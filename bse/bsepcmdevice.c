@@ -147,27 +147,31 @@ bse_pcm_device_get_handle (BsePcmDevice *pdev)
   return pdev->handle;
 }
 
-void
-bse_pcm_handle_read (BsePcmHandle   *handle,
-		     gsize           n_values,
-		     BseSampleValue *values)
+gsize
+bse_pcm_handle_read (BsePcmHandle *handle,
+		     gsize         n_values,
+		     gfloat       *values)
 {
-  g_return_if_fail (handle != NULL);
-  g_return_if_fail (handle->readable);
+  gsize n;
+
+  g_return_val_if_fail (handle != NULL, 0);
+  g_return_val_if_fail (handle->readable, 0);
   if (n_values)
-    g_return_if_fail (values != NULL);
+    g_return_val_if_fail (values != NULL, 0);
   else
     return;
 
   GSL_SPIN_LOCK (&handle->mutex);
-  handle->read (handle, n_values, values);
+  n = handle->read (handle, n_values, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
+
+  return n;
 }
 
 void
-bse_pcm_handle_write (BsePcmHandle         *handle,
-		      gsize                 n_values,
-		      const BseSampleValue *values)
+bse_pcm_handle_write (BsePcmHandle *handle,
+		      gsize         n_values,
+		      const gfloat *values)
 {
   g_return_if_fail (handle != NULL);
   g_return_if_fail (handle->writable);

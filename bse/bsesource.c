@@ -843,7 +843,7 @@ check_jchannel_connection (BseSource *source,
       return j < input->jdata.n_joints ? j : -1;
     }
   else
-    return ochannel == 0 && osource == input->idata.osource ? 0 : -1;
+    return ochannel == input->idata.ochannel && osource == input->idata.osource ? 0 : -1;
 }
 
 BseErrorType

@@ -1,3 +1,27 @@
+Thu Jan 31 17:43:46 2002  Tim Janik  <timj@gtk.org>
+
+	* bsepcminput.[hc]: new module, providing recording abilities,
+	(still has latency issues though).
+
+	* bsecapture.[hc]: disabled this (outdated) module, i.e. don't
+	enter a category for it.
+
+	* bsepcmoutput.[hc]: code fixes and cleanups.
+
+	* bsepcmdevice-oss.c:
+	* bsepcmdevice.[hc]: provide number of values read upon reading
+	from a pcm handle.
+
+	* bsepcmmodule.c: provide pcm input module.
+	* bseserver.[hc]: use/support pcm input modules.
+
+	* bsesong.[hc]: create left/right mixer.
+
+	* bsesource.c: fix stupid bug that caused deletion of some
+	source links to fail.
+
+	* gslopmaster.c: consumer list handling fixes.
+
 Thu Jan 31 01:15:24 2002  Tim Janik  <timj@gtk.org>
 
 	* gslloader-wav.c: deal gracefully with overlong headers.

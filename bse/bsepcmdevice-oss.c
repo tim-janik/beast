@@ -60,12 +60,12 @@ static void	    bse_pcm_device_oss_destroy		(BseObject		*object);
 static BseErrorType bse_pcm_device_oss_open		(BsePcmDevice		*pdev);
 static BseErrorType oss_device_setup			(OSSHandle		*oss);
 static void	    oss_device_retrigger		(OSSHandle		*oss);
-static void	    oss_device_read			(BsePcmHandle		*handle,
+static gsize	    oss_device_read			(BsePcmHandle		*handle,
 							 gsize			 n_values,
-							 BseSampleValue		*values);
+							 gfloat			*values);
 static void	    oss_device_write			(BsePcmHandle		*handle,
 							 gsize			 n_values,
-							 const BseSampleValue	*values);
+							 const gfloat		*values);
 static void	    oss_device_status			(BsePcmHandle		*handle,
 							 BsePcmStatus		*status);
 static void	    bse_pcm_device_oss_close		(BsePcmDevice		*pdev);
@@ -415,22 +415,23 @@ oss_device_status (BsePcmHandle *handle,
     }
 }
 
-static void
-oss_device_read (BsePcmHandle   *handle,
-		 gsize           n_values,
-		 BseSampleValue *values)
+static gsize
+oss_device_read (BsePcmHandle *handle,
+		 gsize         n_values,
+		 gfloat       *values)
 {
   OSSHandle *oss = (OSSHandle*) handle;
   gint fd = oss->fd;
   gsize buf_size = FRAG_BUF_SIZE (oss);
   gpointer buf = oss->frag_buf;
-  BseSampleValue *d = values;
-
-  g_return_if_fail (oss->bytes_per_value == 2);
+  gfloat *d = values;
+  gsize n_left = n_values;
+  
+  g_return_val_if_fail (oss->bytes_per_value == 2, 0);
 
   do
     {
-      gsize n = MIN (buf_size, n_values << 1);
+      gsize n = MIN (buf_size, n_left << 1);
       gint16 *b, *s = buf;
       gssize l;
 
@@ -445,21 +446,23 @@ oss_device_read (BsePcmHandle   *handle,
       l >>= 1;
       for (b = s + l; s < b; s++)
 	*d++ = *s * (1.0 / 32768.0);
-      n_values -= l;
+      n_left -= l;
     }
-  while (n_values);
+  while (n_left);
+
+  return n_values;
 }
 
 static void
-oss_device_write (BsePcmHandle         *handle,
-		  gsize                 n_values,
-		  const BseSampleValue *values)
+oss_device_write (BsePcmHandle *handle,
+		  gsize         n_values,
+		  const gfloat *values)
 {
   OSSHandle *oss = (OSSHandle*) handle;
   gint fd = oss->fd;
   gsize buf_size = FRAG_BUF_SIZE (oss);
   gpointer buf = oss->frag_buf;
-  const BseSampleValue *s = values;
+  const gfloat *s = values;
 
   g_return_if_fail (oss->bytes_per_value == 2);
 
@@ -471,7 +474,7 @@ oss_device_write (BsePcmHandle         *handle,
 
       for (b = d + (n >> 1); d < b; d++)
 	{
-	  BseSampleValue v = *s++;
+	  gfloat v = *s++;
 
 	  *d = v > 1.0 ? 32767 : v < -1.0 ? -32767 : (gint16) (v * 32767.0);
 	}

@@ -24,22 +24,33 @@
 /* --- typedefs & structures --- */
 typedef struct
 {
-  guint           n_values;     /* gsl_engine_block_size() * 2 (stereo) */
-  BseSampleValue *buffer;
-  BseSampleValue *bound;
-  BsePcmHandle   *handle;
+  guint         n_values;	/* gsl_engine_block_size() * 2 (stereo) */
+  gfloat       *buffer;
+  gfloat       *bound;
+  BsePcmHandle *handle;
 } BsePCMModuleData;
 enum
 {
   BSE_PCM_MODULE_ISTREAM_LEFT,
-  BSE_PCM_MODULE_ISTREAM_RIGHT
+  BSE_PCM_MODULE_ISTREAM_RIGHT,
+  BSE_PCM_MODULE_N_ISTREAMS
+};
+enum
+{
+  BSE_PCM_MODULE_OSTREAM_LEFT,
+  BSE_PCM_MODULE_OSTREAM_RIGHT,
+  BSE_PCM_MODULE_N_OSTREAMS
 };
 
 
 /* --- prototypes --- */
-static GslModule*	bse_pcm_module_insert	(BsePcmHandle	*handle,
+static GslModule*	bse_pcm_omodule_insert	(BsePcmHandle	*handle,
 						 GslTrans	*trans);
-static void		bse_pcm_module_remove	(GslModule	*pcm_module,
+static void		bse_pcm_omodule_remove	(GslModule	*pcm_module,
+						 GslTrans	*trans);
+static GslModule*	bse_pcm_imodule_insert	(BsePcmHandle	*handle,
+						 GslTrans	*trans);
+static void		bse_pcm_imodule_remove	(GslModule	*pcm_module,
 						 GslTrans	*trans);
 
 
@@ -94,14 +105,14 @@ bse_pcm_module_poll (gpointer         data,
 }
 
 static void
-bse_pcm_module_process (GslModule *module,
-			guint      n_values)
+bse_pcm_omodule_process (GslModule *module,
+			 guint      n_values)
 {
   BsePCMModuleData *mdata = module->user_data;
-  const BseSampleValue *left = GSL_MODULE_IBUFFER (module, BSE_PCM_MODULE_ISTREAM_LEFT);
-  const BseSampleValue *right = GSL_MODULE_IBUFFER (module, BSE_PCM_MODULE_ISTREAM_RIGHT);
-  BseSampleValue *d = mdata->buffer;
-  BseSampleValue *b = mdata->bound;
+  const gfloat *left = GSL_MODULE_IBUFFER (module, BSE_PCM_MODULE_ISTREAM_LEFT);
+  const gfloat *right = GSL_MODULE_IBUFFER (module, BSE_PCM_MODULE_ISTREAM_RIGHT);
+  gfloat *d = mdata->buffer;
+  gfloat *b = mdata->bound;
   
   g_return_if_fail (n_values == mdata->n_values >> 1);
   
@@ -125,15 +136,15 @@ bse_pcm_module_data_free (gpointer        data,
   g_free (mdata);
 }
 
-GslModule*
-bse_pcm_module_insert (BsePcmHandle *handle,
-		       GslTrans     *trans)
+static GslModule*
+bse_pcm_omodule_insert (BsePcmHandle *handle,
+			GslTrans     *trans)
 {
-  static const GslClass pcm_module_class = {
-    2,				/* n_istreams */
+  static const GslClass pcm_omodule_class = {
+    BSE_PCM_MODULE_N_ISTREAMS,	/* n_istreams */
     0,				/* n_jstreams */
     0,				/* n_ostreams */
-    bse_pcm_module_process,	/* process */
+    bse_pcm_omodule_process,	/* process */
     bse_pcm_module_data_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };
@@ -145,11 +156,11 @@ bse_pcm_module_insert (BsePcmHandle *handle,
   g_return_val_if_fail (trans != NULL, NULL);
   
   mdata = g_new (BsePCMModuleData, 1);
-  mdata->n_values = gsl_engine_block_size () * 2;
-  mdata->buffer = g_new (BseSampleValue, mdata->n_values);
+  mdata->n_values = gsl_engine_block_size () * BSE_PCM_MODULE_N_ISTREAMS;
+  mdata->buffer = g_new (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
   mdata->handle = handle;
-  module = gsl_module_new (&pcm_module_class, mdata);
+  module = gsl_module_new (&pcm_omodule_class, mdata);
   
   gsl_trans_add (trans,
 		 gsl_job_integrate (module));
@@ -161,9 +172,9 @@ bse_pcm_module_insert (BsePcmHandle *handle,
   return module;
 }
 
-void
-bse_pcm_module_remove (GslModule *pcm_module,
-		       GslTrans  *trans)
+static void
+bse_pcm_omodule_remove (GslModule *pcm_module,
+			GslTrans  *trans)
 {
   BsePCMModuleData *mdata;
   
@@ -173,6 +184,77 @@ bse_pcm_module_remove (GslModule *pcm_module,
   mdata = pcm_module->user_data;
   gsl_trans_add (trans,
 		 gsl_job_remove_poll (bse_pcm_module_poll, mdata));
+  gsl_trans_add (trans,
+		 gsl_job_discard (pcm_module));
+}
+
+static void
+bse_pcm_imodule_process (GslModule *module,
+			 guint      n_values)
+{
+  BsePCMModuleData *mdata = module->user_data;
+  gfloat *left = GSL_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_LEFT);
+  gfloat *right = GSL_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
+  const gfloat *s = mdata->buffer;
+  const gfloat *b = mdata->bound;
+  gsize l;
+
+  g_return_if_fail (n_values == mdata->n_values >> 1);
+  
+  l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
+
+  do
+    {
+      *left++ = *s++;
+      *right++ = *s++;
+    }
+  while (s < b);
+  
+  g_return_if_fail (l == mdata->n_values);
+}
+
+static GslModule*
+bse_pcm_imodule_insert (BsePcmHandle *handle,
+			GslTrans     *trans)
+{
+  static const GslClass pcm_imodule_class = {
+    0,				/* n_istreams */
+    0,				/* n_jstreams */
+    BSE_PCM_MODULE_N_OSTREAMS,	/* n_ostreams */
+    bse_pcm_imodule_process,	/* process */
+    bse_pcm_module_data_free,	/* free */
+    GSL_COST_EXPENSIVE,		/* cost */
+  };
+  BsePCMModuleData *mdata;
+  GslModule *module;
+  
+  g_return_val_if_fail (handle != NULL, NULL);
+  g_return_val_if_fail (handle->write != NULL, NULL);
+  g_return_val_if_fail (trans != NULL, NULL);
+  
+  mdata = g_new (BsePCMModuleData, 1);
+  mdata->n_values = gsl_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
+  mdata->buffer = g_new0 (gfloat, mdata->n_values);
+  mdata->bound = mdata->buffer + mdata->n_values;
+  mdata->handle = handle;
+  module = gsl_module_new (&pcm_imodule_class, mdata);
+  
+  gsl_trans_add (trans,
+		 gsl_job_integrate (module));
+  
+  return module;
+}
+
+static void
+bse_pcm_imodule_remove (GslModule *pcm_module,
+			GslTrans  *trans)
+{
+  BsePCMModuleData *mdata;
+  
+  g_return_if_fail (pcm_module != NULL);
+  g_return_if_fail (trans != NULL);
+  
+  mdata = pcm_module->user_data;
   gsl_trans_add (trans,
 		 gsl_job_discard (pcm_module));
 }

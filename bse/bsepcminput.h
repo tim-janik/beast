@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_PCM_OUTPUT_H__
-#define __BSE_PCM_OUTPUT_H__
+#ifndef __BSE_PCM_INPUT_H__
+#define __BSE_PCM_INPUT_H__
 
 #include <bse/bsesource.h>
 
@@ -27,18 +27,18 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_PCM_OUTPUT		 (BSE_TYPE_ID (BsePcmOutput))
-#define BSE_PCM_OUTPUT(object)		 (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_OUTPUT, BsePcmOutput))
-#define BSE_PCM_OUTPUT_CLASS(class)	 (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PCM_OUTPUT, BsePcmOutputClass))
-#define BSE_IS_PCM_OUTPUT(object)	 (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_OUTPUT))
-#define BSE_IS_PCM_OUTPUT_CLASS(class)	 (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_OUTPUT))
-#define BSE_PCM_OUTPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_OUTPUT, BsePcmOutputClass))
+#define BSE_TYPE_PCM_INPUT		(BSE_TYPE_ID (BsePcmInput))
+#define BSE_PCM_INPUT(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_INPUT, BsePcmInput))
+#define BSE_PCM_INPUT_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PCM_INPUT, BsePcmInputClass))
+#define BSE_IS_PCM_INPUT(object)	(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_INPUT))
+#define BSE_IS_PCM_INPUT_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_INPUT))
+#define BSE_PCM_INPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_INPUT, BsePcmInputClass))
 
 
-/* --- BsePcmOutput source --- */
-typedef struct _BsePcmOutput      BsePcmOutput;
-typedef struct _BsePcmOutputClass BsePcmOutputClass;
-struct _BsePcmOutput
+/* --- BsePcmInput source --- */
+typedef struct _BsePcmInput      BsePcmInput;
+typedef struct _BsePcmInputClass BsePcmInputClass;
+struct _BsePcmInput
 {
   BseSource       parent_object;
 
@@ -47,7 +47,7 @@ struct _BsePcmOutput
   /* PREPARED */
   GslModule	 *uplink;
 };
-struct _BsePcmOutputClass
+struct _BsePcmInputClass
 {
   BseSourceClass     parent_class;
 };
@@ -56,9 +56,9 @@ struct _BsePcmOutputClass
 /* --- channels --- */
 enum
 {
-  BSE_PCM_OUTPUT_ICHANNEL_LEFT,
-  BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
-  BSE_PCM_OUTPUT_N_ICHANNELS
+  BSE_PCM_INPUT_OCHANNEL_LEFT,
+  BSE_PCM_INPUT_OCHANNEL_RIGHT,
+  BSE_PCM_INPUT_N_OCHANNELS
 };
 
 
@@ -69,4 +69,4 @@ enum
 }
 #endif /* __cplusplus */
 
-#endif /* __BSE_PCM_OUTPUT_H__ */
+#endif /* __BSE_PCM_INPUT_H__ */

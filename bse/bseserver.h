@@ -54,7 +54,8 @@ struct _BseServer
   guint		  dev_use_count;
 
   BsePcmDevice   *pcm_device;
-  GslModule      *pcm_module;
+  GslModule      *pcm_imodule;
+  GslModule      *pcm_omodule;
   guint		  pcm_ref_count;
 
   BseMidiDevice	 *midi_device;
@@ -83,6 +84,11 @@ GslModule*	bse_server_retrive_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_output_module	(BseServer	*server,
+							 GslModule	*module);
+GslModule*	bse_server_retrive_pcm_input_module	(BseServer	*server,
+							 BseSource	*source,
+							 const gchar	*uplink_name);
+void		bse_server_discard_pcm_input_module	(BseServer	*server,
 							 GslModule	*module);
 GslModule*	bse_server_retrive_midi_input_module	(BseServer	*server,
 							 const gchar	*downlink_name,

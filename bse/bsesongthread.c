@@ -130,7 +130,7 @@ seq_step (BseSongSequencer *seq,
 
   note = bse_pattern_peek_note (pattern, 0, seq->row);
 
-  g_object_set (snet->voices[0].ofreq, "note", note->note, NULL);
+  g_object_set (snet->voices[0].ofreq, "note_1", note->note, NULL);
 
   g_printerr ("SST: tick(%llu): note %u instr %p\n", cur_tick, note->note, note->instrument);
 

@@ -121,7 +121,6 @@ bse_song_class_init (BseSongClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
-  guint ochannel_id;
   
   parent_class = g_type_class_peek_parent (class);
   
@@ -182,8 +181,6 @@ bse_song_class_init (BseSongClass *class)
 						 BSE_DFL_SONG_BPM, BSE_STP_BPM,
 						 BSE_PARAM_DEFAULT |
 						 BSE_PARAM_HINT_SCALE));
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Stereo Out", "Stereo Output");
-  g_assert (ochannel_id == BSE_SONG_OCHANNEL_STEREO);
 
   song_signals[SIGNAL_PATTERN_GROUP_INSERTED] = bse_object_class_add_signal (object_class, "pattern_group_inserted",
 									     bse_marshal_VOID__OBJECT_UINT,
@@ -235,12 +232,14 @@ bse_song_do_destroy (BseObject *object)
 
   song_set_n_channels (song, 0);
 
-  if (song->net.mixer)
+  if (song->net.lmixer)
     {
       BseSongNet *net = &song->net;
 
-      bse_container_remove_item (container, BSE_ITEM (net->mixer));
-      net->mixer = NULL;
+      bse_container_remove_item (container, BSE_ITEM (net->lmixer));
+      net->lmixer = NULL;
+      bse_container_remove_item (container, BSE_ITEM (net->rmixer));
+      net->rmixer = NULL;
       bse_container_remove_item (container, BSE_ITEM (net->output));
       net->output = NULL;
     }
@@ -990,19 +989,26 @@ song_set_n_channels (BseSong *song,
   BseSongNet *net = &song->net;
   guint i;
   
-  if (!net->mixer)
+  if (!net->lmixer)
     {
       /* initial setup */
-      net->mixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
-      BSE_OBJECT_SET_FLAGS (net->mixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      bse_container_add_item (container, BSE_ITEM (net->mixer));
+      net->lmixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
+      BSE_OBJECT_SET_FLAGS (net->lmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
+      bse_container_add_item (container, BSE_ITEM (net->lmixer));
+      g_object_unref (net->lmixer);
+
+      net->rmixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
+      BSE_OBJECT_SET_FLAGS (net->rmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
+      bse_container_add_item (container, BSE_ITEM (net->rmixer));
+      g_object_unref (net->rmixer);
 
       net->output = g_object_new (g_type_from_name ("BsePcmOutput"), NULL);	// FIXME
       BSE_OBJECT_SET_FLAGS (net->output, BSE_ITEM_FLAG_STORAGE_IGNORE);
       bse_container_add_item (container, BSE_ITEM (net->output));
+      g_object_unref (net->output);
 
-      _bse_source_set_input (net->output, 0, net->mixer, 0);
-      _bse_source_set_input (net->output, 1, net->mixer, 0);
+      _bse_source_set_input (net->output, 0, net->lmixer, 0);
+      _bse_source_set_input (net->output, 1, net->rmixer, 0);
     }
 
   for (i = n_channels; i < song->n_channels; i++)
@@ -1011,11 +1017,9 @@ song_set_n_channels (BseSong *song,
 
       item = BSE_ITEM (net->voices[i].ofreq);
       bse_container_remove_item (container, item);
-      g_object_unref (item);
 
       item = BSE_ITEM (net->voices[i].synth);
       bse_container_remove_item (container, item);
-      g_object_unref (item);
     }
 
   i = song->n_channels;
@@ -1030,6 +1034,7 @@ song_set_n_channels (BseSong *song,
       BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
       net->voices[i].ofreq = source;
       bse_container_add_item (container, BSE_ITEM (source));
+      g_object_unref (source);
       
       source = g_object_new (g_type_from_name ("BseSubSynth"),
 			     "in_port_1", "frequency",
@@ -1044,11 +1049,18 @@ song_set_n_channels (BseSong *song,
       BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
       net->voices[i].synth = source;
       bse_container_add_item (container, BSE_ITEM (source));
+      g_object_unref (source);
 
       _bse_source_set_input (net->voices[i].synth, 0, net->voices[i].ofreq, 0);
       _bse_source_set_input (net->voices[i].synth, 1, net->voices[i].ofreq, 1);
       _bse_source_set_input (net->voices[i].synth, 2, net->voices[i].ofreq, 2);
       _bse_source_set_input (net->voices[i].synth, 3, net->voices[i].ofreq, 3);
+
+      if (i < 4) // FIXME
+	{
+	  _bse_source_set_input (net->lmixer, i, net->voices[i].synth, 0);
+	  _bse_source_set_input (net->rmixer, i, net->voices[i].synth, 1);
+	}
     }
 }
 

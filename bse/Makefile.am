@@ -75,6 +75,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemidisynthinput.h \
 	bseobject.h \
 	bseoutport.h \
+	bsepcminput.h \
 	bsepcmoutput.h \
 	bseparam.h \
 	bseparasite.h \
@@ -141,6 +142,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemidisynthinput.c \
 	bseobject.c \
 	bseoutport.c \
+	bsepcminput.c \
 	bsepcmoutput.c \
 	bseparam.c \
 	bseparasite.c \

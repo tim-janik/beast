@@ -118,7 +118,8 @@ bse_server_init (BseServer *server)
   server->loader_magics = NULL;
   server->dev_use_count = 0;
   server->pcm_device = NULL;
-  server->pcm_module = NULL;
+  server->pcm_imodule = NULL;
+  server->pcm_omodule = NULL;
   server->pcm_ref_count = 0;
   server->midi_device = NULL;
   server->midi_decoder = NULL;
@@ -362,8 +363,8 @@ bse_server_activate_devices (BseServer *server)
       engine_init (server, bse_pcm_device_get_handle (server->pcm_device)->mix_freq);
 
       trans = gsl_trans_open ();
-      server->pcm_module = bse_pcm_module_insert (bse_pcm_device_get_handle (server->pcm_device),
-						  trans);
+      server->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (server->pcm_device), trans);
+      server->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (server->pcm_device), trans);
       gsl_trans_commit (trans);
     }
   
@@ -381,10 +382,12 @@ bse_server_suspend_devices (BseServer *server)
   g_return_if_fail (server->midi_ref_count == 0);
 
   trans = gsl_trans_open ();
-  if (server->pcm_module)
+  if (server->pcm_omodule)
     {
-      bse_pcm_module_remove (server->pcm_module, trans);
-      server->pcm_module = NULL;
+      bse_pcm_imodule_remove (server->pcm_imodule, trans);
+      server->pcm_imodule = NULL;
+      bse_pcm_omodule_remove (server->pcm_omodule, trans);
+      server->pcm_omodule = NULL;
     }
   for (slist = server->midi_modules; slist; slist = slist->next)
     bse_midi_module_remove (slist->data, trans);
@@ -411,11 +414,11 @@ bse_server_retrive_pcm_output_module (BseServer   *server,
   g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (uplink_name != NULL, NULL);
-  g_return_val_if_fail (server->pcm_module != NULL, NULL); // FIXME server->pcm_devices_open
+  g_return_val_if_fail (server->pcm_omodule != NULL, NULL); // FIXME server->pcm_devices_open
 
   server->pcm_ref_count += 1;
 
-  return server->pcm_module;
+  return server->pcm_omodule;
 }
 
 void
@@ -426,7 +429,35 @@ bse_server_discard_pcm_output_module (BseServer *server,
   g_return_if_fail (module != NULL);
   g_return_if_fail (server->pcm_ref_count > 0);
 
-  g_return_if_fail (server->pcm_module == module); // FIXME
+  g_return_if_fail (server->pcm_omodule == module); // FIXME
+
+  server->pcm_ref_count -= 1;
+}
+
+GslModule*
+bse_server_retrive_pcm_input_module (BseServer   *server,
+				     BseSource   *source,
+				     const gchar *uplink_name)
+{
+  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (uplink_name != NULL, NULL);
+  g_return_val_if_fail (server->pcm_imodule != NULL, NULL); // FIXME server->pcm_devices_open
+
+  server->pcm_ref_count += 1;
+
+  return server->pcm_imodule;
+}
+
+void
+bse_server_discard_pcm_input_module (BseServer *server,
+				     GslModule *module)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (module != NULL);
+  g_return_if_fail (server->pcm_ref_count > 0);
+
+  g_return_if_fail (server->pcm_imodule == module); // FIXME
 
   server->pcm_ref_count -= 1;
 }

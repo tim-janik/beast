@@ -1,5 +1,5 @@
-/* BsePcmOutput - BSE PCM destination module
- * Copyright (C) 1999, 2000-2001 Tim Janik
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -92,7 +92,7 @@ BSE_BUILTIN_TYPE (BsePcmOutput)
 						 "Stereo PCM sound output module, per default, signals routed into "
 						 "this module are played back on the standard soundcard",
 						 &pcm_output_info);
-  bse_categories_register_icon ("/Source/Output",
+  bse_categories_register_icon ("/Modules/Output",
 				pcm_output_type_id,
 				&pixdata);
   return pcm_output_type_id;
@@ -240,13 +240,11 @@ pcm_output_process (GslModule *module,
 		    guint      n_values)
 {
   ModData *mdata = module->user_data;
-  const BseSampleValue *ls = GSL_MODULE_IBUFFER (module, 0);
-  const BseSampleValue *rs = GSL_MODULE_IBUFFER (module, 1);
-  BseSampleValue *ld = GSL_MODULE_OBUFFER (module, 0);
-  BseSampleValue *rd = GSL_MODULE_OBUFFER (module, 1);
+  const gfloat *ls = GSL_MODULE_IBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_LEFT);
+  const gfloat *rs = GSL_MODULE_IBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
+  gfloat *ld = GSL_MODULE_OBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_LEFT);
+  gfloat *rd = GSL_MODULE_OBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
   gfloat v = mdata->volume;
-  
-  // FIXME: could simply poke pointers for volume==1.0 once nodes support stream buffer virtualization
   
   if (mdata->volume_set)
     while (n_values--)
@@ -255,11 +253,10 @@ pcm_output_process (GslModule *module,
 	*rd++ = v * *rs++;
       }
   else
-    while (n_values--)
-      {
-	*ld++ = *ls++;
-	*rd++ = *rs++;
-      }
+    {
+      GSL_MODULE_OBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_LEFT) = (gfloat*) GSL_MODULE_IBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_LEFT);
+      GSL_MODULE_OBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_RIGHT) = (gfloat*) GSL_MODULE_IBUFFER (module, BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
+    }
 }
 
 static void
@@ -268,9 +265,9 @@ bse_pcm_output_context_create (BseSource *source,
 			       GslTrans  *trans)
 {
   static const GslClass pcm_output_mclass = {
-    2,				/* n_istreams */
+    BSE_PCM_OUTPUT_N_ICHANNELS,	/* n_istreams */
     0,				/* n_jstreams */
-    2,				/* n_ostreams */
+    BSE_PCM_OUTPUT_N_ICHANNELS,	/* n_ostreams */
     pcm_output_process,		/* process */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */

@@ -70,7 +70,7 @@ BSE_BUILTIN_TYPE (BseCapture)
 					   "BseCapture",
 					   "BSE Recording source",
 					   &capture_info);
-  bse_categories_register_icon ("/Source/Capture", capture_type, &mic_pixdata);
+  // bse_categories_register_icon ("/Modules/Capture", capture_type, &mic_pixdata);
 
   return capture_type;
 }

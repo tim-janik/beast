@@ -43,7 +43,8 @@ typedef struct {
   BseSource *synth;
 } BseSongVoice;
 typedef struct {
-  BseSource    *mixer;
+  BseSource    *lmixer;
+  BseSource    *rmixer;
   BseSource    *output;
   BseSongVoice *voices;	/* [n_channels] */
 } BseSongNet;
@@ -73,12 +74,6 @@ struct _BseSong
 struct _BseSongClass
 {
   BseSNetClass parent_class;
-};
-
-
-/* --- ochannels --- */
-enum {
-  BSE_SONG_OCHANNEL_STEREO
 };
 
 

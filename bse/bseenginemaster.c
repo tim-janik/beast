@@ -77,7 +77,7 @@ static OpSchedule  *master_schedule = NULL;
 static void
 add_consumer (OpNode *node)
 {
-  g_return_if_fail (OP_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL);
+  g_return_if_fail (OP_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
 
   node->toplevel_next = master_consumer_list;
   master_consumer_list = node;
@@ -88,7 +88,7 @@ remove_consumer (OpNode *node)
 {
   OpNode *tmp, *last = NULL;
 
-  g_return_if_fail (OP_NODE_IS_CONSUMER (node));
+  g_return_if_fail (!OP_NODE_IS_CONSUMER (node) || !node->integrated);
   
   for (tmp = master_consumer_list; tmp; last = tmp, tmp = last->toplevel_next)
     if (tmp == node)
@@ -169,8 +169,12 @@ master_process_job (GslJob *job)
 	op_node_disconnect_outputs (node, node->output_nodes->data);
       /* remove from consumer list */
       if (OP_NODE_IS_CONSUMER (node))
-	remove_consumer (node);
-      _gsl_mnl_remove (node);
+	{
+	  _gsl_mnl_remove (node);
+	  remove_consumer (node);
+	}
+      else
+	_gsl_mnl_remove (node);
       node->counter = 0;
       master_need_reflow |= TRUE;
       master_schedule_discard ();	/* discard schedule so node may be freed */

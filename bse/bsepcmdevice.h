@@ -93,12 +93,12 @@ struct _BsePcmHandle
   gfloat		 mix_freq;
   guint			 playback_watermark;
   GslMutex		 mutex;
-  void	(*read)		(BsePcmHandle		*handle,
+  gsize	(*read)		(BsePcmHandle		*handle,
 			 gsize			 n_values,
-			 BseSampleValue		*values);
+			 gfloat			*values);
   void	(*write)	(BsePcmHandle		*handle,
 			 gsize			 n_values,
-			 const BseSampleValue	*values);
+			 const gfloat		*values);
   void	(*status)	(BsePcmHandle		*handle,
 			 BsePcmStatus		*status);
 };
@@ -127,12 +127,12 @@ struct _BsePcmDeviceClass
 BseErrorType	bse_pcm_device_open		(BsePcmDevice		*pdev);
 void		bse_pcm_device_suspend		(BsePcmDevice		*pdev);
 BsePcmHandle*	bse_pcm_device_get_handle	(BsePcmDevice		*pdev);
-void		bse_pcm_handle_read		(BsePcmHandle		*handle,
+gsize		bse_pcm_handle_read		(BsePcmHandle		*handle,
 						 gsize			 n_values,
-						 BseSampleValue		*values);
+						 gfloat			*values);
 void		bse_pcm_handle_write		(BsePcmHandle		*handle,
 						 gsize			 n_values,
-						 const BseSampleValue	*values);
+						 const gfloat		*values);
 void		bse_pcm_handle_status		(BsePcmHandle		*handle,
 						 BsePcmStatus		*status);
 void		bse_pcm_handle_set_watermark	(BsePcmHandle		*handle,
