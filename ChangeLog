@@ -15,6 +15,10 @@ Sat Feb 22 17:10:34 2003  Tim Janik  <timj@gtk.org>
 	* beast-gtk/gxk/gxkutils.[hc]: added convenience function gxk_color_alloc().
 	fixed up gxk_tree_view_get_row_area() to return FALSE for empty trees.
 
+	* beast-gtk/bstmarker.[hc]: generic vertical marker drawing code. point of
+	this implementation is to prevent exposes on the host widget while moving
+	markers.
+
 	* beast-gtk/icons/Makefile.am: 
 	* beast-gtk/icons/loopleft.xcf:
 	* beast-gtk/icons/loopleft.png:
