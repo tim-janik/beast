@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-22 14:28+0200\n"
+"POT-Creation-Date: 2004-06-30 20:06+0200\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -409,7 +409,7 @@ msgid "Loading wave `%s'"
 msgstr "Učitavam talas „%s“"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Dodaj"
 
@@ -417,7 +417,7 @@ msgstr "Dodaj"
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
 #: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Obriši"
 
@@ -429,7 +429,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Ime"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:521
 msgid "Comment"
 msgstr "Primedba"
 
@@ -577,16 +577,16 @@ msgstr "Učitavam „%s“"
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:723
 msgid "BEAST About"
 msgstr "O Zveri"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:724
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:725
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
@@ -865,7 +865,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Izgled uređivača obrazaca"
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "VZoom"
 msgstr "UUvećanje"
 
@@ -1268,7 +1268,8 @@ msgid "UTime"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:247
-msgid "Milliseconds of user CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
@@ -1276,7 +1277,8 @@ msgid "STime"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
-msgid "Milliseconds of system CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 
 #.
@@ -1336,7 +1338,7 @@ msgstr ""
 "vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Edit"
 msgstr "_Uredi"
 
@@ -2085,11 +2087,11 @@ msgstr "Premesti deo"
 msgid "Start Editor"
 msgstr "Pokreni uređivač"
 
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr "Dodaj novu melodiju u ovu pesmu"
 
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:64
 msgid "Delete the currently selected track"
 msgstr "Obriši trenutno izabranu melodiju"
 
@@ -2163,202 +2165,194 @@ msgid "Edit the currently selected wave"
 msgstr "Uredi trenutno izabrani talas"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:1
-msgid "Adjust pattern length"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:2
-msgid "Adjust right view boundary"
-msgstr "Prilagodi granicu desnog pogleda"
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr "Prilagodi činilac uvećanja prikaza preusmerivača"
 
 # bug: Aplly -> Apply
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr "Primeni izmene podešavanja u izgledu uređivača obrazaca"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Configure"
 msgstr "Podesi"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Configure the column layout of the pattern editor"
 msgstr "Podeci izgled kolona u uređivaču obrazaca"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Control Type:"
 msgstr "Vrsta kontrole:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Development"
 msgstr "Razvoj"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Discard changes and close dialog"
 msgstr "Zanemari izmene i zatvori prozorče"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "E_xamples"
 msgstr "_Primeri"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Events"
 msgstr "Događaji"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "HZoom"
 msgstr "VUvećanje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Horizontal piano zoom"
 msgstr "Vodoravno uvećanje za klavir"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Horizontal track zoom"
 msgstr "Vodoravno uvećanje pesme"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Layout:"
 msgstr "Izgled:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Note _Length"
 msgstr "Dužina _note"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Piano Notes"
 msgstr "Note za klavir"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Repeat"
 msgstr "Ponovi"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Repeat playback within loop points"
 msgstr "Ponovo pusti u tačkama vrtenja"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Synthesis Modules"
 msgstr "Moduli za sintezu"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Vertical piano zoom"
 msgstr "Uspravno uvećanje za klavir"
 
 # Ja bih radije „Kao-polica“ :-)
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Virtual Rack"
 msgstr "Virtuelna polica"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Wave_s"
 msgstr "_Talasi"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Zoom"
 msgstr "Uvećanje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "_Apply"
 msgstr "Pri_meni"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "_Audio Sources"
 msgstr "Izvori _zvuka"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "_Cancel"
 msgstr "Ot_kaži"
 
 # Hteo sam „proba“, ali imamo i „Test“, pa je bolje tu iskoristiti
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Demo"
 msgstr "_Demo"
 
 # distonirati? u Leksikonu se to pominje u smislu zvuka
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Distortion"
 msgstr "Is_krivljenje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Enhance"
 msgstr "Po_boljšanje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_File"
 msgstr "_Datoteka"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Filters"
 msgstr "_Filteri"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_Help"
 msgstr "_Pomoć"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Input & Output"
 msgstr "_Ulaz i izlaz"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Misc"
 msgstr "_Razno"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Other Sources"
 msgstr "_Ostali izvori"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Project"
 msgstr "_Projekat"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Quantization"
 msgstr "_Kvantizacija"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Routing"
 msgstr "Us_meravanje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Skins"
 msgstr "_Motivi"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Song"
 msgstr "P_esma"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Spatial"
 msgstr "_Prostorno"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Synth"
 msgstr "_Sintetizator"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Synthesizers"
 msgstr "_Sintetizatori"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Tools"
 msgstr "_Alati"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Utilities"
 msgstr "_Pomoćni alati"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_View"
 msgstr "P_regled"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Virtualization"
 msgstr "_Virtuelizacija"
 
@@ -3298,8 +3292,9 @@ msgstr "Modulacija pulsa [%]"
 
 # bug: wisth -> width
 #: bse/bsestandardosc.c:187
+#, fuzzy
 msgid ""
-"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
 "Snaga širine pulsnog ulaza modulacijom (neophodno je da oblik talasa bude "
@@ -3586,7 +3581,8 @@ msgstr "Zvučni izlaz"
 
 # bug: s/SIgnal/Signal/
 #: plugins/bseatandistort.c:90
-msgid "Audio Input SIgnal"
+#, fuzzy
+msgid "Audio Input Signal"
 msgstr "Signal ulaza zvuka"
 
 #: plugins/bseatandistort.c:92
@@ -4004,6 +4000,9 @@ msgstr "Levi izlaz"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Desni izlaz"
+
+#~ msgid "Adjust right view boundary"
+#~ msgstr "Prilagodi granicu desnog pogleda"
 
 #~ msgid "Insert full notes"
 #~ msgstr "Umetni pune note"

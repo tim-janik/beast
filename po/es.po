@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-22 14:28+0200\n"
+"POT-Creation-Date: 2004-06-30 20:06+0200\n"
 "PO-Revision-Date: 2004-04-12 22:33+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -412,7 +412,7 @@ msgid "Loading wave `%s'"
 msgstr "Cargando onda «%s»"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Añadir"
 
@@ -420,7 +420,7 @@ msgstr "Añadir"
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
 #: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Borrar"
 
@@ -432,7 +432,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Nombre"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:521
 msgid "Comment"
 msgstr "Comentario"
 
@@ -580,16 +580,16 @@ msgstr "Cargando  «%s»"
 msgid "Loading project \"%s\""
 msgstr "Cargando el proyecto «%s»"
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:723
 msgid "BEAST About"
 msgstr "Acerca de Beast"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:724
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versión %s de Beast"
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:725
 msgid "Contributions made by:"
 msgstr "Contribuciones hechas por:"
 
@@ -860,7 +860,7 @@ msgstr ""
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "VZoom"
 msgstr "AmpliaciónV"
 
@@ -1259,7 +1259,8 @@ msgid "UTime"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:247
-msgid "Milliseconds of user CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
@@ -1267,7 +1268,8 @@ msgid "STime"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
-msgid "Milliseconds of system CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 
 #.
@@ -1326,7 +1328,7 @@ msgstr ""
 "código (guarde sus proyectos regularmente)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Edit"
 msgstr "_Editar"
 
@@ -2039,11 +2041,11 @@ msgstr "Mover parte"
 msgid "Start Editor"
 msgstr "Iniciar editor"
 
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr "Añadir una  pista nueva a esta canción"
 
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:64
 msgid "Delete the currently selected track"
 msgstr "Borrar la pista seleccionada actualmente"
 
@@ -2117,198 +2119,190 @@ msgid "Edit the currently selected wave"
 msgstr "Editar la onda seleccionada actualmente"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:1
-msgid "Adjust pattern length"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:2
-msgid "Adjust right view boundary"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr "Ajustar el factor de ampliación de la visualización del encaminador"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Configure"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Control Type:"
 msgstr "Tipo de control:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Development"
 msgstr "Desarrollo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Discard changes and close dialog"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "E_xamples"
 msgstr "E_jemplos"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Events"
 msgstr "Eventos"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "HZoom"
 msgstr "AmpliaciónH"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Horizontal piano zoom"
 msgstr "Ampliación horizontal piano"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Horizontal track zoom"
 msgstr "Ampliación de pista horizontal"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Layout:"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Note _Length"
 msgstr "_Duración de la nota"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Piano Notes"
 msgstr "Notas de piano"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Repeat"
 msgstr "Repetir"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Repeat playback within loop points"
 msgstr "Repetir reproducción entre los puntos del bucle"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Synthesis Modules"
 msgstr "Módulos de síntesis"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Vertical piano zoom"
 msgstr "Ampliación vertical de piano"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Virtual Rack"
 msgstr "Rack virtual"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Wave_s"
 msgstr "Onda_s"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Zoom"
 msgstr "Ampliación"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "_Apply"
 msgstr "_Aplicar"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "_Audio Sources"
 msgstr "Fuentes de _sonido"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Demo"
 msgstr "_Demostración"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Distortion"
 msgstr "_Distorsión"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Enhance"
 msgstr "_Mejorar"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_File"
 msgstr "_Archivo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Filters"
 msgstr "_Filtros"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_Help"
 msgstr "A_yuda"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Input & Output"
 msgstr "_Entrada y salida"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Misc"
 msgstr "_Varios"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Other Sources"
 msgstr "_Otras fuentes"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Project"
 msgstr "_Proyecto"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Quantization"
 msgstr "_Cuantización"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Routing"
 msgstr "_Encaminando"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Song"
 msgstr "_Canción"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Spatial"
 msgstr "_Espacial"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Synth"
 msgstr "_Sintetizar"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Synthesizers"
 msgstr "_Sintetizadores"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Tools"
 msgstr "_Herramientas"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Utilities"
 msgstr "_Utilidades"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_View"
 msgstr "_Ver"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Virtualization"
 msgstr "_Virtualización"
 
@@ -3256,7 +3250,7 @@ msgstr "Modulación de pulso [%]"
 #: bse/bsestandardosc.c:187
 #, fuzzy
 msgid ""
-"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
 "Fuerza del pulso  de entrada de modulación (El pulso tiene que tener "
@@ -3541,7 +3535,8 @@ msgid "Audio Output"
 msgstr "Salida de sonido"
 
 #: plugins/bseatandistort.c:90
-msgid "Audio Input SIgnal"
+#, fuzzy
+msgid "Audio Input Signal"
 msgstr "Señal de entrada de sonido"
 
 #: plugins/bseatandistort.c:92

@@ -1,3 +1,9 @@
+Wed Jun 30 19:06:34 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: beast version 0.6.2-rc2, age 0, binary 0.
+
+	* beast-gtk/bstmain.c (beast_show_about_box): translator updates.
+
 Wed Jun 30 18:23:37 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstgrowbar.[hc]: added bst_grow_bar_set_tooltips() and

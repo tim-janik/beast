@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-23 14:06+0200\n"
+"POT-Creation-Date: 2004-06-30 20:06+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -55,8 +55,6 @@ msgstr "_Mbylle"
 msgid "_Save"
 msgstr "_Ruaj"
 
-#. GRUT modified this item
-#. GRUT modified this item
 #: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "Ruaje _Si..."
@@ -73,7 +71,6 @@ msgstr "_Preferime..."
 msgid "Rebuild"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr "_Informacione..."
@@ -82,7 +79,6 @@ msgstr "_Informacione..."
 msgid "_Undo"
 msgstr "_Anullo"
 
-#. GRUT modified this item
 #: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr "_Përsërit"
@@ -179,7 +175,6 @@ msgstr ""
 msgid "Rack editor"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr "Preferimet"
@@ -218,7 +213,6 @@ msgstr ""
 msgid "Input"
 msgstr "Input"
 
-#. GRUT modified this item
 #: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
 #: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
@@ -290,7 +284,6 @@ msgstr ""
 msgid "Open Project"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstfiledialog.c:396
 msgid "Select File"
 msgstr "Zgjidh file"
@@ -404,7 +397,7 @@ msgid "Loading wave `%s'"
 msgstr ""
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Shto"
 
@@ -412,7 +405,7 @@ msgstr "Shto"
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
 #: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Elemino"
 
@@ -424,7 +417,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Emri"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:521
 msgid "Comment"
 msgstr "Komenti"
 
@@ -432,7 +425,6 @@ msgstr "Komenti"
 msgid "Type"
 msgstr "Lloji"
 
-#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:51
 msgid "Add..."
 msgstr "Shto..."
@@ -441,7 +433,6 @@ msgstr "Shto..."
 msgid "Bind a new key combination to a program function"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:53
 msgid "Change..."
 msgstr "Ndrysho..."
@@ -459,7 +450,6 @@ msgstr "Përpjestim"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower"
 msgstr "Inferior"
@@ -492,7 +482,6 @@ msgstr ""
 msgid "Key combinations used to activate a function"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
 msgid "Function"
 msgstr "Funksioni"
@@ -501,7 +490,6 @@ msgstr "Funksioni"
 msgid "Functions to be activated for a key binding"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:438
 msgid "Parameter"
 msgstr "Parametri"
@@ -555,7 +543,6 @@ msgstr "Plugins"
 msgid "LADSPA Plugins"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Scripte"
@@ -580,16 +567,16 @@ msgstr ""
 msgid "Loading project \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:723
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:724
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:725
 msgid "Contributions made by:"
 msgstr ""
 
@@ -609,7 +596,6 @@ msgstr ""
 msgid "Standard Option Menu"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstparam-color-spinner.c:67
 msgid "Select Color"
 msgstr "Zgjidh ngjyrën"
@@ -670,7 +656,6 @@ msgstr "Pastro (fshi)"
 msgid "Clear the current selection"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
 msgstr "Preje"
@@ -687,7 +672,6 @@ msgstr "Kopjo"
 msgid "Copy the current selection into clipboard"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
 msgstr "Ngjite"
@@ -704,7 +688,6 @@ msgstr "Anullo"
 msgid "Undo last editing step"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
 msgstr "Përsërite"
@@ -864,7 +847,7 @@ msgstr ""
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "VZoom"
 msgstr ""
 
@@ -882,7 +865,6 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstpatternctrl.c:91
 msgid "Direction"
 msgstr "Drejtimi"
@@ -1216,7 +1198,6 @@ msgstr ""
 msgid "Generic Keys"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstpreferences.c:88
 msgid "Skin"
 msgstr "Skin (Veshja grafike)"
@@ -1247,25 +1228,24 @@ msgstr ""
 msgid "Percentage of CPU usage"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstprofiler.c:247
 msgid "UTime"
 msgstr "UTime"
 
 #: beast-gtk/bstprofiler.c:247
-msgid "Milliseconds of user CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstprofiler.c:248
 msgid "STime"
 msgstr "STime"
 
 #: beast-gtk/bstprofiler.c:248
-msgid "Milliseconds of system CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 
-#. GRUT modified this item
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
 #. _("Thread State:\n"
@@ -1316,7 +1296,7 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Edit"
 msgstr "_Ndrysho"
 
@@ -1328,7 +1308,6 @@ msgstr ""
 msgid "Controller"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrackitem.c:209
 msgid "Duplicate"
 msgstr "Dyfisho"
@@ -1349,13 +1328,11 @@ msgstr ""
 msgid "Shrink Vertically"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Etiketa"
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:35
 msgid "Up"
 msgstr "Sipër"
@@ -1380,7 +1357,6 @@ msgstr "Djathtas"
 msgid "Move to the right"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:38
 msgid "Down"
 msgstr "Poshtë"
@@ -1389,7 +1365,6 @@ msgstr "Poshtë"
 msgid "Step downwards"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:42
 msgid "None"
 msgstr "Asnjë"
@@ -1594,7 +1569,6 @@ msgstr ""
 msgid "Release counter"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:73
 msgid "Font Size"
 msgstr "Madhësia e gërmave"
@@ -1670,7 +1644,6 @@ msgstr ""
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
 msgid "Background Color"
 msgstr "Ngjyra e Sfondit"
@@ -1891,7 +1864,6 @@ msgstr ""
 msgid "Reset Loop"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bststest.c:590
 msgid "Score"
 msgstr "Pikë"
@@ -2021,11 +1993,11 @@ msgstr ""
 msgid "Start Editor"
 msgstr ""
 
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr ""
 
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:64
 msgid "Delete the currently selected track"
 msgstr ""
 
@@ -2033,7 +2005,6 @@ msgstr ""
 msgid "Error"
 msgstr "Gabim"
 
-#. GRUT modified this item
 #: beast-gtk/bstusermessage.c:95
 msgid "Warning"
 msgstr "Kujdes"
@@ -2046,7 +2017,6 @@ msgstr ""
 msgid "Diagnostic"
 msgstr ""
 
-#. GRUT modified this item
 #. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
 msgid "Debug"
@@ -2101,203 +2071,190 @@ msgid "Edit the currently selected wave"
 msgstr ""
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:1
-msgid "Adjust pattern length"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:2
-msgid "Adjust right view boundary"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Configure"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Control Type:"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Development"
 msgstr "Zhvillim"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Discard changes and close dialog"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "E_xamples"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Events"
 msgstr "Ngjarje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "HZoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Horizontal piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Horizontal track zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Layout:"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Note _Length"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Piano Notes"
 msgstr ""
 
-#. GRUT modified this item
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Repeat"
 msgstr "Përsërit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Repeat playback within loop points"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Synthesis Modules"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Vertical piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Virtual Rack"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Wave_s"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Zoom"
 msgstr "Shkalla"
 
-#. GRUT modified this item
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "_Apply"
 msgstr "_Zbato"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "_Audio Sources"
 msgstr ""
 
-#. GRUT modified this item
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "_Cancel"
 msgstr "_Anullo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Demo"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Distortion"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Enhance"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_File"
 msgstr "_File"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Filters"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_Help"
 msgstr "_Ndihmë"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Input & Output"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_LADSPA"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Misc"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Other Sources"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Project"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Quantization"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Routing"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Song"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Spatial"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Synth"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Synthesizers"
 msgstr ""
 
-#. GRUT modified this item
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Tools"
 msgstr "_Instrumentë"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Utilities"
 msgstr ""
 
-#. GRUT modified this item
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_View"
 msgstr "_Shfaq"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Virtualization"
 msgstr ""
 
@@ -2321,7 +2278,6 @@ msgstr ""
 msgid "Go to browser index"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
 msgstr "Vendodhja"
@@ -2330,7 +2286,6 @@ msgstr "Vendodhja"
 msgid "Reload current page"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
 msgstr "_Mbrapa"
@@ -2343,7 +2298,6 @@ msgstr "_Gjej"
 msgid "_Forward"
 msgstr "_Vazhdo"
 
-#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
 msgstr "_Treguesi"
@@ -2413,7 +2367,6 @@ msgstr "Teksti i etiketës"
 msgid "Use underline"
 msgstr "Përdor nënvijë"
 
-#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:138
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
@@ -2431,7 +2384,6 @@ msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
 msgstr "Orientimi"
@@ -2442,7 +2394,6 @@ msgid ""
 "This does NOT affect the alignment of the label within its allocation."
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
 msgstr "Motivi"
@@ -2467,13 +2418,11 @@ msgstr "Kyçi përshpejtues \"mnemonic\" për këtë etiketë"
 msgid "Mnemonic widget"
 msgstr "\"Mnemonic widget\""
 
-#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 "\"Widget\"-i që duhet aktivuar kur shtypet një kyç \"mnemonic\" etikete"
 
-#. GRUT modified this item
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
@@ -2833,7 +2782,6 @@ msgstr "Gjendja"
 msgid "The execution state of the thread"
 msgstr ""
 
-#. GRUT modified this item
 #: bse/bsecore.idl:380
 msgid "Priority"
 msgstr "Prioriteti"
@@ -2844,7 +2792,6 @@ msgid ""
 "low priority one that is 'nice' to others"
 msgstr ""
 
-#. GRUT modified this item
 #: bse/bsecore.idl:383
 msgid "Processor"
 msgstr "Proçesori"
@@ -3224,7 +3171,7 @@ msgstr ""
 
 #: bse/bsestandardosc.c:187
 msgid ""
-"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
 
@@ -3452,7 +3399,6 @@ msgstr ""
 msgid "Set the threshold"
 msgstr ""
 
-#. GRUT modified this item
 #: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Ratio"
 msgstr "Përpjestimi"
@@ -3502,8 +3448,9 @@ msgid "Audio Output"
 msgstr ""
 
 #: plugins/bseatandistort.c:90
-msgid "Audio Input SIgnal"
-msgstr ""
+#, fuzzy
+msgid "Audio Input Signal"
+msgstr "Audio"
 
 #: plugins/bseatandistort.c:92
 msgid "Distorted Audio Output"
@@ -3594,7 +3541,6 @@ msgstr ""
 msgid "Filter Specification"
 msgstr ""
 
-#. GRUT modified this item
 #: plugins/bseiirfilter.c:131
 msgid "Order"
 msgstr "Renditja"

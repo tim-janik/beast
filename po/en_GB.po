@@ -9,13 +9,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-29 19:15+0200\n"
+"POT-Creation-Date: 2004-06-30 20:06+0200\n"
 "PO-Revision-Date: 2004-06-29 21:38+0100\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
 
 #: beast-gtk/bstapp.c:68
 msgid "_New"
@@ -576,16 +576,16 @@ msgstr "Loading \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:723
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:724
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:725
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -3205,8 +3205,9 @@ msgid "Pulse Modulation [%]"
 msgstr "Pulse Modulation [%]"
 
 #: bse/bsestandardosc.c:187
+#, fuzzy
 msgid ""
-"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
 "Strength of pulse wisth modulation input (Pulse has to be selected as wave "
@@ -3485,7 +3486,8 @@ msgid "Audio Output"
 msgstr "Audio Output"
 
 #: plugins/bseatandistort.c:90
-msgid "Audio Input SIgnal"
+#, fuzzy
+msgid "Audio Input Signal"
 msgstr "Audio Input SIgnal"
 
 #: plugins/bseatandistort.c:92

@@ -1,18 +1,16 @@
 FIXMES:
 - implement ordinary save functionality
-- pressing F+1 on F+1, should delete old note (and its length) and insert new note (and its length)
-- pattern editor: note LENGTH!
+- pattern editor: pressing G+1 on G+1, should delete old note (and its length) and insert new note (and its length)
+- pattern editor: add note LENGTH editing!
 - pattern editor: keep focus line (i.e. tick) across zoom changes
 - pattern editor: delete line and insert line (Del Ins) implementations
 - pattern editor: nth-line background shading
-- piano roll: group movements while button is pressed 
+- piano roll: undo-group movements while button is pressed 
 - piano roll: drag-and-drop should preserve channel numbers if possible
 - track view: when middle button is pressed to position song pointer, set keep-pos-til-song-start flag
 - fix trackroll dnd behaviour in upper left corner of scrollarea
 - document monphon/polyphon setups
-- implement proper pattern/track/song resizing by means of adding [-] and [+] buttons next to scrollbars
 - need midi keyboard demo .bse file to be easily loadable (via demo/ menu)
-- remove docs/generated/bse-plugin-generator.1
 - make channel blurbs and module names have the same font in router display
 - assertion failed: BSE-ERROR **: file bsemidireceiver.cc: line 525 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, GslTrans*)): assertion failed: (vinput->iter == table->end())
 - add DSP engine module stats to profiler dialog
@@ -388,7 +386,6 @@ GSL:
 76- [stw]         1 7 FFT L-case optimiaztions
   - [stw]         5 1 .PAT loader (move)
 74- [stw/timj]    6 5 filter evaluate function (to draw graph)
-  - [stw/timj]      9 port plugins listed in plugins/Makefile.am:UNPORTED
   - [stw/timj]    6 3 1) OscTableEntry sizes (wave_table_size ())
   - [stw/timj]    7 3 2) development of gsl_osc_table_create() frequencies
   - [stw/timj]    4 4 3) PWM scaling
@@ -459,7 +456,6 @@ bseprocidl:
   - should output lower case vars (Info help instead of Info HELP)
 
 STEFAN TODO:
-  - BseServer::bse-preferences should be of type Bse::GConfig instead of Sfi::Rec
   - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
     libtool
 70- Bse::MidiEvent: should be wire-passable
@@ -469,8 +465,7 @@ STEFAN TODO:
   - rename bindings to client and core (instead of interface and implementation)
   - port arts driver from csl to port-audio
   - write port-audio driver for beast
-81- freeverb parameters are broken (it _says_ dB, but it definitely _is not_
-    dB)
+81- freeverb parameters are broken (it _says_ dB, but it definitely _is not_ dB)
 81- compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 81- migrate artscompressor threshold/output to dB (keep compat code)
 

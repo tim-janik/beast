@@ -1,6 +1,25 @@
 Overview of Changes in BEAST/BSE 0.6.2:
 
-* Lots of adaptions to Gtk+-2.4
+* Rewrote scrollbar sizing, so tracks and parts are easily resizable
+* Lots of small GUI enhancements and fixes
+* Added CPU usage information view
+* Enabled tooltips on menu items
+* Rewrote logging, messaging and error reporting system
+* Added support for 1/32, 1/64 and 1/128 notes and quantization steps
+* Added British English translation [Gareth Owen]
+* Added Canadian English translation [Adam Weinberger]
+* Added Brazilian Portuguese translation [Raphael Higino]
+* Updated Catalan translation [Xavier Conde Rueda]
+* Updated Czech translation [Miloslav Trmac]
+* Updated Dutch translation [Tino Meinen]
+* Updated Croatian translation [Robert Sedak]
+* Updated Spanish translation [Francisco Javier F. Serrador]
+* Updated Russian translation [Alexandre Prokoudine]
+* Updated Portuguese translation [Duarte Loreto]
+* Updated Albanian translation [Laurent Dhima]
+* Various sfidl fixes [Stefan Westerfeld, Tim Janik]
+* Fixed user configurable debugging support
+* Lots of adaptions to GLib/Gtk+-2.4
 
 Overview of Changes in BEAST/BSE 0.6.1:
 
