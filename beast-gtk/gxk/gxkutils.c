@@ -1544,16 +1544,11 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
                             gint        *y_p,
                             gint        *height_p)
 {
-  GdkRectangle rect;
+  GdkRectangle rect = { 0, 0, 0, 0 };
 
   g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
 
-  if (row < 0)
-    {
-      rect.y = 0;
-      rect.width = 0;
-    }
-  else
+  if (row >= 0)
     {
       GtkTreePath *path = gtk_tree_path_new ();
       gtk_tree_path_append_index (path, row);

@@ -1,3 +1,8 @@
+Mon Jun 23 05:18:53 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.c (gxk_tree_view_get_row_area): fix
+	uninitialized variable access.
+
 Sat Jun 21 21:43:37 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce release.
