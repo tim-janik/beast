@@ -70,14 +70,14 @@ bst_preferences_init (BstPreferences *self)
   
   kbinding = bst_pattern_controller_piano_keys();
   iseq = bst_key_binding_get_item_seq (kbinding);
-  self->box_piano_keys = bst_key_binding_box (kbinding->n_funcs, kbinding->funcs, TRUE);
+  self->box_piano_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, TRUE);
   bst_key_binding_box_set (self->box_piano_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
   gxk_notebook_append (self->notebook, self->box_piano_keys, _("Piano Keys"));
 
   kbinding = bst_pattern_controller_generic_keys();
   iseq = bst_key_binding_get_item_seq (kbinding);
-  self->box_generic_keys = bst_key_binding_box (kbinding->n_funcs, kbinding->funcs, FALSE);
+  self->box_generic_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, FALSE);
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
   gxk_notebook_append (self->notebook, self->box_generic_keys, _("Generic Keys"));

@@ -525,6 +525,8 @@ bst_early_parse_args (int    *argc_p,
 	    g_print ("%s\n", BST_PATH_LOCALE);
 	  else if (strcmp (arg, "skins") == 0)
 	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
+	  else if (strcmp (arg, "keys") == 0)
+	    g_print ("%s\n", BST_PATH_KEYS);
 	  else if (strcmp (arg, "ladspa") == 0)
 	    g_print ("%s\n", BSE_PATH_LADSPA);
 	  else if (strcmp (arg, "plugins") == 0)
@@ -543,7 +545,7 @@ bst_early_parse_args (int    *argc_p,
 	    {
 	      if (arg[0])
                 g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: docs, images, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
+	      g_message ("supported resource paths: docs, images, locale, keys, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
 	    }
           g_free (freeme);
 	  exit (0);
@@ -598,6 +600,7 @@ bst_exit_print_version (void)
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
   g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
   g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
+  g_print ("Keyrc Path:      %s\n", BST_PATH_KEYS);
   g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
   g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));

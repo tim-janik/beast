@@ -1,3 +1,19 @@
+Fri Feb 27 08:38:09 2004  Tim Janik  <timj@gtk.org>
+
+	* library/keys/: new directory.
+
+	* library/keys/keyrc.de: added german keyrc.
+
+	* beast-gtk/bstkeybindings.[hc]: implemented loading of stock
+	keyrc files.
+
+	* beast-gtk/bstmain.c: handle keys path.
+
+	* beast-gtk/bstfiledialog.[hc]: provide API to allow for arbitrary
+	file dialogs.
+
+	* configure.in: provide beastkeysdir, added library/keys/.
+
 Fri Feb 27 07:08:55 2004  Tim Janik  <timj@gtk.org>
 
 	* launchers/Makefile.am: build beast and bsesh suid wrappers.

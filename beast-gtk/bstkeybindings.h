@@ -51,7 +51,7 @@ typedef struct {
 } BstKeyBindingKey;
 struct _BstKeyBinding
 {
-  const gchar                   *binding_name;
+  gchar                         *binding_name;
   guint                          n_funcs;
   const BstKeyBindingFunction   *funcs;
   guint                          n_keys;
@@ -60,7 +60,8 @@ struct _BstKeyBinding
 
 
 /* --- prototypes --- */
-GtkWidget*                   bst_key_binding_box          (guint                        n_funcs,
+GtkWidget*                   bst_key_binding_box          (const gchar                 *binding_name,
+                                                           guint                        n_funcs,
                                                            const BstKeyBindingFunction *funcs,
                                                            gboolean                     editable);
 void                         bst_key_binding_box_set      (GtkWidget                   *self,

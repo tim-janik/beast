@@ -156,7 +156,7 @@ bst_file_dialog_init (BstFileDialog *self)
 				 0.0, "Filename", NULL,
 				 NULL, self, G_CONNECT_SWAPPED);
   
-  /* pack seperator and buttons */
+  /* pack separator and buttons */
   gtk_box_pack_end (GTK_BOX (main_box), bbox, FALSE, TRUE, 0);
   gtk_box_pack_end (GTK_BOX (main_box),
 		    g_object_new (GTK_TYPE_HSEPARATOR,
@@ -756,6 +756,36 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   return TRUE;
 }
 
+GtkWidget*
+bst_file_dialog_create (void)
+{
+  BstFileDialog *self = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+  bst_file_dialog_set_mode (self, NULL,
+			    BST_FILE_DIALOG_SELECT_FILE,
+			    "File Selector", 0);
+  return GTK_WIDGET (self);
+}
+
+void
+bst_file_dialog_setup (GtkWidget        *widget,
+                       gpointer          parent_widget,
+                       const gchar      *title,
+                       const gchar      *search_path)
+{
+  BstFileDialog *self = BST_FILE_DIALOG (widget);
+  gchar *path;
+  bst_file_dialog_set_mode (self, parent_widget,
+                            BST_FILE_DIALOG_SELECT_FILE,
+                            title, 0);
+  g_free (self->search_path);
+  self->search_path = g_strdup (search_path);
+  self->search_filter = "*";
+  path = g_strconcat (self->search_path, G_DIR_SEPARATOR_S, self->search_filter, NULL);
+  gtk_file_selection_complete (self->fs, path);
+  g_free (path);
+  tree_viewable_changed (self);
+}
+
 typedef struct {
   BstFileDialogHandler handler;
   gpointer             data;
@@ -783,7 +813,7 @@ bst_file_dialog_set_handler (BstFileDialog    *self,
   BstFileDialogData *data = g_new0 (BstFileDialogData, 1);
 
   g_return_if_fail (GTK_WIDGET_VISIBLE (self));
-
+  
   data->handler = handler;
   data->data = handler_data;
   data->destroy = destroy;

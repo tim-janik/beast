@@ -112,6 +112,11 @@ void		bst_file_dialog_set_mode		(BstFileDialog	  *self,
 							 BstFileDialogMode mode,
 							 const gchar	  *fs_title,
 							 SfiProxy	   project);
+GtkWidget*      bst_file_dialog_create                  (void);
+void            bst_file_dialog_setup                   (GtkWidget        *widget,
+                                                         gpointer          parent_widget,
+                                                         const gchar      *title,
+                                                         const gchar      *search_path);
 typedef void  (*BstFileDialogHandler)                   (GtkWidget        *dialog,
                                                          const gchar      *file,
                                                          gpointer          user_data);

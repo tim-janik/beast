@@ -16,9 +16,11 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "topconfig.h"  /* BST_PATH_KEYS */
 #include "bstkeybindings.h"
 #include "bstauxdialogs.h"
 #include "bstpatternctrl.h"
+#include "bstfiledialog.h"
 #include <string.h>
 
 enum {
@@ -26,7 +28,8 @@ enum {
   ACTION_EDIT,
   ACTION_DELETE,
   ACTION_LOWER,
-  ACTION_RAISE
+  ACTION_RAISE,
+  ACTION_LOAD
 };
 
 enum {
@@ -55,6 +58,8 @@ static const GxkStockAction key_bindings_actions[] = {
     ACTION_LOWER,               BST_STOCK_ARROW_DOWN, },
   { N_("Delete"),               "",             N_("Delete the currently selected key binding"),
     ACTION_DELETE,              BST_STOCK_REMOVE, },
+  { N_("Load"),                 "",             N_("Load a key binding set"),
+    ACTION_LOAD,                BST_STOCK_LOAD, },
 };
 
 
@@ -72,6 +77,23 @@ key_binding_find_key (BstKeyBinding  *kbinding,
         kbinding->funcs[kbinding->keys[i].func_index].collision_group == collision_group)
       return i;
   return G_MAXINT;
+}
+
+static void
+key_bindings_load_file (GtkWidget   *dialog,
+                        const gchar *file,
+                        gpointer     data)
+{
+  GtkWidget *self = GTK_WIDGET (data);
+  BstKeyBinding *kbinding = g_object_get_data (self, "BstKeyBinding");
+  GtkTreeView *btview = gxk_gadget_find (self, "binding-tree-view");
+  GtkTreeModel *model = gtk_tree_view_get_model (btview);
+  GSList slist = { kbinding, NULL };
+  BseErrorType error = bst_key_binding_parse (file, &slist);
+  gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));
+  gxk_list_wrapper_notify_append (GXK_LIST_WRAPPER (model), kbinding->n_keys);
+  if (error)
+    g_message ("failed to load \"%s\": %s", file, bse_error_blurb (error));
 }
 
 static void
@@ -207,6 +229,16 @@ key_bindings_exec_action (gpointer data,
             }
         }
       break;
+    case ACTION_LOAD:
+      {
+        static GtkWidget *load_dialog = NULL;
+        if (!load_dialog)
+          load_dialog = bst_file_dialog_create();
+        bst_file_dialog_setup (load_dialog, self, _("Load Key Binding"), BST_PATH_KEYS);
+        gxk_widget_showraise (load_dialog);
+        bst_file_dialog_set_handler (BST_FILE_DIALOG (load_dialog), key_bindings_load_file, self, NULL);
+      }
+      break;
     default:
       g_assert_not_reached ();
       break;
@@ -237,6 +269,8 @@ key_bindings_check_action (gpointer data,
     case ACTION_DELETE:
       tsel = gtk_tree_view_get_selection (btview);
       return gtk_tree_selection_count_selected_rows (tsel) > 0;
+    case ACTION_LOAD:
+      return TRUE;
     default:
       g_warning ("%s: unknown action: %lu", G_STRFUNC, action);
       return FALSE;
@@ -352,12 +386,14 @@ static void
 key_binding_free (gpointer data)
 {
   BstKeyBinding *kbinding = data;
+  g_free (kbinding->binding_name);
   g_free (kbinding->keys);
   g_free (kbinding);
 }
 
 GtkWidget*
-bst_key_binding_box (guint                        n_funcs,
+bst_key_binding_box (const gchar                 *binding_name,
+                     guint                        n_funcs,
                      const BstKeyBindingFunction *funcs,
                      gboolean                     editable)
 {
@@ -366,6 +402,7 @@ bst_key_binding_box (guint                        n_funcs,
   GtkTreeSelection *tsel;
   GtkTreeView *tview;
   BstKeyBinding *kbinding = g_new0 (BstKeyBinding, 1);
+  kbinding->binding_name = g_strdup (binding_name);
   kbinding->n_funcs = n_funcs;
   kbinding->funcs = funcs;
 

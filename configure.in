@@ -386,6 +386,8 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_SUBST(beastdocsdir)
     beastimagesdir=$beastbasedir/v$BST_VERSION/images
     AC_SUBST(beastimagesdir)
+    beastkeysdir=$beastbasedir/v$BST_VERSION/keys
+    AC_SUBST(beastkeysdir)
     beastskinsdir=$beastbasedir/v$BST_VERSION/skins
     AC_SUBST(beastskinsdir)
 ])
@@ -592,6 +594,7 @@ library/effects/Makefile
 library/instruments/Makefile
 library/scripts/Makefile
 library/demo/Makefile
+library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
 tests/Makefile
