@@ -1,0 +1,1067 @@
+# Czech translation of beast.
+# Copyright (C) 2003 beast'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the beast package.
+# Miloslav Trmac <mitr@volny.cz>, 2003.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: beast VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-22 14:05+0200\n"
+"PO-Revision-Date: 2003-10-23 18:04+0200\n"
+"Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
+"Language-Team: Czech <cs@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: beast-gtk/bstapp.c:64
+msgid "/_File"
+msgstr "/_Soubor"
+
+#: beast-gtk/bstapp.c:66
+msgid "/File/_New"
+msgstr "/Soubor/_Nový"
+
+#: beast-gtk/bstapp.c:67
+msgid "/File/_Open..."
+msgstr "/Soubor/_Otevřít..."
+
+#: beast-gtk/bstapp.c:68
+msgid "/File/_Merge..."
+msgstr "/Soubor/S_loučit..."
+
+#: beast-gtk/bstapp.c:69
+msgid "/File/_Close"
+msgstr "/Soubor/_Zavřít"
+
+#: beast-gtk/bstapp.c:71
+msgid "/File/_Save"
+msgstr "/Soubor/_Uložit"
+
+#: beast-gtk/bstapp.c:72
+msgid "/File/Save _As..."
+msgstr "/Soubor/Uložit _jako..."
+
+#: beast-gtk/bstapp.c:74
+msgid "/File/Preferences..."
+msgstr "/Soubor/Nastavení..."
+
+#: beast-gtk/bstapp.c:76
+msgid "/File/_Quit"
+msgstr "/Soubor/U_končit"
+
+#: beast-gtk/bstapp.c:77 beast-gtk/bstpartdialog.c:78
+msgid "/_Edit"
+msgstr "/_Úpravy"
+
+#: beast-gtk/bstapp.c:79
+msgid "/Edit/_Undo"
+msgstr "/Úpravy/_Zpět"
+
+#: beast-gtk/bstapp.c:80
+msgid "/Edit/_Redo"
+msgstr "/Úpravy/Z_novu"
+
+#: beast-gtk/bstapp.c:81
+msgid "/Edit/_Clear Undo"
+msgstr "/Úpravy/Vyma_zat historii"
+
+#: beast-gtk/bstapp.c:83
+msgid "/Edit/Preferences..."
+msgstr "/Úpravy/Nastavení..."
+
+#: beast-gtk/bstapp.c:84
+msgid "/_View"
+msgstr "/_Zobrazit"
+
+#: beast-gtk/bstapp.c:86
+msgid "/View/Procedure _Browser"
+msgstr "/Zobrazit/_Prohlížeč procedur"
+
+#: beast-gtk/bstapp.c:87
+msgid "/View/Rack Editor"
+msgstr "/Zobrazit/Editor racku"
+
+#: beast-gtk/bstapp.c:88
+msgid "/View/Device _Monitor"
+msgstr "/Zobrazit/_Sledování zařízení"
+
+#: beast-gtk/bstapp.c:90
+msgid "/View/Preferences"
+msgstr "/Zobrazit/Nastavení"
+
+#: beast-gtk/bstapp.c:92
+msgid "/View/Rebuild"
+msgstr "/Zobrazit/Znovu sestavit"
+
+#: beast-gtk/bstapp.c:93
+msgid "/_Project"
+msgstr "/_Projekt"
+
+#: beast-gtk/bstapp.c:95
+msgid "/Project/_Play"
+msgstr "/Projekt/_Hrát"
+
+#: beast-gtk/bstapp.c:96
+msgid "/Project/_Stop"
+msgstr "/Projekt/_Zastavit"
+
+#: beast-gtk/bstapp.c:98
+msgid "/Project/New Song"
+msgstr "/Projekt/Nová skladba"
+
+#: beast-gtk/bstapp.c:99
+msgid "/Project/New Custom Synthesizer"
+msgstr "/Projekt/Nový vlastní syntetizér"
+
+#: beast-gtk/bstapp.c:100
+msgid "/Project/New MIDI Synthesizer"
+msgstr "/Projekt/Nový syntetizér MIDI"
+
+#: beast-gtk/bstapp.c:101
+msgid "/Project/Remove Song or Synthesizer"
+msgstr "/Projekt/Odstranit skladbu nebo syntetizér"
+
+#: beast-gtk/bstapp.c:103
+msgid "/_Song"
+msgstr "/_Skladba"
+
+#: beast-gtk/bstapp.c:105
+msgid "/Song/Add _Part"
+msgstr "/_Skladba/Přidat _část"
+
+#: beast-gtk/bstapp.c:106
+msgid "/Song/Delete _Part"
+msgstr "/_Skladba/Odstranit _část"
+
+#: beast-gtk/bstapp.c:107
+msgid "/Song/Add _Track"
+msgstr "/_Skladba/Přidat _stopu"
+
+#: beast-gtk/bstapp.c:108
+msgid "/Song/_Delete Track"
+msgstr "/_Skladba/_Odstranit stopu"
+
+#: beast-gtk/bstapp.c:109
+msgid "/_Synth"
+msgstr "/_Syntéza"
+
+#: beast-gtk/bstapp.c:111
+msgid "/Synth/_Test"
+msgstr "/_Syntéza/_Otestovat"
+
+#: beast-gtk/bstapp.c:112
+msgid "/Wave_s"
+msgstr "/_Vlny"
+
+#: beast-gtk/bstapp.c:114
+msgid "/Waves/_Load Wave..."
+msgstr "/_Vlny/_Načíst vlnu..."
+
+#: beast-gtk/bstapp.c:115
+msgid "/Waves/Delete Wave"
+msgstr "/_Vlny/Odstranit vlnu"
+
+#: beast-gtk/bstapp.c:116
+msgid "/Waves/_Edit Wave..."
+msgstr "/_Vlny/_Upravit vlnu..."
+
+#: beast-gtk/bstapp.c:118
+msgid "/_Synthesizers"
+msgstr "/_Syntetizátory"
+
+#: beast-gtk/bstapp.c:120
+msgid "/Synthesizers/Load _Effect"
+msgstr "/Syntetizátory/Načíst _efekt"
+
+#: beast-gtk/bstapp.c:121
+msgid "/Synthesizers/Load _Instrument"
+msgstr "/Syntetizátory/Načíst _nástroj"
+
+#: beast-gtk/bstapp.c:122
+msgid "/Synthesizers/Save As Effect"
+msgstr "/Syntetizátory/Uložit jako efekt"
+
+#: beast-gtk/bstapp.c:123
+msgid "/Synthesizers/Save As Instrument"
+msgstr "/Syntetizátory/Uložit jako nástroj"
+
+#: beast-gtk/bstapp.c:124
+msgid "/_Demo"
+msgstr "/_Demo"
+
+#: beast-gtk/bstapp.c:126 beast-gtk/bstpartdialog.c:72
+msgid "/_Tools"
+msgstr "/_Nástroje"
+
+#: beast-gtk/bstapp.c:127
+msgid "/Tools/_Song"
+msgstr "/Nástroje/_Skladba"
+
+#: beast-gtk/bstapp.c:128
+msgid "/Tools/_Synth"
+msgstr "/Nástroje/_Syntéza"
+
+#: beast-gtk/bstapp.c:129
+msgid "/Tools/Wave_s"
+msgstr "/Nástroje/_Vlny"
+
+#: beast-gtk/bstapp.c:132
+msgid "/_Help"
+msgstr "/Nápo_věda"
+
+#: beast-gtk/bstapp.c:134
+msgid "/Help/_Release Notes..."
+msgstr "/Nápo_věda/_Poznámky o vydání..."
+
+#: beast-gtk/bstapp.c:135
+msgid "/Help/Quick Start..."
+msgstr "/Nápo_věda/Rychlý start..."
+
+#: beast-gtk/bstapp.c:136
+msgid "/Help/_FAQ..."
+msgstr "/Nápo_věda/_FAQ..."
+
+#: beast-gtk/bstapp.c:137
+msgid "/Help/Development/GSL Engine..."
+msgstr "/Nápo_věda/Vývoj/Engine GSL..."
+
+#: beast-gtk/bstapp.c:139
+msgid "/Help/_About..."
+msgstr "/Nápo_věda/_O aplikaci..."
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:730
+msgid "Rack editor"
+msgstr "Editor racku"
+
+#: beast-gtk/bstapp.c:744
+msgid "Preferences"
+msgstr "Nastavení"
+
+#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+#: beast-gtk/bstapp.c:758
+msgid "Device Monitor"
+msgstr "Sledování zařízení"
+
+#: beast-gtk/bstapp.c:773
+msgid "Procedure Browser"
+msgstr "Procházeč procedur"
+
+#: beast-gtk/bstapp.c:830
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr "Poznámky o vydání BEAST-%s"
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "Spojení modulů: "
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+msgid "Module link"
+msgstr "Spojení modulů"
+
+#: beast-gtk/bstcanvassource.c:484
+msgid "Module Info"
+msgstr "Informace o modulu"
+
+#: beast-gtk/bstcanvassource.c:972
+msgid "Input"
+msgstr "Vstup"
+
+#: beast-gtk/bstcanvassource.c:981
+msgid "Output"
+msgstr "Výstup"
+
+#: beast-gtk/bstcanvassource.c:985
+msgid "(Hint)"
+msgstr "(Nápověda)"
+
+#: beast-gtk/bsteventrollctrl.c:259 beast-gtk/bsteventrollctrl.c:266
+#: beast-gtk/bsteventrollctrl.c:330
+msgid "Move Control Event"
+msgstr "Přesunout řídicí událost"
+
+#: beast-gtk/bsteventrollctrl.c:266 beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:465 beast-gtk/bstpianorollctrl.c:306
+#: beast-gtk/bstpianorollctrl.c:416 beast-gtk/bstpianorollctrl.c:479
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:540
+msgid "No target"
+msgstr "Žádný cíl"
+
+#: beast-gtk/bsteventrollctrl.c:330 beast-gtk/bsteventrollctrl.c:451
+msgid "Lost Event"
+msgstr "Ztracená událost"
+
+#: beast-gtk/bsteventrollctrl.c:340 beast-gtk/bsteventrollctrl.c:373
+msgid "Align Control Events"
+msgstr "Zarovnat řídicí události"
+
+#: beast-gtk/bsteventrollctrl.c:373 beast-gtk/bsteventrollctrl.c:499
+#: beast-gtk/bstpianorollctrl.c:537 beast-gtk/bstpianorollctrl.c:573
+msgid "Aborted"
+msgstr "Přerušeno"
+
+#: beast-gtk/bsteventrollctrl.c:399
+msgid "Insert Control Event"
+msgstr "Vložit řídicí událost"
+
+#: beast-gtk/bsteventrollctrl.c:410 beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:451
+msgid "Resize Control Event"
+msgstr "Přejmenovat řídicí událost"
+
+#: beast-gtk/bsteventrollctrl.c:462 beast-gtk/bsteventrollctrl.c:465
+msgid "Delete Control Event"
+msgstr "Odstranit řídicí událost"
+
+#: beast-gtk/bsteventrollctrl.c:475 beast-gtk/bsteventrollctrl.c:499
+#: beast-gtk/bstpianorollctrl.c:511 beast-gtk/bstpianorollctrl.c:537
+msgid "Select Region"
+msgstr "Vyberte oblast"
+
+#: beast-gtk/bsteventrollctrl.c:508 beast-gtk/bstpianorollctrl.c:582
+msgid "Abortion"
+msgstr "Přerušení"
+
+#: beast-gtk/bstfiledialog.c:197
+msgid "Contents"
+msgstr "Obsah"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:229
+msgid "File Selection"
+msgstr "Výběr souborů"
+
+#: beast-gtk/bstfiledialog.c:400
+msgid "Open Project"
+msgstr "Otevřít projekt"
+
+#: beast-gtk/bstfiledialog.c:414
+msgid "Select Directory"
+msgstr "Zvolit adresář"
+
+#: beast-gtk/bstfiledialog.c:428 beast-gtk/bstfiledialog.c:435
+#, c-format
+msgid "Opening project `%s'"
+msgstr "Otevírám projekt `%s'"
+
+#: beast-gtk/bstfiledialog.c:453
+#, c-format
+msgid "Merge: %s"
+msgstr "Sloučit: %s"
+
+#: beast-gtk/bstfiledialog.c:466
+#, c-format
+msgid "Merging project `%s'"
+msgstr "Slučuji projekt `%s'"
+
+#: beast-gtk/bstfiledialog.c:489
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Nemohu odstranit soubor\n"
+"`%s'\n"
+"kvůli:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:518
+#, c-format
+msgid "Save: %s"
+msgstr "Uložit: %s"
+
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:520
+msgid "Fully include wave files"
+msgstr "Přímo zahrnout soubory vln"
+
+#: beast-gtk/bstfiledialog.c:521
+msgid "Store references to wave files"
+msgstr "Uložit odkazy na soubory vln"
+
+#: beast-gtk/bstfiledialog.c:542 beast-gtk/bstfiledialog.c:552
+#, c-format
+msgid "Saving project `%s'"
+msgstr "Ukládám projekt `%s'"
+
+#: beast-gtk/bstfiledialog.c:543 beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:695
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"Nemohu uložit\n"
+"`%s'\n"
+"do\n"
+"`%s':\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:567
+msgid "Load Effect"
+msgstr "Načíst efekt"
+
+#: beast-gtk/bstfiledialog.c:580
+#, c-format
+msgid "Merging effect `%s'"
+msgstr "Slučuji efekt `%s'"
+
+#: beast-gtk/bstfiledialog.c:597
+msgid "Save Effect"
+msgstr "Uložit efekt"
+
+#: beast-gtk/bstfiledialog.c:618 beast-gtk/bstfiledialog.c:628
+#, c-format
+msgid "Saving effect `%s'"
+msgstr "Ukládám efekt `%s'"
+
+#: beast-gtk/bstfiledialog.c:643
+msgid "Load Instrument"
+msgstr "Načíst nástroj"
+
+#: beast-gtk/bstfiledialog.c:656
+#, c-format
+msgid "Merging instrument `%s'"
+msgstr "Slučuji nástroj `%s'"
+
+#: beast-gtk/bstfiledialog.c:673
+msgid "Save Instrument"
+msgstr "Uložit nástroj"
+
+#: beast-gtk/bstfiledialog.c:694 beast-gtk/bstfiledialog.c:704
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "Ukládám nástroj `%s'"
+
+#: beast-gtk/bstfiledialog.c:720
+msgid "Load Wave"
+msgstr "Načíst vlnu"
+
+#: beast-gtk/bstfiledialog.c:732 beast-gtk/bstfiledialog.c:734
+#, c-format
+msgid "Loading wave `%s'"
+msgstr "Načítám vlnu `%s'"
+
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
+#: beast-gtk/bsttrackview.c:61
+msgid "Add"
+msgstr "Přidat"
+
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:38
+#: beast-gtk/bstrackitem.c:182 beast-gtk/bstsnetrouter.c:1017
+#: beast-gtk/bstsnetrouter.c:1059 beast-gtk/bsttrackview.c:63
+msgid "Delete"
+msgstr "Odstranit"
+
+#. now, we can popup the splash screen
+#.
+#: beast-gtk/bstmain.c:135
+msgid "BEAST Startup"
+msgstr "Spuštění BEAST"
+
+#: beast-gtk/bstmain.c:142
+msgid "Startup"
+msgstr "Spuštění"
+
+#. BEAST initialization
+#.
+#: beast-gtk/bstmain.c:147
+msgid "Objects"
+msgstr "Objekty"
+
+#: beast-gtk/bstmain.c:151
+msgid "Language"
+msgstr "Jazyk"
+
+#: beast-gtk/bstmain.c:164
+msgid "RC File"
+msgstr "Soubor RC"
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:171
+msgid "Splash Image"
+msgstr "Obrázek při spuštění"
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:183
+msgid "BSE Core"
+msgstr "Jádro BSE"
+
+#: beast-gtk/bstmain.c:202
+msgid "Plugins"
+msgstr "Zásuvné moduly"
+
+#: beast-gtk/bstmain.c:221
+msgid "LADSPA Plugins"
+msgstr "Zásuvné moduly LADSPA"
+
+#: beast-gtk/bstmain.c:249
+msgid "Scripts"
+msgstr "Skripty"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:267
+msgid "Dialogs"
+msgstr "Dialogy"
+
+#: beast-gtk/bstmain.c:279
+msgid "Loading..."
+msgstr "Načítám..."
+
+#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#, c-format
+msgid "Loading \"%s\""
+msgstr "Načítám \"%s\""
+
+#: beast-gtk/bstmain.c:328
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "Načítám projekt \"%s\""
+
+#. catalog_key, name, stock_id, accelerator, tooltip, blurb
+#: beast-gtk/bstmessages.c:21
+msgid "Left"
+msgstr "Levé"
+
+#: beast-gtk/bstmessages.c:23
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "Použijte vodorovné pravítko pro úpravu ukazatele levé smyčky"
+
+#: beast-gtk/bstmessages.c:25
+msgid "Pos"
+msgstr "Poz"
+
+#: beast-gtk/bstmessages.c:27
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "Použijte vodorovné pravítko pro úpravu ukazatele pozice přehrávání"
+
+#: beast-gtk/bstmessages.c:29
+msgid "Right"
+msgstr "Pravé"
+
+#: beast-gtk/bstmessages.c:31
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "Použijte vodorovné pravítko pro úpravu ukazatele pravé smyčky"
+
+#: beast-gtk/bstmessages.c:33
+msgid "Q: Tact"
+msgstr "K: Takt"
+
+#: beast-gtk/bstmessages.c:35
+msgid "Quantize to tact boundaries"
+msgstr "Kvantizovat na hranice taktů"
+
+#: beast-gtk/bstmessages.c:37
+msgid "Q: None"
+msgstr "K: Nic"
+
+#: beast-gtk/bstmessages.c:39
+msgid "No quantization selected"
+msgstr "Nevybrána žádná kvantizace"
+
+#: beast-gtk/bstmessages.c:41
+msgid "Q: 1/1"
+msgstr "K: 1/1"
+
+#: beast-gtk/bstmessages.c:43
+msgid "Quantize to full note boundaries"
+msgstr "Kvantizovat na hranice celých not"
+
+#: beast-gtk/bstmessages.c:45
+msgid "Q: 1/2"
+msgstr "K: 1/2"
+
+#: beast-gtk/bstmessages.c:47
+msgid "Quantize to half note boundaries"
+msgstr "Kvantizovat na hranice půlových not"
+
+#: beast-gtk/bstmessages.c:49
+msgid "Q: 1/4"
+msgstr "K: 1/4"
+
+#: beast-gtk/bstmessages.c:51
+msgid "Quantize to quarter note boundaries"
+msgstr "Kvantizovat na hranice čtvrtinových not"
+
+#: beast-gtk/bstmessages.c:53
+msgid "Q: 1/8"
+msgstr "K: 1/8"
+
+#: beast-gtk/bstmessages.c:55
+msgid "Quantize to eighths note boundaries"
+msgstr "Kvantizovat na hranice osminových not"
+
+#: beast-gtk/bstmessages.c:57
+msgid "Q: 1/16"
+msgstr "K: 1/16"
+
+#: beast-gtk/bstmessages.c:59
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Kvantizovat na hranice šestnáctinových not"
+
+#: beast-gtk/bstmessages.c:61
+msgid "_Insert"
+msgstr "_Vložit"
+
+#: beast-gtk/bstmessages.c:63
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Vložit/upravit/přesunout části (tlačítko myši 1 a 2)"
+
+#: beast-gtk/bstmessages.c:65
+msgid "Lin_k"
+msgstr "_Spojit"
+
+#: beast-gtk/bstmessages.c:67
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Spojit nebo přesunout části (tlačítko myši 1 a 2)"
+
+#: beast-gtk/bstmessages.c:69
+msgid "_Rename"
+msgstr "_Přejmenovat"
+
+#: beast-gtk/bstmessages.c:71
+msgid "Rename parts"
+msgstr "Přejmenovat části"
+
+#: beast-gtk/bstmessages.c:73
+msgid "_Delete"
+msgstr "_Odstranit"
+
+#: beast-gtk/bstmessages.c:75
+msgid "Delete parts"
+msgstr "Odstranit části"
+
+#: beast-gtk/bstparam-entry.c:61
+msgid "Remove Paths"
+msgstr "Odstranit cesty"
+
+#: beast-gtk/bstpartdialog.c:73
+msgid "/Tools/Insert"
+msgstr "/Nástroje/Vložit"
+
+#: beast-gtk/bstpartdialog.c:74
+msgid "/Tools/Delete"
+msgstr "/Nástroje/Odstranit"
+
+#: beast-gtk/bstpartdialog.c:75
+msgid "/Tools/Align Events"
+msgstr "/Nástroje/Zarovnat události"
+
+#: beast-gtk/bstpartdialog.c:76
+msgid "/Tools/Select"
+msgstr "/Nástroje/Vybrat"
+
+#: beast-gtk/bstpartdialog.c:77
+msgid "/Tools/Vertical Select"
+msgstr "/Nástroje/Vybrat vertikálně"
+
+#: beast-gtk/bstpartdialog.c:79
+msgid "/Edit/Cut"
+msgstr "/Úpravy/Vyjmout"
+
+#: beast-gtk/bstpartdialog.c:80
+msgid "/Edit/Copy"
+msgstr "/Úpravy/Kopírovat"
+
+#: beast-gtk/bstpartdialog.c:81
+msgid "/Edit/Paste"
+msgstr "/Úpravy/Vložit"
+
+#: beast-gtk/bstpartdialog.c:82
+msgid "/Edit/Clear"
+msgstr "/Úpravy/Vymazat"
+
+#: beast-gtk/bstpartdialog.c:84
+msgid "/Edit/Undo"
+msgstr "/Úpravy/Zpět"
+
+#: beast-gtk/bstpartdialog.c:85
+msgid "/Edit/Redo"
+msgstr "/Úpravy/Znovu"
+
+#: beast-gtk/bstpartdialog.c:87
+msgid "/Scripts"
+msgstr "/Skripty"
+
+#: beast-gtk/bstpartdialog.c:88
+msgid "/Test"
+msgstr "/Test"
+
+#: beast-gtk/bstpartdialog.c:260
+msgid "Control Type: "
+msgstr "Typ řízení: "
+
+#: beast-gtk/bstpartview.c:39
+msgid "Editor"
+msgstr "Editor"
+
+#: beast-gtk/bstpianorollctrl.c:299 beast-gtk/bstpianorollctrl.c:306
+#: beast-gtk/bstpianorollctrl.c:394
+msgid "Move Note"
+msgstr "Přesunout notu"
+
+#: beast-gtk/bstpianorollctrl.c:394 beast-gtk/bstpianorollctrl.c:465
+msgid "Lost Note"
+msgstr "Ztracená nota"
+
+#: beast-gtk/bstpianorollctrl.c:411 beast-gtk/bstpianorollctrl.c:416
+#: beast-gtk/bstpianorollctrl.c:465
+msgid "Resize Note"
+msgstr "Změnit velikost noty"
+
+#: beast-gtk/bstpianorollctrl.c:476 beast-gtk/bstpianorollctrl.c:479
+msgid "Delete Note"
+msgstr "Odstranit notu"
+
+#: beast-gtk/bstpianorollctrl.c:501
+msgid "Insert Note"
+msgstr "Vložit notu"
+
+#: beast-gtk/bstpianorollctrl.c:547
+msgid "Vertical Select"
+msgstr "Vertikální výběr"
+
+#: beast-gtk/bstpianorollctrl.c:573
+msgid "Vertical Region"
+msgstr "Vertikální rozsah"
+
+#: beast-gtk/bstpianorollctrl.c:708
+msgid "Play note"
+msgstr "Přehrát notu"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr "Přehrávání"
+
+#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:620
+msgid "Description"
+msgstr "Popis"
+
+#: beast-gtk/bstprocedure.c:297
+#, c-format
+msgid "Executing `%s'"
+msgstr "Spouštím `%s'"
+
+#: beast-gtk/bstprocedure.c:447
+msgid "Procedure"
+msgstr "Procedura"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr "Znovu spouštím přehrávání"
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr "Spouštím přehrávání"
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr "Zastavuji přehrávání"
+
+#: beast-gtk/bstrackeditor.c:98
+msgid "_Edit"
+msgstr "_Upravit"
+
+#: beast-gtk/bstrackitem.c:172
+msgid "Edit Rack Item"
+msgstr "Upravit položku racku"
+
+#: beast-gtk/bstrackitem.c:174
+msgid "Controller"
+msgstr "Ovladač"
+
+#: beast-gtk/bstrackitem.c:175
+msgid "Duplicate"
+msgstr "Duplikovat"
+
+#: beast-gtk/bstrackitem.c:177
+msgid "Grow Horizontally"
+msgstr "Vodorovně zvětšit"
+
+#: beast-gtk/bstrackitem.c:178
+msgid "Grow Vertically"
+msgstr "Svisle zvětšit"
+
+#: beast-gtk/bstrackitem.c:179
+msgid "Shrink Horizontally"
+msgstr "Vodorovně zmenšit"
+
+#: beast-gtk/bstrackitem.c:180
+msgid "Shrink Vertically"
+msgstr "Svisle zmenšit"
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr "Zvětšení:"
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr "VMěřítko:"
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "Začátek:"
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "Konec:"
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "Rozsah tvaru"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "Průměr tvaru"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "Minimum tvaru"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "Maximum tvaru"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr "Rozsah návrhu"
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr "Průměr návrhu"
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr "Minimum návrhu"
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr "Maximum návrhu"
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "Náslech"
+
+#: beast-gtk/bstsnetrouter.c:407
+msgid "Palette"
+msgstr "Paleta"
+
+#: beast-gtk/bstsnetrouter.c:926
+msgid "Input channel in use"
+msgstr "Vstupní kanál se používá"
+
+#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:991
+msgid "Create Link"
+msgstr "Vytvořit spojení"
+
+#: beast-gtk/bstsnetrouter.c:953
+msgid "Select output module"
+msgstr "Vybrat výstupní modul"
+
+#: beast-gtk/bstsnetrouter.c:955
+msgid "Select input module"
+msgstr "Vybrat vstupní modul"
+
+#: beast-gtk/bstsnetrouter.c:1011
+msgid "Properties"
+msgstr "Vlastnosti"
+
+#: beast-gtk/bstsnetrouter.c:1012
+msgid "Reset Properties"
+msgstr "Přenastavit vlastnosti"
+
+#: beast-gtk/bstsnetrouter.c:1013
+msgid "Delete Inputs"
+msgstr "Odstranit vstupy"
+
+#: beast-gtk/bstsnetrouter.c:1014
+msgid "Delete Outputs"
+msgstr "Odstranit výstupy"
+
+#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+msgid "Show Info"
+msgstr "Zobrazit informace"
+
+#: beast-gtk/bstsnetrouter.c:1041
+msgid "Remove Module"
+msgstr "Odstranit modul"
+
+#: beast-gtk/bstsnetrouter.c:1068
+msgid "Delete Link"
+msgstr "Odstranit spojení"
+
+#: beast-gtk/bstsnetrouter.c:1122
+msgid "Insert Module"
+msgstr "Vložit modul"
+
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
+msgid "Routing"
+msgstr "Směrování"
+
+#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
+#: beast-gtk/bstwavereposhell.c:146
+msgid "Parameters"
+msgstr "Parametry"
+
+#: beast-gtk/bstsongshell.c:152
+msgid "Tracks"
+msgstr "Stopy"
+
+#: beast-gtk/bstsongshell.c:162
+msgid "Parts"
+msgstr "Části"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr "Výběr do smyčky"
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr "Smyčka do výběru"
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr "Zvětšit výběr"
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr "Použít smyčku"
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr "Zrušit smyčku"
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr "Noty"
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "Hledat"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr "Označit signál (začátek)"
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr "Označit signál (konec)"
+
+#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
+msgid "Edit Part"
+msgstr "Upravit část"
+
+#: beast-gtk/bsttrackrollctrl.c:388
+msgid "No Part"
+msgstr "Žádná část"
+
+#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Insert Part"
+msgstr "Vložit část"
+
+#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
+msgid "Lost Part"
+msgstr "Ztracená část"
+
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Position taken"
+msgstr "Pozice převzata"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "Insert part"
+msgstr "Vložit část"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "No Track"
+msgstr "Žádná stopa"
+
+#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
+msgid "Delete Part"
+msgstr "Odstranit část"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+msgid "Link Part"
+msgstr "Spojit část"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:523
+msgid "Move Part"
+msgstr "Přesunout část"
+
+#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
+msgid "Start Editor"
+msgstr "Spustit editor"
+
+#: beast-gtk/bsttrackview.c:62
+msgid "Add a new track to this song"
+msgstr "Přidat k této skladbě novou stopu"
+
+#: beast-gtk/bsttrackview.c:64
+msgid "Delete the currently selected track"
+msgstr "Odstranit momentálně vybranou stopu"
+
+#: beast-gtk/bsttrackview.c:640
+msgid "Comment"
+msgstr "Poznámka"
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Notice"
+msgstr "Upozornění"
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Question"
+msgstr "Otázka"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Warning"
+msgstr "Varování"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Error"
+msgstr "Chyba"
+
+# Různá zpráva :-)
+#: beast-gtk/bstusermessage.c:107
+msgid "Miscellaneous Message"
+msgstr "Zpráva"
+
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+msgid "processing"
+msgstr "zpracování"
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr "Neposouvat nic"
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr "Posouvat obojí"
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr "Posouvat levý"
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr "Posouvat pravý"
+
+#. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
+#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
+msgid "Waves"
+msgstr "Vlny"
