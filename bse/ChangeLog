@@ -1,3 +1,8 @@
+Fri Dec 24 15:26:58 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Added initial implementation of a GSL loader for
+	GUS patches (like those usually used in timidity patch sets).
+
 Mon Dec 20 19:51:07 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemathsignal.h: removed bse_approx_exp2() and bse_signal_exp2().
