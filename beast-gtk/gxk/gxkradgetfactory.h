@@ -19,7 +19,7 @@
 #ifndef __GXK_GADGET_FACTORY_H__
 #define __GXK_GADGET_FACTORY_H__
 
-#include "gxkgadget.h"
+#include "gxkradget.h"
 #include "gxkaction.h"
 
 G_BEGIN_DECLS

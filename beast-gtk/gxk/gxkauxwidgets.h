@@ -20,7 +20,7 @@
 #define __GXK_AUX_WIDGETS_H__
 
 #include "gxkutils.h"
-#include "gxkgadget.h"
+#include "gxkradget.h"
 
 G_BEGIN_DECLS
 

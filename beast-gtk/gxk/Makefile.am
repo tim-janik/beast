@@ -20,7 +20,7 @@ gxk_headers = $(strip \
 	gxkled.h	gxkcanvas.h		gxkdialog.h	gxkauxwidgets.h \
 	gxkstatusbar.h	gxkstock.h		gxktexttools.h	gxklistwrapper.h \
 	gxkrackeditor.h	gxkutils.h		gxkpolygon.h	gxkcellrendererpopup.h \
-	gxkgadget.h	gxkaction.h		gxkglobals.h	gxkgadgetfactory.h \
+	gxkradget.h	gxkaction.h		gxkglobals.h	gxkradgetfactory.h \
 	glewidgets.h	gxkracktable.h		gxkrackitem.h	gxksimplelabel.h \
 	gxkparam.h	gxkscrollcanvas.h	gxkimagecache.h	gxklogadjustment.h \
 	gxkmenubutton.h	\
@@ -30,7 +30,7 @@ gxk_c_sources = $(strip \
 	gxkled.c	gxkcanvas.c		gxkdialog.c	gxkauxwidgets.c \
 	gxkstatusbar.c	gxkstock.c		gxktexttools.c	gxklistwrapper.c \
 	gxkrackeditor.c	gxkutils.c		gxkpolygon.c	gxkcellrendererpopup.c \
-	gxkgadget.c	gxkaction.c		gxkglobals.c	gxkgadgetfactory.c \
+	gxkradget.c	gxkaction.c		gxkglobals.c	gxkradgetfactory.c \
 	glewidgets.c	gxkracktable.c		gxkrackitem.c	gxksimplelabel.c \
 	gxkparam.c	gxkscrollcanvas.c	gxkimagecache.c	gxklogadjustment.c \
 	gxkmenubutton.c	\

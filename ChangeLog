@@ -1,3 +1,30 @@
+Tue Jun 22 14:06:42 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.c: adapt macro references to contents of
+	beast-gtk/dialogs/beast-xml-zfiles.c which use RADGET instead
+	of GADGET now.
+
+	* beast-gtk/dialogs/gadgets-beast.xml:
+	* beast-gtk/dialogs/gadgets-standard.xml:
+	* beast-gtk/dialogs/Makefile.am: include ragdet*xml files, deleted
+	gadget*xml files.
+
+	* beast-gtk/gxk/gxkgadget.h:
+	* beast-gtk/gxk/gxkgadget.c:
+	* beast-gtk/gxk/gxkgadgetfactory.h:
+	* beast-gtk/gxk/gxkgadgetfactory.c:
+	* beast-gtk/gxk/Makefile.am: use *radget* sources, deleted
+	*gadget* sources.
+
+	* beast-gtk/gxk/gxkauxwidgets.h:
+	* beast-gtk/gxk/gxkdialog.c:
+	* beast-gtk/gxk/gxkradget.c:
+	* beast-gtk/gxk/gxkradgetfactory.c:
+	* beast-gtk/gxk/gxkradgetfactory.h:
+	* beast-gtk/gxk/gxktexttools.c:
+	* beast-gtk/gxk/gxk.h: include *radget* sources instead of
+	*gadget* source files.
+
 Tue Jun 22 13:51:13 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/radgets-beast.xml:

@@ -28,8 +28,8 @@
 #include <gxk/gxkcanvas.h>
 #include <gxk/gxkcellrendererpopup.h>
 #include <gxk/gxkdialog.h>
-#include <gxk/gxkgadget.h>
-#include <gxk/gxkgadgetfactory.h>
+#include <gxk/gxkradget.h>
+#include <gxk/gxkradgetfactory.h>
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkled.h>
 #include <gxk/gxklistwrapper.h>

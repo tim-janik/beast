@@ -114,10 +114,10 @@ _bst_init_gadgets (void)
   gxk_gadget_define_widget_type (BST_TYPE_EVENT_ROLL);
   gxk_gadget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_gadget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
-  text = gxk_zfile_uncompress (BST_GADGETS_STANDARD_SIZE, BST_GADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_GADGETS_STANDARD_DATA));
+  text = gxk_zfile_uncompress (BST_RADGETS_STANDARD_SIZE, BST_RADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_RADGETS_STANDARD_DATA));
   gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
-  text = gxk_zfile_uncompress (BST_GADGETS_BEAST_SIZE, BST_GADGETS_BEAST_DATA, G_N_ELEMENTS (BST_GADGETS_BEAST_DATA));
+  text = gxk_zfile_uncompress (BST_RADGETS_BEAST_SIZE, BST_RADGETS_BEAST_DATA, G_N_ELEMENTS (BST_RADGETS_BEAST_DATA));
   gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
 }

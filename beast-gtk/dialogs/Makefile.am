@@ -5,8 +5,8 @@
 
 
 ZFILE_DEFS = $(strip \
-	BST_GADGETS_STANDARD	$(srcdir)/gadgets-standard.xml	\
-	BST_GADGETS_BEAST	$(srcdir)/gadgets-beast.xml	\
+	BST_RADGETS_STANDARD	$(srcdir)/radgets-standard.xml	\
+	BST_RADGETS_BEAST	$(srcdir)/radgets-beast.xml	\
 )
 XML_FILES  = $(filter-out BST_%, $(ZFILE_DEFS))
 EXTRA_DIST = $(XML_FILES)
