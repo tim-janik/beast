@@ -17,6 +17,8 @@ FIXME(urgent):
 - driver interface: support multilpe MIDI devices
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 TODO:
+- add "..." to new dialog items in View/
+- add "Help on Skins" button to skin settings dialog, describing --skinrc option
 - menus: s/New Custom Synthesizer/Add Custom Synthesizer/
          s/New MIDI Synthesizer/Add MIDI Synthesizer/  (might get removed)
 - add mini-keyboard to Router toolbar to test instrument designs
