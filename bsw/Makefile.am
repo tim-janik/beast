@@ -27,7 +27,7 @@ libbsw_la_LDFLAGS = @STRIP_BEGIN@ \
 	-release $(LT_RELEASE) \
 	-export-dynamic \
 @STRIP_END@
-libbsw_la_LIBADD = # $(top_builddir)/bse/libbse.la # -lm
+libbsw_la_LIBADD = $(top_builddir)/bse/libbse.la
 
 
 #

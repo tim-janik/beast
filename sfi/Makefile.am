@@ -98,13 +98,13 @@ EXTRA_DIST += sfidl-generator.h sfidl-namespace.h sfidl-options.h sfidl-parser.h
 progs_extra_sources += sfidl-namespace.h
 testsfi_SOURCES = testsfi.c
 testsfi_LDADD = libsfi.la
-${srcdir}/testsfi.c: testidl.h testidl.c
+$(srcdir)/testsfi.c: testidl.h testidl.c
 testcxx_SOURCES = testcxx.cc
 testcxx_LDADD = libsfi.la
-${srcdir}/testcxx.cc: testidl.h testidl.c
+$(srcdir)/testcxx.cc: testidl.h testidl.c
 testsfidl_SOURCES = testsfidl.cc $(common_idl_sources)
 testsfidl_LDADD = libsfi.la
-${srcdir}/testsfidl.cc: testidl.h testidl.c
+$(srcdir)/testsfidl.cc: testidl.h testidl.c
 
 #
 # TESTS

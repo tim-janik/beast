@@ -1,3 +1,12 @@
+Wed Feb  4 00:07:12 2004  Tim Janik  <timj@gtk.org>
+
+	* applied fixes suggested by Sam Hocevar <sam@zoy.org>.
+
+	* bse/Makefile.am: add libsfi.la to libbse.la ldadd,
+	since we use libtool-1.5 now.
+
+	* bsw/Makefile.am: add libbse.la to libbsw.la ldadd.
+
 Mon Feb  2 16:17:46 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version update to 0.5.7rc1, binary 0, interface 0.

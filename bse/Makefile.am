@@ -31,7 +31,7 @@ libbse_la_LDFLAGS = $(strip \
 	-release $(LT_RELEASE) \
 	-export-dynamic \
 )
-libbse_la_LIBADD = $(BSE_LIBS) -lm
+libbse_la_LIBADD = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 
 
 #
