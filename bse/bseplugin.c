@@ -644,7 +644,7 @@ bse_plugin_find (GModule *gmodule)
   return NULL;
 }
 
-gchar*
+const gchar*
 bse_plugin_check_load (const gchar *_file_name)
 {
   const gint TOKEN_DLNAME = G_TOKEN_LAST + 1;

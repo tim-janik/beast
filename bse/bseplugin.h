@@ -71,7 +71,7 @@ struct _BsePluginClass
 
 /* --- prototypes --- */
 GList*		bse_plugin_dir_list_files	(const gchar	*dir_list);
-gchar*		bse_plugin_check_load		(const gchar	*file_name);
+const gchar*	bse_plugin_check_load		(const gchar	*file_name);
 BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 
 

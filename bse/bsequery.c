@@ -139,9 +139,13 @@ show_procdoc (void)
   for (i = 0; i < n_cats; i++)
     {
       BseProcedureClass *class = g_type_class_ref (cats[i].type);
+      gchar *pname = g_type_name_to_sname (g_type_name (cats[i].type));
       guint j;
 
-      fprintf (f_out, "/**\n * %s\n", g_type_name (cats[i].type));
+      if (pname[0] == 'b' && pname[1] == 's' && pname[2] == 'e')
+	pname[2] = 'w';
+
+      fprintf (f_out, "/**\n * %s\n", pname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
@@ -162,6 +166,7 @@ show_procdoc (void)
 	fprintf (f_out, " * %s\n", class->help);
       fprintf (f_out, " **/\n");
       g_type_class_unref (class);
+      g_free (pname);
     }
   g_free (cats);
 }
@@ -278,20 +283,7 @@ main (gint   argc,
 	}
       else if (strcmp ("-p", argv[i]) == 0)
 	{
-	  GList *free_list, *list;
-
-	  /* check load BSE plugins to register types */
-	  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-	  for (list = free_list; list; list = list->next)
-	    {
-	      gchar *error, *string = list->data;
-	      
-	      error = bse_plugin_check_load (string);
-	      if (error)
-		g_warning ("failed to load plugin \"%s\": %s", string, error);
-	      g_free (string);
-	    }
-	  g_list_free (free_list);
+	  bsw_register_plugins (NULL, TRUE, NULL);
 	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{

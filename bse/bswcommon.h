@@ -161,6 +161,21 @@ BswIcon*	bsw_icon_ref			(BswIcon	*icon);
 void		bsw_icon_unref			(BswIcon	*icon);
 
 
+/* --- handle plugins --- */
+void	bsw_register_plugins	(const gchar	*path,
+				 gboolean	 verbose,
+				 gchar	       **messages);
+
+
+/* --- missing GLib --- */
+gchar*  g_type_name_to_cname            (const gchar    *type_name);
+gchar*  g_type_name_to_sname            (const gchar    *type_name);
+gchar*  g_type_name_to_cupper           (const gchar    *type_name);
+gchar*  g_type_name_to_type_macro       (const gchar    *type_name);
+
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -1130,10 +1130,11 @@ bse_storage_store_procedure (gpointer          storage,
 {
   g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_STORAGE_WRITABLE (storage), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_STORAGE_PROXIES_ENABLED (storage), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
 
   bse_storage_handle_break (storage);
-  bse_storage_printf (storage, "(bse-proc-eval \"%s\"", proc->name);
+  bse_storage_printf (storage, "(bse-proc-eval \"%s\" ", proc->name);
   bse_storage_push_level (storage);
   if (proc->n_in_pspecs)
     {
@@ -1146,6 +1147,7 @@ bse_storage_store_procedure (gpointer          storage,
 	}
     }
   bse_storage_pop_level (storage);
+  bse_storage_handle_break (storage);
   bse_storage_putc (storage, ')');
 
   return BSE_ERROR_NONE;
@@ -1177,6 +1179,8 @@ bse_storage_put_value (BseStorage   *storage,
 		       const GValue *value,
 		       GParamSpec   *pspec)
 {
+  GType vtype;
+
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   g_return_if_fail (G_IS_VALUE (value));
@@ -1184,15 +1188,15 @@ bse_storage_put_value (BseStorage   *storage,
     g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   
   bse_storage_handle_break (storage);
-  
-  switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
+
+  vtype = G_VALUE_TYPE (value);
+  switch (G_TYPE_FUNDAMENTAL (vtype))
     {
       gchar *string;
       GEnumClass *eclass;
       GFlagsClass *fclass;
       GEnumValue *ev;
       GFlagsValue *fv;
-      BseObject *object;
       
     case G_TYPE_BOOLEAN:
       bse_storage_puts (storage, g_value_get_boolean (value) ? "#t" : "#f");
@@ -1286,14 +1290,22 @@ bse_storage_put_value (BseStorage   *storage,
       g_free (string);
       break;
     case G_TYPE_OBJECT:
-      if (BSE_STORAGE_PROXIES_ENABLED (storage))
+      if (BSE_STORAGE_PROXIES_ENABLED (storage) && g_type_is_a (vtype, BSE_TYPE_OBJECT))
 	{
-	  object = g_value_get_object (value);
-	  bse_storage_printf (storage, "(bse-proxy %u)", object ? BSE_OBJECT_ID (object) : 0);
+	  BseObject *object = g_value_get_object (value);
+	  gulong proxy = object ? BSE_OBJECT_ID (object) : 0;
+	  bse_storage_printf (storage, "(bse-proxy %lu)", proxy);
+	  break;
 	}
-      else
-	goto put_unhandled_parameter;
-      break;
+      goto put_unhandled_parameter;
+    case G_TYPE_POINTER:
+      if (BSE_STORAGE_PROXIES_ENABLED (storage) && vtype == BSW_TYPE_PROXY)
+	{
+	  gulong proxy = bsw_value_get_proxy (value);
+	  bse_storage_printf (storage, "(bse-proxy %lu)", proxy);
+	  break;
+	}
+      goto put_unhandled_parameter;
     case G_TYPE_BOXED:
       if (g_type_is_a (G_VALUE_TYPE (value), BSW_TYPE_NOTE_SEQUENCE))
 	{
@@ -1326,7 +1338,7 @@ bse_storage_put_value (BseStorage   *storage,
 		   g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
       else
 	g_warning (G_STRLOC ": unhandled value type `%s'",
-		   g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+		   g_type_name (vtype));
       break;
     }
 }
@@ -1493,15 +1505,21 @@ bse_storage_parse_param_value (BseStorage *storage,
 			       gboolean    close_statement)
 {
   GScanner *scanner;
-  
+  const gchar *pname;
+  GType vtype;
+
   g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
   g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
   g_return_val_if_fail (G_IS_VALUE (value), G_TOKEN_ERROR);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
+  if (pspec)
+    g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
 
   scanner = storage->scanner;
-  
-  switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)))
+  pname = pspec ? pspec->name : "anonymous value";
+  vtype = G_VALUE_TYPE (value);
+  if (pspec)
+    g_return_val_if_fail (g_type_is_a (vtype, G_PARAM_SPEC_VALUE_TYPE (pspec)), G_TOKEN_ERROR);
+  switch (G_TYPE_FUNDAMENTAL (vtype))
     {
       gboolean v_bool;
       gint v_enum;
@@ -1510,7 +1528,6 @@ bse_storage_parse_param_value (BseStorage *storage,
       gdouble v_double;
       GTokenType token;
       gchar *string;
-      BseObject *object;
       
     case G_TYPE_BOOLEAN:
       g_scanner_get_next_token (scanner);
@@ -1532,7 +1549,7 @@ bse_storage_parse_param_value (BseStorage *storage,
             return storage_errwarn_skip (storage, close_statement, TRUE,
 					 "unrecognized boolean value `%c' for parameter `%s'",
 					 scanner->token,
-					 pspec->name);
+					 pname);
 	  else
 	    return 'f';
         }
@@ -1554,10 +1571,10 @@ bse_storage_parse_param_value (BseStorage *storage,
 	    g_value_set_uint (value, v_int);
 	  else
 	    g_value_set_ulong (value, v_int);
-	  if (g_param_value_validate (pspec, value))
+	  if (pspec && g_param_value_validate (pspec, value))
 	    return storage_errwarn_skip (storage, close_statement, FALSE,
 					 "parameter value `%lu' out of bounds for parameter `%s'",
-					 v_int, pspec->name);
+					 v_int, pname);
 	}
       break;
     case G_TYPE_INT:
@@ -1580,11 +1597,11 @@ bse_storage_parse_param_value (BseStorage *storage,
 	    g_value_set_int (value, v_bool ? - v_int : v_int);
 	  else
 	    g_value_set_long (value, v_bool ? - v_int : v_int);
-          if (g_param_value_validate (pspec, value))
+          if (pspec && g_param_value_validate (pspec, value))
 	    return storage_errwarn_skip (storage, close_statement, FALSE,
 					 "parameter value `%ld' out of bounds for parameter `%s'",
 					 v_bool ? - v_int : v_int,
-					 pspec->name);
+					 pname);
 	}
       break;
     case G_TYPE_ENUM:
@@ -1604,28 +1621,30 @@ bse_storage_parse_param_value (BseStorage *storage,
       else if (scanner->token == G_TOKEN_IDENTIFIER)
         {
           GEnumValue *ev;
-          
-          ev = g_enum_get_value_by_nick (G_PARAM_SPEC_ENUM (pspec)->enum_class,
+          GEnumClass *eclass = g_type_class_ref (vtype);
+
+          ev = g_enum_get_value_by_nick (eclass,
                                          scanner->value.v_identifier);
           if (!ev)
-            ev = g_enum_get_value_by_name (G_PARAM_SPEC_ENUM (pspec)->enum_class,
+            ev = g_enum_get_value_by_name (eclass,
                                            scanner->value.v_identifier);
-          if (ev)
-            v_enum = ev->value;
-          else
+	  v_enum = ev ? ev->value : 0;
+
+	  g_type_class_unref (eclass);
+          if (!ev)
             return storage_errwarn_skip (storage, close_statement, FALSE,
 					 "unrecognized enum value `%s' for parameter `%s'",
 					 scanner->value.v_identifier,
-					 pspec->name);
+					 pname);
         }
       else
         return G_TOKEN_IDENTIFIER;
       g_value_set_enum (value, v_enum);
-      if (g_param_value_validate (pspec, value))
+      if (pspec && g_param_value_validate (pspec, value))
         return storage_errwarn_skip (storage, close_statement, FALSE,
 				     "parameter value `%d' out of bounds for parameter `%s'",
 				     v_enum,
-				     pspec->name);
+				     pname);
       break;
     case G_TYPE_FLAGS:
       v_flags = 0;
@@ -1637,30 +1656,30 @@ bse_storage_parse_param_value (BseStorage *storage,
           else if (scanner->token == G_TOKEN_IDENTIFIER)
             {
               GFlagsValue *fv;
-              
-              fv = g_flags_get_value_by_nick (G_PARAM_SPEC_FLAGS (pspec)->flags_class,
-                                              scanner->value.v_identifier);
+	      GFlagsClass *fclass = g_type_class_ref (vtype);
+	      
+              fv = g_flags_get_value_by_nick (fclass, scanner->value.v_identifier);
               if (!fv)
-                g_flags_get_value_by_name (G_PARAM_SPEC_FLAGS (pspec)->flags_class,
-                                           scanner->value.v_identifier);
-              if (fv)
-                v_flags |= fv->value;
-              else
+                g_flags_get_value_by_name (fclass, scanner->value.v_identifier);
+	      v_flags |= fv ? fv->value : 0;
+
+	      g_type_class_unref (fclass);
+              if (!fv)
                 return storage_errwarn_skip (storage, close_statement, FALSE,
 					     "unrecognized flags value `%s' for parameter `%s'",
 					     scanner->value.v_identifier,
-					     pspec->name);
+					     pname);
             }
           else
             return G_TOKEN_IDENTIFIER;
         }
       while (g_scanner_peek_next_token (scanner) != ')');
       g_value_set_flags (value, v_flags);
-      if (g_param_value_validate (pspec, value))
+      if (pspec && g_param_value_validate (pspec, value))
         return storage_errwarn_skip (storage, close_statement, FALSE,
 				     "parameter value `%d' out of bounds for parameter `%s'",
 				     v_flags,
-				     pspec->name);
+				     pname);
       break;
     case G_TYPE_FLOAT:
       g_scanner_get_next_token (scanner);
@@ -1677,11 +1696,11 @@ bse_storage_parse_param_value (BseStorage *storage,
       else
         return G_TOKEN_FLOAT;
       g_value_set_float (value, v_double);
-      if (g_param_value_validate (pspec, value))
+      if (pspec && g_param_value_validate (pspec, value))
         return storage_errwarn_skip (storage, close_statement, FALSE,
 				     "parameter value `%f' out of bounds for parameter `%s'",
 				     v_double,
-				     pspec->name);
+				     pname);
       break;
     case G_TYPE_DOUBLE:
       g_scanner_get_next_token (scanner);
@@ -1698,11 +1717,11 @@ bse_storage_parse_param_value (BseStorage *storage,
       else
         return G_TOKEN_FLOAT;
       g_value_set_double (value, v_double);
-      if (g_param_value_validate (pspec, value))
+      if (pspec && g_param_value_validate (pspec, value))
         return storage_errwarn_skip (storage, close_statement, FALSE,
 				     "parameter value `%f' out of bounds for parameter `%s'",
 				     v_double,
-				     pspec->name);
+				     pname);
       break;
     case G_TYPE_STRING:
       if (g_scanner_get_next_token (scanner) == BSE_TOKEN_NIL)
@@ -1754,61 +1773,79 @@ bse_storage_parse_param_value (BseStorage *storage,
 	      return G_TOKEN_STRING;
 	    }
 	bse_value_set_time (value, bse_time_from_gmt (time));
-	if (g_param_value_validate (pspec, value))
+	if (pspec && g_param_value_validate (pspec, value))
 	  {
 	    gchar bbuffer[BSE_BBUFFER_SIZE];
 	    
 	    return storage_errwarn_skip (storage, close_statement, FALSE,
 					 "date `%s' out of bounds for parameter `%s'",
 					 bse_time_to_bbuffer (bse_time_from_gmt (time), bbuffer),
-					 pspec->name);
+					 pname);
 	  }
       }
       break;
     case BSE_TYPE_NOTE:
-      token = parse_note (storage, BSE_PARAM_SPEC_NOTE (pspec)->allow_void, &v_note);
+      token = parse_note (storage, pspec ? BSE_PARAM_SPEC_NOTE (pspec)->allow_void : TRUE, &v_note);
       if (token != G_TOKEN_NONE)
 	return token;
       else
 	{
 	  bse_value_set_note (value, v_note);
-          if (g_param_value_validate (pspec, value))
+          if (pspec && g_param_value_validate (pspec, value))
 	    {
 	      string = bse_note_to_string (v_note);
 	      return storage_errwarn_skip (storage, close_statement, FALSE,
 					   "note value `%s' out of bounds for parameter `%s'",
 					   string,
-					   pspec->name);
+					   pname);
 	      g_free (string);
 	    }
 	}
       break;
     case G_TYPE_OBJECT:
-      if (BSE_STORAGE_PROXIES_ENABLED (storage))
+      if (BSE_STORAGE_PROXIES_ENABLED (storage) && g_type_is_a (vtype, BSE_TYPE_OBJECT))
 	{
+	  g_scanner_get_next_token (scanner);
 	  if (scanner->token == '(')
 	    {
-	      gulong id;
+	      gulong proxy;
 
 	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
 	      if (!bse_string_equals ("bse-proxy", scanner->value.v_identifier))
 		return G_TOKEN_IDENTIFIER;
 	      parse_or_return (scanner, G_TOKEN_INT);
-	      id = scanner->value.v_int;
+	      proxy = scanner->value.v_int;
 	      parse_or_return (scanner, ')');
-	      object = bse_object_from_id (id);
-	      if (!object)
-		bse_storage_warn (storage, "proxy id `%lu' not currently valid", id);
+	      g_value_set_object (value, proxy ? bse_object_from_id (proxy) : 0);
 	    }
 	  else
 	    return '(';
-	  g_value_set_object (value, object);
+	  break;
 	}
-      else
-	goto parse_unhandled_parameter;
-      break;
+      goto parse_unhandled_parameter;
+    case G_TYPE_POINTER:
+      if (BSE_STORAGE_PROXIES_ENABLED (storage) && vtype == BSW_TYPE_PROXY)
+	{
+	  g_scanner_get_next_token (scanner);
+	  if (scanner->token == '(')
+	    {
+	      gulong proxy;
+
+	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	      if (!bse_string_equals ("bse-proxy", scanner->value.v_identifier))
+		return G_TOKEN_IDENTIFIER;
+	      parse_or_return (scanner, G_TOKEN_INT);
+	      proxy = scanner->value.v_int;
+	      parse_or_return (scanner, ')');
+	      bsw_value_set_proxy (value, proxy);
+	    }
+	  else
+	    return '(';
+	  break;
+	}
+      goto parse_unhandled_parameter;
     case G_TYPE_BOXED:
-      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSW_TYPE_NOTE_SEQUENCE))
+      if (g_type_is_a (vtype, BSW_TYPE_NOTE_SEQUENCE))
 	{
 	  BswNoteSequence *sdata = NULL;
 	  guint i = 0;
@@ -1842,9 +1879,9 @@ bse_storage_parse_param_value (BseStorage *storage,
     parse_unhandled_parameter:
       return storage_errwarn_skip (storage, close_statement, FALSE,
 				   "unhandled parameter type `%s' for parameter `%s': unable to parse `%s' types",
-				   g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
-				   pspec->name,
-				   g_type_name (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec))));
+				   g_type_name (vtype),
+				   pname,
+				   g_type_name (G_TYPE_FUNDAMENTAL (vtype)));
     }
 
   if (!close_statement)
@@ -1939,6 +1976,14 @@ bse_storage_proc_eval (BseStorage *storage,
       error = bse_procedure_marshal (BSE_PROCEDURE_TYPE (proc),
 				     ivalues, retval,
 				     NULL, NULL);
+      if (proc->n_out_pspecs && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]), BSE_TYPE_OBJECT))
+	{
+	  GValue pvalue = { 0, };
+	  g_value_init (&pvalue, BSW_TYPE_PROXY);
+	  g_value_transform (retval, &pvalue);
+	  g_value_unset (retval);
+	  memcpy (retval, &pvalue, sizeof (pvalue));	/* values are relocatable */
+	}
       if (error)
 	{
 	  bse_storage_error (storage, "proc-eval: error during execution of procedure \"%s\": %s",
@@ -1976,14 +2021,14 @@ bse_storage_parse_eval (BseStorage *storage,
     return bse_storage_proc_eval (storage, retval);
   else if (strcmp ("bse-proxy", scanner->next_value.v_identifier) == 0)
     {
-      gulong id;
+      gulong proxy;
 
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);
       parse_or_return (scanner, G_TOKEN_INT);
-      id = scanner->value.v_int;
+      proxy = scanner->value.v_int;
       parse_or_return (scanner, ')');
-      g_value_init (retval, BSE_TYPE_OBJECT);
-      g_value_set_object (retval, bse_object_from_id (id));
+      g_value_init (retval, BSW_TYPE_PROXY);
+      bsw_value_set_proxy (retval, proxy);
       return G_TOKEN_NONE;
     }
   else

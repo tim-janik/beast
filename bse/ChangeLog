@@ -1,3 +1,25 @@
+Wed May 22 07:49:50 2002  Tim Janik  <timj@gtk.org>
+
+	* bsequery.c: use bsw_register_plugins() to load plugins and convert
+	procedure names to scheme names for --procdoc.
+
+	* bseplugin.[hc]: fix const for bse_plugin_check_load().
+
+	* bse.h: added missing files.
+
+	* bseprocedure.[hc]: added bse_procedure_eval() to call procedures from
+	strings, and bse_procedure_marshal_retval() and it's counterpart
+	bse_procedure_unmarshal_retval() to store/retrive procedure call returns
+	in/from strings.
+
+	* bsestorage.c (bse_storage_parse_param_value): allow pspec to be NULL.
+
+	* bswcommon.c (bsw_proxy_get_type): register value transform functions
+	for BswProxy <-> BseObject. added bsw_register_plugins() to reduce
+	duplication of this code. added function that should go into glib:
+	g_type_name_to_cname(), g_type_name_to_sname(), g_type_name_to_cupper(),
+	g_type_name_to_type_macro().
+
 Tue May 21 08:13:51 2002  Tim Janik  <timj@gtk.org>
 
 	* final object reference cleanup. get rid of ulocs, allow freeform

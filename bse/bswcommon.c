@@ -17,8 +17,10 @@
  */
 #include "bswcommon.h"
 
+#include "../PKG_config.h"
 #include "bswprivate.h"
 #include "gslcommon.h"
+#include "bseplugin.h"
 #include <string.h>
 
 
@@ -307,12 +309,34 @@ bsw_iter_add_string_take_ownership (BswIterString *iter,
 
 
 /* --- BSW proxy --- */
+static void
+value_transform_proxy_object (const GValue *src_value,
+			      GValue       *dest_value)
+{
+  BswProxy proxy = bsw_value_get_proxy (src_value);
+
+  g_value_set_object (dest_value, proxy ? bse_object_from_id (proxy) : NULL);
+}
+
+static void
+value_transform_object_proxy (const GValue *src_value,
+			      GValue       *dest_value)
+{
+  BseObject *object = g_value_get_object (src_value);
+
+  bsw_value_set_proxy (dest_value, object ? BSE_OBJECT_ID (object) : 0);
+}
+
 GType
 bsw_proxy_get_type (void)
 {
   static GType type = 0;
   if (!type)
-    type = g_pointer_type_register_static ("BswProxy");
+    {
+      type = g_pointer_type_register_static ("BswProxy");
+      g_value_register_transform_func (BSW_TYPE_PROXY, BSE_TYPE_OBJECT, value_transform_proxy_object);
+      g_value_register_transform_func (BSE_TYPE_OBJECT, BSW_TYPE_PROXY, value_transform_object_proxy);
+    }
   return type;
 }
 
@@ -728,4 +752,199 @@ bsw_icon_unref (BswIcon *icon)
 	  g_free (icon);
 	}
     }
+}
+
+
+/* --- handle plugins --- */
+static void
+handle_message (GString *gstring,
+		gpointer captured)
+{
+  if (!captured && gstring->len)
+    {
+      g_message ("%s", gstring->str);
+      g_string_set_size (gstring, 0);
+    }
+}
+
+void
+bsw_register_plugins (const gchar *path,
+		      gboolean     verbose,
+		      gchar      **messages)
+{
+  GList *free_list, *list;
+  GString *gstring = g_string_new (NULL);
+
+  if (!path)
+    path = BSE_PATH_PLUGINS;
+
+  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+  for (list = free_list; list; list = list->next)
+    {
+      gchar *string = list->data;
+      const gchar *error;
+
+      if (verbose)
+	g_string_printfa (gstring, "loading plugin \"%s\"...", string);
+      handle_message (gstring, messages);
+      error = bse_plugin_check_load (string);
+      if (error)
+	g_string_printfa (gstring, "error encountered loading plugin \"%s\": %s", string, error);
+      handle_message (gstring, messages);
+      g_free (string);
+    }
+  g_list_free (free_list);
+  if (!free_list && verbose)
+    {
+      g_string_printfa (gstring, "strange, can't find any plugins, please check %s", path);
+      handle_message (gstring, messages);
+    }
+  if (messages && gstring->len)
+    *messages = g_string_free (gstring, FALSE);
+  else
+    {
+      if (messages)
+	*messages = NULL;
+      g_string_free (gstring, TRUE);
+    }
+}
+
+
+/* --- missing GLib --- */
+static inline gchar
+check_lower (gchar c)
+{
+  return c >= 'a' && c <= 'z';
+}
+
+static inline gchar
+check_upper (gchar c)
+{
+  return c >= 'A' && c <= 'Z';
+}
+
+static inline gchar
+char_convert (gchar    c,
+	      gchar    fallback,
+	      gboolean want_upper)
+{
+  if (c >= '0' && c <= '9')
+    return c;
+  if (want_upper)
+    {
+      if (check_lower (c))
+	return c - 'a' + 'A';
+      else if (check_upper (c))
+	return c;
+    }
+  else
+    {
+      if (check_upper (c))
+	return c - 'A' + 'a';
+      else if (check_lower (c))
+	return c;
+    }
+  return fallback;
+}
+
+static gchar*
+type_name_to_cname (const gchar *type_name,
+		    const gchar *insert,
+		    gchar        fallback,
+		    gboolean     want_upper)
+{
+  const gchar *s;
+  gchar *result, *p;
+  guint was_upper, ilen;
+
+  s = type_name;
+
+  /* special casing for GLib types */
+  if (strcmp (s, "GString") == 0)
+    s = "GGString";	/* G_TYPE_GSTRING */
+  else if (check_lower (s[0]))
+    {
+      static const struct { gchar *gname; gchar *xname; } glib_ftypes[] = {
+	{ "gboolean",	"GBoolean" },
+	{ "gchar",	"GChar" },
+	{ "guchar",	"GUChar" },
+	{ "gint",	"GInt" },
+	{ "guint",	"GUInt" },
+	{ "glong",	"GLong" },
+	{ "gulong",	"GULong" },
+	{ "gint64",	"GInt64" },
+	{ "guint64",	"GUInt64" },
+	{ "gfloat",	"GFloat" },
+	{ "gdouble",	"GDouble" },
+	{ "gpointer",	"GPointer" },
+	{ "gchararray",	"GString" },	/* G_TYPE_STRING */
+      };
+      guint i;
+
+      for (i = 0; i < G_N_ELEMENTS (glib_ftypes); i++)
+	if (strcmp (s, glib_ftypes[i].gname) == 0)
+	  {
+	    s = glib_ftypes[i].xname;
+	    break;
+	  }
+    }
+
+  ilen = strlen (insert);
+  result = g_new (gchar, strlen (s) * 2 + ilen + 1);
+  p = result;
+
+  *p++ = char_convert (*s++, fallback, want_upper);
+  while (*s && !check_upper (*s))
+    *p++ = char_convert (*s++, fallback, want_upper);
+  strcpy (p, insert);
+  p += ilen;
+  was_upper = 0;
+  while (*s)
+    {
+      if (check_upper (*s))
+	{
+	  if (!was_upper || (s[1] && check_lower (s[1]) && was_upper >= 2))
+	    *p++ = fallback;
+	  was_upper++;
+	}
+      else
+	was_upper = 0;
+      *p++ = char_convert (*s, fallback, want_upper);
+      s++;
+    }
+  *p++ = 0;
+
+  return result;
+}
+
+gchar*
+g_type_name_to_cname (const gchar *type_name)
+{
+  g_return_val_if_fail (type_name != NULL, NULL);
+
+  return type_name_to_cname (type_name, "", '_', FALSE);
+}
+
+gchar*
+g_type_name_to_sname (const gchar *type_name)
+{
+  g_return_val_if_fail (type_name != NULL, NULL);
+
+  return type_name_to_cname (type_name, "", '-', FALSE);
+}
+
+gchar*
+g_type_name_to_cupper (const gchar *type_name)
+{
+  g_return_val_if_fail (type_name != NULL, NULL);
+
+  return type_name_to_cname (type_name, "", '_', TRUE);
+}
+
+gchar*
+g_type_name_to_type_macro (const gchar *type_name)
+{
+  g_return_val_if_fail (type_name != NULL, NULL);
+
+  return type_name_to_cname (type_name, "_TYPE", '_', TRUE);
 }

@@ -28,7 +28,9 @@
 #include        <bse/bsecategories.h>
 #include        <bse/bseconfig.h>
 #include        <bse/bsecontainer.h>
+#include        <bse/bsedatapocket.h>
 #include        <bse/bsedefs.h>
+#include        <bse/bseeditablesample.h>
 #include        <bse/bseeffect.h>
 #include        <bse/bseenums.h>
 #include        <bse/bseexports.h>
@@ -42,6 +44,7 @@
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>
 #include        <bse/bseparasite.h>
+#include        <bse/bsepart.h>
 #include        <bse/bsepattern.h>
 #include        <bse/bsepatterngroup.h>
 #include        <bse/bsepcmdevice.h>
@@ -57,6 +60,7 @@
 #include        <bse/bsetype.h>
 #include        <bse/bseutils.h>
 #include        <bse/bsewave.h>
+#include        <bse/bsewaveosc.h>
 #include        <bse/bsewaverepo.h>
 #include        <bse/bswcommon.h>
 

@@ -25,6 +25,11 @@
 #include	<string.h>
 
 
+/* --- macros --- */
+#define parse_or_return         bse_storage_scanner_parse_or_return
+#define peek_or_return          bse_storage_scanner_peek_or_return
+
+
 /* --- prototypes --- */
 extern void	bse_type_register_procedure_info  (GTypeInfo		    *info);
 static void     bse_procedure_base_init		  (BseProcedureClass	    *proc);
@@ -560,4 +565,236 @@ bse_procedure_execvl (BseProcedureClass *proc,
   for (i = 0, slist = out_value_list; slist && i < proc->n_out_pspecs; i++, slist = slist->next)
     memcpy (slist->data, tmp_ovalues + i, sizeof (tmp_ivalues[0]));
   return error;
+}
+
+static GTokenType
+bse_procedure_eval_storage (BseStorage   *storage,
+			    BseErrorType *error_p,
+			    GValue       *retval)
+{
+  GValue ivalues[BSE_PROCEDURE_MAX_IN_PARAMS];
+  BseProcedureClass *proc;
+  GTokenType token = G_TOKEN_NONE;
+  GScanner *scanner = storage->scanner;
+  GType proc_type;
+  guint i;
+
+  parse_or_return (scanner, '(');
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+  if (strcmp ("bse-proc-call", scanner->value.v_identifier) != 0)
+    return G_TOKEN_IDENTIFIER;
+
+  /* fetch and check procedure */
+  parse_or_return (scanner, G_TOKEN_STRING);
+  proc_type = bse_procedure_lookup (scanner->value.v_string);
+  if (!proc_type)
+    {
+      bse_storage_error (storage, "proc-eval: no such procedure \"%s\"", scanner->value.v_identifier);
+      return G_TOKEN_STRING;
+    }
+  proc = g_type_class_ref (proc_type);
+  if (proc->n_out_pspecs > 1)
+    {
+      bse_storage_error (storage, "proc-eval: procedure \"%s\" has more than 1 (%u) output paremeters",
+			 proc->name, proc->n_out_pspecs);
+      g_type_class_unref (proc);
+      return G_TOKEN_STRING;
+    }
+
+  /* parse input values */
+  for (i = 0; i < proc->n_in_pspecs; i++)
+    {
+      ivalues[i].g_type = 0;
+      g_value_init (ivalues + i, G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[i]));
+      token = bse_storage_parse_param_value (storage, ivalues + i, proc->in_pspecs[i], FALSE);
+      if (token != G_TOKEN_NONE)
+	{
+	  g_value_unset (ivalues + i);
+	  break;
+	}
+    }
+
+  /* close statement */
+  if (token == G_TOKEN_NONE && g_scanner_get_next_token (scanner) != ')')
+    token = ')';
+
+  /* call procedure */
+  if (token == G_TOKEN_NONE)
+    {
+      if (proc->n_out_pspecs)
+	g_value_init (retval, G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]));
+
+      *error_p = bse_procedure_marshal (BSE_PROCEDURE_TYPE (proc),
+					ivalues, retval,
+					NULL, NULL);
+
+      if (proc->n_out_pspecs && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]), BSE_TYPE_OBJECT))
+	{
+	  GValue pvalue = { 0, };
+	  g_value_init (&pvalue, BSW_TYPE_PROXY);
+	  g_value_transform (retval, &pvalue);
+	  g_value_unset (retval);
+	  memcpy (retval, &pvalue, sizeof (pvalue));    /* values are relocatable */
+	}
+      if (*error_p)
+	{
+	  bse_storage_error (storage, "proc-eval: error during execution of procedure \"%s\": %s",
+			     proc->name, bse_error_blurb (*error_p));
+	  token = G_TOKEN_ERROR;
+	}
+    }
+  while (i--)
+    g_value_unset (ivalues + i);
+  g_type_class_unref (proc);
+
+  return token;
+}
+
+gchar*
+bse_procedure_eval (const gchar  *expr,
+		    BseErrorType *error_p,
+		    GValue       *value)
+{
+  BseErrorType error = BSE_ERROR_DATA_CORRUPT;
+  BseStorage *storage;
+  GTokenType token;
+  gchar *warnings = NULL;
+
+  g_return_val_if_fail (expr != NULL, NULL);
+  g_return_val_if_fail (G_VALUE_TYPE (value) == 0, NULL);
+
+  storage = bse_storage_new ();
+  bse_storage_enable_proxies (storage);
+  bse_storage_input_text (storage, expr);
+
+  token = bse_procedure_eval_storage (storage, &error, value);
+  if (token != G_TOKEN_NONE)
+    bse_storage_unexp_token (storage, token);
+
+  if (G_VALUE_TYPE (value) == 0)
+    {
+      g_value_init (value, BSE_TYPE_ERROR_TYPE);
+      g_value_set_enum (value, error);
+    }
+  bse_storage_destroy (storage);
+
+  if (error_p)
+    *error_p = error;
+
+  return warnings;
+}
+
+gchar*
+bse_procedure_marshal_retval (BseErrorType error,
+			      GValue     *value,
+			      const gchar *warnings)
+{
+  BseStorage *storage;
+  gchar *str;
+
+  g_return_val_if_fail (G_IS_VALUE (value), NULL);
+
+  storage = bse_storage_new ();
+  bse_storage_enable_proxies (storage);
+  bse_storage_prepare_write (storage, TRUE);
+
+  bse_storage_puts (storage, "(bse-proc-return ");
+  /* error code, marshalled as uint */
+  bse_storage_printf (storage, "%u ", error);
+  /* return value type */
+  if (G_TYPE_IS_OBJECT (G_VALUE_TYPE (value)))
+    bse_storage_puts (storage, "\"BswProxy\" ");
+  else
+    bse_storage_printf (storage, "\"%s\" ", g_type_name (G_VALUE_TYPE (value)));
+  /* return value */
+  bse_storage_push_level (storage);
+  bse_storage_put_value (storage, value, NULL);
+  /* errors and warnings */
+  if (warnings)
+    {
+      gchar *esc = g_strescape (warnings, NULL);
+
+      bse_storage_break (storage);
+      bse_storage_printf (storage, " \"%s\"", esc);
+      g_free (esc);
+    }
+  bse_storage_pop_level (storage);
+  bse_storage_putc (storage, ')');
+
+  /* done, return string */
+  str = g_strdup (bse_storage_peek_text (storage, NULL));
+  bse_storage_destroy (storage);
+
+  return str;
+}
+
+gchar*
+bse_procedure_unmarshal_retval (const gchar  *string,
+				BseErrorType *error_p,
+				GValue       *value)
+{
+  BseStorage *storage;
+  GScanner *scanner;
+  BseErrorType error;
+  GType rtype;
+  gchar *warnings = NULL;
+
+  g_return_val_if_fail (string != NULL, NULL);
+  g_return_val_if_fail (G_VALUE_TYPE (value) == 0, NULL);
+
+  storage = bse_storage_new ();
+  bse_storage_enable_proxies (storage);
+  bse_storage_input_text (storage, string);
+  scanner = storage->scanner;
+
+  /* parse boilerplate */
+  if (g_scanner_get_next_token (scanner) != '(' ||
+      g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER ||
+      strcmp (scanner->value.v_identifier, "bse-proc-return") != 0)
+    goto data_corrupt;
+
+  /* parse error code */
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_INT)
+    goto data_corrupt;
+  error = scanner->value.v_int;
+
+  /* return value type */
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+    goto data_corrupt;
+  rtype = g_type_from_name (scanner->value.v_string);
+  if (!rtype)
+    goto data_corrupt;
+
+  /* return value */
+  g_value_init (value, rtype);
+  if (bse_storage_parse_param_value (storage, value, NULL, FALSE) != G_TOKEN_NONE)
+    goto data_corrupt;
+
+  /* errors and warnings */
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
+    {
+      g_scanner_get_next_token (scanner);
+      warnings = g_strdup (scanner->value.v_string);
+    }
+
+  /* close statement */
+  if (g_scanner_get_next_token (scanner) != ')')
+    goto data_corrupt;
+  bse_storage_destroy (storage);
+
+  if (error_p)
+    *error_p = error;
+
+  return warnings;
+
+ data_corrupt:
+  if (G_VALUE_TYPE (value))
+    g_value_unset (value);
+  if (warnings)
+    g_free (warnings);
+
+  if (error_p)
+    *error_p = BSE_ERROR_DATA_CORRUPT;
+
+  return g_strdup ("invalid format of bse-error statement");
 }
