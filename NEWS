@@ -21,9 +21,11 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Work around PTH poll() bug on NetBSD [Ben Collver, Tim Janik]
 * Support NetBSD sound device names [Ben Collver]
 * Added i18n infrastrukture for BEAST and BSE [Christian Neumair, Tim Janik]
-* Added German translation [Christian Neumair]
-* Added Swedish translation [Christian Rose]
+* Added Azerbaijani translation [Metin Amiroff]
 * Added Serbian translation [Danilo Segan]
+* Added Swedish translation [Christian Rose]
+* Added German translation [Christian Neumair]
+* Added Czech translation [Miloslav Trmac]
 * Added Dutch translation [Vincent van Adrighem]
 * Lots of bug fixes
 
