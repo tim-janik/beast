@@ -127,7 +127,9 @@ TODO:
 - pattern editor: play notes when inserted (also a piano roll TODO item); should be optional
 - pattern editor: channel based muting
 - pattern editor: allow combining multiple pattern editors (i.e. editing multiple parts which are
-  played synchronously) spawned across multiple tracks
+  played synchronously) spawned across multiple tracks - GUI idea: once selection in the track roll
+  widget is implemented: select multiple parts, use right-mouse-button-menu, select pattern editor:
+  combined view of those parts is opened
 - let bst_key_combo_popup() display currently pressed modifiers
 - let bst_key_combo_popup() tell the user to press a mouse button to abort
 - pattern editor: render letters with pango into offscreen pixmaps, draw text by copying offscreen pixmaps (but skinning?)
