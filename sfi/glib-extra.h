@@ -92,6 +92,8 @@ const gchar*    g_intern_string         (const gchar   *string);
 const gchar*    g_intern_static_string  (const gchar   *string);
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...);
+const gchar*    g_intern_printf         (const gchar   *format,
+                                         ...) G_GNUC_PRINTF (1,2);
 
 gchar*          g_strconcat_with_null  (const gchar   *string1, ...);
 #define         g_strconcat             g_strconcat_with_null
