@@ -22,7 +22,8 @@ extern "C" {
 void toyprof_dump_stats	(int fd) TOYPROF_GNUC_NO_INSTRUMENT;
 
 /* profiling types */
-typedef enum {
+typedef enum	/*< skip >*/
+{
   TOYPROF_OFF			= 0x0,
   TOYPROF_PROFILE_TIMING	= 0x1,
   TOYPROF_TRACE_FUNCTIONS	= 0x3

@@ -1,3 +1,8 @@
+Wed Aug  7 11:20:59 2002  Tim Janik  <timj@gtk.org>
+
+	* toyprof.h: flag conditional enum ToyprofBehaviour to be skipped by
+	the glib-mkenums.
+
 Tue Aug  6 18:48:13 2002  Tim Janik  <timj@gtk.org>
 
 	* bsepart.h:
