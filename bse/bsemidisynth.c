@@ -263,7 +263,7 @@ bse_midi_synth_finalize (GObject *object)
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->sub_synth));
   self->sub_synth = NULL;
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 

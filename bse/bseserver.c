@@ -26,7 +26,6 @@
 #include "bsemidinotifier.h"
 #include "bsemain.h"		/* threads enter/leave */
 #include "bsepcmwriter.h"
-#include "bsemidireceiver.h"
 #include "bsemididevice-null.h"
 #include "bsejanitor.h"
 #include <fcntl.h>
@@ -512,9 +511,7 @@ bse_server_open_midi_device (BseServer *server)
       choice = BSE_TYPE_MIDI_DEVICE_NULL;
     }
 
-  server->midi_device = g_object_new (choice,
-				      "midi_receiver", bse_server_get_midi_receiver (server, "default"),
-				      NULL);
+  server->midi_device = g_object_new (choice, NULL);
   error = bse_midi_device_open (server->midi_device);
   if (error)
     {
@@ -610,8 +607,6 @@ bse_server_close_devices (BseServer *self)
 	  g_object_unref (self->pcm_writer);
 	  self->pcm_writer = NULL;
 	}
-      /* we don't need to discard the midi_receiver */
-      // FIXME: discard midi_receiver modules
       gsl_trans_commit (trans);
       /* wait until transaction has been processed */
       gsl_engine_wait_on_trans ();
@@ -677,20 +672,6 @@ bse_server_discard_pcm_input_module (BseServer *self,
 
   /* decrement dev_use_count */
   bse_server_close_devices (self);
-}
-
-BseMidiReceiver*
-bse_server_get_midi_receiver (BseServer   *self,
-			      const gchar *midi_name)
-{
-  g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
-  g_return_val_if_fail (midi_name != NULL, NULL);
-  
-  if (!self->midi_receiver)
-    self->midi_receiver = bse_midi_receiver_new ("default");
-  // FIXME: we don't actually check the midi_receiver name
-  
-  return self->midi_receiver;
 }
 
 /* bse_server_script_start
@@ -852,13 +833,11 @@ static gboolean
 main_source_prepare (GSource *source,
 		     gint    *timeout_p)
 {
-  MainSource *xsource = (MainSource*) source;
+  // MainSource *xsource = (MainSource*) source;
   gboolean need_dispatch;
   
   BSE_THREADS_ENTER ();
   need_dispatch = FALSE;
-  if (xsource->server->midi_receiver)
-    need_dispatch |= bse_midi_receiver_has_notify_events (xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
   
   return need_dispatch;
@@ -872,8 +851,6 @@ main_source_check (GSource *source)
   
   BSE_THREADS_ENTER ();
   need_dispatch = xsource->pfd.events & xsource->pfd.revents;
-  if (xsource->server->midi_receiver)
-    need_dispatch |= bse_midi_receiver_has_notify_events (xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
   
   return need_dispatch;
@@ -884,11 +861,9 @@ main_source_dispatch (GSource    *source,
 		      GSourceFunc callback,
 		      gpointer    user_data)
 {
-  MainSource *xsource = (MainSource*) source;
+  // MainSource *xsource = (MainSource*) source;
   
   BSE_THREADS_ENTER ();
-  if (xsource->server->midi_receiver && xsource->server->midi_receiver->notifier)
-    bse_midi_notifier_dispatch (xsource->server->midi_receiver->notifier, xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
   
   return TRUE;

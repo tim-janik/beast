@@ -314,7 +314,7 @@ bse_instrument_do_destroy (BseObject *object)
   g_assert (instrument->user_snet == NULL);
   g_assert (instrument->seq_snet == NULL);
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 

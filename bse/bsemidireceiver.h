@@ -49,12 +49,6 @@ struct _BseMidiReceiver
   
   /*< private >*/
   SfiRing	  *events;	/* BseMidiEvent* */
-  BseMidiEventType event_type;	/* event currently being decoded */
-  BseMidiEventType running_mode;
-  guint		   echannel;	/* channel of current event */
-  guint            n_bytes;
-  guint8	  *bytes;
-  guint		   left_bytes;
   guint		   ref_count;
   BseMidiNotifier *notifier;
   SfiRing	  *notifier_events;
@@ -70,10 +64,6 @@ struct _BseMidiReceiver
 BseMidiReceiver* bse_midi_receiver_new		 	  (const gchar		*receiver_name);
 BseMidiReceiver* bse_midi_receiver_ref		 	  (BseMidiReceiver	*self);
 void		 bse_midi_receiver_unref	 	  (BseMidiReceiver	*self);
-void             bse_midi_receiver_push_data    	  (BseMidiReceiver	*self,
-							   guint		 n_bytes,
-							   guint8		*bytes,
-							   guint64	         usec_systime);
 void             bse_midi_receiver_push_event    	  (BseMidiReceiver	*self,
 							   BseMidiEvent		*event);
 void		 bse_midi_receiver_process_events	  (BseMidiReceiver	*self,
@@ -104,6 +94,11 @@ gboolean	 bse_midi_receiver_has_notify_events	  (BseMidiReceiver	*self);
 SfiRing*	 bse_midi_receiver_fetch_notify_events	  (BseMidiReceiver	*self);
 gboolean	 bse_midi_receiver_voices_pending	  (BseMidiReceiver	*self,
                                                            guint                 midi_channel);
+
+void             bse_midi_receiver_enter_farm    	  (BseMidiReceiver      *self);
+void             bse_midi_receiver_farm_distribute_event  (BseMidiEvent		*event);
+void             bse_midi_receiver_farm_process_events    (guint64               max_tick_stamp);
+void             bse_midi_receiver_leave_farm    	  (BseMidiReceiver      *self);
 
 
 /* --- internal --- */

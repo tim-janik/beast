@@ -141,7 +141,7 @@ bse_pattern_do_destroy (BseObject *object)
   pattern->n_rows = 0;
   pattern->notes = NULL;
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 

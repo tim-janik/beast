@@ -195,6 +195,7 @@ bse_project_init (BseProject *self,
   self->redo_stack = bse_undo_stack_new (self, redo_notify);
   self->deactivate_usecs = 3 * 1000000;
   self->midi_receiver = bse_midi_receiver_new ("BseProjectReceiver");
+  bse_midi_receiver_enter_farm (self->midi_receiver);
 
   /* we always have a wave-repo */
   wrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
@@ -693,11 +694,7 @@ bse_project_activate (BseProject *self)
       if (BSE_SUPER_NEEDS_CONTEXT (super))
 	{
 	  BseSNet *snet = BSE_SNET (super);	// FIXME: merge this snet functionality into super
-	  super->context_handle = bse_snet_create_context (snet,
-							   bse_server_get_midi_receiver (bse_server_get (),
-											 "default"),
-							   0,
-							   trans);
+	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 0, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	}
       else
@@ -731,11 +728,7 @@ bse_project_start_playback (BseProject *self)
 	  super->context_handle == ~0)
 	{
 	  BseSNet *snet = BSE_SNET (super);	// FIXME: merge this snet functionality into super
-	  super->context_handle = bse_snet_create_context (snet,
-							   bse_server_get_midi_receiver (bse_server_get (),
-											 "default"),
-							   0,
-							   trans);
+	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 0, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	  seen_synth++;
 	}

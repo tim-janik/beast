@@ -126,7 +126,7 @@ bse_pattern_group_destroy (BseObject *object)
   g_free (pgroup->entries);
   pgroup->entries = NULL;
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 

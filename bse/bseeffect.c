@@ -74,7 +74,7 @@ static void
 bse_effect_destroy (BseObject *object)
 {
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 

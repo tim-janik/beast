@@ -201,7 +201,7 @@ bse_midi_voice_input_dispose (GObject *object)
   
   bse_midi_voice_input_set_midi_receiver (self, NULL, 0);
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (voice_input_parent_class)->dispose (object);
 }
 
@@ -212,7 +212,7 @@ bse_midi_voice_switch_dispose (GObject *object)
   
   bse_midi_voice_switch_set_voice_input (self, NULL);
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (voice_switch_parent_class)->dispose (object);
 }
 

@@ -1,3 +1,24 @@
+Fri Jul 25 01:05:22 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-oss.c: push data into a midi decoder.
+
+	* bsemididevice.c: provide default midi decoder (not midi receiver)
+	for midi devices.
+
+	* bsemididecoder.[hc]: new files. moved midi event decoding from
+	bsemidireceiver.[hc] to here. uses bse_midi_receiver_farm_process_events()
+	and bse_midi_receiver_farm_distribute_event() to have the events handled
+	by all interested midi receivers.
+
+	* bsemidievent.[hc]: added functions to copy and allocate midi events.
+
+	* bsemidireceiver.[hc]: removed midi event decoding functionality.
+	added midi-receiver-farm functions. a global midi event input queue.
+
+	* bseproject.c: add project default decoder to midi receiver farm.
+
+	* bseserver.c: removed default server midi receiver.
+
 Thu Jul 24 01:28:33 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidievent.[hc]: remove MIDI_MAX_CHANNEL assertions, up this to 99.

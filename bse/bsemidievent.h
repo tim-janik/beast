@@ -90,19 +90,21 @@ typedef struct
 
 
 /* --- API --- */
-GType		 bse_midi_event_get_type	(void);	/* boxed */
-void		 bse_midi_free_event		(BseMidiEvent	  *event);
-BseMidiEvent*	 bse_midi_event_note_on		(guint		   midi_channel,
-						 guint64	   tick_stamp,
-						 gfloat		   frequency,
-						 gfloat		   velocity);
-BseMidiEvent*	 bse_midi_event_note_off	(guint		   midi_channel,
-						 guint64	   tick_stamp,
-						 gfloat		   frequency);
-BseMidiEvent*    bse_midi_event_signal          (guint             midi_channel,
-                                                 guint64           tick_stamp,
-                                                 BseMidiSignalType signal_type,
-                                                 gfloat            value);
+GType         bse_midi_event_get_type (void); /* boxed */
+BseMidiEvent* bse_midi_alloc_event    (void);
+BseMidiEvent* bse_midi_copy_event     (const BseMidiEvent *src);
+void          bse_midi_free_event     (BseMidiEvent       *event);
+BseMidiEvent* bse_midi_event_note_on  (guint               midi_channel,
+                                       guint64             tick_stamp,
+                                       gfloat              frequency,
+                                       gfloat              velocity);
+BseMidiEvent* bse_midi_event_note_off (guint               midi_channel,
+                                       guint64             tick_stamp,
+                                       gfloat              frequency);
+BseMidiEvent* bse_midi_event_signal   (guint               midi_channel,
+                                       guint64             tick_stamp,
+                                       BseMidiSignalType   signal_type,
+                                       gfloat              value);
 
 
 /* --- MIDI Signals --- */

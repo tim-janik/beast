@@ -17,28 +17,16 @@
  */
 #include "bsemididevice.h"
 
-#include "bsemidireceiver.h"
+#include "bsemididecoder.h"
 
 #include <errno.h>
-
-enum {
-  PROP_0,
-  PROP_MIDI_RECEIVER
-};
 
 
 /* --- prototypes --- */
 static void	bse_midi_device_init		(BseMidiDevice		*self);
 static void	bse_midi_device_class_init	(BseMidiDeviceClass	*class);
-static void	bse_midi_device_set_property	(GObject                *object,
-						 guint                   param_id,
-						 const GValue           *value,
-						 GParamSpec             *pspec);
-static void	bse_midi_device_get_property	(GObject                *object,
-						 guint                   param_id,
-						 GValue                 *value,
-						 GParamSpec             *pspec);
 static void	bse_midi_device_dispose		(GObject		*object);
+static void	bse_midi_device_finalize	(GObject		*object);
 
 
 /* --- variables --- */
@@ -74,21 +62,15 @@ static void
 bse_midi_device_class_init (BseMidiDeviceClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = bse_midi_device_set_property;
-  gobject_class->get_property = bse_midi_device_get_property;
   gobject_class->dispose = bse_midi_device_dispose;
+  gobject_class->finalize = bse_midi_device_finalize;
   
   class->driver_rating = 0;
   class->open = NULL;
   class->suspend = NULL;
-  
-  bse_object_class_add_param (object_class, NULL,
-			      PROP_MIDI_RECEIVER,
-			      g_param_spec_pointer ("midi_receiver", NULL, NULL, G_PARAM_READWRITE));
 }
 
 static void
@@ -97,50 +79,8 @@ bse_midi_device_init (BseMidiDevice *self)
   BSE_OBJECT_UNSET_FLAGS (self, (BSE_MIDI_FLAG_OPEN |
 				 BSE_MIDI_FLAG_READABLE |
 				 BSE_MIDI_FLAG_WRITABLE));
-  self->midi_receiver = NULL;
+  self->midi_decoder = bse_midi_decoder_new (TRUE);
   self->handle = NULL;
-}
-
-static void
-bse_midi_device_set_property (GObject                *object,
-			      guint                   param_id,
-			      const GValue           *value,
-			      GParamSpec             *pspec)
-{
-  BseMidiDevice *self = BSE_MIDI_DEVICE (object);
-  
-  switch (param_id)
-    {
-    case PROP_MIDI_RECEIVER:
-      if (self->midi_receiver)
-	bse_midi_receiver_unref (self->midi_receiver);
-      self->midi_receiver = g_value_get_pointer (value);
-      if (self->midi_receiver)
-	bse_midi_receiver_ref (self->midi_receiver);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
-}
-
-static void
-bse_midi_device_get_property (GObject                *object,
-			      guint                   param_id,
-			      GValue                 *value,
-			      GParamSpec             *pspec)
-{
-  BseMidiDevice *self = BSE_MIDI_DEVICE (object);
-  
-  switch (param_id)
-    {
-    case PROP_MIDI_RECEIVER:
-      g_value_set_pointer (value, self->midi_receiver);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
 }
 
 static void
@@ -155,12 +95,21 @@ bse_midi_device_dispose (GObject *object)
     }
   if (self->handle)
     g_warning (G_STRLOC ": midi device with stale midi handle");
-  if (self->midi_receiver)
-    bse_midi_receiver_unref (self->midi_receiver);
-  self->midi_receiver = NULL;
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
+}
+
+static void
+bse_midi_device_finalize (GObject *object)
+{
+  BseMidiDevice *self = BSE_MIDI_DEVICE (object);
+  
+  bse_midi_decoder_destroy (self->midi_decoder);
+  self->midi_decoder = NULL;
+  
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 BseErrorType

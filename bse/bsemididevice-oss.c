@@ -18,7 +18,7 @@
 #include	"bsemididevice-oss.h"
 
 #include	"bseserver.h"
-#include	"bsemidireceiver.h"
+#include	"bsemididecoder.h"
 #include	"gslcommon.h"
 
 #include	"PKG_config.h"
@@ -183,7 +183,7 @@ bse_midi_device_oss_finalize (GObject *object)
   g_free (mdev_oss->device_name);
   mdev_oss->device_name = NULL;
   
-  /* chain parent class' destroy handler */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -222,8 +222,8 @@ io_handler (BseMidiDevice *mdev,
     l = read (oss->fd, buffer, buf_size);
   while (l < 0 && errno == EINTR);	/* don't mind signals */
   
-  if (l > 0 && mdev->midi_receiver)
-    bse_midi_receiver_push_data (mdev->midi_receiver, l, buffer, systime);
+  if (l > 0)
+    bse_midi_decoder_push_data (mdev->midi_decoder, l, buffer, systime);
 }
 
 #endif	/* BSE_MIDI_DEVICE_CONF_OSS */

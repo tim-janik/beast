@@ -108,6 +108,26 @@ bse_midi_free_event (BseMidiEvent *event)
 }
 
 BseMidiEvent*
+bse_midi_copy_event (const BseMidiEvent *src)
+{
+  BseMidiEvent *event;
+
+  g_return_val_if_fail (src != NULL, NULL);
+
+  event = bse_midi_alloc_event ();
+  *event = *src;
+  if (src->status == BSE_MIDI_SYS_EX)
+    event->data.sys_ex.bytes = g_memdup (src->data.sys_ex.bytes, src->data.sys_ex.n_bytes);
+  return event;
+}
+
+BseMidiEvent*
+bse_midi_alloc_event (void)
+{
+  return sfi_new_struct (BseMidiEvent, 1);
+}
+
+BseMidiEvent*
 bse_midi_event_note_on (guint   midi_channel,
 			guint64 tick_stamp,
 			gfloat  frequency,
@@ -118,7 +138,7 @@ bse_midi_event_note_on (guint   midi_channel,
   g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY_f, NULL);
   g_return_val_if_fail (velocity >= 0 && velocity <= 1, NULL);
   
-  event = sfi_new_struct (BseMidiEvent, 1);
+  event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_ON;
   event->channel = midi_channel;
   event->tick_stamp = tick_stamp;
@@ -137,7 +157,7 @@ bse_midi_event_note_off (guint   midi_channel,
   
   g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY_f, NULL);
   
-  event = sfi_new_struct (BseMidiEvent, 1);
+  event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_OFF;
   event->channel = midi_channel;
   event->tick_stamp = tick_stamp;
@@ -157,7 +177,7 @@ bse_midi_event_signal (guint             midi_channel,
 
   g_return_val_if_fail (value >= -1 && value <= +1, NULL);
 
-  event = sfi_new_struct (BseMidiEvent, 1);
+  event = bse_midi_alloc_event ();
   switch (signal_type)
     {
     case BSE_MIDI_SIGNAL_PROGRAM:
