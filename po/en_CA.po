@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-19 18:58-0400\n"
-"PO-Revision-Date: 2004-09-19 19:50-0400\n"
+"POT-Creation-Date: 2004-09-23 23:43-0400\n"
+"PO-Revision-Date: 2004-09-23 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -816,16 +816,16 @@ msgstr "Loading \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:725
+#: beast-gtk/bstmain.c:788
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:726
+#: beast-gtk/bstmain.c:789
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:727
+#: beast-gtk/bstmain.c:790
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -2511,7 +2511,7 @@ msgid ""
 msgstr ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 
-#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:912
+#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum number of voices for simultaneous playback"
 
@@ -2519,7 +2519,7 @@ msgstr "Maximum number of voices for simultaneous playback"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Synthesis network or wave to be used as instrument by this track"
 
-#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:918
+#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:947
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
 
@@ -2527,8 +2527,8 @@ msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
 msgid "Mixer busses connected to track output"
 msgstr "Mixer busses connected to track output"
 
-#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:739
-#: bse/bsetrack.c:923
+#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:729
+#: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesis network to be used as postprocessor"
 
@@ -3345,8 +3345,8 @@ msgstr "List of available mixer busses to be used as bus output"
 #. FIXME: fix volume
 #: bse/bsebus.c:825 bse/bsebus.c:827 bse/bsebus.c:829 bse/bsebus.c:831
 #: bse/bsebus.c:835 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
-#: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
-#: bse/bsesong.c:712 bse/bsetrack.c:896
+#: bse/bsemidisynth.c:452 bse/bsesong.c:689 bse/bsesong.c:695
+#: bse/bsesong.c:702 bse/bsetrack.c:925
 msgid "Adjustments"
 msgstr "Adjustments"
 
@@ -3406,11 +3406,11 @@ msgstr "Input Signals"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Synthesis signals (from tracks and busses) used as bus input"
 
-#: bse/bsebus.c:848 bse/bsetrack.c:925
+#: bse/bsebus.c:848 bse/bsetrack.c:954
 msgid "Signal Outputs"
 msgstr "Signal Outputs"
 
-#: bse/bsebus.c:850 bse/bsetrack.c:927
+#: bse/bsebus.c:850 bse/bsetrack.c:956
 msgid "Output Signals"
 msgstr "Output Signals"
 
@@ -4678,12 +4678,12 @@ msgstr ""
 "List of available synthesis networks from which to choose a postprocessor"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:915
-#: bse/bsetrack.c:921
+#: bse/bsemidisynth.c:434 bse/bsesong.c:727 bse/bsetrack.c:944
+#: bse/bsetrack.c:950
 msgid "MIDI Instrument"
 msgstr "MIDI Instrument"
 
-#: bse/bsemidisynth.c:422 bse/bsetrack.c:917
+#: bse/bsemidisynth.c:422 bse/bsetrack.c:946
 msgid "MIDI Channel"
 msgstr "MIDI Channel"
 
@@ -4691,7 +4691,7 @@ msgstr "MIDI Channel"
 msgid "Max Voices"
 msgstr "Max Voices"
 
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:931
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
@@ -4699,23 +4699,23 @@ msgstr "Synthesizer"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Synthesis network to be used as MIDI instrument"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:923
+#: bse/bsemidisynth.c:436 bse/bsesong.c:729 bse/bsetrack.c:952
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
-#: bse/bsemidisynth.c:441 bse/bsesong.c:701
+#: bse/bsemidisynth.c:441 bse/bsesong.c:691
 msgid "Master [float]"
 msgstr "Master [float]"
 
-#: bse/bsemidisynth.c:447 bse/bsesong.c:707
+#: bse/bsemidisynth.c:447 bse/bsesong.c:697
 msgid "Master [dB]"
 msgstr "Master [dB]"
 
-#: bse/bsemidisynth.c:454 bse/bsesong.c:714
+#: bse/bsemidisynth.c:454 bse/bsesong.c:704
 msgid "Master [%]"
 msgstr "Master [%]"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:741
+#: bse/bsemidisynth.c:458 bse/bsesong.c:731
 msgid "Playback Settings"
 msgstr "Playback Settings"
 
@@ -4799,23 +4799,36 @@ msgstr "WAVE File"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Name of the WAVE file used for recording BSE sound output"
 
-#: bse/bseserver.c:504
-msgid "Advice about MIDI device selections"
-msgstr "Advice about MIDI device selections"
+#: bse/bseserver.c:460
+msgid "Advice about PCM device selections problems"
+msgstr "Advice about PCM device selection problems"
 
-#: bse/bseserver.c:505
-msgid "Alert me about MIDI device selections"
-msgstr "Alert me about MIDI device selections"
+#: bse/bseserver.c:461
+msgid "Alert me about PCM device selections problems"
+msgstr "Alert me about PCM device selection problems"
 
-#: bse/bseserver.c:506
+#: bse/bseserver.c:462
 #, c-format
-msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr "failed to open midi device %s (reverting to null device): %s"
+msgid "Failed to open PCM devices, givng up: %s"
+msgstr "Failed to open PCM devices; givng up: %s"
 
-#: bse/bseserver.c:548
+#: bse/bseserver.c:481
+msgid "Advice about MIDI device selections problems"
+msgstr "Advice about MIDI device selection problems"
+
+#: bse/bseserver.c:482
+msgid "Alert me about MIDI device selections problems"
+msgstr "Alert me about MIDI device selection problems"
+
+#: bse/bseserver.c:483
 #, c-format
-msgid "failed to open output file \"%s\": %s"
-msgstr "failed to open output file \"%s\": %s"
+msgid "Failed to open MIDI devices (reverting to null driver): %s"
+msgstr "Failed to open MIDI devices (reverting to null driver): %s"
+
+#: bse/bseserver.c:521
+#, c-format
+msgid "Failed to open output file \"%s\": %s"
+msgstr "Failed to open output file \"%s\": %s"
 
 #: bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
@@ -4829,41 +4842,41 @@ msgstr "Signal In"
 msgid "Snoop Signal"
 msgstr "Snoop Signal"
 
-#: bse/bsesong.c:718 bse/bsesong.c:722 bse/bsesong.c:726 bse/bsesong.c:730
+#: bse/bsesong.c:708 bse/bsesong.c:712 bse/bsesong.c:716 bse/bsesong.c:720
 msgid "Timing"
 msgstr "Timing"
 
-#: bse/bsesong.c:720
+#: bse/bsesong.c:710
 msgid "Ticks"
 msgstr "Ticks"
 
-#: bse/bsesong.c:720
+#: bse/bsesong.c:710
 msgid "Number of ticks per quarter note"
 msgstr "Number of ticks per quarter note"
 
-#: bse/bsesong.c:724
+#: bse/bsesong.c:714
 msgid "Numerator"
 msgstr "Numerator"
 
-#: bse/bsesong.c:724
+#: bse/bsesong.c:714
 msgid "Measure numerator"
 msgstr "Measure numerator"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:718
 msgid "Denominator"
 msgstr "Denominator"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:718
 msgid "Measure denominator, must be a power of 2"
 msgstr "Measure denominator; must be a power of 2"
 
-#: bse/bsesong.c:732
+#: bse/bsesong.c:722
 msgid "Beats per minute"
 msgstr "Beats per minute"
 
 #. change default
 #. override parent property
-#: bse/bsesong.c:746 bse/bsesong.c:750 bse/bsesong.c:755 bse/bsesong.c:760
+#: bse/bsesong.c:736 bse/bsesong.c:740 bse/bsesong.c:745 bse/bsesong.c:750
 msgid "Looping"
 msgstr "Looping"
 
@@ -4931,7 +4944,7 @@ msgstr "/Audio Sources/Standard Oscillator"
 msgid "Wave Form"
 msgstr "Wave Form"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:907 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:936 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Wave"
@@ -5099,27 +5112,27 @@ msgstr "Output Assignments"
 msgid "Input port name to interface to"
 msgstr "Input port name to interface to"
 
-#: bse/bsesuper.c:101
+#: bse/bsesuper.c:174
 msgid "Author"
 msgstr "Author"
 
-#: bse/bsesuper.c:101
+#: bse/bsesuper.c:174
 msgid "Person changing or creating this object"
 msgstr "Person changing or creating this object"
 
-#: bse/bsesuper.c:106
+#: bse/bsesuper.c:179
 msgid "License"
 msgstr "Licence"
 
-#: bse/bsesuper.c:106
+#: bse/bsesuper.c:179
 msgid "Copyright license applying to this object"
 msgstr "Copyright licence applying to this object"
 
-#: bse/bsesuper.c:114
+#: bse/bsesuper.c:187
 msgid "Creation Time"
 msgstr "Creation Time"
 
-#: bse/bsesuper.c:118
+#: bse/bsesuper.c:191
 msgid "Last modification time"
 msgstr "Last modification time"
 
@@ -5140,27 +5153,27 @@ msgstr ""
 msgid "List of available mixer busses to be used as track output"
 msgstr "List of available mixer busses to be used as track output"
 
-#: bse/bsetrack.c:898
+#: bse/bsetrack.c:927
 msgid "Muted"
 msgstr "Muted"
 
-#: bse/bsetrack.c:900 bse/bsetrack.c:905 bse/bsetrack.c:910
+#: bse/bsetrack.c:929 bse/bsetrack.c:934 bse/bsetrack.c:939
 msgid "Synth Input"
 msgstr "Synth Input"
 
-#: bse/bsetrack.c:902
+#: bse/bsetrack.c:931
 msgid "Synthesis network to be used as instrument"
 msgstr "Synthesis network to be used as instrument"
 
-#: bse/bsetrack.c:907
+#: bse/bsetrack.c:936
 msgid "Wave to be used as instrument"
 msgstr "Wave to be used as instrument"
 
-#: bse/bsetrack.c:912
+#: bse/bsetrack.c:941
 msgid "Max Voixes"
 msgstr "Max Voices"
 
-#: bse/bsetrack.c:928
+#: bse/bsetrack.c:957
 msgid "Mixer busses used as output for this track"
 msgstr "Mixer busses used as output for this track"
 
