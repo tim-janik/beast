@@ -216,18 +216,18 @@ bst_sample_repo_init (void)
   g_slist_free (sample_names);
 
 
-  if (bst_debug_flags & BST_DEBUG_SAMPLES) /* FIXME: work around gcc-2.95.2 bug */
-    {
-      GList *free_list = bst_sample_repo_list_sample_locs (), *list;
-      
-      for (list = free_list; list; list = list->next)
-	{
-	  BstSampleLoc *loc = list->data;
-	  
-	  g_print ("%s:: %s\n", loc->repo->name, loc->name);
-	}
-      g_list_free (free_list);
-    }
+  BST_DEBUG (SAMPLES, {
+    GList *free_list = bst_sample_repo_list_sample_locs ();
+    GList *list;
+    
+    for (list = free_list; list; list = list->next)
+      {
+	BstSampleLoc *loc = list->data;
+	
+	g_print ("%s:: %s\n", loc->repo->name, loc->name);
+      }
+    g_list_free (free_list);
+  });
 }
 
 /* --- directory scanning --- */

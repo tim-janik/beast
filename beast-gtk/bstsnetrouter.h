@@ -41,7 +41,7 @@ typedef	struct	_BstSNetRouter		BstSNetRouter;
 typedef	struct	_BstSNetRouterClass	BstSNetRouterClass;
 struct _BstSNetRouter
 {
-  GtkHBox	 parent_object;
+  GtkVBox	 parent_object;
 
   BseSNet	*snet;
 
@@ -50,7 +50,7 @@ struct _BstSNetRouter
 };
 struct _BstSNetRouterClass
 {
-  GtkHBoxClass  parent_class;
+  GtkVBoxClass  parent_class;
 
   GtkTooltips  *tooltips;
 };

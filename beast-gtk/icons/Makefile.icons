@@ -1,4 +1,6 @@
 ## Generated data (by make Makefile.icons)
+icon_list += mouse_tool.c
 icon_list += noicon.c
+icon_list += mouse_tool.xcf
 icon_list += noicon.xcf
 ## Generated data ends here

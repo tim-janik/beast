@@ -58,7 +58,7 @@ bst_snet_router_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      snet_router_type = gtk_type_unique (GTK_TYPE_HBOX, &snet_router_info);
+      snet_router_type = gtk_type_unique (GTK_TYPE_VBOX, &snet_router_info);
     }
   
   return snet_router_type;
@@ -72,7 +72,7 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   object_class = GTK_OBJECT_CLASS (class);
   
   bst_snet_router_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_HBOX);
+  parent_class = gtk_type_class (GTK_TYPE_VBOX);
   
   object_class->destroy = bst_snet_router_destroy;
   class->tooltips = NULL;
@@ -248,7 +248,7 @@ bst_snet_router_update (BstSNetRouter *router)
 }
 
 static GtkWidget*
-add_icon_button (GtkBox        *box,
+add_icon_button (GtkWidget     *parent,
 		 const BseIcon *icon,
 		 GtkWidget     *last_button)
 {
@@ -261,7 +261,9 @@ add_icon_button (GtkBox        *box,
 			   "draw_indicator", FALSE,
 			   "relief", GTK_RELIEF_NONE,
 			   NULL);
-  gtk_box_pack_start (box, button, FALSE, TRUE, 0);
+  gtk_container_add_with_args (GTK_CONTAINER (parent), button,
+			       "hexpand", FALSE,
+			       NULL);
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
 			   "parent", button,
@@ -282,7 +284,7 @@ add_icon_button (GtkBox        *box,
 }
 
 static GtkWidget*
-add_category_button (GtkBox        *box,
+add_category_button (GtkWidget	   *parent,
 		     GtkTooltips   *tooltips,
 		     BseCategory   *category,
 		     const BseIcon *icon,
@@ -298,7 +300,9 @@ add_category_button (GtkBox        *box,
 			   "draw_indicator", FALSE,
 			   "relief", GTK_RELIEF_NONE,
 			   NULL);
-  gtk_box_pack_start (box, button, FALSE, TRUE, 0);
+  gtk_container_add_with_args (GTK_CONTAINER (parent), button,
+			       "hexpand", FALSE,
+			       NULL);
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
 			   "parent", button,
@@ -331,7 +335,6 @@ static GtkWidget*
 bst_snet_router_build_toolbar (BstSNetRouter *router)
 {
   static BseIcon *fallback_icon = NULL;
-  GtkBox *box;
   GtkWidget *bar;
   GtkWidget *radio = NULL;
   guint i;
@@ -352,16 +355,28 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
       fallback_icon = bse_icon_from_pixdata (&noicon_pixdata);
     }
 
-  bar = gtk_widget_new (GTK_TYPE_VBOX,
+  bar = gtk_widget_new (GTK_TYPE_HWRAP_BOX,
 			"visible", TRUE,
 			"homogeneous", FALSE,
-			"spacing", 5,
+			//			"spacing", 5,
 			NULL);
-  box = GTK_BOX (bar);
+
+  if (1)
+    {
+#include "./icons/mouse_tool.c"
+      BsePixdata pd = {
+	MOUSE_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+	MOUSE_TOOL_IMAGE_WIDTH,
+	MOUSE_TOOL_IMAGE_HEIGHT,
+	MOUSE_TOOL_IMAGE_RLE_PIXEL_DATA,
+      };
+      
+      radio = add_icon_button (bar, bse_icon_from_pixdata (&pd), radio);
+    }
 
   cats = bse_categories_match ("/Source/*", &n_cats);
   for (i = 0; i < n_cats; i++)
-    radio = add_category_button (box,
+    radio = add_category_button (bar,
 				 BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
 				 cats + i,
 				 cats[i].icon ? cats[i].icon : fallback_icon,
@@ -373,7 +388,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
   if (1)
     {
 #include "../bse/icons/song.c"
-      X (gimp_image); radio = add_icon_button (box, &icon, radio);
+      X (gimp_image); radio = add_icon_button (bar, &icon, radio);
     }
 
   return gtk_widget_new (GTK_TYPE_FRAME,

@@ -1,10 +1,24 @@
+Fri Oct 29 11:28:21 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.[hc]: use a wrap box for now (far from
+	being perfect in appearance though ;( ).
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_toolbar): add radio
+	for mouse_tool button (link, move, properties). (still all radio
+	buttons selections are test buttons and non-effective).
+
+	* beast-gtk/icons/mouse_tool.{c,xcf}: new icon mouse_tool, composed out
+	of tigert's stock_jump_to.png, stock_properties.png and gnoghurt's
+	move-tool.xpm (indicates link, move, properties for mouse
+	buttons 1,2,3).
+
 Fri Oct 15 02:47:33 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmaster.c: wrapped up MASTER debugging stuff.
 
 	* beast-gtk/bstmain.c (bst_parse_args): new function to parse
 	--beast-debug, --beast-no-debug args and evaluate BEAST_DEBUG and
-	BEAS_NO_DEBUG env vars.
+	BEAST_NO_DEBUG env vars.
 
 Fri Oct 15 01:21:51 1999  Tim Janik  <timj@gtk.org>
 

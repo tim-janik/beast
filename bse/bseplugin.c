@@ -416,7 +416,7 @@ bse_plugin_check_load (const gchar *_file_name)
   const BseExportBegin *sym_begin;
   const BseExportEnd *sym_end;
   gconstpointer *sym_array;
-  const gchar *error = NULL;
+  gchar *error = NULL;
   
   g_return_val_if_fail (file_name != NULL, NULL);
 
@@ -509,9 +509,9 @@ bse_plugin_check_load (const gchar *_file_name)
   plugin->module_refs = 0;
 
   if (g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Procedure), (gpointer) &sym_array))
-    error = bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_PROCS);
+    error = (gchar*) bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_PROCS);
   if (!error && g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Object), (gpointer) &sym_array))
-    error = bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_OBJECTS);
+    error = (gchar*) bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_OBJECTS);
 
   bse_plugins = g_slist_prepend (bse_plugins, plugin);
 
