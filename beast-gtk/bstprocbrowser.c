@@ -148,7 +148,7 @@ bst_proc_browser_init (BstProcBrowser *self)
    */
   tsel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_SINGLE);
-  gtk_tree_selection_select_spath (tsel, "0");
+  gxk_tree_selection_select_spath (tsel, "0");
 
   /* text entry
    */

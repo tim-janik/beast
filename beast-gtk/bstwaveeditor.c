@@ -320,7 +320,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
 	  /* add wave's chunks to list */
 	  gxk_list_wrapper_notify_prepend (self->chunk_wrapper, bse_wave_n_wave_chunks (self->wave));
 	  /* setup (initial) list selection */
-	  gtk_tree_selection_select_spath (gtk_tree_view_get_selection (GTK_TREE_VIEW (self->tree)), "0");
+	  gxk_tree_selection_select_spath (gtk_tree_view_get_selection (GTK_TREE_VIEW (self->tree)), "0");
 	}
     }
 }

@@ -424,6 +424,230 @@ gxk_size_group (GtkSizeGroupMode sgmode,
 }
 
 /**
+ * gxk_tree_selection_select_spath
+ * @selection: GtkTreeSelection to modify
+ * @str_path:  a stringified GtkTreePath
+ *
+ * Select the row denoted by @str_path.
+ */
+void
+gxk_tree_selection_select_spath (GtkTreeSelection *selection,
+				 const gchar      *str_path)
+{
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+  g_return_if_fail (str_path != NULL);
+
+  path = gtk_tree_path_new_from_string (str_path);
+  gtk_tree_selection_select_path (selection, path);
+  gtk_tree_path_free (path);
+}
+
+/**
+ * gxk_tree_selection_unselect_spath
+ * @selection: GtkTreeSelection to modify
+ * @str_path:  a stringified GtkTreePath
+ *
+ * Unselect the row denoted by @str_path.
+ */
+void
+gxk_tree_selection_unselect_spath (GtkTreeSelection *selection,
+				   const gchar      *str_path)
+{
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+  g_return_if_fail (str_path != NULL);
+
+  path = gtk_tree_path_new_from_string (str_path);
+  gtk_tree_selection_unselect_path (selection, path);
+  gtk_tree_path_free (path);
+}
+
+/**
+ * gxk_tree_selection_select_ipath
+ * @selection: GtkTreeSelection to modify
+ * @...:       GtkTreePath indices
+ *
+ * Select the row denoted by the path to be constructed from the
+ * -1 terminated indices.
+ */
+void
+gxk_tree_selection_select_ipath (GtkTreeSelection *selection,
+				 gint              first_index,
+				 ...)
+{
+  GtkTreePath *path;
+  va_list args;
+  gint i;
+
+  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+
+  path = gtk_tree_path_new ();
+  i = first_index;
+  va_start (args, first_index);
+  while (i != -1)
+    {
+      gtk_tree_path_append_index (path, i);
+      i = va_arg (args, gint);
+    }
+  va_end (args);
+  gtk_tree_selection_select_path (selection, path);
+  gtk_tree_path_free (path);
+}
+
+/**
+ * gxk_tree_selection_unselect_ipath
+ * @selection: GtkTreeSelection to modify
+ * @...:       GtkTreePath indices
+ *
+ * Select the row denoted by the path to be constructed from the
+ * -1 terminated indices.
+ */
+void
+gxk_tree_selection_unselect_ipath (GtkTreeSelection *selection,
+				   gint              first_index,
+				   ...)
+{
+  GtkTreePath *path;
+  va_list args;
+  gint i;
+
+  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+
+  path = gtk_tree_path_new ();
+  i = first_index;
+  va_start (args, first_index);
+  while (i != -1)
+    {
+      gtk_tree_path_append_index (path, i);
+      i = va_arg (args, gint);
+    }
+  va_end (args);
+  gtk_tree_selection_unselect_path (selection, path);
+  gtk_tree_path_free (path);
+}
+
+static GSList           *browse_selection_queue = NULL;
+static guint             browse_selection_handler_id = 0;
+static GtkTreeSelection *browse_selection_ignore = NULL;
+
+static void
+browse_selection_weak_notify (gpointer data,
+			      GObject *object)
+{
+  browse_selection_queue = g_slist_remove (browse_selection_queue, object);
+}
+
+static gboolean
+browse_selection_handler (gpointer data)
+{
+  GtkTreeSelection *selection;
+  GDK_THREADS_ENTER ();
+  selection = g_slist_pop_head (&browse_selection_queue);
+  while (selection)
+    {
+      GtkTreeIter iter;
+      gboolean needs_sel;
+      g_object_weak_unref (G_OBJECT (selection), browse_selection_weak_notify, selection);
+      needs_sel = (gtk_tree_selection_get_mode (selection) == GTK_SELECTION_BROWSE &&
+		   !gtk_tree_selection_get_selected (selection, NULL, &iter));
+      if (needs_sel)
+	{
+	  GtkTreePath *path = g_object_get_data (selection, "GxkTreeSelection-last");
+	  g_object_ref (selection);
+	  browse_selection_ignore = selection;
+	  if (path)
+	    {
+	      gtk_tree_selection_select_path (selection, path);
+	      path = g_object_get_data (selection, "GxkTreeSelection-last");
+	      needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
+	      if (needs_sel && path && gxk_tree_path_prev (path))
+		{
+		  gtk_tree_selection_select_path (selection, path);
+		  path = g_object_get_data (selection, "GxkTreeSelection-last");
+		  needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
+		}
+	      if (needs_sel && path && gtk_tree_path_up (path))
+		{
+		  gtk_tree_selection_select_path (selection, path);
+		  path = g_object_get_data (selection, "GxkTreeSelection-last");
+		  needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
+		}
+	    }
+	  if (needs_sel)
+	    gxk_tree_selection_select_ipath (selection, 0, -1);
+	  browse_selection_ignore = NULL;
+	  g_object_unref (selection);
+	}
+      selection = g_slist_pop_head (&browse_selection_queue);
+    }
+  browse_selection_handler_id = 0;
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+static void
+browse_selection_changed (GtkTreeSelection *selection)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
+      g_object_set_data_full (selection, "GxkTreeSelection-last", path, gtk_tree_path_free);
+    }
+  if (browse_selection_ignore != selection &&
+      !g_slist_find (browse_selection_queue, selection))
+    {
+      g_object_weak_ref (G_OBJECT (selection), browse_selection_weak_notify, selection);
+      browse_selection_queue = g_slist_prepend (browse_selection_queue, selection);
+      if (browse_selection_handler_id == 0)
+	browse_selection_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, browse_selection_handler, NULL, NULL);
+    }
+  g_print ("browse_selection_changed\n");
+}
+
+/**
+ * gxk_tree_selection_force_browse
+ * @selection: GtkTreeSelection to watch
+ * @model:     tree model used with @selection
+ *
+ * Watch deletion and insertions into empty trees to
+ * ensure valid selections across these events.
+ */
+void
+gxk_tree_selection_force_browse (GtkTreeSelection *selection,
+				 GtkTreeModel     *model)
+{
+  g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
+  if (model)
+    g_return_if_fail (GTK_IS_TREE_MODEL (model));
+
+  if (!gxk_signal_handler_pending (selection, "changed", G_CALLBACK (browse_selection_changed), selection))
+    g_signal_connect_data (selection, "changed", G_CALLBACK (browse_selection_changed), selection, NULL, 0);
+  if (model && !gxk_signal_handler_pending (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection))
+    g_signal_connect_object (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection, G_CONNECT_SWAPPED);
+  browse_selection_changed (selection);
+}
+
+/**
+ * gxk_tree_path_prev
+ * @path:
+ *
+ * Workaround for gtk_tree_path_prev() which corrupts memory
+ * if called on empty paths (up to version 2.2 at least).
+ */
+gboolean
+gxk_tree_path_prev (GtkTreePath *path)
+{
+  if (path && gtk_tree_path_get_depth (path) < 1)
+    return FALSE;
+  return gtk_tree_path_prev (path);
+}
+
+/**
  * gxk_notebook_append
  * @notebook: a valid notebook
  * @child:    a valid parent-less widget

@@ -78,6 +78,21 @@ void	gxk_size_group			(GtkSizeGroupMode sgmode,
 					 GtkWidget	*first_widget,
 					 ...);
 
+/* tree selection convenience */
+void   gxk_tree_selection_select_spath   (GtkTreeSelection      *selection,
+					  const gchar           *str_path);
+void   gxk_tree_selection_unselect_spath (GtkTreeSelection      *selection,
+					  const gchar           *str_path);
+void   gxk_tree_selection_select_ipath   (GtkTreeSelection      *selection,
+					  gint			 first_index,
+					  ...);
+void   gxk_tree_selection_unselect_ipath (GtkTreeSelection      *selection,
+					  gint			 first_index,
+					  ...);
+void   gxk_tree_selection_force_browse	 (GtkTreeSelection	*selection,
+					  GtkTreeModel		*model);
+gboolean gxk_tree_path_prev		 (GtkTreePath		*path);
+
 /* misc widgets */
 void	gxk_notebook_append		(GtkNotebook	*notebook,
 					 GtkWidget	*child,

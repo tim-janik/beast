@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,20 +40,15 @@ typedef	struct	_BstItemViewClass	BstItemViewClass;
 typedef	struct	_BstItemViewOp		BstItemViewOp;
 struct _BstItemView
 {
-  GtkAlignment	 parent_object;
+  GtkAlignment	  parent_object;
 
-  GtkWidget	*paned;
+  GxkListWrapper *wlist;
+  GtkTreeView    *tree;
+  GtkWidget	 *pview;
 
   const gchar	*item_type;
-  
   SfiProxy	 container;
-
   gchar		*id_format;
-  guint		 item_list_pos;
-  
-  GtkWidget	*item_clist;
-  
-  GtkWidget	*param_view;
 
   GtkWidget	**op_widgets;
 };
@@ -81,11 +76,9 @@ struct _BstItemViewOp
 
 /* --- prototypes --- */
 GtkType		bst_item_view_get_type		(void);
-void		bst_item_view_rebuild		(BstItemView	*item_view);
 void		bst_item_view_select		(BstItemView	*item_view,
 						 SfiProxy	 item);
 SfiProxy	bst_item_view_get_current	(BstItemView	*item_view);
-void		bst_item_view_update		(BstItemView	*item_view);
 void		bst_item_view_set_container	(BstItemView	*item_view,
 						 SfiProxy	 new_container);
 void		bst_item_view_operate		(BstItemView	*item_view,
@@ -94,9 +87,6 @@ gboolean	bst_item_view_can_operate	(BstItemView	*item_view,
 						 BstOps		 op);
 void		bst_item_view_set_id_format	(BstItemView	*item_view,
 						 const gchar	*id_format);
-void		bst_item_view_set_layout	(BstItemView	*item_view,
-						 gboolean	 horizontal,
-						 guint		 pos);
 
 
 

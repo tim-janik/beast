@@ -113,10 +113,6 @@ guint	   gtk_tree_view_add_column	 (GtkTreeView	        *tree_view,
 void   gtk_tree_view_append_text_columns (GtkTreeView		*tree_view,
 					  guint			 n_cols,
 					  ...);
-void   gtk_tree_selection_select_spath   (GtkTreeSelection	*selection,
-					  const gchar		*str_path);
-void   gtk_tree_selection_unselect_spath (GtkTreeSelection	*selection,
-					  const gchar		*str_path);
 
 #define gtk_notebook_current_widget(n) \
     gtk_notebook_get_nth_page ((n), gtk_notebook_get_current_page ((n)))

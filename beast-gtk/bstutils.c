@@ -324,34 +324,6 @@ gtk_tree_view_append_text_columns (GtkTreeView *tree_view,
   va_end (var_args);
 }
 
-void
-gtk_tree_selection_select_spath (GtkTreeSelection *tree_selection,
-				 const gchar      *str_path)
-{
-  GtkTreePath *path;
-
-  g_return_if_fail (GTK_IS_TREE_SELECTION (tree_selection));
-  g_return_if_fail (str_path != NULL);
-
-  path = gtk_tree_path_new_from_string (str_path);
-  gtk_tree_selection_select_path (tree_selection, path);
-  gtk_tree_path_free (path);
-}
-
-void
-gtk_tree_selection_unselect_spath (GtkTreeSelection *tree_selection,
-				   const gchar      *str_path)
-{
-  GtkTreePath *path;
-
-  g_return_if_fail (GTK_IS_TREE_SELECTION (tree_selection));
-  g_return_if_fail (str_path != NULL);
-
-  path = gtk_tree_path_new_from_string (str_path);
-  gtk_tree_selection_unselect_path (tree_selection, path);
-  gtk_tree_path_free (path);
-}
-
 gboolean
 gtk_widget_viewable (GtkWidget *widget)
 {

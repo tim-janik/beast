@@ -1,4 +1,5 @@
 FIXMES:
+- export item seqid as readonly property (doesn't need its own notification signal then)
 - fix context handle ids to be >0 and not use ~0 anymore
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - merge snet specifics down to super

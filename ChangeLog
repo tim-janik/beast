@@ -1,3 +1,20 @@
+Wed Jan 22 23:19:58 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.[hc]: general code cleanup, switched this
+	over to using GtkTreeView.
+
+	* beast-gtk/bstmain.c: support -! as only debug option now.
+	make it accept flags: "g" for fatal warnings and "p" to load
+	plugins.
+
+	beast-gtk/gxk/gxkutils.[hc]: moved gxk_tree_selection_select_spath()
+	and gxk_tree_selection_unselect_spath() here. added
+	gxk_tree_selection_select_ipath(), gxk_tree_selection_select_ipath(),
+	gxk_tree_selection_force_browse() and gxk_tree_path_prev().
+
+	* beast-gtk/bstutils.[hc]: remove GtkTreeSelection convenience
+	functions.
+
 Tue Jan 21 17:56:46 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwaveeditor.[hc]: use GxkListWrapper.

@@ -407,21 +407,19 @@ bst_early_parse_args (int    *argc_p,
   
   for (i = 1; i < argc; i++)
     {
-      if (strcmp ("--no-plugins", argv[i]) == 0)
-	{
-	  bst_load_plugins = FALSE;
-	  argv[i] = NULL;
-	}
-      else if (strcmp (argv[i], "-!") == 0)
-	{
-	  GLogLevelFlags fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
-	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
-	  g_log_set_always_fatal (fatal_mask);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--beast-developer-extensions", argv[i]) == 0)
+      if (strncmp (argv[i], "-!", 2) == 0)
 	{
 	  // bse_developer_extensions = TRUE;
+	  if (strchr (argv[i], 'p'))
+	    bst_load_plugins = TRUE;
+	  else
+	    bst_load_plugins = FALSE;
+	  if (strchr (argv[i], 'g'))
+	    {
+	      GLogLevelFlags fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
+	      fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+	      g_log_set_always_fatal (fatal_mask);
+	    }
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--beast-debug", argv[i]) == 0 ||
@@ -590,7 +588,6 @@ bst_print_blurb (FILE    *fout,
     {
       fprintf (fout, "Usage: beast [options] [files...]\n");
       fprintf (fout, "  --hints                         enrich the GUI with hints usefull for (script) developers\n");
-      fprintf (fout, "  --no-plugins                    disable plugins (debug usage only)\n");
       fprintf (fout, "  --force-xkb                     force XKB keytable queries\n");
       fprintf (fout, "  --beast-debug=keys              enable certain BEAST debug stages\n");
       fprintf (fout, "  --beast-no-debug=keys           disable certain BEAST debug stages\n");
