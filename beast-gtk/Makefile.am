@@ -149,15 +149,15 @@ bstmarshal.c: bstmarshal.list
 
 SCANKEYS=$(TEXITHEQUE) scankeys --
 
-debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/sfi/*.[hc]
+debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/bse/*.cc $(top_srcdir)/sfi/*.[hc] $(top_srcdir)/sfi/*.cc
 bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)
 	cd $(srcdir) \
 	&& echo > xgen-bdkd \
 	&& grep -E 'sfi_debug(|_check)\b' $(debug_key_globs) \
 	| $(SCANKEYS) --key sfi_debug --key sfi_log_check \
-	     --tmplstart '#define BST_LOG_DEBUG_KEYS \\\n' \
-	     --tmplkey   '  %s, \\\n' \
-	     --tmplend   '\n' 	--needkeys - >> xgen-bdkd \
+	     --tmplkey   '  %s,\n' \
+	     --needkeys - \
+	| sort >> xgen-bdkd \
 	&& cp xgen-bdkd $@ \
 	&& rm -f xgen-bdkd
 bstutils.c: bstdebugkeys.defs

@@ -1274,14 +1274,13 @@ bst_file_scan_find_key (const gchar *file,
 
 
 /* --- source file key scans --- */
-#include "bstdebugkeys.defs"
-#ifndef BST_DEBUG_KEYS
-#  define BST_DEBUG_KEYS        /* none */
-#endif
-static const gchar *debug_keys[] = { BST_LOG_DEBUG_KEYS NULL };
 const gchar**
 _bst_log_debug_keys (void)
 {
+  static const gchar *debug_keys[] = { 
+#include "bstdebugkeys.defs"
+    NULL
+  };
   return debug_keys;
 }
 

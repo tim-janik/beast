@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- midi synthesizer does not work anymore (anable multi-voices like in tracks?)
 - pcmmodule input->reset() should queue a server check for !pcm-handle->readable which then throws a warning (dialog)
 - a single CSynth with auto-activate and without a song dosn't keep playback
 - implement sequencer underrun detection
@@ -231,6 +232,15 @@ TASKS:
   played synchronously) spawned across multiple tracks - GUI idea: once selection in the track roll
   widget is implemented: select multiple parts, use right-mouse-button-menu, select pattern editor:
   combined view of those parts is opened
+- PCM channel layout for 7.1 channels (alsa-lib/**/surround71.conf):
+    chn0 - front left
+    chn1 - front right
+    chn2 - rear left
+    chn3 - rear right
+    chn4 - center
+    chn5 - lfe
+    chn7 - side left
+    chn8 - side right
 - App: closing the BEAST window should ask (close/save/abort) for unsaved changes
 - App: file->save as should change the file name in the title bar
 - Project: file open on an unmodified project should not open a new project window but
