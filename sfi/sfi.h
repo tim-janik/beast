@@ -40,6 +40,6 @@
 #include <sfi/sfivalues.h>
 #include <sfi/sfivmarshal.h>
 
-#endif /* __SFI_VALUE_H__ */
+#endif /* __SFI_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */

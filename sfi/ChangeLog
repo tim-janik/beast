@@ -1,3 +1,7 @@
+Mon Jan 19 21:46:15 2004  Tim Janik  <timj@gtk.org>
+
+	* sficxx.h: first start at C++ header.
+
 Mon Jan 19 20:19:11 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bse-plugin-generator.cc sfidl-cxx.cc sfidl-generator.cc
