@@ -31,13 +31,25 @@ foo (void)
 {
   g_message ("foo");
 }
+static void
+testos_class_init (BseSourceClass *class)
+{
+  BseSourceClass *source_class = class;
+  
+  bse_source_class_add_ichannel (source_class,
+				 "Any In", "A Test Input Channel",
+				 1);
+  bse_source_class_add_ochannel (source_class,
+                                 "Any Out", "A Test Output Channel",
+				 1);
+}
 static BseType           type_id_testos = 0;
 static const BseTypeInfo testos_type_info = {
   sizeof (BseSourceClass),
   
   (BseBaseInitFunc) foo,
   (BseBaseDestroyFunc) foo,
-  (BseClassInitFunc) foo,
+  (BseClassInitFunc) testos_class_init,
   (BseClassDestroyFunc) NULL,
   NULL /* class_data */,
   
