@@ -340,12 +340,12 @@ gxk_cell_renderer_popup_clicked (GxkCellRendererPopup *self)
 }
 
 static gboolean
-gxk_cell_renderer_popup_timeout (gpointer data)
+gxk_cell_renderer_idle_popup (gpointer data)
 {
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (data);
 
   GDK_THREADS_ENTER ();
-  if (self->auto_popup && !self->dialog)
+  if (self->auto_popup && !self->dialog && self->entry)
     gxk_cell_renderer_popup_clicked (self);
   GDK_THREADS_LEAVE ();
   return FALSE;
@@ -402,7 +402,7 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
   g_object_set_data_full (cell, "gxk-cell-edit-path", g_strdup (path), g_free);
   if (self->popup_editing && (self->auto_popup || !self->text_editing))
     g_idle_add_full (G_PRIORITY_LOW + 100,
-                     gxk_cell_renderer_popup_timeout,
+                     gxk_cell_renderer_idle_popup,
                      g_object_ref (cell),
                      g_object_unref);
   return GTK_CELL_EDITABLE (eproxy);

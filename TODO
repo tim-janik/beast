@@ -1,9 +1,8 @@
 FIXME(urgent):
 - GusPatch: fix loader magic (GF1PATCH100...?)
 - TrackRoll: display onky basename of wave files
-- WaveList: list items with basname first, add a field for full pathname
+- WaveList: list items with basname in first col, add a col for full pathname
 - automatically change project name to basename fo saved file name
-- check instrument assignment, this often works only atthe second selection (from synth selection dialog)
 - add stock icons for Select/None Select/All Select/Invert
 - add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave

@@ -1,3 +1,10 @@
+Sat Jan 29 00:03:32 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkcellrendererpopup.c (gxk_cell_renderer_idle_popup): 
+	skip dialog popup if the editing entry has been removed meanwhile.
+	works around GtkTreeView button press handling bugs as described in:
+	http://mail.gnome.org/archives/gtk-devel-list/2005-January/msg00144.html
+
 Wed Jan 26 01:22:04 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up, up version to 0.6.5rc, binary 0, interface 0.
