@@ -692,5 +692,8 @@ Misc Buglets/Feature Requests:
  - support selection and cut/copy/paste in synth-edit view
  - .pat files loops are not respected if they are directly loaded
  - track view and piano roll view should show proper numbers
+ - when opening the instrument assignment dialog in the track view,
+   after using the "load" button, the newly loaded instrument should
+   be the default
 
 vim:set ts=8 sts=2 sw=2:
