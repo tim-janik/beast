@@ -70,10 +70,22 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 
 
 /* --- registration macros --- */
+
+#ifdef __cplusplus
+#define BSE_DEFINE_EXPORTS(PluginName)                                                          \
+    static ::BseExportIdentity __bse_export_identity =                                          \
+                               BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __enode_chain_head);       \
+  extern "C" {                                                                                  \
+    extern ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL;                               \
+    ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity;             \
+  }
+#else
 #define BSE_DEFINE_EXPORTS(PluginName)                                                          \
   static BseExportIdentity __bse_export_identity =                                              \
                              BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __enode_chain_head);         \
   BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity
+#endif
+
 #define BSE_DEFINE_EXPORT_STRINGS_FUNC(FUNCNAME, BLURB, AUTHORS, LICENSE)                       \
   static void FUNCNAME (BseExportStrings *es) {                                                 \
     es->blurb = BLURB;                                                                          \
