@@ -1,3 +1,10 @@
+Mon Dec 29 21:16:07 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: s/canonify_type/canonify_name/. made more functions
+	return const char*, added TYPE_NAME(). implemented signal registration
+	and emission glue. declare classes and procedures early enough, so their
+	type ids may be used within the class definitions.
+
 Tue Dec 23 05:05:06 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-generator.cc: turn checks in createTypeCode() into assertions

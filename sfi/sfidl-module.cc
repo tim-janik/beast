@@ -33,21 +33,22 @@ static const gchar*
 TypeName (const string &str)
 {
   int pos = str.rfind (':');
-  if (pos < 0)  // not fully qualified, prolly an Sfi type
+  if (pos < 0)  // FIXME: not fully qualified, prolly an Sfi type (it's a shame that fundamental types aren't fully qualified)
     return g_intern_string (str == "void" ? "void" : ("Sfi" + str).c_str());
   return g_intern_string (str.substr (pos + 1).c_str());
 }
 
-static string
-canonify_type (const string& s)
+static const gchar*
+canonify_name (const string& s,
+               const char    replace = '-')
 {
   /* canonify type names which contain e.g. underscores (procedures) */
   gchar *tmp = g_strcanon (g_strdup (s.c_str()),
                            G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "+",
-                           '-');
+                           replace);
   string d = tmp;
   g_free (tmp);
-  return d;
+  return g_intern_string (d.c_str());
 }
 
 static string
@@ -147,6 +148,20 @@ UC_NAME (const string &cstr)
 }
 #define cUC_NAME(s)    UC_NAME (s).c_str()
 
+static const gchar*
+TYPE_NAME (const string &type)
+{
+  vector<string> vs = split_string (type);
+  string tname = vs.back();
+  vs.pop_back();
+  string nspace = join_string (vs, ":");
+  string NAME_SPACE = UC_NAME (nspace);
+  if (NAME_SPACE == "") // FIXME: need to special case not fully qualified fundamentals (Sfi types) here ;-(
+    NAME_SPACE = "SFI";
+  string result = NAME_SPACE + "_TYPE_" + cUC_NAME (tname);
+  return g_intern_string (result.c_str());
+}
+
 static string
 include_relative (string path,
                   string source_file)
@@ -202,7 +217,7 @@ CodeGeneratorModule::pspec_constructor (const Param &param)
     }
 }
 
-string
+const char*
 CodeGeneratorModule::func_value_set_param (const Param &param)
 {
   switch (parser.typeOf (param.type))
@@ -440,6 +455,7 @@ CodeGeneratorModule::run ()
     {
       string ctName = TypeName (ci->name);
       string ctFullName = nspace + ctName;
+      const char* FULL_TYPE_NAME = g_intern_string ((UC_NAME (nspace) + "_TYPE_" + UC_NAME (TypeName (ci->name))).c_str());
       string ctNameBase = TypeName (ci->name) + string ("Base");
       string ctProperties = TypeName (ci->name) + string ("Properties");
       string ctPropertyID = TypeName (ci->name) + string ("PropertyID");
@@ -448,9 +464,9 @@ CodeGeneratorModule::run ()
         continue;
       
       /* skeleton class declaration + type macro */
+      printf ("#define %s (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n", FULL_TYPE_NAME, TypeName (ci->name));
+      printf ("BSE_CXX_DECLARE_CLASS (%s);\n", TypeName (ci->name));
       printf ("class %s : public ::%s {\n", ctNameBase.c_str(), cQualified (ci->inherits));
-      printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
-              cUC_NAME (nspace), cUC_NAME (TypeName (ci->name)), TypeName (ci->name));
       
       /* class Info strings */
       /* pixstream(), this is a bit of a hack, we make it a template rather than
@@ -472,7 +488,7 @@ CodeGeneratorModule::run ()
       printf ("  static inline const char* options   () { return %s; }\n", ci->infos.get("options").escaped().c_str());
       printf ("  static inline const char* category  () { static const char *c = NULL; const char *category = %s; \n",
               ci->infos.get("category").escaped().c_str());
-      printf ("    if (!c) c = g_intern_strconcat (\"/Modules\", category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
+      printf ("    if (!c && category[0]) c = g_intern_strconcat (\"/Modules\", category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
       printf ("    return c; }\n");
       printf ("  static inline const char* blurb     () { return %s; }\n", ci->infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* authors   () { return %s; }\n", ci->infos.get("authors").escaped().c_str());
@@ -580,7 +596,7 @@ CodeGeneratorModule::run ()
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
         {
           printf ("    case PROP_%s:\n", cUC_NAME (pi->name));
-          printf ("      %s (&value, %s);\n", func_value_set_param (*pi).c_str(), pi->name.c_str());
+          printf ("      %s (&value, %s);\n", func_value_set_param (*pi), pi->name.c_str());
           printf ("    break;\n");
         }
       printf ("    };\n");
@@ -590,6 +606,11 @@ CodeGeneratorModule::run ()
       printf ("private:\n");
       printf ("  static struct StaticData {\n");
       printf ("    int dummy;\n");
+      for (vector<Method>::const_iterator si = ci->signals.begin(); si != ci->signals.end(); si++)
+        {
+          const gchar *sig_name = canonify_name (si->name, '_');
+          printf ("    guint signal_%s;\n", sig_name);
+        }
       printf ("  } static_data;\n");
 
       /* property-changed hooking */
@@ -619,7 +640,7 @@ CodeGeneratorModule::run ()
       printf ("  static void class_init (::Bse::CxxBaseClass *klass)\n");
       printf ("  {\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        printf ("    klass->add (PROP_%s, %s);\n", cUC_NAME (pi->name), pspec_constructor (*pi).c_str());
+        printf ("    klass->add_param (PROP_%s, %s);\n", cUC_NAME (pi->name), pspec_constructor (*pi).c_str());
       for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
         printf ("    klass->add_ichannel (%s, %s, ICHANNEL_%s);\n",
                 si->name.escaped().c_str(), si->blurb.escaped().c_str(), cUC_NAME (si->ident));
@@ -629,11 +650,49 @@ CodeGeneratorModule::run ()
       for (vector<Stream>::const_iterator si = ci->ostreams.begin(); si != ci->ostreams.end(); si++)
         printf ("    klass->add_ochannel (%s, %s, OCHANNEL_%s);\n",
                 si->name.escaped().c_str(), si->blurb.escaped().c_str(), cUC_NAME (si->ident));
+      for (vector<Method>::const_iterator si = ci->signals.begin(); si != ci->signals.end(); si++)
+        {
+          const gchar *sig_name = canonify_name (si->name, '_');
+          const gchar *sig_string = canonify_name (si->name);
+          printf ("    static_data.signal_%s =\n      klass->add_signal (\"%s\", (GSignalFlags) 0, %u",
+                  sig_name, sig_string, si->params.size());
+          for (vector<Param>::const_iterator ai = si->params.begin(); ai != si->params.end(); ai++)
+            printf (",\n                         %s", TYPE_NAME (ai->type));
+          printf (");\n");
+        }
       printf ("  }\n");
+
+      /* signal emission methods */
+      printf ("public:\n");
+      for (vector<Method>::const_iterator si = ci->signals.begin(); si != ci->signals.end(); si++)
+        {
+          const gchar *sig_name = canonify_name (si->name, '_');
+          printf ("  void emit_%s (", sig_name);
+          for (vector<Param>::const_iterator ai = si->params.begin(); ai != si->params.end(); ai++)
+            {
+              if (ai != si->params.begin())
+                printf (", ");
+              printf ("%s %s", TypeRef (ai->type), ai->name.c_str());
+            }
+          printf (")\n");
+          printf ("  {\n");
+          printf ("    GValue args[1 + %u];\n", si->params.size());
+          printf ("    args[0].g_type = 0, g_value_init (args + 0, %s);\n", FULL_TYPE_NAME);
+          printf ("    g_value_set_object (args + 0, gobject());\n");
+          guint i = 1;
+          for (vector<Param>::const_iterator ai = si->params.begin(); ai != si->params.end(); ai++, i++)
+            {
+              printf ("    args[%u].g_type = 0, g_value_init (args + %u, %s);\n", i, i, TYPE_NAME (ai->type));
+              printf ("    %s (args + %u, %s);\n", func_value_set_param (*ai), i, ai->name.c_str());
+            }
+          printf ("    g_signal_emitv (args, static_data.signal_%s, 0, NULL);\n", sig_name);
+          for (i = 0; i <= si->params.size(); i++)
+            printf ("    g_value_unset (args + %u);\n", i);
+          printf ("  }\n");
+        }
 
       /* done */
       printf ("};\n"); /* finish: class ... { }; */
-      printf ("BSE_CXX_DECLARE_CLASS (%s);\n", TypeName (ci->name));
     }
   printf ("\n");
   
@@ -647,15 +706,16 @@ CodeGeneratorModule::run ()
       const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
       const Map<std::string, IString> &infos = mi->infos;
       string ptName = string ("Procedure_") + TypeName (mi->name);
-      string ptFullName = canonify_type (nspace + ptName);
+      string ptFullName = canonify_name (nspace + ptName);
       bool is_void = mi->result.type == "void";
       if (parser.fromInclude (mi->name))
         continue;
       
       /* skeleton class declaration + type macro */
-      printf ("class %s {\n", ptName.c_str());
       printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
               cUC_NAME (nspace), cUC_NAME (TypeName (mi->name)), ptName.c_str());
+      printf ("BSE_CXX_DECLARE_PROC (%s);\n", ptName.c_str());
+      printf ("class %s {\n", ptName.c_str());
 
       /* class Info strings */
       /* pixstream(), this is a bit of a hack, we make it a template rather than
@@ -678,7 +738,7 @@ CodeGeneratorModule::run ()
       printf ("  static inline const char* category  () { static const char *c = NULL; \n");
       printf ("    const char *root_category = %s, *category = %s;\n",
               infos.get("root_category").escaped().c_str(), infos.get("category").escaped().c_str());
-      printf ("    if (!c) c = g_intern_strconcat (root_category && root_category[0] ? root_category : \"/Proc\",\n");
+      printf ("    if (!c && category[0]) c = g_intern_strconcat (root_category && root_category[0] ? root_category : \"/Proc\",\n");
       printf ("                                    category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
       printf ("    return c; }\n");
       printf ("  static inline const char* blurb     () { return %s; }\n", infos.get("blurb").escaped().c_str());
@@ -712,7 +772,7 @@ CodeGeneratorModule::run ()
                 &(*pi) == &(mi->params.back()) ? ' ' : ',');
       printf ("             );\n");
       if (!is_void)
-        printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result).c_str());
+        printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result));
       if (!is_void && func_param_return_free (mi->result) != "")
         printf ("      if (__return_value) %s (__return_value);\n", func_param_return_free (mi->result).c_str());
       printf ("    } catch (std::exception &e) {\n");
@@ -728,7 +788,7 @@ CodeGeneratorModule::run ()
       /* init */
       printf ("  static void init (BseProcedureClass *proc,\n"
               "                    GParamSpec       **in_pspecs,\n"
-              "                    GParamSpec       **out_pspecs)");
+              "                    GParamSpec       **out_pspecs)\n");
       printf ("  {\n");
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
@@ -738,7 +798,6 @@ CodeGeneratorModule::run ()
       
       /* done */
       printf ("};\n"); /* finish: class ... { }; */
-      printf ("BSE_CXX_DECLARE_PROC (%s);\n", ptName.c_str());
     }
   printf ("\n");
   
