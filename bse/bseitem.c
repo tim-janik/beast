@@ -440,6 +440,8 @@ bse_item_get_candidates (BseItem                *item,
     return FALSE;
   if (!pc->items)
     pc->items = bse_item_seq_new();
+  if (!pc->partitions)
+    pc->partitions = bse_type_seq_new();
   class = g_type_class_peek (pspec->owner_type);
   class->get_candidates (item, pspec->param_id, pc, pspec);
   return TRUE;

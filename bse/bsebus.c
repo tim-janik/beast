@@ -116,6 +116,9 @@ bse_bus_get_candidates (BseItem               *item,
       ring = bse_bus_list_inputs (self);
       while (ring)
         bse_item_seq_remove (pc->items, sfi_ring_pop_head (&ring));
+      /* SYNC: type partitions */
+      bse_type_seq_append (pc->partitions, "BseTrack");
+      bse_type_seq_append (pc->partitions, "BseBus");
       break;
     case PROP_SNET:
       break;
@@ -416,6 +419,8 @@ bse_bus_connect (BseBus  *self,
       self->inputs = sfi_ring_append (self->inputs, trackbus);
       bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
       bse_object_proxy_notifies (trackbus, self, "inputs-changed");
+      g_object_notify (self, "inputs");
+      // FIXME: g_object_notify (osource, "outputs");
     }
   return error;
 }
@@ -438,6 +443,8 @@ bse_bus_disconnect (BseBus  *self,
   self->inputs = sfi_ring_remove (self->inputs, trackbus);
   BseErrorType error1 = bse_source_unset_input (self->summation, 0, osource, 0);
   BseErrorType error2 = bse_source_unset_input (self->summation, 1, osource, 1);
+  g_object_notify (self, "inputs");
+  // FIXME: g_object_notify (osource, "outputs");
   return error1 ? error1 : error2;
 }
 
@@ -511,8 +518,13 @@ bse_bus_class_init (BseBusClass *class)
 					      0.1, SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, _("Signal Inputs"),
                               PROP_INPUTS,
-                              bse_param_spec_boxed ("inputs", _("Input Signals"), _("Synthesis signals used as bus input"),
-                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
+                              /* SYNC: type partitions determine the order of displayed objects */
+                              bse_param_spec_boxed ("inputs", _("Input Signals"),
+                                                    /* TRANSLATORS: the "tracks and busses" order in this tooltip needs
+                                                     * to be preserved to match the GUI order of displayed objects.
+                                                     */
+                                                    _("Synthesis signals (from tracks and busses) used as bus input"),
+                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD ":item-sequence"));
   bse_object_class_add_param (object_class, NULL, PROP_SNET, bse_param_spec_object ("snet", NULL, NULL, BSE_TYPE_CSYNTH, SFI_PARAM_READWRITE ":skip-undo"));
   bse_object_class_add_param (object_class, _("Internals"),
 			      PROP_MASTER_OUTPUT,
