@@ -1,3 +1,9 @@
+Sat Jan 24 19:13:40 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-cxx.cc (printRecSeqImpl): remove type_name argument from
+	BSE_CXX_DECLARE_RECORD() and BSE_CXX_DECLARE_SEQUENCE() which they don't
+	need since we provide type_name().
+
 Sat Jan 24 18:25:21 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.h: copied over the newest incarnation of G_DEFINE_TYPE()

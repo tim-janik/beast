@@ -526,7 +526,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       string type_name = makeMixedName (si->name).c_str();
 
       if (options.doImplementation)
-        printf ("BSE_CXX_DECLARE_SEQUENCE (%s, \"%s\");\n", name.c_str(), type_name.c_str());
+        printf ("BSE_CXX_DECLARE_SEQUENCE (%s);\n", name.c_str());
       string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
       printf("%s\n", cTypeRet (si->name));
       printf("%s::from_seq (SfiSeq *sfi_seq)\n", nname.c_str());
@@ -597,7 +597,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       string type_name = makeMixedName (ri->name).c_str();
       
       if (options.doImplementation)
-        printf ("BSE_CXX_DECLARE_RECORD (%s, \"%s\");\n", name.c_str(), type_name.c_str());
+        printf ("BSE_CXX_DECLARE_RECORD (%s);\n", name.c_str());
       printf("%s\n", cTypeRet (ri->name));
       printf("%s::from_rec (SfiRec *sfi_rec)\n", nname.c_str());
       printf("{\n");
