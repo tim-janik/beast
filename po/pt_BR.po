@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-09-18 19:01+0200\n"
-"PO-Revision-Date: 2004-09-19 08:20-0300\n"
+"PO-Revision-Date: 2004-09-19 11:32-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -5662,11 +5662,11 @@ msgstr "Entrada gate (ativa/desativa o envelope)"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger In"
-msgstr ""
+msgstr "Ent retrigger"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger input (raising edge retriggers envelope)"
-msgstr ""
+msgstr "Entrada retrigger (envelope de retriggers de borda ascendente)"
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Ctrl Out"
@@ -5706,11 +5706,11 @@ msgstr "Entrada de áudio"
 #: plugins/davbassfilter.idl:35 plugins/davsyndrum.c:120
 #: plugins/davxtalstrings.c:143
 msgid "Trigger In"
-msgstr ""
+msgstr "Ent trigger"
 
 #: plugins/davbassfilter.idl:35
 msgid "Trigger input"
-msgstr ""
+msgstr "Entrada trigger"
 
 #: plugins/davbassfilter.idl:36
 msgid "Filtered audio output"
@@ -5750,7 +5750,7 @@ msgstr "Define o tamanho do desaparecimento em porcentagem"
 
 #: plugins/davbassfilter.idl:42
 msgid "Trigger filter"
-msgstr ""
+msgstr "Filtro trigger"
 
 #: plugins/davcanyondelay.c:116
 msgid "Left Audio Input"
