@@ -1,3 +1,7 @@
+Wed Jan 19 16:35:55 2000  Tim Janik  <timj@gtk.org>
+
+	* couple of build fixes for older gcc versions.
+
 Mon Jan 17 21:36:24 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (bst_app_operate): provide a Help/Keytable

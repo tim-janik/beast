@@ -118,7 +118,7 @@ g_trash_stack_pop (GTrashStack **stack_p)
   if (data)
     {
       *stack_p = data->next;
-      memset (data, 0, sizeof (GTrashStack));
+      data->next = NULL;
     }
 
   return data;

@@ -113,7 +113,8 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-char, -fsigned-char)
 		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-bitfields, -fsigned-bitfields)
 		dnl dflt: MC_EVAR_ADD(CFLAGS, -fno-writable-strings, -fno-writable-strings)
-		MC_EVAR_ADD(CFLAGS, -fno-strict-aliasing, -fno-strict-aliasing)
+		MC_PROG_CC_SUPPORTS_OPTION(-fno-strict-aliasing,
+		    MC_EVAR_ADD(CFLAGS, -fno-strict-aliasing, -fno-strict-aliasing))
 		MC_EVAR_ADD(CFLAGS, -fno-cond-mismatch, -fno-cond-mismatch)
 		MC_EVAR_ADD(CFLAGS, -ffor-scope, -ffor-scope)
 		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
@@ -147,9 +148,11 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
 		MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return)
 		MC_EVAR_ADD(CFLAGS, -funroll-loops, -funroll-loops)
-		MC_EVAR_ADD(CFLAGS, -frerun-loop-opt, -frerun-loop-opt)
+		MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt,
+		    MC_EVAR_ADD(CFLAGS, -frerun-loop-opt, -frerun-loop-opt))
 		MC_EVAR_ADD(CFLAGS, -fgcse, -fgcse)
-		MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts)
+		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
+		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
 	,	
 		MC_IF_VAR_EQ(CFLAGS_include_O, yes,
 			MC_EVAR_ADD(CFLAGS, -O, -O2)
