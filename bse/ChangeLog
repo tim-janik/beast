@@ -1,3 +1,10 @@
+Sat Jan 31 23:37:22 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseprocedure.c (call_proc): Fixed bug in validation: instead of
+	validating the procedure input values before and after the procedure
+	call, validate the procedure inputs values before, and procedure
+	output values after executing a procedure.
+
 Wed Jan 28 11:10:18 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesniffer.cc: don't swallow requests while inactive, send replies

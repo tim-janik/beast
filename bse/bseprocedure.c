@@ -296,11 +296,11 @@ call_proc (BseProcedureClass  *proc,
         error = proc->execute (proc, ivalues, ovalues);
     }
   
-  for (i = 0; i < proc->n_in_pspecs; i++)
+  for (i = 0; i < proc->n_out_pspecs; i++)
     {
-      GParamSpec *pspec = proc->in_pspecs[i];
+      GParamSpec *pspec = proc->out_pspecs[i];
       
-      if (g_param_value_validate (pspec, ivalues + i) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
+      if (g_param_value_validate (pspec, ovalues + i) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
         g_warning ("%s: internal procedure error: output arg `%s' had invalid value",
                    BSE_PROCEDURE_NAME (proc),
                    pspec->name);
