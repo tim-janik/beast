@@ -77,7 +77,15 @@ void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
 						 guint             ichannel_id,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
-void		bst_canvas_source_popup_view	(BstCanvasSource  *csource);
+void		 bst_canvas_source_popup_view	(BstCanvasSource  *csource);
+BstCanvasSource* bst_canvas_source_ichannel_at	(GnomeCanvas	  *canvas,
+						 gdouble	   world_x,
+						 gdouble	   world_y,
+						 guint		  *ichannel_id);
+BstCanvasSource* bst_canvas_source_ochannel_at	(GnomeCanvas	  *canvas,
+						 gdouble	   world_x,
+						 gdouble	   world_y,
+						 guint		  *ichannel_id);
 
 
 /* --- FIXME: ugly hackery to store coords --- */

@@ -1,3 +1,11 @@
+Tue Dec  7 02:25:39 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_build): make the
+	whole thing clickable with "fill_color_rgba" 0x00000000.
+	(create_canvas_icon): feature gdk_pixbuf if present.
+
+	* configure.in: added check for BST_WITH_GDK_PIXBUF.
+
 Mon Dec  6 03:43:08 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_entry_key_press): even more fixes to

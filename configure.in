@@ -147,6 +147,30 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 	AC_MSG_ERROR(Cannot find GNOME - gnome-config missing from path?)
     fi
 
+    dnl check for -lgdk_pixbuf
+    dnl this check assumes that gdk_pixbuf.la is installed in some
+    dnl standard path, e.g. /usr or /usr/local
+    AC_MSG_CHECKING(for GdkPixbuf Library)
+    cflags=$CFLAGS
+    ldflags=$LDFLAGS
+    CFLAGS=$BEAST_CFLAGS
+    LDFLAGS="-lgdk_pixbuf $BEAST_LIBS"
+    AC_TRY_LINK([
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gdk-pixbuf/gnome-canvas-pixbuf.h>
+],[{
+  gdk_pixbuf_new_from_art_pixbuf (NULL);
+  gnome_canvas_pixbuf_get_type ();
+}],[
+	AC_MSG_RESULT([found it, great!])
+	AC_DEFINE_UNQUOTED(BST_WITH_GDK_PIXBUF)
+	BEAST_LIBS="-lgdk_pixbuf $BEAST_LIBS"
+],[
+	AC_MSG_RESULT([failed - reverting to GnomeCanvasImage])
+])
+    CFLAGS=$cflags
+    LDFLAGS=$ldflags
+
     dnl We need GLE also (and asume it is installed in the same
     dnl prefix as Gtk+ or GNOME)
     GLE_LIBS=
