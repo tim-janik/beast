@@ -322,7 +322,7 @@ g_option_get (const gchar *option_string,
     value = g_option_find_value (option_string, option);
 
   if (!value)
-    return FALSE;                       /* option not present */
+    return NULL;                        /* option not present */
   else switch (value[0])
     {
       gchar *s;
@@ -373,14 +373,249 @@ g_option_check (const gchar *option_string,
 }
 
 
+/* --- GParamSpec options --- */
+static GQuark quark_pspec_options = 0;
+static guint
+pspec_flags (const gchar *poptions)
+{
+  guint flags = 0;
+  if (poptions)
+    {
+      if (g_option_check (poptions, "r"))
+        flags |= G_PARAM_READABLE;
+      if (g_option_check (poptions, "w"))
+        flags |= G_PARAM_WRITABLE;
+      if (g_option_check (poptions, "construct"))
+        flags |= G_PARAM_CONSTRUCT;
+      if (g_option_check (poptions, "construct-only"))
+        flags |= G_PARAM_CONSTRUCT_ONLY;
+      if (g_option_check (poptions, "lax-validation"))
+        flags |= G_PARAM_LAX_VALIDATION;
+    }
+  return flags;
+}
+
+void
+g_param_spec_set_options (GParamSpec  *pspec,
+                          const gchar *options)
+{
+  if (!quark_pspec_options)
+    quark_pspec_options = g_quark_from_static_string ("GParamSpec-options");
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  if (options)
+    g_param_spec_set_qdata (pspec, quark_pspec_options, (gchar*) g_intern_string (options));
+  /* pspec->flags &= ~G_PARAM_MASK; */
+  pspec->flags |= pspec_flags (options);
+}
+
+gboolean
+g_param_spec_check_option (GParamSpec  *pspec,
+                           const gchar *option)
+{
+  const gchar *poptions;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
+  poptions = g_param_spec_get_options (pspec);
+  return g_option_check (poptions, option);
+}
+
+void
+g_param_spec_add_option (GParamSpec  *pspec,
+                         const gchar *option,
+                         const gchar *value)
+{
+  const gchar *options;
+  guint append = 0;
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (option != NULL && !strchr (option, ':'));
+  g_return_if_fail (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
+  options = g_param_spec_get_options (pspec);
+  if (!options)
+    options = "";
+  if (value && strcmp (value, "-") == 0 &&
+      g_option_check (options, option))
+    append = 2;
+  else if ((!value || strcmp (value, "+") == 0) &&
+           !g_option_check (options, option))
+    append = 1;
+  if (append)
+    {
+      guint l = strlen (options);
+      gchar *s = g_strconcat (options,
+                              options[l] == ':' ? "" : ":",
+                              option, /* append >= 1 */
+                              append >= 2 ? value : "",
+                              NULL);
+      g_param_spec_set_options (pspec, s);
+      g_free (s);
+    }
+}
+
+gboolean
+g_param_spec_provides_options (GParamSpec  *pspec,
+                               const gchar *options)
+{
+  const gchar *p;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
+  g_return_val_if_fail (options != NULL, FALSE);
+ recurse:
+  while (options[0] == ':')
+    options++;
+  if (!options[0])
+    return TRUE;
+  p = strchr (options, ':');
+  if (p)
+    {
+      gchar *h = g_strndup (options, p - options);
+      gboolean match = g_param_spec_check_option (pspec, h);
+      g_free (h);
+      if (!match)
+        return FALSE;
+      options = p + 1;
+      goto recurse;
+    }
+  else
+    return g_param_spec_check_option (pspec, options);
+}
+
+const gchar*
+g_param_spec_get_options (GParamSpec *pspec)
+{
+  const gchar *options;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  options = g_param_spec_get_qdata (pspec, quark_pspec_options);
+  return options ? options : "";
+}
+
+static GQuark quark_pspec_istepping = 0;
+static GQuark quark_pspec_istepping64 = 0;
+
+void
+g_param_spec_set_istepping (GParamSpec  *pspec,
+                            guint64      stepping)
+{
+  if (!quark_pspec_istepping)
+    {
+      quark_pspec_istepping = g_quark_from_static_string ("GParamSpec-istepping");
+      quark_pspec_istepping64 = g_quark_from_static_string ("GParamSpec-istepping64");
+    }
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  if (stepping >> 32)
+    {
+      guint64 *istepping64 = g_new (guint64, 1);
+      *istepping64 = stepping;
+      g_param_spec_set_qdata_full (pspec, quark_pspec_istepping64, istepping64, g_free);
+      g_param_spec_set_qdata (pspec, quark_pspec_istepping, 0);
+    }
+  else
+    {
+      g_param_spec_set_qdata (pspec, quark_pspec_istepping64, NULL);
+      g_param_spec_set_qdata (pspec, quark_pspec_istepping, (void*) (guint32) stepping);
+    }
+}
+
+guint64
+g_param_spec_get_istepping (GParamSpec *pspec)
+{
+  guint64 stepping;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  stepping = (guint32) g_param_spec_get_qdata (pspec, quark_pspec_istepping);
+  if (!stepping)
+    {
+      guint64 *istepping64 = g_param_spec_get_qdata (pspec, quark_pspec_istepping64);
+      stepping = istepping64 ? *istepping64 : 0;
+    }
+  return stepping;
+}
+
+static GQuark quark_pspec_fstepping = 0;
+
+void
+g_param_spec_set_fstepping (GParamSpec  *pspec,
+                            gdouble      stepping)
+{
+  if (!quark_pspec_fstepping)
+    quark_pspec_fstepping = g_quark_from_static_string ("GParamSpec-fstepping");
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  if (stepping)
+    {
+      gdouble *fstepping = g_new (gdouble, 1);
+      *fstepping = stepping;
+      g_param_spec_set_qdata_full (pspec, quark_pspec_fstepping, fstepping, g_free);
+    }
+  else
+    g_param_spec_set_qdata (pspec, quark_pspec_fstepping, NULL);
+}
+
+gdouble
+g_param_spec_get_fstepping (GParamSpec *pspec)
+{
+  gdouble *fstepping;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  fstepping = g_param_spec_get_qdata (pspec, quark_pspec_fstepping);
+  return fstepping ? *fstepping : 0;
+}
+
+typedef struct {
+  gdouble center;
+  gdouble base;
+  gdouble n_steps;
+} LogScale;
+
+static GQuark quark_pspec_log_scale = 0;
+
+void
+g_param_spec_set_log_scale (GParamSpec  *pspec,
+                            gdouble      center,
+                            gdouble      base,
+                            gdouble      n_steps)
+{
+  if (!quark_pspec_log_scale)
+    quark_pspec_log_scale = g_quark_from_static_string ("GParamSpec-log-scale");
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  if (n_steps > 0 && base > 0)
+    {
+      LogScale *lscale = g_new0 (LogScale, 1);
+      lscale->center = center;
+      lscale->base = base;
+      lscale->n_steps = n_steps;
+      g_param_spec_set_qdata_full (pspec, quark_pspec_log_scale, lscale, g_free);
+      g_param_spec_add_option (pspec, "log-scale", "+");
+    }
+  else
+    g_param_spec_set_qdata (pspec, quark_pspec_log_scale, NULL);
+}
+
+gboolean
+g_param_spec_get_log_scale (GParamSpec  *pspec,
+                            gdouble     *center,
+                            gdouble     *base,
+                            gdouble     *n_steps)
+{
+  LogScale *lscale;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
+  lscale = g_param_spec_get_qdata (pspec, quark_pspec_log_scale);
+  if (lscale)
+    {
+      if (center)
+        *center = lscale->center;
+      if (base)
+        *base = lscale->base;
+      if (n_steps)
+        *n_steps = lscale->n_steps;
+      return TRUE;
+    }
+  return FALSE;
+}
+
+
 /* --- list extensions --- */
 gpointer
 g_slist_pop_head (GSList **slist_p)
 {
   gpointer data;
-
+  
   g_return_val_if_fail (slist_p != NULL, NULL);
-
+  
   if (!*slist_p)
     return NULL;
   data = (*slist_p)->data;

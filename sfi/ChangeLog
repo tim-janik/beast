@@ -1,3 +1,19 @@
+Sat Dec  6 02:36:49 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added (moved from sfi)
+	g_param_spec_set_options(), g_param_spec_check_option(),
+	g_param_spec_add_option(), g_param_spec_provides_options(),
+	g_param_spec_get_options(), g_param_spec_set_istepping(),
+	g_param_spec_get_istepping(), g_param_spec_set_fstepping(),
+	g_param_spec_get_fstepping(), g_param_spec_set_log_scale()
+	and g_param_spec_get_log_scale() to support user defined
+	options, and to handle stepping and logarithmic scaling
+	generically for the various integer and floarting types.
+
+	* sfiparams.[hc]: removed paramspec functions which glib-extra.h
+	provides now. added sfi_pspec_get_choice_hash() as an approximative
+	substitute for SfiChoice type signatures.
+
 Fri Dec  5 00:35:24 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.c: handle NULL for intern_string variants.

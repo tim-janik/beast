@@ -105,6 +105,33 @@ gchar*          g_option_get      (const gchar   *option_string,
                                    const gchar   *option);
 
 
+/* --- GParamSpec extensions --- */
+void         g_param_spec_set_options      (GParamSpec  *pspec,
+                                            const gchar *options);
+void         g_param_spec_add_option       (GParamSpec  *pspec,
+                                            const gchar *option,
+                                            const gchar *value);
+gboolean     g_param_spec_check_option     (GParamSpec  *pspec,
+                                            const gchar *option);
+gboolean     g_param_spec_provides_options (GParamSpec  *pspec,
+                                            const gchar *options);
+const gchar* g_param_spec_get_options      (GParamSpec  *pspec);
+void         g_param_spec_set_istepping    (GParamSpec  *pspec,
+                                            guint64      stepping);
+guint64      g_param_spec_get_istepping    (GParamSpec  *pspec);
+void         g_param_spec_set_fstepping    (GParamSpec  *pspec,
+                                            gdouble      stepping);
+gdouble      g_param_spec_get_fstepping    (GParamSpec  *pspec);
+void         g_param_spec_set_log_scale    (GParamSpec  *pspec,
+                                            gdouble      center,
+                                            gdouble      base,
+                                            gdouble      n_steps);
+gboolean     g_param_spec_get_log_scale    (GParamSpec  *pspec,
+                                            gdouble     *center,
+                                            gdouble     *base,
+                                            gdouble     *n_steps);
+
+
 /* --- list extensions --- */
 gpointer	g_slist_pop_head	(GSList	     **slist_p);
 gpointer	g_list_pop_head		(GList	     **list_p);

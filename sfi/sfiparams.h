@@ -292,16 +292,11 @@ const gchar*	sfi_pspec_get_group		(GParamSpec	*pspec);
 void		sfi_pspec_set_owner		(GParamSpec	*pspec,
 						 const gchar	*owner);
 const gchar*	sfi_pspec_get_owner		(GParamSpec	*pspec);
-void		sfi_pspec_set_options		(GParamSpec	*pspec,
-						 const gchar	*hints);
-void		sfi_pspec_add_option		(GParamSpec	*pspec,
-						 const gchar	*option,
-                                                 const gchar    *value);
-gboolean	sfi_pspec_check_option		(GParamSpec	*pspec,
-						 const gchar	*hint);
-gboolean	sfi_pspec_require_options	(GParamSpec	*pspec,
-						 const gchar	*hints);
-const gchar*	sfi_pspec_get_options		(GParamSpec	*pspec);
+#define sfi_pspec_set_options(pspec, opts)      g_param_spec_set_options (pspec, opts)
+#define sfi_pspec_add_option(pspec, opt, val)   g_param_spec_add_option (pspec, opt, val)
+#define sfi_pspec_check_option(pspec, opt)      g_param_spec_check_option (pspec, opt)
+#define sfi_pspec_provides_options(pspec, opts) g_param_spec_provides_options (pspec, opts)
+#define sfi_pspec_get_options(pspec)            g_param_spec_get_options (pspec)
 SfiBool		sfi_pspec_get_bool_default	(GParamSpec	*pspec);
 SfiInt		sfi_pspec_get_int_default	(GParamSpec	*pspec);
 void		sfi_pspec_get_int_range		(GParamSpec	*pspec,
@@ -321,17 +316,12 @@ void		sfi_pspec_get_real_range	(GParamSpec	*pspec,
 						 SfiReal        *minimum_value,
 						 SfiReal        *maximum_value,
 						 SfiReal        *stepping);
-void		sfi_pspec_set_log_scale		(GParamSpec	*pspec,
-						 SfiReal         center,
-						 SfiReal         base,
-						 SfiReal         n_steps);
-gboolean	sfi_pspec_get_log_scale		(GParamSpec	*pspec,
-						 SfiReal        *center,
-						 SfiReal        *base,
-						 SfiReal        *n_steps);
+#define sfi_pspec_set_log_scale(p, c, b, n)     g_param_spec_set_log_scale (p, c, b, n)
+#define sfi_pspec_get_log_scale(p, c, b, n)     g_param_spec_get_log_scale (p, c, b, n)
 const gchar*	sfi_pspec_get_string_default	(GParamSpec	*pspec);
 const gchar*	sfi_pspec_get_choice_default	(GParamSpec	*pspec);
 SfiChoiceValues	sfi_pspec_get_choice_values	(GParamSpec	*pspec);
+guint64         sfi_pspec_get_choice_hash       (GParamSpec     *pspec);
 GParamSpec*	sfi_pspec_get_seq_element	(GParamSpec	*pspec);
 SfiRecFields	sfi_pspec_get_rec_fields	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_get_rec_field		(GParamSpec	*pspec,

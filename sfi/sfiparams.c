@@ -63,8 +63,6 @@ static void	sfi_pspec_copy_commons	(GParamSpec   *src_pspec,
 /* --- variables --- */
 GType        *sfi__param_spec_types = NULL;
 static GQuark quark_hints = 0;
-static GQuark quark_stepping = 0;
-static GQuark quark_log_scale = 0;
 static GQuark quark_param_group = 0;
 static GQuark quark_param_owner = 0;
 static GQuark quark_tmp_choice_values = 0;
@@ -93,8 +91,6 @@ _sfi_init_params (void)
   sfi__param_spec_types = pspec_types;
   
   quark_hints = g_quark_from_static_string ("sfi-pspec-hints");
-  quark_stepping = g_quark_from_static_string ("sfi-pspec-stepping");
-  quark_log_scale = g_quark_from_static_string ("sfi-pspec-log-scale");
   quark_param_group = g_quark_from_static_string ("sfi-pspec-group");
   quark_param_owner = g_quark_from_static_string ("sfi-pspec-owner");
   quark_tmp_choice_values = g_quark_from_static_string ("sfi-tmp-choice-values");
@@ -473,7 +469,7 @@ sfi_pspec_int (const gchar    *name,
   
   pspec = g_param_spec_int (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, 0);
   sfi_pspec_set_options (pspec, hints);
-  g_param_spec_set_qdata (pspec, quark_stepping, (gpointer) (glong) stepping);
+  g_param_spec_set_istepping (pspec, stepping);
   
   return pspec;
 }
@@ -489,7 +485,6 @@ sfi_pspec_num (const gchar    *name,
 	       const gchar    *hints)
 {
   GParamSpec *pspec;
-  SfiNum *sdata;
   
   g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
@@ -497,9 +492,7 @@ sfi_pspec_num (const gchar    *name,
   
   pspec = g_param_spec_int64 (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, 0);
   sfi_pspec_set_options (pspec, hints);
-  sdata = g_new (SfiNum, 1);
-  *sdata = stepping;
-  g_param_spec_set_qdata_full (pspec, quark_stepping, sdata, g_free);
+  g_param_spec_set_istepping (pspec, stepping);
   
   return pspec;
 }
@@ -515,7 +508,6 @@ sfi_pspec_real (const gchar    *name,
 		const gchar    *hints)
 {
   GParamSpec *pspec;
-  SfiReal *sdata;
   
   g_return_val_if_fail (default_value >= minimum_value && default_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
@@ -523,10 +515,7 @@ sfi_pspec_real (const gchar    *name,
   
   pspec = g_param_spec_double (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, 0);
   sfi_pspec_set_options (pspec, hints);
-  sdata = g_new (SfiReal, 1);
-  *sdata = stepping;
-  g_param_spec_set_qdata_full (pspec, quark_stepping, sdata, g_free);
-  
+  g_param_spec_set_fstepping (pspec, stepping);
   return pspec;
 }
 
@@ -737,7 +726,7 @@ sfi_pspec_note (const gchar *name,
   ispec->maximum = CLAMP (max_note, SFI_MIN_NOTE, SFI_MAX_NOTE);
   ispec->default_value = default_value;
   nspec->allow_void = allow_void != FALSE;
-  g_param_spec_set_qdata (pspec, quark_stepping, (gpointer) (glong) 12);
+  g_param_spec_set_istepping (pspec, 12);
   thints = g_strconcat ("note:", hints, NULL);
   sfi_pspec_set_options (pspec, thints);
   g_free (thints);
@@ -1049,122 +1038,6 @@ sfi_pspec_get_owner (GParamSpec *pspec)
   return owner;
 }
 
-static guint
-pspec_flags (const gchar *phints)
-{
-  guint flags = 0;
-  if (phints)
-    {
-      if (g_option_check (phints, "r"))
-	flags |= G_PARAM_READABLE;
-      if (g_option_check (phints, "w"))
-	flags |= G_PARAM_WRITABLE;
-      if (g_option_check (phints, "construct"))
-        flags |= G_PARAM_CONSTRUCT;
-      if (g_option_check (phints, "construct-only"))
-        flags |= G_PARAM_CONSTRUCT_ONLY;
-      if (g_option_check (phints, "lax-validation"))
-        flags |= G_PARAM_LAX_VALIDATION;
-    }
-  return flags;
-}
-
-void
-sfi_pspec_set_options (GParamSpec  *pspec,
-                     const gchar *hints)
-{
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-
-  if (hints)
-    g_param_spec_set_qdata (pspec, quark_hints,
-                            g_quark_to_string (g_quark_from_string (hints)));
-  pspec->flags = pspec_flags (hints);
-}
-
-gboolean
-sfi_pspec_check_option (GParamSpec  *pspec,
-                        const gchar *hint)
-{
-  const gchar *phints;
-  
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
-
-  phints = sfi_pspec_get_options (pspec);
-  return g_option_check (phints, hint);
-}
-
-void
-sfi_pspec_add_option (GParamSpec  *pspec,
-                      const gchar *option,
-                      const gchar *value)
-{
-  const gchar *options;
-  guint append = 0;
-
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (option != NULL && !strchr (option, ':'));
-  g_return_if_fail (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
-
-  options = sfi_pspec_get_options (pspec);
-  if (!options)
-    options = "";
-  if (value && strcmp (value, "-") == 0 &&
-      g_option_check (options, option))
-    append = 2;
-  else if ((!value || strcmp (value, "+") == 0) &&
-           !g_option_check (options, option))
-    append = 1;
-  if (append)
-    {
-      guint l = strlen (options);
-      gchar *s = g_strconcat (options,
-                              options[l] == ':' ? "" : ":",
-                              option, /* append >= 1 */
-                              append >= 2 ? value : "",
-                              NULL);
-      sfi_pspec_set_options (pspec, s);
-      g_free (s);
-    }
-}
-
-gboolean
-sfi_pspec_require_options (GParamSpec  *pspec,
-                           const gchar *hints)
-{
-  const gchar *p, *options;
-
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), FALSE);
-  g_return_val_if_fail (hints != NULL, FALSE);
-
-  options = sfi_pspec_get_options (pspec);
- recurse:
-  while (hints[0] == ':')
-    hints++;
-  if (!hints[0])
-    return TRUE;
-  p = strchr (hints, ':');
-  if (p)
-    {
-      gchar *h = g_strndup (hints, p - hints);
-      gboolean match = g_option_check (options, h);
-      g_free (h);
-      if (!match)
-	return FALSE;
-      hints = p + 1;
-      goto recurse;
-    }
-  else
-    return g_option_check (options, hints);
-}
-
-const gchar*
-sfi_pspec_get_options (GParamSpec *pspec)
-{
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-  
-  return g_param_spec_get_qdata (pspec, quark_hints);
-}
-
 #if 0
 static void
 sfi_pspec_set_void_note (GParamSpec *pspec,
@@ -1192,49 +1065,6 @@ typedef struct {
   SfiReal base;
   SfiReal n_steps;
 } LogScale;
-
-void
-sfi_pspec_set_log_scale (GParamSpec *pspec,
-			 SfiReal     center,
-			 SfiReal     base,
-			 SfiReal     n_steps)
-{
-  LogScale *lscale;
-
-  g_return_if_fail (SFI_IS_PSPEC_REAL (pspec));
-  g_return_if_fail (n_steps > 0);
-  g_return_if_fail (base > 0);
-  
-  lscale = g_new0 (LogScale, 1);
-  lscale->center = center;
-  lscale->base = base;
-  lscale->n_steps = n_steps;
-  g_param_spec_set_qdata_full (pspec, quark_log_scale, lscale, g_free);
-  sfi_pspec_add_option (pspec, "log-scale", "+");
-}
-
-gboolean
-sfi_pspec_get_log_scale (GParamSpec *pspec,
-			 SfiReal    *center,
-			 SfiReal    *base,
-			 SfiReal    *n_steps)
-{
-  if (SFI_IS_PSPEC_REAL (pspec))
-    {
-      LogScale *lscale = g_param_spec_get_qdata (pspec, quark_log_scale);
-      if (lscale)
-	{
-	  if (center)
-	    *center = lscale->center;
-	  if (base)
-	    *base = lscale->base;
-	  if (n_steps)
-	    *n_steps = lscale->n_steps;
-	  return TRUE;
-	}
-    }
-  return FALSE;
-}
 
 SfiBool
 sfi_pspec_get_bool_default (GParamSpec *pspec)
@@ -1268,7 +1098,7 @@ sfi_pspec_get_int_range (GParamSpec *pspec,
   if (maximum_value)
     *maximum_value = ispec->maximum;
   if (stepping)
-    *stepping = (SfiInt) (glong) g_param_spec_get_qdata (pspec, quark_stepping);
+    *stepping = g_param_spec_get_istepping (pspec);
 }
 
 SfiNum
@@ -1295,10 +1125,7 @@ sfi_pspec_get_num_range (GParamSpec *pspec,
   if (maximum_value)
     *maximum_value = nspec->maximum;
   if (stepping)
-    {
-      SfiNum *sdata = g_param_spec_get_qdata (pspec, quark_stepping);
-      *stepping = sdata ? *sdata : 0;
-    }
+    *stepping = g_param_spec_get_istepping (pspec);
 }
 
 SfiReal
@@ -1325,10 +1152,7 @@ sfi_pspec_get_real_range (GParamSpec *pspec,
   if (maximum_value)
     *maximum_value = nspec->maximum;
   if (stepping)
-    {
-      SfiReal *sdata = g_param_spec_get_qdata (pspec, quark_stepping);
-      *stepping = sdata ? *sdata : 0;
-    }
+    *stepping = g_param_spec_get_fstepping (pspec);
 }
 
 const gchar*
@@ -1357,6 +1181,25 @@ sfi_pspec_get_choice_values (GParamSpec *pspec)
   
   cspec = SFI_PSPEC_CHOICE (pspec);
   return cspec->cvalues;
+}
+
+guint64
+sfi_pspec_get_choice_hash (GParamSpec *pspec)
+{
+  SfiParamSpecChoice *cspec;
+  guint64 hash;
+  guint i;
+  g_return_val_if_fail (SFI_IS_PSPEC_CHOICE (pspec), 0);
+  cspec = SFI_PSPEC_CHOICE (pspec);
+  /* choices are not registered with the type system,
+   * so have no unique identifier. for some purposes
+   * an approximation of "unique" is good enough though,
+   * so we offer a simple hashing function here.
+   */
+  hash = cspec->cvalues.n_values << 30;
+  for (i = 0; i < cspec->cvalues.n_values; i++)
+    hash = (hash << 7) - hash + g_str_hash (cspec->cvalues.values[i].choice_name);
+  return hash;
 }
 
 GParamSpec*
