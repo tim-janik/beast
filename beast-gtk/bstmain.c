@@ -617,11 +617,12 @@ static void
 bst_print_blurb (void)
 {
   g_print ("Usage: beast [options] [files...]\n");
-  g_print ("  --devel                 enrich the GUI with hints usefull for (script) developers\n");
 #ifdef BST_WITH_XKB
   g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
   g_print ("  --print-dir[=RESOURCE]  print the directory for a specific resource\n");
+  g_print ("  --devel                 enrich the GUI with hints usefull for developers,\n");
+  g_print ("                          enable unstable plugins and experimental code\n");
   g_print ("  -h, --help              show this help message\n");
   g_print ("  -v, --version           print version and file paths\n");
   g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
@@ -636,8 +637,8 @@ bst_print_blurb (void)
   g_print ("                          l - enable LADSPA plugin registration\n");
   g_print ("                          L - disable LADSPA plugin registration\n");
   g_print ("                          s - enable script registration\n");
-  g_print ("                          S - enable script registration\n");
-  g_print ("                          d - developer and debugging extensions (harmfull)\n");
+  g_print ("                          S - disable script registration\n");
+  g_print ("                          d - enable debugging extensions (harmfull)\n");
   if (!BST_VERSION_STABLE)
     {
       g_print ("Gtk+ Options:\n");

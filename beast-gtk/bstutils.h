@@ -61,6 +61,16 @@ GxkActionList* bst_action_list_from_cats      (BseCategorySeq  *cseq,
                                                GxkActionCheck   acheck,
                                                GxkActionExec    aexec,
                                                gpointer         user_data);
+typedef gboolean (*BstActionListCategoryP)    (gpointer         predicate_data,
+                                               BseCategory     *cat);
+GxkActionList* bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
+                                               guint            skip_levels,
+                                               const gchar     *stock_fallback,
+                                               GxkActionCheck   acheck,
+                                               GxkActionExec    aexec,
+                                               gpointer         user_data,
+                                               BstActionListCategoryP predicate,
+                                               gpointer         predicate_data);
 
 
 /* --- stock utilities --- */

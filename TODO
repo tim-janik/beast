@@ -1,10 +1,10 @@
 FIXMES:
-- disable evaluator
+- fix category() for procedures in sfidl-module.cc
+- remove proc->authors and licene
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
 - apply editable and sensitive to params
 - destroy piano roll dialog if part is released
-- disable bseevaluator without --devel as it's unstable
 - remove hpack and vpack
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree

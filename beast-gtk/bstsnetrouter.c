@@ -131,6 +131,16 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   gtk_accel_group_lock (class->popup_factory->accel_group);
 }
 
+static gboolean
+filter_popup_modules (gpointer         predicate_data,
+                      BseCategory     *cat)
+{
+  const gchar *options = bse_type_options (cat->type);
+  if (g_option_check (options, "unstable") && !BST_DVL_HINTS)
+    return FALSE;
+  return TRUE;
+}
+
 static void
 bst_snet_router_init (BstSNetRouter      *self,
 		      BstSNetRouterClass *class)
@@ -201,6 +211,9 @@ bst_snet_router_init (BstSNetRouter      *self,
       };
       const gchar *stock_fallback = NULL;
       BseCategory *cat = cseq->cats[i];
+      /* filter inappropriate modules */
+      if (!filter_popup_modules (NULL, cat))
+        continue;
       /* provide module as canvas tool */
       if (strncmp (cat->type, "BseLadspaModule_", 16) == 0)
         stock_fallback = BST_STOCK_LADSPA;

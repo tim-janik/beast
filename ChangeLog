@@ -1,3 +1,14 @@
+Mon Dec 22 23:59:03 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: don't show unstable plugins without
+	--devel.
+
+	* beast-gtk/bstmain.c: changed --devel description somewhat.
+
+	* beast-gtk/bstutils.[hc]: added bst_action_list_from_cats_pred(),
+	a variant to bst_action_list_from_cats() which allowes for a custom
+	predicate to filter cetgories.
+
 Mon Dec 22 19:52:16 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkgadget.[hc]: 

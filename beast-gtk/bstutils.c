@@ -429,12 +429,14 @@ bst_action_list_add_cat (GxkActionList          *alist,
 }
 
 GxkActionList*
-bst_action_list_from_cats (BseCategorySeq         *cseq,
-                           guint                   skip_levels,
-                           const gchar            *stock_fallback,
-                           GxkActionCheck          acheck,
-                           GxkActionExec           aexec,
-                           gpointer                user_data)
+bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
+                                guint            skip_levels,
+                                const gchar     *stock_fallback,
+                                GxkActionCheck   acheck,
+                                GxkActionExec    aexec,
+                                gpointer         user_data,
+                                BstActionListCategoryP predicate,
+                                gpointer         predicate_data)
 {
   GxkActionList *alist = gxk_action_list_create ();
   guint i;
@@ -442,8 +444,20 @@ bst_action_list_from_cats (BseCategorySeq         *cseq,
   g_return_val_if_fail (cseq != NULL, alist);
 
   for (i = 0; i < cseq->n_cats; i++)
-    bst_action_list_add_cat (alist, cseq->cats[i], skip_levels, stock_fallback, acheck, aexec, user_data);
+    if (!predicate || predicate (predicate_data, cseq->cats[i]))
+      bst_action_list_add_cat (alist, cseq->cats[i], skip_levels, stock_fallback, acheck, aexec, user_data);
   return alist;
+}
+
+GxkActionList*
+bst_action_list_from_cats (BseCategorySeq         *cseq,
+                           guint                   skip_levels,
+                           const gchar            *stock_fallback,
+                           GxkActionCheck          acheck,
+                           GxkActionExec           aexec,
+                           gpointer                user_data)
+{
+  return bst_action_list_from_cats_pred (cseq, skip_levels, stock_fallback, acheck, aexec, user_data, NULL, NULL);
 }
 
 
