@@ -1,3 +1,7 @@
+Sat Mar 27 03:34:23 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-download.texi: update SuSE version of RPMS.
+
 Sat Mar  6 15:32:21 2004  Tim Janik  <timj@gtk.org>
 
 	* released 0.6.1, binary age 0, interface age 0.
