@@ -558,15 +558,15 @@ simple_osc_process (GslModule *module,
 	{
 	  guint64 l64;
 
-	  last_freq = new_freq;
-	  new_freq *= BSE_MAX_FREQUENCY_d; // FIXME
-	  if (1)
+	  if (0)
 	    g_print ("NEWFREQ:::::: new_val=%f freq=%f factor=%f\n",
 		     last_freq, new_freq, new_freq);
+	  last_freq = new_freq;
+	  new_freq *= BSE_MAX_FREQUENCY_d; // FIXME
 	  // new_freq = CLAMP (new_freq, 0, 1.0);
-	  l64 = new_freq * ((gfloat) vars->n_table_values) / BSE_MIX_FREQ_d * BSE_MAX_FREQUENCY_d * ((gfloat) (1<<FRAC_N_BITS));
+	  l64 = new_freq * ((gfloat) vars->n_table_values) / BSE_MIX_FREQ_d * ((gfloat) (1<<FRAC_N_BITS));
 	  pos_inc = l64 & 0xffffffff;
-	  if (0)
+	  if (1)
 	    g_print ("NEWFREQ:::::: tp:%u cp=%u inc=%u new_freq=%f max_freq=%f mix_freq=%f\n",
 		   tpos, cur_pos, pos_inc, new_freq, BSE_MAX_FREQUENCY_d, BSE_MIX_FREQ_d);
 	}

@@ -1,5 +1,22 @@
-#ifndef __GTK_DIAL_H__
-#define __GTK_DIAL_H__
+/* BEAST - Bedevilled Audio System
+ * Copyright (C) 1999, 2000, 2001 Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#ifndef __BST_DIAL_H__
+#define __BST_DIAL_H__
 
 #include <gtk/gtkadjustment.h>
 #include <gtk/gtkwidget.h>
@@ -10,17 +27,17 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-#define GTK_TYPE_DIAL			(gtk_dial_get_type ())
-#define GTK_DIAL(object)		(GTK_CHECK_CAST ((object), GTK_TYPE_DIAL, GtkDial))
-#define GTK_DIAL_CLASS(klass)		(GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_DIAL, GtkDialClass))
-#define GTK_IS_DIAL(object)		(GTK_CHECK_TYPE ((object), GTK_TYPE_DIAL))
-#define GTK_IS_DIAL_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_DIAL))
-#define GTK_DIAL_GET_CLASS(object)	((GtkDialClass*) (((GtkObject*) (object))->klass))
+#define BST_TYPE_DIAL			(bst_dial_get_type ())
+#define BST_DIAL(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_DIAL, BstDial))
+#define BST_DIAL_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_DIAL, BstDialClass))
+#define BST_IS_DIAL(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_DIAL))
+#define BST_IS_DIAL_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_DIAL))
+#define BST_DIAL_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((obj), BST_TYPE_DIAL, BstDialClass))
 
 
-typedef struct _GtkDial	     GtkDial;
-typedef struct _GtkDialClass GtkDialClass;
-struct _GtkDial
+typedef struct _BstDial	     BstDial;
+typedef struct _BstDialClass BstDialClass;
+struct _BstDial
 {
   GtkWidget parent_object;
   
@@ -53,20 +70,20 @@ struct _GtkDial
   /* The adjustment object that stores the data for this dial */
   GtkObject *adjustment;
 };
-struct _GtkDialClass
+struct _BstDialClass
 {
   GtkWidgetClass parent_class;
 };
   
 
-GtkType	       gtk_dial_get_type	       (void);
-GtkWidget*     gtk_dial_new                    (GtkAdjustment *adjustment);
-void           gtk_dial_set_adjustment         (GtkDial       *dial,
+GtkType	       bst_dial_get_type	       (void);
+GtkWidget*     bst_dial_new                    (GtkAdjustment *adjustment);
+void           bst_dial_set_adjustment         (BstDial       *dial,
                                                 GtkAdjustment *adjustment);
-GtkAdjustment* gtk_dial_get_adjustment         (GtkDial       *dial);
-void           gtk_dial_set_update_policy      (GtkDial       *dial,
+GtkAdjustment* bst_dial_get_adjustment         (BstDial       *dial);
+void           bst_dial_set_update_policy      (BstDial       *dial,
                                                 GtkUpdateType  policy);
-void	       bst_dial_set_align_widget       (GtkDial	      *dial,
+void	       bst_dial_set_align_widget       (BstDial	      *dial,
 						GtkWidget     *widget,
 						gboolean       width_align,
 						gboolean       height_align);
@@ -75,5 +92,5 @@ void	       bst_dial_set_align_widget       (GtkDial	      *dial,
 }
 #endif /* __cplusplus */
 
-#endif /* __GTK_DIAL_H__ */
+#endif /* __BST_DIAL_H__ */
 

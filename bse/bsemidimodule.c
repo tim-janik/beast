@@ -40,7 +40,7 @@ pick_signal (BseMidiChannel *channel,
 
 	  switch (signal)
 	    {
-	    case BSE_MIDI_SIGNAL_FREQUENCY:	value = bse_note_to_freq (note->note) / BSE_MAX_FREQUENCY_d;	break;
+	    case BSE_MIDI_SIGNAL_FREQUENCY:	value = BSE_VALUE_FROM_FREQ (bse_note_to_freq (note->note));	break;
 	    case BSE_MIDI_SIGNAL_GATE:		value = note->velocity > 0 ? 1.0 : 0.0;		break;
 	    case BSE_MIDI_SIGNAL_VELOCITY:	value = BSE_VALUE_FROM_BOUNDED_UINT (note->velocity, BSE_MIDI_MAX_VELOCITY);		break;
 	    case BSE_MIDI_SIGNAL_AFTERTOUCH:	value = BSE_VALUE_FROM_BOUNDED_UINT (note->aftertouch, BSE_MIDI_MAX_AFTERTOUCH);	break;

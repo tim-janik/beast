@@ -1,3 +1,20 @@
+/* BEAST - Bedevilled Audio System
+ * Copyright (C) 1999, 2000, 2001 Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
 #include "bstdial.h"
 
 #include <gtk/gtkmain.h>
@@ -10,37 +27,37 @@
 #define RATIO			0.75752
 #define HCENTER			(1.0 / (2 * RATIO))
 
-static void     gtk_dial_class_init                 (GtkDialClass   *class);
-static void     gtk_dial_init                       (GtkDial        *dial);
-static void     gtk_dial_destroy                    (GtkObject      *object);
-static void     gtk_dial_realize                    (GtkWidget      *widget);
-static void     gtk_dial_size_request               (GtkWidget      *widget,
+static void     bst_dial_class_init                 (BstDialClass   *class);
+static void     bst_dial_init                       (BstDial        *dial);
+static void     bst_dial_destroy                    (GtkObject      *object);
+static void     bst_dial_realize                    (GtkWidget      *widget);
+static void     bst_dial_size_request               (GtkWidget      *widget,
                                                      GtkRequisition *requisition);
-static void     gtk_dial_size_allocate              (GtkWidget      *widget,
+static void     bst_dial_size_allocate              (GtkWidget      *widget,
                                                      GtkAllocation  *allocation);
-static gint     gtk_dial_expose                     (GtkWidget      *widget,
+static gint     bst_dial_expose                     (GtkWidget      *widget,
                                                      GdkEventExpose *event);
-static void	gtk_dial_paint			    (GtkDial	    *dial);
-static gint     gtk_dial_button_press               (GtkWidget      *widget,
+static void	bst_dial_paint			    (BstDial	    *dial);
+static gint     bst_dial_button_press               (GtkWidget      *widget,
                                                      GdkEventButton *event);
-static gint     gtk_dial_button_release             (GtkWidget      *widget,
+static gint     bst_dial_button_release             (GtkWidget      *widget,
                                                      GdkEventButton *event);
-static gint     gtk_dial_motion_notify              (GtkWidget      *widget,
+static gint     bst_dial_motion_notify              (GtkWidget      *widget,
                                                      GdkEventMotion *event);
-static gboolean gtk_dial_timer                      (gpointer        data);
-static void     gtk_dial_mouse_update               (GtkDial        *dial,
+static gboolean bst_dial_timer                      (gpointer        data);
+static void     bst_dial_mouse_update               (BstDial        *dial,
                                                      gint            x,
                                                      gint            y);
-static void     gtk_dial_update                     (GtkDial        *dial);
-static void     gtk_dial_adjustment_changed         (GtkAdjustment  *adjustment,
+static void     bst_dial_update                     (BstDial        *dial);
+static void     bst_dial_adjustment_changed         (GtkAdjustment  *adjustment,
                                                      gpointer        data);
-static void     gtk_dial_adjustment_value_changed   (GtkAdjustment  *adjustment,
+static void     bst_dial_adjustment_value_changed   (GtkAdjustment  *adjustment,
                                                      gpointer        data);
 
 static GtkWidgetClass *parent_class = NULL;
 
 GtkType
-gtk_dial_get_type (void)
+bst_dial_get_type (void)
 {
   static GtkType dial_type = 0;
   
@@ -48,11 +65,11 @@ gtk_dial_get_type (void)
     {
       GtkTypeInfo dial_info =
       {
-        "GtkDial",
-        sizeof (GtkDial),
-        sizeof (GtkDialClass),
-        (GtkClassInitFunc) gtk_dial_class_init,
-        (GtkObjectInitFunc) gtk_dial_init,
+        "BstDial",
+        sizeof (BstDial),
+        sizeof (BstDialClass),
+        (GtkClassInitFunc) bst_dial_class_init,
+        (GtkObjectInitFunc) bst_dial_init,
         /* reserved_1 */ NULL,
         /* reserved_2 */ NULL,
         (GtkClassInitFunc) NULL,
@@ -65,29 +82,26 @@ gtk_dial_get_type (void)
 }
 
 static void
-gtk_dial_class_init (GtkDialClass *class)
+bst_dial_class_init (BstDialClass *class)
 {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
   
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
+  object_class->destroy = bst_dial_destroy;
   
-  parent_class = gtk_type_class (GTK_TYPE_WIDGET);
-  
-  object_class->destroy = gtk_dial_destroy;
-  
-  widget_class->size_request = gtk_dial_size_request;
-  widget_class->size_allocate = gtk_dial_size_allocate;
-  widget_class->realize = gtk_dial_realize;
-  widget_class->expose_event = gtk_dial_expose;
-  widget_class->button_press_event = gtk_dial_button_press;
-  widget_class->button_release_event = gtk_dial_button_release;
-  widget_class->motion_notify_event = gtk_dial_motion_notify;
+  widget_class->size_request = bst_dial_size_request;
+  widget_class->size_allocate = bst_dial_size_allocate;
+  widget_class->realize = bst_dial_realize;
+  widget_class->expose_event = bst_dial_expose;
+  widget_class->button_press_event = bst_dial_button_press;
+  widget_class->button_release_event = bst_dial_button_release;
+  widget_class->motion_notify_event = bst_dial_motion_notify;
 }
 
 static void
-gtk_dial_init (GtkDial *dial)
+bst_dial_init (BstDial *dial)
 {
   dial->update_policy = GTK_UPDATE_CONTINUOUS;
   dial->button = 0;
@@ -102,13 +116,13 @@ gtk_dial_init (GtkDial *dial)
 }
 
 static void
-gtk_dial_destroy (GtkObject *object)
+bst_dial_destroy (GtkObject *object)
 {
-  GtkDial *dial;
+  BstDial *dial;
   
-  g_return_if_fail (GTK_IS_DIAL (object));
+  g_return_if_fail (BST_IS_DIAL (object));
   
-  dial = GTK_DIAL (object);
+  dial = BST_DIAL (object);
 
   bst_dial_set_align_widget (dial, 0, 0, 0);
 
@@ -130,10 +144,10 @@ gtk_dial_destroy (GtkObject *object)
 }
 
 static void
-gtk_dial_size_request (GtkWidget      *widget,
+bst_dial_size_request (GtkWidget      *widget,
                        GtkRequisition *requisition)
 {
-  GtkDial *dial = GTK_DIAL (widget);
+  BstDial *dial = BST_DIAL (widget);
 
   if (dial->align_widget)
     {
@@ -157,15 +171,15 @@ gtk_dial_size_request (GtkWidget      *widget,
 }
 
 static void
-gtk_dial_size_allocate (GtkWidget     *widget,
+bst_dial_size_allocate (GtkWidget     *widget,
                         GtkAllocation *allocation)
 {
-  GtkDial *dial;
+  BstDial *dial;
 
-  g_return_if_fail (GTK_IS_DIAL (widget));
+  g_return_if_fail (BST_IS_DIAL (widget));
   g_return_if_fail (allocation != NULL);
   
-  dial = GTK_DIAL (widget);
+  dial = BST_DIAL (widget);
 
   /* center widget within given allocation
    */
@@ -177,7 +191,7 @@ gtk_dial_size_allocate (GtkWidget     *widget,
   /* determine dial radius and pointer width from allocation
    */
   dial->radius = MAX (widget->allocation.width, 2) / 2;
-  dial->pointer_width = dial->radius / 5;
+  dial->pointer_width = dial->radius * 0.25;
 
   /* position widget's window accordingly
    */
@@ -188,15 +202,15 @@ gtk_dial_size_allocate (GtkWidget     *widget,
 }
 
 static void
-gtk_dial_realize (GtkWidget *widget)
+bst_dial_realize (GtkWidget *widget)
 {
-  GtkDial *dial;
+  BstDial *dial;
   GdkWindowAttr attributes;
   gint attributes_mask;
   
-  g_return_if_fail (GTK_IS_DIAL (widget));
+  g_return_if_fail (BST_IS_DIAL (widget));
   
-  dial = GTK_DIAL (widget);
+  dial = BST_DIAL (widget);
   
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
   
@@ -223,23 +237,23 @@ gtk_dial_realize (GtkWidget *widget)
 }
 
 static gint
-gtk_dial_expose (GtkWidget      *widget,
+bst_dial_expose (GtkWidget      *widget,
                  GdkEventExpose *event)
 {
-  g_return_val_if_fail (GTK_IS_DIAL (widget), FALSE);
+  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
   g_return_val_if_fail (event != NULL, FALSE);
 
   /* since we redraw the whole widget from scratch, we ignore
    * intermediate expose events
    */
   if (event->count == 0)
-    gtk_dial_paint (GTK_DIAL (widget));
+    bst_dial_paint (BST_DIAL (widget));
 
   return TRUE;
 }
 
 static void
-gtk_dial_paint (GtkDial *dial)
+bst_dial_paint (BstDial *dial)
 {
   GtkWidget *widget = GTK_WIDGET (dial);
   GdkPoint points[4];
@@ -250,13 +264,12 @@ gtk_dial_paint (GtkDial *dial)
   guint i, pointer_width, radius;
 
   xc = widget->allocation.width / 2;
-  yc = widget->allocation.height * HCENTER;
+  yc = (widget->allocation.height - dial->radius) / 2 + dial->radius;
   pointer_width = dial->pointer_width;
   radius = dial->radius;
 
   /* clear paintable area
    */
-  radius -= 1;
   /* fill upper part */
   gdk_draw_arc (widget->window,
 		widget->style->bg_gc[GTK_WIDGET_IS_SENSITIVE (dial)
@@ -265,47 +278,27 @@ gtk_dial_paint (GtkDial *dial)
 		TRUE,
                 xc - radius, yc - radius,
 		2 * radius, 2 * radius,
-		211.0 * 64, -242.0 * 64);
-  /* erase lower part */
-  gdk_draw_arc (widget->window,
-		widget->style->bg_gc[GTK_STATE_NORMAL],
-		TRUE,
-                xc - radius, yc - radius,
-		2 * radius, 2 * radius,
-		211.0 * 64, 118.0 * 64);
+		0. * 64, 180. * 64);
   /* draw light shade on the left */
   gdk_draw_arc (widget->window,
 		widget->style->light_gc[widget->state],
 		FALSE,
                 xc - radius, yc - radius,
 		2 * radius, 2 * radius,
-		60.0 * 64, 151.0 * 64);
+		60. * 64, 110. * 64);
   /* draw shadow on the right */
   gdk_draw_arc (widget->window,
 		widget->style->dark_gc[widget->state],
 		FALSE,
-                xc - radius, yc - radius,
+		xc - radius, yc - radius,
 		2 * radius, 2 * radius,
-		30.0 * 64, -61.0 * 64);
+		0.0 * 64, 30. * 64);
   radius += 1;
   /* draw bottom shadow left */
-  s = sin (211 * M_PI / 180);
-  c = cos (211 * M_PI / 180);
   gdk_draw_line (widget->window,
 		 widget->style->dark_gc[widget->state],
-		 xc + c * radius,
-		 yc - s * radius,
-		 xc,
-		 yc);
-  /* draw bottom shadow right */
-  s = sin (329 * M_PI / 180);
-  c = cos (329 * M_PI / 180);
-  gdk_draw_line (widget->window,
-		 widget->style->dark_gc[widget->state],
-		 xc + c * radius,
-		 yc - s * radius,
-		 xc,
-		 yc);
+		 xc - radius, yc,
+		 xc + radius, yc);
   radius -= 1;
 
   /* draw the ticks
@@ -317,12 +310,12 @@ gtk_dial_paint (GtkDial *dial)
     }
   else
     {
-      n_steps = 12;
-      thick_step = 1;
+      n_steps = 8;
+      thick_step = 2;
     }
-  for (i = 0; i < n_steps - n_steps / 4; i++)
+  for (i = 0; i < n_steps + 1; i++)
     {
-      theta = (i * M_PI / (n_steps / 2.0) - M_PI / 6.0);
+      theta = M_PI - (i * M_PI / ((double) n_steps));
       s = sin (theta);
       c = cos (theta);
       
@@ -351,12 +344,12 @@ gtk_dial_paint (GtkDial *dial)
   c = cos (dial->angle);
   if (widget->allocation.width >= DIAL_DEFAULT_SIZE)
     radius -= 1;
-  points[0].x = xc + s * pointer_width / 2;
-  points[0].y = yc + c * pointer_width / 2;
-  points[1].x = xc + c * radius;
-  points[1].y = yc - s * radius;
-  points[2].x = xc - s * pointer_width / 2;
-  points[2].y = yc - c * pointer_width / 2;
+  points[0].x = xc + s * pointer_width + 0.5;
+  points[0].y = yc + c * pointer_width + 0.5;
+  points[1].x = xc + c * radius + 0.5;
+  points[1].y = yc - s * radius + 0.5;
+  points[2].x = xc - s * pointer_width + 0.5;
+  points[2].y = yc - c * pointer_width + 0.5;
   points[3].x = points[0].x;
   points[3].y = points[0].y;
   if (widget->allocation.width >= DIAL_DEFAULT_SIZE)
@@ -376,65 +369,64 @@ gtk_dial_paint (GtkDial *dial)
 }
 
 static gint
-gtk_dial_button_press (GtkWidget      *widget,
+bst_dial_button_press (GtkWidget      *widget,
                        GdkEventButton *event)
 {
-  GtkDial *dial;
+  BstDial *dial;
   
-  g_return_val_if_fail (GTK_IS_DIAL (widget), FALSE);
+  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
   g_return_val_if_fail (event != NULL, FALSE);
   
-  dial = GTK_DIAL (widget);
+  dial = BST_DIAL (widget);
 
   if (!dial->button)
     {
       dial->button = event->button;
       
-      gtk_dial_mouse_update (dial, event->x, event->y);
+      bst_dial_mouse_update (dial, event->x, event->y);
     }
 
   return TRUE;
 }
 
 static gint
-gtk_dial_motion_notify (GtkWidget      *widget,
+bst_dial_motion_notify (GtkWidget      *widget,
                         GdkEventMotion *event)
 {
-  GtkDial *dial;
+  BstDial *dial;
   
-  g_return_val_if_fail (GTK_IS_DIAL (widget), FALSE);
+  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
   g_return_val_if_fail (event != NULL, FALSE);
   
-  dial = GTK_DIAL (widget);
+  dial = BST_DIAL (widget);
   
   if (dial->button != 0 && event->window == widget->window)
     {
       if (event->is_hint)
         gdk_window_get_pointer (widget->window, NULL, NULL, NULL);
       
-      gtk_dial_mouse_update (dial, event->x, event->y);
+      bst_dial_mouse_update (dial, event->x, event->y);
     }
   
   return TRUE;
 }
 
-/*< begin_listing="button_release" >*/
 static gint
-gtk_dial_button_release (GtkWidget      *widget,
+bst_dial_button_release (GtkWidget      *widget,
                          GdkEventButton *event)
 {
-  GtkDial *dial;
+  BstDial *dial;
   
-  g_return_val_if_fail (GTK_IS_DIAL (widget), FALSE);
+  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
   g_return_val_if_fail (event != NULL, FALSE);
   
-  dial = GTK_DIAL (widget);
+  dial = BST_DIAL (widget);
   
   if (dial->button == event->button)
     {
       GtkAdjustment *adjustment = GTK_ADJUSTMENT (dial->adjustment);
 
-      gtk_dial_mouse_update (dial, event->x, event->y);
+      bst_dial_mouse_update (dial, event->x, event->y);
 
       dial->button = 0;
       
@@ -450,11 +442,9 @@ gtk_dial_button_release (GtkWidget      *widget,
   
   return TRUE;
 }
-/*< end_listing="button_release" >*/
 
-/*< begin_listing="update_mouse" >*/
 static void
-gtk_dial_mouse_update (GtkDial *dial,
+bst_dial_mouse_update (BstDial *dial,
                        gint     x,
                        gint     y)
 {
@@ -463,33 +453,31 @@ gtk_dial_mouse_update (GtkDial *dial,
   gint xc, yc;
   gfloat angle;
   
-  g_return_if_fail (GTK_IS_DIAL (dial));
+  g_return_if_fail (BST_IS_DIAL (dial));
   
   widget = GTK_WIDGET (dial);
   adjustment = GTK_ADJUSTMENT (dial->adjustment);
 
   /* figure the arc's center */
   xc = widget->allocation.width / 2;
-  yc = widget->allocation.height * HCENTER;
+  yc = (widget->allocation.height - dial->radius) / 2 + dial->radius;
 
   /* calculate the angle of the button click, constrained to the
    * viewable area of the arc
    */
   angle = atan2 (yc - y, x - xc);
-  if (angle < - M_PI / 2.0)
-    angle += 2 * M_PI;
-  if (angle < - M_PI / 6.0)
-    angle = - M_PI / 6.0;
-  if (angle > 7.0 * M_PI / 6.0)
-    angle = 7.0 * M_PI / 6.0;
+  if (angle < M_PI * -0.5)
+    angle = M_PI;
+  if (angle <= 0)
+    angle = 0;
+  if (angle > M_PI)
+    angle = M_PI;
   dial->angle = angle;
 
   /* compute new adjustment value, translated to its lower...upper range */
   adjustment->value = (adjustment->lower +
-		       (7.0 * M_PI / 6 - angle) *
-		       (adjustment->upper - adjustment->lower) /
-		       (4.0 * M_PI / 3.0));
-
+		       (1.0 - angle / M_PI) * (adjustment->upper - adjustment->lower));
+  
   /* if the adjustment value changed:
    * - for continuous updates: emit the GtkAdjustment::value_changed signal
    * - for delayed updates: install a timer to emit the changed signal, if
@@ -509,7 +497,7 @@ gtk_dial_mouse_update (GtkDial *dial,
                 gtk_timeout_remove (dial->timer);
               
               dial->timer = gtk_timeout_add (SCROLL_DELAY_LENGTH,
-                                             gtk_dial_timer,
+                                             bst_dial_timer,
                                              dial);
             }
 
@@ -520,13 +508,11 @@ gtk_dial_mouse_update (GtkDial *dial,
         }
     }
 }
-/*< end_listing="update_mouse" >*/
 
-/*< begin_listing="timer" >*/
 static gboolean
-gtk_dial_timer (gpointer data)
+bst_dial_timer (gpointer data)
 {
-  GtkDial *dial = GTK_DIAL (data);
+  BstDial *dial = BST_DIAL (data);
   
   gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
 
@@ -534,11 +520,9 @@ gtk_dial_timer (gpointer data)
   
   return FALSE;
 }
-/*< end_listing="timer" >*/
 
-/*< begin_listing="new" >*/
 GtkWidget*
-gtk_dial_new (GtkAdjustment *adjustment)
+bst_dial_new (GtkAdjustment *adjustment)
 {
   GtkWidget *dial;
   
@@ -547,30 +531,26 @@ gtk_dial_new (GtkAdjustment *adjustment)
   else
     adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 250.0, 0.0, 0.0, 0.0);
   
-  dial = gtk_widget_new (GTK_TYPE_DIAL, NULL);
+  dial = gtk_widget_new (BST_TYPE_DIAL, NULL);
   
-  gtk_dial_set_adjustment (GTK_DIAL (dial), adjustment);
+  bst_dial_set_adjustment (BST_DIAL (dial), adjustment);
   
   return dial;
 }
-/*< end_listing="new" >*/
 
-/*< begin_listing="get_adjustment" >*/
 GtkAdjustment*
-gtk_dial_get_adjustment (GtkDial *dial)
+bst_dial_get_adjustment (BstDial *dial)
 {
-  g_return_val_if_fail (GTK_IS_DIAL (dial), NULL);
+  g_return_val_if_fail (BST_IS_DIAL (dial), NULL);
   
   return GTK_ADJUSTMENT (dial->adjustment);
 }
-/*< end_listing="get_adjustment" >*/
 
-/*< begin_listing="set_update_policy" >*/
 void
-gtk_dial_set_update_policy (GtkDial      *dial,
+bst_dial_set_update_policy (BstDial      *dial,
                             GtkUpdateType policy)
 {
-  g_return_if_fail (GTK_IS_DIAL (dial));
+  g_return_if_fail (BST_IS_DIAL (dial));
   
   if (dial->update_policy != policy)
     {
@@ -589,14 +569,12 @@ gtk_dial_set_update_policy (GtkDial      *dial,
 	}
     }
 }
-/*< end_listing="set_update_policy" >*/
 
-/*< begin_listing="set_adjustment" >*/
 void
-gtk_dial_set_adjustment (GtkDial       *dial,
+bst_dial_set_adjustment (BstDial       *dial,
                          GtkAdjustment *adjustment)
 {
-  g_return_if_fail (GTK_IS_DIAL (dial));
+  g_return_if_fail (BST_IS_DIAL (dial));
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
   
   if (dial->adjustment)
@@ -611,32 +589,30 @@ gtk_dial_set_adjustment (GtkDial       *dial,
   
   gtk_signal_connect (dial->adjustment,
                       "changed",
-                      GTK_SIGNAL_FUNC (gtk_dial_adjustment_changed),
+                      GTK_SIGNAL_FUNC (bst_dial_adjustment_changed),
                       dial);
   gtk_signal_connect (dial->adjustment,
                       "value_changed",
-                      GTK_SIGNAL_FUNC (gtk_dial_adjustment_value_changed),
+                      GTK_SIGNAL_FUNC (bst_dial_adjustment_value_changed),
                       dial);
   
   dial->old_value = adjustment->value;
   dial->old_lower = adjustment->lower;
   dial->old_upper = adjustment->upper;
   
-  gtk_dial_update (dial);
+  bst_dial_update (dial);
 }
-/*< end_listing="set_adjustment" >*/
 
-/*< begin_listing="adjustment_changed" >*/
 static void
-gtk_dial_adjustment_changed (GtkAdjustment *adjustment,
+bst_dial_adjustment_changed (GtkAdjustment *adjustment,
                              gpointer       data)
 {
-  GtkDial *dial;
+  BstDial *dial;
   
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
   g_return_if_fail (data != NULL);
   
-  dial = GTK_DIAL (data);
+  dial = BST_DIAL (data);
   
   if (dial->old_value != adjustment->value ||
       dial->old_lower != adjustment->lower ||
@@ -646,41 +622,37 @@ gtk_dial_adjustment_changed (GtkAdjustment *adjustment,
       dial->old_lower = adjustment->lower;
       dial->old_upper = adjustment->upper;
 
-      gtk_dial_update (dial);
+      bst_dial_update (dial);
     }
 }
-/*< end_listing="adjustment_changed" >*/
 
-/*< begin_listing="adjustment_value_changed" >*/
 static void
-gtk_dial_adjustment_value_changed (GtkAdjustment *adjustment,
+bst_dial_adjustment_value_changed (GtkAdjustment *adjustment,
                                    gpointer       data)
 {
-  GtkDial *dial;
+  BstDial *dial;
   
   g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
   g_return_if_fail (data != NULL);
   
-  dial = GTK_DIAL (data);
+  dial = BST_DIAL (data);
   
   if (dial->old_value != adjustment->value)
     {
       dial->old_value = adjustment->value;
 
-      gtk_dial_update (dial);
+      bst_dial_update (dial);
     }
 }
-/*< end_listing="adjustment_value_changed" >*/
 
-/*< begin_listing="update" >*/
 static void
-gtk_dial_update (GtkDial *dial)
+bst_dial_update (BstDial *dial)
 {
   GtkAdjustment *adjustment;
   GtkWidget *widget;
   gfloat new_value;
   
-  g_return_if_fail (GTK_IS_DIAL (dial));
+  g_return_if_fail (BST_IS_DIAL (dial));
   
   widget = GTK_WIDGET (dial);
   adjustment = GTK_ADJUSTMENT (dial->adjustment);
@@ -693,21 +665,18 @@ gtk_dial_update (GtkDial *dial)
       gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
     }
   
-  dial->angle = (7.0 * M_PI / 6.0 -
-                 (new_value - adjustment->lower) * 4.0 * M_PI / 3.0 /
-                 MAX (1, (adjustment->upper - adjustment->lower)));
+  dial->angle = M_PI - M_PI * (new_value - adjustment->lower) / MAX (1, (adjustment->upper - adjustment->lower));
   
   gtk_widget_queue_draw (widget);
 }
-/*< end_listing="update" >*/
 
 void
-bst_dial_set_align_widget (GtkDial   *dial,
+bst_dial_set_align_widget (BstDial   *dial,
 			   GtkWidget *widget,
 			   gboolean   width_align,
 			   gboolean   height_align)
 {
-  g_return_if_fail (GTK_IS_DIAL (dial));
+  g_return_if_fail (BST_IS_DIAL (dial));
   if (widget)
     {
       g_return_if_fail (GTK_IS_WIDGET (widget));

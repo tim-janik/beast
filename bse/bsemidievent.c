@@ -355,7 +355,7 @@ bse_midi_event_process (BseMidiEvent  *event,
 	      ch->notes[i].velocity = event->data.note.velocity;
 	      ch->notes[i].aftertouch = event->data.note.velocity;
 	      BSE_IF_DEBUG (MIDI)
-		g_message ("MIDI: note-on: %u %u %u (%u)", ch->notes[i].note, ch->notes[i].velocity, ch->notes[i].aftertouch, i);
+		g_printerr ("MIDI: note-on: %u %+.2fHz %u %u (%u)\n", ch->notes[i].note, bse_note_to_freq (ch->notes[i].note), ch->notes[i].velocity, ch->notes[i].aftertouch, i);
 	    }
 	  break;
 	case BSE_MIDI_NOTE_OFF:

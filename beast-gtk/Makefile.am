@@ -74,6 +74,7 @@ beast_headers = $(strip \
 	bstwavereposhell.h \
 	bstwaveview.h \
 	bstwaveeditor.h \
+	bstxframe.h \
 	bstxkb.h \
 	bstzoomedwindow.h \
 	glewidgets.h \
@@ -117,6 +118,7 @@ beast_sources = $(strip \
 	bstwavereposhell.c \
 	bstwaveview.c \
 	bstwaveeditor.c \
+	bstxframe.c \
 	bstxkb.c \
 	bstzoomedwindow.c \
 	$(PROFILE_SOURCE) \

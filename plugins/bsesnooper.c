@@ -89,8 +89,8 @@ snooper_process (GslModule *module,
 	  max = MAX (max, v);
 	}
       avg /= (gdouble) n_values;
-      g_print ("V: max=%+1.5f min=%+1.5f avg=%+1.5f %u[%+1.5f,..,%+1.5f]\r",
-	       max, min, avg,
+      g_print ("V: max=%+1.5f min=%+1.5f avg=%+1.5f freq=%+1.2f %u[%+1.5f,..,%+1.5f]\r",
+	       max, min, avg, BSE_FREQ_FROM_VALUE (avg),
 	       n_values,
 	       first, last);
     }

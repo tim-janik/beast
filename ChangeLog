@@ -1,3 +1,17 @@
+Fri Dec 14 18:43:49 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdial.[hc] (bst_dial_update): as a usability improvement,
+	restrict range to 180 to 0 degrees. GTK-2.0-updated the code.
+
+	* beast-gtk/bstxframe.[hc]: new widget, required by an as of yet
+	unimplemented killer feature ;)
+
+Fri Dec 14 08:55:29 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: reenable latency device monitor.
+
+	* beast-gtk/bstservermonitor.[hc]: new files, showing BseServer options.
+
 Thu Dec 13 00:53:38 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/icons/: added cdrom icon.

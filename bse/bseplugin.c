@@ -525,13 +525,7 @@ bse_plugin_unuse (GTypePlugin *gplugin)
 
   g_return_if_fail (plugin->use_count > 0);
 
-  if (plugin->use_count < 2)
-    {
-      g_message ("caching plugin\n");	// FIXME: debugging HACK
-      return;
-    }
-  else
-    plugin->use_count--;
+  plugin->use_count--;
   if (!plugin->use_count)
     {
       if (plugin->fname)

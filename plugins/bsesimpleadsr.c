@@ -210,44 +210,30 @@ bse_simple_adsr_get_property (BseSimpleADSR *adsr,
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_inc
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_INC)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_trig_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_TRIG | BSE_MIX_RAMP_WITH_DEC)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 #define	BSE_MIX_VARIANT_NAME	const_mix_gate_trig
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_TRIG)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_DEC)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_trig_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_TRIG | BSE_MIX_RAMP_WITH_DEC)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_invgate_dec
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_IGATE | BSE_MIX_RAMP_WITH_DEC)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 #define	BSE_MIX_VARIANT_NAME	const_mix_invgate
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_IGATE)
 #include "bsesimpleadsr-aux.c"
-#undef	BSE_MIX_VARIANT
-#undef	BSE_MIX_VARIANT_NAME
 
 enum {
   ATTACK,
@@ -274,7 +260,7 @@ simple_adsr_process (GslModule *module,
   const BseSampleValue *gate_bound = GSL_MODULE_IBUFFER (module, 0) + n_values;
   const BseSampleValue *trig_bound = GSL_MODULE_IBUFFER (module, 1) + n_values;
   guint state = 0;
-  
+
   if (!module->ostreams[0].connected)
     return;	/* no output */
 
