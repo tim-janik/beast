@@ -22,7 +22,7 @@ bin_PROGRAMS = bsesh
 # libraries to link programs against
 programs_ldadd = $(top_builddir)/bsw/libbsw.la $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 # source setups
-bsesh_SOURCES = bsesh.c bsescminterp.c
+bsesh_SOURCES = bsesh.c bsescminterp.c cxxdummy.cc
 bsesh_LDADD = $(programs_ldadd) $(BSE_SHELL_LIBS)
 bsescminterp.c: # bsescm-genglue.c
 EXTRA_DIST += bsescminterp.h
