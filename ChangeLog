@@ -1,3 +1,7 @@
+Thu Sep 16 16:03:46 2004  Tim Janik  <timj@gtk.org>
+
+	* tests/testplugin.cc: adapt to recent changes.
+
 Wed Sep 15 17:02:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Added --avg-energy feature, which extracts the

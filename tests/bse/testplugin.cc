@@ -31,6 +31,7 @@ class TestObject : public TestObjectBase
 public:
   //BSE_EFFECT_INTEGRATE_MODULE (TestObject, Module, Properties);
 
+#if 0
   /* FIXME */
   Bse::SynthesisModule* create_module(unsigned int, BseTrans*)
   {
@@ -44,6 +45,11 @@ public:
     g_assert_not_reached ();
     return 0;
   }
+#else
+  Bse::SynthesisModule* create_module(unsigned int, BseTrans*) { return 0; }
+  Bse::SynthesisModule::Closure* make_module_config_closure() { return 0; }
+  void (* get_module_auto_update())(BseModule*, void*) { return 0; }
+#endif
 };
 
 SfiInt
