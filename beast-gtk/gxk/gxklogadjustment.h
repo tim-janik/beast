@@ -66,7 +66,7 @@ GtkAdjustment*	bst_log_adjustment_from_adj	(GtkAdjustment		*client);
 void		bst_log_adjustment_setup	(BstLogAdjustment	*ladj,
 						 gdouble		 center,
 						 gdouble		 base,
-						 guint			 n_steps);
+						 gdouble		 n_steps);
 
 #ifdef __cplusplus
 }
