@@ -1,3 +1,14 @@
+Mon Jan 17 21:36:24 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_operate): provide a Help/Keytable
+	dialog.
+
+	* beast-gtk/bstpatterneditor.[hc] (bst_pattern_editor_class_keydump):
+	dump the current keytable as a string.
+
+	* beast-gtk/bstfiledialog.[hc] (bst_text_view_from): new function that
+	replaces bst_text_view_from_file() for more flexibility.
+
 Mon Jan 17 15:19:18 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (project_cross_changes): auto-sweep unsused

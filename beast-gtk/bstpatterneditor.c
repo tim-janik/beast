@@ -20,6 +20,7 @@
 #include	<gtk/gtksignal.h>
 #include	<gdk/gdkkeysyms.h>
 #include	<string.h>
+#include	<ctype.h>
 
 
 /* FIXME: the layout needs to be changed to something like:
@@ -2346,50 +2347,18 @@ bst_pattern_editor_button_release (GtkWidget	  *widget,
   return handled;
 }
 
-void
-bst_pattern_editor_class_set_key (BstPatternEditorClass	*pe_class,
-				  guint16		 keyval,
-				  guint16		 modifier,
-				  BstPEActionType	 pe_action)
-{
-  g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (pe_class));
-  
-  g_hash_table_insert (pe_class->pea_ktab,
-		       (gpointer) (keyval | ((modifier & BST_MOD_SCA) << 16)),
-		       (gpointer) (pe_action | BST_PEA_TAG));
-}
-
-static gboolean
-bst_clear_keys (gpointer key,
-		gpointer value,
-		gpointer user_data)
-{
-  return TRUE;
-}
-
-void
-bst_pattern_editor_class_clear_keys (BstPatternEditorClass *pe_class)
-{
-  g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (pe_class));
-  
-  g_hash_table_foreach_remove (pe_class->pea_ktab,
-			       bst_clear_keys,
-			       NULL);
-}
-
 static gint
 bst_pattern_editor_key_press (GtkWidget	  *widget,
 			      GdkEventKey *event)
 {
   BstPatternEditor *pe;
-  BstPEActionType pea;
+  BstPEActionType pea = 0;
   guint16 modifier;
   guint16 masks[] = {
     BST_MOD_SCA, BST_MOD_SC0, BST_MOD_S0A, BST_MOD_S00,
     BST_MOD_0CA, BST_MOD_0C0, BST_MOD_00A, BST_MOD_000,
   };
   guint n_masks = sizeof (masks) / sizeof (masks[0]);
-  gpointer p;
   guint i;
   BseNote *bnote;
   BseInstrument *instrument;
@@ -2406,11 +2375,14 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
   pe = BST_PATTERN_EDITOR (widget);
   
   modifier = event->state & BST_MOD_SCA;
-  p = 0;
-  for (i = 0; !(((guint32) p) & BST_PEA_TAG) && i < n_masks; i++)
+  for (i = 0; !(pea & BST_PEA_TAG) && i < n_masks; i++)
     if (modifier == masks[i])
-      p = g_hash_table_lookup (BST_PATTERN_EDITOR_CLASS (((GtkObject*) pe)->klass)->pea_ktab,
-			       (gpointer) (event->keyval | ((modifier & masks[i]) << 16)));
+      {
+	gpointer p = g_hash_table_lookup (BST_PATTERN_EDITOR_GET_CLASS (pe)->pea_ktab,
+					  GUINT_TO_POINTER (event->keyval | ((modifier & masks[i]) << 16)));
+	
+	pea = GPOINTER_TO_UINT (p);
+      }
   
   focus_channel = pe->focus_channel;
   focus_row = pe->focus_row;
@@ -2422,7 +2394,6 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
   new_focus_channel = 0;
   new_focus_row = 0;
   
-  pea = (BstPEActionType) p;
   if (pea & BST_PEA_TAG)
     {
       BstPEActionType wrap;
@@ -2800,4 +2771,180 @@ bst_pattern_editor_set_effect_hooks (BstPatternEditor		 *pe,
   pe->ea_draw = ea_draw;
   pe->ea_data = user_data;
   pe->ea_destroy = ea_destroy;
+}
+
+void
+bst_pattern_editor_class_set_key (BstPatternEditorClass	*class,
+				  guint16		 keyval,
+				  guint16		 modifier,
+				  BstPEActionType	 pe_action)
+{
+  g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (class));
+  
+  g_hash_table_insert (class->pea_ktab,
+		       GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)),
+		       GUINT_TO_POINTER (pe_action | BST_PEA_TAG));
+}
+
+void
+bst_pattern_editor_class_clear_keys (BstPatternEditorClass *class)
+{
+  g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (class));
+  
+  g_hash_table_foreach_remove (class->pea_ktab,
+			       (GHRFunc) gtk_true,
+			       NULL);
+}
+
+static void
+string_dump_pea (gpointer key,
+		 gpointer value,
+		 gpointer user_data)
+{
+  GSList **slist_p = user_data;
+  BstPEActionType pea = GPOINTER_TO_UINT (value);
+  guint keyval = GPOINTER_TO_UINT (key) & 0xffff;
+  guint modifier = GPOINTER_TO_UINT (key) >> 16;
+  GString *gstring = g_string_new ("");
+  gchar *name;
+  
+  name = gdk_keyval_name (gdk_keyval_to_lower (keyval));
+  
+  /* modifier + keyvalname
+   */
+  g_string_sprintfa (gstring, "%-12.12s ", name);
+  g_string_sprintfa (gstring, "%c%c%c ",
+		     modifier & BST_MOD_S00 ? 'S' : '_',
+		     modifier & BST_MOD_0C0 ? 'C' : '_',
+		     modifier & BST_MOD_00A ? 'A' : '_');
+  
+  /* note
+   */
+  name = bse_note_to_string (BSE_NOTE_C (0) + (pea & BST_PEA_NOTE_MASK));
+  name[0] = toupper (name[0]);
+  g_string_sprintfa (gstring, "%-3.3s ", name[0] != 'v' ? name : "");
+  g_free (name);
+
+  /* octave
+   */
+  switch (pea & BST_PEA_MOVE_MASK)
+    {
+    case BST_PEA_OCTAVE_SHIFT_UP:	name = "+1";	break;
+    case BST_PEA_OCTAVE_SHIFT_DOWN:	name = "-1";	break;
+    case BST_PEA_OCTAVE_SHIFT_UP2:	name = "+2";	break;
+    case BST_PEA_OCTAVE_SHIFT_DOWN2:	name = "-2";	break;
+    default:				name = " 0";	break;
+    }
+  g_string_sprintfa (gstring, "%s ", name);
+
+  /* decode instrument
+   */
+  if ((pea & BST_PEA_INSTRUMENT_MASK) == BST_PEA_INSTRUMENT_0F)
+    g_string_append (gstring, "df ");
+  else
+    g_string_sprintfa (gstring, "%02u ", (pea & BST_PEA_INSTRUMENT_MASK) >> 8);
+  
+  /* movement
+   */
+  switch (pea & BST_PEA_MOVE_MASK)
+    {
+    case BST_PEA_MOVE_NEXT:		name = "|n| | | |"; break;
+    case BST_PEA_MOVE_LEFT:		name = "|l| | | |"; break;
+    case BST_PEA_MOVE_RIGHT:		name = "|r| | | |"; break;
+    case BST_PEA_MOVE_UP:		name = "|u| | | |"; break;
+    case BST_PEA_MOVE_DOWN:		name = "|d| | | |"; break;
+    case BST_PEA_MOVE_PAGE_LEFT:	name = "| |L| | |"; break;
+    case BST_PEA_MOVE_PAGE_RIGHT:	name = "| |R| | |"; break;
+    case BST_PEA_MOVE_PAGE_UP:		name = "| |U| | |"; break;
+    case BST_PEA_MOVE_PAGE_DOWN:	name = "| |D| | |"; break;
+    case BST_PEA_MOVE_JUMP_LEFT:	name = "| | |L| |"; break;
+    case BST_PEA_MOVE_JUMP_RIGHT:	name = "| | |R| |"; break;
+    case BST_PEA_MOVE_JUMP_TOP:		name = "| | |T| |"; break;
+    case BST_PEA_MOVE_JUMP_BOTTOM:	name = "| | |B| |"; break;
+    case BST_PEA_MOVE_PREV_PATTERN:	name = "| | | |P|"; break;
+    case BST_PEA_MOVE_NEXT_PATTERN:	name = "| | | |N|"; break;
+    default:				name = "| | | | |"; break;
+    }
+  g_string_sprintfa (gstring, "%s ", name);
+
+  /* flags
+   */
+  g_string_append_c (gstring, pea & BST_PEA_WRAP_TO_NOTE	? 'B' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_WRAP_TO_PATTERN	? 'P' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_NOTE_RESET		? 'N' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_INSTRUMENT_RESET	? 'I' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_SET_INSTRUMENT_0F	? 'F' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_AFFECT_BASE_OCTAVE	? 'D' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_WRAP_AS_CONFIG	? 'c' : '.');
+  
+  g_string_sprintfa (gstring, "\n");
+
+  *slist_p = g_slist_prepend (*slist_p, g_strdup (gstring->str));
+  g_string_free (gstring, TRUE);
+}
+
+static gint
+list_str_cmp (gconstpointer v1,
+	      gconstpointer v2)
+{
+  const gchar *s1 = v1;
+  const gchar *s2 = v2;
+  guint l1, l2;
+
+  for (l1 = 0; s1[l1]; l1++)
+    if (s1[l1] == ' ')
+      break;
+  for (l2 = 0; s2[l2]; l2++)
+    if (s2[l2] == ' ')
+      break;
+
+  return (l1 == l2) ? strcmp (s1, s2) : l1 - l2;
+}
+
+GString*
+bst_pattern_editor_class_keydump (BstPatternEditorClass *class)
+{
+  GString *gstring;
+  GSList *node, *slist = NULL;
+  
+  g_return_val_if_fail (BST_IS_PATTERN_EDITOR_CLASS (class), NULL);
+  
+  gstring = g_string_new ("Pattern editor keytable:\n"
+			  "========================\n"
+			  "\n"
+			  "             Modifier (Shift, Control, ALt)\n"
+			  "             |   Note\n"
+			  "             |   |    Octave shift\n"
+			  "             |   |    | Instrument id (df=default instrument)\n"
+			  "             |   |    | |  Note movement (Next, Left, Right, Up, Down)\n"
+			  "             |   |    | |  | Page movement (Left, Right, Up, Down)\n"
+			  "             |   |    | |  | | Jump to border (Left, Right, Top, Bottom)\n"
+			  "             |   |    | |  | | | Switch Pattern (Next, Previous)\n"
+			  "             |   |    | |  | | | |   Flag Values:\n"
+			  "             |   |    | |  | | | |   | B - Wrap around left and right\n"
+			  "             |   |    | |  | | | |   |     border\n"
+			  "             |   |    | |  | | | |   | P - Wrap to previous/next pattern\n"
+			  "             |   |    | |  | | | |   |     at top and bottom border\n"
+			  "             |   |    | |  | | | |   | N - Reset (delete) current note\n"
+			  "             |   |    | |  | | | |   | I - Reset (delete) current instrument\n"
+			  "             |   |    | |  | | | |   | F - Set default instrument of\n"
+			  "             |   |    | |  | | | |   |     current channel\n"
+			  "             |   |    | |  | | | |   | D - Apply octave shift to the\n"
+			  "             |   |    | |  | | | |   |     default octave of the pattern\n"
+			  "KeyName      Mod Not Oc In Movement  Flags\n");
+  
+  g_hash_table_foreach (class->pea_ktab,
+			string_dump_pea,
+			&slist);
+
+  slist = g_slist_sort (slist, list_str_cmp);
+
+  for (node = slist; node; node = node->next)
+    {
+      g_string_append (gstring, node->data);
+      g_free (node->data);
+    }
+  g_slist_free (slist);
+
+  return gstring;
 }

@@ -284,11 +284,6 @@ void	   bst_pattern_editor_adjust_sas      (BstPatternEditor		*pe,
 					       gboolean			 check_bounds);
 void	   bst_pattern_editor_set_octave      (BstPatternEditor		*pe,
 					       gint			 octave);
-void	   bst_pattern_editor_class_clear_keys(BstPatternEditorClass	*pe_class);
-void	   bst_pattern_editor_class_set_key   (BstPatternEditorClass	*pe_class,
-					       guint16			 keyval,
-					       guint16			 modifier,
-					       BstPEActionType		 pe_action);
 void	   bst_pattern_editor_mark_row	      (BstPatternEditor		*pe,
 					       gint			 row);
 void	   bst_pattern_editor_dfl_stepper     (BstPatternEditor		*pe,
@@ -299,6 +294,12 @@ void bst_pattern_editor_set_effect_hooks   (BstPatternEditor		*pe,
 					    BstPatternEffectAreaDraw	 ea_draw,
 					    gpointer			 user_data,
 					    GtkDestroyNotify		 ea_destroy);
+void	   bst_pattern_editor_class_clear_keys(BstPatternEditorClass	*pe_class);
+void	   bst_pattern_editor_class_set_key   (BstPatternEditorClass	*pe_class,
+					       guint16			 keyval,
+					       guint16			 modifier,
+					       BstPEActionType		 pe_action);
+GString*   bst_pattern_editor_class_keydump   (BstPatternEditorClass	*pe_class);
 
 
 

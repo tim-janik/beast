@@ -242,12 +242,13 @@ bst_file_dialog_new_save (BstApp *app)
 }
 
 GtkWidget*
-bst_text_view_from_file (const gchar *file_name) /* FIXME: should go into misc.c or utils.c */
+bst_text_view_from (GString     *gstring,
+		    const gchar *file_name,
+		    const gchar *font_name,
+		    const gchar *font_fallback) /* FIXME: should go into misc.c or utils.c */
 {
-  gint fd;
   GtkWidget *hbox, *text, *sb;
-  
-  g_return_val_if_fail (file_name != NULL, NULL);
+  GdkFont *font;
   
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			 "visible", TRUE,
@@ -263,40 +264,62 @@ bst_text_view_from_file (const gchar *file_name) /* FIXME: should go into misc.c
 			 "vadjustment", GTK_RANGE (sb)->adjustment,
 			 "editable", FALSE,
 			 "word_wrap", TRUE,
-			 "line_wrap", TRUE,
+			 "line_wrap", FALSE,
 			 "width", 500,
 			 "height", 500,
 			 "parent", hbox,
 			 NULL);
+
+  font = font_name ? gdk_font_load (font_name) : NULL;
+  if (!font && font_fallback)
+    font = gdk_font_load (font_fallback);
+  if (font)
+    {
+      GtkRcStyle *rc_style = gtk_rc_style_new();
+
+      gdk_font_unref (font);
+      g_free (rc_style->font_name);
+      rc_style->font_name = g_strdup (font_name);
+
+      gtk_widget_modify_style (text, rc_style);
+    }
+
+  if (gstring)
+    gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
   
-  fd = open (file_name, O_RDONLY, 0);
-  if (fd >= 0)
+  if (file_name)
     {
-      gchar buffer[512];
-      guint n;
+      gint fd;
       
-      do
+      fd = open (file_name, O_RDONLY, 0);
+      if (fd >= 0)
 	{
-	  do
-	    n = read (fd, buffer, 512);
-	  while (n < 0 && errno == EINTR); /* don't mind signals */
+	  gchar buffer[512];
+	  guint n;
 	  
-	  gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, buffer, n);
+	  do
+	    {
+	      do
+		n = read (fd, buffer, 512);
+	      while (n < 0 && errno == EINTR); /* don't mind signals */
+	      
+	      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, buffer, n);
+	    }
+	  while (n > 0);
+	  close (fd);
+	  
+	  if (n < 0)
+	    fd = -1;
 	}
-      while (n > 0);
-      close (fd);
-
-      if (n < 0)
-	fd = -1;
+      if (fd < 0)
+	{
+	  gchar *error;
+	  
+	  error = g_strconcat ("Failed to load \"", file_name, "\":\n", g_strerror (errno), NULL);
+	  gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, error, strlen (error));
+	  g_free (error);
+	}
     }
-  if (fd < 0)
-    {
-      gchar *error;
-
-      error = g_strconcat ("Failed to load \"", file_name, "\":\n", g_strerror (errno), NULL);
-      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, error, strlen (error));
-      g_free (error);
-    }
-
+      
   return hbox;
 }

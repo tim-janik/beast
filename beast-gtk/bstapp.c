@@ -27,6 +27,7 @@
 #include	"bstheartmonitor.h"
 #include	"bstgconfig.h"
 #include	"bstpreferences.h"
+#include	"bstpatterneditor.h"
 
 
 
@@ -83,6 +84,7 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Help/_FAQ...",			NULL,		BST_OP (HELP_FAQ),		"<Item>" },
+  { "/Help/_Keytable...",		NULL,		BST_OP (HELP_KEYTABLE),		"<Item>" },
   { "/Help/_Heart...",			NULL,		BST_OP (HELP_HEART),		"<Item>" },
   { "/Help/Synthesis _Networks...",	NULL,		BST_OP (HELP_NETWORKS),		"<Item>" },
   { "/Help/-----",			NULL,		NULL, 0,			"<Separator>" },
@@ -473,7 +475,8 @@ bst_app_operate (BstApp *app,
   static GtkWidget *bst_dialog_save = NULL;
   static GtkWidget *bst_preferences = NULL;
   GtkWidget *widget, *shell;
-  gchar *help_file;
+  gchar *help_file = NULL, *help_title = NULL;
+  GString *help_string = NULL;
 
   g_return_if_fail (BST_IS_APP (app));
   g_return_if_fail (bst_app_can_operate (app, op));
@@ -603,13 +606,20 @@ bst_app_operate (BstApp *app,
       gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
       break;
     case BST_OP_HELP_FAQ:
-      help_file = "faq.txt";
+      help_file = g_strconcat (BST_PATH_DOCS, "/faq.txt", NULL);
+      help_title = help_file;
+      goto case_help_dialog;
+    case BST_OP_HELP_KEYTABLE:
+      help_string = bst_pattern_editor_class_keydump (gtk_type_class (BST_TYPE_PATTERN_EDITOR));
+      help_title = "Keytable";
       goto case_help_dialog;
     case BST_OP_HELP_HEART:
-      help_file = "bse-heart.txt";
+      help_file = g_strconcat (BST_PATH_DOCS, "/bse-heart.txt", NULL);
+      help_title = help_file;
       goto case_help_dialog;
     case BST_OP_HELP_NETWORKS:
-      help_file = "bse-networks.txt";
+      help_file = g_strconcat (BST_PATH_DOCS, "/bse-networks.txt", NULL);
+      help_title = help_file;
       goto case_help_dialog;
     case BST_OP_HELP_ABOUT:
       break;
@@ -618,16 +628,20 @@ bst_app_operate (BstApp *app,
 	{
 	  gchar *string;
 
-	  string = g_strconcat (BST_PATH_DOCS, "/", help_file, NULL);
 	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_subwindow_new (NULL,
 									&bst_help_dialogs[op - BST_OP_HELP_FIRST],
-									bst_text_view_from_file (string),
+									bst_text_view_from (help_string,
+											    help_file,
+											    "-misc-fixed-*-*-*-*-15-*-*-*-*-*-*-*",
+											    "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*"),
 									0);
-	  g_free (string);
-	  string = g_strconcat ("BEAST: ", help_file, NULL);
+	  string = g_strconcat ("BEAST: ", help_title, NULL);
 	  gtk_window_set_title (GTK_WINDOW (bst_help_dialogs[op - BST_OP_HELP_FIRST]), string);
 	  g_free (string);
 	}
+      g_free (help_file);
+      if (help_string)
+	g_string_free (help_string, TRUE);
       gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     default:
@@ -710,6 +724,7 @@ bst_app_can_operate (BstApp *app,
       return TRUE;
       // case BST_OP_HELP_ABOUT:
     case BST_OP_HELP_FAQ:
+    case BST_OP_HELP_KEYTABLE:
     case BST_OP_HELP_NETWORKS:
     case BST_OP_HELP_HEART:
       return TRUE;
