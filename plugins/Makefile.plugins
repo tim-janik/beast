@@ -83,6 +83,13 @@ davsyndrum_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += davsyndrum.h
 
 ##
+## Plugin fldbsepattern
+##
+fldbsepattern_la_SOURCES = fldbsepattern.c
+fldbsepattern_la_LDFLAGS = -module -avoid-version
+fldbsepattern_la_LIBADD  = $(plugin_libs)
+
+##
 ## Plugin greeting
 ##
 greeting_la_SOURCES = greeting.c
@@ -108,6 +115,7 @@ plugin_LTLIBRARIES += \
 	bsenoise.la \
 	davorgan.la \
 	davsyndrum.la \
+	fldbsepattern.la \
 	greeting.la \
 	hello-space.la
 

@@ -1,3 +1,7 @@
+Wed Feb  2 06:50:46 2000  Tim Janik  <timj@gtk.org>
+
+	* fldbsepattern.c: test procedure plugin for feldspar.
+
 Mon Jan 31 19:08:37 2000  Tim Janik  <timj@gtk.org>
 
 	* bsemixer.c (bse_mixer_calc_chunk): fixed optimization bug that cause
