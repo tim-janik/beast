@@ -325,6 +325,7 @@ void IdlParser::parse()
   ModuleHelper::define("Int");
   ModuleHelper::define("Real");
   ModuleHelper::define("String");
+  ModuleHelper::define("FBlock");
   
   GTokenType expected_token = G_TOKEN_NONE;
   
@@ -848,10 +849,19 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
     {
       pspec = "sfi_param_spec_Seq";
       if (!pdef.hasSeq())
-	pspec += "_default (\"" + pdef.name + "\",";
+      {
+	const SequenceDef& sdef = parser.findSequence (pdef.type);
+	ParamDef def;
+	def.name = "content";
+	def.type = sdef.contentType;
+	def.pspec = def.type;
+	pspec += "_default (\"" + pdef.name + "\"," + makeParamSpec(def) + ")";
+      }
       else
+      {
 	pspec += " (\"" + pdef.name + "\",\"" + pdef.nick + "\",\"" + pdef.text + "\",\"" + pdef.hints + "\",";
-      pspec += makeParamSpec (pdef.seq()) + ")";
+        pspec += makeParamSpec (pdef.seq()) + ")";
+      }
     }
   else
     {
@@ -875,13 +885,18 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
 
 string CodeGeneratorC::createTypeCode(const string& type, const string &name, int model)
 {
+  g_return_val_if_fail (model != MODEL_ARG || model != MODEL_RET ||
+                        model != MODEL_ARRAY || name == "", "bad");
+  g_return_val_if_fail (model != MODEL_FREE || model != MODEL_COPY || model != MODEL_NEW ||
+                        model != MODEL_FROM_VALUE || model != MODEL_TO_VALUE || name != "", "bad");
+
   if (parser.isRecord (type) || parser.isSequence (type))
     {
-      if (model == MODEL_ARG)         return makeMixedName (type)+" *"+name;
-      if (model == MODEL_RET)         return makeMixedName (type)+" *";
-      if (model == MODEL_ARRAY)       return makeMixedName (type)+" **"+name;
+      if (model == MODEL_ARG)         return makeMixedName (type)+"*";
+      if (model == MODEL_RET)         return makeMixedName (type)+"*";
+      if (model == MODEL_ARRAY)       return makeMixedName (type)+"**";
       if (model == MODEL_FREE)        return makeLowerName (type)+"_free ("+name+")";
-      if (model == MODEL_COPY)        return makeLowerName (type)+"_copy ("+name+")";
+      if (model == MODEL_COPY)        return makeLowerName (type)+"_copy_shallow ("+name+")";
       if (model == MODEL_NEW)         return name + " = " + makeLowerName (type)+"_new ()";
       if (model == MODEL_TO_VALUE)    return makeLowerName (type)+"_to_value ("+name+")";
       if (model == MODEL_FROM_VALUE)  return makeLowerName (type)+"_from_value ("+name+")";
@@ -894,9 +909,9 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
        * also need to register a glib typesystem type to do the conversion
        * between the actual integer value and the string
        */
-      if (model == MODEL_ARG)         return "gchar *" + name;
-      if (model == MODEL_RET)         return "gchar *";
-      if (model == MODEL_ARRAY)       return "gchar **" + name;
+      if (model == MODEL_ARG)         return "gchar*";
+      if (model == MODEL_RET)         return "gchar*";
+      if (model == MODEL_ARRAY)       return "gchar**";
       if (model == MODEL_FREE)        return "g_free (" + name + ")";
       if (model == MODEL_COPY)        return "g_strdup (" + name + ")";;
       if (model == MODEL_NEW)         return "";
@@ -906,9 +921,9 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
     }
   else if (type == "String")
     {
-      if (model == MODEL_ARG)         return "gchar *" + name;
-      if (model == MODEL_RET)         return "gchar *";
-      if (model == MODEL_ARRAY)       return "gchar **" + name;
+      if (model == MODEL_ARG)         return "gchar*";
+      if (model == MODEL_RET)         return "gchar*";
+      if (model == MODEL_ARRAY)       return "gchar**";
       if (model == MODEL_FREE)        return "g_free (" + name + ")";
       if (model == MODEL_COPY)        return "g_strdup (" + name + ")";;
       if (model == MODEL_NEW)         return "";
@@ -916,11 +931,22 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       // FIXME: do we want sfi_value_dup_string?
       if (model == MODEL_FROM_VALUE)  return "g_strdup (sfi_value_get_string ("+name+"))";
     }
+  else if (type == "FBlock")
+    {
+      if (model == MODEL_ARG)         return "SfiFBlock*";
+      if (model == MODEL_RET)         return "SfiFBlock*";
+      if (model == MODEL_ARRAY)       return "SfiFBlock**";
+      if (model == MODEL_FREE)        return "sfi_fblock_unref (" + name + ")";
+      if (model == MODEL_COPY)        return "sfi_fblock_ref (" + name + ")";;
+      if (model == MODEL_NEW)         return name + " = sfi_fblock_new ()";
+      if (model == MODEL_TO_VALUE)    return "sfi_value_fblock ("+name+")";
+      if (model == MODEL_FROM_VALUE)  return "sfi_fblock_ref (sfi_value_get_fblock ("+name+"))";
+    }
   else
     {
-      if (model == MODEL_ARG)         return "Sfi" + type + " " + name;
+      if (model == MODEL_ARG)         return "Sfi" + type;
       if (model == MODEL_RET)         return "Sfi" + type;
-      if (model == MODEL_ARRAY)       return "Sfi" + type + " *" + name;
+      if (model == MODEL_ARRAY)       return "Sfi" + type + "*";
       if (model == MODEL_FREE)        return "";
       if (model == MODEL_COPY)        return name;
       if (model == MODEL_NEW)         return "";
@@ -965,39 +991,39 @@ void CodeGeneratorC::run()
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
-	  string seq = createTypeCode (si->name, "seq", MODEL_ARG);
-	  string element = createTypeCode (si->contentType, "element", MODEL_ARG);
+	  string arg = createTypeCode (si->name, "", MODEL_ARG);
+	  string element = createTypeCode (si->contentType, "", MODEL_ARG);
 	  string lname = makeLowerName (si->name.c_str());
 	  
-	  printf("%s%s_new (void);\n", ret.c_str(), lname.c_str());
-	  printf("void %s_append (%s, %s);\n", lname.c_str(), seq.c_str(), element.c_str());
-	  printf("%s%s_copy (%s);\n", ret.c_str(), lname.c_str(), seq.c_str());
-	  printf("%s%s_from_value (GValue *value);\n", ret.c_str(), lname.c_str());
-	  printf("GValue *%s_to_value (%s);\n", lname.c_str(), seq.c_str());
-	  printf("void %s_free (%s);\n", lname.c_str(), seq.c_str());
+	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
+	  printf("void %s_append (%s seq, %s element);\n", lname.c_str(), arg.c_str(), element.c_str());
+	  printf("%s %s_copy_shallow (%s seq);\n", ret.c_str(), lname.c_str(), arg.c_str());
+	  printf("%s %s_from_value (GValue *value);\n", ret.c_str(), lname.c_str());
+	  printf("GValue *%s_to_value (%s seq);\n", lname.c_str(), arg.c_str());
+	  printf("void %s_free (%s seq);\n", lname.c_str(), arg.c_str());
 	  printf("\n");
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
 	  string ret = createTypeCode (ri->name, "", MODEL_RET);
-	  string rec = createTypeCode (ri->name, "rec", MODEL_ARG);
+	  string arg = createTypeCode (ri->name, "", MODEL_ARG);
 	  string lname = makeLowerName (ri->name.c_str());
 	  
-	  printf("%s%s_new (void);\n", ret.c_str(), lname.c_str());
-	  printf("%s%s_copy (%s);\n", ret.c_str(), lname.c_str(), rec.c_str());
-	  printf("%s%s_from_value (GValue *value);\n", ret.c_str(), lname.c_str());
-	  printf("GValue *%s_to_value (%s);\n", lname.c_str(), rec.c_str());
-	  printf("void %s_free (%s);\n", lname.c_str(), rec.c_str());
+	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
+	  printf("%s %s_copy_shallow (%s rec);\n", ret.c_str(), lname.c_str(), arg.c_str());
+	  printf("%s %s_from_value (GValue *value);\n", ret.c_str(), lname.c_str());
+	  printf("GValue *%s_to_value (%s rec);\n", lname.c_str(), arg.c_str());
+	  printf("void %s_free (%s rec);\n", lname.c_str(), arg.c_str());
 	  printf("\n");
 	}
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
 	  string mname = makeMixedName (si->name.c_str());
-	  string elements = createTypeCode(si->contentType, "elements", MODEL_ARRAY);
+	  string array = createTypeCode (si->contentType, "", MODEL_ARRAY);
 	  
 	  printf("struct _%s {\n", mname.c_str());
 	  printf("  guint n_elements;\n");
-	  printf("  %s;\n", elements.c_str());
+	  printf("  %s elements;\n", array.c_str());
 	  printf("};\n");
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
@@ -1007,7 +1033,7 @@ void CodeGeneratorC::run()
 	  printf("struct _%s {\n", mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
-	      printf("  %s;\n", createTypeCode(pi->type, pi->name, MODEL_ARG).c_str());
+	      printf("  %s %s;\n", createTypeCode(pi->type, "", MODEL_ARG).c_str(), pi->name.c_str());
 	    }
 	  printf("};\n");
 	}
@@ -1054,8 +1080,8 @@ void CodeGeneratorC::run()
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
-	  string seq = createTypeCode (si->name, "seq", MODEL_ARG);
-	  string element = createTypeCode (si->contentType, "element", MODEL_ARG);
+	  string arg = createTypeCode (si->name, "", MODEL_ARG);
+	  string element = createTypeCode (si->contentType, "", MODEL_ARG);
 	  string lname = makeLowerName (si->name.c_str());
 	  string mname = makeMixedName (si->name.c_str());
 	  
@@ -1067,9 +1093,8 @@ void CodeGeneratorC::run()
 	  
 	  string elementCopy = createTypeCode (si->contentType, "element", MODEL_COPY);
 	  printf("void\n");
-	  printf("%s_append (%s, %s)\n", lname.c_str(), seq.c_str(), element.c_str());
+	  printf("%s_append (%s seq, %s element)\n", lname.c_str(), arg.c_str(), element.c_str());
 	  printf("{\n");
-          printf("\n");
 	  printf("  g_return_if_fail (seq != NULL);\n");
 	  printf("\n");
 	  printf("  seq->elements = g_realloc (seq->elements, "
@@ -1077,11 +1102,10 @@ void CodeGeneratorC::run()
 	  printf("  seq->elements[seq->n_elements++] = %s;\n", elementCopy.c_str());
 	  printf("}\n\n");
 	  
-	  string seq_copy = createTypeCode (si->name, "seq_copy", MODEL_ARG);
 	  printf("%s\n", ret.c_str());
-	  printf("%s_copy (%s)\n", lname.c_str(), seq.c_str());
+	  printf("%s_copy_shallow (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-	  printf("  %s = NULL;\n", seq_copy.c_str ());
+	  printf("  %s seq_copy = NULL;\n", arg.c_str ());
           printf("  if (seq)\n");
           printf("    {\n");
 	  printf("      guint i;\n");
@@ -1097,7 +1121,7 @@ void CodeGeneratorC::run()
 	  printf("%s_from_value (GValue *value)\n", lname.c_str());
 	  printf("{\n");
 	  printf("  SfiSeq *value_seq;\n");
-	  printf("  %s;\n", seq.c_str());
+	  printf("  %s seq;\n", arg.c_str());
 	  printf("  guint i, length;\n");
 	  printf("\n");
 	  printf("  g_return_val_if_fail (SFI_VALUE_HOLDS_SEQ (value), NULL);\n");
@@ -1117,7 +1141,7 @@ void CodeGeneratorC::run()
 	  
 	  string elementToValue = createTypeCode (si->contentType, "seq->elements[i]", MODEL_TO_VALUE);
 	  printf("GValue *\n");
-	  printf("%s_to_value (%s)\n", lname.c_str(), seq.c_str());
+	  printf("%s_to_value (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  SfiSeq *value_seq;\n");
 	  printf("  GValue *retvalue;\n");
@@ -1139,9 +1163,9 @@ void CodeGeneratorC::run()
 	  
 	  string element_i_free = createTypeCode (si->contentType, "seq->elements[i]", MODEL_FREE);
 	  printf("void\n");
-	  printf("%s_free (%s)\n", lname.c_str(), seq.c_str());
+	  printf("%s_free (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-          printf("  if (seq);\n");
+          printf("  if (seq)\n");
           printf("    {\n");
 	  if (element_i_free != "")
 	    {
@@ -1157,14 +1181,14 @@ void CodeGeneratorC::run()
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
 	  string ret = createTypeCode (ri->name, "", MODEL_RET);
-	  string rec = createTypeCode (ri->name, "rec", MODEL_ARG);
+	  string arg = createTypeCode (ri->name, "", MODEL_ARG);
 	  string lname = makeLowerName (ri->name.c_str());
 	  string mname = makeMixedName (ri->name.c_str());
 	  
 	  printf("%s\n", ret.c_str());
 	  printf("%s_new (void)\n", lname.c_str());
 	  printf("{\n");
-	  printf("  %s = g_new0 (%s, 1);\n", rec.c_str(), mname.c_str());
+	  printf("  %s rec = g_new0 (%s, 1);\n", arg.c_str(), mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      string init =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_NEW);
@@ -1173,11 +1197,10 @@ void CodeGeneratorC::run()
 	  printf("  return rec;\n");
 	  printf("}\n\n");
 	  
-	  string rec_copy = createTypeCode (ri->name, "rec_copy", MODEL_ARG);
 	  printf("%s\n", ret.c_str());
-	  printf("%s_copy (%s)\n", lname.c_str(), rec.c_str());
+	  printf("%s_copy_shallow (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-	  printf("  %s = NULL;\n", rec_copy.c_str());
+	  printf("  %s rec_copy = NULL;\n", arg.c_str());
 	  printf("  if (rec)\n");
 	  printf("    {\n");
 	  printf("      rec_copy = %s_new ();\n", lname.c_str());
@@ -1195,7 +1218,7 @@ void CodeGeneratorC::run()
 	  printf("{\n");
 	  printf("  SfiRec *value_rec;\n");
 	  printf("  GValue *element;\n");
-	  printf("  %s;\n", rec.c_str());
+	  printf("  %s rec;\n", arg.c_str());
 	  printf("\n");
 	  printf("  g_return_val_if_fail (SFI_VALUE_HOLDS_REC (value), NULL);\n");
 	  printf("\n");
@@ -1211,7 +1234,7 @@ void CodeGeneratorC::run()
 	  printf("}\n\n");
 	  
 	  printf("GValue *\n");
-	  printf("%s_to_value (%s)\n", lname.c_str(), rec.c_str());
+	  printf("%s_to_value (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  SfiRec *value_rec;\n");
 	  printf("  GValue *retval, *element;\n");
@@ -1232,7 +1255,7 @@ void CodeGeneratorC::run()
 	  printf("}\n\n");
 	  
 	  printf("void\n");
-	  printf("%s_free (%s)\n", lname.c_str(), rec.c_str());
+	  printf("%s_free (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  if (rec)\n");
 	  printf("    {\n");
@@ -1334,7 +1357,7 @@ int main (int argc, char **argv)
 #endif
   
   /*
-   * strip path (sfkidl always outputs the result into the current directory)
+   * strip path (sfidl always outputs the result into the current directory)
    */
   char *pathless = strrchr(prefix,'/');
   if(pathless)
