@@ -109,7 +109,7 @@ bst_icon_from_stock (BstIconId _id)
 	return NULL;
       
       icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id);
-      bse_icon_static_ref (icons[icon_id]);
+      bse_icon_ref_static (icons[icon_id]);
     }
   
   return icons[icon_id];

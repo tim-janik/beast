@@ -262,6 +262,12 @@ bst_item_view_item_removed (BstItemView  *item_view,
     }
 }
 
+static void
+bst_item_view_release_container (BstItemView  *item_view)
+{
+  bst_item_view_set_container (item_view, NULL);
+}
+
 void
 bst_item_view_set_container (BstItemView  *item_view,
 			     BseContainer *new_container)
@@ -295,29 +301,41 @@ bst_item_view_set_container (BstItemView  *item_view,
 	  }
       g_list_free (free_list);
       
-      bse_object_remove_notifier (container, item_view->item_added_id);
-      item_view->item_added_id = 0;
-      bse_object_remove_notifier (container, item_view->item_removed_id);
-      item_view->item_removed_id = 0;
-      bse_object_unref (BSE_OBJECT (container));
+      bse_object_remove_notifiers_by_func (container,
+					   bst_item_view_item_removed,
+					   item_view);
+      bse_object_remove_notifiers_by_func (container,
+					   bst_item_view_item_added,
+					   item_view);
+      bse_object_remove_notifiers_by_func (container,
+					   bst_item_view_release_container,
+					   item_view);
     }
+
+  if (new_container)
+    g_return_if_fail (BSE_ITEM (new_container)->parent != NULL);
   
   item_view->container = new_container;
+
   if (item_view->container)
     {
       GList *free_list;
       
       container = item_view->container;
-      bse_object_ref (BSE_OBJECT (container));
       
-      item_view->item_added_id = bse_object_add_data_notifier (container,
-							       "item_added",
-							       bst_item_view_item_added,
-							       item_view);
-      item_view->item_removed_id = bse_object_add_data_notifier (container,
-								 "item_removed",
-								 bst_item_view_item_removed,
-								 item_view);
+      bse_object_add_data_notifier (container,
+				    "set_parent",
+				    bst_item_view_release_container,
+				    item_view);
+      bse_object_add_data_notifier (container,
+				    "item_added",
+				    bst_item_view_item_added,
+				    item_view);
+      bse_object_add_data_notifier (container,
+				    "item_removed",
+				    bst_item_view_item_removed,
+				    item_view);
+
       free_list = bse_container_list_items (BSE_CONTAINER (container));
       for (list = free_list; list; list = list->next)
 	if (bse_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))

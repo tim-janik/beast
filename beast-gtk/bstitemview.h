@@ -47,9 +47,6 @@ struct _BstItemView
 
   BseType	 item_type;
   
-  guint		 item_added_id;
-  guint		 item_removed_id;
-  
   BseContainer	*container;
   
   GtkWidget	*item_clist;

@@ -1,5 +1,4 @@
 bugs:
--	if output params in proc, provide own status bar
 -	select/none + select/invert unselects focus
 
 icons:
@@ -7,14 +6,12 @@ icons:
 
 important:
 -	sane default sizes for windows
--	write up basic blurb 1)new song 2) instrument+sample 3) pattern etc..
+-	write up basic blurb 1) new song 2) instrument+sample 3) pattern etc..
 -	how to get instruments going in a pattern
 
 general:
--	use subwindow for bsepatterdialog
--	item view should use destroy notification for bse container
+-	use suxillary window for bsepatterdialog?
 -	need -Wshadow
--	need file-exists dialog
 -	get File/Save to work
 -	quit/close needs to feature mod-time vs. creation-time handling
 
@@ -24,14 +21,12 @@ instrument editor:
 sample repo:
 -	this needs to be moved into BSE in a clean fashion
 
-Procedure dialog:
--	optimize rebuilding, don't destroy status bar (this confuses the
-	last-dialog keeping of bststatusbar)!
+Statusbars:
 -	figure work around for button is hidden while depressed bug.
 
 Pattern Editor
--	the popup menu should be attached/detached instead of the ref/sink pair
--	feature pattern params
+-	the popup menu should be attached/detached instead of the ifactory ref/sink pair?
+-	feature pattern note parameters
 -	user configurable toggle to start from 000 or 001 for row numbering
 -	per channel mute. per channel in-use flag (bg-color?) (active when any note or instr or eff)
 
