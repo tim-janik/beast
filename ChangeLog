@@ -1,3 +1,9 @@
+Wed Oct  6 01:17:59 2004    <timj@birnet.org>
+
+	* beast-gtk/gxk/gxkutils.c (gxk_widget_ancestry_viewable): work around
+	gdk_widnow_is_viewable() bug in Gtk+-2.4.10 and earlier. removed 
+	debugging code.
+
 Tue Oct  5 22:36:05 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/radgets-standard.xml: added support for paned

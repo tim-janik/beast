@@ -43,30 +43,13 @@ static gulong viewable_changed_id = 0;
 
 
 /* --- functions --- */
-#if     GTK_CHECK_VERSION (2, 4, 0)
-
-#if 0
-static void
-widget_print_ancestry (GtkWidget *widget)
-{
-  g_print ("%s: drawable=%d window-viewable=%d ancestry-mapped=%d\n",
-           g_type_name (G_OBJECT_TYPE (widget)), GTK_WIDGET_DRAWABLE (widget),
-           gdk_window_is_viewable (widget->window),
-           widget_ancestry_mapped (widget));
-  if (widget->parent)
-    widget_print_ancestry (widget->parent);
-}
-#endif
-
 static gboolean
-gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, FIXME: remove this
+gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, remove this when depending on gtk+ > 2.4.10
                                     guint      signal_id)
 {
-  // g_print ("%s: accelerator-check:\n",  g_type_name (G_OBJECT_TYPE (widget))), widget_print_ancestry(widget);
   /* widgets must be onscreen for accels to take effect */
   return GTK_WIDGET_IS_SENSITIVE (widget) && GTK_WIDGET_DRAWABLE (widget) && gxk_widget_ancestry_viewable (widget);
 }
-#endif
 
 static gboolean
 ehook_container_focus_child_set (GSignalInvocationHint *ihint,
@@ -189,19 +172,19 @@ _gxk_init_utils (void)
  * @RETURNS: whether @widget is visible on screen
  *
  * Checks for @widget to be effectively visible on screen.
- * Note that this is not the same as gdk_window_is_viewable()
- * for the widget's window or GTK_WIDGET_DRAWABLE(), as
- * those may return true for children of notebooks, eventboxes
- * or handleboxes although the widget is not visible on screen.
+ * This function works around a bug in Gtk+ versions <= 2.4.10,
+ * with newer Gtk+ versions, (gdk_window_is_viewable(widget->window) &&
+ * GTK_WIDGET_DRAWABLE(widget)) is a suitable replacement.
  */
 gboolean
 gxk_widget_ancestry_viewable (GtkWidget *widget)
 {
+  // GTKFIX: gdk_window_is_viewable() is broken up to Gtk+-2.4.10
   if (!widget->window || !gdk_window_is_viewable (widget->window))
     return FALSE;
   while (widget)
     {
-      if (!GTK_WIDGET_DRAWABLE (widget))        /* visible && mapped */
+      if (!GTK_WIDGET_DRAWABLE (widget) || !gdk_window_is_viewable (widget->window))
         return FALSE;
       widget = widget->parent;
     }
