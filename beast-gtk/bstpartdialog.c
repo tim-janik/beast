@@ -257,7 +257,7 @@ bst_part_dialog_init (BstPartDialog *self)
 
   /* event roll configure box */
   hb3 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  g_object_new (GTK_TYPE_LABEL, "label", "Control Type: ", "parent", hb3, NULL);
+  g_object_new (GTK_TYPE_LABEL, "label", _("Control Type: "), "parent", hb3, NULL);
   gtk_box_pack_start (GTK_BOX (hb3), eb, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vb), hb3, FALSE, TRUE, 0);
 

@@ -138,12 +138,12 @@ bst_wave_repo_shell_rebuild (BstSuperShell *super_shell)
                                NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (wshell->wave_view),
                             gtk_widget_new (GTK_TYPE_LABEL,
-                                            "label", "Waves",
+                                            "label", _("Waves"),
                                             "visible", TRUE,
                                             NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (wshell->param_view),
                             gtk_widget_new (GTK_TYPE_LABEL,
-                                            "label", "Parameters",
+                                            "label", _("Parameters"),
                                             "visible", TRUE,
                                             NULL));
 }

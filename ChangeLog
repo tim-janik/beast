@@ -1,3 +1,35 @@
+Sat Oct 11 21:56:33 2003  Tim Janik  <timj@gtk.org>
+
+	* apllied patch from Christian Neumair <chris@gnome-de.org>
+	to translate bse and beast.
+	made lots of modifications on top of the patch to get bse
+	translations to work, integrate things more smoothly with beast
+	and started sample translation de.
+
+	* po-bse/: new directory holding bse translations.
+
+	* po-bse/de.po:
+	* po/de.po: german message catalogs.
+
+	* po/update.sh:
+	* po-bse/update.sh: helper scripts to update language specifc
+	message catalogs (e.g. update.sh de).
+
+	* po-bse/Makefile.in.in: makefile copy to hardcode GETTEXT_PACKAGE=bse.
+
+	* Makefile.am: provide BST_PATH_LOCALE in make-paths.h.
+
+	* configure.in: moved i18n stuff into its own fucntion.
+	replicated AM_GLIB_DEFINE_LOCALEDIR() which doesn't AC_SUBST() its
+	result.
+	christian's patch adds AC_CONFIG_COMMANDS() to generate po-bse/Makefile.
+
+	* beast-gtk/bstdefs.h:
+	* bse/bsedefs.h: provide _() and N_().
+
+	* beast-gtk/bstmain.c: bind "beast" textdomain to BST_PATH_LOCALE and
+	handle additional path argument.
+
 Sat Oct 11 17:54:01 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstauxdialogs.[hc]: new file for small auxillary dialog

@@ -92,8 +92,8 @@ main (int   argc,
   guint i;
 
   /* initialize i18n */
-  bindtextdomain (GETTEXT_PACKAGE, BEAST_LOCALEDIR);
-  textdomain (GETTEXT_PACKAGE);
+  bindtextdomain ("beast", BST_PATH_LOCALE);
+  textdomain ("beast");
   setlocale (LC_ALL, "");
 
   /* initialize GLib guts */
@@ -540,11 +540,13 @@ bst_early_parse_args (int    *argc_p,
 	    g_print ("%s\n", BSE_PATH_SCRIPTS);
 	  else if (strcmp (arg, "samples") == 0)
 	    g_print ("%s\n", BST_PATH_DATA_SAMPLES);
+	  else if (strcmp (arg, "locale") == 0)
+	    g_print ("%s\n", BST_PATH_LOCALE);
 	  else
 	    {
 	      if (arg[0])
                 g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: docs, images, plugins, scripts, samples");
+	      g_message ("supported resource paths: docs, images, plugins, scripts, samples, locale");
 	    }
 	  exit (0);
 	}
@@ -591,6 +593,7 @@ bst_print_blurb (gboolean print_help)
       g_print ("Image Path:  %s\n", BST_PATH_IMAGES);
       g_print ("Plugin Path: %s\n", BSE_PATH_PLUGINS);
       g_print ("Script Path: %s\n", BSE_PATH_SCRIPTS);
+      g_print ("Locale Path: %s\n", BST_PATH_LOCALE);
       g_print ("Sample Path: %s:$BEAST_SAMPLE_PATH\n", BST_PATH_DATA_SAMPLES);
       g_print ("LADSPA Path: %s:$LADSPA_PATH\n", BSE_PATH_LADSPA);
       g_print ("\n");

@@ -95,7 +95,7 @@ bst_rack_editor_init (BstRackEditor *ed)
 				  NULL);
   gtk_box_pack_start (GTK_BOX (ed), ed->button_edit, FALSE, TRUE, 0);
   g_object_new (GTK_TYPE_LABEL,
-		"label", "_Edit",
+		"label", _("_Edit"),
 		"use_underline", TRUE,
 		"visible", TRUE,
 		"parent", ed->button_edit,

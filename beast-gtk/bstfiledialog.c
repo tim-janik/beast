@@ -193,7 +193,7 @@ bst_file_dialog_init (BstFileDialog *self)
   
   /* setup save options */
   self->osave = g_object_new (GTK_TYPE_FRAME,
-			      "label", "Contents",
+			      "label", _("Contents"),
 			      "parent", self->fs->action_area,
 			      NULL);
   vbox = g_object_new (GTK_TYPE_VBOX,
@@ -201,14 +201,14 @@ bst_file_dialog_init (BstFileDialog *self)
 		       "parent", self->osave,
 		       NULL);
   self->radio1 = g_object_new (GTK_TYPE_RADIO_BUTTON,
-			       "label", "Store references to wave files",
+			       "label", _("Store references to wave files"),
 			       "visible", TRUE,
 			       "parent", vbox,
 			       "can_focus", FALSE,
 			       NULL);
   gtk_misc_set_alignment (GTK_MISC (GTK_BIN (self->radio1)->child), 0, .5);
   any = g_object_new (GTK_TYPE_RADIO_BUTTON,
-		      "label", "Include wave files",
+			      "label", _("Include wave files"),
 		      "visible", TRUE,
 		      "parent", vbox,
 		      "group", self->radio1,

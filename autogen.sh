@@ -123,11 +123,11 @@ echo "Running gettextize...  Ignore non-fatal messages."
 # Hmm, we specify --force here, since otherwise things dont'
 # get added reliably, but we don't want to overwrite intl
 # while making dist.
-echo "no" | $GETTEXTIZE --copy --force
+echo "no" | $GETTEXTIZE --copy --force || exit $?
 
 # run intltool
 echo "Running intltoolize..."
-$INTLTOOLIZE --copy --force --automake
+$INTLTOOLIZE --copy --force --automake || exit $?
 
 # run aclocal
 $ACLOCAL $ACLOCAL_FLAGS	|| exit $?

@@ -149,17 +149,17 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 			       NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->track_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Tracks",
+					    "label", _("Tracks"),
 					    "visible", TRUE,
 					    NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->param_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Parameters",
+					    "label", _("Parameters"),
 					    "visible", TRUE,
 					    NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->part_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Parts",
+					    "label", _("Parts"),
 					    "visible", TRUE,
 					    NULL));
   if (BST_DBG_EXT)
@@ -170,7 +170,7 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 			NULL);
       gtk_notebook_append_page (GTK_NOTEBOOK (notebook), gtk_widget_get_toplevel (GTK_WIDGET (song_shell->snet_router)),
 				gtk_widget_new (GTK_TYPE_LABEL,
-						"label", "Routing",
+						"label", _("Routing"),
 						"visible", TRUE,
 						NULL));
     }

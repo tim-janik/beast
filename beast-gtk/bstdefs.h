@@ -80,12 +80,11 @@ typedef enum {
 
 /* --- i18n and gettext helpers --- */
 #define CKEY(x) x
-/* allow gettext-ization */
-#define _(String) gettext (String)
+#define _(str)		dgettext (NULL, str)
 #ifdef gettext_noop
-#    define N_(String) gettext_noop (String)
+#  define N_(str)	gettext_noop (str)
 #else
-#    define N_(String) (String)
+#  define N_(str)	(str)
 #endif
 
 

@@ -23,7 +23,6 @@
 
 #include <string.h>
 
-#define	_(x)	(x)
 #define	FREQ_DELTA	0.1
 
 /* --- parameters --- */

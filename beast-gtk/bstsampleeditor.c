@@ -533,7 +533,7 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
    */
   any = g_object_new (GTK_TYPE_BUTTON,
 		      "visible", TRUE,
-		      "label", "Preview",
+		      "label", _("Preview"),
 		      NULL);
   g_object_connect (any,
 		    "swapped_signal::clicked", play_back_wchunk, editor,

@@ -627,7 +627,7 @@ bst_radio_tools_build_palette (BstRadioTools *self,
       gtk_box_pack_start (GTK_BOX (hbox), text, TRUE, TRUE, 5);
       gtk_widget_new (GTK_TYPE_FRAME,
                       "visible", TRUE,
-                      "label", "Description",
+                      "label", _("Description"),
                       "label_xalign", 0.5,
                       "border_width", 5,
                       "parent", vbox,

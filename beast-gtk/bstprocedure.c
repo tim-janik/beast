@@ -210,7 +210,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
       gtk_box_pack_start (GTK_BOX (hbox), text, TRUE, TRUE, 5);
       gtk_widget_new (GTK_TYPE_FRAME,
                       "visible", TRUE,
-                      "label", "Description",
+                      "label", _("Description"),
                       "label_xalign", 0.0,
                       "width_request", 1,
                       "height_request", 50,

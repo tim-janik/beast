@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-11 21:32+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. now, we can popup the splash screen
+#.
+#: beast-gtk/bstmain.c:133
+msgid "BEAST Startup"
+msgstr "BEAST Start"
+
+#: beast-gtk/bstmain.c:140
+msgid "Startup"
+msgstr "Starten"
+
+#. BEAST initialization
+#.
+#: beast-gtk/bstmain.c:145
+msgid "Objects"
+msgstr "Objekte"
+
+#: beast-gtk/bstmain.c:149
+msgid "Language"
+msgstr "Sprachen"
+
+#: beast-gtk/bstmain.c:162
+msgid "RC File"
+msgstr ""
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:169
+msgid "Splash Image"
+msgstr ""
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:181
+msgid "BSE Core"
+msgstr ""
+
+#: beast-gtk/bstmain.c:200
+msgid "Plugins"
+msgstr ""
+
+#: beast-gtk/bstmain.c:219
+msgid "LADSPA Plugins"
+msgstr "LADSPA Module"
+
+#: beast-gtk/bstmain.c:247
+msgid "Scripts"
+msgstr ""
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:265
+msgid "Dialogs"
+msgstr ""
+
+#: beast-gtk/bstmain.c:277
+msgid "Loading..."
+msgstr ""
+
+#: beast-gtk/bstmain.c:307 beast-gtk/bstmain.c:309
+#, c-format
+msgid "Loading \"%s\""
+msgstr ""
+
+#: beast-gtk/bstmain.c:326
+#, c-format
+msgid "Loading project \"%s\""
+msgstr ""
+
+#: beast-gtk/bstwavereposhell.c:141
+msgid "Waves"
+msgstr ""
+
+#: beast-gtk/bstwavereposhell.c:146
+msgid "Parameters"
+msgstr "Eigenschaften"

@@ -230,7 +230,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 				       gtk_widget_new (GTK_TYPE_FRAME,
 						       "visible", TRUE,
 						       "border_width", 5,
-						       "label", "Module link",
+						       "label", _("Module link"),
 						       "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL),
 						       NULL));
   clink_view_update (clink, TRUE);

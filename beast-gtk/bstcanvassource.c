@@ -481,7 +481,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 					     gtk_widget_new (GTK_TYPE_FRAME,
 							     "visible", TRUE,
 							     "border_width", 5,
-							     "label", "Module Info",
+							     "label", _("Module Info"),
 							     "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL),
 							     NULL));
     }

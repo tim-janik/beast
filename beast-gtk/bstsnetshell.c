@@ -21,7 +21,6 @@
 #include "bstapp.h"
 
 
-
 /* --- prototypes --- */
 static void	bst_snet_shell_class_init	(BstSNetShellClass	*klass);
 static void	bst_snet_shell_init		(BstSNetShell		*pe);
@@ -115,7 +114,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 			NULL);
       gtk_notebook_append_page (GTK_NOTEBOOK (notebook), gtk_widget_get_toplevel (GTK_WIDGET (snet_shell->snet_router)),
 				gtk_widget_new (GTK_TYPE_LABEL,
-						"label", "Routing",
+						"label", _("Routing"),
 						"visible", TRUE,
 						NULL));
     }
@@ -129,7 +128,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 		    NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (snet_shell->param_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Parameters",
+					    "label", _("Parameters"),
 					    "visible", TRUE,
 					    NULL));
 }

@@ -547,7 +547,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Selection to Loop",
+					   "label", _("Selection to Loop"),
 					   NULL),
 			     "swapped_signal::clicked", selection_to_loop, first_view->qsampler,
 			     NULL);
@@ -555,7 +555,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Loop to Selection",
+					   "label", _("Loop to Selection"),
 					   NULL),
 			     "swapped_signal::clicked", loop_to_selection, first_view->qsampler,
 			     NULL);
@@ -563,7 +563,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Zoom Selection",
+					   "label", _("Zoom Selection"),
 					   NULL),
 			     "swapped_signal::clicked", zoom_selection, first_view->qsampler,
 			     NULL);
@@ -571,7 +571,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Apply Loop",
+					   "label", _("Apply Loop"),
 					   NULL),
 			     "swapped_signal::clicked", set_loop, first_view->qsampler,
 			     NULL);
@@ -579,7 +579,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Reset Loop",
+					   "label", _("Reset Loop"),
 					   NULL),
 			     "swapped_signal::clicked", unset_loop, first_view->qsampler,
 			     NULL);
@@ -587,7 +587,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Score",
+					   "label", _("Score"),
 					   NULL),
 			     "swapped_signal::clicked", score, first_view->qsampler,
 			     NULL);
@@ -595,7 +595,7 @@ main (int   argc,
 
   button = g_object_connect (g_object_new (GTK_TYPE_BUTTON,
 					   "visible", TRUE,
-					   "label", "Find",
+					   "label", _("Find"),
 					   NULL),
 			     "swapped_signal::clicked", find, first_view,
 			     NULL);
@@ -613,7 +613,7 @@ main (int   argc,
   
   button = g_object_new (GTK_TYPE_BUTTON,
 			 "visible", TRUE,
-			 "label", "Mark Signal (Head)",
+			 "label", _("Mark Signal (Head)"),
 			 NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
   for (view = wave_views; view; view = view->next)
@@ -623,7 +623,7 @@ main (int   argc,
 
   button = g_object_new (GTK_TYPE_BUTTON,
 			 "visible", TRUE,
-			 "label", "Mark Signal (Tail)",
+			 "label", _("Mark Signal (Tail)"),
 			 NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
   for (view = wave_views; view; view = view->next)

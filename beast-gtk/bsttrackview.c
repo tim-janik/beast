@@ -637,7 +637,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				  0.5, "Post", "Postprocessing Synthesizer network for this track",
 				  track_view_post_synth_edited, track_view_post_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_BLURB, "",
-				 0.0, "Comment", NULL,
+				 0.0, _("Comment"), NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
 
   /* make widgets visible */
