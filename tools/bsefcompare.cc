@@ -243,7 +243,7 @@ int main (int argc, char **argv)
 	{
 	  double s = 0.0;
 	  printf ("similarities: ");
-	  for (int i = 0; i < similarity.size(); i++)
+	  for (size_t i = 0; i < similarity.size(); i++)
 	    {
 	      printf (i == 0 ? "%f" : ",%f", similarity[i] * 100.0); /* percent */
 	      s += similarity[i];
@@ -252,7 +252,7 @@ int main (int argc, char **argv)
 
 	  double overall = s / similarity.size() * 100.0; /* percent */
 
-	  printf ("overall similarity rating: %f% => ", overall);
+	  printf ("overall similarity rating: %f%% => ", overall);
 	  if (overall == 100.0)
 	    {
 	      printf ("perfect match.\n");

@@ -199,7 +199,7 @@ build_frequency_vector (GslLong size,
                         double *samples)
 {
   vector<double> fvector;
-  double in[size], c[size + 2], *im, vlen;
+  double in[size], c[size + 2], *im;
   gint i;
 
   for (i = 0; i < size; i++)
@@ -369,7 +369,7 @@ int main (int argc, char **argv)
 
       for (double offset_ms = 0; offset_ms < file_size_ms; offset_ms += 30) /* extract a feature vector every 30 ms */
 	{
-	  GslLong extract_frame = offset_ms / file_size_ms * length / n_channels;
+	  GslLong extract_frame = GslLong (offset_ms / file_size_ms * length / n_channels);
 
 	  double samples[4096];
 	  bool skip = false;
