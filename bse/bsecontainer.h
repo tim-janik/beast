@@ -90,10 +90,6 @@ gchar* /*fr*/	bse_container_make_upath	(BseContainer	*container,
 gboolean	bse_container_check_restore	(BseContainer	*container,
 						 const gchar	*child_type);
 /* non-undo functions */
-gpointer        bse_container_new_child         (BseContainer   *container,
-						 GType           child_type,
-						 const gchar    *first_param_name,
-						 ...);
 gpointer        bse_container_new_child_bname   (BseContainer   *container,
 						 GType           child_type,
 						 const gchar    *base_name,

@@ -261,8 +261,10 @@ bse_container_add_item (BseContainer *container,
       if (!uname)
         {
           uname = BSE_OBJECT_TYPE_NAME (item);
-          if (strncmp (uname, "Bse", 3) == 0 && uname[3])
-            uname += 3; /* strip namespace for convenient naming */
+          if (strncmp (uname, "BseContrib", 10) == 0 && uname[10] >= 'A' && uname[10] <= 'Z')
+            uname += 10;                /* strip BseContrib namespace for convenient naming */
+          else if (strncmp (uname, "Bse", 3) == 0 && uname[3] >= 'A' && uname[3] <= 'Z')
+            uname += 3;                 /* strip Bse namespace for convenient naming */
         }
 
       l = strlen (uname);
