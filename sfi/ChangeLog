@@ -1,3 +1,9 @@
+Mon Dec 15 15:30:57 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: auto-prepend "/Modules/" to plugin categories, as
+	this part of the category string should not be translated, and
+	is redundant in idl files.
+
 Sat Dec 13 19:09:47 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.*: Support parsing for i18n'd strings in property
