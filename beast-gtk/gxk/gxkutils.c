@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkutils.h"
+#include "gxkcellrendererpopup.h"
 
 
 /* --- generated marshallers --- */
@@ -748,6 +749,56 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
   cell = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
+		       "xalign", xalign,
+		       "editable", edited_callback != NULL,
+		       NULL);
+  if (edited_callback)
+    g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
+  gxk_tree_view_add_column (tree_view, -1,
+			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+						 "title", title,
+						 "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+						 "resizable", TRUE,
+						 "reorderable", TRUE,
+						 NULL),
+			    cell,
+			    "text", model_column,
+			    NULL);
+  if (tooltip)
+    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
+  gtk_tree_view_column_set_alignment (tcol, xalign);
+}
+
+/**
+ * gxk_tree_view_add_popup_column
+ * @tree_view:        valid #GtkTreeView
+ * @model_column:     model column
+ * @xalign:	      horizontal text alignment
+ * @title:            column title
+ * @tooltip:          column tooltip
+ * @edited_callback:  notification callback 
+ * @data:             data passed in to toggled_callback
+ * @cflags:           connection flags
+ *
+ * Add a text column with popup facility, similar to
+ * gxk_tree_view_add_text_column().
+ */
+void
+gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
+				guint	      model_column,
+				gdouble       xalign,
+				const gchar  *title,
+				const gchar  *tooltip,
+				gpointer      edited_callback,
+				gpointer      data,
+				GConnectFlags cflags)
+{
+  GtkCellRenderer *cell;
+  GtkTreeViewColumn *tcol;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
 		       "xalign", xalign,
 		       "editable", edited_callback != NULL,
 		       NULL);

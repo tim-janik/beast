@@ -18,13 +18,13 @@ noinst_LIBRARIES = libgxk.a
 gxk_headers = $(strip \
 	gxkled.h	gxkcanvas.h	gxkdialog.h	gxkglobals.h     \
 	gxkstatusbar.h	gxkstock.h	gxktexttools.h	gxklistwrapper.h \
-	gxktoolbar.h	gxkutils.h	gxkpolygon.h	\
+	gxktoolbar.h	gxkutils.h	gxkpolygon.h	gxkcellrendererpopup.h \
 	gxk.h \
 )
 gxk_c_sources = $(strip \
 	gxkled.c	gxkcanvas.c	gxkdialog.c	gxkglobals.c     \
 	gxkstatusbar.c	gxkstock.c	gxktexttools.c	gxklistwrapper.c \
-	gxktoolbar.c	gxkutils.c	gxkpolygon.c	\
+	gxktoolbar.c	gxkutils.c	gxkpolygon.c	gxkcellrendererpopup.c \
 )
 gxk_extra_sources = $(strip \
 	gxkmarshal.list \

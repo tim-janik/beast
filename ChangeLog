@@ -1,3 +1,23 @@
+Thu Mar  6 06:09:18 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c: removed SEQID column, since the SeqId
+	is pretty useless for tracks. added Synth column to allow the user
+	to choose the SNet for a track. skip per-track property editing
+	elements. implemented upath matching algorithm for synth lookups.
+	however, we still need a convenient popup window to let the
+	user graphically select synths (or waves).
+
+	* beast-gtk/gxk/gxkutils.c: added function to create popup
+	cell renderer columns.
+	
+	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: new file implementing
+	a GtkCellRendererText derived cell renderer: GxkCellRendererPopup,
+	and a GtkEventBox derived GtkCellEditable interface proxy:
+	GxkProxyEditable. the latter is needed to have multiple widgets
+	make up an editable cell. the actual popup window doesn't yet
+	work, though the rest of the code seems to be in sufficient
+	shape now.
+
 Wed Mar  5 23:19:28 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/catalog-en.c (tools_en): document part-link tool.

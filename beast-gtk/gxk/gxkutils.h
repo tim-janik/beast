@@ -122,6 +122,14 @@ void	gxk_tree_view_add_toggle_column		(GtkTreeView  *tree_view,
 						 gpointer      toggled_callback,
 						 gpointer      data,
 						 GConnectFlags cflags);
+void	 gxk_tree_view_add_popup_column		(GtkTreeView  *tree_view,
+						 guint	       model_column,
+						 gdouble       xalign,
+						 const gchar  *title,
+						 const gchar  *tooltip,
+						 gpointer      edited_callback,
+						 gpointer      data,
+						 GConnectFlags cflags);
 void	gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn   *tree_column,
 						 const gchar         *title,
 						 const gchar	     *tooltip);

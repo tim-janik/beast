@@ -40,10 +40,10 @@ static void	track_view_unlisten_on		(BstItemView		*iview,
 
 /* --- columns --- */
 enum {
-  COL_SEQID,
   COL_NAME,
   COL_MUTE,
   COL_VOICES,
+  COL_SYNTH,
   COL_BLURB,
   N_COLS
 };
@@ -102,7 +102,7 @@ bst_track_view_class_init (BstTrackViewClass *class)
   item_view_class->n_ops = n_track_view_ops;
   item_view_class->ops = track_view_ops;
   item_view_class->horizontal_ops = TRUE;
-  item_view_class->show_properties = TRUE;
+  item_view_class->show_properties = FALSE;
   item_view_class->operate = bst_track_view_operate;
   item_view_class->can_operate = bst_track_view_can_operate;
   item_view_class->create_tree = bst_track_view_create_tree;
@@ -165,10 +165,7 @@ track_view_fill_value (BstItemView *iview,
       const gchar *string;
       gboolean vbool;
       SfiInt vint;
-      SfiProxy item;
-    case COL_SEQID:
-      g_value_set_string_take_ownership (value, g_strdup_printf (iview->id_format, seqid));
-      break;
+      SfiProxy item, snet;
     case COL_NAME:
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       g_value_set_string (value, bse_item_get_name (item));
@@ -182,6 +179,12 @@ track_view_fill_value (BstItemView *iview,
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       bse_proxy_get (item, "n_voices", &vint, NULL);
       sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
+      break;
+    case COL_SYNTH:
+      item = bse_container_get_item (iview->container, iview->item_type, seqid);
+      snet = 0;
+      bse_proxy_get (item, "snet", &snet, NULL);
+      g_value_set_string (value, snet ? bse_item_get_name (snet) : "");
       break;
     case COL_BLURB:
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
@@ -236,6 +239,41 @@ track_view_voices_edited (BstTrackView *self,
 	  if (i > 0)
 	    bse_proxy_set (item, "n_voices", i, NULL);
 	}
+    }
+}
+
+static void
+track_view_synth_edited (BstTrackView *self,
+			 const gchar  *strpath,
+			 const gchar  *text)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy snet = 0, item = bse_container_get_item (BST_ITEM_VIEW (self)->container,
+							BST_ITEM_VIEW (self)->item_type,
+							seqid);
+      guint i, l = text ? strlen (text) : 0;
+      if (l)
+	{
+	  SfiProxy ematch = 0, tmatch = 0;
+	  /* list possible snet candidates */
+	  BseProxySeq *pseq = bse_item_list_proxies (item, "snet");
+	  for (i = 0; !ematch && i < pseq->n_proxies; i++)
+	    {
+	      const gchar *path = bse_item_get_uname_path (pseq->proxies[i]);
+	      guint j = path ? strlen (path) : 0;
+	      if (j == l && strcmp (text, path) == 0)
+		ematch = pseq->proxies[i];	/* find exact match */
+	      else if (!tmatch && j >= l && strcmp (text, path + j - l) == 0)
+		tmatch = pseq->proxies[i];	/* fallback to first tail match */
+	    }
+	  snet = ematch ? ematch : tmatch;
+	}
+      bse_proxy_set (item, "snet", snet, NULL);
     }
 }
 
@@ -312,10 +350,10 @@ bst_track_view_create_tree (BstItemView *iview)
 
   /* item list model */
   iview->wlist = gxk_list_wrapper_new (N_COLS,
-				       G_TYPE_STRING,	/* COL_SEQID */
 				       G_TYPE_STRING,	/* COL_NAME */
 				       G_TYPE_BOOLEAN,	/* COL_MUTE */
 				       G_TYPE_STRING,	/* COL_VOICES */
+				       G_TYPE_STRING,	/* COL_SYNTH */
 				       G_TYPE_STRING	/* COL_BLURB */
 				       );
   g_signal_connect_object (iview->wlist, "fill-value",
@@ -459,8 +497,6 @@ bst_track_view_create_tree (BstItemView *iview)
   gtk_box_pack_start (GTK_BOX (hb), vb3, FALSE, TRUE, 0);
 
   /* add list view columns */
-  gxk_tree_view_append_text_columns (iview->tree, 1,
-				     COL_SEQID, 0.0, "ID");
   gxk_tree_view_add_text_column (iview->tree,
 				 COL_NAME, 0.0, "Name", NULL,
 				 bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
@@ -470,6 +506,9 @@ bst_track_view_create_tree (BstItemView *iview)
   gxk_tree_view_add_text_column (iview->tree,
 				 COL_VOICES, 0.5, "V", "Maximum number of voices for simultaneous playback",
 				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_popup_column (iview->tree,
+				  COL_SYNTH, 0.5, "Test", "Test column with popup",
+				  track_view_synth_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree,
 				 COL_BLURB, 0.0, "Comment", NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);

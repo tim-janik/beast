@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 
 #include <gxk/gxkcanvas.h>
+#include <gxk/gxkcellrendererpopup.h>
 #include <gxk/gxkdialog.h>
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkled.h>
