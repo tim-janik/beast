@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-13 19:22+0100\n"
-"PO-Revision-Date: 2004-03-15 00:29+0100\n"
+"POT-Creation-Date: 2004-04-13 19:05+0200\n"
+"PO-Revision-Date: 2004-04-13 20:44+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -724,7 +724,9 @@ msgstr "Editor"
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
-msgstr "De kolom-indeling van de patroon-editor wordt gemaakt door het geven van kolomtypes met mogelijke aanpassingen in de weergavevolgorde."
+msgstr ""
+"De kolom-indeling van de patroon-editor wordt gemaakt door het geven van "
+"kolomtypes met mogelijke aanpassingen in de weergavevolgorde."
 
 # moet dit vertaald worden?
 #: beast-gtk/bstpatterncolumns.c:685
@@ -896,7 +898,8 @@ msgstr "Stappen"
 #: beast-gtk/bstpatternctrl.c:84
 msgid ""
 "The number of cells to move across each time an event or note was edited"
-msgstr "De verschuiving (in aantal cellen) nadat een gebeurtenis of noot is bewerkt"
+msgstr ""
+"De verschuiving (in aantal cellen) nadat een gebeurtenis of noot is bewerkt"
 
 #: beast-gtk/bstpatternctrl.c:88
 msgid "Direction"
@@ -913,7 +916,9 @@ msgstr "HWrap"
 #: beast-gtk/bstpatternctrl.c:94
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
-msgstr "Schakelen of horizontale verplaatsing van de focus-cel bij de randen doorloopt naar de volgende regel"
+msgstr ""
+"Schakelen of horizontale verplaatsing van de focus-cel bij de randen "
+"doorloopt naar de volgende regel"
 
 #: beast-gtk/bstpatternctrl.c:97
 msgid "Base Octave"
@@ -981,7 +986,9 @@ msgstr "Focus-cel instellen op de laagst mogelijke positie"
 
 #: beast-gtk/bstpatternctrl.c:283
 msgid "Set the number of steps to make when moving to the next cell"
-msgstr "Stel het aantal uit te voeren stappen in bij het verschuiven naar de volgende cel"
+msgstr ""
+"Stel het aantal uit te voeren stappen in bij het verschuiven naar de "
+"volgende cel"
 
 #: beast-gtk/bstpatternctrl.c:287
 msgid "Set the base octave"
@@ -993,7 +1000,9 @@ msgstr "Het basoctaaf met een gegeven hoeveelheid aanpassen"
 
 #: beast-gtk/bstpatternctrl.c:294
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
-msgstr "De focus-cel getals-inhoud (bijv. octaaf) aanpassen met een gegeven hoeveelheid"
+msgstr ""
+"De focus-cel getals-inhoud (bijv. octaaf) aanpassen met een gegeven "
+"hoeveelheid"
 
 #: beast-gtk/bstpatternctrl.c:298
 msgid "Set the focus cell octave"
@@ -1216,15 +1225,11 @@ msgstr "Afspelen stoppen"
 
 #: beast-gtk/bstrackeditor.c:95
 msgid ""
-"The rack editor is still highly experimental code and guranrteed to be "
+"The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
-msgstr ""
-"De rack-editor is zeer experimentele code en zal in toekomstige versies "
-"zeker veranderen. Geloof dus niet dat de rack editor in de toekomst niet zal "
-"veranderen van uiterlijk en zorg dat u rekening houdt met de instabiliteiten "
-"van de code (dus uw projecten regelmatig opslaan). "
+msgstr "De rack-editor is nog steeds zeer experimentele code en zal in toekomstige versies zeker veranderen. Geloof dus niet dat de rack editor in de toekomst niet zal veranderen van uiterlijk en zorg dat u rekening houdt met de instabiliteiten van de code (dus uw projecten regelmatig opslaan). "
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:31
@@ -1531,7 +1536,10 @@ msgstr "Homogene invoervelden"
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
-msgstr "Homogene afmetingen gebruiken voor de meeste (numerieke en tekst) invoervelden.  Voor bepaalde velden zal dit pas effect hebben na een herstart."
+msgstr ""
+"Homogene afmetingen gebruiken voor de meeste (numerieke en tekst) "
+"invoervelden.  Voor bepaalde velden zal dit pas effect hebben na een "
+"herstart."
 
 #: beast-gtk/bstrecords.idl:91
 msgid "Skin Name"
@@ -2643,7 +2651,7 @@ msgstr "Modulatie"
 msgid "Strength of linear frequency modulation"
 msgstr "Mate van lineaire frequentiemodulatie"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169 bse/bsewaveosc.c:140
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
 
@@ -2896,7 +2904,9 @@ msgstr "Vertraging [ms]"
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr "Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere waarden geven een hogere CPU-belasting"
+msgstr ""
+"Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere "
+"waarden geven een hogere CPU-belasting"
 
 #: bse/bsecore.idl:399
 msgid "Synth Mixing Frequency"
@@ -3135,11 +3145,6 @@ msgstr "Af te spelen wav"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Modulatiesterkte voor lineaire frequentiemodulatie"
 
-# taalfout in engels: spatie tussen modulation en instead ontbreekt
-#: bse/bsewaveosc.c:140
-msgid "Perform exponential frequency modulationinstead of linear"
-msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
-
 #: bse/bsewaveosc.c:155 plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Frequentie ingang"
@@ -3211,16 +3216,16 @@ msgid "Attack [ms]"
 msgstr "Attack [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-msgid "Set the attack time in milli seconds"
-msgstr "De attack tijd in milliseconden instellen"
+msgid "Set the attack time in milliseconds"
+msgstr "De attack-tijd in milliseconden instellen"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
 msgstr "Release [ms]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
-msgid "Set the release time in milli seconds"
-msgstr "De release tijd in milliseconden instellen"
+msgid "Set the release time in milliseconds"
+msgstr "De release-tijd in milliseconden instellen"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
@@ -3706,6 +3711,10 @@ msgstr "Linker uitgang"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Rechter uitgang"
+
+# taalfout in engels: spatie tussen modulation en instead ontbreekt
+#~ msgid "Perform exponential frequency modulationinstead of linear"
+#~ msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
 
 #~ msgid "Device _Monitor"
 #~ msgstr "_Apparaatbeheer"
