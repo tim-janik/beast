@@ -1,3 +1,13 @@
+Thu Jan  6 23:03:36 2005  Tim Janik  <timj@gtk.org>
+
+	* bse/gslloader-pat.cc: 
+	* bse/bsetrack.c: use "gus-patch" play-type.
+
+	* zintern/mono-wave.bse:
+	* zintern/gus-patch-mono.bse: removed.
+	
+	* zintern/gus-patch.bse: removed "-mono" suffix from object.
+
 Thu Jan  6 23:02:30 2005  Tim Janik  <timj@gtk.org>
 
 	* zintern/gus-patch.bse: CVS copied from gus-patch-mono.bse.

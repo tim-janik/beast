@@ -435,7 +435,7 @@ struct FileInfo
     wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
     /* header->channels means output channels, GUS Patches are mono only */
     wdsc.n_channels = 1;
-    wdsc.xinfos = bse_xinfos_add_value (wdsc.xinfos, "play-type", "gus-patch-mono");
+    wdsc.xinfos = bse_xinfos_add_value (wdsc.xinfos, "play-type", "gus-patch");
 
     for (guint i = 0; i < wdsc.n_chunks; i++)
       {

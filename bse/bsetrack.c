@@ -358,7 +358,7 @@ create_wnet (BseTrack *self,
 						 "wave", wave,
 					         NULL);
     }
-  else if (strcmp (synthesis_network, "gus-patch-mono") == 0)
+  else if (strcmp (synthesis_network, "gus-patch") == 0)
     {
       g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
 						 "wave", wave,

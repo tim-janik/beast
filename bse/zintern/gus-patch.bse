@@ -2,7 +2,7 @@
 
 (bse-version "0.6.4")
 
-(container-child "BseCSynth::%bse-intern-gus-patch-mono"
+(container-child "BseCSynth::%bse-intern-gus-patch"
   (modification-time "2005-01-02 10:08:04")
   (creation-time "2003-04-27 20:45:24")
   (author "Stefan Westerfeld")

@@ -7,7 +7,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATE
 
 ZFILE_DEFS = $(strip \
 	wave-mono		$(srcdir)/wave-mono.bse		\
-	gus-patch-mono		$(srcdir)/gus-patch-mono.bse	\
+	gus-patch		$(srcdir)/gus-patch.bse		\
 )
 
 gen_sources = xgen-bzc xgen-bzh
