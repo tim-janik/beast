@@ -190,7 +190,7 @@ private:
                 guint fft_size = probe.sample_data.length();
                 if (fft_size)
                   {
-                    fft_size = 1 << g_bit_storage (fft_size - 1);
+                    fft_size = 1 << (g_bit_storage (num) - 1);
                     fft_size = CLAMP (fft_size, 2, 65536);
                     probe.fft_data.resize (fft_size);
                     /* perform fft */
@@ -268,9 +268,8 @@ public:
             guint block_size = 0;
             for (guint i = 0; i < PROBE_QUEUE_LENGTH; i++)
               block_size = MAX (block_size, bsize_fifo[i]);
-            guint min_bsize = MAX (4, bse_engine_block_size() / 8);
             guint max_bsize = MIN (bse_engine_sample_freq(), 65536);
-            block_size = CLAMP (block_size, min_bsize, max_bsize);
+            block_size = CLAMP (block_size, 2, max_bsize);
             bse_trans_add (trans, bse_job_probe_request ((BseModule*) node->data,
                                                          0, // 3 * bse_engine_block_size(),
                                                          block_size, &channel_ages[0], source_probe_callback, pdata));
