@@ -145,11 +145,11 @@ bse_pcm_device_csl_open (BsePcmDevice *pdev)
   csl->bytes_per_value = 4;
   csl->frag_buf = NULL;
 
-  sfi_mutex_init (&csl->sfi_mutex);
-  csl->csl_mutex.user_data = &csl->sfi_mutex;
   csl->csl_mutex.lock = (CslMutexLock) sfi_thread_table.mutex_lock;
   csl->csl_mutex.unlock = (CslMutexUnlock) sfi_thread_table.mutex_unlock;
   csl->csl_mutex.destroy = NULL;
+  csl->csl_mutex.user_data = &csl->sfi_mutex;
+  sfi_mutex_init (csl->csl_mutex.user_data);
 
   csl_error = csl_driver_init_mutex (NULL, CSL_DRIVER_CAP_PCM, &csl->csl_mutex, &csl->driver);
   if (csl_error)

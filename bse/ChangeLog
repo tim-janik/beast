@@ -1,3 +1,7 @@
+Mon Mar  3 23:17:18 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsepcmdevice-csl.c: slightly beautified mutex init code.
+
 Mon Mar  3 22:42:25 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsepcmdevice-csl.c: initialize CSL with a mutex, as BSE is
