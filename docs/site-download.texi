@@ -15,6 +15,15 @@ Publically consumable releases can be found via ftp:
 @* Or alternatively via http:
 @uref{http://beast.gtk.org/beast-ftp/}.
 
+The packages provided in the download directory have the following puposes:
+@itemize
+@item beast-VERSION.tar.gz - the main @beast tarball, this needs to be installed first.
+@item bse-alsa-VERSION.tar.gz - an add-on package for @beast which allowes it to use
+      the @uref{http://www.alsa-project.org,, ALSA} sound driver if installed.
+@item bse-portaudio-VERSION.tar.gz - an experimental add-on package to make use of
+      recent CVS versions of the @uref{http://www.portaudio.com/,, PortAudio} sound driver.
+@end itemize
+
 @anchor{requirements}
 @unnumbered Requirements
 

@@ -217,6 +217,7 @@ TODO:
 - PianoRoll: when moving selecitons reaches the left border (tick 0), stop movement instead of clinching notes
 
 DOCS:
+- fix urls in ChangeLogs ending up after .texi conversion as @uref{@uref{URLS}}
 - command line option arguments in manual pages are incorrectly spaced
 - Provide an "Architecture Overview" that describes how SFI, SFIDL, GSL, BSE,
   the engine, BSESH, Scheme, BSW, BEAST, GTK and GXK work together.
