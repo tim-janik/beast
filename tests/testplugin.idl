@@ -20,6 +20,8 @@
 
 namespace Namespace {
 
+using namespace Sfi;
+
 // test enum
 choice FunkynessType {
   REALLY_FUNKY,

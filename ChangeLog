@@ -1,3 +1,9 @@
+Tue Jan 20 05:09:07 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testplugin.idl: Added "using namespace Sfi;".
+
+	* docs/sfidl.texi: Removed ";" after namespace decls.
+
 Tue Jan 20 03:11:17 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am: No more bse/bsecxxsmart.h.

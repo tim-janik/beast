@@ -75,7 +75,7 @@ sections the elements will be described. First of all, you need to know that
 everything needs to be declared within the scope of a namespace. This avoids
 collisions.
 
-The syntax for namespace is @c FIXME: should be fixed (no ; allowed)
+The syntax for namespace is
 
 @example
 // IDL Code
@@ -86,7 +86,7 @@ namespace Foo @{
     Sfi::Int ints;
   @} IntSeq;
   ... more declarations go here ...
-@};
+@}
 
 @end example
 
@@ -103,7 +103,7 @@ namespace Bar @{
   using namespace Foo;				// add Foo:: to namespace search list
   IntSeq getPrimeNumbers (Sfi::Int bound);	// IntSeq is found in Foo:: automatically
   ... more declarations go here ...
-@};
+@}
 
 @end example
 
@@ -151,7 +151,7 @@ namespace Foo @{
     WAVE_FORM_SAW,
     WAVE_FORM_RECT
   @};
-@};
+@}
 @end example
 
 This means that WaveForm is one of these choices. You can add two informations
@@ -174,7 +174,7 @@ namespace Foo @{
     WAVE_FORM_SAW  = (2,       "Sawtooth wave"),
     WAVE_FORM_RECT = (3,       "Rectangle wave")
   @};
-@};
+@}
 @end example
 
 There is no guarantee what number the interfacing code using the choice in C and C++
@@ -211,7 +211,7 @@ namespace Foo @{
   sequence IntSeq @{
     Sfi::Int ints;  // the contained type
   @};
-@};
+@}
 @end example
 
 A sequence may then hold 0, 1 or N values of the same type. The name "ints" here is only used for
@@ -249,7 +249,7 @@ namespace Foo @{
     Real     velocity;
     Bool     selected;
   @};
-@};
+@}
 @end example
 
 In opposition to sequences, NULL (or nil or whatever is adequate for the language you are
@@ -284,7 +284,7 @@ namespace Foo @{
     SomeRecord   c;
     SomeClass    d;
   @};
-@};
+@}
 @end example
 
 @section Classes and procedures
@@ -312,7 +312,7 @@ namespace Foo @{
     Sample loadSample (String filename);
     void insertSample (Sample sample, Real position, Real speed);
   @};
-@};
+@}
 @end example
 
 As far as this example goes, we have only added the bare minimum. It is however
@@ -337,7 +337,7 @@ namespace Foo @{
     @};
     // ... as above ...
   @};
-@};
+@}
 @end example
 
 Return and argument values referring to instances of classes (in this example samples)
@@ -367,7 +367,7 @@ namespace Foo @{
     signal positionChanged (Real new_position);
     signal donePlaying ();
   @};
-@};
+@}
 @end example
 
 @subsection Properties
@@ -430,7 +430,7 @@ class Compressor : Bse::Effect @{
   IStream invalue   = (_("Audio In"), _("Audio input"));
   OStream outvalue  = (_("Audio Out"), _("Compressed audio output"));
 @};
-@};
+@}
 @end example
 
 As you see, the syntax is quite straight forward, containing a variable name
@@ -444,7 +444,7 @@ Procedures can be thought of as methods-without-a-class. A classic example is:
 @example
 namespace Bse @{
   Real note_to_freq (Int note, Int fine_tune);
-@};
+@}
 @end example
 
 which converts a midi note to a frequency, using a given fine tune. The same
