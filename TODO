@@ -2,7 +2,6 @@ FIXMES:
 - add DSP engine module stats to profiler dialog
 - add tooltips to categories and use that for bst_action_list_add_cat()
 - remove docs/generated/bse-plugin-generator.1
-- new 32th note etc. icons
 - assertion failed:
   BSE-ERROR **: file bsemidireceiver.cc: line 525 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, GslTrans*)): assertion failed: (vinput->iter == table->end())
 - implement proper pattern/track/song resizing by means of adding [-] and [+] buttons next to scrollbars
@@ -10,7 +9,7 @@ FIXMES:
 - need midi keyboard demo .bse file to be easily loadable (via demo/ menu)
 - take a look at the cdrecord source for their __dtoa() implementation
 - if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
-- make VIew/Rebuild --devel or -:d only
+- make View/Rebuild --devel or -:d only
 - provide "+"/"-" buttons for "path" property editors with own tooltips
 - fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
 - beast depends on texithequemacros.texi but texitheque doesn't install it
