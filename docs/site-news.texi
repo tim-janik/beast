@@ -25,6 +25,20 @@
 @unnumbered What's New?
 
 
+@newsTitle{Wednesday 18 Feb 2004, Website updates}
+
+BEAST v0.6.0 supports skins for the
+@uref{http://beast.gtk.org/screenshots/image-zoom-5.html,,  piano roll and event roll}
+widgets, so we've opened up a
+@uref{http://beast.gtk.org/browse-bse-files.html?d=skins,, place to collect skin packages}.
+The
+@uref{http://beast.gtk.org/wiki.php,, wiki} also had changes on the
+@uref{http://beast.gtk.org/wiki.php?id=BeastFeatures,, BeastFeatures} and
+@uref{http://beast.gtk.org/wiki.php?id=FeatureRequests,, FeatureRequests} pages
+and the 
+@uref{beast-doc://links-synthesis,, synthesis links section} was updated.
+
+
 @newsTitle{Wednesday 11 Feb 2004, BEAST Realease ``Silver Vein''}
 
 BEAST/BSE version 0.6.0 is available from the
