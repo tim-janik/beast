@@ -1,3 +1,7 @@
+Fri Jun 20 07:03:08 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/generated/css/default.css: fixed toc links underlining.
+
 Fri Jun 20 00:29:55 2003  Tim Janik  <timj@gtk.org>
 
 	* fix looking for mad.pc to detect libmad which works only

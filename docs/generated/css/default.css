@@ -170,19 +170,19 @@ div.index {
   color: #222222;
 }
 
-span.toc-chapter {
+.toc-chapter {
 }
 
-span.toc-section {
-  padding-left: 2em;
+.toc-section {
+  margin-left: 2em;
 }
 
-span.toc-subsection {
-  padding-left: 4em;
+.toc-subsection {
+  margin-left: 4em;
 }
 
-span.toc-subsubsection {
-  padding-left: 6em;
+.toc-subsubsection {
+  margin-left: 6em;
 }
 
 code.code {
