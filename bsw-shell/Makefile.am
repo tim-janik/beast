@@ -36,6 +36,5 @@ script_DATA = $(public_scripts)
 public_scripts = $(strip	\
 	bsw-scm-glue.boot	\
 	progressor-example.scm	\
-	test.scm		\
 )
-EXTRA_DIST += $(public_scripts)
+EXTRA_DIST += $(public_scripts) test.scm

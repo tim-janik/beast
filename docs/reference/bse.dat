@@ -1,7 +1,7 @@
 @DOC-VARIABLE-DEFINITIONS@
 name    = BSE-Functions
 blurb   = BSE Function Reference
-package = BEAST-0.4.1
+package = BEAST-0.4.1-rc1
 date    = 27 Jul 2002
 image   = bse-functions
 
@@ -9,7 +9,7 @@ image   = bse-functions
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 27 Jul 2002 BEAST-0.4.1
+BSE-Functions 27 Jul 2002 BEAST-0.4.1-rc1
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference

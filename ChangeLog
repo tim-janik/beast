@@ -1,4 +1,9 @@
-Sat Jul 27 18:42:26 2002  Tim Janik  <timj@gtk.org>
+Sat Jul 27 19:10:36 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in (BST_RELEASE_CANDIDATE): feature release candidate
+	appendix.
+
+	* bsw-shell/Makefile.am (public_scripts): don't install test.scm.
 
 	* bsw/Makefile.am: fix build rules for massive parallel
 	builds. fix clean rules.

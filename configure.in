@@ -29,9 +29,14 @@ dnl#   BSE_BINARY_AGE += 1;
 dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
-dnl#
-# BEAST version numbers
+dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]* or nothing
+BST_RELEASE_CANDIDATE=rc1
+
+# version number setup
 BST_VERSION=$BSE_VERSION
+if test -n "$BST_RELEASE_CANDIDATE" ; then
+    BST_VERSION=$BST_VERSION-$BST_RELEASE_CANDIDATE
+fi
 AC_SUBST(BSE_MAJOR_VERSION)
 AC_SUBST(BSE_MINOR_VERSION)
 AC_SUBST(BSE_MICRO_VERSION)
@@ -62,7 +67,7 @@ AC_DIVERT_POP()dnl
 
 
 # initialize automake, don't define PACKAGE and VERSION
-AM_INIT_AUTOMAKE(beast, $BSE_VERSION, no-define)
+AM_INIT_AUTOMAKE(beast, $BST_VERSION, no-define)
 
 # Support program name conversion.
 AC_ARG_PROGRAM
