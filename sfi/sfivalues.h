@@ -136,11 +136,11 @@ void	sfi_value_free		(GValue		*value);
 
 
 /* --- convenience aliases --- */
-#define SFI_VALUE_HOLDS_NOTE(value)	SFI_VALUE_HOLDS_INT
+#define SFI_VALUE_HOLDS_NOTE(value)	SFI_VALUE_HOLDS_INT(value)
 #define	sfi_value_get_note		sfi_value_get_int
 #define	sfi_value_set_note		sfi_value_set_int
 #define	sfi_value_note			sfi_value_int
-#define SFI_VALUE_HOLDS_TIME(value)	SFI_VALUE_HOLDS_TIME
+#define SFI_VALUE_HOLDS_TIME(value)	SFI_VALUE_HOLDS_NUM(value)
 #define	sfi_value_get_time		sfi_value_get_num
 #define	sfi_value_set_time		sfi_value_set_num
 #define	sfi_value_time			sfi_value_num

@@ -20,6 +20,9 @@
 
 #include <string.h>
 
+#define	NULL_CHECKED(x)		((x) && (x)[0] ? x : NULL)
+
+
 /* --- variables --- */
 GType	     *sfi__param_spec_types = NULL;
 static GQuark quark_hints = 0;
@@ -86,7 +89,7 @@ sfi_param_spec_bool (const gchar    *name,
   
   g_return_val_if_fail (default_value == TRUE || default_value == FALSE, NULL);
 
-  pspec = g_param_spec_boolean (name, nick, blurb, default_value, pspec_flags (hints));
+  pspec = g_param_spec_boolean (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), default_value, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
 
   return pspec;
@@ -108,7 +111,7 @@ sfi_param_spec_int (const gchar    *name,
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
 
-  pspec = g_param_spec_int (name, nick, blurb, minimum_value, maximum_value, default_value, pspec_flags (hints));
+  pspec = g_param_spec_int (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   g_param_spec_set_qdata (pspec, quark_stepping, (gpointer) (glong) stepping);
 
@@ -132,7 +135,7 @@ sfi_param_spec_num (const gchar    *name,
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
 
-  pspec = g_param_spec_int64 (name, nick, blurb, minimum_value, maximum_value, default_value, pspec_flags (hints));
+  pspec = g_param_spec_int64 (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   sdata = g_new (SfiNum, 1);
   *sdata = stepping;
@@ -158,7 +161,7 @@ sfi_param_spec_real (const gchar    *name,
   g_return_val_if_fail (minimum_value <= maximum_value, NULL);
   g_return_val_if_fail (minimum_value + stepping <= maximum_value, NULL);
   
-  pspec = g_param_spec_double (name, nick, blurb, minimum_value, maximum_value, default_value, pspec_flags (hints));
+  pspec = g_param_spec_double (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), minimum_value, maximum_value, default_value, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   sdata = g_new (SfiReal, 1);
   *sdata = stepping;
@@ -177,7 +180,7 @@ sfi_param_spec_string (const gchar    *name,
   GParamSpec *pspec;
   GParamSpecString *sspec;
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_STRING, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_STRING, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   sspec = G_PARAM_SPEC_STRING (pspec);
   g_free (sspec->default_value);
@@ -200,7 +203,7 @@ sfi_param_spec_choice (const gchar    *name,
 
   g_return_val_if_fail (static_const_cvalues.n_values >= 1, NULL);
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_CHOICE, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_CHOICE, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   sspec = G_PARAM_SPEC_STRING (pspec);
   g_free (sspec->default_value);
@@ -225,7 +228,7 @@ sfi_param_spec_enum (const gchar    *name,
   g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
   g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
 
-  pspec = g_param_spec_enum (name, nick, blurb, enum_type, default_value, pspec_flags (hints));
+  pspec = g_param_spec_enum (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), enum_type, default_value, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
 
   return pspec;
@@ -240,7 +243,7 @@ sfi_param_spec_bblock (const gchar    *name,
   GParamSpec *pspec;
   // SfiParamSpecBBlock *bspec;
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_BBLOCK, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_BBLOCK, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   pspec->value_type = SFI_TYPE_BBLOCK;
 
@@ -256,7 +259,7 @@ sfi_param_spec_fblock (const gchar    *name,
   GParamSpec *pspec;
   // SfiParamSpecFBlock *fspec;
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_FBLOCK, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_FBLOCK, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   pspec->value_type = SFI_TYPE_FBLOCK;
 
@@ -275,7 +278,7 @@ sfi_param_spec_seq (const gchar    *name,
   if (element_spec)
     g_return_val_if_fail (G_IS_PARAM_SPEC (element_spec), NULL);
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_SEQ, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_SEQ, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   if (element_spec)
     {
@@ -300,7 +303,7 @@ sfi_param_spec_rec (const gchar    *name,
 
   g_return_val_if_fail (static_const_fields.n_fields >= 1, NULL);
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_REC, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_REC, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   rspec = SFI_PARAM_SPEC_REC (pspec);
   rspec->fields = static_const_fields;
@@ -318,7 +321,7 @@ sfi_param_spec_proxy (const gchar    *name,
   GParamSpec *pspec;
   // SfiParamSpecProxy *xspec;
 
-  pspec = g_param_spec_internal (SFI_TYPE_PARAM_PROXY, name, nick, blurb, pspec_flags (hints));
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_PROXY, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
   pspec->value_type = SFI_TYPE_PROXY;
 
@@ -336,7 +339,7 @@ sfi_param_spec_object (const gchar    *name,
 
   g_return_val_if_fail (g_type_is_a (object_type, SFI_TYPE_OBJECT), NULL);
 
-  pspec = g_param_spec_object (name, nick, blurb, object_type, pspec_flags (hints));
+  pspec = g_param_spec_object (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), object_type, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
 
   return pspec;

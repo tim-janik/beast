@@ -1,3 +1,9 @@
+Fri Oct  4 10:01:53 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.c: pass nick and blurb of "" as NULL into GLib pspecs.
+	
+	* sfivalues.h: fix SFI_VALUE_HOLDS_NOTE() and SFI_VALUE_HOLDS_TIME().
+
 Fri Oct  4 08:53:29 2002  Tim Janik  <timj@gtk.org>
 
 	* sfinote.c (sfi_note_from_string): default to kammer note
