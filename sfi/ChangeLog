@@ -1,3 +1,9 @@
+Fri Oct  4 01:18:21 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+        * sfi/sfidl.cc: generate proper default initialization for sequences when
+        @= is omitted (instead of segfaulting), FBlock support, cleanup: add name
+        of arguments/arrays by the caller, not by createTypeCode
+
 Thu Oct  3 23:31:26 2002  Tim Janik  <timj@gtk.org>
 
 	* sfi/: new subdirectory and library. in preparation for SFK (synthesis
