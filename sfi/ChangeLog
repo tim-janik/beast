@@ -1,3 +1,8 @@
+Wed Dec 31 01:18:38 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
+
+        * sfifilecrawler.c (get_user_home): Use configure detection of
+        getpwnam_r and getpwnam functions availability.
+
 Wed Dec 31 00:11:48 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.* sfidl-module.*: Introduce new CodeGeneratorCxxBase
