@@ -58,6 +58,7 @@ typedef struct
 /* --- Oscillator --- */
 void	gsl_osc_config		(GslOscData	*osc,
 				 GslOscConfig	*config);
+void	gsl_osc_reset		(GslOscData	*osc);
 void	gsl_osc_process		(GslOscData	*osc,
 				 guint		 n_values,
 				 const gfloat	*ifreq,

@@ -405,7 +405,7 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
 }
 
 static void
-biquad_filter_reconnect (GslModule *module)
+biquad_filter_reset (GslModule *module)
 {
   FilterModule *fmod = module->user_data;
   gfloat nyquist_freq = 0.5 * gsl_engine_sample_freq ();
@@ -540,7 +540,7 @@ bse_biquad_filter_context_create (BseSource *source,
     BSE_BIQUAD_FILTER_N_OCHANNELS,	/* n_ostreams */
     biquad_filter_process,		/* process */
     NULL,                       	/* process_defer */
-    biquad_filter_reconnect,		/* reset */
+    biquad_filter_reset,		/* reset */
     (GslModuleFreeFunc) g_free,		/* free */
     GSL_COST_NORMAL,			/* flags */
   };

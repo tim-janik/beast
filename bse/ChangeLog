@@ -1,3 +1,13 @@
+Thu Sep 12 01:57:36 2002  Tim Janik  <timj@gtk.org>
+
+	* bsestandardosc.c: implement standard_osc_reset().
+
+	* gsloscillator.[hc]: added gsl_osc_reset() for module resets.
+
+	* bsebiquadfilter.c: fix reset function name.
+
+	* bseamplifier.c: reorder GUI fields.
+
 Sat Sep  7 16:00:47 2002  Tim Janik  <timj@gtk.org>
 
 	* bseenums.[hc]: get rid of BSE_ERROR_USER_* values.

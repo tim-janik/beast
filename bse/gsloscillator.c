@@ -217,3 +217,19 @@ gsl_osc_config (GslOscData   *osc,
   osc->config = *config;
   osc->last_mode = OSC_FLAG_INVAL;
 }
+
+void
+gsl_osc_reset (GslOscData *osc)
+{
+  g_return_if_fail (osc != NULL);
+
+  osc->cur_pos = 0;
+  osc->last_pos = 0;
+  osc->last_sync_level = 0;
+  osc->last_freq_level = 0;
+  osc->last_pwm_level = 0;
+  osc->pwm_offset = 0;
+  osc->pwm_max = 0;
+  osc->pwm_center = 0;
+  osc->last_mode = OSC_FLAG_INVAL;
+}

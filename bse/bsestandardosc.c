@@ -451,6 +451,14 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 }
 
 static void
+standard_osc_reset (GslModule *module)
+{
+  GslOscData *osc = module->user_data;
+
+  gsl_osc_reset (osc);
+}
+
+static void
 standard_osc_process (GslModule *module,
 		      guint      n_values)
 {
@@ -495,7 +503,7 @@ bse_standard_osc_context_create (BseSource *source,
     BSE_STANDARD_OSC_N_OCHANNELS, /* n_ostreams */
     standard_osc_process,	  /* process */
     NULL,                         /* process_defer */
-    NULL,                         /* reset */
+    standard_osc_reset,           /* reset */
     (GslModuleFreeFunc) g_free,	  /* free */
     GSL_COST_NORMAL,		  /* cost */
   };
@@ -503,6 +511,7 @@ bse_standard_osc_context_create (BseSource *source,
   GslOscData *osc = g_new0 (GslOscData, 1);
   GslModule *module;
 
+  gsl_osc_reset (osc);
   gsl_osc_config (osc, &self->config);
   module = gsl_module_new (&sosc_class, osc);
 
