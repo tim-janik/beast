@@ -580,7 +580,6 @@ sfidl:
 
 bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself
-  - should output lower case vars (Info help instead of Info HELP)
 
 modules:
   pwm osc:
