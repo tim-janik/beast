@@ -62,15 +62,23 @@ param_spinner_create (GxkParam    *param,
   return widget;
 }
 
+static void
+param_spinner_update (GxkParam  *param,
+                      GtkWidget *widget)
+{
+  /* contents are updated through the adjustment */
+  gtk_editable_set_editable (GTK_EDITABLE (widget), param->editable);
+}
+
 static GxkParamEditor param_spinner1 = {
   { "spinner",          N_("Spin Button"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
   { NULL,         +9,   TRUE, },        /* options, rating, editing */
-  param_spinner_create, NULL,   PARAM_SPINNER_LINEAR,
+  param_spinner_create, param_spinner_update, PARAM_SPINNER_LINEAR,
 };
 static GxkParamEditor param_spinner2 = {
   { "spinner-log",      N_("Spin Button (Logarithmic)"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
   { "log-scale",  +4,   TRUE, },        /* options, rating, editing */
-  param_spinner_create, NULL,   PARAM_SPINNER_LINEAR,
+  param_spinner_create, param_spinner_update, PARAM_SPINNER_LINEAR,
 };

@@ -1,3 +1,23 @@
+Sun Dec 28 11:22:50 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcluehunter.[hc]: don't popup the clue hunter via tab for
+	non-editable entries. make popup arrow react to editability of the 
+	entry (user configurable).
+
+	* beast-gtk/gxk/gxkparam-spinner.c:
+	* beast-gtk/bstparam-note-spinner.c:
+	* beast-gtk/bstparam-searchpath.c:
+	* beast-gtk/bstparam-proxy.c: added extra logic to the various GUI
+	elements to act according to param editability.
+
+	* beast-gtk/gxk/gxkparam.c:
+	(param_update_flags): auto-update sensitivity of all attached widgets.
+	(gxk_param_add_object): adjust sensitivity of newly added widgets.
+	(gxk_param_apply_value): refuse to alter object values for non-editable
+	or insensitive parameters.
+	(gxk_param_apply_default): use gxk_param_apply_value().
+	(gxk_param_entry_set_text): auto-adjust entry editability.
+
 Sun Dec 28 10:28:08 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (app_action_check): disable non-functional

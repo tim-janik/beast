@@ -224,7 +224,7 @@ param_proxy_create (GxkParam    *param,
   g_object_connect (chunter,
 		    "signal::poll_refresh", param_proxy_populate, param,
 		    NULL);
-  arrow = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter));
+  arrow = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter), TRUE);
   gtk_box_pack_end (GTK_BOX (box), arrow, FALSE, TRUE, 0);
   gtk_widget_show_all (box);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
@@ -283,6 +283,7 @@ param_proxy_update (GxkParam  *param,
     }
   else if (strcmp (gtk_entry_get_text (GTK_ENTRY (entry)), ""))
     gtk_entry_set_text (GTK_ENTRY (entry), "");
+  gtk_editable_set_editable (GTK_EDITABLE (entry), param->editable);
 }
 
 static GxkParamEditor param_proxy = {

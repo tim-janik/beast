@@ -25,8 +25,14 @@
 static void
 param_update_flags (GxkParam *param)
 {
+  gboolean was_sensitive = param->sensitive;
+  GSList *slist;
   param->editable = !param->constant;
   param->sensitive = param->constant || (!param->treadonly && param->ueditable);
+  if (was_sensitive != param->sensitive)
+    for (slist = param->objects; slist; slist = slist->next)
+      if (GTK_IS_WIDGET (slist->data))
+        gtk_widget_set_sensitive (slist->data, param->sensitive);
 }
 
 static GxkParam*
@@ -126,6 +132,8 @@ gxk_param_add_object (GxkParam          *param,
                       GtkObject         *object)
 {
   g_return_if_fail (GXK_IS_PARAM (param));
+  if (GTK_IS_WIDGET (object))
+    gtk_widget_set_sensitive (GTK_WIDGET (object), param->sensitive);
   param->objects = g_slist_prepend (param->objects, g_object_ref (object));
   g_object_connect (object, "swapped_signal::destroy", gxk_param_remove_object, param, NULL);
   param_call_update (param, object);
@@ -153,7 +161,7 @@ gxk_param_apply_value (GxkParam *param)
       g_warning ("%s: param (%p) currently in update", G_STRFUNC, param);
       return;
     }
-  if (param->binding->set_value)
+  if (param->binding->set_value && param->editable && param->sensitive)
     {
       param->binding->set_value (param, &param->value);
       /* binding->set_value() is supposed to trigger gxk_param_update() sooner or later */
@@ -169,13 +177,7 @@ gxk_param_apply_default (GxkParam *param)
   if (!param->updating && param->editable && param->sensitive)
     {
       g_param_value_set_default (param->pspec, &param->value);
-      if (param->binding->set_value)
-        {
-          param->binding->set_value (param, &param->value);
-          /* binding->set_value() is supposed to trigger gxk_param_update() sooner or later */
-        }
-      else
-        gxk_param_update (param);
+      gxk_param_apply_value (param);
     }
 }
 
@@ -645,6 +647,7 @@ gxk_param_entry_set_text (GxkParam    *param,
       gtk_entry_set_text (entry, text);
       gtk_editable_set_position ((GtkEditable*) entry, param->editable ? G_MAXINT : 0);
     }
+  gtk_editable_set_editable (GTK_EDITABLE (entry), param->editable);
 }
 
 static void

@@ -426,8 +426,16 @@ bst_clue_hunter_select_on (BstClueHunter *self,
   g_signal_emit (self, clue_hunter_signals[SIGNAL_SELECT_ON], 0, string);
 }
 
+void
+bst_clue_hunter_popup_if_editable (BstClueHunter *self)
+{
+  if (self->entry && gtk_editable_get_editable (GTK_EDITABLE (self->entry)))
+    bst_clue_hunter_popup (self);
+}
+
 GtkWidget*
-bst_clue_hunter_create_arrow (BstClueHunter *self)
+bst_clue_hunter_create_arrow (BstClueHunter *self,
+                              gboolean       require_editable)
 {
   GtkWidget *button, *arrow;
 
@@ -444,7 +452,9 @@ bst_clue_hunter_create_arrow (BstClueHunter *self)
 			"parent", button,
 			NULL);
   g_object_connect (button,
-		    "swapped_object_signal::clicked", bst_clue_hunter_popup, self,
+		    "swapped_object_signal::clicked", (require_editable ?
+                                                       bst_clue_hunter_popup_if_editable :
+                                                       bst_clue_hunter_popup), self,
 		    NULL);
   return button;
 }
@@ -706,7 +716,7 @@ bst_clue_hunter_do_activate (BstClueHunter *self)
   if (self->popped_up)
     bst_clue_hunter_popdown (self);
   else if (self->entry)
-    bst_clue_hunter_popup (self);
+    bst_clue_hunter_popup_if_editable (self);
 }
 
 static void

@@ -74,6 +74,7 @@ struct	_BstClueHunterClass
 /* --- prototypes --- */
 GtkType	   bst_clue_hunter_get_type	        (void);
 void	   bst_clue_hunter_popup	        (BstClueHunter	*clue_hunter);
+void	   bst_clue_hunter_popup_if_editable    (BstClueHunter	*clue_hunter);
 void	   bst_clue_hunter_set_clist	        (BstClueHunter	*clue_hunter,
 						 GtkCList	*clist,
 						 guint16	 column);
@@ -89,7 +90,8 @@ void	   bst_clue_hunter_select_on	        (BstClueHunter	*clue_hunter,
 						 const gchar	*string);
 void	   bst_clue_hunter_poll_refresh	        (BstClueHunter	*clue_hunter);
 gchar*	   bst_clue_hunter_try_complete	        (BstClueHunter	*clue_hunter);
-GtkWidget* bst_clue_hunter_create_arrow		(BstClueHunter	*clue_hunter);
+GtkWidget* bst_clue_hunter_create_arrow		(BstClueHunter	*clue_hunter,
+                                                 gboolean        require_editable);
 gpointer   bst_clue_hunter_from_entry		(gpointer	 entry);
 
 

@@ -1,8 +1,7 @@
 FIXMES:
-- implement (GUI for) locked properties
-- apply editable and sensitive to params
 - undo across midi file import is broken
 - destroy piano roll dialog if part is released
+- implement (GUI for) locked properties
 - add clone tool for csynths
 - fix undo for: BseDataPocket
 - BseCategories need to provide an untranslated version (for menu paths)
@@ -13,7 +12,6 @@ FIXMES:
 - fix procbrowser
 - fix rack editor
 - fix BseSong::denominator SpinButton arrows not working
-- insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree
 - queue action updates upon grouped action execution 

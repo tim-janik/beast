@@ -47,16 +47,19 @@ param_searchpath_assign (GtkWidget  *dialog,
 static void
 param_searchpath_popup_remove (GtkWidget *widget)
 {
-  GtkEntry *entry = GTK_ENTRY (widget);
-  gchar **paths = g_strsplit (gtk_entry_get_text (entry), G_SEARCHPATH_SEPARATOR_S, -1);
-  GtkWidget *dialog = bst_list_popup_new (_("Remove Paths"), widget,
-                                          param_searchpath_assign,
-                                          widget, NULL);
-  guint i;
-  for (i = 0; paths[i]; i++)
-    bst_list_popup_add (dialog, paths[i]);
-  g_strfreev (paths);
-  gxk_widget_showraise (dialog);
+  if (gtk_editable_get_editable (GTK_EDITABLE (widget)))
+    {
+      GtkEntry *entry = GTK_ENTRY (widget);
+      gchar **paths = g_strsplit (gtk_entry_get_text (entry), G_SEARCHPATH_SEPARATOR_S, -1);
+      GtkWidget *dialog = bst_list_popup_new (_("Remove Paths"), widget,
+                                              param_searchpath_assign,
+                                              widget, NULL);
+      guint i;
+      for (i = 0; paths[i]; i++)
+        bst_list_popup_add (dialog, paths[i]);
+      g_strfreev (paths);
+      gxk_widget_showraise (dialog);
+    }
 }
 
 static void
@@ -75,8 +78,11 @@ param_searchpath_add (GtkWidget   *dialog,
 static void
 param_searchpath_popup_add (GtkWidget *widget)
 {
-  GtkWidget *dialog = bst_file_dialog_popup_select_dir (widget);
-  bst_file_dialog_set_handler (BST_FILE_DIALOG (dialog), param_searchpath_add, widget, NULL);
+  if (gtk_editable_get_editable (GTK_EDITABLE (widget)))
+    {
+      GtkWidget *dialog = bst_file_dialog_popup_select_dir (widget);
+      bst_file_dialog_set_handler (BST_FILE_DIALOG (dialog), param_searchpath_add, widget, NULL);
+    }
 }
 
 static GtkWidget*
