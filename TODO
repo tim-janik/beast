@@ -167,6 +167,7 @@ TODO:
 - Time Counter: Measure,QuarterNote,SixteenthNote,3840ticks
 
 DOCS:
+- command line option arguments in manual pages are incorrectly spaced
 - Provide an "Architecture Overview" that describes how SFI, SFIDL, GSL, BSE,
   the engine, BSESH, Scheme, BSW, BEAST, GTK and GXK work together.
   rough outline: http://mail.gnome.org/archives/beast/2003-October/msg00007.html

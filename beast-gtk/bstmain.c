@@ -698,7 +698,7 @@ bst_print_blurb (void)
   g_print ("                          drivers listed by -p options are used; each\n");
   g_print ("                          DRIVERCONF consists of a driver name and an\n");
   g_print ("                          optional comma seperated list of arguments,\n");
-  g_print ("                          e.g.: -p oss=/dev/dsp2\n");
+  g_print ("                          e.g.: -p oss=/dev/dsp2,rw\n");
   g_print ("  --bse-midi-driver DRIVERCONF\n");
   g_print ("  -m DRIVERCONF           try to use the MIDI driver DRIVERCONF, multiple\n");
   g_print ("                          options may be specified similarly to the\n");

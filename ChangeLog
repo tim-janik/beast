@@ -1,3 +1,8 @@
+Thu Sep 23 18:11:25 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/beast.1.texi:
+	* docs/bsesh.1.texi: document new options.
+
 Thu Sep 23 15:54:04 2004  Tim Janik  <timj@gtk.org>
 
 	* shell/bsesh.c: added support for BSE device listing. implemented
