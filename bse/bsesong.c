@@ -212,22 +212,22 @@ bse_song_class_init (BseSongClass *class)
   bse_object_class_add_param (object_class, "Looping",
 			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
-					      FALSE, SFI_PARAM_READWRITE));
+					      FALSE, SFI_PARAM_READWRITE ":skip-undo"));
   bse_object_class_add_param (object_class, "Looping",
 			      PROP_LOOP_LEFT,
 			      sfi_pspec_int ("loop_left", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_READWRITE));
+					     SFI_PARAM_READWRITE ":skip-undo"));
   bse_object_class_add_param (object_class, "Looping",
 			      PROP_LOOP_RIGHT,
 			      sfi_pspec_int ("loop_right", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_READWRITE));
+					     SFI_PARAM_READWRITE ":skip-undo"));
   bse_object_class_add_param (object_class, "Looping",
 			      PROP_TICK_POINTER,
 			      sfi_pspec_int ("tick_pointer", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_READWRITE));
+					     SFI_PARAM_READWRITE ":skip-undo"));
 
   signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
 							G_TYPE_NONE, 1, SFI_TYPE_INT);

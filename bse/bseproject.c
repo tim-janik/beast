@@ -472,7 +472,7 @@ bse_project_store_bse (BseProject  *self,
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 
   storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-  flags = BSE_STORAGE_SKIP_DEFAULTS;
+  flags = 0;
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
   bse_storage_prepare_write (storage, flags);

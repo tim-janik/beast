@@ -37,18 +37,16 @@ G_BEGIN_DECLS
   BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) >= 0)
 #define BSE_STORAGE_COMPAT(self, vmaj, min, vmic)       ( /* whether file needs <=vARGS compat code */ \
   BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) <= 0)
-#define BSE_STORAGE_SKIP_DEFAULTS(st)    ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SKIP_DEFAULTS) != 0)
 #define BSE_STORAGE_SELF_CONTAINED(st)   ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SELF_CONTAINED) != 0)
 #define BSE_STORAGE_DBLOCK_CONTAINED(st) ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_DBLOCK_CONTAINED) != 0)
 #define BSE_STORAGE_IS_UNDO(st)          BSE_STORAGE_DBLOCK_CONTAINED (st)
 typedef enum    /*< skip >*/
 {
-  BSE_STORAGE_SKIP_DEFAULTS       = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_STORAGE_SELF_CONTAINED      = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
-  BSE_STORAGE_DBLOCK_CONTAINED    = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
+  BSE_STORAGE_SELF_CONTAINED      = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_STORAGE_DBLOCK_CONTAINED    = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1)
 } BseStorageMode;
-#define BSE_STORAGE_FLAGS_USHIFT         (BSE_OBJECT_FLAGS_USHIFT + 3)
-#define BSE_STORAGE_MODE_MASK            (BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_SELF_CONTAINED | BSE_STORAGE_DBLOCK_CONTAINED)
+#define BSE_STORAGE_FLAGS_USHIFT         (BSE_OBJECT_FLAGS_USHIFT + 2)
+#define BSE_STORAGE_MODE_MASK            (BSE_STORAGE_SELF_CONTAINED | BSE_STORAGE_DBLOCK_CONTAINED)
 
 
 /* --- compatibility --- */

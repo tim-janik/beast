@@ -1,3 +1,14 @@
+Tue Dec 16 02:16:25 2003  Tim Janik  <timj@gtk.org>
+
+	* bsesong.c (bse_song_class_init): make playback properties skip-undo.
+
+	* bseitem.c:
+	* bseproject.c:
+	* bsesource.c:
+	* bsestorage.[hc]: removed BSE_STORAGE_SKIP_DEFAULTS flag and macro,
+	since skipping default values is now indicated by the :skip-default:
+	property option.
+
 Mon Dec 15 22:42:37 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidicontroller.c:
