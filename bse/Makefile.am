@@ -94,15 +94,18 @@ bse_idl_sources = $(strip \
 	bseamplifier.idl	\
 	bsecore.idl		\
 	bsesniffer.idl		\
+	bsesummation.idl	\
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
 $(srcdir)/bsecore.cc: bsecore.gen-idl.h
 $(srcdir)/bsesniffer.cc: bsesniffer.gen-idl.h
+$(srcdir)/bsesummation.cc: bsesummation.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
 	bsecore.cc		\
 	bsesniffer.cc		\
+	bsesummation.cc		\
 )
 # idl files not used for build rules
 idl_dummy_files += $(strip	\
