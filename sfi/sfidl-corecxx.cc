@@ -70,7 +70,6 @@ CodeGeneratorModule::TypeRef (const string &type)
     {
     case BBLOCK:
     case FBLOCK:
-    case PSPEC:
     case SEQUENCE:
     case RECORD:
     case OBJECT:        return tname + "*";
@@ -219,7 +218,6 @@ CodeGeneratorModule::func_value_set_param (const Param &param)
     case CHOICE:        return "g_value_set_enum";
     case BBLOCK:        return "sfi_value_set_bblock";
     case FBLOCK:        return "sfi_value_set_fblock";
-    case PSPEC:         return "sfi_value_set_pspec";
     case SEQUENCE:      return "sfi_value_set_seq";
     case RECORD:        return "sfi_value_set_rec";
     case OBJECT:        return "g_value_set_object";
@@ -241,7 +239,6 @@ CodeGeneratorModule::func_value_get_param (const Param &param,
     case CHOICE:        return "(" + TypeName (param.type) + ") g_value_get_enum";
     case BBLOCK:        return "sfi_value_get_bblock";
     case FBLOCK:        return "sfi_value_get_fblock";
-    case PSPEC:         return "sfi_value_get_pspec";
     case SEQUENCE:      return "sfi_value_get_seq";
     case RECORD:        return "sfi_value_get_rec";
     case OBJECT:
@@ -261,7 +258,6 @@ CodeGeneratorModule::func_value_dup_param (const Param &param)
     case STRING:        return "sfi_value_dup_string";
     case BBLOCK:        return "sfi_value_dup_bblock";
     case FBLOCK:        return "sfi_value_dup_fblock";
-    case PSPEC:         return "sfi_value_dup_pspec";
     case SEQUENCE:      return "sfi_value_dup_seq";
     case RECORD:        return "sfi_value_dup_rec";
     case OBJECT:        return "g_value_dup_object";
@@ -282,7 +278,6 @@ CodeGeneratorModule::func_param_return_free (const Param &param)
     case CHOICE:        return "";      /* enum value */
     case BBLOCK:        return "sfi_bblock_unref";
     case FBLOCK:        return "sfi_fblock_unref";
-    case PSPEC:         return "g_param_spec_unref";
     case SEQUENCE:      return "sfi_seq_unref";
     case RECORD:        return "";
     case OBJECT:        return "";

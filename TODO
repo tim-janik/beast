@@ -278,7 +278,6 @@ Effects:
 
 sfidl:
 90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
-89- #include "/absolute/path" is handled as relative path
 85- support records and sequences in bse-plugin-generator and bseprocidl
 60- bse.idl defines bseamplifier, for which there is an idl file
     (touch bseamplifier.idl; make breaks)

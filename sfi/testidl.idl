@@ -21,7 +21,6 @@ record Position {
 record SickGenericThings {
   // $GROUP = "foo";
   Rec   rec   = ("Rec", "", ":readwrite");
-  PSpec pspec = ("Param Spec", "", ":readwrite");
 };
 
 class Blub {

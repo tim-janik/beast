@@ -486,28 +486,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       if (model == MODEL_VCALL_RCONV) return name;
       if (model == MODEL_VCALL_RFREE) return "";
     }
-  else if (type == "PSpec")
-    {
-      /* FIXME: review this for correctness */
-      if (model == MODEL_ARG)         return "GParamSpec*";
-      if (model == MODEL_MEMBER)      return "GParamSpec*";
-      if (model == MODEL_RET)         return "GParamSpec*";
-      if (model == MODEL_ARRAY)       return "GParamSpec**";
-      if (model == MODEL_FREE)        return "sfi_pspec_unref (" + name + ")";
-      if (model == MODEL_COPY)        return "sfi_pspec_ref (" + name + ")";;
-      /* no new: users of this need to be knowing to initialize things themselves */
-      if (model == MODEL_NEW)         return "";
-      if (model == MODEL_TO_VALUE)    return "sfi_value_pspec ("+name+")";
-      if (model == MODEL_FROM_VALUE)  return "sfi_pspec_ref (sfi_value_get_pspec ("+name+"))";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_pspec";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PSPEC) + "', "+name+",";
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "SfiPSpec*";
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
-    }
   else if (type == "Rec")
     {
       /* FIXME: review this for correctness */

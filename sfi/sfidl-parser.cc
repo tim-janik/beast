@@ -206,8 +206,7 @@ Type Parser::typeOf(const string& type) const
   if (isChoice (type))	  return CHOICE;
   if (type == "BBlock")   return BBLOCK;
   if (type == "FBlock")   return FBLOCK;
-  if (type == "Rec")      return REC;
-  if (type == "PSpec")    return FBLOCK;
+  if (type == "Rec")      return SFIREC;
   if (isSequence (type))  return SEQUENCE;
   if (isRecord (type))    return RECORD;
   if (isClass (type))     return OBJECT;
@@ -425,22 +424,33 @@ void Parser::preprocess (const string& input_filename)
 	   || (state == filenameIn2 && *i == '>'))
 	{
 	  string location;
-	  if (state == filenameIn1) // #include "foo.idl" => search in local directory (relative to input_file)
+	  // #include "/usr/include/foo.idl" (absolute path includes)
+	  if (g_path_is_absolute (filename.c_str()))
 	    {
-	      gchar *dir = g_path_get_dirname (input_filename.c_str());
-	      if (fileExists (dir + string(G_DIR_SEPARATOR_S) + filename))
+	      if (fileExists (filename))
 		location = filename;
-	      g_free (dir);
 	    }
-	  if (location == "") // all #include directives => search includepath with standard include dirs
+	  else
 	    {
-	      for(vector<string>::const_iterator i = options.includePath.begin(); i != options.includePath.end(); i++)
+	      // #include "foo.idl" => search in local directory (relative to input_file)
+	      if (state == filenameIn1)
 		{
-		  string testFilename = *i + "/" + filename;
-		  if (fileExists (testFilename))
+		  gchar *dir = g_path_get_dirname (input_filename.c_str());
+		  if (fileExists (dir + string(G_DIR_SEPARATOR_S) + filename))
+		    location = filename;
+		  g_free (dir);
+		}
+	      // all #include directives => search includepath with standard include dirs
+	      if (location == "")
+		{
+		  for(vector<string>::const_iterator i = options.includePath.begin(); i != options.includePath.end(); i++)
 		    {
-		      location = testFilename;
-		      break;
+		      string testFilename = *i + "/" + filename;
+		      if (fileExists (testFilename))
+			{
+			  location = testFilename;
+			  break;
+			}
 		    }
 		}
 	    }
@@ -538,7 +548,6 @@ bool Parser::parse (const string& filename)
   ModuleHelper::define("String");
   ModuleHelper::define("BBlock");
   ModuleHelper::define("FBlock");
-  ModuleHelper::define("PSpec");
   ModuleHelper::define("Rec");
   
   GTokenType expected_token = G_TOKEN_NONE;

@@ -193,9 +193,8 @@ enum Type {
   // blocks of byte/float
   BBLOCK,
   FBLOCK,
-  // generic types: param spec, record
-  PSPEC,
-  REC,
+  // generic record type:
+  SFIREC,
   // user defined types
   SEQUENCE,
   RECORD,
