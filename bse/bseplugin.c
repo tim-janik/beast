@@ -27,8 +27,6 @@
 #include	<unistd.h>
 
 
-#define BSE_DEBUG(y,x)	G_STMT_START { x ; } G_STMT_END
-
 
 /* --- prototypes --- */
 static const gchar* bse_plugin_register_types	(BsePlugin      *plugin,
@@ -76,7 +74,7 @@ bse_plugin_init (void)
 	  plugin->module_refs = 42;
 
 	  BSE_DEBUG (PLUGINS, {
-	    g_message ("register-builtin-plugin: \"%s\"", plugin->name);
+	    g_message ("register-builtin-plugin \"%s\"", plugin->name);
 	  });
 
 	  name = plugin->name;
@@ -115,6 +113,10 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      guint on = plugin->n_proc_types;
 	      const gchar *error;
 	      
+	      BSE_DEBUG (REGS, {
+		g_message ("register-procedure: \"%s\"", pspec->name);
+	      });
+	      
 	      type = bse_type_from_name (pspec->name);
 	      if (type)
 		return "Attempt to register known symbol";
@@ -137,10 +139,6 @@ bse_plugin_register_types (BsePlugin    *plugin,
 
 	      plugin->exports_procedures = TRUE;
 	      *(pspec->type_p) = type;
-	      
-	      BSE_DEBUG (PROCS, {
-		g_message ("register-procedure: \"%s\"", pspec->name);
-	      });
 	    }
 	}
       plugin->e_procs = especs;
@@ -155,6 +153,10 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      BseType type;
 	      guint on = plugin->n_object_types;
 	      const gchar *error;
+	      
+	      BSE_DEBUG (REGS, {
+		g_message ("register-object: \"%s\"", ospec->name);
+	      });
 	      
 	      type = bse_type_from_name (ospec->name);
 	      if (type)
@@ -180,10 +182,6 @@ bse_plugin_register_types (BsePlugin    *plugin,
 
 	      plugin->exports_objects = TRUE;
 	      *(ospec->type_p) = type;
-	      
-	      BSE_DEBUG (OBJECTS, {
-		g_message ("register-object: \"%s\"", ospec->name);
-	      });
 	    }
 	}
       plugin->e_objects = especs;
@@ -260,6 +258,10 @@ bse_plugin_ref (BsePlugin *plugin)
     {
       const gchar *error = NULL;
       
+      BSE_DEBUG (PLUGINS, {
+	g_message ("reloading-plugin \"%s\"", plugin->name);
+      });
+      
       plugin->gmodule = g_module_open (plugin->fname, 0);
       if (!plugin->gmodule)
 	error = g_module_error ();
@@ -297,10 +299,6 @@ bse_plugin_ref (BsePlugin *plugin)
 
       if (error)
 	g_error ("Fatal plugin error, failed to reinitialize plugin: %s", error);
-      
-      BSE_DEBUG (PLUGINS, {
-	g_message ("plugin-reloaded: \"%s\"", plugin->name);
-      });
     }
   plugin->module_refs++;
 }
@@ -318,7 +316,7 @@ bse_plugin_unload (BsePlugin *plugin)
   plugin->e_objects = NULL;
 
   BSE_DEBUG (PLUGINS, {
-    g_message ("plugin-unloaded: \"%s\"", plugin->name);
+    g_message ("unloaded-plugin \"%s\"", plugin->name);
   });
 }
 
@@ -406,7 +404,7 @@ bse_plugin_find (GModule *gmodule)
   return NULL;
 }
 
-const gchar*
+gchar*
 bse_plugin_check_load (const gchar *_file_name)
 {
   const gint TOKEN_DLNAME = G_TOKEN_LAST + 1;

@@ -75,7 +75,25 @@ typedef enum
 } BstOps;
 
 #define	BST_TAG_DIAMETER	(20)
-#define BST_DEBUG(y,x)		G_STMT_START { x ; } G_STMT_END
+
+
+/* --- debug stuff --- */
+typedef enum                    /* <skip> */
+{ /* keep in sync with bstmain.c */
+  BST_DEBUG_KEYTABLE		= (1 << 0),
+  BST_DEBUG_MASTER		= (1 << 1),
+  BST_DEBUG_SAMPLES		= (1 << 2)
+} BstDebugFlags;
+extern BstDebugFlags bst_debug_flags;
+#ifdef G_ENABLE_DEBUG
+#define BST_DEBUG(type, code)   G_STMT_START { \
+  if (bst_debug_flags & BST_DEBUG_##type) \
+    { code ; } \
+} G_STMT_END
+#else  /* !G_ENABLE_DEBUG */
+#define BST_DEBUG(type, code)   /* do nothing */
+#endif /* !G_ENABLE_DEBUG */
+
 
 /* it's hackish to have these prototypes in here, but we need
  * 'em somewhere, implementations are in bstmain.c

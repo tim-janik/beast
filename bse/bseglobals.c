@@ -22,9 +22,6 @@
 
 
 /* --- defines --- */
-#define BSE_DEBUG(y,x)  G_STMT_START { /* x */ ; } G_STMT_END
-
-
 /* factorization constants: 2^(1/12) and 2^(1/(12*6))
  * retrived with:
  * #include <stl.h>
@@ -57,13 +54,13 @@
 
 
 /* --- extern variables --- */
-const guint	bse_major_version = BSE_MAJOR_VERSION;
-const guint	bse_minor_version = BSE_MINOR_VERSION;
-const guint	bse_micro_version = BSE_MICRO_VERSION;
-const guint	bse_interface_age = BSE_INTERFACE_AGE;
-const guint	bse_binary_age = BSE_BINARY_AGE;
-const gchar    *bse_version = BSE_VERSION;
-const gchar    *bse_log_domain_bse = "BSE";
+const guint	     bse_major_version = BSE_MAJOR_VERSION;
+const guint	     bse_minor_version = BSE_MINOR_VERSION;
+const guint	     bse_micro_version = BSE_MICRO_VERSION;
+const guint	     bse_interface_age = BSE_INTERFACE_AGE;
+const guint	     bse_binary_age = BSE_BINARY_AGE;
+const gchar         *bse_version = BSE_VERSION;
+const gchar         *bse_log_domain_bse = "BSE";
 const gdouble*	_bse_halftone_factor_table = NULL;
 const guint*	_bse_halftone_factor_table_fixed = NULL;
 const gdouble*	_bse_fine_tune_factor_table = NULL;
@@ -133,8 +130,8 @@ bse_globals_init (void)
       BSE_DEBUG (TABLES, {
 	if (i == BSE_MIN_NOTE || i == BSE_MAX_NOTE ||
 	    (i >= BSE_KAMMER_NOTE - 6 && i <= BSE_KAMMER_NOTE + 12))
-	  printf ("ht-table: [%d] -> %.20f (%d)\n",
-		  i, ht_factor_table_d[i], ht_factor_table_fixed_ui[i]);
+	  g_message ("ht-table: [%d] -> %.20f (%d)",
+		     i, ht_factor_table_d[i], ht_factor_table_fixed_ui[i]);
       });
     }
   _bse_halftone_factor_table = ht_factor_table_d;
@@ -153,8 +150,8 @@ bse_globals_init (void)
     {
       ft_factor_table_d[BSE_MAX_FINE_TUNE + i] = pow (BSE_2_RAISED_TO_1_OVER_72_d, i);
       BSE_DEBUG (TABLES, {
-	printf ("ft-table: [%d] -> %.20f\n",
-		i, ft_factor_table_d[BSE_MAX_FINE_TUNE + i]);
+	g_message ("ft-table: [%d] -> %.20f",
+		   i, ft_factor_table_d[BSE_MAX_FINE_TUNE + i]);
       });
     }
   _bse_fine_tune_factor_table = ft_factor_table_d + BSE_MAX_FINE_TUNE;

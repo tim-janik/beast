@@ -334,8 +334,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
   GtkBox *box;
   GtkWidget *bar;
   GtkWidget *radio = NULL;
-  BseType *children;
-  guint n_children, i;
+  guint i;
   BseCategory *cats;
   guint n_cats;
   
@@ -360,15 +359,6 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 			NULL);
   box = GTK_BOX (bar);
 
-  children = bse_type_children (BSE_TYPE_SOURCE, &n_children);
-  for (i = 0; i < n_children; i++)
-    {
-      BseType source_type = children[i];
-
-      g_print ("want type: %s\n", bse_type_name (source_type));
-    }
-  g_free (children);
-  
   cats = bse_categories_match ("/Source/*", &n_cats);
   for (i = 0; i < n_cats; i++)
     radio = add_category_button (box,

@@ -156,7 +156,7 @@ static void             bse_type_class_lastref          (gpointer        bse_cla
 
 /* --- type nodes --- */
 static GHashTable       *type_nodes_ht = NULL;
-static GSList           *bse_classes = NULL;
+static GSList           *bse_debug_classes = NULL;
 static TypeNode        **bse_type_nodes = NULL;
 static guint             bse_n_type_nodes = 0;
 
@@ -176,13 +176,13 @@ LOOKUP_TYPE_NODE (register BseType utype)
 static void
 bse_type_debug (void)
 {
-  if (bse_classes)
-    {
+  if (bse_debug_classes)
+    BSE_DEBUG (CLASSES, {
       GSList *slist;
-
-      for (slist = bse_classes; slist; slist = slist->next)
-        g_print ("BSE: stale class: `%s'\n", BSE_CLASS_NAME (slist->data));
-    }
+      
+      for (slist = bse_debug_classes; slist; slist = slist->next)
+	g_message ("stale class: `%s'", BSE_CLASS_NAME (slist->data));
+    });
 }
 
 static inline gchar*
@@ -504,7 +504,7 @@ type_class_init (BseType       type,
   class = g_malloc0 (node->data->classed.class_size);
   node->data->classed.class = class;
 
-  bse_classes = g_slist_prepend (bse_classes, class);
+  BSE_DEBUG (CLASSES, bse_debug_classes = g_slist_prepend (bse_debug_classes, class));
   
   if (pclass)
     {
@@ -564,10 +564,12 @@ type_class_destroy (TypeNode *node)
   type = NODE_TYPE (node);
   class = node->data->classed.class;
 
-  bse_classes = g_slist_remove (bse_classes, class);
-  g_print ("BSE: destroying %sClass `%s'\n",
-           type_descriptive_name (BSE_FUNDAMENTAL_TYPE (type)),
-           type_descriptive_name (type));
+  BSE_DEBUG (CLASSES, {
+    bse_debug_classes = g_slist_remove (bse_debug_classes, class);
+    g_message ("destroying %sClass `%s'",
+	       type_descriptive_name (BSE_FUNDAMENTAL_TYPE (type)),
+	       type_descriptive_name (type));
+  });
   
   if (node->data->classed.class_destroy)
     node->data->classed.class_destroy (class, (gpointer) node->data->classed.class_data);

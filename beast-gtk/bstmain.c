@@ -33,9 +33,21 @@
 #define	VERSION	"Pre-Alpha"
 
 
+/* --- prototypes --- */
+static void	bst_parse_args	(gint    *argc_p,
+				 gchar ***argv_p);
+
+
 /* --- variables --- */
 static guint        args_changed_signal_id = 0;
-static const gchar *beast_rc_string =
+BstDebugFlags       bst_debug_flags = BST_DEBUG_MASTER;
+static GDebugKey       bst_debug_keys[] = { /* keep in sync with bstdefs.h */
+  { "keytable",		BST_DEBUG_KEYTABLE, },
+  { "master",		BST_DEBUG_MASTER, },
+  { "samples",		BST_DEBUG_SAMPLES, },
+};
+static const guint bst_n_debug_keys = sizeof (bst_debug_keys) / sizeof (bst_debug_keys[0]);
+static const gchar *bst_rc_string =
 ( "style'BstTooltips-style'"
   "{"
   "bg[NORMAL]={.94,.88,0.}"
@@ -55,22 +67,23 @@ main (int   argc,
   GSList *unref_list = NULL;
   BstApp *app = NULL;
   guint i;
-
+  
   g_message ("BEAST: pid = %u", getpid ());
-
+  
   /* initialize BSE
    */
   bse_init (&argc, &argv);
-
-  /* initialize GUI libraries
+  
+  /* initialize GUI libraries and pre-parse args
    */
   gtk_init (&argc, &argv);
-  gtk_rc_parse_string (beast_rc_string);
+  gtk_rc_parse_string (bst_rc_string);
   gdk_rgb_init ();
   gle_init (&argc, &argv);
   gnome_type_init ();
   // gnome_init (PROGRAM, VERSION, argc, argv);
-
+  bst_parse_args (&argc, &argv);
+  
   /* check load BSE plugins to register types
    */
   if (1)
@@ -85,13 +98,13 @@ main (int   argc,
 	  g_message ("loading plugin \"%s\"...", string);
 	  error = bse_plugin_check_load (string);
 	  if (error)
-	    g_message ("error encountered loading plugin \"%s\": %s", string, error);
+	    g_warning ("error encountered loading plugin \"%s\": %s", string, error);
 	  g_free (string);
 	}
       g_list_free (free_list);
     }
   
-
+  
   /* hackery rulez!
    */
   args_changed_signal_id =
@@ -100,8 +113,8 @@ main (int   argc,
 				      GTK_RUN_ACTION,
 				      gtk_signal_default_marshaller,
 				      GTK_TYPE_NONE, 0);
-
-
+  
+  
   /* open master output stream
    */
   error = bst_master_init ();
@@ -109,22 +122,22 @@ main (int   argc,
     {
       g_printerr (error);
       g_free (error);
-
+      
       return -1;
     }
-
+  
   /* register neccessary GLE components
    */
   bst_app_register ();
-
-
+  
+  
   /* setup default keytable for pattern editor class
    */
   {
     gchar *encoding, *layout, *model, *variant, *name = NULL;
     GSList *slist, *name_list = NULL;
     BstKeyTablePatch *patch = NULL;
-
+    
     if (bst_xkb_open (gdk_get_display (), TRUE))
       {
 	name = g_strdup (bst_xkb_get_symbol (TRUE));
@@ -139,12 +152,12 @@ main (int   argc,
 		 name, encoding, layout, model, variant);
     });
     g_free (name);
-
+    
     /* strip number of keys (if present) */
     if (layout)
       {
 	gchar *n, *l = layout;
-
+	
 	while (*l && (*l < '0' || *l > '9'))
 	  l++;
 	n = l;
@@ -155,7 +168,7 @@ main (int   argc,
 	layout = *l ? g_strdup (l) : NULL;
 	g_free (n);
       }
-
+    
     /* list guesses */
     if (encoding)
       {
@@ -179,11 +192,11 @@ main (int   argc,
     g_free (layout);
     g_free (model);
     g_free (variant);
-
+    
     for (slist = name_list; slist; slist = slist->next)
       {
 	name = slist->data;
-
+	
 	if (!patch)
 	  {
 	    patch = bst_key_table_patch_find (name);
@@ -200,7 +213,7 @@ main (int   argc,
 	g_free (name);
       }
     g_slist_free (name_list);
-
+    
     if (!patch)
       {
 	name = BST_DFL_KEYTABLE;	/* default keyboard */
@@ -209,17 +222,17 @@ main (int   argc,
 	});
 	patch = bst_key_table_patch_find (name);
       }
-
+    
     bst_key_table_install_patch (patch);
   }
-    
+  
   
   /* parse GLE (GUI) resources
    */
   pdata = gle_parser_data_from_file (resource_file);
   if (!pdata)
     {
-      g_message ("Can't retrive neccessary resources from \"%s\"", resource_file);
+      g_warning ("Can't retrive neccessary resources from \"%s\"", resource_file);
       return 1;
     }
   for (slist = pdata->gtoplevels; slist; slist = slist->next)
@@ -228,21 +241,21 @@ main (int   argc,
       gle_gwidget_set_visible (slist->data, FALSE);
     }
   gle_parser_data_destroy (pdata);
-
-
+  
+  
   /* register sample repositories
    */
   bst_sample_repo_init ();
-
-
+  
+  
   /* open files given on command line
    */
   for (i = 1; i < argc; i++)
     {
       BseStorage *storage = bse_storage_new ();
       BseErrorType error;
-
-
+      
+      
 #if 0
       if (!strcmp (argv[i], "--+debug"))
 	{
@@ -253,11 +266,11 @@ main (int   argc,
 #endif
       
       error = bse_storage_input_file (storage, argv[i]);
-
+      
       if (!error)
 	{
 	  BseProject *project = bse_project_new (argv[i]);
-
+	  
 	  bse_storage_set_path_resolver (storage, bse_project_path_resolver, project);
 	  error = bse_project_restore (project, storage);
 	  if (!error)
@@ -269,17 +282,17 @@ main (int   argc,
 	}
       bse_storage_destroy (storage);
       if (error)
-	g_message ("failed to load project `%s': %s", /* FIXME */
+	g_warning ("failed to load project `%s': %s", /* FIXME */
 		   argv[i],
 		   bse_error_blurb (error));
     }
-
+  
   /* open default app window
    */
   if (!app)
     {
       BseProject *project = bse_project_new ("Untitled.bse");
-
+      
       app = bst_app_new (project);
       bse_object_unref (BSE_OBJECT (project));
       bst_app_operate (app, BST_OP_PROJECT_NEW_SONG);
@@ -288,24 +301,95 @@ main (int   argc,
   
   
   
-/* and away into the main loop
+  /* and away into the main loop
    */
   gtk_main ();
-
-
+  
+  
   for (slist = unref_list; slist; slist = slist->next)
     bse_object_unref (slist->data);
   g_slist_free (unref_list);
-
-
+  
+  
   /* shutdown master
    */
   bst_master_shutdown ();
-
-
-  bse_chunk_debug ();
+  
+  BSE_DEBUG (CHUNKS, bse_chunk_debug ());
   
   return 0;
+}
+
+static void
+bst_parse_args (int    *argc_p,
+		char ***argv_p)
+{
+  guint argc = *argc_p;
+  gchar **argv = *argv_p;
+  gchar *envar;
+  guint i, e;
+  
+  envar = getenv ("BEAST_DEBUG");
+  if (envar)
+    bst_debug_flags |= g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
+  envar = getenv ("BEAST_NO_DEBUG");
+  if (envar)
+    bst_debug_flags &= ~g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
+  
+  for (i = 1; i < argc; i++)
+    {
+      if (strcmp ("--beast-debug", argv[i]) == 0 ||
+	  strncmp ("--beast-debug=", argv[i], 14) == 0)
+	{
+	  gchar *equal = argv[i] + 13;
+	  
+	  if (*equal == '=')
+	    bst_debug_flags |= g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
+	  else if (i + 1 < argc)
+	    {
+	      bst_debug_flags |= g_parse_debug_string (argv[i + 1],
+						       bst_debug_keys,
+						       bst_n_debug_keys);
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--beast-no-debug", argv[i]) == 0 ||
+	       strncmp ("--beast-no-debug=", argv[i], 17) == 0)
+	{
+	  gchar *equal = argv[i] + 16;
+	  
+	  if (*equal == '=')
+	    bst_debug_flags &= ~g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
+	  else if (i + 1 < argc)
+	    {
+	      bst_debug_flags &= ~g_parse_debug_string (argv[i + 1],
+							bst_debug_keys,
+							bst_n_debug_keys);
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
+	}
+    }
+  
+  e = 0;
+  for (i = 1; i < argc; i++)
+    {
+      if (e)
+	{
+	  if (argv[i])
+	    {
+	      argv[e++] = argv[i];
+	      argv[i] = NULL;
+	    }
+	}
+      else if (!argv[i])
+	e = i;
+    }
+  if (e)
+    *argc_p = e;
 }
 
 /* read bstdefs.h on this */
@@ -313,16 +397,16 @@ void
 bst_update_can_operate (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
+  
   /* FIXME, we need to queue a high prioritized idle here as
    * this function can be called multiple times in a row
    */
-
+  
   /* figure toplevel app, and update it
    */
   widget = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
   g_return_if_fail (BST_IS_APP (widget));
-
+  
   bst_app_update_can_operate (BST_APP (widget));
 }
 
@@ -333,13 +417,13 @@ bst_object_set (gpointer     object,
 		...)
 {
   va_list args;
-
+  
   g_return_if_fail (GTK_IS_OBJECT (object));
-
+  
   gtk_object_ref (object);
   
   va_start (args, first_arg_name);
-
+  
   if (GNOME_IS_CANVAS_ITEM (object))
     gnome_canvas_item_set_valist (object, first_arg_name, args);
   else
@@ -371,7 +455,7 @@ bst_object_set (gpointer     object,
 	}
     }
   va_end (args);
-
+  
   BST_OBJECT_ARGS_CHANGED (object);
   
   gtk_object_unref (object);
@@ -383,16 +467,16 @@ gnome_canvas_points_new0 (guint num_points)
 {
   GnomeCanvasPoints *points;
   guint i;
-
+  
   g_return_val_if_fail (num_points > 1, NULL);
-
+  
   points = gnome_canvas_points_new (num_points);
   for (i = 0; i < num_points; i++)
     {
       points->coords[i] = 0;
       points->coords[i + num_points] = 0;
     }
-
+  
   return points;
 }
 
@@ -400,14 +484,14 @@ static void
 item_request_update_recurse (GnomeCanvasItem *item)
 {
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item));
-
+  
   gnome_canvas_item_request_update (item);
-
+  
   if (GNOME_IS_CANVAS_GROUP (item))
     {
       GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (item);
       GList *list;
-
+      
       for (list = group->item_list; list; list = list->next)
 	item_request_update_recurse (list->data);
     }
@@ -417,7 +501,7 @@ void
 gnome_canvas_request_full_update (GnomeCanvas *canvas)
 {
   g_return_if_fail (GNOME_IS_CANVAS (canvas));
-
+  
   item_request_update_recurse (canvas->root);
 }
 
@@ -425,13 +509,13 @@ guint
 gnome_canvas_item_get_stacking (GnomeCanvasItem *item)
 {
   g_return_val_if_fail (GNOME_IS_CANVAS_ITEM (item), 0);
-
+  
   if (item->parent)
     {
       GnomeCanvasGroup *parent = GNOME_CANVAS_GROUP (item->parent);
       GList *list;
       guint pos = 0;
-
+      
       for (list = parent->item_list; list; list = list->next)
 	{
 	  if (list->data == item)
@@ -439,7 +523,7 @@ gnome_canvas_item_get_stacking (GnomeCanvasItem *item)
 	  pos++;
 	}
     }
-
+  
   return 0;
 }
 
@@ -451,11 +535,11 @@ gnome_canvas_item_keep_between (GnomeCanvasItem *between,
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (between));
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item1));
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item2));
-
+  
   if (between->parent && item1->parent == between->parent && item2->parent == between->parent)
     {
       guint n, i, z;
-
+      
       n = gnome_canvas_item_get_stacking (item1);
       i = gnome_canvas_item_get_stacking (item2);
       z = gnome_canvas_item_get_stacking (between);

@@ -28,12 +28,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-/* --- defines --- */
-#define	BSE_MAIN_KEEP_ALIVE()	G_STMT_START { \
-  if (bse_main_need_iteration ()) \
-    bse_main_iteration (); \
-} G_STMT_END
+/* --- variables --- */
+extern BseDebugFlags bse_debug_flags;
 
 
 /* --- prototypes --- */

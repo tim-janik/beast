@@ -84,19 +84,19 @@ bst_master_init (void)
       if (!error &&
 	  attributes.play_frequency == BSE_MIX_FREQ &&
 	  attributes.n_channels == N_TRACKS)
-	{
-	  g_print ("Using %s stream \"%s\" with %uHz in %u channel mode\n",
-		   BSE_OBJECT_TYPE_NAME (stream),
-		   stream->file_name,
-		   attributes.play_frequency,
-		   attributes.n_channels);
-	  g_print ("output buffer size: %d\n", bse_globals->pcm_buffer_size);
-	  g_print ("mix buffer size: %d\n", bse_globals->track_length);
-	}
+	BST_DEBUG (MASTER, {
+	  g_message ("Using %s stream \"%s\" with %uHz in %u channel mode",
+		     BSE_OBJECT_TYPE_NAME (stream),
+		     stream->file_name,
+		     attributes.play_frequency,
+		     attributes.n_channels);
+	  g_message ("output buffer size: %d", bse_globals->pcm_buffer_size);
+	  g_message ("mix buffer size: %d", bse_globals->track_length);
+	});
       else if (!error)
 	error = BSE_ERROR_STREAM_SET_ATTRIB;
     }
-
+  
   if (error)
     {
       gchar *string;

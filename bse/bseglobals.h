@@ -196,13 +196,13 @@ extern const BseGlobals	*bse_globals;
 
 
 /* --- version numbers --- */
-extern	const guint	 bse_major_version;
-extern	const guint	 bse_minor_version;
-extern	const guint	 bse_micro_version;
-extern	const guint	 bse_interface_age;
-extern	const guint	 bse_binary_age;
-extern	const gchar	*bse_version;
-extern  const gchar     *bse_log_domain_bse;
+extern const guint   bse_major_version;
+extern const guint   bse_minor_version;
+extern const guint   bse_micro_version;
+extern const guint   bse_interface_age;
+extern const guint   bse_binary_age;
+extern const gchar  *bse_version;
+extern const gchar  *bse_log_domain_bse;
 
 
 /* --- prototypes --- */

@@ -16,14 +16,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bsemain.h"
+
 #include	"bsesong.h"
 #include	"bsesongsequencer.h"
 #include	"bsestream.h"
 #include	"bseplugin.h"
+#include	<string.h>
+#include	<stdlib.h>
 
 
 /* --- variables --- */
-static gboolean bse_is_initialized = FALSE;
+static gboolean        bse_is_initialized = FALSE;
+BseDebugFlags          bse_debug_flags = 0;
+static GDebugKey       bse_debug_keys[] = { /* keep in sync with bsedefs.h */
+  { "tables",		BSE_DEBUG_TABLES, },
+  { "classes",		BSE_DEBUG_CLASSES, },
+  { "objects",		BSE_DEBUG_OBJECTS, },
+  { "notify",		BSE_DEBUG_NOTIFY, },
+  { "plugins",		BSE_DEBUG_PLUGINS, },
+  { "regs",		BSE_DEBUG_REGS, },
+  { "chunks",		BSE_DEBUG_CHUNKS, },
+};
+static const guint bse_n_debug_keys = sizeof (bse_debug_keys) / sizeof (bse_debug_keys[0]);
 
 
 /* --- functions --- */
@@ -34,14 +48,24 @@ bse_initialized (void)
 }
 
 static void
-bse_parse_args (int *argc_p,
-		char ***argv_p)
+bse_parse_args (gint    *argc_p,
+		gchar ***argv_p)
 {
+  guint argc = *argc_p;
+  gchar **argv = *argv_p;
+  gchar *envar;
   guint i, e;
   
-  for (i = 1; i < *argc_p; i++)
+  envar = getenv ("BSE_DEBUG");
+  if (envar)
+    bse_debug_flags |= g_parse_debug_string (envar, bse_debug_keys, bse_n_debug_keys);
+  envar = getenv ("BSE_NO_DEBUG");
+  if (envar)
+    bse_debug_flags &= ~g_parse_debug_string (envar, bse_debug_keys, bse_n_debug_keys);
+
+  for (i = 1; i < argc; i++)
     {
-      if (strcmp ((*argv_p)[i], "--g-fatal-warnings") == 0)
+      if (strcmp (argv[i], "--g-fatal-warnings") == 0)
 	{
 	  GLogLevelFlags fatal_mask;
 	  
@@ -49,22 +73,56 @@ bse_parse_args (int *argc_p,
 	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
 	  g_log_set_always_fatal (fatal_mask);
 	  
-	  (*argv_p)[i] = NULL;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-debug", argv[i]) == 0 ||
+	       strncmp ("--bse-debug=", argv[i], 12) == 0)
+	{
+	  gchar *equal = argv[i] + 11;
+
+	  if (*equal == '=')
+	    bse_debug_flags |= g_parse_debug_string (equal + 1, bse_debug_keys, bse_n_debug_keys);
+	  else if (i + 1 < argc)
+	    {
+	      bse_debug_flags |= g_parse_debug_string (argv[i + 1],
+						       bse_debug_keys,
+						       bse_n_debug_keys);
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
+	       strncmp ("--bse-no-debug=", argv[i], 15) == 0)
+	{
+	  gchar *equal = argv[i] + 14;
+
+	  if (*equal == '=')
+	    bse_debug_flags &= ~g_parse_debug_string (equal + 1, bse_debug_keys, bse_n_debug_keys);
+	  else if (i + 1 < argc)
+	    {
+	      bse_debug_flags &= ~g_parse_debug_string (argv[i + 1],
+							bse_debug_keys,
+							bse_n_debug_keys);
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
 	}
     }
   
   e = 0;
-  for (i = 1; i < *argc_p; i++)
+  for (i = 1; i < argc; i++)
     {
       if (e)
 	{
-	  if ((*argv_p)[i])
+	  if (argv[i])
 	    {
-	      (*argv_p)[e++] = (*argv_p)[i];
-	      (*argv_p)[i] = NULL;
+	      argv[e++] = argv[i];
+	      argv[i] = NULL;
 	    }
 	}
-      else if (!(*argv_p)[i])
+      else if (!argv[i])
 	e = i;
     }
   if (e)

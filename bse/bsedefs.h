@@ -30,10 +30,20 @@
 extern "C" {
 #endif /* __cplusplus */
 
+
+/* --- some globally used defines --- */
 #define FIXME(msg)  g_message ("%s:%d:FIXME(%s): " # msg, __FILE__, __LINE__, \
 			       G_GNUC_PRETTY_FUNCTION)
 #define FIXME_SKIP(code)  g_message ("%s:%d:FIXME(%s): code portion skipped", \
 				     __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION)
+#ifdef G_ENABLE_DEBUG
+#define BSE_DEBUG(type, code)	G_STMT_START { \
+  if (bse_debug_flags & BSE_DEBUG_##type) \
+    { code ; } \
+} G_STMT_END
+#else  /* !G_ENABLE_DEBUG */
+#define BSE_DEBUG(type, code)	/* do nothing */
+#endif /* !G_ENABLE_DEBUG */
 
 
 /* --- BSE basic typedefs --- */
@@ -136,7 +146,17 @@ typedef struct	_BseNotifyHook		BseNotifyHook;
 
 
 /* --- anticipated enums --- */
-typedef enum                            /* <skip> */
+typedef enum			/* <skip> */
+{ /* keep in sync with bsemain.c */
+  BSE_DEBUG_TABLES		= (1 << 0),
+  BSE_DEBUG_CLASSES		= (1 << 1),
+  BSE_DEBUG_OBJECTS		= (1 << 2),
+  BSE_DEBUG_NOTIFY		= (1 << 3),
+  BSE_DEBUG_PLUGINS		= (1 << 4),
+  BSE_DEBUG_REGS		= (1 << 5),
+  BSE_DEBUG_CHUNKS		= (1 << 6)
+} BseDebugFlags;
+typedef enum			/* <skip> */
 {
   BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1,
   BSE_TOKEN_NIL			= G_TOKEN_LAST + 2
@@ -166,6 +186,10 @@ struct _BseIcon
   guint   height;
   guint8 *pixels;
 };
+
+
+/* --- anticipated variables --- */
+extern BseDebugFlags bse_debug_flags;
 
 
 /* --- required globals --- */

@@ -471,18 +471,17 @@ bse_chunk_complete_hunk (BseChunk *chunk)
 void
 bse_chunk_debug (void)
 {
-  extern BseIndex bse_index;
-
-  g_print ("\n");
-  g_print ("BseIndex: %lld\n", bse_index);
-  g_print ("n_state_blocks: %d\n", g_slist_length (state_blocks));
-  g_print ("hunk_count: %d\n", hunk_count);
-  g_print ("chunk_count: %d\n", chunk_count);
-  g_print ("n_free_chunks: %d\n", g_trash_stack_height (&free_chunks));
+  extern BseIndex bse_index; /* FIXME */
+  
+  g_message ("BseIndex: %lld", bse_index);
+  g_message ("n_state_blocks: %d", g_slist_length (state_blocks));
+  g_message ("hunk_count: %d", hunk_count);
+  g_message ("chunk_count: %d", chunk_count);
+  g_message ("n_free_chunks: %d", g_trash_stack_height (&free_chunks));
   if (chunks_mem_chunk)
     g_mem_chunk_print (chunks_mem_chunk);
   else
-    g_print ("BseChunk mem_chunk is NULL\n");
+    g_message ("BseChunk mem_chunk is NULL");
 }
 
 void

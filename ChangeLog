@@ -1,3 +1,15 @@
+Fri Oct 15 02:47:33 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmaster.c: wrapped up MASTER debugging stuff.
+
+	* beast-gtk/bstmain.c (bst_parse_args): new function to parse
+	--beast-debug, --beast-no-debug args and evaluate BEAST_DEBUG and
+	BEAS_NO_DEBUG env vars.
+
+Fri Oct 15 01:21:51 1999  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added --enable-debug=[no/minimum/yes] option.
+
 Fri Oct 15 00:36:26 1999  Tim Janik  <timj@gtk.org>
 
 	* merge my changes with CVS (finally).

@@ -513,7 +513,7 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
       pcm_stream->attribs.play_frequency = d_int;
       pcm_stream->attribs.record_frequency = d_int;
       
-      g_message ("OSS_DEBUG: play_freq: %d\n", d_int);
+      g_message ("OSS_DEBUG: play_freq: %d", d_int);
     }
   
   if (attrib_mask & BSE_PCMSA_FRAGMENT_SIZE)

@@ -82,10 +82,15 @@ typedef enum
 
 /* casts, checks and convenience macros for structured types
  */
-#define	BSE_CHECK_STRUCT_CAST(sp, bse_type, c_type)	\
+#ifndef BSE_DISABLE_CAST_CHECKS
+#  define BSE_CHECK_STRUCT_CAST(sp, bse_type, c_type)	\
     ((c_type*) bse_type_check_struct_cast ((BseTypeStruct*) (sp), (bse_type)))
-#define	BSE_CHECK_CLASS_CAST(cp, bse_type, c_type)	\
+#  define BSE_CHECK_CLASS_CAST(cp, bse_type, c_type)	\
     ((c_type*) bse_type_check_class_cast ((BseTypeClass*) (cp), (bse_type)))
+# else /* BSE_DISABLE_CAST_CHECKS */
+#  define BSE_CHECK_STRUCT_CAST(sp, bse_type, c_type) ((c_type*) (sp))
+#  define BSE_CHECK_CLASS_CAST(cp, bse_type, c_type)  ((c_type*) (cp))
+#endif /* BSE_DISABLE_CAST_CHECKS */
 #define	BSE_CHECK_STRUCT_TYPE(sp, bse_type)	( \
     bse_type_struct_conforms_to ((BseTypeStruct*) (sp), (bse_type)) \
 )
