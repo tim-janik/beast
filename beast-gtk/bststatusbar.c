@@ -18,6 +18,8 @@
  */
 #include	"bststatusbar.h"
 
+#include	"bstdialog.h"
+
 #include	<gdk/gdkkeysyms.h>
 #include	<string.h>
 
@@ -26,70 +28,71 @@
 
 /* --- prototypes --- */
 static void	status_bar_remove_timer		(GtkWidget	*sbar);
+static gboolean	procedure_share			(gpointer	 func_data,
+						 const gchar	*proc_name,
+						 gfloat		 proc_progress);
+static gboolean	procedure_finished		(gpointer	 func_data,
+						 const gchar	*proc_name,
+						 BseErrorType	 exit_status);
 
 
 /* --- variables --- */
-static GSList	 *status_windows = NULL;
-static GSList	 *status_window_stack = NULL;
-static guint	  proc_notifier = 0;
 static GtkWidget *proc_window = NULL;
-
+static GSList    *status_window_stack = NULL;
+static guint      proc_notifier = 0;
+static guint	  proc_catch_count = 0;
 
 /* --- functions --- */
-static inline gboolean
-widget_fully_visible (GtkWidget *widget)
+void
+bst_status_bar_catch_procedure (void)
 {
-  do
+  if (!proc_catch_count++)
     {
-      if (!GTK_WIDGET_VISIBLE (widget) && widget->parent)
-	return FALSE;
-      widget = widget->parent;
+      proc_notifier = bse_procedure_notifier_add (procedure_finished, NULL);
+      bse_procedure_push_share_hook (procedure_share, NULL);
     }
-  while (widget);
+}
 
-  return TRUE;
+void
+bst_status_bar_uncatch_procedure (void)
+{
+  g_return_if_fail (proc_catch_count > 0);
+
+  if (!--proc_catch_count)
+    {
+      bse_procedure_pop_share_hook ();
+      bse_procedure_notifier_remove (proc_notifier);
+      proc_notifier = 0;
+    }
 }
 
 GtkWidget*
 bst_status_bar_get_current (void)
 {
-  GtkWidget *sbar = NULL;
+  BstDialog *dialog;
+  GSList *slist;
 
-  if (!sbar && status_window_stack)
+  for (slist = status_window_stack; slist; slist = slist->next)
     {
-      GtkWindow *window = status_window_stack->data;
+      dialog = BST_DIALOG (slist->data);
 
-      if (window)
-	sbar = bst_status_bar_from_window (window);
-
-      if (!sbar || !widget_fully_visible (sbar))
-	{
-	  status_window_stack = g_slist_remove (status_window_stack, window);
-	  sbar = bst_status_bar_get_current ();
-	  status_window_stack = g_slist_prepend (status_window_stack, window);
-	}
+      if (dialog->status_bar && GTK_WIDGET_DRAWABLE (dialog->status_bar))
+	return dialog->status_bar;
     }
-  
-  if (!sbar && status_windows)
-    {
-      GtkWindow *window = status_windows->data;
+  dialog = bst_dialog_get_status_window ();
 
-      if (GTK_WIDGET_DRAWABLE (window))
-	sbar = bst_status_bar_from_window (window);
-      
-      if (!sbar || !widget_fully_visible (sbar))
-	{
-	  GSList *saved_status_window_stack = status_window_stack;
+  return dialog ? dialog->status_bar : NULL;
+}
 
-	  status_window_stack = NULL;
-	  status_windows = g_slist_remove (status_windows, window);
-	  sbar = bst_status_bar_get_current ();
-	  status_windows = g_slist_append (status_windows, window);
-	  status_window_stack = saved_status_window_stack;
-	}
-    }
-  
-  return sbar;
+GtkWidget*
+bst_status_bar_from_widget (GtkWidget *widget)
+{
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
+
+  widget = gtk_widget_get_toplevel (widget);
+  if (BST_IS_DIALOG (widget))
+    return BST_DIALOG (widget)->status_bar;
+  return NULL;
 }
 
 void
@@ -109,60 +112,7 @@ bst_status_window_pop (void)
   g_return_if_fail (status_window_stack != NULL);
 
   gtk_widget_unref (status_window_stack->data);
-
   status_window_stack = g_slist_remove (status_window_stack, status_window_stack->data);
-}
-
-GtkWidget*
-bst_status_bar_from_window (GtkWindow *window)
-{
-  g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
-  
-  if (window)
-    {
-      GtkWidget *sbar = gtk_object_get_data (GTK_OBJECT (window), "bst-status-bar");
-      
-      if (sbar)
-	return sbar;
-    }
-  
-  return NULL;
-}
-
-static gint
-bst_status_focus_in_event (GtkWidget	 *widget,
-			   GdkEventFocus *event)
-{
-  widget = gtk_get_event_widget ((GdkEvent*) event);
-  
-  if (event->type == GDK_FOCUS_CHANGE &&
-      event->in == TRUE &&
-      GTK_IS_WINDOW (widget) &&
-      !GTK_WIDGET_REALIZED (widget))
-    {
-      status_windows = g_slist_remove (status_windows, widget);
-      status_windows = g_slist_prepend (status_windows, widget);
-    }
-  
-  return FALSE;
-}
-
-static void
-bst_status_destroyed (GtkWidget *widget)
-{
-  GtkObject *object = GTK_OBJECT (widget);
-  GtkWidget *sbar;
-  
-  gtk_signal_disconnect_by_func (object,
-				 GTK_SIGNAL_FUNC (bst_status_focus_in_event),
-				 NULL);
-  gtk_signal_disconnect_by_func (object,
-				 GTK_SIGNAL_FUNC (bst_status_destroyed),
-				 NULL);
-  status_windows = g_slist_remove (status_windows, widget);
-  sbar = gtk_object_get_data (object, "bst-status-bar");
-  gtk_widget_destroy (sbar);
-  gtk_object_remove_data (object, "bst-status-bar");
 }
 
 static gint
@@ -191,11 +141,6 @@ procedure_share (gpointer     func_data,
   GtkWidget *sbar;
   gboolean should_abort = FALSE;
   
-  if (proc_window && !GTK_WIDGET_VISIBLE (proc_window))
-    {
-      gtk_widget_unref (proc_window);
-      proc_window = NULL;
-    }
   if (!proc_window)
     {
       sbar = bst_status_bar_get_current ();
@@ -206,7 +151,7 @@ procedure_share (gpointer     func_data,
 	    gtk_widget_ref (proc_window);
 	}
     }
-  sbar = proc_window ? bst_status_bar_from_window (GTK_WINDOW (proc_window)) : NULL;
+  sbar = proc_window ? bst_status_bar_from_widget (proc_window) : NULL;
   
   if (sbar)
     {
@@ -221,22 +166,9 @@ procedure_share (gpointer     func_data,
       status_bar_remove_timer (sbar);
       
       if (proc_progress < 0)
-	{
-	  GtkAdjustment *adj;
-	  gfloat value;
-
-	  gtk_progress_set_activity_mode (GTK_PROGRESS (progress), TRUE);
-	  adj = GTK_PROGRESS (progress)->adjustment;
-	  value = adj->value + 1;
-	  if (value > adj->upper)
-	    value = adj->lower;
-	  gtk_progress_set_value (GTK_PROGRESS (progress), value);
-	}
+	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (progress));
       else
-	{
-	  gtk_progress_set_activity_mode (GTK_PROGRESS (progress), FALSE);
-	  gtk_progress_set_percentage (GTK_PROGRESS (progress), proc_progress);
-	}
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), proc_progress);
       
       gtk_label_set_text (GTK_LABEL (msg), text ? text + 1 : proc_name);
       gtk_widget_hide (status);
@@ -256,9 +188,8 @@ procedure_share (gpointer     func_data,
       gtk_grab_add (abort);
 
       GDK_THREADS_LEAVE ();
-      do
+      while (g_main_pending ())
 	g_main_iteration (FALSE);
-      while (g_main_pending ());
       GDK_THREADS_ENTER ();
 
       gtk_grab_remove (abort);
@@ -279,7 +210,7 @@ procedure_finished (gpointer	 func_data,
 {
   GtkWidget *sbar;
   
-  sbar = proc_window ? bst_status_bar_from_window (GTK_WINDOW (proc_window)) : NULL;
+  sbar = proc_window ? bst_status_bar_from_widget (proc_window) : NULL;
   if (!sbar)
     sbar = bst_status_bar_get_current ();
   
@@ -303,42 +234,10 @@ procedure_finished (gpointer	 func_data,
   return TRUE;
 }
 
-static void
-bst_status_register_window (GtkWindow *window)
-{
-  GtkObject *object = GTK_OBJECT (window);
-  static guint focus_in_event = 0;
-  
-  if (!focus_in_event)
-    {
-      /* do general initialization stuff
-       */
-      focus_in_event = gtk_signal_lookup ("focus-in-event", GTK_TYPE_WIDGET);
-      proc_notifier = bse_procedure_notifier_add (procedure_finished, NULL);
-      bse_procedure_push_share_hook (procedure_share, NULL);
-    }
-  
-  /* the window itself might be registered already */
-  if (!gtk_signal_handler_pending_by_func (object, focus_in_event, TRUE,
-					   GTK_SIGNAL_FUNC (focus_in_event),
-					   NULL))
-    {
-      status_windows = g_slist_append (status_windows, window);
-      gtk_signal_connect (object,
-			  "focus-in-event",
-			  GTK_SIGNAL_FUNC (bst_status_focus_in_event),
-			  NULL);
-      gtk_signal_connect (object,
-			  "destroy",
-			  GTK_SIGNAL_FUNC (bst_status_destroyed),
-			  NULL);
-    }
-}
-
 GtkWidget*
-bst_status_bar_ensure (GtkWindow *window)
+bst_status_bar_create (void)
 {
-  GtkWidget *child, *vbox, *sbar, *hbox, *prog, *msg, *status, *abort, *saved_focus, *saved_default;
+  GtkWidget *obox, *sbar, *hbox, *prog, *msg, *status, *abort;
   static const gchar *status_bar_rc_string =
     ( "style'BstStatusBar-Abort-style'"
       "{"
@@ -350,59 +249,36 @@ bst_status_bar_ensure (GtkWindow *window)
       "}"
       "widget'*.BstStatusBar.*.AbortButton*'style'BstStatusBar-Abort-style'"
       "\n");
-  
-  g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
-  
-  sbar = bst_status_bar_from_window (window);
-  if (sbar)
-    return sbar;
-  
+
   if (status_bar_rc_string)
     {
       gtk_rc_parse_string (status_bar_rc_string);
       status_bar_rc_string = NULL;
     }
   
-  child = GTK_BIN (window)->child;
-  saved_focus = window->focus_widget;
-  saved_default = window->default_widget;
-  if (child)
-    {
-      gtk_widget_ref (child);
-      gtk_container_remove (GTK_CONTAINER (child->parent), child);
-    }
-  
-  vbox = gtk_widget_new (GTK_TYPE_VBOX,
-			 "homogeneous", FALSE,
-			 "spacing", 0,
-			 "parent", window,
+  sbar = gtk_widget_new (GTK_TYPE_FRAME,
+			 "visible", FALSE,
+			 "shadow", GTK_SHADOW_OUT,
 			 NULL);
-  sbar = gtk_widget_new (GTK_TYPE_HBOX,
+  obox = gtk_widget_new (GTK_TYPE_HBOX,
+			 "visible", TRUE,
 			 "name", "BstStatusBar",
 			 "homogeneous", FALSE,
 			 "resize_mode", GTK_RESIZE_QUEUE,
 			 "width_request", 110, /* squeeze labels into available space */
 			 "spacing", 0,
-			 "visible", TRUE,
 			 "border_width", 1,
+			 "parent", sbar,
 			 NULL);
-  gtk_box_pack_end (GTK_BOX (vbox),
-		    gtk_widget_new (GTK_TYPE_FRAME,
-				    "visible", TRUE,
-				    "shadow", GTK_SHADOW_OUT,
-				    "child", sbar,
-				    NULL),
-		    FALSE, TRUE, 1);
   prog = gtk_widget_new (GTK_TYPE_PROGRESS_BAR,
-			 "width_request", 100,
 			 "visible", TRUE,
+			 "width_request", 100,
 			 NULL);
-  gtk_progress_bar_set_activity_step (GTK_PROGRESS_BAR (prog), 1);
-  gtk_progress_bar_set_activity_blocks (GTK_PROGRESS_BAR (prog), 5);
-  gtk_progress_set_activity_mode (GTK_PROGRESS (prog), FALSE);
+  gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR (prog), 0.01);	/* per pulse increment */
+  gtk_progress_bar_set_activity_blocks (GTK_PROGRESS_BAR (prog), 4);	/* pbar length divider */
   gtk_progress_set_format_string (GTK_PROGRESS (prog), "%p %%");
   gtk_progress_set_show_text (GTK_PROGRESS (prog), TRUE);
-  gtk_box_pack_start (GTK_BOX (sbar), prog, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (obox), prog, FALSE, TRUE, 0);
   
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			 "visible", TRUE,
@@ -410,7 +286,7 @@ bst_status_bar_ensure (GtkWindow *window)
 			 "parent", gtk_widget_new (GTK_TYPE_FRAME,
 						   "shadow", GTK_SHADOW_IN,
 						   "visible", TRUE,
-						   "parent", sbar,
+						   "parent", obox,
 						   NULL),
 			 NULL);
   
@@ -436,28 +312,11 @@ bst_status_bar_ensure (GtkWindow *window)
   g_object_set_data_full (G_OBJECT (sbar), "bst-status", g_object_ref (status), (GDestroyNotify) g_object_unref);
   g_object_set_data_full (G_OBJECT (sbar), "bst-abort", g_object_ref (abort), (GDestroyNotify) g_object_unref);
   
-  if (child)
-    {
-      gtk_container_add (GTK_CONTAINER (vbox), child);
-      gtk_widget_unref (child);
-      if (saved_focus)
-	gtk_widget_grab_focus (saved_focus);
-      if (saved_default)
-	gtk_widget_grab_default (saved_default);
-    }
-  
   gtk_object_ref (GTK_OBJECT (sbar));
-  gtk_object_set_data_full (GTK_OBJECT (window),
-			    "bst-status-bar",
-			    sbar,
-			    (GtkDestroyNotify) gtk_object_unref);
-  
-  bst_status_bar_queue_clear (sbar, 0);
-  
-  bst_status_register_window (window);
-  gtk_widget_show (vbox);
 
-  return bst_status_bar_from_window (window);
+  bst_status_bar_queue_clear (sbar, 0);
+
+  return sbar;
 }
 
 static void
@@ -560,7 +419,7 @@ bst_status_bar_set (GtkWidget	*sbar,
   gtk_object_ref (object);
 
   bst_status_bar_set_permanent (sbar, percentage, message, status_msg);
-  bst_status_bar_queue_clear (sbar, status_msg ? STATUS_ERROR_LASTS_ms : STATUS_LASTS_ms);
+  bst_status_bar_queue_clear (sbar, percentage < 99.9999 ? STATUS_ERROR_LASTS_ms : STATUS_LASTS_ms);
 
   gtk_object_unref (object);
 }
@@ -601,4 +460,3 @@ bst_status_clear (void)
   if (sbar)
     bst_status_bar_queue_clear (sbar, 0);
 }
-

@@ -20,6 +20,8 @@
 
 #include	"bstpatterneditor.h"
 
+#include	"bstdialog.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +42,7 @@ typedef	struct	_BstPatternDialog	BstPatternDialog;
 typedef	struct	_BstPatternDialogClass	BstPatternDialogClass;
 struct _BstPatternDialog
 {
-  GtkWindow	parent_object;
+  BstDialog	parent_object;
 
   GtkWidget	*main_vbox;
   GtkWidget	*scrolled_window;
@@ -48,12 +50,10 @@ struct _BstPatternDialog
   GtkWidget	*effect_view;
 
   GtkWidget	*popup;
-
-  GtkWidget	*proc_dialog;
 };
 struct _BstPatternDialogClass
 {
-  GtkWindowClass parent_class;
+  BstDialogClass parent_class;
 
   GSList *popup_entries; /* of type BstMenuEntry* */
 };

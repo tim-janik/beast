@@ -190,8 +190,8 @@ static const gchar *cfile_header =
  "#define bsw_value_initset_uint(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uint ((val), (vuint)); }\n"
  "#define bsw_value_initset_ulong(val,t,vulong)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_ulong ((val), (vulong)); }\n"
  "#define bsw_value_initset_enum(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_enum ((val), (vuint)); }\n"
- "#define bsw_value_initset_float(val,t,vfloat)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vfloat)); }\n"
- "#define bsw_value_initset_double(val,t,vdouble) { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vdouble)); }\n"
+ "#define bsw_value_initset_float(val,t,vfloat)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_float ((val), (vfloat)); }\n"
+ "#define bsw_value_initset_double(val,t,vdouble) { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_double ((val), (vdouble)); }\n"
  "#define bsw_value_initset_string(val,t,string)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_static_string ((val), (string)); }\n"
  "#define bsw_value_initset_boxed(val,t,b)        { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_static_boxed ((val), (b)); }\n"
  "#define bsw_value_initset_proxy(val,t,vproxy)	  { (val)->g_type = 0; g_value_init ((val), BSW_TYPE_PROXY); bsw_value_set_proxy ((val), (vproxy)); }\n"
@@ -216,6 +216,7 @@ init_marshal_types (void)
   add (BSW_TYPE_VITER_INT,    "BswVIterInt*",    "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
   add (BSW_TYPE_VITER_STRING, "BswVIterString*", "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
   add (BSW_TYPE_VITER_PROXY,  "BswVIterProxy*",  "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_VALUE_BLOCK,  "BswValueBlock*",  "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
 #undef add
 }
 
@@ -539,6 +540,23 @@ main (gint   argc,
 	{
 	  gen_body = TRUE;
 	}
+      else if (strcmp ("-p", argv[i]) == 0)
+	{
+	  GList *free_list, *list;
+
+	  /* check load BSE plugins to register types */
+	  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+	  for (list = free_list; list; list = list->next)
+	    {
+	      gchar *error, *string = list->data;
+
+	      error = bse_plugin_check_load (string);
+	      if (error)
+		g_warning ("failed to load plugin \"%s\": %s", string, error);
+	      g_free (string);
+	    }
+	  g_list_free (free_list);
+	}
       else if (strcmp ("-h", argv[i]) == 0 ||
 	  strcmp ("--help", argv[i]) == 0)
 	{
@@ -562,7 +580,8 @@ main (gint   argc,
 static gint
 help (gchar *arg)
 {
-  fprintf (stderr, "usage: mkapi <qualifier> [-r <type>] [-{i|b} \"\"] [-s #] [-{h|x|y}]\n");
+  fprintf (stderr, "usage: mkapi <qualifier> [-r <type>] [-{i|b} \"\"] [-s #] [-{h|p|x|y}]\n");
+  fprintf (stderr, "       -p       include plugins\n");
   fprintf (stderr, "       -h       guess what ;)\n");
 
   return arg != NULL;

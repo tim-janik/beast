@@ -2,14 +2,14 @@
 name    = BSE-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.0
-date    = 03 Mar 2002
+date    = 10 Mar 2002
 image   = bse-procedures
 
 @DOC-TITLE@
 BSE-Procedures
 
 @DOC-HEAD@
-BSE-Procedures 03 Mar 2002 BEAST-0.4.0
+BSE-Procedures 10 Mar 2002 BEAST-0.4.0
 
 @DOC-NAME@
 BSE-Procedures - BSE Procedure Reference
@@ -476,6 +476,164 @@ error: BSE error code
 
 @DOC-DESCRIPTION@
 Set a named string in a data pocket entry.  
+@DOC-SYNOPSIS@
+@STRONG BseEditableSample::collect-stats@ (@EMPH esample@, @EMPH voffset@, @EMPH offset-scale@, @EMPH block-size@, @EMPH stepping@, @EMPH max-pairs@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 15
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+voffset
+@DOC-PARDESC@
+Offset of first stat block
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+offset-scale
+@DOC-PARDESC@
+Factor to scale voffset increments with
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+block-size
+@DOC-PARDESC@
+Block size to compute stat pairs from
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+stepping
+@DOC-PARDESC@
+Stepping within a stat block
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+max-pairs
+@DOC-PARDESC@
+Maximum number of (min, max) pairs to collect
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 15
+
+@DOC-RETURNS@
+sample-block: Block of samples
+
+@DOC-DESCRIPTION@
+Collect statistics from sample blocks as (minimum, maximum) pairs.  
+@DOC-SYNOPSIS@
+@STRONG BseEditableSample::get-length@ (@EMPH esample@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+length: Number of values
+
+@DOC-DESCRIPTION@
+Return the number of values in the sample.  
+@DOC-SYNOPSIS@
+@STRONG BseEditableSample::get-n-channels@ (@EMPH esample@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-channels: Number of channels
+
+@DOC-DESCRIPTION@
+Return the number of channels in the sample.  
+@DOC-SYNOPSIS@
+@STRONG BseEditableSample::get-osc-freq@ (@EMPH esample@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+osc-freq: Oscillator Frequency
+
+@DOC-DESCRIPTION@
+Return the oscillator frequency for the sample.  
+@DOC-SYNOPSIS@
+@STRONG BseEditableSample::read-samples@ (@EMPH esample@, @EMPH voffset@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+voffset
+@DOC-PARDESC@
+Value offset
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+sample-block: Block of samples
+
+@DOC-DESCRIPTION@
+Read a set of samples from a specific offset.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::common-ancestor@ (@EMPH item@, @EMPH item2@);
 
@@ -1413,6 +1571,36 @@ retspace = 10
 @DOC-DESCRIPTION@
 Stop processing a project generating sound  
 @DOC-SYNOPSIS@
+@STRONG BseServer::loader-name@ (@EMPH server@, @EMPH file-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+file-name
+@DOC-PARDESC@
+The file to find a loader for
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+loader: 
+
+@DOC-DESCRIPTION@
+Find a loader for a wave file and return the loader name  
+@DOC-SYNOPSIS@
 @STRONG BseServer::run-project@ (@EMPH server@, @EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -1965,7 +2153,57 @@ n-channels:
 @DOC-DESCRIPTION@
 Get the number of channels of a wave  
 @DOC-SYNOPSIS@
-@STRONG BseWaveRepo::read-file@ (@EMPH wave-repo@, @EMPH file-name@);
+@STRONG BseWave::use-editable@ (@EMPH wave@, @EMPH chunk-index@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+chunk-index
+@DOC-PARDESC@
+Index of chunk to edit
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+esample: Editable sample
+
+@DOC-DESCRIPTION@
+Retrive an editable sample object for a wave chunk.  
+@DOC-SYNOPSIS@
+@STRONG BseWaveOsc::request_pcm_position@ (@EMPH wosc@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 7
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wosc
+@DOC-PARDESC@
+Wave Oscilator
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 7
+
+
+@DOC-DESCRIPTION@
+Request emission of the ::notify_pcm_position signal.  
+@DOC-SYNOPSIS@
+@STRONG BseWaveRepo::load-file@ (@EMPH wave-repo@, @EMPH file-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1984,7 +2222,7 @@ typeraw =
 @DOC-PARAMETER@
 file-name
 @DOC-PARDESC@
-The file to read waves from
+The file to import waves from
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 12
@@ -1993,7 +2231,7 @@ retspace = 12
 error: 
 
 @DOC-DESCRIPTION@
-Read Wave from file  
+Load Wave from file  
 @DOC-SYNOPSIS@
 @STRONG BseWaveRepo::remove-wave@ (@EMPH wave-repo@, @EMPH wave@);
 

@@ -21,6 +21,7 @@
 
 #include	"bstparamview.h"
 #include	"bstgconfig.h"
+#include	"bstdialog.h"
 
 
 
@@ -67,7 +68,7 @@ static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GnomeCanvasItem        *child);
 static void     bst_canvas_source_changed       (BstCanvasSource        *csource);
 static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
-						 BseIcon         	*icon);
+						 BswIcon         	*icon);
 
 
 /* --- static variables --- */
@@ -157,32 +158,28 @@ source_channels_changed (BstCanvasSource *csource)
 static void
 source_name_changed (BstCanvasSource *csource)
 {
-  BswProxy project;
-  gchar *pname;
   gchar *name;
 
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
 
   name = bsw_item_get_name_or_type (csource->source);
-  project = bsw_item_get_project (csource->source);
-  pname = bsw_item_get_name_or_type (project);
-  pname = g_strconcat (pname, ": ", name, NULL);
 
   if (csource->text)
     g_object_set (csource->text, "text", name, NULL);
 
   if (csource->source_view)
-    gtk_window_set_title (GTK_WINDOW (csource->source_view), pname);
-  if (csource->source_info)
-    gtk_window_set_title (GTK_WINDOW (csource->source_info), pname);
+    bst_dialog_set_title (BST_DIALOG (csource->source_view), name);
 
-  g_free (pname);
+  name = g_strconcat ("Info: ", name, NULL);
+  if (csource->source_info)
+    bst_dialog_set_title (BST_DIALOG (csource->source_info), name);
+  g_free (name);
 }
 
 static void
 source_icon_changed (BstCanvasSource *csource)
 {
-  BseIcon *icon;
+  BswIcon *icon;
 
   /* update icon in group, revert to a stock icon if none is available
    */
@@ -319,8 +316,11 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
       param_view = bst_param_view_new (csource->source);
       gtk_widget_show (param_view);
-      csource->source_view = bst_adialog_new (GTK_OBJECT (csource), &csource->source_view, param_view,
-					      BST_ADIALOG_POPUP_POS, NULL);
+      csource->source_view = bst_dialog_new (&csource->source_view,
+					     GTK_OBJECT (csource),
+					     BST_DIALOG_POPUP_POS,
+					     bsw_item_get_name_or_type (csource->source),
+					     param_view);
       source_name_changed (csource);
     }
   gtk_widget_showraise (csource->source_view);
@@ -341,7 +341,7 @@ static void
 csource_info_update (BstCanvasSource *csource)
 {
   GtkWidget *frame = (csource->source_info // && (force_update || GTK_WIDGET_VISIBLE (csource->source_info))
-		      ? bst_adialog_get_child (csource->source_info)
+		      ? bst_dialog_get_child (BST_DIALOG (csource->source_info))
 		      : NULL);
 
   if (frame)
@@ -388,20 +388,20 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
 
   if (!csource->source_info)
-    csource->source_info = bst_adialog_new (GTK_OBJECT (csource),
-					    &csource->source_info,
-					    gtk_widget_new (GTK_TYPE_FRAME,
-							    "visible", TRUE,
-							    "border_width", 5,
-							    "label", "Module Info",
-							    "child", gtk_widget_new (GTK_TYPE_LABEL,
-										     "visible", TRUE,
-										     "justify", GTK_JUSTIFY_LEFT,
-										     "xpad", 5,
-										     NULL),
-							    NULL),
-					    BST_ADIALOG_POPUP_POS,
-					    NULL);
+    csource->source_info = bst_dialog_new (&csource->source_info,
+					   GTK_OBJECT (csource),
+					   BST_DIALOG_POPUP_POS,
+					   bsw_item_get_name_or_type (csource->source),
+					   gtk_widget_new (GTK_TYPE_FRAME,
+							   "visible", TRUE,
+							   "border_width", 5,
+							   "label", "Module Info",
+							   "child", gtk_widget_new (GTK_TYPE_LABEL,
+										    "visible", TRUE,
+										    "justify", GTK_JUSTIFY_LEFT,
+										    "xpad", 5,
+										    NULL),
+							   NULL));
   csource_info_update (csource);
   source_name_changed (csource);
   gtk_widget_showraise (csource->source_info);
@@ -436,6 +436,21 @@ bst_canvas_source_is_jchannel (BstCanvasSource *csource,
     return FALSE;
 
   return bsw_source_is_joint_ichannel (csource->source, ichannel);
+}
+
+gboolean
+bst_canvas_source_ichannel_free (BstCanvasSource *csource,
+				 guint            ichannel)
+{
+  g_return_val_if_fail (BST_IS_CANVAS_SOURCE (csource), FALSE);
+
+  if (!csource->source)
+    return FALSE;
+
+  if (bsw_source_is_joint_ichannel (csource->source, ichannel))
+    return TRUE;
+  else
+    return bsw_source_ichannel_get_osource (csource->source, ichannel, 0) == 0;
 }
 
 void
@@ -532,11 +547,11 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 
 static void
 bst_canvas_icon_set (GnomeCanvasItem *item,
-		     BseIcon         *icon)
+		     BswIcon         *icon)
 {
   GdkPixbuf *pixbuf;
   
-  bse_icon_ref (icon);
+  bsw_icon_ref (icon);
 #if 0
   ArtPixBuf *apixbuf;
   apixbuf = (icon->bytes_per_pixel > 3
@@ -561,9 +576,9 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 		// "y_set", TRUE,
 		NULL);
   gtk_object_set_data_full (GTK_OBJECT (item),
-			    "BseIcon",
+			    "BswIcon",
 			    icon,
-			    (GtkDestroyNotify) bse_icon_unref);
+			    (GtkDestroyNotify) bsw_icon_unref);
   gdk_pixbuf_unref (pixbuf);
 }
 

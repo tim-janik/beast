@@ -18,14 +18,14 @@
  */
 #include	"bstmenus.h"
 
-#define	N_TRACKS 2 // FIXME: hack
-#define	MENU_ITEM_PADDING (3)
+#include	"bstdialog.h"
+
 
 /* --- structures --- */
 struct _BstChoice
 {
   BstChoiceFlags type_and_flags;
-  BseIcon       *icon;
+  BswIcon       *icon;
   const gchar   *name;
   gpointer       p_id;
 };
@@ -157,7 +157,7 @@ bst_menu_entries_add_bentries (GSList       *orig_entry_slist,
 }
 
 static GtkWidget*
-create_icon_widget (BseIcon *icon)
+create_icon_widget (BswIcon *icon)
 {
   GtkWidget *widget;
   const guint size = 16;
@@ -216,7 +216,7 @@ bst_menu_entries_create_list (GtkItemFactory *ifactory,
 	    bst_widget_modify_as_title (child);
 	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
 				 "visible", TRUE,
-				 "spacing", MENU_ITEM_PADDING,
+				 "spacing", BST_INNER_PADDING,
 				 "parent", item,
 				 "child", child,
 				 NULL);
@@ -251,13 +251,30 @@ static void
 menu_choice_activate (GtkWidget *item,
 		      gpointer   data)
 {
-  g_assert (GTK_IS_MENU (current_popup_menu));
+  gpointer udata = gtk_object_get_user_data (GTK_OBJECT (item));
 
-  gtk_object_set_data (GTK_OBJECT (current_popup_menu), "BstChoice",
-		       gtk_object_get_user_data (GTK_OBJECT (item)));
+  if (GTK_IS_MENU (current_popup_menu))
+    {
+      gtk_object_set_data (GTK_OBJECT (current_popup_menu), "BstChoice", udata);
+      
+      if (main_quit_on_menu_item_activate)
+	gtk_main_quit ();
+    }
+  else	/* current_popup_menu is not set e.g. for option menus */
+    {
+      while (GTK_IS_MENU (item->parent))
+	{
+	  GtkWidget *tmp;
 
-  if (main_quit_on_menu_item_activate)
-    gtk_main_quit ();
+	  item = item->parent;
+	  tmp = gtk_menu_get_attach_widget (GTK_MENU (item));
+	  if (GTK_IS_MENU_ITEM (tmp))
+	    item = tmp;
+	}
+      g_assert (GTK_IS_MENU (item));
+
+      gtk_object_set_data (GTK_OBJECT (item), "BstChoice", udata);
+    }
 }
 
 static void
@@ -323,7 +340,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
       
       hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			     "visible", TRUE,
-			     "spacing", MENU_ITEM_PADDING,
+			     "spacing", BST_INNER_PADDING,
 			     "parent", item,
 			     NULL);
       gtk_container_add_with_properties (GTK_CONTAINER (hbox),
@@ -342,7 +359,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 	bst_widget_modify_as_title (any);
     }
   if (choice->icon)
-    bse_icon_unref (choice->icon);
+    bsw_icon_unref (choice->icon);
   g_free (choice);
 }
 
@@ -407,7 +424,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 			   ...)
 {
   BstChoice *choice;
-  GtkWidget *dialog, *vbox;
+  GtkWidget *vbox, *dialog;
   va_list args;
   
   g_return_val_if_fail (first_choice != NULL, NULL);
@@ -455,11 +472,8 @@ bst_choice_dialog_createv (BstChoice *first_choice,
   
   /* create dialog
    */
-  dialog = bst_adialog_new (NULL, NULL,
-			    vbox,
-			    BST_ADIALOG_POPUP_POS | BST_ADIALOG_MODAL | BST_ADIALOG_FORCE_HBOX,
-			    NULL);
-  gtk_box_set_homogeneous (GTK_BOX (BST_ADIALOG (dialog)->hbox), TRUE);
+  dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_POPUP_POS | BST_DIALOG_MODAL,
+			   NULL, vbox);
   gtk_widget_ref (dialog);
   gtk_object_sink (GTK_OBJECT (dialog));
   
@@ -469,51 +483,27 @@ bst_choice_dialog_createv (BstChoice *first_choice,
   choice = first_choice;
   do
     {
-      BstADialog *adialog = BST_ADIALOG (dialog);
       guint choice_type = choice->type_and_flags & BST_CHOICE_TYPE_MASK;
       guint choice_flags = choice->type_and_flags & BST_CHOICE_FLAG_MASK;
 
       switch (choice_type)
 	{
-	  GtkWidget *any, *hbox;
+	  GtkWidget *any;
 	case BST_CHOICE_TYPE_TITLE:
-	  gtk_widget_set (dialog,
-			  "title", choice->name,
-			  NULL);
+	  gtk_widget_set (dialog, "title", choice->name, NULL);
 	  break;
 	case BST_CHOICE_TYPE_ITEM:
-	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
-				 "visible", TRUE,
-				 "spacing", MENU_ITEM_PADDING,
-				 NULL);
-	  if (choice->icon)
-	    gtk_container_add_with_properties (GTK_CONTAINER (hbox),
-					       create_icon_widget (choice->icon),
-					       "expand", FALSE,
-					       "fill", FALSE,
-					       NULL);
-	  any = gtk_widget_new (GTK_TYPE_LABEL,
-				"visible", TRUE,
-				"label", choice->name,
-				"parent", hbox,
-				"xalign", 0.5,
-				NULL);
-	  any = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
-						  "visible", TRUE,
-						  "can_default", TRUE,
-						  "sensitive", !(choice_flags & BST_CHOICE_FLAG_INSENSITIVE),
-						  "parent", adialog->hbox,
-						  "child", hbox,
-						  NULL),
-				  "signal::clicked", button_choice_activate, choice->p_id,
-				  NULL);
-	  if (choice_flags & BST_CHOICE_FLAG_DEFAULT)
-	    adialog->default_widget = any;
+	  any = bst_dialog_action_multi (BST_DIALOG (dialog), choice->name,
+					 button_choice_activate, choice->p_id,
+					 choice->icon,
+					 (choice_flags & BST_CHOICE_FLAG_DEFAULT) ? BST_DIALOG_MULTI_DEFAULT : 0);
+	  if (choice_flags & BST_CHOICE_FLAG_INSENSITIVE)
+	    gtk_widget_set_sensitive (any, FALSE);
 	  break;
 	}
       
       if (choice->icon)
-	bse_icon_unref (choice->icon);
+	bsw_icon_unref (choice->icon);
       g_free (choice);
       
       choice = va_arg (args, BstChoice*);
@@ -556,9 +546,9 @@ bst_choice_selectable (GtkWidget *widget)
 	}
       g_list_free (children);
     }
-  else if (BST_IS_ADIALOG (widget))
+  else if (BST_IS_DIALOG (widget))
     {
-      GList *list, *children = gtk_container_children (GTK_CONTAINER (BST_ADIALOG (widget)->hbox));
+      GList *list, *children = gtk_container_children (GTK_CONTAINER (BST_DIALOG (widget)->hbox));
 
       for (list = children; list; list = list->next)
 	{
@@ -601,11 +591,9 @@ bst_choice_modal (GtkWidget *choice,
       
       data = gtk_object_get_data (GTK_OBJECT (menu), "BstChoice");
     }
-  else if (BST_IS_ADIALOG (choice))
+  else if (BST_IS_DIALOG (choice))
     {
-      BstADialog *adialog = BST_ADIALOG (choice);
-
-      gtk_object_set_data (GTK_OBJECT (adialog), "BstChoice", data);
+      gtk_object_set_data (GTK_OBJECT (choice), "BstChoice", data);
 
       if (bst_choice_selectable (choice))
 	{
@@ -620,7 +608,7 @@ bst_choice_modal (GtkWidget *choice,
 	  while (GTK_WIDGET_VISIBLE (choice));
 	}
 
-      data = gtk_object_get_data (GTK_OBJECT (adialog), "BstChoice");
+      data = gtk_object_get_data (GTK_OBJECT (choice), "BstChoice");
     }
   
   return GPOINTER_TO_UINT (data);

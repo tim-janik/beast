@@ -20,6 +20,7 @@
 #define __BST_PREFERENCES_H__
 
 #include	"bstparamview.h"
+#include	"bstdialog.h"
 
 
 #ifdef __cplusplus
@@ -49,7 +50,6 @@ struct _BstPreferences
   GtkWidget	*bst_param_view;
   GtkWidget	*notebook;
   GtkWidget	*apply;
-  GtkWidget	*close;
 };
 struct _BstPreferencesClass
 {
@@ -67,6 +67,8 @@ void		 bst_preferences_apply		(BstPreferences *prefs);
 void		 bst_preferences_save		(BstPreferences *prefs);
 void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
+void		 bst_preferences_create_buttons (BstPreferences *prefs,
+						 BstDialog      *dialog);
 #define	bst_preferences_update	bst_preferences_revert
 
 

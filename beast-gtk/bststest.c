@@ -85,7 +85,7 @@ qsampler_selection_timeout (gpointer data)
 	  else
 	    {
 	      bst_qsampler_get_bounds (qsampler, NULL, &b);
-	      x = MIN (qsampler->n_total_samples - 1, b + x);
+	      x = MIN (qsampler->pcm_length - 1, b + x);
 	    }
 	  retain = TRUE;
 	}
@@ -165,7 +165,7 @@ qsampler_motion_event (BstQSampler    *qsampler,
       if (bst_qsampler_get_offset_at (qsampler, &x))
 	qsampler_set_selection (qsampler, m1, x, 2);
       else if (!qsampler_selection_timeout_id)
-	qsampler_selection_timeout_id = g_timeout_add_full (BST_QSAMPLER_READ_PRIORITY + 1,
+	qsampler_selection_timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT + 1,
 							    QSAMPLER_SELECTION_TIMEOUT,
 							    qsampler_selection_timeout,
 							    g_object_ref (qsampler), NULL);
@@ -229,7 +229,7 @@ zoom_selection (BstQSampler *qsampler)
   m2 = MAX (m2, m1 + 1);
 
   bst_qsampler_scroll_to (qsampler, m1);
-  bst_qsampler_set_zoom (qsampler, qsampler->n_peaks / (gdouble) (m2 - m1) * 100.);
+  bst_qsampler_set_zoom (qsampler, qsampler->n_pixels / (gdouble) (m2 - m1) * 100.);
 }
 
 static void
@@ -258,7 +258,7 @@ qsampler_dcache_filler (gpointer     data,
   gint i;
 
   dnode = gsl_data_cache_ref_node (dcache, voffset, TRUE);
-  dcache_length = dcache->handle->n_values;
+  dcache_length = dcache->dhandle->n_values;
   dnode_length = dcache->node_size;
   for (i = 0; i < n_values; i++)
     {
@@ -286,7 +286,7 @@ qsampler_set_handle (BstQSampler   *qsampler,
   GslDataCache *dcache = gsl_data_cache_new (handle, 1);
   
   gsl_data_cache_open (dcache);
-  bst_qsampler_set_source (qsampler, dcache->handle->n_values,
+  bst_qsampler_set_source (qsampler, dcache->dhandle->n_values,
 			   qsampler_dcache_filler, dcache, (GDestroyNotify) gsl_data_cache_close);
   gsl_data_cache_unref (dcache);
 }
@@ -330,7 +330,7 @@ score (BstQSampler *qsampler)
 {
   GslDataCache *dcache = qsampler->src_data;
   GslDataHandle *shandle = global_handle;
-  GslDataHandle *dhandle = dcache->handle;
+  GslDataHandle *dhandle = dcache->dhandle;
   GslLong l, length = MIN (shandle->n_values, dhandle->n_values);
   gdouble score = 0;
 

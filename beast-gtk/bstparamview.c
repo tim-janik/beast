@@ -247,6 +247,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 			       "vadjustment", gtk_scrolled_window_get_vadjustment (scrolled_window),
 			       "parent", scrolled_window,
 			       NULL);
+      bst_widget_request_aux_info (viewport);
       param_view->container = g_object_new (GTK_TYPE_VBOX,
 					    "visible", TRUE,
 					    "homogeneous", FALSE,

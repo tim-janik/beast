@@ -312,7 +312,7 @@ hscale_size_request (GtkWidget	    *scale,
 
   gtk_widget_style_get (scale, "slider_length", &slider_length, NULL);
   gtk_widget_style_get (scale, "trough_border", &trough_border, NULL);
-  requisition->width = slider_length;
+  requisition->width = slider_length * 2;
   requisition->width += 2 * trough_border;
 }
 

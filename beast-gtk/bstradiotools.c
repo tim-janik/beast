@@ -210,7 +210,7 @@ bst_radio_tools_add_tool (BstRadioTools    *rtools,
 			  const gchar      *tool_name,
 			  const gchar      *tool_tip,
 			  const gchar      *tool_blurb,
-			  BseIcon          *tool_icon,
+			  BswIcon          *tool_icon,
 			  BstRadioToolFlags flags)
 {
   guint i;
@@ -231,7 +231,7 @@ bst_radio_tools_add_tool (BstRadioTools    *rtools,
   rtools->tools[i].name = g_strdup (tool_name);
   rtools->tools[i].tip = g_strdup (tool_tip);
   rtools->tools[i].blurb = g_strdup (tool_blurb);
-  rtools->tools[i].icon = bse_icon_ref (tool_icon);
+  rtools->tools[i].icon = bsw_icon_ref (tool_icon);
   rtools->tools[i].flags = flags;
 }
 
@@ -247,7 +247,7 @@ bst_radio_tools_clear_tools (BstRadioTools *rtools)
       g_free (rtools->tools[i].name);
       g_free (rtools->tools[i].tip);
       g_free (rtools->tools[i].blurb);
-      bse_icon_unref (rtools->tools[i].icon);
+      bsw_icon_unref (rtools->tools[i].icon);
     }
   rtools->n_tools = 0;
   g_free (rtools->tools);
@@ -290,7 +290,7 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
       if (!(rtools->tools[i].flags & BST_RADIO_TOOLS_TOOLBAR))
 	continue;
 
-      forest = bst_forest_from_bse_icon (rtools->tools[i].icon, BST_TOOLBAR_ICON_WIDTH, BST_TOOLBAR_ICON_HEIGHT);
+      forest = bst_forest_from_bsw_icon (rtools->tools[i].icon, BST_TOOLBAR_ICON_WIDTH, BST_TOOLBAR_ICON_HEIGHT);
       button = gtk_toolbar_append_element (toolbar,
 					   GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
 					   rtools->tools[i].name,
@@ -360,7 +360,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
       if (!(rtools->tools[i].flags & BST_RADIO_TOOLS_PALETTE))
 	continue;
       
-      forest = bst_forest_from_bse_icon (rtools->tools[i].icon, BST_PALETTE_ICON_WIDTH, BST_PALETTE_ICON_HEIGHT);
+      forest = bst_forest_from_bsw_icon (rtools->tools[i].icon, BST_PALETTE_ICON_WIDTH, BST_PALETTE_ICON_HEIGHT);
       button = g_object_connect (gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
 						 "visible", TRUE,
 						 "draw_indicator", FALSE,

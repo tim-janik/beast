@@ -23,26 +23,6 @@
 #include	<string.h>
 
 
-/* slow machines:
-   #define	VREAD_TIMEOUT	(20)
-   #define	JOINT_VREADS	(1)
-*/
-/* medium machines:
-   #define	VREAD_TIMEOUT	(10)
-   #define	JOINT_VREADS	(4)
-*/
-/* fast machines:
-   #define	VREAD_TIMEOUT	(0)
-   #define	JOINT_VREADS	(16)
-*/
-#define	VREAD_TIMEOUT	(0)
-#define	JOINT_VREADS	(8)
-
-
-#define	FLOOR(x)	((gint) (x))	// FIXME
-#define	CTYPE		gint16
-
-
 /* --- properties --- */
 enum {
   PROP_0,
@@ -75,55 +55,55 @@ static void	bst_qsampler_style_set		(GtkWidget		*widget,
 static void	bst_qsampler_unrealize		(GtkWidget		*widget);
 static gint	bst_qsampler_expose		(GtkWidget		*widget,
 						 GdkEventExpose		*event);
-static void	bst_qsampler_resize		(BstQSampler		*qsampler,
-						 gboolean		 view_changed);
-static void	bst_qsampler_jump_to		(BstQSampler		*qsampler,
-						 guint			 sample_offset);
-static void	bst_qsampler_queue_vread	(BstQSampler		*qsampler,
-						 guint			 pstart,
-						 guint			 pend);
-static void	bst_qsampler_queue_expose	(BstQSampler		*qsampler,
-						 guint			 pstart,
-						 guint			 pend);
+static void	bst_qsampler_resize		(BstQSampler		*qsampler);
+static void	bst_qsampler_move_to		(BstQSampler		*qsampler,
+						 guint			 peak_offset);
 static void	bst_qsampler_update_types	(BstQSampler		*qsampler,
-						 guint			 offset,
-						 guint			 length);
+						 guint			 pcm_offset,
+						 guint			 pcm_length);
 static void	bst_qsampler_update_adjustment	(BstQSampler		*qsampler);
-static void	nop_filler			(gpointer       data,
-						 guint          voffset,
-						 guint          n_values,
-						 gint16        *values,
-						 BstQSampler   *qsampler);
+static void	bst_qsampler_invalidate		(BstQSampler		*qsampler,
+						 guint			 offset,
+						 guint			 length,
+						 gboolean		 reset);
+static void	bst_qsampler_redraw		(BstQSampler		*qsampler,
+						 gboolean		 draw_dirty);
+static void	bst_qsampler_queue_refresh	(BstQSampler		*qsampler);
 
 
 /* --- static variables --- */
 static gpointer	parent_class = NULL;
+static GSList  *refresh_widgets = NULL;
+static GSList  *tmp_refresh_widgets = NULL;
+static gint     refresh_handler = 0;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_qsampler_get_type (void)
 {
-  static GtkType qsampler_type = 0;
+  static GType type = 0;
 
-  if (!qsampler_type)
+  if (!type)
     {
-      GtkTypeInfo qsampler_info =
-      {
-	"BstQSampler",
-	sizeof (BstQSampler),
+      static const GTypeInfo type_info = {
 	sizeof (BstQSamplerClass),
-	(GtkClassInitFunc) bst_qsampler_class_init,
-	(GtkObjectInitFunc) bst_qsampler_init,
-	/* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_qsampler_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstQSampler),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_qsampler_init,
       };
 
-      qsampler_type = gtk_type_unique (GTK_TYPE_WIDGET, &qsampler_info);
+      type = g_type_register_static (GTK_TYPE_WIDGET,
+				     "BstQSampler",
+				     &type_info, 0);
     }
 
-  return qsampler_type;
+  return type;
 }
 
 static void
@@ -172,16 +152,14 @@ bst_qsampler_init (BstQSampler *qsampler)
   GdkColor default_red   = { 0, 0xe130,      0,      0 };
   GdkColor default_green = { 0,      0, 0xe130,      0 };
 
-  qsampler->n_total_samples = 1;
-  qsampler->sample_offset = 0;
-  qsampler->n_area_samples = 0;
-  qsampler->zoom_factor = 1.0;
-  qsampler->vscale_factor = 1.0;
-  qsampler->offset2peak_factor = 0;
+  qsampler->peak_length = 0;
+  qsampler->peak_offset = 0;
   qsampler->n_peaks = 0;
   qsampler->peaks = NULL;
-  qsampler->mpeaks = NULL;
-  qsampler->peak_types = NULL;
+  qsampler->n_pixels = 0;
+
+  qsampler->zoom_factor = 1.0;
+  qsampler->vscale_factor = 1.0;
   qsampler->marks = NULL;
   qsampler->regions = NULL;
   qsampler->red = default_red;
@@ -189,53 +167,13 @@ bst_qsampler_init (BstQSampler *qsampler)
   qsampler->red_gc = NULL;
   qsampler->green_gc = NULL;
   qsampler->draw_mode = BST_QSAMPLER_DRAW_CRANGE;
-  qsampler->join_vreads = JOINT_VREADS;
-  qsampler->src_filler = nop_filler;
+  qsampler->src_filler = NULL;
   qsampler->src_data = NULL;
   qsampler->src_destroy = NULL;
-  bst_qsampler_resize (qsampler, TRUE);
+  qsampler->expose_frame = FALSE;
+  qsampler->refresh_queued = FALSE;
+  bst_qsampler_resize (qsampler);
   gtk_widget_set_double_buffered (GTK_WIDGET (qsampler), FALSE);
-}
-
-static void
-bst_qsampler_realize (GtkWidget *widget)
-{
-  BstQSampler *qsampler = BST_QSAMPLER (widget);
-  GdkGCValuesMask gc_values_mask;
-  GdkGCValues gc_values;
-  GdkWindowAttr attributes;
-  gint attributes_mask;
-
-  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
-
-  attributes.window_type = GDK_WINDOW_CHILD;
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
-  attributes.wclass = GDK_INPUT_OUTPUT;
-  attributes.visual = gtk_widget_get_visual (widget);
-  attributes.colormap = gtk_widget_get_colormap (widget);
-  attributes.event_mask = gtk_widget_get_events (widget);
-  attributes.event_mask |= (GDK_EXPOSURE_MASK |
-			    GDK_BUTTON_PRESS_MASK |
-			    GDK_BUTTON_RELEASE_MASK);
-  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-  widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
-  gdk_window_set_user_data (widget->window, qsampler);
-  widget->style = gtk_style_attach (widget->style, widget->window);
-  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
-  if (!gdk_color_alloc (widget->style->colormap, &qsampler->red))
-    g_warning ("unable to allocate color: { %d, %d, %d }",
-	       qsampler->red.red, qsampler->red.green, qsampler->red.blue);
-  if (!gdk_color_alloc (widget->style->colormap, &qsampler->green))
-    g_warning ("unable to allocate color: { %d, %d, %d }",
-	       qsampler->green.red, qsampler->green.green, qsampler->green.blue);
-  gc_values_mask = GDK_GC_FOREGROUND;
-  gc_values.foreground = qsampler->red;
-  qsampler->red_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
-  gc_values.foreground = qsampler->green;
-  qsampler->green_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
 }
 
 static void
@@ -257,7 +195,67 @@ bst_qsampler_size_allocate (GtkWidget     *widget,
   
   GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
 
-  bst_qsampler_resize (qsampler, TRUE);
+  if (GTK_WIDGET_REALIZED (widget))
+    gdk_window_move_resize (qsampler->canvas,
+			    widget->style->xthickness,
+			    widget->style->ythickness,
+			    widget->allocation.width - 2 * widget->style->xthickness,
+			    widget->allocation.height - 2 * widget->style->ythickness);
+
+  qsampler->n_pixels = widget->allocation.width - 2 * widget->style->xthickness;
+  bst_qsampler_resize (qsampler);
+}
+
+static void
+bst_qsampler_realize (GtkWidget *widget)
+{
+  BstQSampler *qsampler = BST_QSAMPLER (widget);
+  GdkGCValuesMask gc_values_mask;
+  GdkGCValues gc_values;
+  GdkWindowAttr attributes;
+  gint attributes_mask;
+
+  GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+
+  attributes.window_type = GDK_WINDOW_CHILD;
+  attributes.x = widget->allocation.x;
+  attributes.y = widget->allocation.y;
+  attributes.width = widget->allocation.width;
+  attributes.height = widget->allocation.height;
+  attributes.wclass = GDK_INPUT_OUTPUT;
+  attributes.visual = gtk_widget_get_visual (widget);
+  attributes.colormap = gtk_widget_get_colormap (widget);
+  attributes.event_mask = GDK_EXPOSURE_MASK;
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
+  gdk_window_set_user_data (widget->window, qsampler);
+  widget->style = gtk_style_attach (widget->style, widget->window);
+  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+  attributes.x = widget->style->xthickness;
+  attributes.y = widget->style->ythickness;
+  attributes.width = widget->allocation.width - 2 * widget->style->xthickness;
+  attributes.height = widget->allocation.height - 2 * widget->style->ythickness;
+  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK |
+			    GDK_BUTTON_PRESS_MASK |
+			    GDK_BUTTON_RELEASE_MASK);
+  qsampler->canvas = gdk_window_new (widget->window, &attributes, attributes_mask);
+  gdk_window_set_user_data (qsampler->canvas, qsampler);
+  widget->style = gtk_style_attach (widget->style, qsampler->canvas);
+  gtk_style_set_background (widget->style, qsampler->canvas, GTK_STATE_NORMAL);
+  gdk_window_show (qsampler->canvas);
+
+  if (!gdk_color_alloc (widget->style->colormap, &qsampler->red))
+    g_warning ("unable to allocate color: { %d, %d, %d }",
+	       qsampler->red.red, qsampler->red.green, qsampler->red.blue);
+  if (!gdk_color_alloc (widget->style->colormap, &qsampler->green))
+    g_warning ("unable to allocate color: { %d, %d, %d }",
+	       qsampler->green.red, qsampler->green.green, qsampler->green.blue);
+  gc_values_mask = GDK_GC_FOREGROUND;
+  gc_values.foreground = qsampler->red;
+  qsampler->red_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
+  gc_values.foreground = qsampler->green;
+  qsampler->green_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
 }
 
 static void
@@ -266,11 +264,18 @@ bst_qsampler_style_set (GtkWidget *widget,
 {
   BstQSampler *qsampler = BST_QSAMPLER (widget);
 
+  GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
+
   if (GTK_WIDGET_REALIZED (qsampler))
     {
       GdkGCValuesMask gc_values_mask;
       GdkGCValues gc_values;
 
+      gdk_window_move_resize (qsampler->canvas,
+			      widget->style->xthickness,
+			      widget->style->ythickness,
+			      widget->allocation.width - 2 * widget->style->xthickness,
+			      widget->allocation.height - 2 * widget->style->ythickness);
       gdk_colormap_free_colors (previous_style->colormap, &qsampler->red, 1);
       gdk_colormap_free_colors (previous_style->colormap, &qsampler->green, 1);
       gtk_gc_release (qsampler->red_gc);
@@ -286,8 +291,10 @@ bst_qsampler_style_set (GtkWidget *widget,
       qsampler->red_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
       gc_values.foreground = qsampler->green;
       qsampler->green_gc = gtk_gc_get (widget->style->depth, widget->style->colormap, &gc_values, gc_values_mask);
+      gc_values_mask = GDK_GC_EXPOSURES;
+      gc_values.graphics_exposures = TRUE;
     }
-  GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
+  qsampler->n_pixels = widget->allocation.width - 2 * widget->style->xthickness;
 }
 
 static void
@@ -301,6 +308,9 @@ bst_qsampler_unrealize (GtkWidget *widget)
   gtk_gc_release (qsampler->green_gc);
   qsampler->red_gc = NULL;
   qsampler->green_gc = NULL;
+  gdk_window_set_user_data (qsampler->canvas, NULL);
+  gdk_window_destroy (qsampler->canvas);
+  qsampler->canvas = NULL;
   GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
 }
 
@@ -312,16 +322,10 @@ bst_qsampler_expose (GtkWidget      *widget,
   
   if (GTK_WIDGET_DRAWABLE (qsampler))
     {
-      gint xthickness = widget->style->xthickness;
-      gint ythickness = widget->style->xthickness;
-
-      qsampler->expose_frame |= (event->area.y <= ythickness ||
-				 event->area.y + FLOOR (event->area.height) >= FLOOR (widget->allocation.height) - ythickness ||
-				 event->area.x <= xthickness ||
-				 event->area.x + FLOOR (event->area.width) >= FLOOR (widget->allocation.width) - xthickness);
-      bst_qsampler_queue_expose (qsampler,
-				 CLAMP (event->area.x - xthickness, 0, ((gint) qsampler->n_peaks) - 1),
-				 CLAMP (event->area.x + FLOOR (event->area.width) - xthickness, 0, qsampler->n_peaks));
+      qsampler->expose_frame |= event->window == widget->window;
+      if (event->window == qsampler->canvas)
+	bst_qsampler_invalidate (qsampler, event->area.x, event->area.width, FALSE);
+      bst_qsampler_queue_refresh (qsampler);
     }
   return TRUE;
 }
@@ -337,54 +341,42 @@ bst_qsampler_get_bounds (BstQSampler *qsampler,
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
 
   widget = GTK_WIDGET (qsampler);
-  ostart = qsampler->sample_offset;
-  oend = qsampler->sample_offset + qsampler->n_area_samples;
+
+  ostart = qsampler->peak_offset;
+  oend = ostart + qsampler->n_pixels - 1;
+
+  /* return visible pcm area */
 
   if (first_offset)
-    *first_offset = ostart;
+    *first_offset = ostart * qsampler->zoom_factor;
   if (last_offset)
-    *last_offset = oend;
+    *last_offset = oend * qsampler->zoom_factor;
 }
 
 gboolean
 bst_qsampler_get_offset_at (BstQSampler *qsampler,
 			    gint        *x_coord_p)
 {
+  gboolean fits_visible = FALSE;
+  gint x_coord = 0;
+
   g_return_val_if_fail (BST_IS_QSAMPLER (qsampler), FALSE);
   g_return_val_if_fail (x_coord_p != NULL, FALSE);
 
   if (GTK_WIDGET_DRAWABLE (qsampler))
     {
-      GtkWidget *widget = GTK_WIDGET (qsampler);
-      gint x_coord, xthickness = widget->style->xthickness;
-
       x_coord = *x_coord_p;
-      x_coord -= xthickness;
-      if (x_coord < 0)
-	{
-	  x_coord = ((gdouble) -x_coord) / qsampler->offset2peak_factor;
-	  *x_coord_p = x_coord = -MAX (1, x_coord);
-	  return FALSE;
-	}
-      if (x_coord >= qsampler->n_peaks)
-	{
-	  x_coord -= qsampler->n_peaks;
-	  x_coord = floor (((gdouble) x_coord) / qsampler->offset2peak_factor);
-	  *x_coord_p = x_coord + 1;
-	  return FALSE;
-	}
-      x_coord = qsampler->sample_offset + floor (((gdouble) x_coord) / qsampler->offset2peak_factor);
-      if (x_coord >= qsampler->n_total_samples)
-	{
-	  x_coord -= qsampler->n_total_samples;
-	  *x_coord_p = x_coord + 1;
-	  return FALSE;
-	}
-      *x_coord_p = x_coord;
-      return TRUE;
+
+      /* translate to peaks */
+      fits_visible = x_coord >= 0 && x_coord < qsampler->n_pixels;
+
+      /* translate to pcm offset */
+      x_coord += qsampler->peak_offset;
+      x_coord *= qsampler->zoom_factor;
     }
-  *x_coord_p = 0;
-  return FALSE;
+  *x_coord_p = x_coord;
+
+  return fits_visible;
 }
 
 static void
@@ -404,14 +396,15 @@ bst_qsampler_finalize (GObject *object)
   BstQSampler *qsampler = BST_QSAMPLER (object);
 
   g_free (qsampler->peaks);
-  g_free (qsampler->mpeaks);
-  g_free (qsampler->peak_types);
   g_free (qsampler->marks);
   g_free (qsampler->regions);
-  if (qsampler->vread_handler)
-    g_source_remove (qsampler->vread_handler);
-  if (qsampler->expose_handler)
-    g_source_remove (qsampler->expose_handler);
+  if (qsampler->refresh_queued)
+    {
+      refresh_widgets = g_slist_remove (refresh_widgets, qsampler);
+      tmp_refresh_widgets = g_slist_remove (tmp_refresh_widgets, qsampler);
+    }
+  else
+    qsampler->refresh_queued = TRUE;
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -467,511 +460,581 @@ bst_qsampler_get_property (GObject    *object,
 }
 
 static guint
-bst_qsampler_find_dirty (BstQSampler *qsampler,
-			 guint        current)
+last_peek_from_pcm_region (BstQSampler *qsampler,
+			   guint        pcm_offset,
+			   guint	pcm_length)
 {
-  gint i;
+  guint last = (pcm_offset + pcm_length - 1) / qsampler->zoom_factor;
+  guint bound = (pcm_offset + pcm_length) / qsampler->zoom_factor;
 
-  for (i = current; i < qsampler->n_peaks; i++)
-    if (qsampler->peak_types[i] & BST_QSAMPLER_DIRTY)
-      return i;
-  for (i = 0; i < MIN (current, qsampler->n_peaks); i++)
-    if (qsampler->peak_types[i] & BST_QSAMPLER_DIRTY)
-      return i;
-  return qsampler->n_peaks;
-}
+  /* depending on zoom factor, a pcm_length of 1 spawns multiple peaks */
 
-static gboolean
-bst_qsampler_read (BstQSampler *qsampler)
-{
-  guint i, n, join_vreads = qsampler->join_vreads;
-
-  if (qsampler->vread_handler)
-    {
-      g_source_remove (qsampler->vread_handler);
-      qsampler->vread_handler = 0;
-    }
-
-  // i = bst_qsampler_find_dirty (qsampler, qsampler->n_peaks / 2); // FIXME: kernel wants incremental seeks
-  i = bst_qsampler_find_dirty (qsampler, 0);
-  while (i < qsampler->n_peaks && join_vreads--)
-    {
-      guint ostart = qsampler->sample_offset + floor (((gdouble) i) / qsampler->offset2peak_factor);
-      guint oend = qsampler->sample_offset + floor (((gdouble) i + 1) / qsampler->offset2peak_factor);
-      gint16 vblock[1024] = { 0, };
-      guint filler_n_values, filler_voffset;
-      gint32 va = -32767, vi = 32767;
-      
-      if (oend - ostart > 1024)
-	{
-	  filler_n_values = 1024;
-	  filler_voffset = ostart + (oend - ostart - 1024) / 2;
-	}
-      else
-	{
-	  oend = MAX (oend, ostart + 1);
-	  filler_n_values = oend - ostart;
-	  filler_voffset = ostart;
-	}
-      if (filler_voffset + filler_n_values <= qsampler->n_total_samples)
-	{
-	  qsampler->peak_types[i] &= ~BST_QSAMPLER_SKIP;
-	  qsampler->src_filler (qsampler->src_data, filler_voffset, filler_n_values, vblock, qsampler);
-	}
-      else
-	qsampler->peak_types[i] |= BST_QSAMPLER_SKIP;
-      for (n = 0; n < filler_n_values; n++)
-	{
-	  va = MAX (va, vblock[n]);
-	  vi = MIN (vi, vblock[n]);
-	}
-      qsampler->peaks[i] = va;
-      qsampler->mpeaks[i] = vi;
-      qsampler->peak_types[i] &= ~BST_QSAMPLER_DIRTY;
-      bst_qsampler_queue_expose (qsampler, MAX (i, 1) - 1, MIN (i + 2, qsampler->n_peaks));
-      i = bst_qsampler_find_dirty (qsampler, i);
-    }
-  if (i < qsampler->n_peaks && !qsampler->vread_handler)
-    qsampler->vread_handler = g_timeout_add_full (BST_QSAMPLER_READ_PRIORITY,
-						  VREAD_TIMEOUT,
-						  (GSourceFunc) bst_qsampler_read,
-						  qsampler,
-						  NULL);
-  return FALSE;
-}
-
-static void
-bst_qsampler_queue_vread (BstQSampler *qsampler,
-			  guint	       pstart,
-			  guint	       pend)
-{
-  pend = MIN (pend, qsampler->n_peaks);
-  if (pstart < pend)
-    {
-      guint i;
-      
-      for (i = pstart; i < pend; i++)
-	{
-	  qsampler->peak_types[i] |= BST_QSAMPLER_DIRTY;
-	  qsampler->peaks[i] = 0;
-	  qsampler->mpeaks[i] = 0;
-	}
-      if (!qsampler->vread_handler)
-	qsampler->vread_handler = g_timeout_add_full (BST_QSAMPLER_READ_PRIORITY,
-						      VREAD_TIMEOUT,
-						      (GSourceFunc) bst_qsampler_read,
-						      qsampler,
-						      NULL);
-    }
-}
-
-static guint
-OFS2PEAK (BstQSampler *qsampler,
-	  guint        offset)
-{
-  gdouble start = offset > qsampler->sample_offset ? offset - qsampler->sample_offset : 0;
-  guint peak = qsampler->offset2peak_factor * start + .5;
-
-  return MIN (peak, qsampler->n_peaks);
-}
-
-static guint
-OFS2PEAK_BOUND (BstQSampler *qsampler,
-		guint        offset,
-		guint	     length)
-{
-  guint next_peak = OFS2PEAK (qsampler, offset + length);
-  guint peak = OFS2PEAK (qsampler, offset);
-
-  peak = MAX (peak + 1, next_peak);
-
-  return MIN (peak, qsampler->n_peaks);
-#if 0
-  guint pos = offset + length - 1;
-  gdouble bound = pos > qsampler->sample_offset ? pos - qsampler->sample_offset : 0;
-  guint peak = qsampler->offset2peak_factor * bound;
-
-  return MIN (peak + MAX (1, qsampler->offset2peak_factor), qsampler->n_peaks);
-#endif
-}
-
-static void
-bst_qsampler_intersect (BstQSampler *qsampler,
-			guint	    *start_p,
-			guint	    *end_p,
-			guint	     offset,
-			guint	     length)
-{
-  guint start = OFS2PEAK (qsampler, offset);
-  guint end = OFS2PEAK_BOUND (qsampler, offset, length);
-
-  *start_p = MAX (*start_p, start);
-  *end_p = MIN (*end_p, end);
+  return MAX (last, MAX (bound, 1) - 1);
 }
 
 static void
 bst_qsampler_update_types (BstQSampler *qsampler,
-			   guint	offset,
-			   guint	length)
+			   guint	pcm_offset,
+			   guint	pcm_length)
 {
-  guint start = OFS2PEAK (qsampler, offset);
-  guint end = OFS2PEAK_BOUND (qsampler, offset, length);
+  guint8 *types;
+  guint start = pcm_offset / qsampler->zoom_factor; /* first peek from pcm region */
+  guint end = last_peek_from_pcm_region (qsampler, pcm_offset, MAX (pcm_length, 1));
+  guint i, n, s, e, changed;
 
-  g_return_if_fail (end <= qsampler->n_peaks);
+  pcm_length = MAX (pcm_length, 1);
 
-  if (start < end)
+  /* intersect with cached area */
+  start = MAX (start, qsampler->peak_offset);
+  end = MIN (end, qsampler->peak_offset + qsampler->n_peaks - 1);
+
+  if (end < start)
+    return;
+
+  types = g_new0 (guint8, end - start + 1);
+
+  /* merge regions */
+  for (n = 0; n < qsampler->n_regions; n++)
     {
-      guint8 *types = g_new0 (guint8, end - start);
-      guint changed = end;
-      guint i, n;
-      
-      for (n = 0; n < qsampler->n_regions; n++)
-	{
-	  guint s = start, e = end;
+      BstQSamplerRegion *r = qsampler->regions + n;
+      guint rstart = r->offset / qsampler->zoom_factor;
+      guint rend = last_peek_from_pcm_region (qsampler, r->offset, r->length);
 
-	  if (qsampler->regions[n].offset + qsampler->regions[n].length < qsampler->sample_offset)
-	    continue;
-	  bst_qsampler_intersect (qsampler, &s, &e,
-				  qsampler->regions[n].offset,
-				  qsampler->regions[n].length);
-	  for (i = s; i < e; i++)
-	    types[i - start] |= qsampler->regions[n].type;
-	}
-      for (n = 0; n < qsampler->n_marks; n++)
-	{
-	  guint s = start, e = end;
-	  
-	  if (qsampler->marks[n].offset < qsampler->sample_offset)
-	    continue;
-	  bst_qsampler_intersect (qsampler, &s, &e,
-				  qsampler->marks[n].offset, 1);
-	  if (qsampler->marks[n].type & BST_QSAMPLER_PRELIGHT)
-	    e = MIN (e, s + 1);
-	  for (i = s; i < e; i++)
-	    types[i - start] |= qsampler->marks[n].type;
-	}
-      for (i = start; i < end; i++)
-	if ((qsampler->peak_types[i] & BST_QSAMPLER_MASK) != types[i - start])
-	  {
-	    qsampler->peak_types[i] &= ~BST_QSAMPLER_MASK;
-	    qsampler->peak_types[i] |= types[i - start] | BST_QSAMPLER_NEEDS_DRAW;
-	    changed = i;
-	  }
-      g_free (types);
-      
-      if (changed < end)	/* make sure we have an expose handler */
-	bst_qsampler_queue_expose (qsampler, changed, changed + 1);
-    }
-}
+      g_assert (rstart <= rend);
 
-static void
-bst_qsampler_resize (BstQSampler *qsampler,
-		     gboolean     view_changed)
-{
-  GtkWidget *widget = GTK_WIDGET (qsampler);
-  guint old_peaks, n_peaks = widget->allocation.width;
+      /* intersect */
+      s = MAX (start, rstart);
+      e = MIN (end, rend);
 
-  if (2 * widget->style->xthickness > n_peaks)
-    n_peaks = 3;
-  else
-    {
-      n_peaks -= 2 * widget->style->xthickness;
-      n_peaks = MAX (n_peaks, 3);
+      /* merge region flags */
+      for (i = s; i <= e; i++)
+	types[i - start] |= r->type;
     }
 
-  old_peaks = qsampler->n_peaks;
-  qsampler->n_peaks = n_peaks;
-  qsampler->peaks = g_renew (guint16, qsampler->peaks, qsampler->n_peaks);
-  qsampler->mpeaks = g_renew (guint16, qsampler->mpeaks, qsampler->n_peaks);
-  qsampler->peak_types = g_renew (guint8, qsampler->peak_types, qsampler->n_peaks);
-  if (n_peaks > old_peaks)
-    memset (qsampler->peak_types + (view_changed ? 0 : old_peaks),
-	    BST_QSAMPLER_SKIP,
-	    (n_peaks - (view_changed ? 0 : old_peaks)));
-  qsampler->n_area_samples = ((gdouble) qsampler->n_peaks) / qsampler->zoom_factor;
-  qsampler->n_area_samples = MAX (qsampler->n_area_samples, 1);
-  qsampler->sample_offset = MIN (qsampler->sample_offset,
-				 qsampler->n_total_samples - qsampler->n_area_samples);
-  qsampler->offset2peak_factor = qsampler->n_peaks;
-  qsampler->offset2peak_factor /= (gdouble) qsampler->n_area_samples;
-  bst_qsampler_update_types (qsampler, 0, qsampler->n_total_samples);
-  bst_qsampler_queue_vread (qsampler, view_changed ? 0 : old_peaks, qsampler->n_peaks);
-  bst_qsampler_queue_expose (qsampler, 0, qsampler->n_peaks);
-  /* zoom changed */
-  bst_qsampler_update_adjustment (qsampler);
-}
+  /* merge marks */
+  for (n = 0; n < qsampler->n_marks; n++)
+    {
+      BstQSamplerMark *m = qsampler->marks + n;
+      guint mstart = m->offset / qsampler->zoom_factor;
+      guint mend = last_peek_from_pcm_region (qsampler, m->offset, 1);
 
-static void
-bst_qsampler_jump_to (BstQSampler *qsampler,
-		      guint	   sample_offset)
-{
-  sample_offset = CLAMP (sample_offset, 0, qsampler->n_total_samples - qsampler->n_area_samples);
-  if (sample_offset > qsampler->sample_offset)
-    {
-      gint diff = OFS2PEAK (qsampler, sample_offset);
-      
-      qsampler->sample_offset = sample_offset;
-      g_memmove (qsampler->peaks, qsampler->peaks + diff, (qsampler->n_peaks - diff) * sizeof (gint16));
-      g_memmove (qsampler->mpeaks, qsampler->mpeaks + diff, (qsampler->n_peaks - diff) * sizeof (gint16));
-      g_memmove (qsampler->peak_types, qsampler->peak_types + diff, qsampler->n_peaks - diff);
-      memset (qsampler->peak_types + qsampler->n_peaks - diff, 0, diff);
-      bst_qsampler_update_types (qsampler, 0, qsampler->n_total_samples);
-      bst_qsampler_queue_vread (qsampler, qsampler->n_peaks - diff, qsampler->n_peaks);
-      bst_qsampler_queue_expose (qsampler, 0, qsampler->n_peaks);
+      g_assert (mstart <= mend);
+
+      /* intersect */
+      s = MAX (start, mstart);
+      e = MIN (end, mend);
+
+      /* merge mark flags */
+      for (i = s; i <= e; i++)
+	types[i - start] |= m->type;
     }
-  else if (sample_offset < qsampler->sample_offset)
-    {
-      gint diff = OFS2PEAK (qsampler, qsampler->sample_offset + qsampler->sample_offset - sample_offset);
-      
-      qsampler->sample_offset = sample_offset;
-      g_memmove (qsampler->peaks + diff, qsampler->peaks, (qsampler->n_peaks - diff) * sizeof (gint16));
-      g_memmove (qsampler->mpeaks + diff, qsampler->mpeaks, (qsampler->n_peaks - diff) * sizeof (gint16));
-      g_memmove (qsampler->peak_types + diff, qsampler->peak_types, qsampler->n_peaks - diff);
-      memset (qsampler->peak_types, 0, diff);
-      bst_qsampler_update_types (qsampler, 0, qsampler->n_total_samples);
-      bst_qsampler_queue_vread (qsampler, 0, diff);
-      bst_qsampler_queue_expose (qsampler, 0, qsampler->n_peaks);
-    }
+
+  /* apply changes */
+  start -= qsampler->peak_offset;
+  end -= qsampler->peak_offset;
+  changed = end + 1;
+  for (i = start; i <= end; i++)
+    if ((qsampler->peaks[i].type & BST_QSAMPLER_MASK) != types[i - start])
+      {
+	qsampler->peaks[i].type &= ~BST_QSAMPLER_MASK;
+	qsampler->peaks[i].type |= types[i - start] | BST_QSAMPLER_NEEDS_DRAW;
+	changed = i;
+      }
+  g_free (types);
+
+  /* make sure we have an expose handler */
+  if (changed <= end)
+    bst_qsampler_invalidate (qsampler, changed, 1, FALSE);
 }
 
 static gboolean
-bst_qsampler_redraw (BstQSampler *qsampler)
+bst_qsampler_reload (BstQSampler *qsampler)
 {
-  if (qsampler->expose_handler)
-    {
-      g_source_remove (qsampler->expose_handler);
-      qsampler->expose_handler = 0;
-    }
-  if (GTK_WIDGET_DRAWABLE (qsampler))
-    {
-      GtkWidget *widget = GTK_WIDGET (qsampler);
-      GdkWindow *window = widget->window;
-      gint xthickness = widget->style->xthickness;
-      gint ythickness = widget->style->xthickness;
-      gint hi = ythickness, low = MAX (FLOOR (widget->allocation.height) - ythickness, hi);
-      gint range = (low - hi) >> 1, zero = hi + range;
-      GdkRectangle rectangle = { 0, 0, widget->allocation.width, widget->allocation.height };
-      guint i;
+  guint span, i;
 
-      if (GTK_WIDGET_DOUBLE_BUFFERED (qsampler))
-	gdk_window_begin_paint_rect (widget->window, &rectangle);
-      
-      if (qsampler->expose_frame)
-	gtk_draw_shadow (widget->style, widget->window,
-			 GTK_STATE_NORMAL, GTK_SHADOW_IN,
-			 0, 0,
-			 widget->allocation.width, widget->allocation.height);
-      for (i = 0; i < qsampler->n_peaks; i++)
+  for (i = 0; i < qsampler->n_peaks; i++)
+    if (qsampler->peaks[i].type & BST_QSAMPLER_DIRTY)
+      break;
+  for (span = i; span < qsampler->n_peaks; span++)
+    if (!(qsampler->peaks[i].type & BST_QSAMPLER_DIRTY))
+      break;
+  span -= i;
+  if (span)
+    {
+      guint pcm_offset = (qsampler->peak_offset + i) * qsampler->zoom_factor;
+      guint block_length = CLAMP (1 * qsampler->zoom_factor, 1, 1024);
+      BstQSamplerPeak values[256];
+      guint start = i;
+
+      span = MIN (span, 256);
+      if (qsampler->src_filler)
+	span = qsampler->src_filler (qsampler->src_data,
+				     pcm_offset, qsampler->zoom_factor,
+				     block_length, span, values,
+				     qsampler);
+      else
+	memset (values, 0, span * sizeof (values[0]));
+
+      for (i = 0; i < span; i++)
 	{
-#define	VSCALE(qs, member)	(CLAMP ((qs)->vscale_factor * (qs)->member, -32768, 32767))
-	  gint16 last_peak = VSCALE (qsampler, peaks[i > 0 ? i - 1 : i]);
-	  gint16 peak = VSCALE (qsampler, peaks[i]);
-	  gint16 next_peak = VSCALE (qsampler, peaks[i + 1 < qsampler->n_peaks ? i + 1 : i]);
-	  gint16 last_mpeak = VSCALE (qsampler, mpeaks[i > 0 ? i - 1 : i]);
-	  gint16 mpeak = VSCALE (qsampler, mpeaks[i]);
-	  gint16 next_mpeak = VSCALE (qsampler, mpeaks[i + 1 < qsampler->n_peaks ? i + 1 : i]);
-	  gfloat last_value = ((gfloat) last_peak) / 32768.;
-	  gfloat value = ((gfloat) peak) / 32768.;
-	  gfloat next_value = ((gfloat) next_peak) / 32768.;
-	  gfloat last_mvalue = ((gfloat) last_mpeak) / 32768.;
-	  gfloat mvalue = ((gfloat) mpeak) / 32768.;
-	  gfloat next_mvalue = ((gfloat) next_mpeak) / 32768.;
-	  gfloat last_middle_value = (last_value + last_mvalue) / 2;
-	  gfloat middle_value = (value + mvalue) / 2;
-	  gfloat next_middle_value = (next_value + next_mvalue) / 2;
-	  gint8 peak_type = qsampler->peak_types[i];
-	  GdkGC *back_gc, *fore_gc = NULL;
-	  gint x = i + xthickness, y;
-	  
-	  if (!(peak_type & BST_QSAMPLER_NEEDS_DRAW))
-	    continue;
-	  qsampler->peak_types[i] &= ~BST_QSAMPLER_NEEDS_DRAW;
-	  
-	  if (GTK_WIDGET_IS_SENSITIVE (qsampler) && !(peak_type & BST_QSAMPLER_SKIP))
-	    {
-              back_gc = widget->style->base_gc[GTK_STATE_NORMAL];
-	      if (peak_type & BST_QSAMPLER_MARK)
-		{
-		  if (peak_type & BST_QSAMPLER_ACTIVE)
-		    {
-		      fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
-		      back_gc = qsampler->green_gc;
-		    }
-		  if (peak_type & BST_QSAMPLER_SELECTED)
-		    {
-		      fore_gc = back_gc;
-		      back_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
-		    }
-		  if (peak_type & BST_QSAMPLER_PRELIGHT)
-		    {
-		      back_gc = qsampler->red_gc;
-		      if (peak_type & BST_QSAMPLER_ACTIVE)
-			fore_gc = qsampler->green_gc;
-		      else if (peak_type & BST_QSAMPLER_SELECTED)
-			fore_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
-		      else /* normal */
-			fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
-		    }
-		}
-	      else /* regions or untagged peaks */
-		{
-		  if (peak_type & BST_QSAMPLER_SELECTED)
-		    {
-		      if (peak_type & BST_QSAMPLER_ACTIVE)
-			fore_gc = qsampler->green_gc;
-		      else
-			fore_gc = back_gc;
-		      back_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
-		    }
-		  else if (peak_type & BST_QSAMPLER_ACTIVE)
-		    fore_gc = qsampler->green_gc;
-		  else /* normal */
-		    fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
-		}
-	    }
-	  else
-	    {
-	      back_gc = widget->style->bg_gc[GTK_STATE_INSENSITIVE];
-	      if (qsampler->peak_types[i] & BST_QSAMPLER_SKIP)
-		fore_gc = widget->style->bg_gc[GTK_STATE_NORMAL];
-	      else
-		fore_gc = widget->style->dark_gc[GTK_STATE_INSENSITIVE];
-	    }
-	  if (peak_type & BST_QSAMPLER_SKIP)
-	    gdk_draw_line (window, fore_gc, x, hi, x, low);
-	  else if (peak_type & BST_QSAMPLER_DIRTY)
-	    gdk_draw_line (window, back_gc, x, hi, x, low);
-	  else if (!(qsampler->peak_types[i] & BST_QSAMPLER_DIRTY))
-	    switch (qsampler->draw_mode)
-	      {
-		gint yb, yn;
-	      case BST_QSAMPLER_DRAW_MINIMUM_LINE:
-		last_middle_value = last_mvalue;
-		middle_value = mvalue;
-		next_middle_value = next_mvalue;
-	      case BST_QSAMPLER_DRAW_MIDDLE_LINE:
-		last_value = last_middle_value;
-		value = middle_value;
-		next_value = next_middle_value;
-	      case BST_QSAMPLER_DRAW_MAXIMUM_LINE:
-		y = zero - range * value;
-		yb = zero - range * last_value;
-		yn = zero - range * next_value;
-		gdk_draw_line (window, back_gc, x, hi, x, low);
-		yb = (y + yb) / 2;
-		yn = (y + yn) / 2;
-		gdk_draw_line (window, fore_gc, x, MIN (y, MIN (yb, yn)), x, MAX (y, MAX (yb, yn)));
-		break;
-	      case BST_QSAMPLER_DRAW_MINIMUM_SHAPE:
-		y = low - (mvalue + 1) * range;
-		gdk_draw_line (window, back_gc, x,  y, x, low);
-		gdk_draw_line (window, fore_gc, x, hi, x, y);
-		break;
-	      case BST_QSAMPLER_DRAW_MAXIMUM_SHAPE:
-		y = low - (value + 1) * range;
-		gdk_draw_line (window, back_gc, x, hi, x, y);
-		gdk_draw_line (window, fore_gc, x,  y, x, low);
-		break;
-	      case BST_QSAMPLER_DRAW_CSHAPE:
-		y = low - (value + 1) * range;
-		yb = low - (mvalue + 1) * range;
-		gdk_draw_line (window, back_gc, x, hi, x, y);
-		gdk_draw_line (window, back_gc, x, yb, x, low);
-		gdk_draw_line (window, fore_gc, x,  y, x, yb);
-		break;
-	      case BST_QSAMPLER_DRAW_CRANGE:
-		{
-		  gint last_min = last_mpeak, last_max = last_peak;
-		  gint next_min = next_mpeak, next_max = next_peak;
-		  gint cur_min = mpeak, cur_max = peak;
-		  gint y1, y2;
-		  gfloat min_value, max_value;
-		  
-		  y1 = cur_max;
-		  y2 = cur_max;
-		  if (last_min > cur_max)
-		    y1 = (last_min + cur_max) / 2;
-		  if (next_min > cur_max)
-		    y2 = (next_min + cur_max) / 2;
-		  cur_max = MAX (cur_max, MAX (y1, y2));
-		  y1 = cur_min;
-		  y2 = cur_min;
-		  if (cur_min > last_max)
-		    y1 = (last_max + cur_min) / 2;
-		  if (cur_min > next_max)
-		    y2 = (next_max + cur_min) / 2;
-		  cur_min = MIN (cur_min, MIN (y1, y2));
-		  
-		  min_value = ((gfloat) cur_min) / 32768.;
-		  max_value = ((gfloat) cur_max) / 32768.;
-		  y1 = low - (max_value + 1) * range;
-		  y2 = low - (min_value + 1) * range;
-		  gdk_draw_line (window, back_gc, x, hi, x, y1);
-		  gdk_draw_line (window, back_gc, x, y2, x, low);
-		  gdk_draw_line (window, fore_gc, x, y1, x, y2);
-		}
-		break;
-	      case BST_QSAMPLER_DRAW_ZERO_SHAPE:
-		if (middle_value > 0)
-		  {
-		    y = zero - middle_value * range;
-		    gdk_draw_line (window, back_gc, x,   hi, x,    y);
-		    gdk_draw_line (window, back_gc, x, zero, x,  low);
-		    gdk_draw_line (window, fore_gc, x,    y, x, zero);
-		  }
-		else if (middle_value < 0)
-		  {
-		    y = zero - middle_value * range;
-		    gdk_draw_line (window, back_gc, x,   hi, x, zero);
-		    gdk_draw_line (window, back_gc, x,    y, x,  low);
-		    gdk_draw_line (window, fore_gc, x, zero, x,    y);
-		  }
-		else /* middle_value == 0 */
-		  {
-		    gdk_draw_line (window, back_gc, x, hi, x, low);
-		    gdk_draw_line (window, fore_gc, x, zero, x, zero);
-		  }
-		break;
-	      }
+	  qsampler->peaks[start + i].max = values[i].max;
+	  qsampler->peaks[start + i].min = values[i].min;
+	  qsampler->peaks[start + i].type &= ~BST_QSAMPLER_DIRTY;
+	  qsampler->peaks[start + i].type |= BST_QSAMPLER_NEEDS_DRAW;
+	  if (start + i > 0)
+	    qsampler->peaks[start + i - 1].type |= BST_QSAMPLER_NEEDS_DRAW;
+	  if (start + i + 1 < qsampler->n_peaks)
+	    qsampler->peaks[start + i + 1].type |= BST_QSAMPLER_NEEDS_DRAW;
 	}
-      if (GTK_WIDGET_DOUBLE_BUFFERED (qsampler))
-	gdk_window_end_paint (widget->window);
+      return TRUE;
     }
+  else
+    return FALSE;
+}
+
+static gboolean
+bst_qsampler_refresh_idler (gpointer data)
+{
+  GSList *slist;
+
+  GDK_THREADS_ENTER ();
+  for (slist = refresh_widgets; slist; slist = refresh_widgets)
+    {
+      BstQSampler *qsampler = slist->data;
+
+      refresh_widgets = slist->next;
+      slist->next = tmp_refresh_widgets;
+      tmp_refresh_widgets = slist;
+      if (GTK_WIDGET_DRAWABLE (qsampler))
+	bst_qsampler_redraw (qsampler, FALSE);
+    }
+  refresh_widgets = tmp_refresh_widgets;
+  tmp_refresh_widgets = NULL;
+  for (slist = refresh_widgets; slist; slist = refresh_widgets)
+    {
+      BstQSampler *qsampler = slist->data;
+
+      refresh_widgets = slist->next;
+      slist->next = tmp_refresh_widgets;
+      tmp_refresh_widgets = slist;
+      qsampler->invalid_remains = bst_qsampler_reload (qsampler);
+    }
+  refresh_widgets = tmp_refresh_widgets;
+  tmp_refresh_widgets = NULL;
+  for (slist = refresh_widgets; slist; slist = refresh_widgets)
+    {
+      BstQSampler *qsampler = slist->data;
+
+      refresh_widgets = slist->next;
+      if (qsampler->invalid_remains)
+	{
+	  slist->next = tmp_refresh_widgets;
+	  tmp_refresh_widgets = slist;
+	}
+      else
+	{
+	  g_slist_free_1 (slist);
+	  qsampler->refresh_queued = FALSE;
+	}
+      if (GTK_WIDGET_DRAWABLE (qsampler))
+	bst_qsampler_redraw (qsampler, TRUE);
+    }
+  refresh_widgets = tmp_refresh_widgets;
+  tmp_refresh_widgets = NULL;
+  if (!refresh_widgets)
+    refresh_handler = 0;
+  GDK_THREADS_LEAVE ();
+
+  return refresh_handler != 0;
+}
+
+static void
+bst_qsampler_queue_refresh (BstQSampler *qsampler)
+{
+  if (!qsampler->refresh_queued)
+    {
+      refresh_widgets = g_slist_prepend (refresh_widgets, qsampler);
+      if (!refresh_handler)
+	refresh_handler = g_idle_add_full (GTK_PRIORITY_REDRAW,
+					   bst_qsampler_refresh_idler,
+					   NULL,
+					   NULL);
+      qsampler->refresh_queued = TRUE;
+      qsampler->invalid_remains = TRUE;
+    }
+}
+
+static void
+bst_qsampler_invalidate (BstQSampler *qsampler,
+			 guint        offset,
+			 guint	      length,
+			 gboolean     reset)
+{
+  guint i, bound;
+
+  if (reset)
+    {
+      bound = qsampler->peak_length - MIN (qsampler->peak_offset, qsampler->peak_length);
+      bound = MIN (bound, offset + length);
+      bound = MIN (bound, qsampler->n_peaks);
+      for (i = offset; i < bound; i++)
+	{
+	  qsampler->peaks[i].min = 0;
+	  qsampler->peaks[i].max = 0;
+	  qsampler->peaks[i].type = BST_QSAMPLER_DIRTY | BST_QSAMPLER_NEEDS_DRAW;
+	}
+      bound = MIN (qsampler->n_peaks, offset + length);
+      for (; i < bound; i++)
+	{
+	  qsampler->peaks[i].min = 0;
+	  qsampler->peaks[i].max = 0;
+	  qsampler->peaks[i].type = BST_QSAMPLER_SKIP | BST_QSAMPLER_NEEDS_DRAW;
+	}
+    }
+  else
+    {
+      bound = MIN (qsampler->n_peaks, offset + length);
+      for (i = offset; i < bound; i++)
+	qsampler->peaks[i].type |= BST_QSAMPLER_NEEDS_DRAW;
+    }
+  if (offset < qsampler->n_peaks && length)
+    bst_qsampler_queue_refresh (qsampler);
+}
+
+static void
+bst_qsampler_resize (BstQSampler *qsampler)
+{
+  GtkWidget *widget = GTK_WIDGET (qsampler);
+
+  qsampler->peak_length = qsampler->pcm_length / qsampler->zoom_factor;
+  qsampler->n_peaks = widget->allocation.width + widget->allocation.width;
+  qsampler->peaks = g_renew (BstQSamplerTPeak, qsampler->peaks, qsampler->n_peaks);
+  bst_qsampler_invalidate (qsampler, 0, qsampler->n_peaks, TRUE);
+  bst_qsampler_update_types (qsampler, 0, qsampler->pcm_length);
+
+  /* adjust page size */
+  qsampler->ignore_adjustment = TRUE;
+  bst_qsampler_update_adjustment (qsampler);
+  qsampler->ignore_adjustment = FALSE;
+  bst_qsampler_queue_refresh (qsampler);
+}
+
+static void
+bst_qsampler_copy_area (BstQSampler *qsampler,
+			guint        from,
+			guint	     to)
+{
+  guint length = MAX (from, to);
+  
+  if (GTK_WIDGET_DRAWABLE (qsampler) && length < qsampler->n_pixels)
+    gdk_window_scroll (qsampler->canvas, from - to, 0);
+  else
+    bst_qsampler_invalidate (qsampler, from, qsampler->n_peaks - length, FALSE);
+}
+
+static void
+bst_qsampler_move_to (BstQSampler *qsampler,
+		      guint        peak_offset)
+{
+  /* move contents */
+  if (peak_offset >= qsampler->peak_offset + qsampler->n_peaks ||
+      peak_offset + qsampler->n_peaks <= qsampler->peak_offset)
+    {
+      qsampler->peak_offset = peak_offset;
+      bst_qsampler_invalidate (qsampler, 0, qsampler->n_peaks, TRUE);
+      bst_qsampler_update_types (qsampler, 0, qsampler->pcm_length);
+    }
+  else if (peak_offset > qsampler->peak_offset)
+    {
+      guint diff = peak_offset - qsampler->peak_offset;
+
+      g_memmove (qsampler->peaks, qsampler->peaks + diff, (qsampler->n_peaks - diff) * sizeof (qsampler->peaks[0]));
+      qsampler->peak_offset = peak_offset;
+      bst_qsampler_invalidate (qsampler, (qsampler->n_peaks - diff), qsampler->n_peaks, TRUE);
+      bst_qsampler_update_types (qsampler,
+				 (qsampler->peak_offset + qsampler->n_peaks - diff) * qsampler->zoom_factor,
+				 qsampler->pcm_length);
+      bst_qsampler_copy_area (qsampler, 0, diff);
+    }
+  else if (peak_offset < qsampler->peak_offset)
+    {
+      guint diff = qsampler->peak_offset - peak_offset;
+
+      g_memmove (qsampler->peaks + diff, qsampler->peaks, (qsampler->n_peaks - diff) * sizeof (qsampler->peaks[0]));
+      qsampler->peak_offset = peak_offset;
+      bst_qsampler_invalidate (qsampler, 0, diff, TRUE);
+      bst_qsampler_update_types (qsampler, 0, (qsampler->peak_offset + diff + 1) * qsampler->zoom_factor);
+      bst_qsampler_copy_area (qsampler, diff, 0);
+    }
+  bst_qsampler_queue_refresh (qsampler);
+}
+
+static void
+bst_qsampler_avalue_changed (BstQSampler *qsampler)
+{
+  if (!qsampler->ignore_adjustment)
+    {
+      GtkAdjustment *adjustment = qsampler->adjustment;
+      gdouble rel_offset;
+
+      rel_offset = (adjustment->value - adjustment->lower) / (adjustment->upper - adjustment->lower);
+      bst_qsampler_move_to (qsampler, rel_offset * qsampler->peak_length);
+    }
+}
+
+static void
+bst_qsampler_update_adjustment (BstQSampler *qsampler)
+{
+  GtkAdjustment *adjustment = qsampler->adjustment;
+
+  if (adjustment)
+    {
+      gdouble value = adjustment->value;
+
+      adjustment->lower = 0;
+      adjustment->upper = qsampler->pcm_length;
+      adjustment->page_size = MIN (qsampler->n_pixels * qsampler->zoom_factor, adjustment->upper - adjustment->lower);
+      adjustment->page_increment = adjustment->page_size * .5;
+      adjustment->step_increment = adjustment->page_size * .1;
+      adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
+      gtk_adjustment_changed (adjustment);
+      if (value != adjustment->value)
+	gtk_adjustment_value_changed (adjustment);
+    }
+}
+
+static inline void
+bst_qsampler_draw_peak (BstQSampler *qsampler,
+			guint        offset,
+			GdkGC       *fore_gc)
+{
+#define	VSCALE(member)	(CLAMP ((qsampler)->vscale_factor * (qsampler)->member, -32768, 32767))
+  GtkWidget *widget = (GtkWidget*) qsampler;
+  GdkWindow *canvas = qsampler->canvas;
+  gint ythickness = widget->style->ythickness;
+  gint hi = 0, low = MAX (widget->allocation.height - 2 * ythickness, hi);
+  gint range = (low - hi) >> 1, zero = hi + range;
+  guint last_i = offset > 0 ? offset - 1 : 0;
+  gint16 last_peak  = VSCALE (peaks[last_i].max), last_mpeak = VSCALE (peaks[last_i].min);
+  gint16 peak = VSCALE (peaks[offset].max), mpeak = VSCALE (peaks[offset].min);
+  gint16 next_peak = VSCALE (peaks[offset + 1].max), next_mpeak = VSCALE (peaks[offset + 1].min);
+  gfloat last_value = last_peak / 32768., value = peak / 32768., next_value = next_peak / 32768.;
+  gfloat last_mvalue = last_mpeak / 32768., mvalue = mpeak / 32768., next_mvalue = next_mpeak / 32768.;
+  gfloat last_middle_value = (last_value + last_mvalue) / 2;
+  gfloat middle_value = (value + mvalue) / 2;
+  gfloat next_middle_value = (next_value + next_mvalue) / 2;
+  gint x = offset, y;
+  
+  
+  switch (qsampler->draw_mode)
+    {
+      gint yb, yn;
+    case BST_QSAMPLER_DRAW_MINIMUM_LINE:
+      last_middle_value = last_mvalue;
+      middle_value = mvalue;
+      next_middle_value = next_mvalue;
+    case BST_QSAMPLER_DRAW_MIDDLE_LINE:
+      last_value = last_middle_value;
+      value = middle_value;
+      next_value = next_middle_value;
+    case BST_QSAMPLER_DRAW_MAXIMUM_LINE:
+      y = zero - range * value;
+      yb = zero - range * last_value;
+      yn = zero - range * next_value;
+      yb = (y + yb) / 2;
+      yn = (y + yn) / 2;
+      gdk_draw_line (canvas, fore_gc, x, MIN (y, MIN (yb, yn)), x, MAX (y, MAX (yb, yn)));
+      break;
+    case BST_QSAMPLER_DRAW_MINIMUM_SHAPE:
+      y = low - (mvalue + 1) * range;
+      gdk_draw_line (canvas, fore_gc, x, hi, x, y);
+      break;
+    case BST_QSAMPLER_DRAW_MAXIMUM_SHAPE:
+      y = low - (value + 1) * range;
+      gdk_draw_line (canvas, fore_gc, x,  y, x, low);
+      break;
+    case BST_QSAMPLER_DRAW_CSHAPE:
+      y = low - (value + 1) * range;
+      yb = low - (mvalue + 1) * range;
+      gdk_draw_line (canvas, fore_gc, x,  y, x, yb);
+      break;
+    case BST_QSAMPLER_DRAW_CRANGE:
+      {
+	gint last_min = last_mpeak, last_max = last_peak;
+	gint next_min = next_mpeak, next_max = next_peak;
+	gint cur_min = mpeak, cur_max = peak;
+	gint y1, y2;
+	gfloat min_value, max_value;
+	
+	y1 = cur_max;
+	y2 = cur_max;
+	if (last_min > cur_max)
+	  y1 = (last_min + cur_max) / 2;
+	if (next_min > cur_max)
+	  y2 = (next_min + cur_max) / 2;
+	cur_max = MAX (cur_max, MAX (y1, y2));
+	y1 = cur_min;
+	y2 = cur_min;
+	if (cur_min > last_max)
+	  y1 = (last_max + cur_min) / 2;
+	if (cur_min > next_max)
+	  y2 = (next_max + cur_min) / 2;
+	cur_min = MIN (cur_min, MIN (y1, y2));
+	
+	min_value = ((gfloat) cur_min) / 32768.;
+	max_value = ((gfloat) cur_max) / 32768.;
+	y1 = low - (max_value + 1) * range;
+	y2 = low - (min_value + 1) * range;
+	gdk_draw_line (canvas, fore_gc, x, y1, x, y2);
+      }
+      break;
+    case BST_QSAMPLER_DRAW_ZERO_SHAPE:
+      if (middle_value > 0)
+	{
+	  y = zero - middle_value * range;
+	  gdk_draw_line (canvas, fore_gc, x,    y, x, zero);
+	}
+      else if (middle_value < 0)
+	{
+	  y = zero - middle_value * range;
+	  gdk_draw_line (canvas, fore_gc, x, zero, x,    y);
+	}
+      else /* middle_value == 0 */
+	gdk_draw_line (canvas, fore_gc, x, zero, x, zero);
+      break;
+    }
+}
+
+static inline gboolean
+bst_qsampler_fetch_gcs (BstQSampler *qsampler,
+			guint 	     peak_type,
+			GdkGC      **fore_gc_p,
+			GdkGC      **back_gc_p)
+{
+  GtkWidget *widget = (GtkWidget*) qsampler;
+  GdkGC *back_gc, *fore_gc = NULL;
+  
+  if (GTK_WIDGET_IS_SENSITIVE (widget) && !(peak_type & BST_QSAMPLER_SKIP))
+    {
+      back_gc = widget->style->base_gc[GTK_STATE_NORMAL];
+      if (peak_type & BST_QSAMPLER_MARK)
+	{
+	  if (peak_type & BST_QSAMPLER_ACTIVE)
+	    {
+	      fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
+	      back_gc = qsampler->green_gc;
+	    }
+	  if (peak_type & BST_QSAMPLER_SELECTED)
+	    {
+	      fore_gc = back_gc;
+	      back_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
+	    }
+	  if (peak_type & BST_QSAMPLER_PRELIGHT)
+	    {
+	      back_gc = qsampler->red_gc;
+	      if (peak_type & BST_QSAMPLER_ACTIVE)
+		fore_gc = qsampler->green_gc;
+	      else if (peak_type & BST_QSAMPLER_SELECTED)
+		fore_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
+	      else /* normal */
+		fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
+	    }
+	}
+      else /* regions or untagged peaks */
+	{
+	  if (peak_type & BST_QSAMPLER_SELECTED)
+	    {
+	      if (peak_type & BST_QSAMPLER_ACTIVE)
+		fore_gc = qsampler->green_gc;
+	      else
+		fore_gc = back_gc;
+	      back_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
+	    }
+	  else if (peak_type & BST_QSAMPLER_ACTIVE)
+	    fore_gc = qsampler->green_gc;
+	  else /* normal */
+	    fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
+	}
+      if (peak_type & BST_QSAMPLER_DIRTY)
+	fore_gc = widget->style->bg_gc[GTK_STATE_NORMAL];
+    }
+  else if (peak_type & BST_QSAMPLER_SKIP)
+    back_gc = widget->style->bg_gc[GTK_STATE_NORMAL];
+  else
+    {
+      back_gc = widget->style->bg_gc[GTK_STATE_INSENSITIVE];
+      fore_gc = widget->style->dark_gc[GTK_STATE_INSENSITIVE];
+    }
+  *fore_gc_p = fore_gc;
+  *back_gc_p = back_gc;
+
+  return peak_type & BST_QSAMPLER_DIRTY;
+}
+
+static void
+bst_qsampler_redraw (BstQSampler *qsampler,
+		     gboolean     draw_dirty)
+{
+  GtkWidget *widget = GTK_WIDGET (qsampler);
+  GdkWindow *canvas = qsampler->canvas;
+  gint ythickness = widget->style->ythickness;
+  gint hi = 0, low = MAX (widget->allocation.height - 2 * ythickness, hi);
+  guint peak_type = 0, i, bound;
+  
+  if (qsampler->expose_frame)
+    gtk_draw_shadow (widget->style, widget->window,
+		     GTK_STATE_NORMAL, GTK_SHADOW_IN,
+		     0, 0,
+		     widget->allocation.width, widget->allocation.height);
   qsampler->expose_frame = FALSE;
   
-  return FALSE;
-}
+  i = 0;
+  do
+    {
+      GdkGC *fore_gc, *back_gc;
+      gboolean zero_line;
 
-static void
-bst_qsampler_queue_expose (BstQSampler *qsampler,
-			   guint	pstart,
-			   guint	pend)
-{
-  guint i;
-  
-  g_return_if_fail (pstart < qsampler->n_peaks);
-  g_return_if_fail (pend <= qsampler->n_peaks);
-  
-  for (i = pstart; i < pend; i++)
-    qsampler->peak_types[i] |= BST_QSAMPLER_NEEDS_DRAW;
+      /* find first needs_draw peak */
+      for (; i < qsampler->n_pixels; i++)
+	{
+	  peak_type = qsampler->peaks[i].type;
+	  if (!(peak_type & BST_QSAMPLER_NEEDS_DRAW) ||
+	      (!draw_dirty && (peak_type & BST_QSAMPLER_DIRTY)))
+	    continue;
+	  break;
+	}
+      if (i >= qsampler->n_pixels)
+	return;
+      zero_line = bst_qsampler_fetch_gcs (qsampler, peak_type, &fore_gc, &back_gc);
 
-  /* callers rely on us _always_ installing a handler */
-  if (!qsampler->expose_handler && GTK_WIDGET_DRAWABLE (qsampler))
-    qsampler->expose_handler = g_timeout_add_full (GTK_PRIORITY_REDRAW + 1,
-						   0,
-						   (GSourceFunc) bst_qsampler_redraw,
-						   qsampler,
-						   NULL);
-}
+      /* coalesce common gc setups and clear flags */
+      qsampler->peaks[i].type &= ~BST_QSAMPLER_NEEDS_DRAW;
+      for (bound = i + 1; bound < qsampler->n_pixels; bound++)
+	{
+	  GdkGC *tmp_fore_gc, *tmp_back_gc;
+	  
+	  peak_type = qsampler->peaks[bound].type;
+	  if (!(peak_type & BST_QSAMPLER_NEEDS_DRAW) ||
+	      (!draw_dirty && (peak_type & BST_QSAMPLER_DIRTY)))
+	    break;
+	  if (zero_line != bst_qsampler_fetch_gcs (qsampler, peak_type, &tmp_fore_gc, &tmp_back_gc) ||
+	      tmp_fore_gc != fore_gc || tmp_back_gc != back_gc)
+	    break;
+	  qsampler->peaks[bound].type &= ~BST_QSAMPLER_NEEDS_DRAW;
+	}
 
-static void
-nop_filler (gpointer     data,
-	    guint        voffset,
-	    guint        n_values,
-	    gint16      *values,
-	    BstQSampler *qsampler)
-{
-  memset (values, 0, n_values * sizeof (values[0]));
+      /* clear background */
+      gdk_draw_rectangle (canvas, back_gc, TRUE, i, hi, bound - i, low - hi);
+
+      /* draw peaks */
+      if (zero_line)
+	gdk_draw_line (canvas, fore_gc, i, (hi + low) >> 1, bound - 1, (hi + low) >> 1);
+      else if (fore_gc)
+	for (; i < bound; i++)
+	  bst_qsampler_draw_peak (qsampler, i, fore_gc);
+      i = bound;
+    }
+  while (i < qsampler->n_pixels);
 }
 
 void
@@ -985,25 +1048,29 @@ bst_qsampler_set_source (BstQSampler    *qsampler,
   if (n_total_samples > 0)
     g_return_if_fail (fill_func != NULL);
   else
-    {
-      g_return_if_fail (fill_func == NULL && destroy == NULL);
-      fill_func = nop_filler;
-      n_total_samples = 1;
-    }
+    g_return_if_fail (fill_func == NULL && destroy == NULL);
 
   if (qsampler->src_destroy)
-    qsampler->src_destroy (qsampler->src_data);
+    {
+      GDestroyNotify d = qsampler->src_destroy;
+
+      qsampler->src_destroy = NULL;
+      d (qsampler->src_data);
+    }
   qsampler->n_marks = 0;
   g_free (qsampler->marks);
   qsampler->marks = NULL;
   qsampler->n_regions = 0;
   g_free (qsampler->regions);
   qsampler->regions = NULL;
-  qsampler->n_total_samples = n_total_samples;
+  qsampler->pcm_length = n_total_samples;
+  qsampler->peak_offset = 0;
   qsampler->src_filler = fill_func;
   qsampler->src_data = data;
   qsampler->src_destroy = destroy;
-  bst_qsampler_resize (qsampler, TRUE);
+  if (qsampler->adjustment)
+    qsampler->adjustment->value = -1;	/* force update */
+  bst_qsampler_resize (qsampler);
 }
 
 gint
@@ -1034,8 +1101,8 @@ bst_qsampler_set_mark (BstQSampler    *qsampler,
 
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
   g_return_if_fail (mark_index > 0);
-  g_return_if_fail (offset < qsampler->n_total_samples);
   g_return_if_fail ((type & ~BST_QSAMPLER_MARK_MASK) == 0);
+  g_return_if_fail (offset < offset + 1);	/* catch guint wraps */
 
   if (type)
     type |= BST_QSAMPLER_MARK;
@@ -1085,9 +1152,8 @@ bst_qsampler_set_region (BstQSampler    *qsampler,
 
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
   g_return_if_fail (region_index > 0);
-  g_return_if_fail (offset < qsampler->n_total_samples);
-  g_return_if_fail (offset + length <= qsampler->n_total_samples);
   g_return_if_fail ((type & ~BST_QSAMPLER_REGION_MASK) == 0);
+  g_return_if_fail (offset < offset + length);	/* catch guint wraps */
 
   for (n = 0; n < qsampler->n_regions; n++)
     if (qsampler->regions[n].index == region_index)
@@ -1134,8 +1200,9 @@ bst_qsampler_set_zoom (BstQSampler *qsampler,
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
 
   zoom = CLAMP (zoom, 1e-16, 1e+16);
-  qsampler->zoom_factor = zoom / 100.;
-  bst_qsampler_resize (qsampler, TRUE);
+  qsampler->zoom_factor = 100. / zoom;
+  qsampler->peak_offset = qsampler->adjustment->value / qsampler->zoom_factor;
+  bst_qsampler_resize (qsampler);
 
   g_object_notify (G_OBJECT (qsampler), "zoom");
 }
@@ -1148,7 +1215,8 @@ bst_qsampler_set_vscale (BstQSampler *qsampler,
 
   vscale = CLAMP (vscale, 1e-16, 1e+16);
   qsampler->vscale_factor = vscale / 100.;
-  bst_qsampler_queue_expose (qsampler, 0, qsampler->n_peaks);
+  bst_qsampler_invalidate (qsampler, 0, qsampler->n_pixels, FALSE);
+  bst_qsampler_queue_refresh (qsampler);
 
   g_object_notify (G_OBJECT (qsampler), "vscale");
 }
@@ -1165,69 +1233,90 @@ bst_qsampler_set_draw_mode (BstQSampler        *qsampler,
   g_object_notify (G_OBJECT (qsampler), "draw_mode");
 }
 
+static void
+bst_qsampler_scroll_internal (BstQSampler *qsampler,
+			      guint	   pcm_offset,
+			      gfloat	   pscale,
+			      gfloat       padding,
+			      guint        lrflag)
+{
+  GtkAdjustment *adjustment = qsampler->adjustment;
+  gfloat upper = qsampler->n_pixels * pscale;
+  gfloat lower = qsampler->n_pixels * pscale;
+
+  if ((lrflag & 1) && pcm_offset >= (qsampler->peak_offset + upper) * qsampler->zoom_factor)
+    {
+      adjustment->value = adjustment->lower + pcm_offset - (upper - pscale) * qsampler->zoom_factor;
+      adjustment->value += padding * qsampler->n_pixels * qsampler->zoom_factor;
+      adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
+      gtk_adjustment_value_changed (adjustment);
+    }
+  else if ((lrflag & 2) && pcm_offset < (qsampler->peak_offset + lower) * qsampler->zoom_factor)
+    {
+      adjustment->value = adjustment->lower + pcm_offset - lower * qsampler->zoom_factor;
+      adjustment->value -= padding * qsampler->n_pixels * qsampler->zoom_factor;
+      adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
+      gtk_adjustment_value_changed (adjustment);
+    }
+}
+
+void
+bst_qsampler_scroll_rbounded (BstQSampler *qsampler,
+			      guint        pcm_offset,
+			      gfloat       boundary_padding,
+			      gfloat       padding)
+{
+  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
+  g_return_if_fail (padding >= 0 && padding <= 1.0);
+
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 1);
+}
+
+void
+bst_qsampler_scroll_lbounded (BstQSampler *qsampler,
+			      guint        pcm_offset,
+			      gfloat       boundary_padding,
+			      gfloat       padding)
+{
+  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
+  g_return_if_fail (padding >= 0 && padding <= 1.0);
+
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 2);
+}
+
 void
 bst_qsampler_scroll_show (BstQSampler *qsampler,
-			  guint	       offset)
+			  guint	       pcm_offset)
 {
-  GtkAdjustment *adjustment;
-
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (offset < qsampler->n_total_samples);
 
-  adjustment = qsampler->adjustment;
-  if (offset >= qsampler->sample_offset + qsampler->n_area_samples)
-    {
-      adjustment->value = offset + 1 - qsampler->n_area_samples;
-      gtk_adjustment_value_changed (adjustment);
-    }
-  else if (offset < qsampler->sample_offset)
-    {
-      adjustment->value = offset;
-      gtk_adjustment_value_changed (adjustment);
-    }
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0, 0, 1);
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, 0, 0, 2);
 }
 
 void
 bst_qsampler_scroll_to (BstQSampler *qsampler,
-			guint	     offset)
+			guint	     pcm_offset)
 {
   GtkAdjustment *adjustment;
 
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (offset < qsampler->n_total_samples);
 
   adjustment = qsampler->adjustment;
-  adjustment->value = offset;
+  adjustment->value = pcm_offset;
+  adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
   gtk_adjustment_value_changed (adjustment);
 }
 
-static void
-bst_qsampler_avalue_changed (BstQSampler *qsampler)
+void
+bst_qsampler_force_refresh (BstQSampler *qsampler)
 {
-  GtkAdjustment *adjustment = qsampler->adjustment;
-  gint sample_offset;
+  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
 
-  sample_offset = qsampler->n_total_samples * adjustment->value / (adjustment->upper - adjustment->lower);
-  bst_qsampler_jump_to (qsampler, sample_offset);
-}
-
-static void
-bst_qsampler_update_adjustment (BstQSampler *qsampler)
-{
-  GtkAdjustment *adjustment = qsampler->adjustment;
-
-  if (adjustment)
-    {
-      adjustment->lower = 0;
-      adjustment->upper = qsampler->n_total_samples;
-      adjustment->page_size = MIN (qsampler->n_area_samples, qsampler->n_total_samples);
-      adjustment->page_increment = adjustment->page_size * .5;
-      adjustment->step_increment = adjustment->page_size * .1;
-      adjustment->value = qsampler->sample_offset;
-      adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
-      gtk_adjustment_changed (adjustment);
-      gtk_adjustment_value_changed (adjustment);
-    }
+  if (GTK_WIDGET_DRAWABLE (qsampler))
+    bst_qsampler_redraw (qsampler, FALSE);
 }
 
 void
@@ -1247,6 +1336,7 @@ bst_qsampler_set_adjustment (BstQSampler   *qsampler,
   if (qsampler->adjustment)
     {
       gtk_object_ref (GTK_OBJECT (qsampler->adjustment));
+      gtk_object_sink (GTK_OBJECT (qsampler->adjustment));
       g_object_connect (qsampler->adjustment,
 			"swapped_signal::value_changed", bst_qsampler_avalue_changed, qsampler,
 			NULL);

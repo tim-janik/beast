@@ -522,7 +522,7 @@ qsampler_selection_timeout (gpointer data)
 	  else
 	    {
 	      bst_qsampler_get_bounds (qsampler, NULL, &b);
-	      x = MIN (qsampler->n_total_samples - 1, b + x);
+	      x = MIN (qsampler->pcm_length - 1, b + x);
 	    }
 	  retain = TRUE;
 	}
@@ -602,7 +602,7 @@ qsampler_motion_event (BstQSampler    *qsampler,
       if (bst_qsampler_get_offset_at (qsampler, &x))
 	qsampler_set_selection (qsampler, m1, x, 2);
       else if (!qsampler_selection_timeout_id)
-	qsampler_selection_timeout_id = g_timeout_add_full (BST_QSAMPLER_READ_PRIORITY + 1,
+	qsampler_selection_timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT + 1,
 							    QSAMPLER_SELECTION_TIMEOUT,
 							    qsampler_selection_timeout,
 							    g_object_ref (qsampler), NULL);
@@ -633,7 +633,7 @@ qsampler_filler (gpointer     data,
     {
       glong offset = voffset + i;
 
-      if (offset < 0 || offset >= dcache->handle->n_values)
+      if (offset < 0 || offset >= dcache->dhandle->n_values)
 	*values++ = 0;
       else
 	{
@@ -680,7 +680,7 @@ tree_selection (BstWaveEditor    *wave_editor,
       if (!wave_editor->wchunk)
 	bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
       else
-	bst_qsampler_set_source (qsampler, wave_editor->wchunk->dcache->handle->n_values / wave_editor->n_channels,
+	bst_qsampler_set_source (qsampler, wave_editor->wchunk->dcache->dhandle->n_values / wave_editor->n_channels,
 				 qsampler_filler, wave_editor, NULL);
     }
 }
@@ -689,7 +689,7 @@ static void
 play_back_wchunk (BstWaveEditor *wave_editor)
 {
   bst_play_back_handle_stop (wave_editor->phandle);
-  bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
+  // bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
   bst_play_back_handle_start (wave_editor->phandle);
 }
 

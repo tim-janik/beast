@@ -147,8 +147,8 @@ bst_file_dialog_save (BstFileDialog *fd)
       
       choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
 					  BST_CHOICE_TEXT (text),
-					  BST_CHOICE_D (1, "Overwrite", NONE),
-					  BST_CHOICE (0, "Cancel", NONE),
+					  BST_CHOICE_D (1, BST_STOCK_ACTION_OVERWRITE, NONE),
+					  BST_CHOICE (0, BST_STOCK_ACTION_CANCEL, NONE),
 					  BST_CHOICE_END);
       g_free (title);
       g_free (text);
@@ -183,7 +183,7 @@ bst_file_dialog_new_open (BstApp *app)
   GtkWidget *dialog;
 
   dialog = gtk_widget_new (BST_TYPE_FILE_DIALOG,
-			   "title", "BEAST Open Project",
+			   "title", "Open Project: BEAST",
 			   NULL);
   gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION (dialog)->ok_button),
 			     "clicked",
@@ -217,7 +217,7 @@ bst_file_dialog_new_save (BstApp *app)
 
   g_return_val_if_fail (BST_IS_APP (app), NULL);
 
-  string = g_strconcat ("BEAST Save Project: ", bsw_item_get_name (app->project), NULL);
+  string = g_strconcat ("Save Project: ", bsw_item_get_name (app->project), ": BEAST", NULL);
   dialog = gtk_widget_new (BST_TYPE_FILE_DIALOG,
 			   "title", string,
 			   NULL);

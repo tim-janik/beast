@@ -17,6 +17,8 @@
  */
 #include "bstcanvaslink.h"
 
+#include "bstdialog.h"
+
 #include <math.h>
 
 #define ARROW_LENGTH    (12.0)
@@ -161,28 +163,25 @@ clink_view_update (BstCanvasLink *clink,
 		   gboolean       force_update)
 {
   GtkWidget *frame = (clink->link_view && (force_update || GTK_WIDGET_VISIBLE (clink->link_view))
-		      ? bst_adialog_get_child (clink->link_view)
+		      ? bst_dialog_get_child (BST_DIALOG (clink->link_view))
 		      : NULL);
 
   if (frame)
     {
       GtkWidget *label = GTK_BIN (frame)->child;
-      BswProxy project;
       gchar *ic_name, *oc_name, *ic_blurb, *oc_blurb;
       gchar *string, *iname, *oname;
 
       /* figure appropriate window title
        */
-      project = clink->icsource ? bsw_item_get_project (clink->icsource->source) : 0;
-      string = project ? bsw_item_get_name_or_type (project) : "BEAST";
-      string = g_strconcat (string, ": Module Link", NULL);
-      gtk_window_set_title (GTK_WINDOW (clink->link_view), string);
+      iname = clink->icsource ? bsw_item_get_name_or_type (clink->icsource->source) : "<???>";
+      oname = clink->ocsource ? bsw_item_get_name_or_type (clink->ocsource->source) : "<???>";
+      string = g_strconcat ("Module Link: ", iname, " <=> ", oname, NULL);
+      bst_dialog_set_title (BST_DIALOG (clink->link_view), string);
       g_free (string);
 
       /* construct actuall information
        */
-      iname = clink->icsource ? bsw_item_get_name_or_type (clink->icsource->source) : "<???>";
-      oname = clink->ocsource ? bsw_item_get_name_or_type (clink->ocsource->source) : "<???>";
       oc_name = clink->ocsource ? bsw_source_ochannel_name (clink->ocsource->source, clink->ochannel) : NULL;
       oc_blurb = clink->ocsource ? bsw_source_ochannel_blurb (clink->ocsource->source, clink->ochannel) : NULL;
       ic_name = clink->icsource ? bsw_source_ichannel_name (clink->icsource->source, clink->ichannel) : NULL;
@@ -209,19 +208,20 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
   
   if (!clink->link_view)
-    clink->link_view = bst_adialog_new (GTK_OBJECT (clink),
-					&clink->link_view,
-					gtk_widget_new (GTK_TYPE_FRAME,
-							"visible", TRUE,
-							"border_width", 5,
-							"label", "Module link",
-							"child", gtk_widget_new (GTK_TYPE_LABEL,
-										 "visible", TRUE,
-										 "justify", GTK_JUSTIFY_LEFT,
-										 "xpad", 5,
-										 NULL),
-							NULL),
-					0, NULL);
+    clink->link_view = bst_dialog_new (&clink->link_view,
+				       GTK_OBJECT (clink),
+				       0,
+				       NULL,
+				       gtk_widget_new (GTK_TYPE_FRAME,
+						       "visible", TRUE,
+						       "border_width", 5,
+						       "label", "Module link",
+						       "child", gtk_widget_new (GTK_TYPE_LABEL,
+										"visible", TRUE,
+										"justify", GTK_JUSTIFY_LEFT,
+										"xpad", 5,
+										NULL),
+						       NULL));
   clink_view_update (clink, TRUE);
   gtk_widget_showraise (clink->link_view);
 }

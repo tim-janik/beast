@@ -169,8 +169,8 @@ disconnect_proxy_closure (GClosure *closure)
 static GSList*
 g_object_list_watched_closures (GObject *object)
 {
-#if !GLIB_CHECK_VERSION (1, 3, 13) || (GLIB_CHECK_VERSION (1, 3, 13) && GLIB_CHECK_VERSION (1, 3, 14))
-#  warning GLib 1.3.13 is required for this version of BEAST
+#if !GLIB_CHECK_VERSION (2, 0, 0)
+#  error at least GLib 2.0.0 is required for this version of BEAST
 #endif
   typedef struct {
     GObject  *object;

@@ -22,79 +22,49 @@
 #include "../PKG_config.h"	/* BST_HAVE_BIRNET */
 
 
-/* --- variables --- */
-static BswProxy project = 0;
-static BswProxy const_one = 0;
-static BswProxy wave_repo = 0;
-static BswProxy snet = 0;
-static BswProxy mixer = 0;
+
+/* --- prototypes --- */
+static void wave_oscillator_pcm_notify (BstPlayBackHandle *handle,
+					guint		   pcm_position,
+					BswProxy	   wosc);
 
 
 /* --- functions --- */
-void
-bst_play_back_init (void)
-{
-  if (!project)
-    {
-      BswProxy speaker;
-
-      project = bsw_server_use_new_project (BSW_SERVER, "# BEAST Play Back");
-      if (BST_HAVE_BIRNET)
-	gtk_idle_show_widget (GTK_WIDGET (bst_app_new (project)));
-      snet = bsw_project_create_snet (project);
-      bsw_proxy_set (snet, "auto_activate", TRUE, NULL);
-      mixer = bsw_snet_create_source (snet, "BseMixer");
-      speaker = bsw_snet_create_source (snet, "BsePcmOutput");
-      bsw_source_set_input (speaker, 0, mixer, 0);
-      bsw_source_set_input (speaker, 1, mixer, 0);
-      wave_repo = bsw_project_ensure_wave_repo (project);
-      const_one = bsw_snet_create_source (snet, "BseConstant");
-      bsw_proxy_set (const_one, "value_1", 1.0, NULL);
-    }
-}
-
 BstPlayBackHandle*
 bst_play_back_handle_new (void)
 {
   BstPlayBackHandle *handle;
 
-  bst_play_back_init ();
-
   handle = g_new0 (BstPlayBackHandle, 1);
-  handle->wave = BSE_OBJECT_ID (g_object_new (BSE_TYPE_WAVE, NULL));
-  bse_container_add_item (bse_object_from_id (wave_repo),
-			  bse_object_from_id (handle->wave));
-  handle->wave_osc = bsw_snet_create_source (snet, "BseWaveOsc");
+  handle->project = bsw_server_use_new_project (BSW_SERVER, "# BEAST Play Back");
+  if (BST_HAVE_BIRNET)
+    gtk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
-  handle->const_freq = bsw_snet_create_source (snet, "BseConstant");
-  bsw_source_set_input (handle->wave_osc, 0, handle->const_freq, 0);
-  
-  /* bad hack, just try any of mixer's four input channels */
-  if (bsw_source_set_input (mixer, 0, handle->wave_osc, 0) != BSW_ERROR_NONE &&
-      bsw_source_set_input (mixer, 1, handle->wave_osc, 0) != BSW_ERROR_NONE &&
-      bsw_source_set_input (mixer, 2, handle->wave_osc, 0) != BSW_ERROR_NONE &&
-      bsw_source_set_input (mixer, 3, handle->wave_osc, 0) != BSW_ERROR_NONE)
-    g_message (G_STRLOC ": unable to hook up playback handle");
-  bsw_source_set_input (handle->wave_osc, 1, const_one, 0);
-
+  handle->snet = bsw_project_create_snet (handle->project);
+  bsw_proxy_set (handle->snet, "auto_activate", TRUE, NULL);
+  handle->speaker = bsw_snet_create_source (handle->snet, "BsePcmOutput");
+  handle->wosc = bsw_snet_create_source (handle->snet, "BseWaveOsc");
+  bsw_source_set_input (handle->speaker, 0, handle->wosc, 0);
+  bsw_source_set_input (handle->speaker, 1, handle->wosc, 0);
+  handle->constant = bsw_snet_create_source (handle->snet, "BseConstant");
+  bsw_source_set_input (handle->wosc, 0, handle->constant, 0);
+  bsw_proxy_connect (handle->wosc,
+		     "swapped_signal::notify_pcm_position", wave_oscillator_pcm_notify, handle,
+		     NULL);
   return handle;
 }
 
 void
 bst_play_back_handle_set (BstPlayBackHandle *handle,
-			  GslWaveChunk      *wave_chunk,
+			  BswProxy	     esample,
 			  gdouble            osc_freq)
 {
   g_return_if_fail (handle != NULL);
-  g_return_if_fail (wave_chunk != NULL);
+  if (esample)
+    g_return_if_fail (BSW_IS_EDITABLE_SAMPLE (esample));
 
-  bst_play_back_init ();
-
-  bse_wave_add_chunk (bse_object_from_id (handle->wave),
-		      gsl_wave_chunk_copy (wave_chunk));
-  bsw_proxy_set (handle->const_freq, "frequency_1", osc_freq, NULL);
-  
-  bsw_proxy_set (handle->wave_osc, "wave", handle->wave, NULL);
+  bsw_proxy_set (handle->constant, "frequency_1", osc_freq, NULL);
+  bsw_proxy_set (handle->wosc, "editable_sample", esample, NULL);
 }
 
 void
@@ -102,7 +72,7 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 {
   BseErrorType error;
 
-  error = bsw_server_run_project (BSW_SERVER, project);
+  error = bsw_server_run_project (BSW_SERVER, handle->project);
   if (error)
     bst_status_printf (0, bse_error_blurb (error), "Playback");
 }
@@ -110,7 +80,62 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 void
 bst_play_back_handle_stop (BstPlayBackHandle *handle)
 {
-  bsw_server_halt_project (BSW_SERVER, project);
+  bsw_server_halt_project (BSW_SERVER, handle->project);
+}
+
+void
+bst_play_back_handle_toggle (BstPlayBackHandle *handle)
+{
+  if (bsw_project_is_playing (handle->project))
+    bst_play_back_handle_stop (handle);
+  else
+    bst_play_back_handle_start (handle);
+}
+
+gboolean
+bst_play_back_handle_is_playing (BstPlayBackHandle *handle)
+{
+  return bsw_project_is_playing (handle->project);
+}
+
+static void
+wave_oscillator_pcm_notify (BstPlayBackHandle *handle,
+			    guint              pcm_position,
+			    BswProxy           wosc)
+{
+  g_assert (handle->wosc == wosc);
+
+  if (handle->pcm_notify)
+    handle->pcm_notify (handle->pcm_data, pcm_position);
+}
+
+static gboolean
+pcm_timer (gpointer data)
+{
+  BstPlayBackHandle *handle = data;
+
+  GDK_THREADS_ENTER ();
+  bsw_wave_osc_request_pcm_position (handle->wosc);
+  GDK_THREADS_LEAVE ();
+
+  return TRUE;
+}
+
+void
+bst_play_back_handle_pcm_notify (BstPlayBackHandle *handle,
+				 guint		    timeout,
+				 BstPlayBackNotify  notify,
+				 gpointer           data)
+{
+  handle->pcm_notify = notify;
+  handle->pcm_data = data;
+  if (handle->pcm_notify && !handle->pcm_timeout)
+    handle->pcm_timeout = g_timeout_add_full (GTK_PRIORITY_HIGH, timeout, pcm_timer, handle, NULL);
+  else if (!handle->pcm_notify && handle->pcm_timeout)
+    {
+      g_source_remove (handle->pcm_timeout);
+      handle->pcm_timeout = 0;
+    }
 }
 
 void
@@ -120,12 +145,13 @@ bst_play_back_handle_destroy (BstPlayBackHandle *handle)
 
   bst_play_back_handle_stop (handle);
 
-  bsw_wave_repo_remove_wave (wave_repo, handle->wave);
-  handle->wave = 0;
-  bsw_snet_remove_source (snet, handle->wave_osc);
-  handle->wave_osc = 0;
-  bsw_snet_remove_source (snet, handle->const_freq);
-  handle->const_freq = 0;
+  bsw_proxy_disconnect (handle->wosc,
+			"any_signal", wave_oscillator_pcm_notify, handle,
+			NULL);
 
+  if (handle->pcm_timeout)
+    g_source_remove (handle->pcm_timeout);
+
+  bsw_item_unuse (handle->project);
   g_free (handle);
 }

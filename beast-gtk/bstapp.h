@@ -21,6 +21,8 @@
 
 #include        "bstdefs.h"
 
+#include        "bstdialog.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,10 +38,6 @@ extern "C" {
 #define BST_APP_GET_CLASS(app)  (G_TYPE_INSTANCE_GET_CLASS ((app), BST_TYPE_APP, BstAppClass))
 
 
-/* --- object & class member/convenience macros --- */
-// #define	BST_APP_PROJECT(app)	(BST_APP (app)->project)
-
-
 /* --- typedefs --- */
 typedef struct  _BstApp       BstApp;
 typedef struct  _BstAppClass  BstAppClass;
@@ -48,7 +46,7 @@ typedef struct  _BstAppClass  BstAppClass;
 /* --- structures --- */
 struct _BstApp
 {
-  GtkWindow      window;
+  BstDialog      window;
 
   BswProxy	 project;
 
@@ -62,7 +60,7 @@ struct _BstApp
 };
 struct _BstAppClass
 {
-  GtkWindowClass        parent_class;
+  BstDialogClass        parent_class;
   gboolean		seen_apps;
   GSList               *apps;
 };

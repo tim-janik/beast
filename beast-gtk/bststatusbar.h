@@ -31,9 +31,11 @@ extern "C" {
 
 
 /* --- prototypes --- */
+GtkWidget*	bst_status_bar_create		(void);
 GtkWidget*	bst_status_bar_get_current	(void);
-GtkWidget*	bst_status_bar_from_window	(GtkWindow	*window);
-GtkWidget*	bst_status_bar_ensure		(GtkWindow	*window);
+void		bst_status_bar_catch_procedure	(void);
+void		bst_status_bar_uncatch_procedure (void);
+GtkWidget*	bst_status_bar_from_widget	(GtkWidget	*widget);
 void		bst_status_bar_queue_clear	(GtkWidget	*sbar,
 						 guint		 msecs);
 void		bst_status_bar_set		(GtkWidget	*sbar,

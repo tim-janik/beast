@@ -171,29 +171,20 @@ bst_item_view_item_changed (BstItemView *item_view,
       string = g_strdup_printf (item_view->id_format, bse_item_get_seqid (bse_object_from_id (item)));
       str = NULL;
       if (!gtk_clist_get_text (clist, row, CLIST_SEQID, &str) || strcmp (str, string))
-	{
-	  g_print ("clist:seqid: \"%s\" != \"%s\"\n", str, string);
-	  gtk_clist_set_text (clist, row, CLIST_SEQID, string);
-	}
+	gtk_clist_set_text (clist, row, CLIST_SEQID, string);
       g_free (string);
       string = bsw_item_get_name (item);
       if (!string)
 	string = "";
       str = NULL;
       if (!gtk_clist_get_text (clist, row, CLIST_NAME, &str) || strcmp (str, string))
-	{
-	  g_print ("clist:name: \"%s\" != \"%s\"\n", str, string);
-	  gtk_clist_set_text (clist, row, CLIST_NAME, string);
-	}
+	gtk_clist_set_text (clist, row, CLIST_NAME, string);
       string = NULL;
       g_object_get (bse_object_from_id (item), "blurb", &string, NULL);
       if (!string)
 	string = g_strdup ("");
       if (!gtk_clist_get_text (clist, row, CLIST_BLURB, &str) || strcmp (str, string))
-	{
-	  g_print ("clist:blurb: \"%s\" != \"%s\"\n", str, string);
-	  gtk_clist_set_text (clist, row, CLIST_BLURB, string);
-	}
+	gtk_clist_set_text (clist, row, CLIST_BLURB, string);
       g_free (string);
     }
 }
@@ -444,7 +435,7 @@ bst_item_view_rebuild (BstItemView *item_view)
 			"visible", TRUE,
 			"homogeneous", FALSE,
 			"spacing", 0,
-			"child", bst_forest_from_bse_icon (bst_icon_from_stock (bop->stock_icon),
+			"child", bst_forest_from_bsw_icon (bst_icon_from_stock (bop->stock_icon),
 							   BST_BUTTON_ICON_WIDTH,
 							   BST_BUTTON_ICON_HEIGHT),
 			"child", label,

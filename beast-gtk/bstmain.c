@@ -100,6 +100,7 @@ main (int   argc,
   /* initialize GUI libraries and patch them up ;)
    */
   gtk_init (&argc, &argv);
+  g_set_prgname ("BEAST");
   gtk_post_init_patch_ups ();
   gdk_rgb_init ();
 
@@ -136,36 +137,6 @@ main (int   argc,
       bse_object_unref (BSE_OBJECT (gconf));
       g_free (file_name);
     }
-  
-  /* setup default keytable for pattern editor class
-   */
-  bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
-
-  /* fire up the greetings dialog
-   */
-  this_rc_version = 1;	/* <- increment to trigger greeting dialog */
-  if (bst_globals->rc_version != this_rc_version)
-    {
-      static GtkWidget *txt_dialog = NULL;
-      gchar *txt_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
-      gchar *dialog_title = g_strdup (txt_file);
-      gchar *string;
-
-      string = g_strconcat ("BEAST: ", dialog_title, NULL);
-      txt_dialog = bst_adialog_new (NULL,
-				    &txt_dialog,
-				    bst_text_view_from (NULL,
-							txt_file,
-							NULL),
-				    BST_ADIALOG_DESTROY_ON_HIDE,
-				    "title", string,
-				    NULL);
-      g_free (string);
-      g_free (dialog_title);
-      g_free (txt_file);
-      bst_globals_set_rc_version (this_rc_version);
-      gtk_widget_showraise (txt_dialog);
-    }
 
   /* check load BSE plugins to register types
    */
@@ -189,102 +160,82 @@ main (int   argc,
 	g_message ("strange, can't find any plugins, please check %s", BSE_PATH_PLUGINS);
     }
   
-  
-#if 0
-  /* setup PCM Devices
-   */
-  if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa) && !BST_DISABLE_ALSA)
-    {
-      BseErrorType error;
-      
-      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceAlsa), NULL); /* FIXME: TYPE_ID */
-      error = bse_pcm_device_update_caps (pdev);
-      if (error && error != BSE_ERROR_DEVICE_BUSY)
-	{
-	  bse_object_unref (BSE_OBJECT (pdev));
-	  pdev = NULL;
-	}
-    }
-  if (!pdev && BSE_TYPE_ID (BsePcmDeviceOSS))
-    {
-      BseErrorType error;
-      
-      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL); /* FIXME: TYPE_ID */
-      error = bse_pcm_device_update_caps (pdev);
-      if (error && error != BSE_ERROR_DEVICE_BUSY)
-	{
-	  bse_object_unref (BSE_OBJECT (pdev));
-	  pdev = NULL;
-	}
-    }
-  if (!pdev)
-    g_error ("No PCM device driver known");
-  else
-    {
-      BseErrorType error;
-
-      error = bse_pcm_device_open (pdev,
-				   FALSE, TRUE, 2,
-				   BSE_MIX_FREQ);
-      if (error)
-	g_error ("failed to open PCM Device \"%s\": %s",
-		 bse_device_get_device_name (BSE_DEVICE (pdev)),
-		 bse_error_blurb (error));
-      bse_pcm_device_retrigger (pdev);
-    }
-  bse_scard_out_hack_set_odevice (pdev);
-  // bse_heart_register_device ("Master", pdev);
-  bse_object_unref (BSE_OBJECT (pdev));
-  // bse_heart_set_default_odevice ("Master");
-  // bse_heart_set_default_idevice ("Master");
-#endif
-
-  /* make sure the server has a PCM Device
-   */
-#if 0
-  {
-    BswProxy pdev = bsw_server_default_pcm_device (BSW_SERVER);
-
-    g_assert (BSE_IS_PCM_DEVICE (bse_object_from_id (pdev)));
-  }
-#endif
-  
   /* open files given on command line
    */
   for (i = 1; i < argc; i++)
     {
+      BswProxy project, wrepo;
       BswErrorType error;
-      BswProxy project;
-      
+
+      /* load waves into the last project */
+      if (bsw_server_loader_name (BSW_SERVER, argv[i]))
+	{
+	  if (!app)
+	    {
+	      project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
+	      wrepo = bsw_project_ensure_wave_repo (project);
+	      error = bsw_wave_repo_load_file (wrepo, argv[i]);
+	      if (!error)
+		{
+		  app = bst_app_new (project);
+		  gtk_idle_show_widget (GTK_WIDGET (app));
+		  bsw_item_unuse (project);
+		  continue;
+		}
+	      bsw_item_unuse (project);
+	    }
+	  else
+	    {
+	      BswProxy wrepo = bsw_project_ensure_wave_repo (app->project);
+	      
+	      error = bsw_wave_repo_load_file (wrepo, argv[i]);
+	      if (!error)
+		continue;
+	    }
+	}
       project = bsw_server_use_new_project (BSW_SERVER, argv[i]);
       error = bsw_project_restore_from_file (project, argv[i]);
-      bsw_project_ensure_wave_repo (project);
-
+      
       if (!error)
 	{
 	  app = bst_app_new (project);
 	  gtk_idle_show_widget (GTK_WIDGET (app));
 	}
       bsw_item_unuse (project);
-
+      
       if (error)
 	g_message ("failed to load project `%s': %s", /* FIXME */
 		   argv[i],
 		   bse_error_blurb (error));
     }
-  
+
+
   /* open default app window
    */
   if (!app)
     {
       BswProxy project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
-
+      
       bsw_project_ensure_wave_repo (project);
       app = bst_app_new (project);
       bsw_item_unuse (project);
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
   
+  
+  /* setup default keytable for pattern editor class
+   */
+  bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
+
+
+  /* fire up release notes dialog
+   */
+  this_rc_version = 1;	/* <- increment to trigger greeting dialog */
+  if (bst_globals->rc_version != this_rc_version)
+    {
+      bst_app_operate (app, BST_OP_HELP_RELEASE_NOTES);
+      bst_globals_set_rc_version (this_rc_version);
+    }
   
   
   /* and away into the main loop

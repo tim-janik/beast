@@ -103,21 +103,46 @@ dnl Define package requirements.
 dnl
 AC_DEFUN(AC_GSL_REQUIREMENTS,
 [
-    AC_CHECK_LIB(vorbisfile, ov_read_float, ov_ok=yes, ov_ok=no, -lvorbisenc -lvorbis -logg)
-    if test $ov_ok = yes ; then
-      GSL_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg"
+    dnl === Ogg/Vorbis check ===
+    ov_headers=0
+    AC_CHECK_LIB(vorbisfile, ov_read_float,
+      [AC_CHECK_HEADER(ogg/ogg.h, ov_headers=`expr $ov_headers + 1`)]
+      [AC_CHECK_HEADER(vorbis/vorbisfile.h, ov_headers=`expr $ov_headers + 1`)]
+      [AC_CHECK_HEADER(vorbis/vorbisenc.h, ov_headers=`expr $ov_headers + 1`)]
+      ,
+      ov_headers=0, -lvorbisenc -lvorbis -logg)
+    if test $ov_headers = 3 ; then
+      GSL_LIBS="$GSL_LIBS -lvorbisfile -lvorbisenc -lvorbis -logg"
     else
-      AC_MSG_ERROR([Ogg/Vorbis libraries (at least version 1.0rc3) are required])
+      AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0rc3) or headers])
+    fi
+
+    dnl === libmad MPEG decoder check ===
+    mad_detect=0
+    AC_CHECK_LIB(mad, mad_synth_frame,
+      [AC_CHECK_HEADER(mad.h, mad_detect=1)]
+      ,
+      mad_detect=0, -lmad)
+    if test $mad_detect = 1 ; then
+      GSL_LIBS="$GSL_LIBS -lmad"
+    else
+      AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+    fi
+
+    dnl === Check library requirements ===
+    AC_MSG_CHECKING([the required GSL-Loader library set])
+    if echo $GSL_LIBS | grep ".*-lvorbis.*" >/dev/null ; then
+      AC_MSG_RESULT([complete])
+    else
+      AC_MSG_RESULT([])
+      AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
     AC_SUBST(GSL_LIBS)
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
-    dnl Need pkg-config first
-    MC_ASSERT_PKG_CONFIG()
-
-    dnl Check for GLib and setup variables
-    MC_PKG_CONFIG_REQUIRE(glib-2.0 gobject-2.0 gmodule-2.0 gthread-2.0, 1.3.11, GLIB_CFLAGS, GLIB_LIBS)
+    dnl We need GLib with friends
+    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.0 gobject-2.0 gmodule-2.0 gthread-2.0)
     BSE_CFLAGS="$GLIB_CFLAGS"
     BSE_LIBS="$GSL_LIBS $GLIB_LIBS"
     AC_SUBST(BSE_CFLAGS)
@@ -130,20 +155,16 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
 ])
 AC_DEFUN(AC_BEAST_REQUIREMENTS,
 [
-    dnl Need pkg-config first
-    MC_ASSERT_PKG_CONFIG()
+    dnl Require libraries
+    DEPENDANCIES=
+    DEPENDANCIES="$DEPENDANCIES gtk+-2.0 >= 2.0.0"
+    DEPENDANCIES="$DEPENDANCIES pangoft2 >= 1.0"
+    DEPENDANCIES="$DEPENDANCIES libart-2.0 >= 2.3.8"
+    DEPENDANCIES="$DEPENDANCIES libgnomecanvas-2.0 >= 1.112.0"
+    PKG_CHECK_MODULES(GUI, $DEPENDANCIES)
 
-    dnl Check for Gtk+ + pangoft2
-    MC_PKG_CONFIG_REQUIRE(gtk+-2.0 pangoft2, 1.3.11, GTK_CFLAGS, GTK_LIBS)
-
-    dnl Check for libart-2.0
-    MC_PKG_CONFIG_REQUIRE(libart-2.0, 2.3.7, LIBART_CFLAGS, LIBART_LIBS)
-
-    dnl Check for gnomecanvas-2.0
-    MC_PKG_CONFIG_REQUIRE(libgnomecanvas-2.0, 1.105.0, CANVAS_CFLAGS, CANVAS_LIBS)
-
-    BEAST_CFLAGS="$CANVAS_CFLAGS $GTK_CFLAGS $LIBART_CFLAGS"
-    BEAST_LIBS="$CANVAS_LIBS $GTK_LIBS $LIBART_LIBS"
+    BEAST_CFLAGS="$GUI_CFLAGS"
+    BEAST_LIBS="$GUI_LIBS"
     AC_SUBST(BEAST_CFLAGS)
     AC_SUBST(BEAST_LIBS)
 

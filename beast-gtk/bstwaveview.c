@@ -22,6 +22,8 @@
 #include "bstprocedure.h"
 #include "bstwaveeditor.h"
 #include "bstwavedialog.h"
+#include "bstsampleeditor.h"
+#include "bstdialog.h"
 
 
 
@@ -111,7 +113,7 @@ bst_wave_view_new (BswProxy wrepo)
 }
 
 static void
-popup_wave_dialog (BstWaveView *wave_view)
+XXXpopup_wave_dialog (BstWaveView *wave_view)
 {
   BswProxy wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
   GtkWidget *weditor, *wdialog;
@@ -130,6 +132,25 @@ popup_wave_dialog (BstWaveView *wave_view)
 					 G_CALLBACK (gtk_widget_destroy),
 					 GTK_OBJECT (wdialog));
   gtk_widget_show (wdialog);
+}
+
+static void
+popup_wave_dialog (BstWaveView *wave_view)
+{
+  BswProxy wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
+  BswProxy esample = bsw_wave_use_editable (wave, 0);
+
+  if (esample)
+    {
+      GtkWidget *wdialog, *editor = bst_sample_editor_new (esample);
+
+      wdialog = bst_dialog_new (NULL, GTK_OBJECT (wave_view), BST_DIALOG_DELETE_BUTTON,
+				bsw_item_get_name_or_type (wave),
+				editor);
+      gtk_widget_show (editor);
+      bsw_item_unuse (esample);
+      gtk_widget_show (wdialog);
+    }
 }
 
 void

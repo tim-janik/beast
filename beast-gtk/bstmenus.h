@@ -85,7 +85,7 @@ struct _BstMenuEntry
 struct _BstFactoryItem
 {
   GtkItemFactoryEntry entry;
-  BseIcon            *icon;
+  BswIcon            *icon;
 };
 
 

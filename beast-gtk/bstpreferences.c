@@ -75,8 +75,6 @@ bst_preferences_class_init (BstPreferencesClass *class)
 static void
 bst_preferences_init (BstPreferences *prefs)
 {
-  GtkWidget *any, *hbox, *button;
-
   prefs->gconf = NULL;
   prefs->bse_param_view = g_object_connect (gtk_widget_new (BST_TYPE_PARAM_VIEW,
 							    "visible", TRUE,
@@ -110,68 +108,6 @@ bst_preferences_init (BstPreferences *prefs)
 					    "visible", TRUE,
 					    "label", "BSE",
 					    NULL));
-
-  /* dialog bits
-   */
-  any = gtk_widget_new (gtk_hseparator_get_type (),
-			"visible", TRUE,
-			NULL);
-  gtk_box_pack_start (GTK_BOX (prefs), any, FALSE, TRUE, 0);
-  hbox = gtk_widget_new (GTK_TYPE_HBOX,
-			 "homogeneous", TRUE,
-			 "spacing", 5,
-			 "border_width", 5,
-			 "visible", TRUE,
-			 NULL);
-  gtk_box_pack_end (GTK_BOX (prefs), hbox, FALSE, TRUE, 0);
-  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
-					     "label", "Apply",
-					     "parent", hbox,
-					     "visible", TRUE,
-					     "can_default", TRUE,
-					     NULL),
-			     "swapped_signal::clicked", bst_preferences_apply, prefs,
-			     "swapped_signal::clicked", bst_preferences_save, prefs,
-			     "swapped_signal::destroy", bse_nullify_pointer, &prefs->apply,
-			     NULL);
-  gtk_tooltips_set_tip (BST_TOOLTIPS, button,
-			"Apply and save the preference values. Some values may only take effect after "
-			"restart. The preference values are locked against modifcation during "
-			"playback.",
-			NULL);
-  prefs->apply = button;
-  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
-					     "label", "Revert",
-					     "parent", hbox,
-					     "visible", TRUE,
-					     "can_default", TRUE,
-					     NULL),
-			     "swapped_signal::clicked", bst_preferences_revert, prefs,
-			     NULL);
-  gtk_tooltips_set_tip (BST_TOOLTIPS, button,
-			"Revert the preference values to the current internal values.",
-			NULL);
-  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
-					     "label", "Defaults",
-					     "parent", hbox,
-					     "visible", TRUE,
-					     "can_default", TRUE,
-					     NULL),
-			     "swapped_signal::clicked", bst_preferences_default_revert, prefs,
-			     NULL);
-  gtk_tooltips_set_tip (BST_TOOLTIPS, button,
-			"Revert to hardcoded default values (factory settings).",
-			NULL);
-  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
-					     "label", "Close",
-					     "parent", hbox,
-					     "visible", TRUE,
-					     "can_default", TRUE,
-					     NULL),
-			     "signal::clicked", gtk_toplevel_hide, NULL,
-			     "swapped_signal::destroy", bse_nullify_pointer, &prefs->close,
-			     NULL);
-  prefs->close = button;
 }
 
 static void
@@ -462,4 +398,46 @@ bst_rc_parse (const gchar *file_name,
   bse_storage_destroy (storage);
 
   return error;
+}
+
+void
+bst_preferences_create_buttons (BstPreferences *prefs,
+				BstDialog      *dialog)
+{
+  GtkWidget *widget;
+
+  g_return_if_fail (BST_IS_PREFERENCES (prefs));
+  g_return_if_fail (BST_IS_DIALOG (dialog));
+  g_return_if_fail (prefs->apply == NULL);
+
+  /* Apply
+   */
+  prefs->apply = g_object_connect (bst_dialog_default_action (dialog, BST_STOCK_ACTION_APPLY, NULL, NULL),
+				   "swapped_signal::clicked", bst_preferences_apply, prefs,
+				   "swapped_signal::clicked", bst_preferences_save, prefs,
+				   "swapped_signal::destroy", bse_nullify_pointer, &prefs->apply,
+				   NULL);
+  gtk_tooltips_set_tip (BST_TOOLTIPS, prefs->apply,
+			"Apply and save the preference values. Some values may only take effect after "
+			"restart. The preference values are locked against modifcation during "
+			"playback.",
+			NULL);
+
+  /* Revert
+   */
+  widget = bst_dialog_action_swapped (dialog, BST_STOCK_ACTION_REVERT, bst_preferences_revert, prefs);
+  gtk_tooltips_set_tip (BST_TOOLTIPS, widget,
+			"Revert the preference values to the current internal values.",
+			NULL);
+
+  /* Default Revert
+   */
+  widget = bst_dialog_action_swapped (dialog, BST_STOCK_ACTION_DEFAULT_REVERT, bst_preferences_default_revert, prefs);
+  gtk_tooltips_set_tip (BST_TOOLTIPS, widget,
+			"Revert to hardcoded default values (factory settings).",
+			NULL);
+
+  /* Close
+   */
+  widget = bst_dialog_action (dialog, BST_STOCK_ACTION_CLOSE, gtk_toplevel_delete, NULL);
 }

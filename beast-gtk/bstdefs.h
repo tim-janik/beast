@@ -110,6 +110,12 @@ typedef enum
 #define BST_DRAG_BUTTON_MOVE_MASK (GDK_BUTTON2_MASK)
 #define BST_DRAG_BUTTON_CONTEXT   (3) /* delete, clone, linkdup */
 
+
+/* --- GUI padding --- */
+#define	BST_OUTER_PADDING	  (2)
+#define	BST_INNER_PADDING	  (3)
+
+
 /* --- debug stuff --- */
 typedef enum                    /*< skip >*/
 { /* keep in sync with bstmain.c */

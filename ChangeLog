@@ -1,3 +1,68 @@
+Sun Mar 10 10:19:04 2002  Tim Janik  <timj@gtk.org>
+
+	* LOTS of GUI fixes.
+
+	* bstdialog.[hc]: rewrite of the BstADialog from bstutils.[hc]
+	with cleaner interface and stock support. integrate better
+	with status bars.
+
+	* bststatusbar.[hc]: rely on BstDialog.
+
+	* bstutils.[hc]: removed BstAdialog.
+
+	* bstsampleeditor.[hc]: new widget, currently replacing
+	bstwaveeditor.[hc], at some later point this needs to be integrated
+	into BstWaveEditor.
+
+	* bstdraggroup.c bstplaylist.c: fixed assignment in assertion,
+	GLib finally allowes the compiler to catch this.
+
+	* bstfiledialog.[hc]: changes to fit in with BstDialog. it's
+	a pitty that GtkFileSelection has its own toplevel window.
+
+	* bstitemview.c: stupid NULL pointer fix.
+
+	* bstmain.c: fix release-notes popup. support loading ordinary
+	samples from the commandline. cleanups.
+
+	* bstmenus.c: dialog fixes.
+
+	* bstparam.c: grow our hsliders.
+
+	* bstparamview.c: fix scrolled window stupidness.
+
+	* bstpatterndialog.c: use new saner procedure interface.
+
+	* bstplayback.[hc]: use BseEditableSample for playback.
+	support pcm_position changed notification from BseWaveOsc.
+	cleaned up some hacks.
+
+	* bstprocedure.[hc]: rewrite the dialog parts in terms of BstDialog.
+	improved API for the common usage case a lot.
+
+	* bstqsampler.[hc]: pretty much rewrote this widget, it's *way*
+	faster now and can actually be used to scroll through pcm data
+	during playback in realtime for certain zoom sizes.
+
+	* bststest.c: broke this for the moment due to BstQSampler changes.
+
+	* bstutils.[hc]: added gtk_toplevel_delete() to synthesize a
+	delete event on a window. added bst_widget_request_aux_info()
+	to help with scrolled window not honouring child's requisition.
+
+	* bstwaveeditor.[hc]: currently disabled.
+
+	* changed all BstAdialog users.
+
+Tue Mar  5 11:03:38 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): improve
+	feedback on already connected input/output channels.
+
+Sun Mar  3 19:21:32 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmenus.c (menu_choice_activate): fix option menu handling.
+
 Sun Mar  3 04:45:13 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/tags2doc.pl: comment out code that checks input/output

@@ -128,7 +128,7 @@ bst_app_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
 
-      app_type = gtk_type_unique (GTK_TYPE_WINDOW, &app_info);
+      app_type = gtk_type_unique (BST_TYPE_DIALOG, &app_info);
     }
 
   return app_type;
@@ -137,13 +137,11 @@ bst_app_get_type (void)
 static void
 bst_app_class_init (BstAppClass *class)
 {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
 
   bst_app_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_WINDOW);
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
+  parent_class = g_type_class_peek_parent (class);
 
   object_class->destroy = bst_app_destroy;
 
@@ -171,6 +169,11 @@ bst_app_init (BstApp *app)
   GtkWindow *window = GTK_WINDOW (app);
   GtkItemFactory *factory;
 
+  g_object_set (app,
+		"allow_shrink", TRUE,
+		"allow_grow", TRUE,
+		"flags", BST_DIALOG_STATUS,
+		NULL);
   bst_app_register (app);
   if (0)
     g_object_connect (widget,
@@ -178,13 +181,9 @@ bst_app_init (BstApp *app)
 		      "signal::unrealize", bst_app_unregister, NULL,
 		      NULL);
   bst_app_register (app);
-  gtk_widget_set (widget,
-		  "allow_shrink", TRUE,
-		  "allow_grow", TRUE,
-		  NULL);
   app->main_vbox = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
 						     "visible", TRUE,
-						     "parent", app,
+						     "parent", BST_DIALOG (app)->vbox,
 						     NULL),
 				     "swapped_signal::destroy", bse_nullify_pointer, &app->main_vbox,
 				     NULL);
@@ -225,13 +224,7 @@ bst_app_init (BstApp *app)
 static void
 app_set_title (BstApp *app)
 {
-  GtkWindow *window = GTK_WINDOW (app);
-  gchar *title;
-
-  title = g_strconcat ("BEAST: ", bsw_item_get_name (app->project), NULL);
-  gtk_window_set_title (window, title);
-  g_free (title);
-  gtk_window_set_wmclass (window, window->title, g_get_prgname ());
+  g_object_set (app, "title", bsw_item_get_name (app->project), NULL);
 }
 
 static void
@@ -282,8 +275,6 @@ bst_app_new (BswProxy project)
   geometry.min_width = 320;
   geometry.min_height = 450;
   gtk_window_set_geometry_hints (GTK_WINDOW (widget), NULL, &geometry, GDK_HINT_MIN_SIZE);
-
-  bst_status_bar_ensure (GTK_WINDOW (app));
 
   app->project = project;
   bsw_item_use (app->project);
@@ -569,7 +560,7 @@ bst_app_operate (BstApp *app,
       gtk_widget_showraise (bst_dialog_save);
       break;
     case BST_OP_PROJECT_CLOSE:
-      bst_app_handle_delete_event (widget, NULL);
+      gtk_toplevel_delete (widget);
       break;
     case BST_OP_EXIT:
       if (bst_app_class)
@@ -577,7 +568,7 @@ bst_app_operate (BstApp *app,
 	  GSList *slist, *free_slist = g_slist_copy (bst_app_class->apps);
 
 	  for (slist = free_slist; slist; slist = slist->next)
-	    bst_app_operate (slist->data, BST_OP_PROJECT_CLOSE);
+	    gtk_toplevel_delete (slist->data);
 	  g_slist_free (free_slist);
 	}
       break;
@@ -619,43 +610,44 @@ bst_app_operate (BstApp *app,
 					    "visible", TRUE,
 					    NULL);
 
-	  bst_rack_editor_set_rack_view (ed, bsw_project_get_data_pocket (app->project, "BEAST-Rack-View"));
-	  app->rack_dialog = bst_adialog_new (NULL,
-					      &app->rack_dialog, GTK_WIDGET (ed),
-					      0,
-					      "title", "BEAST: Rack",
-					      NULL);
 	  app->rack_editor = g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &app->rack_editor, NULL);
+	  bst_rack_editor_set_rack_view (ed, bsw_project_get_data_pocket (app->project, "BEAST-Rack-View"));
+	  app->rack_dialog = bst_dialog_new (&app->rack_dialog,
+					     GTK_OBJECT (app),
+					     0, // FIXME: undo Edit when hide && BST_DIALOG_HIDE_ON_DELETE
+					     "Rack editor",
+					     app->rack_editor);
 	}
       gtk_widget_showraise (app->rack_dialog);
       break;
     case BST_OP_DIALOG_PREFERENCES:
       if (!bst_preferences)
 	{
-	  GtkWidget *deflt;
 	  BseGConfig *gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
+	  GtkWidget *widget;
 
 	  bse_gconfig_revert (gconf);
-	  bst_preferences = bst_preferences_new (gconf);
+	  widget = bst_preferences_new (gconf);
 	  bse_object_unref (BSE_OBJECT (gconf));
-	  gtk_widget_show (bst_preferences);
-	  deflt = BST_PREFERENCES (bst_preferences)->apply;
-	  bst_preferences = bst_adialog_new (NULL,
-					     &bst_preferences, bst_preferences,
-					     0,
-					     "title", "BEAST: Preferences",
-					     NULL);
-	  gtk_widget_grab_default (deflt);
+	  gtk_widget_show (widget);
+
+	  bst_preferences = bst_dialog_new (&bst_preferences,
+					    NULL,
+					    BST_DIALOG_HIDE_ON_DELETE,
+					    "Preferences",
+					    widget);
+	  bst_preferences_create_buttons (BST_PREFERENCES (widget), BST_DIALOG (bst_preferences));
 	}
       gtk_widget_showraise (bst_preferences);
       break;
     case BST_OP_DIALOG_DEVICE_MONITOR:
       any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
       gtk_widget_show (any);
-      any = bst_adialog_new (NULL, NULL, any,
-			     0,
-			     "title", "BEAST: Device Monitor",
-			     NULL);
+      any = bst_dialog_new (NULL,
+			    GTK_OBJECT (app),
+			    BST_DIALOG_DELETE_BUTTON, // FIXME: BST_DIALOG_HIDE_ON_DELETE && save dialog pointer
+			    "Device Monitor",
+			    any);
       gtk_widget_show (any);
       break;
     case BST_OP_REFRESH:
@@ -690,20 +682,13 @@ bst_app_operate (BstApp *app,
       break;
     case_help_dialog:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
-	{
-	  gchar *string;
-
-	  string = g_strconcat ("BEAST: ", help_title, NULL);
-	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_adialog_new (NULL,
-								      &bst_help_dialogs[op - BST_OP_HELP_FIRST],
-								      bst_text_view_from (help_string,
-											  help_file,
-											  "monospace"),
-								      BST_ADIALOG_DESTROY_ON_HIDE,
-								      "title", string,
-								      NULL);
-	  g_free (string);
-	}
+	bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
+								   NULL,
+								   BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
+								   help_title,
+								   bst_text_view_from (help_string,
+										       help_file,
+										       "monospace"));
       g_free (help_file);
       if (help_string)
 	g_string_free (help_string, TRUE);

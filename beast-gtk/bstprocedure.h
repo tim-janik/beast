@@ -75,20 +75,12 @@ gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
 						    const GValue      *value,
 						    gboolean	       lock_preset);
 
-/* --- dialogs --- */
-GtkWidget*	   bst_procedure_dialog_from_shell (BstProcedureShell *shell,
-						    GtkWidget	     **dialog_p);
-BstProcedureShell* bst_procedure_dialog_get_shell  (GtkWidget	      *dialog);
-void		   bst_procedure_dialog_exec_modal (GtkWidget	      *dialog,
-						    gboolean	       force_display);
-
 
 /* --- convenience --- */
-void		   bst_procedure_user_exec_method  (const gchar	      *proc_path,
-						    BswProxy	       preset_proxy);
-
-
-
+BstProcedureShell* bst_procedure_shell_global	(void);
+void		   bst_procedure_exec_modal	(GType		 procedure_type,
+						 const gchar	*preset_param,
+						 ...);
 
 
 #ifdef __cplusplus

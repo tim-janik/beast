@@ -81,7 +81,7 @@ bst_pattern_dialog_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      pattern_dialog_type = gtk_type_unique (GTK_TYPE_WINDOW, &pattern_dialog_info);
+      pattern_dialog_type = gtk_type_unique (BST_TYPE_DIALOG, &pattern_dialog_info);
     }
   
   return pattern_dialog_type;
@@ -90,14 +90,12 @@ bst_pattern_dialog_get_type (void)
 static void
 bst_pattern_dialog_class_init (BstPatternDialogClass *class)
 {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   BseCategory *cats;
   guint n_cats;
   
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
-  parent_class = gtk_type_class (GTK_TYPE_WINDOW);
+  parent_class = g_type_class_peek_parent (class);
   bst_pattern_dialog_class = class;
 
   object_class->destroy = bst_pattern_dialog_destroy;
@@ -161,23 +159,22 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 {
   BstPatternDialogClass *class = BST_PATTERN_DIALOG_GET_CLASS (pattern_dialog);
   GtkItemFactory *factory;
+  GtkWidget *main_vbox;
 
-  gtk_window_set_default_size (GTK_WINDOW (pattern_dialog), 600, 450);
-
-  /* setup main container */
-  bst_status_bar_ensure (GTK_WINDOW (pattern_dialog));	/* adds box and status bar */
-  pattern_dialog->main_vbox = GTK_BIN (pattern_dialog)->child;
-  g_object_connect (pattern_dialog->main_vbox,
-		    "signal::destroy", gtk_widget_destroyed, &pattern_dialog->main_vbox,
-		    NULL);
-
+  g_object_set (pattern_dialog,
+		"default_width", 600,
+		"default_height", 450,
+		"flags", BST_DIALOG_STATUS,
+		NULL);
+  main_vbox = BST_DIALOG (pattern_dialog)->vbox;
+  
   /* setup effect view */
   pattern_dialog->effect_view = g_object_connect (gtk_widget_new (BST_TYPE_EFFECT_VIEW,
 								  "visible", TRUE,
 								  NULL),
 						  "signal::destroy", gtk_widget_destroyed, &pattern_dialog->effect_view,
 						  NULL);
-  gtk_box_pack_start (GTK_BOX (pattern_dialog->main_vbox), pattern_dialog->effect_view, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), pattern_dialog->effect_view, FALSE, TRUE, 0);
 
   /* setup pattern editor parent */
   pattern_dialog->scrolled_window =
@@ -185,7 +182,7 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 				      "visible", TRUE,
 				      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 				      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-				      "parent", pattern_dialog->main_vbox,
+				      "parent", main_vbox,
 				      "border_width", 5,
 				      NULL),
 		      "signal::destroy", gtk_widget_destroyed, &pattern_dialog->scrolled_window,
@@ -202,16 +199,12 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 			    bst_pattern_dialog_factories_path,
 			    factory,
 			    (GtkDestroyNotify) gtk_object_unref);
-  pattern_dialog->proc_dialog = NULL;
 }
 
 static void
 bst_pattern_dialog_destroy (GtkObject *object)
 {
-  BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (object);
-
-  if (pattern_dialog->proc_dialog)
-    gtk_widget_destroy (pattern_dialog->proc_dialog);
+  // BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (object);
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -390,63 +383,18 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
 			  GType             proc_type,
 			  GtkWidget        *menu_item)
 {
-  GValue value = { 0, };
-  BstPatternEditor *pattern_editor;
-  BseProcedureClass *procedure;
-  BstProcedureShell *proc_shell;
-  BsePattern *pattern;
-  GtkWidget *widget;
-  guint channel, row;
+  BstPatternEditor *pattern_editor = BST_PATTERN_EDITOR (pattern_dialog->pattern_editor);
+  BsePattern *pattern = BSE_PATTERN (pattern_editor->pattern);
 
-  widget = GTK_WIDGET (pattern_dialog);
-  pattern_editor = BST_PATTERN_EDITOR (pattern_dialog->pattern_editor);
-  pattern = BSE_PATTERN (pattern_editor->pattern);
-  pe_channel_row_from_popup (pattern_dialog, menu_item, &channel, &row);
-
-  gtk_widget_ref (widget);
   bse_object_ref (BSE_OBJECT (pattern));
-
-  /* ensure procedure shell
-   */
-  if (!pattern_dialog->proc_dialog)
-    {
-      proc_shell = BST_PROCEDURE_SHELL (bst_procedure_shell_new (NULL));
-      pattern_dialog->proc_dialog = bst_procedure_dialog_from_shell (proc_shell, &pattern_dialog->proc_dialog);
-    }
-  else
-    proc_shell = bst_procedure_dialog_get_shell (pattern_dialog->proc_dialog);
-
-  /* setup procedure
-   */
-  procedure = g_type_class_ref (proc_type);
-  bst_procedure_shell_set_proc (proc_shell, procedure);
-  g_type_class_unref (procedure);
-
-  /* ok, now we build a list of possible preset parameters to
-   * pass into the procedure and attempt applying them
-   */
-  bst_procedure_shell_unpreset (proc_shell);
-  g_value_init (&value, BSE_TYPE_PATTERN);
-  g_value_set_object (&value, G_OBJECT (pattern));
-  bst_procedure_shell_preset (proc_shell, "pattern", &value, TRUE);
-  g_value_unset (&value);
-  g_value_init (&value, G_TYPE_UINT);
-  g_value_set_uint (&value, pattern_editor->focus_channel);
-  bst_procedure_shell_preset (proc_shell, "focus-channel", &value, TRUE);
-  g_value_set_uint (&value, pattern_editor->focus_row);
-  bst_procedure_shell_preset (proc_shell, "focus-row", &value, TRUE);
-  g_value_unset (&value);
-
-  /* invoke procedure with selection already residing in the pattern
-   */
-  bst_status_window_push (widget);
-  bst_procedure_dialog_exec_modal (pattern_dialog->proc_dialog, FALSE);
-  bst_status_window_pop ();
+  bst_procedure_exec_modal (proc_type,
+			    "pattern", BSE_TYPE_PATTERN, pattern,
+			    "focus-channel", G_TYPE_UINT, pattern_editor->focus_channel,
+			    "focus-row", G_TYPE_UINT, pattern_editor->focus_row,
+			    NULL);
 
   bst_pattern_dialog_update (pattern_dialog);
-
   bse_object_unref (BSE_OBJECT (pattern));
-  gtk_widget_unref (widget);
 }
 
 static void

@@ -34,21 +34,24 @@ extern "C" {
 #define BST_IS_QSAMPLER_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_QSAMPLER))
 #define BST_QSAMPLER_GET_CLASS(obj)  ((BstQSamplerClass*) ((GtkObject*) (obj))->klass)
 
-#define	BST_QSAMPLER_READ_PRIORITY   (G_PRIORITY_LOW)
 
 
 /* --- typedefs --- */
 typedef struct _BstQSampler       BstQSampler;
 typedef struct _BstQSamplerClass  BstQSamplerClass;
+typedef struct _BstQSamplerPeak	  BstQSamplerPeak;
+typedef struct _BstQSamplerTPeak  BstQSamplerTPeak;
 typedef struct _BstQSamplerSource BstQSamplerSource;
 typedef struct _BstQSamplerBlock  BstQSamplerBlock;
 typedef struct _BstQSamplerMark	  BstQSamplerMark;
 typedef struct _BstQSamplerRegion BstQSamplerRegion;
-typedef void  (*BstQSamplerFill) (gpointer	 data,
-				  guint		 voffset,
-				  guint		 n_values,
-				  gint16	*values,
-				  BstQSampler	*qsampler);
+typedef guint (*BstQSamplerFill) (gpointer	   data,
+				  guint		   voffset,
+				  gdouble	   offset_scale,
+				  guint		   block_size,
+				  guint		   n_values,
+				  BstQSamplerPeak *values,
+				  BstQSampler	  *qsampler);
 typedef enum
 {
   /* regions & marks */
@@ -78,6 +81,7 @@ typedef enum
   BST_QSAMPLER_DRAW_MAXIMUM_SHAPE,
   BST_QSAMPLER_DRAW_MODE_LAST	/*< skip >*/
 } BstQSamplerDrawMode;
+#define	BST_QSAMPLER_RELOAD_PRIORITY	(GTK_PRIORITY_REDRAW + 5)
 
 
 /* --- structures --- */
@@ -85,31 +89,48 @@ struct _BstQSampler
 {
   GtkWidget parent_instance;
 
-  GtkAdjustment	    *adjustment;
-  guint		     n_total_samples;
-  guint		     sample_offset;
-  guint		     n_area_samples; /* visible */
-  gdouble	     zoom_factor;
-  gdouble	     vscale_factor;
-  gdouble	     offset2peak_factor;
-  guint		     n_peaks;
-  gint16	    *peaks, *mpeaks; /* max, min */
-  guint8	    *peak_types;
+  guint		     peak_length;	/* pcm length in peaks */
+  guint		     n_peaks;		/* number of cached peaks */
+  BstQSamplerTPeak  *peaks;
+  guint		     peak_offset;	/* display offset */
+  guint		     n_pixels;		/* <= n_peaks */
+
+
+  /* user settings */
   guint		     n_marks;
   BstQSamplerMark   *marks;
   guint		     n_regions;
   BstQSamplerRegion *regions;
-  GdkColor	     red, green;
-  GdkGC		    *red_gc, *green_gc;
-  guint		     vread_handler;
-  guint		     expose_handler;
-  guint		     expose_frame : 1;
-  guint		     draw_mode : 16;
-  guint16	     join_vreads;
-  /* source */
+  guint		     pcm_length;
   BstQSamplerFill    src_filler;
   gpointer	     src_data;
   GDestroyNotify     src_destroy;
+  gdouble	     zoom_factor;
+
+  GtkAdjustment	    *adjustment;
+  gdouble	     vscale_factor;
+
+  GdkColor	     red, green;
+  GdkGC		    *red_gc, *green_gc;
+  GdkWindow	    *canvas;
+  guint		     draw_mode : 16;
+  guint		     expose_frame : 1;
+  guint		     ignore_adjustment : 1;
+  guint		     refresh_queued : 1;
+  guint		     invalid_remains : 1; /* temporary refresh flag */
+
+  /* user data */
+  gpointer	     owner;
+  guint		     owner_index;
+};
+struct _BstQSamplerTPeak
+{
+  gint16 min, max;
+  guint8 type;
+};
+struct _BstQSamplerPeak
+{
+  gint16 min, max;
 };
 struct _BstQSamplerClass
 {
@@ -131,7 +152,7 @@ struct _BstQSamplerRegion
 
 
 /* --- prototypes --- */
-GtkType    bst_qsampler_get_type	(void);
+GType	   bst_qsampler_get_type	(void);
 void	   bst_qsampler_set_source	(BstQSampler			*qsampler,
 					 guint				 n_total_samples,
 					 BstQSamplerFill		 fill_func,
@@ -144,8 +165,17 @@ gboolean   bst_qsampler_get_offset_at	(BstQSampler			*qsampler,
 					 gint				*x_coord_p);
 void	   bst_qsampler_scroll_show	(BstQSampler			*qsampler,
 					 guint				 offset);
+void	   bst_qsampler_scroll_rbounded	(BstQSampler			*qsampler,
+					 guint				 offset,
+					 gfloat				 boundary_padding,
+					 gfloat				 padding);
+void	   bst_qsampler_scroll_lbounded	(BstQSampler			*qsampler,
+					 guint				 offset,
+					 gfloat				 boundary_padding,
+					 gfloat				 padding);
 void	   bst_qsampler_scroll_to	(BstQSampler			*qsampler,
 					 guint				 offset);
+void	   bst_qsampler_force_refresh	(BstQSampler			*qsampler);
 void	   bst_qsampler_set_mark	(BstQSampler			*qsampler,
 					 guint				 mark_index,
 					 guint				 offset,

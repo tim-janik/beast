@@ -477,7 +477,7 @@ drag_group_drag_data_received (GtkWidget        *hbox,
   guint action;
 
   g_return_if_fail (selection_data->type == atom_beast_pattern_pointer);
-  g_return_if_fail (selection_data->format = 8);
+  g_return_if_fail (selection_data->format == 8);
   g_return_if_fail (selection_data->length == sizeof (gpointer));
 
   action = context->actions & context->suggested_action;

@@ -422,7 +422,7 @@ group_list_drag_data_received (GtkWidget        *group_list,
   guint action;
 
   g_return_if_fail (selection_data->type == atom_beast_pattern_group_pointer);
-  g_return_if_fail (selection_data->format = 8);
+  g_return_if_fail (selection_data->format == 8);
   g_return_if_fail (selection_data->length == sizeof (gpointer));
 
   action = context->actions & context->suggested_action;

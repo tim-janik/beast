@@ -30,7 +30,7 @@
 
 
 /* --- Pixmap Stock --- */
-BseIcon*
+BswIcon*
 bst_icon_from_stock (BstIconId _id)
 {
 #include "./icons/noicon.c"
@@ -108,7 +108,7 @@ bst_icon_from_stock (BstIconId _id)
       CDROM_IMAGE_RLE_PIXEL_DATA, },
   };
   static const guint n_stock_icons = sizeof (pixdatas) / sizeof (pixdatas[0]);
-  static BseIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
+  static BswIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
   guint icon_id = _id;
   
   g_assert (n_stock_icons == BST_ICON_LAST);
@@ -120,7 +120,7 @@ bst_icon_from_stock (BstIconId _id)
 	return NULL;
       
       icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id);
-      bse_icon_ref_static (icons[icon_id]);
+      bsw_icon_ref_static (icons[icon_id]);
     }
   
   return icons[icon_id];
@@ -277,6 +277,28 @@ gtk_toplevel_hide (GtkWidget *widget)
 }
 
 void
+gtk_toplevel_delete (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  /* this function is usefull to produce the exact same effect
+   * as if the user caused window manager triggered window
+   * deletion.
+   */
+
+  widget = gtk_widget_get_toplevel (widget);
+  if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
+    {
+      GdkEvent event = { 0, };
+
+      event.any.type = GDK_DELETE;
+      event.any.window = widget->window;
+      event.any.send_event = TRUE;
+      gdk_event_put (&event);
+    }
+}
+
+void
 gtk_toplevel_activate_default (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
@@ -284,6 +306,29 @@ gtk_toplevel_activate_default (GtkWidget *widget)
   widget = gtk_widget_get_toplevel (widget);
   if (GTK_IS_WINDOW (widget))
     gtk_window_activate_default (GTK_WINDOW (widget));
+}
+
+static void
+requisition_to_aux_info (GtkWidget      *widget,
+			 GtkRequisition *requisition)
+{
+  guint width = requisition->width;
+  guint height = requisition->height;
+
+  /* we don't want the requisition to get too big */
+  width = MIN (width, gdk_screen_width () / 2);
+  height = MIN (height, gdk_screen_height () / 2);
+
+  gtk_widget_set_size_request (widget, width, height);
+}
+
+void
+bst_widget_request_aux_info (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  g_signal_handlers_disconnect_by_func (widget, requisition_to_aux_info, NULL);
+  g_signal_connect_after (widget, "size_request", G_CALLBACK (requisition_to_aux_info), NULL);
 }
 
 void
@@ -1087,25 +1132,25 @@ bst_widget_modify_bg_as_base (GtkWidget *widget)
 }
 
 GtkWidget*
-bst_forest_from_bse_icon (BseIcon *bse_icon,
+bst_forest_from_bsw_icon (BswIcon *bsw_icon,
 			  guint    icon_width,
 			  guint    icon_height)
 {
-  BseIcon *icon;
+  BswIcon *icon;
   GtkWidget *forest;
 
-  g_return_val_if_fail (bse_icon != NULL, NULL);
+  g_return_val_if_fail (bsw_icon != NULL, NULL);
   g_return_val_if_fail (icon_width > 0, NULL);
   g_return_val_if_fail (icon_height > 0, NULL);
 
-  icon = bse_icon_ref (bse_icon);
+  icon = bsw_icon_ref (bsw_icon);
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
 			   "width_request", icon_width,
 			   "height_request", icon_height,
 			   "expand_forest", FALSE,
 			   NULL);
-  gtk_object_set_data_full (GTK_OBJECT (forest), "BseIcon", icon, (GDestroyNotify) bse_icon_unref);
+  gtk_object_set_data_full (GTK_OBJECT (forest), "BseIcon", icon, (GDestroyNotify) bsw_icon_unref);
   gnome_forest_put_sprite (GNOME_FOREST (forest), 1,
 			   (icon->bytes_per_pixel > 3
 			    ? art_pixbuf_new_const_rgba
@@ -1287,7 +1332,7 @@ style_modify_bg_as_black (GtkWidget *widget)
 }
 
 GtkWidget*
-bst_drag_window_from_icon (BseIcon *icon)
+bst_drag_window_from_icon (BswIcon *icon)
 {
   GtkWidget *drag_window, *forest;
   GdkBitmap *mask;
@@ -1298,7 +1343,7 @@ bst_drag_window_from_icon (BseIcon *icon)
 
   /* pattern icon window
    */
-  forest = bst_forest_from_bse_icon (icon,
+  forest = bst_forest_from_bsw_icon (icon,
 				     BST_DRAG_ICON_WIDTH,
 				     BST_DRAG_ICON_HEIGHT);
   gtk_signal_connect_after (GTK_OBJECT (forest), "realize", G_CALLBACK (style_modify_bg_as_black), NULL);
@@ -1630,279 +1675,6 @@ gnome_canvas_FIXME_hard_update (GnomeCanvas *canvas)
    * re-translating the root-item is good enough though.
    */
   gnome_canvas_item_move (canvas->root, 0, 0);
-}
-
-
-/* --- Auxillary Dialogs --- */
-static gpointer adialog_parent_class = NULL;
-
-static void
-bst_adialog_show (GtkWidget *widget)
-{
-  BstADialog *adialog = BST_ADIALOG (widget);
-  GtkWindow *window = GTK_WINDOW (widget);
-  
-  if (adialog->default_widget)
-    gtk_widget_grab_default (adialog->default_widget);
-  
-  if (window->focus_widget && window->default_widget &&
-      GTK_WIDGET_CAN_DEFAULT (window->focus_widget) &&
-      window->focus_widget != window->default_widget)
-    gtk_window_set_focus (window, NULL);
-  
-  GTK_WIDGET_CLASS (adialog_parent_class)->show (widget);
-}
-
-static void
-bst_adialog_init (BstADialog *adialog)
-{
-  adialog->vbox = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
-						    "visible", TRUE,
-						    "border_width", 0,
-						    "parent", adialog,
-						    NULL),
-				    "swapped_signal::destroy", bse_nullify_pointer, &adialog->vbox,
-				    NULL);
-  adialog->hbox = NULL;
-  adialog->default_widget = NULL;
-  adialog->child = NULL;
-  gtk_widget_set (GTK_WIDGET (adialog),
-		  "allow_shrink", FALSE,
-		  "allow_grow", TRUE,
-		  "events", GDK_BUTTON_PRESS_MASK,
-		  NULL);
-}
-
-enum {
-  ARG_NONE
-};
-
-static void
-bst_adialog_force_hbox (BstADialog *adialog)
-{
-  if (!adialog->hbox)
-    {
-      adialog->hbox = g_object_connect (gtk_widget_new (GTK_TYPE_HBOX,
-							"visible", TRUE,
-							"border_width", 5,
-							"spacing", 5,
-							NULL),
-					"swapped_signal::destroy", bse_nullify_pointer, &adialog->hbox,
-					NULL);
-      gtk_box_pack_end (GTK_BOX (adialog->vbox), adialog->hbox, FALSE, TRUE, 0);
-      gtk_box_pack_end (GTK_BOX (adialog->vbox),
-			gtk_widget_new (GTK_TYPE_HSEPARATOR,
-					"visible", TRUE,
-					NULL),
-			FALSE, TRUE, 0);
-    }
-}
-
-static void
-bst_adialog_set_arg (GtkObject *object,
-		     GtkArg    *arg,
-		     guint      arg_id)
-{
-  // BstADialog *adialog = BST_ADIALOG (object);
-  
-  switch (arg_id)
-    {
-    default:
-      break;
-    }
-}
-
-void
-bst_adialog_setup_choices (GtkWidget *_dialog,
-			   ...)
-{
-  BstADialog *adialog = (gpointer) _dialog;
-  gchar *name;
-  va_list var_args;
-
-  g_return_if_fail (BST_IS_ADIALOG (adialog));
-  
-  va_start (var_args, _dialog);
-  name = va_arg (var_args, gchar*);
-  while (name)
-    {
-      gpointer func = va_arg (var_args, gpointer);
-      gpointer data = va_arg (var_args, gpointer);
-      gchar *arg_name;
-      guint aid;
-
-      if (strncmp (name, "default_choice::", 16) == 0)
-	aid = 16;
-      else if (strncmp (name, "swapped_choice::", 16) == 0)
-	aid = 16;
-      else if (strncmp (name, "choice::", 8) == 0)
-	aid = 8;
-      else
-	{
-	  g_warning (G_STRLOC ": invalid choice \"%s\"", name);
-	  break;
-	}
-      arg_name = name + aid;
-      if (arg_name[0])
-	{
-	  GtkWidget *choice;
-	  
-	  bst_adialog_force_hbox (adialog);
-	  
-	  choice = gtk_object_get_data (GTK_OBJECT (adialog->hbox), arg_name);
-	  if (!choice)
-	    {
-	      choice = gtk_widget_new (GTK_TYPE_BUTTON,
-				       "visible", TRUE,
-				       "can_default", TRUE,
-				       /* "can_focus", FALSE, */
-				       "label", arg_name,
-				       "parent", adialog->hbox,
-				       NULL);
-	      gtk_object_set_data (GTK_OBJECT (adialog->hbox), arg_name, choice);
-	    }
-	  if (name[0] == 'd' /* default_choice */)
-	    {
-	      adialog->default_widget = choice;
-	      gtk_widget_grab_default (adialog->default_widget);
-	    }
-	  if (func)
-	    gtk_signal_connect_full (GTK_OBJECT (choice), "clicked",
-				     func, NULL, data, NULL,
-				     name[0] == 's' /* swapped_choice */,
-				     FALSE);
-	}
-      name = va_arg (var_args, gchar*);
-    }
-  va_end (var_args);
-}
-
-static void
-bst_adialog_class_init (BstADialogClass *class)
-{
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-  
-  adialog_parent_class = gtk_type_class (GTK_TYPE_WINDOW);
-  
-  object_class->set_arg = bst_adialog_set_arg;
-  
-  widget_class->show = bst_adialog_show;
-  widget_class->delete_event = (gint (*) (GtkWidget*, GdkEventAny*)) gtk_widget_hide_on_delete;
-  
-  /*
-    gtk_object_add_arg_type ("BstADialog::choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_CHOICE);
-    gtk_object_add_arg_type ("BstADialog::data_choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_DATA_CHOICE);
-    gtk_object_add_arg_type ("BstADialog::default_choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_DEFAULT_CHOICE);
-  */
-}
-
-GtkType
-bst_adialog_get_type (void)
-{
-  static GtkType adialog_type = 0;
-  
-  if (!adialog_type)
-    {
-      GtkTypeInfo adialog_info =
-      {
-	"BstADialog",
-	sizeof (BstADialog),
-	sizeof (BstADialogClass),
-	(GtkClassInitFunc) bst_adialog_class_init,
-	(GtkObjectInitFunc) bst_adialog_init,
-	/* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
-      };
-      
-      adialog_type = gtk_type_unique (GTK_TYPE_WINDOW, &adialog_info);
-    }
-  
-  return adialog_type;
-}
-
-static gboolean
-destroy_on_event (GtkWidget *widget)
-{
-  gtk_widget_destroy (widget);
-  return TRUE;
-}
-
-GtkWidget*
-bst_adialog_new (GtkObject      *alive_host,
-		 GtkWidget     **adialog_p,
-		 GtkWidget      *child,
-		 BstADialogFlags flags,
-		 const gchar    *first_arg_name,
-		 ...)
-{
-  GtkWidget *adialog;
-  
-  g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
-  g_return_val_if_fail (child->parent == NULL, NULL);
-  if (alive_host)
-    g_return_val_if_fail (GTK_IS_OBJECT (alive_host), NULL);
-  if (adialog_p)
-    g_return_val_if_fail (adialog_p != NULL, NULL);
-  
-  adialog = g_object_connect (gtk_widget_new (BST_TYPE_ADIALOG,
-					      "modal", (flags & BST_ADIALOG_MODAL) != FALSE,
-					      NULL),
-			      adialog_p ? "swapped_signal::destroy" : NULL, bse_nullify_pointer, adialog_p,
-			      NULL);
-  if (flags & BST_ADIALOG_POPUP_POS)
-    gtk_widget_set (adialog, "window_position", GTK_WIN_POS_MOUSE, NULL);
-  BST_ADIALOG (adialog)->child = child;
-  g_object_set (GTK_WIDGET (child),
-		"parent", BST_ADIALOG (adialog)->vbox,
-		NULL);
-  g_object_connect (GTK_WIDGET (child),
-		    "swapped_signal::destroy", bse_nullify_pointer, &BST_ADIALOG (adialog)->child,
-		    NULL);
-  if (alive_host)
-    gtk_signal_connect_object_while_alive (alive_host,
-					   "destroy",
-					   GTK_SIGNAL_FUNC (gtk_widget_destroy),
-					   GTK_OBJECT (adialog));
-  else
-    gtk_quit_add_destroy (1, GTK_OBJECT (adialog));
-  
-  if (flags & BST_ADIALOG_FORCE_HBOX)
-    bst_adialog_force_hbox (BST_ADIALOG (adialog));
-
-  if (first_arg_name)
-    {
-      GObject *object = G_OBJECT (adialog);
-      va_list var_args;
-
-      g_return_val_if_fail (G_IS_OBJECT (object), NULL);
-
-      va_start (var_args, first_arg_name);
-      g_object_set_valist (object, first_arg_name, var_args);
-      va_end (var_args);
-    }
-  
-  if (flags & BST_ADIALOG_DESTROY_ON_HIDE)
-    gtk_signal_connect_after (GTK_OBJECT (adialog),
-			      "hide",
-			      GTK_SIGNAL_FUNC (gtk_widget_destroy),
-			      NULL);
-  else if (flags & BST_ADIALOG_DESTROY_ON_DELETE)
-    gtk_signal_connect (GTK_OBJECT (adialog),
-			"delete_event",
-			GTK_SIGNAL_FUNC (destroy_on_event),
-			NULL);
-  
-  return adialog;
-}
-
-GtkWidget*
-bst_adialog_get_child (GtkWidget *adialog)
-{
-  g_return_val_if_fail (BST_IS_ADIALOG (adialog), NULL);
-  
-  return BST_ADIALOG (adialog)->child;
 }
 
 

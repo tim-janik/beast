@@ -54,7 +54,7 @@ struct _BstRadioTool
   gchar            *name;
   gchar            *tip;
   gchar            *blurb;
-  BseIcon          *icon;
+  BswIcon          *icon;
 };
 struct _BstRadioTools
 {
@@ -88,7 +88,7 @@ void            bst_radio_tools_add_tool	     (BstRadioTools *rtools,
 						      const gchar   *tool_name,
 						      const gchar   *tool_tip,
 						      const gchar   *tool_blurb,
-						      BseIcon       *tool_icon,
+						      BswIcon       *tool_icon,
 						      BstRadioToolFlags flags);
 void            bst_radio_tools_clear_tools	     (BstRadioTools *rtools);
 void            bst_radio_tools_add_category	     (BstRadioTools *rtools,

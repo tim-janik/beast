@@ -25,23 +25,35 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- structures --- */
+/* --- typedefs & structures --- */
+typedef void (*BstPlayBackNotify)	(gpointer	data,
+					 guint		pcm_position);
 typedef struct
 {
-  BswProxy wave;
-  BswProxy wave_osc;
-  BswProxy const_freq;
+  BswProxy project;
+  BswProxy snet;
+  BswProxy speaker;
+  BswProxy wosc;
+  BswProxy constant;
+  guint             pcm_timeout;
+  BstPlayBackNotify pcm_notify;
+  gpointer          pcm_data;
 } BstPlayBackHandle;
 
 
 /* --- functions --- */
-void			bst_play_back_init		(void);
 BstPlayBackHandle*	bst_play_back_handle_new	(void);
 void			bst_play_back_handle_set	(BstPlayBackHandle	*handle,
-							 GslWaveChunk		*wave_chunk,
+							 BswProxy		 esample,
 							 gdouble		 osc_freq);
 void			bst_play_back_handle_start	(BstPlayBackHandle	*handle);
 void			bst_play_back_handle_stop	(BstPlayBackHandle	*handle);
+void			bst_play_back_handle_toggle	(BstPlayBackHandle	*handle);
+void			bst_play_back_handle_pcm_notify	(BstPlayBackHandle	*handle,
+							 guint			 timeout,
+							 BstPlayBackNotify	 notify,
+							 gpointer		 data);
+gboolean		bst_play_back_handle_is_playing	(BstPlayBackHandle	*handle);
 gboolean		bst_play_back_handle_done	(BstPlayBackHandle	*handle);
 void			bst_play_back_handle_destroy	(BstPlayBackHandle	*handle);
 

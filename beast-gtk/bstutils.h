@@ -60,7 +60,7 @@ typedef enum
 } BstIconId;
 
 /* retrive static icons (no reference count needs) */
-BseIcon* bst_icon_from_stock (BstIconId icon_id);
+BswIcon* bst_icon_from_stock (BstIconId icon_id);
 
 
 /* --- Gtk+ utilities & workarounds --- */
@@ -70,7 +70,9 @@ void	   gtk_post_init_patch_ups	 (void);
 gboolean   gtk_widget_viewable		 (GtkWidget		*widget);
 void	   gtk_widget_showraise		 (GtkWidget		*widget);
 void	   gtk_toplevel_hide		 (GtkWidget		*widget);
+void	   gtk_toplevel_delete		 (GtkWidget		*widget);
 void	   gtk_toplevel_activate_default (GtkWidget		*widget);
+void	   bst_widget_request_aux_info	 (GtkWidget		*viewport);
 void	   gtk_widget_make_sensitive	 (GtkWidget		*widget);
 void	   gtk_widget_make_insensitive	 (GtkWidget		*widget);
 void	   gtk_file_selection_heal	 (GtkFileSelection	*fs);
@@ -155,7 +157,7 @@ gpointer	bst_gmask_quick		(GtkWidget     *gmask_container,
 /* --- BEAST utilities --- */
 void	        bst_widget_modify_as_title	(GtkWidget	*widget);
 void	        bst_widget_modify_bg_as_base	(GtkWidget	*widget);
-GtkWidget*	bst_forest_from_bse_icon	(BseIcon	*bse_icon,
+GtkWidget*	bst_forest_from_bsw_icon	(BswIcon	*bse_icon,
 						 guint           icon_width,
 						 guint           icon_height);
 GtkWidget*	bst_text_view_from		(GString        *gstring,
@@ -168,7 +170,7 @@ void		bst_wrap_text_set		(GtkWidget      *text,
 						 const gchar    *string,
 						 gboolean        double_newlines,
 						 gpointer        user_data);
-GtkWidget*	bst_drag_window_from_icon	(BseIcon	*icon);
+GtkWidget*	bst_drag_window_from_icon	(BswIcon	*icon);
 guint      bst_container_get_insertion_position (GtkContainer   *container,
 						 gboolean        scan_horizontally,
 						 gint            xy,
@@ -200,44 +202,6 @@ void			gnome_canvas_item_keep_above	 (GnomeCanvasItem *above,
 							  GnomeCanvasItem *item1,
 							  GnomeCanvasItem *item2);
 void			gnome_canvas_FIXME_hard_update	 (GnomeCanvas	  *canvas);
-
-
-/* --- Auxillary Dialog --- */
-#define BST_TYPE_ADIALOG            (bst_adialog_get_type ())
-#define BST_ADIALOG(object)         (GTK_CHECK_CAST ((object), BST_TYPE_ADIALOG, BstADialog))
-#define BST_ADIALOG_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_ADIALOG, BstADialogClass))
-#define BST_IS_ADIALOG(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_ADIALOG))
-#define BST_IS_ADIALOG_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_ADIALOG))
-#define BST_ADIALOG_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_ADIALOG, BstADialogClass))
-typedef struct _BstADialog BstADialog;
-typedef GtkWindowClass     BstADialogClass;
-struct _BstADialog
-{
-  GtkWindow  parent_object;
-  GtkWidget *vbox;
-  GtkWidget *hbox;
-  GtkWidget *default_widget;
-  GtkWidget *child;
-};
-typedef enum
-{
-  BST_ADIALOG_DESTROY_ON_HIDE	= (1 << 0),	/* always auto-hides for delete-event */
-  BST_ADIALOG_DESTROY_ON_DELETE	= (1 << 1),	/* always auto-hides for delete-event */
-  BST_ADIALOG_POPUP_POS		= (1 << 2),
-  BST_ADIALOG_MODAL		= (1 << 3),
-  BST_ADIALOG_FORCE_HBOX	= (1 << 4)
-} BstADialogFlags;
-
-GtkType    bst_adialog_get_type		(void);
-GtkWidget* bst_adialog_new       	(GtkObject		*alive_host,
-					 GtkWidget	       **adialog_p,
-					 GtkWidget		*child,
-					 BstADialogFlags	 flags,
-					 const gchar		*first_arg_name,
-					 ...);
-GtkWidget* bst_adialog_get_child	(GtkWidget		*adialog);
-void	   bst_adialog_setup_choices	(GtkWidget		*adialog,
-					 ...);
 
 
 /* --- Gdk utilities & workarounds --- */
