@@ -277,7 +277,7 @@ bse_device_dump_list (GType           base_type,
                 g_printerr ("%sDevices:\n", indent2);
               last_topic = topic;
             }
-          g_printerr ("%s>         %s\n", indent, entry->device_blurb);
+          g_printerr ("%s >        %s\n", indent, entry->device_blurb);
         }
     }
   if (with_auto)
