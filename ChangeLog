@@ -1,3 +1,8 @@
+Thu Sep 12 06:58:52 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxktexttools.c (scroll_text_key_event): support
+	Ctrl+R as reload (mimicking mozilla keybinding again).
+
 Wed Sep 11 18:23:00 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/Makefile.am: remove bsttexttools.[hc] and

@@ -1031,6 +1031,13 @@ scroll_text_key_event (GtkWidget   *sctext,
 	    return TRUE;
 	  }
       break;
+      case 'r': case 'R':
+	if (event->state & GDK_CONTROL_MASK)
+	  {
+	    navigate_reload (sctext);
+	    return TRUE;
+	  }
+      break;
     }
   return FALSE;
 }
@@ -1612,9 +1619,9 @@ scroll_text_reload (GtkWidget *sctext)
 			     "<tagdef name='center' justification='center'/>"
 			     "<span tag='center'><newline/>"
 			     "ABOUT<newline/><newline/>"
-			     "The &quot;tag-span-markup&quot; viewer is a simplistic<newline/>"
-			     "hack, based on the GtkTextView and GtkTextBuffer facilities,<newline/>"
-			     "for ad hoc display of program documentation.</span>"
+			     "The &quot;tag-span-markup&quot; viewer is a compact<newline/>"
+			     "xml markup browser, based on the GtkTextView and GtkTextBuffer<newline/>"
+			     "facilities. The xml tags closely resemble GtkTextTag properties.</span>"
 			     "</tag-span-markup>"
 			     );
   else if (strcmp (tnav->proto, "file") == 0)

@@ -2,14 +2,14 @@
 name    = GXK-Functions
 blurb   = Gtk+ Extension Kit Function Reference
 package = BEAST-0.4.2
-date    = 11 Sep 2002
+date    = 12 Sep 2002
 image   = gxk-functions
 
 @DOC-TITLE@
 GXK-Functions
 
 @DOC-HEAD@
-GXK-Functions 11 Sep 2002 BEAST-0.4.2
+GXK-Functions 12 Sep 2002 BEAST-0.4.2
 
 @DOC-NAME@
 GXK-Functions - Gtk+ Extension Kit Function Reference
