@@ -11,6 +11,27 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@newsTitle{Wednesday 07 Jul 2004, The ``small but steady steps'' Release}
+
+BEAST/BSE version 0.6.2 is available from the
+@uref{beast-doc://download,,download section},
+here is the @uref{http://www.gnomedesktop.org/article.php?sid=1870,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.2.tar.gz,, beast-0.6.2.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.1-0.6.2.bz2,, patch-beast-0.6.1-0.6.2.bz2}.
+
+Lots of tiny but important details got fixed in this release. @beast also had a lot of
+language translation updates, and supports more fine grained note quantization and note lengths.
+Behind the scenes, there's also been some more infrastructure work, the results of which aren't
+going to surface before another releases or two though.
+As always, the
+@uref{beast-doc://release-news,,NEWS section} has the exact changes, enjoy the new code and
+please report bugs to our
+@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
+
+
 @newsTitle{Sunday 04 Jul 2004, Mailing List Back Up}
 
 Thanks to Owen Taylor, a configuration error of the
