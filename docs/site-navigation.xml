@@ -22,6 +22,10 @@
       <navigation-node title="Overview (German)"   target="overview-de.html" />
       <navigation-node title="Quick Start"         target="quickstart.html" />
     </navigation-node>
+    <navigation-node title="Manual Pages">
+      <navigation-node title="beast(1)"            target="beast.1.html"   />
+      <navigation-node title="bsesh(1)"            target="bsesh.1.html"   />
+    </navigation-node>
     <navigation-node title="API Reference">
       <navigation-node title="BSE Procedures"      target="bse-procs.3.html"   />
       <navigation-node title="BSE Structs"         target="bse-structs.3.html" />
@@ -45,6 +49,7 @@
       <navigation-node title="SFI"                 target="log-sfi.html"     />
     </navigation-node>
     <navigation-node title="BEAST/BSE Development">
+      <navigation-node title="Plugin Generator"    target="bse-plugin-generator.1.html"   />
       <navigation-node title="GXK Functions"       target="beast-gxk.3.html"   />
       <navigation-node title="BSE Functions"       target="bse.3.html"         />
       <navigation-node title="Synth Engine"        target="gsl-mplan.html"     />
