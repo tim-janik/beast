@@ -8,354 +8,373 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-13 23:53-0500\n"
-"PO-Revision-Date: 2005-01-13 19:50-0400\n"
+"POT-Creation-Date: 2005-01-20 17:41-0500\n"
+"PO-Revision-Date: 2005-01-20 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:73
 msgid "_New"
 msgstr "_New"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:73
 msgid "Create new project"
 msgstr "Create new project"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:75
 msgid "_Open..."
 msgstr "_Open..."
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:75
 msgid "Open existing project"
 msgstr "Open existing project"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:77
 msgid "_Merge..."
 msgstr "_Merge..."
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:77
 msgid "Merge an existing project into the current project"
 msgstr "Merge an existing project into the current project"
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:79
 msgid "_Import MIDI..."
 msgstr "_Import MIDI..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:79
 msgid "Import a standard MIDI file into the current project"
 msgstr "Import a standard MIDI file into the current project"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:81
 msgid "_Close"
 msgstr "_Close"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:81
 msgid "Close the project"
 msgstr "Close the project"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:85
 msgid "_Save"
 msgstr "_Save"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:85
 msgid "Write project to disk"
 msgstr "Write project to disk"
 
-#: beast-gtk/bstapp.c:89
+#: beast-gtk/bstapp.c:87
 msgid "Save _As..."
 msgstr "Save _As..."
 
-#: beast-gtk/bstapp.c:89
+#: beast-gtk/bstapp.c:87
 msgid "Write project to a specific file"
 msgstr "Write project to a specific file"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:91
 msgid "_Quit"
 msgstr "_Quit"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:91
 msgid "Close all windows and quit"
 msgstr "Close all windows and quit"
 
-#: beast-gtk/bstapp.c:97
+#: beast-gtk/bstapp.c:95
 msgid "_Preferences..."
 msgstr "_Preferences..."
 
-#: beast-gtk/bstapp.c:97
+#: beast-gtk/bstapp.c:95
 msgid "Adjust overall program behaviour"
 msgstr "Adjust overall program behaviour"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:99
 msgid "Rebuild"
 msgstr "Rebuild"
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:102
 msgid "_About..."
 msgstr "_About..."
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:102
 msgid "Display developer and contributor credits"
 msgstr "Display developer and contributor credits"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:106
 msgid "_Undo"
 msgstr "_Undo"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:106
 msgid "Undo the effect of the last action"
 msgstr "Undo the effect of the last action"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:108
 msgid "_Redo"
 msgstr "_Redo"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:108
 msgid "Redo the last undone action"
 msgstr "Redo the last undone action"
 
-#: beast-gtk/bstapp.c:114 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:112 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Clear Undo"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:112
 msgid "Delete the complete undo history"
 msgstr "Delete the complete undo history"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:116
 msgid "Procedure _Browser"
 msgstr "Procedure _Browser"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:116
 msgid "Display an overview of all procedures"
 msgstr "Display an overview of all procedures"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:118
 msgid "Rack Editor"
 msgstr "Rack Editor"
 
-#: beast-gtk/bstapp.c:122 beast-gtk/bstprofiler.c:225
+#: beast-gtk/bstapp.c:120 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:120
 msgid "Display statistics and timing information"
 msgstr "Display statistics and timing information"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:122
 msgid "New View"
 msgstr "New View"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:122
 msgid "Create an extra view of the project"
 msgstr "Create an extra view of the project"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:126
 msgid "_Play"
 msgstr "_Play"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:126
 msgid "Play or restart playback of the project"
 msgstr "Play or restart playback of the project"
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:128
 msgid "_Stop"
 msgstr "_Stop"
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:128
 msgid "Stop playback of the project"
 msgstr "Stop playback of the project"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:132
 msgid "New Song"
 msgstr "New Song"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:132
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Create a new song, consisting of a mixer, tracks, parts and notes"
 
+#: beast-gtk/bstapp.c:134
+msgid "Add Custom Synthesizer"
+msgstr "Add Custom Synthesizer"
+
+#: beast-gtk/bstapp.c:134
+msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
+msgstr "Add a new synthesizer mesh to be used as effect or instrument in songs"
+
 #: beast-gtk/bstapp.c:136
-msgid "New Custom Synthesizer"
-msgstr "New Custom Synthesizer"
+msgid "Add MIDI Synthesizer"
+msgstr "Add MIDI Synthesizer"
 
 #: beast-gtk/bstapp.c:136
 msgid ""
-"Create a new synthesizer mesh to be used as effect or instrument in songs"
+"Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
-"Create a new synthesizer mesh to be used as effect or instrument in songs"
+"Add a new MIDI synthesizer to control an instrument from external MIDI events"
 
 #: beast-gtk/bstapp.c:138
-msgid "New MIDI Synthesizer"
-msgstr "New MIDI Synthesizer"
-
-#: beast-gtk/bstapp.c:138
-msgid ""
-"Create a new MIDI synthesizer to control an instrument from external MIDI "
-"events"
-msgstr ""
-"Create a new MIDI synthesizer to control an instrument from external MIDI "
-"events"
-
-#: beast-gtk/bstapp.c:140
 msgid "Remove Song or Synthesizer"
 msgstr "Remove Song or Synthesizer"
 
-#: beast-gtk/bstapp.c:140
+#: beast-gtk/bstapp.c:138
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Remove the currently selected synthesizer (song)"
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:142
 msgid "Load _Instrument..."
 msgstr "Load _Instrument..."
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:142
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Load synthesizer mesh from instruments folder"
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:144
 msgid "Load _Effect..."
 msgstr "Load _Effect..."
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:144
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Load synthesizer mesh from effects folder"
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:146
 msgid "Save As Instrument..."
 msgstr "Save As Instrument..."
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:146
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Save synthesizer mesh to instruments folder"
 
-#: beast-gtk/bstapp.c:150
+#: beast-gtk/bstapp.c:148
 msgid "Save As Effect..."
 msgstr "Save As Effect..."
 
-#: beast-gtk/bstapp.c:150
+#: beast-gtk/bstapp.c:148
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Save synthesizer mesh to effects folder"
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:152
 msgid "Document _Index..."
 msgstr "Document _Index..."
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:152
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Provide an overview of all BEAST documentation contents"
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:154
 msgid "_Quick Start..."
 msgstr "_Quick Start..."
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:154
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Provides an introduction about how to accomplish the most common tasks"
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:156
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:156
 msgid "Answers to frequently asked questions"
 msgstr "Answers to frequently asked questions"
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:158
 msgid "Online _Help Desk..."
 msgstr "Online _Help Desk..."
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:158
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Open a web browser to the online help desk at the BEAST website"
 
-#: beast-gtk/bstapp.c:162
+#: beast-gtk/bstapp.c:160
 msgid "_BEAST Website..."
 msgstr "_BEAST Website..."
 
-#: beast-gtk/bstapp.c:162
+#: beast-gtk/bstapp.c:160
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Open a web browser to the BEAST website"
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:163
 msgid "_Release Notes..."
 msgstr "_Release Notes..."
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:163
 msgid "Notes and informations about this release cycle"
 msgstr "Notes and information about this release cycle"
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:165
 msgid "Developing Plugins..."
 msgstr "Developing Plugins..."
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:165
 msgid "A guide to synthesis plugin development"
 msgstr "A guide to synthesis plugin development"
 
-#: beast-gtk/bstapp.c:169
+#: beast-gtk/bstapp.c:167
 msgid "DSP Engine..."
 msgstr "DSP Engine..."
 
-#: beast-gtk/bstapp.c:169
+#: beast-gtk/bstapp.c:167
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Technical description of the multi-threaded synthesis engine innards"
 
-#: beast-gtk/bstapp.c:172
+#: beast-gtk/bstapp.c:170
 msgid "Development..."
 msgstr "Development..."
 
-#: beast-gtk/bstapp.c:172
+#: beast-gtk/bstapp.c:170
 msgid "Provide an overview of development related topics and documents"
 msgstr "Provide an overview of development-related topics and documents"
 
-#: beast-gtk/bstapp.c:176
+#: beast-gtk/bstapp.c:174
 msgid "Online Sound Archive..."
 msgstr "Online Sound Archive..."
 
-#: beast-gtk/bstapp.c:176
+#: beast-gtk/bstapp.c:174
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Open a web browser to the online sound archive"
 
-#: beast-gtk/bstapp.c:180
+#: beast-gtk/bstapp.c:178
 msgid "Online Demos..."
 msgstr "Online Demos..."
 
-#: beast-gtk/bstapp.c:180
+#: beast-gtk/bstapp.c:178
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Open a web browser to online demo songs"
 
-#: beast-gtk/bstapp.c:312
+#: beast-gtk/bstapp.c:299
 msgid "Export Audio"
 msgstr "Export Audio"
 
-#: beast-gtk/bstapp.c:642 beast-gtk/bstapp.c:649 beast-gtk/bstfiledialog.c:424
-#: beast-gtk/bstfiledialog.c:431
+#: beast-gtk/bstapp.c:491 beast-gtk/bstsupershell.c:233
+msgid "Waves"
+msgstr "Waves"
+
+#: beast-gtk/bstapp.c:493
+msgid "Wave Repository"
+msgstr "Wave Repository"
+
+#: beast-gtk/bstapp.c:498
+#, c-format
+msgid "Song: %s"
+msgstr "Song: %s"
+
+#: beast-gtk/bstapp.c:503
+#, c-format
+msgid "MIDI Synthesizer: %s"
+msgstr "MIDI Synthesizer: %s"
+
+#: beast-gtk/bstapp.c:508
+#, c-format
+msgid "Synthesizer: %s"
+msgstr "Synthesizer: %s"
+
+#: beast-gtk/bstapp.c:695 beast-gtk/bstapp.c:702 beast-gtk/bstfiledialog.c:421
+#: beast-gtk/bstfiledialog.c:428
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Opening project `%s'"
 
-#: beast-gtk/bstapp.c:709
+#: beast-gtk/bstapp.c:762
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Loading skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:879
+#: beast-gtk/bstapp.c:931
 msgid "Rack editor"
 msgstr "Rack editor"
 
-#: beast-gtk/bstapp.c:893
+#: beast-gtk/bstapp.c:945
 msgid "Preferences"
 msgstr "Preferences"
 
-#: beast-gtk/bstapp.c:920
+#: beast-gtk/bstapp.c:972
 msgid "Procedure Browser"
 msgstr "Procedure Browser"
 
-#: beast-gtk/bstapp.c:977
+#: beast-gtk/bstapp.c:1029
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
@@ -497,48 +516,48 @@ msgstr "Select Region"
 msgid "Abortion"
 msgstr "Abortion"
 
-#: beast-gtk/bstfiledialog.c:169
+#: beast-gtk/bstfiledialog.c:166
 msgid "Contents"
 msgstr "Contents"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:201
+#: beast-gtk/bstfiledialog.c:198
 msgid "File Selection"
 msgstr "File Selection"
 
-#: beast-gtk/bstfiledialog.c:382
+#: beast-gtk/bstfiledialog.c:379
 msgid "Open Project"
 msgstr "Open Project"
 
-#: beast-gtk/bstfiledialog.c:396
+#: beast-gtk/bstfiledialog.c:393
 msgid "Select File"
 msgstr "Select File"
 
-#: beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:407
 msgid "Select Directory"
 msgstr "Select Directory"
 
-#: beast-gtk/bstfiledialog.c:449
+#: beast-gtk/bstfiledialog.c:446
 #, c-format
 msgid "Merge: %s"
 msgstr "Merge: %s"
 
-#: beast-gtk/bstfiledialog.c:462
+#: beast-gtk/bstfiledialog.c:459
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Merging project `%s'"
 
-#: beast-gtk/bstfiledialog.c:478
+#: beast-gtk/bstfiledialog.c:475
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstfiledialog.c:489
+#: beast-gtk/bstfiledialog.c:486
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importing MIDI file `%s'"
 
-#: beast-gtk/bstfiledialog.c:508
+#: beast-gtk/bstfiledialog.c:505
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -554,7 +573,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: beast-gtk/bstfiledialog.c:532 beast-gtk/bstfiledialog.c:546
+#: beast-gtk/bstfiledialog.c:529 beast-gtk/bstfiledialog.c:543
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -567,7 +586,7 @@ msgstr ""
 "due to:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:537
+#: beast-gtk/bstfiledialog.c:534
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -580,71 +599,71 @@ msgstr ""
 "due to:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:574
+#: beast-gtk/bstfiledialog.c:571
 #, c-format
 msgid "Save: %s"
 msgstr "Save: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:576
+#: beast-gtk/bstfiledialog.c:573
 msgid "Fully include wave files"
 msgstr "Fully include wave files"
 
-#: beast-gtk/bstfiledialog.c:577
+#: beast-gtk/bstfiledialog.c:574
 msgid "Store references to wave files"
 msgstr "Store references to wave files"
 
-#: beast-gtk/bstfiledialog.c:591
+#: beast-gtk/bstfiledialog.c:588
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Saving project `%s'"
 
-#: beast-gtk/bstfiledialog.c:606
+#: beast-gtk/bstfiledialog.c:603
 msgid "Load Effect"
 msgstr "Load Effect"
 
-#: beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:616
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Merging effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:636
+#: beast-gtk/bstfiledialog.c:633
 msgid "Save Effect"
 msgstr "Save Effect"
 
-#: beast-gtk/bstfiledialog.c:650
+#: beast-gtk/bstfiledialog.c:647
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Saving effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:665
+#: beast-gtk/bstfiledialog.c:662
 msgid "Load Instrument"
 msgstr "Load Instrument"
 
-#: beast-gtk/bstfiledialog.c:678
+#: beast-gtk/bstfiledialog.c:675
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Merging instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:695
+#: beast-gtk/bstfiledialog.c:692
 msgid "Save Instrument"
 msgstr "Save Instrument"
 
-#: beast-gtk/bstfiledialog.c:709
+#: beast-gtk/bstfiledialog.c:706
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Saving instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:725
+#: beast-gtk/bstfiledialog.c:722
 msgid "Load Wave"
 msgstr "Load Wave"
 
-#: beast-gtk/bstfiledialog.c:737 beast-gtk/bstfiledialog.c:739
+#: beast-gtk/bstfiledialog.c:734 beast-gtk/bstfiledialog.c:736
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Loading wave `%s'"
 
-#: beast-gtk/bstfiledialog.c:741 beast-gtk/bstmain.c:279
+#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstmain.c:279
 #: beast-gtk/bstmain.c:296
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -1534,19 +1553,19 @@ msgstr "Play note"
 msgid "Playback"
 msgstr "Playback"
 
-#: beast-gtk/bstpreferences.c:77
+#: beast-gtk/bstpreferences.c:74
 msgid "Piano Keys"
 msgstr "Piano Keys"
 
-#: beast-gtk/bstpreferences.c:84
+#: beast-gtk/bstpreferences.c:81
 msgid "Generic Keys"
 msgstr "Generic Keys"
 
-#: beast-gtk/bstpreferences.c:88
+#: beast-gtk/bstpreferences.c:85
 msgid "Messages"
 msgstr "Messages"
 
-#: beast-gtk/bstpreferences.c:93
+#: beast-gtk/bstpreferences.c:90
 msgid "Skin"
 msgstr "Skin"
 
@@ -2485,8 +2504,8 @@ msgstr "Select output module"
 msgid "Select input module"
 msgstr "Select input module"
 
-#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
-#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:281
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:189
+#: beast-gtk/bstsupershell.c:222 beast-gtk/bstsupershell.c:236
 msgid "Properties"
 msgstr "Properties"
 
@@ -2598,70 +2617,47 @@ msgstr "Mark Signal (Head)"
 msgid "Mark Signal (Tail)"
 msgstr "Mark Signal (Tail)"
 
-#: beast-gtk/bstsupershell.c:159 beast-gtk/bstsupershell.c:278
-msgid "Waves"
-msgstr "Waves"
-
-#: beast-gtk/bstsupershell.c:160
-msgid "Wave Repository"
-msgstr "Wave Repository"
-
-#: beast-gtk/bstsupershell.c:165
-#, c-format
-msgid "Song: %s"
-msgstr "Song: %s"
-
-#: beast-gtk/bstsupershell.c:170
-#, c-format
-msgid "MIDI Synthesizer: %s"
-msgstr "MIDI Synthesizer: %s"
-
-#: beast-gtk/bstsupershell.c:175
-#, c-format
-msgid "Synthesizer: %s"
-msgstr "Synthesizer: %s"
-
-#: beast-gtk/bstsupershell.c:228
+#: beast-gtk/bstsupershell.c:183
 msgid "Tracks"
 msgstr "Tracks"
 
-#: beast-gtk/bstsupershell.c:228
+#: beast-gtk/bstsupershell.c:183
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Tracks contain instrument definitions and parts with notes"
 
-#: beast-gtk/bstsupershell.c:231
+#: beast-gtk/bstsupershell.c:186
 msgid "Mixer"
 msgstr "Mixer"
 
-#: beast-gtk/bstsupershell.c:231
+#: beast-gtk/bstsupershell.c:186
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Mix track outputs, adjust volume and add effects"
 
-#: beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsupershell.c:189
 msgid "Adjust overall song behaviour"
 msgstr "Adjust overall song behaviour"
 
-#: beast-gtk/bstsupershell.c:238
+#: beast-gtk/bstsupershell.c:193
 msgid "Parts"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:197
 msgid "Busses"
 msgstr "Busses"
 
-#: beast-gtk/bstsupershell.c:246 beast-gtk/bstsupershell.c:263
+#: beast-gtk/bstsupershell.c:201 beast-gtk/bstsupershell.c:218
 msgid "Routing"
 msgstr "Routing"
 
-#: beast-gtk/bstsupershell.c:259
+#: beast-gtk/bstsupershell.c:214
 msgid "Rack"
 msgstr "Rack"
 
-#: beast-gtk/bstsupershell.c:263
+#: beast-gtk/bstsupershell.c:218
 msgid "Add, edit and connect synthsizer mesh components"
 msgstr "Add, edit and connect synthsizer mesh components"
 
-#: beast-gtk/bstsupershell.c:267
+#: beast-gtk/bstsupershell.c:222
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Adjust overall synthesizer behaviour"
 
@@ -2752,7 +2748,7 @@ msgid "Start Editor"
 msgstr "Start Editor"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.c:264
+#: beast-gtk/bsttracksynthdialog.c:261
 #, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "Synthesizer Selection: %s"
@@ -5548,6 +5544,7 @@ msgstr "Self Modulation [%]"
 msgid "Strength of self modulation"
 msgstr "Strength of self modulation"
 
+#. disabled
 #: bse/bsestandardosc.c:173 bse/bsestandardosc.c:180
 msgid "Pulse Modulation"
 msgstr "Pulse Modulation"
