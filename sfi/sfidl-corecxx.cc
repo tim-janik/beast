@@ -165,6 +165,18 @@ UC_NAME (const string &cstr)
 #define cUC_NAME(s)    UC_NAME (s).c_str()
 
 static string
+include_relative (string path,
+                  string source_file)
+{
+  if (g_path_is_absolute (path.c_str()))
+    return path;
+  gchar *dir = g_path_get_dirname (source_file.c_str());
+  string apath = string(dir) + G_DIR_SEPARATOR_S + path;
+  g_free (dir);
+  return apath;
+}
+
+static string
 pspec_constructor (const Param &param)
 {
   switch (sfidl_type (param.type))
@@ -396,7 +408,7 @@ CodeGeneratorModule::run ()
       if (icon != "")
         {
           printf ("  template<bool> static inline const unsigned char* pixstream();\n");
-          images.push_back (Image (icon,
+          images.push_back (Image (include_relative (icon, ci->file),
                                    "template<bool> const unsigned char*\n" +
                                    ctNameBase +
                                    "::pixstream()"));
@@ -595,7 +607,7 @@ CodeGeneratorModule::run ()
       if (icon != "")
         {
           printf ("  template<bool> static inline const unsigned char* pixstream();\n");
-          images.push_back (Image (icon,
+          images.push_back (Image (include_relative (icon, mi->file),
                                    "template<bool> const unsigned char*\n" +
                                    ptName +
                                    "::pixstream()"));

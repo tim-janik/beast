@@ -51,6 +51,7 @@ struct LineInfo {
 
 struct Constant {
   std::string name;
+  std::string file;
   enum { tString = 1, tFloat = 2, tInt = 3 } type;
 
   std::string str;
@@ -61,7 +62,8 @@ struct Constant {
 struct Param {
   std::string type;
   std::string name;
- 
+  std::string file;
+  
   std::string group;
   std::string pspec;
   int         line;
@@ -72,12 +74,14 @@ struct Stream {
   enum Type { IStream, JStream, OStream } type;
   std::string ident;
   std::string name;
+  std::string file;
   std::string blurb;
   int         line;
 };
  
 struct ChoiceValue {
   std::string name;
+  std::string file;
   std::string text;
   
   int         value;
@@ -92,6 +96,7 @@ struct Choice {
    * which would mean an anonymous enum in the Arts namespace
    */
   std::string name;
+  std::string file;
   
   std::vector<ChoiceValue> contents;
   Map<std::string, std::string> infos;
@@ -99,6 +104,7 @@ struct Choice {
 
 struct Record {
   std::string name;
+  std::string file;
   
   std::vector<Param> contents;
   Map<std::string, std::string> infos;
@@ -106,13 +112,15 @@ struct Record {
 
 struct Sequence {
   std::string name;
+  std::string file;
   Param content;
   Map<std::string, std::string> infos;
 };
 
 struct Method {
   std::string name;
-
+  std::string file;
+  
   std::vector<Param> params;
   Param result;
   Map<std::string, std::string> infos;
@@ -120,6 +128,7 @@ struct Method {
 
 struct Class {
   std::string name;
+  std::string file;
   std::string inherits;
   
   std::vector<Method> methods;

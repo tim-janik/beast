@@ -1,3 +1,11 @@
+Fri Oct 10 12:35:34 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: handle icon file paths idl-file location relative.
+
+	* sfidl-parser.[hc]*: provide the source file name for all parsed
+	entities.
+	(parse): setup scanner->input_name with absolute input file name.
+
 Mon Oct  6 10:36:24 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiglueproxy.c (sfi_glue_proxy_disconnect): make missing signal

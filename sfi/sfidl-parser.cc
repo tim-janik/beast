@@ -189,8 +189,9 @@ Sequence Parser::findSequence(const string& name) const
 {
   vector<Sequence>::const_iterator i;
   
-  for(i=sequences.begin();i != sequences.end(); i++)
-    if(i->name == name) return *i;
+  for (i=sequences.begin(); i != sequences.end(); i++)
+    if (i->name == name)
+      return *i;
   
   return Sequence();
 }
@@ -199,8 +200,9 @@ Record Parser::findRecord(const string& name) const
 {
   vector<Record>::const_iterator i;
   
-  for(i=records.begin();i != records.end(); i++)
-    if(i->name == name) return *i;
+  for (i=records.begin(); i != records.end(); i++)
+    if (i->name == name)
+      return *i;
   
   return Record();
 }
@@ -470,6 +472,16 @@ bool Parser::parse (const string& filename)
   /* preprocess (throws includes into contents, removes C-style comments) */
   preprocess (filename);
   g_scanner_input_text (scanner, &scannerInputData[0], scannerInputData.size());
+  /* provide abosulte input file name for fileName() */
+  if (g_path_is_absolute (filename.c_str()))
+    scanner->input_name = g_strdup (filename.c_str());
+  else
+    {
+      gchar *dir = g_get_current_dir();
+      scanner->input_name = g_strconcat (dir, G_DIR_SEPARATOR_S, filename.c_str(), NULL);
+      g_free (dir);
+    }
+  /* FIXME: we leak scanner->input_name later on */
 
   /* define primitive types into the basic namespace */
   ModuleHelper::define("Bool");
@@ -558,6 +570,7 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 
 	      procedure.name = ModuleHelper::define (procedure.name.c_str());
+	      procedure.file = fileName();
 	      addProcedureTodo (procedure);
 	    }
 	    break;
@@ -657,7 +670,8 @@ GTokenType Parser::parseConstant ()
   parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = ModuleHelper::define (scanner->value.v_identifier);
-
+  cdef.file = fileName();
+  
   parse_or_return ('=');
 
   GTokenType t = g_scanner_peek_next_token (scanner);
@@ -712,6 +726,7 @@ GTokenType Parser::parseChoice ()
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   choice.name = ModuleHelper::define (scanner->value.v_identifier);
+  choice.file = fileName();
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
@@ -756,6 +771,7 @@ GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequent
   
   parse_or_return (G_TOKEN_IDENTIFIER);
   comp.name = scanner->value.v_identifier;
+  comp.file = fileName();
   comp.neutral = false;
   
   /* the hints are optional */
@@ -853,6 +869,7 @@ GTokenType Parser::parseRecord ()
   parse_or_return (TOKEN_RECORD);
   parse_or_return (G_TOKEN_IDENTIFIER);
   record.name = ModuleHelper::define (scanner->value.v_identifier);
+  record.file = fileName();
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
@@ -951,6 +968,7 @@ GTokenType Parser::parseRecordField (Param& def, const string& group)
   
   parse_or_return (G_TOKEN_IDENTIFIER);
   def.name = scanner->value.v_identifier;
+  def.file = fileName();
   
   /* the hints are optional */
   skip_ascii_at (scanner);
@@ -1082,6 +1100,7 @@ GTokenType Parser::parseSequence ()
   parse_or_return (TOKEN_SEQUENCE);
   parse_or_return (G_TOKEN_IDENTIFIER);
   sequence.name = ModuleHelper::define (scanner->value.v_identifier);
+  sequence.file = fileName();
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
@@ -1118,6 +1137,7 @@ GTokenType Parser::parseClass ()
   parse_or_return (TOKEN_CLASS);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = ModuleHelper::define (scanner->value.v_identifier);
+  cdef.file = fileName();
   
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
@@ -1266,13 +1286,15 @@ GTokenType Parser::parseMethod (Method& method)
 	return expected_token;
 
       method.result.name = "result";
+      method.result.file = fileName();
     }
 
   method.result.pspec = method.result.type;
 
   parse_or_return (G_TOKEN_IDENTIFIER);
   method.name = scanner->value.v_identifier;
-
+  method.file = fileName();
+  
   parse_or_return ('(');
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
@@ -1286,6 +1308,7 @@ GTokenType Parser::parseMethod (Method& method)
   
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.name = scanner->value.v_identifier;
+      def.file = fileName();
       method.params.push_back(def);
 
       if (g_scanner_peek_next_token (scanner) != GTokenType(')'))
@@ -1323,6 +1346,7 @@ GTokenType Parser::parseMethod (Method& method)
 	  {
 	    parse_or_return (G_TOKEN_IDENTIFIER);
 	    method.result.name = scanner->value.v_identifier;
+            method.result.file = fileName();
 	    pd = &method.result;
 	  }
 	  else if(inout == "In")
