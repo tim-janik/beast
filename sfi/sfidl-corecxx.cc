@@ -224,16 +224,17 @@ func_value_set_param (const Param &param)
 void
 CodeGeneratorModule::run ()
 {
-  // FIXME: shouldn#t have the following global vars at all
+  // FIXME: shouldn't have the following global vars at all
   the_parser = &parser;
   the_cgc = new CodeGeneratorC (parser);
-
+  
   string nspace = "Foo";
   vector<string> enum_exports;
-
+  
   /* standard includes */
-  printf ("\n#include <bse/bsecxxmodule.h>\n", nspace.c_str());
-
+  if (options.doHeader)
+    printf ("\n#include <bse/bsecxxplugin.h>\n", nspace.c_str());
+  
   /* sigh, we can't query things by namespace from the parser. // FIXME
    * so here's a gross hack, figure the namespace from the
    * first class to output (cross fingers there is any) and
@@ -246,188 +247,230 @@ CodeGeneratorModule::run ()
         break;
       }
   printf ("\nnamespace %s {\n", nspace.c_str());
-
-  printf ("\n/* class prototypes */\n");
-  for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+  
+  if (options.doHeader)
     {
-      if (parser.fromInclude (ci->name))
-        continue;
-      /* class prototypes */
-      printf ("class %s;\n", cTypeName (ci->name));
+      printf ("\n/* class prototypes */\n");
+      for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+        {
+          if (parser.fromInclude (ci->name))
+            continue;
+          /* class prototypes */
+          printf ("class %sSkel;\n", cTypeName (ci->name));
+        }
     }
-
+  
   printf ("\n/* choice/enum types */\n");
   for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
     {
       if (parser.fromInclude (ci->name))
         continue;
-
-      printf ("#define %s_TYPE_%s (BSE_TYPE_ID (%s))\n",
-              cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)),
-              cTypeName (ci->name));
-      printf ("enum %s {\n", cTypeName (ci->name));
-      int i = 1; // FIXME: vi->value needs to be set != 0
-      for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-        printf ("  %s = %d,\n", cUC_NAME (vi->name), i++ /* vi->value */ );
-      printf ("};\n");
-      printf ("static GType BSE_TYPE_ID (%s);\n", cTypeName (ci->name));
+      
+      if (options.doSource)
+        printf ("extern \"C\" { GType BSE_TYPE_ID (%s) = 0; }\n", cTypeName (ci->name));
+      else
+        {
+          printf ("extern \"C\" { extern GType BSE_TYPE_ID (%s); }\n", cTypeName (ci->name));
+          printf ("enum %s {\n", cTypeName (ci->name));
+          int i = 1; // FIXME: vi->value needs to be set != 0
+          for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
+            printf ("  %s = %d,\n", cUC_NAME (vi->name), i++ /* vi->value */ );
+          printf ("};\n");
+          printf ("#define %s_TYPE_%s (BSE_TYPE_ID (%s))\n",
+                  cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)),
+                  cTypeName (ci->name));
+        }
     }
-
-  printf ("\n/* choice/enum type value lists */\n");
-  for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
+  
+  if (options.doSource)
     {
-      if (parser.fromInclude (ci->name))
-        continue;
-
-      printf ("static const GEnumValue %s_GEnumValues[%u] = {\n", cTypeName (ci->name), ci->contents.size() + 1);
-      int i = 1; // FIXME: vi->value needs to be set != 0
-      for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-        printf ("  { %d, \"%s\", \"%s\" },\n", i++ /*vi->value*/, cUC_NAME (vi->name), vi->text.c_str());
-      printf ("  { 0, NULL, NULL }\n");
-      printf ("};\n");
-      enum_exports.push_back (string ("{ ") +
-                              "&BSE_TYPE_ID (" + TypeName (ci->name) + "), " +
-                              "\"" + ci->name + "\", " + // FIXME: get rid of :: in type-name
-                              "G_TYPE_ENUM, " +
-                              TypeName (ci->name) + "_GEnumValues " +
-                              "}");
+      printf ("\n/* choice/enum type value lists */\n");
+      for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
+        {
+          if (parser.fromInclude (ci->name))
+            continue;
+          
+          printf ("static const GEnumValue %s_GEnumValues[%u] = {\n", cTypeName (ci->name), ci->contents.size() + 1);
+          int i = 1; // FIXME: vi->value needs to be set != 0
+          for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
+            printf ("  { %d, \"%s\", \"%s\" },\n", i++ /*vi->value*/, cUC_NAME (vi->name), vi->text.c_str());
+          printf ("  { 0, NULL, NULL }\n");
+          printf ("};\n");
+          enum_exports.push_back (string ("{ ") +
+                                  "&BSE_TYPE_ID (" + TypeName (ci->name) + "), " +
+                                  "\"" + ci->name + "\", " + // FIXME: get rid of :: in type-name
+                                  "G_TYPE_ENUM, " +
+                                  TypeName (ci->name) + "_GEnumValues " +
+                                  "}");
+        }
     }
-
+  
   printf ("\n/* class skeletons */\n");
   for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
     {
+      string ctName = TypeName (ci->name) + "Skel";
       vector<string> destroy_jobs;
       if (parser.fromInclude (ci->name))
         continue;
-
+      
       /* skeleton class declaration */
-      printf ("class %sSkel : %s {\n", cTypeName (ci->name), cTypeName (ci->inherits));
-
-      /* property enum */
+      if (options.doHeader)
+        printf ("class %s : %s {\n", ctName.c_str(), cTypeName (ci->inherits));
+      
+      /* properties */
       if (ci->properties.begin() != ci->properties.end())
         {
-          printf ("protected:\n");
-          printf ("  enum PropertyIDs {\n");
-          vector<Param>::const_iterator pi = ci->properties.begin();
-          printf ("    PROP_%s = 1,\n", cUC_NAME (pi->name));
-          for (pi++; pi != ci->properties.end(); pi++)
-            printf ("    PROP_%s,\n", cUC_NAME (pi->name));
-          printf ("  };\n");
+          /* property enum */
+          if (options.doHeader)
+            {
+              printf ("protected:\n  enum PropertyIDs {\n");
+              vector<Param>::const_iterator pi = ci->properties.begin();
+              printf ("    PROP_%s = 1,\n", cUC_NAME (pi->name));
+              for (pi++; pi != ci->properties.end(); pi++)
+                printf ("    PROP_%s,\n", cUC_NAME (pi->name));
+              printf ("  };\n");
+            }
 
           /* property fields */
-          for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          if (options.doHeader)
             {
-              /* type */
-              printf ("  %s ", cTypeName (pi->type));
-              /* name */
-              printf ("%s;\n", pi->name.c_str());
+              for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+                {
+                  /* type */
+                  printf ("  %s ", cTypeName (pi->type));
+                  /* name */
+                  printf ("%s;\n", pi->name.c_str());
+                }
             }
 
           /* property setter */
-          printf ("  void\n");
-          printf ("  set_property (unsigned int  prop_id, const GValue *value)\n");
-          printf ("  {\n");
-          printf ("    switch (prop_id) {\n");
-          for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          if (options.doHeader)
+            printf ("  void set_property (unsigned int  prop_id, const GValue *value);\n");
+          else
             {
-              printf ("    case PROP_%s:\n", cUC_NAME (pi->name));
-              string f = func_param_free (*pi).c_str();
-              if (f.size())
-                printf ("      %s (%s);\n", f.c_str(), pi->name.c_str());
-              printf ("      %s = %s (value);\n", pi->name.c_str(), func_value_dup_param (*pi).c_str());
-              printf ("    break;\n");
+              printf ("void\n%s::set_property (unsigned int  prop_id, const GValue *value)\n", ctName.c_str());
+              printf ("{\n");
+              printf ("  switch (prop_id) {\n");
+              for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+                {
+                  printf ("  case PROP_%s:\n", cUC_NAME (pi->name));
+                  string f = func_param_free (*pi).c_str();
+                  if (f.size())
+                    printf ("    %s (%s);\n", f.c_str(), pi->name.c_str());
+                  printf ("    %s = %s (value);\n", pi->name.c_str(), func_value_dup_param (*pi).c_str());
+                  printf ("  break;\n");
+                }
+              printf ("  };\n");
+              printf ("}\n");
             }
-          printf ("    };\n");
-          printf ("  }\n");
 
           /* property getter */
-          printf ("  void\n");
-          printf ("  get_property (unsigned int  prop_id, GValue *value)\n");
-          printf ("  {\n");
-          printf ("    switch (prop_id) {\n");
-          for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          if (options.doHeader)
+            printf ("  void get_property (unsigned int  prop_id, GValue *value);\n");
+          else
             {
-              printf ("    case PROP_%s:\n", cUC_NAME (pi->name));
-              printf ("      %s (value, %s);\n", func_value_set_param (*pi).c_str(), pi->name.c_str());
-              printf ("    break;\n");
+              printf ("void\n%s::get_property (unsigned int  prop_id, GValue *value)\n", ctName.c_str());
+              printf ("{\n");
+              printf ("  switch (prop_id) {\n");
+              for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+                {
+                  printf ("  case PROP_%s:\n", cUC_NAME (pi->name));
+                  printf ("    %s (value, %s);\n", func_value_set_param (*pi).c_str(), pi->name.c_str());
+                  printf ("  break;\n");
+                }
+              printf ("  };\n");
+              printf ("}\n");
             }
-          printf ("    };\n");
-          printf ("  }\n");
-
+          
           /* pspec construction */
-          printf ("private:\n");
-          printf ("  GParamSpec*\n");
-          printf ("  create_pspec (unsigned int  prop_id)\n");
-          printf ("  {\n");
-          printf ("    switch (prop_id) {\n");
-          for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          if (options.doHeader)
+            printf ("private:\n  GParamSpec* create_pspec (unsigned int  prop_id);\n");
+          else
             {
-              printf ("    case PROP_%s:\n", cUC_NAME (pi->name));
-              printf ("      return %s;\n", pspec_constructor (*pi).c_str());
+              printf ("GParamSpec*\n%s::create_pspec (unsigned int  prop_id)\n", ctName.c_str());
+              printf ("{\n");
+              printf ("  switch (prop_id) {\n");
+              for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+                {
+                  printf ("  case PROP_%s:\n", cUC_NAME (pi->name));
+                  printf ("    return %s;\n", pspec_constructor (*pi).c_str());
+                }
+              printf ("  default:\n");
+              printf ("    return NULL;\n");
+              printf ("  };\n");
+              printf ("}\n");
             }
-          printf ("    };\n");
-          printf ("  }\n");
-
+          
           /* property deletion */
-          printf ("private:\n");
-          printf ("  void\n");
-          printf ("  clear_properties ()\n");
-          printf ("  {\n");
-          for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          if (options.doHeader)
+            printf ("private:\n  void clear_properties ();\n");
+          else
             {
-              string f = func_param_free (*pi).c_str();
-              if (f.size())
-                printf ("    %s (%s);\n", f.c_str(), pi->name.c_str());
+              printf ("void\n%s::clear_properties ()\n", ctName.c_str());
+              printf ("{\n");
+              for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+                {
+                  string f = func_param_free (*pi).c_str();
+                  if (f.size())
+                    printf ("  %s (%s);\n", f.c_str(), pi->name.c_str());
+                }
+              printf ("}\n");
+              destroy_jobs.push_back ("clear_properties ();");
             }
-          printf ("  }\n");
-          destroy_jobs.push_back ("clear_properties ();");
         }
-
+      
       /* methods */
-      if (ci->methods.begin() != ci->methods.end())
-        printf ("protected:\n");
-      for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
+      if (options.doHeader)
         {
-          /* return type */
-          printf ("  virtual %s ", cTypeName (mi->result.type));
-          /* method name */
-          printf ("%s (", mi->name.c_str());
-          /* args */
-          for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
+          if (ci->methods.begin() != ci->methods.end())
+            printf ("protected:\n");
+          for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
             {
-              if (pi != mi->params.begin())
-                printf (", ");
-              printf ("%s %s", cTypeRef (pi->type), pi->name.c_str());
+              /* return type */
+              printf ("  virtual %s ", cTypeName (mi->result.type));
+              /* method name */
+              printf ("%s (", mi->name.c_str());
+              /* args */
+              for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
+                {
+                  if (pi != mi->params.begin())
+                    printf (", ");
+                  printf ("%s %s", cTypeRef (pi->type), pi->name.c_str());
+                }
+              printf (") = 0;\n");
             }
-          printf (") = 0;\n");
         }
-
+      
       /* destructor */
-      if (destroy_jobs.size ())
+      if (options.doHeader)
+        printf ("protected:\n  virtual ~%s ();\n", ctName.c_str());
+      else
         {
-          printf ("protected:\n");
-          printf ("  virtual ~%sSkel ()\n", cTypeName (ci->name));
-          printf ("  {\n");
+          printf ("%s::~%s ()\n", ctName.c_str(), ctName.c_str());
+          printf ("{\n");
           for (vector<string>::const_iterator vi = destroy_jobs.begin(); vi != destroy_jobs.end(); vi++)
-            printf ("    %s\n", vi->c_str());
-          printf ("  }\n");
+            printf ("  %s\n", vi->c_str());
+          printf ("}\n");
         }
-
-          destroy_jobs.push_back ("clear_properties ();");
-      printf ("};\n"); /* finish: class ... { }; */
+      
+      if (options.doHeader)
+        printf ("};\n"); /* finish: class ... { }; */
     }
-
-  printf ("\n/* generate exports */\n");
-  if (enum_exports.size ())
+  
+  if (options.doSource)
     {
-      printf ("#include <bse/bseexports.h>\n");
-      printf ("BSE_EXPORT_STATIC_ENUMS = {\n");
-      for (vector<string>::const_iterator ei = enum_exports.begin(); ei != enum_exports.end(); ei++)
-        printf ("  %s,\n", ei->c_str());
-      printf ("  { NULL, },\n");
-      printf ("};\n");
+      printf ("\n/* generate exports */\n");
+      if (enum_exports.size ())
+        {
+          printf ("#include <bse/bseexports.h>\n");
+          printf ("BSE_EXPORT_STATIC_ENUMS = {\n");
+          for (vector<string>::const_iterator ei = enum_exports.begin(); ei != enum_exports.end(); ei++)
+            printf ("  %s,\n", ei->c_str());
+          printf ("  { NULL, },\n");
+          printf ("};\n");
+        }
     }
-
+  
   /* close namespace */
   printf ("\n}; /* %s */\n", nspace.c_str());
 }

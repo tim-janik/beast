@@ -1,4 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
+/* SFI - Synthesis Fusion Kit Interface                 -*-mode: c++;-*-
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
@@ -26,29 +26,29 @@
 #include <list>
 
 namespace Sfidl {
-  enum Type {
-    VOID,
-    BOOL,
-    INT,
-    NUM,
-    REAL,
-    STRING,
-    CHOICE,
-    BBLOCK,
-    FBLOCK,
-    PSPEC,
-    SEQUENCE,
-    RECORD,
-    OBJECT,     /* PROXY */
-  };
-                          
-  class CodeGeneratorModule : public CodeGenerator {
-  public:
-    CodeGeneratorModule (const Parser &parser) : CodeGenerator (parser) {
-    }
-    void run ();
-  };
+enum Type {
+  VOID,
+  BOOL,
+  INT,
+  NUM,
+  REAL,
+  STRING,
+  CHOICE,
+  BBLOCK,
+  FBLOCK,
+  PSPEC,
+  SEQUENCE,
+  RECORD,
+  OBJECT,     /* PROXY */
 };
+
+class CodeGeneratorModule : public CodeGenerator {
+public:
+  CodeGeneratorModule (const Parser &parser) : CodeGenerator (parser) {
+  }
+  void run ();
+};
+} // Sfidl
 
 #endif	/* _SFIDL_MODULE_H__ */
 

@@ -1,3 +1,8 @@
+Thu Jul 31 18:09:23 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.[hc]*: conditionalize generated code into
+	source and header file stuff.
+
 Wed Jul 30 05:17:56 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-options.[hc]*: add --module code generation option.

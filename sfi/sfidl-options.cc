@@ -113,8 +113,6 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	{
 	  targetModule = true;
           /* provide sane defaults: */
-          if (!doHeader && !doSource)
-            doSource = true;
           if (!doImplementation && !doInterface)
             doImplementation = true;
 	  argv[i] = NULL;
