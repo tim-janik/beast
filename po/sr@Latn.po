@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 18:28+0100\n"
-"PO-Revision-Date: 2004-02-25 18:31+0100\n"
+"POT-Creation-Date: 2004-02-27 22:25+0100\n"
+"PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -417,7 +417,7 @@ msgstr "Učitavam talas „%s“"
 msgid "Add"
 msgstr "Dodaj"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:56
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
 #: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
@@ -441,71 +441,83 @@ msgstr "Primedba"
 msgid "Type"
 msgstr "Vrsta"
 
-#: beast-gtk/bstkeybindings.c:48
+#: beast-gtk/bstkeybindings.c:51
 msgid "Add..."
 msgstr "Dodaj..."
 
-#: beast-gtk/bstkeybindings.c:48
+#: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
 msgstr "Poveži novu kombinaciju tastera sa funkcijom programa"
 
-#: beast-gtk/bstkeybindings.c:50
+#: beast-gtk/bstkeybindings.c:53
 msgid "Change..."
 msgstr "Izmeni..."
 
-#: beast-gtk/bstkeybindings.c:50
+#: beast-gtk/bstkeybindings.c:53
 msgid "Change the currently selected key binding"
 msgstr "Izmeni trenutno izabranu dodelu tastera"
 
-#: beast-gtk/bstkeybindings.c:52
+#: beast-gtk/bstkeybindings.c:55
 msgid "Raise"
 msgstr "Izdigni"
 
-#: beast-gtk/bstkeybindings.c:52
+#: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Izdigni trenutno izabranu dodelu tastera, u odnosu na njegove susede"
 
-#: beast-gtk/bstkeybindings.c:54
+#: beast-gtk/bstkeybindings.c:57
 msgid "Lower"
 msgstr "Spusti"
 
-#: beast-gtk/bstkeybindings.c:54
+#: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
 msgstr "Spusti trenutno izabranu dodelu tastera, u odnosu na njegove susede"
 
-#: beast-gtk/bstkeybindings.c:56
+#: beast-gtk/bstkeybindings.c:59
 msgid "Delete the currently selected key binding"
 msgstr "Obriši trenutno izabranu dodelu tastera"
 
-#: beast-gtk/bstkeybindings.c:395
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load"
+msgstr "Učitaj"
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load a key binding set"
+msgstr "Učitaj skup dodela tastera"
+
+#: beast-gtk/bstkeybindings.c:237
+msgid "Load Key Binding"
+msgstr "Učitaj dodelu tastera"
+
+#: beast-gtk/bstkeybindings.c:432
 msgid "Key Binding"
 msgstr "Dodela tastera"
 
-#: beast-gtk/bstkeybindings.c:396
+#: beast-gtk/bstkeybindings.c:433
 msgid "Key combinations used to activate a function"
 msgstr "Kombinacije tastera koje se koriste za pokretanje funkcije"
 
-#: beast-gtk/bstkeybindings.c:398 beast-gtk/bstkeybindings.c:422
+#: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
 msgid "Function"
 msgstr "Funkcija"
 
-#: beast-gtk/bstkeybindings.c:399
+#: beast-gtk/bstkeybindings.c:436
 msgid "Functions to be activated for a key binding"
 msgstr "Funkcije koje se pokreću za dodeljeni taster"
 
-#: beast-gtk/bstkeybindings.c:401
+#: beast-gtk/bstkeybindings.c:438
 msgid "Parameter"
 msgstr "Parametar"
 
-#: beast-gtk/bstkeybindings.c:402
+#: beast-gtk/bstkeybindings.c:439
 msgid "Parameter to pass to functions upon activation"
 msgstr "Parametar koji se prosleđuje funkcijama pri pokretanju"
 
-#: beast-gtk/bstkeybindings.c:423
+#: beast-gtk/bstkeybindings.c:460
 msgid "Function used to create new key bindings"
 msgstr "Funkcija kojom se dodeljuju nove operacije tasterima"
 
-#: beast-gtk/bstkeybindings.c:425 beast-gtk/bstprocedure.c:206
+#: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Opis"
 
@@ -569,16 +581,16 @@ msgstr "Učitavam „%s“"
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#: beast-gtk/bstmain.c:707
+#: beast-gtk/bstmain.c:710
 msgid "BEAST About"
 msgstr "O Zveri"
 
-#: beast-gtk/bstmain.c:708
+#: beast-gtk/bstmain.c:711
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmain.c:709
+#: beast-gtk/bstmain.c:712
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
@@ -944,7 +956,8 @@ msgstr "Izmeni osnovnu oktavu za datu vrednost"
 
 #: beast-gtk/bstpatternctrl.c:218
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
-msgstr "Izmeni brojevni sadržaj u fokusiranoj ćeliji (npr. oktavu) za datu vrednost"
+msgstr ""
+"Izmeni brojevni sadržaj u fokusiranoj ćeliji (npr. oktavu) za datu vrednost"
 
 #: beast-gtk/bstpatternctrl.c:222
 msgid "Set the focus cell octave"
@@ -2152,7 +2165,8 @@ msgstr ""
 "eksponencijalno (za pojačanje zvučnih zignala). Konačno, glavna jačina "
 "upravlja pojačanje izlaznog signala."
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:47 plugins/bseadder.c:100 plugins/bsebalance.idl:36
+#: plugins/bsemult.c:60
 msgid "Audio In1"
 msgstr "Ulaz zvuka 1"
 
@@ -2160,7 +2174,8 @@ msgstr "Ulaz zvuka 1"
 msgid "First audio input"
 msgstr "Prvi ulaz za zvuk"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:48 plugins/bseadder.c:102 plugins/bsebalance.idl:37
+#: plugins/bsemult.c:62
 msgid "Audio In2"
 msgstr "Ulaz zvuka 2"
 
@@ -2184,9 +2199,12 @@ msgstr "Kontrolni ulaz 2"
 msgid "Second control input"
 msgstr "Drugi kontrolni ulaz"
 
-#: bse/bseamplifier.idl:51 plugins/artscompressor.idl:33
-#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
-#: plugins/evaluator/bseevaluator.idl:33
+#: bse/bseamplifier.idl:51 bse/bsebiquadfilter.c:198 bse/bsestandardosc.c:207
+#: bse/bsewaveosc.c:161 plugins/artscompressor.idl:33 plugins/bseadder.c:104
+#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
+#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Izlaz zvuka"
 
@@ -2350,7 +2368,7 @@ msgstr "Središnja učestanost"
 msgid "Cutoff [Hz]"
 msgstr "Isecanje [Hz]"
 
-#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: bse/bsebiquadfilter.c:146 bse/bseconstant.c:133 bse/bsestandardosc.c:154
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Napomena"
@@ -2377,7 +2395,8 @@ msgstr ""
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
 #: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
-#: bse/bsestandardosc.c:178
+#: bse/bsestandardosc.c:178 bse/bsewaveosc.c:131 bse/bsewaveosc.c:137
+#: bse/bsewaveosc.c:143
 msgid "Modulation"
 msgstr "Modulacija"
 
@@ -2389,7 +2408,7 @@ msgstr "Snaga linearne modulacije frekvencije"
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Izvedi eksponencijalnu modulaciju frekvencije umesto lienarne"
 
-#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175 bse/bsewaveosc.c:146
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Broj oktava na koje utiče eksponencijalna modulacija frekvencija"
 
@@ -2402,17 +2421,38 @@ msgstr "Pojačanje modulacijom [%]"
 msgid "Strength of gain modulation"
 msgstr "Snaga pojačanja modulacijom"
 
+#: bse/bsebiquadfilter.c:190 plugins/artscompressor.idl:32
+#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+msgid "Audio In"
+msgstr "Ulaz zvuka"
+
 #: bse/bsebiquadfilter.c:190
 msgid "Unfiltered Audio Signal"
 msgstr "Nefiltrirani zvučni signal"
+
+#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199 bse/bsewaveosc.c:155
+#: plugins/davorgan.c:132 plugins/davsyndrum.c:116
+#: plugins/davxtalstrings.c:141
+msgid "Freq In"
+msgstr "Ul. učest."
 
 #: bse/bsebiquadfilter.c:192
 msgid "Center Frequency Input"
 msgstr "Središnji frekventni ulaz"
 
 #: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
+msgid "Freq Mod In"
+msgstr "Ul. mod. učest."
+
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
 msgstr "Ulaz modulacije frekvencije"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Mod In"
+msgstr "Ul. poj. mod."
 
 #: bse/bsebiquadfilter.c:196
 msgid "Gain Modulation Input"
@@ -2421,6 +2461,199 @@ msgstr "Ulaz za pojačanje modulacijom"
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Filtrirani zvučni signal"
+
+#: bse/bseconstant.c:111 bse/bseconstant.c:142
+#, c-format
+msgid "Constant Output %u"
+msgstr "Konstantni izlaz %u"
+
+#: bse/bseconstant.c:114
+msgid "Value [float]"
+msgstr "Vrednost [u pokretnom zarezu]"
+
+#: bse/bseconstant.c:122 bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr "Učestanost"
+
+#: bse/bseconstant.c:141
+#, c-format
+msgid "Const Out%u"
+msgstr "Konst. iz.%u"
+
+#: bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+msgid "Note Frequency"
+msgstr "Učestanost note"
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "Gate"
+msgstr "Vrata"
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "High if the note is currently being pressed"
+msgstr "Visoko ukoliko je upravo pritisnuta nota"
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity"
+msgstr "Brzina"
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity of the note press"
+msgstr "Brzina pritiska note"
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Aftertouch"
+msgstr "Nakon dodira"
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Velocity while the note is pressed"
+msgstr "Brzina dok je nota pritisnuta"
+
+#: bse/bseinstrumentoutput.c:106
+msgid "Left Audio"
+msgstr "Zvuk levo"
+
+#: bse/bseinstrumentoutput.c:106
+msgid "Left Channel Output"
+msgstr "Izlaz na levom kanalu"
+
+#: bse/bseinstrumentoutput.c:108
+msgid "Right Audio"
+msgstr "Zvuk desno"
+
+#: bse/bseinstrumentoutput.c:108
+msgid "Right Channel Output"
+msgstr "Izlaz na desnom kanalu"
+
+#: bse/bseinstrumentoutput.c:110
+msgid "Unused"
+msgstr "Nekorišćen"
+
+#: bse/bseinstrumentoutput.c:112
+msgid "Synth Done"
+msgstr "Sint. gotova"
+
+#: bse/bseinstrumentoutput.c:112
+msgid "High indicates the instrument is done synthesizing"
+msgstr "Visoko označava da je instrument završio sa sintezom"
+
+#: bse/bsemidicontroller.c:142
+msgid "Ctrl Out1"
+msgstr "Kont. iz.1"
+
+#: bse/bsemidicontroller.c:142
+msgid "MIDI Signal 1"
+msgstr "MIDI signal 1"
+
+#: bse/bsemidicontroller.c:144
+msgid "Ctrl Out2"
+msgstr "Kont. iz.2"
+
+#: bse/bsemidicontroller.c:144
+msgid "MIDI Signal 2"
+msgstr "MIDI signal 2"
+
+#: bse/bsemidicontroller.c:146
+msgid "Ctrl Out3"
+msgstr "Kont. iz.3"
+
+#: bse/bsemidicontroller.c:146
+msgid "MIDI Signal 3"
+msgstr "MIDI signal 3"
+
+#: bse/bsemidicontroller.c:148
+msgid "Ctrl Out4"
+msgstr "Kont. iz.4"
+
+#: bse/bsemidicontroller.c:148
+msgid "MIDI Signal 4"
+msgstr "MIDI signal 4"
+
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+msgid "Freq Out"
+msgstr "Iz. učest."
+
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:163
+msgid "Gate Out"
+msgstr "Iz. vrata"
+
+#: bse/bsemidivoice.c:113
+msgid "Velocity Out"
+msgstr "Iz. brzina"
+
+#: bse/bsemidivoice.c:115
+msgid "Aftertouch Out"
+msgstr "Iz. nak. dod."
+
+#: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
+msgid "Left In"
+msgstr "Ulaz levo"
+
+#: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
+msgid "Right In"
+msgstr "Ulaz desno"
+
+#: bse/bsemidivoice.c:137
+msgid "Disconnect In"
+msgstr "Ul. isključen"
+
+#: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
+#: plugins/davcanyondelay.c:120
+msgid "Left Out"
+msgstr "Izlaz levo"
+
+#: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
+#: plugins/davcanyondelay.c:122
+msgid "Right Out"
+msgstr "Izlaz desno"
+
+#: bse/bsemidivoice.c:143
+msgid "Disconnect Out"
+msgstr "Iz. isključen"
+
+#: bse/bsepcminput.c:133 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr "Levi izlaz zvuka"
+
+#: bse/bsepcminput.c:133
+msgid "Left channel output"
+msgstr "Izlaz levog kanala"
+
+#: bse/bsepcminput.c:135 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr "Desni izlaz zvuka"
+
+#: bse/bsepcminput.c:135
+msgid "Right channel output"
+msgstr "Izlaz desnog kanala"
+
+#: bse/bsepcmoutput.c:133 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr "Levi ulaz zvuka"
+
+#: bse/bsepcmoutput.c:133
+msgid "Left channel input"
+msgstr "Ulaz levog kanala"
+
+#: bse/bsepcmoutput.c:135 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr "Desni ulaz zvuka"
+
+#: bse/bsepcmoutput.c:135
+msgid "Right channel Input"
+msgstr "Ulaz desnog kanala"
+
+#: bse/bsesnooper.c:113
+msgid "Signal In"
+msgstr "Ul. signala"
+
+#: bse/bsesnooper.c:113
+msgid "Snoop Signal"
+msgstr "Priviri u signal"
 
 #: bse/bsestandardosc.c:111
 msgid ""
@@ -2438,7 +2671,7 @@ msgstr "/Moduli/Izvori zvuka/Standardni oscilator"
 msgid "Wave Form"
 msgstr "Oblik talasa"
 
-#: bse/bsestandardosc.c:139
+#: bse/bsestandardosc.c:139 bse/bsewaveosc.c:127 bse/bsewaveosc.c:129
 msgid "Wave"
 msgstr "Talas"
 
@@ -2454,23 +2687,19 @@ msgstr "Faza"
 msgid "Base Frequency"
 msgstr "Osnovna učestanost"
 
-#: bse/bsestandardosc.c:150
-msgid "Frequency"
-msgstr "Učestanost"
-
 #: bse/bsestandardosc.c:157
 msgid "Fine Tune"
 msgstr "Mala podešavanja"
 
-#: bse/bsestandardosc.c:162
+#: bse/bsestandardosc.c:162 bse/bsewaveosc.c:133
 msgid "Input Modulation [%]"
 msgstr "Modulacija ulaza [%]"
 
-#: bse/bsestandardosc.c:168
+#: bse/bsestandardosc.c:168 bse/bsewaveosc.c:139
 msgid "Exponential FM"
 msgstr "Eksponencijalni FM"
 
-#: bse/bsestandardosc.c:174
+#: bse/bsestandardosc.c:174 bse/bsewaveosc.c:145
 msgid "Octaves"
 msgstr "Oktave"
 
@@ -2516,10 +2745,18 @@ msgid "Oscillating Frequency Input"
 msgstr "Oscilatorni frekventni ulaz"
 
 #: bse/bsestandardosc.c:203
-msgid "Pulse Width Modulation Input"
-msgstr "Širina pulsnog ulaza modulacijom"
+msgid "PWM In"
+msgstr "Ul. MŠP"
 
-#: bse/bsestandardosc.c:205
+#: bse/bsestandardosc.c:203
+msgid "Pulse Width Modulation Input"
+msgstr "Ulaz modulacije po širini pulsa"
+
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
+msgid "Sync In"
+msgstr "Ul. sinh."
+
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Syncronization Input"
 msgstr "Usklađeni ulaz"
 
@@ -2528,8 +2765,65 @@ msgid "Oscillated Output"
 msgstr "Oscilatorni ulaz"
 
 #: bse/bsestandardosc.c:209
+msgid "Sync Out"
+msgstr "Iz. sinh."
+
+#: bse/bsestandardosc.c:209
 msgid "Syncronization Output"
 msgstr "Usklađeni izlaz"
+
+#: bse/bsesubiport.c:127 bse/bsesubsynth.c:137
+#, c-format
+msgid "Input Port %u"
+msgstr "Port ulaza %u"
+
+#: bse/bsesubiport.c:129 bse/bsesuboport.c:129 bse/bsesubsynth.c:127
+msgid "Assignments"
+msgstr "Raspodele"
+
+#: bse/bsesubiport.c:131 bse/bsesuboport.c:131
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr "Ime porta je jedinstveno ime za uspostavu veza između ulazno<->izlaznih portova"
+
+#: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
+#, c-format
+msgid "Virtual input %u"
+msgstr "Virtuelni ulaz %u"
+
+#: bse/bsesuboport.c:127 bse/bsesubsynth.c:147
+#, c-format
+msgid "Output Port %u"
+msgstr "Port izlaza %u"
+
+#: bse/bsesuboport.c:139 bse/bsesubsynth.c:164
+#, c-format
+msgid "Virtual output %u"
+msgstr "Virtuelni izlaz %u"
+
+#: bse/bsesubsynth.c:129
+msgid "Synthesis Network"
+msgstr "Mreža za sintezu"
+
+#: bse/bsesubsynth.c:130
+msgid "The synthesis network to interface to"
+msgstr "Mreža za sintezu sa kojom da se spregne"
+
+#: bse/bsesubsynth.c:139
+msgid "Input Assignments"
+msgstr "Raspodela ulaza"
+
+#: bse/bsesubsynth.c:140
+msgid "Output port name to interface from"
+msgstr "Ime izlaznog porta sa kojim da se spregne"
+
+#: bse/bsesubsynth.c:149
+msgid "Output Assignments"
+msgstr "Raspodela izlaza"
+
+#: bse/bsesubsynth.c:150
+msgid "Input port name to interface to"
+msgstr "Ime ulaznog porta sa kojim da se spregne"
 
 #: bse/bsesuper.c:101
 msgid "Author"
@@ -2554,6 +2848,39 @@ msgstr "Vreme stvaranja"
 #: bse/bsesuper.c:118
 msgid "Last modification time"
 msgstr "Vreme poslednje izmene"
+
+#: bse/bsewaveosc.c:129
+msgid "Wave to play"
+msgstr "Talas za puštanje"
+
+#: bse/bsewaveosc.c:134
+msgid "Modulation Strength for linear frequency modulation"
+msgstr "Snaga modulacije za linearnu modulaciju frekvencije"
+
+# bug: modulationinstead -> modulation instead
+#: bse/bsewaveosc.c:140
+msgid "Perform exponential frequency modulationinstead of linear"
+msgstr "Izvrši eksponencijalnu modulaciju frekvencije umesto lienarne"
+
+#: bse/bsewaveosc.c:155 plugins/davorgan.c:132
+msgid "Frequency Input"
+msgstr "Ulaz učestanosti"
+
+#: bse/bsewaveosc.c:159
+msgid "Mod In"
+msgstr "Ul. mod."
+
+#: bse/bsewaveosc.c:159
+msgid "Modulation Input"
+msgstr "Ulaz modulacije"
+
+#: bse/bsewaveosc.c:161
+msgid "Wave Output"
+msgstr "Talasni izlaz"
+
+#: bse/bsewaveosc.c:163
+msgid "Gate Output"
+msgstr "Vrata izlaza"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -2591,11 +2918,6 @@ msgstr "/Poboljšanje/ArtcKompresor"
 #: plugins/artscompressor.idl:31
 msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor kompresuje zvuk."
-
-#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
-msgid "Audio In"
-msgstr "Ulaz zvuka"
 
 #: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
@@ -2651,36 +2973,41 @@ msgid "ArtsStereoCompressor compresses the sound."
 msgstr "ArtsStereoCompressor kompresuje zvuk."
 
 #: plugins/artscompressor.idl:49
-msgid "Left Audio In"
-msgstr "Levi ulaz zvuka"
-
-#: plugins/artscompressor.idl:49
 msgid "Left audio input"
 msgstr "Levi ulaz zvuka"
-
-#: plugins/artscompressor.idl:50
-msgid "Right Audio In"
-msgstr "Desni ulaz zvuka"
 
 #: plugins/artscompressor.idl:50
 msgid "Right audio input"
 msgstr "Desni ulaz zvuka"
 
 #: plugins/artscompressor.idl:51
-msgid "Left Audio Out"
-msgstr "Levi izlaz zvuka"
-
-#: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
 msgstr "Kopresovani levi izlaz zvuka"
 
 #: plugins/artscompressor.idl:52
-msgid "Right Audio Out"
-msgstr "Desni izlaz zvuka"
-
-#: plugins/artscompressor.idl:52
 msgid "Compressed right audio output"
 msgstr "Kopresovani desni izlaz zvuka"
+
+#: plugins/bseadder.c:100 plugins/bsemult.c:60
+msgid "Audio Input 1"
+msgstr "Ulaz zvuka 1"
+
+#: plugins/bseadder.c:102 plugins/bsemult.c:62
+msgid "Audio Input 2"
+msgstr "Ulaz zvuka 2"
+
+#: plugins/bseadder.c:104 plugins/bsemult.c:68
+msgid "Audio Output"
+msgstr "Zvučni izlaz"
+
+# bug: s/SIgnal/Signal/
+#: plugins/bseatandistort.c:90
+msgid "Audio Input SIgnal"
+msgstr "Signal ulaza zvuka"
+
+#: plugins/bseatandistort.c:92
+msgid "Distorted Audio Output"
+msgstr "Izuvijani izlaz zvuka"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
@@ -2701,10 +3028,6 @@ msgstr ""
 "niskoprolaznim filterom sa prilagodljivom frekvencijom odsecanja."
 
 #: plugins/bsebalance.idl:40
-msgid "Left Out"
-msgstr "Levi izlaz"
-
-#: plugins/bsebalance.idl:40
 msgid "Left audio output"
 msgstr "Levi izlaz zvuka"
 
@@ -2715,10 +3038,6 @@ msgstr "Mešani izlaz"
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
 msgstr "Mešani izlaz zvuka"
-
-#: plugins/bsebalance.idl:42
-msgid "Right Out"
-msgstr "Desni izlaz"
 
 #: plugins/bsebalance.idl:42
 msgid "Right audio output"
@@ -2747,6 +3066,22 @@ msgstr "Ravnoteža izlaza"
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
 msgstr "Prilagodite ravnotežu izlaza levo i desno"
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Out"
+msgstr "Mono izlaz"
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Filtered Output"
+msgstr "Filtriran mono izlaz"
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono In"
+msgstr "Mono ulaz"
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono Signal Input"
+msgstr "Ulaz mono signala"
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
@@ -2795,6 +3130,108 @@ msgstr "Nefiltriran ulaz"
 #: plugins/bseiirfilter.c:162
 msgid "Filtered Output"
 msgstr "Filtriran ulaz"
+
+#: plugins/bsemixer.c:109
+msgid "Sole Output"
+msgstr "Jed. izlaz"
+
+#: plugins/bsemixer.c:115
+#, c-format
+msgid "Channel%u"
+msgstr "Kanal%u"
+
+#: plugins/bsemixer.c:117
+#, c-format
+msgid "Channel%u [float]"
+msgstr "Kanal%u [pok.zap.]"
+
+#: plugins/bsemixer.c:127
+#, c-format
+msgid "Channel%u [dB]"
+msgstr "Kanal%u [dB]"
+
+#: plugins/bsemixer.c:138
+#, c-format
+msgid "Channel%u [%%]"
+msgstr "Kanal%u [%%]"
+
+#: plugins/bsemixer.c:149
+#, c-format
+msgid "Audio In%u"
+msgstr "Ulaz zvuka%u"
+
+#: plugins/bsemixer.c:150
+#, c-format
+msgid "Input Channel %u"
+msgstr "Kanal ulaza %u"
+
+#: plugins/bsemult.c:64
+msgid "Audio In3"
+msgstr "Ulaz zvuka3"
+
+#: plugins/bsemult.c:64
+msgid "Audio Input 3"
+msgstr "Ulaz zvuka 3"
+
+#: plugins/bsemult.c:66
+msgid "Audio In4"
+msgstr "Ulaz zvuka4"
+
+#: plugins/bsemult.c:66
+msgid "Audio Input 4"
+msgstr "Ulaz zvuka 4"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Out"
+msgstr "Izlaz buke"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Output"
+msgstr "Izlaz buke"
+
+#: plugins/bsesequencer.c:107
+msgid "Frequency Signal"
+msgstr "Frekventni signal"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync"
+msgstr "Sinh. note"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync Signal"
+msgstr "Signal sinhronizacije note"
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate In"
+msgstr "Ul. vrata"
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate input (activates/deactivates envelope)"
+msgstr "Ulazna vrata (aktivira/deaktivira kovertu)"
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger In"
+msgstr "Ul. prekid."
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger input (raising edge retriggers envelope)"
+msgstr "Ponovo prekini ulaz (izdizanje ivice ponovo prekida kovertu)"
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Ctrl Out"
+msgstr "Kontr. iz."
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Attack-Decay-Sustain-Release envelope output"
+msgstr "Izlaz napad-rasipanje-zadržavanje-oslobađanje koverte"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "Done Out"
+msgstr "Got. izlaz"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "This signal goes high after the release phase has completed"
+msgstr "Ovaj signal ide visoko kada se faza oslobađanja završi"
 
 #: plugins/davbassfilter.idl:29
 msgid "/Filters/Bass Filter"
@@ -2851,6 +3288,22 @@ msgstr "Postavite dužinu raspada u procentima"
 msgid "Trigger filter"
 msgstr "Pokreni filter"
 
+#: plugins/davcanyondelay.c:116
+msgid "Left Audio Input"
+msgstr "Ulaz zvuka levo"
+
+#: plugins/davcanyondelay.c:118
+msgid "Right Audio Input"
+msgstr "Ulaz zvuka desno"
+
+#: plugins/davcanyondelay.c:120
+msgid "Left Audio Output"
+msgstr "Izlaz zvuka levo"
+
+#: plugins/davcanyondelay.c:122
+msgid "Right Audio Output"
+msgstr "Izlaz zvuka desno"
+
 #: plugins/davchorus.idl:29
 msgid "/Enhance/Chorus"
 msgstr "/Poboljšanje/Horski"
@@ -2870,6 +3323,50 @@ msgstr "Izlaz vlažnog [%]"
 #: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
 msgstr "Postavi količinu izmenjenih podataka za mešanje"
+
+#: plugins/davguitar.c:302
+msgid "Guitar Output"
+msgstr "Izlaz gitare"
+
+#: plugins/davorgan.c:133
+msgid "Organ Output"
+msgstr "Izlaz orgulja"
+
+#: plugins/davsyndrum.c:116
+msgid "Drum Frequency Input"
+msgstr "Frekventni ulaz bubnja"
+
+#: plugins/davsyndrum.c:118
+msgid "Ratio In"
+msgstr "Ul. odnos"
+
+#: plugins/davsyndrum.c:118
+msgid "Frequency shift ratio (assumed 1.0 if not connected)"
+msgstr "Odnos pomeraja frekvencije (pretpostavlja se 1,0 ako nije povezan)"
+
+#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr "Ul. prekidač"
+
+#: plugins/davsyndrum.c:120
+msgid "Hit the drum on raising edges"
+msgstr "Udri bubanj pri izdizanju ivica"
+
+#: plugins/davsyndrum.c:122
+msgid "SynDrum Output"
+msgstr "Iz. sinh. bubnja"
+
+#: plugins/davxtalstrings.c:141
+msgid "Pluck frequency input"
+msgstr "Ulaz udara frekvencije"
+
+#: plugins/davxtalstrings.c:143
+msgid "Pluck strings on raising edge"
+msgstr "Udari žice pri izdizanju ivice"
+
+#: plugins/davxtalstrings.c:145
+msgid "XtalStrings Output"
+msgstr "XtalStrings izlaz"
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
@@ -2906,6 +3403,22 @@ msgstr "Stanje"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Stanje koje se koristi za ispit poruka o greškama"
+
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Input"
+msgstr "Levi ulaz"
+
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Input"
+msgstr "Desni ulaz"
+
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Output"
+msgstr "Levi izlaz"
+
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Output"
+msgstr "Desni izlaz"
 
 #~ msgid "Remove any events in the focus cell and move to the next cell"
 #~ msgstr "Ukloni sve događaje u fokusiranoj ćeliji i pređi na narednu ćeliju"
