@@ -1,3 +1,8 @@
+Sun Nov 14 20:12:03 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: improve responseness under load by handling glue
+	layer events at the same priority as GUI events.
+
 Fri Nov  5 02:32:57 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkparam.[hc]: added gxk_param_add_grab_widget() for
