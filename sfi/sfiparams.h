@@ -186,6 +186,10 @@ GParamSpec*	sfi_pspec_rec		(const gchar    *name,
 					 const gchar    *blurb,
 					 SfiRecFields    static_const_fields,
 					 const gchar	*hints);
+GParamSpec*	sfi_pspec_rec_generic	(const gchar    *name,
+					 const gchar    *nick,
+					 const gchar    *blurb,
+					 const gchar	*hints);
 GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,

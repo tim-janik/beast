@@ -683,6 +683,16 @@ sfi_pspec_rec (const gchar    *name,
 }
 
 GParamSpec*
+sfi_pspec_rec_generic (const gchar    *name,
+                       const gchar    *nick,
+                       const gchar    *blurb,
+                       const gchar    *hints)
+{
+  static const SfiRecFields empty_fields = { 0, NULL };
+  return sfi_pspec_rec (name, nick, blurb, empty_fields, hints);
+}
+
+GParamSpec*
 sfi_pspec_proxy (const gchar    *name,
 		 const gchar    *nick,
 		 const gchar    *blurb,

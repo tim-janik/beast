@@ -119,7 +119,7 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
 	switch (model)
 	  {
 	    case MODEL_TO_VALUE:    return "sfi_value_string ("+name+".c_str())";
-	    case MODEL_FROM_VALUE:  return "::Sfi::String::value_get ("+name+")";
+	    case MODEL_FROM_VALUE:  return "::Sfi::String::value_get_string ("+name+")";
 	    case MODEL_VCALL:       return "sfi_glue_vcall_string";
 	    case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+".c_str(),";
 	    case MODEL_VCALL_CARG:  return "";
@@ -459,11 +459,10 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
         }
       printf ("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
       printf ("public:\n");
-      /* TODO: make this a constructor? */
       printf ("  static inline %s from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
       printf ("  static inline SfiSeq *to_seq (%s seq);\n", cTypeArg (si->name));
-      printf ("  static inline %s value_get (const GValue *value);\n", cTypeRet (si->name));
-      printf ("  static inline void value_set (GValue *value, %s self);\n", cTypeArg (si->name));
+      printf ("  static inline %s value_get_seq (const GValue *value);\n", cTypeRet (si->name));
+      printf ("  static inline void value_set_seq (GValue *value, %s self);\n", cTypeArg (si->name));
       printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
       printf ("  static inline const char* blurb     () { return %s; }\n", si->infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
@@ -497,8 +496,8 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
 	}
       printf ("  static inline %s from_rec (SfiRec *rec);\n", cTypeRet(ri->name));
       printf ("  static inline SfiRec *to_rec (%s ptr);\n", cTypeArg(ri->name));
-      printf ("  static inline %s value_get (const GValue *value);\n", cTypeRet(ri->name));
-      printf ("  static inline void value_set (GValue *value, %s self);\n", cTypeArg (ri->name));
+      printf ("  static inline %s value_get_rec (const GValue *value);\n", cTypeRet(ri->name));
+      printf ("  static inline void value_set_rec (GValue *value, %s self);\n", cTypeArg (ri->name));
       printf ("  static inline const char* options   () { return %s; }\n", ri->infos.get("options").escaped().c_str());
       printf ("  static inline const char* blurb     () { return %s; }\n", ri->infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* authors   () { return %s; }\n", ri->infos.get("authors").escaped().c_str());
@@ -560,16 +559,15 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  return sfi_seq;\n");
       printf("}\n\n");
 
-      /* FIXME: client only, core needs type system support */
       printf ("%s\n", cTypeRet (si->name));
-      printf ("%s::value_get (const GValue *value)\n", nname.c_str());
+      printf ("%s::value_get_seq (const GValue *value)\n", nname.c_str());
       printf ("{\n");
-      printf ("  return ::Sfi::cxx_value_get_sequence< %s> (value);\n", nname.c_str());
+      printf ("  return ::Sfi::cxx_value_get_seq< %s> (value);\n", nname.c_str());
       printf ("}\n\n");
       printf ("void\n");
-      printf ("%s::value_set (GValue *value, %s self)\n", nname.c_str(), cTypeArg (si->name));
+      printf ("%s::value_set_seq (GValue *value, %s self)\n", nname.c_str(), cTypeArg (si->name));
       printf ("{\n");
-      printf ("  ::Sfi::cxx_value_set_sequence< %s> (value, self);\n", nname.c_str());
+      printf ("  ::Sfi::cxx_value_set_seq< %s> (value, self);\n", nname.c_str());
       printf ("}\n\n");
 
       if (options.doImplementation)
@@ -638,16 +636,15 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  return sfi_rec;\n");
       printf("}\n\n");
 
-      /* FIXME: client only, core needs type system support */
       printf ("%s\n", cTypeRet(ri->name));
-      printf ("%s::value_get (const GValue *value)\n", nname.c_str());
+      printf ("%s::value_get_rec (const GValue *value)\n", nname.c_str());
       printf ("{\n");
-      printf ("  return ::Sfi::cxx_value_get_record< %s> (value);\n", nname.c_str());
+      printf ("  return ::Sfi::cxx_value_get_rec< %s> (value);\n", nname.c_str());
       printf ("}\n\n");
       printf ("void\n");
-      printf ("%s::value_set (GValue *value, %s self)\n", nname.c_str(), cTypeArg (ri->name));
+      printf ("%s::value_set_rec (GValue *value, %s self)\n", nname.c_str(), cTypeArg (ri->name));
       printf ("{\n");
-      printf ("  ::Sfi::cxx_value_set_record< %s> (value, self);\n", nname.c_str());
+      printf ("  ::Sfi::cxx_value_set_rec< %s> (value, self);\n", nname.c_str());
       printf ("}\n\n");
 
       if (options.doImplementation)

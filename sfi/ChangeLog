@@ -1,3 +1,23 @@
+Sun Jan 25 05:30:32 2004  Tim Janik  <timj@gtk.org>
+
+	* sficxx.h: renamed value_set() and value_get() methods to
+	value_set_TYPE() and value_get_TYPE(), depending on what TYPE
+	they set/get. added set_boxed() method to Sequence. added
+	c_ptr() and set_boxed() to Sequence (basically, because
+	operator=() isn't inherited).
+	added cxx_value_set_boxed_sequence(), cxx_value_get_boxed_sequence()
+	cxx_value_set_boxed_record() and cxx_value_get_boxed_record().
+
+	* sfidl-cxx.cc: adapt to get_value/set_value renames, changed
+	generated implementation to operate on SfiRec and SfiSeq now.
+	the boxed variants are taken care of by sfidl-module.cc.
+
+	* sfidl-module.cc: fixed generic SfiRec pspec constructor.
+	adapt to value_set/value_get renames.
+
+	* sfiparams.[hc]: added sfi_pspec_rec_generic() for SfiRec
+	idl types.
+
 Sun Jan 25 04:41:23 2004  Tim Janik  <timj@gtk.org>
 
 	* bse-plugin-generator.cc: convert to sfidl code generator

@@ -146,12 +146,12 @@ public:
     g_free (cstring);
   }
   /* provide GValue accessors */
-  static String value_get (const GValue *value)
+  static String value_get_string (const GValue *value)
   {
     return sfi_value_get_string (value);
   }
-  static void value_set (GValue       *value,
-                         const String& str)
+  static void value_set_string (GValue       *value,
+                                const String& str)
   {
     sfi_value_set_string (value, str.c_str());
   }
@@ -223,6 +223,10 @@ public:
     record = NULL;
     return t;
   }
+  Type* c_ptr() const
+  {
+    return record;
+  }
   RecordHandle& operator= (const RecordHandle &src)
   {
     if (record != src.record)
@@ -234,10 +238,6 @@ public:
           record = NULL;
       }
     return *this;
-  }
-  Type* c_ptr() const
-  {
-    return record;
   }
   ~RecordHandle()
   {
@@ -307,6 +307,10 @@ public:
     /* a take(); steal(); sequence needs to preserve pointer */
     return cs;
   }
+  CSeq* c_ptr() const
+  {
+    return cseq;
+  }
   void resize (unsigned int n)
   {
     guint i;
@@ -339,16 +343,21 @@ public:
     new (cseq->elements + i) Type (elm);
     return *this;
   }
+  void set_boxed (const CSeq *cs)
+  {
+    if (cseq == cs)
+      return;
+    resize (0);
+    if (!cs)
+      return;
+    cseq->n_elements = cs->n_elements;
+    cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
+    for (guint i = 0; i < length(); i++)
+      new (cseq->elements + i) Type (cs->elements[i]);
+  }
   Sequence& operator= (const Sequence &sh)
   {
-    if (cseq != sh.cseq)
-      {
-        resize (0);
-        cseq->n_elements = sh.length();
-        cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
-        for (guint i = 0; i < length(); i++)
-          new (cseq->elements + i) Type (sh[i]);
-      }
+    set_boxed (sh.cseq);
     return *this;
   }
   unsigned int length() const
@@ -476,7 +485,7 @@ public:
   {
     return block ? block->values : NULL;
   }
-  static FBlock value_get (const GValue *value)
+  static FBlock value_get_fblock (const GValue *value)
   {
     SfiFBlock *fb = sfi_value_get_fblock (value);
     FBlock self (0);
@@ -484,8 +493,8 @@ public:
       self.take (sfi_fblock_ref (fb));
     return self;
   }
-  static void value_set (GValue       *value,
-                         const FBlock &self)
+  static void value_set_fblock (GValue       *value,
+                                const FBlock &self)
   {
     sfi_value_set_fblock (value, self.block);
   }
@@ -604,7 +613,7 @@ public:
   {
     return block ? block->bytes : NULL;
   }
-  static BBlock value_get (const GValue *value)
+  static BBlock value_get_bblock (const GValue *value)
   {
     SfiBBlock *bb = sfi_value_get_bblock (value);
     BBlock self (0);
@@ -612,8 +621,8 @@ public:
       self.take (sfi_bblock_ref (bb));
     return self;
   }
-  static void value_set (GValue       *value,
-                         const BBlock &self)
+  static void value_set_bblock (GValue       *value,
+                                const BBlock &self)
   {
     sfi_value_set_bblock (value, self.block);
   }
@@ -720,7 +729,7 @@ public:
   {
     return crec ? sfi_rec_get (crec, name) : NULL;
   }
-  static Rec value_get (const GValue *value)
+  static Rec value_get_rec (const GValue *value)
   {
     SfiRec *sr = sfi_value_get_rec (value);
     Rec self;
@@ -728,8 +737,8 @@ public:
       self.take (sfi_rec_ref (sr));
     return self;
   }
-  static void value_set (GValue       *value,
-                         const Rec &self)
+  static void value_set_rec (GValue       *value,
+                             const Rec &self)
   {
     sfi_value_set_rec (value, self.crec);
   }
@@ -914,7 +923,45 @@ cxx_boxed_from_seq (const GValue *src_value,
 }
 
 template<typename Type> RecordHandle<Type>
-cxx_value_get_record (const GValue *value)
+cxx_value_get_boxed_record (const GValue *value)
+{
+  Type *boxed = reinterpret_cast<Type*> (g_value_get_boxed (value));
+  if (boxed)
+    return *boxed;
+  else
+    return INIT_NULL;
+}
+
+template<typename Type> void
+cxx_value_set_boxed_record (GValue                   *value,
+                            const RecordHandle<Type> &self)
+{
+  g_value_set_boxed (value, self.c_ptr());
+}
+
+template<typename SeqType> SeqType
+cxx_value_get_boxed_sequence (const GValue *value)
+{
+  typename SeqType::CSeq *boxed = reinterpret_cast<typename SeqType::CSeq*> (g_value_get_boxed (value));
+  if (boxed)
+    {
+      SeqType sh;
+      sh.set_boxed (boxed);
+      return sh;
+    }
+  else
+    return SeqType();
+}
+
+template<typename SeqType> void
+cxx_value_set_boxed_sequence (GValue        *value,
+                              const SeqType &self)
+{
+  g_value_set_boxed (value, self.c_ptr());
+}
+
+template<typename Type> RecordHandle<Type>
+cxx_value_get_rec (const GValue *value)
 {
   SfiRec *rec = sfi_value_get_rec (value);
   if (rec)
@@ -924,8 +971,8 @@ cxx_value_get_record (const GValue *value)
 }
 
 template<typename Type> void
-cxx_value_set_record (GValue                   *value,
-                      const RecordHandle<Type> &self)
+cxx_value_set_rec (GValue                   *value,
+                   const RecordHandle<Type> &self)
 {
   if (self)
     sfi_value_take_rec (value, Type::to_rec (self));
@@ -934,7 +981,7 @@ cxx_value_set_record (GValue                   *value,
 }
 
 template<typename SeqType> SeqType
-cxx_value_get_sequence (const GValue *value)
+cxx_value_get_seq (const GValue *value)
 {
   SfiSeq *seq = sfi_value_get_seq (value);
   if (seq)
@@ -944,8 +991,8 @@ cxx_value_get_sequence (const GValue *value)
 }
 
 template<typename SeqType> void
-cxx_value_set_sequence (GValue        *value,
-                        const SeqType &self)
+cxx_value_set_seq (GValue        *value,
+                   const SeqType &self)
 {
   sfi_value_take_seq (value, SeqType::to_seq (self));
 }

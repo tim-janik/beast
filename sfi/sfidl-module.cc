@@ -211,6 +211,16 @@ public:
           pspec += ")";
           return pspec;
         }
+      case SFIREC:
+        {
+          string pspec = "sfidl_pspec_Rec";
+          if (param.args == "")
+            pspec += "_default (" + group + ", \"" + param.name + "\", ";
+          else
+            pspec += " (" + group + ", \"" + param.name + "\", " + param.args;
+          pspec += ")";
+          return pspec;
+        }
       case RECORD:
         {
           string pspec = "sfidl_pspec_Record";
@@ -366,13 +376,13 @@ public:
       case INT:         return "sfi_value_set_int";
       case NUM:         return "sfi_value_set_num";
       case REAL:        return "sfi_value_set_real";
-      case STRING:      return "::Sfi::String::value_set";
       case CHOICE:      return "g_value_set_enum";
-      case BBLOCK:      return "::Sfi::BBlock::value_set";
-      case FBLOCK:      return "::Sfi::FBlock::value_set";
-      case SEQUENCE:      
-      case RECORD:      return intern (abs_cxx_type_name (param.type) + "::value_set");
-      case SFIREC:      return "sfi_value_set_rec";
+      case STRING:      return "::Sfi::String::value_set_string";
+      case BBLOCK:      return "::Sfi::BBlock::value_set_bblock";
+      case FBLOCK:      return "::Sfi::FBlock::value_set_fblock";
+      case SFIREC:      return "::Sfi::Rec::value_set_rec";
+      case RECORD:
+      case SEQUENCE:    return intern (abs_cxx_type_name (param.type) + "::value_set_boxed");
       case OBJECT:      return "g_value_set_object";
       default:          g_assert_not_reached(); return NULL;
       }
@@ -387,13 +397,13 @@ public:
       case INT:         return "sfi_value_get_int";
       case NUM:         return "sfi_value_get_num";
       case REAL:        return "sfi_value_get_real";
-      case STRING:      return "::Sfi::String::value_get";
       case CHOICE:      return intern (string ("(") + TypeName (param.type) + ") g_value_get_enum");
-      case BBLOCK:      return "::Sfi::BBlock::value_get";
-      case FBLOCK:      return "::Sfi::FBlock::value_get";
-      case SFIREC:      return "::Sfi::Rec::value_get";
-      case SEQUENCE:      
-      case RECORD:      return intern (abs_cxx_type_name (param.type) + "::value_get");
+      case STRING:      return "::Sfi::String::value_get_string";
+      case BBLOCK:      return "::Sfi::BBlock::value_get_bblock";
+      case FBLOCK:      return "::Sfi::FBlock::value_get_fblock";
+      case SFIREC:      return "::Sfi::Rec::value_get_rec";
+      case RECORD:
+      case SEQUENCE:    return intern (abs_cxx_type_name (param.type) + "::value_get_boxed");
       case OBJECT:
         if (dest != "")
           return intern ("(" + dest + "*) ::Bse::g_value_get_object< " + dest + "Base*>");
@@ -495,8 +505,8 @@ public:
           }
         printf ("  static inline %s from_rec (SfiRec *rec);\n", TypeRet (ri->name));
         printf ("  static inline SfiRec *to_rec (%s ptr);\n", TypeArg (ri->name));
-        printf ("  static inline %s value_get (const GValue *value);\n", TypeRet (ri->name));
-        printf ("  static inline void value_set (GValue *value, %s self);\n", TypeArg (ri->name));
+        printf ("  static inline %s value_get_boxed (const GValue *value);\n", TypeRet (ri->name));
+        printf ("  static inline void value_set_boxed (GValue *value, %s self);\n", TypeArg (ri->name));
         printf ("  static inline const char* options   () { return %s; }\n", ri->infos.get("options").escaped().c_str());
         printf ("  static inline const char* blurb     () { return %s; }\n", ri->infos.get("blurb").escaped().c_str());
         printf ("  static inline const char* authors   () { return %s; }\n", ri->infos.get("authors").escaped().c_str());
@@ -525,8 +535,8 @@ public:
         /* TODO: make this a constructor? */
         printf ("  static inline %s from_seq (SfiSeq *seq);\n", TypeRet (si->name));
         printf ("  static inline SfiSeq *to_seq (%s seq);\n", TypeArg (si->name));
-        printf ("  static inline %s value_get (const GValue *value);\n", TypeRet (si->name));
-        printf ("  static inline void value_set (GValue *value, %s self);\n", TypeArg (si->name));
+        printf ("  static inline %s value_get_boxed (const GValue *value);\n", TypeRet (si->name));
+        printf ("  static inline void value_set_boxed (GValue *value, %s self);\n", TypeArg (si->name));
         printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
         printf ("  static inline const char* blurb     () { return %s; }\n", si->infos.get("blurb").escaped().c_str());
         printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
@@ -589,14 +599,14 @@ public:
         
         /* FIXME: client only, core needs type system support */
         printf ("%s\n", TypeRet (ri->name));
-        printf ("%s::value_get (const GValue *value)\n", nname.c_str());
+        printf ("%s::value_get_boxed (const GValue *value)\n", nname.c_str());
         printf ("{\n");
-        printf ("  return ::Sfi::cxx_value_get_record< %s> (value);\n", nname.c_str());
+        printf ("  return ::Sfi::cxx_value_get_boxed_record< %s> (value);\n", nname.c_str());
         printf ("}\n\n");
         printf ("void\n");
-        printf ("%s::value_set (GValue *value, %s self)\n", nname.c_str(), TypeArg (ri->name));
+        printf ("%s::value_set_boxed (GValue *value, %s self)\n", nname.c_str(), TypeArg (ri->name));
         printf ("{\n");
-        printf ("  ::Sfi::cxx_value_set_record< %s> (value, self);\n", nname.c_str());
+        printf ("  ::Sfi::cxx_value_set_boxed_record< %s> (value, self);\n", nname.c_str());
         printf ("}\n\n");
         
         printf ("SfiRecFields\n");
@@ -664,14 +674,14 @@ public:
         printf ("}\n\n");
         
         printf ("%s\n", TypeRet (si->name));
-        printf ("%s::value_get (const GValue *value)\n", nname.c_str());
+        printf ("%s::value_get_boxed (const GValue *value)\n", nname.c_str());
         printf ("{\n");
-        printf ("  return ::Sfi::cxx_value_get_sequence< %s> (value);\n", nname.c_str());
+        printf ("  return ::Sfi::cxx_value_get_boxed_sequence< %s> (value);\n", nname.c_str());
         printf ("}\n\n");
         printf ("void\n");
-        printf ("%s::value_set (GValue *value, %s self)\n", nname.c_str(), TypeArg (si->name));
+        printf ("%s::value_set_boxed (GValue *value, %s self)\n", nname.c_str(), TypeArg (si->name));
         printf ("{\n");
-        printf ("  ::Sfi::cxx_value_set_sequence< %s> (value, self);\n", nname.c_str());
+        printf ("  ::Sfi::cxx_value_set_boxed_sequence< %s> (value, self);\n", nname.c_str());
         printf ("}\n\n");
         
         printf ("GParamSpec*\n");
