@@ -401,7 +401,7 @@ void Parser::preprocess (const string& input_filename)
 	    case '<':	state = filenameIn2;
 			break;
 	    default:	cerr << "bad char after #include statement" << endl;
-			assert(0); // error handling!
+			g_assert_not_reached (); // error handling!
 	    }
 	}
       else if((state == filenameIn1 && *i == '"')
