@@ -101,7 +101,7 @@ bse_midi_synth_init (BseMidiSynth *self)
   BseSNet *snet = BSE_SNET (self);
 
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
+  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
   self->midi_channel_id = 1;
   self->n_voices = 16;
   self->volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);

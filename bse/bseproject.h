@@ -68,7 +68,6 @@ BseErrorType	bse_project_activate		(BseProject	*project);
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
 void		bse_project_check_auto_stop	(BseProject	*project);
-void		bse_project_queue_auto_stop_SL	(BseProject	*project);
 void		bse_project_deactivate		(BseProject	*project);
 void		bse_project_set_auto_deactivate	(BseProject	*project,
 						 gint64		 usecs);

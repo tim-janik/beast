@@ -412,7 +412,6 @@ bse_song_add_item (BseContainer *container,
     self->busses = sfi_ring_append (self->busses, item);
   else
     /* parent class manages other BseSources */ ;
-  self->song_done_SL = FALSE;	/* let sequencer recheck if playing */
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -554,10 +553,15 @@ bse_song_reset (BseSource *source)
 {
   BseSong *self = BSE_SONG (source);
 
-  bse_ssequencer_handle_jobs (sfi_ring_prepend (NULL, bse_ssequencer_job_stop_super (BSE_SUPER (self))));
+  bse_ssequencer_remove_song (self),
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
+
+  g_assert (self->sequencer_start_request_SL == 0);
+  /* outside of sequencer reach, so no locks needed */
+  self->sequencer_start_SL = 0;
+  self->sequencer_done_SL = 0;
 
   if (self->position_handler)
     {
@@ -568,20 +572,6 @@ bse_song_reset (BseSource *source)
   bse_object_unlock (BSE_OBJECT (self));
 
   g_object_notify (self, "tick-pointer");
-}
-
-void
-bse_song_stop_sequencing_SL (BseSong *self)
-{
-  BseItem *item;
-
-  g_return_if_fail (BSE_IS_SONG (self));
-
-  bse_ssequencer_remove_super_SL (BSE_SUPER (self));
-  item = BSE_ITEM (self);
-  while (item->parent)
-    item = item->parent;
-  bse_project_queue_auto_stop_SL (BSE_PROJECT (item));
 }
 
 BseSource*
@@ -627,7 +617,7 @@ bse_song_init (BseSong *self)
   bse_song_timing_get_default (&timing);
 
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
+  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
 
   self->tpqn = timing.tpqn;
   self->numerator = timing.numerator;

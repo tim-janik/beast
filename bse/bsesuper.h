@@ -33,18 +33,14 @@ G_BEGIN_DECLS
 
 /* --- BseSuper member macros --- */
 #define BSE_SUPER_NEEDS_CONTEXT(object)		  ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_CONTEXT) != 0)
-#define BSE_SUPER_NEEDS_SEQUENCER_CONTEXT(object) ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT) != 0)
-#define BSE_SUPER_NEEDS_SEQUENCER(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_SEQUENCER) != 0)
 
 
 /* --- bse super flags --- */
 typedef enum                            /*< skip >*/
 {
   BSE_SUPER_FLAG_NEEDS_CONTEXT		 = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 0),
-  BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 1),
-  BSE_SUPER_FLAG_NEEDS_SEQUENCER	 = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 2)
 } BseSuperFlags;
-#define BSE_SUPER_FLAGS_USHIFT	       (BSE_CONTAINER_FLAGS_USHIFT + 3)
+#define BSE_SUPER_FLAGS_USHIFT	       (BSE_CONTAINER_FLAGS_USHIFT + 1)
 
 
 /* --- BseSuper object --- */
@@ -57,9 +53,6 @@ struct _BseSuper
 
   /* for BseProject */
   guint          context_handle;
-
-  /* sequencer stuff */
-  guint          sequencer_pending_SL : 1;
 };
 struct _BseSuperClass
 {

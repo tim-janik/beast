@@ -67,10 +67,12 @@ struct _BseSong
   gdouble	    tpsi_SL;		/* ticks per stamp increment (sample) */
   SfiRing	   *tracks_SL;		/* of type BseTrack* */
   /* sequencer stuff */
-  SfiTime	    start_SL;		/* playback start */
+  guint64           sequencer_start_request_SL;
+  guint64           sequencer_start_SL; /* playback start */
+  guint64           sequencer_done_SL;
   gdouble	    delta_stamp_SL;	/* start + delta_stamp => tick */
   guint		    tick_SL;		/* tick at stamp_SL */
-  guint		    song_done_SL : 1;
+  guint             sequencer_owns_refcount_SL : 1;
   guint		    loop_enabled_SL : 1;
   SfiInt	    loop_left_SL;	/* left loop tick */
   SfiInt	    loop_right_SL;	/* left loop tick */

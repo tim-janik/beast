@@ -201,9 +201,9 @@ bse_snet_set_property (GObject      *object,
     {
     case PARAM_AUTO_ACTIVATE:
       if (sfi_value_get_bool (value))
-	BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT);
+	BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
       else
-	BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT);
+	BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -222,7 +222,7 @@ bse_snet_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      sfi_value_set_bool (value, BSE_SUPER_NEEDS_SEQUENCER_CONTEXT (self));
+      sfi_value_set_bool (value, BSE_SUPER_NEEDS_CONTEXT (self));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

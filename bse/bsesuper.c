@@ -32,23 +32,6 @@ enum
 };
 
 
-/* --- prototypes --- */
-static void	bse_super_class_init	(BseSuperClass		*class);
-static void	bse_super_init		(BseSuper		*super,
-					 gpointer		 rclass);
-static void	bse_super_finalize	(GObject		*object);
-static void	bse_super_set_property	(GObject		*object,
-					 guint                   param_id,
-					 const GValue           *value,
-					 GParamSpec             *pspec);
-static void	bse_super_get_property	(GObject		*object,
-					 guint                   param_id,
-					 GValue                 *value,
-					 GParamSpec             *pspec);
-static void	bse_super_do_modified	(BseSuper		*super,
-					 SfiTime		 stamp);
-
-
 /* --- variables --- */
 static GTypeClass	*parent_class = NULL;
 static GQuark		 quark_author = 0;
@@ -57,68 +40,6 @@ static GSList		*bse_super_objects = NULL;
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BseSuper)
-{
-  static const GTypeInfo super_info = {
-    sizeof (BseSuperClass),
-    
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_super_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    sizeof (BseSuper),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_super_init,
-  };
-  
-  return bse_type_register_abstract (BSE_TYPE_CONTAINER,
-                                     "BseSuper",
-                                     "Base type for item managers",
-                                     &super_info);
-}
-
-static void
-bse_super_class_init (BseSuperClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  quark_author = g_quark_from_static_string ("author");
-  quark_license = g_quark_from_static_string ("license");
-  
-  gobject_class->set_property = bse_super_set_property;
-  gobject_class->get_property = bse_super_get_property;
-  gobject_class->finalize = bse_super_finalize;
-  
-  class->modified = bse_super_do_modified;
-  
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_AUTHOR,
-			      sfi_pspec_string ("author", _("Author"), _("Person changing or creating this object"),
-						NULL,
-						SFI_PARAM_STANDARD ":skip-default"));
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_LICENSE,
-			      sfi_pspec_string ("license", _("License"), _("Copyright license applying to this object"),
-						NULL,
-						SFI_PARAM_STANDARD ":skip-default"));
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_COPYRIGHT,
-			      sfi_pspec_string ("copyright", NULL, NULL, NULL, "w")); // COMPAT-FIXME: remove around 0.7.0
-  bse_object_class_add_param (object_class, "Time Stamps",
-			      PARAM_CREATION_TIME,
-			      sfi_pspec_time ("creation_time", _("Creation Time"), NULL,
-					      SFI_PARAM_STANDARD_RDONLY));
-  bse_object_class_add_param (object_class, "Time Stamps",
-			      PARAM_MOD_TIME,
-			      sfi_pspec_time ("modification_time", _("Last modification time"), NULL,
-					      SFI_PARAM_STANDARD_RDONLY));
-}
-
 static void
 bse_super_init (BseSuper *super,
 		gpointer  rclass)
@@ -228,4 +149,67 @@ bse_super_do_modified (BseSuper *super,
 		       SfiTime	 stamp)
 {
   super->mod_time = MAX (super->mod_time, stamp);
+}
+
+static void
+bse_super_class_init (BseSuperClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  quark_author = g_quark_from_static_string ("author");
+  quark_license = g_quark_from_static_string ("license");
+  
+  gobject_class->set_property = bse_super_set_property;
+  gobject_class->get_property = bse_super_get_property;
+  gobject_class->finalize = bse_super_finalize;
+
+  class->modified = bse_super_do_modified;
+  
+  bse_object_class_add_param (object_class, NULL,
+			      PARAM_AUTHOR,
+			      sfi_pspec_string ("author", _("Author"), _("Person changing or creating this object"),
+						NULL,
+						SFI_PARAM_STANDARD ":skip-default"));
+  bse_object_class_add_param (object_class, NULL,
+			      PARAM_LICENSE,
+			      sfi_pspec_string ("license", _("License"), _("Copyright license applying to this object"),
+						NULL,
+						SFI_PARAM_STANDARD ":skip-default"));
+  bse_object_class_add_param (object_class, NULL,
+			      PARAM_COPYRIGHT,
+			      sfi_pspec_string ("copyright", NULL, NULL, NULL, "w")); // COMPAT-FIXME: remove around 0.7.0
+  bse_object_class_add_param (object_class, "Time Stamps",
+			      PARAM_CREATION_TIME,
+			      sfi_pspec_time ("creation_time", _("Creation Time"), NULL,
+					      SFI_PARAM_STANDARD_RDONLY));
+  bse_object_class_add_param (object_class, "Time Stamps",
+			      PARAM_MOD_TIME,
+			      sfi_pspec_time ("modification_time", _("Last modification time"), NULL,
+					      SFI_PARAM_STANDARD_RDONLY));
+}
+
+BSE_BUILTIN_TYPE (BseSuper)
+{
+  static const GTypeInfo super_info = {
+    sizeof (BseSuperClass),
+    
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_super_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    sizeof (BseSuper),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_super_init,
+  };
+  
+  return bse_type_register_abstract (BSE_TYPE_CONTAINER,
+                                     "BseSuper",
+                                     "Base type for item managers",
+                                     &super_info);
 }

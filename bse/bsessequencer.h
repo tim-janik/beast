@@ -19,41 +19,22 @@
 #define __BSE_SSEQUENCER_H__
 
 #include <bse/bsesong.h>
-#include <bse/bsepart.h>
 
 G_BEGIN_DECLS
 
 #define	BSE_SSEQUENCER_PREPROCESS	(bse_engine_block_size () * 7)
 
-
-typedef enum {
-  BSE_SSEQUENCER_JOB_NOP,
-  BSE_SSEQUENCER_JOB_ADD,
-  BSE_SSEQUENCER_JOB_REMOVE,
-} BseSSequencerJobType;
-
-typedef struct {
-  BseSSequencerJobType	 type;
-  BseSuper		*super;
-  SfiTime		 stamp;
-} BseSSequencerJob;
-
 typedef struct {
   SfiTime		 stamp;	/* sequencer time (ahead of real time) */
-  SfiRing		*jobs;
-  SfiRing		*supers;
+  SfiRing		*songs;
 } BseSSequencer;
 
 extern SfiThread       *bse_ssequencer_thread;
 
 void			bse_ssequencer_init_thread	(void);
-void			bse_ssequencer_start_supers	(SfiRing	*supers,
-							 BseTrans	*trans);
-BseSSequencerJob*	bse_ssequencer_job_stop_super	(BseSuper	*super);
-SfiTime			bse_ssequencer_queue_jobs	(SfiRing	 *jobs);
-void			bse_ssequencer_handle_jobs	(SfiRing	 *jobs);
-void			bse_ssequencer_remove_super_SL	(BseSuper	*super);
-
+void			bse_ssequencer_start_song	(BseSong        *song,
+                                                         guint64         start_stamp);
+void                    bse_ssequencer_remove_song	(BseSong        *song);
 
 G_END_DECLS
 

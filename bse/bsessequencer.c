@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2003 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "bseengine.h"
 #include "bsetrack.h"
 #include "bsepart.h"
+#include "bseproject.h"
 #include "bsemidireceiver.h"
 #include "bsemain.h"
 
@@ -35,222 +36,135 @@ static void	bse_ssequencer_process_song_SL	(BseSong	*song,
 
 /* --- variables --- */
 SfiThread            *bse_ssequencer_thread = NULL;
-static BseSSequencer *self = NULL;
-static SfiThread     *seq_thread = NULL;
+static BseSSequencer *global_sequencer = NULL;
 
 
 /* --- functions --- */
 void
 bse_ssequencer_init_thread (void)
 {
+  g_assert (bse_ssequencer_thread == NULL);
+
+  /* initialize BseSSequencer */
   static BseSSequencer sseq = { 0, };
+  sseq.stamp = gsl_tick_stamp ();
+  g_assert (sseq.stamp > 0);
+  global_sequencer = &sseq;
 
-  g_assert (self == NULL);
-
-  self = &sseq;
-  self->stamp = gsl_tick_stamp ();
-  g_assert (self->stamp > 0);
-
-  seq_thread = sfi_thread_run ("Sequencer", bse_ssequencer_thread_main, NULL);
-  if (!seq_thread)
+  bse_ssequencer_thread = sfi_thread_run ("Sequencer", bse_ssequencer_thread_main, NULL);
+  if (!bse_ssequencer_thread)
     g_error ("failed to create sequencer thread");
 }
 
-static BseSSequencerJob*
-bse_ssequencer_add_super (BseSuper *super)
+void
+bse_ssequencer_start_song (BseSong        *song,
+                           guint64         start_stamp)
 {
-  BseSSequencerJob *job;
+  g_assert (bse_ssequencer_thread != NULL);
+  g_return_if_fail (BSE_IS_SONG (song));
+  g_return_if_fail (BSE_SOURCE_PREPARED (song));
+  g_return_if_fail (song->sequencer_start_request_SL == 0);
+  g_assert (song->sequencer_owns_refcount_SL == FALSE);
+  start_stamp = MAX (start_stamp, 1);
 
-  g_return_val_if_fail (super->sequencer_pending_SL == FALSE, NULL);
-
-  job = sfi_new_struct0 (BseSSequencerJob, 1);
-  job->type = BSE_SSEQUENCER_JOB_ADD;
-  job->super = super;
-  super->sequencer_pending_SL = TRUE;
-  job->stamp = 0;
-  return job;
+  g_object_ref (song);
+  BSE_SEQUENCER_LOCK ();
+  song->sequencer_owns_refcount_SL = TRUE;
+  song->sequencer_start_request_SL = start_stamp <= 1 ? global_sequencer->stamp : start_stamp;
+  song->sequencer_start_SL = 0;
+  song->sequencer_done_SL = 0;
+  song->delta_stamp_SL = 0;
+  song->tick_SL = 0;
+  SfiRing *ring;
+  for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
+    {
+      BseTrack *track = ring->data;
+      track->track_done_SL = FALSE;
+    }
+  global_sequencer->songs = sfi_ring_append (global_sequencer->songs, song);
+  BSE_SEQUENCER_UNLOCK ();
+  sfi_thread_wakeup (bse_ssequencer_thread);
 }
 
 void
-bse_ssequencer_start_supers (SfiRing  *supers,
-			     BseTrans *trans)
+bse_ssequencer_remove_song (BseSong *song)
 {
-  SfiRing *ring, *jobs = NULL;
-  for (ring = supers; ring; ring = sfi_ring_walk (ring, supers))
+  g_return_if_fail (BSE_IS_SONG (song));
+  g_return_if_fail (BSE_SOURCE_PREPARED (song));
+  if (song->sequencer_start_request_SL == 0)
     {
-      BseSuper *super = ring->data;
-      g_return_if_fail (BSE_IS_SUPER (super));
-      if (super->sequencer_pending_SL)
-	g_warning ("%s: module %s already in sequencer", G_STRLOC, bse_object_debug_name (super));
-      else
-	jobs = sfi_ring_append (jobs, bse_ssequencer_add_super (super));
+      g_assert (song->sequencer_owns_refcount_SL == FALSE);
+      return;   /* uncontained */
     }
-  if (jobs)
-    {
-      SfiTime start_stamp = bse_ssequencer_queue_jobs (jobs);
-      /* make sure the transaction isn't processed prematurely */
-      if (trans)
-	bse_trans_commit_delayed (trans, start_stamp);
-    }
-  else if (trans)
-    bse_trans_commit (trans);
+
+  BSE_SEQUENCER_LOCK ();
+  SfiRing *ring = sfi_ring_find (global_sequencer->songs, song);
+  global_sequencer->songs = sfi_ring_remove_node (global_sequencer->songs, ring);
+  song->sequencer_start_request_SL = 0;
+  if (!song->sequencer_done_SL)
+    song->sequencer_done_SL = global_sequencer->stamp;
+  if (!song->sequencer_start_SL)
+    song->sequencer_start_SL = song->sequencer_done_SL;
+  gboolean need_unref = song->sequencer_owns_refcount_SL;
+  song->sequencer_owns_refcount_SL = FALSE;
+  BSE_SEQUENCER_UNLOCK ();
+  if (!ring)
+    g_warning ("%s: failed to find %s in sequencer", G_STRLOC, bse_object_debug_name (song));
+  if (need_unref)
+    g_object_unref (song);
 }
 
-BseSSequencerJob*
-bse_ssequencer_job_stop_super (BseSuper *super)
+static gboolean
+bse_ssequencer_remove_song_async (gpointer data)        /* UserThread */
 {
-  BseSSequencerJob *job = NULL;
-
-  g_return_val_if_fail (BSE_IS_SUPER (super), NULL);
-
-  job = sfi_new_struct0 (BseSSequencerJob, 1);
-  job->type = BSE_SSEQUENCER_JOB_NOP;
-  if (super->sequencer_pending_SL == TRUE)
+  BseSong *song = BSE_SONG (data);
+  if (BSE_SOURCE_PREPARED (song) &&     /* project might be deactivated already */
+      song->sequencer_done_SL)          /* song might have been removed and re-added */
     {
-      job->type = BSE_SSEQUENCER_JOB_REMOVE;
-      job->super = super;
-      job->stamp = 0;
+      bse_ssequencer_remove_song (song);
+      BseProject *project = bse_item_get_project (BSE_ITEM (song));
+      bse_project_check_auto_stop (project);
     }
-  return job;
-}
-
-static gint
-jobs_cmp (gconstpointer a,
-	  gconstpointer b,
-          gpointer      data)
-{
-  const BseSSequencerJob *job1 = a;
-  const BseSSequencerJob *job2 = b;
-  return job1->stamp < job2->stamp ? -1 : job1->stamp > job2->stamp;
-}
-
-void
-bse_ssequencer_remove_super_SL (BseSuper *super)
-{
-  g_return_if_fail (BSE_IS_SUPER (super));
-  self->supers = sfi_ring_remove (self->supers, super);
-  super->sequencer_pending_SL = FALSE;
+  g_object_unref (song);                        /* sequencer_owns_refcount_SL = FALSE from bse_ssequencer_queue_remove_song_SL() */
+  return FALSE;
 }
 
 static void
-bse_ssequencer_handle_jobs_SL (SfiTime next_stamp)
+bse_ssequencer_queue_remove_song_SL (BseSong *song)
 {
-  BseSSequencerJob *job = self->jobs ? self->jobs->data : NULL;
-  while (job)
-    {
-      if (job->stamp > next_stamp)
-	return;
-      job = sfi_ring_pop_head (&self->jobs); /* same job, but remove from list */
-      switch (job->type)
-	{
-	  BseSuper *super;
-	  SfiRing *ring;
-	case BSE_SSEQUENCER_JOB_NOP:
-	  break;
-	case BSE_SSEQUENCER_JOB_ADD:
-	  super = job->super;
-	  if (BSE_IS_SONG (super))	// FIXME
-	    {
-	      BseSong *song = BSE_SONG (super);
-	      song->start_SL = job->stamp;
-	      song->delta_stamp_SL = 0;
-	      song->tick_SL = 0;
-	      song->song_done_SL = FALSE;
-	      for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
-		{
-		  BseTrack *track = ring->data;
-		  track->track_done_SL = FALSE;
-		}
-	    }
-	  self->supers = sfi_ring_push_tail (self->supers, super);
-	  break;
-	case BSE_SSEQUENCER_JOB_REMOVE:
-	  bse_ssequencer_remove_super_SL (job->super);
-	  break;
-	default:
-	  g_warning ("%s: unhandled job type: %u", G_STRLOC, job->type);
-	}
-      sfi_delete_struct (BseSSequencerJob, job);
-      job = self->jobs ? self->jobs->data : NULL;
-    }
-}
-
-static SfiTime
-bse_ssequencer_queue_jobs_internal (SfiRing *jobs,
-				    gboolean process_now)
-{
-  SfiTime stamp = gsl_tick_stamp () + BSE_SSEQUENCER_PREPROCESS * 1.5;
-  if (jobs)
-    {
-      SfiRing *tmp;
-      /* shift start stamps to earliest possible stamp */
-      for (tmp = jobs; tmp; tmp = sfi_ring_walk (tmp, jobs))
-	{
-	  BseSSequencerJob *job = tmp->data;
-	  if (job->type == BSE_SSEQUENCER_JOB_ADD)
-	    job->stamp = MAX (job->stamp, stamp);
-	}
-      jobs = sfi_ring_sort (jobs, jobs_cmp, NULL);
-      BSE_SEQUENCER_LOCK ();
-      self->jobs = sfi_ring_merge_sorted (self->jobs, jobs, jobs_cmp, NULL);
-      if (process_now)
-	bse_ssequencer_handle_jobs_SL (gsl_tick_stamp ());
-      BSE_SEQUENCER_UNLOCK ();
-    }
-  return stamp;
-}
-
-SfiTime
-bse_ssequencer_queue_jobs (SfiRing *jobs)
-{
-  SfiTime stamp;
-  /* returns the earliest possible playback stamp */
-  stamp = bse_ssequencer_queue_jobs_internal (jobs, FALSE);
-  sfi_thread_wakeup (seq_thread);
-  return stamp;
-}
-
-void
-bse_ssequencer_handle_jobs (SfiRing *jobs)
-{
-  /* we basically do the same as bse_ssequencer_queue_jobs(),
-   * except that removal jobs are processed immediately
-   */
-  bse_ssequencer_queue_jobs_internal (jobs, TRUE);
+  g_return_if_fail (song->sequencer_owns_refcount_SL == TRUE);
+  song->sequencer_owns_refcount_SL = FALSE;     /* g_object_unref() in bse_ssequencer_remove_song_async() */
+  bse_idle_now (bse_ssequencer_remove_song_async, song);
 }
 
 static void
 bse_ssequencer_thread_main (gpointer data)
 {
-  bse_ssequencer_thread = sfi_thread_self ();
   DEBUG ("SST: start\n");
   do
     {
       const SfiTime cur_stamp = gsl_tick_stamp ();
       SfiTime next_stamp = cur_stamp + BSE_SSEQUENCER_PREPROCESS;
       SfiRing *ring;
-
+      
       BSE_SEQUENCER_LOCK ();
-      bse_ssequencer_handle_jobs_SL (next_stamp);
-      for (ring = self->supers; ring; )
+      for (ring = global_sequencer->songs; ring; ring = sfi_ring_walk (ring, global_sequencer->songs))
 	{
-	  BseSuper *super = ring->data;
-	  if (BSE_IS_SONG (super))
-	    {
-	      BseSong *song = BSE_SONG (super);
-	      gdouble stamp_diff = (next_stamp - song->start_SL) - song->delta_stamp_SL;
-	      ring = sfi_ring_walk (ring, self->supers);	/* list may be modified */
+          BseSong *song = BSE_SONG (ring->data);
+          if (!song->sequencer_start_SL && song->sequencer_start_request_SL <= cur_stamp)
+            song->sequencer_start_SL = cur_stamp;
+          if (song->sequencer_start_SL && !song->sequencer_done_SL)
+            {
+              gdouble stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
 	      while (stamp_diff > 0)
 		{
 		  guint n_ticks = stamp_diff * song->tpsi_SL;
 		  if (n_ticks < 1)
 		    break;
 		  bse_ssequencer_process_song_SL (song, n_ticks);
-		  stamp_diff = (next_stamp - song->start_SL) - song->delta_stamp_SL;
+		  stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
 		}
 	    }
-	  else
-	    ring = sfi_ring_walk (ring, self->supers);
 	}
       BSE_SEQUENCER_UNLOCK ();
 
@@ -274,7 +188,7 @@ bse_ssequencer_process_song_unlooped_SL (BseSong *song,
 					 gboolean force_active_tracks)
 {
   BseMidiReceiver *midi_receiver = song->midi_receiver_SL;
-  gdouble current_stamp = song->start_SL + song->delta_stamp_SL;
+  gdouble current_stamp = song->sequencer_start_SL + song->delta_stamp_SL;
   gdouble stamps_per_tick = 1.0 / song->tpsi_SL;
   SfiTime next_stamp = current_stamp + n_ticks * stamps_per_tick;
   guint tick_bound = song->tick_SL + n_ticks;
@@ -322,11 +236,10 @@ bse_ssequencer_process_song_SL (BseSong *song,
     while (n_ticks);
   else
     tracks_active = bse_ssequencer_process_song_unlooped_SL (song, n_ticks, FALSE);
-  if (!song->song_done_SL)
+  if (!song->sequencer_done_SL && !tracks_active)
     {
-      song->song_done_SL = !tracks_active;
-      if (song->song_done_SL)
-	bse_song_stop_sequencing_SL (song);
+      song->sequencer_done_SL = global_sequencer->stamp;
+      bse_ssequencer_queue_remove_song_SL (song);
     }
 }
 

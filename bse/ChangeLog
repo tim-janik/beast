@@ -1,3 +1,16 @@
+Wed Sep 22 02:13:59 2004  Tim Janik  <timj@gtk.org>
+
+	* bsessequencer.[hc]: rewrote and majorly simplified playback
+	object maintenance. simply allow removal and additions of
+	songs to the sequencer, adapted callers.
+
+	* bsesuper.[hc]: removed sequencer specific code and API, 
+	adapted callers.
+
+	* bsesong.[hc]: adapted to new sequencer API.
+
+	* bseproject.[hc]: simplified and adapted to new sequencer API.
+
 Tue Sep 21 23:59:09 2004  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c: store and restore property automation setups.

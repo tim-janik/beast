@@ -92,8 +92,6 @@ static BseUndoStack* bse_project_get_undo       (BseItem                *item);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_state_changed = 0;
-static GSList     *plist_auto_stop_SL = NULL;
-static guint       handler_id_auto_stop_check_SL = 0;
 static GQuark      quark_storage_trap = 0;
 
 
@@ -276,10 +274,6 @@ bse_project_finalize (GObject *object)
 {
   BseProject *self = BSE_PROJECT (object);
   
-  BSE_SEQUENCER_LOCK ();
-  plist_auto_stop_SL = g_slist_remove (plist_auto_stop_SL, self);
-  BSE_SEQUENCER_UNLOCK ();
-
   bse_midi_receiver_unref (self->midi_receiver);
   self->midi_receiver = NULL;
 
@@ -760,7 +754,6 @@ bse_project_activate (BseProject *self)
 void
 bse_project_start_playback (BseProject *self)
 {
-  SfiRing *seq_list = NULL;
   BseTrans *trans;
   GSList *slist;
   guint seen_synth = 0;
@@ -771,12 +764,12 @@ bse_project_start_playback (BseProject *self)
     return;
   g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
 
+  SfiRing *songs = NULL;
   trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
-      if ((BSE_SUPER_NEEDS_CONTEXT (super) ||
-	   BSE_SUPER_NEEDS_SEQUENCER_CONTEXT (super)) &&
+      if (BSE_SUPER_NEEDS_CONTEXT (super) &&
 	  super->context_handle == ~0)
 	{
           BseMidiContext mcontext = { 0, 0, 0 };
@@ -787,24 +780,25 @@ bse_project_start_playback (BseProject *self)
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	  seen_synth++;
 	}
-      if (BSE_SUPER_NEEDS_SEQUENCER (super))
-	seq_list = sfi_ring_append (seq_list, super);
+      if (BSE_IS_SONG (super))
+	songs = sfi_ring_append (songs, super);
     }
   /* enfore MasterThread roundtrip */
   bse_trans_add (trans, bse_job_nop());
   bse_trans_commit (trans);
   /* first, enforce integrated (and possibly scheduled) modules; */
   bse_engine_wait_on_trans();
-  /* then, start the sequencer */
-  bse_ssequencer_start_supers (seq_list, NULL);
-  if (seen_synth || seq_list)
+  /* update state */
+  if (seen_synth || songs)
     bse_project_state_changed (self, BSE_PROJECT_PLAYING);
+  /* then, start the sequencer */
+  while (songs)
+    bse_ssequencer_start_song (sfi_ring_pop_head (&songs), 0);
 }
 
 void
 bse_project_stop_playback (BseProject *self)
 {
-  SfiRing *seq_jobs = NULL;
   BseTrans *trans;
   GSList *slist;
 
@@ -818,8 +812,8 @@ bse_project_stop_playback (BseProject *self)
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
-
-      seq_jobs = sfi_ring_prepend (seq_jobs, bse_ssequencer_job_stop_super (super));
+      if (BSE_IS_SONG (super))
+        bse_ssequencer_remove_song (BSE_SONG (super));
       if (super->context_handle != ~0 && !BSE_SUPER_NEEDS_CONTEXT (super))
 	{
 	  BseSource *source = BSE_SOURCE (super);
@@ -827,11 +821,12 @@ bse_project_stop_playback (BseProject *self)
 	  super->context_handle = ~0;
 	}
     }
-  if (seq_jobs)
-    bse_ssequencer_handle_jobs (seq_jobs);
+  /* enfore MasterThread roundtrip */
+  bse_trans_add (trans, bse_job_nop());
   bse_trans_commit (trans);
   /* wait until after all modules have actually been dismissed */
   bse_engine_wait_on_trans ();
+  /* update state */
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
 }
 
@@ -848,39 +843,12 @@ bse_project_check_auto_stop (BseProject *self)
 	  BseSuper *super = BSE_SUPER (slist->data);
 	  if (super->context_handle != ~0)
 	    {
-	      if (BSE_SUPER_NEEDS_SEQUENCER_CONTEXT (super) ||
-		  !BSE_IS_SONG (super) ||
-		  !BSE_SONG (super)->song_done_SL)
+	      if (!BSE_IS_SONG (super) || !BSE_SONG (super)->sequencer_done_SL)
 		return;
 	    }
 	}
       bse_project_stop_playback (self);
     }
-}
-
-static gboolean
-auto_stop_check_handler (gpointer data)
-{
-  BSE_SEQUENCER_LOCK ();
-  while (plist_auto_stop_SL)
-    {
-      BseProject *self = g_slist_pop_head (&plist_auto_stop_SL);
-      BSE_SEQUENCER_UNLOCK ();
-      bse_project_check_auto_stop (self);
-      BSE_SEQUENCER_LOCK ();
-    }
-  handler_id_auto_stop_check_SL = 0;
-  BSE_SEQUENCER_UNLOCK ();
-  return FALSE;
-}
-
-void
-bse_project_queue_auto_stop_SL (BseProject *self)
-{
-  if (!g_slist_find (plist_auto_stop_SL, self))
-    plist_auto_stop_SL = g_slist_prepend (plist_auto_stop_SL, self);
-  if (!handler_id_auto_stop_check_SL)
-    handler_id_auto_stop_check_SL = bse_idle_now (auto_stop_check_handler, NULL);
 }
 
 void
