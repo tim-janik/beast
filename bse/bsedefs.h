@@ -125,6 +125,7 @@ typedef struct  _BsePluginClass         BsePluginClass;
 typedef void          (*BseFunc)             (void);
 typedef void          (*BseFreeFunc)         (gpointer           data);
 typedef void          (*BseIOWatch)	     (gpointer		 data,
+                                              guint              n_pfds,
 					      GPollFD		*pfd);
 typedef SfiTokenType  (*BseTryStatement)     (gpointer           context_data,
                                               BseStorage        *storage,

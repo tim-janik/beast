@@ -1,3 +1,9 @@
+Tue Sep 28 18:26:23 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h: added n_fds to BseIOWatch, adapted users.
+
+	* bseplugin.c bse_plugin_path_list_files(): allow *.o plugins besides *.so.
+
 Mon Sep 27 20:36:55 2004  Tim Janik  <timj@gtk.org>
 
 	* bsedevice.[hc]:

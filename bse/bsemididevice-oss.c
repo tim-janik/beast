@@ -52,8 +52,9 @@ typedef struct
 
 
 /* --- prototypes --- */
-static void	    io_handler				(BseMidiDevice		*mdev,
-							 GPollFD		*pfd);
+static void	    io_handler				(BseMidiDevice *mdev,
+                                                         guint          n_pfds,
+                                                         GPollFD       *pfds);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
@@ -225,6 +226,7 @@ bse_midi_device_oss_finalize (GObject *object)
 
 static void
 io_handler (BseMidiDevice *mdev,
+            guint          n_pfds,
 	    GPollFD       *pfd)
 {
   OSSHandle *oss = (OSSHandle*) mdev->handle;

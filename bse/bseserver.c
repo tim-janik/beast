@@ -919,7 +919,7 @@ iowatch_dispatch (GSource    *source,
   WSource *wsource = (WSource*) source;
   
   BSE_THREADS_ENTER ();
-  wsource->watch_func (wsource->data, &wsource->pfd);
+  wsource->watch_func (wsource->data, 1, &wsource->pfd);
   BSE_THREADS_LEAVE ();
   
   return TRUE;
