@@ -1,3 +1,12 @@
+Mon Jan 31 19:08:37 2000  Tim Janik  <timj@gtk.org>
+
+	* bsemixer.c (bse_mixer_calc_chunk): fixed optimization bug that cause
+	volumes to not take effect sometimes.
+
+	* icons/mic.*:
+	* bsecapture.[hc]:
+	moved capturing source into BSE proper.
+
 Mon Jan 17 16:11:03 2000  Tim Janik  <timj@gtk.org>
 
 	* davsyndrum.[hc]: added edge-sensitive trigger input channel.

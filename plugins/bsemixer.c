@@ -425,7 +425,7 @@ bse_mixer_calc_chunk (BseSource *source,
   else if (source->n_inputs == 1 &&
 	   BSE_EPSILON_CMP (1.0,
 			    mixer->volume_factor[0] *
-			    mixer->volume_factor[source->inputs[0].ochannel_id]) == 0)
+			    mixer->volume_factor[source->inputs[0].ichannel_id]) == 0)
     return bse_source_ref_chunk (source->inputs[0].osource, source->inputs[0].ochannel_id, source->index);
 
   bound = mixer->mix_buffer + BSE_TRACK_LENGTH;
