@@ -1,0 +1,4592 @@
+# Japanese translation of Beast's message catalogue
+# Copyright (C) 2004 THE beast's COPYRIGHT HOLDER
+# This file is distributed under the same license as the beast package.
+# SATOH, Satoru <ss@gnome.gr.jp>, 2004.
+# (As I'm not familiar with the terms of MIDI, any fixes are always welcome!)
+msgid ""
+msgstr ""
+"Project-Id-Version: beast 0.6.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-08-28 18:00+0200\n"
+"PO-Revision-Date: 2004-08-06 19:59+0200\n"
+"Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
+"Language-Team: Japanese <translation@gnome.gr.jp>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: beast-gtk/bstapp.c:68
+msgid "_New"
+msgstr "新規(_N)"
+
+#: beast-gtk/bstapp.c:68
+msgid "Create new project"
+msgstr "新しいプロジェクト"
+
+#: beast-gtk/bstapp.c:70
+msgid "_Open..."
+msgstr "開く(_O)..."
+
+#: beast-gtk/bstapp.c:70
+msgid "Open existing project"
+msgstr "プロジェクトを開く"
+
+#: beast-gtk/bstapp.c:72
+msgid "_Merge..."
+msgstr "統合(_M)..."
+
+#: beast-gtk/bstapp.c:72
+msgid "Merge an existing project into the current project"
+msgstr "既存のプロジェクトを現在のプロジェクトに統合"
+
+#: beast-gtk/bstapp.c:74
+msgid "_Import MIDI..."
+msgstr "MIDI をインポート(_I)..."
+
+#: beast-gtk/bstapp.c:74
+msgid "Import a standard MIDI file into the current project"
+msgstr "標準 MIDI ファイルを現在のプロジェクトにインポート"
+
+#: beast-gtk/bstapp.c:76
+msgid "_Close"
+msgstr "閉じる(_C)"
+
+#: beast-gtk/bstapp.c:76
+msgid "Close the project"
+msgstr "プロジェクトを閉じる"
+
+#: beast-gtk/bstapp.c:80
+msgid "_Save"
+msgstr "保存(_S)"
+
+#: beast-gtk/bstapp.c:80
+msgid "Write project to disk"
+msgstr ""
+
+#: beast-gtk/bstapp.c:82
+msgid "Save _As..."
+msgstr "別名で保存(_A)..."
+
+#: beast-gtk/bstapp.c:82
+msgid "Write project to a specific file"
+msgstr ""
+
+#: beast-gtk/bstapp.c:86
+msgid "_Quit"
+msgstr "終了(_Q)"
+
+#: beast-gtk/bstapp.c:86
+msgid "Close all windows and quit"
+msgstr ""
+
+#: beast-gtk/bstapp.c:90
+msgid "_Preferences..."
+msgstr "設定(_P)..."
+
+#: beast-gtk/bstapp.c:90
+msgid "Adjust overall program behaviour"
+msgstr ""
+
+#: beast-gtk/bstapp.c:94
+msgid "Rebuild"
+msgstr "再構築"
+
+#: beast-gtk/bstapp.c:97
+msgid "_About..."
+msgstr "情報(_A)..."
+
+#: beast-gtk/bstapp.c:97
+msgid "Display developer and contributor credits"
+msgstr ""
+
+#: beast-gtk/bstapp.c:101
+msgid "_Undo"
+msgstr "アンドゥ(_U)"
+
+#: beast-gtk/bstapp.c:101
+msgid "Undo the effect of the last action"
+msgstr ""
+
+#: beast-gtk/bstapp.c:103
+msgid "_Redo"
+msgstr "リドゥ(_R)"
+
+#: beast-gtk/bstapp.c:103
+msgid "Redo the last undone action"
+msgstr "最後のアンドゥアクションを元に戻す"
+
+#: beast-gtk/bstapp.c:107 beast-gtk/bstpartdialog.c:70
+msgid "_Clear Undo"
+msgstr "アンドゥをクリア(_C)"
+
+#: beast-gtk/bstapp.c:107
+msgid "Delete the complete undo history"
+msgstr ""
+
+#: beast-gtk/bstapp.c:111
+msgid "Procedure _Browser"
+msgstr "プロセスブラウザ(_B)"
+
+#: beast-gtk/bstapp.c:111
+msgid "Display an overview of all procedures"
+msgstr ""
+
+#: beast-gtk/bstapp.c:113
+msgid "Rack Editor"
+msgstr "ラックエディタ"
+
+#: beast-gtk/bstapp.c:115 beast-gtk/bstprofiler.c:225
+msgid "Profiler"
+msgstr "プロファイラ"
+
+#: beast-gtk/bstapp.c:115
+msgid "Display statistics and timing information"
+msgstr ""
+
+#: beast-gtk/bstapp.c:117
+msgid "New View"
+msgstr "新しいビュー"
+
+#: beast-gtk/bstapp.c:117
+#, fuzzy
+msgid "Create an extra view of the project"
+msgstr "新しいプロジェクト"
+
+#: beast-gtk/bstapp.c:121
+msgid "_Play"
+msgstr "演奏(_P)"
+
+#: beast-gtk/bstapp.c:121
+msgid "Play or restart playback of the project"
+msgstr ""
+
+#: beast-gtk/bstapp.c:123
+msgid "_Stop"
+msgstr "停止(_S)"
+
+#: beast-gtk/bstapp.c:123
+msgid "Stop playback of the project"
+msgstr ""
+
+#: beast-gtk/bstapp.c:127
+msgid "New Song"
+msgstr "新しい曲"
+
+#: beast-gtk/bstapp.c:127
+msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
+msgstr ""
+
+#: beast-gtk/bstapp.c:129
+msgid "New Custom Synthesizer"
+msgstr "新しいカスタムシンセサイザ"
+
+#: beast-gtk/bstapp.c:129
+msgid ""
+"Create a new synthesizer mesh to be used as effect or instrument in songs"
+msgstr ""
+
+#: beast-gtk/bstapp.c:131
+msgid "New MIDI Synthesizer"
+msgstr "新しい MIDI シンセサイザ"
+
+#: beast-gtk/bstapp.c:131
+msgid ""
+"Create a new MIDI synthesizer to control an instrument from external MIDI "
+"events"
+msgstr ""
+
+#: beast-gtk/bstapp.c:133
+msgid "Remove Song or Synthesizer"
+msgstr "曲またはシンセサイザを削除"
+
+#: beast-gtk/bstapp.c:133
+#, fuzzy
+msgid "Remove the currently selected synthesizer (song)"
+msgstr "選択したショートカットを削除"
+
+#: beast-gtk/bstapp.c:137
+msgid "Load _Instrument"
+msgstr "インストゥルメントを読み込み(_I)"
+
+#: beast-gtk/bstapp.c:137
+msgid "Load synthesizer mesh from instruments folder"
+msgstr ""
+
+#: beast-gtk/bstapp.c:139
+msgid "Load _Effect"
+msgstr "エフェクトを読み込み(_E)"
+
+#: beast-gtk/bstapp.c:139
+msgid "Load synthesizer mesh from effects folder"
+msgstr ""
+
+#: beast-gtk/bstapp.c:141
+msgid "Save As Instrument"
+msgstr "インストゥルメントを別名で保存"
+
+#: beast-gtk/bstapp.c:141
+msgid "Save synthesizer mesh to instruments folder"
+msgstr ""
+
+#: beast-gtk/bstapp.c:143
+msgid "Save As Effect"
+msgstr "エフェクトを別名で保存"
+
+#: beast-gtk/bstapp.c:143
+msgid "Save synthesizer mesh to effects folder"
+msgstr ""
+
+#: beast-gtk/bstapp.c:147
+msgid "_Release Notes..."
+msgstr "リリースノート(_R)..."
+
+#: beast-gtk/bstapp.c:147
+msgid "Notes and informations about this release cycle"
+msgstr ""
+
+#: beast-gtk/bstapp.c:149
+msgid "Quick Start..."
+msgstr "クィックスタート..."
+
+#: beast-gtk/bstapp.c:149
+msgid "Provides an introduction about how to accomplish the most common tasks"
+msgstr ""
+
+#: beast-gtk/bstapp.c:151
+msgid "_FAQ..."
+msgstr "FAQ(_F)..."
+
+#: beast-gtk/bstapp.c:151
+msgid "Frequently asked questions"
+msgstr ""
+
+#: beast-gtk/bstapp.c:155
+#, fuzzy
+msgid "DSP Engine..."
+msgstr "GSL エンジン..."
+
+#: beast-gtk/bstapp.c:155
+msgid "Technical description of the multi-threaded synthesis engine innards"
+msgstr ""
+
+#: beast-gtk/bstapp.c:286
+msgid "Export Audio"
+msgstr "オーディオにエクスポート"
+
+#: beast-gtk/bstapp.c:613 beast-gtk/bstapp.c:620 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
+#, c-format
+msgid "Opening project `%s'"
+msgstr "プロジェクト '%s' を開く"
+
+#: beast-gtk/bstapp.c:680
+#, c-format
+msgid "Loading skin `%s'"
+msgstr "スキン `%s' を読み込み"
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:847
+msgid "Rack editor"
+msgstr "ラックエディタ"
+
+#: beast-gtk/bstapp.c:861
+msgid "Preferences"
+msgstr "設定"
+
+#: beast-gtk/bstapp.c:888
+msgid "Procedure Browser"
+msgstr "プロセスブラウザ"
+
+#: beast-gtk/bstapp.c:945
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr "BEAST-%s リリースノート"
+
+#: beast-gtk/bstauxdialogs.c:389
+#, c-format
+msgid "Please press the keyboard shortcut to be installed for function: %s"
+msgstr "機能 %s をインストールするにはキーボードショートカットを押して下さい"
+
+#: beast-gtk/bstauxdialogs.c:394
+msgid "Please press the keyboard shortcut to be installed..."
+msgstr "インストールするにはキーボードショートカットを押して下さい..."
+
+#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:34
+#: beast-gtk/bstbusview.c:34 beast-gtk/bstinstrumentview.c:33
+#: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:61
+msgid "Add"
+msgstr "追加"
+
+#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusview.c:35
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
+#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+msgid "Delete"
+msgstr "削除"
+
+#: beast-gtk/bstbuseditor.c:40 beast-gtk/bstpartview.c:41
+#: beast-gtk/bstwaveview.c:47
+msgid "Editor"
+msgstr "エディタ"
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "モジュールリンク: "
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:747
+msgid "Module link"
+msgstr "モジュールリンク"
+
+#: beast-gtk/bstcanvassource.c:463
+msgid "Module Info"
+msgstr "モジュール情報"
+
+#: beast-gtk/bstcanvassource.c:963 beast-gtk/bstsnetrouter.c:1084
+msgid "Input"
+msgstr "入力"
+
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1081
+#: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
+#: plugins/artscompressor.idl:58
+msgid "Output"
+msgstr "出力"
+
+#: beast-gtk/bstcanvassource.c:976
+msgid "(Hint)"
+msgstr "(ヒント)"
+
+#: beast-gtk/bstdbmeter.c:765
+msgid "Draw Values"
+msgstr ""
+
+#: beast-gtk/bstdbmeter.c:765
+msgid "Adjust whether to draw dB values instead of lines"
+msgstr ""
+
+#: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
+#: beast-gtk/bstdbmeter.c:1510
+#, fuzzy
+msgid "Orientation"
+msgstr "方向"
+
+#: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
+#: beast-gtk/bstdbmeter.c:1510
+msgid "Choose horizontal or vertical orientation"
+msgstr ""
+
+#: beast-gtk/bstdbmeter.c:771
+#, fuzzy
+msgid "Justify"
+msgstr "調整"
+
+#: beast-gtk/bstdbmeter.c:771
+msgid "Adjust relative alignment of the values or bars to be drawn"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
+#: beast-gtk/bsteventrollctrl.c:427
+msgid "Move Control Event"
+msgstr "コントロールイベントを移動"
+
+#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
+#: beast-gtk/bsttrackrollctrl.c:568
+msgid "No target"
+msgstr "ターゲットがありません"
+
+#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
+msgid "Lost Event"
+msgstr "イベントがみつかりません"
+
+#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
+msgid "Align Control Events"
+msgstr "コントロールイベントを調整"
+
+#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
+#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
+msgid "Aborted"
+msgstr "中止されました"
+
+#: beast-gtk/bsteventrollctrl.c:496
+msgid "Insert Control Event"
+msgstr "コントロールイベントを挿入"
+
+#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:548
+msgid "Resize Control Event"
+msgstr "コントロールイベントをリサイズ"
+
+#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
+msgid "Delete Control Event"
+msgstr "コントロールイベントを削除"
+
+#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
+#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
+msgid "Select Region"
+msgstr "範囲を選択"
+
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
+msgid "Abortion"
+msgstr "中止"
+
+#: beast-gtk/bstfiledialog.c:169
+msgid "Contents"
+msgstr "内容"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:201
+msgid "File Selection"
+msgstr "ファイル選択"
+
+#: beast-gtk/bstfiledialog.c:382
+msgid "Open Project"
+msgstr "プロジェクトを開く"
+
+#: beast-gtk/bstfiledialog.c:396
+msgid "Select File"
+msgstr "ファイルを選択"
+
+#: beast-gtk/bstfiledialog.c:410
+msgid "Select Directory"
+msgstr "ディレクトリを選択"
+
+#: beast-gtk/bstfiledialog.c:449
+#, c-format
+msgid "Merge: %s"
+msgstr "統合: %s"
+
+#: beast-gtk/bstfiledialog.c:462
+#, c-format
+msgid "Merging project `%s'"
+msgstr "プロジェクト '%s' を統合中"
+
+#: beast-gtk/bstfiledialog.c:478
+#, c-format
+msgid "Import MIDI: %s"
+msgstr "MIDI をインポート: %s"
+
+#: beast-gtk/bstfiledialog.c:489
+#, c-format
+msgid "Importing MIDI file `%s'"
+msgstr "MIDI ファイル '%s' をインポート中"
+
+#: beast-gtk/bstfiledialog.c:509
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"ファイル '%s' の削除に\n"
+"失敗しました。\n"
+"理由:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:538
+#, c-format
+msgid "Save: %s"
+msgstr "保存: %s"
+
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:540
+msgid "Fully include wave files"
+msgstr "WAVE ファイルをすべて含める"
+
+#: beast-gtk/bstfiledialog.c:541
+msgid "Store references to wave files"
+msgstr "WAVE ファイルへの参照を保存"
+
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
+#, c-format
+msgid "Saving project `%s'"
+msgstr "プロジェクト '%s' を保存中"
+
+#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
+#: beast-gtk/bstfiledialog.c:715
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"'%s' の '%s' への\n"
+"保存に失敗:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:587
+msgid "Load Effect"
+msgstr "エフェクトを読み込み"
+
+#: beast-gtk/bstfiledialog.c:600
+#, c-format
+msgid "Merging effect `%s'"
+msgstr "エフェクト '%s' を統合中"
+
+#: beast-gtk/bstfiledialog.c:617
+msgid "Save Effect"
+msgstr "エフェクトを保存"
+
+#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
+#, c-format
+msgid "Saving effect `%s'"
+msgstr "エフェクト '%s' を保存中"
+
+#: beast-gtk/bstfiledialog.c:663
+msgid "Load Instrument"
+msgstr "インストゥルメントを読み込み"
+
+#: beast-gtk/bstfiledialog.c:676
+#, c-format
+msgid "Merging instrument `%s'"
+msgstr "インストゥルメント '%s' を統合中"
+
+#: beast-gtk/bstfiledialog.c:693
+msgid "Save Instrument"
+msgstr "インストゥルメントを保存"
+
+#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "インストゥルメント '%s' を保存中"
+
+#: beast-gtk/bstfiledialog.c:740
+msgid "Load Wave"
+msgstr "WAVE を読み込み"
+
+#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
+#, c-format
+msgid "Loading wave `%s'"
+msgstr "WAVE '%s' を読み込み中"
+
+#: beast-gtk/bstgrowbar.c:91
+msgid "Shrink the scrollable area"
+msgstr "スクロール可能なエリアを畳む"
+
+#: beast-gtk/bstgrowbar.c:93
+msgid "Grow the scrollable area"
+msgstr "スクロール可能なエリアを広げる"
+
+#: beast-gtk/bstitemview.c:205
+msgid "ID"
+msgstr "ID"
+
+#: beast-gtk/bstitemview.c:208
+msgid "Name"
+msgstr "名前"
+
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:524
+msgid "Comment"
+msgstr "コメント"
+
+#: beast-gtk/bstitemview.c:215
+msgid "Type"
+msgstr "タイプ"
+
+#: beast-gtk/bstkeybindings.c:51
+msgid "Add..."
+msgstr "追加..."
+
+#: beast-gtk/bstkeybindings.c:51
+msgid "Bind a new key combination to a program function"
+msgstr "新しいショートカットをプログラムの機能に関連付け"
+
+#: beast-gtk/bstkeybindings.c:53
+msgid "Change..."
+msgstr "変更..."
+
+#: beast-gtk/bstkeybindings.c:53
+msgid "Change the currently selected key binding"
+msgstr "選択したショートカットを変更"
+
+#: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:25
+msgid "Raise"
+msgstr "上へ"
+
+#: beast-gtk/bstkeybindings.c:55
+msgid "Raise the currently selected key binding, relative to its neighbours"
+msgstr "選択したショートカットを上へ移動"
+
+#: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:19
+msgid "Lower"
+msgstr "下へ"
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower the currently selected key binding, relative to its neighbours"
+msgstr "選択したショートカットを下へ移動"
+
+#: beast-gtk/bstkeybindings.c:59
+msgid "Delete the currently selected key binding"
+msgstr "選択したショートカットを削除"
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load"
+msgstr "読み込み"
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load a key binding set"
+msgstr "ショートカットセットを読み込み"
+
+#: beast-gtk/bstkeybindings.c:237
+msgid "Load Key Binding"
+msgstr "ショートカットを読み込み"
+
+#: beast-gtk/bstkeybindings.c:432
+msgid "Key Binding"
+msgstr "キーボードショートカット"
+
+#: beast-gtk/bstkeybindings.c:433
+msgid "Key combinations used to activate a function"
+msgstr "機能を有効にするショートカット"
+
+#: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
+msgid "Function"
+msgstr "機能"
+
+#: beast-gtk/bstkeybindings.c:436
+msgid "Functions to be activated for a key binding"
+msgstr "ショートカットに対して有効にされる機能"
+
+#: beast-gtk/bstkeybindings.c:438
+msgid "Parameter"
+msgstr "パラメータ"
+
+#: beast-gtk/bstkeybindings.c:439
+msgid "Parameter to pass to functions upon activation"
+msgstr "有効になるときに機能に渡されるパラメータ"
+
+#: beast-gtk/bstkeybindings.c:460
+msgid "Function used to create new key bindings"
+msgstr "新しいショートカットをつくるのに使う機能"
+
+#: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
+msgid "Description"
+msgstr "説明"
+
+#. overriding Gdk's program name
+#: beast-gtk/bstmain.c:118 data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr "BEAST"
+
+#: beast-gtk/bstmain.c:130
+msgid "BEAST Startup"
+msgstr "BEAST 起動"
+
+#: beast-gtk/bstmain.c:137
+msgid "Startup"
+msgstr "起動"
+
+#. BEAST initialization
+#: beast-gtk/bstmain.c:141
+msgid "Initializers"
+msgstr "初期化"
+
+#. parse rc file
+#: beast-gtk/bstmain.c:148
+msgid "RC Files"
+msgstr "初期化ファイル"
+
+#. show splash images
+#: beast-gtk/bstmain.c:152
+msgid "Splash Image"
+msgstr "スプラッシュイメージ"
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:164
+msgid "BSE Core"
+msgstr "BSE コア"
+
+#: beast-gtk/bstmain.c:186
+msgid "Plugins"
+msgstr "プラグイン"
+
+#: beast-gtk/bstmain.c:205
+msgid "LADSPA Plugins"
+msgstr "LADSPA プラグイン"
+
+#: beast-gtk/bstmain.c:233
+msgid "Scripts"
+msgstr "スクリプト"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:251
+msgid "Dialogs"
+msgstr "ダイアログ"
+
+#: beast-gtk/bstmain.c:258
+msgid "Loading..."
+msgstr "読み込み中..."
+
+#: beast-gtk/bstmain.c:288 beast-gtk/bstmain.c:290
+#, c-format
+msgid "Loading \"%s\""
+msgstr "\"%s\" を読み込み中"
+
+#: beast-gtk/bstmain.c:307
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "プロジェクト \"%s\" を読み込み中"
+
+#: beast-gtk/bstmain.c:723
+msgid "BEAST About"
+msgstr "BEAST の情報"
+
+#: beast-gtk/bstmain.c:724
+#, c-format
+msgid "BEAST Version %s"
+msgstr "BEAST バージョン %s"
+
+#: beast-gtk/bstmain.c:725
+msgid "Contributions made by:"
+msgstr "貢献した人々:"
+
+#: beast-gtk/bstparam-choice.c:143
+msgid "Drop Down Combo"
+msgstr "ドロップダウンコンボ"
+
+#: beast-gtk/bstparam-choice.c:149
+msgid "Drop Down Button"
+msgstr "ドロップダウンボタン"
+
+#: beast-gtk/bstparam-choice.c:155
+msgid "Popup Options"
+msgstr "ポップアップオプション"
+
+#: beast-gtk/bstparam-choice.c:161
+msgid "Standard Option Menu"
+msgstr "標準オプションメニュー"
+
+#: beast-gtk/bstparam-color-spinner.c:67
+msgid "Select Color"
+msgstr "色を選択"
+
+#: beast-gtk/bstparam-color-spinner.c:116
+msgid "Color Entry"
+msgstr "色エントリ"
+
+#: beast-gtk/bstparam-note-sequence.c:61
+msgid "Note Sequence Grid Editor"
+msgstr "ノートシーケンスグリッドエディタ"
+
+#: beast-gtk/bstparam-note-spinner.c:74
+msgid "Note Entry"
+msgstr "ノートエントリ"
+
+#: beast-gtk/bstparam-proxy.c:295
+msgid "Object Drop Down Box"
+msgstr "オブジェクトドロップダウンボックス"
+
+#: beast-gtk/bstparam-scale.c:60
+msgid "Knob"
+msgstr "ノブ"
+
+#: beast-gtk/bstparam-scale.c:66
+msgid "Knob (Logarithmic"
+msgstr "ノブ (対数"
+
+#: beast-gtk/bstparam-scale.c:78
+msgid "Dial"
+msgstr "ダイアル"
+
+#: beast-gtk/bstparam-scale.c:84
+msgid "Dial (Logarithmic"
+msgstr "ダイアル (対数"
+
+#: beast-gtk/bstparam-searchpath.c:55
+msgid "Remove Paths"
+msgstr "パスを削除"
+
+#: beast-gtk/bstparam-searchpath.c:148
+msgid "Searchpath Text Entry"
+msgstr "検索パス テキストエントリ"
+
+#: beast-gtk/bstparam-searchpath.c:154
+msgid "Filename Text Entry"
+msgstr "ファイル名 テキストエントリ"
+
+#: beast-gtk/bstparam-time.c:55
+msgid "Time Entry"
+msgstr "時間エントリ"
+
+#: beast-gtk/bstpartdialog.c:60
+msgid "Clear"
+msgstr "クリア"
+
+#: beast-gtk/bstpartdialog.c:60
+msgid "Clear the current selection"
+msgstr "選択をクリア"
+
+#: beast-gtk/bstpartdialog.c:61
+msgid "Cut"
+msgstr "切り取り"
+
+#: beast-gtk/bstpartdialog.c:61
+msgid "Move the current selection into clipboard"
+msgstr "選択領域をクリップボードに移動"
+
+#: beast-gtk/bstpartdialog.c:62
+msgid "Copy"
+msgstr "コピー"
+
+#: beast-gtk/bstpartdialog.c:62
+msgid "Copy the current selection into clipboard"
+msgstr "選択領域をクリップボードにコピー"
+
+#: beast-gtk/bstpartdialog.c:63
+msgid "Paste"
+msgstr "貼り付け"
+
+#: beast-gtk/bstpartdialog.c:63
+msgid "Insert clipboard contents as current selection"
+msgstr "クリップボードの内容を選択領域として挿入"
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Undo"
+msgstr "アンドゥ"
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Undo last editing step"
+msgstr "最後に編集したステップをアンドゥ"
+
+#: beast-gtk/bstpartdialog.c:67
+msgid "Redo"
+msgstr "リドゥ"
+
+#: beast-gtk/bstpartdialog.c:67
+msgid "Redo the last undone editing step"
+msgstr "最後にアンドゥした編集ステップをリドゥ"
+
+#: beast-gtk/bstpatterncolumns.c:686
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+"パターンエディタカラム配置は、可能なモディファイアと共にカラムタイプを表示す"
+"る順番に並べることで指定されます"
+
+#: beast-gtk/bstpatterncolumns.c:688
+msgid "COLUMN TYPES:"
+msgstr "カラムタイプ:"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:690
+msgid "note-1, note-2, ..."
+msgstr "note-1, note-2, ..."
+
+#: beast-gtk/bstpatterncolumns.c:691
+msgid "  display notes of the first, second, ... channel"
+msgstr "  第一、二 ... チャネルのノートを表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:693
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr "offset-1, length-2, velocity-3, ..."
+
+#: beast-gtk/bstpatterncolumns.c:694
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
+msgstr ""
+"  第一、二...チャネル内のノートのオフセット、長さまたはベロシティを表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:696
+msgid "control-0, ..., control-63, cc-0, cc-31"
+msgstr "control-0, ..., control-63, cc-0, cc-31"
+
+#: beast-gtk/bstpatterncolumns.c:697
+msgid "  select various event types (controls, continuous controllers)"
+msgstr "  様々なイベントタイプ(コントロール、連続コントローラ)を選択"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:699
+msgid "bar, |"
+msgstr "bar, |"
+
+#: beast-gtk/bstpatterncolumns.c:700
+msgid "  display solid vertical bar"
+msgstr "  垂直線を表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:702
+msgid "dbar, :"
+msgstr "dbar, :"
+
+#: beast-gtk/bstpatterncolumns.c:703
+msgid "  display dotted vertical bar"
+msgstr "  垂直の点線を表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:705
+msgid "space, _"
+msgstr "space, _"
+
+#: beast-gtk/bstpatterncolumns.c:706
+msgid "  insert vertical space"
+msgstr "  水平スペースを挿入"
+
+#: beast-gtk/bstpatterncolumns.c:707
+msgid "EVENTS:"
+msgstr "イベント:"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:709
+msgid "  balance, volume, cc-8, ..."
+msgstr "  balance, volume, cc-8, ..."
+
+#: beast-gtk/bstpatterncolumns.c:710
+msgid "MODIFIERS:"
+msgstr "モディファイア:"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:712
+msgid "hex2, hex4"
+msgstr "hex2, hex4"
+
+#: beast-gtk/bstpatterncolumns.c:713
+msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
+msgstr "  2 (00..FF) または 4 (0000..FFFF) デジタル 16 進数を表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:715
+msgid "shex2, shex4"
+msgstr "shex2, shex4"
+
+#: beast-gtk/bstpatterncolumns.c:716
+msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
+msgstr "  2 (-FF..+FF) または 4 (-FFFF..+FFFF) デジタル符号付き 16 進数を表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:718
+msgid "dec2, dec3"
+msgstr "dec2, dec3"
+
+#: beast-gtk/bstpatterncolumns.c:719
+msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
+msgstr "  2 (00..99) または 4 (000..999) デジタル 10 進数を表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:721
+msgid "sdec2, sdec3"
+msgstr "sdec2, sdec3"
+
+#: beast-gtk/bstpatterncolumns.c:722
+msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
+msgstr "  2 (-99..+99) または 4 (-999..+999) デジタル符号付き 10 進数を表示"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:724
+msgid "col1, col2, col3"
+msgstr "col1, col2, col3"
+
+#: beast-gtk/bstpatterncolumns.c:725
+msgid "  selects one of 3 predefined colors"
+msgstr "  定義済みの三色の内一つを選択"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:727
+msgid "lfold, rfold"
+msgstr "lfold, rfold"
+
+#: beast-gtk/bstpatterncolumns.c:728
+msgid "  allow folding the column into left/right neighbour"
+msgstr "  左右隣りにカラムを畳めるようにする"
+
+#: beast-gtk/bstpatterncolumns.c:729
+msgid "EXAMPLE:"
+msgstr "例:"
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:731
+msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:741
+msgid "Pattern Editor Layout"
+msgstr "パターンエディタ配置"
+
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:29
+msgid "VZoom"
+msgstr "垂直方向ズーム"
+
+#: beast-gtk/bstpatternctrl.c:120
+msgid "The tick/note length per line"
+msgstr "線当りのティック/ノート長"
+
+#: beast-gtk/bstpatternctrl.c:123
+msgid "Steps"
+msgstr "ステップ"
+
+#: beast-gtk/bstpatternctrl.c:124
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr "イベントまたはノートが編集される度にいくつ分セルを移動するか"
+
+#: beast-gtk/bstpatternctrl.c:128
+msgid "Direction"
+msgstr "方向"
+
+#: beast-gtk/bstpatternctrl.c:129
+msgid "The direction of cell movement each time an event or note was edited"
+msgstr "イベントまたはノートが編集される度のセルの移動の方向"
+
+#: beast-gtk/bstpatternctrl.c:133
+msgid "HWrap"
+msgstr "水平折り返し"
+
+#: beast-gtk/bstpatternctrl.c:134
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr "セルフォーカスの水平移動を端で折り返すかどうか切り替え"
+
+#: beast-gtk/bstpatternctrl.c:137
+msgid "Base Octave"
+msgstr "基音"
+
+#: beast-gtk/bstpatternctrl.c:138
+msgid "Controls the octave relative to which notes are entered"
+msgstr "入力されたノートをコントロールする音階"
+
+#: beast-gtk/bstpatternctrl.c:141
+msgid "Row Shading"
+msgstr "隠す列数"
+
+#: beast-gtk/bstpatternctrl.c:142
+msgid "Adjust the number of rows between each shaded row"
+msgstr "隠された列毎に間に調整する列の数"
+
+#. movement
+#: beast-gtk/bstpatternctrl.c:313
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
+msgstr "次のセルにフォーカス(上下左右: 設定による)"
+
+#: beast-gtk/bstpatternctrl.c:314
+msgid "Move focus cell upwards"
+msgstr "上のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:315
+msgid "Move focus cell to the left"
+msgstr "左のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:316
+msgid "Move focus cell to the right"
+msgstr "右のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:317
+msgid "Move focus cell downwards"
+msgstr "下のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:318
+msgid "Move focus cell upwards page-wise"
+msgstr "ページ上方向のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:319
+msgid "Move focus cell to the left page-wise"
+msgstr "ページ左方向のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:320
+msgid "Move focus cell to the right page-wise"
+msgstr "ページ右方向のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:321
+msgid "Move focus cell downwards page-wise"
+msgstr "ページ下方向のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:322
+msgid "Set the focus cell to the topmost position possible"
+msgstr "可能な限り最も上のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:323
+msgid "Set the focus cell to the leftmost position possible"
+msgstr "可能な限り最も左のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:324
+msgid "Set the focus cell to the rightmost position possible"
+msgstr "可能な限り最も右のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:325
+msgid "Set the focus cell to the bottommost position possible"
+msgstr "可能な限り最も下のセルにフォーカス"
+
+#: beast-gtk/bstpatternctrl.c:328
+msgid "Set the number of steps to make when moving to the next cell"
+msgstr "次のセルに移動するときのステップ数を設定"
+
+#: beast-gtk/bstpatternctrl.c:332
+msgid "Set the base octave"
+msgstr "基音を設定"
+
+#: beast-gtk/bstpatternctrl.c:335
+msgid "Change the base octave by a given amount"
+msgstr "指定した分基音を変更"
+
+#: beast-gtk/bstpatternctrl.c:339
+msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr "指定した分フォーカスセルの内容(例. オクターブ)を変更"
+
+#: beast-gtk/bstpatternctrl.c:343
+msgid "Set the focus cell octave"
+msgstr "フォーカスセルオクターブを設定"
+
+#: beast-gtk/bstpatternctrl.c:347 beast-gtk/bstpatternctrl.c:361
+msgid "Remove any events in the focus cell"
+msgstr "フォーカスセル内のイベントを削除"
+
+#: beast-gtk/bstpatternctrl.c:351 beast-gtk/bstpatternctrl.c:365
+msgid "Set the focus cell note"
+msgstr "フォーカスセルノートを設定"
+
+#: beast-gtk/bstpatternctrl.c:355 beast-gtk/bstpatternctrl.c:369
+msgid "Sets the value of the focus digit"
+msgstr "フォーカスしている数字の値を設定"
+
+#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert"
+msgstr "挿入"
+
+#: beast-gtk/bstpianorollctrl.c:46
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr "ノートを挿入/リサイズ/移動(マウスボタン 1, 2)"
+
+#: beast-gtk/bstpianorollctrl.c:48
+msgid "Delete note (mouse button 1)"
+msgstr "ノートを削除(マウスボタン 1)"
+
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Align Events"
+msgstr "イベントを調整"
+
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Draw a line to align events to"
+msgstr "イベントを調整するための線を描画"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Select"
+msgstr "選択"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Rectangle select notes"
+msgstr "ノートを矩形選択"
+
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
+msgid "Vertical Select"
+msgstr "垂直方向に選択"
+
+#: beast-gtk/bstpianorollctrl.c:54
+msgid "Select tick range vertically"
+msgstr "ティック範囲を垂直方向に選択"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "1\\/1"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "Insert whole notes"
+msgstr "全ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "1\\/2"
+msgstr "1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "Insert half notes"
+msgstr "半ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "1\\/4"
+msgstr "1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "Insert quarter notes"
+msgstr "4分ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "1\\/8"
+msgstr "1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "Insert eighths note"
+msgstr "8分ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "1\\/16"
+msgstr "1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "Insert sixteenth note"
+msgstr "16分ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:77
+msgid "1\\/32"
+msgstr "1\\/32"
+
+#: beast-gtk/bstpianorollctrl.c:77
+msgid "Insert thirty-second note"
+msgstr "32分ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:79
+msgid "1\\/64"
+msgstr "1\\/64"
+
+#: beast-gtk/bstpianorollctrl.c:79
+msgid "Insert sixty-fourth note"
+msgstr "64分ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:81
+msgid "1\\/128"
+msgstr "1\\/128"
+
+#: beast-gtk/bstpianorollctrl.c:81
+msgid "Insert hundred twenty-eighth note"
+msgstr "128分ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
+msgid "Q: Tact"
+msgstr "Q: タクト"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
+msgid "Quantize to tact boundaries"
+msgstr "タクト境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
+msgid "Q: None"
+msgstr "Q: なし"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
+msgid "No quantization selected"
+msgstr "量子化範囲が選択されていません"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+msgid "Q: 1\\/1"
+msgstr "Q: 1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to whole note boundaries"
+msgstr "全ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
+msgid "Q: 1\\/2"
+msgstr "Q: 1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
+msgid "Quantize to half note boundaries"
+msgstr "半ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
+msgid "Q: 1\\/4"
+msgstr "Q: 1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
+msgid "Quantize to quarter note boundaries"
+msgstr "4分ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
+msgid "Q: 1\\/8"
+msgstr "Q: 1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
+msgid "Quantize to eighths note boundaries"
+msgstr "8分ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
+msgid "Q: 1\\/16"
+msgstr "Q: 1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
+msgid "Quantize to sixteenth note boundaries"
+msgstr "16分ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+msgid "Q: 1\\/32"
+msgstr "Q: 1\\/32"
+
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+msgid "Quantize to thirty-second note boundaries"
+msgstr "32分ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+msgid "Q: 1\\/64"
+msgstr "Q: 1\\/64"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+msgid "Quantize to sixty-fourth note boundaries"
+msgstr "64分ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+msgid "Q: 1\\/128"
+msgstr "Q: 1\\/128"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+msgid "Quantize to hundred twenty-eighth note boundaries"
+msgstr "128分ノート境界を量子化"
+
+#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:573
+msgid "Move Note"
+msgstr "ノートを移動"
+
+#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
+msgid "Lost Note"
+msgstr "ノートがありません"
+
+#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
+#: beast-gtk/bstpianorollctrl.c:644
+msgid "Resize Note"
+msgstr "ノートをリサイズ"
+
+#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
+msgid "Delete Note"
+msgstr "ノートを削除"
+
+#: beast-gtk/bstpianorollctrl.c:680
+msgid "Insert Note"
+msgstr "ノートを挿入"
+
+#: beast-gtk/bstpianorollctrl.c:752
+msgid "Vertical Region"
+msgstr "垂直領域"
+
+#: beast-gtk/bstpianorollctrl.c:873
+msgid "Play note"
+msgstr "ノートを演奏"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr "再生"
+
+#: beast-gtk/bstpreferences.c:76
+msgid "Piano Keys"
+msgstr "ピアノキー"
+
+#: beast-gtk/bstpreferences.c:83
+msgid "Generic Keys"
+msgstr "一般キー"
+
+#: beast-gtk/bstpreferences.c:88
+msgid "Skin"
+msgstr "スキン"
+
+#: beast-gtk/bstprocedure.c:296
+#, c-format
+msgid "Executing `%s'"
+msgstr "'%s' を実行"
+
+#: beast-gtk/bstprocedure.c:446
+msgid "Procedure"
+msgstr "プロセス"
+
+#: beast-gtk/bstprofiler.c:166
+msgid "Totals"
+msgstr "総計"
+
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:385
+msgid "Thread Name"
+msgstr "スレッド名"
+
+#: beast-gtk/bstprofiler.c:248
+#, fuzzy
+msgid "TID"
+msgstr "ID"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Thread ID (on some systems the process ID)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:249
+msgid "CPU%"
+msgstr "CPU%"
+
+#: beast-gtk/bstprofiler.c:249
+msgid "Percentage of CPU usage"
+msgstr "CPU 使用量(%)"
+
+#: beast-gtk/bstprofiler.c:250
+msgid "UTime"
+msgstr "UTime"
+
+#: beast-gtk/bstprofiler.c:250
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
+msgstr "スレッドが使用するユーザー CPU 時間の平均(msec/sec)"
+
+#: beast-gtk/bstprofiler.c:251
+msgid "STime"
+msgstr "STime"
+
+#: beast-gtk/bstprofiler.c:251
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
+msgstr "スレッドが使用するシステム CPU 時間の平均(msec/sec)"
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:265
+msgid "Nice"
+msgstr "Nice"
+
+#: beast-gtk/bstprofiler.c:265
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr "スレッド優先度(-20:最高 〜 +19:最低)"
+
+#: beast-gtk/bstprofiler.c:266
+msgid "#CPU"
+msgstr "#CPU"
+
+#: beast-gtk/bstprofiler.c:266
+msgid "CPU the thread is currently running on"
+msgstr "スレッドの実行されている CPU"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr "再生を再度開始"
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr "再生を開始"
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr "再生を停止"
+
+#: beast-gtk/bstrackeditor.c:95
+#, fuzzy
+msgid ""
+"The rack editor is still highly experimental code and guaranteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+msgstr ""
+"ラックエディタはまだ非常に実験的なコードであり、将来リリースされるまではきっ"
+"と壊れているでしょう。従って将来のリリースでは違っているであろうラックエディ"
+"タの内容に信頼をおかず、コードの不安定性を考えておく(すなわちプロジェクトを定"
+"期的に保存する)ようにして下さい。"
+
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
+msgid "_Edit"
+msgstr "編集(_E)"
+
+#: beast-gtk/bstrackitem.c:206
+msgid "Edit Rack Item"
+msgstr "ラックアイテムを編集"
+
+#: beast-gtk/bstrackitem.c:208
+msgid "Controller"
+msgstr "コントローラ"
+
+#: beast-gtk/bstrackitem.c:209
+msgid "Duplicate"
+msgstr "複製"
+
+#: beast-gtk/bstrackitem.c:211
+msgid "Grow Horizontally"
+msgstr "水平方向に拡張"
+
+#: beast-gtk/bstrackitem.c:212
+msgid "Grow Vertically"
+msgstr "垂直方向に拡張"
+
+#: beast-gtk/bstrackitem.c:213
+msgid "Shrink Horizontally"
+msgstr "水平方向に畳む"
+
+#: beast-gtk/bstrackitem.c:214
+msgid "Shrink Vertically"
+msgstr "垂直方向に畳む"
+
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "Label"
+msgstr "ラベル"
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Up"
+msgstr "上へ"
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Move upwards"
+msgstr "上へ移動"
+
+#: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "左"
+
+#: beast-gtk/bstrecords.idl:36
+msgid "Move to the left"
+msgstr "左へ移動"
+
+#: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "右"
+
+#: beast-gtk/bstrecords.idl:37
+msgid "Move to the right"
+msgstr "右へ移動"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Down"
+msgstr "下へ"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Step downwards"
+msgstr "下へ移動"
+
+#: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70
+msgid "None"
+msgstr "なし"
+
+#: beast-gtk/bstrecords.idl:42
+msgid "Unspecified length"
+msgstr "未指定の長さ"
+
+#: beast-gtk/bstrecords.idl:43
+msgid "1/1"
+msgstr "1/1"
+
+#: beast-gtk/bstrecords.idl:43
+msgid "Whole note"
+msgstr "全ノート"
+
+#: beast-gtk/bstrecords.idl:44
+msgid "1/2"
+msgstr "1/2"
+
+#: beast-gtk/bstrecords.idl:44
+msgid "Half note"
+msgstr "半ノート"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "1/4"
+msgstr "1/4"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Quarter note"
+msgstr "4 分ノート"
+
+#: beast-gtk/bstrecords.idl:46
+msgid "1/8"
+msgstr "1/8"
+
+#: beast-gtk/bstrecords.idl:46
+msgid "Eighths note"
+msgstr "8 分ノート"
+
+#: beast-gtk/bstrecords.idl:47
+msgid "1/16"
+msgstr "1/16"
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Sixteenth note"
+msgstr "16 分ノート"
+
+#: beast-gtk/bstrecords.idl:48
+msgid "1/32"
+msgstr "1/32"
+
+#: beast-gtk/bstrecords.idl:48
+#, fuzzy
+msgid "Thirty-secondth note"
+msgstr "32 分ノート"
+
+#: beast-gtk/bstrecords.idl:49
+msgid "1/64"
+msgstr "1/64"
+
+#: beast-gtk/bstrecords.idl:49
+#, fuzzy
+msgid "Sixty-fourth note"
+msgstr "64 分ノート"
+
+#: beast-gtk/bstrecords.idl:50
+msgid "1/128"
+msgstr "1/128"
+
+#: beast-gtk/bstrecords.idl:50
+msgid "Hundred twenty-eighth note"
+msgstr "128 分ノート"
+
+#: beast-gtk/bstrecords.idl:51
+msgid "1/1."
+msgstr "1/1."
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Dotted whole note"
+msgstr "ドット付き全ノート"
+
+#: beast-gtk/bstrecords.idl:52
+msgid "1/2."
+msgstr "1/2."
+
+#: beast-gtk/bstrecords.idl:52
+msgid "Dotted half note"
+msgstr "ドット付き半ノート"
+
+#: beast-gtk/bstrecords.idl:53
+msgid "1/4."
+msgstr "1/4."
+
+#: beast-gtk/bstrecords.idl:53
+msgid "Dotted quarter note"
+msgstr "ドット付き 4 分ノート"
+
+#: beast-gtk/bstrecords.idl:54
+msgid "1/8."
+msgstr "1/8."
+
+#: beast-gtk/bstrecords.idl:54
+msgid "Dotted eighths note"
+msgstr "ドット付き 8 分ノート"
+
+#: beast-gtk/bstrecords.idl:55
+msgid "1/16."
+msgstr "1/16."
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Dotted sixteenth note"
+msgstr "ドット付き 16 分ノート"
+
+#: beast-gtk/bstrecords.idl:56
+msgid "1/32."
+msgstr "1/32."
+
+#: beast-gtk/bstrecords.idl:56
+#, fuzzy
+msgid "Dotted thirty-secondth note"
+msgstr "ドット付き 32 分ノート"
+
+#: beast-gtk/bstrecords.idl:57
+msgid "1/64."
+msgstr "1/64."
+
+#: beast-gtk/bstrecords.idl:57
+#, fuzzy
+msgid "Dotted sixty-fourth note"
+msgstr "ドット付き 64 分ノート"
+
+#: beast-gtk/bstrecords.idl:58
+msgid "1/128."
+msgstr "1/128."
+
+#: beast-gtk/bstrecords.idl:58
+msgid "Dotted hundred twenty-eighth note"
+msgstr "ドット付き 128 分ノート"
+
+#: beast-gtk/bstrecords.idl:59
+msgid "1/1T"
+msgstr "1/1T"
+
+#: beast-gtk/bstrecords.idl:59
+msgid "Triplet whole note"
+msgstr "三連全ノート"
+
+#: beast-gtk/bstrecords.idl:60
+msgid "1/2T"
+msgstr "1/2T"
+
+#: beast-gtk/bstrecords.idl:60
+msgid "Triplet half note"
+msgstr "三連半ノート"
+
+#: beast-gtk/bstrecords.idl:61
+msgid "1/4T"
+msgstr "1/4T"
+
+#: beast-gtk/bstrecords.idl:61
+msgid "Triplet quarter note"
+msgstr "三連 4分ノート"
+
+#: beast-gtk/bstrecords.idl:62
+msgid "1/8T"
+msgstr "1/8T"
+
+#: beast-gtk/bstrecords.idl:62
+msgid "Triplet eighths note"
+msgstr "三連 8分ノート"
+
+#: beast-gtk/bstrecords.idl:63
+msgid "1/16T"
+msgstr "1/16T"
+
+#: beast-gtk/bstrecords.idl:63
+msgid "Triplet sixteenth note"
+msgstr "三連 16分ノート"
+
+#: beast-gtk/bstrecords.idl:64
+msgid "1/32T"
+msgstr "1/32T"
+
+#: beast-gtk/bstrecords.idl:64
+#, fuzzy
+msgid "Triplet thirty-secondth note"
+msgstr "三連 32分ノート"
+
+#: beast-gtk/bstrecords.idl:65
+msgid "1/64T"
+msgstr "1/64T"
+
+#: beast-gtk/bstrecords.idl:65
+#, fuzzy
+msgid "Triplet sixty-fourth note"
+msgstr "三連 64分ノート"
+
+#: beast-gtk/bstrecords.idl:66
+msgid "1/128T"
+msgstr "1/128T"
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Triplet hundred twenty-eighth note"
+msgstr "三連 128分ノート"
+
+#: beast-gtk/bstrecords.idl:71
+msgid "2"
+msgstr "2"
+
+#: beast-gtk/bstrecords.idl:71
+msgid "Every second row"
+msgstr "第2列毎"
+
+#: beast-gtk/bstrecords.idl:72
+msgid "4"
+msgstr "4"
+
+#: beast-gtk/bstrecords.idl:72
+msgid "Every fourth row"
+msgstr "第4列毎"
+
+#: beast-gtk/bstrecords.idl:73
+msgid "8"
+msgstr "8"
+
+#: beast-gtk/bstrecords.idl:73
+msgid "Every eighth row"
+msgstr "第8列毎"
+
+#: beast-gtk/bstrecords.idl:74
+msgid "16"
+msgstr "16"
+
+#: beast-gtk/bstrecords.idl:74
+msgid "Every sixteenth row"
+msgstr "第16列毎"
+
+#: beast-gtk/bstrecords.idl:75
+msgid "2 & 4"
+msgstr "2 & 4"
+
+#: beast-gtk/bstrecords.idl:75
+msgid "Every second and fourth row"
+msgstr "第2, 4列毎"
+
+#: beast-gtk/bstrecords.idl:76
+msgid "4 & 8"
+msgstr "4 & 8"
+
+#: beast-gtk/bstrecords.idl:76
+msgid "Every fourth and eighth row"
+msgstr "第4, 8列毎"
+
+#: beast-gtk/bstrecords.idl:77
+msgid "4 & 12"
+msgstr "4 & 12"
+
+#: beast-gtk/bstrecords.idl:77
+msgid "Every fourth and twelfth row"
+msgstr "第4, 12列毎"
+
+#: beast-gtk/bstrecords.idl:78
+msgid "4 & 16"
+msgstr "4 & 16"
+
+#: beast-gtk/bstrecords.idl:78
+msgid "Every fourth and sixteenth row"
+msgstr "第4, 16列毎"
+
+#: beast-gtk/bstrecords.idl:79
+msgid "8 & 16"
+msgstr "8 & 16"
+
+#: beast-gtk/bstrecords.idl:79
+msgid "Every eighth and sixteenth row"
+msgstr "第8, 16列毎"
+
+#: beast-gtk/bstrecords.idl:80
+msgid "3"
+msgstr "3"
+
+#: beast-gtk/bstrecords.idl:80
+msgid "Every third row"
+msgstr "第3列毎"
+
+#: beast-gtk/bstrecords.idl:81
+msgid "6"
+msgstr "6"
+
+#: beast-gtk/bstrecords.idl:81
+msgid "Every sixth row"
+msgstr "第6列毎"
+
+#: beast-gtk/bstrecords.idl:82
+msgid "12"
+msgstr "12"
+
+#: beast-gtk/bstrecords.idl:82
+msgid "Every twelfth row"
+msgstr "第12列毎"
+
+#: beast-gtk/bstrecords.idl:83
+msgid "3 & 6"
+msgstr "3 & 6"
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Every third and sixth row"
+msgstr "第3, 6列毎"
+
+#: beast-gtk/bstrecords.idl:84
+msgid "3 & 12"
+msgstr "3 & 12"
+
+#: beast-gtk/bstrecords.idl:84
+msgid "Every third and twelfth row"
+msgstr "第3, 12列毎"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "6 & 12"
+msgstr "6 & 12"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Every sixth and twelfth row"
+msgstr "第6, 12列毎"
+
+#: beast-gtk/bstrecords.idl:90
+msgid "Release counter"
+msgstr "リリースカウンタ"
+
+#: beast-gtk/bstrecords.idl:92
+msgid "Font Size"
+msgstr "フォントサイズ"
+
+#: beast-gtk/bstrecords.idl:92
+msgid "Font size in pixels for labels displayed in synthesis networks"
+msgstr "シンセネットワーク内に表示されるラベルのフォントサイズ(ピクセル)"
+
+#: beast-gtk/bstrecords.idl:94
+msgid "Anti-Alias"
+msgstr "アンチエイリアス"
+
+#: beast-gtk/bstrecords.idl:94
+msgid "Draw synthesis networks anti-aliased?"
+msgstr "シンセネットワークをアンチエイリアス表示するかどうか"
+
+#: beast-gtk/bstrecords.idl:96
+msgid "Single Edit"
+msgstr "シングルエディット"
+
+#: beast-gtk/bstrecords.idl:96
+msgid "Fallback into Edit mode after creating synthesis modules?"
+msgstr "シンセモジュールを作成した後で編集モードにフォールバックするかどうか"
+
+#: beast-gtk/bstrecords.idl:98
+msgid "Swap IO"
+msgstr "IO 切り替え"
+
+#: beast-gtk/bstrecords.idl:98
+msgid "Swap input with output channels when displaying synthesis modules?"
+msgstr ""
+"シンセモジュールを表示しているときに入力を出力チャネルに切り替えるかどうか"
+
+#: beast-gtk/bstrecords.idl:102
+msgid "Tab Width"
+msgstr "タブ幅"
+
+#: beast-gtk/bstrecords.idl:102
+msgid "Specify project tab width in pixels"
+msgstr "プロジェクトタブ幅をピクセル数で指定"
+
+#: beast-gtk/bstrecords.idl:104
+msgid "Homogeneous Input Fields"
+msgstr "均一な入力フィールド"
+
+#: beast-gtk/bstrecords.idl:105
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+"ほとんどの(数字と文字)入力フィールドについて均一なサイズとなるようにする。い"
+"くつかのフィールドについては再起動後にのみ有効となる"
+
+#: beast-gtk/bstrecords.idl:113
+msgid "Skin Name"
+msgstr "スキン名"
+
+#: beast-gtk/bstrecords.idl:113
+msgid "Name for the current skin configuration (used for skin selections)."
+msgstr "今のスキン設定の名前(スキン選択時に利用)"
+
+#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
+#: beast-gtk/bstrecords.idl:135
+msgid "Background Image"
+msgstr "背景画像"
+
+#: beast-gtk/bstrecords.idl:115
+msgid "Background image used by the pattern editor."
+msgstr "パターンエディタの背景画像"
+
+#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:136
+msgid "Image shade"
+msgstr "透明度"
+
+#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:136
+msgid "Percentage of background image pixel to blend over background color."
+msgstr "背景画像ピクセルを背景色に混ぜ合わせる割合(%)"
+
+#: beast-gtk/bstrecords.idl:117 beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstrecords.idl:137
+msgid "Background Color"
+msgstr "背景色"
+
+#: beast-gtk/bstrecords.idl:118
+msgid "Background Shade 1"
+msgstr "背景影 1"
+
+#: beast-gtk/bstrecords.idl:119
+msgid "Background Shade 2"
+msgstr "背景影 2"
+
+#: beast-gtk/bstrecords.idl:120
+msgid "Empty Field Color"
+msgstr "空のフィールドの色"
+
+#: beast-gtk/bstrecords.idl:121
+msgid "Text Color"
+msgstr "文字色"
+
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
+msgid "Vertical Bar Color"
+msgstr "垂直バーの色"
+
+#: beast-gtk/bstrecords.idl:125
+#, fuzzy
+msgid "Background image used by the piano-roll editor."
+msgstr "ピアノロールウィジェットの背景画像"
+
+#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:138
+msgid "Horizontal Bar Color"
+msgstr "水平バーの色"
+
+#: beast-gtk/bstrecords.idl:130
+msgid "Horizontal Grid Color"
+msgstr "水平グリッドの色"
+
+#: beast-gtk/bstrecords.idl:131
+msgid "Vertical Grid Color"
+msgstr "垂直グリッドの色"
+
+#: beast-gtk/bstrecords.idl:132 beast-gtk/bstrecords.idl:139
+msgid "Middle Bar Color"
+msgstr "中央バーの色"
+
+#: beast-gtk/bstrecords.idl:135
+#, fuzzy
+msgid "Background image used by the control events editor."
+msgstr "コントロールイベントウィジェットの背景画像"
+
+#: beast-gtk/bstrecords.idl:140
+msgid "Positive Value Color"
+msgstr "正の値の色"
+
+#: beast-gtk/bstrecords.idl:141
+msgid "Zero Value Color"
+msgstr "0 値の色"
+
+#: beast-gtk/bstrecords.idl:142
+msgid "Negative Value Color"
+msgstr "負の値の色"
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr "ズーム:"
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr "垂直方向スケール:"
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "開始:"
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "終了:"
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "シェープ範囲"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "シェープ平均"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "シェープ最小"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "シェープ最大"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr "スケッチ範囲"
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr "スケッチ平均"
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr "スケッチ最小"
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr "スケッチ最大"
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "テスト再生"
+
+#: beast-gtk/bstsnetrouter.c:42
+msgid ""
+"Edit tool (mouse buttons 1-3)\n"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
+msgstr ""
+"ツール編集(マウスボタン1-3)\n"
+"ボタン1 でリンク作成、ボタン2 で移動、ボタン3 で変更"
+
+#: beast-gtk/bstsnetrouter.c:47
+msgid "Edit"
+msgstr "編集"
+
+#: beast-gtk/bstsnetrouter.c:47
+msgid "Edit/Move/Menu (mouse buttons 1-3)"
+msgstr "編集/移動/メニュー (マウスボタン 1-3)"
+
+#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:923
+msgid "Palette"
+msgstr "パレット"
+
+#: beast-gtk/bstsnetrouter.c:51
+msgid "Toggle visibility of the tool palette"
+msgstr "ツールパレットの表示を切り替え"
+
+#: beast-gtk/bstsnetrouter.c:618
+msgid "Input channel in use"
+msgstr "使用する入力チャネル"
+
+#: beast-gtk/bstsnetrouter.c:645 beast-gtk/bstsnetrouter.c:647
+#: beast-gtk/bstsnetrouter.c:683
+msgid "Create Link"
+msgstr "リンク作成"
+
+#: beast-gtk/bstsnetrouter.c:645
+msgid "Select output module"
+msgstr "出力モジュールを選択"
+
+#: beast-gtk/bstsnetrouter.c:647
+msgid "Select input module"
+msgstr "入力モジュールを選択"
+
+#: beast-gtk/bstsnetrouter.c:703
+msgid "Properties"
+msgstr "プロパティ"
+
+#: beast-gtk/bstsnetrouter.c:704
+msgid "Reset Properties"
+msgstr "プロパティをリセット"
+
+#: beast-gtk/bstsnetrouter.c:705
+msgid "Delete Inputs"
+msgstr "入力を削除"
+
+#: beast-gtk/bstsnetrouter.c:706
+msgid "Delete Outputs"
+msgstr "出力を削除"
+
+#: beast-gtk/bstsnetrouter.c:707 beast-gtk/bstsnetrouter.c:749
+msgid "Show Info"
+msgstr "情報を表示"
+
+#: beast-gtk/bstsnetrouter.c:733
+msgid "Remove Module"
+msgstr "モジュールを削除"
+
+#: beast-gtk/bstsnetrouter.c:760
+msgid "Delete Link"
+msgstr "リセットを削除"
+
+#: beast-gtk/bstsnetrouter.c:814
+msgid "Insert Module"
+msgstr "モジュールを挿入"
+
+#: beast-gtk/bstsnetrouter.c:1081
+msgid "PCM Output module"
+msgstr "PCM 出力モジュール"
+
+#: beast-gtk/bstsnetrouter.c:1082
+msgid "DCA"
+msgstr "DCA"
+
+#: beast-gtk/bstsnetrouter.c:1082
+msgid "Standard amplifier module"
+msgstr "標準アンプモジュール"
+
+#: beast-gtk/bstsnetrouter.c:1083
+msgid "Snooper"
+msgstr "スヌーパー"
+
+#: beast-gtk/bstsnetrouter.c:1083
+msgid "Signal debugging module"
+msgstr "シグナルデバッグモジュール"
+
+#: beast-gtk/bstsnetrouter.c:1084
+msgid "PCM Input module"
+msgstr "PCM 入力モジュール"
+
+#: beast-gtk/bstsnetrouter.c:1132
+msgid "Channel Hints"
+msgstr "チャネルヒント"
+
+#: beast-gtk/bstsnetrouter.c:1132
+msgid "Toggle channel name hints"
+msgstr "チャネル名ヒントを切り替え"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr "ループ領域の選択"
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr "選択領域をループ"
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr "ズーム選択"
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr "ループ適用"
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr "ループをリセット"
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr "スコア"
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "検索"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr "信号をマーク (先頭)"
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr "信号をマーク (末尾)"
+
+#: beast-gtk/bstsupershell.c:161 beast-gtk/bstsupershell.c:195
+#: beast-gtk/bstsupershell.c:322
+msgid "Waves"
+msgstr "Wave ファイル"
+
+#: beast-gtk/bstsupershell.c:162
+msgid "Wave Repository"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:167
+#, fuzzy, c-format
+msgid "Song: %s"
+msgstr "保存: %s"
+
+#: beast-gtk/bstsupershell.c:172
+#, fuzzy, c-format
+msgid "MIDI Synthesizer: %s"
+msgstr "新しい MIDI シンセサイザ"
+
+#: beast-gtk/bstsupershell.c:177
+#, fuzzy, c-format
+msgid "Synthesizer: %s"
+msgstr "シンセサイザー(_S)"
+
+#: beast-gtk/bstsupershell.c:257
+msgid "Tracks"
+msgstr "トラック"
+
+#: beast-gtk/bstsupershell.c:262
+msgid "Mixer"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
+#: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
+#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: beast-gtk/bstsupershell.c:272
+msgid "Parts"
+msgstr "パート"
+
+#: beast-gtk/bstsupershell.c:278
+msgid "Busses"
+msgstr "バス"
+
+#: beast-gtk/bstsupershell.c:284 beast-gtk/bstsupershell.c:303
+msgid "Routing"
+msgstr "ルーティング"
+
+#: beast-gtk/bstsupershell.c:298
+msgid "Rack"
+msgstr "ラック"
+
+#: beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "パートを挿入/編集/移動 (マウスボタン1, 2)"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link"
+msgstr "リンク"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "パートをリンク、移動 (マウスボタン1, 2)"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename"
+msgstr "名前の変更"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename parts"
+msgstr "パートの名前を変更"
+
+#: beast-gtk/bsttrackrollctrl.c:51
+msgid "Delete parts"
+msgstr "パートを削除"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "左ループポインタを調整するための水平ルーラーを使用"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Position"
+msgstr "位置"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "演奏位置ポインタを調整するための水平ルーラーを使用"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "右ループポインタを調整するための水平ルーラーを使用"
+
+#: beast-gtk/bsttrackrollctrl.c:416 beast-gtk/bsttrackrollctrl.c:428
+msgid "Edit Part"
+msgstr "パートを編集"
+
+#: beast-gtk/bsttrackrollctrl.c:416
+msgid "No Part"
+msgstr "パートなし"
+
+#: beast-gtk/bsttrackrollctrl.c:447 beast-gtk/bsttrackrollctrl.c:449
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
+msgid "Insert Part"
+msgstr "パートを挿入"
+
+#: beast-gtk/bsttrackrollctrl.c:449 beast-gtk/bsttrackrollctrl.c:551
+msgid "Lost Part"
+msgstr "パートがありません"
+
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
+msgid "Position taken"
+msgstr "確保した位置"
+
+#: beast-gtk/bsttrackrollctrl.c:461
+msgid "Insert part"
+msgstr "パートを挿入"
+
+#: beast-gtk/bsttrackrollctrl.c:461
+msgid "No Track"
+msgstr "トラックなし"
+
+#: beast-gtk/bsttrackrollctrl.c:473 beast-gtk/bsttrackrollctrl.c:476
+msgid "Delete Part"
+msgstr "パートを削除"
+
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
+msgid "Link Part"
+msgstr "パートをリンク"
+
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
+#: beast-gtk/bsttrackrollctrl.c:551
+msgid "Move Part"
+msgstr "パートを移動"
+
+#: beast-gtk/bsttrackrollctrl.c:563 beast-gtk/bsttrackrollctrl.c:568
+msgid "Start Editor"
+msgstr "エディタ起動"
+
+#: beast-gtk/bsttrackview.c:61
+msgid "Add a new track to this song"
+msgstr "新しいトラックをこの曲に追加"
+
+#: beast-gtk/bsttrackview.c:64
+msgid "Delete the currently selected track"
+msgstr "現在選択しているトラックを削除"
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Error"
+msgstr "エラー"
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Warning"
+msgstr "警告"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Notice"
+msgstr "通知"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Diagnostic"
+msgstr "診断"
+
+#. shouldn't end up in dialogs
+#: beast-gtk/bstusermessage.c:107
+msgid "Debug"
+msgstr "デバッグ"
+
+#: beast-gtk/bstusermessage.c:111
+msgid "Miscellaneous Message"
+msgstr "その他のメッセージ"
+
+#: beast-gtk/bstusermessage.c:242 beast-gtk/bstusermessage.c:244
+msgid "processing"
+msgstr "処理中"
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr "スクロールしない"
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr "両方スクロール"
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr "左へスクロール"
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr "右へスクロール"
+
+#: beast-gtk/bstwaveview.c:41
+msgid "Load..."
+msgstr "読み込み..."
+
+#: beast-gtk/bstwaveview.c:41
+msgid "Load a new wave file from disk"
+msgstr "新しい wave ファイルをディスクから読み込み"
+
+#: beast-gtk/bstwaveview.c:43
+msgid "Lib..."
+msgstr "ライブラリ..."
+
+#: beast-gtk/bstwaveview.c:43
+msgid "Load a new wave file from library paths"
+msgstr "新しい wave ファイルをライブラリパスから読み込み"
+
+#: beast-gtk/bstwaveview.c:45
+msgid "Delete the currently selected wave"
+msgstr "現在選択している wave を削除"
+
+#: beast-gtk/bstwaveview.c:47
+msgid "Edit the currently selected wave"
+msgstr "現在選択している wave を編集"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:1
+msgid "Adjust the zoom factor of the router display"
+msgstr "ルーターディスプレイのズーム比率を調整"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
+msgid "Aplly configuration changes to the pattern editor layout"
+msgstr "パターンエディタ配置に設定変更を適用"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
+msgid "Available Items:"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#, fuzzy
+msgid "Bus Name"
+msgstr "名前"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
+msgid "Configure"
+msgstr "設定"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
+msgid "Configure the column layout of the pattern editor"
+msgstr "パターンエディタのカラム配置を設定"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
+msgid "Control Type:"
+msgstr "コントロールタイプ:"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
+msgid "Current Items:"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
+msgid "Development"
+msgstr "開発"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
+msgid "Discard changes and close dialog"
+msgstr "変更を破棄しダイアログを閉じる"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
+msgid "E_xamples"
+msgstr "例(_x)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
+msgid "Events"
+msgstr "イベント"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
+msgid "HZoom"
+msgstr "水平方向ズーム"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
+msgid "Horizontal piano zoom"
+msgstr "水平方向ピアノズーム"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
+msgid "Horizontal track zoom"
+msgstr "水平方向トラックズーム"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#, fuzzy
+msgid "Inputs"
+msgstr "入力"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
+msgid "Layout:"
+msgstr "配置:"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#, fuzzy
+msgid "Level"
+msgstr "ラベル"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#, fuzzy
+msgid "Move the selection down by one position"
+msgstr "選択領域をクリップボードに移動"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
+msgid "Move the selection up by one position"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
+msgid "Note _Length"
+msgstr "ノート長さ(_L)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#, fuzzy
+msgid "Outputs"
+msgstr "出力"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
+msgid "Piano Notes"
+msgstr "ピアノノート"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
+msgid "Repeat"
+msgstr "繰り返し"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
+msgid "Repeat playback within loop points"
+msgstr "ループ点なしに再生を繰り返し"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
+msgid "Synthesis Modules"
+msgstr "シンセモジュール"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
+msgid "Vertical piano zoom"
+msgstr "垂直方向ピアノズーム"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
+msgid "Virtual Rack"
+msgstr "仮想ラック"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
+msgid "Wave_s"
+msgstr "Wave(_s)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
+msgid "Zoom"
+msgstr "ズーム"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#, fuzzy
+msgid "_Add"
+msgstr "追加"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
+msgid "_Apply"
+msgstr "適用(_A)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
+msgid "_Audio Sources"
+msgstr "オーティオソース(_A)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
+msgid "_Cancel"
+msgstr "取り消し(_C)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
+msgid "_Demo"
+msgstr "デモ(_D)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
+msgid "_Distortion"
+msgstr "歪み(_D)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
+msgid "_Enhance"
+msgstr "強調(_E)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
+msgid "_File"
+msgstr "ファイル(_F)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
+msgid "_Filters"
+msgstr "フィルタ(_F)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
+msgid "_Help"
+msgstr "ヘルプ(_H)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
+msgid "_Input & Output"
+msgstr "入出力(_I)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
+msgid "_LADSPA"
+msgstr "LADSPA(_L)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
+msgid "_Misc"
+msgstr "その他(_M)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
+msgid "_Other Sources"
+msgstr "他のソース(_O)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
+msgid "_Project"
+msgstr "プロジェクト(_P)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
+msgid "_Quantization"
+msgstr "量子化(_Q)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#, fuzzy
+msgid "_Remove"
+msgstr "デモ(_D)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:52
+msgid "_Routing"
+msgstr "ルーティング(_R)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:53
+msgid "_Skins"
+msgstr "スキン(_S)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:54
+msgid "_Song"
+msgstr "曲(_S)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:55
+msgid "_Spatial"
+msgstr "空間的(_S)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:56
+msgid "_Synth"
+msgstr "シンセ(_S)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:57
+msgid "_Synthesizers"
+msgstr "シンセサイザー(_S)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:58
+msgid "_Tools"
+msgstr "ツール(_T)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:59
+msgid "_Utilities"
+msgstr "ユーティリティ(_U)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:60
+msgid "_View"
+msgstr "ビュー(_V)"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:61
+msgid "_Virtualization"
+msgstr "仮想化(_V)"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:1
+msgid "Enter document or file location"
+msgstr "ドキュメントかファイル位置を入力"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:2
+msgid "Find in current document"
+msgstr "現在のドキュメント内で検索"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:3
+msgid "Go back one page"
+msgstr "一ページ戻る"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:4
+msgid "Go forward one page"
+msgstr "一ページ進む"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:5
+msgid "Go to browser index"
+msgstr "ブラウザインデクスへ移動"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:6
+msgid "Location"
+msgstr "場所"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:7
+msgid "Reload current page"
+msgstr "現在のページを再読み込み"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:8
+msgid "_Back"
+msgstr "戻る(_B)"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:9
+msgid "_Find"
+msgstr "検索(_F)"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:10
+msgid "_Forward"
+msgstr "進む(_F)"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:11
+msgid "_Index"
+msgstr "インデクス(_I)"
+
+#: beast-gtk/dialogs/radgets-standard.xml.h:12
+msgid "_Reload"
+msgstr "再読み込み(_R)"
+
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr "カラム数"
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr "カラムタイプ配列"
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr "列数"
+
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr "テキストエントリ"
+
+#: beast-gtk/gxk/gxkparam-label.c:66
+msgid "Property Identifier"
+msgstr "プロパティ識別子"
+
+#: beast-gtk/gxk/gxkparam-label.c:72
+msgid "Property Name"
+msgstr "プロパティ名"
+
+#: beast-gtk/gxk/gxkparam-scale.c:82
+msgid "Horizontal Scale"
+msgstr "水平方向スケール"
+
+#: beast-gtk/gxk/gxkparam-scale.c:88
+msgid "Vertical Scale"
+msgstr "垂直方向スケール"
+
+#: beast-gtk/gxk/gxkparam-scale.c:94
+msgid "Horizontal Scale (Logarithmic)"
+msgstr "水平方向スケール(対数)"
+
+#: beast-gtk/gxk/gxkparam-scale.c:100
+msgid "Vertical Scale (Logarithmic)"
+msgstr "垂直方向スケール(対数)"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:82
+msgid "Spin Button"
+msgstr "スピンボタン"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:88
+msgid "Spin Button (Logarithmic)"
+msgstr "スピンボタン(対数)"
+
+#: beast-gtk/gxk/gxkparam-toggle.c:69
+msgid "Toggle Button"
+msgstr "切り替えボタン"
+
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "The text of the label"
+msgstr "ラベルのテキスト"
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid "Use underline"
+msgstr "下線を利用"
+
+#: beast-gtk/gxk/gxksimplelabel.c:138
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+"設定されていれば、テキストの下線が次の文字がショートカットキーのニーモニック"
+"として使われることを示す。"
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+msgid "Auto cut"
+msgstr "自動カット"
+
+#: beast-gtk/gxk/gxksimplelabel.c:143
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+"設定されていれば、長すぎる文字は切り捨てられ、省略記号\"...\" が代りに表示さ"
+"れる。"
+
+#: beast-gtk/gxk/gxksimplelabel.c:147
+msgid "Justification"
+msgstr "調整"
+
+#: beast-gtk/gxk/gxksimplelabel.c:148
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr "ラベルのテキスト内の線間を調整。ラベルの配置の調整ではありません"
+
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid "Pattern"
+msgstr "パターン"
+
+#: beast-gtk/gxk/gxksimplelabel.c:153
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr "テキスト内の _ の付く文字の位置"
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "Mnemonic key"
+msgstr "ニーモニックキー"
+
+#: beast-gtk/gxk/gxksimplelabel.c:158
+msgid "The mnemonic accelerator key for this label"
+msgstr "このラベルのニーモニックショートカットキー"
+
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "Mnemonic widget"
+msgstr "記憶ウィジェット"
+
+#: beast-gtk/gxk/gxksimplelabel.c:163
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr "ラベルのニーモニックキーが押されたときにアクティブになるウィジェット"
+
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:598
+msgid "..."
+msgstr "..."
+
+#: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
+msgid "GNU Lesser General Public License"
+msgstr "GNU 劣等一般公共使用許諾"
+
+#: bse/bseamplifier.idl:31
+msgid "/Routing/Amplifier"
+msgstr "/ルーティング/アンプ"
+
+#: bse/bseamplifier.idl:32
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+"BseAmplifier は入力信号コントロール増幅/減衰器の機能を提供します。二つのコン"
+"トロール入力/オーディオ入力をサポートし、それらはバランス、レベル調整の後で"
+"ミックスされます。ゲイン設定はミックスオーディオ信号のプリアンプリフィケー"
+"ションをコントロールします。強度設定で重み付けされるミックスコントロール信号"
+"は追加の増幅を決定し、外部ソースがすべての音量を変調(トレモロ)できるようにし"
+"ます。ミックスコントロール信号は(他のコントロール信号に)線形に増幅する、また"
+"は(オーディオ信号を)指数関数的に増幅することができます。そして主音量は結果的"
+"に出力される信号の増幅をコントロールします。"
+
+#: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
+#: plugins/bsemult.c:60
+msgid "Audio In1"
+msgstr "オーティオ ln1"
+
+#: bse/bseamplifier.idl:45 plugins/bsebalance.idl:36
+msgid "First audio input"
+msgstr "第一オーティオ入力"
+
+#: bse/bseamplifier.idl:46 plugins/bseadder.c:99 plugins/bsebalance.idl:37
+#: plugins/bsemult.c:62
+msgid "Audio In2"
+msgstr "オーティオ ln2"
+
+#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:37
+msgid "Second audio input"
+msgstr "第二オーティオ入力"
+
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
+msgid "Ctrl In1"
+msgstr "Ctrl In1"
+
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
+msgid "First control input"
+msgstr "第一コントロール入力"
+
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
+msgid "Ctrl In2"
+msgstr "Ctrl In2"
+
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
+msgid "Second control input"
+msgstr "第二コントロール入力"
+
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
+#: bse/bsewaveosc.c:564 plugins/artscompressor.idl:33 plugins/bseadder.c:101
+#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
+#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
+msgid "Audio Out"
+msgstr "オーティオ出力"
+
+#: bse/bseamplifier.idl:49
+msgid "Amplified audio output"
+msgstr "アンプオーディオ出力"
+
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:43
+msgid "Audio Input"
+msgstr "オーティオ入力"
+
+#: bse/bseamplifier.idl:51 bse/bseamplifier.idl:56 plugins/bsebalance.idl:44
+#: plugins/bsebalance.idl:49
+msgid "Input 1 [%]"
+msgstr "入力 1 [%]"
+
+#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:44
+msgid "Attenuate the level of audio input 1"
+msgstr "オーティオ入力 1 のレベルを下げる"
+
+#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:45
+#: plugins/bsebalance.idl:50
+msgid "Input 2 [%]"
+msgstr "入力 2 [%]"
+
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:45
+msgid "Attenuate the level of audio input 2"
+msgstr "オーティオ入力 2 のレベルを下げる"
+
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:46
+#: plugins/bsebalance.idl:51
+msgid "Balance"
+msgstr "バランス"
+
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:46
+msgid "Balance audio input levels"
+msgstr "オーティオ入力レベルをバランス"
+
+#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:48
+msgid "Control Input"
+msgstr "コントロール入力"
+
+#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:49
+msgid "Attenuate the level of control input 1"
+msgstr "コントロール入力 1 のレベルを下げる"
+
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:50
+msgid "Attenuate the level of control input 2"
+msgstr "コントロール入力 2 のレベルを下げる"
+
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:51
+msgid "Balance control input levels"
+msgstr "コントロール入力レベルをバランス"
+
+#: bse/bseamplifier.idl:59
+msgid "Multiply Controls"
+msgstr "コントロールを掛け合せ"
+
+#: bse/bseamplifier.idl:60
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr ""
+"二つのコントロール入力を切り替えて、それらをミックスしてバランスで重みをつけ"
+"るのではなく、ゲインコントロールの連鎖として機能させる"
+
+#: bse/bseamplifier.idl:63
+msgid "Exponential Control"
+msgstr "指数コントロール"
+
+#: bse/bseamplifier.idl:63
+msgid "Toggle exponential and linear control response"
+msgstr "指数/線形コントロール応答を切り替え"
+
+#: bse/bseamplifier.idl:66 plugins/bsebalance.idl:54
+msgid "Control Strength"
+msgstr "コントロールの強さ"
+
+#: bse/bseamplifier.idl:66
+msgid "Adjust how much the control signals affect the output volume"
+msgstr "コントロール信号の出力音量に対する影響がどれぐらいか調整"
+
+#: bse/bseamplifier.idl:67
+msgid "Base Volume"
+msgstr "ベース音量"
+
+#: bse/bseamplifier.idl:67
+msgid "Base amplification (the control signal adds up to this)"
+msgstr "ベースアンプ (加えられるコントロール信号)"
+
+#: bse/bseamplifier.idl:68
+msgid "Master Volume"
+msgstr "主音量"
+
+#: bse/bseamplifier.idl:68
+msgid "Output stage amplification"
+msgstr "出力ステージアンプ"
+
+#: bse/bseautodoc.c:360 bse/bseautodoc.c:422
+msgid "Authors:"
+msgstr "作者:"
+
+#: bse/bseautodoc.c:365 bse/bseautodoc.c:425
+msgid "License:"
+msgstr "ライセンス:"
+
+#: bse/bseautodoc.c:408 bse/bseautodoc.c:410
+msgid "BSE-Objects"
+msgstr "BSE-オブジェクト"
+
+#: bse/bseautodoc.c:410
+msgid " Object Reference"
+msgstr " オブジェクトリファレンス"
+
+#: bse/bseautodoc.c:429
+msgid "Properties:"
+msgstr "プロパティ:"
+
+#: bse/bseautodoc.c:455 bse/bseautodoc.c:488 bse/bseautodoc.c:505
+msgid "Identifier:"
+msgstr "識別子:"
+
+#: bse/bseautodoc.c:460 bse/bseautodoc.c:466
+msgid "Range:"
+msgstr "範囲:"
+
+#: bse/bseautodoc.c:470 bse/bseautodoc.c:491 bse/bseautodoc.c:508
+msgid "Description:"
+msgstr "説明:"
+
+#: bse/bseautodoc.c:480
+msgid "Input Channels:"
+msgstr "入力チャネル:"
+
+#: bse/bseautodoc.c:487
+msgid "(Joint Input)"
+msgstr "(入力を結合)"
+
+#: bse/bseautodoc.c:498
+msgid "Output Channels:"
+msgstr "出力チャネル:"
+
+#: bse/bsebiquadfilter.c:105
+msgid "/Filters/Biquad Types"
+msgstr "/フィルター/四乗べき"
+
+#: bse/bsebiquadfilter.c:124
+msgid "Filter"
+msgstr "フィルター"
+
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:125
+msgid "Filter Type"
+msgstr "フィルタータイプ"
+
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:119
+msgid "The filter design type"
+msgstr "フィルターデザインタイプ"
+
+#: bse/bsebiquadfilter.c:130 bse/bsebiquadfilter.c:138
+msgid "Center Frequency"
+msgstr "中央周波数"
+
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:141
+#: plugins/bseiirfilter.c:151
+msgid "Cutoff [Hz]"
+msgstr "カットオフ [Hz]"
+
+#: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
+msgid "Note"
+msgstr "ノート"
+
+#: bse/bsebiquadfilter.c:145 bse/bsebiquadfilter.c:150
+msgid "Emphasis"
+msgstr "強調"
+
+#: bse/bsebiquadfilter.c:147
+msgid "Gain [dB]"
+msgstr "ゲイン [dB]"
+
+#: bse/bsebiquadfilter.c:152
+msgid "Norm Type"
+msgstr "基準タイプ"
+
+#: bse/bsebiquadfilter.c:153
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr "フィルタゲイン正規化タイプ (高/低周波パスフィルタだけがサポート)"
+
+#: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
+#: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
+#: bse/bsestandardosc.c:153 bse/bsestandardosc.c:159 bse/bsestandardosc.c:165
+#: bse/bsestandardosc.c:171 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
+#: bse/bsewaveosc.c:546
+msgid "Modulation"
+msgstr "変調"
+
+#: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:156
+msgid "Strength of linear frequency modulation"
+msgstr "線形周波変調の強さ"
+
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:543
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr "線形の代わりに指数関数的周波数変調を実行"
+
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:549
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr "指数関数的周波数変調の影響を受けるオクターブ数"
+
+#: bse/bsebiquadfilter.c:179
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr "ゲイン変調 [%]"
+
+#: bse/bsebiquadfilter.c:180
+msgid "Strength of gain modulation"
+msgstr "ゲイン変調の強さ"
+
+#: bse/bsebiquadfilter.c:184 plugins/artscompressor.idl:32
+#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+msgid "Audio In"
+msgstr "オーティオ入力"
+
+#: bse/bsebiquadfilter.c:184
+msgid "Unfiltered Audio Signal"
+msgstr "未フィルターのオーディオ信号"
+
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:558
+#: plugins/davorgan.c:132 plugins/davsyndrum.c:116
+#: plugins/davxtalstrings.c:141
+msgid "Freq In"
+msgstr "周波数入力"
+
+#: bse/bsebiquadfilter.c:186
+msgid "Center Frequency Input"
+msgstr "中央周波数入力"
+
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+msgid "Freq Mod In"
+msgstr "周波数変調入力"
+
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+msgid "Frequency Modulation Input"
+msgstr "周波数変調の入力"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Gain Mod In"
+msgstr "ゲイン変調入力"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Gain Modulation Input"
+msgstr "ゲイン変調の入力"
+
+#: bse/bsebiquadfilter.c:192
+msgid "Filtered Audio Signal"
+msgstr "フィルター済みのオーディオ信号"
+
+#: bse/bsebus.c:109
+#, fuzzy
+msgid "Available Inputs"
+msgstr "信号入力"
+
+#: bse/bsebus.c:109
+msgid "List of available synthesis signals to be used as bus input"
+msgstr ""
+
+#: bse/bsebus.c:483 bse/bsebus.c:488 bse/bsetrack.c:875
+#, fuzzy
+msgid "Adjustments"
+msgstr "割り当て"
+
+#: bse/bsebus.c:485
+msgid "Left Volume [dB]"
+msgstr ""
+
+#: bse/bsebus.c:485
+msgid "Volume adjustment of left bus channel"
+msgstr ""
+
+#: bse/bsebus.c:490
+msgid "Right Volume [dB]"
+msgstr ""
+
+#: bse/bsebus.c:490
+msgid "Volume adjustment of right bus channel"
+msgstr ""
+
+#: bse/bsebus.c:493
+#, fuzzy
+msgid "Signal Inputs"
+msgstr "信号入力"
+
+#: bse/bsebus.c:495
+#, fuzzy
+msgid "Input Signals"
+msgstr "オーディオ入力信号"
+
+#: bse/bsebus.c:495
+#, fuzzy
+msgid "Synthesis signals used as bus input"
+msgstr "インターフェースするシンセネットワーク"
+
+#: bse/bsebus.c:497
+msgid "Internals"
+msgstr ""
+
+#: bse/bsebus.c:499
+#, fuzzy
+msgid "Master Output"
+msgstr "ゲート出力"
+
+#: bse/bsebus.c:502 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr "左オーディオ入力"
+
+#: bse/bsebus.c:502 bse/bsepcmoutput.c:128
+msgid "Left channel input"
+msgstr "左チャネル入力"
+
+#: bse/bsebus.c:504 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr "右オーディオ入力"
+
+#: bse/bsebus.c:504
+msgid "Right channel input"
+msgstr "右チャネル入力"
+
+#: bse/bsebus.c:506 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr "左オーディオ出力"
+
+#: bse/bsebus.c:506 bse/bsepcminput.c:128
+msgid "Left channel output"
+msgstr "左チャネル出力"
+
+#: bse/bsebus.c:508 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr "右オーディオ出力"
+
+#: bse/bsebus.c:508 bse/bsepcminput.c:130
+msgid "Right channel output"
+msgstr "右チャネル出力"
+
+#: bse/bsebus.c:527
+#, fuzzy
+msgid ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
+msgstr "曲のバス。マスタ出力にトラックオーディオ信号をルーティングするのに使用"
+
+#: bse/bseconstant.c:84
+msgid "/Other Sources/Constant"
+msgstr "/他のソース/一定"
+
+#: bse/bseconstant.c:106 bse/bseconstant.c:137
+#, c-format
+msgid "Constant Output %u"
+msgstr "一定出力 %u"
+
+#: bse/bseconstant.c:109
+msgid "Value [float]"
+msgstr "値 [浮動小数]"
+
+#: bse/bseconstant.c:117 bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
+#: bse/bsestandardosc.c:143
+msgid "Frequency"
+msgstr "周波数"
+
+#: bse/bseconstant.c:136
+#, c-format
+msgid "Const Out%u"
+msgstr "一定出力%u"
+
+#: bse/bsecore.idl:386
+msgid "State"
+msgstr "状態"
+
+#: bse/bsecore.idl:386
+msgid "The execution state of the thread"
+msgstr "スレッドの実行状態"
+
+#: bse/bsecore.idl:387
+#, fuzzy
+msgid "Thread ID"
+msgstr "スレッド名"
+
+#: bse/bsecore.idl:387
+msgid "A unique number identifying this thread"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "Priority"
+msgstr "プライオリティ"
+
+#: bse/bsecore.idl:389
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+"スレッドの nice 値。-20 は他よりも最も高い優先度を、+19 は最も低い優先度を示"
+"す"
+
+#: bse/bsecore.idl:392
+msgid "Processor"
+msgstr "プロセッサ"
+
+#: bse/bsecore.idl:392
+msgid "The processor that this thread is currently being executed on"
+msgstr "スレッドの実行されているプロセッサ"
+
+#: bse/bsecore.idl:394
+msgid "User Time"
+msgstr "ユーザー時間"
+
+#: bse/bsecore.idl:394
+msgid "The CPU time spent executing instructions of this thread"
+msgstr "スレッドの命令を実行するのにかかった CPU 時間"
+
+#: bse/bsecore.idl:396
+msgid "System Time"
+msgstr "システム時間"
+
+#: bse/bsecore.idl:396
+msgid "The CPU time spent in the system for this thread"
+msgstr "スレッドについてシステムが要した CPU 時間"
+
+#: bse/bsecore.idl:398
+msgid "Child User Time"
+msgstr "子ユーザー時間"
+
+#: bse/bsecore.idl:398
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr "スレッドの子の命令を実行するのにかかった CPU 時間"
+
+#: bse/bsecore.idl:400
+msgid "Child System Time"
+msgstr "子システム時間"
+
+#: bse/bsecore.idl:400
+msgid "The CPU time spent in the system for children of this thread"
+msgstr "スレッドの子についてシステムが要した CPU 時間"
+
+#: bse/bsecore.idl:441
+msgid "Latency [ms]"
+msgstr "レイテンシ [ms]"
+
+#: bse/bsecore.idl:442
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+"サンプル一つの入出力の間での処理遅延時間。より小さくなるほど CPU 負荷を増大さ"
+"せる"
+
+#: bse/bsecore.idl:445
+msgid "Synth Mixing Frequency"
+msgstr "シンセミキサ周波数"
+
+#: bse/bsecore.idl:446
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr "シンセミキサ周波数。通常値: 22050, 44100, 48000"
+
+#: bse/bsecore.idl:448
+msgid "Synth Control Frequency"
+msgstr "シンセコントロール周波数"
+
+#: bse/bsecore.idl:449
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"コントロール値を評価するときの周波数。CPU 負荷を減らすためにはシンセミキサ周"
+"波数よりずっと小さくするべきです。"
+
+#: bse/bseinstrumentinput.c:68
+msgid "/Input & Output/Instrument Voice Input"
+msgstr "/入出力/インストゥルメント音声入力"
+
+#: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
+msgid "Note Frequency"
+msgstr "ノート周波数"
+
+#: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
+msgid "Gate"
+msgstr "ゲート"
+
+#: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
+msgid "High if the note is currently being pressed"
+msgstr "ノートがプレスされていれば高"
+
+#: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
+msgid "Velocity"
+msgstr "ヴェロシティ"
+
+#: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
+msgid "Velocity of the note press"
+msgstr "ノートプレスのヴェロシティ"
+
+#: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
+msgid "Aftertouch"
+msgstr "アフタータッチ"
+
+#: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
+msgid "Velocity while the note is pressed"
+msgstr "ノートプレス間のヴェロシティ"
+
+#: bse/bseinstrumentoutput.c:68
+msgid "/Input & Output/Instrument Output"
+msgstr "/入出力/インストゥルメント出力"
+
+#: bse/bseinstrumentoutput.c:101
+msgid "Left Audio"
+msgstr "左オーディオ"
+
+#: bse/bseinstrumentoutput.c:101
+msgid "Left Channel Output"
+msgstr "左チャネル出力"
+
+#: bse/bseinstrumentoutput.c:103
+msgid "Right Audio"
+msgstr "右オーディオ"
+
+#: bse/bseinstrumentoutput.c:103
+msgid "Right Channel Output"
+msgstr "右チャネル出力"
+
+#: bse/bseinstrumentoutput.c:105
+msgid "Unused"
+msgstr "未使用"
+
+#: bse/bseinstrumentoutput.c:107
+msgid "Synth Done"
+msgstr "シンセ完了"
+
+#: bse/bseinstrumentoutput.c:107
+msgid "High indicates the instrument is done synthesizing"
+msgstr "高ならインストゥルメントのシンセ完了を示す"
+
+#: bse/bsemidicontroller.c:86
+msgid "/Input & Output/MIDI Control Input"
+msgstr "/入出力/MIDI コントロール入力"
+
+#: bse/bsemidicontroller.c:137
+msgid "Ctrl Out1"
+msgstr "コントロール出力 1"
+
+#: bse/bsemidicontroller.c:137
+msgid "MIDI Signal 1"
+msgstr "MIDI 信号 1"
+
+#: bse/bsemidicontroller.c:139
+msgid "Ctrl Out2"
+msgstr "コントロール出力 2"
+
+#: bse/bsemidicontroller.c:139
+msgid "MIDI Signal 2"
+msgstr "MIDI 信号 2"
+
+#: bse/bsemidicontroller.c:141
+msgid "Ctrl Out3"
+msgstr "コントロール出力 3"
+
+#: bse/bsemidicontroller.c:141
+msgid "MIDI Signal 3"
+msgstr "MIDI 信号 3"
+
+#: bse/bsemidicontroller.c:143
+msgid "Ctrl Out4"
+msgstr "コントロール出力 4"
+
+#: bse/bsemidicontroller.c:143
+msgid "MIDI Signal 4"
+msgstr "MIDI 信号 4"
+
+#: bse/bsemidiinput.c:82
+msgid "/Input & Output/MIDI Voice Input"
+msgstr "/入出力/MIDI 音声入力"
+
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+msgid "Freq Out"
+msgstr "周波数出力"
+
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:566
+msgid "Gate Out"
+msgstr "ゲート出力"
+
+#: bse/bsemidivoice.c:113
+msgid "Velocity Out"
+msgstr "ヴェロシティ出力"
+
+#: bse/bsemidivoice.c:115
+msgid "Aftertouch Out"
+msgstr "アフタータッチ出力"
+
+#: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
+msgid "Left In"
+msgstr "左入力"
+
+#: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
+msgid "Right In"
+msgstr "右入力"
+
+#: bse/bsemidivoice.c:137
+msgid "Disconnect In"
+msgstr "入力切断"
+
+#: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
+#: plugins/davcanyondelay.c:120
+msgid "Left Out"
+msgstr "左出力"
+
+#: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
+#: plugins/davcanyondelay.c:122
+msgid "Right Out"
+msgstr "右出力"
+
+#: bse/bsemidivoice.c:143
+msgid "Disconnect Out"
+msgstr "出力切断"
+
+#: bse/bseparasite.proc:28 bse/bseparasite.proc:52 bse/bseparasite.proc:70
+#: bse/bseparasite.proc:89
+msgid "Item"
+msgstr "アイテム"
+
+#: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
+#: bse/bseparasite.proc:90
+msgid "Path"
+msgstr "パス"
+
+#: bse/bseparasite.proc:30
+msgid "Parasite Paths"
+msgstr "パラサイトパス"
+
+#: bse/bseparasite.proc:54 bse/bseparasite.proc:72 bse/bseparasite.proc:91
+msgid "Parasite"
+msgstr "パラサイト"
+
+#: bse/bsepcminput.c:85
+msgid "/Input & Output/PCM Input"
+msgstr "/入出力/PCM 入力"
+
+#: bse/bsepcmoutput.c:85
+msgid "/Input & Output/PCM Output"
+msgstr "/入出力/PCM 出力"
+
+#: bse/bsepcmoutput.c:130
+msgid "Right channel Input"
+msgstr "右チャネル入力"
+
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr "WAVE ファイル"
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
+msgstr "BSE 音声出力を録音する WAVE ファイル名"
+
+#: bse/bseserver.c:504
+msgid "Advice about MIDI device selections"
+msgstr "MIDI デバイス選択についてアドバイス"
+
+#: bse/bseserver.c:505
+msgid "Alert me about MIDI device selections"
+msgstr "MIDI デバイス選択について警告"
+
+#: bse/bseserver.c:506
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
+msgstr "MIDI デバイス %s を開くのに失敗 (null デバイスを使用): %s"
+
+#: bse/bseserver.c:548
+#, c-format
+msgid "failed to open output file \"%s\": %s"
+msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
+
+#: bse/bsesnooper.c:77
+msgid "/Misc/Snooper"
+msgstr "/その他/スヌーパー"
+
+#: bse/bsesnooper.c:108
+msgid "Signal In"
+msgstr "信号入力"
+
+#: bse/bsesnooper.c:108
+msgid "Snoop Signal"
+msgstr "信号をスヌープ"
+
+#: bse/bsesong.proc:37
+msgid "Create a new mixer bus for a Song."
+msgstr ""
+
+#: bse/bsesong.proc:68
+msgid "Delete a mixer bus from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:121
+msgid "Retrieve master output bus of a song."
+msgstr ""
+
+#: bse/bsesong.proc:148
+msgid "Ensure that each part in a song is inserted into at least one track."
+msgstr ""
+
+#: bse/bsesong.proc:169
+msgid "Connect all unconnected track of a song to the master output bus."
+msgstr ""
+
+#: bse/bsesong.proc:209
+msgid "Create a new Part in a Song."
+msgstr ""
+
+#: bse/bsesong.proc:240
+msgid "Delete a Part from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:278
+#, fuzzy
+msgid "Create a new Track for a Song."
+msgstr "新しいトラックをこの曲に追加"
+
+#: bse/bsesong.proc:314
+msgid "Delete a Track from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:353
+msgid "Find a track suitable for playing notes of a given part."
+msgstr ""
+
+#: bse/bsesong.proc:396
+msgid "Synthesize a note on a song of an active project."
+msgstr ""
+
+#: bse/bsesong.proc:446
+msgid "Retrieve song timing information at a specific tick."
+msgstr ""
+
+#: bse/bsestandardosc.c:106
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr ""
+"StandardOsc は様々な種類の波形と変調入力をサポートする BSE 基本発振器です。"
+
+#: bse/bsestandardosc.c:109
+#, fuzzy
+msgid "/Audio Sources/Standard Oscillator"
+msgstr "/オーディオソース/標準発振器"
+
+#: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
+msgid "Wave Form"
+msgstr "波形"
+
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:886 bse/bsewaveosc.c:530
+#: bse/bsewaveosc.c:532
+msgid "Wave"
+msgstr "波"
+
+#: bse/bsestandardosc.c:132
+msgid "Oscillator wave form"
+msgstr "発振器波形"
+
+#: bse/bsestandardosc.c:138
+msgid "Phase"
+msgstr "位相"
+
+#: bse/bsestandardosc.c:141 bse/bsestandardosc.c:145 bse/bsestandardosc.c:148
+msgid "Base Frequency"
+msgstr "ベース周波数"
+
+#: bse/bsestandardosc.c:150
+msgid "Fine Tune"
+msgstr "微細調整"
+
+#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:536
+msgid "Input Modulation [%]"
+msgstr "入力変調 [%]"
+
+#: bse/bsestandardosc.c:161 bse/bsewaveosc.c:542
+msgid "Exponential FM"
+msgstr "指数関数 FM"
+
+#: bse/bsestandardosc.c:167 bse/bsewaveosc.c:548
+msgid "Octaves"
+msgstr "オクターブ"
+
+#: bse/bsestandardosc.c:173
+msgid "Self Modulation [%]"
+msgstr "自己変調 [%]"
+
+#: bse/bsestandardosc.c:174
+msgid "Strength of self modulation"
+msgstr "自己変調の強さ"
+
+#: bse/bsestandardosc.c:177 bse/bsestandardosc.c:184
+msgid "Pulse Modulation"
+msgstr "パルス変調"
+
+#: bse/bsestandardosc.c:179
+msgid "Pulse Width"
+msgstr "パルス幅"
+
+#: bse/bsestandardosc.c:180
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr ""
+"パルス波形の正コンポーネントデュレイションの比率(このエフェクトについてはパル"
+"ス波形を選択しなければなりません)"
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Modulation [%]"
+msgstr "パルス変調 [%]"
+
+#: bse/bsestandardosc.c:187
+#, fuzzy
+msgid ""
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr ""
+"パルス幅変調入力の強さ (パルスの効果を得るにはこれについて波形を選ぶべき)"
+
+#: bse/bsestandardosc.c:192
+msgid "Oscillating Frequency Input"
+msgstr "発振器周波数入力"
+
+#: bse/bsestandardosc.c:196
+msgid "PWM In"
+msgstr "PWM 入力"
+
+#: bse/bsestandardosc.c:196
+msgid "Pulse Width Modulation Input"
+msgstr "パルス幅変調入力"
+
+#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
+msgid "Sync In"
+msgstr "同期入力"
+
+#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
+msgid "Syncronization Input"
+msgstr "同期入力"
+
+#: bse/bsestandardosc.c:200
+msgid "Oscillated Output"
+msgstr "発振された出力"
+
+#: bse/bsestandardosc.c:202
+msgid "Sync Out"
+msgstr "同期出力"
+
+#: bse/bsestandardosc.c:202
+msgid "Syncronization Output"
+msgstr "同期出力"
+
+#: bse/bsesubiport.c:90
+msgid "/Virtualization/Virtual Input"
+msgstr "/仮想化/仮想入力"
+
+#: bse/bsesubiport.c:122 bse/bsesubsynth.c:502
+#, c-format
+msgid "Input Port %u"
+msgstr "入力ポート %u"
+
+#: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:492
+msgid "Assignments"
+msgstr "割り当て"
+
+#: bse/bsesubiport.c:126 bse/bsesuboport.c:126
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr "入出力ポートの関係を確立するためにポート名として固有な名前を与えます"
+
+#: bse/bsesubiport.c:134 bse/bsesubsynth.c:522
+#, c-format
+msgid "Virtual input %u"
+msgstr "仮想入力 %u"
+
+#: bse/bsesuboport.c:90
+msgid "/Virtualization/Virtual Output"
+msgstr "/仮想化/仮想出力"
+
+#: bse/bsesuboport.c:122 bse/bsesubsynth.c:512
+#, c-format
+msgid "Output Port %u"
+msgstr "出力ポート %u"
+
+#: bse/bsesuboport.c:134 bse/bsesubsynth.c:529
+#, c-format
+msgid "Virtual output %u"
+msgstr "仮想出力 %u"
+
+#: bse/bsesubsynth.c:94
+msgid "/Virtualization/Virtual Sub Synth"
+msgstr "/仮想化/仮想サブシンセ"
+
+#: bse/bsesubsynth.c:146 bse/bsetrack.c:275
+#, fuzzy
+msgid "Available Synthesizers"
+msgstr "シンセサイザー(_S)"
+
+#: bse/bsesubsynth.c:146
+msgid "List of available synthesis networks to choose a sub network from"
+msgstr ""
+
+#: bse/bsesubsynth.c:494 bse/bsetrack.c:881
+#, fuzzy
+msgid "Synthesizer"
+msgstr "シンセサイザー(_S)"
+
+#: bse/bsesubsynth.c:495
+#, fuzzy
+msgid "Synthesis network to use as embedded sub network"
+msgstr "インターフェースするシンセネットワーク"
+
+#: bse/bsesubsynth.c:504
+msgid "Input Assignments"
+msgstr "入力割り当て"
+
+#: bse/bsesubsynth.c:505
+msgid "Output port name to interface from"
+msgstr "インターフェースする出力ポート名"
+
+#: bse/bsesubsynth.c:514
+msgid "Output Assignments"
+msgstr "出力割り当て"
+
+#: bse/bsesubsynth.c:515
+msgid "Input port name to interface to"
+msgstr "インターフェースする入力ポート名"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "作者"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "このオブジェクトをつくった/変更した人"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "ライセンス"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "このオブジェクトに適用するコピーライトライセンス"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "作成日時"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "最終更新日時"
+
+#: bse/bsetrack.c:275
+#, fuzzy
+msgid "List of available synthesis networks to choose a track instrument from"
+msgstr "インターフェースするシンセネットワーク"
+
+#: bse/bsetrack.c:279
+msgid "Available Postprocessors"
+msgstr ""
+
+#: bse/bsetrack.c:279
+#, fuzzy
+msgid "List of available synthesis networks to choose a postprocessor from"
+msgstr "インターフェースするシンセネットワーク"
+
+#: bse/bsetrack.c:283 bse/bsewaveosc.c:125
+msgid "Available Waves"
+msgstr ""
+
+#: bse/bsetrack.c:283
+msgid "List of available waves to choose as track instrument"
+msgstr ""
+
+#: bse/bsetrack.c:877
+msgid "Muted"
+msgstr ""
+
+#: bse/bsetrack.c:879 bse/bsetrack.c:884 bse/bsetrack.c:889
+#, fuzzy
+msgid "Synth Input"
+msgstr "左入力"
+
+#: bse/bsetrack.c:881
+#, fuzzy
+msgid "Synthesis network to be used as instrument"
+msgstr "インターフェースするシンセネットワーク"
+
+#: bse/bsetrack.c:886
+#, fuzzy
+msgid "Wave to be used as instrument"
+msgstr "インストゥルメントを別名で保存"
+
+#: bse/bsetrack.c:891
+msgid "Max Voixes"
+msgstr ""
+
+#: bse/bsetrack.c:891
+msgid "Maximum number of voices for simultaneous playback"
+msgstr ""
+
+#: bse/bsetrack.c:894 bse/bsetrack.c:900
+#, fuzzy
+msgid "MIDI Instrument"
+msgstr "インストゥルメントを保存"
+
+#: bse/bsetrack.c:896
+#, fuzzy
+msgid "MIDI Channel"
+msgstr "チャネル%u"
+
+#: bse/bsetrack.c:897
+msgid "Midi channel assigned to this track, 0 uses private per-track channel"
+msgstr ""
+
+#: bse/bsetrack.c:902
+#, fuzzy
+msgid "Postprocessor"
+msgstr "プロセッサ"
+
+#: bse/bsetrack.c:902
+#, fuzzy
+msgid "Synthesis network to be used as postprocessor"
+msgstr "インターフェースするシンセネットワーク"
+
+#: bse/bsewaveosc.c:94
+msgid "/Audio Sources/Wave Oscillator"
+msgstr "/オーディオソース/波形発振器"
+
+#: bse/bsewaveosc.c:125
+msgid "List of available waves to choose as oscillator source"
+msgstr ""
+
+#: bse/bsewaveosc.c:532
+#, fuzzy
+msgid "Wave used as oscillator source"
+msgstr "インストゥルメントを別名で保存"
+
+#: bse/bsewaveosc.c:537
+msgid "Modulation Strength for linear frequency modulation"
+msgstr "線形周波数変調の変調強度"
+
+#: bse/bsewaveosc.c:558 plugins/davorgan.c:132
+msgid "Frequency Input"
+msgstr "周波数入力"
+
+#: bse/bsewaveosc.c:562
+msgid "Mod In"
+msgstr "変調入力"
+
+#: bse/bsewaveosc.c:562
+msgid "Modulation Input"
+msgstr "変調入力"
+
+#: bse/bsewaveosc.c:564
+msgid "Wave Output"
+msgstr "波形出力"
+
+#: bse/bsewaveosc.c:566
+msgid "Gate Output"
+msgstr "ゲート出力"
+
+#: data/beast.desktop.in.h:2
+msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
+msgstr "MIDI トラッカー、音楽編集そしてモジュールシンセサイザアプリケーション"
+
+#: data/beast.desktop.in.h:3
+msgid "Music Composer"
+msgstr "音楽編集"
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr "オーディオ"
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr "BSE マルチパート WAVE ファイル"
+
+#: data/bse.keys.in.h:3
+msgid "BSE Synthesis File"
+msgstr "BSE シンセサイザファイル"
+
+#: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
+#: plugins/evaluator/bseevaluator.idl:27
+msgid "GNU General Public License"
+msgstr "GNU 一般公共使用許諾書"
+
+#: plugins/artscompressor.idl:30
+msgid "/Enhance/ArtsCompressor"
+msgstr "/拡張/ArtsCompressor"
+
+#: plugins/artscompressor.idl:31
+msgid "ArtsCompressor compresses the sound."
+msgstr "ArtsCompressor は音を圧縮します"
+
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+msgid "Audio input"
+msgstr "オーディオ入力"
+
+#: plugins/artscompressor.idl:33
+msgid "Compressed audio output"
+msgstr "圧縮されたオーディオ出力"
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+msgid "Attack [ms]"
+msgstr "アタック [ms]"
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#, fuzzy
+msgid "Set the attack time in milliseconds"
+msgstr "アタック時間 [ms] を設定"
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+msgid "Release [ms]"
+msgstr "リリース [ms]"
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#, fuzzy
+msgid "Set the release time in milliseconds"
+msgstr "リリース時間 [ms] を設定"
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+msgid "Threshold"
+msgstr "スレッシュホールド"
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+msgid "Set the threshold"
+msgstr "スレッシュホールドを設定"
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+msgid "Ratio"
+msgstr "比率"
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+msgid "Set the compression ratio"
+msgstr "圧縮比率を設定"
+
+#: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
+msgid "Set the output amplification"
+msgstr "出力増幅率を設定"
+
+#: plugins/artscompressor.idl:47
+msgid "/Enhance/ArtsStereoCompressor"
+msgstr "/拡張/ArtsStereoCompressor"
+
+#: plugins/artscompressor.idl:48
+msgid "ArtsStereoCompressor compresses the sound."
+msgstr "ArtsStereoCompressor は音を圧縮します"
+
+#: plugins/artscompressor.idl:49
+msgid "Left audio input"
+msgstr "左オーディオ入力"
+
+#: plugins/artscompressor.idl:50
+msgid "Right audio input"
+msgstr "右オーディオ入力"
+
+#: plugins/artscompressor.idl:51
+msgid "Compressed left audio output"
+msgstr "圧縮された左オーディオ出力"
+
+#: plugins/artscompressor.idl:52
+msgid "Compressed right audio output"
+msgstr "圧縮された右オーディオ出力"
+
+#: plugins/bseadder.c:97 plugins/bsemult.c:60
+msgid "Audio Input 1"
+msgstr "オーディオ入力 1"
+
+#: plugins/bseadder.c:99 plugins/bsemult.c:62
+msgid "Audio Input 2"
+msgstr "オーディオ入力 2"
+
+#: plugins/bseadder.c:101 plugins/bsemult.c:68
+msgid "Audio Output"
+msgstr "オーディオ出力"
+
+#: plugins/bseatandistort.c:90
+#, fuzzy
+msgid "Audio Input Signal"
+msgstr "オーディオ入力信号"
+
+#: plugins/bseatandistort.c:92
+msgid "Distorted Audio Output"
+msgstr "歪みオーディオ出力"
+
+#: plugins/bsebalance.idl:27
+msgid "/Spatial/Balance"
+msgstr "/空間作用/バランス"
+
+#: plugins/bsebalance.idl:28
+msgid ""
+"BseBalance is a stereo panning module with two audio and two control inputs, "
+"each of which can be seperately level adjusted. The resulting output balance "
+"is controlled by a balance adjustment and the sum of the control inputs. To "
+"avoid aliasing artefacts for rapid balance changes, the control signal is "
+"preprocessed by a simple lowpass filter with adjustable cutoff frequency."
+msgstr ""
+"BseBalance は二つのオーディオ/コントロール入力(各々個別にレベル調整されます)"
+"に対するステレオパンモジュールです。結果出力バランスはバランス調整とコント"
+"ロール入力の合計でコントロールされます。高速なバランス変化に対するエイリアス"
+"アーチフェクトを避けるためにコントロール信号は周波数カットオフ調整付きの単純"
+"な低周波フィルタによって前処理されます。"
+
+#: plugins/bsebalance.idl:40
+msgid "Left audio output"
+msgstr "左オーディオ出力"
+
+#: plugins/bsebalance.idl:41
+msgid "Mix Out"
+msgstr "ミックス出力"
+
+#: plugins/bsebalance.idl:41
+msgid "Mixed audio output"
+msgstr "ミックスされたオーディオ出力"
+
+#: plugins/bsebalance.idl:42
+msgid "Right audio output"
+msgstr "右オーディオ出力"
+
+#: plugins/bsebalance.idl:53
+msgid "Output Panning"
+msgstr "出力パン"
+
+#: plugins/bsebalance.idl:54
+msgid "Adjust how much the control signals affect the output balance"
+msgstr "出力バランスに影響させるコントロール信号を調整"
+
+#: plugins/bsebalance.idl:55
+msgid "Lowpass [Hz]"
+msgstr "低周波数パス [Hz]"
+
+#: plugins/bsebalance.idl:55
+msgid "Lowpass filter frequency for the control signal"
+msgstr "コントロール信号の低周波数パスフィルタ周波数"
+
+#: plugins/bsebalance.idl:56
+msgid "Output Balance"
+msgstr "出力バランス"
+
+#: plugins/bsebalance.idl:56
+msgid "Adjust output balance between left and right"
+msgstr "左右の出力バランスを調整"
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Out"
+msgstr "モノ出力"
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Filtered Output"
+msgstr "モノフィルター出力"
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono In"
+msgstr "モノ入力"
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono Signal Input"
+msgstr "モノ信号入力"
+
+#: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
+msgid "Filter Choice"
+msgstr "フィルター選択"
+
+#: plugins/bseiirfilter.c:119
+msgid "Filter Algorithm"
+msgstr "フィルターアルゴリズム"
+
+#: plugins/bseiirfilter.c:125
+msgid "The type of filter to use"
+msgstr "使用するフィルターの種類"
+
+#: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
+msgid "Filter Specification"
+msgstr "フィルター仕様"
+
+#: plugins/bseiirfilter.c:131
+msgid "Order"
+msgstr "順番"
+
+#: plugins/bseiirfilter.c:131
+msgid "Order of Filter"
+msgstr "フィルターの順番"
+
+#: plugins/bseiirfilter.c:136
+msgid "Epsilon"
+msgstr "イプシロン"
+
+#: plugins/bseiirfilter.c:136
+msgid "Passband falloff at cutoff frequency"
+msgstr "カットオフ周波数でのパスバンドフォールオフ"
+
+#: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
+msgid "Cutoff Frequency (All Filters)"
+msgstr "カットオフ周波数 (すべてのフィルター)"
+
+#: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr "カットオフ周波数 2 (バンドパス/停止)"
+
+#: plugins/bseiirfilter.c:160
+msgid "Unfiltered Input"
+msgstr "未フィルターの入力"
+
+#: plugins/bseiirfilter.c:162
+msgid "Filtered Output"
+msgstr "フィルター済みの出力"
+
+#: plugins/bsemixer.c:109
+msgid "Sole Output"
+msgstr "単一出力"
+
+#: plugins/bsemixer.c:115
+#, c-format
+msgid "Channel%u"
+msgstr "チャネル%u"
+
+#: plugins/bsemixer.c:117
+#, c-format
+msgid "Channel%u [float]"
+msgstr "チャネル%u [浮動小数]"
+
+#: plugins/bsemixer.c:127
+#, c-format
+msgid "Channel%u [dB]"
+msgstr "チャネル%u [dB]"
+
+#: plugins/bsemixer.c:138
+#, c-format
+msgid "Channel%u [%%]"
+msgstr "チャネル%u [%%]"
+
+#: plugins/bsemixer.c:149
+#, c-format
+msgid "Audio In%u"
+msgstr "オーディオ入力%u"
+
+#: plugins/bsemixer.c:150
+#, c-format
+msgid "Input Channel %u"
+msgstr "入力チャネル %u"
+
+#: plugins/bsemult.c:64
+msgid "Audio In3"
+msgstr "オーディオ入力 3"
+
+#: plugins/bsemult.c:64
+msgid "Audio Input 3"
+msgstr "オーディオ入力 3"
+
+#: plugins/bsemult.c:66
+msgid "Audio In4"
+msgstr "オーディオ入力 4"
+
+#: plugins/bsemult.c:66
+msgid "Audio Input 4"
+msgstr "オーディオ入力 4"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Out"
+msgstr "ノイズ出力"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Output"
+msgstr "ノイズ出力"
+
+#: plugins/bsesequencer.c:107
+msgid "Frequency Signal"
+msgstr "周波数信号"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync"
+msgstr "ノート同期"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync Signal"
+msgstr "ノート同期信号"
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate In"
+msgstr "ゲート入力"
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate input (activates/deactivates envelope)"
+msgstr "ゲート入力 (活性/不活性エンベロープ)"
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger In"
+msgstr "再トリガー入力"
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger input (raising edge retriggers envelope)"
+msgstr "再トリガー入力 (レイズ端再トリガーエンベロープ)"
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Ctrl Out"
+msgstr "コントロール出力"
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Attack-Decay-Sustain-Release envelope output"
+msgstr "アタック-減衰-サスティン-リリースエンベロープ出力"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "Done Out"
+msgstr "完了出力"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "This signal goes high after the release phase has completed"
+msgstr "リリース位相完了後にこの信号が高となる"
+
+#: plugins/davbassfilter.idl:29
+msgid "/Filters/Bass Filter"
+msgstr "/フィルター/バスフィルター"
+
+#: plugins/davbassfilter.idl:30
+msgid ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgstr ""
+"DavBassFilter は gsyn v0.2 に含まれる VCF303 をベースにする低周波パスレゾナン"
+"ス TB-303 スタイルのフィルタです。フィルタアルゴリズムは Hal Chamberlin 著 "
+"\"Musical Applications of Microprocessors\" のものに部分的に基づいています。"
+
+#: plugins/davbassfilter.idl:35
+msgid "Filtered audio output"
+msgstr "フィルター済みオーディオ出力"
+
+#: plugins/davbassfilter.idl:37
+msgid "Cutoff [%]"
+msgstr "カットオフ [%]"
+
+#: plugins/davbassfilter.idl:37
+msgid "Set the cutoff frequency percentage"
+msgstr "カットオフ周波数比率を設定"
+
+#: plugins/davbassfilter.idl:38
+msgid "Resonance [%]"
+msgstr "レゾナンス [%]"
+
+#: plugins/davbassfilter.idl:38
+msgid "Set the amount of resonance in percent"
+msgstr "レゾナンス比率を設定"
+
+#: plugins/davbassfilter.idl:39
+msgid "Envelope Modulation [%]"
+msgstr "エンベロープ変調 [%]"
+
+#: plugins/davbassfilter.idl:39
+msgid "Set the envelope magnitude in percent"
+msgstr "エンベロープマグニチュードを設定"
+
+#: plugins/davbassfilter.idl:40
+msgid "Decay [%]"
+msgstr "減衰 [%]"
+
+#: plugins/davbassfilter.idl:40
+msgid "Set the decay length in percent"
+msgstr "減衰長を設定"
+
+#: plugins/davbassfilter.idl:41
+msgid "Trigger filter"
+msgstr "トリガーフィルター"
+
+#: plugins/davcanyondelay.c:116
+msgid "Left Audio Input"
+msgstr "左オーディオ入力"
+
+#: plugins/davcanyondelay.c:118
+msgid "Right Audio Input"
+msgstr "右オーディオ入力"
+
+#: plugins/davcanyondelay.c:120
+msgid "Left Audio Output"
+msgstr "左オーディオ出力"
+
+#: plugins/davcanyondelay.c:122
+msgid "Right Audio Output"
+msgstr "右オーディオ出力"
+
+#: plugins/davchorus.idl:29
+msgid "/Enhance/Chorus"
+msgstr "/拡張/コーラス"
+
+#: plugins/davchorus.idl:30
+msgid "DavChorus adds more depth to sounds"
+msgstr "DavChorus は音により深みを与えます"
+
+#: plugins/davchorus.idl:32
+msgid "Chorus audio output"
+msgstr "コーラスオーディオ出力"
+
+#: plugins/davchorus.idl:34
+msgid "Wet out [%]"
+msgstr "Wet 出力 [%]"
+
+#: plugins/davchorus.idl:34
+msgid "Set the amount of modified data to mix"
+msgstr "ミックスするために変更されるデータの総計を設定"
+
+#: plugins/davguitar.c:302
+msgid "Guitar Output"
+msgstr "ギター出力"
+
+#: plugins/davorgan.c:133
+msgid "Organ Output"
+msgstr "オルガン出力"
+
+#: plugins/davsyndrum.c:116
+msgid "Drum Frequency Input"
+msgstr "ドラム周波数入力"
+
+#: plugins/davsyndrum.c:118
+msgid "Ratio In"
+msgstr "比率入力"
+
+#: plugins/davsyndrum.c:118
+msgid "Frequency shift ratio (assumed 1.0 if not connected)"
+msgstr "周波数シフト比率 (接続していないなら 1.0)"
+
+#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr "トリガー入力"
+
+#: plugins/davsyndrum.c:120
+msgid "Hit the drum on raising edges"
+msgstr "レイズ端でドラムをヒット"
+
+#: plugins/davsyndrum.c:122
+msgid "SynDrum Output"
+msgstr "SynDrum 出力"
+
+#: plugins/davxtalstrings.c:141
+msgid "Pluck frequency input"
+msgstr "プラック周波数入力"
+
+#: plugins/davxtalstrings.c:143
+msgid "Pluck strings on raising edge"
+msgstr "レイズ端でストリングスをヒット"
+
+#: plugins/davxtalstrings.c:145
+msgid "XtalStrings Output"
+msgstr "XtalStrings 出力"
+
+#: plugins/evaluator/bseevaluator.idl:28
+msgid "/Misc/Evaluator"
+msgstr "/その他/評価器"
+
+#: plugins/evaluator/bseevaluator.idl:29
+msgid ""
+"BseEvaluator is a module which can compute arithmetic operations in a small "
+"language. The audio input signal is called input, the audio output signal is "
+"called output. Simple examples for programs would be \"output = input * 5\" "
+"or \"output = 2 * input + 1\"."
+msgstr ""
+"BseEvaluator は算術操作を計算する小さな言語のモジュールです。オーディオ入力信"
+"号は input と呼ばれ、オーディオ出力信号はoutput と呼ばれます。簡単なプログラ"
+"ムの例: \"output = input * 5\", \"output = 2 * input + 1\""
+
+#: plugins/evaluator/bseevaluator.idl:33
+msgid "Audio output"
+msgstr "オーディオ出力"
+
+#: plugins/evaluator/bseevaluator.idl:35
+msgid "Source code"
+msgstr "ソースコード"
+
+#: plugins/evaluator/bseevaluator.idl:35
+msgid "The source code"
+msgstr "ソースコード"
+
+#: plugins/evaluator/bseevaluator.idl:36
+msgid "Status"
+msgstr "ステータス"
+
+#: plugins/evaluator/bseevaluator.idl:36
+msgid "Status used to output error messages"
+msgstr "エラーメッセージを出力"
+
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Input"
+msgstr "左入力"
+
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Input"
+msgstr "右入力"
+
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Output"
+msgstr "左出力"
+
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Output"
+msgstr "右出力"
+
+#, fuzzy
+#~ msgid "Input Synths"
+#~ msgstr "入力"
+
+#~ msgid "Synthesis Network"
+#~ msgstr "シンセネットワーク"
+
+#~ msgid "The synthesis network to interface to"
+#~ msgstr "インターフェースするシンセネットワーク"
+
+#, fuzzy
+#~ msgid "Custom Synth Net"
+#~ msgstr "新しいカスタムシンセサイザ"
+
+#, fuzzy
+#~ msgid "Custom Wave"
+#~ msgstr "WAVE を読み込み"
+
+#~ msgid "Wave to play"
+#~ msgstr "演奏する波形"
+
+#~ msgid "Insert full notes"
+#~ msgstr "全ノートを挿入"
+
+#~ msgid "Quantize to full note boundaries"
+#~ msgstr "全ノート境界を量子化"
+
+#~ msgid "Question"
+#~ msgstr "質問"
+
+#~ msgid "Adjust pattern length"
+#~ msgstr "パターン長を調整"
+
+#~ msgid "Adjust right view boundary"
+#~ msgstr "右ビュー境界を調整"
+
+#~ msgid "Perform exponential frequency modulationinstead of linear"
+#~ msgstr "線形の代わりに指数関数的周波数変調を実行"
+
+#~ msgid "/Misc/Sniffer"
+#~ msgstr "/その他/スニファ"
+
+#~ msgid ""
+#~ "BseSniffer provides the neccessary data to implement client side signal "
+#~ "scopes."
+#~ msgstr ""
+#~ "BseSniffer でクライアント側信号スコープを実行するのに必要なデータを取得で"
+#~ "きます"
+
+#~ msgid "Snapshooting"
+#~ msgstr "スナップシュート"
+
+#~ msgid ""
+#~ "Multiply the two control inputs with each other, rather than weighting "
+#~ "them by balance"
+#~ msgstr ""
+#~ "バランスで重み付けするのではなく、二つのコントロール入力を互いに掛け合せ"
+
+#~ msgid "l6i"
+#~ msgstr "l6i"
+
+#~ msgid "l10i"
+#~ msgstr "l10i"
+
+#~ msgid "b12"
+#~ msgstr "b12"
+
+#~ msgid "l14i"
+#~ msgstr "l14i"
+
+#~ msgid "b14i"
+#~ msgstr "b14i"
