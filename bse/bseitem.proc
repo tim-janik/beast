@@ -479,6 +479,133 @@ METHOD (BseItem, ungroup-undo) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseItem, undo) {
+  HELP	= "Call the undo function of the project corresponding to this item if any.";
+  IN	= bse_param_spec_object ("item", NULL, NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  BseProject *project;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  project = bse_item_get_project (self);
+  if (project)
+    bse_item_exec_void (project, "undo");
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, redo) {
+  HELP	= "Call the redo function of the project corresponding to this item if any.";
+  IN	= bse_param_spec_object ("item", NULL, NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  BseProject *project;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  project = bse_item_get_project (self);
+  if (project)
+    bse_item_exec_void (project, "redo");
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, clear-undo) {
+  HELP	= "Call the clear-undo function of the project corresponding to this item if any.";
+  IN	= bse_param_spec_object ("item", NULL, NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  BseProject *project;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  project = bse_item_get_project (self);
+  if (project)
+    bse_item_exec_void (project, "clear-undo");
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, undo-depth) {
+  HELP  = "Call the undo-depth function of the project corresponding to this item if any.";
+  IN    = bse_param_spec_object ("item", NULL, NULL,
+                                 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("undo_depth", NULL, "Number of times undo can be called",
+                         0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  gint depth = 0;
+  BseProject *project;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  project = bse_item_get_project (self);
+  if (project)
+    bse_item_exec_void (project, "undo-depth", &depth);
+
+  /* set output parameters */
+  sfi_value_set_int (out_values++, depth);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, redo-depth) {
+  HELP  = "Call the redo-depth function of the project corresponding to this item if any.";
+  IN    = bse_param_spec_object ("item", NULL, NULL,
+                                 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("redo_depth", NULL, "Number of times redo can be called",
+                         0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  gint depth = 0;
+  BseProject *project;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  project = bse_item_get_project (self);
+  if (project)
+    bse_item_exec_void (project, "redo-depth", &depth);
+
+  /* set output parameters */
+  sfi_value_set_int (out_values++, depth);
+
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseItem, fixme-set-parasite) {
   IN    = bse_param_spec_object ("item", NULL, NULL,
 				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);

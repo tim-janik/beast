@@ -743,7 +743,7 @@ METHOD (BseProject, undo-depth) {
 }
 
 METHOD (BseProject, undo) {
-  HELP  = "Undo a previous operaiton in a project";
+  HELP  = "Undo a previous operation in a project";
   IN    = bse_param_spec_object ("project", "Project", "The project",
                                  BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,

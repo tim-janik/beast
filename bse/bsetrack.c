@@ -282,7 +282,7 @@ track_uncross_part (BseItem *owner,
         guint tick = self->entries_SL[i].tick;
 	XREF_DEBUG ("uncrossing[start]: %p %p (%d)", self, part, tick);
         /* delete track via procedure so deletion is recorded to undo */
-        bse_item_exec_void_proc (owner, "remove-tick", tick);
+        bse_item_exec_void (owner, "remove-tick", tick);
 	XREF_DEBUG ("uncrossing[done]: %p %p (%d)", self, part, tick);
 	return;
       }

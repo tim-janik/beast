@@ -687,9 +687,9 @@ bse_item_exec (gpointer     _item,
 }
 
 BseErrorType
-bse_item_exec_void_proc (gpointer     _item,
-                         const gchar *procedure,
-                         ...)
+bse_item_exec_void (gpointer     _item,
+                    const gchar *procedure,
+                    ...)
 {
   BseItem *item = _item;
   va_list var_args;

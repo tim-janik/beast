@@ -116,7 +116,7 @@ void            bse_item_set_parent	     (BseItem         *item,
 BseErrorType    bse_item_exec                (gpointer	       item,
 					      const gchar     *procedure,
 					      ...);
-BseErrorType    bse_item_exec_void_proc      (gpointer	       item,
+BseErrorType    bse_item_exec_void           (gpointer	       item,
 					      const gchar     *procedure,
 					      ...); /* ignore return values */
 /* undo-aware functions */

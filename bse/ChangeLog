@@ -1,3 +1,10 @@
+Tue Jun 10 22:08:18 2003  Tim Janik  <timj@gtk.org>
+
+	* bseitem.c: renamed bse_item_exec_void_proc() to bse_item_exec_void().
+
+	* bseitem.proc: added undo, redo, clear-undo, undo-depth and redo-depth
+	procedures.
+
 Mon Jun  9 18:08:27 2003  Tim Janik  <timj@gtk.org>
 
 	* bsepart.[hcp]*: allocate part ids in LIFO scheme to provide correct
