@@ -654,35 +654,39 @@ bst_print_blurb (void)
 void
 beast_show_about_box (void)
 {
+  /* contributor/author names do not get i18n markup. instead, their names are to be
+   * written using utf-8 encoding, where non-ascii characters are entered using
+   * hexadecimal escape sequences. for instance: "Ville P\xc3\xa4tsi"
+   */
   const gchar *contributors[] = {
     /* graphics */
-    _("Cyria Arweiler"),
-    _("Tuomas Kuosmanen"),
-    _("Jakub Steiner"),
-    _("Ville Pätsi"),
+    "Cyria Arweiler",
+    "Tuomas Kuosmanen",
+    "Jakub Steiner",
+    "Ville P\xc3\xa4tsi",
     /* general code and fixes */
-    _("Christian Neumair"),
-    _("Sam Hocevar"),
-    _("Alper Ersoy"),
-    _("Ben Collver"),
-    _("Tim Janik"),
-    _("Stefan Westerfeld"),
+    "Christian Neumair",
+    "Sam Hocevar",
+    "Alper Ersoy",
+    "Ben Collver",
+    "Tim Janik",
+    "Stefan Westerfeld",
     /* plugins */
-    _("David A. Bartold"),
-    //_("Tim Janik"),
-    //_("Stefan Westerfeld"),
+    "David A. Bartold",
+    //"Tim Janik",
+    //"Stefan Westerfeld",
     /* languages */
-    _("Metin Amiroff"),
-    _("Alexandre Prokoudine"),
-    _("Danilo Segan"),
-    _("Christian Rose"),
-    //_("Christian Neumair"),
-    _("Miloslav Trmac"),
-    _("Duarte Loreto"),
-    _("Vincent van Adrighem"),
-    _("Danilo Segan"),
-    _("Xavier Conde Rueda"),
-    _("Kostas Papadimas"),
+    "Metin Amiroff",
+    "Alexandre Prokoudine",
+    "Danilo Segan",
+    "Christian Rose",
+    //"Christian Neumair",
+    "Miloslav Trmac",
+    "Duarte Loreto",
+    "Vincent van Adrighem",
+    "Danilo Segan",
+    "Xavier Conde Rueda",
+    "Kostas Papadimas",
     NULL
   };
   if (!GTK_WIDGET_VISIBLE (beast_splash))
