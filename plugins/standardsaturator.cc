@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "standardsaturator.gen-idl.h"
+#include "standardsaturator.genidl.hh"
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
 

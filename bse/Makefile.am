@@ -8,7 +8,7 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_srcdir) for <bse/bsedefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.h" in .gen-proc.c
-# need -I. (builddir) for "bsecore.gen-idl.h" in bsecore.cc
+# need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
@@ -102,12 +102,12 @@ bse_idl_sources = $(strip \
 	bseprobe.idl		\
 	bsesummation.idl	\
 )
-$(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
-$(srcdir)/bsebusmodule.cc: bsebusmodule.gen-idl.h
-$(srcdir)/bsecxxplugin.hh: bsecore.gen-idl.h
-$(srcdir)/bseprobe.cc: bseprobe.gen-idl.h
-$(srcdir)/bsesummation.cc: bsesummation.gen-idl.h
-idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
+$(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
+$(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
+$(srcdir)/bsecxxplugin.hh: bsecore.genidl.hh
+$(srcdir)/bseprobe.cc: bseprobe.genidl.hh
+$(srcdir)/bsesummation.cc: bsesummation.genidl.hh
+idl_built_sources += $(bse_idl_sources:.idl=.genidl.hh)
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
 	bsebusmodule.cc		\
@@ -210,7 +210,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 # setup sources, their dependancies and commands
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
-libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.gen-idl.h
+libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.genidl.hh
 libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
@@ -259,7 +259,7 @@ $(srcdir)/bsegentypes.c: @DVLBUILD@ mktypes.pl bsecore.idl $(SFIDL) # $(bse_c_so
 	) > xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
-bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.gen-idl.h
+bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.genidl.hh
 	cd . \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-bgcc \
 	&& cp xgen-bgcc $(@F) \
@@ -303,7 +303,7 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 %.gen-proc.c: %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 # setup generation of C++ objects from idl files
-%.gen-idl.h: $(srcdir)/%.idl $(SFIDL)
+%.genidl.hh: $(srcdir)/%.idl $(SFIDL)
 	$(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 

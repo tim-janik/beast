@@ -6,4 +6,4 @@ _libs
 Makefile
 Makefile.in
 *.enums
-*.gen-idl.h
+*.genidl.hh

@@ -1,6 +1,6 @@
 #include <bse/bsecxxbase.hh>
 #include <bse/bsemain.h>
-#include <bse/bseamplifier.gen-idl.h>
+#include <bse/bseamplifier.genidl.hh>
 
 namespace {
 using namespace Bse;

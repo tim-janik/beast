@@ -22,7 +22,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "davbassfilter.gen-idl.h"
+#include "davbassfilter.genidl.hh"
 
 namespace Bse {
 namespace Dav {

@@ -25,7 +25,7 @@ bseprocidl
 bsehack.idl
 
 *.gen-proc.c
-*.gen-idl.h
+*.genidl.hh
 bseinfo
 bsemarshal.c
 bsemarshal.h

@@ -77,7 +77,7 @@ $(srcdir)/perftest.cc: bsecxxapi.h
 noinst_PROGRAMS = $(TESTS)
 
 # test plugin: setup generation of C++ plugins from idl files
-%.gen-idl.h: %.idl $(BSEPGEN) $(SFIDL)
+%.genidl.hh: %.idl $(BSEPGEN) $(SFIDL)
 	$(SFIDL) --core-cxx $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 # test plugin: library
@@ -91,10 +91,10 @@ lib_LTLIBRARIES = testplugin.la
 # Prevent those libs from being installed
 install-libLTLIBRARIES:
 
-$(srcdir)/testplugin.cc: testplugin.gen-idl.h
+$(srcdir)/testplugin.cc: testplugin.genidl.hh
 
-CLEANFILES += testplugin.gen-idl.h
+CLEANFILES += testplugin.genidl.hh
 EXTRA_DIST += $(strip \
-	testplugin.gen-idl.h 	\
+	testplugin.genidl.hh 	\
 	$(EXTRA_HEADERS)	\
 )

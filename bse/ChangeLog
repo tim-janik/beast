@@ -1,3 +1,8 @@
+Mon Mar  7 08:35:41 2005  Tim Janik  <timj@gtk.org>
+
+	* renamed every occourance of *.gen-idl.h (C++ headers generated from 
+	idl files) to *.genidl.hh.
+
 Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
 
         * removed obsolete .h C++ headers.
@@ -1176,16 +1181,16 @@ Mon Sep 20 00:44:12 2004  Tim Janik  <timj@gtk.org>
 	* bsesource.[hc]: added property_updated() class function. fixed
 	automation property maintenance.
 
-	* Makefile.am: fixed dependencies, install bsecore.gen-idl.h.
+	* Makefile.am: fixed dependencies, install bsecore.genidl.hh.
 
-	* bsecxxmodule.cc: include bsecore.gen-idl.h through bsecxxplugin.h,
-	so bsecore.gen-idl.h is publically available.
+	* bsecxxmodule.cc: include bsecore.genidl.hh through bsecxxplugin.h,
+	so bsecore.genidl.hh is publically available.
 
 	* bsecore.idl: use bse_intern_path_user_data() instead of macros from
 	topconfig.h.
 
 	* bseutils.[hc]: provide bse_intern_path_user_data() 
-	for bsecore.gen-idl.h.
+	for bsecore.genidl.hh.
 
 	* bsecxxbase.[hc]*: only flag writable properties as G_PARAM_CONSTRUCT.
 	added set_accessors() to setup per inheritance level property
@@ -1199,10 +1204,10 @@ Mon Sep 20 00:44:12 2004  Tim Janik  <timj@gtk.org>
 	record tick_stamp  of last module update.
 
 	* bsecxxplugin.h: removed function definition macros. instead, use
-	trampoline generation templates. include <bse/bsecore.gen-idl.h>
+	trampoline generation templates. include <bse/bsecore.genidl.hh>
 	after defining all required macros, implement get_candidate()
 	trampoline template which depends on class PropertyCandidates,
-	supplied by bsecore.gen-idl.h.
+	supplied by bsecore.genidl.hh.
 
 	* bsecxxutils.[hc]*: comment updates. removed function definition
 	macros which are replaced by trampoline templates.

@@ -298,7 +298,7 @@ public:
 } // Bse
 
 /* include generated C++ core types */
-#include <bse/bsecore.gen-idl.h>        /* includes bsecxxplugin.hh itself */
+#include <bse/bsecore.genidl.hh>        /* includes bsecxxplugin.hh itself */
 
 /* define types dependant on bsecore.idl */
 namespace Bse {

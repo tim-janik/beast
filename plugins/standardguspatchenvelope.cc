@@ -34,7 +34,7 @@
 
 #include <bse/bsecxxplugin.hh>
 #include <bse/bsewave.h>
-#include "standardguspatchenvelope.gen-idl.h"
+#include "standardguspatchenvelope.genidl.hh"
 #include <bse/gslwavechunk.h>
 #include <bse/bsemathsignal.h>
 

@@ -2,6 +2,6 @@ Makefile.in
 Makefile
 bsecxxapi.h
 bsecxxapi.cc
-*.gen-idl.h
+*.genidl.hh
 cxxbinding
 perftest

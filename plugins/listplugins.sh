@@ -27,8 +27,8 @@ for file in "$@" ; do
 	echo "$_name""_la_SOURCES = $file.cc"
 	echo "$_name""_la_LDFLAGS =" '-module $(plugin_ldflags)'
 	echo "$_name""_la_LIBADD  =" '$(plugin_libs)'
-	echo '$(srcdir)/'"$file.cc: $file.gen-idl.h"
-	echo "plugins_built_sources += $file.gen-idl.h"
+	echo '$(srcdir)/'"$file.cc: $file.genidl.hh"
+	echo "plugins_built_sources += $file.genidl.hh"
 	echo "plugin_LTLIBRARIES    += $file.la"
 done
 #

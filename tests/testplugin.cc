@@ -17,7 +17,7 @@
  *
  */
 #include "bse/bsecxxmodule.hh"
-#include "testplugin.gen-idl.h"
+#include "testplugin.genidl.hh"
 #include <stdexcept>
 #include <math.h>
 #include <string.h>

@@ -108,8 +108,8 @@ plugin_LTLIBRARIES += davcanyondelay.la
 davchorus_la_SOURCES = davchorus.cc
 davchorus_la_LDFLAGS = -module $(plugin_ldflags)
 davchorus_la_LIBADD  = $(plugin_libs)
-$(srcdir)/davchorus.cc: davchorus.gen-idl.h
-plugins_built_sources += davchorus.gen-idl.h
+$(srcdir)/davchorus.cc: davchorus.genidl.hh
+plugins_built_sources += davchorus.genidl.hh
 plugin_LTLIBRARIES    += davchorus.la
 
 ##
@@ -118,8 +118,8 @@ plugin_LTLIBRARIES    += davchorus.la
 bsebalance_la_SOURCES = bsebalance.cc
 bsebalance_la_LDFLAGS = -module $(plugin_ldflags)
 bsebalance_la_LIBADD  = $(plugin_libs)
-$(srcdir)/bsebalance.cc: bsebalance.gen-idl.h
-plugins_built_sources += bsebalance.gen-idl.h
+$(srcdir)/bsebalance.cc: bsebalance.genidl.hh
+plugins_built_sources += bsebalance.genidl.hh
 plugin_LTLIBRARIES    += bsebalance.la
 
 ##
@@ -128,8 +128,8 @@ plugin_LTLIBRARIES    += bsebalance.la
 artscompressor_la_SOURCES = artscompressor.cc
 artscompressor_la_LDFLAGS = -module $(plugin_ldflags)
 artscompressor_la_LIBADD  = $(plugin_libs)
-$(srcdir)/artscompressor.cc: artscompressor.gen-idl.h
-plugins_built_sources += artscompressor.gen-idl.h
+$(srcdir)/artscompressor.cc: artscompressor.genidl.hh
+plugins_built_sources += artscompressor.genidl.hh
 plugin_LTLIBRARIES    += artscompressor.la
 
 ##
@@ -138,8 +138,8 @@ plugin_LTLIBRARIES    += artscompressor.la
 davbassfilter_la_SOURCES = davbassfilter.cc
 davbassfilter_la_LDFLAGS = -module $(plugin_ldflags)
 davbassfilter_la_LIBADD  = $(plugin_libs)
-$(srcdir)/davbassfilter.cc: davbassfilter.gen-idl.h
-plugins_built_sources += davbassfilter.gen-idl.h
+$(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh
+plugins_built_sources += davbassfilter.genidl.hh
 plugin_LTLIBRARIES    += davbassfilter.la
 
 ##
@@ -148,8 +148,8 @@ plugin_LTLIBRARIES    += davbassfilter.la
 bsecontribsampleandhold_la_SOURCES = bsecontribsampleandhold.cc
 bsecontribsampleandhold_la_LDFLAGS = -module $(plugin_ldflags)
 bsecontribsampleandhold_la_LIBADD  = $(plugin_libs)
-$(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.gen-idl.h
-plugins_built_sources += bsecontribsampleandhold.gen-idl.h
+$(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh
+plugins_built_sources += bsecontribsampleandhold.genidl.hh
 plugin_LTLIBRARIES    += bsecontribsampleandhold.la
 
 ##
@@ -158,8 +158,8 @@ plugin_LTLIBRARIES    += bsecontribsampleandhold.la
 bsenoise_la_SOURCES = bsenoise.cc
 bsenoise_la_LDFLAGS = -module $(plugin_ldflags)
 bsenoise_la_LIBADD  = $(plugin_libs)
-$(srcdir)/bsenoise.cc: bsenoise.gen-idl.h
-plugins_built_sources += bsenoise.gen-idl.h
+$(srcdir)/bsenoise.cc: bsenoise.genidl.hh
+plugins_built_sources += bsenoise.genidl.hh
 plugin_LTLIBRARIES    += bsenoise.la
 
 ##
@@ -168,8 +168,8 @@ plugin_LTLIBRARIES    += bsenoise.la
 standardsaturator_la_SOURCES = standardsaturator.cc
 standardsaturator_la_LDFLAGS = -module $(plugin_ldflags)
 standardsaturator_la_LIBADD  = $(plugin_libs)
-$(srcdir)/standardsaturator.cc: standardsaturator.gen-idl.h
-plugins_built_sources += standardsaturator.gen-idl.h
+$(srcdir)/standardsaturator.cc: standardsaturator.genidl.hh
+plugins_built_sources += standardsaturator.genidl.hh
 plugin_LTLIBRARIES    += standardsaturator.la
 
 ##
@@ -178,8 +178,8 @@ plugin_LTLIBRARIES    += standardsaturator.la
 standardguspatchenvelope_la_SOURCES = standardguspatchenvelope.cc
 standardguspatchenvelope_la_LDFLAGS = -module $(plugin_ldflags)
 standardguspatchenvelope_la_LIBADD  = $(plugin_libs)
-$(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.gen-idl.h
-plugins_built_sources += standardguspatchenvelope.gen-idl.h
+$(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.genidl.hh
+plugins_built_sources += standardguspatchenvelope.genidl.hh
 plugin_LTLIBRARIES    += standardguspatchenvelope.la
 
 ## Generated data ends here

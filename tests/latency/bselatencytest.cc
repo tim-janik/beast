@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "bselatencytest.gen-idl.h"
+#include "bselatencytest.genidl.hh"
 #include <sys/time.h>
 #include <string>
 #include <errno.h>

@@ -28,7 +28,7 @@ EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
-%.gen-idl.h: %.idl $(SFIDL)
+%.genidl.hh: %.idl $(SFIDL)
 	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 plugins_built_sources =
@@ -67,8 +67,8 @@ include Makefile.plugins
 ##foo_la_SOURCES         = foo.cc
 ##foo_la_LDFLAGS         = -module $(plugin_ldflags)
 ##foo_la_LIBADD          = $(plugin_libs)
-##$(srcdir)/foo.cc:        foo.gen-idl.h
-##plugins_built_sources += foo.gen-idl.h
+##$(srcdir)/foo.cc:        foo.genidl.hh
+##plugins_built_sources += foo.genidl.hh
 ##plugin_LTLIBRARIES    += foo.la
 #
 plugin_ldflags = -avoid-version

@@ -13,7 +13,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 BSESH     = $(top_builddir)/shell/bsesh-$(BIN_VERSION)
 
 # IDL generation rule for plugins
-%.gen-idl.h: %.idl $(BSEPGEN) $(SFIDL)
+%.genidl.hh: %.idl $(BSEPGEN) $(SFIDL)
 	$(SFIDL) $(SFIDL_INC) --plugin --macro $(<F) $< > $@ || (rm $@ ; exit 1 )
 
 #
@@ -25,8 +25,8 @@ bselatencytest_la_LDFLAGS = -module -avoid-version
 bselatencytest_la_LIBADD  = $(BSE_LIBS) -lm
 EXTRA_HEADERS += bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.idl
-$(srcdir)/bselatencytest.cc: bselatencytest.gen-idl.h
-CLEANFILES += bselatencytest.gen-idl.h
+$(srcdir)/bselatencytest.cc: bselatencytest.genidl.hh
+CLEANFILES += bselatencytest.genidl.hh
 
 # libraries to build
 lib_LTLIBRARIES = bselatencytest.la

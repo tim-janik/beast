@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-#include "artscompressor.gen-idl.h"
+#include "artscompressor.genidl.hh"
 
 #include <bse/bsemath.h>
 #include <string.h>
