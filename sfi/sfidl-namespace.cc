@@ -85,16 +85,16 @@ NamespaceHelper::setFromSymbol(string symbol)
   list<string>::iterator ni,si;
   ni = currentNamespace.begin();
   si = symlist.begin();
-  long wrong = currentNamespace.size();
   while (ni != currentNamespace.end() && si != symlist.end() && *ni == *si)
     {
       ni++;
       si++;
-      wrong--;
     }
-  while (wrong--)
+  /* close unwanted namespaces */
+  reverse (ni, currentNamespace.end()); /* close inner namespaces first */
+  while (ni != currentNamespace.end())
     {
-      fprintf (out,"}\n"); // FIXME: should print out: // old-namespace
+      fprintf (out,"} // %s\n", (*ni++).c_str());
     }
   
   /* enter new components at the end */

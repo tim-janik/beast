@@ -715,6 +715,14 @@ GTokenType Parser::parseNamespace()
 	      parse_or_return (';');
 	    }
 	    break;
+	  case TOKEN_NAMESPACE:
+	    {
+	      parse_or_return (TOKEN_NAMESPACE);
+	      GTokenType expected_token = parseNamespace ();
+	      if (expected_token != G_TOKEN_NONE)
+		return expected_token;
+	    }
+	    break;
 	  default:
 	    ready = true;
 	}

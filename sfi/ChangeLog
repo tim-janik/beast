@@ -1,3 +1,11 @@
+Sun Jan 25 21:13:16 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-namespace.cc: Add closing comment when closing namespaces.
+	
+	* sfidl-parser.cc: Support namespaces in namespaces. I needed this
+	for testing the closing comments, but it might be a useful feature
+	anyway...
+
 Sun Jan 25 19:42:31 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.cc sfidl-generator.cc sfidl-parser.cc: Put fully qualified

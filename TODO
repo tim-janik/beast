@@ -289,7 +289,6 @@ Effects:
 
 sfidl:
   - stefan: can we optimize cxx_value_get_sequence() returns?
-  - add comment for closing namespaces in namespacehelper
   - handle Procedure {} namesace in namespacehelper
   - rename nspace.printableForm() to something that expresses namespace relativity
 90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
@@ -346,7 +345,7 @@ sfidl:
     - createTypeCode refactoring
       funcFromValue, funcToValue,
       codeVCallArgs
-    - reenable support for nested namespaces: namespace A { namespace B { }; };
+    - should we have toplevel (unnamespaced) symbols?
     - should we have a "using Bse::Standard" (as opposed to "using namespace Bse")?
 
 bseprocidl:
