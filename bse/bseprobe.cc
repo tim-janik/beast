@@ -294,15 +294,15 @@ void
 source_mass_request::exec (const ProbeRequestSeq &cprseq)
 {
   struct Sub {
-    static int
-    cmp_probe_requests1 (const ProbeRequestHandle &h1,
-                         const ProbeRequestHandle &h2)
+    static bool
+    probe_requests_lesser (const ProbeRequestHandle &h1,
+                           const ProbeRequestHandle &h2)
     {
-      return h2->source - h1->source;
+      return h2->source < h1->source;
     }
   };
   ProbeRequestSeq prs (cprseq);
-  stable_sort (prs.begin(), prs.end(), Sub::cmp_probe_requests1);
+  stable_sort (prs.begin(), prs.end(), Sub::probe_requests_lesser);
   BseSource *current = NULL;
   const ProbeFeatures **channel_features = NULL;
   for (ProbeRequestSeq::iterator it = prs.begin(); it != prs.end(); it++)
