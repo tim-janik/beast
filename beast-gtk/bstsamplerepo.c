@@ -178,7 +178,8 @@ bst_sample_repo_init (void)
   GSList *slist, *sample_names = NULL;
   GPatternSpec *pspec;
 
-  BST_DEBUG (SAMPLES, g_message ("Scanning sample repositories..."));
+  BST_IF_DEBUG (SAMPLES)
+    g_message ("Scanning sample repositories...");
 
   pspec = g_pattern_spec_new ("*.bse");
   sample_names = list_files_rec (sample_names, BST_DATA_DIR, pspec);
@@ -215,28 +216,28 @@ bst_sample_repo_init (void)
 	  close (fd);
 	}
 
-      BST_DEBUG (SAMPLES, {
+      BST_IF_DEBUG (SAMPLES)
 	if (!recognized)
 	  g_print ("failed to open \"%s\":: %s\n", file_name, g_strerror (errno));
-      });
       g_free (file_name);
     }
   g_scanner_destroy (scanner);
   g_slist_free (sample_names);
 
 
-  BST_DEBUG (SAMPLES, {
-    GList *free_list = bst_sample_repo_list_sample_locs ();
-    GList *list;
-    
-    for (list = free_list; list; list = list->next)
-      {
-	BstSampleLoc *loc = list->data;
-	
-	g_print ("%s:: %s\n", loc->repo->name, loc->name);
-      }
-    g_list_free (free_list);
-  });
+  BST_IF_DEBUG (SAMPLES)
+    {
+      GList *free_list = bst_sample_repo_list_sample_locs ();
+      GList *list;
+      
+      for (list = free_list; list; list = list->next)
+	{
+	  BstSampleLoc *loc = list->data;
+	  
+	  g_print ("%s:: %s\n", loc->repo->name, loc->name);
+	}
+      g_list_free (free_list);
+    }
 }
 
 /* --- directory scanning --- */

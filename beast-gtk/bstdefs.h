@@ -106,12 +106,9 @@ typedef enum                    /* <skip> */
 } BstDebugFlags;
 extern BstDebugFlags bst_debug_flags;
 #ifdef G_ENABLE_DEBUG
-#define BST_DEBUG(type, code)   G_STMT_START { \
-  if (bst_debug_flags & BST_DEBUG_##type) \
-    { code ; } \
-} G_STMT_END
+#  define BST_IF_DEBUG(type)	if (!(bst_debug_flags & BST_DEBUG_ ## type)) { } else
 #else  /* !G_ENABLE_DEBUG */
-#define BST_DEBUG(type, code)   /* do nothing */
+#  define BST_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
 
 

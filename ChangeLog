@@ -1,3 +1,15 @@
+Thu Dec 30 05:33:54 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdefs.h:
+	* beast-gtk/bstmain.c:
+	* beast-gtk/bstsamplerepo.c:
+	cleaned up debugging code, s/BST_DEBUG/BST_IF_DEBUG()/, according
+	to the BSE_IF_DEBUG() scheme.
+
+	* beast-gtk/bstmain.c: clean up the PCM devices correctly.
+	feature BST_DEBUG, BST_NO_DEBUG, --bst-debug and --bst-no-debug
+	besides their "beast" variants.
+
 Thu Dec 30 04:59:54 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparamview.c (bst_param_view_rebuild): work around a size

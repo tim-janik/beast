@@ -127,8 +127,8 @@ main (int   argc,
     {
       BseErrorType error;
 
-      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceAlsa), NULL);
-      error = bse_pcm_device_update_caps (pdev); error |= 1; /* FIXME: DEBUG */
+      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceAlsa), NULL); /* FIXME: TYPE_ID */
+      error = bse_pcm_device_update_caps (pdev);
       if (error && error != BSE_ERROR_DEVICE_BUSY)
 	{
 	  bse_object_unref (BSE_OBJECT (pdev));
@@ -139,7 +139,7 @@ main (int   argc,
     {
       BseErrorType error;
 
-      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL);
+      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL); /* FIXME: TYPE_ID */
       error = bse_pcm_device_update_caps (pdev);
       if (error && error != BSE_ERROR_DEVICE_BUSY)
 	{
@@ -150,6 +150,7 @@ main (int   argc,
   if (!pdev)
     g_error ("No PCM device driver known");
   bse_heart_register_device ("Master", pdev);
+  bse_object_unref (BSE_OBJECT (pdev));
   bse_heart_set_default_odevice ("Master");
   bse_heart_set_default_idevice ("Master");
 
@@ -216,14 +217,11 @@ main (int   argc,
     ;
   
   /* remove pcm devices */
-  bse_heart_unregister_device (pdev);
+  bse_heart_unregister_all_devices ();
 
   /* perform necessary cleanup cycles */
   while (g_main_iteration (FALSE))
     ;
-  
-  BSE_IF_DEBUG (CHUNKS)
-    bse_chunk_debug ();
   
   return 0;
 }
@@ -240,7 +238,13 @@ bst_parse_args (int    *argc_p,
   envar = getenv ("BEAST_DEBUG");
   if (envar)
     bst_debug_flags |= g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
+  envar = getenv ("BST_DEBUG");
+  if (envar)
+    bst_debug_flags |= g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
   envar = getenv ("BEAST_NO_DEBUG");
+  if (envar)
+    bst_debug_flags &= ~g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
+  envar = getenv ("BST_NO_DEBUG");
   if (envar)
     bst_debug_flags &= ~g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
   
@@ -263,10 +267,44 @@ bst_parse_args (int    *argc_p,
 	    }
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--bst-debug", argv[i]) == 0 ||
+	       strncmp ("--bst-debug=", argv[i], 12) == 0)
+	{
+	  gchar *equal = argv[i] + 11;
+	  
+	  if (*equal == '=')
+	    bst_debug_flags |= g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
+	  else if (i + 1 < argc)
+	    {
+	      bst_debug_flags |= g_parse_debug_string (argv[i + 1],
+						       bst_debug_keys,
+						       bst_n_debug_keys);
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
+	}
       else if (strcmp ("--beast-no-debug", argv[i]) == 0 ||
 	       strncmp ("--beast-no-debug=", argv[i], 17) == 0)
 	{
 	  gchar *equal = argv[i] + 16;
+	  
+	  if (*equal == '=')
+	    bst_debug_flags &= ~g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
+	  else if (i + 1 < argc)
+	    {
+	      bst_debug_flags &= ~g_parse_debug_string (argv[i + 1],
+							bst_debug_keys,
+							bst_n_debug_keys);
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bst-no-debug", argv[i]) == 0 ||
+	       strncmp ("--bst-no-debug=", argv[i], 15) == 0)
+	{
+	  gchar *equal = argv[i] + 14;
 	  
 	  if (*equal == '=')
 	    bst_debug_flags &= ~g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
@@ -316,10 +354,9 @@ bst_key_table_from_xkb (const gchar *display)
     }
   
   bst_xkb_parse_symbol (name, &encoding, &layout, &model, &variant);
-  BST_DEBUG (KEYTABLE, {
+  BST_IF_DEBUG (KEYTABLE)
     g_message ("keytable %s: encoding(%s) layout(%s) model(%s) variant(%s)",
 	       name, encoding, layout, model, variant);
-  });
   g_free (name);
   
   /* strip number of keys (if present) */
@@ -369,16 +406,14 @@ bst_key_table_from_xkb (const gchar *display)
       if (!patch)
 	{
 	  patch = bst_key_table_patch_find (name);
-	  BST_DEBUG (KEYTABLE, {
+	  BST_IF_DEBUG (KEYTABLE)
 	    g_message ("Guessing keytable, %s \"%s\"",
 		       patch ? "found" : "failed to get",
 		       name);
-	  });
 	}
       else
-	BST_DEBUG (KEYTABLE, {
+	BST_IF_DEBUG (KEYTABLE)
 	  g_message ("Guessing keytable, discarding \"%s\"", name);
-	});
       g_free (name);
     }
   g_slist_free (name_list);
@@ -386,9 +421,8 @@ bst_key_table_from_xkb (const gchar *display)
   if (!patch)
     {
       name = BST_DFL_KEYTABLE;	/* default keyboard */
-      BST_DEBUG (KEYTABLE, {
+      BST_IF_DEBUG (KEYTABLE)
 	g_message ("Guessing keytable failed, reverting to \"%s\"", name);
-      });
       patch = bst_key_table_patch_find (name);
     }
   
