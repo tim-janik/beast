@@ -29,7 +29,6 @@
 #include <errno.h>
 
 
-#define DEBUG        sfi_debug_keyfunc ("engine")
 #define JOB_DEBUG    sfi_debug_keyfunc ("job")
 #define TJOB_DEBUG   sfi_debug_keyfunc ("tjob")
 
@@ -811,7 +810,7 @@ master_process_locked_node (EngineNode *node,
 	  /* suspended node processing behaviour */
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	    if (node->module.ostreams[i].connected)
-	      node->module.ostreams[i].values = gsl_engine_const_values (0.0);
+	      node->module.ostreams[i].values = (gfloat*) gsl_engine_master_zero_block;
           node->needs_reset = TRUE;
 	}
       else
@@ -843,7 +842,6 @@ master_process_flow (void)
   
   g_assert (gsl_fpu_okround () == TRUE);
   
-  DEBUG ("process_flow");
   if (master_schedule)
     {
       EngineNode *node;
@@ -919,7 +917,6 @@ master_reschedule_flow (void)
   
   g_return_if_fail (master_need_reflow == TRUE);
   
-  DEBUG ("flow_reschedule");
   if (!master_schedule)
     master_schedule = _engine_schedule_new ();
   else
@@ -980,10 +977,6 @@ _engine_master_prepare (GslEngineLoop *loop)
   if (need_dispatch)
     loop->timeout = 0;
   
-  DEBUG ("PREPARE: need_dispatch=%u timeout=%6ld n_fds=%u",
-	 need_dispatch,
-	 loop->timeout, loop->n_fds);
-  
   return need_dispatch;
 }
 
@@ -1011,8 +1004,6 @@ _engine_master_check (const GslEngineLoop *loop)
       master_poll_check (&dummy, TRUE);
       need_dispatch = master_need_process;
     }
-  
-  DEBUG ("CHECK: need_dispatch=%u", need_dispatch);
   
   return need_dispatch;
 }
