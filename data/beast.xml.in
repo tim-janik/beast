@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="audio/x-bse">
+    <glob pattern="*.bse"/>
+    <magic priority="80">
+      <match type="string" value="; BseProject" offset="0:64"/>
+      <match type="string" value="(bse-version " offset="0:64"/>
+    </magic>
+    <_comment>BSE Synthesis File</_comment>
+  </mime-type>
+  <mime-type type="audio/x-bsewave">
+    <glob pattern="*.bsewave"/>
+    <magic priority="80">
+      <match type="string" value="#BseWave" offset="0:64"/>
+    </magic>
+    <_comment>BSE Multi-Part Wave File</_comment>
+  </mime-type>
+</mime-info>
