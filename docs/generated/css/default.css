@@ -671,4 +671,268 @@ a.image-link:hover {
 }
 /* }}} */
 
+/* {{{ sample list */
+table.browse {
+  text-align: left;
+  border: 0;
+  width: 90%;
+}
+
+table.browse tr.gallery-info {
+  font-weight: bold;
+  color: #dddddd;
+  background-color: #555577;
+  text-align: center;
+}
+
+table.browse tr.odd {
+  background-color: #dadada;
+}
+
+table.browse tr.even {
+  background-color: #eeeeee;
+}
+
+table.browse td {
+  padding: 0.4em;
+  margin: 0.4em;
+}
+
+table.browse td.paginate {
+  font-size: 80%;
+  background-color: #f6f6f6;
+  color: inherit;
+  padding: 1em;
+  text-align: center;
+  border-top: 1px #555577 solid;
+  border-bottom: 1px #555577 solid;
+}
+
+table.browse td.mode-switcher {
+  font-size: 80%;
+  background-color: #f9f9f9;
+  color: #666666;
+  text-align: right;
+}
+
+/* {{{ directory stack */
+
+/* {{{ standard mode */
+
+/* {{{ root directory */
+
+table.browse tr.root-directory {
+  font-weight: bold;
+  color: #444455;
+  background-color: #bcddbc;
+}
+
+table.browse td.root-dir-info {
+  font-weight: bold;
+}
+
+table.browse span.root-dir-size {
+  font-size: 90%;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+table.browse span.root-dir-name {
+  font-family: monospace;
+}
+
+table.browse a.root-dir-link {
+  font-family: monospace;
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+}
+
+table.browse a.root-dir-link:hover {
+  border-bottom: 1px solid #0000ff;
+  background-color: inherit;
+}
+
+/* }}} */
+
+/* {{{ dot directory */
+
+table.browse tr.dot-directory {
+  font-weight: bold;
+  color: #444455;
+  background-color: #9cd49c;
+}
+
+table.browse td.dot-dir-info {
+  font-weight: bold;
+}
+
+table.browse span.dot-dir-size {
+  font-size: 90%;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+table.browse span.dot-dir-name {
+  font-family: monospace;
+}
+
+/* }}} */
+
+/* {{{ dotdot directory */
+
+table.browse tr.dotdot-directory {
+  font-weight: bold;
+  color: #444455;
+  background-color: #7cd07c;
+}
+
+table.browse td.dotdot-dir-info {
+  font-weight: bold;
+}
+
+table.browse span.dotdot-dir-size {
+  font-size: 90%;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+table.browse span.dotdot-dir-name {
+  font-family: monospace;
+}
+
+table.browse a.dotdot-dir-link {
+  font-family: monospace;
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+}
+
+table.browse a.dotdot-dir-link:hover {
+  border-bottom: 1px solid #0000ff;
+  background-color: inherit;
+}
+
+/* }}} */
+
+/* }}} */
+
+/* {{{ mini tree mode */
+
+/* {{{ current directory */
+
+table.browse tr.current-directory {
+  font-weight: bold;
+  color: #dddddd;
+  background-color: #66667f;
+}
+
+table.browse td.current-dir-info {
+  font-weight: bold;
+}
+
+table.browse span.current-dir-size {
+  font-size: 90%;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+table.browse span.current-dir-name {
+  font-family: monospace;
+}
+
+/* }}} */
+
+/* {{{ upper directories */
+
+table.browse tr.upper-directory-odd {
+  font-weight: bold;
+  color: #555555;
+  background-color: #dadaf4;
+}
+
+table.browse tr.upper-directory-even {
+  font-weight: bold;
+  color: #555555;
+  background-color: #eeeeff;
+}
+
+table.browse td.upper-dir-info {
+  font-weight: bold;
+  color: #555577;
+}
+
+table.browse span.upper-dir-size {
+  font-size: 90%;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+table.browse a.upper-dir-link {
+  font-family: monospace;
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+}
+
+table.browse a.upper-dir-link:hover {
+  border-bottom: 1px solid #0000ff;
+  background-color: inherit;
+}
+
+/* }}} */
+
+/* }}} */
+
+/* }}} */
+
+/* {{{ dirs */
+
+table.browse td.dir-info {
+  font-weight: bold;
+  color: #555577;
+}
+
+table.browse span.dir-size {
+  font-size: 90%;
+  font-family: monospace;
+}
+
+table.browse a.dir-link {
+  font-family: monospace;
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+}
+
+table.browse a.dir-link:hover {
+  border-bottom: 1px solid #0000ff;
+  background-color: inherit;
+}
+
+/* }}} */
+
+/* {{{ files */
+
+table.browse td.file-info {
+  font-weight: bold;
+  color: #555577;
+}
+
+table.browse span.file-size {
+  font-size: 90%;
+  font-family: monospace;
+}
+
+table.browse a.file-link {
+  font-family: monospace;
+  text-decoration: none;
+  border-bottom: 1px dashed black;
+}
+
+table.browse a.file-link:hover {
+  border-bottom: 1px solid #0000ff;
+  background-color: inherit;
+}
+
+/* }}} */
+
+/* }}} */
+
 /* vim: set fdm=marker: */

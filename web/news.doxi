@@ -11,6 +11,18 @@
 @unnumbered What's New?
 
 
+@newsTitle{Sunday 20 Apr 2003, BEAST-0.5.1 patch fixed}
+
+The @beast patch to update from version 0.5.0 to 0.5.1 unfortunately
+missed an image file (due to it being detected as binary by diff),
+causing the 0.5.1 build to fail for some users. We've put up a new
+patch as
+@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.0-0.5.1.fixed.gz,,patch-beast-0.5.0-0.5.1.fixed.gz}
+now, which contains the missing file and correctly updates from 0.5.0 to
+@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.1.tar.gz,,beast-0.5.1.tar.gz}.
+We apologise for the inconvenience this may have caused.
+
+
 @newsTitle{Monday 14 Apr 2003, BEAST Featuring LADSPA}
 
 BEAST/BSE version 0.5.1 is available in the
@@ -36,23 +48,6 @@ Also, the @uref{beast-doc://links-synthesis,, link section}
 has been updated, and we got new or updated screen shots
 (amongst them the new track editor) in the
 @uref{beast-doc://screenshots/index,,screen shot area}.
-
-
-@newsTitle{Thursday 13 Mar 2003, New Development Release}
-
-BEAST/BSE version 0.5.0 is available in the
-@uref{beast-doc://download,,download section}, here is the
-@uref{http://www.gnomedesktop.org/article.php?sid=993,,FootNotes announcement}.
-
-This new development series of BEAST comes with a lot of
-the internals redone, many new GUI features and a sound
-generation back-end separated from any GUI activities.
-The most outstanding new feature is the track editor which
-allows free arrangement of parts in songs and adds loop
-support to simplify song edits.
-
-More details can be found in the
-@uref{beast-doc://release-news,,NEWS section}.
 
 
 @bye
