@@ -1,4 +1,6 @@
 FIXMES:
+- amplifier: audio_balance and ctrl_balance range: -100..+100
+- File/Open should merge if issued on an empty project
 - nuke frequency fine-tune for biquad filter
 - fix syndrum parameter scale
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
