@@ -93,7 +93,7 @@ test_content_exec (BseProcedureClass *proc,
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
   { &type_id_test_content, "BsePattern::test-content",
-    "Random fill notes",
+    "Random fill notes", 0,
     test_content_setup, test_content_exec, NULL,
     "/Method/BsePattern/Test Content",
   },

@@ -58,7 +58,7 @@ hello_space_exec (BseProcedureClass *proc,
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
   { &type_id_hello_space, "hello-space",
-    "Hello Space - Simplistic Hello World type o' thing.",
+    "Hello Space - Simplistic Hello World type o' thing.", 0,
     hello_space_setup, hello_space_exec, NULL,
     "/Proc/Test/Hello Space",
     { TEST_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
