@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-29 11:02+0200\n"
+"POT-Creation-Date: 2004-08-18 11:02+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -59,9 +59,10 @@ msgstr "_Ruaj"
 msgid "Save _As..."
 msgstr "Ruaje _Si..."
 
+#. GRUT modified this item
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
-msgstr "_Dil"
+msgstr "_Dalja"
 
 #: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
@@ -520,77 +521,82 @@ msgstr ""
 msgid "Description"
 msgstr "Përshkrimi"
 
-#: beast-gtk/bstmain.c:129
+#. overriding Gdk's program name
+#: beast-gtk/bstmain.c:118 data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr ""
+
+#: beast-gtk/bstmain.c:130
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:136
+#: beast-gtk/bstmain.c:137
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:140
+#: beast-gtk/bstmain.c:141
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.c:147
+#: beast-gtk/bstmain.c:148
 #, fuzzy
 msgid "RC Files"
 msgstr "_File"
 
 #. show splash images
-#: beast-gtk/bstmain.c:151
+#: beast-gtk/bstmain.c:152
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:164
 msgid "BSE Core"
 msgstr ""
 
-#: beast-gtk/bstmain.c:185
+#: beast-gtk/bstmain.c:186
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:204
+#: beast-gtk/bstmain.c:205
 msgid "LADSPA Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:232
+#: beast-gtk/bstmain.c:233
 msgid "Scripts"
 msgstr "Scripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:250
+#: beast-gtk/bstmain.c:251
 msgid "Dialogs"
 msgstr ""
 
-#: beast-gtk/bstmain.c:257
+#: beast-gtk/bstmain.c:258
 msgid "Loading..."
 msgstr "Duke ngarkuar..."
 
-#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
+#: beast-gtk/bstmain.c:288 beast-gtk/bstmain.c:290
 #, c-format
 msgid "Loading \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:306
+#: beast-gtk/bstmain.c:307
 #, c-format
 msgid "Loading project \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:723
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:723
+#: beast-gtk/bstmain.c:724
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:724
+#: beast-gtk/bstmain.c:725
 msgid "Contributions made by:"
 msgstr ""
 
@@ -861,7 +867,7 @@ msgstr ""
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "VZoom"
 msgstr ""
 
@@ -1326,7 +1332,7 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_Edit"
 msgstr "_Ndrysho"
 
@@ -2056,34 +2062,39 @@ msgstr ""
 msgid "Mark Signal (Tail)"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:150 beast-gtk/bstsupershell.c:273
+#: beast-gtk/bstsupershell.c:151 beast-gtk/bstsupershell.c:279
 msgid "Waves"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:213
+#: beast-gtk/bstsupershell.c:214
 msgid "Tracks"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
-#: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
+#. GRUT modified this item
+#: beast-gtk/bstsupershell.c:219
+msgid "Mixer"
+msgstr "Kontrolli i volumit"
+
+#: beast-gtk/bstsupershell.c:224 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:284 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:223
+#: beast-gtk/bstsupershell.c:229
 msgid "Parts"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:229
+#: beast-gtk/bstsupershell.c:235
 msgid "Busses"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
+#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:260
 msgid "Routing"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:249
+#: beast-gtk/bstsupershell.c:255
 msgid "Rack"
 msgstr ""
 
@@ -2259,182 +2270,203 @@ msgid "Aplly configuration changes to the pattern editor layout"
 msgstr ""
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
+#, fuzzy
+msgid "Bus Name"
+msgstr "Emri"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Configure"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Control Type:"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Development"
 msgstr "Zhvillim"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Discard changes and close dialog"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "E_xamples"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
-msgid "Events"
-msgstr "Ngjarje"
-
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:10
+msgid "Events"
+msgstr "Ndodhitë"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "HZoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Horizontal piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Horizontal track zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#, fuzzy
+msgid "Inputs"
+msgstr "Input"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Layout:"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#, fuzzy
+msgid "Level"
+msgstr "Etiketa"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Note _Length"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#, fuzzy
+msgid "Outputs"
+msgstr "Rezultati"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Piano Notes"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Repeat"
 msgstr "Përsërit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Repeat playback within loop points"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Synthesis Modules"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Vertical piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Virtual Rack"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "Wave_s"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "Zoom"
 msgstr "Shkalla e zmadhimit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Apply"
 msgstr "_Zbato"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Audio Sources"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Cancel"
 msgstr "_Anullo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_Demo"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Distortion"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Enhance"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_File"
 msgstr "_File"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Filters"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Help"
 msgstr "_Ndihmë"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Input & Output"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_LADSPA"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Misc"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Other Sources"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Project"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Quantization"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Routing"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Song"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Spatial"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Synth"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Synthesizers"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_Tools"
 msgstr "_Instrumentë"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Utilities"
 msgstr ""
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:52
 msgid "_View"
 msgstr "_Shfaq"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:53
 msgid "_Virtualization"
 msgstr ""
 
@@ -2768,13 +2800,15 @@ msgstr ""
 msgid "Output stage amplification"
 msgstr ""
 
+#. GRUT modified this item
 #: bse/bseautodoc.c:360 bse/bseautodoc.c:422
 msgid "Authors:"
-msgstr ""
+msgstr "Autorët:"
 
+#. GRUT modified this item
 #: bse/bseautodoc.c:365 bse/bseautodoc.c:425
 msgid "License:"
-msgstr ""
+msgstr "Liçenca:"
 
 #: bse/bseautodoc.c:408 bse/bseautodoc.c:410
 msgid "BSE-Objects"
@@ -3226,21 +3260,21 @@ msgstr "Ngjite"
 msgid "/Input & Output/PCM Input"
 msgstr ""
 
-#: bse/bsepcminput.c:128 bse/bsebus.c:273 plugins/artscompressor.idl:51
+#: bse/bsepcminput.c:128 bse/bsebus.c:303 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr ""
 
-#: bse/bsepcminput.c:128 bse/bsebus.c:273
+#: bse/bsepcminput.c:128 bse/bsebus.c:303
 msgid "Left channel output"
 msgstr ""
 
-#: bse/bsepcminput.c:130 bse/bsebus.c:275 plugins/artscompressor.idl:52
+#: bse/bsepcminput.c:130 bse/bsebus.c:305 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr ""
 
-#: bse/bsepcminput.c:130 bse/bsebus.c:275
+#: bse/bsepcminput.c:130 bse/bsebus.c:305
 msgid "Right channel output"
 msgstr ""
 
@@ -3248,16 +3282,16 @@ msgstr ""
 msgid "/Input & Output/PCM Output"
 msgstr ""
 
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:269 plugins/artscompressor.idl:49
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:299 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr ""
 
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:269
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:299
 msgid "Left channel input"
 msgstr ""
 
-#: bse/bsepcmoutput.c:130 bse/bsebus.c:271 plugins/artscompressor.idl:50
+#: bse/bsepcmoutput.c:130 bse/bsebus.c:301 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr ""
@@ -3352,12 +3386,33 @@ msgstr ""
 msgid "Retrieve song timing information at a specific tick."
 msgstr ""
 
-#: bse/bsebus.c:271
+#: bse/bsebus.c:287
+#, fuzzy
+msgid "Signal Inputs"
+msgstr "Input"
+
+#: bse/bsebus.c:289
+msgid "Custom Synth Net"
+msgstr ""
+
+#: bse/bsebus.c:289
+msgid "Synthesis network to be used as instrument"
+msgstr ""
+
+#: bse/bsebus.c:291
+msgid "Adjustments"
+msgstr ""
+
+#: bse/bsebus.c:293
+msgid "Bus Gain [float]"
+msgstr ""
+
+#: bse/bsebus.c:301
 #, fuzzy
 msgid "Right channel input"
 msgstr "Input"
 
-#: bse/bsebus.c:294
+#: bse/bsebus.c:324
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3554,7 +3609,6 @@ msgstr ""
 msgid "Copyright license applying to this object"
 msgstr ""
 
-#. GRUT modified this item
 #: bse/bsesuper.c:114
 msgid "Creation Time"
 msgstr "Koha e Krijimit"
@@ -3594,10 +3648,6 @@ msgstr ""
 
 #: bse/bsewaveosc.c:157
 msgid "Gate Output"
-msgstr ""
-
-#: data/beast.desktop.in.h:1
-msgid "BEAST"
 msgstr ""
 
 #: data/beast.desktop.in.h:2
