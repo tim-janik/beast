@@ -37,6 +37,7 @@ struct _BstScrollgraph
 {
   GtkWidget       parent_instance;
   BstDirection    direction;
+  guint           window_size : 24;
   guint           flip : 1;
   gdouble         boost;
   guint           n_points;

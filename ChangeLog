@@ -1,3 +1,24 @@
+Mon Dec  6 23:40:46 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrecords.idl: added FFTSize choice.
+
+	* beast-gtk/bstutils.[hc]: added fft-size<->int conversion functions.
+
+	* bstscrollgraph.[hc]: made fft size configurable.
+
+	* beast-gtk/dialogs/radgets-beast.xml: added rulers to scrolgraph, use
+	GtkTable for layouting.
+
+	* beast-gtk/dialogs/radgets-standard.xml: added hruler and vruler.
+
+	* beast-gtk/gxk/gxkutils.c: confine popup-menus to screen boundaries.
+
+	* beast-gtk/gxk/gxkmenubutton.c: fixed push-in positioning.
+
+	* beast-gtk/gxk/gxkdialog.c: cleanups.
+
+	* beast-gtk/bstparam-choice.c: fixed empty tooltips.
+
 Fri Dec  3 19:05:27 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (bst_early_parse_args): stop argument 

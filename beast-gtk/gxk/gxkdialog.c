@@ -37,99 +37,14 @@ enum {
 
 
 /* --- prototypes --- */
-static void	gxk_dialog_class_init		(GxkDialogClass	  *class);
-static void	gxk_dialog_init			(GxkDialog	  *dialog);
-static void	gxk_dialog_destroy		(GtkObject	  *object);
-static void	gxk_dialog_finalize		(GObject	  *object);
-static void	gxk_dialog_show			(GtkWidget	  *widget);
-static void	gxk_dialog_hide			(GtkWidget	  *widget);
-static gboolean gxk_dialog_key_press_event	(GtkWidget	  *widget,
-						 GdkEventKey	  *event);
-static gboolean gxk_dialog_delete_event		(GtkWidget	  *widget,
-						 GdkEventAny	  *event);
-static gboolean	gxk_dialog_enter_notify_event	(GtkWidget	  *widget,
-						 GdkEventCrossing *event);
-static void	gxk_dialog_set_property		(GObject	  *object,
-						 guint		   prop_id,
-						 const GValue	  *value,
-						 GParamSpec	  *pspec);
-static void	gxk_dialog_get_property		(GObject	  *object,
-						 guint		   prop_id,
-						 GValue		  *value,
-						 GParamSpec	  *pspec);
 
 
 /* --- variables --- */
-static gpointer		 parent_class = NULL;
 static GSList		*enter_stack = NULL;
 
 
 /* --- functions --- */
-GtkType
-gxk_dialog_get_type (void)
-{
-  static GtkType dialog_type = 0;
-
-  if (!dialog_type)
-    {
-      GtkTypeInfo dialog_info =
-      {
-	"GxkDialog",
-	sizeof (GxkDialog),
-	sizeof (GxkDialogClass),
-	(GtkClassInitFunc) gxk_dialog_class_init,
-	(GtkObjectInitFunc) gxk_dialog_init,
-	/* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
-      };
-
-      dialog_type = gtk_type_unique (GTK_TYPE_WINDOW, &dialog_info);
-    }
-
-  return dialog_type;
-}
-
-static void
-gxk_dialog_class_init (GxkDialogClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
-
-  gobject_class->finalize = gxk_dialog_finalize;
-  gobject_class->set_property = gxk_dialog_set_property;
-  gobject_class->get_property = gxk_dialog_get_property;
-  
-  object_class->destroy = gxk_dialog_destroy;
-
-  widget_class->show = gxk_dialog_show;
-  widget_class->hide = gxk_dialog_hide;
-  widget_class->key_press_event = gxk_dialog_key_press_event;
-  widget_class->delete_event = gxk_dialog_delete_event;
-  widget_class->enter_notify_event = gxk_dialog_enter_notify_event;
-
-  g_object_class_install_property (G_OBJECT_CLASS (object_class),
-				   PROP_POINTER,
-				   g_param_spec_pointer ("pointer", NULL, NULL,
-							 G_PARAM_READWRITE));
-  g_object_class_install_property (G_OBJECT_CLASS (object_class),
-				   PROP_ALIVE_OBJECT,
-				   g_param_spec_object ("alive_object", NULL, NULL,
-							GTK_TYPE_OBJECT,
-							G_PARAM_READWRITE));
-  g_object_class_install_property (G_OBJECT_CLASS (object_class),
-				   PROP_FLAGS,
-				   g_param_spec_flags ("flags", NULL, NULL,
-						       GXK_TYPE_DIALOG_FLAGS, 0,
-						       G_PARAM_READWRITE));
-  g_object_class_install_property (G_OBJECT_CLASS (object_class),
-				   PROP_TITLE,
-				   g_param_spec_string ("title", NULL, NULL,
-							NULL, G_PARAM_READWRITE));
-}
+G_DEFINE_TYPE (GxkDialog, gxk_dialog, GTK_TYPE_WINDOW);
 
 static void
 gxk_dialog_init (GxkDialog *self)
@@ -307,7 +222,7 @@ gxk_dialog_destroy (GtkObject *object)
 		"pointer", NULL,
 		NULL);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gxk_dialog_parent_class)->destroy (object);
 }
 
 static void
@@ -319,7 +234,7 @@ gxk_dialog_finalize (GObject *object)
     g_object_unref (dialog->child);
   dialog->child = NULL;
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gxk_dialog_parent_class)->finalize (object);
 }
 
 /**
@@ -379,6 +294,23 @@ gxk_dialog_new_radget (gpointer        pointer_loc,
     return NULL;
 }
 
+static void
+gxk_dialog_set_min_size (GxkDialog      *self,
+                         gint            min_width,
+                         gint            min_height)
+{
+  GdkGeometry geometry = { 0, };
+  geometry.min_width = min_width;
+  geometry.min_height = min_height;
+  if (g_object_get_long (self, "GxkDialog-min-width") != geometry.min_width ||
+      g_object_get_long (self, "GxkDialog-min-height") != geometry.min_height)
+    {
+      g_object_set_long (self, "GxkDialog-min-width", geometry.min_width);
+      g_object_set_long (self, "GxkDialog-min-height", geometry.min_height);
+      gtk_window_set_geometry_hints (GTK_WINDOW (self), NULL, &geometry, GDK_HINT_MIN_SIZE);
+    }
+}
+
 /**
  * gxk_dialog_set_sizes
  * @dialog:         valid GxkDialog
@@ -397,20 +329,19 @@ gxk_dialog_set_sizes (GxkDialog      *dialog,
                       gint            default_width,
                       gint            default_height)
 {
-  GdkGeometry geometry = { 0, };
   gint swidth = gdk_screen_width();
   gint sheight = gdk_screen_height();
-  geometry.min_width = CLAMP (min_width, -1, swidth);
-  geometry.min_height = CLAMP (min_height, -1, sheight);
+  min_width = CLAMP (min_width, -1, swidth);
+  min_height = CLAMP (min_height, -1, sheight);
   if (default_width > 0)
     default_width = MIN (default_width, swidth * 0.95);
   if (default_height > 0)
     default_height = MIN (default_height, sheight * 0.95);
-  if (geometry.min_width > 0 && default_width > 0)
-    geometry.min_width = MIN (geometry.min_width, default_width);
-  if (geometry.min_height > 0 && default_height > 0)
-    geometry.min_height = MIN (geometry.min_height, default_height);
-  gtk_window_set_geometry_hints (GTK_WINDOW (dialog), NULL, &geometry, GDK_HINT_MIN_SIZE);
+  if (min_width > 0 && default_width > 0)
+    min_width = MIN (min_width, default_width);
+  if (min_height > 0 && default_height > 0)
+    min_height = MIN (min_height, default_height);
+  gxk_dialog_set_min_size (dialog, min_width, min_height);
   gtk_window_set_default_size (GTK_WINDOW (dialog), default_width, default_height);
 }
 
@@ -574,7 +505,7 @@ gxk_dialog_show (GtkWidget *widget)
       !g_slist_find (enter_stack, self))
     enter_stack = g_slist_prepend (enter_stack, self);
 
-  GTK_WIDGET_CLASS (parent_class)->show (widget);
+  GTK_WIDGET_CLASS (gxk_dialog_parent_class)->show (widget);
 
   gxk_widget_viewable_changed (widget);
 
@@ -588,7 +519,7 @@ gxk_dialog_hide (GtkWidget *widget)
 {
   GxkDialog *self = GXK_DIALOG (widget);
   
-  GTK_WIDGET_CLASS (parent_class)->hide (widget);
+  GTK_WIDGET_CLASS (gxk_dialog_parent_class)->hide (widget);
 
   gxk_widget_viewable_changed (widget);
 
@@ -771,4 +702,43 @@ gxk_dialog_action_multi (GxkDialog          *self,
 	gxk_dialog_set_default (self, button);
     }
   return button;
+}
+
+static void
+gxk_dialog_class_init (GxkDialogClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+
+  gobject_class->finalize = gxk_dialog_finalize;
+  gobject_class->set_property = gxk_dialog_set_property;
+  gobject_class->get_property = gxk_dialog_get_property;
+  
+  object_class->destroy = gxk_dialog_destroy;
+
+  widget_class->show = gxk_dialog_show;
+  widget_class->hide = gxk_dialog_hide;
+  widget_class->key_press_event = gxk_dialog_key_press_event;
+  widget_class->delete_event = gxk_dialog_delete_event;
+  widget_class->enter_notify_event = gxk_dialog_enter_notify_event;
+
+  g_object_class_install_property (G_OBJECT_CLASS (object_class),
+				   PROP_POINTER,
+				   g_param_spec_pointer ("pointer", NULL, NULL,
+							 G_PARAM_READWRITE));
+  g_object_class_install_property (G_OBJECT_CLASS (object_class),
+				   PROP_ALIVE_OBJECT,
+				   g_param_spec_object ("alive_object", NULL, NULL,
+							GTK_TYPE_OBJECT,
+							G_PARAM_READWRITE));
+  g_object_class_install_property (G_OBJECT_CLASS (object_class),
+				   PROP_FLAGS,
+				   g_param_spec_flags ("flags", NULL, NULL,
+						       GXK_TYPE_DIALOG_FLAGS, 0,
+						       G_PARAM_READWRITE));
+  g_object_class_install_property (G_OBJECT_CLASS (object_class),
+				   PROP_TITLE,
+				   g_param_spec_string ("title", NULL, NULL,
+							NULL, G_PARAM_READWRITE));
 }

@@ -1322,7 +1322,108 @@ bst_xpm_view_create (const gchar **xpm,
 }
 
 
-/* --- file utils --- */
+/* --- misc utils --- */
+gint
+bst_fft_size_to_int (BstFFTSize fft_size)
+{
+  switch (fft_size)
+    {
+#if 0
+    case BST_FFT_SIZE_1:          return 1;
+#endif
+    case BST_FFT_SIZE_2:          return 2;
+    case BST_FFT_SIZE_4:          return 4;
+    case BST_FFT_SIZE_8:          return 8;
+    case BST_FFT_SIZE_16:         return 16;
+    case BST_FFT_SIZE_32:         return 32;
+    case BST_FFT_SIZE_64:         return 64;
+    case BST_FFT_SIZE_128:        return 128;
+    case BST_FFT_SIZE_256:        return 256;
+    case BST_FFT_SIZE_512:        return 512;
+    case BST_FFT_SIZE_1024:       return 1024;
+    case BST_FFT_SIZE_2048:       return 2048;
+    case BST_FFT_SIZE_4096:       return 4096;
+    case BST_FFT_SIZE_8192:       return 8192;
+    case BST_FFT_SIZE_16384:      return 16384;
+    case BST_FFT_SIZE_32768:      return 32768;
+    case BST_FFT_SIZE_65536:      return 65536;
+#if 0
+    case BST_FFT_SIZE_131072:     return 131072;
+    case BST_FFT_SIZE_262144:     return 262144;
+    case BST_FFT_SIZE_524288:     return 524288;
+    case BST_FFT_SIZE_1048576:    return 1048576;
+    case BST_FFT_SIZE_2097152:    return 2097152;
+    case BST_FFT_SIZE_4194304:    return 4194304;
+    case BST_FFT_SIZE_8388608:    return 8388608;
+    case BST_FFT_SIZE_16777216:   return 16777216;
+    case BST_FFT_SIZE_33554432:   return 33554432;
+    case BST_FFT_SIZE_67108864:   return 67108864;
+    case BST_FFT_SIZE_134217728:  return 134217728;
+    case BST_FFT_SIZE_268435456:  return 268435456;
+    case BST_FFT_SIZE_536870912:  return 536870912;
+    case BST_FFT_SIZE_1073741824: return 1073741824;
+    case BST_FFT_SIZE_2147483648: return 2147483648;
+    case BST_FFT_SIZE_4294967296: return 4294967296;
+#endif
+    default:                      return 0;
+    }
+}
+
+BstFFTSize
+bst_fft_size_from_int (guint sz)
+{
+  const struct { BstFFTSize fft_size; guint sz; } sizes[] = {
+#if 0
+    { BST_FFT_SIZE_1, 1 },
+#endif
+    { BST_FFT_SIZE_2, 2 },
+    { BST_FFT_SIZE_4, 4 },
+    { BST_FFT_SIZE_8, 8 },
+    { BST_FFT_SIZE_16,    16 },
+    { BST_FFT_SIZE_32,    32 },
+    { BST_FFT_SIZE_64,    64 },
+    { BST_FFT_SIZE_128,   128 },
+    { BST_FFT_SIZE_256,   256 },
+    { BST_FFT_SIZE_512,   512 },
+    { BST_FFT_SIZE_1024,  1024 },
+    { BST_FFT_SIZE_2048,  2048 },
+    { BST_FFT_SIZE_4096,  4096 },
+    { BST_FFT_SIZE_8192,  8192 },
+    { BST_FFT_SIZE_16384, 16384 },
+    { BST_FFT_SIZE_32768, 32768 },
+    { BST_FFT_SIZE_65536, 65536 },
+#if 0
+    { BST_FFT_SIZE_131072,     131072 },
+    { BST_FFT_SIZE_262144,     262144 },
+    { BST_FFT_SIZE_524288,     524288 },
+    { BST_FFT_SIZE_1048576,    1048576 },
+    { BST_FFT_SIZE_2097152,    2097152 },
+    { BST_FFT_SIZE_4194304,    4194304 },
+    { BST_FFT_SIZE_8388608,    8388608 },
+    { BST_FFT_SIZE_16777216,   16777216 },
+    { BST_FFT_SIZE_33554432,   33554432 },
+    { BST_FFT_SIZE_67108864,   67108864 },
+    { BST_FFT_SIZE_134217728,  134217728 },
+    { BST_FFT_SIZE_268435456,  268435456 },
+    { BST_FFT_SIZE_536870912,  536870912 },
+    { BST_FFT_SIZE_1073741824, 1073741824 },
+    { BST_FFT_SIZE_2147483648, 2147483648 },
+    { BST_FFT_SIZE_4294967296, 4294967296 },
+#endif
+  };
+  /* find size via bisection */
+  guint offset = 0, n = G_N_ELEMENTS (sizes);
+  while (offset + 1 < n)
+    {
+      guint i = (offset + n) >> 1;
+      if (sz < sizes[i].sz)
+        n = i;
+      else
+        offset = i;
+    }
+  return sizes[offset].fft_size;
+}
+
 #include <sfi/sfistore.h>
 
 gchar*

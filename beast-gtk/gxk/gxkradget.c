@@ -478,7 +478,7 @@ parse_formula (const gchar *c,
     }
   args = g_slist_prepend (args, g_strndup (last, c - last));
   if (!*c)
-    g_printerr ("malformed formula: $(%s", start);
+    g_printerr ("malformed formula: $(%s\n", start);
   else
     c++;        /* ')' */
   if (args)

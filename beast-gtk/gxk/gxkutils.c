@@ -3399,6 +3399,13 @@ menu_position_func (GtkMenu  *menu,
             }
         }
     }
+  else /* lift up if too close to edge */
+    {
+      GtkRequisition requisition;
+      gtk_widget_get_child_requisition (GTK_WIDGET (menu), &requisition);
+      if (*y + requisition.height > gdk_screen_height())
+        *y = MAX (0, gdk_screen_height() - requisition.height);
+    }
 }
 
 void

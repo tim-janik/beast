@@ -26,13 +26,14 @@
 #define HORIZONTAL(scg) ((scg)->direction == BST_RIGHT || (scg)->direction == BST_LEFT)
 #define VERTICAL(scg)   ((scg)->direction == BST_UP || (scg)->direction == BST_DOWN)
 #define FLIP(scg)       ((scg)->flip ^ HORIZONTAL (scg))
-#define FFT_SIZE 2048
+#define FFTSZ2POINTS(k) ((k) / 2 + 1)
 
 enum {
   PROP_0,
   PROP_FLIP,
   PROP_DIRECTION,
   PROP_BOOST,
+  PROP_WINDOW_SIZE,
 };
 
 /* --- prototypes --- */
@@ -74,6 +75,10 @@ bst_scrollgraph_set_property (GObject      *object,
       self->boost = sfi_value_get_real (value);
       gtk_widget_queue_draw (widget);
       break;
+    case PROP_WINDOW_SIZE:
+      self->window_size = bst_fft_size_to_int (bst_fft_size_from_choice (sfi_value_get_choice (value)));
+      gtk_widget_queue_resize (widget);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -98,6 +103,9 @@ bst_scrollgraph_get_property (GObject     *object,
     case PROP_BOOST:
       sfi_value_set_real (value, self->boost);
       break;
+    case PROP_WINDOW_SIZE:
+      sfi_value_set_choice (value, bst_fft_size_to_choice (bst_fft_size_from_int (self->window_size)));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -113,16 +121,16 @@ bst_scrollgraph_size_request (GtkWidget      *widget,
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->size_request (widget, requisition);
 
-  guint length = 480;
+  guint length = MIN (FFTSZ2POINTS (self->window_size), 480);
   if (HORIZONTAL (self))
     {
-      requisition->height = MAX (requisition->height, self->n_points);
+      requisition->height = FFTSZ2POINTS (self->window_size);
       requisition->width = length;
     }
   if (VERTICAL (self))
     {
       requisition->height = length;
-      requisition->width = MAX (requisition->width, self->n_points);
+      requisition->width = FFTSZ2POINTS (self->window_size);
     }
 }
 
@@ -349,7 +357,7 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
     {
       gfloat *bar = BAR (self, self->n_bars - 1); /* update last bar */
       SfiFBlock *fft = probe->fft_data;
-      for (i = 0; i < MIN (self->n_points, fft->n_values / 2 + 1); i++)
+      for (i = 0; i < MIN (self->n_points, FFTSZ2POINTS (fft->n_values)); i++)
         {
           gfloat re, im;
           if (i == 0)
@@ -365,7 +373,7 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
         bst_scrollgraph_draw_bar (self, 0);
     }
   bse_probe_seq_free (pseq);
-  bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 0, FFT_SIZE);
+  bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 0, self->window_size);
 }
 
 static void
@@ -404,7 +412,7 @@ bst_scrollgraph_set_source (BstScrollgraph *self,
       bse_proxy_connect (self->source,
                          "signal::probes", bst_scrollgraph_probes_notify, self,
                          NULL);
-      bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 0, FFT_SIZE);
+      bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 0, self->window_size);
     }
 }
 
@@ -438,7 +446,8 @@ bst_scrollgraph_init (BstScrollgraph *self)
   GtkWidget *widget = GTK_WIDGET (self);
   self->direction = BST_LEFT;
   self->boost = 1;
-  self->n_points = FFT_SIZE / 2 + 1;
+  self->window_size = 512;
+  self->n_points = FFTSZ2POINTS (self->window_size);
   self->n_bars = 1;
   self->bar_offset = 0;
   self->values = g_new0 (gfloat, N_VALUES (self));
@@ -475,6 +484,9 @@ bst_scrollgraph_class_init (BstScrollgraphClass *class)
   bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_BOOST,
                                      sfi_pspec_real ("boost", _("Boost"), _("Adjust frequency level threshold"),
                                                      1.0, 1.0 / 256., 256, 0.1, SFI_PARAM_STANDARD ":scale:db-range"));
+  bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_WINDOW_SIZE,
+                                     sfi_pspec_choice ("window_size", _("Window Size"), _("Adjust FFT window size"),
+                                                       "BST_FFT_SIZE_512", bst_fft_size_get_values(), SFI_PARAM_STANDARD ":scale:db-range"));
 }
 
 static GxkParam*
@@ -505,9 +517,10 @@ bst_scrollgraph_build_dialog (const gchar *radget_domain,
         pbox = gxk_radget_find_area (pbox, NULL);       /* find pbox' default child-area */
       if (GTK_IS_CONTAINER (pbox))
         {
-          bst_param_create_span_gmask (scrollgraph_build_param (scg, "boost"), NULL, pbox, 1);
-          bst_param_create_col_gmask (scrollgraph_build_param (scg, "flip"), NULL, pbox, 0);
-          bst_param_create_col_gmask (scrollgraph_build_param (scg, "direction"), NULL, pbox, 1);
+          bst_param_create_span_gmask (scrollgraph_build_param (scg, "boost"), NULL, pbox, 2);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "direction"), NULL, pbox, 2);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "window-size"), NULL, pbox, 0);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "flip"), NULL, pbox, 1);
         }
     }
   return radget;

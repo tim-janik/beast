@@ -135,7 +135,18 @@ menu_button_popup (GxkMenuButton *self,
                   "height-request", self->islot->requisition.height,
                   NULL);
   menu_button_remove_contents (self);
-  gdk_window_get_origin (widget->window, &x, &y);
+  if (push_in && self->cslot)
+    {
+      gdk_window_get_origin (widget->window, &x, &y);   /* x = widget->location->x */
+      GtkWidget *toplevel = gtk_widget_get_toplevel (self->cslot);
+      gint tx, ty;
+      gdk_window_get_origin (toplevel->window, &tx, &ty);
+      y = ty;                                           /* y = toplevel->location->y */
+      gtk_widget_translate_coordinates (self->cslot, toplevel, 0, 0, &tx, &ty);
+      y += ty;                                          /* y = cslot->location->y */
+    }
+  else
+    gdk_window_get_origin (widget->window, &x, &y);
   if (popup_right)
     x += widget->allocation.width;
   if (popup_bottom)

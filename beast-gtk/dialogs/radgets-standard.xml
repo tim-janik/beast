@@ -186,12 +186,12 @@
   <xdef:hruler                inherit="GtkHRuler"
     prop:lower="$(first-occupied,$lower,1.0)"
     prop:upper="$(first-occupied,$upper,1.0)"
-    prop:position="$(first-occupied,$position,0.5"
+    prop:position="$(first-occupied,$position,0.5)"
     prop:max-size="$(first-occupied,$max-size,10.0)" />
   <xdef:vruler                inherit="GtkVRuler"
     prop:lower="$(first-occupied,$lower,1.0)"
     prop:upper="$(first-occupied,$upper,1.0)"
-    prop:position="$(first-occupied,$position,0.5"
+    prop:position="$(first-occupied,$position,0.5)"
     prop:max-size="$(first-occupied,$max-size,10.0)" />
   <!-- misc containers -->
   <xdef:viewport              inherit="GtkViewport"
@@ -208,7 +208,15 @@
     prop:rules-hint="$(ifdef,rules-hint,$rules-hint,1)"
     />
   <xdef:window                inherit="GtkWindow"         />
-  <xdef:table                 inherit="GtkTable"          />
+  <xdef:table                 inherit="GtkTable"
+    default-pack:left-attach="$(first-occupied,$left-attach,0)"
+    default-pack:right-attach="$(first-occupied,$right-attach,1)"
+    default-pack:top-attach="$(first-occupied,$top-attach,0)"
+    default-pack:bottom-attach="$(first-occupied,$bottom-attach,1)"
+    default-pack:x-options="$(first-occupied,$x-options,fill)"
+    default-pack:y-options="$(first-occupied,$y-options,fill)"
+    default-pack:x-padding="$(first-occupied,$x-padding,0)"
+    default-pack:y-padding="$(first-occupied,$y-padding,0)" />
   <!-- paned containers -->
   <xdef:hpaned                inherit="GtkHPaned"
     prop:position="$(max,$position,0)"

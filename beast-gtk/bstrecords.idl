@@ -38,6 +38,25 @@ choice Direction {
   DOWN  = (_("Down"), _("Move downwards"))
 };
 
+choice FFTSize {
+  FFT_SIZE_2     = (_("2 Value FFT Window"), _("A 2 value FFT window corresponds to a spectrum with 2 frequency peaks")),
+  FFT_SIZE_4     = (_("4 Value FFT Window"), _("A 4 value FFT window corresponds to a spectrum with 3 frequency peaks")),
+  FFT_SIZE_8     = (_("8 Value FFT Window"), _("A 8 value FFT window corresponds to a spectrum with 5 frequency peaks")),
+  FFT_SIZE_16    = (_("16 Value FFT Window"), _("A 16 value FFT window corresponds to a spectrum with 9 frequency peaks")),
+  FFT_SIZE_32    = (_("32 Value FFT Window"), _("A 32 value FFT window corresponds to a spectrum with 17 frequency peaks")),
+  FFT_SIZE_64    = (_("64 Value FFT Window"), _("A 64 value FFT window corresponds to a spectrum with 33 frequency peaks")),
+  FFT_SIZE_128   = (_("128 Value FFT Window"), _("A 128 value FFT window corresponds to a spectrum with 65 frequency peaks")),
+  FFT_SIZE_256   = (_("256 Value FFT Window"), _("A 256 value FFT window corresponds to a spectrum with 129 frequency peaks")),
+  FFT_SIZE_512   = (_("512 Value FFT Window"), _("A 512 value FFT window corresponds to a spectrum with 257 frequency peaks")),
+  FFT_SIZE_1024  = (_("1024 Value FFT Window"), _("A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks")),
+  FFT_SIZE_2048  = (_("2048 Value FFT Window"), _("A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks")),
+  FFT_SIZE_4096  = (_("4096 Value FFT Window"), _("A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks")),
+  FFT_SIZE_8192  = (_("8192 Value FFT Window"), _("A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks")),
+  FFT_SIZE_16384 = (_("16384 Value FFT Window"), _("A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks")),
+  FFT_SIZE_32768 = (_("32768 Value FFT Window"), _("A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks")),
+  FFT_SIZE_65536 = (_("65536 Value FFT Window"), _("A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks")),
+};
+
 choice NoteLength {
   NOTE_LENGTH_NONE      = (Neutral,    _("None"), _("Unspecified length")),
   NOTE_LENGTH_1         = (_("1/1"),   _("Whole note")),

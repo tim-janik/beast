@@ -74,7 +74,7 @@ struct _GxkDialogClass
 
 
 /* --- prototypes --- */
-GtkType		gxk_dialog_get_type		  (void);
+GType		gxk_dialog_get_type		  (void);
 gpointer	gxk_dialog_new			  (gpointer	   pointer_loc,
 						   GtkObject	  *alive_object,
 						   GxkDialogFlags  flags,

@@ -23,6 +23,8 @@
 #include <gtk/gtk.h>
 #include "bstdefs.h"
 #include "bstcluehunter.h"
+/* generated type IDs, idl types */
+#include "bstgentypes.h"
 
 G_BEGIN_DECLS
 
@@ -100,8 +102,10 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
 #define bst_pixbuf_knob()       gxk_stock_fallback_pixbuf (BST_STOCK_KNOB)
 
 
-/* --- file utils --- */
-gchar*  bst_file_scan_find_key          (const gchar  *file,
+/* --- misc utils --- */
+gint            bst_fft_size_to_int     (BstFFTSize    fft_size);
+BstFFTSize      bst_fft_size_from_int   (guint         sz);
+gchar*          bst_file_scan_find_key  (const gchar  *file,
                                          const gchar  *key,
                                          const gchar  *value_prefix);
 
@@ -215,8 +219,6 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 
 
 /* --- generated includes --- */
-/* type IDs, idl types */
-#include "bstgentypes.h"
 /* marshallers */
 #include "bstmarshal.h"
 /* icon stock IDs */
