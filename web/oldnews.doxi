@@ -11,6 +11,18 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@newsTitle{Tuesday 31 Dec 2002, Ongoing Work}
+
+The CVS tree has undergone major shuffeling recently due to integration of a
+new middleware layer into BSE. In other news, our website maintainer
+@uref{mailto://dirt@@gtk.org,,Alper Ersoy} is working hard on a new
+website layout which is why we haven't had much site updating in the last
+couple weeks.
+
+We expect to switch web presence over anytime soon, so stay tuned for a new
+look and much improved content.
+
+
 @newsTitle{Monday 2 Sep 2002, New Development Release}
 
 BEAST/BSE version 0.4.1 is available in the

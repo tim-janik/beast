@@ -1,3 +1,8 @@
+Fri Feb 21 22:24:43 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: added a new website news entry sketching
+	recent development highlights.
+
 Fri Feb 21 20:02:16 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/Makefile.am: call xml files with unfixed cross

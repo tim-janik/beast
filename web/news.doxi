@@ -10,6 +10,27 @@
 
 @unnumbered What's New?
 
+@newsTitle{Friday 21 February 2003, Recent Development}
+
+Lots of website content has been improved recently. The
+@uref{beast-doc://historic,, Historic} section got updated,
+and thanks to Alper Ersoys continued work on the documentation
+system, the constantly evolving
+@uref{beast-doc://documentation,, Reference} and
+@uref{beast-doc://development,, Development} docs now support
+function, structure and external API links.
+
+In actual program development, Stefan Westerfeld has hacked up
+a new @beast backend, supporting PCM output through CSL, so
+@beast can now benefit from CSLs sound server support.
+Also, there's a new track editor widget developing in CVS,
+enabling more complex arrangements of songs. We'll post
+screenshots of the new widget as soon as its GUI has
+matured a bit. For the curious,
+@uref{beast-doc://release-news,, NEWS} has more details
+about development highlights in the upcoming 0.4.2
+release.
+
 
 @newsTitle{Saturday 11 January 2003, Website Switch}
 
@@ -21,16 +42,6 @@ and a lot more content.
 So browse and enjoy! ;-)
 
 
-@newsTitle{Tuesday 31 Dec 2002, Ongoing Work}
-
-The CVS tree has undergone major shuffeling recently due to integration of a
-new middleware layer into BSE. In other news, our website maintainer
-@uref{mailto://dirt@@gtk.org,,Alper Ersoy} is working hard on a new
-website layout which is why we haven't had much site updating in the last
-couple weeks.
-
-We expect to switch web presence over anytime soon, so stay tuned for a new
-look and much improved content.
-
-
 @bye
+
+@c  LocalWords:  website uref Alper Ersoy efford
