@@ -7,179 +7,183 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-10 02:34+0200\n"
-"PO-Revision-Date: 2004-02-28 14:21+0100\n"
+"POT-Creation-Date: 2004-06-21 09:53+0200\n"
+"PO-Revision-Date: 2004-06-19 14:21+0100\n"
 "Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "_New"
 msgstr "_Nou"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "Create new project"
 msgstr "Crea un nou projecte"
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "_Open..."
 msgstr "_Obre..."
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "Open existing project"
 msgstr "Obre un projecte existent"
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "_Merge..."
 msgstr "Fusio_na..."
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "Merge an existing project into the current project"
 msgstr "Fusiona un projecte existent amb el projecte actual"
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
 msgstr "_Importa un MIDI..."
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importa un fitxer MIDI estàndard dins del projecte actual"
 
-#: beast-gtk/bstapp.c:58
+#: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr "Tan_ca"
 
-#: beast-gtk/bstapp.c:62
+#: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "De_sa"
 
-#: beast-gtk/bstapp.c:64
+#: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "_Anomena i desa..."
 
-#: beast-gtk/bstapp.c:68
+#: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "Su_rt"
 
-#: beast-gtk/bstapp.c:72
+#: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Preferències..."
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:93
 msgid "Rebuild"
 msgstr "Torna a muntar"
 
-#: beast-gtk/bstapp.c:78
+#: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr "Qu_ant a..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr "_Desfés"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr "To_rna a fer"
 
-#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Neteja història del desfés"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
 msgstr "Na_vegador de procediments"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
 msgstr "Editor del rack"
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+msgid "Profiler"
+msgstr "Perfils"
+
+#: beast-gtk/bstapp.c:115
 msgid "New View"
 msgstr "Nova visualització"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:119
 msgid "_Play"
 msgstr "Re_produeix"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:121
 msgid "_Stop"
 msgstr "A_tura"
 
-#: beast-gtk/bstapp.c:105
+#: beast-gtk/bstapp.c:125
 msgid "New Song"
 msgstr "Nova cançó"
 
-#: beast-gtk/bstapp.c:107
+#: beast-gtk/bstapp.c:127
 msgid "New Custom Synthesizer"
 msgstr "Nou sintetitzador personalitzat"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:129
 msgid "New MIDI Synthesizer"
 msgstr "Nou sintetitzador MIDI"
 
-#: beast-gtk/bstapp.c:111
+#: beast-gtk/bstapp.c:131
 msgid "Remove Song or Synthesizer"
 msgstr "Esborra cançó o sintetitzador"
 
-#: beast-gtk/bstapp.c:115
+#: beast-gtk/bstapp.c:135
 msgid "Load _Instrument"
 msgstr "Carrega un _instrument"
 
-#: beast-gtk/bstapp.c:117
+#: beast-gtk/bstapp.c:137
 msgid "Load _Effect"
 msgstr "Carr_ega un efecte"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:139
 msgid "Save As Instrument"
 msgstr "Desa com a instrument"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:141
 msgid "Save As Effect"
 msgstr "Desa com a efecte"
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:145
 msgid "_Release Notes..."
 msgstr "Info_rmació de la versió..."
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:146
 msgid "Quick Start..."
 msgstr "Inici ràpid..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:147
 msgid "_FAQ..."
 msgstr "_Preguntes habituals..."
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:150
 msgid "GSL Engine..."
 msgstr "Motor GSL..."
 
-#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "S'està obrint el projecte '%s'"
 
-#: beast-gtk/bstapp.c:610
+#: beast-gtk/bstapp.c:630
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "S'està carregant l'aparença '%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:772
+#: beast-gtk/bstapp.c:791
 msgid "Rack editor"
 msgstr "Editor del rack"
 
-#: beast-gtk/bstapp.c:786
+#: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr "Preferències"
 
-#: beast-gtk/bstapp.c:809
+#: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
 msgstr "Navegador de procediments"
 
-#: beast-gtk/bstapp.c:866
+#: beast-gtk/bstapp.c:889
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Notes quant al BEAST-%s"
@@ -510,76 +514,76 @@ msgstr "Funció usada per crear noves relacions de tecles"
 msgid "Description"
 msgstr "Descripció"
 
-#: beast-gtk/bstmain.c:128
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr "Inici del BEAST"
 
-#: beast-gtk/bstmain.c:135
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr "Inici"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr "Inicialitzadors"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:147
 msgid "RC Files"
 msgstr "Fitxers RC"
 
 #. show splash images
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr "Imatge de l'inici"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr "Nucli BSE"
 
-#: beast-gtk/bstmain.c:184
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Connectors"
 
-#: beast-gtk/bstmain.c:203
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr "Connectors LADSPA"
 
-#: beast-gtk/bstmain.c:231
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Fitxers de seqüència d'ordres"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:249
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Diàlegs"
 
-#: beast-gtk/bstmain.c:256
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "S'està carregant..."
 
-#: beast-gtk/bstmain.c:286 beast-gtk/bstmain.c:288
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "S'està carregant '%s'"
 
-#: beast-gtk/bstmain.c:305
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "S'està carregant el projecte '%s'"
 
-#: beast-gtk/bstmain.c:719
+#: beast-gtk/bstmain.c:720
 msgid "BEAST About"
 msgstr "Quant al BEAST"
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:721
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST versió %s"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:722
 msgid "Contributions made by:"
 msgstr "Hi ha contribuït:"
 
@@ -715,7 +719,7 @@ msgstr ""
 msgid "COLUMN TYPES:"
 msgstr "Tipus de columnes:"
 
-# DONCS NO HO MARQUIS PER TRADUIR, COLL... !!!
+# DONCS NO HO MARQUIS PER TRADUIR !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:687
 msgid "note-1, note-2, ..."
@@ -1039,9 +1043,8 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-#, fuzzy
 msgid "Insert whole notes"
-msgstr "Insereix blanques"
+msgstr "Insereix rodona"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1076,34 +1079,28 @@ msgid "Insert sixteenth note"
 msgstr "Insereix semicorxeres"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "1\\/32"
-msgstr "1/32"
+msgstr "1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "Insert thirty-second note"
-msgstr "Fusa triple"
+msgstr "Insereix fusa"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "1\\/64"
-msgstr "1/64"
+msgstr "1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "Insert sixty-fourth note"
-msgstr "Insereix semicorxeres"
+msgstr "Insereix semifusa"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "1\\/128"
-msgstr "1\\/1"
+msgstr "1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "Insert hundred twenty-eighth note"
-msgstr "Insereix corxeres"
+msgstr "Insereix mitges semifuses"
 
 #: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
@@ -1126,9 +1123,8 @@ msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
-#, fuzzy
 msgid "Quantize to whole note boundaries"
-msgstr "Quantitza fins als límits d'una blanca"
+msgstr "Quantitza fins als límits d'una rodona"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
@@ -1163,34 +1159,28 @@ msgid "Quantize to sixteenth note boundaries"
 msgstr "Quantitza fins als límits d'una semicorxera"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Q: 1\\/32"
-msgstr "Q: 1\\/2"
+msgstr "Q: 1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Quantize to thirty-second note boundaries"
-msgstr "Quantitza fins als límits d'una semicorxera"
+msgstr "Quantitza fins als límits d'una fusa"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Q: 1\\/64"
-msgstr "Q: 1\\/4"
+msgstr "Q: 1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Quantize to sixty-fourth note boundaries"
-msgstr "Quantitza fins als límits d'una semicorxera"
+msgstr "Quantitza fins als límits d'una semifusa"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Q: 1\\/128"
-msgstr "Q: 1\\/1"
+msgstr "Q: 1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Quantize to hundred twenty-eighth note boundaries"
-msgstr "Quantitza fins als límits d'una corxera"
+msgstr "Quantitza fins als límits de mitja semifusa"
 
 #: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:573
@@ -1247,6 +1237,72 @@ msgstr "S'està executant el '%s'"
 msgid "Procedure"
 msgstr "Procediment"
 
+#: beast-gtk/bstprofiler.c:167
+#, fuzzy
+msgid "Totals"
+msgstr "_Eines"
+
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr "Nom del fluxe"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+#, fuzzy
+msgid "UTime"
+msgstr "Temps d'usuari"
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+#, fuzzy
+msgid "STime"
+msgstr "Temps del sistema"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr ""
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+#, fuzzy
+msgid "Nice"
+msgstr "Atenció"
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+#, fuzzy
+msgid "CPU the thread is currently running on"
+msgstr "Alt si la nota es prem en aquest moment"
+
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
 msgstr "S'està reiniciant la reproducció"
@@ -1260,7 +1316,6 @@ msgid "Stopping Playback"
 msgstr "S'està aturant la reproducció"
 
 #: beast-gtk/bstrackeditor.c:95
-#, fuzzy
 msgid ""
 "The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
@@ -1395,7 +1450,6 @@ msgid "1/32"
 msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "Thirty-secondth note"
 msgstr "Fusa"
 
@@ -1404,19 +1458,16 @@ msgid "1/64"
 msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "Sixty-fourth note"
 msgstr "Semifusa"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/128"
-msgstr "1\\/1"
+msgstr "1/128"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "Hundred twenty-eighth note"
-msgstr "Insereix corxeres"
+msgstr "Mitja semifusa"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "1/1."
@@ -1463,7 +1514,6 @@ msgid "1/32."
 msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "Dotted thirty-secondth note"
 msgstr "Fusa i mitja"
 
@@ -1472,19 +1522,16 @@ msgid "1/64."
 msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "Dotted sixty-fourth note"
 msgstr "Semifusa i mitja"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/128."
-msgstr "1\\/1"
+msgstr "1/128."
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "Dotted hundred twenty-eighth note"
-msgstr "Insereix corxeres"
+msgstr "Mitja semifusa i mitja"
 
 #: beast-gtk/bstrecords.idl:59
 msgid "1/1T"
@@ -1531,7 +1578,6 @@ msgid "1/32T"
 msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:64
-#, fuzzy
 msgid "Triplet thirty-secondth note"
 msgstr "Fusa triple"
 
@@ -1540,19 +1586,16 @@ msgid "1/64T"
 msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:65
-#, fuzzy
 msgid "Triplet sixty-fourth note"
 msgstr "Semifusa triple"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "1/128T"
-msgstr "1\\/1"
+msgstr "1/128T"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "Triplet hundred twenty-eighth note"
-msgstr "Insereix corxeres"
+msgstr "Mitja semifusa triple"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "Release counter"
@@ -2021,12 +2064,12 @@ msgstr "Atenció"
 
 #: beast-gtk/bstusermessage.c:103
 msgid "Diagnostic"
-msgstr ""
+msgstr "Diagnòstic"
 
 #. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
 msgid "Debug"
-msgstr ""
+msgstr "Depuració"
 
 #: beast-gtk/bstusermessage.c:111
 msgid "Miscellaneous Message"
@@ -2665,9 +2708,8 @@ msgid "Output Channels:"
 msgstr "Canals de sortida:"
 
 #: bse/bsebiquadfilter.c:105
-#, fuzzy
 msgid "/Filters/Biquad Types"
-msgstr "Tipus de filtre"
+msgstr "/Filtres/Tipus biquadrats"
 
 #: bse/bsebiquadfilter.c:124
 msgid "Filter"
@@ -2786,9 +2828,8 @@ msgid "Filtered Audio Signal"
 msgstr "Senyal de so filtrada"
 
 #: bse/bseconstant.c:84
-#, fuzzy
 msgid "/Other Sources/Constant"
-msgstr "Altres f_onts"
+msgstr "/Altres fonts/Constant"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
 #, c-format
@@ -2809,11 +2850,72 @@ msgstr "Freqüència"
 msgid "Const Out%u"
 msgstr "Sortida constant%u"
 
-#: bse/bsecore.idl:395
+#: bse/bsecore.idl:379
+msgid "State"
+msgstr "Estat"
+
+#: bse/bsecore.idl:379
+msgid "The execution state of the thread"
+msgstr "Estat d'execució del fluxe"
+
+#: bse/bsecore.idl:380
+msgid "Priority"
+msgstr "Prioritat"
+
+#: bse/bsecore.idl:380
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+"El valor de prioritat d'un fluxe. -20 indica un fluxe d'alta prioritat i +19 "
+"un fluxe de baixa."
+
+#: bse/bsecore.idl:383
+msgid "Processor"
+msgstr "Processador"
+
+#: bse/bsecore.idl:383
+msgid "The processor that this thread is currently being executed on"
+msgstr "El processador on s'està executant aquest fluxe"
+
+#: bse/bsecore.idl:385
+msgid "User Time"
+msgstr "Temps d'usuari"
+
+#: bse/bsecore.idl:385
+msgid "The CPU time spent executing instructions of this thread"
+msgstr "El temps de CPU dedicat a executar instruccions d'aquest fluxe"
+
+#: bse/bsecore.idl:387
+msgid "System Time"
+msgstr "Temps del sistema"
+
+#: bse/bsecore.idl:387
+msgid "The CPU time spent in the system for this thread"
+msgstr "El temps de CPU dedicat pel sistema per a aquest fluxe"
+
+#: bse/bsecore.idl:389
+msgid "Child User Time"
+msgstr "Temps d'usuari del fill"
+
+#: bse/bsecore.idl:389
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr ""
+"El temps de CPU dedicat a executar instruccions del fill en aquest fluxe"
+
+#: bse/bsecore.idl:391
+msgid "Child System Time"
+msgstr "Temps del sistema del fill"
+
+#: bse/bsecore.idl:391
+msgid "The CPU time spent in the system for children of this thread"
+msgstr "El temps de CPU dedicat pel sistema per al fill d'aquest fluxe"
+
+#: bse/bsecore.idl:432
 msgid "Latency [ms]"
 msgstr "Latència [ms]"
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:433
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -2821,20 +2923,20 @@ msgstr ""
 "Duració del processament entre l'entrada i sortida d'una mostra. Els valors "
 "més petits incrementen la càrrega de CPU"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
 msgstr "Freqüència de mescla del sintetitzador"
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:437
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "Freqüències de mescla de síntesi, els valors comuns són: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:402
+#: bse/bsecore.idl:439
 msgid "Synth Control Frequency"
 msgstr "Control de freqüència del sintetitzador"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:440
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -2843,9 +2945,8 @@ msgstr ""
 "que la freqüència de mescla del sintetitzador per reduir la càrrega de CPU"
 
 #: bse/bseinstrumentinput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
-msgstr "_Entrada i sortida"
+msgstr "/Entrada i sortida/Entrada de veu d'instrument"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2876,9 +2977,8 @@ msgid "Velocity while the note is pressed"
 msgstr "Velocitat quan no es prem la nota"
 
 #: bse/bseinstrumentoutput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Output"
-msgstr "_Entrada i sortida"
+msgstr "/Entrada i sortida/Sortida d'instrument"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2902,16 +3002,15 @@ msgstr "No usat"
 
 #: bse/bseinstrumentoutput.c:107
 msgid "Synth Done"
-msgstr "Sintetitzant"
+msgstr "S'ha sintetitzat"
 
 #: bse/bseinstrumentoutput.c:107
 msgid "High indicates the instrument is done synthesizing"
 msgstr "Alt indica que l'instrument està sintetizant"
 
 #: bse/bsemidicontroller.c:86
-#, fuzzy
 msgid "/Input & Output/MIDI Control Input"
-msgstr "_Entrada i sortida"
+msgstr "/Entrada i sortida/Entrada de control MIDI"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2946,9 +3045,8 @@ msgid "MIDI Signal 4"
 msgstr "Senyal MIDI 4"
 
 #: bse/bsemidiinput.c:82
-#, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
-msgstr "_Entrada i sortida"
+msgstr "/Entrada i sortida/Entrada de veu MIDI"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
 msgid "Freq Out"
@@ -2993,9 +3091,8 @@ msgid "Disconnect Out"
 msgstr "Sortida desconnexió"
 
 #: bse/bsepcminput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Input"
-msgstr "_Entrada i sortida"
+msgstr "/Entrada i sortida/Entrada PCM"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
@@ -3016,9 +3113,8 @@ msgid "Right channel output"
 msgstr "Sortida del canal dret"
 
 #: bse/bsepcmoutput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Output"
-msgstr "_Entrada i sortida"
+msgstr "/Entrada i sortida/Sortida PCM"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
@@ -3038,28 +3134,37 @@ msgstr "Entrada de so dreta"
 msgid "Right channel Input"
 msgstr "Entrada del canal dret"
 
-#: bse/bseserver.c:503
-msgid "Advice about MIDI device selections"
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr ""
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
 #: bse/bseserver.c:504
-msgid "Alert me about MIDI device selections"
-msgstr ""
+msgid "Advice about MIDI device selections"
+msgstr "Avís quant a les seleccions de dispositiu MIDI"
 
 #: bse/bseserver.c:505
+msgid "Alert me about MIDI device selections"
+msgstr "Avisa'm quant a les seleccions de dispositiu MIDI"
+
+#: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
+"no s'ha pogut obrir el dispositiu midi %s (es farà servir el dispositiu "
+"null): %s"
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
-msgstr ""
+msgstr "no s'ha pogut obrir el fitxer de sortida '%s': %s"
 
 #: bse/bsesnooper.c:77
-#, fuzzy
 msgid "/Misc/Snooper"
-msgstr "Snooper"
+msgstr "/Miscel·lània/Snooper"
 
 #: bse/bsesnooper.c:108
 msgid "Signal In"
@@ -3078,9 +3183,8 @@ msgstr ""
 "formes d'ona i d'entrades de modulació."
 
 #: bse/bsestandardosc.c:109
-#, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
-msgstr "/Mòduls/Fonts de so/Oscil·lador estàndard"
+msgstr "Fonts de so/Oscil·lador estàndard"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
 msgid "Wave Form"
@@ -3187,9 +3291,8 @@ msgid "Syncronization Output"
 msgstr "Sortida de sincronització"
 
 #: bse/bsesubiport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Input"
-msgstr "_Virtualització"
+msgstr "/Virtualització/Entrada virtual"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
 #, c-format
@@ -3213,9 +3316,8 @@ msgid "Virtual input %u"
 msgstr "Entrada virtual %u"
 
 #: bse/bsesuboport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Output"
-msgstr "_Virtualització"
+msgstr "/Virtualització/Sortida virtual"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
 #, c-format
@@ -3228,9 +3330,8 @@ msgid "Virtual output %u"
 msgstr "Sortida virtual %u"
 
 #: bse/bsesubsynth.c:97
-#, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
-msgstr "_Virtualització"
+msgstr "/Virtualització/Virtual Sub Synth"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
@@ -3281,9 +3382,8 @@ msgid "Last modification time"
 msgstr "Darrera hora de modificació"
 
 #: bse/bsewaveosc.c:97
-#, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
-msgstr "/Mòduls/Fonts de so/Oscil·lador estàndard"
+msgstr "/Fonts de so/Oscil·lador d'ones"
 
 #: bse/bsewaveosc.c:123
 msgid "Wave to play"
@@ -3364,7 +3464,6 @@ msgid "Attack [ms]"
 msgstr "Atac [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-#, fuzzy
 msgid "Set the attack time in milliseconds"
 msgstr "Definiu el temps d'atac en milisegons"
 
@@ -3373,7 +3472,6 @@ msgid "Release [ms]"
 msgstr "Alliberament [ms]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
-#, fuzzy
 msgid "Set the release time in milliseconds"
 msgstr "Definiu el temps d'alliberament en milisegons"
 
@@ -3852,15 +3950,3 @@ msgstr "Sortida esquerra"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Sortida dreta"
-
-#~ msgid "Insert full notes"
-#~ msgstr "Insereix rodones"
-
-#~ msgid "Quantize to full note boundaries"
-#~ msgstr "Quantitza fins als límits d'una rodona"
-
-#~ msgid "Question"
-#~ msgstr "Pregunta"
-
-#~ msgid "Perform exponential frequency modulationinstead of linear"
-#~ msgstr "Realitza modulació exponencial freqüencial en comptes de lineal"
