@@ -1,3 +1,14 @@
+Mon Jan 19 18:50:14 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnifferscope.[hc] (sniffer_notify_pcm_data): implemented
+	rudimentary scope display drawing routine.
+	added bst_sniffer_scope_set_sniffer().
+
+	* beast-gtk/bsttrackroll.c: special case and setup sniffer scopes.
+
+	* bsw/Makefile.am: fix idl includes.
+	fix bswgenapi.c dependencies.
+	
 Mon Jan 19 15:32:21 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-development.texi: add french translation.

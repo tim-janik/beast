@@ -41,7 +41,9 @@ bst_sniffer_scope_new (void)
 static void
 bst_sniffer_scope_destroy (GtkObject *object)
 {
-  // BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
+  BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
+
+  bst_sniffer_scope_set_sniffer (self, 0);
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -49,7 +51,9 @@ bst_sniffer_scope_destroy (GtkObject *object)
 static void
 bst_sniffer_scope_finalize (GObject *object)
 {
-  // BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
+  BstSnifferScope *self = BST_SNIFFER_SCOPE (object);
+
+  bst_sniffer_scope_set_sniffer (self, 0);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -116,4 +120,75 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *class)
   widget_class->size_request = bst_sniffer_scope_size_request;
   widget_class->size_allocate = bst_sniffer_scope_size_allocate;
   widget_class->expose_event = bst_sniffer_scope_expose;
+}
+
+static void
+sniffer_notify_pcm_data (SfiProxy   proxy,
+                         SfiNum     tick_stamp,
+                         SfiFBlock *left_samples,
+                         SfiFBlock *right_samples,
+                         gpointer   data)
+{
+  BstSnifferScope *self = BST_SNIFFER_SCOPE (data);
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  if (left_samples->n_values >= widget->allocation.width / 2)
+    {
+      GdkWindow *window = widget->window;
+      GtkAllocation *allocation = &widget->allocation;
+      GdkGC *fg_gc = widget->style->dark_gc[widget->state];
+      GdkGC *bg_gc = widget->style->white_gc;
+      guint i;
+      for (i = 0; i < widget->allocation.width / 2; i++)
+        {
+          gfloat lv = CLAMP (left_samples->values[i], -1, +1) * 0.5 + 0.5;
+          gfloat rv = CLAMP (right_samples->values[i], -1, +1) * 0.5 + 0.5;
+          gdk_draw_line (window, bg_gc,
+                         allocation->x + i,
+                         allocation->y,
+                         allocation->x + i,
+                         allocation->y + allocation->height * (1.0 - lv));
+          gdk_draw_line (window, fg_gc,
+                         allocation->x + i,
+                         allocation->y + allocation->height * (1.0 - lv),
+                         allocation->x + i,
+                         allocation->y + allocation->height);
+          gdk_draw_line (window, bg_gc,
+                         allocation->x + i + allocation->width / 2,
+                         allocation->y,
+                         allocation->x + i + allocation->width / 2,
+                         allocation->y + allocation->height * (1.0 - rv));
+          gdk_draw_line (window, fg_gc,
+                         allocation->x + i + allocation->width / 2,
+                         allocation->y + allocation->height * (1.0 - rv),
+                         allocation->x + i + allocation->width / 2,
+                         allocation->y + allocation->height);
+        }
+    }
+  bse_sniffer_request_samples (self->proxy,
+                               bse_sniffer_get_tick_stamp (self->proxy) +
+                               bse_sniffer_get_mix_freq (self->proxy) * 0.100,
+                               widget->allocation.width / 2, BSE_SNIFFER_PICK_FIRST_INPUT);
+}
+
+void
+bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
+                               SfiProxy         proxy)
+{
+  if (proxy)
+    g_return_if_fail (BSE_IS_SNIFFER (proxy));
+  if (self->proxy)
+    {
+      bse_proxy_disconnect (self->proxy,
+                            "any_signal::notify_pcm_data", sniffer_notify_pcm_data, self,
+                            NULL);
+    }
+  self->proxy = proxy;
+  if (self->proxy)
+    {
+      bse_proxy_connect (self->proxy,
+                         "signal::notify_pcm_data", sniffer_notify_pcm_data, self,
+                         NULL);
+      // FIXME: bse_sniffer_request_samples (self->proxy, 0, 128, BSE_PICK_FIRST_INPUT);
+    }
 }

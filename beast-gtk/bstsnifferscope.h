@@ -33,10 +33,13 @@ G_BEGIN_DECLS
 /* --- API --- */
 typedef struct {
   GtkWidget parent_instance;
+  SfiProxy  proxy;
 } BstSnifferScope;
 typedef GtkWidgetClass BstSnifferScopeClass;
-GType      bst_sniffer_scope_get_type (void);
-GtkWidget* bst_sniffer_scope_new      (void);
+GType      bst_sniffer_scope_get_type    (void);
+GtkWidget* bst_sniffer_scope_new         (void);
+void       bst_sniffer_scope_set_sniffer (BstSnifferScope *scope,
+                                          SfiProxy         proxy);
 G_END_DECLS
 
 #endif /* __BST_SNIFFER_SCOPE_H__ */

@@ -6,6 +6,7 @@
 # SUBDIRS = # icons
 
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_CONST_RETURNS
+IDL_INCLUDES = -I$(top_srcdir)
 
 #
 # libraries to compile and install
@@ -83,15 +84,15 @@ CLEANFILES += $(gen_sources)
 # initial creation of the real stamp-* files
 bswgenapi.h: stamp-bswgenapi.h ;
 # normal autogeneration rules
-stamp-bswgenapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
+stamp-bswgenapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	echo -e "#include <sfi/sfi.h>\n" > xgen-sbpah \
-	&& $(SFIDL) --header --interface --prefix beast_ $(top_builddir)/bse/bse.idl >> xgen-sbpah \
+	&& $(SFIDL) --header --interface --prefix beast_ $(IDL_INCLUDES) $(top_builddir)/bse/bse.idl >> xgen-sbpah \
 	&& (cmp -s xgen-sbpah bswgenapi.h || cp xgen-sbpah bswgenapi.h) \
 	&& rm -f xgen-sbpah \
 	&& echo timestamp > $@
-bswgenapi.c: bswgenapi.h $(top_builddir)/bse/bse.idl $(SFIDL)
+bswgenapi.c: bswgenapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	echo -e "#include \"bswgenapi.h\"\n" > xgen-sbpac \
-	&& $(SFIDL) --source --interface --prefix beast_ $(top_builddir)/bse/bse.idl >> xgen-sbpac \
+	&& $(SFIDL) --source --interface --prefix beast_ $(IDL_INCLUDES) $(top_builddir)/bse/bse.idl >> xgen-sbpac \
 	&& cp xgen-sbpac $@ \
 	&& rm -f xgen-sbpac
 
