@@ -1,13 +1,8 @@
 FIXMES:
-- delete bstmarker.[hc]
 - fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
-- remove bse-plugin-generator
 - document options: :filename, :rgb, :hex
-- remove bstdragutils.[hc]
-- cause gxkscrollcanvas to center itself if max_canvas_height is exceeded
 - make sample editor play stereo
-- rename sfidl.texi to sfidl-manual.texi
 - complete sfidl.1 manual page
 - bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
 - remove sfi_boxed_get_record_info
@@ -15,9 +10,7 @@ FIXMES:
 - remove sfi_boxed_make_sequence
 - allow inverted synth-done (i.e. suitable for gate connecitons)
 - let the ADSR provide Gate-Out
-- reset-properties sets base-volume of BseAmplifier to 100% (should be 0)
-- add author and license display to palette
-- default-initialize authors: field with user name
+- default-initialize authors field of objects with user name
 - add default-settings config preference (authors, license)
 - evaluate elimination of seqid
 - implement auto-save feature

@@ -464,14 +464,14 @@ move_start (BstPianoRollController *self,
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
       controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Note"), NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
       if (bse_part_is_event_selected (part, self->obj_id))
 	self->sel_pseq = bse_part_note_seq_copy_shallow (bse_part_list_selected_notes (part));
     }
   else
     {
       gxk_status_set (GXK_STATUS_ERROR, _("Move Note"), _("No target"));
-      drag->state = BST_DRAG_HANDLED;
+      drag->state = GXK_DRAG_HANDLED;
     }
 }
 
@@ -504,7 +504,7 @@ move_group_motion (BstPianoRollController *self,
 			    pnote->fine_tune,
 			    pnote->velocity);
     }
-  if (drag->type == BST_DRAG_DONE)
+  if (drag->type == GXK_DRAG_DONE)
     {
       bse_part_note_seq_free (self->sel_pseq);
       self->sel_pseq = NULL;
@@ -535,7 +535,7 @@ move_motion (BstPianoRollController *self,
     {
       bse_item_group_undo (part, "Move Note");
       if (bse_part_delete_event (part, self->obj_id) != BSE_ERROR_NONE)
-        drag->state = BST_DRAG_ERROR;
+        drag->state = GXK_DRAG_ERROR;
       else
 	{
 	  self->obj_id = bse_part_insert_note_auto (part, new_tick, self->obj_duration,
@@ -543,7 +543,7 @@ move_motion (BstPianoRollController *self,
 	  self->obj_tick = new_tick;
 	  self->obj_note = drag->current_note;
 	  if (!self->obj_id)
-	    drag->state = BST_DRAG_ERROR;
+	    drag->state = GXK_DRAG_ERROR;
 	}
       bse_item_ungroup_undo (part);
     }
@@ -576,12 +576,12 @@ resize_start (BstPianoRollController *self,
 	self->tick_bound = self->obj_tick;
       controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RESIZE);
       gxk_status_set (GXK_STATUS_WAIT, _("Resize Note"), NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
     }
   else
     {
       gxk_status_set (GXK_STATUS_ERROR, _("Resize Note"), _("No target"));
-      drag->state = BST_DRAG_HANDLED;
+      drag->state = GXK_DRAG_HANDLED;
     }
 }
 
@@ -609,17 +609,17 @@ resize_motion (BstPianoRollController *self,
 	{
 	  BseErrorType error = bse_part_delete_event (part, self->obj_id);
 	  if (error)
-	    drag->state = BST_DRAG_ERROR;
+	    drag->state = GXK_DRAG_ERROR;
 	  self->obj_id = 0;
 	}
-      if (new_duration && drag->state != BST_DRAG_ERROR)
+      if (new_duration && drag->state != GXK_DRAG_ERROR)
 	{
 	  self->obj_id = bse_part_insert_note_auto (part, new_tick, new_duration,
                                                     self->obj_note, self->obj_fine_tune, self->obj_velocity);
 	  self->obj_tick = new_tick;
 	  self->obj_duration = new_duration;
 	  if (!self->obj_id)
-	    drag->state = BST_DRAG_ERROR;
+	    drag->state = GXK_DRAG_ERROR;
 	}
       bse_item_ungroup_undo (part);
     }
@@ -644,7 +644,7 @@ delete_start (BstPianoRollController *self,
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Delete Note"), _("No target"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -666,7 +666,7 @@ insert_start (BstPianoRollController *self,
 	}
     }
   bst_status_eprintf (error, _("Insert Note"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -676,7 +676,7 @@ select_start (BstPianoRollController *self,
   drag->start_tick = bst_piano_roll_controller_quantize (self, drag->start_tick);
   bst_piano_roll_set_view_selection (drag->proll, drag->start_tick, 0, 0, 0);
   gxk_status_set (GXK_STATUS_WAIT, _("Select Region"), NULL);
-  drag->state = BST_DRAG_CONTINUE;
+  drag->state = GXK_DRAG_CONTINUE;
 }
 
 static void
@@ -690,7 +690,7 @@ select_motion (BstPianoRollController *self,
   gint max_note = MAX (drag->start_note, drag->current_note);
 
   bst_piano_roll_set_view_selection (drag->proll, start_tick, end_tick - start_tick, min_note, max_note);
-  if (drag->type == BST_DRAG_DONE)
+  if (drag->type == GXK_DRAG_DONE)
     {
       bse_part_select_notes_exclusive (part, start_tick, end_tick - start_tick, min_note, max_note);
       bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
@@ -712,7 +712,7 @@ vselect_start (BstPianoRollController *self,
   drag->start_tick = bst_piano_roll_controller_quantize (self, drag->start_tick);
   bst_piano_roll_set_view_selection (drag->proll, drag->start_tick, 0, drag->proll->min_note, drag->proll->max_note);
   gxk_status_set (GXK_STATUS_WAIT, _("Vertical Select"), NULL);
-  drag->state = BST_DRAG_CONTINUE;
+  drag->state = GXK_DRAG_CONTINUE;
 }
 
 static void
@@ -725,7 +725,7 @@ vselect_motion (BstPianoRollController *self,
 
   bst_piano_roll_set_view_selection (drag->proll, start_tick, end_tick - start_tick,
 				     drag->proll->min_note, drag->proll->max_note);
-  if (drag->type == BST_DRAG_DONE)
+  if (drag->type == GXK_DRAG_DONE)
     {
       bse_part_select_notes_exclusive (part, start_tick, end_tick - start_tick,
                                        drag->proll->min_note, drag->proll->max_note);
@@ -771,7 +771,7 @@ controller_canvas_drag (BstPianoRollController *self,
   };
   guint i;
 
-  if (drag->type == BST_DRAG_START)
+  if (drag->type == GXK_DRAG_START)
     {
       BstGenericRollTool tool = BST_GENERIC_ROLL_TOOL_NONE;
       BsePartNoteSeq *pseq;
@@ -816,22 +816,22 @@ controller_canvas_drag (BstPianoRollController *self,
   g_return_if_fail (i < G_N_ELEMENTS (tool_table));
   switch (drag->type)
     {
-    case BST_DRAG_START:
+    case GXK_DRAG_START:
       if (tool_table[i].start)
 	tool_table[i].start (self, drag);
       break;
-    case BST_DRAG_MOTION:
-    case BST_DRAG_DONE:
+    case GXK_DRAG_MOTION:
+    case GXK_DRAG_DONE:
       if (tool_table[i].motion)
 	tool_table[i].motion (self, drag);
       break;
-    case BST_DRAG_ABORT:
+    case GXK_DRAG_ABORT:
       if (tool_table[i].abort)
 	tool_table[i].abort (self, drag);
       break;
     }
-  if (drag->type == BST_DRAG_DONE ||
-      drag->type == BST_DRAG_ABORT)
+  if (drag->type == GXK_DRAG_DONE ||
+      drag->type == GXK_DRAG_ABORT)
     controller_reset_canvas_cursor (self);
 }
 
@@ -848,8 +848,8 @@ controller_piano_drag (BstPianoRollController *self,
 
   if (project && track)
     {
-      if (drag->type == BST_DRAG_START ||
-	  (drag->type == BST_DRAG_MOTION &&
+      if (drag->type == GXK_DRAG_START ||
+	  (drag->type == GXK_DRAG_MOTION &&
 	   self->obj_note != drag->current_note))
 	{
 	  BseErrorType error;
@@ -859,11 +859,11 @@ controller_piano_drag (BstPianoRollController *self,
 	  if (error == BSE_ERROR_NONE)
 	    bse_song_synthesize_note (song, track, 384 * 4, self->obj_note, 0, 1.0);
 	  bst_status_eprintf (error, _("Play note"));
-	  drag->state = BST_DRAG_CONTINUE;
+	  drag->state = GXK_DRAG_CONTINUE;
 	}
     }
 
-  if (drag->type == BST_DRAG_START ||
-      drag->type == BST_DRAG_MOTION)
-    drag->state = BST_DRAG_CONTINUE;
+  if (drag->type == GXK_DRAG_START ||
+      drag->type == GXK_DRAG_MOTION)
+    drag->state = GXK_DRAG_CONTINUE;
 }

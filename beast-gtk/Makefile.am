@@ -37,8 +37,8 @@ beast_headers = $(strip \
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	\
-	bstsnifferscope.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
-	bstlogadjustment.h	bstitemview.h	bstmarker.h		bstknob.h	\
+	bstsnifferscope.h			bstfiledialog.h		bstgconfig.h	\
+	bstlogadjustment.h	bstitemview.h				bstknob.h	\
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
 	bstrackeditor.h		bstrackitem.h	bstracktable.h		\
@@ -56,8 +56,8 @@ beast_sources = $(strip \
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	\
-	bstsnifferscope.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
-	bstlogadjustment.c	bstitemview.c	bstmarker.c		bstknob.c	\
+	bstsnifferscope.c			bstfiledialog.c		bstgconfig.c	\
+	bstlogadjustment.c	bstitemview.c				bstknob.c	\
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
 	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
 	bstrackeditor.c		bstrackitem.c	bstracktable.c		\

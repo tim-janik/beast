@@ -18,7 +18,7 @@
 #ifndef __BST_TRACK_ROLL_H__
 #define __BST_TRACK_ROLL_H__
 
-#include "bstdragutils.h"
+#include "bstutils.h"
 
 G_BEGIN_DECLS
 

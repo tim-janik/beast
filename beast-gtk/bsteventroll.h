@@ -18,7 +18,6 @@
 #ifndef __BST_EVENT_ROLL_H__
 #define __BST_EVENT_ROLL_H__
 
-#include	"bstdragutils.h"
 #include	"bstsegment.h"
 
 G_BEGIN_DECLS

@@ -408,7 +408,7 @@ edit_name_start (BstTrackRollController *self,
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Edit Part"), _("No Part"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -442,7 +442,7 @@ insert_start (BstTrackRollController *self,
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
           bse_item_ungroup_undo (song);
-	  drag->state = BST_DRAG_HANDLED;
+	  drag->state = GXK_DRAG_HANDLED;
 	}
       else
 	gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Position taken"));
@@ -453,7 +453,7 @@ insert_start (BstTrackRollController *self,
 	gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Position taken"));
       else
 	gxk_status_set (GXK_STATUS_ERROR, _("Insert part"), _("No Track"));
-      drag->state = BST_DRAG_HANDLED;
+      drag->state = GXK_DRAG_HANDLED;
     }
 }
 
@@ -468,7 +468,7 @@ delete_start (BstTrackRollController *self,
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Delete Part"), _("No target"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -482,13 +482,13 @@ move_link_start (BstTrackRollController *self,
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
       controller_update_canvas_cursor (self, link_pending ? BST_GENERIC_ROLL_TOOL_LINK : BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
       self->skip_deletion = link_pending;
     }
   else
     {
       gxk_status_set (GXK_STATUS_ERROR, action, _("No target"));
-      drag->state = BST_DRAG_HANDLED;
+      drag->state = GXK_DRAG_HANDLED;
     }
 }
 
@@ -560,7 +560,7 @@ editor_create (BstTrackRollController *self,
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Start Editor"), _("No target"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -568,11 +568,11 @@ pointer_move (BstTrackRollController *self,
 	      BstTrackRollDrag       *drag)
 {
   if (self->song &&
-      drag->type != BST_DRAG_DONE) /* skip release events */
+      drag->type != GXK_DRAG_DONE) /* skip release events */
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
       bse_proxy_set (self->song, "tick-pointer", tick, NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
     }
 }
 
@@ -584,7 +584,7 @@ tick_left_move (BstTrackRollController *self,
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
       bse_proxy_set (self->song, "loop-left", tick, NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
     }
 }
 
@@ -596,7 +596,7 @@ tick_right_move (BstTrackRollController *self,
     {
       guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
       bse_proxy_set (self->song, "loop-right", tick, NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
     }
 }
 
@@ -627,7 +627,7 @@ controller_drag (BstTrackRollController *self,
   };
 
   /* initial drag handling */
-  if (drag->type == BST_DRAG_START)
+  if (drag->type == GXK_DRAG_START)
     {
       BstGenericRollTool obj_tool, tool;
       BseTrackPart *tpart = NULL;
@@ -693,21 +693,21 @@ controller_drag (BstTrackRollController *self,
   /* generic drag handling */
   switch (drag->type)
     {
-    case BST_DRAG_START:
+    case GXK_DRAG_START:
       if (self->current_tool->start)
 	self->current_tool->start (self, drag);
       break;
-    case BST_DRAG_MOTION:
-    case BST_DRAG_DONE:
+    case GXK_DRAG_MOTION:
+    case GXK_DRAG_DONE:
       if (self->current_tool->motion)
 	self->current_tool->motion (self, drag);
       break;
-    case BST_DRAG_ABORT:
+    case GXK_DRAG_ABORT:
       if (self->current_tool->abort)
 	self->current_tool->abort (self, drag);
       break;
     }
-  if (drag->type == BST_DRAG_DONE || drag->type == BST_DRAG_ABORT)
+  if (drag->type == GXK_DRAG_DONE || drag->type == GXK_DRAG_ABORT)
     {
       self->current_tool = NULL;
       controller_reset_canvas_cursor (self);

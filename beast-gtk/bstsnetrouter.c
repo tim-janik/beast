@@ -1021,7 +1021,13 @@ snet_router_tool2text (BstSNetRouter *self)
   GtkLabel *label = gxk_gadget_find (self->palette, "type-label");
   BseCategory *cat = ROUTER_TOOL (self) ? bse_category_from_id (ROUTER_TOOL (self)) : 0;
   const gchar *blurb = cat ? bse_type_blurb (cat->type) : NULL;
+  const gchar *authors = cat ? bse_type_authors (cat->type) : NULL;
+  const gchar *license = cat ? bse_type_license (cat->type) : NULL;
   const gchar *name = cat ? gxk_factory_path_get_leaf (cat->category) : NULL;
+  if (authors && !authors[0])
+    authors = NULL;
+  if (license && !license[0])
+    license = NULL;
   if (!blurb)
     {
       guint i;
@@ -1033,6 +1039,21 @@ snet_router_tool2text (BstSNetRouter *self)
           name = router_canvas_tools[i].name;
     }
   gxk_scroll_text_set (self->palette_text, blurb);
+  if (blurb && (authors || license))
+    gxk_scroll_text_append (self->palette_text, "\n");
+  if (authors)
+    {
+      gxk_scroll_text_append (self->palette_text, "\n");
+      gxk_scroll_text_append (self->palette_text, "Authors: ");
+      gxk_scroll_text_append (self->palette_text, authors);
+      gxk_scroll_text_append (self->palette_text, "\n");
+    }
+  if (license)
+    {
+      gxk_scroll_text_append (self->palette_text, "\n");
+      gxk_scroll_text_append (self->palette_text, "License: ");
+      gxk_scroll_text_append (self->palette_text, license);
+    }
   g_object_set (label, "label", name, NULL);
 }
 

@@ -349,14 +349,14 @@ move_start (BstEventRollController *self,
     {
       controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Control Event"), NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
       if (bse_part_is_event_selected (part, self->obj_id))
 	self->sel_cseq = bse_part_control_seq_copy_shallow (bse_part_list_selected_controls (part, CONTROL_TYPE (self)));
     }
   else
     {
       gxk_status_set (GXK_STATUS_ERROR, _("Move Control Event"), _("No target"));
-      drag->state = BST_DRAG_HANDLED;
+      drag->state = GXK_DRAG_HANDLED;
     }
 }
 
@@ -380,7 +380,7 @@ move_group_motion (BstEventRollController *self,
                                CONTROL_TYPE (self),
                                pctrl->value);
     }
-  if (drag->type == BST_DRAG_DONE)
+  if (drag->type == GXK_DRAG_DONE)
     {
       bse_part_control_seq_free (self->sel_cseq);
       self->sel_cseq = NULL;
@@ -408,7 +408,7 @@ move_motion (BstEventRollController *self,
       if (!cseq->n_pcontrols)    /* avoid overlap */
         {
           if (bse_part_change_control (part, self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != BSE_ERROR_NONE)
-            drag->state = BST_DRAG_ERROR;
+            drag->state = GXK_DRAG_ERROR;
           else
             self->obj_tick = new_tick;
         }
@@ -433,7 +433,7 @@ align_start (BstEventRollController *self,
 {
   bst_event_roll_init_segment (self->eroll, BST_SEGMENT_LINE);
   bst_event_roll_segment_start (self->eroll, drag->start_tick, drag->start_value);
-  drag->state = BST_DRAG_CONTINUE;
+  drag->state = GXK_DRAG_CONTINUE;
   gxk_status_set (GXK_STATUS_WAIT, _("Align Control Events"), NULL);
 }
 
@@ -442,7 +442,7 @@ align_motion (BstEventRollController *self,
               BstEventRollDrag       *drag)
 {
   bst_event_roll_segment_move_to (self->eroll, drag->current_tick, drag->current_value_raw);
-  if (drag->type == BST_DRAG_DONE)
+  if (drag->type == GXK_DRAG_DONE)
     {
       SfiProxy part = self->eroll->proxy;
       guint tick, duration, i;
@@ -494,7 +494,7 @@ insert_start (BstEventRollController *self,
   else /* no insertion */
     self->obj_id = 0;
   bst_status_eprintf (error, _("Insert Control Event"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -505,12 +505,12 @@ resize_start (BstEventRollController *self,
     {
       controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RESIZE);
       gxk_status_set (GXK_STATUS_WAIT, _("Resize Control Event"), NULL);
-      drag->state = BST_DRAG_CONTINUE;
+      drag->state = GXK_DRAG_CONTINUE;
     }
   else
     {
       gxk_status_set (GXK_STATUS_ERROR, _("Resize Control Event"), _("No target"));
-      drag->state = BST_DRAG_HANDLED;
+      drag->state = GXK_DRAG_HANDLED;
     }
 }
 
@@ -536,7 +536,7 @@ resize_motion (BstEventRollController *self,
       self->obj_value = drag->current_value;
       if (bse_part_change_control (part, self->obj_id, self->obj_tick, CONTROL_TYPE (self),
                                    self->obj_value) != BSE_ERROR_NONE)
-        drag->state = BST_DRAG_ERROR;
+        drag->state = GXK_DRAG_ERROR;
       bse_item_ungroup_undo (part);
     }
 }
@@ -560,7 +560,7 @@ delete_start (BstEventRollController *self,
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Delete Control Event"), _("No target"));
-  drag->state = BST_DRAG_HANDLED;
+  drag->state = GXK_DRAG_HANDLED;
 }
 
 static void
@@ -570,7 +570,7 @@ select_start (BstEventRollController *self,
   drag->start_tick = bst_event_roll_controller_quantize (self, drag->start_tick);
   bst_event_roll_set_view_selection (drag->eroll, drag->start_tick, 0);
   gxk_status_set (GXK_STATUS_WAIT, _("Select Region"), NULL);
-  drag->state = BST_DRAG_CONTINUE;
+  drag->state = GXK_DRAG_CONTINUE;
 }
 
 static void
@@ -582,7 +582,7 @@ select_motion (BstEventRollController *self,
   guint end_tick = MAX (drag->start_tick, drag->current_tick);
   
   bst_event_roll_set_view_selection (drag->eroll, start_tick, end_tick - start_tick);
-  if (drag->type == BST_DRAG_DONE)
+  if (drag->type == GXK_DRAG_DONE)
     {
       bse_part_select_controls_exclusive (part, start_tick, end_tick - start_tick, CONTROL_TYPE (self));
       bst_event_roll_set_view_selection (drag->eroll, 0, 0);
@@ -628,7 +628,7 @@ controller_canvas_drag (BstEventRollController *self,
   
   // sfi_debug ("canvas drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
 
-  if (drag->type == BST_DRAG_START)
+  if (drag->type == GXK_DRAG_START)
     {
       BstGenericRollTool tool = BST_GENERIC_ROLL_TOOL_NONE;
       BsePartControlSeq *cseq;
@@ -688,22 +688,22 @@ controller_canvas_drag (BstEventRollController *self,
   g_return_if_fail (i < G_N_ELEMENTS (tool_table));
   switch (drag->type)
     {
-    case BST_DRAG_START:
+    case GXK_DRAG_START:
       if (tool_table[i].start)
 	tool_table[i].start (self, drag);
       break;
-    case BST_DRAG_MOTION:
-    case BST_DRAG_DONE:
+    case GXK_DRAG_MOTION:
+    case GXK_DRAG_DONE:
       if (tool_table[i].motion)
 	tool_table[i].motion (self, drag);
       break;
-    case BST_DRAG_ABORT:
+    case GXK_DRAG_ABORT:
       if (tool_table[i].abort)
 	tool_table[i].abort (self, drag);
       break;
     }
-  if (drag->type == BST_DRAG_DONE ||
-      drag->type == BST_DRAG_ABORT)
+  if (drag->type == GXK_DRAG_DONE ||
+      drag->type == GXK_DRAG_ABORT)
     controller_reset_canvas_cursor (self);
 }
 
@@ -713,7 +713,7 @@ controller_vpanel_drag (BstEventRollController *self,
 {
   // sfi_debug ("vpanel drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
   
-  if (drag->type == BST_DRAG_START ||
-      drag->type == BST_DRAG_MOTION)
-    drag->state = BST_DRAG_CONTINUE;
+  if (drag->type == GXK_DRAG_START ||
+      drag->type == GXK_DRAG_MOTION)
+    drag->state = GXK_DRAG_CONTINUE;
 }
