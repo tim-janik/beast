@@ -20,6 +20,7 @@ plugin_idl_files = $(strip		\
 	artscompressor.idl		\
 	davbassfilter.idl		\
 	bsecontribsampleandhold.idl	\
+	bsenoise.idl			\
 )
 EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files
@@ -44,7 +45,6 @@ PLUGIN_CFILES = $(strip		\
 	bseiirfilter.[hc]	\
 	bsemixer.[hc]		\
 	bsemult.[hc]		\
-	bsenoise.[hc]		\
 	bsesimpleadsr.[hc]	\
 	bsesequencer.[hc]	\
 	davorgan.[hc]		\

@@ -46,15 +46,6 @@ EXTRA_HEADERS      += bsemult.h
 plugin_LTLIBRARIES += bsemult.la
 
 ##
-## Plugin bsenoise
-##
-bsenoise_la_SOURCES = bsenoise.c
-bsenoise_la_LDFLAGS = -module $(plugin_ldflags)
-bsenoise_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bsenoise.h
-plugin_LTLIBRARIES += bsenoise.la
-
-##
 ## Plugin bsesimpleadsr
 ##
 bsesimpleadsr_la_SOURCES = bsesimpleadsr.c
@@ -160,5 +151,15 @@ bsecontribsampleandhold_la_LIBADD  = $(plugin_libs)
 $(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.gen-idl.h
 plugins_built_sources += bsecontribsampleandhold.gen-idl.h
 plugin_LTLIBRARIES    += bsecontribsampleandhold.la
+
+##
+## Plugin bsenoise
+##
+bsenoise_la_SOURCES = bsenoise.cc
+bsenoise_la_LDFLAGS = -module $(plugin_ldflags)
+bsenoise_la_LIBADD  = $(plugin_libs)
+$(srcdir)/bsenoise.cc: bsenoise.gen-idl.h
+plugins_built_sources += bsenoise.gen-idl.h
+plugin_LTLIBRARIES    += bsenoise.la
 
 ## Generated data ends here

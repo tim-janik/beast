@@ -1,3 +1,9 @@
+Sun Jul 18 21:54:09 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsenoise.cc bsenoise.idl: C++ified the noise module from bsenoise.[hc].
+
+	* bsenoise.[hc]: Obsolete, removed.
+
 Tue Aug 31 08:11:50 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecontribsampleandhold.idl:
