@@ -1,3 +1,8 @@
+Mon Sep 13 21:52:07 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]: removed gxk_object_derive(), a suitable
+	replacement is provided by G_DEFINE_TYPE(), fixed callers.
+
 Mon Sep 13 21:24:40 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/beast-index.texi: document list and link list updates.

@@ -325,24 +325,6 @@ gboolean	gxk_signal_handler_pending	(gpointer	 instance,
 						 gpointer	 data);
 
 
-/* --- derivation convenience --- */
-typedef enum /*< skip >*/
-{
-  GXK_METHOD_NONE,
-  GXK_METHOD_INIT,
-  GXK_METHOD_FINALIZE,
-  GXK_METHOD_DISPOSE,
-  GXK_METHOD_DESTROY,
-} GxkMethodType;
-GType	gxk_object_derive	(GType		parent_type,
-				 const gchar   *name,
-				 gpointer      *parent_class_p,
-				 guint          instance_size,
-				 guint          class_size,
-				 GxkMethodType  mtype,
-				 ...);
-
-
 /* --- zlib support --- */
 gchar*  gxk_zfile_uncompress    (guint                uncompressed_size,
                                  const unsigned char *cdata,

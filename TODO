@@ -1,5 +1,4 @@
 FIXMES:	(release-critical)
-- remove gxk_object_derive ?
 - how are nodes scheduled that have different depth (levels) due to different consumers?
 - implement solo for master
 - ensure there always is a master
