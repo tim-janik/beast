@@ -44,7 +44,7 @@ struct _BseLadspaModuleClass
 {
   BseSourceClass parent_class;
   BseLadspaInfo *bli;
-  GslClass *gsl_class;
+  BseModuleClass *gsl_class;
 };
 
 void	bse_ladspa_module_derived_type_info	(GType			type,

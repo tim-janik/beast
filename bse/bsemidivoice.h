@@ -63,12 +63,12 @@ void           bse_midi_voice_switch_set_midi_channel (BseMidiVoiceSwitch *self,
                                                        guint               midi_channel);
 BseMidiContext bse_midi_voice_switch_ref_poly_voice   (BseMidiVoiceSwitch *self,
                                                        guint               context_handle,
-                                                       GslTrans           *trans);
+                                                       BseTrans           *trans);
 BseMidiContext bse_midi_voice_switch_peek_poly_voice  (BseMidiVoiceSwitch *self,
                                                        guint               context_handle);
 void           bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
                                                        guint               context_handle,
-                                                       GslTrans           *trans);
+                                                       BseTrans           *trans);
 void           bse_midi_voice_input_set_voice_switch  (BseMidiVoiceInput  *self,
                                                        BseMidiVoiceSwitch *voice_switch);
 

@@ -53,7 +53,7 @@ static void	   bse_biquad_filter_get_property	(GObject		*object,
 							 GParamSpec		*pspec);
 static void	   bse_biquad_filter_context_create	(BseSource		*source,
 							 guint			 context_handle,
-							 GslTrans		*trans);
+							 BseTrans		*trans);
 static void	   bse_biquad_filter_update_modules	(BseBiquadFilter	*self);
 
 
@@ -317,7 +317,7 @@ typedef struct {
 } FilterModule;
 
 static void
-biquad_filter_access (GslModule *module,
+biquad_filter_access (BseModule *module,
 		      gpointer   data)
 {
   FilterModule *fmod = module->user_data;
@@ -337,7 +337,7 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
   if (BSE_SOURCE_PREPARED (self))
     {
       FilterModule *cfg = g_new0 (FilterModule, 1);
-      gfloat nyquist_freq = 0.5 * gsl_engine_sample_freq ();
+      gfloat nyquist_freq = 0.5 * bse_engine_sample_freq ();
       
       cfg->base_freq = MIN (self->freq, nyquist_freq);
       cfg->gain = self->gain;
@@ -381,57 +381,57 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
 }
 
 static void
-biquad_filter_reset (GslModule *module)
+biquad_filter_reset (BseModule *module)
 {
   FilterModule *fmod = module->user_data;
-  gfloat nyquist_freq = 0.5 * gsl_engine_sample_freq ();
+  gfloat nyquist_freq = 0.5 * bse_engine_sample_freq ();
   
   gsl_biquad_config_setup (&fmod->config, fmod->base_freq / nyquist_freq, fmod->gain, 0);
   gsl_biquad_filter_config (&fmod->biquad, &fmod->config, TRUE);
 }
 
 static void
-biquad_filter_process (GslModule *module,
+biquad_filter_process (BseModule *module,
 		       guint      n_values)
 {
   FilterModule *fmod = module->user_data;
-  const gfloat *audio_in = GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);
-  gfloat *sig_out = GSL_MODULE_OBUFFER (module, BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
+  const gfloat *audio_in = BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);
+  gfloat *sig_out = BSE_MODULE_OBUFFER (module, BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
   gfloat *bound = sig_out + n_values;
   gboolean sig_out_as_freq = TRUE;
   
-  if (GSL_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected &&
-      GSL_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
+  if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected &&
+      BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
     gsl_frequency_modulator (&fmod->fm,
 			     n_values,
-			     GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ),
-			     GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD),
+			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ),
+			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD),
 			     sig_out);
-  else if (GSL_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected)
+  else if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected)
     gsl_frequency_modulator (&fmod->fm,
 			     n_values,
-			     GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ),
+			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ),
 			     NULL,
 			     sig_out);
-  else if (GSL_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
+  else if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
     gsl_frequency_modulator (&fmod->fm,
 			     n_values,
 			     NULL,
-			     GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD),
+			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD),
 			     sig_out);
   else
     sig_out_as_freq = FALSE;
   
-  if (GSL_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD).connected && sig_out_as_freq)
+  if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD).connected && sig_out_as_freq)
     {
-      const gfloat *gain_in = GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
-      gfloat freq, nyquist = 0.5 * gsl_engine_sample_freq ();
+      const gfloat *gain_in = BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
+      gfloat freq, nyquist = 0.5 * bse_engine_sample_freq ();
       gfloat last_gain = fmod->config.gain / fmod->gain_strength;
       gfloat last_freq = GSL_SIGNAL_FROM_FREQ (fmod->config.f_fn * nyquist);
       nyquist = 1.0 / nyquist;
       do
 	{
-	  guint n = MIN (bound - sig_out, gsl_engine_control_raster ());
+	  guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
 	  if_reject (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq))
 	    {
@@ -460,12 +460,12 @@ biquad_filter_process (GslModule *module,
     }
   else if (sig_out_as_freq)
     {
-      gfloat freq, nyquist = 0.5 * gsl_engine_sample_freq ();
+      gfloat freq, nyquist = 0.5 * bse_engine_sample_freq ();
       gfloat last_freq = GSL_SIGNAL_FROM_FREQ (fmod->config.f_fn * nyquist);
       nyquist = 1.0 / nyquist;
       do
 	{
-          guint n = MIN (bound - sig_out, gsl_engine_control_raster ());
+          guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
           if_reject (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq))
 	    {
@@ -480,13 +480,13 @@ biquad_filter_process (GslModule *module,
 	}
       while (sig_out < bound);
     }
-  else if (GSL_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD).connected)
+  else if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD).connected)
     {
-      const gfloat *gain_in = GSL_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
+      const gfloat *gain_in = BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
       gfloat last_gain = fmod->config.gain / fmod->gain_strength;
       do
 	{
-          guint n = MIN (bound - sig_out, gsl_engine_control_raster ());
+          guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
 	  if_reject (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain))
 	    {
@@ -508,22 +508,22 @@ biquad_filter_process (GslModule *module,
 static void
 bse_biquad_filter_context_create (BseSource *source,
 				  guint      context_handle,
-				  GslTrans  *trans)
+				  BseTrans  *trans)
 {
-  static const GslClass biquad_filter_class = {
+  static const BseModuleClass biquad_filter_class = {
     BSE_BIQUAD_FILTER_N_ICHANNELS,	/* n_istreams */
     0,					/* n_jstreams */
     BSE_BIQUAD_FILTER_N_OCHANNELS,	/* n_ostreams */
     biquad_filter_process,		/* process */
     NULL,                       	/* process_defer */
     biquad_filter_reset,		/* reset */
-    (GslModuleFreeFunc) g_free,		/* free */
-    GSL_COST_NORMAL,			/* flags */
+    (BseModuleFreeFunc) g_free,		/* free */
+    BSE_COST_NORMAL,			/* flags */
   };
   BseBiquadFilter *self = BSE_BIQUAD_FILTER (source);
   FilterModule *fmod = g_new0 (FilterModule, 1);
-  gfloat nyquist_freq = 0.5 * gsl_engine_sample_freq ();
-  GslModule *module;
+  gfloat nyquist_freq = 0.5 * bse_engine_sample_freq ();
+  BseModule *module;
   
   fmod->base_freq = MIN (self->freq, nyquist_freq);
   fmod->gain = self->gain;
@@ -536,13 +536,13 @@ bse_biquad_filter_context_create (BseSource *source,
   gsl_biquad_config_init (&fmod->config, self->filter_type, self->norm_type);
   gsl_biquad_config_setup (&fmod->config, fmod->base_freq / nyquist_freq, fmod->gain, 0);
   
-  module = gsl_module_new (&biquad_filter_class, fmod);
+  module = bse_module_new (&biquad_filter_class, fmod);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

@@ -56,7 +56,7 @@ static BseItemSeq* bse_wave_osc_list_items      (BseItem                *item,
                                                  GParamSpec             *pspec);
 static void     bse_wave_osc_context_create     (BseSource              *source,
                                                  guint                   context_handle,
-                                                 GslTrans               *trans);
+                                                 BseTrans               *trans);
 static void   bse_wave_osc_update_config_wchunk (BseWaveOsc             *self);
 static void     bse_wave_osc_update_modules     (BseWaveOsc             *self);
 
@@ -225,7 +225,7 @@ clear_wave_and_esample (BseWaveOsc *self)
            * before we continue (since bse_wave_drop_index() will destroy
            * the wchunk index)
            */
-          gsl_engine_wait_on_trans ();
+          bse_engine_wait_on_trans ();
         }
       bse_wave_drop_index (wave);
       g_object_notify (self, "wave");
@@ -242,7 +242,7 @@ clear_wave_and_esample (BseWaveOsc *self)
           /* need to make sure our modules know about the wave chunk vanishing
            * before we return (so the wchunk update propagates)
            */
-          gsl_engine_wait_on_trans ();
+          bse_engine_wait_on_trans ();
         }
       gsl_wave_chunk_close (esample_wchunk);
     }
@@ -265,7 +265,7 @@ bse_wave_osc_set_from_esample (BseWaveOsc        *self,
           bse_wave_osc_update_config_wchunk (self);
           bse_wave_osc_update_modules (self);
           if (BSE_SOURCE_PREPARED (self))
-            gsl_engine_wait_on_trans ();
+            bse_engine_wait_on_trans ();
         }
     }
 }
@@ -299,7 +299,7 @@ bse_wave_osc_set_property (GObject      *object,
                   /* need to make sure our modules know about BseWave vanishing
                    * before we return (so the wchunk update propagates)
                    */
-                  gsl_engine_wait_on_trans ();
+                  bse_engine_wait_on_trans ();
                 }
             }
         }
@@ -387,7 +387,7 @@ bse_wave_osc_finalize (GObject *object)
 }
 
 static void
-wosc_access (GslModule *module,
+wosc_access (BseModule *module,
              gpointer   data)
 {
   GslWaveOscData *wosc = module->user_data;
@@ -437,7 +437,7 @@ bse_wave_osc_update_modules (BseWaveOsc *self)
 
 static void
 wosc_free (gpointer        data,
-           const GslClass *klass)
+           const BseModuleClass *klass)
 {
   GslWaveOscData *wosc = data;
   
@@ -446,7 +446,7 @@ wosc_free (gpointer        data,
 }
 
 static void
-wosc_process (GslModule *module,
+wosc_process (BseModule *module,
               guint      n_values)
 {
   GslWaveOscData *wosc = module->user_data;
@@ -454,20 +454,20 @@ wosc_process (GslModule *module,
   
   gsl_wave_osc_process (wosc,
                         n_values,
-                        (GSL_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_FREQ).connected ?
-                         GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_FREQ) : NULL),
-                        (GSL_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_MOD).connected ?
-                         GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_MOD) : NULL),
-                        (GSL_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_SYNC).connected ?
-                         GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_SYNC) : NULL),
-                        GSL_MODULE_OBUFFER (module, BSE_WAVE_OSC_OCHANNEL_WAVE));
+                        (BSE_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_FREQ).connected ?
+                         BSE_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_FREQ) : NULL),
+                        (BSE_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_MOD).connected ?
+                         BSE_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_MOD) : NULL),
+                        (BSE_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_SYNC).connected ?
+                         BSE_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_SYNC) : NULL),
+                        BSE_MODULE_OBUFFER (module, BSE_WAVE_OSC_OCHANNEL_WAVE));
   
   gate = wosc->done ? 0.0 : 1.0;
-  module->ostreams[BSE_WAVE_OSC_OCHANNEL_GATE].values = gsl_engine_const_values (gate);
+  module->ostreams[BSE_WAVE_OSC_OCHANNEL_GATE].values = bse_engine_const_values (gate);
 }
 
 static void
-wosc_reset (GslModule *module)
+wosc_reset (BseModule *module)
 {
   GslWaveOscData *wosc = module->user_data;
   gsl_wave_osc_reset (wosc);
@@ -476,9 +476,9 @@ wosc_reset (GslModule *module)
 static void
 bse_wave_osc_context_create (BseSource *source,
                              guint      context_handle,
-                             GslTrans  *trans)
+                             BseTrans  *trans)
 {
-  static const GslClass wosc_class = {
+  static const BseModuleClass wosc_class = {
     BSE_WAVE_OSC_N_ICHANNELS,   /* n_istreams */
     0,                          /* n_jstreams */
     BSE_WAVE_OSC_N_OCHANNELS,   /* n_ostreams */
@@ -486,22 +486,22 @@ bse_wave_osc_context_create (BseSource *source,
     NULL,                       /* process_defer */
     wosc_reset,                 /* reset */
     wosc_free,                  /* free */
-    GSL_COST_NORMAL,            /* cost */
+    BSE_COST_NORMAL,            /* cost */
   };
   BseWaveOsc *self = BSE_WAVE_OSC (source);
   GslWaveOscData *wosc = g_new0 (GslWaveOscData, 1);
-  GslModule *module;
+  BseModule *module;
   
   gsl_wave_osc_init (wosc);
   gsl_wave_osc_config (wosc, &self->config);
   
-  module = gsl_module_new (&wosc_class, wosc);
+  module = bse_module_new (&wosc_class, wosc);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -516,7 +516,7 @@ typedef struct {
 } PcmPos;
 
 static void
-pcm_pos_access (GslModule *module,
+pcm_pos_access (BseModule *module,
                 gpointer   data)
 {
   GslWaveOscData *wosc = module->user_data;

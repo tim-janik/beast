@@ -78,7 +78,7 @@ typedef struct _BseSourceChannelDefs	BseSourceChannelDefs;
 typedef struct _BseSourceProbes		BseSourceProbes;
 typedef void (*BseSourceFreeContextData) (BseSource *source,
 					  gpointer   data,
-					  GslTrans  *trans);
+					  BseTrans  *trans);
 struct _BseSourceOutput
 {
   BseSource *osource;
@@ -125,13 +125,13 @@ struct _BseSourceClass
   void		(*prepare)		(BseSource	*source);
   void		(*context_create)	(BseSource	*source,
 					 guint		 context_handle,
-					 GslTrans	*trans);
+					 BseTrans	*trans);
   void		(*context_connect)	(BseSource	*source,
 					 guint		 context_handle,
-					 GslTrans	*trans);
+					 BseTrans	*trans);
   void		(*context_dismiss)	(BseSource	*source,
 					 guint		 context_handle,
-					 GslTrans	*trans);
+					 BseTrans	*trans);
   void		(*reset)		(BseSource	*source);
 
   /*< private >*/
@@ -143,7 +143,7 @@ struct _BseSourceClass
 			 guint		 ichannel,
 			 BseSource	*osource,
 			 guint		 ochannel);
-  GslClass *gsl_class;
+  BseModuleClass *gsl_class;
 };
 
 
@@ -188,32 +188,32 @@ guint	    bse_source_class_add_ochannel      	(BseSourceClass	*source_class,
 						 const gchar	*blurb);
 void		bse_source_set_context_imodule	(BseSource	*source,
 						 guint		 context_handle,
-						 GslModule	*imodule);
+						 BseModule	*imodule);
 void		bse_source_set_context_omodule	(BseSource	*source,
 						 guint		 context_handle,
-						 GslModule	*omodule);
-GslModule*	bse_source_get_context_imodule	(BseSource	*source,
+						 BseModule	*omodule);
+BseModule*	bse_source_get_context_imodule	(BseSource	*source,
 						 guint		 context_handle);
-GslModule*	bse_source_get_context_omodule	(BseSource	*source,
+BseModule*	bse_source_get_context_omodule	(BseSource	*source,
 						 guint		 context_handle);
 void		bse_source_flow_access_module	(BseSource	*source,
 						 guint		 context_handle,
 						 guint64	 tick_stamp,
-						 GslAccessFunc   access_func,
+						 BseEngineAccessFunc   access_func,
 						 gpointer	 data,
-						 GslFreeFunc	 data_free_func,
-						 GslTrans	*trans);
+						 BseFreeFunc	 data_free_func,
+						 BseTrans	*trans);
 void		bse_source_flow_access_modules	(BseSource	*source,
 						 guint64	 tick_stamp,
-						 GslAccessFunc   access_func,
+						 BseEngineAccessFunc   access_func,
 						 gpointer	 data,
-						 GslFreeFunc	 data_free_func,
-						 GslTrans	*trans);
+						 BseFreeFunc	 data_free_func,
+						 BseTrans	*trans);
 void		bse_source_access_modules	(BseSource	*source,
-						 GslAccessFunc   access_func,
+						 BseEngineAccessFunc   access_func,
 						 gpointer	 data,
-						 GslFreeFunc	 data_free_func,
-						 GslTrans	*trans);
+						 BseFreeFunc	 data_free_func,
+						 BseTrans	*trans);
 BseErrorType    bse_source_check_input          (BseSource      *source,
                                                  guint           ichannel,
                                                  BseSource      *osource,
@@ -226,15 +226,15 @@ void       bse_source_input_backup_to_undo      (BseSource      *source,
                                                  guint           ochannel);
 /* convenience */
 void    	bse_source_class_cache_gsl_class(BseSourceClass	*source_class,
-						 const GslClass *gsl_class);
+						 const BseModuleClass *gsl_class);
 void		bse_source_set_context_module	(BseSource	*source,
 						 guint		 context_handle,
-						 GslModule	*module);
+						 BseModule	*module);
 void		bse_source_update_modules	(BseSource	*source,
 						 guint		 member_offset,
 						 gpointer	 member_data,
 						 guint		 member_size,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 void		bse_source_clear_ichannels	(BseSource	*source);
 void		bse_source_clear_ochannels	(BseSource	*source);
 
@@ -251,19 +251,19 @@ void	 bse_source_create_context_with_data	(BseSource	*source,
 						 guint		 context_handle,
 						 gpointer	 data,
 						 BseSourceFreeContextData free_data,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 void		bse_source_create_context	(BseSource	*source,
 						 guint		 context_handle,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 void		bse_source_connect_context	(BseSource	*source,
 						 guint		 context_handle,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 void		bse_source_dismiss_context	(BseSource	*source,
 						 guint		 context_handle,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 void		bse_source_recreate_context	(BseSource	*source,
 						 guint		 context_handle,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 void		bse_source_prepare		(BseSource	*source);
 void		bse_source_reset		(BseSource	*source);
 guint*		bse_source_context_ids		(BseSource	*source,

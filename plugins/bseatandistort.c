@@ -43,7 +43,7 @@ static void	 bse_atan_distort_get_property	      (GObject			*object,
 						       GParamSpec               *pspec);
 static void	 bse_atan_distort_context_create      (BseSource		*source,
 						       guint			 context_handle,
-						       GslTrans			*trans);
+						       BseTrans			*trans);
 static void	 bse_atan_distort_update_modules      (BseAtanDistort		*comp);
 
 
@@ -171,7 +171,7 @@ bse_atan_distort_update_modules (BseAtanDistort *self)
 }
 
 static void
-atan_distort_process (GslModule *module,
+atan_distort_process (BseModule *module,
 		      guint      n_values)
 {
   AtanDistortModule *admod = module->user_data;
@@ -189,7 +189,7 @@ atan_distort_process (GslModule *module,
       /* reset our output buffer to static-0s, this is faster
        * than using memset()
        */
-      module->ostreams[BSE_ATAN_DISTORT_OCHANNEL_MONO1].values = gsl_engine_const_values (0);
+      module->ostreams[BSE_ATAN_DISTORT_OCHANNEL_MONO1].values = bse_engine_const_values (0);
       return;
     }
   
@@ -202,24 +202,24 @@ atan_distort_process (GslModule *module,
 static void
 bse_atan_distort_context_create (BseSource *source,
 				 guint      context_handle,
-				 GslTrans  *trans)
+				 BseTrans  *trans)
 {
-  static const GslClass admod_class = {
+  static const BseModuleClass admod_class = {
     BSE_ATAN_DISTORT_N_ICHANNELS, /* n_istreams */
     0,                            /* n_jstreams */
     BSE_ATAN_DISTORT_N_OCHANNELS, /* n_ostreams */
     atan_distort_process,	  /* process */
     NULL,                         /* process_defer */
     NULL,                         /* reset */
-    (GslModuleFreeFunc) g_free,	  /* free */
-    GSL_COST_NORMAL,		  /* cost */
+    (BseModuleFreeFunc) g_free,	  /* free */
+    BSE_COST_NORMAL,		  /* cost */
   };
   BseAtanDistort *self = BSE_ATAN_DISTORT (source);
   AtanDistortModule *admod;
-  GslModule *module;
+  BseModule *module;
   
   /* for each context that BseAtanDistort is used in, we create
-   * a GslModule with data portion AtanDistortModule, that runs
+   * a BseModule with data portion AtanDistortModule, that runs
    * in the synthesis engine.
    */
   admod = g_new0 (AtanDistortModule, 1);
@@ -227,10 +227,10 @@ bse_atan_distort_context_create (BseSource *source,
   /* initial setup of module parameters */
   admod->prescale = self->prescale;
   
-  /* create a GslModule with AtanDistortModule as user_data */
-  module = gsl_module_new (&admod_class, admod);
+  /* create a BseModule with AtanDistortModule as user_data */
+  module = bse_module_new (&admod_class, admod);
   
-  /* the istreams and ostreams of our GslModule map 1:1 to
+  /* the istreams and ostreams of our BseModule map 1:1 to
    * BseAtanDistort's input/output channels, so we can call
    * bse_source_set_context_module() which does all the internal
    * crap of mapping istreams/ostreams of the module to
@@ -239,7 +239,7 @@ bse_atan_distort_context_create (BseSource *source,
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

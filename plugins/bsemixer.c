@@ -51,9 +51,9 @@ static void	 bse_mixer_get_property		(GObject	*object,
 						 GParamSpec     *pspec);
 static void	 bse_mixer_context_create	(BseSource      *source,
 						 guint           context_handle,
-						 GslTrans       *trans);
+						 BseTrans       *trans);
 static void	 bse_mixer_update_modules	(BseMixer	*self,
-						 GslTrans       *trans);
+						 BseTrans       *trans);
 
 
 /* --- Export to BSE --- */
@@ -286,7 +286,7 @@ typedef struct
 
 static void
 bse_mixer_update_modules (BseMixer *self,
-			  GslTrans *trans)
+			  BseTrans *trans)
 {
   gfloat volumes[BSE_MIXER_N_INPUTS];
   guint i;
@@ -302,21 +302,21 @@ bse_mixer_update_modules (BseMixer *self,
 }
 
 static void
-mixer_process (GslModule *module,
+mixer_process (BseModule *module,
 	       guint      n_values)
 {
   Mixer *mixer = module->user_data;
-  gfloat *wave_out = GSL_MODULE_OBUFFER (module, 0);
+  gfloat *wave_out = BSE_MODULE_OBUFFER (module, 0);
   gfloat *wave_bound = wave_out + n_values;
   
   if (module->ostreams[0].connected)
     {
       guint n;
       
-      for (n = 0; n < GSL_MODULE_N_ISTREAMS (module); n++)
+      for (n = 0; n < BSE_MODULE_N_ISTREAMS (module); n++)
 	if (module->istreams[n].connected)
 	  {
-	    const gfloat *wave_in = GSL_MODULE_IBUFFER (module, n);
+	    const gfloat *wave_in = BSE_MODULE_IBUFFER (module, n);
 	    gfloat *w = wave_out;
 	    gfloat volume = mixer->volumes[n];
 	    
@@ -326,12 +326,12 @@ mixer_process (GslModule *module,
 	      do { *w++ = *wave_in++; } while (w < wave_bound);
 	    break;
 	  }
-      if (n >= GSL_MODULE_N_ISTREAMS (module))
+      if (n >= BSE_MODULE_N_ISTREAMS (module))
 	memset (wave_out, 0, sizeof (wave_out[0]) * n_values);
-      for (n += 1; n < GSL_MODULE_N_ISTREAMS (module); n++)
+      for (n += 1; n < BSE_MODULE_N_ISTREAMS (module); n++)
 	if (module->istreams[n].connected)
 	  {
-	    const gfloat *wave_in = GSL_MODULE_IBUFFER (module, n);
+	    const gfloat *wave_in = BSE_MODULE_IBUFFER (module, n);
 	    gfloat *w = wave_out;
 	    gfloat volume = mixer->volumes[n];
 	    
@@ -346,28 +346,28 @@ mixer_process (GslModule *module,
 static void
 bse_mixer_context_create (BseSource *source,
 			  guint      context_handle,
-			  GslTrans  *trans)
+			  BseTrans  *trans)
 {
-  static const GslClass mixer_class = {
+  static const BseModuleClass mixer_class = {
     BSE_MIXER_N_INPUTS,		/* n_istreams */
     0,                          /* n_jstreams */
     1,				/* n_ostreams */
     mixer_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_CHEAP,		/* flags */
+    (BseModuleFreeFunc) g_free,	/* free */
+    BSE_COST_CHEAP,		/* flags */
   };
   Mixer *mixer = g_new0 (Mixer, 1);
-  GslModule *module;
+  BseModule *module;
   
-  module = gsl_module_new (&mixer_class, mixer);
+  module = bse_module_new (&mixer_class, mixer);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

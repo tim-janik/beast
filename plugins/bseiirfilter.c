@@ -54,7 +54,7 @@ static void	   bse_iir_filter_get_property		(GObject		*object,
 static void	   bse_iir_filter_prepare		(BseSource		*source);
 static void	   bse_iir_filter_context_create	(BseSource		*source,
 							 guint			 context_handle,
-							 GslTrans		*trans);
+							 BseTrans		*trans);
 static void	   bse_iir_filter_update_modules	(BseIIRFilter		*filt);
 
 
@@ -301,7 +301,7 @@ bse_iir_filter_prepare (BseSource *source)
 {
   BseIIRFilter *filt = BSE_IIR_FILTER (source);
   
-  /* need to call update_modules() because we only now have gsl_engine_sample_freq() */
+  /* need to call update_modules() because we only now have bse_engine_sample_freq() */
   bse_iir_filter_update_modules (filt);
   
   /* chain parent class' handler */
@@ -314,7 +314,7 @@ typedef struct {
 } FilterModule;
 
 static void
-iir_filter_access (GslModule *module,
+iir_filter_access (BseModule *module,
 		   gpointer   data)
 {
   FilterModule *fmod = module->user_data;
@@ -333,9 +333,9 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
   if (BSE_SOURCE_PREPARED (filt))
     {
       FilterModule *fmod = g_new0 (FilterModule, 1);
-      gfloat nyquist_fact = GSL_PI / (0.5 * gsl_engine_sample_freq ());
-      gfloat freq1 = MIN (filt->cut_off_freq1, 0.5 * gsl_engine_sample_freq ());
-      gfloat freq2 = MIN (filt->cut_off_freq2, 0.5 * gsl_engine_sample_freq ());
+      gfloat nyquist_fact = GSL_PI / (0.5 * bse_engine_sample_freq ());
+      gfloat freq1 = MIN (filt->cut_off_freq1, 0.5 * bse_engine_sample_freq ());
+      gfloat freq2 = MIN (filt->cut_off_freq2, 0.5 * bse_engine_sample_freq ());
       gfloat steepness = 1.1;
       
       freq1 *= nyquist_fact;
@@ -406,12 +406,12 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 }
 
 static void
-iir_filter_process (GslModule *module,
+iir_filter_process (BseModule *module,
 		    guint      n_values)
 {
   FilterModule *fmod = module->user_data;
-  const gfloat *sig_in = GSL_MODULE_IBUFFER (module, BSE_IIR_FILTER_ICHANNEL_MONO);
-  gfloat *sig_out = GSL_MODULE_OBUFFER (module, BSE_IIR_FILTER_OCHANNEL_MONO);
+  const gfloat *sig_in = BSE_MODULE_IBUFFER (module, BSE_IIR_FILTER_ICHANNEL_MONO);
+  gfloat *sig_out = BSE_MODULE_OBUFFER (module, BSE_IIR_FILTER_OCHANNEL_MONO);
   
   gsl_iir_filter_eval (&fmod->iir, n_values, sig_in, sig_out);
 }
@@ -419,9 +419,9 @@ iir_filter_process (GslModule *module,
 static void
 bse_iir_filter_context_create (BseSource *source,
 			       guint      context_handle,
-			       GslTrans  *trans)
+			       BseTrans  *trans)
 {
-  static const GslClass iir_filter_class = {
+  static const BseModuleClass iir_filter_class = {
     BSE_IIR_FILTER_N_ICHANNELS,	/* n_istreams */
     0,				/* n_jstreams */
     BSE_IIR_FILTER_N_OCHANNELS,	/* n_ostreams */
@@ -429,21 +429,21 @@ bse_iir_filter_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (gpointer) g_free,		/* free */
-    GSL_COST_NORMAL,		/* flags */
+    BSE_COST_NORMAL,		/* flags */
   };
   BseIIRFilter *filt = BSE_IIR_FILTER (source);
   FilterModule *fmod = g_new0 (FilterModule, 1);
-  GslModule *module;
+  BseModule *module;
   
   gsl_iir_filter_setup (&fmod->iir, filt->order, filt->a, filt->b, fmod->dummy);
   
-  module = gsl_module_new (&iir_filter_class, fmod);
+  module = bse_module_new (&iir_filter_class, fmod);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

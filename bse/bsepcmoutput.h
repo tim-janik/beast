@@ -45,7 +45,7 @@ struct _BsePcmOutput
   gfloat	  volume_factor;
 
   /* PREPARED */
-  GslModule	 *uplink;
+  BseModule	 *uplink;
 };
 struct _BsePcmOutputClass
 {

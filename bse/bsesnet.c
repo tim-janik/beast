@@ -78,13 +78,13 @@ static gint	 snet_ports_compare              (gconstpointer   bsearch_node1, /* 
 						  gconstpointer   bsearch_node2);
 static void      bse_snet_context_create	 (BseSource      *source,
 						  guint           context_handle,
-						  GslTrans       *trans);
+						  BseTrans       *trans);
 static void      bse_snet_context_connect	 (BseSource      *source,
 						  guint           context_handle,
-						  GslTrans       *trans);
+						  BseTrans       *trans);
 static void      bse_snet_context_dismiss	 (BseSource      *source,
 						  guint           context_handle,
-						  GslTrans       *trans);
+						  BseTrans       *trans);
 static GSList*	 snet_context_children		 (BseContainer	 *container);
 
 
@@ -559,9 +559,9 @@ void
 bse_snet_set_iport_src (BseSNet     *snet,
 			const gchar *name,
 			guint        snet_context,
-			GslModule   *omodule,
+			BseModule   *omodule,
 			guint        ostream,
-			GslTrans    *trans)
+			BseTrans    *trans)
 {
   BseSNetPort *port;
   
@@ -569,7 +569,7 @@ bse_snet_set_iport_src (BseSNet     *snet,
   g_return_if_fail (name != NULL);
   g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (omodule)
-    g_return_if_fail (ostream < GSL_MODULE_N_OSTREAMS (omodule));
+    g_return_if_fail (ostream < BSE_MODULE_N_OSTREAMS (omodule));
   g_return_if_fail (trans != NULL);
   
   port = port_lookup (snet, name, snet_context, TRUE);
@@ -581,11 +581,11 @@ bse_snet_set_iport_src (BseSNet     *snet,
     ostream = G_MAXUINT;
   
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+    bse_trans_add (trans, bse_job_disconnect (port->dest_imodule, port->dest_istream));
   port->src_omodule = omodule;
   port->src_ostream = ostream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+    bse_trans_add (trans, bse_job_connect (port->src_omodule, port->src_ostream,
 					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
@@ -595,9 +595,9 @@ void
 bse_snet_set_iport_dest (BseSNet     *snet,
 			 const gchar *name,
 			 guint        snet_context,
-			 GslModule   *imodule,
+			 BseModule   *imodule,
 			 guint        istream,
-			 GslTrans    *trans)
+			 BseTrans    *trans)
 {
   BseSNetPort *port;
   
@@ -605,7 +605,7 @@ bse_snet_set_iport_dest (BseSNet     *snet,
   g_return_if_fail (name != NULL);
   g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (imodule)
-    g_return_if_fail (istream < GSL_MODULE_N_ISTREAMS (imodule));
+    g_return_if_fail (istream < BSE_MODULE_N_ISTREAMS (imodule));
   g_return_if_fail (trans != NULL);
   
   port = port_lookup (snet, name, snet_context, TRUE);
@@ -617,11 +617,11 @@ bse_snet_set_iport_dest (BseSNet     *snet,
     istream = G_MAXUINT;
   
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+    bse_trans_add (trans, bse_job_disconnect (port->dest_imodule, port->dest_istream));
   port->dest_imodule = imodule;
   port->dest_istream = istream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+    bse_trans_add (trans, bse_job_connect (port->src_omodule, port->src_ostream,
 					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
@@ -631,9 +631,9 @@ void
 bse_snet_set_oport_src (BseSNet     *snet,
 			const gchar *name,
 			guint        snet_context,
-			GslModule   *omodule,
+			BseModule   *omodule,
 			guint        ostream,
-			GslTrans    *trans)
+			BseTrans    *trans)
 {
   BseSNetPort *port;
   
@@ -641,7 +641,7 @@ bse_snet_set_oport_src (BseSNet     *snet,
   g_return_if_fail (name != NULL);
   g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (omodule)
-    g_return_if_fail (ostream < GSL_MODULE_N_OSTREAMS (omodule));
+    g_return_if_fail (ostream < BSE_MODULE_N_OSTREAMS (omodule));
   g_return_if_fail (trans != NULL);
   
   port = port_lookup (snet, name, snet_context, FALSE);
@@ -653,11 +653,11 @@ bse_snet_set_oport_src (BseSNet     *snet,
     ostream = G_MAXUINT;
   
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+    bse_trans_add (trans, bse_job_disconnect (port->dest_imodule, port->dest_istream));
   port->src_omodule = omodule;
   port->src_ostream = ostream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+    bse_trans_add (trans, bse_job_connect (port->src_omodule, port->src_ostream,
 					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
@@ -667,9 +667,9 @@ void
 bse_snet_set_oport_dest (BseSNet     *snet,
 			 const gchar *name,
 			 guint        snet_context,
-			 GslModule   *imodule,
+			 BseModule   *imodule,
 			 guint        istream,
-			 GslTrans    *trans)
+			 BseTrans    *trans)
 {
   BseSNetPort *port;
   
@@ -677,7 +677,7 @@ bse_snet_set_oport_dest (BseSNet     *snet,
   g_return_if_fail (name != NULL);
   g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
   if (imodule)
-    g_return_if_fail (istream < GSL_MODULE_N_ISTREAMS (imodule));
+    g_return_if_fail (istream < BSE_MODULE_N_ISTREAMS (imodule));
   g_return_if_fail (trans != NULL);
   
   port = port_lookup (snet, name, snet_context, FALSE);
@@ -689,11 +689,11 @@ bse_snet_set_oport_dest (BseSNet     *snet,
     istream = G_MAXUINT;
   
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+    bse_trans_add (trans, bse_job_disconnect (port->dest_imodule, port->dest_istream));
   port->dest_imodule = imodule;
   port->dest_istream = istream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+    bse_trans_add (trans, bse_job_connect (port->src_omodule, port->src_ostream,
 					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
@@ -740,7 +740,7 @@ create_context_data (BseSNet         *self,
 static void
 free_context_data (BseSource *source,
 		   gpointer   data,
-		   GslTrans  *trans)
+		   BseTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = data;
@@ -772,7 +772,7 @@ free_context_data (BseSource *source,
 guint
 bse_snet_create_context (BseSNet         *self,
                          BseMidiContext   mcontext,
-			 GslTrans        *trans)
+			 BseTrans        *trans)
 {
   ContextData *cdata;
   guint cid;
@@ -796,7 +796,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
 			       guint            context,
 			       BseSource       *context_merger,
                                BseMidiContext   mcontext,
-			       GslTrans        *trans)
+			       BseTrans        *trans)
 {
   SfiRing *ring;
   guint bcid = 0;
@@ -926,7 +926,7 @@ bse_snet_reset (BseSource *source)
 static void
 bse_snet_context_create (BseSource *source,
 			 guint      context_handle,
-			 GslTrans  *trans)
+			 BseTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
   
@@ -952,7 +952,7 @@ bse_snet_context_create (BseSource *source,
 static void
 bse_snet_context_connect (BseSource *source,
 			  guint      context_handle,
-			  GslTrans  *trans)
+			  BseTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = find_context_data (self, context_handle);
@@ -968,7 +968,7 @@ bse_snet_context_connect (BseSource *source,
 static void
 bse_snet_context_dismiss (BseSource *source,
 			  guint      context_handle,
-			  GslTrans  *trans)
+			  BseTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = find_context_data (self, context_handle);

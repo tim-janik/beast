@@ -50,7 +50,7 @@ static void dav_canyon_delay_get_property   (GObject             *object,
 static void dav_canyon_delay_prepare        (BseSource           *source);
 static void dav_canyon_delay_context_create (BseSource           *source,
                                              guint                context_handle,
-                                             GslTrans            *trans);
+                                             BseTrans            *trans);
 static void dav_canyon_delay_update_modules (DavCanyonDelay      *self);
 
 
@@ -215,14 +215,14 @@ dav_canyon_delay_prepare (BseSource *source)
 }
 
 static void
-canyon_delay_process (GslModule *module,
+canyon_delay_process (BseModule *module,
                       guint      n_values)
 {
   DavCanyonDelayModule *cmod = module->user_data;
-  const gfloat *left_in = GSL_MODULE_IBUFFER (module, DAV_CANYON_DELAY_ICHANNEL_LEFT);
-  const gfloat *right_in = GSL_MODULE_IBUFFER (module, DAV_CANYON_DELAY_ICHANNEL_RIGHT);
-  gfloat *left_out = GSL_MODULE_OBUFFER (module, DAV_CANYON_DELAY_OCHANNEL_LEFT);
-  gfloat *right_out = GSL_MODULE_OBUFFER (module, DAV_CANYON_DELAY_OCHANNEL_RIGHT);
+  const gfloat *left_in = BSE_MODULE_IBUFFER (module, DAV_CANYON_DELAY_ICHANNEL_LEFT);
+  const gfloat *right_in = BSE_MODULE_IBUFFER (module, DAV_CANYON_DELAY_ICHANNEL_RIGHT);
+  gfloat *left_out = BSE_MODULE_OBUFFER (module, DAV_CANYON_DELAY_OCHANNEL_LEFT);
+  gfloat *right_out = BSE_MODULE_OBUFFER (module, DAV_CANYON_DELAY_OCHANNEL_RIGHT);
   guint i;
 
   for (i = 0; i < n_values; i++)
@@ -268,7 +268,7 @@ canyon_delay_process (GslModule *module,
 }
 
 static void
-canyon_delay_reset (GslModule *module)
+canyon_delay_reset (BseModule *module)
 {
   DavCanyonDelayModule *cmod = module->user_data;
   cmod->pos = 0;
@@ -280,7 +280,7 @@ canyon_delay_reset (GslModule *module)
 
 static void
 canyon_delay_free (gpointer        data,
-                   const GslClass *klass)
+                   const BseModuleClass *klass)
 {
   DavCanyonDelayModule *cmod = data;
   /* Free tables */
@@ -291,9 +291,9 @@ canyon_delay_free (gpointer        data,
 static void
 dav_canyon_delay_context_create (BseSource *source,
                                  guint      context_handle,
-                                 GslTrans  *trans)
+                                 BseTrans  *trans)
 {
-  static const GslClass cmod_class = {
+  static const BseModuleClass cmod_class = {
     DAV_CANYON_DELAY_N_ICHANNELS,       /* n_istreams */
     0,                                  /* n_jstreams */
     DAV_CANYON_DELAY_N_OCHANNELS,       /* n_ostreams */
@@ -301,13 +301,13 @@ dav_canyon_delay_context_create (BseSource *source,
     NULL,                               /* process_defer */
     canyon_delay_reset,                 /* reset */
     canyon_delay_free,                  /* free */
-    GSL_COST_NORMAL,                    /* cost */
+    BSE_COST_NORMAL,                    /* cost */
   };
   DavCanyonDelay *self = DAV_CANYON_DELAY (source);
   DavCanyonDelayModule *cmod = g_new0 (DavCanyonDelayModule, 1);
-  GslModule *module;
+  BseModule *module;
 
-  module = gsl_module_new (&cmod_class, cmod);
+  module = bse_module_new (&cmod_class, cmod);
   cmod->datasize = BSE_MIX_FREQ;
   cmod->data_l = g_new0 (gdouble, cmod->datasize);
   cmod->data_r = g_new0 (gdouble, cmod->datasize);
@@ -318,7 +318,7 @@ dav_canyon_delay_context_create (BseSource *source,
   bse_source_set_context_module (source, context_handle, module);
 
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -326,7 +326,7 @@ dav_canyon_delay_context_create (BseSource *source,
 
 /* update module configuration from new parameter set */
 static void
-canyon_delay_access (GslModule *module,
+canyon_delay_access (BseModule *module,
                      gpointer   data)
 {
   DavCanyonDelayModule *cmod = module->user_data;

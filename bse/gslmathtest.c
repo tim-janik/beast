@@ -245,7 +245,7 @@ main (int   argc,
       f = atof (argv[3]);
       e = atof (argv[4]);
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
+      e = bse_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb1 (order, f, e, a, b);
@@ -269,7 +269,7 @@ main (int   argc,
       e = atof (argv[5]);
       fc *= GSL_PI / 2.;
       fr *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
+      e = bse_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb2 (order, fc, fr, e, a, b);

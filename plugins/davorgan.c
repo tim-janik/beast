@@ -55,7 +55,7 @@ static void        dav_organ_get_property     (GObject	      *object,
 static void        dav_organ_prepare          (BseSource      *source);
 static void	   dav_organ_context_create   (BseSource      *source,
 					       guint	       context_handle,
-					       GslTrans	      *trans);
+					       BseTrans	      *trans);
 static void        dav_organ_reset            (BseSource      *source);
 static void	   dav_organ_update_modules   (DavOrgan       *self);
 
@@ -366,7 +366,7 @@ table_pos (const gfloat *table,
 }
 
 static void
-dav_organ_process (GslModule *module,
+dav_organ_process (BseModule *module,
 		   guint      n_values)
 {
   Organ *organ = module->user_data;
@@ -374,13 +374,13 @@ dav_organ_process (GslModule *module,
   const gfloat *sine_table = class->sine_table;
   const gfloat *flute_table = organ->config.flute ? class->triangle_table : sine_table;
   const gfloat *reed_table = organ->config.reed ? class->pulse_table : sine_table;
-  const gfloat *ifreq = GSL_MODULE_IBUFFER (module, DAV_ORGAN_ICHANNEL_FREQ);
-  gfloat *ovalues = GSL_MODULE_OBUFFER (module, DAV_ORGAN_OCHANNEL_MONO);
+  const gfloat *ifreq = BSE_MODULE_IBUFFER (module, DAV_ORGAN_ICHANNEL_FREQ);
+  gfloat *ovalues = BSE_MODULE_OBUFFER (module, DAV_ORGAN_OCHANNEL_MONO);
   guint freq_256, mix_freq_256;
   guint freq_256_harm0, freq_256_harm1;
   guint i;
   
-  if (GSL_MODULE_ISTREAM (module, DAV_ORGAN_ICHANNEL_FREQ).connected)
+  if (BSE_MODULE_ISTREAM (module, DAV_ORGAN_ICHANNEL_FREQ).connected)
     freq_256 = BSE_FREQ_FROM_VALUE (ifreq[0]) * 256 + 0.5;
   else
     freq_256 = organ->config.freq * 256 + 0.5;
@@ -433,32 +433,32 @@ dav_organ_process (GslModule *module,
 static void
 dav_organ_context_create (BseSource *source,
 			  guint      context_handle,
-			  GslTrans  *trans)
+			  BseTrans  *trans)
 {
-  static const GslClass organ_class = {
+  static const BseModuleClass organ_class = {
     DAV_ORGAN_N_ICHANNELS,	/* n_istreams */
     0,				/* n_jstreams */
     DAV_ORGAN_N_OCHANNELS,	/* n_ostreams */
     dav_organ_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_NORMAL,		/* cost */
+    (BseModuleFreeFunc) g_free,	/* free */
+    BSE_COST_NORMAL,		/* cost */
   };
   DavOrgan *self = DAV_ORGAN (source);
   Organ *organ = g_new0 (Organ, 1);
-  GslModule *module;
+  BseModule *module;
   
   /* initialize organ data */
   organ->class = DAV_ORGAN_GET_CLASS (self);
   organ->config = self->config;
-  module = gsl_module_new (&organ_class, organ);
+  module = bse_module_new (&organ_class, organ);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

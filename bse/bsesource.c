@@ -41,8 +41,8 @@ typedef struct
   guint	      id;
   union {
     struct {
-      GslModule  *imodule;
-      GslModule  *omodule;
+      BseModule  *imodule;
+      BseModule  *omodule;
     } mods;
     struct {
       gpointer d1;
@@ -310,7 +310,7 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
 
 void
 bse_source_class_cache_gsl_class (BseSourceClass *source_class,
-                                  const GslClass *gsl_class)
+                                  const BseModuleClass *gsl_class)
 {
   g_return_if_fail (source_class->gsl_class == NULL);
   g_return_if_fail (gsl_class != NULL);
@@ -380,7 +380,7 @@ bse_source_reset (BseSource *source)
   n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
-      GslTrans *trans = gsl_trans_open ();
+      BseTrans *trans = bse_trans_open ();
       while (n_contexts)
 	{
 	  BseSourceContext *context = g_bsearch_array_get_nth (source->contexts,
@@ -389,9 +389,9 @@ bse_source_reset (BseSource *source)
 	  bse_source_dismiss_context (source, context->id, trans);
 	  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
 	}
-      gsl_trans_commit (trans);
+      bse_trans_commit (trans);
     }
-  gsl_engine_wait_on_trans ();
+  bse_engine_wait_on_trans ();
   BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
   BSE_SOURCE_GET_CLASS (source)->reset (source);
   g_bsearch_array_free (source->contexts, &context_config);
@@ -402,7 +402,7 @@ bse_source_reset (BseSource *source)
 static void
 bse_source_real_context_create	(BseSource *source,
 				 guint      context_handle,
-				 GslTrans  *trans)
+				 BseTrans  *trans)
 {
 }
 
@@ -480,7 +480,7 @@ source_create_context (BseSource               *source,
 		       gpointer                 data,
 		       BseSourceFreeContextData free_data,
 		       const gchar             *str_loc,
-		       GslTrans                *trans)
+		       BseTrans                *trans)
 {
   BseSourceContext *context, key = { 0, };
 
@@ -515,7 +515,7 @@ bse_source_create_context_with_data (BseSource      *source,
 				     guint           context_handle,
 				     gpointer        data,
 				     BseSourceFreeContextData free_data,
-				     GslTrans       *trans)
+				     BseTrans       *trans)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
@@ -529,7 +529,7 @@ bse_source_create_context_with_data (BseSource      *source,
 void
 bse_source_create_context (BseSource *source,
 			   guint      context_handle,
-			   GslTrans  *trans)
+			   BseTrans  *trans)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
@@ -543,7 +543,7 @@ static void
 bse_source_context_connect_ichannel (BseSource        *source,
 				     BseSourceContext *context,
 				     guint             ichannel,
-				     GslTrans         *trans,
+				     BseTrans         *trans,
 				     guint	       first_joint)
 {
   BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
@@ -558,10 +558,10 @@ bse_source_context_connect_ichannel (BseSource        *source,
 
 	  if (output->osource)
 	    {
-	      GslModule *omodule = bse_source_get_context_omodule (output->osource,
+	      BseModule *omodule = bse_source_get_context_omodule (output->osource,
 								   context->id);
-	      gsl_trans_add (trans,
-			     gsl_job_jconnect (omodule,
+	      bse_trans_add (trans,
+			     bse_job_jconnect (omodule,
 					       BSE_SOURCE_OCHANNEL_OSTREAM (output->osource,
 									   output->ochannel),
 					       context->u.mods.imodule,
@@ -573,10 +573,10 @@ bse_source_context_connect_ichannel (BseSource        *source,
     {
       if (input->idata.osource)
 	{
-	  GslModule *omodule = bse_source_get_context_omodule (input->idata.osource,
+	  BseModule *omodule = bse_source_get_context_omodule (input->idata.osource,
 							       context->id);
-	  gsl_trans_add (trans,
-			 gsl_job_connect (omodule,
+	  bse_trans_add (trans,
+			 bse_job_connect (omodule,
 					  BSE_SOURCE_OCHANNEL_OSTREAM (input->idata.osource,
 								       input->idata.ochannel),
 					  context->u.mods.imodule,
@@ -588,7 +588,7 @@ bse_source_context_connect_ichannel (BseSource        *source,
 static void
 bse_source_real_context_connect	(BseSource *source,
 				 guint      context_handle,
-				 GslTrans  *trans)
+				 BseTrans  *trans)
 {
   guint i;
 
@@ -603,7 +603,7 @@ bse_source_real_context_connect	(BseSource *source,
 void
 bse_source_connect_context (BseSource *source,
 			    guint      context_handle,
-			    GslTrans  *trans)
+			    BseTrans  *trans)
 {
   BseSourceContext *context;
 
@@ -626,16 +626,16 @@ bse_source_connect_context (BseSource *source,
 static void
 bse_source_real_context_dismiss	(BseSource *source,
 				 guint      context_handle,
-				 GslTrans  *trans)
+				 BseTrans  *trans)
 {
   BseSourceContext *context = context_lookup (source, context_handle);
 
   if (BSE_SOURCE_N_ICHANNELS (source) || BSE_SOURCE_N_OCHANNELS (source))
     {
       if (context->u.mods.imodule)
-	gsl_trans_add (trans, gsl_job_discard (context->u.mods.imodule));
+	bse_trans_add (trans, bse_job_discard (context->u.mods.imodule));
       if (context->u.mods.omodule && context->u.mods.omodule != context->u.mods.imodule)
-	gsl_trans_add (trans, gsl_job_discard (context->u.mods.omodule));
+	bse_trans_add (trans, bse_job_discard (context->u.mods.omodule));
       context->u.mods.imodule = NULL;
       context->u.mods.omodule = NULL;
       if (source->probes)
@@ -646,7 +646,7 @@ bse_source_real_context_dismiss	(BseSource *source,
 void
 bse_source_dismiss_context (BseSource *source,
 			    guint      context_handle,
-			    GslTrans  *trans)
+			    BseTrans  *trans)
 {
   BseSourceContext *context;
 
@@ -693,7 +693,7 @@ bse_source_dismiss_context (BseSource *source,
 void
 bse_source_set_context_imodule (BseSource *source,
 				guint	   context_handle,
-				GslModule *imodule)
+				BseModule *imodule)
 {
   BseSourceContext *context;
 
@@ -703,14 +703,14 @@ bse_source_set_context_imodule (BseSource *source,
   g_return_if_fail (BSE_SOURCE_N_ICHANNELS (source) > 0);
   if (imodule)
     {
-      g_return_if_fail (GSL_MODULE_N_JSTREAMS (imodule) >= BSE_SOURCE_N_JOINT_ICHANNELS (source));
+      g_return_if_fail (BSE_MODULE_N_JSTREAMS (imodule) >= BSE_SOURCE_N_JOINT_ICHANNELS (source));
       if (BSE_SOURCE_N_JOINT_ICHANNELS (source))
 	{
 	  guint n_non_joint_ichannels = BSE_SOURCE_N_ICHANNELS (source) - BSE_SOURCE_N_JOINT_ICHANNELS (source);
-	  g_return_if_fail (GSL_MODULE_N_ISTREAMS (imodule) >= n_non_joint_ichannels);
+	  g_return_if_fail (BSE_MODULE_N_ISTREAMS (imodule) >= n_non_joint_ichannels);
 	}
       else
-	g_return_if_fail (GSL_MODULE_N_ISTREAMS (imodule) >= BSE_SOURCE_N_ICHANNELS (source));
+	g_return_if_fail (BSE_MODULE_N_ISTREAMS (imodule) >= BSE_SOURCE_N_ICHANNELS (source));
     }
 
   context = context_lookup (source, context_handle);
@@ -727,7 +727,7 @@ bse_source_set_context_imodule (BseSource *source,
   context->u.mods.imodule = imodule;
 }
 
-GslModule*
+BseModule*
 bse_source_get_context_imodule (BseSource *source,
 				guint      context_handle)
 {
@@ -749,7 +749,7 @@ bse_source_get_context_imodule (BseSource *source,
 void
 bse_source_set_context_omodule (BseSource *source,
 				guint	   context_handle,
-				GslModule *omodule)
+				BseModule *omodule)
 {
   BseSourceContext *context;
 
@@ -758,7 +758,7 @@ bse_source_set_context_omodule (BseSource *source,
   g_return_if_fail (context_handle > 0);
   g_return_if_fail (BSE_SOURCE_N_OCHANNELS (source) > 0);
   if (omodule)
-    g_return_if_fail (GSL_MODULE_N_OSTREAMS (omodule) >= BSE_SOURCE_N_OCHANNELS (source));
+    g_return_if_fail (BSE_MODULE_N_OSTREAMS (omodule) >= BSE_SOURCE_N_OCHANNELS (source));
 
   context = context_lookup (source, context_handle);
   if (!context)
@@ -791,7 +791,7 @@ bse_source_list_omodules (BseSource *source)
   return ring;
 }
 
-GslModule*
+BseModule*
 bse_source_get_context_omodule (BseSource *source,
 				guint      context_handle)
 {
@@ -813,13 +813,13 @@ bse_source_get_context_omodule (BseSource *source,
 void
 bse_source_set_context_module (BseSource *source,
 			       guint      context_handle,
-			       GslModule *module)
+			       BseModule *module)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (module != NULL);
-  g_return_if_fail (GSL_MODULE_N_OSTREAMS (module) >= BSE_SOURCE_N_OCHANNELS (source));
-  g_return_if_fail (GSL_MODULE_N_ISTREAMS (module) + GSL_MODULE_N_JSTREAMS (module) >= BSE_SOURCE_N_ICHANNELS (source));
+  g_return_if_fail (BSE_MODULE_N_OSTREAMS (module) >= BSE_SOURCE_N_OCHANNELS (source));
+  g_return_if_fail (BSE_MODULE_N_ISTREAMS (module) + BSE_MODULE_N_JSTREAMS (module) >= BSE_SOURCE_N_ICHANNELS (source));
   
   if (BSE_SOURCE_N_ICHANNELS (source))
     bse_source_set_context_imodule (source, context_handle, module);
@@ -831,13 +831,13 @@ void
 bse_source_flow_access_module (BseSource    *source,
 			       guint         context_handle,
 			       guint64       tick_stamp,
-			       GslAccessFunc access_func,
+			       BseEngineAccessFunc access_func,
 			       gpointer      data,
-			       GslFreeFunc   data_free_func,
-			       GslTrans     *trans)
+			       BseFreeFunc   data_free_func,
+			       BseTrans     *trans)
 {
   BseSourceContext *context;
-  GslModule *m1, *m2;
+  BseModule *m1, *m2;
 
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
@@ -858,16 +858,16 @@ bse_source_flow_access_module (BseSource    *source,
 
   if (m1 || m2)
     {
-      GslTrans *my_trans = trans ? trans : gsl_trans_open ();
+      BseTrans *my_trans = trans ? trans : bse_trans_open ();
 
       if (m1)
-	gsl_trans_add (my_trans, gsl_job_flow_access (m1, tick_stamp, access_func, data,
+	bse_trans_add (my_trans, bse_job_flow_access (m1, tick_stamp, access_func, data,
 						      m2 ? NULL : data_free_func));
       if (m2)
-	gsl_trans_add (my_trans, gsl_job_flow_access (m2, tick_stamp, access_func, data,
+	bse_trans_add (my_trans, bse_job_flow_access (m2, tick_stamp, access_func, data,
 						      data_free_func));
       if (!trans)
-	gsl_trans_commit (my_trans);
+	bse_trans_commit (my_trans);
     }
   else if (data_free_func)
     data_free_func (data);
@@ -876,10 +876,10 @@ bse_source_flow_access_module (BseSource    *source,
 void
 bse_source_flow_access_modules (BseSource    *source,
 				guint64       tick_stamp,
-				GslAccessFunc access_func,
+				BseEngineAccessFunc access_func,
 				gpointer      data,
-				GslFreeFunc   data_free_func,
-				GslTrans     *trans)
+				BseFreeFunc   data_free_func,
+				BseTrans     *trans)
 {
   GSList *modules = NULL;
   guint i;
@@ -901,14 +901,14 @@ bse_source_flow_access_modules (BseSource    *source,
   
   if (modules)
     {
-      GslTrans *my_trans = trans ? trans : gsl_trans_open ();
+      BseTrans *my_trans = trans ? trans : bse_trans_open ();
       GSList *slist;
       
       for (slist = modules; slist; slist = slist->next)
-	gsl_trans_add (my_trans, gsl_job_flow_access (slist->data, tick_stamp, access_func, data,
+	bse_trans_add (my_trans, bse_job_flow_access (slist->data, tick_stamp, access_func, data,
 						      slist->next ? NULL : data_free_func));
       if (!trans)
-	gsl_trans_commit (my_trans);
+	bse_trans_commit (my_trans);
       g_slist_free (modules);
     }
   else if (data_free_func)
@@ -917,10 +917,10 @@ bse_source_flow_access_modules (BseSource    *source,
 
 void
 bse_source_access_modules (BseSource    *source,
-			   GslAccessFunc access_func,
+			   BseEngineAccessFunc access_func,
 			   gpointer      data,
-			   GslFreeFunc   data_free_func,
-			   GslTrans     *trans)
+			   BseFreeFunc   data_free_func,
+			   BseTrans     *trans)
 {
   GSList *modules = NULL;
   guint i;
@@ -942,14 +942,14 @@ bse_source_access_modules (BseSource    *source,
 
   if (modules)
     {
-      GslTrans *my_trans = trans ? trans : gsl_trans_open ();
+      BseTrans *my_trans = trans ? trans : bse_trans_open ();
       GSList *slist;
 
       for (slist = modules; slist; slist = slist->next)
-	gsl_trans_add (my_trans, gsl_job_access (slist->data, access_func, data,
+	bse_trans_add (my_trans, bse_job_access (slist->data, access_func, data,
 						 slist->next ? NULL : data_free_func));
       if (!trans)
-	gsl_trans_commit (my_trans);
+	bse_trans_commit (my_trans);
       g_slist_free (modules);
     }
   else if (data_free_func)
@@ -962,7 +962,7 @@ typedef struct {
 } AccessData;
 
 static void
-op_access_update (GslModule *module,
+op_access_update (BseModule *module,
 		  gpointer   data)
 {
   AccessData *adata = data;
@@ -976,7 +976,7 @@ bse_source_update_modules (BseSource *source,
 			   guint      member_offset,
 			   gpointer   member_data,
 			   guint      member_size,
-			   GslTrans  *trans)
+			   BseTrans  *trans)
 {
   AccessData *adata;
 
@@ -1019,7 +1019,7 @@ bse_source_real_add_input (BseSource *source,
 
   if (BSE_SOURCE_PREPARED (source) && BSE_SOURCE_N_CONTEXTS (source))
     {
-      GslTrans *trans = gsl_trans_open ();
+      BseTrans *trans = bse_trans_open ();
       guint c;
       
       for (c = 0; c < BSE_SOURCE_N_CONTEXTS (source); c++)
@@ -1028,7 +1028,7 @@ bse_source_real_add_input (BseSource *source,
 	  
 	  bse_source_context_connect_ichannel (source, context, ichannel, trans, j);
 	}
-      gsl_trans_commit (trans);
+      bse_trans_commit (trans);
     }
 }
 
@@ -1103,7 +1103,7 @@ bse_source_real_remove_input (BseSource *source,
 			      guint      ochannel)
 {
   BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
-  GslTrans *trans = NULL;
+  BseTrans *trans = NULL;
   gint j = -1;
 
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
@@ -1117,14 +1117,14 @@ bse_source_real_remove_input (BseSource *source,
   if (BSE_SOURCE_PREPARED (source) && BSE_SOURCE_N_CONTEXTS (source))
     {
       guint c;
-      trans = gsl_trans_open ();
+      trans = bse_trans_open ();
       for (c = 0; c < BSE_SOURCE_N_CONTEXTS (source); c++)
 	{
 	  BseSourceContext *context = context_nth (source, c);
 	  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
 	    {
 	      BseSourceContext *src_context = context_nth (osource, c);
-	      gsl_trans_add (trans, gsl_job_jdisconnect (context->u.mods.imodule,
+	      bse_trans_add (trans, bse_job_jdisconnect (context->u.mods.imodule,
 							 BSE_SOURCE_ICHANNEL_JSTREAM (source, ichannel),
 							 src_context->u.mods.omodule,
 							 BSE_SOURCE_OCHANNEL_OSTREAM (osource, ochannel)));
@@ -1135,7 +1135,7 @@ bse_source_real_remove_input (BseSource *source,
 		{
 		  BseSourceContext *context = context_nth (source, c);
 		  
-		  gsl_trans_add (trans, gsl_job_disconnect (context->u.mods.imodule,
+		  bse_trans_add (trans, bse_job_disconnect (context->u.mods.imodule,
 							    BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
 		}
 	    }
@@ -1157,7 +1157,7 @@ bse_source_real_remove_input (BseSource *source,
   osource->outputs = g_slist_remove (osource->outputs, source);
 
   if (trans)
-    gsl_trans_commit (trans);
+    bse_trans_commit (trans);
 }
 
 BseErrorType

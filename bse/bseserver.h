@@ -47,8 +47,8 @@ struct _BseServer
   
   guint		   dev_use_count;
   BsePcmDevice    *pcm_device;
-  GslModule       *pcm_imodule;
-  GslModule       *pcm_omodule;
+  BseModule       *pcm_imodule;
+  BseModule       *pcm_omodule;
   BsePcmWriter	  *pcm_writer;
   BseMidiDevice	  *midi_device;
   
@@ -68,23 +68,23 @@ BseProject*	bse_server_find_project			(BseServer	*server,
 							 const gchar	*name);
 BseErrorType	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
-GslModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
+BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_output_module	(BseServer	*server,
-							 GslModule	*module);
-GslModule*	bse_server_retrieve_pcm_input_module	(BseServer	*server,
+							 BseModule	*module);
+BseModule*	bse_server_retrieve_pcm_input_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_input_module	(BseServer	*server,
-							 GslModule	*module);
-GslModule*	bse_server_retrieve_midi_input_module	(BseServer	*server,
+							 BseModule	*module);
+BseModule*	bse_server_retrieve_midi_input_module	(BseServer	*server,
 							 const gchar	*downlink_name,
 							 guint		 midi_channel_id,
 							 guint		 nth_note,
 							 guint		 signals[4]);
 void		bse_server_discard_midi_input_module	(BseServer	*server,
-							 GslModule	*module);
+							 BseModule	*module);
 void		bse_server_add_io_watch			(BseServer	*server,
 							 gint		 fd,
 							 GIOCondition	 events,

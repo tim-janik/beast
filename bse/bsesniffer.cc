@@ -58,7 +58,7 @@ class Sniffer : public SnifferBase {
           jstream (JCHANNEL_AUDIO_IN2).n_connections)
         return;
 
-      SnifferData *data = static_cast<SnifferData*> (NULL); // gsl_module_peek_reply (gslmodule()));
+      SnifferData *data = static_cast<SnifferData*> (NULL); // bse_module_peek_reply (gslmodule()));
       while (data && data->tick_stamp < tick_stamp() + n_values)
         {
           guint64 offset = data->tick_stamp > tick_stamp() ? data->tick_stamp - tick_stamp() : 0;
@@ -133,39 +133,39 @@ class Sniffer : public SnifferBase {
           
           if (data->n_filled >= data->fblock1->n_values)
             {
-              // gsl_module_process_reply (gslmodule());
-              data = static_cast<SnifferData*> (NULL); // gsl_module_peek_reply (gslmodule()));
+              // bse_module_process_reply (gslmodule());
+              data = static_cast<SnifferData*> (NULL); // bse_module_peek_reply (gslmodule()));
             }
           else
             data = NULL;
         }
     }
   };
-  GslModule *single_sniff;         /* context-singleton per instance */
+  BseModule *single_sniff;         /* context-singleton per instance */
   guint      single_sniff_ref_count;
-  GslModule*
-  single_sniff_ref (GslTrans *trans)
+  BseModule*
+  single_sniff_ref (BseTrans *trans)
   {
     if (!single_sniff_ref_count)
       {
         SingleSniff *m = new SingleSniff();
-        single_sniff = gsl_module_new (create_gsl_class (m, CHEAP, 0, 2, 0), m);
+        single_sniff = bse_module_new (create_gsl_class (m, CHEAP, 0, 2, 0), m);
         m->set_module (single_sniff);
-        gsl_trans_add (trans, gsl_job_integrate (single_sniff));
-        gsl_trans_add (trans, gsl_job_set_consumer (single_sniff, TRUE));
+        bse_trans_add (trans, bse_job_integrate (single_sniff));
+        bse_trans_add (trans, bse_job_set_consumer (single_sniff, TRUE));
         commit_queue (trans);
       }
     single_sniff_ref_count++;
     return single_sniff;
   }
   void
-  single_sniff_unref (GslTrans *trans)
+  single_sniff_unref (BseTrans *trans)
   {
     g_return_if_fail (single_sniff_ref_count > 0);
     single_sniff_ref_count--;
     if (!single_sniff_ref_count)
       {
-        gsl_trans_add (trans, gsl_job_discard (single_sniff));
+        bse_trans_add (trans, bse_job_discard (single_sniff));
         single_sniff = NULL;
       }
   }
@@ -191,13 +191,13 @@ class Sniffer : public SnifferBase {
     delete data;
   }
   void
-  commit_queue (GslTrans *trans = NULL)
+  commit_queue (BseTrans *trans = NULL)
   {
     if (!single_sniff)
       return;
-    GslTrans *tmptrans = NULL;
+    BseTrans *tmptrans = NULL;
     if (!trans)
-      trans = tmptrans = gsl_trans_open();
+      trans = tmptrans = bse_trans_open();
     while (!queued_jobs.empty())
       {
         SRequest sr = queued_jobs.front();
@@ -209,10 +209,10 @@ class Sniffer : public SnifferBase {
         data->fblock1 = sfi_fblock_new_sized (sr.n_samples);
         data->fblock2 = sfi_fblock_new_sized (sr.n_samples);
         data->stype = sr.stype;
-        // gsl_trans_add (trans, gsl_job_request_reply (single_sniff, data, sniffer_reply));
+        // bse_trans_add (trans, bse_job_request_reply (single_sniff, data, sniffer_reply));
       }
     if (tmptrans)
-      gsl_trans_commit (tmptrans);
+      bse_trans_commit (tmptrans);
   }
 public:
   void
@@ -227,40 +227,40 @@ public:
     queued_jobs.push (sr);
     commit_queue();
   }
-  GslModule* get_sniffer_module () { return is_prepared() ? single_sniff : NULL; }
+  BseModule* get_sniffer_module () { return is_prepared() ? single_sniff : NULL; }
   Sniffer() :
     single_sniff (NULL),
     single_sniff_ref_count (0)
   {
   }
   /* implement creation and config methods for synthesis modules */
-  GslModule*
-  integrate_gsl_module (unsigned int   context_handle,
-                        GslTrans      *trans)
+  BseModule*
+  integrate_bse_module (unsigned int   context_handle,
+                        BseTrans      *trans)
   {
     /* here, we create a virtual module for each context, connecting to the single sniffer module */
-    GslModule *sniffer = single_sniff_ref (trans);
-    GslModule *vmodule = gsl_module_new_virtual (sniffer->klass->n_jstreams, NULL, NULL);
+    BseModule *sniffer = single_sniff_ref (trans);
+    BseModule *vmodule = bse_module_new_virtual (sniffer->klass->n_jstreams, NULL, NULL);
     /* intergrate module into engine */
-    gsl_trans_add (trans, gsl_job_integrate (vmodule));
+    bse_trans_add (trans, bse_job_integrate (vmodule));
     /* connect to virtual module */
-    gsl_trans_add (trans, gsl_job_jconnect (vmodule, 0, sniffer, 0));
-    gsl_trans_add (trans, gsl_job_jconnect (vmodule, 1, sniffer, 1));
+    bse_trans_add (trans, bse_job_jconnect (vmodule, 0, sniffer, 0));
+    bse_trans_add (trans, bse_job_jconnect (vmodule, 1, sniffer, 1));
     return vmodule;
   }
   void
-  dismiss_gsl_module (GslModule       *vmodule,
+  dismiss_bse_module (BseModule       *vmodule,
                       guint            context_handle,
-                      GslTrans        *trans)
+                      BseTrans        *trans)
   {
-    gsl_trans_add (trans, gsl_job_discard (vmodule));
+    bse_trans_add (trans, bse_job_discard (vmodule));
     single_sniff_unref (trans);
   }
   SynthesisModule*
   create_module (unsigned int context_handle,
-                 GslTrans    *trans)
+                 BseTrans    *trans)
   {
-    return NULL; // dummy, creation taken over by integrate_gsl_module()
+    return NULL; // dummy, creation taken over by integrate_bse_module()
   }
   SynthesisModule::Accessor*
   module_configurator()
@@ -294,8 +294,8 @@ sniffer_get_mix_freq::exec (Sniffer *self)
 {
   if (!self)
     throw std::runtime_error ("invalid arguments");
-  GslModule *module = self->get_sniffer_module ();
-  return module ? gsl_engine_sample_freq() : 0;
+  BseModule *module = self->get_sniffer_module ();
+  return module ? bse_engine_sample_freq() : 0;
 }
 
 void
@@ -315,7 +315,7 @@ sniffer_request_combined::exec (const SnifferRequestSeq &srs)
         case SNIFFER_TIME_ABSOLUTE_TICK_STAMP:  /* handled in initialization */
           break;
         case SNIFFER_TIME_RELATIVE_USECS:
-          tick_stamp = Num (sr->variable_time * (gsl_engine_sample_freq() * 0.000001) + gsl_tick_stamp ());
+          tick_stamp = Num (sr->variable_time * (bse_engine_sample_freq() * 0.000001) + gsl_tick_stamp ());
           break;
         case SNIFFER_TIME_RELATIVE_TICK_STAMP:
           tick_stamp = sr->variable_time + gsl_tick_stamp ();

@@ -48,13 +48,13 @@ static void      bse_sub_oport_set_parent       (BseItem                *item,
                                                  BseItem                *parent);
 static void      bse_sub_oport_context_create   (BseSource              *source,
                                                  guint                   instance_id,
-                                                 GslTrans               *trans);
+                                                 BseTrans               *trans);
 static void      bse_sub_oport_context_connect  (BseSource              *source,
                                                  guint                   context_handle,
-                                                 GslTrans               *trans);
+                                                 BseTrans               *trans);
 static void      bse_sub_oport_context_dismiss  (BseSource              *source,
                                                  guint                   context_handle,
-                                                 GslTrans               *trans);
+                                                 BseTrans               *trans);
 static void      bse_sub_oport_update_modules   (BseSubOPort            *self,
                                                  const gchar            *old_name,
                                                  const gchar            *new_name,
@@ -265,22 +265,22 @@ bse_sub_oport_set_parent (BseItem *item,
 }
 
 static void
-sub_oport_process (GslModule *module,
+sub_oport_process (BseModule *module,
                    guint      n_values)
 {
-  guint i, n = GSL_MODULE_N_ISTREAMS (module);
+  guint i, n = BSE_MODULE_N_ISTREAMS (module);
   
   for (i = 0; i < n; i++)
-    GSL_MODULE_OBUFFER (module, i) = (gfloat*) GSL_MODULE_IBUFFER (module, i);
+    BSE_MODULE_OBUFFER (module, i) = (gfloat*) BSE_MODULE_IBUFFER (module, i);
 }
 
 static void
 bse_sub_oport_context_create (BseSource *source,
                               guint      context_handle,
-                              GslTrans  *trans)
+                              BseTrans  *trans)
 {
   BseSubOPortClass *class = BSE_SUB_OPORT_GET_CLASS (source);
-  GslModule *module;
+  BseModule *module;
   
   if (class->gsl_class.process == NULL)
     {
@@ -289,15 +289,15 @@ bse_sub_oport_context_create (BseSource *source,
       class->gsl_class.n_ostreams = class->n_output_ports;
       class->gsl_class.process = sub_oport_process;
       class->gsl_class.free = NULL;
-      class->gsl_class.mflags = GSL_COST_CHEAP;
+      class->gsl_class.mflags = BSE_COST_CHEAP;
     }
-  module = gsl_module_new (&class->gsl_class, NULL);
+  module = bse_module_new (&class->gsl_class, NULL);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_imodule (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -306,13 +306,13 @@ bse_sub_oport_context_create (BseSource *source,
 static void
 bse_sub_oport_context_connect (BseSource *source,
                                guint      context_handle,
-                               GslTrans  *trans)
+                               BseTrans  *trans)
 {
   BseSubOPort *self = BSE_SUB_OPORT (source);
   BseSubOPortClass *class = BSE_SUB_OPORT_GET_CLASS (self);
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = BSE_SNET (item->parent);
-  GslModule *module = bse_source_get_context_imodule (source, context_handle);
+  BseModule *module = bse_source_get_context_imodule (source, context_handle);
   guint i;
   
   for (i = 0; i < class->n_output_ports; i++)
@@ -326,7 +326,7 @@ bse_sub_oport_context_connect (BseSource *source,
 static void
 bse_sub_oport_context_dismiss (BseSource *source,
                                guint      context_handle,
-                               GslTrans  *trans)
+                               BseTrans  *trans)
 {
   BseSubOPort *self = BSE_SUB_OPORT (source);
   BseSubOPortClass *class = BSE_SUB_OPORT_GET_CLASS (self);
@@ -351,7 +351,7 @@ bse_sub_oport_update_modules (BseSubOPort *self,
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = BSE_SNET (item->parent);
   BseSource *source = BSE_SOURCE (self);
-  GslTrans *trans = gsl_trans_open ();
+  BseTrans *trans = bse_trans_open ();
   guint *cids, n, i;
   
   g_return_if_fail (BSE_SOURCE_PREPARED (self));
@@ -359,11 +359,11 @@ bse_sub_oport_update_modules (BseSubOPort *self,
   cids = bse_source_context_ids (source, &n);
   for (i = 0; i < n; i++)
     {
-      GslModule *module = bse_source_get_context_imodule (source, cids[i]);
+      BseModule *module = bse_source_get_context_imodule (source, cids[i]);
       
       bse_snet_set_oport_src (snet, old_name, cids[i], NULL, port, trans);
       bse_snet_set_oport_src (snet, new_name, cids[i], module, port, trans);
     }
   g_free (cids);
-  gsl_trans_commit (trans);
+  bse_trans_commit (trans);
 }

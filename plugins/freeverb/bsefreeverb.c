@@ -18,7 +18,7 @@
  */
 #include "bsefreeverb.h"
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 
 
 /* --- properties --- */
@@ -46,7 +46,7 @@ static void	bse_free_verb_get_property	(GObject		*object,
 						 GParamSpec		*pspec);
 static void	bse_free_verb_context_create	(BseSource		*source,
 						 guint			 context_handle,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
 
 
@@ -202,7 +202,7 @@ bse_free_verb_get_property (GObject    *object,
 }
 
 static void
-free_verb_access (GslModule *module,
+free_verb_access (BseModule *module,
 		  gpointer   data)
 {
   BseFreeVerbCpp *cpp = module->user_data;
@@ -227,20 +227,20 @@ bse_free_verb_update_modules (BseFreeVerb *self)
 }
 
 static void
-free_verb_process (GslModule *module,
+free_verb_process (BseModule *module,
 		   guint      n_values)
 {
   BseFreeVerbCpp *cpp = module->user_data;
-  const gfloat *ileft = GSL_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_LEFT);
-  const gfloat *iright = GSL_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_RIGHT);
-  gfloat *oleft = GSL_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_LEFT);
-  gfloat *oright = GSL_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_RIGHT);
+  const gfloat *ileft = BSE_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_LEFT);
+  const gfloat *iright = BSE_MODULE_IBUFFER (module, BSE_FREE_VERB_ICHANNEL_RIGHT);
+  gfloat *oleft = BSE_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_LEFT);
+  gfloat *oright = BSE_MODULE_OBUFFER (module, BSE_FREE_VERB_OCHANNEL_RIGHT);
 
   bse_free_verb_cpp_process (cpp, n_values, ileft, iright, oleft, oright);
 }
 
 static void
-free_verb_reset (GslModule *module)
+free_verb_reset (BseModule *module)
 {
   BseFreeVerbCpp *cpp = module->user_data;
   BseFreeVerbConfig config;
@@ -254,7 +254,7 @@ free_verb_reset (GslModule *module)
 
 static void
 free_verb_destroy (gpointer        data,
-		   const GslClass *klass)
+		   const BseModuleClass *klass)
 {
   BseFreeVerbCpp *cpp = data;
 
@@ -265,9 +265,9 @@ free_verb_destroy (gpointer        data,
 static void
 bse_free_verb_context_create (BseSource *source,
 			      guint      context_handle,
-			      GslTrans  *trans)
+			      BseTrans  *trans)
 {
-  static const GslClass free_verb_class = {
+  static const BseModuleClass free_verb_class = {
     BSE_FREE_VERB_N_ICHANNELS,	/* n_istreams */
     0,				/* n_jstreams */
     BSE_FREE_VERB_N_OCHANNELS,	/* n_ostreams */
@@ -275,23 +275,23 @@ bse_free_verb_context_create (BseSource *source,
     NULL,			/* process_defer */
     free_verb_reset,		/* reset */
     free_verb_destroy,		/* free */
-    GSL_COST_EXPENSIVE,		/* cost */
+    BSE_COST_EXPENSIVE,		/* cost */
   };
   BseFreeVerb *self = BSE_FREE_VERB (source);
   BseFreeVerbCpp *cpp = g_new0 (BseFreeVerbCpp, 1);
-  GslModule *module;
+  BseModule *module;
 
   /* initialize module data */
   bse_free_verb_cpp_create (cpp);
   bse_free_verb_cpp_configure (cpp, &self->config);
   bse_free_verb_cpp_save_config (cpp, &self->config);
-  module = gsl_module_new (&free_verb_class, cpp);
+  module = bse_module_new (&free_verb_class, cpp);
 
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
 
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

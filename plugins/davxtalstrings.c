@@ -65,7 +65,7 @@ static void	   dav_xtal_strings_get_property     (GObject              *object,
 						      GParamSpec           *pspec);
 static void	   dav_xtal_strings_context_create   (BseSource		   *source,
 						      guint		    context_handle,
-						      GslTrans		   *trans);
+						      BseTrans		   *trans);
 static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 						      gboolean		    trigger_now);
 
@@ -314,12 +314,12 @@ xmod_trigger (XtalStringsModule *xmod,
 }
 
 static void
-xmod_process (GslModule *module,
+xmod_process (BseModule *module,
 	      guint      n_values)
 {
   XtalStringsModule *xmod = module->user_data;
-  const gfloat *freq_in, *trigger_in = GSL_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_TRIGGER);
-  gfloat *wave_out = GSL_MODULE_OBUFFER (module, DAV_XTAL_STRINGS_OCHANNEL_MONO);
+  const gfloat *freq_in, *trigger_in = BSE_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_TRIGGER);
+  gfloat *wave_out = BSE_MODULE_OBUFFER (module, DAV_XTAL_STRINGS_OCHANNEL_MONO);
   gint32 pos2;
   gfloat sample, last_trigger_level;
   guint real_freq_256, actual_freq_256;
@@ -328,8 +328,8 @@ xmod_process (GslModule *module,
   real_freq_256 = (int) (xmod->last_trigger_freq * 256);
   actual_freq_256 = (int) (BSE_MIX_FREQ_f * 256 / xmod->size);
   
-  if (GSL_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ).connected)
-    freq_in = GSL_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ);
+  if (BSE_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ).connected)
+    freq_in = BSE_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ);
   else
     freq_in = NULL;
   last_trigger_level = xmod->last_trigger_level;
@@ -378,7 +378,7 @@ xmod_process (GslModule *module,
 #define	STRING_LENGTH()	((BSE_MIX_FREQ + 19) / 20)
 
 static void
-xmod_reset (GslModule *module)
+xmod_reset (BseModule *module)
 {
   XtalStringsModule *xmod = module->user_data;
   
@@ -395,7 +395,7 @@ xmod_reset (GslModule *module)
 
 static void
 xmod_free (gpointer        data,
-	   const GslClass *klass)
+	   const BseModuleClass *klass)
 {
   XtalStringsModule *xmod = data;
   
@@ -406,9 +406,9 @@ xmod_free (gpointer        data,
 static void
 dav_xtal_strings_context_create (BseSource *source,
 				 guint      context_handle,
-				 GslTrans  *trans)
+				 BseTrans  *trans)
 {
-  static const GslClass xmod_class = {
+  static const BseModuleClass xmod_class = {
     DAV_XTAL_STRINGS_N_ICHANNELS,	/* n_istreams */
     0,					/* n_jstreams */
     DAV_XTAL_STRINGS_N_OCHANNELS,	/* n_ostreams */
@@ -416,22 +416,22 @@ dav_xtal_strings_context_create (BseSource *source,
     NULL,				/* process_defer */
     xmod_reset,				/* reset */
     xmod_free,				/* free */
-    GSL_COST_NORMAL,			/* cost */
+    BSE_COST_NORMAL,			/* cost */
   };
   DavXtalStrings *self = DAV_XTAL_STRINGS (source);
   XtalStringsModule *xmod = g_new0 (XtalStringsModule, 1);
-  GslModule *module;
+  BseModule *module;
   
   xmod->string = g_new0 (gfloat, STRING_LENGTH ());
   xmod->tparams = self->params;
-  module = gsl_module_new (&xmod_class, xmod);
+  module = bse_module_new (&xmod_class, xmod);
   xmod_reset (module); /* value initialization */
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -440,7 +440,7 @@ dav_xtal_strings_context_create (BseSource *source,
 /* update module configuration from a new set of DavXtalStringsParams
  */
 static void
-xmod_access (GslModule *module,
+xmod_access (BseModule *module,
 	     gpointer   data)
 {
   XtalStringsModule *xmod = module->user_data;

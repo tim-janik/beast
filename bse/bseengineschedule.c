@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseengineschedule.h"
-
-
-#include "gslcommon.h"
+#include "bseengineutils.h"
 
 
 /* --- prototypes --- */
@@ -739,7 +737,7 @@ subschedule_query_node (EngineSchedule *schedule,
   /* eliminate dead virtual ends in jstreams */
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     {
-      GslJStream *jstream = node->module.jstreams + j;
+      BseJStream *jstream = node->module.jstreams + j;
 
       /* we check this jstream's connections for virtual dead-ends.
        * valid connections stay at (are moved to) the array front and

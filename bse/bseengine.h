@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,95 +15,98 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_ENGINE_H__
-#define __GSL_ENGINE_H__
+#ifndef __BSE_ENGINE_H__
+#define __BSE_ENGINE_H__
 
-#include <bse/gsldefs.h>
+#include <bse/bsedefs.h>
 
 G_BEGIN_DECLS
 
 /* --- constants --- */
-#define	GSL_STREAM_MAX_VALUES		        (1024 /* power of 2 and <= 16384 */)
-#define	GSL_MODULE_N_OSTREAMS(module)	        ((module)->klass->n_ostreams)
-#define	GSL_MODULE_N_ISTREAMS(module)	        ((module)->klass->n_istreams)
-#define	GSL_MODULE_N_JSTREAMS(module)	        ((module)->klass->n_jstreams)
-#define	GSL_MODULE_ISTREAM(module, stream)      ((module)->istreams[(stream)])
-#define	GSL_MODULE_JSTREAM(module, stream)      ((module)->jstreams[(stream)])
-#define	GSL_MODULE_OSTREAM(module, stream)      ((module)->ostreams[(stream)])
-#define	GSL_MODULE_IBUFFER(module, stream)      (GSL_MODULE_ISTREAM ((module), (stream)).values)
-#define	GSL_MODULE_JBUFFER(module, stream, con) (GSL_MODULE_JSTREAM ((module), (stream)).values[con])
-#define	GSL_MODULE_OBUFFER(module, stream)      (GSL_MODULE_OSTREAM ((module), (stream)).values)
+#define	BSE_STREAM_MAX_VALUES		        (1024 /* power of 2 and <= 16384 */)
+#define	BSE_MODULE_N_OSTREAMS(module)	        ((module)->klass->n_ostreams)
+#define	BSE_MODULE_N_ISTREAMS(module)	        ((module)->klass->n_istreams)
+#define	BSE_MODULE_N_JSTREAMS(module)	        ((module)->klass->n_jstreams)
+#define	BSE_MODULE_ISTREAM(module, stream)      ((module)->istreams[(stream)])
+#define	BSE_MODULE_JSTREAM(module, stream)      ((module)->jstreams[(stream)])
+#define	BSE_MODULE_OSTREAM(module, stream)      ((module)->ostreams[(stream)])
+#define	BSE_MODULE_IBUFFER(module, stream)      (BSE_MODULE_ISTREAM ((module), (stream)).values)
+#define	BSE_MODULE_JBUFFER(module, stream, con) (BSE_MODULE_JSTREAM ((module), (stream)).values[con])
+#define	BSE_MODULE_OBUFFER(module, stream)      (BSE_MODULE_OSTREAM ((module), (stream)).values)
+#define BSE_ENGINE_MAX_POLLFDS  		(128)
 
 
 /* --- typedefs --- */
-typedef struct _GslProbe GslProbe;
-typedef gboolean (*GslPollFunc)		(gpointer	data,
+typedef struct _BseIStream		 BseIStream;
+typedef struct _BseJStream		 BseJStream;
+typedef struct _BseOStream		 BseOStream;
+typedef struct _BseJob			 BseJob;
+/* bsedefs.h:
+ * typedef void (*BseEngineAccessFunc)	(BseModule	*module,
+ * 					 gpointer	 data);
+ */
+typedef gboolean (*BseEnginePollFunc)	(gpointer	data,
 					 guint		n_values,
 					 glong	       *timeout_p,
 					 guint          n_fds,
 					 const GPollFD *fds,
 					 gboolean	revents_filled);
-typedef gboolean (*GslEngineTimerFunc)	(gpointer	data,
+typedef gboolean (*BseEngineTimerFunc)	(gpointer	data,
 					 guint64	tick_stamp);
-typedef void     (*GslProcessFunc)	(GslModule     *module,
-					 guint		n_values);
-typedef guint    (*GslProcessDeferFunc)	(GslModule     *module,
-					 guint		n_ivalues,
-					 guint		n_ovalues);
-typedef void     (*GslResetFunc)	(GslModule     *module);
-typedef void     (*GslProbeFunc)	(gpointer       data,
+typedef void     (*BseEngineProbeFunc)	(gpointer       data,
                                          guint64        tick_stamp,
                                          guint          n_values,
                                          gfloat       **oblocks); /* [ENGINE_NODE_N_OSTREAMS()] */
+typedef void     (*BseProcessFunc)	(BseModule     *module,
+					 guint		n_values);
+typedef guint    (*BseProcessDeferFunc)	(BseModule     *module,
+					 guint		n_ivalues,
+					 guint		n_ovalues);
+typedef void     (*BseModuleResetFunc)	(BseModule     *module);
+typedef void     (*BseModuleFreeFunc)	(gpointer	 data,
+                                         const BseModuleClass *klass);
 
-/* gsldefs.h:
- * typedef void  (*GslAccessFunc)	(GslModule	*module,
- *					 gpointer	 data);
- * typedef void  (*GslFreeFunc)		(gpointer	 data);
- * typedef void  (*GslModuleFreeFunc)	(gpointer	 data,
- *                                       const GslClass *klass);
- */
 typedef enum	/*< skip >*/
 {
-  GSL_COST_NORMAL	= 0,
-  GSL_COST_CHEAP	= 1 << 0,
-  GSL_COST_EXPENSIVE	= 1 << 1
-} GslModuleFlags;
+  BSE_COST_NORMAL	= 0,
+  BSE_COST_CHEAP	= 1 << 0,
+  BSE_COST_EXPENSIVE	= 1 << 1
+} BseCostType;
 /* class, filled out by user */
-struct _GslClass
+struct _BseModuleClass
 {
   guint		      n_istreams;
   guint		      n_jstreams;
   guint		      n_ostreams;
-  GslProcessFunc      process;		/* EngineThread */
-  GslProcessDeferFunc process_defer;	/* EngineThread */
-  GslResetFunc	      reset;		/* EngineThread */
-  GslModuleFreeFunc   free;		/* UserThread */
-  GslModuleFlags      mflags;
+  BseProcessFunc      process;		/* EngineThread */
+  BseProcessDeferFunc process_defer;	/* EngineThread */
+  BseModuleResetFunc	      reset;		/* EngineThread */
+  BseModuleFreeFunc   free;		/* UserThread */
+  BseCostType      mflags;
 };
 /* module, constructed by engine */
-struct _GslModule
+struct _BseModule
 {
-  const GslClass *klass;
+  const BseModuleClass *klass;
   gpointer	  user_data;
-  GslIStream	 *istreams;	/* input streams */
-  GslJStream	 *jstreams;	/* joint (multiconnect) input streams */
-  GslOStream	 *ostreams;	/* output streams */
+  BseIStream	 *istreams;	/* input streams */
+  BseJStream	 *jstreams;	/* joint (multiconnect) input streams */
+  BseOStream	 *ostreams;	/* output streams */
 };
 /* streams, constructed by engine */
-struct _GslJStream
+struct _BseJStream
 {
   const gfloat **values;
   guint          n_connections;	/* scheduler update */
   /*< private >*/
   guint		 jcount;	/* internal field */
 };
-struct _GslIStream
+struct _BseIStream
 {
   const gfloat *values;
   gboolean	connected;	/* scheduler update */
 };
-struct _GslOStream
+struct _BseOStream
 {
   gfloat     *values;
   gboolean    connected;
@@ -111,92 +114,92 @@ struct _GslOStream
 
 
 /* --- interface (UserThread functions) --- */
-GslModule*	gsl_module_new		(const GslClass	 *klass,
+BseModule*	bse_module_new		(const BseModuleClass	 *klass,
 					 gpointer	  user_data);
-GslModule*	gsl_module_new_virtual	(guint		  n_iostreams,
+BseModule*	bse_module_new_virtual	(guint		  n_iostreams,
 					 gpointer	  user_data,
-					 GslFreeFunc	  free_data);
-guint64		gsl_module_tick_stamp	(GslModule	 *module);
-gboolean        gsl_module_has_source   (GslModule       *module,
+					 BseFreeFunc	  free_data);
+guint64		bse_module_tick_stamp	(BseModule	 *module);
+gboolean        bse_module_has_source   (BseModule       *module,
                                          guint            istream);
-GslJob*		gsl_job_connect		(GslModule	 *src_module,
+BseJob*		bse_job_connect		(BseModule	 *src_module,
 					 guint		  src_ostream,
-					 GslModule	 *dest_module,
+					 BseModule	 *dest_module,
 					 guint		  dest_istream);
-GslJob*		gsl_job_jconnect	(GslModule	 *src_module,
+BseJob*		bse_job_jconnect	(BseModule	 *src_module,
 					 guint		  src_ostream,
-					 GslModule	 *dest_module,
+					 BseModule	 *dest_module,
 					 guint		  dest_jstream);
-GslJob*		gsl_job_disconnect	(GslModule	 *dest_module,
+BseJob*		bse_job_disconnect	(BseModule	 *dest_module,
 					 guint		  dest_istream);
-GslJob*		gsl_job_jdisconnect	(GslModule	 *dest_module,
+BseJob*		bse_job_jdisconnect	(BseModule	 *dest_module,
 					 guint		  dest_jstream,
-					 GslModule	 *src_module,
+					 BseModule	 *src_module,
 					 guint		  src_ostream);
-GslJob*		gsl_job_kill_inputs	(GslModule	 *module);
-GslJob*		gsl_job_kill_outputs	(GslModule	 *module);
-GslJob*		gsl_job_integrate	(GslModule	 *module);
-GslJob*		gsl_job_discard		(GslModule	 *module);
-GslJob*		gsl_job_force_reset	(GslModule	 *module);
-GslJob*		gsl_job_access		(GslModule	 *module,
-					 GslAccessFunc	  access_func,	/* EngineThread */
+BseJob*		bse_job_kill_inputs	(BseModule	 *module);
+BseJob*		bse_job_kill_outputs	(BseModule	 *module);
+BseJob*		bse_job_integrate	(BseModule	 *module);
+BseJob*		bse_job_discard		(BseModule	 *module);
+BseJob*		bse_job_force_reset	(BseModule	 *module);
+BseJob*		bse_job_access		(BseModule	 *module,
+					 BseEngineAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslFreeFunc	  free_func);	/* UserThread */
-GslJob*		gsl_job_set_consumer	(GslModule	 *module,
+					 BseFreeFunc	  free_func);	/* UserThread */
+BseJob*		bse_job_set_consumer	(BseModule	 *module,
 					 gboolean	  is_toplevel_consumer);
-GslJob*		gsl_job_suspend_now	(GslModule	 *module);
-GslJob*		gsl_job_resume_at	(GslModule	 *module,
+BseJob*		bse_job_suspend_now	(BseModule	 *module);
+BseJob*		bse_job_resume_at	(BseModule	 *module,
 					 guint64	  tick_stamp);
-GslJob*		gsl_job_debug		(const gchar	 *debug);
-GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
+BseJob*		bse_job_debug		(const gchar	 *debug);
+BseJob*		bse_job_add_poll	(BseEnginePollFunc	  poll_func,
 					 gpointer	  data,
-					 GslFreeFunc	  free_func,
+					 BseFreeFunc	  free_func,
 					 guint		  n_fds,
 					 const GPollFD   *fds);
-GslJob*		gsl_job_remove_poll	(GslPollFunc	  poll_func,
+BseJob*		bse_job_remove_poll	(BseEnginePollFunc	  poll_func,
 					 gpointer	  data);
-GslJob*		gsl_job_add_timer	(GslEngineTimerFunc timer_func,
+BseJob*		bse_job_add_timer	(BseEngineTimerFunc timer_func,
 					 gpointer	  data,
-					 GslFreeFunc	  free_func);
-GslTrans*	gsl_trans_open		(void);
-void		gsl_trans_add		(GslTrans	 *trans,
-					 GslJob		 *job);
-GslTrans*	gsl_trans_merge		(GslTrans	 *trans1,
-					 GslTrans	 *trans2);
-void		gsl_trans_commit	(GslTrans	 *trans);
-void		gsl_trans_commit_delayed(GslTrans	 *trans,
+					 BseFreeFunc	  free_func);
+BseTrans*	bse_trans_open		(void);
+void		bse_trans_add		(BseTrans	 *trans,
+					 BseJob		 *job);
+BseTrans*	bse_trans_merge		(BseTrans	 *trans1,
+					 BseTrans	 *trans2);
+void		bse_trans_commit	(BseTrans	 *trans);
+void		bse_trans_commit_delayed(BseTrans	 *trans,
 					 guint64	  tick_stamp);
-void		gsl_trans_dismiss	(GslTrans	 *trans);
-void		gsl_transact		(GslJob		 *job,
+void		bse_trans_dismiss	(BseTrans	 *trans);
+void		bse_transact		(BseJob		 *job,
 					 ...);
-GslJob*         gsl_job_probe_request   (GslModule       *module,
+BseJob*         bse_job_probe_request   (BseModule       *module,
                                          guint8          *ochannel_bytemask,
-                                         GslProbeFunc     probe,        /* UserThread */
+                                         BseEngineProbeFunc     probe,        /* UserThread */
                                          gpointer         data);
-GslJob*		gsl_job_flow_access	(GslModule	 *module,
+BseJob*		bse_job_flow_access	(BseModule	 *module,
 					 guint64	  tick_stamp,
-					 GslAccessFunc	  access_func,	/* EngineThread */
+					 BseEngineAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslFreeFunc	  free_func);	/* UserThread */
-GslJob*		gsl_job_boundary_access	(GslModule	 *module,
+					 BseFreeFunc	  free_func);	/* UserThread */
+BseJob*		bse_job_boundary_access	(BseModule	 *module,
 					 guint64	  tick_stamp,
-					 GslAccessFunc	  access_func,	/* EngineThread */
+					 BseEngineAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslFreeFunc      free_func);	/* UserThread */
+					 BseFreeFunc      free_func);	/* UserThread */
 
 
 /* --- module utilities (EngineThread functions) --- */
-gfloat*	      gsl_engine_const_values   (gfloat		  value);
+gfloat*	      bse_engine_const_values   (gfloat		  value);
 
 
 /* --- initialization & main loop --- */
-void            gsl_engine_constrain    (guint            latency_ms,
+void            bse_engine_constrain    (guint            latency_ms,
                                          guint            sample_freq,
                                          guint            control_freq,
                                          guint           *block_size_p,
                                          guint           *control_raster_p);
-void	        gsl_engine_init		(gboolean	  threaded);
-gboolean        gsl_engine_configure    (guint		  latency_ms,
+void	        bse_engine_init		(gboolean	  threaded);
+gboolean        bse_engine_configure    (guint		  latency_ms,
 					 guint		  sample_freq,
 					 guint		  control_freq);
 typedef struct
@@ -206,30 +209,30 @@ typedef struct
   guint		n_fds;
   GPollFD      *fds;
   gboolean	revents_filled;
-} GslEngineLoop;
-gboolean        gsl_engine_prepare	(GslEngineLoop		*loop);
-gboolean        gsl_engine_check	(const GslEngineLoop	*loop);
-void	        gsl_engine_dispatch	(void);
-SfiThread**     gsl_engine_get_threads	(guint                  *n_threads);
+} BseEngineLoop;
+gboolean        bse_engine_prepare	(BseEngineLoop		*loop);
+gboolean        bse_engine_check	(const BseEngineLoop	*loop);
+void	        bse_engine_dispatch	(void);
+SfiThread**     bse_engine_get_threads	(guint                  *n_threads);
 
 
 /* --- miscellaneous --- */
-gboolean      gsl_engine_has_garbage		 (void);
-void	      gsl_engine_garbage_collect	 (void);
-void	      gsl_engine_wait_on_trans		 (void);
-guint64	      gsl_engine_tick_stamp_from_systime (guint64	systime);
-#define	      gsl_engine_block_size()		 (0 + (const guint) gsl_externvar_block_size)
-#define	      gsl_engine_sample_freq()		 (0 + (const guint) gsl_externvar_sample_freq)
-#define	      gsl_engine_control_raster()	 (1 + (const guint) gsl_externvar_control_mask)
-#define	      gsl_engine_control_mask()	         (0 + (const guint) gsl_externvar_control_mask)
-#define	      GSL_CONTROL_CHECK(index)	         ((gsl_engine_control_mask() & (index)) == 0)
+gboolean      bse_engine_has_garbage		 (void);
+void	      bse_engine_garbage_collect	 (void);
+void	      bse_engine_wait_on_trans		 (void);
+guint64	      bse_engine_tick_stamp_from_systime (guint64	systime);
+#define	      bse_engine_block_size()		 (0 + (const guint) bse_engine_exvar_block_size)
+#define	      bse_engine_sample_freq()		 (0 + (const guint) bse_engine_exvar_sample_freq)
+#define	      bse_engine_control_raster()	 (1 + (const guint) bse_engine_exvar_control_mask)
+#define	      bse_engine_control_mask()	         (0 + (const guint) bse_engine_exvar_control_mask)
+#define	      BSE_CONTROL_CHECK(index)	         ((bse_engine_control_mask() & (index)) == 0)
 
 
 /*< private >*/
-extern guint	gsl_externvar_block_size;
-extern guint	gsl_externvar_sample_freq;
-extern guint	gsl_externvar_control_mask;
+extern guint	bse_engine_exvar_block_size;
+extern guint	bse_engine_exvar_sample_freq;
+extern guint	bse_engine_exvar_control_mask;
 
 G_END_DECLS
 
-#endif /* __GSL_ENGINE_H__ */
+#endif /* __BSE_ENGINE_H__ */

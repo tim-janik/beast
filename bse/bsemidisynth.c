@@ -62,7 +62,7 @@ static BseItemSeq*  bse_midi_synth_list_items          (BseItem           *item,
                                                         GParamSpec        *pspec);
 static void         bse_midi_synth_context_create      (BseSource         *source,
                                                         guint              context_handle,
-                                                        GslTrans          *trans);
+                                                        BseTrans          *trans);
 static void         bse_misi_synth_update_midi_channel (BseMidiSynth      *self);
 
 
@@ -448,7 +448,7 @@ bse_midi_synth_get_property (GObject    *object,
 static void
 bse_midi_synth_context_create (BseSource *source,
 			       guint      context_handle,
-			       GslTrans  *trans)
+			       BseTrans  *trans)
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (source);
   BseSNet *snet = BSE_SNET (self);

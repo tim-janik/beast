@@ -56,7 +56,7 @@ typedef struct
   gdouble           y[GSL_WAVE_OSC_FILTER_ORDER + 1];
   guint             j;                  /* y[] index */
   GslWaveChunk     *wchunk;
-  gfloat	    mix_freq;		/* gsl_engine_sample_freq() */
+  gfloat	    mix_freq;		/* bse_engine_sample_freq() */
   gfloat	    step_factor;
   gboolean	    done;		/* FIXME. caution, this is TRUE only if
 					 * (play_dir < 0 && cur_pos < 0) ||
@@ -86,7 +86,7 @@ GslLong		gsl_wave_osc_cur_pos	(GslWaveOscData	*wosc);
 
 /* setup:
  * wosc = g_new0 (GslWaveOscData, 1);
- * wosc->mix_freq = gsl_engine_sample_freq ();
+ * wosc->mix_freq = bse_engine_sample_freq ();
  */
 
 

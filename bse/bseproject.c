@@ -682,7 +682,7 @@ bse_project_state_changed (BseProject     *self,
       SfiTime stamp = gsl_tick_stamp ();
       SfiTime delay_usecs = 0;
       if (self->deactivate_min_tick > stamp)
-	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / gsl_engine_sample_freq ();
+	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / bse_engine_sample_freq ();
       self->deactivate_timer = bse_idle_timed (self->deactivate_usecs + delay_usecs, auto_deactivate, self);
     }
   g_signal_emit (self, signal_state_changed, 0, state);
@@ -706,7 +706,7 @@ BseErrorType
 bse_project_activate (BseProject *self)
 {
   BseErrorType error;
-  GslTrans *trans;
+  BseTrans *trans;
   GSList *slist;
 
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
@@ -723,7 +723,7 @@ bse_project_activate (BseProject *self)
   bse_source_prepare (BSE_SOURCE (self));
   self->deactivate_min_tick = 0;
   
-  trans = gsl_trans_open ();
+  trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
@@ -739,7 +739,7 @@ bse_project_activate (BseProject *self)
       else
 	super->context_handle = ~0;
     }
-  gsl_trans_commit (trans);
+  bse_trans_commit (trans);
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
   return BSE_ERROR_NONE;
 }
@@ -748,7 +748,7 @@ void
 bse_project_start_playback (BseProject *self)
 {
   SfiRing *seq_list = NULL;
-  GslTrans *trans;
+  BseTrans *trans;
   GSList *slist;
   guint seen_synth = 0;
 
@@ -758,7 +758,7 @@ bse_project_start_playback (BseProject *self)
     return;
   g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
 
-  trans = gsl_trans_open ();
+  trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
@@ -786,7 +786,7 @@ void
 bse_project_stop_playback (BseProject *self)
 {
   SfiRing *seq_jobs = NULL;
-  GslTrans *trans;
+  BseTrans *trans;
   GSList *slist;
 
   g_return_if_fail (BSE_IS_PROJECT (self));
@@ -795,7 +795,7 @@ bse_project_stop_playback (BseProject *self)
     return;
   g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
 
-  trans = gsl_trans_open ();
+  trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
@@ -810,9 +810,9 @@ bse_project_stop_playback (BseProject *self)
     }
   if (seq_jobs)
     bse_ssequencer_handle_jobs (seq_jobs);
-  gsl_trans_commit (trans);
+  bse_trans_commit (trans);
   /* wait until after all modules have actually been dismissed */
-  gsl_engine_wait_on_trans ();
+  bse_engine_wait_on_trans ();
   bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
 }
 
@@ -867,7 +867,7 @@ bse_project_queue_auto_stop_SL (BseProject *self)
 void
 bse_project_deactivate (BseProject *self)
 {
-  GslTrans *trans;
+  BseTrans *trans;
   GSList *slist;
 
   g_return_if_fail (BSE_IS_PROJECT (self));
@@ -878,7 +878,7 @@ bse_project_deactivate (BseProject *self)
 
   bse_project_stop_playback (self);
 
-  trans = gsl_trans_open ();
+  trans = bse_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)
     {
       BseSuper *super = BSE_SUPER (slist->data);
@@ -889,9 +889,9 @@ bse_project_deactivate (BseProject *self)
 	  super->context_handle = ~0;
 	}
     }
-  gsl_trans_commit (trans);
+  bse_trans_commit (trans);
   /* wait until after all modules have actually been dismissed */
-  gsl_engine_wait_on_trans ();
+  bse_engine_wait_on_trans ();
   bse_source_reset (BSE_SOURCE (self));
   bse_project_state_changed (self, BSE_PROJECT_INACTIVE);
 

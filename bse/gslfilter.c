@@ -56,7 +56,7 @@ band_filter_common (unsigned int iorder,
   double alpha, norm;
   guint i;
   
-  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  epsilon = bse_trans_zepsilon2ss (epsilon);
   alpha = cos ((s_freq + p_freq) * 0.5) / cos ((s_freq - p_freq) * 0.5);
   
   fpoly[0] = gsl_complex (1, 0);
@@ -152,13 +152,13 @@ gsl_filter_butter_rp (unsigned int iorder,
 {
   double pi = GSL_PI, order = iorder;
   double beta_mul = pi / (2.0 * order);
-  /* double kappa = gsl_trans_freq2s (freq); */
+  /* double kappa = bse_trans_freq2s (freq); */
   double kappa;
   GslComplex root;
   unsigned int i;
 
-  epsilon = gsl_trans_zepsilon2ss (epsilon);
-  kappa = gsl_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
+  epsilon = bse_trans_zepsilon2ss (epsilon);
+  kappa = bse_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
 
   /* construct poles for butterworth filter */
   for (i = 1; i <= iorder; i++)
@@ -168,7 +168,7 @@ gsl_filter_butter_rp (unsigned int iorder,
 
       root.re = kappa * cos (beta);
       root.im = kappa * sin (beta);
-      poles[i - 1] = gsl_trans_s2z (root);
+      poles[i - 1] = bse_trans_s2z (root);
     }
 
   /* z numerator polynomial */
@@ -218,11 +218,11 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
   double pi = GSL_PI, order = iorder;
   double alpha;
   double beta_mul = pi / (2.0 * order);
-  double kappa = gsl_trans_freq2s (freq);
+  double kappa = bse_trans_freq2s (freq);
   GslComplex root;
   unsigned int i;
 
-  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  epsilon = bse_trans_zepsilon2ss (epsilon);
   alpha = asinh (1.0 / epsilon) / order;
 
   /* construct poles polynomial from tschebyscheff polynomial */
@@ -233,7 +233,7 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
 
       root.re = kappa * sinh (alpha) * cos (beta);
       root.im = kappa * cosh (alpha) * sin (beta);
-      poles[i - 1] = gsl_trans_s2z (root);
+      poles[i - 1] = bse_trans_s2z (root);
     }
 
   /* z numerator polynomial */
@@ -253,8 +253,8 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
 {
   double pi = GSL_PI, order = iorder;
   double r_freq = c_freq * steepness;
-  double kappa_c = gsl_trans_freq2s (c_freq);
-  double kappa_r = gsl_trans_freq2s (r_freq);
+  double kappa_c = bse_trans_freq2s (c_freq);
+  double kappa_r = bse_trans_freq2s (r_freq);
   double tepsilon;
   double alpha;
   double beta_mul = pi / (2.0 * order);
@@ -269,7 +269,7 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
 #endif
   g_return_if_fail (steepness > 1.0);
 
-  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  epsilon = bse_trans_zepsilon2ss (epsilon);
   tepsilon = epsilon * tschebyscheff_eval (iorder, kappa_r / kappa_c);
   alpha = asinh (tepsilon) / order;
   
@@ -282,7 +282,7 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
       root.re = sinh (alpha) * cos (beta);
       root.im = cosh (alpha) * sin (beta);
       root = gsl_complex_div (gsl_complex (kappa_r, 0), root);
-      root = gsl_trans_s2z (root);
+      root = bse_trans_s2z (root);
       poles[i - 1] = root;
     }
   
@@ -295,7 +295,7 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
       if (fabs (root.im) > 1e-14)
 	{
 	  root = gsl_complex_div (gsl_complex (kappa_r, 0), root);
-	  root = gsl_trans_s2z (root);
+	  root = bse_trans_s2z (root);
 	}
       else
 	root = gsl_complex (-1, 0);
@@ -338,10 +338,10 @@ gsl_filter_tscheb2_steepness (unsigned int iorder,
 {
   double kappa_c, kappa_r, r_freq;
 
-  epsilon = gsl_trans_zepsilon2ss (epsilon);
-  kappa_c = gsl_trans_freq2s (c_freq);
+  epsilon = bse_trans_zepsilon2ss (epsilon);
+  kappa_c = bse_trans_freq2s (c_freq);
   kappa_r = tschebyscheff_inverse (iorder, sqrt (1.0 / (residue * residue) - 1.0) / epsilon) * kappa_c;
-  r_freq = gsl_trans_freq2z (kappa_r);
+  r_freq = bse_trans_freq2z (kappa_r);
 
   return r_freq / c_freq;
 }
@@ -407,7 +407,7 @@ gsl_filter_tscheb1_lp (unsigned int iorder,
   norm = gsl_poly_eval (iorder, b, 1) / gsl_poly_eval (iorder, a, 1);
   if ((iorder & 1) == 0)      /* norm is fluctuation minimum */
     {
-      epsilon = gsl_trans_zepsilon2ss (epsilon);
+      epsilon = bse_trans_zepsilon2ss (epsilon);
       norm *= sqrt (1.0 / (1.0 + epsilon * epsilon));
     }
   gsl_poly_scale (iorder, a, norm);
@@ -775,7 +775,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
   GslComplex *zf = g_newa (GslComplex, 1 + iorder);
   double *vk = g_newa (double, 1 + iorder), norm;
   double *q = g_newa (double, 2 * (1 + iorder));
-  double O = gsl_trans_freq2s (zomega);
+  double O = bse_trans_freq2s (zomega);
   unsigned int i;
   
   /* calc Vk() */
@@ -814,7 +814,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
   
   /* s => z */
   for (i = 0; i < iorder; i++)
-    roots[i] = gsl_trans_s2z (roots[i]);
+    roots[i] = bse_trans_s2z (roots[i]);
   
   /* z denominator polynomial */
   gsl_cpoly_from_roots (iorder, zf, roots);

@@ -73,7 +73,7 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 
 
 /* --- Convenience --- */
-#define	BSE_MIX_FREQ	(gsl_engine_sample_freq ())
+#define	BSE_MIX_FREQ	(bse_engine_sample_freq ())
 #define	BSE_MIX_FREQ_f	((gfloat) BSE_MIX_FREQ)
 #define	BSE_MIX_FREQ_d	((gdouble) BSE_MIX_FREQ)
 

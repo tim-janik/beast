@@ -49,10 +49,10 @@ static void	 bse_pcm_input_get_property	(GObject                *object,
 static void	 bse_pcm_input_prepare		(BseSource		*source);
 static void	 bse_pcm_input_context_create	(BseSource		*source,
 						 guint			 instance_id,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	 bse_pcm_input_context_connect	(BseSource		*source,
 						 guint			 instance_id,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	 bse_pcm_input_reset		(BseSource		*source);
 
 
@@ -213,14 +213,14 @@ typedef struct {
 } ModData;
 
 static void
-pcm_input_process (GslModule *module,
+pcm_input_process (BseModule *module,
 		   guint      n_values)
 {
   ModData *mdata = module->user_data;
-  const gfloat *ls = GSL_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
-  const gfloat *rs = GSL_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
-  gfloat *ld = GSL_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
-  gfloat *rd = GSL_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
+  const gfloat *ls = BSE_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
+  const gfloat *rs = BSE_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
+  gfloat *ld = BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
+  gfloat *rd = BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
   gfloat v = mdata->volume;
   
   if (mdata->volume_set)
@@ -231,28 +231,28 @@ pcm_input_process (GslModule *module,
       }
   else
     {
-      GSL_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT) = (gfloat*) GSL_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
-      GSL_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT) = (gfloat*) GSL_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
+      BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT) = (gfloat*) BSE_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_LEFT);
+      BSE_MODULE_OBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT) = (gfloat*) BSE_MODULE_IBUFFER (module, BSE_PCM_INPUT_OCHANNEL_RIGHT);
     }
 }
 
 static void
 bse_pcm_input_context_create (BseSource *source,
 			      guint      context_handle,
-			      GslTrans  *trans)
+			      BseTrans  *trans)
 {
-  static const GslClass pcm_input_mclass = {
+  static const BseModuleClass pcm_input_mclass = {
     BSE_PCM_INPUT_N_OCHANNELS,	/* n_istreams */
     0,				/* n_jstreams */
     BSE_PCM_INPUT_N_OCHANNELS,	/* n_ostreams */
     pcm_input_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_CHEAP,		/* cost */
+    (BseModuleFreeFunc) g_free,	/* free */
+    BSE_COST_CHEAP,		/* cost */
   };
   ModData *mdata = g_new0 (ModData, 1);
-  GslModule *module = gsl_module_new (&pcm_input_mclass, mdata);
+  BseModule *module = bse_module_new (&pcm_input_mclass, mdata);
   
   mdata->volume = 1.0;
   mdata->volume_set = BSE_EPSILON_CMP (mdata->volume, 1.0) != 0;
@@ -261,7 +261,7 @@ bse_pcm_input_context_create (BseSource *source,
   bse_source_set_context_omodule (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -270,17 +270,17 @@ bse_pcm_input_context_create (BseSource *source,
 static void
 bse_pcm_input_context_connect (BseSource *source,
 			       guint      context_handle,
-			       GslTrans  *trans)
+			       BseTrans  *trans)
 {
   BsePcmInput *iput = BSE_PCM_INPUT (source);
-  GslModule *module;
+  BseModule *module;
   
   /* get context specific module */
   module = bse_source_get_context_omodule (source, context_handle);
   
   /* connect module to server uplink */
-  gsl_trans_add (trans, gsl_job_connect (iput->uplink, 0, module, 0));
-  gsl_trans_add (trans, gsl_job_connect (iput->uplink, 1, module, 1));
+  bse_trans_add (trans, bse_job_connect (iput->uplink, 0, module, 0));
+  bse_trans_add (trans, bse_job_connect (iput->uplink, 1, module, 1));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);

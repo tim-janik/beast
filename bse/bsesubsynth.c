@@ -54,13 +54,13 @@ static BseItemSeq* bse_sub_synth_list_items	(BseItem		*item,
 static void	 bse_sub_synth_do_dispose	(GObject		*object);
 static void	 bse_sub_synth_context_create	(BseSource		*source,
 						 guint			 instance_id,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	 bse_sub_synth_context_connect	(BseSource		*source,
 						 guint			 instance_id,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	 bse_sub_synth_context_dismiss	(BseSource		*source,
 						 guint			 instance_id,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void  bse_sub_synth_update_port_contexts (BseSubSynth		*self,
 						 const gchar		*old_name,
 						 const gchar		*new_name,
@@ -377,15 +377,15 @@ typedef struct {
 static void
 bse_sub_synth_context_create (BseSource *source,
 			      guint      context_handle,
-			      GslTrans  *trans)
+			      BseTrans  *trans)
 {
   static GSList *recursion_stack = NULL;
   BseSubSynth *self = BSE_SUB_SYNTH (source);
   BseSNet *snet = self->snet;
   ModData *mdata_in = g_new0 (ModData, 1);
   ModData *mdata_out = g_new0 (ModData, 1);
-  GslModule *imodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_in, g_free);
-  GslModule *omodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_out, g_free);
+  BseModule *imodule = bse_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_in, g_free);
+  BseModule *omodule = bse_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_out, g_free);
   guint foreign_context_handle = 0, shortcut = FALSE;
 
   /* create new context for foreign synth */
@@ -416,14 +416,14 @@ bse_sub_synth_context_create (BseSource *source,
   bse_source_set_context_omodule (source, context_handle, omodule);
   
   /* commit modules to engine */
-  gsl_trans_add (trans, gsl_job_integrate (imodule));
-  gsl_trans_add (trans, gsl_job_integrate (omodule));
+  bse_trans_add (trans, bse_job_integrate (imodule));
+  bse_trans_add (trans, bse_job_integrate (omodule));
   
   if (shortcut)
     {
       guint i;
       for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
-        gsl_trans_add (trans, gsl_job_connect (imodule, i, omodule, i));
+        bse_trans_add (trans, bse_job_connect (imodule, i, omodule, i));
     }
 
   /* chain parent class' handler */
@@ -433,7 +433,7 @@ bse_sub_synth_context_create (BseSource *source,
 static void
 bse_sub_synth_context_connect (BseSource *source,
 			       guint      context_handle,
-			       GslTrans  *trans)
+			       BseTrans  *trans)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (source);
   BseSNet *snet = self->snet;
@@ -442,8 +442,8 @@ bse_sub_synth_context_connect (BseSource *source,
   /* connect module to sub synthesizer */
   if (snet)
     {
-      GslModule *imodule = bse_source_get_context_imodule (source, context_handle);
-      GslModule *omodule = bse_source_get_context_omodule (source, context_handle);
+      BseModule *imodule = bse_source_get_context_imodule (source, context_handle);
+      BseModule *omodule = bse_source_get_context_omodule (source, context_handle);
       ModData *mdata_in = imodule->user_data;
       guint foreign_context_handle = mdata_in->synth_context_handle;
       
@@ -467,14 +467,14 @@ bse_sub_synth_context_connect (BseSource *source,
 static void
 bse_sub_synth_context_dismiss (BseSource *source,
 			       guint      context_handle,
-			       GslTrans  *trans)
+			       BseTrans  *trans)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (source);
   BseSNet *snet = self->snet;
   
   if (snet)
     {
-      GslModule *imodule = bse_source_get_context_imodule (source, context_handle);
+      BseModule *imodule = bse_source_get_context_imodule (source, context_handle);
       ModData *mdata_in = imodule->user_data;
       guint i, foreign_context_handle = mdata_in->synth_context_handle;
       
@@ -502,7 +502,7 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
 {
   BseSNet *snet = self->snet;
   BseSource *source = BSE_SOURCE (self);
-  GslTrans *trans = gsl_trans_open ();
+  BseTrans *trans = bse_trans_open ();
   guint *cids, n, i;
   
   g_return_if_fail (BSE_SOURCE_PREPARED (self));
@@ -511,7 +511,7 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
   for (i = 0; i < n; i++)
     if (is_input)
       {
-	GslModule *imodule = bse_source_get_context_imodule (source, cids[i]);
+	BseModule *imodule = bse_source_get_context_imodule (source, cids[i]);
 	ModData *mdata_in = imodule->user_data;
 	guint foreign_context_handle = mdata_in->synth_context_handle;
 	
@@ -523,7 +523,7 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
       }
     else
       {
-	GslModule *omodule = bse_source_get_context_omodule (source, cids[i]);
+	BseModule *omodule = bse_source_get_context_omodule (source, cids[i]);
 	ModData *mdata_in = omodule->user_data;
         guint foreign_context_handle = mdata_in->synth_context_handle;
 	
@@ -534,5 +534,5 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
 	  }
       }
   g_free (cids);
-  gsl_trans_commit (trans);
+  bse_trans_commit (trans);
 }

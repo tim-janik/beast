@@ -28,7 +28,7 @@
 #include "bsecsynth.h"
 #include "bsessequencer.h"
 #include "bsesubsynth.h"
-#include "bseengine.h"	// FIXME: for gsl_engine_sample_freq()
+#include "bseengine.h"	// FIXME: for bse_engine_sample_freq()
 #include <string.h>
 
 
@@ -514,7 +514,7 @@ bse_song_update_tpsi_SL (BseSong *self)
   gdouble tpqn = self->tpqn;		/* ticks per quarter note */
   gdouble qnps = self->bpm / 60.;	/* quarter notes per second */
   gdouble tps = tpqn * qnps;		/* ticks per second */
-  gdouble sps = gsl_engine_sample_freq ();
+  gdouble sps = bse_engine_sample_freq ();
   gdouble tpsi = tps / sps;		/* ticks per stamp increment (sample) */
   BSE_SEQUENCER_LOCK ();
   self->tpsi_SL = tpsi;
@@ -540,7 +540,7 @@ bse_song_prepare (BseSource *source)
 static void
 bse_song_context_create (BseSource *source,
 			 guint      context_handle,
-			 GslTrans  *trans)
+			 BseTrans  *trans)
 {
   BseSong *self = BSE_SONG (source);
   BseSNet *snet = BSE_SNET (self);

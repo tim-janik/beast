@@ -51,7 +51,7 @@ struct _BseSubOPortClass
   BseSourceClass parent_class;
 
   guint          n_output_ports;
-  GslClass       gsl_class;
+  BseModuleClass       gsl_class;
 };
 
 

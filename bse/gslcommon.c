@@ -32,7 +32,7 @@
 
 
 /* --- variables --- */
-volatile guint64     gsl_externvar_tick_stamp = 0;
+volatile guint64     bse_engine_exvar_tick_stamp = 0;
 static guint64	     tick_stamp_system_time = 0;
 static guint         global_tick_stamp_leaps = 0;
 
@@ -45,16 +45,16 @@ static SfiMutex     global_tick_stamp_mutex = { 0, };
  *
  * Retrieve the global GSL tick counter stamp.
  * GSL increments its global tick stamp at certain intervals,
- * by specific amounts (refer to gsl_engine_init() for further
+ * by specific amounts (refer to bse_engine_init() for further
  * details). The tick stamp is a non-wrapping, unsigned 64bit
  * integer greater than 0. Threads can schedule sleep interruptions
  * at certain tick stamps with sfi_thread_awake_after() and
  * sfi_thread_awake_before(). Tick stamp updating occours at
  * GSL engine block processing boundaries, so code that can
  * guarantee to not run across those boundaries (for instance
- * GslProcessFunc() functions) may use the macro %GSL_TICK_STAMP
+ * BseProcessFunc() functions) may use the macro %GSL_TICK_STAMP
  * to retrieve the current tick in a faster manner (not involving
- * mutex locking). See also gsl_module_tick_stamp().
+ * mutex locking). See also bse_module_tick_stamp().
  * This function is MT-safe and may be called from any thread.
  */
 guint64
@@ -63,7 +63,7 @@ gsl_tick_stamp (void)
   guint64 stamp;
 
   GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  stamp = gsl_externvar_tick_stamp;
+  stamp = bse_engine_exvar_tick_stamp;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
 
   return stamp;
@@ -90,7 +90,7 @@ gsl_tick_stamp_last (void)
   GslTickStampUpdate ustamp;
 
   GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  ustamp.tick_stamp = gsl_externvar_tick_stamp;
+  ustamp.tick_stamp = bse_engine_exvar_tick_stamp;
   ustamp.system_time = tick_stamp_system_time;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
 
@@ -106,10 +106,10 @@ _gsl_tick_stamp_inc (void)
   g_return_if_fail (global_tick_stamp_leaps > 0);
 
   systime = sfi_time_system ();
-  newstamp = gsl_externvar_tick_stamp + global_tick_stamp_leaps;
+  newstamp = bse_engine_exvar_tick_stamp + global_tick_stamp_leaps;
 
   GSL_SPIN_LOCK (&global_tick_stamp_mutex);
-  gsl_externvar_tick_stamp = newstamp;
+  bse_engine_exvar_tick_stamp = newstamp;
   tick_stamp_system_time = systime;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
 
@@ -476,7 +476,7 @@ gsl_init (const GslConfigValue values[])
 
   g_return_if_fail (gsl_config == NULL);	/* assert single initialization */
 
-  gsl_externvar_tick_stamp = 1;
+  bse_engine_exvar_tick_stamp = 1;
 
   /* configure permanent config record */
   if (config)
@@ -519,7 +519,6 @@ gsl_init (const GslConfigValue values[])
   _gsl_init_signal ();
   _gsl_init_fd_pool ();
   _gsl_init_data_caches ();
-  _gsl_init_engine_utils ();
   _gsl_init_loader_gslwave ();
   _gsl_init_loader_aiff ();
   _gsl_init_loader_wav ();

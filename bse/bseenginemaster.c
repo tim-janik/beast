@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001-2003 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,19 +56,19 @@ typedef struct _Poll Poll;
 struct _Poll
 {
   Poll	     *next;
-  GslPollFunc poll_func;
+  BseEnginePollFunc poll_func;
   gpointer    data;
   guint       n_fds;
   GPollFD    *fds;
-  GslFreeFunc free_func;
+  BseFreeFunc free_func;
 };
 typedef struct _Timer Timer;
 struct _Timer
 {
   Timer             *next;
-  GslEngineTimerFunc timer_func;
+  BseEngineTimerFunc timer_func;
   gpointer           data;
-  GslFreeFunc        free_func;
+  BseFreeFunc        free_func;
 };
 
 
@@ -80,12 +80,12 @@ static void	master_schedule_discard	(void);
 static gboolean	       master_need_reflow = FALSE;
 static gboolean	       master_need_process = FALSE;
 static EngineNode     *master_consumer_list = NULL;
-const gfloat           gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
+const gfloat           bse_engine_master_zero_block[BSE_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
 static Timer	      *master_timer_list = NULL;
 static Poll	      *master_poll_list = NULL;
 static guint           master_n_pollfds = 0;
 static guint           master_pollfds_changed = FALSE;
-static GPollFD         master_pollfds[GSL_ENGINE_MAX_POLLFDS];
+static GPollFD         master_pollfds[BSE_ENGINE_MAX_POLLFDS];
 static EngineSchedule *master_schedule = NULL;
 static SfiRing        *boundary_node_list = NULL;
 static gboolean        master_new_boundary_jobs = FALSE;
@@ -314,7 +314,7 @@ node_peek_boundary_job_stamp (EngineNode *node)
 
 /* --- job processing --- */
 static void
-master_process_job (GslJob *job)
+master_process_job (BseJob *job)
 {
   switch (job->job_id)
     {
@@ -577,9 +577,9 @@ master_process_job (GslJob *job)
       break;
     case ENGINE_JOB_ADD_POLL:
       JOB_DEBUG ("add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);
-      if (job->data.poll.n_fds + master_n_pollfds > GSL_ENGINE_MAX_POLLFDS)
+      if (job->data.poll.n_fds + master_n_pollfds > BSE_ENGINE_MAX_POLLFDS)
 	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
-		 job->data.poll.n_fds + master_n_pollfds, GSL_ENGINE_MAX_POLLFDS);
+		 job->data.poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
       poll = sfi_new_struct0 (Poll, 1);
       poll->poll_func = job->data.poll.poll_func;
       poll->data = job->data.poll.data;
@@ -658,7 +658,7 @@ master_poll_check (glong   *timeout_p,
     {
       glong timeout = -1;
       
-      if (poll->poll_func (poll->data, gsl_engine_block_size (), &timeout,
+      if (poll->poll_func (poll->data, bse_engine_block_size (), &timeout,
 			   poll->n_fds, poll->n_fds ? poll->fds : NULL, check_with_revents)
 	  || timeout == 0)
 	{
@@ -685,14 +685,14 @@ master_tick_stamp_inc (void)
       Timer *next = timer->next;
       if (!timer->timer_func (timer->data, new_stamp))
 	{
-	  GslTrans *trans = gsl_trans_open ();
+	  BseTrans *trans = bse_trans_open ();
 	  if (last)
 	    last->next = next;
 	  else
 	    master_timer_list = next;
 	  /* free timer data in user thread */
-	  gsl_trans_add (trans, gsl_job_add_timer (timer->timer_func, timer->data, timer->free_func));
-	  gsl_trans_dismiss (trans);
+	  bse_trans_add (trans, bse_job_add_timer (timer->timer_func, timer->data, timer->free_func));
+	  bse_trans_dismiss (trans);
 	  sfi_delete_struct (Timer, timer);
 	}
       else
@@ -814,7 +814,7 @@ master_process_locked_node (EngineNode *node,
 	      ENGINE_NODE_UNLOCK (inode);
 	    }
 	  else
-	    node->module.istreams[i].values = gsl_engine_master_zero_block;
+	    node->module.istreams[i].values = bse_engine_master_zero_block;
 	}
       /* ensure all jstream inputs have n_values available */
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
@@ -838,7 +838,7 @@ master_process_locked_node (EngineNode *node,
 	  /* suspended node processing behaviour */
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	    if (node->module.ostreams[i].connected)
-	      node->module.ostreams[i].values = (gfloat*) gsl_engine_master_zero_block;
+	      node->module.ostreams[i].values = (gfloat*) bse_engine_master_zero_block;
           node->needs_reset = TRUE;
 	}
       else
@@ -858,16 +858,16 @@ master_process_locked_node (EngineNode *node,
     }
 }
 
-static GslLong gsl_profile_modules = 0;	/* set to 1 in gdb to get profile output */
+static gboolean gsl_profile_modules = 0;	/* set to 1 in gdb to get profile output */
 
 static void
 master_process_flow (void)
 {
   const guint64 current_stamp = GSL_TICK_STAMP;
-  guint n_values = gsl_engine_block_size();
+  guint n_values = bse_engine_block_size();
   guint64 final_counter = current_stamp + n_values;
-  GslLong profile_maxtime = 0;
-  GslLong profile_modules = gsl_profile_modules;
+  guint64 profile_maxtime = 0;
+  gboolean profile_modules = gsl_profile_modules;
   EngineNode *profile_node = NULL;
   
   g_return_if_fail (master_need_process == TRUE);
@@ -891,10 +891,8 @@ master_process_flow (void)
 
 	  if_reject (profile_modules)
 	    {
-	      GslLong duration;
-	      
 	      toyprof_stamp (profile_stamp2);
-	      duration = toyprof_elapsed (profile_stamp1, profile_stamp2);
+	      guint64 duration = toyprof_elapsed (profile_stamp1, profile_stamp2);
 	      if (duration > profile_maxtime)
 		{
 		  profile_maxtime = duration;
@@ -908,7 +906,7 @@ master_process_flow (void)
 
       /* walk unscheduled nodes with flow jobs */
       node = _engine_mnl_head ();
-      while (node && GSL_MNL_UNSCHEDULED_UJOB_NODE (node))
+      while (node && BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))
 	{
 	  EngineNode *tmp = node->mnl_next;
           node->counter = final_counter;
@@ -931,10 +929,10 @@ master_process_flow (void)
 	  if (profile_node)
 	    {
 	      if (profile_maxtime > profile_modules)
-		g_print ("Excess Node: %p  Duration: %lu usecs     ((void(*)())%p)         \n",
+		g_print ("Excess Node: %p  Duration: %llu usecs     ((void(*)())%p)         \n",
 			 profile_node, profile_maxtime, profile_node->module.klass->process);
 	      else
-		g_print ("Slowest Node: %p  Duration: %lu usecs     ((void(*)())%p)         \r",
+		g_print ("Slowest Node: %p  Duration: %llu usecs     ((void(*)())%p)         \r",
 			 profile_node, profile_maxtime, profile_node->module.klass->process);
 	    }
 	}
@@ -982,7 +980,7 @@ master_schedule_discard (void)
 
 /* --- MasterThread main loop --- */
 gboolean
-_engine_master_prepare (GslEngineLoop *loop)
+_engine_master_prepare (BseEngineLoop *loop)
 {
   gboolean need_dispatch;
   guint i;
@@ -1017,7 +1015,7 @@ _engine_master_prepare (GslEngineLoop *loop)
 }
 
 gboolean
-_engine_master_check (const GslEngineLoop *loop)
+_engine_master_check (const BseEngineLoop *loop)
 {
   gboolean need_dispatch;
   
@@ -1048,8 +1046,8 @@ void
 _engine_master_dispatch_jobs (void)
 {
   const guint64 current_stamp = GSL_TICK_STAMP;
-  guint64 last_block_tick = current_stamp + gsl_engine_block_size() - 1;
-  GslJob *job = _engine_pop_job ();
+  guint64 last_block_tick = current_stamp + bse_engine_block_size() - 1;
+  BseJob *job = _engine_pop_job ();
   /* here, we have to process _all_ pending jobs in a row. a popped job
    * stays valid until the next call to _engine_pop_job().
    */
@@ -1130,7 +1128,7 @@ _engine_master_thread (EngineMasterData *mdata)
 
   while (!sfi_thread_aborted ())        /* also updates accounting information */
     {
-      GslEngineLoop loop;
+      BseEngineLoop loop;
       gboolean need_dispatch;
       
       need_dispatch = _engine_master_prepare (&loop);
@@ -1163,7 +1161,7 @@ _engine_master_thread (EngineMasterData *mdata)
       }
 
       /* wakeup user thread if necessary */
-      if (gsl_engine_has_garbage ())
+      if (bse_engine_has_garbage ())
 	sfi_thread_wakeup (mdata->user_thread);
     }
 }

@@ -75,7 +75,7 @@ collect_thread_totals::exec ()
     }
   guint n;
   SfiThread **t;
-  t = gsl_engine_get_threads (&n);
+  t = bse_engine_get_threads (&n);
   for (guint i = 0; i < n; i++)
     {
       ti = sfi_thread_info_collect (t[i]);

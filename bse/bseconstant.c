@@ -49,9 +49,9 @@ static void	 bse_constant_get_property	(GObject	  *object,
 						 GParamSpec       *pspec);
 static void	 bse_constant_context_create	(BseSource        *source,
 						 guint             context_handle,
-						 GslTrans         *trans);
+						 BseTrans         *trans);
 static void	 bse_constant_update_modules	(BseConstant	  *constant,
-						 GslTrans         *trans);
+						 BseTrans         *trans);
 
 
 /* --- variables --- */
@@ -251,7 +251,7 @@ typedef struct
 
 static void
 bse_constant_update_modules (BseConstant *constant,
-			     GslTrans    *trans)
+			     BseTrans    *trans)
 {
   if (BSE_SOURCE_PREPARED (constant))
     bse_source_update_modules (BSE_SOURCE (constant),
@@ -268,42 +268,42 @@ typedef struct {
 } FlowAccessData;
 
 static void
-constant_process (GslModule *module,
+constant_process (BseModule *module,
 		  guint      n_values)
 {
   ConstantModule *cmod = module->user_data;
   guint i;
   
   for (i = 0; i < BSE_CONSTANT_N_OUTPUTS; i++)
-    if (GSL_MODULE_OSTREAM (module, i).connected)
-      GSL_MODULE_OSTREAM (module, i).values = gsl_engine_const_values (cmod->constants[i]);
+    if (BSE_MODULE_OSTREAM (module, i).connected)
+      BSE_MODULE_OSTREAM (module, i).values = bse_engine_const_values (cmod->constants[i]);
 }
 
 static void
 bse_constant_context_create (BseSource *source,
 			     guint      context_handle,
-			     GslTrans  *trans)
+			     BseTrans  *trans)
 {
-  static const GslClass constant_class = {
+  static const BseModuleClass constant_class = {
     0,				/* n_istreams */
     0,                          /* n_jstreams */
     BSE_CONSTANT_N_OUTPUTS,	/* n_ostreams */
     constant_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_CHEAP,		/* flags */
+    (BseModuleFreeFunc) g_free,	/* free */
+    BSE_COST_CHEAP,		/* flags */
   };
   ConstantModule *constant = g_new0 (ConstantModule, 1);
-  GslModule *module;
+  BseModule *module;
   
-  module = gsl_module_new (&constant_class, constant);
+  module = bse_module_new (&constant_class, constant);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

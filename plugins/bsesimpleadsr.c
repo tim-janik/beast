@@ -48,9 +48,9 @@ static void	bse_simple_adsr_get_property	(GObject                *object,
 						 GParamSpec		*pspec);
 static void	bse_simple_adsr_context_create	(BseSource		*source,
 						 guint			 context_handle,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	bse_simple_adsr_update_modules	(BseSimpleADSR		*simple_adsr,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 
 
 /* --- Export to BSE --- */
@@ -252,32 +252,32 @@ typedef struct
 } SimpleADSR;
 
 static void
-simple_adsr_process (GslModule *module,
+simple_adsr_process (BseModule *module,
 		     guint      n_values)
 {
   SimpleADSR *env = module->user_data;
   BseSimpleADSRVars *vars = &env->vars;
   BseMixRampLinear *ramp = &env->ramp;
-  const gfloat *gate_in = GSL_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE);
-  const gfloat *trig_in = GSL_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
-  gfloat *wave_out = GSL_MODULE_OBUFFER (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT);
-  gboolean have_gate = GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected;
+  const gfloat *gate_in = BSE_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE);
+  const gfloat *trig_in = BSE_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
+  gfloat *wave_out = BSE_MODULE_OBUFFER (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT);
+  gboolean have_gate = BSE_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected;
   guint state = 0;
   
-  if (!GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).connected &&
-      !GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).connected)
+  if (!BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).connected &&
+      !BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).connected)
     return;	/* no output */
   
   if (env->phase == POST_RELEASE &&
-      !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected &&
-      !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER).connected)
+      !BSE_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected &&
+      !BSE_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER).connected)
     {
       /* no trigger input possible */
-      GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).values = gsl_engine_const_values (0.0);
+      BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).values = bse_engine_const_values (0.0);
       if (env->phase == POST_RELEASE)
-	GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (1.0);
+	BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = bse_engine_const_values (1.0);
       else
-	GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (0.0);
+	BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = bse_engine_const_values (0.0);
       return;
     }
   
@@ -365,19 +365,19 @@ simple_adsr_process (GslModule *module,
   while (state != BSE_MIX_RAMP_REACHED_BOUND);
   
   if (env->phase == POST_RELEASE)
-    GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (1.0);
+    BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = bse_engine_const_values (1.0);
   else
-    GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (0.0);
+    BSE_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = bse_engine_const_values (0.0);
 }
 
 static void
 bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
-				GslTrans      *trans)
+				BseTrans      *trans)
 {
   BseSimpleADSRVars vars;
   double ms = bse_time_range_to_ms (adsr->time_range);
   
-  ms *= gsl_engine_sample_freq () / 1000.0;
+  ms *= bse_engine_sample_freq () / 1000.0;
   vars.attack_level = 1.0;
   if (adsr->attack_time < TIME_EPSILON)
     vars.attack_inc = 1.0;
@@ -404,31 +404,31 @@ bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
 static void
 bse_simple_adsr_context_create (BseSource *source,
 				guint      context_handle,
-				GslTrans  *trans)
+				BseTrans  *trans)
 {
-  static const GslClass env_class = {
+  static const BseModuleClass env_class = {
     BSE_SIMPLE_ADSR_N_ICHANNELS,	/* n_istreams */
     0,					/* n_jstreams */
     BSE_SIMPLE_ADSR_N_OCHANNELS,	/* n_ostreams */
     simple_adsr_process,		/* process */
     NULL,                       	/* process_defer */
     NULL,                       	/* reset */
-    (GslModuleFreeFunc) g_free,		/* free */
-    GSL_COST_CHEAP,			/* cost */
+    (BseModuleFreeFunc) g_free,		/* free */
+    BSE_COST_CHEAP,			/* cost */
   };
   BseSimpleADSR *simple_adsr = BSE_SIMPLE_ADSR (source);
   SimpleADSR *env = g_new0 (SimpleADSR, 1);
-  GslModule *module;
+  BseModule *module;
   
   env->ramp.last_trigger = 0;
   env->ramp.level = 0;
-  module = gsl_module_new (&env_class, env);
+  module = bse_module_new (&env_class, env);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

@@ -43,7 +43,7 @@ Effect::get_property (guint       prop_id,
 }
 
 void
-access_trampoline (GslModule *module,
+access_trampoline (BseModule *module,
                    gpointer   data)
 {
   SynthesisModule::Accessor *ac = static_cast<SynthesisModule::Accessor*> (data);
@@ -59,7 +59,7 @@ access_data_free (gpointer data)
 }
 
 void
-Effect::update_modules (GslTrans *trans)
+Effect::update_modules (BseTrans *trans)
 {
   BseSource *source = cast (this);
   if (BSE_SOURCE_PREPARED (source))
@@ -67,10 +67,10 @@ Effect::update_modules (GslTrans *trans)
       SynthesisModule::Accessor *ac = module_configurator();
       if (ac)
         {
-          GslTrans *atrans = trans ? trans : gsl_trans_open();
+          BseTrans *atrans = trans ? trans : bse_trans_open();
           bse_source_access_modules (source, access_trampoline, ac, access_data_free, atrans);
           if (!trans)
-            gsl_trans_commit (atrans);
+            bse_trans_commit (atrans);
         }
     }
 }
@@ -81,7 +81,7 @@ SynthesisModule::SynthesisModule()
 }
 
 void
-SynthesisModule::set_module (GslModule *gslmodule)
+SynthesisModule::set_module (BseModule *gslmodule)
 {
   g_return_if_fail (engine_module == NULL);
   g_return_if_fail (gslmodule != NULL);
@@ -97,14 +97,14 @@ void
 SynthesisModule::ostream_set (unsigned int ostream_index,
                               const float *values)
 {
-  GslModule *m = gslmodule();
+  BseModule *m = gslmodule();
   m->ostreams[ostream_index].values = const_cast<float*> (values);
 }
 
 const float*
 SynthesisModule::const_values (float value)
 {
-  return gsl_engine_const_values (value);
+  return bse_engine_const_values (value);
 }
 
 SynthesisModule::~SynthesisModule()
@@ -118,7 +118,7 @@ SynthesisModule::cost()
 }
 
 void
-process_module (GslModule *gslmodule,
+process_module (BseModule *gslmodule,
                 guint      n_values)
 {
   SynthesisModule *m = static_cast<SynthesisModule*> (gslmodule->user_data);
@@ -126,7 +126,7 @@ process_module (GslModule *gslmodule,
 }
 
 void
-reset_module (GslModule *gslmodule)
+reset_module (BseModule *gslmodule)
 {
   SynthesisModule *m = static_cast<SynthesisModule*> (gslmodule->user_data);
   m->reset();
@@ -134,25 +134,25 @@ reset_module (GslModule *gslmodule)
 
 void
 delete_module (gpointer        data,
-               const GslClass *klass)
+               const BseModuleClass *klass)
 {
   SynthesisModule *m = static_cast<SynthesisModule*> (data);
   delete m;
 }
 
-static GslModuleFlags
+static BseCostType
 module_flags_from_process_cost (ProcessCost cost)
 {
   switch (cost)
     {
-    case EXPENSIVE:     return GSL_COST_EXPENSIVE;
-    case CHEAP:         return GSL_COST_CHEAP;
+    case EXPENSIVE:     return BSE_COST_EXPENSIVE;
+    case CHEAP:         return BSE_COST_CHEAP;
     default:
-    case NORMAL:        return GSL_COST_NORMAL;
+    case NORMAL:        return BSE_COST_NORMAL;
     }
 }
 
-const GslClass*
+const BseModuleClass*
 Effect::create_gsl_class (SynthesisModule *sample_module,
                           int              cost,
                           int              n_istreams,
@@ -163,7 +163,7 @@ Effect::create_gsl_class (SynthesisModule *sample_module,
   BseSourceClass *source_class = BSE_SOURCE_GET_CLASS (source);
   if (!source_class->gsl_class)
     {
-      GslClass klass = {
+      BseModuleClass klass = {
         0,                      /* n_istreams */
         0,                      /* n_jstreams */
         0,                      /* n_ostreams */
@@ -171,9 +171,9 @@ Effect::create_gsl_class (SynthesisModule *sample_module,
         NULL,                   /* process_defer */
         reset_module,           /* reset */
         delete_module,          /* free */
-        GSL_COST_NORMAL,        /* mflags */
+        BSE_COST_NORMAL,        /* mflags */
       };
-      klass.mflags = GslModuleFlags (cost >= 0 ? cost : module_flags_from_process_cost (sample_module->cost()));
+      klass.mflags = BseCostType (cost >= 0 ? cost : module_flags_from_process_cost (sample_module->cost()));
       klass.n_istreams = n_istreams >= 0 ? n_istreams : (BSE_SOURCE_N_ICHANNELS (source) -
                                                          BSE_SOURCE_N_JOINT_ICHANNELS (source));
       klass.n_jstreams = n_jstreams >= 0 ? n_jstreams : BSE_SOURCE_N_JOINT_ICHANNELS (source);
@@ -183,25 +183,25 @@ Effect::create_gsl_class (SynthesisModule *sample_module,
   return source_class->gsl_class;
 }
 
-GslModule*
-Effect::integrate_gsl_module (unsigned int   context_handle,
-                              GslTrans      *trans)
+BseModule*
+Effect::integrate_bse_module (unsigned int   context_handle,
+                              BseTrans      *trans)
 {
   SynthesisModule *cxxmodule = create_module (context_handle, trans);
-  GslModule *gslmodule = gsl_module_new (create_gsl_class (cxxmodule), cxxmodule);
+  BseModule *gslmodule = bse_module_new (create_gsl_class (cxxmodule), cxxmodule);
   cxxmodule->set_module (gslmodule);
   /* intergrate module into engine */
-  gsl_trans_add (trans, gsl_job_integrate (gslmodule));
+  bse_trans_add (trans, bse_job_integrate (gslmodule));
   return gslmodule;
 }
 
 void
-Effect::dismiss_gsl_module (GslModule       *gslmodule,
+Effect::dismiss_bse_module (BseModule       *gslmodule,
                             guint            context_handle,
-                            GslTrans        *trans)
+                            BseTrans        *trans)
 {
   if (gslmodule)
-    gsl_trans_add (trans, gsl_job_discard (gslmodule));
+    bse_trans_add (trans, bse_job_discard (gslmodule));
 }
 
 void
@@ -213,21 +213,21 @@ Effect::class_init (CxxBaseClass *klass)
     static void
     effect_context_create (BseSource *source,
                            guint      context_handle,
-                           GslTrans  *trans)
+                           BseTrans  *trans)
     {
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
-      GslModule *gslmodule = self->integrate_gsl_module (context_handle, trans);
+      BseModule *gslmodule = self->integrate_bse_module (context_handle, trans);
       
       /* setup module i/o streams with BseSource i/o channels */
       bse_source_set_context_module (source, context_handle, gslmodule);
       
       /* reset module */
-      gsl_trans_add (trans, gsl_job_force_reset (gslmodule));
+      bse_trans_add (trans, bse_job_force_reset (gslmodule));
       /* configure module */
       SynthesisModule::Accessor *ac = self->module_configurator();
       if (ac)
-        gsl_trans_add (trans, gsl_job_access (gslmodule, access_trampoline, ac, access_data_free));
+        bse_trans_add (trans, bse_job_access (gslmodule, access_trampoline, ac, access_data_free));
       
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
@@ -235,11 +235,11 @@ Effect::class_init (CxxBaseClass *klass)
     static void
     effect_context_dismiss (BseSource *source,
                             guint      context_handle,
-                            GslTrans  *trans)
+                            BseTrans  *trans)
     {
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
-      GslModule *gslmodule = NULL;
+      BseModule *gslmodule = NULL;
       if (BSE_SOURCE_N_ICHANNELS (source))
         {
           gslmodule = bse_source_get_context_imodule (source, context_handle);
@@ -251,7 +251,7 @@ Effect::class_init (CxxBaseClass *klass)
           bse_source_set_context_omodule (source, context_handle, NULL);
         }
 
-      self->dismiss_gsl_module (gslmodule, context_handle, trans);
+      self->dismiss_bse_module (gslmodule, context_handle, trans);
 
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_dismiss (source, context_handle, trans);
@@ -276,15 +276,15 @@ Effect::class_init (CxxBaseClass *klass)
 static void
 check_mirror_structs ()
 {
-  ASSERT (sizeof (JStream) == sizeof (GslJStream));
-  ASSERT_FIELD (JStream, GslJStream, values);
-  ASSERT_FIELD (JStream, GslJStream, n_connections);
+  ASSERT (sizeof (JStream) == sizeof (BseJStream));
+  ASSERT_FIELD (JStream, BseJStream, values);
+  ASSERT_FIELD (JStream, BseJStream, n_connections);
   
-  ASSERT (sizeof (IStream) == sizeof (GslIStream));
-  ASSERT_FIELD (IStream, GslIStream, values);
+  ASSERT (sizeof (IStream) == sizeof (BseIStream));
+  ASSERT_FIELD (IStream, BseIStream, values);
   
-  ASSERT (sizeof (OStream) == sizeof (GslOStream));
-  ASSERT_FIELD (OStream, GslOStream, values);
+  ASSERT (sizeof (OStream) == sizeof (BseOStream));
+  ASSERT_FIELD (OStream, BseOStream, values);
 }
 
 extern "C" void

@@ -47,7 +47,7 @@ static void dav_syn_drum_get_property   (GObject         *object,
 static void dav_syn_drum_prepare        (BseSource       *source);
 static void dav_syn_drum_context_create (BseSource       *source,
                                          guint            context_handle,
-                                         GslTrans        *trans);
+                                         BseTrans        *trans);
 static void dav_syn_drum_update_modules (DavSynDrum      *self,
                                          gboolean         force_trigger);
 
@@ -227,14 +227,14 @@ dmod_trigger (DavSynDrumModule *dmod,
 }
 
 static void
-dmod_process (GslModule *module,
+dmod_process (BseModule *module,
               guint      n_values)
 {
   DavSynDrumModule *dmod = module->user_data;
-  const gfloat *freq_in = GSL_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_FREQ);
-  const gfloat *ratio_in = GSL_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_RATIO);
-  const gfloat *trigger_in = GSL_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_TRIGGER);
-  gfloat *wave_out = GSL_MODULE_OBUFFER (module, DAV_SYN_DRUM_OCHANNEL_MONO);
+  const gfloat *freq_in = BSE_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_FREQ);
+  const gfloat *ratio_in = BSE_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_RATIO);
+  const gfloat *trigger_in = BSE_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_TRIGGER);
+  gfloat *wave_out = BSE_MODULE_OBUFFER (module, DAV_SYN_DRUM_OCHANNEL_MONO);
   const gfloat res = dmod->params.res;
   gfloat freq_rad = dmod->freq_rad;
   gfloat freq_shift = dmod->freq_shift;
@@ -244,9 +244,9 @@ dmod_process (GslModule *module,
   gfloat env = dmod->env;
   guint i;
 
-  if (!GSL_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_FREQ).connected)
+  if (!BSE_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_FREQ).connected)
     freq_in = NULL;
-  if (!GSL_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_RATIO).connected)
+  if (!BSE_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_RATIO).connected)
     ratio_in = NULL;
 
   for (i = 0; i < n_values; i++)
@@ -283,7 +283,7 @@ dmod_process (GslModule *module,
 }
 
 static void
-dmod_reset (GslModule *module)
+dmod_reset (BseModule *module)
 {
   DavSynDrumModule *dmod = module->user_data;
   /* this function is called whenever we need to start from scratch */
@@ -298,31 +298,31 @@ dmod_reset (GslModule *module)
 static void
 dav_syn_drum_context_create (BseSource *source,
                              guint      context_handle,
-                             GslTrans  *trans)
+                             BseTrans  *trans)
 {
-  static const GslClass dmod_class = {
+  static const BseModuleClass dmod_class = {
     DAV_SYN_DRUM_N_ICHANNELS,           /* n_istreams */
     0,                                  /* n_jstreams */
     DAV_SYN_DRUM_N_OCHANNELS,           /* n_ostreams */
     dmod_process,                       /* process */
     NULL,                               /* process_defer */
     dmod_reset,                         /* reset */
-    (GslModuleFreeFunc) g_free,         /* free */
-    GSL_COST_NORMAL,                    /* cost */
+    (BseModuleFreeFunc) g_free,         /* free */
+    BSE_COST_NORMAL,                    /* cost */
   };
   DavSynDrum *self = DAV_SYN_DRUM (source);
   DavSynDrumModule *dmod = g_new0 (DavSynDrumModule, 1);
-  GslModule *module;
+  BseModule *module;
 
   dmod->params = self->params;
-  module = gsl_module_new (&dmod_class, dmod);
+  module = bse_module_new (&dmod_class, dmod);
   dmod_reset (module);
 
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
 
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -330,7 +330,7 @@ dav_syn_drum_context_create (BseSource *source,
 
 /* update module configuration from new parameter set */
 static void
-dmod_access (GslModule *module,
+dmod_access (BseModule *module,
              gpointer   data)
 {
   DavSynDrumModule *dmod = module->user_data;
@@ -341,7 +341,7 @@ dmod_access (GslModule *module,
 
 /* update module configuration from new parameter set and force trigger */
 static void
-dmod_access_trigger (GslModule *module,
+dmod_access_trigger (BseModule *module,
                      gpointer   data)
 {
   DavSynDrumModule *dmod = module->user_data;

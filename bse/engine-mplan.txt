@@ -1,4 +1,4 @@
-The GSL Engine
+The BSE Engine
 ==============
 
 The following gives an outline of the conceptual approach to
@@ -7,7 +7,7 @@ implementation along.
 
 Introductionary remarks:
 ------------------------
-The GSL Engine simulates signal flow systems by mapping them
+The BSE Engine simulates signal flow systems by mapping them
 onto a network of signal processing modules which are connected
 via signal streams.
 The signal streams are value quantized and time discrete, where

@@ -32,7 +32,7 @@ public:
   //BSE_EFFECT_INTEGRATE_MODULE (TestObject, Module, Properties);
 
   /* FIXME */
-  Bse::SynthesisModule* create_module(unsigned int, GslTrans*)
+  Bse::SynthesisModule* create_module(unsigned int, BseTrans*)
   {
     g_assert_not_reached ();
     return 0;

@@ -65,6 +65,8 @@ typedef struct  _BseMidiReceiver        BseMidiReceiver;
 typedef struct  _BseMidiSynth           BseMidiSynth;
 typedef struct  _BseMidiSynthClass      BseMidiSynthClass;
 typedef struct  _BseMidiContext         BseMidiContext;
+typedef struct  _BseModule              BseModule;
+typedef struct  _BseModuleClass         BseModuleClass;
 typedef struct  _BseObject              BseObject;
 typedef struct  _BseObjectClass         BseObjectClass;
 typedef struct  _BseParasite		BseParasite;
@@ -94,6 +96,7 @@ typedef struct  _BseSuper               BseSuper;
 typedef struct  _BseSuperClass          BseSuperClass;
 typedef struct  _BseTrack               BseTrack;
 typedef struct  _BseTrackClass          BseTrackClass;
+typedef struct  _BseTrans               BseTrans;
 typedef struct  _BseUndoStack		BseUndoStack;
 typedef struct  _BseUndoStep            BseUndoStep;
 typedef struct  _BseVoice		BseVoice;
@@ -112,6 +115,7 @@ typedef struct  _BsePluginClass         BsePluginClass;
 
 /* --- BSE function types --- */
 typedef void          (*BseFunc)             (void);
+typedef void          (*BseFreeFunc)         (gpointer           data);
 typedef void          (*BseIOWatch)	     (gpointer		 data,
 					      GPollFD		*pfd);
 typedef SfiTokenType  (*BseTryStatement)     (gpointer           context_data,
@@ -128,7 +132,9 @@ typedef gboolean      (*BseProcedureShare)   (gpointer           func_data,
 typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               GType              type,
                                               gpointer           user_data);
-
+typedef void          (*BseEngineAccessFunc) (BseModule         *module,
+                                              gpointer           data); 
+                                         
 
 
 /* --- i18n and gettext helpers --- */

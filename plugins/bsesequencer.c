@@ -46,7 +46,7 @@ static void	bse_sequencer_get_property	(BseSequencer           *sequencer,
 static void	bse_sequencer_prepare		(BseSource		*source);
 static void	bse_sequencer_context_create	(BseSource		*source,
 						 guint			 context_handle,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	bse_sequencer_reset		(BseSource		*source);
 static void	bse_sequencer_update_modules	(BseSequencer		*seq);
 
@@ -249,7 +249,7 @@ typedef struct {
 } AccessData;
 
 static void
-seq_access (GslModule *module,
+seq_access (BseModule *module,
 	    gpointer   data)
 {
   SeqModule *smod = module->user_data;
@@ -287,7 +287,7 @@ bse_sequencer_update_modules (BseSequencer *seq)
       
       d->n_values = seq->n_freq_values;
       d->new_values = seq->freq_values;
-      d->counter = seq->counter / 1000.0 * gsl_engine_sample_freq ();
+      d->counter = seq->counter / 1000.0 * bse_engine_sample_freq ();
       d->counter = MAX (d->counter, 1);
       
       bse_source_access_modules (BSE_SOURCE (seq),
@@ -297,12 +297,12 @@ bse_sequencer_update_modules (BseSequencer *seq)
 }
 
 static void
-sequencer_process (GslModule *module,
+sequencer_process (BseModule *module,
 		   guint      n_values)
 {
   SeqModule *smod = module->user_data;
-  gfloat *freq_out = GSL_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_FREQ);
-  gfloat *nsync_out = GSL_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
+  gfloat *freq_out = BSE_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_FREQ);
+  gfloat *nsync_out = BSE_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
   gfloat *bound = freq_out + n_values;
   
   while (freq_out < bound)
@@ -340,9 +340,9 @@ bse_sequencer_prepare (BseSource *source)
 static void
 bse_sequencer_context_create (BseSource *source,
 			      guint      context_handle,
-			      GslTrans  *trans)
+			      BseTrans  *trans)
 {
-  static const GslClass sequencer_class = {
+  static const BseModuleClass sequencer_class = {
     0,				/* n_istreams */
     0,                  	/* n_jstreams */
     BSE_SEQUENCER_N_OCHANNELS,	/* n_ostreams */
@@ -350,26 +350,26 @@ bse_sequencer_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (gpointer) g_free,		/* free */
-    GSL_COST_CHEAP,		/* flags */
+    BSE_COST_CHEAP,		/* flags */
   };
   BseSequencer *seq = BSE_SEQUENCER (source);
   SeqModule *smod = g_new0 (SeqModule, 1);
-  GslModule *module;
+  BseModule *module;
   
   smod->n_values = seq->n_freq_values;
   smod->values = seq->freq_values;
-  smod->counter = seq->counter / 1000.0 * gsl_engine_sample_freq ();
+  smod->counter = seq->counter / 1000.0 * bse_engine_sample_freq ();
   smod->counter = MAX (smod->counter, 1);
   smod->index = 0;
   smod->c = smod->counter;
   
-  module = gsl_module_new (&sequencer_class, smod);
+  module = bse_module_new (&sequencer_class, smod);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

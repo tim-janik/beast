@@ -131,7 +131,7 @@ bse_bus_prepare (BseSource *source)
 static void
 bse_bus_context_create (BseSource *source,
                         guint      context_handle,
-                        GslTrans  *trans)
+                        BseTrans  *trans)
 {
   // BseBus *iput = BSE_BUS (source);
   /* chain parent class' handler */
@@ -141,7 +141,7 @@ bse_bus_context_create (BseSource *source,
 static void
 bse_bus_context_connect (BseSource *source,
                          guint      context_handle,
-                         GslTrans  *trans)
+                         BseTrans  *trans)
 {
   // BseBus *iput = BSE_BUS (source);
   /* chain parent class' handler */

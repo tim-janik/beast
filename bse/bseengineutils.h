@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001-2003 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,24 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_ENGINE_UTIL_H__
-#define __GSL_ENGINE_UTIL_H__
+#ifndef __BSE_ENGINE_UTIL_H__
+#define __BSE_ENGINE_UTIL_H__
 
-#include <bse/gsldefs.h>
+#include <bse/bseenginenode.h>
 
 G_BEGIN_DECLS
 
-/* --- typedefs --- */
-typedef struct _EngineNode     EngineNode;
-typedef struct _EngineSchedule EngineSchedule;
-
-
 /* --- UserThread --- */
-void		_engine_free_trans		(GslTrans      *trans);
-GslOStream*	_engine_alloc_ostreams		(guint		n);
+void            bse_engine_reinit_utils         (void);
+void		_engine_free_trans		(BseTrans      *trans);
+BseOStream*	_engine_alloc_ostreams		(guint		n);
 #if 0	/* bseengine.h: */
-void            gsl_engine_garbage_collect	(void);
-gfloat*		gsl_engine_const_values		(gfloat		value);
+void            bse_engine_garbage_collect	(void);
+gfloat*		bse_engine_const_values		(gfloat		value);
 #endif
 
 
@@ -43,7 +39,7 @@ void		_engine_node_collect_jobs	(EngineNode	*node);
 void		_engine_mnl_remove		(EngineNode	*node);
 void		_engine_mnl_node_changed	(EngineNode	*node);
 void		_engine_mnl_integrate		(EngineNode	*node);
-#define	GSL_MNL_UNSCHEDULED_UJOB_NODE(node)	(!(node)->sched_tag && ((node)->flow_jobs || (node)->probe_jobs))
+#define BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE(node)	(!(node)->sched_tag && ((node)->flow_jobs || (node)->probe_jobs))
 EngineNode*	_engine_mnl_head		(void);
 
 /* communication routines for threads:
@@ -56,12 +52,12 @@ EngineNode*	_engine_mnl_head		(void);
 
 /* --- job transactions --- */
 /* UserThread */
-void		_engine_enqueue_trans	(GslTrans	*trans);
-GslTrans*	_engine_collect_trans	(void);
+void		_engine_enqueue_trans	(BseTrans	*trans);
+BseTrans*	_engine_collect_trans	(void);
 void		_engine_wait_on_trans	(void);
 /* MasterThread */
-/* GslJob*	_engine_pop_job_timed	(glong		 max_useconds); */
-GslJob*		_engine_pop_job		(void);
+/* BseJob*	_engine_pop_job_timed	(glong		 max_useconds); */
+BseJob*		_engine_pop_job		(void);
 gboolean	_engine_job_pending	(void);
 
 
@@ -76,4 +72,4 @@ void	    _engine_wait_on_unprocessed		(void);
 
 G_END_DECLS
 
-#endif /* __GSL_ENGINE_UTIL_H__ */
+#endif /* __BSE_ENGINE_UTIL_H__ */

@@ -826,7 +826,7 @@ bse_track_clone_voices (BseTrack       *self,
 			BseSNet        *snet,
 			guint           context,
                         BseMidiContext  mcontext,
-			GslTrans       *trans)
+			BseTrans       *trans)
 {
   guint i;
   

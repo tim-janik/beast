@@ -50,10 +50,10 @@ static void bse_midi_controller_get_property    (GObject                *object,
                                                  GParamSpec             *pspec);
 static void bse_midi_controller_context_create  (BseSource              *source,
                                                  guint                   instance_id,
-                                                 GslTrans               *trans);
+                                                 BseTrans               *trans);
 static void bse_midi_controller_context_connect (BseSource              *source,
                                                  guint                   instance_id,
-                                                 GslTrans               *trans);
+                                                 BseTrans               *trans);
 static void bse_midi_controller_update_modules  (BseMidiController      *self);
 
 
@@ -225,28 +225,28 @@ typedef struct {
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
   guint            default_channel;
-  GslModule       *control_module;
+  BseModule       *control_module;
 } ModuleData;
 
 static void
 module_data_free (gpointer data)
 {
   ModuleData *mdata = data;
-  GslTrans *trans = gsl_trans_open ();
+  BseTrans *trans = bse_trans_open ();
   
   bse_midi_receiver_discard_control_module (mdata->midi_receiver, mdata->control_module, trans);
-  gsl_trans_commit (trans);
+  bse_trans_commit (trans);
   g_free (mdata);
 }
 
 static void
 bse_midi_controller_context_create (BseSource *source,
                                     guint      context_handle,
-                                    GslTrans  *trans)
+                                    BseTrans  *trans)
 {
   BseMidiController *self = BSE_MIDI_CONTROLLER (source);
   ModuleData *mdata = g_new (ModuleData, 1);
-  GslModule *module = gsl_module_new_virtual (BSE_MIDI_CONTROLLER_N_OCHANNELS, mdata, module_data_free);
+  BseModule *module = bse_module_new_virtual (BSE_MIDI_CONTROLLER_N_OCHANNELS, mdata, module_data_free);
   BseItem *parent = BSE_ITEM (self)->parent;
   BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (parent), context_handle);
   
@@ -263,7 +263,7 @@ bse_midi_controller_context_create (BseSource *source,
   bse_source_set_context_omodule (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -272,16 +272,16 @@ bse_midi_controller_context_create (BseSource *source,
 static void
 bse_midi_controller_context_connect (BseSource *source,
                                      guint      context_handle,
-                                     GslTrans  *trans)
+                                     BseTrans  *trans)
 {
-  GslModule *module = bse_source_get_context_omodule (source, context_handle);
+  BseModule *module = bse_source_get_context_omodule (source, context_handle);
   ModuleData *mdata = module->user_data;
   
   /* connect module to midi control uplink */
-  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 0, module, 0));
-  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 1, module, 1));
-  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 2, module, 2));
-  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 3, module, 3));
+  bse_trans_add (trans, bse_job_connect (mdata->control_module, 0, module, 0));
+  bse_trans_add (trans, bse_job_connect (mdata->control_module, 1, module, 1));
+  bse_trans_add (trans, bse_job_connect (mdata->control_module, 2, module, 2));
+  bse_trans_add (trans, bse_job_connect (mdata->control_module, 3, module, 3));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
@@ -293,7 +293,7 @@ bse_midi_controller_update_modules (BseMidiController *self)
   if (BSE_SOURCE_PREPARED (self))
     {
       BseSource *source = BSE_SOURCE (self);
-      GslTrans *trans = gsl_trans_open ();
+      BseTrans *trans = bse_trans_open ();
       guint *cids, n, i;
       
       /* forall contexts */
@@ -302,14 +302,14 @@ bse_midi_controller_update_modules (BseMidiController *self)
       /* reconnect modules */
       for (i = 0; i < n; i++)
 	{
-	  GslModule *module = bse_source_get_context_omodule (source, cids[i]);
+	  BseModule *module = bse_source_get_context_omodule (source, cids[i]);
 	  ModuleData *mdata = module->user_data;
 	  
 	  /* disconnect from old module */
-	  gsl_trans_add (trans, gsl_job_disconnect (module, 0));
-	  gsl_trans_add (trans, gsl_job_disconnect (module, 1));
-	  gsl_trans_add (trans, gsl_job_disconnect (module, 2));
-	  gsl_trans_add (trans, gsl_job_disconnect (module, 3));
+	  bse_trans_add (trans, bse_job_disconnect (module, 0));
+	  bse_trans_add (trans, bse_job_disconnect (module, 1));
+	  bse_trans_add (trans, bse_job_disconnect (module, 2));
+	  bse_trans_add (trans, bse_job_disconnect (module, 3));
 	  
 	  /* discard old module */
 	  bse_midi_receiver_discard_control_module (mdata->midi_receiver, mdata->control_module, trans);
@@ -323,14 +323,14 @@ bse_midi_controller_update_modules (BseMidiController *self)
 									     self->controls,
 									     trans);
 	  /* connect to new module */
-	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 0, module, 0));
-	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 1, module, 1));
-	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 2, module, 2));
-	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 3, module, 3));
+	  bse_trans_add (trans, bse_job_connect (mdata->control_module, 0, module, 0));
+	  bse_trans_add (trans, bse_job_connect (mdata->control_module, 1, module, 1));
+	  bse_trans_add (trans, bse_job_connect (mdata->control_module, 2, module, 2));
+	  bse_trans_add (trans, bse_job_connect (mdata->control_module, 3, module, 3));
 	}
       
       /* commit and cleanup */
       g_free (cids);
-      gsl_trans_commit (trans);
+      bse_trans_commit (trans);
     }
 }

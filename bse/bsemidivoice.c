@@ -31,19 +31,19 @@ static void bse_midi_voice_input_class_init       (BseMidiVoiceInputClass   *cla
 static void bse_midi_voice_input_dispose          (GObject                  *object);
 static void bse_midi_voice_input_context_create   (BseSource                *source,
                                                    guint                     context_handle,
-                                                   GslTrans                 *trans);
+                                                   BseTrans                 *trans);
 static void bse_midi_voice_input_context_dismiss  (BseSource                *source,
                                                    guint                     context_handle,
-                                                   GslTrans                 *trans);
+                                                   BseTrans                 *trans);
 static void bse_midi_voice_switch_init            (BseMidiVoiceSwitch       *self);
 static void bse_midi_voice_switch_class_init      (BseMidiVoiceSwitchClass  *class);
 static void bse_midi_voice_switch_dispose         (GObject                  *object);
 static void bse_midi_voice_switch_context_create  (BseSource                *source,
                                                    guint                     context_handle,
-                                                   GslTrans                 *trans);
+                                                   BseTrans                 *trans);
 static void bse_midi_voice_switch_context_dismiss (BseSource                *source,
                                                    guint                     context_handle,
-                                                   GslTrans                 *trans);
+                                                   BseTrans                 *trans);
 
 
 /* --- variables --- */
@@ -196,7 +196,7 @@ bse_midi_voice_switch_dispose (GObject *object)
 static void
 bse_midi_voice_input_context_create (BseSource *source,
 				     guint      context_handle,
-				     GslTrans  *trans)
+				     BseTrans  *trans)
 {
   BseMidiVoiceInput *self = BSE_MIDI_VOICE_INPUT (source);
   BseMidiContext mcontext = bse_midi_voice_switch_ref_poly_voice (self->voice_switch, context_handle, trans);
@@ -215,13 +215,13 @@ bse_midi_voice_input_context_create (BseSource *source,
 static void
 bse_midi_voice_input_context_dismiss (BseSource *source,
 				      guint      context_handle,
-				      GslTrans  *trans)
+				      BseTrans  *trans)
 {
   BseMidiVoiceInput *self = BSE_MIDI_VOICE_INPUT (source);
   BseMidiContext mcontext = bse_midi_voice_switch_peek_poly_voice (self->voice_switch, context_handle);
-  GslModule *module;
+  BseModule *module;
 
-  /* the GslModule isn't ours, so theoretically we would just need
+  /* the BseModule isn't ours, so theoretically we would just need
    * to disconnect and not discard it.
    * but since connecting/disconnecting src to dest modules is handled by
    * the dest modules, we actually have to do nothing besides preventing
@@ -241,7 +241,7 @@ bse_midi_voice_input_context_dismiss (BseSource *source,
 static void
 bse_midi_voice_switch_context_create (BseSource *source,
 				      guint      context_handle,
-				      GslTrans  *trans)
+				      BseTrans  *trans)
 {
   BseMidiVoiceSwitch *self = BSE_MIDI_VOICE_SWITCH (source);
   BseMidiContext mcontext = bse_midi_voice_switch_ref_poly_voice (self, context_handle, trans);
@@ -261,15 +261,15 @@ bse_midi_voice_switch_context_create (BseSource *source,
 static void
 bse_midi_voice_switch_context_dismiss (BseSource *source,
 				       guint      context_handle,
-				       GslTrans  *trans)
+				       BseTrans  *trans)
 {
   BseMidiVoiceSwitch *self = BSE_MIDI_VOICE_SWITCH (source);
   
-  /* the GslModules aren't ours, so we need to disconnect the input module
+  /* the BseModules aren't ours, so we need to disconnect the input module
    * and prevent discarding the modules.
    */
   
-  gsl_trans_add (trans, gsl_job_kill_inputs (bse_source_get_context_imodule (source, context_handle)));
+  bse_trans_add (trans, bse_job_kill_inputs (bse_source_get_context_imodule (source, context_handle)));
   bse_source_set_context_imodule (source, context_handle, NULL);
   bse_source_set_context_omodule (source, context_handle, NULL);
   
@@ -298,7 +298,7 @@ typedef struct {
 BseMidiContext
 bse_midi_voice_switch_ref_poly_voice (BseMidiVoiceSwitch     *self,
                                       guint                   context_handle,
-                                      GslTrans               *trans)
+                                      BseTrans               *trans)
 {
   BseMidiContext mcontext = { 0, };
   MidiVoice *mvoice;
@@ -359,7 +359,7 @@ bse_midi_voice_switch_peek_poly_voice (BseMidiVoiceSwitch     *self,
 void
 bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
                                         guint               context_handle,
-                                        GslTrans           *trans)
+                                        BseTrans           *trans)
 {
   BseMidiContext mcontext;
   MidiVoice *mvoice;

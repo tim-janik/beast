@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001-2003 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,19 +31,19 @@
 
 
 /* --- UserThread --- */
-GslOStream*
+BseOStream*
 _engine_alloc_ostreams (guint n)
 {
   if (n)
     {
-      guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
-      GslOStream *streams = g_malloc0 (i);
+      guint i = sizeof (BseOStream) * n + sizeof (gfloat) * bse_engine_block_size () * n;
+      BseOStream *streams = g_malloc0 (i);
       gfloat *buffers = (gfloat*) (streams + n);
 
       for (i = 0; i < n; i++)
 	{
 	  streams[i].values = buffers;
-	  buffers += gsl_engine_block_size ();
+	  buffers += bse_engine_block_size ();
 	}
       return streams;
     }
@@ -84,7 +84,7 @@ free_user_job (EngineUserJob *ujob)
 static void
 free_node (EngineNode *node)
 {
-  const GslClass *klass;
+  const BseModuleClass *klass;
   gpointer user_data;
   guint j;
 
@@ -105,12 +105,12 @@ free_node (EngineNode *node)
   sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
-      g_free (node->module.ostreams);   /* gsl_engine_block_size() may have changed since allocation */
+      g_free (node->module.ostreams);   /* bse_engine_block_size() may have changed since allocation */
       sfi_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
     }
   if (node->module.istreams)
     {
-      sfi_delete_structs (GslIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
+      sfi_delete_structs (BseIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
       sfi_delete_structs (EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
     }
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
@@ -120,7 +120,7 @@ free_node (EngineNode *node)
     }
   if (node->module.jstreams)
     {
-      sfi_delete_structs (GslJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
+      sfi_delete_structs (BseJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
       sfi_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
     }
   klass = node->module.klass;
@@ -133,7 +133,7 @@ free_node (EngineNode *node)
 }
 
 static void
-free_job (GslJob *job)
+free_job (BseJob *job)
 {
   g_return_if_fail (job != NULL);
   
@@ -172,13 +172,13 @@ free_job (GslJob *job)
       break;
     default: ;
     }
-  sfi_delete_struct (GslJob, job);
+  sfi_delete_struct (BseJob, job);
 }
 
 static void
-free_trans (GslTrans *trans)
+free_trans (BseTrans *trans)
 {
-  GslJob *job;
+  BseJob *job;
   
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
@@ -188,28 +188,28 @@ free_trans (GslTrans *trans)
   job = trans->jobs_head;
   while (job)
     {
-      GslJob *tmp = job->next;
+      BseJob *tmp = job->next;
       
       free_job (job);
       job = tmp;
     }
-  sfi_delete_struct (GslTrans, trans);
+  sfi_delete_struct (BseTrans, trans);
 }
 
 
 /* --- job transactions --- */
 static SfiMutex        cqueue_trans = { 0, };
-static GslTrans       *cqueue_trans_pending_head = NULL;
-static GslTrans       *cqueue_trans_pending_tail = NULL;
+static BseTrans       *cqueue_trans_pending_head = NULL;
+static BseTrans       *cqueue_trans_pending_tail = NULL;
 static SfiCond         cqueue_trans_cond = { 0, };
-static GslTrans       *cqueue_trans_trash = NULL;
-static GslTrans       *cqueue_trans_active_head = NULL;
-static GslTrans       *cqueue_trans_active_tail = NULL;
+static BseTrans       *cqueue_trans_trash = NULL;
+static BseTrans       *cqueue_trans_active_head = NULL;
+static BseTrans       *cqueue_trans_active_tail = NULL;
 static EngineUserJob  *cqueue_trash_ujobs = NULL;
-static GslJob         *cqueue_trans_job = NULL;
+static BseJob         *cqueue_trans_job = NULL;
 
 void
-_engine_enqueue_trans (GslTrans *trans)
+_engine_enqueue_trans (BseTrans *trans)
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == TRUE);
@@ -252,7 +252,7 @@ _engine_job_pending (void)
 }
 
 void
-_engine_free_trans (GslTrans *trans)
+_engine_free_trans (BseTrans *trans)
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
@@ -265,7 +265,7 @@ _engine_free_trans (GslTrans *trans)
   GSL_SPIN_UNLOCK (&cqueue_trans);
 }
 
-GslJob*
+BseJob*
 _engine_pop_job (void)
 {
   /* clean up if necessary and try fetching new jobs
@@ -305,7 +305,7 @@ _engine_pop_job (void)
   /* pick new job and out of here */
   if (cqueue_trans_job)
     {
-      GslJob *job = cqueue_trans_job;
+      BseJob *job = cqueue_trans_job;
       
       cqueue_trans_job = job->next;
       return job;
@@ -318,21 +318,21 @@ _engine_pop_job (void)
 
 /* --- user thread garbage collection --- */
 /**
- * gsl_engine_garbage_collect
+ * bse_engine_garbage_collect
  *
- * GSL Engine user thread function. Collects processed jobs
+ * BSE Engine user thread function. Collects processed jobs
  * and transactions from the engine and frees them. This
- * involves callback invocation of GslFreeFunc() functions,
- * e.g. from gsl_job_access() or gsl_job_flow_access()
+ * involves callback invocation of BseFreeFunc() functions,
+ * e.g. from bse_job_access() or bse_job_flow_access()
  * jobs.
  * This function may only be called from the user thread,
- * as GslFreeFunc() functions are guranteed to be executed
+ * as BseFreeFunc() functions are guranteed to be executed
  * in the user thread.
  */
 void
-gsl_engine_garbage_collect (void)
+bse_engine_garbage_collect (void)
 {
-  GslTrans *trans;
+  BseTrans *trans;
   EngineUserJob *jlist;
 
   GSL_SPIN_LOCK (&cqueue_trans);
@@ -352,7 +352,7 @@ gsl_engine_garbage_collect (void)
 
   while (trans)
     {
-      GslTrans *t = trans;
+      BseTrans *t = trans;
       
       trans = t->cqt_next;
       t->cqt_next = NULL;
@@ -364,7 +364,7 @@ gsl_engine_garbage_collect (void)
 }
 
 gboolean
-gsl_engine_has_garbage (void)
+bse_engine_has_garbage (void)
 {
   return cqueue_trans_trash || cqueue_trash_ujobs;
 }
@@ -484,7 +484,7 @@ _engine_push_processed_node (EngineNode *node)
   collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
-  if (!pqueue_n_nodes && !pqueue_n_cycles && GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
+  if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
     sfi_cond_signal (&pqueue_done_cond);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
@@ -507,7 +507,7 @@ void
 _engine_wait_on_unprocessed (void)
 {
   GSL_SPIN_LOCK (&pqueue_mutex);
-  while (pqueue_n_nodes || pqueue_n_cycles || !GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
+  while (pqueue_n_nodes || pqueue_n_cycles || !BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
     sfi_cond_wait (&pqueue_done_cond, &pqueue_mutex);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
@@ -572,7 +572,7 @@ _engine_mnl_node_changed (EngineNode *node)
    * are agglomerated at the head.
    */
   sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
-  if_reject (sibling && GSL_MNL_UNSCHEDULED_UJOB_NODE (node) != GSL_MNL_UNSCHEDULED_UJOB_NODE (sibling))
+  if_reject (sibling && BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node) != BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (sibling))
     {
       /* remove */
       if (node->mnl_prev)
@@ -583,7 +583,7 @@ _engine_mnl_node_changed (EngineNode *node)
 	node->mnl_next->mnl_prev = node->mnl_prev;
       else
 	master_node_list_tail = node->mnl_prev;
-      if (GSL_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
+      if (BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
 	{
 	  /* prepend to non-NULL list */
 	  master_node_list_head->mnl_prev = node;
@@ -707,13 +707,13 @@ const_values_insert (ConstValuesArray *array,
 static ConstValuesArray cvalue_array = { 0, NULL, NULL };
 
 gfloat*
-gsl_engine_const_values (gfloat value)
+bse_engine_const_values (gfloat value)
 {
-  extern const gfloat gsl_engine_master_zero_block[];
+  extern const gfloat bse_engine_master_zero_block[];
   gfloat **block;
   
   if (fabs (value) < GSL_SIGNAL_EPSILON)
-    return (gfloat*) gsl_engine_master_zero_block;
+    return (gfloat*) bse_engine_master_zero_block;
 
   block = const_values_lookup_nextmost (&cvalue_array, value);
 
@@ -726,10 +726,10 @@ gsl_engine_const_values (gfloat value)
   else
     {
       /* create new value block */
-      gfloat *values = g_new (gfloat, gsl_engine_block_size ());
+      gfloat *values = g_new (gfloat, bse_engine_block_size ());
       guint i;
 
-      for (i = 0; i < gsl_engine_block_size (); i++)
+      for (i = 0; i < bse_engine_block_size (); i++)
 	values[i] = value;
      
       if (block)
@@ -772,18 +772,17 @@ _engine_recycle_const_values (gboolean nuke_all)
 
 /* --- initialization --- */
 void
-_gsl_init_engine_utils (void)
+bse_engine_reinit_utils (void)
 {
   static gboolean initialized = FALSE;
-
-  g_assert (initialized == FALSE); /* single invocation */
-  initialized++;
-
-  sfi_mutex_init (&cqueue_trans);
-  sfi_cond_init (&cqueue_trans_cond);
-  sfi_mutex_init (&pqueue_mutex);
-  sfi_cond_init (&pqueue_done_cond);
+  if (!initialized)
+    {
+      initialized = TRUE;
+      sfi_mutex_init (&cqueue_trans);
+      sfi_cond_init (&cqueue_trans_cond);
+      sfi_mutex_init (&pqueue_mutex);
+      sfi_cond_init (&pqueue_done_cond);
+    }
 }
-
 
 /* vim:set ts=8 sts=2 sw=2: */

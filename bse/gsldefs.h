@@ -30,18 +30,11 @@ G_BEGIN_DECLS
 
 /* --- forward decls --- */
 typedef struct _GslMagic		GslMagic;
-typedef struct _GslClass		GslClass;
 typedef struct _GslComplex		GslComplex;
 typedef struct _GslDataCache		GslDataCache;
 typedef struct _GslDataHandle		GslDataHandle;
 typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;
-typedef struct _GslJob			GslJob;
-typedef struct _GslModule		GslModule;
-typedef struct _GslIStream		GslIStream;
-typedef struct _GslJStream		GslJStream;
 typedef struct _GslLoader		GslLoader;
-typedef struct _GslOStream		GslOStream;
-typedef struct _GslTrans		GslTrans;
 typedef struct _GslWaveChunk		GslWaveChunk;
 typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
 typedef struct _GslWaveFileInfo         GslWaveFileInfo;
@@ -91,13 +84,8 @@ typedef enum    /*< skip >*/
   GSL_ERROR_LAST		/*< skip >*/
 } GslErrorType;
 
-
 /* --- functions --- */
-typedef void     (*GslAccessFunc)       (GslModule      *module,
-					 gpointer        data);
 typedef void     (*GslFreeFunc)         (gpointer        data);
-typedef void     (*GslModuleFreeFunc)   (gpointer        data,
-					 const GslClass	*klass);
 
 
 #if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK) \
@@ -108,7 +96,6 @@ typedef void     (*GslModuleFreeFunc)   (gpointer        data,
 
 
 /* --- implementation details --- */
-#define	GSL_ENGINE_MAX_POLLFDS	(128)
 #if __GNUC__ >= 3 && defined __OPTIMIZE__
 #  define GSL_GCC_EXPECT1(cond)	  (__builtin_expect (cond, 1))
 #  define GSL_GCC_EXPECT0(cond)	  (__builtin_expect (cond, 0))

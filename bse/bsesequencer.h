@@ -23,7 +23,7 @@
 
 G_BEGIN_DECLS
 
-#define	BSE_SSEQUENCER_PREPROCESS	(gsl_engine_block_size () * 7)
+#define	BSE_SSEQUENCER_PREPROCESS	(bse_engine_block_size () * 7)
 
 
 typedef enum {
@@ -48,7 +48,7 @@ extern SfiThread       *bse_ssequencer_thread;
 
 void			bse_ssequencer_init_thread	(void);
 void			bse_ssequencer_start_supers	(SfiRing	*supers,
-							 GslTrans	*trans);
+							 BseTrans	*trans);
 BseSSequencerJob*	bse_ssequencer_job_stop_super	(BseSuper	*super);
 SfiTime			bse_ssequencer_queue_jobs	(SfiRing	 *jobs);
 void			bse_ssequencer_handle_jobs	(SfiRing	 *jobs);

@@ -49,9 +49,9 @@ typedef struct
   gchar     *name;
   guint      context : 31;
   guint	     input : 1;
-  GslModule *src_omodule;	/* output */
+  BseModule *src_omodule;	/* output */
   guint	     src_ostream;
-  GslModule *dest_imodule;	/* input */
+  BseModule *dest_imodule;	/* input */
   guint	     dest_istream;
 } BseSNetPort;
 struct _BseSNet
@@ -82,12 +82,12 @@ struct _BseMidiContext {
 /* --- prototypes --- */
 guint            bse_snet_create_context        (BseSNet         *snet,
                                                  BseMidiContext   mcontext,
-                                                 GslTrans        *trans);
+                                                 BseTrans        *trans);
 guint            bse_snet_context_clone_branch  (BseSNet         *self,
                                                  guint            context,
                                                  BseSource       *context_merger,
                                                  BseMidiContext   mcontext,
-                                                 GslTrans        *trans);
+                                                 BseTrans        *trans);
 gboolean         bse_snet_context_is_branch     (BseSNet         *self,
                                                  guint            context_id);
 void             bse_snet_intern_child          (BseSNet         *self,
@@ -109,27 +109,27 @@ void             bse_snet_oport_name_unregister (BseSNet         *snet,
 void             bse_snet_set_iport_src         (BseSNet         *snet,
                                                  const gchar     *port_name,
                                                  guint            snet_context,
-                                                 GslModule       *omodule,
+                                                 BseModule       *omodule,
                                                  guint            ostream,
-                                                 GslTrans        *trans);
+                                                 BseTrans        *trans);
 void             bse_snet_set_iport_dest        (BseSNet         *snet,
                                                  const gchar     *port_name,
                                                  guint            snet_context,
-                                                 GslModule       *imodule,
+                                                 BseModule       *imodule,
                                                  guint            istream,
-                                                 GslTrans        *trans);
+                                                 BseTrans        *trans);
 void             bse_snet_set_oport_src         (BseSNet         *snet,
                                                  const gchar     *port_name,
                                                  guint            snet_context,
-                                                 GslModule       *omodule,
+                                                 BseModule       *omodule,
                                                  guint            ostream,
-                                                 GslTrans        *trans);
+                                                 BseTrans        *trans);
 void             bse_snet_set_oport_dest        (BseSNet         *snet,
                                                  const gchar     *port_name,
                                                  guint            snet_context,
-                                                 GslModule       *imodule,
+                                                 BseModule       *imodule,
                                                  guint            istream,
-                                                 GslTrans        *trans);
+                                                 BseTrans        *trans);
 
 
 G_END_DECLS

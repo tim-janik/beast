@@ -60,11 +60,11 @@ static void	bse_standard_osc_get_property	(GObject		*object,
 static void	bse_standard_osc_prepare	(BseSource		*source);
 static void	bse_standard_osc_context_create	(BseSource		*source,
 						 guint			 context_handle,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 static void	bse_standard_osc_reset		(BseSource		*source);
 static void	bse_standard_osc_update_modules	(BseStandardOsc		*standard_osc,
 						 gboolean		 recreate_table,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 
 
 /* --- variables --- */
@@ -341,7 +341,7 @@ bse_standard_osc_prepare (BseSource *source)
 {
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
   
-  self->config.table = gsl_osc_table_create (gsl_engine_sample_freq (),
+  self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
 					     self->wave,
 					     gsl_window_blackman,
 					     G_N_ELEMENTS (osc_table_freqs),
@@ -358,7 +358,7 @@ typedef struct
 } OscConfigData;
 
 static void
-standard_osc_access (GslModule *module,
+standard_osc_access (BseModule *module,
 		     gpointer   data)
 {
   GslOscData *osc = module->user_data;
@@ -382,7 +382,7 @@ standard_osc_access_free (gpointer data)
 static void
 bse_standard_osc_update_modules (BseStandardOsc *self,
 				 gboolean	 recreate_table,
-				 GslTrans       *trans)
+				 BseTrans       *trans)
 {
   self->config.fm_strength = self->config.exponential_fm ? self->n_octaves : self->fm_strength;
   
@@ -395,7 +395,7 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
       if (recreate_table)
 	{
 	  cdata.old_osc_table = self->config.table;
-	  self->config.table = gsl_osc_table_create (gsl_engine_sample_freq (),
+	  self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
 						     self->wave,
 						     gsl_window_blackman,
 						     G_N_ELEMENTS (osc_table_freqs),
@@ -413,7 +413,7 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 }
 
 static void
-standard_osc_reset (GslModule *module)
+standard_osc_reset (BseModule *module)
 {
   GslOscData *osc = module->user_data;
   
@@ -421,7 +421,7 @@ standard_osc_reset (GslModule *module)
 }
 
 static void
-standard_osc_process (GslModule *module,
+standard_osc_process (BseModule *module,
 		      guint      n_values)
 {
   GslOscData *osc = module->user_data;
@@ -432,21 +432,21 @@ standard_osc_process (GslModule *module,
   gfloat *osc_out = NULL;
   gfloat *sync_out = NULL;
   
-  if (GSL_MODULE_OSTREAM (module, BSE_STANDARD_OSC_OCHANNEL_SYNC).connected)
-    sync_out = GSL_MODULE_OBUFFER (module, BSE_STANDARD_OSC_OCHANNEL_SYNC);
-  osc_out = GSL_MODULE_OBUFFER (module, BSE_STANDARD_OSC_OCHANNEL_OSC);
-  if (!GSL_MODULE_OSTREAM (module, BSE_STANDARD_OSC_OCHANNEL_OSC).connected &&
+  if (BSE_MODULE_OSTREAM (module, BSE_STANDARD_OSC_OCHANNEL_SYNC).connected)
+    sync_out = BSE_MODULE_OBUFFER (module, BSE_STANDARD_OSC_OCHANNEL_SYNC);
+  osc_out = BSE_MODULE_OBUFFER (module, BSE_STANDARD_OSC_OCHANNEL_OSC);
+  if (!BSE_MODULE_OSTREAM (module, BSE_STANDARD_OSC_OCHANNEL_OSC).connected &&
       !sync_out)
     return;	/* nothing to process */
   
-  if (GSL_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_FREQ).connected)
-    freq_in = GSL_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_FREQ);
-  if (GSL_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD).connected)
-    mod_in = GSL_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD);
-  if (GSL_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_SYNC).connected)
-    sync_in = GSL_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_SYNC);
-  if (GSL_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_PWM).connected)
-    pwm_in = GSL_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_PWM);
+  if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_FREQ).connected)
+    freq_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_FREQ);
+  if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD).connected)
+    mod_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD);
+  if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_SYNC).connected)
+    sync_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_SYNC);
+  if (BSE_MODULE_ISTREAM (module, BSE_STANDARD_OSC_ICHANNEL_PWM).connected)
+    pwm_in = BSE_MODULE_IBUFFER (module, BSE_STANDARD_OSC_ICHANNEL_PWM);
   
   if (osc->config.table->wave_form == GSL_OSC_WAVE_PULSE_SAW)
     gsl_osc_process_pulse (osc, n_values, freq_in, mod_in, sync_in, pwm_in, osc_out, sync_out);
@@ -457,31 +457,31 @@ standard_osc_process (GslModule *module,
 static void
 bse_standard_osc_context_create (BseSource *source,
 				 guint      context_handle,
-				 GslTrans  *trans)
+				 BseTrans  *trans)
 {
-  static const GslClass sosc_class = {
+  static const BseModuleClass sosc_class = {
     BSE_STANDARD_OSC_N_ICHANNELS, /* n_istreams */
     0,                            /* n_jstreams */
     BSE_STANDARD_OSC_N_OCHANNELS, /* n_ostreams */
     standard_osc_process,	  /* process */
     NULL,                         /* process_defer */
     standard_osc_reset,           /* reset */
-    (GslModuleFreeFunc) g_free,	  /* free */
-    GSL_COST_NORMAL,		  /* cost */
+    (BseModuleFreeFunc) g_free,	  /* free */
+    BSE_COST_NORMAL,		  /* cost */
   };
   BseStandardOsc *self = BSE_STANDARD_OSC (source);
   GslOscData *osc = g_new0 (GslOscData, 1);
-  GslModule *module;
+  BseModule *module;
   
   gsl_osc_reset (osc);
   gsl_osc_config (osc, &self->config);
-  module = gsl_module_new (&sosc_class, osc);
+  module = bse_module_new (&sosc_class, osc);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

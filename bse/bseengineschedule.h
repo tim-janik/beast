@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_ENGINE_SCHEDULE_H__
-#define __GSL_ENGINE_SCHEDULE_H__
+#ifndef __BSE_ENGINE_SCHEDULE_H__
+#define __BSE_ENGINE_SCHEDULE_H__
 
 #include <bse/bseenginenode.h>
 
@@ -47,7 +47,7 @@ struct _EngineSchedule
   SfiRing  *cur_cycle;
   SfiRing  *vnodes;	/* virtual modules */
 };
-#define	GSL_SCHEDULE_NONPOPABLE(schedule)		((schedule)->cur_leaf_level >= (schedule)->leaf_levels)
+#define	BSE_ENGINE_SCHEDULE_NONPOPABLE(schedule)        ((schedule)->cur_leaf_level >= (schedule)->leaf_levels)
 
 
 /* --- MasterThread --- */
@@ -64,4 +64,4 @@ void		_engine_schedule_unsecure	(EngineSchedule	*schedule);
 
 G_END_DECLS
 
-#endif /* __GSL_ENGINE_SCHEDULE_H__ */
+#endif /* __BSE_ENGINE_SCHEDULE_H__ */

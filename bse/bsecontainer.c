@@ -55,13 +55,13 @@ static BseItem*     bse_container_real_retrieve_child   (BseContainer           
 static void         bse_container_prepare               (BseSource              *source);
 static void         bse_container_context_create        (BseSource              *source,
                                                          guint                    context_handle,
-                                                         GslTrans               *trans);
+                                                         BseTrans               *trans);
 static void         bse_container_context_connect       (BseSource              *source,
                                                          guint                   context_handle,
-                                                         GslTrans               *trans);
+                                                         BseTrans               *trans);
 static void         bse_container_context_dismiss       (BseSource              *source,
                                                          guint                   context_handle,
-                                                         GslTrans               *trans);
+                                                         BseTrans               *trans);
 static void         bse_container_reset                 (BseSource              *source);
 static GSList*      container_context_children          (BseContainer           *container);
 static void         container_release_children          (BseContainer           *container);
@@ -210,7 +210,7 @@ bse_container_do_add_item (BseContainer *container,
   
   if (BSE_IS_SOURCE (item) && BSE_SOURCE_PREPARED (container))
     {
-      GslTrans *trans = gsl_trans_open ();
+      BseTrans *trans = bse_trans_open ();
       guint *cids, n, c;
       
       g_return_if_fail (BSE_SOURCE_PREPARED (item) == FALSE);
@@ -224,7 +224,7 @@ bse_container_do_add_item (BseContainer *container,
       for (c = 0; c < n; c++)
         bse_source_connect_context (BSE_SOURCE (item), cids[c], trans);
       g_free (cids);
-      gsl_trans_commit (trans);
+      bse_trans_commit (trans);
     }
 }
 
@@ -1115,7 +1115,7 @@ container_context_children (BseContainer *container)
 static void
 bse_container_context_create (BseSource *source,
                               guint      context_handle,
-                              GslTrans  *trans)
+                              BseTrans  *trans)
 {
   BseContainer *container = BSE_CONTAINER (source);
   
@@ -1156,7 +1156,7 @@ forall_context_connect (BseItem *item,
 static void
 bse_container_context_connect (BseSource *source,
                                guint      context_handle,
-                               GslTrans  *trans)
+                               BseTrans  *trans)
 {
   BseContainer *container = BSE_CONTAINER (source);
   
@@ -1197,7 +1197,7 @@ forall_context_dismiss (BseItem *item,
 static void
 bse_container_context_dismiss (BseSource *source,
                                guint      context_handle,
-                               GslTrans  *trans)
+                               BseTrans  *trans)
 {
   BseContainer *container = BSE_CONTAINER (source);
   

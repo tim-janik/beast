@@ -19,7 +19,7 @@
 #include "gslwaveosc.h"
 #include "gslfilter.h"
 #include "gslsignal.h"
-#include "bseengine.h"	/* for gsl_engine_sample_freq() */
+#include "bseengine.h"	/* for bse_engine_sample_freq() */
 #include <string.h>
 
 #define DEBUG(...)      sfi_debug ("waveosc", __VA_ARGS__)
@@ -396,7 +396,7 @@ gsl_wave_osc_init (GslWaveOscData *wosc)
   g_assert (GSL_WAVE_OSC_FILTER_ORDER <= gsl_get_config ()->wave_chunk_padding);
 
   memset (wosc, 0, sizeof (GslWaveOscData));
-  wosc->mix_freq = gsl_engine_sample_freq ();
+  wosc->mix_freq = bse_engine_sample_freq ();
 }
 
 void

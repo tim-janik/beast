@@ -42,7 +42,7 @@ struct _BsePcmInput
   gfloat	  volume_factor;
 
   /* PREPARED */
-  GslModule	 *uplink;
+  BseModule	 *uplink;
 };
 struct _BsePcmInputClass
 {

@@ -44,7 +44,7 @@ static gboolean  bse_snooper_needs_storage      (BseItem                *item,
                                                  BseStorage             *storage);
 static void	 bse_snooper_context_create	(BseSource		*source,
 						 guint			 context_handle,
-						 GslTrans		*trans);
+						 BseTrans		*trans);
 
 
 /* --- variables --- */
@@ -165,10 +165,10 @@ typedef struct {
 } SnoopData;
 
 static void
-snooper_process (GslModule *module,
+snooper_process (BseModule *module,
 		 guint      n_values)
 {
-  const gfloat *wave_in = GSL_MODULE_IBUFFER (module, 0);
+  const gfloat *wave_in = BSE_MODULE_IBUFFER (module, 0);
   SnoopData *data = module->user_data;
   
   if (data->context_id == *data->active_context_id &&
@@ -213,9 +213,9 @@ snooper_process (GslModule *module,
 static void
 bse_snooper_context_create (BseSource *source,
 			    guint      context_handle,
-			    GslTrans  *trans)
+			    BseTrans  *trans)
 {
-  static const GslClass snooper_class = {
+  static const BseModuleClass snooper_class = {
     BSE_SNOOPER_N_ICHANNELS,	/* n_istreams */
     0,                  	/* n_jstreams */
     0,				/* n_ostreams */
@@ -223,22 +223,22 @@ bse_snooper_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     (gpointer) g_free,		/* free */
-    GSL_COST_CHEAP,		/* flags */
+    BSE_COST_CHEAP,		/* flags */
   };
   BseSnooper *snooper = BSE_SNOOPER (source);
   SnoopData *data = g_new0 (SnoopData, 1);
-  GslModule *module;
+  BseModule *module;
   
   data->context_id = context_handle;
   data->active_context_id = &snooper->active_context_id;
-  module = gsl_module_new (&snooper_class, data);
+  module = bse_module_new (&snooper_class, data);
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
   
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
-  gsl_trans_add (trans, gsl_job_set_consumer (module, TRUE));
+  bse_trans_add (trans, bse_job_integrate (module));
+  bse_trans_add (trans, bse_job_set_consumer (module, TRUE));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

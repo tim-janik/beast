@@ -140,7 +140,7 @@ private:
           Probe &probe = **it;
           gfloat *block = oblocks[probe.channel_id];
           if (probe.probe_features->probe_samples || probe.probe_features->probe_fft)
-            probe.sample_data.take (sfi_fblock_new_foreign (gsl_engine_block_size(), block, g_free));
+            probe.sample_data.take (sfi_fblock_new_foreign (bse_engine_block_size(), block, g_free));
           oblocks[probe.channel_id] = NULL;    /* steal from engine */
           fill_probe (probe, n_values, block, FALSE);
         }
@@ -193,20 +193,20 @@ public:
     SfiRing *ring = get_omodules();
     if (!ring)
       return;
-    GslTrans *trans = gsl_trans_open();
+    BseTrans *trans = bse_trans_open();
     while (queued_jobs < PROBE_QUEUE_LENGTH)
       {
         ProbeData *pdata = new ProbeData (*this);
         pdata->n_modules = 0;
         for (SfiRing *node = ring; node; node = sfi_ring_walk (node, ring))
           {
-            gsl_trans_add (trans, gsl_job_probe_request ((GslModule*) node->data, &channel_ages[0], source_probe_callback, pdata));
+            bse_trans_add (trans, bse_job_probe_request ((BseModule*) node->data, &channel_ages[0], source_probe_callback, pdata));
             pdata->n_modules++;
           }
         pdata->n_pending = pdata->n_modules;
         queued_jobs++;
       }
-    gsl_trans_commit (trans);
+    bse_trans_commit (trans);
   }
   static gboolean
   idle_commit_requests (gpointer data)
@@ -333,7 +333,7 @@ source_get_mix_freq::exec (BseSource *self)
 {
   if (!self)
     throw std::runtime_error ("invalid arguments");
-  return BSE_SOURCE_PREPARED (self) ? gsl_engine_sample_freq() : 0;
+  return BSE_SOURCE_PREPARED (self) ? bse_engine_sample_freq() : 0;
 }
 
 } // Procedure

@@ -46,9 +46,9 @@ static void	 bse_adder_get_property		(GObject        *object,
 static BseIcon*	 bse_adder_do_get_icon		(BseObject	*object);
 static void      bse_adder_context_create       (BseSource      *source,
 						 guint           context_handle,
-						 GslTrans       *trans);
+						 BseTrans       *trans);
 static void	 bse_adder_update_modules	(BseAdder	*self,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 
 
 /* --- Export to BSE --- */
@@ -173,7 +173,7 @@ typedef struct
 
 static void
 bse_adder_update_modules (BseAdder *self,
-			  GslTrans *trans)
+			  BseTrans *trans)
 {
   if (BSE_SOURCE_PREPARED (self))
     bse_source_update_modules (BSE_SOURCE (self),
@@ -184,32 +184,32 @@ bse_adder_update_modules (BseAdder *self,
 }
 
 static void
-adder_process (GslModule *module,
+adder_process (BseModule *module,
 	       guint      n_values)
 {
   Adder *adder = module->user_data;
-  guint n_au1 = GSL_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO1).n_connections;
-  guint n_au2 = GSL_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO2).n_connections;
-  gfloat *out, *audio_out = GSL_MODULE_OBUFFER (module, BSE_ADDER_OCHANNEL_AUDIO_OUT);
+  guint n_au1 = BSE_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO1).n_connections;
+  guint n_au2 = BSE_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO2).n_connections;
+  gfloat *out, *audio_out = BSE_MODULE_OBUFFER (module, BSE_ADDER_OCHANNEL_AUDIO_OUT);
   gfloat *bound = audio_out + n_values;
   const gfloat *auin;
   guint i;
 
   if (!n_au1 && !n_au2)
     {
-      module->ostreams[BSE_ADDER_OCHANNEL_AUDIO_OUT].values = gsl_engine_const_values (0);
+      module->ostreams[BSE_ADDER_OCHANNEL_AUDIO_OUT].values = bse_engine_const_values (0);
       return;
     }
   if (n_au1)	/* sum up audio1 inputs */
     {
-      auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO1, 0);
+      auin = BSE_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO1, 0);
       out = audio_out;
       do
 	*out++ = *auin++;
       while (out < bound);
       for (i = 1; i < n_au1; i++)
 	{
-	  auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO1, i);
+	  auin = BSE_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO1, i);
 	  out = audio_out;
 	  do
 	    *out++ += *auin++;
@@ -222,7 +222,7 @@ adder_process (GslModule *module,
   if (n_au2 && !adder->subtract)	/* sum up audio2 inputs */
     for (i = 0; i < n_au2; i++)
       {
-	auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO2, i);
+	auin = BSE_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO2, i);
 	out = audio_out;
 	do
 	  *out++ += *auin++;
@@ -231,7 +231,7 @@ adder_process (GslModule *module,
   else if (n_au2)		/*  subtract audio2 inputs */
     for (i = 0; i < n_au2; i++)
       {
-	auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO2, i);
+	auin = BSE_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO2, i);
 	out = audio_out;
 	do
 	  *out++ -= *auin++;
@@ -242,29 +242,29 @@ adder_process (GslModule *module,
 static void
 bse_adder_context_create (BseSource *source,
 			  guint      context_handle,
-			  GslTrans  *trans)
+			  BseTrans  *trans)
 {
-  static const GslClass add_class = {
+  static const BseModuleClass add_class = {
     0,				/* n_istreams */
     BSE_ADDER_N_JCHANNELS,	/* n_jstreams */
     BSE_ADDER_N_OCHANNELS,	/* n_ostreams */
     adder_process,		/* process */
     NULL,                       /* process_defer */
     NULL,                       /* reset */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_CHEAP,		/* cost */
+    (BseModuleFreeFunc) g_free,	/* free */
+    BSE_COST_CHEAP,		/* cost */
   };
   BseAdder *adder = BSE_ADDER (source);
   Adder *add = g_new0 (Adder, 1);
-  GslModule *module;
+  BseModule *module;
 
-  module = gsl_module_new (&add_class, add);
+  module = bse_module_new (&add_class, add);
 
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
 
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

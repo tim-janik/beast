@@ -46,7 +46,7 @@ struct OStream {
 
 class SynthesisModule {
   template<class T, typename P> class AccessorP1; /* 1-argument member function closure */
-  GslModule     *engine_module;
+  BseModule     *engine_module;
   const IStream *istreams;
   const JStream *jstreams;
   const OStream *ostreams;
@@ -65,7 +65,7 @@ public:
   inline const unsigned int mix_freq        () const;
   inline const unsigned int block_size      () const;
   inline guint64            tick_stamp      ();
-  inline GslModule*         gslmodule       ();
+  inline BseModule*         gslmodule       ();
   static inline int         dtoi            (double d) { return gsl_dtoi (d); }
   static inline int         ftoi            (float  f) { return gsl_ftoi (f); }
   /* member function closure base */
@@ -78,7 +78,7 @@ public:
   static Accessor*          accessor        (void    (C::*accessor) (D*),
                                              const D     &data);
   /* internal */
-  void                      set_module      (GslModule *module);
+  void                      set_module      (BseModule *module);
 };
 
 #define BSE_TYPE_EFFECT         (BSE_CXX_TYPE_GET_REGISTERED (Bse, Effect))
@@ -109,29 +109,29 @@ public:
   const gchar*  ochannel_label (guint i)        { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
   const gchar*  ochannel_blurb (guint i)        { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
   virtual SynthesisModule*  create_module        (unsigned int     context_handle,
-                                                  GslTrans        *trans) = 0;
+                                                  BseTrans        *trans) = 0;
   virtual SynthesisModule::
   Accessor*                 module_configurator  () = 0;
-  void                      update_modules       (GslTrans        *trans = NULL);
+  void                      update_modules       (BseTrans        *trans = NULL);
   
   static void               class_init           (CxxBaseClass    *klass);
 protected:
-  const GslClass*           create_gsl_class     (SynthesisModule *sample_module,
+  const BseModuleClass*           create_gsl_class     (SynthesisModule *sample_module,
                                                   int              cost = -1,
                                                   int              n_istreams = -1,
                                                   int              n_jstreams = -1,
                                                   int              n_ostreams = -1);
-  virtual GslModule*        integrate_gsl_module (unsigned int     context_handle,
-                                                  GslTrans        *trans);
-  virtual void              dismiss_gsl_module   (GslModule       *gslmodule,
+  virtual BseModule*        integrate_bse_module (unsigned int     context_handle,
+                                                  BseTrans        *trans);
+  virtual void              dismiss_bse_module   (BseModule       *gslmodule,
                                                   guint            context_handle,
-                                                  GslTrans        *trans);
+                                                  BseTrans        *trans);
 };
 /* effect method: create_module(); */
 #define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType,ModuleType,ParamType)           \
   Bse::SynthesisModule*                                                         \
   ObjectType::create_module (unsigned int context_handle,                       \
-                             GslTrans    *trans)                                \
+                             BseTrans    *trans)                                \
   { /* create a synthesis module */                                             \
     return new ModuleType();                                                    \
   }
@@ -150,11 +150,11 @@ ObjectType::module_configurator()                                               
 
 /* --- implementation details --- */
 namespace externC { extern "C" {
-extern guint gsl_externvar_sample_freq;
-extern guint gsl_externvar_block_size;
-extern guint64 gsl_module_tick_stamp (GslModule*);
+extern guint bse_engine_exvar_sample_freq;
+extern guint bse_engine_exvar_block_size;
+extern guint64 bse_module_tick_stamp (BseModule*);
 } }
-inline GslModule*
+inline BseModule*
 SynthesisModule::gslmodule ()
 {
   return engine_module;
@@ -162,17 +162,17 @@ SynthesisModule::gslmodule ()
 inline const unsigned int
 SynthesisModule::mix_freq () const
 {
-  return externC::gsl_externvar_sample_freq;
+  return externC::bse_engine_exvar_sample_freq;
 }
 inline const unsigned int
 SynthesisModule::block_size () const
 {
-  return externC::gsl_externvar_block_size;
+  return externC::bse_engine_exvar_block_size;
 }
 inline guint64
 SynthesisModule::tick_stamp ()
 {
-  return externC::gsl_module_tick_stamp (gslmodule());
+  return externC::bse_module_tick_stamp (gslmodule());
 }
 inline const IStream&
 SynthesisModule::istream (unsigned int istream_index) const

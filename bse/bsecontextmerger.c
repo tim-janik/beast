@@ -30,10 +30,10 @@ static void	 bse_context_merger_init		(BseContextMerger	 *self);
 static void	 bse_context_merger_class_init		(BseContextMergerClass	 *class);
 static void	 bse_context_merger_context_create	(BseSource		 *source,
 							 guint			  context_handle,
-							 GslTrans		 *trans);
+							 BseTrans		 *trans);
 static void	 bse_context_merger_context_dismiss	(BseSource		 *source,
 							 guint			  context_handle,
-							 GslTrans		 *trans);
+							 BseTrans		 *trans);
 
 
 /* --- variables --- */
@@ -117,29 +117,29 @@ typedef struct {
 } ContextModuleData;
 
 static void
-context_merger_process (GslModule *module,
+context_merger_process (BseModule *module,
 			guint      n_values)
 {
   guint i;
   
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
-    if (GSL_MODULE_OSTREAM (module, i).connected)
+    if (BSE_MODULE_OSTREAM (module, i).connected)
       {
-	guint j, n_cons = GSL_MODULE_JSTREAM (module, i).n_connections;
+	guint j, n_cons = BSE_MODULE_JSTREAM (module, i).n_connections;
 	
 	if (!n_cons)
-	  module->ostreams[i].values = gsl_engine_const_values (0);
+	  module->ostreams[i].values = bse_engine_const_values (0);
 	else if (n_cons == 1)
-	  module->ostreams[i].values = (gfloat*) GSL_MODULE_JBUFFER (module, i, 0);
+	  module->ostreams[i].values = (gfloat*) BSE_MODULE_JBUFFER (module, i, 0);
 	else
 	  {
-	    gfloat *sout = GSL_MODULE_OBUFFER (module, i), *bound = sout + n_values;
-	    const gfloat *sin = GSL_MODULE_JBUFFER (module, i, 0);
+	    gfloat *sout = BSE_MODULE_OBUFFER (module, i), *bound = sout + n_values;
+	    const gfloat *sin = BSE_MODULE_JBUFFER (module, i, 0);
 	    memcpy (sout, sin, n_values * sizeof (sin[0]));
 	    for (j = 1; j < n_cons; j++)
 	      {
 		gfloat *d = sout;
-		sin = GSL_MODULE_JBUFFER (module, i, j);
+		sin = BSE_MODULE_JBUFFER (module, i, j);
 		do
 		  *d++ += *sin++;
 		while (d < bound);
@@ -151,20 +151,20 @@ context_merger_process (GslModule *module,
 static void
 bse_context_merger_context_create (BseSource *source,
 				   guint      context_handle,
-				   GslTrans  *trans)
+				   BseTrans  *trans)
 {
-  static const GslClass context_merger_mclass = {
+  static const BseModuleClass context_merger_mclass = {
     0,                            /* n_istreams */
     BSE_CONTEXT_MERGER_N_IOPORTS, /* n_jstreams */
     BSE_CONTEXT_MERGER_N_IOPORTS, /* n_ostreams */
     context_merger_process,       /* process */
     NULL,                         /* process_defer */
     NULL,                         /* reset */
-    (GslModuleFreeFunc) g_free,	  /* free */
-    GSL_COST_CHEAP,               /* cost */
+    (BseModuleFreeFunc) g_free,	  /* free */
+    BSE_COST_CHEAP,               /* cost */
   };
   BseContextMerger *self = BSE_CONTEXT_MERGER (source);
-  GslModule *module;
+  BseModule *module;
   
   /* merge with existing context if set */
   if (self->merge_context)
@@ -184,9 +184,9 @@ bse_context_merger_context_create (BseSource *source,
       ContextModuleData *cmdata = g_new (ContextModuleData, 1);
       cmdata->real_context = context_handle;
       cmdata->ref_count = 1;
-      module = gsl_module_new (&context_merger_mclass, cmdata);
+      module = bse_module_new (&context_merger_mclass, cmdata);
       /* commit module to engine */
-      gsl_trans_add (trans, gsl_job_integrate (module));
+      bse_trans_add (trans, bse_job_integrate (module));
     }
   
   /* setup module i/o streams with BseSource i/o channels */
@@ -199,11 +199,11 @@ bse_context_merger_context_create (BseSource *source,
 static void
 bse_context_merger_context_dismiss (BseSource *source,
 				    guint      context_handle,
-				    GslTrans  *trans)
+				    BseTrans  *trans)
 {
-  GslModule *module;
+  BseModule *module;
   
-  /* if the GslModule wasn't created within context_handle, we would
+  /* if the BseModule wasn't created within context_handle, we would
    * just need to disconnect it from connections within this context
    * and not discard it. however, that's somewhat tedious since it
    * requires poking around in BseSource internals which we can't do here.

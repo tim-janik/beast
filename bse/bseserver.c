@@ -33,7 +33,7 @@
 #include <string.h>
 
 
-/* --- PCM GslModule implementations ---*/
+/* --- PCM BseModule implementations ---*/
 #include "bsepcmmodule.c"
 
 
@@ -533,7 +533,7 @@ bse_server_open_devices (BseServer *self)
     error = bse_server_open_midi_device (self);
   if (!error)
     {
-      GslTrans *trans = gsl_trans_open ();
+      BseTrans *trans = bse_trans_open ();
       bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (self->pcm_device), BSE_GCONFIG (synth_latency));
       engine_init (self, bse_pcm_device_get_handle (self->pcm_device)->mix_freq);
       self->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
@@ -541,7 +541,7 @@ bse_server_open_devices (BseServer *self)
 	{
 	  BseErrorType error;
 	  self->pcm_writer = g_object_new (BSE_TYPE_PCM_WRITER, NULL);
-	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, gsl_engine_sample_freq ());
+	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, bse_engine_sample_freq ());
 	  if (error)
 	    {
               sfi_warn (SfiLogger ("recording", NULL, NULL),
@@ -553,7 +553,7 @@ bse_server_open_devices (BseServer *self)
 	}
       self->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (self->pcm_device),
 						  self->pcm_writer, trans);
-      gsl_trans_commit (trans);
+      bse_trans_commit (trans);
       self->dev_use_count++;
     }
   else
@@ -583,7 +583,7 @@ bse_server_close_devices (BseServer *self)
   self->dev_use_count--;
   if (!self->dev_use_count)
     {
-      GslTrans *trans = gsl_trans_open ();
+      BseTrans *trans = bse_trans_open ();
       bse_pcm_imodule_remove (self->pcm_imodule, trans);
       self->pcm_imodule = NULL;
       bse_pcm_omodule_remove (self->pcm_omodule, trans);
@@ -595,9 +595,9 @@ bse_server_close_devices (BseServer *self)
 	  g_object_unref (self->pcm_writer);
 	  self->pcm_writer = NULL;
 	}
-      gsl_trans_commit (trans);
+      bse_trans_commit (trans);
       /* wait until transaction has been processed */
-      gsl_engine_wait_on_trans ();
+      bse_engine_wait_on_trans ();
       bse_pcm_device_suspend (self->pcm_device);
       bse_midi_device_suspend (self->midi_device);
       engine_shutdown (self);
@@ -608,7 +608,7 @@ bse_server_close_devices (BseServer *self)
     }
 }
 
-GslModule*
+BseModule*
 bse_server_retrieve_pcm_output_module (BseServer   *self,
 				       BseSource   *source,
 				       const gchar *uplink_name)
@@ -625,7 +625,7 @@ bse_server_retrieve_pcm_output_module (BseServer   *self,
 
 void
 bse_server_discard_pcm_output_module (BseServer *self,
-				      GslModule *module)
+				      BseModule *module)
 {
   g_return_if_fail (BSE_IS_SERVER (self));
   g_return_if_fail (module != NULL);
@@ -635,7 +635,7 @@ bse_server_discard_pcm_output_module (BseServer *self,
   bse_server_close_devices (self);
 }
 
-GslModule*
+BseModule*
 bse_server_retrieve_pcm_input_module (BseServer   *self,
 				      BseSource   *source,
 				      const gchar *uplink_name)
@@ -652,7 +652,7 @@ bse_server_retrieve_pcm_input_module (BseServer   *self,
 
 void
 bse_server_discard_pcm_input_module (BseServer *self,
-				     GslModule *module)
+				     BseModule *module)
 {
   g_return_if_fail (BSE_IS_SERVER (self));
   g_return_if_fail (module != NULL);
@@ -978,8 +978,8 @@ iowatch_remove (BseServer *server,
 typedef struct {
   GSource       source;
   guint         n_fds;
-  GPollFD       fds[GSL_ENGINE_MAX_POLLFDS];
-  GslEngineLoop loop;
+  GPollFD       fds[BSE_ENGINE_MAX_POLLFDS];
+  BseEngineLoop loop;
 } PSource;
 
 static gboolean
@@ -990,7 +990,7 @@ engine_prepare (GSource *source,
   gboolean need_dispatch;
   
   BSE_THREADS_ENTER ();
-  need_dispatch = gsl_engine_prepare (&psource->loop);
+  need_dispatch = bse_engine_prepare (&psource->loop);
   if (psource->loop.fds_changed)
     {
       guint i;
@@ -1024,7 +1024,7 @@ engine_check (GSource *source)
   for (i = 0; i < psource->n_fds; i++)
     psource->loop.fds[i].revents = psource->fds[i].revents;
   psource->loop.revents_filled = TRUE;
-  need_dispatch = gsl_engine_check (&psource->loop);
+  need_dispatch = bse_engine_check (&psource->loop);
   BSE_THREADS_LEAVE ();
   
   return need_dispatch;
@@ -1036,7 +1036,7 @@ engine_dispatch (GSource    *source,
 		 gpointer    user_data)
 {
   BSE_THREADS_ENTER ();
-  gsl_engine_dispatch ();
+  bse_engine_dispatch ();
   BSE_THREADS_LEAVE ();
   
   return TRUE;
@@ -1065,13 +1065,13 @@ engine_init (BseServer *server,
       guint mypid = bse_main_getpid();
       int current_priority;
       engine_is_initialized = TRUE;
-      gsl_engine_init (TRUE);
+      bse_engine_init (TRUE);
       /* lower priorities compared to engine if our priority range permits */
       current_priority = getpriority (PRIO_PROCESS, mypid);
       if (current_priority <= -2 && mypid)
         setpriority (PRIO_PROCESS, mypid, current_priority + 1);
     }
-  gsl_engine_configure (BSE_GCONFIG (synth_latency), mix_freq, BSE_GCONFIG (synth_control_freq));
+  bse_engine_configure (BSE_GCONFIG (synth_latency), mix_freq, BSE_GCONFIG (synth_control_freq));
 
   g_source_attach (server->engine_source, bse_main_context);
 }
@@ -1083,7 +1083,7 @@ engine_shutdown (BseServer *server)
   
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
-  gsl_engine_garbage_collect ();
+  bse_engine_garbage_collect ();
   // FIXME: need to be able to completely unintialize engine here
   bse_gconfig_unlock ();
 }

@@ -52,7 +52,7 @@ struct _BseWave
   guint		     n_wchunks;
   GSList	    *wave_chunks;
 
-  /* requested GslModule indices */
+  /* requested BseModule indices */
   guint		     request_count;
   guint		     index_dirty : 1;
   GSList	    *index_list;
@@ -91,7 +91,7 @@ void		bse_wave_request_index		(BseWave	*wave);
 BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
 void		bse_wave_drop_index		(BseWave	*wave);
 
-/* BseWaveIndex is safe to use from GslModules (self-contained constant structure) */
+/* BseWaveIndex is safe to use from BseModules (self-contained constant structure) */
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq);
 						 

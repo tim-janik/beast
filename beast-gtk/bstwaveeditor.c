@@ -377,7 +377,7 @@ update_play_back_marks (gpointer data,
     play_back_wchunk_off (self);	/* stop looping */
 }
 
-guint64       gsl_engine_tick_stamp_from_systime (guint64       systime); // FIXME
+guint64       bse_engine_tick_stamp_from_systime (guint64       systime); // FIXME
 
 static gboolean
 playback_marker (gpointer data)
@@ -388,7 +388,7 @@ playback_marker (gpointer data)
   self = BST_WAVE_EDITOR (data);
   if (self->tick_stamp)
     {
-      SfiNum tick_now = gsl_engine_tick_stamp_from_systime (sfi_time_system ()); // FIXME!!!
+      SfiNum tick_now = bse_engine_tick_stamp_from_systime (sfi_time_system ()); // FIXME!!!
       guint pcm_pos = self->pcm_pos + (tick_now - self->tick_stamp) * self->pcm_per_tick;
       self->ignore_playpos = TRUE;
       gtk_adjustment_set_value (GTK_RANGE (self->qsampler_playpos)->adjustment,

@@ -313,7 +313,7 @@ bse_midi_decoder_push_data (BseMidiDecoder *self,
   if (n_bytes)
     g_return_if_fail (bytes != NULL);
   
-  data.delta_time = gsl_engine_tick_stamp_from_systime (usec_systime);
+  data.delta_time = bse_engine_tick_stamp_from_systime (usec_systime);
   data.bytes = bytes;
   data.bound = bytes + n_bytes;
   while (data.bytes < data.bound || self->state_changed)

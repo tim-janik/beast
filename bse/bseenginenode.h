@@ -1,5 +1,5 @@
-/* GSL Engine - Flow module operation engine
- * Copyright (C) 2001-2003 Tim Janik
+/* BSE Engine - Flow module operation engine
+ * Copyright (C) 2001, 2002, 2003, 2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,11 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_ENGINE_NODE_H__
-#define __GSL_ENGINE_NODE_H__
+#ifndef __BSE_ENGINE_NODE_H__
+#define __BSE_ENGINE_NODE_H__
 
 #include "bseengine.h"
-#include "bseengineutils.h"
 #include "gslcommon.h"
 
 G_BEGIN_DECLS
@@ -34,12 +33,16 @@ G_BEGIN_DECLS
 #define	ENGINE_NODE_IS_VIRTUAL(node)	((node)->virtual_node)
 #define	ENGINE_NODE_IS_DEFERRED(node)	(FALSE)
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
-#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & GSL_COST_CHEAP) != 0)
-#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & GSL_COST_EXPENSIVE) != 0)
+#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & BSE_COST_CHEAP) != 0)
+#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & BSE_COST_EXPENSIVE) != 0)
 #define	ENGINE_NODE_LOCK(node)		sfi_rec_mutex_lock (&(node)->rec_mutex)
 #define	ENGINE_NODE_UNLOCK(node)	sfi_rec_mutex_unlock (&(node)->rec_mutex)
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
+
+/* --- typedefs --- */
+typedef struct _EngineNode     EngineNode;
+typedef struct _EngineSchedule EngineSchedule;
 
 /* --- transactions --- */
 typedef struct _EngineUserJob  EngineUserJob;
@@ -72,10 +75,10 @@ typedef enum /*< skip >*/
   ENGINE_JOB_DEBUG,
   ENGINE_JOB_LAST
 } EngineJobType;
-struct _GslJob
+struct _BseJob
 {
   EngineJobType       job_id;
-  GslJob	     *next;
+  BseJob	     *next;
   union {
     EngineNode	     *node;
     struct {
@@ -95,21 +98,21 @@ struct _GslJob
     } connection;
     struct {
       EngineNode     *node;
-      GslAccessFunc   access_func;
+      BseEngineAccessFunc   access_func;
       gpointer	      data;
-      GslFreeFunc     free_func;
+      BseFreeFunc     free_func;
     } access;
     struct {
-      GslPollFunc     poll_func;
+      BseEnginePollFunc     poll_func;
       gpointer	      data;
-      GslFreeFunc     free_func;
+      BseFreeFunc     free_func;
       guint           n_fds;
       GPollFD	     *fds;
     } poll;
     struct {
-      GslEngineTimerFunc timer_func;
+      BseEngineTimerFunc timer_func;
       gpointer	         data;
-      GslFreeFunc        free_func;
+      BseFreeFunc        free_func;
     } timer;
     struct {
       EngineNode     *node;
@@ -122,12 +125,12 @@ struct _GslJob
     gchar	     *debug;
   } data;
 };
-struct _GslTrans
+struct _BseTrans
 {
-  GslJob   *jobs_head;
-  GslJob   *jobs_tail;
+  BseJob   *jobs_head;
+  BseJob   *jobs_tail;
   guint	    comitted : 1;
-  GslTrans *cqt_next;	/* com-thread-queue */
+  BseTrans *cqt_next;	/* com-thread-queue */
 };
 struct _EngineUserJob
 {
@@ -138,7 +141,7 @@ struct _EngineProbeJob
 {
   EngineProbeJob   *next;       /* keep in sync with EngineUserJob */
   EngineJobType     job_type;   /* keep in sync with EngineUserJob */
-  GslProbeFunc      probe_func;
+  BseEngineProbeFunc      probe_func;
   gpointer          data;
   guint64           tick_stamp;
   guint             n_values;
@@ -149,10 +152,10 @@ struct _EngineTimedJob
 {
   EngineTimedJob   *next;       /* keep in sync with EngineUserJob */
   EngineJobType     job_type;   /* keep in sync with EngineUserJob */
-  GslFreeFunc       free_func;
+  BseFreeFunc       free_func;
   gpointer          data;
   guint64	    tick_stamp;
-  GslAccessFunc     access_func;
+  BseEngineAccessFunc     access_func;
 };
 
 
@@ -180,7 +183,7 @@ typedef struct
 } EngineOutput;
 struct _EngineNode		/* fields sorted by order of processing access */
 {
-  GslModule	 module;
+  BseModule	 module;
 
   SfiRecMutex	 rec_mutex;	/* processing lock */
   guint64	 counter;	/* <= GSL_TICK_STAMP */
@@ -222,4 +225,4 @@ struct _EngineNode		/* fields sorted by order of processing access */
 
 G_END_DECLS
 
-#endif /* __GSL_ENGINE_NODE_H__ */
+#endif /* __BSE_ENGINE_NODE_H__ */

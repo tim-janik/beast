@@ -28,7 +28,7 @@ static void	 bse_noise_class_init		(BseNoiseClass	*class);
 static void	 bse_noise_prepare		(BseSource	*source);
 static void	 bse_noise_context_create	(BseSource	*source,
 						 guint		 context_handle,
-						 GslTrans	*trans);
+						 BseTrans	*trans);
 static void	 bse_noise_reset		(BseSource	*source);
 
 
@@ -78,7 +78,7 @@ bse_noise_prepare (BseSource *source)
   BseNoise *noise = BSE_NOISE (source);
   guint i, l;
   
-  l = gsl_engine_block_size() * (N_STATIC_BLOCKS + 1);
+  l = bse_engine_block_size() * (N_STATIC_BLOCKS + 1);
   noise->static_noise = g_new (gfloat, l);
   
   for (i = 0; i < l; i++)
@@ -89,22 +89,22 @@ bse_noise_prepare (BseSource *source)
 }
 
 static void
-noise_process (GslModule *module,
+noise_process (BseModule *module,
 	       guint      n_values)
 {
   gfloat *static_noise = module->user_data;
 
-  g_return_if_fail (n_values <= gsl_engine_block_size()); /* paranoid */
+  g_return_if_fail (n_values <= bse_engine_block_size()); /* paranoid */
 
-  GSL_MODULE_OBUFFER (module, 0) = static_noise + (rand () % (gsl_engine_block_size() * N_STATIC_BLOCKS));
+  BSE_MODULE_OBUFFER (module, 0) = static_noise + (rand () % (bse_engine_block_size() * N_STATIC_BLOCKS));
 }
 
 static void
 bse_noise_context_create (BseSource *source,
 			  guint      context_handle,
-			  GslTrans  *trans)
+			  BseTrans  *trans)
 {
-  static const GslClass output_mclass = {
+  static const BseModuleClass output_mclass = {
     0,				/* n_istreams */
     0,                  	/* n_jstreams */
     1,				/* n_ostreams */
@@ -112,16 +112,16 @@ bse_noise_context_create (BseSource *source,
     NULL,                       /* process_defer */
     NULL,                       /* reset */
     NULL,			/* free */
-    GSL_COST_CHEAP,		/* cost */
+    BSE_COST_CHEAP,		/* cost */
   };
   BseNoise *noise = BSE_NOISE (source);
-  GslModule *module = gsl_module_new (&output_mclass, noise->static_noise);
+  BseModule *module = bse_module_new (&output_mclass, noise->static_noise);
 
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
 
   /* commit module to engine */
-  gsl_trans_add (trans, gsl_job_integrate (module));
+  bse_trans_add (trans, bse_job_integrate (module));
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

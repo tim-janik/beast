@@ -73,7 +73,7 @@ bse_ssequencer_add_super (BseSuper *super)
 
 void
 bse_ssequencer_start_supers (SfiRing  *supers,
-			     GslTrans *trans)
+			     BseTrans *trans)
 {
   SfiRing *ring, *jobs = NULL;
   for (ring = supers; ring; ring = sfi_ring_walk (ring, supers))
@@ -90,10 +90,10 @@ bse_ssequencer_start_supers (SfiRing  *supers,
       SfiTime start_stamp = bse_ssequencer_queue_jobs (jobs);
       /* make sure the transaction isn't processed prematurely */
       if (trans)
-	gsl_trans_commit_delayed (trans, start_stamp);
+	bse_trans_commit_delayed (trans, start_stamp);
     }
   else if (trans)
-    gsl_trans_commit (trans);
+    bse_trans_commit (trans);
 }
 
 BseSSequencerJob*
@@ -254,7 +254,7 @@ bse_ssequencer_thread_main (gpointer data)
 	}
       BSE_SEQUENCER_UNLOCK ();
 
-      sfi_thread_awake_after (cur_stamp + gsl_engine_block_size ());
+      sfi_thread_awake_after (cur_stamp + bse_engine_block_size ());
     }
   while (sfi_thread_sleep (-1));
   DEBUG ("SST: end\n");

@@ -112,15 +112,14 @@ void	       _gsl_tick_stamp_set_leap (guint		 ticks);
 void	_gsl_init_signal		(void);
 void	_gsl_init_fd_pool		(void);
 void	_gsl_init_data_caches		(void);
-void	_gsl_init_engine_utils		(void);
 void	_gsl_init_loader_gslwave	(void);
 void	_gsl_init_loader_aiff		(void);
 void	_gsl_init_loader_wav		(void);
 void	_gsl_init_loader_oggvorbis	(void);
 void	_gsl_init_loader_mad		(void);
 #define		GSL_N_IO_RETRIES	(5)
-#define		_GSL_TICK_STAMP_VAL()	(gsl_externvar_tick_stamp + 0)
-extern volatile guint64	gsl_externvar_tick_stamp;
+#define		_GSL_TICK_STAMP_VAL()	(bse_engine_exvar_tick_stamp + 0)
+extern volatile guint64	bse_engine_exvar_tick_stamp;
 
 
 G_END_DECLS
