@@ -1187,28 +1187,20 @@ void
 bse_storage_putf (BseStorage *self,
                   gfloat      vfloat)
 {
-  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
-
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->wstore);
 
-  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", vfloat);
-
-  bse_storage_puts (self, numbuf);
+  sfi_wstore_putf (self->wstore, vfloat);
 }
 
 void
 bse_storage_putd (BseStorage *self,
                   gdouble     vdouble)
 {
-  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
-
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->wstore);
 
-  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", vdouble);
-
-  bse_storage_puts (self, numbuf);
+  sfi_wstore_putd (self->wstore, vdouble);
 }
 
 void
@@ -1458,13 +1450,15 @@ bse_storage_put_data_handle (BseStorage    *self,
       
       bse_storage_break (self);
       bse_storage_printf (self,
-                          "(%s %u %s %s %.7g %.7g",
+                          "(%s %u %s %s",
                           g_quark_to_string (quark_raw_data_handle),
                           gsl_data_handle_n_channels (dhandle),
                           gsl_wave_format_to_string (format),
-                          gsl_byte_order_to_string (G_LITTLE_ENDIAN),
-                          gsl_data_handle_mix_freq (dhandle),
-                          gsl_data_handle_osc_freq (dhandle));
+                          gsl_byte_order_to_string (G_LITTLE_ENDIAN));
+      bse_storage_puts (self, " ");
+      bse_storage_putf (self, gsl_data_handle_mix_freq (dhandle));
+      bse_storage_puts (self, " ");
+      bse_storage_putf (self, gsl_data_handle_osc_freq (dhandle));
       bse_storage_push_level (self);
       bse_storage_break (self);
 

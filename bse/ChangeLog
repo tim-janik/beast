@@ -1,3 +1,9 @@
+Thu Jan 20 17:12:24 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c: use sfi_wstore_putf() and sfi_wstore_putd() internally.
+	bse_storage_put_data_handle(): don't use printf and %g to store floats,
+	but use bse_storage_putf() so floats are stored locale independant.
+
 Thu Jan 20 15:18:53 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (bse_storage_printf): issue warnings if the format string
