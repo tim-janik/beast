@@ -1,3 +1,10 @@
+Mon Dec 22 00:49:05 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwaveview.c: added missing tooltips.
+
+	* tests/Makefile.am: create the testplugin via noinst_LTLIBRARIES,
+	to not clutter a public installation directory.
+
 Sun Dec 21 19:30:56 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkgadget.[hc]: another major overhaul of variable

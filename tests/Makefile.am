@@ -76,8 +76,7 @@ BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
 testplugin_la_SOURCES = testplugin.cc
 testplugin_la_LDFLAGS = -module -avoid-version
 testplugin_la_LIBADD  = $(BSE_LIBS) -lm
-plugindir = $(bseplugindir)/nirvana
-plugin_LTLIBRARIES = testplugin.la
+noinst_LTLIBRARIES = testplugin.la
 
 $(srcdir)/testplugin.cc: testplugin.gen-idl.h
 

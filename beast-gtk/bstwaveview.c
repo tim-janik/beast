@@ -40,10 +40,14 @@ enum {
   ACTION_WAVE_LAST
 };
 static const GxkStockAction wave_view_actions[] = {
-  { N_("Load..."),  NULL,   NULL,   ACTION_LOAD_WAVE,       BST_STOCK_LOAD,	},
-  { N_("Lib..."),   NULL,   NULL,   ACTION_LOAD_WAVE_LIB,	BST_STOCK_LOAD_LIB, },
-  { N_("Delete"),   NULL,   NULL,   ACTION_DELETE_WAVE,	BST_STOCK_TRASHCAN, },
-  { N_("Editor"),   NULL,   NULL,   ACTION_EDIT_WAVE,	BST_STOCK_EDIT_TOOL, },
+  { N_("Load..."),  NULL,       N_("Load a new wave file from disk"),
+    ACTION_LOAD_WAVE,           BST_STOCK_LOAD,	},
+  { N_("Lib..."),   NULL,       N_("Load a new wave file from library paths"),
+    ACTION_LOAD_WAVE_LIB,	BST_STOCK_LOAD_LIB, },
+  { N_("Delete"),   NULL,       N_("Delete the currently selected wave"),
+    ACTION_DELETE_WAVE,         BST_STOCK_TRASHCAN, },
+  { N_("Editor"),   NULL,       N_("Edit the currently selected wave"),
+    ACTION_EDIT_WAVE,	        BST_STOCK_EDIT_TOOL, },
 };
 
 

@@ -1,7 +1,6 @@
 FIXMES:
 - fix test plugin installatiojn
 - disable evaluator
-- wave repo button tooltips
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
 - apply editable and sensitive to params
