@@ -284,7 +284,6 @@ struct FileInfo
   PatHeader          *header;
   PatInstrument      *instrument;
   vector<PatPatch *>  patches;
-  vector<long>	      data_offsets;
 
   GslWaveLoopType loop_type (int wave_format)
   {
@@ -320,6 +319,11 @@ struct FileInfo
       {
 	return GSL_WAVE_LOOP_NONE;
       }
+  }
+
+  guint& data_offset (int chunk_number)
+  {
+    return wdsc.chunks[chunk_number].loader_data[0].uint;
   }
 
   GslWaveFormatType
@@ -401,6 +405,10 @@ struct FileInfo
         return;
       }
 
+    /* allocate GslWaveDsc */
+    wdsc.n_chunks = instrument->sampleCount;
+    wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
+
     for (int i = 0; i<instrument->sampleCount; i++)
       {
 	PatPatch *patch = new PatPatch();
@@ -410,7 +418,7 @@ struct FileInfo
         if (*error_p)
           return;
 
-	data_offsets.push_back (ftell (patfile));
+	data_offset (i) = (guint) ftell (patfile);
 
 	*error_p = skip (patfile, patch->wavesize);
         if (*error_p)
@@ -422,17 +430,13 @@ struct FileInfo
       }
     fclose (patfile);
 
-    /* allocate and fill appropriate Gsl* data structures */
-
-    /* fill GslWaveFileInfo */
+    /* allocate and fill GslWaveFileInfo */
     wfi.n_waves = 1;
     wfi.waves = (typeof (wfi.waves)) g_malloc0 (sizeof (wfi.waves[0]) * wfi.n_waves);
     wfi.waves[0].name = g_strdup (file_name);
 
     /* fill GslWaveDsc */
     wdsc.name = g_strdup (file_name);
-    wdsc.n_chunks = instrument->sampleCount;
-    wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
     /* header->channels means output channels, GUS Patches are mono only */
     wdsc.n_channels = 1;
     wdsc.xinfos = bse_xinfos_add_value (wdsc.xinfos, "play-type", "gus-patch");
@@ -545,7 +549,7 @@ pat_create_chunk_handle (gpointer      data,
   const PatPatch *patch = file_info->patches[nth_chunk];
   const GslWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
 
-  GUS_PATCH_DEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %ld %d",
+  GUS_PATCH_DEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %u %d",
           nth_chunk,
 	  file_info->wfi.file_name,
 	  wave_dsc->n_channels,
@@ -553,7 +557,7 @@ pat_create_chunk_handle (gpointer      data,
 	  G_LITTLE_ENDIAN,
 	  chunk->mix_freq,
 	  chunk->osc_freq,
-	  file_info->data_offsets[nth_chunk],
+	  file_info->data_offset (nth_chunk),
 	  patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
 
   GslDataHandle *dhandle;
@@ -563,7 +567,7 @@ pat_create_chunk_handle (gpointer      data,
 				 G_LITTLE_ENDIAN,
 				 chunk->mix_freq,
 				 chunk->osc_freq,
-				 file_info->data_offsets[nth_chunk],
+				 file_info->data_offset (nth_chunk),
 				 patch->wavesize / file_info->bytes_per_frame (patch->waveFormat),
                                  chunk->xinfos);
   return dhandle;

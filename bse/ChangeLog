@@ -1,3 +1,9 @@
+Fri Jan  7 02:53:05 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Reimplemented data_offset storing in a way that is
+	both: fairly readable in the code, and based on the new style
+	loader_data array that replaces the loader_offset field.
+
 Fri Jan  7 02:01:11 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c: store Ogg/Vorbis data handles with increasing serialnos.
