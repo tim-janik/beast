@@ -22,6 +22,7 @@
 #include "bstxkb.h"
 #include "bstgconfig.h"
 #include "bstusermessage.h"
+#include "bstcatalog.h"
 #include "bstpreferences.h"
 #include "../PKG_config.h"
 #include "images/beast-images.h"
@@ -119,14 +120,14 @@ main (int   argc,
 
   /* now, we can popup the splash screen
    */
-  splash = bst_splash_new ("BEAST Startup", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
+  splash = bst_splash_new (_("BEAST Startup"), BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
   gtk_object_set_user_data (GTK_OBJECT (splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (splash,
 		       "<b><big>BEAST</big></b>\n"
 		       "<b>The Bedevilled Audio System</b>\n"
 		       "<b>Version %s (%s)</b>\n",
 		       BST_VERSION, BST_VERSION_HINT);
-  bst_splash_update_entity (splash, "Startup");
+  bst_splash_update_entity (splash, _("Startup"));
   bst_splash_show_now (splash);
 
   /* initialize Sfi types
@@ -139,10 +140,12 @@ main (int   argc,
 
   /* BEAST initialization
    */
-  bst_splash_update_item (splash, "Objects");
+  bst_splash_update_item (splash, _("Objects"));
   _bst_init_utils ();
   _bst_init_params ();
   _bst_gconfig_init ();
+  bst_splash_update_item (splash, _("Language"));
+  _bst_catalog_init ();
 
   /* GUI patchups
    */
@@ -154,14 +157,14 @@ main (int   argc,
   if (TRUE)
     {
       gchar *file_name = BST_STRDUP_RC_FILE ();
-      bst_splash_update_item (splash, "RC File");
+      bst_splash_update_item (splash, _("RC File"));
       bst_rc_parse (file_name);
       g_free (file_name);
     }
 
   /* show splash images
    */
-  bst_splash_update_item (splash, "Splash Image");
+  bst_splash_update_item (splash, _("Splash Image"));
   string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
@@ -173,7 +176,7 @@ main (int   argc,
     }
 
   /* start BSE core and connect */
-  bst_splash_update_item (splash, "BSE Core");
+  bst_splash_update_item (splash, _("BSE Core"));
   bse_init_async (&argc, &argv, NULL);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
   source = g_source_simple (G_PRIORITY_HIGH,
@@ -191,7 +194,7 @@ main (int   argc,
   /* register dynamic types and modules (plugins) */
   if (bst_load_plugins)
     {
-      bst_splash_update_entity (splash, "Plugins");
+      bst_splash_update_entity (splash, _("Plugins"));
 
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
@@ -219,7 +222,7 @@ main (int   argc,
   /* register BSE scripts */
   if (bst_load_plugins)
     {
-      bst_splash_update_entity (splash, "Scripts");
+      bst_splash_update_entity (splash, _("Scripts"));
 
       /* script registration, this is done asyncronously,
        * so we wait until all are done
@@ -237,7 +240,7 @@ main (int   argc,
 
   /* listen to BseServer notification
    */
-  bst_splash_update_entity (splash, "Dialogs");
+  bst_splash_update_entity (splash, _("Dialogs"));
   bst_catch_scripts_and_msgs ();
 
   /* grab events on the splash to keep the user away
@@ -249,7 +252,7 @@ main (int   argc,
   /* open files given on command line
    */
   if (argc > 1)
-    bst_splash_update_entity (splash, "Loading...");
+    bst_splash_update_entity (splash, _("Loading..."));
   for (i = 1; i < argc; i++)
     {
       SfiProxy project, wrepo;
@@ -279,9 +282,9 @@ main (int   argc,
 	    {
 	      SfiProxy wrepo = bse_project_ensure_wave_repo (app->project);
 	      
-	      gxk_status_printf (GXK_STATUS_WAIT, NULL, "Loading \"%s\"", argv[i]);
+	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
 	      error = bse_wave_repo_load_file (wrepo, argv[i]);
-	      bst_status_eprintf (error, "Loading \"%s\"", argv[i]);
+	      bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
 	      if (!error)
 		continue;
 	    }
@@ -298,7 +301,7 @@ main (int   argc,
       bse_item_unuse (project);
       
       if (error)
-	bst_status_eprintf (error, "Loading project \"%s\"", argv[i]);
+	bst_status_eprintf (error, _("Loading project \"%s\""), argv[i]);
     }
 
   /* open default app window

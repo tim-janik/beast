@@ -36,9 +36,6 @@ static void	track_view_listen_on		(BstItemView		*iview,
 						 SfiProxy		 item);
 static void	track_view_unlisten_on		(BstItemView		*iview,
 						 SfiProxy		 item);
-static void     track_view_update_canvas_tool	(BstTrackView		*self);
-static void	track_view_update_hpanel_tool	(BstTrackView		*self);
-static void	track_view_update_quant_tool	(BstTrackView		*self);
 
 
 /* --- columns --- */
@@ -122,63 +119,6 @@ bst_track_view_init (BstTrackView *self)
   /* configure item view for tracks */
   iview->item_type = "BseTrack";
   bst_item_view_set_id_format (iview, "%02X");
-
-  /* radio tools */
-  self->canvas_rtools = bst_radio_tools_new ();
-  g_object_connect (self->canvas_rtools,
-		    "swapped_signal::set_tool", track_view_update_canvas_tool, self,
-		    NULL);
-  self->hpanel_rtools = bst_radio_tools_new ();
-  g_object_connect (self->hpanel_rtools,
-		    "swapped_signal::set_tool", track_view_update_hpanel_tool, self,
-		    NULL);
-  self->quant_rtools = bst_radio_tools_new ();
-  g_object_connect (self->quant_rtools,
-		    "swapped_signal::set_tool", track_view_update_quant_tool, self,
-		    NULL);
-
-  /* register canvas tools */
-  bst_radio_tools_add_stock_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT,
-				  "Insert", "Insert/rename/move parts (mouse button 1 and 2)", NULL,
-				  BST_STOCK_PART, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_DELETE,
-				  "Delete", "Delete part", NULL,
-				  BST_STOCK_TRASHCAN, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
-				  "Editor", "Start part editor", NULL,
-				  BST_STOCK_PART_EDITOR, BST_RADIO_TOOLS_EVERYWHERE);
-  /* register hpanel tools */
-  bst_radio_tools_add_stock_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,
-				  "Left", "Use the horizontal ruler to adjust the left loop pointer", NULL,
-				  BST_STOCK_TICK_LOOP_LEFT, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-				  "Pos", "Use the horizontal ruler to adjust the play position pointer pointer", NULL,
-				  BST_STOCK_TICK_POINTER, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,
-				  "Right", "Use the horizontal ruler to adjust the right loop pointer", NULL,
-				  BST_STOCK_TICK_LOOP_RIGHT, BST_RADIO_TOOLS_EVERYWHERE);
-  /* register quantization tools */
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_TACT,
-				  "Q: Tact", "Quantize to tact boundaries", NULL,
-				  BST_STOCK_QTACT, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NONE,
-				  "None", "No quantization selected", NULL,
-				  BST_STOCK_QNOTE_NONE, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_1,
-				  "Q: 1/1", "Quantize to full note boundaries", NULL,
-				  BST_STOCK_QNOTE_1, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_2,
-				  "Q: 1/2", "Quantize to half note boundaries", NULL,
-				  BST_STOCK_QNOTE_2, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_4,
-				  "Q: 1/4", "Quantize to quarter note boundaries", NULL,
-				  BST_STOCK_QNOTE_4, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_8,
-				  "Q: 1/8", "Quantize to eighths note boundaries", NULL,
-				  BST_STOCK_QNOTE_8, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_16,
-				  "Q: 1/16", "Quantize to sixteenth note boundaries", NULL,
-				  BST_STOCK_QNOTE_16, BST_RADIO_TOOLS_EVERYWHERE);
 }
 
 static void
@@ -188,12 +128,6 @@ bst_track_view_finalize (GObject *object)
 
   if (self->troll_ctrl)
     bst_track_roll_controller_unref (self->troll_ctrl);
-  bst_radio_tools_destroy (self->canvas_rtools);
-  g_object_unref (self->canvas_rtools);
-  bst_radio_tools_destroy (self->hpanel_rtools);
-  g_object_unref (self->hpanel_rtools);
-  bst_radio_tools_destroy (self->quant_rtools);
-  g_object_unref (self->quant_rtools);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -448,17 +382,13 @@ bst_track_view_create_tree (BstItemView *iview)
   /* track roll controller */
   self->troll_ctrl = bst_track_roll_controller_new (self->troll);
   bst_track_roll_controller_set_song (self->troll_ctrl, iview->container);
-  /* update controller from rtools */
-  bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
-  bst_radio_tools_set_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER);
-  bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_TACT);
 
   /* create toolbar */
   self->toolbar = gxk_toolbar_new (&self->toolbar);
   /* add radio tools to toolbar */
-  bst_radio_tools_build_toolbar (self->canvas_rtools, self->toolbar);
+  bst_radio_tools_build_toolbar (self->troll_ctrl->canvas_rtools, self->toolbar);
   gxk_toolbar_append_separator (self->toolbar);
-  bst_radio_tools_build_toolbar_choice (self->hpanel_rtools, self->toolbar);
+  bst_radio_tools_build_toolbar_choice (self->troll_ctrl->hpanel_rtools, self->toolbar);
   /* add repeat toggle */
   self->repeat_toggle = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_TOGGLE,
 						  "Repeat", "Repeat playback within loop points", BST_STOCK_REPEAT);
@@ -467,7 +397,7 @@ bst_track_view_create_tree (BstItemView *iview)
   track_view_repeat_changed (self);
   /* add quantization tools to toolbar */
   gxk_toolbar_append_separator (self->toolbar);
-  bst_radio_tools_build_toolbar_choice (self->quant_rtools, self->toolbar);
+  bst_radio_tools_build_toolbar_choice (self->troll_ctrl->quant_rtools, self->toolbar);
   /* add zoom spinner */
   gxk_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (50, 1, 100, 1, 5, 0);
@@ -482,6 +412,11 @@ bst_track_view_create_tree (BstItemView *iview)
 			NULL);
   gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "Zoom", "Horizontal Zoom", entry);
+
+  /* setup accelerators */
+  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->canvas_rtools->accel_group);
+  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->hpanel_rtools->accel_group);
+  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->quant_rtools->accel_group);
 
   /* tree view box */
   vb1 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
@@ -662,105 +597,4 @@ bst_track_view_can_operate (BstItemView *item_view,
     default:
       return FALSE;
     }
-}
-
-static void
-reset_canvas_rtools (gpointer data)
-{
-  BstTrackView *self = BST_TRACK_VIEW (data);
-  if (self->canvas_rtools)
-    bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
-}
-
-static void
-track_view_update_canvas_tool (BstTrackView *self)
-{
-  if (!self->troll_ctrl)
-    return;
-  switch (self->canvas_rtools->tool_id)
-    {
-    case BST_TRACK_ROLL_TOOL_INSERT:
-      bst_track_roll_controller_set_object_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_EDIT_NAME,
-						  BST_TRACK_ROLL_TOOL_MOVE,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      bst_track_roll_controller_set_canvas_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_INSERT,
-						  BST_TRACK_ROLL_TOOL_MOVE,		/* error */
-						  BST_TRACK_ROLL_TOOL_NONE);
-      break;
-    case BST_TRACK_ROLL_TOOL_EDIT_NAME:
-      bst_track_roll_controller_set_object_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_EDIT_NAME,
-						  BST_TRACK_ROLL_TOOL_MOVE,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      bst_track_roll_controller_set_canvas_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_EDIT_NAME,	/* error */
-						  BST_TRACK_ROLL_TOOL_MOVE,		/* error */
-						  BST_TRACK_ROLL_TOOL_NONE);
-      break;
-    case BST_TRACK_ROLL_TOOL_DELETE:
-      bst_track_roll_controller_set_object_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_DELETE,
-						  BST_TRACK_ROLL_TOOL_MOVE,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      bst_track_roll_controller_set_canvas_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_DELETE,	/* error */
-						  BST_TRACK_ROLL_TOOL_MOVE,		/* error */
-						  BST_TRACK_ROLL_TOOL_NONE);
-      break;
-    case BST_TRACK_ROLL_TOOL_EDITOR_ONCE:
-      bst_track_roll_controller_set_object_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
-						  BST_TRACK_ROLL_TOOL_MOVE,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      bst_track_roll_controller_set_canvas_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_EDITOR_ONCE,	/* error */
-						  BST_TRACK_ROLL_TOOL_MOVE,		/* error */
-						  BST_TRACK_ROLL_TOOL_NONE);
-      bst_track_roll_controller_set_canvas_reset (self->troll_ctrl, reset_canvas_rtools, self);
-      break;
-    default:    /* fallback */
-      bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
-      break;
-    }
-}
-
-static void
-track_view_update_hpanel_tool (BstTrackView *self)
-{
-  if (!self->troll_ctrl)
-    return;
-  switch (self->hpanel_rtools->tool_id)
-    {
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT:
-      bst_track_roll_controller_set_hpanel_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,
-						  BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      break;
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER:
-      bst_track_roll_controller_set_hpanel_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-						  BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      break;
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT:
-      bst_track_roll_controller_set_hpanel_tools (self->troll_ctrl,
-						  BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,
-						  BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-						  BST_TRACK_ROLL_TOOL_NONE);
-      break;
-    default:    /* fallback */
-      bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER);
-      break;
-    }
-}
-
-static void
-track_view_update_quant_tool (BstTrackView *self)
-{
-  if (!self->troll_ctrl)
-    return;
-  bst_track_roll_controller_set_quantization (self->troll_ctrl, self->quant_rtools->tool_id);
 }

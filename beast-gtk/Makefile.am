@@ -51,7 +51,7 @@ beast_headers = $(strip \
 	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
 	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
 	bstzoomedwindow.h	glewidgets.h	bsttrackrollctrl.h	bstxframe.h	\
-	bstdefs.h bstmarshal.h \
+	bstcatalog.h		bstdefs.h bstmarshal.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
@@ -68,13 +68,16 @@ beast_sources = $(strip \
 	bstusermessage.c	bstutils.c	bstwavedialog.c		bstwaveeditor.c	\
 	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
 	bstzoomedwindow.c	glewidgets.c	bsttrackrollctrl.c	bstxframe.c	\
-	$(PROFILE_SOURCE) \
+	bstcatalog.c		$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
-	bstparam-label.c	bstmarshal.c	bstparam-toggle.c	bstparam-spinner.c \
-	bstrackeditor-covers.c	bstmarshal.list	bstparam-choice.c	bstparam-note-sequence.c \
-	bstenum_arrays.stamp	bstparam-scale.c			bstparam-entry.c \
+	bstparam-label.c	bstmarshal.c	 bstparam-toggle.c	bstparam-spinner.c \
+	bstrackeditor-covers.c	bstparam-scale.c bstparam-choice.c	bstparam-note-sequence.c \
+	bstparam-entry.c \
+)
+beast_extra_files = $(strip \
+	catalog-en.c	bstmarshal.list		bstenum_arrays.stamp	\
 )
 # BEAST built sources that don't get installed
 beast_built_sources = @STRIP_BEGIN@ \
@@ -142,22 +145,35 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 	&& cp xgen-bmc bstmarshal.c \
 	&& rm -f xgen-bmc
 
+SCANKEYS=$(top_builddir)/beast-gtk/scankeys
+bstutils.o bstutils.lo: scankeys $(beast_sources) $(beast_extra_sources)
+	cd $(srcdir) \
+	&& $(SCANKEYS) --key CKEY --skipkeys catalog-en.c \
+	     --tmplstart '#error MISSING DOC KEYS:\n' \
+	     --tmplkey '  { CKEY (%s),\t\t"Name",\n  BST_STOCK_,\t\t\t\t"",\n    "tip", NULL,\n  },\n' \
+	     --needkeys $(beast_sources) $(beast_extra_sources)
+
 #
 # setup BEAST sources and their dependancies
 #
 bin_PROGRAMS = beast
 beast_SOURCES = bstmain.c $(beast_sources)
 beast_LDADD = $(progs_LDADD)
-noinst_PROGRAMS = bststest tsmview
+noinst_PROGRAMS = bststest tsmview scankeys
 bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
 tsmview_SOURCES = tsmview.c
 tsmview_LDADD = $(progs_LDADD)
 
+# scankeys
+scankeys_SOURCES = scankeys.c
+scankeys_LDADD = $(progs_LDADD)
+
+
 # extra deps
 $(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
 
-EXTRA_DIST += $(beast_headers) $(beast_extra_sources)
+EXTRA_DIST += $(beast_headers) $(beast_extra_sources) $(beast_extra_files)
 MAINTAINERCLEANFILES += $(beast_built_sources)
 EXTRA_DIST += $(beast_built_sources)
 

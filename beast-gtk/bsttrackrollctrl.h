@@ -20,6 +20,7 @@
 
 
 #include "bsttrackroll.h"
+#include "bstradiotools.h"
 
 G_BEGIN_DECLS
 
@@ -36,25 +37,23 @@ typedef enum /*< skip >*/
   BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,
   BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,
 } BstTrackRollTool;
-
+typedef struct _BstTrackRollUtil BstTrackRollUtil;
 typedef struct {
-  BstTrackRollTool object_tool[3];
-  BstTrackRollTool canvas_tool[3];
-  BstTrackRollTool hpanel_tool[3];
-  BstQuantizationType quantization;
-  guint		   ref_count;
-  BstTrackRoll	  *troll;
-  SfiProxy	   song;
-  guint		   note_length;
-  /* reset canvas tool reset */
-  void           (*canvas_reset) (gpointer data);
-  gpointer         canvas_reset_data;
+  /* misc data */
+  guint		    ref_count;
+  BstTrackRoll	   *troll;
+  SfiProxy	    song;
+  guint		    note_length;
   /* drag data */
-  guint		   tool_index;
-  SfiProxy	   obj_track, obj_part;
-  guint		   obj_tick, obj_duration;
-  guint		   xoffset;
-  guint		   tick_bound;
+  SfiProxy	    obj_track, obj_part;
+  guint		    obj_tick, obj_duration;
+  guint		    xoffset;
+  guint		    tick_bound;
+  BstTrackRollUtil *current_tool;
+  /* tool selections */
+  BstRadioTools    *canvas_rtools;
+  BstRadioTools    *hpanel_rtools;
+  BstRadioTools    *quant_rtools;
 } BstTrackRollController;
 
 
@@ -64,21 +63,6 @@ BstTrackRollController*	bst_track_roll_controller_ref		(BstTrackRollController	*
 void			bst_track_roll_controller_unref		(BstTrackRollController	*self);
 void		bst_track_roll_controller_set_song		(BstTrackRollController	*self,
 								 SfiProxy		 song);
-void		bst_track_roll_controller_set_canvas_tools	(BstTrackRollController *self,
-								 BstTrackRollTool        tool1,
-								 BstTrackRollTool        tool2,
-								 BstTrackRollTool        tool3);
-void		bst_track_roll_controller_set_object_tools	(BstTrackRollController *self,
-								 BstTrackRollTool        tool1,
-								 BstTrackRollTool        tool2,
-								 BstTrackRollTool        tool3);
-void		bst_track_roll_controller_set_hpanel_tools	(BstTrackRollController *self,
-								 BstTrackRollTool        tool1,
-								 BstTrackRollTool        tool2,
-								 BstTrackRollTool        tool3);
-void		bst_track_roll_controller_set_canvas_reset	(BstTrackRollController	*self,
-								 void (*handler) (gpointer data),
-								 gpointer                data);
 void		bst_track_roll_controller_set_quantization	(BstTrackRollController *self,
 								 BstQuantizationType     quantization);
 guint		bst_track_roll_controller_quantize		(BstTrackRollController *self,

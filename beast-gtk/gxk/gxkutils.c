@@ -494,6 +494,55 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
     g_signal_connect (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL);
 }
 
+static gboolean
+gxk_activate_accel_group (GtkWidget     *widget,
+			  GdkEventKey   *event,
+			  GtkAccelGroup *accel_group)
+{
+  GdkModifierType accel_mods = event->state;
+  guint accel_key = event->keyval;
+  gboolean was_handled = FALSE;
+  if (gtk_accelerator_valid (accel_key, accel_mods))
+    {
+      gchar *accel_name = gtk_accelerator_name (accel_key, (accel_mods & gtk_accelerator_get_default_mod_mask ()));
+      GQuark accel_quark = g_quark_from_string (accel_name);
+      guint signal_accel_activate = g_signal_lookup ("accel_activate", GTK_TYPE_ACCEL_GROUP);
+      g_free (accel_name);
+      g_signal_emit (accel_group, signal_accel_activate, accel_quark,
+		     widget, accel_key, accel_mods, &was_handled);
+    }
+  return was_handled;
+}
+
+/**
+ * gxk_widget_activate_accel_group
+ * @widget:      a valid #GtkWidget
+ * @accel_group: a valid #GtkAccelGroup
+ *
+ * Activate accelerators within accel group when @widget
+ * receives key press events. This function isn't pure
+ * convenience, as it works around Gtk 2.2 not exporting
+ * _gtk_accel_group_activate(), _gtk_accel_group_attach()
+ * or _gtk_accel_group_detach().
+ */
+void
+gxk_widget_activate_accel_group (GtkWidget     *widget,
+				 GtkAccelGroup *accel_group)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (accel_group)
+    {
+      g_return_if_fail (GTK_IS_ACCEL_GROUP (accel_group));
+
+      gtk_accel_group_lock (accel_group);
+      g_signal_connect_data (widget, "key_press_event",
+			     G_CALLBACK (gxk_activate_accel_group),
+			     g_object_ref (accel_group),
+			     (GClosureNotify) g_object_unref, 0);
+    }
+}
+
 /**
  * gxk_size_group
  * @sgmode: size group mode, one of %GTK_SIZE_GROUP_NONE,

@@ -144,9 +144,12 @@ extern void bst_update_can_operate (GtkWidget   *some_widget);
 } G_STMT_END
 
 #define	BST_TOOLTIPS			(GXK_TOOLTIPS)
-
-
-
+#ifndef	CKEY
+#  define CKEY(x) x
+#endif
+/* allow gettext-ization */
+#define	_N(x)	x
+#define	_(x)	x
 
 #ifdef __cplusplus
 }

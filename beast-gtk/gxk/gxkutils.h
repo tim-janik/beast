@@ -83,11 +83,13 @@ void	gxk_toplevel_delete		(GtkWidget	*widget);
 void	gxk_toplevel_hide		(GtkWidget	*widget);
 void	gxk_toplevel_activate_default	(GtkWidget	*widget);
 
-/* widget appearance */
+/* widget utilities */
 void	gxk_widget_modify_as_title	(GtkWidget	*widget);
 void	gxk_widget_modify_bg_as_base	(GtkWidget	*widget);
 void	gxk_widget_modify_base_as_bg	(GtkWidget	*widget);
 void	gxk_widget_force_bg_clear	(GtkWidget	*widget);
+void	gxk_widget_activate_accel_group	(GtkWidget	*widget,
+					 GtkAccelGroup	*accel_group);
 void	gxk_size_group			(GtkSizeGroupMode sgmode,
 					 gpointer	  first_widget,
 					 ...);

@@ -1,4 +1,6 @@
 FIXMES:
+- make bst_catalog_get_action() always return an action, so callers don't need to check
+- gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - open() may return -EINVAL (e.g. for non-readable cards),
   we shouldn't map that onto BSE_ERROR_INTERNAL
 - CSL driver has a prio higher than OSS? leads to no device being
@@ -53,6 +55,7 @@ FIXMES:
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - save errno across logging/debugging
 - master tune slider in preferences (kammer ton)
+- CSL driver should initialize csl mutex functions
 
 URGENT:
 - support pspec groups in idl files [stw]
@@ -201,6 +204,7 @@ General BSE:
 - add pre-amplification (0..1) to freeverb for clip prevention
 - fix scanner error messages for deferred channel resolution to include the *correct* line number
 - fix update_suspension_state() recursion for ordinary cycles
+- BseSubinstrument contains pixel artefact
   
 Old BSE:
 general:

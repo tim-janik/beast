@@ -37,6 +37,14 @@ extern "C" {
 #include "./icons/bst-stock-gen.h"
 
 
+/* --- utility structs --- */
+typedef struct {
+  const gchar *cat_key;
+  guint        tool_id;
+  guint        flags;
+} BstTool;
+
+
 /* --- stock icon aliases --- */
 #define	BST_STOCK_QUESTION		GTK_STOCK_DIALOG_QUESTION
 #define	BST_STOCK_WARNING		GTK_STOCK_DIALOG_WARNING

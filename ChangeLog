@@ -1,3 +1,37 @@
+Wed Mar  5 01:51:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.[hc]: removed tool selections,
+	BstTrackRollCtrl takes care of that now. setup radio tool
+	accelerators.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_widget_activate_accel_group()
+	to support per widget accelerator groups.
+
+	* beast-gtk/bstradiotools.[hc]: code cleanups. added accel group
+	and tool accelerators support. support BstCatalog tools.
+
+	* beast-gtk/bsttrackrollctrl.[hc]: moved tool selections here,
+	the track roll controler now creates his own radio tools, make
+	use of catalog tool definitions. removed code that became useless.
+
+	* beast-gtk/bstdefs.h: added dummy macros to allow for catalog
+	key and i18n string markup.
+
+	* beast-gtk/bstmain.c: added i18n markup.
+
+	* beast-gtk/bstcatalog.[hc]: started on a catalog mechanism
+	to lookup messages and other translatable things which aren't
+	good to be handled by gettext.
+
+	* beast-gtk/catalog-en.c: english catalog holding tool
+	definitions (name, icon, tooltip, etc.) for ctalog keys.
+
+	* beast-gtk/scankeys.c: small tool to grep for specific key
+	macros in C sources.
+
+	* beast-gtk/Makefile.am: add a rule that verifies there're
+	are no undefined catalog keys being used in the program.
+
 Mon Mar  3 16:04:55 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-links-related.texi: added CSL.
