@@ -43,7 +43,6 @@ static CEntry    *cat_entries = NULL;
 static gboolean   cats_need_sort = FALSE;
 static guint      global_category_id = 1;
 static SfiUStore *category_ustore = NULL;
-static BseIcon   *dummy_icon = NULL;
 
 
 /* --- functions --- */
@@ -53,7 +52,6 @@ _bse_init_categories (void)
   g_return_if_fail (category_ustore == NULL);
 
   category_ustore = sfi_ustore_new ();
-  dummy_icon = bse_icon_new ();
 }
 
 static inline CEntry*
@@ -299,7 +297,7 @@ categories_match (const gchar      *pattern,
 	  cat.mindex = centry->mindex;
 	  cat.lindex = centry->lindex;
 	  cat.type = g_type_name (centry->type);
-	  cat.icon = centry->icon ? centry->icon : dummy_icon;
+	  cat.icon = centry->icon ? centry->icon : NULL;
           if (!check || check (&cat, data))
             bse_category_seq_append (cseq, &cat);
 	}
@@ -349,7 +347,7 @@ bse_categories_from_type (GType type)
 	cat.mindex = centry->mindex;
 	cat.lindex = centry->lindex;
 	cat.type = g_type_name (centry->type);
-	cat.icon = centry->icon ? centry->icon : dummy_icon;
+	cat.icon = centry->icon ? centry->icon : NULL;
 	bse_category_seq_append (cseq, &cat);
       }
   return cseq;
@@ -375,7 +373,7 @@ bse_category_from_id (guint id)
       cat->type = g_strdup (g_type_name (centry->type));
       if (cat->icon)
         bse_icon_free (cat->icon);
-      cat->icon = centry->icon ? bse_icon_copy_shallow (centry->icon) : bse_icon_new ();
+      cat->icon = centry->icon ? bse_icon_copy_shallow (centry->icon) : NULL;
       return cat;
     }
   return NULL;

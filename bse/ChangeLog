@@ -1,3 +1,8 @@
+Wed Dec 17 23:54:22 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecategories.c (bse_category_from_id): set the icon to NULL instead
+	of creating a degenerated one. removed degenerated dummy-icon hacks.
+
 Wed Dec 17 19:55:58 2003  Tim Janik  <timj@gtk.org>
 
 	* bseglue.c (bglue_exec_proc): make messages warnings in debugging mode.
