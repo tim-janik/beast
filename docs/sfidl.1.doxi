@@ -25,6 +25,12 @@ BSE Plugin Generator - Code Generator for BSE Plugins
 @*		print usage information
 @*	@emph{-I <directory>}
 @*		add this directory to the include path
+@*	@emph{--version}
+@*              print version
+@*      @emph{--print-include-path}
+@*              print include path
+@*      @emph{--nostdinc}
+@*              don't use standard include path
 
 @unnumbered SEE ALSO
 @uref{beast-man://3/bse-procs,BSE Procedures}
