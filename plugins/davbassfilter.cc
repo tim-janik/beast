@@ -134,32 +134,32 @@ dav_bass_filter_class_init (DavBassFilterClass *class)
   
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER,
 			      sfi_pspec_bool ("trigger", "Trigger filter",
-						   "Trigger the filter",
-						   FALSE, SFI_PARAM_GUI));
+                                              "Trigger the filter",
+                                              FALSE, SFI_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_CUTOFF_FREQ,
 			      bse_param_spec_float ("cutoff_freq", "Cutoff [%]",
-						  "Set the cutoff frequency",
-						  0.0, 100.0, 50.0, 0.1,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+                                                    "Set the cutoff frequency",
+                                                    0.0, 100.0, 50.0, 0.1,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_RESONANCE,
 			      bse_param_spec_float ("resonance", "Resonance [%]",
-						  "Set the amount of resonance",
-						  0.0, 100.0, 99.5, 0.1,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+                                                    "Set the amount of resonance",
+                                                    0.0, 100.0, 99.5, 0.1,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_ENV_MOD,
 			      bse_param_spec_float ("env_mod", "Envelope Modulation [%]",
-						  "Set the envelope magnitude",
-						  0.0, 100.0, 90.0, 0.1,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+                                                    "Set the envelope magnitude",
+                                                    0.0, 100.0, 90.0, 0.1,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_DECAY,
 			      bse_param_spec_float ("decay", "Decay [%]",
-						  "Set the decay length",
-						  0.0, 100.0, 20.0, 0.1,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+                                                    "Set the decay length",
+                                                    0.0, 100.0, 20.0, 0.1,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "BassFilter Output", 1);
   g_assert (ochannel_id == DAV_BASS_FILTER_OCHANNEL_MONO);

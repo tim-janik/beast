@@ -1,3 +1,12 @@
+Mon Dec 15 22:56:22 2003  Tim Janik  <timj@gtk.org>
+
+	* bseadder.c:
+	* bsesequencer.c:
+	* davsyndrum.c: flagged :skip-default: properties.
+
+	* davsyndrum.c: 
+	* davxtalstrings.c: fixed up trigger property flags.
+
 Mon Dec 15 22:06:15 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: removed old unused cruft. fixed up idl generation

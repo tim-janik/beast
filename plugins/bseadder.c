@@ -94,7 +94,7 @@ bse_adder_class_init (BseAdderClass *class)
 						   "Use subtraction to combine sample"
 						   "values (instead of addition)",
 						   FALSE,
-						   SFI_PARAM_DEFAULT));
+						   SFI_PARAM_DEFAULT ":skip-default"));
   
   channel = bse_source_class_add_jchannel (source_class, "Audio In1", "Audio Input 1");
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO1);

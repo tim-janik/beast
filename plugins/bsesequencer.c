@@ -96,7 +96,7 @@ bse_sequencer_class_init (BseSequencerClass *class)
 			      PARAM_TRANSPOSE,
 			      sfi_pspec_int ("transpose", "Transpose", NULL,
 					     0, -36, +36, 3,
-					     SFI_PARAM_DEFAULT ":scale"));
+					     SFI_PARAM_DEFAULT ":scale:skip-default"));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_COUNTER,
 			      sfi_pspec_real ("counter", "Timing [ms]", NULL,

@@ -108,13 +108,13 @@ dav_organ_class_init (DavOrganClass *class)
                               bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_BRASS,
 			      sfi_pspec_bool ("brass", "Brass Sounds", "Changes the organ to sound more brassy",
-						   FALSE, SFI_PARAM_DEFAULT));
+                                              FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_REED,
 			      sfi_pspec_bool ("reed", "Reed Sounds", "Adds reeds sound",
-						   FALSE, SFI_PARAM_DEFAULT));
+                                              FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_FLUTE,
 			      sfi_pspec_bool ("flute", "Flute Sounds", "Adds flute sounds",
-						   FALSE, SFI_PARAM_DEFAULT));
+                                              FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM0,
 			      harm_param ("harm0", "16th", "16th Harmonic", 1.0));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM1,
@@ -378,7 +378,7 @@ dav_organ_process (GslModule *module,
   guint freq_256, mix_freq_256;
   guint freq_256_harm0, freq_256_harm1;
   guint i;
-
+  
   if (GSL_MODULE_ISTREAM (module, DAV_ORGAN_ICHANNEL_FREQ).connected)
     freq_256 = BSE_FREQ_FROM_VALUE (ifreq[0]) * 256 + 0.5;
   else

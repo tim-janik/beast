@@ -99,7 +99,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
                                               SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_HIT,
 			      sfi_pspec_bool ("force_trigger", "Trigger Hit", "Hit the drum",
-                                              FALSE, SFI_PARAM_GUI ":TRIGGER"));
+                                              FALSE, SFI_PARAM_GUI ":trigger:skip-undo"));
   bse_object_class_add_param (object_class, "Parameters", PROP_RES,
 			      sfi_pspec_real ("res", "Resonance",
                                               "Set resonance half life in number of milli seconds",
