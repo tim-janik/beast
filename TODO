@@ -1,4 +1,7 @@
 FIXMES:
+- /Demo
+- check button3 /Tools/ menu in piano rool editor
+- check i18n strings for pianoroll GUI elements
 - regitering the same procedure twice trigegrs g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this

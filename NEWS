@@ -16,14 +16,14 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Lots of small MIDI handling fixes
 * Fixed MP3 loader
 * Major GUI improvements
+* Made search paths for various resources user configurable
 * Added prototype support to IDL compiler [Stefan Westerfeld]
 * Work around PTH poll() bug on NetBSD [Ben Collver, Tim Janik]
 * Support NetBSD sound device names [Ben Collver]
 * Added i18n infrastrukture for BEAST and BSE [Christian Neumair, Tim Janik]
-* Made search paths for various resources user configurable
+* Added German translation [Christian Neumair]
 * Added Swedish translation [Christian Rose]
 * Added Serbian translation [Danilo Segan]
-* First German translation efforts
 * Lots of bug fixes
 
 Overview of Changes in BEAST/BSE 0.5.4:
