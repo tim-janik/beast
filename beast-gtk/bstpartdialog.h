@@ -20,6 +20,7 @@
 
 #include	"bstdialog.h"
 #include	"bstpianoroll.h"
+#include	"bstpianorollctrl.h"
 #include	"bstradiotools.h"
 
 #ifdef __cplusplus
@@ -46,7 +47,8 @@ struct _BstPartDialog
   GtkWidget	*main_vbox;
   GtkWidget	*scrolled_window;
   GtkWidget	*proll;
-  GtkWidget	*toolbar;
+  BstPianoRollController *proll_ctrl;
+  BstToolbar	*toolbar;
   BstRadioTools	*rtools;
 };
 struct _BstPartDialogClass

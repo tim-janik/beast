@@ -15,6 +15,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	mouse_tool.xcf		\
 	no_olink.xcf		\
 	noicon.xcf		\
+	notes.xcf		\
 	palette.xcf		\
 	part-tool.xcf		\
 	pattern-group.xcf	\
@@ -39,6 +40,11 @@ STOCK_IMAGE_PAIRS = @STRIP_BEGIN@ \
 	stock_no_ilink			$(srcdir)/no_ilink.png		\
 	stock_no_olink			$(srcdir)/no_olink.png		\
 	stock_no_icon			$(srcdir)/noicon.png		\
+	stock_note_1			$(srcdir)/note-1.png		\
+	stock_note_2			$(srcdir)/note-2.png		\
+	stock_note_4			$(srcdir)/note-4.png		\
+	stock_note_8			$(srcdir)/note-8.png		\
+	stock_note_16			$(srcdir)/note-16.png		\
 	stock_palette			$(srcdir)/palette.png		\
 	stock_part			$(srcdir)/part.png		\
 	stock_part_editor		$(srcdir)/part-editor.png	\
@@ -46,6 +52,12 @@ STOCK_IMAGE_PAIRS = @STRIP_BEGIN@ \
 	stock_pattern_group		$(srcdir)/pattern-group.png	\
 	stock_pattern_tool		$(srcdir)/pattern-tool.png	\
 	stock_pattern			$(srcdir)/pattern.png		\
+	stock_qnote_none		$(srcdir)/qnote-none.png	\
+	stock_qnote_1			$(srcdir)/qnote-1.png		\
+	stock_qnote_2			$(srcdir)/qnote-2.png		\
+	stock_qnote_4			$(srcdir)/qnote-4.png		\
+	stock_qnote_8			$(srcdir)/qnote-8.png		\
+	stock_qnote_16			$(srcdir)/qnote-16.png		\
 	stock_rect_select		$(srcdir)/rect-select.png	\
 	stock_small_audio		$(srcdir)/small-audio.png	\
 	stock_small_noaudio		$(srcdir)/small-noaudio.png	\

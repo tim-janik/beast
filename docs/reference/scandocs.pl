@@ -132,7 +132,7 @@ while (<>) {
 			delete $hash->{$arg};
 		    } else {
 			$blurb = "";
-			print STDERR "NOTE: missing description for \`$name($arg)'\n";
+			print STDERR "NOTE: missing description for \`$name(ARG: $arg)'\n";
 		    }
 		    push @$names, $arg;
 		    push @$types, $t;

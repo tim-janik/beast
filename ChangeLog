@@ -1,3 +1,42 @@
+Mon Jul 15 07:18:40 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw-shell/record-midi.scm (record-midi): quick script to record midi notes
+	into a BsePart.
+
+	* beast-gtk/bstdragutils.[hc]: start at implementing necessary utilities
+	for widget implementations that support mouse dragging APIs (and auto-
+	scrolling).
+
+	* beast-gtk/bstpianorollctrl.[hc]: piano roll controller implementation
+	(insertion, selection, resizing, movement, deletion etc. of notes).
+
+	* beast-gtk/bsttoolbar.[hc]: quick toolbar implementation based on
+	standard widgets. this gets rid of lots of problems with GtkToolbar
+	and supports drop-down selection tool items.
+
+	* beast-gtk/bsttrackview.[hc]: view for BseTracks withint BseSong
+	shells.
+
+	* beast-gtk/bstpartdialog.[hc]: moved piano roll controller code into
+	bstpianorollctrl.[hc]. extend button3 menu with piano roll tools. add
+	hzoom, use new toolbar, add note length and quantization selections.
+	configure piano roll ctrl tools.
+	
+	* beast-gtk/bstpianoroll.[hc]: implement new drag API. added auto
+	scrolling, support selections and implement proper boundary (highest/
+	lowest frequency) checks.
+
+	* beast-gtk/bstradiotools.[hc]: support BstToolbar.
+
+	* beast-gtk/bstsongshell.[hc]: support BstTrackView.
+
+	* beast-gtk/icons/*note*:
+	* beast-gtk/bstutils.[hc]: added new stock items for note length
+	and quantization selection.
+
+	* bsw-shell/bswscminterp.[hc]: implement GslGlueRec as SCM smob
+	with named field accessor. use GslGlueSeq of rproc/signal arguments.
+	
 Wed Jun 12 06:16:07 2002  Tim Janik  <timj@gtk.org>
 
 	* bswproxy.[hc]: added facility to set/get data pointers per proxy.

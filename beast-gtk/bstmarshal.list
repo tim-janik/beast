@@ -22,6 +22,7 @@
 #   NONE        deprecated alias for VOID
 #   BOOL        deprecated alias for BOOLEAN
 
+NONE:POINTER
 NONE:POINTER,POINTER
 NONE:UINT,UINT
 NONE:UINT,INT

@@ -66,6 +66,8 @@ SCM	bsw_scm_script_register		(SCM		 name,
 					 SCM		 params);
 SCM	bsw_scm_context_pending		(void);
 SCM	bsw_scm_context_iteration	(SCM		 s_may_block);
+SCM	bsw_scm_glue_rec_get		(SCM		  scm_rec,
+					 SCM		  s_field);
 
 
 /* --- SCM-Wire --- */

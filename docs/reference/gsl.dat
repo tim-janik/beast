@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1
-date    = 13 Jun 2002
+date    = 15 Jul 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 13 Jun 2002 BEAST-0.4.1
+GSL-Functions 15 Jul 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -175,7 +175,35 @@ retspace = 11
 GSL's execution tick stamp as unsigned 64bit integer
 
 @DOC-DESCRIPTION@
-Retrive the GSL global tick stamp. GSL increments its global tick stamp at certain intervals, by specific amounts (refer to @STRONG gsl_engine_init()@ for further details). The tick stamp is a non-wrapping, unsigned 64bit integer greater than 0. Threads can schedule sleep interruptions at certain tick stamps with @STRONG gsl_thread_awake_after()@ and @STRONG gsl_thread_awake_before()@. Tick stamp updating occours at GSL engine block processing boundaries, so code that can guarantee to not run across those boundaries (for instance @STRONG GslProcessFunc()@ functions) may use the macro @EMPH GSL_TICK_STAMP@ to retrive the current tick in a faster manner (not involving mutex locking). See also @STRONG gsl_module_tick_stamp()@.  
+Retrive the GSL global tick stamp. GSL increments its global tick stamp at certain intervals, by specific amounts (refer to @STRONG gsl_engine_init()@ for further details). The tick stamp is a non-wrapping, unsigned 64bit integer greater than 0. Threads can schedule sleep interruptions at certain tick stamps with @STRONG gsl_thread_awake_after()@ and @STRONG gsl_thread_awake_before()@. Tick stamp updating occours at GSL engine block processing boundaries, so code that can guarantee to not run across those boundaries (for instance @STRONG GslProcessFunc()@ functions) may use the macro @EMPH GSL_TICK_STAMP@ to retrive the current tick in a faster manner (not involving mutex locking). See also @STRONG gsl_module_tick_stamp()@. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_time_system@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+Current system time in micro seconds
+
+@DOC-DESCRIPTION@
+Get the current system time in micro seconds. Subsequent calls to this function do not necessarily return growing values. In fact, a second call may return a value smaller than the first call under certainsystem conditions. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_tick_stamp_last@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+Current tick stamp and system time in micro seconds
+
+@DOC-DESCRIPTION@
+Get the system time of the last GSL global tick stamp update. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_data_find_block@ (@EMPH handle@, @EMPH n_values@, @EMPH values@, @EMPH epsilon@);
 
@@ -223,6 +251,36 @@ position of values in data handle or -1
 @DOC-DESCRIPTION@
 Find the position of a block of values within a data handle, where all values compare to the reference values with a delta smaller than epsilon.  
 @DOC-SYNOPSIS@
+@STRONG gsl_module_new@ (@EMPH klass@, @EMPH user_data@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 27
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ GslClass*
+typeraw = const GslClass*
+@DOC-PARAMETER@
+klass
+@DOC-PARDESC@
+the GslClass which determines the module's behaviour
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ \ \ \ 
+typeraw = gpointer       
+@DOC-PARAMETER@
+user_data
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 27
+
+@DOC-RETURNS@
+a newly created module
+
+@DOC-DESCRIPTION@
+Create a new module with methods specified in @EMPH klass@ and a user_data field set to @EMPH user_data@. The returned module can then be integrated into the engine with @STRONG gsl_job_integrate()@. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
 @STRONG gsl_module_tick_stamp@ (@EMPH module@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -243,7 +301,7 @@ retspace = 19
 the module's tick stamp, indicating its process status
 
 @DOC-DESCRIPTION@
-Any thread may call this function on a valid engine module. The module specific tick stamp is updated to @STRONG gsl_tick_stamp()@ + @EMPH n_values@ every time its @STRONG GslProcessFunc()@ function was called. See also @STRONG gsl_tick_stamp()@.  
+Any thread may call this function on a valid engine module. The module specific tick stamp is updated to @STRONG gsl_tick_stamp()@ + @EMPH n_values@ every time its @STRONG GslProcessFunc()@ function was called. See also @STRONG gsl_tick_stamp()@. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_integrate@ (@EMPH module@);
 
@@ -265,7 +323,7 @@ retspace = 19
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job to integrate @EMPH module@ into the engine.  
+Create a new transaction job to integrate @EMPH module@ into the engine. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_discard@ (@EMPH module@);
 
@@ -287,7 +345,51 @@ retspace = 19
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which removes @EMPH module@ from the engine and destroys it.  
+Create a new transaction job which removes @EMPH module@ from the engine and destroys it. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_job_kill_inputs@ (@EMPH module@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+Module with input streams
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
+
+@DOC-DESCRIPTION@
+Create a new transaction job which causes all connected input streams of @EMPH module@ to be disconnected, like it's done upon discarding the module. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_job_kill_outputs@ (@EMPH module@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+Module with output streams
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
+
+@DOC-DESCRIPTION@
+Create a new transaction job which causes all connected output streams of @EMPH module@ to be disconnected, like it's done upon discarding the module. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_connect@ (@EMPH src_module@, @EMPH src_ostream@, @EMPH dest_module@, @EMPH dest_istream@);
 
@@ -333,7 +435,53 @@ retspace = 25
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which connects the ouput stream @EMPH src_ostream@ of module @EMPH src_module@ to the input stream @EMPH dest_istream@ of module @EMPH dest_module@ (it is an error if the input stream is already connected by the time the job is executed).  
+Create a new transaction job which connects the ouput stream @EMPH src_ostream@ of module @EMPH src_module@ to the input stream @EMPH dest_istream@ of module @EMPH dest_module@ (it is an error if the input stream is already connected by the time the job is executed). This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_job_jconnect@ (@EMPH src_module@, @EMPH src_ostream@, @EMPH dest_module@, @EMPH dest_jstream@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 25
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+src_module
+@DOC-PARDESC@
+Module with output stream
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ 
+typeraw = guint     
+@DOC-PARAMETER@
+src_ostream
+@DOC-PARDESC@
+Index of output stream of @EMPH src_module@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+dest_module
+@DOC-PARDESC@
+Module with unconnected joint input stream
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ 
+typeraw = guint     
+@DOC-PARAMETER@
+dest_jstream
+@DOC-PARDESC@
+Index of joint input stream of @EMPH dest_module@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 25
+
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
+
+@DOC-DESCRIPTION@
+Create a new transaction job which connects the ouput stream @EMPH src_ostream@ of module @EMPH src_module@ to the joint input stream @EMPH dest_istream@ of module @EMPH dest_module@. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_disconnect@ (@EMPH dest_module@, @EMPH dest_istream@);
 
@@ -363,7 +511,53 @@ retspace = 25
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which causes the input stream @EMPH dest_istream@ of @EMPH dest_module@ to be disconnected (it is an error if the input stream isn't connected by the time the job is executed).  
+Create a new transaction job which causes the input stream @EMPH dest_istream@ of @EMPH dest_module@ to be disconnected (it is an error if the input stream isn't connected by the time the job is executed). This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_job_jdisconnect@ (@EMPH dest_module@, @EMPH dest_jstream@, @EMPH src_module@, @EMPH src_ostream@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 25
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+dest_module
+@DOC-PARDESC@
+Module with connected input stream
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ 
+typeraw = guint     
+@DOC-PARAMETER@
+dest_jstream
+@DOC-PARDESC@
+Index of input stream of @EMPH dest_module@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+src_module
+@DOC-PARDESC@
+Module with output stream
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ 
+typeraw = guint	    
+@DOC-PARAMETER@
+src_ostream
+@DOC-PARDESC@
+Index of output stream of @EMPH src_module@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 25
+
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
+
+@DOC-DESCRIPTION@
+Create a new transaction job which causes the joint input stream @EMPH dest_jstream@ of @EMPH dest_module@ to be disconnected from the output stream @EMPH src_ostream@ of @EMPH src_module@ (it is an error if this connection isn't established by the time the job is executed). Beware, the order of @EMPH dest_module@ and @EMPH src_module@ is different from @STRONG gsl_job_jconnect()@. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG GslAccessFunc@ (@EMPH module@, @EMPH data@);
 
@@ -437,7 +631,7 @@ retspace = 28
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which will invoke @EMPH access_func@ on @EMPH module@ with @EMPH data@ when the transaction queue is processed to modify the module's state.  
+Create a new transaction job which will invoke @EMPH access_func@ on @EMPH module@ with @EMPH data@ when the transaction queue is processed to modify the module's state. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_flow_job_access@ (@EMPH module@, @EMPH tick_stamp@, @EMPH access_func@, @EMPH data@, @EMPH free_func@);
 
@@ -450,7 +644,7 @@ typeraw = GslModule*
 @DOC-PARAMETER@
 module
 @DOC-PARDESC@
-
+The module to access
 
 @DOC-VARIABLE-DEFINITIONS@
 type = guint64\ \ \ \ \ \ \ 
@@ -458,7 +652,7 @@ typeraw = guint64
 @DOC-PARAMETER@
 tick_stamp
 @DOC-PARDESC@
-
+Engine time stamp
 
 @DOC-VARIABLE-DEFINITIONS@
 type = GslAccessFunc\ 
@@ -466,7 +660,7 @@ typeraw = GslAccessFunc
 @DOC-PARAMETER@
 access_func
 @DOC-PARDESC@
-
+The accessor function
 
 @DOC-VARIABLE-DEFINITIONS@
 type = gpointer\ \ \ \ \ \ 
@@ -474,7 +668,7 @@ typeraw = gpointer
 @DOC-PARAMETER@
 data
 @DOC-PARDESC@
-
+Data passed in to the accessor
 
 @DOC-VARIABLE-DEFINITIONS@
 type = GslFreeFunc\ \ \ 
@@ -482,14 +676,68 @@ typeraw = GslFreeFunc
 @DOC-PARAMETER@
 free_func
 @DOC-PARDESC@
-
+Function to free @EMPH data@
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 28
 
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
+Create a new transaction job which inserts @EMPH access_func@ with @EMPH data@ into the flow job queue of @EMPH module@. Flow jobs are jobs with limited impact on modules, which are executed during flow system progress at specific times. Once the time stamp counter of @EMPH module@ passed @EMPH tick_stamp@, @EMPH access_func@ is called to modify the module's state. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_job_suspend@ (@EMPH module@);
 
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+Module not currently suspended
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
+
+@DOC-DESCRIPTION@
+Create a new transaction job which suspends the @EMPH module@ and all it's input modules which don't have other non-suspended output connections. Suspension of a module prevents it's @STRONG process()@ method from being called, it's outputs are simply filled with zero's instead. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_flow_job_resume@ (@EMPH module@, @EMPH tick_stamp@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 23
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslModule*
+typeraw = GslModule*
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+Module not currently suspended
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint64\ \ \ 
+typeraw = guint64   
+@DOC-PARAMETER@
+tick_stamp
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 23
+
+@DOC-RETURNS@
+New job suitable for @STRONG gsl_trans_add()@
+
+@DOC-DESCRIPTION@
+Create a new transaction job which inserts a resumption event into the flow job queue of @EMPH module@. Flow jobs are jobs with limited impact on modules, which are executed during flow system progress at specific times. Once the time stamp counter of @EMPH module@ passed @EMPH tick_stamp@, its @STRONG reset()@ method is called and the module is resumed, causing it's @STRONG process()@ method to be called again. Resuming a module also resumes all input modules it has, unless those were explicitely suspended via @STRONG gsl_job_suspend()@. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG GslPollFunc@ (@EMPH data@, @EMPH n_values@, @EMPH timeout_p@, @EMPH n_fds@, @EMPH fds@, @EMPH revents_filled@);
 
@@ -605,7 +853,7 @@ retspace = 26
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which adds a poll function to the engine. The poll function is used by the engine to determine whether processing is currently necessary.  
+Create a new transaction job which adds a poll function to the engine. The poll function is used by the engine to determine whether processing is currently necessary. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_remove_poll@ (@EMPH poll_func@, @EMPH data@);
 
@@ -635,7 +883,7 @@ retspace = 24
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which removes a previously inserted poll function from the engine.  
+Create a new transaction job which removes a previously inserted poll function from the engine. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_debug@ (@EMPH debug@);
 
@@ -657,7 +905,7 @@ retspace = 20
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which issues @EMPH debug@ message when the job is executed. This function is meant for debugging purposes during development phase only and shouldn't be used in production code.  
+Create a new transaction job which issues @EMPH debug@ message when the job is executed. This function is meant for debugging purposes during development phase only and shouldn't be used in production code. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_trans_open@ ();
 
@@ -671,7 +919,7 @@ retspace = 11
 Newly opened empty transaction
 
 @DOC-DESCRIPTION@
-Open up a new transaction to commit jobs to the GSL engine. This function may cause garbage collection (see @STRONG gsl_engine_garbage_collect()@).  
+Open up a new transaction to commit jobs to the GSL engine. While the distinct functions to operate on a transaction are MT-safe, the caller has to take measures himself, to assure that only one function operates on the transaction at a time. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_trans_add@ (@EMPH trans@, @EMPH job@);
 
@@ -699,7 +947,7 @@ retspace = 17
 
 
 @DOC-DESCRIPTION@
-Append a job to an opened transaction.  
+Append a job to an opened transaction. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_trans_commit@ (@EMPH trans@);
 
@@ -739,7 +987,7 @@ retspace = 17
 
 
 @DOC-DESCRIPTION@
-Close and discard the transaction, destroy all jobs currently contained in it and do not execute them. This function may cause garbage collection (see @STRONG gsl_engine_garbage_collect()@).  
+Close and discard the transaction, causes destruction of all jobs currently contained in it and prevents their execution. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_transact@ (@EMPH job@, @EMPH ...@);
 
@@ -767,7 +1015,45 @@ retspace = 6
 
 
 @DOC-DESCRIPTION@
-Convenience function which openes up a new transaction, collects the @EMPH NULL@ terminated job list passed to the function, and commits the transaction.  
+Convenience function which openes up a new transaction, collects the @EMPH NULL@ terminated job list passed to the function, and commits the transaction. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_module_new_virtual@ (@EMPH n_iostreams@, @EMPH user_data@, @EMPH free_data@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 26
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ 
+typeraw = guint       
+@DOC-PARAMETER@
+n_iostreams
+@DOC-PARDESC@
+number of input and output streams
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ 
+typeraw = gpointer    
+@DOC-PARAMETER@
+user_data
+@DOC-PARDESC@
+user data, stored in module->user_data
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslFreeFunc\ 
+typeraw = GslFreeFunc 
+@DOC-PARAMETER@
+free_data
+@DOC-PARDESC@
+function to free user_data when the module is discarded
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 26
+
+@DOC-RETURNS@
+a newly created module
+
+@DOC-DESCRIPTION@
+Create a new virtual module which has @EMPH n_iostreams@ input streams and @EMPH n_iostreams@ output streams. Simply put, virtual modules just pass all input stream signals through to the corresponsding output stream. However, they are cheaper to compute than a literal module implementation that just passes through all data in its @STRONG progress()@ method, because the connections can be virtualized in a connection optimization stage during scheduling, so that they don't end up in the list of modules which need to be processed during calculation phase. Beware though, flow jobs may not be scheduled on virtual modules (thusly, suspend jobs cannot be queued on them either), as virtual modules are ignored during calculation phase. They do, however, work just like ordinary modules with regards to suspension propagation, so the suspension state from output modules does only propagate across the virtual module to its input modules, if all its outputs are suspended. Instead of a single virtual module with multiple input/output streams, multiple virtual modules can be used if suspension is desired to propagate per stream. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_engine_init@ (@EMPH run_threaded@, @EMPH block_size@, @EMPH sample_freq@, @EMPH sub_sample_mask@);
 
@@ -813,6 +1099,40 @@ retspace = 27
 @DOC-DESCRIPTION@
 Initialize the GSL engine, this function must be called prior to any other engine related function and can only be invoked once. The @EMPH block_size@ determines the amount by which the global tick stamp (see @STRONG gsl_tick_stamp()@) is updated everytime the whole module network completed processing @EMPH block_size@ values.  
 @DOC-SYNOPSIS@
+@STRONG gsl_engine_dispatch@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 3
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 3
+
+
+@DOC-DESCRIPTION@
+Perform necessary work the engine has to handle in the user thread. This function may only be called from the user thread, since it will invoke @STRONG GslFreeFunc()@ functions (see @STRONG gsl_engine_garbage_collect()@) and do other things which are guranteed to be executed in the user thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_engine_tick_stamp_from_systime@ (@EMPH systime@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 18
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint64\ 
+typeraw = guint64 
+@DOC-PARAMETER@
+systime
+@DOC-PARDESC@
+System time in micro seconds.
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 18
+
+@DOC-RETURNS@
+Engine tick stamp value
+
+@DOC-DESCRIPTION@
+Depending on the engine's sample frequency and the time of the last global tick stamp update, calculate the corresponding engine tick stamp from a given system time. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
 @STRONG gsl_engine_wait_on_trans@ ();
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -823,7 +1143,7 @@ retspace = 3
 
 
 @DOC-DESCRIPTION@
-Wait until all pending transactions have been processed by the GSL Engine. This function may cause garbage collection (see @STRONG gsl_engine_garbage_collect()@).  
+Wait until all pending transactions have been processed by the GSL Engine. This function, when done waiting, will run a garbage collection cycle before returning (see @STRONG gsl_engine_garbage_collect()@).  
 @DOC-SYNOPSIS@
 @STRONG gsl_power2_fftac@ (@EMPH n_values@, @EMPH ri_values_in@, @EMPH ri_values_out@);
 
@@ -1859,7 +2179,7 @@ retspace = 3
 
 
 @DOC-DESCRIPTION@
-GSL Engine user thread function. Collects processed jobs and transactions from the engine and frees them, this involves callback invocation of @STRONG GslFreeFunc()@ functions, e.g. from @STRONG gsl_job_access()@ or @STRONG gsl_flow_job_access()@ jobs. This function may only be called from the user thread, as @STRONG GslFreeFunc()@ functions are guranteed to be executed in the user thread.  
+GSL Engine user thread function. Collects processed jobs and transactions from the engine and frees them. This involves callback invocation of @STRONG GslFreeFunc()@ functions, e.g. from @STRONG gsl_job_access()@ or @STRONG gsl_flow_job_access()@ jobs. This function may only be called from the user thread, as @STRONG GslFreeFunc()@ functions are guranteed to be executed in the user thread.  
 @DOC-SYNOPSIS@
 @STRONG gsl_signal_exp2@ ();
 

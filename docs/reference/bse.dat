@@ -2,14 +2,14 @@
 name    = BSE-Functions
 blurb   = BSE Function Reference
 package = BEAST-0.4.1
-date    = 13 Jun 2002
+date    = 15 Jul 2002
 image   = bse-functions
 
 @DOC-TITLE@
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 13 Jun 2002 BEAST-0.4.1
+BSE-Functions 15 Jul 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference
@@ -106,6 +106,46 @@ retspace = 19
 
 @DOC-DESCRIPTION@
 Destroys an existing cross reference previously installed via @STRONG bse_item_cross_ref()@ by executing the associated notifier.  
+@DOC-SYNOPSIS@
+@STRONG bse_midi_signal_default@ (@EMPH type@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 25
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseMidiSignalType\ 
+typeraw = BseMidiSignalType 
+@DOC-PARAMETER@
+type
+@DOC-PARDESC@
+BseMidiSignalType type
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 25
+
+
+@DOC-DESCRIPTION@
+Get the initial default value for a midi signal. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG bse_midi_free_event@ (@EMPH event@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseMidiEvent*
+typeraw = BseMidiEvent*
+@DOC-PARAMETER@
+event
+@DOC-PARDESC@
+BseMidiEvent structure
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Free the @EMPH event@ and all data associated with it. This function is MT-safe and may be called from any thread.  
 @DOC-SYNOPSIS@
 @STRONG bse_server_get@ ();
 

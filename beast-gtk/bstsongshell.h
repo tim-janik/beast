@@ -22,6 +22,7 @@
 #include	"bstsupershell.h"
 #include	"bstparamview.h"
 #include	"bstinstrumentview.h"
+#include	"bsttrackview.h"
 #include	"bstpatternview.h"
 #include	"bstpartview.h"
 #include	"bstplaylist.h"
@@ -51,6 +52,7 @@ struct _BstSongShell
 
   BstParamView   *param_view;
   BstItemView    *instrument_view;
+  BstItemView    *track_view;
   BstItemView    *pattern_view;
   BstItemView    *part_view;
   BstSNetRouter  *snet_router;

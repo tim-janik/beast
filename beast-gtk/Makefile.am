@@ -45,6 +45,7 @@ beast_headers = $(strip \
 	bstdefs.h \
 	bstdial.h \
 	bstdialog.h \
+	bstdragutils.h \
 	bsteffectview.h \
 	bstfiledialog.h \
 	bstfreeradiobutton.h \
@@ -64,6 +65,7 @@ beast_headers = $(strip \
 	bstpatterneditor.h \
 	bstpatternview.h \
 	bstpianoroll.h \
+	bstpianorollctrl.h \
 	bstplayback.h \
 	bstplaylist.h \
 	bstpreferences.h \
@@ -81,6 +83,8 @@ beast_headers = $(strip \
 	bstsnetrouter.h \
 	bstsongshell.h \
 	bststatusbar.h \
+	bsttoolbar.h \
+	bsttrackview.h \
 	bstsupershell.h \
 	bstusermessage.h \
 	bstutils.h \
@@ -103,6 +107,7 @@ beast_sources = $(strip \
 	bstcontrollers.c \
 	bstdial.c \
 	bstdialog.c \
+	bstdragutils.c \
 	bsteffectview.c \
 	bstfiledialog.c \
 	bstfreeradiobutton.c \
@@ -122,6 +127,7 @@ beast_sources = $(strip \
 	bstpatterneditor.c \
 	bstpatternview.c \
 	bstpianoroll.c \
+	bstpianorollctrl.c \
 	bstplayback.c \
 	bstplaylist.c \
 	bstpreferences.c \
@@ -139,6 +145,8 @@ beast_sources = $(strip \
 	bstsnetrouter.c \
 	bstsongshell.c \
 	bststatusbar.c \
+	bsttoolbar.c \
+	bsttrackview.c \
 	bstsupershell.c \
 	bstusermessage.c \
 	bstutils.c \

@@ -42,6 +42,10 @@
  *              scm_catch_handler_t handler, void *handler_data);
  */
 
+/* --- prototypes --- */
+static SCM	bsw_scm_from_glue_value		(GslGlueValue	 value);
+
+
 
 /* --- SCM GC hook --- */
 typedef void (*BswScmFreeFunc) ();
@@ -96,6 +100,52 @@ bsw_scm_free_gc_cell (SCM scm_gc_cell)
   
   return size;
 }
+
+
+/* --- SCM Glue Record --- */
+static gulong tc_glue_rec = 0;
+static SCM
+bsw_scm_make_glue_rec (GslGlueRec *rec)
+{
+  SCM s_rec = 0;
+
+  g_return_val_if_fail (rec != NULL, SCM_UNSPECIFIED);
+
+  gsl_glue_rec_ref (rec);
+  SCM_NEWSMOB (s_rec, tc_glue_rec, rec);
+  return s_rec;
+}
+
+static scm_sizet
+bsw_scm_free_glue_rec (SCM scm_rec)
+{
+  GslGlueRec *rec = (GslGlueRec*) SCM_CDR (scm_rec);
+
+  gsl_glue_rec_unref (rec);
+  return 0;
+}
+
+SCM
+bsw_scm_glue_rec_get (SCM scm_rec,
+		      SCM s_field)
+{
+  GslGlueValue val;
+  GslGlueRec *rec;
+  gchar *name;
+  SCM s_val;
+
+  SCM_ASSERT ((SCM_NIMP (scm_rec) && SCM_CAR (scm_rec) == tc_glue_rec), scm_rec, SCM_ARG1, "bsw-record-get");
+  SCM_ASSERT (SCM_SYMBOLP (s_field),  s_field,  SCM_ARG2, "bsw-record-get");
+
+  rec = (GslGlueRec*) SCM_CDR (scm_rec);
+  name = g_strndup (SCM_ROCHARS (s_field), SCM_LENGTH (s_field));
+  val = gsl_glue_rec_get (rec, name);
+  g_free (name);
+  s_val = bsw_scm_from_glue_value (val);
+
+  return s_val;
+}
+
 
 
 /* --- SCM procedures --- */
@@ -205,7 +255,7 @@ bsw_scm_glue_set_prop (SCM s_proxy,
   SCM gclist = SCM_EOL;
   GslGlueValue value, tmpval;
   GslGlueProp *pdef;
-  GslGlueRec *rec;
+  GslGlueSeq *seq;
   gulong proxy;
   gchar *prop_name;
 
@@ -268,13 +318,13 @@ bsw_scm_glue_set_prop (SCM s_proxy,
       scm_wrong_type_arg ("bsw-set-prop", SCM_ARG3, s_value);
     }
 
-  rec = gsl_glue_rec ();
+  seq = gsl_glue_seq ();
   tmpval = gsl_glue_value_proxy (proxy);
-  gsl_glue_rec_take_append (rec, &tmpval);
+  gsl_glue_seq_take_append (seq, &tmpval);
   tmpval = gsl_glue_value_string (prop_name);
-  gsl_glue_rec_take_append (rec, &tmpval);
-  gsl_glue_rec_take_append (rec, &value);
-  value = gsl_glue_value_take_rec (rec);
+  gsl_glue_seq_take_append (seq, &tmpval);
+  gsl_glue_seq_take_append (seq, &value);
+  value = gsl_glue_value_take_seq (seq);
   tmpval = gsl_glue_client_msg ("bse-set-prop", value);
   gsl_glue_reset_value (&value);
   gsl_glue_reset_value (&tmpval);
@@ -312,16 +362,21 @@ bsw_scm_from_glue_value (GslGlueValue value)
     case GSL_GLUE_TYPE_PROXY:
       s_ret = gh_long2scm (value.value.v_proxy);
       break;
+    case GSL_GLUE_TYPE_SEQ:
+      s_ret = SCM_EOL;
+      if (value.value.v_seq)
+	{
+	  GslGlueSeq *seq = value.value.v_seq;
+	  guint i = seq->n_elements;
+
+	  while (i--)
+	    s_ret = scm_cons (bsw_scm_from_glue_value (seq->elements[i]), s_ret);
+	}
+      break;
     case GSL_GLUE_TYPE_REC:
       s_ret = SCM_EOL;
       if (value.value.v_rec)
-	{
-	  GslGlueRec *rec = value.value.v_rec;
-	  guint i = rec->n_fields;
-
-	  while (i--)
-	    s_ret = scm_cons (bsw_scm_from_glue_value (rec->fields[i]), s_ret);
-	}
+	s_ret = bsw_scm_make_glue_rec (value.value.v_rec);
       break;
     case GSL_GLUE_TYPE_ENUM:
       if (value.value.v_enum.name)
@@ -443,7 +498,7 @@ typedef struct {
   gulong proxy;
   gchar *signal;
   SCM s_lambda;
-  GslGlueRec *tmp_args;
+  GslGlueSeq *tmp_args;
 } SigData;
 
 static void
@@ -462,17 +517,17 @@ marshal_sproc (void *data)
 {
   SigData *sdata = data;
   SCM s_ret, args = SCM_EOL;
-  GslGlueRec *rec = sdata->tmp_args;
+  GslGlueSeq *seq = sdata->tmp_args;
   guint i;
 
   sdata->tmp_args = NULL;
 
-  g_return_val_if_fail (rec != NULL && rec->n_fields > 0, SCM_UNSPECIFIED);
+  g_return_val_if_fail (seq != NULL && seq->n_elements > 0, SCM_UNSPECIFIED);
 
-  i = rec->n_fields;
+  i = seq->n_elements;
   while (i--)
     {
-      SCM arg = bsw_scm_from_glue_value (rec->fields[i]);
+      SCM arg = bsw_scm_from_glue_value (seq->elements[i]);
       args = gh_cons (arg, args);
     }
 
@@ -484,7 +539,7 @@ marshal_sproc (void *data)
 static void
 signal_handler (gpointer     sig_data,
 		const gchar *signal,
-		GslGlueRec  *args)
+		GslGlueSeq  *args)
 {
   SCM_STACKITEM stack_item;
   SigData *sdata = sig_data;
@@ -558,7 +613,7 @@ bsw_scm_script_register (SCM s_name,
   BSW_SCM_DEFER_INTS ();
   if (script_register_enabled)
     {
-      GslGlueSeq *seq = gsl_glue_seq (GSL_GLUE_TYPE_STRING);
+      GslGlueSeq *seq = gsl_glue_seq ();
       GslGlueValue sv, rv;
 
       sv = gsl_glue_value_stringl (SCM_ROCHARS (s_name), SCM_LENGTH (s_name));
@@ -695,6 +750,10 @@ bsw_scm_interp_init (BswSCMWire *wire)
   tc_gc_cell = scm_make_smob_type ("BswScmGCCell", 0);
   scm_set_smob_mark (tc_gc_cell, bsw_scm_mark_gc_cell);
   scm_set_smob_free (tc_gc_cell, bsw_scm_free_gc_cell);
+
+  tc_glue_rec = scm_make_smob_type ("BswGlueRec", 0);
+  scm_set_smob_free (tc_gc_cell, bsw_scm_free_glue_rec);
+  gh_new_procedure ("bsw-record-get", bsw_scm_glue_rec_get, 2, 0, 0);
 
   gh_new_procedure ("bsw-glue-call", bsw_scm_glue_call, 2, 0, 0);
   gh_new_procedure ("bsw-glue-set-prop", bsw_scm_glue_set_prop, 3, 0, 0);

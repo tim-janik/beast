@@ -477,6 +477,7 @@ bst_print_blurb (FILE    *fout,
       fprintf (fout, "\n");
       fprintf (fout, "Doc-path:    %s\n", BST_PATH_DOCS);
       fprintf (fout, "Plugin-path: %s\n", BSE_PATH_PLUGINS);
+      fprintf (fout, "Script-path: %s\n", BSW_PATH_SCRIPTS);
       fprintf (fout, "Sample-path: %s\n", BST_PATH_DATA_SAMPLES);
       fprintf (fout, "\n");
       fprintf (fout, "BEAST comes with ABSOLUTELY NO WARRANTY.\n");

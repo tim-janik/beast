@@ -562,7 +562,7 @@ bst_snet_router_build_tools (BstSNetRouter *router)
   
   /* add radios to toolbar
    */
-  bst_radio_tools_build_toolbar (router->rtools, GTK_TOOLBAR (router->toolbar));
+  bst_radio_tools_build_gtk_toolbar (router->rtools, GTK_TOOLBAR (router->toolbar));
 
   /* seperate radios
    */

@@ -84,6 +84,7 @@ bst_song_shell_init (BstSongShell *song_shell)
 {
   song_shell->param_view = NULL;
   song_shell->instrument_view = NULL;
+  song_shell->track_view = NULL;
   song_shell->pattern_view = NULL;
   song_shell->part_view = NULL;
   song_shell->snet_router = NULL;
@@ -112,6 +113,13 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
   g_object_connect (GTK_WIDGET (song_shell->instrument_view),
 		    "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
 		    NULL);
+  song_shell->track_view = (BstItemView*) bst_track_view_new (song);
+  g_object_set (GTK_WIDGET (song_shell->track_view),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (song_shell->track_view),
+		    "signal::destroy", gtk_widget_destroyed, &song_shell->track_view,
+		    NULL);
   song_shell->part_view = g_object_new (BST_TYPE_PART_VIEW,
 					"visible", TRUE,
 					NULL);
@@ -139,14 +147,19 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Parameters",
 					    "visible", TRUE,
 					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->instrument_view),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Instruments",
-					    "visible", TRUE,
-					    NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->part_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Parts",
+					    "visible", TRUE,
+					    NULL));
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->track_view),
+			    gtk_widget_new (GTK_TYPE_LABEL,
+					    "label", "Tracks",
+					    "visible", TRUE,
+					    NULL));
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->instrument_view),
+			    gtk_widget_new (GTK_TYPE_LABEL,
+					    "label", "Instruments",
 					    "visible", TRUE,
 					    NULL));
   if (BST_DVL_EXT)
@@ -200,6 +213,7 @@ bst_song_shell_update (BstSuperShell *super_shell)
   
   bst_param_view_update (song_shell->param_view);
   bst_item_view_update (song_shell->instrument_view);
+  bst_item_view_update (song_shell->track_view);
   bst_item_view_update (song_shell->part_view);
   if (song_shell->pattern_view)
     bst_item_view_update (song_shell->pattern_view);
@@ -233,6 +247,10 @@ bst_song_shell_operate (BstSuperShell *super_shell,
     case BST_OP_INSTRUMENT_DELETE:
       bst_item_view_operate (song_shell->instrument_view, op);
       break;
+    case BST_OP_TRACK_ADD:
+    case BST_OP_TRACK_DELETE:
+      bst_item_view_operate (song_shell->track_view, op);
+      break;
     default:
       break;
     }
@@ -263,6 +281,10 @@ bst_song_shell_can_operate (BstSuperShell *super_shell,
     case BST_OP_INSTRUMENT_DELETE:
       return (song_shell->instrument_view &&
 	      bst_item_view_can_operate (song_shell->instrument_view, op));
+    case BST_OP_TRACK_ADD:
+    case BST_OP_TRACK_DELETE:
+      return (song_shell->track_view &&
+	      bst_item_view_can_operate (song_shell->track_view, op));
     default:
       return FALSE;
     }

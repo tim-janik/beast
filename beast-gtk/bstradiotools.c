@@ -319,7 +319,46 @@ rtools_toggle_toggled (BstRadioTools   *rtools,
 
 void
 bst_radio_tools_build_toolbar (BstRadioTools *rtools,
-			       GtkToolbar    *toolbar)
+			       BstToolbar    *toolbar)
+{
+  guint i;
+
+  g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
+  g_return_if_fail (BST_IS_TOOLBAR (toolbar));
+
+  for (i = 0; i < rtools->n_tools; i++)
+    {
+      GtkWidget *button, *image = NULL;
+
+      if (!(rtools->tools[i].flags & BST_RADIO_TOOLS_TOOLBAR))
+	continue;
+
+      if (rtools->tools[i].icon)
+	image = bst_image_from_icon (rtools->tools[i].icon, BST_SIZE_TOOLBAR);
+      else if (rtools->tools[i].stock_icon)
+	image = bst_image_from_stock (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
+      if (!image)
+	image = bst_image_from_stock (BST_STOCK_NOICON, BST_SIZE_TOOLBAR);
+      button = bst_toolbar_append (toolbar, BST_TOOLBAR_TOGGLE,
+				   rtools->tools[i].name,
+				   rtools->tools[i].tip,
+				   image);
+      g_object_set (button,
+		    "user_data", GUINT_TO_POINTER (rtools->tools[i].tool_id),
+		    NULL);
+      g_object_connect (button,
+			"swapped_signal::toggled", rtools_toggle_toggled, rtools,
+			"swapped_signal::destroy", rtools_widget_destroyed, rtools,
+			NULL);
+      rtools->widgets = g_slist_prepend (rtools->widgets, button);
+    }
+
+  BST_RADIO_TOOLS_GET_CLASS (rtools)->set_tool (rtools, rtools->tool_id);
+}
+
+void
+bst_radio_tools_build_gtk_toolbar (BstRadioTools *rtools,
+				   GtkToolbar    *toolbar)
 {
   guint i;
 

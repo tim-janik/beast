@@ -18,6 +18,7 @@
 #include	"bstpianoroll.h"
 
 #include	"bstasciipixbuf.h"
+#include	<gdk/gdkkeysyms.h>
 
 
 /* --- defines --- */
@@ -53,6 +54,10 @@
 #define	CANVAS_BG_GC(self)	(&STYLE (self)->base[GTK_WIDGET_STATE (self)])
 #define	KEY_DEFAULT_VPIXELS	(4)
 #define	QNOTE_HPIXELS		(30)	/* guideline */
+
+/* behaviour */
+#define AUTO_SCROLL_TIMEOUT	(33)
+#define	AUTO_SCROLL_SCALE	(0.2)
 
 
 /* --- prototypes --- */
@@ -94,6 +99,9 @@ static gboolean	bst_piano_roll_button_release		(GtkWidget		*widget,
 static void	piano_roll_update_adjustments		(BstPianoRoll		*self,
 							 gboolean		 hadj,
 							 gboolean		 vadj);
+static void	piano_roll_scroll_adjustments		(BstPianoRoll		*self,
+							 gint			 x_pixel,
+							 gint			 y_pixel);
 static void	piano_roll_adjustment_changed		(BstPianoRoll		*self);
 static void	piano_roll_adjustment_value_changed	(BstPianoRoll		*self,
 							 GtkAdjustment		*adjustment);
@@ -105,9 +113,8 @@ static void	bst_piano_roll_hsetup			(BstPianoRoll		*self,
 
 /* --- static variables --- */
 static gpointer	parent_class = NULL;
+static guint	signal_canvas_drag = 0;
 static guint	signal_canvas_press = 0;
-static guint	signal_canvas_motion = 0;
-static guint	signal_canvas_release = 0;
 
 
 /* --- functions --- */
@@ -169,25 +176,18 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
 
   class->set_scroll_adjustments = bst_piano_roll_set_scroll_adjustments;
   class->canvas_press = NULL;
-  class->canvas_motion = NULL;
-  class->canvas_release = NULL;
   
+  signal_canvas_drag = g_signal_new ("canvas-drag", G_OBJECT_CLASS_TYPE (class),
+				     G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_drag),
+				     NULL, NULL,
+				     bst_marshal_NONE__POINTER,
+				     G_TYPE_NONE, 1, G_TYPE_POINTER);
   signal_canvas_press = g_signal_new ("canvas-press", G_OBJECT_CLASS_TYPE (class),
 				      G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_press),
 				      NULL, NULL,
 				      bst_marshal_NONE__UINT_UINT_FLOAT_BOXED,
 				      G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_FLOAT,
 				      GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_canvas_motion = g_signal_new ("canvas-motion", G_OBJECT_CLASS_TYPE (class),
-				       G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_motion),
-				       NULL, NULL,
-				       bst_marshal_NONE__UINT_UINT_FLOAT,
-				       G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_FLOAT);
-  signal_canvas_release = g_signal_new ("canvas-release", G_OBJECT_CLASS_TYPE (class),
-					G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_release),
-					NULL, NULL,
-					bst_marshal_NONE__UINT_UINT_FLOAT,
-					G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_FLOAT);
   widget_class->set_scroll_adjustments_signal =
     gtk_signal_new ("set_scroll_adjustments",
 		    GTK_RUN_LAST,
@@ -215,7 +215,9 @@ bst_piano_roll_init (BstPianoRoll *self)
   self->draw_qn_grid = TRUE;
   self->draw_qqn_grid = TRUE;
   self->min_octave = -1;
+  self->min_half_tone = 0;
   self->max_octave = 2;
+  self->max_half_tone = 11;
   self->hpanel_height = 20;
   self->vpanel = NULL;
   self->hpanel = NULL;
@@ -265,7 +267,12 @@ bst_piano_roll_finalize (GObject *object)
   self->hadjustment = NULL;
   g_object_unref (self->vadjustment);
   self->vadjustment = NULL;
-  
+
+  if (self->scroll_timer)
+    {
+      g_source_remove (self->scroll_timer);
+      self->scroll_timer = 0;
+    }
   bst_ascii_pixbuf_unref ();
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -312,7 +319,6 @@ bst_piano_roll_set_hadjustment (BstPianoRoll  *self,
 		    "swapped_signal::changed", piano_roll_adjustment_changed, self,
 		    "swapped_signal::value-changed", piano_roll_adjustment_value_changed, self,
 		    NULL);
-  bst_piano_roll_adjust_scroll_area (self);
 }
 
 void
@@ -342,7 +348,6 @@ bst_piano_roll_set_vadjustment (BstPianoRoll  *self,
 		    "swapped_signal::changed", piano_roll_adjustment_changed, self,
 		    "swapped_signal::value-changed", piano_roll_adjustment_value_changed, self,
 		    NULL);
-  bst_piano_roll_adjust_scroll_area (self);
 }
 
 static void
@@ -434,7 +439,6 @@ bst_piano_roll_size_request (GtkWidget	    *widget,
 
   requisition->width = CANVAS_X (self) + 500 + STYLE (self)->xthickness;
   requisition->height = CANVAS_Y (self) + N_OCTAVES (self) * OCTAVE_HEIGHT (self) + STYLE (self)->ythickness;
-  g_print ("request: n: %d (%d %d)\n", N_OCTAVES (self), self->min_octave, self->max_octave);
 }
 
 static void
@@ -466,7 +470,6 @@ bst_piano_roll_size_allocate (GtkWidget	    *widget,
 			      CANVAS_WIDTH (self), CANVAS_HEIGHT (self));
     }
   piano_roll_update_adjustments (self, TRUE, TRUE);
-  bst_piano_roll_adjust_scroll_area (self);
 }
 
 static void
@@ -502,7 +505,8 @@ bst_piano_roll_realize (GtkWidget *widget)
   attributes.width = VPANEL_WIDTH (self);
   attributes.height = VPANEL_HEIGHT (self);
   attributes.event_mask = gtk_widget_get_events (widget) | (GDK_EXPOSURE_MASK |
-							    GDK_POINTER_MOTION_MASK);
+							    GDK_BUTTON_MOTION_MASK |
+							    GDK_POINTER_MOTION_HINT_MASK);
   self->vpanel = gdk_window_new (widget->window, &attributes, attributes_mask);
   gdk_window_set_user_data (self->vpanel, self);
   gdk_window_show (self->vpanel);
@@ -525,8 +529,8 @@ bst_piano_roll_realize (GtkWidget *widget)
   attributes.event_mask = gtk_widget_get_events (widget) | (GDK_EXPOSURE_MASK |
 							    GDK_BUTTON_PRESS_MASK |
 							    GDK_BUTTON_RELEASE_MASK |
-							    GDK_BUTTON1_MOTION_MASK |
-							    GDK_POINTER_MOTION_MASK |
+							    GDK_BUTTON_MOTION_MASK |
+							    GDK_POINTER_MOTION_HINT_MASK |
 							    GDK_KEY_PRESS_MASK |
 							    GDK_KEY_RELEASE_MASK);
   self->canvas = gdk_window_new (widget->window, &attributes, attributes_mask);
@@ -540,7 +544,6 @@ bst_piano_roll_realize (GtkWidget *widget)
   /* style setup */
   widget->style = gtk_style_attach (widget->style, widget->window);
   piano_roll_reset_backgrounds (self);
-  bst_piano_roll_adjust_scroll_area (self);
 
   /* update cursors */
   cursor_type = self->canvas_cursor++;
@@ -679,19 +682,24 @@ typedef struct {
   guint key_frac;	/* 0 .. 4*z-1 fractional pixel index into key */
   guint wstate;		/* DRAW_ START/MIDDLE/END of white key */
   guint bstate;		/* DRAW_ NONE/START/MIDDLE/END of black key */
-  guint bmatch;		/* TRUE if on black key (differs from bstate!=NONE) */
+  guint bmatch : 1;	/* TRUE if on black key (differs from bstate!=NONE) */
+  guint fes_ces : 1;	/* TRUE if on non-existant black key below C or F */
+  guint valid : 1;	/* FALSE if min/max octave/half_tone are exceeded */
+  gint  valid_octave;
+  guint valid_note;
 } NoteInfo;
 
 static gint
 note_to_coord (BstPianoRoll *self,
-	       guint         note,
+	       guint         half_tone,
 	       gint	     octave,
-	       gint	    *height_p)
+	       gint	    *height_p,
+	       gint	    *ces_fes_height_p)
 {
   gint ythickness = 1, z = self->vzoom, h = NOTE_HEIGHT (self);
   gint oheight = OCTAVE_HEIGHT (self), y, zz = z + z, offs = 0, height = h;
 
-  switch (note)
+  switch (half_tone)
     {
     case 10:	offs += zz + h;
     case  8:	offs += zz + h;
@@ -720,6 +728,8 @@ note_to_coord (BstPianoRoll *self,
 
   if (height_p)
     *height_p = height;
+  if (ces_fes_height_p)
+    *ces_fes_height_p = (half_tone == 0 || half_tone == 4 || half_tone == 5 || half_tone == 11) ? z : 0;
 
   return y - self->y_offset;
 }
@@ -755,6 +765,10 @@ coord_to_note (BstPianoRoll *self,
   end_shift = i >= z + h;
   start_shift = i < z + ythickness;
   info->note = 0;
+  info->fes_ces = ((info->key == 0 && start_shift) ||
+		   (info->key == 2 && end_shift) ||
+		   (info->key == 3 && start_shift) ||
+		   (info->key == 6 && end_shift));
   switch (info->key)
     {
     case 3:	info->note += 5;
@@ -806,6 +820,29 @@ coord_to_note (BstPianoRoll *self,
     }
   else
     info->bmatch = TRUE;
+
+  /* validate note */
+  if (y < 0 ||		/* we calc junk in this case, flag invalidity */
+      info->octave > self->max_octave ||
+      (info->octave == self->max_octave && info->note > self->max_half_tone))
+    {
+      info->valid_octave = self->max_octave;
+      info->valid_note = self->max_half_tone;
+      info->valid = FALSE;
+    }
+  else if (info->octave < self->min_octave ||
+	   (info->octave == self->min_octave && info->note < self->min_half_tone))
+    {
+      info->valid_octave = self->min_octave;
+      info->valid_note = self->min_half_tone;
+      info->valid = FALSE;
+    }
+  else
+    {
+      info->valid_octave = info->octave;
+      info->valid_note = info->note;
+      info->valid = TRUE;
+    }
 
   return info->bmatch != 0;
 }
@@ -914,7 +951,34 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
   GdkWindow *window = self->canvas;
   GdkGC *light_gc, *note_gc, *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
   gint i, dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
+  guint sel_duration;
   BswIterPartNote *iter;
+
+  /* draw selection */
+  sel_duration = bsw_part_get_selection_duration (self->proxy);
+  if (sel_duration)
+    {
+      BswNoteDescription *info;
+      gfloat sel_min_freq, sel_max_freq;
+      guint sel_tick;
+      gint x1, x2, y1, y2, height;
+
+      sel_tick = bsw_part_get_selection_tick (self->proxy);
+      sel_min_freq = bsw_part_get_selection_min_freq (self->proxy);
+      sel_max_freq = bsw_part_get_selection_max_freq (self->proxy);
+
+      x1 = tick_to_coord (self, sel_tick);
+      x2 = tick_to_coord (self, sel_tick + sel_duration);
+      info = bsw_server_note_from_freq (BSW_SERVER, sel_max_freq);
+      y1 = note_to_coord (self, info->half_tone, info->octave, &height, NULL);
+      bsw_note_description_free (info);
+      info = bsw_server_note_from_freq (BSW_SERVER, sel_min_freq);
+      y2 = note_to_coord (self, info->half_tone, info->octave, &height, NULL);
+      y2 += height;
+      bsw_note_description_free (info);
+      gdk_draw_rectangle (window, GTK_WIDGET (self)->style->bg_gc[GTK_STATE_SELECTED], TRUE,
+			  x1, y1, MAX (x2 - x1, 0), MAX (y2 - y1, 0));
+    }
 
   /* draw horizontal grid lines */
   for (i = y; i < ybound; i++)
@@ -994,22 +1058,35 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
       BswPartNote *pnote = bsw_iter_get_part_note (iter);
       BswNoteDescription *info = bsw_server_note_from_freq (BSW_SERVER, pnote->freq);
       guint start = pnote->tick, end = start + pnote->duration;
+      GdkGC *xdark_gc, *xlight_gc;
       gint x1, x2, y1, y2, height;
 
+      if (pnote->selected)
+	{
+          xdark_gc = self->color_gc[info->half_tone];
+	  note_gc = dark_gc;
+	  xlight_gc = self->color_gc[info->half_tone];
+	}
+      else
+	{
+	  xdark_gc = dark_gc;
+	  note_gc = self->color_gc[info->half_tone];
+	  xlight_gc = NULL;	/* skip this in white canvas */
+	}
       x1 = tick_to_coord (self, start);
       x2 = tick_to_coord (self, end);
 
-      y1 = note_to_coord (self, info->half_tone, info->octave, &height);
+      y1 = note_to_coord (self, info->half_tone, info->octave, &height, NULL);
       y2 = y1 + height - 1;
-      gdk_draw_line (window, dark_gc, x1, y2, x2, y2);
-      gdk_draw_line (window, dark_gc, x2, y1, x2, y2);
-      gdk_draw_rectangle (window, self->color_gc[info->half_tone], TRUE, x1, y1, MAX (x2 - x1, 1), MAX (y2 - y1, 1));
+      gdk_draw_line (window, xdark_gc, x1, y2, x2, y2);
+      gdk_draw_line (window, xdark_gc, x2, y1, x2, y2);
+      gdk_draw_rectangle (window, note_gc, TRUE, x1, y1, MAX (x2 - x1, 1), MAX (y2 - y1, 1));
       if (y2 - y1 >= 3)	/* work for zoom to micro size */
 	{
-	  if (0) /* skip this with white canvas */
+	  if (xlight_gc)
 	    {
-	      gdk_draw_line (window, light_gc, x1, y1, x2, y1);
-	      gdk_draw_line (window, light_gc, x1, y1, x1, y2);
+	      gdk_draw_line (window, xlight_gc, x1, y1, x2, y1);
+	      gdk_draw_line (window, xlight_gc, x1, y1, x1, y2);
 	    }
 	}
       bsw_note_description_free (info);
@@ -1162,13 +1239,13 @@ piano_roll_queue_expose (BstPianoRoll *self,
 {
   gint x1 = tick_to_coord (self, tick_start);
   gint x2 = tick_to_coord (self, tick_end);
-  gint height, y1 = note_to_coord (self, note, octave, &height);
+  gint height, cfheight, y1 = note_to_coord (self, note, octave, &height, &cfheight);
   GdkRectangle area;
 
   area.x = x1 - 3;		/* add fudge */
-  area.y = y1;
+  area.y = y1 - cfheight;
   area.width = x2 - x1 + 3 + 3;	/* add fudge */
-  area.height = height;
+  area.height = height + 2 * cfheight;
   if (window == self->vpanel)
     {
       area.x = 0;
@@ -1279,9 +1356,40 @@ piano_roll_update_adjustments (BstPianoRoll *self,
     gtk_adjustment_value_changed (self->vadjustment);
 }
 
-void
-bst_piano_roll_adjust_scroll_area (BstPianoRoll *self)
+static void
+piano_roll_scroll_adjustments (BstPianoRoll *self,
+			       gint          x_pixel,
+			       gint          y_pixel)
 {
+  gdouble hv = self->hadjustment->value;
+  gdouble vv = self->vadjustment->value;
+  gint xdiff, ydiff;
+  gint ticks;
+
+  xdiff = x_pixel * AUTO_SCROLL_SCALE;
+  ydiff = y_pixel * AUTO_SCROLL_SCALE;
+
+  ticks = pixels_to_ticks (self, ABS (xdiff));
+  if (x_pixel > 0)
+    ticks = MAX (ticks, 1);
+  else if (x_pixel < 0)
+    ticks = MIN (-1, -ticks);
+  self->hadjustment->value += ticks;
+  self->hadjustment->value = CLAMP (self->hadjustment->value,
+				    self->hadjustment->lower,
+				    self->hadjustment->upper - self->hadjustment->page_size);
+  if (y_pixel > 0)
+    ydiff = MAX (ydiff, 1);
+  else if (y_pixel < 0)
+    ydiff = MIN (-1, ydiff);
+  self->vadjustment->value += ydiff;
+  self->vadjustment->value = CLAMP (self->vadjustment->value,
+				    self->vadjustment->lower,
+				    self->vadjustment->upper - self->vadjustment->page_size);
+  if (hv != self->hadjustment->value)
+    gtk_adjustment_value_changed (self->hadjustment);
+  if (vv != self->vadjustment->value)
+    gtk_adjustment_value_changed (self->vadjustment);
 }
 
 static void
@@ -1355,6 +1463,67 @@ bst_piano_roll_focus_out (GtkWidget	*widget,
   return TRUE;
 }
 
+static void
+bst_piano_roll_canvas_drag_abort (BstPianoRoll *self)
+{
+  if (self->canvas_drag)
+    {
+      self->canvas_drag = FALSE;
+      self->drag.type = BST_DRAG_ABORT;
+      g_signal_emit (self, signal_canvas_drag, 0, &self->drag);
+    }
+}
+
+static gboolean
+bst_piano_roll_canvas_drag (BstPianoRoll *self,
+			    gint	  coord_x,
+			    gint	  coord_y,
+			    gboolean      initial)
+{
+  if (self->canvas_drag)
+    {
+      BswNoteDescription *desc;
+      guint fine_tick;
+      NoteInfo info;
+      
+      fine_tick = coord_to_tick (self, coord_x, FALSE);
+      self->drag.current_tick = coord_to_tick (self, coord_x, FALSE);
+      /* quantize tick */
+      self->drag.current_tick = bst_piano_roll_quantize (self, fine_tick);
+      coord_to_note (self, coord_y, &info);
+      desc = bsw_server_construct_note (BSW_SERVER, info.valid_note, info.valid_octave, 0);
+      self->drag.current_freq = desc->freq;
+      bsw_note_description_free (desc);
+      self->drag.current_valid = info.valid && !info.fes_ces;
+      if (initial)
+	{
+	  self->drag.start_tick = self->drag.current_tick;
+	  self->drag.start_freq = self->drag.current_freq;
+	  self->drag.start_valid = self->drag.current_valid;
+	  if (self->proxy && self->drag.start_valid)
+	    {
+	      BswIterPartNote *iter = bsw_part_get_note (self->proxy, fine_tick, self->drag.start_freq);
+	      if (bsw_iter_n_left (iter))
+		{
+		  BswPartNote *pnote = bsw_iter_get_part_note (iter);
+		  self->drag.obj_tick = pnote->tick;
+		  self->drag.obj_duration = pnote->duration;
+		  self->drag.obj_freq = pnote->freq;
+		}
+	      bsw_iter_free (iter);
+	    }
+	}
+      g_signal_emit (self, signal_canvas_drag, 0, &self->drag);
+      if (self->drag.state == BST_DRAG_HANDLED)
+	self->canvas_drag = FALSE;
+      else if (self->drag.state == BST_DRAG_ERROR)
+	bst_piano_roll_canvas_drag_abort (self);
+      else if (initial && self->drag.state == BST_DRAG_UNHANDLED)
+	return TRUE;
+    }
+  return FALSE;
+}
+
 static gboolean
 bst_piano_roll_button_press (GtkWidget	    *widget,
 			     GdkEventButton *event)
@@ -1365,26 +1534,64 @@ bst_piano_roll_button_press (GtkWidget	    *widget,
   if (!GTK_WIDGET_HAS_FOCUS (widget))
     gtk_widget_grab_focus (widget);
 
-  if (self->drag_button == 0)
+  if (event->window == self->canvas && !self->canvas_drag)
     {
       handled = TRUE;
-      if (event->window == self->canvas)
+      memset (&self->drag, 0, sizeof (self->drag));
+      self->drag.proll = self;
+      self->drag.type = BST_DRAG_START;
+      self->drag.mode = bst_drag_modifier_start (event->state);
+      self->drag.button = event->button;
+      self->drag.state = BST_DRAG_UNHANDLED;
+      self->canvas_drag = TRUE;
+      if (bst_piano_roll_canvas_drag (self, event->x, event->y, TRUE) == TRUE)
 	{
-	  BswNoteDescription *desc;
-	  NoteInfo info;
-
-	  self->drag_button = event->button;
-	  self->drag_type = BST_PIANO_ROLL_POINTER_MOTION;
-	  self->drag_tick0 = coord_to_tick (self, event->x, FALSE);
-	  coord_to_note (self, event->y, &info);
-	  desc = bsw_server_construct_note (BSW_SERVER, info.note, info.octave, 0);
-	  self->drag_freq0 = desc->freq;
-	  bsw_note_description_free (desc);
-	  g_signal_emit (self, signal_canvas_press, 0, self->drag_button, self->drag_tick0, self->drag_freq0, event);
+	  self->canvas_drag = FALSE;
+	  g_signal_emit (self, signal_canvas_press, 0, self->drag.button, self->drag.start_tick, self->drag.start_freq, event);
 	}
     }
 
   return handled;
+}
+
+static gboolean
+timeout_scroller (gpointer data)
+{
+  BstPianoRoll *self;
+  guint remain = 1;
+
+  GDK_THREADS_ENTER ();
+  self = BST_PIANO_ROLL (data);
+  if (self->canvas_drag && GTK_WIDGET_DRAWABLE (self))
+    {
+      gint x, y, width, height, xdiff = 0, ydiff = 0;
+      GdkModifierType modifiers;
+
+      gdk_window_get_size (self->canvas, &width, &height);
+      gdk_window_get_pointer (self->canvas, &x, &y, &modifiers);
+      if (x < 0)
+	xdiff = x;
+      else if (x >= width)
+	xdiff = x - width + 1;
+      if (y < 0)
+	ydiff = y;
+      else if (y >= height)
+	ydiff = y - height + 1;
+      if (xdiff || ydiff)
+	{
+	  piano_roll_scroll_adjustments (self, xdiff, ydiff);
+	  self->drag.type = BST_DRAG_MOTION;
+	  self->drag.mode = bst_drag_modifier_next (modifiers, self->drag.mode);
+	  bst_piano_roll_canvas_drag (self, x, y, FALSE);
+	}
+      else
+	self->scroll_timer = remain = 0;
+    }
+  else
+    self->scroll_timer = remain = 0;
+  GDK_THREADS_LEAVE ();
+
+  return remain;
 }
 
 static gboolean
@@ -1393,23 +1600,29 @@ bst_piano_roll_motion (GtkWidget      *widget,
 {
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
   gboolean handled = FALSE;
+
+  /* FIXME:
+     optimize part for non-L shaped seletion updates
+     fix tick boundary ;(
+  */
   
-  if (self->drag_button)
+  if (event->window == self->canvas && self->canvas_drag)
     {
+      gint width, height;
+
       handled = TRUE;
-      if (event->window == self->canvas && self->drag_type == BST_PIANO_ROLL_POINTER_MOTION)
-	{
-          BswNoteDescription *desc;
-	  NoteInfo info;
-	  guint tick = coord_to_tick (self, event->x, FALSE);
-	  gfloat freq;
-	  
-	  coord_to_note (self, event->y, &info);
-	  desc = bsw_server_construct_note (BSW_SERVER, info.note, info.octave, 0);
-	  freq = desc->freq;
-	  bsw_note_description_free (desc);
-	  g_signal_emit (self, signal_canvas_motion, 0, self->drag_button, tick, freq);
-	}
+      self->drag.type = BST_DRAG_MOTION;
+      self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
+      bst_piano_roll_canvas_drag (self, event->x, event->y, FALSE);
+      gdk_window_get_size (self->canvas, &width, &height);
+      if (!self->scroll_timer && (event->x < 0 || event->x >= width ||
+				  event->y < 0 || event->y >= height))
+	self->scroll_timer = g_timeout_add_full (G_PRIORITY_DEFAULT,
+						 AUTO_SCROLL_TIMEOUT,
+						 timeout_scroller,
+						 self, NULL);
+      /* trigger motion events (since we use motion-hint) */
+      gdk_window_get_pointer (self->canvas, NULL, NULL, NULL);
     }
   if (event->window == self->vpanel)
     {
@@ -1429,23 +1642,13 @@ bst_piano_roll_button_release (GtkWidget      *widget,
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
   gboolean handled = FALSE;
 
-  if (self->drag_button == event->button)
+  if (event->window == self->canvas && self->canvas_drag && event->button == self->drag.button)
     {
-      self->drag_button = 0;
       handled = TRUE;
-      if (event->window == self->canvas && self->drag_type >= BST_PIANO_ROLL_POINTER_RELEASE)
-	{
-	  BswNoteDescription *desc;
-	  NoteInfo info;
-	  guint tick = coord_to_tick (self, event->x, FALSE);
-	  gfloat freq;
-
-	  coord_to_note (self, event->y, &info);
-	  desc = bsw_server_construct_note (BSW_SERVER, info.note, info.octave, 0);
-	  freq = desc->freq;
-	  bsw_note_description_free (desc);
-	  g_signal_emit (self, signal_canvas_release, 0, event->button, tick, freq);
-	}
+      self->drag.type = BST_DRAG_DONE;
+      self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
+      bst_piano_roll_canvas_drag (self, event->x, event->y, FALSE);
+      self->canvas_drag = FALSE;
     }
 
   return handled;
@@ -1455,8 +1658,11 @@ static gboolean
 bst_piano_roll_key_press (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
-  // BstPianoRoll *self = BST_PIANO_ROLL (widget);
-  gboolean handled = FALSE;
+  BstPianoRoll *self = BST_PIANO_ROLL (widget);
+  gboolean handled = TRUE;
+
+  if (event->keyval == GDK_Escape)
+    bst_piano_roll_canvas_drag_abort (self);
 
   return handled;
 }
@@ -1466,7 +1672,7 @@ bst_piano_roll_key_release (GtkWidget   *widget,
 			    GdkEventKey *event)
 {
   // BstPianoRoll *self = BST_PIANO_ROLL (widget);
-  gboolean handled = FALSE;
+  gboolean handled = TRUE;
 
   return handled;
 }
@@ -1479,13 +1685,25 @@ piano_roll_update (BstPianoRoll *self,
 		   gfloat        max_freq)
 {
   gint note, octave;
+  BswNoteDescription *min_info = bsw_server_note_from_freq (BSW_SERVER, min_freq);
+  BswNoteDescription *max_info = bsw_server_note_from_freq (BSW_SERVER, max_freq);
 
-  g_return_if_fail (duration > 0);
-
-  // FIXME: freq->note/octave translation
-  for (note = 0; note < 12; note++)
-    for (octave = self->min_octave; octave <= self->max_octave; octave++)
+  duration = MAX (duration, 1);
+  note = min_info->half_tone;
+  octave = min_info->octave;
+  do
+    {
       piano_roll_queue_expose (self, self->canvas, note, octave, tick, tick + duration - 1);
+      note++;
+      if (note >= 12)
+	{
+	  note = 0;
+	  octave++;
+	}
+    }
+  while (octave < max_info->octave || (octave == max_info->octave && note <= max_info->half_tone));
+  bsw_note_description_free (min_info);
+  bsw_note_description_free (max_info);
 }
 
 static void
@@ -1516,6 +1734,7 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
   self->proxy = proxy;
   if (self->proxy)
     {
+      BswNoteDescription *desc;
       bsw_item_use (self->proxy);
       bsw_proxy_connect (self->proxy,
 			 "swapped_signal::set_parent", piano_roll_unset_proxy, self,
@@ -1523,93 +1742,64 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);
       self->min_octave = bsw_part_get_min_octave (self->proxy);
+      self->min_half_tone = bsw_part_get_min_half_tone (self->proxy);
       self->max_octave = bsw_part_get_max_octave (self->proxy);
+      self->max_half_tone = bsw_part_get_max_half_tone (self->proxy);
+      desc = bsw_server_construct_note (BSW_SERVER, self->min_half_tone, self->min_octave, 0);
+      self->min_freq = desc->freq;
+      bsw_note_description_free (desc);
+      desc = bsw_server_construct_note (BSW_SERVER, self->max_half_tone, self->max_octave, 0);
+      self->max_freq = desc->freq;
+      bsw_note_description_free (desc);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
 void
-bst_piano_roll_set_pointer (BstPianoRoll           *self,
-			    BstPianoRollPointerType type)
-{
-  g_return_if_fail (BST_IS_PIANO_ROLL (self));
-  g_return_if_fail (type >= BST_PIANO_ROLL_POINTER_IGNORE && type <= BST_PIANO_ROLL_POINTER_MOTION);
-
-  self->drag_type = type;
-}
-
-void
-bst_piano_roll_set_drag_data1 (BstPianoRoll *self,
-			       guint         tick,
-                               guint         duration,
-			       gfloat        freq)
+bst_piano_roll_set_quantization (BstPianoRoll *self,
+				 guint         note_fraction)
 {
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
 
-  self->drag_tick1 = tick;
-  self->drag_duration1 = duration;
-  self->drag_freq1 = freq;
-}
-
-void
-bst_piano_roll_set_drag_data2 (BstPianoRoll *self,
-			       guint         tick,
-			       guint	     duration,
-			       gfloat        freq)
-{
-  g_return_if_fail (BST_IS_PIANO_ROLL (self));
-
-  self->drag_tick2 = tick;
-  self->drag_duration2 = duration;
-  self->drag_freq2 = freq;
-}
-
-guint
-bst_piano_roll_get_drag_data0 (BstPianoRoll *self,
-			       guint        *tick,
-			       gfloat       *freq)
-{
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
-
-  if (tick)
-    *tick = self->drag_tick0;
-  if (freq)
-    *freq = self->drag_freq0;
-  return self->drag_button;
+  switch (note_fraction)
+    {
+    case 1:
+    case 2:
+    case 4:
+    case 8:
+    case 16:
+    case 32:
+    case 64:
+    case 128:
+    case 256:
+    case 512:
+      self->quantization = note_fraction;
+      break;
+    default:
+      self->quantization = 0;
+      break;
+    }
 }
 
 guint
-bst_piano_roll_get_drag_data1 (BstPianoRoll *self,
-			       guint        *tick,
-			       guint	    *duration,
-			       gfloat       *freq)
+bst_piano_roll_quantize (BstPianoRoll *self,
+			 guint         fine_tick)
 {
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
+  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), fine_tick);
 
-  if (tick)
-    *tick = self->drag_tick1;
-  if (duration)
-    *duration = self->drag_duration1;
-  if (freq)
-    *freq = self->drag_freq1;
-  return self->drag_button;
-}
-
-guint
-bst_piano_roll_get_drag_data2 (BstPianoRoll *self,
-			       guint        *tick,
-			       guint	    *duration,
-			       gfloat       *freq)
-{
-  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
-
-  if (tick)
-    *tick = self->drag_tick2;
-  if (duration)
-    *duration = self->drag_duration2;
-  if (freq)
-    *freq = self->drag_freq2;
-  return self->drag_button;
+  /* quantize tick */
+  if (self->quantization)
+    {
+      guint quant = self->ppqn * 4 / self->quantization;
+      guint qtick = fine_tick / quant;
+      qtick *= quant;
+      if (fine_tick - qtick > quant / 2 &&
+	  qtick + quant > fine_tick)
+	fine_tick = qtick + quant;
+      else
+	fine_tick = qtick;
+    }
+  return fine_tick;
 }
 
 void
