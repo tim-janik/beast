@@ -1,15 +1,8 @@
 FIXMES:
-- fix subsample assertion
-- PatternEditor: load default keytable
-- PatternEditor: implement vzoom
-- PatternEditor: implement last tick changes
-- PatternEditor: implement focus to mouse clicks
 - remove bse_glue_make_rorecord() and siblings
 - fix bse_gettext()
 - piano roll/align events: does insert notes with wrong cursor
 - event roll: align events: outline colors don't honour skin colorization
-- part editor UI, add fields:
-  Last Tick: _____, Max (used) Channel: ___
 - add author and license to procedure execution dialog
 - fix ref-count initilization for Bst*Controller
 - fix repeat not working if left/right exchanged
@@ -69,7 +62,6 @@ FIXMES:
 - register drivers with categories
 - fix gsl wave osc
 - nuke SFI memblocks, malloc() is good enough
-- fix engine deinitialization warning in bseserver.c
 - master tune slider in preferences (kammer ton)
 - bsemididevice-oss throws warnings when compiled without midi support
 - MidiEvent (serialization)
@@ -88,17 +80,12 @@ FIXMES:
 - gslwaveosc resp. gslwavechunk occasionally segfaults on ping-pong loops
 
 DOCS:
-- pressing browsing hotkeys in release-notes dialog does stuff
-- Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
-- update /Help index to cover new docs
-- add bse-categories.txt to /Help menu (probably rewrite to .texi)
+- add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
+- rewrite bse-categories.txt as .texi and add to /Help menu
 - add tag to load/play bse files
 - add QuickStart section on wave selection
 - add QuickStart section on postprocessing effects
-- make beast recognize and view .markup files from the command line
 - add QuickStart section on piano roll usage, esp. copy+pasting
-- implement Playback facility in doc browser for .bse file links
-- try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
@@ -106,33 +93,39 @@ DOCS:
   could WRITING.3 have a set of default macros showing this? [alper]
 - allow commas in @refBlurb{}, respectively Info BLURB = ","; texts [alper]
 
-Stefan Gui TODOs (priorities: 9=high, 0=low):
-8 - closing the BEAST window should ask (close/save/abort) if unsaved changes are
-    in the project
-7 - file->save as should change the file name in the title bar
-6 - file open on an unmodified project should not open a new project window but
-    reuse the existing one
-5 - implement copying of parts
-4 - implement selection and copy and paste of parts in the strack roll
-
 TODO:
-- pattern editor: Ctrl+I (interpolate) should interpolate values between start and end of a selection,
+- Main: make beast recognize and view .markup files from the command line
+- DocBrowser: pressing browsing hotkeys in release-notes dialog does stuff
+- DocBrowser: Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
+- DocBrowser: update /Help index to cover new docs
+- DocBrowser: implement Playback facility in doc browser for .bse file links
+- DocBrowser: try implementing some kind of table layout
+- PatternEditor: load default keytable
+- PatternEditor: implement last tick spinner
+- PatternEditor: implement length and offset columns
+- PatternEditor: allow inserting notes of different lengths
+- PatternEditor: Ctrl+I (interpolate) should interpolate values between start and end of a selection,
   regardless whether the selected column is a note or event
-- pattern editor: Ctrl+R (random) should insert random notes or events
-- pattern editor: transpose script (up and down by semitone, so that we can use an accelerator)
-- pattern editor: background colors should be different (darker) every 4 and every 16 steps (maybe
+- PatternEditor: Ctrl+R (random) should insert random notes or events
+- PatternEditor: transpose script (up and down by semitone, so that we can use an accelerator)
+- PatternEditor: background colors should be different (darker) every 4 and every 16 steps (maybe
   depending on measure)
-- pattern editor: selection, cut, copy, paste
-- pattern editor: marker for play position
-- pattern editor: play notes when inserted (also a piano roll TODO item); should be optional
-- pattern editor: channel based muting
-- pattern editor: allow combining multiple pattern editors (i.e. editing multiple parts which are
+- PatternEditor: selection, cut, copy, paste
+- PatternEditor: marker for play position
+- PatternEditor: play notes when inserted (also a piano roll TODO item); should be optional
+- PatternEditor: channel based muting
+- PatternEditor: allow combining multiple pattern editors (i.e. editing multiple parts which are
   played synchronously) spawned across multiple tracks - GUI idea: once selection in the track roll
   widget is implemented: select multiple parts, use right-mouse-button-menu, select pattern editor:
   combined view of those parts is opened
+- App: closing the BEAST window should ask (close/save/abort) for unsaved changes
+- App: file->save as should change the file name in the title bar
+- Project: file open on an unmodified project should not open a new project window but
+  reuse the existing one
+- TrackRoll: implement copying of parts
+- TrackRoll: implement selection and copy and paste of parts
 - let bst_key_combo_popup() display currently pressed modifiers
 - let bst_key_combo_popup() tell the user to press a mouse button to abort
-- pattern editor: render letters with pango into offscreen pixmaps, draw text by copying offscreen pixmaps (but skinning?)
 - CPU monitoring
 - add facility to record MIDI control events
 - implement an object clippboard
@@ -143,12 +136,7 @@ TODO:
 - fix tracks used only as modulation input (party-monster.bse)
 - piano and track roll scrolling implemented with secondary scrollbar
 - piano roll dialog gains partlink property editor
-- item links: (where (link 3 "TrackLink::LinkTrack::Cool"))
-              (where (3 "tree:sopidgsdf:sdggsdf"))
-              (where (link 3 "tree::sopidgsdf::sdggsdf"))
-- prop flag: SFI_PARAM_SKIP_DEFAULT
 - implement humanizer note offsetting in sequencer, let the user specify randomization range
-- add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
 - support loading of Effects from Effect Library directory from a button in the router/rackview display
 - add "Insert Property" menu to rack view which lists all objects and their proeprties hirachically
 - object tree backbone/trunk/tribe type for project, server and workbench
