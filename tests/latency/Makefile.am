@@ -10,6 +10,7 @@ CPPFLAGS += $(EXTRA_CXXFLAGS)
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+BSESH     = $(top_builddir)/shell/bsesh-$(BSE_VERSION)
 
 # IDL generation rule for plugins
 %.gen-idl.h: %.idl $(BSEPGEN) $(SFIDL)
@@ -32,6 +33,23 @@ lib_LTLIBRARIES = bselatencytest.la
 # prevent libraries from being installed
 install-libLTLIBRARIES:
 
+builddirplugins = ./.libs/*.so:$(top_builddir)/plugins/.libs/*.so
+
+# 
+# test rule
+#
+test: 	all
+	cd . \
+	&& rm -f ./tmp-midi-fifo					\
+	&& mkfifo ./tmp-midi-fifo					\
+	&& FIFO=tmp-midi-fifo $(BSESH)					\
+	    -m oss=tmp-midi-fifo -p null				\
+	   --bse-override-plugin-globs $(builddirplugins)		\
+	   --bse-override-script-path $(top_builddir)/shell/		\
+	   -s $(srcdir)/bseplay.scm $(srcdir)/midi-latency.bse
+CLEANFILES += tmp-midi-fifo
+
 EXTRA_DIST += $(strip 		\
+	midi-latency.bse	\
 	$(EXTRA_HEADERS)	\
 )

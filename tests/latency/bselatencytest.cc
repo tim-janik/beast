@@ -104,8 +104,10 @@ class LatencyTest : public LatencyTestBase {
     void
     config (Properties *properties)
     {
-      midi_output_name = properties->midi_output.c_str();
       logfile_name = properties->logfile_name.c_str();
+      midi_output_name = properties->midi_output.c_str();
+      if (midi_output_name[0] == '$')
+        midi_output_name = g_getenv (midi_output_name.c_str() + 1);
 
       /* send pending note-off events, close and reopen devices */
       reset();

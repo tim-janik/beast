@@ -30,8 +30,6 @@
 
 #define BSE_EXIT_STATUS 102
 
-#define	BOILERPLATE_SCM		BSE_PATH_SCRIPTS "/bse-scm-glue.boot"
-
 
 /* --- prototypes --- */
 static void	gh_main			(gint	 argc,
@@ -49,7 +47,7 @@ static gboolean        bse_scm_auto_load = TRUE;
 static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
-
+static const gchar    *boot_script_path = BSE_PATH_SCRIPTS;
 
 /* --- functions --- */
 static void
@@ -123,7 +121,8 @@ gh_main (int   argc,
   bse_scm_interp_init ();
 
   /* exec Bse Scheme bootup code */
-  gh_load (BOILERPLATE_SCM);
+  const gchar *boot_script = g_intern_printf ("%s/%s", boot_script_path, "bse-scm-glue.boot");
+  gh_load (boot_script);
 
   /* eval, auto-play or interactive */
   if (bse_scm_eval_expr)
@@ -258,6 +257,12 @@ shell_parse_args (gint    *argc_p,
         {
           /* modify args for BSE */
           argv[i] = "--bse-midi-driver";
+        }
+      else if (strcmp ("--bse-override-script-path", argv[i]) == 0 && i + 1 < argc)
+        {
+          argv[i++] = NULL;
+          boot_script_path = argv[i];
+          argv[i] = NULL;
         }
       else if (strcmp ("-h", argv[i]) == 0 ||
                strcmp ("--help", argv[i]) == 0)

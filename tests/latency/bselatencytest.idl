@@ -32,7 +32,7 @@ class LatencyTest : Effect {
 			  "After sending a midi event, the latency tester will count the number"
 			  " of samples until it sees some signal on its input channel. From"
 			  " that number a latency is computed and printed (or logged, if you specified a log file)");
-
+  
   group _("Test configuration") {
     Real   bpm = (_("Beats per Minute"), _("The speed at which test events (quarter notes) are generated"),
                   120, 10, 1000, 5, STANDARD);
@@ -40,17 +40,21 @@ class LatencyTest : Effect {
 				_("Input signal needs to be louder than this to be counted as active"),
 				-24, -96, 0, 1, STANDARD ":scale");
     String logfile_name	= (_("Log File Name"), _("When set, the latency information will be written to this log file, stdout otherwise."),
-                          "", STANDARD);
+                           "", STANDARD);
   };
   group _("MIDI setup") {
     Int	   midi_note	= Note (_("Note"), NULL, bse_note_from_freq (BSE_KAMMER_FREQUENCY_f), STANDARD);
     Int    midi_channel = (_("Midi Output Channel"), _("The midi output device where the tester sends its events"),
-                          1, 1, 16, 1, STANDARD);
-    String midi_output	= (_("Midi Output Device"), _("The midi output device where the tester sends its events"),
-                          "", STANDARD);
+                           1, 1, 16, 1, STANDARD);
+    String midi_output	= (_("Midi Output Device"),
+                           _("The midi output device where the tester sends its events. "
+                             "This may be a named pipe (see man 1 mkfifo) which can be used "
+                             "with the OSS midi driver. If the name starts out with a \"$\", "
+                             "it is interpreted as an environment variable name and expanded."),
+                           "/tmp/midi-fifo", STANDARD);
   };
-
- 
+  
+  
   IStream audio_in   = (_("Audio In"), _("Test signal input, which the latency tester waits for"));
   OStream audio_out  = (_("Audio Out"), _("Test signal output"));
 };

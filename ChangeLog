@@ -1,3 +1,17 @@
+Tue Sep 28 23:08:23 2004  Tim Janik  <timj@gtk.org>
+
+	* tests/latency/bselatencytest.idl:
+	* tests/latency/bselatencytest.cc: support $ENVVAR expansion for midi
+	file name, extended docs.
+
+	* tests/latency/Makefile.am: create a named pipe, stored in $FIFO, and
+	invoke bsesh with bseplay.scm and midi-latency.bse to test midi latency.
+
+	* tests/latency/midi-latency.bse: use $FIFO as midi file.
+
+	* shell/bsesh.c: adapt boot script loading if 
+	--bse-override-script-path <script> is given.
+
 Tue Sep 28 21:49:25 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/latency/midi-latency.bse: added test file for BseLatencyTest.

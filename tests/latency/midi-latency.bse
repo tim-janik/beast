@@ -73,7 +73,7 @@
   (modification-time "2004-09-28 19:41:23")
   (creation-time "2004-09-28 11:07:38")
   (container-child "BseLatencyTest::LatencyTest-1"
-    (midi-output "/tmp/midi")
+    (midi-output "$FIFO")
     (midi-channel 1)
     (midi-note D-2)
     (logfile-name "")

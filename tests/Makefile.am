@@ -9,7 +9,7 @@ CFLAGS   += $(EXTRA_CFLAGS)
 CPPFLAGS += $(EXTRA_CXXFLAGS)
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
 
-DEFS += -DG_LOG_DOMAIN=\"BEAST-TEST\" # -DG_DISABLE_CONST_RETURNS
+DEFS += -DG_LOG_DOMAIN="\"BEAST-TEST\"" # -DG_DISABLE_CONST_RETURNS
 
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
