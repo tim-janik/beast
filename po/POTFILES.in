@@ -11,7 +11,6 @@ beast-gtk/bstdbmeter.c
 beast-gtk/bsteventrollctrl.c
 beast-gtk/bstfiledialog.c
 beast-gtk/bstgrowbar.c
-beast-gtk/bstinstrumentview.c
 beast-gtk/bstitemseqdialog.c
 beast-gtk/bstitemview.c
 beast-gtk/bstkeybindings.c
