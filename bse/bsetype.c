@@ -86,36 +86,42 @@ bse_type_register_dynamic (GType        parent_type,
 /* provide common constants */
 #include "bseglobals.h"
 /* provide IDL type initializers */
-#define	sfidl_pspec_Int(name, nick, blurb, dflt, min, max, step, hints)	\
-  sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints)
-#define	sfidl_pspec_Int_default(name)	sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_DEFAULT)
-#define	sfidl_pspec_UInt(name, nick, blurb, dflt, hints)	\
-  sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints)
-#define	sfidl_pspec_Real(name, nick, blurb, dflt, min, max, step, hints)	\
-  sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)
-#define	sfidl_pspec_Real_default(name)	sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT)
-#define	sfidl_pspec_Bool(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_bool (name, nick, blurb, dflt, hints)
-#define	sfidl_pspec_Bool_default(name)	sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT)
-#define	sfidl_pspec_Note(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints)
-#define	sfidl_pspec_Octave(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints)
-#define	sfidl_pspec_Freq(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_real (name, nick, blurb, dflt, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f, 10.0, hints)
-#define	sfidl_pspec_FineTune(name, nick, blurb, hints)			\
-  sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, hints)
-#define	sfidl_pspec_String(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_string (name, nick, blurb, dflt, hints)
-#define	sfidl_pspec_String_default(name)	sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_DEFAULT)
-#define	sfidl_pspec_Proxy_default(name)	sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_DEFAULT)
-#define	sfidl_pspec_BoxedSeq(name, nick, blurb, hints, element_pspec)		\
-  sfi_pspec_seq (name, nick, blurb, element_pspec, hints)
-#define	sfidl_pspec_BoxedRec(name, nick, blurb, hints, fields)			\
-  sfi_pspec_rec (name, nick, blurb, fields, hints)
-#define	sfidl_pspec_BoxedRec_default(name, fields)	sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_DEFAULT)
-#define	sfidl_pspec_BBlock(name, nick, blurb, hints)				\
-  sfi_pspec_bblock (name, nick, blurb, hints)
+#define	sfidl_pspec_Int(group, name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
+#define	sfidl_pspec_Int_default(group, name)	\
+  sfi_pspec_set_group (sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_UInt(group, name, nick, blurb, dflt, hints)	\
+  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints), group)
+#define	sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
+#define	sfidl_pspec_Real_default(group, name)	\
+  sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
+#define	sfidl_pspec_Bool_default(group, name)	\
+  sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Note(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints), group)
+#define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints), group)
+#define	sfidl_pspec_Freq(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f, 10.0, hints), group)
+#define	sfidl_pspec_FineTune(group, name, nick, blurb, hints)			\
+  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, hints), group)
+#define	sfidl_pspec_String(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, hints), group)
+#define	sfidl_pspec_String_default(group, name)  \
+  sfi_pspec_set_group (sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Proxy_default(group, name)  \
+  sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_BoxedSeq(group, name, nick, blurb, hints, element_pspec)		\
+  sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element_pspec, hints), group)
+#define	sfidl_pspec_BoxedRec(group, name, nick, blurb, hints, fields)			\
+  sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, hints), group)
+#define	sfidl_pspec_BoxedRec_default(group, name, fields)	\
+  sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_BBlock(group, name, nick, blurb, hints)				\
+  sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, hints), group)
 /* provide IDL constants */
 #define	KAMMER_FREQ	BSE_KAMMER_FREQUENCY_f
 #define	KAMMER_NOTE	BSE_KAMMER_NOTE
