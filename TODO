@@ -1,5 +1,4 @@
 FIXME(urgent):
-- fix float saving with de_DE
 - add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - install bsewavetool, bsewavetool.1
