@@ -1,6 +1,10 @@
 URGENT:
 - nuke OPEN_FAILED and similar errors in favour of real descriptions
 - track volume
+- sample chunk display should show note names not only midi notes
+- hotkey in piano roll to replay project
+- pasting doesn't quinatize (without later movement)
+- initial piano roll popup should shift vscrollbar to 50%
 
 FEATURES:
 - Module Menu: add EDIT
