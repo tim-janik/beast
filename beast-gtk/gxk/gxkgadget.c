@@ -332,6 +332,14 @@ env_get_size_group (Env         *env,
   return sg;
 }
 
+typedef struct _RecursiveOption RecursiveOption;
+struct _RecursiveOption {
+  RecursiveOption    *next;
+  const GxkGadgetOpt *opt;
+  GQuark              quark;
+};
+static RecursiveOption *stack_options = NULL;
+
 static const GxkGadgetOpt*
 env_find_quark (Env   *env,
                 GQuark quark,
@@ -342,7 +350,14 @@ env_find_quark (Env   *env,
     {
       GxkGadgetOpt *opt = slist->data;
       if (gadget_options_lookup_quark (opt, quark, nthp))
-        return opt;
+        {
+          RecursiveOption *ropt;
+          for (ropt = stack_options; opt && ropt; ropt = ropt->next)
+            if (opt == ropt->opt && quark == ropt->quark)
+              opt = NULL;
+          if (opt)
+            return opt;
+        }
     }
   return NULL;
 }
@@ -361,12 +376,20 @@ env_lookup (Env         *env,
 }
 
 static gchar*
-expand_option_value (const GxkGadgetOpt *opt,
-                     guint               nth,
-                     Env                *env)
+env_expand_option_value (Env                *env,
+                         const GxkGadgetOpt *opt,
+                         guint               nth)
 {
   const gchar *value = OPTIONS_NTH_VALUE (opt, nth);
-  return expand_expr (value, env);
+  gchar *exval;
+  RecursiveOption ropt;
+  ropt.opt = opt;
+  ropt.quark = opt->quarks[nth];
+  ropt.next = stack_options;
+  stack_options = &ropt;
+  exval = expand_expr (value, env);
+  stack_options = ropt.next;
+  return exval;
 }
 
 static inline const gchar*
@@ -472,7 +495,7 @@ parse_dollar (const gchar *c,
           const GxkGadgetOpt *opt = env_find_quark (env, quark, &nth);
           if (opt)
             {
-              gchar *exval = expand_option_value (opt, nth, env);
+              gchar *exval = env_expand_option_value (env, opt, nth);
               g_string_append (result, exval);
               g_free (exval);
             }
@@ -1018,7 +1041,7 @@ node_expand_call_options (Node               *node,
       gchar *value = OPTIONS_NTH_VALUE (opt, i);
       if (value && strchr (value, '$'))
         {
-          gchar *exval = expand_option_value (opt, i, env);
+          gchar *exval = env_expand_option_value (env, opt, i);
           OPTIONS_NTH_VALUE (opt, i) = exval;
           g_free (value);
         }

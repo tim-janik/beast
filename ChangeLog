@@ -1,3 +1,13 @@
+Sat Dec 20 19:49:02 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkgadget.c: allow variables referencing themselves,
+	i.e. label="foo-$label". this actually makes sense, since we have
+	multiple variables lists in an environment to lookup values.
+	(env_expand_option_value): record a successfull variable lookup onto
+	a recursion stack while expanding its value.
+	(env_find_quark): don't return variable values that are listed
+	in the recursion stack.
+
 Fri Dec 19 19:41:30 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkgadget.c (gxk_gadget_options_get): speed up
