@@ -458,13 +458,13 @@ print_proc (GType              type,
       fprintf (f_out, "  BswProxyProcedureCall cl;\n");
       fprintf (f_out, "  GValue *value = cl.ivalues;\n");
       for (i = 0; i < class->n_in_pspecs; i++)
-	fprintf (f_out, "  %s (value, %s, %s); value++;\n",
+	fprintf (f_out, "  value->g_type = 0; %s (value, %s, %s); value++;\n",
 		 marshal_find (class->in_pspecs[i]->value_type, TRUE)->set_func,
 		 tmacro_from_type (class->in_pspecs[i]->value_type),
 		 cident_canonify (class->in_pspecs[i]->value_type, class->in_pspecs[i]->name));
       fprintf (f_out, "  cl.n_ivalues = value - cl.ivalues;\n");
       if (class->n_out_pspecs)
-	fprintf (f_out, "  %s (&cl.ovalue, %s, 0);\n",
+	fprintf (f_out, "  cl.ovalue.g_type = 0; %s (&cl.ovalue, %s, 0);\n",
 		 marshal_find (class->out_pspecs[0]->value_type, TRUE)->set_func,
 		 tmacro_from_type (class->out_pspecs[0]->value_type));
       fprintf (f_out, "  cl.proc_name = \"%s\";\n", class->name);
