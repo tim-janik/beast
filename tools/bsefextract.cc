@@ -92,7 +92,7 @@ public:
     if (options.cut_zeros_head)
       {
 	/* cut_zeros head */
-	while (head_is_silent() && signal_length > signal_n_channels)
+	while (head_is_silent() && signal_length > (GslLong) signal_n_channels)
 	  {
 	    signal_offset += signal_n_channels;
 	    signal_length -= signal_n_channels;
@@ -101,7 +101,7 @@ public:
     if (options.cut_zeros_tail)
       {
 	/* cut_zeros tail */
-	while (tail_is_silent() && signal_length > signal_n_channels)
+	while (tail_is_silent() && signal_length > (GslLong) signal_n_channels)
 	  {
 	    signal_length -= signal_n_channels;
 	  }

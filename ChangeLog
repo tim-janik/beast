@@ -1,3 +1,8 @@
+Fri Dec 31 14:15:08 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Added casts to fix signedness compiler
+	warnings.
+
 Fri Dec 31 04:04:33 2004  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.[hc]*: fixed error handling.
