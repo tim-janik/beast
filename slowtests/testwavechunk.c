@@ -52,8 +52,8 @@ static void	print_block (GslWaveChunk      *wchunk,
 static void
 run_tests (GslWaveLoopType loop_type,
 	   gint            play_dir,
-	   gint		   loop_start,
-	   gint		   loop_end,
+	   gint		   loop_first,
+	   gint		   loop_last,
 	   gint		   loop_count)
 {
   gfloat tmpstorage[DEBUG_SIZE], *cmpblock = tmpstorage + DEBUG_SIZE / 2;
@@ -73,10 +73,10 @@ run_tests (GslWaveLoopType loop_type,
   gsl_data_handle_unref (myhandle);
   wchunk = _gsl_wave_chunk_create (dcache, 0, my_data_length,
 				   1, 44.0, 44100.0,
-				   loop_type, loop_start, loop_end, loop_count);
+				   loop_type, loop_first, loop_last, loop_count);
   if (verbosity >= VERBOSITY_SETUP)
-    g_print ("SETUP: loop_type=%u loop_start=%ld loop_end=%ld loop_count=%d playdir=%+d\n",
-	     wchunk->loop_type, wchunk->loop_start, wchunk->loop_end, wchunk->loop_count, play_dir);
+    g_print ("SETUP: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d playdir=%+d\n",
+	     wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, play_dir);
   gsl_wave_chunk_debug_block (wchunk, - DEBUG_SIZE / 2, DEBUG_SIZE, cmpblock - DEBUG_SIZE / 2);
 
   block.play_dir = play_dir;
@@ -117,8 +117,8 @@ run_tests (GslWaveLoopType loop_type,
 	}
       if (abort)
 	{
-	  g_error ("mismatches occoured, setup: loop_type=%u loop_start=%ld loop_end=%ld loop_count=%d (length=%ld)",
-		   wchunk->loop_type, wchunk->loop_start, wchunk->loop_end, wchunk->loop_count, wchunk->length);
+	  g_error ("mismatches occoured, setup: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d (length=%ld)",
+		   wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, wchunk->length);
 	}
 
       gsl_wave_chunk_unuse_block (wchunk, &block);

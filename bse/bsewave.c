@@ -506,15 +506,15 @@ bse_wave_do_store_private (BseObject  *object,
 	      bse_storage_break (storage);
 	      bse_storage_printf (storage, "(loop %lu %lu %lu)",
 				  (GslLong) url->wchunk->loop_count,
-				  url->wchunk->loop_start,
-				  url->wchunk->loop_end);
+				  url->wchunk->loop_first,
+				  url->wchunk->loop_last);
 	      break;
 	    case GSL_WAVE_LOOP_PINGPONG:
 	      bse_storage_break (storage);
 	      bse_storage_printf (storage, "(ping-pong-loop %lu %lu %lu)",
 				  (GslLong) url->wchunk->loop_count,
-				  url->wchunk->loop_start,
-				  url->wchunk->loop_end);
+				  url->wchunk->loop_first,
+				  url->wchunk->loop_last);
 	      break;
 	    case GSL_WAVE_LOOP_NONE:
 	      break;

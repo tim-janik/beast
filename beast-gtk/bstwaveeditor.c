@@ -470,8 +470,8 @@ wave_chunk_fill_value (BstWaveEditor *self,
     case COL_LOOP:
       g_value_set_string_take_ownership (value, g_strdup_printf ("L:%u {0x%08lx,0x%08lx}",
 								 wchunk->loop_count,
-								 wchunk->loop_start,
-								 wchunk->loop_end));
+								 wchunk->loop_first,
+								 wchunk->loop_last));
       break;
     case COL_WAVE_NAME:
       g_value_set_string (value, bwave->wave_name);

@@ -58,8 +58,8 @@ struct _GslWaveChunk
   GslWaveLoopType loop_type : 16;
   guint		  pploop_ends_backwards : 1;
   guint		  mini_loop : 1;
-  GslLong	  loop_start;
-  GslLong	  loop_end;
+  GslLong	  loop_first;
+  GslLong	  loop_last;
   guint		  loop_count;
 
   /* preformatted blocks */
@@ -102,7 +102,7 @@ GslWaveChunk*	_gsl_wave_chunk_create		(GslDataCache		*dcache,
 						 gfloat			 mix_freq,
 						 GslWaveLoopType	 loop_type,
 						 GslLong		 loop_start,
-						 GslLong		 loop_end,
+						 GslLong		 loop_last,
 						 guint			 loop_count);
 void		_gsl_wave_chunk_destroy		(GslWaveChunk		*wchunk);
 void		gsl_wave_chunk_debug_block	(GslWaveChunk		*wchunk,
