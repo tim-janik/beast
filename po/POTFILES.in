@@ -94,6 +94,7 @@ bse/bsesuboport.c
 bse/bsesubsynth.c
 bse/bsesuper.c
 bse/bsetrack.c
+bse/bsewave.c
 bse/bsewaveosc.c
 data/beast.desktop.in
 data/beast.xml.in
