@@ -1,4 +1,5 @@
 FIXMES:
+- fix foo-prefix prefix
 - /Demo			# parse song name from bse files
 - fix copyright/license in song-parts-operations.scm
 - fix copyright/license in party-monster.bse
