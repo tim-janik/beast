@@ -141,7 +141,7 @@ eparam_changed (gpointer         data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
-  GtkWidget *entry, *button, *hscroll, *vscroll, *eb, *child;
+  GtkWidget *hscroll, *vscroll, *eb, *child;
   GtkPaned *paned;
   GtkObject *adjustment;
   GParamSpec *pspec;
@@ -217,65 +217,30 @@ bst_part_dialog_init (BstPartDialog *self)
       bst_param_apply_value (bparam); /* update model */
     }
 
-  /* create toolbar */
-  self->toolbar = gxk_toolbar_new (&self->toolbar);
-  gxk_gadget_add (gadget, "toolbar-area", self->toolbar);
-
-  /* add note tools to toolbar */
-  // bst_radio_tools_build_toolbar (self->pctrl->canvas_rtools, self->toolbar);
-  // gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->canvas_rtools->accel_group);
-  
-  /* selection ops (copy/cut/...) */
-  gxk_toolbar_append_separator (self->toolbar);
-  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Clear", "Clear the current selection", BST_STOCK_TRASH_SCISSORS);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_clear, self->pctrl, NULL);
-  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_clear, self->ectrl, NULL);
-  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Cut", "Move the current selection into clipboard", BST_STOCK_MUSIC_CUT);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_cut, self->pctrl, NULL);
-  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_cut, self->ectrl, NULL);
-  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Copy", "Copy the current selection into clipboard", BST_STOCK_MUSIC_COPY);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_copy, self->pctrl, NULL);
-  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_copy, self->ectrl, NULL);
-  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Paste", "Insert clipboard contents as current selection", BST_STOCK_MUSIC_PASTE);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_paste, self->pctrl, NULL);
-  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_paste, self->ectrl, NULL);
-
-  /* add note-length choice to toolbar */
-  //bst_radio_tools_build_toolbar_choice (self->pctrl->note_rtools, self->toolbar);
-  //gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->note_rtools->accel_group);
-  
-  /* add quantization selection to toolbar */
-  //bst_radio_tools_build_toolbar_choice (self->pctrl->quant_rtools, self->toolbar);
-  //gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->quant_rtools->accel_group);
-  
   /* hzoom */
-  gxk_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (13, 0, 100, 1, 5, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", hzoom_changed, self,
 		    NULL);
-  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
-			"visible", TRUE,
-			"adjustment", adjustment,
-			"digits", 1,
-			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
-			NULL);
-  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
-		      "HZoom", "Horizontal Zoom", entry);
-
+  gxk_gadget_add (self, "hzoom-area",
+                  g_object_new (GTK_TYPE_SPIN_BUTTON,
+                                "visible", TRUE,
+                                "adjustment", adjustment,
+                                "digits", 1,
+                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                NULL));
   /* vzoom */
   adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", vzoom_changed, self,
 		    NULL);
-  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
-			"visible", TRUE,
-			"adjustment", adjustment,
-			"digits", 0,
-			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
-			NULL);
-  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
-		      "VZoom", "Vertical Zoom", entry);
+  gxk_gadget_add (self, "vzoom-area",
+                  g_object_new (GTK_TYPE_SPIN_BUTTON,
+                                "visible", TRUE,
+                                "adjustment", adjustment,
+                                "digits", 0,
+                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                NULL));
 }
 
 static void
@@ -391,10 +356,6 @@ part_dialog_action_exec (gpointer data,
       bse_item_clear_undo (self->proll->proxy);
       break;
     default:
-      if (action >= BST_GENERIC_ROLL_TOOL_FIRST)
-        {
-          // FIXME: if (self->pctrl && self->pctrl->canvas_rtools) bst_radio_tools_set_tool (self->pctrl->canvas_rtools, action);
-        }
       break;
     }
 

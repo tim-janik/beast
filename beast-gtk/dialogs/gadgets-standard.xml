@@ -3,6 +3,7 @@
   
   <!-- Primitive Gtk+ widget type wrappers -->
   
+  <xdef:entry                 inherit="GtkEntry"        />
   <!-- frame, alignment -->
   <xdef:alignment             inherit="GtkAlignment"        />
   <xdef:event-box             inherit="GtkEventBox"         />
@@ -123,22 +124,6 @@
     </hbox>
     <vbox name="south" />
   </xdef:border-layout>
-  <!-- toolbar-space: hseparator= vseparator= -->
-  <xdef:toolbar-space inherit="alignment"
-    prop:yscale="0.4" prop:xscale="0.4"  >
-    <hbox>
-      <vseparator
-	visible="$vseparator"
-	size:hgroup="gxk-toolbar-space" />
-      <hseparator
-	visible="$hseparator"
-	size:vgroup="gxk-toolbar-space" />
-      <alignment
-	visible="$(nor,$hseparator,$vseparator)"
-	size:hgroup="gxk-toolbar-space"
-	size:vgroup="gxk-toolbar-space" />
-    </hbox>
-  </xdef:toolbar-space>
 
   <!-- Gxk builtin types -->
 
@@ -174,5 +159,61 @@
   <xdef:menu-separator inherit="GxkMenuItem" prop:sensitive="0" />
   <!-- menu-tearoff: actions= -->
   <xdef:menu-tearoff inherit="GtkTearoffMenuItem" />
+
+  <!-- separator: hseparator= vseparator= -->
+  <xdef:separator inherit="alignment"
+    prop:yscale="0.4" prop:xscale="0.4"  >
+    <hbox>
+      <vseparator
+	visible="$vseparator"
+	size:hgroup="gxk-toolbar-space" />
+      <hseparator
+	visible="$hseparator"
+	size:vgroup="gxk-toolbar-space" />
+      <alignment
+	visible="$(nor,$hseparator,$vseparator)"
+	size:hgroup="gxk-toolbar-space"
+	size:vgroup="gxk-toolbar-space" />
+    </hbox>
+  </xdef:separator>
+  <!-- button factories: button-args, action-*= -->
+  <xdef:button-factory inherit="gadget-factory"
+    per-action="action-button"
+    activatable="action-button"
+    regulate="action-button" />
+  <xdef:toggle-factory inherit="gadget-factory"
+    per-action="action-toggle"
+    activatable="action-toggle"
+    regulate="action-toggle" />
+  <xdef:action-button inherit="button"
+    focus="0" >
+    <tooltip text="$action-tooltip" />
+    <widget-patcher prop:width-from-height="1.25" />
+    <vbox>
+      <image
+	expand="1"
+	stock-image="$action-stock"
+	visible="$(ifdef,action-stock,1,0)"
+	stock-size="$image-size" />
+      <label label="$action-name" />
+    </vbox>
+  </xdef:action-button>
+  <xdef:action-toggle inherit="toggle-button"
+    focus="0" >
+    <tooltip text="$action-tooltip" />
+    <widget-patcher prop:width-from-height="1.25" />
+    <vbox>
+      <image
+	expand="1"
+	stock-image="$action-stock"
+	visible="$(ifdef,action-stock,1,0)"
+	stock-size="$image-size" />
+      <label label="$action-name" />
+    </vbox>
+  </xdef:action-toggle>
+  <!-- muted-button: button-args -->
+  <xdef:muted-button inherit="button" focus="0" >
+    <widget-patcher prop:mute-events="1" prop:lower-windows="1" />
+  </xdef:muted-button>
 
 </gxk-gadget-definitions>

@@ -1,3 +1,32 @@
+Fri Nov 14 23:05:35 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.[hc]: removed last bits of manually coded
+	toolbar. removed final radio tools traces. added hzoom and vzoom
+	spinners to toolbar areas in the piano-roll-box gadget.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added tool-* stencils to
+	produce toolbar-alike widgets. provided room for hzoom and
+	vzoom tools.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: defined entry. defined
+	separator. defined muted-button. moved button factories here.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: added ::mute_events and
+	::lower_windows properties to GxkWidgetPatcher to filter-out
+	any action-events from a widget and to have its windows lowered
+	beyxond child windows (usefull for input-only windows).
+
+	* beast-gtk/gxk/gxkgadget.[hc]: switched to keep default-area
+	information only in string form. that way, widgets created from
+	stencils can still search for default-areas within widget trees.
+	adapted default-area search to allow level-order searching,
+	i.e. parents not appearing in the widget path.
+	added gxk_gadget_find_area() which in addition to gxk_gadget_find()
+	also resolves default-area settings on the child if present.
+	switched gxk_gadget_add() to use gxk_gadget_find_area().
+	(gxk_gadget_define_widget_type): support width= and height=
+	variables for widgets.
+
 Fri Nov 14 18:42:25 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkauxwidgets.[hc]: added tooltip-visible and

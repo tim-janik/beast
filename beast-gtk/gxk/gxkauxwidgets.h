@@ -61,6 +61,8 @@ typedef struct {
   GObject parent_instance;
   gchar  *tooltip;
   guint   tooltip_visible : 1;
+  guint   mute_events : 1;
+  guint   lower_windows : 1;
   gdouble width_from_height;
   gdouble height_from_width;
 } GxkWidgetPatcher;

@@ -247,6 +247,8 @@ enum {
   PATCHER_PROP_0,
   PATCHER_PROP_TOOLTIP,
   PATCHER_PROP_TOOLTIP_VISIBLE,
+  PATCHER_PROP_MUTE_EVENTS,
+  PATCHER_PROP_LOWER_WINDOWS,
   PATCHER_PROP_WIDTH_FROM_HEIGHT,
   PATCHER_PROP_HEIGHT_FROM_WIDTH
 };
@@ -264,6 +266,12 @@ gxk_widget_patcher_set_property (GObject      *object,
       break;
     case PATCHER_PROP_TOOLTIP_VISIBLE:
       self->tooltip_visible = g_value_get_boolean (value);
+      break;
+    case PATCHER_PROP_MUTE_EVENTS:
+      self->mute_events = g_value_get_boolean (value);
+      break;
+    case PATCHER_PROP_LOWER_WINDOWS:
+      self->lower_windows = g_value_get_boolean (value);
       break;
     case PATCHER_PROP_WIDTH_FROM_HEIGHT:
       self->width_from_height = g_value_get_double (value);
@@ -295,6 +303,10 @@ gxk_widget_patcher_class_init (GxkWidgetPatcherClass *class)
   g_object_class_install_property (gobject_class, PATCHER_PROP_TOOLTIP_VISIBLE,
                                    g_param_spec_boolean ("tooltip_visible", NULL, NULL,
                                                          TRUE, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_MUTE_EVENTS,
+                                   g_param_spec_boolean ("mute-events", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_LOWER_WINDOWS,
+                                   g_param_spec_boolean ("lower-windows", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_WIDTH_FROM_HEIGHT,
                                    g_param_spec_double ("width_from_height", NULL, NULL, -G_MAXDOUBLE, G_MAXDOUBLE, 0, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_HEIGHT_FROM_WIDTH,
@@ -317,6 +329,38 @@ widget_patcher_width_from_height (GtkWidget      *widget,
     requisition->width = requisition->height * factor;
 }
 static gboolean
+widget_mute_events (GtkWidget *widget,
+                    GdkEvent  *event)
+{
+  switch (event->type)
+    {
+    case GDK_BUTTON_PRESS:
+    case GDK_2BUTTON_PRESS:
+    case GDK_3BUTTON_PRESS:
+    case GDK_BUTTON_RELEASE:
+    case GDK_MOTION_NOTIFY:
+    case GDK_KEY_PRESS:
+    case GDK_KEY_RELEASE:
+    case GDK_ENTER_NOTIFY:
+    case GDK_LEAVE_NOTIFY:
+      return TRUE;
+    default:
+      return FALSE;
+    }
+}
+static void
+widget_lower_windows (GtkWidget *widget)
+{
+  GList *list = gdk_window_peek_children (widget->window);
+  for (; list; list = list->next)
+    {
+      gpointer user_data;
+      gdk_window_get_user_data (list->data, &user_data);
+      if (user_data == (gpointer) widget)
+        gdk_window_lower (list->data);
+    }
+}
+static gboolean
 widget_patcher_adopt (GxkGadget          *gadget,
                       GxkGadget          *parent,
                       GxkGadgetData      *gdgdata)
@@ -328,6 +372,12 @@ widget_patcher_adopt (GxkGadget          *gadget,
       if (self->tooltip_visible)
         gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, self->tooltip, NULL);
     }
+  if (self->mute_events &&
+      !gxk_signal_handler_pending (parent, "event", G_CALLBACK (widget_mute_events), NULL))
+    g_object_connect (parent, "signal::event", widget_mute_events, NULL, NULL);
+  if (self->lower_windows &&
+      !gxk_signal_handler_pending (parent, "map", G_CALLBACK (widget_lower_windows), NULL))
+    g_object_connect (parent, "signal_after::map", widget_lower_windows, NULL, NULL);
   if (self->width_from_height &&
       !gxk_signal_handler_pending (parent, "size-request", G_CALLBACK (widget_patcher_width_from_height), NULL))
     g_object_connect (parent, "signal_after::size-request", widget_patcher_width_from_height, NULL, NULL);

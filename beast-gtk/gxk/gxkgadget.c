@@ -69,7 +69,7 @@ struct Node {
   const gchar  *size_hgroup;
   const gchar  *size_vgroup;
   const gchar  *size_hvgroup;
-  Node         *default_child;
+  const gchar *default_area;
   GSList       *children;       /* Node* */
   GSList       *call_stack;     /* expanded call_options */
 };
@@ -81,8 +81,6 @@ typedef struct {
   Domain *domain;
   guint   tag_opened;
   GSList *node_stack; /* Node* */
-  const gchar *default_area;
-  Node        *default_child;
 } PData;                /* parser state */
 typedef gchar* (*MacroFunc)     (GSList *args,
                                  Env    *env);
@@ -99,6 +97,8 @@ static inline guint64   num_from_string                 (const gchar    *value);
 static guint64          num_from_expr                   (const gchar    *expr,
                                                          Env            *env);
 static void             gadget_define_gtk_menu          (void);
+static Node*            node_children_find_area         (Node           *node,
+                                                         const gchar    *area);
 
 
 /* --- variables --- */
@@ -190,6 +190,7 @@ clone_node_intern (Node        *source,
   node->size_hgroup = source->size_hgroup;
   node->size_vgroup = source->size_vgroup;
   node->size_hvgroup = source->size_hvgroup;
+  node->default_area = source->default_area;
   for (slist = source->children; slist; slist = slist->next)
     {
       Node *child = slist->data;
@@ -202,8 +203,6 @@ clone_node_intern (Node        *source,
       else
         node->children = last = g_slist_new (child);
     }
-  if (source->default_child)
-    node->default_child = clone_list_find (clist, source->default_child);
   return node;
 }
 
@@ -495,11 +494,21 @@ static Node*
 node_children_find_area (Node        *node,
                          const gchar *area)
 {
-  GSList *slist;
-  for (slist = node->children; slist; slist = slist->next)
+  GSList *children = g_slist_copy (node->children);
+  while (children)
     {
-      if (strcmp (NODE (slist->data)->name, area) == 0)
-        return slist->data;
+      GSList *slist, *newlist = NULL;
+      for (slist = children; slist; slist = slist->next)
+        if (strcmp (NODE (slist->data)->name, area) == 0)
+          {
+            node = slist->data;
+            g_slist_free (children);
+            return node;
+          }
+      for (slist = children; slist; slist = slist->next)
+        newlist = g_slist_concat (g_slist_copy (NODE (slist->data)->children), newlist);
+      g_slist_free (children);
+      children = newlist;
     }
   return NULL;
 }
@@ -510,20 +519,18 @@ node_find_area (Node        *node,
 {
   Node *child;
   const gchar *p;
-  if (!area || strcmp (area, "default") == 0)
-    {
-      child = node->default_child;
-      if (child)
-        return node_find_area (child, NULL);
-      else
-        return node;
-    }
+  if (!area || strcmp ("default", area) == 0)
+    area = node->default_area;
+  if (!area)
+    return node;
   p = strchr (area, '.');
   if (p)
     {
       gchar *str = g_strndup (area, p - area);
       if (strcmp (str, "default") == 0)
-        child = node->default_child;
+        child = !node->default_area ? node : node_children_find_area (node, node->default_area);
+      else if (strcmp (str, node->name) == 0)
+        child = node;
       else
         child = node_children_find_area (node, str);
       g_free (str);
@@ -532,7 +539,10 @@ node_find_area (Node        *node,
       else
         return node_find_area (node, NULL);
     }
-  child = node_children_find_area (node, area);
+  if (strcmp (area, node->name) == 0)
+    child = node;
+  else
+    child = node_children_find_area (node, area);
   if (child)
     return node_find_area (child, NULL);
   else
@@ -677,10 +687,13 @@ gadget_start_element  (GMarkupParseContext *context,
         set_error (error, "redefinition of gadget: %s", name);
       else
         {
+          const gchar *default_area = NULL;
           Node *node = node_define (pdata->domain, name, 0, NULL, NULL, attribute_names, attribute_values,
-                                    NULL, NULL, &pdata->default_area, error);
+                                    NULL, NULL, &default_area, error);
           if (node)
             {
+              if (default_area)
+                node->default_area = default_area;
               g_datalist_set_data (&pdata->domain->nodes, name, node);
               pdata->node_stack = g_slist_prepend (pdata->node_stack, node);
             }
@@ -722,17 +735,11 @@ gadget_end_element (GMarkupParseContext *context,
     }
   else if (pdata->node_stack && pdata->node_stack->next == NULL && strncmp (element_name, "xdef:", 5) == 0)
     {
-      Node *node = g_slist_pop_head (&pdata->node_stack);
-      if (pdata->default_child)
-        node->default_child = pdata->default_child;
-      pdata->default_child = NULL;
-      pdata->default_area = NULL;
+      g_slist_pop_head (&pdata->node_stack);
     }
   else if (pdata->node_stack && pdata->node_stack->next)
     {
-      Node *node = g_slist_pop_head (&pdata->node_stack);
-      if (pdata->default_area && strcmp (node->name, pdata->default_area) == 0)
-        pdata->default_child = node;
+      g_slist_pop_head (&pdata->node_stack);
     }
 }
 
@@ -960,16 +967,6 @@ node_expand_call_options (Node               *node,
   if (node->xdef_node && node->xdef_node->call_stack)
     n_pops++, env->option_list = g_slist_prepend (env->option_list, node->xdef_node->call_stack->data);
   n_pops++, env->option_list = g_slist_prepend (env->option_list, opt);
-#if 0
-  {
-    guint i; const GxkGadgetOpt *ox = ovr_options;
-    for (i=0; i < OPTIONS_N_ENTRIES (ox); i++)
-      {
-        const gchar *name = OPTIONS_NTH_NAME (ox, i), *value = OPTIONS_NTH_VALUE (ox, i);
-        g_print ("DEBUG-option: %s %s (%u)\n", name, value, i);
-      }
-  }
-#endif
   /* expand options */
   for (i = 0; i < OPTIONS_N_ENTRIES (opt); i++)
     {
@@ -1389,14 +1386,24 @@ gxk_gadget_get_domain (GxkGadget *gadget)
   return gadget_node->domain;
 }
 
+void
+gxk_gadget_sensitize (GxkGadget      *gadget,
+                      const gchar    *name,
+                      gboolean        sensitive)
+{
+  GtkWidget *widget = gxk_gadget_find (gadget, name);
+  if (GTK_IS_WIDGET (widget))
+    gtk_widget_set_sensitive (widget, sensitive);
+}
+
 gpointer
 gxk_gadget_find (GxkGadget      *gadget,
-                 const gchar    *region)
+                 const gchar    *name)
 {
-  const gchar *next, *c = region;
+  const gchar *next, *c = name;
 
   g_return_val_if_fail (gadget != NULL, NULL);
-  g_return_val_if_fail (region != NULL, NULL);
+  g_return_val_if_fail (name != NULL, NULL);
 
   if (!GTK_IS_WIDGET (gadget))
     return NULL;
@@ -1414,27 +1421,34 @@ gxk_gadget_find (GxkGadget      *gadget,
   return gadget;
 }
 
-void
-gxk_gadget_sensitize (GxkGadget      *gadget,
-                      const gchar    *region,
-                      gboolean        sensitive)
+gpointer
+gxk_gadget_find_area (GxkGadget      *gadget,
+                      const gchar    *area)
 {
-  GtkWidget *widget = gxk_gadget_find (gadget, region);
-  if (GTK_IS_WIDGET (widget))
-    gtk_widget_set_sensitive (widget, sensitive);
+  Node *node;
+  gadget = gxk_gadget_find (gadget, area);
+  if (!GTK_IS_WIDGET (gadget))
+    return NULL;
+  node = g_object_get_qdata (gadget, quark_gadget_node);
+  while (node && node->default_area)
+    {
+      gadget = gxk_widget_find_level_ordered (gadget, node->default_area);
+      node = gadget ? g_object_get_qdata (gadget, quark_gadget_node) : NULL;
+    }
+  return gadget;
 }
 
 void
 gxk_gadget_add (GxkGadget      *gadget,
-                const gchar    *region,
+                const gchar    *area,
                 gpointer        widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  gadget = gxk_gadget_find (gadget, region);
-  if (!gadget || !GTK_IS_CONTAINER (gadget))
-    g_warning ("GxkGadget: failed to find region \"%s\"", region);
+  gadget = gxk_gadget_find_area (gadget, area);
+  if (GTK_IS_CONTAINER (gadget))
+    gtk_container_add (gadget, widget);
   else
-    gtk_container_add (GTK_CONTAINER (gadget), widget);
+    g_warning ("GxkGadget: failed to find area \"%s\"", area);
 }
 
 
@@ -1565,8 +1579,8 @@ gxk_gadget_define_widget_type (GType type)
     widget_find_pack,
     widget_set_pack,
   };
-  const gchar *attribute_names[2] = { NULL, NULL };
-  const gchar *attribute_values[2] = { NULL, NULL };
+  const gchar *attribute_names[4] = { NULL, NULL };
+  const gchar *attribute_values[4] = { NULL, NULL };
   
   g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
   g_return_if_fail (g_type_is_a (type, GTK_TYPE_WIDGET));
@@ -1575,6 +1589,10 @@ gxk_gadget_define_widget_type (GType type)
   g_type_set_qdata (type, quark_gadget_type, (gpointer) &widget_info);
   attribute_names[0] = "prop:visible";
   attribute_values[0] = "$(ifdef,visible,$visible,1)";
+  attribute_names[1] = "prop:width-request";
+  attribute_values[1] = "$(ifdef,width,$width,0)";
+  attribute_names[2] = "prop:height-request";
+  attribute_values[2] = "$(ifdef,height,$height,0)";
   gadget_define_type (type, g_type_name (type), attribute_names, attribute_values);
 }
 

@@ -22,7 +22,6 @@
 #include	"bsteventroll.h"
 #include	"bstpianorollctrl.h"
 #include	"bsteventrollctrl.h"
-#include	"bstradiotools.h"
 
 G_BEGIN_DECLS
 
@@ -46,7 +45,6 @@ struct _BstPartDialog
   BstPianoRollController *pctrl;
   BstEventRoll  *eroll;
   BstEventRollController *ectrl;
-  GxkToolbar	*toolbar;
   SfiProxy       project;
 };
 struct _BstPartDialogClass

@@ -1,44 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
   
-  <!-- factory contents: button-args, action-*= -->
-  <xdef:factory-button inherit="button"
-    focus="0" >
-    <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1.25" />
+  <!-- toolbar items -->
+  <xdef:tool-button-factory inherit="button-factory" image-size="big-button" relief="none" />
+  <xdef:tool-toggle-factory inherit="toggle-factory" image-size="big-button" relief="none" />
+  <xdef:tool-separator      inherit="separator" hseparator="0" vseparator="1" />
+  <xdef:tool-space          inherit="separator" hseparator="0" vseparator="0" />
+  <xdef:tool-area           inherit="muted-button"
+    hseparator="0" vseparator="0" relief="none" default-area="image-area" >
+    <tooltip text="$(null-collapse,$tooltip)" />
     <vbox>
-      <image
-	expand="1"
-	stock-image="$action-stock"
-	visible="$(ifdef,action-stock,1,0)"
-	stock-size="$image-size" />
-      <label label="$action-name" />
+      <vbox name="image-area" />
+      <vbox name="label-area" pack:pack-type="end" />
     </vbox>
-  </xdef:factory-button>
-  <xdef:factory-toggle-button inherit="toggle-button"
-    focus="0" >
-    <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1.25" />
-    <vbox>
-      <image
-	expand="1"
-	stock-image="$action-stock"
-	visible="$(ifdef,action-stock,1,0)"
-        stock-size="$image-size" />
-      <label label="$action-name" />
-    </vbox>
-  </xdef:factory-toggle-button>
-  <!-- factories: actions= -->
-  <xdef:button-factory inherit="gadget-factory"
-    per-action="factory-button"
-    activatable="factory-button"
-    regulate="factory-button" />
-  <xdef:big-button-factory inherit="button-factory" image-size="big-button" />
-  <xdef:toggle-factory inherit="gadget-factory"
-    per-action="factory-toggle-button"
-    activatable="factory-toggle-button"
-    regulate="factory-toggle-button" />
-  <xdef:big-toggle-factory inherit="toggle-factory" image-size="big-button" />
+  </xdef:tool-area>
   
   <!-- misc BEAST widgets -->
   <xdef:piano-roll inherit="BstPianoRoll" />
@@ -51,7 +26,7 @@
 	<vbox spacing="3" >
 	  <alignment prop:xscale="0" prop:xalign="0" >
 	    <hbox prop:homogeneous="1" spacing="3" size:vgroup="toolbar-size" >
-	      <big-button-factory actions="track-view-actions" />
+	      <tool-button-factory actions="track-view-actions" />
 	    </hbox>
 	  </alignment>
 	  <frame-shadow-in size:vgroup="tree-size" pack:expand="1" >
@@ -81,7 +56,7 @@
       </scrolled-window>
       <alignment prop:yscale="0" prop:yalign="0" >
 	<vbox prop:homogeneous="1" spacing="3" >
-	  <big-button-factory actions="wave-view-actions" />
+	  <tool-button-factory actions="wave-view-actions" />
 	</vbox>
       </alignment>
     </hbox>
@@ -96,7 +71,7 @@
 	</scrolled-window>
 	<alignment prop:yscale="0" prop:yalign="0" >
 	  <vbox prop:homogeneous="1" spacing="3" >
-	    <big-button-factory actions="part-view-actions" />
+	    <tool-button-factory actions="part-view-actions" />
 	  </vbox>
 	</alignment>
       </hbox>
@@ -109,10 +84,10 @@
     <vbox name="toolbar-area" area="north" >
       <frame-shadow-out >
 	<hbox name="toolbar" >
-	  <big-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
-	  <toolbar-space pack:padding="3" vseparator="1" />
-	  <big-button-factory action-root="" actions="piano-edit-actions" relief="none" />
-	  <toolbar-space pack:padding="3" vseparator="1" />
+	  <tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
+	  <tool-separator pack:padding="3" />
+	  <tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
+	  <tool-separator pack:padding="3" />
 	  <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
 	    <popup-menu >
 	      <menu-factory action-root="" actions="pctrl-quant-tools" />
@@ -123,7 +98,15 @@
 	      <menu-factory action-root="" actions="pctrl-note-tools" />
 	    </popup-menu>
 	  </menu-button>
-	  <toolbar-space pack:padding="3" vseparator="1" />
+          <tool-separator pack:padding="3" />
+	  <tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
+            <label area="label-area"
+	      _label="HZoom" />
+	  </tool-area>
+          <tool-area name="vzoom-area" _tooltip="Vertical piano zoom" >
+	    <label area="label-area"
+	      _label="VZoom" />
+	  </tool-area>
 	</hbox>
       </frame-shadow-out>
     </vbox>

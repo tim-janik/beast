@@ -71,12 +71,14 @@ void          gxk_gadget_parse_text     (const gchar        *domain_name,
                                          gint                text_len,
                                          GError            **error);
 gpointer      gxk_gadget_find           (GxkGadget          *gadget,
-                                         const gchar        *region);
+                                         const gchar        *name);
+gpointer      gxk_gadget_find_area      (GxkGadget          *gadget,
+                                         const gchar        *area);
 void          gxk_gadget_add            (GxkGadget          *gadget,
-                                         const gchar        *region,
+                                         const gchar        *area,
                                          gpointer            widget);
 void          gxk_gadget_sensitize      (GxkGadget          *gadget,
-                                         const gchar        *region,
+                                         const gchar        *name,
                                          gboolean            sensitive);
 
 
