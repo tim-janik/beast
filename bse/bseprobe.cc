@@ -196,15 +196,16 @@ private:
                     /* perform fft */
                     double *rv = g_new (double, fft_size * 2), *cv = rv + fft_size; // FIXME: optimize
                     gfloat *fvalues = probe.sample_data.fblock()->values;
-                    const double reci_fft_size = 1.0 / (fft_size - 1);
+                    double reci_fft_size = 1.0 / (fft_size - 1);
                     guint i = fft_size;
                     while (i--) /* convert to double */
                       rv[i] = fvalues[i] * blackman_window (i * reci_fft_size);
                     gsl_power2_fftar (fft_size, rv, cv);
                     fvalues = probe.fft_data.fblock()->values;
+                    reci_fft_size = 1.0 / fft_size;
                     i = fft_size;
                     while (i--) /* convert to float */
-                      fvalues[i] = cv[i];
+                      fvalues[i] = cv[i] * reci_fft_size;
                     g_free (rv);
                   }
                 else

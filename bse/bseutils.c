@@ -17,12 +17,16 @@
  */
 #include "topconfig.h"
 #include "bseutils.h"
+#include "gsldatautils.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 
 
 /* --- record utils --- */
@@ -184,6 +188,36 @@ bse_item_seq_from_ring (SfiRing *ring)
   for (node = ring; node; node = sfi_ring_walk (node, ring))
     bse_item_seq_append (iseq, node->data);
   return iseq;
+}
+
+/* --- debugging --- */
+static int debug_fds[] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+#define MAX_DEBUG_STREAMS       (G_N_ELEMENTS (debug_fds))
+void
+bse_debug_dump_floats (guint   debug_stream,
+                       guint   n_channels,
+                       guint   mix_freq,
+                       guint   n_values,
+                       gfloat *values)
+{
+  debug_stream %= MAX_DEBUG_STREAMS;
+  if (debug_fds[debug_stream] < 0)
+    {
+      gchar *file = g_strdup_printf ("/tmp/beast-debug-dump%u.%u", debug_stream, getpid());
+      debug_fds[debug_stream] = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+      g_free (file);
+      if (debug_fds[debug_stream] >= 0)
+        gsl_wave_file_dump_header (debug_fds[debug_stream], 0x7fff0000, 16, n_channels, mix_freq);
+    }
+  if (debug_fds[debug_stream] >= 0)
+    {
+      guint8 *dest = g_new (guint8, n_values * 2); /* 16bit */
+      guint j, n_bytes = gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER, values, dest, n_values);
+      do
+        j = write (debug_fds[debug_stream], dest, n_bytes);
+      while (j < 0 && errno == EINTR);
+      g_free (dest);
+    }
 }
 
 /* --- balance calculation --- */

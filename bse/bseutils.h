@@ -61,6 +61,14 @@ SfiRing*            bse_item_seq_to_ring             (BseItemSeq            *ise
 BseItemSeq*         bse_item_seq_from_ring           (SfiRing               *ring);
 
 
+/* --- debugging --- */
+void    bse_debug_dump_floats   (guint   debug_stream,
+                                 guint   n_channels,
+                                 guint   mix_freq,
+                                 guint   n_values,
+                                 gfloat *values);
+
+
 /* --- balance calculation --- */
 /* levels are 0..100, balance is -100..+100 */
 double  bse_balance_get         (double  level1,

@@ -325,7 +325,7 @@ master_process_job (BseJob *job)
       guint64 stamp;
       guint istream, jstream, ostream, con;
       EngineTimedJob *tjob;
-      EngineProbeJob *pjob;
+      EngineProbeJob *pjob, *last_pjob;
       gboolean was_consumer;
     case ENGINE_JOB_SYNC:
       JOB_DEBUG ("sync");
@@ -551,9 +551,17 @@ master_process_job (BseJob *job)
       pjob = job->probe_job.pjob;
       JOB_DEBUG ("add probe_job(%p,%p)", node, pjob);
       g_return_if_fail (node->integrated == TRUE);
+      g_return_if_fail (pjob->next == NULL);
       job->probe_job.pjob = NULL;  /* ownership taken over */
-      pjob->next = node->probe_jobs;
-      node->probe_jobs = pjob;
+      last_pjob = node->probe_jobs;
+      if (!last_pjob)   /* insert first */
+        node->probe_jobs = pjob;
+      else
+        {               /* append after tail */
+          while (last_pjob->next)
+            last_pjob = last_pjob->next;
+          last_pjob->next = pjob;
+        }
       break;
     case ENGINE_JOB_FLOW_JOB:
       node = job->timed_job.node;

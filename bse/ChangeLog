@@ -1,3 +1,14 @@
+Mon Nov 29 21:45:25 2004  Tim Janik  <timj@gtk.org>
+
+	* bseenginemaster.c: append probe jobs upon insertion, so probe data
+	isn't mixed up between multiple probe jobs, and probe jobs are
+	processed in order.
+
+	* bseprobe.cc: normalize fft by multiplying with 1/n.
+
+	* bseutils.[hc]: added bse_debug_dump_floats() to easily dump debugging
+	wave data to a file in /tmp/.
+
 Sat Nov 27 20:02:04 2004  Tim Janik  <timj@gtk.org>
 
 	* engine-mplan.txt: * reflect renames in the code base
