@@ -121,6 +121,12 @@ bst_param_view_new (BseObject *object)
   return param_view;
 }
 
+static void
+param_view_reset_object (BstParamView *param_view)
+{
+  bst_param_view_set_object (param_view, NULL);
+}
+
 void
 bst_param_view_set_object (BstParamView *param_view,
 			   BseObject    *object)
@@ -133,12 +139,19 @@ bst_param_view_set_object (BstParamView *param_view,
 
   if (param_view->object)
     {
-      bse_object_unref (param_view->object);
+      bse_object_remove_notifiers_by_func (param_view->object,
+					   param_view_reset_object,
+					   param_view);
       param_view->object = NULL;
     }
   param_view->object = object;
   if (param_view->object)
-    bse_object_ref (param_view->object);
+    {
+      bse_object_add_data_notifier (param_view->object,
+				    "destroy",
+				    param_view_reset_object,
+				    param_view);
+    }
 
   for (slist = param_view->bparams; slist; slist = slist->next)
     bst_param_set_object (slist->data, object);

@@ -329,6 +329,12 @@ bst_param_set_procedure (BstParam          *bparam,
     }
 }
 
+static void
+bparam_reset_object (BstParam *bparam)
+{
+  bst_param_set_object (bparam, NULL);
+}
+
 void
 bst_param_set_object (BstParam  *bparam,
 		      BseObject *object)
@@ -342,7 +348,9 @@ bst_param_set_object (BstParam  *bparam,
   if (bparam->owner)
     {
       bse_object_remove_notifier (bparam->owner, bparam->param_set_id);
-      bse_object_unref (bparam->owner);
+      bse_object_remove_notifiers_by_func (bparam->owner,
+					   bparam_reset_object,
+					   bparam);
     }
 
   bparam->owner = object;
@@ -352,11 +360,14 @@ bst_param_set_object (BstParam  *bparam,
        * for object->class (or its anchestors), but actually i don't feel
        * like writing the extra code just to issue a warning
        */
-      bse_object_ref (bparam->owner);
-      bparam->param_set_id = bse_object_add_data_notifier (object,
+      bparam->param_set_id = bse_object_add_data_notifier (bparam->owner,
 							   "param_changed",
 							   bst_bparam_bse_changed,
 							   bparam);
+      bse_object_add_data_notifier (bparam->owner,
+				    "destroy",
+				    bparam_reset_object,
+				    bparam);
       if (bparam->group)
 	bst_param_get (bparam);
     }

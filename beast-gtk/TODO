@@ -1,4 +1,5 @@
 general:
+-	item view should use destroy notification for bse container
 -	need -Wshadow
 -	need file-exists dialog
 -	get File/Save to work

@@ -80,8 +80,13 @@ typedef enum
 /* --- pixmap stock --- */
 typedef enum
 {
+  BST_ICON_NONE,
   BST_ICON_NOICON,
   BST_ICON_MOUSE_TOOL,
+  BST_ICON_PROPERTIES,
+  BST_ICON_TRASH,
+  BST_ICON_NO_ILINK,
+  BST_ICON_NO_OLINK,
   BST_ICON_LAST
 } BstIconId;
 BseIcon* bst_icon_from_stock (BstIconId icon_id);

@@ -393,7 +393,13 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
 {
 #include "./icons/noicon.c"
 #include "./icons/mouse_tool.c"
+#include "./icons/properties.c"
+#include "./icons/trash.c"
+#include "./icons/no_ilink.c"
+#include "./icons/no_olink.c"
   static const BsePixdata pixdatas[] = {
+    /* BST_ICON_NONE */
+    { 0, 0, 0, NULL, },
     /* BST_ICON_NOICON */
     { NOICON_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NOICON_PIXDATA_WIDTH, NOICON_PIXDATA_HEIGHT,
@@ -402,6 +408,22 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
     { MOUSE_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       MOUSE_TOOL_IMAGE_WIDTH, MOUSE_TOOL_IMAGE_HEIGHT,
       MOUSE_TOOL_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_PROPERTIES */
+    { PROPERTIES_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      PROPERTIES_IMAGE_WIDTH, PROPERTIES_IMAGE_HEIGHT,
+      PROPERTIES_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_TRASH */
+    { TRASH_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      TRASH_IMAGE_WIDTH, TRASH_IMAGE_HEIGHT,
+      TRASH_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_NO_ILINK */
+    { NO_ILINK_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      NO_ILINK_IMAGE_WIDTH, NO_ILINK_IMAGE_HEIGHT,
+      NO_ILINK_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_NO_OLINK */
+    { NO_OLINK_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      NO_OLINK_IMAGE_WIDTH, NO_OLINK_IMAGE_HEIGHT,
+      NO_OLINK_IMAGE_RLE_PIXEL_DATA, },
   };
   static const guint n_stock_icons = sizeof (pixdatas) / sizeof (pixdatas[0]);
   static BseIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
@@ -412,6 +434,9 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
   
   if (!icons[icon_id])
     {
+      if (!pixdatas[icon_id].encoded_pix_data)
+	return NULL;
+
       icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id); /* static reference */
       bse_icon_static_ref (icons[icon_id]);
     }

@@ -276,12 +276,10 @@ bst_app_add_super (BstApp   *app,
 
   if (BSE_IS_SONG (super))
     shell = gtk_widget_new (BST_TYPE_SONG_SHELL,
-			    "super", super,
 			    "visible", TRUE,
 			    NULL);
   else if (BSE_IS_SNET (super))
     shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
-			    "super", super,
 			    "visible", TRUE,
 			    NULL);
   else
@@ -290,13 +288,13 @@ bst_app_add_super (BstApp   *app,
       return;
     }
 
-  gtk_notebook_popup_enable (app->notebook);
+  /* gtk_notebook_popup_enable (app->notebook); */
   gtk_notebook_append_page (app->notebook,
 			    shell,
 			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", BSE_OBJECT_NAME (super),
 					    "visible", TRUE,
 					    NULL));
+  bst_super_shell_set_super (BST_SUPER_SHELL (shell), super);
 }
 
 void

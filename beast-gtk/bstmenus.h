@@ -27,7 +27,20 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+
+/* --- defines --- */
+#define	BST_CHOICE_TITLE(name)		(bst_choice_alloc (1, BST_ICON_NONE, (name), 0))
+#define	BST_CHOICE(id, name, bst_icon)	(bst_choice_alloc (0, BST_ICON_ ## bst_icon, \
+							   (name), (id)))
+#define	BST_CHOICE_S(id, name, icon, s)	(bst_choice_alloc ((s) ? 0 : 1, BST_ICON_ ## icon, \
+							   (name), (id)))
+#define	BST_CHOICE_SEPERATOR		(bst_choice_alloc (1, BST_ICON_NONE, NULL, 0))
+#define BST_CHOICE_END			(NULL)
+
+
+/* --- structures --- */
 typedef struct _BstMenuEntry BstMenuEntry;
+typedef struct _BstChoice    BstChoice;
 struct _BstMenuEntry
 {
   GtkItemFactoryEntry entry;
@@ -44,8 +57,20 @@ GSList*	bst_menu_entries_compose	(guint			 n_menu_entries,
 void    bst_menu_entries_create         (GtkItemFactory         *ifactory,
 					 GSList                 *bst_menu_entries,
 					 gpointer                callback_data);
+GtkWidget* bst_choice_createv		(BstChoice		*first_choice,
+					 ...);
+gboolean   bst_choice_selectable	(GtkWidget		*widget);
+guint      bst_choice_modal		(GtkWidget		*widget,
+					 guint                   mouse_button,
+					 guint32                 time);
+void       bst_choice_destroy		(GtkWidget		*widget);
 
 
+/* --- private --- */
+BstChoice* bst_choice_alloc		(guint			 type,
+					 BstIconId		 icon_id,
+					 const gchar		*choice_name,
+					 guint			 choice_id);
 
 
 #ifdef __cplusplus

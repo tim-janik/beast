@@ -1,3 +1,29 @@
+Sun Dec 12 12:07:38 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/icons/*: added a bunch of new icons (based on stock icons
+	from tigert) required for menu items.
+
+	* beast-gtk/bstsupershell.c (bst_super_shell_name_set): prefix the
+	super name with its type for the notebook tab label.
+
+	* beast-gtk/bstmenus.[hc]: added bst_choice_* interface to create
+	small menus on the fly for the user to make a quick choice.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): made button1
+	*toggle* source view visibility. added button3 menu (finally).
+
+	* beast-gtk/bstparam.c (bst_param_set_object): use destroy notification
+	instead of reference counting.
+
+	* beast-gtk/bstparamview.c (bst_param_view_set_object): use destroy
+	notification instead of reference counting.
+
+Sun Dec 12 09:08:38 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_new): when the source
+	gets destroyed, don't just nullify its pointer but destroy the csource
+	also.
+
 Sat Dec 11 04:38:41 1999  Tim Janik  <timj@gtk.org>
 
 	* configure.in: properly detect ALSA and -lasound.

@@ -200,8 +200,8 @@ bst_canvas_source_destroy (GtkObject *object)
     gtk_object_destroy (group->item_list->data);
 
   bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
-				       bse_nullify_pointer,
-				       &csource->source);
+				       gtk_object_destroy,
+				       csource);
   bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
 				       source_channels_changed,
 				       csource);
@@ -273,8 +273,8 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   csource->source = source;
   bse_object_add_data_notifier (BSE_OBJECT (csource->source),
 				"destroy",
-				bse_nullify_pointer,
-				&csource->source);
+				gtk_object_destroy,
+				csource);
   bse_object_add_data_notifier (BSE_OBJECT (csource->source),
 				"io_changed",
 				source_channels_changed,
@@ -337,6 +337,17 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
   gtk_widget_show (csource->source_view);
   gdk_window_raise (csource->source_view->window);
+}
+
+void
+bst_canvas_source_toggle_view (BstCanvasSource *csource)
+{
+  g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
+
+  if (!csource->source_view || !GTK_WIDGET_VISIBLE (csource->source_view))
+    bst_canvas_source_popup_view (csource);
+  else
+    gtk_widget_hide (csource->source_view);
 }
 
 BstCanvasSource*

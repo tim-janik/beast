@@ -20,6 +20,7 @@
 #include <math.h>
 #include "bstcanvaslink.h"
 #include "bststatusbar.h"
+#include "bstmenus.h"
 
 
 /* --- prototypes --- */
@@ -779,7 +780,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
       else if (csource &&
 	       csource->source != (BseSource*) router->snet &&
 	       ichannel_id == 0)
-	bst_canvas_source_popup_view (csource);
+	bst_canvas_source_toggle_view (csource);
     }
   else if ((event->type == GDK_BUTTON_PRESS ||
 	    event->type == GDK_BUTTON_RELEASE) &&
@@ -819,8 +820,44 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 
       csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
 
-      if (csource && csource->source != (BseSource*) router->snet)
-	bst_canvas_source_popup_view (csource);
+      if (csource)
+	{
+	  GtkWidget *choice;
+	  BseSource *source = csource->source;
+	  BseSource *rsource = BSE_SOURCE (router->snet);
+	  gchar *source_name = g_strconcat (BSE_OBJECT_TYPE_NAME (source),
+					    ": ",
+					    BSE_OBJECT_NAME (source),
+					    NULL);
+
+	  choice = bst_choice_createv (BST_CHOICE_TITLE (source_name),
+				       BST_CHOICE_SEPERATOR,
+				       BST_CHOICE_S (2, "Properties", PROPERTIES, source != rsource),
+				       BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, source->n_inputs),
+				       BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, source->outputs),
+				       BST_CHOICE_SEPERATOR,
+				       BST_CHOICE_S (1, "Delete", TRASH, source != rsource),
+				       BST_CHOICE_END);
+	  g_free (source_name);
+	  switch (bst_choice_selectable (choice)
+		  ? bst_choice_modal (choice, event->button.button, event->button.time)
+		  : 0)
+	    {
+	    case 1:
+	      bse_snet_remove_source (router->snet, source);
+	      break;
+	    case 2:
+	      bst_canvas_source_popup_view (csource);
+	      break;
+	    case 3:
+	      bse_source_clear_ichannels (source);
+	      break;
+	    case 4:
+	      bse_source_clear_ochannels (source);
+	      break;
+	    }
+	  bst_choice_destroy (choice);
+	}
     }
   
   return handled;

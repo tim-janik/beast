@@ -18,6 +18,16 @@
 #include	"bstmenus.h"
 
 #define	N_TRACKS 2 // FIXME: hack
+#define	MENU_ITEM_PADDING (3)
+
+/* --- structures --- */
+struct _BstChoice
+{
+  guint        type;
+  BseIcon     *icon;
+  const gchar *name;
+  guint        id;
+};
 
 
 /* --- prototypes --- */
@@ -140,8 +150,9 @@ bst_menu_entries_create (GtkItemFactory *ifactory,
 	  gtk_widget_ref (child);
 	  gtk_container_remove (GTK_CONTAINER (item), child);
 	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
-				 "parent", item,
 				 "visible", TRUE,
+				 "spacing", MENU_ITEM_PADDING,
+				 "parent", item,
 				 "child", child,
 				 NULL);
 	  gtk_container_add_with_args (GTK_CONTAINER (hbox),
@@ -153,4 +164,156 @@ bst_menu_entries_create (GtkItemFactory *ifactory,
 	  gtk_widget_unref (child);
 	}
     }
+}
+
+BstChoice*
+bst_choice_alloc (guint        type,
+		  BstIconId    icon_id,
+		  const gchar *choice_name,
+		  guint        choice_id)
+{
+  BstChoice *choice = g_new (BstChoice, 1);
+
+  choice->type = type;
+  choice->icon = bst_icon_from_stock (icon_id);
+  choice->name = choice_name;
+  choice->id = choice_id;
+
+  return choice;
+}
+
+static void
+choice_activate (GtkWidget *item,
+		 gpointer   data)
+{
+  GtkWidget *menu = gtk_widget_get_ancestor (item, GTK_TYPE_MENU);
+
+  gtk_object_set_data (GTK_OBJECT (menu), "BstChoice", data);
+
+  gtk_main_quit ();
+}
+
+GtkWidget*
+bst_choice_createv (BstChoice *first_choice,
+		    ...)
+{
+  BstChoice *choice;
+  GtkWidget *menu;
+  va_list args;
+  
+  g_return_val_if_fail (first_choice != NULL, NULL);
+
+  va_start (args, first_choice);
+
+  menu = gtk_widget_new (GTK_TYPE_MENU,
+			 "signal::selection-done", gtk_main_quit, NULL,
+			 NULL);
+
+  choice = first_choice;
+  do
+    {
+      GtkWidget *item, *hbox;
+
+      switch (choice->type)
+	{
+	case 0:
+	case 1:
+	  item = gtk_widget_new (GTK_TYPE_MENU_ITEM,
+				 "visible", TRUE,
+				 "sensitive", choice->type == 0,
+				 "parent", menu,
+				 "signal::activate", choice_activate, GUINT_TO_POINTER (choice->id),
+				 NULL);
+	  break;
+	default:
+	  g_assert_not_reached ();
+	  exit (1);
+	}
+      gtk_widget_lock_accelerators (item);
+      if (choice->name)
+	{
+	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
+				 "visible", TRUE,
+				 "spacing", MENU_ITEM_PADDING,
+				 "parent", item,
+				 NULL);
+	  gtk_container_add_with_args (GTK_CONTAINER (hbox),
+				       create_icon_widget (choice->icon),
+				       "expand", FALSE,
+				       "fill", FALSE,
+				       NULL);
+	  gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
+			  "visible", TRUE,
+			  "label", choice->name,
+			  "parent", hbox,
+			  "accel_widget", item,
+			  "xalign", 0.0,
+			  NULL);
+	}
+      if (choice->icon)
+	bse_icon_unref (choice->icon);
+      g_free (choice);
+
+      choice = va_arg (args, BstChoice*);
+    }
+  while (choice);
+
+  va_end (args);
+
+  return menu;
+}
+
+guint
+bst_choice_modal (GtkWidget *widget,
+		  guint      mouse_button,
+		  guint32    time)
+{
+  GtkMenu *menu;
+  gpointer data;
+
+  g_return_val_if_fail (GTK_IS_MENU (widget), 0);
+
+  menu = GTK_MENU (widget);
+  gtk_object_set_data (GTK_OBJECT (menu), "BstChoice", GUINT_TO_POINTER (0));
+
+  gtk_menu_popup (menu, NULL, NULL, NULL, NULL, mouse_button, time);
+
+  gtk_main ();
+
+  data = gtk_object_get_data (GTK_OBJECT (menu), "BstChoice");
+
+  return GPOINTER_TO_UINT (data);
+}
+
+gboolean
+bst_choice_selectable (GtkWidget *widget)
+{
+  GList *list, *children;
+  gboolean selectable = FALSE;
+
+  g_return_val_if_fail (GTK_IS_MENU (widget), FALSE);
+
+  children = gtk_container_children (GTK_CONTAINER (widget));
+  for (list = children; list; list = list->next)
+    {
+      GtkBin *bin = list->data;
+
+      if (GTK_WIDGET_IS_SENSITIVE (bin) && bin->child)
+	{
+	  selectable = TRUE;
+	  break;
+	}
+    }
+  g_list_free (children);
+
+  return selectable;
+}
+
+void
+bst_choice_destroy (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_MENU (widget));
+
+  gtk_widget_destroy (widget);
+  gtk_widget_unref (widget);
 }

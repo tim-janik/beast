@@ -180,8 +180,17 @@ bst_super_shell_name_set (BstSuperShell *super_shell,
   widget = GTK_WIDGET (super_shell);
   if (widget->parent && GTK_IS_NOTEBOOK (widget->parent))
     {
+      gchar *name = g_strconcat (BSE_OBJECT_TYPE_NAME (super),
+				 ":\n",
+				 BSE_OBJECT_NAME (super),
+				 NULL);
+      
       widget = gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget);
-      gtk_label_set_text (GTK_LABEL (widget), BSE_OBJECT_NAME (super));
+      gtk_widget_set (widget,
+		      "label", name,
+		      /* "xalign", 0.0, */
+		      NULL);
+      g_free (name);
     }
 }
 
