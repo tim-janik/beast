@@ -62,31 +62,34 @@ typedef union
 
 
 /* --- public API --- */
-static inline GBSearchArray*    g_bsearch_array_create    (const GBSearchConfig *bconfig);
-static inline gpointer          g_bsearch_array_get_nth   (GBSearchArray        *barray,
+static inline GBSearchArray*  g_bsearch_array_create      (const GBSearchConfig *bconfig);
+static inline gpointer        g_bsearch_array_get_nth     (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig,
                                                            guint                 nth);
-static inline guint             g_bsearch_array_get_index (GBSearchArray        *barray,
+static inline guint           g_bsearch_array_get_index   (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig,
                                                            gconstpointer         node_in_array);
-static inline GBSearchArray*    g_bsearch_array_remove    (GBSearchArray        *barray,
+static inline GBSearchArray*  g_bsearch_array_remove      (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig,
                                                            guint                 index);
+static inline GBSearchArray*  g_bsearch_array_remove_node (GBSearchArray        *barray,
+                                                           const GBSearchConfig *bconfig,
+                                                           gconstpointer         node_in_array);
 /* provide uninitialized space at index for node insertion */
-static inline GBSearchArray*    g_bsearch_array_grow      (GBSearchArray        *barray,
+static inline GBSearchArray*  g_bsearch_array_grow        (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig,
                                                            guint                 index);
 /* insert key_node into array if it does not exist, otherwise do nothing */
-static inline GBSearchArray*    g_bsearch_array_insert    (GBSearchArray        *barray,
+static inline GBSearchArray*  g_bsearch_array_insert      (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig,
                                                            gconstpointer         key_node);
 /* insert key_node into array if it does not exist,
  * otherwise replace the existing node's contents with key_node
  */
-static inline GBSearchArray*    g_bsearch_array_replace   (GBSearchArray        *barray,
+static inline GBSearchArray*  g_bsearch_array_replace     (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig,
                                                            gconstpointer         key_node);
-static inline void              g_bsearch_array_free      (GBSearchArray        *barray,
+static inline void            g_bsearch_array_free        (GBSearchArray        *barray,
                                                            const GBSearchConfig *bconfig);
 #define g_bsearch_array_get_n_nodes(barray)     (((GBSearchArray*) (barray))->n_nodes)
 
@@ -288,6 +291,13 @@ g_bsearch_array_remove (GBSearchArray        *barray,
         barray = (GBSearchArray *) g_realloc (barray, sizeof (GBSearchArray) + new_size);
     }
   return barray;
+}
+static inline GBSearchArray*
+g_bsearch_array_remove_node (GBSearchArray        *barray,
+                             const GBSearchConfig *bconfig,
+                             gconstpointer         node_in_array)
+{
+  return g_bsearch_array_remove (barray, bconfig, g_bsearch_array_get_index (barray, bconfig, node_in_array));
 }
 static inline void
 g_bsearch_array_free (GBSearchArray        *barray,

@@ -38,6 +38,16 @@ G_BEGIN_DECLS
 #else
 #define G_HASH_POINTER(p)       ((guint32) (gsize) (p))
 #endif
+/* Provide a string identifying the current function, non-concatenatable */
+#ifndef G_STRFUNC
+#  if defined (__GNUC__)
+#    define G_STRFUNC     ((const char*) (__PRETTY_FUNCTION__))
+#  elif defined (G_HAVE_ISO_VARARGS)
+#    define G_STRFUNC     ((const char*) (__func__))
+#  elif
+#    define G_STRFUNC     ((const char*) ("???"))
+#  endif
+#endif
 
 
 /* --- provide (historic) aliases --- */
@@ -74,8 +84,10 @@ gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
 
-const gchar*    g_intern_string        (const gchar   *string);
-const gchar*    g_intern_static_string (const gchar   *string);
+const gchar*    g_intern_string         (const gchar   *string);
+const gchar*    g_intern_static_string  (const gchar   *string);
+const gchar*    g_strref                (const gchar   *string);
+void            g_strunref              (const gchar   *string);
 
 gchar*          g_strconcat_with_null  (const gchar   *string1, ...);
 #define         g_strconcat             g_strconcat_with_null

@@ -1,3 +1,13 @@
+Tue Dec  2 23:32:12 2003  Tim Janik  <timj@gtk.org>
+
+	* gbsearcharray.h: added g_bsearch_array_remove_node() which is a simple
+	convenience function for g_bsearch_array_remove() and
+	g_bsearch_array_get_index().
+
+	* glib-extra.[hc]: added G_STRFUNC, g_strref() and g_strunref(). the
+	latter two keep reference counts on duplicated strings to avoid gross
+	memory duplication for often referenced strings.
+
 Sat Nov 29 06:22:36 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.h: implemented GBitMatrix, a couple inline functions to
