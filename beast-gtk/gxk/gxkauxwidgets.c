@@ -625,9 +625,9 @@ static void
 rgb_to_hls (gdouble  red,
             gdouble  green,
             gdouble  blue,
-            gdouble *h_p,
-            gdouble *l_p,
-            gdouble *s_p)
+            gdouble *h_p,	/* 0..360 */
+            gdouble *l_p,	/* 0..1 */
+            gdouble *s_p)	/* 0..1 */
 {
   gdouble max = MAX (MAX (red, green), blue);
   gdouble min = MIN (MIN (red, green), blue);
@@ -655,9 +655,9 @@ rgb_to_hls (gdouble  red,
 }
 
 static void
-hls_to_rgb (gdouble  hue,
-            gdouble  lightness,
-            gdouble  saturation,
+hls_to_rgb (gdouble  hue,		/* 0..360 */
+            gdouble  lightness,		/* 0..1 */
+            gdouble  saturation,	/* 0..1 */
             gdouble *r_p,
             gdouble *g_p,
             gdouble *b_p)
