@@ -1,3 +1,12 @@
+Wed Nov 26 13:40:11 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecxxsmart.h: Added (template) classes for SmartPtr, RefCountable,
+	Sequence, ... used for records.
+
+	* tests/testsmart.cc: Test for the smartpointer stuff.
+
+	* Makefile.am tests/Makefile.am: Corresponding Makefile entries.
+
 Tue Nov 18 20:03:38 2003  Tim Janik  <timj@gtk.org>
 
 	* engine-mplan.txt: renamed (from gsl-mplan.txt).

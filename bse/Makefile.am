@@ -60,7 +60,7 @@ bse_public_h_sources = $(strip \
 	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
 	bsenote.h		\
 	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
-	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			\
+	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			bsecxxsmart.h \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
