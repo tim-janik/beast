@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-15 16:21+0100\n"
-"PO-Revision-Date: 2003-12-15 18:57+0100\n"
+"POT-Creation-Date: 2003-12-19 18:26+0100\n"
+"PO-Revision-Date: 2003-12-19 18:29+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -77,7 +77,7 @@ msgstr "Опо_зови"
 msgid "_Redo"
 msgstr "По_нови"
 
-#: beast-gtk/bstapp.c:86
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
 msgid "_Clear Undo"
 msgstr "_Очисти враћање"
 
@@ -93,87 +93,91 @@ msgstr "Уређивач полица"
 msgid "Device _Monitor"
 msgstr "Пр_аћење уређаја"
 
-#: beast-gtk/bstapp.c:98
+#: beast-gtk/bstapp.c:96
+msgid "New View"
+msgstr "Нови преглед"
+
+#: beast-gtk/bstapp.c:100
 msgid "_Play"
 msgstr "_Пусти"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:102
 msgid "_Stop"
 msgstr "_Заустави"
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:106
 msgid "New Song"
 msgstr "Нова песма"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:108
 msgid "New Custom Synthesizer"
 msgstr "Нови синтетизатор по избору"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:110
 msgid "New MIDI Synthesizer"
 msgstr "Нови MIDI синтетизатор"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:112
 msgid "Remove Song or Synthesizer"
 msgstr "Уклони песму или синтетизатор"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:116
 msgid "Load _Effect"
 msgstr "Учитај _ефекат"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:118
 msgid "Load _Instrument"
 msgstr "Учитај _инструмент"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:120
 msgid "Save As Effect"
 msgstr "Сачувај као ефекат"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:122
 msgid "Save As Instrument"
 msgstr "Сачувај као инструмент"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:126
 msgid "_Release Notes..."
 msgstr "_Објава издања..."
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:127
 msgid "Quick Start..."
 msgstr "Брзи почетак..."
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:128
 msgid "_FAQ..."
 msgstr "Питања и _одговори"
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:131
 msgid "GSL Engine..."
 msgstr "GSL машинерија..."
 
-#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:547 beast-gtk/bstapp.c:554 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Отвара пројекат „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:715
+#: beast-gtk/bstapp.c:717
 msgid "Rack editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:729
+#: beast-gtk/bstapp.c:731
 msgid "Preferences"
 msgstr "Поставке"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:743
+#: beast-gtk/bstapp.c:745
 msgid "Device Monitor"
 msgstr "Праћење уређаја"
 
-#: beast-gtk/bstapp.c:758
+#: beast-gtk/bstapp.c:764
 msgid "Procedure Browser"
 msgstr "Разгледач процедура"
 
-#: beast-gtk/bstapp.c:815
+#: beast-gtk/bstapp.c:821
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ЗВЕР-%s Објава издања"
@@ -186,21 +190,21 @@ msgstr "Веза са модулом:"
 msgid "Module link"
 msgstr "Веза са модулом"
 
-#: beast-gtk/bstcanvassource.c:483
+#: beast-gtk/bstcanvassource.c:492
 msgid "Module Info"
 msgstr "Подаци о модулу"
 
-#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:200
 msgid "Input"
 msgstr "Улаз"
 
-#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstcanvassource.c:989 beast-gtk/bstsnetrouter.c:197
 #: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
 #: plugins/artscompressor.idl:57
 msgid "Output"
 msgstr "Излаз"
 
-#: beast-gtk/bstcanvassource.c:984
+#: beast-gtk/bstcanvassource.c:993
 msgid "(Hint)"
 msgstr "(савет)"
 
@@ -1029,8 +1033,8 @@ msgstr "Песме"
 
 #: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
 #: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
-#: plugins/artscompressor.idl:52 plugins/davchorus.idl:32
-#: plugins/evaluator/bseevaluator.idl:33
+#: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:33
 msgid "Parameters"
 msgstr "Параметри"
 
@@ -1518,7 +1522,8 @@ msgstr "Елемент пречице"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Елемент који се активира када се притисне пречица ознаке"
 
-#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26 plugins/davchorus.idl:27
+#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "ГНУ-ова слабија општа јавна лиценца (LGPL)"
 
@@ -1581,7 +1586,8 @@ msgid "Second control input"
 msgstr "Други контролни улаз"
 
 #: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
 msgid "Audio Out"
 msgstr "Излаз звука"
 
@@ -1830,13 +1836,13 @@ msgstr "/Побољшање/АртцКомпресор"
 msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor компресује звук."
 
-#: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
-#: plugins/evaluator/bseevaluator.idl:31
+#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
 msgid "Audio In"
 msgstr "Улаз звука"
 
-#: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
-#: plugins/evaluator/bseevaluator.idl:31
+#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
 msgid "Audio input"
 msgstr "Улаз звука"
 
@@ -2033,6 +2039,57 @@ msgstr "Нефилтриран улаз"
 #: plugins/bseiirfilter.c:161
 msgid "Filtered Output"
 msgstr "Филтриран улаз"
+
+#: plugins/davbassfilter.idl:28
+msgid "/Filters/Bass Filter"
+msgstr "/Филтери/Бас филтер"
+
+#: plugins/davbassfilter.idl:29
+msgid ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgstr "DavBassFilter је нископролазни резонантни филтер TB-303 стила заснован на VCF303 деловима gsyn-а v0.2. Алгоритам филтера је делимично заснован на оном описаном у „Музичке примене микропроцесора“ („Musical Applications of Microprocessors“) од Хала Чемберлина (Hal Chamberlin)."
+
+#: plugins/davbassfilter.idl:34
+msgid "Filtered audio output"
+msgstr "Филтрирани излаз звука"
+
+#: plugins/davbassfilter.idl:36
+msgid "Cutoff [%]"
+msgstr "Исецање [%]"
+
+#: plugins/davbassfilter.idl:36
+msgid "Set the cutoff frequency percentage"
+msgstr "Постави проценат исецања учестаности"
+
+#: plugins/davbassfilter.idl:37
+msgid "Resonance [%]"
+msgstr "Резонанца [%]"
+
+#: plugins/davbassfilter.idl:37
+msgid "Set the amount of resonance in percent"
+msgstr "Постави количину резонанце у постотцима"
+
+#: plugins/davbassfilter.idl:38
+msgid "Envelope Modulation [%]"
+msgstr "Модулација омотача [%]"
+
+#: plugins/davbassfilter.idl:38
+msgid "Set the envelope magnitude in percent"
+msgstr "Поставите величину омотача у постотцима"
+
+#: plugins/davbassfilter.idl:39
+msgid "Decay [%]"
+msgstr "Распад [%]"
+
+#: plugins/davbassfilter.idl:39
+msgid "Set the decay length in percent"
+msgstr "Поставите дужину распада у процентима"
+
+#: plugins/davbassfilter.idl:40
+msgid "Trigger filter"
+msgstr "Покрени филтер"
 
 #: plugins/davchorus.idl:28
 msgid "/Enhance/Chorus"
