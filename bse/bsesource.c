@@ -1015,10 +1015,10 @@ bse_source_flow_access_module (BseSource    *source,
       GslTrans *my_trans = trans ? trans : gsl_trans_open ();
 
       if (m1)
-	gsl_trans_add (my_trans, gsl_flow_job_access (m1, tick_stamp, access_func, data,
+	gsl_trans_add (my_trans, gsl_job_flow_access (m1, tick_stamp, access_func, data,
 						      m2 ? NULL : data_free_func));
       if (m2)
-	gsl_trans_add (my_trans, gsl_flow_job_access (m2, tick_stamp, access_func, data,
+	gsl_trans_add (my_trans, gsl_job_flow_access (m2, tick_stamp, access_func, data,
 						      data_free_func));
       if (!trans)
 	gsl_trans_commit (my_trans);
@@ -1059,7 +1059,7 @@ bse_source_flow_access_modules (BseSource    *source,
       GSList *slist;
       
       for (slist = modules; slist; slist = slist->next)
-	gsl_trans_add (my_trans, gsl_flow_job_access (slist->data, tick_stamp, access_func, data,
+	gsl_trans_add (my_trans, gsl_job_flow_access (slist->data, tick_stamp, access_func, data,
 						      slist->next ? NULL : data_free_func));
       if (!trans)
 	gsl_trans_commit (my_trans);

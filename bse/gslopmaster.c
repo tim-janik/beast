@@ -31,7 +31,7 @@
 
 #define DEBUG        sfi_debug_keyfunc ("engine")
 #define JOB_DEBUG    sfi_debug_keyfunc ("job")
-#define FJOB_DEBUG   sfi_debug_keyfunc ("fjob")
+#define TJOB_DEBUG   sfi_debug_keyfunc ("tjob")
 
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = (node)->module.klass->reset != NULL*/; } G_STMT_END
 
@@ -88,9 +88,11 @@ static guint           master_n_pollfds = 0;
 static guint           master_pollfds_changed = FALSE;
 static GPollFD         master_pollfds[GSL_ENGINE_MAX_POLLFDS];
 static EngineSchedule *master_schedule = NULL;
+static SfiRing        *boundary_node_list = NULL;
+static gboolean        master_new_boundary_jobs = FALSE;
 
 
-/* --- functions --- */
+/* --- node state functions --- */
 static void
 add_consumer (EngineNode *node)
 {
@@ -205,6 +207,113 @@ master_disconnect_node_outputs (EngineNode *src_node,
 	master_jdisconnect_node (dest_node, j, i--);
 }
 
+
+/* --- timed job handling --- */
+static inline void
+insert_trash_job (EngineNode      *node,
+                  EngineTimedJob  *tjob)
+{
+  tjob->next = node->tjob_first;
+  node->tjob_first = tjob;
+  if (!node->tjob_last)
+    node->tjob_last = node->tjob_first;
+}
+
+static inline EngineTimedJob*
+node_pop_flow_job (EngineNode  *node,
+                   guint64      tick_stamp)
+{
+  EngineTimedJob *tjob = node->flow_jobs;
+  if_reject (tjob != NULL)
+    {
+      if (tjob->tick_stamp <= tick_stamp)
+        {
+          node->flow_jobs = tjob->next;
+          insert_trash_job (node, tjob);
+        }
+      else
+        tjob = NULL;
+    }
+  return tjob;
+}
+
+static inline EngineTimedJob*
+node_pop_boundary_job (EngineNode  *node,
+                       guint64      tick_stamp,
+                       SfiRing     *blist_node)
+{
+  EngineTimedJob *tjob = node->boundary_jobs;
+  if (tjob != NULL)
+    {
+      if (tjob->tick_stamp <= tick_stamp)
+        {
+          node->boundary_jobs = tjob->next;
+          insert_trash_job (node, tjob);
+          if (!node->boundary_jobs)
+            boundary_node_list = sfi_ring_remove_node (boundary_node_list, blist_node);
+        }
+      else
+        tjob = NULL;
+    }
+  return tjob;
+}
+
+static inline EngineTimedJob*
+insert_timed_job (EngineTimedJob *head,
+                  EngineTimedJob *tjob)
+{
+  EngineTimedJob *last = NULL, *tmp = head;
+  /* find next position */
+  while (tmp && tmp->tick_stamp <= tjob->tick_stamp)
+    {
+      last = tmp;
+      tmp = last->next;
+    }
+  /* insert before */
+  tjob->next = tmp;
+  if (last)
+    last->next = tjob;
+  else
+    head = tjob;
+  return head;
+}
+
+static void
+node_insert_flow_job (EngineNode      *node,
+                      EngineTimedJob  *tjob)
+{
+  node->flow_jobs = insert_timed_job (node->flow_jobs, tjob);
+}
+
+static void
+node_insert_boundary_job (EngineNode      *node,
+                          EngineTimedJob  *tjob)
+{
+  if (!node->boundary_jobs)
+    boundary_node_list = sfi_ring_append (boundary_node_list, node);
+  node->boundary_jobs = insert_timed_job (node->boundary_jobs, tjob);
+}
+
+static inline guint64
+node_peek_flow_job_stamp (EngineNode *node)
+{
+  EngineTimedJob *tjob = node->flow_jobs;
+  if_reject (tjob != NULL)
+    return tjob->tick_stamp;
+  return GSL_MAX_TICK_STAMP;
+}
+
+static inline guint64
+node_peek_boundary_job_stamp (EngineNode *node)
+{
+  EngineTimedJob *tjob = node->boundary_jobs;
+  if_reject (tjob != NULL)
+    return tjob->tick_stamp;
+  return GSL_MAX_TICK_STAMP;
+}
+
+
+/* --- job processing --- */
 static void
 master_process_job (GslJob *job)
 {
@@ -215,7 +324,7 @@ master_process_job (GslJob *job)
       Timer *timer;
       guint64 stamp;
       guint istream, jstream, ostream, con;
-      EngineFlowJob *fjob;
+      EngineTimedJob *tjob;
       gboolean was_consumer;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
@@ -277,11 +386,15 @@ master_process_job (GslJob *job)
       node->counter = GSL_MAX_TICK_STAMP;
       master_need_reflow |= TRUE;
       master_schedule_discard ();	/* discard schedule so node may be freed */
-      /* nuke pending flow jobs */
+      /* nuke pending timed jobs */
       do
-	fjob = _engine_node_pop_flow_job (node, GSL_MAX_TICK_STAMP);
-      while (fjob);
-      _engine_node_collect_flow_jobs (node);
+        tjob = node_pop_flow_job (node, GSL_MAX_TICK_STAMP);
+      while (tjob);
+      if (node->boundary_jobs)
+        do
+          tjob = node_pop_boundary_job (node, GSL_MAX_TICK_STAMP, sfi_ring_find (boundary_node_list, node));
+        while (tjob);
+      _engine_node_collect_timed_jobs (node);
       break;
     case ENGINE_JOB_SET_CONSUMER:
     case ENGINE_JOB_UNSET_CONSUMER:
@@ -422,13 +535,22 @@ master_process_job (GslJob *job)
       job->data.access.access_func (&node->module, job->data.access.data);
       break;
     case ENGINE_JOB_FLOW_JOB:
-      node = job->data.flow_job.node;
-      fjob = job->data.flow_job.fjob;
-      JOB_DEBUG ("add flow_job(%p,%p)", node, fjob);
+      node = job->data.timed_job.node;
+      tjob = job->data.timed_job.tjob;
+      JOB_DEBUG ("add flow_job(%p,%p)", node, tjob);
       g_return_if_fail (node->integrated == TRUE);
-      job->data.flow_job.fjob = NULL;	/* ownership taken over */
-      _engine_node_insert_flow_job (node, fjob);
-      _engine_mnl_reorder (node);
+      job->data.timed_job.tjob = NULL;	/* ownership taken over */
+      node_insert_flow_job (node, tjob);
+      _engine_mnl_reorder (node);       /* flow jobs affect mnl ordering */
+      break;
+    case ENGINE_JOB_BOUNDARY_JOB:
+      node = job->data.timed_job.node;
+      tjob = job->data.timed_job.tjob;
+      JOB_DEBUG ("add boundary_job(%p,%p)", node, tjob);
+      g_return_if_fail (node->integrated == TRUE);
+      job->data.timed_job.tjob = NULL;	/* ownership taken over */
+      node_insert_boundary_job (node, tjob);
+      master_new_boundary_jobs = TRUE;
       break;
     case ENGINE_JOB_DEBUG:
       JOB_DEBUG ("debug");
@@ -561,32 +683,31 @@ master_tick_stamp_inc (void)
 }
 
 static inline guint64
-master_handle_flow_jobs (EngineNode *node,
-			 guint64     max_tick)
+master_update_node_state (EngineNode *node,
+                          guint64     max_tick)
 {
-  EngineFlowJob *fjob = _engine_node_pop_flow_job (node, max_tick);
-
-  /* node is not necessarily scheduled */
-  
-  if_reject (fjob != NULL)
+  /* the node is not necessarily scheduled */
+  EngineTimedJob *tjob;
+  /* if a reset is pending, it needs to be handled *before*
+   * flow jobs change state.
+   */
+  if_reject (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter))
+    {
+      /* for suspended nodes, reset() occours later */
+      node->module.klass->reset (&node->module);
+      node->needs_reset = FALSE;
+    }
+  tjob = node_pop_flow_job (node, max_tick);
+  if_reject (tjob != NULL)
     do
       {
-	FJOB_DEBUG ("FJob (%s) for (%p:s=%u) at:%lld current:%lld\n",
-		    fjob->fjob_id == 0/*FIXME:ENGINE_FLOW_JOB_RESUME*/ ? "resume" : "access",
-		    node, node->sched_tag, fjob->any.tick_stamp, node->counter);
-	switch (fjob->fjob_id)
-	  {
-	  case ENGINE_FLOW_JOB_ACCESS:
-	    fjob->access.access_func (&node->module, fjob->access.data);
-	    break;
-	  default:
-	    g_assert_not_reached ();
-	  }
-	fjob = _engine_node_pop_flow_job (node, max_tick);
+	TJOB_DEBUG ("flow-access for (%p:s=%u) at:%lld current:%lld\n",
+		    node, node->sched_tag, tjob->tick_stamp, node->counter);
+        tjob->access_func (&node->module, tjob->data);
+        tjob = node_pop_flow_job (node, max_tick);
       }
-    while (fjob);
-  
-  return _engine_node_peek_flow_job_stamp (node);
+    while (tjob);
+  return node_peek_flow_job_stamp (node);
 }
 
 static void
@@ -600,14 +721,8 @@ master_process_locked_node (EngineNode *node,
   
   while (node->counter < final_counter)
     {
-      /* reset node */
-      if_reject (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter))
-        {
-          node->module.klass->reset (&node->module);
-          node->needs_reset = FALSE;
-        }
-      /* exec flow jobs */
-      next_counter = master_handle_flow_jobs (node, node->counter);
+      /* call reset() and exec flow jobs */
+      next_counter = master_update_node_state (node, node->counter);
       /* figure n_values to process */
       new_counter = MIN (next_counter, final_counter);
       if (node->next_active > node->counter)
@@ -738,7 +853,7 @@ master_process_flow (void)
 	{
 	  EngineNode *tmp = node->mnl_next;
           node->counter = final_counter;
-          master_handle_flow_jobs (node, node->counter);
+          master_update_node_state (node, node->counter);
 	  _engine_mnl_reorder (node);
 	  node = tmp;
 	}
@@ -861,18 +976,50 @@ _engine_master_check (const GslEngineLoop *loop)
 void
 _engine_master_dispatch_jobs (void)
 {
-  GslJob *job;
-  
-  /* here, we have to process _all_ pending jobs
-   * in a row. a popped job stays valid until the
-   * next call to _engine_pop_job().
+  guint64 CURRENT_STAMP = GSL_TICK_STAMP;
+  guint64 last_block_tick = CURRENT_STAMP + gsl_engine_block_size() - 1;
+  GslJob *job = _engine_pop_job ();
+  /* here, we have to process _all_ pending jobs in a row. a popped job
+   * stays valid until the next call to _engine_pop_job().
    */
-  job = _engine_pop_job ();
   while (job)
     {
       master_process_job (job);
       job = _engine_pop_job ();
     }
+  /* process boundary jobs and possibly newly queued jobs after that. */
+  if_reject (boundary_node_list != NULL)
+    do
+      {
+        SfiRing *ring = boundary_node_list;
+        master_new_boundary_jobs = FALSE;       /* to catch new boundary jobs */
+        while (ring)
+          {
+            SfiRing *current = ring;
+            EngineNode *node = ring->data;
+            EngineTimedJob *tjob;
+            ring = sfi_ring_walk (ring, boundary_node_list);
+            tjob = node_pop_boundary_job (node, last_block_tick, current);
+            if (tjob)
+              node->counter = CURRENT_STAMP;
+            while (tjob)
+              {
+                TJOB_DEBUG ("boundary-access for (%p:s=%u) at:%lld current:%lld\n",
+                            node, node->sched_tag, tjob->tick_stamp, node->counter);
+                tjob->access_func (&node->module, tjob->data);
+                tjob = node_pop_boundary_job (node, last_block_tick, current);
+              }
+          }
+        /* process newly queued jobs if any */
+        job = _engine_pop_job ();
+        while (job)
+          {
+            master_process_job (job);
+            job = _engine_pop_job ();
+          }
+        /* need to repeat if master_process_job() just queued a new boundary job */
+      }
+    while (master_new_boundary_jobs);   /* new boundary jobs arrived */
 }
 
 void

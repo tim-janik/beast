@@ -165,7 +165,12 @@ void		gsl_trans_commit_delayed(GslTrans	 *trans,
 void		gsl_trans_dismiss	(GslTrans	 *trans);
 void		gsl_transact		(GslJob		 *job,
 					 ...);
-GslJob*		gsl_flow_job_access	(GslModule	 *module,
+GslJob*		gsl_job_flow_access	(GslModule	 *module,
+					 guint64	  tick_stamp,
+					 GslAccessFunc	  access_func,	/* EngineThread */
+					 gpointer	  data,
+					 GslFreeFunc	  free_func);	/* UserThread */
+GslJob*		gsl_job_boundary_access	(GslModule	 *module,
 					 guint64	  tick_stamp,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,

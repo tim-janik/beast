@@ -90,8 +90,9 @@ gsl_module_new (const GslClass *klass,
       node->module.ostreams[i].sub_sample_pattern = gsl_engine_sub_sample_test (node->module.ostreams[i].values);
     }
   node->flow_jobs = NULL;
-  node->fjob_first = NULL;
-  node->fjob_last = NULL;
+  node->boundary_jobs = NULL;
+  node->tjob_first = NULL;
+  node->tjob_last = NULL;
   
   return &node->module;
 }
@@ -478,31 +479,75 @@ gsl_job_access (GslModule    *module,
  * This function is MT-safe and may be called from any thread.
  */
 GslJob*
-gsl_flow_job_access (GslModule    *module,
+gsl_job_flow_access (GslModule    *module,
 		     guint64       tick_stamp,
 		     GslAccessFunc access_func,
 		     gpointer      data,
 		     GslFreeFunc   free_func)
 {
   GslJob *job;
-  EngineFlowJob *fjob;
+  EngineTimedJob *tjob;
 
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  fjob = (EngineFlowJob*) sfi_new_struct0 (EngineFlowJobAccess, 1);
-  fjob->fjob_id = ENGINE_FLOW_JOB_ACCESS;
-  fjob->any.tick_stamp = tick_stamp;
-  fjob->access.access_func = access_func;
-  fjob->access.data = data;
-  fjob->access.free_func = free_func;
+  tjob = sfi_new_struct0 (EngineTimedJob, 1);
+  tjob->tick_stamp = tick_stamp;
+  tjob->access_func = access_func;
+  tjob->data = data;
+  tjob->free_func = free_func;
 
   job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
-  job->data.flow_job.node = ENGINE_NODE (module);
-  job->data.flow_job.fjob = fjob;
+  job->data.timed_job.node = ENGINE_NODE (module);
+  job->data.timed_job.tjob = tjob;
+  
+  return job;
+}
+
+/**
+ * gsl_job_boundary_access
+ * @module:      The module to access
+ * @tick_stamp:  Engine time stamp
+ * @access_func: The accessor function
+ * @data:        Data passed in to the accessor
+ * @free_func:   Function to free @data
+ * @Returns:     New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which inserts @access_func 
+ * with @data into the boundary job queue of @module.
+ * Boundary jobs are executed at block boundaries, after all
+ * ordinary jobs have been processed and before global time
+ * stamp counter passed @tick_stamp.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslJob*
+gsl_job_boundary_access (GslModule    *module,
+                         guint64       tick_stamp,
+                         GslAccessFunc access_func,
+                         gpointer      data,
+                         GslFreeFunc   free_func)
+{
+  GslJob *job;
+  EngineTimedJob *tjob;
+
+  g_return_val_if_fail (module != NULL, NULL);
+  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
+  g_return_val_if_fail (access_func != NULL, NULL);
+  
+  tjob = sfi_new_struct0 (EngineTimedJob, 1);
+  tjob->tick_stamp = tick_stamp;
+  tjob->access_func = access_func;
+  tjob->data = data;
+  tjob->free_func = free_func;
+
+  job = sfi_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_BOUNDARY_JOB;
+  job->data.timed_job.node = ENGINE_NODE (module);
+  job->data.timed_job.tjob = tjob;
   
   return job;
 }

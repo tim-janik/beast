@@ -38,7 +38,7 @@ gfloat*		gsl_engine_const_values		(gfloat		value);
 
 /* --- MasterThread --- */
 void		_engine_recycle_const_values	(void);
-void		_engine_node_collect_flow_jobs	(EngineNode	*node);
+void		_engine_node_collect_timed_jobs	(EngineNode	*node);
 /* master node list */
 void		_engine_mnl_remove		(EngineNode	*node);
 void		_engine_mnl_reorder		(EngineNode	*node);

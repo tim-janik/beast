@@ -20,10 +20,7 @@
 
 #include <bse/gslopnode.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 typedef struct
 {
@@ -65,9 +62,6 @@ SfiRing*	_engine_schedule_pop_cycle	(EngineSchedule	*schedule);
 void		_engine_schedule_restart	(EngineSchedule	*schedule);
 void		_engine_schedule_unsecure	(EngineSchedule	*schedule);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_ENGINE_SCHEDULE_H__ */

@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 
 
 /* --- transactions --- */
-typedef union _EngineFlowJob EngineFlowJob;
+typedef struct _EngineTimedJob EngineTimedJob;
 typedef enum {
   ENGINE_JOB_NOP,
   ENGINE_JOB_INTEGRATE,
@@ -63,6 +63,7 @@ typedef enum {
   ENGINE_JOB_REMOVE_POLL,
   ENGINE_JOB_ADD_TIMER,
   ENGINE_JOB_FLOW_JOB,
+  ENGINE_JOB_BOUNDARY_JOB,
   ENGINE_JOB_DEBUG,
   ENGINE_JOB_LAST
 } EngineJobType;
@@ -102,8 +103,8 @@ struct _GslJob
     } timer;
     struct {
       EngineNode     *node;
-      EngineFlowJob  *fjob;
-    } flow_job;
+      EngineTimedJob *tjob;
+    } timed_job;
     gchar	     *debug;
   } data;
 };
@@ -114,32 +115,13 @@ struct _GslTrans
   guint	    comitted : 1;
   GslTrans *cqt_next;	/* com-thread-queue */
 };
-typedef enum {
-  ENGINE_FLOW_JOB_NOP,
-  // ENGINE_FLOW_JOB_RESUME,
-  ENGINE_FLOW_JOB_ACCESS,
-  ENGINE_FLOW_JOB_LAST
-} EngineFlowJobType;
-typedef struct
+struct _EngineTimedJob
 {
-  EngineFlowJobType fjob_id;
-  EngineFlowJob    *next;
-  guint64           tick_stamp;
-} EngineFlowJobAny;
-typedef struct
-{
-  EngineFlowJobType fjob_id;
-  EngineFlowJob	   *next;
+  EngineTimedJob   *next;
   guint64	    tick_stamp;
   GslAccessFunc     access_func;
   gpointer          data;
   GslFreeFunc       free_func;
-} EngineFlowJobAccess;
-union _EngineFlowJob
-{
-  EngineFlowJobType   fjob_id;
-  EngineFlowJobAny    any;
-  EngineFlowJobAccess access;
 };
 
 
@@ -175,9 +157,10 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
   EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */
 
-  /* flow jobs */
-  EngineFlowJob	*flow_jobs;			/* active jobs */
-  EngineFlowJob	*fjob_first, *fjob_last;	/* trash list */
+  /* timed jobs */
+  EngineTimedJob *flow_jobs;			/* active jobs */
+  EngineTimedJob *boundary_jobs;		/* active jobs */
+  EngineTimedJob *tjob_first, *tjob_last;	/* trash list */
 
   /* suspend/activation time */
   guint64        next_active;           /* result of suspend state updates */
@@ -204,61 +187,6 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineNode	*toplevel_next;	        /* master-consumer-list, FIXME: overkill, using a SfiRing is good enough */
   SfiRing	*output_nodes;	        /* EngineNode* ring of nodes in ->outputs[] */
 };
-
-static void
-_engine_node_insert_flow_job (EngineNode    *node,
-			      EngineFlowJob *fjob)
-{
-  EngineFlowJob *last = NULL, *tmp = node->flow_jobs;
-
-  /* find next position */
-  while (tmp && tmp->any.tick_stamp <= fjob->any.tick_stamp)
-    {
-      last = tmp;
-      tmp = last->any.next;
-    }
-  /* insert before */
-  fjob->any.next = tmp;
-  if (last)
-    last->any.next = fjob;
-  else
-    node->flow_jobs = fjob;
-}
-
-static inline EngineFlowJob*
-_engine_node_pop_flow_job (EngineNode *node,
-			   guint64     tick_stamp)
-{
-  EngineFlowJob *fjob = node->flow_jobs;
-
-  if_reject (fjob != NULL)
-    {
-      if (fjob->any.tick_stamp <= tick_stamp)
-	{
-	  node->flow_jobs = fjob->any.next;
-	  
-	  fjob->any.next = node->fjob_first;
-	  node->fjob_first = fjob;
-	  if (!node->fjob_last)
-	    node->fjob_last = node->fjob_first;
-	}
-      else
-	fjob = NULL;
-    }
-
-  return fjob;
-}
-
-static inline guint64
-_engine_node_peek_flow_job_stamp (EngineNode *node)
-{
-  EngineFlowJob *fjob = node->flow_jobs;
-
-  if_reject (fjob != NULL)
-    return fjob->any.tick_stamp;
-
-  return GSL_MAX_TICK_STAMP;
-}
 
 G_END_DECLS
 

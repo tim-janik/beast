@@ -342,7 +342,7 @@ change_midi_control_modules (GSList           *modules,
   adata->signal = signal;
   adata->value = value;
   for (slist = modules; slist; slist = slist->next)
-    gsl_trans_add (trans, gsl_flow_job_access (slist->data,
+    gsl_trans_add (trans, gsl_job_flow_access (slist->data,
 					       tick_stamp,
 					       midi_control_module_access,
 					       adata,
@@ -516,7 +516,7 @@ change_mono_synth (BseMidiMonoSynth *msynth,
   mdata.freq_value = freq_value;
   mdata.velocity = velocity;
 
-  gsl_trans_add (trans, gsl_flow_job_access (msynth->fmodule, tick_stamp,
+  gsl_trans_add (trans, gsl_job_flow_access (msynth->fmodule, tick_stamp,
 					     mono_synth_module_access,
 					     g_memdup (&mdata, sizeof (mdata)), g_free));
   switch (mdata.vtype)
@@ -596,50 +596,14 @@ destroy_mono_synth (BseMidiMonoSynth *msynth,
 struct _BseMidiVoice
 {
   /* module state: */
-  guint64            alive_stamp;       /* module stays connected until alive_stamp */
-  gboolean           connect_pending;   /* whether reconnect jobs are pending */
-  gboolean           disconnected;      /* a hint towards module currently being non-busy */
+  volatile gboolean  disconnected;      /* a hint towards module currently being idle */
   /* switchable midi voice */
-  guint              activate_pending;
   guint              n_msynths;
   BseMidiMonoSynth **msynths;
   guint              ref_count;
   GslModule         *smodule;           /* input module (switches and suspends) */
   GslModule         *vmodule;           /* output module (virtual) */
 };
-
-static void
-switch_module_reset_pending_flag (GslModule *module,
-                                  gpointer   data)
-{
-  BseMidiVoice *voice = module->user_data;
-  voice->connect_pending = FALSE;
-}
-
-static void
-switch_module_check_connections (GslModule *module,
-                                 gpointer   data)
-{
-  BseMidiVoice *voice = module->user_data;
-  if (data)
-    {
-      guint64 *stamp = data;
-      voice->alive_stamp = MAX (voice->alive_stamp, *stamp);
-    }
-  if ((data || gsl_module_tick_stamp (module) <= voice->alive_stamp) &&
-      !voice->connect_pending && !gsl_module_has_source (voice->vmodule, 0))
-    {
-      GslTrans *trans = gsl_trans_open ();
-      guint i;
-      for (i = 0; i < GSL_MODULE_N_ISTREAMS (voice->vmodule); i++)
-        gsl_trans_add (trans, gsl_job_connect (voice->smodule, i, voice->vmodule, i));
-      voice->connect_pending = TRUE;
-      gsl_trans_add (trans, gsl_job_resume_at (voice->smodule, voice->alive_stamp));
-      gsl_trans_add (trans, gsl_job_access (voice->smodule, switch_module_reset_pending_flag, NULL, NULL));
-      gsl_trans_commit (trans);
-      voice->disconnected = FALSE;      /* reset hint early */
-    }
-}
 
 static void
 switch_module_process (GslModule *module,
@@ -654,18 +618,44 @@ switch_module_process (GslModule *module,
       GSL_MODULE_OSTREAM (module, i).values = (gfloat*) GSL_MODULE_IBUFFER (module, i);
   
   /* check Done state on last stream */
-  if (GSL_MODULE_IBUFFER (module, GSL_MODULE_N_ISTREAMS (module) - 1)[n_values - 1] >= 1.0 &&
-      gsl_module_tick_stamp (module) > voice->alive_stamp)
+  if (GSL_MODULE_IBUFFER (module, GSL_MODULE_N_ISTREAMS (module) - 1)[n_values - 1] >= 1.0)
     {
       GslTrans *trans = gsl_trans_open ();
       /* disconnect all inputs */
       gsl_trans_add (trans, gsl_job_suspend_now (module));
       gsl_trans_add (trans, gsl_job_kill_inputs (voice->vmodule));
-      gsl_trans_add (trans, gsl_job_access (voice->smodule, switch_module_check_connections, NULL, NULL));
-      /* reset all msynths */
       gsl_trans_commit (trans);
       voice->disconnected = TRUE;       /* hint towards possible reuse */
     }
+}
+
+static void
+switch_module_boundary_check (GslModule *module,
+                              gpointer   data)
+{
+  BseMidiVoice *voice = module->user_data;
+  if (!gsl_module_has_source (voice->vmodule, 0))
+    {
+      GslTrans *trans = gsl_trans_open ();
+      guint i;
+      for (i = 0; i < GSL_MODULE_N_ISTREAMS (voice->vmodule); i++)
+        gsl_trans_add (trans, gsl_job_connect (voice->smodule, i, voice->vmodule, i));
+      gsl_trans_commit (trans);
+      voice->disconnected = FALSE;      /* reset hint */
+    }
+}
+
+static void
+activate_switch_module (BseMidiVoice *voice,
+                        guint64       tick_stamp,
+                        GslTrans     *trans)
+{
+  g_return_if_fail (voice->disconnected == TRUE);
+  /* make sure the module is connected before tick_stamp */
+  gsl_trans_add (trans, gsl_job_boundary_access (voice->smodule, tick_stamp, switch_module_boundary_check, NULL, NULL));
+  /* make sure the module is not suspended at tick_stamp */
+  gsl_trans_add (trans, gsl_job_resume_at (voice->smodule, tick_stamp));
+  voice->disconnected = FALSE;  /* reset hint early */
 }
 
 static void
@@ -693,10 +683,7 @@ create_switch_module (GslTrans *trans)
   };
   BseMidiVoice *voice = g_new0 (BseMidiVoice, 1);
   
-  voice->alive_stamp = 0;
-  voice->connect_pending = FALSE;
   voice->disconnected = TRUE;
-  voice->activate_pending = 0;
   voice->ref_count = 1;
   voice->smodule = gsl_module_new (&switch_module_class, voice);
   voice->vmodule = gsl_module_new_virtual (BSE_MIDI_VOICE_N_CHANNELS, NULL, NULL);
@@ -707,39 +694,10 @@ create_switch_module (GslTrans *trans)
   return voice;
 }
 
-typedef struct {
-  guint64 avail_stamp;
-  BseMidiVoice *voice;
-} SwitchModuleActivateData;
-
-static void
-free_switch_module_activate_data (gpointer data)
-{
-  SwitchModuleActivateData *adata = data;
-  adata->voice->activate_pending--;
-  g_free (adata);
-}
-
-static void
-activate_switch_module (BseMidiVoice *voice,
-                        guint64       tick_stamp,
-                        GslTrans     *trans)
-{
-  SwitchModuleActivateData *adata = g_new (SwitchModuleActivateData, 1);
-  adata->avail_stamp = tick_stamp;
-  adata->voice = voice;
-  voice->activate_pending++;
-  /* make sure the module is connected before tick_stamp */
-  gsl_trans_add (trans, gsl_job_access (voice->smodule, switch_module_check_connections, adata, free_switch_module_activate_data));
-  /* make sure the module is not suspended at tick_stamp */
-  gsl_trans_add (trans, gsl_job_resume_at (voice->smodule, tick_stamp));
-  voice->disconnected = FALSE;  /* reset hint early */
-}
-
 static inline gboolean
 check_switch_module_available (BseMidiVoice *voice)
 {
-  return (voice->disconnected && !voice->activate_pending);
+  return voice->disconnected;
 }
 
 static void

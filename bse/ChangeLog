@@ -1,3 +1,26 @@
+Sun Sep  7 15:45:26 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.c (activate_switch_module): fix switch module
+	activation by using boundary jobs to check connection state.
+
+	* gslopmaster.c (master_update_node_state): really fix all cases where
+	reset() could be called after a flow job for an active tick by merging
+	reset invocation into the flow job handling function.
+
+	* gslopnode.h:
+	* gslopengine.[hc]: added gsl_job_boundary_access().
+
+	* gslopmaster.c: implemented boundary job handling.
+
+	* gslopnode.h:
+	* gsloputils.[hc]:
+	* gslopmaster.[hc]:
+	* gslopschedule.[hc]: 
+	* gslopengine.[hc]: cleaned up flow job implementation,
+	there're no resume flow jobs anymore and we need jobs
+	with time stamps at other places. so the underlying structure
+	is a TimedJob now.
+
 Sat Sep  6 20:18:00 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.[hc]: allow sub voices per switchable voice.
