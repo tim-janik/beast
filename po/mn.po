@@ -1,0 +1,1408 @@
+# translation of beast.HEAD.po to Mongolian
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>, 2003.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: beast.HEAD\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-02 19:09+0100\n"
+"PO-Revision-Date: 2003-12-08 17:11+0800\n"
+"Last-Translator: Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>\n"
+"Language-Team: Mongolian <openmn-core@lists.sf.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0.2\n"
+
+#: beast-gtk/bstapp.c:51
+msgid "_New"
+msgstr "_Шинэ"
+
+#: beast-gtk/bstapp.c:51
+msgid "Create new project"
+msgstr "Шинэ төсөл үүсгэ"
+
+#: beast-gtk/bstapp.c:53
+msgid "_Open..."
+msgstr "_Нээ..."
+
+#: beast-gtk/bstapp.c:53
+msgid "Open existing project"
+msgstr "Байгаа төслийг нээ"
+
+#: beast-gtk/bstapp.c:55
+msgid "_Merge..."
+msgstr "_Нэгтгэ..."
+
+#: beast-gtk/bstapp.c:55
+msgid "Merge an existing project into the current project"
+msgstr "Байгаа төслийг энэ төсөл рүү нэгтгэ"
+
+#: beast-gtk/bstapp.c:57
+msgid "_Close"
+msgstr "_Хаа"
+
+#: beast-gtk/bstapp.c:61
+msgid "_Save"
+msgstr "_Хадгал"
+
+#: beast-gtk/bstapp.c:63
+msgid "Save _As..."
+msgstr "_гэж хадгал"
+
+#: beast-gtk/bstapp.c:67
+msgid "_Quit"
+msgstr "_Унтраа"
+
+#: beast-gtk/bstapp.c:71
+msgid "_Preferences..."
+msgstr "_Тохиргоонууд"
+
+#: beast-gtk/bstapp.c:74
+msgid "Rebuild"
+msgstr "_Ахин босго"
+
+#: beast-gtk/bstapp.c:77
+msgid "_About..."
+msgstr "_Тухай..."
+
+#: beast-gtk/bstapp.c:80
+msgid "_Undo"
+msgstr "_Буцаа"
+
+#: beast-gtk/bstapp.c:82
+msgid "_Redo"
+msgstr "_Дахи"
+
+#: beast-gtk/bstapp.c:86
+msgid "_Clear Undo"
+msgstr "_Буцаалтыг арилга"
+
+#: beast-gtk/bstapp.c:90
+msgid "Procedure _Browser"
+msgstr ""
+
+#: beast-gtk/bstapp.c:92
+msgid "Rack Editor"
+msgstr ""
+
+#: beast-gtk/bstapp.c:94
+msgid "Device _Monitor"
+msgstr ""
+
+#: beast-gtk/bstapp.c:98
+msgid "_Play"
+msgstr "_Тоглуул"
+
+#: beast-gtk/bstapp.c:100
+msgid "_Stop"
+msgstr "_Зогсоо"
+
+#: beast-gtk/bstapp.c:104
+msgid "New Song"
+msgstr "Шинэ дуу"
+
+#: beast-gtk/bstapp.c:106
+msgid "New Custom Synthesizer"
+msgstr ""
+
+#: beast-gtk/bstapp.c:108
+msgid "New MIDI Synthesizer"
+msgstr ""
+
+#: beast-gtk/bstapp.c:110
+msgid "Remove Song or Synthesizer"
+msgstr ""
+
+#: beast-gtk/bstapp.c:114
+msgid "Load _Effect"
+msgstr ""
+
+#: beast-gtk/bstapp.c:116
+msgid "Load _Instrument"
+msgstr "Зэмсгийг ачаалла"
+
+#: beast-gtk/bstapp.c:118
+msgid "Save As Effect"
+msgstr ""
+
+#: beast-gtk/bstapp.c:120
+msgid "Save As Instrument"
+msgstr ""
+
+#: beast-gtk/bstapp.c:124
+msgid "_Release Notes..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:125
+msgid "Quick Start..."
+msgstr "Түргэн гараа..."
+
+#: beast-gtk/bstapp.c:126
+msgid "_FAQ..."
+msgstr "_ТАА..."
+
+#: beast-gtk/bstapp.c:129
+msgid "GSL Engine..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstfiledialog.c:445
+#, c-format
+msgid "Opening project `%s'"
+msgstr "`%s' төслийг нээ"
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:715
+msgid "Rack editor"
+msgstr ""
+
+#: beast-gtk/bstapp.c:729
+msgid "Preferences"
+msgstr "Тохиргоонууд"
+
+#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+#: beast-gtk/bstapp.c:743
+msgid "Device Monitor"
+msgstr ""
+
+#: beast-gtk/bstapp.c:758
+msgid "Procedure Browser"
+msgstr ""
+
+#: beast-gtk/bstapp.c:815
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr ""
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "Модулийн холбоос: "
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:914
+msgid "Module link"
+msgstr "Модулийн холбоос"
+
+#: beast-gtk/bstcanvassource.c:483
+msgid "Module Info"
+msgstr "Модулийн мэдээлэл"
+
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:200
+msgid "Input"
+msgstr "Оролт"
+
+#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+msgid "Output"
+msgstr "Гаралт"
+
+#: beast-gtk/bstcanvassource.c:984
+msgid "(Hint)"
+msgstr "(Зөвлөгөө)"
+
+#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
+#: beast-gtk/bsteventrollctrl.c:421
+msgid "Move Control Event"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
+#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:472
+#: beast-gtk/bstpianorollctrl.c:582 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
+#: beast-gtk/bsttrackrollctrl.c:560
+msgid "No target"
+msgstr "Бай алга"
+
+#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
+msgid "Lost Event"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
+msgid "Align Control Events"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bstpianorollctrl.c:703 beast-gtk/bstpianorollctrl.c:739
+msgid "Aborted"
+msgstr "Зогсоогдсон"
+
+#: beast-gtk/bsteventrollctrl.c:490
+msgid "Insert Control Event"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
+#: beast-gtk/bsteventrollctrl.c:542
+msgid "Resize Control Event"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
+msgid "Delete Control Event"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bstpianorollctrl.c:677 beast-gtk/bstpianorollctrl.c:703
+msgid "Select Region"
+msgstr "Бүсийг сонго"
+
+#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:748
+msgid "Abortion"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:197
+msgid "Contents"
+msgstr "Агууллага"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:229
+msgid "File Selection"
+msgstr "Файлын сонголт"
+
+#: beast-gtk/bstfiledialog.c:410
+msgid "Open Project"
+msgstr "Төслийг нээ"
+
+#: beast-gtk/bstfiledialog.c:424
+msgid "Select Directory"
+msgstr "Хавтсыг сонго"
+
+#: beast-gtk/bstfiledialog.c:463
+#, c-format
+msgid "Merge: %s"
+msgstr "Нэгтгэ: %s"
+
+#: beast-gtk/bstfiledialog.c:476
+#, c-format
+msgid "Merging project `%s'"
+msgstr "`%s' төслийг нэгтгэж байна"
+
+#: beast-gtk/bstfiledialog.c:499
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:528
+#, c-format
+msgid "Save: %s"
+msgstr "Хадгал: %s"
+
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:530
+msgid "Fully include wave files"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:531
+msgid "Store references to wave files"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:552 beast-gtk/bstfiledialog.c:562
+#, c-format
+msgid "Saving project `%s'"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:553 beast-gtk/bstfiledialog.c:629
+#: beast-gtk/bstfiledialog.c:705
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:577
+msgid "Load Effect"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:590
+#, c-format
+msgid "Merging effect `%s'"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:607
+msgid "Save Effect"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:628 beast-gtk/bstfiledialog.c:638
+#, c-format
+msgid "Saving effect `%s'"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:653
+msgid "Load Instrument"
+msgstr "Зэмсгийг ачаалла"
+
+#: beast-gtk/bstfiledialog.c:666
+#, c-format
+msgid "Merging instrument `%s'"
+msgstr "`%s' зэмсгийг нэгтгэж байна"
+
+#: beast-gtk/bstfiledialog.c:683
+msgid "Save Instrument"
+msgstr "Зэмсгийг хадгал"
+
+#: beast-gtk/bstfiledialog.c:704 beast-gtk/bstfiledialog.c:714
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "`%s' зэмсгийг хадгалж байна"
+
+#: beast-gtk/bstfiledialog.c:730
+msgid "Load Wave"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:742 beast-gtk/bstfiledialog.c:744
+#, c-format
+msgid "Loading wave `%s'"
+msgstr ""
+
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:41
+#: beast-gtk/bsttrackview.c:62
+msgid "Add"
+msgstr "Нэм"
+
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
+#: beast-gtk/bstwaveview.c:45
+msgid "Delete"
+msgstr "Устга"
+
+#: beast-gtk/bstitemview.c:235
+msgid "ID"
+msgstr "Дугаар"
+
+#: beast-gtk/bstitemview.c:238
+msgid "Name"
+msgstr "Нэр"
+
+#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
+msgid "Comment"
+msgstr "Тайлбар"
+
+#: beast-gtk/bstitemview.c:245
+msgid "Type"
+msgstr "Төрөл"
+
+#: beast-gtk/bstmain.c:134
+msgid "BEAST Startup"
+msgstr ""
+
+#: beast-gtk/bstmain.c:141
+msgid "Startup"
+msgstr ""
+
+#. BEAST initialization
+#.
+#: beast-gtk/bstmain.c:146
+msgid "Objects"
+msgstr "Обьект"
+
+#: beast-gtk/bstmain.c:150
+msgid "Language"
+msgstr "Хэл"
+
+#: beast-gtk/bstmain.c:162
+msgid "RC File"
+msgstr ""
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:169
+msgid "Splash Image"
+msgstr ""
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:181
+msgid "BSE Core"
+msgstr ""
+
+#: beast-gtk/bstmain.c:200
+msgid "Plugins"
+msgstr "Плагинууд"
+
+#: beast-gtk/bstmain.c:219
+msgid "LADSPA Plugins"
+msgstr ""
+
+#: beast-gtk/bstmain.c:247
+msgid "Scripts"
+msgstr "Скриптүүд"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:265
+msgid "Dialogs"
+msgstr "Харилцахууд"
+
+#: beast-gtk/bstmain.c:272
+msgid "Loading..."
+msgstr "Ачааллаж байна..."
+
+#: beast-gtk/bstmain.c:302 beast-gtk/bstmain.c:304
+#, c-format
+msgid "Loading \"%s\""
+msgstr "\"%s\"-г ачааллаж байна"
+
+#: beast-gtk/bstmain.c:321
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "\"%s\" төслийг ачааллаж байна"
+
+#: beast-gtk/bstmain.c:694
+msgid "BEAST About"
+msgstr ""
+
+#: beast-gtk/bstmain.c:695
+#, c-format
+msgid "BEAST Version %s"
+msgstr ""
+
+#: beast-gtk/bstmain.c:696
+msgid "Contributions made by:"
+msgstr ""
+
+#: beast-gtk/bstparam-entry.c:61
+msgid "Remove Paths"
+msgstr "Замуудыг устга"
+
+#: beast-gtk/bstpartdialog.c:59
+msgid "Clear"
+msgstr "Цэвэрлэ"
+
+#: beast-gtk/bstpartdialog.c:59
+msgid "Clear the current selection"
+msgstr "Энэ сонголтыг цэвэрлэ"
+
+#: beast-gtk/bstpartdialog.c:60
+msgid "Cut"
+msgstr "Хайчла"
+
+#: beast-gtk/bstpartdialog.c:60
+msgid "Move the current selection into clipboard"
+msgstr "Энэ сонголтыг клипборд руу зөө"
+
+#: beast-gtk/bstpartdialog.c:61
+msgid "Copy"
+msgstr "Хуул"
+
+#: beast-gtk/bstpartdialog.c:61
+msgid "Copy the current selection into clipboard"
+msgstr "Энэ сонголтыг клипборд руу хуул"
+
+#: beast-gtk/bstpartdialog.c:62
+msgid "Paste"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:62
+msgid "Insert clipboard contents as current selection"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:65
+msgid "Undo"
+msgstr "Буцаа"
+
+#: beast-gtk/bstpartdialog.c:65
+msgid "Undo last editing step"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Redo"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Redo the last undone editing step"
+msgstr ""
+
+#: beast-gtk/bstpartview.c:43 beast-gtk/bstwaveview.c:46
+msgid "Editor"
+msgstr "Засварлагч"
+
+#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert"
+msgstr "Оруул"
+
+#: beast-gtk/bstpianorollctrl.c:46
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:48
+msgid "Delete note (mouse button 1)"
+msgstr "Тэмдэглэлийг устга (хулганы 1 товч)"
+
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Align Events"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Draw a line to align events to"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Select"
+msgstr "Сонго"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Rectangle select notes"
+msgstr "Тэгш өнцөгт сонгох тэмдэглэлүүд"
+
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
+msgid "Vertical Select"
+msgstr "Босоо сонголт"
+
+#: beast-gtk/bstpianorollctrl.c:54
+msgid "Select tick range vertically"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "1\\/1"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "Insert full notes"
+msgstr "Бүтэн нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "1\\/2"
+msgstr "1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "Insert half notes"
+msgstr "Хагас нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "1\\/4"
+msgstr "1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "Insert quarter notes"
+msgstr "Дөрөвтийн нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "1\\/8"
+msgstr "1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "Insert eighths note"
+msgstr "Наймтын нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "1\\/16"
+msgstr "1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "Insert sixteenth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Q: Tact"
+msgstr "А: Такт"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Quantize to tact boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "Q: None"
+msgstr "А: Алга"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "No quantization selected"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Q: 1\\/1"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to full note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Q: 1\\/2"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Quantize to half note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Q: 1\\/4"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Quantize to quarter note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Q: 1\\/8"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Quantize to eighths note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Q: 1\\/16"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Quantize to sixteenth note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
+#: beast-gtk/bstpianorollctrl.c:560
+msgid "Move Note"
+msgstr "Нотыг зөө"
+
+#: beast-gtk/bstpianorollctrl.c:560 beast-gtk/bstpianorollctrl.c:631
+msgid "Lost Note"
+msgstr "Алдагдсан нот"
+
+#: beast-gtk/bstpianorollctrl.c:577 beast-gtk/bstpianorollctrl.c:582
+#: beast-gtk/bstpianorollctrl.c:631
+msgid "Resize Note"
+msgstr "Нотын хэмжээг өөрчил"
+
+#: beast-gtk/bstpianorollctrl.c:642 beast-gtk/bstpianorollctrl.c:645
+msgid "Delete Note"
+msgstr "Нотыг устга"
+
+#: beast-gtk/bstpianorollctrl.c:667
+msgid "Insert Note"
+msgstr "Нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:739
+msgid "Vertical Region"
+msgstr "Босоо бүс"
+
+#: beast-gtk/bstpianorollctrl.c:860
+msgid "Play note"
+msgstr "Нотыг тогло"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr ""
+
+#: beast-gtk/bstprocedure.c:213
+msgid "Description"
+msgstr "Тайлбар"
+
+#: beast-gtk/bstprocedure.c:297
+#, c-format
+msgid "Executing `%s'"
+msgstr "`%s'-г ажилуулж байна"
+
+#: beast-gtk/bstprocedure.c:447
+msgid "Procedure"
+msgstr "Процедур"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr ""
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr ""
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr ""
+
+#: beast-gtk/bstrackeditor.c:95
+msgid ""
+"The rack editor is still highly experimental code and guranrteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+msgstr ""
+
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:21
+msgid "_Edit"
+msgstr "_Засварла"
+
+#: beast-gtk/bstrackitem.c:172
+msgid "Edit Rack Item"
+msgstr ""
+
+#: beast-gtk/bstrackitem.c:174
+msgid "Controller"
+msgstr ""
+
+#: beast-gtk/bstrackitem.c:175
+msgid "Duplicate"
+msgstr "Хувьла"
+
+#: beast-gtk/bstrackitem.c:177
+msgid "Grow Horizontally"
+msgstr "Хэвтээгээр өсгө"
+
+#: beast-gtk/bstrackitem.c:178
+msgid "Grow Vertically"
+msgstr "Босоогоор өсгө"
+
+#: beast-gtk/bstrackitem.c:179
+msgid "Shrink Horizontally"
+msgstr "Хэвтээгээр тана"
+
+#: beast-gtk/bstrackitem.c:180
+msgid "Shrink Vertically"
+msgstr "Босоогоор тана"
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr ""
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr ""
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "Гараа:"
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "Төгсгөл:"
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "Дүрсийн хязгаар"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "Дүрсийн дундаж"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "Дүрсийн хамгийн бага"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "Дүрсийн хамгийн их"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr ""
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr ""
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr ""
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr ""
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "Урьдчилан үзэх"
+
+#: beast-gtk/bstsnetrouter.c:72
+msgid ""
+"Edit tool (mouse buttons 1-3)\n"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:77
+msgid "Edit"
+msgstr "Засварла"
+
+#: beast-gtk/bstsnetrouter.c:77
+msgid "Edit/Move/Menu (mouse buttons 1-3)"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1069
+msgid "Palette"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:81
+msgid "Toggle visibility of the tool palette"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:197
+msgid "PCM Output module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "DCA"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "Standard amplifier module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Snooper"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Signal debugging module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:200
+msgid "PCM Input module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Channel Hints"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Toggle channel name hints"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:785
+msgid "Input channel in use"
+msgstr "Оролтын суваг ашиглагдаж байна"
+
+#: beast-gtk/bstsnetrouter.c:812 beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:850
+msgid "Create Link"
+msgstr "Холбоос үүсгэ"
+
+#: beast-gtk/bstsnetrouter.c:812
+msgid "Select output module"
+msgstr "Гаралтын модулийг сонго"
+
+#: beast-gtk/bstsnetrouter.c:814
+msgid "Select input module"
+msgstr "Оролтын модулийг сонго"
+
+#: beast-gtk/bstsnetrouter.c:870
+msgid "Properties"
+msgstr "Шинжүүд"
+
+#: beast-gtk/bstsnetrouter.c:871
+msgid "Reset Properties"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:872
+msgid "Delete Inputs"
+msgstr "Оролтуудыг устга"
+
+#: beast-gtk/bstsnetrouter.c:873
+msgid "Delete Outputs"
+msgstr "Гаралтуудыг устга"
+
+#: beast-gtk/bstsnetrouter.c:874 beast-gtk/bstsnetrouter.c:916
+msgid "Show Info"
+msgstr "Мэдээллийг үзүүл"
+
+#: beast-gtk/bstsnetrouter.c:900
+msgid "Remove Module"
+msgstr "Модулийг устга"
+
+#: beast-gtk/bstsnetrouter.c:927
+msgid "Delete Link"
+msgstr "Холбоосыг устга"
+
+#: beast-gtk/bstsnetrouter.c:981
+msgid "Insert Module"
+msgstr "Модуль оруул"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr ""
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr ""
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr ""
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr ""
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr ""
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr "Одоо"
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "Ол"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr ""
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:172 beast-gtk/bstsupershell.c:285
+msgid "Waves"
+msgstr "Урсгал"
+
+#: beast-gtk/bstsupershell.c:235
+msgid "Tracks"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:240 beast-gtk/bstsupershell.c:272
+#: beast-gtk/bstsupershell.c:290
+msgid "Parameters"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:245
+msgid "Parts"
+msgstr "Хэсгүүд"
+
+#: beast-gtk/bstsupershell.c:251 beast-gtk/bstsupershell.c:266
+msgid "Routing"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link"
+msgstr "Холбоос"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename"
+msgstr "Ахин нэрлэ"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename parts"
+msgstr "Хэсгүүдийг ахин нэрлэ"
+
+#: beast-gtk/bsttrackrollctrl.c:51
+msgid "Delete parts"
+msgstr "Хэсгүүдийг устга"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Зүүн"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Position"
+msgstr "Байрлал"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Баруун"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
+msgid "Edit Part"
+msgstr "Хэсгийг засварла"
+
+#: beast-gtk/bsttrackrollctrl.c:408
+msgid "No Part"
+msgstr "Хэсэг алга"
+
+#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
+#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+msgid "Insert Part"
+msgstr "Хэсэг оруул"
+
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
+msgid "Lost Part"
+msgstr "Алдагдсан хэсэг"
+
+#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+msgid "Position taken"
+msgstr "Байрлал авагдсан"
+
+#: beast-gtk/bsttrackrollctrl.c:453
+msgid "Insert part"
+msgstr "Хэсэг оруул"
+
+#: beast-gtk/bsttrackrollctrl.c:453
+msgid "No Track"
+msgstr ""
+
+#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
+msgid "Delete Part"
+msgstr "Хэсгийг устга"
+
+#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+msgid "Link Part"
+msgstr "Хэсгийг холбо"
+
+#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:543
+msgid "Move Part"
+msgstr "Хэсгийг зөө"
+
+#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
+msgid "Start Editor"
+msgstr "Засварлагчийг эхлүүл"
+
+#: beast-gtk/bsttrackview.c:62
+msgid "Add a new track to this song"
+msgstr ""
+
+#: beast-gtk/bsttrackview.c:65
+msgid "Delete the currently selected track"
+msgstr ""
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Notice"
+msgstr ""
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Question"
+msgstr "Асуулт"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Warning"
+msgstr "Анхааруулга"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Error"
+msgstr "Алдаа"
+
+#: beast-gtk/bstusermessage.c:107
+msgid "Miscellaneous Message"
+msgstr "Төрөл бүрийн мэдээнүүд"
+
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+msgid "processing"
+msgstr ""
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr ""
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr ""
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr ""
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr ""
+
+#: beast-gtk/bstwaveview.c:43
+msgid "Load..."
+msgstr "Ачаалла..."
+
+#: beast-gtk/bstwaveview.c:44
+msgid "Lib..."
+msgstr "Сан..."
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust the zoom factor of the router display"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+msgid "Control Type:"
+msgstr "Удирдлагын төрөл:"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+msgid "Development"
+msgstr "Хөгжүүлэлт"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+msgid "E_xamples"
+msgstr "Ж_ишээнүүд"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+msgid "Events"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+msgid "HZoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+msgid "Horizontal piano zoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+msgid "Horizontal track zoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+msgid "Note _Length"
+msgstr "Нотын урт"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+msgid "Piano Notes"
+msgstr "Төгөлдөр хуурын нот"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+msgid "Repeat"
+msgstr "Давт"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+msgid "Repeat playback within loop points"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+msgid "Synthesis Modules"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+msgid "VZoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+msgid "Vertical piano zoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+msgid "Wave_s"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+msgid "Zoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+msgid "_Audio Sources"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+msgid "_Demo"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+msgid "_Distortion"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+msgid "_Enhance"
+msgstr "_Өсгө"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+msgid "_File"
+msgstr "_Файл"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+msgid "_Filters"
+msgstr "_Шүүлтүүрүүд"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+msgid "_Help"
+msgstr "_Тусламж"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+msgid "_Input & Output"
+msgstr "_Орол ба гаралт"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_LADSPA"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+msgid "_Misc"
+msgstr "_Төрөл бүр"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+msgid "_Other Sources"
+msgstr "_Бусад эхүүд"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+msgid "_Project"
+msgstr "_Төсөл"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+msgid "_Quantization"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+msgid "_Routing"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+msgid "_Song"
+msgstr "_Дуу"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Spatial"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+msgid "_Synth"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+msgid "_Synthesizers"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+msgid "_Tools"
+msgstr "_Хэрэгслүүд"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+msgid "_Utilities"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+msgid "_View"
+msgstr "_Үзэмж"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+msgid "_Virtualization"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+msgid "Find in current document"
+msgstr "Энэ баримтанд ол"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+msgid "Go back one page"
+msgstr "Нэг хуудсаар хойшло"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+msgid "Go forward one page"
+msgstr "Нэг хуудас урагшла"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+msgid "Go to browser index"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+msgid "Location"
+msgstr "Байрлал"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+msgid "Reload current page"
+msgstr "Энэ хуудсыг ахин ачаалла"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+msgid "_Back"
+msgstr "_Буц"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+msgid "_Find"
+msgstr "_Ол"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+msgid "_Forward"
+msgstr "_Урагш"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+msgid "_Index"
+msgstr "_Индекс"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+msgid "_Reload"
+msgstr "_Ахин ачаалла"
+
+#: beast-gtk/gxk/gxksimplelabel.c:132
+msgid "Label"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:132
+msgid "The text of the label"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:136
+msgid "Use underline"
+msgstr "_Доогуур зураас ашигла"
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:141
+msgid "Auto cut"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:146
+msgid "Justification"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:147
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:151
+msgid "Pattern"
+msgstr "Загварчлал"
+
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:156
+msgid "Mnemonic key"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "The mnemonic accelerator key for this label"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:161
+msgid "Mnemonic widget"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr ""
+
+#: data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr ""
+
+#: data/beast.desktop.in.h:2
+msgid "Music Composer"
+msgstr ""
+
+#: data/beast.desktop.in.h:3
+msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgstr ""
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr "Аудио"
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr ""
+
+#: data/bse.keys.in.h:3
+msgid "BSE Synthesis File"
+msgstr ""
+
