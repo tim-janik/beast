@@ -230,7 +230,7 @@ bse_server_register_loader (BseServer   *server,
   g_return_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type));
   g_return_if_fail (magic_spec != NULL);
 
-  magic = bse_magic_create (GUINT_TO_POINTER (proc_type),
+  magic = bse_magic_create ((gpointer) proc_type,
 			    G_PRIORITY_DEFAULT,
 			    extension ? g_quark_from_string (extension) : 0,
 			    magic_spec);

@@ -633,7 +633,7 @@ find_named_typed_item (BseItem *item,
 {
   gpointer *data = data_p;
   gchar *name = data[1];
-  GType   type = GPOINTER_TO_UINT (data[2]);
+  GType type = (GType) data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), type) &&
       bse_string_equals (BSE_OBJECT_NAME (item), name))
@@ -683,7 +683,7 @@ bse_container_item_from_handle (BseContainer *container,
 	  gpointer data[3] = { NULL, };
 	  
 	  data[1] = name;
-	  data[2] = GUINT_TO_POINTER (type);
+	  data[2] = (gpointer) type;
 	  bse_container_forall_items (container, find_named_typed_item, data);
 	  item = data[0];
 

@@ -587,7 +587,7 @@ list_objects (gpointer key,
   gpointer *data = user_data;
   
   for (slist = value; slist; slist = slist->next)
-    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), GPOINTER_TO_UINT (data[1])))
+    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), (GType) data[1]))
       data[0] = g_list_prepend (data[0], slist->data);
 }
 
@@ -598,7 +598,7 @@ bse_objects_list (GType	  type)
   
   if (object_names_ht)
     {
-      gpointer data[2] = { NULL, GUINT_TO_POINTER (type), };
+      gpointer data[2] = { NULL, (gpointer) type, };
       
       g_hash_table_foreach (object_names_ht, list_objects, data);
       

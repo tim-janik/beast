@@ -140,6 +140,10 @@ double			 gsl_temp_freq		(double		kammer_freq,
 						 int		halftone_delta);
 
 
+/* --- miscellaneous --- */
+gfloat			gsl_bit_depth_epsilon	(guint		n_bits); /* 1..32 */
+
+
 /* --- ellipses --- */
 double			 gsl_ellip_rf		(double 	x,
 						 double		y,

@@ -73,10 +73,11 @@ GslDataHandle*	  gsl_data_handle_new_translate	(GslDataHandle	  *src_handle,
 						 GslLong	   tail_cut);
 GslDataHandle*	  gsl_data_handle_new_reversed	(GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
+						 guint             paste_bit_depth,
 						 GslLong	   insertion_offset,
 						 GslLong	   n_paste_values,
 						 const gfloat	  *paste_values,
-						 guint             paste_bit_depth);
+						 void            (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_merge	(GslDataHandle	  *src_handle,
 						 GslLong	   insertion_offset,
 						 GslLong	   n_insertions,

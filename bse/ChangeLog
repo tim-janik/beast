@@ -1,3 +1,18 @@
+Mon Nov 26 10:04:42 2001  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.c: fix things to not cast GType into UINT.
+	* bseobject.c: 
+	* bseserver.c:
+	* bseproject.c: same here.
+
+Mon Nov 26 05:08:50 2001  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.[hc] (gsl_data_handle_new_insert):  implemented new
+	handle for insertion of a small fixed value block.
+
+	* gslmath.[hc] (gsl_bit_depth_epsilon): new function for epsilons at
+	certain bit depths.
+
 Sun Nov 25 23:47:16 2001  Tim Janik  <timj@gtk.org>
 
 	* gsl*.[hc]: applied patch from stefan to use g_newa() instead

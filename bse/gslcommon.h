@@ -91,13 +91,9 @@ void		gsl_ring_free		(GslRing	*head);
 
 
 /* --- GslMessage --- */
-typedef enum	/*< skip >*/
-{
-  GSL_MSG_NOTIFY,
-  GSL_MSG_DATA_CACHE,
-  GSL_MSG_WAVE_DATA_HANDLE,
-  GSL_MSG_LAST
-} GslMsgType;
+#define	GSL_MSG_NOTIFY		"Notify"
+#define	GSL_MSG_DATA_CACHE	"DataCache"
+#define	GSL_MSG_DATA_HANDLE	"DataHandle"
 typedef enum	/*< skip >*/
 {
   GSL_ERROR_NONE,
@@ -107,8 +103,9 @@ typedef enum	/*< skip >*/
   GSL_ERROR_IO,
   GSL_ERROR_NOT_FOUND,
   GSL_ERROR_OPEN_FAILED,
-  GSL_ERROR_READ_FAILED,
   GSL_ERROR_SEEK_FAILED,
+  GSL_ERROR_READ_FAILED,
+  GSL_ERROR_WRITE_FAILED,
   GSL_ERROR_PREMATURE_EOF,
   /* content errors */
   GSL_ERROR_FORMAT_INVALID,
@@ -116,9 +113,9 @@ typedef enum	/*< skip >*/
   /* miscellaneous errors */
   GSL_ERROR_CODEC_FAILURE
 } GslErrorType;
-void		gsl_message_send	(GslMsgType	msgtype,
-					 GslErrorType	error,
-					 const gchar   *reasonf,
+void		gsl_message_send	(const gchar   *reporter, /* GSL_MSG_* */
+					 GslErrorType	error,	  /* maybe 0 */
+					 const gchar   *messagef,
 					 ...)	G_GNUC_PRINTF (3, 4);
 const gchar*	gsl_strerror		(GslErrorType	error);
 
@@ -176,6 +173,7 @@ void		_gsl_init_data_handles	(void);
 void		_gsl_init_data_caches	(void);
 void		_gsl_init_wave_dsc	(void);
 void		_gsl_init_engine_utils	(void);
+#define		GSL_N_IO_RETRIES	(5)
 
 
 #ifdef __cplusplus

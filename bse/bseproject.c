@@ -255,7 +255,7 @@ make_nick_paths (BseItem *item,
 		 gpointer data_p)
 {
   gpointer *data = data_p;
-  GType   item_type = GPOINTER_TO_UINT (data[1]);
+  GType item_type = (GType) data[1];
   gchar *prefix = data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
@@ -275,7 +275,7 @@ GList* /* free result (strings and list) */
 bse_project_list_nick_paths (BseProject *project,
 			     GType       item_type)
 {
-  gpointer data[3] = { NULL, GUINT_TO_POINTER (item_type), "" };
+  gpointer data[3] = { NULL, (gpointer) item_type, "" };
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
   g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);

@@ -161,6 +161,7 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
 	    {	/* pathologic */
 	      peekbuf->data[k - peekbuf->start] = 0;
 	      inc = 1;
+	      gsl_message_send (G_STRLOC, GSL_ERROR_READ_FAILED, "unable to read from data handle (%p)", dhandle);
 	    }
 	}
     }
@@ -190,7 +191,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   if (min_value <= max_value)
     for (i = start_offset; i < dhandle->n_values && i >= 0; i += direction)
       {
-	gfloat val = gsl_data_peek_value (dhandle, i, &peekbuf);
+	gfloat val = GSL_DATA_PEEK_VALUE (dhandle, i, &peekbuf);
 	
 	// g_print ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value);
 	if (val >= min_value && val <= max_value)
@@ -199,7 +200,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   else
     for (i = start_offset; i < dhandle->n_values && i >= 0; i += direction)
       {
-	gfloat val = gsl_data_peek_value (dhandle, i, &peekbuf);
+	gfloat val = GSL_DATA_PEEK_VALUE (dhandle, i, &peekbuf);
 	
 	// g_print ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value);
 	if (val > min_value || val < max_value)

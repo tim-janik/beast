@@ -671,8 +671,9 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_IO:			return "I/O error";
     case GSL_ERROR_NOT_FOUND:		return "Not found";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
-    case GSL_ERROR_READ_FAILED:		return "Read failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
+    case GSL_ERROR_READ_FAILED:		return "Read failed";
+    case GSL_ERROR_WRITE_FAILED:	return "Write failed";
     case GSL_ERROR_PREMATURE_EOF:	return "Premature EOF";
     case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
     case GSL_ERROR_DATA_CORRUPT:        return "data corrupt";
@@ -682,47 +683,45 @@ gsl_strerror (GslErrorType error)
 }
 
 void
-gsl_message_send (GslMsgType   msgtype,
+gsl_message_send (const gchar *reporter,
 		  GslErrorType error,
-		  const gchar *reasonf,
+		  const gchar *messagef,
 		  ...)
 {
   struct {
-    GslMsgType   msg_type;
-    const gchar	*msg_str;
+    gchar        reporter[1024];
     GslErrorType error;
     const gchar	*error_str;
-    gchar	 reason[1024];
+    gchar	 message[1024];
   } tmsg, *msg = &tmsg;
+  gchar *tmp;
+  va_list args;
     
-  g_return_if_fail (msgtype >= 0);
-  g_return_if_fail (msgtype < GSL_MSG_LAST);
+  g_return_if_fail (reporter != NULL);
+  g_return_if_fail (messagef != NULL);
 
-  msg->msg_type = msgtype;
-  switch (msg->msg_type)
-    {
-    case GSL_MSG_NOTIFY:		msg->msg_str = "Note";			break;
-    case GSL_MSG_DATA_CACHE:		msg->msg_str = "DataCache";		break;
-    case GSL_MSG_WAVE_DATA_HANDLE:	msg->msg_str = "WaveDataHandle";	break;
-    default:				g_assert_not_reached ();
-    }
+  strncpy (msg->reporter, reporter, 1023);
+  msg->reporter[1023] = 0;
+
   msg->error = error;
-  msg->error_str = gsl_strerror (msg->error);
-  g_assert (msg->error_str != NULL);
-  {	/* vsnprintf() replacement */
-    gchar *tmp;
-    va_list args;
+  msg->error_str = error ? gsl_strerror (msg->error) : NULL;
 
-    va_start (args, reasonf);
-    tmp = g_strdup_vprintf (reasonf, args);
-    va_end (args);
-    strncpy (msg->reason, tmp, 1023);
-    msg->reason[1023] = 0;
-    g_free (tmp);
-  }
+  /* vsnprintf() replacement */
+  va_start (args, messagef);
+  tmp = g_strdup_vprintf (messagef, args);
+  va_end (args);
+  strncpy (msg->message, tmp, 1023);
+  msg->message[1023] = 0;
+  g_free (tmp);
 
-  /* in current lack of a decent message queue, just puke the message to stderr */
-  g_message ("%s: %s: %s", msg->msg_str, msg->reason, msg->error_str);
+  /* always puke the message to stderr */
+  if (msg->error_str)
+    g_printerr ("GSL **: %s: %s: %s\n", msg->reporter, msg->message, msg->error_str);
+  else
+    g_printerr ("GSL **: %s: %s\n", msg->reporter, msg->message);
+
+  /* in current lack of a decent message queue, do nothing here */
+  ;
 }
 
 

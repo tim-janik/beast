@@ -36,7 +36,7 @@ typedef struct {
 } GslDataPeekBuffer;
 
 /* carefull, this macro evaluates arguments multiple times */
-#define	gsl_data_peek_value(dhandle, pos, peekbuf)	(	\
+#define	GSL_DATA_PEEK_VALUE(dhandle, pos, peekbuf)	(	\
   ((pos) >= (peekbuf)->start && (pos) < (peekbuf)->end) ?	\
     (peekbuf)->data[(pos) - (peekbuf)->start] :			\
     gsl_data_peek_value_f ((dhandle), (pos), (peekbuf)))
