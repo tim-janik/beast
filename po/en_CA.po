@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-21 04:03-0500\n"
-"PO-Revision-Date: 2005-01-21 19:50-0400\n"
+"POT-Creation-Date: 2005-01-25 11:07-0500\n"
+"PO-Revision-Date: 2005-01-25 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -2812,7 +2812,7 @@ msgstr "Maximum number of voices for simultaneous playback"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Synthesis network or wave to be used as instrument by this track"
 
-#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:1018
+#: beast-gtk/bsttrackview.c:620
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
 
@@ -2878,7 +2878,7 @@ msgstr "Message has been repeated %u time"
 msgid "Message has been repeated %u times"
 msgstr "Message has been repeated %u times"
 
-#: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
+#: beast-gtk/bstusermessage.c:386 beast-gtk/bstusermessage.c:388
 msgid "processing"
 msgstr "processing"
 
@@ -5761,6 +5761,10 @@ msgstr "Wave to be used as instrument"
 #: bse/bsetrack.c:1012
 msgid "Max Voixes"
 msgstr "Max Voices"
+
+#: bse/bsetrack.c:1018
+msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
+msgstr "Midi channel assigned to this track. 0 uses internal per-track channel"
 
 #: bse/bsetrack.c:1028
 msgid "Mixer busses used as output for this track"
