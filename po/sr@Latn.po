@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-23 01:28+0100\n"
-"PO-Revision-Date: 2003-11-23 01:32+0100\n"
+"POT-Creation-Date: 2003-11-22 18:13+0100\n"
+"PO-Revision-Date: 2003-11-22 18:14+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -1019,7 +1019,7 @@ msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr "Koristi vodoravni lenjir za popravku pokazivača leve petlje"
 
 #: beast-gtk/bsttrackrollctrl.c:66
-msgid "Pos"
+msgid "Position"
 msgstr "Položaj"
 
 #: beast-gtk/bsttrackrollctrl.c:66
@@ -1354,7 +1354,9 @@ msgstr "Koristi podvlaku"
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
-msgstr "Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja prečicu"
+msgstr ""
+"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja "
+"prečicu"
 
 #: beast-gtk/gxk/gxksimplelabel.c:141
 msgid "Auto cut"
@@ -1363,7 +1365,9 @@ msgstr "Samo-iseci"
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
-msgstr "Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri tačke „...“"
+msgstr ""
+"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri "
+"tačke „...“"
 
 #: beast-gtk/gxk/gxksimplelabel.c:146
 msgid "Justification"
@@ -1386,7 +1390,8 @@ msgstr "Obrazac"
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
-msgstr "Niska sa znacima „_“ na mestima odgovara znacima u tekstu koji se podvlače"
+msgstr ""
+"Niska sa znacima „_“ na mestima odgovara znacima u tekstu koji se podvlače"
 
 #: beast-gtk/gxk/gxksimplelabel.c:156
 msgid "Mnemonic key"
@@ -1427,6 +1432,9 @@ msgstr "BSE višedelna Wave datoteka"
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "BSE datoteka za sintezu"
+
+#~ msgid "Pos"
+#~ msgstr "Položaj"
 
 #~ msgid "Cyria Arweiler"
 #~ msgstr "Sirija Arvajler (Cyria Arweiler)"
