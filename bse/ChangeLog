@@ -1,3 +1,9 @@
+Sun Oct  5 07:00:40 2003  Tim Janik  <timj@gtk.org>
+
+	* bseutils.[hc]: added balance property utility functions.
+	
+	* bsetype.h: added balance pspec creator.
+
 Sat Oct  4 04:13:00 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecompat.c (bse_compat_rewrite_type_name): enter renamed

@@ -56,6 +56,15 @@ void                bse_note_sequence_resize         (BseNoteSequence   *rec,
 guint               bse_note_sequence_length         (BseNoteSequence   *rec);
 
 
+/* --- balance calculation --- */
+/* levels are 0..100, balance is -100..+100 */
+double  bse_balance_get         (double  level1,
+                                 double  level2);
+void    bse_balance_set         (double  balance,
+                                 double *level1,
+                                 double *level2);
+
+
 /* --- icons --- */
 BseIcon* bse_icon_from_pixdata   (const BsePixdata *pixdata);
 BseIcon* bse_icon_from_pixstream (const guint8     *pixstream);

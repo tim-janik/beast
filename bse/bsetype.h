@@ -115,6 +115,8 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_Perc(group, name, nick, blurb, dflt, hints)	\
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, 0.0, 100.0, 5.0, hints SFI_PARAM_HINT_SCALE), group)
+#define	sfidl_pspec_Balance(group, name, nick, blurb, dflt, hints)	\
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, -100.0, +100.0, 5.0, hints SFI_PARAM_HINT_SCALE), group)
 #define	sfidl_pspec_Note(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints), group)
 #define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\

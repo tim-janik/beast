@@ -470,6 +470,48 @@ bse_note_sequence_length (BseNoteSequence *rec)
 }
 
 
+/* --- balance calculation --- */
+double
+bse_balance_get (double level1,
+                 double level2)
+{
+  return level2 - level1;
+}
+
+void
+bse_balance_set (double balance,
+                 double *level1,
+                 double *level2)
+{
+  double l1 = *level1, l2 = *level2;
+  double d = (l1 + l2) * 0.5;
+  l1 = d - balance * 0.5;
+  l2 = d + balance * 0.5;
+  if (l1 < 0)
+    {
+      l2 += -l1;
+      l1 = 0;
+    }
+  if (l1 > 100)
+    {
+      l2 -= l1 - 100;
+      l1 = 100;
+    }
+  if (l2 < 0)
+    {
+      l1 += -l2;
+      l2 = 0;
+    }
+  if (l2 > 100)
+    {
+      l1 -= l2 - 100;
+      l2 = 100;
+    }
+  *level1 = l1;
+  *level2 = l2;
+}
+
+
 /* --- icons --- */
 BseIcon*
 bse_icon_from_pixdata (const BsePixdata *pixdata)
