@@ -1,3 +1,8 @@
+Wed Sep  3 01:19:33 2003  Tim Janik  <timj@gtk.org>
+
+	* icons/chorus.xcf: 
+	* icons/chorus.png: new icon.
+
 Mon Aug 25 19:27:04 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: 
