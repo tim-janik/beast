@@ -1640,6 +1640,7 @@ gnome_canvas_item_keep_above (GnomeCanvasItem *above,
 void
 gnome_canvas_FIXME_hard_update (GnomeCanvas *canvas)
 {
+  return;
   g_return_if_fail (GNOME_IS_CANVAS (canvas));
 
   /* _first_ recalc bounds of already queued items */
