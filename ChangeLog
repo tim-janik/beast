@@ -1,3 +1,8 @@
+Tue Sep  5 2004  Amanpreet Singh Alam <amanpreetalam@yahoo.com>
+
+	* configure.inB add pa(Punjabi) to ALL_LINGUAS
+
+
 Mon Oct  4 23:27:29 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-development.texi: added link to the it translation statistics.
