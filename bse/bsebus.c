@@ -37,6 +37,9 @@ enum
 };
 
 
+/* --- prototypes --- */
+static gboolean bse_bus_ensure_summation (BseBus *self);
+
 /* --- variables --- */
 static gpointer		 bus_parent_class = NULL;
 
@@ -322,6 +325,7 @@ bse_bus_get_stack (BseBus        *self,
   if (!BSE_SUB_SYNTH (self)->snet && project && BSE_IS_SONG (item->parent))
     {
       g_assert (self->n_effects == 0);
+      bse_bus_ensure_summation (self);
       BseSNet *snet = (BseSNet*) bse_project_create_intern_csynth (project, "%BusEffectStack");
       self->vin = bse_container_new_child_bname (BSE_CONTAINER (snet), BSE_TYPE_SUB_IPORT, "%VInput", NULL);
       bse_snet_intern_child (snet, self->vin);
