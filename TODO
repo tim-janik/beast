@@ -74,8 +74,8 @@ GSL:
 * sample loader currently hard codes 440.0 for osc_freq
 - [stw]      ?	LP -> LP transforms or zero/poles
 - [stw]      2h	3-stage joining FFT code
+- [stw]      ?h /usr/share/doc/sfftw-dev/README.hacks
 - [stw]      ?h	FFT L-case optimiaztions
-- [stw/timj] 3h	CSL: whitepaper completion and publication
 - [stw/timj] 2h	CSL: csl_select() completion
 - [stw/timj] 2h	Filter boundary conditions?
 		Also, need 2stage filters with way smaller errors
