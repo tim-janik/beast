@@ -188,6 +188,8 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     dnl     AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
     dnl )
     MAD_LIBS=
+    LIBMAD_XXX_0=""
+    LIBMAD_XXX_1=""
     mad_tests=0
     AC_CHECK_LIB(mad, mad_stream_errorstr,
         [AC_CHECK_HEADER(mad.h, mad_tests=`expr $mad_tests + 1`)]
@@ -196,11 +198,15 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     if test $mad_tests = 1 ; then
 	GSL_HAVE_LIBMAD=1
         MAD_LIBS="-lmad -lm"
+	LIBMAD_XXX_0="XXX_"
     else
-	GSL_HAVE_LIBMAD=0
         AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+	GSL_HAVE_LIBMAD=0
+	LIBMAD_XXX_1="XXX_"
     fi
     AC_SUBST(GSL_HAVE_LIBMAD)
+    AC_SUBST(LIBMAD_XXX_0)
+    AC_SUBST(LIBMAD_XXX_1)
 
     dnl --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
@@ -545,6 +551,9 @@ AC_SUBST(NOTDVLBUILD)
 AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
 AM_CONDITIONAL(IF_NOTDVLBUILD, test -z "$NOTDVLBUILD")
 
+# find installation utilities
+AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
+
 # Check requirement sets
 AC_I18N_REQUIREMENTS
 AC_SFI_REQUIREMENTS
@@ -597,6 +606,7 @@ tests/Makefile
 data/Makefile
 data/sfi.pc
 data/bse.pc
+data/beast.applications
 test/Makefile
 po/Makefile.in
 po-helper.sh

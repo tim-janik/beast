@@ -34,6 +34,7 @@ beast-images.h:	Makefile ${public_images}
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = sfi.pc bse.pc
 $(pkgconfig_DATA): $(top_builddir)/config.status
+CLEANFILES += bse.pc sfi.pc
 
 # install .applications files
 dotapplicationsdir = $(datadir)/application-registry
@@ -50,12 +51,28 @@ beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 dotdesktopdir = $(datadir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
+CLEANFILES += beast.desktop
+
+# generate and install .xml mime info file
+@INTLTOOL_XML_RULE@
+sharedmimedir = $(datadir)/mime
+sharedmimepackagedir = $(sharedmimedir)/packages
+sharedmimepackage_in_files = beast.xml.in
+sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
+CLEANFILES += beast.xml
 
 # generate and install .mime and .keys files
 @INTLTOOL_KEYS_RULE@
 mimedir = $(datadir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
+CLEANFILES += bse.keys
+
+# update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
+install-data-hook:
+	$(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+uninstall-local: uninstall-sharedmimepackageDATA
+	$(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
 
 
 noinst_build_sources += config-paths.h

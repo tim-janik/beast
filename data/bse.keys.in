@@ -1,19 +1,17 @@
-audio/x-bse:
-	_description=BSE Synthesis File
-	_category=Audio
-	icon_filename=beast-audio-x-bse
+audio/x-bse
 	short_list_application_ids_for_novice_user_level=beast
 	short_list_application_ids_for_intermediate_user_level=beast
 	short_list_application_ids_for_advanced_user_level=beast
 	short_list_application_user_additions=beast,bsesh
 	default_application_id=beast
 	default_component_id=beast
+	icon_filename=beast-audio-x-bse
 	open=beast %f
 	view=beast %f
-
-audio/x-bsewave:
-	_description=BSE Multi-Part Wave File
 	_category=Audio
+	_description=BSE Synthesis File
+
+audio/x-bsewave
 	short_list_application_ids_for_novice_user_level=beast
 	short_list_application_ids_for_intermediate_user_level=beast
 	short_list_application_ids_for_advanced_user_level=beast
@@ -22,3 +20,5 @@ audio/x-bsewave:
 	default_component_id=beast
 	open=beast %f
 	view=beast %f
+	_category=Audio
+	_description=BSE Multi-Part Wave File

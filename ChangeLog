@@ -1,3 +1,19 @@
+Thu Sep 16 23:21:58 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added helper macros to implement libmad specific
+	mime registration. provide UPDATE_MIME_DATABASE.
+
+	* data/Makefile.am: added missing CLEANFILES. install beast.xml
+	mime information file and invoke update-mime-database. 
+
+	* data/beast.applications: removed from CVS, this is now generated
+	from data/beast.applications.in.
+
+	* data/beast.applications.in: provide libmad sensitive mime
+	handling information.
+
+	* data/bse.keys.in: minor fixups.
+
 Thu Sep 16 16:03:46 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/testplugin.cc: adapt to recent changes.
