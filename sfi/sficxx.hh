@@ -283,6 +283,15 @@ public:
 
 } // Sfi
 
+/* extending sfi_value functions to C++ types */
+inline Sfi::String sfi_value_get_cxxstring (const GValue *value) {
+  return sfi_value_get_string (value);
+}
+
+inline void sfi_value_set_cxxstring (GValue *value, const Sfi::String& string) {
+  sfi_value_set_string (value, string.c_str());
+}
+
 #endif /* __SFI_CXX_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */
