@@ -285,9 +285,7 @@ sfidl:
   - support records and sequences in bse-plugin-generator and bseprocidl
   - reenable signals in bseprocidl
   fixes:
-  - support N/A choice values, currently hardcoded for BseErrorType
-  - syntax for neutral values in choices
-  - allow enum prototypes?
+  - support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
   extensions:
   - need support for real enums in bserecords.sfidl
   - choices need support for icons per value
