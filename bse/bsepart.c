@@ -1085,14 +1085,18 @@ bse_part_store_private (BseObject  *object,
 	  if (ev->type == BSE_PART_EVENT_NOTE)
 	    {
 	      bse_storage_break (storage);
-	      if (ev->note.velocity < 1.0)
-		bse_storage_printf (storage, "(insert-note %u %u %d %d %g)",
-				    self->nodes[index].tick, ev->note.duration,
-				    ev->note.note, ev->note.fine_tune, ev->note.velocity);
-	      else if (ev->note.fine_tune != 0)
-		bse_storage_printf (storage, "(insert-note %u %u %d %d)",
-				    self->nodes[index].tick, ev->note.duration,
-				    ev->note.note, ev->note.fine_tune);
+	      if (ev->note.fine_tune != 0 || ev->note.velocity < 1.0)
+		{
+		  bse_storage_printf (storage, "(insert-note %u %u %d %d",
+				      self->nodes[index].tick, ev->note.duration,
+				      ev->note.note, ev->note.fine_tune);
+		  if (ev->note.velocity < 1.0)
+		    {
+		      bse_storage_putc (storage, ' ');
+		      bse_storage_putf (storage, ev->note.velocity);
+		    }
+		  bse_storage_putc (storage, ')');
+		}
 	      else
 		bse_storage_printf (storage, "(insert-note %u %u %d)",
 				    self->nodes[index].tick, ev->note.duration,

@@ -209,7 +209,7 @@ bse_storage_prepare_write (BseStorage    *self,
   bse_storage_break (self);
   if (!(mode & BSE_STORAGE_SKIP_COMPAT))
     {
-      bse_storage_printf (self, "(bse-storage-support \"v%s\")", BSE_VERSION);
+      bse_storage_printf (self, "(bse-version \"%s\")", BSE_VERSION);
       bse_storage_break (self);
     }
 }
@@ -711,6 +711,22 @@ bse_storage_pop_level (BseStorage *self)
 }
 
 void
+bse_storage_putc (BseStorage *storage,
+                  gchar       character)
+{
+  g_return_if_fail (BSE_IS_STORAGE (storage));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
+  
+  if (storage->gstring)
+    g_string_append_c (storage->gstring, character);
+  
+  if (character == '\n')
+    BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+  else
+    BSE_OBJECT_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+}
+
+void
 bse_storage_puts (BseStorage  *storage,
                   const gchar *string)
 {
@@ -735,19 +751,45 @@ bse_storage_puts (BseStorage  *storage,
 }
 
 void
-bse_storage_putc (BseStorage *storage,
-                  gchar       character)
+bse_storage_putf (BseStorage *self,
+		  gfloat      vfloat)
 {
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
-  
-  if (storage->gstring)
-    g_string_append_c (storage->gstring, character);
-  
-  if (character == '\n')
-    BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (self));
+
+  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", vfloat);
+
+  bse_storage_puts (self, numbuf);
+}
+
+void
+bse_storage_putd (BseStorage *self,
+		  gdouble     vdouble)
+{
+  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (self));
+
+  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", vdouble);
+
+  bse_storage_puts (self, numbuf);
+}
+
+void
+bse_storage_putr (BseStorage     *self,
+		  SfiReal         vreal,
+		  const gchar    *hints)
+{
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (self));
+
+  if (hints && strstr (hints, ":"SFI_PARAM_FLOAT))
+    bse_storage_putf (self, vreal);
   else
-    BSE_OBJECT_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+    bse_storage_putd (self, vreal);
 }
 
 void

@@ -111,10 +111,17 @@ void		bse_storage_enable_proxies	(BseStorage	*storage);
 /* --- writing --- */
 void		bse_storage_push_level		(BseStorage	*storage);
 void		bse_storage_pop_level		(BseStorage	*storage);
-void		bse_storage_puts		(BseStorage	*storage,
-						 const gchar	*string);
 void		bse_storage_putc		(BseStorage	*storage,
 						 gchar		 character);
+void		bse_storage_puts		(BseStorage	*storage,
+						 const gchar	*string);
+void		bse_storage_putf		(BseStorage	*storage,
+						 gfloat		 vfloat);
+void		bse_storage_putd		(BseStorage	*storage,
+						 gdouble	 vdouble);
+void		bse_storage_putr		(BseStorage	*storage,
+						 SfiReal	 vreal,
+						 const gchar	*hints);
 void		bse_storage_printf		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2, 3);

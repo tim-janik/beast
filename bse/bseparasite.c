@@ -93,7 +93,8 @@ bse_parasite_store (BseObject  *object,
 	      
 	      if ((i + 1) % 5 == 0)
 		bse_storage_break (storage);
-	      bse_storage_printf (storage, " %f", floats[i]);
+	      bse_storage_putc (storage, ' ');
+	      bse_storage_putf (storage, floats[i]);
 	    }
 	  break;
 	default:

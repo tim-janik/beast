@@ -340,7 +340,7 @@ bse_project_store_bse (BseProject  *project,
     if (BSE_IS_SONG (slist->data))
       mflags |= BSE_MAGIC_BSE_SONG;
 
-  string = g_strdup_printf ("; BSE project\n"); /* %010o mflags */
+  string = g_strdup_printf ("; BseProject\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);

@@ -420,7 +420,7 @@ bse_wave_store_private (BseObject  *object,
 		bse_storage_break (storage);
 	      else
 		bse_storage_putc (storage, ' ');
-	      bse_storage_printf (storage, "%g", url->wchunk->osc_freq);
+	      bse_storage_putf (storage, url->wchunk->osc_freq);
 	    }
 	  if (i != 0)
 	    bse_storage_pop_level (storage);
@@ -440,9 +440,10 @@ bse_wave_store_private (BseObject  *object,
       if (url->file_name && url->wave_name && !BSE_STORAGE_SELF_CONTAINED (storage))
 	{
 	  bse_storage_break (storage);
-	  bse_storage_printf (storage, "(load-wave \"%s\" \"%s\" list %g)",
-			      url->file_name, url->wave_name,
-			      url->wchunk->osc_freq);
+	  bse_storage_printf (storage, "(load-wave \"%s\" \"%s\" list ",
+			      url->file_name, url->wave_name);
+	  bse_storage_putf (storage, url->wchunk->osc_freq);
+	  bse_storage_putc (storage, ')');
 	}
       else	/* self-contained wave storage */
 	{
@@ -455,7 +456,10 @@ bse_wave_store_private (BseObject  *object,
 	      continue;
 	    }
           bse_storage_break (storage);
-	  bse_storage_printf (storage, "(wave-chunk %g %g", url->wchunk->osc_freq, url->wchunk->mix_freq);
+	  bse_storage_puts (storage, "(wave-chunk ");
+	  bse_storage_putf (storage, url->wchunk->osc_freq);
+	  bse_storage_putc (storage, ' ');
+	  bse_storage_putf (storage, url->wchunk->mix_freq);
           bse_storage_push_level (storage);
 	  if (gsl_data_handle_n_channels (url->wchunk->dcache->dhandle) > 1)
 	    {

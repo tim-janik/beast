@@ -1,3 +1,20 @@
+Thu Mar 13 13:51:49 2003  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.[hc]: added bse_storage_putf(), bse_storage_putd() and
+	bse_storage_putr() to store floats, doubles and Reals in a locale
+	independent fashion.
+
+	* *.c: fixed storage code by using bse_storage_put{f|d|r}() to store
+	float numbers.
+
+	* bsestorage.c (bse_storage_prepare_write): fix bse version storage.
+
+	* bsestandardosc.c (bse_standard_osc_class_init): add SFI_PARAM_FLOAT
+	for Real properties which are stored in floats 'cause they don't need
+	full double precision.
+	
+	* bseamplifier.c (bse_amplifier_class_init): remove bogus pspec flags.
+
 Sun Mar  9 09:53:41 2003  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (bse_storage_resolve_item_links): 

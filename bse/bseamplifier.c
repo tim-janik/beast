@@ -154,7 +154,7 @@ bse_amplifier_class_init (BseAmplifierClass *class)
 			      PROP_CTRL_STRENGTH_f,
 			      sfi_pspec_real ("ctrl_strength_f", "Control Strength [float]", NULL,
 					      0.5, 0, 1.0, 0.01,
-					      SFI_PARAM_STORAGE SFI_PARAM_FORCE_DIRTY));
+					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_dB,
 			      sfi_pspec_real ("ctrl_strength_dB", "Strength [dB]", "Amount of impact of the control inputs",
@@ -180,7 +180,7 @@ bse_amplifier_class_init (BseAmplifierClass *class)
 			      PROP_GAIN_f,
 			      sfi_pspec_real ("audio_gain_f", "Gain [float]", NULL,
 					      0.5, 0, 1.0, 0.01,
-					      SFI_PARAM_STORAGE SFI_PARAM_FORCE_DIRTY));
+					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_dB,
 			      sfi_pspec_real ("audio_gain_dB", "Gain [dB]", "Base amplification (the control signal adds up to this)",
@@ -197,7 +197,7 @@ bse_amplifier_class_init (BseAmplifierClass *class)
 			      PROP_MASTER_f,
 			      sfi_pspec_real ("master_gain_f", "Master [float]", NULL,
 					      1.0, 0, 1.0, 0.01,
-					      SFI_PARAM_STORAGE SFI_PARAM_FORCE_DIRTY));
+					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Output",
 			      PROP_MASTER_dB,
 			      sfi_pspec_real ("master_gain_dB", "Master [dB]", "Output stage amplification",

@@ -499,7 +499,7 @@ bse_data_pocket_do_store_private (BseObject  *object,
 	{
 	  bse_storage_break (storage);
 	  bse_storage_printf (storage,
-			      "(set-data \"%s\" #\\%c ",
+			      "(set-data \"%s\" %c ",
 			      g_quark_to_string (entry->items[j].quark),
 			      entry->items[j].type);
 	  switch (entry->items[j].type)
@@ -507,7 +507,7 @@ bse_data_pocket_do_store_private (BseObject  *object,
 	      gchar *string;
 	      guint v_uint;
 	    case BSE_DATA_POCKET_INT:	bse_storage_printf (storage, "%u", entry->items[j].value.v_int);	break;
-	    case BSE_DATA_POCKET_FLOAT:	bse_storage_printf (storage, "%.17e", entry->items[j].value.v_float);	break;
+	    case BSE_DATA_POCKET_FLOAT:	bse_storage_putf (storage, entry->items[j].value.v_float);		break;
 	    case BSE_DATA_POCKET_INT64:
 	      v_uint = entry->items[j].value.v_int64 >> 32;
 	      bse_storage_printf (storage, "%u ", v_uint);
@@ -573,8 +573,6 @@ parse_set_data (BseDataPocket *pocket,
   
   parse_or_return (scanner, G_TOKEN_STRING);
   quark = g_quark_from_string (scanner->value.v_string);
-  parse_or_return (scanner, '#');
-  parse_or_return (scanner, '\\');
   
   char_2_token = scanner->config->char_2_token;
   scanner->config->char_2_token = FALSE;
