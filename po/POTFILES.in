@@ -35,6 +35,7 @@ beast-gtk/bstrackview.c
 beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.c
 beast-gtk/bstsnetrouter.c
+beast-gtk/bstsongbusview.c
 beast-gtk/bststest.c
 beast-gtk/bstsupershell.c
 beast-gtk/bsttrackrollctrl.c
@@ -61,10 +62,13 @@ bse/bseinstrumentoutput.c
 bse/bsemidicontroller.c
 bse/bsemidiinput.c
 bse/bsemidivoice.c
+bse/bseparasite.proc
 bse/bsepcminput.c
 bse/bsepcmoutput.c
 bse/bseserver.c
 bse/bsesnooper.c
+bse/bsesong.proc
+bse/bsesongbus.c
 bse/bsestandardosc.c
 bse/bsesubiport.c
 bse/bsesuboport.c
