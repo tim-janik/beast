@@ -29,8 +29,6 @@
  */
 
 #include <stdlib.h>
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
 #include "davguitar.h"
 
 /* --- parameters --- */

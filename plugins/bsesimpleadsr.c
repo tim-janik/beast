@@ -397,12 +397,11 @@ bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
     vars.release_dec = vars.sustain_level / (ms * adsr->release_time);
   
   if (BSE_SOURCE_PREPARED (adsr))
-    bse_source_update_omodules (BSE_SOURCE (adsr),
-				BSE_SIMPLE_ADSR_OCHANNEL_OUT,
-				G_STRUCT_OFFSET (SimpleADSR, vars),
-				&vars,
-				sizeof (vars),
-				trans);
+    bse_source_update_modules (BSE_SOURCE (adsr),
+			       G_STRUCT_OFFSET (SimpleADSR, vars),
+			       &vars,
+			       sizeof (vars),
+			       trans);
 }
 
 static void

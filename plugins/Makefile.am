@@ -37,7 +37,6 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsemult.[hc]		\
 	bsenoise.[hc]		\
 	bsesimpleadsr.[hc]	\
-	bsesimpleosc.[hc]	\
 	bsesimpleresonancefilter.[hc]	\
 	bsesequencer.[hc]	\
 	bsesnooper.[hc]		\

@@ -24,8 +24,6 @@
  */
 #include "davbassfilter.h"
 
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
 
 /* --- parameters --- */
 enum

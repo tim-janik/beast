@@ -539,12 +539,11 @@ static void
 bse_gen_osc_update_modules (BseGenOsc *gen_osc)
 {
   if (BSE_SOURCE_PREPARED (gen_osc))
-    bse_source_update_omodules (BSE_SOURCE (gen_osc),
-				BSE_GEN_OSC_OCHANNEL_OSC,
-				G_STRUCT_OFFSET (GenOsc, vars),
-				&gen_osc->vars,
-				sizeof (gen_osc->vars),
-				NULL);
+    bse_source_update_modules (BSE_SOURCE (gen_osc),
+			       G_STRUCT_OFFSET (GenOsc, vars),
+			       &gen_osc->vars,
+			       sizeof (gen_osc->vars),
+			       NULL);
 }
 
 static void

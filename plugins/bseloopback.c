@@ -18,7 +18,6 @@
  */
 #include "bseloopback.h"
 
-#include <bse/bsechunk.h>
 #include <stdlib.h>
 #include <time.h>
 

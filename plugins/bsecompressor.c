@@ -159,19 +159,16 @@ bse_compressor_update_modules (BseCompressor *comp)
     {
       /* we're prepared, that means we have engine modules currently
        * processing data. now we need to let each of these modules
-       * know about the new settings. bse_source_update_omodules()
-       * will visit all modules that we created in context_create()
-       * and which are connected with their ostream to
-       * BSE_COMPRESSOR_OCHANNEL_MONO1.
+       * know about the new settings. bse_source_update_modules()
+       * will visit all modules that we created in context_create().
        * upon visiting each, it'll copy the contents of comp->vars into
        * CompressorModule.vars when that module is not currently busy in
        * compressor_process().
        */
-      bse_source_update_omodules (BSE_SOURCE (comp),
-				  BSE_COMPRESSOR_OCHANNEL_MONO1,
-				  G_STRUCT_OFFSET (CompressorModule, vars),
-				  &comp->vars, sizeof (comp->vars),
-				  NULL);
+      bse_source_update_modules (BSE_SOURCE (comp),
+				 G_STRUCT_OFFSET (CompressorModule, vars),
+				 &comp->vars, sizeof (comp->vars),
+				 NULL);
     }
 }
 

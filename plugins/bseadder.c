@@ -18,8 +18,6 @@
  */
 #include "bseadder.h"
 
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
 #include <bse/gslengine.h>
 
 
@@ -236,12 +234,11 @@ bse_adder_update_modules (BseAdder *adder,
 			  GslTrans *trans)
 {
   if (BSE_SOURCE_PREPARED (adder))
-    bse_source_update_omodules (BSE_SOURCE (adder),
-				BSE_ADDER_OCHANNEL_MONO,
-				G_STRUCT_OFFSET (Adder, subtract),
-				&adder->subtract,
-				sizeof (adder->subtract),
-				trans);
+    bse_source_update_modules (BSE_SOURCE (adder),
+			       G_STRUCT_OFFSET (Adder, subtract),
+			       &adder->subtract,
+			       sizeof (adder->subtract),
+			       trans);
 }
 
 static void

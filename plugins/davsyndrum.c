@@ -17,8 +17,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
 #include "davsyndrum.h"
 
 /* --- parameters --- */

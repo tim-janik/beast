@@ -333,12 +333,11 @@ dav_xtal_strings_trigger (DavXtalStrings *strings)
        * will be called multiple times for all XtalStringsModules,
        * the data will be freed after the last execution occoured
        */
-      bse_source_access_omodules (BSE_SOURCE (strings),
-				  DAV_XTAL_STRINGS_OCHANNEL_MONO,
-				  xmod_access,
-				  g_memdup (&strings->params, sizeof (strings->params)),
-				  g_free,
-				  NULL);
+      bse_source_access_modules (BSE_SOURCE (strings),
+				 xmod_access,
+				 g_memdup (&strings->params, sizeof (strings->params)),
+				 g_free,
+				 NULL);
     }
 }
 

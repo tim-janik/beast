@@ -278,10 +278,9 @@ bse_sequencer_update_modules (BseSequencer *seq)
       d->counter = seq->counter / 1000.0 * gsl_engine_sample_freq ();
       d->counter = MAX (d->counter, 1);
 
-      bse_source_access_omodules (BSE_SOURCE (seq),
-				  BSE_SEQUENCER_OCHANNEL_FREQ,
-				  seq_access, d, seq_access_free,
-				  NULL);
+      bse_source_access_modules (BSE_SOURCE (seq),
+				 seq_access, d, seq_access_free,
+				 NULL);
     }
 }
 

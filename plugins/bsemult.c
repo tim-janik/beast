@@ -18,8 +18,6 @@
  */
 #include "bsemult.h"
 
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
 #include <bse/gslengine.h>
 
 

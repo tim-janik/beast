@@ -17,7 +17,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <bse/bsechunk.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "davorgan.h"

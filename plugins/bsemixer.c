@@ -18,8 +18,6 @@
  */
 #include "bsemixer.h"
 
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
 #include <bse/gslengine.h>
 
 #define	BSE_DFL_MIXER_VOLUME_dB	(BSE_DFL_MASTER_VOLUME_dB)
@@ -290,12 +288,11 @@ bse_mixer_update_modules (BseMixer *mixer,
   for (i = 0; i < BSE_MIXER_N_INPUTS; i++)
     volumes[i] = mixer->volume_factors[i] * mixer->master_volume_factor;
   if (BSE_SOURCE_PREPARED (mixer))
-    bse_source_update_omodules (BSE_SOURCE (mixer),
-				BSE_MIXER_OCHANNEL_MONO,
-				G_STRUCT_OFFSET (Mixer, volumes),
-				volumes,
-				sizeof (volumes),
-				trans);
+    bse_source_update_modules (BSE_SOURCE (mixer),
+			       G_STRUCT_OFFSET (Mixer, volumes),
+			       volumes,
+			       sizeof (volumes),
+			       trans);
 }
 
 static void

@@ -47,9 +47,9 @@ delete_note_setup (BseProcedureClass *proc,
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
 					BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
   *(in_pspecs++) = bse_param_spec_uint ("focus_channel", "Focus Channel", NULL,
-				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, BSE_PARAM_DEFAULT);
+					0, 256 - 1, 0, 1, BSE_PARAM_DEFAULT);
   *(in_pspecs++) = bse_param_spec_uint ("focus_row", "Focus Row", NULL,
-				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, BSE_PARAM_DEFAULT);
+					0, 256 - 1, 0, 1, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 
@@ -109,9 +109,9 @@ insert_note_setup (BseProcedureClass *proc,
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
 					BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
   *(in_pspecs++) = bse_param_spec_uint ("focus_channel", "Focus Channel", NULL,
-				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, BSE_PARAM_DEFAULT);
+					0, 256 - 1, 0, 1, BSE_PARAM_DEFAULT);
   *(in_pspecs++) = bse_param_spec_uint ("focus_row", "Focus Row", NULL,
-				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, BSE_PARAM_DEFAULT);
+				      0, 256 - 1, 0, 1, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 

@@ -69,16 +69,6 @@ bsesimpleadsr_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsesimpleadsr.h
 
 ##
-## Plugin bsesimpleosc
-##
-bsesimpleosc.enums: bsesimpleosc.h 
-plugins_built_sources += bsesimpleosc.enums
-bsesimpleosc_la_SOURCES = bsesimpleosc.c
-bsesimpleosc_la_LDFLAGS = -module -avoid-version
-bsesimpleosc_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS         += bsesimpleosc.h
-
-##
 ## Plugin bsesimpleresonancefilter
 ##
 bsesimpleresonancefilter_la_SOURCES = bsesimpleresonancefilter.c
@@ -135,7 +125,6 @@ plugin_LTLIBRARIES += \
 	bsemult.la \
 	bsenoise.la \
 	bsesimpleadsr.la \
-	bsesimpleosc.la \
 	bsesimpleresonancefilter.la \
 	bsesequencer.la \
 	bsesnooper.la \

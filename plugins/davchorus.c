@@ -18,7 +18,6 @@
  */
 #include "davchorus.h"
 
-#include <bse/bsechunk.h>
 #include <bse/bsehunkmixer.h>
 
 

@@ -20,7 +20,6 @@
 
 #include <bse/gslengine.h>
 #include <stdlib.h>
-#include <time.h>
 
 
 /* --- prototypes --- */
@@ -93,7 +92,6 @@ bse_noise_prepare (BseSource *source)
   l = BSE_BLOCK_N_VALUES * (N_STATIC_BLOCKS + 1);
   noise->static_noise = g_new (BseSampleValue, l);
   
-  srand (time (NULL));
   for (i = 0; i < l; i++)
     noise->static_noise[i] = 1.0 - rand () / (0.5 * RAND_MAX);	// FIXME: should have class noise
   

@@ -18,7 +18,6 @@
  */
 #include "bsefirfilter.h"
 
-#include <bse/bsechunk.h>
 
 
 /* --- parameters --- */

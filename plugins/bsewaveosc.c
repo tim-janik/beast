@@ -137,7 +137,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
 						   G_PARAM_WRITABLE));
 
   signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
-							    bse_marshal_VOID__UINT,
+							    bse_marshal_VOID__UINT, NULL,
 							    G_TYPE_NONE, 1, G_TYPE_UINT);
 
   ichannel = bse_source_class_add_ichannel (source_class, "freq_in", "Frequency Input");
@@ -248,10 +248,10 @@ bse_wave_osc_set_property (BseWaveOsc  *wosc,
 	g_object_set (wosc, "editable_sample", NULL, NULL);
       if (wosc->wave)
 	{
-	  g_object_disconnect (wosc->wave,
+	  g_object_disconnect (wosc->wave,	// FIXME: disconnect in uncross
 			       "any_signal", notify_wave_changed, wosc,
 			       NULL);
-	  bse_item_cross_unref (BSE_ITEM (wosc), BSE_ITEM (wosc->wave));
+	  bse_item_uncross (BSE_ITEM (wosc), BSE_ITEM (wosc->wave));
 	  g_assert (wosc->wave == NULL);
 	}
       wosc->wave = g_value_get_object (value);
@@ -412,12 +412,11 @@ static void
 bse_wave_osc_update_modules (BseWaveOsc *wosc)
 {
   if (BSE_SOURCE_PREPARED (wosc))
-    bse_source_access_omodules (BSE_SOURCE (wosc),
-				BSE_WAVE_OSC_OCHANNEL_WAVE,
-				wmod_access,
-				g_memdup (&wosc->config, sizeof (wosc->config)),
-				g_free,
-				NULL);
+    bse_source_access_modules (BSE_SOURCE (wosc),
+			       wmod_access,
+			       g_memdup (&wosc->config, sizeof (wosc->config)),
+			       g_free,
+			       NULL);
 }
 
 static void
@@ -541,12 +540,11 @@ request_pcm_position_exec (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   if (BSE_SOURCE_PREPARED (wosc))
-    bse_source_access_omodules (BSE_SOURCE (wosc),
-				BSE_WAVE_OSC_OCHANNEL_WAVE,
-				pcm_pos_access,
-				g_object_ref (wosc),
-				pcm_pos_access_free,
-				NULL);
+    bse_source_access_modules (BSE_SOURCE (wosc),
+			       pcm_pos_access,
+			       g_object_ref (wosc),
+			       pcm_pos_access_free,
+			       NULL);
 
   return BSE_ERROR_NONE;
 }

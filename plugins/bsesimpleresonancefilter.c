@@ -241,10 +241,9 @@ bse_simple_resonance_filter_update_modules (BseSimpleResonanceFilter *filt)
       fmod->c1 = filt->c1;
       fmod->c2 = filt->c2;
 
-      bse_source_access_omodules (BSE_SOURCE (filt),
-				  BSE_SIMPLE_RESONANCE_FILTER_OCHANNEL_MONO,
-				  simple_resonance_filter_access, fmod, g_free,
-				  NULL);
+      bse_source_access_modules (BSE_SOURCE (filt),
+				 simple_resonance_filter_access, fmod, g_free,
+				 NULL);
     }
 }
 

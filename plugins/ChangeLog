@@ -1,3 +1,21 @@
+Sun Mar 31 19:47:57 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.c (bse_wave_osc_set_property): use bse_item_uncross() to
+	remove the cross reference to an old wave, because we want the
+	notifier to be executed.
+
+Sat Mar 30 05:54:04 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesimpleosc.[hc]: remove this, replaced by a standard oscillator
+	in BSE.
+
+	* fldbsepattern.c: adapt this code to removal of old definitions,
+	will be deprecated anyways.
+
+	* bse_wave_osc_class_init: provide proxy marshaller for signal.
+
+	* *.c: remove old unused includes.
+
 Wed Mar 13 18:17:46 2002  Tim Janik  <timj@gtk.org>
 
 	* remove "no icon" icons from modules which don't have an icon.

@@ -398,10 +398,9 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
       fmod->iir.w = filt->algo_type_change ? fmod->dummy : NULL;
       filt->algo_type_change = FALSE;
 
-      bse_source_access_omodules (BSE_SOURCE (filt),
-				  BSE_IIR_FILTER_OCHANNEL_MONO,
-				  iir_filter_access, fmod, g_free,
-				  NULL);
+      bse_source_access_modules (BSE_SOURCE (filt),
+				 iir_filter_access, fmod, g_free,
+				 NULL);
     }
 }
 
