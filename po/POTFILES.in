@@ -18,6 +18,7 @@ beast-gtk/bstkeybindings.c
 beast-gtk/bstmain.c
 beast-gtk/bstparam-choice.c
 beast-gtk/bstparam-color-spinner.c
+beast-gtk/bstparam-item-seq.c
 beast-gtk/bstparam-note-sequence.c
 beast-gtk/bstparam-note-spinner.c
 beast-gtk/bstparam-proxy.c
