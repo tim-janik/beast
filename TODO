@@ -345,7 +345,5 @@ other stuff:
   - Bse::MidiEvent: should be wire-passable
   - Makefile.plugins doesn't get regenerated properly
 
-LEGAL:
-- email RMS about plugins covered by patents
 
 vim:set ts=8 sts=2 sw=2:
