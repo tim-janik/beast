@@ -1,3 +1,11 @@
+Sun Aug 29 04:18:43 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-proxy.c: guard against NULL return values from
+	bse_item_get_property_candidates().
+
+	* beast-gtk/dialogs/radgets-beast.xml: allow the pattern editor
+	to grab focus.
+
 Sat Aug 28 21:56:44 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version 6.2.3rc1.

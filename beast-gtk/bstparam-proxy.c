@@ -52,7 +52,7 @@ param_proxy_populate (GtkWidget *chunter,
   proxy = bst_param_get_proxy (param);
   if (proxy)
     pc = bse_item_get_property_candidates (proxy, param->pspec->name);
-  if (pc->items)
+  if (pc && pc->items)
     {
       pop = g_new (ParamProxyPopulation, 1);
       pop->iseq = bse_item_seq_copy_shallow (pc->items);
@@ -222,7 +222,7 @@ param_proxy_create (GxkParam    *param,
   if (proxy)
     {
       BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, chunter, pc->tooltip, NULL);
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, chunter, pc ? pc->tooltip : NULL, NULL);
     }
   gxk_widget_add_font_requisition (widget, 16, 2);
   gxk_param_entry_connect_handlers (param, widget, param_proxy_changed);

@@ -8,6 +8,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- rename bse_bus_get_stack() which is the only valid hook to setup song modules atm
 - evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins
 - add more menu tooltips
@@ -20,6 +21,7 @@ TODO:
 - assertion:
   BSE-ERROR **: file bsemidireceiver.cc: line 526 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, BseTrans*)): assertion failed: (vinput->iter == table->end())
   aborting...
+- (beast:18498): BSE-WARNING **: while executing undo method "BseSong+remove-bus" of item "BseSong::Unnamed": Synthesis module currently busy
 - rename bsesnifferscope.* to bsescope.*
 - split bstutils into bstgutils
 - rename snifferscope to trackscope

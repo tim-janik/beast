@@ -517,7 +517,7 @@
 	</hbox>
 	<hbox pack:expand="1" >
 	  <frame-shadow-in pack:expand="1" >
-	    <pattern-view />
+	    <pattern-view id="pattern-view" can-focus="1" />
 	  </frame-shadow-in>
 	  <hbox spacing="1" >
 	    <vgrow-bar id="pattern-view-vgrow-bar" size:hgroup="scroll-size" />
