@@ -32,10 +32,6 @@
 
 /* --- typedefs & enums --- */
 enum {
-  SIGNAL_IO_CHANGED,
-  SIGNAL_LAST
-};
-enum {
   PROP_0,
   PROP_POS_X,
   PROP_POS_Y,
@@ -59,13 +55,13 @@ typedef struct
 
 
 /* --- prototypes --- */
-static gint	    contexts_compare			(gconstpointer	 bsearch_node1, /* key */
-							 gconstpointer	 bsearch_node2);
+static gint     contexts_compare        (gconstpointer	 bsearch_node1, /* key */
+                                         gconstpointer	 bsearch_node2);
 
 
 /* --- variables --- */
 static GTypeClass          *parent_class = NULL;
-static guint                source_signals[SIGNAL_LAST] = { 0, };
+static guint                signal_io_changed = 0;
 static const GBSearchConfig context_config = {
   sizeof (BseSourceContext),
   contexts_compare,
@@ -84,6 +80,7 @@ bse_source_init (BseSource      *source,
   source->contexts = NULL;
   source->pos_x = 0;
   source->pos_y = 0;
+  source->probes = NULL;
 }
 
 static void
@@ -133,6 +130,8 @@ bse_source_dispose (GObject *object)
 {
   BseSource *source = BSE_SOURCE (object);
 
+  if (source->probes)
+    bse_source_clear_probes (source);
   bse_source_clear_ochannels (source);
   if (BSE_SOURCE_PREPARED (source))
     {
@@ -152,6 +151,8 @@ bse_source_finalize (GObject *object)
   BseSource *source = BSE_SOURCE (object);
   guint i;
 
+  if (source->probes)
+    bse_source_clear_probes (source);
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
     if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
       g_free (BSE_SOURCE_INPUT (source, i)->jdata.joints);
@@ -637,6 +638,8 @@ bse_source_real_context_dismiss	(BseSource *source,
 	gsl_trans_add (trans, gsl_job_discard (context->u.mods.omodule));
       context->u.mods.imodule = NULL;
       context->u.mods.omodule = NULL;
+      if (source->probes)
+        bse_source_probes_modules_changed (source);
     }
 }
 
@@ -769,6 +772,23 @@ bse_source_set_context_omodule (BseSource *source,
     g_return_if_fail (context->u.mods.omodule != NULL);
 
   context->u.mods.omodule = omodule;
+  if (source->probes)
+    bse_source_probes_modules_changed (source);
+}
+
+SfiRing*
+bse_source_list_omodules (BseSource *source)
+{
+  guint i, n_contexts = BSE_SOURCE_PREPARED (source) ? BSE_SOURCE_N_CONTEXTS (source) : 0;
+  SfiRing *ring = NULL;
+  if (BSE_SOURCE_N_OCHANNELS (source))
+    for (i = 0; i < n_contexts; i++)
+      {
+        BseSourceContext *context = g_bsearch_array_get_nth (source->contexts, &context_config, i);
+        if (context->u.mods.omodule)
+          ring = sfi_ring_append (ring, context->u.mods.omodule);
+      }
+  return ring;
 }
 
 GslModule*
@@ -1068,8 +1088,8 @@ bse_source_set_input (BseSource *source,
   g_object_ref (source);
   g_object_ref (osource);
   BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel, osource, ochannel);
-  g_signal_emit (source, source_signals[SIGNAL_IO_CHANGED], 0);
-  g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
+  g_signal_emit (source, signal_io_changed, 0);
+  g_signal_emit (osource, signal_io_changed, 0);
   g_object_unref (source);
   g_object_unref (osource);
   
@@ -1182,8 +1202,8 @@ bse_source_unset_input (BseSource *source,
   g_object_ref (source);
   g_object_ref (osource);
   BSE_SOURCE_GET_CLASS (source)->remove_input (source, ichannel, osource, ochannel);
-  g_signal_emit (source, source_signals[SIGNAL_IO_CHANGED], 0);
-  g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
+  g_signal_emit (source, signal_io_changed, 0);
+  g_signal_emit (osource, signal_io_changed, 0);
   g_object_unref (osource);
   g_object_unref (source);
 
@@ -1316,7 +1336,7 @@ bse_source_clear_ichannels (BseSource *source)
 	      io_changed = TRUE;
 	      g_object_ref (osource);
 	      BSE_SOURCE_GET_CLASS (source)->remove_input (source, i, osource, ochannel);
-	      g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
+	      g_signal_emit (osource, signal_io_changed, 0);
 	      g_object_unref (osource);
 	    }
 	}
@@ -1327,12 +1347,12 @@ bse_source_clear_ichannels (BseSource *source)
 	  io_changed = TRUE;
 	  g_object_ref (osource);
 	  BSE_SOURCE_GET_CLASS (source)->remove_input (source, i, osource, input->idata.ochannel);
-	  g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
+	  g_signal_emit (osource, signal_io_changed, 0);
 	  g_object_unref (osource);
 	}
     }
   if (io_changed)
-    g_signal_emit (source, source_signals[SIGNAL_IO_CHANGED], 0);
+    g_signal_emit (source, signal_io_changed, 0);
   g_object_unref (source);
 }
 
@@ -1395,7 +1415,7 @@ bse_source_clear_ochannels (BseSource *source)
 		  io_changed = TRUE;
 		  BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i,
 								source, input->jdata.joints[j].ochannel);
-		  g_signal_emit (isource, source_signals[SIGNAL_IO_CHANGED], 0);
+		  g_signal_emit (isource, signal_io_changed, 0);
 		  break;
 		}
 	    }
@@ -1404,14 +1424,14 @@ bse_source_clear_ochannels (BseSource *source)
 	      io_changed = TRUE;
 	      BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i,
 							    source, input->idata.ochannel);
-	      g_signal_emit (isource, source_signals[SIGNAL_IO_CHANGED], 0);
+	      g_signal_emit (isource, signal_io_changed, 0);
 	      break;
 	    }
 	}
       g_object_unref (isource);
     }
   if (io_changed)
-    g_signal_emit (source, source_signals[SIGNAL_IO_CHANGED], 0);
+    g_signal_emit (source, signal_io_changed, 0);
   g_object_unref (source);
 }
 
@@ -1717,8 +1737,8 @@ bse_source_class_init (BseSourceClass *class)
 					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
 					      SFI_PARAM_STORAGE ":skip-default"));
 
-  source_signals[SIGNAL_IO_CHANGED] = bse_object_class_add_signal (object_class, "io_changed",
-								   G_TYPE_NONE, 0);
+  signal_io_changed = bse_object_class_add_signal (object_class, "io-changed", G_TYPE_NONE, 0);
+  bse_source_class_add_probe_signals (class);
 }
 
 BSE_BUILTIN_TYPE (BseSource)

@@ -53,7 +53,7 @@ BODY (BseProcedureClass *proc,
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
-      error = bse_bus_connect (self, BSE_SOURCE (track));
+      error = bse_bus_connect (self, BSE_ITEM (track));
       if (!error)
         bse_item_push_undo_proc (self, "disconnect-track", track);
     }
@@ -89,7 +89,7 @@ BODY (BseProcedureClass *proc,
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
-      error = bse_bus_disconnect (self, BSE_SOURCE (track));
+      error = bse_bus_disconnect (self, BSE_ITEM (track));
       if (!error)
         bse_item_push_undo_proc (self, "connect-track", track);
     }
@@ -125,7 +125,7 @@ BODY (BseProcedureClass *proc,
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
-      error = bse_bus_connect (self, BSE_SOURCE (bus));
+      error = bse_bus_connect (self, BSE_ITEM (bus));
       if (!error)
         bse_item_push_undo_proc (self, "disconnect-bus", bus);
     }
@@ -161,7 +161,7 @@ BODY (BseProcedureClass *proc,
     error = BSE_ERROR_SOURCE_PARENT_MISMATCH;
   else
     {
-      error = bse_bus_disconnect (self, BSE_SOURCE (bus));
+      error = bse_bus_disconnect (self, BSE_ITEM (bus));
       if (!error)
         bse_item_push_undo_proc (self, "connect-bus", bus);
     }

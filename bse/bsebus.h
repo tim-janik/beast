@@ -49,9 +49,9 @@ struct _BseBusClass
 
 /* --- API --- */
 BseErrorType bse_bus_connect          (BseBus    *self,
-                                       BseSource *trackbus);
+                                       BseItem   *item);
 BseErrorType bse_bus_disconnect       (BseBus    *self,
-                                       BseSource *trackbus);
+                                       BseItem   *item);
 SfiRing*     bse_bus_list_inputs      (BseBus    *self);
 
 

@@ -462,6 +462,25 @@ gsl_job_access (GslModule    *module,
 }
 
 /**
+ * GslProbeFunc
+ * @data:       user data passed in to gsl_job_probe_request()
+ * @tick_stamp: engine time in microseconds of the probe
+ * @n_values:   number of values probed
+ * @oblocks:    array of probe value block per output channel
+ *
+ * A GslProbeFunc() is provided by users as a means to be notified about
+ * a completed probe. This function is executed in the user thread.
+ * Per each output channel that a probe has been requested through
+ * gsl_job_request_probe(), a block of probe values is supplied as
+ * @oblocks[channel-index]. These blocks are allocate via g_new() and
+ * may be "stolen" by assigning NULL to the respective pointer (the
+ * caller then is responsible to g_free() the block).
+ * Note that n_values may be 0 in case the module to be probed was
+ * inactive. The blocks still contain gsl_engine_block_size() values
+ * regardless.
+ */
+
+/**
  * gsl_job_request_probe
  * @module:      The module to access
  * @ochannel_bytemask: One byte per ochannel, bytes != 0 indicate a probe request
@@ -490,33 +509,21 @@ gsl_job_probe_request (GslModule    *module,
                        gpointer      data)
 {
   g_return_val_if_fail (module != NULL, NULL);
-  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (probe_func != NULL, NULL);
   g_return_val_if_fail (ochannel_bytemask != NULL, NULL);
 
-  guint i, n_blocks = 0, n_ostreams = module->klass->n_ostreams;
-  for (i = 0; i < n_ostreams; i++)
-    if (ochannel_bytemask[i])
-      n_blocks++;
-
-  EngineProbeJob *pjob;
-  guint jsize = sizeof (*pjob) + sizeof (pjob->oblocks[0]) * n_ostreams;
-  guint8 *bmem = g_malloc0 (jsize + gsl_engine_block_size() * sizeof (float) * n_blocks);
-  pjob = (EngineProbeJob*) bmem;
-  gfloat *floats = (gfloat*) (bmem + jsize);
+  guint i, n_oblocks = module->klass->n_ostreams;
+  EngineProbeJob *pjob = g_malloc0 (sizeof (*pjob) +  sizeof (pjob->oblocks[0]) * n_oblocks);
 
   pjob->job_type = ENGINE_JOB_PROBE_JOB;
   pjob->probe_func = probe_func;
   pjob->data = data;
   pjob->tick_stamp = 0;
   pjob->n_values = 0;
-
-  for (i = 0; i < n_ostreams; i++)
+  pjob->n_oblocks = n_oblocks;
+  for (i = 0; i < n_oblocks; i++)
     if (ochannel_bytemask[i])
-      {
-        pjob->oblocks[i] = floats;
-        floats += gsl_engine_block_size();
-      }
+      pjob->oblocks[i] = g_new0 (gfloat, gsl_engine_block_size());
 
   GslJob *job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;

@@ -93,17 +93,20 @@ bse_c_sources = $(strip \
 bse_idl_sources = $(strip \
 	bseamplifier.idl	\
 	bsecore.idl		\
+	bseprobe.idl		\
 	bsesniffer.idl		\
 	bsesummation.idl	\
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
 $(srcdir)/bsecore.cc: bsecore.gen-idl.h
+$(srcdir)/bseprobe.cc: bseprobe.gen-idl.h
 $(srcdir)/bsesniffer.cc: bsesniffer.gen-idl.h
 $(srcdir)/bsesummation.cc: bsesummation.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
 	bsecore.cc		\
+	bseprobe.cc		\
 	bsesniffer.cc		\
 	bsesummation.cc		\
 )

@@ -185,8 +185,8 @@ bus_uncross_input (BseItem *owner,
 }
 
 BseErrorType
-bse_bus_connect (BseBus     *self,
-                 BseSource  *trackbus)
+bse_bus_connect (BseBus  *self,
+                 BseItem *trackbus)
 {
   BseSource *osource;
   if (BSE_IS_TRACK (trackbus))
@@ -209,8 +209,8 @@ bse_bus_connect (BseBus     *self,
 }
 
 BseErrorType
-bse_bus_disconnect (BseBus     *self,
-                    BseSource  *trackbus)
+bse_bus_disconnect (BseBus  *self,
+                    BseItem *trackbus)
 {
   BseSource *osource;
   if (BSE_IS_TRACK (trackbus))

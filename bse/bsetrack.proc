@@ -214,11 +214,12 @@ METHOD (BseTrack, get-timing) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseTrack, create-sniffer) {
-  HELP  = "Create a new sniffer for this track.";
-  IN    = bse_param_spec_object ("track", "Track", NULL,
+METHOD (BseTrack, get-output-source) {
+  HELP  = _("Get the output module for this track. The output of this module is the merged result from "
+            "all polyphonic voices and has all track specific alterations applied.");
+  IN    = bse_param_spec_object ("track", NULL, NULL,
                                  BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_object ("sniffer", "Sniffer", NULL,
+  OUT   = bse_param_spec_object ("source", NULL, NULL,
                                  BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
@@ -226,8 +227,6 @@ METHOD (BseTrack, create-sniffer) {
 {
   /* extract parameter values */
   BseTrack *track = bse_value_get_object (in_values++);
-  BseItem *song;
-  BseUndoStack *ustack;
   BseSource *child = NULL;
 
   /* check parameters */
@@ -235,17 +234,7 @@ METHOD (BseTrack, create-sniffer) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  song = BSE_ITEM (track)->parent;
-  if (BSE_IS_SONG (song))
-    {
-      ustack = bse_item_undo_open (song, "SKIP");
-      bse_undo_stack_ignore_steps (ustack);
-      child = bse_container_new_child (BSE_CONTAINER (song), g_type_from_name ("BseSniffer"), NULL);
-      bse_item_set_internal (child, TRUE);
-      bse_track_connect_sniffer (track, child);
-      bse_undo_stack_unignore_steps (ustack);
-      bse_item_undo_close (ustack);
-    }
+  child = track->postprocess;
 
   /* set output parameters */
   bse_value_set_object (out_values++, child);

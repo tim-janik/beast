@@ -141,6 +141,7 @@ struct _EngineProbeJob
   gpointer          data;
   guint64           tick_stamp;
   guint             n_values;
+  guint             n_oblocks;
   gfloat           *oblocks[1]; /* [ENGINE_NODE_N_OSTREAMS()] */
 };
 struct _EngineTimedJob

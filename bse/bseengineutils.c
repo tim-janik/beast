@@ -58,10 +58,14 @@ free_user_job (EngineUserJob *ujob)
     {
       EngineProbeJob *pjob;
       EngineTimedJob *tjob;
+      guint i;
     case ENGINE_JOB_PROBE_JOB:
       pjob = (EngineProbeJob*) ujob;
       if (pjob->probe_func)
         pjob->probe_func (pjob->data, pjob->tick_stamp, pjob->n_values, pjob->oblocks);
+      for (i = 0; i < pjob->n_oblocks; i++)
+        if (pjob->oblocks[i])
+          g_free (pjob->oblocks[i]);
       g_free (pjob);
       break;
     case ENGINE_JOB_FLOW_JOB:
@@ -462,7 +466,6 @@ void
 _engine_node_collect_jobs (EngineNode *node)
 {
   g_return_if_fail (node != NULL);
-  g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
 
   GSL_SPIN_LOCK (&pqueue_mutex);
   collect_user_jobs_L (node);

@@ -122,8 +122,8 @@ _engine_schedule_debug_dump (EngineSchedule *sched)
     {
       guint i;
       
-      g_printerr ("  n_items=%u, leaf_levels=%u, secured=%u,\n",
-		  sched->n_items, sched->leaf_levels, sched->secured);
+      g_printerr ("  n_items=%u, n_vnodes=%u, leaf_levels=%u, secured=%u,\n",
+		  sched->n_items, sfi_ring_length (sched->vnodes), sched->leaf_levels, sched->secured);
       g_printerr ("  in_pqueue=%u, cur_leaf_level=%u,\n",
 		  sched->in_pqueue, sched->cur_leaf_level);
       g_printerr ("  cur_node=%p, cur_cycle=%p,\n",
@@ -141,6 +141,11 @@ _engine_schedule_debug_dump (EngineSchedule *sched)
 			((EngineNode*) ring->data)->sched_tag);
 	  g_printerr (" },\n");
 	}
+      SfiRing *ring;
+      g_printerr ("  { vnodes:");
+      for (ring = sched->vnodes; ring; ring = sfi_ring_walk (ring, sched->vnodes))
+        g_printerr (" vnode(%p(pj:%u))", ring->data, ((EngineNode*) ring->data)->probe_jobs != 0);
+      g_printerr (" },\n");
     }
   g_printerr ("};\n");
 }
@@ -216,6 +221,13 @@ schedule_virtual (EngineSchedule *sched,
   vnode->cleared_ostreams = FALSE;
   sched->vnodes = sfi_ring_append (sched->vnodes, vnode);
   sched->n_items++;
+  guint i;
+  for (i = 0; i < ENGINE_NODE_N_ISTREAMS (vnode); i++)
+    {
+      vnode->inputs[i].real_node = NULL;
+      vnode->inputs[i].real_stream = 0;
+      /* _used_ virtual inputs are filled later on */
+    }
 }
 
 static void
@@ -602,10 +614,32 @@ clean_ostreams (EngineNode *node)
   if (!node->cleared_ostreams && !ENGINE_NODE_IS_SCHEDULED (node))
     {
       guint i;
-
+      
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	node->module.ostreams[i].connected = FALSE;
       node->cleared_ostreams = TRUE;
+    }
+}
+
+static inline void
+subschedule_trace_virtual_input (EngineSchedule *schedule,
+                                 EngineNode     *node,
+                                 guint           istream)
+{
+  if (!ENGINE_NODE_IS_SCHEDULED (node))
+    schedule_virtual (schedule, node);
+  EngineInput *input = node->inputs + istream;
+  if (input->src_node && ENGINE_NODE_IS_VIRTUAL (input->src_node))
+    {
+      subschedule_trace_virtual_input (schedule, input->src_node, input->src_stream);
+      EngineInput *src_input = input->src_node->inputs + input->src_stream;
+      input->real_node = src_input->real_node;
+      input->real_stream = src_input->real_stream;
+    }
+  else
+    {
+      input->real_node = input->src_node;
+      input->real_stream = input->src_stream;
     }
 }
 
@@ -614,13 +648,12 @@ subschedule_skip_virtuals (EngineSchedule *schedule,
 			   EngineNode     *node,
 			   guint          *ostream_p)
 {
-  while (node && ENGINE_NODE_IS_VIRTUAL (node))
+  if (node && ENGINE_NODE_IS_VIRTUAL (node))
     {
+      subschedule_trace_virtual_input (schedule, node, *ostream_p);
       EngineInput *input = node->inputs + *ostream_p;
-      if (!ENGINE_NODE_IS_SCHEDULED (node))
-	schedule_virtual (schedule, node);
-      node = input->src_node;
-      *ostream_p = input->src_stream;
+      *ostream_p = input->real_stream;
+      node = input->real_node;
     }
   return node;
 }
@@ -689,7 +722,6 @@ subschedule_query_node (EngineSchedule *schedule,
     {
       EngineNode *child = node->inputs[i].src_node;
       guint child_ostream = node->inputs[i].src_stream;
-
       child = subschedule_skip_virtuals (schedule, child, &child_ostream);
       if (!child)
 	{
@@ -721,7 +753,6 @@ subschedule_query_node (EngineSchedule *schedule,
 	  EngineJInput *tmp, *jinput = node->jinputs[j] + jstream->n_connections;
 	  EngineNode *child = jinput->src_node;
 	  guint child_ostream = jinput->src_stream;
-
 	  child = subschedule_skip_virtuals (schedule, child, &child_ostream);
 	  if (child)
 	    {

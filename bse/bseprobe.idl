@@ -1,0 +1,57 @@
+/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+ * Copyright (C) 2003-2004 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include <bse/bsecxxmodule.idl>
+
+namespace Bse {
+
+record ProbeFeatures {
+  Bool          probe_range;
+  Bool          probe_energie;
+  Bool          probe_samples;
+  Bool          probe_fft;
+};
+record Probe {
+  Int           channel_id;
+  Num           block_stamp;
+  ProbeFeatures probe_features;
+  Real          min;
+  Real          max;
+  FBlock        sample_data;
+  FBlock        fft_data;
+};
+sequence ProbeSeq {
+  Probe probes;
+};
+
+record ProbeRequest {
+  Source        source;
+  Int           channel_id;
+  ProbeFeatures probe_features;
+};
+sequence ProbeRequestSeq {
+  ProbeRequest probe_requests;
+};
+
+void source_request_probes (Source          source,
+                            Int             ochannel_id,
+                            ProbeFeatures   probe_features);
+void source_mass_request   (ProbeRequestSeq prseq);
+Num  source_get_tick_stamp (Source          obj);
+Int  source_get_mix_freq   (Source          obj);
+
+};

@@ -1,3 +1,39 @@
+Sat Jul 17 12:40:38 2004  Tim Janik  <timj@gtk.org>
+
+	* bse/bsebus.[hcp]*: fixed track/bus argument type for bse_bus_connect()
+	and bse_bus_disconnect().
+
+	* bse.idl: make bseprobe.idl public core API. bsehack.idl must be the
+	last file being included, so all idl types are defined once it's parsed.
+
+	* bseprobe.idl:
+	* bseprobe.cc: implemented auxillary BseSourceProbes logic for
+	BseSource. this manages generic signal probe handling for sources.
+	the code is integrated with BseSource via implementation of
+	bse_source_probes*() functions.
+
+	* bsesource.[hc]: introduce and call bse_source_probes*() from various
+	parts of the BseSource code.
+
+	* bsetrack.proc: provide get-output-source() instead of create-sniffer().
+
+	* gslopnode.h: record the number of output channels to be probed with
+	probe jobs, required to release job resources.
+
+	* gslengine.[hc]: add more docs. allocate probe blocks individually, so
+	user code can "steal" allocated blocks.
+
+	* gslopmaster.[hc]: fixed up sample block probing code to work on
+	virtual nodes (and return processed probe jobs from "unprocessed"
+	nodes). added minor optimization to output buffer pointer virtualisation
+	logic. 
+
+	* gslopschedule.[ch]: added virtual nodes to debugging output of
+	schedules. properly connect even virtual node inputs, so the outputs can
+	be probed without walking virtual node input connections.
+
+	* gsloputil.c: properly free probe job blocks.
+
 Thu Jul 15 01:15:01 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesniffer.cc:

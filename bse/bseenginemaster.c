@@ -701,19 +701,53 @@ master_tick_stamp_inc (void)
     }
 }
 
+typedef enum {
+  PROBE_UNSCHEDULED,
+  PROBE_SCHEDULED,
+  PROBE_VIRTUAL /* scheduled */
+} ProbeType;
+
 static inline void
-master_zero_probes (EngineNode   *node,
+master_take_probes (EngineNode   *node,
                     const guint64 current_stamp,
-                    guint         n_values)
+                    guint         n_values,
+                    ProbeType     ptype)
 {
-  if (G_UNLIKELY (node->probe_jobs))
+  if (G_LIKELY (!node->probe_jobs))
+    return;
+  /* pop probe job */
+  EngineProbeJob *pjob = node->probe_jobs;
+  node->probe_jobs = pjob->next;
+  insert_trash_job (node, (EngineUserJob*) pjob);
+  /* fill probe parameters */
+  pjob->tick_stamp = current_stamp;
+  switch (ptype)
     {
-      EngineProbeJob *pjob = node->probe_jobs;
-      node->probe_jobs = pjob->next;
-      insert_trash_job (node, (EngineUserJob*) pjob);
-      pjob->tick_stamp = current_stamp;
-      pjob->n_values = n_values;
+      guint i;
+    case PROBE_UNSCHEDULED:
+      pjob->n_values = 0;
       /* the blocks are already zero initialised */
+      _engine_node_collect_jobs (node);
+      break;
+    case PROBE_SCHEDULED:
+      pjob->n_values = n_values;
+      /* fill probe data */
+      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+        if (pjob->oblocks[i])
+          memcpy (pjob->oblocks[i], node->module.ostreams[i].values, pjob->n_values);
+      break;
+    case PROBE_VIRTUAL:
+      pjob->n_values = n_values;
+      /* fill probe data */
+      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+        if (pjob->oblocks[i])
+          {
+            EngineInput *input = node->inputs + i;
+            if (node->inputs->real_node)
+              memcpy (pjob->oblocks[i], input->real_node->module.ostreams[input->real_stream].values, pjob->n_values);
+          }
+      _engine_node_collect_jobs (node);
+      break;
     }
 }
 
@@ -812,22 +846,13 @@ master_process_locked_node (EngineNode *node,
       /* catch obuffer pointer changes */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	{
-	  /* FIXME: this takes the worst possible performance hit to support virtualization */
-	  if (node->module.ostreams[i].values != node->outputs[i].buffer + diff)
+	  /* FIXME: this takes the worst possible performance hit to support obuffer pointer virtualization */
+	  if (node->module.ostreams[i].connected &&
+              node->module.ostreams[i].values != node->outputs[i].buffer + diff)
 	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
 		    (new_counter - node->counter) * sizeof (gfloat));
 	}
-      if (G_UNLIKELY (node->probe_jobs))
-        {
-          EngineProbeJob *pjob = node->probe_jobs;
-          node->probe_jobs = pjob->next;
-          insert_trash_job (node, (EngineUserJob*) pjob);
-          pjob->tick_stamp = current_stamp;
-          pjob->n_values = n_values;
-          for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-            if (pjob->oblocks[i])
-              memcpy (pjob->oblocks[i], node->outputs[i].buffer, pjob->n_values);
-        }
+      master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);
       /* update node counter */
       node->counter = new_counter;
     }
@@ -851,12 +876,10 @@ master_process_flow (void)
   
   if (master_schedule)
     {
-      EngineNode *node;
-      
       _engine_schedule_restart (master_schedule);
       _engine_set_schedule (master_schedule);
       
-      node = _engine_pop_unprocessed_node ();
+      EngineNode *node = _engine_pop_unprocessed_node ();
       while (node)
 	{
 	  ToyprofStamp profile_stamp1, profile_stamp2;
@@ -890,14 +913,19 @@ master_process_flow (void)
 	  EngineNode *tmp = node->mnl_next;
           node->counter = final_counter;
           master_update_node_state (node, node->counter - 1);
-          master_zero_probes (node, current_stamp, n_values);
+          master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
 	  _engine_mnl_node_changed (node);      /* collects trash jobs and reorders */
 	  node = tmp;
 	}
 
       /* nothing new to process, wait for slaves */
       _engine_wait_on_unprocessed ();
-      
+
+      /* take virtual node probes */
+      SfiRing *ring;
+      for (ring = master_schedule->vnodes; ring; ring = sfi_ring_walk (ring, master_schedule->vnodes))
+        master_take_probes (ring->data, current_stamp, n_values, PROBE_VIRTUAL);
+
       if_reject (profile_modules)
 	{
 	  if (profile_node)
