@@ -92,7 +92,7 @@ Selected @uref{http://www.soundonsound.com,,Sound On Sound} Articles:
 	@uref{http://www.soundonsound.com/sos/aug03/articles/synthsecrets.htm,,Part52}
 	@uref{http://www.soundonsound.com/sos/sep03/articles/synthsecrets.htm,,Part53}
 	@uref{http://www.soundonsound.com/sos/oct03/articles/synthsecrets.htm,,Part54}
-	@c @uref{http://www.soundonsound.com/sos/nov03/articles/synthsecrets.htm,,Part55}
+	@uref{http://www.soundonsound.com/sos/nov03/articles/synthsecrets.htm,,Part55}
 	@c @uref{http://www.soundonsound.com/sos/dec03/articles/synthsecrets.htm,,Part56}
 @end itemize
 
