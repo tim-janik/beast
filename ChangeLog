@@ -1,3 +1,7 @@
+Sun Dec 28 11:31:44 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.5.6, binary/interface age 0.
+
 Sun Dec 28 11:22:50 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcluehunter.[hc]: don't popup the clue hunter via tab for
