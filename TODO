@@ -704,5 +704,6 @@ Misc Buglets/Feature Requests:
    after using the "load" button, the newly loaded instrument should
    be the default
  - add: playback cursor follows song (like sweep does: with jumps)
+ - scheme console via xterm
 
 vim:set ts=8 sts=2 sw=2:
