@@ -306,7 +306,7 @@ bse_sample_set_munk (BseSample	   *sample,
   g_return_if_fail (recording_note >= BSE_MIN_NOTE && recording_note <= BSE_MAX_NOTE);
   g_return_if_fail (BSE_IS_BIN_DATA (bin_data));
   g_return_if_fail (loop_begin <= loop_end);
-  g_return_if_fail (loop_end < bin_data->n_values);
+  g_return_if_fail (loop_end <= bin_data->n_values);
   
   bse_sample_set_munk_i (sample, munk_index, recording_note,
 			 loop_begin, loop_end,
@@ -491,9 +491,10 @@ bse_sample_do_restore_private (BseObject  *object,
 	      munk.loop_end > munk.bin_data->n_values)
 	    {
 	      bse_storage_warn (storage,
-				"loop interval [%u...%u] exceeds sample range",
+				"loop interval [%u...%u] exceeds sample range (%u)",
 				munk.loop_begin,
-				munk.loop_end);
+				munk.loop_end,
+				munk.bin_data->n_values);
 	      munk.loop_begin = 0;
 	      munk.loop_end = 0;
 	    }

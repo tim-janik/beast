@@ -19,7 +19,7 @@
 
 #include        "bseproject.h"
 #include        "bsecategories.h"
-#include        "bsechunk.h"
+#include        "bsemixer.h"
 #include        "bsestorage.h"
 #include        <string.h>
 #include        <time.h>
@@ -335,8 +335,7 @@ bse_snet_calc_chunk (BseSource *source,
   // BseSNet *snet = BSE_SNET (source);
   BseSourceInput *input;
   BseChunk *ichunk;
-  BseSampleValue *hunk, *shunk;
-  guint i;
+  BseSampleValue *hunk;
 
   g_return_val_if_fail (ochannel_id == BSE_SNET_OCHANNEL_STEREO, NULL);
 
@@ -350,17 +349,9 @@ bse_snet_calc_chunk (BseSource *source,
 
   g_assert (ichunk->n_tracks == 1); /* FIXME: paranoid */
 
-  /* ok, mix mono to stereo
-   * FIXME: we need a general bse_hunk_alloc_mixed () functions to return a mixed hunk
-   * from a given chunk with variable number of channels
-   */
+  /* ok, mix mono to stereo, no volume */
   hunk = bse_hunk_alloc (2);
-  shunk = ichunk->hunk;
-  for (i = 0; i < BSE_TRACK_LENGTH; i++)
-    {
-      hunk[i * 2] = shunk[i];
-      hunk[i * 2 + 1] = shunk[i];
-    }
+  bse_hunk_mix (2, hunk, NULL, 1, ichunk->hunk);
   bse_chunk_unref (ichunk);
 
   return bse_chunk_new_orphan (2, hunk);

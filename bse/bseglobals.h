@@ -40,12 +40,13 @@ extern "C" {
 
 /* --- notes & note based frequencies --- */
 #define	BSE_KAMMER_FREQ			(440)
+#define	BSE_KAMMER_FREQ_d		((gdouble) 440)
 #define	BSE_MIN_NOTE			(0)
 #define	BSE_MAX_NOTE			(127)
 #define	BSE_NOTE_VOID			(1024)
 #define	BSE_NOTE_UNPARSABLE		(BSE_NOTE_VOID + 1)
-#define	BSE_KAMMER_NOTE			((gint) (69) /* A! */)
-#define	BSE_KAMMER_OCTAVE		((gint) (-1))
+#define	BSE_KAMMER_NOTE			((gint) (57) /* A' */)
+#define	BSE_KAMMER_OCTAVE		((gint) (+1))
 #define	BSE_NOTE_C(o)			(CLAMP (BSE_KAMMER_NOTE - 9 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
 #define	BSE_NOTE_Cis(o)			(CLAMP (BSE_KAMMER_NOTE - 8 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
 #define	BSE_NOTE_Des(o)			(BSE_NOTE_Cis (o))

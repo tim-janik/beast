@@ -252,12 +252,12 @@ bse_hunk_mix (guint                 n_dest_tracks,
   
   if (mix_wv_func)
     mix_wv_func (dest_hunk,
-		 dest_hunk + sizeof (BseSampleValue) * BSE_TRACK_LENGTH * n_dest_tracks,
+		 dest_hunk + BSE_TRACK_LENGTH * n_dest_tracks,
 		 dest_volumes,
 		 src_hunk);
   else if (mix_nv_func)
     mix_nv_func (dest_hunk,
-		 dest_hunk + sizeof (BseSampleValue) * BSE_TRACK_LENGTH * n_dest_tracks,
+		 dest_hunk + BSE_TRACK_LENGTH * n_dest_tracks,
 		 src_hunk);
   else
     g_warning (G_GNUC_PRETTY_FUNCTION "(): mixing from %u source tracks to "

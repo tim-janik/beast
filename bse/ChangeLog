@@ -1,3 +1,27 @@
+Sun Nov 14 19:44:51 1999  Tim Janik  <timj@gtk.org>
+
+	* bseglobals.h: eeeek, bad change necessary: BSE_KAMMER_NOTE is actually
+	A' not A-0, and it's MIDI code is actually 57, not 69. this displaces
+	all saved songs by one octave, but there are hopefully not too much of
+	them out there yet ;)
+
+Sun Nov 14 05:52:23 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.c (bse_snet_calc_chunk): use bse_hunk_mix () to do the
+	mixing for us.
+
+	* bsemixer.c (bse_hunk_mix): don't multiply added values of a qualified
+	pointer with sizeof (*pointer).
+
+Sun Nov 14 05:28:37 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmstream-oss.c (pcm_stream_oss_open_dsp): disable duplex for now.
+
+	* bsedefs.h: make sure we have PI, BSE_MAX_SAMPLE_VALUE and
+	BSE_MIN_SAMPLE_VALUE defined. oh, and i recently added BSE_EPSILON
+	and BSE_EPSILON_CMP to provide generic double/float comparision
+	against a certain quantity (BSE_EPSILON=1e-6).
+
 Sat Nov 13 04:40:45 1999  Tim Janik  <timj@gtk.org>
 
 	* bsepcmstream-oss.c: reordered stuff so initialization actually works

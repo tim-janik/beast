@@ -24,6 +24,7 @@
 #undef		G_DISABLE_CHECKS
 #include	<glib.h>
 #include	<bse/glib-extra.h>
+#include	<math.h>
 
 
 #ifdef __cplusplus
@@ -171,9 +172,17 @@ typedef enum                    /* <skip> */
 } BsePixdataType;
 
 
-/* --- float/double utilities --- */
-#define BSE_EPSILON                       (1e-6 /* threshold for 16 bit values */)
+/* --- float/double/math utilities and consts --- */
+#define BSE_EPSILON                       (1e-6 /* threshold, coined for 16 bit */)
 #define BSE_EPSILON_CMP(double1, double2) (_bse_epsilon_cmp ((double1), (double2)))
+#undef PI
+#if   defined (M_PIl)
+#  define PI	(M_PIl)
+#else /* !math.h M_PI */
+#  define PI	(3.1415926535897932384626433832795029)
+#endif
+#define BSE_MAX_SAMPLE_VALUE	(32767)
+#define BSE_MIN_SAMPLE_VALUE	(-32768)
 
 
 /* --- implementation details --- */

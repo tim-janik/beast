@@ -427,7 +427,8 @@ pcm_stream_oss_open_dsp (BsePcmStreamOSS *pcm_stream_oss)
   stream = BSE_STREAM (pcm_stream_oss);
   pcm_stream = BSE_PCM_STREAM (pcm_stream_oss);
   
-  fd = open (stream->file_name, O_RDWR);
+  // fd = open (stream->file_name, O_RDWR);
+  fd = -1;
   if (fd < 0)
     {
       BSE_STREAM_UNSET_FLAG (pcm_stream_oss, READABLE);

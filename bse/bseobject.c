@@ -556,10 +556,6 @@ bse_object_unref (BseObject *object)
 
       class->destroy (object);
 
-      g_print ("Destroying `%s': \"%s\"\n",
-	       BSE_OBJECT_TYPE_NAME (object),
-	       BSE_OBJECT_NAME (object));
-
       g_return_if_fail (object->ref_count == 0);
 
       BSE_DEBUG (OBJECTS, {
