@@ -228,6 +228,12 @@ CodeGeneratorModule::func_value_set_param (const Param &param)
     }
 }
 
+static const char*
+abs_cxx_type_name (const string &dest)
+{
+  return g_intern_string (string(string ("::") + dest).c_str());
+}
+
 string
 CodeGeneratorModule::func_value_get_param (const Param &param,
                                            const string dest = "")
@@ -246,7 +252,7 @@ CodeGeneratorModule::func_value_get_param (const Param &param,
     case RECORD:        return "sfi_value_get_rec";
     case OBJECT:
       if (dest != "")
-        return "::Bse::g_value_get_object<"+ dest +">";
+        return "("+ dest +"*) ::Bse::g_value_get_object< "+ dest +"Base*>";
       else
         return "(GObject*) g_value_get_object";
     default:            return "*** ERROR ***";
@@ -374,7 +380,7 @@ CodeGeneratorModule::generate_procedures (const std::string          &outer_nspa
       printf ("        exec (\n");
       int i = 0;
       for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
-        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, TypeRef (pi->type)).c_str(), i++,
+        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, abs_cxx_type_name (pi->type)).c_str(), i++,
                 &(*pi) == &(mi->params.back()) ? ' ' : ',');
       printf ("             );\n");
       if (!is_void)

@@ -1,3 +1,7 @@
+Mon Jan 19 19:03:42 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc (generate_procedures): fix g_value_get_object<>() usage.
+
 Sun Jan 11 06:20:12 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.h: adapt to gtype.h changes.
