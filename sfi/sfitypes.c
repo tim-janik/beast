@@ -121,19 +121,25 @@ sfi_choice_match_detailed (const gchar *choice_val1,
 			   const gchar *choice_val2,
 			   gboolean     l1_ge_l2)
 {
-  const gchar *cv1, *cv2;
-  guint l1, l2;
-
   g_return_val_if_fail (choice_val1 != NULL, FALSE);
   g_return_val_if_fail (choice_val2 != NULL, FALSE);
 
-  l1 = strlen (choice_val1);
-  l2 = strlen (choice_val2);
+  guint l1 = strlen (choice_val1);
+  guint l2 = strlen (choice_val2);
   if (l1_ge_l2 && l1 < l2)
     return FALSE;
-  cv1 = choice_val1 + l1 - MIN (l1, l2);
-  cv2 = choice_val2 + l2 - MIN (l1, l2);
-  if (l1_ge_l2 && cv1 > choice_val1)    /* only allow partial matches on word boundary */
+  if (l2 > l1)
+    {
+      const gchar *ts = choice_val2;
+      choice_val2 = choice_val1;
+      choice_val1 = ts;
+      guint tl = l2;
+      l2 = l1;
+      l1 = tl;
+    }
+  const gchar *cv1 = choice_val1 + l1 - MIN (l1, l2);
+  const gchar *cv2 = choice_val2 + l2 - MIN (l1, l2);
+  if (cv1 > choice_val1)  /* only allow partial matches on word boundary */
     {
       if (isalnum (cv1[-1]) && isalnum (cv1[0])) /* no word boundary */
         return FALSE;
