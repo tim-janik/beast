@@ -1,3 +1,12 @@
+Tue Jun 24 23:22:58 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc: allocate structures with g_new0() in shallow_copy(),
+	so we don't oeverwrite fields with already initialized contents
+	and leak substructures.
+	also free the array holding element pointers when freeing sequencs.
+	
+	* sficomport.c (sfi_com_port_destroy): don't forget to destroy port->scanner.
+
 Mon Jun 23 20:38:13 2003  Tim Janik  <timj@gtk.org>
 
 	* sficomport.[hc]: added sfi_com_port_reap_child() and fields holding

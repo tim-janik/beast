@@ -1005,7 +1005,8 @@ void CodeGeneratorC::run ()
 	      printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
 	      printf("    %s;\n", element_i_free.c_str());
 	    }
-	  printf("  g_free (seq);\n");
+          printf("  g_free (seq->%s);\n", elements.c_str());
+          printf("  g_free (seq);\n");
 	  printf("}\n\n");
 	  printf("\n");
 	}
@@ -1033,11 +1034,11 @@ void CodeGeneratorC::run ()
 	  printf("%s\n", ret.c_str());
 	  printf("%s_copy_shallow (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-	  printf("  %s rec_copy = NULL;\n", arg.c_str());
+	  printf("  %s rec_copy;\n", arg.c_str());
 	  printf("\n");
 	  printf("  g_return_val_if_fail (rec != NULL, NULL);");
 	  printf("\n");
-	  printf("  rec_copy = %s_new ();\n", lname.c_str());
+	  printf("  rec_copy = g_new0 (%s, 1);\n", mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      string copy =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_COPY);

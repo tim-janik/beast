@@ -274,6 +274,8 @@ sfi_com_port_destroy (SfiComPort *port)
   g_return_if_fail (port != NULL);
   
   sfi_com_port_close_remote (port, FALSE);
+  if (port->scanner)
+    g_scanner_destroy (port->scanner);
   g_free (port->ident);
   g_free (port->wbuffer.data);
   g_free (port->rbuffer.data);
