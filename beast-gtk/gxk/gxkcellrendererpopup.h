@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 typedef struct {
   GtkCellRendererText parent_instace;
   GtkWidget          *dialog;
-  gboolean	      mybool;
+  gboolean	      show_button;
 } GxkCellRendererPopup;
 typedef struct {
   GtkCellRendererTextClass parent_class;

@@ -238,7 +238,7 @@ bst_snet_router_viewable_changed (GtkWidget *widget)
 
   if (router->palette)
     {
-      gboolean show_palette = widget->window && gtk_widget_viewable (widget);
+      gboolean show_palette = widget->window && gxk_widget_viewable (widget);
 
       if (show_palette && router->reshow_palette)
 	{

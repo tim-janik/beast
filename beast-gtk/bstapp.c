@@ -248,7 +248,7 @@ bst_app_init (BstApp *app)
   g_object_connect (app->notebook,
 		    "swapped_signal::destroy", g_nullify_pointer, &app->notebook,
 		    "swapped_signal_after::switch-page", bst_update_can_operate, app,
-		    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+		    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
 		    NULL);
 }
 

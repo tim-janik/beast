@@ -38,7 +38,10 @@ GtkWidget*  gxk_item_factory_get_item		(GtkItemFactory	 *ifactory,
 GtkWidget*  gxk_item_factory_get_widget		(GtkItemFactory	 *ifactory,
 						 const gchar	 *path);
 void	    gxk_widget_proxy_requisition	(GtkWidget	 *widget);
-void	    gxk_file_selection_heal		(GtkFileSelection *fs);
+
+
+/* --- GtkFileSelection workarounds --- */
+GtkWidget*	gxk_file_selection_heal		(GtkFileSelection	 *fs);
 
 
 /* --- GObject convenience --- */
@@ -62,6 +65,16 @@ glong	g_object_get_long		(gpointer		 object,
 					 const gchar		*name);
 #define	g_object_set_int		g_object_set_long	// FIXME
 #define	g_object_get_int		g_object_get_long	// FIXME
+
+
+/* --- UTF8 helpers --- */
+gchar*	gxk_convert_latin1_to_utf8	(const gchar	*string);
+gchar*	gxk_filename_to_utf8		(const gchar	*string);
+
+
+/* --- Gtk+ Utilities --- */
+void	 gxk_widget_viewable_changed	(GtkWidget		*widget);
+gboolean gxk_widget_viewable		(GtkWidget		*widget);
 
 
 /* --- Gdk convenience --- */
@@ -114,27 +127,30 @@ void	 gxk_tree_view_append_text_columns	(GtkTreeView		*tree_view,
 						 ...);
 void	 gxk_tree_view_add_text_column		(GtkTreeView  *tree_view,
 						 guint	       model_column,
+						 const gchar  *column_flags,
 						 gdouble       xalign,
 						 const gchar  *title,
 						 const gchar  *tooltip,
 						 gpointer      edited_callback,
 						 gpointer      data,
 						 GConnectFlags cflags);
-void	gxk_tree_view_add_toggle_column		(GtkTreeView  *tree_view,
-						 guint	      model_column,
-						 gdouble       xalign,
-						 const gchar  *title,
-						 const gchar  *tooltip,
-						 gpointer      toggled_callback,
-						 gpointer      data,
-						 GConnectFlags cflags);
 void	 gxk_tree_view_add_popup_column		(GtkTreeView  *tree_view,
 						 guint	       model_column,
+						 const gchar  *column_flags,
 						 gdouble       xalign,
 						 const gchar  *title,
 						 const gchar  *tooltip,
 						 gpointer      edited_callback,
 						 gpointer      popup_callback,
+						 gpointer      data,
+						 GConnectFlags cflags);
+void	gxk_tree_view_add_toggle_column		(GtkTreeView  *tree_view,
+						 guint	       model_column,
+						 const gchar  *column_flags,
+						 gdouble       xalign,
+						 const gchar  *title,
+						 const gchar  *tooltip,
+						 gpointer      toggled_callback,
 						 gpointer      data,
 						 GConnectFlags cflags);
 void	gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn   *tree_column,

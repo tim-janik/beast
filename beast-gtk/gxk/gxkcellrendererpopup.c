@@ -29,7 +29,7 @@
 
 enum {
   PROP_NONE,
-  PROP_MYBOOL,
+  PROP_SHOW_BUTTON
 };
 
 
@@ -116,7 +116,7 @@ gxk_cell_renderer_popup_get_type (void)
 static void
 gxk_cell_renderer_popup_init (GxkCellRendererPopup *self)
 {
-  self->mybool = FALSE;
+  self->show_button = TRUE;
   // GTK_CELL_RENDERER (self)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
   // GTK_CELL_RENDERER (self)->xpad = 2;
   // GTK_CELL_RENDERER (self)->ypad = 2;
@@ -139,10 +139,9 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
   cell_class->start_editing = gxk_cell_renderer_popup_start_editing;
   
   g_object_class_install_property (object_class,
-				   PROP_MYBOOL,
-				   g_param_spec_boolean ("mybool", "MYBOOL", NULL,
-							 FALSE,
-							 G_PARAM_READWRITE));
+				   PROP_SHOW_BUTTON,
+				   g_param_spec_boolean ("show_button", "Show Button", "Whether the popup button is visible",
+							 TRUE, G_PARAM_READWRITE));
   signal_popup = g_signal_new ("popup",
 			       G_OBJECT_CLASS_TYPE (object_class),
 			       G_SIGNAL_RUN_LAST,
@@ -164,8 +163,8 @@ gxk_cell_renderer_popup_set_property (GObject      *object,
   
   switch (param_id)
     {
-    case PROP_MYBOOL:
-      self->mybool = g_value_get_boolean (value);
+    case PROP_SHOW_BUTTON:
+      self->show_button = g_value_get_boolean (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -183,8 +182,8 @@ gxk_cell_renderer_popup_get_property (GObject    *object,
   
   switch (param_id)
     {
-    case PROP_MYBOOL:
-      g_value_set_boolean (value, self->mybool);
+    case PROP_SHOW_BUTTON:
+      g_value_set_boolean (value, self->show_button);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -201,14 +200,17 @@ gxk_cell_renderer_popup_get_size (GtkCellRenderer *cell,
 				  gint            *width_p,
 				  gint            *height_p)
 {
-  // GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
+  GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
 
   GTK_CELL_RENDERER_CLASS (parent_class)->get_size (cell, widget, cell_area, xoffs_p, yoffs_p, width_p, height_p);
 
-  if (width_p)
-    *width_p += ARROW_WIDTH;
-  if (xoffs_p)
-    *xoffs_p = MAX (*xoffs_p - ARROW_WIDTH / 2, 0);
+  if (self->show_button)
+    {
+      if (width_p)
+	*width_p += ARROW_WIDTH;
+      if (xoffs_p)
+	*xoffs_p = MAX (*xoffs_p - ARROW_WIDTH / 2, 0);
+    }
 }
 
 static void
@@ -233,14 +235,6 @@ gxk_cell_renderer_popup_activate (GtkCellRenderer     *cell,
 				  GtkCellRendererState flags)
 {
   return GTK_CELL_RENDERER_CLASS (parent_class)->activate (cell, event, widget, path, background_area, cell_area, flags);
-#if 0
-  GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
-  
-  g_print ("GxkCellRendererPopup activated\n");
-  g_object_set (self, "mybool", !self->mybool, NULL);
-  
-  return FALSE;
-#endif
 }
 
 void
@@ -284,10 +278,13 @@ static gboolean
 gxk_cell_renderer_popup_clicked (GxkCellRendererPopup *self)
 {
   const gchar *path = g_object_get_data (self, "gxk-cell-edit-path");
-  if (self->dialog)
+  if (self->dialog && GTK_WIDGET_VISIBLE (self->dialog))
     gxk_cell_renderer_popup_dialog (self, NULL);
   else
-    g_signal_emit (self, signal_popup, 0, path, NULL);
+    {
+      gxk_cell_renderer_popup_dialog (self, NULL);
+      g_signal_emit (self, signal_popup, 0, path, NULL);
+    }
   return TRUE;	/* we handled the event */
 }
 
@@ -330,15 +327,15 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 		       "child", entry,
 		       NULL);
 #if 0	/* GTKFIX: this exhibits tree view scrolling+resizing bug in gtk+2.2 */
-  popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", TRUE,
+  popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", self->show_button,
 			     "can_focus", FALSE, "width_request", ARROW_WIDTH,
 			     "child", g_object_new (GTK_TYPE_ARROW, "visible", TRUE,
 						    "arrow_type", GTK_ARROW_DOWN, NULL),
 			     NULL);
   g_object_connect (popup_area, "swapped_signal::clicked", gxk_cell_renderer_popup_clicked, cell, NULL);
 #else
-  popup_area = g_object_new (GTK_TYPE_FRAME, "visible", TRUE, "width_request", ARROW_WIDTH,
-			     "shadow_type", GTK_SHADOW_OUT,
+  popup_area = g_object_new (GTK_TYPE_FRAME, "visible", self->show_button,
+			     "width_request", ARROW_WIDTH, "shadow_type", GTK_SHADOW_OUT,
 			     "child", g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
 						    "label", "...", NULL),
 			     NULL);

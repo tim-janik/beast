@@ -101,11 +101,6 @@ void		bst_window_sync_title_to_proxy	(gpointer	 window,
 const gchar**	bst_log_scan_keys		(void);
 
 
-/* --- Gtk+ utilities & workarounds --- */
-gboolean   gtk_widget_viewable		 (GtkWidget		*widget);
-void	   gtk_widget_viewable_changed	 (GtkWidget		*widget);
-
-
 /* --- GUI field mask --- */
 typedef struct _BstGMask BstGMask;
 GtkWidget*   bst_gmask_container_create	(guint		border_width,

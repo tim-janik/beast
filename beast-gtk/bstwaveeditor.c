@@ -170,11 +170,11 @@ bst_wave_editor_init (BstWaveEditor *self)
 
   /* add columns to chunk list */
   gxk_tree_view_append_text_columns (GTK_TREE_VIEW (self->tree), N_COLS,
-				     COL_OSC_FREQ, 0.0, "OscFreq",
-				     COL_MIX_FREQ, 0.0, "MixFreq",
-				     COL_LOOP, 0.0, "Loop",
-				     COL_WAVE_NAME, 0.0, "WaveName",
-				     COL_FILE_NAME, 0.0, "FileName");
+				     COL_OSC_FREQ, "", 0.0, "OscFreq",
+				     COL_MIX_FREQ, "", 0.0, "MixFreq",
+				     COL_LOOP, "", 0.0, "Loop",
+				     COL_WAVE_NAME, "", 0.0, "WaveName",
+				     COL_FILE_NAME, "", 0.0, "FileName");
 
   /* qsampler container */
   self->qsampler_parent = g_object_new (GTK_TYPE_VBOX,

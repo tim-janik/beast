@@ -31,12 +31,6 @@
 
 /* --- prototypes --- */
 static void	_bst_init_idl			(void);
-static void	traverse_viewable_changed	(GtkWidget	*widget,
-						 gpointer	 data);
-
-
-/* --- variables --- */
-static gulong viewable_changed_id = 0;
 
 
 /* --- functions --- */
@@ -46,15 +40,6 @@ _bst_init_utils (void)
   static guint initialized = 0;
   
   g_assert (initialized++ == 0);
-
-  /* Gtk+ patchups */
-  viewable_changed_id = g_signal_newv ("viewable-changed",
-				       G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
-				       G_SIGNAL_RUN_LAST,
-				       g_cclosure_new (G_CALLBACK (traverse_viewable_changed), NULL, NULL),
-				       NULL, NULL,
-				       gtk_marshal_VOID__VOID,
-				       G_TYPE_NONE, 0, NULL);
 
   /* initialize generated type ids */
   {
@@ -227,44 +212,9 @@ bst_window_sync_title_to_proxy (gpointer     window,
     }
   else
     {
-      if (g_object_get_data (window, "bst-title-sync"))
-	{
-	  g_object_set (window, "title", NULL, NULL);
-	  g_object_set_data (window, "bst-title-sync", NULL);
-	}
+      g_object_set_data (window, "bst-title-sync", NULL);
+      g_object_set (window, "title", title_format, NULL);
     }
-}
-
-
-/* --- Gtk+ Utilities --- */
-void
-gtk_widget_viewable_changed (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  g_signal_emit (widget, viewable_changed_id, 0);
-}
-
-static void
-traverse_viewable_changed (GtkWidget *widget,
-			   gpointer   data)
-{
-  if (GTK_IS_CONTAINER (widget))
-    gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gtk_widget_viewable_changed, NULL);
-}
-
-gboolean
-gtk_widget_viewable (GtkWidget *widget)
-{
-  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
-
-  while (widget)
-    {
-      if (!GTK_WIDGET_MAPPED (widget))
-	return FALSE;
-      widget = widget->parent;
-    }
-  return TRUE;
 }
 
 

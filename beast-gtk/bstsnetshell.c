@@ -109,7 +109,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 			   "visible", TRUE,
 			   NULL);
   g_object_connect (notebook,
-		    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+		    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
 		    NULL);
 
   /* router */

@@ -1,5 +1,5 @@
-/* GxkListWrapper - GtkListModel implementation as a simple list wrapper
- * Copyright (C) 2002,2003 Tim Janik
+/* GxkListWrapper - GtkTreeModel implemented as list wrapper
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,7 @@
 
 #include <gtk/gtktreemodel.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define GXK_TYPE_LIST_WRAPPER              (gxk_list_wrapper_get_type ())
@@ -85,9 +83,6 @@ void		gxk_list_wrapper_get_iter_at	(GxkListWrapper	*self,
 						 GtkTreeIter	*iter,
 						 guint		 index);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GXK_LIST_WRAPPER_H__ */

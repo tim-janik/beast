@@ -528,20 +528,20 @@ bst_track_view_create_tree (BstItemView *iview)
   gtk_box_pack_start (GTK_BOX (hb), vb3, FALSE, TRUE, 0);
 
   /* add list view columns */
-  gxk_tree_view_add_text_column (iview->tree,
-				 COL_NAME, 0.0, "Name", NULL,
+  gxk_tree_view_add_text_column (iview->tree, COL_NAME, "",
+				 0.0, "Name", NULL,
 				 bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_toggle_column (iview->tree,
-				   COL_MUTE, 0.5, "M", "Notes from unchecked tracks are muted during playback",
+  gxk_tree_view_add_toggle_column (iview->tree, COL_MUTE, "",
+				   0.5, "M", "Notes from unchecked tracks are muted during playback",
 				   track_view_mute_toggled, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_text_column (iview->tree,
-				 COL_VOICES, 0.5, "V", "Maximum number of voices for simultaneous playback",
+  gxk_tree_view_add_text_column (iview->tree, COL_VOICES, "",
+				 0.5, "V", "Maximum number of voices for simultaneous playback",
 				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_popup_column (iview->tree,
-				  COL_SYNTH, 0.5, "Synth", "Synthesizer network or wave to be used by this track",
+  gxk_tree_view_add_popup_column (iview->tree, COL_SYNTH, "",
+				  0.5, "Synth", "Synthesizer network or wave to be used by this track",
 				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_text_column (iview->tree,
-				 COL_BLURB, 0.0, "Comment", NULL,
+  gxk_tree_view_add_text_column (iview->tree, COL_BLURB, "",
+				 0.0, "Comment", NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
 
   /* make widgets visible */

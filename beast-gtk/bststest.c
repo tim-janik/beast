@@ -723,9 +723,9 @@ pack_test_widget (void)
 		       "parent", scwin,
 		       NULL);
   gxk_tree_view_append_text_columns (GTK_TREE_VIEW (tree), 3 /* N_COLS */,
-				     0, 0.0, "Foo Name",
-				     1, 0.0, "Bar Name",
-				     2, 0.0, "Baz Type"
+				     0, "", 0.0, "Foo Name",
+				     1, "", 0.0, "Bar Name",
+				     2, "", 0.0, "Baz Type"
 				     );
   gtk_tree_view_add_column (GTK_TREE_VIEW (tree), -1,
 			    g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,

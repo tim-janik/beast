@@ -301,13 +301,14 @@ bst_item_view_create_tree (BstItemView *self)
   gxk_tree_selection_force_browse (tsel, GTK_TREE_MODEL (self->wlist));
 
   /* add list view columns */
-  gxk_tree_view_append_text_columns (self->tree, 1,
-				     COL_SEQID, 0.0, "ID");
-  gxk_tree_view_add_text_column (self->tree,
-				 COL_NAME, 0.0, "Name", NULL,
+  gxk_tree_view_add_text_column (self->tree, COL_SEQID, "S",
+				 0.0, "ID", NULL,
+				 NULL, NULL, 0);
+  gxk_tree_view_add_text_column (self->tree, COL_NAME, "S",
+				 0.0, "Name", NULL,
 				 bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_text_column (self->tree,
-				 COL_BLURB, 0.0, "Comment", NULL,
+  gxk_tree_view_add_text_column (self->tree, COL_BLURB, "",
+				 0.0, "Comment", NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
 
   /* make widgets visible */

@@ -40,7 +40,7 @@ typedef enum
   GXK_DIALOG_HIDE_ON_DELETE	= 1 << 0,	/* skips destroy upon delete event */
   GXK_DIALOG_STATUS_SHELL	= 1 << 1,
   GXK_DIALOG_MODAL		= 1 << 2,
-  GXK_DIALOG_POPUP_POS		= 1 << 3,
+  GXK_DIALOG_POPUP_POS		= 1 << 3,	/* popup at mouse pointer */
   GXK_DIALOG_DELETE_BUTTON	= 1 << 4	/* has "Close" button */
 } GxkDialogFlags;
 
@@ -58,6 +58,7 @@ struct _GxkDialog
   gpointer	*pointer_loc;	/* nullified on destroy */
   GtkWidget	*status_bar;
   GtkWidget	*default_widget;
+  GtkWidget	*focus_widget;
   GtkWidget	*sep;
   GtkWidget	*hbox;
   GtkWidget	*mbox;
@@ -77,6 +78,10 @@ gpointer	gxk_dialog_new			  (gpointer	   pointer_loc,
 						   GtkWidget	  *child);
 void		gxk_dialog_set_title		  (GxkDialog	  *dialog,
 						   const gchar	  *title);
+void		gxk_dialog_set_focus		  (GxkDialog	  *dialog,
+						   GtkWidget	  *widget);
+void		gxk_dialog_set_default		  (GxkDialog	  *dialog,
+						   GtkWidget	  *widget);
 void		gxk_dialog_set_child		  (GxkDialog	  *dialog,
 						   GtkWidget	  *child);
 GtkWidget*	gxk_dialog_get_child		  (GxkDialog	  *dialog);

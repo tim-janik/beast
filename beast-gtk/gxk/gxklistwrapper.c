@@ -1,5 +1,5 @@
-/* GxkListWrapper - GtkListModel implementation as a simple list wrapper
- * Copyright (C) 2002,2003 Tim Janik
+/* GxkListWrapper - GtkTreeModel implemented as list wrapper
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,7 @@
  */
 #include "gxklistwrapper.h"
 #include "gxkmarshal.h"
+#include <gtk/gtkmain.h>
 
 
 #define	I2P(x)		GINT_TO_POINTER (x)
@@ -402,9 +403,12 @@ gxk_list_wrapper_init_tree_model_iface (GtkTreeModelIface *iface)
   iface->get_path = gxk_list_wrapper_get_path;
   iface->get_value = gxk_list_wrapper_get_value;
   iface->iter_next = gxk_list_wrapper_iter_next;
+  iface->iter_children = (gpointer) gtk_false;
+  iface->iter_parent = (gpointer) gtk_false;
   iface->iter_has_child = gxk_list_wrapper_iter_has_child;
   iface->iter_n_children = gxk_list_wrapper_iter_n_children;
   iface->iter_nth_child = gxk_list_wrapper_iter_nth_child;
+  
 }
 
 void

@@ -87,7 +87,7 @@ bst_preferences_init (BstPreferences *prefs)
 				  NULL);
   gxk_nullify_on_destroy (prefs->notebook, &prefs->notebook);
   g_object_connect (prefs->notebook,
-		    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+		    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
 		    NULL);
 
   pspec = bst_gconfig_pspec ();

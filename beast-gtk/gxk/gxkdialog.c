@@ -188,61 +188,73 @@ gxk_dialog_set_property (GObject      *object,
 			 const GValue *value,
 			 GParamSpec   *pspec)
 {
-  GxkDialog *dialog = GXK_DIALOG (object);
-
+  GxkDialog *self = GXK_DIALOG (object);
+  
   switch (prop_id)
     {
+      GtkWindow *window;
       const gchar *cstring;
       gchar *string;
       guint old_flags;
     case PROP_ALIVE_OBJECT:
-      if (dialog->alive_object)
-	g_signal_handlers_disconnect_by_func (dialog->alive_object, gtk_widget_destroy, dialog);
-      dialog->alive_object = g_value_get_object (value);
-      if (dialog->alive_object && G_OBJECT (dialog->alive_object)->ref_count)
-	g_signal_connect_swapped (dialog->alive_object, "destroy", G_CALLBACK (gtk_widget_destroy), dialog);
+      if (self->alive_object)
+	g_signal_handlers_disconnect_by_func (self->alive_object, gtk_widget_destroy, self);
+      self->alive_object = g_value_get_object (value);
+      if (self->alive_object && G_OBJECT (self->alive_object)->ref_count)
+	g_signal_connect_swapped (self->alive_object, "destroy", G_CALLBACK (gtk_widget_destroy), self);
       else
-	dialog->alive_object = NULL;
+	self->alive_object = NULL;
       break;
     case PROP_POINTER:
-      dialog->pointer_loc = g_value_get_pointer (value);
+      self->pointer_loc = g_value_get_pointer (value);
       break;
     case PROP_TITLE:
       cstring = g_value_get_string (value);
       if (!cstring)
 	cstring = "";
-      if (!GTK_WIDGET_VISIBLE (dialog))
+      if (!GTK_WIDGET_VISIBLE (self))
 	{
-	  if (GTK_WIDGET_REALIZED (dialog))
-	    gtk_widget_unrealize (GTK_WIDGET (dialog));
-	  gtk_window_set_role (GTK_WINDOW (dialog), cstring);
+	  if (GTK_WIDGET_REALIZED (self))
+	    gtk_widget_unrealize (GTK_WIDGET (self));
+	  gtk_window_set_role (GTK_WINDOW (self), cstring);
 	}
-      string = g_strconcat (cstring, ": BEAST", NULL);
-      g_object_set (dialog, "GtkWindow::title", string, NULL);
+      string = g_strconcat (cstring, " - ", g_get_prgname (), NULL);
+      g_object_set (self, "GtkWindow::title", string, NULL);
       g_free (string);
       break;
     case PROP_FLAGS:
-      old_flags = dialog->flags;
-      dialog->flags = g_value_get_flags (value);
-      if (dialog->status_bar)
+      old_flags = self->flags;
+      self->flags = g_value_get_flags (value);
+      window = GTK_WINDOW (self);
+      if (!(old_flags & GXK_DIALOG_STATUS_SHELL) && (self->flags & GXK_DIALOG_STATUS_SHELL))
 	{
-	  if (dialog->flags & GXK_DIALOG_STATUS_SHELL)
-	    gtk_widget_show (dialog->status_bar);
-	  else
-	    gtk_widget_hide (dialog->status_bar);
+	  GtkWindowGroup *wgroup = gtk_window_group_new ();
+	  if (window->group)
+	    gtk_window_group_remove_window (window->group, window);
+	  /* gtk_window_group_add_window (wgroup, window); GTKFIX: Gtk+-2.2.1 window groups seem to be broken wrt menus */
+	  g_object_unref (wgroup);
+	  if (self->status_bar)
+	    gtk_widget_show (self->status_bar);
 	}
-      gtk_window_set_modal (GTK_WINDOW (dialog), dialog->flags & GXK_DIALOG_MODAL);
+      else if ((old_flags & GXK_DIALOG_STATUS_SHELL) && !(self->flags & GXK_DIALOG_STATUS_SHELL))
+	{
+	  if (window->group)
+	    gtk_window_group_remove_window (window->group, window);
+	  if (self->status_bar)
+	    gtk_widget_hide (self->status_bar);
+	}
+      gtk_window_set_modal (GTK_WINDOW (self), self->flags & GXK_DIALOG_MODAL);
       /* some flags can't be unset */
       if (!(old_flags & GXK_DIALOG_DELETE_BUTTON) &&
-	  (dialog->flags & GXK_DIALOG_DELETE_BUTTON))
+	  (self->flags & GXK_DIALOG_DELETE_BUTTON))
 	{
 	  /* we synthesize a delete event instead of hiding/destroying
 	   * directly, because derived classes may override delete_event
 	   */
-	  gxk_dialog_default_action (dialog, GTK_STOCK_CLOSE, gxk_toplevel_delete, NULL);
+	  gxk_dialog_default_action (self, GTK_STOCK_CLOSE, gxk_toplevel_delete, NULL);
 	}
       else if (old_flags & GXK_DIALOG_DELETE_BUTTON)
-	dialog->flags |= GXK_DIALOG_DELETE_BUTTON;
+	self->flags |= GXK_DIALOG_DELETE_BUTTON;
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -257,7 +269,7 @@ gxk_dialog_get_property (GObject     *object,
 			 GParamSpec  *pspec)
 {
   GxkDialog *dialog = GXK_DIALOG (object);
-
+  
   switch (prop_id)
     {
     case PROP_FLAGS:
@@ -441,26 +453,74 @@ gxk_dialog_set_child (GxkDialog *dialog,
     gtk_container_add (GTK_CONTAINER (dialog->vbox), child);
 }
 
+/**
+ * gxk_dialog_set_focus
+ * @dialog:        valid #GxkDialog
+ * @focus_widget:  valid #GtkWidget
+ *
+ * A #GxkDialog will automatically unset the focus
+ * everytime it is shown, unless @focus_widget is
+ * a valid widget that can be focused each time.
+ */
+void
+gxk_dialog_set_focus (GxkDialog *self,
+		      GtkWidget *focus_widget)
+{
+  g_return_if_fail (GXK_IS_DIALOG (self));
+
+  if (self->focus_widget)
+    g_signal_handlers_disconnect_by_func (self->focus_widget, g_nullify_pointer, &self->focus_widget);
+  self->focus_widget = focus_widget;
+  g_signal_connect_swapped (self->focus_widget, "destroy", G_CALLBACK (g_nullify_pointer), &self->focus_widget);
+}
+
+/**
+ * gxk_dialog_set_default
+ * @dialog:         valid #GxkDialog
+ * @default_widget: valid #GtkWidget
+ *
+ * This function is similar to gxk_dialog_set_focus(),
+ * it just affects the widget taking the default
+ * activation.
+ */
+void
+gxk_dialog_set_default (GxkDialog *self,
+			GtkWidget *default_widget)
+{
+  g_return_if_fail (GXK_IS_DIALOG (self));
+
+  if (self->default_widget)
+    g_signal_handlers_disconnect_by_func (self->default_widget, g_nullify_pointer, &self->default_widget);
+  self->default_widget = default_widget;
+  g_signal_connect_swapped (self->default_widget, "destroy", G_CALLBACK (g_nullify_pointer), &self->default_widget);
+}
+
 static void
 gxk_dialog_show (GtkWidget *widget)
 {
-  GxkDialog *dialog = GXK_DIALOG (widget);
+  GxkDialog *self = GXK_DIALOG (widget);
   
-  if (dialog->flags & GXK_DIALOG_POPUP_POS)
-    g_object_set (dialog, "window_position", GTK_WIN_POS_MOUSE, NULL);
+  if (self->flags & GXK_DIALOG_POPUP_POS)
+    g_object_set (self, "window_position", GTK_WIN_POS_MOUSE, NULL);
   else
-    g_object_set (dialog, "window_position", GTK_WIN_POS_NONE, NULL);
-  
-  gtk_window_set_focus (GTK_WINDOW (dialog), NULL);
-  if (dialog->default_widget)
-    gtk_widget_grab_default (dialog->default_widget);
+    g_object_set (self, "window_position", GTK_WIN_POS_NONE, NULL);
 
-  if (dialog->status_bar &&
+  if (self->focus_widget && GTK_WIDGET_CAN_FOCUS (self->focus_widget) &&
+      gtk_widget_get_toplevel (self->focus_widget) == widget)
+    gtk_window_set_focus (GTK_WINDOW (self), self->focus_widget);
+  else
+    gtk_window_set_focus (GTK_WINDOW (self), NULL);
+  if (self->default_widget)
+    gtk_widget_grab_default (self->default_widget);
+
+  if (self->status_bar &&
       gxk_dialog_get_status_window () == NULL &&
-      !g_slist_find (enter_stack, dialog))
-    enter_stack = g_slist_prepend (enter_stack, dialog);
+      !g_slist_find (enter_stack, self))
+    enter_stack = g_slist_prepend (enter_stack, self);
 
   GTK_WIDGET_CLASS (parent_class)->show (widget);
+
+  gxk_widget_viewable_changed (widget);
 }
 
 static void
@@ -469,6 +529,8 @@ gxk_dialog_hide (GtkWidget *widget)
   // GxkDialog *dialog = GXK_DIALOG (widget);
   
   GTK_WIDGET_CLASS (parent_class)->hide (widget);
+
+  gxk_widget_viewable_changed (widget);
 }
 
 static gboolean
@@ -570,7 +632,7 @@ gxk_dialog_remove_actions (GxkDialog *dialog)
  * Add a new (stock) button to a dialog.
  */
 GtkWidget*
-gxk_dialog_action_multi (GxkDialog          *dialog,
+gxk_dialog_action_multi (GxkDialog          *self,
 			 const gchar        *action,
 			 gpointer            callback,
 			 gpointer            data,
@@ -579,12 +641,12 @@ gxk_dialog_action_multi (GxkDialog          *dialog,
 {
   GtkWidget *button = NULL;
 
-  g_return_val_if_fail (GXK_IS_DIALOG (dialog), NULL);
+  g_return_val_if_fail (GXK_IS_DIALOG (self), NULL);
   g_return_val_if_fail (action != NULL, NULL);
 
-  if (dialog->sep)
-    gtk_widget_show (dialog->sep);
-  if (dialog->hbox)
+  if (self->sep)
+    gtk_widget_show (self->sep);
+  if (self->hbox)
     {
       GtkWidget *alignment, *hbox, *image = icon_stock_id ? gxk_stock_image (icon_stock_id, GXK_SIZE_BUTTON) : NULL;
 
@@ -593,12 +655,12 @@ gxk_dialog_action_multi (GxkDialog          *dialog,
 
       /* catch installation of a Close button */
       if (strcmp (action, GTK_STOCK_CLOSE) == 0)
-	dialog->flags |= GXK_DIALOG_DELETE_BUTTON;
+	self->flags |= GXK_DIALOG_DELETE_BUTTON;
 
       /* setup button */
       button = g_object_new (GTK_TYPE_BUTTON,
 			     "can_default", TRUE,
-			     "parent", dialog->hbox,
+			     "parent", self->hbox,
 			     NULL);
       if (callback)
 	g_signal_connect_data (button, "clicked",
@@ -620,15 +682,10 @@ gxk_dialog_action_multi (GxkDialog          *dialog,
 			  FALSE, TRUE, 0);
       gtk_widget_show_all (button);
 
-      gtk_widget_show (dialog->hbox);
+      gtk_widget_show (self->hbox);
 
       if (multi_mode & GXK_DIALOG_MULTI_DEFAULT)
-	{
-	  if (dialog->default_widget)
-	    g_signal_handlers_disconnect_by_func (dialog->default_widget, g_nullify_pointer, &dialog->default_widget);
-	  dialog->default_widget = button;
-	  g_signal_connect_swapped (dialog->default_widget, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->default_widget);
-	}
+	gxk_dialog_set_default (self, button);
     }
   return button;
 }

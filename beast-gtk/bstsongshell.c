@@ -129,7 +129,7 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 					     "parent", song_shell,
 					     "visible", TRUE,
 					     NULL),
-			       "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+			       "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
 			       NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->track_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,

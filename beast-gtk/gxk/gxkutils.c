@@ -18,6 +18,7 @@
  */
 #include "gxkutils.h"
 #include "gxkcellrendererpopup.h"
+#include <string.h>
 
 
 /* --- generated marshallers --- */
@@ -28,11 +29,30 @@
 #include "gxkgentypes.c"
 
 
+/* --- prototypes --- */
+static void     gxk_traverse_viewable_changed	(GtkWidget      *widget,
+						 gpointer        data);
+
+
+/* --- variables --- */
+static gulong viewable_changed_id = 0;
+
+
 /* --- functions --- */
 void
 _gxk_init_utils (void)
 {
+  /* type registrations */
   gxk_type_register_generated (G_N_ELEMENTS (generated_type_entries), generated_type_entries);
+
+  /* Gtk+ patchups */
+  viewable_changed_id = g_signal_newv ("viewable-changed",
+				       G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
+				       G_SIGNAL_RUN_LAST,
+				       g_cclosure_new (G_CALLBACK (gxk_traverse_viewable_changed), NULL, NULL),
+				       NULL, NULL,
+				       gtk_marshal_VOID__VOID,
+				       G_TYPE_NONE, 0, NULL);
 }
 
 /**
@@ -158,6 +178,93 @@ g_object_get_long (gpointer     object,
   g_return_val_if_fail (G_IS_OBJECT (object), 0);
 
   return (glong) g_object_get_data (object, name);
+}
+
+gchar*
+gxk_convert_latin1_to_utf8 (const gchar *string)
+{
+  if (string)
+    {
+      const guchar *s = string;
+      guint l = strlen (s);
+      guchar *dest = g_new (guchar, l * 2 + 1), *d = dest;
+      while (*s)
+	if (*s >= 0xC0)
+	  *d++ = 0xC3, *d++ = *s++ - 0x40;
+	else if (*s >= 0x80)
+	  *d++ = 0xC2, *d++ = *s++;
+	else
+	  *d++ = *s++;
+      *d++ = 0;
+      return dest;
+    }
+  return NULL;
+}
+
+gchar*
+gxk_filename_to_utf8 (const gchar *filename)
+{
+  if (filename)
+    {
+      gchar *s = g_locale_to_utf8 (filename, -1, NULL, NULL, NULL);
+      if (!s)
+	s = gxk_convert_latin1_to_utf8 (filename);
+      return s;
+    }
+  return NULL;
+}
+
+/* --- Gtk+ Utilities --- */
+/**
+ * gxk_widget_viewable_changed
+ * @widget: valid #GtkWidget
+ *
+ * A widget should call this function if it changed
+ * the mapped state of one of its children (or if it
+ * is a toplevel and gets show or hidden) to emit the
+ * ::viewable-changed signal on the related sub-tree.
+ * #GxkDialog properly emits this signal if show or
+ * hidden, containers like #GtkNotebook need this
+ * function be explicitely connected to their ::switch-page
+ * signal, in order for their children to get properly
+ * notified.
+ */
+void
+gxk_widget_viewable_changed (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  g_signal_emit (widget, viewable_changed_id, 0);
+}
+
+static void
+gxk_traverse_viewable_changed (GtkWidget *widget,
+			       gpointer   data)
+{
+  if (GTK_IS_CONTAINER (widget))
+    gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gxk_widget_viewable_changed, NULL);
+}
+
+/**
+ * gxk_widget_viewable
+ * @widget: valid #GtkWidget
+ * RETURNS: %TRUE if the widget is viewable, %FALSE otherwise
+ *
+ * Check whether a widget is viewable by verifying the mapped
+ * state of the widget and all its parent widgets.
+ */
+gboolean
+gxk_widget_viewable (GtkWidget *widget)
+{
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+
+  while (widget)
+    {
+      if (!GTK_WIDGET_MAPPED (widget))
+	return FALSE;
+      widget = widget->parent;
+    }
+  return TRUE;
 }
 
 /**
@@ -739,11 +846,29 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
  * @...:       column arguments
  *
  * Add @n_cols new columns with text cells to
- * @tree_view. Per column, the caller needs to
- * supply a #guint, a #gdouble and a string, to
- * be used as model column number (for the text
- * to be displayed), the horizontal cell alignment
+ * @tree_view (a short hand version for multiple
+ * calls to gxk_tree_view_add_text_column()).
+ * Per column, the caller needs to
+ * supply a #guint, a string, a #gdouble and another
+ * string. The Arguments are used as model column
+ * number (for the text to be displayed), the column
+ * specific flags, the horizontal cell alignment
  * (between 0 and 1) and the column title respectively.
+ *
+ * The @column_flags argument is a combination of letters that
+ * are able to switch certain characteristics on or of,
+ * currently supported are:
+ * @* %F - column is fixed in sizing;
+ * @* %A - column resizes automatically;
+ * @* %G - columns sizing behaviour is grow only;
+ * @* %S - column is sortable;
+ * @* %s - column is unsortable;
+ * @* %O - column is reorderable;
+ * @* %o - column is not reorderable;
+ * @* %R - column is user-resizable;
+ * @* %r - column is not user-resizable;
+ * @* %P - add extra padding between multiple cells of the same column;
+ * @* %p - cancel a previous %P flag.
  */
 void
 gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
@@ -758,29 +883,139 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
   while (n_cols--)
     {
       guint col = va_arg (var_args, guint);
+      gchar *column_flags = va_arg (var_args, gchar*);
       gfloat xalign = va_arg (var_args, gdouble);
       gchar *title = va_arg (var_args, gchar*);
 
-      gxk_tree_view_add_column (tree_view, -1,
-				g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
-					      "title", title,
-					      "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
-					      "resizable", TRUE,
-					      "reorderable", TRUE,
-					      NULL),
-				g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
-					      "xalign", xalign,
-					      NULL),
-				"text", col,
-				NULL);
+      gxk_tree_view_add_text_column (tree_view, col, column_flags,
+				     xalign, title, NULL,
+				     NULL, NULL, 0);
     }
   va_end (var_args);
+}
+
+static void
+tree_view_add_column (GtkTreeView  *tree_view,
+		      guint	     model_column,
+		      gdouble       xalign,
+		      const gchar  *title,
+		      const gchar  *tooltip,
+		      gpointer      callback1,
+		      gpointer      callback2,
+		      gpointer      data,
+		      GConnectFlags cflags,
+		      guint         column_type,
+		      const gchar  *dcolumn_flags,
+		      const gchar  *ucolumn_flags)
+{
+  GtkCellRenderer *cell = NULL;
+  const gchar *prop = NULL;
+  GtkTreeViewColumn *tcol;
+  GtkTreeViewColumnSizing sizing = GTK_TREE_VIEW_COLUMN_GROW_ONLY;
+  gboolean reorderable = FALSE, resizable = TRUE, sortable = FALSE;
+  gchar *p, *column_flags = g_strconcat (" ", dcolumn_flags, ucolumn_flags, NULL);
+  guint fixed_width = 0, padding = 0;
+
+  for (p = column_flags; *p; p++)
+    switch (*p)
+      {
+      case 'F':	/* column is fixed in sizing */
+	sizing = GTK_TREE_VIEW_COLUMN_FIXED;
+	fixed_width = 120;
+	break;
+      case 'A':	/* autosizing columns */
+	sizing = GTK_TREE_VIEW_COLUMN_AUTOSIZE;
+	break;
+      case 'G':	/* grow-only columns */
+	sizing = GTK_TREE_VIEW_COLUMN_GROW_ONLY;
+	break;
+      case 'S':	/* sortable columns */
+	sortable = TRUE;
+	break;
+      case 's':	/* unsortable columns */
+	sortable = FALSE;
+	break;
+      case 'O':	/* reorderable columns */
+	reorderable = TRUE;
+	break;
+      case 'o':	/* non-reorderable columns */
+	reorderable = TRUE;
+	break;
+      case 'R':	/* resizable columns */
+	resizable = TRUE;
+	break;
+      case 'r':	/* non-resizable columns */
+	resizable = FALSE;
+	break;
+      case 'P':	/* add cell padding */
+	padding += 3;
+	break;
+      case 'p':	/* add cell padding */
+	padding = MAX (padding, 3) - 3;
+	break;
+      }
+
+  switch (column_type)
+    {
+    case 1:	/* text */
+      /* GTKFIX: we use a popup cell renderer for text cells to work around focus problems in gtk */
+      cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
+			   "show_button", FALSE,
+			   "xalign", xalign,
+			   "editable", callback1 != NULL,
+			   NULL);
+      prop = "text";
+      if (callback1)
+	g_signal_connect_data (cell, "edited", G_CALLBACK (callback1), data, NULL, cflags);
+      break;
+    case 2:	/* popup */
+      cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
+			   "xalign", xalign,
+			   "editable", callback1 != NULL,
+			   NULL);
+      prop = "text";
+      if (callback1)
+	g_signal_connect_data (cell, "edited", G_CALLBACK (callback1), data, NULL, cflags);
+      if (callback2)
+	g_signal_connect_data (cell, "popup", G_CALLBACK (callback2), data, NULL, cflags);
+      break;
+    case 3:
+      cell = g_object_new (GTK_TYPE_CELL_RENDERER_TOGGLE,
+			   /* "radio", radio_indicator, */
+			   "activatable", callback1 != NULL,
+			   NULL);
+      prop = "active";
+      if (callback1)
+	g_signal_connect_data (cell, "toggled", G_CALLBACK (callback1), data, NULL, cflags);
+      break;
+    }
+  gxk_tree_view_add_column (tree_view, -1,
+			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+						 "title", title,
+						 "sizing", sizing,
+						 "resizable", resizable,
+						 "reorderable", reorderable,
+						 NULL),
+			    cell,
+			    prop, model_column,
+			    NULL);
+  if (fixed_width)
+    gtk_tree_view_column_set_fixed_width (tcol, fixed_width);
+  if (padding)
+    gtk_tree_view_column_set_spacing (tcol, padding);
+  if (sortable && GTK_IS_TREE_SORTABLE (gtk_tree_view_get_model (tree_view)))
+    gtk_tree_view_column_set_sort_column_id (tcol, model_column);
+  if (tooltip)
+    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
+  gtk_tree_view_column_set_alignment (tcol, xalign);
+  g_free (column_flags);
 }
 
 /**
  * gxk_tree_view_add_text_column
  * @tree_view:        valid #GtkTreeView
  * @model_column:     model column
+ * @column_flags:     column flags
  * @xalign:	      horizontal text alignment
  * @title:            column title
  * @tooltip:          column tooltip
@@ -788,48 +1023,35 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
  * @data:             data passed in to toggled_callback
  * @cflags:           connection flags
  *
- * Add a text column, similar to
- * gxk_tree_view_append_text_columns().
- * @edited_callback(@data) is connected with
- * @cflags (see g_signal_connect_data()) to
- * the "edited" signal of the text cell,
- * or passed as %NULL which makes the column
- * non-editable.
+ * Add a new column with text cell to a @tree_view.
+ * The @model_column indicates the column number
+ * of the tree model containing the text to be
+ * displayed, the @column_flags toggle specific
+ * column characteristics (see
+ * gxk_tree_view_append_text_columns() for details)
+ * and @xalign controls the horizontal cell alignment
+ * (between 0 and 1).
+ * If non-%NULL, @edited_callback(@data) is connected
+ * with @cflags (see g_signal_connect_data()) to the
+ * "::edited" signal of the text cell and the cell is
+ * made editable.
  */
 void
 gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
-			       guint	     model_column,
-			       gdouble       xalign,
-			       const gchar  *title,
-			       const gchar  *tooltip,
-			       gpointer      edited_callback,
-			       gpointer      data,
-			       GConnectFlags cflags)
+                               guint         model_column,
+			       const gchar  *column_flags,
+                               gdouble       xalign,
+                               const gchar  *title,
+                               const gchar  *tooltip,
+                               gpointer      edited_callback,
+                               gpointer      data,
+                               GConnectFlags cflags)
 {
-  GtkCellRenderer *cell;
-  GtkTreeViewColumn *tcol;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
-  cell = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
-		       "xalign", xalign,
-		       "editable", edited_callback != NULL,
-		       NULL);
-  if (edited_callback)
-    g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
-  gxk_tree_view_add_column (tree_view, -1,
-			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
-						 "title", title,
-						 "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
-						 "resizable", TRUE,
-						 "reorderable", TRUE,
-						 NULL),
-			    cell,
-			    "text", model_column,
-			    NULL);
-  if (tooltip)
-    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
-  gtk_tree_view_column_set_alignment (tcol, xalign);
+  return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
+                               edited_callback, NULL, data, cflags,
+			       1, "", column_flags);
 }
 
 /**
@@ -845,11 +1067,15 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
  * @cflags:           connection flags
  *
  * Add a text column with popup facility, similar to
- * gxk_tree_view_add_text_column().
+ * gxk_tree_view_add_text_column(). This function takes
+ * an additional argument @popup_callback() which is
+ * called when the user clicks on the cells "popup"
+ * button.
  */
 void
 gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				guint	      model_column,
+				const gchar  *column_flags,
 				gdouble       xalign,
 				const gchar  *title,
 				const gchar  *tooltip,
@@ -858,32 +1084,11 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				gpointer      data,
 				GConnectFlags cflags)
 {
-  GtkCellRenderer *cell;
-  GtkTreeViewColumn *tcol;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
-  cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
-		       "xalign", xalign,
-		       "editable", edited_callback != NULL,
-		       NULL);
-  if (popup_callback)
-    g_signal_connect_data (cell, "popup", G_CALLBACK (popup_callback), data, NULL, cflags);
-  if (edited_callback)
-    g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
-  gxk_tree_view_add_column (tree_view, -1,
-			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
-						 "title", title,
-						 "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
-						 "resizable", TRUE,
-						 "reorderable", TRUE,
-						 NULL),
-			    cell,
-			    "text", model_column,
-			    NULL);
-  if (tooltip)
-    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
-  gtk_tree_view_column_set_alignment (tcol, xalign);
+  return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
+			       edited_callback, popup_callback, data, cflags,
+			       2, "", column_flags);
 }
 
 /**
@@ -898,16 +1103,17 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
  * @cflags:           connection flags
  *
  * Add a toggle button column, similar
- * to gxk_tree_view_add_text_column().
- * @edited_callback(@data) is connected with
- * @cflags (see g_signal_connect_data()) to
- * the "toggled" signal of the toggle cell,
- * or passed as %NULL which makes the column
- * non-editable.
+ * to gxk_tree_view_add_text_column(), however
+ * the model column is expected to be of type
+ * %G_TYPE_BOOLEAN, and instead of an @edited_callback(),
+ * this function has a @toggled_callback(@data) callback
+ * which is connected to the "toggled" signal of
+ * the new cell.
  */
 void
 gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 				 guint         model_column,
+				 const gchar  *column_flags,
 				 gdouble       xalign,
 				 const gchar  *title,
 				 const gchar  *tooltip,
@@ -915,30 +1121,11 @@ gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 				 gpointer      data,
 				 GConnectFlags cflags)
 {
-  GtkCellRenderer *cell;
-  GtkTreeViewColumn *tcol;
-
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
-  cell = g_object_new (GTK_TYPE_CELL_RENDERER_TOGGLE,
-		       /* "radio", radio_indicator, */
-		       "activatable", toggled_callback != NULL,
-		       NULL);
-  if (toggled_callback)
-    g_signal_connect_data (cell, "toggled", G_CALLBACK (toggled_callback), data, NULL, cflags);
-  gxk_tree_view_add_column (tree_view, -1,
-			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
-						 "title", title,
-						 "sizing", GTK_TREE_VIEW_COLUMN_AUTOSIZE,
-						 "resizable", TRUE,
-						 "reorderable", TRUE,
-						 NULL),
-			    cell,
-			    "active", model_column,
-			    NULL);
-  if (tooltip)
-    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
-  gtk_tree_view_column_set_alignment (tcol, xalign);
+  return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
+			       toggled_callback, NULL, data, cflags,
+			       3, "A", column_flags);
 }
 
 static void
@@ -1139,12 +1326,15 @@ browse_selection_handler (gpointer data)
 	    }
 	  if (needs_sel)
 	    {
-	      gxk_tree_selection_select_ipath (selection, 0, -1);
 	      path = gtk_tree_path_new ();
 	      gtk_tree_path_append_index (path, 0);
 	      gtk_tree_selection_select_path (selection, path);
-	      gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
-					path, NULL, FALSE);
+	      if (gtk_tree_selection_path_is_selected (selection, path))
+		{
+		  /* GTKFIX: this triggeres an assertion on empty sort models */
+		  gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
+					    path, NULL, FALSE);
+		}
 	      gtk_tree_path_free (path);
 	    }
 	  else
@@ -1634,7 +1824,10 @@ gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell)
   g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
 
   if (!gtk_widget_is_focus (GTK_WIDGET (ecell)))
-    gtk_cell_editable_editing_done (ecell);
+    {
+      gtk_cell_editable_editing_done (ecell);
+      gtk_cell_editable_remove_widget (ecell);
+    }
 }
 
 static gchar*
@@ -1735,30 +1928,39 @@ gxk_widget_proxy_requisition (GtkWidget *widget)
 
 /**
  * gxk_file_selection_heal
- * @fs: valid #GtkFileSelection
+ * @fs:     valid #GtkFileSelection
+ * RETURNS: new toplevel VBox of the file selection
  *
  * Fixup various oddities that happened to the Gtk+
  * file selection widget over time. This function
  * corrects container border widths, spacing, button
  * placement and the default and focus widgets.
+ * Also, the lifetime of the file selection window
+ * is tied to the returned #GtkVBox, enabling removal
+ * of the #GtkVBox from it's parent and thus using the
+ * file selection widgets in a custom #GtkWindow.
  */
-void
+GtkWidget*
 gxk_file_selection_heal (GtkFileSelection *fs)
 {
   GtkWidget *main_vbox;
   GtkWidget *hbox;
   GtkWidget *any;
 
-  g_return_if_fail (GTK_IS_FILE_SELECTION (fs));
+  g_return_val_if_fail (GTK_IS_FILE_SELECTION (fs), NULL);
 
-  /* button placement
-   */
-  gtk_container_set_border_width (GTK_CONTAINER (fs), 0);
+  /* nuke GUI junk */
   gtk_file_selection_hide_fileop_buttons (fs);
+
+  /* fix spacing and borders */
+  gtk_container_set_border_width (GTK_CONTAINER (fs), 0);
   gtk_widget_ref (fs->main_vbox);
   gtk_container_remove (GTK_CONTAINER (fs), fs->main_vbox);
-  gtk_box_set_spacing (GTK_BOX (fs->main_vbox), 0);
-  gtk_container_set_border_width (GTK_CONTAINER (fs->main_vbox), 5);
+  g_object_set (fs->main_vbox,
+		"spacing", 0,
+		"border_width", 5,
+		NULL);
+  /* repack into new parent box */
   main_vbox = gtk_widget_new (GTK_TYPE_VBOX,
 			      "homogeneous", FALSE,
 			      "spacing", 0,
@@ -1768,30 +1970,37 @@ gxk_file_selection_heal (GtkFileSelection *fs)
 			      NULL);
   gtk_box_pack_start (GTK_BOX (main_vbox), fs->main_vbox, TRUE, TRUE, 0);
   gtk_widget_unref (fs->main_vbox);
+
+  /* use an ordinary HBox as button container */
   gtk_widget_hide (fs->ok_button->parent);
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			 "homogeneous", TRUE,
-			 "spacing", 0,
+			 "spacing", 3,
 			 "border_width", 5,
 			 "visible", TRUE,
 			 NULL);
   gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, TRUE, 0);
   gtk_widget_reparent (fs->ok_button, hbox);
   gtk_widget_reparent (fs->cancel_button, hbox);
-  gtk_widget_grab_default (fs->ok_button);
-  // gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->ok_button)->child), "Ok");
-  // gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->cancel_button)->child), "Cancel");
 
-  /* heal the action_area packing so we can customize children
-   */
+  /* fix the action_area packing so we can customize children */
   gtk_box_set_child_packing (GTK_BOX (fs->action_area->parent),
 			     fs->action_area,
 			     FALSE, TRUE,
 			     5, GTK_PACK_START);
 
+  /* obligatory button seperator */
   any = gtk_widget_new (GTK_TYPE_HSEPARATOR,
 			"visible", TRUE,
 			NULL);
   gtk_box_pack_end (GTK_BOX (main_vbox), any, FALSE, TRUE, 0);
+
+  /* fs life cycle */
+  g_signal_connect_object (main_vbox, "destroy", G_CALLBACK (gtk_widget_destroy), fs, G_CONNECT_SWAPPED);
+
+  /* fixup focus and default widgets */
+  gtk_widget_grab_default (fs->ok_button);
   gtk_widget_grab_focus (fs->selection_entry);
+
+  return main_vbox;
 }

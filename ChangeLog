@@ -1,3 +1,51 @@
+Tue May  6 15:43:12 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: added property
+	to toggle display of the popup button, fixed popup/popdown
+	logic in popup button clicked handler.
+
+	* beast-gtk/gxk/gxkdialog.[hc]: added gxk_dialog_set_focus()
+	and gxk_dialog_set_default() which control the widgets that
+	are getting the focus and default upon every new popup.
+	prepared for later usage of window groups via
+	gtk_window_group_add_window() which unfortunately seems to
+	be broken at least in gtk+-2.2.1.
+
+	* beast-gtk/bststest.c:
+	* beast-gtk/bstprocbrowser.c:
+	* beast-gtk/bsttrackview.c:
+	* beast-gtk/bstwaveeditor.c:
+	* beast-gtk/bstitemview.c: adapt tree column creations.
+
+	* bstutils.[hc]: removed gtk_widget_viewable*() API.
+	fixed resetting behaviour of bst_window_sync_title_to_proxy().
+
+	* beast-gtk/gxk/gxklistwrapper.c: provide dummy versions
+	of iface->iter_children() and iface->iter_parent(), as
+	sort models demand these funcitons exist.
+
+	* beast-gtk/gxk/gxkutils.[hc]: moved the
+	::viewable-changed signal with assorted functions
+	gxk_widget_viewable_changed() and gxk_widget_viewable()
+	from bstutils.[hc] to here.
+	added gxk_convert_latin1_to_utf8() and gxk_filename_to_utf8()
+	which don't produce annoying warnings like the GLib variants.
+	added a @column_flags argument to gxk_tree_view_add_column(),
+	gxk_tree_view_add_text_column(), gxk_tree_view_add_popup_column()
+	and gxk_tree_view_add_toggle_column(). simplified tree column
+	creation code, work around GtkCellRendererText focus problems
+	by using GxkCellRendererPopup which gets it right.
+	work aorund gtk_tree_view_set_cursor() producing an assertion
+	if used with an empty sort model.
+	(gxk_cell_editable_is_focus_handler): added a call to
+	gtk_cell_editable_remove_widget() after the editing is done,
+	so related GUI elements are properly taken down.
+	(gxk_file_selection_heal): return the newly created main vbox,
+	added life cycle management which allowes reparentation of the
+	file selection contents, minor cosmetic fixups.
+
+	* beast-gtk/*.c: changed gxk_tree_view_add*() callers.
+
 Mon May  5 04:02:49 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_set_snet): fix proxy snet
