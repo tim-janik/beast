@@ -1,3 +1,15 @@
+Wed Sep 22 01:59:31 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Added --cut-zeros option, which cuts zero
+	samples at the head and tail of the signal before computing the
+	features.
+
+	* tests/audio/featuretest.sh: Use --cut-zeros option, to make results
+	more reproduceable.
+
+	* tests/audio/bseadder.test.reference: Adapted test to --cut-zeros
+	like features.
+
 Wed Sep 22 00:54:46 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in: Add tests/audio/Makefile.am

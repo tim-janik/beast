@@ -42,7 +42,7 @@ do
     echo -n "$test_indentation"
     $top_builddir/shell/bsesh-$BSE_VERSION -s bsetowav.scm $filename $filename.wav || exit 1
     echo "${test_indentation}extracting features: $features"
-    $top_builddir/tools/bsefextract $features $filename.wav > $test_file.current || exit 1
+    $top_builddir/tools/bsefextract --cut-zeros $features $filename.wav > $test_file.current || exit 1
     rm $filename.wav
     if test -f $test_file.reference; then
       echo "${test_indentation}comparing features with threshold: $threshold"

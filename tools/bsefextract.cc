@@ -39,6 +39,7 @@ using namespace std;
 struct Options {
   string	      programName;
   guint               channel;
+  bool                cut_zeros;
 
   map<string, FILE*>  outputFiles;
 
@@ -55,6 +56,7 @@ class Signal
   GslDataHandle	 *data_handle;
   guint		  signal_n_channels;
   GslLong	  signal_length;
+  GslLong         signal_offset;
 
 public:
   Signal (GslDataHandle *data_handle)
@@ -62,9 +64,25 @@ public:
   {
     signal_n_channels = gsl_data_handle_n_channels (data_handle);
     signal_length = gsl_data_handle_length (data_handle);
+    signal_offset = 0;
 
     memset (&peek_buffer, 0, sizeof (peek_buffer));
     peek_buffer.dir = 1; /* incremental direction */;
+
+    if (options.cut_zeros)
+      {
+	/* cut_zeros head */
+	while ((*this)[options.channel] == 0 && signal_length > signal_n_channels)
+	  {
+	    signal_offset += signal_n_channels;
+	    signal_length -= signal_n_channels;
+	  }
+	/* cut_zeros tail */
+	while ((*this)[signal_length - signal_n_channels + options.channel] == 0 && signal_length > signal_n_channels)
+	  {
+	    signal_length -= signal_n_channels;
+	  }
+      }
   }
 
   GslLong length() const
@@ -79,7 +97,7 @@ public:
 
   double operator[] (GslLong k) const
   {
-    return gsl_data_handle_peek_value (data_handle, k, &peek_buffer);
+    return gsl_data_handle_peek_value (data_handle, k + signal_offset, &peek_buffer);
   }
   
   double mix_freq() const
@@ -372,6 +390,7 @@ Options::Options ()
 {
   programName = "bsefextract";
   channel = 0;
+  cut_zeros = false;
 }
 
 FILE *Options::openOutputFile (const char *filename)
@@ -428,6 +447,11 @@ void Options::parse (int *argc_p, char **argv_p[])
 	  printf ("%s %s\n", programName.c_str(), BST_VERSION);
 	  exit (0);
 	}
+      else if (strcmp ("--cut-zeros", opt) == 0)
+	{
+	  cut_zeros = true;
+	  argv[i] = NULL;
+	}
       else if (strcmp ("--channel", opt) == 0)
 	{
 	  if (!arg)
@@ -483,6 +507,7 @@ void Options::printUsage ()
   fprintf (stderr, " --channel=<channel>         select channel (0: left, 1: right)\n");
   fprintf (stderr, " --help                      help for %s\n", programName.c_str());
   fprintf (stderr, " --version                   print version\n");
+  fprintf (stderr, " --cut-zeros                 cut zero samples at start/end of the signal\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "If you want to write an extracted feature to a seperate files, you can\n");
   fprintf (stderr, "append =<filename> to a feature (example: %s --start-time=t.start t.wav).\n", programName.c_str());
