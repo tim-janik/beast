@@ -3,7 +3,7 @@
 @settitle BEAST Architecture
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: architecture.doxi,v 1.6 2005/01/06 22:12:09 timj Exp $
+@c revision-date: $Id: architecture.doxi,v 1.7 2005/01/07 13:18:46 timj Exp $
 
 @include texiutils.texi
 
@@ -81,6 +81,10 @@ Sample Data is organized at three levels:
 @end enumerate
 
 @section Extra Information (XInfo Strings) for Wave Files
+
+XInfos consist of a list of ``key=value'' pairs.
+Values need to be valid UTF-8 strings, while keys may consist only
+of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 
 @subsection Wave Chunk specific XInfos
 

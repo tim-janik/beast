@@ -1,3 +1,13 @@
+Fri Jan  7 14:08:53 2005  Tim Janik  <timj@gtk.org>
+
+	* docs/architecture.texi: more XInfo docs.
+
+	* tools/bsewavetool.cc: fixed "store" blurb.
+	implemented "add-chunk" command.
+
+	* tools/bwtwave.[hc]: add xinfos to new chunks.
+	fixed sorting.
+
 Fri Jan  7 02:05:35 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bwtwave.cc:

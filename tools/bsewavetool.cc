@@ -210,8 +210,8 @@ wavetool_print_version (void)
 static void
 wavetool_print_blurb (void)
 {
-  g_print ("Usage: bsewavetool [options] command <file.bsewave> {command-arguments}\n");
-  g_print ("Options:\n");
+  g_print ("Usage: bsewavetool [tool-options] command <file.bsewave> {command-arguments}\n");
+  g_print ("Tool options:\n");
   g_print ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
   g_print ("  -k                    continue on errors (may overwrite bsewave files after\n");
   g_print ("                        load errors occoured for part of its contents)\n");
@@ -306,11 +306,11 @@ wavetool_parse_args (int    *argc_p,
                strncmp ("-o", argv[i], 2) == 0)
         {
           gchar *equal = argv[i] + 2;
-          if (*equal == '=')            /* -o=Foo */
+          if (*equal == '=')            /* -o=Arg */
             output_file = equal + 1;
-          else if (*equal)              /* -oFoo */
+          else if (*equal)              /* -oArg */
             output_file = equal;
-          else if (i + 1 < argc)        /* -o Foo */
+          else if (i + 1 < argc)        /* -o Arg */
             {
               argv[i++] = NULL;
               output_file = argv[i];
@@ -362,7 +362,11 @@ public:
   blurb()
   {
     g_print ("\n");
-    g_print ("    Store the input bsewave as output bsewave without any modifications.\n");
+    g_print ("    Store the input bsewave as output bsewave. If both file names are the same,\n");
+    g_print ("    the bsewave file is simply rewritten. Allthough no explicit modifications\n");
+    g_print ("    are performed on the bsewave, externally referenced sample files will be\n");
+    g_print ("    inlined, chunks may be reordered, and other changes related to the bsewave\n");
+    g_print ("    storage process may occour.\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
 } cmd_store ("store");
@@ -597,7 +601,291 @@ public:
   }
 } cmd_oggenc ("oggenc");
 
+class AddChunk : public Command {
+  struct OptChunk {
+    const gchar *midi_note;
+    gfloat       osc_freq;
+    const gchar *sample_file;
+    guint        auto_extract_type; /* 1=midi-note, 2=osc-freq */
+    const gchar *auto_extract_str;
+    OptChunk()
+    {
+      memset (this, 0, sizeof (*this));
+    }
+  };
+  list<OptChunk> opt_chunks;
+  OptChunk&
+  top_opt_chunk()
+  {
+    if (opt_chunks.empty())
+      opt_chunks.push_front (OptChunk());
+    OptChunk &ochunk = opt_chunks.front();
+    if (ochunk.sample_file)
+      opt_chunks.push_front (OptChunk());
+    ochunk = opt_chunks.front();
+    return ochunk;
+  }
+public:
+  AddChunk (const char *command_name) :
+    Command (command_name)
+  {
+  }
+  void
+  blurb()
+  {
+    g_print ("[options] {-m=midi-note|-f=osc-freq} <sample-file> ...\n");
+    g_print ("    Add a new chunk containing <sample-file> to the wave file. For each chunk,\n");
+    g_print ("    a unique oscillator frequency must be given to determine what note the\n");
+    g_print ("    chunk is to be played back for. Multi oscillator frequency + sample-file\n");
+    g_print ("    option combinations may be given on the command line to add multiple wave\n");
+    g_print ("    chunks. The -f and -m options can be omitted for a sample file, if the\n");
+    g_print ("    oscillator frequency can be determined through auto extract options.\n");
+    g_print ("    Options:\n");
+    g_print ("    -f <osc-freq>       oscillator frequency for the next chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --auto-extract-midi-note <nth>\n");
+    g_print ("                        automatically retrieve the midi note by extracting the\n");
+    g_print ("                        <nth> number from the base name of <sample-file>\n");
+    g_print ("    --auto-extract-osc-freq <nth>\n");
+    g_print ("                        automatically retrieve the oscillator frequency by\n");
+    g_print ("                        extracting the <nth> number from the base name\n");
+    g_print ("                        of <sample-file>\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (int    argc,
+              char **argv)
+  {
+    for (int i = 1; i < argc; i++)
+      {
+        if (strcmp ("--auto-extract-midi-note", argv[i]) == 0 ||
+            strncmp ("--auto-extract-midi-note", argv[i], 24) == 0)
+          {
+            gchar *equal = argv[i] + 24;
+            const gchar *extract_str = NULL;
+            if (*equal == '=')            /* -*=Arg */
+              extract_str = equal + 1;
+            else if (*equal)              /* -*Arg */
+              extract_str = equal;
+            else if (i + 1 < argc)        /* -* Arg */
+              {
+                argv[i++] = NULL;
+                extract_str = argv[i];
+              }
+            argv[i] = NULL;
+            if (extract_str)
+              {
+                OptChunk &ochunk = top_opt_chunk();
+                ochunk.auto_extract_type = 1;
+                ochunk.auto_extract_str = extract_str;
+              }
+          }
+        else if (strcmp ("--auto-extract-osc-freq", argv[i]) == 0 ||
+                 strncmp ("--auto-extract-osc-freq", argv[i], 23) == 0)
+          {
+            gchar *equal = argv[i] + 23;
+            const gchar *extract_str = NULL;
+            if (*equal == '=')            /* -*=Arg */
+              extract_str = equal + 1;
+            else if (*equal)              /* -*Arg */
+              extract_str = equal;
+            else if (i + 1 < argc)        /* -* Arg */
+              {
+                argv[i++] = NULL;
+                extract_str = argv[i];
+              }
+            argv[i] = NULL;
+            if (extract_str)
+              {
+                OptChunk &ochunk = top_opt_chunk();
+                ochunk.auto_extract_type = 2;
+                ochunk.auto_extract_str = extract_str;
+              }
+          }
+        else if (strcmp ("-m", argv[i]) == 0 ||
+            strncmp ("-m", argv[i], 2) == 0)
+          {
+            gchar *equal = argv[i] + 2;
+            const gchar *note_str = NULL;
+            if (*equal == '=')            /* -m=Arg */
+              note_str = equal + 1;
+            else if (*equal)              /* -mArg */
+              note_str = equal;
+            else if (i + 1 < argc)        /* -m Arg */
+              {
+                argv[i++] = NULL;
+                note_str = argv[i];
+              }
+            argv[i] = NULL;
+            if (note_str)
+              {
+                OptChunk &ochunk = top_opt_chunk();
+                ochunk.osc_freq = 0;
+                ochunk.midi_note = note_str;
+              }
+          }
+        else if (strcmp ("-f", argv[i]) == 0 ||
+                 strncmp ("-f", argv[i], 2) == 0)
+          {
+            gchar *equal = argv[i] + 2;
+            const gchar *freq_str = NULL;
+            if (*equal == '=')            /* -f=Arg */
+              freq_str = equal + 1;
+            else if (*equal)              /* -fArg */
+              freq_str = equal;
+            else if (i + 1 < argc)        /* -f Arg */
+              {
+                argv[i++] = NULL;
+                freq_str = argv[i];
+              }
+            argv[i] = NULL;
+            if (freq_str)
+              {
+                OptChunk &ochunk = top_opt_chunk();
+                ochunk.osc_freq = g_ascii_strtod (freq_str, NULL);
+                ochunk.midi_note = NULL;
+              }
+          }
+        else /* sample file name */
+          {
+            OptChunk &ochunk = top_opt_chunk();
+            ochunk.sample_file = argv[i];
+            argv[i] = NULL;
+          }
+      }
+    return 0; // no missing args
+  }
+  static gdouble
+  str2num (const gchar *str,
+           guint        nth)
+  {
+    gchar *num_any = ".0123456789", *num_first = num_any + 1;
+    while (nth--)
+      {
+        /* skip number */
+        if (*str && strchr (num_first, *str))
+          do
+            str++;
+          while (*str && strchr (num_any, *str));
+        /* and trailing non-number stuff */
+        while (*str && !strchr (num_first, *str))
+          str++;
+        if (!*str)
+          return BSE_DOUBLE_NAN;
+      }
+    if (strchr (num_first, *str))
+      return atof (str);
+    return BSE_DOUBLE_NAN;
+  }
+  void
+  exec (Wave *wave)
+  {
+    for (list<OptChunk>::iterator it = opt_chunks.begin(); it != opt_chunks.end(); it++)
+      if (it->sample_file)
+        {
+          const OptChunk &ochunk = *it;
+          gchar **xinfos = NULL;
+          /* figure osc freq */
+          gfloat osc_freq = 0;
+          if (ochunk.midi_note)
+            {
+              SfiNum num = g_ascii_strtoull (ochunk.midi_note, NULL, 10);
+              osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+              xinfos = bse_xinfos_add_num (xinfos, "midi-note", num);
+            }
+          else if (ochunk.osc_freq)
+            osc_freq = ochunk.osc_freq;
+          else
+            {
+              /* find auto extract option */
+              const gchar *auto_extract = NULL;
+              guint auto_extract_type = 0;
+              for (list<OptChunk>::iterator it2 = it; it2 != opt_chunks.end(); it2++)
+                if (it2->auto_extract_type)
+                  {
+                    auto_extract_type = it2->auto_extract_type;
+                    auto_extract = it2->auto_extract_str;
+                    break;
+                  }
+              /* auto extract */
+              if (auto_extract_type)
+                {
+                  gchar *bname = g_path_get_basename (ochunk.sample_file);
+                  SfiNum nth = g_ascii_strtoull (auto_extract, NULL, 10);
+                  if (auto_extract_type == 1)
+                    {
+                      SfiNum num = int (str2num (bname, nth));
+                      osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+                      xinfos = bse_xinfos_add_num (xinfos, "midi-note", num);
+                    }
+                  else
+                    osc_freq = str2num (bname, nth);
+                  g_free (bname);
+                }
+            }
+          xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
+          /* check osc_freq */
+          if (osc_freq <= 0)
+            {
+              sfi_error ("none or invalid oscillator frequency given for wave chunk \"%s\": %.2f",
+                         ochunk.sample_file, osc_freq);
+              exit (1);
+            }
+          if (wave->lookup (osc_freq))
+            {
+              sfi_error ("wave \"%s\" already contains a chunk with oscillator frequency %.2f",
+                         wave->name.c_str(), osc_freq);
+              exit (1);
+            }
+          /* load sample file */
+          sfi_debug (NULL, "LOAD: %s", ochunk.sample_file);
+          BseErrorType error = BSE_ERROR_NONE;
+          GslWaveFileInfo *winfo = gsl_wave_file_info_load (ochunk.sample_file, &error);
+          if (winfo && winfo->n_waves == 1)
+            {
+              GslWaveDsc *wdsc = gsl_wave_dsc_load (winfo, 0, TRUE, &error);
+              if (wdsc && wdsc->n_chunks == 1)
+                {
+                  GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, 0, &error);
+                  if (dhandle)
+                    {
+                      wave->add_chunk (dhandle, xinfos);
+                      gsl_data_handle_unref (dhandle);
+                    }
+                  else
+                    {
+                      if (continue_on_error)
+                        {
+                          sfi_warning ("failed to load wave chunk from file \"%s\": %s (loader: %s)",
+                                       ochunk.sample_file, bse_error_blurb (error), gsl_wave_file_info_loader (winfo));
+                          error = BSE_ERROR_NONE;
+                        }
+                      else
+                        break;
+                    }
+                }
+              else if (wdsc)
+                error = BSE_ERROR_FORMAT_INVALID;
+              if (wdsc)
+                gsl_wave_dsc_free (wdsc);
+            }
+          else if (winfo)
+            error = BSE_ERROR_FORMAT_INVALID;
+          if (winfo)
+            gsl_wave_file_info_unref (winfo);
+          if (error)
+            {
+              sfi_error ("failed to load wave chunk from file \"%s\": %s",
+                         ochunk.sample_file, bse_error_blurb (error));
+              exit (1);
+            }
+          g_strfreev (xinfos);
+        }
+  }
+} cmd_add_chunk ("add-chunk");
+
 /* FIXME: TODO items:
+ * bsewavetool del-wave <file.bsewave> {-m midi-note|-f osc-freq} ...
  * bsewavetool config-gus-patch <file.bsewave> {--chunk=<freq>|--all-chunks}
  *   --chunk=<freq>             select chunk to modify by frequency
  *   --all-chunks               select all chunks for modifications
@@ -608,8 +896,6 @@ public:
  *   --tremolo=<s,r,d>          tremolo, s.., r..., d...
  *   --vibrato=<s,r,d>          vibrato, s.., r..., d...
  * bsewavetool merge <file.bsewave> <second.bsewave>
- * bsewavetool add-wave <file.bsewave> <wavefile> [-n note] ...
- * bsewavetool del-wave <file.bsewave> {<note>|-f <freq>} ...
  * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
  * bsewavetool clip <file.bsewave> [-c clip-config] ...
  * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...

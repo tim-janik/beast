@@ -120,9 +120,19 @@ Wave::Wave (const gchar    *wave_name,
 }
 
 void
-Wave::add_chunk (GslDataHandle  *dhandle)
+Wave::add_chunk (GslDataHandle  *dhandle,
+                 gchar         **xinfos)
 {
   g_return_if_fail (dhandle != NULL);
+
+  if (xinfos)
+    {
+      GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (dhandle, xinfos);
+      gsl_data_handle_unref (dhandle);
+      dhandle = tmp_handle;
+    }
+  else
+    gsl_data_handle_ref (dhandle);
 
   BseErrorType error = gsl_data_handle_open (dhandle);
   if (!error)
@@ -131,6 +141,16 @@ Wave::add_chunk (GslDataHandle  *dhandle)
       wc.dhandle = dhandle;
       chunks.push_front (wc);
     }
+  gsl_data_handle_unref (dhandle);
+}
+
+GslDataHandle*
+Wave::lookup (gfloat osc_freq)
+{
+  for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
+    if (fabs (gsl_data_handle_osc_freq (it->dhandle) - osc_freq) < 0.01)
+      return it->dhandle;
+  return NULL;
 }
 
 void
@@ -144,11 +164,11 @@ Wave::sort ()
 {
   /* brrrr, lists aren't sortable due to iterator issues */
   struct Sub {
-    static float
-    chunk_cmp (const WaveChunk &wc1,
-               const WaveChunk &wc2)
+    static bool
+    is_smaller (const WaveChunk &wc1,
+                const WaveChunk &wc2)
     {
-      return gsl_data_handle_osc_freq (wc1.dhandle) - gsl_data_handle_osc_freq (wc2.dhandle);
+      return gsl_data_handle_osc_freq (wc1.dhandle) < gsl_data_handle_osc_freq (wc2.dhandle);
     }
   };
 #if 0 /* brrrr, lists aren't sortable due to iterator issues */
@@ -156,7 +176,7 @@ Wave::sort ()
 #else
   vector<WaveChunk> vwc;
   vwc.assign (chunks.begin(), chunks.end());
-  stable_sort (vwc.begin(), vwc.end(), Sub::chunk_cmp);
+  stable_sort (vwc.begin(), vwc.end(), Sub::is_smaller);
   chunks.assign (vwc.begin(), vwc.end());
 #endif
 }
@@ -248,7 +268,7 @@ Wave::store (const string file_name)
     {
       WaveChunk *chunk = &*it;
       sfi_wstore_puts (wstore, "  chunk {\n");
-      int midi_note = bse_xinfos_get_num (chunk->dhandle->setup.xinfos, "midi-note");
+      int midi_note = 0; // FIXME: bse_xinfos_get_num (chunk->dhandle->setup.xinfos, "midi-note");
       if (midi_note)
         sfi_wstore_printf (wstore, "    midi-note = %u\n", midi_note);
       else
@@ -286,7 +306,7 @@ Wave::store (const string file_name)
               const gchar *value = strchr (key, '=') + 1;
               gchar *ckey = g_strndup (key, value - key - 1);
               static const gchar *skip_keys[] = {
-                "midi-note", "osc-freq", "mix-freq",
+                "osc-freq", "mix-freq", // FIXME: "midi-note",
               };
               guint j;
               for (j = 0; j < G_N_ELEMENTS (skip_keys); j++)

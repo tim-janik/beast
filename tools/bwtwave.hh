@@ -46,14 +46,16 @@ struct Wave {
   list<WaveChunk> chunks;
   gchar         **wave_xinfos;
 public:
-  /*Con*/       Wave            (const gchar    *wave_name,
-                                 guint           n_channels,
-                                 gchar         **xinfos);
-  void          add_chunk       (GslDataHandle  *dhandle);
-  void          remove          (list<WaveChunk>::iterator it);
-  void          sort            ();
-  BseErrorType  store           (const string    file_name);
-  /*Des*/       ~Wave           ();
+  /*Con*/               Wave            (const gchar    *wave_name,
+                                         guint           n_channels,
+                                         gchar         **xinfos);
+  void                  add_chunk       (GslDataHandle  *dhandle,
+                                         gchar         **xinfos = NULL);
+  GslDataHandle*        lookup          (gfloat          osc_freq);
+  void                  remove          (list<WaveChunk>::iterator it);
+  void                  sort            ();
+  BseErrorType          store           (const string    file_name);
+  /*Des*/               ~Wave           ();
 };
 
 } // BseWaveTool
