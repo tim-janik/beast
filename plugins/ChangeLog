@@ -1,3 +1,8 @@
+Wed Nov  3 20:55:21 1999  Tim Janik  <timj@gtk.org>
+
+	* testos.c: we need to be *at least* of size sizeof (BseSource) if
+	we want to derive from BseSource.
+
 Sat Oct 30 07:54:26 1999  Tim Janik  <timj@gtk.org>
 
 	* testos.c: correctly prefix all obejct type names with "Bse".

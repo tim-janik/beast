@@ -21,7 +21,7 @@
 #define BSE_PLUGIN_NAME "Test-Objects"
 #include        <bse/bseplugin.h>
 
-#include	<bse/bseobject.h>
+#include	<bse/bsesource.h>
 
 
 
@@ -33,7 +33,7 @@ foo (void)
 }
 static BseType           type_id_testos = 0;
 static const BseTypeInfo testos_type_info = {
-  sizeof (BseObjectClass),
+  sizeof (BseSourceClass),
   
   (BseBaseInitFunc) foo,
   (BseBaseDestroyFunc) foo,
@@ -41,7 +41,7 @@ static const BseTypeInfo testos_type_info = {
   (BseClassDestroyFunc) NULL,
   NULL /* class_data */,
   
-  sizeof (BseObject),
+  sizeof (BseSource),
   0 /* n_preallocs */,
   (BseObjectInitFunc) foo,
 };
@@ -49,6 +49,7 @@ static BseType           type_id_mic = 0;
 static BseType           type_id_sine = 0;
 static BseType           type_id_amp = 0;
 static BseType           type_id_speaker = 0;
+static BseType           type_id_broken = 0;
 
 
 /* --- Export to BSE --- */
@@ -98,6 +99,11 @@ BSE_EXPORT_OBJECTS = {
     { SPEAKER_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       SPEAKER_WIDTH, SPEAKER_HEIGHT,
       SPEAKER_RLE_PIXEL_DATA, },
+  },
+  { &type_id_broken, "BseBroken", "BseSource",
+    "Broken is a broken test object",
+    &testos_type_info,
+    "/Source/Broken",
   },
   { NULL, },
 };
