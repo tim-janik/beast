@@ -946,7 +946,7 @@ gadget_parser (Domain      *domain,
   PData pbuf = { 0, }, *pdata = &pbuf;
   GMarkupParseContext *context = g_markup_parse_context_new (&parser, 0, pdata, NULL);
   guint8 bspace[1024];
-  const guint8 *buffer = text ? text : bspace;
+  const gchar *buffer = text ? text : (const gchar*) bspace;
   pdata->domain = domain;
   if (!text)
     length = read (fd, bspace, 1024);

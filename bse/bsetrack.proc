@@ -23,7 +23,7 @@
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2003 Tim Janik";
+LICENSE = "Copyright (C) 2003 Tim Janik";
 
 
 METHOD (BseTrack, insert-part) {

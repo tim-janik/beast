@@ -1,3 +1,14 @@
+Sun Nov  2 04:13:54 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: help string and XKBgeom.h detection fixes, suggested by
+	Sam Hocevar <sam@zoy.org>.
+	
+	* ltmain.sh: update to libtool 1.5.0a.
+	
+	* beast-gtk/bstapp.c: minor /Tools menu fix.
+	
+	* beast-gtk/gxk/gxkgadget.c: minor type fix.
+	
 Thu Oct 30 22:08:48 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/Makefile.am: added new directory to keep

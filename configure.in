@@ -341,7 +341,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_CHECK_LIB(X11, XkbOpenDisplay, have_xkb=1$have_xkb)
     AC_CHECK_LIB(X11, XkbGetKeyboard, have_xkb=2$have_xkb)
     AC_CHECK_HEADER(X11/XKBlib.h, have_xkb=3$have_xkb)
-    AC_CHECK_HEADER(X11/extensions/XKBgeom.h, have_xkb=4$have_xkb)
+    AC_CHECK_HEADER(X11/extensions/XKBgeom.h, have_xkb=4$have_xkb, , X11/Xlib.h)
     MC_IF_VAR_EQ(have_xkb, 4321,
 	AC_DEFINE_UNQUOTED(BST_WITH_XKB, 1, [XKB present]),
     )
@@ -388,11 +388,11 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     dnl OSS-Lite driver check
     AC_CHECK_HEADER(sys/soundcard.h, have_oss_header=yes, have_oss_header=no)
     AC_ARG_ENABLE(osspcm,
-	[  --enable-pcm=DEVICE     force DEVICE as OSS PCM device name],
+	[  --enable-osspcm=DEVICE  force DEVICE as OSS PCM device name],
 	[AC_MSG_WARN([Ignoring detection of PCM device])],
 	[enable_osspcm=""])
     AC_ARG_ENABLE([ossmidi],
-	[  --enable-midi=DEVICE    force DEVICE as OSS MIDI device name],
+	[  --enable-ossmidi=DEVICE force DEVICE as OSS MIDI device name],
 	[AC_MSG_WARN([Ignoring detection of MIDI device])],
 	[enable_ossmidi=""])
     AC_MSG_CHECKING([for available OSS sound devices])
