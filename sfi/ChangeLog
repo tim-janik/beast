@@ -1,3 +1,11 @@
+Tue Jan 27 00:31:35 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.*: Resort classes in a way that derived classes always
+	occur after their base classes in the vector returned by getClasses().
+	This allows bindings to rely on that assumption; in C++ for instance
+	you need to specify base classes before the derived classes, whereas
+	the IDL file syntax allows you to invert the order.
+
 Mon Jan 26 19:55:42 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.*: CodeGenerator: Added setOption and getOptions

@@ -240,6 +240,16 @@ Record Parser::findRecord(const string& name) const
   return Record();
 }
 
+const Class*
+Parser::findClass (const string& name) const
+{
+  for (vector<Class>::const_iterator ci = classes.begin(); ci != classes.end(); ci++)
+    if (ci->name == name)
+      return &*ci;
+
+  return 0;
+}
+
 Parser::Parser () : options (*Options::the())
 {
   scanner = g_scanner_new (&scanner_config_template);
@@ -579,6 +589,53 @@ bool Parser::insideInclude () const
   return scannerLineInfo[scanner_line].isInclude;
 }
 
+/*
+ * comparation class, used to sort classes in such an order that bases
+ * classes appear before derived classes
+ */
+class ClassCompare {
+public:
+  const Parser& parser;
+  map<string, int> inheritanceLevel;
+
+  ClassCompare (const Parser& parser) : parser (parser)
+  {
+    vector<Class>::const_iterator ci;
+
+    /*
+     * precompute the inheritance levels, as the classes data structure within the
+     * parser will be modified by sort() during sorting with ClassCompare ; besides,
+     * it should be more efficient that way
+     */
+    for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+      computeInheritanceLevel (*ci);
+  }
+
+  int computeInheritanceLevel (const Class& cdef)
+  {
+    int& level = inheritanceLevel[cdef.name];
+    if (!level)
+      {
+	const Class *parent = (cdef.inherits == "") ? 0 : parser.findClass (cdef.inherits);
+	if (parent)
+	  level = computeInheritanceLevel (*parent) + 1;
+	else
+	  level = 1;
+      }
+    return level;
+  }
+
+  /* return true if c1 is to be placed before c2 */
+  bool operator()(const Class& c1, const Class& c2)
+  {
+    int l1 = inheritanceLevel[c1.name];
+    int l2 = inheritanceLevel[c2.name];
+    if (l1 < l2) return true;
+    if (l1 > l2) return false;
+    return c1.name < c2.name;
+  }
+};
+
 /* --- parsing functions --- */
 
 bool Parser::parse (const string& filename)
@@ -638,6 +695,8 @@ bool Parser::parse (const string& filename)
   if (scanner->parse_errors > 0)
     return false;
 
+  /* postprocessing of the data structures: */
+  sort (classes.begin(), classes.end(), ClassCompare (*this));
   return true;
 }
 

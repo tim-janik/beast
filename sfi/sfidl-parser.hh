@@ -308,6 +308,7 @@ public:
   
   Sequence findSequence (const std::string& name) const;
   Record findRecord (const std::string& name) const;
+  const Class* findClass (const std::string &name) const;
   
   bool isChoice(const std::string& type) const;
   bool isSequence(const std::string& type) const;
