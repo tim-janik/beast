@@ -1,3 +1,11 @@
+Mon Dec 15 22:06:15 2003  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: removed old unused cruft. fixed up idl generation
+	rules, include idl files in dist tarballs.
+
+	* plugins/evaluator/Makefile.am: fixups, removed cruft. build
+	bseevaluator.so (properly namespace prefixed).
+
 Mon Dec 15 16:00:09 2003  Tim Janik  <timj@gtk.org>
 
 	* evaluator/bseevaluator.idl: 

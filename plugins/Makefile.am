@@ -5,24 +5,35 @@
 
 SUBDIRS = icons . freeverb evaluator
 
-CFLAGS   += $(EXTRA_CFLAGS)
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
 INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
-GLIB_MKENUMS = glib-mkenums
 
 # install plugins under:
 plugindir = $(bseplugindir)
 
-# all plugins want to link against:
-plugin_libs = $(BSE_LIBS) -lm
-# plugin_ldlibs = $(top_builddir)/bse/libbse.la $(top_builddir)/blib/libblib.la
+#
+# C++ Plugins
+#
+plugin_idl_files = $(strip	\
+	davchorus.idl		\
+	bsebalance.idl		\
+	artscompressor.idl	\
+)
+EXTRA_HEADERS += $(plugin_idl_files)
+# setup generation of C++ plugins from idl files
+BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
+%.gen-idl.h: %.idl $(BSEPGEN)
+	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
-# create plugin list
+plugins_built_sources =
+Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
+	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@
+	$(srcdir)/listplugins.sh --idl $(plugin_idl_files:.idl=) >>$@
+
+# old/unported plugin list
 UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
-	bseloader-wave.[hc]	\
 	davbassfilter.[hc]	\
-	davchorus.[hc]		\
 	davguitar.[hc]		\
 )
 PLUGIN_CFILES = $(strip		\
@@ -43,66 +54,25 @@ EXTRA_CFILES = $(strip		\
 	bsesimpleadsr-aux.c	\
 )
 
-# *.enums generation rule
-%.enums: %.h
-	cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
-	  --fhead "\n#include\t<bse/bsetype.h>\n" \
-	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"\n" \
-	  --eprod "/* @EnumName@\n */\n" \
-	  --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
-	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
-	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	  --vtail "static GType BSE_TYPE_ID (@EnumName@);" \
-	    $< > xgen-enums-$(@F) \
-	&& $(GLIB_MKENUMS) \
-	  --fhead "\n#include\t<bse/bseexports.h>\n" \
-	  --fhead "\nBSE_EXPORT_STATIC_ENUMS = {" \
-	  --eprod "  { &BSE_TYPE_ID (@EnumName@), \"@EnumName@\",\n" \
-	  --eprod "    G_TYPE_@TYPE@, @enum_name@_values }," \
-	  --ftail "  { NULL, },\n};" \
-	    $< >> xgen-enums-$(@F) \
-	&& cp xgen-enums-$(@F) $(@F) \
-	&& rm -f xgen-enums-$(@F)
-CLEANFILES += $(plugins_built_sources) xgen-enums-*
-
-#
-# C++ Plugins
-#
-plugin_idl_files = $(strip	\
-	davchorus.idl		\
-	bsebalance.idl		\
-	artscompressor.idl	\
-)
-# setup generation of C++ plugins from idl files
-BSEPGEN = ../sfi/bse-plugin-generator
-%.gen-idl.h: %.idl $(BSEPGEN)
-	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
-
-plugins_built_sources =
-Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
-	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@
-	$(srcdir)/listplugins.sh --idl $(plugin_idl_files:.idl=) >>$@
+CLEANFILES += $(plugins_built_sources)
 
 ## include generated plugin Makefile
 include Makefile.plugins
-## Makefile.plugins contains a generated make rule list of the *.c
-## files in this directory, e.g. it'd list a given foo.c as:
+## Makefile.plugins contains generated plugin rules:
 ##
-##foo.enums: foo.h
-##plugins_built_sources += foo.enums
-##foo_la_SOURCES = foo.c
-##foo_la_LDFLAGS = -module -avoid-version
-##foo_la_LIBADD  = $(plugin_libs)
-##EXTRA_HEADERS += foo.h
-##
-##plugin_LTLIBRARIES += foo.la
+##foo_la_SOURCES         = foo.cc
+##foo_la_LDFLAGS         = $(plugin_ldflags)
+##foo_la_LIBADD          = $(plugin_libs)
+##$(srcdir)/foo.cc:        foo.gen-idl.h
+##plugins_built_sources += foo.gen-idl.h
+##plugin_LTLIBRARIES    += foo.la
+#
+plugin_ldflags = -module -avoid-version
+plugin_libs    = $(BSE_LIBS) -lm # $(top_builddir)/bse/libbse.la
 
 EXTRA_DIST += $(strip \
         $(EXTRA_HEADERS) \
         $(EXTRA_CFILES) \
-        $(plugins_built_sources) \
 	listplugins.sh \
 )
 

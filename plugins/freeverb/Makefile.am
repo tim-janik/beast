@@ -1,8 +1,6 @@
 # Freeverb Makefile
 #
 
-CFLAGS   += $(EXTRA_CFLAGS)
-CPPFLAGS += $(EXTRA_CXXFLAGS)
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
 INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 

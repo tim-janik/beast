@@ -1,36 +1,33 @@
 # Evaluator Makefile
 
-CFLAGS   += $(EXTRA_CFLAGS)
-CPPFLAGS += $(EXTRA_CXXFLAGS)
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
 INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
+
+# install plugins under:
+plugindir = $(bseplugindir)
 
 # setup generation of C++ plugins from idl files
 BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
 %.gen-idl.h: %.idl $(BSEPGEN)
 	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
-
-# install plugins under:
-plugindir = $(bseplugindir)
-
-# all plugins want to link against:
-plugin_libs = $(BSE_LIBS) -lm
-
-#
-noinst_PROGRAMS = evaluateexpr
+CLEANFILES += $(plugins_built_sources)
 
 EVALUATE_SOURCES = instruction.cc compiler.cc cpu.cc
 
+bseevaluator_la_SOURCES = bseevaluator.cc $(EVALUATE_SOURCES)
+bseevaluator_la_LDFLAGS = -module -avoid-version
+bseevaluator_la_LIBADD  = $(BSE_LIBS) -lm
+$(srcdir)/bseevaluator.cc: bseevaluator.gen-idl.h
+plugins_built_sources += bseevaluator.gen-idl.h
+EXTRA_HEADERS += bseevaluator.idl
+
+plugin_LTLIBRARIES = bseevaluator.la
+
+# test programs:
+noinst_PROGRAMS = evaluateexpr
 evaluateexpr_SOURCES = evaluateexpr.cc $(EVALUATE_SOURCES)
 
-evaluator_la_SOURCES = bseevaluator.cc $(EVALUATE_SOURCES)
-evaluator_la_LDFLAGS = -module -avoid-version
-evaluator_la_LIBADD  = $(plugin_libs)
-
-$(srcdir)/bseevaluator.cc: bseevaluator.gen-idl.h
-
-plugin_LTLIBRARIES = evaluator.la
-
-EXTRA_DIST += $(strip	\
-	bseevaluator.cc	\
+EXTRA_DIST += $(strip		\
+	bseevaluator.cc		\
+	$(EXTRA_HEADERS)	\
 )

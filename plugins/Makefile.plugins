@@ -4,7 +4,7 @@
 ## Plugin bseadder
 ##
 bseadder_la_SOURCES = bseadder.c
-bseadder_la_LDFLAGS = -module -avoid-version
+bseadder_la_LDFLAGS = $(plugin_ldflags)
 bseadder_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bseadder.h
 plugin_LTLIBRARIES += bseadder.la
@@ -13,7 +13,7 @@ plugin_LTLIBRARIES += bseadder.la
 ## Plugin bseatandistort
 ##
 bseatandistort_la_SOURCES = bseatandistort.c
-bseatandistort_la_LDFLAGS = -module -avoid-version
+bseatandistort_la_LDFLAGS = $(plugin_ldflags)
 bseatandistort_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bseatandistort.h
 plugin_LTLIBRARIES += bseatandistort.la
@@ -22,7 +22,7 @@ plugin_LTLIBRARIES += bseatandistort.la
 ## Plugin bseiirfilter
 ##
 bseiirfilter_la_SOURCES = bseiirfilter.c
-bseiirfilter_la_LDFLAGS = -module -avoid-version
+bseiirfilter_la_LDFLAGS = $(plugin_ldflags)
 bseiirfilter_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bseiirfilter.h
 plugin_LTLIBRARIES += bseiirfilter.la
@@ -31,7 +31,7 @@ plugin_LTLIBRARIES += bseiirfilter.la
 ## Plugin bsemixer
 ##
 bsemixer_la_SOURCES = bsemixer.c
-bsemixer_la_LDFLAGS = -module -avoid-version
+bsemixer_la_LDFLAGS = $(plugin_ldflags)
 bsemixer_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bsemixer.h
 plugin_LTLIBRARIES += bsemixer.la
@@ -40,7 +40,7 @@ plugin_LTLIBRARIES += bsemixer.la
 ## Plugin bsemult
 ##
 bsemult_la_SOURCES = bsemult.c
-bsemult_la_LDFLAGS = -module -avoid-version
+bsemult_la_LDFLAGS = $(plugin_ldflags)
 bsemult_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bsemult.h
 plugin_LTLIBRARIES += bsemult.la
@@ -49,7 +49,7 @@ plugin_LTLIBRARIES += bsemult.la
 ## Plugin bsenoise
 ##
 bsenoise_la_SOURCES = bsenoise.c
-bsenoise_la_LDFLAGS = -module -avoid-version
+bsenoise_la_LDFLAGS = $(plugin_ldflags)
 bsenoise_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bsenoise.h
 plugin_LTLIBRARIES += bsenoise.la
@@ -58,7 +58,7 @@ plugin_LTLIBRARIES += bsenoise.la
 ## Plugin bsesimpleadsr
 ##
 bsesimpleadsr_la_SOURCES = bsesimpleadsr.c
-bsesimpleadsr_la_LDFLAGS = -module -avoid-version
+bsesimpleadsr_la_LDFLAGS = $(plugin_ldflags)
 bsesimpleadsr_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bsesimpleadsr.h
 plugin_LTLIBRARIES += bsesimpleadsr.la
@@ -67,7 +67,7 @@ plugin_LTLIBRARIES += bsesimpleadsr.la
 ## Plugin bsesequencer
 ##
 bsesequencer_la_SOURCES = bsesequencer.c
-bsesequencer_la_LDFLAGS = -module -avoid-version
+bsesequencer_la_LDFLAGS = $(plugin_ldflags)
 bsesequencer_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += bsesequencer.h
 plugin_LTLIBRARIES += bsesequencer.la
@@ -76,7 +76,7 @@ plugin_LTLIBRARIES += bsesequencer.la
 ## Plugin davorgan
 ##
 davorgan_la_SOURCES = davorgan.c
-davorgan_la_LDFLAGS = -module -avoid-version
+davorgan_la_LDFLAGS = $(plugin_ldflags)
 davorgan_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += davorgan.h
 plugin_LTLIBRARIES += davorgan.la
@@ -85,7 +85,7 @@ plugin_LTLIBRARIES += davorgan.la
 ## Plugin davxtalstrings
 ##
 davxtalstrings_la_SOURCES = davxtalstrings.c
-davxtalstrings_la_LDFLAGS = -module -avoid-version
+davxtalstrings_la_LDFLAGS = $(plugin_ldflags)
 davxtalstrings_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += davxtalstrings.h
 plugin_LTLIBRARIES += davxtalstrings.la
@@ -94,7 +94,7 @@ plugin_LTLIBRARIES += davxtalstrings.la
 ## Plugin davsyndrum
 ##
 davsyndrum_la_SOURCES = davsyndrum.c
-davsyndrum_la_LDFLAGS = -module -avoid-version
+davsyndrum_la_LDFLAGS = $(plugin_ldflags)
 davsyndrum_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += davsyndrum.h
 plugin_LTLIBRARIES += davsyndrum.la
@@ -103,7 +103,7 @@ plugin_LTLIBRARIES += davsyndrum.la
 ## Plugin davcanyondelay
 ##
 davcanyondelay_la_SOURCES = davcanyondelay.c
-davcanyondelay_la_LDFLAGS = -module -avoid-version
+davcanyondelay_la_LDFLAGS = $(plugin_ldflags)
 davcanyondelay_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS      += davcanyondelay.h
 plugin_LTLIBRARIES += davcanyondelay.la
@@ -115,7 +115,7 @@ plugin_LTLIBRARIES += davcanyondelay.la
 ## Plugin davchorus
 ##
 davchorus_la_SOURCES = davchorus.cc
-davchorus_la_LDFLAGS = -module -avoid-version
+davchorus_la_LDFLAGS = $(plugin_ldflags)
 davchorus_la_LIBADD  = $(plugin_libs)
 $(srcdir)/davchorus.cc: davchorus.gen-idl.h
 plugins_built_sources += davchorus.gen-idl.h
@@ -125,7 +125,7 @@ plugin_LTLIBRARIES    += davchorus.la
 ## Plugin bsebalance
 ##
 bsebalance_la_SOURCES = bsebalance.cc
-bsebalance_la_LDFLAGS = -module -avoid-version
+bsebalance_la_LDFLAGS = $(plugin_ldflags)
 bsebalance_la_LIBADD  = $(plugin_libs)
 $(srcdir)/bsebalance.cc: bsebalance.gen-idl.h
 plugins_built_sources += bsebalance.gen-idl.h
@@ -135,7 +135,7 @@ plugin_LTLIBRARIES    += bsebalance.la
 ## Plugin artscompressor
 ##
 artscompressor_la_SOURCES = artscompressor.cc
-artscompressor_la_LDFLAGS = -module -avoid-version
+artscompressor_la_LDFLAGS = $(plugin_ldflags)
 artscompressor_la_LIBADD  = $(plugin_libs)
 $(srcdir)/artscompressor.cc: artscompressor.gen-idl.h
 plugins_built_sources += artscompressor.gen-idl.h

@@ -25,7 +25,7 @@ for file in "$@" ; do
 	#	exit 1
 	#}
 	echo "$_name""_la_SOURCES = $file.cc"
-	echo "$_name""_la_LDFLAGS = -module -avoid-version"
+	echo "$_name""_la_LDFLAGS =" '$(plugin_ldflags)'
 	echo "$_name""_la_LIBADD  =" '$(plugin_libs)'
 	echo '$(srcdir)/'"$file.cc: $file.gen-idl.h"
 	echo "plugins_built_sources += $file.gen-idl.h"
@@ -71,7 +71,7 @@ for file in $LFILES ; do
 	    echo '$(srcdir)/'"$cfile: $efile"
 	}
 	echo "$_name""_la_SOURCES = $cfile"
-	echo "$_name""_la_LDFLAGS = -module -avoid-version"
+	echo "$_name""_la_LDFLAGS =" '$(plugin_ldflags)'
 	echo "$_name""_la_LIBADD  =" '$(plugin_libs)'
 	# echo "$_name""_la_LDADD   =" '$(plugin_ldlibs)'
 	test -e "$hfile" && {
