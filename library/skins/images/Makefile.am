@@ -5,6 +5,7 @@
 
 
 images_DATA = $(strip		\
+	biogreen.jpg		\
 	blueimpress.jpg		\
 	brownforms.jpg		\
 	moonpaper.png		\

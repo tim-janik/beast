@@ -6,6 +6,7 @@
 SUBDIRS = images
 
 skins_DATA = $(strip		\
+	biogreen.skin		\
 	blueimpress.skin	\
 	brownforms.skin		\
 	moonpaper.skin		\

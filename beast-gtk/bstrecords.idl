@@ -59,7 +59,7 @@ record SkinConfig {
   group "Piano Roll" {
     String      skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), NULL, STANDARD);
     String      piano_image = (_("Background Image"), _("Background image used by the piano-roll widget."), NULL, STANDARD ":filename:image");
-    Real        piano_shade = (_("Image shade"), _("Percentage of background image pixels to blend over backgroudn color."), 10, 0, 100, 5, STANDARD ":scale");
+    Real        piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 10, 0, 100, 5, STANDARD ":scale");
     Int         piano_color = (_("Background Color"),      NULL, 0xffffff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int         piano_hbar  = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int         piano_vbar  = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");

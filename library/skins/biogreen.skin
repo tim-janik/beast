@@ -1,0 +1,13 @@
+; skin-file for BEAST v0.5.6
+
+; BstSkinConfig Dump
+(beast-skin-config-v1 
+  ((skin-name "Biogreen")
+   (piano-image "images/biogreen.jpg")
+   (piano-shade 90)
+   (piano-color 0x00a0ff80)
+   (piano-hbar 0x00ffffff)
+   (piano-vbar 0x00ffffff)
+   (piano-hgrid 0x00a0a0a0)
+   (piano-vgrid 0x00a0a0a0)
+   (piano-mbar 0x00a0ffa0)))
