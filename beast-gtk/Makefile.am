@@ -89,6 +89,7 @@ SFIDL = ../sfi/sfidl    # FIXME: cd $(srcdir) && $(SFIDL) doesn't work for build
 
 
 # gen-sources
+CLEANFILES += xgen-beac xgen-beac xgen-bgth xgen-bgtc xgen-belc xgen-bmh xgen-bmc xgen-bdkd
 bstenum_arrays.c: $(beast_headers)
 	(cd ${srcdir} \
 	&& $(GLIB_MKENUMS) \
