@@ -1,6 +1,5 @@
 FIXME(urgent):
-- GusPatch: fix loader magic (GF1PATCH100...?)
-- TrackRoll: display onky basename of wave files
+- TrackRoll: display only basename of wave files
 - WaveList: list items with basname in first col, add a col for full pathname
 - automatically change project name to basename fo saved file name
 - add stock icons for Select/None Select/All Select/Invert
@@ -25,6 +24,7 @@ FIXME(urgent):
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 - registering the same script function twice triggers GType assertion
+- add extra path handling for freepats packages
 TODO:
 - TrackRoll: support shift/ctrl/alt modifier to copy/link/move parts
 - TrackRoll: disallow instrument field editing or dialog box during playback (simply gdk_beep())
