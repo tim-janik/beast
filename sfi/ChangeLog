@@ -1,3 +1,8 @@
+Mon Oct  6 10:36:24 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.c (sfi_glue_proxy_disconnect): make missing signal
+	handlers a debugging message, rather than a warning.
+
 Mon Oct  6 03:00:01 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: provide type_name() method for effects and

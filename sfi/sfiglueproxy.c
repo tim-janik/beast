@@ -549,7 +549,7 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
 	}
 
       if (!slist)
-	sfi_warn ("%s: signal handler %p(%p) is not connected", G_STRLOC, callback, data);
+	sfi_debug ("%s: signal handler %p(%p) is not connected", G_STRLOC, callback, data);
       signal = va_arg (var_args, gchar*);
     }
   va_end (var_args);
