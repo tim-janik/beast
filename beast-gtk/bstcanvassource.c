@@ -27,24 +27,26 @@
 
 
 /* --- defines --- */
-#define	ICON_WIDTH	((gdouble) 64)
-#define	ICON_HEIGHT	((gdouble) 64)
-#define CHANNEL_WIDTH	((gdouble) 10)
-#define CHANNEL_HEIGHT	((gdouble) ICON_HEIGHT)
-#define	ICON_X		((gdouble) CHANNEL_WIDTH)
-#define	ICON_Y		((gdouble) 0)
-#define ICHANNEL_realX	((gdouble) 0)
-#define OCHANNEL_realX	((gdouble) CHANNEL_WIDTH + ICON_WIDTH)
-#define ICHANNEL_X(cs)	(cs->swap_channels ? OCHANNEL_realX : ICHANNEL_realX)
-#define OCHANNEL_X(cs)	(cs->swap_channels ? ICHANNEL_realX : OCHANNEL_realX)
-#define ICHANNEL_Y	((gdouble) 0)
-#define OCHANNEL_Y	((gdouble) 0)
-#define	TOTAL_WIDTH	((gdouble) CHANNEL_WIDTH + ICON_WIDTH + CHANNEL_WIDTH)
-#define	TOTAL_HEIGHT	((gdouble) ICON_HEIGHT + TEXT_HEIGHT)
-#define TEXT_X		((gdouble) CHANNEL_WIDTH + ICON_WIDTH / 2) /* anchor: north */
-#define TEXT_Y		((gdouble) ICON_HEIGHT)
-#define TEXT_HEIGHT	((gdouble) 13)
-#define RGBA_BLACK	(0x000000ff)
+#define	ICON_WIDTH		((gdouble) 64)
+#define	ICON_HEIGHT		((gdouble) 64)
+#define CHANNEL_WIDTH		((gdouble) 10)
+#define CHANNEL_HEIGHT		((gdouble) ICON_HEIGHT)
+#define	ICON_X			((gdouble) CHANNEL_WIDTH)
+#define	ICON_Y			((gdouble) 0)
+#define ICHANNEL_realX		((gdouble) 0)
+#define OCHANNEL_realX		((gdouble) CHANNEL_WIDTH + ICON_WIDTH)
+#define ICHANNEL_X(cs)		(cs->swap_channels ? OCHANNEL_realX : ICHANNEL_realX)
+#define OCHANNEL_X(cs)		(cs->swap_channels ? ICHANNEL_realX : OCHANNEL_realX)
+#define CHANNEL_EAST(cs,isinp)	(cs->swap_channels ^ !isinp)
+#define	BORDER_PAD		((gdouble) 1)
+#define ICHANNEL_Y		((gdouble) 0)
+#define OCHANNEL_Y		((gdouble) 0)
+#define	TOTAL_WIDTH		((gdouble) CHANNEL_WIDTH + ICON_WIDTH + CHANNEL_WIDTH)
+#define	TOTAL_HEIGHT		((gdouble) ICON_HEIGHT + TEXT_HEIGHT)
+#define TEXT_X			((gdouble) CHANNEL_WIDTH + ICON_WIDTH / 2) /* anchor: north */
+#define TEXT_Y			((gdouble) ICON_HEIGHT)
+#define TEXT_HEIGHT		((gdouble) 13)
+#define RGBA_BLACK		(0x000000ff)
 
 
 /* --- signals --- */
@@ -139,8 +141,10 @@ bst_canvas_source_init (BstCanvasSource *csource)
   csource->icon_item = NULL;
   csource->text = NULL;
   csource->channel_items = NULL;
+  csource->channel_hints = NULL;
   csource->swap_channels = BST_SNET_SWAP_IO_CHANNELS;
   csource->in_move = FALSE;
+  csource->show_hints = FALSE;
   csource->move_dx = 0;
   csource->move_dy = 0;
   g_object_connect (object,
@@ -198,6 +202,8 @@ bst_canvas_source_destroy (GtkObject *object)
   BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
 
+  while (csource->channel_hints)
+    gtk_object_destroy (csource->channel_hints->data);
   while (group->item_list)
     gtk_object_destroy (group->item_list->data);
 
@@ -339,6 +345,23 @@ bst_canvas_source_toggle_view (BstCanvasSource *csource)
     bst_canvas_source_popup_view (csource);
   else
     gtk_widget_hide (csource->source_view);
+}
+
+void
+bst_canvas_source_set_channel_hints (BstCanvasSource *csource,
+				     gboolean         on_off)
+{
+  GSList *slist;
+
+  g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
+
+  csource->show_hints = !!on_off;
+  if (csource->show_hints)
+    for (slist = csource->channel_hints; slist; slist = slist->next)
+      g_object_set (slist->data, "text", g_object_get_data (slist->data, "hint_text"), NULL);
+  else
+    for (slist = csource->channel_hints; slist; slist = slist->next)
+      g_object_set (slist->data, "text", "", NULL);
 }
 
 static void
@@ -618,6 +641,13 @@ channel_item_remove (BstCanvasSource *csource,
 }
 
 static void
+channel_name_remove (BstCanvasSource *csource,
+		     GnomeCanvasItem *item)
+{
+  csource->channel_hints = g_slist_remove (csource->channel_hints, item);
+}
+
+static void
 bst_canvas_source_build_channels (BstCanvasSource *csource,
 				  gboolean         is_input,
 				  gint             color1,
@@ -630,6 +660,7 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   gint n_channels, color1_delta = 0, color2_delta = 0;
   gdouble x1, x2, y1, y2;
   gdouble d_y;
+  gboolean east_channel = CHANNEL_EAST (csource, is_input);
   guint i;
 
   if (is_input)
@@ -680,11 +711,12 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 			       NULL);
       csource->channel_items = g_slist_prepend (csource->channel_items, item);
     }
-
+  
   for (i = 0; i < n_channels; i++)
     {
       GnomeCanvasItem *item;
       gboolean is_jchannel = is_input && bsw_source_is_joint_ichannel_by_id (csource->source, i);
+      const gchar *name = (is_input ? bsw_source_ichannel_name : bsw_source_ochannel_name) (csource->source, i);
       guint tmp_color = is_jchannel ? color2 : color1;
 
       y2 = y1 + d_y;
@@ -701,6 +733,22 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 			       "swapped_signal::event", bst_canvas_source_child_event, csource,
 			       NULL);
       csource->channel_items = g_slist_prepend (csource->channel_items, item);
+
+      item = g_object_connect (gnome_canvas_item_new (group,
+						      GNOME_TYPE_CANVAS_TEXT,
+						      "fill_color_rgba", (0x000000 << 8) | 0x80,
+						      "anchor", east_channel ? GTK_ANCHOR_WEST : GTK_ANCHOR_EAST,
+						      "justification", GTK_JUSTIFY_RIGHT,
+						      "x", east_channel ? TOTAL_WIDTH + BORDER_PAD * 2. : -BORDER_PAD,
+						      "y", (y1 + y2) / 2.,
+						      "font", "Serif 10",
+						      "text", csource->show_hints ? name : "",
+						      NULL),
+			       "swapped_signal::destroy", channel_name_remove, csource,
+			       NULL);
+      g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (name), g_free);
+      csource->channel_hints = g_slist_prepend (csource->channel_hints, item);
+      
       color1 += color1_delta;
       color2 += color2_delta;
       y1 = y2;
@@ -751,6 +799,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
    */
   while (csource->channel_items)
     gtk_object_destroy (csource->channel_items->data);
+  while (csource->channel_hints)
+    gtk_object_destroy (csource->channel_hints->data);
   bst_canvas_source_build_channels (csource,
 				    TRUE, /* input channels */
 				    0xffff00, 0x808000,	  /* ichannels */

@@ -31,6 +31,7 @@ Overview of Changes in BEAST/BSE 0.4.1:
   connections per channel on some modules
 * New file caching layer
 * Major GUI cleanups and improvements
+* Major documentation improvements
 * Ported BEAST/BSE to Gtk+2.0 and GLib-2.0
 * Moved the BSE type system into GLib-2.0 as GObject
 * A huge amount of bug fixes

@@ -815,7 +815,7 @@ bst_param_create (gpointer	owner,
     case G_TYPE_OBJECT:
       action = g_object_connect (gtk_widget_new (GTK_TYPE_ENTRY,
 						 "visible", TRUE,
-						 "width_request", 160 * 2,
+						 "width_request", 250,
 						 "activates_default", TRUE,
 						 NULL),
 				 "signal::key_press_event", bst_entry_key_press, bparam,

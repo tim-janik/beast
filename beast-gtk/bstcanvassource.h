@@ -50,9 +50,11 @@ struct _BstCanvasSource
   GnomeCanvasItem *icon_item;
   GnomeCanvasItem *text;
   GSList	  *channel_items;
+  GSList	  *channel_hints;
 
   guint		   swap_channels : 1;
   guint            in_move : 1;
+  guint		   show_hints : 1;
   gdouble	   move_dx, move_dy;
 };
 struct _BstCanvasSourceClass
@@ -92,9 +94,11 @@ BstCanvasSource* bst_canvas_source_at  		(GnomeCanvas      *csource,
 						 gdouble           world_x,
 						 gdouble           world_y);
 void		 bst_canvas_source_popup_view	(BstCanvasSource  *csource);
-void		 bst_canvas_source_toggle_view	(BstCanvasSource  *canvas);
+void		 bst_canvas_source_toggle_view	(BstCanvasSource  *csource);
 void		 bst_canvas_source_popup_info	(BstCanvasSource  *csource);
-void		 bst_canvas_source_toggle_info	(BstCanvasSource  *canvas);
+void		 bst_canvas_source_toggle_info	(BstCanvasSource  *csource);
+void	   bst_canvas_source_set_channel_hints	(BstCanvasSource  *csource,
+						 gboolean          on_off);
 
      
      

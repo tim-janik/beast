@@ -54,6 +54,7 @@ struct _BstSNetRouter
 
   gdouble           world_x, world_y;
   guint		    reshow_palette : 1;
+  guint		    channel_hints : 1;
   guint		    drag_is_input : 1;
   guint             drag_channel;
   BstCanvasSource  *drag_csource;
@@ -69,17 +70,18 @@ struct _BstSNetRouterClass
 
 
 /* --- prototypes --- */
-GtkType		 bst_snet_router_get_type	     (void);
-GtkWidget*	 bst_snet_router_new		     (BswProxy	     snet);
-void		 bst_snet_router_set_snet 	     (BstSNetRouter *router,
-						      BswProxy       snet);
-void		 bst_snet_router_update		     (BstSNetRouter *snet_router);
-void		 bst_snet_router_rebuild	     (BstSNetRouter *snet_router);
-void		 bst_snet_router_adjust_region	     (BstSNetRouter *snet_router);
-BstCanvasSource* bst_snet_router_csource_from_source (BstSNetRouter *snet_router,
-						      BswProxy       source);
-void		 bst_snet_router_toggle_palette	     (BstSNetRouter *snet_router);
-BstSNetRouter*	 bst_snet_router_build_page	     (BswProxy	     snet);
+GtkType		 bst_snet_router_get_type	      (void);
+GtkWidget*	 bst_snet_router_new		      (BswProxy	     snet);
+void		 bst_snet_router_set_snet 	      (BstSNetRouter *router,
+						       BswProxy       snet);
+void		 bst_snet_router_update		      (BstSNetRouter *snet_router);
+void		 bst_snet_router_rebuild	      (BstSNetRouter *snet_router);
+void		 bst_snet_router_adjust_region	      (BstSNetRouter *snet_router);
+BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router,
+						       BswProxy       source);
+void		 bst_snet_router_toggle_channel_hints (BstSNetRouter *router);
+void		 bst_snet_router_toggle_palette	      (BstSNetRouter *snet_router);
+BstSNetRouter*	 bst_snet_router_build_page	      (BswProxy	     snet);
 
 
 #ifdef __cplusplus

@@ -153,6 +153,7 @@ bst_snet_router_init (BstSNetRouter      *self,
   self->snet = 0;
   self->world_x = 0;
   self->world_y = 0;
+  self->channel_hints = TRUE;
   self->drag_is_input = FALSE;
   self->drag_channel = ~0;
   self->drag_csource = NULL;
@@ -356,11 +357,11 @@ bst_snet_router_toggle_palette (BstSNetRouter *router)
 }
 
 static void
-bst_snet_router_item_added (BstSNetRouter *router,
+bst_snet_router_item_added (BstSNetRouter *self,
 			    BseItem       *item,
 			    BseContainer  *container)
 {
-  GnomeCanvas *canvas = GNOME_CANVAS (router);
+  GnomeCanvas *canvas = GNOME_CANVAS (self);
   GnomeCanvasItem *csource;
   
   if (!BSE_IS_SOURCE (item))
@@ -368,10 +369,11 @@ bst_snet_router_item_added (BstSNetRouter *router,
   
   csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
 				   BSE_OBJECT_ID (item),
-				   router->world_x,
-				   router->world_y);
+				   self->world_x,
+				   self->world_y);
+  bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), self->channel_hints);
   g_object_connect (csource,
-		    "swapped_signal::update_links", bst_snet_router_update_links, router,
+		    "swapped_signal::update_links", bst_snet_router_update_links, self,
 		    NULL);
   bst_canvas_source_update_links (BST_CANVAS_SOURCE (csource));
   /* queue update cause ellipse-rect is broken */
@@ -383,8 +385,8 @@ walk_items (BseItem  *item,
 	    gpointer  data_p)
 {
   gpointer *data = data_p;
-  BstSNetRouter *router = BST_SNET_ROUTER (data[0]);
-  GnomeCanvas *canvas = GNOME_CANVAS (router);
+  BstSNetRouter *self = BST_SNET_ROUTER (data[0]);
+  GnomeCanvas *canvas = GNOME_CANVAS (self);
   
   if (BSE_IS_SOURCE (item))
     {
@@ -392,10 +394,11 @@ walk_items (BseItem  *item,
       
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
 				       BSE_OBJECT_ID (item),
-				       router->world_x,
-				       router->world_y);
+				       self->world_x,
+				       self->world_y);
+      bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), self->channel_hints);
       g_object_connect (csource,
-			"swapped_signal::update_links", bst_snet_router_update_links, router,
+			"swapped_signal::update_links", bst_snet_router_update_links, self,
 			NULL);
       data[1] = g_slist_prepend (data[1], csource);
       /* queue update cause ellipse-rect is broken */
@@ -406,34 +409,35 @@ walk_items (BseItem  *item,
 }
 
 void
-bst_snet_router_update (BstSNetRouter *router)
+bst_snet_router_update (BstSNetRouter *self)
 {
   GnomeCanvasItem *csource;
   GnomeCanvas *canvas;
   GSList *slist;
   gpointer data[2];
   
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  g_return_if_fail (BST_IS_SNET_ROUTER (self));
   
-  canvas = GNOME_CANVAS (router);
+  canvas = GNOME_CANVAS (self);
   
-  bst_snet_router_destroy_contents (router);
+  bst_snet_router_destroy_contents (self);
 
   /* walk all child sources */
-  data[0] = router;
+  data[0] = self;
   data[1] = NULL;
   if (0)
     {
       /* add the snet itself */
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
-				       router->snet,
+				       self->snet,
 				       0, 0);
+      bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), self->channel_hints);
       g_object_connect (csource,
-			"swapped_signal::update_links", bst_snet_router_update_links, router,
+			"swapped_signal::update_links", bst_snet_router_update_links, self,
 			NULL);
       data[1] = g_slist_prepend (NULL, csource);
     }
-  bse_container_forall_items (bse_object_from_id (router->snet),
+  bse_container_forall_items (bse_object_from_id (self->snet),
 			      walk_items,
 			      data);
   
@@ -573,8 +577,23 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   gtk_widget_set_usize (button, 50, 0);
   gtk_widget_show (button);
   bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
-		      "Zoom Factor", "Adjust the zoom factor of the router display",
+		      "Zoom", "Adjust the zoom factor of the router display",
 		      button);
+
+  /* add channel name toggle
+   */
+  button = gtk_toggle_button_new_with_mnemonic ("_Channel");
+  g_object_set (button,
+		"visible", TRUE,
+		"active", self->channel_hints,
+		"can_focus", FALSE,
+		NULL);
+  bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
+		      "Hints", "Toggle channel name hints.",
+		      button);
+  g_object_connect (button,
+		    "swapped_signal::clicked", bst_snet_router_toggle_channel_hints, self,
+		    NULL);
 
   /* set default tool
    */
@@ -641,6 +660,26 @@ bst_snet_router_csource_from_source (BstSNetRouter *router,
     }
 
   return NULL;
+}
+
+void
+bst_snet_router_toggle_channel_hints (BstSNetRouter *self)
+{
+  GnomeCanvas *canvas;
+  GnomeCanvasGroup *root;
+  GList *list;
+
+  g_return_if_fail (BST_IS_SNET_ROUTER (self));
+
+  self->channel_hints = !self->channel_hints;
+  canvas = GNOME_CANVAS (self);
+  root = GNOME_CANVAS_GROUP (canvas->root);
+  for (list = root->item_list; list; list = list->next)
+    {
+      BstCanvasSource *csource = list->data;
+      if (BST_IS_CANVAS_SOURCE (csource))
+	bst_canvas_source_set_channel_hints (csource, self->channel_hints);
+    }
 }
 
 static void

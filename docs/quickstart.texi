@@ -10,7 +10,7 @@
 @center Tim Janik
 @center @revision
 @*
-This guide attempts to give a few very brief hints for new users,
+This guide attempts to give a few brief hints for new users,
 in order to get started with the most basic tasks that can be
 accomplished with @beast{}.
 @*
@@ -61,12 +61,12 @@ Similarly, playback is halted by selecting @menupath{/Project/Stop}.
 
 To be able to playback songs with @beast{}, synthesis instruments have to
 be created which are used to playback the notes contained in the parts
-of a song.
+of a song. Songs are created through the menu by selecting
+@menupath{/Project/New Song}.
 
 @section What Is A Synthesis Instrument?
-A synthesis instrument is a special kind of synthesizer network which
-were already introduced in the first section. The special things about
-a synthesis instrument are:
+A synthesis instrument is a special kind of synthesizer network,
+it has particular properties:
 @itemize
 @item	A synthesis instrument doesn't need to have its @prop{Auto Activate}
 	property enabled. That's because the song using the instrument will
@@ -74,16 +74,76 @@ a synthesis instrument are:
 @item	A dedicated module type is used as input to the synthesis instrument
 	so information about the note to be played can be fed into it.
 @item	A dedicated module type is used as output of the synthesis instrument
-	to jointly compose the soung output together with other synthesis
+	to jointly compose the sound output together with other synthesis
 	instruments being used.
 @end itemize
 
 @section Creating A Synthesis Instrument
+Here is how to create a simple synthesis instrument with one oscillator
+producing the basic tone, an envelope to control a note's volume, and
+an amplifier to adjust overall volume and apply the envelope to the
+oscillator.
 @enumerate
-@item	Select @menupath{/Project/New Synthesizer Network} from the menu to
-	create a new network.
-@item	Switch to the @pagepath{Routing} notebook page.
+@item	Select @menupath{/Project/New Synthesizer Network} from the menu.
+@item	Switch to the networks's @pagepath{Routing} notebook page.
 @item	Create a @module{SubKeyboard} module for the input, and
 	a @module{SubInstrument} for the instrument output.
-@item   More important stuff about envelopes and oscillators goes here.
+@item   Create the three modules making up the actual instrument:
+        a @module{Standard Oscillator}, a @module{Simple ADSR} (the
+        envelope) and an @module{Amplifier}.
+@item   To control the oscillating frequency, and to trigger the
+	oscillator wave at note start, connect the output channels
+	@channel{Frequency} and @channel{Gate} of the @module{SubKeyboard}
+	module to the input channels @channel{Freq In} and @channel{Sync In}
+	of the @module{Standard Oscillator} module respectively.
+@item	To let the @module{Amplifier} shape the volume of the
+	oscillating tone and to provide actual output, connect the
+	output channel @channel{Audio Out} of the @module{Standard Oscillator}
+	to one of the @channel{Audio} input channels of the @module{Amplifier} and
+	connect it's output channel @channel{Audio Out} the two input
+	channels @channel{Right Audio} and @channel{Left Audio} of the
+	@module{SubInstrument}.
+@item	It is recommended to intially reduce the @prop{Master Volume}
+	property of the @module{Amplifier} to avoid overdriving the
+	output later on. The properties of a module can be adjusted in
+	it's property dialog which is offered by the Button-3 popup menu
+	of each module.
+@item	Connect the input channel @channel{Gate In} of the @module{Simple ADSR}
+	to the output channel @channel{Gate} of the @module{SubKeyboard} to
+	trigger the envelope at at note start. Connect the @channel{Ctrl Out}
+	output channel of the @module{Simple ADSR} to one of the @channel{Control} input
+	channels of the @module{Amplifier}.
+@item	@important{IMPORTANT:} Synthesis instruments are used to play multiple
+	notes sequentially. In order to determine when an instrument has finished
+	playing a certain note and is thusly free to play a new note, the
+	@channel{Synth Done} channel of the @module{SubInstrument} must be
+	connected to a signal going high at note end. For this example, connect
+	the @channel{Synth Done} channel to the @channel{Done Out} output channel
+	of the @module{Simple ADSR} module, this output channel produces a signal
+	which is low while the envelope is active and goes high past the envelope
+	end.
 @end enumerate
+While the synthesis instrument is basically ready for use now, it can't be
+used or tested directly, but has to be deployed in a song or @object{MidiSynth}
+(offered by the main menu under @menupath{/Project/New MIDI Synthesizer}) which
+leads us to the next Topic.
+
+@section Setting Up Parts And Tracks
+Songs basically consist of notes kept in @object{Part}s which are arranged in
+@object{Track}s. The tracks control the order in which parts are played and
+what instrument is used to play a certain part.
+So the steps to a simple test setup for a synthesis instrument are:
+@enumerate
+@item	Switch to the @pagepath{Parts} notebook page of a song and add a
+	@object{Part} to the song.
+@item	Use the part editor to create some notes in the part to be played back.
+@item	Switch to the @pagepath{Tracks} notebook page of a song and add
+	a @object{Track} to the song.
+@item	Select the previously created part as @prop{Part} property for this
+	track.
+@item	Select a synthesis network (created as shown in the last section) as
+	synthesis input for this track by editing the @prop{Custom Synth Net}
+	property.
+@end enumerate
+A song with parts, instruments and tracks setup can be played back via
+the main menu by selecting the menu item @menupath{/Project/Play}.

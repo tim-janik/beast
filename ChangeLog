@@ -1,3 +1,17 @@
+Fri Aug 23 21:21:54 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/quickstart.texi: complete "Setting Up Songs" chapter.
+
+	* beast-gtk/bstcanvassource.[hc]: add channel name hints, can be
+	toggled on and off with bst_canvas_source_set_channel_hints().
+
+	* beast-gtk/bstsnetrouter.[hc]:
+	add bst_snet_router_toggle_channel_hints() with GUI button to blend
+	in/out channel name hints.
+
+	* beast-gtk/bstparam.c (bst_param_create): shrink object properties by
+	a slight bit, so they aren't _insanely_ big.
+
 Fri Aug 23 15:22:41 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/images/beast-logo.png: remove the "GNU" bubble from the
