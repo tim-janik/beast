@@ -1,3 +1,7 @@
+Thu Feb 27 00:02:09 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: add news blurb about LinuxForum 2003.
+
 Wed Feb 26 23:02:18 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackroll.c: adjusted hzoom range.

@@ -10,6 +10,17 @@
 
 @unnumbered What's New?
 
+
+@newsTitle{Thursday 27 February 2003, LinuxForum 2003}
+
+Stefan Westerfeld and Tim Janik are going to the
+@uref{http://www.linuxforum.dk,,Linux Forum 2003} this Saturday
+(1 March). We'll probably hang out at the debian booth if people
+want to catch us to talk about @beast{},
+@uref{http://www.arts-project.org,,aRts} or
+@uref{http://sfk.evilplan.org/csl/,,CSL}.
+
+
 @newsTitle{Friday 21 February 2003, Recent Development}
 
 Lots of website content has been improved recently. The
