@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-25 19:00+0200\n"
-"PO-Revision-Date: 2004-09-26 03:34+0200\n"
+"POT-Creation-Date: 2004-09-29 11:03+0200\n"
+"PO-Revision-Date: 2004-09-30 04:53+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -1075,7 +1075,9 @@ msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
-msgstr "  verschillende gebeurtenistypen selecteren (controleknoppen, continue-controllers)"
+msgstr ""
+"  verschillende gebeurtenistypen selecteren (controleknoppen, continue-"
+"controllers)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
@@ -4544,10 +4546,22 @@ msgstr "BPM-stappen"
 msgid "Step width for beats per minute"
 msgstr "Stapgrootte voro beats per minuut"
 
+# betere vertaling placeholder?
+# Dict: a person authorized to act for another
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsedevice.c:312
+msgid ""
+"Auto is a special driver, it acts as a placeholder for\n"
+"automatic driver selection."
+msgstr ""
+"Auto is een speciaal stuurprogramma; het fungeert als een\n"
+"verzamelnaam voor automatische stuurprogrammaselectie"
+
+# goed verlopen
 #. GSL
 #: bse/bseenums.c:99
 msgid "Everything went well"
-msgstr "Alles is goedgegaan"
+msgstr "Alles is goed gegaan"
 
 #: bse/bseenums.c:100
 msgid "Functionality not implemented"
@@ -4766,6 +4780,19 @@ msgstr "Hoog geeft aan dat het instrument klaar is met de synthese"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Invoer & uitvoer/Instrument uitvoer"
 
+# beschikbare geluiden
+#: bse/bsemain.c:268
+msgid ""
+"\n"
+"Available PCM drivers:\n"
+msgstr "\nBeschikbare PCM stuurprogramma's:\n"
+
+#: bse/bsemain.c:270
+msgid ""
+"\n"
+"Available MIDI drivers:\n"
+msgstr "\nBeschikbare Midi stuurprogramma's:\n"
+
 #: bse/bsemidicontroller.c:86
 msgid "/Input & Output/MIDI Control Input"
 msgstr "/Invoer & uitvoer/MIDI controle invoer"
@@ -4801,6 +4828,31 @@ msgstr "Ctrl Out4"
 #: bse/bsemidicontroller.c:143
 msgid "MIDI Signal 4"
 msgstr "MIDI signaal 4"
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsemididevice-null.c:92
+msgid ""
+"Discards all output events and generates no input events. This driver\n"
+"is not part of the automatic device selection list for MIDI devices."
+msgstr ""
+"Verwerpt alle uitvoer en genereert geen invoer. Dit stuurprogramma\n"
+"staat niet in de lijst automatische apparaatselectie voor\n"
+"Midi-apparaten."
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsemididevice-oss.c:266
+msgid ""
+"Open Sound System MIDI driver:\n"
+"  DEVICE - MIDI device file name.\n"
+"  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+"           read-only, read-write or write-only access."
+msgstr ""
+"Open Sound System Midi stuurprogramma:\n"
+"  APPARAAT - Bestandsnaam Midi apparaat\n"
+"  MODUS    - mag \"rw\", \"ro\" of \"wo\" bevatten voor\n"
+"             alleen-lezen, lezen-schrijven of\n"
+"             alleen-schrijven; toevoegen van \"hs\"\n"
+"             forceert een hard sync bij underruns."
 
 #: bse/bsemidiinput.c:82
 msgid "/Input & Output/MIDI Voice Input"
@@ -4932,6 +4984,37 @@ msgstr "Parasietpaden"
 msgid "Parasite"
 msgstr "Parasiet"
 
+#. syntax
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsepcmdevice-null.c:145
+msgid ""
+"Discard all PCM output and provide zero blocks as input. This\n"
+"driver is not part of the automatic PCM device selection list."
+msgstr ""
+"Alle PCM-uitvoer verwerpen en 'zero-blocks' aanleveren als invoer. Dit\n"
+"stuurprogramma staat niet in de lijst automatische apparaatselectie\n"
+"voor PCM-apparaten."
+
+#: bse/bsepcmdevice-oss.c:651
+msgid "DEVICE,MODE"
+msgstr "APPARAAT,MODUS"
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsepcmdevice-oss.c:653
+msgid ""
+"Open Sound System PCM driver:\n"
+"  DEVICE - PCM device file name\n"
+"  MODE   - may contain \"rw\", \"ro\" or \"wo\" for\n"
+"           read-only, read-write or write-only access;\n"
+"           adding \"hs\" forces hard sync on underruns.\n"
+msgstr ""
+"Open Sound System PCM stuurprogramma:\n"
+"  APPARAAT - Bestandsnaam PCM apparaat\n"
+"  MODUS    - mag \"rw\", \"ro\" of \"wo\" bevatten voor\n"
+"             alleen-lezen, lezen-schrijven of\n"
+"             alleen-schrijven; toevoegen van \"hs\"\n"
+"             forceert een hard sync bij underruns.\n"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr "/Invoer & uitvoer/PCM invoer"
@@ -4954,38 +5037,38 @@ msgstr "Naam het WAVE-bestand dat gebruikt wordt voor opname van BSE geluid"
 
 # kort houden.
 # (niet: bij problemen met het selecteren van een PCM-apparaat)
-#: bse/bseserver.c:463
+#: bse/bseserver.c:472
 msgid "Advice about PCM device selections problems"
 msgstr "Adviseren bij problemen met selecteren PCM-apparaat"
 
-#: bse/bseserver.c:464
+#: bse/bseserver.c:473
 msgid "Alert me about PCM device selections problems"
 msgstr "Waarschuw mij bij problemen bij het selecteren van PCM-apparaten"
 
 # misschien beter in enkelvoud:
 # openen Midi-apparaat mislukt
 # opgeven/niet meer proberen
-#: bse/bseserver.c:465
+#: bse/bseserver.c:474
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Openen van PCM-apparaten mislukt, opgeven: %s"
 
-#: bse/bseserver.c:484
+#: bse/bseserver.c:493
 msgid "Advice about MIDI device selections problems"
 msgstr "Adviseren bij problemen met selecteren Midi-apparaat"
 
-#: bse/bseserver.c:485
+#: bse/bseserver.c:494
 msgid "Alert me about MIDI device selections problems"
 msgstr "Waarschuw mij bij problemen bij het selecteren van Midi-apparaten"
 
 # misschien beter in enkelvoud:
 # openen Midi-apparaat mislukt
-#: bse/bseserver.c:486
+#: bse/bseserver.c:495
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null driver): %s"
 msgstr "Openen Midi-apparaten mislukt (teruggaan naar null-stuurprogramma): %s"
 
-#: bse/bseserver.c:524
+#: bse/bseserver.c:547
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Openen uitvoerbestand \"%s\" mislukt: %s"
@@ -5416,6 +5499,42 @@ msgstr "BSE Synthesis-bestand"
 #: data/bse.keys.in.h:1
 msgid "Audio"
 msgstr "Audio"
+
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:537
+msgid "PLUGIN:CARD,DEV,SUBDEV"
+msgstr "PLUGIN:KAART,APP,SUBAPP"
+
+# Follow the instructions to read the message.
+#. TRANSLATORS: keep this text to 70 chars in width
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:539
+#, c-format
+msgid ""
+"Advanced Linux Sound Architecture PCM driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Various ALSA plugins can be used here, 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
+msgstr ""
+"Advanced Linux Sound Architecture PCM stuurprogramma,\n"
+"gebruik ALSA %s.\n"
+"De apparaatspecificatie volgt de naamgevingconventie voor\n"
+"ALSA apparaten. Een gedetailleerde beschrijving hiervan is\n"
+"beschikbaar op de website van het project:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Verschillende ALSA plugins kunnen hier worden gebruikt; 'hw' geeft\n"
+"directe toegang tot hardware-kanalen via kaart, apparaat en sub-\n"
+"apparaat.\n"
+"  PLUGIN - de ALSA plugin, 'default' is gewoonlijk goed genoeg\n"
+"  KAART  - het kaartnummer voor plugins als 'hw'\n"
+"  APP    - het apparaatnummer voor plugins als 'hw'\n"
+"  SUBAPP - het subapparaatnummer voor plugins als 'hw'\n"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
