@@ -1,3 +1,12 @@
+Wed Sep  8 17:00:04 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* artscompressor.idl artscompressor.cc: Cleanup: new documentation,
+	volume related properties are dB now, compressor ratio is given as x:1
+	and not as fraction (more intuitive), new property auto_output allows
+	adjusting the output amplification automatically. Removed stereo
+	version completely in favour of an implementation which handles both,
+	mono and stereo, in one module. Moved into the Bse namespace.
+
 Sun Sep  5 16:36:09 2004  Tim Janik  <timj@gtk.org>
 
 	* icons/compressor.png:
