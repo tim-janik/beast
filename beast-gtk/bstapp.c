@@ -277,24 +277,25 @@ bst_app_init (BstApp *app)
 static void
 bst_app_destroy (GtkObject *object)
 {
-  BstApp *app = BST_APP (object);
+  BstApp *self = BST_APP (object);
 
-  if (app->rack_dialog)
-    gtk_widget_destroy (app->rack_dialog);
+  if (self->rack_dialog)
+    gtk_widget_destroy (self->rack_dialog);
 
-  if (app->project)
+  if (self->project)
     {
-      if (app->pcontrols)
-        bst_project_ctrl_set_project (BST_PROJECT_CTRL (app->pcontrols), 0);
-      bse_project_deactivate (app->project);
-      bse_proxy_disconnect (app->project,
-                           "any_signal", bst_app_reload_supers, app,
+      if (self->pcontrols)
+        bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), 0);
+      bse_project_deactivate (self->project);
+      bse_proxy_disconnect (self->project,
+                           "any_signal", bst_app_reload_supers, self,
+                           "any_signal", bst_widget_update_activatable, self,
                            NULL);
-      bse_item_unuse (app->project);
-      app->project = 0;
+      bse_item_unuse (self->project);
+      self->project = 0;
     }
 
-  bst_app_unregister (app);
+  bst_app_unregister (self);
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 
@@ -329,6 +330,7 @@ bst_app_new (SfiProxy project)
   bse_proxy_connect (self->project,
                      "swapped_signal::item-added", bst_app_reload_supers, self,
                      "swapped_signal::item-removed", bst_app_reload_supers, self,
+                     "swapped_signal::state-changed", bst_widget_update_activatable, self,
                      NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project, "%s");
   if (self->pcontrols)

@@ -56,6 +56,8 @@ SCM	bse_scm_glue_call		(SCM		 s_proc_name,
 SCM	bse_scm_signal_connect		(SCM		 s_proxy,
 					 SCM		 s_signal,
 					 SCM		 s_lambda);
+SCM     bse_scm_signal_disconnect       (SCM             s_proxy,
+                                         SCM             s_handler_id);
 SCM	bse_scm_script_register		(SCM		 name,
 					 SCM		 category,
 					 SCM		 blurb,

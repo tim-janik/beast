@@ -16,7 +16,7 @@ Some *.bse files used for testing are also included in the ./test
 subdirectory.
 
 To get a basic start, you'll also need Gtk+-2.0, a recent version
-of the Gtk+-2.0 based GnomeCanvas, Guile-1.4 and the Ogg/Vorbis
+of the Gtk+-2.0 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST.
@@ -27,7 +27,7 @@ GnomeCanvas (GNOME-2.0):
 	ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
 Gtk+-2.0:
 	ftp://ftp.gtk.org/pub/gtk/v2.0/
-Guile-1.4:
+Guile-1.6:
 	http://www.gnu.org/software/guile/guile.html
 Ogg/Vorbis (at least version 1.0):
 	http://www.xiph.org/ogg/vorbis/download/

@@ -110,6 +110,15 @@ case $ac_vm in
 esac
 ])
 
+dnl MC_ASSERT_NONEMPTY(variable, program, srcpackage)
+AC_DEFUN(MC_ASSERT_NONEMPTY,[
+    case "x$[$1]"y in
+    xy)
+	AC_MSG_ERROR([failed to find $2 which is required for a functional build. $3])
+	;;
+    esac
+])
+
 dnl Find program
 dnl MC_ASSERT_PROG(variable, program, srcpackage)
 AC_DEFUN(MC_ASSERT_PROG,[

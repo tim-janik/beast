@@ -1,3 +1,21 @@
+Mon May 26 13:56:16 2003  Tim Janik  <timj@gtk.org>
+
+	* shell/bse-scm-glue.boot: added bse-server-register-blocking to allow
+	for blocking plugin and script registration in scripts.
+
+	* shell/bsescminterp.[hc]: upgrade to guile-1.6. fixed up signal connect
+	implementation, added bse-signal-disconnect.
+
+	* NEWS:
+	* README:
+	* configure.in:
+	* docs/site-download.texi: depend on guile-1.6.
+
+	* acbeast.m4: added MC_ASSERT_NONEMPTY() to verify a program has been
+	found.
+
+	* beast-gtk/bstapp.c: update menu state upon playback status changes.
+
 Mon May 26 02:40:39 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: update version to 0.5.2-rc1 already, to properly

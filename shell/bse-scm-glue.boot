@@ -56,3 +56,25 @@
 			      (bse-item-tname omod)
 			      ": "
 			      (bse-error-blurb err))))))
+
+;; boilerplate code for plugin/script registration
+(define (bse-server-register-blocking register-request verbose)
+  (let ((registration-done #f))
+    (let ((sigid (bse-signal-connect bse-server "registration"
+				     (lambda (server registration-type what error-msg)
+				       (if (and verbose (string? what))
+					   (display (string-append
+						     "registering "
+						     what
+						     "...\n")))
+				       (if (string? error-msg)
+					   (display (string-append
+						     "WARNING: registration failed for "
+						     what
+						     ": " error-msg "\n")))
+				       (set! registration-done
+					     (eq? registration-type 'bse-register-done))))))
+      (register-request bse-server)
+      (while (not registration-done)
+	     (bse-context-iteration #t))
+      (bse-signal-disconnect bse-server sigid))))

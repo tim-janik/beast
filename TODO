@@ -1,5 +1,4 @@
 FIXMES:
-- get compilation with guile-1.6 to work (scm_i_long_long2big)
 - fix saving of internal objects
 - rename gslwave files appropriately
 - need detailed "ladspa" info/debug messages which tell when what plugin file is being loaded
@@ -33,7 +32,6 @@ FIXMES:
 - nuke SFI memblocks, malloc() is good enough
 - GslModuleClass.free should be renamed free_user_data
 - add demo song
-- fix plugins in bsesh
 - fix engine deinitialization assertions in bseserver.c
 - default saving (SFI_PARAM_SKIP_DEFAULT)
 - match enum names on word boundaries only
@@ -104,7 +102,6 @@ Random:
   - use_count prevents ::release emission
   - ::release on containers removes children
 - implement remote use-count collection
-- cleanup all glue generation code in bsw-shell
 - complete and intergrate piano-script
 - portamento-to-note in piano roll? probably need special effects
 * move mix_freq and recording_freq into datahandle

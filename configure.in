@@ -121,7 +121,7 @@ AC_DEFUN(AC_SFI_REQUIREMENTS,
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
-    dnl === Ogg/Vorbis check ===
+    dnl --- Ogg/Vorbis check ---
     OV_LIBS=
     ov_tests=0
     AC_CHECK_LIB(vorbisfile, ogg_stream_reset_serialno,
@@ -136,7 +136,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
 	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0) or headers])
     fi
     
-    dnl === libmad MPEG decoder check ===
+    dnl --- libmad MPEG decoder check ---
     PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
 	GSL_HAVE_LIBMAD=1
 	,
@@ -145,7 +145,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     )
     AC_SUBST(GSL_HAVE_LIBMAD)
 
-    dnl === check codec requirements ===
+    dnl --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
     if echo " $OV_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
       AC_MSG_RESULT([complete])
@@ -154,7 +154,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
 
-    dnl == require libz ===
+    dnl --- require libz ---
     if test -z "$LIBZ"; then
 	AC_CHECK_LIB(z, gzsetparams,
 	    [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
@@ -165,7 +165,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     fi
     AC_SUBST(LIBZ)
 
-    dnl === complete CFLAGS/LIBS setup ===
+    dnl --- complete CFLAGS/LIBS setup ---
     BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS"
     BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS $LIBZ"
     AC_SUBST(BSE_CFLAGS)
@@ -181,7 +181,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
 
-    dnl === sizeof types ===
+    dnl --- sizeof types ---
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
     SFI_SIZEOF_PTH_MUTEX_T="$glib_cv_sizeof_pth_mutex_t"
     AC_SUBST(SFI_SIZEOF_PTH_MUTEX_T)
@@ -192,7 +192,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     GSL_SIZEOF_STD_INTMAX_T="$glib_cv_sizeof_std_intmax_t"
     AC_SUBST(GSL_SIZEOF_STD_INTMAX_T)
 
-    dnl === pthread_mutexattr_settype ===
+    dnl --- pthread_mutexattr_settype ---
     AC_MSG_CHECKING([for pthread_mutexattr_settype()])
     AC_TRY_COMPILE([
       #define _XOPEN_SOURCE   600
@@ -210,7 +210,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     )
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
-    dnl === setup BSE install paths ===
+    dnl --- setup BSE install paths ---
     bselibdir=\${libdir}/bse/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
     bseplugindir=$bselibdir/plugins
     AC_SUBST(bseplugindir)
@@ -222,13 +222,15 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
     BSE_SHELL_CFLAGS="$BSE_CFLAGS"
     BSE_SHELL_LIBS="$BSE_LIBS"
 
-    dnl === libguile check ===
+    dnl --- libguile check ---
     # require guile-config
-    MC_ASSERT_PROG(GUILE_CONFIG, guile-config, [guile-config is supplied by libguile at http://www.gnu.org/software/guile/guile.html])
+    AC_PATH_PROG(GUILE_CONFIG, guile-1.6-config)
+    AC_PATH_PROG(GUILE_CONFIG, guile-config)
+    MC_ASSERT_NONEMPTY(GUILE_CONFIG, guile-config, [guile-config is supplied by libguile at http://www.gnu.org/software/guile/guile.html])
     GUILE_VERSION=`$GUILE_CONFIG info guileversion`
     GUILE_CFLAGS=`$GUILE_CONFIG compile`
     GUILE_LDFLAGS=`$GUILE_CONFIG link`
-    REQUIRED_VERSION=1.4
+    REQUIRED_VERSION=1.6
     MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [
       BSE_SHELL_CFLAGS="$GUILE_CFLAGS $BSE_SHELL_CFLAGS"
       BSE_SHELL_LIBS="$GUILE_LDFLAGS $BSE_SHELL_LIBS"
@@ -424,7 +426,7 @@ if test x"$enable_devel_rules" = xyes ; then
     TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
     TEST_BUILDDIR=$(cd . ; /bin/pwd)
     AC_MSG_CHECKING(whether source dir equals build dir)
-    if test "$TEST_SRCDIR" == "$TEST_BUILDDIR" ; then
+    if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" ; then
 	AC_MSG_RESULT(yes)
     else
 	AC_MSG_RESULT(no)
