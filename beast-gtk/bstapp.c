@@ -446,29 +446,29 @@ proxyp_cmp_supers (gconstpointer v1,
 }
 
 void
-bst_app_reload_supers (BstApp *app)
+bst_app_reload_supers (BstApp *self)
 {
-  GtkWidget *old_page, *old_focus, *first_synth = NULL;
+  GtkWidget *old_page, *old_focus, *first_unseen = NULL, *first_synth = NULL;
   GSList *page_list = NULL;
   GSList *slist;
   BseItemSeq *iseq;
   guint i;
   
-  g_return_if_fail (BST_IS_APP (app));
+  g_return_if_fail (BST_IS_APP (self));
   
-  old_focus = GTK_WINDOW (app)->focus_widget;
+  old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
-  old_page = app->notebook->cur_page ? gtk_notebook_current_widget (app->notebook) : NULL;
-  while (gtk_notebook_current_widget (app->notebook))
+  old_page = gtk_notebook_current_widget (self->notebook);
+  while (gtk_notebook_current_widget (self->notebook))
     {
-      g_object_ref (gtk_notebook_current_widget (app->notebook));
-      page_list = g_slist_prepend (page_list, gtk_notebook_current_widget (app->notebook));
-      gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
+      g_object_ref (gtk_notebook_current_widget (self->notebook));
+      page_list = g_slist_prepend (page_list, gtk_notebook_current_widget (self->notebook));
+      gtk_container_remove (GTK_CONTAINER (self->notebook), page_list->data);
     }
   
   /* get supers */
-  iseq = bse_project_get_supers (app->project);
+  iseq = bse_project_get_supers (self->project);
   SfiRing *ring, *supers = NULL;
   /* convert to ring */
   for (i = 0; i < iseq->n_items; i++)
@@ -485,7 +485,7 @@ bst_app_reload_supers (BstApp *app)
       GtkWidget *page = NULL;
       GSList *node;
       for (node = page_list; node; node = node->next)
-        if (BST_SUPER_SHELL (node->data)->super == iseq->items[i])
+        if (BST_SUPER_SHELL (node->data)->super == super)
           {
             page = node->data;
             page_list = g_slist_remove (page_list, page);
@@ -496,28 +496,33 @@ bst_app_reload_supers (BstApp *app)
           page = g_object_new (BST_TYPE_SUPER_SHELL, "super", super, NULL);
           g_object_ref (page);
           gtk_object_sink (GTK_OBJECT (page));
+          if (!first_unseen)
+            first_unseen = page;
         }
       if (!first_synth && BSE_IS_SNET (super))
         first_synth = page;
       GtkWidget *label = bst_super_shell_create_label (BST_SUPER_SHELL (page));
-      gtk_notebook_append_page (app->notebook, page, label);
-      gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
+      gtk_notebook_append_page (self->notebook, page, label);
+      gtk_notebook_set_tab_label_packing (self->notebook, page, FALSE, TRUE, GTK_PACK_START);
       bst_super_shell_update_label (BST_SUPER_SHELL (page));
       gtk_widget_unref (page);
     }
   /* free ring */
   sfi_ring_free (ring);
-
-  /* restore page */
-  if (old_page && old_page->parent == GTK_WIDGET (app->notebook))
-    gxk_notebook_set_current_page_widget (app->notebook, old_page);
+  
+  /* select/restore current page */
+  if (first_unseen && self->select_unseen_super)
+    gxk_notebook_set_current_page_widget (self->notebook, first_unseen);
+  else if (old_page && old_page->parent == GTK_WIDGET (self->notebook))
+    gxk_notebook_set_current_page_widget (self->notebook, old_page);
   else if (first_synth)
-    gxk_notebook_set_current_page_widget (app->notebook, first_synth);
+    gxk_notebook_set_current_page_widget (self->notebook, first_synth);
+  self->select_unseen_super = FALSE;
   /* restore focus */
   if (old_focus)
     {
-      if (old_page && gtk_widget_is_ancestor (old_focus, old_page) &&
-          gtk_widget_get_toplevel (old_focus) == GTK_WIDGET (app))
+      if (gxk_widget_ancestry_viewable (old_focus) &&
+          gtk_widget_get_toplevel (old_focus) == GTK_WIDGET (self))
         gtk_widget_grab_focus (old_focus);
       gtk_widget_unref (old_focus);
     }
@@ -777,9 +782,11 @@ app_action_exec (gpointer data,
       break;
     case BST_ACTION_MERGE_EFFECT:
       bst_file_dialog_popup_merge_effect (self, self->project);
+      self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_MERGE_INSTRUMENT:
       bst_file_dialog_popup_merge_instrument (self, self->project);
+      self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_SAVE_EFFECT:
       bst_file_dialog_popup_save_effect (self, self->project, bst_app_get_current_super (self));
@@ -789,17 +796,21 @@ app_action_exec (gpointer data,
       break;
     case BST_ACTION_NEW_SONG:
       proxy = bse_project_create_song (self->project, NULL);
+      self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_CSYNTH:
       proxy = bse_project_create_csynth (self->project, NULL);
+      self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_MIDI_SYNTH:
       proxy = bse_project_create_midi_synth (self->project, NULL);
+      self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_REMOVE_SYNTH:
       proxy = bst_app_get_current_super (self);
       if (BSE_IS_SNET (proxy) && !bse_project_is_active (self->project))
         bse_project_remove_snet (self->project, proxy);
+      self->select_unseen_super = FALSE;
       break;
     case BST_ACTION_CLEAR_UNDO:
       bse_project_clear_undo (self->project);

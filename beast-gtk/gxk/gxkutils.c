@@ -42,17 +42,6 @@ static gulong viewable_changed_id = 0;
 
 /* --- functions --- */
 #if     GTK_CHECK_VERSION (2, 4, 0)
-static gboolean
-widget_ancestry_mapped (GtkWidget *widget)
-{
-  while (widget)
-    {
-      if (!GTK_WIDGET_MAPPED (widget))
-        return FALSE;
-      widget = widget->parent;
-    }
-  return TRUE;
-}
 
 #if 0
 static void
@@ -73,7 +62,7 @@ gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, FIXME
 {
   // g_print ("%s: accelerator-check:\n",  g_type_name (G_OBJECT_TYPE (widget))), widget_print_ancestry(widget);
   /* widgets must be onscreen for accels to take effect */
-  return GTK_WIDGET_IS_SENSITIVE (widget) && GTK_WIDGET_DRAWABLE (widget) && gdk_window_is_viewable (widget->window) && widget_ancestry_mapped (widget);
+  return GTK_WIDGET_IS_SENSITIVE (widget) && GTK_WIDGET_DRAWABLE (widget) && gxk_widget_ancestry_viewable (widget);
 }
 #endif
 
@@ -95,6 +84,31 @@ _gxk_init_utils (void)
   GtkWidgetClass *widget_class = gtk_type_class (GTK_TYPE_WIDGET);
   widget_class->can_activate_accel = gxk_widget_real_can_activate_accel;
 #endif
+}
+
+/**
+ * gxk_widget_ancestry_viewable
+ * @widget:  a valid %GtkWidget
+ * @RETURNS: whether @widget is visible on screen
+ *
+ * Checks for @widget to be effectively visible on screen.
+ * Note that this is not the same as gdk_window_viewable()
+ * for the widget's window or GTK_WIDGET_DRAWABLE(), as
+ * those may return true for children of notebooks, eventboxes
+ * or handleboxes although the widget is not visible on screen.
+ */
+gboolean
+gxk_widget_ancestry_viewable (GtkWidget *widget)
+{
+  if (!widget->window || !gdk_window_is_viewable (widget->window))
+    return FALSE;
+  while (widget)
+    {
+      if (!GTK_WIDGET_DRAWABLE (widget))        /* visible && mapped */
+        return FALSE;
+      widget = widget->parent;
+    }
+  return TRUE;
 }
 
 /**

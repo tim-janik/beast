@@ -31,6 +31,7 @@ G_BEGIN_DECLS
 
 
 /* --- Gtk+ workarounds and amendments --- */
+gboolean        gxk_widget_ancestry_viewable       (GtkWidget       *widget);
 void            gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell);
 gboolean        gxk_cell_editable_canceled         (GtkCellEditable *ecell);
 GtkWidget*      gxk_item_factory_sensitize         (GtkItemFactory  *ifactory,

@@ -1,3 +1,10 @@
+Sun Aug 22 04:59:08 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.[hc]: improved notebook page selection logic.
+
+	* beast-gtk/gxk/gxkutils.[hc]: export gxk_widget_ancestry_viewable()
+	to figure whether a widget is onscreen.
+
 Sun Aug 22 03:37:36 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: lots of tooltip additions.

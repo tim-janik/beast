@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- opening new view resets mixer volume
 - enfore minimum size of ca. screen-width and screen-height for GxkDialog (should make preferences scrollable)  
 - in preferences the skin-editor viewport shouldn't gxk_widget_proxy_requisition()
 - add a "[_] never show this warning" toggle button to warnings

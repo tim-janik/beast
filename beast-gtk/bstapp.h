@@ -43,6 +43,8 @@ struct _BstApp
 
   SfiProxy        project;
 
+  guint           select_unseen_super : 1;
+
   GxkParam       *wave_file;
 
   GxkRadget      *box;
