@@ -1,3 +1,18 @@
+Thu Oct  9 23:24:55 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/beast.1.texi:
+	* docs/bsesh.1.texi:
+	* docs/bse-plugin-generator.1.texi: improved markup for better nroff
+	outputs. fixed a couple of typos.
+
+	* docs/teximacros.texi: removed now unnecessary work-around macros.
+
+	* docs/generated/Makefile.am:
+	* docs/generated/scandocs.pl: dropped --package option from
+	scandocs.pl in favor of using texiutils.texi for versions.
+
+	* TODO: removed fixed items.
+
 Thu Oct  9 16:08:58 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-download.texi: reflect freedesktop.org CVS move.

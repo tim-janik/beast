@@ -7,19 +7,6 @@
 \TEXT\
 @end rmacro
 
-@c --- manual page markup ---
-@c --- FIXME: texitheque needs to emph @command and @option
-@ifxml
-@unmacro command
-@rmacro command{TEXT}
-@rawxml{<emph><command>}\TEXT\@rawxml{</command></emph>}
-@end rmacro
-@unmacro option
-@rmacro option{TEXT}
-@rawxml{<emph><option>}\TEXT\@rawxml{</option></emph>}
-@end rmacro
-@end ifxml
-
 @c --- common names ---
 @rmacro beast
 @emph{BEAST}

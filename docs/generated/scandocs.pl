@@ -11,7 +11,6 @@ use POSIX "strftime";
 
 my $pname = "Foo-Manual";
 my $pblurb = "Official Foo Manual";
-my $package = "FooFactory";
 
 my @seealso = ();
 
@@ -31,7 +30,6 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
     last if /^--$/;
     if (/^--name$/) { $pname = shift; }
     elsif (/^--blurb$/) { $pblurb = shift; }
-    elsif (/^--package$/) { $package = shift; }
     elsif (/^--seealso$/) { push @seealso, shift; }
 }
 
@@ -274,8 +272,6 @@ my @dups = ();
 my $tname = lc($pname);
 $tname =~ tr/A-Za-z0-9-/_/c;
 
-# \@settitle $pname - $pblurb - $package
-
 print <<END_HEADER;
 \\input texinfo
 \@c %**start of header
@@ -285,7 +281,7 @@ print <<END_HEADER;
 
 \@include texiutils.texi
 
-\@docpackage{$package}
+\@docpackage{BEAST-\@value{BST_VERSION}}
 \@docfont{tech}
 
 \@unnumbered NAME

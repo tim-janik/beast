@@ -5,39 +5,37 @@
 @c %**end of header
 
 @include texiutils.texi
-@include version.texi
 
 @docpackage{BEAST-@value{BST_VERSION}}
-@docfont{tech}
 
 @unnumbered NAME
-BSE Plugin Generator - Code Generator for BSE Plugins
+BSE Plugin Generator - Code Generator for @bse Plugins
 
 @unnumbered SYNOPSIS
-	@emph{bse-plugin-generator} [@emph{options}] <@emph{plugin.idl}>
+	@command{bse-plugin-generator} [@var{options}] <@var{plugin.idl}>
 
 @unnumbered DESCRIPTION
 
-	@emph{bse-plugin-generator} generates glue code for BSE plugins from
-	BSE interface definition language files.
+	@command{bse-plugin-generator} generates glue code for @bse plugins from
+	@bse interface definition language files.
 
 @unnumbered OPTIONS
 
-@table @samp
+@table @option
 @item -h, ---help
-print usage information
+	print usage information
 
-@item -I <directory>
-add this directory to the include path
+@item -I <@var{DIRECTORY}>
+	add @var{DIRECTORY} to the include path
 
 @item ---version
-print version
+	print version
 
 @item ---print-include-path
-print include path
+	print include path
 
 @item ---nostdinc
-don't use standard include path
+	don't use standard include path
 @end table
 
 @unnumbered SEE ALSO
