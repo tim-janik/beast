@@ -1,3 +1,12 @@
+Sat Jan  1 15:38:43 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am:
+	* Makefile.plugins: Added standardguspatchenvelope.idl.
+
+	* standardguspatchenvelope.idl:
+	* standardguspatchenvelope.cc: The GUS Patch format is a mono format,
+	so we only need a mono input for envelope. Moved to the Misc category.
+
 Fri Dec 31 14:19:21 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.idl:

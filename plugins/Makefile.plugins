@@ -172,4 +172,14 @@ $(srcdir)/standardsaturator.cc: standardsaturator.gen-idl.h
 plugins_built_sources += standardsaturator.gen-idl.h
 plugin_LTLIBRARIES    += standardsaturator.la
 
+##
+## Plugin standardguspatchenvelope
+##
+standardguspatchenvelope_la_SOURCES = standardguspatchenvelope.cc
+standardguspatchenvelope_la_LDFLAGS = -module $(plugin_ldflags)
+standardguspatchenvelope_la_LIBADD  = $(plugin_libs)
+$(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.gen-idl.h
+plugins_built_sources += standardguspatchenvelope.gen-idl.h
+plugin_LTLIBRARIES    += standardguspatchenvelope.la
+
 ## Generated data ends here

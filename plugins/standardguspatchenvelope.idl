@@ -25,7 +25,7 @@ class GusPatchEnvelope : Effect {
   // Info    icon        = "icons/noise.png";
   Info    authors     = "Stefan Westerfeld";
   Info    license     = _("GNU Lesser General Public License");
-  Info    category    = _("/Audio Sources/StandardGusPatchEnvelope");
+  Info    category    = _("/Misc/StandardGusPatchEnvelope");
   Info    blurb       = _("StandardGusPatchEnvelope is an Envelope for GUS Patches\n\n"
                           "GUS Patches contain different volume settings and tremolo "
 			  "settings for different notes, and the envelopes are of a non-standard "
@@ -42,10 +42,8 @@ class GusPatchEnvelope : Effect {
   IStream frequency      = (_("Frequency"),    _("Frequency Input"));
   IStream gate_in        = (_("Gate In"),      _("Gate input (activates/deactivates envelope)"));
   IStream retrigger_in   = (_("Retrigger In"), _("Retrigger input (raising edge retriggers envelope)"));
-  IStream audio_in1      = (_("Audio In1"),    _("Audio input 1"));
-  IStream audio_gate1    = (_("Audio Gate1"),  _("Gate Output of the first channel of the patch"));
-  IStream audio_in2      = (_("Audio In2"),    _("Audio input 2"));
-  IStream audio_gate2    = (_("Audio Gate2"),  _("Gate Output of the second channel of the patch"));
+  IStream audio_in       = (_("Audio In"),     _("Audio Input of the WaveOsc playing the patch"));
+  IStream audio_gate     = (_("Audio Gate"),   _("Gate Output of the WaveOsc playing the patch"));
 
   // outputs
   OStream audio_out1     = (_("Audio Out1"),   _("Envelope audio output 1 (left output signal)"));

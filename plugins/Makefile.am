@@ -22,6 +22,7 @@ plugin_idl_files = $(strip		\
 	bsecontribsampleandhold.idl	\
 	bsenoise.idl			\
 	standardsaturator.idl		\
+	standardguspatchenvelope.idl	\
 )
 EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files

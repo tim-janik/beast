@@ -51,11 +51,10 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
       /* optimize me: we need 4 cases */
       if (ostream (OCHANNEL_AUDIO_OUT1).connected || ostream (OCHANNEL_AUDIO_OUT2).connected)
         {
-          if (istream (ICHANNEL_AUDIO_IN1).connected || istream (ICHANNEL_AUDIO_IN2).connected)
+          if (istream (ICHANNEL_AUDIO_IN).connected)
             {
 	      const gfloat *gate = istream (ICHANNEL_GATE_IN).values;
-              const gfloat *in1 = istream (ICHANNEL_AUDIO_IN1).values;
-              const gfloat *in2 = istream (ICHANNEL_AUDIO_IN2).values;
+              const gfloat *in = istream (ICHANNEL_AUDIO_IN).values;
 	      gfloat *out1 = ostream (OCHANNEL_AUDIO_OUT1).values, *bound = out1 + n_values;
 	      gfloat *out2 = ostream (OCHANNEL_AUDIO_OUT2).values;
 	      gfloat *done = ostream (OCHANNEL_DONE_OUT).values;
@@ -72,8 +71,8 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 		  else
 		    envelope_value = max<gfloat> (envelope_value - envelope_incr, 0.0);
 
-		  *out1++ = *in1++ * envelope_value;
-		  *out2++ = *in2++ * envelope_value;
+		  *out1++ = *in++ * envelope_value;
+		  *out2++ = *in++ * envelope_value;
 
 		  *done++ = (!gate_active && envelope_value < epsilon) ? 1.0 : 0.0;
 		}
