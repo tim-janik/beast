@@ -813,7 +813,7 @@ bse_storage_put_item_link (BseStorage *self,
     {
       bse_storage_puts (self, SFI_SERIAL_NULL_TOKEN);
     }
-  else          /* ordiniary object link within a project or other container */
+  else          /* ordinary object link within a project or other container */
     {
       BseItem *tmp, *common_ancestor;
       guint pbackup = 0;

@@ -1,3 +1,10 @@
+Sun Aug 29 12:49:36 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c: made parent's BseSubSynth::snet a private property that's
+	ignored by storage and GUI.
+
+	* bsesong.c: save loop setup.
+
 Sun Aug 29 04:19:57 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c (bse_bus_get_stack): ensure the summation module gets build.

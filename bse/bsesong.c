@@ -753,17 +753,17 @@ bse_song_class_init (BseSongClass *class)
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
-					      FALSE, SFI_PARAM_READWRITE ":skip-undo"));
+					      FALSE, SFI_PARAM_STORAGE ":skip-default:skip-undo"));
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_LEFT,
 			      sfi_pspec_int ("loop_left", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_READWRITE ":skip-undo"));
+					     SFI_PARAM_STORAGE ":skip-default:skip-undo"));
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_RIGHT,
 			      sfi_pspec_int ("loop_right", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
-					     SFI_PARAM_READWRITE ":skip-undo"));
+					     SFI_PARAM_STORAGE ":skip-default:skip-undo"));
   bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_TICK_POINTER,
 			      sfi_pspec_int ("tick_pointer", NULL, NULL,

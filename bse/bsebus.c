@@ -21,6 +21,7 @@
 #include "bsetrack.h"
 #include "bsesong.h"
 #include "bseengine.h"
+#include "bsecsynth.h"
 #include "bsesubiport.h"
 #include "bsesuboport.h"
 #include "bseproject.h"
@@ -31,6 +32,7 @@ enum
 {
   PROP_0,
   PROP_INPUTS,
+  PROP_SNET,
   PROP_LEFT_VOLUME_dB,
   PROP_RIGHT_VOLUME_dB,
   PROP_MASTER_OUTPUT,
@@ -115,6 +117,8 @@ bse_bus_get_candidates (BseItem               *item,
       while (ring)
         bse_item_seq_remove (pc->items, sfi_ring_pop_head (&ring));
       break;
+    case PROP_SNET:
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -165,6 +169,9 @@ bse_bus_set_property (GObject      *object,
       self->inputs = sfi_ring_reorder (inputs, saved_inputs, sfi_compare_pointers, NULL);
       sfi_ring_free (inputs);
       sfi_ring_free (saved_inputs);
+      break;
+    case PROP_SNET:
+      g_object_set_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
     case PROP_LEFT_VOLUME_dB:
       db = sfi_value_get_real (value);
@@ -227,6 +234,9 @@ bse_bus_get_property (GObject    *object,
       while (ring)
         bse_item_seq_append (iseq, sfi_ring_pop_head (&ring));
       g_value_take_boxed (value, iseq);
+      break;
+    case PROP_SNET:
+      g_object_get_property (G_OBJECT (self), "BseSubSynth::snet", value);
       break;
     case PROP_LEFT_VOLUME_dB:
       sfi_value_set_real (value, bse_db_from_factor (self->left_volume, BSE_MIN_VOLUME_dB));
@@ -339,7 +349,7 @@ bse_bus_get_stack (BseBus        *self,
                     NULL);
       bse_source_must_set_input (vout, 0, self->bmodule, 0);
       bse_source_must_set_input (vout, 1, self->bmodule, 1);
-      g_object_set (self, "snet", snet, NULL); /* no undo */
+      g_object_set (self, "BseSubSynth::snet", snet, NULL); /* no undo */
       /* connect empty effect stack */
       bse_source_must_set_input (self->bmodule, 0, self->vin, 0);
       bse_source_must_set_input (self->bmodule, 1, self->vin, 1);
@@ -503,6 +513,7 @@ bse_bus_class_init (BseBusClass *class)
                               PROP_INPUTS,
                               bse_param_spec_boxed ("inputs", _("Input Signals"), _("Synthesis signals used as bus input"),
                                                     BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, NULL, PROP_SNET, bse_param_spec_object ("snet", NULL, NULL, BSE_TYPE_CSYNTH, SFI_PARAM_READWRITE ":skip-undo"));
   bse_object_class_add_param (object_class, _("Internals"),
 			      PROP_MASTER_OUTPUT,
 			      sfi_pspec_bool ("master-output", _("Master Output"), NULL,
