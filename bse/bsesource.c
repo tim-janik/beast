@@ -474,13 +474,18 @@ bse_source_set_automation_property (BseSource        *source,
                                     guint             midi_channel,
                                     BseMidiSignalType signal_type)
 {
+  g_assert (BSE_MIDI_CONTROL_NONE          == 0 &&
+            BSE_MIDI_CONTROL_CONTINUOUS_0  == BSE_MIDI_SIGNAL_CONTINUOUS_0 &&
+            BSE_MIDI_CONTROL_CONTINUOUS_31 == BSE_MIDI_SIGNAL_CONTINUOUS_31 &&
+            BSE_MIDI_CONTROL_0             == BSE_MIDI_SIGNAL_CONTROL_0 &&
+            BSE_MIDI_CONTROL_127           == BSE_MIDI_SIGNAL_CONTROL_127);
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (prop_name != NULL, BSE_ERROR_INTERNAL);
   if (BSE_SOURCE_PREPARED (source))
     return BSE_ERROR_SOURCE_BUSY;
-  if (signal_type &&
-      (signal_type < BSE_MIDI_SIGNAL_CONTINUOUS_0 || signal_type > BSE_MIDI_SIGNAL_CONTINUOUS_31) &&
-      (signal_type < BSE_MIDI_SIGNAL_CONTROL_0 || signal_type > BSE_MIDI_SIGNAL_CONTROL_127))
+  if (signal_type != BSE_MIDI_CONTROL_NONE &&
+      (signal_type < BSE_MIDI_CONTROL_CONTINUOUS_0 || signal_type > BSE_MIDI_CONTROL_CONTINUOUS_31) &&
+      (signal_type < BSE_MIDI_CONTROL_0 || signal_type > BSE_MIDI_CONTROL_127))
     return BSE_ERROR_INVALID_MIDI_CONTROL;
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);

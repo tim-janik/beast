@@ -1,3 +1,21 @@
+Tue Sep 14 19:06:12 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesource.proc:
+	* bsesource.[hc]: switched automation API over to BseMidiControlType.
+
+	* bsecore.idl: added i18n markup. added MidiControlType, which 
+	duplicates the portions of MidiSignalType that are usable by automation.
+
+	* bsecxxplugin.h: provide enum value initialization funciton, instead
+	of initializing from static constructor (and calling i18n code prema-
+	turely).
+
+	* bseexports.h (BseExportNodeEnum): offer an enum value list 
+	initialization 	function instead of a pointer to already initialized
+	enums values.
+
+	* bseplugin.c: call enum value list initializer.
+
 Tue Sep 14 13:42:11 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.cc: cleanup control handler if the last module is

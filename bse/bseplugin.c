@@ -294,7 +294,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
             break;
           case BSE_EXPORT_NODE_ENUM:
             enode = (BseExportNodeEnum*) node;
-            g_enum_complete_type_info (type, type_info, enode->values);
+            g_enum_complete_type_info (type, type_info, enode->get_values());
             break;
           case BSE_EXPORT_NODE_RECORD:
           case BSE_EXPORT_NODE_SEQUENCE:

@@ -77,14 +77,21 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
     static BseExportNodeEnum enode = {                                  \
       { NULL, BSE_EXPORT_NODE_ENUM, EnumName, },                        \
     };                                                                  \
-    static GEnumValue values[N + 1];                                    \
-    if (!enode.values) {                                                \
-      GEnumValue *v = values;                                           \
-      ICode; /* initializes values via *v++ = ...; */                   \
-      g_assert (v == values + N);                                       \
-      *v++ = ::Bse::EnumValue (0, 0, 0); /* NULL termination */         \
-      enode.values = values;                                            \
-    }                                                                   \
+    struct Sub {                                                        \
+      static GEnumValue* get_values (void)                              \
+      {                                                                 \
+        static GEnumValue values[N + 1];                                \
+        if (!values[0].value_name) {                                    \
+          GEnumValue *v = values;                                       \
+          ICode; /* initializes values via *v++ = ...; */               \
+          g_assert (v == values + N);                                   \
+          *v++ = ::Bse::EnumValue (0, 0, 0); /* NULL termination */     \
+        }                                                               \
+        return values;                                                  \
+      }                                                                 \
+    };                                                                  \
+    if (!enode.get_values)                                              \
+      enode.get_values = Sub::get_values;                               \
     return &enode.node;                                                 \
   }                                                                     \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__3##EnumType;

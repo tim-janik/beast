@@ -712,7 +712,7 @@ METHOD (BseSource, set-automation) {
   IN    = sfi_pspec_int ("midi_channel", _("MIDI Channel"), _("The MIDI Channel from which automation events should be received, 0 designates the default MIDI channel"),
                          0, 0, BSE_MIDI_MAX_CHANNELS, 1, SFI_PARAM_STANDARD ":scale:unprepared");
   IN    = bse_param_spec_genum ("control_type", _("Control Type"), _("The type of control events used for automation"),
-                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_CONTINUOUS_16, SFI_PARAM_STANDARD);
+                                BSE_TYPE_MIDI_CONTROL_TYPE, BSE_MIDI_CONTROL_CONTINUOUS_16, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL, BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -782,7 +782,7 @@ METHOD (BseSource, get-automation-control) {
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("property_name", NULL, "Item property name",
                             NULL, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_genum ("control_type", NULL, NULL, BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_CONTINUOUS_16, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_genum ("control_type", NULL, NULL, BSE_TYPE_MIDI_CONTROL_TYPE, BSE_MIDI_CONTROL_CONTINUOUS_16, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
