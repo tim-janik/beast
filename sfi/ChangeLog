@@ -1,3 +1,8 @@
+Mon Feb 23 04:04:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Bugfix: It is now possible to use fully qualified
+	constant names (such as Bse::STANDARD) within param specs.
+
 Mon Feb 23 01:27:25 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-clientc.* sfidl-hostc.* sfidl-cbase.*: Code cleanup of the

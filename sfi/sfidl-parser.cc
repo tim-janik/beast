@@ -1188,6 +1188,56 @@ Parser::parseStream (Stream&      stream,
   return G_TOKEN_NONE;
 }
 
+/* like g_scanner_get_token, but accepts ':' within identifiers */
+GTokenType scanner_get_next_token_with_colon_identifiers (GScanner *scanner)
+{
+  char *cset_identifier_first_orig = scanner->config->cset_identifier_first;
+  char *cset_identifier_nth_orig   = scanner->config->cset_identifier_nth;
+
+  string identifier_first_with_colon = cset_identifier_first_orig + string (":");
+  string identifier_nth_with_colon = cset_identifier_nth_orig + string (":");
+
+  scanner->config->cset_identifier_first = const_cast<char *>(identifier_first_with_colon.c_str());
+  scanner->config->cset_identifier_nth   = const_cast<char *>(identifier_nth_with_colon.c_str());
+
+  GTokenType token = g_scanner_get_next_token (scanner);
+
+  scanner->config->cset_identifier_first = cset_identifier_first_orig;
+  scanner->config->cset_identifier_nth   = cset_identifier_nth_orig;
+
+  return token;
+}
+
+/* returns true for C++ style identifiers (Foo::BAR) - only the colons are checked, not individual chars */
+bool isCxxTypeName (const string& str)
+{
+  enum { valid, colon1, colon2, invalid } state = valid;
+
+  for (string::const_iterator i = str.begin(); i != str.end(); i++)
+    {
+      if (state == valid)
+	{
+	  if (*i == ':')
+	    state = colon1;
+	}
+      else if (state == colon1)
+	{
+	  if (*i == ':')
+	    state = colon2;
+	  else
+	    state = invalid;
+	}
+      else if (state == colon2)
+	{
+	  if (*i == ':')
+	    state = invalid;
+	  else
+	    state = valid;
+	}
+    }
+  return (state == valid) && (str.size() != 0);
+}
+
 GTokenType Parser::parseParamHints (Param &def)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
@@ -1195,14 +1245,14 @@ GTokenType Parser::parseParamHints (Param &def)
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.pspec = scanner->value.v_identifier;
     }
-  
+
   parse_or_return ('(');
 
   int bracelevel = 1;
   string args;
   while (!g_scanner_eof (scanner) && bracelevel > 0)
     {
-      GTokenType t = g_scanner_get_next_token (scanner);
+      GTokenType t = scanner_get_next_token_with_colon_identifiers (scanner);
       gchar *token_as_string = 0, *x = 0;
 
       if(int(t) > 0 && int(t) <= 255)
@@ -1226,13 +1276,17 @@ GTokenType Parser::parseParamHints (Param &def)
 	  break;
 	case G_TOKEN_IDENTIFIER:
           {
-            vector<Constant>::iterator ci;
-            string coname = qualifySymbol (scanner->value.v_identifier);
-            /* FIXME: there should be a generic const_to_string() function */
-            for (ci = constants.begin(); ci != constants.end(); ci++)
-              if (ci->name == coname)
-                break;
-            // else g_printerr("lookup failed: %s (%s)\n", scanner->value.v_identifier, ci->name.c_str());
+	    vector<Constant>::iterator ci = constants.end();
+	    if (isCxxTypeName (scanner->value.v_identifier))
+	      {
+		string coname = qualifySymbol (scanner->value.v_identifier);
+
+		/* FIXME: there should be a generic const_to_string() function */
+		for (ci = constants.begin(); ci != constants.end(); ci++)
+		  if (ci->name == coname)
+		    break;
+	      }
+
             if (ci == constants.end())
               token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
             else switch (ci->type)
@@ -1724,21 +1778,22 @@ string Parser::defineSymbol (const string& name)
   return sym->fullName();
 }
 
-static list<string> symbolToList(string symbol)
+list<string> symbolToList (const string& symbol)
 {
   list<string> result;
   string current;
+
+  g_return_val_if_fail (isCxxTypeName (symbol), result);
   
-  string::iterator si;
-  for(si = symbol.begin(); si != symbol.end(); si++)
+  for (string::const_iterator si = symbol.begin(); si != symbol.end(); si++)
     {
-      if(*si != ':')
+      if (*si != ':')
 	{
 	  current += *si;
 	}
       else
 	{
-	  if(current != "")
+	  if (current != "")
 	    result.push_back(current);
 	  
 	  current = "";
