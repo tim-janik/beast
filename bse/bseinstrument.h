@@ -64,8 +64,8 @@ struct _BseInstrument
   BseInstrumentType  type;
   
   /* sample specific fields */
-  guint		 interpolation : 1;
-  guint		 polyphony : 1;
+  guint		  polyphony : 1;
+  BseInterpolType interpolation : 8;
 
   BseSource     *input; /* for sample and sinstrument */
 

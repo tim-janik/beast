@@ -73,23 +73,29 @@ mixer_loop_max_iterations (gfloat rate_pos	/* << 16 */,
 #undef	IF_STEREO
 #undef	IF_MONO
 #undef	IF_DELTA_RATE
-#undef	IF_INTERPOLATION
-#if DO_STEREO
-#  define IF_STEREO(expr)			expr
-#  define IF_MONO(expr)				/* expr */
+#undef	IF_IPOL_LINEAR
+#undef	IF_IPOL_CUBIC
+#undef	MIX_WITH_RATE
+#undef	MIX_WITH_IPOL
+#define	MIX_WITH_RATE	(MIX_CONST_RATE | MIX_DELTA_RATE)
+#define	MIX_WITH_IPOL	(MIX_IPOL_LINEAR | MIX_IPOL_CUBIC)
+#undef	IPOL_SHIFT_BITS
+#if MIX_IPOL_LINEAR
+#  define IPOL_SHIFT_BITS	16
+#elif MIX_IPOL_CUBIC
+#  define IPOL_SHIFT_BITS	CUBIC_IPOL_SBITS
+#endif
+#if MIX_STEREO
+#  define IF_STEREO(expr)		expr
+#  define IF_MONO(expr)			/* expr */
 #else /* mono */
-#  define IF_STEREO(expr)			/* expr */
-#  define IF_MONO(expr)				expr
+#  define IF_STEREO(expr)		/* expr */
+#  define IF_MONO(expr)			expr
 #endif
-#if DO_RATE_D
-#  define IF_DELTA_RATE(expr)			expr
+#if MIX_DELTA_RATE
+#  define IF_DELTA_RATE(expr)		expr
 #else
-#  define IF_DELTA_RATE(expr)			/* expr */
-#endif
-#if DO_INTERPOLATION
-#  define IF_INTERPOLATION(expr)		expr
-#else
-#  define IF_INTERPOLATION(expr)		/* expr */
+#  define IF_DELTA_RATE(expr)		/* expr */
 #endif
 
 
@@ -101,13 +107,13 @@ MIXER_FUNCTION_ID (BseMixBuffer *mix_buffer,
 		   BseMixRate   *rate)
 {
   BseMixValue *buffer = mix_buffer->buffer, *buffer_bound = mix_buffer->bound;
-#if DO_VOLUME1_C	/* mono volume, constant */
+#if MIX_VOLUME1_C	/* mono volume, constant */
   gfloat m_volume = volume->left;
-#elif DO_VOLUME1_D	/* mono volume, delta slide */
+#elif MIX_VOLUME1_D	/* mono volume, delta slide */
   gfloat m_volume = volume->left, m_volume_delta = volume->left_delta;
-#elif DO_VOLUME2_C	/* stereo volume, constant */
+#elif MIX_VOLUME2_C	/* stereo volume, constant */
   gfloat l_volume = volume->left, r_volume = volume->right;
-#elif DO_VOLUME2_D	/* stereo volume, delta slide */
+#elif MIX_VOLUME2_D	/* stereo volume, delta slide */
   gfloat l_volume = volume->left, r_volume = volume->right;
   gfloat l_volume_delta = volume->left_delta, r_volume_delta = volume->right_delta;
 #endif
@@ -115,10 +121,9 @@ MIXER_FUNCTION_ID (BseMixBuffer *mix_buffer,
   do /* restart mixing cycles for src buffers with loops */
     {
       BseMixValue *run_buffer_start = buffer, *bound = buffer;
-      gint rate_frac = rate->frac, rate_step = rate->step, rate_delta = rate->delta;
+      gint32 rate_frac = rate->frac, rate_step = rate->step, rate_delta = rate->delta;
       BseSampleValue *l_sample = source->cur_pos;
       gint i = source->loop_count ? source->loop_bound - l_sample : source->bound - l_sample;
-      IF_INTERPOLATION (gint half_step = rate_step >> 16);
       
       IF_STEREO (i >>= 1);
       i = mixer_loop_max_iterations (rate_frac, rate_step, rate_delta, i);
@@ -126,77 +131,84 @@ MIXER_FUNCTION_ID (BseMixBuffer *mix_buffer,
 	bound += MIN (buffer_bound - buffer, MIN (i, source->max_run_values) << 1);
       else
 	bound += MIN (buffer_bound - buffer, i << 1);
-#if DO_STEREO
+#if MIX_STEREO
       rate_frac <<= 1;
       rate_step <<= 1;
       rate_delta <<= 1;
-#else
-      IF_INTERPOLATION (half_step >>= 1);
 #endif
-      do /* inner mixing loop */
+
+      do	/* inner mixing loop */
 	{
 	  register BseMixValue l_value, r_value;
-	  
-#if DO_LINEAR
-	  l_value = *(l_sample++);	IF_STEREO (r_value = *(l_sample++));
-	  IF_MONO (r_value = l_value);
-#else /* DO_RATE_? */
-	  register gint pos_high = rate_frac >> 16;
-	  IF_INTERPOLATION (register gint pos_low);
 
-	  rate_frac &= 0xffff;		IF_INTERPOLATION (pos_low = rate_frac);
-	  rate_frac += rate_step;
-	  IF_INTERPOLATION (IF_DELTA_RATE (half_step = rate_step >> 17));
+#if MIX_WITH_RATE
+	  register guint pos_high = rate_frac >> 16;
+	  register guint pos_low = rate_frac & 0xffff;
+
+	  rate_frac = pos_low + rate_step;
 	  IF_DELTA_RATE (rate_step += rate_delta);
-#  if DO_INTERPOLATION
+#  if MIX_IPOL_CUBIC
 	  {
-	    register BseMixValue l_value_prev, l_value_next;
-#    if DO_STEREO
-	    register BseMixValue r_value_prev, r_value_next;
-#    endif
-	    
-	    l_value_prev = *l_sample;
-	    l_value_next = *(l_sample + half_step);
-#    if DO_STEREO
-	    r_value_prev = *(l_sample + 1);
-	    r_value_next = *(l_sample + 1 + half_step);
-#    endif
-	    l_sample += pos_high;
-	    l_value = l_value_prev * (0x00010000 - pos_low) + l_value_next * pos_low;
-	    IF_STEREO (r_value = r_value_prev * (0x00010000 - pos_low) + r_value_next * pos_low);
-	    IF_MONO (r_value = l_value);
+	    register guint cindex = pos_low >> (16 - CUBIC_IPOL_CBITS);
+	    register gint32 W3 = bse_cubic_ipol_W3[cindex], W2 = bse_cubic_ipol_W2[cindex];
+	    register gint32 W1 = bse_cubic_ipol_W1[cindex], W0 = bse_cubic_ipol_W0[cindex];
+#    if MIX_STEREO
+	    register BseMixValue l_V0 = l_sample[-2], l_V1 = l_sample[0], l_V2 = l_sample[2], l_V3 = l_sample[4];
+	    register BseMixValue r_V0 = l_sample[-1], r_V1 = l_sample[1], r_V2 = l_sample[3], r_V3 = l_sample[5];
+
+	    r_value = W3 * r_V3 + W2 * r_V2 + W1 * r_V1 + W0 * r_V0;
+#    else /* mono */
+	    register BseMixValue l_V0 = l_sample[-1], l_V1 = l_sample[0], l_V2 = l_sample[1], l_V3 = l_sample[2];
+#    endif /* mono */
+	    l_value = W3 * l_V3 + W2 * l_V2 + W1 * l_V1 + W0 * l_V0;
 	  }
-#  else /* !DO_INTERPOLATION */
-	  l_value = *l_sample;
-	  IF_STEREO (r_value = *(l_sample + 1));	IF_MONO (r_value = l_value);
+#  elif MIX_IPOL_LINEAR
+	  {
+#    if MIX_STEREO
+	    register BseMixValue l_V1 = l_sample[0], r_V1 = l_sample[1], l_V2 = l_sample[2], r_V2 = l_sample[3];
+
+	    r_value = (r_V1 << 16) + (r_V2 - r_V1) * pos_low;
+#    else /* mono */
+	    register BseMixValue l_V1 = l_sample[0], l_V2 = l_sample[1];
+#    endif /* mono */
+	    l_value = (l_V1 << 16) + (l_V2 - l_V1) * pos_low;
+	  }
+#  else /* no interpolation */
+	  l_value = l_sample[0];
+	  IF_STEREO (r_value = l_sample[1]);
+#  endif /* no interpolation */
+	  IF_MONO (r_value = l_value);
 	  l_sample += pos_high;
-#  endif
-#endif /* DO_RATE_? */
-	  
-#if DO_VOLUME1_C
+#else /* not MIX_WITH_RATE */
+	  l_value = *(l_sample++);
+	  IF_STEREO (r_value = *(l_sample++));
+	  IF_MONO (r_value = l_value);
+#endif /* not MIX_WITH_RATE */
+
+
+#if MIX_VOLUME1_C	/* volume multiplications */
+	  l_value *= m_volume; 
+	  IF_STEREO (r_value *= m_volume);
+	  IF_MONO (r_value = l_value);
+#elif MIX_VOLUME1_D
 	  l_value *= m_volume;
-	  IF_STEREO (r_value *= m_volume);		IF_MONO (r_value = l_value);
-#elif DO_VOLUME1_D
-	  l_value *= m_volume;
-	  IF_STEREO (r_value *= m_volume);		IF_MONO (r_value = l_value);
+	  IF_STEREO (r_value *= m_volume);
+	  IF_MONO (r_value = l_value);
 	  m_volume += m_volume_delta;
-#elif DO_VOLUME2_C
+#elif MIX_VOLUME2_C
 	  l_value *= l_volume;
 	  r_value *= r_volume;
-#elif DO_VOLUME2_D
+#elif MIX_VOLUME2_D
 	  l_value *= l_volume;
 	  r_value *= r_volume;
 	  l_volume += l_volume_delta;
 	  r_volume += r_volume_delta;
-#endif
+#endif /* MIX_VOLUME2_D */
 	  
-	  /* post interpolation correction
-	   * (shift *after* the volume multiplication)
-	   */
-#if DO_INTERPOLATION
-	  l_value >>= 16;
-#  if DO_STEREO || DO_VOLUME2
-	  r_value >>= 16;
+#if MIX_WITH_IPOL	/* post interpolation correction / 65536 (shift *after* the volume multiplication) */
+	  l_value >>= IPOL_SHIFT_BITS;
+#  if MIX_STEREO || MIX_VOLUME2
+	  r_value >>= IPOL_SHIFT_BITS;
 #  else
 	  r_value = l_value;
 #  endif
@@ -207,10 +219,10 @@ MIXER_FUNCTION_ID (BseMixBuffer *mix_buffer,
 	}
       while (buffer < bound);
 
-#if DO_VOLUME1_D
+#if MIX_VOLUME1_D
       volume->left = m_volume;
       volume->right = m_volume;
-#elif DO_VOLUME2_D
+#elif MIX_VOLUME2_D
       volume->left = l_volume;
       volume->right = r_volume;
 #endif

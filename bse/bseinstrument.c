@@ -147,8 +147,9 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_INTERPOLATION,
-			      b_param_spec_bool ("interpolation", "Use interpolation?", NULL /* FIXME */,
-						 TRUE,
+			      b_param_spec_enum ("interpolation", "Interpolation", NULL /* FIXME */,
+						 BSE_TYPE_INTERPOL_TYPE,
+						 BSE_INTERPOL_CUBIC,
 						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_POLYPHONY,
@@ -409,7 +410,7 @@ bse_instrument_set_param (BseInstrument *instrument,
       bse_object_param_changed (BSE_OBJECT (instrument), "sample");
       break;
     case PARAM_INTERPOLATION:
-      instrument->interpolation = b_value_get_bool (value);
+      instrument->interpolation = b_value_get_enum (value);
       break;
     case PARAM_POLYPHONY:
       instrument->polyphony = b_value_get_bool (value);
@@ -573,7 +574,7 @@ bse_instrument_get_param (BseInstrument *instrument,
 	g_value_set_object (value, NULL);
       break;
     case PARAM_INTERPOLATION:
-      b_value_set_bool (value, instrument->interpolation);
+      b_value_set_enum (value, instrument->interpolation);
       break;
     case PARAM_POLYPHONY:
       b_value_set_bool (value, instrument->polyphony);

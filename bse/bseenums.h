@@ -37,6 +37,12 @@ typedef enum
 #define	BSE_BYTE_ORDER	G_BYTE_ORDER
 typedef enum
 {
+  BSE_INTERPOL_NONE,		/*< nick=None >*/
+  BSE_INTERPOL_LINEAR,		/*< nick=Linear >*/
+  BSE_INTERPOL_CUBIC		/*< nick=Cubic >*/
+} BseInterpolType;
+typedef enum
+{
   BSE_LOOP_NONE,
   BSE_LOOP_PATTERN,
   BSE_LOOP_PATTERN_ROWS,

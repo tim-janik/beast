@@ -56,7 +56,7 @@ struct _BseSample
   
   guint		 n_tracks;
   guint		 rec_freq;
-  
+
   BseMunk	 munks[BSE_MAX_SAMPLE_MUNKS];
 };
 struct _BseSampleClass

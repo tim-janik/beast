@@ -47,6 +47,7 @@ struct _BseMixSource
   BseSampleValue *loop_bound;
   /* run expiration */
   gint            max_run_values; /* post-adjusted */
+  guint		  block_padding;  /* n_values pre and post padding */
   guint           run_limit : 1;
 };
 struct _BseMixVolume
@@ -58,7 +59,7 @@ struct _BseMixVolume
 };
 struct _BseMixRate
 {
-  guint           interpolation : 1;
+  guint           interpolation : 8;
   gint            frac;		/* post-adjusted */
   gint            step;		/* post-adjusted */
   gint            delta;	/* stepping delta */

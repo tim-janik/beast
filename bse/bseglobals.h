@@ -102,6 +102,7 @@ extern "C" {
 #define	BSE_MAX_SEQ_ID			(65535)
 #define	BSE_BBUFFER_SIZE		(128)
 #define BSE_DFL_OCHANNEL_ID		(1)
+#define	BSE_DFL_BIN_DATA_PADDING	(16 * sizeof (BseSampleValue))
 
 
 /* --- BseSource limits --- */

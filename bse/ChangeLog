@@ -1,3 +1,36 @@
+Thu May 25 02:56:18 2000  Tim Janik  <timj@gtk.org>
+
+	* bsebuffermixer.[hc]: 
+	* bsebuffermixercore.c: mixer function cleanup, implemented cubic
+	interpolation.
+
+Wed May 24 06:40:11 2000  Tim Janik  <timj@gtk.org>
+
+	* bsebuffermixercore.c: squeezed half_step thinko in linear
+	interpolation. optimized linear interpolation by trading a
+	multiplication for a bitshift.
+
+	* bsevoice.c (bse_voice_set_note): set BseMixSource's block_padding
+	field from the munk's bin_data object.
+
+	* bsebuffermixer.[hc] (struct _BseMixVolume): added block_padding field,
+	since certain interpolation can only be run with sufficient start and
+	end padding on the sample data.
+
+	* bsestorage.c (bse_storage_create_rblock): set bin data padding on
+	newly created bin_data objects to BSE_DFL_BIN_DATA_PADDING.
+
+	* bsebindata.[hc]: support zero padding at start and end of data block
+	by a certain amount of bytes.
+	(bse_bin_data_set_byte_padding): set padding if no data was
+	allocated yet.
+
+Tue May 23 18:17:24 2000  Tim Janik  <timj@gtk.org>
+
+	* bseenums.h (enum): new enum BseInterpolType.
+
+	* bseinstrument.[hc]: made the interpoltion field an enum.
+
 Fri Apr 28 21:27:16 2000  Tim Janik  <timj@gtk.org>
 
 	* bseobject.c (bse_object_add_notifier_i): list all valid characters in

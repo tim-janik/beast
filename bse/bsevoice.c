@@ -275,6 +275,7 @@ bse_voice_activate (BseVoice      *voice,
       voice->source.loop_bound = NULL;
       voice->source.run_limit = FALSE;
       voice->source.max_run_values = 0;
+      voice->source.block_padding = 0;
       break;
     case BSE_INSTRUMENT_SYNTH:
       sinstrument = BSE_SINSTRUMENT (instrument->input);
@@ -292,6 +293,7 @@ bse_voice_activate (BseVoice      *voice,
       voice->source.loop_bound = NULL;
       voice->source.run_limit = FALSE;
       voice->source.max_run_values = 0;
+      voice->source.block_padding = 0;
       break;
     default:
       g_assert_not_reached ();
@@ -336,6 +338,7 @@ bse_voice_set_note (BseVoice *voice,
 	  voice->input.sample.rate.frac = 0;
 	  voice->input.sample.rate.step = 0;
 	  voice->input.sample.rate.delta = 0;
+	  voice->source.block_padding = munk->bin_data->byte_padding / sizeof (voice->source.cur_pos);
 	}
       /* calc new sample rate according to note */
       voice->note = note;

@@ -737,6 +737,7 @@ bse_storage_create_rblock (BseStorage   *storage,
   bin_data = bse_object_new (BSE_TYPE_BIN_DATA,
                              "n-bits", bits_per_value,
                              NULL);
+  bse_bin_data_set_byte_padding (bin_data, BSE_DFL_BIN_DATA_PADDING);
   error = bse_bin_data_set_values_from_fd (bin_data,
                                            fd,
                                            storage->bin_offset + 1 + offset,

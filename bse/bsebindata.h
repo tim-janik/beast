@@ -49,6 +49,7 @@ struct _BseBinData
   guint		 	 n_values;
   guint			 n_bytes;
   guint8		*values;
+  guint			 byte_padding;
 };
 struct _BseBinDataClass
 {
@@ -65,6 +66,8 @@ BseErrorType	bse_bin_data_set_values_from_fd	(BseBinData	*bin_data,
 void		bse_bin_data_init_values	(BseBinData	*bin_data,
 						 guint		 bits_per_value,
 						 guint		 n_values);
+void		bse_bin_data_set_byte_padding	(BseBinData	*bin_data,
+						 guint		 n_bytes);
 
 
 

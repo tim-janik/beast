@@ -86,7 +86,7 @@ bse_bin_data_class_init (BseBinDataClass *class)
   
   gobject_class->set_param = (GObjectSetParamFunc) bse_bin_data_set_param;
   gobject_class->get_param = (GObjectGetParamFunc) bse_bin_data_get_param;
-
+  
   object_class->destroy = bse_bin_data_destroy;
   
   bse_object_class_add_param (object_class, NULL,
@@ -111,6 +111,7 @@ bse_bin_data_init (BseBinData *bin_data)
   bin_data->n_values = 0;
   bin_data->n_bytes = 0;
   bin_data->values = NULL;
+  bin_data->byte_padding = 0;
 }
 
 static void
@@ -173,10 +174,21 @@ bse_bin_data_get_param (BseBinData  *bin_data,
 static void
 bse_bin_data_free_values (BseBinData *bin_data)
 {
-  g_free (bin_data->values);
+  if (bin_data->values)
+    g_free (bin_data->values - bin_data->byte_padding);
   bin_data->values = NULL;
   bin_data->n_values = 0;
   bin_data->n_bytes = 0;
+}
+
+void
+bse_bin_data_set_byte_padding (BseBinData *bin_data,
+			       guint       n_bytes)
+{
+  g_return_if_fail (BSE_IS_BIN_DATA (bin_data));
+  
+  if (!bin_data->values)
+    bin_data->byte_padding = n_bytes;
 }
 
 BseErrorType
@@ -186,63 +198,67 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
 				 guint         n_bytes,
 				 BseEndianType byte_order)
 {
+  guint8 *pad_data;
   glong l;
-
+  
   g_return_val_if_fail (BSE_IS_BIN_DATA (bin_data), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_IS_LOCKED (bin_data), BSE_ERROR_INTERNAL);
-
+  
   bse_bin_data_free_values (bin_data);
   if (!n_bytes)
     return BSE_ERROR_NONE;
-
+  
   g_return_val_if_fail (fd >= 0, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (offset >= 0, BSE_ERROR_INTERNAL);
-
+  
   l = lseek (fd, 0, SEEK_END);
   if (l < 0)
     return BSE_ERROR_FILE_IO;
   if (l < offset + n_bytes)
     return BSE_ERROR_FILE_TOO_SHORT;
-
+  
   if (lseek (fd, offset, SEEK_SET) != offset)
     return BSE_ERROR_FILE_IO;
-
+  
   bin_data->n_values = n_bytes / ((bin_data->bits_per_value + 7) / 8);
   bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
   bse_object_param_changed (BSE_OBJECT (bin_data), "n_bits");
   bse_object_param_changed (BSE_OBJECT (bin_data), "byte_size");
-  bin_data->values = g_new (guint8, bin_data->n_bytes);
-
+  pad_data = g_new (guint8, bin_data->byte_padding + bin_data->n_bytes + bin_data->byte_padding);
+  memset (pad_data, 0, bin_data->byte_padding);
+  memset (pad_data + bin_data->byte_padding + bin_data->n_bytes, 0, bin_data->byte_padding);
+  bin_data->values = pad_data + bin_data->byte_padding;
+  
   do
     {
       l = read (fd, bin_data->values, bin_data->n_bytes);
     }
   while (l < 0 && errno == EINTR);
-
+  
   if (l < bin_data->n_bytes)
     {
       /* FIXME: we could probably do better here */
       bse_bin_data_free_values (bin_data);
-
+      
       return l < 1 ? BSE_ERROR_FILE_IO : BSE_ERROR_FILE_TOO_SHORT;
     }
-
+  
   /* if necessary, convert LE/BE
    */
   if (byte_order != G_BYTE_ORDER && bin_data->bits_per_value > 8)
     {
       guint16 *v16_f, *v16_l; /* first, last */
-
+      
       v16_f = (gpointer) bin_data->values;
       v16_l = v16_f + bin_data->n_values;
-
+      
       while (v16_f < v16_l)
 	{
 	  *v16_f = GUINT16_SWAP_LE_BE (*v16_f);
 	  v16_f++;
 	}
     }
-
+  
   return BSE_ERROR_NONE;
 }
 
@@ -251,15 +267,20 @@ bse_bin_data_init_values (BseBinData *bin_data,
 			  guint       bits_per_value,
 			  guint       n_values)
 {
+  guint8 *pad_data;
+  
   g_return_if_fail (BSE_IS_BIN_DATA (bin_data));
   g_return_if_fail (!BSE_OBJECT_IS_LOCKED (bin_data));
-
+  
   bse_bin_data_free_values (bin_data);
-
+  
   bin_data->bits_per_value = CLAMP (bits_per_value, BSE_MIN_BIT_SIZE, BSE_MIN_BIT_SIZE);
   bin_data->n_values = n_values;
   bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
   bse_object_param_changed (BSE_OBJECT (bin_data), "n_bits");
   bse_object_param_changed (BSE_OBJECT (bin_data), "byte_size");
-  bin_data->values = g_new0 (guint8, bin_data->n_bytes + 32);
+  pad_data = g_new0 (guint8, bin_data->byte_padding + bin_data->n_bytes + bin_data->byte_padding);
+  memset (pad_data, 0, bin_data->byte_padding);
+  memset (pad_data + bin_data->byte_padding + bin_data->n_bytes, 0, bin_data->byte_padding);
+  bin_data->values = pad_data + bin_data->byte_padding;
 }
