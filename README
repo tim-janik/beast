@@ -29,7 +29,7 @@ Gtk+-2.0:
 	ftp://ftp.gtk.org/pub/gtk/v2.0/
 Guile-1.4:
 	http://www.gnu.org/software/guile/guile.html
-Ogg/Vorbis (at least version 1.0rc3):
+Ogg/Vorbis (at least version 1.0):
 	http://www.xiph.org/ogg/vorbis/download/
 MAD (BSE was developed against libmad-0.14.2):
 	http://www.mars.org/home/rob/proj/mpeg/

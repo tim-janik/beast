@@ -133,7 +133,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     if test $ov_tests = 3 ; then
 	OV_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg"
     else
-	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0rc3) or headers])
+	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0) or headers])
     fi
     
     dnl === libmad MPEG decoder check ===

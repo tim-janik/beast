@@ -34,7 +34,7 @@ progs_LDADD = $(strip \
 beast_headers = $(strip \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
-	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstdial.h	\
+	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	\
 	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
 	bstlogadjustment.h	bstitemview.h	bstmarker.h		bstknob.h	\
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
@@ -45,13 +45,13 @@ beast_headers = $(strip \
 	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
 	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
 	bstzoomedwindow.h	glewidgets.h	bsttrackrollctrl.h	bstxframe.h	\
-	bstcatalog.h		bstdefs.h bstmarshal.h \
+	bstcatalog.h		bstdial.h	bstdefs.h bstmarshal.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	bstsnetshell.c	\
-	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstdial.c	\
+	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	\
 	bstfreeradiobutton.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
 	bstlogadjustment.c	bstitemview.c	bstmarker.c		bstknob.c	\
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
@@ -62,7 +62,7 @@ beast_sources = $(strip \
 	bstusermessage.c	bstutils.c	bstwavedialog.c		bstwaveeditor.c	\
 	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
 	bstzoomedwindow.c	glewidgets.c	bsttrackrollctrl.c	bstxframe.c	\
-	bstcatalog.c		$(PROFILE_SOURCE) \
+	bstcatalog.c		bstdial.c	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \

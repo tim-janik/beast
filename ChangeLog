@@ -1,3 +1,13 @@
+Sun Apr 13 22:56:09 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstxxutils.{h|cc}: added a c++ object file so the main
+	program is able to load dynamic c++ plugins (required by gcc 3.2).
+
+	* docs/faq.texi: fixed mime logo reference, adjusted hardware
+	recommendation.
+	
+	* TODO, README: miscellaneous release specific updates.
+
 Tue Apr  8 03:08:49 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (bst_update_can_operate): allow any kind of

@@ -1,7 +1,5 @@
 FIXMES:
-- fix button sensitivity
 - fix gsl wave osc
-- fix BSE mime logo to say BSE instead of BEAST
 - install bsw/* into bse/.
 - remove SFI(signal): spurious unknown signal "release" on proxy (23)
 - remove SFI(signal): spurious unknown signal "io_changed" on proxy (35)

@@ -98,13 +98,13 @@ contents may even be manually edited, as long as the binary
 appendix used to store wave data doesn't get corrupted.
 @*
 The recommended mime type image for @bse files looks like this:
-@image{beast-mime,,,BSE-Mime-Logo,png}
+@image{bse-mime,,,BSE-Mime-Logo,png}
 
 @section What are the minimum hardware requirements for @beast{}?
 
 This depends a lot on how you utilise @beast{}.  If you simply want to
 create synthesis networks or very simple songs, any Pentium II ought to
 suffice. If you want to lay down a few tracks with effects you may need
-something more modern: a Pentium III 500MHz is recommended.
+something more modern like a CPU with 1 GHz or higher core frequency.
 
 @bye

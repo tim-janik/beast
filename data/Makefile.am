@@ -5,6 +5,7 @@
 
 public_images = @STRIP_BEGIN@ \
 	beast-mime.png \
+	bse-mime.png \
 	beast-splash.png \
 @STRIP_END@
 private_images = @STRIP_BEGIN@ \
