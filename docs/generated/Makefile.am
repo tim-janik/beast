@@ -121,9 +121,9 @@ gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
 # generate *.xml from *.texi with makeinfo gnome-index
 %.xml: %.crossfix.xml $(srcdir)/reference-filter.pl index.lst gnome-index.lst
 	$(srcdir)/reference-filter.pl 		\
-		--index index.lst		\
-		--index gnome-index.lst		\
-		$< >$@
+	  --index index.lst			\
+	  --index gnome-index.lst		\
+	  $< >$@
 %.crossfix.xml: %.texi		$(srcdir)/../teximacros.texi $(XMLANTISPACE)
 	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`"	\
 			-I $(srcdir)/.. --xml $< -o -	\

@@ -232,7 +232,7 @@ a.homelink {
   padding-top: 0.4em;
   padding-bottom: 0.2em;
   width: 4em;
-  background-color: #f8f8f8;
+  background-color: #e8e8ff; /* #f8f8f8; */
   background-image: url(images/arrow-left.png);
   background-position: center left;
   background-repeat: repeat-y;
@@ -261,7 +261,8 @@ a {
 
 a:hover {
   text-decoration: underline;
-  color: #005090;
+  background-color: #e8e8ff;
+  /* color: #005090; */
 }
 
 a:visited {
@@ -287,7 +288,7 @@ div.banner {
   background-image: url(images/arrow-right.png);
   background-position: center left;
   background-repeat: repeat-y;
-  background-color: #f8f8f8;
+  background-color: #e8e8ff; /* #f8f8f8; */
   color: inherit;
   margin-bottom: 1em;
   margin-right: 0.5em;
