@@ -758,6 +758,7 @@ beast_show_about_box (void)
     /* translations */
     "Adam Weinberger",
     "Alexandre Prokoudine",
+    "Amanpreet Singh Alam",
     //"Artem Popov",
     "Christian Neumair",
     "Christian Rose",
