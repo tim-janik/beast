@@ -19,11 +19,11 @@
 
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 #include <guile/gh.h>
 #include <bsw/bsw.h>
 #include <bsw/bswglue.h>
 #include "bswscminterp.h"
-#include "bswscmhandle.h"
 #include "../PKG_config.h"
 
 
@@ -45,7 +45,16 @@ int
 main (int   argc,
       char *argv[])
 {
+  const gchar *env_str;
+
   g_thread_init (NULL);
+  env_str = g_getenv ("BSW_SHELL_SLEEP4GDB");
+  if (env_str && atoi (env_str) > 0)
+    {
+      g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
+      g_usleep (2147483647);
+    }
+
   bsw_init (&argc, &argv, NULL);
   shell_parse_args (&argc, &argv);
 
@@ -153,16 +162,14 @@ gh_main (int   argc,
   if (!bsw_scm_wire)
     bsw_scm_enable_server (TRUE);	/* do this before interp_init */
 
-  bsw_scm_interp_init ();
+  bsw_scm_interp_init (bsw_scm_wire);
 
   gh_load (BOILERPLATE_SCM);
 
   if (bsw_scm_wire)
     {
       BSW_SCM_DEFER_INTS ();
-      bsw_scm_handle_set_wire (bsw_scm_wire);
       gh_eval_str (bsw_scm_remote_expr);
-      bsw_scm_handle_set_wire (NULL);
       bsw_scm_wire_died (bsw_scm_wire);
       BSW_SCM_ALLOW_INTS ();
     }

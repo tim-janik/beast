@@ -33,9 +33,8 @@
                     (set! busy-spin (- busy-spin 1))))
 	   ; (display (- 1.0 (/ (* 1.0 niter) total))) (newline)
 	   (if uperc
-	       (bsw-progress (- 1.0 (/ (* 1.0 niter) total)))
-	       (bsw-progress -1)
+	       (bsw-script-progress (- 1.0 (/ (* 1.0 niter) total)))
+	       (bsw-script-progress -1)
 	       ))
     ; final progress mark
-    (bsw-progress 1)))
-
+    (bsw-script-progress 1)))
