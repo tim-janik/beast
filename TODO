@@ -1,4 +1,5 @@
 FIXMES:
+- nuke SFI memblocks, malloc() is good enough
 - update QuickStart to match 0.5 behaviour
 - fix BSE mime logo to say BSE instead of BEAST
 - install bsw/* into bse/.
