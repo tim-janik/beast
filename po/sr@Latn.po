@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-20 06:36+0100\n"
-"PO-Revision-Date: 2004-02-20 06:58+0100\n"
+"POT-Creation-Date: 2004-02-25 18:28+0100\n"
+"PO-Revision-Date: 2004-02-25 18:31+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -85,7 +85,7 @@ msgstr "Opo_zovi"
 msgid "_Redo"
 msgstr "Po_novi"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Očisti vraćanje"
 
@@ -477,108 +477,108 @@ msgstr "Spusti trenutno izabranu dodelu tastera, u odnosu na njegove susede"
 msgid "Delete the currently selected key binding"
 msgstr "Obriši trenutno izabranu dodelu tastera"
 
-#: beast-gtk/bstkeybindings.c:391
+#: beast-gtk/bstkeybindings.c:395
 msgid "Key Binding"
 msgstr "Dodela tastera"
 
-#: beast-gtk/bstkeybindings.c:392
+#: beast-gtk/bstkeybindings.c:396
 msgid "Key combinations used to activate a function"
 msgstr "Kombinacije tastera koje se koriste za pokretanje funkcije"
 
-#: beast-gtk/bstkeybindings.c:394 beast-gtk/bstkeybindings.c:418
+#: beast-gtk/bstkeybindings.c:398 beast-gtk/bstkeybindings.c:422
 msgid "Function"
 msgstr "Funkcija"
 
-#: beast-gtk/bstkeybindings.c:395
+#: beast-gtk/bstkeybindings.c:399
 msgid "Functions to be activated for a key binding"
 msgstr "Funkcije koje se pokreću za dodeljeni taster"
 
-#: beast-gtk/bstkeybindings.c:397
+#: beast-gtk/bstkeybindings.c:401
 msgid "Parameter"
 msgstr "Parametar"
 
-#: beast-gtk/bstkeybindings.c:398
+#: beast-gtk/bstkeybindings.c:402
 msgid "Parameter to pass to functions upon activation"
 msgstr "Parametar koji se prosleđuje funkcijama pri pokretanju"
 
-#: beast-gtk/bstkeybindings.c:419
+#: beast-gtk/bstkeybindings.c:423
 msgid "Function used to create new key bindings"
 msgstr "Funkcija kojom se dodeljuju nove operacije tasterima"
 
-#: beast-gtk/bstkeybindings.c:421 beast-gtk/bstprocedure.c:206
+#: beast-gtk/bstkeybindings.c:425 beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Opis"
 
-#: beast-gtk/bstmain.c:127
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr "Pokretanje Zveri"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr "Pokretanje"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:138
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr "Pokretači"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:145
+#: beast-gtk/bstmain.c:147
 msgid "RC Files"
 msgstr "RC datoteke"
 
 #. show splash images
-#: beast-gtk/bstmain.c:149
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr "Uvodna slika"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:161
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr "BSE jezgro"
 
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Dodaci"
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr "LADSPA dodaci"
 
-#: beast-gtk/bstmain.c:227
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:245
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Prozorčići"
 
-#: beast-gtk/bstmain.c:252
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Učitavam..."
 
-#: beast-gtk/bstmain.c:282 beast-gtk/bstmain.c:284
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Učitavam „%s“"
 
-#: beast-gtk/bstmain.c:301
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#: beast-gtk/bstmain.c:702
+#: beast-gtk/bstmain.c:707
 msgid "BEAST About"
 msgstr "O Zveri"
 
-#: beast-gtk/bstmain.c:703
+#: beast-gtk/bstmain.c:708
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmain.c:704
+#: beast-gtk/bstmain.c:709
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
@@ -644,51 +644,51 @@ msgstr "Unos imena datoteke"
 msgid "Time Entry"
 msgstr "Unos vremena"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
 msgstr "Očisti"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear the current selection"
 msgstr "Očisti tekući izbor"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
 msgstr "Iseci"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:61
 msgid "Move the current selection into clipboard"
 msgstr "Premesti tekući izbor među isečke"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy"
 msgstr "Umnoži"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy the current selection into clipboard"
 msgstr "Umnoži tekući izbor među isečke"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
 msgstr "Ubaci"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:63
 msgid "Insert clipboard contents as current selection"
 msgstr "Ubaci sadržaj isečaka kao na mesto tekućeg izbora"
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo"
 msgstr "Opozovi"
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo last editing step"
 msgstr "Opozovi poslednju izmenu"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
 msgstr "Ponovi"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr "Ponovi poslednju opozvanu izmenu"
 
@@ -696,140 +696,155 @@ msgstr "Ponovi poslednju opozvanu izmenu"
 msgid "Editor"
 msgstr "Uređivač"
 
-#: beast-gtk/bstpatterncolumns.c:311
+#: beast-gtk/bstpatterncolumns.c:653
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
-msgstr "Raspored kolona u uređivaču obrazaca se određuje navođenjem vrsta kolona uz moguće izmenjivaču u redosledu prikazivanja."
+msgstr ""
+"Raspored kolona u uređivaču obrazaca se određuje navođenjem vrsta kolona uz "
+"moguće izmenjivaču u redosledu prikazivanja."
 
-#: beast-gtk/bstpatterncolumns.c:313
+#: beast-gtk/bstpatterncolumns.c:655
 msgid "COLUMN TYPES:"
 msgstr "VRSTE KOLONA:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:315
+#: beast-gtk/bstpatterncolumns.c:657
 msgid "note-1, note-2, ..."
 msgstr "note-1, note-2, ..."
 
-#: beast-gtk/bstpatterncolumns.c:316
+#: beast-gtk/bstpatterncolumns.c:658
 msgid "  display notes of the first, second, ... channel"
 msgstr "  prikaži note prvog, drugog,... kanala"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:318
-msgid "offset-1, length-2, velocty-3, ..."
-msgstr "offset-1, length-2, velocty-3, ..."
+#: beast-gtk/bstpatterncolumns.c:660
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr "offset-1, length-2, velocity-3, ..."
 
-#: beast-gtk/bstpatterncolumns.c:319
+#: beast-gtk/bstpatterncolumns.c:661
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
 msgstr "  prikaži pomeraj, dužinu ili brzinu nota u prvom, drugom,... kanalu"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:321
+#: beast-gtk/bstpatterncolumns.c:663
 msgid "control-0, ..., control-63, cc-0, cc-31"
 msgstr "control-0, ..., control-63, cc-0, cc-31"
 
-#: beast-gtk/bstpatterncolumns.c:322
+#: beast-gtk/bstpatterncolumns.c:664
 msgid "  select various event types (controls, continuous controllers)"
 msgstr "  izaberi razne vrste događaja (upravljanje, neprekidni upravljači)"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:324
+#: beast-gtk/bstpatterncolumns.c:666
 msgid "bar, |"
 msgstr "bar, |"
 
-#: beast-gtk/bstpatterncolumns.c:325
+#: beast-gtk/bstpatterncolumns.c:667
 msgid "  display solid vertical bar"
 msgstr "  prikaži punu uspravnu traku"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:327
+#: beast-gtk/bstpatterncolumns.c:669
 msgid "dbar, :"
 msgstr "dbar, :"
 
-#: beast-gtk/bstpatterncolumns.c:328
+#: beast-gtk/bstpatterncolumns.c:670
 msgid "  display dotted vertical bar"
 msgstr "  prikaži istačkanu uspravnu traku"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:330
+#: beast-gtk/bstpatterncolumns.c:672
 msgid "space, _"
 msgstr "space, _"
 
-#: beast-gtk/bstpatterncolumns.c:331
+#: beast-gtk/bstpatterncolumns.c:673
 msgid "  insert vertical space"
 msgstr "  umetni uspravni razmak"
 
-#: beast-gtk/bstpatterncolumns.c:332
+#: beast-gtk/bstpatterncolumns.c:674
 msgid "EVENTS:"
 msgstr "DOGAĐAJI:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:334
+#: beast-gtk/bstpatterncolumns.c:676
 msgid "  balance, volume, cc-8, ..."
 msgstr "  balance, volume, cc-8, ..."
 
-#: beast-gtk/bstpatterncolumns.c:335
+#: beast-gtk/bstpatterncolumns.c:677
 msgid "MODIFIERS:"
 msgstr "IZMENjIVAČI:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:337
+#: beast-gtk/bstpatterncolumns.c:679
 msgid "hex2, hex4"
 msgstr "hex2, hex4"
 
-#: beast-gtk/bstpatterncolumns.c:338
+#: beast-gtk/bstpatterncolumns.c:680
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr "  prikaži 2- (00..FF) ili 4- (0000..FFFF) cifrene heksadekadne brojeve"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:340
+#: beast-gtk/bstpatterncolumns.c:682
 msgid "shex2, shex4"
 msgstr "shex2, shex4"
 
-#: beast-gtk/bstpatterncolumns.c:341
+#: beast-gtk/bstpatterncolumns.c:683
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
-msgstr "  prikaži 2- (-FF..+FF) ili 4- (-FFFF..+FFFF) cifrene označene heksadekadne brojeve"
+msgstr ""
+"  prikaži 2- (-FF..+FF) ili 4- (-FFFF..+FFFF) cifrene označene heksadekadne "
+"brojeve"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:343
+#: beast-gtk/bstpatterncolumns.c:685
 msgid "dec2, dec3"
 msgstr "dec2, dec3"
 
-#: beast-gtk/bstpatterncolumns.c:344
+#: beast-gtk/bstpatterncolumns.c:686
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  prikaži 2- (00..99) ili 3- (000..999) cifrene dekadne brojeve"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:346
+#: beast-gtk/bstpatterncolumns.c:688
 msgid "sdec2, sdec3"
 msgstr "sdec2, sdec3"
 
-#: beast-gtk/bstpatterncolumns.c:347
+#: beast-gtk/bstpatterncolumns.c:689
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
-msgstr "  prikaži 2- (-99..+99) ili 3- (-999..+999) cifrene označene dekadne brojeve"
+msgstr ""
+"  prikaži 2- (-99..+99) ili 3- (-999..+999) cifrene označene dekadne brojeve"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:349
+#: beast-gtk/bstpatterncolumns.c:691
 msgid "col1, col2, col3"
 msgstr "col1, col2, col3"
 
-#: beast-gtk/bstpatterncolumns.c:350
+#: beast-gtk/bstpatterncolumns.c:692
 msgid "  selects one of 3 predefined colors"
 msgstr "  izabira jednu od 3 pretpostavljene boje"
 
-#: beast-gtk/bstpatterncolumns.c:351
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:694
+msgid "lfold, rfold"
+msgstr "lfold, rfold"
+
+#: beast-gtk/bstpatterncolumns.c:695
+msgid "  allow folding the column into left/right neighbour"
+msgstr "  dozvoli zaklapanje kolone sa levim/desnim susedom"
+
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "EXAMPLE:"
 msgstr "PRIMER:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:353
+#: beast-gtk/bstpatterncolumns.c:698
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
-#: beast-gtk/bstpatterncolumns.c:362
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:708
 msgid "Pattern Editor Layout"
 msgstr "Izgled uređivača obrazaca"
 
@@ -840,7 +855,9 @@ msgstr "Koraci"
 #: beast-gtk/bstpatternctrl.c:40
 msgid ""
 "The number of cells to move across each time an event or note was edited"
-msgstr "Broj ćelija za koji da premesti popreko svaki put kada se uredi događaj ili nota"
+msgstr ""
+"Broj ćelija za koji da premesti popreko svaki put kada se uredi događaj ili "
+"nota"
 
 #: beast-gtk/bstpatternctrl.c:44
 msgid "Direction"
@@ -850,109 +867,100 @@ msgstr "Pravac"
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "Pravac kretanja ćelije svaki put kada se uredi događaj ili nota"
 
+#: beast-gtk/bstpatternctrl.c:49
+msgid "HWrap"
+msgstr "VPrelom"
+
+#: beast-gtk/bstpatternctrl.c:50
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr "Promeni da li se vodoravno kretanje ćelije prelama kod ivica"
+
 #. movement
-#: beast-gtk/bstpatternctrl.c:161
+#: beast-gtk/bstpatternctrl.c:192
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr "Fokusiraj sledeću ćeliju (gore/levo/desno/dole prema podešavanjima)"
 
-#: beast-gtk/bstpatternctrl.c:162
+#: beast-gtk/bstpatternctrl.c:193
 msgid "Move focus cell upwards"
 msgstr "Fokusiraj ćeliju iznad"
 
-#: beast-gtk/bstpatternctrl.c:163
+#: beast-gtk/bstpatternctrl.c:194
 msgid "Move focus cell to the left"
 msgstr "Fokusiraj ćeliju levo"
 
-#: beast-gtk/bstpatternctrl.c:164
+#: beast-gtk/bstpatternctrl.c:195
 msgid "Move focus cell to the right"
 msgstr "Fokusiraj ćeliju desno"
 
-#: beast-gtk/bstpatternctrl.c:165
+#: beast-gtk/bstpatternctrl.c:196
 msgid "Move focus cell downwards"
 msgstr "Fokusiraj ćeliju ispod"
 
-#: beast-gtk/bstpatternctrl.c:166
+#: beast-gtk/bstpatternctrl.c:197
 msgid "Move focus cell upwards page-wise"
 msgstr "Fokusiraj ćeliju iznad prema stranici"
 
-#: beast-gtk/bstpatternctrl.c:167
+#: beast-gtk/bstpatternctrl.c:198
 msgid "Move focus cell to the left page-wise"
 msgstr "Fokusiraj ćeliju levo prema stranici"
 
-#: beast-gtk/bstpatternctrl.c:168
+#: beast-gtk/bstpatternctrl.c:199
 msgid "Move focus cell to the right page-wise"
 msgstr "Fokusiraj ćeliju desno prema stranici"
 
-#: beast-gtk/bstpatternctrl.c:169
+#: beast-gtk/bstpatternctrl.c:200
 msgid "Move focus cell downwards page-wise"
 msgstr "Fokusiraj ćeliju ispod prema stranici"
 
-#: beast-gtk/bstpatternctrl.c:170
+#: beast-gtk/bstpatternctrl.c:201
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Fokusiraj ćeliju što je moguće više gore"
 
-#: beast-gtk/bstpatternctrl.c:171
+#: beast-gtk/bstpatternctrl.c:202
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Fokusiraj ćeliju što je moguće više levo"
 
-#: beast-gtk/bstpatternctrl.c:172
+#: beast-gtk/bstpatternctrl.c:203
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Fokusiraj ćeliju što je moguće više desno"
 
-#: beast-gtk/bstpatternctrl.c:173
+#: beast-gtk/bstpatternctrl.c:204
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Fokusiraj ćeliju što je moguće više dole"
 
-#: beast-gtk/bstpatternctrl.c:177
-msgid "Remove any events in the focus cell"
-msgstr "Ukloni sve događaje u fokusiranoj ćeliji"
+#: beast-gtk/bstpatternctrl.c:207
+msgid "Set the number of steps to make when moving to the next cell"
+msgstr "Postavi broj koraka pri prelasku na narednu ćeliju"
 
-#: beast-gtk/bstpatternctrl.c:180
-msgid "Remove any events in the focus cell and move to the next cell"
-msgstr "Ukloni sve događaje u fokusiranoj ćeliji i pređi na narednu ćeliju"
-
-#: beast-gtk/bstpatternctrl.c:184
-msgid "Set the focus cell note"
-msgstr "Postavi notu u fokusiranoj ćeliji"
-
-#: beast-gtk/bstpatternctrl.c:187
-msgid "Set the focus cell note and move to the next cell"
-msgstr "Postavi notu u fokusiranoj ćeliji i pređi na narednu ćeliju"
-
-#: beast-gtk/bstpatternctrl.c:190
-msgid "Set the focus cell note relative to the base octave"
-msgstr "Postavi notu u fokusiranoj ćeliji relativno u odnosu na osnovnu oktavu"
-
-#: beast-gtk/bstpatternctrl.c:193
-msgid ""
-"Set the focus cell note relative to the base octave and move to the next cell"
-msgstr "Postavi notu u fokusiranoj ćeliji relativno u odnosu na osnovnu oktavu i pređi na sledeću ćeliju"
-
-#: beast-gtk/bstpatternctrl.c:197
-msgid "Set the focus cell octave"
-msgstr "Postavi oktavu u fokusiranoj ćeliji"
-
-#: beast-gtk/bstpatternctrl.c:200
-msgid "Set the focus cell octave and move to the next cell"
-msgstr "Postavi oktavu u fokusiranoj ćeliji i pređi na narednu ćeliju"
-
-#: beast-gtk/bstpatternctrl.c:203
-msgid "Change the focus cell octave by a given amount"
-msgstr "Izmeni oktavu u fokusiranoj ćeliji za datu vrednost"
-
-#: beast-gtk/bstpatternctrl.c:206
-msgid ""
-"Change the focus cell octave by a given amount and move to the next cell"
-msgstr "Izmeni oktavu u fokusiranoj ćeliji za datu vrednost i pređi na narednu ćeliju"
-
-#: beast-gtk/bstpatternctrl.c:210
+#: beast-gtk/bstpatternctrl.c:211
 msgid "Set the base octave"
 msgstr "Postavi osnovnu oktavu"
 
-#: beast-gtk/bstpatternctrl.c:213
+#: beast-gtk/bstpatternctrl.c:214
 msgid "Change the base octave by a given amount"
 msgstr "Izmeni osnovnu oktavu za datu vrednost"
+
+#: beast-gtk/bstpatternctrl.c:218
+msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr "Izmeni brojevni sadržaj u fokusiranoj ćeliji (npr. oktavu) za datu vrednost"
+
+#: beast-gtk/bstpatternctrl.c:222
+msgid "Set the focus cell octave"
+msgstr "Postavi oktavu u fokusiranoj ćeliji"
+
+#: beast-gtk/bstpatternctrl.c:226 beast-gtk/bstpatternctrl.c:240
+msgid "Remove any events in the focus cell"
+msgstr "Ukloni sve događaje u fokusiranoj ćeliji"
+
+#: beast-gtk/bstpatternctrl.c:230 beast-gtk/bstpatternctrl.c:244
+msgid "Set the focus cell note"
+msgstr "Postavi notu u fokusiranoj ćeliji"
+
+#: beast-gtk/bstpatternctrl.c:234 beast-gtk/bstpatternctrl.c:248
+msgid "Sets the value of the focus digit"
+msgstr "Postavlja vrednost fokusirane cifre"
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
@@ -1165,7 +1173,7 @@ msgstr ""
 "budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Edit"
 msgstr "_Uredi"
 
@@ -1287,7 +1295,9 @@ msgstr "Jednoobrazna ulazna polja"
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
-msgstr "Koristi jednoobraznu veličinu za većinu (brojevnih i tekstualnih) polja za unos. Za neka polja, ovo će uzeti maha tek pri novom pokretanju."
+msgstr ""
+"Koristi jednoobraznu veličinu za većinu (brojevnih i tekstualnih) polja za "
+"unos. Za neka polja, ovo će uzeti maha tek pri novom pokretanju."
 
 #: beast-gtk/bstrecords.idl:66
 msgid "Skin Name"
@@ -1738,202 +1748,202 @@ msgid "Edit the currently selected wave"
 msgstr "Uredi trenutno izabrani talas"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust right view boundary"
+msgstr "Prilagodi granicu desnog pogleda"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust the zoom factor of the router display"
 msgstr "Prilagodi činilac uvećanja prikaza preusmerivača"
 
 # bug: Aplly -> Apply
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr "Primeni izmene podešavanja u izgledu uređivača obrazaca"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
-msgid "Apply configuration changes to the pattern editor layout"
-msgstr "Primeni izmene podešavanja u izgledu uređivača obrazaca"
-
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
 msgid "Configure"
 msgstr "Podesi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
 msgid "Configure the column layout of the pattern editor"
 msgstr "Podeci izgled kolona u uređivaču obrazaca"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
 msgid "Control Type:"
 msgstr "Vrsta kontrole:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
 msgid "Development"
 msgstr "Razvoj"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
 msgid "Discard changes and close dialog"
 msgstr "Zanemari izmene i zatvori prozorče"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
 msgid "E_xamples"
 msgstr "_Primeri"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
 msgid "Events"
 msgstr "Događaji"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
 msgid "HZoom"
 msgstr "VUvećanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
 msgid "Horizontal piano zoom"
 msgstr "Vodoravno uvećanje za klavir"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
 msgid "Horizontal track zoom"
 msgstr "Vodoravno uvećanje pesme"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
 msgid "Layout:"
 msgstr "Izgled:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
 msgid "Note _Length"
 msgstr "Dužina _note"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
 msgid "Piano Notes"
 msgstr "Note za klavir"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
 msgid "Repeat"
 msgstr "Ponovi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
 msgid "Repeat playback within loop points"
 msgstr "Ponovo pusti u tačkama vrtenja"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "Synthesis Modules"
 msgstr "Moduli za sintezu"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
 msgid "VZoom"
 msgstr "UUvećanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "Vertical piano zoom"
 msgstr "Uspravno uvećanje za klavir"
 
 # Ja bih radije „Kao-polica“ :-)
-#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "Virtual Rack"
 msgstr "Virtuelna polica"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "Wave_s"
 msgstr "_Talasi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
 msgid "Zoom"
 msgstr "Uvećanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Apply"
 msgstr "Pri_meni"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Audio Sources"
 msgstr "Izvori _zvuka"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
 msgid "_Cancel"
 msgstr "Ot_kaži"
 
 # Hteo sam „proba“, ali imamo i „Test“, pa je bolje tu iskoristiti
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_Demo"
 msgstr "_Demo"
 
 # distonirati? u Leksikonu se to pominje u smislu zvuka
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
 msgid "_Distortion"
 msgstr "Is_krivljenje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Enhance"
 msgstr "Po_boljšanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_File"
 msgstr "_Datoteka"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Filters"
 msgstr "_Filteri"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Help"
 msgstr "_Pomoć"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Input & Output"
 msgstr "_Ulaz i izlaz"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Misc"
 msgstr "_Razno"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Other Sources"
 msgstr "_Ostali izvori"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Project"
 msgstr "_Projekat"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Quantization"
 msgstr "_Kvantizacija"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Routing"
 msgstr "Us_meravanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Skins"
 msgstr "_Motivi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/gadgets-beast.xml.h:43
 msgid "_Song"
 msgstr "P_esma"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:44
 msgid "_Spatial"
 msgstr "_Prostorno"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:44
+#: beast-gtk/dialogs/gadgets-beast.xml.h:45
 msgid "_Synth"
 msgstr "_Sintetizator"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:45
+#: beast-gtk/dialogs/gadgets-beast.xml.h:46
 msgid "_Synthesizers"
 msgstr "_Sintetizatori"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:46
+#: beast-gtk/dialogs/gadgets-beast.xml.h:47
 msgid "_Tools"
 msgstr "_Alati"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:47
+#: beast-gtk/dialogs/gadgets-beast.xml.h:48
 msgid "_Utilities"
 msgstr "_Pomoćni alati"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:48
+#: beast-gtk/dialogs/gadgets-beast.xml.h:49
 msgid "_View"
 msgstr "P_regled"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:49
+#: beast-gtk/dialogs/gadgets-beast.xml.h:50
 msgid "_Virtualization"
 msgstr "_Virtuelizacija"
 
@@ -2103,6 +2113,13 @@ msgstr "Element prečice"
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Element koji se aktivira kada se pritisne prečica oznake"
+
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:575
+msgid "..."
+msgstr "..."
 
 #: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
@@ -2543,12 +2560,12 @@ msgid "BEAST"
 msgstr "ZVER"
 
 #: data/beast.desktop.in.h:2
-msgid "Music Composer"
-msgstr "Komponovanje muzike"
+msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
+msgstr "Program za slaganje MIDI-ja, sastavljanje muzike i modularnu sintezu"
 
 #: data/beast.desktop.in.h:3
-msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
-msgstr "Alat za sintezu muzike, komponovanje MIDI datoteka i pesama"
+msgid "Music Composer"
+msgstr "Komponovanje muzike"
 
 #: data/bse.keys.in.h:1
 msgid "Audio"
@@ -2889,6 +2906,35 @@ msgstr "Stanje"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Stanje koje se koristi za ispit poruka o greškama"
+
+#~ msgid "Remove any events in the focus cell and move to the next cell"
+#~ msgstr "Ukloni sve događaje u fokusiranoj ćeliji i pređi na narednu ćeliju"
+
+#~ msgid "Set the focus cell note relative to the base octave"
+#~ msgstr ""
+#~ "Postavi notu u fokusiranoj ćeliji relativno u odnosu na osnovnu oktavu"
+
+#~ msgid ""
+#~ "Set the focus cell note relative to the base octave and move to the next "
+#~ "cell"
+#~ msgstr ""
+#~ "Postavi notu u fokusiranoj ćeliji relativno u odnosu na osnovnu oktavu i "
+#~ "pređi na sledeću ćeliju"
+
+#~ msgid "Set the focus cell octave and move to the next cell"
+#~ msgstr "Postavi oktavu u fokusiranoj ćeliji i pređi na narednu ćeliju"
+
+#~ msgid ""
+#~ "Change the focus cell octave by a given amount and move to the next cell"
+#~ msgstr ""
+#~ "Izmeni oktavu u fokusiranoj ćeliji za datu vrednost i pređi na narednu "
+#~ "ćeliju"
+
+#~ msgid "Apply configuration changes to the pattern editor layout"
+#~ msgstr "Primeni izmene podešavanja u izgledu uređivača obrazaca"
+
+#~ msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+#~ msgstr "Alat za sintezu muzike, komponovanje MIDI datoteka i pesama"
 
 #~ msgid "Objects"
 #~ msgstr "Objekti"
