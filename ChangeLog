@@ -1,3 +1,23 @@
+Sun Jul 21 21:16:22 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.[hc]: add clipboard functions to toolbar,
+	cut/copy/paste and clear.
+
+	* beast-gtk/bstpianoroll.[hc]: slight note colorization changes, support
+	view-only selection rectangle. add function to retrive paste position.
+	remove controller-specific drag data.
+
+	* beast-gtk/bstpianorollctrl.[hc]: add clipborad support add
+	per-controller drag data. support selection group moves.
+
+	* beast-gtk/bsttoolbar.[hc]: support stock images.
+
+	* beast-gtk/bsttrackview.[hc]: fixup track image.
+
+	* beast-gtk/bstutils.[hc]:
+	* beast-gtk/icons/*: added new icons: music clipboard cut/copy/paste,
+	track and trash-scissors.
+
 Mon Jul 15 14:40:52 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_page): use BstToolbar

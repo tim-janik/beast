@@ -141,7 +141,7 @@ static void
 bst_part_dialog_init (BstPartDialog *self)
 {
   BstPartDialogClass *class = BST_PART_DIALOG_GET_CLASS (self);
-  GtkWidget *main_vbox, *entry, *choice;
+  GtkWidget *main_vbox, *entry, *choice, *button;
   GtkObject *adjustment;
 
   /* configure self */
@@ -202,9 +202,20 @@ bst_part_dialog_init (BstPartDialog *self)
 				  "VSelect", "Select tick range vertically", NULL,
 				  BST_STOCK_VERT_SELECT, BST_RADIO_TOOLS_EVERYWHERE);
   bst_radio_tools_build_toolbar (self->rtools, self->toolbar);
-  bst_toolbar_append_space (self->toolbar);
+
+  /* selection ops (copy/cut/...) */
+  bst_toolbar_append_separator (self->toolbar);
+  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Clear", "Clear the current selection", BST_STOCK_TRASH_SCISSORS);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_clear, self->proll_ctrl, NULL);
+  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Cut", "Move the current selection into clipboard", BST_STOCK_MUSIC_CUT);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_cut, self->proll_ctrl, NULL);
+  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Copy", "Copy the current selection into clipboard", BST_STOCK_MUSIC_COPY);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_copy, self->proll_ctrl, NULL);
+  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Paste", "Insert clipboard contents as current selection", BST_STOCK_MUSIC_PASTE);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_paste, self->proll_ctrl, NULL);
 
   /* note selection */
+  bst_toolbar_append_separator (self->toolbar);
   choice = bst_toolbar_append_choice (self->toolbar, BST_TOOLBAR_TRUNC_BUTTON,
 				      (BstToolbarChoiceFunc) part_dialog_note_choice, self, NULL);
   bst_toolbar_choice_add (choice, "1/1", "Insert full notes",
@@ -235,6 +246,7 @@ bst_part_dialog_init (BstPartDialog *self)
 			  bst_image_from_stock (BST_STOCK_QNOTE_16, BST_SIZE_TOOLBAR), 16);
 
   /* vzoom */
+  bst_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", vzoom_changed, self,
@@ -249,7 +261,7 @@ bst_part_dialog_init (BstPartDialog *self)
 		      "VZoom", "Vertical Zoom", entry);
 
   /* hzoom */
-  bst_toolbar_append_separator (self->toolbar);
+  // bst_toolbar_append_space (self->toolbar);
   adjustment = gtk_adjustment_new (13, 0, 100, 1, 5, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", hzoom_changed, self,

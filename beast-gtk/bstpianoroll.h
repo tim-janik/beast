@@ -54,12 +54,6 @@ typedef struct {
   guint		current_valid : 1;	/* freq out of range or non-existant black key */
   /* user data */
   BstDragStatus state;		/* request type: unhandled/continue/handled/error */
-  gint          x, y, xoffset, yoffset, width, height;
-  gpointer      data1, data2, tdata;
-  gfloat	fdata1, fdata2;
-  /* drag-object if any */
-  guint         obj_tick, obj_duration;
-  gfloat        obj_freq;
 } BstPianoRollDrag;
 struct _BstPianoRoll
 {
@@ -82,7 +76,8 @@ struct _BstPianoRoll
   gfloat	 hzoom;
   guint		 draw_qn_grid : 1;
   guint		 draw_qqn_grid : 1;
-  
+
+  /* scroll offset */
   gint		 x_offset, y_offset;
 
   guint		 hpanel_height;
@@ -92,6 +87,12 @@ struct _BstPianoRoll
 
   GtkAdjustment	*hadjustment, *vadjustment;
   guint		 scroll_timer;
+
+  /* selection rectangle */
+  guint		 selection_tick;
+  guint		 selection_duration;
+  gfloat	 selection_min_freq;
+  gfloat	 selection_max_freq;
 
   /* drag operations */
   guint		   canvas_drag : 1;
@@ -134,10 +135,17 @@ void	bst_piano_roll_set_hpanel_cursor	(BstPianoRoll	*proll,
 						 GdkCursorType	 cursor);
 void	bst_piano_roll_set_quantization		(BstPianoRoll	*proll,
 						 guint		 note_fraction);
+void	bst_piano_roll_set_view_selection	(BstPianoRoll	*proll,
+						 guint		 tick,
+						 guint		 duration,
+						 gfloat		 min_freq,
+						 gfloat		 max_freq);
 guint	bst_piano_roll_quantize			(BstPianoRoll	*self,
 						 guint		 fine_tick);
-     
-     
+void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
+						 guint          *tick_p,
+						 gfloat		*freq_p);
+
      
 
 #ifdef __cplusplus

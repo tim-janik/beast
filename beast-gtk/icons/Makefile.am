@@ -10,6 +10,7 @@ EXTRA_DIST += @STRIP_BEGIN@ \
 SRC_IMAGES = @STRIP_BEGIN@	\
 	aguitar.xcf		\
 	cdrom.xcf		\
+	clipboard.xcf		\
 	editor.xcf		\
 	knob.xcf		\
 	mouse_tool.xcf		\
@@ -21,8 +22,10 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	pattern-group.xcf	\
 	pattern-tool.xcf	\
 	pattern.xcf		\
+	railway.xcf		\
 	rect-select.xcf		\
 	target.xcf		\
+	trash-scissors.xcf	\
 	trashcan.xcf		\
 	vert-select.xcf		\
 	wave.xcf		\
@@ -37,6 +40,9 @@ STOCK_IMAGE_PAIRS = @STRIP_BEGIN@ \
 	stock_instrument		$(srcdir)/aguitar.png		\
 	stock_knob			$(srcdir)/knob.png		\
 	stock_mouse_tool		$(srcdir)/mouse_tool.png	\
+	stock_music_cut			$(srcdir)/music-cut.png		\
+	stock_music_copy		$(srcdir)/music-copy.png	\
+	stock_music_paste		$(srcdir)/music-paste.png	\
 	stock_no_ilink			$(srcdir)/no_ilink.png		\
 	stock_no_olink			$(srcdir)/no_olink.png		\
 	stock_no_icon			$(srcdir)/noicon.png		\
@@ -58,11 +64,13 @@ STOCK_IMAGE_PAIRS = @STRIP_BEGIN@ \
 	stock_qnote_4			$(srcdir)/qnote-4.png		\
 	stock_qnote_8			$(srcdir)/qnote-8.png		\
 	stock_qnote_16			$(srcdir)/qnote-16.png		\
+	stock_railway			$(srcdir)/railway.png		\
 	stock_rect_select		$(srcdir)/rect-select.png	\
 	stock_small_audio		$(srcdir)/small-audio.png	\
 	stock_small_noaudio		$(srcdir)/small-noaudio.png	\
 	stock_target			$(srcdir)/target.png		\
 	stock_trashcan			$(srcdir)/trashcan.png		\
+	stock_trash_scissors		$(srcdir)/trash-scissors.png	\
 	stock_vert_select		$(srcdir)/vert-select.png	\
 	stock_wave			$(srcdir)/wave.png		\
 	stock_wave_tool			$(srcdir)/wave-tool.png		\

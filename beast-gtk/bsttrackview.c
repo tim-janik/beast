@@ -30,7 +30,7 @@ static gboolean	bst_track_view_can_operate	(BstItemView		*item_view,
 
 /* --- track ops --- */
 static BstItemViewOp track_view_ops[] = {
-  { "Add",		BST_OP_TRACK_ADD,	BST_STOCK_TRASHCAN	},	// FIXME: BST_STOCK_TRACK
+  { "Add",		BST_OP_TRACK_ADD,	BST_STOCK_TRACK		},
   { "Delete",		BST_OP_TRACK_DELETE,	BST_STOCK_TRASHCAN	},
 };
 static guint n_track_view_ops = sizeof (track_view_ops) / sizeof (track_view_ops[0]);

@@ -78,6 +78,11 @@ GtkWidget*	bst_toolbar_append		(BstToolbar	*self,
 						 const gchar	*name,
 						 const gchar	*tooltip,
 						 GtkWidget	*icon);
+GtkWidget*	bst_toolbar_append_stock	(BstToolbar	*self,
+						 BstToolbarChild child_type,
+						 const gchar	*name,
+						 const gchar	*tooltip,
+						 const gchar    *stock_id);
 #define	bst_toolbar_append_space(self)		bst_toolbar_append ((self), BST_TOOLBAR_SPACE, 0, 0, 0)
 #define	bst_toolbar_append_separator(self)	bst_toolbar_append ((self), BST_TOOLBAR_SEPARATOR, 0, 0, 0)
 GtkWidget*	bst_toolbar_append_choice	(BstToolbar	*self,

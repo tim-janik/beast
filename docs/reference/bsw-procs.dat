@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 15 Jul 2002
+date    = 21 Jul 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 15 Jul 2002 BEAST-0.4.1
+BSW-Procedures 21 Jul 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -1017,6 +1017,68 @@ is-a-check:
 @DOC-DESCRIPTION@
 Check object type  
 @DOC-SYNOPSIS@
+@STRONG bsw-part-change-note@ (@EMPH part@, @EMPH id@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+id
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+velocity
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Change an existing note within a part.  
+@DOC-SYNOPSIS@
 @STRONG bsw-part-check-overlap@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -1063,7 +1125,37 @@ note-list:
 @DOC-DESCRIPTION@
 Check whether a note would overlap with neighbours.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-delete-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+@STRONG bsw-part-delete-event@ (@EMPH part@, @EMPH id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+id
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Delete an existing event from a part.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-deselect-event@ (@EMPH part@, @EMPH id@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 7
@@ -1080,15 +1172,7 @@ part
 type = 
 typeraw = 
 @DOC-PARAMETER@
-tick
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-freq
+id
 @DOC-PARDESC@
 
 
@@ -1097,9 +1181,9 @@ retspace = 7
 
 
 @DOC-DESCRIPTION@
-Delete an existing note from a part.  
+Deselect an existing event.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-find-notes@ (@EMPH part@, @EMPH tick@, @EMPH duration@);
+@STRONG bsw-part-deselect-rectangle@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1110,7 +1194,7 @@ typeraw =
 @DOC-PARAMETER@
 part
 @DOC-PARDESC@
-
+Part
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1118,7 +1202,7 @@ typeraw =
 @DOC-PARAMETER@
 tick
 @DOC-PARDESC@
-
+Selection Tick
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1126,38 +1210,30 @@ typeraw =
 @DOC-PARAMETER@
 duration
 @DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-note-list: 
-
-@DOC-DESCRIPTION@
-List all notes within or crossing a tick range.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-find-selected-notes@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
+Selection Duration
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
 typeraw = 
 @DOC-PARAMETER@
-part
+min-freq
 @DOC-PARDESC@
+Minimum Selection Frequency
 
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+max-freq
+@DOC-PARDESC@
+Maximum Selection Frequency
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
-@DOC-RETURNS@
-note-list: 
 
 @DOC-DESCRIPTION@
-List all notes within current selection.  
+Deselect all notes within rectangle.  
 @DOC-SYNOPSIS@
 @STRONG bsw-part-freq-equals@ (@EMPH part@, @EMPH freq1@, @EMPH freq2@);
 
@@ -1241,6 +1317,28 @@ octave:
 @DOC-DESCRIPTION@
 Retrive the maximum octave supported.  
 @DOC-SYNOPSIS@
+@STRONG bsw-part-get-max-tick@ (@EMPH part@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+tick: Maximum Tick
+
+@DOC-DESCRIPTION@
+Retrive the maximum tick count represented in a part.  
+@DOC-SYNOPSIS@
 @STRONG bsw-part-get-min-half-tone@ (@EMPH part@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -1285,7 +1383,7 @@ octave:
 @DOC-DESCRIPTION@
 Retrive the minimum octave supported.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-get-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+@STRONG bsw-part-get-notes@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1321,95 +1419,7 @@ retspace = 11
 note-list: 
 
 @DOC-DESCRIPTION@
-List a note of specific frequency at a specific tick.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-selection-duration@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-Part
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-duration: Selection Duration
-
-@DOC-DESCRIPTION@
-Retrive the selection duration.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-selection-max-freq@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-Part
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-freq: Maximum Selection Frequency
-
-@DOC-DESCRIPTION@
-Retrive the selection maximum frequency.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-selection-min-freq@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-Part
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-freq: Minimum Selection Frequency
-
-@DOC-DESCRIPTION@
-Retrive the selection minimum frequency.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-selection-tick@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-Part
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-tick: Selection Tick
-
-@DOC-DESCRIPTION@
-Retrive the selection start tick.  
+Retrive all notes of specific frequency at a specific tick.  
 @DOC-SYNOPSIS@
 @STRONG bsw-part-insert-note@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
 
@@ -1460,12 +1470,182 @@ velocity
 retspace = 11
 
 @DOC-RETURNS@
-error: 
+id: 
 
 @DOC-DESCRIPTION@
 Insert a new note into a part.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-set-selection@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+@STRONG bsw-part-is-selected-event@ (@EMPH part@, @EMPH id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+id
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+selected: 
+
+@DOC-DESCRIPTION@
+Check whether a specific event is selected.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-list-notes-crossing@ (@EMPH part@, @EMPH tick@, @EMPH duration@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+note-list: 
+
+@DOC-DESCRIPTION@
+List all notes within or crossing a tick range.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-list-selected-notes@ (@EMPH part@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+note-list: 
+
+@DOC-DESCRIPTION@
+List all currently selected notes.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-queue-notes-within@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+min-freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+max-freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Queue updates for all notes starting within the given region.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-select-event@ (@EMPH part@, @EMPH id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 7
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+id
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 7
+
+
+@DOC-DESCRIPTION@
+Select an existing event.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-select-rectangle@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1515,7 +1695,59 @@ retspace = 11
 
 
 @DOC-DESCRIPTION@
-Set the selection rectangle.  
+Select all notes within rectangle.  
+@DOC-SYNOPSIS@
+@STRONG bsw-part-select-rectangle-exclusive@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+Part
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+Selection Tick
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+Selection Duration
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+min-freq
+@DOC-PARDESC@
+Minimum Selection Frequency
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+max-freq
+@DOC-PARDESC@
+Maximum Selection Frequency
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Select all notes within rectangle and deselect all others.  
 @DOC-SYNOPSIS@
 @STRONG bsw-pattern-clear-content@ (@EMPH pattern@);
 

@@ -94,7 +94,7 @@ proxy_meta_marshal (GClosure     *closure,
     g_closure_set_marshal (event->closure, bse_proxy_marshaller_lookup (closure->marshal));
 
   if (!event_list)
-    g_idle_add_full (BSE_NOTIFY_PRIORITY, handle_event_list, NULL, NULL);
+    bse_idle_notify (handle_event_list, NULL);
   event_list = gsl_ring_append (event_list, event);
 }
 

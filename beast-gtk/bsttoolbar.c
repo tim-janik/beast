@@ -248,7 +248,7 @@ bst_toolbar_append (BstToolbar     *self,
 			  "yalign", 0.5,
 			  "yscale", 1.0,
 			  "xscale", 1.0,
-			  "child", icon,
+			  icon ? "child" : NULL, icon,
 			  NULL);
       if (filtered && icon)
 	gtk_tooltips_set_tip (BST_TOOLTIPS, icon, tooltip, NULL);
@@ -288,6 +288,19 @@ bst_toolbar_append (BstToolbar     *self,
   gtk_tooltips_set_tip (BST_TOOLTIPS, child, tooltip, NULL);
 
   return child;
+}
+
+GtkWidget*
+bst_toolbar_append_stock (BstToolbar     *self,
+			  BstToolbarChild child_type,
+			  const gchar    *name,
+			  const gchar    *tooltip,
+			  const gchar    *stock_id)
+{
+  g_return_val_if_fail (BST_IS_TOOLBAR (self), NULL);
+
+  return bst_toolbar_append (self, child_type, name, tooltip,
+			     bst_image_from_stock (stock_id, self->icon_size));
 }
 
 typedef struct {

@@ -45,6 +45,13 @@ typedef struct {
   guint		   ref_count;
   BstPianoRoll	  *proll;
   guint		   note_length;
+  /* drag data */
+  BswIterPartNote *sel_iter;
+  guint		   tool_index;
+  guint		   obj_id, obj_tick, obj_duration;
+  gfloat	   obj_freq, obj_velocity;
+  guint		   xoffset;
+  guint		   tick_bound;
 } BstPianoRollController;
 
 
@@ -60,7 +67,12 @@ void			bst_piano_roll_controller_set_obj_tools	(BstPianoRollController	*self,
 								 BstPianoRollTool	 tool1,
 								 BstPianoRollTool	 tool2,
 								 BstPianoRollTool	 tool3);
-
+void			bst_piano_roll_controller_set_clipboard (BswIterPartNote	*iter);
+BswIterPartNote*	bst_piano_roll_controller_get_clipboard	(void);
+void			bst_piano_roll_controller_clear		(BstPianoRollController	*self);
+void			bst_piano_roll_controller_cut		(BstPianoRollController	*self);
+void			bst_piano_roll_controller_copy		(BstPianoRollController	*self);
+void			bst_piano_roll_controller_paste		(BstPianoRollController	*self);
 
 
 #ifdef __cplusplus
