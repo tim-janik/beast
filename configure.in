@@ -110,7 +110,7 @@ dnl
 AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
     dnl supported translations:
-    ALL_LINGUAS="de sv"
+    ALL_LINGUAS="de sr sr@Latn sv"
     AC_SUBST(ALL_LINGUAS)
 
     dnl versioned BSE gettext domain (po-bse/)

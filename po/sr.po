@@ -1,0 +1,1036 @@
+# Serbian translation of beast
+# Courtesy of Prevod.org team (http://www.prevod.org/) -- 2003.
+#
+# This file is distributed under the same license as the beast package.
+#
+# Maintainer: Данило Шеган <dsegan@gmx.net>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: beast\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-16 00:11+0200\n"
+"PO-Revision-Date: 2003-10-16 00:11+0200\n"
+"Last-Translator: Данило Шеган <danilo@prevod.org>\n"
+"Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: beast-gtk/bstapp.c:64
+msgid "/_File"
+msgstr "/_Датотека"
+
+#: beast-gtk/bstapp.c:66
+msgid "/File/_New"
+msgstr "/Датотека/_Нова"
+
+#: beast-gtk/bstapp.c:67
+msgid "/File/_Open..."
+msgstr "/Датотека/_Отвори..."
+
+#: beast-gtk/bstapp.c:68
+msgid "/File/_Merge..."
+msgstr "/Датотека/_Споји..."
+
+#: beast-gtk/bstapp.c:69
+msgid "/File/_Close"
+msgstr "/Датотека/_Затвори"
+
+#: beast-gtk/bstapp.c:71
+msgid "/File/_Save"
+msgstr "/Датотека/_Сачувај"
+
+#: beast-gtk/bstapp.c:72
+msgid "/File/Save _As..."
+msgstr "/Датотека/Сачувај _као..."
+
+#: beast-gtk/bstapp.c:74
+msgid "/File/Preferences..."
+msgstr "/Датотека/_Поставке"
+
+#: beast-gtk/bstapp.c:76
+msgid "/File/_Quit"
+msgstr "/Датотека/_Изађи"
+
+#: beast-gtk/bstapp.c:77
+msgid "/_Edit"
+msgstr "/_Уређивање"
+
+#: beast-gtk/bstapp.c:79
+msgid "/Edit/_Undo"
+msgstr "/Уређивање/Опо_зови"
+
+#: beast-gtk/bstapp.c:80
+msgid "/Edit/_Redo"
+msgstr "/Уређивање/По_нови"
+
+#: beast-gtk/bstapp.c:81
+msgid "/Edit/_Clear Undo"
+msgstr "/Уређивање/_Очисти враћање"
+
+#: beast-gtk/bstapp.c:83
+msgid "/Edit/Preferences..."
+msgstr "/Уређивање/_Поставке"
+
+#: beast-gtk/bstapp.c:84
+msgid "/_View"
+msgstr "/П_реглед"
+
+#: beast-gtk/bstapp.c:86
+msgid "/View/Procedure _Browser"
+msgstr "/Преглед/Раз_гледач процедура"
+
+#: beast-gtk/bstapp.c:87
+msgid "/View/Rack Editor"
+msgstr "/Преглед/Уређивач полица"
+
+#: beast-gtk/bstapp.c:88
+msgid "/View/Device _Monitor"
+msgstr "/Преглед/Праћење _уређаја"
+
+#: beast-gtk/bstapp.c:90
+msgid "/View/Preferences"
+msgstr "/Преглед/Поставке"
+
+#: beast-gtk/bstapp.c:92
+msgid "/View/Rebuild"
+msgstr "/Преглед/Поново _изгради"
+
+#: beast-gtk/bstapp.c:93
+msgid "/_Project"
+msgstr "/_Пројекат"
+
+#: beast-gtk/bstapp.c:95
+msgid "/Project/_Play"
+msgstr "/Пројекат/_Пусти"
+
+#: beast-gtk/bstapp.c:96
+msgid "/Project/_Stop"
+msgstr "/Пројекат/_Заустави"
+
+#: beast-gtk/bstapp.c:98
+msgid "/Project/New Song"
+msgstr "/Пројекат/Нова песма"
+
+#: beast-gtk/bstapp.c:99
+msgid "/Project/New Custom Synthesizer"
+msgstr "/Пројекат/Нови синтетизатор по избору"
+
+#: beast-gtk/bstapp.c:100
+msgid "/Project/New MIDI Synthesizer"
+msgstr "/Пројекат/Нови MIDI синтетизатор"
+
+#: beast-gtk/bstapp.c:101
+msgid "/Project/Remove Synthesizer"
+msgstr "/Пројекат/Уклони синтетизатор"
+
+#: beast-gtk/bstapp.c:103
+msgid "/_Song"
+msgstr "/П_есма"
+
+#: beast-gtk/bstapp.c:105
+msgid "/Song/Add _Part"
+msgstr "/Песма/Додај д_ео"
+
+#: beast-gtk/bstapp.c:106
+msgid "/Song/Delete _Part"
+msgstr "/Песма/_Обриши део"
+
+#: beast-gtk/bstapp.c:107
+msgid "/Song/Add _Track"
+msgstr "/Песма/_Додај песму"
+
+#: beast-gtk/bstapp.c:108
+msgid "/Song/_Delete Track"
+msgstr "/Песма/_Уклони песму"
+
+#: beast-gtk/bstapp.c:109
+msgid "/_Synth"
+msgstr "/_Синтетизатор"
+
+#: beast-gtk/bstapp.c:111
+msgid "/Synth/_Test"
+msgstr "/Синтетизатор/_Проба"
+
+#: beast-gtk/bstapp.c:112
+msgid "/Wave_s"
+msgstr "/_Таласи"
+
+#: beast-gtk/bstapp.c:114
+msgid "/Waves/_Load Wave..."
+msgstr "/Таласи/_Учитај талас..."
+
+#: beast-gtk/bstapp.c:115
+msgid "/Waves/Delete Wave"
+msgstr "/Таласи/Обриши талас"
+
+#: beast-gtk/bstapp.c:116
+msgid "/Waves/_Edit Wave..."
+msgstr "/Таласи/_Уреди талас..."
+
+#: beast-gtk/bstapp.c:118
+msgid "/_Tools"
+msgstr "/_Алати"
+
+#: beast-gtk/bstapp.c:119
+msgid "/Tools/_Song"
+msgstr "/Алати/_Песма"
+
+#: beast-gtk/bstapp.c:120
+msgid "/Tools/_Synth"
+msgstr "/Алати/_Синтетизатор"
+
+#: beast-gtk/bstapp.c:121
+msgid "/Tools/Wave_s"
+msgstr "/Алати/_Таласи"
+
+#: beast-gtk/bstapp.c:124
+msgid "/_Help"
+msgstr "/_Помоћ"
+
+#: beast-gtk/bstapp.c:126
+msgid "/Help/_Release Notes..."
+msgstr "/Помоћ/_Објава издања..."
+
+#: beast-gtk/bstapp.c:127
+msgid "/Help/Quick Start..."
+msgstr "/Помоћ/Брзи почетак..."
+
+#: beast-gtk/bstapp.c:128
+msgid "/Help/_FAQ..."
+msgstr "/Помоћ/Питања и _одговори"
+
+#: beast-gtk/bstapp.c:129
+msgid "/Help/Development/GSL Engine..."
+msgstr "/Помоћ/Развој/GSL структура..."
+
+#: beast-gtk/bstapp.c:131
+msgid "/Help/_About..."
+msgstr "/Помоћ/_О програму..."
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:710
+msgid "Rack editor"
+msgstr "Уређивач полица"
+
+#: beast-gtk/bstapp.c:724
+msgid "Preferences"
+msgstr "Поставке"
+
+#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+#: beast-gtk/bstapp.c:738
+msgid "Device Monitor"
+msgstr "Праћење уређаја"
+
+#: beast-gtk/bstapp.c:753
+msgid "Procedure Browser"
+msgstr "Разгледач процедура"
+
+#: beast-gtk/bstapp.c:810
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr "ЗВЕР-%s Објава издања"
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "Веза са модулом:"
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+msgid "Module link"
+msgstr "Веза са модулом"
+
+#: beast-gtk/bstcanvassource.c:484
+msgid "Module Info"
+msgstr "Подаци о модулу"
+
+#: beast-gtk/bstcanvassource.c:972
+msgid "Input"
+msgstr "Улаз"
+
+#: beast-gtk/bstcanvassource.c:981
+msgid "Output"
+msgstr "Излаз"
+
+#: beast-gtk/bstcanvassource.c:985
+msgid "(Hint)"
+msgstr "(савет)"
+
+#: beast-gtk/bsteventrollctrl.c:259 beast-gtk/bsteventrollctrl.c:266
+#: beast-gtk/bsteventrollctrl.c:330
+msgid "Move Control Event"
+msgstr "Премести контролни догађај"
+
+#: beast-gtk/bsteventrollctrl.c:266 beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:465 beast-gtk/bstpianorollctrl.c:306
+#: beast-gtk/bstpianorollctrl.c:416 beast-gtk/bstpianorollctrl.c:479
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:540
+msgid "No target"
+msgstr "Без мете"
+
+#: beast-gtk/bsteventrollctrl.c:330 beast-gtk/bsteventrollctrl.c:451
+msgid "Lost Event"
+msgstr "Изгубљен догађај"
+
+#: beast-gtk/bsteventrollctrl.c:340 beast-gtk/bsteventrollctrl.c:373
+msgid "Align Control Events"
+msgstr "Поравнај контролне догађаје"
+
+#: beast-gtk/bsteventrollctrl.c:373 beast-gtk/bsteventrollctrl.c:499
+#: beast-gtk/bstpianorollctrl.c:537 beast-gtk/bstpianorollctrl.c:573
+msgid "Aborted"
+msgstr "Прекинут"
+
+#: beast-gtk/bsteventrollctrl.c:399
+msgid "Insert Control Event"
+msgstr "Уметни контролни догађај"
+
+#: beast-gtk/bsteventrollctrl.c:410 beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:451
+msgid "Resize Control Event"
+msgstr "Промени величину контролног догађаја"
+
+#: beast-gtk/bsteventrollctrl.c:462 beast-gtk/bsteventrollctrl.c:465
+msgid "Delete Control Event"
+msgstr "Обриши контролни догађај"
+
+#: beast-gtk/bsteventrollctrl.c:475 beast-gtk/bsteventrollctrl.c:499
+#: beast-gtk/bstpianorollctrl.c:511 beast-gtk/bstpianorollctrl.c:537
+msgid "Select Region"
+msgstr "Изабери подручје"
+
+#: beast-gtk/bsteventrollctrl.c:508 beast-gtk/bstpianorollctrl.c:582
+msgid "Abortion"
+msgstr "Прекид"
+
+#: beast-gtk/bstfiledialog.c:196
+msgid "Contents"
+msgstr "Садржај"
+
+#: beast-gtk/bstfiledialog.c:204
+msgid "Store references to wave files"
+msgstr "Смести референце у Wave датотеке"
+
+#: beast-gtk/bstfiledialog.c:211
+msgid "Include wave files"
+msgstr "Укључи Wave датотеке"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:228
+msgid "File Selection"
+msgstr "Избор датотека"
+
+#: beast-gtk/bstfiledialog.c:343
+msgid "Open Project"
+msgstr "Отвори пројекат"
+
+#: beast-gtk/bstfiledialog.c:357
+msgid "Select Directory"
+msgstr "Изабери директоријум"
+
+#: beast-gtk/bstfiledialog.c:371 beast-gtk/bstfiledialog.c:378
+#, c-format
+msgid "Opening project `%s'"
+msgstr "Отвара пројекат „%s“"
+
+#: beast-gtk/bstfiledialog.c:396
+#, c-format
+msgid "Merge: %s"
+msgstr "Споји: %s"
+
+#: beast-gtk/bstfiledialog.c:409
+#, c-format
+msgid "Merging project `%s'"
+msgstr "Спаја пројекат „%s“"
+
+#: beast-gtk/bstfiledialog.c:425
+#, c-format
+msgid "Save: %s"
+msgstr "Сачувај: %s"
+
+#: beast-gtk/bstfiledialog.c:446 beast-gtk/bstfiledialog.c:481
+#, c-format
+msgid "Saving project `%s'"
+msgstr "Снима пројекат „%s“"
+
+#: beast-gtk/bstfiledialog.c:447
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"Нисам успео да сачувам\n"
+"„%s“\n"
+"у\n"
+"„%s“:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:463
+#, c-format
+msgid "Deleting file `%s'"
+msgstr "Брише датотеку „%s“"
+
+#: beast-gtk/bstfiledialog.c:464
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Нисам успео да уклоним датотеку\n"
+"„%s“\n"
+"због:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:497
+msgid "Load Wave"
+msgstr "Учитај Wave"
+
+#: beast-gtk/bstfiledialog.c:509 beast-gtk/bstfiledialog.c:511
+#, c-format
+msgid "Loading wave `%s'"
+msgstr "Учитавам Wave „%s“"
+
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
+#: beast-gtk/bsttrackview.c:61
+msgid "Add"
+msgstr "Додај"
+
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:38
+#: beast-gtk/bstrackitem.c:182 beast-gtk/bstsnetrouter.c:1017
+#: beast-gtk/bstsnetrouter.c:1059 beast-gtk/bsttrackview.c:63
+msgid "Delete"
+msgstr "Обриши"
+
+#. now, we can popup the splash screen
+#.
+#: beast-gtk/bstmain.c:135
+msgid "BEAST Startup"
+msgstr "Покретање Звери"
+
+#: beast-gtk/bstmain.c:142
+msgid "Startup"
+msgstr "Покретање"
+
+#. BEAST initialization
+#.
+#: beast-gtk/bstmain.c:147
+msgid "Objects"
+msgstr "Објекти"
+
+#: beast-gtk/bstmain.c:151
+msgid "Language"
+msgstr "Језик"
+
+#: beast-gtk/bstmain.c:164
+msgid "RC File"
+msgstr "RC датотека"
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:171
+msgid "Splash Image"
+msgstr "Уводна слика"
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:183
+msgid "BSE Core"
+msgstr "BSE језгро"
+
+#: beast-gtk/bstmain.c:202
+msgid "Plugins"
+msgstr "Додаци"
+
+#: beast-gtk/bstmain.c:221
+msgid "LADSPA Plugins"
+msgstr "LADSPA додаци"
+
+#: beast-gtk/bstmain.c:249
+msgid "Scripts"
+msgstr "Скрипте"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:267
+msgid "Dialogs"
+msgstr "Прозорчићи"
+
+#: beast-gtk/bstmain.c:279
+msgid "Loading..."
+msgstr "Учитавам..."
+
+#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#, c-format
+msgid "Loading \"%s\""
+msgstr "Учитавам „%s“"
+
+#: beast-gtk/bstmain.c:328
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "Учитавам пројекат „%s“"
+
+#. catalog_key, name, stock_id, accelerator, tooltip, blurb
+#: beast-gtk/bstmessages.c:21
+msgid "Left"
+msgstr "Лево"
+
+#: beast-gtk/bstmessages.c:23
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "Користи водоравни лењир за поправку показивача леве петље"
+
+#: beast-gtk/bstmessages.c:25
+msgid "Pos"
+msgstr "Положај"
+
+#: beast-gtk/bstmessages.c:27
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "Користи водоравни лењир за поправку показивача тока пуштања"
+
+#: beast-gtk/bstmessages.c:29
+msgid "Right"
+msgstr "Десно"
+
+#: beast-gtk/bstmessages.c:31
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "Користи водоравни лењир за поправку показивача десне петље"
+
+#: beast-gtk/bstmessages.c:33
+msgid "Q: Tact"
+msgstr "Q: такт"
+
+#: beast-gtk/bstmessages.c:35
+msgid "Quantize to tact boundaries"
+msgstr "Квантизација на нивоу такта"
+
+#: beast-gtk/bstmessages.c:37
+msgid "Q: None"
+msgstr "Q: ништа"
+
+#: beast-gtk/bstmessages.c:39
+msgid "No quantization selected"
+msgstr "Без квантизације"
+
+#: beast-gtk/bstmessages.c:41
+msgid "Q: 1/1"
+msgstr "Q: 1/1"
+
+#: beast-gtk/bstmessages.c:43
+msgid "Quantize to full note boundaries"
+msgstr "Квантизација на нивоу целе ноте"
+
+#: beast-gtk/bstmessages.c:45
+msgid "Q: 1/2"
+msgstr "Q: 1/2"
+
+#: beast-gtk/bstmessages.c:47
+msgid "Quantize to half note boundaries"
+msgstr "Квантизација на нивоу пола ноте"
+
+#: beast-gtk/bstmessages.c:49
+msgid "Q: 1/4"
+msgstr "Q: 1/4"
+
+#: beast-gtk/bstmessages.c:51
+msgid "Quantize to quarter note boundaries"
+msgstr "Квантизација на нивоу четврт ноте"
+
+#: beast-gtk/bstmessages.c:53
+msgid "Q: 1/8"
+msgstr "Q: 1/8"
+
+#: beast-gtk/bstmessages.c:55
+msgid "Quantize to eighths note boundaries"
+msgstr "Квантизација на нивоу осмине ноте"
+
+#: beast-gtk/bstmessages.c:57
+msgid "Q: 1/16"
+msgstr "Q: 1/16"
+
+#: beast-gtk/bstmessages.c:59
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Квантизација на нивоу шеснестине ноте"
+
+#: beast-gtk/bstmessages.c:61
+msgid "_Insert"
+msgstr "У_метни"
+
+#: beast-gtk/bstmessages.c:63
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Уметни/уреди/премести делове (1. и 2. дугме миша)"
+
+#: beast-gtk/bstmessages.c:65
+msgid "Lin_k"
+msgstr "_Вежи"
+
+#: beast-gtk/bstmessages.c:67
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Вежи или премести делове (1. и 2. дугме миша)"
+
+#: beast-gtk/bstmessages.c:69
+msgid "_Rename"
+msgstr "Пре_именуј"
+
+#: beast-gtk/bstmessages.c:71
+msgid "Rename parts"
+msgstr "Преименуј делове"
+
+#: beast-gtk/bstmessages.c:73
+msgid "_Delete"
+msgstr "_Обриши"
+
+#: beast-gtk/bstmessages.c:75
+msgid "Delete parts"
+msgstr "Обриши делове"
+
+#: beast-gtk/bstparam-entry.c:61
+msgid "Remove Paths"
+msgstr "Уклони путање"
+
+#: beast-gtk/bstpartdialog.c:260
+msgid "Control Type: "
+msgstr "Врста контроле:"
+
+#: beast-gtk/bstpartview.c:39
+msgid "Editor"
+msgstr "Уређивач"
+
+#: beast-gtk/bstpianorollctrl.c:299 beast-gtk/bstpianorollctrl.c:306
+#: beast-gtk/bstpianorollctrl.c:394
+msgid "Move Note"
+msgstr "Премести ноту"
+
+#: beast-gtk/bstpianorollctrl.c:394 beast-gtk/bstpianorollctrl.c:465
+msgid "Lost Note"
+msgstr "Изгубљена нота"
+
+#: beast-gtk/bstpianorollctrl.c:411 beast-gtk/bstpianorollctrl.c:416
+#: beast-gtk/bstpianorollctrl.c:465
+msgid "Resize Note"
+msgstr "Промени величину ноте"
+
+#: beast-gtk/bstpianorollctrl.c:476 beast-gtk/bstpianorollctrl.c:479
+msgid "Delete Note"
+msgstr "Обриши ноту"
+
+#: beast-gtk/bstpianorollctrl.c:501
+msgid "Insert Note"
+msgstr "Уметни ноту"
+
+#: beast-gtk/bstpianorollctrl.c:547
+msgid "Vertical Select"
+msgstr "Усправан избор"
+
+#: beast-gtk/bstpianorollctrl.c:573
+msgid "Vertical Region"
+msgstr "Усправно подручје"
+
+#: beast-gtk/bstpianorollctrl.c:708
+msgid "Play note"
+msgstr "Пусти ноту"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr "Пуштање"
+
+#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:620
+msgid "Description"
+msgstr "Опис"
+
+#: beast-gtk/bstprocedure.c:297
+#, c-format
+msgid "Executing `%s'"
+msgstr "Извршавам „%s“"
+
+#: beast-gtk/bstprocedure.c:447
+msgid "Procedure"
+msgstr "Процедура"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr "Пуштам испочетка"
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr "Пуштам"
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr "Заустављам пуштање"
+
+#: beast-gtk/bstrackeditor.c:98
+msgid "_Edit"
+msgstr "_Уреди"
+
+#: beast-gtk/bstrackitem.c:172
+msgid "Edit Rack Item"
+msgstr "Уреди ставку полице"
+
+#: beast-gtk/bstrackitem.c:174
+msgid "Controller"
+msgstr "Управљач"
+
+#: beast-gtk/bstrackitem.c:175
+msgid "Duplicate"
+msgstr "Удвостручи"
+
+#: beast-gtk/bstrackitem.c:177
+msgid "Grow Horizontally"
+msgstr "Повећај водоравно"
+
+#: beast-gtk/bstrackitem.c:178
+msgid "Grow Vertically"
+msgstr "Повећај усправно"
+
+#: beast-gtk/bstrackitem.c:179
+msgid "Shrink Horizontally"
+msgstr "Смањи водоравно"
+
+#: beast-gtk/bstrackitem.c:180
+msgid "Shrink Vertically"
+msgstr "Смањи усправно"
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr "Увећање:"
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr "Усправна размера:"
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "Почетак:"
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "Крај:"
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "Обликуј опсег"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "Обликуј просек"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "Обликуј минимум"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "Обликуј максимум"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr "Скицирај опсег"
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr "Скицирај просек"
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr "Скицирај минимум"
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr "Скицирај максимум"
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "Преслушај"
+
+#: beast-gtk/bstsnetrouter.c:407
+msgid "Palette"
+msgstr "Палета"
+
+#: beast-gtk/bstsnetrouter.c:926
+msgid "Input channel in use"
+msgstr "Улазни канал у употреби"
+
+#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:991
+msgid "Create Link"
+msgstr "Направи везу"
+
+#: beast-gtk/bstsnetrouter.c:953
+msgid "Select output module"
+msgstr "Изаберите излазни модул"
+
+#: beast-gtk/bstsnetrouter.c:955
+msgid "Select input module"
+msgstr "Изаберите улазни модул"
+
+#: beast-gtk/bstsnetrouter.c:1011
+msgid "Properties"
+msgstr "Особине"
+
+#: beast-gtk/bstsnetrouter.c:1012
+msgid "Reset Properties"
+msgstr "Врати особине"
+
+#: beast-gtk/bstsnetrouter.c:1013
+msgid "Delete Inputs"
+msgstr "Уклони улазе"
+
+#: beast-gtk/bstsnetrouter.c:1014
+msgid "Delete Outputs"
+msgstr "Уклони излазе"
+
+#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+msgid "Show Info"
+msgstr "Прикажи податке"
+
+#: beast-gtk/bstsnetrouter.c:1041
+msgid "Remove Module"
+msgstr "Уклони модул"
+
+#: beast-gtk/bstsnetrouter.c:1068
+msgid "Delete Link"
+msgstr "Уклони везу"
+
+#: beast-gtk/bstsnetrouter.c:1122
+msgid "Insert Module"
+msgstr "Уметни модул"
+
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
+msgid "Routing"
+msgstr "Усмеравање"
+
+#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
+#: beast-gtk/bstwavereposhell.c:146
+msgid "Parameters"
+msgstr "Параметри"
+
+#: beast-gtk/bstsongshell.c:152
+msgid "Tracks"
+msgstr "Песме"
+
+#: beast-gtk/bstsongshell.c:162
+msgid "Parts"
+msgstr "Делови"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr "Избор у круг"
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr "Петља у избор"
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr "Увећај избор"
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr "Примени петљу"
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr "Врати петљу"
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr "Партитура"
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "Пронађи"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr "Означи сигнал (глава)"
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr "Означи сигнал (реп)"
+
+#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
+msgid "Edit Part"
+msgstr "Уреди део"
+
+#: beast-gtk/bsttrackrollctrl.c:388
+msgid "No Part"
+msgstr "Без дела"
+
+#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Insert Part"
+msgstr "Уметни део"
+
+#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
+msgid "Lost Part"
+msgstr "Изгубљен део"
+
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Position taken"
+msgstr "Положај заузет"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "Insert part"
+msgstr "Уметни део"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "No Track"
+msgstr "Без песме"
+
+#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
+msgid "Delete Part"
+msgstr "Уклони део"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+msgid "Link Part"
+msgstr "Вежи део"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:523
+msgid "Move Part"
+msgstr "Премести део"
+
+#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
+msgid "Start Editor"
+msgstr "Покрени уређивач"
+
+#: beast-gtk/bsttrackview.c:62
+msgid "Add a new track to this song"
+msgstr "Додај нову мелодију у ову песму"
+
+#: beast-gtk/bsttrackview.c:64
+msgid "Delete the currently selected track"
+msgstr "Обриши тренутно изабрану мелодију"
+
+#: beast-gtk/bsttrackview.c:640
+msgid "Comment"
+msgstr "Примедба"
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Notice"
+msgstr "Напомена"
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Question"
+msgstr "Питање"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Warning"
+msgstr "Упозорење"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Error"
+msgstr "Грешка"
+
+#: beast-gtk/bstusermessage.c:107
+msgid "Miscellaneous Message"
+msgstr "Разноврсна порука"
+
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+msgid "processing"
+msgstr "обрађујем"
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr "Не клизај"
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr "Клизај оба"
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr "Клизај лево"
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr "Клизај десно"
+
+#. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
+#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
+msgid "Waves"
+msgstr "Таласи"
+
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr "Број колона"
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr "Низ врста колона"
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr "Број редова"
+
+#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+msgid "Filter Choice"
+msgstr "Избор филтера"
+
+#: plugins/bseiirfilter.c:118
+msgid "Filter Algorithm"
+msgstr "Алгоритам филтрирања"
+
+#: plugins/bseiirfilter.c:118
+msgid "The filter design type"
+msgstr "Врста израде филтера"
+
+#: plugins/bseiirfilter.c:124
+msgid "Filter Type"
+msgstr "Врста филтера"
+
+#: plugins/bseiirfilter.c:124
+msgid "The type of filter to use"
+msgstr "Коју врсту филтера да користим"
+
+#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+msgid "Filter Specification"
+msgstr "Навод филтера"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order"
+msgstr "Редослед"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order of Filter"
+msgstr "Редослед филтера"
+
+#: plugins/bseiirfilter.c:135
+msgid "Epsilon"
+msgstr "Епсилон"
+
+# шта год :-)
+#: plugins/bseiirfilter.c:135
+msgid "Passband falloff at cutoff frequency"
+msgstr "Пад пролазне траке на учестаности исецања"
+
+#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+msgid "Cutoff Frequency (All Filters)"
+msgstr "Учестаност исецања (сви филтери)"
+
+#: plugins/bseiirfilter.c:140 plugins/bseiirfilter.c:150
+msgid "Cutoff [Hz]"
+msgstr "Исецање [Hz]"
+
+#: plugins/bseiirfilter.c:145 plugins/bseiirfilter.c:155
+msgid "Note"
+msgstr "Напомена"
+
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr "Учестаност исецања 2 (пролаз/заустављање траке)"
+
+#: plugins/bseiirfilter.c:159
+msgid "Unfiltered Input"
+msgstr "Нефилтрирани улаз"
+
+#: plugins/bseiirfilter.c:161
+msgid "Filtered Output"
+msgstr "Филтрирани улаз"
