@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 03:08+0100\n"
-"PO-Revision-Date: 2004-02-25 07:24+0100\n"
+"POT-Creation-Date: 2004-03-01 03:09+0100\n"
+"PO-Revision-Date: 2004-03-01 15:11+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -417,7 +417,7 @@ msgstr "Načítám vlnu `%s'"
 msgid "Add"
 msgstr "Přidat"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:56
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
 #: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
@@ -441,144 +441,156 @@ msgstr "Poznámka"
 msgid "Type"
 msgstr "Typ"
 
-#: beast-gtk/bstkeybindings.c:48
+#: beast-gtk/bstkeybindings.c:51
 msgid "Add..."
 msgstr "Přidat..."
 
-#: beast-gtk/bstkeybindings.c:48
+#: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
 msgstr "Spojit novou kombinaci kláves s funkcí programu"
 
-#: beast-gtk/bstkeybindings.c:50
+#: beast-gtk/bstkeybindings.c:53
 msgid "Change..."
 msgstr "Změnit..."
 
-#: beast-gtk/bstkeybindings.c:50
+#: beast-gtk/bstkeybindings.c:53
 msgid "Change the currently selected key binding"
 msgstr "Změnit momentálně vybranou klávesovou zkratku"
 
-#: beast-gtk/bstkeybindings.c:52
+#: beast-gtk/bstkeybindings.c:55
 msgid "Raise"
 msgstr "Zvyšit"
 
-#: beast-gtk/bstkeybindings.c:52
+#: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Zvýšit momentálně vybranou klávesouvou zkratku relativně vůči sousedům"
 
-#: beast-gtk/bstkeybindings.c:54
+#: beast-gtk/bstkeybindings.c:57
 msgid "Lower"
 msgstr "Snížit"
 
-#: beast-gtk/bstkeybindings.c:54
+#: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
 msgstr "Snížit momentálně vybranou klávesouvou zkratku relativně vůči sousedům"
 
-#: beast-gtk/bstkeybindings.c:56
+#: beast-gtk/bstkeybindings.c:59
 msgid "Delete the currently selected key binding"
 msgstr "Odstranit momentálně vybranou klávesovou zkratku"
 
-#: beast-gtk/bstkeybindings.c:395
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load"
+msgstr "Načíst"
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load a key binding set"
+msgstr "Načíst sadu klávesových zkratek"
+
+#: beast-gtk/bstkeybindings.c:237
+msgid "Load Key Binding"
+msgstr "Načíst klávesovou zkratku"
+
+#: beast-gtk/bstkeybindings.c:432
 msgid "Key Binding"
 msgstr "Klávesová zkratka"
 
-#: beast-gtk/bstkeybindings.c:396
+#: beast-gtk/bstkeybindings.c:433
 msgid "Key combinations used to activate a function"
 msgstr "Kombinace kláves používané pro aktivování funkce"
 
-#: beast-gtk/bstkeybindings.c:398 beast-gtk/bstkeybindings.c:422
+#: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
 msgid "Function"
 msgstr "Funkce"
 
-#: beast-gtk/bstkeybindings.c:399
+#: beast-gtk/bstkeybindings.c:436
 msgid "Functions to be activated for a key binding"
 msgstr "Funkce, které aktivovat pro klávesovou zkratku"
 
-#: beast-gtk/bstkeybindings.c:401
+#: beast-gtk/bstkeybindings.c:438
 msgid "Parameter"
 msgstr "Parametr"
 
-#: beast-gtk/bstkeybindings.c:402
+#: beast-gtk/bstkeybindings.c:439
 msgid "Parameter to pass to functions upon activation"
 msgstr "Parametr, který při aktivaci předat funkci"
 
-#: beast-gtk/bstkeybindings.c:423
+#: beast-gtk/bstkeybindings.c:460
 msgid "Function used to create new key bindings"
 msgstr "Funkce používaná pro vytvoření nových klávesových zkratek"
 
-#: beast-gtk/bstkeybindings.c:425 beast-gtk/bstprocedure.c:206
+#: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Popis"
 
-#: beast-gtk/bstmain.c:127
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr "Spuštění"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:138
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr "Inicializéry"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:145
+#: beast-gtk/bstmain.c:147
 msgid "RC Files"
 msgstr "Soubory RC"
 
 #. show splash images
-#: beast-gtk/bstmain.c:149
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr "Obrázek při spuštění"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:161
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr "Jádro BSE"
 
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Zásuvné moduly"
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr "Zásuvné moduly LADSPA"
 
-#: beast-gtk/bstmain.c:227
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Skripty"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:245
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Dialogy"
 
-#: beast-gtk/bstmain.c:252
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Načítám..."
 
-#: beast-gtk/bstmain.c:282 beast-gtk/bstmain.c:284
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
-#: beast-gtk/bstmain.c:301
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:702
+#: beast-gtk/bstmain.c:710
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:703
+#: beast-gtk/bstmain.c:711
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:704
+#: beast-gtk/bstmain.c:712
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -873,7 +885,9 @@ msgstr "VPřechod"
 #: beast-gtk/bstpatternctrl.c:50
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
-msgstr "Přepnout, jestli vodorovný pohyb aktivní buňky bude pokračovat od opačného konce"
+msgstr ""
+"Přepnout, jestli vodorovný pohyb aktivní buňky bude pokračovat od opačného "
+"konce"
 
 #. movement
 #: beast-gtk/bstpatternctrl.c:192
@@ -1749,7 +1763,7 @@ msgstr "Upravit momentálně vybranou vlnu"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
 msgid "Adjust right view boundary"
-msgstr ""
+msgstr "Upravit pravou hranici zobrazení"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust the zoom factor of the router display"
@@ -2147,7 +2161,8 @@ msgstr ""
 "zesilování zvukových signálů). Konečně hlavní hlasitost ovládá zesilování "
 "výsledného výstupního signálu."
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:47 plugins/bseadder.c:100 plugins/bsebalance.idl:36
+#: plugins/bsemult.c:60
 msgid "Audio In1"
 msgstr "Zvuk In1"
 
@@ -2155,7 +2170,8 @@ msgstr "Zvuk In1"
 msgid "First audio input"
 msgstr "První vstup zvuku"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:48 plugins/bseadder.c:102 plugins/bsebalance.idl:37
+#: plugins/bsemult.c:62
 msgid "Audio In2"
 msgstr "Zvuk In2"
 
@@ -2179,9 +2195,12 @@ msgstr "Říd In2"
 msgid "Second control input"
 msgstr "Druhý řídicí vstup"
 
-#: bse/bseamplifier.idl:51 plugins/artscompressor.idl:33
-#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
-#: plugins/evaluator/bseevaluator.idl:33
+#: bse/bseamplifier.idl:51 bse/bsebiquadfilter.c:198 bse/bsestandardosc.c:207
+#: bse/bsewaveosc.c:161 plugins/artscompressor.idl:33 plugins/bseadder.c:104
+#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
+#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Výstup zvuku"
 
@@ -2345,7 +2364,7 @@ msgstr "Střední frekvence"
 msgid "Cutoff [Hz]"
 msgstr "Odříznutí [Hz]"
 
-#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: bse/bsebiquadfilter.c:146 bse/bseconstant.c:133 bse/bsestandardosc.c:154
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Upozornění"
@@ -2370,7 +2389,8 @@ msgstr "Typ filtru normalizace zisku (podporováno jen horní a dolní propustí
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
 #: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
-#: bse/bsestandardosc.c:178
+#: bse/bsestandardosc.c:178 bse/bsewaveosc.c:131 bse/bsewaveosc.c:137
+#: bse/bsewaveosc.c:143
 msgid "Modulation"
 msgstr "Modulace"
 
@@ -2382,7 +2402,7 @@ msgstr "Síla lineární frekvenční modulace"
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
 
-#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175 bse/bsewaveosc.c:146
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Počet oktáv, na které má mít vliv exponenciální frekvenční modulace"
 
@@ -2395,17 +2415,38 @@ msgstr "Modulace zisku [%s]"
 msgid "Strength of gain modulation"
 msgstr "Síla modulace zisku"
 
+#: bse/bsebiquadfilter.c:190 plugins/artscompressor.idl:32
+#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+msgid "Audio In"
+msgstr "Zvuk In"
+
 #: bse/bsebiquadfilter.c:190
 msgid "Unfiltered Audio Signal"
 msgstr "Nefiltrovaný signál zvuku"
+
+#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199 bse/bsewaveosc.c:155
+#: plugins/davorgan.c:132 plugins/davsyndrum.c:116
+#: plugins/davxtalstrings.c:141
+msgid "Freq In"
+msgstr "Frekv In"
 
 #: bse/bsebiquadfilter.c:192
 msgid "Center Frequency Input"
 msgstr "Vstup střední frekvence"
 
 #: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
+msgid "Freq Mod In"
+msgstr "Frekv mod In"
+
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
 msgstr "Vstup frekvenční modulace"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Mod In"
+msgstr "Zisk mod In"
 
 #: bse/bsebiquadfilter.c:196
 msgid "Gain Modulation Input"
@@ -2414,6 +2455,199 @@ msgstr "Vstup modulace zisku"
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
+
+#: bse/bseconstant.c:111 bse/bseconstant.c:142
+#, c-format
+msgid "Constant Output %u"
+msgstr "Konstantní výstup %u"
+
+#: bse/bseconstant.c:114
+msgid "Value [float]"
+msgstr "Hodnota [float]"
+
+#: bse/bseconstant.c:122 bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr "Frekvence"
+
+#: bse/bseconstant.c:141
+#, c-format
+msgid "Const Out%u"
+msgstr "Konst Out%u"
+
+#: bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+msgid "Note Frequency"
+msgstr "Frekvence noty"
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "Gate"
+msgstr "Brána"
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "High if the note is currently being pressed"
+msgstr "High, pokud je nota právě stisknuta"
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity"
+msgstr "Rychlost"
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity of the note press"
+msgstr "Rychlost stisku noty"
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Aftertouch"
+msgstr "Dotlak"
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Velocity while the note is pressed"
+msgstr "Rychlost při stisknutí noty"
+
+#: bse/bseinstrumentoutput.c:106
+msgid "Left Audio"
+msgstr "Levý zvuk"
+
+#: bse/bseinstrumentoutput.c:106
+msgid "Left Channel Output"
+msgstr "Výstup levého kanálu"
+
+#: bse/bseinstrumentoutput.c:108
+msgid "Right Audio"
+msgstr "Pravý zvuk"
+
+#: bse/bseinstrumentoutput.c:108
+msgid "Right Channel Output"
+msgstr "Výstup pravého kanálu"
+
+#: bse/bseinstrumentoutput.c:110
+msgid "Unused"
+msgstr "Nepoužito"
+
+#: bse/bseinstrumentoutput.c:112
+msgid "Synth Done"
+msgstr "Syntéza dokončena"
+
+#: bse/bseinstrumentoutput.c:112
+msgid "High indicates the instrument is done synthesizing"
+msgstr "High znamená, že nástroj dosyntetizoval"
+
+#: bse/bsemidicontroller.c:142
+msgid "Ctrl Out1"
+msgstr "Říd Out1"
+
+#: bse/bsemidicontroller.c:142
+msgid "MIDI Signal 1"
+msgstr "MIDI signál 1"
+
+#: bse/bsemidicontroller.c:144
+msgid "Ctrl Out2"
+msgstr "Říd Out2"
+
+#: bse/bsemidicontroller.c:144
+msgid "MIDI Signal 2"
+msgstr "MIDI signál 2"
+
+#: bse/bsemidicontroller.c:146
+msgid "Ctrl Out3"
+msgstr "Říd Out3"
+
+#: bse/bsemidicontroller.c:146
+msgid "MIDI Signal 3"
+msgstr "MIDI signál 3"
+
+#: bse/bsemidicontroller.c:148
+msgid "Ctrl Out4"
+msgstr "Říd Out4"
+
+#: bse/bsemidicontroller.c:148
+msgid "MIDI Signal 4"
+msgstr "MIDI signál 4"
+
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+msgid "Freq Out"
+msgstr "Frekv Out"
+
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:163
+msgid "Gate Out"
+msgstr "Brána Out"
+
+#: bse/bsemidivoice.c:113
+msgid "Velocity Out"
+msgstr "Rychlost Out"
+
+#: bse/bsemidivoice.c:115
+msgid "Aftertouch Out"
+msgstr "Dotlak Out"
+
+#: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
+msgid "Left In"
+msgstr "Levé In"
+
+#: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
+msgid "Right In"
+msgstr "Pravé In"
+
+#: bse/bsemidivoice.c:137
+msgid "Disconnect In"
+msgstr "Odpojení In"
+
+#: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
+#: plugins/davcanyondelay.c:120
+msgid "Left Out"
+msgstr "Levé Out"
+
+#: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
+#: plugins/davcanyondelay.c:122
+msgid "Right Out"
+msgstr "Pravé Out"
+
+#: bse/bsemidivoice.c:143
+msgid "Disconnect Out"
+msgstr "Odpojení Out"
+
+#: bse/bsepcminput.c:133 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr "Levý zvuk Out"
+
+#: bse/bsepcminput.c:133
+msgid "Left channel output"
+msgstr "Výstup levého kanálu"
+
+#: bse/bsepcminput.c:135 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr "Pravý zvuk Out"
+
+#: bse/bsepcminput.c:135
+msgid "Right channel output"
+msgstr "Výstup pravého kanálu"
+
+#: bse/bsepcmoutput.c:133 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr "Levý zvuk In"
+
+#: bse/bsepcmoutput.c:133
+msgid "Left channel input"
+msgstr "Vstup levého kanálu"
+
+#: bse/bsepcmoutput.c:135 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr "Pravý zvuk In"
+
+#: bse/bsepcmoutput.c:135
+msgid "Right channel Input"
+msgstr "Vstup pravého kanálu"
+
+#: bse/bsesnooper.c:113
+msgid "Signal In"
+msgstr "Signál In"
+
+#: bse/bsesnooper.c:113
+msgid "Snoop Signal"
+msgstr ""
 
 #: bse/bsestandardosc.c:111
 msgid ""
@@ -2431,7 +2665,7 @@ msgstr "/Moduly/Zdroje zvuku/Standardní oscilátor"
 msgid "Wave Form"
 msgstr "Tvar vlny"
 
-#: bse/bsestandardosc.c:139
+#: bse/bsestandardosc.c:139 bse/bsewaveosc.c:127 bse/bsewaveosc.c:129
 msgid "Wave"
 msgstr "Vlna"
 
@@ -2447,23 +2681,19 @@ msgstr "Fáze"
 msgid "Base Frequency"
 msgstr "Základní frekvence"
 
-#: bse/bsestandardosc.c:150
-msgid "Frequency"
-msgstr "Frekvence"
-
 #: bse/bsestandardosc.c:157
 msgid "Fine Tune"
 msgstr "Doladění"
 
-#: bse/bsestandardosc.c:162
+#: bse/bsestandardosc.c:162 bse/bsewaveosc.c:133
 msgid "Input Modulation [%]"
 msgstr "Modulace vstupu [%]"
 
-#: bse/bsestandardosc.c:168
+#: bse/bsestandardosc.c:168 bse/bsewaveosc.c:139
 msgid "Exponential FM"
 msgstr "Exponenciální FM"
 
-#: bse/bsestandardosc.c:174
+#: bse/bsestandardosc.c:174 bse/bsewaveosc.c:145
 msgid "Octaves"
 msgstr "Oktávy"
 
@@ -2508,10 +2738,18 @@ msgid "Oscillating Frequency Input"
 msgstr "Vstup oscilující frekvence"
 
 #: bse/bsestandardosc.c:203
+msgid "PWM In"
+msgstr "PWM In"
+
+#: bse/bsestandardosc.c:203
 msgid "Pulse Width Modulation Input"
 msgstr "Vstup modulace šířky pulzu"
 
-#: bse/bsestandardosc.c:205
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
+msgid "Sync In"
+msgstr "Synch In"
+
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Syncronization Input"
 msgstr "Vstup synchronizace"
 
@@ -2520,8 +2758,65 @@ msgid "Oscillated Output"
 msgstr "Oscilovaný výstup"
 
 #: bse/bsestandardosc.c:209
+msgid "Sync Out"
+msgstr "Synch Out"
+
+#: bse/bsestandardosc.c:209
 msgid "Syncronization Output"
 msgstr "Výstup synchronizace"
+
+#: bse/bsesubiport.c:127 bse/bsesubsynth.c:137
+#, c-format
+msgid "Input Port %u"
+msgstr "Vstupní port %u"
+
+#: bse/bsesubiport.c:129 bse/bsesuboport.c:129 bse/bsesubsynth.c:127
+msgid "Assignments"
+msgstr "Přiřazení"
+
+#: bse/bsesubiport.c:131 bse/bsesuboport.c:131
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr "Název portu je jedinečný název pro tvorbu vztahů portů vstup<->výstup"
+
+#: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
+#, c-format
+msgid "Virtual input %u"
+msgstr "Virtuální vstup %u"
+
+#: bse/bsesuboport.c:127 bse/bsesubsynth.c:147
+#, c-format
+msgid "Output Port %u"
+msgstr "Výstupní port %u"
+
+#: bse/bsesuboport.c:139 bse/bsesubsynth.c:164
+#, c-format
+msgid "Virtual output %u"
+msgstr "Virtuální výstup %u"
+
+#: bse/bsesubsynth.c:129
+msgid "Synthesis Network"
+msgstr "Síť syntézy"
+
+#: bse/bsesubsynth.c:130
+msgid "The synthesis network to interface to"
+msgstr "Síť syntézy, se kterou se spojit"
+
+#: bse/bsesubsynth.c:139
+msgid "Input Assignments"
+msgstr "Přiřazení vstupů"
+
+#: bse/bsesubsynth.c:140
+msgid "Output port name to interface from"
+msgstr "Název výstupního portu, se kterým se spojit"
+
+#: bse/bsesubsynth.c:149
+msgid "Output Assignments"
+msgstr "Přiřazení výstupů"
+
+#: bse/bsesubsynth.c:150
+msgid "Input port name to interface to"
+msgstr "Název vstupního portu, se kterým se spojit"
 
 #: bse/bsesuper.c:101
 msgid "Author"
@@ -2547,17 +2842,49 @@ msgstr "Čas vytvoření"
 msgid "Last modification time"
 msgstr "Čas poslední změny"
 
+#: bse/bsewaveosc.c:129
+msgid "Wave to play"
+msgstr "Vlna, kterou přehrávat"
+
+#: bse/bsewaveosc.c:134
+msgid "Modulation Strength for linear frequency modulation"
+msgstr "Síla lineární frekvenční modulace"
+
+#: bse/bsewaveosc.c:140
+msgid "Perform exponential frequency modulationinstead of linear"
+msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
+
+#: bse/bsewaveosc.c:155 plugins/davorgan.c:132
+msgid "Frequency Input"
+msgstr "Vstup frekvence"
+
+#: bse/bsewaveosc.c:159
+msgid "Mod In"
+msgstr "Mod In"
+
+#: bse/bsewaveosc.c:159
+msgid "Modulation Input"
+msgstr "Vstup modulace"
+
+#: bse/bsewaveosc.c:161
+msgid "Wave Output"
+msgstr "Výstup vlny"
+
+#: bse/bsewaveosc.c:163
+msgid "Gate Output"
+msgstr "Výstup brány"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
-msgid "Music Composer"
-msgstr "Skladatel hudby"
+msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
+msgstr "MIDI tracker, aplikace pro skládání hudby a modulární syntézu"
 
 #: data/beast.desktop.in.h:3
-msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
-msgstr "Nástroj pro syntézu hudby, tracker MIDI a skladatel hudby"
+msgid "Music Composer"
+msgstr "Skladatel hudby"
 
 #: data/bse.keys.in.h:1
 msgid "Audio"
@@ -2583,11 +2910,6 @@ msgstr "/Vylepšit/ArtsCompressor"
 #: plugins/artscompressor.idl:31
 msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor komprimuje zvuk."
-
-#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
-msgid "Audio In"
-msgstr "Zvuk In"
 
 #: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
@@ -2643,36 +2965,40 @@ msgid "ArtsStereoCompressor compresses the sound."
 msgstr "ArtsStereoCompressor komprimuje zvuk."
 
 #: plugins/artscompressor.idl:49
-msgid "Left Audio In"
-msgstr "Levý zvuk In"
-
-#: plugins/artscompressor.idl:49
 msgid "Left audio input"
 msgstr "Vstup levého zvuku"
-
-#: plugins/artscompressor.idl:50
-msgid "Right Audio In"
-msgstr "Pravý zvuk In"
 
 #: plugins/artscompressor.idl:50
 msgid "Right audio input"
 msgstr "Vstup pravého zvuku"
 
 #: plugins/artscompressor.idl:51
-msgid "Left Audio Out"
-msgstr "Levý zvuk Out"
-
-#: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
 msgstr "Výstup komprimovaného levého zvuku"
 
 #: plugins/artscompressor.idl:52
-msgid "Right Audio Out"
-msgstr "Pravý zvuk Out"
-
-#: plugins/artscompressor.idl:52
 msgid "Compressed right audio output"
 msgstr "Výstup komprimovaného pravého zvuku"
+
+#: plugins/bseadder.c:100 plugins/bsemult.c:60
+msgid "Audio Input 1"
+msgstr "Vstup zvuku 1"
+
+#: plugins/bseadder.c:102 plugins/bsemult.c:62
+msgid "Audio Input 2"
+msgstr "Vstup zvuku 2"
+
+#: plugins/bseadder.c:104 plugins/bsemult.c:68
+msgid "Audio Output"
+msgstr "Výstup zvuku"
+
+#: plugins/bseatandistort.c:90
+msgid "Audio Input SIgnal"
+msgstr "Vstupní signál zvuku"
+
+#: plugins/bseatandistort.c:92
+msgid "Distorted Audio Output"
+msgstr "Výstup zkresleného zvuku"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
@@ -2693,10 +3019,6 @@ msgstr ""
 "předzpracován jednoduchou dolní propustí s upravitelnou limitní frekvencí."
 
 #: plugins/bsebalance.idl:40
-msgid "Left Out"
-msgstr "Levé Out"
-
-#: plugins/bsebalance.idl:40
 msgid "Left audio output"
 msgstr "Výstup levého zvuku"
 
@@ -2707,10 +3029,6 @@ msgstr "Mix Out"
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
 msgstr "Výstup mixovaného zvuku"
-
-#: plugins/bsebalance.idl:42
-msgid "Right Out"
-msgstr "Pravé Out"
 
 #: plugins/bsebalance.idl:42
 msgid "Right audio output"
@@ -2739,6 +3057,22 @@ msgstr "Vyvážení výstupu"
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
 msgstr "Upravit vyvážení výstupu mezi levou a pravou stranou"
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Out"
+msgstr "Mono Out"
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Filtered Output"
+msgstr "Filtrovaný mono výstup"
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono In"
+msgstr "Mono In"
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono Signal Input"
+msgstr "Vstup mono signálu"
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
@@ -2787,6 +3121,108 @@ msgstr "Nefiltrovaný vstup"
 #: plugins/bseiirfilter.c:162
 msgid "Filtered Output"
 msgstr "Filtrovaný výstup"
+
+#: plugins/bsemixer.c:109
+msgid "Sole Output"
+msgstr "Jediný výstup"
+
+#: plugins/bsemixer.c:115
+#, c-format
+msgid "Channel%u"
+msgstr "Kanál%u"
+
+#: plugins/bsemixer.c:117
+#, c-format
+msgid "Channel%u [float]"
+msgstr "Kanál%u [float]"
+
+#: plugins/bsemixer.c:127
+#, c-format
+msgid "Channel%u [dB]"
+msgstr "Kanál%u [dB]"
+
+#: plugins/bsemixer.c:138
+#, c-format
+msgid "Channel%u [%%]"
+msgstr "Kanál%u [%%]"
+
+#: plugins/bsemixer.c:149
+#, c-format
+msgid "Audio In%u"
+msgstr "Zvuk In%u"
+
+#: plugins/bsemixer.c:150
+#, c-format
+msgid "Input Channel %u"
+msgstr "Vstupní kanál %u"
+
+#: plugins/bsemult.c:64
+msgid "Audio In3"
+msgstr "Zvuk In3"
+
+#: plugins/bsemult.c:64
+msgid "Audio Input 3"
+msgstr "Vstup zvuku 3"
+
+#: plugins/bsemult.c:66
+msgid "Audio In4"
+msgstr "Zvuk In4"
+
+#: plugins/bsemult.c:66
+msgid "Audio Input 4"
+msgstr "Vstup zvuku 4"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Out"
+msgstr "Hluk Out"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Output"
+msgstr "Výstup hluku"
+
+#: plugins/bsesequencer.c:107
+msgid "Frequency Signal"
+msgstr "Signál frekvence"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync"
+msgstr "Synch noty"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync Signal"
+msgstr "Signál synchronizace noty"
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate In"
+msgstr "Brána In"
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate input (activates/deactivates envelope)"
+msgstr "Vstup brány (aktivuje/deaktivuje obálku)"
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger input (raising edge retriggers envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Ctrl Out"
+msgstr "Říd Out"
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Attack-Decay-Sustain-Release envelope output"
+msgstr "Výstup obálky nástup-útlum-trvání-uvolnění"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "Done Out"
+msgstr "Hot Out"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "This signal goes high after the release phase has completed"
+msgstr "Tento signál je high po dokončení fáze uvolnění"
 
 #: plugins/davbassfilter.idl:29
 msgid "/Filters/Bass Filter"
@@ -2843,6 +3279,22 @@ msgstr "Nastavit délku útlumu v procentech"
 msgid "Trigger filter"
 msgstr "Spustit filtr"
 
+#: plugins/davcanyondelay.c:116
+msgid "Left Audio Input"
+msgstr "Vstup levého zvuku"
+
+#: plugins/davcanyondelay.c:118
+msgid "Right Audio Input"
+msgstr "Vstup pravého zvuku"
+
+#: plugins/davcanyondelay.c:120
+msgid "Left Audio Output"
+msgstr "Výstup levého zvuku"
+
+#: plugins/davcanyondelay.c:122
+msgid "Right Audio Output"
+msgstr "Výstup pravého zvuku"
+
 #: plugins/davchorus.idl:29
 msgid "/Enhance/Chorus"
 msgstr "/Vylepšit/Sbor"
@@ -2862,6 +3314,50 @@ msgstr ""
 #: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
 msgstr "Nastavit množství upravených dat, která mixovat"
+
+#: plugins/davguitar.c:302
+msgid "Guitar Output"
+msgstr "Výstup kytary"
+
+#: plugins/davorgan.c:133
+msgid "Organ Output"
+msgstr "Výstup varhan"
+
+#: plugins/davsyndrum.c:116
+msgid "Drum Frequency Input"
+msgstr "Vstup frekvence bubnu"
+
+#: plugins/davsyndrum.c:118
+msgid "Ratio In"
+msgstr "Poměr In"
+
+#: plugins/davsyndrum.c:118
+msgid "Frequency shift ratio (assumed 1.0 if not connected)"
+msgstr "Podíl posunu frekvence (není-li připojeno, předpokládá se 1.0)"
+
+#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr "Spuštění In"
+
+#: plugins/davsyndrum.c:120
+msgid "Hit the drum on raising edges"
+msgstr "Udeřit do bubnu při vzestupných hranách"
+
+#: plugins/davsyndrum.c:122
+msgid "SynDrum Output"
+msgstr "Výstup SynDrum"
+
+#: plugins/davxtalstrings.c:141
+msgid "Pluck frequency input"
+msgstr "Vstup frekvence brnkání"
+
+#: plugins/davxtalstrings.c:143
+msgid "Pluck strings on raising edge"
+msgstr "Brnknout do strun při vzestupných hranách"
+
+#: plugins/davxtalstrings.c:145
+msgid "XtalStrings Output"
+msgstr "Výstup XtalStrings"
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
@@ -2898,6 +3394,22 @@ msgstr "Stav"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Stav používaný pro výstup zpráv o chybách"
+
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Input"
+msgstr "Levý vstup"
+
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Input"
+msgstr "Pravý vstup"
+
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Output"
+msgstr "Levý výstup"
+
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Output"
+msgstr "Pravý výstup"
 
 #~ msgid "Remove any events in the focus cell and move to the next cell"
 #~ msgstr "Odstranit události v aktivní buňce a aktivovat následující buňku"
