@@ -1,4 +1,6 @@
 
+* Synthesis instruments, i.e. use of synthesis networks as song
+  instruments
 * New synthesis modules:
   BseMixer   - mix 4->1 channels with adjustable volumes
   DavOrgan   - a modifiable Additive Organ Synthesizer
