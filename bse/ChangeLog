@@ -1,3 +1,8 @@
+Tue Mar  2 12:59:38 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.c (bse_part_insert_note): ensure enough octaves are present
+	to insert a note.
+
 Tue Mar  2 10:48:19 2004  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: i18n fixes and blurb output fixes.

@@ -690,8 +690,10 @@ bse_part_insert_note (BsePart *self,
   g_return_val_if_fail (BSE_IS_PART (self), BSE_ERROR_INTERNAL);
   if (use_any_channel)
     channel = 0;
+  else if (channel >= self->n_channels)
+    g_object_set (self, "n_channels", channel + 1, NULL);
 
-  if (!(BSE_NOTE_IS_VALID (note) && channel < self->n_channels &&
+  if (!(BSE_NOTE_IS_VALID (note) &&
 	BSE_FINE_TUNE_IS_VALID (fine_tune) &&
 	tick < BSE_PART_MAX_TICK &&
 	duration > 0 &&
