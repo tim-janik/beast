@@ -1,7 +1,7 @@
 ;; (bse-script-register <func> <category> <blurb> <help> <author> <copyright> ARGS...)
 
 (bse-script-register 'modules2grid
-                     "/Scripts/Utils/Grid Align"
+                     "/SNet/Utils/Grid Align"
 		     "Align modules to grid"
 		     (string-append "This function rounds module positions to their nearest grid position "
 				    "and thusly aligns all modules within a synthesis network.")

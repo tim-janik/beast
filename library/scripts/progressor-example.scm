@@ -11,7 +11,7 @@
 ;;                      (bse-param-note   "Note" "C-7"))
 
 (bse-script-register 'progressor
-                     "/Scripts/Test/Progressor..."
+                     "/Project/Toys/Progressor..."
 		     "Progressor is a quick example script"
 		     (string-append "Progressor takes two seed values and then starts progressing. "
 				    "It doesn't do anything particularly usefull, other than "

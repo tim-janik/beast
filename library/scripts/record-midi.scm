@@ -1,5 +1,5 @@
 (bse-script-register 'record-midi
-                     "/Scripts/Part/Record Midi..."
+                     "/Part/Record Midi..."
 		     "Record midi events"
 		     (string-append "Record midi events, currently being played on the default external "
 				    "midi device, into a given song part. The MIDI recorder is still work in progress.")
