@@ -48,6 +48,7 @@ beast_headers = $(strip \
 	bstpreferences.h \
 	bstprocedure.h \
 	bstsamplerepo.h \
+	bstsampleshell.h \
 	bstsnetshell.h \
 	bstsnetrouter.h \
 	bstsongshell.h \
@@ -80,6 +81,7 @@ beast_sources = $(strip \
 	bstpreferences.c \
 	bstprocedure.c \
 	bstsamplerepo.c \
+	bstsampleshell.c \
 	bstsnetshell.c \
 	bstsnetrouter.c \
 	bstsongshell.c \

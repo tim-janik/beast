@@ -77,6 +77,7 @@ void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
 BstSuperShell*	bst_super_shell_from_super	(BseSuper	*super);
 void            bst_super_shell_rebuild         (BstSuperShell  *super_shell);
 void            bst_super_shell_update          (BstSuperShell  *super_shell);
+void            bst_super_shell_update_parent   (BstSuperShell  *super_shell);
 
      
 

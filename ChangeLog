@@ -1,3 +1,14 @@
+Sun Jan 16 07:33:35 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_add_super): popup sample shell.
+	(bst_app_new): auto-update GUI when supers got added to/removed
+	from the project.
+        (bst_app_reload_supers): don't unecessarily destroy widgets,
+	remeber old page.
+	
+	* beast-gtk/bstsampleshell.[hc]: new sample shell widget (features
+	nothing more than a paramview yet).
+
 Sun Jan 16 00:24:31 2000  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am:

@@ -186,10 +186,11 @@ bst_super_shell_name_set (BstSuperShell *super_shell,
 				 NULL);
       
       widget = gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget);
-      gtk_widget_set (widget,
-		      "label", name,
-		      /* "xalign", 0.0, */
-		      NULL);
+      if (widget)
+	gtk_widget_set (widget,
+			"label", name,
+			/* "xalign", 0.0, */
+			NULL);
       g_free (name);
     }
 }
@@ -255,9 +256,19 @@ void
 bst_super_shell_update (BstSuperShell *super_shell)
 {
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
+
+  bst_super_shell_name_set (super_shell, super_shell->super);
       
   if (BST_SUPER_SHELL_GET_CLASS (super_shell)->update)
     BST_SUPER_SHELL_GET_CLASS (super_shell)->update (super_shell);
+}
+
+void
+bst_super_shell_update_parent (BstSuperShell *super_shell)
+{
+  g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
+
+  bst_super_shell_name_set (super_shell, super_shell->super);
 }
 
 BstSuperShell*

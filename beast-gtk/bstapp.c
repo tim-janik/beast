@@ -19,6 +19,7 @@
 
 #include	"../PKG_config.h"
 
+#include	"bstsampleshell.h"
 #include	"bstsongshell.h"
 #include	"bstsnetshell.h"
 #include	"bstfiledialog.h"
@@ -216,6 +217,9 @@ bst_app_destroy (GtkObject *object)
       bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
 					   app_set_title,
 					   app);
+      bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
+					   bst_app_reload_supers,
+					   app);
       bse_object_unref (BSE_OBJECT (app->project));
       app->project = NULL;
     }
@@ -246,6 +250,14 @@ bst_app_new (BseProject *project)
   bse_object_add_data_notifier (BSE_OBJECT (project),
 				"name-set",
 				app_set_title,
+				app);
+  bse_object_add_data_notifier (BSE_OBJECT (project),
+				"item-added",
+				bst_app_reload_supers,
+				app);
+  bse_object_add_data_notifier (BSE_OBJECT (project),
+				"item-removed",
+				bst_app_reload_supers,
 				app);
   app_set_title (app);
 
@@ -281,9 +293,9 @@ bst_app_menu_factory (BstApp *app)
   return gtk_object_get_data (GTK_OBJECT (app), bst_app_factories_path);
 }
 
-static void
-bst_app_add_super (BstApp   *app,
-		   BseSuper *super)
+static GtkWidget*
+bst_app_create_super_shell (BstApp   *app,
+			    BseSuper *super)
 {
   GtkWidget *shell = NULL;
 
@@ -295,34 +307,77 @@ bst_app_add_super (BstApp   *app,
     shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
 			    "visible", TRUE,
 			    NULL);
+  else if (BSE_IS_SAMPLE (super))
+    shell = gtk_widget_new (BST_TYPE_SAMPLE_SHELL,
+			    "visible", TRUE,
+			    NULL);
   else
     {
-      g_message ("FIXME: skipping dialog for %s", BSE_OBJECT_TYPE_NAME (super));
-      return;
+      g_warning ("unknown super type `%s'", BSE_OBJECT_TYPE_NAME (super));
+      return NULL;
     }
 
-  /* gtk_notebook_popup_enable (app->notebook); */
-  gtk_notebook_append_page (app->notebook,
-			    shell,
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "visible", TRUE,
-					    NULL));
   bst_super_shell_set_super (BST_SUPER_SHELL (shell), super);
+
+  gtk_widget_ref (shell);
+  gtk_object_sink (GTK_OBJECT (shell));
+
+  return shell;
 }
 
 void
 bst_app_reload_supers (BstApp *app)
 {
+  GtkWidget *old_page;
+  GSList *page_list = NULL;
   GSList *slist;
 
   g_return_if_fail (BST_IS_APP (app));
 
   gtk_widget_hide (GTK_WIDGET (app->notebook));
 
-  gtk_container_foreach (GTK_CONTAINER (app->notebook), (GtkCallback) gtk_widget_destroy, NULL);
+  old_page = app->notebook->cur_page ? app->notebook->cur_page->child : NULL;
+  while (app->notebook->cur_page && app->notebook->cur_page->child)
+    {
+      gtk_object_ref (GTK_OBJECT (app->notebook->cur_page->child));
+      page_list = g_slist_prepend (page_list, app->notebook->cur_page->child);
+      gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
+    }
+
+  // gtk_container_foreach (GTK_CONTAINER (app->notebook), (GtkCallback) gtk_widget_destroy, NULL);
 
   for (slist = app->project->supers; slist; slist = slist->next)
-    bst_app_add_super (app, slist->data);
+    {
+      GtkWidget *page = NULL;
+      GSList *node;
+
+      for (node = page_list; node; node = node->next)
+	if (BST_SUPER_SHELL (node->data)->super == slist->data)
+	  {
+	    page = node->data;
+	    page_list = g_slist_remove (page_list, page);
+	    break;
+	  }
+      if (!page)
+	page = bst_app_create_super_shell (app, slist->data);
+      gtk_notebook_append_page (app->notebook,
+				page,
+				gtk_widget_new (GTK_TYPE_LABEL,
+						"visible", TRUE,
+						NULL));
+      bst_super_shell_update_parent (BST_SUPER_SHELL (page));
+      gtk_widget_unref (page);
+    }
+  if (old_page && old_page->parent == GTK_WIDGET (app->notebook))
+    gtk_notebook_set_page (app->notebook,
+			   gtk_notebook_page_num (app->notebook,
+						  old_page));
+  for (slist = page_list; slist; slist = slist->next)
+    {
+      gtk_widget_destroy (slist->data);
+      gtk_widget_unref (slist->data);
+    }
+  g_slist_free (page_list);
 
   gtk_widget_show (GTK_WIDGET (app->notebook));
 }
@@ -455,14 +510,12 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_PROJECT_NEW_SONG:
       song = bse_song_new (BST_APP_PROJECT (app), BSE_DFL_SONG_N_CHANNELS);
-      bst_app_reload_supers (app);
       super_shell = bst_super_shell_from_super (BSE_SUPER (song));
       bst_super_shell_operate (super_shell, BST_OP_PATTERN_ADD);
       bse_object_unref (BSE_OBJECT (song));
       break;
     case BST_OP_PROJECT_NEW_SNET:
       snet = bse_snet_new (BST_APP_PROJECT (app), NULL);
-      bst_app_reload_supers (app);
       super_shell = bst_super_shell_from_super (BSE_SUPER (snet));
       bse_object_unref (BSE_OBJECT (snet));
       break;
