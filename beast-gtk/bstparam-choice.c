@@ -75,6 +75,7 @@ param_choice_create (GxkParam    *param,
     widget = g_object_new (GXK_TYPE_MENU_BUTTON,
                            "visible", TRUE,
                            "mode", variant,
+                           "can-focus", variant == GXK_MENU_BUTTON_COMBO_MODE,
                            NULL);
 
   menu = g_object_new (GTK_TYPE_MENU, NULL);
@@ -139,25 +140,25 @@ param_choice_update (GxkParam  *param,
 }
 
 static GxkParamEditor param_choice1 = {
-  { "option-button",    N_("Popup Options"), },
-  { G_TYPE_STRING,      "SfiChoice", },
-  { NULL,       +8,     TRUE, },        /* options, rating, editing */
-  param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_OPTION_MODE
-};
-static GxkParamEditor param_choice2 = {
   { "combo-button",     N_("Drop Down Combo"), },
   { G_TYPE_STRING,      "SfiChoice", },
-  { NULL,       +7,     TRUE, },        /* options, rating, editing */
+  { NULL,       +8,     TRUE, },        /* options, rating, editing */
   param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_COMBO_MODE
 };
-static GxkParamEditor param_choice3 = {
+static GxkParamEditor param_choice2 = {
   { "tool-button",      N_("Drop Down Button"), },
   { G_TYPE_STRING,      "SfiChoice", },
-  { NULL,       +6,     TRUE, },        /* options, rating, editing */
+  { NULL,       +7,     TRUE, },        /* options, rating, editing */
   param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_TOOL_MODE
 };
+static GxkParamEditor param_choice3 = {
+  { "choice-button",    N_("Popup Options"), },
+  { G_TYPE_STRING,      "SfiChoice", },
+  { NULL,       +6,     TRUE, },        /* options, rating, editing */
+  param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_OPTION_MODE
+};
 static GxkParamEditor param_choice4 = {
-  { "option-menu",      N_("Standard Option Menu"), },
+  { "choice-menu",      N_("Standard Option Menu"), },
   { G_TYPE_STRING,      "SfiChoice", },
   { NULL,       +5,     TRUE, },        /* options, rating, editing */
   param_choice_create,  param_choice_update,    CHOICE_PARAM_OPTION_MENU

@@ -1,4 +1,6 @@
 FIXMES:	(release-critical)
+- use only one of stock= or stock-image= in radget files
+- support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
 - opening new view resets mixer volume
 - enfore minimum size of ca. screen-width and screen-height for GxkDialog (should make preferences scrollable)  
 - in preferences the skin-editor viewport shouldn't gxk_widget_proxy_requisition()
@@ -6,16 +8,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
-* dialog to spawn for [Inputs...] and [Outputs...]:
-  |                |                           |                |
-  |                |      +------------------+ |                |
-  |                |  <<  |      Add         | |                |
-  |                |      +------------------+ |                |
-  |                |                           |                |
-  |                | +------------------+      |                |
-  |                | |     Remove       |  >>  |                |
-  |                | +------------------+      |                |
-  |                |                           |                |
+- evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins
 - add more menu tooltips
 - mixer icon
@@ -24,6 +17,9 @@ TODO:
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong
 - delete+undo on tracks kills connections (busses?)
+- assertion:
+  BSE-ERROR **: file bsemidireceiver.cc: line 526 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, BseTrans*)): assertion failed: (vinput->iter == table->end())
+  aborting...
 - rename bsesnifferscope.* to bsescope.*
 - split bstutils into bstgutils
 - rename snifferscope to trackscope

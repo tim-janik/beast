@@ -323,6 +323,7 @@ enum {
   PATCHER_PROP_MUTE_EVENTS,
   PATCHER_PROP_NORMAL_BG_AS_BASE,
   PATCHER_PROP_BG_AS_BASE,
+  PATCHER_PROP_BG_AS_ACTIVE,
   PATCHER_PROP_BASE_AS_BG,
   PATCHER_PROP_LOWER_WINDOWS,
   PATCHER_PROP_HIDE_INSENSITIVE,
@@ -353,6 +354,9 @@ gxk_widget_patcher_set_property (GObject      *object,
       break;
     case PATCHER_PROP_NORMAL_BG_AS_BASE:
       self->modify_normal_bg_as_base = g_value_get_boolean (value);
+      break;
+    case PATCHER_PROP_BG_AS_ACTIVE:
+      self->modify_bg_as_active = g_value_get_boolean (value);
       break;
     case PATCHER_PROP_BG_AS_BASE:
       self->modify_bg_as_base = g_value_get_boolean (value);
@@ -412,6 +416,8 @@ gxk_widget_patcher_class_init (GxkWidgetPatcherClass *class)
                                    g_param_spec_boolean ("mute-events", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_NORMAL_BG_AS_BASE,
                                    g_param_spec_boolean ("normal-bg-as-base", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_BG_AS_ACTIVE,
+                                   g_param_spec_boolean ("bg-as-active", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_BG_AS_BASE,
                                    g_param_spec_boolean ("bg-as-base", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_BASE_AS_BG,
@@ -528,6 +534,8 @@ widget_patcher_adopt (GxkRadget          *radget,
     g_object_connect (parent, "signal::event", widget_mute_events, NULL, NULL);
   if (self->modify_normal_bg_as_base)
     gxk_widget_modify_normal_bg_as_base (parent);
+  if (self->modify_bg_as_active)
+    gxk_widget_modify_bg_as_active (parent);
   if (self->modify_bg_as_base)
     gxk_widget_modify_bg_as_base (parent);
   if (self->modify_base_as_bg)

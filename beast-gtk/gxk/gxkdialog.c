@@ -169,18 +169,18 @@ gxk_dialog_init (GxkDialog *self)
   self->hbox = g_object_new (GTK_TYPE_HBOX,
                              "visible", FALSE,
                              "homogeneous", TRUE,
-                             "spacing", GXK_INNER_PADDING,
-                             "border_width", GXK_INNER_PADDING,
+                             "spacing", GXK_BUTTON_PADDING,
+                             "border_width", GXK_OUTER_BORDER,
                              NULL);
   gxk_nullify_in_object (self, &self->hbox);
-  gtk_box_pack_end (GTK_BOX (self->mbox), self->hbox, FALSE, TRUE, GXK_INNER_PADDING);
+  gtk_box_pack_end (GTK_BOX (self->mbox), self->hbox, FALSE, TRUE, 0);
   
   /* separator */
   self->sep = g_object_new (GTK_TYPE_HSEPARATOR,
                             "visible", FALSE,
                             NULL);
   gxk_nullify_in_object (self, &self->sep);
-  gtk_box_pack_end (GTK_BOX (self->mbox), self->sep, FALSE, FALSE, GXK_INNER_PADDING);
+  gtk_box_pack_end (GTK_BOX (self->mbox), self->sep, FALSE, FALSE, 0);
 }
 
 static void

@@ -100,7 +100,7 @@ gxk_simple_label_get_type (void)
           32,             /* n_preallocs */
           (GInstanceInitFunc) simple_label_init,
         };
-      label_type = g_type_register_static (GTK_TYPE_WIDGET, "GxkSimpleLabel", &label_info, 0);
+      label_type = g_type_register_static (GTK_TYPE_MISC, "GxkSimpleLabel", &label_info, 0);
     }
   return label_type;
 }
@@ -315,8 +315,15 @@ simple_label_mnemonic_activate (GtkWidget *widget,
       if (GTK_WIDGET_CAN_FOCUS (parent) ||
           GTK_WIDGET_GET_CLASS (parent)->activate_signal ||
           (parent->parent && GTK_IS_NOTEBOOK (parent->parent)) ||
-          (GTK_IS_MENU_ITEM (parent)))
-        return gtk_widget_mnemonic_activate (parent, group_cycling);
+          GTK_IS_MENU_ITEM (parent))
+        {
+          gboolean cc = gtk_widget_mnemonic_activate (parent, group_cycling);
+          g_print ("simple_label_mnemonic_activate: %s: %u (%d %d %d %d)\n", G_OBJECT_TYPE_NAME (parent), cc,
+                   GTK_WIDGET_CAN_FOCUS (parent), GTK_WIDGET_GET_CLASS (parent)->activate_signal,
+                   (parent->parent && GTK_IS_NOTEBOOK (parent->parent)),
+                   GTK_IS_MENU_ITEM (parent));
+          return cc;
+        }
       parent = parent->parent;
     }
   
@@ -557,13 +564,29 @@ label_ensure_layout (GxkSimpleLabel *self)
         case GTK_JUSTIFY_FILL:
           /* this is broken, but GtkLabel doesn't do any better */
           pango_layout_set_justify (self->layout, TRUE);
-          // pango_layout_set_width (self->layout, widget->allocation.width);
+          // pango_layout_set_width (self->layout, label_allocation_width (self));
           break;
         }
       pango_layout_set_alignment (self->layout, align);
     }
   pango_layout_set_text (self->layout, self->text, -1);
   self->needs_cutting = self->auto_cut;
+}
+
+static inline gint
+label_allocation_width (GxkSimpleLabel *self)
+{
+  GtkWidget *widget = GTK_WIDGET (self);
+  GtkMisc *misc = GTK_MISC (self);
+  return MAX (widget->allocation.width - 2 * misc->xpad, 1);
+}
+
+static inline gint
+label_allocation_height (GxkSimpleLabel *self)
+{
+  GtkWidget *widget = GTK_WIDGET (self);
+  GtkMisc *misc = GTK_MISC (self);
+  return MAX (widget->allocation.height - 2 * misc->ypad, 1);
 }
 
 static void
@@ -573,7 +596,6 @@ label_cut_layout (GxkSimpleLabel *self)
    * of a clipped label if it does not fit its assigned width.
    */
   const gchar *cliptext = _("...");
-  GtkWidget *widget = GTK_WIDGET (self);
   PangoRectangle logical_rect;
   gint l2 = strlen (cliptext);
   gint l1 = strlen (self->text);
@@ -581,7 +603,7 @@ label_cut_layout (GxkSimpleLabel *self)
   if (!l)
     return;
   pango_layout_get_extents (self->layout, NULL, &logical_rect);
-  for (i = l; i >= 0 && PANGO_PIXELS (logical_rect.width) > widget->allocation.width; i--)
+  for (i = l; i >= 0 && PANGO_PIXELS (logical_rect.width) > label_allocation_width (self); i--)
     {
       gchar *p, *sspace = g_new0 (char, l1 + l2 + 1);
       g_utf8_strncpy (sspace, self->text, i);
@@ -609,8 +631,8 @@ simple_label_size_request (GtkWidget      *widget,
     }
   label_ensure_layout (self);
   pango_layout_get_extents (self->layout, NULL, &logical_rect);
-  requisition->width = PANGO_PIXELS (logical_rect.width);
-  requisition->height = PANGO_PIXELS (logical_rect.height);
+  requisition->width = PANGO_PIXELS (logical_rect.width) + 2 * GTK_MISC (self)->xpad;
+  requisition->height = PANGO_PIXELS (logical_rect.height) + 2 * GTK_MISC (self)->ypad;
 }
 
 static void 
@@ -638,9 +660,12 @@ get_layout_location (GxkSimpleLabel  *self,
 {
   GtkWidget *widget = GTK_WIDGET (self);
   gint x, y;
-  
-  x = widget->allocation.x + 0.5 * MAX (widget->allocation.width - widget->requisition.width, 0);
-  y = widget->allocation.y + 0.5 * MAX (widget->allocation.height - widget->requisition.height, 0);
+  GtkMisc *misc = GTK_MISC (self);
+  gint xpad = MIN ((widget->allocation.width - 1) / 2, misc->xpad);
+  gint ypad = MIN ((widget->allocation.height - 1) / 2, misc->ypad);
+
+  x = widget->allocation.x + xpad + GTK_MISC (self)->xalign * MAX (label_allocation_width (self) - widget->requisition.width, 0);
+  y = widget->allocation.y + ypad + GTK_MISC (self)->yalign * MAX (label_allocation_height (self) - widget->requisition.height, 0);
   *xp = x;
   *yp = y;
 }

@@ -66,6 +66,42 @@ gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, FIXME
 }
 #endif
 
+static gboolean
+ehook_container_focus_child_set (GSignalInvocationHint *ihint,
+                                 guint                  n_param_values,
+                                 const GValue          *param_values,
+                                 gpointer               data)
+{
+  GtkContainer *container = g_value_get_object (param_values + 0);
+  if (!container->focus_child ||
+      !GTK_WIDGET_DRAWABLE (container->focus_child) ||
+      gtk_container_get_focus_hadjustment (container) ||
+      gtk_container_get_focus_vadjustment (container))
+    return TRUE;
+  /* check for scrolled window ancestor */
+  GtkWidget *widget = container->focus_child->parent;
+  while (widget && !GTK_IS_VIEWPORT (widget))
+    widget = widget->parent;
+  if (widget)   /* viewport */
+    {
+      GtkAdjustment *hadj = gtk_viewport_get_hadjustment (GTK_VIEWPORT (widget));
+      GtkAdjustment *vadj = gtk_viewport_get_vadjustment (GTK_VIEWPORT (widget));
+      if (hadj || vadj)
+        {
+          GtkWidget *focus_child = container->focus_child;
+          while (GTK_IS_CONTAINER (focus_child) && GTK_CONTAINER (focus_child)->focus_child)
+            focus_child = GTK_CONTAINER (focus_child)->focus_child;
+          gint x, y;
+          gtk_widget_translate_coordinates (focus_child, GTK_BIN (widget)->child, 0, 0, &x, &y);
+          if (hadj)
+            gtk_adjustment_clamp_page (hadj, x, x + focus_child->allocation.width);
+          if (vadj)
+            gtk_adjustment_clamp_page (vadj, y, y + focus_child->allocation.height);
+        }
+    }
+  return TRUE;
+}
+
 void
 _gxk_init_utils (void)
 {
@@ -84,6 +120,11 @@ _gxk_init_utils (void)
   GtkWidgetClass *widget_class = gtk_type_class (GTK_TYPE_WIDGET);
   widget_class->can_activate_accel = gxk_widget_real_can_activate_accel;
 #endif
+
+  /* patch up scrolling+focus behaviour */
+  g_type_class_unref (g_type_class_ref (GTK_TYPE_CONTAINER));   /* create static class */
+  g_signal_add_emission_hook (g_signal_lookup ("set-focus-child", GTK_TYPE_CONTAINER), 0,
+                              ehook_container_focus_child_set, NULL, NULL);
 }
 
 /**
@@ -881,6 +922,7 @@ enum {
   STYLE_MODIFY_BASE_AS_BG,
   STYLE_MODIFY_BG_AS_BASE,
   STYLE_MODIFY_NORMAL_BG_AS_BASE,
+  STYLE_MODIFY_BG_AS_ACTIVE,
 };
 
 static void
@@ -931,6 +973,18 @@ widget_modify_style (GtkWidget *widget)
           }
       gtk_widget_modify_style (widget, rc_style);
       break;
+    case STYLE_MODIFY_BG_AS_ACTIVE:
+      rc_style = gtk_widget_get_modifier_style (widget);
+      for (i = GTK_STATE_NORMAL; i <= GTK_STATE_INSENSITIVE; i++)
+        if (i == GTK_STATE_NORMAL)
+          {
+            rc_style->color_flags[i] = GTK_RC_BG;
+            rc_style->bg[i].red = widget->style->bg[GTK_STATE_ACTIVE].red;
+            rc_style->bg[i].green = widget->style->bg[GTK_STATE_ACTIVE].green;
+            rc_style->bg[i].blue = widget->style->bg[GTK_STATE_ACTIVE].blue;
+          }
+      gtk_widget_modify_style (widget, rc_style);
+      break;
     }
 }
 
@@ -965,8 +1019,8 @@ gxk_widget_modify_as_title (GtkWidget *widget)
  *
  * Modify the widget's background to look like the background
  * of a text or list widget (usually white). This is useful
- * if a hbox or similar widget is used to "simulate" a list,
- * text, or similar widget.
+ * if a hbox or similar widget is used to "simulate" a list
+ * or text widget.
  */
 void
 gxk_widget_modify_bg_as_base (GtkWidget *widget)
@@ -1021,6 +1075,27 @@ gxk_widget_modify_base_as_bg (GtkWidget *widget)
   if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BASE_AS_BG);
+      g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
+      if (GTK_WIDGET_REALIZED (widget))
+        widget_modify_style (widget);
+    }
+}
+
+/**
+ * gxk_widget_modify_bg_as_active
+ * @widget: a valid GtkWidget
+ *
+ * Modify the widget's background to look like the background
+ * of depressed button.
+ */
+void
+gxk_widget_modify_bg_as_active (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+    {
+      g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BG_AS_ACTIVE);
       g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
       if (GTK_WIDGET_REALIZED (widget))
         widget_modify_style (widget);

@@ -45,9 +45,9 @@ typedef struct
 
 
 /* --- spacing/padding --- */
-#define	GXK_SIBLING_PADDING	(3)	/* padding between neighboured buttons, etc. */
-#define	GXK_INNER_PADDING	(3)	/* padding between property input fields */
-#define	GXK_OUTER_PADDING	(4)	/* padding between functional blocks */
+#define	GXK_OUTER_BORDER	(5)	/* outer dialog border-width */
+#define	GXK_INNER_SPACING	(3)	/* spacing/padding between h/v boxes */
+#define	GXK_BUTTON_PADDING	(3)	/* padding between adjacent buttons */
 
 
 /* --- convenience --- */

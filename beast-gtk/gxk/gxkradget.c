@@ -50,9 +50,10 @@ typedef struct {
 } EnvSpecials;
 
 typedef struct {
-  GSList       *args_list; /* GxkRadgetArgs* */
+  GSList       *args_list;              /* GxkRadgetArgs* */
   const gchar  *name;
-  EnvSpecials  *specials;
+  EnvSpecials  *specials;               /* per expression level */
+  guint         skip_property : 1;      /* per call */
   GData        *hgroups, *vgroups, *hvgroups;
   GxkRadget    *xdef_radget;
 } Env;
@@ -554,7 +555,9 @@ expand_expr (const gchar *expr,
     }
   g_string_append (result, c);
   env->specials = saved_specials;
-  if (specials.null_collapse && !result->str[0])
+  gboolean null_collapse = specials.null_collapse;
+  specials.null_collapse = FALSE;
+  if (null_collapse && !result->str[0])
     return g_string_free (result, TRUE);
   else
     return g_string_free (result, FALSE);
@@ -1039,7 +1042,14 @@ property_value_from_string (GtkType      widget_type,
       vtype = PANGO_TYPE_WEIGHT;
       edefault = G_PARAM_SPEC_INT (pspec)->default_value;
     }
+  env->skip_property = FALSE;
   exvalue = expand_expr (pvalue, env);
+  if (env->skip_property)
+    {
+      env->skip_property = FALSE;
+      g_free (exvalue);
+      return;
+    }
   switch (G_TYPE_FUNDAMENTAL (vtype))
     {
       GEnumClass *eclass;
@@ -1841,7 +1851,7 @@ gxk_radget_define_widget_type (GType type)
     {   "prop:width-request",   "$(first-occupied,$width,0)" },
     {   "prop:height-request",  "$(first-occupied,$height,0)" },
     {   "prop:events",          "$events" },
-    {   "prop:can-focus",       "$(first-occupied,$can-focus,$focus,1)" },
+    {   "prop:can-focus",       "$(first-occupied,$can-focus,$focus,$(skip-property))" },
     {   "prop:has-focus",       "$(first-occupied,$has-focus,$focus,0)" },
     {   "prop:can-default",     "$(first-occupied,$can-default,$default,0)" },
     {   "prop:has-default",     "$(first-occupied,$has-default,$default,0)" },
@@ -2084,6 +2094,14 @@ mf_null_collapse (GSList *args,
 }
 
 static gchar*
+mf_skip_property (GSList *args,
+                  Env    *env)
+{
+  env->skip_property = TRUE;
+  return g_strdup ("");
+}
+
+static gchar*
 mf_empty (GSList *args,
           Env    *env)
 {
@@ -2133,6 +2151,7 @@ macro_func_lookup (const gchar *name)
     { "ifdef",          mf_ifdef, },
     { "first-occupied", mf_first_occupied, },
     { "null-collapse",  mf_null_collapse, },
+    { "skip-property",  mf_skip_property, },
     { "empty",          mf_empty, },
     { "println",        mf_println, },
   };

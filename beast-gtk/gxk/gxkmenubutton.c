@@ -24,6 +24,7 @@
 
 enum {
   MENU_BUTTON_PROP_0,
+  MENU_BUTTON_PROP_CAN_FOCUS,
   MENU_BUTTON_PROP_MENU,
   MENU_BUTTON_PROP_STOCK_SIZE,
   MENU_BUTTON_PROP_RELIEF,
@@ -105,10 +106,10 @@ menu_button_restore_backing (GxkMenuButton *self)
 static void
 menu_button_grab_focus (GxkMenuButton *self)
 {
-  if (self->mode != GXK_MENU_BUTTON_COMBO_MODE && self->button)
-    gtk_widget_grab_focus (self->button);
-  else
+  if (self->mode == GXK_MENU_BUTTON_COMBO_MODE)
     gtk_widget_grab_focus (GTK_WIDGET (self));
+  else if (self->button)
+    gtk_widget_grab_focus (self->button);
 }
 
 static void
@@ -363,6 +364,20 @@ gxk_menu_button_set_property (GObject      *object,
     {
       const gchar *cstr;
       guint mode;
+    case MENU_BUTTON_PROP_CAN_FOCUS:
+      if (self->mode == GXK_MENU_BUTTON_COMBO_MODE)
+        {
+          gboolean saved_focus = GTK_WIDGET_CAN_FOCUS (self);
+          if (g_value_get_boolean (value))
+            GTK_WIDGET_SET_FLAGS (self, GTK_CAN_FOCUS);
+          else
+            GTK_WIDGET_UNSET_FLAGS (self, GTK_CAN_FOCUS);
+          if (saved_focus != GTK_WIDGET_CAN_FOCUS (self))
+            gtk_widget_queue_resize (GTK_WIDGET (self));
+        }
+      else if (self->button)
+        g_object_set (self->button, "can-focus", g_value_get_boolean (value), NULL);
+      break;
     case MENU_BUTTON_PROP_MODE:
       mode = g_value_get_enum (value);
       if (self->mode != mode)
@@ -413,6 +428,12 @@ gxk_menu_button_get_property (GObject    *object,
   GxkMenuButton *self = GXK_MENU_BUTTON (object);
   switch (param_id)
     {
+    case MENU_BUTTON_PROP_CAN_FOCUS:
+      if (self->mode == GXK_MENU_BUTTON_COMBO_MODE)
+        g_value_set_boolean (value, GTK_WIDGET_CAN_FOCUS (self));
+      else
+        g_value_set_boolean (value, self->button ? GTK_WIDGET_CAN_FOCUS (self->button) : FALSE);
+      break;
     case MENU_BUTTON_PROP_MODE:
       g_value_set_enum (value, self->mode);
       break;
@@ -426,21 +447,6 @@ gxk_menu_button_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-}
-
-static void
-menu_button_notify (GObject        *object,
-                    GParamSpec     *pspec)
-{
-  GxkMenuButton *self = GXK_MENU_BUTTON (object);
-  if (strcmp (pspec->name, "can-focus") == 0)
-    {
-      gboolean can_focus = GTK_WIDGET_CAN_FOCUS (self) && self->mode != GXK_MENU_BUTTON_COMBO_MODE;
-      if (self->button && can_focus != GTK_WIDGET_CAN_FOCUS (self->button))
-        g_object_set (self->button, "can-focus", can_focus, NULL);
-    }
-  if (G_OBJECT_CLASS (gxk_menu_button_parent_class)->notify)
-    G_OBJECT_CLASS (gxk_menu_button_parent_class)->notify (object, pspec);
 }
 
 static void
@@ -468,9 +474,10 @@ menu_button_create_button (GxkMenuButton *self,
 {
   g_return_val_if_fail (self->button == NULL, NULL);
   self->button = g_object_new (GTK_TYPE_BUTTON,
-                               "can-focus", GTK_WIDGET_CAN_FOCUS (self) && self->mode != GXK_MENU_BUTTON_COMBO_MODE,
                                "relief", self->relief,
                                "child", child ? gtk_widget_get_toplevel (child) : NULL,
+                               /* MENU_BUTTON_PROP_CAN_FOCUS */
+                               "can-focus", GTK_WIDGET_CAN_FOCUS (self) && self->mode != GXK_MENU_BUTTON_COMBO_MODE,
                                NULL);
   gxk_nullify_in_object (self, &self->button);
   g_signal_connect_swapped (self->button, "button-press-event", G_CALLBACK (menu_button_button_press), self);
@@ -648,8 +655,10 @@ gxk_menu_button_class_init (GxkMenuButtonClass *class)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   gobject_class->set_property = gxk_menu_button_set_property;
   gobject_class->get_property = gxk_menu_button_get_property;
-  gobject_class->notify = menu_button_notify;
   gobject_class->dispose = menu_button_dispose;
+  g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_CAN_FOCUS,
+                                   g_param_spec_boolean ("can_focus", NULL, NULL,
+                                                         FALSE, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_MODE,
                                    g_param_spec_enum ("mode", NULL, NULL, GXK_TYPE_MENU_BUTTON_MODE,
                                                       GXK_MENU_BUTTON_TOOL_MODE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));

@@ -33,7 +33,7 @@ progs_LDADD = $(strip 			\
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
-	bstdbmeter.h		bstbusmixer.h	bstbuseditor.h		\
+	bstdbmeter.h		bstbusmixer.h	bstbuseditor.h		bstitemseqdialog.h  \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	    \
 	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
 	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstbusview.h        \
@@ -53,7 +53,7 @@ beast_headers = $(strip \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
-	bstdbmeter.c		bstbusmixer.c	bstbuseditor.c		\
+	bstdbmeter.c		bstbusmixer.c	bstbuseditor.c		bstitemseqdialog.c  \
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	    \
 	bstpatterncolumns.c	bstxkb.c	bstpatternview.c	bstpatternctrl.c    \
 	bstkeybindings.c	bstprofiler.c	bstgrowbar.c		bstbusview.c        \

@@ -76,6 +76,7 @@ typedef struct {
   guint   modify_normal_bg_as_base : 1;
   guint   modify_bg_as_base : 1;
   guint   modify_base_as_bg : 1;
+  guint   modify_bg_as_active : 1;
   gdouble resize_hsteps, resize_vsteps;
   gdouble resize_hunits, resize_vunits;
   gdouble width_from_height;

@@ -53,9 +53,22 @@ enum {
   BST_PROXY_STORE_N_COLS
 };
 /* store based on a BseItemSeq */
-GtkTreeModel*   bst_item_seq_store_new                  (void);
+GtkTreeModel*   bst_item_seq_store_new                  (gboolean        sorted);
 void            bst_item_seq_store_set                  (GtkTreeModel   *self,
                                                          BseItemSeq     *iseq);
+gint            bst_item_seq_store_add                  (GtkTreeModel   *self,
+                                                         SfiProxy        proxy);
+gint            bst_item_seq_store_remove               (GtkTreeModel   *self,
+                                                         SfiProxy        proxy);
+gint            bst_item_seq_store_raise                (GtkTreeModel   *self,
+                                                         SfiProxy        proxy);
+gboolean        bst_item_seq_store_can_raise            (GtkTreeModel   *self,
+                                                         SfiProxy        proxy);
+gint            bst_item_seq_store_lower                (GtkTreeModel   *self,
+                                                         SfiProxy        proxy);
+gboolean        bst_item_seq_store_can_lower            (GtkTreeModel   *self,
+                                                         SfiProxy        proxy);
+BseItemSeq*     bst_item_seq_store_dup                  (GtkTreeModel   *self);
 SfiProxy        bst_item_seq_store_get_proxy            (GtkTreeModel   *self,
                                                          gint            row);
 SfiProxy        bst_item_seq_store_get_from_iter        (GtkTreeModel   *self,

@@ -89,7 +89,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
   gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->spage, "Synthesis Network Selection", TRUE);
 
   /* synth selection store and tree */
-  self->pstore = bst_item_seq_store_new ();
+  self->pstore = bst_item_seq_store_new (TRUE);
   smodel = gtk_tree_model_sort_new_with_model (self->pstore);
   self->tview = g_object_new (GTK_TYPE_TREE_VIEW,
                               "visible", TRUE,

@@ -40,7 +40,7 @@ param_proxy_populate (GtkWidget *chunter,
 {
   BstClueHunter *ch = BST_CLUE_HUNTER (chunter);
   ParamProxyPopulation *pop = NULL;
-  BseItemSeq *iseq = NULL;
+  BsePropertyCandidates *pc = NULL;
   SfiProxy proxy;
   gchar *p;
   guint i, l;
@@ -51,16 +51,16 @@ param_proxy_populate (GtkWidget *chunter,
   /* list candidates */
   proxy = bst_param_get_proxy (param);
   if (proxy)
-    iseq = bse_item_list_items (proxy, param->pspec->name);
-  if (iseq)
+    pc = bse_item_get_property_candidates (proxy, param->pspec->name);
+  if (pc->items)
     {
       pop = g_new (ParamProxyPopulation, 1);
-      pop->iseq = bse_item_seq_copy_shallow (iseq);
+      pop->iseq = bse_item_seq_copy_shallow (pc->items);
       pop->paths = NULL;
       pop->prefix = NULL;
       /* go from object to path name */
-      for (i = 0; i < iseq->n_items; i++)
-	pop->paths = g_straddv (pop->paths, g_strdup (bse_item_get_uname_path (iseq->items[i])));
+      for (i = 0; i < pop->iseq->n_items; i++)
+	pop->paths = g_straddv (pop->paths, g_strdup (bse_item_get_uname_path (pop->iseq->items[i])));
       if (!pop->paths || !pop->paths[0])
 	{
 	  param_proxy_free_population (pop);
@@ -218,13 +218,18 @@ param_proxy_create (GxkParam    *param,
 				     "user_data", param,
                                      "align-widget", box,
 				     NULL);
-  GtkWidget *arrow;
+  SfiProxy proxy = bst_param_get_proxy (param);
+  if (proxy)
+    {
+      BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, chunter, pc->tooltip, NULL);
+    }
   gxk_widget_add_font_requisition (widget, 16, 2);
   gxk_param_entry_connect_handlers (param, widget, param_proxy_changed);
   g_object_connect (chunter,
 		    "signal::poll_refresh", param_proxy_populate, param,
 		    NULL);
-  arrow = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter), TRUE);
+  GtkWidget *arrow = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter), TRUE);
   gtk_box_pack_end (GTK_BOX (box), arrow, FALSE, TRUE, 0);
   gtk_widget_show_all (box);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);

@@ -23,6 +23,7 @@
     prop:min-resize-vunits="$(ifdef,min-resize-vunits,$min-resize-vunits,0)"
     prop:normal-bg-as-base="$(ifdef,normal-bg-as-base,$normal-bg-as-base,0)"
     prop:bg-as-base="$(ifdef,bg-as-base,$bg-as-base,0)"
+    prop:bg-as-active="$(ifdef,bg-as-active,$bg-as-active,0)"
     prop:base-as-bg="$(ifdef,base-as-bg,$base-as-bg,0)"
     />
 
@@ -142,7 +143,12 @@
   <!-- label: label= -->
   <xdef:label                 inherit="GxkSimpleLabel"
     prop:label="$label" prop:use-underline="0"
-    prop:auto-cut="$(first-occupied,$auto-cut,1)" />
+    prop:auto-cut="$(first-occupied,$auto-cut,1)"
+    prop:xpad="$(first-occupied,$xpad,0)"
+    prop:ypad="$(first-occupied,$ypad,0)"
+    prop:xalign="$(first-occupied,$xalign,0.5)"
+    prop:yalign="$(first-occupied,$yalign,0.5)"
+    />
   <xdef:ulabel                inherit="label"
     prop:justify="$(first-occupied,$justify,justify-left)"
     prop:use-underline="$(first-occupied,$use-underline,1)" />
@@ -172,10 +178,10 @@
   <xdef:back-shade            inherit="GxkBackShade"
     />
   <!-- scrollbars/scales -->
-  <xdef:hscale                inherit="GtkHScale" prop:draw_value="$(first-occupied,$draw-value,0)" prop:can-focus="0" />
-  <xdef:vscale                inherit="GtkVScale" prop:draw_value="$(first-occupied,$draw-value,0)" prop:can-focus="0" />
-  <xdef:hscrollbar            inherit="GtkHScrollbar" prop:can-focus="0" />
-  <xdef:vscrollbar            inherit="GtkVScrollbar" prop:can-focus="0" />
+  <xdef:hscale                inherit="GtkHScale" prop:draw_value="$(first-occupied,$draw-value,0)" focus="0" />
+  <xdef:vscale                inherit="GtkVScale" prop:draw_value="$(first-occupied,$draw-value,0)" focus="0" />
+  <xdef:hscrollbar            inherit="GtkHScrollbar" focus="0" />
+  <xdef:vscrollbar            inherit="GtkVScrollbar" focus="0" />
   <!-- misc containers -->
   <xdef:viewport              inherit="GtkViewport"
     prop:shadow-type="$(first-occupied,$shadow-type,shadow-none)"
@@ -307,7 +313,7 @@
 	stock-size="$image-size" />
     </vbox>
   </xdef:action-image-toggle>
-  <xdef:action-toggle inherit="action-image-toggle" >
+  <xdef:action-toggle inherit="action-image-toggle">
     <ulabel label="$action-name" />
   </xdef:action-toggle>
   <!-- muted-button: button-args -->

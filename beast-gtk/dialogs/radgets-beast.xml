@@ -45,13 +45,13 @@
 	      action-stock="BST_STOCK_REPEAT"
 	      relief="none"
 	      />
-	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	    <menu-button can-focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
 	      <popup-menu >
 		<menu-factory actions="tctrl-hpanel-tools" />
 	      </popup-menu>
 	    </menu-button>
 	    <tool-separator pack:padding="2" />
-	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	    <menu-button can-focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
 	      <popup-menu >
 		<menu-factory actions="tctrl-quant-tools" />
 	      </popup-menu>
@@ -140,12 +140,12 @@
   <xdef:snet-palette inherit="vbox" >
     <hwrap expand="1" aspect-ratio="0.5" >
       <palette-toggle-factory action-root="" actions="router-canvas-tools"
-	force-resize-hsteps="1" force-resize-vsteps="1"
+	force-resize-hsteps="1" force-resize-vsteps="1" can-focus="1"
 	min-resize-hunits="2" min-resize-vunits="3" />
-      <palette-toggle-factory action-root="" actions="router-palette-modules" />
+      <palette-toggle-factory action-root="" actions="router-palette-modules" can-focus="1"/>
       <vbox wrapped="1" expand="1" >
 	<hbox>
-	  <menu-button mode="popup-mode" focus="0" >
+	  <menu-button mode="popup-mode" can-focus="1" >
 	    <modules-popup id="snet-popup" root="1" />
 	  </menu-button>
 	  <label id="type-label" expand="1" />
@@ -199,6 +199,67 @@
       <alignment id="property-area" />
     </vpaned>
   </xdef:part-view>
+
+  <!-- item seq dialog -->
+  <xdef:item-seq-box inherit="vbox" border-width="5" >
+    <hbox expand="1" spacing="3" >
+      <!-- candidate list -->
+      <vbox expand="1" spacing="3" >
+	<label id="candidate-label" _label="Available Items:" xalign="0" size:hgroup="tree-column" />
+	<scrolled-window expand="1" hscrollbar-policy="automatic" vscrollbar-policy="automatic" >
+	  <tree-view id="candidate-view" size:hgroup="tree-column" />
+	</scrolled-window>
+      </vbox>
+      <vbox spacing="3" >
+	<alignment size:vgroup="button-size" />            <!-- placeholder for tree labels -->
+	<alignment size:vgroup="button-size" expand="1" /> <!-- placeholder for tree titles -->
+	<vbox spacing="5" expand="1" fill="0" >
+	  <!-- add button -->
+	  <hbox size:vgroup="button-size" >
+	    <button id="button-add" expand="1" size:hgroup="buttons" >
+	      <hbox>
+		<label label=" " size:hgroup="arrows" />
+		<hbox padding="7" expand="1" fill="0" >
+		  <image stock-image="gtk-add" stock-size="button" />
+		  <ulabel _label="_Add" expand="1" />
+		</hbox>
+	      </hbox>
+	    </button>
+	    <label label=" &gt;&gt; " size:hgroup="arrows" />
+	  </hbox>
+	  <!-- remove button -->
+	  <hbox size:vgroup="button-size" >
+	    <label label=" &lt;&lt; " size:hgroup="arrows" />
+	    <button id="button-remove" expand="1" size:hgroup="buttons" >
+	      <hbox>
+		<hbox padding="7" expand="1" fill="0" >
+		  <image stock-image="gtk-remove" stock-size="button" />
+		  <ulabel _label="_Remove" expand="1" />
+		</hbox>
+		<label label=" " size:hgroup="arrows" />
+	      </hbox>
+	    </button>
+	  </hbox>
+	</vbox>
+	<alignment size:vgroup="button-size" expand="1" /> <!-- placeholder -->
+	<alignment size:vgroup="button-size" expand="1" /> <!-- placeholder -->
+      </vbox>
+      <!-- item list -->
+      <vbox expand="1" spacing="3" >
+	<label id="item-label" _label="Current Items:" xalign="0" size:hgroup="tree-column" />
+	<scrolled-window expand="1" hscrollbar-policy="automatic" vscrollbar-policy="automatic" >
+	  <tree-view id="item-view" rules-hint="0" size:hgroup="tree-column" />
+	</scrolled-window>
+	<!-- raise/lower buttons -->
+	<hbox spacing="3" homogeneous="1" >
+	  <hstock-button id="button-up" stock="gtk-go-up" _label="Raise"
+	    _tooltip="Move the selection up by one position" />
+	  <hstock-button id="button-down" stock="gtk-go-down" _label="Lower"
+	    _tooltip="Move the selection down by one position" />
+	</hbox>
+      </vbox>
+    </hbox>
+  </xdef:item-seq-box>
   
   <!-- bus description -->
   <xdef:bus-description inherit="GtkAlignment" border-width="3" >
@@ -246,7 +307,7 @@
 	  <!-- Name -->
 	  <entry text="Name" width="10" size:window-vgroup="bus-name" />
 	  <!-- Inputs -->
-	  <button can-focus="0" size:window-vgroup="bus-inputs" >
+	  <button id="bus-inputs" can-focus="0" size:window-vgroup="bus-inputs" >
 	    <tooltip text="Source signals going into this bus" />
 	    <hbox>
 	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
@@ -287,7 +348,7 @@
 	  <!-- VolumeSpinners -->
 	  <hbox id="spinner-box" homogeneous="1" width="1" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
-	  <button can-focus="0" size:window-vgroup="bus-outputs" >
+	  <button id="bus-outputs" can-focus="0" size:window-vgroup="bus-outputs" >
 	    <tooltip text="Signal destinations going out of this bus" />
 	    <hbox>
 	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
@@ -315,7 +376,7 @@
       </alignment>
       <scrolled-window pack:expand="1" >
 	<viewport id="mixer-area" >
-	  <widget-patcher bg-as-base="1" />
+	  <widget-patcher bg-as-active="1" />
 	  <alignment xalign="0" xscale="0" > <!-- open non-expanding container -->
 	    <hbox id="bus-area" expand="0" spacing="0" >
 	      <!-- FIXME: children packed here via gxk_radget_add() are still expanded -->
@@ -354,12 +415,12 @@
 	    <tool-separator pack:padding="2" />
 	    <tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
 	    <tool-separator pack:padding="2" />
-	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	    <menu-button can-focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
 	      <popup-menu >
 		<menu-factory action-root="" actions="pctrl-quant-tools" />
 	      </popup-menu>
 	    </menu-button>
-	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	    <menu-button can-focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
 	      <popup-menu >
 		<menu-factory action-root="" actions="pctrl-note-tools" />
 	      </popup-menu>

@@ -1,3 +1,62 @@
+Sat Aug 28 14:30:52 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbuseditor.c: popup an item sequence dialog if the
+	"Inputs" button is pressed.
+
+	* beast-gtk/bstitemseqdialog.[hc]: new widget, suitable to edit
+	BseItemSeq* structures, allowes exchanging items with a list
+	of candidates, and reordering the item list.
+
+	* beast-gtk/bstparam-choice.c: patched up rating for the various
+	choice editors. made the combo-box variant a focussable widget.
+
+	* beast-gtk/bstparam-proxy.c: adapt to bse_item_get_property_candidates(),
+	added support for candidate list tooltips.
+
+	* beast-gtk/bsttracksynthdialog.c: sort the list of synthesizers.
+
+	* beast-gtk/bsttrackview.c: adapt to bse_item_get_property_candidates().
+
+	* beast-gtk/bsttreestores.[hc]: use an SfiRing internally to store
+	a list of proxies. added a sortable flag to bst_item_seq_store_new().
+	added bst_item_seq_store_add(), bst_item_seq_store_remove(),
+	bst_item_seq_store_can_raise(), bst_item_seq_store_raise(),
+	bst_item_seq_store_can_lower(), bst_item_seq_store_lower() and
+	bst_item_seq_store_dup().
+
+	* beast-gtk/dialogs/radgets-standard.xml:
+	* beast-gtk/dialogs/radgets-beast.xml: can-focus vs. focus fixups.
+
+	* beast-gtk/dialogs/radgets-beast.xml:
+	give focus to snet-palette widgets. added item-seq-box.
+	made the bus-mixer background drak as in bg[ACTIVE] (requested
+	by stefan).
+
+	* beast-gtk/dialogs/radgets-standard.xml: added support for
+	prop:bg-as-active on widget-patcher. added support for GtkMisc
+	properties to labels.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: implemented bg-as-active property.
+
+	* beast-gtk/gxk/gxkglobals.h:
+	* beast-gtk/gxk/gxkdialog.c: spacing/padding fixups.
+
+	* beast-gtk/gxk/gxkmenubutton.[hc]: finally fixed up focus handling, 
+	in all modes but combo-box, can-focus ability is handled by the button.
+
+	* beast-gtk/gxk/gxkradget.[hc]: fixed up can-focus default, broken
+	a long time ago. to preserve a widgets default setting of can-focus,
+	call the newly implemented $(skip-property) func in case no setting
+	is provided by the environment.
+
+	* beast-gtk/gxk/gxksimplelabel.[hc]: change parent type of GxkSimpleLabel
+	to GtkMisc and added support for x/y padding and x/y alignment.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added emission hook handler to GtkContainer
+	::focus_child_set, which ensures that newly focused widgets stay within
+	the visible area of a viewport in case it has such an ancestor.
+	added gxk_widget_modify_bg_as_active().
+
 Wed Aug 25 18:11:38 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdbmeter.c: extended dB range to +12.

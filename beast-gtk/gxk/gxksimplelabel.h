@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 #define GXK_SIMPLE_LABEL_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GXK_TYPE_SIMPLE_LABEL, GxkSimpleLabelClass))
 
 typedef struct {
-  GtkWidget      parent_instance;
+  GtkMisc        parent_instance;
   
   gchar         *label;
   guint8         jtype;
@@ -47,7 +47,7 @@ typedef struct {
   PangoAttrList *effective_attrs;
   PangoLayout   *layout;
 } GxkSimpleLabel;
-typedef GtkWidgetClass GxkSimpleLabelClass;
+typedef GtkMiscClass GxkSimpleLabelClass;
 
 GType   gxk_simple_label_get_type             (void) G_GNUC_CONST;
 void    gxk_simple_label_set_mnemonic_widget  (GxkSimpleLabel  *self,
