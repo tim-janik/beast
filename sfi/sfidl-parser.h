@@ -27,9 +27,7 @@
 
 namespace Sfidl {
 
-/**
- * we implement a get() function since operator[] is not const
- */
+/* we implement a get() function since operator[] is not const */
 template<typename Key, typename Value>
 class Map : public std::map<Key,Value> {
 private:
