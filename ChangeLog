@@ -1,3 +1,21 @@
+Wed Jun  9 18:36:53 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianorollctrl.c: fix full vs. whole note wording.
+	add 1/32, 1/64, 1/128 note lengths and quantization boundaries.
+
+	* beast-gtk/bsttrackrollctrl.c: fix full vs. whole note wording.
+	add 1/32, 1/64, 1/128 quantization boundaries.
+
+	* beast-gtk/icons/Makefile.am:
+	* beast-gtk/icons/note-32.png:
+	* beast-gtk/icons/note-64.png:
+	* beast-gtk/icons/note-128.png:
+	* beast-gtk/icons/qnote-32.png:
+	* beast-gtk/icons/qnote-64.png:
+	* beast-gtk/icons/qnote-128.png:
+	* beast-gtk/icons/notes.xcf:
+	added new stock icons.
+
 Mon Jun  7 19:21:37 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-about.texi:

@@ -68,6 +68,9 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_NOTE_4			$(srcdir)/note-4.png		\
 	STOCK_NOTE_8			$(srcdir)/note-8.png		\
 	STOCK_NOTE_16			$(srcdir)/note-16.png		\
+	STOCK_NOTE_32			$(srcdir)/note-32.png		\
+	STOCK_NOTE_64			$(srcdir)/note-64.png		\
+	STOCK_NOTE_128			$(srcdir)/note-128.png		\
 	STOCK_PALETTE			$(srcdir)/palette.png		\
 	STOCK_PART			$(srcdir)/part.png		\
 	STOCK_PART_TEXT			$(srcdir)/part-text.png		\
@@ -88,6 +91,9 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_QNOTE_4			$(srcdir)/qnote-4.png		\
 	STOCK_QNOTE_8			$(srcdir)/qnote-8.png		\
 	STOCK_QNOTE_16			$(srcdir)/qnote-16.png		\
+	STOCK_QNOTE_32			$(srcdir)/qnote-32.png		\
+	STOCK_QNOTE_64			$(srcdir)/qnote-64.png		\
+	STOCK_QNOTE_128			$(srcdir)/qnote-128.png		\
 	STOCK_RECT_SELECT		$(srcdir)/rect-select.png	\
 	STOCK_REPEAT			$(srcdir)/repeat.png		\
 	STOCK_TARGET			$(srcdir)/target.png		\

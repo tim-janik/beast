@@ -82,7 +82,7 @@ bst_track_roll_controller_quant_actions (BstTrackRollController *self)
       BST_QUANTIZE_TACT,      BST_STOCK_QTACT, },
     { N_("Q: None"),          "<ctrl>0",      N_("No quantization selected"),
       BST_QUANTIZE_NONE,      BST_STOCK_QNOTE_NONE, },
-    { N_("Q: 1\\/1"),         "<ctrl>1",      N_("Quantize to full note boundaries"),
+    { N_("Q: 1\\/1"),         "<ctrl>1",      N_("Quantize to whole note boundaries"),
       BST_QUANTIZE_NOTE_1,    BST_STOCK_QNOTE_1, },
     { N_("Q: 1\\/2"),         "<ctrl>2",      N_("Quantize to half note boundaries"),
       BST_QUANTIZE_NOTE_2,    BST_STOCK_QNOTE_2, },
@@ -92,6 +92,12 @@ bst_track_roll_controller_quant_actions (BstTrackRollController *self)
       BST_QUANTIZE_NOTE_8,    BST_STOCK_QNOTE_8, },
     { N_("Q: 1\\/16"),        "<ctrl>6",      N_("Quantize to sixteenth note boundaries"),
       BST_QUANTIZE_NOTE_16,   BST_STOCK_QNOTE_16, },
+    { N_("Q: 1\\/32"),        "<ctrl>3",      N_("Quantize to thirty-second note boundaries"),
+      BST_QUANTIZE_NOTE_32,   BST_STOCK_QNOTE_32, },
+    { N_("Q: 1\\/64"),        "<ctrl>5",      N_("Quantize to sixty-fourth note boundaries"),
+      BST_QUANTIZE_NOTE_64,   BST_STOCK_QNOTE_64, },
+    { N_("Q: 1\\/128"),       "<ctrl>7",      N_("Quantize to hundred twenty-eighth note boundaries"),
+      BST_QUANTIZE_NOTE_128,  BST_STOCK_QNOTE_128, },
   };
   gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);

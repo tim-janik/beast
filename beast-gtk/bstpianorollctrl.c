@@ -64,7 +64,7 @@ bst_piano_roll_controller_note_actions (BstPianoRollController *self)
 {
   GxkActionList *alist = gxk_action_list_create_grouped (self->note_rtools);
   static const GxkStockAction actions[] = {
-    { N_("1\\/1"),              "1",    N_("Insert full notes"),
+    { N_("1\\/1"),              "1",    N_("Insert whole notes"),
       1,                        BST_STOCK_NOTE_1, },
     { N_("1\\/2"),              "2",    N_("Insert half notes"),
       2,                        BST_STOCK_NOTE_2, },
@@ -74,6 +74,12 @@ bst_piano_roll_controller_note_actions (BstPianoRollController *self)
       8,                        BST_STOCK_NOTE_8, },
     { N_("1\\/16"),             "6",    N_("Insert sixteenth note"),
       16,                       BST_STOCK_NOTE_16, },
+    { N_("1\\/32"),             "3",    N_("Insert thirty-second note"),
+      32,                       BST_STOCK_NOTE_32, },
+    { N_("1\\/64"),             "5",    N_("Insert sixty-fourth note"),
+      64,                       BST_STOCK_NOTE_64, },
+    { N_("1\\/128"),            "7",    N_("Insert hundred twenty-eighth note"),
+      128,                      BST_STOCK_NOTE_128, },
   };
   gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
@@ -89,7 +95,7 @@ bst_piano_roll_controller_quant_actions (BstPianoRollController *self)
         BST_QUANTIZE_TACT,      BST_STOCK_QTACT, },
       { N_("Q: None"),          "<ctrl>0",      N_("No quantization selected"),
         BST_QUANTIZE_NONE,      BST_STOCK_QNOTE_NONE, },
-      { N_("Q: 1\\/1"),         "<ctrl>1",      N_("Quantize to full note boundaries"),
+      { N_("Q: 1\\/1"),         "<ctrl>1",      N_("Quantize to whole note boundaries"),
         BST_QUANTIZE_NOTE_1,    BST_STOCK_QNOTE_1, },
       { N_("Q: 1\\/2"),         "<ctrl>2",      N_("Quantize to half note boundaries"),
         BST_QUANTIZE_NOTE_2,    BST_STOCK_QNOTE_2, },
@@ -99,6 +105,12 @@ bst_piano_roll_controller_quant_actions (BstPianoRollController *self)
         BST_QUANTIZE_NOTE_8,    BST_STOCK_QNOTE_8, },
       { N_("Q: 1\\/16"),        "<ctrl>6",      N_("Quantize to sixteenth note boundaries"),
         BST_QUANTIZE_NOTE_16,   BST_STOCK_QNOTE_16, },
+      { N_("Q: 1\\/32"),        "<ctrl>3",      N_("Quantize to thirty-second note boundaries"),
+        BST_QUANTIZE_NOTE_32,   BST_STOCK_QNOTE_32, },
+      { N_("Q: 1\\/64"),        "<ctrl>5",      N_("Quantize to sixty-fourth note boundaries"),
+        BST_QUANTIZE_NOTE_64,   BST_STOCK_QNOTE_64, },
+      { N_("Q: 1\\/128"),       "<ctrl>7",      N_("Quantize to hundred twenty-eighth note boundaries"),
+        BST_QUANTIZE_NOTE_128,  BST_STOCK_QNOTE_128, },
   };
   gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
