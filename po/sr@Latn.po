@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-07 23:01+0100\n"
-"PO-Revision-Date: 2003-12-07 23:02+0100\n"
+"POT-Creation-Date: 2003-12-11 19:08+0100\n"
+"PO-Revision-Date: 2003-12-11 19:13+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -417,49 +417,49 @@ msgstr "Objekti"
 msgid "Language"
 msgstr "Jezik"
 
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:161
 msgid "RC File"
 msgstr "RC datoteka"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:169
+#: beast-gtk/bstmain.c:168
 msgid "Splash Image"
 msgstr "Uvodna slika"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:181
+#: beast-gtk/bstmain.c:180
 msgid "BSE Core"
 msgstr "BSE jezgro"
 
-#: beast-gtk/bstmain.c:200
+#: beast-gtk/bstmain.c:199
 msgid "Plugins"
 msgstr "Dodaci"
 
-#: beast-gtk/bstmain.c:219
+#: beast-gtk/bstmain.c:218
 msgid "LADSPA Plugins"
 msgstr "LADSPA dodaci"
 
-#: beast-gtk/bstmain.c:247
+#: beast-gtk/bstmain.c:246
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:265
+#: beast-gtk/bstmain.c:264
 msgid "Dialogs"
 msgstr "Prozorčići"
 
-#: beast-gtk/bstmain.c:272
+#: beast-gtk/bstmain.c:271
 msgid "Loading..."
 msgstr "Učitavam..."
 
-#: beast-gtk/bstmain.c:302 beast-gtk/bstmain.c:304
+#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Učitavam „%s“"
 
-#: beast-gtk/bstmain.c:321
+#: beast-gtk/bstmain.c:320
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
@@ -477,9 +477,55 @@ msgstr "ZVER, izdanje %s"
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
-#: beast-gtk/bstparam-entry.c:61 beast-gtk/gxk/gxkparam-entry.c:61
+#: beast-gtk/bstparam-choice.c:144
+msgid "Drop Down Box (Option Menu)"
+msgstr "Padajuća lista (meni opcija)"
+
+#: beast-gtk/bstparam-choice.c:150
+msgid "Drop Down Button"
+msgstr "Padajuće dugme"
+
+#: beast-gtk/bstparam-note-sequence.c:61
+msgid "Note Sequence Grid Editor"
+msgstr "Mrežni uređivač niza nota"
+
+#: beast-gtk/bstparam-note-spinner.c:66
+msgid "Note Entry"
+msgstr "Unos note"
+
+#: beast-gtk/bstparam-proxy.c:289
+msgid "Object Drop Down Box"
+msgstr "Padajuća lista objekata"
+
+#: beast-gtk/bstparam-scale.c:60
+msgid "Knob"
+msgstr "Dugme"
+
+# bug: closing )?
+#: beast-gtk/bstparam-scale.c:66
+msgid "Knob (Logarithmic"
+msgstr "Dugme (logaritamsko)"
+
+#: beast-gtk/bstparam-scale.c:78
+msgid "Dial"
+msgstr "Brojčanik"
+
+# bug: closing )?
+#: beast-gtk/bstparam-scale.c:84
+msgid "Dial (Logarithmic"
+msgstr "Brojčanik (logaritamski)"
+
+#: beast-gtk/bstparam-searchpath.c:52
 msgid "Remove Paths"
 msgstr "Ukloni putanje"
+
+#: beast-gtk/bstparam-searchpath.c:105
+msgid "Searchpath Text Entry"
+msgstr "Unos putanje pretrage"
+
+#: beast-gtk/bstparam-time.c:55
+msgid "Time Entry"
+msgstr "Unos vremena"
 
 #: beast-gtk/bstpartdialog.c:59
 msgid "Clear"
@@ -699,16 +745,16 @@ msgstr "Pusti notu"
 msgid "Playback"
 msgstr "Puštanje"
 
-#: beast-gtk/bstprocedure.c:213
+#: beast-gtk/bstprocedure.c:212
 msgid "Description"
 msgstr "Opis"
 
-#: beast-gtk/bstprocedure.c:297
+#: beast-gtk/bstprocedure.c:296
 #, c-format
 msgid "Executing `%s'"
 msgstr "Izvršavam „%s“"
 
-#: beast-gtk/bstprocedure.c:447
+#: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Procedura"
 
@@ -768,7 +814,8 @@ msgstr "Smanji vodoravno"
 msgid "Shrink Vertically"
 msgstr "Smanji uspravno"
 
-#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxksimplelabel.c:132
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Oznaka"
 
@@ -1352,15 +1399,51 @@ msgstr "_Indeks"
 msgid "_Reload"
 msgstr "Os_veži"
 
-#: beast-gtk/gxk/gxksimplelabel.c:132
+#: beast-gtk/gxk/gxkparam-label.c:49
+msgid "Property Name"
+msgstr "Ime osobine"
+
+#: beast-gtk/gxk/gxkparam-scale.c:82
+msgid "Horizontal Scale"
+msgstr "Horizontalna razmera"
+
+#: beast-gtk/gxk/gxkparam-scale.c:88
+msgid "Vertical Scale"
+msgstr "Vertikalna razmera"
+
+#: beast-gtk/gxk/gxkparam-scale.c:94
+msgid "Horizontal Scale (Logarithmic)"
+msgstr "Horizontalna razmera (logaritamska)"
+
+#: beast-gtk/gxk/gxkparam-scale.c:100
+msgid "Vertical Scale (Logarithmic)"
+msgstr "Vertikalna razmera (logaritamska)"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:66
+msgid "Spin Button"
+msgstr "Vrteće dugme"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:72
+msgid "Spin Button (Logarithmic)"
+msgstr "Vrteće dugme (logaritamsko)"
+
+#: beast-gtk/gxk/gxkparam-toggle.c:69
+msgid "Toggle Button"
+msgstr "Prekidačko dugme"
+
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr "Unos teksta"
+
+#: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "The text of the label"
 msgstr "Tekst oznake"
 
-#: beast-gtk/gxk/gxksimplelabel.c:136
+#: beast-gtk/gxk/gxksimplelabel.c:137
 msgid "Use underline"
 msgstr "Koristi podvlaku"
 
-#: beast-gtk/gxk/gxksimplelabel.c:137
+#: beast-gtk/gxk/gxksimplelabel.c:138
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
@@ -1368,22 +1451,22 @@ msgstr ""
 "Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja "
 "prečicu"
 
-#: beast-gtk/gxk/gxksimplelabel.c:141
+#: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
 msgstr "Samo-iseci"
 
-#: beast-gtk/gxk/gxksimplelabel.c:142
+#: beast-gtk/gxk/gxksimplelabel.c:143
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 "Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri "
 "tačke „...“"
 
-#: beast-gtk/gxk/gxksimplelabel.c:146
+#: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
 msgstr "Poravnavanje"
 
-#: beast-gtk/gxk/gxksimplelabel.c:147
+#: beast-gtk/gxk/gxksimplelabel.c:148
 msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
@@ -1391,31 +1474,31 @@ msgstr ""
 "Međusobno poravnavanje redova teksta u oznaci.\n"
 "Ovo ne utiče na poravnavanje oznake na svom mestu."
 
-#: beast-gtk/gxk/gxksimplelabel.c:151
+#: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
 msgstr "Obrazac"
 
 # bug: a bit flakey, ain't it?
-#: beast-gtk/gxk/gxksimplelabel.c:152
+#: beast-gtk/gxk/gxksimplelabel.c:153
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
 msgstr ""
 "Niska sa znacima „_“ na mestima odgovara znacima u tekstu koji se podvlače"
 
-#: beast-gtk/gxk/gxksimplelabel.c:156
+#: beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
 msgstr "Prečica"
 
-#: beast-gtk/gxk/gxksimplelabel.c:157
+#: beast-gtk/gxk/gxksimplelabel.c:158
 msgid "The mnemonic accelerator key for this label"
 msgstr "Taster prečice za izbor ove oznake"
 
-#: beast-gtk/gxk/gxksimplelabel.c:161
+#: beast-gtk/gxk/gxksimplelabel.c:162
 msgid "Mnemonic widget"
 msgstr "Element prečice"
 
-#: beast-gtk/gxk/gxksimplelabel.c:162
+#: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Element koji se aktivira kada se pritisne prečica oznake"
 
