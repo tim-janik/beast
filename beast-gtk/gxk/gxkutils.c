@@ -123,7 +123,7 @@ ehook_widget_size_allocate (GSignalInvocationHint *ihint,
 static void
 fixup_gtk24_size_allocate (void)
 {
-#if GTK_CHECK_VERSION (2, 4, 0) && !GTK_CHECK_VERSION (2, 5, 0) // GTKFIX
+#if GTK_CHECK_VERSION (2, 4, 0) && !GTK_CHECK_VERSION (2, 5, 5) // GTKFIX
   GtkWidget *widget = g_object_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
   g_object_ref (widget);
   gtk_object_sink (GTK_OBJECT (widget));
