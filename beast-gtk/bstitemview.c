@@ -314,6 +314,7 @@ bst_item_view_create_tree (BstItemView *self)
 
   /* make widgets visible */
   gtk_widget_show_all (scwin);
+  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 static void
@@ -322,6 +323,7 @@ pview_selection_changed (BstItemView *self)
   if (self->pview)
     bst_param_view_set_item (BST_PARAM_VIEW (self->pview),
 			     bst_item_view_get_current (self));
+  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 static void
@@ -375,6 +377,7 @@ item_property_notify (SfiProxy     item,
     {
       gint row = bse_item_get_seqid (item) - 1;
       gxk_list_wrapper_notify_change (GXK_LIST_WRAPPER (self->wlist), row);
+      bst_update_can_operate (GTK_WIDGET (self));
     }
 }
 
@@ -415,7 +418,7 @@ item_view_item_added (SfiProxy     container,
       gint row = bse_item_get_seqid (item) - 1;
       gxk_list_wrapper_notify_insert (self->wlist, row);
       BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, item);
-      bst_item_view_can_operate (self, 0);
+      bst_update_can_operate (GTK_WIDGET (self));
     }
 }
 
@@ -480,6 +483,7 @@ item_view_set_container (BstItemView *self,
 	      gxk_list_wrapper_notify_append (self->wlist, 1);
 	  }
     }
+  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 void

@@ -924,10 +924,10 @@ bst_update_can_operate (GtkWidget *widget)
   /* figure toplevel app, and update it
    */
   widget = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
-  g_return_if_fail (BST_IS_APP (widget));
-
-  op_update_list = g_slist_prepend (op_update_list, g_object_ref (widget));
-
-  if (!op_update_id)
-    op_update_id = g_idle_add_full (-1000, op_update_handler, NULL, NULL);
+  if (BST_IS_APP (widget) && !g_slist_find (op_update_list, widget))
+    {
+      op_update_list = g_slist_prepend (op_update_list, g_object_ref (widget));
+      if (!op_update_id)
+	op_update_id = g_idle_add_full (G_PRIORITY_DEFAULT, op_update_handler, NULL, NULL);
+    }
 }
