@@ -28,7 +28,7 @@
 #include "sfidl-module.h"
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
-#define PRG_NAME "bse-module-generator"
+#define PRG_NAME "bse-plugin-generator"
 
 using namespace Sfidl;
 using namespace std;
@@ -97,7 +97,7 @@ main (int   argc,
     {
       g_printerr ("%s: %s\n", argv[0],
                   argc < 2
-                  ? "missing module definition file"
+                  ? "missing plugin definition file"
                   : "too many file names specified");
       usage();
       return 1;

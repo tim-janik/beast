@@ -1,3 +1,7 @@
+Fri Aug 29 18:17:49 2003  Tim Janik  <timj@gtk.org>
+
+	* bse-plugin-generator.cc: cvs rename.
+
 Tue Aug 26 08:57:54 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.[hc]*: fixed buglet.
