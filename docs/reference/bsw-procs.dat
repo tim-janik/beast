@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1-rc2
-date    = 04 Aug 2002
+date    = 07 Aug 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 04 Aug 2002 BEAST-0.4.1-rc2
+BSW-Procedures 07 Aug 2002 BEAST-0.4.1-rc2
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -2387,7 +2387,7 @@ can-load:
 @DOC-DESCRIPTION@
 Check whether a loader can be found for a wave file  
 @DOC-SYNOPSIS@
-@STRONG bsw-server-construct-note@ (@EMPH server@, @EMPH half-tone@, @EMPH octave@, @EMPH fine-tune@);
+@STRONG bsw-server-construct-note@ (@EMPH server@, @EMPH semitone@, @EMPH octave@, @EMPH fine-tune@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -2404,7 +2404,7 @@ server
 type = 
 typeraw = 
 @DOC-PARAMETER@
-half-tone
+semitone
 @DOC-PARDESC@
 
 
@@ -2431,7 +2431,7 @@ retspace = 12
 note-description: 
 
 @DOC-DESCRIPTION@
-Describe a note, given its half tone, octave and fine tune.  
+Describe a note, given its semitone, octave and fine tune.  
 @DOC-SYNOPSIS@
 @STRONG bsw-server-describe-note@ (@EMPH server@, @EMPH note@, @EMPH fine-tune@);
 
@@ -2469,7 +2469,7 @@ retspace = 12
 note-description: 
 
 @DOC-DESCRIPTION@
-Describe a note, providing information about its octave, half tone, frequency, etc.  
+Describe a note, providing information about its octave, semitone, frequency, etc.  
 @DOC-SYNOPSIS@
 @STRONG bsw-server-get-midi-notifier@ (@EMPH server@);
 

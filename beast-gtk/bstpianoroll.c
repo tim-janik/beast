@@ -27,9 +27,9 @@
 #define	ALLOCATION(self)	(&GTK_WIDGET (self)->allocation)
 #define	N_OCTAVES(self)		(MAX_OCTAVE (self) - MIN_OCTAVE (self) + 1)
 #define	MAX_OCTAVE(self)	(BSW_NOTE_OCTAVE ((self)->max_note))
-#define	MAX_HALF_TONE(self)	(BSW_NOTE_HALF_TONE ((self)->max_note))
+#define	MAX_SEMITONE(self)	(BSW_NOTE_SEMITONE ((self)->max_note))
 #define	MIN_OCTAVE(self)	(BSW_NOTE_OCTAVE ((self)->min_note))
-#define	MIN_HALF_TONE(self)	(BSW_NOTE_HALF_TONE ((self)->min_note))
+#define	MIN_SEMITONE(self)	(BSW_NOTE_SEMITONE ((self)->min_note))
 
 /* layout (requisition) */
 #define	NOTE_HEIGHT(self)	((gint) ((self)->vzoom * 1.2))		/* factor must be between 1 .. 2 */
@@ -686,16 +686,16 @@ coord_check_crossing (BstPianoRoll *self,
 
 typedef struct {
   gint  octave;
-  guint half_tone;	/* 0 .. 11    within octave */
+  guint semitone;	/* 0 .. 11    within octave */
   guint key;		/* 0 .. 6     index of white key */
   guint key_frac;	/* 0 .. 4*z-1 fractional pixel index into key */
   guint wstate;		/* DRAW_ START/MIDDLE/END of white key */
   guint bstate;		/* DRAW_ NONE/START/MIDDLE/END of black key */
   guint bmatch : 1;	/* TRUE if on black key (differs from bstate!=NONE) */
   guint ces_fes : 1;	/* TRUE if on non-existant black key below C or F */
-  guint valid : 1;	/* FALSE if min/max octave/half_tone are exceeded */
+  guint valid : 1;	/* FALSE if min/max octave/semitone are exceeded */
   gint  valid_octave;
-  guint valid_half_tone;
+  guint valid_semitone;
 } NoteInfo;
 
 static gint
@@ -704,10 +704,10 @@ note_to_coord (BstPianoRoll *self,
 	       gint	    *height_p,
 	       gint	    *ces_fes_height_p)
 {
-  gint octave, ythickness = 1, z = self->vzoom, h = NOTE_HEIGHT (self), half_tone = BSW_NOTE_HALF_TONE (note);
+  gint octave, ythickness = 1, z = self->vzoom, h = NOTE_HEIGHT (self), semitone = BSW_NOTE_SEMITONE (note);
   gint oheight = OCTAVE_HEIGHT (self), y, zz = z + z, offs = 0, height = h;
 
-  switch (half_tone)
+  switch (semitone)
     {
     case 10:	offs += zz + h;
     case  8:	offs += zz + h;
@@ -737,7 +737,7 @@ note_to_coord (BstPianoRoll *self,
   if (height_p)
     *height_p = height;
   if (ces_fes_height_p)
-    *ces_fes_height_p = (half_tone == 0 || half_tone == 4 || half_tone == 5 || half_tone == 11) ? z : 0;
+    *ces_fes_height_p = (semitone == 0 || semitone == 4 || semitone == 5 || semitone == 11) ? z : 0;
 
   return y - self->y_offset;
 }
@@ -772,27 +772,27 @@ coord_to_note (BstPianoRoll *self,
   /* figure black notes */
   end_shift = i >= z + h;
   start_shift = i < z; /* + ythickness; */
-  info->half_tone = 0;
+  info->semitone = 0;
   info->ces_fes = ((info->key == 0 && start_shift) ||
 		   (info->key == 2 && end_shift) ||
 		   (info->key == 3 && start_shift) ||
 		   (info->key == 6 && end_shift));
   switch (info->key)
     {
-    case 3:	info->half_tone += 5;
+    case 3:	info->semitone += 5;
     case 0:
-      info->half_tone += 0 + end_shift;
+      info->semitone += 0 + end_shift;
       black_shift = end_shift;
       break;
-    case 5:	info->half_tone += 2;
-    case 4:	info->half_tone += 5;
+    case 5:	info->semitone += 2;
+    case 4:	info->semitone += 5;
     case 1:
-      info->half_tone += 2 + (start_shift ? -1 : end_shift);
+      info->semitone += 2 + (start_shift ? -1 : end_shift);
       black_shift = start_shift || end_shift;
       break;
-    case 6:	info->half_tone += 7;
+    case 6:	info->semitone += 7;
     case 2:
-      info->half_tone += 4 - start_shift;
+      info->semitone += 4 - start_shift;
       black_shift = start_shift;
       break;
     }
@@ -819,12 +819,12 @@ coord_to_note (BstPianoRoll *self,
   if (black_shift && info->bstate == DRAW_END)
     {
       info->bmatch = FALSE;
-      info->half_tone += 1;
+      info->semitone += 1;
     }
   else if (black_shift && info->bstate == DRAW_START)
     {
       info->bmatch = FALSE;
-      info->half_tone -= 1;
+      info->semitone -= 1;
     }
   else
     info->bmatch = TRUE;
@@ -832,23 +832,23 @@ coord_to_note (BstPianoRoll *self,
   /* validate note */
   if (y < 0 ||		/* we calc junk in this case, flag invalidity */
       info->octave > MAX_OCTAVE (self) ||
-      (info->octave == MAX_OCTAVE (self) && info->half_tone > MAX_HALF_TONE (self)))
+      (info->octave == MAX_OCTAVE (self) && info->semitone > MAX_SEMITONE (self)))
     {
       info->valid_octave = MAX_OCTAVE (self);
-      info->valid_half_tone = MAX_HALF_TONE (self);
+      info->valid_semitone = MAX_SEMITONE (self);
       info->valid = FALSE;
     }
   else if (info->octave < MIN_OCTAVE (self) ||
-	   (info->octave == MIN_OCTAVE (self) && info->half_tone < MIN_HALF_TONE (self)))
+	   (info->octave == MIN_OCTAVE (self) && info->semitone < MIN_SEMITONE (self)))
     {
       info->valid_octave = MIN_OCTAVE (self);
-      info->valid_half_tone = MIN_HALF_TONE (self);
+      info->valid_semitone = MIN_SEMITONE (self);
       info->valid = FALSE;
     }
   else
     {
       info->valid_octave = info->octave;
-      info->valid_half_tone = info->half_tone;
+      info->valid_semitone = info->semitone;
       info->valid = TRUE;
     }
   
@@ -907,7 +907,7 @@ bst_piano_roll_draw_vpanel (BstPianoRoll *self,
 	{
 	case DRAW_START:
 	  gdk_draw_line (window, dark_gc, x, i, white_x, i);
-	  if (info.half_tone == 0)	/* C */
+	  if (info.semitone == 0)	/* C */
 	    {
 	      gint pbheight, ypos, ythickness = 1, overlap = 1;
 	      gint pbwidth = white_x - black_x + overlap;
@@ -984,12 +984,12 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
       if (info.wstate != DRAW_START)
 	continue;
 
-      if (info.half_tone == 0)	/* C */
+      if (info.semitone == 0)	/* C */
 	{
 	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
 	  gdk_draw_line (window, dark_gc, x, i, xbound - 1, i);
 	}
-      else if (info.half_tone == 5) /* F */
+      else if (info.semitone == 5) /* F */
 	{
 	  guint8 dash[3] = { 2, 2, 0 };
 	  
@@ -1050,7 +1050,7 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
   for (; iter && bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
       BswPartNote *pnote = bsw_iter_get_part_note (iter);
-      gint half_tone = BSW_NOTE_HALF_TONE (pnote->note);
+      gint semitone = BSW_NOTE_SEMITONE (pnote->note);
       guint start = pnote->tick, end = start + pnote->duration;
       GdkGC *xdark_gc, *xlight_gc, *xnote_gc;
       gint x1, x2, y1, y2, height;
@@ -1069,7 +1069,7 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
       else
 	{
 	  xdark_gc = dark_gc;
-	  xnote_gc = self->color_gc[half_tone];
+	  xnote_gc = self->color_gc[semitone];
 	  xlight_gc = NULL;	/* skip this in white canvas */
 	}
       x1 = tick_to_coord (self, start);
@@ -1483,7 +1483,7 @@ bst_piano_roll_canvas_drag (BstPianoRoll *self,
       
       self->drag.current_tick = coord_to_tick (self, MAX (coord_x, 0), FALSE);
       coord_to_note (self, MAX (coord_y, 0), &info);
-      self->drag.current_note = BSW_NOTE_GENERIC (info.valid_octave, info.valid_half_tone);
+      self->drag.current_note = BSW_NOTE_GENERIC (info.valid_octave, info.valid_semitone);
       self->drag.current_valid = info.valid && !info.ces_fes;
       if (initial)
 	{
@@ -1606,7 +1606,7 @@ bst_piano_roll_motion (GtkWidget      *widget,
       NoteInfo info;
       coord_to_note (self, event->y, &info);
       g_print ("motion: ht=%d octave=%d note_step=%d step_frac=%d\n",
-	       info.half_tone, info.octave, info.key, info.key_frac);
+	       info.semitone, info.octave, info.key, info.key_frac);
     }
   
   return handled;
@@ -1849,7 +1849,7 @@ bst_piano_roll_get_paste_pos (BstPianoRoll *self,
 			      guint        *tick_p,
 			      gint         *note_p)
 {
-  guint tick, half_tone;
+  guint tick, semitone;
   gint octave;
   
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
@@ -1868,17 +1868,17 @@ bst_piano_roll_get_paste_pos (BstPianoRoll *self,
 	}
       tick = coord_to_tick (self, x, FALSE);
       coord_to_note (self, y, &info);
-      half_tone = info.valid_half_tone;
+      semitone = info.valid_semitone;
       octave = info.valid_octave;
     }
   else
     {
-      half_tone = 6;
+      semitone = 6;
       octave = (MIN_OCTAVE (self) + MAX_OCTAVE (self)) / 2;
       tick = 0;
     }
   if (note_p)
-    *note_p = BSW_NOTE_MAKE_VALID (BSW_NOTE_GENERIC (octave, half_tone));
+    *note_p = BSW_NOTE_MAKE_VALID (BSW_NOTE_GENERIC (octave, semitone));
   if (tick_p)
     *tick_p = tick;
 }

@@ -1,3 +1,16 @@
+Tue Aug  6 23:18:33 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_key_table_from_xkb): don't perform Xkb
+	queries, since we currently don't need key tables.
+
+	* bsw/bswproxy.c (bsw_collector_get_string): plug string leakage.
+
+	* beast-gtk/bstpatterneditor.c:
+	* beast-gtk/bstpianoroll.c: s/halftone/semitone/.
+
+	* beast-gtk/bsttrackview.c (bst_track_view_can_operate): for a short
+	term hack, allow only creation of one track.
+
 Mon Aug  5 11:21:11 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.[hc]: renamed bst_wrap_text_*() to

@@ -663,7 +663,7 @@ bst_key_table_from_xkb (const gchar *display)
 	g_message ("Failed to find keytable \"%s\"", BST_XKB_SYMBOL);
     }
   
-  if (!patch)
+  if (!patch && 0 /* FIXME: we don't need xkb keytables currently */)
     {
       gchar *xkb_symbol = NULL;
       

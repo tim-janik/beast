@@ -148,10 +148,55 @@ bsw_proxy_get_server (void)
   return bsw_proxy_lookup (bse_server_get ());
 }
 
-gchar*
-bsw_collector_get_string (GValue *value)	// FIXME
+typedef struct {
+  gpointer next;
+  gpointer data;
+  void (*free_func) (gpointer data);
+} GCData;
+
+static GCData *collector_list = NULL;
+static guint   collector_id = 0;
+
+static gboolean
+garbage_collector (gpointer data)
 {
-  return g_value_dup_string (value);
+  GCData *list;
+  BSE_THREADS_ENTER ();
+  list = collector_list;
+  collector_list = NULL;
+  collector_id = 0;
+  while (list)
+    {
+      GCData *tmp = list->next;
+      list->free_func (list->data);
+      g_list_free_1 ((GList*) list);
+      list = tmp;
+    }
+  BSE_THREADS_LEAVE ();
+  return FALSE;
+}
+
+static void
+add_gc (gpointer data,
+	gpointer free_func)
+{
+  GCData *gcdata = (gpointer) g_list_alloc ();	/* abuse GList memchunk for this */
+  g_assert (sizeof (*gcdata) == sizeof (GList));
+
+  if (!collector_id)
+    bse_idle_background (garbage_collector, NULL);
+  gcdata->data = data;
+  gcdata->free_func = free_func;
+  gcdata->next = collector_list;
+  collector_list = gcdata;
+}
+
+gchar*
+bsw_collector_get_string (GValue *value)
+{
+  gchar *str = g_value_dup_string (value);
+  add_gc (str, g_free);
+  return str;
 }
 
 void

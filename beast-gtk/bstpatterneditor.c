@@ -2255,10 +2255,10 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	case BST_PEA_OCTAVE_DFLT:
 	  if (BSE_NOTE_VALID (note))
 	    {
-	      guint half_tone;
+	      guint semitone;
 	      
-	      bse_note_examine (note, NULL, &half_tone, NULL, NULL);
-	      note = BSE_NOTE_GENERIC (pe->base_octave, half_tone);
+	      bse_note_examine (note, NULL, &semitone, NULL, NULL);
+	      note = BSE_NOTE_GENERIC (pe->base_octave, semitone);
 	    }
 	  break;
 	}

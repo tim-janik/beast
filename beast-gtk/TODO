@@ -1,10 +1,5 @@
 RELEASE:
-- terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw), half.tone->semitone
-- remove GenOsc plugin
 - help: QuickStart-Samples, QuickStart-Synthesis, QuickStart-Songs
-- disallow creating more than one track as long as playback isn't supported for it
-* add switch to set keytables directly, no-serverquery, which works without rc file
-- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
 
 FEATURES:
 - Module Menu: add EDIT
@@ -28,6 +23,8 @@ FEATURES:
 - pianoroll: select loop for playback during editing
 - BstToolbar, drop-down selections work only after button release
 - snet router: optionally, paint i/o channel names onto background
+- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
+- fix data cache seeks to skip the -64 byte offset at block boundaries
 
 GENERAL:
 * BLIT, band-limited impulse train oscillator

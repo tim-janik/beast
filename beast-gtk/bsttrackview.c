@@ -146,6 +146,7 @@ bst_track_view_can_operate (BstItemView *item_view,
 			    BstOps	   op)
 {
   BstTrackView *track_view = BST_TRACK_VIEW (item_view);
+  BswProxy song = item_view->container;
   
   g_return_val_if_fail (BST_IS_TRACK_VIEW (track_view), FALSE);
   
@@ -153,7 +154,7 @@ bst_track_view_can_operate (BstItemView *item_view,
     {
       BswProxy item;
     case BST_OP_TRACK_ADD:
-      return TRUE;
+      return bse_container_get_item (bse_object_from_id (song), BSE_TYPE_TRACK, 1) == NULL;  // FIXME: remove this hack
     case BST_OP_TRACK_DELETE:
       item = bst_item_view_get_current (item_view);
       return item != 0;
