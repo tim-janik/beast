@@ -17,6 +17,7 @@
  */
 #include "bstscrollgraph.h"
 #include "bstsnifferscope.h" // FIXME: remove include
+#include <math.h>
 
 #define N_VALUES(scg)   ((scg)->n_points * (scg)->n_bars)
 #define VALUE(scg,b,p)  (BAR (scg, b)[(p)])
@@ -220,6 +221,8 @@ bst_scrollgraph_clear (BstScrollgraph *self)
   gtk_widget_queue_draw (widget);
 }
 
+#define FFT_SIZE 1024
+
 static void
 bst_scrollgraph_probes_notify (SfiProxy     source,
                                SfiSeq      *sseq,
@@ -232,17 +235,26 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
   for (i = 0; i < pseq->n_probes && !probe; i++)
     if (pseq->probes[i]->channel_id == self->ochannel)
       probe = pseq->probes[i];
-  if (probe && probe->probe_features->probe_samples)
+  if (probe && probe->probe_features->probe_fft && probe->fft_data->n_values)
     {
       gfloat *bar = BAR (self, self->n_bars - 1); /* update last bar */
-      SfiFBlock *sample = probe->sample_data;
-      for (i = 0; i < MIN (self->n_points, sample->n_values); i++)
-        bar[i] = sample->values[i];
+      SfiFBlock *fft = probe->fft_data;
+      for (i = 0; i < MIN (self->n_points, fft->n_values / 2 + 1); i++)
+        {
+          gfloat re, im;
+          if (i == 0)
+            re = fft->values[0], im = 0;
+          else if (i == fft->n_values / 2)
+            re = fft->values[1], im = 0;
+          else
+            re = fft->values[i * 2], im = fft->values[i * 2 + 1];
+          bar[i] = sqrt (re * re + im * im); // FIXME: speed up
+        }
       bst_scrollgraph_scroll_bars (self); /* last bar becomes bar0 */
       if (GTK_WIDGET_DRAWABLE (self))
         bst_scrollgraph_draw_bar (self, 0);
     }
-  bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 1, 0);
+  bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 0, FFT_SIZE);
 }
 
 static void
@@ -281,7 +293,7 @@ bst_scrollgraph_set_source (BstScrollgraph *self,
       bse_proxy_connect (self->source,
                          "signal::probes", bst_scrollgraph_probes_notify, self,
                          NULL);
-      bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 1, 0);
+      bse_source_queue_probe_request (self->source, self->ochannel, 0, 0, 0, FFT_SIZE);
     }
 }
 

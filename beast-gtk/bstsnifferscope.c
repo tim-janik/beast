@@ -327,18 +327,22 @@ bse_source_queue_probe_request (SfiProxy            source,
                                 guint               ochannel_id,
                                 gboolean            probe_range,
                                 gboolean            probe_energie,
-                                gboolean            probe_samples,
-                                gboolean            probe_fft)
+                                guint               probe_samples,
+                                guint               probe_fft)
 {
   BseProbeFeatures features = { 0, };
   features.probe_range = probe_range;
   features.probe_energie = probe_energie;
-  features.probe_samples = probe_samples;
-  features.probe_fft = probe_fft;
+  features.probe_samples = probe_samples > 0;
+  features.probe_fft = probe_fft > 0;
   BseProbeRequest request = { 0, };
   request.source = source;
   request.channel_id = ochannel_id;
   request.probe_features = &features;
+  if ((probe_samples | probe_fft) == 1)
+    request.block_size = 128;   /* default block_size if only TRUE was specified */
+  else if (probe_samples || probe_fft)
+    request.block_size = MAX (probe_samples, probe_fft);
   if (!probe_request_seq)
     {
       g_idle_add_full (GTK_PRIORITY_REDRAW + 5, source_probe_idle_request, NULL, NULL);

@@ -48,8 +48,8 @@ void       bse_source_queue_probe_request   (SfiProxy            source,
                                              guint               ochannel_id,
                                              gboolean            probe_range,
                                              gboolean            probe_energie,
-                                             gboolean            probe_samples,
-                                             gboolean            probe_fft);
+                                             guint               probe_samples,
+                                             guint               probe_fft);
 
 G_END_DECLS
 
