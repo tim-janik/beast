@@ -39,9 +39,13 @@ extern "C" {
 
 /* --- BseSong object --- */
 typedef struct {
-  BseSource *mixer;
-  BseSource *output;
-  BseSource *wosc;
+  BseSource *ofreq;
+  BseSource *synth;
+} BseSongVoice;
+typedef struct {
+  BseSource    *mixer;
+  BseSource    *output;
+  BseSongVoice *voices;	/* [n_channels] */
 } BseSongNet;
 struct _BseSong
 {

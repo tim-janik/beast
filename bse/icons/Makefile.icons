@@ -1,5 +1,6 @@
 ## Generated data (by make Makefile.icons)
 icon_list += ball.c
+icon_list += const.c
 icon_list += inoutport.c
 icon_list += inport.c
 icon_list += keyboard.c

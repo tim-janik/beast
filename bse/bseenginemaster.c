@@ -144,6 +144,7 @@ master_process_job (GslJob *job)
       Poll *poll, *poll_last;
       guint istream, ostream;
       GslFlowJob *fjob;
+      gboolean was_consumer;
     case OP_JOB_INTEGRATE:
       node = job->data.node;
       OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "integrate(%p)", node);
@@ -174,6 +175,21 @@ master_process_job (GslJob *job)
       master_need_reflow |= TRUE;
       master_schedule_discard ();	/* discard schedule so node may be freed */
       break;
+    case GSL_JOB_SET_CONSUMER:
+    case GSL_JOB_UNSET_CONSUMER:
+      node = job->data.node;
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "toggle_consumer(%p)", node);
+      was_consumer = OP_NODE_IS_CONSUMER (node);
+      node->is_consumer = job->job_id == GSL_JOB_SET_CONSUMER;
+      if (was_consumer != OP_NODE_IS_CONSUMER (node))
+	{
+	  if (OP_NODE_IS_CONSUMER (node))
+	    add_consumer (node);
+	  else
+	    remove_consumer (node);
+	  master_need_reflow |= TRUE;
+	}
+      break;
     case OP_JOB_CONNECT:
       node = job->data.connection.dest_node;
       src_node = job->data.connection.src_node;
@@ -187,12 +203,13 @@ master_process_job (GslJob *job)
       node->inputs[istream].src_stream = ostream;
       node->module.istreams[istream].connected = TRUE;
       /* remove from consumer list */
-      if (OP_NODE_IS_CONSUMER (src_node))
-	remove_consumer (src_node);
+      was_consumer = OP_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = TRUE;
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
       src_node->counter = 0;
+      if (was_consumer && !OP_NODE_IS_CONSUMER (src_node))
+	remove_consumer (src_node);
       master_need_reflow |= TRUE;
       break;
     case OP_JOB_DISCONNECT:

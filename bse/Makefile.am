@@ -46,6 +46,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsecategories.h \
 	bsechunk.h \
 	bseconfig.h \
+	bseconstant.h \
 	bsecontainer.h \
 	bsedefs.h \
 	bseeffect.h \
@@ -113,6 +114,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsecapture.c \
 	bsecategories.c \
 	bsechunk.c \
+	bseconstant.c \
 	bsecontainer.c \
 	bseeffect.c \
 	bseeffectbalance.c \

@@ -154,6 +154,8 @@ bse_pcm_module_insert (BsePcmHandle *handle,
   gsl_trans_add (trans,
 		 gsl_job_integrate (module));
   gsl_trans_add (trans,
+		 gsl_job_set_consumer (module, TRUE));
+  gsl_trans_add (trans,
 		 gsl_job_add_poll (bse_pcm_module_poll, mdata, NULL, 0, NULL));
   
   return module;

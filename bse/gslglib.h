@@ -181,7 +181,11 @@ char *alloca ();
 #define g_newa(struct_type, n_structs)  ((struct_type*) g_alloca (sizeof (struct_type) * (gsize) (n_structs)))
 
 /* needs inline configure check */
-#if defined(__GNUC__)
+#if defined (__xlc__)
+#  if !defined (inline)
+#    define inline _Inline
+#  endif
+#elif defined (__GNUC__)
 #define inline __inline__
 #else
 #define inline /* no inline */

@@ -30,14 +30,9 @@ enum
 {
   PARAM_0,
   PARAM_SNET,
-  PARAM_IPORT_NAME1,
-  PARAM_IPORT_NAME2,
-  PARAM_IPORT_NAME3,
-  PARAM_IPORT_NAME4,
-  PARAM_OPORT_NAME1,
-  PARAM_OPORT_NAME2,
-  PARAM_OPORT_NAME3,
-  PARAM_OPORT_NAME4
+  /* don't add params after here */
+  PARAM_IPORT_NAME,
+  PARAM_OPORT_NAME
 };
 
 
@@ -101,7 +96,7 @@ BSE_BUILTIN_TYPE (BseSubSynth)
 						"This module encapsulates whole synthesizer networks, by "
 						"interfacing to/from their virtual input and output ports",
 						&sub_synth_info);
-  bse_categories_register_icon ("/Source/Plug/Virtual Sub Synth",
+  bse_categories_register_icon ("/Modules/Plug/Virtual Sub Synth",
 				sub_synth_type_id,
 				&pixdata);
   return sub_synth_type_id;
@@ -113,7 +108,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint ichannel_id, ochannel_id;
+  guint channel_id, i;
   
   parent_class = g_type_class_peek_parent (class);
   
@@ -132,64 +127,44 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
 			      PARAM_SNET,
 			      g_param_spec_object ("snet", "Synthesis Network", "The synthesis network to interface to",
 						   BSE_TYPE_SNET, BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Input Assignments",
-			      PARAM_IPORT_NAME1,
-			      bse_param_spec_string ("in_port_1", "Input Port 1", "Output port name to interface from",
-						     "synth_in_1",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Input Assignments",
-			      PARAM_IPORT_NAME2,
-			      bse_param_spec_string ("in_port_2", "Input Port 2", "Output port name to interface from",
-						     "synth_in_2",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Input Assignments",
-			      PARAM_IPORT_NAME3,
-			      bse_param_spec_string ("in_port_3", "Input Port 3", "Output port name to interface from",
-						     "synth_in_3",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Input Assignments",
-			      PARAM_IPORT_NAME4,
-			      bse_param_spec_string ("in_port_4", "Input Port 4", "Output port name to interface from",
-						     "synth_in_4",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Output Assignments",
-			      PARAM_OPORT_NAME1,
-			      bse_param_spec_string ("out_port_1", "Output Port 1", "Input port name to interface to",
-						     "synth_out_1",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Output Assignments",
-			      PARAM_OPORT_NAME2,
-			      bse_param_spec_string ("out_port_2", "Output Port 2", "Input port name to interface to",
-						     "synth_out_2",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Output Assignments",
-			      PARAM_OPORT_NAME3,
-			      bse_param_spec_string ("out_port_3", "Output Port 3", "Input port name to interface to",
-						     "synth_out_3",
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Output Assignments",
-			      PARAM_OPORT_NAME4,
-			      bse_param_spec_string ("out_port_4", "Output Port 4", "Input port name to interface to",
-						     "synth_out_4",
-						     BSE_PARAM_DEFAULT));
-  
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Input 1", "Virtual input 1");
-  g_assert (ichannel_id == BSE_SUB_SYNTH_ICHANNEL_VIN1);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Input 2", "Virtual input 2");
-  g_assert (ichannel_id == BSE_SUB_SYNTH_ICHANNEL_VIN2);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Input 3", "Virtual input 3");
-  g_assert (ichannel_id == BSE_SUB_SYNTH_ICHANNEL_VIN3);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Input 4", "Virtual input 4");
-  g_assert (ichannel_id == BSE_SUB_SYNTH_ICHANNEL_VIN4);
+  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+    {
+      gchar *string, *name, *value;
 
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Output 1", "Virtual output 1");
-  g_assert (ochannel_id == BSE_SUB_SYNTH_OCHANNEL_VOUT1);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Output 2", "Virtual output 2");
-  g_assert (ochannel_id == BSE_SUB_SYNTH_OCHANNEL_VOUT2);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Output 3", "Virtual output 3");
-  g_assert (ochannel_id == BSE_SUB_SYNTH_OCHANNEL_VOUT3);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Output 4", "Virtual output 4");
-  g_assert (ochannel_id == BSE_SUB_SYNTH_OCHANNEL_VOUT4);
+      string = g_strdup_printf ("in_port_%u", i + 1);
+      name = g_strdup_printf ("Input Port %u", i + 1);
+      value = g_strdup_printf ("synth_in_%u", i + 1);
+      bse_object_class_add_param (object_class, "Input Assignments", PARAM_IPORT_NAME + i * 2,
+				  bse_param_spec_string (string, name, "Output port name to interface from",
+							 value, BSE_PARAM_DEFAULT));
+      g_free (string);
+      g_free (name);
+      g_free (value);
+
+      string = g_strdup_printf ("out_port_%u", i + 1);
+      name = g_strdup_printf ("Output Port %u", i + 1);
+      value = g_strdup_printf ("synth_out_%u", i + 1);
+      bse_object_class_add_param (object_class, "Output Assignments", PARAM_OPORT_NAME + i * 2,
+				  bse_param_spec_string (string, name, "Input port name to interface to",
+							 value, BSE_PARAM_DEFAULT));
+      g_free (string);
+      g_free (name);
+      g_free (value);
+
+      string = g_strdup_printf ("Input %u", i + 1);
+      name = g_strdup_printf ("Virtual input %u", i + 1);
+      channel_id = bse_source_class_add_ichannel (source_class, string, name);
+      g_assert (channel_id == i);
+      g_free (string);
+      g_free (name);
+
+      string = g_strdup_printf ("Output %u", i + 1);
+      name = g_strdup_printf ("Virtual output %u", i + 1);
+      channel_id = bse_source_class_add_ochannel (source_class, string, name);
+      g_assert (channel_id == i);
+      g_free (string);
+      g_free (name);
+    }
 }
 
 static void
@@ -200,15 +175,15 @@ bse_sub_synth_class_finalize (BseSubSynthClass *class)
 static void
 bse_sub_synth_init (BseSubSynth *synth)
 {
+  guint i;
+
   synth->snet = NULL;
-  synth->input_ports[0] = g_strdup ("synth_in_1");
-  synth->input_ports[1] = g_strdup ("synth_in_2");
-  synth->input_ports[2] = g_strdup ("synth_in_3");
-  synth->input_ports[3] = g_strdup ("synth_in_4");
-  synth->output_ports[0] = g_strdup ("synth_out_1");
-  synth->output_ports[1] = g_strdup ("synth_out_2");
-  synth->output_ports[2] = g_strdup ("synth_out_3");
-  synth->output_ports[3] = g_strdup ("synth_out_4");
+
+  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+    {
+      synth->input_ports[i] = g_strdup_printf ("synth_in_%u", i + 1);
+      synth->output_ports[i] = g_strdup_printf ("synth_out_%u", i + 1);
+    }
 }
 
 static void
@@ -222,7 +197,7 @@ bse_sub_synth_do_destroy (BseObject *object)
       g_object_unref (synth->snet);
       synth->snet = NULL;
     }
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       g_free (synth->input_ports[i]);
       synth->input_ports[i] = NULL;
@@ -243,7 +218,7 @@ bse_sub_synth_set_property (BseSubSynth *synth,
 {
   switch (param_id)
     {
-      guint i;
+      guint indx, n;
     case PARAM_SNET:
       if (synth->snet)
 	g_object_unref (synth->snet);
@@ -251,25 +226,25 @@ bse_sub_synth_set_property (BseSubSynth *synth,
       if (synth->snet)
 	g_object_ref (synth->snet);
       break;
-    case PARAM_IPORT_NAME1:
-    case PARAM_IPORT_NAME2:
-    case PARAM_IPORT_NAME3:
-    case PARAM_IPORT_NAME4:
-      i = param_id - PARAM_IPORT_NAME1;
-      g_free (synth->input_ports[i]);
-      synth->input_ports[i] = g_strdup (g_value_get_string (value));
-      break;
-    case PARAM_OPORT_NAME1:
-    case PARAM_OPORT_NAME2:
-    case PARAM_OPORT_NAME3:
-    case PARAM_OPORT_NAME4:
-      i = param_id - PARAM_OPORT_NAME1;
-      g_free (synth->output_ports[i]);
-      synth->output_ports[i] = g_strdup (g_value_get_string (value));
-      break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (synth, param_id, pspec);
-      break;
+      indx = (param_id - PARAM_IPORT_NAME) % 2 + PARAM_IPORT_NAME;
+      n = (param_id - PARAM_IPORT_NAME) / 2;
+      switch (indx)
+	{
+	case PARAM_IPORT_NAME:
+	  g_free (synth->input_ports[n]);
+	  synth->input_ports[n] = g_value_dup_string (value);
+	  // FIXME: update modules?
+	  break;
+	case PARAM_OPORT_NAME:
+	  g_free (synth->output_ports[n]);
+	  synth->output_ports[n] = g_value_dup_string (value);
+	  // FIXME: update modules?
+	  break;
+	default:
+	  G_OBJECT_WARN_INVALID_PROPERTY_ID (synth, param_id, pspec);
+	  break;
+	}
     }
 }
 
@@ -282,26 +257,25 @@ bse_sub_synth_get_property (BseSubSynth *synth,
 {
   switch (param_id)
     {
-      guint i;
+      guint indx, n;
     case PARAM_SNET:
       g_value_set_object (value, synth->snet);
       break;
-    case PARAM_IPORT_NAME1:
-    case PARAM_IPORT_NAME2:
-    case PARAM_IPORT_NAME3:
-    case PARAM_IPORT_NAME4:
-      i = param_id - PARAM_IPORT_NAME1;
-      g_value_set_string (value, synth->input_ports[i]);
-      break;
-    case PARAM_OPORT_NAME1:
-    case PARAM_OPORT_NAME2:
-    case PARAM_OPORT_NAME3:
-    case PARAM_OPORT_NAME4:
-      i = param_id - PARAM_OPORT_NAME1;
-      g_value_set_string (value, synth->output_ports[i]);
-      break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (synth, param_id, pspec);
+      indx = (param_id - PARAM_IPORT_NAME) % 2 + PARAM_IPORT_NAME;
+      n = (param_id - PARAM_IPORT_NAME) / 2;
+      switch (indx)
+	{
+	case PARAM_IPORT_NAME:
+	  g_value_set_string (value, synth->input_ports[n]);
+	  break;
+	case PARAM_OPORT_NAME:
+	  g_value_set_string (value, synth->output_ports[n]);
+	  break;
+	default:
+	  G_OBJECT_WARN_INVALID_PROPERTY_ID (synth, param_id, pspec);
+	  break;
+	}
       break;
     }
 }
@@ -323,10 +297,10 @@ static void
 sub_synths_process (GslModule *module,
 		    guint      n_values)
 {
-  GSL_MODULE_OBUFFER (module, 0) = (gfloat*) GSL_MODULE_IBUFFER (module, 0);
-  GSL_MODULE_OBUFFER (module, 1) = (gfloat*) GSL_MODULE_IBUFFER (module, 1);
-  GSL_MODULE_OBUFFER (module, 2) = (gfloat*) GSL_MODULE_IBUFFER (module, 2);
-  GSL_MODULE_OBUFFER (module, 3) = (gfloat*) GSL_MODULE_IBUFFER (module, 3);
+  guint i;
+
+  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+    GSL_MODULE_OBUFFER (module, i) = (gfloat*) GSL_MODULE_IBUFFER (module, i);
 }
 
 static void
@@ -335,9 +309,9 @@ bse_sub_synth_context_create (BseSource *source,
 			      GslTrans  *trans)
 {
   static const GslClass sub_synth_mclass = {
-    4,				/* n_istreams */
+    BSE_SUB_SYNTH_N_IOPORTS,	/* n_istreams */
     0,				/* n_jstreams */
-    4,				/* n_ostreams */
+    BSE_SUB_SYNTH_N_IOPORTS,	/* n_ostreams */
     sub_synths_process,		/* process */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
@@ -348,7 +322,7 @@ bse_sub_synth_context_create (BseSource *source,
   ModData *mdata_out = g_new0 (ModData, 1);
   GslModule *imodule = gsl_module_new (&sub_synth_mclass, mdata_in);
   GslModule *omodule = gsl_module_new (&sub_synth_mclass, mdata_out);
-  guint foreign_context_handle = ~0;
+  guint i, foreign_context_handle = ~0;
 
   /* create new context for foreign synth */
   if (snet)
@@ -358,15 +332,12 @@ bse_sub_synth_context_create (BseSource *source,
   mdata_out->synth_context_handle = foreign_context_handle;
   
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_imodule (source, BSE_SUB_SYNTH_ICHANNEL_VIN1, context_handle, imodule, 0);
-  bse_source_set_context_imodule (source, BSE_SUB_SYNTH_ICHANNEL_VIN2, context_handle, imodule, 1);
-  bse_source_set_context_imodule (source, BSE_SUB_SYNTH_ICHANNEL_VIN3, context_handle, imodule, 2);
-  bse_source_set_context_imodule (source, BSE_SUB_SYNTH_ICHANNEL_VIN4, context_handle, imodule, 3);
-  bse_source_set_context_omodule (source, BSE_SUB_SYNTH_OCHANNEL_VOUT1, context_handle, omodule, 0);
-  bse_source_set_context_omodule (source, BSE_SUB_SYNTH_OCHANNEL_VOUT2, context_handle, omodule, 1);
-  bse_source_set_context_omodule (source, BSE_SUB_SYNTH_OCHANNEL_VOUT3, context_handle, omodule, 2);
-  bse_source_set_context_omodule (source, BSE_SUB_SYNTH_OCHANNEL_VOUT4, context_handle, omodule, 3);
-  
+  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+    {
+      bse_source_set_context_imodule (source, i, context_handle, imodule, i);
+      bse_source_set_context_omodule (source, i, context_handle, omodule, i);
+    }
+
   /* commit modules to engine */
   gsl_trans_add (trans, gsl_job_integrate (imodule));
   gsl_trans_add (trans, gsl_job_integrate (omodule));
@@ -387,8 +358,8 @@ bse_sub_synth_context_connect (BseSource *source,
   guint i, stream;
   
   /* get context specific modules */
-  imodule = bse_source_get_ichannel_module (source, BSE_SUB_SYNTH_ICHANNEL_VIN1, context_handle, NULL);
-  omodule = bse_source_get_ochannel_module (source, BSE_SUB_SYNTH_OCHANNEL_VOUT1, context_handle, NULL);
+  imodule = bse_source_get_ichannel_module (source, 0, context_handle, NULL);
+  omodule = bse_source_get_ochannel_module (source, 0, context_handle, NULL);
   mdata_in = imodule->user_data;
   mdata_out = omodule->user_data;
   
@@ -398,7 +369,7 @@ bse_sub_synth_context_connect (BseSource *source,
       guint foreign_context_handle = mdata_in->synth_context_handle;
 
       bse_source_connect_context (BSE_SOURCE (snet), foreign_context_handle, trans);
-      for (i = 0; i < 4; i++)
+      for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
 	{
 	  fmodule = bse_snet_get_out_port_module (snet, synth->output_ports[i], foreign_context_handle, &stream);
 	  if (fmodule)
@@ -424,7 +395,7 @@ bse_sub_synth_context_dismiss (BseSource *source,
   ModData *mdata_in;
 
   /* get context specific modules */
-  imodule = bse_source_get_ichannel_module (source, BSE_SUB_SYNTH_ICHANNEL_VIN1, context_handle, NULL);
+  imodule = bse_source_get_ichannel_module (source, 0, context_handle, NULL);
   mdata_in = imodule->user_data;
 
   if (snet)

@@ -36,6 +36,7 @@ extern "C" {
 #define BSE_IS_SYNTH_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_SYNTH))
 #define BSE_SUB_SYNTH_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_SYNTH, BseSubSynthClass))
 
+#define BSE_SUB_SYNTH_N_IOPORTS (5)
 
 /* --- BseSubSynth source --- */
 typedef struct _BseSubSynth      BseSubSynth;
@@ -45,33 +46,13 @@ struct _BseSubSynth
   BseSource       parent_object;
 
   BseSNet	*snet;
-  gchar		*input_ports[4];
-  gchar		*output_ports[4];
+  gchar		*input_ports[BSE_SUB_SYNTH_N_IOPORTS];
+  gchar		*output_ports[BSE_SUB_SYNTH_N_IOPORTS];
 };
 struct _BseSubSynthClass
 {
   BseSourceClass     parent_class;
 };
-
-
-/* --- channels --- */
-enum
-{
-  BSE_SUB_SYNTH_ICHANNEL_VIN1,
-  BSE_SUB_SYNTH_ICHANNEL_VIN2,
-  BSE_SUB_SYNTH_ICHANNEL_VIN3,
-  BSE_SUB_SYNTH_ICHANNEL_VIN4
-};
-enum
-{
-  BSE_SUB_SYNTH_OCHANNEL_VOUT1,
-  BSE_SUB_SYNTH_OCHANNEL_VOUT2,
-  BSE_SUB_SYNTH_OCHANNEL_VOUT3,
-  BSE_SUB_SYNTH_OCHANNEL_VOUT4
-};
-
-
-
 
 
 #ifdef __cplusplus

@@ -1,3 +1,24 @@
+Tue Jan 29 15:16:51 2002  Tim Janik  <timj@gtk.org>
+
+	* gslengine.[hc], gslopmaster.c: make consumer property a per module
+	property, changable via gsl_job_set_consumer().
+	
+	* *.c: changed modules accordingly to set consumership where
+	necessary.
+
+	* bsesubsynth.[hc]: make number of input/output channels compile time
+	configurable.
+	
+	* bsesong.[hc]: more work on the required synthesis network.
+	
+	* *.[hc]: s/BSE_ITEM_NEVER_STORE/BSE_ITEM_STORAGE_IGNORE/.
+
+Fri Jan 25 07:13:25 2002  Tim Janik  <timj@gtk.org>
+
+	* bseconstant.[hc]: moved this from ../plugins/ to here, since
+	we refer to it from the core. changed module to deal with multiple
+	outputs.
+
 Thu Jan 24 11:04:41 2002  Tim Janik  <timj@gtk.org>
 
 	* bseenums.[hc]: added more source conneciton errors, removed

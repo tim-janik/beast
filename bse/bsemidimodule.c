@@ -103,7 +103,7 @@ bse_midi_module_insert (BseMidiDecoder *decoder,
     BSE_MIDI_MODULE_N_CHANNELS,	/* n_ostreams */
     bse_midi_module_process,	/* process */
     (GslModuleFreeFunc) g_free,	/* free */
-    (GSL_COST_CHEAP | GSL_ALWAYS_PROCESS)
+    GSL_COST_CHEAP
   };
   BseMidiModuleData *mdata;
   GslModule *module;
@@ -122,6 +122,7 @@ bse_midi_module_insert (BseMidiDecoder *decoder,
     mdata->signals[i] = signals[i];
   module = gsl_module_new (&midi_module_class, mdata);
   gsl_trans_add (trans, gsl_job_integrate (module));
+  gsl_trans_add (trans, gsl_job_set_consumer (module, TRUE));
 
   _bse_midi_decoder_use_channel (mdata->decoder, mdata->midi_channel_id - 1);
   

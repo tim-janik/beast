@@ -161,13 +161,13 @@ bse_midi_synth_init (BseMidiSynth *msynth)
 
   /* left channel multiport */
   msynth->lmixer = g_object_new (g_type_from_name ("BseMixer"), "name", "left-mixer", NULL);
-  BSE_OBJECT_SET_FLAGS (msynth->lmixer, BSE_ITEM_FLAG_NEVER_STORE);
+  BSE_OBJECT_SET_FLAGS (msynth->lmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
   bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (msynth->lmixer));
   g_object_unref (msynth->lmixer);
 
   /* right channel multiport */
   msynth->rmixer = g_object_new (g_type_from_name ("BseMixer"), "name", "right-mixer", NULL);
-  BSE_OBJECT_SET_FLAGS (msynth->rmixer, BSE_ITEM_FLAG_NEVER_STORE);
+  BSE_OBJECT_SET_FLAGS (msynth->rmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
   bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (msynth->rmixer));
   g_object_unref (msynth->rmixer);
 
@@ -176,7 +176,7 @@ bse_midi_synth_init (BseMidiSynth *msynth)
 				  "name", "pcm-output",
 				  "master_volume_f", msynth->volume_factor,
 				  NULL);
-  BSE_OBJECT_SET_FLAGS (msynth->pcm_out, BSE_ITEM_FLAG_NEVER_STORE);
+  BSE_OBJECT_SET_FLAGS (msynth->pcm_out, BSE_ITEM_FLAG_STORAGE_IGNORE);
   bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (msynth->pcm_out));
   g_object_unref (msynth->pcm_out);
 
@@ -227,7 +227,7 @@ midi_synth_set_n_voices (BseMidiSynth *msynth,
 
       voice->midi_synth_input = g_object_new (BSE_TYPE_MIDI_SYNTH_INPUT, NULL);
       bse_midi_synth_input_set_params (BSE_MIDI_SYNTH_INPUT (voice->midi_synth_input), msynth->midi_channel_id, i);
-      BSE_OBJECT_SET_FLAGS (voice->midi_synth_input, BSE_ITEM_FLAG_NEVER_STORE);
+      BSE_OBJECT_SET_FLAGS (voice->midi_synth_input, BSE_ITEM_FLAG_STORAGE_IGNORE);
       bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (voice->midi_synth_input));
       g_object_unref (voice->midi_synth_input);
       
@@ -238,31 +238,29 @@ midi_synth_set_n_voices (BseMidiSynth *msynth,
 				       "in_port_4", "aftertouch",
 				       "out_port_1", "left_out",
 				       "out_port_2", "right_out",
-				       "out_port_3", "synth_done",
-				       "out_port_4", "unused",
+				       "out_port_3", "unused",
+				       "out_port_4", "synth_done",
 				       "snet", msynth->snet,
 				       NULL);
-      BSE_OBJECT_SET_FLAGS (voice->sub_synth, BSE_ITEM_FLAG_NEVER_STORE);
+      BSE_OBJECT_SET_FLAGS (voice->sub_synth, BSE_ITEM_FLAG_STORAGE_IGNORE);
       bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (voice->sub_synth));
       g_object_unref (voice->sub_synth);
 
-      error = _bse_source_set_input (voice->sub_synth, BSE_SUB_SYNTH_ICHANNEL_VIN1,
+      error = _bse_source_set_input (voice->sub_synth, 0,
 				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_FREQUENCY);
       g_assert (error == BSE_ERROR_NONE);
-      error = _bse_source_set_input (voice->sub_synth, BSE_SUB_SYNTH_ICHANNEL_VIN2,
+      error = _bse_source_set_input (voice->sub_synth, 1,
 				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_GATE);
       g_assert (error == BSE_ERROR_NONE);
-      error = _bse_source_set_input (voice->sub_synth, BSE_SUB_SYNTH_ICHANNEL_VIN3,
+      error = _bse_source_set_input (voice->sub_synth, 2,
 				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_VELOCITY);
       g_assert (error == BSE_ERROR_NONE);
-      error = _bse_source_set_input (voice->sub_synth, BSE_SUB_SYNTH_ICHANNEL_VIN4,
+      error = _bse_source_set_input (voice->sub_synth, 3,
 				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_AFTERTOUCH);
       g_assert (error == BSE_ERROR_NONE);
 
-      error = _bse_source_set_input (msynth->lmixer, i,
-				     voice->sub_synth, BSE_SUB_SYNTH_OCHANNEL_VOUT1);
-      error = _bse_source_set_input (msynth->rmixer, i,
-				     voice->sub_synth, BSE_SUB_SYNTH_OCHANNEL_VOUT2);
+      error = _bse_source_set_input (msynth->lmixer, i, voice->sub_synth, 0);
+      error = _bse_source_set_input (msynth->rmixer, i, voice->sub_synth, 1);
       g_assert (error == BSE_ERROR_NONE);
     }
 }

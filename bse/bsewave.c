@@ -172,7 +172,7 @@ bse_wave_init (BseWave *wave)
   wave->wave_chunks = NULL;
   wave->abandoned_chunks = NULL;
   wave->index_list = NULL;
-  BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_NEVER_STORE);
+  BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
 static void
@@ -319,9 +319,9 @@ bse_wave_remove_chunk (BseWave      *wave,
   wave_update_index (wave, FALSE);
 
   if (wave->n_wchunks)
-    BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_NEVER_STORE);
+    BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
   else
-    BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_NEVER_STORE);
+    BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
 static gint
@@ -356,7 +356,7 @@ bse_wave_add_chunk (BseWave      *wave,
       wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
     }
   wave_update_index (wave, FALSE);
-  BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_NEVER_STORE);
+  BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
 void
@@ -383,7 +383,7 @@ bse_wave_add_chunk_with_locator (BseWave      *wave,
   url->wave_name = g_strdup (wave_name);
   wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
   wave_update_index (wave, FALSE);
-  BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_NEVER_STORE);
+  BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
 void

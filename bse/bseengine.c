@@ -187,6 +187,21 @@ gsl_job_disconnect (GslModule *dest_module,
   return job;
 }
 
+GslJob*
+gsl_job_set_consumer (GslModule *module,
+		      gboolean   is_toplevel_consumer)
+{
+  GslJob *job;
+  
+  g_return_val_if_fail (module != NULL, NULL);
+  
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = is_toplevel_consumer ? GSL_JOB_SET_CONSUMER : GSL_JOB_UNSET_CONSUMER;
+  job->data.node = OP_NODE (module);
+  
+  return job;
+}
+
 /**
  * GslAccessFunc
  * @module:	Module to operate on

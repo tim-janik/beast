@@ -31,8 +31,11 @@ extern "C" {
 #define	GSL_STREAM_MAX_VALUES		   (16384)	/* FIXME */
 #define	GSL_MODULE_N_OSTREAMS(module)	   ((module)->klass->n_ostreams)
 #define	GSL_MODULE_N_ISTREAMS(module)	   ((module)->klass->n_istreams)
-#define	GSL_MODULE_OBUFFER(module, stream) ((module)->ostreams[(stream)].values)
-#define	GSL_MODULE_IBUFFER(module, stream) ((module)->istreams[(stream)].values)
+#define	GSL_MODULE_ISTREAM(module, stream) ((module)->istreams[(stream)])
+#define	GSL_MODULE_JSTREAM(module, stream) ((module)->jstreams[(stream)])
+#define	GSL_MODULE_OSTREAM(module, stream) ((module)->ostreams[(stream)])
+#define	GSL_MODULE_IBUFFER(module, stream) (GSL_MODULE_ISTREAM ((module), (stream)).values)
+#define	GSL_MODULE_OBUFFER(module, stream) (GSL_MODULE_OSTREAM ((module), (stream)).values)
 
 
 /* --- typedefs --- */
@@ -55,8 +58,7 @@ typedef enum	/*< skip >*/
 {
   GSL_COST_NORMAL	= 0,
   GSL_COST_CHEAP	= 1 << 0,
-  GSL_COST_EXPENSIVE	= 1 << 1,
-  GSL_ALWAYS_PROCESS	= 1 << 2
+  GSL_COST_EXPENSIVE	= 1 << 1
 } GslModuleFlags;
 /* class, filled out by user */
 struct _GslClass
@@ -80,8 +82,8 @@ struct _GslModule
 /* streams, constructed by engine */
 struct _GslJStream
 {
-  guint          n_connections;
   const gfloat **values;
+  guint          n_connections;
   guint		 user_flags : 16;
 };
 struct _GslIStream
@@ -115,6 +117,8 @@ GslJob*		gsl_job_access		(GslModule	 *module,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
 					 GslFreeFunc	  free_func);	/* UserThread */
+GslJob*		gsl_job_set_consumer	(GslModule	 *module,
+					 gboolean	  is_toplevel_consumer);
 GslJob*		gsl_job_debug		(const gchar	 *debug);
 GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data,

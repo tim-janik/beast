@@ -514,7 +514,7 @@ store_forall (BseItem *item,
   BseStorage *storage = data[1];
   gchar *path;
 
-  if (!BSE_ITEM_NEVER_STORE (item))
+  if (!BSE_ITEM_STORAGE_IGNORE (item))
     {
       bse_storage_break (storage);
       bse_storage_putc (storage, '(');

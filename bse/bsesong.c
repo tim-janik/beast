@@ -223,18 +223,6 @@ bse_song_do_destroy (BseObject *object)
   BseSong *song = BSE_SONG (object);
   BseContainer *container = BSE_CONTAINER (song);
   
-  if (song->net.mixer)
-    {
-      BseSongNet *net = &song->net;
-
-      bse_container_remove_item (container, BSE_ITEM (net->mixer));
-      net->mixer = NULL;
-      bse_container_remove_item (container, BSE_ITEM (net->output));
-      net->output = NULL;
-      bse_container_remove_item (container, BSE_ITEM (net->wosc));
-      net->wosc = NULL;
-    }
-  
   while (song->pattern_groups)
     bse_container_remove_item (BSE_CONTAINER (song), song->pattern_groups->data);
   song->n_pgroups = 0;
@@ -245,6 +233,19 @@ bse_song_do_destroy (BseObject *object)
   while (song->instruments)
     bse_container_remove_item (BSE_CONTAINER (song), song->instruments->data);
 
+  song_set_n_channels (song, 0);
+
+  if (song->net.mixer)
+    {
+      BseSongNet *net = &song->net;
+
+      bse_container_remove_item (container, BSE_ITEM (net->mixer));
+      net->mixer = NULL;
+      bse_container_remove_item (container, BSE_ITEM (net->output));
+      net->output = NULL;
+    }
+  g_free (song->net.voices);
+  
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -987,28 +988,68 @@ song_set_n_channels (BseSong *song,
 {
   BseContainer *container = BSE_CONTAINER (song);
   BseSongNet *net = &song->net;
-
+  guint i;
+  
   if (!net->mixer)
     {
       /* initial setup */
       net->mixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
-      BSE_OBJECT_SET_FLAGS (net->mixer, BSE_ITEM_FLAG_NEVER_STORE);
+      BSE_OBJECT_SET_FLAGS (net->mixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
       bse_container_add_item (container, BSE_ITEM (net->mixer));
 
       net->output = g_object_new (g_type_from_name ("BsePcmOutput"), NULL);	// FIXME
-      BSE_OBJECT_SET_FLAGS (net->output, BSE_ITEM_FLAG_NEVER_STORE);
+      BSE_OBJECT_SET_FLAGS (net->output, BSE_ITEM_FLAG_STORAGE_IGNORE);
       bse_container_add_item (container, BSE_ITEM (net->output));
 
       _bse_source_set_input (net->output, 0, net->mixer, 0);
       _bse_source_set_input (net->output, 1, net->mixer, 0);
-
-      net->wosc = g_object_new (g_type_from_name ("BseWaveOsc"), NULL);		// FIXME
-      BSE_OBJECT_SET_FLAGS (net->wosc, BSE_ITEM_FLAG_NEVER_STORE);
-      bse_container_add_item (container, BSE_ITEM (net->wosc));
-
-      _bse_source_set_input (net->mixer, 0, net->wosc, 0);
     }
+
+  for (i = n_channels; i < song->n_channels; i++)
+    {
+      BseItem *item;
+
+      item = BSE_ITEM (net->voices[i].ofreq);
+      bse_container_remove_item (container, item);
+      g_object_unref (item);
+
+      item = BSE_ITEM (net->voices[i].synth);
+      bse_container_remove_item (container, item);
+      g_object_unref (item);
+    }
+
+  i = song->n_channels;
   song->n_channels = n_channels;
+  net->voices = g_renew (BseSongVoice, net->voices, song->n_channels);
+
+  for (; i < song->n_channels; i++)
+    {
+      BseSource *source;
+
+      source = g_object_new (g_type_from_name ("BseConstant"), NULL);
+      BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
+      net->voices[i].ofreq = source;
+      bse_container_add_item (container, BSE_ITEM (source));
+      
+      source = g_object_new (g_type_from_name ("BseSubSynth"),
+			     "in_port_1", "frequency",
+			     "in_port_2", "gate",
+			     "in_port_3", "velocity",
+			     "in_port_4", "aftertouch",
+			     "out_port_1", "left_out",
+			     "out_port_2", "right_out",
+			     "out_port_3", "unused",
+			     "out_port_4", "synth_done",
+			     NULL);
+      BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
+      net->voices[i].synth = source;
+      bse_container_add_item (container, BSE_ITEM (source));
+
+      _bse_source_set_input (net->voices[i].synth, 0, net->voices[i].ofreq, 0);
+      _bse_source_set_input (net->voices[i].synth, 1, net->voices[i].ofreq, 1);
+      _bse_source_set_input (net->voices[i].synth, 2, net->voices[i].ofreq, 2);
+      _bse_source_set_input (net->voices[i].synth, 3, net->voices[i].ofreq, 3);
+    }
 }
 
 static void

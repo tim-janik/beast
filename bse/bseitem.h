@@ -33,9 +33,9 @@
 
 
 /* --- BseItem member macros --- */
-#define BSE_ITEM_PARENT_REF(object)  ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_PARENT_REF) != 0)
-#define BSE_ITEM_SINGLETON(object)   ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
-#define BSE_ITEM_NEVER_STORE(object) ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_NEVER_STORE) != 0)
+#define BSE_ITEM_PARENT_REF(object)     ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_PARENT_REF) != 0)
+#define BSE_ITEM_SINGLETON(object)      ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
+#define BSE_ITEM_STORAGE_IGNORE(object) ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_STORAGE_IGNORE) != 0)
 
 
 /* --- bse item flags --- */
@@ -43,7 +43,7 @@ typedef enum                            /*< skip >*/
 {
   BSE_ITEM_FLAG_PARENT_REF	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
   BSE_ITEM_FLAG_SINGLETON	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
-  BSE_ITEM_FLAG_NEVER_STORE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
+  BSE_ITEM_FLAG_STORAGE_IGNORE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseItemFlags;
 #define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 3)
 

@@ -8,26 +8,20 @@ NEW:
 
 OLD:
 general:
--	bse_object_do_store_private() should not save equally named params (from
-	different heirarchy levels), actually this is a general problem with GUIs
-	as well.
-	possible solution:
-	GList* bse_object_class_list_pspecs (BseObjectClass *class,
-	                                     BseParamFlags   required_flags);
-	/* how to handle groups here? */
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
 -	optimize cross-reference removal
--	BseStorage must not contain type references above BSE_TYPE_ITEM (cleanlyness)
+-	BseStorage shouldn't not contain type references above BSE_TYPE_ITEM()
 -	param_changed(): update modified stamp and record undo
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.
 
-!	sources need to disconnect their links ala xrefs, and need to notify of
+-	to enable source grouping:
+	sources need to disconnect their links ala xrefs, and need to notify of
 	that *before* destroy is invoked.
-	effectively, this has to work like so:
+	effectively, this has to work like as:
 	channels installed on a source need to be xref-linked if the i/o sources
-	don#t have the same parent. if their parents are the same, we can simply
+	don't have the same parent. if their parents are the same, we can simply
 	have bsecontainer.c care about destructing those channels (as an optimization
 	to keep xref-links low).
 
@@ -47,17 +41,9 @@ Instrument
 
 Loaders
 -	we need AIFF
--	we need .WAV, desperatedly
-
-loadwav.c:
--	read_data(): read sample data by blocks not as a whole
 
 Balance
 -	durch 3d raum position ersetzen
-
-Munks
--	automatische munk berechnung durch frequenz transformation
-	hm, koennte nen memory hog werden...
 
 Effects
 -	there is no code at all yet ;)
