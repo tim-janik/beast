@@ -87,10 +87,12 @@ class LatencyTest : public LatencyTestBase {
     reset()
     {
       close_devices();
-      midi_output_file = fopen (midi_output_name.c_str(), "w");
+
+      if (sfi_file_check (midi_output_name.c_str(), "pw")) /* writable pipe */
+        midi_output_file = fopen (midi_output_name.c_str(), "w");
       if (!midi_output_file)
         sfi_error (SfiLogger(NULL,NULL,NULL), "failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));
-      if (logfile_name == "")
+      if (logfile_name == "" || !midi_output_file)
         logfile = stdout;
       else
 	{
