@@ -1,3 +1,20 @@
+Sun Jan 25 08:38:36 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: removed lots of old ad-hoc string conversion
+	fucntions. replaced with varians of rename().
+	refactored class and enum generation into different functions.
+	generate class_init() in the implementation section, after all
+	types have been defined. use NamespaceHelper.printable_form()
+	which returns static strings that don't corrupt.
+	lots of symbol name generation fixes.
+	resolved namespace problems/hacks with NamespaceHelper.
+
+	* sfidl-module.h: removed unused code.
+
+	* sfidl-namespace.h, sfidl-namespace.cc:
+	added printable_form() to return a constant c-string from
+	printableForm().
+
 Sun Jan 25 05:30:32 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: renamed value_set() and value_get() methods to

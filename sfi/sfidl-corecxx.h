@@ -26,42 +26,6 @@
 #include <string>
 #include <list>
 
-#if 0
-namespace Sfidl {
-class CodeGeneratorModule : public CodeGeneratorCxxBase {
-protected:
-  std::string typeArg (const std::string &type);
-  const gchar* TypeRef (const std::string &type);
-  std::string createTypeCode (const std::string& type, const std::string& name,
-                              TypeCodeModel model);
-  const gchar* TypeField (const std::string& type);
-
-  const char* func_value_set_param (const Param &param);
-  std::string func_value_get_param (const Param &param, const std::string dest);
-  std::string func_param_return_free (const Param &param);
-  std::string func_param_free (const Param &param);
-  
-  struct Image {
-    std::string file;
-    std::string method;
-    Image (const std::string &f,
-           const std::string &m)
-      : file (f), method (m)
-    {}
-  };
-  
-  void  generate_procedures (const std::string          &outer_nspace,
-                             std::vector<const Method*> &procs,
-                             std::vector<Image>         &images);
-  
-public:
-  CodeGeneratorModule (const Parser &parser) : CodeGeneratorCxxBase (parser) {
-  }
-  void run ();
-};
-} // Sfidl
-#endif
-
 #endif	/* _SFIDL_MODULE_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */

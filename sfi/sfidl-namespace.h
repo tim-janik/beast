@@ -57,6 +57,7 @@ class NamespaceHelper {
    * if you are in the Arts namespace.
    */
   std::string printableForm(std::string symbol);
+  const char* printable_form (std::string symbol);
   
   /*
    * Returns only the last component of the symbol (the name) cutting the

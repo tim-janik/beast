@@ -133,6 +133,11 @@ string NamespaceHelper::printableForm(string symbol)
   
   return listToSymbol(symlist);
 }
+const char*
+NamespaceHelper::printable_form (std::string symbol)
+{
+  return g_intern_string (printableForm (symbol).c_str());
+}
 
 string NamespaceHelper::nameOf(string symbol)
 {
