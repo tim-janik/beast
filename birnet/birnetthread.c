@@ -441,7 +441,7 @@ sfi_thread_get_pid (SfiThread *thread)
 }
 
 /**
- * sfi_thread_get_pid
+ * sfi_thread_get_name
  * @thread:  a valid %SfiThread handle
  * @RETURNS: thread name
  * Return the name of @thread as specified upon invokation of
