@@ -1,3 +1,8 @@
+Mon Dec 27 01:27:56 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.c: document guaranteed properties (stable-ness,
+	set precedence for duplicate elements, etc.) for ring functions.
+
 Sun Dec 26 23:50:16 2004  Tim Janik  <timj@gtk.org>
 
 	* sfilog.c: cosmetics, strip path from executable names if logging

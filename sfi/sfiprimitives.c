@@ -1763,6 +1763,8 @@ sfi_ring_insert_sorted (SfiRing	      *head,
   if (!head)
     return sfi_ring_prepend (head, insertion_data);
 
+  /* implement stable sorting by inserting insertion_data *after* equal nodes */
+
   if (cmp (insertion_data, head->data, cmp_data) >= 0)  /* insert after head */
     {
       SfiRing *tmp, *tail = head->prev;
@@ -1790,6 +1792,8 @@ sfi_ring_merge_sorted (SfiRing        *head1,
                        SfiCompareFunc  cmp,
                        gpointer        data)
 {
+  /* implement stable sorting by inserting head2 members *after* equal nodes from head1 */
+
   if (head1 && head2)
     {
       SfiRing *tail1 = head1->prev;
@@ -1839,6 +1843,8 @@ sfi_ring_sort (SfiRing        *head,
 {
   g_return_val_if_fail (cmp != NULL, head);
 
+  /* stable sorting guaranteed by sfi_ring_merge_sorted() */
+
   if (head && head->next != head)
     {
       SfiRing *ring, *tmp, *tail = head->prev;
@@ -1862,6 +1868,7 @@ sfi_ring_uniq (SfiRing        *sorted_ring1,
                SfiCompareFunc  cmp,
                gpointer        data)
 {
+  /* always preserves the first of a sublist of consequtive equal elements */
   SfiRing *ring = sfi_ring_copy_uniq (sorted_ring1, cmp, data);
   sfi_ring_free (sorted_ring1);
   return ring;
@@ -1872,6 +1879,7 @@ sfi_ring_copy_uniq (const SfiRing  *sorted_ring1,
                     SfiCompareFunc  cmp,
                     gpointer        data)
 {
+  /* always preserves the first of a sublist of consequtive equal elements */
   const SfiRing *r1 = sorted_ring1;
   SfiRing *r2 = NULL;
   if (r1)
@@ -1894,6 +1902,7 @@ sfi_ring_union (const SfiRing  *sorted_set1,
                 SfiCompareFunc  cmp,
                 gpointer        data)
 {
+  /* for two equal elements from both sets, the element from sorted_set1 is picked, the one from sorted_set2 discarded */
   const SfiRing *r1 = sorted_set1, *r2 = sorted_set2;
   SfiRing *d = NULL;
   while (r1 && r2)
@@ -1925,6 +1934,7 @@ sfi_ring_intersection (const SfiRing  *sorted_set1,
                        SfiCompareFunc  cmp,
                        gpointer        data)
 {
+  /* for two equal elements from both sets, only elements from sorted_set1 are picked */
   const SfiRing *r1 = sorted_set1, *r2 = sorted_set2;
   SfiRing *d = NULL;
   while (r1 && r2)
