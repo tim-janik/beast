@@ -20,7 +20,7 @@
 #define __BST_MENUS_H__
 
 
-#include        "bstdefs.h"
+#include        "bstutils.h"
 
 
 #ifdef __cplusplus

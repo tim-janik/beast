@@ -76,8 +76,8 @@ bst_toolbar_init (BstToolbar *self)
 		NULL);
   self->relief_style = GTK_RELIEF_NONE;
   self->icon_size = BST_SIZE_TOOLBAR;
-  self->icon_width = bst_size_width (self->icon_size);
-  self->icon_height = bst_size_height (self->icon_size);
+  self->icon_width = gxk_size_width (self->icon_size);
+  self->icon_height = gxk_size_height (self->icon_size);
   self->size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   self->box = g_object_new (GTK_TYPE_HBOX,
 			    "visible", TRUE,
@@ -306,7 +306,7 @@ bst_toolbar_append_stock (BstToolbar     *self,
   g_return_val_if_fail (BST_IS_TOOLBAR (self), NULL);
 
   return bst_toolbar_append (self, child_type, name, tooltip,
-			     bst_image_from_stock (stock_id, self->icon_size));
+			     gxk_stock_image (stock_id, self->icon_size));
 }
 
 typedef struct {

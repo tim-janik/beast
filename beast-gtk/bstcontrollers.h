@@ -18,7 +18,7 @@
 #ifndef __BST_CONTROLLERS_H__
 #define __BST_CONTROLLERS_H__
 
-#include        "bstdefs.h"
+#include        "bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

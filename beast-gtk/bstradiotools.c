@@ -344,9 +344,9 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
       if (rtools->tools[i].icon)
 	image = bst_image_from_icon (rtools->tools[i].icon, BST_SIZE_TOOLBAR);
       else if (rtools->tools[i].stock_icon)
-	image = bst_image_from_stock (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
+	image = gxk_stock_image (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
       if (!image)
-	image = bst_image_from_stock (BST_STOCK_NOICON, BST_SIZE_TOOLBAR);
+	image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_TOOLBAR);
       button = bst_toolbar_append (toolbar, BST_TOOLBAR_TOGGLE,
 				   rtools->tools[i].name,
 				   rtools->tools[i].tip,
@@ -383,9 +383,9 @@ bst_radio_tools_build_gtk_toolbar (BstRadioTools *rtools,
       if (rtools->tools[i].icon)
 	image = bst_image_from_icon (rtools->tools[i].icon, BST_SIZE_TOOLBAR);
       else if (rtools->tools[i].stock_icon)
-	image = bst_image_from_stock (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
+	image = gxk_stock_image (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
       if (!image)
-	image = bst_image_from_stock (BST_STOCK_NOICON, BST_SIZE_TOOLBAR);
+	image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_TOOLBAR);
       button = gtk_toolbar_append_element (toolbar,
 					   GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
 					   rtools->tools[i].name,
@@ -462,9 +462,9 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
       if (rtools->tools[i].icon)
 	image = bst_image_from_icon (rtools->tools[i].icon, BST_SIZE_PALETTE);
       else if (rtools->tools[i].stock_icon)
-	image = bst_image_from_stock (rtools->tools[i].stock_icon, BST_SIZE_PALETTE);
+	image = gxk_stock_image (rtools->tools[i].stock_icon, BST_SIZE_PALETTE);
       if (!image)
-	image = bst_image_from_stock (BST_STOCK_NOICON, BST_SIZE_PALETTE);
+	image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_PALETTE);
       button = g_object_connect (gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
 						 "visible", TRUE,
 						 "draw_indicator", FALSE,

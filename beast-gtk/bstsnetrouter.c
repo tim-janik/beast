@@ -566,7 +566,7 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   bst_toolbar_append_space (self->toolbar);
   button = bst_toolbar_append (self->toolbar, BST_TOOLBAR_BUTTON,
 			       "Palette", "Toggle visibility of the tool palette",
-			       bst_image_from_stock (BST_STOCK_PALETTE, BST_SIZE_TOOLBAR));
+			       gxk_stock_image (BST_STOCK_PALETTE, BST_SIZE_TOOLBAR));
   g_object_connect (button,
 		    "swapped_signal::clicked", bst_snet_router_toggle_palette, self,
 		    NULL);

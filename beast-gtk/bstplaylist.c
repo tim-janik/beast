@@ -179,7 +179,7 @@ bst_play_list_init (BstPlayList *plist)
 		       "parent", vbox,
 		       NULL);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (sw), plist->pattern_list);
-  bst_widget_modify_bg_as_base (plist->pattern_list->parent);
+  gxk_widget_modify_bg_as_base (plist->pattern_list->parent);
 
   /* setup group list
    */
@@ -207,7 +207,7 @@ bst_play_list_init (BstPlayList *plist)
 		       "parent", vbox,
 		       NULL);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (sw), plist->group_list);
-  bst_widget_modify_bg_as_base (plist->group_list->parent);
+  gxk_widget_modify_bg_as_base (plist->group_list->parent);
 
   /* setup group list as drag destination
    */
@@ -266,7 +266,7 @@ bst_play_list_init (BstPlayList *plist)
 				    NULL);
       gtk_widget_ref (drag_widget);
       gtk_object_sink (GTK_OBJECT (drag_widget));
-      bst_widget_force_bg_clear (drag_widget);
+      gxk_widget_force_bg_clear (drag_widget);
       bst_play_list_drop_spot_pattern_group = drag_widget;
 
       drag_widget = bst_drag_window_from_stock (BST_STOCK_PATTERN);

@@ -18,9 +18,7 @@
 #ifndef __BST_PIANO_ROLL_H__
 #define __BST_PIANO_ROLL_H__
 
-#include        "bstdefs.h"
 #include	"bstdragutils.h"
-
 
 #ifdef __cplusplus
 extern "C" {

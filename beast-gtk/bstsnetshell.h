@@ -18,7 +18,6 @@
 #ifndef __BST_SNET_SHELL_H__
 #define __BST_SNET_SHELL_H__
 
-#include	"bstdefs.h"
 #include	"bstsupershell.h"
 #include	"bstparamview.h"
 #include	"bstsnetrouter.h"

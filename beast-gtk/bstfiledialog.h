@@ -19,7 +19,7 @@
 #define __BST_FILE_DIALOG_H__
 
 
-#include        "bstdefs.h"
+#include        "bstutils.h"
 #include        "bstapp.h"
 
 

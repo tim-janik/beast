@@ -110,7 +110,7 @@ update_dialog (BstDialog     *dialog,
 		       "visible", TRUE,
 		       NULL);
   if (stock)
-    gtk_box_pack_start (GTK_BOX (hbox), bst_image_from_stock (stock, BST_SIZE_INFO_SIGN),
+    gtk_box_pack_start (GTK_BOX (hbox), gxk_stock_image (stock, BST_SIZE_INFO_SIGN),
 			FALSE, FALSE, 5);
   xmessage = g_strconcat (" \n", message, NULL);
   gtk_box_pack_start (GTK_BOX (hbox),

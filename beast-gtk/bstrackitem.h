@@ -18,7 +18,6 @@
 #ifndef __BST_RACK_ITEM_H__
 #define __BST_RACK_ITEM_H__
 
-#include	"bstdefs.h"
 #include	"bstracktable.h"
 #include	"bstcontrollers.h"
 

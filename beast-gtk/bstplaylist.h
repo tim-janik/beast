@@ -19,8 +19,7 @@
 #ifndef __BST_PLAY_LIST_H__
 #define __BST_PLAY_LIST_H__
 
-#include	"bstdefs.h"
-
+#include	"bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

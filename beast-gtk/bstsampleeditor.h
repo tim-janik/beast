@@ -18,7 +18,6 @@
 #ifndef __BST_SAMPLE_EDITOR_H__
 #define __BST_SAMPLE_EDITOR_H__
 
-#include	"bstdefs.h"
 #include	"bstqsampler.h"
 #include	"bstplayback.h"
 

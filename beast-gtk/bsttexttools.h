@@ -19,7 +19,7 @@
 #ifndef __BST_TEXT_TOOLS_H__
 #define __BST_TEXT_TOOLS_H__
 
-#include        "bstdefs.h"
+#include        "bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

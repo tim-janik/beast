@@ -18,9 +18,7 @@
 #ifndef __BST_RACK_EDITOR_H__
 #define __BST_RACK_EDITOR_H__
 
-#include "bstdefs.h"
 #include "bstracktable.h"
-
 
 #ifdef __cplusplus
 extern "C" {

@@ -18,7 +18,7 @@
 #ifndef __BST_WAVE_DIALOG_H__
 #define __BST_WAVE_DIALOG_H__
 
-#include        "bstdefs.h"
+#include        "bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

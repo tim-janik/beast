@@ -18,7 +18,6 @@
 #ifndef __BST_SNET_ROUTER_H__
 #define __BST_SNET_ROUTER_H__
 
-#include	"bstdefs.h"
 #include	"bstcanvassource.h"
 #include	"bstradiotools.h"
 

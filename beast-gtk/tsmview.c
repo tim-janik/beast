@@ -46,8 +46,8 @@ main (int   argc,
   /* initialize modules
    */
   g_type_init ();
-  _bst_utils_init ();
-  bst_init_gentypes ();
+  gxk_init ();
+  bst_init_utils ();
   gtk_init (&argc, &argv);
 
   title = g_strdup (argv[1]);

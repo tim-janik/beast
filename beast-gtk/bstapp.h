@@ -18,11 +18,7 @@
 #ifndef __BST_APP_H__
 #define __BST_APP_H__
 
-
-#include        "bstdefs.h"
-
-#include        "bstdialog.h"
-
+#include        "bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

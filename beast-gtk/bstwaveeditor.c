@@ -163,7 +163,7 @@ bst_wave_editor_init (BstWaveEditor *self)
 			     "border_width", 10,
 			     "parent", any,
 			     NULL);
-  bst_nullify_on_destroy (self->tree, &self->tree);
+  gxk_nullify_on_destroy (self->tree, &self->tree);
   g_object_connect (self->tree, "swapped_object_signal::row_activated", tree_row_activated, self, NULL);
   tsel = gtk_tree_view_get_selection (GTK_TREE_VIEW (self->tree));
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_SINGLE);
@@ -183,18 +183,18 @@ bst_wave_editor_init (BstWaveEditor *self)
 					"spacing", 1,
 					"border_width", 0,
 					NULL);
-  bst_nullify_on_destroy (self->qsampler_parent, &self->qsampler_parent);
+  gxk_nullify_on_destroy (self->qsampler_parent, &self->qsampler_parent);
   gtk_paned_pack2 (GTK_PANED (paned), self->qsampler_parent, TRUE, TRUE);
 
   /* GUI mask container */
   self->gmask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5, TRUE);
-  bst_nullify_on_destroy (self->gmask_parent, &self->gmask_parent);
+  gxk_nullify_on_destroy (self->gmask_parent, &self->gmask_parent);
   gtk_box_pack_start (GTK_BOX (self->main_vbox), self->gmask_parent, FALSE, TRUE, 0);
 
   /* qsampler (horizontal) zoom */
   self->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0));
   g_object_connect (self->zoom_adjustment, "swapped_signal_after::value_changed", adjustments_changed, self, NULL);
-  bst_nullify_on_destroy (self->zoom_adjustment, &self->zoom_adjustment);
+  gxk_nullify_on_destroy (self->zoom_adjustment, &self->zoom_adjustment);
   any = g_object_new (GTK_TYPE_SPIN_BUTTON,
 		      "adjustment", self->zoom_adjustment,
 		      "digits", 5,
@@ -205,7 +205,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   /* qsampler vscale */
   self->vscale_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 1, 10, 0));
   g_object_connect (self->vscale_adjustment, "swapped_signal_after::value_changed", adjustments_changed, self, NULL);
-  bst_nullify_on_destroy (self->vscale_adjustment, &self->vscale_adjustment);
+  gxk_nullify_on_destroy (self->vscale_adjustment, &self->vscale_adjustment);
   any = g_object_new (GTK_TYPE_SPIN_BUTTON,
 		      "adjustment", self->vscale_adjustment,
 		      "digits", 5,
@@ -253,12 +253,12 @@ bst_wave_editor_init (BstWaveEditor *self)
   any = g_object_new (GTK_TYPE_HBOX,
 		      "visible", TRUE,
 		      NULL);
-  self->preview_on = bst_stock_button_child (BST_STOCK_PREVIEW_AUDIO, "Start _Preview");
-  self->preview_off = bst_stock_button_child (BST_STOCK_PREVIEW_NOAUDIO, "Stop _Preview");
+  self->preview_on = gxk_stock_button_child (BST_STOCK_PREVIEW_AUDIO, "Start _Preview");
+  self->preview_off = gxk_stock_button_child (BST_STOCK_PREVIEW_NO_AUDIO, "Stop _Preview");
   gtk_container_add (GTK_CONTAINER (any), self->preview_on);
   gtk_container_add (GTK_CONTAINER (any), self->preview_off);
-  bst_nullify_on_destroy (self->preview_on, &self->preview_on);
-  bst_nullify_on_destroy (self->preview_off, &self->preview_off);
+  gxk_nullify_on_destroy (self->preview_on, &self->preview_on);
+  gxk_nullify_on_destroy (self->preview_off, &self->preview_off);
   any = g_object_new (GTK_TYPE_BUTTON,
 		      "visible", TRUE,
 		      "child", any,
@@ -425,7 +425,7 @@ wave_editor_set_n_qsamplers (BstWaveEditor *self,
 						 "draw_value", FALSE,
 						 "can_focus", FALSE,
 						 NULL);
-	  bst_nullify_on_destroy (self->qsampler_playpos, &self->qsampler_playpos);
+	  gxk_nullify_on_destroy (self->qsampler_playpos, &self->qsampler_playpos);
 	  gtk_box_pack_end (GTK_BOX (qsampler_parent), self->qsampler_playpos, FALSE, TRUE, 0);
 	  g_object_connect (GTK_RANGE (self->qsampler_playpos)->adjustment,
 			    "swapped_signal_after::value_changed", playpos_changed, self,

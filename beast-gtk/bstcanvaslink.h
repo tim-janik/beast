@@ -18,7 +18,7 @@
 #ifndef __BST_CANVAS_LINK_H__
 #define __BST_CANVAS_LINK_H__
 
-#include	"bstdefs.h"
+#include	"bstutils.h"
 #include	"bstcanvassource.h"
 
 

@@ -169,18 +169,18 @@ bst_dialog_init (BstDialog *dialog)
   dialog->hbox = g_object_new (GTK_TYPE_HBOX,
 			       "visible", FALSE,
 			       "homogeneous", TRUE,
-			       "spacing", BST_INNER_PADDING,
-			       "border_width", BST_INNER_PADDING,
+			       "spacing", GXK_INNER_PADDING,
+			       "border_width", GXK_INNER_PADDING,
 			       NULL);
   g_signal_connect_swapped (dialog->hbox, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->hbox);
-  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->hbox, FALSE, TRUE, BST_INNER_PADDING);
+  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->hbox, FALSE, TRUE, GXK_INNER_PADDING);
 
   /* separator */
   dialog->sep = g_object_new (GTK_TYPE_HSEPARATOR,
 			      "visible", FALSE,
 			      NULL);
   g_signal_connect_swapped (dialog->sep, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->sep);
-  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->sep, FALSE, FALSE, BST_INNER_PADDING);
+  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->sep, FALSE, FALSE, GXK_INNER_PADDING);
 }
 
 static void
@@ -567,10 +567,10 @@ bst_dialog_action_multi (BstDialog          *dialog,
     gtk_widget_show (dialog->sep);
   if (dialog->hbox)
     {
-      GtkWidget *alignment, *hbox, *image = icon_stock_id ? bst_image_from_stock (icon_stock_id, BST_SIZE_BUTTON) : NULL;
+      GtkWidget *alignment, *hbox, *image = icon_stock_id ? gxk_stock_image (icon_stock_id, BST_SIZE_BUTTON) : NULL;
 
       if (!image)
-	image = bst_image_from_stock (action, BST_SIZE_BUTTON);
+	image = gxk_stock_image (action, BST_SIZE_BUTTON);
 
       /* catch installation of a Close button */
       if (strcmp (action, BST_STOCK_CLOSE) == 0 ||
@@ -596,7 +596,7 @@ bst_dialog_action_multi (BstDialog          *dialog,
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
       gtk_box_pack_start (GTK_BOX (hbox),
 			  g_object_new (GTK_TYPE_LABEL,
-					"label", bst_stock_action (action),
+					"label", gxk_stock_action (action),
 					"use_underline", TRUE,
 					NULL),
 			  FALSE, TRUE, 0);

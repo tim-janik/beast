@@ -19,8 +19,7 @@
 #ifndef __BST_PARAM_H__
 #define __BST_PARAM_H__
 
-#include	"bstdefs.h"
-#include	<gtk/gtk.h>
+#include	"bstutils.h"
 
 
 #ifdef __cplusplus

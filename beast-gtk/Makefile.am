@@ -3,15 +3,16 @@
 #
 ## Makefile.am for BEAST
  
-SUBDIRS = icons images
+SUBDIRS = gxk icons images
 
-INCLUDES = -I$(top_srcdir) $(BEAST_CFLAGS) -I. \
-           -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
-
-#
-# programs to compile and install
-#
-bin_PROGRAMS = beast
+INCLUDES = $(strip \
+	-I$(top_srcdir)	\
+	-I. \
+	$(BEAST_CFLAGS) \
+	-DG_DISABLE_CONST_RETURNS \
+	-DGTK_ENABLE_BROKEN \
+)
+# -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
 # we specify the logging domain here
 DEFS += $(strip \
@@ -24,12 +25,12 @@ CFLAGS += # $(subst profile.c, -pg -a, $(findstring profile.c, $(<F)))
 LIBS += # -lefence # -pg 
 
 # link programs against BSE and other neccessary libraries
-progs_LDADD = \
+progs_LDADD = $(strip \
 	$(top_builddir)/bse/libbse.la \
 	$(top_builddir)/bsw/libbsw.la \
-	$(LDFLAGS) $(BEAST_LIBS)
-beast_LDADD = $(progs_LDADD)
-
+	./gxk/libgxk.a \
+	$(LDFLAGS) $(BEAST_LIBS) \
+)
 
 #
 # setup source file variables
@@ -230,7 +231,9 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 #
 # setup BEAST sources and their dependancies
 #
+bin_PROGRAMS = beast
 beast_SOURCES = bstmain.c $(beast_sources)
+beast_LDADD = $(progs_LDADD)
 noinst_PROGRAMS = bststest tsmview
 bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)

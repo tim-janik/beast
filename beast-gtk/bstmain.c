@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bstdefs.h"
+#include        "bstutils.h"
 
 #include        "bstapp.h"
 #include        "bstsplash.h"
@@ -109,6 +109,7 @@ main (int   argc,
   gtk_init (&argc, &argv);
   g_set_prgname ("BEAST");
   gtk_post_init_patch_ups ();
+  gxk_init ();
 
   GDK_THREADS_ENTER ();
 
@@ -125,9 +126,8 @@ main (int   argc,
 
   /* BEAST initialization
    */
-  _bst_utils_init ();
   bst_splash_update_item (splash, "Objects");
-  bst_init_gentypes ();
+  bst_init_utils ();
   gtk_rc_parse_string (bst_rc_string);
   g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
   

@@ -2,15 +2,15 @@
 
 DOC_SOURCE_GLOB = $(top_srcdir)/bse/bse*.[hcp]*
 
-MAN_PAGES_3 = gsl.3 bse.3 bsw-procs.3 bst.3
-DATA_FILES = gsl.dat bse.dat bsw-procs.dat bst.dat
+MAN_PAGES_3 = gsl.3 bse.3 bsw-procs.3 beast-gxk.3
+DATA_FILES = gsl.dat bse.dat bsw-procs.dat gxk.dat
 
 # install man pages
-man_MANS = gsl.3 bsw-procs.3
+man_MANS = gsl.3 bsw-procs.3 beast-gxk.3
 
 BSE_MAN_SRC_GLOBS=$(top_srcdir)/bse/bse*.[hc]
 GSL_MAN_SRC_GLOBS=$(top_srcdir)/bse/gsl*.[hc]
-BST_MAN_SRC_GLOBS=$(top_srcdir)/beast-gtk/bst*.[hc]
+GXK_MAN_SRC_GLOBS=$(top_srcdir)/beast-gtk/gxk/gxk*.[hc]
 
 TAGS2DOC = $(srcdir)/tags2doc.pl
 
@@ -40,11 +40,11 @@ bsw-procs.dat: $(top_builddir)/bse/bsequery $(srcdir)/scandocs.pl $(top_srcdir)/
                                --package "BEAST-$(VERSION)" \
                                temp-bsw-gen1.doc >$@ \
         && rm -f temp-bsw-gen1.doc
-bst.dat: $(BST_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl $(top_srcdir)/configure
-	$(srcdir)/scandocs.pl --name "BST-Functions" \
-                            --blurb "BEAST Function Reference" \
+gxk.dat: $(GXK_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl $(top_srcdir)/configure
+	$(srcdir)/scandocs.pl --name "GXK-Functions" \
+                            --blurb "Gtk+ Extension Kit Function Reference" \
                             --package "BEAST-$(VERSION)" \
-                            $(BST_MAN_SRC_GLOBS) >$@
+                            $(GXK_MAN_SRC_GLOBS) >$@
 
 
 #
@@ -59,8 +59,8 @@ bse.3:		bse.dat $(MAN_DEPS)
 	$(DOC2MAN) < $(srcdir)/bse.dat > $@
 bsw-procs.3:	bsw-procs.dat $(MAN_DEPS)
 	$(DOC2MAN) < $(srcdir)/bsw-procs.dat > $@
-bst.3:		bst.dat $(MAN_DEPS)
-	$(DOC2MAN) < $(srcdir)/bst.dat > $@
+beast-gxk.3:	gxk.dat $(MAN_DEPS)
+	$(DOC2MAN) < $(srcdir)/gxk.dat > $@
 
 
 #

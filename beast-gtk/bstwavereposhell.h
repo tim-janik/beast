@@ -18,7 +18,6 @@
 #ifndef __BST_WAVE_REPO_SHELL_H__
 #define __BST_WAVE_REPO_SHELL_H__
 
-#include	"bstdefs.h"
 #include	"bstsupershell.h"
 #include	"bstparamview.h"
 #include	"bstwaveview.h"

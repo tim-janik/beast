@@ -230,31 +230,31 @@ bst_part_dialog_init (BstPartDialog *self)
   choice = bst_toolbar_append_choice (self->toolbar, BST_TOOLBAR_TRUNC_BUTTON,
 				      (BstToolbarChoiceFunc) part_dialog_note_choice, self, NULL);
   bst_toolbar_choice_add (choice, "1/1", "Insert full notes",
-			  bst_image_from_stock (BST_STOCK_NOTE_1, BST_SIZE_TOOLBAR), 1);
+			  gxk_stock_image (BST_STOCK_NOTE_1, BST_SIZE_TOOLBAR), 1);
   bst_toolbar_choice_add (choice, "1/2", "Insert half notes",
-			  bst_image_from_stock (BST_STOCK_NOTE_2, BST_SIZE_TOOLBAR), 2);
+			  gxk_stock_image (BST_STOCK_NOTE_2, BST_SIZE_TOOLBAR), 2);
   bst_toolbar_choice_set (choice, "1/4", "Insert quarter notes",
-			  bst_image_from_stock (BST_STOCK_NOTE_4, BST_SIZE_TOOLBAR), 4);
+			  gxk_stock_image (BST_STOCK_NOTE_4, BST_SIZE_TOOLBAR), 4);
   bst_toolbar_choice_add (choice, "1/8", "Insert eighths note",
-			  bst_image_from_stock (BST_STOCK_NOTE_8, BST_SIZE_TOOLBAR), 8);
+			  gxk_stock_image (BST_STOCK_NOTE_8, BST_SIZE_TOOLBAR), 8);
   bst_toolbar_choice_add (choice, "1/16", "Insert sixteenth note",
-			  bst_image_from_stock (BST_STOCK_NOTE_16, BST_SIZE_TOOLBAR), 16);
+			  gxk_stock_image (BST_STOCK_NOTE_16, BST_SIZE_TOOLBAR), 16);
   
   /* quantization selection */
   choice = bst_toolbar_append_choice (self->toolbar, BST_TOOLBAR_TRUNC_BUTTON,
 				      (BstToolbarChoiceFunc) part_dialog_qnote_choice, self, NULL);
   bst_toolbar_choice_add (choice, "None", "No quantization selected",
-			  bst_image_from_stock (BST_STOCK_QNOTE_NONE, BST_SIZE_TOOLBAR), 0);
+			  gxk_stock_image (BST_STOCK_QNOTE_NONE, BST_SIZE_TOOLBAR), 0);
   bst_toolbar_choice_add (choice, "Q: 1/1", "Quantize to full note boundaries",
-			  bst_image_from_stock (BST_STOCK_QNOTE_1, BST_SIZE_TOOLBAR), 1);
+			  gxk_stock_image (BST_STOCK_QNOTE_1, BST_SIZE_TOOLBAR), 1);
   bst_toolbar_choice_add (choice, "Q: 1/2", "Quantize to half note boundaries",
-			  bst_image_from_stock (BST_STOCK_QNOTE_2, BST_SIZE_TOOLBAR), 2);
+			  gxk_stock_image (BST_STOCK_QNOTE_2, BST_SIZE_TOOLBAR), 2);
   bst_toolbar_choice_add (choice, "Q: 1/4", "Quantize to quarter note boundaries",
-			  bst_image_from_stock (BST_STOCK_QNOTE_4, BST_SIZE_TOOLBAR), 4);
+			  gxk_stock_image (BST_STOCK_QNOTE_4, BST_SIZE_TOOLBAR), 4);
   bst_toolbar_choice_set (choice, "Q: 1/8", "Quantize to eighths note boundaries",
-			  bst_image_from_stock (BST_STOCK_QNOTE_8, BST_SIZE_TOOLBAR), 8);
+			  gxk_stock_image (BST_STOCK_QNOTE_8, BST_SIZE_TOOLBAR), 8);
   bst_toolbar_choice_add (choice, "Q: 1/16", "Quantize to sixteenth note boundaries",
-			  bst_image_from_stock (BST_STOCK_QNOTE_16, BST_SIZE_TOOLBAR), 16);
+			  gxk_stock_image (BST_STOCK_QNOTE_16, BST_SIZE_TOOLBAR), 16);
 
   /* vzoom */
   bst_toolbar_append_separator (self->toolbar);
@@ -266,7 +266,7 @@ bst_part_dialog_init (BstPartDialog *self)
 			"visible", TRUE,
 			"adjustment", adjustment,
 			"digits", 0,
-			"width_request", 2 * bst_size_width (BST_SIZE_TOOLBAR),
+			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
 			NULL);
   bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
 		      "VZoom", "Vertical Zoom", entry);
@@ -281,7 +281,7 @@ bst_part_dialog_init (BstPartDialog *self)
 			"visible", TRUE,
 			"adjustment", adjustment,
 			"digits", 1,
-			"width_request", 2 * bst_size_width (BST_SIZE_TOOLBAR),
+			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
 			NULL);
   bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
 		      "HZoom", "Horizontal Zoom", entry);

@@ -19,9 +19,8 @@
 #ifndef __BST_RADIO_TOOLS_H__
 #define __BST_RADIO_TOOLS_H__
 
-#include	"bstdefs.h"
+#include	"bstutils.h"
 #include	"bsttoolbar.h"
-
 
 #ifdef __cplusplus
 extern "C" {

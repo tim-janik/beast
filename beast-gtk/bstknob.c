@@ -21,6 +21,7 @@
 #include <gtk/gtksignal.h>
 #include <math.h>
 #include <stdio.h>
+#include <gxk/gxkstock.h>	// FIXME: remove include
 
 #include "bstutils.h"	/* for the knob pixbuf */
 

@@ -18,7 +18,7 @@
 #ifndef __BST_DEFS_H__
 #define __BST_DEFS_H__
 
-#include	"bstutils.h"
+#include <gxk/gxk.h>
 #include	"gtklistwrapper.h"
 #include	"glewidgets.h"
 #include	"bstzoomedwindow.h"
@@ -96,24 +96,14 @@ typedef enum
 /* --- constants & defines --- */
 #define	BST_TAG_DIAMETER	  (20)
 #define BST_STRDUP_RC_FILE()	  (g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
-#define BST_BUTTON_ICON_WIDTH	  (32)
-#define BST_BUTTON_ICON_HEIGHT	  (32)
-#define BST_DRAG_ICON_WIDTH	  (BST_BUTTON_ICON_WIDTH)
-#define BST_DRAG_ICON_HEIGHT	  (BST_BUTTON_ICON_HEIGHT)
-#define BST_TOOLBAR_ICON_WIDTH    (BST_BUTTON_ICON_WIDTH)
-#define BST_TOOLBAR_ICON_HEIGHT   (BST_BUTTON_ICON_WIDTH)
-#define BST_PALETTE_ICON_WIDTH    (BST_TOOLBAR_ICON_WIDTH)
-#define BST_PALETTE_ICON_HEIGHT   (BST_TOOLBAR_ICON_HEIGHT)
+
+/* --- configuration candidates --- */
+/* mouse button numbers and masks for drag operations */
 #define BST_DRAG_BUTTON_COPY	  (1)
 #define BST_DRAG_BUTTON_COPY_MASK (GDK_BUTTON1_MASK)
 #define BST_DRAG_BUTTON_MOVE	  (2)
 #define BST_DRAG_BUTTON_MOVE_MASK (GDK_BUTTON2_MASK)
 #define BST_DRAG_BUTTON_CONTEXT   (3) /* delete, clone, linkdup */
-
-
-/* --- GUI padding --- */
-#define	BST_OUTER_PADDING	  (2)
-#define	BST_INNER_PADDING	  (3)
 
 
 /* --- debug stuff --- */
@@ -139,10 +129,7 @@ extern void bst_update_can_operate (GtkWidget   *some_widget);
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
 
-#define bst_nullify_on_destroy(obj, location) \
-  g_signal_connect_swapped ((obj), "destroy", G_CALLBACK (g_nullify_pointer), (location))
-
-#define	BST_TOOLTIPS	(bst_global_tooltips ())
+#define	BST_TOOLTIPS			(GXK_TOOLTIPS)
 
 
 

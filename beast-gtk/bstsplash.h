@@ -18,9 +18,7 @@
 #ifndef __BST_SPLASH_H__
 #define __BST_SPLASH_H__
 
-
-#include        "bstdefs.h"
-
+#include        "bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

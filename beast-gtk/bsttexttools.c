@@ -1081,6 +1081,7 @@ bst_scroll_text_create (BstTextViewFlags flags,
 			NULL);
       tnav->refe = g_object_new (GTK_TYPE_ENTRY,
 				 "visible", TRUE,
+				 "width_request", 10,
 				 NULL);
       g_object_connect (g_object_ref (tnav->refe),
 			"swapped_signal::activate", navigate_goto, sctext,
@@ -1107,7 +1108,7 @@ bst_scroll_text_create (BstTextViewFlags flags,
   if (flags & BST_TEXT_VIEW_MONO_SPACED)
     g_object_set_data ((GObject*) tbuffer, "family", "mono");
   if (!(flags & BST_TEXT_VIEW_SHEET_BG))
-    bst_widget_modify_base_as_bg (widget);
+    gxk_widget_modify_base_as_bg (widget);
 
   bst_scroll_text_append (sctext, string);
   

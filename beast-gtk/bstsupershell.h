@@ -18,9 +18,7 @@
 #ifndef __BST_SUPER_SHELL_H__
 #define __BST_SUPER_SHELL_H__
 
-#include	"bstdefs.h"
-#include	<gtk/gtk.h>
-
+#include	"bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

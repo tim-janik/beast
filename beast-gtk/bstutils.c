@@ -25,276 +25,71 @@
 #include        <string.h>
 
 
-/* compile marshallers */
-#include        "bstmarshal.c"
-
-
-
-
-/* --- generated types --- */
+/* --- generated type IDs --- */
 #include "bstgentypes.c"	/* type id defs */
+
+
+/* --- generated enums --- */
 #include "bstenum_arrays.c"	/* enum string value arrays plus include directives */
-void
-bst_init_gentypes (void)
-{
-  static gboolean initialized = FALSE;
 
-  if (!initialized)
-    {
-      static struct {
-	gchar            *type_name;
-	GType             parent;
-	GType            *type_id;
-	gconstpointer     pointer1;
-      } builtin_info[] = {
+
+/* --- generated marshallers --- */
+#include "bstmarshal.c"
+
+
+/* --- functions --- */
+void
+bst_init_utils (void)
+{
+  static guint initialized = 0;
+  
+  g_assert (initialized++ == 0);
+
+  /* initialize generated type ids */
+  {
+    static struct {
+      gchar            *type_name;
+      GType             parent;
+      GType            *type_id;
+      gconstpointer     pointer1;
+    } builtin_info[] = {
 #include "bstenum_list.c"	/* type entries */
-      };
-      guint i;
+    };
+    guint i;
+    for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
+      {
+	GType type_id = 0;
+	
+	if (builtin_info[i].parent == G_TYPE_ENUM)
+	  type_id = g_enum_register_static (builtin_info[i].type_name, builtin_info[i].pointer1);
+	else if (builtin_info[i].parent == G_TYPE_FLAGS)
+	  type_id = g_flags_register_static (builtin_info[i].type_name, builtin_info[i].pointer1);
+	else
+	  g_assert_not_reached ();
+	g_assert (g_type_name (type_id) != NULL);
+	*builtin_info[i].type_id = type_id;
+      }
+  }
 
-      for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
-	{
-	  GType type_id = 0;
-
-	  if (builtin_info[i].parent == G_TYPE_ENUM)
-	    type_id = g_enum_register_static (builtin_info[i].type_name, builtin_info[i].pointer1);
-	  else if (builtin_info[i].parent == G_TYPE_FLAGS)
-	    type_id = g_flags_register_static (builtin_info[i].type_name, builtin_info[i].pointer1);
-	  else
-	    g_assert_not_reached ();
-	  g_assert (g_type_name (type_id) != NULL);
-	  *builtin_info[i].type_id = type_id;
-	}
-    }
-}
-
-
-/* --- Icons, Stock setup --- */
+  /* initialize stock icons (included above) */
+  {
+    /* generated stock icons */
 #include "./icons/bst-stock-gen.c"
-typedef struct
-{
-  const gchar *stock_id;
-  const gchar *data;
-} StockIcon;
-static StockIcon stock_pixdata_icons[] = {
-  { BST_STOCK_EDIT_TOOL,	stock_editor,		},
-  { BST_STOCK_INFO,		stock_info,		},
-  { BST_STOCK_INSTRUMENT,	stock_instrument,	},
-  { BST_STOCK_KNOB,		stock_knob,		},
-  { BST_STOCK_LOAD,		stock_cdrom,		},
-  { BST_STOCK_MOUSE_TOOL,	stock_mouse_tool,	},
-  { BST_STOCK_MUSIC_CUT,	stock_music_cut,	},
-  { BST_STOCK_MUSIC_COPY,	stock_music_copy,	},
-  { BST_STOCK_MUSIC_PASTE,	stock_music_paste,	},
-  { BST_STOCK_NOTE_1,		stock_note_1,		},
-  { BST_STOCK_NOTE_2,		stock_note_2,		},
-  { BST_STOCK_NOTE_4,		stock_note_4,		},
-  { BST_STOCK_NOTE_8,		stock_note_8,		},
-  { BST_STOCK_NOTE_16,		stock_note_16,		},
-  { BST_STOCK_NOICON,		stock_no_icon,		},
-  { BST_STOCK_NO_ILINK,		stock_no_ilink,		},
-  { BST_STOCK_NO_OLINK,		stock_no_olink,		},
-  { BST_STOCK_PALETTE,		stock_palette,		},
-  { BST_STOCK_PART,		stock_part,		},
-  { BST_STOCK_PART_EDITOR,	stock_part_editor,	},
-  { BST_STOCK_PART_TOOL,	stock_part_tool,	},
-  { BST_STOCK_PATTERN,		stock_pattern,		},
-  { BST_STOCK_PATTERN_GROUP,	stock_pattern_group,	},
-  { BST_STOCK_PATTERN_TOOL,	stock_pattern_tool,	},
-  { BST_STOCK_PREVIEW_AUDIO,	stock_small_audio,	},
-  { BST_STOCK_PREVIEW_NOAUDIO,	stock_small_noaudio,	},
-  { BST_STOCK_QNOTE_NONE,	stock_qnote_none,	},
-  { BST_STOCK_QNOTE_1,		stock_qnote_1,		},
-  { BST_STOCK_QNOTE_2,		stock_qnote_2,		},
-  { BST_STOCK_QNOTE_4,		stock_qnote_4,		},
-  { BST_STOCK_QNOTE_8,		stock_qnote_8,		},
-  { BST_STOCK_QNOTE_16,		stock_qnote_16,		},
-  { BST_STOCK_RECT_SELECT,	stock_rect_select,	},
-  { BST_STOCK_TARGET,		stock_target,		},
-  { BST_STOCK_TRACK,		stock_railway,		},
-  { BST_STOCK_TRASHCAN,		stock_trashcan,		},
-  { BST_STOCK_TRASH_SCISSORS,	stock_trash_scissors,	},
-  { BST_STOCK_VERT_SELECT,	stock_vert_select,	},
-  { BST_STOCK_WAVE,		stock_wave,		},
-  { BST_STOCK_WAVE_TOOL,	stock_wave_tool,	},
-  { BST_STOCK_ZOOM_ANY,		stock_zoom_any,		},
-};
-static StockIcon stock_gtk_stock_ids[] = {
-  { BST_STOCK_APPLY,		GTK_STOCK_APPLY,		},
-  { BST_STOCK_CANCEL,		GTK_STOCK_CANCEL,		},
-  { BST_STOCK_CDROM,		GTK_STOCK_CDROM,		},
-  { BST_STOCK_CLONE,		GTK_STOCK_COPY,			},
-  { BST_STOCK_CLOSE,		GTK_STOCK_CLOSE,		},
-  { BST_STOCK_DEFAULT_REVERT,	GTK_STOCK_UNDO,			},
-  { BST_STOCK_DELETE,		GTK_STOCK_DELETE,		},
-  { BST_STOCK_EXECUTE,		GTK_STOCK_EXECUTE,		},
-  { BST_STOCK_OK,		GTK_STOCK_OK,			},
-  { BST_STOCK_OVERWRITE,	GTK_STOCK_SAVE,			},
-  { BST_STOCK_PROPERTIES,	GTK_STOCK_PROPERTIES,		},
-  { BST_STOCK_REDO,		GTK_STOCK_REDO,			},
-  { BST_STOCK_REVERT,		GTK_STOCK_UNDO,			},
-  { BST_STOCK_UNDO,		GTK_STOCK_UNDO,			},
-  { BST_STOCK_ZOOM_100,		GTK_STOCK_ZOOM_100,		},
-  { BST_STOCK_ZOOM_FIT,		GTK_STOCK_ZOOM_FIT,		},
-  { BST_STOCK_ZOOM_IN,		GTK_STOCK_ZOOM_IN,		},
-  { BST_STOCK_ZOOM_OUT,		GTK_STOCK_ZOOM_OUT,		},
-  { BST_STOCK_INFO,		GTK_STOCK_DIALOG_INFO,		},
-  { BST_STOCK_QUESTION,		GTK_STOCK_DIALOG_QUESTION,	},
-  { BST_STOCK_WARNING,		GTK_STOCK_DIALOG_WARNING,	},
-  { BST_STOCK_ERROR,		GTK_STOCK_DIALOG_ERROR,		},
-};
-/* stock icon sizes */
-guint    bst_size_button = 0;
-guint    bst_size_big_button = 0;
-guint    bst_size_canvas = 0;
-guint    bst_size_toolbar = 0;
-guint    bst_size_info_sign = 0;
-guint    bst_size_menu = 0;
-static GtkIconFactory *stock_icon_factory = NULL;
-static GdkPixbuf      *stock_pixbuf_no_icon = NULL;
-static GdkPixbuf      *stock_pixbuf_knob = NULL;
-static GdkPixbuf      *stock_pixbuf_pattern_group = NULL;
-static GdkPixbuf      *stock_pixbuf_pattern = NULL;
 
-void
-_bst_utils_init (void)
-{
-  guint i;
+    gxk_stock_register_icons (G_N_ELEMENTS (stock_icons), stock_icons);
+  }
 
-  g_assert (stock_icon_factory == NULL);
-
-  stock_icon_factory = gtk_icon_factory_new ();
-
-  /* setup icon sizes */
-  bst_size_button = GTK_ICON_SIZE_BUTTON;	/* 20x20 */
-  bst_size_big_button = GTK_ICON_SIZE_DND;	/* 32x32 */
-  bst_size_info_sign = GTK_ICON_SIZE_DIALOG;	/* 48x48 */
-  bst_size_menu = GTK_ICON_SIZE_MENU;		/* 16x16 */
-  bst_size_toolbar = bst_size_big_button;
-  bst_size_canvas = gtk_icon_size_register ("BstIconSizeCanvas", 64, 64);
-
-  /* add beast icons to stock factory */
-  for (i = 0; i < G_N_ELEMENTS (stock_pixdata_icons); i++)
-    {
-      StockIcon *icon = stock_pixdata_icons + i;
-      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_inline (-1, icon->data, FALSE, NULL);
-      GtkIconSet *iset = gtk_icon_set_new_from_pixbuf (pixbuf);
-
-      if (icon->stock_id == BST_STOCK_NOICON)
-	stock_pixbuf_no_icon = pixbuf;
-      else if (icon->stock_id == BST_STOCK_KNOB)
-        stock_pixbuf_knob = pixbuf;
-      else if (icon->stock_id == BST_STOCK_PATTERN_GROUP)
-        stock_pixbuf_pattern_group = pixbuf;
-      else if (icon->stock_id == BST_STOCK_PATTERN)
-        stock_pixbuf_pattern = pixbuf;
-      else
-	g_object_unref (pixbuf);
-      gtk_icon_factory_add (stock_icon_factory, icon->stock_id, iset);
-      gtk_icon_set_unref (iset);
-    }
-
-  /* add gtk aliases to stock factory */
-  for (i = 0; i < G_N_ELEMENTS (stock_gtk_stock_ids); i++)
-    {
-      StockIcon *icon = stock_gtk_stock_ids + i;
-
-      gtk_icon_factory_add (stock_icon_factory,
-			    icon->stock_id,
-			    gtk_icon_factory_lookup_default (icon->data));
-    }
-
-  /* register globally */
-  gtk_icon_factory_add_default (stock_icon_factory);
-}
-
-guint
-bst_size_width (GtkIconSize bst_size)
-{
-  gint width = 10;
-
-  gtk_icon_size_lookup (bst_size, &width, NULL);
-  return width;
-}
-
-guint
-bst_size_height (GtkIconSize bst_size)
-{
-  gint height = 10;
-
-  gtk_icon_size_lookup (bst_size, NULL, &height);
-  return height;
-}
-
-GtkWidget*
-bst_image_from_stock (const gchar *stock_icon_id,
-		      GtkIconSize  icon_size)
-{
-  if (stock_icon_id && gtk_icon_factory_lookup_default (stock_icon_id))
-    {
-      GtkWidget *image = gtk_image_new_from_stock (stock_icon_id, icon_size);
-
-      gtk_widget_show (image);
-      return image;
-    }
-  return NULL;
-}
-
-const gchar*
-bst_stock_action (const gchar *stock_id)
-{
-  const gchar *action = NULL;
-  GtkStockItem item;
-
-  g_return_val_if_fail (stock_id != NULL, NULL);
-
-  /* keep the lookup stupid and simple for now */
-  if (strcmp (stock_id, BST_STOCK_CLONE) == 0)
-    action = "_Clone";
-  else if (strcmp (stock_id, BST_STOCK_REVERT) == 0)
-    action = "_Revert";
-  else if (strcmp (stock_id, BST_STOCK_DEFAULT_REVERT) == 0)
-    action = "_Defaults";
-  else if (strcmp (stock_id, BST_STOCK_OVERWRITE) == 0)
-    action = "_Overwrite";
-  else if (strcmp (stock_id, BST_STOCK_LOAD) == 0)
-    action = "_Load";
-
-  if (!action)
-    {
-      guint i;
-
-      /* find gtk alias */
-      for (i = 0; i < G_N_ELEMENTS (stock_gtk_stock_ids); i++)
-	{
-	  StockIcon *icon = stock_gtk_stock_ids + i;
-
-	  if (strcmp (stock_id, icon->stock_id) == 0)
-	    {
-	      action = icon->data;
-	      break;
-	    }
-	}
-      if (action && gtk_stock_lookup (action, &item))
-	action = item.label;
-      else
-	action = NULL;
-    }
-  if (!action)
-    action = stock_id;
-
-  return action;
-}
-
-GdkPixbuf*
-bst_pixbuf_no_icon (void)
-{
-  return stock_pixbuf_no_icon;
-}
-
-GdkPixbuf*
-bst_pixbuf_knob (void)
-{
-  return stock_pixbuf_knob;
+  /* initialize stock actions */
+  {
+    static const GxkStockAction stock_actions[] = {
+      { BST_STOCK_CLONE,		"_Clone",	GTK_STOCK_COPY,			},
+      { BST_STOCK_DEFAULT_REVERT,	"_Defaults",	GTK_STOCK_UNDO,			},
+      { BST_STOCK_LOAD,			"_Load",	NULL,				},
+      { BST_STOCK_OVERWRITE,		"_Overwrite",	GTK_STOCK_SAVE,			},
+      { BST_STOCK_REVERT,		"_Revert",	GTK_STOCK_UNDO,			},
+    };
+    gxk_stock_register_actions (G_N_ELEMENTS (stock_actions), stock_actions);
+  }
 }
 
 GtkWidget*
@@ -334,124 +129,6 @@ bst_image_from_icon (BswIcon    *icon,
   gtk_widget_show (image);
 
   return image;
-}
-
-GtkWidget*
-bst_stock_button_child (const gchar *stock_id,
-			const gchar *label)
-{
-  GtkWidget *alignment, *hbox, *image;
-
-  g_return_val_if_fail (stock_id != NULL, NULL);
-
-  alignment = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
-  hbox = gtk_hbox_new (FALSE, 2);
-  gtk_container_add (GTK_CONTAINER (alignment), hbox);
-  image = bst_image_from_stock (stock_id, BST_SIZE_BUTTON);
-  if (image)
-    gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (hbox),
-		      g_object_new (GTK_TYPE_LABEL,
-				    "label", label ? label : bst_stock_action (stock_id),
-				    "use_underline", TRUE,
-				    NULL),
-		      FALSE, TRUE, 0);
-  gtk_widget_show_all (alignment);
-
-  return alignment;
-}
-
-GtkWidget*
-bst_stock_button (const gchar *stock_id,
-		  const gchar *label)
-{
-  GtkWidget *button, *alignment;
-
-  g_return_val_if_fail (stock_id != NULL, NULL);
-
-  button = g_object_new (GTK_TYPE_BUTTON,
-			 "visible", TRUE,
-			 NULL);
-  alignment = bst_stock_button_child (stock_id, label);
-  gtk_container_add (GTK_CONTAINER (button), alignment);
-
-  return button;
-}
-
-GtkWidget*
-bst_drag_window_from_stock (const gchar *stock)
-{
-  GtkWidget *drag_window, *image;
-  GdkPixbuf *pixbuf;
-  GdkBitmap *mask;
-  guint8 *bitmap_data;
-  gint width, height;
-
-  g_return_val_if_fail (stock != NULL, NULL);
-
-  if (strcmp (stock, BST_STOCK_PATTERN_GROUP) == 0)
-    pixbuf = stock_pixbuf_pattern_group;
-  else if (strcmp (stock, BST_STOCK_PATTERN) == 0)
-    pixbuf = stock_pixbuf_pattern;
-  else
-    {
-      g_warning ("unhandled stock id: \"%s\"", stock);
-      return NULL;
-    }
-  
-  image = gtk_image_new_from_pixbuf (pixbuf);
-  gtk_widget_show (image);
-
-  drag_window = gtk_widget_new (GTK_TYPE_WINDOW,
-				"type", GTK_WINDOW_POPUP,
-				"child", image,
-				NULL);
-  gtk_widget_set_app_paintable (drag_window, TRUE);
-  gtk_widget_realize (drag_window);
-  gdk_window_raise (drag_window->window);
-  bitmap_data = gdk_pixbuf_create_bitmap_data (pixbuf, &width, &height, 1);
-  mask = gdk_bitmap_create_from_data (drag_window->window, bitmap_data, width, height);
-  g_free (bitmap_data);
-  gtk_widget_shape_combine_mask (drag_window, mask, 0, 0);
-  gdk_pixmap_unref (mask);
-
-  return drag_window;
-}
-
-guint8*
-gdk_pixbuf_create_bitmap_data (GdkPixbuf *pixbuf,
-			       gint	 *width_p,
-			       gint	 *height_p,
-			       guint8	  alpha_threshold)
-{
-  guint width, height, rowstride, x, y;
-  guint8 *data, *buffer;
-
-  g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), NULL);
-
-  width = gdk_pixbuf_get_width (pixbuf);
-  height = gdk_pixbuf_get_height (pixbuf);
-  rowstride = gdk_pixbuf_get_rowstride (pixbuf);
-  buffer = gdk_pixbuf_get_pixels (pixbuf);
-
-  data = g_new0 (guint8, (width + 7) / 8 * height);
-  if (!gdk_pixbuf_get_has_alpha (pixbuf))
-    memset (data, 0xff, (width + 7) / 8 * height);
-  else
-    for (y = 0; y < height; y++)
-      for (x = 0; x < width; x++)
-	{
-	  guint8 *d = data + (width + 7) / 8 * y + x / 8;
-	  guint8 *buf = buffer + y * rowstride + x * 4;
-	  
-	  if (buf[3] >= alpha_threshold)
-	    *d |= 1 << (x % 8);
-	}
-  if (width_p)
-    *width_p = width;
-  if (height_p)
-    *height_p = height;
-  return data;
 }
 
 
@@ -608,22 +285,6 @@ gtk_widget_showraise (GtkWidget *widget)
   gtk_widget_show (widget);
   if (GTK_WIDGET_REALIZED (widget))
     gdk_window_raise (widget->window);
-}
-
-void
-gtk_widget_make_sensitive (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  gtk_widget_set_sensitive (widget, TRUE);
-}
-
-void
-gtk_widget_make_insensitive (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  gtk_widget_set_sensitive (widget, FALSE);
 }
 
 void
@@ -1431,126 +1092,6 @@ bst_gmask_quick (GtkWidget   *gmask_container,
 
 
 /* --- BEAST utilities --- */
-GtkTooltips*
-bst_global_tooltips (void)
-{
-  static GtkTooltips *gtt = NULL;
-  if (!gtt)
-    {
-      gtt = gtk_tooltips_new ();
-      g_object_ref (gtt);
-      gtk_object_sink (GTK_OBJECT (gtt));
-    }
-  return gtt;
-}
-
-static void
-style_modify_fg_as_sensitive (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
-  
-  rc_style->color_flags[GTK_STATE_INSENSITIVE] = GTK_RC_FG;
-  rc_style->fg[GTK_STATE_INSENSITIVE].red = widget->style->fg[GTK_STATE_NORMAL].red;
-  rc_style->fg[GTK_STATE_INSENSITIVE].green = widget->style->fg[GTK_STATE_NORMAL].green;
-  rc_style->fg[GTK_STATE_INSENSITIVE].blue = widget->style->fg[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
-}
-
-void
-bst_widget_modify_as_title (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  gtk_widget_set_sensitive (widget, FALSE);
-  if (GTK_WIDGET_REALIZED (widget))
-    style_modify_fg_as_sensitive (widget);
-  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					   TRUE,
-					   style_modify_fg_as_sensitive,
-					   NULL))
-    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_fg_as_sensitive), NULL);
-  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					   TRUE,
-					   gtk_widget_make_insensitive,
-					   NULL))
-    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (gtk_widget_make_insensitive), NULL);
-}
-
-static void
-style_modify_bg_as_base (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_widget_get_modifier_style (widget);
-  
-  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BG;
-  rc_style->bg[GTK_STATE_NORMAL].red = widget->style->base[GTK_STATE_NORMAL].red;
-  rc_style->bg[GTK_STATE_NORMAL].green = widget->style->base[GTK_STATE_NORMAL].green;
-  rc_style->bg[GTK_STATE_NORMAL].blue = widget->style->base[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
-}
-
-void
-bst_widget_modify_bg_as_base (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  if (GTK_WIDGET_REALIZED (widget))
-    style_modify_bg_as_base (widget);
-  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					   TRUE,
-					   style_modify_bg_as_base,
-					   NULL))
-    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_bg_as_base), NULL);
-}
-
-static void
-style_modify_base_as_bg (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
-  
-  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BASE;
-  rc_style->base[GTK_STATE_NORMAL].red = widget->style->bg[GTK_STATE_NORMAL].red;
-  rc_style->base[GTK_STATE_NORMAL].green = widget->style->bg[GTK_STATE_NORMAL].green;
-  rc_style->base[GTK_STATE_NORMAL].blue = widget->style->bg[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
-}
-
-void
-bst_widget_modify_base_as_bg (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  if (GTK_WIDGET_REALIZED (widget))
-    style_modify_base_as_bg (widget);
-  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					   TRUE,
-					   style_modify_base_as_bg,
-					   NULL))
-    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_base_as_bg), NULL);
-}
-
-void
-g_object_set_int (gpointer     object,
-		  const gchar *name,
-		  glong        v_int)
-{
-  g_return_if_fail (G_IS_OBJECT (object));
-
-  g_object_set_data (object, name, (gpointer) v_int);
-}
-
-glong
-g_object_get_int (gpointer     object,
-		  const gchar *name)
-{
-  g_return_val_if_fail (G_IS_OBJECT (object), 0);
-
-  return (glong) g_object_get_data (object, name);
-}
-
 guint
 bst_container_get_insertion_position (GtkContainer   *container,
 				      gboolean        scan_horizontally,
@@ -1692,175 +1233,4 @@ bst_xpm_view_create (const gchar **xpm,
 		  "visible", TRUE,
 		  NULL);
   return pix;
-}
-
-static gboolean
-expose_bg_clear (GtkWidget      *widget,
-		 GdkEventExpose *event)
-{
-  gtk_paint_flat_box (widget->style, widget->window, GTK_STATE_NORMAL,
-		      GTK_SHADOW_NONE, &event->area, widget, "base", 0, 0, -1, -1);
-  
-  return FALSE;
-}
-
-void
-bst_widget_force_bg_clear (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  gtk_widget_set_redraw_on_allocate (widget, TRUE);
-  if (!g_signal_handler_find (widget, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, 0, 0, NULL, expose_bg_clear, NULL))
-    g_object_connect (widget, "signal::expose_event", expose_bg_clear, NULL, NULL);
-}
-
-
-/* --- Canvas Utilities & Workarounds --- */
-GnomeCanvasPoints*
-gnome_canvas_points_new0 (guint num_points)
-{
-  GnomeCanvasPoints *points;
-  guint i;
-  
-  g_return_val_if_fail (num_points > 1, NULL);
-  
-  points = gnome_canvas_points_new (num_points);
-  for (i = 0; i < num_points; i++)
-    {
-      points->coords[i] = 0;
-      points->coords[i + num_points] = 0;
-    }
-  
-  return points;
-}
-
-GnomeCanvasPoints*
-gnome_canvas_points_newv (guint num_points,
-			  ...)
-{
-  GnomeCanvasPoints *points;
-  guint i;
-  va_list args;
-  
-  g_return_val_if_fail (num_points > 1, NULL);
-  
-  va_start (args, num_points);
-  points = gnome_canvas_points_new (num_points);
-  for (i = 0; i < num_points * 2; i++)
-    points->coords[i] = va_arg (args, gdouble);
-  va_end (args);
-  
-  return points;
-}
-
-GnomeCanvasItem*
-gnome_canvas_typed_item_at (GnomeCanvas *canvas,
-			    GtkType      item_type,
-			    gdouble      world_x,
-			    gdouble      world_y)
-{
-  GnomeCanvasItem *item;
-  
-  g_return_val_if_fail (GNOME_IS_CANVAS (canvas), NULL);
-  
-  item = gnome_canvas_get_item_at (canvas, world_x, world_y);
-  while (item && !gtk_type_is_a (GTK_OBJECT_TYPE (item), item_type))
-    item = item->parent;
-  
-  return item && gtk_type_is_a (GTK_OBJECT_TYPE (item), item_type) ? item : NULL;
-}
-
-guint
-gnome_canvas_item_get_stacking (GnomeCanvasItem *item)
-{
-  g_return_val_if_fail (GNOME_IS_CANVAS_ITEM (item), 0);
-  
-  if (item->parent)
-    {
-      GnomeCanvasGroup *parent = GNOME_CANVAS_GROUP (item->parent);
-      GList *list;
-      guint pos = 0;
-      
-      for (list = parent->item_list; list; list = list->next)
-	{
-	  if (list->data == item)
-	    return pos;
-	  pos++;
-	}
-    }
-  
-  return 0;
-}
-
-void
-gnome_canvas_item_keep_between (GnomeCanvasItem *between,
-				GnomeCanvasItem *item1,
-				GnomeCanvasItem *item2)
-{
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (between));
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item1));
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item2));
-
-  if (between->parent && item1->parent && item2->parent)
-    {
-      if (item1->parent == between->parent && item2->parent == between->parent)
-	{
-	  guint n, i, z;
-	  
-	  n = gnome_canvas_item_get_stacking (item1);
-	  i = gnome_canvas_item_get_stacking (item2);
-	  z = gnome_canvas_item_get_stacking (between);
-	  n = (n + i + (z > MIN (n, i))) / 2;
-	  if (z < n)
-	    gnome_canvas_item_raise (between, n - z);
-	  else if (n < z)
-	    gnome_canvas_item_lower (between, z - n);
-	}
-      else
-	g_warning ("gnome_canvas_item_keep_between() called for non-siblings");
-    }
-}
-
-void
-gnome_canvas_item_keep_above (GnomeCanvasItem *above,
-			      GnomeCanvasItem *item1,
-			      GnomeCanvasItem *item2)
-{
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (above));
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item1));
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item2));
-  
-  if (above->parent && item1->parent && item2->parent)
-    {
-      if (item1->parent == above->parent && item2->parent == above->parent)
-	{
-	  guint n, i, z;
-	  
-	  n = gnome_canvas_item_get_stacking (item1);
-	  i = gnome_canvas_item_get_stacking (item2);
-	  z = gnome_canvas_item_get_stacking (above);
-	  n = MAX (n, i) + 1;
-	  if (z < n)
-	    gnome_canvas_item_raise (above, n - z);
-	  else if (n < z)
-	    gnome_canvas_item_lower (above, z - n);
-	}
-      else
-	g_warning ("gnome_canvas_item_keep_above() called for non-siblings");
-    }
-}
-
-void
-gnome_canvas_FIXME_hard_update (GnomeCanvas *canvas)
-{
-  return;
-  g_return_if_fail (GNOME_IS_CANVAS (canvas));
-
-  /* _first_ recalc bounds of already queued items */
-  gnome_canvas_update_now (canvas);
-
-  /* just requeueing an update doesn't suffice for rect-ellipses,
-   * re-translating the root-item is good enough though.
-   */
-  gnome_canvas_item_move (canvas->root, 0, 0);
 }

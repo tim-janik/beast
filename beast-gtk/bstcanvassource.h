@@ -18,7 +18,7 @@
 #ifndef __BST_CANVAS_SOURCE_H__
 #define __BST_CANVAS_SOURCE_H__
 
-#include	"bstdefs.h"
+#include	"bstutils.h"
 
 
 #ifdef __cplusplus

@@ -18,8 +18,7 @@
 #ifndef __BST_RACK_TABLE_H__
 #define __BST_RACK_TABLE_H__
 
-#include	<gtk/gtktable.h>
-#include	<gtk/gtkwindow.h>
+#include "bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,3 +1,34 @@
+Fri Sep  6 17:37:19 2002  Tim Janik  <timj@gtk.org>
+
+	* started general refactoring and cleanup work.
+
+	* beast-gtk/gxk/Makefile.am: new static library, holding
+	Gtk+ extensions/fixes and new widgets which are not beast-specific.
+
+	* beast-gtk/gxk/gxkcanvas.[hc]: new files covering gnome canvas
+	related functions.
+
+	* beast-gtk/gxk/gxkglobals.[hc]: global configuration stuff.
+
+	* beast-gtk/gxk/gxkstock.[hc]: stock icon/action rekated functions.
+
+	* beast-gtk/gxk/gxkutils.[hc]: miscellaneous utilities.
+
+	* beast-gtk/utils.[hc]: move many things out of this file into gxk.
+
+	* beast-gtk/*.[hc]: include fixes. adaptions to gxk.
+
+	* beast-gtk/icons/Makefile.am: generate icon list with
+	stock ids alongside the inlined pixbufs.
+
+	* docs/reference/Makefile.am: generate beast-gxk.dat and manual
+	page and get rid of the bst.* variants.
+
+Wed Sep  4 01:39:42 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttexttools.c (bst_scroll_text_create): prevent the location
+	entry from eating space unneccessarily.
+
 Wed Sep  4 01:29:06 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttexttools.c (bst_scroll_text_create): add support for

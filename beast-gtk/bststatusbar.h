@@ -19,9 +19,7 @@
 #ifndef __BST_STATUS_BAR_H__
 #define __BST_STATUS_BAR_H__
 
-
-#include	"bstdefs.h"
-
+#include	"bstutils.h"
 
 #ifdef __cplusplus
 extern "C" {

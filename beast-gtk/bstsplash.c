@@ -97,7 +97,7 @@ bst_splash_init (BstSplash *self)
 			     "spacing", 0,
 			     "parent", window,
 			     NULL);
-  bst_nullify_on_destroy (self->vbox, &self->vbox);
+  gxk_nullify_on_destroy (self->vbox, &self->vbox);
   
   /* splash vbox */
   self->splash_box = g_object_new (GTK_TYPE_VBOX,
@@ -105,14 +105,14 @@ bst_splash_init (BstSplash *self)
 				   "homogeneous", FALSE,
 				   "spacing", 0,
 				   NULL);
-  bst_nullify_on_destroy (self->splash_box, &self->splash_box);
+  gxk_nullify_on_destroy (self->splash_box, &self->splash_box);
   gtk_box_pack_start (GTK_BOX (self->vbox), self->splash_box, TRUE, TRUE, 0);
 
   /* progress bar */
   self->pbar = g_object_new (GTK_TYPE_PROGRESS_BAR,
 			     "visible", TRUE,
 			     NULL);
-  bst_nullify_on_destroy (self->pbar, &self->pbar);
+  gxk_nullify_on_destroy (self->pbar, &self->pbar);
   gtk_box_pack_end (GTK_BOX (self->vbox), GTK_WIDGET (self->pbar), FALSE, TRUE, 0);
   gtk_progress_set_show_text (GTK_PROGRESS (self->pbar), FALSE);
   
@@ -128,7 +128,7 @@ bst_splash_init (BstSplash *self)
 			     "width_request", 1,
 			     "parent", any,
 			     NULL);
-  bst_nullify_on_destroy (self->item, &self->item);
+  gxk_nullify_on_destroy (self->item, &self->item);
 
   /* entity label */
   any = g_object_new (GTK_TYPE_ALIGNMENT,
@@ -142,7 +142,7 @@ bst_splash_init (BstSplash *self)
 			       "width_request", 1,
 			       "parent", any,
 			       NULL);
-  bst_nullify_on_destroy (self->entity, &self->entity);
+  gxk_nullify_on_destroy (self->entity, &self->entity);
 }
 
 static void

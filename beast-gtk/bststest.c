@@ -473,7 +473,8 @@ main (int   argc,
   bse_init (&argc, &argv, NULL);
   gsl_init (gslconfig, NULL);
   gtk_init (&argc, &argv);
-  bst_init_gentypes ();
+  gxk_init ();
+  bst_init_utils ();
   
   if (argc < 2)
     g_error ("need filenames");

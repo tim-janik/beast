@@ -18,7 +18,7 @@
 #ifndef __BST_PATTERN_EDITOR_H__
 #define __BST_PATTERN_EDITOR_H__
 
-#include        "bstdefs.h"
+#include        "bstutils.h"
 
 
 #ifdef __cplusplus

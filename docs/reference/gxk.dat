@@ -1,0 +1,550 @@
+@DOC-VARIABLE-DEFINITIONS@
+name    = GXK-Functions
+blurb   = Gtk+ Extension Kit Function Reference
+package = BEAST-0.4.2
+date    = 06 Sep 2002
+image   = gxk-functions
+
+@DOC-TITLE@
+GXK-Functions
+
+@DOC-HEAD@
+GXK-Functions 06 Sep 2002 BEAST-0.4.2
+
+@DOC-NAME@
+GXK-Functions - Gtk+ Extension Kit Function Reference
+
+@DOC-SYNOPSIS@
+@STRONG gxk_size_width@ (@EMPH icon_size@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkIconSize\ 
+typeraw = GtkIconSize 
+@DOC-PARAMETER@
+icon_size
+@DOC-PARDESC@
+image size id
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+@DOC-RETURNS@
+image size width
+
+@DOC-DESCRIPTION@
+Return the width of a specific image size.  
+@DOC-SYNOPSIS@
+@STRONG gxk_size_height@ (@EMPH icon_size@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkIconSize\ 
+typeraw = GtkIconSize 
+@DOC-PARAMETER@
+icon_size
+@DOC-PARDESC@
+image size id
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+@DOC-RETURNS@
+image size height
+
+@DOC-DESCRIPTION@
+Return the height of a specific image size.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_image@ (@EMPH stock_icon_id@, @EMPH icon_size@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 28
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+stock_icon_id
+@DOC-PARDESC@
+stock name
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkIconSize\ 
+typeraw = GtkIconSize 
+@DOC-PARAMETER@
+icon_size
+@DOC-PARDESC@
+image size
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 28
+
+@DOC-RETURNS@
+a visible GtkImage widget or @EMPH NULL@
+
+@DOC-DESCRIPTION@
+Create a GtkImage widget with a stock image of a certain size, or return @EMPH NULL@ if the image doesn't exist. The returned image widget correctly displays the stock icon, honouring prelight and sensitivity state of the widget.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_button@ (@EMPH stock_id@, @EMPH label@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 23
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+stock_id
+@DOC-PARDESC@
+stock name
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+label
+@DOC-PARDESC@
+button text
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 23
+
+@DOC-RETURNS@
+a visible GtkButton widget
+
+@DOC-DESCRIPTION@
+Create a GtkButton widget with a stock image and custom label text.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_button_child@ (@EMPH stock_id@, @EMPH label@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 23
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+stock_id
+@DOC-PARDESC@
+stock name
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+label
+@DOC-PARDESC@
+button text
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 23
+
+@DOC-RETURNS@
+a visible widget suitable as GtkButton child
+
+@DOC-DESCRIPTION@
+This function does the same as @STRONG gxk_stock_button()@ except for creating the actual button. The button's child is instead returned to the caller, this might e.g. be usefull if a button is created containing multiple children which are shown only selectively during runtime.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_register_icon@ (@EMPH icon@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 26
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ GxkStockIcon*
+typeraw = const GxkStockIcon*
+@DOC-PARAMETER@
+icon
+@DOC-PARDESC@
+a validly filled out GxkStockIcon
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 26
+
+
+@DOC-DESCRIPTION@
+Register a new stock icon from an inlined pixbuf. The inlined pixbuf pixels are not copied, so the caller must make sure for the data to remain valid.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_register_icons@ (@EMPH n_icons@, @EMPH icons@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 29
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+typeraw = guint              
+@DOC-PARAMETER@
+n_icons
+@DOC-PARDESC@
+number of icons to register
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ GxkStockIcon*
+typeraw = const GxkStockIcon*
+@DOC-PARAMETER@
+icons
+@DOC-PARDESC@
+a validly filled out array of GxkStockIcon
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 29
+
+
+@DOC-DESCRIPTION@
+For all @EMPH n_icons@ contained in @EMPH icons@, call @STRONG gxk_stock_register_icon()@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_register_action@ (@EMPH action@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 30
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ GxkStockAction*
+typeraw = const GxkStockAction*
+@DOC-PARAMETER@
+action
+@DOC-PARDESC@
+a validly filled out GxkStockAction
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 30
+
+
+@DOC-DESCRIPTION@
+Register a new stock action. The new stock action @EMPH action-@>stock_id is registered with an action label of @EMPH action-@>label and the stock icon @EMPH action-@>stock_fallback. If @EMPH action-@>label is @EMPH NULL@, @EMPH action-@>stock_fallback must not be @EMPH NULL@, and @EMPH action-@>stock_id becomes merely an alias of @EMPH action-@>stock_fallback.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_register_actions@ (@EMPH n_actions@, @EMPH actions@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 33
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+typeraw = guint                
+@DOC-PARAMETER@
+n_actions
+@DOC-PARDESC@
+number of actions to register
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ GxkStockAction*
+typeraw = const GxkStockAction*
+@DOC-PARAMETER@
+actions
+@DOC-PARDESC@
+a validly filled out array of GxkStockAction
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 33
+
+
+@DOC-DESCRIPTION@
+For all @EMPH n_actions@ contained in @EMPH actions@, call @STRONG gxk_stock_register_action()@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_fallback_pixbuf@ (@EMPH stock_id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 23
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+stock_id
+@DOC-PARDESC@
+stock name
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 23
+
+@DOC-RETURNS@
+this @EMPH stock_id@'s pixbuf (or @EMPH NULL@ for invalid stock ids)
+
+@DOC-DESCRIPTION@
+Return the pixbuf associated with @EMPH stock_id@, the pixbuf is owned by the stock system and persists throughout runtime. To display stock icons in widgets use @STRONG gxk_stock_image()@ and not this pixbuf.  
+@DOC-SYNOPSIS@
+@STRONG gxk_stock_icon_window@ (@EMPH stock_id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 23
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+stock_id
+@DOC-PARDESC@
+a valid stock icon name
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 23
+
+@DOC-RETURNS@
+a window showing the stock icon
+
+@DOC-DESCRIPTION@
+Create a window displaying a stock icon which is transparent according to the icon's alpha mask. Such windows are mostly usefull to implement drag-and-drop operations with stock icons.  
+@DOC-SYNOPSIS@
+@STRONG gxk_type_register_generated@ (@EMPH n_entries@, @EMPH entries@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 35
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+typeraw = guint                  
+@DOC-PARAMETER@
+n_entries
+@DOC-PARDESC@
+number of generated types to register
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ GxkTypeGenerated*
+typeraw = const GxkTypeGenerated*
+@DOC-PARAMETER@
+entries
+@DOC-PARDESC@
+GxkTypeGenerated type descriptions
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 35
+
+
+@DOC-DESCRIPTION@
+Register each of the generated type entries with the type system. Currently supported parent types are @EMPH G_TYPE_ENUM@ and @EMPH G_TYPE_FLAGS@ in which cases the @EMPH type_data@ member must point to a @EMPH NULL@ terminated array of GEnumValue or GFlagValue structures. No extra copying is performed, so the passed in structures have to persist throughout runtime.  
+@DOC-SYNOPSIS@
+@STRONG g_object_set_long@ (@EMPH object@, @EMPH name@, @EMPH v_long@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ 
+typeraw = gpointer    
+@DOC-PARAMETER@
+object
+@DOC-PARDESC@
+a valid GObject
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+name of the long value to set
+
+@DOC-VARIABLE-DEFINITIONS@
+type = glong\ \ \ \ \ \ \ 
+typeraw = glong       
+@DOC-PARAMETER@
+v_long
+@DOC-PARDESC@
+the actual value
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Convenience variant of @STRONG g_object_set_data()@ to set a long instead of a pointer.  
+@DOC-SYNOPSIS@
+@STRONG g_object_get_long@ (@EMPH object@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ 
+typeraw = gpointer    
+@DOC-PARAMETER@
+object
+@DOC-PARDESC@
+a valid GObject
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+name of the long value to retrive
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+@DOC-RETURNS@
+the actual value
+
+@DOC-DESCRIPTION@
+Convenience variant of @STRONG g_object_get_data()@ to retrive a long instead of a pointer.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_make_insensitive@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid GtkWidget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+This function is euqivalent to gtk_widget_set_sensitive (@EMPH widget@, @STRONG FALSE@); It exists as a convenient signal connection callback.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_make_sensitive@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid GtkWidget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+This function is euqivalent to gtk_widget_set_sensitive (@EMPH widget@, @STRONG TRUE@); It exists as a convenient signal connection callback.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_modify_as_title@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid GtkWidget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Modify the widget and it's style, so that it is insensitive, but doesn't quite look that way. Usefull for inactive title menu items in menus.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_modify_bg_as_base@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid GtkWidget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Modify the widget's background to look like the background of a text or list widget (usually white). This is usefull if a hbox or similar widget is used to "simulate" a list, text, or similar widget.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_modify_base_as_bg@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid GtkWidget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Modify the widget's base background (used by list and text widgets) to look like an ordinary widget background. This is usefull if a list, text or similar widget shouldn't stand out as such, e.g. when the GtkTextView widget displaying a long non-editable text should look similar to a GtkLabel.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_force_bg_clear@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid GtkWidget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Enforce drawing of a widget's background. Some widgets do not explicitely draw their background, but simply draw themsleves on top of their parent's background. This function forces the widget into drawing its background according to its style settings.  
+@DOC-SYNOPSIS@
+@STRONG gxk_signal_handler_pending@ (@EMPH instance@, @EMPH detailed_signal@, @EMPH callback@, @EMPH data@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 30
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ 
+typeraw = gpointer    
+@DOC-PARAMETER@
+instance
+@DOC-PARDESC@
+object instance with signals
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+detailed_signal
+@DOC-PARDESC@
+signal name
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GCallback\ \ \ 
+typeraw = GCallback   
+@DOC-PARAMETER@
+callback
+@DOC-PARDESC@
+custom callback function
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ 
+typeraw = gpointer    
+@DOC-PARAMETER@
+data
+@DOC-PARDESC@
+callback data
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 30
+
+@DOC-RETURNS@
+whether callback is connected
+
+@DOC-DESCRIPTION@
+Find out whether a specific @EMPH callback@ is pending for a specific signal on an instance. @EMPH TRUE@ is returned if the @EMPH callback@ is found, @EMPH FALSE@ otherwise.  

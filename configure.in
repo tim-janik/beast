@@ -16,7 +16,7 @@ AC_PREREQ(2.13)
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=4
-BSE_MICRO_VERSION=1
+BSE_MICRO_VERSION=2
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 AC_DIVERT_POP()dnl
@@ -474,6 +474,7 @@ plugins/freeverb/Makefile
 bsw/Makefile
 bsw-shell/Makefile
 beast-gtk/Makefile
+beast-gtk/gxk/Makefile
 beast-gtk/icons/Makefile
 beast-gtk/images/Makefile
 docs/Makefile

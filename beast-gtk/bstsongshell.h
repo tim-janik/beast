@@ -18,7 +18,6 @@
 #ifndef __BST_SONG_SHELL_H__
 #define __BST_SONG_SHELL_H__
 
-#include	"bstdefs.h"
 #include	"bstsupershell.h"
 #include	"bstparamview.h"
 #include	"bsttrackview.h"

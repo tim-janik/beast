@@ -19,7 +19,7 @@
 #ifndef __BST_GLOBALS_H__
 #define __BST_GLOBALS_H__
 
-#include	"bstdefs.h"
+#include	"bstutils.h"
 
 
 #ifdef __cplusplus

@@ -219,7 +219,7 @@ bst_menu_entries_create (GtkItemFactory *ifactory,
 
       /* fixup Title items */
       if (entry.item_type && strcmp (entry.item_type, "<Title>") == 0)
-	bst_widget_modify_as_title (GTK_BIN (item)->child);
+	gxk_widget_modify_as_title (GTK_BIN (item)->child);
     }
 }
 
@@ -391,7 +391,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 
       if (choice->icon_stock_id)
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item),
-				       bst_image_from_stock (choice->icon_stock_id, BST_SIZE_MENU));
+				       gxk_stock_image (choice->icon_stock_id, BST_SIZE_MENU));
       any = gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
 			    "visible", TRUE,
 			    "label", choice->name,
@@ -400,7 +400,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 			    "xalign", 0.0,
 			    NULL);
       if (choice_type == BST_CHOICE_TYPE_TITLE)
-	bst_widget_modify_as_title (any);
+	gxk_widget_modify_as_title (any);
     }
   free_choice (choice);
 }
