@@ -552,14 +552,15 @@ GTokenType IdlParser::parseParamDefHints (ParamDef &def)
 				  token_as_string = g_strdup_printf ("\"%s\"", x);
 				  g_free (x);
 	  break;
-	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%ld", scanner->value.v_int);
+	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%lu", scanner->value.v_int);
 	  break;
-	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%f", scanner->value.v_float);
+	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%.20g", scanner->value.v_float);
 	  break;
 	case G_TOKEN_IDENTIFIER:  token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
 	  break;
-	default:		  if (!token_as_string)
-				    printError ("implement me, token is %d\n",t);
+	default:
+	  if (!token_as_string)
+	    return GTokenType (')');
 	}
       if (token_as_string && bracelevel)
 	{

@@ -1,3 +1,10 @@
+Thu Oct 10 18:25:40 2002  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc (parseParamDefHints): stringify unsigned longs with %lu (not
+	%ld), stringify doubles with %.20g to preserve precision, handle
+	unexpected tokens by simple returning the expected token so we
+	actually trigger a scanning error.
+
 Wed Oct  9 13:59:00 2002  Stefan Westerfeld <stefan@space.twc.de>
 
 	* sfidl.cc: conceptually changed the way setting up defaults for
