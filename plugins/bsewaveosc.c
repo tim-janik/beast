@@ -29,7 +29,9 @@ enum
 {
   PARAM_0,
   PARAM_WAVE,
-  PARAM_FM_PERC
+  PARAM_FM_PERC,
+  PARAM_FM_EXP,
+  PARAM_FM_OCTAVES
 };
 
 
@@ -97,15 +99,38 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
 			      g_param_spec_object ("wave", "Wave", "Wave to play",
 						   BSE_TYPE_WAVE,
 						   BSE_PARAM_DEFAULT));
-  
+  bse_object_class_add_param (object_class, "Modulation",
+			      PARAM_FM_PERC,
+			      bse_param_spec_float ("fm_perc", "Input Modulation [%]",
+						    "Modulation Strength for linear frequency modulation",
+						    0, 100.0,
+						    10.0, 5.0,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "Modulation",
+			      PARAM_FM_EXP,
+			      bse_param_spec_boolean ("exponential_fm", "Exponential FM",
+						      "Perform exponential frequency modulation"
+						      "instead of linear",
+						      FALSE,
+						      BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Modulation",
+			      PARAM_FM_OCTAVES,
+			      bse_param_spec_float ("fm_n_octaves", "Octaves",
+						    "Number of octaves to be affected by exponential frequency modulation",
+						    0, 3.0,
+						    1.0, 0.5,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_SCALE));
+
   ichannel = bse_source_class_add_ichannel (source_class, "freq_in", "Frequency Input");
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
   ichannel = bse_source_class_add_ichannel (source_class, "sync_in", "Syncronization Input");
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
+  ichannel = bse_source_class_add_ichannel (source_class, "mod_in", "Modulation Input");
+  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
   ochannel = bse_source_class_add_ochannel (source_class, "wave_out", "Wave Output");
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
-  ochannel = bse_source_class_add_ochannel (source_class, "sync_out", "Syncronization Output");
-  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_SYNC);
   ochannel = bse_source_class_add_ochannel (source_class, "gate_out", "Gate Output");
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
 }
@@ -119,9 +144,15 @@ static void
 bse_wave_osc_init (BseWaveOsc *wosc)
 {
   wosc->wave = NULL;
-  wosc->vars.start_offset = 0;
-  wosc->vars.play_dir = 1;
-  wosc->vars.index = NULL;
+  wosc->fm_strength = 10.0;
+  wosc->n_octaves = 1;
+  wosc->config.start_offset = 0;
+  wosc->config.play_dir = +1;
+  wosc->config.wchunk_data = NULL;
+  wosc->config.wchunk_from_freq = NULL;
+  wosc->config.fm_strength = wosc->fm_strength / 100.0;
+  wosc->config.exponential_fm = FALSE;
+  wosc->config.cfreq = 440.;
 }
 
 static void
@@ -152,10 +183,10 @@ wave_uncross (BseItem *owner,
   BseWaveOsc *wosc = BSE_WAVE_OSC (owner);
 
   wosc->wave = NULL;
-  wosc->vars.index = NULL;
-  g_object_notify (G_OBJECT (wosc), "wave");
-
+  wosc->config.wchunk_data = NULL;
+  wosc->config.wchunk_from_freq = NULL;
   bse_wave_osc_update_modules (wosc);
+
   if (BSE_SOURCE_PREPARED (wosc))
     {
       /* need to make sure our modules know about BseWave vanishing
@@ -163,6 +194,7 @@ wave_uncross (BseItem *owner,
        */
       gsl_engine_wait_on_trans ();
     }
+  g_object_notify (G_OBJECT (wosc), "wave");
 }
 
 static void
@@ -181,7 +213,8 @@ bse_wave_osc_set_property (BseWaveOsc  *wosc,
 			       NULL);
 	  bse_item_cross_unref (BSE_ITEM (wosc), BSE_ITEM (wosc->wave));
 	  wosc->wave = NULL;
-	  wosc->vars.index = NULL;
+	  wosc->config.wchunk_data = NULL;
+	  wosc->config.wchunk_from_freq = NULL;
 	}
       wosc->wave = g_value_get_object (value);
       if (wosc->wave)
@@ -191,7 +224,11 @@ bse_wave_osc_set_property (BseWaveOsc  *wosc,
 			    "swapped_signal::notify::name", notify_wave_changed, wosc,
 			    NULL);
 	  if (BSE_SOURCE_PREPARED (wosc))
-	    wosc->vars.index = bse_wave_get_index_for_modules (wosc->wave);
+	    {
+	      wosc->config.wchunk_data = bse_wave_get_index_for_modules (wosc->wave);
+	      if (wosc->config.wchunk_data)
+		wosc->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
+	    }
 	}
       bse_wave_osc_update_modules (wosc);
       if (BSE_SOURCE_PREPARED (wosc))
@@ -200,6 +237,30 @@ bse_wave_osc_set_property (BseWaveOsc  *wosc,
 	   * before we return
 	   */
 	  gsl_engine_wait_on_trans ();
+	}
+      break;
+    case PARAM_FM_PERC:
+      wosc->fm_strength = g_value_get_float (value);
+      if (!wosc->config.exponential_fm)
+	{
+	  wosc->config.fm_strength = wosc->fm_strength / 100.0;
+	  bse_wave_osc_update_modules (wosc);
+	}
+      break;
+    case PARAM_FM_EXP:
+      wosc->config.exponential_fm = g_value_get_boolean (value);
+      if (wosc->config.exponential_fm)
+	wosc->config.fm_strength = wosc->n_octaves;
+      else
+	wosc->config.fm_strength = wosc->fm_strength / 100.0;
+      bse_wave_osc_update_modules (wosc);
+      break;
+    case PARAM_FM_OCTAVES:
+      wosc->n_octaves = g_value_get_float (value);
+      if (wosc->config.exponential_fm)
+	{
+	  wosc->config.fm_strength = wosc->n_octaves;
+	  bse_wave_osc_update_modules (wosc);
 	}
       break;
     default:
@@ -219,6 +280,15 @@ bse_wave_osc_get_property (BseWaveOsc   *wosc,
     case PARAM_WAVE:
       g_value_set_object (value, wosc->wave);
       break;
+    case PARAM_FM_PERC:
+      g_value_set_float (value, wosc->fm_strength);
+      break;
+    case PARAM_FM_EXP:
+      g_value_set_boolean (value, wosc->config.exponential_fm);
+      break;
+    case PARAM_FM_OCTAVES:
+      g_value_set_float (value, wosc->n_octaves);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (wosc, param_id, pspec);
       break;
@@ -228,113 +298,35 @@ bse_wave_osc_get_property (BseWaveOsc   *wosc,
 static void
 bse_wave_osc_prepare (BseSource *source)
 {
-#if 0 // shame, BseWave might not be prepared already, so defer to context_create
   BseWaveOsc *wosc = BSE_WAVE_OSC (source);
 
-  wosc->vars.index = wosc->wave ? bse_wave_get_index_for_modules (wosc->wave) : NULL;
-#endif
+  wosc->config.wchunk_data = bse_wave_get_index_for_modules (wosc->wave);
+  if (wosc->config.wchunk_data)
+    wosc->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
+  else
+    wosc->config.wchunk_from_freq = NULL;
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
-}
-
-#define	ORDER	8	/* <= BSE_MAX_BLOCK_PADDING !! */
-
-typedef struct
-{
-  BseWaveOscVars    vars;
-  gfloat	    play_freq, last_sync_level, last_freq_level;
-  GslWaveChunk     *wchunk;
-  gfloat            zero_padding, part_step;
-  GslWaveChunkBlock block;
-  gfloat           *x;			/* pointer into block */
-  guint             cur_pos, istep;
-  gdouble           a[ORDER + 1];	/* order */
-  gdouble           b[ORDER + 1];	/* reversed order */
-  gdouble           y[ORDER + 1];
-  guint             j;			/* y[] index */
-} WaveOscModule;
-#define FRAC_SHIFT	(16)
-#define FRAC_MASK	((1 << FRAC_SHIFT) - 1)
-
-static inline void
-wmod_set_freq (WaveOscModule *wmod,
-	       gfloat	      play_freq,
-	       gboolean	      change_wave)
-{
-  gfloat step;
-  guint i, istep;
-
-  wmod->play_freq = play_freq;
-  if (!wmod->vars.index)
-    return;
-
-  if (change_wave)
-    {
-      if (wmod->wchunk)
-	gsl_wave_chunk_unuse_block (wmod->wchunk, &wmod->block);
-      wmod->wchunk = bse_wave_index_lookup_best (wmod->vars.index, wmod->play_freq);
-      wmod->zero_padding = 2;
-      wmod->part_step = wmod->zero_padding * wmod->wchunk->mix_freq;
-      wmod->part_step /= wmod->wchunk->osc_freq * BSE_MIX_FREQ_d;
-      g_print ("wave lookup: want=%f got=%f length=%lu\n",
-	       play_freq, wmod->wchunk->osc_freq, wmod->wchunk->wave_length);
-      wmod->block.offset = wmod->vars.start_offset;
-      gsl_wave_chunk_use_block (wmod->wchunk, &wmod->block);
-      // wmod->last_sync_level = 0;
-      // wmod->last_freq_level = 0;
-      wmod->x = wmod->block.start;
-    }
-  step = wmod->part_step * wmod->play_freq;
-  istep = step * (FRAC_MASK + 1.) + 0.5;
-
-  if (istep != wmod->istep)
-    {
-      gfloat nyquist_fact = GSL_PI / 22050., cutoff_freq = 18000, stop_freq = 24000;
-      gfloat filt_fact = CLAMP (1. / step, 1. / (6. * wmod->zero_padding), 1. / wmod->zero_padding);
-      gfloat freq_c = cutoff_freq * nyquist_fact * filt_fact;
-      gfloat freq_r = stop_freq * nyquist_fact * filt_fact;
-
-      wmod->istep = istep;
-      gsl_filter_tscheb2_lp (ORDER, freq_c, freq_r / freq_c, 0.18, wmod->a, wmod->b);
-      for (i = 0; i < ORDER + 1; i++)
-	wmod->a[i] *= wmod->zero_padding;	/* scale to compensate for zero-padding */
-      for (i = 0; i < (ORDER + 1) / 2; i++)	/* reverse bs */
-	{
-	  gfloat t = wmod->b[ORDER - i];
-	  
-	  wmod->b[ORDER - i] = wmod->b[i];
-	  wmod->b[i] = t;
-	}
-      g_print ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wmod->istep);
-    }
 }
 
 static void
 wmod_access (GslModule *module,
 	     gpointer   data)
 {
-  WaveOscModule *wmod = module->user_data;
-  BseWaveOscVars *vars = data;
+  GslWaveOscData *wmod = module->user_data;
+  GslWaveOscConfig *config = data;
 
-  if (wmod->vars.index != vars->index)
-    {
-      if (wmod->wchunk)
-	gsl_wave_chunk_unuse_block (wmod->wchunk, &wmod->block);
-      wmod->wchunk = NULL;
-    }
-  wmod->vars = *vars;
-  wmod_set_freq (wmod, wmod->play_freq, wmod->wchunk == NULL);
+  gsl_wave_osc_config (wmod, config);
 }
 
 static void
 wmod_free (gpointer        data,
 	   const GslClass *klass)
 {
-  WaveOscModule *wmod = data;
+  GslWaveOscData *wmod = data;
 
-  if (wmod->vars.index && wmod->wchunk)
-    gsl_wave_chunk_unuse_block (wmod->wchunk, &wmod->block);
+  gsl_wave_osc_shutdown (wmod);
   g_free (wmod);
 }
 
@@ -345,74 +337,27 @@ bse_wave_osc_update_modules (BseWaveOsc *wosc)
     bse_source_access_omodules (BSE_SOURCE (wosc),
 				BSE_WAVE_OSC_OCHANNEL_WAVE,
 				wmod_access,
-				g_memdup (&wosc->vars, sizeof (wosc->vars)),
+				g_memdup (&wosc->config, sizeof (wosc->config)),
 				g_free,
 				NULL);
 }
-
-#define WMOD_MIX_VARIANT_NAME	wmod_mix_nofreq_nosync
-#define WMOD_MIX_VARIANT	(0)
-#include "bsewaveosc-aux.c"
-#undef  WMOD_MIX_VARIANT
-#undef  WMOD_MIX_VARIANT_NAME
-
-#define WMOD_MIX_VARIANT_NAME	wmod_mix_nofreq_sync
-#define WMOD_MIX_VARIANT	(WMOD_MIX_WITH_SYNC)
-#include "bsewaveosc-aux.c"
-#undef  WMOD_MIX_VARIANT
-#undef  WMOD_MIX_VARIANT_NAME
-
-#define WMOD_MIX_VARIANT_NAME	wmod_mix_freq_nosync
-#define WMOD_MIX_VARIANT	(WMOD_MIX_WITH_FREQ)
-#include "bsewaveosc-aux.c"
-#undef  WMOD_MIX_VARIANT
-#undef  WMOD_MIX_VARIANT_NAME
-
-#define WMOD_MIX_VARIANT_NAME	wmod_mix_freq_sync
-#define WMOD_MIX_VARIANT	(WMOD_MIX_WITH_SYNC | WMOD_MIX_WITH_FREQ)
-#include "bsewaveosc-aux.c"
-#undef  WMOD_MIX_VARIANT
-#undef  WMOD_MIX_VARIANT_NAME
-
 
 static void
 wmod_process (GslModule *module,
 	      guint      n_values)
 {
-  WaveOscModule *wmod = module->user_data;
+  GslWaveOscData *wmod = module->user_data;
+  gfloat gate;
 
-  if (module->istreams[BSE_WAVE_OSC_ICHANNEL_FREQ].connected)
-    {
-      if (module->istreams[BSE_WAVE_OSC_ICHANNEL_SYNC].connected)
-	wmod_mix_freq_sync (module, n_values);
-      else /* nosync */
-	wmod_mix_freq_nosync (module, n_values);
-    }
-  else /* nofreq */
-    {
-      if (module->istreams[BSE_WAVE_OSC_ICHANNEL_SYNC].connected)
-	wmod_mix_nofreq_sync (module, n_values);
-      else /* nosync */
-	wmod_mix_nofreq_nosync (module, n_values);
-    }
+  gsl_wave_osc_process (wmod,
+			n_values,
+			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_FREQ),
+			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_MOD),
+			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_SYNC),
+			GSL_MODULE_OBUFFER (module, BSE_WAVE_OSC_OCHANNEL_WAVE));
 
-  if (wmod->y[0] != 0.0 &&
-      !(fabs (wmod->y[0]) > GSL_SIGNAL_EPSILON && fabs (wmod->y[0]) < GSL_SIGNAL_KAPPA))
-    {
-      guint i;
-
-      g_printerr ("clearing filter state at:\n");
-      for (i = 0; i < ORDER; i++)
-	{
-	  g_printerr ("%u) %+.38f\n", i, wmod->y[i]);
-	  if (GSL_DOUBLE_IS_INF (wmod->y[0]) || fabs (wmod->y[0]) > GSL_SIGNAL_KAPPA)
-	    wmod->y[i] = GSL_DOUBLE_SIGN (wmod->y[0]) ? -1.0 : 1.0;
-	  else
-	    wmod->y[i] = 0.0;
-	}
-    }
-  g_assert (!GSL_DOUBLE_IS_NANINF (wmod->y[0]));
-  g_assert (!GSL_DOUBLE_IS_SUBNORMAL (wmod->y[0]));
+  gate = wmod->done ? 0.0 : 1.0;
+  module->ostreams[BSE_WAVE_OSC_OCHANNEL_GATE].values = gsl_engine_const_values (gate);
 }
 
 static void
@@ -429,20 +374,11 @@ bse_wave_osc_context_create (BseSource *source,
     GSL_COST_NORMAL,		/* cost */
   };
   BseWaveOsc *wosc = BSE_WAVE_OSC (source);
-  WaveOscModule *wmod = g_new0 (WaveOscModule, 1);
+  GslWaveOscData *wmod = g_new0 (GslWaveOscData, 1);
   GslModule *module;
 
-  if (!wosc->vars.index && wosc->wave)	/* BseWave is prepared now */
-    wosc->vars.index = bse_wave_get_index_for_modules (wosc->wave);
-
-  wmod->vars = wosc->vars;
-  wmod->last_sync_level = 0;
-  wmod->last_freq_level = 0;
-  wmod->wchunk = NULL;
-  wmod->play_freq = 0;
-  wmod->block.play_dir = wmod->vars.play_dir;
-  wmod->block.offset = wmod->vars.start_offset;
-  wmod_set_freq (wmod, wmod->play_freq, TRUE);
+  gsl_wave_osc_init (wmod);
+  gsl_wave_osc_config (wmod, &wosc->config);
 
   module = gsl_module_new (&wmod_class, wmod);
 
@@ -461,7 +397,8 @@ bse_wave_osc_reset (BseSource *source)
 {
   BseWaveOsc *wosc = BSE_WAVE_OSC (source);
 
-  wosc->vars.index = NULL;
+  wosc->config.wchunk_data = NULL;
+  wosc->config.wchunk_from_freq = NULL;
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);

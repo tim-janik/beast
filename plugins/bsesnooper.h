@@ -49,6 +49,8 @@ typedef struct _BseSourceClass BseSnooperClass;
 struct _BseSnooper
 {
   BseSource       parent_object;
+
+  volatile guint  active_context_id;
 };
 
 

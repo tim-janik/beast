@@ -1,3 +1,16 @@
+Tue Jan 15 17:38:57 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesnooper.[hc]: deal with multiple incarnations by letting
+	the user specify a context id which identifies the context to
+	snoop on.
+
+Tue Jan 15 17:37:14 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc*.[hc]: stripped GslModule calculation code,
+	use functions from gslwaveosc.h unstead. adapted input/output
+	channels, supports modulation (linear and exponential) now.
+	got rid of bsewaveosc-aux.c.
+
 Sat Jan 12 13:36:12 2002  Tim Janik  <timj@gtk.org>
 
 	* bsewaveosc.[hc]: fixed GslModule channel allocations.

@@ -26,6 +26,7 @@
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 #include <bse/bsewave.h>
+#include <gsl/gslwaveosc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,17 +46,14 @@ extern "C" {
 /* --- BseWaveOsc source --- */
 typedef struct _BseWaveOsc      BseWaveOsc;
 typedef struct _BseWaveOscClass BseWaveOscClass;
-typedef struct {
-  GslLong	 start_offset;
-  gint		 play_dir;
-  BseWaveIndex  *index;
-} BseWaveOscVars;
 struct _BseWaveOsc
 {
-  BseSource      parent_object;
+  BseSource        parent_object;
 
-  BseWave	*wave;
-  BseWaveOscVars vars;
+  BseWave	  *wave;
+  GslWaveOscConfig config;
+  gfloat	   fm_strength;
+  gfloat	   n_octaves;
 };
 struct _BseWaveOscClass
 {
@@ -68,12 +66,12 @@ enum
 {
   BSE_WAVE_OSC_ICHANNEL_FREQ,
   BSE_WAVE_OSC_ICHANNEL_SYNC,
+  BSE_WAVE_OSC_ICHANNEL_MOD,
   BSE_WAVE_OSC_N_ICHANNELS
 };
 enum
 {
   BSE_WAVE_OSC_OCHANNEL_WAVE,
-  BSE_WAVE_OSC_OCHANNEL_SYNC,
   BSE_WAVE_OSC_OCHANNEL_GATE,
   BSE_WAVE_OSC_N_OCHANNELS
 };
