@@ -1,3 +1,8 @@
+Sun Apr 13 23:48:07 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_open): fallback to check
+	/dev/dsp[0-3] if /dev/dsp couldn't be opened.
+
 Fri Apr 11 14:10:07 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-oss.c (bse_midi_device_oss_open): fallback to check

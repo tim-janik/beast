@@ -23,9 +23,7 @@
 #include	<bse/bsepcmdevice.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- object type macros --- */
@@ -53,8 +51,6 @@ struct _BsePcmDeviceOSSClass
 
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_PCM_DEVICE_OSS_H__ */
