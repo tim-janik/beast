@@ -1,3 +1,13 @@
+Wed Dec 31 01:15:19 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
+
+        * configure.in: Detect getpwnam_r and
+        getpwnam functions availability.
+
+Wed Dec 31 01:05:14 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
+
+        * configure.in (AC_BSE_SNDDEV_CHECK): Detect OSS emulation that is
+        not implemented in sys/soundcard.h but in soundcard.h
+
 Tue Dec 30 23:41:03 2003  Tim Janik  <timj@gtk.org>
 
 	* *.c: adapted gxk_nullify_in_object() callers and switched
