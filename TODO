@@ -1,4 +1,5 @@
 FIXMES:
+- implement proper pattern/track/song resizing by means of adding [-] and [+] buttons next to scrollbars
 - make channel blurbs and module names have the same font in router display
 - need midi keyboard demo .bse file to be easily loadable (via demo/ menu)
 - take a look at the cdrecord source for their __dtoa() implementation
