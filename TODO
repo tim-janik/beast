@@ -529,6 +529,7 @@ SCRIPTS:
 - PianoRoll: implement horizontal flip selection script (does need horizontal seleciton boundary markers?)
 - PianoRoll: implement vertical flip selection script (does need vertical seleciton boundary markers?)
 - PatternEditor: transpose script (up and down by semitone, so that we can use an accelerator)
+- TrackRoll: add script to repeat (loop) parts for a number of times in a track. allow repetition of part sequences (P1P2P1P2P1P2...)
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 
