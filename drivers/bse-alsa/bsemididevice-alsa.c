@@ -137,6 +137,16 @@ bse_midi_device_alsa_list_devices (BseDevice *device)
   return ring;
 }
 
+static void
+silent_error_handler (const char *file,
+                      int         line,
+                      const char *function,
+                      int         err,
+                      const char *fmt,
+                      ...)
+{
+}
+
 static BseErrorType
 bse_midi_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -154,9 +164,14 @@ bse_midi_device_alsa_open (BseDevice     *device,
   /* try open */
   gchar *dname = n_args ? g_strjoinv (",", (gchar**) args) : g_strdup ("default");
   if (!aerror)
-    aerror = snd_rawmidi_open (require_readable ? &alsa->read_handle : NULL,
-                               require_writable ? &alsa->write_handle : NULL,
-                               dname, SND_RAWMIDI_NONBLOCK);
+    {
+      snd_lib_error_set_handler (silent_error_handler);
+      aerror = snd_rawmidi_open (require_readable ? &alsa->read_handle : NULL,
+                                 require_writable ? &alsa->write_handle : NULL,
+                                 dname, SND_RAWMIDI_NONBLOCK);
+      snd_lib_error_set_handler (NULL);
+    }
+
   /* try setup */
   BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
   snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);

@@ -161,6 +161,16 @@ bse_pcm_device_alsa_list_devices (BseDevice *device)
   return ring;
 }
 
+static void
+silent_error_handler (const char *file,
+                      int         line,
+                      const char *function,
+                      int         err,
+                      const char *fmt,
+                      ...)
+{
+}
+
 static BseErrorType
 bse_pcm_device_alsa_open (BseDevice     *device,
                           gboolean       require_readable,
@@ -178,10 +188,12 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   alsa->frame_size = handle->n_channels * 2; /* for 16bit samples */
   /* try open */
   gchar *dname = n_args ? g_strjoinv (",", (gchar**) args) : g_strdup ("default");
+  snd_lib_error_set_handler (silent_error_handler);
   if (!aerror && require_readable)
     aerror = snd_pcm_open (&alsa->read_handle, dname, SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
   if (!aerror && require_writable)
     aerror = snd_pcm_open (&alsa->write_handle, dname, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+  snd_lib_error_set_handler (NULL);
   /* try setup */
   const guint period_size = BSE_PCM_DEVICE (device)->req_block_length;
   BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
