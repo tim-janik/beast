@@ -244,11 +244,11 @@ msgstr "エフェクトフォルダにシンセサイザメッシュを保存"
 
 #: beast-gtk/bstapp.c:154
 msgid "Document _Index..."
-msgstr ""
+msgstr "文書索引(_I)..."
 
 #: beast-gtk/bstapp.c:154
 msgid "Provide an overview of all BEAST documentation contents"
-msgstr ""
+msgstr "すべての BEAST 文書内容の概要を提供します"
 
 #: beast-gtk/bstapp.c:156
 #, fuzzy
@@ -270,20 +270,21 @@ msgstr "よくある質問と答え"
 
 #: beast-gtk/bstapp.c:160
 msgid "Online _Help Desk..."
-msgstr ""
+msgstr "オンラインヘルプデスク(_H)..."
 
 #: beast-gtk/bstapp.c:160
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr ""
+"BEAST オンラインヘルプデスクサイトをブラウザで開く"
 
 #: beast-gtk/bstapp.c:162
 msgid "_BEAST Website..."
-msgstr ""
+msgstr "BEAST ウェブ(_B)..."
 
 #: beast-gtk/bstapp.c:162
 msgid "Start a web browser pointing to the BEAST website"
-msgstr ""
+msgstr "BEAST ウェブサイトをブラウザで開く"
 
 #: beast-gtk/bstapp.c:165
 msgid "_Release Notes..."
@@ -295,11 +296,11 @@ msgstr "このリリースサイクルについてのノートと情報"
 
 #: beast-gtk/bstapp.c:167
 msgid "Developing Plugins..."
-msgstr ""
+msgstr "プラグイン開発..."
 
 #: beast-gtk/bstapp.c:167
 msgid "A guide to synthesis plugin development"
-msgstr ""
+msgstr "シンセプラグイン開発のガイド"
 
 #: beast-gtk/bstapp.c:169
 msgid "DSP Engine..."
@@ -310,29 +311,28 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "マルチスレッドシンセエンジン内部の技術的な説明"
 
 #: beast-gtk/bstapp.c:172
-#, fuzzy
 msgid "Development..."
-msgstr "開発"
+msgstr "開発..."
 
 #: beast-gtk/bstapp.c:172
 msgid "Provide an overview of development related topics and documents"
-msgstr ""
+msgstr "開発関連のトピックや文書の概要を提供します"
 
 #: beast-gtk/bstapp.c:176
 msgid "Online Sound Archive..."
-msgstr ""
+msgstr "オンラインサウンドアーカイブ..."
 
 #: beast-gtk/bstapp.c:176
 msgid "Start a web browser pointing to the online sound archive"
-msgstr ""
+msgstr "オンラインサウンドアーカイブをブラウザで開く"
 
 #: beast-gtk/bstapp.c:180
 msgid "Online Demos..."
-msgstr ""
+msgstr "オンラインデモ..."
 
 #: beast-gtk/bstapp.c:180
 msgid "Start a web browser pointing to online demo songs"
-msgstr ""
+msgstr "オンラインデモ曲をブラウザで開く"
 
 #: beast-gtk/bstapp.c:312
 msgid "Export Audio"
@@ -575,14 +575,14 @@ msgstr ""
 "%s"
 
 #: beast-gtk/bstfiledialog.c:537
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Failed to replace file\n"
 "`%s'\n"
 "due to:\n"
 "%s"
 msgstr ""
-"ファイル '%s' の削除に\n"
+"ファイル '%s' の置き換えに\n"
 "失敗しました。\n"
 "理由:\n"
 "%s"
@@ -662,7 +662,7 @@ msgstr "スクロール可能なエリアを広げる"
 #: beast-gtk/bstitemseqdialog.c:159
 #, c-format
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
-msgstr ""
+msgstr "\"%s\"リストから選択して\"%s\"リストへ追加"
 
 #: beast-gtk/bstitemseqdialog.c:162
 #, fuzzy, c-format
@@ -850,44 +850,43 @@ msgstr "貢献した人々:"
 
 #: beast-gtk/bstmsgabsorb.c:226
 msgid "Enable or disable message display of a specific message type"
-msgstr ""
+msgstr "特定のメッセージタイプを表示/非表示"
 
 #: beast-gtk/bstmsgabsorb.c:228
 msgid "Message Type"
-msgstr ""
+msgstr "メッセージタイプ"
 
 #: beast-gtk/bstmsgabsorb.c:231
-#, fuzzy
 msgid "Version"
-msgstr "質問"
+msgstr "バージョン"
 
 #: beast-gtk/bstmsgabsorb.c:232
 msgid "The last program version that displayed this message type"
-msgstr ""
+msgstr "このメッセージタイプを表示した最後のプログラムバージョン"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: beast-gtk/bstparam-automation.c:97
 #, c-format
 msgid "Control Automation: %s"
-msgstr ""
+msgstr "コントロール自動化: %s"
 
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.c:197
 #, c-format
 msgid "%s: automation disabled"
-msgstr ""
+msgstr "%s: 自動化を無効に"
 
 #. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
 #: beast-gtk/bstparam-automation.c:205
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
-msgstr ""
+msgstr "%s: MIDI コントロールからの自動化: %s (MIDI チャネル: %d)"
 
 #. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
 #: beast-gtk/bstparam-automation.c:217
 #, c-format
 msgid "%s: automation from MIDI control: %s"
-msgstr ""
+msgstr "%s: MIDI コントロールからの自動化: %s"
 
 #: beast-gtk/bstparam-automation.c:235
 #, fuzzy
@@ -956,9 +955,8 @@ msgid "Dial"
 msgstr "ダイアル"
 
 #: beast-gtk/bstparam-scale.c:90
-#, fuzzy
 msgid "Dial (Logarithmic)"
-msgstr "ダイアル (対数"
+msgstr "ダイアル (対数)"
 
 #: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
@@ -966,15 +964,15 @@ msgstr "パスを削除"
 
 #: beast-gtk/bstparam-searchpath.c:128
 msgid "Remove directory from searchpath"
-msgstr ""
+msgstr "検索パスからディレクトリを削除"
 
 #: beast-gtk/bstparam-searchpath.c:129
 msgid "Add directory to searchpath"
-msgstr ""
+msgstr "検索パスにディレクトリを追加"
 
 #: beast-gtk/bstparam-searchpath.c:139
 msgid "Open file browser"
-msgstr ""
+msgstr "ファイルブラウザを開く"
 
 #: beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
@@ -1546,7 +1544,7 @@ msgstr "一般キー"
 
 #: beast-gtk/bstpreferences.c:88
 msgid "Messages"
-msgstr ""
+msgstr "メッセージ"
 
 #: beast-gtk/bstpreferences.c:93
 msgid "Skin"
@@ -1724,147 +1722,146 @@ msgid "Down"
 msgstr "下へ"
 
 #: beast-gtk/bstrecords.idl:38
-#, fuzzy
 msgid "Move downwards"
 msgstr "下へ移動"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "2 Value FFT Window"
-msgstr ""
+msgstr "2 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "A 2 value FFT window corresponds to a spectrum with 2 frequency peaks"
-msgstr ""
+msgstr "2 周波数ピークのスペクトルに対する 2 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:43
 msgid "4 Value FFT Window"
-msgstr ""
+msgstr "4 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:43
 msgid "A 4 value FFT window corresponds to a spectrum with 3 frequency peaks"
-msgstr ""
+msgstr "3 周波数ピークのスペクトルに対する 4 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:44
 msgid "8 Value FFT Window"
-msgstr ""
+msgstr "8 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:44
 msgid "A 8 value FFT window corresponds to a spectrum with 5 frequency peaks"
-msgstr ""
+msgstr "5 周波数ピークのスペクトルに対する 8 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "16 Value FFT Window"
-msgstr ""
+msgstr "16 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "A 16 value FFT window corresponds to a spectrum with 9 frequency peaks"
-msgstr ""
+msgstr "9 周波数ピークのスペクトルに対する 16 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:46
 msgid "32 Value FFT Window"
-msgstr ""
+msgstr "32 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:46
 msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
-msgstr ""
+msgstr "17 周波数ピークのスペクトルに対する 32 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "64 Value FFT Window"
-msgstr ""
+msgstr "64 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
-msgstr ""
+msgstr "33 周波数ピークのスペクトルに対する 64 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:48
 msgid "128 Value FFT Window"
-msgstr ""
+msgstr "128 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:48
 msgid ""
 "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
-msgstr ""
+msgstr "65 周波数ピークのスペクトルに対する 128 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "256 Value FFT Window"
-msgstr ""
+msgstr "256 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:49
 msgid ""
 "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
-msgstr ""
+msgstr "129 周波数ピークのスペクトルに対する 256 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:50
 msgid "512 Value FFT Window"
-msgstr ""
+msgstr "512 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:50
 msgid ""
 "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
-msgstr ""
+msgstr "257 周波数ピークのスペクトルに対する 512 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "1024 Value FFT Window"
-msgstr ""
+msgstr "1024 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:51
 msgid ""
 "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
-msgstr ""
+msgstr "513 周波数ピークのスペクトルに対する 1024 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:52
 msgid "2048 Value FFT Window"
-msgstr ""
+msgstr "2048 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:52
 msgid ""
 "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
-msgstr ""
+msgstr "1025 周波数ピークのスペクトルに対する 2048 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:53
 msgid "4096 Value FFT Window"
-msgstr ""
+msgstr "4096 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:53
 msgid ""
 "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
-msgstr ""
+msgstr "2049 周波数ピークのスペクトルに対する 4096 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:54
 msgid "8192 Value FFT Window"
-msgstr ""
+msgstr "8192 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:54
 msgid ""
 "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
-msgstr ""
+msgstr "4097 周波数ピークのスペクトルに対する 8192 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:55
 msgid "16384 Value FFT Window"
-msgstr ""
+msgstr "16384 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:55
 msgid ""
 "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
-msgstr ""
+msgstr "8193 周波数ピークのスペクトルに対する 16384 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:56
 msgid "32768 Value FFT Window"
-msgstr ""
+msgstr "32768 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:56
 msgid ""
 "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
-msgstr ""
+msgstr "16385 周波数ピークのスペクトルに対する 32768 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:57
 msgid "65536 Value FFT Window"
-msgstr ""
+msgstr "65536 値 FFT ウィンドウ"
 
 #: beast-gtk/bstrecords.idl:57
 msgid ""
 "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
-msgstr ""
+msgstr "32769 周波数ピークのスペクトルに対する 65536 値 FFT ウィンドウ"
 
 #. special cased signals
 #: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
@@ -2238,18 +2235,19 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:125
 msgid "Enable scopes"
-msgstr ""
+msgstr "スコープを有効に"
 
 #: beast-gtk/bstrecords.idl:126 beast-gtk/bstrecords.idl:130
 msgid ""
 "Enables or prevents BEAST from periodically updating the scopes. Disabling "
 "may be desirable especially on slow machines."
 msgstr ""
+"スコープの定期的な更新を有効/無効に. 特に遅いマシンでは"
+"これを無効にするのが望ましいでしょう."
 
 #: beast-gtk/bstrecords.idl:129
-#, fuzzy
 msgid "Enable meters"
-msgstr "パラメータ"
+msgstr "メーターを有効に"
 
 #: beast-gtk/bstrecords.idl:138
 msgid "Skin Name"
@@ -2397,41 +2395,39 @@ msgstr "テスト再生"
 #: beast-gtk/bstscrollgraph.c:567 beast-gtk/bstscrollgraph.c:570
 #: beast-gtk/bstscrollgraph.c:573 beast-gtk/bstscrollgraph.c:576
 msgid "Spectrograph"
-msgstr ""
+msgstr "スペクトログラフ"
 
 #: beast-gtk/bstscrollgraph.c:568
 msgid "Flip Spectrum"
-msgstr ""
+msgstr "スペクトラムを反転"
 
 #: beast-gtk/bstscrollgraph.c:568
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
-msgstr ""
+msgstr "高低周波数を交換してスペクトラム表示を反転"
 
 #: beast-gtk/bstscrollgraph.c:571
 msgid "Choose display scrolling direction"
-msgstr ""
+msgstr "表示スクロール方向の選択"
 
 #: beast-gtk/bstscrollgraph.c:574
 msgid "Boost"
-msgstr ""
+msgstr "ブースト"
 
 #: beast-gtk/bstscrollgraph.c:574
 msgid "Adjust frequency level threshold"
-msgstr ""
+msgstr "周波数レベル閾値を調整"
 
 #: beast-gtk/bstscrollgraph.c:577
-#, fuzzy
 msgid "Window Size"
-msgstr "フォントサイズ"
+msgstr "ウィンドウサイズ"
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Adjust FFT window size"
-msgstr ""
+msgstr "FFT ウィンドウサイズを調整"
 
 #: beast-gtk/bstscrollgraph.c:667
-#, fuzzy
 msgid "Unconnected Output Channel"
-msgstr "出力チャネル:"
+msgstr "未接続の出力チャネル"
 
 #: beast-gtk/bstsnetrouter.c:43
 msgid ""
@@ -2518,22 +2514,20 @@ msgid "PCM Input module"
 msgstr "PCM 入力モジュール"
 
 #: beast-gtk/bstsnetrouter.c:1090
-#, fuzzy
 msgid "Oscillator"
-msgstr "発振器波形"
+msgstr "発振器"
 
 #: beast-gtk/bstsnetrouter.c:1090
-#, fuzzy
 msgid "Standard oscillator module"
-msgstr "標準アンプモジュール"
+msgstr "標準発振器モジュール"
 
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "ADSR"
-msgstr ""
+msgstr "ADSR"
 
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "ADSR Envelope Generator"
-msgstr ""
+msgstr "ADSR エンベロープジェネレータ"
 
 #: beast-gtk/bstsnetrouter.c:1092
 msgid "DCA"
@@ -2620,7 +2614,7 @@ msgstr "トラック"
 
 #: beast-gtk/bstsupershell.c:228
 msgid "Tracks contain instrument definitions and parts with notes"
-msgstr ""
+msgstr "インストゥルメント定義とノートパートを含むトラック"
 
 #: beast-gtk/bstsupershell.c:231
 msgid "Mixer"
@@ -2628,12 +2622,11 @@ msgstr "ミキサー"
 
 #: beast-gtk/bstsupershell.c:231
 msgid "Mix track outputs, adjust volume and add effects"
-msgstr ""
+msgstr "トラック出力を mix、音量を調整してエフェクトを加える"
 
 #: beast-gtk/bstsupershell.c:234
-#, fuzzy
 msgid "Adjust overall song behaviour"
-msgstr "プログラム全般の動作を調整"
+msgstr "曲全般の動作を調整"
 
 #: beast-gtk/bstsupershell.c:238
 msgid "Parts"
@@ -2653,12 +2646,11 @@ msgstr "ラック"
 
 #: beast-gtk/bstsupershell.c:263
 msgid "Add, edit and connect synthsizer mesh components"
-msgstr ""
+msgstr "シンセメッシュコンポーネントを追加、編集、接続"
 
 #: beast-gtk/bstsupershell.c:267
-#, fuzzy
 msgid "Adjust overall synthesizer behaviour"
-msgstr "プログラム全般の動作を調整"
+msgstr "シンセ全般の動作を調整"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -2765,7 +2757,6 @@ msgid "Available Waves"
 msgstr "利用可能な波形"
 
 #: beast-gtk/bsttrackview.c:302
-#, fuzzy
 msgid "List of available waves to choose a track instrument from"
 msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
 
@@ -2773,15 +2764,15 @@ msgstr "トラックインスゥルメントとして選択する、利用可能
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
+"演奏中シーケンサは未検証のトラックのノートを無視します"
 
 #: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:973
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "同時再生する最大音声数"
 
 #: beast-gtk/bsttrackview.c:617
-#, fuzzy
 msgid "Synthesis network or wave to be used as instrument by this track"
-msgstr "インストゥルメントとして使うシンセネットワーク"
+msgstr "このトラックでインストゥルメントとして使うシンセネットワーク"
 
 #: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:979
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
@@ -2791,7 +2782,7 @@ msgstr ""
 
 #: beast-gtk/bsttrackview.c:623
 msgid "Mixer busses connected to track output"
-msgstr ""
+msgstr "トラック出力に接続するミキサーバス"
 
 #: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:747
 #: bse/bsetrack.c:984
@@ -2807,9 +2798,8 @@ msgid "Warning"
 msgstr "警告"
 
 #: beast-gtk/bstusermessage.c:103
-#, fuzzy
 msgid "Info"
-msgstr "情報を表示"
+msgstr "情報"
 
 #: beast-gtk/bstusermessage.c:108
 msgid "Miscellaneous Message"
@@ -2817,7 +2807,7 @@ msgstr "その他のメッセージ"
 
 #: beast-gtk/bstusermessage.c:195
 msgid "Details:"
-msgstr ""
+msgstr "詳細:"
 
 #: beast-gtk/bstusermessage.c:202
 #, c-format
@@ -2825,30 +2815,31 @@ msgid "Origin:  %s\n"
 msgstr ""
 
 #: beast-gtk/bstusermessage.c:204
-#, fuzzy, c-format
+#, c-format
 msgid "Process: %s\n"
-msgstr "プロセッサ"
+msgstr "プロセッサ: %s\n"
 
 #: beast-gtk/bstusermessage.c:206
 #, c-format
 msgid "PID:     %u\n"
-msgstr ""
+msgstr "PID:     %u\n"
 
 #: beast-gtk/bstusermessage.c:230
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
 msgstr ""
+"この設定は設定ダイアログの\"メッセージ\"セクションで変更できます"
 
 #: beast-gtk/bstusermessage.c:277
 #, c-format
 msgid "Message has been repeated %u time"
-msgstr ""
+msgstr "メッセージは %u 回繰り返されました"
 
 #: beast-gtk/bstusermessage.c:277
 #, c-format
 msgid "Message has been repeated %u times"
-msgstr ""
+msgstr "メッセージは %u 回繰り返されました"
 
 #: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
 msgid "processing"
@@ -2856,7 +2847,7 @@ msgstr "処理中"
 
 #: beast-gtk/bstutils.c:297 beast-gtk/bstutils.c:319 beast-gtk/bstutils.c:322
 msgid "Updating View"
-msgstr ""
+msgstr "ビューを更新中"
 
 #: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll None"
@@ -3653,50 +3644,44 @@ msgid "Adjustments"
 msgstr "調整"
 
 #: bse/bsebus.c:840
-#, fuzzy
 msgid "Mute"
 msgstr "ミュート"
 
 #: bse/bsebus.c:840
 msgid "Mute: turn off the bus volume"
-msgstr ""
+msgstr "ミュート: バス音量を切る"
 
 #: bse/bsebus.c:842
 msgid "Solo"
-msgstr ""
+msgstr "ソロ"
 
 #: bse/bsebus.c:842
 msgid "Solo: mute all other busses"
-msgstr ""
+msgstr "ソロ: 他のすべてのバスをミュート"
 
 #: bse/bsebus.c:844
-#, fuzzy
 msgid "Sync"
-msgstr "同期入力"
+msgstr "同期"
 
 #: bse/bsebus.c:844
 msgid "Syncronize left and right volume"
-msgstr ""
+msgstr "左右の音量を同期"
 
 #: bse/bsebus.c:846
-#, fuzzy
 msgid "Left Volume"
-msgstr "左音量[dB]"
+msgstr "左音量"
 
 #: bse/bsebus.c:846
-#, fuzzy
 msgid "Volume adjustment in decibel of left bus channel"
-msgstr "左バスチャネルの音量調整"
+msgstr "左バスチャネルの音量調整(dB)"
 
 #: bse/bsebus.c:850
-#, fuzzy
 msgid "Right Volume"
-msgstr "右音量[dB]"
+msgstr "右音量"
 
 #: bse/bsebus.c:850
-#, fuzzy
 msgid "Volume adjustment in decibel of right bus channel"
-msgstr "右バスチャネルの音量調整"
+msgstr "右バスチャネルの音量調整(dB)"
 
 #: bse/bsebus.c:853
 msgid "Signal Inputs"
@@ -3711,23 +3696,20 @@ msgstr "入力信号"
 #. * to be preserved to match the GUI order of displayed objects.
 #.
 #: bse/bsebus.c:860
-#, fuzzy
 msgid "Synthesis signals (from tracks and busses) used as bus input"
-msgstr "バス入力として使うシンセ信号"
+msgstr "バス入力として使う(トラックとバスからの)シンセ信号"
 
 #: bse/bsebus.c:862 bse/bsetrack.c:986
-#, fuzzy
 msgid "Signal Outputs"
-msgstr "信号入力"
+msgstr "信号出力"
 
 #: bse/bsebus.c:864 bse/bsetrack.c:988
-#, fuzzy
 msgid "Output Signals"
-msgstr "入力信号"
+msgstr "出力信号"
 
 #: bse/bsebus.c:865
 msgid "Mixer busses used as output for synthesis signals"
-msgstr ""
+msgstr "シンセ信号の出力として使われるミキサーバス"
 
 #: bse/bsebus.c:868
 msgid "Internals"
@@ -3802,94 +3784,79 @@ msgstr "一定出力%u"
 #. special cased signals
 #: bse/bsecore.idl:63
 msgid "Program Change"
-msgstr ""
+msgstr "プロパティ変更"
 
 #. 7bit
 #: bse/bsecore.idl:64
-#, fuzzy
 msgid "Channel Pressure"
-msgstr "チャネル%u"
+msgstr "チャネル圧力"
 
 #. 7bit
 #: bse/bsecore.idl:65
 msgid "Pitch Bend"
-msgstr ""
+msgstr "ピッチベンド"
 
 #. 14bit
 #: bse/bsecore.idl:66
-#, fuzzy
 msgid "Note Velocity"
-msgstr "ヴェロシティ"
+msgstr "ノートヴェロシティ"
 
 #: bse/bsecore.idl:67
-#, fuzzy
 msgid "Note Fine Tune"
-msgstr "微細調整"
+msgstr "ノート微細調整"
 
 #. 14bit, continuous controls
 #: bse/bsecore.idl:69 bse/bsecore.idl:246
-#, fuzzy
 msgid "Bank Select"
-msgstr "選択"
+msgstr "バンク選択"
 
 #: bse/bsecore.idl:70 bse/bsecore.idl:247
-#, fuzzy
 msgid "Modulation Depth"
-msgstr "変調入力"
+msgstr "変調深度"
 
 #: bse/bsecore.idl:71 bse/bsecore.idl:248
-#, fuzzy
 msgid "Breath Control"
-msgstr "指数コントロール"
+msgstr "ブレスコントロール"
 
 #: bse/bsecore.idl:72 bse/bsecore.idl:249
-#, fuzzy
 msgid "Continuous 3"
-msgstr "内容"
+msgstr ""
 
 #: bse/bsecore.idl:73 bse/bsecore.idl:250
-#, fuzzy
 msgid "Foot Controller"
-msgstr "コントローラ"
+msgstr "フットコントローラ"
 
 #: bse/bsecore.idl:74 bse/bsecore.idl:251
-#, fuzzy
 msgid "Portamento Time"
-msgstr "作成日時"
+msgstr "ポルタメント時間"
 
 #: bse/bsecore.idl:75 bse/bsecore.idl:252
-#, fuzzy
 msgid "Data Entry"
-msgstr "テキストエントリ"
+msgstr "日時エントリ"
 
 #: bse/bsecore.idl:76 bse/bsecore.idl:253
-#, fuzzy
 msgid "Volume"
-msgstr "ベース音量"
+msgstr "音量"
 
 #: bse/bsecore.idl:78 bse/bsecore.idl:255
-#, fuzzy
 msgid "Continuous 9"
-msgstr "内容"
+msgstr ""
 
 #: bse/bsecore.idl:79 bse/bsecore.idl:256
 msgid "Panorama"
-msgstr ""
+msgstr "パノラマ"
 
 #: bse/bsecore.idl:80 bse/bsecore.idl:257
-#, fuzzy
 msgid "Expression"
-msgstr "イプシロン"
+msgstr "表現"
 
 #: bse/bsecore.idl:81 bse/bsecore.idl:258
-#, fuzzy
 msgid "Effect Control 1"
-msgstr "指数コントロール"
+msgstr "エフェクトコントロール 1"
 
 #: bse/bsecore.idl:82 bse/bsecore.idl:259
-#, fuzzy
 msgid "Effect Control 2"
-msgstr "指数コントロール"
+msgstr "エフェクトコントロール 2"
 
 #: bse/bsecore.idl:83 bse/bsecore.idl:260
 msgid "Continuous 14"
@@ -3901,19 +3868,19 @@ msgstr ""
 
 #: bse/bsecore.idl:85 bse/bsecore.idl:262
 msgid "General Purpose Controller 1"
-msgstr ""
+msgstr "汎用コントローラ 1"
 
 #: bse/bsecore.idl:86 bse/bsecore.idl:263
 msgid "General Purpose Controller 2"
-msgstr ""
+msgstr "汎用コントローラ 2"
 
 #: bse/bsecore.idl:87 bse/bsecore.idl:264
 msgid "General Purpose Controller 3"
-msgstr ""
+msgstr "汎用コントローラ 3"
 
 #: bse/bsecore.idl:88 bse/bsecore.idl:265
 msgid "General Purpose Controller 4"
-msgstr ""
+msgstr "汎用コントローラ 4"
 
 #: bse/bsecore.idl:89 bse/bsecore.idl:266
 msgid "Continuous 20"
@@ -3966,16 +3933,15 @@ msgstr ""
 #. 14bit, special cased signals
 #: bse/bsecore.idl:102
 msgid "Constant HIGH"
-msgstr ""
+msgstr "一定(高)"
 
 #: bse/bsecore.idl:103
 msgid "Constant CENTER"
-msgstr ""
+msgstr "一定(中)"
 
 #: bse/bsecore.idl:104
-#, fuzzy
 msgid "Constant LOW"
-msgstr "一定出力 %u"
+msgstr "一定(低)"
 
 #: bse/bsecore.idl:105
 msgid "Constant Negative CENTER"
@@ -3986,578 +3952,531 @@ msgid "Constant Negative HIGH"
 msgstr ""
 
 #: bse/bsecore.idl:107
-#, fuzzy
 msgid "Registered Parameter"
-msgstr "パラメータ"
+msgstr "登録されたパラメータ"
 
 #: bse/bsecore.idl:108
 msgid "Non-Registered Parameter"
-msgstr ""
+msgstr "未登録のパラメータ"
 
 #. 7bit, literal channel controls, MSB values
 #: bse/bsecore.idl:110 bse/bsecore.idl:279
 msgid "Control 0 Bank Select MSB"
-msgstr ""
+msgstr "コントロール 0 バンク選択 MSB"
 
 #: bse/bsecore.idl:111 bse/bsecore.idl:280
 msgid "Control 1 Modulation Depth MSB"
-msgstr ""
+msgstr "コントロール 1 変調深度 MSB"
 
 #: bse/bsecore.idl:112 bse/bsecore.idl:281
 msgid "Control 2 Breath Control MSB"
-msgstr ""
+msgstr "コントロール 2 ブレスコントロール MSB"
 
 #: bse/bsecore.idl:113 bse/bsecore.idl:282
-#, fuzzy
 msgid "control-3"
-msgstr "コントローラ"
+msgstr "コントローラ 3"
 
 #: bse/bsecore.idl:114 bse/bsecore.idl:283
 msgid "Control 4 Foot Controller MSB"
-msgstr ""
+msgstr "コントロール 4 フットコントローラ MSB"
 
 #: bse/bsecore.idl:115 bse/bsecore.idl:284
 msgid "Control 5 Portamento Time MSB"
-msgstr ""
+msgstr "コントロール 5 ポルタメント時間 MSB"
 
 #: bse/bsecore.idl:116 bse/bsecore.idl:285
 msgid "Control 6 Data Entry MSB"
-msgstr ""
+msgstr "コントロール 6 データエントリ MSB"
 
 #: bse/bsecore.idl:117 bse/bsecore.idl:286
-#, fuzzy
 msgid "Control 7 Volume MSB"
-msgstr "コントローラ"
+msgstr "コントロール 7 音量 MSB"
 
 #: bse/bsecore.idl:118 bse/bsecore.idl:287
 msgid "Control 8 Balance MSB"
-msgstr ""
+msgstr "コントロール 8 バランス MSB"
 
 #: bse/bsecore.idl:119 bse/bsecore.idl:288
-#, fuzzy
 msgid "control-9"
-msgstr "コントローラ"
+msgstr "コントロール 9"
 
 #: bse/bsecore.idl:120 bse/bsecore.idl:289
 msgid "Control 10 Panorama MSB"
-msgstr ""
+msgstr "コントロール 10 パノラマ MSB"
 
 #: bse/bsecore.idl:121 bse/bsecore.idl:290
 msgid "Control 11 Expression MSB"
-msgstr ""
+msgstr "コントロール 11 エクスプレッション MSB"
 
 #: bse/bsecore.idl:122 bse/bsecore.idl:291
 msgid "Control 12 Effect Control 1 MSB"
-msgstr ""
+msgstr "コントロール 12 エフェクトコントロール 1 MSB"
 
 #: bse/bsecore.idl:123 bse/bsecore.idl:292
 msgid "Control 13 Effect Control 2 MSB"
-msgstr ""
+msgstr "コントロール 13 エフェクトコントロール 2 MSB"
 
 #: bse/bsecore.idl:124 bse/bsecore.idl:293
-#, fuzzy
 msgid "control-14"
-msgstr "コントローラ"
+msgstr "コントロール 14"
 
 #: bse/bsecore.idl:125 bse/bsecore.idl:294
-#, fuzzy
 msgid "control-15"
-msgstr "コントローラ"
+msgstr "コントロール 14"
 
 #: bse/bsecore.idl:126 bse/bsecore.idl:295
 msgid "Control 16 General Purpose Controller 1 MSB"
-msgstr ""
+msgstr "コントロール 16 汎用コントローラ 1 MSB"
 
 #: bse/bsecore.idl:127 bse/bsecore.idl:296
 msgid "Control 17 General Purpose Controller 2 MSB"
-msgstr ""
+msgstr "コントロール 17 汎用コントローラ 2 MSB"
 
 #: bse/bsecore.idl:128 bse/bsecore.idl:297
 msgid "Control 18 General Purpose Controller 3 MSB"
-msgstr ""
+msgstr "コントロール 18 汎用コントローラ 3 MSB"
 
 #: bse/bsecore.idl:129 bse/bsecore.idl:298
 msgid "Control 19 General Purpose Controller 4 MSB"
-msgstr ""
+msgstr "コントロール 19 汎用コントローラ 4 MSB"
 
 #: bse/bsecore.idl:130 bse/bsecore.idl:299
-#, fuzzy
 msgid "control-20"
-msgstr "コントローラ"
+msgstr "コントロール 20"
 
 #: bse/bsecore.idl:131 bse/bsecore.idl:300
-#, fuzzy
 msgid "control-21"
-msgstr "コントローラ"
+msgstr "コントロール 21"
 
 #: bse/bsecore.idl:132 bse/bsecore.idl:301
-#, fuzzy
 msgid "control-22"
-msgstr "コントローラ"
+msgstr "コントロール 22"
 
 #: bse/bsecore.idl:133 bse/bsecore.idl:302
-#, fuzzy
 msgid "control-23"
-msgstr "コントローラ"
+msgstr "コントロール 23"
 
 #: bse/bsecore.idl:134 bse/bsecore.idl:303
-#, fuzzy
 msgid "control-24"
-msgstr "コントローラ"
+msgstr "コントロール 24"
 
 #: bse/bsecore.idl:135 bse/bsecore.idl:304
-#, fuzzy
 msgid "control-25"
-msgstr "コントローラ"
+msgstr "コントロール 25"
 
 #: bse/bsecore.idl:136 bse/bsecore.idl:305
-#, fuzzy
 msgid "control-26"
-msgstr "コントローラ"
+msgstr "コントロール 26"
 
 #: bse/bsecore.idl:137 bse/bsecore.idl:306
-#, fuzzy
 msgid "control-27"
-msgstr "コントローラ"
+msgstr "コントロール 27"
 
 #: bse/bsecore.idl:138 bse/bsecore.idl:307
-#, fuzzy
 msgid "control-28"
-msgstr "コントローラ"
+msgstr "コントロール 28"
 
 #: bse/bsecore.idl:139 bse/bsecore.idl:308
-#, fuzzy
 msgid "control-29"
-msgstr "コントローラ"
+msgstr "コントロール 29"
 
 #: bse/bsecore.idl:140 bse/bsecore.idl:309
-#, fuzzy
 msgid "control-30"
-msgstr "コントローラ"
+msgstr "コントロール 30"
 
 #: bse/bsecore.idl:141 bse/bsecore.idl:310
-#, fuzzy
 msgid "control-31"
-msgstr "コントローラ"
+msgstr "コントロール 31"
 
 #. 7bit, literal channel controls, LSB values
 #: bse/bsecore.idl:143 bse/bsecore.idl:312
 msgid "Control 32 Bank Select LSB"
-msgstr ""
+msgstr "コントロール 32 バンク選択 LSB"
 
 #: bse/bsecore.idl:144 bse/bsecore.idl:313
 msgid "Control 33 Modulation Depth LSB"
-msgstr ""
+msgstr "コントロール 33 変調深度 LSB"
 
 #: bse/bsecore.idl:145 bse/bsecore.idl:314
 msgid "Control 34 Breath Control LSB"
-msgstr ""
+msgstr "コントロール 34 ブレスコントロール LSB"
 
 #: bse/bsecore.idl:146 bse/bsecore.idl:315
-#, fuzzy
 msgid "control-35"
-msgstr "コントローラ"
+msgstr "コントロール 35"
 
 #: bse/bsecore.idl:147 bse/bsecore.idl:316
 msgid "Control 36 Foot Controller LSB"
-msgstr ""
+msgstr "コントロール 36 フットコントローラ LSB"
 
 #: bse/bsecore.idl:148 bse/bsecore.idl:317
 msgid "Control 37 Portamento Time LSB"
-msgstr ""
+msgstr "コントロール 37 ポルタメント時間 LSB"
 
 #: bse/bsecore.idl:149 bse/bsecore.idl:318
 msgid "Control 38 Data Entry LSB"
-msgstr ""
+msgstr "コントロール 38 データエントリ LSB"
 
 #: bse/bsecore.idl:150 bse/bsecore.idl:319
 msgid "Control 39 Volume LSB"
-msgstr ""
+msgstr "コントロール 39 音量 LSB"
 
 #: bse/bsecore.idl:151 bse/bsecore.idl:320
 msgid "Control 40 Balance LSB"
-msgstr ""
+msgstr "コントロール 40 バランス LSB"
 
 #: bse/bsecore.idl:152 bse/bsecore.idl:321
-#, fuzzy
 msgid "control-41"
-msgstr "コントローラ"
+msgstr "コントロール 41"
 
 #: bse/bsecore.idl:153 bse/bsecore.idl:322
 msgid "Control 42 Panorama LSB"
-msgstr ""
+msgstr "コントロール 42 パノラマ LSB"
 
 #: bse/bsecore.idl:154 bse/bsecore.idl:323
 msgid "Control 43 Expression LSB"
-msgstr ""
+msgstr "コントロール 43 エクスプレッション LSB"
 
 #: bse/bsecore.idl:155 bse/bsecore.idl:324
 msgid "Control 44 Effect Control 1 LSB"
-msgstr ""
+msgstr "コントロール 44 エフェクトコントロール 1 LSB"
 
 #: bse/bsecore.idl:156 bse/bsecore.idl:325
 msgid "Control 45 Effect Control 2 LSB"
-msgstr ""
+msgstr "コントロール 45 エフェクトコントロール 2 LSB"
 
 #: bse/bsecore.idl:157 bse/bsecore.idl:326
-#, fuzzy
 msgid "control-46"
-msgstr "コントローラ"
+msgstr "コントロール 46"
 
 #: bse/bsecore.idl:158 bse/bsecore.idl:327
-#, fuzzy
 msgid "control-47"
-msgstr "コントローラ"
+msgstr "コントロール 47"
 
 #: bse/bsecore.idl:159 bse/bsecore.idl:328
 msgid "Control 48 General Purpose Controller 1 LSB"
-msgstr ""
+msgstr "コントロール 48 汎用コントローラ 1 LSB"
 
 #: bse/bsecore.idl:160 bse/bsecore.idl:329
 msgid "Control 49 General Purpose Controller 2 LSB"
-msgstr ""
+msgstr "コントロール 49 汎用コントローラ 2 LSB"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:330
 msgid "Control 50 General Purpose Controller 3 LSB"
-msgstr ""
+msgstr "コントロール 50 汎用コントローラ 3 LSB"
 
 #: bse/bsecore.idl:162 bse/bsecore.idl:331
 msgid "Control 51 General Purpose Controller 4 LSB"
-msgstr ""
+msgstr "コントロール 51 汎用コントローラ 4 LSB"
 
 #: bse/bsecore.idl:163 bse/bsecore.idl:332
-#, fuzzy
 msgid "control-52"
-msgstr "コントローラ"
+msgstr "コントロール 52"
 
 #: bse/bsecore.idl:164 bse/bsecore.idl:333
-#, fuzzy
 msgid "control-53"
-msgstr "コントローラ"
+msgstr "コントロール 53"
 
 #: bse/bsecore.idl:165 bse/bsecore.idl:334
-#, fuzzy
 msgid "control-54"
-msgstr "コントローラ"
+msgstr "コントロール 54"
 
 #: bse/bsecore.idl:166 bse/bsecore.idl:335
-#, fuzzy
 msgid "control-55"
-msgstr "コントローラ"
+msgstr "コントロール 55"
 
 #: bse/bsecore.idl:167 bse/bsecore.idl:336
-#, fuzzy
 msgid "control-56"
-msgstr "コントローラ"
+msgstr "コントロール 56"
 
 #: bse/bsecore.idl:168 bse/bsecore.idl:337
-#, fuzzy
 msgid "control-57"
-msgstr "コントローラ"
+msgstr "コントロール 57"
 
 #: bse/bsecore.idl:169 bse/bsecore.idl:338
-#, fuzzy
 msgid "control-58"
-msgstr "コントローラ"
+msgstr "コントロール 58"
 
 #: bse/bsecore.idl:170 bse/bsecore.idl:339
-#, fuzzy
 msgid "control-59"
-msgstr "コントローラ"
+msgstr "コントロール 59"
 
 #: bse/bsecore.idl:171 bse/bsecore.idl:340
-#, fuzzy
 msgid "control-60"
-msgstr "コントローラ"
+msgstr "コントロール 60"
 
 #: bse/bsecore.idl:172 bse/bsecore.idl:341
-#, fuzzy
 msgid "control-61"
-msgstr "コントローラ"
+msgstr "コントロール 61"
 
 #: bse/bsecore.idl:173 bse/bsecore.idl:342
-#, fuzzy
 msgid "control-62"
-msgstr "コントローラ"
+msgstr "コントロール 62"
 
 #: bse/bsecore.idl:174 bse/bsecore.idl:343
-#, fuzzy
 msgid "control-63"
-msgstr "コントローラ"
+msgstr "コントロール 63"
 
 #. 7bit, literal channel controls
 #: bse/bsecore.idl:176 bse/bsecore.idl:345
 msgid "Control 64 Damper Pedal Switch (Sustain)"
-msgstr ""
+msgstr "コントロール 64 ダンパーペダルスウィッチ(サスティン)"
 
 #: bse/bsecore.idl:177 bse/bsecore.idl:346
 msgid "Control 65 Portamento Switch"
-msgstr ""
+msgstr "コントロール 65 ポルタメントスウィッチ"
 
 #: bse/bsecore.idl:178 bse/bsecore.idl:347
-#, fuzzy
 msgid "Control 66 Sustenuto Switch"
-msgstr "コントロールの強さ"
+msgstr "コントロール 66 サスティヌートスウィッチ"
 
 #: bse/bsecore.idl:179 bse/bsecore.idl:348
-#, fuzzy
 msgid "Control 67 Soft Switch"
-msgstr "コントロールの強さ"
+msgstr "コントロール 67 ソフトスウィッチ"
 
 #: bse/bsecore.idl:180 bse/bsecore.idl:349
 msgid "Control 68 Legato Pedal Switch"
-msgstr ""
+msgstr "コントロール 68 レガートペダルスウィッチ"
 
 #: bse/bsecore.idl:181 bse/bsecore.idl:350
 msgid "Control 69 Hold Pedal Switch"
-msgstr ""
+msgstr "コントロール 69 ホールドペダルスウィッチ"
 
 #: bse/bsecore.idl:182 bse/bsecore.idl:351
 msgid "Control 70 Sound Variation"
-msgstr ""
+msgstr "コントロール 70 サウンドバリエーション"
 
 #: bse/bsecore.idl:183 bse/bsecore.idl:352
 msgid "Control 71 Filter Resonance (Timbre)"
-msgstr ""
+msgstr "コントロール 71 フィルターレゾナンス (音色)"
 
 #: bse/bsecore.idl:184 bse/bsecore.idl:353
 msgid "Control 72 Sound Release Time"
-msgstr ""
+msgstr "コントロール 72 サウンドリリース時間"
 
 #: bse/bsecore.idl:185 bse/bsecore.idl:354
 msgid "Control 73 Sound Attack Time"
-msgstr ""
+msgstr "コントロール 73 サウンドアタック時間"
 
 #: bse/bsecore.idl:186 bse/bsecore.idl:355
 msgid "Control 74 Sound Brightness"
-msgstr ""
+msgstr "コントロール 74 サウンド明度"
 
 #: bse/bsecore.idl:187 bse/bsecore.idl:356
 msgid "Control 75 Sound Decay Time"
-msgstr ""
+msgstr "コントロール 75 サウンドディケイ時間"
 
 #: bse/bsecore.idl:188 bse/bsecore.idl:357
 msgid "Control 76 Vibrato Rate"
-msgstr ""
+msgstr "コントロール 76 バイブレート比率"
 
 #: bse/bsecore.idl:189 bse/bsecore.idl:358
-#, fuzzy
 msgid "Control 77 Vibrato Depth"
-msgstr "コントロールの強さ"
+msgstr "コントロール 77 バイブレート深度"
 
 #: bse/bsecore.idl:190 bse/bsecore.idl:359
 msgid "Control 78 Vibrato Delay"
-msgstr ""
+msgstr "コントロール 78 バイブレートディレイ"
 
 #: bse/bsecore.idl:191 bse/bsecore.idl:360
 msgid "Control 79 Sound Control 10"
-msgstr ""
+msgstr "コントロール 79 サウンドコントロール 10"
 
 #: bse/bsecore.idl:192 bse/bsecore.idl:361
 msgid "Control 80 General Purpose Switch 5"
-msgstr ""
+msgstr "コントロール 80 汎用スウィッチ 5"
 
 #: bse/bsecore.idl:193 bse/bsecore.idl:362
 msgid "Control 81 General Purpose Switch 6"
-msgstr ""
+msgstr "コントロール 81 汎用スウィッチ 6"
 
 #: bse/bsecore.idl:194 bse/bsecore.idl:363
 msgid "Control 82 General Purpose Switch 7"
-msgstr ""
+msgstr "コントロール 82 汎用スウィッチ 7"
 
 #: bse/bsecore.idl:195 bse/bsecore.idl:364
 msgid "Control 83 General Purpose Switch 8"
-msgstr ""
+msgstr "コントロール 83 汎用スウィッチ 8"
 
 #: bse/bsecore.idl:196 bse/bsecore.idl:365
 msgid "Control 84 Portamento Control (Note)"
-msgstr ""
+msgstr "コントロール 84 ポルタメントコントロール (ノート)"
 
 #: bse/bsecore.idl:197 bse/bsecore.idl:366
-#, fuzzy
 msgid "control-85"
-msgstr "コントローラ"
+msgstr "コントロール 85"
 
 #: bse/bsecore.idl:198 bse/bsecore.idl:367
-#, fuzzy
 msgid "control-86"
-msgstr "コントローラ"
+msgstr "コントロール 86"
 
 #: bse/bsecore.idl:199 bse/bsecore.idl:368
-#, fuzzy
 msgid "control-87"
-msgstr "コントローラ"
+msgstr "コントロール 87"
 
 #: bse/bsecore.idl:200 bse/bsecore.idl:369
-#, fuzzy
 msgid "control-88"
-msgstr "コントローラ"
+msgstr "コントロール 88"
 
 #: bse/bsecore.idl:201 bse/bsecore.idl:370
-#, fuzzy
 msgid "control-89"
-msgstr "コントローラ"
+msgstr "コントロール 89"
 
 #: bse/bsecore.idl:202 bse/bsecore.idl:371
-#, fuzzy
 msgid "control-90"
-msgstr "コントローラ"
+msgstr "コントロール 90"
 
 #: bse/bsecore.idl:203 bse/bsecore.idl:372
-#, fuzzy
 msgid "Control 91 Reverb Depth"
-msgstr "コントロールの強さ"
+msgstr "コントロール 91 リバーブ深度"
 
 #: bse/bsecore.idl:204 bse/bsecore.idl:373
-#, fuzzy
 msgid "Control 92 Tremolo Depth"
-msgstr "コントロールの強さ"
+msgstr "コントロール 92 トレモロ深度"
 
 #: bse/bsecore.idl:205 bse/bsecore.idl:374
-#, fuzzy
 msgid "Control 93 Chorus Depth"
-msgstr "コントロールの強さ"
+msgstr "コントロール 93 コーラス深度"
 
 #: bse/bsecore.idl:206 bse/bsecore.idl:375
-#, fuzzy
 msgid "Control 93 Detune Depth"
-msgstr "コントロールの強さ"
+msgstr "コントロール 93 デチューン深度"
 
 #: bse/bsecore.idl:207 bse/bsecore.idl:376
 msgid "Control 95 Phase Depth"
-msgstr ""
+msgstr "コントロール 95 位相深度"
 
 #: bse/bsecore.idl:208 bse/bsecore.idl:377
 msgid "Control 96 Data Increment Trigger"
-msgstr ""
+msgstr "コントロール 96 データ増分トリガー"
 
 #: bse/bsecore.idl:209 bse/bsecore.idl:378
 msgid "Control 97 Data Decrement Trigger"
-msgstr ""
+msgstr "コントロール 97 データ減分トリガー"
 
 #: bse/bsecore.idl:210 bse/bsecore.idl:379
 msgid "Control 98 Non-Registered Parameter MSB"
-msgstr ""
+msgstr "コントロール 98 未登録のパラメータ MSB"
 
 #: bse/bsecore.idl:211 bse/bsecore.idl:380
 msgid "Control 99 Non-Registered Parameter LSB"
-msgstr ""
+msgstr "コントロール 99 未登録のパラメータ LSB"
 
 #: bse/bsecore.idl:212 bse/bsecore.idl:381
 msgid "Control 100 Registered Parameter MSB"
-msgstr ""
+msgstr "コントロール 100 登録済みのパラメータ MSB"
 
 #: bse/bsecore.idl:213 bse/bsecore.idl:382
 msgid "Control 101 Registered Parameter LSB"
-msgstr ""
+msgstr "コントロール 101 登録済みのパラメータ LSB"
 
 #: bse/bsecore.idl:214 bse/bsecore.idl:383
 msgid "control-102"
-msgstr ""
+msgstr "コントロール 102"
 
 #: bse/bsecore.idl:215 bse/bsecore.idl:384
 msgid "control-103"
-msgstr ""
+msgstr "コントロール 103"
 
 #: bse/bsecore.idl:216 bse/bsecore.idl:385
 msgid "control-104"
-msgstr ""
+msgstr "コントロール 104"
 
 #: bse/bsecore.idl:217 bse/bsecore.idl:386
 msgid "control-105"
-msgstr ""
+msgstr "コントロール 105"
 
 #: bse/bsecore.idl:218 bse/bsecore.idl:387
 msgid "control-106"
-msgstr ""
+msgstr "コントロール 106"
 
 #: bse/bsecore.idl:219 bse/bsecore.idl:388
 msgid "control-107"
-msgstr ""
+msgstr "コントロール 107"
 
 #: bse/bsecore.idl:220 bse/bsecore.idl:389
 msgid "control-108"
-msgstr ""
+msgstr "コントロール 108"
 
 #: bse/bsecore.idl:221 bse/bsecore.idl:390
 msgid "control-109"
-msgstr ""
+msgstr "コントロール 109"
 
 #: bse/bsecore.idl:222 bse/bsecore.idl:391
 msgid "control-110"
-msgstr ""
+msgstr "コントロール 110"
 
 #: bse/bsecore.idl:223 bse/bsecore.idl:392
 msgid "control-111"
-msgstr ""
+msgstr "コントロール 111"
 
 #: bse/bsecore.idl:224 bse/bsecore.idl:393
 msgid "control-112"
-msgstr ""
+msgstr "コントロール 112"
 
 #: bse/bsecore.idl:225 bse/bsecore.idl:394
 msgid "control-113"
-msgstr ""
+msgstr "コントロール 113"
 
 #: bse/bsecore.idl:226 bse/bsecore.idl:395
 msgid "control-114"
-msgstr ""
+msgstr "コントロール 114"
 
 #: bse/bsecore.idl:227 bse/bsecore.idl:396
 msgid "control-115"
-msgstr ""
+msgstr "コントロール 115"
 
 #: bse/bsecore.idl:228 bse/bsecore.idl:397
 msgid "control-116"
-msgstr ""
+msgstr "コントロール 116"
 
 #: bse/bsecore.idl:229 bse/bsecore.idl:398
 msgid "control-117"
-msgstr ""
+msgstr "コントロール 117"
 
 #: bse/bsecore.idl:230 bse/bsecore.idl:399
 msgid "control-118"
-msgstr ""
+msgstr "コントロール 118"
 
 #: bse/bsecore.idl:231 bse/bsecore.idl:400
 msgid "control-119"
-msgstr ""
+msgstr "コントロール 119"
 
 #: bse/bsecore.idl:232 bse/bsecore.idl:401
 msgid "Control 120 All Sound Off ITrigger"
-msgstr ""
+msgstr "コントロール 120 全サウンドオフ ITrigger"
 
 #: bse/bsecore.idl:233 bse/bsecore.idl:402
 msgid "Control 121 All Controllers Off ITrigger"
-msgstr ""
+msgstr "コントロール 121 全コントローラオフ ITrigger"
 
 #: bse/bsecore.idl:234 bse/bsecore.idl:403
 msgid "Control 122 Local Control Switch"
-msgstr ""
+msgstr "コントロール 122 ローカルコントロールスウィッチ"
 
 #: bse/bsecore.idl:235 bse/bsecore.idl:404
 msgid "Control 123 All Notes Off ITrigger"
-msgstr ""
+msgstr "コントロール 123 全ノートオフ ITrigger"
 
 #: bse/bsecore.idl:236 bse/bsecore.idl:405
 msgid "Control 124 Omni Mode Off ITrigger"
-msgstr ""
+msgstr "コントロール 124 オムニモードオフ ITrigger"
 
 #: bse/bsecore.idl:237 bse/bsecore.idl:406
 msgid "Control 125 Omni Mode On ITrigger"
-msgstr ""
+msgstr "コントロール 125 オムニモードオン ITrigger"
 
 #: bse/bsecore.idl:238 bse/bsecore.idl:407
 msgid "Control 126 Monophonic Voices Mode"
-msgstr ""
+msgstr "コントロール 126 モノラル音声モード"
 
 #: bse/bsecore.idl:239 bse/bsecore.idl:408
 msgid "Control 127 Polyphonic Mode On ITrigger"
-msgstr ""
+msgstr "コントロール 127 多声モードオン ITrigger"
 
 #: bse/bsecore.idl:246
 msgid "Continuous MIDI Control #1 - Bank Select"
-msgstr ""
+msgstr "連続 MIDI コントロール #1 - バンク選択"
 
 #: bse/bsecore.idl:596
 msgid "State"
@@ -4628,25 +4547,23 @@ msgid "The CPU time spent in the system for children of this thread"
 msgstr "スレッドの子についてシステムが要した CPU 時間"
 
 #: bse/bsecore.idl:625
-#, fuzzy
 msgid "Search Paths"
-msgstr "パラサイトパス"
+msgstr "検索パス"
 
 #: bse/bsecore.idl:626
-#, fuzzy
 msgid "Sample Path"
-msgstr "パスを削除"
+msgstr "サンプルパス"
 
 #: bse/bsecore.idl:627
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
+"音声サンプルをみつけるための \"%s\" で区切られたディレクトリの検索パス"
 
 #: bse/bsecore.idl:630
-#, fuzzy
 msgid "Effect Path"
-msgstr "パートを編集"
+msgstr "エフェクトパス"
 
 #: bse/bsecore.idl:631
 #, c-format
@@ -4654,11 +4571,11 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
 "files."
 msgstr ""
+"BSE エフェクトファイルをみつけるための \"%s\" で区切られたディレクトリの検索パス"
 
 #: bse/bsecore.idl:634
-#, fuzzy
 msgid "Instrument Path"
-msgstr "パートを挿入"
+msgstr "インストゥルメントパス"
 
 #: bse/bsecore.idl:635
 #, c-format
@@ -4666,11 +4583,12 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
 "files."
 msgstr ""
+"BSE インストゥルメントファイルをみつけるための \"%s\" で区切られた"
+"ディレクトリの検索パス"
 
 #: bse/bsecore.idl:638
-#, fuzzy
 msgid "Script Path"
-msgstr "スクリプト"
+msgstr "スクリプトパス"
 
 #: bse/bsecore.idl:639
 #, c-format
@@ -4678,11 +4596,12 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
 "scripts."
 msgstr ""
+"BSE スキームスクリプトをみつけるための \"%s\" で区切られた"
+"ディレクトリの検索パス"
 
 #: bse/bsecore.idl:642
-#, fuzzy
 msgid "Plugin Path"
-msgstr "プラグイン"
+msgstr "プラグインパス"
 
 #: bse/bsecore.idl:643
 #, c-format
@@ -4691,11 +4610,12 @@ msgid ""
 "This path is searched for in addition to the standard BSE plugin location on "
 "this system."
 msgstr ""
+"BSE プラグインをみつけるための \"%s\" で区切られたディレクトリの検索パス"
+"システムの標準 BSE プラグイン配置場所に加えてこのパスも検索されます"
 
 #: bse/bsecore.idl:647
-#, fuzzy
 msgid "LADSPA Path"
-msgstr "LADSPA(_L)"
+msgstr "LADSPA パス"
 
 #: bse/bsecore.idl:648
 #, c-format
@@ -4706,11 +4626,14 @@ msgid ""
 "API, more informations about LADSPA plugins can be found at http://www."
 "ladspa.org/."
 msgstr ""
+"LADSPA プラグインをみつけるための \"%s\" で区切られたディレクトリの検索パス"
+"システムの標準 LADSPA プラグイン配置場所に加えてこのパスも検索されます。"
+"LADSPA は Linux Audio Developer's Simple Plugin API の略ですが、"
+"LADSPA プラグインについての詳細な情報は http://www.ladspa.org/ にあります"
 
 #: bse/bsecore.idl:654
-#, fuzzy
 msgid "Synthesis Settings"
-msgstr "シンセモジュール"
+msgstr "シンセ設定"
 
 #: bse/bsecore.idl:655
 msgid "Latency [ms]"
@@ -4745,40 +4668,37 @@ msgstr ""
 "波数よりずっと小さくするべきです。"
 
 #: bse/bsecore.idl:666
-#, fuzzy
 msgid "MIDI"
-msgstr "ID"
+msgstr "MIDI"
 
 #: bse/bsecore.idl:667
 msgid "Invert Sustain Pedal"
-msgstr ""
+msgstr "サスティンペダルを反転"
 
 #: bse/bsecore.idl:668
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
-msgstr ""
+msgstr "サスティン(ダンパー)ペダルのオン/オフを反転"
 
 #: bse/bsecore.idl:671
 msgid "Stepping Rates"
-msgstr ""
+msgstr "ステッピング比率"
 
 #: bse/bsecore.idl:672
-#, fuzzy
 msgid "Volume [dB] Steps"
-msgstr "左音量[dB]"
+msgstr "音量[dB]ステップ"
 
 #: bse/bsecore.idl:672
 msgid "Step width for volume in decibel"
-msgstr ""
+msgstr "デシベル単位での音量のステップ幅"
 
 #: bse/bsecore.idl:674
-#, fuzzy
 msgid "BPM Steps"
-msgstr "ステップ"
+msgstr "BPM ステップ"
 
 #: bse/bsecore.idl:674
 msgid "Step width for beats per minute"
-msgstr ""
+msgstr "BPM ステップ幅"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsedevice.c:312
@@ -4789,169 +4709,158 @@ msgstr ""
 
 #. GSL
 #: bse/bseenums.c:99
-#, fuzzy
 msgid "Everything went well"
-msgstr "第3, 12列毎"
+msgstr "万事オーケー"
 
 #: bse/bseenums.c:100
 msgid "Functionality not implemented"
-msgstr ""
+msgstr "機能はまだ実装されていません"
 
 #: bse/bseenums.c:101
 msgid "No device (driver) available"
-msgstr ""
+msgstr "デバイス(ドライバ)が利用できません"
 
 #: bse/bseenums.c:102
 msgid "Device not async capable"
-msgstr ""
+msgstr "デバイスは非同期に利用できません"
 
 #: bse/bseenums.c:103
 msgid "Device busy"
-msgstr ""
+msgstr "デバイスが使用中"
 
 #: bse/bseenums.c:104
 msgid "Failed to configure device format"
-msgstr ""
+msgstr "デバイスフォーマット設定に失敗"
 
 #: bse/bseenums.c:105
 msgid "Failed to configure device buffer"
-msgstr ""
+msgstr "デバイスバッファー設定に失敗"
 
 #: bse/bseenums.c:106
 msgid "Failed to configure device latency"
-msgstr ""
+msgstr "デバイスレイテンシ設定に失敗"
 
 #: bse/bseenums.c:107
 msgid "Failed to configure number of device channels"
-msgstr ""
+msgstr "デバイスチャネル設定に失敗"
 
 #: bse/bseenums.c:108
 msgid "Failed to configure device frequency"
-msgstr ""
+msgstr "デバイス周波数設定に失敗"
 
 #: bse/bseenums.c:109
 msgid "Device configurations mismatch"
-msgstr ""
+msgstr "デバイス設定の不整合"
 
 #: bse/bseenums.c:110
-#, fuzzy
 msgid "No such synthesis module"
-msgstr "シンセモジュール"
+msgstr "そのようなシンセモジュールはありません"
 
 #: bse/bseenums.c:111
-#, fuzzy
 msgid "No such input channel"
-msgstr "入力チャネル:"
+msgstr "そのような入力チャネルはありません"
 
 #: bse/bseenums.c:112
-#, fuzzy
 msgid "No such output channel"
-msgstr "出力チャネル:"
+msgstr "そのような出力チャネルはありません"
 
 #: bse/bseenums.c:113
-#, fuzzy
 msgid "Input/Output channels not connected"
-msgstr "使用する入力チャネル"
+msgstr "入出力チャネルが接続されていません"
 
 #: bse/bseenums.c:114
-#, fuzzy
 msgid "Input channel is private"
-msgstr "使用する入力チャネル"
+msgstr "入力チャネルはプライベートです"
 
 #: bse/bseenums.c:115
-#, fuzzy
 msgid "Input channel already in use"
-msgstr "使用する入力チャネル"
+msgstr "入力チャネルは既に使用されています"
 
 #: bse/bseenums.c:116
 msgid "Input/Output channels already connected"
-msgstr ""
+msgstr "入出力チャネルは既に接続されています"
 
 #: bse/bseenums.c:117
 msgid "Invalid synthesis module connection"
-msgstr ""
+msgstr "不適切なシンセモジュール接続"
 
 #: bse/bseenums.c:118
 msgid "Parent mismatch"
-msgstr ""
+msgstr "親の不整合"
 
 #: bse/bseenums.c:119
 msgid "Bad loopback"
-msgstr ""
+msgstr "不正なループバック"
 
 #: bse/bseenums.c:120
-#, fuzzy
 msgid "Synthesis module currently busy"
-msgstr "シンセモジュール"
+msgstr "シンセモジュールは現在ビュジーです"
 
 #: bse/bseenums.c:121
 msgid "Invalid synthsis module type"
-msgstr ""
+msgstr "不正なシンセモジュールタイプ"
 
 #: bse/bseenums.c:122
-#, fuzzy
 msgid "No such procedure"
-msgstr "プロセス"
+msgstr "そのようなプロセスはありません"
 
 #: bse/bseenums.c:123
 msgid "Procedure currently busy"
-msgstr ""
+msgstr "プロセスは現在ビュジーです"
 
 #. recursion
 #: bse/bseenums.c:124
 msgid "Procedure parameter invalid"
-msgstr ""
+msgstr "プロセスパラメータが不正です"
 
 #: bse/bseenums.c:125
 msgid "Procedure execution failed"
-msgstr ""
+msgstr "プロセス実行に失敗"
 
 #: bse/bseenums.c:126
 msgid "Procedure execution aborted"
-msgstr ""
+msgstr "プロセス実行を中止"
 
 #: bse/bseenums.c:127
 msgid "Invalid object property"
-msgstr ""
+msgstr "不正なオブジェクトプロパティ"
 
 #: bse/bseenums.c:128
 msgid "Invalid MIDI control type"
-msgstr ""
+msgstr "不正な MIDI コントロールタイプ"
 
 #: bse/bseenums.c:129
 msgid "Parsing error"
-msgstr ""
+msgstr "パーズエラー"
 
 #: bse/bseenums.c:130
 msgid "Failed to spawn child process"
-msgstr ""
+msgstr "子プロセスの起動に失敗"
 
 #. various procedure errors
 #: bse/bseenums.c:132
-#, fuzzy
 msgid "No such entry"
-msgstr "ノートエントリ"
+msgstr "そのようなエントリはありません"
 
 #: bse/bseenums.c:133
-#, fuzzy
 msgid "No such event"
-msgstr "イベントがみつかりません"
+msgstr "そのようなイベントはありません"
 
 #: bse/bseenums.c:135
 msgid "Ownership mismatch"
-msgstr ""
+msgstr "所有者の不整合"
 
 #: bse/bseenums.c:136
 msgid "Invalid offset"
-msgstr ""
+msgstr "不正なオフセット"
 
 #: bse/bseenums.c:137
 msgid "Invalid duration"
-msgstr ""
+msgstr "不正な持続期間"
 
 #: bse/bseenums.c:138
 msgid "Invalid overlap"
-msgstr ""
+msgstr "不正なオーバーラップ"
 
 #: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -5223,7 +5132,7 @@ msgstr ""
 #: bse/bsepcmdevice-oss.c:651
 #: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:352
 msgid "DEVICE,MODE"
-msgstr ""
+msgstr "DEVICE.MODE"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-oss.c:653
@@ -5257,7 +5166,7 @@ msgstr "BSE 音声出力を録音する WAVE ファイル名"
 
 #: bse/bseserver.c:439
 msgid "Show messages about audio recording problems"
-msgstr ""
+msgstr "オーディオ録音障害についてのメッセージを表示"
 
 #: bse/bseserver.c:440
 msgid ""
@@ -5268,31 +5177,29 @@ msgid ""
 msgstr ""
 
 #: bse/bseserver.c:486
-#, fuzzy
 msgid "Show messages about PCM device selections problems"
-msgstr "MIDI デバイス選択について警告"
+msgstr "PCM デバイス選択の問題についてのメッセージを表示"
 
 #: bse/bseserver.c:487
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open PCM devices, giving up: %s"
-msgstr "MIDI デバイス %s を開くのに失敗 (null デバイスを使用): %s"
+msgstr "PCM デバイスを開くのに失敗、中止しました: %s"
 
 #: bse/bseserver.c:506
-#, fuzzy
 msgid "Show messages about MIDI device selections problems"
-msgstr "MIDI デバイス選択について警告"
+msgstr "MIDI デバイス選択の問題についてのメッセージを表示"
 
 #: bse/bseserver.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open MIDI devices (reverting to null device): %s"
-msgstr "MIDI デバイス %s を開くのに失敗 (null デバイスを使用): %s"
+msgstr "MIDI デバイスを開くのに失敗 (null デバイスを使用): %s"
 
 #: bse/bseserver.c:558
 msgid "Show recording file errors"
-msgstr ""
+msgstr "録音ファイルエラーを表示"
 
 #: bse/bseserver.c:559
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
@@ -5316,17 +5223,15 @@ msgstr "主音量"
 
 #: bse/bsesong.c:726 bse/bsesong.c:730 bse/bsesong.c:734 bse/bsesong.c:738
 msgid "Timing"
-msgstr ""
+msgstr "タイミング"
 
 #: bse/bsesong.c:728
-#, fuzzy
 msgid "Ticks"
-msgstr "トラック"
+msgstr "ティック"
 
 #: bse/bsesong.c:728
-#, fuzzy
 msgid "Number of ticks per quarter note"
-msgstr "三連 4分ノート"
+msgstr "4分ノート当りのティック数"
 
 #: bse/bsesong.c:732
 msgid "Numerator"
@@ -5346,13 +5251,13 @@ msgstr ""
 
 #: bse/bsesong.c:740
 msgid "Beats per minute"
-msgstr ""
+msgstr "BPM"
 
 #. change default
 #. override parent property
 #: bse/bsesong.c:754 bse/bsesong.c:758 bse/bsesong.c:763 bse/bsesong.c:768
 msgid "Looping"
-msgstr ""
+msgstr "ループ"
 
 #: bse/bsesong.proc:36
 msgid "Create a new mixer bus for a Song."
@@ -5378,7 +5283,7 @@ msgstr "曲の主出力バスを取得"
 #.
 #: bse/bsesong.proc:171
 msgid "Orphan Parts"
-msgstr ""
+msgstr "パートを破棄"
 
 #: bse/bsesong.proc:209
 msgid "Ensure that each part in a song is inserted into at least one track."
