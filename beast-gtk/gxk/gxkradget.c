@@ -1800,7 +1800,7 @@ radget_define_type (GType           type,
 }
 
 void
-_gxk_init_radget_types (void)
+gxk_init_radget_types (void)
 {
   GType types[1024], *t = types;
   g_assert (quark_radget_type == 0);
@@ -1829,9 +1829,9 @@ _gxk_init_radget_types (void)
   while (t-- > types)
     gxk_radget_define_widget_type (*t);
   radget_define_gtk_menu ();
-  gxk_radget_define_type (GXK_TYPE_RADGET_FACTORY, _gxk_radget_factory_def);
-  gxk_radget_define_type (GXK_TYPE_FACTORY_BRANCH, _gxk_factory_branch_def);
-  gxk_radget_define_type (GXK_TYPE_WIDGET_PATCHER, _gxk_widget_patcher_def);
+  gxk_radget_define_type (GXK_TYPE_RADGET_FACTORY, gxk_radget_factory_def);
+  gxk_radget_define_type (GXK_TYPE_FACTORY_BRANCH, gxk_factory_branch_def);
+  gxk_radget_define_type (GXK_TYPE_WIDGET_PATCHER, gxk_widget_patcher_def);
   gxk_radget_register_hook (g_param_spec_string ("gxk-adopt-hint", NULL, NULL, NULL, G_PARAM_READWRITE), 1, gxk_adopt_hint_hook);
 }
 

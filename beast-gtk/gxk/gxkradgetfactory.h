@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 
 /* --- structures --- */
 typedef struct {
-  GxkActionFactory parent_instance;
+  GObject          parent_instance;
   GtkWindow       *window;
   GxkRadget       *radget;
   GxkRadget       *xdef_radget;
@@ -54,7 +54,7 @@ typedef struct {
   GData           *branch_widgets;
   GSList          *branches;
 } GxkRadgetFactory;
-typedef GxkActionFactoryClass GxkRadgetFactoryClass;
+typedef GObjectClass GxkRadgetFactoryClass;
 
 
 /* --- public API --- */
@@ -85,8 +85,8 @@ GType   gxk_factory_branch_get_type          (void);
 
 
 /* --- implementation details --- */
-extern const GxkRadgetType *_gxk_radget_factory_def;
-extern const GxkRadgetType *_gxk_factory_branch_def;
+extern const GxkRadgetType *gxk_radget_factory_def;
+extern const GxkRadgetType *gxk_factory_branch_def;
 
 
 G_END_DECLS

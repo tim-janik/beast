@@ -871,7 +871,7 @@ gxk_param_get_digits (gdouble                    value,
 #include "gxkparam-toggle.c"
 
 void
-_gxk_init_params (void)
+gxk_init_params (void)
 {
   gxk_param_register_editor (&param_entry, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_label1, GXK_I18N_DOMAIN);

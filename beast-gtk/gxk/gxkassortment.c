@@ -257,7 +257,7 @@ static GQuark quark_window_assortments = 0;
 static GQuark quark_widget_assortments = 0;
 
 void
-_gxk_init_assortments (void)
+gxk_init_assortments (void)
 {
   quark_assortment_clients = g_quark_from_static_string ("gxk-assortment-clients");
   quark_window_assortments = g_quark_from_static_string ("gxk-window-assortments");

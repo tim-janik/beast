@@ -32,7 +32,6 @@ typedef gboolean (*GxkActionCheck)      (gpointer        user_data,
                                          gulong          action_id);
 typedef void     (*GxkActionExec)       (gpointer        user_data,
                                          gulong          action_id);
-typedef        GObject        GxkActionFactory; /* prototyped */
 typedef struct GxkActionGroup GxkActionGroup;   /* prototyped */
 typedef struct GxkActionList  GxkActionList;
 typedef struct {
@@ -53,7 +52,6 @@ typedef struct {
   gulong        action_id;
   const gchar  *stock_icon;     /* stock_id for the icon */
 } GxkStockAction;
-
 
 /* --- public API --- */
 GxkActionList*  gxk_action_list_create          (void);
@@ -89,10 +87,11 @@ void            gxk_action_list_regulate_widget (GxkActionList          *alist,
 void            gxk_action_list_force_regulate  (GtkWidget              *widget);
 void            gxk_action_list_free            (GxkActionList          *alist);
 void            gxk_action_activate_callback    (gconstpointer          action_data);
-void            gxk_window_add_action_factory   (GtkWindow              *window,
-                                                 GxkActionFactory       *afactory);
-void            gxk_window_remove_action_factory(GtkWindow              *window,
-                                                 GxkActionFactory       *afactory);
+void      gxk_widget_update_actions_upwards     (gpointer                widget);
+void      gxk_widget_update_actions_downwards   (gpointer                widget);
+void      gxk_widget_update_actions             (gpointer                widget);
+
+/* --- publishing --- */
 void      gxk_widget_publish_action_list        (gpointer                widget,
                                                  const gchar            *prefix,
                                                  GxkActionList          *alist);
@@ -138,9 +137,16 @@ void      gxk_widget_publish_grouped_translated (gpointer                widget,
 void      gxk_widget_republish_actions          (gpointer                widget,
                                                  const gchar            *prefix,
                                                  gpointer                source_widget);
-void      gxk_widget_update_actions_upwards     (gpointer                widget);
-void      gxk_widget_update_actions_downwards   (gpointer                widget);
-void      gxk_widget_update_actions             (gpointer                widget);
+typedef void  (*GxkActionClient)                (gpointer                client_data,
+                                                 GtkWindow              *window,
+                                                 const gchar            *prefix,
+                                                 GxkActionList          *action_list,
+                                                 GtkWidget              *publisher);
+void      gxk_window_add_action_client          (GtkWindow              *window,
+                                                 GxkActionClient         added_func,
+                                                 gpointer                client_data);
+void      gxk_window_remove_action_client       (GtkWindow              *window,
+                                                 gpointer                client_data);
 
 
 /* --- action groups --- */
@@ -168,23 +174,6 @@ void            gxk_action_group_lock           (GxkActionGroup        *agroup);
 void            gxk_action_group_unlock         (GxkActionGroup        *agroup);
 void            gxk_action_group_dispose        (GxkActionGroup        *agroup);
 GxkActionGroup* gxk_action_toggle_new           (void);
-
-
-/* --- action factory --- */
-#define GXK_TYPE_ACTION_FACTORY              (gxk_action_factory_get_type ())
-#define GXK_ACTION_FACTORY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_ACTION_FACTORY, GxkActionFactory))
-#define GXK_ACTION_FACTORY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_ACTION_FACTORY, GxkActionFactoryClass))
-#define GXK_IS_ACTION_FACTORY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_ACTION_FACTORY))
-#define GXK_IS_ACTION_FACTORY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_ACTION_FACTORY))
-#define GXK_ACTION_FACTORY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_ACTION_FACTORY, GxkActionFactoryClass))
-typedef struct {
-  GObjectClass parent_class;
-  void  (*match_action_list)    (GxkActionFactory       *self,
-                                 const gchar            *prefix,
-                                 GxkActionList          *alist,
-                                 GtkWidget              *publisher);
-} GxkActionFactoryClass;
-GType   gxk_action_factory_get_type     (void);
 
 
 G_END_DECLS

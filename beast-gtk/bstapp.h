@@ -108,10 +108,7 @@ enum {
 /* --- prototypes --- */
 GType           bst_app_get_type                (void);
 BstApp*         bst_app_new                     (SfiProxy        project);
-void            bst_app_reload_supers           (BstApp         *app);
 void            bst_app_create_default          (BstApp         *app);
-GtkWidget*      bst_app_get_current_shell       (BstApp         *app);
-SfiProxy        bst_app_get_current_super       (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
 void            bst_app_show_release_notes      (BstApp         *app);
 

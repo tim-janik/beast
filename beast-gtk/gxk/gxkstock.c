@@ -34,7 +34,7 @@ static GtkIconFactory *stock_icon_factory = NULL;
 
 /* --- functions --- */
 void
-_gxk_init_stock (void)
+gxk_init_stock (void)
 {
   stock_icon_factory = gtk_icon_factory_new ();
   gtk_icon_factory_add_default (stock_icon_factory);

@@ -94,7 +94,7 @@ typedef struct {
   gdouble height_from_width;
 } GxkWidgetPatcher;
 GType   gxk_widget_patcher_get_type     (void);
-extern const GxkRadgetType *_gxk_widget_patcher_def;
+extern const GxkRadgetType *gxk_widget_patcher_def;
 
 /* --- back shade --- */
 #define GXK_TYPE_BACK_SHADE              (gxk_back_shade_get_type ())

@@ -42,6 +42,7 @@ static void           app_action_exec             (gpointer     data,
                                                    gulong       action);
 static gboolean       app_action_check            (gpointer     data,
                                                    gulong       action);
+static void           bst_app_reload_pages        (BstApp      *self);
 
 
 /* --- menus --- */
@@ -328,7 +329,7 @@ bst_app_destroy (GtkObject *object)
         bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), 0);
       bse_project_deactivate (self->project);
       bse_proxy_disconnect (self->project,
-                            "any_signal", bst_app_reload_supers, self,
+                            "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
       bse_item_unuse (self->project);
@@ -357,7 +358,7 @@ bst_app_finalize (GObject *object)
   if (self->project)
     {
       bse_proxy_disconnect (self->project,
-                            "any_signal", bst_app_reload_supers, self,
+                            "any_signal", bst_app_reload_pages, self,
                             "any_signal", gxk_widget_update_actions, self,
                             NULL);
       bse_item_unuse (self->project);
@@ -384,8 +385,8 @@ bst_app_new (SfiProxy project)
   self->project = project;
   bse_item_use (self->project);
   bse_proxy_connect (self->project,
-                     "swapped_signal::item-added", bst_app_reload_supers, self,
-                     "swapped_signal::item-remove", bst_app_reload_supers, self,
+                     "swapped_signal::item-added", bst_app_reload_pages, self,
+                     "swapped_signal::item-remove", bst_app_reload_pages, self,
                      "swapped_signal::state-changed", gxk_widget_update_actions, self,
                      "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,
                      NULL);
@@ -393,7 +394,7 @@ bst_app_new (SfiProxy project)
   if (self->pcontrols)
     bst_project_ctrl_set_project (BST_PROJECT_CTRL (self->pcontrols), self->project);
   
-  bst_app_reload_supers (self);
+  bst_app_reload_pages (self);
   
   /* update menu entries
    */
@@ -419,29 +420,18 @@ bst_app_find (SfiProxy project)
   return NULL;
 }
 
-GtkWidget*
-bst_app_get_current_shell (BstApp *app)
-{
-  g_return_val_if_fail (BST_IS_APP (app), NULL);
-  
-  if (app->notebook && app->notebook->cur_page)
-    {
-      g_return_val_if_fail (BST_IS_SUPER_SHELL (gtk_notebook_current_widget (app->notebook)), NULL);
-      
-      return gtk_notebook_current_widget (app->notebook);
-    }
-  
-  return NULL;
-}
-
-SfiProxy
+static SfiProxy
 bst_app_get_current_super (BstApp *app)
 {
-  GtkWidget *shell = bst_app_get_current_shell (app);
-  if (BST_IS_SUPER_SHELL (shell))
+  g_return_val_if_fail (BST_IS_APP (app), 0);
+  if (app->notebook && app->notebook->cur_page)
     {
-      BstSuperShell *super_shell = BST_SUPER_SHELL (shell);
-      return super_shell->super;
+      GtkWidget *shell = gtk_notebook_current_widget (app->notebook);
+      if (BST_IS_SUPER_SHELL (shell))
+        {
+          BstSuperShell *super_shell = BST_SUPER_SHELL (shell);
+          return super_shell->super;
+        }
     }
   return 0;
 }
@@ -542,8 +532,8 @@ proxyp_cmp_items (gconstpointer v1,
   return proxy_rate_item (*p1) - proxy_rate_item (*p2);
 }
 
-void
-bst_app_reload_supers (BstApp *self)
+static void
+bst_app_reload_pages (BstApp *self)
 {
   g_return_if_fail (BST_IS_APP (self));
   
@@ -791,8 +781,7 @@ bst_app_run_script_proc (gpointer data,
 {
   BstApp *self = BST_APP (data);
   BseCategory *cat = bse_category_from_id (category_id);
-  GtkWidget *shell = bst_app_get_current_shell (self);
-  SfiProxy super = shell ? BST_SUPER_SHELL (shell)->super : 0;
+  SfiProxy super = bst_app_get_current_super (self);
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
   
   if (BSE_IS_SONG (super))

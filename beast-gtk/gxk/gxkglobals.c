@@ -37,12 +37,12 @@ gxk_init (void)
   g_object_ref (globals.tooltips);
   gtk_object_sink (GTK_OBJECT (globals.tooltips));
 
-  _gxk_init_utils ();
-  _gxk_init_params ();
-  _gxk_init_stock ();
-  _gxk_init_actions ();
-  _gxk_init_assortments ();
-  _gxk_init_radget_types ();
+  gxk_init_utils ();
+  gxk_init_params ();
+  gxk_init_stock ();
+  gxk_init_actions ();
+  gxk_init_assortments ();
+  gxk_init_radget_types ();
 }
 
 gulong

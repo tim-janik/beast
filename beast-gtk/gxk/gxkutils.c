@@ -93,7 +93,7 @@ ehook_container_focus_child_set (GSignalInvocationHint *ihint,
 }
 
 void
-_gxk_init_utils (void)
+gxk_init_utils (void)
 {
   /* type registrations */
   gxk_type_register_generated (G_N_ELEMENTS (generated_type_entries), generated_type_entries);

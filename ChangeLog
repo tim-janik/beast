@@ -1,3 +1,18 @@
+Thu Jan 20 00:07:47 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.[hc]: removed externally unused functions from public
+	API. code cleanups. 
+
+	* beast-gtk/gxk/gxkaction.[hc]: removed GxkActionFactory. added
+	gxk_window_add_action_client() and gxk_window_remove_action_client()
+	to receive notification about newly added action lists. 
+
+	* beast-gtk/gxk/gxkglobals.[hc]: removed undue '_'-prefixing from symbols.
+
+	* beast-gtk/gxk/gxkradgetfactory.[hc]: derive from GObject and register with
+	gxk_window_add_action_client() and gxk_window_remove_action_client().
+	code cleanups.
+
 Wed Jan 19 19:41:12 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.[hc]: added ::attached-hierarchy-changed signal

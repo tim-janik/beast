@@ -654,7 +654,7 @@ static const GxkRadgetType widget_patcher_def = {
   NULL,         /* find_pack */
   NULL,         /* set_pack */
 };
-const GxkRadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
+const GxkRadgetType *gxk_widget_patcher_def = &widget_patcher_def;
 
 
 /* --- back shade --- */

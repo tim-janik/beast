@@ -390,8 +390,14 @@ gxk_action_activate_callback (gconstpointer action_data)
 
 
 /* --- GtkWindow action sets --- */
-typedef struct _ActionSet ActionSet;
-struct _ActionSet {
+typedef struct {
+  gpointer            client_data;
+  GxkActionClient     added_func;
+} ActionClient;
+static GQuark quark_action_clients = 0;
+
+typedef struct ActionSet ActionSet;
+struct ActionSet {
   guint          ref_count;
   gchar         *prefix;
   GtkWidget     *widget;
@@ -433,19 +439,19 @@ static void
 window_add_action_set (GtkWidget *window,
                        ActionSet *aset)
 {
-  GSList *slist;
   g_return_if_fail (GTK_IS_WIDGET (aset->widget));
   g_return_if_fail (aset->toplevel == NULL);
   aset->next = g_object_steal_qdata (window, quark_action_sets);
   aset->toplevel = window;
   aset->ref_count++;
   g_object_set_qdata_full (window, quark_action_sets, aset, window_destroy_action_sets);
-  slist = g_object_get_qdata (window, quark_action_factories);
+  GSList *slist = g_object_get_qdata (window, quark_action_clients);
   while (slist)
     {
-      GxkActionFactory *afactory = slist->data;
+      ActionClient *aclient = slist->data;
       slist = slist->next;
-      GXK_ACTION_FACTORY_GET_CLASS (afactory)->match_action_list (afactory, aset->prefix, aset->alist, aset->widget);
+      if (aclient->added_func)
+        aclient->added_func (aclient->client_data, (GtkWindow*) window, aset->prefix, aset->alist, aset->widget);
     }
 }
 
@@ -455,10 +461,8 @@ window_remove_action_set (ActionSet *aset)
   GtkWidget *window = aset->toplevel;
   g_return_if_fail (GTK_IS_WIDGET (aset->toplevel));
   
-  ActionSet *anode, *last = NULL;
-  for (anode = g_object_get_qdata (window, quark_action_sets);
-       anode;
-       last = anode, anode = last->next)
+  ActionSet *last = NULL, *anode = g_object_get_qdata (window, quark_action_sets);
+  for (; anode; last = anode, anode = last->next)
     if (anode == aset)
       {
         if (last)
@@ -608,7 +612,36 @@ window_queue_action_updates (GtkWidget *window,
 }
 
 
-/* --- widget action handling --- */
+
+void
+gxk_widget_update_actions_upwards (gpointer widget)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (GTK_IS_WINDOW (toplevel))
+    window_queue_action_updates (toplevel, widget, NULL);
+}
+
+void
+gxk_widget_update_actions_downwards (gpointer widget)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (GTK_IS_WINDOW (toplevel))
+    window_queue_action_updates (toplevel, NULL, widget);
+}
+
+void
+gxk_widget_update_actions (gpointer widget)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (GTK_IS_WINDOW (toplevel))
+    window_queue_action_updates (toplevel, widget, widget);
+}
+
+
+/* --- publishing --- */
 static GQuark  quark_widget_actions = 0;
 static GSList *publisher_list = NULL;
 
@@ -790,32 +823,46 @@ gxk_widget_publish_translated (gpointer                widget,
 }
 
 void
-gxk_widget_update_actions_upwards (gpointer widget)
+gxk_window_add_action_client (GtkWindow              *window,
+                              GxkActionClient         added_func,
+                              gpointer                client_data)
 {
-  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  if (GTK_IS_WINDOW (toplevel))
-    window_queue_action_updates (toplevel, widget, NULL);
+  g_return_if_fail (GTK_IS_WINDOW (window));
+  g_return_if_fail (client_data != NULL);
+  ActionClient *aclient = g_new0 (ActionClient, 1);
+  aclient->client_data = client_data;
+  aclient->added_func = added_func;
+  GSList *slist = g_object_get_qdata (window, quark_action_clients);
+  g_object_set_qdata (window, quark_action_clients, g_slist_prepend (slist, aclient));
+  ActionSet *aset;
+  for (aset = g_object_get_qdata (window, quark_action_sets); aset; aset = aset->next)
+    aclient->added_func (aclient->client_data, window, aset->prefix, aset->alist, aset->widget);
 }
 
 void
-gxk_widget_update_actions_downwards (gpointer widget)
+gxk_window_remove_action_client (GtkWindow              *window,
+                                 gpointer                client_data)
 {
-  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  if (GTK_IS_WINDOW (toplevel))
-    window_queue_action_updates (toplevel, NULL, widget);
+  g_return_if_fail (GTK_IS_WINDOW (window));
+  g_return_if_fail (client_data != NULL);
+  GSList *last = NULL, *slist = g_object_get_qdata (window, quark_action_clients);
+  while (slist)
+    {
+      ActionClient *aclient = slist->data;
+      if (aclient->client_data == client_data)
+        {
+          if (last)
+            last->next = slist->next;
+          else
+            g_object_set_qdata (window, quark_action_clients, slist->next);
+          g_free (aclient);
+          return;
+        }
+      last = slist;
+      slist = last->next;
+    }
+  g_warning ("failed to remove action client (%p) from GtkWindow (%p)", client_data, window);
 }
-
-void
-gxk_widget_update_actions (gpointer widget)
-{
-  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  if (GTK_IS_WINDOW (toplevel))
-    window_queue_action_updates (toplevel, widget, widget);
-}
-
 
 /* --- action group --- */
 static gulong action_group_signal_changed = 0;
@@ -906,60 +953,17 @@ gxk_action_group_dispose (GxkActionGroup *self)
 }
 
 
-/* --- action factory --- */
-GType
-gxk_action_factory_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (GxkActionFactoryClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) NULL,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (GxkActionFactory),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
-      type = g_type_register_static (G_TYPE_OBJECT, "GxkActionFactory", &type_info, 0);
-    }
-  return type;
-}
-
-void
-gxk_window_add_action_factory (GtkWindow        *window,
-                               GxkActionFactory *afactory)
-{
-  GSList *slist = g_object_get_qdata (window, quark_action_factories);
-  ActionSet *aset;
-  g_object_set_qdata (window, quark_action_factories, g_slist_prepend (slist, afactory));
-  for (aset = g_object_get_qdata (window, quark_action_sets); aset; aset = aset->next)
-    GXK_ACTION_FACTORY_GET_CLASS (afactory)->match_action_list (afactory, aset->prefix, aset->alist, aset->widget);
-}
-
-void
-gxk_window_remove_action_factory (GtkWindow        *window,
-                                  GxkActionFactory *afactory)
-{
-  GSList *slist = g_object_get_qdata (window, quark_action_factories);
-  slist = g_slist_remove (slist, afactory);
-  g_object_set_qdata (window, quark_action_factories, slist);
-}
-
-
 /* --- initialization --- */
 void
-_gxk_init_actions (void)
+gxk_init_actions (void)
 {
   g_assert (action_class_ht == NULL);
   action_class_ht = g_hash_table_new (action_class_hash, action_class_equals);
-  quark_action_sets = g_quark_from_static_string ("GxkWindow-action-sets");
+  quark_action_sets = g_quark_from_static_string ("gxk-action-sets");
   quark_action_factories = g_quark_from_static_string ("GxkActionFactory-list");
-  quark_action_entry = g_quark_from_static_string ("GxkAction-entry");
-  quark_widget_actions = g_quark_from_static_string ("GxkWidget-action-sets");
-  quark_widgets_upwards = g_quark_from_static_string ("GxkWindow-widgets-upwards");
-  quark_widgets_downwards = g_quark_from_static_string ("GxkWindow-widgets-downwards");
+  quark_action_entry = g_quark_from_static_string ("gxk-action-entry");
+  quark_action_clients = g_quark_from_static_string ("gxk-action-clients");
+  quark_widget_actions = g_quark_from_static_string ("gxk-action-widget-action-sets");
+  quark_widgets_upwards = g_quark_from_static_string ("gxk-action-widgets-upwards");
+  quark_widgets_downwards = g_quark_from_static_string ("gxk-action-widgets-downwards");
 }
