@@ -454,7 +454,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_iir_filter, "BseIIRFilter", "BseSource",
     "BseIIRFilter is an infinite impulse response filter of variable order",
     &type_info_iir_filter,
-    "/Modules/IIR Filter",
+    "/Modules/Filters/IIR Filter",
     { FILTER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       FILTER_IMAGE_WIDTH, FILTER_IMAGE_HEIGHT,
       FILTER_IMAGE_RLE_PIXEL_DATA, },

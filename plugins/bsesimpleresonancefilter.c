@@ -324,7 +324,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_simple_resonance_filter, "BseSimpleResonanceFilter", "BseSource",
     "BseSimpleResonanceFilter is an infinite impulse response filter with variable resonance",
     &type_info_simple_resonance_filter,
-    "/Modules/Simple Resonance Filter",
+    "/Modules/Filters/Simple Resonance Filter",
     { FILTER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       FILTER_IMAGE_WIDTH, FILTER_IMAGE_HEIGHT,
       FILTER_IMAGE_RLE_PIXEL_DATA, },

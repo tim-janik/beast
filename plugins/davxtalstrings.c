@@ -439,7 +439,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_xtal_strings, "DavXtalStrings", "BseSource",
     "DavXtalStrings is a string synthesizer - Any commercial use of this module requires a license from Stanford University",
     &type_info_xtal_strings,
-    "/Modules/XtalStrings",
+    "/Modules/Audio Sources/XtalStrings",
   },
   { NULL, },
 };

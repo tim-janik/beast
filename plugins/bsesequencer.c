@@ -381,7 +381,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_sequencer, "BseSequencer", "BseSource",
     "The Sequencer produces a frequency signal according to a sequence of notes",
     &type_info_sequencer,
-    "/Modules/Sequencer",
+    "/Modules/Other Sources/Sequencer",
     { SEQUENCER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       SEQUENCER_IMAGE_WIDTH, SEQUENCER_IMAGE_HEIGHT,
       SEQUENCER_IMAGE_RLE_PIXEL_DATA, },

@@ -156,7 +156,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_noise, "BseNoise", "BseSource",
     "Noise is a generator of (supposedly) white noise",
     &type_info_noise,
-    "/Modules/Noise",
+    "/Modules/Audio Sources/Noise",
     { NOISE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NOISE_IMAGE_WIDTH, NOISE_IMAGE_HEIGHT,
       NOISE_IMAGE_RLE_PIXEL_DATA, },

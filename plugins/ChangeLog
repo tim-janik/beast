@@ -1,3 +1,9 @@
+Tue Apr 16 08:24:53 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesnooper.[hc]: remove this module from plugins.
+
+	* *.c: category fixes.
+
 Tue Apr  9 03:03:53 2002  Tim Janik  <timj@gtk.org>
 
 	* implemented BseFreeVerb module, a wrapper around the public domain

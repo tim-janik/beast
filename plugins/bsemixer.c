@@ -376,7 +376,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_mixer, "BseMixer", "BseSource",
     "The Mixer module sums up incomming signals, and allowes for fine adjusted weighting (volume setting) of the input sources",
     &type_info_mixer,
-    "/Modules/Mixer",
+    "/Modules/Routing/Mixer",
     { AMP_MIX_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       AMP_MIX_IMAGE_WIDTH, AMP_MIX_IMAGE_HEIGHT,
       AMP_MIX_IMAGE_RLE_PIXEL_DATA, },

@@ -563,7 +563,7 @@ BSE_EXPORT_OBJECTS = {
     "The plaback frequency can be specified through an incoming signal, featuring "
     "an extra signal input for linear or exponential frequency modulation.",
     &type_info_wave_osc,
-    "/Modules/Oscillators/Wave Oscillator",
+    "/Modules/Audio Sources/Wave Oscillator",
     { WAVE_OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       WAVE_OSC_IMAGE_WIDTH, WAVE_OSC_IMAGE_HEIGHT,
       WAVE_OSC_IMAGE_RLE_PIXEL_DATA, },
