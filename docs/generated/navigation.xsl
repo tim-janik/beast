@@ -8,38 +8,34 @@
 
 <xsl:template name="navigation">
   <xsl:if test="string-length(/texinfo/para/document-navigation) > 0">
-    <div id="navigation">
-      <xsl:if test="string(/texinfo/para/document-hasbanner) != 'large'">
-        <xsl:attribute name="class">with-nobanner</xsl:attribute>
-      </xsl:if>
+    <ul id="navigation">
       <xsl:apply-templates select="document(string(/texinfo/para/document-navigation))"/>
-    </div>
+    </ul>
   </xsl:if>
 </xsl:template>
 
 <xsl:template match="navigation-node[@target != $this_file]">
-  <xsl:call-template name="dash"/>
-  <a>
-    <xsl:call-template name="navigation-href"/>
-    <xsl:attribute name="class">
-      <xsl:choose>
-	<xsl:when test="count(.//navigation-node[@target=$this_file]) > 0">open-tree</xsl:when>
-	<xsl:when test="count(./navigation-node) > 0">closed-tree</xsl:when>
-      </xsl:choose>
-    </xsl:attribute>
-    <xsl:call-template name="navigation-image"/>
-  </a>
-  <xsl:if test="count(.//navigation-node[@target=$this_file]) > 0">
-    <span class="hidden">: </span>
-    <span class="subtree">
-      <xsl:apply-templates/>
-    </span>
-    <br class="hidden"/>
-  </xsl:if>
+  <li>
+    <a>
+      <xsl:call-template name="navigation-href"/>
+      <xsl:attribute name="class">
+	<xsl:choose>
+	  <xsl:when test="count(.//navigation-node[@target=$this_file]) > 0">open-tree</xsl:when>
+	  <xsl:when test="count(./navigation-node) > 0">closed-tree</xsl:when>
+	</xsl:choose>
+      </xsl:attribute>
+      <xsl:call-template name="navigation-image"/>
+    </a>
+    <xsl:if test="count(.//navigation-node[@target=$this_file]) > 0">
+      <ul class="subtree">
+	<xsl:apply-templates/>
+      </ul>
+    </xsl:if>
+  </li>
 </xsl:template>
 
 <xsl:template match="navigation-node[@target = $this_file]">
-  <xsl:call-template name="dash"/>
+  <li>
   <strong><span>
     <xsl:attribute name="class">
       <xsl:choose>
@@ -50,17 +46,15 @@
     <xsl:call-template name="navigation-image"/>
   </span></strong>
   <xsl:if test="count(./navigation-node) > 0">
-    <span class="hidden">: </span>
-    <span class="subtree">
+    <ul class="subtree">
       <xsl:apply-templates/>
-    </span>
-    <br class="hidden"/>
+    </ul>
   </xsl:if>
+  </li>
 </xsl:template>
 
 <xsl:template match="navigation-node[@target = '']">
-  <xsl:call-template name="dash"/>
-  <span>
+  <li><span>
     <xsl:attribute name="class">
       <xsl:choose>
 	<xsl:when test="count(./navigation-node) > 0">nolink-tree</xsl:when>
@@ -70,24 +64,11 @@
     <xsl:call-template name="navigation-image"/>
   </span>
   <xsl:if test="count(./navigation-node) > 0">
-    <span class="hidden">: </span>
-    <span class="subtree">
+    <ul class="subtree">
       <xsl:apply-templates/>
-    </span>
-    <br class="hidden"/>
+    </ul>
   </xsl:if>
-</xsl:template>
-
-<xsl:template name="dash">
-  <xsl:variable name="prev" select="(position() - 2) div 2"/>
-  <xsl:choose>
-    <xsl:when test="count(./navigation-node) > 0 and (@target = $this_file or @target = '') and ../navigation-node[$prev]/@target != ''"><br class="hidden"/></xsl:when>
-    <xsl:when test="count(.//navigation-node[@target = $this_file]) > 0"><br class="hidden"/></xsl:when>
-    <xsl:when test="count(../navigation-node[$prev]//*) > 0 and ../navigation-node[$prev]//@target = ''"/>
-    <xsl:when test="count(../navigation-node[$prev]//*) > 0 and ../navigation-node[$prev]//@target = $this_file"/>
-    <xsl:when test="count(../navigation-node[$prev]/*)  > 0 and ../navigation-node[$prev]/@target = ''"/>
-    <xsl:when test="position() > 2"><span class="hidden"> - </span></xsl:when>
-  </xsl:choose>
+  </li>
 </xsl:template>
 
 <xsl:template name="navigation-image">

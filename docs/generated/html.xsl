@@ -8,10 +8,13 @@
 <xsl:preserve-space elements="code display smalldisplay format smallformat example smallexample lisp smalllisp"/>
 
 <xsl:param name="images_prefix" select="''"/>
+<xsl:param name="banner_prefix" select="''"/>
+<xsl:param name="site_icon"     select="''"/>
 
 <!-- {{{ start parsing -->
 <xsl:template match="texinfo">
 <html>
+ <xsl:call-template name="document-language" />
  <head>
   <meta http-equiv="Default-Style" content="Default"/>
   <style type="text/css" media="all">
@@ -19,17 +22,30 @@
     <!-- This is here because 'inherit' is not a valid CSS1 value -->
     span.default { <xsl:call-template name="document-font"/> }
   </style>
-  <style type="text/css" media="all" title="Default">
-    @import 'css/default.css';
-  </style>
+  <link href="css/default.css" rel="stylesheet" type="text/css" title="Default"/>
   <title><xsl:value-of select="settitle"/></title>
+  <xsl:if test="string-length($site_icon) > 0">
+    <link rel="icon" type="image/png">
+      <xsl:attribute name="href">
+        <xsl:value-of select="concat($images_prefix, $site_icon)"/>
+      </xsl:attribute>
+    </link>
+  </xsl:if>
  </head>
  <!-- Stupid bgcolor attribute to override default Netscape 4 background color :\ -->
+ <!-- Also, text attribute is to complement bgcolor as Bobby Accessibility checker
+      does not like a lonely bgcolor. -->
  <!-- The id is for user-agent side site specific CSS overriding goodness,
       ie. #beast-gtk-org { font-size: 10px !important; } -->
- <body id="beast-gtk-org" bgcolor="White">
+ <body id="beast-gtk-org" bgcolor="White" text="Black">
   <xsl:call-template name="banner"/>
+
+  <h1 id="page-title" align="center">
+    <xsl:call-template name="document-title"/>
+  </h1>
+
   <xsl:call-template name="navigation"/>
+
   <div id="content">
    <xsl:call-template name="document-size"/>
 
@@ -46,28 +62,34 @@
 
 <xsl:template name="document-size">
   <xsl:choose>
-    <!-- the banner is large and there is no navigation stuff on the left -->
-    <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large' and string(/texinfo/para/document-navigation) = ''">
-      <xsl:attribute name="class">with-banner-nonav</xsl:attribute>
+    <!-- navigation stuff on the left -->
+    <xsl:when test="string(/texinfo/para/document-navigation) != ''">
+      <xsl:attribute name="class">nav</xsl:attribute>
     </xsl:when>
-    <!-- the banner is large and there is also navigation stuff -->
-    <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large' and string(/texinfo/para/document-navigation) != ''">
-      <xsl:attribute name="class">with-banner-nav</xsl:attribute>
-    </xsl:when>
-    <!-- the banner is small and there is navigation on the left -->
-    <xsl:when test="string(/texinfo/para/document-hasbanner) != 'large' and string(/texinfo/para/document-navigation) != ''">
-      <xsl:attribute name="class">with-nobanner-nav</xsl:attribute>
-    </xsl:when>
-    <!-- Otherwise: banner is small and no navigation. largest content size -->
+    <!-- no navigation -->
     <xsl:otherwise>
-      <xsl:attribute name="class">with-nobanner-nonav</xsl:attribute>
+      <xsl:attribute name="class">nonav</xsl:attribute>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
+<xsl:template name="document-language">
+  <xsl:attribute name="lang">
+    <xsl:choose>
+      <xsl:when test="string-length(/texinfo/para/document-language) > 0">
+	<xsl:value-of select="/texinfo/para/document-language" />
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>en</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:attribute>
+</xsl:template>
+
 <!-- }}} -->
 
 <!-- {{{ useless tags -->
-<xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|document-navigation|document-hasbanner|itemfunction|columnfraction"/>
+<xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-language|document-font|document-navigation|document-hasbanner|itemfunction|columnfraction"/>
 <!-- }}} -->
 
 <!-- {{{ setting a default font for documents -->
@@ -122,18 +144,30 @@
 
 <!-- {{{ creating a banner at top -->
 <xsl:template name="banner">
+  <a name="_top"/>
   <xsl:choose>
     <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large'">
-      <div id="bigbanner">
-	<a name="_top"/>
-	<h1 id="bannertitle">
-	  <xsl:call-template name="document-title"/>
-	</h1>
+      <div id="banner" align="center">
+	<img id="banner-left" alt="This is the left part of the banner.">
+	  <xsl:attribute name="src">
+	    <xsl:value-of select="concat('css/images/', $banner_prefix, '-left.png')" />
+	  </xsl:attribute>
+	</img>
+	<img id="banner-right" alt="This is the right part of the banner.">
+	  <xsl:attribute name="src">
+	    <xsl:value-of select="concat('css/images/', $banner_prefix, '-right.png')" />
+	  </xsl:attribute>
+	</img>
       </div>
-      <div id="bannerleft"/>
     </xsl:when>
     <xsl:otherwise>
-      <div id="bannerright"/>
+      <div id="banner-small">
+	<img id="banner-right" alt="This is a smaller banner, to make the documents use more of screen real estate.">
+	  <xsl:attribute name="src">
+	    <xsl:value-of select="concat('css/images/', $banner_prefix, '-small.png')" />
+	  </xsl:attribute>
+	</img>
+      </div>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -603,7 +637,7 @@
 <xsl:template match="para">
   <xsl:apply-templates/>
   <xsl:choose>
-    <xsl:when test="count(document-font|document-title|document-author|document-navigation|document-hasbanner)"/>
+    <xsl:when test="count(document-font|document-title|document-author|document-language|document-navigation|document-hasbanner)"/>
     <xsl:when test="count(news-title|news-date)"/>
     <!-- <xsl:when test="count(reference-function|reference-struct-name)"><breakline/></xsl:when> -->
     <xsl:otherwise><br/><br/></xsl:otherwise>

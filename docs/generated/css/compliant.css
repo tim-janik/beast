@@ -1,0 +1,266 @@
+/*
+**
+** CSS1 and CSS2 information for compliant browsers.
+**
+*/
+
+#page-title {
+  margin-left: 1em;
+}
+
+#banner-left {
+  float: left;
+}
+
+#banner-right {
+  float: right;
+}
+
+#banner-small {
+  padding-bottom: 65px;
+}
+
+/* {{{ navigation links */
+#navigation {
+  display: block;
+  font-size: 85%;
+  background-image: url(images/vertical-dots.png);
+  background-position: top right;
+  background-repeat: repeat-y;
+}
+
+#navigation .subtree {
+  display: block;
+  list-style-type: none;
+  padding: 0;
+  padding-left: 1em;
+}
+
+#navigation a {
+  display: block;
+  padding: 0.2em;
+  padding-left: 14px;
+  text-decoration: none;
+}
+
+#navigation a:hover {
+  text-decoration: underline; /* none; */
+  background-image: url(images/gradient.png);
+  background-position: top left;
+  background-repeat: repeat-y;
+/*  background-color: #b0b0de; */
+/*  color: #444444; */
+}
+
+#navigation a.closed-tree {
+  display: block;
+  font-weight: bold;
+  background-image: url(images/triangle-right-blue.png);
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+#navigation a.closed-tree:hover {
+  background-image: url(images/gradient-with-triangle.png);
+}
+
+#navigation a.open-tree {
+  display: block;
+  font-weight: bold;
+  background-image: url(images/triangle-down-blue.png);
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+#navigation a.open-tree:hover {
+  background-image: url(images/gradient-with-triangle.png);
+}
+
+#navigation span {
+  display: block;
+  padding: 0.2em;
+  padding-left: 14px;
+}
+
+#navigation span.nolink-tree {
+  font-weight: bold;
+  color: #aaa;
+  background-image: url(images/triangle-down-gray.png);
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+#navigation span.nolink {
+  font-weight: bold;
+  color: #aaa;
+}
+
+#navigation span.current {
+  display: block;
+  /* padding-left: 2em; */
+  font-weight: bold;
+  color: #535353;
+  background-image: url(images/gradient-light.png);
+  background-position: top left;
+  background-repeat: repeat-y;
+  background-color: #cfcfeb;
+}
+
+#navigation span.current-tree {
+  font-weight: bold;
+  color: #535353;
+  background-image: url(images/gradient-light-with-triangle.png);
+  background-position: center left;
+  background-repeat: repeat-y;
+  background-color: #cfcfeb;
+}
+
+a.homelink {
+  display: block;
+  min-height: 19px;
+  margin-bottom: 1em;
+  padding: 0;
+  padding-left: 32px;
+  padding-top: 0.4em;
+  padding-bottom: 0.2em;
+  width: 4em;
+  background-color: #e8e8ff; /* #f8f8f8; */
+  background-image: url(images/arrow-left.png);
+  background-position: center left;
+  background-repeat: repeat-y;
+  font-weight: bold;
+  text-decoration: underline;
+  color: black;
+}
+
+a.homelink:hover {
+  background-color: #8383cc;
+  color: White;
+}
+
+#navigation .hidden {
+  display: none;
+}
+
+/* }}} */
+
+div.banner {
+  letter-spacing: 0.4em;
+  background-image: url(images/arrow-right.png);
+  background-position: center left;
+  background-repeat: repeat-y;
+  background-color: #e8e8ff; /* #f8f8f8; */
+  color: inherit;
+  margin-bottom: 1em;
+  margin-right: 0.5em;
+  padding: 0;
+  padding-left: 32px;
+  padding-top: 0.4em;
+  min-height: 1.2em;
+  /* border-top: 1px solid #b5b5b5; */
+  /* border-bottom: 1px solid #b5b5b5; */
+}
+
+/* {{{ news items */
+span.news-date {
+  display: block;
+  border-top: 1px dashed #dadada;
+  padding-left: 12px;
+  padding-top: 3px;
+  margin-bottom: -1em;
+  margin-right: 0.5em;
+  background-image: url(images/square.png);
+  background-repeat: no-repeat;
+  background-position: center left;
+}
+/* }}} */
+
+.error,
+.errorbox ul,
+code.reference-function,
+code.reference-parameter,
+code.reference-constant,
+code.reference-returns,
+code.reference-type,
+code.reference-blurb,
+code.reference-struct-type,
+code.reference-struct-name,
+pre.lisp,
+pre.smalllisp,
+strong.important,
+span.paginate-disabled,
+span.paginate-title,
+span.image-info,
+code.changelog-item,
+code.changelog-entry {
+  background-color: inherit;
+}
+
+pre.display,
+pre.format,
+pre.smalldisplay {
+  font-family: inherit;
+}
+
+div.paginate,
+table.images td,
+code.pagepath,
+code.menupath {
+  color: inherit;
+}
+
+/* {{{ image gallery */
+div.gallery-info {
+  margin-bottom: 1em;
+}
+
+div.paginate {
+  font-size: 75%;
+  background-color: #f6f6f6;
+  padding: 0.5em;
+  width: 80%;
+  text-align: center;
+}
+
+table.images {
+  width: 80%;
+}
+
+table.images td {
+  background-color: #f6f6f6;
+  padding: 1em;
+}
+
+img.gallery-zoom {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+span.paginate {
+}
+
+span.paginate-disabled {
+  font-weight: bold;
+  color: #a0a0a0;
+}
+
+span.paginate-title {
+  font-weight: bold;
+  color: #4d4daa;
+}
+
+span.image-info {
+  font-size: 80%;
+  color: #666666;
+}
+
+span.image-text {
+  font-size: 90%;
+}
+
+a.image-link:hover {
+  text-decoration: none;
+}
+/* }}} */
+ 
+/* vim: set fdm=marker: */

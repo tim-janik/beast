@@ -189,6 +189,8 @@ index.lst: $(REFERENCE_XMLS) $(srcdir)/reference-index.xsl
 %.html: %.xml	texinfo.dtd html.xsl navigation.xsl navigation.xml
 	$(XSLTPROC) --stringparam this_file "$@" \
 	            --stringparam images_prefix "cvs-images/" \
+		    --stringparam banner_prefix "beast" \
+		    --stringparam site_icon "beast16.png" \
 	            $(srcdir)/html.xsl $< >$@
 # postscript rules
 %.nroff: %.xml man.xsl

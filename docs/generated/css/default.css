@@ -1,254 +1,69 @@
+/*
+**
+** Basic CSS1 information for little-CSS-aware
+** browsers (ie. 4.x series).
+**
+*/
+
+@import url("compliant.css");
+
+html, body {
+  margin-top: 7px;
+}
+
+#page-title {
+  font-size: 160%;
+}
+
 /* {{{ banners,  large and small */
-#bigbanner {
-  position: fixed;
-  margin: 0;
-  height: 136px;
-  width: 100%;
-  background-image: url(images/banner-right.png);
+#banner {
+  background-image: url(images/beast-bg.png);
   background-position: top right;
-  background-repeat: no-repeat;
-  z-index: 6;
-}
-
-#bannerleft {
-  position: fixed;
-  margin: 0;
-  float: left;
-  height: 136px;
-  width: 363px;
-  background-image: url(images/banner-left.png);
-  background-position: top left;
-  background-repeat: no-repeat;
-  z-index: 6;
-}
-
-#bannertitle {
-  font-size: 14px;
-  font-weight: bold;
-  font-family: "verdana", sans-serif;
-  color: #a0a0a0;
-  position: absolute;
-  white-space: nowrap;
-  margin: 0;
-  margin-left: -3px;
-  top: 0;
-  left: 363px;
-  right: 374px;
-  height: 38px;
-  background-image: url(images/banner-dots.png);
   background-repeat: repeat-x;
-  background-position: top left;
-  background-color: white;
-  padding: 98px 9px 0 9px;
-  text-align: center;
-  z-index: 6;
+  height: 120px;
 }
 
-#bannerright {
-  position: absolute;
-  float: left;
-  margin: 0;
-  margin-top: 5px;
-  margin-left: -28px;
-  padding: 0;
-  height: 64px;
-  width: 100%;
-  top: 0;
-  background-image: url(images/banner-small.png);
-  background-position: top right;
-  background-repeat: no-repeat;
-  z-index: 6;
+#banner-small {
+  background-image: url(images/horizontal-dots.png);
+  background-position: 0px 55px;
+  background-repeat: repeat-x;
+  margin: 0 0.5em;
 }
+
 /* }}} */
 
 /* {{{ real content layout */
 #content {
   font-size: 90%;
-  /* Disabled in favor of CSS1 */
-  /* max-width: 76em; */
   padding-right: 1em;
+  margin-top: 1em;
 }
 
-#content.with-banner-nav {
-  position: absolute;
-  margin-top: 148px;
+#content.nav {
   margin-left: 230px;
-  padding-left: 1em;
-  padding-right: 1em;
-  z-index: 4;
 }
 
-#content.with-banner-nonav {
-  position: absolute;
+#content.nonav {
   margin-left: 1em;
-  margin-top: 148px;
-  z-index: 4;
 }
 
-#content.with-nobanner-nav {
-  position: absolute;
-  margin-left: 230px;
-  margin-top: 76px;
-  padding-right: 1.5em;
-  background-image: url(images/horizontal-dots.png);
-  background-position: 0 56px;
-  background-repeat: repeat-x;
-  z-index: 4;
-}
-
-#content.with-nobanner-nonav {
-  margin: 1em;
-  padding-top: 76px;
-  background-image: url(images/horizontal-dots.png);
-  background-position: 0 56px;
-  background-repeat: repeat-x;
-}
 /* }}} */
 
 /* {{{ navigation links */
 #navigation {
-  position: fixed;
   font-family: sans-serif;
-  display: block;
+  list-style-type: none;
   width: 200px;
-  font-size: 85%;
   float: left;
-  margin: 0;
-  margin-top: 148px;
-  /* bottom: 10px; */
-  padding: 0;
+  margin-left: -1px;
   padding-left: 6px;
-  padding-right: 1em;
-  list-style-type: none;
-  background-image: url(images/vertical-dots.png);
-  background-position: top right;
-  background-repeat: repeat-y;
-  background-color: white;
-  color: inherit;
-  z-index: 5;
+  padding-right: 10px;
 }
 
-#navigation.with-nobanner {
-  top: 10px;
-  padding-top: 56px;
-}
-
-#navigation span.subtree {
-  display: block;
-  list-style-type: none;
-  padding: 0;
-  padding-left: 1em;
-}
-
-#navigation a {
-  display: block;
-  padding: 0.2em;
-  padding-left: 14px;
-  text-decoration: none;
-}
-
-#navigation a:hover {
-  text-decoration: underline; /* none; */
-  background-image: url(images/gradient.png);
-  background-position: top left;
-  background-repeat: repeat-y;
-/*  background-color: #b0b0de; */
-/*  color: #444444; */
-}
-
-#navigation a.closed-tree {
-  display: block;
-  font-weight: bold;
-  background-image: url(images/triangle-right-blue.png);
-  background-position: center left;
-  background-repeat: no-repeat;
-}
-
-#navigation a.closed-tree:hover {
-  background-image: url(images/gradient-with-triangle.png);
-}
-
-#navigation a.open-tree {
-  display: block;
-  font-weight: bold;
-  background-image: url(images/triangle-down-blue.png);
-  background-position: center left;
-  background-repeat: no-repeat;
-}
-
-#navigation a.open-tree:hover {
-  background-image: url(images/gradient-with-triangle.png);
-}
-
-#navigation span {
-  display: block;
-  padding: 0.2em;
-  padding-left: 14px;
-}
-
-#navigation span.nolink-tree {
-  font-weight: bold;
-  color: #aaa;
-  background-image: url(images/triangle-down-gray.png);
-  background-position: center left;
-  background-repeat: no-repeat;
-}
-
-#navigation span.nolink {
-  font-weight: bold;
-  color: #aaa;
-}
-
-#navigation span.current {
-  display: block;
-  /* padding-left: 2em; */
-  font-weight: bold;
-  color: #535353;
-  background-image: url(images/gradient-light.png);
-  background-position: top left;
-  background-repeat: repeat-y;
-  background-color: #cfcfeb;
-}
-
-#navigation span.current-tree {
-  font-weight: bold;
-  color: #535353;
-  background-image: url(images/gradient-light-with-triangle.png);
-  background-position: center left;
-  background-repeat: repeat-y;
-  background-color: #cfcfeb;
-}
-
-#navigation .hidden {
-  display: none;
-}
-
-a.homelink {
-  display: block;
-  min-height: 19px;
-  margin-bottom: 1em;
-  padding: 0;
-  padding-left: 32px;
-  padding-top: 0.4em;
-  padding-bottom: 0.2em;
-  width: 4em;
-  background-color: #e8e8ff; /* #f8f8f8; */
-  background-image: url(images/arrow-left.png);
-  background-position: center left;
-  background-repeat: repeat-y;
-  font-weight: bold;
-  text-decoration: underline;
-  color: black;
-}
-
-a.homelink:hover {
-  background-color: #8383cc;
-  color: white;
-}
 /* }}} */
 
 body {
-  background-color: white;
+  background-color: White;
   color: Black;
   margin: 0;
 }
@@ -283,26 +98,9 @@ h1.banner {
   font-weight: normal;
 }
 
-div.banner {
-  letter-spacing: 0.4em;
-  background-image: url(images/arrow-right.png);
-  background-position: center left;
-  background-repeat: repeat-y;
-  background-color: #e8e8ff; /* #f8f8f8; */
-  color: inherit;
-  margin-bottom: 1em;
-  margin-right: 0.5em;
-  padding: 0;
-  padding-left: 32px;
-  padding-top: 0.4em;
-  min-height: 1.2em;
-  /* border-top: 1px solid #b5b5b5; */
-  /* border-bottom: 1px solid #b5b5b5; */
-}
-
 h1, h2, h3, h4 {
   color: #005a9c;
-  background-color: inherit;
+  /* background-color: White; */
 }
 
 h2 {
@@ -334,7 +132,7 @@ ul, ol {
 h1.document-title {
   font-size: 160%;
   color: #005a9c;
-  background-color: inherit;
+  background-color: White;
   text-align: center;
 }
 
@@ -352,6 +150,24 @@ thead td {
 }
 
 div.index {
+}
+
+.error {
+  font-weight: bold;
+  color: red;
+}
+
+.errorbox {
+  background-color: #f0f0f0;
+  border: 1px solid #999999;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.errorbox ul {
+  padding-left: 2em;
+  list-style-type: square;
+  color: #222222;
 }
 
 span.toc-chapter {
@@ -391,14 +207,12 @@ code.file {
 /* A bit more colorful file names in ChangeLogs */
 code.changelog-item {
   color: #b08000;
-  background-color: inherit;
   font-weight: bold;
 }
 
 /* Date, time and author lines in titles */
 code.changelog-entry {
   color: #888888;
-  background-color: inherit;
 }
 
 code.command {
@@ -412,13 +226,11 @@ code.menupath {
   /* FIXME italic monospace fonts look so ugly! :\ */
   /* font-style: italic; */
   background-color: #e0e0e0;
-  color: inherit;
 }
 
 code.pagepath {
   font-weight: bold;
   background-color: #f0f0f0;
-  color: inherit;
 }
 
 code.object {
@@ -439,13 +251,11 @@ strong.important {
   color: #df5fdf;
   font-weight: bold;
   text-decoration: underline;
-  background-color: inherit;
 }
 
 /* {{{ api reference  */
 code.reference-function {
   color: #5555cc;
-  background-color: inherit;
   font-weight: bold;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
@@ -453,7 +263,6 @@ code.reference-function {
 
 code.reference-parameter {
   color: #555555;
-  background-color: inherit;
   font-weight: normal;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
@@ -461,13 +270,11 @@ code.reference-parameter {
 
 code.reference-constant {
   color: #00b0b0;
-  background-color: inherit;
   font-family: sans-serif;
 }
 
 code.reference-returns {
   color: #00c000;
-  background-color: inherit;
   margin-left: -1em;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
@@ -475,21 +282,18 @@ code.reference-returns {
 
 code.reference-type {
   color: #00c000;
-  background-color: inherit;
   font-weight: normal;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
 }
 
 code.reference-blurb {
-  background-color: inherit;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
 }
 
 code.reference-struct-type {
   color: #682407;
-  background-color: inherit;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
   font-weight: normal;
@@ -497,7 +301,6 @@ code.reference-struct-type {
 
 code.reference-struct-name {
   color: #00c000;
-  background-color: inherit;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
   font-weight: normal;
@@ -537,30 +340,18 @@ pre.smallexample {
 
 pre.lisp {
   color: #000040;
-  background-color: inherit;
 }
 
 pre.smalllisp {
   color: #000040;
-  background-color: inherit;
   font-size: 90%;
-}
-
-pre.display {
-  font-family: inherit;
 }
 
 pre.smalldisplay {
-  font-family: inherit;
   font-size: 90%;
 }
 
-pre.format {
-  font-family: inherit;
-}
-
 pre.smallformat {
-  font-family: inherit;
   font-size: 90%;
 }
 /* }}} */
@@ -593,81 +384,14 @@ table.indented {
 
 /* {{{ news items */
 span.news-date {
-  display: block;
   border: none;
-  border-top: 1px dashed #dadada;
-  padding-left: 12px;
-  padding-top: 3px;
-  margin-bottom: -1em;
-  margin-right: 0.5em;
-  background-image: url(images/square.png);
-  background-repeat: no-repeat;
-  background-position: center left;
+  font-weight: bold;
 }
 
 span.news-heading {
   font-weight: bold;
   color: #4d4daa;
-  background-color: inherit;
-}
-/* }}} */
-
-/* {{{ image gallery */
-div.gallery-info {
-  margin-bottom: 1em;
-}
-
-div.paginate {
-  font-size: 75%;
-  background-color: #f6f6f6;
-  color: inherit;
-  padding: 0.5em;
-  width: 80%;
-  text-align: center;
-}
-
-table.images {
-  width: 80%;
-}
-
-table.images td {
-  background-color: #f6f6f6;
-  color: inherit;
-  padding: 1em;
-}
-
-img.gallery-zoom {
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
-span.paginate {
-}
-
-span.paginate-disabled {
-  font-weight: bold;
-  color: #a0a0a0;
-  background-color: inherit;
-}
-
-span.paginate-title {
-  font-weight: bold;
-  color: #4d4daa;
-  background-color: inherit;
-}
-
-span.image-info {
-  font-size: 80%;
-  color: #666666;
-  background-color: inherit;
-}
-
-span.image-text {
-  font-size: 90%;
-}
-
-a.image-link:hover {
-  text-decoration: none;
+  background-color: White;
 }
 /* }}} */
 
@@ -675,7 +399,7 @@ a.image-link:hover {
 table.browse {
   text-align: left;
   border: 0;
-  width: 90%;
+  /* width: 90%; */
 }
 
 table.browse tr.gallery-info {

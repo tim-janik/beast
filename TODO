@@ -72,13 +72,7 @@ DOCS:
   tsmview. then, gsl-mplan.txt and NEWS don't need anymore markup. [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
-- adjust overall brightness of the site [alper]
-- in development docs, make function names in descriptions links to
-  apropriate functions [alper]
-- the beast site is unusable under IE [alper]
 - nroff files need another build step to get final page numbers [alper]
-- the html description for @func from bstutils.c:bst_gmask_foreach()
-  is messed up [alper]
 - the FAQ entry 1.13 has an anchor of #node-2-13-0-0 instead of #node-1-13-0-0
   due to unnumbered sections being counted as well. unnumbered sections should
   be counted seperately (e.g. as #node-u1-0-0-0). [alper]

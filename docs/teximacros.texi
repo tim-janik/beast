@@ -30,10 +30,10 @@
 
 
 @c --- preformatted sections ---
-@c WORKAROUND:
-@c makeinfo-4.3 still mixes up <display> with <para> tags which
-@c we can only circumvent by enclosing paragraphs in displaySTART
-@c and displayEND
+@c --- WORKAROUND:
+@c --- makeinfo-4.3 still mixes up <display> with <para> tags which
+@c --- we can only circumvent by enclosing paragraphs in displaySTART
+@c --- and displayEND
 @rmacro displaySTART
 @rawxml{<display>}
 @end rmacro
@@ -127,9 +127,9 @@
 
 
 @c --- revision bit ---
-@c -- WORKAROUND:
-@c -- If `@*' doesn't exist at the end of the line, makeinfo
-@c -- misfills the first following paragraph.
+@c --- WORKAROUND:
+@c --- If `@*' doesn't exist at the end of the line, makeinfo
+@c --- misfills the first following paragraph.
 @rmacro revision{TEXT}
 @emph{\TEXT\} @value{TexiStamp}@*
 @end rmacro
@@ -210,6 +210,14 @@
 @end rmacro
 @rmacro docpackage{TEXT}
 @ifxmlelse{\TEXT\,document-package,nop}
+@end rmacro
+
+@c --- document language ---
+@c --- WORKAROUND:
+@c --- makeinfo-4.3 does not make use of @documentlanguage command
+@c --- in XML outputs
+@rmacro documentlanguage{CC}
+@ifxmlelse{\CC\,document-language,documentlanguage}
 @end rmacro
 
 @c --- document style ---

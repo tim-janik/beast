@@ -1,3 +1,48 @@
+Fri Apr 25 20:49:54 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* TODO: removed obsolete items
+
+	* docs/teximacros.texi: added workaround for @documentlanguage which
+	was getting omitted in makeinfo's xml output. cleaned up workaround
+	comments a bit.
+
+	* docs/generated/Makefile.am: added banner_prefix and site_icon
+	parameters to the html rule.
+
+	* docs/generated/html.xsl: added site_icon and banner_prefix
+	parameters. added document language info to the html tag.
+	changed link style to default stylesheet to make it available to
+	older browsers as well. added "text" attribute to body tag as
+	recommended by Watchfire Bobby Accessibility Checker on
+	http://bobby.watchfire.com/. made top banner layout friendlier to
+	older browsers.
+
+	* docs/generated/navigation.xsl: use unordered list for menu
+	items as complicated css rules for span tags caused 
+	some certain browsers to cough.
+
+	* docs/generated/css/default.css: moved problematic CSS2
+	properties (ie. background-color: inherit, and navigation rules)
+	to docs/generated/css/compliant.css. exchanged banner properties
+	with a much smaller set. added "error" properties to be used by
+	sample-upload cgi script.
+
+	* docs/generated/css/compliant.css: css file containing rules
+	from docs/generated/css/default.css that cause problems for
+	older, less compliant browsers. due to the way this file is
+	included, these rules are hidden from those browsers.
+
+	* docs/generated/css/images/beast-bg.png:
+	* docs/generated/css/images/beast-left.png:
+	* docs/generated/css/images/beast-right.png:
+	* docs/generated/css/images/beast-small.png: logo parts with
+	fixed brightness to take over docs/generated/css/images/banner-*.png.
+	
+	* docs/generated/css/images/banner-dots.png:
+	* docs/generated/css/images/banner-left.png:
+	* docs/generated/css/images/banner-right.png:
+	* docs/generated/css/images/banner-small.png: removed.
+	
 Fri Apr 25 18:35:09 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/images/beast16.png: updated to a version supplied by Alper.
