@@ -268,6 +268,8 @@ bse_snet_remove_item (BseContainer *container,
 
       bse_source_clear_ochannels (source);
       bse_source_clear_ichannels (source);
+      if (BSE_SOURCE_PREPARED (source))
+	bse_source_reset (source);
       snet->sources = g_list_remove (snet->sources, item);
     }
   else

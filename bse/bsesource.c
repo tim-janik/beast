@@ -607,7 +607,6 @@ bse_source_set_input (BseSource *source,
   bse_object_ref (BSE_OBJECT (input));
 
   BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel_id, input, ochannel_id);
-  bse_source_calc_history (input, ochannel_id);
   BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
   BSE_NOTIFY (input, io_changed, NOTIFY (OBJECT, DATA));
   

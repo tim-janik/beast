@@ -1,3 +1,8 @@
+Sun Dec 12 09:06:29 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c (bse_source_set_input): don't calc history here,
+	we do that on demand.
+
 Sun Dec 12 04:50:19 1999  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-oss.c (bse_pcm_device_oss_open): start playback with
