@@ -30,6 +30,8 @@ html_targets = $(strip		\
 	download.html		\
 	contact.html		\
 	resources.html		\
+	links-related.html	\
+	links-synthesis.html	\
 	documentation.html	\
 	development.html	\
 	historic.html		\
@@ -37,6 +39,7 @@ html_targets = $(strip		\
 	log-bse.html		\
 	log-plugins.html	\
 	log-sfi.html		\
+	release-news.html	\
 	$(patsubst %.3, %.3.html, $(man_MANS)) \
 	faq.html		\
 	quickstart.html		\
@@ -144,7 +147,7 @@ if HAVE_XMLMAKEINFO_AND_XSLTPROC
 %.xml: $(srcdir)/../site-%.xml
 	cp -p $< $@
 # plain text generation rules
-gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt
+gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt Makefile
 	cd . \
 	&& echo "\input texinfo"		 >$@ \
 	&& echo "@settitle GSL Flow Engine"	>>$@ \
@@ -154,12 +157,14 @@ gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt
 	&& echo "@verbatiminclude $<"		>>$@ \
 	&& echo "@end format"			>>$@ \
 	&& echo "@bye"				>>$@
-release-news.texi: $(top_srcdir)/NEWS
+release-news.texi: $(top_srcdir)/NEWS Makefile
 	cd . \
 	&& echo "\input texinfo"		>$@ \
 	&& echo "@settitle BEAST/BSE NEWS"	>>$@ \
 	&& echo "@include teximacros.texi" 	>>$@ \
 	&& echo "@docfont{mono}"                >>$@ \
+	&& echo "@hasbanner{large}"             >>$@ \
+	&& echo "@navigation{navigation.xml}"   >>$@ \
 	&& echo "@format"			>>$@ \
 	&& echo "@verbatiminclude $<"		>>$@ \
 	&& echo "@end format"			>>$@ \

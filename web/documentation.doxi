@@ -1,6 +1,6 @@
 \input texinfo
 @c %**start of header
-@settitle BEAST/BSE API Overview
+@settitle BEAST/BSE Documentation
 @c %**end of header
 
 @include teximacros.texi
@@ -8,14 +8,41 @@
 @hasbanner{large}
 @navigation{navigation.xml}
 
-@unnumbered A Gentle Introduction to the @beastbse Architecture
 
-Beast has a number of components. These are:
+@unnumbered Synthesis
 
-@itemize
-@item GXK
-@item SFI
-@item BSE
-@end itemize
+@beast comes with a very basic synthesis tutorial about how
+to get synthesis going for new users, the
+@uref{http://beast.gtk.org/quickstart.html,, BEAST/BSE Quick Start Guide}.
 
+Tutorials and documentation about audio synthesis in general is
+currently not covered by @beast or this website, we've collected
+a number of interesting links to articles on this subject in the
+@uref{http://beast.gtk.org/links-synthesis.html,, Synthesis Links}
+section however.
+
+
+@unnumbered Development with @beastbse
+
+With the development release 0.4.1, @bse added support for the
+@uref{http://www.gnu.org,, GNU} extension language
+@uref{http://www.gnu.org/software/guile/guile.html,, Guile} and
+since can be scripted in Scheme.
+
+The
+@uref{http://beast.gtk.org/bse-procs.3.html,, procedure} and
+@uref{http://beast.gtk.org/bse-structs.3.html,, structure} references
+cover the supported interfaces to access @bse functionality from C or
+Scheme.
+
+For C specifically,
+@uref{http://beast.gtk.org/sfi.3.html,, SFI} provides the necessary
+@uref{http://gtk.org,, GLib} based framework to deal with
+threads, notes, parameters (properties), records, sequences, time stamps
+and generic values. Users of SFI will probably also appreciate the
+@uref{http://developer.gnome.org/doc/API,, GLib and GObject API Reference}.
+
+
+
+ 
 @bye

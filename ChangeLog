@@ -1,3 +1,22 @@
+Wed Jan  1 17:07:36 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-links-related.texi:
+	* docs/site-links-synthesis.texi: new content, provide synthesis and
+	related projects links.
+
+	* docs/site-documentation.texi: provide some basic content.
+	
+	* docs/site-navigation.xml: restructured development docs,
+	added link sections.
+	
+	* docs/site-news.texi: sync this with the real site.
+	
+	* docs/site-oldnews.texi: fix title.
+	
+	* site-resources.texi: introduce link sections.
+	
+	* site-about.texi: fixups.
+	
 Tue Dec 31 18:17:44 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: moved most of this into site-oldnews.texi.

@@ -3,13 +3,13 @@ General Information
 
 This is an ALPHA version of BEAST/BSE, the bedevilled audio system and
 the bedevilled sound engine.
-BEAST is still in development stage, the BSW (BSE wrapper) API has
-not really stabelized yet.
+BEAST is currently in development stage, the BSE API has not fully
+stabelized yet.
 The rough goal of this project is to get an audio system that supports
 multiple song and sample formats (besides the project specific .bse
 format) as well as synthesis networks and allows full fledged editing
 and manipulation of them. Sample manipulation includes generation of new
-sounds from module networks, based on various kinds of synthesis.
+sounds from module networks, based on various forms of audio synthesis.
 More information on the fundamental principles can be found in the
 ./docs subdirectory.
 Some *.bse files used for testing are also included in the ./test
@@ -20,8 +20,7 @@ of the Gtk+-2.0 based GnomeCanvas, Guile-1.4 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST. Most distributions
-already ship these packages or will soon, their sources can be
-found at:
+already ship these packages, their sources can be found at:
 
 GnomeCanvas (GNOME-2.0):
 	ftp://ftp.gnome.org/pub/GNOME/2.0.1/latest/sources/

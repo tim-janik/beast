@@ -1,0 +1,95 @@
+\input texinfo
+@settitle Synthesis Links
+
+@include teximacros.texi
+@hasbanner{large}
+@navigation{navigation.xml}
+
+
+@unnumbered About Synthesis
+
+@itemize
+@item @uref{http://www.harmony-central.com,, Harmony Central}:
+	@uref{http://www.harmony-central.com/Effects/effects-explained.html,,Effects Explained}
+@item @uref{http://www.synthmuseum.com,, Synth Museum}:
+	@uref{http://www.synthmuseum.com/magazine/linexpo.html,, Linear vs. Exponential}
+@end itemize
+
+Selected @uref{http://www.sospubs.co.uk,,Sound On Sound} Articles:
+@itemize
+@item Synth School 1997:
+	@uref{http://www.sospubs.co.uk/sos/1997_articles/jun97/synthschool1.html,,Part01}
+	@uref{http://www.sospubs.co.uk/sos/1997_articles/aug97/synthschool2.html,,Part02}
+	@uref{http://www.sospubs.co.uk/sos/1997_articles/sep97/synthschool3.html,,Part03}
+	@uref{http://www.sospubs.co.uk/sos/1997_articles/oct97/synthschool4.html,,Part04}
+	@uref{http://www.sospubs.co.uk/sos/1997_articles/dec97/synthschool5.html,,Part05}
+@item Synth School 1998:
+	@uref{http://www.sospubs.co.uk/sos/feb98/articles/synth.html,,Part06}
+	@uref{http://www.sospubs.co.uk/sos/apr98/articles/synthschool.html,,Part07}
+	@uref{http://www.sospubs.co.uk/sos/jun98/articles/synthschool.html,,Part08}
+	@uref{http://www.sospubs.co.uk/sos/jul98/articles/synthschool9.html,,Part09}
+	@uref{http://www.sospubs.co.uk/sos/aug98/articles/synthschool.html,,Part10}
+	@uref{http://www.sospubs.co.uk/sos/sep98/articles/synthschool.html,,Part11}
+	@uref{http://www.sospubs.co.uk/sos/oct98/articles/synthschool12.html,,Part12}
+@item @uref{http://www.sospubs.co.uk/sos/apr99/articles/20tips.htm,,20 Tips on Synth Programming}
+@item @uref{http://www.sospubs.co.uk/sos/regular_htm/glossary.htm,, SOS Technical Glossary}
+@item Synth Secrets 1999:
+	@uref{http://www.sospubs.co.uk/sos/may99/articles/synthsec.htm,,Part01}
+	@uref{http://www.sospubs.co.uk/sos/jun99/articles/synthsecrets.htm,,Part02}
+	@uref{http://www.sospubs.co.uk/sos/jul99/articles/synthsecrets.htm,,Part03}
+	@uref{http://www.sospubs.co.uk/sos/aug99/articles/synthsecrets.htm,,Part04}
+	@uref{http://www.sospubs.co.uk/sos/sep99/articles/synthsecrets.htm,,Part05}
+	@uref{http://www.sospubs.co.uk/sos/oct99/articles/synthsecrets.htm,,Part06}
+	@uref{http://www.sospubs.co.uk/sos/nov99/articles/synthsecrets.htm,,Part07}
+	@uref{http://www.sospubs.co.uk/sos/dec99/articles/synthsecrets.htm,,Part08}
+@item Synth Secrets 2000:
+	@uref{http://www.sospubs.co.uk/sos/jan00/articles/synthsecrets.htm,,Part09}
+	@uref{http://www.sospubs.co.uk/sos/feb00/articles/synthsecrets.htm,,Part10}
+	@uref{http://www.sospubs.co.uk/sos/mar00/articles/synthsecrets.htm,,Part11}
+	@uref{http://www.sospubs.co.uk/sos/apr00/articles/synthsecrets.htm,,Part12}
+	@uref{http://www.sospubs.co.uk/sos/may00/articles/synth.htm,,Part13}
+	@uref{http://www.sospubs.co.uk/sos/jun00/articles/synthsec.htm,,Part14}
+	@uref{http://www.sospubs.co.uk/sos/jul00/articles/synthsec.htm,,Part15}
+	@uref{http://www.sospubs.co.uk/sos/aug00/articles/synthsec.htm,,Part16}
+	@uref{http://www.sospubs.co.uk/sos/sep00/articles/synthsec.htm,,Part17}
+	@uref{http://www.sospubs.co.uk/sos/oct00/articles/synthsec.htm,,Part18}
+	@uref{http://www.sospubs.co.uk/sos/nov00/articles/synthsec.htm,,Part19}
+	@uref{http://www.sospubs.co.uk/sos/dec00/articles/synthsec.asp,,Part20}
+@item Synth Secrets 2001:
+	@uref{http://www.sospubs.co.uk/sos/jan01/articles/synthsec.asp,,Part21}
+	@uref{http://www.sospubs.co.uk/sos/feb01/articles/synthsecrets.asp,,Part22}
+	@uref{http://www.sospubs.co.uk/sos/mar01/articles/synthsec.asp,,Part23}
+	@uref{http://www.sospubs.co.uk/sos/apr01/articles/synthsecrets.asp,,Part24}
+	@uref{http://www.sospubs.co.uk/sos/may01/articles/synthsecrets.asp,,Part25}
+	@uref{http://www.sospubs.co.uk/sos/jun01/articles/synthsecrets.pt26.asp,,Part26}
+	@uref{http://www.sospubs.co.uk/sos/jul01/articles/synthsec.asp,,Part27}
+	@uref{http://www.sospubs.co.uk/sos/aug01/articles/synthsecrets28.asp,,Part28}
+	@uref{http://www.sospubs.co.uk/sos/sep01/articles/synthsecrets29.asp,,Part29}
+	@uref{http://www.sospubs.co.uk/sos/oct01/articles/synthsecrets30.asp,,Part30}
+	@uref{http://www.sospubs.co.uk/sos/nov01/articles/synthsecrets1101.asp,,Part31}
+	@uref{http://www.sospubs.co.uk/sos/dec01/articles/synthsecrets1201.asp,,Part32}
+@item Synth Secrets 2002:
+	@uref{http://www.sospubs.co.uk/sos/jan02/articles/synthsecrets0102.asp,,Part33}
+	@uref{http://www.sospubs.co.uk/sos/feb02/articles/synthsecrets0202.asp,,Part34}
+	@uref{http://www.sospubs.co.uk/sos/mar02/articles/synthsecrets0302.asp,,Part35}
+	@uref{http://www.sospubs.co.uk/sos/apr02/articles/synthsecrets0402.asp,,Part36}
+	@uref{http://www.sospubs.co.uk/sos/may02/articles/synthsecrets0502.asp,,Part37}
+	@uref{http://www.sospubs.co.uk/sos/jun02/articles/synthsecrets0602.asp,,Part38}
+	@uref{http://www.sospubs.co.uk/sos/jul02/articles/synthsecrets0702.asp,,Part39}
+@end itemize
+
+
+@unnumbered Synthesis Development
+
+@itemize
+@item @uref{http://www-ccrma.stanford.edu/~jos/pubs.html,, Julius O. Smith Publications}
+@item @uref{http://www.musicdsp.org, Music-DSP}
+@item @uref{http://www.dspguide.com, Guide to Digital Signal Processing}
+@item @uref{http://www.harmony-central.com,, Harmony Central}:
+	@uref{http://www.harmony-central.com/Effects,,Effects}
+	@uref{http://www.harmony-central.com/MIDI,,MIDI}
+@item @uref{http://www.chipcenter.com,,ChipCenter}:
+	@uref{http://www.chipcenter.com/dsp/colarch.html,,DSP Features Archive}
+@end itemize
+
+@bye

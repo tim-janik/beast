@@ -1,19 +1,21 @@
 \input texinfo
-@c %**start of header
-@settitle Links
-@c %**end of header
+@settitle Resources
 
 @include teximacros.texi
-
 @hasbanner{large}
 @navigation{navigation.xml}
 
+
 @unnumbered Links
 
-@itemize
-@item @uref{ftp://beast.gtk.org/pub/beast/,, BEAST/BSE FTP site}
-@item @uref{http://www.gtk.org,, GTK+ - The GIMP Toolkit}
-@item @uref{http://www.gnome.org,, GNOME Project}
-@end itemize
+We're maintaining a
+@uref{http://beast.gtk.org/links-synthesis.html,, collection of selected links}
+to articles and other writings about audio synthesis for people
+interested in reading up on the topics.
+
+And there is of course a
+@uref{http://beast.gtk.org/links-related.html,, collection} of links to related
+or subsidiary projects.
+
 
 @bye

@@ -10,20 +10,19 @@
 
 @unnumbered What are @beast{} and @bse{}?
 
-@beast{} (the @beastlong{}) is a GTK+/GNOME based front-end to @bse{} (the
-@bselong{}). @bse{} is a shared library that comes with the necessary framework
-to simulate audio synthesis (modular synthesis) and song composition as known
-from other popular "tracker" programs. @beast{} and @bse{} are provided under
-the terms of the @uref{http://www.gnu.org/copyleft/gpl.html,, GNU General Public
-License}.
+@beast (the Bedevilled Audio System) is a GTK+/GNOME based front-end to @bse
+(the Bedevilled Sound Engine).
+@bse is a shared library that comes with the necessary framework to simulate
+audio synthesis (modular synthesis) in realtime and allow for song composition.
+@beast and @bse are provided under the terms of the
+@uref{http://www.gnu.org/copyleft/gpl.html,, GNU General Public License}.
 
-@beast{} is in a very early development stage. The GUI is still pretty rough in
-some places and the @bse{} API has not really stabilized yet. The rough goal of
-this project is to get an audio system that supports multiple song and sample
-formats (besides the newly introduced @code{.bse} format) as well as synthesis
-networks, and allows full fledged editing and manipulation of them. Sample
-manipulation includes generation of new sounds from module networks, based on
-subtractive synthesis.
+@beast is currently in development stage, the @bse API has not fully stabelized yet.
+The rough goal of this project is to get an audio system that supports multiple
+song and sample formats (besides the newly introduced @code{.bse} format) as well
+as synthesis networks and allows full fledged editing and manipulation of them.
+Sample manipulation includes generation of new sounds from module networks,
+based on various forms of audio synthesis.
 
 You may want to check out the @uref{beast-doc://screenshots/index,, screenshots} page to get an
 idea of how it looks like.
