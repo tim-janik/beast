@@ -18,10 +18,9 @@
 #ifndef __BST_TRACK_VIEW_H__
 #define __BST_TRACK_VIEW_H__
 
-#include	"bstitemview.h"
-#include	"bsttrackroll.h"
-#include	"bstradiotools.h"
-#include	"bsttrackrollctrl.h"
+#include "bstitemview.h"
+#include "bsttrackroll.h"
+#include "bsttrackrollctrl.h"
 
 G_BEGIN_DECLS
 
@@ -41,8 +40,7 @@ struct _BstTrackView
 {
   BstItemView	          parent_object;
   BstTrackRoll	         *troll;
-  BstTrackRollController *troll_ctrl;
-  GxkToolbar		 *toolbar;
+  BstTrackRollController *tctrl;
   GtkWidget		 *repeat_toggle;
 };
 struct _BstTrackViewClass

@@ -658,7 +658,7 @@ gxk_menu_button_set_property (GObject      *object,
       self->menu = g_value_get_object (value);
       if (self->menu)
         {
-          gtk_menu_attach_to_widget (self->menu, GTK_WIDGET (self), menu_button_detacher);
+          gxk_menu_attach_as_popup_with_func (self->menu, GTK_WIDGET (self), menu_button_detacher);
           g_object_connect (self->menu,
                             "swapped_signal_after::selection_done", gxk_menu_button_update, self,
                             "swapped_signal_after::size-request", menu_button_max_size, self,

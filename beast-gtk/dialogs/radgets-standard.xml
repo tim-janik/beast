@@ -142,7 +142,7 @@
   <xdef:tooltip inherit="widget-patcher"
     prop:tooltip="$(null-collapse,$text)"
     prop:tooltip-visible="$(ifdef,latent-tooltip,$(not,$latent-tooltip),1)" />
-  <!-- gadget-factory: actions= activatable= regulate= per-list= per-action= -->
+  <!-- gadget-factory: actions= action-root= activatable= regulate= per-list= per-action= -->
   <xdef:gadget-factory        inherit="GxkGadgetFactory"
     prop:action-root="$(ifdef,action-root,$action-root,:xdef)"
     prop:action-list="$actions"
@@ -181,7 +181,7 @@
 	size:vgroup="gxk-toolbar-space" />
     </hbox>
   </xdef:separator>
-  <!-- button factories: button-args, action-*= -->
+  <!-- button factories: button-args, gadget-factory-args -->
   <xdef:button-factory inherit="gadget-factory"
     per-action="action-button"
     activatable="action-button"
@@ -190,6 +190,7 @@
     per-action="action-toggle"
     activatable="action-toggle"
     regulate="action-toggle" />
+  <!-- action buttons: button-args, image-size= action-*= -->
   <xdef:action-button inherit="button"
     focus="0" >
     <tooltip text="$action-tooltip" />

@@ -11,7 +11,7 @@
     hseparator="0" vseparator="0" relief="none" default-area="image-area" >
     <tooltip text="$(null-collapse,$tooltip)" />
     <vbox>
-      <vbox name="image-area" />
+      <vbox name="image-area" expand="1" />
       <vbox name="label-area" pack:pack-type="end" />
     </vbox>
   </xdef:tool-area>
@@ -36,7 +36,35 @@
 	  <hscrollbar name="tree-hscrollbar" size:vgroup="scroll-size" />
 	</vbox>
 	<vbox spacing="3" >
-	  <hbox name="toolbar-area" size:vgroup="toolbar-size" />
+	  <frame-shadow-out name="toolbar-area" size:vgroup="toolbar-size" >
+	    <hbox name="toolbar" >
+	      <tool-toggle-factory actions="tctrl-canvas-tools" relief="none" />
+	      <tool-separator pack:padding="2" />
+	      <action-toggle name="repeat-toggle" comment="FIXME: this should really be done via pspec publishing"
+		_action-name="Repeat"
+		_action-tooltip="Repeat playback within loop points"
+		image-size="big-button"
+		action-stock="BST_STOCK_REPEAT"
+		relief="none"
+		/>
+	      <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+		<popup-menu >
+		  <menu-factory actions="tctrl-hpanel-tools" />
+		</popup-menu>
+	      </menu-button>
+              <tool-separator pack:padding="2" />
+	      <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+		<popup-menu >
+		  <menu-factory actions="tctrl-quant-tools" />
+		</popup-menu>
+	      </menu-button>
+	      <tool-separator pack:padding="2" />
+	      <tool-area name="hzoom-area" _tooltip="Horizontal track zoom" >
+		<label area="label-area"
+		  _label="HZoom" />
+	      </tool-area>
+	    </hbox>
+	  </frame-shadow-out>
 	  <frame-shadow-in name="track-area" size:vgroup="tree-size" pack:expand="1" />
 	  <hscrollbar name="track-hscrollbar" size:vgroup="scroll-size" />
 	</vbox>
@@ -86,9 +114,9 @@
       <frame-shadow-out >
 	<hbox name="toolbar" >
 	  <tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
-	  <tool-separator pack:padding="3" />
+	  <tool-separator pack:padding="2" />
 	  <tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
-	  <tool-separator pack:padding="3" />
+	  <tool-separator pack:padding="2" />
 	  <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
 	    <popup-menu >
 	      <menu-factory action-root="" actions="pctrl-quant-tools" />
@@ -99,7 +127,7 @@
 	      <menu-factory action-root="" actions="pctrl-note-tools" />
 	    </popup-menu>
 	  </menu-button>
-          <tool-separator pack:padding="3" />
+          <tool-separator pack:padding="2" />
 	  <tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
             <label area="label-area"
 	      _label="HZoom" />

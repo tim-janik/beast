@@ -52,6 +52,9 @@ void            gxk_menu_attach_as_submenu         (GtkMenu         *menu,
                                                     GtkMenuItem     *menu_item);
 void            gxk_menu_attach_as_popup           (GtkMenu         *menu,
                                                     GtkWidget       *widget);
+void            gxk_menu_attach_as_popup_with_func (GtkMenu         *menu,
+                                                    GtkWidget       *widget,
+                                                    GtkMenuDetachFunc mdfunc);
 void            gxk_menu_popup                     (GtkMenu         *menu,
                                                     gint             x,
                                                     gint             y,

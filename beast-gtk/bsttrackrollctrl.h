@@ -20,7 +20,6 @@
 
 
 #include "bsttrackroll.h"
-#include "bstradiotools.h"
 
 G_BEGIN_DECLS
 
@@ -40,9 +39,9 @@ typedef struct {
   BstTrackRollUtil *current_tool;
   guint		    skip_deletion : 1;
   /* tool selections */
-  BstRadioTools    *canvas_rtools;
-  BstRadioTools    *hpanel_rtools;
-  BstRadioTools    *quant_rtools;
+  GxkActionGroup   *canvas_rtools;
+  GxkActionGroup   *hpanel_rtools;
+  GxkActionGroup   *quant_rtools;
 } BstTrackRollController;
 
 
@@ -56,6 +55,9 @@ void		bst_track_roll_controller_set_quantization	(BstTrackRollController *self,
 								 BstQuantizationType     quantization);
 guint		bst_track_roll_controller_quantize		(BstTrackRollController *self,
 								 guint                   fine_tick);
+GxkActionList*  bst_track_roll_controller_canvas_actions        (BstTrackRollController *self);
+GxkActionList*  bst_track_roll_controller_hpanel_actions        (BstTrackRollController *self);
+GxkActionList*  bst_track_roll_controller_quant_actions         (BstTrackRollController *self);
 
 
 G_END_DECLS

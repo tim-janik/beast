@@ -1,4 +1,6 @@
 FIXMES:
+- fix accel activation of menu items in popups on invisible notebook pages
+- rename _atools
 - add one-shot property to factories
 - move bst_action_list_add_cat() to bstutils.[hc]
 - delete BstActionRegions

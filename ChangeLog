@@ -1,3 +1,25 @@
+Sat Nov 15 09:54:17 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackrollctrl.[hc]: switched to GxkActionGroup and explicit
+	GxkActionList creation.
+	(bst_track_roll_controller_set_quantization): removed unused function.
+
+	* beast-gtk/bsttrackview.[hc]: removed manual toolbar setup code, switched
+	gadgets.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added track-view toolbar widgets.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: comment fixes.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: attach menu-button via
+	gxk_menu_attach_as_popup_with_func() insteaf of gtk_menu_attach_to_widget(),
+	so the menu can fetch an accel group from the toplevel and support
+	accels for menu-button popups.
+
+	* beast-gtk/gxk/gxkutils.[hc]: provide gxk_menu_attach_as_popup_with_func(),
+	a variant of gxk_menu_attach_as_popup() which preserves the detach function
+	for gtk_menu_attach_to_widget().
+
 Sat Nov 15 07:20:23 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkauxwidgets.[hc]: introduced title-style property

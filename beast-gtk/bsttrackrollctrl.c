@@ -20,7 +20,7 @@
 #include "bstpartdialog.h"
 
 
-#define QUANTIZATION(self)	((self)->quant_rtools->tool_id)
+#define QUANTIZATION(self)	((self)->quant_rtools->action_id)
 #define	HAVE_OBJECT		(1 << 31)
 
 
@@ -37,6 +37,79 @@ static void	controller_stop_edit		(BstTrackRollController *self,
 
 
 /* --- functions --- */
+GxkActionList*
+bst_track_roll_controller_canvas_actions (BstTrackRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (self->canvas_rtools);
+  static const GxkStockAction actions[] = {
+    { N_("Insert"),             "I",    N_("Insert/edit/move parts (mouse button 1 and 2)"),
+      BST_GENERIC_ROLL_TOOL_INSERT,     BST_STOCK_PART_EDITOR },
+    { N_("Link"),               "K",    N_("Link or move parts (mouse button 1 and 2)"),
+      BST_GENERIC_ROLL_TOOL_LINK,       BST_STOCK_PART_COPY },
+    { N_("Rename"),             "E",    N_("Rename parts"),
+      BST_GENERIC_ROLL_TOOL_RENAME,     BST_STOCK_PART_TEXT },
+    { N_("Delete"),             "D",    N_("Delete parts"),
+      BST_GENERIC_ROLL_TOOL_DELETE,     BST_STOCK_TRASHCAN },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
+  return alist;
+}
+
+GxkActionList*
+bst_track_roll_controller_hpanel_actions (BstTrackRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (self->hpanel_rtools);
+  static const GxkStockAction actions[] = {
+    { N_("Left"),               "L",    N_("Use the horizontal ruler to adjust the left loop pointer"),
+      BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT,     BST_STOCK_TICK_LOOP_LEFT },
+    { N_("Pos"),                "P",    N_("Use the horizontal ruler to adjust the play position pointer"),
+      BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER,  BST_STOCK_TICK_POINTER },
+    { N_("Right"),              "R",    N_("Use the horizontal ruler to adjust the right loop pointer"),
+      BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT,    BST_STOCK_TICK_LOOP_RIGHT },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
+  return alist;
+}
+
+GxkActionList*
+bst_track_roll_controller_quant_actions (BstTrackRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (self->quant_rtools);
+  static const GxkStockAction actions[] = {
+    { N_("Q: Tact"),          "<ctrl>T",      N_("Quantize to tact boundaries"),
+      BST_QUANTIZE_TACT,      BST_STOCK_QTACT, },
+    { N_("Q: None"),          "<ctrl>0",      N_("No quantization selected"),
+      BST_QUANTIZE_NONE,      BST_STOCK_QNOTE_NONE, },
+    { N_("Q: 1/1"),           "<ctrl>1",      N_("Quantize to full note boundaries"),
+      BST_QUANTIZE_NOTE_1,    BST_STOCK_QNOTE_1, },
+    { N_("Q: 1/2"),           "<ctrl>2",      N_("Quantize to half note boundaries"),
+      BST_QUANTIZE_NOTE_2,    BST_STOCK_QNOTE_2, },
+    { N_("Q: 1/4"),           "<ctrl>4",      N_("Quantize to quarter note boundaries"),
+      BST_QUANTIZE_NOTE_4,    BST_STOCK_QNOTE_4, },
+    { N_("Q: 1/8"),           "<ctrl>8",      N_("Quantize to eighths note boundaries"),
+      BST_QUANTIZE_NOTE_8,    BST_STOCK_QNOTE_8, },
+    { N_("Q: 1/16"),          "<ctrl>6",      N_("Quantize to sixteenth note boundaries"),
+      BST_QUANTIZE_NOTE_16,   BST_STOCK_QNOTE_16, },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
+  return alist;
+}
+
+static void
+controller_reset_canvas_cursor (BstTrackRollController *self)
+{
+  controller_update_canvas_cursor (self, self->canvas_rtools->action_id);
+}
+
+static void
+controller_reset_hpanel_cursor (BstTrackRollController *self)
+{
+  controller_update_hpanel_cursor (self, self->hpanel_rtools->action_id);
+}
+
 BstTrackRollController*
 bst_track_roll_controller_new (BstTrackRoll *troll)
 {
@@ -59,49 +132,21 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
 			 self, NULL,
 			 G_CONNECT_SWAPPED);
   /* register canvas tools */
-  self->canvas_rtools = bst_radio_tools_new ();
+  self->canvas_rtools = gxk_action_group_new ();
+  gxk_action_group_select (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
   g_object_connect (self->canvas_rtools,
-		    "swapped_signal::set_tool", controller_update_canvas_cursor, self,
+		    "swapped_signal::changed", controller_reset_canvas_cursor, self,
 		    NULL);
-  {
-    BstTool radio_tools[] = {
-      { CKEY ("TrackRoll/Insert"),	BST_GENERIC_ROLL_TOOL_INSERT,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/Link"),	BST_GENERIC_ROLL_TOOL_LINK,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/Rename"),	BST_GENERIC_ROLL_TOOL_RENAME,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/Delete"),	BST_GENERIC_ROLL_TOOL_DELETE,   BST_RADIO_TOOLS_EVERYWHERE },
-    };
-    bst_radio_tools_add_tools (self->canvas_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
-  }
+  controller_reset_canvas_cursor (self);
   /* register hpanel tools */
-  self->hpanel_rtools = bst_radio_tools_new ();
+  self->hpanel_rtools = gxk_action_group_new ();
+  gxk_action_group_select (self->hpanel_rtools, BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER);
   g_object_connect (self->hpanel_rtools,
-		    "swapped_signal::set_tool", controller_update_hpanel_cursor, self,
+		    "swapped_signal::changed", controller_reset_hpanel_cursor, self,
 		    NULL);
-  {
-    BstTool radio_tools[] = {
-      { CKEY ("TrackRoll/TickLeft"),	BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT,	  BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/TickPos"),	BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER,  BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/TickRight"),	BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT,	  BST_RADIO_TOOLS_EVERYWHERE },
-    };
-    bst_radio_tools_add_tools (self->hpanel_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->hpanel_rtools, BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER);
-  }
   /* register quantization tools */
-  self->quant_rtools = bst_radio_tools_new ();
-  {
-    BstTool radio_tools[] = {
-      { CKEY ("Quant/Tact"),	BST_QUANTIZE_TACT,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/None"),	BST_QUANTIZE_NONE,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/1"),	BST_QUANTIZE_NOTE_1,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/2"),	BST_QUANTIZE_NOTE_2,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/4"),	BST_QUANTIZE_NOTE_4,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/8"),	BST_QUANTIZE_NOTE_8,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/16"),	BST_QUANTIZE_NOTE_16,	BST_RADIO_TOOLS_EVERYWHERE },
-    };
-    bst_radio_tools_add_tools (self->quant_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_TACT);
-  }
+  self->quant_rtools = gxk_action_group_new ();
+  gxk_action_group_select (self->quant_rtools, BST_QUANTIZE_TACT);
 
   return self;
 }
@@ -110,7 +155,7 @@ static BstGenericRollTool
 hpanel_button_tool (BstTrackRollController *self,
 		    guint                   button)
 {
-  switch (self->hpanel_rtools->tool_id)	/* user selected tool */
+  switch (self->hpanel_rtools->action_id)	/* user selected tool */
     {
     case BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT:
       switch (button)
@@ -142,7 +187,7 @@ canvas_button_tool (BstTrackRollController *self,
 		    guint                   button,
 		    guint                   have_object)
 {
-  switch (self->canvas_rtools->tool_id | /* user selected tool */
+  switch (self->canvas_rtools->action_id | /* user selected tool */
 	  (have_object ? HAVE_OBJECT : 0))
     {
     case BST_GENERIC_ROLL_TOOL_INSERT | HAVE_OBJECT:
@@ -240,11 +285,11 @@ bst_track_roll_controller_unref (BstTrackRollController *self)
   self->ref_count--;
   if (!self->ref_count)
     {
-      bst_radio_tools_dispose (self->canvas_rtools);
+      gxk_action_group_dispose (self->canvas_rtools);
       g_object_unref (self->canvas_rtools);
-      bst_radio_tools_dispose (self->hpanel_rtools);
+      gxk_action_group_dispose (self->hpanel_rtools);
       g_object_unref (self->hpanel_rtools);
-      bst_radio_tools_dispose (self->quant_rtools);
+      gxk_action_group_dispose (self->quant_rtools);
       g_object_unref (self->quant_rtools);
       g_free (self);
     }
@@ -261,31 +306,6 @@ bst_track_roll_controller_set_song (BstTrackRollController *self,
     self->song = song;
   else
     self->song = 0;
-}
-
-void
-bst_track_roll_controller_set_quantization (BstTrackRollController *self,
-					    BstQuantizationType     quantization)
-{
-  g_return_if_fail (self != NULL);
-
-  switch (quantization)
-    {
-    case BST_QUANTIZE_TACT:
-    case BST_QUANTIZE_NOTE_1:
-    case BST_QUANTIZE_NOTE_2:
-    case BST_QUANTIZE_NOTE_4:
-    case BST_QUANTIZE_NOTE_8:
-    case BST_QUANTIZE_NOTE_16:
-    case BST_QUANTIZE_NOTE_32:
-    case BST_QUANTIZE_NOTE_64:
-    case BST_QUANTIZE_NOTE_128:
-      bst_radio_tools_set_tool (self->quant_rtools, quantization);
-      break;
-    default:
-      bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_NONE);
-      break;
-    }
 }
 
 guint
@@ -399,7 +419,7 @@ controller_stop_edit (BstTrackRollController *self,
       bse_item_set_name (self->obj_part, gtk_entry_get_text (GTK_ENTRY (ecell)));
       gxk_status_set (GXK_STATUS_DONE, _("Edit Part"), NULL);
     }
-  controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
+  controller_reset_canvas_cursor (self);
 }
 
 static void
@@ -533,8 +553,8 @@ editor_create (BstTrackRollController *self,
       bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), self->obj_part);
       g_signal_connect_object (self->troll, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
       gxk_status_set (GXK_STATUS_DONE, _("Start Editor"), NULL);
-      gtk_widget_show (pdialog);
-      bst_radio_tools_set_tool (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
+      gxk_idle_show_widget (pdialog);
+      gxk_action_group_select (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Start Editor"), _("No target"));
@@ -688,7 +708,7 @@ controller_drag (BstTrackRollController *self,
   if (drag->type == BST_DRAG_DONE || drag->type == BST_DRAG_ABORT)
     {
       self->current_tool = NULL;
-      controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
-      controller_update_hpanel_cursor (self, self->hpanel_rtools->tool_id);
+      controller_reset_canvas_cursor (self);
+      controller_reset_hpanel_cursor (self);
     }
 }

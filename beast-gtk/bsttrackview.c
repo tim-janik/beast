@@ -18,7 +18,6 @@
 #include "bsttrackview.h"
 #include "bstparam.h"
 #include "bsttracksynthdialog.h"
-
 #include <stdlib.h> /* strtol */
 #include <string.h>
 
@@ -118,8 +117,8 @@ bst_track_view_finalize (GObject *object)
 {
   BstTrackView *self = BST_TRACK_VIEW (object);
 
-  if (self->troll_ctrl)
-    bst_track_roll_controller_unref (self->troll_ctrl);
+  if (self->tctrl)
+    bst_track_roll_controller_unref (self->tctrl);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -437,7 +436,7 @@ static void
 bst_track_view_init (BstTrackView *self)
 {
   BstItemView *iview = BST_ITEM_VIEW (self);
-  GtkWidget *treehs, *trackhs, *vscroll, *entry;
+  GtkWidget *treehs, *trackhs, *vscroll;
   GtkObject *adjustment;
   GtkTreeView *tview;
   GtkTreeSelection *tsel;
@@ -521,44 +520,30 @@ bst_track_view_init (BstTrackView *self)
 			   self->troll, G_CONNECT_SWAPPED);
 
   /* track roll controller */
-  self->troll_ctrl = bst_track_roll_controller_new (self->troll);
-  bst_track_roll_controller_set_song (self->troll_ctrl, iview->container);
-
-  /* create toolbar */
-  self->toolbar = gxk_toolbar_new (&self->toolbar);
-  gxk_gadget_add (gadget, "toolbar-area", self->toolbar);
-  /* add radio tools to toolbar */
-  bst_radio_tools_build_toolbar (self->troll_ctrl->canvas_rtools, self->toolbar);
-  gxk_toolbar_append_separator (self->toolbar);
-  bst_radio_tools_build_toolbar_choice (self->troll_ctrl->hpanel_rtools, self->toolbar);
+  self->tctrl = bst_track_roll_controller_new (self->troll);
+  bst_track_roll_controller_set_song (self->tctrl, iview->container);
+  gxk_widget_publish_action_list (self, "tctrl-canvas-tools", bst_track_roll_controller_canvas_actions (self->tctrl));
+  gxk_widget_publish_action_list (self, "tctrl-hpanel-tools", bst_track_roll_controller_hpanel_actions (self->tctrl));
+  gxk_widget_publish_action_list (self, "tctrl-quant-tools", bst_track_roll_controller_quant_actions (self->tctrl));
+  
   /* add repeat toggle */
-  self->repeat_toggle = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_TOGGLE,
-						  _("Repeat"), _("Repeat playback within loop points"), BST_STOCK_REPEAT);
+  self->repeat_toggle = gxk_gadget_find (gadget, "repeat-toggle");
   gxk_nullify_on_destroy (self->repeat_toggle, &self->repeat_toggle);
   g_object_connect (self->repeat_toggle, "swapped_signal::toggled", track_view_repeat_toggled, self, NULL);
   track_view_repeat_changed (self);
-  /* add quantization tools to toolbar */
-  gxk_toolbar_append_separator (self->toolbar);
-  bst_radio_tools_build_toolbar_choice (self->troll_ctrl->quant_rtools, self->toolbar);
+
   /* add zoom spinner */
-  gxk_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (50, 1, 100, 1, 5, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", track_view_hzoom_changed, self,
 		    NULL);
-  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
-			"visible", TRUE,
-			"adjustment", adjustment,
-			"digits", 0,
-			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
-			NULL);
-  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
-		      _("Zoom"), _("Horizontal Zoom"), entry);
-
-  /* setup accelerators */
-  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->canvas_rtools->accel_group);
-  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->hpanel_rtools->accel_group);
-  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->quant_rtools->accel_group);
+  gxk_gadget_add (self, "hzoom-area",
+                  g_object_new (GTK_TYPE_SPIN_BUTTON,
+                                "visible", TRUE,
+                                "adjustment", adjustment,
+                                "digits", 0,
+                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                NULL));
 
   /* add list view columns */
   if (BST_DVL_HINTS)
@@ -621,7 +606,7 @@ track_view_set_container (BstItemView *iview,
   BST_ITEM_VIEW_CLASS (parent_class)->set_container (iview, new_container);
   if (BSE_IS_SONG (iview->container))
     {
-      bst_track_roll_controller_set_song (self->troll_ctrl, iview->container);
+      bst_track_roll_controller_set_song (self->tctrl, iview->container);
       bse_proxy_connect (iview->container,
 			 "swapped_signal::pointer-changed", track_view_pointer_changed, self,
 			 "swapped_signal::property-notify::loop-left", track_view_marks_changed, self,

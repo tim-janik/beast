@@ -2338,11 +2338,43 @@ popup_menu_detacher (GtkWidget *widget,
                      GtkMenu   *menu)
 {
   GList *menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
+  GtkMenuDetachFunc mdfunc;
   if (menu_list)
     {
       menu_list = g_list_remove (menu_list, menu);
       g_object_set_data_full (widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
     }
+  mdfunc = g_object_get_data (menu, "gxk-GtkMenuDetachFunc");
+  if (mdfunc)
+    mdfunc (widget, menu);
+}
+
+/**
+ * gxk_menu_attach_as_popup_with_func
+ * @menu:      valid #GtkMenu
+ * @menu_item: valid #GtkMenuItem
+ * @mdfunc:    a #GtkMenuDetachFunc func as in gtk_menu_attach_to_widget()
+ *
+ * Variant of gxk_menu_attach_as_popup() which preserves the #GtkMenuDetachFunc.
+ */
+void
+gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
+                                    GtkWidget        *widget,
+                                    GtkMenuDetachFunc mdfunc)
+{
+  GList *menu_list;
+  g_return_if_fail (GTK_IS_MENU (menu));
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
+  menu_list = g_list_prepend (menu_list, menu);
+  g_object_set_data_full (widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
+  g_object_set_data (menu, "gxk-GtkMenuDetachFunc", mdfunc);
+  gtk_menu_attach_to_widget (menu, widget, popup_menu_detacher);
+
+  if (!gxk_signal_handler_pending (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL))
+    g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL);
+  menu_widget_propagate_hierarchy_changed (widget);
 }
 
 /**
@@ -2362,18 +2394,7 @@ void
 gxk_menu_attach_as_popup (GtkMenu         *menu,
                           GtkWidget       *widget)
 {
-  GList *menu_list;
-  g_return_if_fail (GTK_IS_MENU (menu));
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
-  menu_list = g_list_prepend (menu_list, menu);
-  g_object_set_data_full (widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
-  gtk_menu_attach_to_widget (menu, widget, popup_menu_detacher);
-
-  if (!gxk_signal_handler_pending (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL))
-    g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL);
-  menu_widget_propagate_hierarchy_changed (widget);
+  gxk_menu_attach_as_popup_with_func (menu, widget, NULL);
 }
 
 typedef struct {
