@@ -57,7 +57,8 @@ struct ControlValue {
   gfloat                 value;
   GSList                *cmodules;
   explicit ControlValue (gfloat  v) :
-    value (v) {}
+    value (v),
+    cmodules (NULL) {}
 };
 
 
