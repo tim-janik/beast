@@ -1,7 +1,7 @@
 ;BseProjectV0
 
 
-(BseWaveRepo::Wave_Repository
+(BseWaveRepo::Wave-Repository
   (modification-time "2002-02-02 11:07:30")
   (creation-time "2002-01-12 12:42:41"))
 (BseMidiSynth::MIDI-Net

@@ -37,6 +37,6 @@
     (source-input "left_in" BseSNet:1.BseMult:5 "mono_out")
     (source-input "right_in" BseSNet:1.BseMult:5 "mono_out")
     (parasite f "BstRouterCoords" 2 -216.500000 -5.500000)))
-(BseWaveRepo::Default
+(BseWaveRepo::Wave-Repository
   (modification-time "2002-02-02 11:09:01")
   (creation-time "2002-02-02 11:09:01"))
