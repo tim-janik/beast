@@ -6,7 +6,7 @@ Wed Jan 12 23:11:31 2000  Tim Janik  <timj@gtk.org>
 	types.
 
 	* bseenums.[hc]: provide bse_enum_type_register() and
-	bse_enum_complete_info () to register exported enums.
+	bse_enum_complete_info() to register exported enums.
 
 	* bsestorage.c (bse_storage_parse_param_value): humpf, flags value
 	parsing case was missing.
