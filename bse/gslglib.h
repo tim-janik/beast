@@ -173,6 +173,7 @@ char *alloca ();
 #endif /* !__GNUC__ && !GLIB_HAVE_ALLOCA_H */
 
 #define g_alloca (size) alloca (size)
+#define g_newa(struct_type, n_structs)  ((struct_type*) g_alloca (sizeof (struct_type) * (gsize) (n_structs)))
 
 #ifdef __GNUC__
 #define inline __inline__
