@@ -14,7 +14,7 @@
 @newsTitle{Monday 29 Dec 2003, intltool add-on for beast-0.5.6}
 
 Aparently intltool 0.28 which the last beast release uses, requires a specific
-perl module to be available in order to build: So for some users, the build
+perl module to be available in order to build. So for some users, the build
 has been failing. If you run into build errors like:
 @example
 </tmp/beast-0.5.6>$ make -C data
