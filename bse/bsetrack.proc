@@ -234,7 +234,7 @@ METHOD (BseTrack, get-output-source) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  child = track->postprocess;
+  child = bse_track_get_output (track);
 
   /* set output parameters */
   bse_value_set_object (out_values++, child);

@@ -8,7 +8,7 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_srcdir) for <bse/bsedefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.h" in .gen-proc.c
-# need -I. (builddir) for "bseamplifier.gen-idl.h" in bseamplifier.cc
+# need -I. (builddir) for "bsecore.gen-idl.h" in bsecore.cc
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
@@ -94,17 +94,20 @@ bse_c_sources = $(strip \
 # Synthesis Modules
 bse_idl_sources = $(strip \
 	bseamplifier.idl	\
+	bsebusmodule.idl	\
 	bsecore.idl		\
 	bseprobe.idl		\
 	bsesummation.idl	\
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
+$(srcdir)/bsebusmodule.cc: bsebusmodule.gen-idl.h
 $(srcdir)/bsecore.cc: bsecore.gen-idl.h
 $(srcdir)/bseprobe.cc: bseprobe.gen-idl.h
 $(srcdir)/bsesummation.cc: bsesummation.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
+	bsebusmodule.cc		\
 	bsecore.cc		\
 	bseprobe.cc		\
 	bsesummation.cc		\

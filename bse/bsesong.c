@@ -421,6 +421,9 @@ bse_song_add_item (BseContainer *container,
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
 
   BSE_SEQUENCER_UNLOCK ();
+
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
+    bse_bus_create_stack (BSE_BUS (item));
 }
 
 static void
@@ -591,10 +594,10 @@ bse_song_stop_sequencing_SL (BseSong *self)
 BseSource*
 bse_song_create_summation (BseSong *self)
 {
-  BseSource *merger = bse_container_new_child (BSE_CONTAINER (self), g_type_from_name ("BseSummation"),
-                                               "uname", "Merger", NULL);
-  bse_snet_intern_child (BSE_SNET (self), merger);
-  return merger;
+  BseSource *summation = bse_container_new_child (BSE_CONTAINER (self), g_type_from_name ("BseSummation"),
+                                                  "uname", "Summation", NULL);
+  bse_snet_intern_child (BSE_SNET (self), summation);
+  return summation;
 }
 
 BseBus*
@@ -616,8 +619,9 @@ bse_song_connect_master (BseSong        *self,
   if (BSE_ITEM (bus)->parent == BSE_ITEM (self))
     {
       bse_source_clear_ichannels (self->postprocess);
-      bse_source_must_set_input (self->postprocess, 0, BSE_SOURCE (bus), 0);
-      bse_source_must_set_input (self->postprocess, 1, BSE_SOURCE (bus), 1);
+      BseSource *osource = BSE_SOURCE (bus);
+      bse_source_must_set_input (self->postprocess, 0, osource, 0);
+      bse_source_must_set_input (self->postprocess, 1, osource, 1);
     }
 }
 
@@ -658,8 +662,6 @@ bse_song_init (BseSong *self)
   bse_snet_intern_child (snet, self->postprocess);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
 
-  /* context merger <-> postprocess */
-  
   /* output */
   self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);

@@ -1,3 +1,21 @@
+Wed Aug 25 18:15:00 2004  Tim Janik  <timj@gtk.org>
+
+	* bsetype.h: added dB property type.
+
+	* bsebus.[hc]: construct effect stack csynth and add a volume
+	module into it. update the volume effect from volume properties.
+
+	* bsebusmodule.idl:
+	* bsebusmodule.cc: implement module functionality needed by busses.
+
+	* bsecontainer.c: fix base-name handling in
+	bse_container_new_child_bname() for objects with default names.
+
+	* bseproject.[hc: implement bse_project_create_intern_csynth().
+
+	* bsesong.c: trigger effect stack creation of busses after adding
+	them to songs.
+
 Sun Aug 22 19:26:23 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.[hc]: made bus input channels private to avoid undo or disk

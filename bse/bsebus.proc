@@ -165,9 +165,9 @@ BODY (BseProcedureClass *proc,
       if (!error)
         bse_item_push_undo_proc (self, "connect-bus", bus);
     }
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-
+  
   return BSE_ERROR_NONE;
 }

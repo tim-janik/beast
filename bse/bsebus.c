@@ -21,6 +21,9 @@
 #include "bsetrack.h"
 #include "bsesong.h"
 #include "bseengine.h"
+#include "bsesubiport.h"
+#include "bsesuboport.h"
+#include "bseproject.h"
 
 
 /* --- parameters --- */
@@ -97,13 +100,20 @@ bse_bus_set_property (GObject      *object,
   switch (param_id)
     {
       BseItem *parent;
+      double db;
     case PROP_INPUTS:
       break;
     case PROP_LEFT_VOLUME_dB:
-      self->left_volume = bse_db_to_factor (sfi_value_get_real (value));
+      db = sfi_value_get_real (value);
+      self->left_volume = bse_db_to_factor (db);
+      if (self->bmodule)
+        g_object_set (self->bmodule, "volume1db", db, NULL);
       break;
     case PROP_RIGHT_VOLUME_dB:
-      self->right_volume = bse_db_to_factor (sfi_value_get_real (value));
+      db = sfi_value_get_real (value);
+      self->right_volume = bse_db_to_factor (db);
+      if (self->bmodule)
+        g_object_set (self->bmodule, "volume2db", db, NULL);
       break;
     case PROP_MASTER_OUTPUT:
       parent = BSE_ITEM (self)->parent;
@@ -190,6 +200,13 @@ bse_bus_set_parent (BseItem *item,
       BseContainer *container = BSE_CONTAINER (sitem->parent);
       bse_container_remove_item (container, sitem);
     }
+  if (BSE_SUB_SYNTH (self)->snet)
+    {
+      /* there should be snet=NULL if we have not yet a parent, and
+       * snet should be set to NULL due to uncrossing before we are orphaned
+       */
+      g_warning ("Bus[%p] has snet[%p] in set-parent", self, BSE_SUB_SYNTH (self)->snet);
+    }
 }
 
 static void
@@ -226,6 +243,48 @@ bse_bus_reset (BseSource *source)
   // BseBus *iput = BSE_BUS (source);
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (bus_parent_class)->reset (source);
+}
+
+gboolean
+bse_bus_get_stack (BseBus        *self,
+                   BseContainer **snetp,
+                   BseSource    **vinp,
+                   BseSource    **voutp)
+{
+  BseItem *item = BSE_ITEM (self);
+  BseProject *project = bse_item_get_project (item);
+  if (!BSE_SUB_SYNTH (self)->snet && project && BSE_IS_SONG (item->parent))
+    {
+      g_assert (self->n_effects == 0);
+      BseSNet *snet = (BseSNet*) bse_project_create_intern_csynth (project, "%BusEffectStack");
+      self->vin = bse_container_new_child_bname (BSE_CONTAINER (snet), BSE_TYPE_SUB_IPORT, "%VInput", NULL);
+      bse_snet_intern_child (snet, self->vin);
+      BseSource *vout = bse_container_new_child_bname (BSE_CONTAINER (snet), BSE_TYPE_SUB_OPORT, "%VOutput", NULL);
+      bse_snet_intern_child (snet, vout);
+      self->bmodule = bse_container_new_child_bname (BSE_CONTAINER (snet), g_type_from_name ("BseBusModule"), "%Volume", NULL);
+      bse_snet_intern_child (snet, self->bmodule);
+      g_object_set (self->bmodule,
+                    "volume1db", bse_db_from_factor (self->left_volume, BSE_MIN_VOLUME_dB),
+                    "volume2db", bse_db_from_factor (self->right_volume, BSE_MIN_VOLUME_dB),
+                    NULL);
+      bse_source_must_set_input (vout, 0, self->bmodule, 0);
+      bse_source_must_set_input (vout, 1, self->bmodule, 1);
+      g_object_set (self, "snet", snet, NULL); /* no undo */
+      /* connect empty effect stack */
+      bse_source_must_set_input (self->bmodule, 0, self->vin, 0);
+      bse_source_must_set_input (self->bmodule, 1, self->vin, 1);
+    }
+  if (BSE_SUB_SYNTH (self)->snet)
+    {
+      if (snetp)
+        *snetp = (BseContainer*) BSE_SUB_SYNTH (self)->snet;
+      if (vinp)
+        *vinp = self->vin;
+      if (voutp)
+        *voutp = self->bmodule;
+      return TRUE;
+    }
+  return FALSE;
 }
 
 static gboolean
@@ -360,10 +419,6 @@ bse_bus_class_init (BseBusClass *class)
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
   
-  bse_object_class_add_param (object_class, _("Signal Inputs"),
-                              PROP_INPUTS,
-                              bse_param_spec_boxed ("snet", _("Custom Synth Net"), _("Synthesis network to be used as instrument"),
-                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_LEFT_VOLUME_dB,
 			      sfi_pspec_real ("left-volume-db", _("Left Volume [dB]"), _("Volume adjustment of left bus channel"),
@@ -374,6 +429,10 @@ bse_bus_class_init (BseBusClass *class)
 			      sfi_pspec_real ("right-volume-db", _("Right Volume [dB]"), _("Volume adjustment of right bus channel"),
                                               0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      0.1, SFI_PARAM_GUI ":dial"));
+  bse_object_class_add_param (object_class, _("Signal Inputs"),
+                              PROP_INPUTS,
+                              bse_param_spec_boxed ("inputs", _("Input Synths"), _("Synthesis modules used as input"),
+                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Internals"),
 			      PROP_MASTER_OUTPUT,
 			      sfi_pspec_bool ("master-output", _("Master Output"), NULL,

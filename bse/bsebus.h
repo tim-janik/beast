@@ -36,10 +36,14 @@ G_BEGIN_DECLS
 struct _BseBus
 {
   BseSubSynth   parent_object;
-  BseSource    *summation;
   SfiRing      *inputs;
   double        left_volume;
   double        right_volume;
+  BseSource    *summation;
+  BseSource    *vin;
+  BseSource    *bmodule;        /* implicitely vout */
+  guint         n_effects;      /* # of slots */
+  BseSource   **effects;        /* slot maybe NULL */
 };
 struct _BseBusClass
 {
@@ -55,6 +59,19 @@ BseErrorType    bse_bus_disconnect              (BseBus         *self,
 SfiRing*        bse_bus_list_inputs             (BseBus         *self);
 SfiRing*        bse_bus_list_outputs            (BseBus         *self);
 void            bse_bus_disconnect_outputs      (BseBus         *self);
+gboolean        bse_bus_get_stack               (BseBus         *self,
+                                                 BseContainer  **snet,
+                                                 BseSource     **vin,
+                                                 BseSource     **vout);
+BseErrorType    bse_bus_insert_slot             (BseBus         *self,
+                                                 guint           slot);
+BseErrorType    bse_bus_delete_slot             (BseBus         *self,
+                                                 guint           slot);
+BseErrorType    bse_bus_replace_effect          (BseBus         *self,
+                                                 guint           slot,
+                                                 const gchar    *etype);
+#define         bse_bus_create_stack(b)         bse_bus_get_stack (b,0,0,0)
+
 
 /* --- channels --- */
 enum

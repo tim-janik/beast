@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,7 @@
 
 #include <bse/bsesource.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_CONTEXT_MERGER              (BSE_TYPE_ID (BseContextMerger))
@@ -36,12 +33,11 @@ extern "C" {
 
 #define BSE_CONTEXT_MERGER_N_IOPORTS (8)
 
-
 /* --- object structures --- */
 struct _BseContextMerger
 {
   BseSource parent_instance;
-
+  
   guint merge_context;
 };
 struct _BseContextMergerClass
@@ -49,14 +45,10 @@ struct _BseContextMergerClass
   BseSourceClass parent_class;
 };
 
-
 /* --- API --- */
 void	bse_context_merger_set_merge_context	(BseContextMerger	*self,
 						 guint			 merge_context);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_CONTEXT_MERGER_H__ */

@@ -308,6 +308,8 @@ bse_container_new_child_bname (BseContainer *container,
   va_start (var_args, first_param_name);
   child = g_object_new_valist (child_type, first_param_name, var_args);
   va_end (var_args);
+  if (base_name)
+    g_object_set (child, "uname", NULL, NULL); /* no undo */
   bse_container_add_item (container, child);
   g_object_unref (child);
   

@@ -97,6 +97,8 @@ BseWaveRepo*	bse_project_get_wave_repo	(BseProject	*project);
 gpointer	bse_project_create_intern_synth	(BseProject	*project,
 						 const gchar	*synth_name,
 						 GType           check_type);
+BseCSynth*      bse_project_create_intern_csynth(BseProject     *project,
+                                                 const char     *base_name);
 
 
 G_END_DECLS

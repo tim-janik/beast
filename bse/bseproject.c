@@ -21,6 +21,7 @@
 #include "bsestorage.h"
 #include "bsesong.h"
 #include "bsesnet.h"
+#include "bsecsynth.h"
 #include "bsewaverepo.h"
 #include "bsessequencer.h"
 #include "bseserver.h"
@@ -638,6 +639,18 @@ bse_project_create_intern_synth (BseProject  *self,
       g_object_set_qdata (self, quark_storage_trap, old_strap);
     }
   return synth;
+}
+
+BseCSynth*
+bse_project_create_intern_csynth (BseProject *self,
+                                  const char *base_name)
+{
+  BseCSynth *csynth = bse_container_new_child_bname (BSE_CONTAINER (self),
+                                                     BSE_TYPE_CSYNTH,
+                                                     base_name,
+                                                     NULL);
+  bse_item_set_internal (BSE_ITEM (csynth), TRUE);
+  return csynth;
 }
 
 static void
