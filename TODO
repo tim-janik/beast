@@ -216,6 +216,7 @@ DRIVER DIALOG:
 - Driver NAme
 
 TASKS:
+- PianoRoll: allow editing parts from multiple tracks in a single window (syncronizing horizontal scroll position)
 - support sequencer input from and to ALSA and JACK
 - Icons: delete-track and delete-part shouldn't have the same item in track-roll
 - Main: make beast recognize and view .markup files from the command line
