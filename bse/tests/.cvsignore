@@ -8,5 +8,6 @@ cutvorbis
 magictest
 mathtests
 testcxx
+testsmart
 testfft
 testwavechunk
