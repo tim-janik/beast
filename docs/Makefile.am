@@ -22,7 +22,7 @@ docsdir = ${beastdocsdir}
 docs_DATA = ${public_docs}
 
 
-faq.txt: @MISSING_PYTHON@ @MISSING_FOLD@ faq.dat makefaq.py
+faq.txt: @MISSING_PYTHON@ @MISSING_FOLD@ faq.dat makefaq.py text.1.faq text.2.faq
 	python makefaq.py -c text -t text.1.faq -b text.2.faq -o STDOUT | fold -s > $@
 
 MAINTAINERCLEANFILES += $(built_sources)

@@ -45,6 +45,7 @@ beast_headers = $(strip \
 	bstpatterneditor.h \
 	bstpatterndialog.h \
 	bstpatternview.h \
+	bstplaylist.h \
 	bstpreferences.h \
 	bstprocedure.h \
 	bstradiotools.h \
@@ -80,6 +81,7 @@ beast_sources = $(strip \
 	bstpatterneditor.c \
 	bstpatterndialog.c \
 	bstpatternview.c \
+	bstplaylist.c \
 	bstpreferences.c \
 	bstprocedure.c \
 	bstradiotools.c \
@@ -101,6 +103,7 @@ beast_extra_sources = $(strip \
 	bstkeytable-base.c \
 	bstkeytable-us.c \
 	bstkeytable-de.c \
+	bstplaylistwidgets.c \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = $(strip \

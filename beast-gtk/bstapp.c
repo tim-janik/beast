@@ -385,7 +385,7 @@ bst_app_reload_supers (BstApp *app)
 
   for (slist = app->project->supers; slist; slist = slist->next)
     {
-      GtkWidget *page = NULL;
+      GtkWidget *label, *page = NULL;
       GSList *node;
 
       for (node = page_list; node; node = node->next)
@@ -397,12 +397,14 @@ bst_app_reload_supers (BstApp *app)
 	  }
       if (!page)
 	page = bst_app_create_super_shell (app, slist->data);
+      label = gtk_widget_new (GTK_TYPE_LABEL,
+			      "visible", TRUE,
+			      "width", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
+			      NULL);
       gtk_notebook_append_page (app->notebook,
 				page,
-				gtk_widget_new (GTK_TYPE_LABEL,
-						"visible", TRUE,
-						"width", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
-						NULL));
+				label);
+      gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
       bst_super_shell_update_parent (BST_SUPER_SHELL (page));
       gtk_widget_unref (page);
     }

@@ -425,36 +425,3 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
   
   return vbox;
 }
-
-GtkWidget*
-bst_forest_from_bse_icon (BseIcon *bse_icon,
-			  guint    icon_width,
-			  guint    icon_height)
-{
-  BseIcon *icon;
-  GtkWidget *forest;
-  
-  g_return_val_if_fail (bse_icon != NULL, NULL);
-  g_return_val_if_fail (icon_width > 0, NULL);
-  g_return_val_if_fail (icon_height > 0, NULL);
-  
-  icon = bse_icon_ref (bse_icon);
-  forest = gtk_widget_new (GNOME_TYPE_FOREST,
-			   "visible", TRUE,
-			   "width", icon_width,
-			   "height", icon_height,
-			   "expand_forest", FALSE,
-			   NULL);
-  gtk_object_set_data_full (GTK_OBJECT (forest), "BseIcon", icon, (GDestroyNotify) bse_icon_unref);
-  gnome_forest_put_sprite (GNOME_FOREST (forest), 1,
-			   (icon->bytes_per_pixel > 3
-			    ? art_pixbuf_new_const_rgba
-			    : art_pixbuf_new_const_rgb) (icon->pixels,
-							 icon->width,
-							 icon->height,
-							 icon->width *
-							 icon->bytes_per_pixel));
-  gnome_forest_set_sprite_size (GNOME_FOREST (forest), 1, icon_width, icon_height);
-
-  return forest;
-}

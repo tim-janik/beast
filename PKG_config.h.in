@@ -17,6 +17,7 @@
 
 #undef  BST_ARCH_NAME
 #undef  BST_VERSION
+#undef  BST_VERSION_HINT
 #undef  BST_DFL_KEYTABLE
 #undef  BST_WITH_XKB
 #undef  BST_WITH_GDK_PIXBUF

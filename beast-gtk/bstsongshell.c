@@ -96,8 +96,9 @@ static void
 bst_song_shell_init (BstSongShell *song_shell)
 {
   song_shell->param_view = NULL;
-  song_shell->pattern_view = NULL;
   song_shell->instrument_view = NULL;
+  song_shell->pattern_view = NULL;
+  song_shell->play_list = NULL;
   song_shell->tooltips = gtk_tooltips_new ();
   gtk_object_ref (GTK_OBJECT (song_shell->tooltips));
   gtk_object_sink (GTK_OBJECT (song_shell->tooltips));
@@ -146,14 +147,19 @@ bst_song_shell_build (BstSongShell *song_shell)
 		  "signal::destroy", gtk_widget_destroyed, &song_shell->param_view,
 		  "visible", TRUE,
 		  NULL);
+  song_shell->instrument_view = (BstItemView*) bst_instrument_view_new (song);
+  gtk_widget_set (GTK_WIDGET (song_shell->instrument_view),
+		  "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
+		  "visible", TRUE,
+		  NULL);
   song_shell->pattern_view = (BstItemView*) bst_pattern_view_new (song);
   gtk_widget_set (GTK_WIDGET (song_shell->pattern_view),
 		  "signal::destroy", gtk_widget_destroyed, &song_shell->pattern_view,
 		  "visible", TRUE,
 		  NULL);
-  song_shell->instrument_view = (BstItemView*) bst_instrument_view_new (song);
-  gtk_widget_set (GTK_WIDGET (song_shell->instrument_view),
-		  "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
+  song_shell->play_list = bst_play_list_new (song);
+  gtk_widget_set (GTK_WIDGET (song_shell->play_list),
+		  "signal::destroy", gtk_widget_destroyed, &song_shell->play_list,
 		  "visible", TRUE,
 		  NULL);
   
@@ -174,14 +180,19 @@ bst_song_shell_build (BstSongShell *song_shell)
 					    "label", "Parameters",
 					    "visible", TRUE,
 					    NULL));
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->instrument_view),
+			    gtk_widget_new (GTK_TYPE_LABEL,
+					    "label", "Instruments",
+					    "visible", TRUE,
+					    NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->pattern_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Patterns",
 					    "visible", TRUE,
 					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->instrument_view),
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), song_shell->play_list,
 			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Instruments",
+					    "label", "Arrangement",
 					    "visible", TRUE,
 					    NULL));
 }
@@ -221,8 +232,9 @@ bst_song_shell_update (BstSuperShell *super_shell)
   song_shell = BST_SONG_SHELL (super_shell);
   
   bst_param_view_update (song_shell->param_view);
-  bst_item_view_update (song_shell->pattern_view);
   bst_item_view_update (song_shell->instrument_view);
+  bst_item_view_update (song_shell->pattern_view);
+  // bst_play_list_update (song_shell->play_list);
 }
 
 static void
@@ -233,8 +245,9 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
   song_shell = BST_SONG_SHELL (super_shell);
   
   bst_param_view_rebuild (song_shell->param_view);
-  bst_item_view_rebuild (song_shell->pattern_view);
   bst_item_view_rebuild (song_shell->instrument_view);
+  bst_item_view_rebuild (song_shell->pattern_view);
+  bst_play_list_rebuild (BST_PLAY_LIST (song_shell->play_list));
 }
 
 static void

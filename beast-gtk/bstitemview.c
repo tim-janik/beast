@@ -18,7 +18,6 @@
 #include	"bstitemview.h"
 
 #include	"bstparamview.h"
-#include	"bstradiotools.h" // for bst_forest_from_bse_icon ()
 
 
 
@@ -439,8 +438,8 @@ bst_item_view_rebuild (BstItemView *item_view)
 			"homogeneous", FALSE,
 			"spacing", 0,
 			"child", bst_forest_from_bse_icon (bst_icon_from_stock (bop->stock_icon),
-							   BST_TOOLBAR_ICON_WIDTH,
-							   BST_TOOLBAR_ICON_HEIGHT),
+							   BST_BUTTON_ICON_WIDTH,
+							   BST_BUTTON_ICON_HEIGHT),
 			"child", label,
 			"parent", item_view->op_widgets[i],
 			NULL);

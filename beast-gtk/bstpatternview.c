@@ -140,16 +140,18 @@ bst_pattern_view_operate (BstItemView *item_view,
   
   switch (op)
     {
-      BsePattern *pattern;
       BseItem *item;
       
     case BST_OP_PATTERN_ADD:
       item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_PATTERN, NULL);
+      bse_pattern_group_insert_pattern (bse_song_get_default_pattern_group (song),
+					BSE_PATTERN (item),
+					-1);
       bst_item_view_select (item_view, item);
       break;
     case BST_OP_PATTERN_DELETE:
-      pattern = (BsePattern*) bst_item_view_get_current (BST_ITEM_VIEW (pattern_view));
-      bse_song_delete_pattern (song, pattern);
+      item = bst_item_view_get_current (BST_ITEM_VIEW (pattern_view));
+      bse_container_remove_item (BSE_CONTAINER (song), item);
       break;
     case BST_OP_PATTERN_EDITOR:
       popup_pattern_dialog (pattern_view);

@@ -21,8 +21,9 @@
 #include	"bstdefs.h"
 #include	"bstsupershell.h"
 #include	"bstparamview.h"
-#include	"bstpatternview.h"
 #include	"bstinstrumentview.h"
+#include	"bstpatternview.h"
+#include	"bstplaylist.h"
 
 
 #ifdef __cplusplus
@@ -48,8 +49,9 @@ struct _BstSongShell
   BstSuperShell	parent_object;
 
   BstParamView   *param_view;
-  BstItemView    *pattern_view;
   BstItemView    *instrument_view;
+  BstItemView    *pattern_view;
+  GtkWidget      *play_list;
 
   GtkTooltips	*tooltips;
 };

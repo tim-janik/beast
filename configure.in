@@ -13,6 +13,7 @@ AC_PREREQ(2.13)
 #
 # BSE version numbers
 #
+AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=3
 BSE_MICRO_VERSION=1
@@ -20,6 +21,7 @@ BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
 BST_VERSION=$BSE_VERSION
+AC_DIVERT_POP()dnl
 dnl#
 dnl# Making releases:
 dnl#   BSE_MICRO_VERSION += 1;
@@ -47,6 +49,17 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
+dnl figure debugging default, prior to $ac_help setup
+dnl
+AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
+if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
+        debug_default=yes
+else
+        debug_default=minimum
+fi
+AC_DIVERT_POP()dnl
+
+
 # initialize automake, don't define PACKAGE and VERSION
 AM_INIT_AUTOMAKE(beast, $BSE_VERSION, no-define)
 
@@ -63,7 +76,7 @@ AC_PROG_MAKE_SET
 AC_CANONICAL_HOST
 
 # declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug, [  --enable-debug=[no/minimum/yes] turn on debugging [default=yes]],,enable_debug=yes)
+AC_ARG_ENABLE(debug, [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
 
 dnl setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
@@ -206,6 +219,17 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 
     # BEAST version
     AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION")
+    case "$BST_VERSION" in
+    0.99.*)     BST_VERSION_HINT=BETA ;;
+    0.*)        BST_VERSION_HINT="Pre-ALPHA" ;;
+    *)          if test `expr $BSE_MINOR_VERSION \% 2` = 1 ; then
+                  BST_VERSION_HINT="Development Branch"
+                else
+	 	  BST_VERSION_HINT="Stable Branch"
+	        fi ;;
+    esac
+    AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT")
+
 
     # BEAST data from beast-data package
     beastbasedir=\${datadir}/beast

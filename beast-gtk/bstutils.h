@@ -40,10 +40,12 @@ typedef enum
   BST_ICON_PROPERTIES,
   BST_ICON_DELETE,
   BST_ICON_TRASHCAN,
+  BST_ICON_TARGET,
   BST_ICON_CLOSE,
   BST_ICON_NO_ILINK,
   BST_ICON_NO_OLINK,
   BST_ICON_PATTERN,
+  BST_ICON_PATTERN_GROUP,
   BST_ICON_PATTERN_TOOL,
   BST_ICON_LAST
 } BstIconId;
@@ -62,7 +64,62 @@ void	   gtk_widget_make_sensitive	 (GtkWidget		*widget);
 void	   gtk_widget_make_insensitive	 (GtkWidget		*widget);
 void	   gtk_file_selection_heal	 (GtkFileSelection	*fs);
 void	   gtk_idle_show_widget		 (GtkWidget		*widget);
-void	   gtk_widget_modify_as_title	 (GtkWidget		*widget);
+void	   gtk_idle_unparent		 (GtkWidget		*widget);
+void	   gtk_last_event_coords	 (gint			*x_root,
+					  gint			*y_root);
+void	   gtk_last_event_widget_coords	 (GtkWidget		*widget,
+					  gint			*x,
+					  gint			*y);
+
+
+/* --- Gtk+ Kennel --- */
+typedef enum
+{
+  GTK_KENNEL_TO_MINIMUM	= 1,
+  GTK_KENNEL_TO_MAXIMUM	= 2,
+  GTK_KENNEL_TO_USIZE	= 3,
+  GTK_KENNEL_TO_WIDGET	= 4
+} GtkKennelType;
+typedef    struct _GtkKennel              GtkKennel;
+GtkKennel* gtk_kennel_new		 (GtkKennelType		 width_constrain,
+					  GtkKennelType		 height_constrain);
+void	   gtk_kennel_configure		 (GtkKennel		*kennel,
+					  GtkKennelType		 width_constrain,
+					  GtkKennelType		 height_constrain);
+GtkKennel* gtk_kennel_ref		 (GtkKennel		*kennel);
+void	   gtk_kennel_unref		 (GtkKennel		*kennel);
+void	   gtk_kennel_add		 (GtkKennel		*kennel,
+					  GtkWidget		*widget);
+void	   gtk_kennel_remove		 (GtkKennel		*kennel,
+					  GtkWidget		*widget);
+void	   gtk_kennel_resize		 (GtkKennel		*kennel,
+					  guint			 width,
+					  guint			 height);
+
+
+/* --- BEAST utilities --- */
+void	        bst_widget_modify_as_title	(GtkWidget	*widget);
+void	        bst_widget_modify_bg_as_base	(GtkWidget	*widget);
+GtkWidget*	bst_forest_from_bse_icon	(BseIcon	*bse_icon,
+						 guint           icon_width,
+						 guint           icon_height);
+GtkWidget*	bst_text_view_from		(GString        *gstring,
+						 const gchar    *file_name,
+						 const gchar    *font_name,
+						 const gchar    *font_fallback);
+GtkWidget*	bst_wrap_text_create		(const gchar    *string,
+						 gboolean        double_newlines,
+						 gpointer        user_data);
+void		bst_wrap_text_set		(GtkWidget      *text,
+						 const gchar    *string,
+						 gboolean        double_newlines,
+						 gpointer        user_data);
+GtkWidget*	bst_drag_window_from_icon	(BseIcon	*icon);
+guint      bst_container_get_insertion_position (GtkContainer   *container,
+						 gboolean        scan_horizontally,
+						 gint            xy,
+						 GtkWidget      *ignore_child,
+						 gint           *ignore_child_position);
 
 
 /* --- Canvas utilities & workarounds --- */
@@ -118,18 +175,12 @@ GtkWidget* bst_adialog_new       	(GtkObject		*alive_host,
 GtkWidget* bst_adialog_get_child	(GtkWidget		*adialog);
 
 
-/* --- Auxillary Dialog --- */
-GtkWidget* bst_text_view_from           (GString        *gstring,
-					 const gchar    *file_name,
-					 const gchar    *font_name,
-					 const gchar    *font_fallback);
-GtkWidget* bst_wrap_text_create         (const gchar    *string,
-					 gboolean        double_newlines,
-					 gpointer        user_data);
-void       bst_wrap_text_set            (GtkWidget      *text,
-					 const gchar    *string,
-					 gboolean        double_newlines,
-					 gpointer        user_data);
+/* --- Gdk utilities & workarounds --- */
+gboolean gdk_window_translate		(GdkWindow	*src_window,
+					 GdkWindow	*dest_window,
+					 gint		*x,
+					 gint		*y);
+
 
 
 

@@ -88,8 +88,21 @@ typedef enum
 
 
 /* --- constants & defines --- */
-#define	BST_TAG_DIAMETER	(20)
-#define BST_STRDUP_RC_FILE()	(g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
+#define	BST_TAG_DIAMETER	  (20)
+#define BST_STRDUP_RC_FILE()	  (g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
+#define BST_BUTTON_ICON_WIDTH	  (32)
+#define BST_BUTTON_ICON_HEIGHT	  (32)
+#define BST_DRAG_ICON_WIDTH	  (BST_BUTTON_ICON_WIDTH)
+#define BST_DRAG_ICON_HEIGHT	  (BST_BUTTON_ICON_HEIGHT)
+#define BST_TOOLBAR_ICON_WIDTH    (BST_BUTTON_ICON_WIDTH)
+#define BST_TOOLBAR_ICON_HEIGHT   (BST_BUTTON_ICON_WIDTH)
+#define BST_PALETTE_ICON_WIDTH    (BST_TOOLBAR_ICON_WIDTH)
+#define BST_PALETTE_ICON_HEIGHT   (BST_TOOLBAR_ICON_HEIGHT)
+#define BST_DRAG_BUTTON_COPY	  (1)
+#define BST_DRAG_BUTTON_COPY_MASK (GDK_BUTTON1_MASK)
+#define BST_DRAG_BUTTON_MOVE	  (2)
+#define BST_DRAG_BUTTON_MOVE_MASK (GDK_BUTTON2_MASK)
+#define BST_DRAG_BUTTON_CONTEXT   (3) /* delete, clone, linkdup */
 
 /* --- debug stuff --- */
 typedef enum                    /*< skip >*/

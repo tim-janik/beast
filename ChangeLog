@@ -1,3 +1,33 @@
+Wed Mar  8 10:56:51 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.[hc]: added a bunch of new helper functions for
+	general widget handling and DND workarounds.
+	new GtkKennel structure to constrain arbitrary widgets to a certain
+	size.
+	* beast-gtk/icons/target.c:
+	* beast-gtk/icons/target.xcf: new icon to indicate DND target zone.
+	* beast-gtk/icons/pattern-group.c:
+	* beast-gtk/icons/pattern-group.xcf: icon to indicate pattern groups.
+
+	* beast-gtk/bstplaylist.[hc]: new pattern playlist editor widget.
+	* beast-gtk/bstdraggroup.c: 
+	* beast-gtk/bstdragpattern.c: assistant files for pattern dnd and
+	pattern group dnd.
+
+	* general code cleanups.
+
+Mon Mar  6 23:51:09 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatternview.c (bst_pattern_view_operate): auto-add
+	newly created patterns to the song's default pattern group.
+
+	* beast-gtk/gnomeforest.[hc]: keep idle update handler id, so we can
+	force updates. made the renderer independant of the REALIZED state.
+	(gnome_forest_render_now): new function to force updates.
+	(gnome_forest_bitmap_data): new function to create bitmap mask data
+	from the current forest buffer, suitable to create a bitmap mask with
+	gdk_bitmap_create_from_data().
+
 Tue Feb 29 08:59:39 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.[hc]: new files, holding the icon stock,

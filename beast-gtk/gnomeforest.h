@@ -149,8 +149,9 @@ struct _GnomeForest
   guint		 n_sprites;
   GnomeSprite	*sprites;
 
+  guint		 update_queued;
+
   guint		 expand_forest : 1;
-  guint		 update_queued : 1;
 
   guint		 buffer_size : 28;
   guint8	*buffer;
@@ -173,6 +174,7 @@ struct _GnomeForestClass
 GtkType		gnome_forest_get_type		(void);
 GtkWidget*	gnome_forest_new		(void);
 void		gnome_forest_rerender		(GnomeForest	  *forest);
+void		gnome_forest_render_now		(GnomeForest	  *forest);
 guint		gnome_forest_put_sprite		(GnomeForest	  *forest,
 						 guint		   id,
 						 ArtPixBuf	  *image);
@@ -207,6 +209,9 @@ void		gnome_forest_set_sprite_vflip	(GnomeForest	  *forest,
 /* caution: this pointer is short lived */
 GnomeSprite*	gnome_forest_peek_sprite	(GnomeForest	  *forest,
 						 guint		   id);
+guint8*		gnome_forest_bitmap_data	(GnomeForest	  *forest,
+						 gint             *width,
+						 gint             *height);
 
 
 /* --- sprite animation --- */

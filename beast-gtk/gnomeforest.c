@@ -522,8 +522,8 @@ gnome_forest_init (GnomeForest *forest)
 {
   forest->n_sprites = 0;
   forest->sprites = NULL;
+  forest->update_queued = 0;
   forest->expand_forest = TRUE;
-  forest->update_queued = FALSE;
   forest->buffer_size = 0;
   forest->buffer = NULL;
   forest->render_uta = NULL;
@@ -1302,10 +1302,9 @@ gnome_forest_paint (GnomeForest *forest,
   ArtIRect arect = { 0, 0, allocation->width, allocation->height };
   ArtIRect *rects, *irect, *irect_end;
   guint n_rects;
-  
-  /* finish rendering */
-  if (forest->render_uta)
-    gnome_forest_render (forest, bg_color);
+
+  /* assume rendering finished */
+  g_return_if_fail (forest->render_uta == NULL);
   
   /* rectangle list of redraw areas */
   rects = art_rect_list_from_uta (forest->paint_uta,
@@ -1369,7 +1368,9 @@ gnome_forest_idle_update (gpointer func_data)
 {
   GnomeForest *forest = GNOME_FOREST (func_data);
   
-  if (GTK_WIDGET_DRAWABLE (forest) && !GTK_OBJECT_DESTROYED (forest))
+  forest->update_queued = 0;
+  
+  if (GTK_WIDGET_VISIBLE (forest) && forest->buffer && !GTK_OBJECT_DESTROYED (forest))
     {
       gboolean need_cd = FALSE;
       
@@ -1389,21 +1390,21 @@ gnome_forest_idle_update (gpointer func_data)
 	  if (need_cd)
 	    need_cd = gnome_forest_collisions (forest);
 	}
-      while (need_cd && GTK_WIDGET_DRAWABLE (forest));
+      while (need_cd && GTK_WIDGET_VISIBLE (forest));
       
-      if (GTK_WIDGET_DRAWABLE (forest))
+      if (GTK_WIDGET_VISIBLE (forest))
 	{
 	  GtkWidget *widget = GTK_WIDGET (forest);
 	  GtkStateType state;
 	  
 	  state = GTK_WIDGET_STATE (widget);
-	  if (forest->render_uta || forest->paint_uta)
+	  if (forest->render_uta)
+	    gnome_forest_render (forest, &widget->style->bg[state]);
+	  if (GTK_WIDGET_DRAWABLE (forest) && forest->paint_uta)
 	    gnome_forest_paint (forest, &widget->style->bg[state]);
 	}
       /*FIXME*/ gnome_forest_collisions (forest);
     }
-  
-  forest->update_queued = FALSE;
   
   return FALSE;
 }
@@ -1413,15 +1414,90 @@ gnome_forest_queue_update (GnomeForest *forest)
 {
   g_return_if_fail (GNOME_IS_FOREST (forest));
   
-  if (!forest->update_queued && GTK_WIDGET_DRAWABLE (forest))
+  if (!forest->update_queued && GTK_WIDGET_VISIBLE (forest))
     {
-      forest->update_queued = TRUE;
       gtk_object_ref (GTK_OBJECT (forest));
-      g_idle_add_full (GNOME_FOREST_PRIORITY - 1,
-		       gnome_forest_idle_update,
-		       forest,
-		       (GDestroyNotify) gtk_object_unref);
+      forest->update_queued = g_idle_add_full (GNOME_FOREST_PRIORITY - 1,
+					       gnome_forest_idle_update,
+					       forest,
+					       (GDestroyNotify) gtk_object_unref);
     }
+}
+
+void
+gnome_forest_render_now (GnomeForest *forest)
+{
+  GtkWidget *widget;
+
+  g_return_if_fail (GNOME_IS_FOREST (forest));
+
+  widget = GTK_WIDGET (forest);
+
+  if (forest->update_queued)
+    {
+      guint handler_id = forest->update_queued;
+
+      gnome_forest_idle_update (forest);
+      g_source_remove (handler_id);
+    }
+}
+
+guint8*
+gnome_forest_bitmap_data (GnomeForest *forest,
+			  gint        *width_p,
+			  gint        *height_p)
+{
+  GtkWidget *widget;
+  guint8 *data;
+  gint x, y, width, height, red, green, blue, rowstride;
+
+  g_return_val_if_fail (GNOME_IS_FOREST (forest), NULL);
+  g_return_val_if_fail (width_p != NULL, NULL);
+  g_return_val_if_fail (height_p != NULL, NULL);
+  g_return_val_if_fail (GTK_WIDGET_VISIBLE (forest), NULL);
+
+  widget = GTK_WIDGET (forest);
+
+  gtk_widget_ensure_style (widget);
+
+  /* force size allocation, only
+   * necessary for unrealized forest
+   */
+  if (!forest->buffer)
+    {
+      GtkRequisition requisition = { 0, 0, };
+      GtkAllocation allocation = { 0, 0, 0, 0, };
+      
+      gtk_widget_size_request (widget, &requisition);
+      allocation.width = requisition.width;
+      allocation.height = requisition.height;
+      gtk_widget_size_allocate (widget, &allocation);
+    }
+
+  gnome_forest_render_now (forest);
+
+  width = widget->allocation.width;
+  rowstride = widget->allocation.width * 3;
+  height = widget->allocation.height;
+  red = widget->style->bg[GTK_WIDGET_STATE (widget)].red >> 8;
+  green = widget->style->bg[GTK_WIDGET_STATE (widget)].green >> 8;
+  blue = widget->style->bg[GTK_WIDGET_STATE (widget)].blue >> 8;
+
+  data = g_new0 (guint8, (width + 7) / 8 * height);
+  for (y = 0; y < height; y++)
+    for (x = 0; x < width; x++)
+      {
+	guint8 *d = data + (width + 7) / 8 * y + x / 8;
+	guint8 *buf = forest->buffer + y * rowstride + x * 3;
+
+	if (buf[0] != red || buf[1] != green || buf[2] != blue)
+	  *d |= 1 << (x % 8);
+      }
+
+  *width_p = width;
+  *height_p = height;
+
+  return data;
 }
 
 static void

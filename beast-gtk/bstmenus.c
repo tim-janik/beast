@@ -211,7 +211,7 @@ bst_menu_entries_create (GtkItemFactory *ifactory,
 	  gtk_widget_ref (child);
 	  gtk_container_remove (GTK_CONTAINER (item), child);
 	  if (bitem->entry.item_type && strcmp (bitem->entry.item_type, "<Title>") == 0)
-	    gtk_widget_modify_as_title (child);
+	    bst_widget_modify_as_title (child);
 	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
 				 "visible", TRUE,
 				 "spacing", MENU_ITEM_PADDING,
@@ -322,7 +322,7 @@ bst_choice_menu_createv (BstChoice *first_choice,
 				"xalign", 0.0,
 				NULL);
 	  if (choice_type == BST_CHOICE_TYPE_TITLE)
-	    gtk_widget_modify_as_title (any);
+	    bst_widget_modify_as_title (any);
 	}
       if (choice->icon)
 	bse_icon_unref (choice->icon);

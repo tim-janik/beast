@@ -404,7 +404,7 @@ bst_print_blurb (FILE    *fout,
 {
   if (!print_help)
     {
-      fprintf (fout, "BEAST version %s\n", BST_VERSION);
+      fprintf (fout, "BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
       fprintf (fout, "Libraries: ");
       fprintf (fout, "BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
       fprintf (fout, ", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);

@@ -118,15 +118,15 @@ bst_instrument_view_operate (BstItemView *item_view,
   
   switch (op)
     {
-      BseInstrument *instrument;
+      BseItem *item;
       gchar *string;
       
     case BST_OP_INSTRUMENT_ADD:
-      instrument = bse_song_add_instrument (song);
-      string = g_strdup_printf ("Instrument-%03u", bse_item_get_seqid (BSE_ITEM (instrument)));
-      bse_object_set_name (BSE_OBJECT (instrument), string);
+      item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_INSTRUMENT, NULL);
+      string = g_strdup_printf ("Instrument-%03u", bse_item_get_seqid (item));
+      bse_object_set_name (BSE_OBJECT (item), string);
       g_free (string);
-      bst_item_view_select (item_view, BSE_ITEM (instrument));
+      bst_item_view_select (item_view, item);
       break;
     case BST_OP_INSTRUMENT_DELETE:
       break;
