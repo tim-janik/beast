@@ -346,7 +346,8 @@ METHOD (BseProject, remove-snet) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  bse_container_remove_item (project, snet);
+  if (!BSE_SOURCE_PREPARED (project))
+    bse_container_remove_item (project, snet);
   
   return BSE_ERROR_NONE;
 }
