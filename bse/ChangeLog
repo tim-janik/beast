@@ -1,3 +1,8 @@
+Fri Oct 10 00:22:03 2003  Tim Janik  <timj@gtk.org>
+
+	* bseprocidl.cc (printInterface): *sigh* prevent BseAmplifier from
+	being generated.
+
 Thu Oct  9 23:28:10 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: added rules to build C++ modules from idl files.

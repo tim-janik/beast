@@ -286,7 +286,10 @@ void printMethods (const std::string& iface)
 void printInterface (const std::string& iface, const std::string& parent = "")
 {
   std::string idliface = removeBse (iface);
-  
+
+  if (iface == "BseAmplifier")
+    return;
+
   setActiveInterface (idliface, parent);
   printMethods (idliface);
   
