@@ -1,8 +1,8 @@
 FIXMES:
+- skip undo for trigger properties
 - disable bseevaluator without --devel as it's unstable
 - remove hpack and vpack
 - make plugins/Makefile.am actually pick up *.idl files in distribution tarballs
-- remove 64bit data fields from BseUndoStep if possible
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree
 - s/sfi_value_rec_take_ref/sfi_value_take_rec/

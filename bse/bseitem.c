@@ -849,7 +849,7 @@ undo_call_proc (BseUndoStep  *ustep,
 {
   BseProcedureClass *proc = ustep->data[0].v_pointer;
   GValue *ivalues = ustep->data[1].v_pointer; /* packed for undo */
-  gboolean commit_as_redo = ustep->data[2].v_num;
+  gboolean commit_as_redo = ustep->data[2].v_long;
   if (commit_as_redo)
     {
       const gchar *packed_item_pointer = g_value_get_string (ivalues + 0);
@@ -859,7 +859,7 @@ undo_call_proc (BseUndoStep  *ustep,
       redo_step = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       redo_step->data[0].v_pointer = proc;
       redo_step->data[1].v_pointer = ivalues;
-      redo_step->data[2].v_num = FALSE; /* not commit_as_redo again */
+      redo_step->data[2].v_long = FALSE; /* not commit_as_redo again */
       bse_undo_stack_push (redo_stack, redo_step);
       bse_item_undo_close (redo_stack);
       /* prevent premature deletion */
@@ -947,7 +947,7 @@ bse_item_push_undo_proc_valist (gpointer     item,
         pack_value_for_undo (ivalues + i, ustack);
       ustep->data[0].v_pointer = proc;
       ustep->data[1].v_pointer = ivalues;
-      ustep->data[2].v_num = commit_as_redo;
+      ustep->data[2].v_long = commit_as_redo;
       bse_undo_stack_push (ustack, ustep);
     }
   else /* urg shouldn't happen */

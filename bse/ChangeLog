@@ -1,3 +1,11 @@
+Mon Dec 15 21:16:49 2003  Tim Janik  <timj@gtk.org>
+
+	* bseundostack.h: remove 64bit fields from BseUndoStep data union and
+	added long/ulong fields to reduce memory usage on 32bit systems.
+
+	* bseitem.c: 
+	* bsecontainer.c: use v_long/v_ulong data fields in BseUndoStep.
+
 Mon Dec 15 16:00:48 2003  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.idl: stripped "/Module" prefix from categories as this

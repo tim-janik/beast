@@ -1245,7 +1245,7 @@ static void
 undo_remove_child (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  BseItem *child = g_object_new (ustep->data[0].v_unum,
+  BseItem *child = g_object_new (ustep->data[0].v_ulong,
                                  "uname", ustep->data[1].v_pointer,
                                  NULL);
   bse_container_add_item (bse_undo_pointer_unpack (ustep->data[2].v_pointer, ustack), child);
@@ -1304,7 +1304,7 @@ bse_container_remove_backedup (BseContainer *container,
   if (!BSE_UNDO_STACK_VOID (ustack))
     {
       BseUndoStep *ustep = bse_undo_step_new (undo_remove_child, unde_free_remove_child, 3);
-      ustep->data[0].v_unum = G_OBJECT_TYPE (child);
+      ustep->data[0].v_ulong = G_OBJECT_TYPE (child);
       ustep->data[1].v_pointer = g_strdup (BSE_OBJECT_UNAME (child));
       ustep->data[2].v_pointer = bse_undo_pointer_pack (container, ustack);
       bse_undo_stack_push (ustack, ustep);

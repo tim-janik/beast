@@ -60,9 +60,8 @@ struct _BseUndoStep
   gchar        *debug_name;
   union {
     gpointer    v_pointer;
-    guint64     v_unum;
-    gint64      v_num;
-    gdouble     v_double;
+    glong       v_long;
+    gulong      v_ulong;
   }             data[1];        /* flexible array */
 };
 
