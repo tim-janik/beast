@@ -16,16 +16,16 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfidl-cxxbase.h"
-#include "sfidl-factory.h"
+#include "sfidl-cxxbase.hh"
+#include "sfidl-factory.hh"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
-#include "sfidl-namespace.h"
-#include "sfidl-options.h"
-#include "sfidl-parser.h"
+#include "sfidl-namespace.hh"
+#include "sfidl-options.hh"
+#include "sfidl-parser.hh"
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;

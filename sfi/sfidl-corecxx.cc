@@ -16,9 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfidl-corecxx.h"
-#include "sfidl-namespace.h"
-#include "sfidl-factory.h"
+#include "sfidl-corecxx.hh"
+#include "sfidl-namespace.hh"
+#include "sfidl-factory.hh"
 
 #include <string.h>
 #include <stdio.h>

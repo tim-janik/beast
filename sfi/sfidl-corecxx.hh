@@ -19,9 +19,9 @@
 #ifndef _SFIDL_CORECXX_H__
 #define _SFIDL_CORECXX_H__
 
-#include "sfidl-generator.h"
-#include "sfidl-cxxbase.h"
-#include "sfidl-parser.h"
+#include "sfidl-generator.hh"
+#include "sfidl-cxxbase.hh"
+#include "sfidl-parser.hh"
 #include <stdio.h>
 #include <string>
 #include <list>

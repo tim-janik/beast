@@ -19,8 +19,8 @@
 #ifndef __SFIDL_CXXBASE_H__
 #define __SFIDL_CXXBASE_H__
 
-#include "sfidl-cbase.h"
-#include "sfidl-namespace.h"
+#include "sfidl-cbase.hh"
+#include "sfidl-namespace.hh"
 
 namespace Sfidl {
 

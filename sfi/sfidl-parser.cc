@@ -21,9 +21,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
-#include "sfidl-parser.h"
-#include "sfidl-namespace.h"
-#include "sfidl-options.h"
+#include "sfidl-parser.hh"
+#include "sfidl-namespace.hh"
+#include "sfidl-options.hh"
 #include <iostream>
 #include <set>
 #include <stack>

@@ -20,7 +20,7 @@
 #ifndef _SFIDL_TYPELIST_H__
 #define _SFIDL_TYPELIST_H__
 
-#include "sfidl-generator.h"
+#include "sfidl-generator.hh"
 #include <string>
 #include <list>
 

@@ -21,7 +21,7 @@
 #include <list>
 #include <string>
 #include <map>
-#include "sfidl-namespace.h"
+#include "sfidl-namespace.hh"
 #include <sfi/glib-extra.h>
 
 using namespace std;

@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfidl-generator.h"
-#include "sfidl-factory.h"
+#include "sfidl-generator.hh"
+#include "sfidl-factory.hh"
 #include <stdio.h>
 
 using namespace Sfidl;

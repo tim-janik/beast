@@ -17,8 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "sfidl-typelist.h"
-#include "sfidl-factory.h"
+#include "sfidl-typelist.hh"
+#include "sfidl-factory.hh"
 
 using namespace Sfidl;
 using namespace std;

@@ -92,10 +92,10 @@ sfidl_LDADD = $(SFI_LIBS) -lm
 
 bin_PROGRAMS = sfidl
 
-EXTRA_DIST += sfidl-generator.h sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-factory.h sfidl-typelist.h
-EXTRA_DIST += sfidl-cbase.h sfidl-clientc.h sfidl-clientcxx.h sfidl-corec.h sfidl-corecxx.h sfidl-cxxbase.h sfidl-hostc.h
+EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh sfidl-typelist.hh
+EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-corec.hh sfidl-corecxx.hh sfidl-cxxbase.hh sfidl-hostc.hh
 
-progs_extra_sources += sfidl-namespace.h
+progs_extra_sources += sfidl-namespace.hh
 testsfi_SOURCES = testsfi.c
 testsfi_LDADD = libsfi.la
 $(srcdir)/testsfi.c: testidl.h testidl.c

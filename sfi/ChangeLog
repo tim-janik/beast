@@ -1,3 +1,9 @@
+Mon Mar  7 07:32:03 2005  Tim Janik  <timj@gtk.org>
+
+	* removed obsolete .h C++ headers.
+
+	* adapted sources to compile against .hh C++ headers.
+
 Thu Jan 20 17:51:25 2005  Tim Janik  <timj@gtk.org>
 
 	* sfistore.[hc]: removed position arguemtn from SfiStoreReadBin().

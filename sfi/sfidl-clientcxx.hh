@@ -19,8 +19,8 @@
 #ifndef __SFIDL_CLIENTCXX_H__
 #define __SFIDL_CLIENTCXX_H__
 
-#include "sfidl-cxxbase.h"
-#include "sfidl-namespace.h"
+#include "sfidl-cxxbase.hh"
+#include "sfidl-namespace.hh"
 
 namespace Sfidl {
 

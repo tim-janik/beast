@@ -25,10 +25,10 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include "sfidl-namespace.h"
-#include "sfidl-options.h"
-#include "sfidl-parser.h"
-#include "sfidl-generator.h"
+#include "sfidl-namespace.hh"
+#include "sfidl-options.hh"
+#include "sfidl-parser.hh"
+#include "sfidl-generator.hh"
 
 namespace Sfidl {
   

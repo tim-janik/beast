@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfidl-factory.h"
+#include "sfidl-factory.hh"
 #include "glib-extra.h"
 
 using namespace Sfidl;

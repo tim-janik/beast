@@ -25,7 +25,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include "sfidl-cbase.h"
+#include "sfidl-cbase.hh"
 
 namespace Sfidl {
   
