@@ -1,3 +1,47 @@
+Mon Dec 29 21:00:23 2003  Tim Janik  <timj@gtk.org>
+
+	* bsesniffer.idl:
+	* bsesniffer.cc: start at a module to report current sample data
+	or statistics thereof. this needs to have its own procedures, signals,
+	and a context merging module.
+
+	* opnode.[hc]:
+	* gslopmaster.c:
+	* gslengine.[hc]: implemented ENGINE_JOB_REQUEST_REPLY and
+	gsl_job_request_reply() to support delayed round trip jobs.
+	unified destruction logic of reply jobs and timed jobs.
+	(gsl_module_process_reply): new function to send a reply job
+	back to the client.
+
+	* gslopmaster.c: claim ownership for a node in ENGINE_JOB_INTEGRATE.
+
+	* gsloputil.[hc]:
+	renamed _engine_mnl_reorder() to _engine_mnl_node_changed() since it
+	also collects trash reply jobs now.
+	(free_node): free unused reply jobs, fixed leaks of job data from
+	discarded transactions for ENGINE_JOB_INTEGRATE, ENGINE_JOB_FLOW_JOB
+	and ENGINE_JOB_BOUNDARY_JOB.
+	(gsl_engine_garbage_collect): call reply job handlers as early as
+	possible.
+
+	* bsecxxbase.[hc]: renamed add_param(). implemented add_signal().
+
+	* bseobject.[hc]: export bse_object_marshal_signal() to allow C++
+	object signals.
+
+	* bsecxxmodule.[hc]*: added lots of GslModule related hooks so
+	more advanced modules dealing with BseSource or engine internals can
+	still be written in C++.
+	moved BSE_CXX_DEFINE_CREATE_MODULE(), BSE_EFFECT_INTEGRATE_MODULE()
+	and BSE_CXX_DEFINE_MODULE_CONFIGURATOR() here from bsecxxplugin.h.
+
+	* bsemidireceiver.cc (voice_switch_module_free): fix free'd
+	memory access.
+
+	* bse/bsetype.h: support FBlock pspecs.
+
+	* bseprocidl.cc: guard against already-destroyed signals.
+
 Sun Dec 28 10:24:29 2003  Tim Janik  <timj@gtk.org>
 
 	* bserecords.idl:

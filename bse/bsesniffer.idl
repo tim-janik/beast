@@ -1,0 +1,60 @@
+/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+ * Copyright (C) 2003 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+// FIXME: #include <bse/bse.idl>
+namespace Bse { // FIXME: bad workaround
+  class Effect;
+  Const STANDARD = ":r:w:G:S:";
+};
+
+namespace Bse {
+
+class Sniffer : Effect {
+  // hidden core plugin: Info    icon      = "icons/sniffer.png";
+  Info    authors   = "Tim Janik";
+  Info    license   = _("GNU General Public License");
+  // hidden core plugin:
+  Info    category  = _("/Misc/Sniffer");
+  Info    blurb     = _("BseSniffer provides the neccessary data to implement client side signal scopes.");
+  IStream audio_in  = (_("Audio In"), _("Audio input"));
+  group _("Snapshooting") {
+    Bool  ctrl_mul  = Bool (_("Multiply Controls"),
+                            _("Multiply the two control inputs with each other, "
+                              "rather than weighting them by balance"),
+                            TRUE, STANDARD);
+    Real  alevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of audio input 1"), 100, STANDARD);
+  };
+  signal notify_pcm_data (Num   num,
+                          Real  f,
+                          FBlock fb,
+                          Int   i)
+  {
+    Info    authors   = "Tim Janik";
+    Info    license   = _("GNU General Public License");
+  }
+};
+
+// test procedure
+Int sniffer_start_shooting (Sniffer obj, Int i)
+{
+  // hidden core plugin: Info    category  = _("/Misc/Start Sniffer");
+  Info    authors   = "Tim Janik";
+  Info    license   = _("GNU General Public License");
+}
+
+};

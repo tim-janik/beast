@@ -211,12 +211,12 @@ master_disconnect_node_outputs (EngineNode *src_node,
 /* --- timed job handling --- */
 static inline void
 insert_trash_job (EngineNode      *node,
-                  EngineTimedJob  *tjob)
+                  EngineReplyJob  *rjob)
 {
-  tjob->next = node->tjob_first;
-  node->tjob_first = tjob;
-  if (!node->tjob_last)
-    node->tjob_last = node->tjob_first;
+  rjob->next = node->rjob_first;
+  node->rjob_first = rjob;
+  if (!node->rjob_last)
+    node->rjob_last = node->rjob_first;
 }
 
 static inline EngineTimedJob*
@@ -229,7 +229,7 @@ node_pop_flow_job (EngineNode  *node,
       if (tjob->tick_stamp <= tick_stamp)
         {
           node->flow_jobs = tjob->next;
-          insert_trash_job (node, tjob);
+          insert_trash_job (node, (EngineReplyJob*) tjob);
         }
       else
         tjob = NULL;
@@ -248,7 +248,7 @@ node_pop_boundary_job (EngineNode  *node,
       if (tjob->tick_stamp <= tick_stamp)
         {
           node->boundary_jobs = tjob->next;
-          insert_trash_job (node, tjob);
+          insert_trash_job (node, (EngineReplyJob*) tjob);
           if (!node->boundary_jobs)
             boundary_node_list = sfi_ring_remove_node (boundary_node_list, blist_node);
         }
@@ -325,12 +325,14 @@ master_process_job (GslJob *job)
       guint64 stamp;
       guint istream, jstream, ostream, con;
       EngineTimedJob *tjob;
+      EngineReplyJob *rjob;
       gboolean was_consumer;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
       JOB_DEBUG ("integrate(%p)", node);
       g_return_if_fail (node->integrated == FALSE);
       g_return_if_fail (node->sched_tag == FALSE);
+      job->data.node = NULL;  /* ownership taken over */
       _engine_mnl_integrate (node);
       if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
@@ -394,7 +396,7 @@ master_process_job (GslJob *job)
         do
           tjob = node_pop_boundary_job (node, GSL_MAX_TICK_STAMP, sfi_ring_find (boundary_node_list, node));
         while (tjob);
-      _engine_node_collect_timed_jobs (node);
+      _engine_node_collect_jobs (node);
       break;
     case ENGINE_JOB_SET_CONSUMER:
     case ENGINE_JOB_UNSET_CONSUMER:
@@ -534,6 +536,15 @@ master_process_job (GslJob *job)
       node->counter = GSL_TICK_STAMP;
       job->data.access.access_func (&node->module, job->data.access.data);
       break;
+    case ENGINE_JOB_REQUEST_REPLY:
+      node = job->data.timed_job.node;
+      rjob = job->data.reply_job.rjob;
+      JOB_DEBUG ("add reply_request(%p,%p)", node, rjob);
+      g_return_if_fail (node->integrated == TRUE);
+      job->data.reply_job.rjob = NULL;  /* ownership taken over */
+      rjob->next = node->reply_jobs;
+      node->reply_jobs = rjob;
+      break;
     case ENGINE_JOB_FLOW_JOB:
       node = job->data.timed_job.node;
       tjob = job->data.timed_job.tjob;
@@ -541,7 +552,7 @@ master_process_job (GslJob *job)
       g_return_if_fail (node->integrated == TRUE);
       job->data.timed_job.tjob = NULL;	/* ownership taken over */
       node_insert_flow_job (node, tjob);
-      _engine_mnl_reorder (node);       /* flow jobs affect mnl ordering */
+      _engine_mnl_node_changed (node);
       break;
     case ENGINE_JOB_BOUNDARY_JOB:
       node = job->data.timed_job.node;
@@ -710,6 +721,21 @@ master_update_node_state (EngineNode *node,
   return node_peek_flow_job_stamp (node);
 }
 
+gpointer
+gsl_module_process_reply (GslModule *module)
+{
+  EngineNode *node = ENGINE_NODE (module);
+  g_return_val_if_fail (ENGINE_NODE_IS_SCHEDULED (node), NULL);
+  if (G_UNLIKELY (node->reply_jobs))
+    {
+      EngineReplyJob *rjob = node->reply_jobs;
+      node->reply_jobs = rjob->next;
+      insert_trash_job (node, rjob);
+      return rjob->data;
+    }
+  return NULL;
+}
+
 static void
 master_process_locked_node (EngineNode *node,
 			    guint       n_values)
@@ -854,7 +880,7 @@ master_process_flow (void)
 	  EngineNode *tmp = node->mnl_next;
           node->counter = final_counter;
           master_update_node_state (node, node->counter);
-	  _engine_mnl_reorder (node);
+	  _engine_mnl_node_changed (node);      /* collects trash jobs */
 	  node = tmp;
 	}
 
@@ -1075,7 +1101,7 @@ _engine_master_thread (EngineMasterData *mdata)
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else if (errno != EINTR)
-	    g_printerr (G_STRLOC ": poll() error: %s\n", g_strerror (errno));
+	    g_printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
 	  
 	  if (loop.revents_filled)
 	    need_dispatch = _engine_master_check (&loop);

@@ -86,7 +86,8 @@ std::string getMethod (const std::string& name)
   return result;
 }
 
-std::string signalName (const std::string& signal)
+std::string
+signalName (const std::string& signal)
 {
   std::string result;
   std::string::const_iterator si = signal.begin ();
@@ -308,6 +309,12 @@ void printInterface (const std::string& iface, const std::string& parent = "")
 	    {
 	      GSignalQuery query;
 	      g_signal_query (sids[s], &query);
+
+              // FIXME: some core types are implemented as plugins, and thus have
+              // class destructors that are executed right after type registration.
+              // that's why we can't query their signals here
+              if (!query.signal_id)
+                continue;
 
 	      // FIXME: how to deal with Bse::MidiEvent?
 	      if (signalName (query.signal_name) == "midi_event")

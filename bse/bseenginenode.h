@@ -42,6 +42,7 @@ G_BEGIN_DECLS
 
 
 /* --- transactions --- */
+typedef struct _EngineReplyJob EngineReplyJob;
 typedef struct _EngineTimedJob EngineTimedJob;
 typedef enum {
   ENGINE_JOB_NOP,
@@ -62,6 +63,7 @@ typedef enum {
   ENGINE_JOB_ADD_POLL,
   ENGINE_JOB_REMOVE_POLL,
   ENGINE_JOB_ADD_TIMER,
+  ENGINE_JOB_REQUEST_REPLY,
   ENGINE_JOB_FLOW_JOB,
   ENGINE_JOB_BOUNDARY_JOB,
   ENGINE_JOB_DEBUG,
@@ -105,6 +107,10 @@ struct _GslJob
       EngineNode     *node;
       EngineTimedJob *tjob;
     } timed_job;
+    struct {
+      EngineNode     *node;
+      EngineReplyJob *rjob;
+    } reply_job;
     gchar	     *debug;
   } data;
 };
@@ -115,13 +121,19 @@ struct _GslTrans
   guint	    comitted : 1;
   GslTrans *cqt_next;	/* com-thread-queue */
 };
+struct _EngineReplyJob
+{
+  EngineReplyJob   *next;       /* keep in sync with EngineTimedJob */
+  GslReplyFunc      reply_func; /* keep in sync with EngineTimedJob */
+  gpointer          data;       /* keep in sync with EngineTimedJob */
+};
 struct _EngineTimedJob
 {
-  EngineTimedJob   *next;
+  EngineTimedJob   *next;       /* keep in sync with EngineReplyJob */
+  GslReplyFunc      reply_func; /* keep in sync with EngineReplyJob */
+  gpointer          data;       /* keep in sync with EngineReplyJob */
   guint64	    tick_stamp;
   GslAccessFunc     access_func;
-  gpointer          data;
-  GslFreeFunc       free_func;
 };
 
 
@@ -160,7 +172,8 @@ struct _EngineNode		/* fields sorted by order of processing access */
   /* timed jobs */
   EngineTimedJob *flow_jobs;			/* active jobs */
   EngineTimedJob *boundary_jobs;		/* active jobs */
-  EngineTimedJob *tjob_first, *tjob_last;	/* trash list */
+  EngineReplyJob *reply_jobs;		        /* reply requests */
+  EngineReplyJob *rjob_first, *rjob_last;	/* trash list */
 
   /* suspend/activation time */
   guint64        next_active;           /* result of suspend state updates */

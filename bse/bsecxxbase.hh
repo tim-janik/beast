@@ -29,20 +29,24 @@ namespace Bse {
 
 class CxxBaseClass : public BseSourceClass {
 public:
-  void add          (const char *group,
-                     guint       prop_id,
-                     GParamSpec *pspec);
-  void add          (guint       prop_id,
-                     GParamSpec *grouped_pspec);
-  void add_ochannel (const char *name,
-                     const char *blurb,
-                     int         assert_id = -1);
-  void add_ichannel (const char *name,
-                     const char *blurb,
-                     int         assert_id = -1);
-  void add_jchannel (const char *name,
-                     const char *blurb,
-                     int         assert_id = -1);
+  void  add_param    (const char  *group,
+                      guint        prop_id,
+                      GParamSpec  *pspec);
+  void  add_param    (guint        prop_id,
+                      GParamSpec  *grouped_pspec);
+  guint add_signal   (const gchar *signal_name,
+                      GSignalFlags flags,
+                      guint        n_params,
+                      ...);
+  void  add_ochannel (const char  *name,
+                      const char  *blurb,
+                      int          assert_id = -1);
+  void  add_ichannel (const char  *name,
+                      const char  *blurb,
+                      int          assert_id = -1);
+  void  add_jchannel (const char  *name,
+                      const char  *blurb,
+                      int          assert_id = -1);
 };
 class CxxBase {
   void*           cast_to_gobject   ();

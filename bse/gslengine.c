@@ -91,8 +91,9 @@ gsl_module_new (const GslClass *klass,
     }
   node->flow_jobs = NULL;
   node->boundary_jobs = NULL;
-  node->tjob_first = NULL;
-  node->tjob_last = NULL;
+  node->reply_jobs = NULL;
+  node->rjob_first = NULL;
+  node->rjob_last = NULL;
   
   return &node->module;
 }
@@ -462,6 +463,46 @@ gsl_job_access (GslModule    *module,
 }
 
 /**
+ * gsl_job_request_reply
+ * @module:      The module to access
+ * @data:        Data passed in to the accessor
+ * @reply_func:  Function invoked with @data in the user thread upon reply
+ * @Returns:     New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which inserts @reply_func
+ * with @data into the reply job queue of @module.
+ * Reply jobs are jobs with limited impact on modules, which
+ * processed by the module on demand. Once a module has processed
+ * a reply job, the job is returned to the user thread before the
+ * next block boundary, so @reply_func() can be invoked as early
+ * as possible.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslJob*
+gsl_job_request_reply (GslModule    *module,
+                       GslReplyFunc  reply_func,
+                       gpointer      data)
+{
+  GslJob *job;
+  EngineReplyJob *rjob;
+
+  g_return_val_if_fail (module != NULL, NULL);
+  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  g_return_val_if_fail (reply_func != NULL, NULL);
+  
+  rjob = g_new0 (EngineReplyJob, 1);
+  rjob->reply_func = reply_func;
+  rjob->data = data;
+
+  job = sfi_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_REQUEST_REPLY;
+  job->data.reply_job.node = ENGINE_NODE (module);
+  job->data.reply_job.rjob = rjob;
+  
+  return job;
+}
+
+/**
  * gsl_flow_job_access
  * @module:      The module to access
  * @tick_stamp:  Engine time stamp
@@ -493,11 +534,11 @@ gsl_job_flow_access (GslModule    *module,
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  tjob = sfi_new_struct0 (EngineTimedJob, 1);
+  tjob = g_new0 (EngineTimedJob, 1);
+  tjob->reply_func = (GslReplyFunc) free_func;
+  tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
-  tjob->data = data;
-  tjob->free_func = free_func;
 
   job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
@@ -538,11 +579,11 @@ gsl_job_boundary_access (GslModule    *module,
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  tjob = sfi_new_struct0 (EngineTimedJob, 1);
+  tjob = g_new0 (EngineTimedJob, 1);
+  tjob->reply_func = (GslReplyFunc) free_func;
+  tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
-  tjob->data = data;
-  tjob->free_func = free_func;
 
   job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;

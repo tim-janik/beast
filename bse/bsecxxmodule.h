@@ -82,26 +82,56 @@ public:
   static Accessor*          accessor        (void    (C::*accessor) (D*),
                                              const D     &data);
   /* internal */
-  void                      set_module      (void*);
+  void                      set_module      (GslModule *module);
 };
 
 class Effect : public CxxBase {
 public:
-  explicit                  Effect              ();
-  void                      set_property        (guint          prop_id,
-                                                 const Value   &value,
-                                                 GParamSpec    *pspec);
-  void                      get_property        (guint          prop_id,
-                                                 Value         &value,
-                                                 GParamSpec    *pspec);
-  virtual SynthesisModule*  create_module       (unsigned int   context_handle,
-                                                 GslTrans      *trans) = 0;
+  explicit                  Effect               ();
+  void                      set_property         (guint            prop_id,
+                                                  const Value     &value,
+                                                  GParamSpec      *pspec);
+  void                      get_property         (guint            prop_id,
+                                                  Value           &value,
+                                                  GParamSpec      *pspec);
+  virtual SynthesisModule*  create_module        (unsigned int     context_handle,
+                                                  GslTrans        *trans) = 0;
   virtual SynthesisModule::Accessor*
-                            module_configurator () = 0;
-  void                      update_modules      (GslTrans      *trans = NULL);
+  module_configurator  () = 0;
+  void                      update_modules       (GslTrans        *trans = NULL);
   
-  static void               class_init          (CxxBaseClass *klass);
+  static void               class_init           (CxxBaseClass    *klass);
+protected:
+  const GslClass*           create_gsl_class     (SynthesisModule *sample_module,
+                                                  int              cost = -1,
+                                                  int              n_istreams = -1,
+                                                  int              n_jstreams = -1,
+                                                  int              n_ostreams = -1);
+  virtual GslModule*        integrate_gsl_module (unsigned int     context_handle,
+                                                  GslTrans        *trans);
+  virtual void              dismiss_gsl_module   (GslModule       *gslmodule,
+                                                  guint            context_handle,
+                                                  GslTrans        *trans);
 };
+/* effect method: create_module(); */
+#define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType,ModuleType,ParamType)           \
+  Bse::SynthesisModule*                                                         \
+  ObjectType::create_module (unsigned int context_handle,                       \
+                             GslTrans    *trans)                                \
+  { /* create a synthesis module */                                             \
+    return new ModuleType();                                                    \
+  }
+/* effect method: module_configurator(); */
+#define BSE_CXX_DEFINE_MODULE_CONFIGURATOR(ObjectType,ModuleType,ParamType)     \
+Bse::SynthesisModule::Accessor*                                                 \
+ObjectType::module_configurator()                                               \
+{                                                                               \
+  return SynthesisModule::accessor (&ModuleType::config, ParamType (this));     \
+}
+/* convenience macro to define BseEffect module methods */
+#define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
+  BSE_CXX_DEFINE_CREATE_MODULE (ObjectType,ModuleType,ParamType);               \
+  BSE_CXX_DEFINE_MODULE_CONFIGURATOR (ObjectType,ModuleType,ParamType);
 
 
 /* --- implementation details --- */

@@ -173,25 +173,6 @@ EnumValue (int         int_value,
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__0##Effect (bse_export_node<Effect>,                   \
                                      &BSE_CXX_EXPORT_IDENTITY);
-/* effect method: create_module(); */
-#define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType,ModuleType,ParamType)           \
-  Bse::SynthesisModule*                                                         \
-  ObjectType::create_module (unsigned int context_handle,                       \
-                             GslTrans    *trans)                                \
-  { /* create a synthesis module */                                             \
-    return new ModuleType();                                                    \
-  }
-/* effect method: module_configurator(); */
-#define BSE_CXX_DEFINE_MODULE_CONFIGURATOR(ObjectType,ModuleType,ParamType)     \
-Bse::SynthesisModule::Accessor*                                                 \
-ObjectType::module_configurator()                                               \
-{                                                                               \
-  return SynthesisModule::accessor (&ModuleType::config, ParamType (this));     \
-}
-/* convenience macro to define BseEffect module methods */
-#define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
-  BSE_CXX_DEFINE_CREATE_MODULE (ObjectType,ModuleType,ParamType);               \
-  BSE_CXX_DEFINE_MODULE_CONFIGURATOR (ObjectType,ModuleType,ParamType);
 /* implement static_data portions used by auto-generated classes */
 #define BSE_CXX_DEFINE_STATIC_DATA(ObjectType)                                  \
   ObjectType::StaticData ObjectType::static_data;

@@ -92,11 +92,14 @@ bse_c_sources = $(strip \
 # Synthesis Modules
 bse_idl_sources = $(strip \
 	bseamplifier.idl	\
+	bsesniffer.idl		\
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
+$(srcdir)/bsesniffer.cc: bsesniffer.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
 bse_cc_sources = $(strip \
 	bseamplifier.cc		\
+	bsesniffer.cc		\
 )
 # procedure sources
 bse_proc_sources = $(strip \

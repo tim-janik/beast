@@ -233,9 +233,9 @@ CxxBase::item ()
 }
 
 void
-CxxBaseClass::add (const char *group,
-                   guint       prop_id,
-                   GParamSpec *pspec)
+CxxBaseClass::add_param (const char *group,
+                         guint       prop_id,
+                         GParamSpec *pspec)
 {
   g_return_if_fail (pspec->owner_type == 0);
   pspec->flags = (GParamFlags) (pspec->flags | G_PARAM_CONSTRUCT);
@@ -243,12 +243,37 @@ CxxBaseClass::add (const char *group,
 }
 
 void
-CxxBaseClass::add (guint       prop_id,
-                   GParamSpec *grouped_pspec)
+CxxBaseClass::add_param (guint       prop_id,
+                         GParamSpec *grouped_pspec)
 {
   g_return_if_fail (grouped_pspec->owner_type == 0);
   grouped_pspec->flags = (GParamFlags) (grouped_pspec->flags | G_PARAM_CONSTRUCT);
   bse_object_class_add_grouped_property ((BseObjectClass*) this, prop_id, grouped_pspec);
+}
+
+guint
+CxxBaseClass::add_signal (const gchar *signal_name,
+                          GSignalFlags flags,
+                          guint        n_params,
+                          ...)
+{
+  va_list args;
+  guint signal_id;
+  
+  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  g_return_val_if_fail (signal_name != NULL, 0);
+  
+  va_start (args, n_params);
+  signal_id = g_signal_new_valist (signal_name,
+                                   G_TYPE_FROM_CLASS (this),
+                                   (GSignalFlags) (G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | (int) flags),
+                                   NULL, NULL, NULL,
+                                   bse_object_marshal_signal,
+                                   G_TYPE_NONE,
+                                   n_params, args);
+  va_end (args);
+  
+  return signal_id;
 }
 
 void

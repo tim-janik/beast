@@ -381,13 +381,13 @@ bse_object_class_add_property (BseObjectClass *class,
   bse_object_class_add_grouped_property (class, property_id, pspec);
 }
 
-static void
-bse_marshal_signal (GClosure       *closure,
-		    GValue /*out*/ *return_value,
-		    guint           n_param_values,
-		    const GValue   *param_values,
-		    gpointer        invocation_hint,
-		    gpointer        marshal_data)
+void
+bse_object_marshal_signal (GClosure       *closure,
+                           GValue /*out*/ *return_value,
+                           guint           n_param_values,
+                           const GValue   *param_values,
+                           gpointer        invocation_hint,
+                           gpointer        marshal_data)
 {
   gpointer arg0, argN;
   
@@ -429,7 +429,7 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
 				   G_TYPE_FROM_CLASS (oclass),
 				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
 				   NULL, NULL, NULL,
-				   bse_marshal_signal,
+				   bse_object_marshal_signal,
 				   return_type,
 				   n_params, args);
   va_end (args);
@@ -456,7 +456,7 @@ bse_object_class_add_asignal (BseObjectClass    *oclass,
 				   G_TYPE_FROM_CLASS (oclass),
 				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION,
 				   NULL, NULL, NULL,
-				   bse_marshal_signal,
+				   bse_object_marshal_signal,
 				   return_type,
 				   n_params, args);
   va_end (args);
@@ -483,7 +483,7 @@ bse_object_class_add_dsignal (BseObjectClass    *oclass,
 				   G_TYPE_FROM_CLASS (oclass),
 				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_DETAILED,
 				   NULL, NULL, NULL,
-				   bse_marshal_signal,
+				   bse_object_marshal_signal,
 				   return_type,
 				   n_params, args);
   va_end (args);

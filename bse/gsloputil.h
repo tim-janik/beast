@@ -38,10 +38,10 @@ gfloat*		gsl_engine_const_values		(gfloat		value);
 
 /* --- MasterThread --- */
 void		_engine_recycle_const_values	(void);
-void		_engine_node_collect_timed_jobs	(EngineNode	*node);
+void		_engine_node_collect_jobs	(EngineNode	*node);
 /* master node list */
 void		_engine_mnl_remove		(EngineNode	*node);
-void		_engine_mnl_reorder		(EngineNode	*node);
+void		_engine_mnl_node_changed	(EngineNode	*node);
 void		_engine_mnl_integrate		(EngineNode	*node);
 #define	GSL_MNL_UNSCHEDULED_FLOW_NODE(node)	((node)->flow_jobs && !(node)->sched_tag)
 EngineNode*	_engine_mnl_head		(void);

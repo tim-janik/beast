@@ -82,7 +82,7 @@ unschedule_node (EngineSchedule *sched,
   node->sched_leaf_level = 0;
   node->sched_tag = FALSE;
   if (node->flow_jobs)
-    _engine_mnl_reorder (node);
+    _engine_mnl_node_changed (node);
   sched->n_items--;
 }
 
@@ -109,7 +109,7 @@ unschedule_cycle (EngineSchedule *sched,
       node->sched_leaf_level = 0;
       node->sched_tag = FALSE;
       if (node->flow_jobs)
-	_engine_mnl_reorder (node);
+	_engine_mnl_node_changed (node);
     }
   sched->n_items--;
 }
@@ -233,7 +233,7 @@ schedule_node (EngineSchedule *sched,
   node->sched_tag = TRUE;
   node->cleared_ostreams = FALSE;
   if (node->flow_jobs)
-    _engine_mnl_reorder (node);
+    _engine_mnl_node_changed (node);
   _engine_schedule_grow (sched, leaf_level);
   /* could do 3-stage scheduling by expensiveness */
   sched->nodes[leaf_level] = (ENGINE_NODE_IS_EXPENSIVE (node) ? sfi_ring_prepend : sfi_ring_append) (sched->nodes[leaf_level], node);
@@ -260,7 +260,7 @@ schedule_cycle (EngineSchedule *sched,
       node->sched_tag = TRUE;
       node->cleared_ostreams = FALSE;
       if (node->flow_jobs)
-	_engine_mnl_reorder (node);
+	_engine_mnl_node_changed (node);
     }
   _engine_schedule_grow (sched, leaf_level);
   sched->cycles[leaf_level] = sfi_ring_prepend (sched->cycles[leaf_level], cycle_nodes);

@@ -696,8 +696,8 @@ voice_switch_module_free (gpointer        data,
 {
   VoiceSwitch *voice = (VoiceSwitch*) data;
   
-  g_free (voice);
   g_free (voice->vinputs);
+  g_free (voice);
 }
 
 static VoiceSwitch*

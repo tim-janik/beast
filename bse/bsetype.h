@@ -146,6 +146,10 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, options), group)
 #define	sfidl_pspec_GEnum_default(group, name, etype)	\
   sfi_pspec_set_group (bse_param_spec_genum (name, NULL, NULL, etype, 0, SFI_PARAM_STANDARD), group)
+#define	sfidl_pspec_FBlock(group, name, nick, blurb, options)			\
+  sfi_pspec_set_group (sfi_pspec_fblock (name, nick, blurb, options), group)
+#define	sfidl_pspec_FBlock_default(group, name)			\
+  sfidl_pspec_FBlock (group, name, NULL, NULL, "")
 #define	sfidl_pspec_String(group, name, nick, blurb, dflt, options)			\
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
 #define	sfidl_pspec_String_default(group, name)  \

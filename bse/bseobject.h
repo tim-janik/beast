@@ -153,6 +153,12 @@ bse_object_unproxy_notifies	(gpointer	 src_object,
 
 /* --- implementation details --- */
 extern GQuark bse_quark_uname;
+void          bse_object_marshal_signal (GClosure       *closure,
+                                         GValue /*out*/ *return_value,
+                                         guint           n_param_values,
+                                         const GValue   *param_values,
+                                         gpointer        invocation_hint,
+                                         gpointer        marshal_data);
 
 G_END_DECLS
 

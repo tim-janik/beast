@@ -65,10 +65,13 @@ Effect::update_modules (GslTrans *trans)
   if (BSE_SOURCE_PREPARED (source))
     {
       SynthesisModule::Accessor *ac = module_configurator();
-      GslTrans *atrans = trans ? trans : gsl_trans_open();
-      bse_source_access_modules (source, access_trampoline, ac, access_data_free, atrans);
-      if (!trans)
-        gsl_trans_commit (atrans);
+      if (ac)
+        {
+          GslTrans *atrans = trans ? trans : gsl_trans_open();
+          bse_source_access_modules (source, access_trampoline, ac, access_data_free, atrans);
+          if (!trans)
+            gsl_trans_commit (atrans);
+        }
     }
 }
 
@@ -78,10 +81,8 @@ SynthesisModule::SynthesisModule()
 }
 
 void
-SynthesisModule::set_module (void *ptr)
+SynthesisModule::set_module (GslModule *gslmodule)
 {
-  GslModule *gslmodule = static_cast<GslModule*> (ptr);
-  
   g_return_if_fail (engine_module == NULL);
   g_return_if_fail (gslmodule != NULL);
   
@@ -139,8 +140,8 @@ delete_module (gpointer        data,
   delete m;
 }
 
-GslModuleFlags
-gsl_module_flags_from_process_cost (ProcessCost cost)
+static GslModuleFlags
+module_flags_from_process_cost (ProcessCost cost)
 {
   switch (cost)
     {
@@ -152,9 +153,13 @@ gsl_module_flags_from_process_cost (ProcessCost cost)
 }
 
 const GslClass*
-make_gsl_class (BseSource       *source,
-                SynthesisModule *sample_module)
+Effect::create_gsl_class (SynthesisModule *sample_module,
+                          int              cost,
+                          int              n_istreams,
+                          int              n_jstreams,
+                          int              n_ostreams)
 {
+  BseSource *source = cast (this);
   BseSourceClass *source_class = BSE_SOURCE_GET_CLASS (source);
   if (!source_class->gsl_class)
     {
@@ -168,52 +173,95 @@ make_gsl_class (BseSource       *source,
         delete_module,          /* free */
         GSL_COST_NORMAL,        /* mflags */
       };
-      klass.n_jstreams = BSE_SOURCE_N_JOINT_ICHANNELS (source);
-      klass.n_istreams = BSE_SOURCE_N_ICHANNELS (source) - klass.n_jstreams;
-      klass.n_ostreams = BSE_SOURCE_N_OCHANNELS (source);
-      klass.mflags = gsl_module_flags_from_process_cost (sample_module->cost());
+      klass.mflags = GslModuleFlags (cost >= 0 ? cost : module_flags_from_process_cost (sample_module->cost()));
+      klass.n_istreams = n_istreams >= 0 ? n_istreams : (BSE_SOURCE_N_ICHANNELS (source) -
+                                                         BSE_SOURCE_N_JOINT_ICHANNELS (source));
+      klass.n_jstreams = n_jstreams >= 0 ? n_jstreams : BSE_SOURCE_N_JOINT_ICHANNELS (source);
+      klass.n_ostreams = n_ostreams >= 0 ? n_ostreams : BSE_SOURCE_N_OCHANNELS (source);
       bse_source_class_cache_gsl_class (source_class, &klass);
     }
   return source_class->gsl_class;
 }
 
-static gpointer effect_parent_class = NULL;
-
-static void
-effect_context_create (BseSource *source,
-                       guint      context_handle,
-                       GslTrans  *trans)
+GslModule*
+Effect::integrate_gsl_module (unsigned int   context_handle,
+                              GslTrans      *trans)
 {
-  CxxBase *base = cast (source);
-  Effect *self = static_cast<Effect*> (base);
-  
-  SynthesisModule *cxxmodule = self->create_module (context_handle, trans);
-  
-  GslModule *gslmodule = gsl_module_new (make_gsl_class (source, cxxmodule), cxxmodule);
-  
+  SynthesisModule *cxxmodule = create_module (context_handle, trans);
+  GslModule *gslmodule = gsl_module_new (create_gsl_class (cxxmodule), cxxmodule);
   cxxmodule->set_module (gslmodule);
-  
-  /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_module (source, context_handle, gslmodule);
-  
   /* intergrate module into engine */
   gsl_trans_add (trans, gsl_job_integrate (gslmodule));
-  /* reset module */
-  gsl_trans_add (trans, gsl_job_force_reset (gslmodule));
-  /* configure module */
-  SynthesisModule::Accessor *ac = self->module_configurator();
-  gsl_trans_add (trans, gsl_job_access (gslmodule, access_trampoline, ac, access_data_free));
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
+  return gslmodule;
+}
+
+void
+Effect::dismiss_gsl_module (GslModule       *gslmodule,
+                            guint            context_handle,
+                            GslTrans        *trans)
+{
+  if (gslmodule)
+    gsl_trans_add (trans, gsl_job_discard (gslmodule));
 }
 
 void
 Effect::class_init (CxxBaseClass *klass)
 {
+  static gpointer effect_parent_class = NULL;
+  struct Local
+  {
+    static void
+    effect_context_create (BseSource *source,
+                           guint      context_handle,
+                           GslTrans  *trans)
+    {
+      CxxBase *base = cast (source);
+      Effect *self = static_cast<Effect*> (base);
+      GslModule *gslmodule = self->integrate_gsl_module (context_handle, trans);
+      
+      /* setup module i/o streams with BseSource i/o channels */
+      bse_source_set_context_module (source, context_handle, gslmodule);
+      
+      /* reset module */
+      gsl_trans_add (trans, gsl_job_force_reset (gslmodule));
+      /* configure module */
+      SynthesisModule::Accessor *ac = self->module_configurator();
+      if (ac)
+        gsl_trans_add (trans, gsl_job_access (gslmodule, access_trampoline, ac, access_data_free));
+      
+      /* chain parent class' handler */
+      BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
+    }
+    static void
+    effect_context_dismiss (BseSource *source,
+                            guint      context_handle,
+                            GslTrans  *trans)
+    {
+      CxxBase *base = cast (source);
+      Effect *self = static_cast<Effect*> (base);
+      GslModule *gslmodule = NULL;
+      if (BSE_SOURCE_N_ICHANNELS (source))
+        {
+          gslmodule = bse_source_get_context_imodule (source, context_handle);
+          bse_source_set_context_imodule (source, context_handle, NULL);
+        }
+      if (BSE_SOURCE_N_OCHANNELS (source))
+        {
+          gslmodule = bse_source_get_context_omodule (source, context_handle);
+          bse_source_set_context_omodule (source, context_handle, NULL);
+        }
+
+      self->dismiss_gsl_module (gslmodule, context_handle, trans);
+
+      /* chain parent class' handler */
+      BSE_SOURCE_CLASS (effect_parent_class)->context_dismiss (source, context_handle, trans);
+    }
+  };
   BseSourceClass *source_class = klass;
+
   effect_parent_class = g_type_class_peek_parent (klass);
-  source_class->context_create = effect_context_create;
+  source_class->context_create = Local::effect_context_create;
+  source_class->context_dismiss = Local::effect_context_dismiss;
 }
 
 
