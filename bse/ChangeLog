@@ -1,3 +1,12 @@
+Mon Sep  8 00:11:45 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsemidireceiver.cc: cvs copy of bsemidireceiver.c.
+
+	* bsemidireceiver.c: removed.
+
+	* bsemidireceiver.*: adapted to compile with a C++ compiler.
+	made _BseMidiReceiver private.
+
 Sun Sep  7 19:35:04 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.c (check_mono_synth_improvement):

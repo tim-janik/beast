@@ -32,22 +32,6 @@ typedef struct {
   guint             n_voices;
   BseMidiVoice    **voices;
 } BseMidiChannel;
-struct _BseMidiReceiver
-{
-  gchar		    *receiver_name;
-
-  guint		     n_cmodules;
-  GslModule	   **cmodules;                  /* control signals */
-  
-  /*< private >*/
-  gpointer	     ctrl_slot_array;	        /* BSA of BseMidiControlSlot* */
-  gpointer           midi_channel_array;        /* BSA of BseMidiChannel */
-  SfiRing	    *events;                    /* contains BseMidiEvent* */
-  guint		     ref_count;
-  BseMidiNotifier   *notifier;
-  SfiRing	    *notifier_events;
-};
-
 
 /* --- API --- */
 #define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS		   (4)
