@@ -1,4 +1,8 @@
 FIXMES:
+- add tooltip and Filedialog-button to "WAVE File" entry
+- big engine block sizes (>=1024) triggers sequencer race, causing clicks; in particular
+  if (vinput->vstate == VSTATE_IDLE) g_printerr ("reading from idle\n"); in
+  voice_input_module_process() holds true
 - fix bse_gettext()
 - deleting a track doesn't delete it's sniffer
 - report sample rate to stdout if it doesn't match requested rate exactly
