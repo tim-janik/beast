@@ -1,6 +1,17 @@
 /* DavGuitar - DAV Physical Modelling Acoustic Guitar Synthesizer
  * Copyright (c) 2000 David A. Bartold
  *
+ * This software uses technology under patent US 4,649,783, which is
+ * set to expire in May of 2004.  In the meantime, a non-patented
+ * alternative to this module is in the works.
+ *
+ ***********************************************************************
+ *
+ * Any commercial use of this module requires a license from
+ * Stanford University.
+ *
+ ***********************************************************************
+ *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -44,8 +55,11 @@ enum
   PARAM_FREQ_6,
   PARAM_NOTE_6,
   PARAM_TRIGGER_6,
+  PARAM_TRIGGER_VEL,
   PARAM_TRIGGER_ALL,
-  PARAM_STOP_ALL
+  PARAM_STOP_ALL,
+  PARAM_METALLIC_FACTOR,
+  PARAM_SNAP_FACTOR
 };
 
 
@@ -124,17 +138,40 @@ wave_guide_set_freq (WaveGuide *wave, float frq)
 }
 
 static void
-wave_guide_pluck (WaveGuide *wave)
+wave_guide_pluck (WaveGuide *wave,
+		  gfloat     metallic_factor,
+		  gfloat     snap_factor,
+		  gfloat     trigger_vel)
 {
   guint i;
+  guint pivot;
   
   wave->lowpass_data = 0.0;
   wave_guide_unstop (wave);
   
   /* Initialize wave guide (i.e. string) by setting it to random data. */
   
+  /* Create envelope. */
+  pivot = wave->wavelen / 5;
+  
+  for (i = 0; i <= pivot; i++)
+    wave->data[i] = ((float) i) / pivot;
+  
+  for (; i < wave->wavelen; i++)
+    wave->data[i] = ((float) (wave->wavelen - i - 1)) / (wave->wavelen - pivot - 1);
+  
+  /* Add some snap. */
   for (i = 0; i < wave->wavelen; i++)
-    wave->data[i] = ((float) rand ()) / RAND_MAX * 2.0F - 1.0F;
+    wave->data[i] = pow (wave->data[i], snap_factor * 10.0F + 1.0F);
+  
+  /* Add static to displacements. */
+  for (i = 0; i < wave->wavelen; i++)
+    wave->data[i] = wave->data[i] * (1.0F - metallic_factor) +
+      ((rand() & 1) ? -1.0F : 1.0F) * metallic_factor;
+  
+  /* Set velocity. */
+  for (i = 0; i < wave->wavelen; i++)
+    wave->data[i] *= trigger_vel;
 }
 
 static void
@@ -240,13 +277,31 @@ dav_guitar_class_init (DavGuitarClass *class)
   add_string_param (object_class, "String 6",
 		    "freq_6", PARAM_FREQ_6, 391.995436, "note_6", PARAM_NOTE_6, BSE_NOTE_G (1),	 "trigger_6", PARAM_TRIGGER_6);
   
-  bse_object_class_add_param (object_class, "Control", PARAM_TRIGGER_ALL,
+  bse_object_class_add_param (object_class, "Global Control", PARAM_TRIGGER_VEL,
+			      b_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
+						  "Set the velocity of the string pluck",
+						  0.0, 100.0, 100.0, 10.0,
+						  B_PARAM_GUI | B_PARAM_HINT_SCALE));
+  
+  bse_object_class_add_param (object_class, "Global Control", PARAM_TRIGGER_ALL,
 			      b_param_spec_bool ("trigger_all", "Trigger Hit All", "Strum guitar",
 						 FALSE, B_PARAM_GUI));
   
-  bse_object_class_add_param (object_class, "Control", PARAM_STOP_ALL,
+  bse_object_class_add_param (object_class, "Global Control", PARAM_STOP_ALL,
 			      b_param_spec_bool ("stop_all", "Stop All", "Stop all the strings from vibrating",
 						 FALSE, B_PARAM_GUI));
+  
+  bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
+			      b_param_spec_float ("metallic_factor", "Metallic Factor [%]",
+						  "Set the metallicness of the string",
+						  0.0, 100.0, 16.0, 0.25,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+  
+  bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
+			      b_param_spec_float ("snap_factor", "Snap Factor [%]",
+						  "Set the snappiness of the string",
+						  0.0, 100.0, 34.0, 0.25,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "GuitarOutput", 1);
   g_assert (ochannel_id == DAV_GUITAR_OCHANNEL_MONO);
@@ -262,6 +317,9 @@ dav_guitar_init (DavGuitar *guitar)
 {
   guitar->hipass_coeff = 0;
   guitar->hipass_data = 0.0;
+  guitar->trigger_vel = 1.0;
+  guitar->metallic_factor = 0.16;
+  guitar->snap_factor = 0.34;
   
   wave_guide_init (&guitar->strings[0], 097.998859); /* G */
   wave_guide_init (&guitar->strings[1], 123.470825); /* B */
@@ -296,7 +354,7 @@ dav_guitar_trigger_string (DavGuitar *guitar, int str)
 {
   g_return_if_fail (DAV_IS_GUITAR (guitar));
   
-  wave_guide_pluck (&guitar->strings[str]);
+  wave_guide_pluck (&guitar->strings[str], guitar->metallic_factor, guitar->snap_factor, guitar->trigger_vel);
   wave_guide_unstop (&guitar->body);
 }
 
@@ -306,7 +364,7 @@ dav_guitar_trigger (DavGuitar *guitar)
   guint i;
   
   for (i = 0; i < 6; i++)
-    wave_guide_pluck (&guitar->strings[i]);
+    wave_guide_pluck (&guitar->strings[i], guitar->metallic_factor, guitar->snap_factor, guitar->trigger_vel);
   
   wave_guide_unstop (&guitar->body);
 }
@@ -397,11 +455,20 @@ dav_guitar_set_param (DavGuitar   *guitar,
     case PARAM_TRIGGER_6:
       dav_guitar_trigger_string (guitar, 5);
       break;
+    case PARAM_TRIGGER_VEL:
+      guitar->trigger_vel = b_value_get_float (value) / 100.0;
+      break;
     case PARAM_TRIGGER_ALL:
       dav_guitar_trigger (guitar);
       break;
     case PARAM_STOP_ALL:
       dav_guitar_stop (guitar);
+      break;
+    case PARAM_METALLIC_FACTOR:
+      guitar->metallic_factor = b_value_get_float (value) / 100.0;
+      break;
+    case PARAM_SNAP_FACTOR:
+      guitar->snap_factor = b_value_get_float (value) / 100.0;
       break;
       
     default:
@@ -473,11 +540,20 @@ dav_guitar_get_param (DavGuitar   *guitar,
     case PARAM_TRIGGER_6:
       b_value_set_bool (value, FALSE);
       break;
+    case PARAM_TRIGGER_VEL:
+      b_value_set_float (value, guitar->trigger_vel * 100.0);
+      break;
     case PARAM_TRIGGER_ALL:
       b_value_set_bool (value, FALSE);
       break;
     case PARAM_STOP_ALL:
       b_value_set_bool (value, FALSE);
+      break;
+    case PARAM_METALLIC_FACTOR:
+      b_value_set_float (value, guitar->metallic_factor * 100.0);
+      break;
+    case PARAM_SNAP_FACTOR:
+      b_value_set_float (value, guitar->snap_factor * 100.0);
       break;
       
     default:
@@ -579,7 +655,8 @@ dav_guitar_reset (BseSource *source)
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_guitar, "DavGuitar", "BseSource",
-    "DavGuitar is a physical modelling acoustic guitar synthesizer",
+    "DavGuitar is a physical modelling acoustic guitar synthesizer - "
+    "Any commercial use of this module requires a license from Stanford University",
     &type_info_guitar,
     "/Source/Guitar",
     { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,

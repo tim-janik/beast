@@ -58,6 +58,9 @@ struct _DavGuitar
   gint      body_taps[6];
   WaveGuide strings[6];
   WaveGuide body;
+  gfloat    trigger_vel;
+  gfloat    metallic_factor;
+  gfloat    snap_factor;
 };
 
 struct _DavGuitarClass

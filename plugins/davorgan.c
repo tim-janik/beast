@@ -288,7 +288,7 @@ dav_organ_class_ref_tables (DavOrganClass *class)
   for (i = 0; i < rate / 2; i++)
     class->triangle_table[i] = (4 * BSE_MAX_SAMPLE_VALUE_f / rate * i - BSE_MAX_SAMPLE_VALUE_f) / 6.0;
   for (; i < rate; i++)
-    class->triangle_table[i] = (4 * BSE_MAX_SAMPLE_VALUE_f / rate * (rate / 2 - i - 1) - BSE_MAX_SAMPLE_VALUE_f) / 6.0;
+    class->triangle_table[i] = (4 * BSE_MAX_SAMPLE_VALUE_f / rate * (rate - i) - BSE_MAX_SAMPLE_VALUE_f) / 6.0;
   
   /* Initialize pulse table. */
   class->pulse_table = g_new (BseSampleValue, rate);

@@ -1,3 +1,16 @@
+Tue Apr 11 05:36:09 2000  Tim Janik  <timj@gtk.org>
+
+	* applied changes from David A. Bartold <foxx@mail.utexas.edu>:
+
+	* davguitar.[hc]: added trigger velocity, metallic factor and snap
+	factor parameters.
+
+	* davorgan.c (dav_organ_class_ref_tables): fixed triangle table setup.
+
+	* davguitar.c:
+	* davxtalstrings.c: added note on the use of a stanford patent for
+	wavetable modification.
+
 Tue Apr 11 04:23:08 2000  Tim Janik  <timj@gtk.org>
 
 	* *.[hc]: port over from BseParam to GValue and [GB]ParamSpecs.

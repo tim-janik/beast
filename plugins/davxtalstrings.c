@@ -4,6 +4,17 @@
  * Generate a string pluck sound using a modified Karplus-Strong algorithm
  * and then use Brensenham's algorithm to correct the frequency.
  *
+ * This software uses technology under patent US 4,649,783, which is
+ * set to expire in May of 2004.  In the meantime, a non-patented
+ * alternative to this module is in the works.
+ *
+ ***********************************************************************
+ *
+ * Any commercial use of this module requires a license from
+ * Stanford University.
+ *
+ ***********************************************************************
+ *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -407,7 +418,7 @@ dav_xtal_strings_reset (BseSource *source)
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_xtal_strings, "DavXtalStrings", "BseSource",
-    "DavXtalStrings is a string synthesizer",
+    "DavXtalStrings is a string synthesizer - Any commercial use of this module requires a license from Stanford University",
     &type_info_xtal_strings,
     "/Source/XtalStrings",
     { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
