@@ -1,3 +1,12 @@
+Tue Oct  5 19:12:31 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkradget.[hc]: added hook:* arguments for radgets, so
+	users can easily hook up custom properties without implementing new
+	object types.
+
+	* beast-gtk/gxk/gxkutils.c (fixup_gtk24_size_allocate): workaround 
+	gtk_widget_size_allocate() not honouring NEED_REQUEST.
+
 Tue Sep  5 2004  Amanpreet Singh Alam <amanpreetalam@yahoo.com>
 
 	* configure.inB add pa(Punjabi) to ALL_LINGUAS

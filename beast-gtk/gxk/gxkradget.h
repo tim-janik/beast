@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -111,6 +111,13 @@ void           gxk_radget_define_type            (GType                type,
                                                   const GxkRadgetType *ggtype);
 gboolean       gxk_radget_type_lookup            (GType                type,
                                                   GxkRadgetType       *ggtype);
+typedef void (*GxkRadgetHook)                    (GxkRadget           *radget,
+                                                  guint                property_id,
+                                                  const GValue        *value,
+                                                  GParamSpec          *pspec);
+void           gxk_radget_register_hook          (GParamSpec          *pspec,
+                                                  guint                property_id,
+                                                  GxkRadgetHook        hook_func);
 GxkRadgetArgs* gxk_radget_data_copy_call_args    (GxkRadgetData       *gdgdata);
 GxkRadget*     gxk_radget_data_get_scope_radget  (GxkRadgetData       *gdgdata);
 

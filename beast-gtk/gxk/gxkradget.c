@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 2002-2003 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -76,6 +76,7 @@ struct Node {
   GxkRadgetArgs *prop_args;
   GxkRadgetArgs *pack_args;
   GxkRadgetArgs *dfpk_args;
+  GxkRadgetArgs *hook_args;
   const gchar  *size_hgroup, *size_vgroup, *size_hvgroup;
   const gchar  *size_window_hgroup, *size_window_vgroup, *size_window_hvgroup;
   const gchar *default_area;
@@ -112,6 +113,8 @@ static Node*           node_children_find_area  (Node                *node,
 static const gchar*    radget_args_lookup_quark (const GxkRadgetArgs *args,
                                                  GQuark               quark,
                                                  guint               *nth);
+static GParamSpec*     find_hook                (const gchar         *name,
+                                                 GxkRadgetHook       *hook_func_p);
 
 
 /* --- variables --- */
@@ -221,6 +224,7 @@ clone_node_intern (Node        *source,
   node->prop_args = clone_args (source->prop_args);
   node->pack_args = clone_args (source->pack_args);
   node->dfpk_args = clone_args (source->dfpk_args);
+  node->hook_args = clone_args (source->hook_args);
   node->size_hgroup = source->size_hgroup;
   node->size_vgroup = source->size_vgroup;
   node->size_hvgroup = source->size_hvgroup;
@@ -722,6 +726,8 @@ node_define (Domain       *domain,
       node->pack_args = radget_args_intern_set (node->pack_args, attribute_names[i] + 5, attribute_values[i]);
     else if (strncmp (attribute_names[i], "default-pack:", 13) == 0)
       node->dfpk_args = radget_args_intern_set (node->dfpk_args, attribute_names[i] + 13, attribute_values[i]);
+    else if (strncmp (attribute_names[i], "hook:", 5) == 0)
+      node->hook_args = radget_args_intern_set (node->hook_args, attribute_names[i] + 5, attribute_values[i]);
     else if (strcmp (attribute_names[i], "name") == 0 || strcmp (attribute_names[i], "_name") == 0 ||
              strcmp (attribute_names[i], "id") == 0 || strcmp (attribute_names[i], "_id") == 0)
       {
@@ -1353,6 +1359,55 @@ radget_add_to_parent (GxkRadget    *parent,
 }
 
 static void
+radget_apply_hooks (GxkRadget    *radget,
+                    Env          *env,
+                    GError      **error)
+{
+  Node *cnode = g_object_get_qdata (radget, quark_radget_node);
+  GxkRadgetType tinfo;
+  guint i, n_pops = 0;
+  /* prepare for $name lookups */
+  env->name = cnode->name;
+  /* retrive type info */
+  gxk_radget_type_lookup (cnode->type, &tinfo);
+  /* precedence for property value lookups:
+   * - all node ancestry args
+   * - expanded call_args
+   */
+  if (cnode->call_stack)
+    n_pops++, env->args_list = g_slist_prepend (env->args_list, cnode->call_stack->data);
+  if (cnode->parent_arg_list)
+    n_pops += g_slist_length (cnode->parent_arg_list), env->args_list = g_slist_concat (g_slist_copy (cnode->parent_arg_list),
+                                                                                        env->args_list);
+  /* set hook args */
+  const GxkRadgetArgs *args = cnode->hook_args;
+  for (i = 0; i < ARGS_N_ENTRIES (args); i++)
+    {
+      const gchar *hname = ARGS_NTH_NAME (args, i);
+      const gchar *hvalue = ARGS_NTH_VALUE (args, i);
+      GxkRadgetHook hook_func;
+      GParamSpec *pspec = find_hook (hname, &hook_func);
+      if (pspec)
+        {
+          GValue value = { 0 };
+          property_value_from_string (0, pspec, &value, hname, hvalue, env, error);
+          if (G_VALUE_TYPE (&value))
+            {
+              /* we always assume G_PARAM_LAX_VALIDATION */
+              g_param_value_validate (pspec, &value);
+              hook_func (radget, pspec->param_id, &value, pspec);
+              g_value_unset (&value);
+            }
+        }
+      else
+        g_printerr ("GXK: no such hook property: %s (radget=%s)\n", hname, G_OBJECT_TYPE_NAME (radget));
+    }
+  /* cleanup */
+  while (n_pops--)
+    g_slist_pop_head (&env->args_list);
+}
+
+static void
 radget_create_children (GxkRadget    *parent,
                         Env          *env,
                         GError      **error)
@@ -1372,6 +1427,7 @@ radget_create_children (GxkRadget    *parent,
       if (cnode->children)
         radget_create_children (radget, env, error);
       radget_add_to_parent (parent, radget, env, error);
+      radget_apply_hooks (radget, env, error);
       g_slist_pop_head (&cnode->call_stack);
       gxk_radget_free_args (call_args);
     }
@@ -1412,6 +1468,8 @@ radget_creator (GxkRadget          *radget,
             }
           if (parent && radget)
             radget_add_to_parent (parent, radget, &env, &error);
+          if (radget)
+            radget_apply_hooks (radget, &env, &error);
           /* cleanup */
           while (n_pops--)
             g_slist_pop_head (&env.args_list);
@@ -1429,6 +1487,7 @@ radget_creator (GxkRadget          *radget,
   return radget;
 }
 
+/* --- radget args --- */
 GxkRadgetArgs*
 gxk_radget_data_copy_call_args (GxkRadgetData *gdgdata)
 {
@@ -1439,68 +1498,6 @@ gxk_radget_data_copy_call_args (GxkRadgetData *gdgdata)
   args = node_expand_call_args (gdgdata->node, olist, gdgdata->env);
   g_slist_free (olist);
   return args;
-}
-
-GxkRadget*
-gxk_radget_data_get_scope_radget (GxkRadgetData *gdgdata)
-{
-  return gdgdata->xdef_radget;
-}
-
-GxkRadget*
-gxk_radget_creator (GxkRadget          *radget,
-                    const gchar        *domain_name,
-                    const gchar        *name,
-                    GxkRadget          *parent,
-                    GSList             *call_args,
-                    GSList             *env_args)
-{
-  g_return_val_if_fail (domain_name != NULL, NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-  if (radget)
-    {
-      Node *radget_node = g_object_get_qdata (radget, quark_radget_node);
-      g_return_val_if_fail (radget_node == NULL, NULL);
-    }
-  return radget_creator (radget, domain_name, name, parent, call_args, env_args);
-}
-
-GxkRadget*
-gxk_radget_create (const gchar        *domain_name,
-                   const gchar        *name,
-                   const gchar        *var1,
-                   ...)
-{
-  GxkRadgetArgs *gargs;
-  GxkRadget *radget;
-  GSList olist = { 0, };
-  va_list vargs;
-  va_start (vargs, var1);
-  gargs = gxk_radget_args_valist (var1, vargs);
-  olist.data = gargs;
-  radget = gxk_radget_creator (NULL, domain_name, name, NULL, &olist, NULL);
-  gxk_radget_free_args (gargs);
-  va_end (vargs);
-  return radget;
-}
-
-GxkRadget*
-gxk_radget_complete (GxkRadget          *radget,
-                     const gchar        *domain_name,
-                     const gchar        *name,
-                     const gchar        *var1,
-                     ...)
-{
-  GxkRadgetArgs *gargs;
-  GSList olist = { 0, };
-  va_list vargs;
-  va_start (vargs, var1);
-  gargs = gxk_radget_args_valist (var1, vargs);
-  olist.data = gargs;
-  radget = gxk_radget_creator (radget, domain_name, name, NULL, &olist, NULL);
-  gxk_radget_free_args (gargs);
-  va_end (vargs);
-  return radget;
 }
 
 GxkRadgetArgs*
@@ -1621,6 +1618,69 @@ gxk_radget_free_args (GxkRadgetArgs *args)
       g_free (args->quarks);
       g_free (args);
     }
+}
+
+/* --- radget functions --- */
+GxkRadget*
+gxk_radget_data_get_scope_radget (GxkRadgetData *gdgdata)
+{
+  return gdgdata->xdef_radget;
+}
+
+GxkRadget*
+gxk_radget_creator (GxkRadget          *radget,
+                    const gchar        *domain_name,
+                    const gchar        *name,
+                    GxkRadget          *parent,
+                    GSList             *call_args,
+                    GSList             *env_args)
+{
+  g_return_val_if_fail (domain_name != NULL, NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+  if (radget)
+    {
+      Node *radget_node = g_object_get_qdata (radget, quark_radget_node);
+      g_return_val_if_fail (radget_node == NULL, NULL);
+    }
+  return radget_creator (radget, domain_name, name, parent, call_args, env_args);
+}
+
+GxkRadget*
+gxk_radget_create (const gchar        *domain_name,
+                   const gchar        *name,
+                   const gchar        *var1,
+                   ...)
+{
+  GxkRadgetArgs *gargs;
+  GxkRadget *radget;
+  GSList olist = { 0, };
+  va_list vargs;
+  va_start (vargs, var1);
+  gargs = gxk_radget_args_valist (var1, vargs);
+  olist.data = gargs;
+  radget = gxk_radget_creator (NULL, domain_name, name, NULL, &olist, NULL);
+  gxk_radget_free_args (gargs);
+  va_end (vargs);
+  return radget;
+}
+
+GxkRadget*
+gxk_radget_complete (GxkRadget          *radget,
+                     const gchar        *domain_name,
+                     const gchar        *name,
+                     const gchar        *var1,
+                     ...)
+{
+  GxkRadgetArgs *gargs;
+  GSList olist = { 0, };
+  va_list vargs;
+  va_start (vargs, var1);
+  gargs = gxk_radget_args_valist (var1, vargs);
+  olist.data = gargs;
+  radget = gxk_radget_creator (radget, domain_name, name, NULL, &olist, NULL);
+  gxk_radget_free_args (gargs);
+  va_end (vargs);
+  return radget;
 }
 
 const gchar*
@@ -1927,6 +1987,53 @@ radget_define_gtk_menu (void)
   radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
+/* --- radget hooks --- */
+typedef struct RadgetHook RadgetHook;
+struct RadgetHook {
+  GParamSpec          *pspec;
+  GxkRadgetHook        hook_func;
+  RadgetHook          *next;
+};
+static RadgetHook *radget_hooks = NULL;
+
+void
+gxk_radget_register_hook (GParamSpec   *pspec,
+                          guint         property_id,
+                          GxkRadgetHook hook_func)
+{
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (pspec->flags & G_PARAM_WRITABLE);
+  g_return_if_fail (property_id > 0);
+  g_return_if_fail (pspec->param_id == 0);
+  g_return_if_fail (pspec->owner_type == 0);
+  g_return_if_fail (hook_func != NULL);
+  if (find_hook (pspec->name, NULL))
+    {
+      g_printerr ("GXK: not re-registering hook property: %s\n", pspec->name);
+      return;
+    }
+  RadgetHook *hook = g_new0 (RadgetHook, 1);
+  hook->pspec = g_param_spec_ref (pspec);
+  g_param_spec_sink (pspec);
+  g_quark_from_static_string (pspec->name);
+  hook->pspec->param_id = property_id;
+  hook->pspec->owner_type = G_TYPE_OBJECT; /* common base for all radgets */
+  hook->hook_func = hook_func;
+  hook->next = radget_hooks;
+  radget_hooks = hook;
+}
+
+static GParamSpec*
+find_hook (const gchar   *name,
+           GxkRadgetHook *hook_func_p)
+{
+  RadgetHook *hook = radget_hooks;
+  while (hook && strcmp (hook->pspec->name, name) != 0)
+    hook = hook->next;
+  if (hook && hook_func_p)
+    *hook_func_p = hook->hook_func;
+  return hook ? hook->pspec : NULL;
+}
 
 /* --- macro functions --- */
 static inline const gchar*

@@ -3,8 +3,9 @@
   xmlns:xdef="http://beast.gtk.org/xmlns:xdef"
   xmlns:prop="http://beast.gtk.org/xmlns:prop"
   xmlns:pack="http://beast.gtk.org/xmlns:pack"
-  xmlns:default-pack="http://beast.gtk.org/xmlns:default-pack"
-  xmlns:size="http://beast.gtk.org/xmlns:size" >
+  xmlns:hook="http://beast.gtk.org/xmlns:hook"
+  xmlns:size="http://beast.gtk.org/xmlns:size"
+  xmlns:default-pack="http://beast.gtk.org/xmlns:default-pack" >
   
   <!-- misc BEAST widgets -->
   <xdef:piano-roll    inherit="BstPianoRoll" />
