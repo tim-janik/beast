@@ -54,6 +54,8 @@ static const GxkStockAction file_open_actions[] = {
     BST_ACTION_OPEN_PROJECT,    BST_STOCK_OPEN, },
   { N_("_Merge..."),            "<ctrl>M",      N_("Merge an existing project into the current project"),
     BST_ACTION_MERGE_PROJECT,   BST_STOCK_MERGE, },
+  { N_("_Import MIDI..."),      "",             N_("Import a standard MIDI file into the current project"),
+    BST_ACTION_IMPORT_MIDI,     BST_STOCK_OPEN, },
   { N_("_Close"),               "<ctrl>W",      NULL,
     BST_ACTION_CLOSE_PROJECT,   BST_STOCK_CLOSE, },
 };
@@ -113,14 +115,14 @@ static const GxkStockAction project_actions[] = {
     BST_ACTION_REMOVE_SYNTH,    BST_STOCK_REMOVE_SYNTH },
 };
 static const GxkStockAction library_files_actions[] = {
-  { N_("Load _Effect"),         NULL,           NULL,
-    BST_ACTION_MERGE_EFFECT, },
   { N_("Load _Instrument"),     NULL,           NULL,
     BST_ACTION_MERGE_INSTRUMENT, },
-  { N_("Save As Effect"),       NULL,           NULL,
-    BST_ACTION_SAVE_EFFECT, },
+  { N_("Load _Effect"),         NULL,           NULL,
+    BST_ACTION_MERGE_EFFECT, },
   { N_("Save As Instrument"),   NULL,           NULL,
     BST_ACTION_SAVE_INSTRUMENT, },
+  { N_("Save As Effect"),       NULL,           NULL,
+    BST_ACTION_SAVE_EFFECT, },
 };
 static const GxkStockAction simple_help_actions[] = {
   { N_("_Release Notes..."),    NULL,           NULL,   BST_ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
@@ -657,6 +659,9 @@ app_action_exec (gpointer data,
     case BST_ACTION_MERGE_PROJECT:
       bst_file_dialog_popup_merge_project (self, self->project);
       break;
+    case BST_ACTION_IMPORT_MIDI:
+      bst_file_dialog_popup_import_midi (self, self->project);
+      break;
     case BST_ACTION_SAVE_PROJECT:
     case BST_ACTION_SAVE_PROJECT_AS:
       bst_file_dialog_popup_save_project (self, self->project);
@@ -867,6 +872,7 @@ app_action_check (gpointer data,
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
+    case BST_ACTION_IMPORT_MIDI:
     case BST_ACTION_SAVE_PROJECT:
     case BST_ACTION_SAVE_PROJECT_AS:
     case BST_ACTION_NEW_SONG:

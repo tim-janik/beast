@@ -43,6 +43,7 @@ typedef enum {
   BST_FILE_DIALOG_OPEN_PROJECT	   = 0x0001,
   BST_FILE_DIALOG_MERGE_PROJECT	   = 0x0002,
   BST_FILE_DIALOG_SAVE_PROJECT	   = 0x0003,
+  BST_FILE_DIALOG_IMPORT_MIDI	   = 0x0004,
   BST_FILE_DIALOG_SELECT_DIR	   = 0x0009,
   BST_FILE_DIALOG_LOAD_WAVE	   = 0x0011,
   BST_FILE_DIALOG_LOAD_WAVE_LIB	   = 0x0012,
@@ -85,6 +86,8 @@ struct _BstFileDialogClass
 GType		bst_file_dialog_get_type		(void);
 GtkWidget*	bst_file_dialog_popup_open_project	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer	   parent_widget,
+							 SfiProxy	   project);
+GtkWidget*	bst_file_dialog_popup_import_midi	(gpointer	   parent_widget,
 							 SfiProxy	   project);
 GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);

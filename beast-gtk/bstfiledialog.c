@@ -480,6 +480,30 @@ bst_file_dialog_merge_project (BstFileDialog *self,
   return TRUE;
 }
 
+GtkWidget*
+bst_file_dialog_popup_import_midi (gpointer   parent_widget,
+                                   SfiProxy   project)
+{
+  BstFileDialog *self = bst_file_dialog_global_project ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+			    BST_FILE_DIALOG_IMPORT_MIDI,
+			    _("Import MIDI: %s"), project);
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+static gboolean
+bst_file_dialog_import_midi (BstFileDialog *self,
+                             const gchar   *file_name)
+{
+  BseErrorType error = bse_project_import_midi_file (self->proxy, file_name);
+  bst_status_eprintf (error, _("Importing MIDI file `%s'"), file_name);
+  return TRUE;
+}
+
 static gboolean
 retry_after_file_unlink (gchar       *title,
                          gchar       *message,
@@ -827,6 +851,9 @@ bst_file_dialog_activate (BstFileDialog *self)
       break;
     case BST_FILE_DIALOG_MERGE_PROJECT:
       popdown = bst_file_dialog_merge_project (self, file_name);
+      break;
+    case BST_FILE_DIALOG_IMPORT_MIDI:
+      popdown = bst_file_dialog_import_midi (self, file_name);
       break;
     case BST_FILE_DIALOG_MERGE_EFFECT:
       popdown = bst_file_dialog_merge_effect (self, file_name);
