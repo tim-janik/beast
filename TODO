@@ -4,7 +4,6 @@ FIXME(urgent):
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
 - write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
 - sfidl --client: generate: extern "C" ifdef's, include sfi/sfi.h
-- s/bse_server_use_new_project/bse_server_create_project/
 - install bsewavetool, bsewavetool.1
 - gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - fix float saving with de_DE
@@ -18,8 +17,6 @@ FIXME(urgent):
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
-- menu-button: keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
-- menu-button: popup the menu at least as wide as the menu-button itself (for combo mode)
 - play + play doesn't reset wave oscillator state
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
@@ -31,10 +28,10 @@ FIXME(urgent):
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 - close pianoroll window in response to part::release  
-- add dialog to ask the user whether he really wants to delete the last link to a part.
 - make sfi_wstore_flush_fd() return -errno on errors and handle those in Wave::store()
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 TODO:
+- add more menu tooltips
 - add editable text fields to snet router
 - implement ResetAll according to: http://www.midi.org/about-midi/rp15.shtml (more: http://www.midi.org/about-midi/specinfo.shtml)
 - provide a color/dB reference scale, next to the fft-scope view
@@ -48,8 +45,6 @@ TODO:
 - implement Monitor Output Signal dialogs:
   - histogram
   - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
-- menus: s/New Custom Synthesizer/Add Custom Synthesizer/
-         s/New MIDI Synthesizer/Add MIDI Synthesizer/  (might get removed)
 - add mini-keyboard to Router toolbar to test instrument designs
 - implement hirarchical topc selector instead of notebook-tabs for preferences:
   - move BSE paths into their own "paths" categorie
@@ -98,7 +93,6 @@ TODO:
 - rename bse_bus_get_stack() which is the only valid hook to setup song modules atm
 - evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins
-- add more menu tooltips
 - mixer icon
 - icons for: BseSong, BseCSynth and BseWaveRepo (get rid of object type prefixes in the toplevel notebook, use icons)
   * waverepo: similar to Lib... button; CSynth: box(filter,osc)+connection+speaker; Song: pages of notes
@@ -135,7 +129,6 @@ TODO:
 - track view: when middle button is pressed to position song pointer, set keep-pos-til-song-start flag
 - fix trackroll dnd behaviour in upper left corner of scrollarea
 - document monphon/polyphon setups
-- need midi keyboard demo .bse file to be easily loadable (via demo/ menu)
 - make channel blurbs and module names have the same font in router display
 - assertion failed: BSE-ERROR **: file bsemidireceiver.cc: line 525 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, GslTrans*)): assertion failed: (vinput->iter == table->end())
 - add DSP engine module stats to profiler dialog
@@ -184,7 +177,6 @@ TODO:
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
 - fix syndrum parameter scale
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
-- add piano roll scripts and offer those in pianoroll button3 menu
 - registering the same procedure twice triggers a g_warning()
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - File/Open should merge if issued on an empty project

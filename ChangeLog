@@ -1,3 +1,17 @@
+Thu Jan 20 04:03:00 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: reworded menu entries.
+
+	* beast-gtk/gxk/gxknotebook.c:
+	* beast-gtk/gxk/gxkassortment.[hc]: added selection blocking ability.
+	properly update selection of newly created menus and notebooks.
+
+	* beast-gtk/gxk/gxkmenubutton.[hc]: changed menu popup logic to support
+	conditionally pushed-in menus if screen size would otherwise be exceeded.
+
+	* beast-gtk/gxk/gxkutils.[hc]: changed API so we offer menu popup
+	functions with, without and with conditional push-in modes.
+
 Thu Jan 20 02:20:06 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkaction.[hc]: removed unused options field, code cleanups.

@@ -317,7 +317,7 @@ piano_canvas_clicked (BstPianoRoll           *proll,
 {
   if (button == 3 && event)
     gxk_menu_popup (gxk_radget_find (self, "piano-popup"),
-                    event->button.x_root, event->button.y_root, FALSE,
+                    event->button.x_root, event->button.y_root,
                     event->button.button, event->button.time);
 }
 
@@ -331,7 +331,7 @@ event_canvas_clicked (BstEventRoll           *eroll,
 {
   if (button == 3 && event)
     gxk_menu_popup (gxk_radget_find (self, "event-popup"),
-                    event->button.x_root, event->button.y_root, FALSE,
+                    event->button.x_root, event->button.y_root,
                     event->button.button, event->button.time);
 }
 

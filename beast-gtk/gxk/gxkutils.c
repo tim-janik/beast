@@ -3423,9 +3423,48 @@ gxk_menu_attach_as_popup (GtkMenu         *menu,
 }
 
 typedef struct {
-  gint     x, y;
-  gboolean push_in;
+  gint     x, y, pushed_x, pushed_y;
+  guint    pushed_in : 1;
+  guint    pushable : 1;
 } PopupData;
+
+static gboolean
+menu_position_unpushed (GtkMenu   *menu,
+                        gint      *x,
+                        gint      *y)
+{
+  /* lift up if too close to edge */
+  GtkRequisition requisition;
+  gtk_widget_get_child_requisition (GTK_WIDGET (menu), &requisition);
+  if (*y + requisition.height > gdk_screen_height())
+    {
+      *y = MAX (0, gdk_screen_height() - requisition.height);
+      return FALSE;
+    }
+  else
+    return TRUE;
+}
+
+static void
+menu_position_pushed_in (GtkMenu   *menu,
+                         gint      *x,
+                         gint      *y,
+                         GtkWidget *active)
+{
+  GList *list;
+  for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
+    {
+      GtkWidget *child = list->data;
+      if (active == child)
+        break;
+      else if (GTK_WIDGET_VISIBLE (child))
+        {
+          GtkRequisition requisition;
+          gtk_widget_get_child_requisition (child, &requisition);
+          *y -= requisition.height;
+        }
+    }
+}
 
 static void
 menu_position_func (GtkMenu  *menu,
@@ -3435,32 +3474,42 @@ menu_position_func (GtkMenu  *menu,
                     gpointer  func_data)
 {
   PopupData *pdata = func_data;
-  GtkWidget *active = gtk_menu_get_active (menu);
-  *x = pdata->x;
-  *y = pdata->y;
-  *push_in = pdata->push_in && active;
-  if (*push_in)
+  *push_in = FALSE;
+  if (pdata->pushed_in)
     {
-      GList *list;
-      for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
+      GtkWidget *active = gtk_menu_get_active (menu);
+      if (active)
         {
-          GtkWidget *child = list->data;
-          if (active == child)
-            break;
-          else if (GTK_WIDGET_VISIBLE (child))
-            {
-              GtkRequisition requisition;
-              gtk_widget_get_child_requisition (child, &requisition);
-              *y -= requisition.height;
-            }
+          *x = pdata->pushed_x;
+          *y = pdata->pushed_y;
+          *push_in = TRUE;
+          menu_position_pushed_in (menu, x, y, active);
+        }
+      else
+        {
+          *x = pdata->x;
+          *y = pdata->y;
+          *push_in = FALSE;
+          menu_position_unpushed (menu, x, y);
         }
     }
-  else /* lift up if too close to edge */
+  else
     {
-      GtkRequisition requisition;
-      gtk_widget_get_child_requisition (GTK_WIDGET (menu), &requisition);
-      if (*y + requisition.height > gdk_screen_height())
-        *y = MAX (0, gdk_screen_height() - requisition.height);
+      *x = pdata->x;
+      *y = pdata->y;
+      *push_in = FALSE;
+      gboolean fitscreen = menu_position_unpushed (menu, x, y);
+      if (!fitscreen && pdata->pushable)
+        {
+          GtkWidget *active = gtk_menu_get_active (menu);
+          if (active)
+            {
+              *x = pdata->pushed_x;
+              *y = pdata->pushed_y;
+              *push_in = TRUE;
+              menu_position_pushed_in (menu, x, y, active);
+            }
+        }
     }
 }
 
@@ -3468,18 +3517,48 @@ void
 gxk_menu_popup (GtkMenu *menu,
                 gint     x,
                 gint     y,
-                gboolean push_in,
                 guint    mouse_button,
                 guint32  time)
 {
-  PopupData *pdata = g_new0 (PopupData, 1);
   g_return_if_fail (GTK_IS_MENU (menu));
+  PopupData *pdata = g_new0 (PopupData, 1);
   pdata->x = x;
   pdata->y = y;
-  pdata->push_in = push_in;
-  gtk_menu_popup (menu, NULL, NULL,
-                  menu_position_func, pdata,
-                  mouse_button, time);
+  gtk_menu_popup (menu, NULL, NULL, menu_position_func, pdata, mouse_button, time);
+}
+
+void
+gxk_menu_popup_pushable (GtkMenu         *menu,
+                         gint             x,
+                         gint             y,
+                         gint             pushed_x,
+                         gint             pushed_y,
+                         guint            mouse_button,
+                         guint32          time)
+{
+  g_return_if_fail (GTK_IS_MENU (menu));
+  PopupData *pdata = g_new0 (PopupData, 1);
+  pdata->x = x;
+  pdata->y = y;
+  pdata->pushed_x = pushed_x;
+  pdata->pushed_y = pushed_y;
+  pdata->pushable = TRUE;
+  gtk_menu_popup (menu, NULL, NULL, menu_position_func, pdata, mouse_button, time);
+}
+
+void
+gxk_menu_popup_pushed_in (GtkMenu         *menu,
+                          gint             pushed_x,
+                          gint             pushed_y,
+                          guint            mouse_button,
+                          guint32          time)
+{
+  g_return_if_fail (GTK_IS_MENU (menu));
+  PopupData *pdata = g_new0 (PopupData, 1);
+  pdata->pushed_x = pushed_x;
+  pdata->pushed_y = pushed_y;
+  pdata->pushed_in = TRUE;
+  gtk_menu_popup (menu, NULL, NULL, menu_position_func, pdata, mouse_button, time);
 }
 
 static GtkWidget*

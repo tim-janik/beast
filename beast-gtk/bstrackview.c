@@ -223,7 +223,7 @@ rack_view_button_press_event (BstRackView     *self,
   if (event->button == 3)
     {
       gxk_menu_popup (gxk_radget_find (self, "rack-view-popup"),
-                      event->x_root, event->y_root, FALSE,
+                      event->x_root, event->y_root,
                       event->button, event->time);
       return TRUE;
     }

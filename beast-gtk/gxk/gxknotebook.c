@@ -132,6 +132,7 @@ notebook_assortment_entry_added (GxkAssortment      *assortment,
                                  GxkAssortmentEntry *entry,
                                  GxkNotebook        *self)
 {
+  gxk_assortment_block_selection (assortment);
   if (GTK_IS_WIDGET (entry->object))
     {
       GtkWidget *child = GTK_WIDGET (entry->object);
@@ -143,6 +144,7 @@ notebook_assortment_entry_added (GxkAssortment      *assortment,
           gtk_notebook_insert_page (notebook, child, tab, g_slist_index (assortment->entries, entry));
         }
     }
+  gxk_assortment_unblock_selection (assortment);
 }
 
 static void
@@ -232,6 +234,7 @@ gxk_notebook_set_assortment (GxkNotebook    *self,
       GSList *slist;
       for (slist = self->assortment->entries; slist; slist = slist->next)
         notebook_assortment_entry_added (self->assortment, slist->data, self);
+      notebook_assortment_selection_changed (self->assortment, self);
     }
 }
 

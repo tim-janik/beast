@@ -53,6 +53,7 @@ struct GxkAssortment
   gchar              *publishing_name;
   GSList             *entries;
   GxkAssortmentEntry *selected;
+  guint               block_count;
 };
 typedef struct {
   GObjectClass parent_class;
@@ -69,10 +70,6 @@ typedef struct {
 GType           gxk_assortment_entry_get_type   (void);
 GType               gxk_assortment_get_type     (void);
 GxkAssortment*      gxk_assortment_new          (void);
-void                gxk_assortment_select       (GxkAssortment          *self,
-                                                 GxkAssortmentEntry     *entry);
-void                gxk_assortment_select_data  (GxkAssortment          *self,
-                                                 gpointer                entry_user_data);
 GxkAssortmentEntry* gxk_assortment_find_data    (GxkAssortment          *self,
                                                  gpointer                entry_user_data);
 GxkAssortmentEntry* gxk_assortment_insert       (GxkAssortment          *self,
@@ -89,7 +86,13 @@ void                gxk_assortment_changed      (GxkAssortment          *self,
 void                gxk_assortment_remove       (GxkAssortment          *self,
                                                  GxkAssortmentEntry     *entry);
 void                gxk_assortment_dispose      (GxkAssortment          *self);
-void                gxk_assortment_manage_menu  (GxkAssortment          *self,
+void          gxk_assortment_block_selection    (GxkAssortment          *self);
+void          gxk_assortment_select             (GxkAssortment          *self,
+                                                 GxkAssortmentEntry     *entry);
+void          gxk_assortment_select_data        (GxkAssortment          *self,
+                                                 gpointer                entry_user_data);
+void          gxk_assortment_unblock_selection  (GxkAssortment          *self);
+void          gxk_assortment_manage_menu        (GxkAssortment          *self,
                                                  GtkMenu                *menu);
 
 /* --- publishing --- */

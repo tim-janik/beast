@@ -90,11 +90,26 @@ gxk_assortment_dispose (GxkAssortment *self)
 }
 
 void
+gxk_assortment_block_selection (GxkAssortment *self)
+{
+  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  self->block_count++;
+}
+
+void
+gxk_assortment_unblock_selection (GxkAssortment *self)
+{
+  g_return_if_fail (GXK_IS_ASSORTMENT (self));
+  g_return_if_fail (self->block_count > 0);
+  self->block_count--;
+}
+
+void
 gxk_assortment_select (GxkAssortment      *self,
                        GxkAssortmentEntry *entry)
 {
   g_return_if_fail (GXK_IS_ASSORTMENT (self));
-  if (entry != self->selected)
+  if (!self->block_count && entry != self->selected)
     {
       self->selected = entry;
       g_signal_emit (self, signal_selection_changed, 0);
@@ -487,6 +502,7 @@ assortment_menu_entry_added (GxkAssortment          *self,
                              GxkAssortmentEntry     *entry,
                              GtkMenu                *menu)
 {
+  gxk_assortment_block_selection (self);
   GtkWidget *menu_item = g_object_new (GTK_TYPE_IMAGE_MENU_ITEM,
                                        "visible", TRUE,
                                        "user-data", entry->user_data,
@@ -502,6 +518,7 @@ assortment_menu_entry_added (GxkAssortment          *self,
   g_object_set_data_full (menu_item, "gxk-assortment-label", g_object_ref (label), g_object_unref);
   g_object_set_data_full (menu_item, "gxk-assortment-image", g_object_ref (image), g_object_unref);
   gtk_menu_shell_insert (GTK_MENU_SHELL (menu), menu_item, g_slist_index (self->entries, entry));
+  gxk_assortment_unblock_selection (self);
   assortment_menu_entry_changed (self, entry, menu);
 }
 
@@ -615,4 +632,5 @@ gxk_assortment_manage_menu (GxkAssortment          *self,
   GSList *slist;
   for (slist = self->entries; slist; slist = slist->next)
     assortment_menu_entry_added (self, slist->data, menu);
+  assortment_menu_selection_changed (self, menu);
 }

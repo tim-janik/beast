@@ -131,9 +131,9 @@ static const GxkStockAction playback_actions[] = {
 static const GxkStockAction project_actions[] = {
   { N_("New Song"),             NULL,           N_("Create a new song, consisting of a mixer, tracks, parts and notes"),
     BST_ACTION_NEW_SONG,        BST_STOCK_MINI_SONG },
-  { N_("New Custom Synthesizer"), NULL,         N_("Create a new synthesizer mesh to be used as effect or instrument in songs"),
+  { N_("Add Custom Synthesizer"), NULL,         N_("Add a new synthesizer mesh to be used as effect or instrument in songs"),
     BST_ACTION_NEW_CSYNTH,      BST_STOCK_MINI_CSYNTH },
-  { N_("New MIDI Synthesizer"), NULL,           N_("Create a new MIDI synthesizer to control an instrument from external MIDI events"),
+  { N_("Add MIDI Synthesizer"), NULL,           N_("Add a new MIDI synthesizer to control an instrument from external MIDI events"),
     BST_ACTION_NEW_MIDI_SYNTH,  BST_STOCK_MINI_MIDI_SYNTH },
   { N_("Remove Song or Synthesizer"), NULL,     N_("Remove the currently selected synthesizer (song)"),
     BST_ACTION_REMOVE_SYNTH,    BST_STOCK_REMOVE_SYNTH },

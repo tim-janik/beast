@@ -122,9 +122,7 @@ menu_button_popup (GxkMenuButton *self,
   gboolean popup_right = self->mode == GXK_MENU_BUTTON_POPUP_MODE;
   gboolean popup_bottom = (self->mode == GXK_MENU_BUTTON_TOOL_MODE ||
                            self->mode == GXK_MENU_BUTTON_COMBO_MODE);
-  GdkEvent *event = gtk_get_current_event ();
   GtkWidget *menu_item, *widget = GTK_WIDGET (self);
-  gint x, y;
   menu_button_grab_focus (self);
   /* handle expose events and snapshot background */
   menu_button_restore_backing (self);
@@ -136,23 +134,32 @@ menu_button_popup (GxkMenuButton *self,
                   "height-request", self->islot->requisition.height,
                   NULL);
   menu_button_remove_contents (self);
-  if (push_in && self->cslot)
+  gint x, y;
+  gdk_window_get_origin (widget->window, &x, &y);
+  gint pushed_x = x, pushed_y = y;                      /* pushed_x = widget->origin.x */
+  if (self->cslot)
     {
-      gdk_window_get_origin (widget->window, &x, &y);   /* x = widget->location->x */
       GtkWidget *toplevel = gtk_widget_get_toplevel (self->cslot);
       gint tx, ty;
       gdk_window_get_origin (toplevel->window, &tx, &ty);
-      y = ty;                                           /* y = toplevel->location->y */
+      pushed_y = ty;                                    /* pushed_y = toplevel->origin.y */
       gtk_widget_translate_coordinates (self->cslot, toplevel, 0, 0, &tx, &ty);
-      y += ty;                                          /* y = cslot->location->y */
+      pushed_y += ty;                                   /* pushed_y = cslot->origin.y */
     }
   else
-    gdk_window_get_origin (widget->window, &x, &y);
+    push_in = FALSE;
   if (popup_right)
     x += widget->allocation.width;
   if (popup_bottom)
     y += widget->allocation.height;
-  gxk_menu_popup (self->menu, x, y, push_in, button, event ? gdk_event_get_time (event) : 0);
+  GdkEvent *event = gtk_get_current_event ();
+  guint32 etime = event ? gdk_event_get_time (event) : 0;
+  if (push_in)
+    gxk_menu_popup_pushed_in (self->menu, pushed_x, pushed_y, button, etime);
+  else if (self->cslot)
+    gxk_menu_popup_pushable (self->menu, x, y, pushed_x, pushed_y, button, etime);
+  else
+    gxk_menu_popup (self->menu, x, y, button, etime);
   menu_item = gtk_menu_get_active (self->menu);
   if (menu_item)
     gtk_menu_shell_select_item (GTK_MENU_SHELL (self->menu), menu_item);

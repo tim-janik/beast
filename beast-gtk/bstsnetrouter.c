@@ -865,7 +865,7 @@ bst_snet_router_button_press (GtkWidget      *widget,
   
   if (!handled && event->button == 3 && self->canvas_popup)
     gxk_menu_popup (self->canvas_popup,
-                    event->x_root, event->y_root, FALSE,
+                    event->x_root, event->y_root,
                     event->button, event->time);
   return handled;
 }
