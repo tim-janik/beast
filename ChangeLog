@@ -1,3 +1,7 @@
+Fri Aug 22 04:22:56 2003  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: enable -O2 optimizations for c++ code.
+
 Thu Jul 31 18:15:03 2003  Tim Janik  <timj@gtk.org>
 
 	* added cxxdummy.cc files over the place to force C++ linkage

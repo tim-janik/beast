@@ -284,7 +284,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 
 		dnl Optimizations
 		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
-		dnl compile-time-expensive: MC_EVAR_ADD(CXXFLAGS, -O, -O2)
+		MC_EVAR_ADD(CXXFLAGS, -O, -O2)
 		MC_PROG_CC_SUPPORTS_OPTION(-ftracer,
 		    MC_EVAR_ADD(CXXFLAGS, -ftracer, -ftracer))
 		MC_EVAR_ADD(CXXFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
