@@ -632,7 +632,7 @@ bst_scrollgraph_build_dialog (GtkWidget   *alive_object,
       if (alignment)
         g_signal_connect_object (scg, "resize-values", G_CALLBACK (scrollgraph_resize_alignment), alignment, G_CONNECT_AFTER);
     }
-  GtkWidget *dialog = gxk_dialog_new (NULL, (GtkObject*) alive_object, GXK_DIALOG_HIDE_ON_DELETE, "Scrollgraph", radget);
+  GtkWidget *dialog = gxk_dialog_new (NULL, (GtkObject*) alive_object, 0, "Scrollgraph", radget);
   gchar *title = g_strdup_printf ("Spectrogram: %%s (%s)", bse_source_ochannel_label (source, ochannel));
   bst_window_sync_title_to_proxy (dialog, source, title);
   g_free (title);

@@ -1,5 +1,4 @@
 FIXME(release-critical):
-- fix probes for multi-module objects
 - menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
 - play + play doesn't reset wave oscillator state
 - implement Monitor Output Signal dialogs:
