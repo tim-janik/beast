@@ -1,3 +1,12 @@
+Fri Oct 17 21:35:43 2003  Tim Janik  <timj@gtk.org>
+
+	* library/*/Makefile.am: include _DATA files in tarballs.
+
+	* library/scripts/modules2grid.scm: 
+	* library/scripts/progressor-example.scm:
+	* library/scripts/record-midi.scm:
+	* library/scripts/test.scm: moved scripts here from shell/.
+
 Fri Oct 17 21:07:55 2003  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/test-string.bse: added simplistic test instrument

@@ -9,3 +9,5 @@ scripts_DATA = $(strip		\
 	modules2grid.scm	\
 )
 scriptsdir = $(bsescriptdir)
+
+EXTRA_DIST = $(scripts_DATA)

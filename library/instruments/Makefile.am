@@ -8,3 +8,5 @@ instruments_DATA = $(strip 	\
 	test-string.bse		\
 )
 instrumentsdir = $(bseinstrumentdir)
+
+EXTRA_DIST = $(instruments_DATA)

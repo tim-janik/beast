@@ -7,3 +7,5 @@
 demo_DATA = $(strip \
 )
 demodir = $(bsedemodir)
+
+EXTRA_DIST = $(demo_DATA)
