@@ -7,5 +7,6 @@ Makefile.in
 cutvorbis
 magictest
 mathtests
+testcxx
 testfft
 testwavechunk

@@ -10,6 +10,8 @@ ACLOCAL=aclocal
 AUTOCONF=autoconf
 AUTOCONF_VERSION=2.50
 AUTOHEADER=autoheader
+GETTEXTIZE=glib-gettextize
+INTLTOOLIZE=intltoolize
 #LIBTOOL=libtool
 CONFIGURE_OPTIONS=--enable-devel-rules=yes
 
@@ -60,6 +62,21 @@ else
 	DIE=1
 fi
 
+# check for gettextize
+$GETTEXTIZE --version >/dev/null 2>&1 || {
+	echo
+	echo "You need to have $GETTEXTIZE installed to compile $PROJECT."
+	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
+	DIE=1
+}
+
+# check for intltoolize
+$INTLTOOLIZE --version >/dev/null 2>&1 || {
+	echo
+	echo "You need to have $INTLTOOLIZE installed to compile $PROJECT."
+	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
+	DIE=1
+}
 # check for libtool
 #$LIBTOOL --version >/dev/null 2>&1 || {
 #	echo
@@ -102,11 +119,15 @@ if test -z "$ACLOCAL_FLAGS"; then
 fi
 
 # run gettext
-#echo "Running gettextize...  Ignore non-fatal messages."
+echo "Running gettextize...  Ignore non-fatal messages."
 # Hmm, we specify --force here, since otherwise things dont'
 # get added reliably, but we don't want to overwrite intl
 # while making dist.
-#echo "no" | gettextize --copy --force
+echo "no" | $GETTEXTIZE --copy --force
+
+# run intltool
+echo "Running intltoolize..."
+$INTLTOOLIZE --copy --force --automake
 
 # run aclocal
 $ACLOCAL $ACLOCAL_FLAGS	|| exit $?

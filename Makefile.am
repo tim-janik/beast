@@ -41,18 +41,26 @@ make-paths.h: $(top_builddir)/config.status Makefile
 # always built make-paths.h and create links
 stamp-h: make-paths.h
 
-CLEANFILES += make-paths.h
+CLEANFILES += $(strip		\
+	make-paths.h		\
+	intltool-extract	\
+	intltool-merge		\
+	intltool-update		\
+	)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = sfi.pc bse.pc
 $(pkgconfig_DATA): config.status
 
-EXTRA_DIST += $(strip	\
-	TODO		\
-	COPYING.GPL	\
-	COPYING.LGPL	\
-	acbeast.m4	\
-	sfi.pc.in	\
-	bse.pc.in	\
-	topconfig.h	\
+EXTRA_DIST += $(strip		\
+	TODO			\
+	COPYING.GPL		\
+	COPYING.LGPL		\
+	acbeast.m4		\
+	sfi.pc.in		\
+	bse.pc.in		\
+	topconfig.h		\
+	intltool-extract.in     \
+	intltool-merge.in       \
+	intltool-update.in	\
 )

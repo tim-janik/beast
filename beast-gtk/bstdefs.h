@@ -19,6 +19,7 @@
 #define __BST_DEFS_H__
 
 #include <gxk/gxk.h>
+#include <libintl.h>
 #include "glewidgets.h"
 #include "bstzoomedwindow.h"
 #include "bstfreeradiobutton.h"
@@ -80,8 +81,12 @@ typedef enum {
 /* --- i18n and gettext helpers --- */
 #define CKEY(x) x
 /* allow gettext-ization */
-#define	_N(x)	x
-#define	_(x)	x
+#define _(String) gettext (String)
+#ifdef gettext_noop
+#    define N_(String) gettext_noop (String)
+#else
+#    define N_(String) (String)
+#endif
 
 
 /* --- internal stuff --- */

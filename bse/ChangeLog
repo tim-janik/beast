@@ -1,3 +1,7 @@
+2003-10-08  Christian Neumair  <chris@gnome-de.org>
+
+	* tests/.cvsignore: Added missing file.
+
 Mon Oct  6 02:55:49 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecategories.c: adapt to new documented toplevel category set.

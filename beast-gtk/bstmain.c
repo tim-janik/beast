@@ -91,6 +91,11 @@ main (int   argc,
   GSource *source;
   guint i;
 
+  /* initialize i18n */
+  bindtextdomain (GETTEXT_PACKAGE, BEAST_LOCALEDIR);
+  textdomain (GETTEXT_PACKAGE);
+  setlocale (LC_ALL, "");
+
   /* initialize GLib guts */
   if (0)
     toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);

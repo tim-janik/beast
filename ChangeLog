@@ -1,3 +1,13 @@
+2003-10-08  Christian Neumair  <chris@gnome-de.org>
+
+	* beast-gtk/gtkdefs.h:
+	* beast-gtk/gtkmain.c:
+	* Makefile.am:
+	* autogen.sh:
+	* configure.in: Added i18n support through gettext/intltool.
+
+	* .cvsignore: Added missing files.
+
 Mon Oct  6 10:40:17 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackrollctrl.[hc]: tweaked part editing tools.
