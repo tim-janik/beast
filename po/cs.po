@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-15 11:05+0200\n"
-"PO-Revision-Date: 2004-09-16 00:49+0200\n"
+"POT-Creation-Date: 2004-09-21 11:01+0200\n"
+"PO-Revision-Date: 2004-09-21 14:07+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -829,6 +829,34 @@ msgstr "BEAST verze %s"
 #: beast-gtk/bstmain.c:727
 msgid "Contributions made by:"
 msgstr "Přispěli:"
+
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bstparam-automation.c:97
+#, c-format
+msgid "Control Automation: %s"
+msgstr "Automatizace ovládacího prvku: %s"
+
+#. TRANSLATORS: %s is substituted with a property name
+#: beast-gtk/bstparam-automation.c:197
+#, c-format
+msgid "%s: automation disabled"
+msgstr "%s: automatizace zakázána"
+
+#. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
+#: beast-gtk/bstparam-automation.c:205
+#, c-format
+msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
+msgstr "%s: automatizace z ovládacího prvku MIDI: %s (kanál MIDI: %d)"
+
+#. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
+#: beast-gtk/bstparam-automation.c:217
+#, c-format
+msgid "%s: automation from MIDI control: %s"
+msgstr "%s: automatizace z ovládacího prvku MIDI: %s"
+
+#: beast-gtk/bstparam-automation.c:235
+msgid "Control Automation"
+msgstr "Automatizace ovládacích prvků"
 
 #: beast-gtk/bstparam-choice.c:143
 msgid "Drop Down Combo"
@@ -2488,7 +2516,7 @@ msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "Noty z nezaškrtnutých stop sekvencer při přehrávání ignoruje"
 
-#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:912
+#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximální počet hlasů pro současné přehrávání"
 
@@ -2496,7 +2524,7 @@ msgstr "Maximální počet hlasů pro současné přehrávání"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Síť syntézy nebo vlna, kterou v této stopě používat jako nástroj"
 
-#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:918
+#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:947
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
 
@@ -2505,7 +2533,7 @@ msgid "Mixer busses connected to track output"
 msgstr "Sběrnice mixéru připojené k výstupu stopy"
 
 #: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:739
-#: bse/bsetrack.c:923
+#: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Síť syntézy, kterou používat jako postprocesor"
 
@@ -3041,7 +3069,7 @@ msgstr "Druhý řídicí vstup"
 
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
 #: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
-#: plugins/bseiirfilter.c:162 plugins/bsemixer.c:109 plugins/bsemult.c:68
+#: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
 #: plugins/davorgan.c:133 plugins/davsyndrum.c:122
 #: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
@@ -3195,11 +3223,11 @@ msgstr "/Filtry/Bikvadratické typy"
 msgid "Filter"
 msgstr "Filtr"
 
-#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:127
 msgid "Filter Type"
 msgstr "Typ filtru"
 
-#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:121
 msgid "The filter design type"
 msgstr "Typ návrhu filtru"
 
@@ -3207,13 +3235,13 @@ msgstr "Typ návrhu filtru"
 msgid "Center Frequency"
 msgstr "Střední frekvence"
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:141
-#: plugins/bseiirfilter.c:151
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:143
+#: plugins/bseiirfilter.c:153
 msgid "Cutoff [Hz]"
 msgstr "Odříznutí [Hz]"
 
 #: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
-#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Upozornění"
 
@@ -3264,7 +3292,7 @@ msgid "Strength of gain modulation"
 msgstr "Síla modulace zisku"
 
 #: bse/bsebiquadfilter.c:184 plugins/bseatandistort.c:90
-#: plugins/bseiirfilter.c:160 plugins/davbassfilter.idl:34
+#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Zvuk In"
@@ -3323,7 +3351,7 @@ msgstr "Seznam dostupných sběrnic mixérů, které používat jako výstup sb�
 #: bse/bsebus.c:825 bse/bsebus.c:827 bse/bsebus.c:829 bse/bsebus.c:831
 #: bse/bsebus.c:835 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
 #: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
-#: bse/bsesong.c:712 bse/bsetrack.c:896
+#: bse/bsesong.c:712 bse/bsetrack.c:925
 msgid "Adjustments"
 msgstr "Úpravy"
 
@@ -3384,11 +3412,11 @@ msgstr "Vstupní signály"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Signály syntézy (ze stop a sběrnic) používané jako vstup sběrnice"
 
-#: bse/bsebus.c:848 bse/bsetrack.c:925
+#: bse/bsebus.c:848 bse/bsetrack.c:954
 msgid "Signal Outputs"
 msgstr "Výstupy signálu"
 
-#: bse/bsebus.c:850 bse/bsetrack.c:927
+#: bse/bsebus.c:850 bse/bsetrack.c:956
 msgid "Output Signals"
 msgstr "Výstupní signály"
 
@@ -4656,12 +4684,12 @@ msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Seznam dostupných sítí syntézy, ze které zvolit postprocesor"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:915
-#: bse/bsetrack.c:921
+#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:944
+#: bse/bsetrack.c:950
 msgid "MIDI Instrument"
 msgstr "Nástroj MIDI"
 
-#: bse/bsemidisynth.c:422 bse/bsetrack.c:917
+#: bse/bsemidisynth.c:422 bse/bsetrack.c:946
 msgid "MIDI Channel"
 msgstr "Kanál MIDI"
 
@@ -4669,7 +4697,7 @@ msgstr "Kanál MIDI"
 msgid "Max Voices"
 msgstr "Max hlasů"
 
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:931
 msgid "Synthesizer"
 msgstr "Syntetizér"
 
@@ -4677,7 +4705,7 @@ msgstr "Syntetizér"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj MIDI"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:923
+#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:952
 msgid "Postprocessor"
 msgstr "Postprocesor"
 
@@ -4909,7 +4937,7 @@ msgstr "/Zdroje zvuku/Standardní oscilátor"
 msgid "Wave Form"
 msgstr "Tvar vlny"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:907 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:936 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Vlna"
@@ -5115,28 +5143,28 @@ msgstr "Seznam dostupných sítí syntézy, ze kterých zvolit nástroj stopy"
 msgid "List of available mixer busses to be used as track output"
 msgstr "Seznam dostupných sběrnic mixéru, které používat jako výstup stopy"
 
-#: bse/bsetrack.c:898
+#: bse/bsetrack.c:927
 msgid "Muted"
 msgstr "Umlčeno"
 
-#: bse/bsetrack.c:900 bse/bsetrack.c:905 bse/bsetrack.c:910
+#: bse/bsetrack.c:929 bse/bsetrack.c:934 bse/bsetrack.c:939
 msgid "Synth Input"
 msgstr "Vstup syntézy"
 
-#: bse/bsetrack.c:902
+#: bse/bsetrack.c:931
 msgid "Synthesis network to be used as instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj"
 
-#: bse/bsetrack.c:907
+#: bse/bsetrack.c:936
 msgid "Wave to be used as instrument"
 msgstr "Vlna, kterou používat jako nástroj"
 
 # FIXME: s/Voixes/Voices/
-#: bse/bsetrack.c:912
+#: bse/bsetrack.c:941
 msgid "Max Voixes"
 msgstr "Max hlasů"
 
-#: bse/bsetrack.c:928
+#: bse/bsetrack.c:957
 msgid "Mixer busses used as output for this track"
 msgstr "Sběrnice mixéru používané jako výstup této stopy"
 
@@ -5184,17 +5212,17 @@ msgstr "MIDI tracker, aplikace pro skládání hudby a modulární syntézu"
 msgid "Music Composer"
 msgstr "Skladatel hudby"
 
-#: data/bse.keys.in.h:1
-msgid "Audio"
-msgstr "Zvuk"
-
-#: data/bse.keys.in.h:2
+#: data/beast.xml.in.h:1 data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
 msgstr "Soubor zvuku BSE s více částmi"
 
-#: data/bse.keys.in.h:3
+#: data/beast.xml.in.h:2 data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "Soubor syntézy BSE"
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr "Zvuk"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
@@ -5314,8 +5342,8 @@ msgid "Threshold [dB]"
 msgstr "Práh [dB]"
 
 #: plugins/artscompressor.idl:58
-msgid "Set the threshold"
-msgstr "Nastavit práh"
+msgid "Only parts louder than threshold are compressed"
+msgstr "Komprimovány jsou jen části hlasitější než práh"
 
 #: plugins/artscompressor.idl:59
 msgid "Ratio [x:1]"
@@ -5338,8 +5366,10 @@ msgid "Auto Output"
 msgstr "Automatický výstup"
 
 #: plugins/artscompressor.idl:61
-msgid "Adjust the output amplification automatically"
-msgstr "Automaticky upravit zesílení výstupu"
+msgid ""
+"Adjust the output amplification automatically according to threshold and "
+"ratio"
+msgstr "Automaticky upravit zesílení výstupu podle prahu a poměru"
 
 #: plugins/bseadder.c:97 plugins/bsemult.c:60
 msgid "Audio Input 1"
@@ -5435,51 +5465,51 @@ msgstr "Mono In"
 msgid "Mono Signal Input"
 msgstr "Vstup mono signálu"
 
-#: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
+#: plugins/bseiirfilter.c:119 plugins/bseiirfilter.c:125
 msgid "Filter Choice"
 msgstr "Výběr filtru"
 
-#: plugins/bseiirfilter.c:119
+#: plugins/bseiirfilter.c:121
 msgid "Filter Algorithm"
 msgstr "Algoritmus filtru"
 
-#: plugins/bseiirfilter.c:125
+#: plugins/bseiirfilter.c:127
 msgid "The type of filter to use"
 msgstr "Typ filtru, který používat"
 
-#: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
+#: plugins/bseiirfilter.c:131 plugins/bseiirfilter.c:136
 msgid "Filter Specification"
 msgstr "Určení filtrů"
 
-#: plugins/bseiirfilter.c:131
+#: plugins/bseiirfilter.c:133
 msgid "Order"
 msgstr "Pořadí"
 
-#: plugins/bseiirfilter.c:131
+#: plugins/bseiirfilter.c:133
 msgid "Order of Filter"
 msgstr "Pořadí filtrů"
 
-#: plugins/bseiirfilter.c:136
+#: plugins/bseiirfilter.c:138
 msgid "Epsilon"
 msgstr "Epsilon"
 
-#: plugins/bseiirfilter.c:136
+#: plugins/bseiirfilter.c:138
 msgid "Passband falloff at cutoff frequency"
 msgstr ""
 
-#: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
+#: plugins/bseiirfilter.c:141 plugins/bseiirfilter.c:146
 msgid "Cutoff Frequency (All Filters)"
 msgstr "Limitní frekvence (všechny filtry)"
 
-#: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
+#: plugins/bseiirfilter.c:151 plugins/bseiirfilter.c:156
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr ""
 
-#: plugins/bseiirfilter.c:160
+#: plugins/bseiirfilter.c:162
 msgid "Unfiltered Input"
 msgstr "Nefiltrovaný vstup"
 
-#: plugins/bseiirfilter.c:162
+#: plugins/bseiirfilter.c:164
 msgid "Filtered Output"
 msgstr "Filtrovaný výstup"
 
@@ -5789,6 +5819,9 @@ msgstr "Levý výstup"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Pravý výstup"
+
+#~ msgid "Set the threshold"
+#~ msgstr "Nastavit práh"
 
 #~ msgid "Tab Width"
 #~ msgstr "Šířka záložky"
