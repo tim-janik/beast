@@ -140,18 +140,18 @@ fread_dword (FILE *file, dword& dw)
 
 struct PatHeader
 {
-  char id[12];		  /* ID='GF1PATCH110' */
-  char manufacturer_id[10];	  /* Manufacturer ID */
-  char description[60];	  /* Description of the contained Instruments
-                             or copyright of manufacturer. */
-  byte instruments;		  /* Number of instruments in this patch */
-  byte voices;		  /* Number of voices for sample */
-  byte channels;		  /* Number of output channels
-				     (1=mono,2=stereo) */
-  word waveforms;		  /* Number of waveforms */
-  word mastervolume;		  /* Master volume for all samples */
-  dword size;			  /* Size of the following data */
-  char reserved[36];		  /* reserved */
+  char id[12];		        /* ID='GF1PATCH110' */
+  char manufacturer_id[10];	/* Manufacturer ID */
+  char description[60];	        /* Description of the contained Instruments
+                                 * or copyright of manufacturer. */
+  byte instruments;		/* Number of instruments in this patch */
+  byte voices;		        /* Number of voices for sample */
+  byte channels;		/* Number of output channels
+                                 * (1=mono,2=stereo) */
+  word waveforms;		/* Number of waveforms */
+  word mastervolume;		/* Master volume for all samples */
+  dword size;			/* Size of the following data */
+  char reserved[36];		/* reserved */
   
   PatHeader()
   {
