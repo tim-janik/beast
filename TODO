@@ -1,5 +1,7 @@
 FIXMES:
 - fix bse_gettext()
+- deleting a track doesn't delete it's sniffer
+- report sample rate to stdout if it doesn't match requested rate exactly
 - piano roll/align events: does insert notes with wrong cursor
 - event roll: align events: outline colors don't honour skin colorization
 - add author and license to procedure execution dialog
