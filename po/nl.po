@@ -5,259 +5,258 @@
 # Vincent van Adrighem <V.vanAdrighem@dirck.mine.nu>, 2003.
 # Tino Meinen <a.t.meinen@chello.nl>, 2003, 2004, 2005.
 #
+# events    gebeurtenissen/signalen/events
+# tracks	  sporen/kanalen
+# channel	  kanaal/ingang
 msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-19 10:37+0100\n"
-"PO-Revision-Date: 2005-01-19 12:10+0100\n"
+"POT-Creation-Date: 2005-02-17 19:38+0100\n"
+"PO-Revision-Date: 2005-02-18 03:07+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:74
 msgid "_New"
 msgstr "_Nieuw"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:74
 msgid "Create new project"
 msgstr "Nieuw project"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:76
 msgid "_Open..."
 msgstr "_Openen..."
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:76
 msgid "Open existing project"
 msgstr "Bestaand project openen"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:78
 msgid "_Merge..."
 msgstr "_Samenvoegen..."
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:78
 msgid "Merge an existing project into the current project"
 msgstr "Een bestaand project met huidige project samenvoegen"
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:80
 msgid "_Import MIDI..."
 msgstr "_MIDI importeren..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:80
 msgid "Import a standard MIDI file into the current project"
 msgstr "Een standaard MIDI-bestand in het huidige project invoegen"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:82
 msgid "_Close"
 msgstr "Sl_uiten"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:82
 msgid "Close the project"
 msgstr "Het project sluiten"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:86
 msgid "_Save"
 msgstr "Op_slaan"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:86
 msgid "Write project to disk"
 msgstr "Project op schijf opslaan"
 
-#: beast-gtk/bstapp.c:89
+#: beast-gtk/bstapp.c:88
 msgid "Save _As..."
 msgstr "Opslaan _als..."
 
-#: beast-gtk/bstapp.c:89
+#: beast-gtk/bstapp.c:88
 msgid "Write project to a specific file"
 msgstr "Project in een bepaald bestand opslaan"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:92
 msgid "_Quit"
 msgstr "A_fsluiten"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:92
 msgid "Close all windows and quit"
 msgstr "Alle vensters sluiten en afsluiten"
 
-#: beast-gtk/bstapp.c:97
+#: beast-gtk/bstapp.c:96
 msgid "_Preferences..."
 msgstr "_Voorkeuren..."
 
 # wijzigen
-#: beast-gtk/bstapp.c:97
+#: beast-gtk/bstapp.c:96
 msgid "Adjust overall program behaviour"
 msgstr "Algeheel programmagedrag aanpassen"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:100
 msgid "Rebuild"
 msgstr "Opnieuw opbouwen"
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:103
 msgid "_About..."
 msgstr "_Info..."
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:103
 msgid "Display developer and contributor credits"
 msgstr "Ontwikkelaars en anderen die hebben bijgedragen tonen"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:107
 msgid "_Undo"
 msgstr "_Ongedaan maken"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:107
 msgid "Undo the effect of the last action"
 msgstr "Het effect van de laatste actie ongedaan maken"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:109
 msgid "_Redo"
 msgstr "O_pnieuw"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:109
 msgid "Redo the last undone action"
 msgstr "De laatst herstelde stap weer toepassen"
 
 # schonen wissen
-#: beast-gtk/bstapp.c:114 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:113 beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "Herstelbuffer _wissen"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:113
 msgid "Delete the complete undo history"
 msgstr "De volledige herstelgeschiedenis verwijderen"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:117
 msgid "Procedure _Browser"
 msgstr "Procedure_beheer"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:117
 msgid "Display an overview of all procedures"
 msgstr "Een overzicht tonen van alle procedures "
 
 # beter woord voor rack
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:119
 msgid "Rack Editor"
 msgstr "Rack bewerken"
 
 # wat is een goede vertaling hiervoor?
-#: beast-gtk/bstapp.c:122 beast-gtk/bstprofiler.c:225
+#: beast-gtk/bstapp.c:121 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:121
 msgid "Display statistics and timing information"
 msgstr "Statistieken en timing-informatie weergeven"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:123
 msgid "New View"
 msgstr "Nieuw Beeld"
 
 # Een extra weergave van het project aanmaken<
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:123
 msgid "Create an extra view of the project"
 msgstr "Een extra visie op het project weergeven"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:127
 msgid "_Play"
 msgstr "_Afspelen"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:127
 msgid "Play or restart playback of the project"
 msgstr "Het project afspelen of het afspelen hervatten"
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:129
 msgid "_Stop"
 msgstr "_Stoppen"
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:129
 msgid "Stop playback of the project"
 msgstr "Afspelen van het project stoppen"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:133
 msgid "New Song"
 msgstr "Nieuw nummer"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:133
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr ""
 "Een nieuw nummer aanmaken, bestaande uit een mixer, sporen, onderdelen en "
 "noten"
 
-#: beast-gtk/bstapp.c:136
-msgid "New Custom Synthesizer"
-msgstr "Nieuwe aangepaste synthesizer"
+#: beast-gtk/bstapp.c:135
+msgid "Add Custom Synthesizer"
+msgstr "Aangepaste synthesizer toevoegen"
 
-#: beast-gtk/bstapp.c:136
+#: beast-gtk/bstapp.c:135
+msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
+msgstr "Een nieuwe synthesizernet toevoegen dat als effect of als instrument in liedjes gebruikt wordt"
+
+#: beast-gtk/bstapp.c:137
+msgid "Add MIDI Synthesizer"
+msgstr "MIDI synthesizer toevoegen"
+
+# signalen/events
+# signalen klink hier eigenlijk heel goed
+#: beast-gtk/bstapp.c:137
 msgid ""
-"Create a new synthesizer mesh to be used as effect or instrument in songs"
-msgstr ""
-"Een nieuwe synthesizernet aanmaken dat als effect of als instrument in "
-"liedjes gebruikt wordt"
+"Add a new MIDI synthesizer to control an instrument from external MIDI events"
+msgstr "Een nieuwe MIDI-synthesizer toevoegen om een instument te bedienen met externe MIDI-signalen"
 
-#: beast-gtk/bstapp.c:138
-msgid "New MIDI Synthesizer"
-msgstr "Nieuwe MIDI synthesizer"
-
-#: beast-gtk/bstapp.c:138
-msgid ""
-"Create a new MIDI synthesizer to control an instrument from external MIDI "
-"events"
-msgstr ""
-"Een nieuwe Midi-synthesizer aanmaken om een instument te bedienen met "
-"externe Midi-signalen"
-
-#: beast-gtk/bstapp.c:140
+#: beast-gtk/bstapp.c:139
 msgid "Remove Song or Synthesizer"
 msgstr "Nummer of synthesizer verwijderen"
 
 # huidige geselecteerde golf? wave-bestand?
-#: beast-gtk/bstapp.c:140
+#: beast-gtk/bstapp.c:139
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "De momenteel geselecteerde synthesizer verwijderen (lied)"
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:143
 msgid "Load _Instrument..."
 msgstr "_Instrument laden..."
 
 # mesh - net?
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:143
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Synthesizernet laden uit de insturmentenmap"
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:145
 msgid "Load _Effect..."
 msgstr "_Effect laden..."
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:145
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Synthesizernet laden uit effectenmap"
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:147
 msgid "Save As Instrument..."
 msgstr "Opslaan als instrument..."
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:147
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Synthesizersnet opslaan in instrumentenmap"
 
-#: beast-gtk/bstapp.c:150
+#: beast-gtk/bstapp.c:149
 msgid "Save As Effect..."
 msgstr "Opslaan als effect..."
 
-#: beast-gtk/bstapp.c:150
+#: beast-gtk/bstapp.c:149
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Synthesizersnet opslaan in effectenmap"
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:153
 msgid "Document _Index..."
 msgstr "Document _index..."
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:153
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Geef een overzicht van de inhoud van de documentatie over BEAST"
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:155
 msgid "_Quick Start..."
 msgstr "_Snel aan de slag..."
 
@@ -265,116 +264,141 @@ msgstr "_Snel aan de slag..."
 # taken verricht
 # doelen bereikt
 # Geeft een introductie voor veelgebruikte taken
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:155
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Geeft een introductie hoe veelgebruike taken kunnen worden verricht."
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:157
 msgid "_FAQ..."
 msgstr "_Vaak gestelde vragen..."
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:157
 msgid "Answers to frequently asked questions"
 msgstr "Antwoorden op veelgestelde vragen"
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:159
 msgid "Online _Help Desk..."
 msgstr "Online _helpdesk..."
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:159
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr ""
 "Een webbrowser opstarten met de online helpdesk op de website van BEAST"
 
 # webstek
-#: beast-gtk/bstapp.c:162
+#: beast-gtk/bstapp.c:161
 msgid "_BEAST Website..."
 msgstr "_BEAST website..."
 
-#: beast-gtk/bstapp.c:162
+#: beast-gtk/bstapp.c:161
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Een webbrowser opstarten met de website van BEAST"
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:164
 msgid "_Release Notes..."
 msgstr "_Release notes..."
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:164
 msgid "Notes and informations about this release cycle"
 msgstr "Informatie en opmerkingen over deze versie"
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:166
 msgid "Developing Plugins..."
 msgstr "Plugin-ontwikkeling..."
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:166
 msgid "A guide to synthesis plugin development"
 msgstr "Een gids voor het ontwikkelen van plugins"
 
-#: beast-gtk/bstapp.c:169
+#: beast-gtk/bstapp.c:168
 msgid "DSP Engine..."
 msgstr "DSP motor..."
 
-#: beast-gtk/bstapp.c:169
+#: beast-gtk/bstapp.c:168
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 "Technische beschrijving van de inwendige werking van de multi-threaded "
 "synthesis motor"
 
-#: beast-gtk/bstapp.c:172
+#: beast-gtk/bstapp.c:171
 msgid "Development..."
 msgstr "Ontwikkeling..."
 
-#: beast-gtk/bstapp.c:172
+#: beast-gtk/bstapp.c:171
 msgid "Provide an overview of development related topics and documents"
 msgstr "Geef een overzicht van ontwikkelaarsonderwerpen en documenten"
 
-#: beast-gtk/bstapp.c:176
+#: beast-gtk/bstapp.c:175
 msgid "Online Sound Archive..."
 msgstr "Online geluidsarchief..."
 
-#: beast-gtk/bstapp.c:176
+#: beast-gtk/bstapp.c:175
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Een webbrowser opstarten met het online geluidsarchief"
 
-#: beast-gtk/bstapp.c:180
+#: beast-gtk/bstapp.c:179
 msgid "Online Demos..."
 msgstr "Online demos..."
 
-#: beast-gtk/bstapp.c:180
+#: beast-gtk/bstapp.c:179
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Een webbrowser opstarten met online demo-nummers"
 
-#: beast-gtk/bstapp.c:312
+#: beast-gtk/bstapp.c:300
 msgid "Export Audio"
 msgstr "Audio exporteren"
 
-#: beast-gtk/bstapp.c:642 beast-gtk/bstapp.c:649 beast-gtk/bstfiledialog.c:424
-#: beast-gtk/bstfiledialog.c:431
+#: beast-gtk/bstapp.c:492 beast-gtk/bstsupershell.c:233
+msgid "Waves"
+msgstr "Waves"
+
+# beter woord voor verzameling?
+#: beast-gtk/bstapp.c:494
+msgid "Wave Repository"
+msgstr "Wave verzameling"
+
+# nummer
+#: beast-gtk/bstapp.c:499
+#, c-format
+msgid "Song: %s"
+msgstr "Lied: %s"
+
+#: beast-gtk/bstapp.c:504
+#, c-format
+msgid "MIDI Synthesizer: %s"
+msgstr "MIDI synthesizer: %s"
+
+#: beast-gtk/bstapp.c:509
+#, c-format
+msgid "Synthesizer: %s"
+msgstr "Synthesizer: %s"
+
+#: beast-gtk/bstapp.c:696 beast-gtk/bstapp.c:703 beast-gtk/bstfiledialog.c:421
+#: beast-gtk/bstfiledialog.c:428
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Openen van project `%s'"
 
-#: beast-gtk/bstapp.c:709
+#: beast-gtk/bstapp.c:763
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Laden van skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:879
+#: beast-gtk/bstapp.c:932
 msgid "Rack editor"
 msgstr "Rack bewerken"
 
-#: beast-gtk/bstapp.c:893
+#: beast-gtk/bstapp.c:946
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: beast-gtk/bstapp.c:920
+#: beast-gtk/bstapp.c:973
 msgid "Procedure Browser"
 msgstr "Procedurebeheer"
 
-#: beast-gtk/bstapp.c:977
+#: beast-gtk/bstapp.c:1030
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
@@ -397,7 +421,7 @@ msgstr "Toevoegen"
 #: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusmixer.c:36
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
+#: beast-gtk/bstpianorollctrl.c:80 beast-gtk/bstrackitem.c:216
 #: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:760
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
@@ -471,96 +495,122 @@ msgstr "Uitlijnen"
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "De relatieve uitlijning aanpassen van de te tonen waarden of balken"
 
-#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
-#: beast-gtk/bsteventrollctrl.c:427
-msgid "Move Control Event"
-msgstr "Verplaatsen controlegebeurtenis"
+#: beast-gtk/bsteventrollctrl.c:58 beast-gtk/bstpianorollctrl.c:58
+msgid "All"
+msgstr "Alles"
 
-#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
-#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsteventrollctrl.c:58
+msgid "Select all events"
+msgstr "Alle 'events' selecteren"
+
+#. special cased signals
+#: beast-gtk/bsteventrollctrl.c:60 beast-gtk/bstpianorollctrl.c:60
+#: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
+msgid "None"
+msgstr "Geen"
+
+#: beast-gtk/bsteventrollctrl.c:60
+msgid "Unselect all events"
+msgstr "Alle 'events' deselecteren"
+
+#: beast-gtk/bsteventrollctrl.c:62 beast-gtk/bstpianorollctrl.c:62
+msgid "Invert"
+msgstr "Omkeren"
+
+#: beast-gtk/bsteventrollctrl.c:62 beast-gtk/bstpianorollctrl.c:62
+msgid "Invert the current seleciton"
+msgstr "De huidige selectie omkeren"
+
+#: beast-gtk/bsteventrollctrl.c:441 beast-gtk/bsteventrollctrl.c:448
+#: beast-gtk/bsteventrollctrl.c:517
+msgid "Move Control Event"
+msgstr "Controle-'event' verplaatsen"
+
+#: beast-gtk/bsteventrollctrl.c:448 beast-gtk/bsteventrollctrl.c:602
+#: beast-gtk/bsteventrollctrl.c:652 beast-gtk/bstpianorollctrl.c:575
+#: beast-gtk/bstpianorollctrl.c:685 beast-gtk/bstpianorollctrl.c:748
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
 #: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:170
 msgid "No target"
 msgstr "Geen doel"
 
-#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
+#: beast-gtk/bsteventrollctrl.c:517 beast-gtk/bsteventrollctrl.c:638
 msgid "Lost Event"
-msgstr "Gebeurtenis kwijt"
+msgstr "'Event' kwijtgeraakt"
 
-#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
+#: beast-gtk/bsteventrollctrl.c:527 beast-gtk/bsteventrollctrl.c:560
 msgid "Align Control Events"
-msgstr "Uitlijnen controlegebeurtenis"
+msgstr "Uitlijnen controle-events"
 
-#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
+#: beast-gtk/bsteventrollctrl.c:560 beast-gtk/bsteventrollctrl.c:686
+#: beast-gtk/bstpianorollctrl.c:806 beast-gtk/bstpianorollctrl.c:842
 msgid "Aborted"
 msgstr "Afgebroken"
 
-#: beast-gtk/bsteventrollctrl.c:496
+#: beast-gtk/bsteventrollctrl.c:586
 msgid "Insert Control Event"
-msgstr "Invoegen controlegebeurtenis"
+msgstr "Invoegen controle-events"
 
-#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:548
+#: beast-gtk/bsteventrollctrl.c:597 beast-gtk/bsteventrollctrl.c:602
+#: beast-gtk/bsteventrollctrl.c:638
 msgid "Resize Control Event"
-msgstr "Herschalen controlegebeurtenis"
+msgstr "Herschalen controle-event"
 
-#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
+#: beast-gtk/bsteventrollctrl.c:649 beast-gtk/bsteventrollctrl.c:652
 msgid "Delete Control Event"
-msgstr "Verwijderen controlegebeurtenis"
+msgstr "Verwijderen controle-event"
 
-#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
+#: beast-gtk/bsteventrollctrl.c:662 beast-gtk/bsteventrollctrl.c:686
+#: beast-gtk/bstpianorollctrl.c:780 beast-gtk/bstpianorollctrl.c:806
 msgid "Select Region"
 msgstr "Regio selecteren"
 
-#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
+#: beast-gtk/bsteventrollctrl.c:695 beast-gtk/bstpianorollctrl.c:851
 msgid "Abortion"
 msgstr "Afbreken"
 
-#: beast-gtk/bstfiledialog.c:169
+#: beast-gtk/bstfiledialog.c:166
 msgid "Contents"
 msgstr "Inhoud"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:201
+#: beast-gtk/bstfiledialog.c:198
 msgid "File Selection"
 msgstr "Bestandsselectie"
 
-#: beast-gtk/bstfiledialog.c:382
+#: beast-gtk/bstfiledialog.c:379
 msgid "Open Project"
 msgstr "Project openen"
 
-#: beast-gtk/bstfiledialog.c:396
+#: beast-gtk/bstfiledialog.c:393
 msgid "Select File"
 msgstr "Bestand selecteren"
 
-#: beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:407
 msgid "Select Directory"
 msgstr "Map selecteren"
 
-#: beast-gtk/bstfiledialog.c:449
+#: beast-gtk/bstfiledialog.c:446
 #, c-format
 msgid "Merge: %s"
 msgstr "Samenvoegen: %s"
 
-#: beast-gtk/bstfiledialog.c:462
+#: beast-gtk/bstfiledialog.c:459
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Samenvoegen van project `%s'"
 
-#: beast-gtk/bstfiledialog.c:478
+#: beast-gtk/bstfiledialog.c:475
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "MIDI importeren: %s"
 
-#: beast-gtk/bstfiledialog.c:489
+#: beast-gtk/bstfiledialog.c:486
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Invoegen MIDI-bestand `%s'"
 
-#: beast-gtk/bstfiledialog.c:508
+#: beast-gtk/bstfiledialog.c:505
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -576,7 +626,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: beast-gtk/bstfiledialog.c:532 beast-gtk/bstfiledialog.c:546
+#: beast-gtk/bstfiledialog.c:529 beast-gtk/bstfiledialog.c:543
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -589,7 +639,7 @@ msgstr ""
 "opslaan wegens:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:537
+#: beast-gtk/bstfiledialog.c:534
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -602,81 +652,81 @@ msgstr ""
 "niet vervangen wegens:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:574
+#: beast-gtk/bstfiledialog.c:571
 #, c-format
 msgid "Save: %s"
 msgstr "Opslaan: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:576
+#: beast-gtk/bstfiledialog.c:573
 msgid "Fully include wave files"
 msgstr "Wave-bestanden volledig bijvoegen"
 
-#: beast-gtk/bstfiledialog.c:577
+#: beast-gtk/bstfiledialog.c:574
 msgid "Store references to wave files"
 msgstr "Refenties naar wave-bestanden opslaan"
 
-#: beast-gtk/bstfiledialog.c:591
+#: beast-gtk/bstfiledialog.c:588
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Opslaan van project `%s'"
 
-#: beast-gtk/bstfiledialog.c:606
+#: beast-gtk/bstfiledialog.c:603
 msgid "Load Effect"
 msgstr "Effect laden"
 
-#: beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:616
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Samenvoegen van effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:636
+#: beast-gtk/bstfiledialog.c:633
 msgid "Save Effect"
 msgstr "Effect opslaan"
 
-#: beast-gtk/bstfiledialog.c:650
+#: beast-gtk/bstfiledialog.c:647
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Opslaan van effect: `%s'"
 
-#: beast-gtk/bstfiledialog.c:665
+#: beast-gtk/bstfiledialog.c:662
 msgid "Load Instrument"
 msgstr "Instrument laden"
 
-#: beast-gtk/bstfiledialog.c:678
+#: beast-gtk/bstfiledialog.c:675
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Samenvoegen van intrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:695
+#: beast-gtk/bstfiledialog.c:692
 msgid "Save Instrument"
 msgstr "Instrument opslaan"
 
-#: beast-gtk/bstfiledialog.c:709
+#: beast-gtk/bstfiledialog.c:706
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Opslaan van intrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:725
+#: beast-gtk/bstfiledialog.c:722
 msgid "Load Wave"
 msgstr "Wave laden"
 
-#: beast-gtk/bstfiledialog.c:737 beast-gtk/bstfiledialog.c:739
+#: beast-gtk/bstfiledialog.c:734 beast-gtk/bstfiledialog.c:736
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Laden van wave `%s'"
 
-#: beast-gtk/bstfiledialog.c:741 beast-gtk/bstmain.c:279
+#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstmain.c:279
 #: beast-gtk/bstmain.c:296
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Laden van wave-bestand \"%s\" mislukt: %s"
 
-#: beast-gtk/bstgrowbar.c:91
+#: beast-gtk/bstgrowbar.c:93
 msgid "Shrink the scrollable area"
 msgstr "Het schuifbare gebied kleiner maken"
 
-#: beast-gtk/bstgrowbar.c:93
+#: beast-gtk/bstgrowbar.c:95
 msgid "Grow the scrollable area"
 msgstr "Het schuifbare gebied groter maken"
 
@@ -912,13 +962,13 @@ msgstr "%s: automatisering uigezet"
 #: beast-gtk/bstparam-automation.c:205
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
-msgstr "%s: automatisering vanaf Midi-bediening: %s (Midi-kanaal: %d)"
+msgstr "%s: automatisering vanaf MIDI-bediening: %s (MIDI-kanaal: %d)"
 
 #. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
 #: beast-gtk/bstparam-automation.c:217
 #, c-format
 msgid "%s: automation from MIDI control: %s"
-msgstr "%s: automatisering vanaf Midi-bediening: %s"
+msgstr "%s: automatisering vanaf MIDI-bediening: %s"
 
 # automatisering beheren?
 #: beast-gtk/bstparam-automation.c:235
@@ -1019,51 +1069,51 @@ msgstr "Bestandsnaam tekstinvoer"
 msgid "Time Entry"
 msgstr "Tijd invoer"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:62
 msgid "Clear"
 msgstr "Wissen"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:62
 msgid "Clear the current selection"
 msgstr "Huidige selectie wissen"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:63
 msgid "Cut"
 msgstr "Knippen"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:63
 msgid "Move the current selection into clipboard"
 msgstr "Huidige selectie verplaatsen naar het klembord"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:64
 msgid "Copy"
 msgstr "Kopiëren"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:64
 msgid "Copy the current selection into clipboard"
 msgstr "Huidige selectie kopiëren naar het klembord"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:65
 msgid "Paste"
 msgstr "Plakken"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:65
 msgid "Insert clipboard contents as current selection"
 msgstr "Inhoud van het klembord plakken als huidige selectie"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:68
 msgid "Undo"
 msgstr "Ongedaan maken"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:68
 msgid "Undo last editing step"
 msgstr "Laatste verandering herstellen"
 
-#: beast-gtk/bstpartdialog.c:67
+#: beast-gtk/bstpartdialog.c:69
 msgid "Redo"
 msgstr "Opnieuw"
 
-#: beast-gtk/bstpartdialog.c:67
+#: beast-gtk/bstpartdialog.c:69
 msgid "Redo the last undone editing step"
 msgstr "De laatst herstelde stap weer toepassen"
 
@@ -1109,9 +1159,7 @@ msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
-msgstr ""
-"  verschillende gebeurtenistypen selecteren (controleknoppen, continue-"
-"controllers)"
+msgstr "  verschillende event-types selecteren (controleknoppen, continue-controllers)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
@@ -1245,8 +1293,7 @@ msgstr "Stappen"
 #: beast-gtk/bstpatternctrl.c:124
 msgid ""
 "The number of cells to move across each time an event or note was edited"
-msgstr ""
-"De verschuiving (in aantal cellen) nadat een gebeurtenis of noot is bewerkt"
+msgstr "De verschuiving (in aantal cellen) nadat een 'event' of noot is bewerkt"
 
 #: beast-gtk/bstpatternctrl.c:128 beast-gtk/bstscrollgraph.c:571
 msgid "Direction"
@@ -1254,7 +1301,7 @@ msgstr "Richting"
 
 #: beast-gtk/bstpatternctrl.c:129
 msgid "The direction of cell movement each time an event or note was edited"
-msgstr "De verschuivingsrichting nadat een gebeurtenis of noot is bewerkt"
+msgstr "De verschuivingsrichting nadat een 'event' of noot is bewerkt"
 
 #: beast-gtk/bstpatternctrl.c:133
 msgid "HWrap"
@@ -1365,7 +1412,7 @@ msgstr "Focus-cel octaaf instellen"
 
 #: beast-gtk/bstpatternctrl.c:347 beast-gtk/bstpatternctrl.c:361
 msgid "Remove any events in the focus cell"
-msgstr "Alle gebeurtenissen in de focus-cel wissen"
+msgstr "Alle 'events' in de focus-cel wissen"
 
 #: beast-gtk/bstpatternctrl.c:351 beast-gtk/bstpatternctrl.c:365
 msgid "Set the focus cell note"
@@ -1375,220 +1422,228 @@ msgstr "Focus-cel toon instellen"
 msgid "Sets the value of the focus digit"
 msgstr "De waarde van get focus-getal instellen"
 
-#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+#: beast-gtk/bstpianorollctrl.c:58
+msgid "Select all notes"
+msgstr "Alle noten selecteren"
+
+#: beast-gtk/bstpianorollctrl.c:60
+msgid "Unselect all notes"
+msgstr "Alle noten deselecteren"
+
+#: beast-gtk/bstpianorollctrl.c:78 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
 msgstr "Invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:46
+#: beast-gtk/bstpianorollctrl.c:78
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "Noten invoegen/bewerken/verplaatsen (muisknop 1 en 2)"
 
-#: beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstpianorollctrl.c:80
 msgid "Delete note (mouse button 1)"
 msgstr "Noot verwijderen (muisknop 1)"
 
-#: beast-gtk/bstpianorollctrl.c:50
+#: beast-gtk/bstpianorollctrl.c:82
 msgid "Align Events"
-msgstr "Gebeurtenissen uitlijnen"
+msgstr "'Events' uitlijnen"
 
-#: beast-gtk/bstpianorollctrl.c:50
+#: beast-gtk/bstpianorollctrl.c:82
 msgid "Draw a line to align events to"
-msgstr "Teken een lijn om gebeurtenissen op uit te lijnen"
+msgstr "Teken een lijn om 'events' op uit te lijnen"
 
-#: beast-gtk/bstpianorollctrl.c:52
+#: beast-gtk/bstpianorollctrl.c:84
 msgid "Select"
 msgstr "Selecteren"
 
 # huh?
-#: beast-gtk/bstpianorollctrl.c:52
+#: beast-gtk/bstpianorollctrl.c:84
 msgid "Rectangle select notes"
 msgstr "Rechthoek selecteren opmerkingen"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
+#: beast-gtk/bstpianorollctrl.c:86 beast-gtk/bstpianorollctrl.c:816
 msgid "Vertical Select"
 msgstr "Verticaal selecteren"
 
-#: beast-gtk/bstpianorollctrl.c:54
+#: beast-gtk/bstpianorollctrl.c:86
 msgid "Select tick range vertically"
 msgstr "Markeringsbereik verticaal selecteren"
 
-#: beast-gtk/bstpianorollctrl.c:67
+#: beast-gtk/bstpianorollctrl.c:99
 msgid "1\\/1"
 msgstr "1\\/1"
 
-#: beast-gtk/bstpianorollctrl.c:67
+#: beast-gtk/bstpianorollctrl.c:99
 msgid "Insert whole notes"
 msgstr "Hele noten invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:69
+#: beast-gtk/bstpianorollctrl.c:101
 msgid "1\\/2"
 msgstr "1\\/2"
 
-#: beast-gtk/bstpianorollctrl.c:69
+#: beast-gtk/bstpianorollctrl.c:101
 msgid "Insert half notes"
 msgstr "Halve noten invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:71
+#: beast-gtk/bstpianorollctrl.c:103
 msgid "1\\/4"
 msgstr "1\\/4"
 
-#: beast-gtk/bstpianorollctrl.c:71
+#: beast-gtk/bstpianorollctrl.c:103
 msgid "Insert quarter notes"
 msgstr "Kwarten invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:73
+#: beast-gtk/bstpianorollctrl.c:105
 msgid "1\\/8"
 msgstr "1\\/8"
 
 # plotseling geen meervoud meer?: note ipv notes
-#: beast-gtk/bstpianorollctrl.c:73
+#: beast-gtk/bstpianorollctrl.c:105
 msgid "Insert eighths note"
 msgstr "Achtsten invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:75
+#: beast-gtk/bstpianorollctrl.c:107
 msgid "1\\/16"
 msgstr "1\\/16"
 
-#: beast-gtk/bstpianorollctrl.c:75
+#: beast-gtk/bstpianorollctrl.c:107
 msgid "Insert sixteenth note"
 msgstr "Zestienden invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:77
+#: beast-gtk/bstpianorollctrl.c:109
 msgid "1\\/32"
 msgstr "1\\/32"
 
-#: beast-gtk/bstpianorollctrl.c:77
+#: beast-gtk/bstpianorollctrl.c:109
 msgid "Insert thirty-second note"
 msgstr "Tweeëndertigsten invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:79
+#: beast-gtk/bstpianorollctrl.c:111
 msgid "1\\/64"
 msgstr "1\\/64"
 
-#: beast-gtk/bstpianorollctrl.c:79
+#: beast-gtk/bstpianorollctrl.c:111
 msgid "Insert sixty-fourth note"
 msgstr "Vierenzestigsten invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:113
 msgid "1\\/128"
 msgstr "1\\/128"
 
-#: beast-gtk/bstpianorollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:113
 msgid "Insert hundred twenty-eighth note"
 msgstr "Honderachtentwintigsten invoegen"
 
 # tact is het duitse woord voor het engelse 'bar' -> maat ?
 # Tact heeft anders geen betekenis
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:126 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
 msgstr "Q: Maat"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:126 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
 msgstr "Quantiseren op maatgrenzen"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:128 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
 msgstr "Q: Geen"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:128 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
 msgstr "Geen quantisatie geselecteerd"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:130 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
 # bouderies:
 # op grensen van ... noten
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:130 beast-gtk/bsttrackrollctrl.c:85
 msgid "Quantize to whole note boundaries"
 msgstr "Quantiseren op hele noten"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:132 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
 msgstr "Q: 1\\/2"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:132 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
 msgstr "Quantiseren op halve noten"
 
-#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:134 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
 msgstr "Q: 1\\/4"
 
-#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:134 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
 msgstr "Quantiseren op kwarten"
 
-#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:136 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
 msgstr "Q: 1\\/8"
 
-#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:136 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
 msgstr "Quantiseren op achtsten"
 
-#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:138 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
 msgstr "Q: 1\\/16"
 
-#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:138 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Quantiseren op zestienden"
 
-#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#: beast-gtk/bstpianorollctrl.c:140 beast-gtk/bsttrackrollctrl.c:95
 msgid "Q: 1\\/32"
 msgstr "Q: 1\\/32"
 
-#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#: beast-gtk/bstpianorollctrl.c:140 beast-gtk/bsttrackrollctrl.c:95
 msgid "Quantize to thirty-second note boundaries"
 msgstr "Quantiseren op tweeëndertigsten"
 
-#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#: beast-gtk/bstpianorollctrl.c:142 beast-gtk/bsttrackrollctrl.c:97
 msgid "Q: 1\\/64"
 msgstr "Q: 1\\/64"
 
-#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#: beast-gtk/bstpianorollctrl.c:142 beast-gtk/bsttrackrollctrl.c:97
 msgid "Quantize to sixty-fourth note boundaries"
 msgstr "Quantiseren op vierenzestigsten"
 
-#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#: beast-gtk/bstpianorollctrl.c:144 beast-gtk/bsttrackrollctrl.c:99
 msgid "Q: 1\\/128"
 msgstr "Q: 1\\/128"
 
-#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#: beast-gtk/bstpianorollctrl.c:144 beast-gtk/bsttrackrollctrl.c:99
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr "Quantiseren op honderdachtentwintigsten"
 
-#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
-#: beast-gtk/bstpianorollctrl.c:573
+#: beast-gtk/bstpianorollctrl.c:568 beast-gtk/bstpianorollctrl.c:575
+#: beast-gtk/bstpianorollctrl.c:663
 msgid "Move Note"
 msgstr "Noot verplaatsen"
 
 # wat betekent dit?
-#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
+#: beast-gtk/bstpianorollctrl.c:663 beast-gtk/bstpianorollctrl.c:734
 msgid "Lost Note"
 msgstr "Noot verloren"
 
-#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
-#: beast-gtk/bstpianorollctrl.c:644
+#: beast-gtk/bstpianorollctrl.c:680 beast-gtk/bstpianorollctrl.c:685
+#: beast-gtk/bstpianorollctrl.c:734
 msgid "Resize Note"
 msgstr "Nootlengte aanpassen"
 
-#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bstpianorollctrl.c:745 beast-gtk/bstpianorollctrl.c:748
 msgid "Delete Note"
 msgstr "Noot verwijderen"
 
-#: beast-gtk/bstpianorollctrl.c:680
+#: beast-gtk/bstpianorollctrl.c:770
 msgid "Insert Note"
 msgstr "Noot invoegen"
 
-#: beast-gtk/bstpianorollctrl.c:752
+#: beast-gtk/bstpianorollctrl.c:842
 msgid "Vertical Region"
 msgstr "Verticaal gebied"
 
-#: beast-gtk/bstpianorollctrl.c:873
+#: beast-gtk/bstpianorollctrl.c:963
 msgid "Play note"
 msgstr "Noot afspelen"
 
@@ -1596,19 +1651,19 @@ msgstr "Noot afspelen"
 msgid "Playback"
 msgstr "Afspelen"
 
-#: beast-gtk/bstpreferences.c:77
+#: beast-gtk/bstpreferences.c:74
 msgid "Piano Keys"
 msgstr "Pianotoetsen"
 
-#: beast-gtk/bstpreferences.c:84
+#: beast-gtk/bstpreferences.c:81
 msgid "Generic Keys"
 msgstr "Generieke toetsen"
 
-#: beast-gtk/bstpreferences.c:88
+#: beast-gtk/bstpreferences.c:85
 msgid "Messages"
 msgstr "Berichten"
 
-#: beast-gtk/bstpreferences.c:93
+#: beast-gtk/bstpreferences.c:90
 msgid "Skin"
 msgstr "Skin"
 
@@ -1962,11 +2017,6 @@ msgid ""
 msgstr ""
 "Een 65536-waarde FFT-venster correspondeert met een spectrum met 32769 "
 "frequentiepieken"
-
-#. special cased signals
-#: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
-msgid "None"
-msgstr "Geen"
 
 # niet gespecificeerde duur
 # duur niet gegeven/gespecificeerd
@@ -2586,8 +2636,8 @@ msgstr "Uitvoer kiezen"
 msgid "Select input module"
 msgstr "Invoer kiezen"
 
-#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
-#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:281
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:189
+#: beast-gtk/bstsupershell.c:222 beast-gtk/bstsupershell.c:236
 msgid "Properties"
 msgstr "Eigenschappen"
 
@@ -2702,74 +2752,49 @@ msgstr "Markering (begin)"
 msgid "Mark Signal (Tail)"
 msgstr "Markering (eind)"
 
-#: beast-gtk/bstsupershell.c:159 beast-gtk/bstsupershell.c:278
-msgid "Waves"
-msgstr "Waves"
-
-# beter woord voor verzameling?
-#: beast-gtk/bstsupershell.c:160
-msgid "Wave Repository"
-msgstr "Wave verzameling"
-
-# nummer
-#: beast-gtk/bstsupershell.c:165
-#, c-format
-msgid "Song: %s"
-msgstr "Lied: %s"
-
-#: beast-gtk/bstsupershell.c:170
-#, c-format
-msgid "MIDI Synthesizer: %s"
-msgstr "MIDI synthesizer: %s"
-
-#: beast-gtk/bstsupershell.c:175
-#, c-format
-msgid "Synthesizer: %s"
-msgstr "Synthesizer: %s"
-
-#: beast-gtk/bstsupershell.c:228
+#: beast-gtk/bstsupershell.c:183
 msgid "Tracks"
 msgstr "Sporen"
 
-#: beast-gtk/bstsupershell.c:228
+#: beast-gtk/bstsupershell.c:183
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Sporen bevatten instrumentdefinities en gedeeltes met noten"
 
-#: beast-gtk/bstsupershell.c:231
+#: beast-gtk/bstsupershell.c:186
 msgid "Mixer"
 msgstr "Mixer"
 
-#: beast-gtk/bstsupershell.c:231
+#: beast-gtk/bstsupershell.c:186
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Uitgangssporen mixen, volume aanpassen en effecten toevoegen"
 
 # wijzigen/aanpassen
-#: beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsupershell.c:189
 msgid "Adjust overall song behaviour"
 msgstr "Algeheel programmagedrag wijzigen"
 
-#: beast-gtk/bstsupershell.c:238
+#: beast-gtk/bstsupershell.c:193
 msgid "Parts"
 msgstr "Delen"
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:197
 msgid "Busses"
 msgstr "Bussen"
 
-#: beast-gtk/bstsupershell.c:246 beast-gtk/bstsupershell.c:263
+#: beast-gtk/bstsupershell.c:201 beast-gtk/bstsupershell.c:218
 msgid "Routing"
 msgstr "Routing"
 
-#: beast-gtk/bstsupershell.c:259
+#: beast-gtk/bstsupershell.c:214
 msgid "Rack"
 msgstr "Rack"
 
-#: beast-gtk/bstsupershell.c:263
+#: beast-gtk/bstsupershell.c:218
 msgid "Add, edit and connect synthsizer mesh components"
 msgstr "Toevoegen, bewerken en verbinden van synthesizernet componenten"
 
 # wijzigen/aanpassen
-#: beast-gtk/bstsupershell.c:267
+#: beast-gtk/bstsupershell.c:222
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Algeheel synthesizergedrag wijzigen"
 
@@ -2863,7 +2888,7 @@ msgid "Start Editor"
 msgstr "Editor starten"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.c:264
+#: beast-gtk/bsttracksynthdialog.c:261
 #, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "Synthesizer selectie: %s"
@@ -2903,17 +2928,16 @@ msgstr ""
 "Het synthese-netwerk of wave dat als instrument gebruikt zal worden bij dit "
 "spoor"
 
-#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:1018
+#: beast-gtk/bsttrackview.c:620
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
-msgstr ""
-"Midikanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor kanaal"
+msgstr "MIDI-kanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor kanaal"
 
 #: beast-gtk/bsttrackview.c:623
 msgid "Mixer busses connected to track output"
 msgstr "Mixerbussen verbonden met de spooruitgang"
 
 # uitleg
-#: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:747
+#: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:743
 #: bse/bsetrack.c:1023
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesenetwerk dat als postprocessor gebruikt zal worden"
@@ -2972,7 +2996,7 @@ msgstr "Bericht werd %u keer herhaald"
 msgid "Message has been repeated %u times"
 msgstr "Bericht werd %u keer herhaald"
 
-#: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
+#: beast-gtk/bstusermessage.c:386 beast-gtk/bstusermessage.c:388
 msgid "processing"
 msgstr "verwerken"
 
@@ -3064,9 +3088,10 @@ msgstr "Aanpassingen negeren en dialoogvenster sluiten"
 msgid "E_xamples"
 msgstr "_Voorbeelden"
 
+# Gebeurtenissen/signalen
 #: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Events"
-msgstr "Gebeurtenissen"
+msgstr "Events"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "HZoom"
@@ -3219,38 +3244,42 @@ msgid "_Routing"
 msgstr "_Routing"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:53
+msgid "_Select"
+msgstr "_Selecteren"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:54
 msgid "_Skins"
 msgstr "_Skins"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:54
+#: beast-gtk/dialogs/radgets-beast.xml.h:55
 msgid "_Song"
 msgstr "_Nummer"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:55
+#: beast-gtk/dialogs/radgets-beast.xml.h:56
 msgid "_Spatial"
 msgstr "_Ruimtelijk"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:56
+#: beast-gtk/dialogs/radgets-beast.xml.h:57
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:57
+#: beast-gtk/dialogs/radgets-beast.xml.h:58
 msgid "_Synthesizers"
 msgstr "_Synthesizers"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:58
+#: beast-gtk/dialogs/radgets-beast.xml.h:59
 msgid "_Tools"
 msgstr "E_xtra"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:59
+#: beast-gtk/dialogs/radgets-beast.xml.h:60
 msgid "_Utilities"
 msgstr "_Hulpmiddelen"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:60
+#: beast-gtk/dialogs/radgets-beast.xml.h:61
 msgid "_View"
 msgstr "Beel_d"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:61
+#: beast-gtk/dialogs/radgets-beast.xml.h:62
 msgid "_Virtualization"
 msgstr "_Virtualisatie"
 
@@ -4642,7 +4671,7 @@ msgstr "Controle 127 Polyfonische Modus aan ITrigger"
 
 #: bse/bsecore.idl:246
 msgid "Continuous MIDI Control #1 - Bank Select"
-msgstr "Continue Midi controle #1 - Bank select"
+msgstr "Continue MIDI controle #1 - Bank select"
 
 #: bse/bsecore.idl:610
 msgid "State"
@@ -4844,7 +4873,7 @@ msgstr ""
 
 #: bse/bsecore.idl:680
 msgid "MIDI"
-msgstr "Midi"
+msgstr "MIDI"
 
 #: bse/bsecore.idl:681
 msgid "Invert Sustain Pedal"
@@ -5027,7 +5056,7 @@ msgstr "Ongeldige objecteigenschap"
 
 #: bse/bseenums.c:135
 msgid "Invalid MIDI control type"
-msgstr "Ongeldig Midi-control type"
+msgstr "Ongeldig MIDI-control type"
 
 #: bse/bseenums.c:136
 msgid "Parsing error"
@@ -5154,7 +5183,7 @@ msgstr "Deze bestaat niet"
 
 #: bse/bseenums.c:169
 msgid "No such event"
-msgstr "Gebeurtenis bestaat niet"
+msgstr "Event bestaat niet"
 
 #: bse/bseenums.c:171
 msgid "Ownership mismatch"
@@ -5250,9 +5279,7 @@ msgstr ""
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
-msgstr ""
-"\n"
-"Beschikbare Midi stuurprogramma's:\n"
+msgstr "\nBeschikbare MIDI stuurprogramma's:\n"
 
 #: bse/bsemidicontroller.c:86
 msgid "/Input & Output/MIDI Control Input"
@@ -5298,7 +5325,7 @@ msgid ""
 msgstr ""
 "Verwerpt alle uitvoer en genereert geen invoer. Dit stuurprogramma\n"
 "staat niet in de lijst automatische apparaatselectie voor\n"
-"Midi-apparaten."
+"MIDI-apparaten."
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-oss.c:270
@@ -5308,8 +5335,8 @@ msgid ""
 "  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
 "           read-only, read-write or write-only access."
 msgstr ""
-"Open Sound System Midi stuurprogramma:\n"
-"  APPARAAT - Bestandsnaam Midi apparaat\n"
+"Open Sound System MIDI-stuurprogramma:\n"
+"  APPARAAT - Bestandsnaam MIDI-apparaat\n"
 "  MODUS    - mag \"rw\", \"ro\" of \"wo\" bevatten voor\n"
 "             alleen-lezen, lezen-schrijven of\n"
 "             alleen-schrijven; toevoegen van \"hs\"\n"
@@ -5326,30 +5353,28 @@ msgstr "Beschikbare synthesizers"
 # uitleg
 #: bse/bsemidisynth.c:227
 msgid "List of available synthesis networks to choose a MIDI instrument from"
-msgstr ""
-"Lijst met beschikbare synthesenetwerken waaruit een Midi-instrument gekozen "
-"kan worden"
+msgstr "Lijst met beschikbare synthesenetwerken waaruit een MIDI-instrument gekozen kan worden"
 
 # beter woord voor postprocesser
-#: bse/bsemidisynth.c:231 bse/bsesong.c:142 bse/bsetrack.c:295
+#: bse/bsemidisynth.c:231 bse/bsesong.c:138 bse/bsetrack.c:295
 msgid "Available Postprocessors"
 msgstr "Beschikbare postprocessors"
 
-#: bse/bsemidisynth.c:231 bse/bsesong.c:142 bse/bsetrack.c:295
+#: bse/bsemidisynth.c:231 bse/bsesong.c:138 bse/bsetrack.c:295
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 "Lijst met beschikbare synthesenetwerken waaruit een postprocessor kan worden "
 "gekozen"
 
 #: bse/bsemidisynth.c:442 bse/bsemidisynth.c:447 bse/bsemidisynth.c:452
-#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:1015
+#: bse/bsemidisynth.c:456 bse/bsesong.c:741 bse/bsetrack.c:1015
 #: bse/bsetrack.c:1021
 msgid "MIDI Instrument"
-msgstr "Midi-instrument"
+msgstr "MIDI-instrument"
 
 #: bse/bsemidisynth.c:444 bse/bsetrack.c:1017
 msgid "MIDI Channel"
-msgstr "Midi-kanaal"
+msgstr "MIDI-kanaal"
 
 #: bse/bsemidisynth.c:449
 msgid "Max Voices"
@@ -5362,10 +5387,10 @@ msgstr "Synthesizer"
 # uitleg
 #: bse/bsemidisynth.c:454
 msgid "Synthesis network to be used as MIDI instrument"
-msgstr "Het synthese-netwerk dat als Midi-instrument gebruikt zal worden"
+msgstr "Het synthese-netwerk dat als MIDI-instrument gebruikt zal worden"
 
 # rekeneenheid
-#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:1023
+#: bse/bsemidisynth.c:458 bse/bsesong.c:743 bse/bsetrack.c:1023
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
@@ -5381,7 +5406,7 @@ msgstr "Master [dB]"
 msgid "Master [%]"
 msgstr "Master [%]"
 
-#: bse/bsemidisynth.c:480 bse/bsesong.c:749
+#: bse/bsemidisynth.c:480 bse/bsesong.c:745
 msgid "Playback Settings"
 msgstr "Afspeelinstellingen"
 
@@ -5528,15 +5553,14 @@ msgstr "Openen van PCM-apparaten mislukt, opgeven: %s"
 
 #: bse/bseserver.c:506
 msgid "Show messages about MIDI device selections problems"
-msgstr "Waarschuwen bij problemen bij het selecteren van Midi-apparaten"
+msgstr "Waarschuwen bij problemen bij het selecteren van MIDI-apparaten"
 
 # misschien beter in enkelvoud:
 # openen Midi-apparaat mislukt
 #: bse/bseserver.c:507
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null device): %s"
-msgstr ""
-"Openen Midi-apparaten mislukt (terugvallen naar null-stuurprogramma): %s"
+msgstr "Openen MIDI-apparaten mislukt (terugvallen naar null-stuurprogramma): %s"
 
 #: bse/bseserver.c:558
 msgid "Show recording file errors"
@@ -5563,48 +5587,48 @@ msgstr "Afgesnoept signaal"
 
 # moet dit vertaald worden?
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: bse/bsesong.c:629
+#: bse/bsesong.c:625
 msgid "Master"
 msgstr "Master"
 
-#: bse/bsesong.c:726 bse/bsesong.c:730 bse/bsesong.c:734 bse/bsesong.c:738
+#: bse/bsesong.c:722 bse/bsesong.c:726 bse/bsesong.c:730 bse/bsesong.c:734
 msgid "Timing"
 msgstr "Timing"
 
 # slagen
-#: bse/bsesong.c:728
+#: bse/bsesong.c:724
 msgid "Ticks"
 msgstr "Tikken"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:724
 msgid "Number of ticks per quarter note"
 msgstr "Aantal tikken per kwartnoot"
 
-#: bse/bsesong.c:732
+#: bse/bsesong.c:728
 msgid "Numerator"
 msgstr "Teller"
 
-#: bse/bsesong.c:732
+#: bse/bsesong.c:728
 msgid "Measure numerator"
 msgstr "Matenteller"
 
-#: bse/bsesong.c:736
+#: bse/bsesong.c:732
 msgid "Denominator"
 msgstr "Noemer"
 
-#: bse/bsesong.c:736
+#: bse/bsesong.c:732
 msgid "Measure denominator, must be a power of 2"
 msgstr "Matennoemer, moet een macht van 2 zijn"
 
 # slagen per minuut
-#: bse/bsesong.c:740
+#: bse/bsesong.c:736
 msgid "Beats per minute"
 msgstr "Beats per minuut"
 
 # herhalen
 #. change default
 #. override parent property
-#: bse/bsesong.c:754 bse/bsesong.c:758 bse/bsesong.c:763 bse/bsesong.c:768
+#: bse/bsesong.c:750 bse/bsesong.c:754 bse/bsesong.c:759 bse/bsesong.c:764
 msgid "Looping"
 msgstr "Loopen"
 
@@ -5754,6 +5778,7 @@ msgstr "Zelf-modulatie [%]"
 msgid "Strength of self modulation"
 msgstr "Mate van zelf-modulatie"
 
+#. disabled
 #: bse/bsestandardosc.c:173 bse/bsestandardosc.c:180
 msgid "Pulse Modulation"
 msgstr "Puls-modulatie"
@@ -5946,9 +5971,19 @@ msgstr "Wave dat als instrument gebruikt zal worden"
 msgid "Max Voixes"
 msgstr "Max stemmen"
 
+# MIDI-ingang dat aan dit kanaal is toebedeeld,...
+#: bse/bsetrack.c:1018
+msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
+msgstr "MIDI-kanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor kanaal"
+
 #: bse/bsetrack.c:1028
 msgid "Mixer busses used as output for this track"
 msgstr "Mixerbussen die gebruikt worden als uitgang voor dit spoor"
+
+#: bse/bsewave.c:305
+#, c-format
+msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
+msgstr "Wave-bestand \"%s\": laden van wave-deelvoor frequentie %f mislukt: %s"
 
 #: bse/bsewaveosc.c:95
 msgid "/Audio Sources/Wave Oscillator"
@@ -6812,9 +6847,6 @@ msgstr "Rechter uitgang"
 
 #~ msgid "Adjust right view boundary"
 #~ msgstr "Rechter weergavegrens aanpassen"
-
-#~ msgid "Insert full notes"
-#~ msgstr "Hele noten invoegen"
 
 #~ msgid "Quantize to full note boundaries"
 #~ msgstr "Quantiseren op hele noten"
