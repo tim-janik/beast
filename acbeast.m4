@@ -243,7 +243,7 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
 		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions)
 		MC_EVAR_ADD(CFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
-		MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return)
+		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) # buggy on 3.2
 		dnl MC_EVAR_ADD(CFLAGS, -funroll-loops, -funroll-loops)
 		MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt,
 		    MC_EVAR_ADD(CFLAGS, -frerun-loop-opt, -frerun-loop-opt))
@@ -305,7 +305,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
 		MC_EVAR_ADD(CXXFLAGS, -finline-functions, -finline-functions)
 		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
-		MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return)
+		dnl MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return) # buggy on 3.2
 		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
 		dnl MC_EVAR_ADD(CXXFLAGS, -funroll-loops, -funroll-loops)
 		dnl SLOW: MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt, MC_EVAR_ADD(CXXFLAGS, -frerun-loop-opt, -frerun-loop-opt))
@@ -316,7 +316,6 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		dnl
 		dnl C++ specific Options
 		dnl
-		MC_EVAR_ADD(CXXFLAGS, -fnonnull-objects, -fnonnull-objects)
 		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-signatures, -fhandle-signatures)
 		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-exceptions, -fhandle-exceptions)
 		dnl MC_EVAR_ADD(CXXFLAGS, -frtti, -frtti)

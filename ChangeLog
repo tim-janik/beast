@@ -1,3 +1,11 @@
+Thu Feb  6 20:08:02 2003  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: remove -freg-struct-return from CFLAGS and CXXFLAGS,
+	it causes broken code generation on g++-3.2.
+
+	* acbeast.m4: remove -fnonnull-objects from CXXFLAGS which isn't
+	supported by newer gcc versions anymore.
+
 Wed Feb  5 16:48:55 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-about.texi: 
