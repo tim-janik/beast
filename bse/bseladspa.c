@@ -1,0 +1,688 @@
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 2003 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include "bseladspa.h"
+#include "bseladspamodule.h"
+#include "bsecategories.h"
+#include <string.h>
+
+#include "ladspa.h"
+
+#define DEBUG   sfi_debug_keyfunc ("plugins")
+
+#define	LADSPA_TYPE_NAME	"BseLadspaModule_"
+
+
+/* --- prototypes --- */
+static void     ladspa_plugin_iface_init	(GTypePluginClass      *iface);
+static void	ladspa_plugin_use		(GTypePlugin		*gplugin);
+static void	ladspa_plugin_unuse		(GTypePlugin		*gplugin);
+static void	ladspa_plugin_complete_info	(GTypePlugin		*gplugin,
+						 GType			 type,
+						 GTypeInfo		*type_info,
+						 GTypeValueTable	*value_vtable);
+static const gchar*	ladspa_plugin_reinit_type_ids (BseLadspaPlugin           *self,
+						       LADSPA_Descriptor_Function ldf);
+
+
+/* --- variables --- */
+static GSList *ladspa_plugins = NULL;
+
+
+/* --- functions --- */
+BSE_BUILTIN_TYPE (BseLadspaPlugin)
+{
+  static const GTypeInfo type_info = {
+    sizeof (BseLadspaPluginClass),
+
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) NULL,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+
+    sizeof (BseLadspaPlugin),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) NULL,
+  };
+  static const GInterfaceInfo iface_info = {
+    (GInterfaceInitFunc) ladspa_plugin_iface_init,
+    NULL,               /* interface_finalize */
+    NULL,               /* interface_data */
+  };
+  GType type;
+
+  type = bse_type_register_static (G_TYPE_OBJECT,
+				   "BseLadspaPlugin",
+				   "LADSPA Plugin Loader",
+				   &type_info);
+  g_type_add_interface_static (type, G_TYPE_TYPE_PLUGIN, &iface_info);
+  
+  return type;
+}
+
+static void
+ladspa_plugin_iface_init (GTypePluginClass *iface)
+{
+  iface->use_plugin = ladspa_plugin_use;
+  iface->unuse_plugin = ladspa_plugin_unuse;
+  iface->complete_type_info = ladspa_plugin_complete_info;
+}
+
+static void
+ladspa_plugin_use (GTypePlugin *gplugin)
+{
+  BseLadspaPlugin *self = BSE_LADSPA_PLUGIN (gplugin);
+
+  g_object_ref (self);
+  if (!self->use_count)
+    {
+      LADSPA_Descriptor_Function ldf = NULL;
+      const gchar *error = NULL;
+      self->use_count++;
+
+      DEBUG ("reloading-plugin \"%s\"", self->fname);
+
+      self->gmodule = g_module_open (self->fname, 0);
+      if (!self->gmodule)
+	error = g_module_error ();
+      if (!error)
+	{
+	  if (!g_module_symbol (self->gmodule, "ladspa_descriptor", (gpointer) &ldf) || !ldf)
+	    error = g_module_error ();
+	}
+      if (!error)
+	{
+	  if (ldf (self->n_types) != NULL || ldf (self->n_types - 1) == NULL)
+	    error = "plugin types changed on disk";
+	}
+      if (!error)
+	error = ladspa_plugin_reinit_type_ids (self, ldf);
+
+      if (error)
+	g_error ("Fatal: failed to reinitialize plugin \"%s\": %s", self->fname, error);
+    }
+  else
+    self->use_count++;
+}
+
+static void
+ladspa_plugin_unload (BseLadspaPlugin *self)
+{
+  guint i;
+
+  g_return_if_fail (self->gmodule != NULL);
+
+  g_module_close (self->gmodule);
+  self->gmodule = NULL;
+
+  for (i = 0; i < self->n_types; i++)
+    {
+      bse_ladspa_info_free (self->types[i].info);
+      self->types[i].info = NULL;
+    }
+
+  DEBUG ("unloaded-plugin \"%s\"", self->fname);
+}
+
+static void
+ladspa_plugin_unuse (GTypePlugin *gplugin)
+{
+  BseLadspaPlugin *self = BSE_LADSPA_PLUGIN (gplugin);
+
+  g_return_if_fail (self->use_count > 0);
+
+  self->use_count--;
+  if (!self->use_count)
+    ladspa_plugin_unload (self);
+  g_object_unref (self);
+}
+
+static void
+ladspa_plugin_complete_info (GTypePlugin	*gplugin,
+			     GType		 type,
+			     GTypeInfo		*type_info,
+			     GTypeValueTable	*value_vtable)
+{
+  BseLadspaPlugin *self = BSE_LADSPA_PLUGIN (gplugin);
+  guint j;
+  for (j = 0; j < self->n_types; j++)
+    if (self->types[j].type == type)
+      {
+	bse_ladspa_module_derived_type_info (type, self->types[j].info, type_info);
+	break;
+      }
+}
+
+static const gchar*
+ladspa_plugin_reinit_type_ids (BseLadspaPlugin           *self,
+			       LADSPA_Descriptor_Function ldf)
+{
+  guint i, j;
+  for (j = 0; j < self->n_types; j++)
+    {
+      const gchar *label = g_type_name (self->types[j].type) + strlen (LADSPA_TYPE_NAME);
+      const LADSPA_Descriptor *cld;
+      for (i = 0; ; i++)
+	{
+	  cld = ldf (i);
+	  if (!cld)
+	    return "plugin type missing";
+	  if (cld->Label && strcmp (cld->Label, label) == 0)
+	    break;
+	}
+      self->types[j].info = bse_ladspa_info_assemble (self->fname, cld);
+      if (self->types[j].info->broken)
+	return "plugin type broken";
+    }
+  return NULL;
+}
+
+#define to_upper(c)	((c) >='a' && (c) <='z' ? (c) - 'a' + 'A' : (c))
+#define is_alnum(c)	(((c) >='A' && (c) <='Z') || ((c) >='a' && (c) <='z') || ((c) >='0' && (c) <='9'))
+
+static const gchar*
+ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
+			     LADSPA_Descriptor_Function ldf)
+{
+  gchar *prefix = NULL, *error = NULL;
+  guint i;
+  /* check for multi module plugins */
+  if (ldf (0) && ldf (1))
+    {
+      guint k, was_char = FALSE;
+      prefix = strrchr (self->fname, '/');
+      prefix = prefix ? g_strdup (prefix + 1) : g_strdup (self->fname);
+      for (k = 0; prefix[k]; k++)
+	if (prefix[k] == '_')
+	  prefix[k] = ' ';
+	else if (is_alnum (prefix[k]))
+	  {
+	    if (!was_char)
+	      prefix[k] = to_upper (prefix[k]);
+	    was_char = TRUE;
+	  }
+	else
+	  was_char = FALSE;
+    }
+  for (i = 0; ; i++)
+    {
+      const LADSPA_Descriptor *cld = ldf (i);
+      BseLadspaInfo *bli;
+      if (!cld)
+	break;
+      bli = bse_ladspa_info_assemble (self->fname, cld);
+      if (!bli->broken)
+	{
+	  gchar *string, *name;
+	  guint k, j;
+	  name = g_strconcat (LADSPA_TYPE_NAME, cld->Label, NULL);
+	  if (g_type_from_name (name) != 0)
+	    {
+	      g_free (name);
+	      bse_ladspa_info_free (bli);
+	      error = "Plugin contains registered types";
+	      goto cleanup;
+	    }
+	  j = self->n_types++;
+	  self->types = g_realloc (self->types, self->n_types * sizeof (self->types[0]));
+	  self->types[j].type = bse_type_register_dynamic (BSE_TYPE_LADSPA_MODULE, name,
+							   "LADSPA Undocumented", G_TYPE_PLUGIN (self));
+	  self->types[j].info = bli;
+	  DEBUG ("registered-plugin: \"%s\"", name);
+	  g_free (name);
+	  string = g_strdup (self->types[j].info->name);
+	  for (k = 0; string[k]; k++)
+	    if (string[k] == '_')
+	      string[k] = '-';
+	    else if (string[k] == '/')
+	      string[k] = '|';
+	  name = g_strconcat ("/Modules/LADSPA/",
+			      prefix ? prefix : "",
+			      prefix ? "/" : "",
+			      string, NULL);
+	  g_free (string);
+	  bse_categories_register (name, self->types[j].type);
+	  g_free (name);
+	}
+      else
+	bse_ladspa_info_free (bli);
+    }
+ cleanup:
+  g_free (prefix);
+  return error;
+}
+
+static gboolean
+bse_ladspa_info_add_port (BseLadspaInfo              *bli,
+			  const gchar                *port_name,
+			  guint                       port_flags,
+			  const LADSPA_PortRangeHint *port_range,
+			  guint			     *n_ports_p,
+			  BseLadspaPort		    **ports_p,
+			  guint			      port_index)
+{
+  gboolean input = (port_flags & LADSPA_PORT_INPUT) != 0;
+  gboolean output = (port_flags & LADSPA_PORT_OUTPUT) != 0;
+  BseLadspaPort *port;
+  gchar *ident, *string;
+  guint i, dedup = 1;
+  if (!input && !output)
+    {
+      g_message ("LADSPA(%s): port '%s' is neither input nor output", bli->ident, port_name);
+      return FALSE;
+    }
+  i = (*n_ports_p)++;
+  (*ports_p) = g_renew (BseLadspaPort, (*ports_p), *n_ports_p);
+  port = (*ports_p) + i;
+  memset (port, 0, sizeof (*port));
+  port->name = port_name;
+  port->port_index = port_index;
+  port->audio_channel = (port_flags & LADSPA_PORT_AUDIO) != 0;
+  port->input = input;
+  port->output = output;
+  if (!((port_name[0] >= 'a' && port_name[0] <= 'z') ||
+	(port_name[0] >= 'A' && port_name[0] <= 'Z')))
+    string = g_strconcat (port->audio_channel ? "Audio-" : "Control-", port_name, NULL);
+  else
+    string = g_strdup (port_name);
+  g_strcanon (string, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
+  ident = string;
+  /* ensure uniqueness */
+ recheck:
+  for (i = 0; i < *n_ports_p - 1; i++)
+    if (strcmp ((*ports_p)[i].ident, ident) == 0)
+      {
+	if (ident != string)
+	  g_free (ident);
+	ident = g_strdup_printf ("%s-dD%u", string, dedup++);
+	goto recheck;
+      }
+  if (ident == string)
+    port->ident = string;
+  else
+    {
+      port->ident = g_strdup (ident);
+      g_free (ident);
+      g_free (string);
+    }
+  port->minimum = G_MINFLOAT;
+  port->default_value = 0;
+  port->maximum = G_MAXFLOAT;
+  if (port_range)
+    {
+      guint hints = port_range->HintDescriptor;
+      if (hints & LADSPA_HINT_BOUNDED_BELOW)
+	port->minimum = port_range->LowerBound;
+      if (hints & LADSPA_HINT_BOUNDED_ABOVE)
+	port->maximum = port_range->UpperBound;
+      port->logarithmic = (hints & LADSPA_HINT_LOGARITHMIC) != 0;
+      if (hints & LADSPA_HINT_SAMPLE_RATE)
+	{
+	  port->frequency = TRUE;
+	  port->minimum = MAX (port->minimum, 0);
+	}
+      if (hints & LADSPA_HINT_INTEGER)
+	{
+	  port->integer_stepping = TRUE;
+	  port->minimum = MAX (port->minimum, G_MININT);
+	  port->maximum = MIN (port->maximum, G_MAXINT);
+	}
+      if (hints & LADSPA_HINT_TOGGLED)
+	{
+	  port->boolean = TRUE;
+	  port->minimum = 0;
+	  port->maximum = 1;
+	}
+      port->maximum = MAX (port->minimum, port->maximum);
+      switch (hints & LADSPA_HINT_DEFAULT_MASK)
+	{
+	case LADSPA_HINT_DEFAULT_MINIMUM:
+	  port->default_value = port->minimum;
+	  break;
+	case LADSPA_HINT_DEFAULT_MAXIMUM:
+	  port->default_value = port->maximum;
+	  break;
+	case LADSPA_HINT_DEFAULT_0:
+	  port->default_value = 0;
+	  break;
+	case LADSPA_HINT_DEFAULT_1:
+	  port->default_value = 1;
+	  break;
+	case LADSPA_HINT_DEFAULT_100:
+	  port->default_value = 100;
+	  break;
+	case LADSPA_HINT_DEFAULT_LOW:
+	  if (port->logarithmic)
+	    port->default_value = exp (log (port->minimum) * 0.75 +
+				       log (port->maximum) * 0.25);
+	  else
+	    port->default_value = port->minimum * 0.75 + port->maximum * 0.25;
+	  break;
+	case LADSPA_HINT_DEFAULT_440:
+	  port->concert_a = TRUE;
+	  /* fall through to standard default-value picking */
+	default:
+	case 0: /* LADSPA_HINT_DEFAULT_NONE */
+	  if (!(hints & LADSPA_HINT_BOUNDED_BELOW) ||
+	      !(hints & LADSPA_HINT_BOUNDED_ABOVE))
+	    break;
+	  /* fall through to default-middle behaviour */
+	case LADSPA_HINT_DEFAULT_MIDDLE:
+	  if (port->logarithmic)
+	    port->default_value = exp (log (port->minimum) * 0.5 +
+				       log (port->maximum) * 0.5);
+	  else
+	    port->default_value = port->minimum * 0.5 + port->maximum * 0.5;
+	  break;
+	case LADSPA_HINT_DEFAULT_HIGH:
+	  if (port->logarithmic)
+	    port->default_value = exp (log (port->minimum) * 0.25 +
+				       log (port->maximum) * 0.75);
+	  else
+	    port->default_value = port->minimum * 0.25 + port->maximum * 0.75;
+	  break;
+	}
+      port->default_value = CLAMP (port->default_value, port->minimum, port->maximum);
+    }
+  return TRUE;
+}
+
+gchar*
+bse_ladspa_info_port_2str (BseLadspaPort *port)
+{
+  gchar flags[64];
+  flags[0] = 0;
+  if (port->input)
+    strcat (flags, "w");
+  if (port->output)
+    strcat (flags, "r");
+  if (port->boolean)
+    strcat (flags, "b");
+  if (port->integer_stepping)
+    strcat (flags, "i");
+  if (port->frequency)
+    strcat (flags, "f");
+  if (port->logarithmic)
+    strcat (flags, "L");
+  if (port->concert_a)
+    strcat (flags, "A");
+  return g_strdup_printf ("( %s, %f<=%f<=%f, %s )",
+			  port->ident,
+			  port->minimum, port->default_value, port->maximum,
+			  flags);
+}
+
+BseLadspaInfo*
+bse_ladspa_info_assemble (const gchar  *file_path,
+			  gconstpointer ladspa_descriptor)
+{
+  const LADSPA_Descriptor *cld = ladspa_descriptor;
+  BseLadspaInfo *bli = g_new0 (BseLadspaInfo, 1);
+  gboolean seen_output = FALSE;
+  guint i;
+
+  g_return_val_if_fail (cld != NULL, NULL);
+
+  bli->file_path = g_strdup (file_path);
+  if (!file_path)
+    file_path = "";	/* ensure !=NULL for messages below */
+  if (bli->file_path)
+    {
+      bli->file_name = strrchr (bli->file_path, '/');
+      bli->file_name = bli->file_name ? bli->file_name + 1 : bli->file_path;
+    }
+  else
+    bli->file_name = "#NONE";
+
+  bli->plugin_id = cld->UniqueID;
+  if (bli->plugin_id < 1 || bli->plugin_id >= 0x1000000)
+    g_message ("LADSPA(\"%s\"): plugin with suspicious ID: %u", file_path, bli->plugin_id);
+  if (!cld->Label)
+    {
+      g_message ("LADSPA(\"%s\"): plugin with NULL label", file_path);
+      goto bail_broken;
+    }
+  else
+    bli->ident = g_strdup_printf ("%s#%s", file_path, cld->Label);
+  bli->name = cld->Name ? cld->Name : bli->ident;
+  if (!cld->Maker)
+    g_message ("LADSPA(%s): plugin with 'Maker' field of NULL", bli->ident);
+  bli->author = cld->Maker ? cld->Maker : "";
+  if (!cld->Copyright || g_ascii_strcasecmp (cld->Copyright, "none") == 0)
+    bli->copyright = "";
+  else
+    bli->copyright = cld->Copyright;
+  bli->interactive = (cld->Properties & LADSPA_PROPERTY_REALTIME) != 0;
+  bli->rt_capable = (cld->Properties & LADSPA_PROPERTY_HARD_RT_CAPABLE) != 0;
+
+  if (!cld->PortCount)
+    {
+      g_message ("LADSPA(%s): number of plugin ports is 0", bli->ident);
+      goto bail_broken;
+    }
+  if (!cld->PortDescriptors)
+    {
+      g_message ("LADSPA(%s): port descriptor array is NULL", bli->ident);
+      goto bail_broken;
+    }
+  if (!cld->PortNames)
+    {
+      g_message ("LADSPA(%s): port name array is NULL", bli->ident);
+      goto bail_broken;
+    }
+  if (!cld->PortRangeHints)
+    g_message ("LADSPA(%s): port range hint array is NULL", bli->ident);
+  for (i = 0; i < cld->PortCount; i++)
+    {
+      const LADSPA_PortRangeHint *port_range = cld->PortRangeHints ? cld->PortRangeHints + i : NULL;
+      const gchar *port_name = cld->PortNames[i];
+      guint port_flags = cld->PortDescriptors[i];
+      if (!port_name)
+	{
+	  g_message ("LADSPA(%s): port %u name is NULL", bli->ident, i);
+	  goto bail_broken;
+	}
+      switch (port_flags & (LADSPA_PORT_CONTROL | LADSPA_PORT_AUDIO))
+	{
+	case LADSPA_PORT_CONTROL:
+	  if (!bse_ladspa_info_add_port (bli, port_name, port_flags, port_range,
+					 &bli->n_cports, &bli->cports, i))
+	    goto bail_broken;
+	  break;
+	case LADSPA_PORT_AUDIO:
+	  if (!bse_ladspa_info_add_port (bli, port_name, port_flags, port_range,
+					 &bli->n_aports, &bli->aports, i))
+	    goto bail_broken;
+	  seen_output |= bli->aports[bli->n_aports - 1].output;
+	  break;
+	case LADSPA_PORT_CONTROL | LADSPA_PORT_AUDIO:
+	  g_message ("LADSPA(%s): port %u type claims to be `control` and `audio`", bli->ident, i);
+	  goto bail_broken;
+	default:
+	case 0:
+	  g_message ("LADSPA(%s): port %u type is neither `control` nor `audio`", bli->ident, i);
+	  goto bail_broken;
+	}
+    }
+  if (!seen_output)
+    {
+      g_message ("LADSPA(%s): plugin has no output channel", bli->ident);
+      goto bail_broken;
+    }
+
+  if (!cld->instantiate)
+    {
+      g_message ("LADSPA(%s): function instantiate() is NULL", bli->ident);
+      goto bail_broken;
+    }
+  bli->descdata = cld;
+  bli->instantiate = (void*) cld->instantiate;
+  if (!cld->connect_port)
+    {
+      g_message ("LADSPA(%s): function connect_port() is NULL", bli->ident);
+      goto bail_broken;
+    }
+  bli->connect_port = cld->connect_port;
+  if (!cld->run)
+    {
+      g_message ("LADSPA(%s): function run() is NULL", bli->ident);
+      goto bail_broken;
+    }
+  bli->run = cld->run;
+  if (cld->run_adding && !cld->set_run_adding_gain)
+    g_message ("LADSPA(%s): function set_run_adding_gain() is NULL though run_adding() is provided", bli->ident);
+  if (!cld->cleanup)
+    {
+      g_message ("LADSPA(%s): function cleanup() is NULL", bli->ident);
+      goto bail_broken;
+    }
+  bli->cleanup = cld->cleanup;
+  bli->activate = cld->activate;
+  bli->deactivate = cld->deactivate;
+  return bli;
+
+ bail_broken:
+  bli->broken = TRUE;
+  return bli;
+}
+
+void
+bse_ladspa_info_free (BseLadspaInfo *bli)
+{
+  guint i;
+
+  g_return_if_fail (bli != NULL);
+
+  for (i = 0; i < bli->n_cports; i++)
+    {
+      BseLadspaPort *port = bli->cports + i;
+      g_free (port->ident);
+    }
+  g_free (bli->cports);
+  for (i = 0; i < bli->n_aports; i++)
+    {
+      BseLadspaPort *port = bli->aports + i;
+      g_free (port->ident);
+    }
+  g_free (bli->aports);
+  g_free (bli->ident);
+  g_free (bli->file_path);
+  g_free (bli);
+}
+
+static BseLadspaPlugin*
+ladspa_plugin_find (const gchar *fname)
+{
+  GSList *slist;
+  for (slist = ladspa_plugins; slist; slist = slist->next)
+    {
+      BseLadspaPlugin *plugin = slist->data;
+      if (strcmp (plugin->fname, fname) == 0)
+	return plugin;
+    }
+  return NULL;
+}
+
+const gchar*
+bse_ladspa_plugin_check_load (const gchar *file_name)
+{
+  BseLadspaPlugin *self;
+  LADSPA_Descriptor_Function ldf = NULL;
+  const gchar *error;
+  GModule *gmodule;
+
+  g_return_val_if_fail (file_name != NULL, "Internal Error");
+
+  if (ladspa_plugin_find (file_name))
+    return "Plugin already registered";
+
+  /* load module once */
+  gmodule = g_module_open (file_name, 0);
+  if (!gmodule)
+    return g_module_error ();
+  /* check whether this is a LADSPA module */
+  if (!g_module_symbol (gmodule, "ladspa_descriptor", (gpointer) &ldf) || !ldf)
+    {
+      g_module_close (gmodule);
+      return "Plugin without ladspa_descriptor";
+    }
+
+  /* create plugin and register types */
+  self = g_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
+  self->fname = g_strdup (file_name);
+  self->gmodule = gmodule;
+  error = ladspa_plugin_init_type_ids (self, ldf);
+
+  /* keep plugin if types were successfully registered */
+  ladspa_plugin_unload (self);
+  if (self->n_types)
+    {
+      ladspa_plugins = g_slist_prepend (ladspa_plugins, self);
+      g_object_ref (self);
+    }
+  else
+    g_object_unref (self);
+
+  return error;
+}
+
+GSList*
+bse_ladspa_plugin_dir_list_files (const gchar *dir_list)
+{
+  GSList *slist = bse_search_path_list_files (dir_list, "*.so", NULL, 0);
+
+  return g_slist_sort (slist, (GCompareFunc) strcmp);
+}
+
+static void
+ladspa_test_load (const gchar *file)
+{
+  LADSPA_Descriptor_Function ldf = NULL;
+  const gchar *error;
+  GModule *gmodule;
+  
+  gmodule = g_module_open (file, 0);
+  error = g_module_error ();
+  if (!error && gmodule)
+    {
+      if (!g_module_symbol (gmodule, "ladspa_descriptor", (gpointer) &ldf) || !ldf)
+	error = g_module_error ();
+    }
+  if (!error && ldf)
+    {
+      guint i;
+      const gchar *lfile = strrchr (file, '/');
+      lfile = lfile ? lfile + 1 : file;
+      for (i = 0; ; i++)
+	{
+	  const LADSPA_Descriptor *cld = ldf (i);
+	  BseLadspaInfo *bli;
+	  if (!cld)
+	    break;
+	  bli = bse_ladspa_info_assemble (file, cld);
+	  if (!bli->broken)
+	    g_print ("LADSPA: found %s\n", bli->ident);
+	}
+      if (i == 0)
+	error = "missing LADSPA descriptor";
+    }
+  if (error)
+    g_message ("failed to load LADSPA plugin \"%s\": %s", file, error);
+  if (gmodule)
+    g_module_close (gmodule);
+}

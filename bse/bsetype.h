@@ -48,7 +48,7 @@ GType  		bse_type_register_static  (GType  	      parent_type,
 GType  		bse_type_register_dynamic (GType              parent_type,
 					   const gchar       *type_name,
 					   const gchar       *type_blurb,
-					   BsePlugin         *plugin);
+					   GTypePlugin       *plugin);
 
 
 /* --- implementation details --- */

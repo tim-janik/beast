@@ -226,6 +226,8 @@ master_process_job (GslJob *job)
 	add_consumer (node);
       node->counter = 0;
       NODE_FLAG_RECONNECT (node);
+      node->outputs_suspended = TRUE;
+      node->suspension_update = TRUE;
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_KILL_INPUTS:

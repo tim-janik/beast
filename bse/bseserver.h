@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 #include        <bse/bsepcmdevice.h>
 #include        <bse/bsemididevice.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_SERVER              (BSE_TYPE_ID (BseServer))
@@ -122,9 +119,6 @@ void		bse_server_queue_kill_wire		(BseServer	*server,
 							 SfiComWire	*wire);
 void		bse_server_notify_gconfig		(BseServer	*server);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SERVER_H__ */

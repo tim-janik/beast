@@ -299,7 +299,7 @@ main (gint   argc,
 	}
       else if (strcmp ("-p", argv[i]) == 0)
 	{
-	  // FIXME: bsw_register_plugins (NULL, TRUE, NULL, NULL, NULL);
+	  // bse_ladspa_plugin_test ();
 	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{

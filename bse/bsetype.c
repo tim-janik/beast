@@ -72,9 +72,9 @@ GType
 bse_type_register_dynamic (GType        parent_type,
 			   const gchar *type_name,
 			   const gchar *type_blurb,
-			   BsePlugin   *plugin)
+			   GTypePlugin *plugin)
 {
-  GType type = g_type_register_dynamic (parent_type, type_name, G_TYPE_PLUGIN (plugin), 0);
+  GType type = g_type_register_dynamic (parent_type, type_name, plugin, 0);
   
   bse_type_set_blurb (type, type_blurb);
   

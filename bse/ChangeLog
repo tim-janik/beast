@@ -1,3 +1,24 @@
+Fri Apr  4 10:25:00 2003  Tim Janik  <timj@gtk.org>
+
+	* ladspa.h: added LADSPA API Version 1.1 header file.
+
+	* bseladspa.[hc]: implemented BseLadspaInfo assembler and
+	GTypePlugin to load LADSPA plugins.
+
+	* bseladspamodule.[hc]: implemented BseLadspaModule base type
+	and derived methods used by BseLadspaModule_* implementations.
+	a working LADSPA module is then derived from BseLadspaModule
+	using these methods and equipped with BseLadspaInfo.
+
+	* bseserver.proc (register-plugins): register ladspa plugins after
+	registering BSE plugins.
+
+	* gslopmaster.c (master_process_job): when integrating nodes,
+	flag suspension_update, so the scheduler updates their suspension
+	state. also, flag them initially as outputs_suspended, in order to
+	trigger reset() method activation prior to the first process()
+	call.
+
 Mon Mar 17 07:06:43 2003  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice.[hc]: derive from BseItem, so device can later be valid

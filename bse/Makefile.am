@@ -42,71 +42,24 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 #
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = $(strip \
-	bse.h \
-	bseamplifier.h \
-	bsebindata.h \
-	bsebiquadfilter.h \
-	bsecategories.h \
-	bsecompat.h \
-	bseconfig.h \
-	bseconstant.h \
-	bseconstvalues.h \
-	bsecontainer.h \
-	bsecontextmerger.h \
-	bsedatapocket.h \
-	bsedefs.h \
-	bseeditablesample.h \
-	bseenums.h \
-	bseexports.h \
-	bsegconfig.h \
-	bseglobals.h \
-	bseglue.h \
-	bseitem.h \
-	bsejanitor.h \
-	bsemain.h \
-	bsemath.h \
-	bsemidiicontroller.h \
-	bsemididevice.h \
-	bsemididevice-null.h \
-	bsemididevice-oss.h \
-	bsemidievent.h \
-	bsemidinotifier.h \
-	bsemidireceiver.h \
-	bsemidisynth.h \
-	bseobject.h \
-	bsepart.h \
-	bsepcminput.h \
-	bsepcmoutput.h \
-	bseparam.h \
-	bseparasite.h \
-	bsepcmdevice.h \
-	bsepcmdevice-oss.h \
-	bseplugin.h \
-	bseprocedure.h \
-	bseproject.h \
-	bsescripthelper.h \
-	bseserver.h \
-	bsesnet.h \
-	bsesnooper.h \
-	bsesong.h \
-	bsessequencer.h \
-	bsesource.h \
-	bsestandardosc.h \
-	bsestandardsynths.h \
-	bsestorage.h \
-	bsesubinstrument.h \
-	bsesubiport.h \
-	bsesubkeyboard.h \
-	bsesuboport.h \
-	bsesubsynth.h \
-	bsesuper.h \
-	bsetrack.h \
-	bsetype.h \
-	bseutils.h \
-	bsemidivoice.h \
-	bsewave.h \
-	bsewaveosc.h \
-	bsewaverepo.h \
+	bse.h	bsedefs.h	bseexports.h	bsecompat.h	bseconfig.h	ladspa.h \
+	\
+	bseamplifier.h		bsebindata.h		bsebiquadfilter.h		bsecategories.h \
+	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
+	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
+	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
+	bsemain.h		bsemath.h		bsemidiicontroller.h		bsemididevice.h \
+	bsemididevice-null.h	bsemididevice-oss.h	bsemidievent.h			bsemidinotifier.h \
+	bsemidireceiver.h	bsemidisynth.h		bseobject.h			bsepart.h \
+	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
+	bsepcmdevice.h		bsepcmdevice-oss.h	bseplugin.h			bseladspa.h \
+	bseprocedure.h		bseproject.h		bsescripthelper.h		bseserver.h \
+	bsesnet.h		bsesnooper.h		bsesong.h			bsessequencer.h \
+	bsesource.h		bsestandardosc.h	bsestandardsynths.h		bsestorage.h \
+	bsesubinstrument.h	bsesubiport.h		bsesubkeyboard.h		bsesuboport.h \
+	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
+	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
+	bsewaverepo.h		bseladspamodule.h \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -114,66 +67,22 @@ bse_private_h_sources = $(strip \
 # BSE C sources to build the library from
 bse_c_sources = $(strip \
 	$(GSL_C_SRC) \
-	bseamplifier.c \
-	bsebindata.c \
-	bsebiquadfilter.c \
-	bsecategories.c \
-	bseconstant.c \
-	bseconstvalues.c \
-	bsecontainer.c \
-	bsecontextmerger.c \
-	bsedatapocket.c \
-	bseeditablesample.c \
-	bseenums.c \
-	bsegconfig.c \
-	bseglobals.c \
-	bseglue.c \
-	bseitem.c \
-	bsejanitor.c \
-	bsemain.c \
-	bsemath.c \
-	bsemidiicontroller.c \
-	bsemididevice.c \
-	bsemididevice-null.c \
-	bsemididevice-oss.c \
-	bsemidievent.c \
-	bsemidinotifier.c \
-	bsemidireceiver.c \
-	bsemidisynth.c \
-	bseobject.c \
-	bsepart.c \
-	bsepcminput.c \
-	bsepcmoutput.c \
-	bseparam.c \
-	bseparasite.c \
-	bsepcmdevice.c \
-	bsepcmdevice-oss.c \
-	bseplugin.c \
-	bseprocedure.c \
-	bseproject.c \
-	bsescripthelper.c \
-	bseserver.c \
-	bsesnet.c \
-	bsesnooper.c \
-	bsesong.c \
-	bsessequencer.c \
-	bsesource.c \
-	bsestandardosc.c \
-	bsestandardsynths.c \
-	bsestorage.c \
-	bsesubinstrument.c \
-	bsesubiport.c \
-	bsesubkeyboard.c \
-	bsesuboport.c \
-	bsesubsynth.c \
-	bsesuper.c \
-	bsetrack.c \
-	bsetype.c \
-	bseutils.c \
-	bsemidivoice.c \
-	bsewave.c \
-	bsewaveosc.c \
-	bsewaverepo.c \
+	bseamplifier.c		bsebindata.c		bsebiquadfilter.c		bsecategories.c \
+	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
+	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
+	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
+	bsemain.c		bsemath.c		bsemidiicontroller.c		bsemididevice.c \
+	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
+	bsemidireceiver.c	bsemidisynth.c		bseobject.c			bsepart.c \
+	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
+	bsepcmdevice.c		bsepcmdevice-oss.c	bseplugin.c			bseladspa.c \
+	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
+	bsesnet.c		bsesnooper.c		bsesong.c			bsessequencer.c \
+	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
+	bsesubinstrument.c	bsesubiport.c		bsesubkeyboard.c		bsesuboport.c \
+	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
+	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
+	bsewaverepo.c		bseladspamodule.c \
 )
 # procedure sources
 bse_proc_sources = $(strip \
