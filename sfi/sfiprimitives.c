@@ -149,10 +149,10 @@ SfiFBlock*
 sfi_fblock_new (void)
 {
   SfiFBlock *fblock = sfi_new_struct (SfiFBlock, 1);
-
   fblock->ref_count = 1;
   fblock->n_values = 0;
   fblock->values = NULL;
+  fblock->freefunc = g_free;
   return fblock;
 }
 
@@ -161,6 +161,19 @@ sfi_fblock_new_sized (guint size)
 {
   SfiFBlock *fblock = sfi_fblock_new ();
   sfi_fblock_resize (fblock, size);
+  return fblock;
+}
+
+SfiFBlock*
+sfi_fblock_new_foreign (guint     n_values,
+                        gfloat   *values,
+                        GFreeFunc freefunc)
+{
+  g_return_val_if_fail (n_values == 0 || values != NULL, NULL);
+  SfiFBlock *fblock = sfi_fblock_new ();
+  fblock->n_values = n_values;
+  fblock->values = values;
+  fblock->freefunc = freefunc;
   return fblock;
 }
 
@@ -183,8 +196,26 @@ sfi_fblock_unref (SfiFBlock *fblock)
   fblock->ref_count--;
   if (fblock->ref_count == 0)
     {
-      g_free (fblock->values);
+      fblock->freefunc (fblock->values);
       sfi_delete_struct (SfiFBlock, fblock);
+    }
+}
+
+static void
+fblock_resize (SfiFBlock *fblock,
+               guint      size)
+{
+  guint oldsize = fblock->n_values;
+  fblock->n_values = size;
+  if (fblock->freefunc == g_free)
+    fblock->values = g_renew (gfloat, fblock->values, fblock->n_values);
+  else
+    {
+      gfloat *values = g_new (gfloat, fblock->n_values);
+      memcpy (values, fblock->values, MIN (fblock->n_values, oldsize) * sizeof (values[0]));
+      fblock->freefunc (fblock->values);
+      fblock->values = values;
+      fblock->freefunc = g_free;
     }
 }
 
@@ -192,15 +223,12 @@ void
 sfi_fblock_resize (SfiFBlock *fblock,
 		   guint      size)
 {
-  guint i;
-
   g_return_if_fail (fblock != NULL);
 
-  i = fblock->n_values;
-  fblock->n_values = size;
-  fblock->values = g_renew (gfloat, fblock->values, fblock->n_values);
-  if (size > i)
-    memset (fblock->values + i, 0, sizeof (fblock->values[0]) * (size - i));
+  guint osize = fblock->n_values;
+  fblock_resize (fblock, size);
+  if (size > osize)
+    memset (fblock->values + osize, 0, sizeof (fblock->values[0]) * (size - osize));
 }
 
 SfiFBlock*
@@ -226,14 +254,10 @@ sfi_fblock_append (SfiFBlock    *fblock,
 
   if (n_values)
     {
-      guint i;
-
       g_return_if_fail (values != NULL);
-
-      i = fblock->n_values;
-      fblock->n_values += n_values;
-      fblock->values = g_renew (gfloat, fblock->values, fblock->n_values);
-      memcpy (fblock->values + i, values, n_values * sizeof (fblock->values[0]));
+      guint oldsize = fblock->n_values;
+      fblock_resize (fblock, oldsize + n_values);
+      memcpy (fblock->values + oldsize, values, n_values * sizeof (fblock->values[0]));
     }
 }
 
@@ -241,13 +265,9 @@ void
 sfi_fblock_append1 (SfiFBlock *fblock,
 		    gfloat     float0)
 {
-  guint i;
-
   g_return_if_fail (fblock != NULL);
-
-  i = fblock->n_values++;
-  fblock->values = g_renew (gfloat, fblock->values, fblock->n_values);
-  fblock->values[i] = float0;
+  fblock_resize (fblock, fblock->n_values + 1);
+  fblock->values[fblock->n_values - 1] = float0;
 }
 
 guint

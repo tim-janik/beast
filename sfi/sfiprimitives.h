@@ -49,12 +49,16 @@ guint8*	   sfi_bblock_get	   (const SfiBBlock *bblock);
 
 /* --- SfiFBlock primitive type --- */
 struct _SfiFBlock {
-  guint   ref_count;
-  guint   n_values;
-  gfloat *values;
+  guint     ref_count;
+  guint     n_values;
+  gfloat   *values;
+  GFreeFunc freefunc;
 };
 SfiFBlock* sfi_fblock_new	   (void);
 SfiFBlock* sfi_fblock_new_sized	   (guint	     size);
+SfiFBlock* sfi_fblock_new_foreign  (guint            n_values,
+                                    gfloat          *values,
+                                    GFreeFunc        freefunc);
 SfiFBlock* sfi_fblock_ref	   (SfiFBlock	    *fblock);
 void	   sfi_fblock_unref	   (SfiFBlock	    *fblock);
 void	   sfi_fblock_resize	   (SfiFBlock	    *fblock,

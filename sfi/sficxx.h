@@ -252,11 +252,23 @@ public:
   {
     delete record;
   }
-  Type* operator-> () const
+  Type*
+  operator-> ()
   {
     return record;
   }
-  Type& operator* ()
+  const Type*
+  operator-> () const
+  {
+    return record;
+  }
+  Type&
+  operator* ()
+  {
+    return *record;
+  }
+  const Type&
+  operator* () const
   {
     return *record;
   }
@@ -330,6 +342,8 @@ public:
 template<typename Type>
 class Sequence {
 public:
+  typedef Type*       iterator;
+  typedef const Type* const_iterator;
   struct CSeq {
     unsigned int n_elements;
     Type        *elements;
@@ -352,6 +366,26 @@ public:
   {
     cseq = g_new0 (CSeq, 1);
     set_boxed (&cs);
+  }
+  iterator
+  begin()
+  {
+    return cseq->elements;
+  }
+  const_iterator
+  begin() const
+  {
+    return cseq->elements;
+  }
+  iterator
+  end()
+  {
+    return cseq->elements + cseq->n_elements;
+  }
+  const_iterator
+  end() const
+  {
+    return cseq->elements + cseq->n_elements;
   }
   void
   take (CSeq *cs)
@@ -504,6 +538,8 @@ cxx_value_set_boxed_sequence (GValue        *value,
 class FBlock {
   SfiFBlock *block;
 public:
+  typedef float*       iterator;
+  typedef const float* const_iterator;
   FBlock (unsigned int length = 0)
   {
     block = sfi_fblock_new_sized (length);
@@ -526,7 +562,28 @@ public:
     else
       block = sfi_fblock_new();
   }
-  FBlock& operator= (SfiFBlock &fb)
+  iterator
+  begin()
+  {
+    return block ? block->values : NULL;
+  }
+  const_iterator
+  begin() const
+  {
+    return block ? block->values : NULL;
+  }
+  iterator
+  end()
+  {
+    return block ? block->values + block->n_values : NULL;
+  }
+  const_iterator
+  end() const
+  {
+    return block ? block->values + block->n_values : NULL;
+  }
+  FBlock&
+  operator= (SfiFBlock &fb)
   {
     if (block != &fb)
       {
@@ -538,7 +595,8 @@ public:
       }
     return *this;
   }
-  FBlock& operator= (const FBlock &s)
+  FBlock&
+  operator= (const FBlock &s)
   {
     if (block != s.block)
       {
@@ -550,7 +608,8 @@ public:
       }
     return *this;
   }
-  SfiFBlock* fblock()
+  SfiFBlock*
+  fblock()
   {
     return block;
   }
@@ -559,62 +618,73 @@ public:
     if (block)
       sfi_fblock_unref (block);
   }
-  void ref ()
+  void
+  ref ()
   {
     if (block)
       sfi_fblock_ref (block);
     else
       block = sfi_fblock_new();
   }
-  void unref ()
+  void
+  unref ()
   {
     g_return_if_fail (block != NULL && block->ref_count > 0);
     sfi_fblock_unref (block);
   }
-  void resize (unsigned int length)
+  void
+  resize (unsigned int length)
   {
     if (block)
       sfi_fblock_resize (block, length);
     else
       block = sfi_fblock_new_sized (length);
   }
-  void take (SfiFBlock *fb)
+  void
+  take (SfiFBlock *fb)
   {
     if (block)
       sfi_fblock_unref (block);
     block = fb;
   }
-  FBlock copy_deep()
+  FBlock
+  copy_deep()
   {
     if (block)
       return FBlock (block->n_values, block->values);
     else
       return FBlock (0);
   }
-  FBlock copy_shallow()
+  FBlock
+  copy_shallow()
   {
     return FBlock (*this);
   }
-  void append (unsigned int length,
-               const float *values)
+  void
+  append (unsigned int length,
+          const float *values)
   {
     if (!block)
       block = sfi_fblock_new();
     sfi_fblock_append (block, length, values);
   }
-  void append (float f)
+  void
+  append (float f)
   {
     append (1, &f);
   }
-  unsigned int length()
+  unsigned int
+  length()
   {
     return block ? block->n_values : 0;
   }
-  const float* get()
+  const float*
+  get()
   {
     return block ? block->values : NULL;
   }
-  static FBlock value_get_fblock (const GValue *value)
+  static FBlock
+  value_get_fblock (const GValue *value)
   {
     SfiFBlock *fb = sfi_value_get_fblock (value);
     FBlock self (0);
@@ -622,8 +692,9 @@ public:
       self.take (sfi_fblock_ref (fb));
     return self;
   }
-  static void value_set_fblock (GValue       *value,
-                                const FBlock &self)
+  static void
+  value_set_fblock (GValue       *value,
+                    const FBlock &self)
   {
     sfi_value_set_fblock (value, self.block);
   }
