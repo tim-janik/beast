@@ -1,3 +1,12 @@
+Mon Oct 29 22:38:27 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: options update.
+
+	* beast-gtk/bstqsampler.c: make requisition
+	smaller, we can only provide a bad guess anyways.
+
+	* beast-gtk/bststest.c: support multiple samples.
+
 Sat Oct  6 15:11:25 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.c (bst_pattern_editor_class_set_key): use

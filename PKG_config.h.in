@@ -1,4 +1,4 @@
-/* PKG_config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* PKG_config.h.in.  Generated automatically from configure.in by autoheader 2.13.  */
 /* acconfig.h for BEAST - Bedevilled Audio System
  * here we list all symbols, which get introduced by configure.in
  */

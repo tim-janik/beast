@@ -30,7 +30,19 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+
 #define	QSAMPLER_SELECTION_TIMEOUT	(33)
+
+typedef struct _WaveView WaveView;
+struct _WaveView
+{
+  BstQSampler *qsampler;
+  GslDataHandle *handle;
+  WaveView *next;
+};
+static WaveView *wave_views = NULL;
+
+
 static gulong qsampler_selection_timeout_id = 0;
 
 static void
@@ -267,7 +279,7 @@ qsampler_dcache_filler (gpointer     data,
   gsl_data_cache_unref_node (dcache, dnode);
 }
 
-void
+static void
 qsampler_set_handle (BstQSampler   *qsampler,
 		     GslDataHandle *handle)
 {
@@ -369,15 +381,27 @@ score_loop (GslDataHandle *shandle,
 #include <gsl/gsllooper.h>
 
 static void
-find (BstQSampler *qsampler)
+find (WaveView *view)
 {
   GslLong start, end;
-  GslLong length = global_handle->n_values;
+  GslLong length = view->handle->n_values;
   GslLoopSpec loop_spec = { 0, length / 3, 44100.0/15., length / 3.5 };
     
-  gsl_loop_find_tailmatch (global_handle, &loop_spec, &start, &end);
-  qsampler_set_selection (qsampler, start, end, 2);
-  selection_to_loop (qsampler);
+  gsl_data_find_tailmatch (view->handle, &loop_spec, &start, &end);
+  qsampler_set_selection (view->qsampler, start, end, 2);
+  selection_to_loop (view->qsampler);
+}
+
+static void
+mark_signal (WaveView *view)
+{
+  GslLong mark;
+
+  mark = gsl_data_find_sample (view->handle,
+			       1. / 32768. * +16.,
+			       1. / 32768. * -16.,
+			       0, +1);
+  bst_qsampler_set_mark (view->qsampler, 5, MAX (mark, 0), mark < 0 ? 0 : BST_QSAMPLER_PRELIGHT);
 }
 
 static void
@@ -424,17 +448,16 @@ int
 main (int   argc,
       char *argv[])
 {
-  GtkWidget *window, *vbox, *hbox, *sbar, *dummy, *spin, *button;
-  BstQSampler *qsampler;
+  GtkWidget *window, *vbox, *hbox, *sbar, *spin, *button;
   GslConfigValue gslconfig[] = {
     { "wave_chunk_padding",     1, },
     { "dcache_block_size",      8192, },
     { "dcache_cache_memory",	5 * 1024 * 1024, },
     { NULL, },
   };
-  GslDataHandle *handle;
-  gchar *file_name;
-
+  WaveView *view, *first_view = NULL;
+  guint i;
+  
   g_thread_init (NULL);
   g_type_init ();
   bse_init (&argc, &argv, NULL);
@@ -442,52 +465,53 @@ main (int   argc,
   gtk_init (&argc, &argv);
   bst_init_gentypes ();
   
-  if (argc != 2)
-    g_error ("need filename");
-
-  
-  file_name = argv[1];
-  handle = gsl_wave_handle_new_cached (file_name, 0, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN, 0);
-  if (!handle)
-    g_error ("cannot create handle for \"%s\": stat() failed", file_name);
-  
-  dummy = gtk_widget_new (BST_TYPE_QSAMPLER,
-			  "visible", TRUE,
-			  "events", (GDK_BUTTON_PRESS_MASK |
-				     GDK_BUTTON_RELEASE_MASK |
-				     GDK_BUTTON1_MOTION_MASK),
-			  NULL);
-  qsampler = BST_QSAMPLER (dummy);
-  g_object_connect (qsampler,
-		    "signal::button_press_event", qsampler_button_event, NULL,
-		    "signal::button_release_event", qsampler_button_event, NULL,
-		    "signal::motion_notify_event", qsampler_motion_event, NULL,
-		    NULL);
-  qsampler_set_handle (qsampler, handle);
-  global_handle = handle;
-  bst_qsampler_set_mark (qsampler, 9, 100, BST_QSAMPLER_PRELIGHT);
-  // bst_qsampler_set_region (qsampler, 9, 200, 100, BST_QSAMPLER_PRELIGHT);
+  if (argc < 2)
+    g_error ("need filenames");
 
   sbar = gtk_widget_new (GTK_TYPE_HSCROLLBAR,
 			 "visible", TRUE,
 			 NULL);
-  bst_qsampler_set_adjustment (qsampler, gtk_range_get_adjustment (GTK_RANGE (sbar)));
-
   vbox = gtk_widget_new (GTK_TYPE_VBOX,
 			 "visible", TRUE,
 			 "border_width", 10,
-			 "child", qsampler,
 			 NULL);
   gtk_box_pack_start (GTK_BOX (vbox), sbar, FALSE, TRUE, 0);
+
+  for (i = 1; i < argc; i++)
+    {
+      view = g_new (WaveView, 1);
+      view->handle = gsl_wave_handle_new_cached (argv[i], 0, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN, 0);
+      if (!view->handle)
+	g_error ("failed to create handle for \"%s\": stat() failed", argv[i]);
+      view->qsampler = g_object_new (BST_TYPE_QSAMPLER,
+				     "visible", TRUE,
+				     "events", (GDK_BUTTON_PRESS_MASK |
+						GDK_BUTTON_RELEASE_MASK |
+						GDK_BUTTON1_MOTION_MASK),
+				     NULL);
+      g_object_connect (view->qsampler,
+			"signal::button_press_event", qsampler_button_event, view,
+			"signal::button_release_event", qsampler_button_event, view,
+			"signal::motion_notify_event", qsampler_motion_event, view,
+			NULL);
+      qsampler_set_handle (view->qsampler, view->handle);
+      bst_qsampler_set_adjustment (view->qsampler, gtk_range_get_adjustment (GTK_RANGE (sbar)));
+      gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (view->qsampler), TRUE, TRUE, 2);
+      view->next = wave_views;
+      wave_views = view;
+      if (i == 1)
+	first_view = view;
+    }
 
   spin = gtk_spin_button_new (GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0)), 0, 5);
   gtk_widget_set (spin,
 		  "visible", TRUE,
 		  "width_request", 40,
 		  NULL);
-  g_object_connect (GTK_OBJECT (gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin))),
-		    "signal::value_changed", adjust_zoom, qsampler,
-		    NULL);
+  for (view = wave_views; view; view = view->next)
+    g_object_connect (GTK_OBJECT (gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin))),
+		      "signal::value_changed", adjust_zoom, view->qsampler,
+		      NULL);
   gtk_box_pack_start (GTK_BOX (vbox), spin, FALSE, TRUE, 0);
   
   spin = gtk_spin_button_new (GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 1, 10, 0)), 0, 5);
@@ -495,9 +519,10 @@ main (int   argc,
 		  "visible", TRUE,
 		  "width_request", 40,
 		  NULL);
-  g_object_connect (GTK_OBJECT (gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin))),
-		    "signal::value_changed", adjust_vscale, qsampler,
-		    NULL);
+  for (view = wave_views; view; view = view->next)
+    g_object_connect (GTK_OBJECT (gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spin))),
+		      "signal::value_changed", adjust_vscale, view->qsampler,
+		      NULL);
   gtk_box_pack_start (GTK_BOX (vbox), spin, FALSE, TRUE, 0);
   
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
@@ -510,7 +535,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Selection to Loop",
 					   NULL),
-			     "swapped_signal::clicked", selection_to_loop, qsampler,
+			     "swapped_signal::clicked", selection_to_loop, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -518,7 +543,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Loop to Selection",
 					   NULL),
-			     "swapped_signal::clicked", loop_to_selection, qsampler,
+			     "swapped_signal::clicked", loop_to_selection, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -526,7 +551,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Zoom Selection",
 					   NULL),
-			     "swapped_signal::clicked", zoom_selection, qsampler,
+			     "swapped_signal::clicked", zoom_selection, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -534,7 +559,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Apply Loop",
 					   NULL),
-			     "swapped_signal::clicked", set_loop, qsampler,
+			     "swapped_signal::clicked", set_loop, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -542,7 +567,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Reset Loop",
 					   NULL),
-			     "swapped_signal::clicked", unset_loop, qsampler,
+			     "swapped_signal::clicked", unset_loop, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -550,7 +575,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Score",
 					   NULL),
-			     "swapped_signal::clicked", score, qsampler,
+			     "swapped_signal::clicked", score, first_view->qsampler,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -558,7 +583,7 @@ main (int   argc,
 					   "visible", TRUE,
 					   "label", "Find",
 					   NULL),
-			     "swapped_signal::clicked", find, qsampler,
+			     "swapped_signal::clicked", find, first_view,
 			     NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
 
@@ -571,6 +596,18 @@ main (int   argc,
 					     NULL),
 			     "signal::destroy", gtk_main_quit, NULL,
 			     NULL);
+  
+  button = g_object_new (GTK_TYPE_BUTTON,
+			 "visible", TRUE,
+			 "label", "Mark Signal",
+			 NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+  for (view = wave_views; view; view = view->next)
+     g_object_connect (GTK_OBJECT (button),
+		       "swapped_signal::clicked", mark_signal, view,
+		       NULL);
+  
+  
   gtk_main ();
   
   return 0;

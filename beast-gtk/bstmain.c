@@ -491,6 +491,7 @@ bst_print_blurb (FILE    *fout,
       fprintf (fout, "  --gdk-debug=FLAGS		Gdk debugging flags to enable\n");
       fprintf (fout, "  --gdk-no-debug=FLAGS		Gdk debugging flags to disable\n");
       fprintf (fout, "  --g-fatal-warnings		make warnings fatal (abort)\n");
+      fprintf (fout, "  --display=DISPLAY		X display to use\n");
       fprintf (fout, "  --sync   			do all X calls synchronously\n");
     }
 }

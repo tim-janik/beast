@@ -245,8 +245,8 @@ bst_qsampler_size_request (GtkWidget      *widget,
   BstQSampler *qsampler = BST_QSAMPLER (widget);
 
   /* can just guess constantly */
-  requisition->width = 320;
-  requisition->height = 32;
+  requisition->width = 32;
+  requisition->height = widget->style->ythickness * 2;
 }
 
 static void
