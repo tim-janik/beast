@@ -11,18 +11,19 @@
 
 @unnumbered @center RELEASE-NOTES
 
-This new development series of BEAST comes with a lot of
-the internals redone, many new GUI features and a sound generation
+This new development series of BEAST comes with a lot of the internals
+redone, many new GUI features and a sound generation
 back-end separated from any GUI activities.
 Specifics can be found in the
-@uref{beast-doc://release-news,,NEWS section}).
+@uref{beast-doc://release-news,,NEWS section}.
 
-The most outstanding new feature is the track editor which allows
-free arrangement of parts in songs and adds loop support to
-simplify song edits.
+The most outstanding new features are the track editor which allowes
+for easy selection of synthesizers or samples as track sources, loop
+support and unlimited UnDo/ReDo capabilities.
 
-Be warned though, the .bse file format hasn't completely stabilized
-yet, so incompatibilities with future versions may occur.
+NOTE: The .bse file format hasn't fully stabilized yet, so
+incompatibilities with future versions may occur, though we're
+making every possible attempt to maintain backwards compatibility.
 
 A good starting point are the test files shipped in the
 @path{tests/} subdirectory of the source package, or the

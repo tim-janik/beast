@@ -1,18 +1,16 @@
 General Information
 ===================
 
-This is an ALPHA version of BEAST/BSE, the bedevilled audio system and
-the bedevilled sound engine.
-BEAST is currently in development stage, the BSE API has not fully
-stabelized yet.
-The overall goal of this project is to get an audio system that supports
-multiple song and sample formats (besides the project specific .bse
-format) as well as synthesis networks and allows full fledged editing
-and manipulation of them. Sample manipulation includes generation of new
-sounds from module networks, based on various forms of audio synthesis.
+This is a development version of BEAST/BSE, the BEdevilled Audio SysTem
+and the Bedevilled Sound Engine, the BSE API is not considered to be stable.
+The overall goal of this project is to become an audio system that supports
+multiple song and sample formats (besides the project specific .bse format)
+as well as synthesis networks and allows full fledged editing and
+manipulation of those. Sample manipulation includes generation of new
+sounds from module networks, based on various kinds of audio synthesis.
 More information on the fundamental principles can be found in the
-./docs subdirectory and on the beast website.
-Some *.bse files used for testing are also included in the ./test
+docs/ subdirectory and on the beast website.
+Some *.bse files used for testing are also included in the test/
 subdirectory.
 
 To get a basic start, you'll also need Gtk+-2.0, a recent version
@@ -20,8 +18,8 @@ of the Gtk+-2.0 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST.
-Most distributions
-already ship these packages, their sources can be found at:
+Most distributions already ship these packages,
+the sources can be found at:
 
 GnomeCanvas (GNOME-2.0):
 	ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
@@ -40,7 +38,7 @@ The official ftp site for BEAST/BSE is:
 The official web site for BEAST/BSE is:
   http://beast.gtk.org/
 
-And finally there's a mailing list as well (beast@gnome.org):
+And there is a mailing list as well (beast@gnome.org):
   http://mail.gnome.org/mailman/listinfo/beast/
 
 BEAST also supports the LADSPA plugin API, so various kinds of third
