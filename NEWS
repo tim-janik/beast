@@ -1,8 +1,14 @@
 Overview of Changes in BEAST/BSE 0.4.2:
 
-* Added documentation about GUI extensions to Gtk
+* Moved BSE into its own thread
+* Added IDL based code generator [Stefan Westerfeld]
+* Deployed new middleware layer
+* Major documentation generation improvements [Alper Ersoy]
+* Generate structure documentation [Timj, Alper]
+* Added documentation about Gtk+ GUI extensions
 * Made documentation browser navigatable
-* Documentation processing improvements from Alper Ersoy
+* Major code cleanups, bug fixes and refactoring
+* Lots of GUI bug fixes, improvements and revamps
 * Bug fixes and major cleanups
 
 Overview of Changes in BEAST/BSE 0.4.1:

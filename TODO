@@ -1,4 +1,5 @@
 FIXMES:
+- fix usage of serif fonts in sans-serif dialogs
 - registering the same script function twice triggers GType assertion
 - fix procbrowser
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c

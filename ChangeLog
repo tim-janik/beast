@@ -809,6 +809,10 @@ Wed Sep  4 00:21:01 2002  Tim Janik  <timj@gtk.org>
 
 Mon Sep  2 10:04:38 2002  Tim Janik  <timj@gtk.org>
 
+	* released beast-0.4.1.tar.gz.
+	
+Mon Sep  2 10:04:38 2002  Tim Janik  <timj@gtk.org>
+
 	* docs/reference/Makefile.am: add $(top_srcdir)/configure as dependency
 	to the *.dat rules, so the .dat files are properly remade if the
 	package version changes.
