@@ -1,3 +1,11 @@
+Fri Dec  3 18:32:33 2004  Tim Janik  <timj@gtk.org>
+
+	* launchers/suidmain.c:
+	(adjust_priority): renamed variable and moved to file scope in
+	priviledged code.
+	(main): parse -n=<nicelevel> and -N options in unpriviledged code
+	sections and drop nicelevel if appropriate.
+
 Fri Dec  3 16:59:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/scripts/waveloadtest.scm: Don't leak memory.
