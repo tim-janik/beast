@@ -599,7 +599,7 @@ undo_do_deactivate (BseUndoStep  *ustep,
                     BseUndoStack *ustack)
 {
   BseProject *self = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
-  bse_project_stop_playback (self);
+  bse_project_deactivate (self);
 }
 
 static void
@@ -611,18 +611,27 @@ undo_do_deactivate_free (BseUndoStep *ustep)
 static void
 project_push_undo_silent_deactivate (BseProject *self)
 {
-  BseUndoStack *ustack = bse_item_undo_open (self, "deactivate-project");
-  BseUndoStep *ustep = bse_undo_step_new (undo_do_deactivate, undo_do_deactivate_free, 1);
-  /* certain things work only (can only be undone) in deactivated projects,
+  /* certain things work only (can only be undone/redone) in deactivated projects,
    * so we need to push an undo step here. this step isn't required however
    * if there're no undo steps pushed so far, and it shouldn't be visible
    * as a seperate undo step to the user either. so what we do is to push
    * an "add-on" step, which just prepares state for execution of further
    * undo steps, if there are any pending.
    */
+  BseUndoStack *ustack = bse_item_undo_open (self, "deactivate-project");
+  BseUndoStep *ustep = bse_undo_step_new (undo_do_deactivate, undo_do_deactivate_free, 1);
   ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
   bse_undo_stack_push_add_on (ustack, ustep);
   bse_item_undo_close (ustack);
+
+  gboolean in_undo = self->in_undo;
+  self->in_undo = !in_undo;             /* swap undo<=>redo */
+  ustack = bse_item_undo_open (self, "deactivate-project");
+  ustep = bse_undo_step_new (undo_do_deactivate, undo_do_deactivate_free, 1);
+  ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
+  bse_undo_stack_push_add_on (ustack, ustep);
+  bse_item_undo_close (ustack);
+  self->in_undo = in_undo;              /* swap undo<=>redo */
 }
 
 METHOD (BseProject, activate) {
@@ -851,11 +860,11 @@ METHOD (BseProject, undo) {
       const gchar *name = bse_undo_stack_peek (project->undo_stack);
       if (name)
         {
-          project->in_undo = TRUE;
+          project->in_undo = TRUE;      /* swap undo<=>redo */
           bse_undo_group_open (project->redo_stack, name);
           bse_undo_stack_undo (project->undo_stack);
           bse_undo_group_close (project->redo_stack);
-          project->in_undo = FALSE;
+          project->in_undo = FALSE;     /* swap undo<=>redo */
         }
     }
 
@@ -906,11 +915,11 @@ METHOD (BseProject, redo) {
       const gchar *name = bse_undo_stack_peek (project->redo_stack);
       if (name)
         {
-          project->in_redo = TRUE;
+          project->in_redo = TRUE;      /* disable redo-stack clearing */
           bse_undo_group_open (project->undo_stack, name);
           bse_undo_stack_undo (project->redo_stack);
           bse_undo_group_close (project->undo_stack);
-          project->in_redo = FALSE;
+          project->in_redo = FALSE;     /* enable redo-stack clearing */
         }
     }
 

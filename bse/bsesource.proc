@@ -738,7 +738,7 @@ BODY (BseProcedureClass *proc,
     {
       error = bse_source_set_automation_property (source, property, midi_channel, control_type);
       if (error == BSE_ERROR_NONE)
-        bse_item_push_undo_proc (source, "set-automation", source, property, old_midi_channel, old_control_type);
+        bse_item_push_undo_proc (source, "set-automation", property, old_midi_channel, old_control_type);
     }
 
   /* set output parameters */

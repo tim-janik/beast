@@ -1,3 +1,14 @@
+Mon Sep 20 01:38:14 2004  Tim Janik  <timj@gtk.org>
+
+	* bseproject.proc:
+	undo_do_deactivate(): properly deactivate via bse_project_deactivate(),
+	not just bse_project_stop_playback() which doesn't reset PREPARED state
+	anymore. 
+	project_push_undo_silent_deactivate(): stop playback before undo *and*
+	redo execution.
+
+	* bsesource.proc: undo fixup for set-automation.
+
 Mon Sep 20 00:44:12 2004  Tim Janik  <timj@gtk.org>
 
 	* completed infrastructure for automation.
