@@ -35,13 +35,13 @@
 #define NODE(n)         ((Node*) n)
 
 struct _GxkGadgetOpt {
-  guint         n_variables;
-  gboolean      intern_quarks;
-  const gchar **names;
-  gchar       **values;
+  guint    n_variables;
+  gboolean intern_quarks;
+  GQuark  *quarks;
+  gchar  **values;
 };
 #define OPTIONS_N_ENTRIES(o)    ((o) ? (o)->n_variables : 0)
-#define OPTIONS_NTH_NAME(o,n)   ((o)->names[(n)])
+#define OPTIONS_NTH_NAME(o,n)   (g_quark_to_string ((o)->quarks[(n)]))
 #define OPTIONS_NTH_VALUE(o,n)  ((o)->values[(n)])
 
 typedef struct {
@@ -93,22 +93,26 @@ typedef gchar* (*MacroFunc)     (GSList *args,
 
 
 /* --- prototypes --- */
-static gchar*           expand_expr                     (const gchar    *expr,
-                                                         Env            *env);
-static MacroFunc        macro_func_lookup               (const gchar    *name);
-static inline gboolean  boolean_from_string             (const gchar    *value);
-static gboolean         boolean_from_expr               (const gchar    *expr,
-                                                         Env            *env);
-static inline guint64   num_from_string                 (const gchar    *value);
-static guint64          num_from_expr                   (const gchar    *expr,
-                                                         Env            *env);
-static void             gadget_define_gtk_menu          (void);
-static Node*            node_children_find_area         (Node           *node,
-                                                         const gchar    *area);
+static gchar*          expand_expr                 (const gchar        *expr,
+                                                    Env                *env);
+static MacroFunc       macro_func_lookup           (const gchar        *name);
+static inline gboolean boolean_from_string         (const gchar        *value);
+static gboolean        boolean_from_expr           (const gchar        *expr,
+                                                    Env                *env);
+static inline guint64  num_from_string             (const gchar        *value);
+static guint64         num_from_expr               (const gchar        *expr,
+                                                    Env                *env);
+static void            gadget_define_gtk_menu      (void);
+static Node*           node_children_find_area     (Node               *node,
+                                                    const gchar        *area);
+static const gchar*    gadget_options_lookup_quark (const GxkGadgetOpt *opt,
+                                                    GQuark              quark,
+                                                    guint              *nth);
 
 
 /* --- variables --- */
 static Domain *standard_domain = NULL;
+static GQuark  quark_name = 0;
 static GQuark  quark_gadget_type = 0;
 static GQuark  quark_gadget_node = 0;
 
@@ -328,20 +332,41 @@ env_get_size_group (Env         *env,
   return sg;
 }
 
+static const GxkGadgetOpt*
+env_find_quark (Env   *env,
+                GQuark quark,
+                guint *nthp)
+{
+  GSList *slist;
+  for (slist = env->option_list; slist; slist = slist->next)
+    {
+      GxkGadgetOpt *opt = slist->data;
+      if (gadget_options_lookup_quark (opt, quark, nthp))
+        return opt;
+    }
+  return NULL;
+}
+
 static const gchar*
 env_lookup (Env         *env,
             const gchar *var)
 {
-  const gchar *cval = NULL;
-  GSList *slist;
+  const GxkGadgetOpt *opt;
+  GQuark quark = g_quark_try_string (var);
+  guint nth;
   if (strcmp (var, "name") == 0)
-    cval = env->name;
-  for (slist = env->option_list; !cval && slist; slist = slist->next)
-    {
-      GxkGadgetOpt *opt = slist->data;
-      cval = gxk_gadget_options_get (opt, var);
-    }
-  return cval;
+    return env->name;
+  opt = quark ? env_find_quark (env, quark, &nth) : NULL;
+  return opt ? OPTIONS_NTH_VALUE (opt, nth) : NULL;
+}
+
+static gchar*
+expand_option_value (const GxkGadgetOpt *opt,
+                     guint               nth,
+                     Env                *env)
+{
+  const gchar *value = OPTIONS_NTH_VALUE (opt, nth);
+  return expand_expr (value, env);
 }
 
 static inline const gchar*
@@ -422,6 +447,7 @@ parse_dollar (const gchar *c,
   const gchar *ident_start = G_CSET_A_2_Z G_CSET_a_2_z "_";
   const gchar *ident_chars = G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS ".-_";
   const gchar *mark = c;
+  GQuark quark;
   if (*c == '(')
     return parse_formula (c + 1, result, env);
   if (*c == '$')
@@ -431,19 +457,25 @@ parse_dollar (const gchar *c,
     }
   if (strchr (ident_start, *c))
     {
-      const gchar *cval;
       gchar *var;
       c++;
       while (*c && strchr (ident_chars, *c))
         c++;
       var = g_strndup (mark, c - mark);
-      cval = env_lookup (env, var);
+      quark = g_quark_try_string (var);
       g_free (var);
-      if (cval)
+      if (quark == quark_name)
+        g_string_append (result, env->name);
+      else
         {
-          gchar *exval = expand_expr (cval, env);
-          g_string_append (result, exval);
-          g_free (exval);
+          guint nth;
+          const GxkGadgetOpt *opt = env_find_quark (env, quark, &nth);
+          if (opt)
+            {
+              gchar *exval = expand_option_value (opt, nth, env);
+              g_string_append (result, exval);
+              g_free (exval);
+            }
         }
       return c;
     }
@@ -986,7 +1018,8 @@ node_expand_call_options (Node               *node,
       gchar *value = OPTIONS_NTH_VALUE (opt, i);
       if (value && strchr (value, '$'))
         {
-          OPTIONS_NTH_VALUE (opt, i) = expand_expr (value, env);
+          gchar *exval = expand_option_value (opt, i, env);
+          OPTIONS_NTH_VALUE (opt, i) = exval;
           g_free (value);
         }
     }
@@ -1326,19 +1359,20 @@ gxk_gadget_options_set (GxkGadgetOpt   *opt,
                         const gchar    *name,
                         const gchar    *value)
 {
+  GQuark quark = g_quark_from_string (name);
   guint i;
   g_return_val_if_fail (name != NULL, opt);
   if (!opt)
     opt = gxk_gadget_options (NULL);
   for (i = 0; i < OPTIONS_N_ENTRIES (opt); i++)
-    if (strcmp (name, opt->names[i]) == 0)
+    if (quark == opt->quarks[i])
       break;
   if (i >= OPTIONS_N_ENTRIES (opt))
     {
       i = opt->n_variables++;
-      opt->names = g_renew (const gchar*, opt->names, OPTIONS_N_ENTRIES (opt));
+      opt->quarks = g_renew (GQuark, opt->quarks, OPTIONS_N_ENTRIES (opt));
       opt->values = g_renew (gchar*, opt->values, OPTIONS_N_ENTRIES (opt));
-      opt->names[i] = g_intern_string (name);
+      opt->quarks[i] = quark;
     }
   else if (!opt->intern_quarks)
     g_free (opt->values[i]);
@@ -1349,15 +1383,29 @@ gxk_gadget_options_set (GxkGadgetOpt   *opt,
   return opt;
 }
 
+static const gchar*
+gadget_options_lookup_quark (const GxkGadgetOpt *opt,
+                             GQuark              quark,
+                             guint              *nthp)
+{
+  guint i;
+  for (i = 0; i < OPTIONS_N_ENTRIES (opt); i++)
+    if (quark == opt->quarks[i])
+      {
+        if (nthp)
+          *nthp = i;
+        return OPTIONS_NTH_VALUE (opt, i);
+      }
+  return NULL;
+}
+
 const gchar*
 gxk_gadget_options_get (const GxkGadgetOpt *opt,
                         const gchar        *name)
 {
-  guint i;
-  if (opt)
-    for (i = 0; i < OPTIONS_N_ENTRIES (opt); i++)
-      if (strcmp (name, opt->names[i]) == 0)
-        return opt->values[i];
+  GQuark quark = g_quark_try_string (name);
+  if (opt && quark)
+    return gadget_options_lookup_quark (opt, quark, NULL);
   return NULL;
 }
 
@@ -1371,7 +1419,7 @@ gxk_gadget_options_merge (GxkGadgetOpt       *opt,
       if (!opt)
         opt = gxk_gadget_options (NULL);
       for (i = 0; i < OPTIONS_N_ENTRIES (source); i++)
-        gxk_gadget_options_set (opt, source->names[i], source->values[i]);
+        gxk_gadget_options_set (opt, OPTIONS_NTH_NAME (source, i), OPTIONS_NTH_VALUE (source, i));
     }
   return opt;
 }
@@ -1386,7 +1434,7 @@ gxk_gadget_free_options (GxkGadgetOpt *opt)
         for (i = 0; i < OPTIONS_N_ENTRIES (opt); i++)
           g_free (opt->values[i]);
       g_free (opt->values);
-      g_free (opt->names);
+      g_free (opt->quarks);
       g_free (opt);
     }
 }
@@ -1497,6 +1545,7 @@ _gxk_init_gadget_types (void)
 {
   GType types[1024], *t = types;
   g_assert (quark_gadget_type == 0);
+  quark_name = g_quark_from_static_string ("name");
   quark_gadget_type = g_quark_from_static_string ("GxkGadget-type");
   quark_gadget_node = g_quark_from_static_string ("GxkGadget-node");
   standard_domain = g_new0 (Domain, 1);
