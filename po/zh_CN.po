@@ -1,0 +1,3539 @@
+# translation of beast.po to zh_CN
+# Copyright (C) 2003 Free Software Foundation, Inc.
+# This file is distributed under the same license as the beast package.
+# storm119 <bbbush@163.com>, 2003.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: beast\n"
+"POT-Creation-Date: 2004-02-28 14:14+0100\n"
+"PO-Revision-Date: 2003-10-25 21:45+0800\n"
+"Last-Translator: storm119 <bbbush@163.com>\n"
+"Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
+"X-Generator: KBabel 1.0.2\n"
+
+#: beast-gtk/bstapp.c:49
+#, fuzzy
+msgid "_New"
+msgstr "/查看(_V)"
+
+#: beast-gtk/bstapp.c:49
+#, fuzzy
+msgid "Create new project"
+msgstr "打开项目"
+
+#: beast-gtk/bstapp.c:51
+#, fuzzy
+msgid "_Open..."
+msgstr "/文件(F)/打开(_O)"
+
+#: beast-gtk/bstapp.c:51
+#, fuzzy
+msgid "Open existing project"
+msgstr "打开项目“%s”"
+
+#: beast-gtk/bstapp.c:53
+#, fuzzy
+msgid "_Merge..."
+msgstr "/文件(F)/合并(_M)"
+
+#: beast-gtk/bstapp.c:53
+msgid "Merge an existing project into the current project"
+msgstr ""
+
+#: beast-gtk/bstapp.c:55
+msgid "_Import MIDI..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:55
+msgid "Import a standard MIDI file into the current project"
+msgstr ""
+
+#: beast-gtk/bstapp.c:57
+#, fuzzy
+msgid "_Close"
+msgstr "/文件(F)/关闭(_C)"
+
+#: beast-gtk/bstapp.c:61
+#, fuzzy
+msgid "_Save"
+msgstr "/文件(F)/保存(_S)"
+
+#: beast-gtk/bstapp.c:63
+#, fuzzy
+msgid "Save _As..."
+msgstr "/文件(F)/另存为...(_A)"
+
+#: beast-gtk/bstapp.c:67
+#, fuzzy
+msgid "_Quit"
+msgstr "/文件(F)/退出(_Q)"
+
+#: beast-gtk/bstapp.c:71
+#, fuzzy
+msgid "_Preferences..."
+msgstr "配置"
+
+#: beast-gtk/bstapp.c:74
+#, fuzzy
+msgid "Rebuild"
+msgstr "/查看(V)/重建"
+
+#: beast-gtk/bstapp.c:77
+#, fuzzy
+msgid "_About..."
+msgstr "/帮助(H)/关于(_A)..."
+
+#: beast-gtk/bstapp.c:80
+#, fuzzy
+msgid "_Undo"
+msgstr "/编辑(E)/撤销(_U)"
+
+#: beast-gtk/bstapp.c:82
+#, fuzzy
+msgid "_Redo"
+msgstr "/编辑(E)/重做(_R)"
+
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
+#, fuzzy
+msgid "_Clear Undo"
+msgstr "/编辑(E)/清除修改历史(_C)"
+
+#: beast-gtk/bstapp.c:90
+msgid "Procedure _Browser"
+msgstr "过程浏览器(_B)"
+
+#: beast-gtk/bstapp.c:92
+#, fuzzy
+msgid "Rack Editor"
+msgstr "编辑器"
+
+#: beast-gtk/bstapp.c:94
+msgid "Device _Monitor"
+msgstr "设备监视器(_M)"
+
+#: beast-gtk/bstapp.c:96
+#, fuzzy
+msgid "New View"
+msgstr "/查看(_V)"
+
+#: beast-gtk/bstapp.c:100
+msgid "_Play"
+msgstr "播放(_P)"
+
+#: beast-gtk/bstapp.c:102
+msgid "_Stop"
+msgstr ""
+
+#: beast-gtk/bstapp.c:106
+#, fuzzy
+msgid "New Song"
+msgstr "/项目(P)/新建曲目"
+
+#: beast-gtk/bstapp.c:108
+#, fuzzy
+msgid "New Custom Synthesizer"
+msgstr "/项目(P)/新建自定义合成器"
+
+#: beast-gtk/bstapp.c:110
+#, fuzzy
+msgid "New MIDI Synthesizer"
+msgstr "/项目(P)/新建MIDI合成器"
+
+#: beast-gtk/bstapp.c:112
+#, fuzzy
+msgid "Remove Song or Synthesizer"
+msgstr "/项目(P)/删除合成器"
+
+#: beast-gtk/bstapp.c:116
+msgid "Load _Instrument"
+msgstr ""
+
+#: beast-gtk/bstapp.c:118
+#, fuzzy
+msgid "Load _Effect"
+msgstr "加载波形文件"
+
+#: beast-gtk/bstapp.c:120
+#, fuzzy
+msgid "Save As Instrument"
+msgstr "正在保存项目“%s”"
+
+#: beast-gtk/bstapp.c:122
+#, fuzzy
+msgid "Save As Effect"
+msgstr "加载波形文件"
+
+#: beast-gtk/bstapp.c:126
+#, fuzzy
+msgid "_Release Notes..."
+msgstr "/帮助(H)/发行注记(_R)..."
+
+#: beast-gtk/bstapp.c:127
+#, fuzzy
+msgid "Quick Start..."
+msgstr "/帮助(H)/快速入门..."
+
+#: beast-gtk/bstapp.c:128
+#, fuzzy
+msgid "_FAQ..."
+msgstr "/帮助(H)/FAQ(_F)..."
+
+#: beast-gtk/bstapp.c:131
+msgid "GSL Engine..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:530 beast-gtk/bstapp.c:537 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
+#, c-format
+msgid "Opening project `%s'"
+msgstr "打开项目“%s”"
+
+#: beast-gtk/bstapp.c:597
+#, fuzzy, c-format
+msgid "Loading skin `%s'"
+msgstr "正在加载波形文件“%s”"
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:759
+msgid "Rack editor"
+msgstr ""
+
+#: beast-gtk/bstapp.c:773
+msgid "Preferences"
+msgstr "配置"
+
+#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+#: beast-gtk/bstapp.c:787
+msgid "Device Monitor"
+msgstr "设备监视器"
+
+#: beast-gtk/bstapp.c:806
+msgid "Procedure Browser"
+msgstr "过程浏览器"
+
+#: beast-gtk/bstapp.c:863
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr "BEAST-%s 发行注记"
+
+#: beast-gtk/bstauxdialogs.c:389
+#, c-format
+msgid "Please press the keyboard shortcut to be installed for function: %s"
+msgstr ""
+
+#: beast-gtk/bstauxdialogs.c:394
+msgid "Please press the keyboard shortcut to be installed..."
+msgstr ""
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "模块链接："
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:901
+msgid "Module link"
+msgstr "模块链接"
+
+#: beast-gtk/bstcanvassource.c:463
+msgid "Module Info"
+msgstr "模块信息"
+
+#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:184
+msgid "Input"
+msgstr "输入"
+
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
+#: bse/bseamplifier.idl:67 plugins/artscompressor.idl:39
+#: plugins/artscompressor.idl:58
+msgid "Output"
+msgstr "输出"
+
+#: beast-gtk/bstcanvassource.c:975
+msgid "(Hint)"
+msgstr "(提示)"
+
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
+#: beast-gtk/bsteventrollctrl.c:427
+msgid "Move Control Event"
+msgstr "移动控制事件"
+
+#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
+#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
+#: beast-gtk/bsttrackrollctrl.c:562
+msgid "No target"
+msgstr "没有目标"
+
+#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
+msgid "Lost Event"
+msgstr "丢失事件"
+
+#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
+msgid "Align Control Events"
+msgstr "排列控制时间"
+
+#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
+#: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
+msgid "Aborted"
+msgstr "放弃"
+
+#: beast-gtk/bsteventrollctrl.c:496
+msgid "Insert Control Event"
+msgstr "插入控制事件"
+
+#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:548
+msgid "Resize Control Event"
+msgstr "改变控制事件"
+
+#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
+msgid "Delete Control Event"
+msgstr "删除控制事件"
+
+#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
+#: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
+msgid "Select Region"
+msgstr "选择区域"
+
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
+msgid "Abortion"
+msgstr "放弃"
+
+#: beast-gtk/bstfiledialog.c:169
+msgid "Contents"
+msgstr "内容"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:201
+msgid "File Selection"
+msgstr "选择文件"
+
+#: beast-gtk/bstfiledialog.c:382
+msgid "Open Project"
+msgstr "打开项目"
+
+#: beast-gtk/bstfiledialog.c:396
+#, fuzzy
+msgid "Select File"
+msgstr "删除"
+
+#: beast-gtk/bstfiledialog.c:410
+msgid "Select Directory"
+msgstr "选择目录"
+
+#: beast-gtk/bstfiledialog.c:449
+#, c-format
+msgid "Merge: %s"
+msgstr "合并：%s"
+
+#: beast-gtk/bstfiledialog.c:462
+#, c-format
+msgid "Merging project `%s'"
+msgstr "正在合并项目“%s”"
+
+#: beast-gtk/bstfiledialog.c:478
+#, c-format
+msgid "Import MIDI: %s"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:489
+#, fuzzy, c-format
+msgid "Importing MIDI file `%s'"
+msgstr "正在删除文件“%s”"
+
+#: beast-gtk/bstfiledialog.c:509
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"删除文件“%s”失败，原因是:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:538
+#, c-format
+msgid "Save: %s"
+msgstr "保存：%s"
+
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:540
+#, fuzzy
+msgid "Fully include wave files"
+msgstr "包含波形文件"
+
+#: beast-gtk/bstfiledialog.c:541
+msgid "Store references to wave files"
+msgstr "存储对波形文件的引用"
+
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
+#, c-format
+msgid "Saving project `%s'"
+msgstr "正在保存项目“%s”"
+
+#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
+#: beast-gtk/bstfiledialog.c:715
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"无法将“%s”保存为“%s”:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:587
+#, fuzzy
+msgid "Load Effect"
+msgstr "加载波形文件"
+
+#: beast-gtk/bstfiledialog.c:600
+#, fuzzy, c-format
+msgid "Merging effect `%s'"
+msgstr "正在合并项目“%s”"
+
+#: beast-gtk/bstfiledialog.c:617
+msgid "Save Effect"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
+#, fuzzy, c-format
+msgid "Saving effect `%s'"
+msgstr "正在保存项目“%s”"
+
+#: beast-gtk/bstfiledialog.c:663
+msgid "Load Instrument"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:676
+#, fuzzy, c-format
+msgid "Merging instrument `%s'"
+msgstr "正在合并项目“%s”"
+
+#: beast-gtk/bstfiledialog.c:693
+msgid "Save Instrument"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
+#, fuzzy, c-format
+msgid "Saving instrument `%s'"
+msgstr "正在保存项目“%s”"
+
+#: beast-gtk/bstfiledialog.c:740
+msgid "Load Wave"
+msgstr "加载波形"
+
+#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
+#, c-format
+msgid "Loading wave `%s'"
+msgstr "正在加载波形“%s”"
+
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
+#: beast-gtk/bsttrackview.c:60
+msgid "Add"
+msgstr "添加"
+
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
+#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
+msgid "Delete"
+msgstr "删除"
+
+#: beast-gtk/bstitemview.c:205
+msgid "ID"
+msgstr ""
+
+#: beast-gtk/bstitemview.c:208
+msgid "Name"
+msgstr ""
+
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
+msgid "Comment"
+msgstr "注释"
+
+#: beast-gtk/bstitemview.c:215
+msgid "Type"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:51
+msgid "Add..."
+msgstr "添加..."
+
+#: beast-gtk/bstkeybindings.c:51
+msgid "Bind a new key combination to a program function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:53
+msgid "Change..."
+msgstr "更改..."
+
+#: beast-gtk/bstkeybindings.c:53
+#, fuzzy
+msgid "Change the currently selected key binding"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/bstkeybindings.c:55
+#, fuzzy
+msgid "Raise"
+msgstr "放弃"
+
+#: beast-gtk/bstkeybindings.c:55
+msgid "Raise the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:59
+#, fuzzy
+msgid "Delete the currently selected key binding"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/bstkeybindings.c:61
+#, fuzzy
+msgid "Load"
+msgstr "加载..."
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load a key binding set"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:237
+msgid "Load Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:432
+msgid "Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:433
+msgid "Key combinations used to activate a function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
+#, fuzzy
+msgid "Function"
+msgstr "问题"
+
+#: beast-gtk/bstkeybindings.c:436
+msgid "Functions to be activated for a key binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:438
+#, fuzzy
+msgid "Parameter"
+msgstr "参数"
+
+#: beast-gtk/bstkeybindings.c:439
+msgid "Parameter to pass to functions upon activation"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:460
+msgid "Function used to create new key bindings"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
+msgid "Description"
+msgstr "描述"
+
+#: beast-gtk/bstmain.c:129
+msgid "BEAST Startup"
+msgstr "启动 BEAST"
+
+#: beast-gtk/bstmain.c:136
+msgid "Startup"
+msgstr "启动"
+
+#. BEAST initialization
+#: beast-gtk/bstmain.c:140
+msgid "Initializers"
+msgstr ""
+
+#. parse rc file
+#: beast-gtk/bstmain.c:147
+msgid "RC Files"
+msgstr "RC 文件"
+
+#. show splash images
+#: beast-gtk/bstmain.c:151
+msgid "Splash Image"
+msgstr "启动图像"
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:163
+msgid "BSE Core"
+msgstr "BSE 核心"
+
+#: beast-gtk/bstmain.c:185
+msgid "Plugins"
+msgstr "插件"
+
+#: beast-gtk/bstmain.c:204
+msgid "LADSPA Plugins"
+msgstr "LADSPA 插件"
+
+#: beast-gtk/bstmain.c:232
+msgid "Scripts"
+msgstr "脚本"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:250
+msgid "Dialogs"
+msgstr "对话框"
+
+#: beast-gtk/bstmain.c:257
+msgid "Loading..."
+msgstr "正在加载..."
+
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
+#, c-format
+msgid "Loading \"%s\""
+msgstr "正在加载“%s”"
+
+#: beast-gtk/bstmain.c:306
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "正在打开项目“%s”"
+
+#: beast-gtk/bstmain.c:710
+msgid "BEAST About"
+msgstr ""
+
+#: beast-gtk/bstmain.c:711
+#, c-format
+msgid "BEAST Version %s"
+msgstr ""
+
+#: beast-gtk/bstmain.c:712
+msgid "Contributions made by:"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:145
+msgid "Drop Down Box (Option Menu)"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:151
+msgid "Drop Down Button"
+msgstr ""
+
+#: beast-gtk/bstparam-color-spinner.c:67
+#, fuzzy
+msgid "Select Color"
+msgstr "删除"
+
+#: beast-gtk/bstparam-color-spinner.c:116
+msgid "Color Entry"
+msgstr ""
+
+#: beast-gtk/bstparam-note-sequence.c:61
+msgid "Note Sequence Grid Editor"
+msgstr ""
+
+#: beast-gtk/bstparam-note-spinner.c:74
+#, fuzzy
+msgid "Note Entry"
+msgstr "事件"
+
+#: beast-gtk/bstparam-proxy.c:290
+msgid "Object Drop Down Box"
+msgstr ""
+
+#: beast-gtk/bstparam-scale.c:60
+msgid "Knob"
+msgstr ""
+
+#: beast-gtk/bstparam-scale.c:66
+msgid "Knob (Logarithmic"
+msgstr ""
+
+#: beast-gtk/bstparam-scale.c:78
+#, fuzzy
+msgid "Dial"
+msgstr "对话框"
+
+#: beast-gtk/bstparam-scale.c:84
+msgid "Dial (Logarithmic"
+msgstr ""
+
+#: beast-gtk/bstparam-searchpath.c:55
+msgid "Remove Paths"
+msgstr "移除路径"
+
+#: beast-gtk/bstparam-searchpath.c:148
+msgid "Searchpath Text Entry"
+msgstr ""
+
+#: beast-gtk/bstparam-searchpath.c:154
+msgid "Filename Text Entry"
+msgstr ""
+
+#: beast-gtk/bstparam-time.c:55
+msgid "Time Entry"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:60
+#, fuzzy
+msgid "Clear"
+msgstr "/编辑(E)/清除修改历史(_C)"
+
+#: beast-gtk/bstpartdialog.c:60
+#, fuzzy
+msgid "Clear the current selection"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/bstpartdialog.c:61
+msgid "Cut"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:61
+#, fuzzy
+msgid "Move the current selection into clipboard"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/bstpartdialog.c:62
+msgid "Copy"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:62
+msgid "Copy the current selection into clipboard"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:63
+msgid "Paste"
+msgstr "粘贴"
+
+#: beast-gtk/bstpartdialog.c:63
+msgid "Insert clipboard contents as current selection"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Undo"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Undo last editing step"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:67
+msgid "Redo"
+msgstr ""
+
+#: beast-gtk/bstpartdialog.c:67
+msgid "Redo the last undone editing step"
+msgstr ""
+
+#: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
+msgid "Editor"
+msgstr "编辑器"
+
+#: beast-gtk/bstpatterncolumns.c:653
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:655
+msgid "COLUMN TYPES:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:657
+msgid "note-1, note-2, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:658
+msgid "  display notes of the first, second, ... channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:660
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:661
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:663
+msgid "control-0, ..., control-63, cc-0, cc-31"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:664
+msgid "  select various event types (controls, continuous controllers)"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:666
+msgid "bar, |"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:667
+msgid "  display solid vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:669
+msgid "dbar, :"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:670
+msgid "  display dotted vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:672
+msgid "space, _"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:673
+msgid "  insert vertical space"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:674
+msgid "EVENTS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:676
+msgid "  balance, volume, cc-8, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:677
+msgid "MODIFIERS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:679
+msgid "hex2, hex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:680
+msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:682
+msgid "shex2, shex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:683
+msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:685
+msgid "dec2, dec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:686
+msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:688
+msgid "sdec2, sdec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:689
+msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:691
+msgid "col1, col2, col3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:692
+msgid "  selects one of 3 predefined colors"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:694
+msgid "lfold, rfold"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:695
+msgid "  allow folding the column into left/right neighbour"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:696
+msgid "EXAMPLE:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:698
+msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+msgstr ""
+
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:708
+msgid "Pattern Editor Layout"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:39
+msgid "Steps"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:40
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:44
+#, fuzzy
+msgid "Direction"
+msgstr "描述"
+
+#: beast-gtk/bstpatternctrl.c:45
+msgid "The direction of cell movement each time an event or note was edited"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:49
+msgid "HWrap"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:50
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr ""
+
+#. movement
+#: beast-gtk/bstpatternctrl.c:192
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:193
+msgid "Move focus cell upwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:194
+msgid "Move focus cell to the left"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:195
+msgid "Move focus cell to the right"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:196
+msgid "Move focus cell downwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:197
+msgid "Move focus cell upwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:198
+msgid "Move focus cell to the left page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:199
+msgid "Move focus cell to the right page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:200
+msgid "Move focus cell downwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:201
+msgid "Set the focus cell to the topmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:202
+msgid "Set the focus cell to the leftmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:203
+msgid "Set the focus cell to the rightmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:204
+msgid "Set the focus cell to the bottommost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:207
+msgid "Set the number of steps to make when moving to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:211
+msgid "Set the base octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:214
+msgid "Change the base octave by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:218
+msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:222
+msgid "Set the focus cell octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:226 beast-gtk/bstpatternctrl.c:240
+msgid "Remove any events in the focus cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:230 beast-gtk/bstpatternctrl.c:244
+#, fuzzy
+msgid "Set the focus cell note"
+msgstr "插入小节"
+
+#: beast-gtk/bstpatternctrl.c:234 beast-gtk/bstpatternctrl.c:248
+msgid "Sets the value of the focus digit"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert"
+msgstr "插入"
+
+#: beast-gtk/bstpianorollctrl.c:46
+#, fuzzy
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr "插入(I)/编辑/移动片段(鼠标左右键)"
+
+#: beast-gtk/bstpianorollctrl.c:48
+#, fuzzy
+msgid "Delete note (mouse button 1)"
+msgstr "插入(I)/编辑/移动片段(鼠标左右键)"
+
+#: beast-gtk/bstpianorollctrl.c:50
+#, fuzzy
+msgid "Align Events"
+msgstr "/工具(T)/波形文件(_s)"
+
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Draw a line to align events to"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:52
+#, fuzzy
+msgid "Select"
+msgstr "删除"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Rectangle select notes"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:714
+msgid "Vertical Select"
+msgstr "纵向选择"
+
+#: beast-gtk/bstpianorollctrl.c:54
+msgid "Select tick range vertically"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:67
+#, fuzzy
+msgid "1\\/1"
+msgstr "Q: 1/1"
+
+#: beast-gtk/bstpianorollctrl.c:67
+#, fuzzy
+msgid "Insert full notes"
+msgstr "插入小节"
+
+#: beast-gtk/bstpianorollctrl.c:69
+#, fuzzy
+msgid "1\\/2"
+msgstr "Q: 1/2"
+
+#: beast-gtk/bstpianorollctrl.c:69
+#, fuzzy
+msgid "Insert half notes"
+msgstr "插入小节"
+
+#: beast-gtk/bstpianorollctrl.c:71
+#, fuzzy
+msgid "1\\/4"
+msgstr "Q: 1/4"
+
+#: beast-gtk/bstpianorollctrl.c:71
+#, fuzzy
+msgid "Insert quarter notes"
+msgstr "插入片段"
+
+#: beast-gtk/bstpianorollctrl.c:73
+#, fuzzy
+msgid "1\\/8"
+msgstr "Q: 1/8"
+
+#: beast-gtk/bstpianorollctrl.c:73
+#, fuzzy
+msgid "Insert eighths note"
+msgstr "插入小节"
+
+#: beast-gtk/bstpianorollctrl.c:75
+#, fuzzy
+msgid "1\\/16"
+msgstr "Q: 1/16"
+
+#: beast-gtk/bstpianorollctrl.c:75
+#, fuzzy
+msgid "Insert sixteenth note"
+msgstr "插入小节"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Q: Tact"
+msgstr "Q: 节拍"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Quantize to tact boundaries"
+msgstr "抽样值取最大节拍"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "Q: None"
+msgstr "Q: 空"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "No quantization selected"
+msgstr "没有选择量化指标"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+#, fuzzy
+msgid "Q: 1\\/1"
+msgstr "Q: 1/1"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to full note boundaries"
+msgstr "抽样值为一比一"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#, fuzzy
+msgid "Q: 1\\/2"
+msgstr "Q: 1/2"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Quantize to half note boundaries"
+msgstr "抽样值为1/2"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#, fuzzy
+msgid "Q: 1\\/4"
+msgstr "Q: 1/4"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Quantize to quarter note boundaries"
+msgstr "抽样值为1/4"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#, fuzzy
+msgid "Q: 1\\/8"
+msgstr "Q: 1/8"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Quantize to eighths note boundaries"
+msgstr "抽样值为1/8"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#, fuzzy
+msgid "Q: 1\\/16"
+msgstr "Q: 1/16"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Quantize to sixteenth note boundaries"
+msgstr "抽样值为1/16"
+
+#: beast-gtk/bstpianorollctrl.c:466 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bstpianorollctrl.c:561
+msgid "Move Note"
+msgstr "移动小节"
+
+#: beast-gtk/bstpianorollctrl.c:561 beast-gtk/bstpianorollctrl.c:632
+msgid "Lost Note"
+msgstr "找不到小节"
+
+#: beast-gtk/bstpianorollctrl.c:578 beast-gtk/bstpianorollctrl.c:583
+#: beast-gtk/bstpianorollctrl.c:632
+msgid "Resize Note"
+msgstr "改变小节大小"
+
+#: beast-gtk/bstpianorollctrl.c:643 beast-gtk/bstpianorollctrl.c:646
+msgid "Delete Note"
+msgstr "删除小节"
+
+#: beast-gtk/bstpianorollctrl.c:668
+msgid "Insert Note"
+msgstr "插入小节"
+
+#: beast-gtk/bstpianorollctrl.c:740
+msgid "Vertical Region"
+msgstr "纵向区域"
+
+#: beast-gtk/bstpianorollctrl.c:861
+msgid "Play note"
+msgstr "播放小节"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr "播放"
+
+#: beast-gtk/bstpreferences.c:76
+#, fuzzy
+msgid "Piano Keys"
+msgstr "播放小节"
+
+#: beast-gtk/bstpreferences.c:83
+msgid "Generic Keys"
+msgstr ""
+
+#: beast-gtk/bstpreferences.c:88
+msgid "Skin"
+msgstr ""
+
+#: beast-gtk/bstprocedure.c:296
+#, c-format
+msgid "Executing `%s'"
+msgstr "执行“%s”"
+
+#: beast-gtk/bstprocedure.c:446
+msgid "Procedure"
+msgstr "过程"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr "重新开始回放"
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr "开始回放"
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr "停止回放"
+
+#: beast-gtk/bstrackeditor.c:95
+msgid ""
+"The rack editor is still highly experimental code and guranrteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+msgstr ""
+
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+msgid "_Edit"
+msgstr "编辑(_E)"
+
+#: beast-gtk/bstrackitem.c:206
+msgid "Edit Rack Item"
+msgstr ""
+
+#: beast-gtk/bstrackitem.c:208
+msgid "Controller"
+msgstr "控制器"
+
+#: beast-gtk/bstrackitem.c:209
+msgid "Duplicate"
+msgstr "复制"
+
+#: beast-gtk/bstrackitem.c:211
+msgid "Grow Horizontally"
+msgstr "水平方向伸展"
+
+#: beast-gtk/bstrackitem.c:212
+msgid "Grow Vertically"
+msgstr "竖直方向伸展"
+
+#: beast-gtk/bstrackitem.c:213
+msgid "Shrink Horizontally"
+msgstr "水平方向收缩"
+
+#: beast-gtk/bstrackitem.c:214
+msgid "Shrink Vertically"
+msgstr "竖直方向收缩"
+
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "Label"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Up"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:35
+#, fuzzy
+msgid "Move upwards"
+msgstr "移动片段"
+
+#: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "左"
+
+#: beast-gtk/bstrecords.idl:36
+#, fuzzy
+msgid "Move to the left"
+msgstr "移动小节"
+
+#: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "右"
+
+#: beast-gtk/bstrecords.idl:37
+#, fuzzy
+msgid "Move to the right"
+msgstr "移动小节"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Down"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Step downwards"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:43
+#, fuzzy
+msgid "Release counter"
+msgstr "/帮助(H)/发行注记(_R)..."
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Font Size"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Font size in pixels for labels displayed in synthesis networks"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Anti-Alias"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Draw synthesis networks anti-aliased?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Single Edit"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Fallback into Edit mode after creating synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Swap IO"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Swap input with output channels when displaying synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Tab Width"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Specify project tab width in pixels"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:57
+msgid "Homogeneous Input Fields"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:58
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Skin Name"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Name for the current skin configuration (used for skin selections)."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:68 beast-gtk/bstrecords.idl:78
+msgid "Background Image"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:68
+msgid "Background image used by the piano-roll widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
+msgid "Image shade"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
+msgid "Percentage of background image pixel to blend over background color."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:70 beast-gtk/bstrecords.idl:80
+msgid "Background Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:71 beast-gtk/bstrecords.idl:81
+#, fuzzy
+msgid "Horizontal Bar Color"
+msgstr "水平方向伸展"
+
+#: beast-gtk/bstrecords.idl:72
+#, fuzzy
+msgid "Vertical Bar Color"
+msgstr "纵向区域"
+
+#: beast-gtk/bstrecords.idl:73
+#, fuzzy
+msgid "Horizontal Grid Color"
+msgstr "水平方向伸展"
+
+#: beast-gtk/bstrecords.idl:74
+#, fuzzy
+msgid "Vertical Grid Color"
+msgstr "纵向区域"
+
+#: beast-gtk/bstrecords.idl:75 beast-gtk/bstrecords.idl:82
+msgid "Middle Bar Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:78
+msgid "Background image used by the control events widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Positive Value Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:84
+#, fuzzy
+msgid "Zero Value Color"
+msgstr "删除"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Negative Value Color"
+msgstr ""
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr "缩放："
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr "竖直缩放："
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "开始："
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "结束："
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "范围形状"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "平均值形状"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "最小值形状"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "最大值形状"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr "估计范围"
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr "估计平均值"
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr "估计最小值"
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr "估计最大值"
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "预览"
+
+#: beast-gtk/bstsnetrouter.c:69
+msgid ""
+"Edit tool (mouse buttons 1-3)\n"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:74
+msgid "Edit"
+msgstr "编辑"
+
+#: beast-gtk/bstsnetrouter.c:74
+#, fuzzy
+msgid "Edit/Move/Menu (mouse buttons 1-3)"
+msgstr "插入(I)/编辑/移动片段(鼠标左右键)"
+
+#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
+msgid "Palette"
+msgstr "调色板"
+
+#: beast-gtk/bstsnetrouter.c:78
+msgid "Toggle visibility of the tool palette"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:181
+#, fuzzy
+msgid "PCM Output module"
+msgstr "选择输出模块"
+
+#: beast-gtk/bstsnetrouter.c:182
+msgid "DCA"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:182
+msgid "Standard amplifier module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:183
+msgid "Snooper"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:183
+msgid "Signal debugging module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:184
+#, fuzzy
+msgid "PCM Input module"
+msgstr "选择输入模块"
+
+#: beast-gtk/bstsnetrouter.c:232
+#, fuzzy
+msgid "Channel Hints"
+msgstr "输入通道使用中"
+
+#: beast-gtk/bstsnetrouter.c:232
+msgid "Toggle channel name hints"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:772
+msgid "Input channel in use"
+msgstr "输入通道使用中"
+
+#: beast-gtk/bstsnetrouter.c:799 beast-gtk/bstsnetrouter.c:801
+#: beast-gtk/bstsnetrouter.c:837
+msgid "Create Link"
+msgstr "创建链接"
+
+#: beast-gtk/bstsnetrouter.c:799
+msgid "Select output module"
+msgstr "选择输出模块"
+
+#: beast-gtk/bstsnetrouter.c:801
+msgid "Select input module"
+msgstr "选择输入模块"
+
+#: beast-gtk/bstsnetrouter.c:857
+msgid "Properties"
+msgstr "属性"
+
+#: beast-gtk/bstsnetrouter.c:858
+msgid "Reset Properties"
+msgstr "重置属性"
+
+#: beast-gtk/bstsnetrouter.c:859
+msgid "Delete Inputs"
+msgstr "删除输入"
+
+#: beast-gtk/bstsnetrouter.c:860
+msgid "Delete Outputs"
+msgstr "删除输出"
+
+#: beast-gtk/bstsnetrouter.c:861 beast-gtk/bstsnetrouter.c:903
+msgid "Show Info"
+msgstr "显示信息"
+
+#: beast-gtk/bstsnetrouter.c:887
+msgid "Remove Module"
+msgstr "移除模块"
+
+#: beast-gtk/bstsnetrouter.c:914
+msgid "Delete Link"
+msgstr "删除链接"
+
+#: beast-gtk/bstsnetrouter.c:968
+msgid "Insert Module"
+msgstr "插入模块"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr "循环起始位置"
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr "循环结束位置"
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr "缩放"
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr "接受循环播放设置"
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr "重置循环播放"
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr ""
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "查找"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr "标记符号(起始)"
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr "标记符号(结束)"
+
+#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
+msgid "Waves"
+msgstr "波形"
+
+#: beast-gtk/bstsupershell.c:212
+msgid "Tracks"
+msgstr "音轨"
+
+#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
+#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
+msgid "Parameters"
+msgstr "参数"
+
+#: beast-gtk/bstsupershell.c:222
+msgid "Parts"
+msgstr "片段"
+
+#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
+msgid "Routing"
+msgstr "经由"
+
+#: beast-gtk/bstsupershell.c:242
+#, fuzzy
+msgid "Rack"
+msgstr "音轨"
+
+#: beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "插入(I)/编辑/移动片段(鼠标左右键)"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link"
+msgstr "链接"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "连接或移动片段(鼠标左右键)"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+#, fuzzy
+msgid "Rename"
+msgstr "改名(_R)"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename parts"
+msgstr "片段改名"
+
+#: beast-gtk/bsttrackrollctrl.c:51
+msgid "Delete parts"
+msgstr "删除片段"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "使用水平标尺来调整左侧循环播放指针"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+#, fuzzy
+msgid "Position"
+msgstr "已选取位置"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "使用水平标尺来调整播放位置指针"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "使用水平标尺来调整右侧循环播放指针"
+
+#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
+msgid "Edit Part"
+msgstr "编辑片段"
+
+#: beast-gtk/bsttrackrollctrl.c:410
+msgid "No Part"
+msgstr "没有片段"
+
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+msgid "Insert Part"
+msgstr "插入片段"
+
+#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
+msgid "Lost Part"
+msgstr "丢失的片段"
+
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+msgid "Position taken"
+msgstr "已选取位置"
+
+#: beast-gtk/bsttrackrollctrl.c:455
+msgid "Insert part"
+msgstr "插入片段"
+
+#: beast-gtk/bsttrackrollctrl.c:455
+msgid "No Track"
+msgstr "没有音轨"
+
+#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
+msgid "Delete Part"
+msgstr "删除片段"
+
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+msgid "Link Part"
+msgstr "连接片段"
+
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:545
+msgid "Move Part"
+msgstr "移动片段"
+
+#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
+msgid "Start Editor"
+msgstr "打开编辑器"
+
+#: beast-gtk/bsttrackview.c:60
+msgid "Add a new track to this song"
+msgstr "向乐曲中添加一个新音轨"
+
+#: beast-gtk/bsttrackview.c:63
+msgid "Delete the currently selected track"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Notice"
+msgstr "注意"
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Question"
+msgstr "问题"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Warning"
+msgstr "警告"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Error"
+msgstr "错误"
+
+#: beast-gtk/bstusermessage.c:107
+msgid "Miscellaneous Message"
+msgstr "其他信息"
+
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+msgid "processing"
+msgstr "处理中"
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr "不卷动"
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr "全部卷动"
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr "卷动左声道"
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr "卷动右声道"
+
+#: beast-gtk/bstwaveview.c:41
+#, fuzzy
+msgid "Load..."
+msgstr "加载..."
+
+#: beast-gtk/bstwaveview.c:41
+msgid "Load a new wave file from disk"
+msgstr ""
+
+#: beast-gtk/bstwaveview.c:43
+#, fuzzy
+msgid "Lib..."
+msgstr "加载..."
+
+#: beast-gtk/bstwaveview.c:43
+msgid "Load a new wave file from library paths"
+msgstr ""
+
+#: beast-gtk/bstwaveview.c:45
+#, fuzzy
+msgid "Delete the currently selected wave"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/bstwaveview.c:47
+#, fuzzy
+msgid "Edit the currently selected wave"
+msgstr "删除当前选择的音轨"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust right view boundary"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+msgid "Adjust the zoom factor of the router display"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+msgid "Aplly configuration changes to the pattern editor layout"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+msgid "Configure"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+msgid "Configure the column layout of the pattern editor"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#, fuzzy
+msgid "Control Type:"
+msgstr "控制类型: "
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+msgid "Development"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+msgid "Discard changes and close dialog"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+msgid "E_xamples"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#, fuzzy
+msgid "Events"
+msgstr "/工具(T)/波形文件(_s)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#, fuzzy
+msgid "HZoom"
+msgstr "缩放:"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#, fuzzy
+msgid "Horizontal piano zoom"
+msgstr "水平方向伸展"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#, fuzzy
+msgid "Horizontal track zoom"
+msgstr "水平方向伸展"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+msgid "Layout:"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+msgid "Note _Length"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#, fuzzy
+msgid "Piano Notes"
+msgstr "播放小节"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+msgid "Repeat"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+msgid "Repeat playback within loop points"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+msgid "Synthesis Modules"
+msgstr "合成器模块"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#, fuzzy
+msgid "VZoom"
+msgstr "缩放:"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+#, fuzzy
+msgid "Vertical piano zoom"
+msgstr "纵向区域"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+msgid "Virtual Rack"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#, fuzzy
+msgid "Wave_s"
+msgstr "/波形文件(_s)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#, fuzzy
+msgid "Zoom"
+msgstr "缩放:"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#, fuzzy
+msgid "_Apply"
+msgstr "接受循环播放设置"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+msgid "_Audio Sources"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_Cancel"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#, fuzzy
+msgid "_Demo"
+msgstr "/编辑(E)/重做(_R)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#, fuzzy
+msgid "_Distortion"
+msgstr "描述"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+msgid "_Enhance"
+msgstr "增强(_E)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+msgid "_File"
+msgstr "文件(_F)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+msgid "_Filters"
+msgstr "过滤器(_F)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Help"
+msgstr "帮助(_H)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+msgid "_Input & Output"
+msgstr "输入输出(_I)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+msgid "_LADSPA"
+msgstr "_LADSPA"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+msgid "_Misc"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+msgid "_Other Sources"
+msgstr "其它资源(_O)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+msgid "_Project"
+msgstr "项目(_P)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+msgid "_Quantization"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#, fuzzy
+msgid "_Routing"
+msgstr "经由"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+msgid "_Skins"
+msgstr "皮肤(_S)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:43
+msgid "_Song"
+msgstr "曲目(_S)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:44
+msgid "_Spatial"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:45
+msgid "_Synth"
+msgstr "旋律(_S)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:46
+msgid "_Synthesizers"
+msgstr "合成器(_S)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:47
+msgid "_Tools"
+msgstr "工具(_T)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:48
+msgid "_Utilities"
+msgstr "实用工具(_U)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:49
+msgid "_View"
+msgstr "查看(_V)"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:50
+msgid "_Virtualization"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+msgid "Enter document or file location"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+msgid "Find in current document"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+msgid "Go back one page"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+msgid "Go forward one page"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+msgid "Go to browser index"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#, fuzzy
+msgid "Location"
+msgstr "放弃"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+msgid "Reload current page"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+msgid "_Back"
+msgstr "后退(_B)"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+msgid "_Find"
+msgstr "查找(_F)"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+msgid "_Forward"
+msgstr "前进(_F)"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+msgid "_Index"
+msgstr "索引(_I)"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:12
+#, fuzzy
+msgid "_Reload"
+msgstr "/编辑(E)/重做(_R)"
+
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-label.c:66
+#, fuzzy
+msgid "Property Identifier"
+msgstr "属性"
+
+#: beast-gtk/gxk/gxkparam-label.c:72
+#, fuzzy
+msgid "Property Name"
+msgstr "属性"
+
+#: beast-gtk/gxk/gxkparam-scale.c:82
+#, fuzzy
+msgid "Horizontal Scale"
+msgstr "水平方向伸展"
+
+#: beast-gtk/gxk/gxkparam-scale.c:88
+#, fuzzy
+msgid "Vertical Scale"
+msgstr "纵向选择"
+
+#: beast-gtk/gxk/gxkparam-scale.c:94
+msgid "Horizontal Scale (Logarithmic)"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-scale.c:100
+#, fuzzy
+msgid "Vertical Scale (Logarithmic)"
+msgstr "纵向选择"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:82
+msgid "Spin Button"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-spinner.c:88
+msgid "Spin Button (Logarithmic)"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-toggle.c:69
+msgid "Toggle Button"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "The text of the label"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid "Use underline"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:138
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+msgid "Auto cut"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:143
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:147
+msgid "Justification"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:148
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid "Pattern"
+msgstr "调色板"
+
+#: beast-gtk/gxk/gxksimplelabel.c:153
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "Mnemonic key"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:158
+msgid "The mnemonic accelerator key for this label"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "Mnemonic widget"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:163
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr ""
+
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:575
+#, fuzzy
+msgid "..."
+msgstr "加载..."
+
+#: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
+msgid "GNU Lesser General Public License"
+msgstr ""
+
+#: bse/bseamplifier.idl:33
+msgid "/Routing/Amplifier"
+msgstr ""
+
+#: bse/bseamplifier.idl:34
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+
+#: bse/bseamplifier.idl:47 plugins/bseadder.c:100 plugins/bsebalance.idl:36
+#: plugins/bsemult.c:60
+msgid "Audio In1"
+msgstr ""
+
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
+msgid "First audio input"
+msgstr ""
+
+#: bse/bseamplifier.idl:48 plugins/bseadder.c:102 plugins/bsebalance.idl:37
+#: plugins/bsemult.c:62
+msgid "Audio In2"
+msgstr ""
+
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
+msgid "Second audio input"
+msgstr ""
+
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
+msgid "Ctrl In1"
+msgstr ""
+
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
+#, fuzzy
+msgid "First control input"
+msgstr "插入控制事件"
+
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
+msgid "Ctrl In2"
+msgstr ""
+
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
+msgid "Second control input"
+msgstr ""
+
+#: bse/bseamplifier.idl:51 bse/bsebiquadfilter.c:198 bse/bsestandardosc.c:207
+#: bse/bsewaveosc.c:161 plugins/artscompressor.idl:33 plugins/bseadder.c:104
+#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
+#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
+msgid "Audio Out"
+msgstr ""
+
+#: bse/bseamplifier.idl:51
+msgid "Amplified audio output"
+msgstr ""
+
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:43
+#, fuzzy
+msgid "Audio Input"
+msgstr "输入"
+
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:44
+#: plugins/bsebalance.idl:49
+#, fuzzy
+msgid "Input 1 [%]"
+msgstr "输入"
+
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:44
+msgid "Attenuate the level of audio input 1"
+msgstr ""
+
+#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:45
+#: plugins/bsebalance.idl:50
+#, fuzzy
+msgid "Input 2 [%]"
+msgstr "输入"
+
+#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:45
+msgid "Attenuate the level of audio input 2"
+msgstr ""
+
+#: bse/bseamplifier.idl:55 bse/bseamplifier.idl:60 plugins/bsebalance.idl:46
+#: plugins/bsebalance.idl:51
+msgid "Balance"
+msgstr ""
+
+#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:46
+msgid "Balance audio input levels"
+msgstr ""
+
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:48
+#, fuzzy
+msgid "Control Input"
+msgstr "控制类型: "
+
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:49
+msgid "Attenuate the level of control input 1"
+msgstr ""
+
+#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:50
+msgid "Attenuate the level of control input 2"
+msgstr ""
+
+#: bse/bseamplifier.idl:60 plugins/bsebalance.idl:51
+msgid "Balance control input levels"
+msgstr ""
+
+#: bse/bseamplifier.idl:61
+msgid "Multiply Controls"
+msgstr ""
+
+#: bse/bseamplifier.idl:62
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr ""
+
+#: bse/bseamplifier.idl:65
+msgid "Exponential Control"
+msgstr ""
+
+#: bse/bseamplifier.idl:65
+msgid "Toggle exponential and linear control response"
+msgstr ""
+
+#: bse/bseamplifier.idl:68 plugins/bsebalance.idl:54
+msgid "Control Strength"
+msgstr "控制强度"
+
+#: bse/bseamplifier.idl:68
+msgid "Adjust how much the control signals affect the output volume"
+msgstr ""
+
+#: bse/bseamplifier.idl:69
+msgid "Base Volume"
+msgstr ""
+
+#: bse/bseamplifier.idl:69
+msgid "Base amplification (the control signal adds up to this)"
+msgstr ""
+
+#: bse/bseamplifier.idl:70
+msgid "Master Volume"
+msgstr ""
+
+#: bse/bseamplifier.idl:70
+msgid "Output stage amplification"
+msgstr ""
+
+#: bse/bseautodoc.c:397 bse/bseautodoc.c:399
+#, fuzzy
+msgid "BSE-Objects"
+msgstr "对象"
+
+#: bse/bseautodoc.c:399
+msgid " Object Reference"
+msgstr ""
+
+#: bse/bseautodoc.c:411
+msgid "Authors:"
+msgstr ""
+
+#: bse/bseautodoc.c:414
+msgid "License:"
+msgstr ""
+
+#: bse/bseautodoc.c:418
+msgid "Properties:"
+msgstr "属性："
+
+#: bse/bseautodoc.c:444 bse/bseautodoc.c:477 bse/bseautodoc.c:494
+msgid "Identifier:"
+msgstr ""
+
+#: bse/bseautodoc.c:449 bse/bseautodoc.c:455
+msgid "Range:"
+msgstr ""
+
+#: bse/bseautodoc.c:459 bse/bseautodoc.c:480 bse/bseautodoc.c:497
+msgid "Description:"
+msgstr "描述："
+
+#: bse/bseautodoc.c:469
+#, fuzzy
+msgid "Input Channels:"
+msgstr "输入通道使用中"
+
+#: bse/bseautodoc.c:476
+#, fuzzy
+msgid "(Joint Input)"
+msgstr "控制类型: "
+
+#: bse/bseautodoc.c:487
+#, fuzzy
+msgid "Output Channels:"
+msgstr "输出"
+
+#: bse/bsebiquadfilter.c:130
+#, fuzzy
+msgid "Filter"
+msgstr "/文件(_F)"
+
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:125
+#, fuzzy
+msgid "Filter Type"
+msgstr "/文件(_F)"
+
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:119
+msgid "The filter design type"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:141
+#: plugins/bseiirfilter.c:151
+msgid "Cutoff [Hz]"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:146 bse/bseconstant.c:133 bse/bsestandardosc.c:154
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
+#, fuzzy
+msgid "Note"
+msgstr "注意"
+
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:158
+#, fuzzy
+msgid "Norm Type"
+msgstr "控制类型: "
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+#: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:178 bse/bsewaveosc.c:131 bse/bsewaveosc.c:137
+#: bse/bsewaveosc.c:143
+#, fuzzy
+msgid "Modulation"
+msgstr "放弃"
+
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:163
+msgid "Strength of linear frequency modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175 bse/bsewaveosc.c:146
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:186
+msgid "Strength of gain modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:190 plugins/artscompressor.idl:32
+#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+msgid "Audio In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:190
+msgid "Unfiltered Audio Signal"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199 bse/bsewaveosc.c:155
+#: plugins/davorgan.c:132 plugins/davsyndrum.c:116
+#: plugins/davxtalstrings.c:141
+msgid "Freq In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:192
+msgid "Center Frequency Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
+msgid "Freq Mod In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
+msgid "Frequency Modulation Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Mod In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Modulation Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:198
+msgid "Filtered Audio Signal"
+msgstr ""
+
+#: bse/bseconstant.c:111 bse/bseconstant.c:142
+#, c-format
+msgid "Constant Output %u"
+msgstr ""
+
+#: bse/bseconstant.c:114
+msgid "Value [float]"
+msgstr ""
+
+#: bse/bseconstant.c:122 bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr ""
+
+#: bse/bseconstant.c:141
+#, c-format
+msgid "Const Out%u"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+msgid "Note Frequency"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "Gate"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "High if the note is currently being pressed"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+#, fuzzy
+msgid "Velocity"
+msgstr "纵向选择"
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity of the note press"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Aftertouch"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Velocity while the note is pressed"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:106
+#, fuzzy
+msgid "Left Audio"
+msgstr "左"
+
+#: bse/bseinstrumentoutput.c:106
+#, fuzzy
+msgid "Left Channel Output"
+msgstr "删除输出"
+
+#: bse/bseinstrumentoutput.c:108
+#, fuzzy
+msgid "Right Audio"
+msgstr "右"
+
+#: bse/bseinstrumentoutput.c:108
+#, fuzzy
+msgid "Right Channel Output"
+msgstr "右"
+
+#: bse/bseinstrumentoutput.c:110
+msgid "Unused"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:112
+msgid "Synth Done"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:112
+msgid "High indicates the instrument is done synthesizing"
+msgstr ""
+
+#: bse/bsemidicontroller.c:142
+#, fuzzy
+msgid "Ctrl Out1"
+msgstr "控制类型: "
+
+#: bse/bsemidicontroller.c:142
+msgid "MIDI Signal 1"
+msgstr ""
+
+#: bse/bsemidicontroller.c:144
+#, fuzzy
+msgid "Ctrl Out2"
+msgstr "控制类型: "
+
+#: bse/bsemidicontroller.c:144
+msgid "MIDI Signal 2"
+msgstr ""
+
+#: bse/bsemidicontroller.c:146
+#, fuzzy
+msgid "Ctrl Out3"
+msgstr "控制类型: "
+
+#: bse/bsemidicontroller.c:146
+msgid "MIDI Signal 3"
+msgstr ""
+
+#: bse/bsemidicontroller.c:148
+#, fuzzy
+msgid "Ctrl Out4"
+msgstr "控制类型: "
+
+#: bse/bsemidicontroller.c:148
+msgid "MIDI Signal 4"
+msgstr ""
+
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+#, fuzzy
+msgid "Freq Out"
+msgstr "左"
+
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:163
+#, fuzzy
+msgid "Gate Out"
+msgstr "左"
+
+#: bse/bsemidivoice.c:113
+#, fuzzy
+msgid "Velocity Out"
+msgstr "左"
+
+#: bse/bsemidivoice.c:115
+msgid "Aftertouch Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
+#, fuzzy
+msgid "Left In"
+msgstr "左"
+
+#: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
+#, fuzzy
+msgid "Right In"
+msgstr "右"
+
+#: bse/bsemidivoice.c:137
+msgid "Disconnect In"
+msgstr ""
+
+#: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
+#: plugins/davcanyondelay.c:120
+#, fuzzy
+msgid "Left Out"
+msgstr "左"
+
+#: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
+#: plugins/davcanyondelay.c:122
+#, fuzzy
+msgid "Right Out"
+msgstr "右"
+
+#: bse/bsemidivoice.c:143
+msgid "Disconnect Out"
+msgstr ""
+
+#: bse/bsepcminput.c:133 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr ""
+
+#: bse/bsepcminput.c:133
+msgid "Left channel output"
+msgstr ""
+
+#: bse/bsepcminput.c:135 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr ""
+
+#: bse/bsepcminput.c:135
+msgid "Right channel output"
+msgstr ""
+
+#: bse/bsepcmoutput.c:133 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr ""
+
+#: bse/bsepcmoutput.c:133
+#, fuzzy
+msgid "Left channel input"
+msgstr "输入通道使用中"
+
+#: bse/bsepcmoutput.c:135 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr ""
+
+#: bse/bsepcmoutput.c:135
+#, fuzzy
+msgid "Right channel Input"
+msgstr "输入通道使用中"
+
+#: bse/bsesnooper.c:113
+msgid "Signal In"
+msgstr ""
+
+#: bse/bsesnooper.c:113
+msgid "Snoop Signal"
+msgstr ""
+
+#: bse/bsestandardosc.c:111
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr ""
+
+#: bse/bsestandardosc.c:114
+msgid "/Modules/Audio Sources/Standard Oscillator"
+msgstr ""
+
+#: bse/bsestandardosc.c:137 bse/bsestandardosc.c:143
+msgid "Wave Form"
+msgstr ""
+
+#: bse/bsestandardosc.c:139 bse/bsewaveosc.c:127 bse/bsewaveosc.c:129
+#, fuzzy
+msgid "Wave"
+msgstr "波形文件"
+
+#: bse/bsestandardosc.c:139
+msgid "Oscillator wave form"
+msgstr ""
+
+#: bse/bsestandardosc.c:145
+msgid "Phase"
+msgstr ""
+
+#: bse/bsestandardosc.c:148 bse/bsestandardosc.c:152 bse/bsestandardosc.c:155
+msgid "Base Frequency"
+msgstr ""
+
+#: bse/bsestandardosc.c:157
+#, fuzzy
+msgid "Fine Tune"
+msgstr "/文件(_F)"
+
+#: bse/bsestandardosc.c:162 bse/bsewaveosc.c:133
+#, fuzzy
+msgid "Input Modulation [%]"
+msgstr "放弃"
+
+#: bse/bsestandardosc.c:168 bse/bsewaveosc.c:139
+msgid "Exponential FM"
+msgstr ""
+
+#: bse/bsestandardosc.c:174 bse/bsewaveosc.c:145
+#, fuzzy
+msgid "Octaves"
+msgstr "波形文件"
+
+#: bse/bsestandardosc.c:180
+#, fuzzy
+msgid "Self Modulation [%]"
+msgstr "放弃"
+
+#: bse/bsestandardosc.c:181
+msgid "Strength of self modulation"
+msgstr ""
+
+#: bse/bsestandardosc.c:184 bse/bsestandardosc.c:191
+#, fuzzy
+msgid "Pulse Modulation"
+msgstr "放弃"
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Width"
+msgstr ""
+
+#: bse/bsestandardosc.c:187
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr ""
+
+#: bse/bsestandardosc.c:193
+#, fuzzy
+msgid "Pulse Modulation [%]"
+msgstr "放弃"
+
+#: bse/bsestandardosc.c:194
+msgid ""
+"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr ""
+
+#: bse/bsestandardosc.c:199
+msgid "Oscillating Frequency Input"
+msgstr ""
+
+#: bse/bsestandardosc.c:203
+msgid "PWM In"
+msgstr ""
+
+#: bse/bsestandardosc.c:203
+msgid "Pulse Width Modulation Input"
+msgstr ""
+
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
+msgid "Sync In"
+msgstr ""
+
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
+#, fuzzy
+msgid "Syncronization Input"
+msgstr "控制类型: "
+
+#: bse/bsestandardosc.c:207
+#, fuzzy
+msgid "Oscillated Output"
+msgstr "删除输出"
+
+#: bse/bsestandardosc.c:209
+msgid "Sync Out"
+msgstr ""
+
+#: bse/bsestandardosc.c:209
+msgid "Syncronization Output"
+msgstr ""
+
+#: bse/bsesubiport.c:127 bse/bsesubsynth.c:137
+#, fuzzy, c-format
+msgid "Input Port %u"
+msgstr "输入"
+
+#: bse/bsesubiport.c:129 bse/bsesuboport.c:129 bse/bsesubsynth.c:127
+#, fuzzy
+msgid "Assignments"
+msgstr "/工具(T)/波形文件(_s)"
+
+#: bse/bsesubiport.c:131 bse/bsesuboport.c:131
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr ""
+
+#: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
+#, c-format
+msgid "Virtual input %u"
+msgstr ""
+
+#: bse/bsesuboport.c:127 bse/bsesubsynth.c:147
+#, fuzzy, c-format
+msgid "Output Port %u"
+msgstr "输出"
+
+#: bse/bsesuboport.c:139 bse/bsesubsynth.c:164
+#, c-format
+msgid "Virtual output %u"
+msgstr ""
+
+#: bse/bsesubsynth.c:129
+msgid "Synthesis Network"
+msgstr "合成器网络"
+
+#: bse/bsesubsynth.c:130
+msgid "The synthesis network to interface to"
+msgstr ""
+
+#: bse/bsesubsynth.c:139
+msgid "Input Assignments"
+msgstr ""
+
+#: bse/bsesubsynth.c:140
+msgid "Output port name to interface from"
+msgstr ""
+
+#: bse/bsesubsynth.c:149
+msgid "Output Assignments"
+msgstr ""
+
+#: bse/bsesubsynth.c:150
+msgid "Input port name to interface to"
+msgstr ""
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr ""
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr ""
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr ""
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr ""
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr ""
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr ""
+
+#: bse/bsewaveosc.c:129
+msgid "Wave to play"
+msgstr ""
+
+#: bse/bsewaveosc.c:134
+msgid "Modulation Strength for linear frequency modulation"
+msgstr ""
+
+#: bse/bsewaveosc.c:140
+msgid "Perform exponential frequency modulationinstead of linear"
+msgstr ""
+
+#: bse/bsewaveosc.c:155 plugins/davorgan.c:132
+msgid "Frequency Input"
+msgstr ""
+
+#: bse/bsewaveosc.c:159
+#, fuzzy
+msgid "Mod In"
+msgstr "模块信息"
+
+#: bse/bsewaveosc.c:159
+#, fuzzy
+msgid "Modulation Input"
+msgstr "放弃"
+
+#: bse/bsewaveosc.c:161
+#, fuzzy
+msgid "Wave Output"
+msgstr "输出"
+
+#: bse/bsewaveosc.c:163
+#, fuzzy
+msgid "Gate Output"
+msgstr "删除输出"
+
+#: data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr ""
+
+#: data/beast.desktop.in.h:2
+msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
+msgstr ""
+
+#: data/beast.desktop.in.h:3
+msgid "Music Composer"
+msgstr ""
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr ""
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr ""
+
+#: data/bse.keys.in.h:3
+msgid "BSE Synthesis File"
+msgstr ""
+
+#: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
+#: plugins/evaluator/bseevaluator.idl:27
+msgid "GNU General Public License"
+msgstr ""
+
+#: plugins/artscompressor.idl:30
+msgid "/Enhance/ArtsCompressor"
+msgstr ""
+
+#: plugins/artscompressor.idl:31
+msgid "ArtsCompressor compresses the sound."
+msgstr ""
+
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+msgid "Audio input"
+msgstr ""
+
+#: plugins/artscompressor.idl:33
+msgid "Compressed audio output"
+msgstr ""
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+msgid "Attack [ms]"
+msgstr ""
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+msgid "Set the attack time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#, fuzzy
+msgid "Release [ms]"
+msgstr "/帮助(H)/发行注记(_R)..."
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+msgid "Set the release time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+msgid "Threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+msgid "Set the threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+#, fuzzy
+msgid "Ratio"
+msgstr "放弃"
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+msgid "Set the compression ratio"
+msgstr ""
+
+#: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
+msgid "Set the output amplification"
+msgstr ""
+
+#: plugins/artscompressor.idl:47
+msgid "/Enhance/ArtsStereoCompressor"
+msgstr ""
+
+#: plugins/artscompressor.idl:48
+msgid "ArtsStereoCompressor compresses the sound."
+msgstr ""
+
+#: plugins/artscompressor.idl:49
+msgid "Left audio input"
+msgstr ""
+
+#: plugins/artscompressor.idl:50
+msgid "Right audio input"
+msgstr ""
+
+#: plugins/artscompressor.idl:51
+msgid "Compressed left audio output"
+msgstr ""
+
+#: plugins/artscompressor.idl:52
+msgid "Compressed right audio output"
+msgstr ""
+
+#: plugins/bseadder.c:100 plugins/bsemult.c:60
+#, fuzzy
+msgid "Audio Input 1"
+msgstr "输入"
+
+#: plugins/bseadder.c:102 plugins/bsemult.c:62
+#, fuzzy
+msgid "Audio Input 2"
+msgstr "输入"
+
+#: plugins/bseadder.c:104 plugins/bsemult.c:68
+#, fuzzy
+msgid "Audio Output"
+msgstr "输入"
+
+#: plugins/bseatandistort.c:90
+#, fuzzy
+msgid "Audio Input SIgnal"
+msgstr "输入"
+
+#: plugins/bseatandistort.c:92
+#, fuzzy
+msgid "Distorted Audio Output"
+msgstr "删除输出"
+
+#: plugins/bsebalance.idl:27
+msgid "/Spatial/Balance"
+msgstr ""
+
+#: plugins/bsebalance.idl:28
+msgid ""
+"BseBalance is a stereo panning module with two audio and two control inputs, "
+"each of which can be seperately level adjusted. The resulting output balance "
+"is controlled by a balance adjustment and the sum of the control inputs. To "
+"avoid aliasing artefacts for rapid balance changes, the control signal is "
+"preprocessed by a simple lowpass filter with adjustable cutoff frequency."
+msgstr ""
+
+#: plugins/bsebalance.idl:40
+msgid "Left audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:41
+msgid "Mix Out"
+msgstr ""
+
+#: plugins/bsebalance.idl:41
+msgid "Mixed audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:42
+msgid "Right audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:53
+#, fuzzy
+msgid "Output Panning"
+msgstr "输出"
+
+#: plugins/bsebalance.idl:54
+msgid "Adjust how much the control signals affect the output balance"
+msgstr ""
+
+#: plugins/bsebalance.idl:55
+msgid "Lowpass [Hz]"
+msgstr ""
+
+#: plugins/bsebalance.idl:55
+msgid "Lowpass filter frequency for the control signal"
+msgstr ""
+
+#: plugins/bsebalance.idl:56
+#, fuzzy
+msgid "Output Balance"
+msgstr "输出"
+
+#: plugins/bsebalance.idl:56
+msgid "Adjust output balance between left and right"
+msgstr ""
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Out"
+msgstr ""
+
+#: plugins/bsefirfilter.c:143
+#, fuzzy
+msgid "Mono Filtered Output"
+msgstr "删除输出"
+
+#: plugins/bsefirfilter.c:145
+#, fuzzy
+msgid "Mono In"
+msgstr "控制类型: "
+
+#: plugins/bsefirfilter.c:145
+#, fuzzy
+msgid "Mono Signal Input"
+msgstr "控制类型: "
+
+#: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
+msgid "Filter Choice"
+msgstr ""
+
+#: plugins/bseiirfilter.c:119
+msgid "Filter Algorithm"
+msgstr ""
+
+#: plugins/bseiirfilter.c:125
+msgid "The type of filter to use"
+msgstr ""
+
+#: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
+#, fuzzy
+msgid "Filter Specification"
+msgstr "选择文件"
+
+#: plugins/bseiirfilter.c:131
+msgid "Order"
+msgstr ""
+
+#: plugins/bseiirfilter.c:131
+msgid "Order of Filter"
+msgstr ""
+
+#: plugins/bseiirfilter.c:136
+msgid "Epsilon"
+msgstr ""
+
+#: plugins/bseiirfilter.c:136
+msgid "Passband falloff at cutoff frequency"
+msgstr ""
+
+#: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
+msgid "Cutoff Frequency (All Filters)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:160
+#, fuzzy
+msgid "Unfiltered Input"
+msgstr "删除输入"
+
+#: plugins/bseiirfilter.c:162
+#, fuzzy
+msgid "Filtered Output"
+msgstr "删除输出"
+
+#: plugins/bsemixer.c:109
+#, fuzzy
+msgid "Sole Output"
+msgstr "删除输出"
+
+#: plugins/bsemixer.c:115
+#, fuzzy, c-format
+msgid "Channel%u"
+msgstr "输入通道使用中"
+
+#: plugins/bsemixer.c:117
+#, fuzzy, c-format
+msgid "Channel%u [float]"
+msgstr "输入通道使用中"
+
+#: plugins/bsemixer.c:127
+#, c-format
+msgid "Channel%u [dB]"
+msgstr ""
+
+#: plugins/bsemixer.c:138
+#, c-format
+msgid "Channel%u [%%]"
+msgstr ""
+
+#: plugins/bsemixer.c:149
+#, fuzzy, c-format
+msgid "Audio In%u"
+msgstr "输入"
+
+#: plugins/bsemixer.c:150
+#, fuzzy, c-format
+msgid "Input Channel %u"
+msgstr "输入通道使用中"
+
+#: plugins/bsemult.c:64
+#, fuzzy
+msgid "Audio In3"
+msgstr "输入"
+
+#: plugins/bsemult.c:64
+#, fuzzy
+msgid "Audio Input 3"
+msgstr "输入"
+
+#: plugins/bsemult.c:66
+#, fuzzy
+msgid "Audio In4"
+msgstr "输入"
+
+#: plugins/bsemult.c:66
+#, fuzzy
+msgid "Audio Input 4"
+msgstr "输入"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Out"
+msgstr ""
+
+#: plugins/bsenoise.c:64
+#, fuzzy
+msgid "Noise Output"
+msgstr "删除输出"
+
+#: plugins/bsesequencer.c:107
+msgid "Frequency Signal"
+msgstr ""
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync"
+msgstr ""
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync Signal"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate input (activates/deactivates envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger input (raising edge retriggers envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:122
+#, fuzzy
+msgid "Ctrl Out"
+msgstr "控制类型: "
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Attack-Decay-Sustain-Release envelope output"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:124
+#, fuzzy
+msgid "Done Out"
+msgstr "左"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "This signal goes high after the release phase has completed"
+msgstr ""
+
+#: plugins/davbassfilter.idl:29
+msgid "/Filters/Bass Filter"
+msgstr ""
+
+#: plugins/davbassfilter.idl:30
+msgid ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgstr ""
+
+#: plugins/davbassfilter.idl:35
+#, fuzzy
+msgid "Filtered audio output"
+msgstr "删除输出"
+
+#: plugins/davbassfilter.idl:37
+msgid "Cutoff [%]"
+msgstr ""
+
+#: plugins/davbassfilter.idl:37
+msgid "Set the cutoff frequency percentage"
+msgstr ""
+
+#: plugins/davbassfilter.idl:38
+msgid "Resonance [%]"
+msgstr ""
+
+#: plugins/davbassfilter.idl:38
+msgid "Set the amount of resonance in percent"
+msgstr ""
+
+#: plugins/davbassfilter.idl:39
+#, fuzzy
+msgid "Envelope Modulation [%]"
+msgstr "放弃"
+
+#: plugins/davbassfilter.idl:39
+msgid "Set the envelope magnitude in percent"
+msgstr ""
+
+#: plugins/davbassfilter.idl:40
+msgid "Decay [%]"
+msgstr ""
+
+#: plugins/davbassfilter.idl:40
+msgid "Set the decay length in percent"
+msgstr ""
+
+#: plugins/davbassfilter.idl:41
+msgid "Trigger filter"
+msgstr ""
+
+#: plugins/davcanyondelay.c:116
+#, fuzzy
+msgid "Left Audio Input"
+msgstr "输入"
+
+#: plugins/davcanyondelay.c:118
+#, fuzzy
+msgid "Right Audio Input"
+msgstr "输入"
+
+#: plugins/davcanyondelay.c:120
+#, fuzzy
+msgid "Left Audio Output"
+msgstr "输入"
+
+#: plugins/davcanyondelay.c:122
+#, fuzzy
+msgid "Right Audio Output"
+msgstr "删除输出"
+
+#: plugins/davchorus.idl:29
+msgid "/Enhance/Chorus"
+msgstr ""
+
+#: plugins/davchorus.idl:30
+msgid "DavChorus adds more depth to sounds"
+msgstr ""
+
+#: plugins/davchorus.idl:32
+msgid "Chorus audio output"
+msgstr ""
+
+#: plugins/davchorus.idl:34
+msgid "Wet out [%]"
+msgstr ""
+
+#: plugins/davchorus.idl:34
+msgid "Set the amount of modified data to mix"
+msgstr ""
+
+#: plugins/davguitar.c:302
+#, fuzzy
+msgid "Guitar Output"
+msgstr "删除输出"
+
+#: plugins/davorgan.c:133
+#, fuzzy
+msgid "Organ Output"
+msgstr "输出"
+
+#: plugins/davsyndrum.c:116
+msgid "Drum Frequency Input"
+msgstr ""
+
+#: plugins/davsyndrum.c:118
+#, fuzzy
+msgid "Ratio In"
+msgstr "放弃"
+
+#: plugins/davsyndrum.c:118
+msgid "Frequency shift ratio (assumed 1.0 if not connected)"
+msgstr ""
+
+#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr ""
+
+#: plugins/davsyndrum.c:120
+msgid "Hit the drum on raising edges"
+msgstr ""
+
+#: plugins/davsyndrum.c:122
+#, fuzzy
+msgid "SynDrum Output"
+msgstr "输出"
+
+#: plugins/davxtalstrings.c:141
+msgid "Pluck frequency input"
+msgstr ""
+
+#: plugins/davxtalstrings.c:143
+msgid "Pluck strings on raising edge"
+msgstr ""
+
+#: plugins/davxtalstrings.c:145
+#, fuzzy
+msgid "XtalStrings Output"
+msgstr "删除输出"
+
+#: plugins/evaluator/bseevaluator.idl:28
+msgid "/Misc/Evaluator"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:29
+msgid ""
+"BseEvaluator is a module which can compute arithmetic operations in a small "
+"language. The audio input signal is called input, the audio output signal is "
+"called output. Simple examples for programs would be \"output = input * 5\" "
+"or \"output = 2 * input + 1\"."
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:33
+msgid "Audio output"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:35
+msgid "Source code"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:35
+msgid "The source code"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:36
+#, fuzzy
+msgid "Status"
+msgstr "启动"
+
+#: plugins/evaluator/bseevaluator.idl:36
+msgid "Status used to output error messages"
+msgstr ""
+
+#: plugins/freeverb/bsefreeverb.c:123
+#, fuzzy
+msgid "Left Input"
+msgstr "左"
+
+#: plugins/freeverb/bsefreeverb.c:124
+#, fuzzy
+msgid "Right Input"
+msgstr "右"
+
+#: plugins/freeverb/bsefreeverb.c:125
+#, fuzzy
+msgid "Left Output"
+msgstr "左"
+
+#: plugins/freeverb/bsefreeverb.c:126
+#, fuzzy
+msgid "Right Output"
+msgstr "右"
