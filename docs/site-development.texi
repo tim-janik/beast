@@ -21,31 +21,31 @@ overall track keeping, the release specific
 @beast is being translated into various different languages. Status of individual
 translations can be obtained from the following pages.
 
-@uref{http://l10n-status.gnome.org/gnome-2.8/index.html,, Translation statistics for the gnome-2.8 release: }
+@uref{http://l10n-status.gnome.org/gnome-2.10/index.html,, Translation statistics for the gnome-2.10 release: }
 @c status page links to all translations listed in ALL_LINGUAS:
-@uref{http://l10n-status.gnome.org/gnome-2.8/az/extras/index.html,, az},
-@uref{http://l10n-status.gnome.org/gnome-2.8/ca/extras/index.html,, ca},
-@uref{http://l10n-status.gnome.org/gnome-2.8/cs/extras/index.html,, cs},
-@uref{http://l10n-status.gnome.org/gnome-2.8/de/extras/index.html,, de},
-@uref{http://l10n-status.gnome.org/gnome-2.8/el/extras/index.html,, el},
-@uref{http://l10n-status.gnome.org/gnome-2.8/en_CA/extras/index.html,, en_CA},
-@uref{http://l10n-status.gnome.org/gnome-2.8/en_GB/extras/index.html,, en_GB},
-@uref{http://l10n-status.gnome.org/gnome-2.8/eo/extras/index.html,, eo},
-@uref{http://l10n-status.gnome.org/gnome-2.8/es/extras/index.html,, es},
-@uref{http://l10n-status.gnome.org/gnome-2.8/fr/extras/index.html,, fr},
-@uref{http://l10n-status.gnome.org/gnome-2.8/hr/extras/index.html,, hr},
-@uref{http://l10n-status.gnome.org/gnome-2.8/it/extras/index.html,, it},
-@uref{http://l10n-status.gnome.org/gnome-2.8/ja/extras/index.html,, ja},
-@uref{http://l10n-status.gnome.org/gnome-2.8/mn/extras/index.html,, mn},
-@uref{http://l10n-status.gnome.org/gnome-2.8/nl/extras/index.html,, nl},
-@uref{http://l10n-status.gnome.org/gnome-2.8/pa/extras/index.html,, pa},
-@uref{http://l10n-status.gnome.org/gnome-2.8/pt/extras/index.html,, pt},
-@uref{http://l10n-status.gnome.org/gnome-2.8/pt_BR/extras/index.html,, pt_BR},
-@uref{http://l10n-status.gnome.org/gnome-2.8/ru/extras/index.html,, ru},
-@uref{http://l10n-status.gnome.org/gnome-2.8/sq/extras/index.html,, sq},
-@uref{http://l10n-status.gnome.org/gnome-2.8/sr/extras/index.html,, sr},
-@uref{http://l10n-status.gnome.org/gnome-2.8/sr/extras/index.html,, sr@@Latn},
-@uref{http://l10n-status.gnome.org/gnome-2.8/sv/extras/index.html,, sv}.
+@uref{http://l10n-status.gnome.org/gnome-2.10/az/extras/index.html,, az},
+@uref{http://l10n-status.gnome.org/gnome-2.10/ca/extras/index.html,, ca},
+@uref{http://l10n-status.gnome.org/gnome-2.10/cs/extras/index.html,, cs},
+@uref{http://l10n-status.gnome.org/gnome-2.10/de/extras/index.html,, de},
+@uref{http://l10n-status.gnome.org/gnome-2.10/el/extras/index.html,, el},
+@uref{http://l10n-status.gnome.org/gnome-2.10/en_CA/extras/index.html,, en_CA},
+@uref{http://l10n-status.gnome.org/gnome-2.10/en_GB/extras/index.html,, en_GB},
+@uref{http://l10n-status.gnome.org/gnome-2.10/eo/extras/index.html,, eo},
+@uref{http://l10n-status.gnome.org/gnome-2.10/es/extras/index.html,, es},
+@uref{http://l10n-status.gnome.org/gnome-2.10/fr/extras/index.html,, fr},
+@uref{http://l10n-status.gnome.org/gnome-2.10/hr/extras/index.html,, hr},
+@uref{http://l10n-status.gnome.org/gnome-2.10/it/extras/index.html,, it},
+@uref{http://l10n-status.gnome.org/gnome-2.10/ja/extras/index.html,, ja},
+@uref{http://l10n-status.gnome.org/gnome-2.10/mn/extras/index.html,, mn},
+@uref{http://l10n-status.gnome.org/gnome-2.10/nl/extras/index.html,, nl},
+@uref{http://l10n-status.gnome.org/gnome-2.10/pa/extras/index.html,, pa},
+@uref{http://l10n-status.gnome.org/gnome-2.10/pt/extras/index.html,, pt},
+@uref{http://l10n-status.gnome.org/gnome-2.10/pt_BR/extras/index.html,, pt_BR},
+@uref{http://l10n-status.gnome.org/gnome-2.10/ru/extras/index.html,, ru},
+@uref{http://l10n-status.gnome.org/gnome-2.10/sq/extras/index.html,, sq},
+@uref{http://l10n-status.gnome.org/gnome-2.10/sr/extras/index.html,, sr},
+@uref{http://l10n-status.gnome.org/gnome-2.10/sr/extras/index.html,, sr@@Latn},
+@uref{http://l10n-status.gnome.org/gnome-2.10/sv/extras/index.html,, sv}.
 
 
 @unnumbered Web Site Development
