@@ -524,6 +524,8 @@ track_roll_idle_update_scopes (gpointer data)
   
   /* allocate scopes 'n stuff */
   gxk_scroll_canvas_reallocate (GXK_SCROLL_CANVAS (self));
+  /* work around spurious redraw problems */
+  gtk_widget_queue_draw (GTK_WIDGET (self));
 
   GDK_THREADS_LEAVE ();
   return FALSE;

@@ -1,3 +1,8 @@
+Thu Nov  4 16:23:51 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackroll.c (track_roll_idle_update_scopes): redraw the
+	whole widget to work around spurious redraw problems.
+
 Sat Oct 30 17:38:46 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-development.texi: moved po statistic links from gnome-2.10/
