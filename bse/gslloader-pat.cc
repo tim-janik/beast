@@ -305,7 +305,7 @@ struct FileInfo
     return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1) * header->channels;
   }
 
-  FileInfo (const gchar *file_name, GslErrorType *error_p)
+  FileInfo (const gchar *file_name, BseErrorType *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));
@@ -315,7 +315,7 @@ struct FileInfo
     FILE *patfile = fopen (file_name, "r");
     if (!patfile)
       {
-	*error_p = gsl_error_from_errno (errno, GSL_ERROR_IO);
+	*error_p = gsl_error_from_errno (errno, BSE_ERROR_IO);
 	return;
       }
 
@@ -334,7 +334,7 @@ struct FileInfo
 
 	printf (" - read patch, srate = %d (%d bytes)\n", patch->sampleRate, patch->wavesize);
       }
-    *error_p = GSL_ERROR_NONE; /* FIXME: more error handling might be useful */
+    *error_p = BSE_ERROR_NONE; /* FIXME: more error handling might be useful */
     fclose (patfile);
 
     /* allocate and fill appropriate Gsl* data structures */
@@ -401,7 +401,7 @@ struct FileInfo
 static GslWaveFileInfo*
 pat_load_file_info (gpointer      data,
 		    const gchar  *file_name,
-		    GslErrorType *error_p)
+		    BseErrorType *error_p)
 {
   FileInfo *file_info = new FileInfo (file_name, error_p);
   if (*error_p)
@@ -425,7 +425,7 @@ static GslWaveDsc*
 pat_load_wave_dsc (gpointer         data,
 		   GslWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
-		   GslErrorType    *error_p)
+		   BseErrorType    *error_p)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   return &file_info->wdsc;
@@ -441,7 +441,7 @@ static GslDataHandle*
 pat_create_chunk_handle (gpointer      data,
 			 GslWaveDsc   *wave_dsc,
 			 guint         nth_chunk,
-			 GslErrorType *error_p)
+			 BseErrorType *error_p)
 {
   g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
 

@@ -18,7 +18,6 @@
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
 
-#include	<bse/bseglobals.h>
 #include	<bse/bse.h>	/* initialization */
 
 G_BEGIN_DECLS

@@ -40,34 +40,9 @@ typedef struct {
 } MemHandle;
 typedef struct {
   GslDataHandle     dhandle;
-  GslDataHandle	   *src_handle;
+  GslDataHandle	   *src_handle; /* structure layout mirrored by various structs */
 } ChainHandle;
 typedef ChainHandle ReversedHandle;
-typedef struct {
-  GslDataHandle     dhandle;
-  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
-  GslLong	    cut_offset;
-  GslLong	    n_cut_values;
-  GslLong	    tail_cut;
-} CutHandle;
-typedef struct {
-  GslDataHandle     dhandle;
-  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
-  GslLong	    requested_paste_offset;
-  GslLong	    paste_offset;
-  GslLong	    n_paste_values;
-  guint		    paste_bit_depth;
-  const gfloat	   *paste_values;
-  void            (*free_values) (gpointer);
-} InsertHandle;
-typedef struct {
-  GslDataHandle     dhandle;
-  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
-  GslLong	    requested_first;
-  GslLong	    requested_last;
-  GslLong	    loop_start;
-  GslLong	    loop_width;
-} LoopHandle;
 typedef struct {
   GslDataHandle     dhandle;
   GslDataCache	   *dcache;
@@ -160,15 +135,15 @@ gsl_data_handle_override (GslDataHandle    *dhandle,
                           gfloat            osc_freq)
 {
   gfloat *fp;
-
+  
   g_return_if_fail (dhandle != NULL);
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   if (bit_depth <= 0)
     g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", NULL);
   else
     g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", GINT_TO_POINTER (MIN (bit_depth, 32)));
-
+  
   if (mix_freq <= 0)
     g_datalist_set_data (&dhandle->qdata, "bse-mix-freq", NULL);
   else
@@ -177,7 +152,7 @@ gsl_data_handle_override (GslDataHandle    *dhandle,
       *fp = mix_freq;
       g_datalist_set_data_full (&dhandle->qdata, "bse-mix-freq", fp, g_free);
     }
-
+  
   if (osc_freq <= 0)
     g_datalist_set_data (&dhandle->qdata, "bse-osc-freq", NULL);
   else
@@ -189,20 +164,20 @@ gsl_data_handle_override (GslDataHandle    *dhandle,
   GSL_SPIN_UNLOCK (&dhandle->mutex);
 }
 
-GslErrorType
+BseErrorType
 gsl_data_handle_open (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, GSL_ERROR_INTERNAL);
-  g_return_val_if_fail (dhandle->ref_count > 0, GSL_ERROR_INTERNAL);
-
+  g_return_val_if_fail (dhandle != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (dhandle->ref_count > 0, BSE_ERROR_INTERNAL);
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   if (dhandle->open_count == 0)
     {
       GslDataHandleSetup setup = { 0, };
-      GslErrorType error;
+      BseErrorType error;
       gfloat *fp;
       gint i;
-
+      
       error = dhandle->vtable->open (dhandle, &setup);
       if (!error && (setup.n_values < 0 ||
 		     setup.n_channels < 1 ||
@@ -214,11 +189,13 @@ gsl_data_handle_open (GslDataHandle *dhandle)
 		     dhandle->vtable->open, setup.n_values, setup.n_channels,
                      setup.bit_depth, setup.mix_freq, setup.osc_freq);
 	  dhandle->vtable->close (dhandle);
-	  error = GSL_ERROR_INTERNAL;
+	  error = BSE_ERROR_INTERNAL;
 	}
       if (error)
 	{
 	  GSL_SPIN_UNLOCK (&dhandle->mutex);
+          if (setup.xinfos)
+            g_warning ("%s: leaking xinfos after open() (%p)", "GslDataHandle", dhandle->vtable->open);
 	  return error;
 	}
       dhandle->ref_count++;
@@ -238,7 +215,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
     dhandle->open_count++;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
-  return GSL_ERROR_NONE;
+  return BSE_ERROR_NONE;
 }
 
 void
@@ -256,6 +233,8 @@ gsl_data_handle_close (GslDataHandle *dhandle)
   if (!dhandle->open_count)
     {
       dhandle->vtable->close (dhandle);
+      if (dhandle->setup.xinfos)
+        g_warning ("%s: leaking xinfos after close() (%p)", "GslDataHandle", dhandle->vtable->close);
       memset (&dhandle->setup, 0, sizeof (dhandle->setup));
     }
   GSL_SPIN_UNLOCK (&dhandle->mutex);
@@ -291,14 +270,14 @@ GslLong
 gsl_data_handle_length (GslDataHandle *dhandle)
 {
   GslLong l;
-
+  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   l = dhandle->open_count ? dhandle->setup.n_values : 0;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
-
+  
   return l;
 }
 
@@ -306,14 +285,14 @@ guint
 gsl_data_handle_n_channels (GslDataHandle *dhandle)
 {
   guint n;
-
+  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   n = dhandle->open_count ? dhandle->setup.n_channels : 0;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
-
+  
   return n;
 }
 
@@ -321,14 +300,14 @@ guint
 gsl_data_handle_bit_depth (GslDataHandle *dhandle)
 {
   guint n;
-
+  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   n = dhandle->open_count ? dhandle->setup.bit_depth : 0;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
-
+  
   return n;
 }
 
@@ -336,14 +315,14 @@ gfloat
 gsl_data_handle_mix_freq (GslDataHandle *dhandle)
 {
   gfloat f;
-
+  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   f = dhandle->open_count ? dhandle->setup.mix_freq : 0;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
-
+  
   return f;
 }
 
@@ -351,14 +330,14 @@ gfloat
 gsl_data_handle_osc_freq (GslDataHandle *dhandle)
 {
   gfloat f;
-
+  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   f = dhandle->open_count ? dhandle->setup.osc_freq : 0;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
-
+  
   return f;
 }
 
@@ -366,7 +345,7 @@ const gchar*
 gsl_data_handle_name (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, NULL);
-
+  
   return dhandle->name;
 }
 
@@ -380,7 +359,7 @@ data_handle_recurse_func (GslDataHandle *dhandle,
 			  gpointer       data)
 {
   RecurseData *rdata = data;
-
+  
   GSL_SPIN_LOCK (&dhandle->mutex);
   rdata->ufunc (dhandle, rdata->udata);
   if (dhandle->vtable->recurse)
@@ -404,7 +383,7 @@ query_needs_cache (GslDataHandle *dhandle,
 		   gpointer       data)
 {
   gboolean *needs_cache = data;
-
+  
   if (dhandle->vtable->ojob)
     {
       gboolean implemented, dhandle_needs_cache = FALSE;
@@ -418,30 +397,30 @@ gboolean
 gsl_data_handle_needs_cache (GslDataHandle *dhandle)
 {
   gboolean needs_cache = FALSE;
-
+  
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (dhandle->ref_count > 0, FALSE);
-
+  
   data_handle_recurse (dhandle, query_needs_cache, &needs_cache);
-
+  
   return needs_cache;
 }
 
 
 /* --- const memory handle --- */
-static GslErrorType
+static BseErrorType
 mem_handle_open (GslDataHandle      *dhandle,
 		 GslDataHandleSetup *setup)
 {
   MemHandle *mhandle = (MemHandle*) dhandle;
-
+  
   setup->n_values = mhandle->n_values;
   setup->n_channels = mhandle->n_channels;
   setup->bit_depth = mhandle->bit_depth;
   setup->mix_freq = mhandle->mix_freq;
   setup->osc_freq = mhandle->osc_freq;
-
-  return GSL_ERROR_NONE;
+  
+  return BSE_ERROR_NONE;
 }
 
 static void
@@ -456,7 +435,7 @@ mem_handle_destroy (GslDataHandle *dhandle)
   MemHandle *mhandle = (MemHandle*) dhandle;
   void (*free_values) (gpointer) = mhandle->free_values;
   const gfloat *mem_values = mhandle->values;
-
+  
   gsl_data_handle_common_free (dhandle);
   mhandle->values = NULL;
   mhandle->free_values = NULL;
@@ -473,11 +452,11 @@ mem_handle_read (GslDataHandle *dhandle,
 		 gfloat        *values)
 {
   MemHandle *mhandle = (MemHandle*) dhandle;
-
+  
   g_return_val_if_fail (voffset + n_values <= mhandle->n_values, -1);
-
+  
   memcpy (values, mhandle->values + voffset, n_values * sizeof (values[0]));
-
+  
   return n_values;
 }
 
@@ -499,7 +478,7 @@ gsl_data_handle_new_mem (guint         n_channels,
   };
   MemHandle *mhandle;
   gboolean success;
-
+  
   g_return_val_if_fail (n_channels > 0, NULL);
   g_return_val_if_fail (bit_depth > 0, NULL);
   g_return_val_if_fail (mix_freq >= 4000, NULL);
@@ -532,20 +511,305 @@ gsl_data_handle_new_mem (guint         n_channels,
 }
 
 
+/* --- xinfo handle --- */
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle    *src_handle;
+  SfiRing          *remove_xinfos; /* list of "xinfo=" stubs */
+  SfiRing          *added_xinfos;  /* list of valid xinfos */
+  guint             clear_xinfos : 1;
+} XInfoHandle;
+
+static gint
+xinfo_stub_compare (gconstpointer v1,
+                    gconstpointer v2,
+                    gpointer      data)
+{
+  const gchar *e1 = strchr (v1, '=');
+  gint l1 = e1 - (const gchar*) v1;
+  const gchar *e2 = strchr (v2, '=');
+  gint l2 = e2 - (const gchar*) v2;
+  if (l1 != l2)
+    return l1 - l2;
+  return strncmp (v1, v2, l1);
+}
+
+static SfiRing*
+ring_remove_dups (SfiRing        *ring,
+                  SfiCompareFunc  cmp,
+                  gpointer        data,
+                  GDestroyNotify  data_destroy)
+{
+  SfiRing *rcopy = sfi_ring_copy (ring);
+  /* sort (stable, keeping order) */
+  ring = sfi_ring_sort (ring, cmp, data);
+  /* remove dups (preserves first element from dup list) */
+  ring = sfi_ring_uniq_free_deep (ring, cmp, data, data_destroy);
+  /* restore original order */
+  ring = sfi_ring_reorder (ring, rcopy);
+  sfi_ring_free (rcopy);
+  return ring;
+}
+
+static BseErrorType
+xinfo_handle_open (GslDataHandle      *dhandle,
+                   GslDataHandleSetup *setup)
+{
+  XInfoHandle *chandle = (XInfoHandle*) dhandle;
+  GslDataHandle *src_handle = chandle->src_handle;
+  BseErrorType error = gsl_data_handle_open (src_handle);
+  if (error != BSE_ERROR_NONE)
+    return error;
+  *setup = src_handle->setup;
+  setup->xinfos = NULL;
+  guint i;
+  /* collect xinfos to copy over */
+  SfiRing *sxinfos = NULL;
+  if (!chandle->clear_xinfos && src_handle->setup.xinfos)
+    {
+      for (i = 0; src_handle->setup.xinfos[i]; i++)
+        sxinfos = sfi_ring_append (sxinfos, (gchar*) src_handle->setup.xinfos[i]);
+    }
+  /* override by deleting xinfos */
+  if (sxinfos)
+    sxinfos = sfi_ring_concat (sfi_ring_copy (chandle->remove_xinfos), sxinfos);
+  /* override by added xinfos */
+  sxinfos = sfi_ring_concat (sfi_ring_copy (chandle->added_xinfos), sxinfos);
+  /* remove dups (preserves first element from dup list) */
+  sxinfos = ring_remove_dups (sxinfos, xinfo_stub_compare, NULL, NULL);
+  /* copy over non-empty xinfos */
+  if (sxinfos)
+    {
+      setup->xinfos = g_new (gchar*, sfi_ring_length (sxinfos) + 1);
+      i = 0;
+      while (sxinfos)
+        {
+          const gchar *xinfo = sfi_ring_pop_head (&sxinfos);
+          const gchar *e = strchr (xinfo, '=');
+          if (e[1]) /* non-empty xinfo */
+            setup->xinfos[i++] = g_strdup (xinfo);
+        }
+      setup->xinfos[i] = NULL;
+    }
+  return BSE_ERROR_NONE;
+}
+
+static GslLong
+xinfo_handle_read (GslDataHandle *dhandle,
+                   GslLong        voffset,
+                   GslLong        n_values,
+                   gfloat        *values)
+{
+  XInfoHandle *chandle = (XInfoHandle*) dhandle;
+  return gsl_data_handle_read (chandle->src_handle, voffset, n_values, values);
+}
+
+static void
+xinfo_handle_close (GslDataHandle *dhandle)
+{
+  XInfoHandle *chandle = (XInfoHandle*) dhandle;
+  g_strfreev (dhandle->setup.xinfos);
+  dhandle->setup.xinfos = NULL;
+  gsl_data_handle_close (chandle->src_handle);
+}
+
+static void
+xinfo_handle_recurse (GslDataHandle       *dhandle,
+                      GslDataHandleRecurse recurse,
+                      gpointer		   data)
+{
+  XInfoHandle *chandle = (XInfoHandle*) dhandle;
+  recurse (chandle->src_handle, data);
+}
+
+static void
+xinfo_handle_destroy (GslDataHandle *dhandle)
+{
+  XInfoHandle *chandle = (XInfoHandle*) dhandle;
+  
+  sfi_ring_free_deep (chandle->remove_xinfos, g_free);
+  sfi_ring_free_deep (chandle->added_xinfos, g_free);
+  gsl_data_handle_unref (chandle->src_handle);
+  
+  gsl_data_handle_common_free (dhandle);
+  sfi_delete_struct (XInfoHandle, chandle);
+}
+
+static GslDataHandle*
+xinfo_data_handle_new (GslDataHandle *src_handle,
+                       gboolean       clear_xinfos,
+                       SfiRing       *remove_xinfos,
+                       SfiRing       *added_xinfos)
+{
+  static GslDataHandleFuncs xinfo_handle_vtable = {
+    xinfo_handle_open,
+    xinfo_handle_read,
+    xinfo_handle_close,
+    xinfo_handle_recurse,
+    xinfo_handle_destroy,
+  };
+  SfiRing *dest_added = NULL, *dest_remove = NULL;
+  gboolean dest_clear_xinfos = FALSE;
+  /* if src_handle is a xinfo handle, collapse handle chain */
+  if (src_handle->vtable == &xinfo_handle_vtable)
+    {
+      XInfoHandle *src_chandle = (XInfoHandle*) src_handle;
+      src_handle = src_chandle->src_handle; /* unchain */
+      if (!clear_xinfos)
+        {
+          /* copy over old added xinfos */
+          dest_added = sfi_ring_copy_deep (src_chandle->added_xinfos, (SfiRingDataFunc) g_strdup, NULL);
+        }
+      if (!clear_xinfos)
+        {
+          /* copy over remove xinfos */
+          dest_remove = sfi_ring_copy_deep (src_chandle->remove_xinfos, (SfiRingDataFunc) g_strdup, NULL);
+          /* override with old added xinfos */
+          dest_remove = sfi_ring_concat (sfi_ring_copy_deep (src_chandle->added_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_remove);
+        }
+      dest_clear_xinfos = src_chandle->clear_xinfos;
+    }
+  /* setup added xinfos */
+  if (clear_xinfos)
+    dest_added = sfi_ring_copy_deep (added_xinfos, (SfiRingDataFunc) g_strdup, NULL);
+  else
+    {
+      /* override with new removals */
+      dest_added = sfi_ring_concat (sfi_ring_copy_deep (remove_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_added);
+      /* override with newly added xinfos */
+      dest_added = sfi_ring_concat (sfi_ring_copy_deep (added_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_added);
+    }
+  /* remove dups (preserves first element from dup list) */
+  dest_added = ring_remove_dups (dest_added, xinfo_stub_compare, NULL, g_free);
+  /* filter non-empty xinfos */
+  SfiRing *ring = NULL;
+  while (dest_added)
+    {
+      gchar *xinfo = sfi_ring_pop_head (&dest_added);
+      const gchar *e = strchr (xinfo, '=');
+      if (e[1]) /* non-empty xinfo */
+        ring = sfi_ring_append (ring, xinfo);
+      else
+        g_free (xinfo);
+    }
+  dest_added = ring;
+  /* setup remove xinfos */
+  if (!clear_xinfos)
+    {
+      /* override with new removals */
+      dest_remove = sfi_ring_concat (sfi_ring_copy_deep (remove_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_remove);
+      /* override with newly added xinfos */
+      dest_remove = sfi_ring_concat (sfi_ring_copy_deep (added_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_remove);
+    }
+  /* remove dups (preserves first element from dup list) */
+  dest_remove = ring_remove_dups (dest_remove, xinfo_stub_compare, NULL, g_free);
+  /* filter empty xinfos */
+  ring = NULL;
+  while (dest_remove)
+    {
+      gchar *xinfo = sfi_ring_pop_head (&dest_remove);
+      const gchar *e = strchr (xinfo, '=');
+      if (!e[1]) /* empty xinfo */
+        ring = sfi_ring_append (ring, xinfo);
+      else
+        g_free (xinfo);
+    }
+  dest_remove = ring;
+  /* setup clear_xinfos */
+  clear_xinfos |= dest_clear_xinfos;
+  /* cleanup and swap */
+  sfi_ring_free_deep (remove_xinfos, g_free);
+  sfi_ring_free_deep (added_xinfos, g_free);
+  remove_xinfos = dest_remove;
+  added_xinfos = dest_added;
+  /* create handle */
+  XInfoHandle *chandle = sfi_new_struct0 (XInfoHandle, 1);
+  gboolean success = gsl_data_handle_common_init (&chandle->dhandle, NULL);
+  if (success)
+    {
+      chandle->dhandle.name = g_strconcat (src_handle->name,
+                                           "// #xinfo",
+                                           clear_xinfos ? "-clear" : "",
+                                           remove_xinfos ? "-remove" : "",
+                                           added_xinfos ? "-add" : "",
+                                           " /", NULL);
+      chandle->dhandle.vtable = &xinfo_handle_vtable;
+      chandle->src_handle = gsl_data_handle_ref (src_handle);
+      chandle->clear_xinfos = clear_xinfos;
+      if (chandle->clear_xinfos)
+        {
+          chandle->remove_xinfos = NULL;
+          sfi_ring_free_deep (remove_xinfos, g_free);
+        }
+      else
+        chandle->remove_xinfos = remove_xinfos;
+      chandle->added_xinfos = added_xinfos;
+    }
+  else
+    {
+      sfi_ring_free_deep (remove_xinfos, g_free);
+      sfi_ring_free_deep (added_xinfos, g_free);
+      sfi_delete_struct (XInfoHandle, chandle);
+      return NULL;
+    }
+  return &chandle->dhandle;
+}
+
+GslDataHandle*
+gsl_data_handle_new_add_xinfos (GslDataHandle *src_handle,
+                                gchar        **xinfos)
+{
+  SfiRing *added_xinfos = NULL;
+  guint i;
+  for (i = 0; xinfos && xinfos[i]; i++)
+    {
+      const gchar *xinfo = xinfos[i];
+      const gchar *e = strchr (xinfo, '=');
+      if (e && e[1]) /* non-empty xinfo */
+        added_xinfos = sfi_ring_append (added_xinfos, g_strdup (xinfo));
+    }
+  return xinfo_data_handle_new (src_handle, FALSE, NULL, added_xinfos);
+}
+
+GslDataHandle*
+gsl_data_handle_new_remove_xinfos (GslDataHandle *src_handle,
+                                   gchar        **xinfos)
+{
+  SfiRing *remove_xinfos = NULL;
+  guint i;
+  for (i = 0; xinfos && xinfos[i]; i++)
+    {
+      const gchar *xinfo = xinfos[i];
+      const gchar *e = strchr (xinfo, '=');
+      if (!e && xinfo[0])     /* empty xinfo without '=' */
+        remove_xinfos = sfi_ring_append (remove_xinfos, g_strconcat (xinfo, "=", NULL));
+      if (e && !e[1])           /* empty xinfo with "=" */
+        remove_xinfos = sfi_ring_append (remove_xinfos, g_strdup (xinfo));
+    }
+  return xinfo_data_handle_new (src_handle, FALSE, remove_xinfos, NULL);
+}
+
+GslDataHandle*
+gsl_data_handle_new_clear_xinfos (GslDataHandle *src_handle)
+{
+  return xinfo_data_handle_new (src_handle, TRUE, NULL, NULL);
+}
+
+
 /* --- chain handle --- */
-static GslErrorType
+static BseErrorType
 chain_handle_open (GslDataHandle      *dhandle,
 		   GslDataHandleSetup *setup)
 {
   ChainHandle *chandle = (ChainHandle*) dhandle;
-  GslErrorType error;
-
+  BseErrorType error;
+  
   error = gsl_data_handle_open (chandle->src_handle);
-  if (error != GSL_ERROR_NONE)
+  if (error != BSE_ERROR_NONE)
     return error;
-  *setup = chandle->src_handle->setup;
-
-  return GSL_ERROR_NONE;
+  *setup = chandle->src_handle->setup; /* copies setup.xinfos by pointer */
+  
+  return BSE_ERROR_NONE;
 }
 
 static void
@@ -554,7 +818,7 @@ chain_handle_recurse (GslDataHandle       *dhandle,
 		      gpointer		   data)
 {
   ChainHandle *chandle = (ChainHandle*) dhandle;
-
+  
   recurse (chandle->src_handle, data);
 }
 
@@ -563,6 +827,7 @@ chain_handle_close (GslDataHandle *dhandle)
 {
   ChainHandle *chandle = (ChainHandle*) dhandle;
   
+  dhandle->setup.xinfos = NULL;     /* cleanup pointer reference */
   gsl_data_handle_close (chandle->src_handle);
 }
 
@@ -650,21 +915,29 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
 
 
 /* --- cut handle --- */
-static GslErrorType
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
+  GslLong	    cut_offset;
+  GslLong	    n_cut_values;
+  GslLong	    tail_cut;
+} CutHandle;
+
+static BseErrorType
 cut_handle_open (GslDataHandle      *dhandle,
 		 GslDataHandleSetup *setup)
 {
   CutHandle *chandle = (CutHandle*) dhandle;
-  GslErrorType error;
-
+  BseErrorType error;
+  
   error = gsl_data_handle_open (chandle->src_handle);
-  if (error != GSL_ERROR_NONE)
+  if (error != BSE_ERROR_NONE)
     return error;
-  *setup = chandle->src_handle->setup;
+  *setup = chandle->src_handle->setup; /* copies setup.xinfos by pointer */
   setup->n_values -= MIN (setup->n_values, chandle->tail_cut);
   setup->n_values -= MIN (setup->n_values, chandle->n_cut_values);
-
-  return GSL_ERROR_NONE;
+  
+  return BSE_ERROR_NONE;
 }
 
 static void
@@ -707,7 +980,7 @@ cut_handle_read (GslDataHandle *dhandle,
 	return l;       /* pass on errors */
       else if (l < 0)
 	l = 0;
-
+      
       n_values -= l;
     }
   
@@ -791,25 +1064,36 @@ gsl_data_handle_new_crop (GslDataHandle *src_handle,
 
 
 /* --- insert handle --- */
-static GslErrorType
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
+  GslLong	    requested_paste_offset;
+  GslLong	    paste_offset;
+  GslLong	    n_paste_values;
+  guint		    paste_bit_depth;
+  const gfloat	   *paste_values;
+  void            (*free_values) (gpointer);
+} InsertHandle;
+
+static BseErrorType
 insert_handle_open (GslDataHandle      *dhandle,
 		    GslDataHandleSetup *setup)
 {
   InsertHandle *ihandle = (InsertHandle*) dhandle;
-  GslErrorType error;
-
+  BseErrorType error;
+  
   error = gsl_data_handle_open (ihandle->src_handle);
-  if (error != GSL_ERROR_NONE)
+  if (error != BSE_ERROR_NONE)
     return error;
-  *setup = ihandle->src_handle->setup;
+  *setup = ihandle->src_handle->setup; /* copies setup.xinfos by pointer */
   ihandle->paste_offset = ihandle->requested_paste_offset < 0 ? setup->n_values : ihandle->requested_paste_offset;
   if (setup->n_values < ihandle->paste_offset)
     setup->n_values = ihandle->paste_offset + ihandle->n_paste_values;
   else
     setup->n_values += ihandle->n_paste_values;
   setup->bit_depth = MAX (setup->bit_depth, ihandle->paste_bit_depth);
-
-  return GSL_ERROR_NONE;
+  
+  return BSE_ERROR_NONE;
 }
 
 static void
@@ -851,7 +1135,7 @@ insert_handle_read (GslDataHandle *data_handle,
       n_values -= l;
       values += l;
     }
-
+  
   if (n_values && voffset >= ihandle->src_handle->setup.n_values && voffset < ihandle->paste_offset)
     {
       l = MIN (n_values, ihandle->paste_offset - voffset);
@@ -860,7 +1144,7 @@ insert_handle_read (GslDataHandle *data_handle,
       n_values -= l;
       values += l;
     }
-
+  
   if (n_values && voffset >= ihandle->paste_offset && voffset < ihandle->paste_offset + ihandle->n_paste_values)
     {
       l = MIN (n_values, ihandle->paste_offset + ihandle->n_paste_values - voffset);
@@ -930,18 +1214,27 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
 
 
 /* --- loop handle --- */
-static GslErrorType
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
+  GslLong	    requested_first;
+  GslLong	    requested_last;
+  GslLong	    loop_start;
+  GslLong	    loop_width;
+} LoopHandle;
+
+static BseErrorType
 loop_handle_open (GslDataHandle      *dhandle,
 		  GslDataHandleSetup *setup)
 {
   LoopHandle *lhandle = (LoopHandle*) dhandle;
-  GslErrorType error;
-
+  BseErrorType error;
+  
   error = gsl_data_handle_open (lhandle->src_handle);
-  if (error != GSL_ERROR_NONE)
+  if (error != BSE_ERROR_NONE)
     return error;
-
-  *setup = lhandle->src_handle->setup;
+  
+  *setup = lhandle->src_handle->setup; /* copies setup.xinfos by pointer */
   if (setup->n_values > lhandle->requested_last)
     {
       lhandle->loop_start = lhandle->requested_first;
@@ -953,8 +1246,8 @@ loop_handle_open (GslDataHandle      *dhandle,
       lhandle->loop_start = setup->n_values;
       lhandle->loop_width = 0;
     }
-
-  return GSL_ERROR_NONE;
+  
+  return BSE_ERROR_NONE;
 }
 
 static void
@@ -1045,21 +1338,21 @@ dcache_handle_destroy (GslDataHandle *data_handle)
   sfi_delete_struct (DCacheHandle, dhandle);
 }
 
-static GslErrorType
+static BseErrorType
 dcache_handle_open (GslDataHandle      *data_handle,
 		    GslDataHandleSetup *setup)
 {
   DCacheHandle *dhandle = (DCacheHandle*) dhandle;
-  GslErrorType error;
-
+  BseErrorType error;
+  
   error = gsl_data_handle_open (dhandle->dcache->dhandle);
-  if (error != GSL_ERROR_NONE)
+  if (error != BSE_ERROR_NONE)
     return error;
   gsl_data_cache_open (dhandle->dcache);
-  *setup = dhandle->dcache->dhandle->setup;
+  *setup = dhandle->dcache->dhandle->setup; /* copies setup.xinfos by pointer */
   gsl_data_handle_close (dhandle->dcache->dhandle);
-
-  return GSL_ERROR_NONE;
+  
+  return BSE_ERROR_NONE;
 }
 
 static void
@@ -1068,7 +1361,7 @@ dcache_handle_recurse (GslDataHandle       *data_handle,
 		       gpointer             data)
 {
   DCacheHandle *dhandle = (DCacheHandle*) data_handle;
-
+  
   recurse (dhandle->dcache->dhandle, data);
 }
 
@@ -1077,6 +1370,7 @@ dcache_handle_close (GslDataHandle *data_handle)
 {
   DCacheHandle *dhandle = (DCacheHandle*) data_handle;
   
+  data_handle->setup.xinfos = NULL;     /* cleanup pointer reference */
   gsl_data_cache_close (dhandle->dcache);
 }
 
@@ -1184,20 +1478,20 @@ static void
 wave_handle_destroy (GslDataHandle *data_handle)
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
-
+  
   gsl_data_handle_common_free (data_handle);
   sfi_delete_struct (WaveHandle, whandle);
 }
 
-static GslErrorType
+static BseErrorType
 wave_handle_open (GslDataHandle      *data_handle,
 		  GslDataHandleSetup *setup)
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
-
+  
   whandle->hfile = gsl_hfile_open (whandle->dhandle.name);
   if (!whandle->hfile)
-    return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+    return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
   else
     {
       GslLong l, fwidth = wave_format_byte_width (whandle->format);
@@ -1225,7 +1519,7 @@ wave_handle_open (GslDataHandle      *data_handle,
       setup->bit_depth = wave_format_bit_depth (whandle->format);
       setup->mix_freq = whandle->mix_freq;
       setup->osc_freq = whandle->osc_freq;
-      return GSL_ERROR_NONE;
+      return BSE_ERROR_NONE;
     }
 }
 
@@ -1234,6 +1528,8 @@ wave_handle_close (GslDataHandle *dhandle)
 {
   WaveHandle *whandle = (WaveHandle*) dhandle;
   
+  g_strfreev (dhandle->setup.xinfos);
+  dhandle->setup.xinfos = NULL;
   gsl_hfile_close (whandle->hfile);
   whandle->hfile = NULL;
 }
@@ -1264,10 +1560,10 @@ wave_handle_read (GslDataHandle *data_handle,
   WaveHandle *whandle = (WaveHandle*) data_handle;
   gpointer buffer = values;
   GslLong l, byte_offset;
-
+  
   byte_offset = voffset * wave_format_byte_width (whandle->format);	/* float offset into bytes */
   byte_offset += whandle->byte_offset;
-
+  
   switch (whandle->format)
     {
       guint8 *u8; gint8 *s8; guint16 *u16; guint32 *u32;
@@ -1322,7 +1618,8 @@ gsl_wave_handle_new (const gchar      *file_name,
                      gfloat            mix_freq,
                      gfloat            osc_freq,
 		     GslLong           byte_offset,
-		     GslLong           n_values)
+		     GslLong           n_values,
+                     gchar           **xinfos)
 {
   static GslDataHandleFuncs wave_handle_vtable = {
     wave_handle_open,
@@ -1333,7 +1630,7 @@ gsl_wave_handle_new (const gchar      *file_name,
     wave_handle_ojob,
   };
   WaveHandle *whandle;
-
+  
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
@@ -1342,7 +1639,7 @@ gsl_wave_handle_new (const gchar      *file_name,
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (n_channels >= 1, NULL);
   g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
-
+  
   whandle = sfi_new_struct0 (WaveHandle, 1);
   if (gsl_data_handle_common_init (&whandle->dhandle, file_name))
     {
@@ -1355,7 +1652,14 @@ gsl_wave_handle_new (const gchar      *file_name,
       whandle->requested_offset = byte_offset;
       whandle->requested_length = n_values;
       whandle->hfile = NULL;
-      return &whandle->dhandle;
+      if (xinfos && xinfos[0])
+        {
+          GslDataHandle *dhandle = gsl_data_handle_new_add_xinfos (&whandle->dhandle, xinfos);
+          gsl_data_handle_unref (&whandle->dhandle);
+          return dhandle;
+        }
+      else
+        return &whandle->dhandle;
     }
   else
     {
@@ -1372,13 +1676,20 @@ gsl_wave_handle_new_zoffset (const gchar      *file_name,
                              gfloat            mix_freq,
                              gfloat            osc_freq,
                              GslLong           byte_offset,
-			     GslLong           byte_size)
+			     GslLong           byte_size,
+                             gchar           **xinfos)
 {
   GslDataHandle *dhandle = gsl_wave_handle_new (file_name, n_channels, format,
 						byte_order, mix_freq, osc_freq, byte_offset,
-						byte_size / wave_format_byte_width (format));
+						byte_size / wave_format_byte_width (format), NULL);
   if (dhandle)
     ((WaveHandle*) dhandle)->add_zoffset = TRUE;
+  if (dhandle && xinfos && xinfos[0])
+    {
+      GslDataHandle *tmp_handle = dhandle;
+      dhandle = gsl_data_handle_new_add_xinfos (tmp_handle, xinfos);
+      gsl_data_handle_unref (tmp_handle);
+    }
   return dhandle;
 }
 
@@ -1406,9 +1717,9 @@ GslWaveFormatType
 gsl_wave_format_from_string (const gchar *string)
 {
   gboolean is_unsigned = FALSE;
-
+  
   g_return_val_if_fail (string != NULL, GSL_WAVE_FORMAT_NONE);
-
+  
   while (*string == ' ')
     string++;
   if (strncasecmp (string, "alaw", 5) == 0)

@@ -59,7 +59,7 @@ dummy_read (gint  fd,
   return total;
 }
 
-static GslErrorType
+static BseErrorType
 smf_read_header (gint       fd,
                  SMFHeader *header)
 {
@@ -69,7 +69,7 @@ smf_read_header (gint       fd,
   if (read (fd, header, n_bytes) != n_bytes)
     {
       SMF_DEBUG ("failed to read midi file header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, GSL_ERROR_IO);
+      return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
   /* endianess corrections */
   header->chunk.type = GUINT32_FROM_BE (header->chunk.type);
@@ -81,43 +81,43 @@ smf_read_header (gint       fd,
   if (header->chunk.type != ('M' << 24 | 'T' << 16 | 'h' << 8 | 'd'))
     {
       SMF_DEBUG ("unmatched token 'MThd'");
-      return GSL_ERROR_FORMAT_INVALID;
+      return BSE_ERROR_FORMAT_INVALID;
     }
   if (header->chunk.length < 6)
     {
       SMF_DEBUG ("truncated midi file header");
-      return GSL_ERROR_FORMAT_INVALID;
+      return BSE_ERROR_FORMAT_INVALID;
     }
   if (header->format > 2)
     {
       SMF_DEBUG ("unknown midi file format");
-      return GSL_ERROR_FORMAT_UNKNOWN;
+      return BSE_ERROR_FORMAT_UNKNOWN;
     }
   if (header->format == 0 && header->n_tracks != 1)
     {
       SMF_DEBUG ("invalid number of tracks: %d", header->n_tracks);
-      return GSL_ERROR_FORMAT_INVALID;
+      return BSE_ERROR_FORMAT_INVALID;
     }
   if (header->n_tracks < 1)
     {
       SMF_DEBUG ("midi file without tracks");
-      return GSL_ERROR_NO_DATA;
+      return BSE_ERROR_NO_DATA;
     }
   if (header->division & 0x8000)        // FIXME: this allowes only tpqn
     {
       SMF_DEBUG ("SMPTE time encoding not supported");
-      return GSL_ERROR_FORMAT_UNKNOWN;
+      return BSE_ERROR_FORMAT_UNKNOWN;
     }
   /* read up remaining unused header bytes */
   if (dummy_read (fd, header->chunk.length - 6) != header->chunk.length - 6)
     {
       SMF_DEBUG ("failed to read midi file header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, GSL_ERROR_IO);
+      return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
-  return GSL_ERROR_NONE;
+  return BSE_ERROR_NONE;
 }
 
-static GslErrorType
+static BseErrorType
 smf_read_track (BseMidiFile    *smf,
                 gint            fd,
                 BseMidiDecoder *md)
@@ -129,7 +129,7 @@ smf_read_track (BseMidiFile    *smf,
   if (read (fd, &chunk, n_bytes) != n_bytes)
     {
       SMF_DEBUG ("failed to read midi track header: %s", g_strerror (errno));
-      return gsl_error_from_errno (errno, GSL_ERROR_IO);
+      return gsl_error_from_errno (errno, BSE_ERROR_IO);
     }
   /* endianess corrections */
   chunk.type = GUINT32_FROM_BE (chunk.type);
@@ -138,7 +138,7 @@ smf_read_track (BseMidiFile    *smf,
   if (chunk.type != ('M' << 24 | 'T' << 16 | 'r' << 8 | 'k'))
     {
       SMF_DEBUG ("unmatched token 'MTrk'");
-      return GSL_ERROR_FORMAT_INVALID;
+      return BSE_ERROR_FORMAT_INVALID;
     }
   /* read up and decode track data */
   n_bytes = chunk.length;
@@ -149,27 +149,27 @@ smf_read_track (BseMidiFile    *smf,
       if (read (fd, buffer, l) < 0)
         {
           SMF_DEBUG ("failed to read (got %d bytes) midi track: %s", l, g_strerror (errno));
-          return gsl_error_from_errno (errno, GSL_ERROR_IO);
+          return gsl_error_from_errno (errno, BSE_ERROR_IO);
         }
       bse_midi_decoder_push_smf_data (md, l, buffer);
       n_bytes -= l;
     }
-  return GSL_ERROR_NONE;
+  return BSE_ERROR_NONE;
 }
 
 BseMidiFile*
 bse_midi_file_load (const gchar  *file_name,
-                    GslErrorType *error_p)
+                    BseErrorType *error_p)
 {
   BseMidiFile *smf;
   SMFHeader header;
-  GslErrorType dummy_error;
+  BseErrorType dummy_error;
   gint i, fd = open (file_name, O_RDONLY);
   if (!error_p)
     error_p = &dummy_error;
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -225,7 +225,7 @@ bse_midi_file_load (const gchar  *file_name,
           smf->denominator = event->data.time_signature.denominator;
         }
     }
-  *error_p = GSL_ERROR_NONE;
+  *error_p = BSE_ERROR_NONE;
   return smf;
 }
 

@@ -33,7 +33,7 @@ load_file (BseWaveRepo *wrepo,
 	   const gchar *file_name,
            BseWave    **wave_p)
 {
-  GslErrorType error;
+  BseErrorType error;
   GslWaveFileInfo *finfo;
   GslWaveDsc *wdsc;
   BseWave *wave;
@@ -76,7 +76,7 @@ load_file (BseWaveRepo *wrepo,
     {
       bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
       *wave_p = wave;
-      error = GSL_ERROR_NONE;
+      error = BSE_ERROR_NONE;
     }
   else if (!error)
     error = BSE_ERROR_WAVE_NOT_FOUND;
@@ -191,7 +191,7 @@ BODY (BseProcedureClass *proc,
     {
       info.size = sbuf.st_size;
       info.mtime = sbuf.st_mtime * SFI_USEC_FACTOR;
-      wfi = gsl_wave_file_info_load (filename, (GslErrorType*) &info.error);
+      wfi = gsl_wave_file_info_load (filename, (BseErrorType*) &info.error);
       if (wfi)
 	{
 	  guint i;

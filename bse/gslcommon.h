@@ -20,6 +20,7 @@
 #define __GSL_COMMON_H__
 
 #include <bse/gsldefs.h>
+#include <bse/bseenums.h>
 
 G_BEGIN_DECLS
 
@@ -67,15 +68,14 @@ void		gsl_thread_awake_before	(guint64	 tick_stamp);
 
 
 /* --- misc --- */
-const gchar* gsl_strerror		(GslErrorType	error);
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
-GslErrorType gsl_error_from_errno	(gint		 sys_errno,
-					 GslErrorType	 fallback);
-GslErrorType gsl_error_select           (guint           n_errors,
-                                         GslErrorType    first_error,
+BseErrorType gsl_error_from_errno	(gint		 sys_errno,
+					 BseErrorType	 fallback);
+BseErrorType gsl_error_select           (guint           n_errors,
+                                         BseErrorType    first_error,
                                          ...);
-GslErrorType gsl_file_check		(const gchar	*file_name,
+BseErrorType gsl_file_check		(const gchar	*file_name,
 					 const gchar	*mode);
 
 

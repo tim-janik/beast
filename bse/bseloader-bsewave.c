@@ -59,6 +59,7 @@ typedef enum
   GSL_WAVE_TOKEN_LABEL,
   GSL_WAVE_TOKEN_VOLUME,
   GSL_WAVE_TOKEN_BALANCE,
+  GSL_WAVE_TOKEN_XINFO,
   GSL_WAVE_TOKEN_FILE,
   GSL_WAVE_TOKEN_INDEX,
   GSL_WAVE_TOKEN_RAWLINK,
@@ -114,6 +115,7 @@ static const char *wave_tokens_512[] = {
   "byte_order",
   "format",     "n_channels",   "mix_freq",     "osc_freq",
   "midi_note",  "label",        "volume",       "balance",
+  "xinfo",
   "file",       "index",	"rawlink",
   "ogglink",    "boffset",	"n_values",
   "loop_type",	"loop_start",   "loop_end",	"loop_count",
@@ -167,7 +169,7 @@ gslwave_skip_rest_statement (GScanner *scanner,
 static GslWaveFileInfo*
 gslwave_load_file_info (gpointer      data,
 			const gchar  *_file_name,
-			GslErrorType *error_p)
+			BseErrorType *error_p)
 {
   FileInfo *fi = NULL;
   gboolean in_wave = FALSE, abort = FALSE;
@@ -194,7 +196,7 @@ gslwave_load_file_info (gpointer      data,
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       g_free (cwd);
       g_free (file_name);
       return NULL;
@@ -298,6 +300,7 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
     switch (g_scanner_get_next_token (scanner))
       {
         double dvalue;
+        gchar *key;
       case '}':
 	return G_TOKEN_NONE;
       default:
@@ -367,6 +370,7 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
 	parse_or_return (scanner, G_TOKEN_INT);
 	chunk->osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq,
 					 scanner->value.v_int64 - gsl_get_config ()->midi_kammer_note);
+        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "midi-note", scanner->value.v_int64);
 	break;
       case GSL_WAVE_TOKEN_LABEL:
         parse_or_return (scanner, '=');
@@ -407,6 +411,22 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
           dvalue = -dvalue;
         DEBUG ("ignoring: balance=%f", dvalue);
         break;
+      case GSL_WAVE_TOKEN_XINFO:
+        parse_or_return (scanner, '[');
+        parse_or_return (scanner, G_TOKEN_STRING);
+        key = g_strdup (scanner->value.v_string);
+        if (g_scanner_peek_next_token (scanner) != ']')
+          g_free (key);
+        parse_or_return (scanner, ']');
+        if (g_scanner_peek_next_token (scanner) != '=')
+          g_free (key);
+        parse_or_return (scanner, '=');
+        if (g_scanner_peek_next_token (scanner) != G_TOKEN_STRING)
+          g_free (key);
+        parse_or_return (scanner, G_TOKEN_STRING);
+        chunk->xinfos = bse_xinfos_add_value (chunk->xinfos, key, scanner->value.v_string);
+        g_free (key);
+        break;
       case GSL_WAVE_TOKEN_BOFFSET:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
@@ -421,26 +441,31 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
 	parse_or_return (scanner, '=');
 	switch (g_scanner_get_next_token (scanner))
 	  {
-	  case GSL_WAVE_TOKEN_NONE:	chunk->loop_type = GSL_WAVE_LOOP_NONE;		break;
-	  case GSL_WAVE_TOKEN_JUMP:	chunk->loop_type = GSL_WAVE_LOOP_JUMP;		break;
-	  case GSL_WAVE_TOKEN_PINGPONG:	chunk->loop_type = GSL_WAVE_LOOP_PINGPONG;	break;
-	  default:			return GSL_WAVE_TOKEN_JUMP;
+	  case GSL_WAVE_TOKEN_PINGPONG:
+            chunk->xinfos = bse_xinfos_add_value (chunk->xinfos, "loop-type", gsl_wave_loop_type_to_string (GSL_WAVE_LOOP_PINGPONG));
+            break;
+	  case GSL_WAVE_TOKEN_JUMP:
+            chunk->xinfos = bse_xinfos_add_value (chunk->xinfos, "loop-type", gsl_wave_loop_type_to_string (GSL_WAVE_LOOP_JUMP));
+            break;
+	  case GSL_WAVE_TOKEN_NONE:
+	  default:
+            break;
 	  }
 	break;
       case GSL_WAVE_TOKEN_LOOP_START:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->loop_start = scanner->value.v_int64;
+        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "loop-start", scanner->value.v_int64);
 	break;
       case GSL_WAVE_TOKEN_LOOP_END:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->loop_end = scanner->value.v_int64;
+        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "loop-end", scanner->value.v_int64);
 	break;
       case GSL_WAVE_TOKEN_LOOP_COUNT:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->loop_count = scanner->value.v_int64;
+        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "loop-count", scanner->value.v_int64);
 	break;
       }
   while (TRUE);
@@ -534,10 +559,6 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 	memset (dsc->wdsc.chunks + i, 0, sizeof (dsc->wdsc.chunks[0]) * 1);
 	dsc->wdsc.chunks[i].mix_freq = dsc->dfl_mix_freq;
 	dsc->wdsc.chunks[i].osc_freq = -1;
-	dsc->wdsc.chunks[i].loop_type = GSL_WAVE_LOOP_JUMP;
-	dsc->wdsc.chunks[i].loop_start = GSL_MAXLONG;
-	dsc->wdsc.chunks[i].loop_end = -1;
-	dsc->wdsc.chunks[i].loop_count = 1000000; /* FIXME */
 	dsc->wdsc.chunks[i].loader_offset = 0;			/* offset in bytes */
 	dsc->wdsc.chunks[i].loader_length = 0;			/* length in n_values or bytes */
 	dsc->wdsc.chunks[i].loader_data1 = NULL;		/* file_name */
@@ -545,13 +566,6 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 	token = gslwave_parse_chunk_dsc (scanner, dsc->wdsc.chunks + i);
 	if (token != G_TOKEN_NONE)
 	  return token;
-	if (dsc->wdsc.chunks[i].loop_end < dsc->wdsc.chunks[i].loop_start)
-	  {
-	    dsc->wdsc.chunks[i].loop_type = GSL_WAVE_LOOP_NONE;
-	    dsc->wdsc.chunks[i].loop_start = 0;
-	    dsc->wdsc.chunks[i].loop_end = 0;
-	    dsc->wdsc.chunks[i].loop_count = 0;
-	  }
 	if (dsc->wdsc.chunks[i].osc_freq <= 0)
 	  g_scanner_error (scanner, "wave chunk \"%s\" without oscilator frequency: mix_freq=%f osc_freq=%f",
 			   dsc->wdsc.chunks[i].loader_data1 ? (gchar*) dsc->wdsc.chunks[i].loader_data1 : "",
@@ -619,6 +633,7 @@ gslwave_wave_dsc_free (WaveDsc *dsc)
 
   for (i = 0; i < dsc->wdsc.n_chunks; i++)
     {
+      g_strfreev (dsc->wdsc.chunks[i].xinfos);
       g_free (dsc->wdsc.chunks[i].loader_data1); /* file_name */
       g_free (dsc->wdsc.chunks[i].loader_data2); /* wave_name */
     }
@@ -631,7 +646,7 @@ static GslWaveDsc*
 gslwave_load_wave_dsc (gpointer         data,
 		       GslWaveFileInfo *file_info,
 		       guint            nth_wave,
-		       GslErrorType    *error_p)
+		       BseErrorType    *error_p)
 {
   GScanner *scanner;
   WaveDsc *dsc;
@@ -641,7 +656,7 @@ gslwave_load_wave_dsc (gpointer         data,
   fd = open (file_info->file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
 
@@ -707,7 +722,7 @@ static GslDataHandle*
 gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
 			       const gchar     *wave_name,
                                gfloat           osc_freq,
-			       GslErrorType    *error_p)
+			       BseErrorType    *error_p)
 {
   GslWaveDsc *wdsc;
   guint i;
@@ -717,7 +732,7 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
   else if (!wave_name)
     {
       /* don't know which wave to pick */
-      *error_p = GSL_ERROR_FORMAT_INVALID;
+      *error_p = BSE_ERROR_FORMAT_INVALID;
       return NULL;
     }
   else /* find named wave */
@@ -726,7 +741,7 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
 	break;
   if (i >= fi->n_waves)
     {
-      *error_p = GSL_ERROR_WAVE_NOT_FOUND;
+      *error_p = BSE_ERROR_WAVE_NOT_FOUND;
       return NULL;
     }
 
@@ -747,7 +762,7 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
    * point to a wave with multiple chunks...
    */
   gsl_wave_dsc_free (wdsc);
-  *error_p = GSL_ERROR_FORMAT_INVALID;
+  *error_p = BSE_ERROR_FORMAT_INVALID;
   return NULL;
 }
 
@@ -755,7 +770,7 @@ static GslDataHandle*
 gslwave_create_chunk_handle (gpointer      data,
 			     GslWaveDsc   *wave_dsc,
 			     guint         nth_chunk,
-			     GslErrorType *error_p)
+			     BseErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
@@ -785,6 +800,12 @@ gslwave_create_chunk_handle (gpointer      data,
 						   chunk->loader_data2,	/* wave_name */
                                                    chunk->osc_freq,
 						   error_p);
+          if (dhandle && chunk->xinfos)
+            {
+              GslDataHandle *tmp_handle = dhandle;
+              dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
+              gsl_data_handle_unref (tmp_handle);
+            }
 	  gsl_wave_file_info_unref (cfi);
 	  g_free (string);
 	  return dhandle;
@@ -794,7 +815,7 @@ gslwave_create_chunk_handle (gpointer      data,
       if (chunk->loader_data2)	/* wave_name */
 	{
 	  /* raw samples don't give names to their data */
-	  *error_p = GSL_ERROR_WAVE_NOT_FOUND;
+	  *error_p = BSE_ERROR_WAVE_NOT_FOUND;
 	  g_free (string);
 	  return NULL;
 	}
@@ -805,10 +826,11 @@ gslwave_create_chunk_handle (gpointer      data,
                                      chunk->mix_freq <= 0 ? dsc->dfl_mix_freq : chunk->mix_freq,
                                      chunk->osc_freq,
 				     chunk->loader_offset,	/* byte_offset */
-				     chunk->loader_length > 0	/* n_values */
-				     ? chunk->loader_length
-				     : -1);
-      *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
+				     (chunk->loader_length > 0	/* n_values */
+                                      ? chunk->loader_length
+                                      : -1),
+                                     chunk->xinfos);
+      *error_p = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
       g_free (string);
       return dhandle;
     }	
@@ -824,11 +846,12 @@ gslwave_create_chunk_handle (gpointer      data,
                                                  chunk->mix_freq <= 0 ? dsc->dfl_mix_freq : chunk->mix_freq,
                                                  chunk->osc_freq,
 						 chunk->loader_offset,	/* byte_offset */
-						 chunk->loader_length);	/* byte length */
-	  *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
+						 chunk->loader_length,	/* byte length */
+                                                 chunk->xinfos);
+	  *error_p = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
 	}
       else
-	*error_p = GSL_ERROR_WAVE_NOT_FOUND;
+	*error_p = BSE_ERROR_WAVE_NOT_FOUND;
       return dhandle;
     }
   else if (chunk->loader_num1 == OGGLINK_MAGIC)
@@ -840,15 +863,22 @@ gslwave_create_chunk_handle (gpointer      data,
                                                             chunk->osc_freq,
                                                             chunk->loader_offset,	/* byte_offset */
                                                             chunk->loader_length);	/* byte length */
-	  *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
+          if (dhandle && chunk->xinfos)
+            {
+              GslDataHandle *tmp_handle = dhandle;
+              dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
+              gsl_data_handle_unref (tmp_handle);
+            }
+
+	  *error_p = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
 	}
       else
-	*error_p = GSL_ERROR_WAVE_NOT_FOUND;
+	*error_p = BSE_ERROR_WAVE_NOT_FOUND;
       return dhandle;
     }
   else /* no file_name and no loader specified */
     {
-      *error_p = GSL_ERROR_FORMAT_UNKNOWN;
+      *error_p = BSE_ERROR_FORMAT_UNKNOWN;
       return NULL;
     }
 }

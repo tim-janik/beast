@@ -33,6 +33,8 @@ struct _GslWaveFileInfo
     gchar *name;
   }       *waves;
 
+  gchar  **comments;
+
   /*< private >*/
   gchar     *file_name;
   GslLoader *loader;
@@ -44,9 +46,7 @@ struct _GslWaveDsc
   guint	           n_chunks;
   GslWaveChunkDsc *chunks;
   guint            n_channels;
-  gchar           *authors;
-  gchar           *license;
-  gchar           *comment;
+  gchar          **xinfos;
   /*< private >*/
   GslWaveFileInfo *file_info;
 };
@@ -54,10 +54,7 @@ struct _GslWaveChunkDsc
 {
   gfloat	  mix_freq;
   gfloat	  osc_freq;
-  GslWaveLoopType loop_type;
-  GslLong	  loop_start;	/* sample offset */
-  GslLong	  loop_end;	/* sample offset */
-  guint		  loop_count;
+  gchar         **xinfos;
   /* loader-specific */
   GslLong         loader_offset;
   GslLong         loader_length;
@@ -69,20 +66,20 @@ struct _GslWaveChunkDsc
 
 /* --- functions --- */
 GslWaveFileInfo*      gsl_wave_file_info_load	(const gchar	 *file_name,
-						 GslErrorType	 *error);
+						 BseErrorType	 *error);
 GslWaveFileInfo*      gsl_wave_file_info_ref	(GslWaveFileInfo *wave_file_info);
 void                  gsl_wave_file_info_unref	(GslWaveFileInfo *wave_file_info);
 const gchar*	      gsl_wave_file_info_loader	(GslWaveFileInfo *fi);
 GslWaveDsc*	      gsl_wave_dsc_load		(GslWaveFileInfo *wave_file_info,
 						 guint		  nth_wave,
-						 GslErrorType	 *error);
+						 BseErrorType	 *error);
 void		      gsl_wave_dsc_free		(GslWaveDsc	 *wave_dsc);
 GslDataHandle*	      gsl_wave_handle_create	(GslWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
-						 GslErrorType	 *error);
+						 BseErrorType	 *error);
 GslWaveChunk*	      gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
-						 GslErrorType	 *error);
+						 BseErrorType	 *error);
 
 
 /* --- loader impl --- */
@@ -109,24 +106,41 @@ struct _GslLoader
   gpointer		  data;
   GslWaveFileInfo*	(*load_file_info)	(gpointer	   data,
 						 const gchar	  *file_name,
-						 GslErrorType	  *error);
+						 BseErrorType	  *error);
   void			(*free_file_info)	(gpointer	   data,
 						 GslWaveFileInfo  *file_info);
   GslWaveDsc*		(*load_wave_dsc)	(gpointer	   data,
 						 GslWaveFileInfo  *file_info,
 						 guint		   nth_wave,
-						 GslErrorType	  *error);
+						 BseErrorType	  *error);
   void			(*free_wave_dsc)	(gpointer	   data,
 						 GslWaveDsc	  *wave_dsc);
   GslDataHandle*	(*create_chunk_handle)	(gpointer	   data,
 						 GslWaveDsc	  *wave_dsc,
 						 guint		   nth_chunk,
-						 GslErrorType	  *error);
+						 BseErrorType	  *error);
   GslLoader   *next;	/* must be NULL */
 };
 
-void		gsl_loader_register	(GslLoader	*loader);
-GslLoader*	gsl_loader_match	(const gchar	*file_name);
+void	      gsl_loader_register	        (GslLoader	 *loader);
+GslLoader*    gsl_loader_match	                (const gchar	 *file_name);
+gchar**       bse_xinfos_add_value              (gchar          **xinfos,
+                                                 const gchar     *key,
+                                                 const gchar     *value);
+gchar**       bse_xinfos_add_float              (gchar          **xinfos,
+                                                 const gchar     *key,
+                                                 gfloat           fvalue);
+gchar**       bse_xinfos_add_num                (gchar          **xinfos,
+                                                 const gchar     *key,
+                                                 SfiNum           num);
+const gchar*  bse_xinfos_get_value              (gchar          **xinfos,
+                                                 const gchar     *key);
+gfloat        bse_xinfos_get_float              (gchar          **xinfos,
+                                                 const gchar     *key);
+SfiNum        bse_xinfos_get_num                (gchar          **xinfos,
+                                                 const gchar     *key);
+gchar**       bse_xinfos_del_value              (gchar          **xinfos,
+                                                 const gchar     *key);
 
 G_END_DECLS
 

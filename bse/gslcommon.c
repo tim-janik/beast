@@ -139,42 +139,6 @@ gsl_thread_awake_before (guint64 tick_stamp)
 
 /* --- misc --- */
 const gchar*
-gsl_strerror (GslErrorType error)
-{
-  switch (error)
-    {
-    case GSL_ERROR_NONE:		return "Everything went well";
-    case GSL_ERROR_INTERNAL:		return "Internal error (please report)";
-    case GSL_ERROR_UNKNOWN:		return "Unknown error";
-    case GSL_ERROR_IO:			return "Input/output error";
-    case GSL_ERROR_PERMS:		return "Insufficient permission";
-    case GSL_ERROR_BUSY:		return "Device or resource busy";
-    case GSL_ERROR_EXISTS:		return "File exists already";
-    case GSL_ERROR_EOF:			return "File empty or premature EOF";
-    case GSL_ERROR_NOT_FOUND:		return "No such file, device or directory";
-    case GSL_ERROR_IS_DIR:		return "Is a directory";
-    case GSL_ERROR_OPEN_FAILED:		return "Open failed";
-    case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
-    case GSL_ERROR_READ_FAILED:		return "Read failed";
-    case GSL_ERROR_WRITE_FAILED:	return "Write failed";
-    case GSL_ERROR_MANY_FILES:		return "Too many open files";
-    case GSL_ERROR_NO_FILES:		return "Too many open files in system";
-    case GSL_ERROR_NO_SPACE:		return "No space left on device";
-    case GSL_ERROR_NO_MEMORY:		return "Out of memory";
-    case GSL_ERROR_NO_HEADER:		return "Failed to detect (start of) header";
-    case GSL_ERROR_NO_SEEK_INFO:	return "Failed to retrieve seek information";
-    case GSL_ERROR_NO_DATA:		return "No data available";
-    case GSL_ERROR_DATA_CORRUPT:        return "Data corrupt";
-    case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
-    case GSL_ERROR_FORMAT_UNKNOWN:	return "Unknown format";
-    case GSL_ERROR_TEMP:		return "Temporary error";
-    case GSL_ERROR_WAVE_NOT_FOUND:	return "No such wave";
-    case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
-    default:				return NULL;
-    }
-}
-
-const gchar*
 gsl_byte_order_to_string (guint byte_order)
 {
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
@@ -201,41 +165,41 @@ gsl_byte_order_from_string (const gchar *string)
   return 0;
 }
 
-GslErrorType
+BseErrorType
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
   if (sfi_file_check (file_name, mode))
-    return GSL_ERROR_NONE;
-  return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+    return BSE_ERROR_NONE;
+  return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 }
 
-GslErrorType
+BseErrorType
 gsl_error_from_errno (gint         sys_errno,
-		      GslErrorType fallback)
+		      BseErrorType fallback)
 {
   switch (sys_errno)
     {
     case ELOOP:
     case ENAMETOOLONG:
-    case ENOENT:        return GSL_ERROR_NOT_FOUND;
-    case EISDIR:        return GSL_ERROR_IS_DIR;
+    case ENOENT:        return BSE_ERROR_FILE_NOT_FOUND;
+    case EISDIR:        return BSE_ERROR_FILE_IS_DIR;
     case EROFS:
     case EPERM:
-    case EACCES:        return GSL_ERROR_PERMS;
-    case ENOMEM:	return GSL_ERROR_NO_MEMORY;
-    case ENOSPC:	return GSL_ERROR_NO_SPACE;
-    case ENFILE:	return GSL_ERROR_NO_FILES;
-    case EMFILE:	return GSL_ERROR_MANY_FILES;
+    case EACCES:        return BSE_ERROR_PERMS;
+    case ENOMEM:	return BSE_ERROR_NO_MEMORY;
+    case ENOSPC:	return BSE_ERROR_NO_SPACE;
+    case ENFILE:	return BSE_ERROR_NO_FILES;
+    case EMFILE:	return BSE_ERROR_MANY_FILES;
     case EFBIG:
     case ESPIPE:
-    case EIO:           return GSL_ERROR_IO;
-    case EEXIST:        return GSL_ERROR_EXISTS;
+    case EIO:           return BSE_ERROR_IO;
+    case EEXIST:        return BSE_ERROR_FILE_EXISTS;
     case ETXTBSY:
-    case EBUSY:         return GSL_ERROR_BUSY;
+    case EBUSY:         return BSE_ERROR_FILE_BUSY;
     case EAGAIN:
-    case EINTR:		return GSL_ERROR_TEMP;
-    case EFAULT:        return GSL_ERROR_INTERNAL;
+    case EINTR:		return BSE_ERROR_TEMP;
+    case EFAULT:        return BSE_ERROR_INTERNAL;
     case EBADF:
     case ENOTDIR:
     case ENODEV:
@@ -245,14 +209,16 @@ gsl_error_from_errno (gint         sys_errno,
 }
 
 static guint
-score_error (GslErrorType error)
+score_error (BseErrorType error)
 {
   /* errors are sorted by increasing descriptiveness */
-  static const GslErrorType error_score[] = {
-    GSL_ERROR_NONE /* least descriptive, indicates 0-initialized error variable */,
-    GSL_ERROR_UNKNOWN, GSL_ERROR_INTERNAL, GSL_ERROR_TEMP,
-    GSL_ERROR_OPEN_FAILED, GSL_ERROR_SEEK_FAILED, GSL_ERROR_READ_FAILED, GSL_ERROR_WRITE_FAILED,
-    GSL_ERROR_NOT_FOUND, GSL_ERROR_WAVE_NOT_FOUND, GSL_ERROR_IO, GSL_ERROR_EOF,
+  static const BseErrorType error_score[] = {
+    BSE_ERROR_NONE /* least descriptive, indicates 0-initialized error variable */,
+    BSE_ERROR_UNKNOWN, BSE_ERROR_INTERNAL, BSE_ERROR_TEMP,
+    BSE_ERROR_IO, BSE_ERROR_FILE_EOF,
+    BSE_ERROR_FILE_OPEN_FAILED, BSE_ERROR_FILE_SEEK_FAILED,
+    BSE_ERROR_FILE_READ_FAILED, BSE_ERROR_FILE_WRITE_FAILED,
+    BSE_ERROR_FILE_NOT_FOUND, BSE_ERROR_WAVE_NOT_FOUND,
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (error_score); i++)
@@ -261,12 +227,12 @@ score_error (GslErrorType error)
   return i;
 }
 
-GslErrorType
+BseErrorType
 gsl_error_select (guint           n_errors,
-                  GslErrorType    first_error,
+                  BseErrorType    first_error,
                   ...)
 {
-  GslErrorType *errors = g_new (GslErrorType, MAX (1, n_errors));
+  BseErrorType *errors = g_new (BseErrorType, MAX (1, n_errors));
   va_list args;
   guint i, e, score;
   /* function used to select a descriptive error in
@@ -276,7 +242,7 @@ gsl_error_select (guint           n_errors,
   for (i = 0; i < n_errors; i++)
     {
       if (i)
-        first_error = va_arg (args, GslErrorType);
+        first_error = va_arg (args, BseErrorType);
       errors[i] = first_error;
     }
   va_end (args);

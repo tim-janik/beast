@@ -38,12 +38,12 @@ typedef struct
 static GslWaveFileInfo*
 mad_load_file_info (gpointer      data,
 		    const gchar  *file_name,
-		    GslErrorType *error_p)
+		    BseErrorType *error_p)
 {
   FileInfo *fi;
   guint n_channels;
   gfloat mix_freq;
-  GslErrorType error;
+  BseErrorType error;
 
   error = gsl_data_handle_mad_testopen (file_name, &n_channels, &mix_freq);
   if (error)
@@ -80,7 +80,7 @@ static GslWaveDsc*
 mad_load_wave_dsc (gpointer         data,
 		   GslWaveFileInfo *file_info,
 		   guint            nth_wave,
-		   GslErrorType    *error_p)
+		   BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   GslWaveDsc *wdsc = sfi_new_struct0 (GslWaveDsc, 1);
@@ -99,8 +99,11 @@ static void
 mad_free_wave_dsc (gpointer    data,
 		   GslWaveDsc *wdsc)
 {
-  g_free (wdsc->name);
+  guint i;
+  for (i = 0; i < wdsc->n_chunks; i++)
+    g_strfreev (wdsc->chunks[i].xinfos);
   g_free (wdsc->chunks);
+  g_free (wdsc->name);
   sfi_delete_struct (GslWaveDsc, wdsc);
 }
 
@@ -108,7 +111,7 @@ static GslDataHandle*
 mad_create_chunk_handle (gpointer      data,
 			 GslWaveDsc   *wdsc,
 			 guint         nth_chunk,
-			 GslErrorType *error_p)
+			 BseErrorType *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
@@ -116,8 +119,14 @@ mad_create_chunk_handle (gpointer      data,
   g_return_val_if_fail (nth_chunk == 0, NULL);
 
   dhandle = gsl_data_handle_new_mad_err (fi->wfi.file_name, wdsc->chunks[0].osc_freq, error_p);
+  if (dhandle && wdsc->chunks[0].xinfos)
+    {
+      GslDataHandle *tmp_handle = dhandle;
+      dhandle = gsl_data_handle_new_add_xinfos (dhandle, wdsc->chunks[0].xinfos);
+      gsl_data_handle_unref (tmp_handle);
+    }
   if (!dhandle && !*error_p)
-    *error_p = GSL_ERROR_OPEN_FAILED;
+    *error_p = BSE_ERROR_FILE_OPEN_FAILED;
   return dhandle;
 }
 

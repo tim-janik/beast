@@ -39,7 +39,7 @@ typedef struct
 static GslWaveFileInfo*
 oggv_load_file_info (gpointer      data,
 		     const gchar  *file_name,
-		     GslErrorType *error_p)
+		     BseErrorType *error_p)
 {
   FileInfo *fi = sfi_new_struct0 (FileInfo, 1);
   FILE *file;
@@ -48,7 +48,7 @@ oggv_load_file_info (gpointer      data,
   file = fopen (file_name, "r");
   if (!file)
     {
-      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+      *error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
       return NULL;
     }
   
@@ -58,7 +58,7 @@ oggv_load_file_info (gpointer      data,
     {
       fclose (file);
       sfi_delete_struct (FileInfo, fi);
-      *error_p = GSL_ERROR_CODEC_FAILURE;
+      *error_p = BSE_ERROR_CODEC_FAILURE;
       return NULL;
     }
 
@@ -99,7 +99,7 @@ static GslWaveDsc*
 oggv_load_wave_dsc (gpointer         data,
 		    GslWaveFileInfo *file_info,
 		    guint            nth_wave,
-		    GslErrorType    *error_p)
+		    BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   GslWaveDsc *wdsc = sfi_new_struct0 (GslWaveDsc, 1);
@@ -120,8 +120,11 @@ static void
 oggv_free_wave_dsc (gpointer    data,
 		    GslWaveDsc *wdsc)
 {
-  g_free (wdsc->name);
+  guint i;
+  for (i = 0; i < wdsc->n_chunks; i++)
+    g_strfreev (wdsc->chunks[i].xinfos);
   g_free (wdsc->chunks);
+  g_free (wdsc->name);
   sfi_delete_struct (GslWaveDsc, wdsc);
 }
 
@@ -129,7 +132,7 @@ static GslDataHandle*
 oggv_create_chunk_handle (gpointer      data,
 			  GslWaveDsc   *wdsc,
 			  guint         nth_chunk,
-			  GslErrorType *error_p)
+			  BseErrorType *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
@@ -139,8 +142,14 @@ oggv_create_chunk_handle (gpointer      data,
   dhandle = gsl_data_handle_new_ogg_vorbis_muxed (fi->wfi.file_name,
 					          wdsc->chunks[0].loader_offset, /* lbitstream */
 					          wdsc->chunks[0].osc_freq);
+  if (dhandle && wdsc->chunks[0].xinfos)
+    {
+      GslDataHandle *tmp_handle = dhandle;
+      dhandle = gsl_data_handle_new_add_xinfos (dhandle, wdsc->chunks[0].xinfos);
+      gsl_data_handle_unref (tmp_handle);
+    }
   if (!dhandle)
-    *error_p = GSL_ERROR_OPEN_FAILED;
+    *error_p = BSE_ERROR_FILE_OPEN_FAILED;
   return dhandle;
 }
 

@@ -99,17 +99,17 @@ bse_midi_device_oss_list_devices (BseDevice *device)
       gchar *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!sfi_file_equals (last, dname))
         {
-          if (check_device_usage (dname, "crw") == GSL_ERROR_NONE)
+          if (check_device_usage (dname, "crw") == BSE_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,rw", dname),
                                                           g_strdup_printf ("%s (read-write)", dname)));
-          else if (check_device_usage (dname, "cr") == GSL_ERROR_NONE)
+          else if (check_device_usage (dname, "cr") == BSE_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,ro", dname),
                                                           g_strdup_printf ("%s (read only)", dname)));
-          else if (check_device_usage (dname, "cw") == GSL_ERROR_NONE)
+          else if (check_device_usage (dname, "cw") == BSE_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,wo", dname),

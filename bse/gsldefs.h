@@ -45,44 +45,6 @@ typedef glong			  GslLong;
 #define	GSL_MINLONG		  G_MINLONG
 
 
-/* --- GSL errors --- */
-typedef enum    /*< skip >*/
-{
-  GSL_ERROR_NONE,
-  GSL_ERROR_INTERNAL,
-  GSL_ERROR_UNKNOWN,
-  /* file/directory errors */
-  GSL_ERROR_IO,
-  GSL_ERROR_PERMS,
-  GSL_ERROR_BUSY,
-  GSL_ERROR_EXISTS,
-  GSL_ERROR_EOF,
-#define GSL_ERROR_FILE_EMPTY	GSL_ERROR_EOF
-  GSL_ERROR_NOT_FOUND,
-  GSL_ERROR_IS_DIR,
-  GSL_ERROR_OPEN_FAILED,
-  GSL_ERROR_SEEK_FAILED,
-  GSL_ERROR_READ_FAILED,
-  GSL_ERROR_WRITE_FAILED,
-  /* out of resource conditions */
-  GSL_ERROR_MANY_FILES,
-  GSL_ERROR_NO_FILES,
-  GSL_ERROR_NO_SPACE,
-  GSL_ERROR_NO_MEMORY,
-  /* content errors */
-  GSL_ERROR_NO_HEADER,
-  GSL_ERROR_NO_SEEK_INFO,
-  GSL_ERROR_NO_DATA,
-  GSL_ERROR_DATA_CORRUPT,
-  GSL_ERROR_FORMAT_INVALID,
-  GSL_ERROR_FORMAT_UNKNOWN,
-  /* miscellaneous errors */
-  GSL_ERROR_TEMP,
-  GSL_ERROR_WAVE_NOT_FOUND,
-  GSL_ERROR_CODEC_FAILURE,
-  GSL_ERROR_LAST		/*< skip >*/
-} GslErrorType;
-
 /* --- functions --- */
 typedef void     (*GslFreeFunc)         (gpointer        data);
 

@@ -63,7 +63,7 @@ run_tests (GslWaveLoopType loop_type,
   GslDataCache *dcache;
   GslWaveChunkBlock block = { 0, };
   GslWaveChunk *wchunk;
-  GslErrorType error;
+  BseErrorType error;
 
   myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   dcache = gsl_data_cache_new (myhandle, 1);
@@ -73,7 +73,7 @@ run_tests (GslWaveLoopType loop_type,
 			       loop_type, loop_first, loop_last, loop_count);
   error = gsl_wave_chunk_open (wchunk);
   if (error)
-    g_error ("failed to open wave chunk: %s", gsl_strerror (error));
+    g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
     g_print ("SETUP: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d playdir=%+d\n",
@@ -210,7 +210,7 @@ main (gint   argc,
       GslDataHandle *myhandle;
       GslDataHandle *rhandle1, *rhandle2;
       GslLong o, l, i, e;
-      GslErrorType error;
+      BseErrorType error;
 
       g_print ("reversed datahandle test:...\n");
       
@@ -221,7 +221,7 @@ main (gint   argc,
       gsl_data_handle_unref (rhandle1);
       error = gsl_data_handle_open (rhandle2);
       if (error)
-	g_error ("failed to open rhandle2: %s", gsl_strerror (error));
+	g_error ("failed to open rhandle2: %s", bse_error_blurb (error));
       gsl_data_handle_unref (rhandle2);
       
       g_assert (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));

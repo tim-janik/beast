@@ -674,23 +674,23 @@ gsl_wave_chunk_unref (GslWaveChunk *wchunk)
     }
 }
 
-GslErrorType
+BseErrorType
 gsl_wave_chunk_open (GslWaveChunk *wchunk)
 {
-  g_return_val_if_fail (wchunk != NULL, GSL_ERROR_INTERNAL);
-  g_return_val_if_fail (wchunk->ref_count > 0, GSL_ERROR_INTERNAL);
+  g_return_val_if_fail (wchunk != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (wchunk->ref_count > 0, BSE_ERROR_INTERNAL);
   
   if (wchunk->open_count == 0)
     {
-      GslErrorType error;
+      BseErrorType error;
       
       error = gsl_data_handle_open (wchunk->dcache->dhandle);
-      if (error != GSL_ERROR_NONE)
+      if (error != BSE_ERROR_NONE)
 	return error;
       if (gsl_data_handle_n_values (wchunk->dcache->dhandle) < gsl_data_handle_n_channels (wchunk->dcache->dhandle))
 	{
 	  gsl_data_handle_close (wchunk->dcache->dhandle);
-	  return GSL_ERROR_FILE_EMPTY;
+	  return BSE_ERROR_FILE_EMPTY;
 	}
       wchunk->n_channels = gsl_data_handle_n_channels (wchunk->dcache->dhandle);
       wchunk->length = gsl_data_handle_n_values (wchunk->dcache->dhandle) / wchunk->n_channels;
@@ -698,7 +698,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
       wchunk->n_pad_values = gsl_get_config ()->wave_chunk_padding * wchunk->n_channels;
       gsl_data_cache_open (wchunk->dcache);
       gsl_data_handle_close (wchunk->dcache->dhandle);
-      g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, GSL_ERROR_INTERNAL);
+      g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, BSE_ERROR_INTERNAL);
       wchunk->open_count++;
       wchunk->ref_count++;
       wave_chunk_setup_loop (wchunk);
@@ -706,7 +706,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
     }
   else
     wchunk->open_count++;
-  return GSL_ERROR_NONE;
+  return BSE_ERROR_NONE;
 }
 
 void

@@ -288,7 +288,7 @@ wstore_context_reader (gpointer data,
 
   if (!wc->opened)
     {
-      GslErrorType error = gsl_data_handle_open (wc->dhandle);
+      BseErrorType error = gsl_data_handle_open (wc->dhandle);
       if (error)
 	return -ENOENT; /* approximation of OPEN_FAILED */
       wc->opened = TRUE;
@@ -404,7 +404,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle != NULL, -1);
   g_return_val_if_fail (direction == -1 || direction == +1, -1);
 
-  if (gsl_data_handle_open (dhandle) != GSL_ERROR_NONE ||
+  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE ||
       start_offset >= dhandle->setup.n_values)
     return -1;
 
@@ -488,7 +488,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   g_return_val_if_fail (lspec->max_loop >= lspec->min_loop, FALSE);
   g_return_val_if_fail (lspec->tail_cut >= lspec->max_loop, FALSE);
 
-  if (gsl_data_handle_open (dhandle) != GSL_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
     return FALSE;
   length = dhandle->setup.n_values;
   if (lspec->head_skip < length)

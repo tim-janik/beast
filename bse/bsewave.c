@@ -313,9 +313,10 @@ bse_wave_set_description_bits (BseWave        *self,
   g_return_if_fail (BSE_IS_WAVE (self));
   if (wdsc->name && honour_name)
     bse_item_set (self, "uname", wdsc->name, NULL);
-  /* FIXME: also set authors, license */
-  if (wdsc->comment)
-    bse_item_set (self, "blurb", wdsc->comment, NULL);
+  /* FIXME: set authors, license, comment
+   * if (wdsc->comment)
+   * bse_item_set (self, "blurb", wdsc->comment, NULL);
+   */
 }
 
 void
@@ -463,12 +464,12 @@ bse_wave_store_private (BseObject  *object,
 	}
       else	/* self-contained wave storage */
 	{
-	  GslErrorType error = gsl_data_handle_open (url->wchunk->dcache->dhandle);
+	  BseErrorType error = gsl_data_handle_open (url->wchunk->dcache->dhandle);
 	  if (error)
 	    {
 	      bse_storage_warn (storage, "failed to open data handle (%s): %s",
 				gsl_data_handle_name (url->wchunk->dcache->dhandle),
-				gsl_strerror (error));
+				bse_error_blurb (error));
 	      continue;
 	    }
           bse_storage_break (storage);
@@ -823,7 +824,7 @@ bse_wave_get_index_for_modules (BseWave *wave)
       index->wchunks = (gpointer) (index + 1);
       for (slist = wave->wave_chunks; slist; slist = slist->next)
 	{
-	  GslErrorType error = gsl_wave_chunk_open (slist->data);
+	  BseErrorType error = gsl_wave_chunk_open (slist->data);
 	  if (!error)
 	    index->wchunks[index->n_wchunks++] = slist->data;
 	}

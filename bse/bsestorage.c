@@ -1300,10 +1300,10 @@ wstore_data_handle_reader (gpointer data,
   
   if (!wh->opened)
     {
-      GslErrorType error = gsl_data_handle_open (wh->dhandle);
+      BseErrorType error = gsl_data_handle_open (wh->dhandle);
       if (error)
         {
-          bse_storage_error (wh->storage, "failed to open data handle: %s", gsl_strerror (error));
+          bse_storage_error (wh->storage, "failed to open data handle: %s", bse_error_blurb (error));
           return -ENOENT;
         }
       wh->opened = TRUE;
@@ -1443,7 +1443,7 @@ parse_raw_data_handle (BseStorage     *self,
     *data_handle_p = gsl_wave_handle_new (self->rstore->fname,
                                           n_channels, format, byte_order,
                                           mix_freq, osc_freq,
-                                          offset, length);
+                                          offset, length, NULL);
   if (n_channels_p)
     *n_channels_p = n_channels;
   if (mix_freq_p)
@@ -1641,6 +1641,6 @@ compat_parse_data_handle (BseStorage     *self,
                                         byte_order,
                                         self->mix_freq, self->osc_freq,
                                         sfi_rstore_get_bin_offset (self->rstore) + offset,
-                                        vlength);
+                                        vlength, NULL);
   return G_TOKEN_NONE;
 }

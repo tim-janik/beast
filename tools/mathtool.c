@@ -109,7 +109,7 @@ main (int   argc,
       while (file)
 	{
 	  GslWaveFileInfo *fi;
-	  GslErrorType error;
+	  BseErrorType error;
 	  
 	  fi = gsl_wave_file_info_load (file, &error);
 	  if (fi)
@@ -122,7 +122,7 @@ main (int   argc,
 	      gsl_wave_file_info_unref (fi);
 	    }
 	  else
-	    g_print ("Failed to scan \"%s\": %s\n", file, gsl_strerror (error));
+	    g_print ("Failed to scan \"%s\": %s\n", file, bse_error_blurb (error));
 	  file = pshift ();
 	  if (!file[0])
 	    break;
@@ -133,12 +133,12 @@ main (int   argc,
       const gchar *file = pshift ();
       
       g_print ("file test for \"%s\":\n", file);
-      g_print ("  is readable   : %s\n", gsl_strerror (gsl_file_check (file, "r")));
-      g_print ("  is writable   : %s\n", gsl_strerror (gsl_file_check (file, "w")));
-      g_print ("  is executable : %s\n", gsl_strerror (gsl_file_check (file, "x")));
-      g_print ("  is file       : %s\n", gsl_strerror (gsl_file_check (file, "f")));
-      g_print ("  is directory  : %s\n", gsl_strerror (gsl_file_check (file, "d")));
-      g_print ("  is link       : %s\n", gsl_strerror (gsl_file_check (file, "l")));
+      g_print ("  is readable   : %s\n", bse_error_blurb (gsl_file_check (file, "r")));
+      g_print ("  is writable   : %s\n", bse_error_blurb (gsl_file_check (file, "w")));
+      g_print ("  is executable : %s\n", bse_error_blurb (gsl_file_check (file, "x")));
+      g_print ("  is file       : %s\n", bse_error_blurb (gsl_file_check (file, "f")));
+      g_print ("  is directory  : %s\n", bse_error_blurb (gsl_file_check (file, "d")));
+      g_print ("  is link       : %s\n", bse_error_blurb (gsl_file_check (file, "l")));
     }
   else if (strcmp (arg, "ring-test") == 0)
     {

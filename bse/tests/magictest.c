@@ -102,12 +102,12 @@ main (gint   argc,
                   if (test_open)
                     {
                       GslWaveFileInfo *wfi;
-                      GslErrorType error = 0;
+                      BseErrorType error = 0;
                       g_print ("\n  LOADER: %s\n", loader->name);
                       wfi = gsl_wave_file_info_load (argv[i], &error);
                       if (wfi)
                         gsl_wave_file_info_unref (wfi);
-                      g_print ("  ERROR: %s", gsl_strerror (error));
+                      g_print ("  ERROR: %s", bse_error_blurb (error));
                     }
                   else
                     g_print (" LOADER: %s", loader->name);

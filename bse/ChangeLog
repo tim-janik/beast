@@ -1,3 +1,38 @@
+Mon Dec 27 23:59:19 2004  Tim Janik  <timj@gtk.org>                                                                                                           
+                                                                                                                                                              
+        * gsldatahandle.[hc]: added xinfos[] array to opened data handles.                                                                                    
+        added gsl_data_handle_new_add_xinfos(),                                                                                                               
+        gsl_data_handle_new_remove_xinfos() and                                                                                                               
+        gsl_data_handle_new_clear_xinfos() to control the xinfos of a data                                                                                    
+        handle after loading.                                                                                                                                 
+        added xinfos[] field to gsl_wave_handle_new_zoffset() and                                                                                             
+        gsl_wave_handle_new().                                                                                                                                
+                                                                                                                                                              
+        * gslloader-bsewave.c: support parsing of xinfos["key"] = "value"                                                                                     
+        statements.                                                                                                                                           
+                                                                                                                                                              
+        * gslloader.[hc]: introduced xinfos for loader structures, provided                                                                                   
+        xinfos accessors. removed authors, license, blurb (comment) and                                                                                       
+        looping fields. this data is taken care of by xinfos now.                                                                                             
+                                                                                                                                                              
+        * gslloader-oggvorbis.c:                                                                                                                              
+        * gslloader-bsewave.c:                                                                                                                                
+        * gslloader-wav.c:                                                                                                                                    
+        * gslloader-mad.c:                                                                                                                                    
+        * gslloader-aiff.c: provide chunk->xinfos instead of accessing                                                                                        
+        chunk fields. support data-handles with xinfos.                                                                                                       
+                                                                                                                                                              
+        * bseenums.[hc]: merged error enums with GslErrorType.                                                                                                
+                                                                                                                                                              
+        * gsldefs.h:                                                                                                                                          
+        * gslcommon.[hc]: removed GslErrorType specific code.                                                                                                 
+        include bseenums.h.                                                                                                                                   
+                                                                                                                                                              
+        * bsemain.h: include fixes.                                                                                                                           
+                                                                                                                                                              
+        * tests/*.c:                                                                                                                                          
+        * *.c: BseErrorType enum fixups.                                                                                                                      
+                                                                                                                                                              
 Mon Dec 27 00:12:44 2004  Tim Janik  <timj@gtk.org>
 
 	* gslloader-bsewave.c (gsl_wave_token): fix off-by-one error in reverse

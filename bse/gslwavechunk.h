@@ -109,7 +109,7 @@ GslWaveChunk*	gsl_wave_chunk_new		(GslDataCache		*dcache,
 						 guint			 loop_count);
 GslWaveChunk*	gsl_wave_chunk_ref		(GslWaveChunk		*wchunk);
 void		gsl_wave_chunk_unref		(GslWaveChunk		*wchunk);
-GslErrorType	gsl_wave_chunk_open		(GslWaveChunk		*wchunk);
+BseErrorType	gsl_wave_chunk_open		(GslWaveChunk		*wchunk);
 void		gsl_wave_chunk_close		(GslWaveChunk		*wchunk);
 void		gsl_wave_chunk_debug_block	(GslWaveChunk		*wchunk,
 						 GslLong		 offset,

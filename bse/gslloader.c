@@ -148,14 +148,14 @@ gsl_loader_match (const gchar *file_name)
 
 GslWaveFileInfo*
 gsl_wave_file_info_load (const gchar  *file_name,
-			 GslErrorType *error_p)
+			 BseErrorType *error_p)
 {
   GslWaveFileInfo *finfo = NULL;
-  GslErrorType error = GSL_ERROR_NONE;
+  BseErrorType error = BSE_ERROR_NONE;
   GslLoader *loader;
   
   if (error_p)
-    *error_p = GSL_ERROR_INTERNAL;
+    *error_p = BSE_ERROR_INTERNAL;
   g_return_val_if_fail (file_name != NULL, NULL);
 
   loader = gsl_loader_match (file_name);
@@ -169,7 +169,7 @@ gsl_wave_file_info_load (const gchar  *file_name,
 	  finfo = NULL;
 	}
       if (!finfo && !error)
-	error = GSL_ERROR_FILE_EMPTY;	/* FIXME: try next loader */
+	error = BSE_ERROR_FILE_EMPTY;	/* FIXME: try next loader */
       if (finfo)
 	{
 	  if (finfo->n_waves > 0)
@@ -190,7 +190,7 @@ gsl_wave_file_info_load (const gchar  *file_name,
 	    {
 	      loader->free_file_info (loader->data, finfo);
 	      finfo = NULL;
-	      error = GSL_ERROR_FILE_EMPTY;   /* FIXME: try next loader */
+	      error = BSE_ERROR_FILE_EMPTY;   /* FIXME: try next loader */
 	    }
 	}
     }
@@ -199,13 +199,136 @@ gsl_wave_file_info_load (const gchar  *file_name,
       /* try to provide apropriate error code */
       error = gsl_file_check (file_name, "rf");
       if (!error)
-	error = GSL_ERROR_FORMAT_UNKNOWN;
+	error = BSE_ERROR_FORMAT_UNKNOWN;
     }
 
   if (error_p)
     *error_p = error;
 
   return finfo;
+}
+
+gchar**
+bse_xinfos_add_value (gchar          **xinfos,
+                      const gchar     *key,
+                      const gchar     *value)
+{
+  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  if (!value || !value[0])
+    return bse_xinfos_del_value (xinfos, key);
+  else
+    {
+      gchar *ckey = g_strcanon (g_strdup (key), G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
+      guint i, l = strlen (ckey);
+      if (xinfos)
+        {
+          for (i = 0; xinfos[i]; i++)
+            if (strncmp (xinfos[i], ckey, l) == 0 &&
+                xinfos[i][l] == '=')
+              break;
+          if (xinfos[i]) /* found value to replace */
+            {
+              g_free (xinfos[i]);
+              xinfos[i] = g_strconcat (ckey, "=", value, NULL);
+              g_free (ckey);
+              return xinfos;
+            }
+        }
+      i = xinfos ? g_strlenv (xinfos) : 0;
+      i++;
+      xinfos = g_renew (gchar*, xinfos, i + 1);
+      xinfos[i--] = NULL;
+      xinfos[i] = g_strconcat (ckey, "=", value, NULL);
+      g_free (ckey);
+      return xinfos;
+    }
+}
+
+gchar**
+bse_xinfos_del_value (gchar       **xinfos,
+                      const gchar  *key)
+{
+  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  if (xinfos)
+    {
+      gchar *ckey = g_strcanon (g_strdup (key), G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
+      guint i, l = strlen (ckey);
+      for (i = 0; xinfos[i]; i++)
+        if (strncmp (xinfos[i], ckey, l) == 0 &&
+            xinfos[i][l] == '=')
+          break;
+      g_free (ckey);
+      if (xinfos[i]) /* found value to delete */
+        {
+          g_free (xinfos[i]);
+          while (xinfos[i + 1])
+            {
+              xinfos[i] = xinfos[i + 1];
+              i++;
+            }
+          xinfos[i] = NULL;
+        }
+    }
+  return xinfos;
+}
+
+gchar**
+bse_xinfos_add_float (gchar          **xinfos,
+                      const gchar     *key,
+                      gfloat           fvalue)
+{
+  gchar buffer[G_ASCII_DTOSTR_BUF_SIZE * 2 + 1024];
+  return bse_xinfos_add_value (xinfos, key, g_ascii_dtostr (buffer, sizeof (buffer), fvalue));
+}
+
+gchar**
+bse_xinfos_add_num (gchar          **xinfos,
+                    const gchar     *key,
+                    SfiNum           num)
+{
+  gchar buffer[128];
+  g_snprintf (buffer, sizeof (buffer), "%lld", num);
+  return bse_xinfos_add_value (xinfos, key, buffer);
+}
+
+const gchar*
+bse_xinfos_get_value (gchar          **xinfos,
+                      const gchar     *key)
+{
+  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, NULL);
+  if (xinfos)
+    {
+      guint i, l = strlen (key);
+      for (i = 0; xinfos[i]; i++)
+        if (strncmp (xinfos[i], key, l) == 0 &&
+            xinfos[i][l] == '=')
+          break;
+      if (xinfos[i]) /* found value */
+        return xinfos[i] + l + 1;
+    }
+  return NULL;
+}
+
+gfloat
+bse_xinfos_get_float (gchar          **xinfos,
+                      const gchar     *key)
+{
+  const gchar *v = bse_xinfos_get_value (xinfos, key);
+  if (v)
+    return g_ascii_strtod (v, NULL);
+  else
+    return 0.0;
+}
+
+SfiNum
+bse_xinfos_get_num (gchar          **xinfos,
+                    const gchar     *key)
+{
+  const gchar *v = bse_xinfos_get_value (xinfos, key);
+  if (v)
+    return g_ascii_strtoull (v, NULL, 10);
+  else
+    return 0.0;
 }
 
 void
@@ -222,6 +345,8 @@ gsl_wave_file_info_unref (GslWaveFileInfo *wave_file_info)
       g_free (wave_file_info->file_name);
       wave_file_info->file_name = NULL;
       wave_file_info->loader = NULL;
+      g_strfreev (wave_file_info->comments);
+      wave_file_info->comments = NULL;
 
       loader->free_file_info (loader->data, wave_file_info);
     }
@@ -249,14 +374,14 @@ gsl_wave_file_info_loader (GslWaveFileInfo *fi)
 GslWaveDsc*
 gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
-		   GslErrorType    *error_p)
+		   BseErrorType    *error_p)
 {
-  GslErrorType error = GSL_ERROR_NONE;
+  BseErrorType error = BSE_ERROR_NONE;
   GslWaveDsc *wdsc;
   GslLoader *loader;
 
   if (error_p)
-    *error_p = GSL_ERROR_INTERNAL;
+    *error_p = BSE_ERROR_INTERNAL;
   g_return_val_if_fail (wave_file_info != NULL, NULL);
   g_return_val_if_fail (wave_file_info->loader != NULL, NULL);
   g_return_val_if_fail (nth_wave < wave_file_info->n_waves, NULL);
@@ -271,7 +396,7 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
       wdsc = NULL;
     }
   if (!wdsc && !error)
-    error = GSL_ERROR_FILE_EMPTY;
+    error = BSE_ERROR_FILE_EMPTY;
   if (wdsc)
     {
       if (wdsc->n_chunks > 0)
@@ -286,7 +411,7 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 	{
 	  loader->free_wave_dsc (loader->data, wdsc);
 	  wdsc = NULL;
-	  error = GSL_ERROR_FILE_EMPTY;
+	  error = BSE_ERROR_FILE_EMPTY;
 	}
     }
 
@@ -308,6 +433,7 @@ gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
   wave_dsc->file_info = NULL;
   
   file_info->loader->free_wave_dsc (file_info->loader->data, wave_dsc);
+  g_strfreev (wave_dsc->xinfos);
 
   gsl_wave_file_info_unref (file_info);
 }
@@ -315,14 +441,14 @@ gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
 GslDataHandle*
 gsl_wave_handle_create (GslWaveDsc   *wave_dsc,
 			guint	      nth_chunk,
-			GslErrorType *error_p)
+			BseErrorType *error_p)
 {
-  GslErrorType error = GSL_ERROR_NONE;
+  BseErrorType error = BSE_ERROR_NONE;
   GslDataHandle *dhandle;
   GslLoader *loader;
 
   if (error_p)
-    *error_p = GSL_ERROR_INTERNAL;
+    *error_p = BSE_ERROR_INTERNAL;
   g_return_val_if_fail (wave_dsc != NULL, NULL);
   g_return_val_if_fail (wave_dsc->file_info != NULL, NULL);
   g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
@@ -340,7 +466,7 @@ gsl_wave_handle_create (GslWaveDsc   *wave_dsc,
       dhandle = NULL;
     }
   if (!dhandle && !error)
-    error = GSL_ERROR_FORMAT_INVALID;
+    error = BSE_ERROR_FORMAT_INVALID;
 
   if (error_p)
     *error_p = error;
@@ -351,14 +477,14 @@ gsl_wave_handle_create (GslWaveDsc   *wave_dsc,
 GslWaveChunk*
 gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
 		       guint         nth_chunk,
-		       GslErrorType *error_p)
+		       BseErrorType *error_p)
 {
   GslDataHandle *dhandle;
   GslDataCache *dcache;
   GslWaveChunk *wchunk;
 
   if (error_p)
-    *error_p = GSL_ERROR_INTERNAL;
+    *error_p = BSE_ERROR_INTERNAL;
   g_return_val_if_fail (wave_dsc != NULL, NULL);
   g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
 
@@ -366,8 +492,10 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
   if (!dhandle)
     return NULL;
 
+  GslWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
+
   if (error_p)
-    *error_p = GSL_ERROR_IO;
+    *error_p = BSE_ERROR_IO;
 
   /* FIXME: we essentially create a dcache for each wchunk here ;( */
 
@@ -377,17 +505,26 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
     return NULL;
   /* dcache keeps dhandle alive */
 
+  const gchar *ltype = bse_xinfos_get_value (chunk->xinfos, "loop-type");
+  GslWaveLoopType loop_type = ltype ? gsl_wave_loop_type_from_string (ltype) : GSL_WAVE_LOOP_NONE;
+  SfiNum loop_start = bse_xinfos_get_num (chunk->xinfos, "loop-start");
+  SfiNum loop_end = bse_xinfos_get_num (chunk->xinfos, "loop-end");
+  SfiNum loop_count = bse_xinfos_get_num (chunk->xinfos, "loop-count");
+  if (loop_end <= loop_start)
+    {
+      loop_start = loop_end = 0;
+      loop_type = GSL_WAVE_LOOP_NONE;
+      loop_count = 0;
+    }
+
   wchunk = gsl_wave_chunk_new (dcache,
-			       wave_dsc->chunks[nth_chunk].mix_freq,
-			       wave_dsc->chunks[nth_chunk].osc_freq,
-			       wave_dsc->chunks[nth_chunk].loop_type,
-			       wave_dsc->chunks[nth_chunk].loop_start,
-			       wave_dsc->chunks[nth_chunk].loop_end,
-			       wave_dsc->chunks[nth_chunk].loop_count);
+			       chunk->mix_freq,
+			       chunk->osc_freq,
+                               loop_type, loop_start, loop_end, loop_count);
   gsl_data_cache_unref (dcache);
 
   if (error_p && wchunk)
-    *error_p = GSL_ERROR_NONE;
+    *error_p = BSE_ERROR_NONE;
 
   return wchunk;
 }

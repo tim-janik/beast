@@ -129,13 +129,13 @@ gsl_data_cache_open (GslDataCache *dcache)
   GSL_SPIN_LOCK (&dcache->mutex);
   if (!dcache->open_count)
     {
-      GslErrorType error;
+      BseErrorType error;
 
       error = gsl_data_handle_open (dcache->dhandle);
       if (error)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
-	  sfi_diag ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, gsl_strerror (error));
+	  sfi_diag ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, bse_error_blurb (error));
 	}
       else
 	{

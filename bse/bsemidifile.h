@@ -38,7 +38,7 @@ typedef struct {
 } BseMidiFile;
 
 BseMidiFile* bse_midi_file_load            (const gchar  *file_name,
-                                            GslErrorType *error_p);
+                                            BseErrorType *error_p);
 void         bse_midi_file_free            (BseMidiFile  *smf);
 void         bse_midi_file_add_part_events (BseMidiFile  *smf,
                                             guint         nth_track,

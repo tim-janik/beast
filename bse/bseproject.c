@@ -550,7 +550,7 @@ bse_project_store_bse (BseProject  *self,
   bse_storage_reset (storage);
   g_object_unref (storage);
 
-  return close (fd) < 0 ? BSE_ERROR_FILE_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
 
 BseErrorType
