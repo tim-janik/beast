@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,8 @@ static void	    bse_data_pocket_class_init		(BseDataPocketClass	*class);
 static void	    bse_data_pocket_class_finalize	(BseDataPocketClass	*class);
 static void	    bse_data_pocket_dispose		(GObject		*object);
 static void	    bse_data_pocket_finalize		(GObject		*object);
+static gboolean     bse_data_pocket_needs_storage       (BseItem                *item,
+                                                         BseStorage             *storage);
 static void	    bse_data_pocket_do_store_private	(BseObject		*object,
 							 BseStorage		*storage);
 static SfiTokenType bse_data_pocket_restore_private	(BseObject		*object,
@@ -87,6 +89,7 @@ bse_data_pocket_class_init (BseDataPocketClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   quark_set_data = g_quark_from_static_string ("set-data");
@@ -97,6 +100,8 @@ bse_data_pocket_class_init (BseDataPocketClass *class)
   object_class->store_private = bse_data_pocket_do_store_private;
   object_class->restore_private = bse_data_pocket_restore_private;
   
+  item_class->needs_storage = bse_data_pocket_needs_storage;
+
   signal_entry_added = bse_object_class_add_signal (object_class, "entry-added",
 						    G_TYPE_NONE, 1, G_TYPE_INT);
   signal_entry_removed = bse_object_class_add_signal (object_class, "entry-removed",
@@ -118,7 +123,6 @@ bse_data_pocket_init (BseDataPocket *pocket)
   pocket->entries = NULL;
   pocket->need_store = 0;
   pocket->cr_items = NULL;
-  BSE_OBJECT_SET_FLAGS (pocket, BSE_ITEM_FLAG_AGGREGATE);
 }
 
 static void
@@ -335,11 +339,6 @@ _bse_data_pocket_delete_entry (BseDataPocket *pocket,
   if (i < pocket->n_entries)
     pocket->entries[i] = pocket->entries[pocket->n_entries];
   
-  if (pocket->need_store)
-    BSE_OBJECT_UNSET_FLAGS (pocket, BSE_ITEM_FLAG_AGGREGATE);
-  else
-    BSE_OBJECT_SET_FLAGS (pocket, BSE_ITEM_FLAG_AGGREGATE);
-  
   while (cr_del)
     {
       GSList *tmp = cr_del;
@@ -430,11 +429,6 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
 	add_cross_ref (pocket, value.v_object);
     }
   
-  if (pocket->need_store)
-    BSE_OBJECT_UNSET_FLAGS (pocket, BSE_ITEM_FLAG_AGGREGATE);
-  else
-    BSE_OBJECT_SET_FLAGS (pocket, BSE_ITEM_FLAG_AGGREGATE);
-  
   changed_notify_add (pocket, entry->id);
   
   return TRUE;
@@ -471,6 +465,14 @@ _bse_data_pocket_entry_get (BseDataPocket      *pocket,
   *value = entry->items[n].value;
   
   return entry->items[n].type;
+}
+
+static gboolean
+bse_data_pocket_needs_storage (BseItem    *item,
+                               BseStorage *storage)
+{
+  BseDataPocket *self = BSE_DATA_POCKET (item);
+  return self->need_store > 0;
 }
 
 static void

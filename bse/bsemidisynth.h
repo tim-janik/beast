@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1996-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,7 @@
 #include	<bse/bsesnet.h>
 #include	<bse/bsesubsynth.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_SYNTH	         (BSE_TYPE_ID (BseMidiSynth))
@@ -47,6 +43,8 @@ struct _BseMidiSynth
   guint		 n_voices;
   gfloat	 volume_factor;         /* 1-based factor */
 
+  BseSNet       *snet;
+
   BseSource	*voice_input;
   BseSource	*voice_switch;
   BseSource	*context_merger;
@@ -59,9 +57,6 @@ struct _BseMidiSynthClass
 };
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MIDI_SYNTH_H__ */

@@ -37,9 +37,10 @@
 
 
 typedef struct {
-  GType   base_type;
-  guint   max_items;
-  GSList *items;
+  GType    base_type;
+  gboolean intern_children;
+  guint    max_items;
+  GSList  *items;
 } StorageTrap;
 
 
@@ -375,6 +376,8 @@ bse_project_retrieve_child (BseContainer *container,
       StorageTrap *strap = g_object_get_qdata (self, quark_storage_trap);
       if (item && strap)
 	{
+          if (strap->intern_children)
+            bse_item_set_internal (item, TRUE);
 	  strap->items = g_slist_prepend (strap->items, item);
 	  strap->max_items--;
 	}
@@ -576,7 +579,7 @@ bse_project_create_intern_synth (BseProject  *self,
     {
       BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
       BseErrorType error = BSE_ERROR_NONE;
-      StorageTrap strap = { 0, }, *old_strap = g_object_get_qdata (self, quark_storage_trap);
+      StorageTrap strap = { 0, TRUE, }, *old_strap = g_object_get_qdata (self, quark_storage_trap);
       bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
       g_object_set_qdata (self, quark_storage_trap, &strap);
       strap.max_items = 1;

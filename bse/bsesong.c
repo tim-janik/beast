@@ -216,6 +216,7 @@ bse_song_class_init (BseSongClass *class)
 static void
 bse_song_init (BseSong *self)
 {
+  BseSNet *snet = BSE_SNET (self);
   BseSongTiming timing;
 
   bse_song_timing_get_default (&timing);
@@ -241,11 +242,11 @@ bse_song_init (BseSong *self)
 
   /* context merger */
   self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
-  BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
+  bse_snet_intern_child (snet, self->context_merger);
 
   /* output */
   self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
-  BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_AGGREGATE);
+  bse_snet_intern_child (snet, self->output);
 
   /* context merger <-> output */
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,

@@ -172,6 +172,29 @@ METHOD (BseItem, get-uname-path) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseItem, internal) {
+  HELP	= "Check whether an item is internal, i.e. owned by another non-internal item.";
+  IN	= bse_param_spec_object ("item", "Item", NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_bool ("internal", "Internal", NULL,
+                          FALSE, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_bool (out_values++, BSE_ITEM_INTERNAL (item));
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseItem, use) {
   HELP	= "Increment use count to keep an item alive.";
   IN	= bse_param_spec_object ("item", "Item", NULL,

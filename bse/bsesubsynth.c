@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
 #include "bsesubsynth.h"
 
 #include "bsecategories.h"
-#include "bsesnet.h"
+#include "bsecsynth.h"
 #include "bseproject.h"
 #include "bsemidireceiver.h"
 #include "./icons/inoutport.c"
@@ -131,7 +131,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
   bse_object_class_add_param (object_class, "Assignments",
 			      PARAM_SNET,
 			      bse_param_spec_object ("snet", "Synthesis Network", "The synthesis network to interface to",
-						     BSE_TYPE_SNET, SFI_PARAM_DEFAULT));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT));
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       gchar *string, *name, *value;
@@ -210,6 +210,25 @@ bse_sub_synth_do_dispose (GObject *object)
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
+static BseProxySeq*
+bse_sub_synth_list_proxies (BseItem    *item,
+			    guint       param_id,
+			    GParamSpec *pspec)
+{
+  BseSubSynth *self = BSE_SUB_SYNTH (item);
+  BseProxySeq *pseq = bse_proxy_seq_new ();
+  switch (param_id)
+    {
+    case PARAM_SNET:
+      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return pseq;
+}
+
 static gboolean
 find_name (BseSubSynth *self,
 	   const gchar *name,
@@ -244,6 +263,14 @@ dup_name_unique (BseSubSynth *self,
 }
 
 static void
+sub_synth_uncross_snet (BseItem *owner,
+                        BseItem *ref_item)
+{
+  BseSubSynth *self = BSE_SUB_SYNTH (owner);
+  bse_item_set (self, "snet", NULL, NULL);
+}
+
+static void
 bse_sub_synth_set_property (GObject      *object,
 			    guint         param_id,
 			    const GValue *value,
@@ -255,13 +282,20 @@ bse_sub_synth_set_property (GObject      *object,
     {
       guint indx, n;
     case PARAM_SNET:
-      if (!BSE_SOURCE_PREPARED (self))	/* FIXME: should check LOCKED() here instead? */
+      if (!BSE_SOURCE_PREPARED (self))
 	{
-	  if (self->snet)
-	    g_object_unref (self->snet);
+          if (self->snet)
+            {
+              bse_object_unproxy_notifies (self->snet, self, "notify::snet");
+              bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), sub_synth_uncross_snet);
+              self->snet = NULL;
+            }
 	  self->snet = bse_value_get_object (value);
 	  if (self->snet)
-	    g_object_ref (self->snet);	// FIXME: use cross-refs
+            {
+              bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), sub_synth_uncross_snet);
+              bse_object_proxy_notifies (self->snet, self, "notify::snet");
+            }
 	}
       break;
     default:
@@ -324,25 +358,6 @@ bse_sub_synth_get_property (GObject    *object,
 	}
       break;
     }
-}
-
-static BseProxySeq*
-bse_sub_synth_list_proxies (BseItem    *item,
-			    guint       param_id,
-			    GParamSpec *pspec)
-{
-  BseSubSynth *self = BSE_SUB_SYNTH (item);
-  BseProxySeq *pseq = bse_proxy_seq_new ();
-  switch (param_id)
-    {
-    case PARAM_SNET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_SNET, BSE_TYPE_PROJECT, FALSE);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
-      break;
-    }
-  return pseq;
 }
 
 void

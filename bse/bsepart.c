@@ -220,7 +220,7 @@ static guint
 bse_part_alloc_id (BsePart *self,
 		   guint    tick)
 {
-  guint next, id;
+  guint id;
   
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
 

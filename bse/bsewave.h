@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,7 @@
 
 #include	<bse/bsesource.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_WAVE		   (BSE_TYPE_ID (BseWave))
@@ -95,10 +91,6 @@ void		bse_wave_drop_index		(BseWave	*wave);
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq);
 						 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_WAVE_H__ */

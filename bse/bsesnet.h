@@ -58,7 +58,8 @@ struct _BseSNet
 {
   BseSuper	 parent_object;
 
-  GList		*sources;	/* of type BseSource* */
+  SfiRing	*sources;	/* of type BseSource* */
+  SfiRing	*isources;	/* internal (protected) sources */
   GSList	*iport_names;
   GSList	*oport_names;
   gpointer	 port_array;	/* of type BseSNetPort* */
@@ -74,57 +75,60 @@ struct _BseSNetClass
 
 
 /* --- prototypes --- */
-guint		bse_snet_create_context		(BseSNet	 *snet,
-						 BseMidiReceiver *midi_receiver,
-						 guint		  midi_channel,
-						 GslTrans	 *trans);
-guint		bse_snet_context_clone_branch	(BseSNet         *self,
-						 guint            context,
-						 BseSource       *context_merger,
-						 BseMidiReceiver *midi_receiver,
-						 guint            midi_channel,
-						 GslTrans        *trans);
-gboolean	bse_snet_context_is_branch	(BseSNet	 *self,
-						 guint		  context_id);
-BseMidiReceiver*bse_snet_get_midi_receiver	(BseSNet	 *snet,
-						 guint		  context_handle,
-						 guint		 *midi_channel);
-const gchar*	bse_snet_iport_name_register	(BseSNet	 *snet,
-						 const gchar	 *tmpl_name);
-gboolean	bse_snet_iport_name_registered	(BseSNet         *snet,
-						 const gchar     *name);
-void		bse_snet_iport_name_unregister	(BseSNet	 *snet,
-						 const gchar	 *name);
-const gchar*	bse_snet_oport_name_register	(BseSNet	 *snet,
-						 const gchar	 *tmpl_name);
-gboolean	bse_snet_oport_name_registered	(BseSNet         *snet,
-						 const gchar     *name);
-void		bse_snet_oport_name_unregister	(BseSNet	 *snet,
-						 const gchar	 *name);
-void		bse_snet_set_iport_src		(BseSNet	 *snet,
-						 const gchar	 *port_name,
-						 guint		  snet_context,
-						 GslModule	 *omodule,
-						 guint		  ostream,
-						 GslTrans	 *trans);
-void		bse_snet_set_iport_dest		(BseSNet	 *snet,
-						 const gchar	 *port_name,
-						 guint		  snet_context,
-						 GslModule	 *imodule,
-						 guint		  istream,
-						 GslTrans	 *trans);
-void		bse_snet_set_oport_src		(BseSNet	 *snet,
-						 const gchar	 *port_name,
-						 guint		  snet_context,
-						 GslModule	 *omodule,
-						 guint		  ostream,
-						 GslTrans	 *trans);
-void		bse_snet_set_oport_dest		(BseSNet	 *snet,
-						 const gchar	 *port_name,
-						 guint		  snet_context,
-						 GslModule	 *imodule,
-						 guint		  istream,
-						 GslTrans	 *trans);
+guint            bse_snet_create_context        (BseSNet         *snet,
+                                                 BseMidiReceiver *midi_receiver,
+                                                 guint            midi_channel,
+                                                 GslTrans        *trans);
+guint            bse_snet_context_clone_branch  (BseSNet         *self,
+                                                 guint            context,
+                                                 BseSource       *context_merger,
+                                                 BseMidiReceiver *midi_receiver,
+                                                 guint            midi_channel,
+                                                 GslTrans        *trans);
+gboolean         bse_snet_context_is_branch     (BseSNet         *self,
+                                                 guint            context_id);
+void             bse_snet_intern_child          (BseSNet         *self,
+                                                 gpointer         child);
+BseMidiReceiver* bse_snet_get_midi_receiver     (BseSNet         *snet,
+                                                 guint            context_handle,
+                                                 guint           *midi_channel);
+const gchar*     bse_snet_iport_name_register   (BseSNet         *snet,
+                                                 const gchar     *tmpl_name);
+gboolean         bse_snet_iport_name_registered (BseSNet         *snet,
+                                                 const gchar     *name);
+void             bse_snet_iport_name_unregister (BseSNet         *snet,
+                                                 const gchar     *name);
+const gchar*     bse_snet_oport_name_register   (BseSNet         *snet,
+                                                 const gchar     *tmpl_name);
+gboolean         bse_snet_oport_name_registered (BseSNet         *snet,
+                                                 const gchar     *name);
+void             bse_snet_oport_name_unregister (BseSNet         *snet,
+                                                 const gchar     *name);
+void             bse_snet_set_iport_src         (BseSNet         *snet,
+                                                 const gchar     *port_name,
+                                                 guint            snet_context,
+                                                 GslModule       *omodule,
+                                                 guint            ostream,
+                                                 GslTrans        *trans);
+void             bse_snet_set_iport_dest        (BseSNet         *snet,
+                                                 const gchar     *port_name,
+                                                 guint            snet_context,
+                                                 GslModule       *imodule,
+                                                 guint            istream,
+                                                 GslTrans        *trans);
+void             bse_snet_set_oport_src         (BseSNet         *snet,
+                                                 const gchar     *port_name,
+                                                 guint            snet_context,
+                                                 GslModule       *omodule,
+                                                 guint            ostream,
+                                                 GslTrans        *trans);
+void             bse_snet_set_oport_dest        (BseSNet         *snet,
+                                                 const gchar     *port_name,
+                                                 guint            snet_context,
+                                                 GslModule       *imodule,
+                                                 guint            istream,
+                                                 GslTrans        *trans);
+
 
 G_END_DECLS
 

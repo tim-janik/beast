@@ -88,7 +88,6 @@ static void
 bse_editable_sample_init (BseEditableSample *self)
 {
   self->wchunk = NULL;
-  BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_AGGREGATE);
 }
 
 static void

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1996-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bsemidisynth.h"
+#include "bsemidisynth.h"
 
-#include        "bsemidievent.h"	/* BSE_MIDI_MAX_CHANNELS */
-#include        "bsemidivoice.h"
-#include        "bsecontextmerger.h"
-#include        "bsesubsynth.h"
-#include        "bsepcmoutput.h"
-#include        "bseproject.h"
-#include        <string.h>
-#include        <time.h>
-#include        <fcntl.h>
-#include        <unistd.h>
+#include "bsemidievent.h"	/* BSE_MIDI_MAX_CHANNELS */
+#include "bsemidivoice.h"
+#include "bsecontextmerger.h"
+#include "bsesubsynth.h"
+#include "bsepcmoutput.h"
+#include "bseproject.h"
+#include "bsecsynth.h"
+#include <string.h>
+#include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-#include        "./icons/snet.c"
+#include "./icons/snet.c"
 
 
 /* --- parameters --- */
@@ -127,7 +128,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   bse_object_class_add_param (object_class, "MIDI Instrument",
 			      PARAM_SNET,
 			      bse_param_spec_object ("snet", "Synthesis Network", "The MIDI instrument synthesis network",
-						     BSE_TYPE_SNET, SFI_PARAM_DEFAULT));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
@@ -157,8 +158,9 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 static void
 bse_midi_synth_init (BseMidiSynth *self)
 {
+  BseSNet *snet = BSE_SNET (self);
   BseErrorType error;
-  
+
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
   self->midi_channel_id = 1;
@@ -167,14 +169,14 @@ bse_midi_synth_init (BseMidiSynth *self)
   
   /* midi voice modules */
   self->voice_input = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
-  BSE_OBJECT_SET_FLAGS (self->voice_input, BSE_ITEM_FLAG_AGGREGATE);
+  bse_snet_intern_child (snet, self->voice_input);
   self->voice_switch = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
-  BSE_OBJECT_SET_FLAGS (self->voice_switch, BSE_ITEM_FLAG_AGGREGATE);
+  bse_snet_intern_child (snet, self->voice_switch);
   bse_midi_voice_switch_set_voice_input (BSE_MIDI_VOICE_SWITCH (self->voice_switch), BSE_MIDI_VOICE_INPUT (self->voice_input));
   
   /* context merger */
   self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
-  BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
+  bse_snet_intern_child (snet, self->context_merger);
   
   /* midi voice switch <-> context merger */
   error = bse_source_set_input (self->context_merger, 0,
@@ -186,7 +188,7 @@ bse_midi_synth_init (BseMidiSynth *self)
   
   /* output */
   self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
-  BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_AGGREGATE);
+  bse_snet_intern_child (snet, self->output);
   
   /* context merger <-> output */
   error = bse_source_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
@@ -207,8 +209,8 @@ bse_midi_synth_init (BseMidiSynth *self)
                                              "out_port_3", "unused",
                                              "out_port_4", "synth-done",
                                              NULL);
-  BSE_OBJECT_SET_FLAGS (self->sub_synth, BSE_ITEM_FLAG_AGGREGATE);
-  
+  bse_snet_intern_child (snet, self->sub_synth);
+
   /* voice input <-> sub-synth */
   error = bse_source_set_input (self->sub_synth, 0,
 				self->voice_input, BSE_MIDI_VOICE_INPUT_OCHANNEL_FREQUENCY);
@@ -265,13 +267,21 @@ bse_midi_synth_list_proxies (BseItem    *item,
   switch (param_id)
     {
     case PARAM_SNET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_SNET, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
   return pseq;
+}
+
+static void
+midi_synth_uncross_snet (BseItem *owner,
+                         BseItem *ref_item)
+{
+  BseMidiSynth *self = BSE_MIDI_SYNTH (owner);
+  bse_item_set (self, "snet", NULL, NULL);
 }
 
 static void
@@ -284,9 +294,24 @@ bse_midi_synth_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_SNET:
-      g_object_set (self->sub_synth, /* no undo */
-                    "snet", bse_value_get_object (value),
-                    NULL);
+      if (!BSE_SOURCE_PREPARED (self))
+        {
+          if (self->snet)
+            {
+              bse_object_unproxy_notifies (self->snet, self, "notify::snet");
+              bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), midi_synth_uncross_snet);
+              self->snet = NULL;
+            }
+          self->snet = bse_value_get_object (value);
+          if (self->snet)
+            {
+              bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), midi_synth_uncross_snet);
+              bse_object_proxy_notifies (self->snet, self, "notify::snet");
+            }
+          g_object_set (self->sub_synth, /* no undo */
+                        "snet", self->snet,
+                        NULL);
+        }
       break;
     case PARAM_MIDI_CHANNEL:
       if (!BSE_SOURCE_PREPARED (self))	/* midi channel is locked while prepared */
@@ -336,7 +361,7 @@ bse_midi_synth_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_SNET:
-      g_object_get_property (G_OBJECT (self->sub_synth), "snet", value);
+      bse_value_set_object (value, self->snet);
       break;
     case PARAM_MIDI_CHANNEL:
       sfi_value_set_int (value, self->midi_channel_id);

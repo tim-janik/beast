@@ -19,7 +19,7 @@
 
 #include "bseglobals.h"
 #include "bsestorage.h"
-#include "bsesnet.h"
+#include "bsecsynth.h"
 #include "bsewave.h"
 #include "bsepart.h"
 #include "bsemain.h"
@@ -125,7 +125,7 @@ bse_track_class_init (BseTrackClass *class)
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_SYNTH_NET,
 			      bse_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
-						     BSE_TYPE_SNET,
+						     BSE_TYPE_CSYNTH,
 						     SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_WAVE,
@@ -299,7 +299,7 @@ bse_track_list_proxies (BseItem    *item,
     {
       BseProject *project;
     case PROP_SYNTH_NET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_SNET, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_WAVE:
       project = bse_item_get_project (item);
@@ -636,7 +636,7 @@ bse_track_add_modules (BseTrack     *self,
 
   /* midi voice input */
   self->voice_input = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
-  BSE_OBJECT_SET_FLAGS (self->voice_input, BSE_ITEM_FLAG_AGGREGATE);
+  bse_item_set_internal (self->voice_input, TRUE);
   bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), self->midi_receiver_SL, 0);
   
   /* sub synth */
@@ -651,17 +651,17 @@ bse_track_add_modules (BseTrack     *self,
                                              "out_port_4", "synth-done",
                                              "snet", self->snet,
                                              NULL);
-  BSE_OBJECT_SET_FLAGS (self->sub_synth, BSE_ITEM_FLAG_AGGREGATE);
+  bse_item_set_internal (self->sub_synth, TRUE);
   bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), self->midi_receiver_SL, 0);
   
   /* midi voice switch */
   self->voice_switch = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
-  BSE_OBJECT_SET_FLAGS (self->voice_switch, BSE_ITEM_FLAG_AGGREGATE);
+  bse_item_set_internal (self->voice_switch, TRUE);
   bse_midi_voice_switch_set_voice_input (BSE_MIDI_VOICE_SWITCH (self->voice_switch), BSE_MIDI_VOICE_INPUT (self->voice_input));
   
   /* context merger */
   self->context_merger = bse_container_new_child (container, BSE_TYPE_CONTEXT_MERGER, NULL);
-  BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
+  bse_item_set_internal (self->context_merger, TRUE);
   
   /* voice input <-> sub-synth */
   bse_source_must_set_input (self->sub_synth, 0,

@@ -46,6 +46,9 @@ static void             bse_item_get_property_internal  (GObject                
                                                          guint                   param_id,
                                                          GValue                 *value,
                                                          GParamSpec             *pspec);
+static void             bse_item_update_state           (BseItem                *self);
+static gboolean         bse_item_real_needs_storage     (BseItem                *self,
+                                                         BseStorage             *storage);
 static BseProxySeq*     bse_item_list_no_proxies        (BseItem                *item,
                                                          guint                   param_id,
                                                          GParamSpec             *pspec);
@@ -118,6 +121,7 @@ bse_item_class_init (BseItemClass *class)
   class->set_parent = bse_item_do_set_parent;
   class->get_seqid = bse_item_do_get_seqid;
   class->get_undo = bse_item_default_get_undo;
+  class->needs_storage = bse_item_real_needs_storage;
 
   bse_object_class_add_param (object_class, NULL,
                               PROP_SEQID,
@@ -216,10 +220,82 @@ bse_item_do_set_uname (BseObject   *object,
 }
 
 static void
-bse_item_do_set_parent (BseItem *item,
+bse_item_do_set_parent (BseItem *self,
                         BseItem *parent)
 {
-  item->parent = parent;
+  self->parent = parent;
+  bse_item_update_state (self);
+}
+
+static gboolean
+recurse_update_state (BseItem  *self,
+                      gpointer  data)
+{
+  bse_item_update_state (self);
+  return TRUE;
+}
+
+static void
+bse_item_update_state (BseItem *self)
+{
+  /* save original state */
+  gboolean old_internal = BSE_ITEM_INTERNAL (self);
+
+  /* update state */
+  if ((BSE_OBJECT_FLAGS (self) & BSE_ITEM_FLAG_INTERN) ||
+      (self->parent && BSE_ITEM_INTERNAL (self->parent)))
+    BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN_BRANCH);
+  else
+    BSE_OBJECT_UNSET_FLAGS (self, BSE_ITEM_FLAG_INTERN_BRANCH);
+
+  /* compare state and recurse if necessary */
+  if (BSE_IS_CONTAINER (self) && (old_internal != BSE_ITEM_INTERNAL (self)))
+    bse_container_forall_items ((BseContainer*) self, recurse_update_state, NULL);
+}
+
+/**
+ * bse_item_set_internal
+ * @item:      valid #BseItem
+ * @internal:  %TRUE or %FALSE
+ *
+ * Set whether an item should be considered internal to the BSE
+ * implementation (or implementation of another BSE object).
+ * Internal items are not stored with their parents and undo
+ * is not recorded for internal items either. Marking containers
+ * internal also affects any children they contain, in effect,
+ * the whole posterity spawned by the container is considered
+ * internal.
+ */
+void
+bse_item_set_internal (gpointer item,
+                       gboolean internal)
+{
+  BseItem *self = item;
+
+  g_return_if_fail (BSE_IS_ITEM (self));
+
+  if (internal)
+    BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN);
+  else
+    BSE_OBJECT_UNSET_FLAGS (self, BSE_ITEM_FLAG_INTERN);
+  bse_item_update_state (self);
+}
+
+static gboolean
+bse_item_real_needs_storage (BseItem    *self,
+                             BseStorage *storage)
+{
+  return TRUE;
+}
+
+gboolean
+bse_item_needs_storage (BseItem    *self,
+                        BseStorage *storage)
+{
+  g_return_val_if_fail (BSE_IS_ITEM (self), FALSE);
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), FALSE);
+
+  return BSE_ITEM_GET_CLASS (self)->needs_storage (self, storage);
 }
 
 typedef struct {
@@ -237,7 +313,7 @@ gather_child (BseItem *child,
 {
   GatherData *gdata = data;
   
-  if (child != gdata->item &&
+  if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
     bse_proxy_seq_append (gdata->proxies, BSE_OBJECT_ID (child));
@@ -313,11 +389,13 @@ gather_typed_acheck (BseItem  *proxy,
  * @proxies:        sequence of proxies to append to
  * @proxy_type:     base type of the proxies to gather
  * @container_type: base type of the containers to check for proxies
+ * @allow_ancestor: if %FALSE, direct ancestors of @item are omitted
  * @RETURNS:   returns @proxies
  *
  * Variant of bse_item_gather_proxies(), the containers and proxies
  * are simply filtered by checking derivation from @container_type
- * and @proxy_type respectively.
+ * and @proxy_type respectively. Proxies may not be direct ancestors
+ * of @item if @allow_ancestor is %FALSE.
  */
 BseProxySeq*
 bse_item_gather_proxies_typed (BseItem              *item,
@@ -813,7 +891,8 @@ bse_item_push_undo_proc_valist (gpointer     item,
   GValue *ivalues;
   BseErrorType error;
   guint i;
-  if (BSE_UNDO_STACK_VOID (ustack))
+  if (BSE_UNDO_STACK_VOID (ustack) ||
+      BSE_ITEM_INTERNAL (item))
     {
       bse_item_undo_close (ustack);
       return;
@@ -1020,19 +1099,14 @@ bse_item_set_property_undoable (BseItem      *self,
   BseUndoStack *ustack = bse_item_undo_open (self, "set-property(%s,\"%s\")", bse_object_debug_name (self), name);
   BseUndoStep *ustep;
   GValue *tvalue = g_new0 (GValue, 1);
-#if 0
-  const BseUndoStep *lstep = bse_undo_group_peek_last_atom (ustack, NULL);
-  if (lstep && lstep->undo_func == undo_set_property &&
-      strcmp (lstep->data[1].v_pointer, name) == 0 &&
-      bse_undo_pointer_unpack (lstep->data[0].v_pointer, ustack) == (gpointer) self)
-    ; /* try to coalesce with last... */
-#endif
   g_value_init (tvalue, G_VALUE_TYPE (value));
   g_object_get_property (G_OBJECT (self), name, tvalue);
-  /* try to coalesce with last */
-  if (values_equal_for_undo (value, tvalue))
+  if (BSE_ITEM_INTERNAL (self) ||
+      values_equal_for_undo (value, tvalue))
     {
-      /* we're about to set the same value again => skip undo */
+      /* we're about to set a value on an internal item or
+       * to set the same value again => skip undo
+       */
       g_value_unset (tvalue);
       g_free (tvalue);
       bse_item_undo_close (ustack);
@@ -1114,12 +1188,16 @@ bse_item_push_undo_storage (BseItem         *self,
                             BseUndoStack    *ustack,
                             BseStorage      *storage)
 {
-  BseUndoStep *ustep;
-  bse_storage_turn_readable (storage, "<undo-storage>");
-  ustep = bse_undo_step_new (undo_restore_item, unde_free_item, 2);
-  ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
-  ustep->data[1].v_pointer = g_object_ref (storage);
-  bse_undo_stack_push (ustack, ustep);
+  if (!BSE_ITEM_INTERNAL (self) && !BSE_UNDO_STACK_VOID (ustack))
+    {
+      BseUndoStep *ustep = bse_undo_step_new (undo_restore_item, unde_free_item, 2);
+      bse_storage_turn_readable (storage, "<undo-storage>");
+      ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
+      ustep->data[1].v_pointer = g_object_ref (storage);
+      bse_undo_stack_push (ustack, ustep);
+    }
+  else
+    bse_storage_reset (storage);
 }
 
 void

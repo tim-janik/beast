@@ -40,6 +40,8 @@ static void      bse_snooper_get_property       (GObject                *object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
+static gboolean  bse_snooper_needs_storage      (BseItem                *item,
+                                                 BseStorage             *storage);
 static void	 bse_snooper_context_create	(BseSource		*source,
 						 guint			 context_handle,
 						 GslTrans		*trans);
@@ -87,6 +89,7 @@ bse_snooper_class_init (BseSnooperClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ichannel;
   
@@ -95,6 +98,8 @@ bse_snooper_class_init (BseSnooperClass *class)
   gobject_class->set_property = bse_snooper_set_property;
   gobject_class->get_property = bse_snooper_get_property;
   
+  item_class->needs_storage = bse_snooper_needs_storage;
+
   source_class->context_create = bse_snooper_context_create;
   
   bse_object_class_add_param (object_class, "Context",
@@ -112,7 +117,6 @@ bse_snooper_class_init (BseSnooperClass *class)
 static void
 bse_snooper_init (BseSnooper *snooper)
 {
-  BSE_OBJECT_SET_FLAGS (snooper, BSE_ITEM_FLAG_AGGREGATE);
   snooper->active_context_id = 0;
 }
 
@@ -150,6 +154,14 @@ bse_snooper_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
+}
+
+static gboolean
+bse_snooper_needs_storage (BseItem    *item,
+                           BseStorage *storage)
+{
+  // BseSnooper *self = BSE_SNOOPER (item);
+  return FALSE;
 }
 
 typedef struct {

@@ -517,7 +517,8 @@ store_forall (BseItem *item,
               gpointer data)
 {
   BseStorage *storage = data;
-  if (!BSE_ITEM_AGGREGATE (item))
+  if (!BSE_ITEM_INTERNAL (item) &&
+      bse_item_needs_storage (item, storage))
     bse_storage_store_child (storage, item);
   return TRUE;
 }

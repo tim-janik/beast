@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include        <bse/bsesuper.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_DATA_POCKET              (BSE_TYPE_ID (BseDataPocket))
@@ -105,9 +102,6 @@ gchar	 _bse_data_pocket_entry_get	(BseDataPocket	    *pocket,
 					 GQuark		     data_quark,
 					 BseDataPocketValue *value);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_DATA_POCKET_H__ */

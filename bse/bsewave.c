@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@ static void	    bse_wave_get_property	(GObject                *object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
+static gboolean     bse_wave_needs_storage      (BseItem                *item,
+                                                 BseStorage             *storage);
 static void         bse_wave_store_private	(BseObject		*object,
 						 BseStorage		*storage);
 static SfiTokenType bse_wave_restore_private	(BseObject		*object,
@@ -113,6 +115,7 @@ bse_wave_class_init (BseWaveClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
@@ -122,6 +125,8 @@ bse_wave_class_init (BseWaveClass *class)
   
   object_class->store_private = bse_wave_store_private;
   object_class->restore_private = bse_wave_restore_private;
+
+  item_class->needs_storage = bse_wave_needs_storage;
   
   quark_n_channels = g_quark_from_static_string ("n-channels");
   quark_loop = g_quark_from_static_string ("loop");
@@ -160,7 +165,6 @@ bse_wave_init (BseWave *wave)
   wave->request_count = 0;
   wave->index_dirty = FALSE;
   wave->index_list = NULL;
-  BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_AGGREGATE);
 }
 
 static void
@@ -199,6 +203,14 @@ bse_wave_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
+}
+
+static gboolean
+bse_wave_needs_storage (BseItem    *item,
+                        BseStorage *storage)
+{
+  BseWave *self = BSE_WAVE (item);
+  return self->n_wchunks > 0;
 }
 
 static void
@@ -284,11 +296,6 @@ bse_wave_remove_chunk (BseWave      *wave,
   
   gsl_wave_chunk_unref (wchunk);
   wave->index_dirty = TRUE;
-  
-  if (wave->n_wchunks)
-    BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_AGGREGATE);
-  else
-    BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_AGGREGATE);
 }
 
 static gint
@@ -321,7 +328,6 @@ bse_wave_add_chunk (BseWave      *wave,
   url->locator_overrides = FALSE;
   wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
   wave->index_dirty = TRUE;
-  BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_AGGREGATE);
 }
 
 void
@@ -347,7 +353,6 @@ bse_wave_add_chunk_with_locator (BseWave      *wave,
   url->locator_overrides = FALSE;
   wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
   wave->index_dirty = TRUE;
-  BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_AGGREGATE);
 }
 
 void

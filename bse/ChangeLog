@@ -1,3 +1,47 @@
+Mon Jun 16 20:55:48 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidisynth.c:
+	* bsesong.c: use bse_snet_intern_child() to mark internal children,
+	since we also need to keep them alive across dispose.
+	
+	* bsesnet.c: added bse_snet_intern_child() to mark a child internal
+	and to protected from automatic removal at dispose time.
+	
+	* bsemidisynth.c:
+	* bsesubsynth.c: use cross-refs to keep track of snets.
+	
+	* bsemidisynth.c (bse_midi_synth_list_proxies): 
+	* bsesubsynth.c (bse_sub_synth_list_proxies): 
+	* bsetrack.c (bse_track_list_proxies): collect synthesis networks (and
+	change ::snet property types) of type BseCSynth, not BseSNet (which is
+	abstract and includes songs and midi synths).
+	
+	* bseitem.c (bse_item_gather_proxies): don't gather internal items.
+
+	* bseitem.c: renamed BSE_ITEM_AGGREGATE() to BSE_ITEM_INTERNAL().
+	added bse_item_set_internal() to set whether an item is internal
+	and made this flag affect whole branches.
+	added bse_item_needs_storage() and ->needs_storage(), so items can
+	refuse to get stored without flagging themselves as "aggregate".
+	don't store undo for internal items. changed callers.
+
+	* bseitem.proc: added bse-item-internal() to check whether an
+	item is internal.
+
+	* bseproject.c: made bse_project_create_intern_synth() flag the
+	newly created synth as internal.
+
+	* bseeditablesample.c: don't flag editable samples as aggregate.
+
+	* bsesnooper.c: don't flag as aggregate, just refuse storage via
+	implementing ->needs_storage().
+
+	* bsewave.c: don't flag as aggregate. just refuse storage for
+	empty waves by implementing ->needs_storage().
+
+	* bsedatapocket.c: don't flag as aggregate, implement ->needs_storage()
+	instead.
+
 Fri Jun 13 20:01:58 2003  Tim Janik  <timj@gtk.org>
 
 	* bseitem.proc: use bse_item_exec(), not bse_item_exec_void() to keep

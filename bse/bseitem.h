@@ -34,16 +34,17 @@ G_BEGIN_DECLS
 
 /* --- BseItem member macros --- */
 #define BSE_ITEM_SINGLETON(object)  ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
-#define BSE_ITEM_AGGREGATE(object)  ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_AGGREGATE) != 0)
+#define BSE_ITEM_INTERNAL(item)     ((BSE_OBJECT_FLAGS (item) & BSE_ITEM_FLAG_INTERN_BRANCH) != 0)
 
 
 /* --- bse item flags --- */
 typedef enum                            /*< skip >*/
 {
-  BSE_ITEM_FLAG_SINGLETON	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_ITEM_FLAG_AGGREGATE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1)
+  BSE_ITEM_FLAG_SINGLETON       = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_ITEM_FLAG_INTERN          = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
+  BSE_ITEM_FLAG_INTERN_BRANCH   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseItemFlags;
-#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 2)
+#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 3)
 
 
 /* --- BseItem object --- */
@@ -57,68 +58,74 @@ struct _BseItem
 struct _BseItemClass
 {
   BseObjectClass parent_class;
-
-  BseProxySeq*	(*list_proxies)	(BseItem	*item,
-				 guint		 param_id,
-				 GParamSpec	*pspec);
-
-  void		(*set_parent)	(BseItem	*item,
-				 BseItem	*parent);
-  guint		(*get_seqid)	(BseItem	*item);
-  BseUndoStack* (*get_undo)     (BseItem        *item);
+  
+  BseProxySeq*  (*list_proxies)  (BseItem       *item,
+                                  guint          param_id,
+                                  GParamSpec    *pspec);
+  
+  void          (*set_parent)    (BseItem       *item,
+                                  BseItem       *parent);
+  gboolean      (*needs_storage) (BseItem       *item,
+                                  BseStorage    *storage);
+  guint         (*get_seqid)     (BseItem       *item);
+  BseUndoStack* (*get_undo)      (BseItem       *item);
 };
 
-typedef void     (*BseItemUncross)	     (BseItem        *owner,
-					      BseItem        *link);
+typedef void     (*BseItemUncross)           (BseItem        *owner,
+                                              BseItem        *link);
 typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
-					      BseItem	     *item,
-					      gpointer	      data);
-typedef gboolean (*BseItemCheckProxy)	     (BseItem	     *proxy,
-					      BseItem	     *item,
-					      gpointer	      data);
+                                              BseItem        *item,
+                                              gpointer        data);
+typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
+                                              BseItem        *item,
+                                              gpointer        data);
 
 
 /* --- prototypes --- */
-BseProxySeq*	bse_item_gather_proxies	     (BseItem	           *item,
-					      BseProxySeq          *proxies,
-					      GType		    base_type,
-					      BseItemCheckContainer ccheck,
-					      BseItemCheckProxy     pcheck,
-					      gpointer	            data);
-BseProxySeq*	bse_item_gather_proxies_typed(BseItem	           *item,
-					      BseProxySeq          *proxies,
-					      GType                 proxy_type,
-					      GType		    container_type,
+BseProxySeq*    bse_item_gather_proxies      (BseItem              *item,
+                                              BseProxySeq          *proxies,
+                                              GType                 base_type,
+                                              BseItemCheckContainer ccheck,
+                                              BseItemCheckProxy     pcheck,
+                                              gpointer              data);
+BseProxySeq*    bse_item_gather_proxies_typed(BseItem              *item,
+                                              BseProxySeq          *proxies,
+                                              GType                 proxy_type,
+                                              GType                 container_type,
                                               gboolean              allow_ancestor);
-BseProxySeq*	bse_item_list_proxies	     (BseItem	      *item,
-					      const gchar     *property);
+BseProxySeq*    bse_item_list_proxies        (BseItem         *item,
+                                              const gchar     *property);
+void            bse_item_set_internal        (gpointer         item,
+                                              gboolean         internal);
+gboolean        bse_item_needs_storage       (BseItem         *item,
+                                              BseStorage      *storage);
 guint           bse_item_get_seqid           (BseItem         *item);
 void            bse_item_queue_seqid_changed (BseItem         *item);
 BseSuper*       bse_item_get_super           (BseItem         *item);
 BseProject*     bse_item_get_project         (BseItem         *item);
 BseItem*        bse_item_get_toplevel        (BseItem         *item);
 gboolean        bse_item_has_ancestor        (BseItem         *item,
-					      BseItem         *ancestor);
+                                              BseItem         *ancestor);
 BseItem*        bse_item_common_ancestor     (BseItem         *item1,
-					      BseItem         *item2);
-void            bse_item_cross_link	     (BseItem         *owner,
-					      BseItem         *link,
-					      BseItemUncross   uncross_func);
-void            bse_item_cross_unlink	     (BseItem         *owner,
-					      BseItem         *link,
-					      BseItemUncross   uncross_func);
-void            bse_item_uncross	     (BseItem         *owner,
-					      BseItem         *link);
-BseItem*	bse_item_use		     (BseItem	      *item);
-void		bse_item_unuse		     (BseItem	      *item);
-void            bse_item_set_parent	     (BseItem         *item,
-					      BseItem         *parent);
-BseErrorType    bse_item_exec                (gpointer	       item,
-					      const gchar     *procedure,
-					      ...);
-BseErrorType    bse_item_exec_void           (gpointer	       item,
-					      const gchar     *procedure,
-					      ...); /* ignore return values */
+                                              BseItem         *item2);
+void            bse_item_cross_link          (BseItem         *owner,
+                                              BseItem         *link,
+                                              BseItemUncross   uncross_func);
+void            bse_item_cross_unlink        (BseItem         *owner,
+                                              BseItem         *link,
+                                              BseItemUncross   uncross_func);
+void            bse_item_uncross             (BseItem         *owner,
+                                              BseItem         *link);
+BseItem*        bse_item_use                 (BseItem         *item);
+void            bse_item_unuse               (BseItem         *item);
+void            bse_item_set_parent          (BseItem         *item,
+                                              BseItem         *parent);
+BseErrorType    bse_item_exec                (gpointer         item,
+                                              const gchar     *procedure,
+                                              ...);
+BseErrorType    bse_item_exec_void           (gpointer         item,
+                                              const gchar     *procedure,
+                                              ...); /* ignore return values */
 /* undo-aware functions */
 void          bse_item_set_valist_undoable   (gpointer         object,
                                               const gchar     *first_property_name,
@@ -135,12 +142,12 @@ BseUndoStack* bse_item_undo_open             (gpointer         item,
                                               ...);
 void          bse_item_undo_close            (BseUndoStack    *ustack);
 /* undo helper functions */
-void          bse_item_push_undo_proc        (gpointer	       item,
-					      const gchar     *procedure,
-					      ...);
-void          bse_item_push_redo_proc        (gpointer	       item,
-					      const gchar     *procedure,
-					      ...);
+void          bse_item_push_undo_proc        (gpointer         item,
+                                              const gchar     *procedure,
+                                              ...);
+void          bse_item_push_redo_proc        (gpointer         item,
+                                              const gchar     *procedure,
+                                              ...);
 void          bse_item_backup_to_undo        (BseItem         *self,
                                               BseUndoStack    *ustack);
 void          bse_item_push_undo_storage     (BseItem         *self,

@@ -158,26 +158,45 @@ bse_snet_init (BseSNet *snet)
 {
   BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_USER_SYNTH);
   snet->sources = NULL;
+  snet->isources = NULL;
   snet->iport_names = NULL;
   snet->oport_names = NULL;
   snet->port_array = NULL;
   snet->port_unregistered_id = 0;
 }
 
+/**
+ * bse_snet_intern_child
+ * @self:  valid #BseSNet
+ * @child: valid #BseItem, which is a child of @self
+ *
+ * Mark @child as internal via bse_item_set_internal() and
+ * add special protection so to not destroy it automatically
+ * upon g_object_dispose().
+ */
+void
+bse_snet_intern_child (BseSNet *self,
+                       gpointer child)
+{
+  BseItem *item = child;
+
+  g_return_if_fail (BSE_IS_SNET (self));
+  g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (item->parent == (BseItem*) self);
+  g_return_if_fail (sfi_ring_find (self->sources, child) != NULL);
+
+  self->sources = sfi_ring_remove (self->sources, child);
+  self->isources = sfi_ring_append (self->isources, child);
+  bse_item_set_internal (child, TRUE);
+}
+
 static void
 bse_snet_release_children (BseContainer *container)
 {
   BseSNet *snet = BSE_SNET (container);
-  GList *list;
 
-  list = snet->sources;
-  while (list)
-    {
-      GList *next = list->next;
-      if (!BSE_ITEM_AGGREGATE (list->data))
-	bse_container_remove_item (container, list->data);
-      list = next;
-    }
+  while (snet->sources)
+    bse_container_remove_item (container, sfi_ring_pop_head (&snet->sources));
   if (snet->iport_names)
     g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'i', (gchar*) snet->iport_names->data);
   if (snet->oport_names)
@@ -281,7 +300,7 @@ bse_snet_add_item (BseContainer *container,
   BseSNet *snet = BSE_SNET (container);
   
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
-    snet->sources = g_list_append (snet->sources, item);
+    snet->sources = sfi_ring_append (snet->sources, item);
   else if (BSE_SNET_USER_SYNTH (snet))
     g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
@@ -296,15 +315,22 @@ bse_snet_forall_items (BseContainer      *container,
                        gpointer           data)
 {
   BseSNet *snet = BSE_SNET (container);
-  GList *list;
-  
-  list = snet->sources;
-  while (list)
+  SfiRing *node;
+
+  node = snet->sources;
+  while (node)
     {
-      BseItem *item;
-      
-      item = list->data;
-      list = list->next;
+      BseItem *item = node->data;
+      node = sfi_ring_walk (node, snet->sources);
+      if (!func (item, data))
+        return;
+    }
+
+  node = snet->isources;
+  while (node)
+    {
+      BseItem *item = node->data;
+      node = sfi_ring_walk (node, snet->isources);
       if (!func (item, data))
         return;
     }
@@ -314,13 +340,17 @@ static void
 bse_snet_remove_item (BseContainer *container,
                       BseItem      *item)
 {
-  BseSNet *snet;
-  
-  snet = BSE_SNET (container);
+  BseSNet *self = BSE_SNET (container);
   
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
-    snet->sources = g_list_remove (snet->sources, item);
-  else if (BSE_SNET_USER_SYNTH (snet))
+    {
+      SfiRing *node = sfi_ring_find (self->isources, item);
+      if (node)
+        self->isources = sfi_ring_remove_node (self->isources, node);
+      else
+        self->sources = sfi_ring_remove (self->sources, item);
+    }
+  else if (BSE_SNET_USER_SYNTH (self))
     g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
   
