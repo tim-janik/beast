@@ -145,11 +145,14 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
     {
       GslLong inc, k, bsize = GSL_DATA_HANDLE_PEEK_BUFFER;
 
+      g_return_val_if_fail (pos >= 0 && pos < dhandle->n_values, 0);
+
       peekbuf->start = peekbuf->dir > 0 ? pos : peekbuf->dir < 0 ? pos - bsize + 1: pos - bsize / 2;
       peekbuf->end = MIN (peekbuf->start + bsize, dhandle->n_values);
+      peekbuf->start = MAX (peekbuf->start, 0);
       for (k = peekbuf->start; k < peekbuf->end; k += inc)
 	{
-	  guint n_retries = 5;
+	  guint n_retries = 5;	/* FIXME: need global retry strategy */
 	  
 	  do
 	    inc = gsl_data_handle_read (dhandle, k, peekbuf->end - k, peekbuf->data + k - peekbuf->start);
@@ -175,14 +178,17 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   GslLong i;
 
   g_return_val_if_fail (dhandle != NULL, -1);
-  g_return_val_if_fail (direction == -1 || direction == 1, -1);
+  g_return_val_if_fail (direction == -1 || direction == +1, -1);
 
-  if (gsl_data_handle_open (dhandle) != 0)
+  if (start_offset >= dhandle->n_values || gsl_data_handle_open (dhandle) != 0)
     return -1;
+
+  if (start_offset < 0)
+    start_offset = dhandle->n_values - 1;
 
   peekbuf.dir = direction;
   if (min_value <= max_value)
-    for (i = start_offset; i < dhandle->n_values; i += direction)
+    for (i = start_offset; i < dhandle->n_values && i >= 0; i += direction)
       {
 	gfloat val = gsl_data_peek_value (dhandle, i, &peekbuf);
 	
@@ -191,7 +197,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
 	  break;
       }
   else
-    for (i = start_offset; i < dhandle->n_values; i += direction)
+    for (i = start_offset; i < dhandle->n_values && i >= 0; i += direction)
       {
 	gfloat val = gsl_data_peek_value (dhandle, i, &peekbuf);
 	

@@ -29,9 +29,9 @@ extern "C" {
 /* --- cache single sample access --- */
 #define GSL_DATA_HANDLE_PEEK_BUFFER	(8192)
 typedef struct {
-  gint    dir;		/* initialize this to -1 or 1 (or 0 if random access) */
-  GslLong start;	/* initialize to 0 */
-  GslLong end;		/* initialize to 0 */
+  gint    dir;	    /* initialize this to -1 or +1 (or 0 for random access) */
+  GslLong start;    /* initialize to 0 */
+  GslLong end;	    /* initialize to 0 */
   gfloat  data[GSL_DATA_HANDLE_PEEK_BUFFER];
 } GslDataPeekBuffer;
 

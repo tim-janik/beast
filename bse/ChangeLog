@@ -1,3 +1,7 @@
+Tue Nov 13 01:44:01 2001  Tim Janik  <timj@gtk.org>
+
+	* gsllooper.[hc]: minor fixes.
+
 Mon Oct 29 22:45:37 2001  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.h: provide GSL_DATA_HANDLE_OPENED() to
