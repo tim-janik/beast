@@ -240,6 +240,7 @@ DRIVER DIALOG:
 - Driver NAme
 
 TASKS:
+- InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
 - TableSynth(note mapping): allow multiple synths and presets per
   track, configurable via table, e.g.:
   Note | Synth | Preset
