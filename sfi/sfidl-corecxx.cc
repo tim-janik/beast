@@ -909,11 +909,9 @@ public:
         printf ("  static inline const char* type_name () { return \"%s\"; }\n", make_PrefixedTypeName (ci->name));
         
         /* i/j/o channel names */
-        int is_public = 0;
         if (ci->istreams.size())
           {
-            if (!is_public++)
-              printf ("public:\n");
+            printf ("public:\n");
             printf ("  enum {\n");
             for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
               printf ("    ICHANNEL_%s,\n", pure_UPPER (si->ident));
@@ -921,8 +919,7 @@ public:
           }
         if (ci->jstreams.size())
           {
-            if (!is_public++)
-              printf ("public:\n");
+            printf ("public:\n");
             printf ("  enum {\n");
             for (vector<Stream>::const_iterator si = ci->jstreams.begin(); si != ci->jstreams.end(); si++)
               printf ("    JCHANNEL_%s,\n", pure_UPPER (si->ident));
@@ -930,35 +927,12 @@ public:
           }
         if (ci->ostreams.size())
           {
-            if (!is_public++)
-              printf ("public:\n");
+            printf ("public:\n");
             printf ("  enum {\n");
             for (vector<Stream>::const_iterator si = ci->ostreams.begin(); si != ci->ostreams.end(); si++)
               printf ("    OCHANNEL_%s,\n", pure_UPPER (si->ident));
             printf ("    N_OCHANNELS\n  };\n");
           }
-        
-        /* "Properties" structure for synthesis modules */
-        if (ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
-          {
-            if (!is_public++)
-              printf ("public:\n");
-            printf ("  /* \"transport\" structure to configure synthesis modules from properties */\n");
-            printf ("  struct %s {\n", ctProperties);
-            for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-              printf ("    %s %s;\n", TypeField (pi->type), pi->name.c_str());
-            printf ("    explicit %s (%s *p) ", ctProperties, ctNameBase);
-            for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-              printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
-            printf ("\n    {\n");
-            printf ("    }\n");
-            printf ("  };\n");
-          }
-        
-        /* property fields */
-        printf ("protected:\n");
-        for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-          printf ("  %s %s;\n", TypeField (pi->type), pi->name.c_str());
         
         /* property IDs */
         printf ("protected:\n  enum %s {\n", ctPropertyID);
@@ -970,6 +944,35 @@ public:
               printf ("    PROP_%s,\n", pure_UPPER (pi->name));
           }
         printf ("  };\n");
+        
+        /* "Properties" structure for synthesis modules */
+        if (ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
+          {
+            printf ("public:\n");
+            printf ("  /* \"transport\" structure to configure synthesis modules from properties */\n");
+            printf ("  struct %s {\n", ctProperties);
+            printf ("    typedef %s IDType;\n", ctPropertyID);
+            for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+              printf ("    %s %s;\n", TypeField (pi->type), pi->name.c_str());
+            printf ("    explicit %s (%s *p) ", ctProperties, ctNameBase);
+            for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+              printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
+            printf ("\n    {\n");
+            printf ("    }\n");
+            printf ("  };\n");
+          }
+        
+        /* auto-update type */
+        printf ("protected:\n");
+        bool has_automation_property = false;   /* figure whether automation properties are required */
+        for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          has_automation_property |= g_option_check (pi->literal_options.c_str(), "automate");
+        printf ("  typedef %s AutoUpdateCategory;\n", has_automation_property ? "::Bse::SynthesisModule::NeedAutoUpdateTag" : "void");
+
+        /* property fields */
+        printf ("protected:\n");
+        for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          printf ("  %s %s;\n", TypeField (pi->type), pi->name.c_str());
         
         /* property setter */
         printf ("public:\n");
