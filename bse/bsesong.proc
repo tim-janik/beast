@@ -16,11 +16,15 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bsesong.h>
-#include        <bse/bsepart.h>
-#include        <bse/bsetrack.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsesong.h>
+#include <bse/bsepart.h>
+#include <bse/bsetrack.h>
+#include "bsemidireceiver.h"
+#include "bseproject.h"
+#include "gslcommon.h"
+#include "gslengine.h"
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Copyright (C) 2002 Tim Janik";
@@ -141,4 +145,96 @@ METHOD (BseSong, remove-track) {
     bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (track));
   
   return error;
+}
+
+METHOD (BseSong, find-track-for-part) {
+  HELP  = "Find a track suitable for playing notes of a given part.";
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self = bse_value_get_object (in_values++);
+  BsePart *part = bse_value_get_object (in_values++);
+  BseTrack *track = NULL;
+  SfiRing *ring;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) ||
+      BSE_ITEM (part)->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *test_track = ring->data;
+      if (test_track->part_SL == part)
+	{
+	  track = test_track;
+	  break;
+	}
+    }
+  if (!track)
+    track = self->tracks_SL ? self->tracks_SL->data : NULL;
+
+  /* set output parameters */
+  bse_value_set_object (out_values++, track);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, synthesize-note) {
+  HELP  = "Synthesize a note on a song of an active project.";
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN    = bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
+  IN    = sfi_pspec_real ("velocity", "Velocity", NULL,
+			  1.0, 0, 1.0, 0.01,
+			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self      = bse_value_get_object (in_values++);
+  BseTrack *track    = bse_value_get_object (in_values++);
+  guint    duration  = sfi_value_get_int (in_values++);
+  gint     note      = sfi_value_get_note (in_values++);
+  gint     fine_tune = sfi_value_get_int (in_values++);
+  gfloat   velocity  = sfi_value_get_real (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (track) ||
+      BSE_ITEM (track)->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  if (BSE_SOURCE_PREPARED (self) && track->midi_receiver_SL)
+    {
+      gfloat freq = BSE_KAMMER_FREQUENCY_f *
+		    BSE_SEMITONE_FACTOR (note) *
+		    BSE_FINE_TUNE_FACTOR (fine_tune);
+      SfiTime tstamp = gsl_tick_stamp () + gsl_engine_block_size () * 2;
+      BseMidiEvent *eon, *eoff;
+      eon  = bse_midi_event_note_on (0, tstamp, freq, velocity);
+      eoff = bse_midi_event_note_off (0, tstamp + duration, freq);
+      bse_midi_receiver_push_event (track->midi_receiver_SL, eon);
+      bse_midi_receiver_push_event (track->midi_receiver_SL, eoff);
+      bse_midi_receiver_process_events (track->midi_receiver_SL, tstamp + duration);
+      bse_project_keep_activated (BSE_PROJECT (BSE_ITEM (self)->parent), tstamp + duration);
+    }
+  
+  return BSE_ERROR_NONE;
 }

@@ -48,6 +48,7 @@ struct _BseProject
   BseProjectState     state;
   guint		      deactivate_timer;
   gint64	      deactivate_usecs;
+  guint64	      deactivate_min_tick;
 };
 struct _BseProjectClass
 {
@@ -64,6 +65,8 @@ void		bse_project_queue_auto_stop_SL	(BseProject	*project);
 void		bse_project_deactivate		(BseProject	*project);
 void		bse_project_set_auto_deactivate	(BseProject	*project,
 						 gint64		 usecs);
+void		bse_project_keep_activated	(BseProject	*project,
+						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
 BseStringSeq*	bse_project_list_upaths		(BseProject	*project,

@@ -1,3 +1,15 @@
+Tue Jan 21 03:42:08 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.c (bse_midi_receiver_process_events): keep
+	processing events until the specified max_tick_stamp is reached.
+
+	* bseproject.[hc]: bse_project_keep_activated() keep the project
+	from automatic deactivation until a certain tick stamp is reached.
+
+	* bsesong.proc: added procedures to find a track for a part, suitable
+	for live playing of notes and to synthesize track notes for immediate
+	playback.
+
 Mon Jan 20 11:18:02 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.[hcp]: changed playback and activation logic.

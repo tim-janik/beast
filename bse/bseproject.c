@@ -15,22 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bseproject.h"
+#include "bseproject.h"
 
-#include	"bsesuper.h"
-#include	"bsestorage.h"
-#include	"bsesong.h"
-#include	"bsesnet.h"
-#include	"bsewaverepo.h"
-#include	"bsessequencer.h"
-#include	"bseserver.h"
-#include	"bsemain.h"
-#include	"gslengine.h"
-#include	<string.h>
-#include	<stdlib.h>
-#include	<fcntl.h>
-#include	<unistd.h>
-#include	<errno.h>
+#include "bsesuper.h"
+#include "bsestorage.h"
+#include "bsesong.h"
+#include "bsesnet.h"
+#include "bsewaverepo.h"
+#include "bsessequencer.h"
+#include "bseserver.h"
+#include "bsemain.h"
+#include "gslcommon.h"
+#include "gslengine.h"
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 
 
 /* --- macros --- */
@@ -539,8 +540,28 @@ bse_project_state_changed (BseProject     *self,
     }
   self->state = state;
   if (self->state == BSE_PROJECT_ACTIVE && self->deactivate_usecs >= 0)
-    self->deactivate_timer = bse_idle_timed (self->deactivate_usecs, auto_deactivate, self);
+    {
+      SfiTime stamp = gsl_tick_stamp ();
+      SfiTime delay_usecs = 0;
+      if (self->deactivate_min_tick > stamp)
+	delay_usecs = (self->deactivate_min_tick - stamp) * 1000000 / gsl_engine_sample_freq ();
+      self->deactivate_timer = bse_idle_timed (self->deactivate_usecs + delay_usecs, auto_deactivate, self);
+    }
   g_signal_emit (self, signal_state_changed, 0, state);
+}
+
+void
+bse_project_keep_activated (BseProject *self,
+			    guint64     min_tick)
+{
+  g_return_if_fail (BSE_IS_PROJECT (self));
+
+  if (min_tick > self->deactivate_min_tick)
+    {
+      self->deactivate_min_tick = min_tick;
+      if (self->deactivate_timer)
+	bse_project_state_changed (self, self->state);
+    }
 }
 
 BseErrorType
@@ -562,6 +583,7 @@ bse_project_activate (BseProject *self)
     return error;
 
   bse_source_prepare (BSE_SOURCE (self));
+  self->deactivate_min_tick = 0;
   
   trans = gsl_trans_open ();
   for (slist = self->supers; slist; slist = slist->next)

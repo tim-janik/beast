@@ -31,7 +31,7 @@
 
 
 /* --- prototypes --- */
-static void	midi_receiver_process_events_L (BseMidiReceiver        *self,
+static gint	midi_receiver_process_event_L  (BseMidiReceiver        *self,
 						guint64                 max_tick_stamp);
 static gint	midi_control_slots_compare	(gconstpointer		bsearch_node1, /* key */
 						 gconstpointer		bsearch_node2);
@@ -288,7 +288,7 @@ bse_midi_receiver_push_data (BseMidiReceiver *self,
       if (self->event_type != 0 && self->left_bytes == 0)
         receiver_enqueue_event_L (self, tick_stamp);
     }
-  midi_receiver_process_events_L (self, tick_stamp);
+  midi_receiver_process_event_L (self, tick_stamp);
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 
@@ -308,11 +308,17 @@ void
 bse_midi_receiver_process_events (BseMidiReceiver *self,
 				  guint64          max_tick_stamp)
 {
+  gboolean seen_event;
+
   g_return_if_fail (self != NULL);
-  
-  BSE_MIDI_RECEIVER_LOCK (self);
-  midi_receiver_process_events_L (self, max_tick_stamp);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+
+  do
+    {
+      BSE_MIDI_RECEIVER_LOCK (self);
+      seen_event = midi_receiver_process_event_L (self, max_tick_stamp);
+      BSE_MIDI_RECEIVER_UNLOCK (self);
+    }
+  while (seen_event);
 }
 
 
@@ -1339,21 +1345,20 @@ process_midi_control_L (BseMidiReceiver *self,
     }
 }
 
-static void
-midi_receiver_process_events_L (BseMidiReceiver *self,
-				guint64          max_tick_stamp)
+static gint
+midi_receiver_process_event_L (BseMidiReceiver *self,
+			       guint64          max_tick_stamp)
 {
   BseMidiEvent *event;
-  GslTrans *trans;
   gboolean need_wakeup = FALSE;
   
   if (!self->events)
-    return;
+    return FALSE;
   
-  trans = gsl_trans_open ();
   event = self->events->data;
   if (event->tick_stamp <= max_tick_stamp)
     {
+      GslTrans *trans = gsl_trans_open ();
       self->events = sfi_ring_remove_node (self->events, self->events);
       switch (event->status)
 	{
@@ -1422,11 +1427,15 @@ midi_receiver_process_events_L (BseMidiReceiver *self,
 	}
       else
 	bse_midi_free_event (event);
+      gsl_trans_commit (trans);
     }
-  gsl_trans_commit (trans);
+  else
+    return FALSE;
   
 #if 0   /* FIXME: wake up midi notifer if necessary */
   if (need_wakeup)
     sfi_thread_wakeup (sfi_thread_main ());
 #endif
+
+  return TRUE;
 }
