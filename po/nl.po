@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-19 11:01+0200\n"
-"PO-Revision-Date: 2004-09-20 01:17+0200\n"
+"POT-Creation-Date: 2004-09-25 19:00+0200\n"
+"PO-Revision-Date: 2004-09-26 03:34+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -284,7 +284,8 @@ msgstr "Online _helpdesk..."
 #: beast-gtk/bstapp.c:159
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
-msgstr "Een webbrowser opstarten met de online helpdesk op de website van BEAST"
+msgstr ""
+"Een webbrowser opstarten met de online helpdesk op de website van BEAST"
 
 # webstek
 #: beast-gtk/bstapp.c:161
@@ -479,7 +480,7 @@ msgstr "Verplaatsen controlegebeurtenis"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
-#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:131
+#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:134
 msgid "No target"
 msgstr "Geen doel"
 
@@ -848,16 +849,16 @@ msgstr "Bezig met laden van \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Laden van project \"%s\""
 
-#: beast-gtk/bstmain.c:725
+#: beast-gtk/bstmain.c:788
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: beast-gtk/bstmain.c:726
+#: beast-gtk/bstmain.c:789
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: beast-gtk/bstmain.c:727
+#: beast-gtk/bstmain.c:790
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
@@ -865,30 +866,30 @@ msgstr "Met dank aan:"
 #: beast-gtk/bstparam-automation.c:97
 #, c-format
 msgid "Control Automation: %s"
-msgstr ""
+msgstr "Bedieningsautomatisering: %s"
 
 #. TRANSLATORS: %s is substituted with a property name
 #: beast-gtk/bstparam-automation.c:197
 #, c-format
 msgid "%s: automation disabled"
-msgstr ""
+msgstr "%s: automatisering uigezet"
 
 #. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
 #: beast-gtk/bstparam-automation.c:205
 #, c-format
 msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
-msgstr ""
+msgstr "%s: automatisering vanaf Midi-bediening: %s (Midi-kanaal: %d)"
 
 #. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
 #: beast-gtk/bstparam-automation.c:217
 #, c-format
 msgid "%s: automation from MIDI control: %s"
-msgstr ""
+msgstr "%s: automatisering vanaf Midi-bediening: %s"
 
 # automatisering beheren?
 #: beast-gtk/bstparam-automation.c:235
 msgid "Control Automation"
-msgstr "Controle-automatisering"
+msgstr "Bedieningsautomatisering"
 
 #: beast-gtk/bstparam-choice.c:143
 msgid "Drop Down Combo"
@@ -1074,9 +1075,7 @@ msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
-msgstr ""
-"  verschillende gebeurtenistypen selecteren (controleknoppen, doorlopende "
-"controllers)"
+msgstr "  verschillende gebeurtenistypen selecteren (controleknoppen, continue-controllers)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
@@ -2596,7 +2595,7 @@ msgstr ""
 "genegeerd door de sequencer."
 
 # bij gelijktijdig afspelen
-#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:912
+#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum aantal stemmen voor gelijktijdig afspelen"
 
@@ -2606,7 +2605,7 @@ msgstr ""
 "Het synthese-netwerk of wave dat als instrument gebruikt zal worden bij dit "
 "spoor"
 
-#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:918
+#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:947
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 "Midikanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor kanaal"
@@ -2616,8 +2615,8 @@ msgid "Mixer busses connected to track output"
 msgstr "Mixerbussen verbonden met de spooruitgang"
 
 # uitleg
-#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:739
-#: bse/bsetrack.c:923
+#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:729
+#: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesenetwerk dat als postprocessor gebruikt zal worden"
 
@@ -3459,8 +3458,8 @@ msgstr ""
 #. FIXME: fix volume
 #: bse/bsebus.c:825 bse/bsebus.c:827 bse/bsebus.c:829 bse/bsebus.c:831
 #: bse/bsebus.c:835 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
-#: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
-#: bse/bsesong.c:712 bse/bsetrack.c:896
+#: bse/bsemidisynth.c:452 bse/bsesong.c:689 bse/bsesong.c:695
+#: bse/bsesong.c:702 bse/bsetrack.c:925
 msgid "Adjustments"
 msgstr "Aanpassingen"
 
@@ -3522,11 +3521,11 @@ msgstr "Ingangsignalen"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Synthese-signalen (uit sporen en bussen) gebruikt als bus-ingang"
 
-#: bse/bsebus.c:848 bse/bsetrack.c:925
+#: bse/bsebus.c:848 bse/bsetrack.c:954
 msgid "Signal Outputs"
 msgstr "Signaal uitvoer"
 
-#: bse/bsebus.c:850 bse/bsetrack.c:927
+#: bse/bsebus.c:850 bse/bsetrack.c:956
 msgid "Output Signals"
 msgstr "Uitgangsignalen"
 
@@ -3641,7 +3640,7 @@ msgstr "Bank select"
 
 #: bse/bsecore.idl:69 bse/bsecore.idl:246
 msgid "Modulation Depth"
-msgstr "Modulatiediepte"
+msgstr "Modulatie-sterkte"
 
 #: bse/bsecore.idl:70 bse/bsecore.idl:247
 msgid "Breath Control"
@@ -3682,11 +3681,11 @@ msgstr "Uitdrukking"
 
 #: bse/bsecore.idl:80 bse/bsecore.idl:257
 msgid "Effect Control 1"
-msgstr "Effect control 1"
+msgstr "Effect controle 1"
 
 #: bse/bsecore.idl:81 bse/bsecore.idl:258
 msgid "Effect Control 2"
-msgstr "Effect control 2"
+msgstr "Effect controle 2"
 
 #: bse/bsecore.idl:82 bse/bsecore.idl:259
 msgid "Continuous 14"
@@ -3696,21 +3695,22 @@ msgstr "Continue 14"
 msgid "Continuous 15"
 msgstr "Continue 15"
 
+# Bedieningsknop/bedienaar/controller/controleknop
 #: bse/bsecore.idl:84 bse/bsecore.idl:261
 msgid "General Purpose Controller 1"
-msgstr ""
+msgstr "Algemene bedieningsknop 1"
 
 #: bse/bsecore.idl:85 bse/bsecore.idl:262
 msgid "General Purpose Controller 2"
-msgstr ""
+msgstr "Algemene bedieningsknop 2"
 
 #: bse/bsecore.idl:86 bse/bsecore.idl:263
 msgid "General Purpose Controller 3"
-msgstr ""
+msgstr "Algemene bedieningsknop 3"
 
 #: bse/bsecore.idl:87 bse/bsecore.idl:264
 msgid "General Purpose Controller 4"
-msgstr ""
+msgstr "Algemene bedieningsknop 4"
 
 #: bse/bsecore.idl:88 bse/bsecore.idl:265
 msgid "Continuous 20"
@@ -3792,521 +3792,523 @@ msgstr "Niet geregistreerde parameter"
 #. 7bit, literal channel controls, MSB values
 #: bse/bsecore.idl:109 bse/bsecore.idl:278
 msgid "Control 0 Bank Select MSB"
-msgstr ""
+msgstr "Controle 0 Bank Select MSB"
 
 #: bse/bsecore.idl:110 bse/bsecore.idl:279
 msgid "Control 1 Modulation Depth MSB"
-msgstr ""
+msgstr "Controle 1 Modulatie-sterkte MSB"
 
 #: bse/bsecore.idl:111 bse/bsecore.idl:280
 msgid "Control 2 Breath Control MSB"
-msgstr ""
+msgstr "Controle 2 Ademcontrole MSB"
 
 #: bse/bsecore.idl:112 bse/bsecore.idl:281
 msgid "control-3"
-msgstr "control-3"
+msgstr "controle-3"
 
 #: bse/bsecore.idl:113 bse/bsecore.idl:282
 msgid "Control 4 Foot Controller MSB"
-msgstr ""
+msgstr "Controle 4 Voetbediening MSB"
 
 #: bse/bsecore.idl:114 bse/bsecore.idl:283
 msgid "Control 5 Portamento Time MSB"
-msgstr ""
+msgstr "Controle 5 Portamentotijd MSB"
 
 #: bse/bsecore.idl:115 bse/bsecore.idl:284
 msgid "Control 6 Data Entry MSB"
-msgstr ""
+msgstr "Controle 6 Data-invoer MSB"
 
 #: bse/bsecore.idl:116 bse/bsecore.idl:285
 msgid "Control 7 Volume MSB"
-msgstr ""
+msgstr "Controle 7 Geluidssterkte MSB"
 
 #: bse/bsecore.idl:117 bse/bsecore.idl:286
 msgid "Control 8 Balance MSB"
-msgstr ""
+msgstr "Controle 8 Balans MSB"
 
 #: bse/bsecore.idl:118 bse/bsecore.idl:287
 msgid "control-9"
-msgstr "control-9"
+msgstr "controle-9"
 
 #: bse/bsecore.idl:119 bse/bsecore.idl:288
 msgid "Control 10 Panorama MSB"
-msgstr ""
+msgstr "Controle 10 Panorama MSB"
 
 #: bse/bsecore.idl:120 bse/bsecore.idl:289
 msgid "Control 11 Expression MSB"
-msgstr ""
+msgstr "Controle 11 Expressie MSB"
 
 #: bse/bsecore.idl:121 bse/bsecore.idl:290
 msgid "Control 12 Effect Control 1 MSB"
-msgstr ""
+msgstr "Controle 12 Effect-controle 1 MSB"
 
 #: bse/bsecore.idl:122 bse/bsecore.idl:291
 msgid "Control 13 Effect Control 2 MSB"
-msgstr ""
+msgstr "Controle 13 Effect-controle 2 MSB"
 
 #: bse/bsecore.idl:123 bse/bsecore.idl:292
 msgid "control-14"
-msgstr "control-14"
+msgstr "controle-14"
 
 #: bse/bsecore.idl:124 bse/bsecore.idl:293
 msgid "control-15"
-msgstr "control-15"
+msgstr "controle-15"
 
 #: bse/bsecore.idl:125 bse/bsecore.idl:294
 msgid "Control 16 General Purpose Controller 1 MSB"
-msgstr ""
+msgstr "Controle 16 Algemene bedieningsknop 1 MSB"
 
 #: bse/bsecore.idl:126 bse/bsecore.idl:295
 msgid "Control 17 General Purpose Controller 2 MSB"
-msgstr ""
+msgstr "Controle 17 Algemene bedieningsknop 2 MSB"
 
 #: bse/bsecore.idl:127 bse/bsecore.idl:296
 msgid "Control 18 General Purpose Controller 3 MSB"
-msgstr ""
+msgstr "Controle 18 Algemene bedieningsknop 3 MSB"
 
 #: bse/bsecore.idl:128 bse/bsecore.idl:297
 msgid "Control 19 General Purpose Controller 4 MSB"
-msgstr ""
+msgstr "Controle 97 Algemene bedieningsknop 4 MSB"
 
 #: bse/bsecore.idl:129 bse/bsecore.idl:298
 msgid "control-20"
-msgstr "control-20"
+msgstr "controle-20"
 
 #: bse/bsecore.idl:130 bse/bsecore.idl:299
 msgid "control-21"
-msgstr "control-21"
+msgstr "controle-21"
 
 #: bse/bsecore.idl:131 bse/bsecore.idl:300
 msgid "control-22"
-msgstr "control-22"
+msgstr "controle-22"
 
 #: bse/bsecore.idl:132 bse/bsecore.idl:301
 msgid "control-23"
-msgstr "control-23"
+msgstr "controle-23"
 
 #: bse/bsecore.idl:133 bse/bsecore.idl:302
 msgid "control-24"
-msgstr "control-24"
+msgstr "controle-24"
 
 #: bse/bsecore.idl:134 bse/bsecore.idl:303
 msgid "control-25"
-msgstr "control-25"
+msgstr "controle-25"
 
 #: bse/bsecore.idl:135 bse/bsecore.idl:304
 msgid "control-26"
-msgstr "control-26"
+msgstr "controle-26"
 
 #: bse/bsecore.idl:136 bse/bsecore.idl:305
 msgid "control-27"
-msgstr "control-27"
+msgstr "controle-27"
 
 #: bse/bsecore.idl:137 bse/bsecore.idl:306
 msgid "control-28"
-msgstr "control-28"
+msgstr "controle-28"
 
 #: bse/bsecore.idl:138 bse/bsecore.idl:307
 msgid "control-29"
-msgstr "control-29"
+msgstr "controle-29"
 
 #: bse/bsecore.idl:139 bse/bsecore.idl:308
 msgid "control-30"
-msgstr "control-30"
+msgstr "controle-30"
 
 #: bse/bsecore.idl:140 bse/bsecore.idl:309
 msgid "control-31"
-msgstr "control-31"
+msgstr "controle-31"
 
 #. 7bit, literal channel controls, LSB values
 #: bse/bsecore.idl:142 bse/bsecore.idl:311
 msgid "Control 32 Bank Select LSB"
-msgstr ""
+msgstr "Controle 32 Bank Select LSB"
 
 #: bse/bsecore.idl:143 bse/bsecore.idl:312
 msgid "Control 33 Modulation Depth LSB"
-msgstr ""
+msgstr "Controle 33 Modulatie-sterkte LSB"
 
+# adembeheersing
 #: bse/bsecore.idl:144 bse/bsecore.idl:313
 msgid "Control 34 Breath Control LSB"
-msgstr ""
+msgstr "Controle 34 Ademcontrole LSB"
 
 #: bse/bsecore.idl:145 bse/bsecore.idl:314
 msgid "control-35"
-msgstr "control-35"
+msgstr "controle-35"
 
 #: bse/bsecore.idl:146 bse/bsecore.idl:315
 msgid "Control 36 Foot Controller LSB"
-msgstr ""
+msgstr "Controle 36 Voetbediening LSB"
 
 #: bse/bsecore.idl:147 bse/bsecore.idl:316
 msgid "Control 37 Portamento Time LSB"
-msgstr ""
+msgstr "Controle 37 Portamentotijd LSB"
 
 #: bse/bsecore.idl:148 bse/bsecore.idl:317
 msgid "Control 38 Data Entry LSB"
-msgstr ""
+msgstr "Controle 38 Data-invoer LSB"
 
 #: bse/bsecore.idl:149 bse/bsecore.idl:318
 msgid "Control 39 Volume LSB"
-msgstr ""
+msgstr "Controle 39 Geluidssterkte LSB"
 
 #: bse/bsecore.idl:150 bse/bsecore.idl:319
 msgid "Control 40 Balance LSB"
-msgstr ""
+msgstr "Controle 40 Balans LSB"
 
 #: bse/bsecore.idl:151 bse/bsecore.idl:320
 msgid "control-41"
-msgstr "control-41"
+msgstr "controle-41"
 
 #: bse/bsecore.idl:152 bse/bsecore.idl:321
 msgid "Control 42 Panorama LSB"
-msgstr ""
+msgstr "Controle 42 Panorama LSB"
 
 #: bse/bsecore.idl:153 bse/bsecore.idl:322
 msgid "Control 43 Expression LSB"
-msgstr ""
+msgstr "Controle 43 Expressie LSB"
 
 #: bse/bsecore.idl:154 bse/bsecore.idl:323
 msgid "Control 44 Effect Control 1 LSB"
-msgstr ""
+msgstr "Controle 44 Effect-controle 1 LSB"
 
 #: bse/bsecore.idl:155 bse/bsecore.idl:324
 msgid "Control 45 Effect Control 2 LSB"
-msgstr ""
+msgstr "Controle 45 Effect-controle 2 LSB"
 
 #: bse/bsecore.idl:156 bse/bsecore.idl:325
 msgid "control-46"
-msgstr "control-46"
+msgstr "controle-46"
 
 #: bse/bsecore.idl:157 bse/bsecore.idl:326
 msgid "control-47"
-msgstr "control-47"
+msgstr "controle-47"
 
 #: bse/bsecore.idl:158 bse/bsecore.idl:327
 msgid "Control 48 General Purpose Controller 1 LSB"
-msgstr ""
+msgstr "Controle 48 Algemene bedieningsknop 1 LSB"
 
 #: bse/bsecore.idl:159 bse/bsecore.idl:328
 msgid "Control 49 General Purpose Controller 2 LSB"
-msgstr ""
+msgstr "Controle 49 Algemene bedieningsknop 2 LSB"
 
 #: bse/bsecore.idl:160 bse/bsecore.idl:329
 msgid "Control 50 General Purpose Controller 3 LSB"
-msgstr ""
+msgstr "Controle 50 Algemene bedieningsknop 3 LSB"
 
 #: bse/bsecore.idl:161 bse/bsecore.idl:330
 msgid "Control 51 General Purpose Controller 4 LSB"
-msgstr ""
+msgstr "Controle 51 Algemene bedieningsknop 4 LSB"
 
 #: bse/bsecore.idl:162 bse/bsecore.idl:331
 msgid "control-52"
-msgstr "control-52"
+msgstr "controle-52"
 
 #: bse/bsecore.idl:163 bse/bsecore.idl:332
 msgid "control-53"
-msgstr "control-53"
+msgstr "controle-53"
 
 #: bse/bsecore.idl:164 bse/bsecore.idl:333
 msgid "control-54"
-msgstr "control-54"
+msgstr "controle-54"
 
 #: bse/bsecore.idl:165 bse/bsecore.idl:334
 msgid "control-55"
-msgstr "control-55"
+msgstr "controle-55"
 
 #: bse/bsecore.idl:166 bse/bsecore.idl:335
 msgid "control-56"
-msgstr "control-56"
+msgstr "controle-56"
 
 #: bse/bsecore.idl:167 bse/bsecore.idl:336
 msgid "control-57"
-msgstr "control-57"
+msgstr "controle-57"
 
 #: bse/bsecore.idl:168 bse/bsecore.idl:337
 msgid "control-58"
-msgstr "control-58"
+msgstr "controle-58"
 
 #: bse/bsecore.idl:169 bse/bsecore.idl:338
 msgid "control-59"
-msgstr "control-59"
+msgstr "controle-59"
 
 #: bse/bsecore.idl:170 bse/bsecore.idl:339
 msgid "control-60"
-msgstr "control-60"
+msgstr "controle-60"
 
 #: bse/bsecore.idl:171 bse/bsecore.idl:340
 msgid "control-61"
-msgstr "control-61"
+msgstr "controle-61"
 
 #: bse/bsecore.idl:172 bse/bsecore.idl:341
 msgid "control-62"
-msgstr "control-62"
+msgstr "controle-62"
 
 #: bse/bsecore.idl:173 bse/bsecore.idl:342
 msgid "control-63"
-msgstr "control-63"
+msgstr "controle-63"
 
 #. 7bit, literal channel controls
 #: bse/bsecore.idl:175 bse/bsecore.idl:344
 msgid "Control 64 Damper Pedal Switch (Sustain)"
-msgstr ""
+msgstr "Controle 64 Demperpedaal (Sustain)"
 
 #: bse/bsecore.idl:176 bse/bsecore.idl:345
 msgid "Control 65 Portamento Switch"
-msgstr ""
+msgstr "Controle 65 Portamento-wisselaar"
 
 #: bse/bsecore.idl:177 bse/bsecore.idl:346
 msgid "Control 66 Sustenuto Switch"
-msgstr ""
+msgstr "Controle 66 Sustenuto-wisselaar"
 
 #: bse/bsecore.idl:178 bse/bsecore.idl:347
 msgid "Control 67 Soft Switch"
-msgstr ""
+msgstr "Controle 67 Zacht-wisselaar"
 
 #: bse/bsecore.idl:179 bse/bsecore.idl:348
 msgid "Control 68 Legato Pedal Switch"
-msgstr ""
+msgstr "Controle 68 Legato-pedaal wisselaar"
 
 #: bse/bsecore.idl:180 bse/bsecore.idl:349
 msgid "Control 69 Hold Pedal Switch"
-msgstr ""
+msgstr "Controle 69 Pedaal-houden wisselaar"
 
 #: bse/bsecore.idl:181 bse/bsecore.idl:350
 msgid "Control 70 Sound Variation"
-msgstr ""
+msgstr "Controle 70 Geluidsvariatie"
 
 #: bse/bsecore.idl:182 bse/bsecore.idl:351
 msgid "Control 71 Filter Resonance (Timbre)"
-msgstr ""
+msgstr "Controle 71 Filter-resonantie (Geluidskleur)"
 
 #: bse/bsecore.idl:183 bse/bsecore.idl:352
 msgid "Control 72 Sound Release Time"
-msgstr ""
+msgstr "Controle 72 Sound-release tijd"
 
 #: bse/bsecore.idl:184 bse/bsecore.idl:353
 msgid "Control 73 Sound Attack Time"
-msgstr ""
+msgstr "Controle 73 Sound-attack tijd"
 
 #: bse/bsecore.idl:185 bse/bsecore.idl:354
 msgid "Control 74 Sound Brightness"
-msgstr ""
+msgstr "Controle 74 Sound-brightness"
 
 #: bse/bsecore.idl:186 bse/bsecore.idl:355
 msgid "Control 75 Sound Decay Time"
-msgstr ""
+msgstr "Controle 75 Sound-decay tijd"
 
 #: bse/bsecore.idl:187 bse/bsecore.idl:356
 msgid "Control 76 Vibrato Rate"
-msgstr ""
+msgstr "Controle 76 Vibrato-frequentie"
 
 #: bse/bsecore.idl:188 bse/bsecore.idl:357
 msgid "Control 77 Vibrato Depth"
-msgstr ""
+msgstr "Controle 77 Vibrato-sterkte"
 
 #: bse/bsecore.idl:189 bse/bsecore.idl:358
 msgid "Control 78 Vibrato Delay"
-msgstr ""
+msgstr "Controle 78 Vibrato-vertraging"
 
 #: bse/bsecore.idl:190 bse/bsecore.idl:359
 msgid "Control 79 Sound Control 10"
-msgstr ""
+msgstr "Control 79 Sound Controle 10"
 
 #: bse/bsecore.idl:191 bse/bsecore.idl:360
 msgid "Control 80 General Purpose Switch 5"
-msgstr ""
+msgstr "Controle 80 Algemene bedieningswisselaar 5"
 
 #: bse/bsecore.idl:192 bse/bsecore.idl:361
 msgid "Control 81 General Purpose Switch 6"
-msgstr ""
+msgstr "Controle 81 Algemene bedieningswisselaar 6"
 
 #: bse/bsecore.idl:193 bse/bsecore.idl:362
 msgid "Control 82 General Purpose Switch 7"
-msgstr ""
+msgstr "Controle 82 Algemene bedieningswisselaar 7"
 
 #: bse/bsecore.idl:194 bse/bsecore.idl:363
 msgid "Control 83 General Purpose Switch 8"
-msgstr ""
+msgstr "Controle 83 Algemene bedieningswisselaar 8"
 
 #: bse/bsecore.idl:195 bse/bsecore.idl:364
 msgid "Control 84 Portamento Control (Note)"
-msgstr ""
+msgstr "Controle 84 Portamento controle (Noot)"
 
 #: bse/bsecore.idl:196 bse/bsecore.idl:365
 msgid "control-85"
-msgstr "control-85"
+msgstr "controle-85"
 
 #: bse/bsecore.idl:197 bse/bsecore.idl:366
 msgid "control-86"
-msgstr "control-86"
+msgstr "controle-86"
 
 #: bse/bsecore.idl:198 bse/bsecore.idl:367
 msgid "control-87"
-msgstr "control-87"
+msgstr "controle-87"
 
 #: bse/bsecore.idl:199 bse/bsecore.idl:368
 msgid "control-88"
-msgstr "control-88"
+msgstr "controle-88"
 
 #: bse/bsecore.idl:200 bse/bsecore.idl:369
 msgid "control-89"
-msgstr "control-89"
+msgstr "controle-89"
 
 #: bse/bsecore.idl:201 bse/bsecore.idl:370
 msgid "control-90"
-msgstr "control-90"
+msgstr "controle-90"
 
 #: bse/bsecore.idl:202 bse/bsecore.idl:371
 msgid "Control 91 Reverb Depth"
-msgstr ""
+msgstr "Controle-91 Galm-sterkte"
 
 #: bse/bsecore.idl:203 bse/bsecore.idl:372
 msgid "Control 92 Tremolo Depth"
-msgstr ""
+msgstr "Controle 92 Tremolo-sterkte"
 
 #: bse/bsecore.idl:204 bse/bsecore.idl:373
 msgid "Control 93 Chorus Depth"
-msgstr ""
+msgstr "Controle 93 Chorus-sterkte"
 
+# ontstemmen?
 #: bse/bsecore.idl:205 bse/bsecore.idl:374
 msgid "Control 93 Detune Depth"
-msgstr ""
+msgstr "Controle 93 Detune-sterte"
 
 #: bse/bsecore.idl:206 bse/bsecore.idl:375
 msgid "Control 95 Phase Depth"
-msgstr ""
+msgstr "Controle 95 Phase-sterkte"
 
 #: bse/bsecore.idl:207 bse/bsecore.idl:376
 msgid "Control 96 Data Increment Trigger"
-msgstr ""
+msgstr "Controle 96 Data Increment Trigger"
 
 #: bse/bsecore.idl:208 bse/bsecore.idl:377
 msgid "Control 97 Data Decrement Trigger"
-msgstr ""
+msgstr "Controle 97 Data Decrement Trigger"
 
 #: bse/bsecore.idl:209 bse/bsecore.idl:378
 msgid "Control 98 Non-Registered Parameter MSB"
-msgstr ""
+msgstr "Control 98 Niet-geregistreerde parameter MSB"
 
 #: bse/bsecore.idl:210 bse/bsecore.idl:379
 msgid "Control 99 Non-Registered Parameter LSB"
-msgstr ""
+msgstr "Control 99 Niet-geregistreerde parameter LSB"
 
 #: bse/bsecore.idl:211 bse/bsecore.idl:380
 msgid "Control 100 Registered Parameter MSB"
-msgstr ""
+msgstr "Control 100 Geregistreerde parameter MSB"
 
 #: bse/bsecore.idl:212 bse/bsecore.idl:381
 msgid "Control 101 Registered Parameter LSB"
-msgstr ""
+msgstr "Control 101 Geregistreerde parameter LSB"
 
 #: bse/bsecore.idl:213 bse/bsecore.idl:382
 msgid "control-102"
-msgstr "control-102"
+msgstr "controle-102"
 
 #: bse/bsecore.idl:214 bse/bsecore.idl:383
 msgid "control-103"
-msgstr "control-103"
+msgstr "controle-103"
 
 #: bse/bsecore.idl:215 bse/bsecore.idl:384
 msgid "control-104"
-msgstr "control-104"
+msgstr "controle-104"
 
 #: bse/bsecore.idl:216 bse/bsecore.idl:385
 msgid "control-105"
-msgstr "control-105"
+msgstr "controle-105"
 
 #: bse/bsecore.idl:217 bse/bsecore.idl:386
 msgid "control-106"
-msgstr "control-106"
+msgstr "controle-106"
 
 #: bse/bsecore.idl:218 bse/bsecore.idl:387
 msgid "control-107"
-msgstr "control-107"
+msgstr "controle-107"
 
 #: bse/bsecore.idl:219 bse/bsecore.idl:388
 msgid "control-108"
-msgstr "control-108"
+msgstr "controle-108"
 
 #: bse/bsecore.idl:220 bse/bsecore.idl:389
 msgid "control-109"
-msgstr "control-109"
+msgstr "controle-109"
 
 #: bse/bsecore.idl:221 bse/bsecore.idl:390
 msgid "control-110"
-msgstr "control-110"
+msgstr "controle-110"
 
 #: bse/bsecore.idl:222 bse/bsecore.idl:391
 msgid "control-111"
-msgstr "control-111"
+msgstr "controle-111"
 
 #: bse/bsecore.idl:223 bse/bsecore.idl:392
 msgid "control-112"
-msgstr "control-112"
+msgstr "controle-112"
 
 #: bse/bsecore.idl:224 bse/bsecore.idl:393
 msgid "control-113"
-msgstr "control-113"
+msgstr "controle-113"
 
 #: bse/bsecore.idl:225 bse/bsecore.idl:394
 msgid "control-114"
-msgstr "control-114"
+msgstr "controle-114"
 
 #: bse/bsecore.idl:226 bse/bsecore.idl:395
 msgid "control-115"
-msgstr "control-115"
+msgstr "controle-115"
 
 #: bse/bsecore.idl:227 bse/bsecore.idl:396
 msgid "control-116"
-msgstr "control-116"
+msgstr "controle-116"
 
 #: bse/bsecore.idl:228 bse/bsecore.idl:397
 msgid "control-117"
-msgstr "control-117"
+msgstr "controle-117"
 
 #: bse/bsecore.idl:229 bse/bsecore.idl:398
 msgid "control-118"
-msgstr "control-118"
+msgstr "controle-118"
 
 #: bse/bsecore.idl:230 bse/bsecore.idl:399
 msgid "control-119"
-msgstr "control-119"
+msgstr "controle-119"
 
 #: bse/bsecore.idl:231 bse/bsecore.idl:400
 msgid "Control 120 All Sound Off ITrigger"
-msgstr ""
+msgstr "Controle 120 Alle geluid uit ITrigger"
 
 #: bse/bsecore.idl:232 bse/bsecore.idl:401
 msgid "Control 121 All Controllers Off ITrigger"
-msgstr ""
+msgstr "Controle 121 Alle controllers uit ITrigger"
 
 #: bse/bsecore.idl:233 bse/bsecore.idl:402
 msgid "Control 122 Local Control Switch"
-msgstr ""
+msgstr "Controle 122 Locale controle wisselaar"
 
 #: bse/bsecore.idl:234 bse/bsecore.idl:403
 msgid "Control 123 All Notes Off ITrigger"
-msgstr ""
+msgstr "Controle 123 Alle noten uit ITrigger"
 
 #: bse/bsecore.idl:235 bse/bsecore.idl:404
 msgid "Control 124 Omni Mode Off ITrigger"
-msgstr ""
+msgstr "Controle 124 Omni Mode uit ITrigger"
 
 #: bse/bsecore.idl:236 bse/bsecore.idl:405
 msgid "Control 125 Omni Mode On ITrigger"
-msgstr ""
+msgstr "Controle 125 Omni Mode aan ITrigger"
 
 #: bse/bsecore.idl:237 bse/bsecore.idl:406
 msgid "Control 126 Monophonic Voices Mode"
-msgstr ""
+msgstr "Controle 126 Monofonische stemmen Modus"
 
 #: bse/bsecore.idl:238 bse/bsecore.idl:407
 msgid "Control 127 Polyphonic Mode On ITrigger"
-msgstr ""
+msgstr "Controle 127 Polyfonische Modus aan ITrigger"
 
 #: bse/bsecore.idl:245
 msgid "Continuous MIDI Control #1 - Bank Select"
-msgstr ""
+msgstr "Continue Midi controle #1 - Bank select"
 
 #: bse/bsecore.idl:579
 msgid "State"
@@ -4564,125 +4566,138 @@ msgid "Device busy"
 msgstr "Apparaat bezet"
 
 #: bse/bseenums.c:104
-msgid "Failed to query device capabilities"
-msgstr "Bevragen van apparaatmogelijkheden is mislukt"
+msgid "Failed to configure device format"
+msgstr "Apparaat-formaat configureren is mislukt"
 
 #: bse/bseenums.c:105
-msgid "Device capabilities not sufficient"
-msgstr "Mogelijkheden van het apparaat onvoldoende"
+msgid "Failed to configure device buffer"
+msgstr "Apparaat-buffer configureren is mislukt"
 
+# traagheid
 #: bse/bseenums.c:106
-msgid "Failed to set device capabilities"
-msgstr "Instellen apparaatmogelijkheden is mislukt"
+msgid "Failed to configure device latency"
+msgstr "Apparaat-'latency' configureren is mislukt"
 
 #: bse/bseenums.c:107
+msgid "Failed to configure number of device channels"
+msgstr "Het aantal apparaat-kanalen configureren is mislukt"
+
+#: bse/bseenums.c:108
+msgid "Failed to configure device frequency"
+msgstr "Apparaat-frequentie configureren is mislukt"
+
+#: bse/bseenums.c:109
+msgid "Device configurations mismatch"
+msgstr "Apparaatconfiguraties komen niet overeen"
+
+#: bse/bseenums.c:110
 msgid "No such synthesis module"
 msgstr "Zo'n synthesemodule bestaat niet"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.c:111
 msgid "No such input channel"
 msgstr "Zo'n invoerkanaal bestaat niet"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.c:112
 msgid "No such output channel"
 msgstr "Zo'n uitvoerkanaal bestaat niet"
 
-#: bse/bseenums.c:110
+#: bse/bseenums.c:113
 msgid "Input/Output channels not connected"
 msgstr "Invoer/uitvoerkanalen niet verbonden"
 
 # persoonlijk bezit
-#: bse/bseenums.c:111
+#: bse/bseenums.c:114
 msgid "Input channel is private"
 msgstr "Invoerkanaal is privé"
 
-#: bse/bseenums.c:112
+#: bse/bseenums.c:115
 msgid "Input channel already in use"
 msgstr "Invoerkanaal is al in gebruik"
 
-#: bse/bseenums.c:113
+#: bse/bseenums.c:116
 msgid "Input/Output channels already connected"
 msgstr "Invoer/uitvoerkanalen zijn al verbonden"
 
-#: bse/bseenums.c:114
+#: bse/bseenums.c:117
 msgid "Invalid synthesis module connection"
 msgstr "Ongeldige verbinding synthesemodule"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.c:118
 msgid "Parent mismatch"
 msgstr "Ouders komen niet overeen"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.c:119
 msgid "Bad loopback"
 msgstr "Onjuidyr loopback"
 
-#: bse/bseenums.c:117
+#: bse/bseenums.c:120
 msgid "Synthesis module currently busy"
 msgstr "Synthesemodule is momenteel bezet"
 
-#: bse/bseenums.c:118
+#: bse/bseenums.c:121
 msgid "Invalid synthsis module type"
 msgstr "Ongeldig type synthesemodule"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.c:122
 msgid "No such procedure"
 msgstr "Zo'n procedure bestaat niet"
 
-#: bse/bseenums.c:120
+#: bse/bseenums.c:123
 msgid "Procedure currently busy"
 msgstr "Procedure is momenteel bezet"
 
 #. recursion
-#: bse/bseenums.c:121
+#: bse/bseenums.c:124
 msgid "Procedure parameter invalid"
 msgstr "Procedure-parameter ongeldig"
 
-#: bse/bseenums.c:122
+#: bse/bseenums.c:125
 msgid "Procedure execution failed"
 msgstr "Uitvoering procedure mislukt"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.c:126
 msgid "Procedure execution aborted"
 msgstr "Uitvoering procedure afgebroken"
 
-#: bse/bseenums.c:124
+#: bse/bseenums.c:127
 msgid "Invalid object property"
 msgstr "Ongeldige objecteigenschap"
 
-#: bse/bseenums.c:125
+#: bse/bseenums.c:128
 msgid "Invalid MIDI control type"
 msgstr "Ongeldig Midi-control type"
 
-#: bse/bseenums.c:126
+#: bse/bseenums.c:129
 msgid "Parsing error"
 msgstr "Verwerkingsfout"
 
-#: bse/bseenums.c:127
+#: bse/bseenums.c:130
 msgid "Failed to spawn child process"
 msgstr "Afsplitsen van een dochterproces is mislukt"
 
 #. various procedure errors
-#: bse/bseenums.c:129
+#: bse/bseenums.c:132
 msgid "No such entry"
 msgstr "Deze bestaat niet"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.c:133
 msgid "No such event"
 msgstr "Gebeurtenis bestaat niet"
 
-#: bse/bseenums.c:132
+#: bse/bseenums.c:135
 msgid "Ownership mismatch"
 msgstr "Eigenaars komen niet overeen"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:136
 msgid "Invalid offset"
 msgstr "Ongeldige verschuiving"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.c:137
 msgid "Invalid duration"
 msgstr "Ongeldige lengte"
 
-#: bse/bseenums.c:135
+#: bse/bseenums.c:138
 msgid "Invalid overlap"
 msgstr "Ongeldige overlap"
 
@@ -4814,12 +4829,12 @@ msgstr ""
 "gekozen"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:915
-#: bse/bsetrack.c:921
+#: bse/bsemidisynth.c:434 bse/bsesong.c:727 bse/bsetrack.c:944
+#: bse/bsetrack.c:950
 msgid "MIDI Instrument"
 msgstr "Midi-instrument"
 
-#: bse/bsemidisynth.c:422 bse/bsetrack.c:917
+#: bse/bsemidisynth.c:422 bse/bsetrack.c:946
 msgid "MIDI Channel"
 msgstr "Midi-kanaal"
 
@@ -4827,7 +4842,7 @@ msgstr "Midi-kanaal"
 msgid "Max Voices"
 msgstr "Max stemmen"
 
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:931
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
@@ -4837,23 +4852,23 @@ msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Het synthese-netwerk dat als Midi-instrument gebruikt zal worden"
 
 # rekeneenheid
-#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:923
+#: bse/bsemidisynth.c:436 bse/bsesong.c:729 bse/bsetrack.c:952
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
-#: bse/bsemidisynth.c:441 bse/bsesong.c:701
+#: bse/bsemidisynth.c:441 bse/bsesong.c:691
 msgid "Master [float]"
 msgstr "Master [float]"
 
-#: bse/bsemidisynth.c:447 bse/bsesong.c:707
+#: bse/bsemidisynth.c:447 bse/bsesong.c:697
 msgid "Master [dB]"
 msgstr "Master [dB]"
 
-#: bse/bsemidisynth.c:454 bse/bsesong.c:714
+#: bse/bsemidisynth.c:454 bse/bsesong.c:704
 msgid "Master [%]"
 msgstr "Master [%]"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:741
+#: bse/bsemidisynth.c:458 bse/bsesong.c:731
 msgid "Playback Settings"
 msgstr "Afspeelinstellingen"
 
@@ -4937,23 +4952,43 @@ msgstr "WAVE bestand"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Naam het WAVE-bestand dat gebruikt wordt voor opname van BSE geluid"
 
-#: bse/bseserver.c:504
-msgid "Advice about MIDI device selections"
-msgstr "Adviseren over MIDI apparaat selectie"
+# kort houden.
+# (niet: bij problemen met het selecteren van een PCM-apparaat)
+#: bse/bseserver.c:463
+msgid "Advice about PCM device selections problems"
+msgstr "Adviseren bij problemen met selecteren PCM-apparaat"
 
-#: bse/bseserver.c:505
-msgid "Alert me about MIDI device selections"
-msgstr "Waarschuw mij bij MIDI apparaatselectie"
+#: bse/bseserver.c:464
+msgid "Alert me about PCM device selections problems"
+msgstr "Waarschuw mij bij problemen bij het selecteren van PCM-apparaten"
 
-#: bse/bseserver.c:506
+# misschien beter in enkelvoud:
+# openen Midi-apparaat mislukt
+# opgeven/niet meer proberen
+#: bse/bseserver.c:465
 #, c-format
-msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr "openen midi apparaat %s mislukt (teruggaan naar null-apparaat): %s"
+msgid "Failed to open PCM devices, giving up: %s"
+msgstr "Openen van PCM-apparaten mislukt, opgeven: %s"
 
-#: bse/bseserver.c:548
+#: bse/bseserver.c:484
+msgid "Advice about MIDI device selections problems"
+msgstr "Adviseren bij problemen met selecteren Midi-apparaat"
+
+#: bse/bseserver.c:485
+msgid "Alert me about MIDI device selections problems"
+msgstr "Waarschuw mij bij problemen bij het selecteren van Midi-apparaten"
+
+# misschien beter in enkelvoud:
+# openen Midi-apparaat mislukt
+#: bse/bseserver.c:486
 #, c-format
-msgid "failed to open output file \"%s\": %s"
-msgstr "openen uitvoerbestand \"%s\" mislukt: %s"
+msgid "Failed to open MIDI devices (reverting to null driver): %s"
+msgstr "Openen Midi-apparaten mislukt (teruggaan naar null-stuurprogramma): %s"
+
+#: bse/bseserver.c:524
+#, c-format
+msgid "Failed to open output file \"%s\": %s"
+msgstr "Openen uitvoerbestand \"%s\" mislukt: %s"
 
 #: bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
@@ -4969,44 +5004,44 @@ msgstr "Signaal in"
 msgid "Snoop Signal"
 msgstr "Afgesnoept signaal"
 
-#: bse/bsesong.c:718 bse/bsesong.c:722 bse/bsesong.c:726 bse/bsesong.c:730
+#: bse/bsesong.c:708 bse/bsesong.c:712 bse/bsesong.c:716 bse/bsesong.c:720
 msgid "Timing"
 msgstr "Timing"
 
 # slagen
-#: bse/bsesong.c:720
+#: bse/bsesong.c:710
 msgid "Ticks"
 msgstr "Tikken"
 
-#: bse/bsesong.c:720
+#: bse/bsesong.c:710
 msgid "Number of ticks per quarter note"
 msgstr "Aantal tikken per kwartnoot"
 
-#: bse/bsesong.c:724
+#: bse/bsesong.c:714
 msgid "Numerator"
 msgstr "Teller"
 
-#: bse/bsesong.c:724
+#: bse/bsesong.c:714
 msgid "Measure numerator"
 msgstr "Matenteller"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:718
 msgid "Denominator"
 msgstr "Noemer"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:718
 msgid "Measure denominator, must be a power of 2"
 msgstr "Matennoemer, moet een macht van 2 zijn"
 
 # slagen per minuut
-#: bse/bsesong.c:732
+#: bse/bsesong.c:722
 msgid "Beats per minute"
 msgstr "Beats per minuut"
 
 # herhalen
 #. change default
 #. override parent property
-#: bse/bsesong.c:746 bse/bsesong.c:750 bse/bsesong.c:755 bse/bsesong.c:760
+#: bse/bsesong.c:736 bse/bsesong.c:740 bse/bsesong.c:745 bse/bsesong.c:750
 msgid "Looping"
 msgstr "Loopen"
 
@@ -5083,7 +5118,7 @@ msgstr "/Geluidsbronnen/Standaard oscillator"
 msgid "Wave Form"
 msgstr "Golfvorm"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:907 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:936 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Wave"
@@ -5254,27 +5289,27 @@ msgstr "Uitgangs-toewijzingen"
 msgid "Input port name to interface to"
 msgstr "Naam van ingangspoort waar verbinding naar toe moet"
 
-#: bse/bsesuper.c:101
+#: bse/bsesuper.c:174
 msgid "Author"
 msgstr "Auteur"
 
-#: bse/bsesuper.c:101
+#: bse/bsesuper.c:174
 msgid "Person changing or creating this object"
 msgstr "Persoon die dit object aanmaakt of verandert"
 
-#: bse/bsesuper.c:106
+#: bse/bsesuper.c:179
 msgid "License"
 msgstr "Licentie"
 
-#: bse/bsesuper.c:106
+#: bse/bsesuper.c:179
 msgid "Copyright license applying to this object"
 msgstr "Copyright licentie voor dit object"
 
-#: bse/bsesuper.c:114
+#: bse/bsesuper.c:187
 msgid "Creation Time"
 msgstr "Aanmaaktijd"
 
-#: bse/bsesuper.c:118
+#: bse/bsesuper.c:191
 msgid "Last modification time"
 msgstr "Laatste modificatietijd"
 
@@ -5299,29 +5334,29 @@ msgid "List of available mixer busses to be used as track output"
 msgstr ""
 "Lijst met beschikbare mixerbussen die kunnen worden gebruikt als spooruitgang"
 
-#: bse/bsetrack.c:898
+#: bse/bsetrack.c:927
 msgid "Muted"
 msgstr "Gedempt"
 
 # Synth ingang
-#: bse/bsetrack.c:900 bse/bsetrack.c:905 bse/bsetrack.c:910
+#: bse/bsetrack.c:929 bse/bsetrack.c:934 bse/bsetrack.c:939
 msgid "Synth Input"
 msgstr "Synth invoer"
 
-#: bse/bsetrack.c:902
+#: bse/bsetrack.c:931
 msgid "Synthesis network to be used as instrument"
 msgstr "Het synthese-netwerk dat als instrument gebruikt zal worden"
 
 # uitleg
-#: bse/bsetrack.c:907
+#: bse/bsetrack.c:936
 msgid "Wave to be used as instrument"
 msgstr "Wave dat als instrument gebruikt zal worden"
 
-#: bse/bsetrack.c:912
+#: bse/bsetrack.c:941
 msgid "Max Voixes"
 msgstr "Max stemmen"
 
-#: bse/bsetrack.c:928
+#: bse/bsetrack.c:957
 msgid "Mixer busses used as output for this track"
 msgstr "Mixerbussen die gebruikt worden als uitgang voor dit spoor"
 
@@ -5533,7 +5568,9 @@ msgstr "Audio uitgang"
 msgid ""
 "Adjust the output amplification automatically according to threshold and "
 "ratio"
-msgstr "De uitgangsversterking automatisch aanpassen volgens de drempelwaarde en verhouding"
+msgstr ""
+"De uitgangsversterking automatisch aanpassen volgens de drempelwaarde en "
+"verhouding"
 
 #: plugins/bseadder.c:97 plugins/bsemult.c:60
 msgid "Audio Input 1"
@@ -5993,6 +6030,12 @@ msgstr "Linker uitgang"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Rechter uitgang"
+
+#~ msgid "Device capabilities not sufficient"
+#~ msgstr "Mogelijkheden van het apparaat onvoldoende"
+
+#~ msgid "Failed to set device capabilities"
+#~ msgstr "Instellen apparaatmogelijkheden is mislukt"
 
 #~ msgid "Tab Width"
 #~ msgstr "Tabbreedte"
