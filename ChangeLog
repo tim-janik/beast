@@ -32,7 +32,7 @@ Mon Jan  3 17:27:07 2000  Tim Janik  <timj@gtk.org>
 	bseplugindir.
 
 	* beast-gtk/Makefile.am: removed building of bstconfigpaths.h,
-	dropped TAGS rule for now.
+	dropped TAGS rule.
 
 	* docs/Makfile.am: install selected text files.
 
