@@ -58,7 +58,7 @@ guint64		   gsl_tick_stamp	(void);
 guint64		   gsl_time_system	(void);
 GslTickStampUpdate gsl_tick_stamp_last	(void);
 #define		   GSL_TICK_STAMP	(_GSL_TICK_STAMP_VAL ())
-#define		   GSL_MAX_TICK_STAMP	(G_MAXUINT64)
+#define		   GSL_MAX_TICK_STAMP	(18446744073709551615LLU /* 2^64-1*/)
 void		gsl_thread_awake_before	(guint64	 tick_stamp);
 #define	GSL_SPIN_LOCK	SFI_SPIN_LOCK
 #define	GSL_SPIN_UNLOCK	SFI_SPIN_UNLOCK
@@ -84,13 +84,14 @@ typedef guint (*GslProgressFunc)        (gpointer          data,
                                          GslProgressState *pstate);
 struct _GslProgressState
 {
-  guint           wipe_length;
-  gfloat          pval;
+  guint           wipe_length, precision;
+  gfloat          pval, epsilon;
   gpointer        pdata;
   GslProgressFunc pfunc;
 };
 GslProgressState gsl_progress_state     (gpointer          data,
-                                         GslProgressFunc   pfunc);
+                                         GslProgressFunc   pfunc,
+                                         guint             precision);
 void             gsl_progress_notify    (GslProgressState *pstate,
                                          gfloat            pval,
                                          const gchar      *detail_format,

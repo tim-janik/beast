@@ -1,5 +1,5 @@
 /* BseSnooper - BSE Snooper
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -186,7 +186,7 @@ snooper_process (GslModule *module,
 	      seen_pinf |= GSL_FLOAT_IS_INF_POSITIVE (v);
 	      seen_ninf |= GSL_FLOAT_IS_INF_POSITIVE (v);
 	    }
-	  else if_reject (GSL_DOUBLE_IS_SUBNORMAL (v))
+	  else if_reject (GSL_FLOAT_IS_SUBNORMAL (v))
 		 seen_subn = TRUE;
 	}
       avg /= (gdouble) n_values;

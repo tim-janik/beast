@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 1999-2002 Tim Janik
+ * Copyright (C) 1999-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,7 @@
 
 #include <bse/gsldefs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* IEEE 754 single precision floating point layout:
@@ -96,8 +94,8 @@ extern "C" {
 #define	GSL_DOUBLE_SIGN(d)		(GSL_DOUBLE_PARTS (d).mpn.sign)
 
 /* get structured parts of floating point numbers */
-#define	GSL_FLOAT_PARTS(f)		(*((GslFloatIEEE754*) &(f)))
-#define	GSL_DOUBLE_PARTS(d)		(*((GslDoubleIEEE754*) &(d)))
+#define	GSL_FLOAT_PARTS(f)		(((GslFloatIEEE754) (f)))
+#define	GSL_DOUBLE_PARTS(d)		(((GslDoubleIEEE754) (d))) /* (*((GslDoubleIEEE754*) &(d))) */
 
 /* --- rounding --- */
 typedef	unsigned short int	GslFpuState;
@@ -239,8 +237,6 @@ gsl_dtoi (register double v)
 }
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_IEEE754_H__ */		/* vim: set ts=8 sw=2 sts=2: */

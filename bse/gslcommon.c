@@ -285,11 +285,17 @@ gsl_error_from_errno (gint         sys_errno,
 /* --- progress notification --- */
 GslProgressState
 gsl_progress_state (gpointer        data,
-                    GslProgressFunc pfunc)
+                    GslProgressFunc pfunc,
+                    guint           precision)
 {
-  GslProgressState pstate = { 0, 0.0, };
+  GslProgressState pstate = { 0, -99, };
   pstate.pfunc = pfunc;
   pstate.pdata = data;
+  pstate.precision = precision = CLAMP (precision, 0, 9);
+  pstate.epsilon = 1;
+  while (precision--)
+    pstate.epsilon *= 0.1;
+  pstate.epsilon *= 0.5;
   return pstate;
 }
 
@@ -306,7 +312,7 @@ gsl_progress_notify (GslProgressState *pstate,
   if (pval >= 0)
     {
       pval = CLAMP (pval, 0, 100);
-      need_update = ABS (pval - pstate->pval) > 0.05;
+      need_update = ABS (pval - pstate->pval) > pstate->epsilon;
     }
   else
     {
@@ -355,15 +361,19 @@ gsl_progress_printerr (gpointer          message,
                        const gchar      *detail,
                        GslProgressState *pstate)
 {
-  gchar *str = g_strdup_printf ("%s%sprocessed %5.1f%% %s%s%s",
-                                message ? (gchar*) message : "",
-                                message ? ": " : "",
-                                pval,
-                                detail ? "(" : "",
-                                detail ? detail : "",
-                                detail ? ")" : "");
+  gchar *str, format[128] = "%s%sprocessed %5.1f%% %s%s%s";
+  gchar *ppos = strchr (format, '1');
+  guint prec = pstate->precision;
+  ppos[0] = '0' + CLAMP (prec, 0, 9);
+  str = g_strdup_printf (format,
+                         message ? (gchar*) message : "",
+                         message ? ": " : "",
+                         pval,
+                         detail ? "(" : "",
+                         detail ? detail : "",
+                         detail ? ")" : "");
   guint l = strlen (str);
-  g_printerr ("%s\r", str);
+  g_printerr ("%s            \r", str);
   g_free (str);
   return l;
 }

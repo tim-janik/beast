@@ -1,5 +1,5 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -585,7 +585,7 @@ master_handle_flow_jobs (EngineNode *node,
 
   /* node is not necessarily scheduled */
   
-  if_reject (fjob)
+  if_reject (fjob != NULL)
     do
       {
 	FJOB_DEBUG ("FJob (%s) for (%p:s=%u) at:%lld current:%lld\n",

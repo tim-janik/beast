@@ -101,19 +101,25 @@ typedef void     (*GslModuleFreeFunc)   (gpointer        data,
 
 #if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK) \
     || defined (GSL_WANT_GLIB_WRAPPER) || defined (GSL_EXTENSIONS)
-#  define if_expect(cond)		if (GSL_GCC_EXPECT (cond))
-#  define if_reject(cond)		if (GSL_GCC_REJECT (cond))
+#  define if_expect(cond)		if (GSL_GCC_EXPECT1 (cond))
+#  define if_reject(cond)		if (GSL_GCC_EXPECT0 (cond))
 #endif
 
 
 /* --- implementation details --- */
 #define	GSL_ENGINE_MAX_POLLFDS	(128)
 #if __GNUC__ >= 3 && defined __OPTIMIZE__
-#  define GSL_GCC_EXPECT(cond)	(__builtin_expect ((cond) != 0, 1))
-#  define GSL_GCC_REJECT(cond)	(__builtin_expect ((cond) != 0, 0))
+#  define GSL_GCC_EXPECT1(cond)	  (__builtin_expect (cond, 1))
+#  define GSL_GCC_EXPECT0(cond)	  (__builtin_expect (cond, 0))
+#  define GSL_GCC_PREFETCH(addr)  (__builtin_prefetch (addr, 0))
+#  define GSL_GCC_RPREFETCH(addr) (__builtin_prefetch (addr, 0))
+#  define GSL_GCC_WPREFETCH(addr) (__builtin_prefetch (addr, 1))
 #else
-#  define GSL_GCC_EXPECT(cond)	cond
-#  define GSL_GCC_REJECT(cond)	cond
+#  define GSL_GCC_EXPECT1(cond)	cond
+#  define GSL_GCC_EXPECT0(cond)	cond
+#  define GSL_GCC_PREFETCH(addr)  /* addr */
+#  define GSL_GCC_RPREFETCH(addr) /* addr */
+#  define GSL_GCC_WPREFETCH(addr) /* addr */
 #endif
 
 G_END_DECLS

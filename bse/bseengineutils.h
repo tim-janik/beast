@@ -1,5 +1,5 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include <bse/gsldefs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- typedefs --- */
 typedef struct _EngineNode     EngineNode;
@@ -77,10 +74,6 @@ SfiRing*    _engine_pop_unprocessed_cycle	(void);
 void	    _engine_push_processed_cycle	(SfiRing	*cycle);
 void	    _engine_wait_on_unprocessed		(void);
 
-       
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_ENGINE_UTIL_H__ */

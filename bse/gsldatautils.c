@@ -142,7 +142,7 @@ gsl_wave_file_dump_header (gint           fd,
   guint byte_per_sample, byte_per_second, file_length;
 
   g_return_val_if_fail (fd >= 0, EINVAL);
-  g_return_val_if_fail (n_data_bytes < 4294967296 - 44, EINVAL);
+  g_return_val_if_fail (n_data_bytes < 4294967296LLU - 44, EINVAL);
   g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
   g_return_val_if_fail (n_channels >= 1, EINVAL);
 
@@ -179,7 +179,7 @@ gsl_wave_file_patch_length (gint           fd,
   glong l;
 
   g_return_val_if_fail (fd >= 0, EINVAL);
-  g_return_val_if_fail (n_data_bytes < 4294967296 - 44, EINVAL);
+  g_return_val_if_fail (n_data_bytes < 4294967296LLU - 44, EINVAL);
 
   file_length = 0; /* 4 + 4; */				/* 'RIFF' header is left out*/
   file_length += 4 + 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */

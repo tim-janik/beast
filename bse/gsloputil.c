@@ -1,5 +1,5 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -605,7 +605,7 @@ _engine_set_schedule (EngineSchedule *sched)
   g_return_if_fail (sched->secured == TRUE);
   
   GSL_SPIN_LOCK (&pqueue_mutex);
-  if_reject (pqueue_schedule)
+  if_reject (pqueue_schedule != NULL)
     {
       GSL_SPIN_UNLOCK (&pqueue_mutex);
       g_warning (G_STRLOC ": schedule already set");
@@ -670,7 +670,7 @@ _engine_pop_unprocessed_node (void)
 static inline void
 collect_trash_flow_jobs_L (EngineNode *node)
 {
-  if_reject (node->fjob_first)
+  if_reject (node->fjob_first != NULL)
     {
       /*move into flow jobs trash queue */
       node->fjob_last->any.next = pqueue_trash_fjobs_first;

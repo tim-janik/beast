@@ -1,5 +1,5 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,7 @@
 #include "gsloputil.h"
 #include "gslcommon.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
+G_BEGIN_DECLS
 
 #define	ENGINE_NODE(module)		((EngineNode*) (module))
 #define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
@@ -226,7 +222,7 @@ _engine_node_pop_flow_job (EngineNode *node,
 {
   EngineFlowJob *fjob = node->flow_jobs;
 
-  if_reject (fjob)
+  if_reject (fjob != NULL)
     {
       if (fjob->any.tick_stamp <= tick_stamp)
 	{
@@ -249,15 +245,12 @@ _engine_node_peek_flow_job_stamp (EngineNode *node)
 {
   EngineFlowJob *fjob = node->flow_jobs;
 
-  if_reject (fjob)
+  if_reject (fjob != NULL)
     return fjob->any.tick_stamp;
 
   return GSL_MAX_TICK_STAMP;
 }
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_ENGINE_NODE_H__ */

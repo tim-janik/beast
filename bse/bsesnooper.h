@@ -1,5 +1,5 @@
 /* BseSnooper - BSE Snooper
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,7 @@
 
 #include <bse/bsesource.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
-
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_SNOOPER              (BSE_TYPE_ID (BseSnooper))
@@ -57,11 +51,6 @@ enum
 };
 
 
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SNOOPER_H__ */

@@ -1,5 +1,5 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001, 2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include <bse/gslengine.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- internal (EngineThread) --- */
 gboolean	_engine_master_prepare		(GslEngineLoop		*loop);
@@ -37,9 +34,6 @@ typedef struct {
 void		_engine_master_thread		(EngineMasterData	*mdata);
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_ENGINE_MASTER_H__ */

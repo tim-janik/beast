@@ -1,3 +1,13 @@
+Tue May 20 15:08:01 2003  Tim Janik  <timj@gtk.org>
+
+	* port code to gcc-3.3.
+
+	* gsldefs.h: provide gcc specific prefetch macros and rename _EXPECT()
+	and _REJECT() macros to _EXPECT1() and _EXPECT0() respectively. removed
+	parenthesis around macro arguments to catch inline assignments.
+
+	* gslcommon.[hc]: allow precision specification with progress functions.
+
 Sun May 18 04:55:45 2003  Tim Janik  <timj@gtk.org>
 
 	* bseprocedure.proc: added bse-string-extract-number() to deal with
