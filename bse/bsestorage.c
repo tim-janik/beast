@@ -282,8 +282,6 @@ BseErrorType
 bse_storage_input_file (BseStorage  *self,
                         const gchar *file_name)
 {
-  gint fd;
-  
   g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
 
