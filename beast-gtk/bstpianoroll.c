@@ -1005,10 +1005,10 @@ piano_roll_update (BstPianoRoll *self,
 		   gint          max_note)
 {
   gint note;
-  
   duration = MAX (duration, 1);
-  for (note = min_note; note <= max_note; note++)
-    piano_roll_queue_expose (self, CANVAS (self), note, tick, tick + duration - 1);
+  if (GTK_WIDGET_DRAWABLE (self))
+    for (note = min_note; note <= max_note; note++)
+      piano_roll_queue_expose (self, CANVAS (self), note, tick, tick + duration - 1);
 }
 
 static void

@@ -102,36 +102,44 @@ struct _BstPatternViewClass
 
 
 /* --- prototypes --- */
-GType bst_pattern_view_get_type        (void);
-void  bst_pattern_view_set_proxy       (BstPatternView           *self,
-                                        SfiProxy                  part);
-void  bst_pattern_view_vsetup          (BstPatternView           *self,
-                                        guint                     tpqn,
-                                        guint                     qnpt,
-                                        guint                     max_ticks,
-                                        guint                     vticks);
-void  bst_pattern_view_set_marker      (BstPatternView           *self,
-                                        guint                     mark_index,
-                                        guint                     position,
-                                        BstPatternViewMarkerType  mtype);
-void  bst_pattern_view_set_pixmarker   (BstPatternView           *self,
-                                        guint                     mark_index,
-                                        BstPatternViewMarkerType  mtype,
-                                        gint                      x,
-                                        gint                      y,
-                                        gint                      width,
-                                        gint                      height);
-void  bst_pattern_view_add_column      (BstPatternView           *self,
-                                        BstPatternLType           ltype,
-                                        gint                      num,
-                                        BstPatternLFlags          lflags);
-void  bst_pattern_view_set_focus       (BstPatternView           *self,
-                                        guint                     focus_col,
-                                        guint                     focus_row);
-gint  bst_pattern_view_get_focus_width (BstPatternView           *self);
-gint  bst_pattern_view_get_last_row    (BstPatternView           *self);
-guint bst_pattern_view_set_layout      (BstPatternView           *self,
-                                        const gchar              *layout);
+GType             bst_pattern_view_get_type        (void);
+void              bst_pattern_view_set_proxy       (BstPatternView            *self,
+                                                    SfiProxy                   part);
+void              bst_pattern_view_vsetup          (BstPatternView            *self,
+                                                    guint                      tpqn,
+                                                    guint                      qnpt,
+                                                    guint                      max_ticks,
+                                                    guint                      vticks);
+void              bst_pattern_view_set_marker      (BstPatternView            *self,
+                                                    guint                      mark_index,
+                                                    guint                      position,
+                                                    BstPatternViewMarkerType   mtype);
+void              bst_pattern_view_set_pixmarker   (BstPatternView            *self,
+                                                    guint                      mark_index,
+                                                    BstPatternViewMarkerType   mtype,
+                                                    gint                       x,
+                                                    gint                       y,
+                                                    gint                       width,
+                                                    gint                       height);
+void              bst_pattern_view_add_column      (BstPatternView            *self,
+                                                    BstPatternLType            ltype,
+                                                    gint                       num,
+                                                    BstPatternLFlags           lflags);
+void              bst_pattern_view_set_focus       (BstPatternView            *self,
+                                                    guint                      focus_col,
+                                                    guint                      focus_row);
+gint              bst_pattern_view_get_focus_width (BstPatternView            *self);
+BstPatternColumn* bst_pattern_view_get_focus_cell  (BstPatternView            *self,
+                                                    guint                     *tick,
+                                                    guint                     *duration);
+gboolean          bst_pattern_view_dispatch_key    (BstPatternView            *self,
+                                                    guint                      keyval,
+                                                    GdkModifierType            modifier,
+                                                    BstPatternAction           action,
+                                                    gdouble                    param);
+gint              bst_pattern_view_get_last_row    (BstPatternView            *self);
+guint             bst_pattern_view_set_layout      (BstPatternView            *self,
+                                                    const gchar               *layout);
 
 
 G_END_DECLS

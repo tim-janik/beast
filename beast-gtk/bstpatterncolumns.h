@@ -22,6 +22,27 @@
 
 G_BEGIN_DECLS
 
+/* --- enums --- */
+typedef enum /*< skip >*/
+{
+  BST_PATTERN_NONE                = 0,
+  /* events */
+  BST_PATTERN_REMOVE_EVENTS,
+  /* notes */
+  BST_PATTERN_SET_NOTE,           /* #note */
+  BST_PATTERN_SET_CONF_NOTE,      /* #note */
+  /* octaves */
+  BST_PATTERN_SET_OCTAVE,         /* #octave */
+  BST_PATTERN_CHANGE_OCTAVE,      /* #octave */
+  /* fine tune */
+  BST_PATTERN_SET_FINE_TUNE,      /* -100 .. +100 */
+  BST_PATTERN_CHANGE_FINE_TUNE,   /* -100 .. +100 */
+  /* values (and velocity) */
+  BST_PATTERN_SET_VALUE,          /* -1 .. +1 */
+  BST_PATTERN_CHANGE_VALUE,       /* -1 .. +1 */
+} BstPatternAction;
+
+
 /* --- typedefs & structures --- */
 typedef struct _BstPatternView        BstPatternView;
 typedef struct _BstPatternColumn      BstPatternColumn;
@@ -54,6 +75,17 @@ struct _BstPatternColumnClass
                                                  GdkWindow              *drawable,
                                                  PangoLayout            *pango_layout,
                                                  guint                   duration);
+  gboolean              (*key_event)            (BstPatternColumn       *self,
+                                                 BstPatternView         *pview,
+                                                 GdkWindow              *drawable,
+                                                 PangoLayout            *pango_layout,
+                                                 guint                   tick,
+                                                 guint                   duration,
+                                                 GdkRectangle           *cell_rect,
+                                                 guint                   keyval,
+                                                 GdkModifierType         modifier,
+                                                 BstPatternAction        action,
+                                                 gdouble                 param);
   void                  (*finalize)             (BstPatternColumn       *self);
 };
 

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999-2002 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999-2004 Tim Janik and Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,8 @@ G_BEGIN_DECLS
 /* --- prototypes --- */
 void		_bst_gconfig_init		(void);
 void		bst_gconfig_set_rc_version	(const gchar	*rc_version);
+void		bst_gconfig_set_rec_rc_version	(SfiRec         *rec,
+                                                 const gchar	*rc_version);
 void		bst_gconfig_apply		(SfiRec		*rec);
 GParamSpec*	bst_gconfig_pspec		(void);
 /* bstutils.h: BstGConfig*     bst_gconfig_get_global (void); */

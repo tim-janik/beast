@@ -1,9 +1,7 @@
 FIXMES:
+- part editor UI, add fields:
+  Jump Steps: __ Jump Direction: _ Last Tick: _____, Last (used) Channel: ___
 - add author and license to procedure execution dialog
-- for notes support parsing:
-  #c-4    => cis-4
-  c#4     => cis+4
-  c#-4    => cis-4
 - copy/paste in piano roll produces two selected note blocks
 - fix ref-count initilization for Bst*Controller
 - rename *_reallocate_children to *_reallocate_contents for GxkScrollCanvas and derived

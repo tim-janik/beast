@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999-2002 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@
 #include "bstskinconfig.h"
 #include "bstkeybindings.h"
 #include "bstpatternctrl.h"
+#include "topconfig.h" /* BST_VERSION */
 #include "bstparam.h"
 
 
@@ -67,12 +68,19 @@ bst_preferences_init (BstPreferences *self)
   pchild = bst_preferences_build_rec_editor (self->rec_gconfig, sfi_pspec_get_rec_fields (pspec), &self->params_gconfig);
   gxk_notebook_append (self->notebook, pchild, "BEAST");
   
-  kbinding = bst_pattern_controller_bindings();
+  kbinding = bst_pattern_controller_piano_keys();
   iseq = bst_key_binding_get_item_seq (kbinding);
-  self->box_pview = bst_key_binding_box (kbinding->n_funcs, kbinding->funcs);
-  bst_key_binding_box_set (self->box_pview, iseq);
+  self->box_piano_keys = bst_key_binding_box (kbinding->n_funcs, kbinding->funcs, TRUE);
+  bst_key_binding_box_set (self->box_piano_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
-  gxk_notebook_append (self->notebook, self->box_pview, _("Key Bindings"));
+  gxk_notebook_append (self->notebook, self->box_piano_keys, _("Piano Keys"));
+
+  kbinding = bst_pattern_controller_generic_keys();
+  iseq = bst_key_binding_get_item_seq (kbinding);
+  self->box_generic_keys = bst_key_binding_box (kbinding->n_funcs, kbinding->funcs, FALSE);
+  bst_key_binding_box_set (self->box_generic_keys, iseq);
+  bst_key_binding_item_seq_free (iseq);
+  gxk_notebook_append (self->notebook, self->box_generic_keys, _("Generic Keys"));
   
   pspec = bst_skin_config_pspec ();
   self->rec_skin = bst_skin_config_to_rec (bst_skin_config_get_global ());
@@ -186,9 +194,14 @@ bst_preferences_revert (BstPreferences *self)
   sfi_rec_swap_fields (self->rec_gconfig, crec);
   sfi_rec_unref (crec);
 
-  kbinding = bst_pattern_controller_bindings();
+  kbinding = bst_pattern_controller_piano_keys();
   iseq = bst_key_binding_get_item_seq (kbinding);
-  bst_key_binding_box_set (self->box_pview, iseq);
+  bst_key_binding_box_set (self->box_piano_keys, iseq);
+  bst_key_binding_item_seq_free (iseq);
+
+  kbinding = bst_pattern_controller_generic_keys();
+  iseq = bst_key_binding_get_item_seq (kbinding);
+  bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
 
   rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
@@ -216,12 +229,18 @@ bst_preferences_default_revert (BstPreferences *self)
   
   rec = sfi_rec_new ();
   sfi_rec_validate (rec, sfi_pspec_get_rec_fields (bst_gconfig_pspec ()));
+  bst_gconfig_set_rec_rc_version (rec, BST_VERSION);
   sfi_rec_swap_fields (self->rec_gconfig, rec);
   sfi_rec_unref (rec);
+  
+  kbinding = bst_pattern_controller_piano_keys();
+  iseq = bst_key_binding_get_item_seq (bst_pattern_controller_default_piano_keys());
+  bst_key_binding_box_set (self->box_piano_keys, iseq);
+  bst_key_binding_item_seq_free (iseq);
 
-  kbinding = bst_pattern_controller_bindings();
-  iseq = bst_key_binding_get_item_seq (bst_pattern_controller_default_bindings());
-  bst_key_binding_box_set (self->box_pview, iseq);
+  kbinding = bst_pattern_controller_generic_keys();
+  iseq = bst_key_binding_get_item_seq (bst_pattern_controller_default_generic_keys());
+  bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
 
   rec = sfi_rec_new ();
@@ -246,8 +265,13 @@ bst_preferences_apply (BstPreferences *self)
   
   bst_gconfig_apply (self->rec_gconfig);
 
-  kbinding = bst_pattern_controller_bindings();
-  iseq = bst_key_binding_box_get (self->box_pview);
+  kbinding = bst_pattern_controller_piano_keys();
+  iseq = bst_key_binding_box_get (self->box_piano_keys);
+  bst_key_binding_set_item_seq (kbinding, iseq);
+  bst_key_binding_item_seq_free (iseq);
+
+  kbinding = bst_pattern_controller_generic_keys();
+  iseq = bst_key_binding_box_get (self->box_generic_keys);
   bst_key_binding_set_item_seq (kbinding, iseq);
   bst_key_binding_item_seq_free (iseq);
 
@@ -256,6 +280,23 @@ bst_preferences_apply (BstPreferences *self)
   bse_proxy_set (BSE_SERVER, "bse-preferences", self->bserec, NULL);
 
   bst_preferences_revert (self);
+}
+
+void
+bst_preferences_load_rc_files (void)
+{
+  gchar *file_name = BST_STRDUP_RC_FILE ();
+  GSList *slist = NULL;
+
+  bst_rc_parse (file_name);
+  g_free (file_name);
+
+  bst_skin_parse (bst_skin_config_rcfile ());
+
+  slist = g_slist_append (slist, bst_pattern_controller_piano_keys());
+  // slist = g_slist_append (slist, bst_pattern_controller_generic_keys());
+  bst_key_binding_parse (bst_key_binding_rcfile (), slist);
+  g_slist_free (slist);
 }
 
 void
@@ -276,7 +317,8 @@ bst_preferences_save (BstPreferences *self)
   g_free (file_name);
 
   file_name = g_strdup (bst_key_binding_rcfile ());
-  slist = g_slist_append (slist, bst_pattern_controller_bindings());
+  slist = g_slist_append (slist, bst_pattern_controller_piano_keys());
+  // slist = g_slist_append (slist, bst_pattern_controller_generic_keys());
   error = bst_key_binding_dump (file_name, slist);
   if (error)
     g_warning ("failed to save skinrc \"%s\": %s", file_name, bse_error_blurb (error));

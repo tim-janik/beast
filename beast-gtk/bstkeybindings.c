@@ -119,8 +119,10 @@ key_bindings_exec_action (gpointer data,
           kbinding->keys[nb].param = 0;
           gxk_list_wrapper_notify_insert (GXK_LIST_WRAPPER (model), nb);
           gxk_tree_view_select_index (btview, nb);
+#if 0   /* usefull for entering movement bindings, not notes */
           if (nf + 1 < kbinding->n_funcs)
             gxk_tree_view_select_index (ftview, nf + 1);
+#endif
         }
       else
         gdk_beep();
@@ -216,8 +218,11 @@ key_bindings_check_action (gpointer data,
                            gulong   action)
 {
   GtkWidget *self = GTK_WIDGET (data);
+  gboolean editable = g_object_get_long (self, "editable");
   GtkTreeView *btview = gxk_gadget_find (self, "binding-tree-view");
   GtkTreeView *ftview = gxk_gadget_find (self, "function-tree-view");
+  if (!editable)
+    return FALSE;
   switch (action)
     {
       GtkTreeSelection *tsel;
@@ -308,10 +313,10 @@ key_binding_fill_binding_value (GtkWidget      *self,
       switch (kbinding->funcs[kbinding->keys[nb].func_index].ptype)
         {
         case BST_KEY_BINDING_PARAM_m1_p1:       str = g_strdup_printf ("%+.7f", param);         break;
-        case BST_KEY_BINDING_PARAM_0_p1:        str = g_strdup_printf ("%.7f", param);          break;
+        case BST_KEY_BINDING_PARAM_0_p1:        str = g_strdup_printf ("% .7f", param);         break;
         case BST_KEY_BINDING_PARAM_m1_0:        str = g_strdup_printf ("%+.7f", param);         break;
-        case BST_KEY_BINDING_PARAM_PERC:        str = g_strdup_printf ("%3.2f", param);         break;
-        case BST_KEY_BINDING_PARAM_OCTAVE:      str = g_strdup_printf ("%d", (gint) param);     break;
+        case BST_KEY_BINDING_PARAM_PERC:        str = g_strdup_printf ("% 3.2f", param);        break;
+        case BST_KEY_BINDING_PARAM_OCTAVE:      str = g_strdup_printf ("% d", (gint) param);    break;
         case BST_KEY_BINDING_PARAM_NOTE:        str = sfi_note_to_string (param);               break;
         default:                                str = g_strdup ("");                            break;
         }
@@ -349,7 +354,8 @@ key_binding_free (gpointer data)
 
 GtkWidget*
 bst_key_binding_box (guint                        n_funcs,
-                     const BstKeyBindingFunction *funcs)
+                     const BstKeyBindingFunction *funcs,
+                     gboolean                     editable)
 {
   GxkGadget *self = gxk_gadget_create ("beast", "key-bindings-box", NULL);
   GxkListWrapper *lwrapper;
@@ -360,6 +366,7 @@ bst_key_binding_box (guint                        n_funcs,
   kbinding->funcs = funcs;
 
   g_object_set_data_full (self, "BstKeyBinding", kbinding, key_binding_free);
+  g_object_set_long (self, "editable", editable != FALSE);
   gxk_widget_publish_actions (self, "key-bindings-actions", G_N_ELEMENTS (key_bindings_actions), key_bindings_actions,
                               NULL, key_bindings_check_action, key_bindings_exec_action);
   
@@ -389,7 +396,7 @@ bst_key_binding_box (guint                        n_funcs,
                                  NULL, NULL, 0);
   gxk_tree_view_add_text_column (tview, BCOL_PARAM, "S", 0.0, _("Parameter"),
                                  _("Parameter to pass to functions upon activation"),
-                                 key_binding_binding_param_edited, self, G_CONNECT_SWAPPED);
+                                 editable ? key_binding_binding_param_edited : NULL, self, G_CONNECT_SWAPPED);
   
   /* function list */
   lwrapper = gxk_list_wrapper_new (N_FCOLS,
@@ -441,6 +448,7 @@ bst_key_binding_lookup_key (BstKeyBinding  *kbinding,
                             GdkModifierType modifier)
 {
   guint i;
+  keyval = gdk_keyval_to_lower (keyval);
   modifier &= GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK;
   for (i = 0; i < kbinding->n_keys; i++)
     if (kbinding->keys[i].keyval == keyval &&
@@ -452,18 +460,22 @@ bst_key_binding_lookup_key (BstKeyBinding  *kbinding,
 const BstKeyBindingFunction*
 bst_key_binding_lookup (BstKeyBinding   *kbinding,
                         guint            keyval,
-                        GdkModifierType  modifier)
+                        GdkModifierType  modifier,
+                        gdouble         *param)
 {
   BstKeyBindingKey *key = bst_key_binding_lookup_key (kbinding, keyval, modifier);
+  if (param)
+    *param = key ? key->param : 0;
   return key ? &kbinding->funcs[key->func_index] : NULL;
 }
 
 guint
 bst_key_binding_lookup_id (BstKeyBinding   *kbinding,
                            guint            keyval,
-                           GdkModifierType  modifier)
+                           GdkModifierType  modifier,
+                           gdouble         *param)
 {
-  const BstKeyBindingFunction *func = bst_key_binding_lookup (kbinding, keyval, modifier);
+  const BstKeyBindingFunction *func = bst_key_binding_lookup (kbinding, keyval, modifier, param);
   return func ? func->id : 0;
 }
 

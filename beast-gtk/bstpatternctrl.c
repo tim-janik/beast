@@ -80,75 +80,66 @@ bst_pattern_controller_unref (BstPatternController   *self)
     }
 }
 
-static void
-pattern_controller_move_focus (BstPatternController   *self,
-                               BstPatternFunction      ftype,
-                               guint                  *focus_col_p,
-                               guint                  *focus_row_p)
-{
-  const guint channel_page = 2, row_page = 4;
-  const guint note_wrap = TRUE;
-  BstPatternView *pview = self->pview;
-  gint focus_row = *focus_row_p;
-  gint focus_col = *focus_col_p;
-
-  /* movement */
-  switch (ftype)
-    {
-    case BST_PATTERN_MOVE_LEFT:         focus_col--;                                        break;
-    case BST_PATTERN_MOVE_RIGHT:        focus_col++;                                        break;
-    case BST_PATTERN_MOVE_UP:           focus_row--;                                        break;
-    case BST_PATTERN_MOVE_DOWN:         focus_row++;                                        break;
-    case BST_PATTERN_PAGE_LEFT:         focus_col -= channel_page;                          break;
-    case BST_PATTERN_PAGE_RIGHT:        focus_col += channel_page;                          break;
-    case BST_PATTERN_PAGE_UP:           focus_row -= row_page;                              break;
-    case BST_PATTERN_PAGE_DOWN:         focus_row += row_page;                              break;
-    case BST_PATTERN_JUMP_LEFT:         focus_col = 0;                                      break;
-    case BST_PATTERN_JUMP_RIGHT:        focus_col = pview->n_focus_cols - 1;                break;
-    case BST_PATTERN_JUMP_TOP:          focus_row = 0;                                      break;
-    case BST_PATTERN_JUMP_BOTTOM:       focus_row = bst_pattern_view_get_last_row (pview);  break;
-    default: ;
-    }
-  /* wrapping */
-  if (focus_col < 0)
-    focus_col = note_wrap ? pview->n_focus_cols - 1 : 0;
-  if (focus_col >= pview->n_focus_cols)
-    focus_col = note_wrap ? 0 : pview->n_focus_cols - 1;
-  if (focus_row < 0)
-    focus_row = 0;
-  if (focus_row > bst_pattern_view_get_last_row (pview))
-    focus_row = bst_pattern_view_get_last_row (pview);
-  *focus_row_p = focus_row;
-  *focus_col_p = focus_col;
-}
-
 static gboolean
 pattern_controller_key_press (BstPatternController *self,
                               GdkEventKey          *event)
 {
-  BstPatternFunction ftype = bst_key_binding_lookup_id (bst_pattern_controller_bindings(),
-                                                        event->keyval, event->state);
-  if (ftype)
+  BstPatternView *pview = self->pview;
+  gdouble param = 0;
+  BstPatternAction action;
+  BstPatternFunction ftype;
+  gboolean handled;
+  ftype = bst_key_binding_lookup_id (bst_pattern_controller_piano_keys(), event->keyval, event->state, &param);
+  if (!ftype)
+    ftype = bst_key_binding_lookup_id (bst_pattern_controller_generic_keys(), event->keyval, event->state, &param);
+  action = ftype & BST_PATTERN_MASK_ACTION;
+  handled = bst_pattern_view_dispatch_key (pview, event->keyval, event->state, action, param);
+  if (ftype & BST_PATTERN_MASK_MOVEMENT)
     {
-      guint focus_col = self->pview->focus_col;
-      guint focus_row = self->pview->focus_row;
-      pattern_controller_move_focus (self, ftype, &focus_col, &focus_row);
+      const guint channel_page = 2, row_page = 4;
+      const guint note_wrap = TRUE;
+      gint focus_col = pview->focus_col;
+      gint focus_row = pview->focus_row;
+      /* movement */
+      switch (ftype & BST_PATTERN_MASK_MOVEMENT)
+        {
+        case BST_PATTERN_MOVE_LEFT:         focus_col--;                                        break;
+        case BST_PATTERN_MOVE_RIGHT:        focus_col++;                                        break;
+        case BST_PATTERN_MOVE_UP:           focus_row--;                                        break;
+        case BST_PATTERN_MOVE_NEXT:
+        case BST_PATTERN_MOVE_DOWN:         focus_row++;                                        break;
+        case BST_PATTERN_PAGE_LEFT:         focus_col -= channel_page;                          break;
+        case BST_PATTERN_PAGE_RIGHT:        focus_col += channel_page;                          break;
+        case BST_PATTERN_PAGE_UP:           focus_row -= row_page;                              break;
+        case BST_PATTERN_PAGE_DOWN:         focus_row += row_page;                              break;
+        case BST_PATTERN_JUMP_LEFT:         focus_col = 0;                                      break;
+        case BST_PATTERN_JUMP_RIGHT:        focus_col = pview->n_focus_cols - 1;                break;
+        case BST_PATTERN_JUMP_TOP:          focus_row = 0;                                      break;
+        case BST_PATTERN_JUMP_BOTTOM:       focus_row = bst_pattern_view_get_last_row (pview);  break;
+        default: ;
+        }
+      /* wrapping */
+      if (focus_col < 0)
+        focus_col = note_wrap ? pview->n_focus_cols - 1 : 0;
+      if (focus_col >= pview->n_focus_cols)
+        focus_col = note_wrap ? 0 : pview->n_focus_cols - 1;
+      if (focus_row < 0)
+        focus_row = 0;
+      if (focus_row > bst_pattern_view_get_last_row (pview))
+        focus_row = bst_pattern_view_get_last_row (pview);
+      /* update focus */
       bst_pattern_view_set_focus (self->pview, focus_col, focus_row);
-      return TRUE;
+      handled = TRUE;
     }
-  return FALSE;
+  return handled;
 }
 
-BstKeyBinding*
-bst_pattern_controller_default_bindings (void)
+static const BstKeyBindingFunction*
+pattern_controller_get_functions (guint *n_p)
 {
   static BstKeyBindingFunction pcfuncs[] = {
-    { BST_PATTERN_MOVE_UP,      "test-func-note",  BST_KEY_BINDING_PARAM_NOTE,   "" },
-    { BST_PATTERN_MOVE_UP,      "test-func-oct",   BST_KEY_BINDING_PARAM_OCTAVE, "" },
-    { BST_PATTERN_MOVE_UP,      "test-func-perc",  BST_KEY_BINDING_PARAM_PERC,   "" },
-    { BST_PATTERN_MOVE_UP,      "test-func-m1p1",  BST_KEY_BINDING_PARAM_m1_p1,  "" },
-    { BST_PATTERN_MOVE_UP,      "test-func-0p1",   BST_KEY_BINDING_PARAM_0_p1,   "" },
-    { BST_PATTERN_MOVE_UP,      "test-func-m10",   BST_KEY_BINDING_PARAM_m1_0,   "" },
+    /* movement */
+    { BST_PATTERN_MOVE_NEXT,    "next",         0, N_("Move focus to the next cell (up/left/right/down according to configuration)") },
     { BST_PATTERN_MOVE_UP,      "move-up",      0, N_("Move focus cell upwards") },
     { BST_PATTERN_MOVE_LEFT,    "move-left",    0, N_("Move focus cell to the left") },
     { BST_PATTERN_MOVE_RIGHT,   "move-right",   0, N_("Move focus cell to the right") },
@@ -161,30 +152,139 @@ bst_pattern_controller_default_bindings (void)
     { BST_PATTERN_JUMP_LEFT,    "jump-left",    0, N_("Set the focus cell to the leftmost position possible") },
     { BST_PATTERN_JUMP_RIGHT,   "jump-right",   0, N_("Set the focus cell to the rightmost position possible") },
     { BST_PATTERN_JUMP_BOTTOM,  "jump-bottom",  0, N_("Set the focus cell to the bottommost position possible") },
+    /* events */
+    { BST_PATTERN_REMOVE_EVENTS,
+      "remove-events",                          0,
+      N_("Remove any events in the focus cell") },
+    { BST_PATTERN_REMOVE_EVENTS | BST_PATTERN_MOVE_NEXT,
+      "remove-events,next",                     0,
+      N_("Remove any events in the focus cell and move to the next cell") },
+    /* notes */
+    { BST_PATTERN_SET_NOTE,
+      "set-note",                               BST_KEY_BINDING_PARAM_NOTE,
+      N_("Set the focus cell note") },
+    { BST_PATTERN_SET_NOTE | BST_PATTERN_MOVE_NEXT,
+      "set-note,next",                          BST_KEY_BINDING_PARAM_NOTE,
+      N_("Set the focus cell note and move to the next cell") },
+    { BST_PATTERN_SET_CONF_NOTE,
+      "set-note-relative",                      BST_KEY_BINDING_PARAM_NOTE,
+      N_("Set the focus cell note relative to the base octave") },
+    { BST_PATTERN_SET_CONF_NOTE | BST_PATTERN_MOVE_NEXT,
+      "set-note-relative,next",                 BST_KEY_BINDING_PARAM_NOTE,
+      N_("Set the focus cell note relative to the base octave and move to the next cell") },
+    /* octaves */
+    { BST_PATTERN_SET_OCTAVE,
+      "set-octave",                             BST_KEY_BINDING_PARAM_OCTAVE,
+      N_("Set the focus cell octave") },
+    { BST_PATTERN_SET_OCTAVE | BST_PATTERN_MOVE_NEXT,
+      "set-octave,next",                        BST_KEY_BINDING_PARAM_OCTAVE,
+      N_("Set the focus cell octave and move to the next cell") },
+    { BST_PATTERN_CHANGE_OCTAVE,
+      "change-octave",                          BST_KEY_BINDING_PARAM_OCTAVE,
+      N_("Change the focus cell octave by a given amount") },
+    { BST_PATTERN_CHANGE_OCTAVE | BST_PATTERN_MOVE_NEXT,
+      "change-octave,next",                     BST_KEY_BINDING_PARAM_OCTAVE,
+      N_("Change the focus cell octave by a given amount and move to the next cell") },
+    /* base octave */
+    { BST_PATTERN_SET_BASE_OCTAVE,
+      "set-base-octave",                        BST_KEY_BINDING_PARAM_OCTAVE,
+      N_("Set the base octave") },
+    { BST_PATTERN_CHANGE_BASE_OCTAVE,
+      "change-base-octave",                     BST_KEY_BINDING_PARAM_OCTAVE,
+      N_("Change the base octave by a given amount") },
   };
-  static BstKeyBindingItem defkeys[] = {
-    { "Up",    "move-up", 0 },
-    { "Left",  "move-left", 0 },
-    { "Right", "move-right", 0 },
-    { "Down",  "move-down", 0 },
+  static guint n_pcfuncs = 0;
+  if (!n_pcfuncs)
+    {
+      guint i;
+      n_pcfuncs = G_N_ELEMENTS (pcfuncs);
+      for (i = 0; i < n_pcfuncs; i++)
+        pcfuncs[i].function_blurb = _(pcfuncs[i].function_blurb);
+    }
+  *n_p = n_pcfuncs;
+  return pcfuncs;
+}
+
+BstKeyBinding*
+bst_pattern_controller_default_generic_keys (void)
+{
+  static BstKeyBindingItem dflt_keys[] = {
+    /* move in cells */
+    {                   "Up",                   "move-up",      	0 },
+    {                   "KP_Up",                "move-up",      	0 },
+    {                   "Left",                 "move-left",    	0 },
+    {                   "KP_Left",              "move-left",    	0 },
+    {                   "Right",                "move-right",   	0 },
+    {                   "KP_Right",             "move-right",   	0 },
+    {                   "Down",                 "move-down",    	0 },
+    {                   "KP_Down",              "move-down",    	0 },
+    {                   "KP_Begin"/*5*/,        "move-down",    	0 },
+#if 0
+    /* move according to configuration */
+    {                   "Return",               "next",    	        0 },
+    {                   "KP_Enter",             "next",    	        0 },
+#endif
+    /* move in pages */
+    {                   "Page_Up",              "page-up",      	0 },
+    {                   "KP_Page_Up",           "page-up",      	0 },
+    { "<Control>"       "Left",                 "page-left",    	0 },
+    { "<Control>"       "KP_Left",              "page-left",    	0 },
+    { "<Control>"       "Right",                "page-right",   	0 },
+    { "<Control>"       "KP_Right",             "page-right",   	0 },
+    {                   "Page_Down",            "page-down",    	0 },
+    {                   "KP_Page_Down",         "page-down",    	0 },
+    /* jump to boundary */
+    { "<Control>"       "Page_Up",              "jump-top",     	0 },
+    { "<Control>"       "KP_Page_Up",           "jump-top",     	0 },
+    {                   "Home",                 "jump-left",    	0 },
+    {                   "KP_Home",              "jump-left",    	0 },
+    {                   "End",                  "jump-right",   	0 },
+    {                   "KP_End",               "jump-right",   	0 },
+    { "<Control>"       "Page_Down",            "jump-bottom",  	0 },
+    { "<Control>"       "KP_Page_Down",         "jump-bottom",  	0 },
+#if 0
+    /* part movement */
+    {                   "Tab",                  "next-part",            0 },
+    {                   "KP_Tab",               "next-part",            0 },
+    /* {                "ISO_Left_Tab",         "next-part",            0 }, */
+    {                   "ISO_Left_Tab",         "prev-part",            0 },
+    { "<Shift>"         "Tab",                  "prev-part",            0 },
+    { "<Shift>"         "KP_Tab",               "prev-part",            0 },
+    { "<Shift>"         "ISO_Left_Tab",         "prev-part",            0 },
+#endif
+    /* change cell octave */
+    {                   "plus",                 "change-octave",        +1 },
+    { "<Shift>"         "plus",                 "change-octave",        +1 },
+    {                   "KP_Add",               "change-octave",        +1 },
+    {                   "minus",                "change-octave",        -1 },
+    { "<Shift>"         "minus",                "change-octave",        -1 },
+    {                   "KP_Subtract",          "change-octave",        -1 },
+    /* change cell octave & move */
+    { "<Control>"       "plus",                 "change-octave,next",   +1 },
+    { "<Shift><Control>""plus",                 "change-octave,next",   +1 },
+    { "<Control>"       "KP_Add",               "change-octave,next",   +1 },
+    { "<Control>"       "minus",                "change-octave,next",   -1 },
+    { "<Shift><Control>""minus",                "change-octave,next",   -1 },
+    { "<Control>"       "KP_Subtract",          "change-octave,next",   -1 },
+    /* change base octave */
+    {                   "asterisk",             "change-base-octave",   +1 },
+    { "<Shift>"         "asterisk",             "change-base-octave",   +1 },
+    {                   "KP_Multiply",          "change-base-octave",   +1 },
+    {                   "underscore",           "change-base-octave",   -1 },
+    { "<Shift>"         "underscore",           "change-base-octave",   -1 },
+    {                   "KP_Divide",            "change-base-octave",   -1 },
+    // keypad: "KP_Insert"/*0*/, "KP_Delete"/*,*/
   };
-  static BstKeyBinding kbinding = {
-    "pattern-controller-default-keys",
-    G_N_ELEMENTS (pcfuncs), pcfuncs,
-  };
-  static gboolean initialized = 0;
-  if (!initialized)
+  static BstKeyBinding kbinding = { "pattern-controller-default-generic-keys", };
+  if (!kbinding.n_funcs)
     {
       BstKeyBindingItemSeq *iseq;
       guint i;
-      initialized = TRUE;
-      /* translate function blurbs */
-      for (i = 0; i < kbinding.n_funcs; i++)
-        pcfuncs[i].function_blurb = _(pcfuncs[i].function_blurb);
+      kbinding.funcs = pattern_controller_get_functions (&kbinding.n_funcs);
       /* setup default keys */
       iseq = bst_key_binding_item_seq_new();
-      for (i = 0; i < G_N_ELEMENTS (defkeys); i++)
-        bst_key_binding_item_seq_append (iseq, &defkeys[i]);
+      for (i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
+        bst_key_binding_item_seq_append (iseq, &dflt_keys[i]);
       bst_key_binding_set_item_seq (&kbinding, iseq);
       bst_key_binding_item_seq_free (iseq);
     }
@@ -192,18 +292,59 @@ bst_pattern_controller_default_bindings (void)
 }
 
 BstKeyBinding*
-bst_pattern_controller_bindings (void)
+bst_pattern_controller_default_piano_keys (void)
 {
-  static BstKeyBinding kbinding = { "pattern-controller-keys" };
+  static BstKeyBindingItem dflt_keys[] = {
+    /* events */
+    {                   "space",                "remove-events,next",   0 },
+    { "<Shift>"         "space",                "remove-events",        0 },
+    {                   "KP_Space",             "remove-events,next",   0 },
+    { "<Shift>"         "KP_Space",             "remove-events",        0 },
+  };
+  static BstKeyBinding kbinding = { "pattern-controller-default-piano-keys", };
   if (!kbinding.n_funcs)
     {
-      BstKeyBinding *defkb = bst_pattern_controller_default_bindings();
       BstKeyBindingItemSeq *iseq;
-      /* copy functions */
-      kbinding.n_funcs = defkb->n_funcs;
-      kbinding.funcs = defkb->funcs;
+      guint i;
+      kbinding.funcs = pattern_controller_get_functions (&kbinding.n_funcs);
+      /* setup default keys */
+      iseq = bst_key_binding_item_seq_new();
+      for (i = 0; i < G_N_ELEMENTS (dflt_keys); i++)
+        bst_key_binding_item_seq_append (iseq, &dflt_keys[i]);
+      bst_key_binding_set_item_seq (&kbinding, iseq);
+      bst_key_binding_item_seq_free (iseq);
+    }
+  return &kbinding;
+}
+
+BstKeyBinding*
+bst_pattern_controller_generic_keys (void)
+{
+  static BstKeyBinding kbinding = { "pattern-controller-generic-keys", };
+  if (!kbinding.n_funcs)
+    {
+      BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_generic_keys();
+      BstKeyBindingItemSeq *iseq;
+      kbinding.funcs = pattern_controller_get_functions (&kbinding.n_funcs);
       /* copy keys */
-      iseq = bst_key_binding_get_item_seq (defkb);
+      iseq = bst_key_binding_get_item_seq (dflt_kbinding);
+      bst_key_binding_set_item_seq (&kbinding, iseq);
+      bst_key_binding_item_seq_free (iseq);
+    }
+  return &kbinding;
+}
+
+BstKeyBinding*
+bst_pattern_controller_piano_keys (void)
+{
+  static BstKeyBinding kbinding = { "pattern-controller-piano-keys", };
+  if (!kbinding.n_funcs)
+    {
+      BstKeyBinding *dflt_kbinding = bst_pattern_controller_default_piano_keys();
+      BstKeyBindingItemSeq *iseq;
+      kbinding.funcs = pattern_controller_get_functions (&kbinding.n_funcs);
+      /* copy keys */
+      iseq = bst_key_binding_get_item_seq (dflt_kbinding);
       bst_key_binding_set_item_seq (&kbinding, iseq);
       bst_key_binding_item_seq_free (iseq);
     }

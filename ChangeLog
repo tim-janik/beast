@@ -1,3 +1,42 @@
+Wed Feb 18 01:17:44 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstauxdialogs.c: lower-case grabbed key events.
+
+	* beast-gtk/bstkeybindings.[hc]: don't auto-advance the selected
+	function, this is usefull only to setup basic key bindings. cosmetic
+	fixups. support non-editable keybinding displays. lower-case key
+	value for lookups.
+
+	* beast-gtk/bstmain.c: moved rc-file parsing logic into
+	bst_preferences_load_rc_files().
+
+	* beast-gtk/bstpatterncolumns.[hc]: select monospace font for notes.
+	added key-event handling to notes.
+
+	* beast-gtk/bstpatternctrl.[hc]: invoke pattern view/pattern column
+	keypress handlers. split up key bindings into genric ones and piano
+	bindings. added more key binding functions. provide a good set of
+	default movement/etc bindings for the generic set.
+
+	* beast-gtk/bstpatternview.c: proeprly queue expose events in response
+	to model changes. destroy focus rectangle upon column changes.
+	change focus rectangle color due to widget focus changes. added
+	fucntions to query focus cell and to dispatch key events.
+
+	* beast-gtk/bstpianoroll.c:
+	* beast-gtk/bsteventroll.c: guard against unrealized windows when
+	queueing exposes.
+
+	* beast-gtk/gxk/gxkscrollcanvas.[hc]: redraw markers upon focus changes.
+
+	* beast-gtk/bstpreferences.[hc]: added generic key binding page,
+	non editable currently, since saving/loading generic key bindings
+	is currently disabled. moved rc-file parsing logic from bstmain.c
+	into bst_preferences_load_rc_files(). fixed copyright.
+
+	* beast-gtk/bstgconfig.[hc]: support rc-version setting on records.
+	fixed copyright.
+
 Tue Feb 17 01:40:21 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c: fire up layout configuration dialog when

@@ -59,7 +59,8 @@ struct _BstKeyBinding
 
 /* --- prototypes --- */
 GtkWidget*                   bst_key_binding_box          (guint                        n_funcs,
-                                                           const BstKeyBindingFunction *funcs);
+                                                           const BstKeyBindingFunction *funcs,
+                                                           gboolean                     editable);
 void                         bst_key_binding_box_set      (GtkWidget                   *self,
                                                            BstKeyBindingItemSeq        *kbseq);
 BstKeyBindingItemSeq*        bst_key_binding_box_get      (GtkWidget                   *self);
@@ -68,10 +69,12 @@ BstKeyBindingKey*            bst_key_binding_lookup_key   (BstKeyBinding        
                                                            GdkModifierType              modifier);
 const BstKeyBindingFunction* bst_key_binding_lookup       (BstKeyBinding               *kbinding,
                                                            guint                        keyval,
-                                                           GdkModifierType              modifier);
+                                                           GdkModifierType              modifier,
+                                                           gdouble                     *param);
 guint                        bst_key_binding_lookup_id    (BstKeyBinding               *kbinding,
                                                            guint                        keyval,
-                                                           GdkModifierType              modifier);
+                                                           GdkModifierType              modifier,
+                                                           gdouble                     *param);
 void                         bst_key_binding_set_item_seq (BstKeyBinding               *kbinding,
                                                            BstKeyBindingItemSeq        *seq);
 BstKeyBindingItemSeq*        bst_key_binding_get_item_seq (BstKeyBinding               *kbinding);

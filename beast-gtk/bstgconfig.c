@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999-2002 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999-2004 Tim Janik and Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -106,6 +106,13 @@ bst_gconfig_set_rc_version (const gchar *rc_version)
   g_free (gconfig->rc_version);
   gconfig->rc_version = g_strdup (rc_version);
   set_gconfig (gconfig);
+}
+
+void
+bst_gconfig_set_rec_rc_version (SfiRec         *rec,
+                                const gchar    *rc_version)
+{
+  sfi_rec_set_string (rec, "rc_version", rc_version);
 }
 
 

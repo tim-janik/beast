@@ -44,7 +44,7 @@ static PangoFontDescription*
 pattern_column_note_create_font_desc (BstPatternColumn *self)
 {
   PangoFontDescription *fdesc = pango_font_description_new ();
-  // pango_font_description_set_family_static (fdesc, "monospace");
+  pango_font_description_set_family_static (fdesc, "monospace");
   pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
   return fdesc;
 }
@@ -172,6 +172,45 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
   gdk_draw_layout (drawable, draw_gc, accu + self->co3 + (self->cw3 - prect.width) / 2, yline, pango_layout);
 }
 
+static gboolean
+pattern_column_note_key_event (BstPatternColumn       *column,
+                               BstPatternView         *pview,
+                               GdkWindow              *drawable,
+                               PangoLayout            *pango_layout,
+                               guint                   tick,
+                               guint                   duration,
+                               GdkRectangle           *cell_rect,
+                               guint                   keyval,
+                               GdkModifierType         modifier,
+                               BstPatternAction        action,
+                               gdouble                 param)
+{
+  // BstPatternColumnNote *self = (BstPatternColumnNote*) column;
+  SfiProxy proxy = pview->proxy;
+  BsePartNoteSeq *pseq = proxy ? bse_part_list_notes_within (proxy, column->num, tick, duration) : NULL;
+  guint i, iparam = 0.5 + param;
+  switch (action)
+    {
+    case BST_PATTERN_REMOVE_EVENTS:
+      for (i = 0; i < pseq->n_pnotes; i++)
+        bse_part_delete_event (proxy, pseq->pnotes[i]->id);
+      return TRUE;
+    case BST_PATTERN_SET_NOTE:
+      if (pseq->n_pnotes == 1)
+        {
+          BsePartNote *pnote = pseq->pnotes[0];
+          bse_part_delete_event (proxy, pnote->id);
+        }
+      if (pseq->n_pnotes <= 1)
+        bse_part_insert_note (proxy, column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
+      else
+        gdk_beep();
+      return TRUE;
+    default: ;
+    }
+  return FALSE;
+}
+
 static void
 pattern_column_note_finalize (BstPatternColumn *column)
 {
@@ -186,6 +225,7 @@ static BstPatternColumnClass pattern_column_note_class = {
   pattern_column_note_create_font_desc,
   pattern_column_note_draw_cell,
   pattern_column_note_width_request,
+  pattern_column_note_key_event,
   pattern_column_note_finalize,
 };
 
@@ -244,6 +284,7 @@ static BstPatternColumnClass pattern_column_vbar_class = {
   NULL, /* create_font_desc */
   pattern_column_vbar_draw_cell,
   pattern_column_vbar_width_request,
+  NULL, /* key_event */
   pattern_column_vbar_finalize,
 };
 

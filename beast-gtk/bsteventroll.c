@@ -584,15 +584,17 @@ event_roll_update (BstEventRoll *self,
   guint tick_end = tick_start + MAX (duration, 1) - 1;
   gint x1 = tick_to_coord (self, tick_start);
   gint x2 = tick_to_coord (self, tick_end);
-  gint width, height;
-  GdkRectangle area;
-  gdk_window_get_size (CANVAS (self), &width, &height);
-
-  area.x = x1 - 3;		/* add fudge */
-  area.y = 0;
-  area.width = x2 - x1 + 3 + 3;	/* add fudge */
-  area.height = height;
-  gdk_window_invalidate_rect (CANVAS (self), &area, TRUE);
+  if (GTK_WIDGET_DRAWABLE (self))
+    {
+      gint width, height;
+      GdkRectangle area;
+      gdk_window_get_size (CANVAS (self), &width, &height);
+      area.x = x1 - 3;		/* add fudge */
+      area.y = 0;
+      area.width = x2 - x1 + 3 + 3;	/* add fudge */
+      area.height = height;
+      gdk_window_invalidate_rect (CANVAS (self), &area, TRUE);
+    }
 }
 
 static void

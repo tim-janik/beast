@@ -22,7 +22,6 @@
 #include "bstxkb.h"
 #include "bstgconfig.h"
 #include "bstkeybindings.h"
-#include "bstpatternctrl.h"
 #include "bstskinconfig.h"
 #include "bstusermessage.h"
 #include "bstparam.h"
@@ -84,7 +83,6 @@ main (int   argc,
   SfiRec *bseconfig;
   gchar *string;
   GSource *source;
-  gboolean parse_rc_file = TRUE;
   gboolean save_rc_file = TRUE;
   guint i;
 
@@ -112,22 +110,19 @@ main (int   argc,
   bseconfig = sfi_rec_new ();
   bst_early_parse_args (&argc, &argv, bseconfig);
 
-  /* initialize Gtk+ and go into threading mode
-   */
+  /* initialize Gtk+ and go into threading mode */
   gtk_init (&argc, &argv);
   g_set_prgname ("BEAST");	/* overriding Gdk's program name */
   GDK_THREADS_ENTER ();
 
-  /* initialize Gtk+ Extension Kit
-   */
+  /* initialize Gtk+ Extension Kit */
   gxk_init ();
   /* documentation search paths */
   gxk_text_add_tsm_path (BST_PATH_DOCS);
   gxk_text_add_tsm_path (BST_PATH_IMAGES);
   gxk_text_add_tsm_path (".");
 
-  /* now, we can popup the splash screen
-   */
+  /* now, we can popup the splash screen */
   beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
   bst_splash_set_title (beast_splash, _("BEAST Startup"));
   gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
@@ -139,33 +134,18 @@ main (int   argc,
   bst_splash_update_entity (beast_splash, _("Startup"));
   bst_splash_show_grab (beast_splash);
 
-  /* BEAST initialization
-   */
-  bst_splash_update_item (beast_splash, _("Objects"));
+  /* BEAST initialization */
+  bst_splash_update_item (beast_splash, _("Initializers"));
   _bst_init_utils ();
   _bst_init_params ();
   _bst_gconfig_init ();
   _bst_skin_config_init ();
-  bst_splash_update_item (beast_splash, _("Language"));
 
-  /* parse rc file
-   */
-  if (parse_rc_file)
-    {
-      gchar *file_name = BST_STRDUP_RC_FILE ();
-      GSList *slist = NULL;
-      bst_splash_update_item (beast_splash, _("RC File"));
-      bst_rc_parse (file_name);
-      g_free (file_name);
-      bst_splash_update_item (beast_splash, _("Skin RC"));
-      bst_skin_parse (bst_skin_config_rcfile ());
-      slist = g_slist_prepend (slist, bst_pattern_controller_bindings());
-      bst_key_binding_parse (bst_key_binding_rcfile (), slist);
-      g_slist_free (slist);
-    }
+  /* parse rc file */
+  bst_splash_update_item (beast_splash, _("RC Files"));
+  bst_preferences_load_rc_files();
 
-  /* show splash images
-   */
+  /* show splash images */
   bst_splash_update_item (beast_splash, _("Splash Image"));
   string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   anim = gdk_pixbuf_animation_new_from_file (string, NULL);

@@ -335,7 +335,7 @@ grab_key_event (GtkWidget *window,
       gtk_widget_hide (window);
       break;
     case GDK_KEY_PRESS:
-      grab_key_keyval = event->key.keyval;
+      grab_key_keyval = gdk_keyval_to_lower (event->key.keyval);
       grab_key_modifier = event->key.state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK);
       if (bst_key_combo_valid (grab_key_keyval, grab_key_modifier))
         {

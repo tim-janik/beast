@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999-2002 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,8 @@ struct _BstPreferences
   SfiRec	       *rec_gconfig;
   SfiRing	       *params_gconfig;
 
-  GtkWidget            *box_pview;
+  GtkWidget            *box_piano_keys;
+  GtkWidget            *box_generic_keys;
 
   SfiRec               *rec_skin;
   SfiRing              *params_skin;
@@ -63,6 +64,7 @@ struct _BstPreferencesClass
 /* --- prototypes --- */
 GtkType		 bst_preferences_get_type	(void);
 void		 bst_preferences_apply		(BstPreferences *prefs);
+void		 bst_preferences_load_rc_files	(void);
 void		 bst_preferences_save		(BstPreferences *prefs);
 void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
