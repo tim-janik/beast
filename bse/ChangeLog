@@ -1,3 +1,10 @@
+Sun Dec 12 03:13:17 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengineutils.c: make sure pending user trash jobs are collected
+	before ordinary trash jobs are collected.
+
+	* bsesource.[hcp]*: added bse_source_has_output().
+
 Sat Dec 11 22:45:46 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepart.c (bse_part_restore_private): parse velocity as int as well as float.

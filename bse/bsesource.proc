@@ -263,6 +263,30 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseSource, has-output) {
+  HELP	= "Check whether a module's output channel is connected.";
+  IN	= bse_param_spec_object ("module", NULL, NULL, BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("ochannel", NULL, NULL, 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
+  OUT   = sfi_pspec_bool ("has_outputs", NULL, NULL, FALSE, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ochannel    = sfi_value_get_int (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_bool (out_values++, bse_source_has_output (source, ochannel));
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseSource, has-outputs) {
   HELP	= "Check whether a module has output channel connections.";
   IN	= bse_param_spec_object ("module", "Module", NULL,

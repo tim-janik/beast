@@ -230,6 +230,8 @@ BseErrorType    bse_source_check_input          (BseSource      *source,
                                                  guint           ichannel,
                                                  BseSource      *osource,
                                                  guint           ochannel);
+gboolean        bse_source_has_output           (BseSource      *source,
+                                                 guint           ochannel);
 void       bse_source_backup_ichannels_to_undo  (BseSource      *source);
 void       bse_source_backup_ochannels_to_undo  (BseSource      *source);
 void       bse_source_input_backup_to_undo      (BseSource      *source,

@@ -1409,6 +1409,35 @@ bse_source_get_input (BseSource      *source,
   return FALSE;
 }
 
+gboolean
+bse_source_has_output (BseSource *source,
+                       guint      ochannel)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), FALSE);
+  if (ochannel < BSE_SOURCE_N_OCHANNELS (source))
+    {
+      GSList *slist;
+      for (slist = source->outputs; slist; slist = slist->next)
+        {
+          BseSource *isource = slist->data;
+          guint i, j;
+          for (i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
+            {
+              BseSourceInput *input = BSE_SOURCE_INPUT (isource, i);
+              if (BSE_SOURCE_IS_JOINT_ICHANNEL (isource, i))
+                {
+                  for (j = 0; j < input->jdata.n_joints; j++)
+                    if (input->jdata.joints[j].osource == source && input->jdata.joints[j].ochannel == ochannel)
+                      return TRUE;
+                }
+              else if (input->idata.osource == source && input->idata.ochannel == ochannel)
+                return TRUE;
+	    }
+	}
+    }
+  return FALSE;
+}
+
 void
 bse_source_must_set_input_loc (BseSource      *source,
                                guint           ichannel,

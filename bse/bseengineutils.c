@@ -28,6 +28,10 @@
 
 #define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
 
+/* --- prototypes --- */
+static inline void      engine_fetch_process_queue_trash_jobs_U (EngineUserJob **trash_ujobs_first,
+                                                                 EngineUserJob **trash_ujobs_last);
+
 
 /* --- UserThread --- */
 BseOStream*
@@ -278,9 +282,19 @@ _engine_pop_job (gboolean update_commit_stamp)
   /* clean up if necessary and try fetching new jobs */
   if (!cqueue_trans_job)	/* no transaction job in communication queue */
     {
+      /* before adding trash jobs to the cqueue, make sure pending pqueue trash
+       * jobs can be collected (these need to be collected first in the USerThread).
+       */
+      EngineUserJob *trash_ujobs_first, *trash_ujobs_last;
+      engine_fetch_process_queue_trash_jobs_U (&trash_ujobs_first, &trash_ujobs_last);
       if (cqueue_trans_active_head)	/* currently processing transaction */
 	{
 	  GSL_SPIN_LOCK (&cqueue_trans);
+          if (trash_ujobs_first)        /* move trash user jobs */
+            {
+              trash_ujobs_last->next = cqueue_trash_ujobs;
+              cqueue_trash_ujobs = trash_ujobs_first;
+            }
 	  /* get rid of processed transaction and
 	   * signal UserThread which might be in
 	   * op_com_wait_on_trans()
@@ -305,6 +319,11 @@ _engine_pop_job (gboolean update_commit_stamp)
       else	/* not currently processing a transaction */
 	{
 	  GSL_SPIN_LOCK (&cqueue_trans);
+          if (trash_ujobs_first)        /* move trash user jobs */
+            {
+              trash_ujobs_last->next = cqueue_trash_ujobs;
+              cqueue_trash_ujobs = trash_ujobs_first;
+            }
 	  /* fetch new transaction */
 	  cqueue_trans_active_head = cqueue_trans_pending_head;
 	  cqueue_trans_active_tail = cqueue_trans_pending_tail;
@@ -391,6 +410,23 @@ static guint             pqueue_n_cycles = 0;
 static SfiCond		 pqueue_done_cond = { 0, };
 static EngineUserJob    *pqueue_trash_ujobs_first = NULL;
 static EngineUserJob    *pqueue_trash_ujobs_last = NULL;
+
+static inline void
+engine_fetch_process_queue_trash_jobs_U (EngineUserJob **trash_ujobs_first,
+                                         EngineUserJob **trash_ujobs_last)
+{
+  if (G_UNLIKELY (pqueue_trash_ujobs_first != NULL))
+    {
+      GSL_SPIN_LOCK (&pqueue_mutex);
+      *trash_ujobs_first = pqueue_trash_ujobs_first;
+      *trash_ujobs_last = pqueue_trash_ujobs_last;
+      pqueue_trash_ujobs_first = NULL;
+      pqueue_trash_ujobs_last = NULL;
+      GSL_SPIN_UNLOCK (&pqueue_mutex);
+    }
+  else
+    *trash_ujobs_first = *trash_ujobs_last = NULL;
+}
 
 void
 _engine_set_schedule (EngineSchedule *sched)
