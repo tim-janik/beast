@@ -849,7 +849,7 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	    sfi_value_free (pvalue);
 	}
       else
-	sfi_warn ("object \"%s\" has no property `%s'",
+	sfi_warn ("object %s has no property `%s'",
 		  bse_object_debug_name (object), prop ? prop : "<NULL>");
     }
 }

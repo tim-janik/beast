@@ -34,7 +34,7 @@ METHOD (BseProject, is-playing) {
   HELP	= "Check whether a project is currently playing";
   IN	= bse_param_spec_object ("project", "Project", "The project",
 				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_bool ("is_playing", "Is Playing", "Whether the project is currently producing sound",
+  OUT	= sfi_pspec_bool ("is_playing", "Is Playing", "Whether the project is currently playing songs or synths",
 			  FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
@@ -50,7 +50,32 @@ METHOD (BseProject, is-playing) {
   /* action */
   
   /* set output parameters */
-  sfi_value_set_bool (out_values++, BSE_SOURCE_PREPARED (project));
+  sfi_value_set_bool (out_values++, project->state == BSE_PROJECT_PLAYING);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, is-active) {
+  HELP	= "Check whether a project is active";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_bool ("is_active", NULL, "Whether the project is currently producing sound",
+			  FALSE, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  
+  /* set output parameters */
+  sfi_value_set_bool (out_values++, project->state != BSE_PROJECT_INACTIVE);
   
   return BSE_ERROR_NONE;
 }

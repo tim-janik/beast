@@ -1,3 +1,9 @@
+Tue May 27 01:36:56 2003  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c (bglue_proxy_set_property): warning cosmetics.
+
+	* bseproject.proc: added bse-project-is-active.
+
 Sun May 25 15:04:37 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecompat.[hc]: added bse_compat_rewrite_type_name() to handle
