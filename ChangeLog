@@ -1,3 +1,10 @@
+Sun Jan 23 22:04:43 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/scripts/Makefile.am:
+	* tests/scripts/noteplaytest.scm: New script that allows testing how
+	an instrument (currently: only wave instruments such as gus patches
+	supported) sounds when played on a given midi note.
+
 Fri Jan 21 00:33:42 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/radgets-beast.xml: added action factories to event

@@ -4,4 +4,5 @@
 
 EXTRA_DIST += $(strip \
 	waveloadtest.scm \
+	noteplaytest.scm \
 )
