@@ -1,4 +1,5 @@
 FIXMES:
+- .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
 - amplifier: audio_balance and ctrl_balance range: -100..+100
 - File/Open should merge if issued on an empty project
 - nuke frequency fine-tune for biquad filter
