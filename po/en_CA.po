@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-07 21:55-0500\n"
-"PO-Revision-Date: 2004-12-07 19:50-0400\n"
+"POT-Creation-Date: 2004-12-12 02:30-0500\n"
+"PO-Revision-Date: 2004-12-12 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -331,8 +331,8 @@ msgstr "Open a web browser to online demo songs"
 msgid "Export Audio"
 msgstr "Export Audio"
 
-#: beast-gtk/bstapp.c:628 beast-gtk/bstapp.c:635 beast-gtk/bstfiledialog.c:423
-#: beast-gtk/bstfiledialog.c:430
+#: beast-gtk/bstapp.c:628 beast-gtk/bstapp.c:635 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Opening project `%s'"
@@ -379,7 +379,7 @@ msgstr "Add"
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:764
+#: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:760
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
@@ -402,7 +402,7 @@ msgstr "Delete the currently selected bus"
 msgid "Module Link: "
 msgstr "Module Link: "
 
-#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:760
+#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:756
 msgid "Module link"
 msgstr "Module link"
 
@@ -410,11 +410,11 @@ msgstr "Module link"
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1097
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1093
 msgid "Input"
 msgstr "Input"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1094
+#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1090
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Output"
@@ -497,43 +497,43 @@ msgstr "Select Region"
 msgid "Abortion"
 msgstr "Abortion"
 
-#: beast-gtk/bstfiledialog.c:168
+#: beast-gtk/bstfiledialog.c:169
 msgid "Contents"
 msgstr "Contents"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:200
+#: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
 msgstr "File Selection"
 
-#: beast-gtk/bstfiledialog.c:381
+#: beast-gtk/bstfiledialog.c:382
 msgid "Open Project"
 msgstr "Open Project"
 
-#: beast-gtk/bstfiledialog.c:395
+#: beast-gtk/bstfiledialog.c:396
 msgid "Select File"
 msgstr "Select File"
 
-#: beast-gtk/bstfiledialog.c:409
+#: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
 msgstr "Select Directory"
 
-#: beast-gtk/bstfiledialog.c:448
+#: beast-gtk/bstfiledialog.c:449
 #, c-format
 msgid "Merge: %s"
 msgstr "Merge: %s"
 
-#: beast-gtk/bstfiledialog.c:461
+#: beast-gtk/bstfiledialog.c:462
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Merging project `%s'"
 
-#: beast-gtk/bstfiledialog.c:477
+#: beast-gtk/bstfiledialog.c:478
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstfiledialog.c:488
+#: beast-gtk/bstfiledialog.c:489
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importing MIDI file `%s'"
@@ -541,92 +541,105 @@ msgstr "Importing MIDI file `%s'"
 #: beast-gtk/bstfiledialog.c:508
 #, c-format
 msgid ""
-"Failed to delete file\n"
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+
+#. error != BSE_ERROR_FILE_EXISTS
+#: beast-gtk/bstfiledialog.c:532 beast-gtk/bstfiledialog.c:546
+#, c-format
+msgid ""
+"Failed to save to file\n"
 "`%s'\n"
 "due to:\n"
 "%s"
 msgstr ""
-"Failed to delete file\n"
+"Failed to save to file\n"
 "`%s'\n"
 "due to:\n"
 "%s"
 
 #: beast-gtk/bstfiledialog.c:537
 #, c-format
+msgid ""
+"Failed to replace file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Failed to replace file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:574
+#, c-format
 msgid "Save: %s"
 msgstr "Save: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:539
+#: beast-gtk/bstfiledialog.c:576
 msgid "Fully include wave files"
 msgstr "Fully include wave files"
 
-#: beast-gtk/bstfiledialog.c:540
+#: beast-gtk/bstfiledialog.c:577
 msgid "Store references to wave files"
 msgstr "Store references to wave files"
 
-#: beast-gtk/bstfiledialog.c:561 beast-gtk/bstfiledialog.c:571
+#: beast-gtk/bstfiledialog.c:591
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Saving project `%s'"
 
-#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:638
-#: beast-gtk/bstfiledialog.c:714
-#, c-format
-msgid ""
-"Failed to save\n"
-"`%s'\n"
-"to\n"
-"`%s':\n"
-"%s"
-msgstr ""
-"Failed to save\n"
-"`%s'\n"
-"to\n"
-"`%s':\n"
-"%s"
-
-#: beast-gtk/bstfiledialog.c:586
+#: beast-gtk/bstfiledialog.c:606
 msgid "Load Effect"
 msgstr "Load Effect"
 
-#: beast-gtk/bstfiledialog.c:599
+#: beast-gtk/bstfiledialog.c:619
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Merging effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:616
+#: beast-gtk/bstfiledialog.c:636
 msgid "Save Effect"
 msgstr "Save Effect"
 
-#: beast-gtk/bstfiledialog.c:637 beast-gtk/bstfiledialog.c:647
+#: beast-gtk/bstfiledialog.c:650
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Saving effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:665
 msgid "Load Instrument"
 msgstr "Load Instrument"
 
-#: beast-gtk/bstfiledialog.c:675
+#: beast-gtk/bstfiledialog.c:678
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Merging instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:692
+#: beast-gtk/bstfiledialog.c:695
 msgid "Save Instrument"
 msgstr "Save Instrument"
 
-#: beast-gtk/bstfiledialog.c:713 beast-gtk/bstfiledialog.c:723
+#: beast-gtk/bstfiledialog.c:709
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Saving instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:739
+#: beast-gtk/bstfiledialog.c:725
 msgid "Load Wave"
 msgstr "Load Wave"
 
-#: beast-gtk/bstfiledialog.c:751 beast-gtk/bstfiledialog.c:753
+#: beast-gtk/bstfiledialog.c:737 beast-gtk/bstfiledialog.c:739
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Loading wave `%s'"
@@ -1181,7 +1194,7 @@ msgid ""
 msgstr ""
 "The number of cells to move across each time an event or note was edited"
 
-#: beast-gtk/bstpatternctrl.c:128 beast-gtk/bstscrollgraph.c:482
+#: beast-gtk/bstpatternctrl.c:128 beast-gtk/bstscrollgraph.c:561
 msgid "Direction"
 msgstr "Direction"
 
@@ -1747,7 +1760,8 @@ msgstr "32 Value FFT Window"
 
 #: beast-gtk/bstrecords.idl:46
 msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
-msgstr "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
+msgstr ""
+"A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "64 Value FFT Window"
@@ -1755,7 +1769,8 @@ msgstr "64 Value FFT Window"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
-msgstr "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
+msgstr ""
+"A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
 
 #: beast-gtk/bstrecords.idl:48
 msgid "128 Value FFT Window"
@@ -2385,38 +2400,42 @@ msgstr "Sketch Maximum"
 msgid "Preview"
 msgstr "Preview"
 
-#: beast-gtk/bstscrollgraph.c:478 beast-gtk/bstscrollgraph.c:481
-#: beast-gtk/bstscrollgraph.c:484 beast-gtk/bstscrollgraph.c:487
+#: beast-gtk/bstscrollgraph.c:557 beast-gtk/bstscrollgraph.c:560
+#: beast-gtk/bstscrollgraph.c:563 beast-gtk/bstscrollgraph.c:566
 msgid "Spectrograph"
 msgstr "Spectrograph"
 
-#: beast-gtk/bstscrollgraph.c:479
+#: beast-gtk/bstscrollgraph.c:558
 msgid "Flip Spectrum"
 msgstr "Flip Spectrum"
 
-#: beast-gtk/bstscrollgraph.c:479
+#: beast-gtk/bstscrollgraph.c:558
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr "Flip Spectrum display,  interchaging low and high frequencies"
 
-#: beast-gtk/bstscrollgraph.c:482
+#: beast-gtk/bstscrollgraph.c:561
 msgid "Choose display scrolling direction"
 msgstr "Choose display scrolling direction"
 
-#: beast-gtk/bstscrollgraph.c:485
+#: beast-gtk/bstscrollgraph.c:564
 msgid "Boost"
 msgstr "Boost"
 
-#: beast-gtk/bstscrollgraph.c:485
+#: beast-gtk/bstscrollgraph.c:564
 msgid "Adjust frequency level threshold"
 msgstr "Adjust frequency level threshold"
 
-#: beast-gtk/bstscrollgraph.c:488
+#: beast-gtk/bstscrollgraph.c:567
 msgid "Window Size"
 msgstr "Window Size"
 
-#: beast-gtk/bstscrollgraph.c:488
+#: beast-gtk/bstscrollgraph.c:567
 msgid "Adjust FFT window size"
 msgstr "Adjust FFT window size"
+
+#: beast-gtk/bstscrollgraph.c:657
+msgid "Unconnected Output Channel"
+msgstr "Unconnected Output Channel"
 
 #: beast-gtk/bstsnetrouter.c:43
 msgid ""
@@ -2436,7 +2455,7 @@ msgstr "Edit"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Edit/Move/Menu (mouse buttons 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:52 beast-gtk/bstsnetrouter.c:936
+#: beast-gtk/bstsnetrouter.c:52 beast-gtk/bstsnetrouter.c:932
 msgid "Palette"
 msgstr "Palette"
 
@@ -2478,59 +2497,55 @@ msgstr "Delete Inputs"
 msgid "Delete Outputs"
 msgstr "Delete Outputs"
 
-#: beast-gtk/bstsnetrouter.c:709 beast-gtk/bstsnetrouter.c:762
+#: beast-gtk/bstsnetrouter.c:709 beast-gtk/bstsnetrouter.c:758
 msgid "Show Info"
 msgstr "Show Info"
 
 #: beast-gtk/bstsnetrouter.c:710
-msgid "Monitor Output Signal"
-msgstr "Monitor Output Signal"
+msgid "Output Signal Monitor"
+msgstr "Output Signal Monitor"
 
 #: beast-gtk/bstsnetrouter.c:737
 msgid "Remove Module"
 msgstr "Remove Module"
 
-#: beast-gtk/bstsnetrouter.c:744
-msgid "Scrollgraph"
-msgstr "Scrollgraph"
-
-#: beast-gtk/bstsnetrouter.c:773
+#: beast-gtk/bstsnetrouter.c:769
 msgid "Delete Link"
 msgstr "Delete Link"
 
-#: beast-gtk/bstsnetrouter.c:827
+#: beast-gtk/bstsnetrouter.c:823
 msgid "Insert Module"
 msgstr "Insert Module"
 
-#: beast-gtk/bstsnetrouter.c:1094
+#: beast-gtk/bstsnetrouter.c:1090
 msgid "PCM Output module"
 msgstr "PCM Output module"
 
-#: beast-gtk/bstsnetrouter.c:1095
+#: beast-gtk/bstsnetrouter.c:1091
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1095
+#: beast-gtk/bstsnetrouter.c:1091
 msgid "Standard amplifier module"
 msgstr "Standard amplifier module"
 
-#: beast-gtk/bstsnetrouter.c:1096
+#: beast-gtk/bstsnetrouter.c:1092
 msgid "Snooper"
 msgstr "Snooper"
 
-#: beast-gtk/bstsnetrouter.c:1096
+#: beast-gtk/bstsnetrouter.c:1092
 msgid "Signal debugging module"
 msgstr "Signal debugging module"
 
-#: beast-gtk/bstsnetrouter.c:1097
+#: beast-gtk/bstsnetrouter.c:1093
 msgid "PCM Input module"
 msgstr "PCM Input module"
 
-#: beast-gtk/bstsnetrouter.c:1145
+#: beast-gtk/bstsnetrouter.c:1141
 msgid "Channel Hints"
 msgstr "Channel Hints"
 
-#: beast-gtk/bstsnetrouter.c:1145
+#: beast-gtk/bstsnetrouter.c:1141
 msgid "Toggle channel name hints"
 msgstr "Toggle channel name hints"
 
@@ -3437,49 +3452,54 @@ msgstr "Master Volume"
 msgid "Output stage amplification in decibel"
 msgstr "Output stage amplification in decibels"
 
-#: bse/bseautodoc.c:360 bse/bseautodoc.c:422
+#: bse/bseautodoc.c:360 bse/bseautodoc.c:397
 msgid "Authors:"
 msgstr "Authors:"
 
-#: bse/bseautodoc.c:365 bse/bseautodoc.c:425
+#: bse/bseautodoc.c:365 bse/bseautodoc.c:400
 msgid "License:"
 msgstr "Licence:"
 
-#: bse/bseautodoc.c:408 bse/bseautodoc.c:410
-msgid "BSE-Objects"
-msgstr "BSE-Objects"
-
-#: bse/bseautodoc.c:410
-msgid " Object Reference"
-msgstr " Object Reference"
-
-#: bse/bseautodoc.c:429
+#: bse/bseautodoc.c:404
 msgid "Properties:"
 msgstr "Properties:"
 
-#: bse/bseautodoc.c:455 bse/bseautodoc.c:488 bse/bseautodoc.c:505
+#: bse/bseautodoc.c:431 bse/bseautodoc.c:500 bse/bseautodoc.c:518
 msgid "Identifier:"
 msgstr "Identifier:"
 
-#: bse/bseautodoc.c:460 bse/bseautodoc.c:466
+#: bse/bseautodoc.c:436 bse/bseautodoc.c:442
 msgid "Range:"
 msgstr "Range:"
 
-#: bse/bseautodoc.c:470 bse/bseautodoc.c:491 bse/bseautodoc.c:508
+#: bse/bseautodoc.c:446 bse/bseautodoc.c:503 bse/bseautodoc.c:521
 msgid "Description:"
 msgstr "Description:"
 
-#: bse/bseautodoc.c:480
+#: bse/bseautodoc.c:460
+msgid "Signals:"
+msgstr "Signals:"
+
+#: bse/bseautodoc.c:492
 msgid "Input Channels:"
 msgstr "Input Channels:"
 
-#: bse/bseautodoc.c:487
+#: bse/bseautodoc.c:499
 msgid "(Joint Input)"
 msgstr "(Joint Input)"
 
-#: bse/bseautodoc.c:498
+#: bse/bseautodoc.c:511
 msgid "Output Channels:"
 msgstr "Output Channels:"
+
+#: bse/bseautodoc.c:565 bse/bseautodoc.c:567 bse/bseautodoc.c:592
+#: bse/bseautodoc.c:594
+msgid "BSE-Objects"
+msgstr "BSE-Objects"
+
+#: bse/bseautodoc.c:567 bse/bseautodoc.c:594
+msgid " Object Reference"
+msgstr " Object Reference"
 
 #: bse/bsebiquadfilter.c:105
 msgid "/Filters/Biquad Types"
