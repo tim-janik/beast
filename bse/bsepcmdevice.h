@@ -81,9 +81,9 @@ typedef struct _BsePcmDeviceClass	BsePcmDeviceClass;
 struct _BsePcmStatus
 {
   guint	total_playback_values;
-  guint	n_playback_values_left;
+  guint	n_playback_values_available;
   guint	total_capture_values;
-  guint	n_capture_values_left;
+  guint	n_capture_values_available;
 };
 struct _BsePcmHandle
 {
@@ -135,6 +135,8 @@ void		bse_pcm_handle_write		(BsePcmHandle		*handle,
 						 const BseSampleValue	*values);
 void		bse_pcm_handle_status		(BsePcmHandle		*handle,
 						 BsePcmStatus		*status);
+void		bse_pcm_handle_set_watermark	(BsePcmHandle		*handle,
+						 guint			 watermark);
 
 
 /* --- misc utils --- */

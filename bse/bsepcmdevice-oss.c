@@ -370,14 +370,14 @@ oss_device_status (BsePcmHandle *handle,
       memset (&info, 0, sizeof (info));
       (void) ioctl (fd, SNDCTL_DSP_GETISPACE, &info);
       status->total_capture_values = info.fragstotal * info.fragsize / oss->bytes_per_value;
-      status->n_capture_values_left = info.fragments * info.fragsize / oss->bytes_per_value;
+      status->n_capture_values_available = info.fragments * info.fragsize / oss->bytes_per_value;
       /* probably more accurate: */
-      status->n_capture_values_left = info.bytes / oss->bytes_per_value;
+      status->n_capture_values_available = info.bytes / oss->bytes_per_value;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
-      status->n_capture_values_left = MIN (status->total_capture_values, status->n_capture_values_left);
+      status->n_capture_values_available = MIN (status->total_capture_values, status->n_capture_values_available);
       BSE_IF_DEBUG (PCM)
 	g_message ("OSS-ISPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-		   status->n_capture_values_left,
+		   status->n_capture_values_available,
 		   status->total_capture_values,
 		   info.fragstotal,
 		   info.fragsize,
@@ -387,21 +387,21 @@ oss_device_status (BsePcmHandle *handle,
   else
     {
       status->total_capture_values = 0;
-      status->n_capture_values_left = 0;
+      status->n_capture_values_available = 0;
     }
   if (handle->writable)
     {
       memset (&info, 0, sizeof (info));
       (void) ioctl (fd, SNDCTL_DSP_GETOSPACE, &info);
       status->total_playback_values = info.fragstotal * info.fragsize / oss->bytes_per_value;
-      status->n_playback_values_left = info.fragments * info.fragsize / oss->bytes_per_value;
+      status->n_playback_values_available = info.fragments * info.fragsize / oss->bytes_per_value;
       /* probably more accurate: */
-      status->n_playback_values_left = info.bytes / oss->bytes_per_value;
+      status->n_playback_values_available = info.bytes / oss->bytes_per_value;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
-      status->n_playback_values_left = MIN (status->total_playback_values, status->n_playback_values_left);
+      status->n_playback_values_available = MIN (status->total_playback_values, status->n_playback_values_available);
       BSE_IF_DEBUG (PCM)
 	g_message ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-		   status->n_playback_values_left,
+		   status->n_playback_values_available,
 		   status->total_playback_values,
 		   info.fragstotal,
 		   info.fragsize,
@@ -411,7 +411,7 @@ oss_device_status (BsePcmHandle *handle,
   else
     {
       status->total_playback_values = 0;
-      status->n_playback_values_left = 0;
+      status->n_playback_values_available = 0;
     }
 }
 

@@ -188,7 +188,9 @@ extern BseDebugFlags bse_debug_flags;
 
 
 /* --- BSE function types --- */
-typedef void          (*BseFunc)              (void);
+typedef void          (*BseFunc)             (void);
+typedef void          (*BseIOWatch)	     (gpointer		 data,
+					      GPollFD		*pfd);
 typedef BseTokenType  (*BseTryStatement)     (gpointer           func_data,
                                               BseStorage        *storage,
                                               gpointer           user_data);

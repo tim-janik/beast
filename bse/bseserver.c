@@ -33,6 +33,7 @@
 enum
 {
   PARAM_0,
+  PARAM_PCM_LATENCY,
 };
 
 
@@ -51,6 +52,14 @@ static void	 bse_server_get_property	(BseServer	   *server,
 static void	 engine_init			(BseServer	   *server,
 						 gfloat		    mix_freq);
 static void	 engine_shutdown		(BseServer	   *server);
+static gboolean	 iowatch_remove			(BseServer	   *server,
+						 BseIOWatch	    watch_func,
+						 gpointer	    data);
+static void	 iowatch_add			(BseServer	   *server,
+						 gint		    fd,
+						 GIOCondition	    events,
+						 BseIOWatch	    watch_func,
+						 gpointer	    data);
 
 
 /* --- variables --- */
@@ -90,8 +99,14 @@ bse_server_class_init (BseServerClass *class)
   
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_server_set_property;
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_server_get_property;
-  
   object_class->destroy = bse_server_destroy;
+
+  bse_object_class_add_param (object_class, "PCM Settings",
+			      PARAM_PCM_LATENCY,
+			      bse_param_spec_uint ("latency", "Latency [ms]", NULL,
+						   1, 2000,
+						   50, 5,
+						   BSE_PARAM_DEFAULT | G_PARAM_CONSTRUCT));
 }
 
 static void
@@ -131,6 +146,13 @@ bse_server_set_property (BseServer  *server,
 {
   switch (param_id)
     {
+      BsePcmHandle *handle;
+    case PARAM_PCM_LATENCY:
+      server->pcm_latency = g_value_get_uint (value);
+      handle = server->pcm_device ? bse_pcm_device_get_handle (server->pcm_device) : NULL;
+      if (handle)
+	bse_pcm_handle_set_watermark (handle, server->pcm_latency);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
       break;
@@ -145,6 +167,9 @@ bse_server_get_property (BseServer  *server,
 {
   switch (param_id)
     {
+    case PARAM_PCM_LATENCY:
+      g_value_set_uint (value, server->pcm_latency);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
       break;
@@ -331,6 +356,8 @@ bse_server_activate_devices (BseServer *server)
     {
       GslTrans *trans;
 
+      bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (server->pcm_device),
+				    server->pcm_latency);
       engine_init (server, bse_pcm_device_get_handle (server->pcm_device)->mix_freq);
 
       trans = gsl_trans_open ();
@@ -445,6 +472,32 @@ bse_server_discard_midi_input_module (BseServer   *server,
   server->midi_ref_count -= 1;
 }
 
+void
+bse_server_add_io_watch (BseServer      *server,
+			 gint            fd,
+			 GIOCondition    events,
+			 BseIOWatch      watch_func,
+			 gpointer        data)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (watch_func != NULL);
+  g_return_if_fail (fd >= 0);
+
+  iowatch_add (server, fd, events, watch_func, data);
+}
+
+void
+bse_server_remove_io_watch (BseServer *server,
+			    BseIOWatch watch_func,
+			    gpointer   data)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (watch_func != NULL);
+
+  if (!iowatch_remove (server, watch_func, data))
+    g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
+}
+
 
 /* --- G_IO_* <-> GSL_POLL* --- */
 static guint gio2gslpoll = 2; /* three state: 0:equalvalues, 1:translatevalues, 2:queryvalues */
@@ -500,6 +553,103 @@ gslpoll_from_gio (guint gio)
 }
 
 
+/* --- GPollFD IO watch source --- */
+typedef struct {
+  GSource    source;
+  GPollFD    pfd;
+  BseIOWatch watch_func;
+  gpointer   data;
+} WSource;
+
+static gboolean
+iowatch_prepare (GSource *source,
+		 gint    *timeout_p)
+{
+  /* WSource *wsource = (WSource*) source; */
+  gboolean need_dispatch;
+  
+  /* BSE_THREADS_ENTER (); */
+  need_dispatch = FALSE;
+  /* BSE_THREADS_LEAVE (); */
+
+  return need_dispatch;
+}
+
+static gboolean
+iowatch_check (GSource *source)
+{
+  WSource *wsource = (WSource*) source;
+  guint need_dispatch;
+
+  /* BSE_THREADS_ENTER (); */
+  need_dispatch = wsource->pfd.events & wsource->pfd.revents;
+  /* BSE_THREADS_LEAVE (); */
+
+  return need_dispatch > 0;
+}
+
+static gboolean
+iowatch_dispatch (GSource    *source,
+		  GSourceFunc callback,
+		  gpointer    user_data)
+{
+  WSource *wsource = (WSource*) source;
+
+  BSE_THREADS_ENTER ();
+  wsource->watch_func (wsource->data, &wsource->pfd);
+  BSE_THREADS_LEAVE ();
+
+  return TRUE;
+}
+
+static void
+iowatch_add (BseServer   *server,
+	     gint         fd,
+	     GIOCondition events,
+	     BseIOWatch   watch_func,
+	     gpointer     data)
+{
+  static GSourceFuncs iowatch_gsource_funcs = {
+    iowatch_prepare,
+    iowatch_check,
+    iowatch_dispatch,
+    NULL
+  };
+  GSource *source = g_source_new (&iowatch_gsource_funcs, sizeof (WSource));
+  WSource *wsource = (WSource*) source;
+
+  server->watch_list = g_slist_prepend (server->watch_list, wsource);
+  wsource->pfd.fd = fd;
+  wsource->pfd.events = events;
+  wsource->watch_func = watch_func;
+  wsource->data = data;
+  g_source_set_priority (source, G_PRIORITY_HIGH);
+  g_source_add_poll (source, &wsource->pfd);
+  g_source_attach (source, g_main_context_default ());
+}
+
+static gboolean
+iowatch_remove (BseServer *server,
+		BseIOWatch watch_func,
+		gpointer   data)
+{
+  GSList *slist;
+
+  for (slist = server->watch_list; slist; slist = slist->next)
+    {
+      WSource *wsource = slist->data;
+
+      if (wsource->watch_func == watch_func && wsource->data == data)
+	{
+	  g_source_destroy (&wsource->source);
+	  server->watch_list = g_slist_remove (server->watch_list, wsource);
+	  return TRUE;
+	}
+    }
+  return FALSE;
+}
+
+
 /* --- GSL engine main loop --- */
 typedef struct {
   GSource       source;
@@ -534,10 +684,6 @@ engine_prepare (GSource *source,
 	}
     }
   *timeout_p = psource->loop.timeout;
-
-  /* bad hack to get midi to work temporarily */
-  if (*timeout_p >= 25 || *timeout_p < 0)
-    *timeout_p = 25;
   BSE_THREADS_LEAVE ();
 
   return need_dispatch;
@@ -555,9 +701,6 @@ engine_check (GSource *source)
     psource->loop.fds[i].revents = gslpoll_from_gio (psource->fds[i].revents);
   psource->loop.revents_filled = TRUE;
   need_dispatch = gsl_engine_check (&psource->loop);
-
-  /* bad hack to get midi to work temporarily */
-  need_dispatch = TRUE;
   BSE_THREADS_LEAVE ();
 
   return need_dispatch;
@@ -568,12 +711,7 @@ engine_dispatch (GSource    *source,
 		 GSourceFunc callback,
 		 gpointer    user_data)
 {
-  BseServer *server;
-
   BSE_THREADS_ENTER ();
-  server = bse_server_get ();
-  if (server->midi_device)	/* get midi to work for now */
-    bse_midi_device_trigger (server->midi_device);
   gsl_engine_dispatch ();
   BSE_THREADS_LEAVE ();
 
@@ -620,4 +758,3 @@ engine_shutdown (BseServer *server)
   server->engine_source = NULL;
   bse_globals_unlock ();
 }
-

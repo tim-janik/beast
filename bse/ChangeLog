@@ -1,3 +1,20 @@
+Fri Dec 14 08:49:49 2001  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-oss.c: use BseServer IO watch to monitor device.
+	this should have its own thread some day, but for now a high
+	prioritized main loop source is pretty fine already.
+
+	* bsepcmdevice.[hc]: support setting watermarks on pcm handles.
+
+	* bsepcmdevice-oss.c: fix up to PCM changes.
+
+	* bsepcmmodule.c: yay, fixup poll function, finally! supports
+	watermark now.
+
+	* bseserver.[hc]: added pcm_latency property. implemented io watch
+	handlers through a main loop source for now, should be a thread
+	someday.
+
 Fri Dec 14 04:09:52 2001  Tim Janik  <timj@gtk.org>
 
 	* gslengine.c (gsl_engine_prepare): fix loop filling for the

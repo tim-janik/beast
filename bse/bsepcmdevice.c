@@ -193,6 +193,17 @@ bse_pcm_handle_status (BsePcmHandle *handle,
   GSL_SPIN_UNLOCK (&handle->mutex);
 }
 
+void
+bse_pcm_handle_set_watermark (BsePcmHandle *handle,
+			      guint         watermark)
+{
+  g_return_if_fail (handle != NULL);
+
+  GSL_SPIN_LOCK (&handle->mutex);
+  handle->playback_watermark = handle->mix_freq / 1000. * watermark * handle->n_channels;
+  GSL_SPIN_UNLOCK (&handle->mutex);
+}
+
 
 /* --- frequency utilities --- */
 gfloat

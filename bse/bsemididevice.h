@@ -56,7 +56,7 @@ typedef enum
 typedef struct _BseMidiHandle		BseMidiHandle;
 typedef struct _BseMidiDevice		BseMidiDevice;
 typedef struct _BseMidiDeviceClass	BseMidiDeviceClass;
-struct _BseMidiHandle
+struct _BseMidiHandle	/* this should be nuked, it's useless */
 {
   gint			 midi_fd;
   guint			 writable : 1;

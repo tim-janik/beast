@@ -43,6 +43,8 @@ struct _BseServer
 {
   BseItem         parent_object;
 
+  guint		  pcm_latency;
+
   GSource	*engine_source;
 
   GList	         *projects;
@@ -59,6 +61,8 @@ struct _BseServer
   BseMidiDecoder *midi_decoder;
   GSList	 *midi_modules;
   guint		  midi_ref_count;
+
+  GSList	 *watch_list;
 };
 struct _BseServerClass
 {
@@ -93,7 +97,14 @@ void		bse_server_register_loader		(BseServer	*server,
 							 const gchar    *magic_spec);
 GType		bse_server_find_loader			(BseServer	*server,
 							 const gchar	*file_name);
-
+void		bse_server_add_io_watch			(BseServer	*server,
+							 gint		 fd,
+							 GIOCondition	 events,
+							 BseIOWatch	 watch_func,
+							 gpointer	 data);
+void		bse_server_remove_io_watch		(BseServer	*server,
+							 BseIOWatch	 watch_func,
+							 gpointer	 data);
 
 #ifdef __cplusplus
 }

@@ -17,6 +17,8 @@
  */
 #include	"bsemididevice-oss.h"
 
+#include	"bseserver.h"
+
 #include	"../PKG_config.h"
 
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
@@ -46,8 +48,9 @@ static void	    bse_midi_device_oss_init		(BseMidiDeviceOSS	*midi_device_oss);
 static void	    bse_midi_device_oss_destroy		(BseObject		*object);
 static BseErrorType bse_midi_device_oss_open		(BseMidiDevice		*mdev,
 							 BseMidiDecoder		*decoder);
-static void	    bse_midi_device_oss_trigger		(BseMidiDevice		*mdev);
 static void	    bse_midi_device_oss_close		(BseMidiDevice		*mdev);
+static void	    io_handler				(BseMidiDevice		*mdev,
+							 GPollFD		*pfd);
 
 
 /* --- variables --- */
@@ -93,7 +96,6 @@ bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *class)
   midi_device_class->driver_rating = 1;
   midi_device_class->open = bse_midi_device_oss_open;
   midi_device_class->suspend = bse_midi_device_oss_close;
-  midi_device_class->trigger = bse_midi_device_oss_trigger;
 }
 
 static void
@@ -151,6 +153,7 @@ bse_midi_device_oss_open (BseMidiDevice  *mdev,
       mdev->handle = handle;
       handle->decoder = decoder;
       handle->midi_fd = oss->fd;
+      bse_server_add_io_watch (bse_server_get (), handle->midi_fd, G_IO_IN, (BseIOWatch) io_handler, mdev);
     }
   else
     {
@@ -185,12 +188,14 @@ bse_midi_device_oss_close (BseMidiDevice *mdev)
   g_assert (handle->running_thread == FALSE);
   /* midi_handle_abort_wait (handle); */
 
+  bse_server_remove_io_watch (bse_server_get (), (BseIOWatch) io_handler, mdev);
   (void) close (oss->fd);
   g_free (oss);
 }
 
 static void
-bse_midi_device_oss_trigger (BseMidiDevice *mdev)
+io_handler (BseMidiDevice *mdev,
+	    GPollFD       *pfd)
 {
   OSSHandle *oss = (OSSHandle*) mdev->handle;
   BseMidiHandle *handle = &oss->handle;

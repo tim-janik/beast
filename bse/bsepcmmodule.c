@@ -52,7 +52,7 @@ bse_pcm_module_poll (gpointer         data,
 		     const GslPollFD *fds,
 		     gboolean         revents_filled)
 {
-#if 1
+#if 0
   /* written for full OSS buffer fills */
   BsePCMModuleData *mdata = data;
   BsePcmStatus status;
@@ -71,26 +71,24 @@ bse_pcm_module_poll (gpointer         data,
 
   return *timeout_p == 0;
 #else
-  /* check if less than 3 fragments are supplied */
   BsePCMModuleData *mdata = data;
+  BsePcmHandle *handle = mdata->handle;
   BsePcmStatus status;
-  gfloat diff;
-  guint need_values;
+  guint fillmark, watermark;
 
   /* get playback status */
   bse_pcm_handle_status (mdata->handle, &status);
-  
-  /* already enough space for another write? */
-  need_values = MIN (mdata->handle->playback_watermark, status.total_playback_values);
-  need_values = status.total_playback_values - mdata->handle->playback_watermark;
-  need_values = MAX (need_values, n_values * 2 /* stereo */);
-  if (status.n_playback_values_left >= need_values)
-    return TRUE;
-  
-  /* when do we have enough space available? */
-  diff = need_values - status.n_playback_values_left;
-  *timeout_p = diff * 1000.0 / mdata->handle->mix_freq;
-  
+
+  watermark = status.total_playback_values - MIN (mdata->n_values, status.total_playback_values);
+  watermark = MIN (watermark, handle->playback_watermark);
+  fillmark = status.total_playback_values - status.n_playback_values_available;
+  if (fillmark <= watermark)
+    return TRUE;	/* need to write out stuff now */
+
+  fillmark -= watermark;
+  fillmark /= handle->n_channels;
+  *timeout_p = fillmark * 1000.0 / mdata->handle->mix_freq;
+
   return *timeout_p == 0;
 #endif
 }
