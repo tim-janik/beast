@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-18 19:37-0400\n"
-"PO-Revision-Date: 2004-09-18 19:50-0400\n"
+"POT-Creation-Date: 2004-09-19 18:58-0400\n"
+"PO-Revision-Date: 2004-09-19 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -828,6 +828,34 @@ msgstr "BEAST Version %s"
 #: beast-gtk/bstmain.c:727
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
+
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bstparam-automation.c:97
+#, c-format
+msgid "Control Automation: %s"
+msgstr "Control Automation: %s"
+
+#. TRANSLATORS: %s is substituted with a property name
+#: beast-gtk/bstparam-automation.c:197
+#, c-format
+msgid "%s: automation disabled"
+msgstr "%s: automation disabled"
+
+#. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
+#: beast-gtk/bstparam-automation.c:205
+#, c-format
+msgid "%s: automation from MIDI control: %s (MIDI channel: %d)"
+msgstr "%s: automation from MIDI control: %s (MIDI channel: %d)"
+
+#. TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type
+#: beast-gtk/bstparam-automation.c:217
+#, c-format
+msgid "%s: automation from MIDI control: %s"
+msgstr "%s: automation from MIDI control: %s"
+
+#: beast-gtk/bstparam-automation.c:235
+msgid "Control Automation"
+msgstr "Control Automation"
 
 #: beast-gtk/bstparam-choice.c:143
 msgid "Drop Down Combo"
@@ -5180,17 +5208,17 @@ msgstr "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgid "Music Composer"
 msgstr "Music Composer"
 
-#: data/bse.keys.in.h:1
-msgid "Audio"
-msgstr "Audio"
-
-#: data/bse.keys.in.h:2
+#: data/beast.xml.in.h:1 data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
 msgstr "BSE Multi-Part Wave File"
 
-#: data/bse.keys.in.h:3
+#: data/beast.xml.in.h:2 data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "BSE Synthesis File"
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr "Audio"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
