@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001, 2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 #include "gslloader.h"
 
 #include "gsldatahandle.h"
+#include "gsldatahandle-vorbis.h"
 #include "gslmath.h"
 #include <sfi/sfistore.h>
 #include <fcntl.h>
@@ -33,6 +34,10 @@
                                           if (g_scanner_get_next_token (scanner) != _t) \
                                             return _t; \
                                         }
+
+/* --- inline loader types --- */
+#define RAWLINK_MAGIC           (('R' << 24) | ('a' << 16) | ('w' << 8) | 'L')
+#define OGGLINK_MAGIC           (('O' << 24) | ('g' << 16) | ('g' << 8) | 'L')
 
 
 /* --- token types --- */
@@ -50,7 +55,8 @@ typedef enum
   GSL_WAVE_TOKEN_MIDI_NOTE,
   GSL_WAVE_TOKEN_FILE,
   GSL_WAVE_TOKEN_INDEX,
-  GSL_WAVE_TOKEN_BINLINK,
+  GSL_WAVE_TOKEN_RAWLINK,
+  GSL_WAVE_TOKEN_OGGLINK,
   GSL_WAVE_TOKEN_BOFFSET,
   GSL_WAVE_TOKEN_N_VALUES,
   GSL_WAVE_TOKEN_LOOP_TYPE,
@@ -97,9 +103,9 @@ typedef struct
 static const char *wave_tokens_512[] = {
   "wave",       "chunk",        "name",         "byte_order",
   "format",     "n_channels",   "mix_freq",     "osc_freq",
-  "midi_note",  "file",         "index",	"binlink",
-  "boffset",	"n_values",	"loop_type",	"loop_start",
-  "loop_end",	"loop_count",
+  "midi_note",  "file",         "index",	"rawlink",
+  "ogglink",    "boffset",	"n_values",
+  "loop_type",	"loop_start",   "loop_end",	"loop_count",
 };
 static const char *wave_tokens_768[] = {
   "big_endian", "big",          "little_endian", "little",
@@ -294,11 +300,11 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
 	g_free (chunk->loader_data2);	/* wave_name */
 	chunk->loader_data2 = g_strdup (scanner->value.v_string);
 	break;
-      case GSL_WAVE_TOKEN_BINLINK:
+      case GSL_WAVE_TOKEN_RAWLINK:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, '(');
 	parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-	if (strcmp (scanner->value.v_identifier, "sfi-binary") != 0)
+	if (strcmp (scanner->value.v_identifier, "binary-appendix") != 0)
 	  return G_TOKEN_IDENTIFIER;
 	parse_or_return (scanner, G_TOKEN_INT);
 	chunk->loader_offset = scanner->value.v_int64; /* byte offset */
@@ -307,6 +313,22 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
 	parse_or_return (scanner, ')');
 	g_free (chunk->loader_data1);	/* file_name */
 	chunk->loader_data1 = NULL;
+        chunk->loader_num1 = RAWLINK_MAGIC;
+	break;
+      case GSL_WAVE_TOKEN_OGGLINK:
+	parse_or_return (scanner, '=');
+	parse_or_return (scanner, '(');
+	parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	if (strcmp (scanner->value.v_identifier, "binary-appendix") != 0)
+	  return G_TOKEN_IDENTIFIER;
+	parse_or_return (scanner, G_TOKEN_INT);
+	chunk->loader_offset = scanner->value.v_int64; /* byte offset */
+	parse_or_return (scanner, G_TOKEN_INT);
+	chunk->loader_length = scanner->value.v_int64; /* byte length */
+	parse_or_return (scanner, ')');
+	g_free (chunk->loader_data1);	/* file_name */
+	chunk->loader_data1 = NULL;
+        chunk->loader_num1 = OGGLINK_MAGIC;
 	break;
       case GSL_WAVE_TOKEN_MIX_FREQ:
 	parse_or_return (scanner, '=');
@@ -674,7 +696,7 @@ gslwave_create_chunk_handle (gpointer      data,
       g_free (string);
       return dhandle;
     }	
-  else /* no file_name specified */
+  else if (chunk->loader_num1 == RAWLINK_MAGIC)
     {
       GslDataHandle *dhandle = NULL;
       if (chunk->loader_length) /* inlined binary data */
@@ -690,6 +712,25 @@ gslwave_create_chunk_handle (gpointer      data,
       else
 	*error_p = GSL_ERROR_WAVE_NOT_FOUND;
       return dhandle;
+    }
+  else if (chunk->loader_num1 == OGGLINK_MAGIC)
+    {
+      GslDataHandle *dhandle = NULL;
+      if (chunk->loader_length) /* inlined binary data */
+	{
+	  dhandle = gsl_data_handle_new_ogg_vorbis_zoffset (fi->wfi.file_name,
+                                                            chunk->loader_offset,	/* byte_offset */
+                                                            chunk->loader_length);	/* byte length */
+	  *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
+	}
+      else
+	*error_p = GSL_ERROR_WAVE_NOT_FOUND;
+      return dhandle;
+    }
+  else /* no file_name and no loader specified */
+    {
+      *error_p = GSL_ERROR_FORMAT_UNKNOWN;
+      return NULL;
     }
 }
 

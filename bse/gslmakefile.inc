@@ -17,17 +17,23 @@
 
 # make sure gslincludedir= is defined
 # GSL targets
-GSL_H_SRC     =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h \
-		gslloader.h gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
-		gslfft.h gslieee754.h gslsignal.h gslmagic.h \
-		gslengine.h gslwaveosc.h gslwavechunk.h gsldatahandle-mad.h \
-		gslosctable.h gsloscillator.h gslfilehash.h
-GSL_C_SRC     =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
-		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
-		gslloader-wav.c gslloader-gslwave.c gslloader-mad.c gslloader-oggvorbis.c \
-		gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
-		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c gsldatahandle-mad.c \
-		gslosctable.c gsloscillator.c gslfilehash.c
+GSL_H_SRC     = $(strip \
+	gslengine.h		gsldefs.h	gslieee754.h	\
+	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
+	gslfilter.h		gslsignal.h	gslmath.h	gslcommon.h \
+	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
+	gsldatahandle-mad.h	gslloader.h	gslfilehash.h	gsldatautils.h	\
+	gslwaveosc.h		gslosctable.h	gslmagic.h	\
+)
+GSL_C_SRC     =	$(strip \
+	gslengine.c		gsloputil.c	gslopmaster.c	gslopschedule.c \
+	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
+	gslfilter.c		gslsignal.c	gslmath.c	gslcommon.c \
+	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-gslwave.c \
+	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
+	gsldatahandle-mad.c	gslloader.c	gslfilehash.c	gsldatautils.c	\
+	gslwaveosc.c		gslosctable.c	gslmagic.c	\
+)
 GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
 		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
 GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header \

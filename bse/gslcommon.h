@@ -76,6 +76,32 @@ GslErrorType gsl_check_file		(const gchar	*file_name,
 					 const gchar	*mode);
 
 
+/* --- progress notification --- */
+typedef struct _GslProgressState GslProgressState;
+typedef guint (*GslProgressFunc)        (gpointer          data,
+                                         gfloat            pval, /* -1, 0..100 */
+                                         const gchar      *detail,
+                                         GslProgressState *pstate);
+struct _GslProgressState
+{
+  guint           wipe_length;
+  gfloat          pval;
+  gpointer        pdata;
+  GslProgressFunc pfunc;
+};
+GslProgressState gsl_progress_state     (gpointer          data,
+                                         GslProgressFunc   pfunc);
+void             gsl_progress_notify    (GslProgressState *pstate,
+                                         gfloat            pval,
+                                         const gchar      *detail_format,
+                                         ...);
+void             gsl_progress_wipe      (GslProgressState *pstate);
+guint            gsl_progress_printerr  (gpointer          message,
+                                         gfloat            pval,
+                                         const gchar      *detail,
+                                         GslProgressState *pstate);
+
+
 /* --- implementation details --- */
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);

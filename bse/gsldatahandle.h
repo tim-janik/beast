@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,9 +22,7 @@
 #include <bse/gsldefs.h>
 #include <bse/gslcommon.h>	/* GslErrorType */
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- macros --- */
@@ -158,8 +156,7 @@ gboolean	gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name);
 void		gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
+G_END_DECLS
 
 #endif /* __GSL_DATA_HANDLE_H__ */

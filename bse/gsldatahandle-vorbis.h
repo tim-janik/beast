@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,19 +23,16 @@
 #include <bse/gslcommon.h>
 #include <bse/gsldatahandle.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* linear-read handle! needs linbuffer handle wrapper
  */
-GslDataHandle*	gsl_data_handle_new_ogg_vorbis	(const gchar	*file_name,
-						 guint		 lbitstream);
+GslDataHandle*	gsl_data_handle_new_ogg_vorbis_muxed    (const gchar	*file_name,
+                                                         guint		 lbitstream);
+GslDataHandle*	gsl_data_handle_new_ogg_vorbis_zoffset	(const gchar	*file_name,
+                                                         GslLong         byte_offset,
+                                                         GslLong         byte_size);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_DATA_HANDLE_VORBIS_H__ */

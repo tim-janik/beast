@@ -453,7 +453,7 @@ tailmatch_score_loop (GslDataHandle *shandle,
 
       b = gsl_data_handle_read (shandle, l, b, v1);
       b = gsl_data_handle_read (dhandle, l, b, v2);
-      g_assert (b >= 1);
+      g_assert (b >= 1);        // FIXME
       l += b;
 
       while (b--)

@@ -19,6 +19,10 @@
 #include <bse/bseprocedure.h>
 #include <bse/bsescripthelper.h>
 #include <bse/bseserver.h>
+#include <bse/gslcommon.h>      /* gsl_get_config */
+#include <bse/gslmath.h>        /* gsl_temp_freq */
+#include <string.h>     /* strchr */
+#include <stdlib.h>     /* strtol */
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -95,5 +99,99 @@ PROCEDURE (bse-type-blurb, "Utils/Types/Get Blurb") {
   /* set out params */
   sfi_value_set_string (out_values++, type ? bse_type_blurb (type) : NULL);
 
+  return BSE_ERROR_NONE;
+}
+
+static gdouble
+str2num (const gchar *str,
+         guint        nth)
+{
+  gchar *num_any = ".0123456789", *num_first = num_any + 1;
+  while (nth--)
+    {
+      /* skip number */
+      if (*str && strchr (num_first, *str))
+        do
+          str++;
+        while (*str && strchr (num_any, *str));
+      /* and trailing non-number stuff */
+      while (*str && !strchr (num_first, *str))
+        str++;
+      if (!*str)
+        return 0;       /* no number */
+    }
+  if (strchr (num_first, *str))
+    return g_strtod (str, NULL);
+  return 0; /* no number */
+}
+
+PROCEDURE (bse-string-extract-number, "Utils/Strings/Extract Number") {
+  HELP  = "Retrieve numbers from a string.";
+  IN    = sfi_pspec_string ("string", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("format", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_real ("aux_base", NULL, NULL, 0, -SFI_MAXNUM, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_real ("dflt", NULL, NULL, 0, -SFI_MAXNUM, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_real ("number", NULL, NULL, 0, -SFI_MAXNUM, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  gchar *string   = sfi_value_get_string (in_values++);
+  gchar *format   = sfi_value_get_string (in_values++);
+  SfiReal aux_base = sfi_value_get_real (in_values++);
+  SfiReal dflt     = sfi_value_get_real (in_values++);
+  SfiReal number = dflt;
+
+  if (string)
+    {
+      if (format)
+        {
+          gchar *base, *ep = NULL;
+          switch (*format)
+            {
+              glong l;
+            case '#':
+              number = str2num (++format, 0);
+              break;
+            case 'n':
+              l = strtol (++format, &ep, 10);
+              number = str2num (string, l);
+              break;
+            case 'b':
+              l = strtol (++format, &ep, 10);
+              base = g_path_get_basename (string);
+              number = str2num  (base ? base : string, l);
+              g_free (base);
+              break;
+            case 'c':
+              format++;
+              number = aux_base;
+              if (*format == '*')
+                {
+                  gdouble factor = g_strtod (++format, &ep);
+                  number *= factor;
+                }
+              else
+                ep = (char*) format;
+              break;
+            default:
+              /* ("Invalid chunk format given: modifier `%c'", *format) */
+              number = 0;
+              break;
+            }
+          if (ep && *ep)
+            {
+              if (*ep == 'm')       /* interpret d as midi note and return freq */
+                number = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+                                        number - gsl_get_config ()->midi_kammer_note);
+              else /* ("Invalid chunk format given: postmodifier `%c'", *ep) */
+                number = 0;
+            }
+        }
+      else
+        number = str2num (string, 0);
+    }
+  sfi_value_set_real (out_values++, number);
   return BSE_ERROR_NONE;
 }

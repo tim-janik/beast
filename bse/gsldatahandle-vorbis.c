@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,9 @@ typedef struct {
 
   guint    stream;
   guint    n_streams;
+  guint    rfile_byte_offset;
+  guint    rfile_byte_length : 31;
+  guint    rfile_add_zoffset : 1;
 
   /* live data */
   gint64  soffset;	/* our PCM start offset */
@@ -77,14 +80,20 @@ ov_errno_to_error (gint         ov_errno,
     }
 }
 
+typedef struct {
+  GslRFile *rfile;
+  GslLong   byte_offset;
+  GslLong   byte_length;
+} RFile;
+
 static size_t
 rfile_read (void  *ptr,
 	    size_t size,
 	    size_t nmemb,
 	    void  *datasource)
 {
-  GslRFile *rfile = datasource;
-  return gsl_rfile_read (rfile, size * nmemb, ptr);
+  RFile *rfile = datasource;
+  return gsl_rfile_read (rfile->rfile, size * nmemb, ptr);
 }
 
 static int
@@ -92,39 +101,44 @@ rfile_seek (void       *datasource,
 	    ogg_int64_t offset,
 	    int         whence)
 {
-  GslRFile *rfile = datasource;
-  GslLong l;
+  RFile *rfile = datasource;
+  ogg_int64_t l;
   switch (whence)
     {
     default:
     case SEEK_SET:
-      l = gsl_rfile_seek_set (rfile, offset);
+      l = rfile->byte_offset + offset;
+      l = CLAMP (l, rfile->byte_offset, rfile->byte_offset + rfile->byte_length);
+      l = gsl_rfile_seek_set (rfile->rfile, l);
       break;
     case SEEK_CUR:
-      l = gsl_rfile_position (rfile);
-      l = gsl_rfile_seek_set (rfile, l + offset);
+      l = gsl_rfile_position (rfile->rfile) + offset;
+      l = CLAMP (l, rfile->byte_offset, rfile->byte_offset + rfile->byte_length);
+      l = gsl_rfile_seek_set (rfile->rfile, l);
       break;
     case SEEK_END:
-      l = gsl_rfile_length (rfile);
-      l = gsl_rfile_seek_set (rfile, l + offset);
+      l = rfile->byte_offset + rfile->byte_length + offset;
+      l = CLAMP (l, rfile->byte_offset, rfile->byte_offset + rfile->byte_length);
+      l = gsl_rfile_seek_set (rfile->rfile, l);
       break;
     }
-  return l;
+  return l < 0 ? -1 : l - rfile->byte_offset;
 }
 
 static int
 rfile_close (void *datasource)
 {
-  GslRFile *rfile = datasource;
-  gsl_rfile_close (rfile);
+  RFile *rfile = datasource;
+  gsl_rfile_close (rfile->rfile);
+  g_free (rfile);
   return 0;
 }
 
 static long
 rfile_tell (void *datasource)
 {
-  GslRFile *rfile = datasource;
-  return gsl_rfile_position (rfile);
+  RFile *rfile = datasource;
+  return gsl_rfile_position (rfile->rfile) - rfile->byte_offset;
 }
 
 static ov_callbacks rfile_ov_callbacks = {
@@ -139,18 +153,43 @@ dh_vorbis_open (GslDataHandle      *data_handle,
 		GslDataHandleSetup *setup)
 {
   VorbisHandle *vhandle = (VorbisHandle*) data_handle;
-  GslRFile *rfile;
+  RFile *rfile;
   vorbis_info *vi;
   GslLong n, i;
   gint err;
-  
-  rfile = gsl_rfile_open (vhandle->dhandle.name);
-  if (!rfile)
-    return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+
+  rfile = g_new0 (RFile, 1);
+  rfile->rfile = gsl_rfile_open (vhandle->dhandle.name);
+  if (!rfile->rfile)
+    {
+      g_free (rfile);
+      return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+    }
+  rfile->byte_length = gsl_rfile_length (rfile->rfile);
+  if (vhandle->rfile_add_zoffset)
+    {
+      rfile->byte_offset = gsl_hfile_zoffset (rfile->rfile->hfile) + 1;
+      rfile->byte_offset += vhandle->rfile_byte_offset;
+      rfile->byte_offset = MIN (rfile->byte_offset, rfile->byte_length);
+      rfile->byte_length -= rfile->byte_offset;
+    }
+  else
+    {
+      rfile->byte_offset = MIN (vhandle->rfile_byte_offset, rfile->byte_length);
+      rfile->byte_length -= rfile->byte_offset;
+    }
+  if (vhandle->rfile_byte_length > 0)
+    rfile->byte_length = MIN (rfile->byte_length, vhandle->rfile_byte_length);
   err = ov_open_callbacks (rfile, &vhandle->ofile, NULL, 0, rfile_ov_callbacks);
   if (err < 0)
     {
-      gsl_rfile_close (rfile);
+      if (0)
+        g_printerr ("failed to open ogg at offset %d (real offset=%ld) (add-zoffset=%d): %s\n",
+                    vhandle->rfile_byte_offset,
+                    rfile->byte_offset,
+                    vhandle->rfile_add_zoffset,
+                    gsl_strerror (ov_errno_to_error (err, GSL_ERROR_OPEN_FAILED)));
+      rfile_close (rfile);
       return ov_errno_to_error (err, GSL_ERROR_OPEN_FAILED);
     }
 
@@ -335,17 +374,15 @@ static GslDataHandleFuncs dh_vorbis_vtable = {
   dh_vorbis_ojob,
 };
 
-GslDataHandle*
-gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
-				guint        lbitstream)
+static GslDataHandle*
+gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
+                                    guint        lbitstream,
+                                    gboolean     add_zoffset,
+                                    guint        byte_offset,
+                                    guint        byte_size)
 {
-  VorbisHandle *vhandle;
-  gboolean success;
-
-  g_return_val_if_fail (file_name != NULL, NULL);
-
-  vhandle = sfi_new_struct0 (VorbisHandle, 1);
-  success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
+  VorbisHandle *vhandle = sfi_new_struct0 (VorbisHandle, 1);
+  gboolean success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
     {
       GslErrorType error;
@@ -353,6 +390,9 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->n_streams = 0;
       vhandle->stream = lbitstream;
+      vhandle->rfile_byte_offset = byte_offset;
+      vhandle->rfile_add_zoffset = add_zoffset != FALSE;
+      vhandle->rfile_byte_length = byte_size;
 
       /* we can only check matters upon opening
        */
@@ -373,4 +413,25 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
       sfi_delete_struct (VorbisHandle, vhandle);
       return NULL;
     }
+}
+
+GslDataHandle*
+gsl_data_handle_new_ogg_vorbis_muxed (const gchar *file_name,
+                                      guint        lbitstream)
+{
+  g_return_val_if_fail (file_name != NULL, NULL);
+
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, FALSE, 0, 0);
+}
+
+GslDataHandle*
+gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
+                                        GslLong      byte_offset,
+                                        GslLong      byte_size)
+{
+  g_return_val_if_fail (file_name != NULL, NULL);
+  g_return_val_if_fail (byte_offset >= 0, NULL);
+  g_return_val_if_fail (byte_size > 0, NULL);
+
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, TRUE, byte_offset, byte_size);
 }

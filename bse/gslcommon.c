@@ -282,6 +282,91 @@ gsl_error_from_errno (gint         sys_errno,
     }
 }
 
+/* --- progress notification --- */
+GslProgressState
+gsl_progress_state (gpointer        data,
+                    GslProgressFunc pfunc)
+{
+  GslProgressState pstate = { 0, 0.0, };
+  pstate.pfunc = pfunc;
+  pstate.pdata = data;
+  return pstate;
+}
+
+void
+gsl_progress_notify (GslProgressState *pstate,
+                     gfloat            pval,
+                     const gchar      *detail_format,
+                     ...)
+{
+  gboolean need_update;
+
+  g_return_if_fail (pstate != NULL);
+
+  if (pval >= 0)
+    {
+      pval = CLAMP (pval, 0, 100);
+      need_update = ABS (pval - pstate->pval) > 0.05;
+    }
+  else
+    {
+      pval = -1;
+      need_update = TRUE;
+    }
+
+  if (need_update && pstate->pfunc)
+    {
+      gchar *detail = NULL;
+      guint l;
+      if (detail_format)
+        {
+          va_list args;
+          va_start (args, detail_format);
+          detail = g_strdup_vprintf (detail_format, args);
+          va_end (args);
+        }
+      pstate->pval = pval;
+      l = pstate->pfunc (pstate->pdata, pstate->pval, detail && detail[0] ? detail : NULL, pstate);
+      pstate->wipe_length = MAX (pstate->wipe_length, l);
+      g_free (detail);
+    }
+}
+
+void
+gsl_progress_wipe (GslProgressState *pstate)
+{
+  g_return_if_fail (pstate != NULL);
+
+  if (pstate->wipe_length)
+    {
+      gchar *wstr = g_malloc (pstate->wipe_length + 1 + 1);
+      memset (wstr, ' ', pstate->wipe_length);
+      wstr[pstate->wipe_length] = '\r';
+      wstr[pstate->wipe_length + 1] = 0;
+      g_printerr (wstr);
+      g_free (wstr);
+      pstate->wipe_length = 0;
+    }
+}
+
+guint
+gsl_progress_printerr (gpointer          message,
+                       gfloat            pval,
+                       const gchar      *detail,
+                       GslProgressState *pstate)
+{
+  gchar *str = g_strdup_printf ("%s%sprocessed %5.1f%% %s%s%s",
+                                message ? (gchar*) message : "",
+                                message ? ": " : "",
+                                pval,
+                                detail ? "(" : "",
+                                detail ? detail : "",
+                                detail ? ")" : "");
+  guint l = strlen (str);
+  g_printerr ("%s\r", str);
+  g_free (str);
+  return l;
+}
 
 /* --- global initialization --- */
 static guint

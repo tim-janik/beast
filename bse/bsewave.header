@@ -36,21 +36,24 @@ wave {
 		midi_note = 57		# alternative way to specify osc_freq.
 					# e.g. the midi note number '57' means
 					# 440 Hz (A-1).
-	        mix_freq = 44100	# the sampling frequency with which
-	        			# this chunk has been recorded.
-                binlink = (...)		# reference to data block in
+	        mix_freq = 44100	# for raw samples, the sampling
+	        			# frequency with which this chunk has
+	        			# been recorded.
+                rawlink = (...)		# reference to raw sample block in
                 			# binary appendix of this file
+                ogglink = (...)		# reference to Ogg/Vorbis data block
+                			# in binary appendix of this file
+                boffset = 256		# for raw samples, the number of bytes
+                			# to skip at beginning of filename
+                n_values = 512		# for raw samples, number of values
+                			# in filename. (maybe 0 for default)
+                			# defaults to filelength without the
+                			# offset, divided by the format size
                 file = "filename"	# file containing this chunk's
                 			# sampled data.
 		index = "wavename"	# wavename of sample to read from
 					# filename, indexing this chunk's
 					# sampled data.
-                boffset = 256		# for raw samples, the number of bytes
-                			# to skip at beginning of filename
-                n_values = 512		# number of values recorded in
-                			# filename. (maybe 0 for default)
-                			# defaults to filelength without the
-                			# offset, divided by the format size
                 # loop definition
                 # for samples that contain parts which are to be looped,
                 # the loop definition specifies the start and end points of
@@ -71,9 +74,9 @@ wave {
 # this can be used to construct gslwave files that contain:
 # 1) the gslwave header
 # 2) a literal "\000" byte
-# 3) encoded sample data which the chunks refer to (binlink)
+# 3) encoded sample data which the chunks refer to (e.g. rawlink)
 
 
-^@ <-- supposedly \000
+^@ <--- supposedly \000
 
 File content which is ignore by the gslwave header parser.

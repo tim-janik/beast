@@ -1442,16 +1442,6 @@ bse_storage_parse_data_handle (BseStorage     *storage,
   g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
   g_return_val_if_fail (n_channels > 0, G_TOKEN_ERROR);
 
-  /*
-    bse_storage_printf (storage,
-    "(BseStorageBinaryV0 %lu %c:%u %lu %lu)",
-    bblock->storage_offset,
-    G_BYTE_ORDER == G_LITTLE_ENDIAN ? 'L' : 'B',
-    bblock->bytes_per_value,
-    bblock->storage_length,
-    bblock->storage_vlength);
-  */
-
   scanner = storage->scanner;
 
   parse_or_return (scanner, '(');

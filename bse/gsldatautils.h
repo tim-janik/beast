@@ -29,7 +29,7 @@ extern "C" {
 
 
 /* --- structures --- */
-#define GSL_DATA_HANDLE_PEEK_BUFFER     (8192)
+#define GSL_DATA_HANDLE_PEEK_BUFFER     (2048)
 typedef struct
 {
   gint    dir;   /* initialize direction to -1 or +1 (or 0 for random access) */
@@ -43,7 +43,7 @@ typedef struct
   GslLong tail_cut;
   GslLong min_loop;
   GslLong max_loop;
-} GslLoopSpec;	/* rename this to ...Data... */
+} GslLoopSpec;	/* rename this to GslData... */
 
 
 /* --- data utils --- */

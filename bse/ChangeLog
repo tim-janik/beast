@@ -1,3 +1,28 @@
+Sun May 18 04:55:45 2003  Tim Janik  <timj@gtk.org>
+
+	* bseprocedure.proc: added bse-string-extract-number() to deal with
+	command line argumens and midi notes.
+
+	* gslcommon.[hc]: added simple progress api for comand line apps.
+
+	* gsldatahandle-vorbis.[hc]: changed API, now a data handle relates
+	to a logical ogg/vorbis stream specified by either the logical stream
+	number or a zero-offset relative file section.
+
+	* gsldatautils.h: reduced peek buffer size from 8192 to 2048 for
+	better cache utilization.
+
+	* gslloader-gslwave.c: support inlined (binary appendix) raw sample data
+	via "rawlink" key word, and added support for inlined ogg/vorbis sample
+	data via "ogglink". adjust binary appendix syntax parsing.
+	
+	* gslwave.header: minor description fixes, describe ogglink and rawlink.
+
+	* gslvorbis-enc.[hc]: Ogg/Vorbis encoder API front end.
+
+	* gslvorbis-cutter.[hc]: Ogg/Vorbis stream cutting implementation
+	currently supports tail cutting at sample, packet and page boundaries.
+
 Sun May 11 18:45:40 2003  Tim Janik  <timj@gtk.org>
 
 	* gsldefs.h:
