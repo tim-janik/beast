@@ -1,3 +1,8 @@
+Wed Oct 13 19:46:34 2004  Tim Janik  <timj@gtk.org>
+
+	* tests/latency/bseplay.scm: added BSE file play script missing
+	for latency test.
+
 Wed Oct 13 18:57:17 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am:
