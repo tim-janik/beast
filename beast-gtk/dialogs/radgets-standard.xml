@@ -104,7 +104,7 @@
     prop:stock-image="$(ifdef,stock-image,$stock-image,BST_STOCK_FOLDER)"
     prop:right-justify="$(ifdef,last,$last,0)" >
     <hidden-when-insensitive hidden-when-insensitive="$hidden-when-insensitive" />
-    <GtkMenu name="menu" tearoff-title="$label" />
+    <GtkMenu id="menu" tearoff-title="$label" />
   </xdef:submenu>
   <xdef:submenu-last          inherit="submenu" last="1" />
   <!-- option-menu -->
@@ -197,13 +197,13 @@
 
   <!-- border-layout -->
   <xdef:border-layout inherit="vbox" default-area="center" >
-    <vbox name="north" />
+    <vbox id="north" />
     <hbox pack:expand="1" >
-      <hbox name="east" />
-      <vbox name="center" pack:expand="1" />
-      <hbox name="west" />
+      <hbox id="east" />
+      <vbox id="center" pack:expand="1" />
+      <hbox id="west" />
     </hbox>
-    <vbox name="south" />
+    <vbox id="south" />
   </xdef:border-layout>
 
   <!-- Gxk builtin types -->
@@ -309,7 +309,7 @@
   <xdef:toolbar             inherit="frame-shadow-out"
     default-area="toolbar-hbox" >
     <event-box>
-      <hbox name="toolbar-hbox" />
+      <hbox id="toolbar-hbox" />
     </event-box>
   </xdef:toolbar>
   <!-- toolbar factories -->
@@ -326,8 +326,8 @@
     hseparator="0" vseparator="0" relief="none" default-area="image-area" >
     <tooltip text="$(null-collapse,$tooltip)" />
     <vbox>
-      <vbox name="image-area" expand="1" />
-      <vbox name="label-area" pack:pack-type="end" />
+      <vbox id="image-area" expand="1" />
+      <vbox id="label-area" pack:pack-type="end" />
     </vbox>
   </xdef:tool-area>
   <!-- labeled-tool-area: label= tooltip= -->
@@ -336,8 +336,8 @@
     <!--local relief="foo" label="" /-->
     <tooltip text="$(null-collapse,$tooltip)" />
     <vbox>
-      <vbox name="image-area" expand="1" />
-      <vbox name="label-area" pack:pack-type="end" >
+      <vbox id="image-area" expand="1" />
+      <vbox id="label-area" pack:pack-type="end" >
 	<ulabel area="label-area" label="$label" />
       </vbox>
     </vbox>
@@ -388,23 +388,23 @@
   <!-- gxk-scroll-text-toolbar -->
   <xdef:gxk-scroll-text-toolbar inherit="frame-shadow-out" >
     <hbox >
-      <big-tool-button name="back-button" size:hgroup="gxksttbtns"
+      <big-tool-button id="back-button" size:hgroup="gxksttbtns"
 	_label="_Back"
 	_tooltip="Go back one page"
 	stock-image="gtk-go-back" />
-      <big-tool-button name="forward-button" size:hgroup="gxksttbtns"
+      <big-tool-button id="forward-button" size:hgroup="gxksttbtns"
 	_label="_Forward"
 	_tooltip="Go forward one page"
 	stock-image="gtk-go-forward" />
-      <big-tool-button name="reload-button" size:hgroup="gxksttbtns"
+      <big-tool-button id="reload-button" size:hgroup="gxksttbtns"
 	_label="_Reload"
 	_tooltip="Reload current page"
 	stock-image="gtk-refresh" />
-      <big-tool-button name="index-button" size:hgroup="gxksttbtns"
+      <big-tool-button id="index-button" size:hgroup="gxksttbtns"
 	_label="_Index"
 	_tooltip="Go to browser index"
 	stock-image="gtk-index" />
-      <big-tool-button name="find-button" size:hgroup="gxksttbtns"
+      <big-tool-button id="find-button" size:hgroup="gxksttbtns"
 	_label="_Find"
 	_tooltip="Find in current document"
 	sensitive="0"
@@ -413,7 +413,7 @@
 	_label="Location"
 	_tooltip="Enter document or file location"
 	expand="1" >
-	<entry name="location-entry" activates-default="0" />
+	<entry id="location-entry" activates-default="0" />
       </labeled-tool-area>
     </hbox>
   </xdef:gxk-scroll-text-toolbar>

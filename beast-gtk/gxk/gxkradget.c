@@ -116,6 +116,7 @@ static const gchar*    radget_args_lookup_quark (const GxkRadgetArgs *args,
 
 /* --- variables --- */
 static Domain *standard_domain = NULL;
+static GQuark  quark_id = 0;
 static GQuark  quark_name = 0;
 static GQuark  quark_radget_type = 0;
 static GQuark  quark_radget_node = 0;
@@ -393,9 +394,9 @@ env_lookup (Env         *env,
 {
   const GxkRadgetArgs *args;
   GQuark quark = g_quark_try_string (var);
-  guint nth;
-  if (strcmp (var, "name") == 0)
+  if (quark == quark_name || quark == quark_id)
     return env->name;
+  guint nth;
   args = quark ? env_find_quark (env, quark, &nth) : NULL;
   return args ? ARGS_NTH_VALUE (args, nth) : NULL;
 }
@@ -512,7 +513,7 @@ parse_dollar (const gchar *c,
       var = g_strndup (mark, c - mark);
       quark = g_quark_try_string (var);
       g_free (var);
-      if (quark == quark_name)
+      if (quark == quark_name || quark == quark_id)
         g_string_append (result, env->name);
       else
         {
@@ -716,7 +717,8 @@ node_define (Domain       *domain,
       node->pack_args = radget_args_intern_set (node->pack_args, attribute_names[i] + 5, attribute_values[i]);
     else if (strncmp (attribute_names[i], "default-pack:", 13) == 0)
       node->dfpk_args = radget_args_intern_set (node->dfpk_args, attribute_names[i] + 13, attribute_values[i]);
-    else if (strcmp (attribute_names[i], "name") == 0 || strcmp (attribute_names[i], "_name") == 0)
+    else if (strcmp (attribute_names[i], "name") == 0 || strcmp (attribute_names[i], "_name") == 0 ||
+             strcmp (attribute_names[i], "id") == 0 || strcmp (attribute_names[i], "_id") == 0)
       {
         if (name_p && !*name_p)
           *name_p = g_intern_string (attribute_values[i]);
@@ -1624,6 +1626,7 @@ _gxk_init_radget_types (void)
 {
   GType types[1024], *t = types;
   g_assert (quark_radget_type == 0);
+  quark_id = g_quark_from_static_string ("id");
   quark_name = g_quark_from_static_string ("name");
   quark_radget_type = g_quark_from_static_string ("GxkRadget-type");
   quark_radget_node = g_quark_from_static_string ("GxkRadget-node");

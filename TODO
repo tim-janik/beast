@@ -2,7 +2,6 @@ FIXMES:
 - mixer icon
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong
-- alias id= to name= in radget files
 - delte+undo on tracks kills connections? (busses?)
 - rename bsesnifferscop.* to bsescope.*
 - rename snifferscope to trackscope

@@ -25,15 +25,15 @@
 	    </hbox>
 	  </alignment>
 	  <frame-shadow-in size:vgroup="tree-size" pack:expand="1" >
-	    <tree-view name="tree-view" height="120" width="200" />
+	    <tree-view id="tree-view" height="120" width="200" />
 	  </frame-shadow-in>
-	  <hscrollbar name="tree-hscrollbar" size:vgroup="scroll-size" />
+	  <hscrollbar id="tree-hscrollbar" size:vgroup="scroll-size" />
 	</vbox>
 	<vbox spacing="3" >
 	  <toolbar size:vgroup="toolbar-size" >
 	    <tool-toggle-factory actions="tctrl-canvas-tools" relief="none" />
 	    <tool-separator pack:padding="2" />
-	    <action-toggle name="repeat-toggle" comment="FIXME: this should really be done via pspec publishing"
+	    <action-toggle id="repeat-toggle" comment="FIXME: this should really be done via pspec publishing"
 	      _action-name="Repeat"
 	      _action-tooltip="Repeat playback within loop points"
 	      image-size="big-button"
@@ -52,19 +52,19 @@
 	      </popup-menu>
 	    </menu-button>
 	    <tool-separator pack:padding="2" />
-	    <tool-area name="hzoom-area" _tooltip="Horizontal track zoom" >
+	    <tool-area id="hzoom-area" _tooltip="Horizontal track zoom" >
 	      <ulabel area="label-area"
 		_label="HZoom" />
 	    </tool-area>
 	  </toolbar>
-	  <frame-shadow-in name="track-area" size:vgroup="tree-size" pack:expand="1" />
-	  <hgrow-bar name="track-hgrow-bar" />
-	  <!--hscrollbar name="track-hscrollbar" size:vgroup="scroll-size" /-->
+	  <frame-shadow-in id="track-area" size:vgroup="tree-size" pack:expand="1" />
+	  <hgrow-bar id="track-hgrow-bar" />
+	  <!--hscrollbar id="track-hscrollbar" size:vgroup="scroll-size" /-->
 	</vbox>
       </hpaned>
       <vbox spacing="3" >
 	<alignment size:vgroup="toolbar-size" />
-	<vscrollbar name="tree-vscrollbar" size:vgroup="tree-size" pack:expand="1" />
+	<vscrollbar id="tree-vscrollbar" size:vgroup="tree-size" pack:expand="1" />
 	<alignment size:vgroup="scroll-size" />
       </vbox>
     </hbox>
@@ -73,10 +73,10 @@
   <!-- rack view -->
   <xdef:rack-view inherit="vbox" border-width="3" >
     <vbox spacing="3" expand="1" >
-      <toggle-button label="_Edit" name="edit-toggle" />
-      <event-box name="rack-table-event-box" events="button-press-mask" expand="1" >
+      <toggle-button label="_Edit" id="edit-toggle" />
+      <event-box id="rack-table-event-box" events="button-press-mask" expand="1" >
 	<rack-table >
-	  <popup-menu name="rack-view-popup" >
+	  <popup-menu id="rack-view-popup" >
 	    <menu-title _label="Virtual Rack" />
 	    <menu-separator />
 	    <menu-factory action-root="" actions="rack-view-popup-actions" />
@@ -119,14 +119,14 @@
 	<tool-separator pack:padding="2" />
 	<tool-button-factory actions="router-toolbar-actions" relief="none" />
 	<tool-separator pack:padding="2" />
-	<tool-area name="zoom-area" _tooltip="Adjust the zoom factor of the router display" >
+	<tool-area id="zoom-area" _tooltip="Adjust the zoom factor of the router display" >
 	  <ulabel area="label-area" _label="Zoom" />
 	</tool-area>
 	<tool-separator pack:padding="2" />
 	<tool-text-toggle-factory actions="router-channel-toggle" relief="none" yalign="0.5" />
       </toolbar>
       <zoomed-window expand="1" >
-	<modules-popup name="snet-popup" />
+	<modules-popup id="snet-popup" />
       </zoomed-window>
     </vbox>
   </xdef:snet-view>
@@ -141,12 +141,12 @@
       <vbox wrapped="1" expand="1" >
 	<hbox>
 	  <menu-button mode="popup-mode" focus="0" >
-	    <modules-popup name="snet-popup" root="1" />
+	    <modules-popup id="snet-popup" root="1" />
 	  </menu-button>
-	  <label name="type-label" expand="1" />
+	  <label id="type-label" expand="1" />
 	</hbox>
 	<frame-etched-in expand="1" border-width="3" >
-	  <alignment name="text-area" border-width="2" />
+	  <alignment id="text-area" border-width="2" />
 	</frame-etched-in>
       </vbox>
     </hwrap>
@@ -156,9 +156,9 @@
   <xdef:profiler inherit="vbox">
     <alignment border-width="5" expand="1" >
       <vbox>
-	<scrolled-window name="tree-area" pack:expand="1"
+	<scrolled-window id="tree-area" pack:expand="1"
 	  hscrollbar-policy="never" vscrollbar-policy="never" >
-	  <tree-view name="tree-view" />
+	  <tree-view id="tree-view" />
 	</scrolled-window>
       </vbox>
     </alignment>
@@ -167,8 +167,8 @@
   <!-- wave view -->
   <xdef:wave-view inherit="BstWaveView" border-width="3" >
     <hbox spacing="3" >
-      <scrolled-window name="tree-area" pack:expand="1" >
-	<tree-view name="tree-view" height="120" width="200" />
+      <scrolled-window id="tree-area" pack:expand="1" >
+	<tree-view id="tree-view" height="120" width="200" />
       </scrolled-window>
       <alignment yscale="0" yalign="0" >
 	<vbox homogeneous="1" spacing="3" >
@@ -182,8 +182,8 @@
   <xdef:part-view inherit="BstPartView" border-width="3" >
     <vpaned>
       <hbox spacing="3" >
-	<scrolled-window name="tree-area" pack:expand="1" >
-	  <tree-view name="tree-view" height="120" width="200" />
+	<scrolled-window id="tree-area" pack:expand="1" >
+	  <tree-view id="tree-view" height="120" width="200" />
 	</scrolled-window>
 	<alignment yscale="0" yalign="0" >
 	  <vbox homogeneous="1" spacing="3" >
@@ -191,7 +191,7 @@
 	  </vbox>
 	</alignment>
       </hbox>
-      <alignment name="property-area" />
+      <alignment id="property-area" />
     </vpaned>
   </xdef:part-view>
   
@@ -234,10 +234,10 @@
 	</vbox>
       </alignment>
       <scrolled-window pack:expand="1" >
-	<viewport name="mixer-area" >
+	<viewport id="mixer-area" >
 	  <widget-patcher bg-as-base="1" />
 	  <alignment xalign="0" xscale="0" > <!-- open non-expanding container -->
-	    <hbox name="bus-area" expand="0" spacing="0" >
+	    <hbox id="bus-area" expand="0" spacing="0" >
 	      <!-- FIXME: children packed here via gxk_radget_add() are still expanded -->
 	    </hbox>
 	  </alignment>
@@ -250,8 +250,8 @@
   <xdef:bus-view inherit="BstBusView" border-width="3" >
     <vpaned>
       <hbox spacing="3" >
-	<scrolled-window name="tree-area" pack:expand="1" >
-	  <tree-view name="tree-view" height="120" width="200" />
+	<scrolled-window id="tree-area" pack:expand="1" >
+	  <tree-view id="tree-view" height="120" width="200" />
 	</scrolled-window>
 	<alignment yscale="0" yalign="0" >
 	  <vbox homogeneous="1" spacing="3" >
@@ -259,7 +259,7 @@
 	  </vbox>
 	</alignment>
       </hbox>
-      <alignment name="property-area" />
+      <alignment id="property-area" />
     </vpaned>
   </xdef:bus-view>
   
@@ -268,7 +268,7 @@
     <notebook pack:expand="1" homogeneous="1" >
       <!-- PianoRoll-vbox -->
       <vbox pack:tab-label="Piano Roll" >
-	<vbox name="toolbar-area" area="north" >
+	<vbox id="toolbar-area" area="north" >
 	  <toolbar >
 	    <tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
 	    <tool-separator pack:padding="2" />
@@ -285,25 +285,25 @@
 	      </popup-menu>
 	    </menu-button>
 	    <tool-separator pack:padding="2" />
-	    <tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
+	    <tool-area id="hzoom-area" _tooltip="Horizontal piano zoom" >
 	      <ulabel area="label-area"
 		_label="HZoom" />
 	    </tool-area>
-	    <tool-area name="vzoom-area" _tooltip="Vertical piano zoom" >
+	    <tool-area id="vzoom-area" _tooltip="Vertical piano zoom" >
 	      <ulabel area="label-area"
 		_label="VZoom" />
 	    </tool-area>
 	  </toolbar>
 	</vbox>
 	<!-- PianoRoll-vpaned -->
-	<vpaned name="piano-paned" height="500" position="400" pack:expand="1" >
+	<vpaned id="piano-paned" height="500" position="400" pack:expand="1" >
 	  <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
 	  !   ! child properties on paned, so C code patches up "piano-paned"
 	  -->
 	  <hbox >
 	    <frame-shadow-in pack:expand="1" >
 	      <piano-roll height="200" >
-		<popup-menu name="piano-popup" >
+		<popup-menu id="piano-popup" >
 		  <menu-title _label="Piano Notes" />
 		  <menu-separator />
 		  <submenu _label="_Tools" >
@@ -328,13 +328,13 @@
 		</popup-menu>
 	      </piano-roll>
 	    </frame-shadow-in>
-	    <vscrollbar name="piano-roll-vscrollbar" size:hgroup="scroll-size" />
+	    <vscrollbar id="piano-roll-vscrollbar" size:hgroup="scroll-size" />
 	  </hbox>
 	  <hbox >
 	    <vbox spacing="3" pack:expand="1" >
 	      <frame-shadow-in pack:expand="1" >
 		<event-roll height="50" >
-		  <popup-menu name="event-popup" >
+		  <popup-menu id="event-popup" >
 		    <menu-title _label="Events" />
 		    <menu-separator />
 		    <submenu _label="_Tools" >
@@ -353,7 +353,7 @@
 	      </frame-shadow-in>
 	      <hbox>
 		<label _label="Control Type:" expand="1" />
-		<alignment name="event-roll-control-area" />
+		<alignment id="event-roll-control-area" />
 	      </hbox>
 	    </vbox>
 	    <alignment size:hgroup="scroll-size" />
@@ -361,7 +361,7 @@
 	</vpaned>
 	<hbox>
 	  <vbox expand="1" spacing="1" >
-	    <hgrow-bar name="piano-roll-hgrow-bar" />
+	    <hgrow-bar id="piano-roll-hgrow-bar" />
 	  </vbox>
 	  <alignment size:hgroup="scroll-size" />
 	</hbox>
@@ -369,8 +369,8 @@
       <!-- PatternEditor-vbox -->
       <vbox pack:tab-label="Pattern Editor (highly experimental)" >
 	<hbox spacing="2" border-width="2" >
-	  <hbox name="pattern-control-box" spacing="2" />
-	  <hstock-button name="configure-button" pack:pack-type="end"
+	  <hbox id="pattern-control-box" spacing="2" />
+	  <hstock-button id="configure-button" pack:pack-type="end"
 	    _label="Configure" stock="BST_STOCK_EDIT"
 	    _tooltip="Configure the column layout of the pattern editor" />
 	</hbox>
@@ -379,11 +379,11 @@
 	    <pattern-view />
 	  </frame-shadow-in>
 	  <hbox spacing="1" >
-	    <vgrow-bar name="pattern-view-vgrow-bar" size:hgroup="scroll-size" />
+	    <vgrow-bar id="pattern-view-vgrow-bar" size:hgroup="scroll-size" />
 	  </hbox>
 	</hbox>
 	<hbox >
-	  <hscrollbar name="pattern-view-hscrollbar" expand="1" />
+	  <hscrollbar id="pattern-view-hscrollbar" expand="1" />
           <hbox spacing="1" >
 	    <alignment size:hgroup="scroll-size" />
 	    <alignment size:hgroup="scroll-size" />
@@ -396,17 +396,17 @@
   <!-- pattern editor layout dialog -->
   <xdef:pattern-editor-layout-box inherit="vbox" spacing="3" border-width="3" >
     <frame expand="1" >
-      <alignment name="sctext-box" expand="1" />
+      <alignment id="sctext-box" expand="1" />
     </frame>
     <hbox>
       <label _label="Layout:" />
-      <entry name="layout-entry" expand="1" />
+      <entry id="layout-entry" expand="1" />
     </hbox>
     <hseparator/>
     <hbox spacing="3" homogeneous="1" >
-      <hstock-button name="apply-button" _label="_Apply" stock="gtk-apply" can-default="1"
+      <hstock-button id="apply-button" _label="_Apply" stock="gtk-apply" can-default="1"
 	_tooltip="Aplly configuration changes to the pattern editor layout" />
-      <hstock-button name="cancel-button" _label="_Cancel" stock="gtk-cancel" can-default="1"
+      <hstock-button id="cancel-button" _label="_Cancel" stock="gtk-cancel" can-default="1"
 	_tooltip="Discard changes and close dialog" />
     </hbox>
   </xdef:pattern-editor-layout-box>
@@ -416,7 +416,7 @@
     <vbox spacing="3" expand="1" >
       <scrolled-window pack:expand="1"
 	hscrollbar-policy="automatic" >
-	<tree-view name="binding-tree-view" />
+	<tree-view id="binding-tree-view" />
       </scrolled-window>
       <alignment xscale="0" >
 	<hbox spacing="3" >
@@ -425,7 +425,7 @@
       </alignment>
       <scrolled-window pack:expand="1"
 	hscrollbar-policy="automatic" >
-	<tree-view name="function-tree-view" />
+	<tree-view id="function-tree-view" />
       </scrolled-window>
     </vbox>
   </xdef:key-bindings-box>
@@ -467,13 +467,13 @@
     </submenu>
     <submenu _label="_Tools">
       <menu-tearoff />
-      <submenu _label="_Song" name="song-submenu" >
+      <submenu _label="_Song" id="song-submenu" >
 	<menu-factory action-root="" actions="tools-song" />
       </submenu>
-      <submenu _label="_Synth" name="synth-submenu" >
+      <submenu _label="_Synth" id="synth-submenu" >
 	<menu-factory action-root="" actions="tools-synth" />
       </submenu>
-      <submenu _label="Wave_s" name="waves-submenu" >
+      <submenu _label="Wave_s" id="waves-submenu" >
 	<menu-factory action-root="" actions="tools-wave-repo" />
       </submenu>
       <menu-factory action-root="" actions="tools-project" />
@@ -494,15 +494,15 @@
   
   <!-- application-box -->
   <xdef:application-box inherit="border-layout" >
-    <vbox name="menu-area" area="north" >
+    <vbox id="menu-area" area="north" >
       <beast-menubar />
     </vbox>
-    <vbox name="toolbar-area" area="north" />
-    <bottom-deck name="main-notebook" expand="1" />
+    <vbox id="toolbar-area" area="north" />
+    <bottom-deck id="main-notebook" expand="1" />
     <hbox area="north" >
-      <hbox name="control-area" />
-      <hbox name="control-area-file-label" pack:pack-type="last" />
-      <hbox name="control-area-file-entry" pack:pack-type="last" expand="1" />
+      <hbox id="control-area" />
+      <hbox id="control-area-file-label" pack:pack-type="last" />
+      <hbox id="control-area-file-entry" pack:pack-type="last" expand="1" />
     </hbox>
   </xdef:application-box>
 

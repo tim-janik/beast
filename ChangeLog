@@ -1,3 +1,10 @@
+Mon Aug 16 13:03:45 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkradget.c: alias id= to name= in radget definitions.
+
+	* beast-gtk/dialogs/radgets-beast.xml: 
+	* beast-gtk/dialogs/radgets-standard.xml: s/name=/id=/.
+
 Mon Aug 16 11:11:19 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbusmixer.[hc]: new container to display mixer GUI
