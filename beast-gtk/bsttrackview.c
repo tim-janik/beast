@@ -255,12 +255,26 @@ track_view_post_synth_edited (BstTrackView *self,
     }
 }
 
+typedef struct {
+  BstTrackView         *self;
+  GxkCellRendererPopup *pcell;
+} SynthPopup;
+
 static void
-track_view_synth_popup_cb (GxkCellRendererPopup *pcell,
+track_view_synth_popup_cleanup (gpointer data)
+{
+  SynthPopup *sdata = data;
+  gxk_cell_renderer_popup_change (sdata->pcell, NULL, FALSE, TRUE);
+  g_free (sdata);
+}
+
+static void
+track_view_synth_popup_cb (gpointer              data,
                            SfiProxy              proxy,
                            BstTrackSynthDialog  *tsdialog)
 {
-  gxk_cell_renderer_popup_change (pcell,
+  SynthPopup *sdata = data;
+  gxk_cell_renderer_popup_change (sdata->pcell,
                                   proxy ? bse_item_get_uname_path (proxy) : "",
                                   FALSE,
                                   proxy == 0);
@@ -281,10 +295,13 @@ track_view_synth_popup (BstTrackView         *self,
       if (bse_item_editable_property (item, "snet"))
         {
           BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
+          SynthPopup sdata = { self, pcell, };
           GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
-                                                            pc->items,
+                                                            pc->label, pc->tooltip, pc->items,
+                                                            _("Available Waves"),
+                                                            _("List of available waves to choose a track instrument from"),
                                                             bse_project_get_wave_repo (bse_item_get_project (item)),
-                                                            track_view_synth_popup_cb, pcell);
+                                                            track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
@@ -304,10 +321,18 @@ track_view_post_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "pnet");
-      GtkWidget *dialog = bst_track_synth_dialog_popup (self, item, pc->items, 0,
-                                                        track_view_synth_popup_cb, pcell);
-      gxk_cell_renderer_popup_dialog (pcell, dialog);
+      if (bse_item_editable_property (item, "pnet"))
+        {
+          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "pnet");
+          SynthPopup sdata = { self, pcell, };
+          GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
+                                                            pc->label, pc->tooltip, pc->items,
+                                                            NULL, NULL, 0,
+                                                            track_view_synth_popup_cb, g_memdup (&sdata, sizeof (sdata)), track_view_synth_popup_cleanup);
+          gxk_cell_renderer_popup_dialog (pcell, dialog);
+        }
+      else
+        gdk_beep();
     }
 }
 
@@ -358,7 +383,7 @@ track_view_outputs_popup (BstTrackView         *self,
       BseItemSeq *iseq = bse_item_seq_from_seq (seq);
       OutputsPopup odata = { self, pcell, item };
       GtkWidget *dialog = bst_item_seq_dialog_popup (self, item,
-                                                     pc->nick, pc->tooltip, pc->items,
+                                                     pc->label, pc->tooltip, pc->items,
                                                      g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
                                                      track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
       bse_item_seq_free (iseq);

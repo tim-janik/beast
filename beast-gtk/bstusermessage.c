@@ -397,7 +397,7 @@ static GtkWidget*
 create_janitor_dialog (SfiProxy janitor)
 {
   GxkDialog *dialog = gxk_dialog_new (NULL, NULL,
-                                      GXK_DIALOG_STATUS_BAR | GXK_DIALOG_WINDOW_GROUP,
+                                      GXK_DIALOG_STATUS_BAR, // | GXK_DIALOG_WINDOW_GROUP,
                                       NULL, NULL);
   gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
   

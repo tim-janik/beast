@@ -1,3 +1,19 @@
+Fri Oct  8 18:34:51 2004  Tim Janik  <timj@gtk.org>
+
+	* bsttracksynthdialog.[hc]: added candidate and wave repo label and
+	tooltip handling. support cleanup callback. disable object type column
+	for non devel modes.
+
+	* beast-gtk/bsttrackview.c: provide proper labels and tooltips when 
+	popping up track synth selectiong. fixed pnet editability handling.
+
+	* beast-gtk/bstapp.c:
+	* beast-gtk/bstprocedure.c:
+	* beast-gtk/bstusermessage.c: disable GXK_DIALOG_WINDOW_GROUP, most
+	modal dialogs in beast depend on global modality.
+
+	* beast-gtk/bstitemseqdialog.[hc]: minor cleanups.
+
 Fri Oct  8 14:30:33 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-download.texi: added a note about the srcdir==builddir 

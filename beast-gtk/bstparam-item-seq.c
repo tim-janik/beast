@@ -45,7 +45,7 @@ param_item_seq_popup_editor (GtkWidget *widget,
       SfiSeq *seq = g_value_get_boxed (&param->value);
       BseItemSeq *iseq = bse_item_seq_from_seq (seq);
       bst_item_seq_dialog_popup (widget, proxy,
-                                 pc->nick, pc->tooltip, pc->items,
+                                 pc->label, pc->tooltip, pc->items,
                                  g_param_spec_get_nick (param->pspec), g_param_spec_get_blurb (param->pspec), iseq,
                                  param_item_seq_changed,
                                  param, NULL);

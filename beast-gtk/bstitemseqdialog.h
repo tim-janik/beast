@@ -59,21 +59,22 @@ struct _BstItemSeqDialogClass
 
 
 /* --- prototypes --- */
-GType           bst_item_seq_dialog_get_type (void);
-GtkWidget*      bst_item_seq_dialog_popup    (gpointer          parent_widget,
-                                              SfiProxy          item,
-                                              const gchar      *candidate_label,
-                                              const gchar      *candidate_tooltip,
-                                              BseItemSeq       *candidates,
-                                              const gchar      *item_label,
-                                              const gchar      *item_tooltip,
-                                              BseItemSeq       *iseq,
-                                              BstItemSeqDialogSelected selected_callback,
-                                              gpointer          selected_data,
-                                              GxkFreeFunc       selected_cleanup);
-void            bst_item_seq_dialog_set      (BstItemSeqDialog *self,
-                                              BseItemSeq       *candidates,
-                                              BseItemSeq       *iseq);
+GType      bst_item_seq_dialog_get_type (void);
+GtkWidget* bst_item_seq_dialog_popup    (gpointer                  parent_widget,
+                                         SfiProxy                  item,
+                                         const gchar              *candidate_label,
+                                         const gchar              *candidate_tooltip,
+                                         BseItemSeq               *candidates,
+                                         const gchar              *item_label,
+                                         const gchar              *item_tooltip,
+                                         BseItemSeq               *iseq,
+                                         BstItemSeqDialogSelected  selected_callback,
+                                         gpointer                  selected_data,
+                                         GxkFreeFunc               selected_cleanup);
+void       bst_item_seq_dialog_set      (BstItemSeqDialog         *self,
+                                         BseItemSeq               *candidates,
+                                         BseItemSeq               *iseq);
+
 
 
 G_END_DECLS

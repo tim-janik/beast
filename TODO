@@ -11,7 +11,6 @@ FIXMES:	(release-critical)
 - auto-add orphan parts to a new track when loading
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
-- support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
 TODO:
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 

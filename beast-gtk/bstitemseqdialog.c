@@ -48,12 +48,11 @@ bst_item_seq_dialog_delete_event (GtkWidget   *widget,
                                   GdkEventAny *event)
 {
   BstItemSeqDialog *self = BST_ITEM_SEQ_DIALOG (widget);
-  gpointer                 selected_data = self->selected_data;
-  GxkFreeFunc              selected_cleanup = self->selected_cleanup;
+  GxkFreeFunc selected_cleanup = self->selected_cleanup;
   self->selected_callback = NULL;
   self->selected_cleanup = NULL;
   if (selected_cleanup)
-    selected_cleanup (selected_data);
+    selected_cleanup (self->selected_data);
   if (self->candidate_store)
     bst_item_seq_store_set (self->candidate_store, NULL);
   if (self->item_store)
@@ -67,6 +66,7 @@ parent_window_destroyed (BstItemSeqDialog *self)
 {
   self->selected_callback = NULL;
   GxkFreeFunc selected_cleanup = self->selected_cleanup;
+  self->selected_callback = NULL;
   self->selected_cleanup = NULL;
   if (selected_cleanup)
     selected_cleanup (self->selected_data);
@@ -85,8 +85,8 @@ bst_item_seq_dialog_setup (BstItemSeqDialog *self,
   
   g_return_if_fail (BST_IS_ITEM_SEQ_DIALOG (self));
   
-  self->selected_callback = NULL;
   GxkFreeFunc selected_cleanup = self->selected_cleanup;
+  self->selected_callback = NULL;
   self->selected_cleanup = NULL;
   if (selected_cleanup)
     selected_cleanup (self->selected_data);

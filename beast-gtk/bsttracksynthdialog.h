@@ -42,7 +42,7 @@ typedef void (*BstTrackSynthDialogSelected)     (gpointer                data,
 struct _BstTrackSynthDialog
 {
   GxkDialog      parent_instance;
-  GtkWidget     *notebook;
+  GtkNotebook   *notebook;
   GtkWidget     *wpage;         /* wave repo item view */
   GtkWidget     *spage;         /* synth list */
   GtkWidget     *ok;            /* ok button */
@@ -50,8 +50,9 @@ struct _BstTrackSynthDialog
   guint          ignore_activate : 1;
   GtkTreeModel  *pstore;        /* proxy store */
   GtkTreeView   *tview;         /* synth selection tree view */
-  gpointer       selected_callback;
-  gpointer       selected_data;
+  BstTrackSynthDialogSelected  selected_callback;
+  gpointer                     selected_data;
+  GxkFreeFunc                  selected_cleanup;
 };
 struct _BstTrackSynthDialogClass
 {
@@ -60,16 +61,22 @@ struct _BstTrackSynthDialogClass
 
 
 /* --- prototypes --- */
-GType           bst_track_synth_dialog_get_type (void);
-GtkWidget*      bst_track_synth_dialog_popup    (gpointer             parent_widget,
-                                                 SfiProxy             track,
-                                                 BseItemSeq          *iseq,
-                                                 SfiProxy             wrepo,
-                                                 gpointer             selected_callback,
-                                                 gpointer             data);
-void            bst_track_synth_dialog_set      (BstTrackSynthDialog *self,
-                                                 BseItemSeq          *iseq,
-                                                 SfiProxy             wrepo);
+GType      bst_track_synth_dialog_get_type (void);
+GtkWidget* bst_track_synth_dialog_popup    (gpointer                     parent_widget,
+                                            SfiProxy                     track,
+                                            const gchar                 *candidate_label,
+                                            const gchar                 *candidate_tooltip,
+                                            BseItemSeq                  *candidates,
+                                            const gchar                 *wrepo_label,
+                                            const gchar                 *wrepo_tooltip,
+                                            SfiProxy                     wrepo,
+                                            BstTrackSynthDialogSelected  selected_callback,
+                                            gpointer                     selected_data,
+                                            GxkFreeFunc                  selected_cleanup);
+void       bst_track_synth_dialog_set      (BstTrackSynthDialog         *self,
+                                            BseItemSeq                  *iseq,
+                                            SfiProxy                     wrepo);
+
 
 
 G_END_DECLS
