@@ -120,6 +120,7 @@ main (int   argc,
   /* now, we can popup the splash screen
    */
   splash = bst_splash_new ("BEAST Startup", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
+  gtk_object_set_user_data (GTK_OBJECT (splash), NULL);	/* fix for broken user_data in 2.2 */
   bst_splash_set_text (splash,
 		       "<b><big>BEAST</big></b>\n"
 		       "<b>The Bedevilled Audio System</b>\n"
