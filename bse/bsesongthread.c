@@ -129,7 +129,7 @@ seq_step (BseSongSequencer *seq,
 
   note = bse_pattern_peek_note (pattern, 0, seq->row);
 
-  g_printerr ("SST: tick(%llu): note %u\n", cur_tick, note->note);
+  g_printerr ("SST: tick(%llu): note %u instr %p\n", cur_tick, note->note, note->instrument);
 
   /* next step setup */
   seq->row++;

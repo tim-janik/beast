@@ -46,6 +46,7 @@ band_filter_common (unsigned int iorder,
   double alpha, norm;
   guint i;
   
+  epsilon = gsl_trans_zepsilon2ss (epsilon);
   alpha = cos ((s_freq + p_freq) * 0.5) / cos ((s_freq - p_freq) * 0.5);
   
   fpoly[0] = gsl_complex (1, 0);
@@ -140,9 +141,12 @@ gsl_filter_butter_rp (unsigned int iorder,
   double pi = GSL_PI, order = iorder;
   double beta_mul = pi / (2.0 * order);
   /* double kappa = gsl_trans_freq2s (freq); */
-  double kappa = gsl_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
+  double kappa;
   GslComplex root;
   unsigned int i;
+
+  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  kappa = gsl_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
 
   /* construct poles for butterworth filter */
   for (i = 1; i <= iorder; i++)
@@ -192,11 +196,14 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
 		       GslComplex  *poles)
 {
   double pi = GSL_PI, order = iorder;
-  double alpha = asinh (1.0 / epsilon) / order;
+  double alpha;
   double beta_mul = pi / (2.0 * order);
   double kappa = gsl_trans_freq2s (freq);
   GslComplex root;
   unsigned int i;
+
+  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  alpha = asinh (1.0 / epsilon) / order;
 
   /* construct poles polynomial from tschebyscheff polynomial */
   for (i = 1; i <= iorder; i++)
@@ -219,20 +226,33 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
 void
 gsl_filter_tscheb2_rp (unsigned int iorder,
 		       double       c_freq, /* 1..pi */
-		       double       r_freq, /* 1..pi */
+		       double       steepness,
 		       double       epsilon,
 		       GslComplex  *roots,  /* [0..iorder-1] */
 		       GslComplex  *poles)
 {
   double pi = GSL_PI, order = iorder;
+  double r_freq = c_freq * steepness;
   double kappa_c = gsl_trans_freq2s (c_freq);
   double kappa_r = gsl_trans_freq2s (r_freq);
-  double tepsilon = epsilon * tschebyscheff_eval (iorder, kappa_r / kappa_c);
-  double alpha = asinh (tepsilon) / order;
+  double tepsilon;
+  double alpha;
   double beta_mul = pi / (2.0 * order);
   GslComplex root;
   unsigned int i;
 
+#if 0
+  /* triggers an internal compiler error with gcc-2.95.4 (and certain
+   * combinations of optimization options)
+   */
+  g_return_if_fail (c_freq * steepness < GSL_PI);
+#endif
+  g_return_if_fail (steepness > 1.0);
+
+  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  tepsilon = epsilon * tschebyscheff_eval (iorder, kappa_r / kappa_c);
+  alpha = asinh (tepsilon) / order;
+  
   /* construct poles polynomial from tschebyscheff polynomial */
   for (i = 1; i <= iorder; i++)
     {
@@ -323,7 +343,10 @@ gsl_filter_tscheb1_lp (unsigned int iorder,
   /* scale maximum to 1.0 */
   norm = gsl_poly_eval (iorder, b, 1) / gsl_poly_eval (iorder, a, 1);
   if ((iorder & 1) == 0)      /* norm is fluctuation minimum */
-    norm *= sqrt (1.0 / (1.0 + epsilon * epsilon));
+    {
+      epsilon = gsl_trans_zepsilon2ss (epsilon);
+      norm *= sqrt (1.0 / (1.0 + epsilon * epsilon));
+    }
   gsl_poly_scale (iorder, a, norm);
 }
 
@@ -331,11 +354,14 @@ gsl_filter_tscheb1_lp (unsigned int iorder,
  * gsl_filter_tscheb2_lp
  * @iorder:    filter order
  * @freq:      passband cutoff frequency (0..pi)
- * @steepness: frequency steepness (c_freq * (1 + steepness) < pi)
+ * @steepness: frequency steepness (c_freq * steepness < pi)
  * @epsilon:   fall off at passband frequency (0..1)
  * @a:         root polynomial coefficients a[0..iorder]
  * @b:         pole polynomial coefficients b[0..iorder]
  * Tschebyscheff type 2 lowpass filter.
+ * To gain a transition band between freq1 and freq2, pass arguements
+ * @freq=freq1 and @steepness=freq2/freq1. To specify the transition
+ * band width in fractions of octaves, pass @steepness=2^octave_fraction.
  */
 void
 gsl_filter_tscheb2_lp (unsigned int iorder,
@@ -350,9 +376,10 @@ gsl_filter_tscheb2_lp (unsigned int iorder,
   double norm;
 
   g_return_if_fail (freq > 0 && freq < GSL_PI);
-  g_return_if_fail (freq * (1.0 + steepness) < GSL_PI);
+  g_return_if_fail (freq * steepness < GSL_PI);
+  g_return_if_fail (steepness > 1.0);
 
-  gsl_filter_tscheb2_rp (iorder, freq, freq * (1.0 + steepness), epsilon, roots, poles);
+  gsl_filter_tscheb2_rp (iorder, freq, steepness, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
   
   /* scale maximum to 1.0 */
@@ -535,7 +562,7 @@ gsl_filter_tscheb2_bp (unsigned int iorder,
   
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
-  gsl_filter_tscheb2_rp (iorder2, theta, theta * (1.0 + steepness), epsilon, roots, poles);
+  gsl_filter_tscheb2_rp (iorder2, theta, steepness, epsilon, roots, poles);
   band_filter_common (iorder, freq1, freq2, epsilon, roots, poles, a, b, TRUE, FALSE);
 }
 
@@ -641,7 +668,7 @@ gsl_filter_tscheb2_bs (unsigned int iorder,
   
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
-  gsl_filter_tscheb2_rp (iorder2, theta, theta * (1.0 + steepness), epsilon, roots, poles);
+  gsl_filter_tscheb2_rp (iorder2, theta, steepness, epsilon, roots, poles);
   band_filter_common (iorder, freq1, freq2, epsilon, roots, poles, a, b, FALSE, FALSE);
 }
 

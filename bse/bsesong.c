@@ -82,6 +82,8 @@ static GTokenType bse_song_restore              (BseObject         *object,
 						 BseStorage        *storage);
 static void	 bse_song_prepare		(BseSource	   *source);
 static void	 bse_song_reset			(BseSource	   *source);
+static void	 song_set_n_channels		(BseSong	   *song,
+						 guint		    n_channels);
 
 
 /* --- variables --- */
@@ -200,7 +202,7 @@ bse_song_init (BseSong *song)
   song->bpm = BSE_DFL_SONG_BPM;
   song->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   song->pattern_length = BSE_DFL_SONG_PATTERN_LENGTH;
-  song->n_channels = BSE_DFL_SONG_N_CHANNELS;
+  song->n_channels = 0;
   
   song->instruments = NULL;
   song->patterns = NULL;
@@ -211,14 +213,27 @@ bse_song_init (BseSong *song)
 
   song->sequencer = NULL;
   song->sequencer_index = 0;
+
+  song_set_n_channels (song, BSE_DFL_SONG_N_CHANNELS);
 }
 
 static void
 bse_song_do_destroy (BseObject *object)
 {
-  BseSong *song;
+  BseSong *song = BSE_SONG (object);
+  BseContainer *container = BSE_CONTAINER (song);
   
-  song = BSE_SONG (object);
+  if (song->net.mixer)
+    {
+      BseSongNet *net = &song->net;
+
+      bse_container_remove_item (container, BSE_ITEM (net->mixer));
+      net->mixer = NULL;
+      bse_container_remove_item (container, BSE_ITEM (net->output));
+      net->output = NULL;
+      bse_container_remove_item (container, BSE_ITEM (net->wosc));
+      net->wosc = NULL;
+    }
   
   while (song->pattern_groups)
     bse_container_remove_item (BSE_CONTAINER (song), song->pattern_groups->data);
@@ -229,7 +244,7 @@ bse_song_do_destroy (BseObject *object)
     bse_container_remove_item (BSE_CONTAINER (song), song->patterns->data);
   while (song->instruments)
     bse_container_remove_item (BSE_CONTAINER (song), song->instruments->data);
-  
+
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -251,7 +266,7 @@ bse_song_set_property (BseSong     *song,
       /* we silently ignore this parameter during playing phase */
       if (!BSE_OBJECT_IS_LOCKED (song))
 	{
-	  song->n_channels = g_value_get_uint (value);
+	  song_set_n_channels (song, g_value_get_uint (value));
 	  for (list = song->patterns; list; list = list->next)
 	    bse_pattern_set_n_channels (list->data, song->n_channels);
 	}
@@ -965,6 +980,36 @@ bse_song_reload_instrument_samples (BseSong	     *song,
     }
 }
 #endif
+
+static void
+song_set_n_channels (BseSong *song,
+		     guint    n_channels)
+{
+  BseContainer *container = BSE_CONTAINER (song);
+  BseSongNet *net = &song->net;
+
+  if (!net->mixer)
+    {
+      /* initial setup */
+      net->mixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
+      BSE_OBJECT_SET_FLAGS (net->mixer, BSE_ITEM_FLAG_NEVER_STORE);
+      bse_container_add_item (container, BSE_ITEM (net->mixer));
+
+      net->output = g_object_new (g_type_from_name ("BsePcmOutput"), NULL);	// FIXME
+      BSE_OBJECT_SET_FLAGS (net->output, BSE_ITEM_FLAG_NEVER_STORE);
+      bse_container_add_item (container, BSE_ITEM (net->output));
+
+      _bse_source_set_input (net->output, 0, net->mixer, 0);
+      _bse_source_set_input (net->output, 1, net->mixer, 0);
+
+      net->wosc = g_object_new (g_type_from_name ("BseWaveOsc"), NULL);		// FIXME
+      BSE_OBJECT_SET_FLAGS (net->wosc, BSE_ITEM_FLAG_NEVER_STORE);
+      bse_container_add_item (container, BSE_ITEM (net->wosc));
+
+      _bse_source_set_input (net->mixer, 0, net->wosc, 0);
+    }
+  song->n_channels = n_channels;
+}
 
 static void
 bse_song_prepare (BseSource *source)

@@ -17,12 +17,13 @@
  */
 #include	"bseinstrument.h"
 
-#include	"bsesample.h"
 #include	"bseglobals.h"
+#include	"bsewave.h"
 
 
 enum {
   PARAM_0,
+  PARAM_WAVE,
   PARAM_SYNTH,
   PARAM_SAMPLE,
   PARAM_INTERPOLATION,
@@ -132,26 +133,10 @@ bse_instrument_class_init (BseInstrumentClass *class)
   
   object_class->destroy = bse_instrument_do_destroy;
   
-  bse_object_class_add_param (object_class, "Synthesis Input",
-			      PARAM_SYNTH,
-			      g_param_spec_object ("sinstrument", "Synth", NULL,	// FIXME
-						   BSE_TYPE_SAMPLE, // INSTRUMENT,
-						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sample Input",
-			      PARAM_SAMPLE,
-			      g_param_spec_object ("sample", "Sample", NULL,	// FIXME
-						   BSE_TYPE_SAMPLE,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Sample Input",
-			      PARAM_INTERPOLATION,
-			      bse_param_spec_enum ("interpolation", "Interpolation", NULL /* FIXME */,
-						   BSE_TYPE_INTERPOL_TYPE,
-						   BSE_INTERPOL_CUBIC,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Sample Input",
-			      PARAM_POLYPHONY,
-			      bse_param_spec_bool ("polyphony", "Polyphony instrument?", NULL,
-						   FALSE,
+			      PARAM_WAVE,
+			      g_param_spec_object ("wave", "Wave", "Wave to play",
+						   BSE_TYPE_WAVE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
@@ -300,6 +285,8 @@ bse_instrument_do_destroy (BseObject *object)
   BseInstrument *instrument = BSE_INSTRUMENT (object);
   
   g_assert (instrument->type == BSE_INSTRUMENT_NONE); /* paranoid */
+
+  g_assert (instrument->wave == NULL);	/* automatically uncorssed */
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
@@ -317,66 +304,19 @@ instrument_input_changed (BseInstrument *instrument)
 }
 
 static void
-unset_input_cb (BseItem *owner,
-		BseItem *input,
-		gpointer data)
+notify_wave_changed (BseInstrument *instrument)
 {
-  BseInstrument *instrument = BSE_INSTRUMENT (owner);
-  
-  g_object_disconnect (input,
-		       "any_signal", instrument_input_changed, instrument,
-		       NULL);
-  instrument_input_changed (instrument);
-  instrument->input = NULL;
-  instrument->type = BSE_INSTRUMENT_NONE;
-#if 0
-  if (BSE_IS_SINSTRUMENT (input))
-    {
-      BseSInstrument *sinstrument = BSE_SINSTRUMENT (input);
-      
-      bse_sinstrument_poke_foreigns (sinstrument, NULL, sinstrument->voice);
-      if (sinstrument->voice)
-	_bse_voice_fade_out (sinstrument->voice);
-    }
-#endif
+  g_object_notify (G_OBJECT (instrument), "wave");
 }
 
 static void
-instrument_set_input (BseInstrument  *instrument,
-		      BseSample      *sample)
+wave_uncross (BseItem *owner,
+	      BseItem *ref_item)
 {
-  BseItem *item = BSE_ITEM (instrument);
-  
-  // g_return_if_fail (sample == NULL || sinstrument == NULL);
-  
-#if 0
-  if (instrument->input)
-    bse_item_cross_unref (item, BSE_ITEM (instrument->input));
-#endif
-  
-  if (sample)
-    {
-      instrument->input = BSE_SOURCE (sample);
-      instrument->type = BSE_INSTRUMENT_SAMPLE;
-#if 0
-      bse_item_cross_ref (item, BSE_ITEM (instrument->input), unset_input_cb, NULL);
-#endif
-      g_object_connect (instrument->input,
-			"swapped_signal::notify::name", instrument_input_changed, instrument,
-			NULL);
-    }
-#if 0
-  else if (sinstrument && sinstrument->instrument == NULL)
-    {
-      instrument->input = BSE_SOURCE (sinstrument);
-      instrument->type = BSE_INSTRUMENT_SYNTH;
-      bse_item_cross_ref (item, BSE_ITEM (instrument->input), unset_input_cb, NULL);
-      g_object_connect (instrument->input,
-			"swapped_signal::notify::name", instrument_input_changed, instrument,
-			NULL);
-      bse_sinstrument_poke_foreigns (sinstrument, instrument, sinstrument->voice);
-    }
-#endif
+  BseInstrument *instrument = BSE_INSTRUMENT (owner);
+
+  instrument->wave = NULL;
+  g_object_notify (G_OBJECT (instrument), "wave");
 }
 
 static void
@@ -391,19 +331,26 @@ bse_instrument_set_property (BseInstrument *instrument,
   switch (param_id)
     {
       guint total;
-    case PARAM_SAMPLE:
-      instrument_set_input (instrument, (BseSample*) g_value_get_object (value));
-      // bse_object_param_changed (BSE_OBJECT (instrument), "sinstrument");
+    case PARAM_WAVE:
+      if (instrument->wave)
+	{
+	  g_object_disconnect (instrument->wave,
+			       "any_signal", notify_wave_changed, instrument,
+			       NULL);
+	  bse_item_cross_unref (BSE_ITEM (instrument), BSE_ITEM (instrument->wave));
+	  instrument->wave = NULL;
+	}
+      instrument->wave = g_value_get_object (value);
+      if (instrument->wave)
+	{
+	  bse_item_cross_ref (BSE_ITEM (instrument), BSE_ITEM (instrument->wave), wave_uncross);
+	  g_object_connect (instrument->wave,
+			    "swapped_signal::notify::name", notify_wave_changed, instrument,
+			    NULL);
+	}
       break;
     case PARAM_SYNTH:
-      // instrument_set_input (instrument, NULL, (BseSInstrument*) g_value_get_object (value));
-      bse_object_param_changed (BSE_OBJECT (instrument), "sample");
-      break;
-    case PARAM_INTERPOLATION:
-      instrument->interpolation = g_value_get_enum (value);
-      break;
-    case PARAM_POLYPHONY:
-      instrument->polyphony = g_value_get_boolean (value);
+      // FIXME
       break;
     case PARAM_VOLUME_f:
       instrument->volume_factor = g_value_get_float (value);
@@ -551,23 +498,10 @@ bse_instrument_get_property (BseInstrument *instrument,
     {
       BseDot dots[ENV_N_DOTS];
       guint total;
-    case PARAM_SAMPLE:
-      if (instrument->type == BSE_INSTRUMENT_SAMPLE && instrument->input)
-	g_value_set_object (value, G_OBJECT (instrument->input));
-      else
-	g_value_set_object (value, NULL);
+    case PARAM_WAVE:
+      g_value_set_object (value, instrument->wave);
       break;
     case PARAM_SYNTH:
-      if (instrument->type == BSE_INSTRUMENT_SYNTH && instrument->input)
-	g_value_set_object (value, G_OBJECT (instrument->input));
-      else
-	g_value_set_object (value, NULL);
-      break;
-    case PARAM_INTERPOLATION:
-      g_value_set_enum (value, instrument->interpolation);
-      break;
-    case PARAM_POLYPHONY:
-      g_value_set_boolean (value, instrument->polyphony);
       break;
     case PARAM_VOLUME_f:
       g_value_set_float (value, instrument->volume_factor);
@@ -636,39 +570,3 @@ bse_instrument_get_property (BseInstrument *instrument,
       break;
     }
 }
-
-void
-bse_instrument_set_sample (BseInstrument  *instrument,
-			   BseSample	  *sample)
-{
-  g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
-  if (sample)
-    {
-      g_return_if_fail (BSE_IS_SAMPLE (sample));
-      g_return_if_fail (bse_item_get_project (BSE_ITEM (instrument)) ==
-			bse_item_get_project (BSE_ITEM (sample)));
-    }
-  
-  bse_object_set (BSE_OBJECT (instrument),
-		  "sample", sample,
-		  NULL);
-}
-
-#if 0
-void
-bse_instrument_set_sinstrument (BseInstrument  *instrument,
-				BseSInstrument *sinstrument)
-{
-  g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
-  if (sinstrument)
-    {
-      g_return_if_fail (BSE_IS_SINSTRUMENT (sinstrument));
-      g_return_if_fail (bse_item_get_project (BSE_ITEM (instrument)) ==
-			bse_item_get_project (BSE_ITEM (sinstrument)));
-    }
-  
-  bse_object_set (BSE_OBJECT (instrument),
-		  "sinstrument", sinstrument,
-		  NULL);
-}
-#endif

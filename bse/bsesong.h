@@ -38,6 +38,11 @@ extern "C" {
 
 
 /* --- BseSong object --- */
+typedef struct {
+  BseSource *mixer;
+  BseSource *output;
+  BseSource *wosc;
+} BseSongNet;
 struct _BseSong
 {
   BseSNet parent_object;
@@ -54,6 +59,8 @@ struct _BseSong
 
   guint             n_pgroups;
   BsePatternGroup **pgroups;		/* play list */
+
+  BseSongNet	    net;
 
   /*< private >*/
   BseSongSequencer *sequencer;

@@ -1,3 +1,19 @@
+Sat Jan 12 11:22:18 2002  Tim Janik  <timj@gtk.org>
+
+	* bseinstrument.[hc]: get rid of old sample and synth inputs. support
+	BseWave now. removed a bunch of old/dead code.
+
+	* bsesong.[hc]: create partial (non-savable) synthesis modules to
+	play a song now.
+
+	* gslfilter.[hc]: do gsl_trans_zepsilon2ss() in the public filter
+	functions automatically, so users are to pass epsilon in z-space
+	now, as they are to pass frequencies in z-space already.
+	commented out an assertion that triggers an internal compiler error
+	(bug reported to gcc-bugs).
+	adjusted steepness argument for tschebyscheff type II filters, so
+	it's a real factor, based on the first frequency given.
+
 Fri Jan 11 06:17:23 2002  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.h: provide object flags user shift macro.

@@ -62,7 +62,9 @@ struct _BseInstrument
   BseItem	parent_object;
   
   BseInstrumentType  type;
-  
+
+  BseWave	*wave;
+
   /* sample specific fields */
   guint		  polyphony : 1;
   BseInterpolType interpolation : 8;
@@ -83,13 +85,6 @@ struct _BseInstrumentClass
 
 
 /* --- prototypes -- */
-void		bse_instrument_set_sample	(BseInstrument	*instrument,
-						 BseSample	*sample);
-#if 0
-void		bse_instrument_set_sinstrument	(BseInstrument	*instrument,
-						 BseSInstrument *sinstrument);
-#endif
-
 
 
 
