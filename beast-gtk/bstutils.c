@@ -642,7 +642,6 @@ gmask_form (GtkWidget   *parent,
   gmask->parent = g_object_ref (parent);
   gtk_object_sink (GTK_OBJECT (parent));
   gmask->action = action;
-  gpack = CLAMP (gpack, BST_GMASK_FIT, BST_GMASK_CENTER);
   gmask->gpack = gpack;
   
   return action;
@@ -703,6 +702,7 @@ bst_gmask_container_create (guint    border_width,
  * columns up to the prompt,
  @* %BST_GMASK_CENTER - center the action widget within space across all possible
  * columns up to the prompt.
+ @* %BST_GMASK_MULTI_SPAN - span aux2 widget across multiple gmask columns.
  */
 BstGMask*
 bst_gmask_form (GtkWidget   *gmask_container,
@@ -1014,8 +1014,8 @@ get_toplevel_and_set_tip (GtkWidget   *widget,
 
 static guint
 table_max_bottom_row (GtkTable *table,
-                      guint     min_col,
-                      guint     max_col)
+                      guint     left_col,
+                      guint     right_col)
 {
   guint max_bottom = 0;
   GList *list;
@@ -1023,8 +1023,8 @@ table_max_bottom_row (GtkTable *table,
   for (list = table->children; list; list = list->next)
     {
       GtkTableChild *child = list->data;
-      
-      if (child->left_attach >= min_col && child->right_attach <= max_col)
+
+      if (child->left_attach < right_col && child->right_attach > left_col)
         max_bottom = MAX (max_bottom, child->bottom_attach);
     }
   return max_bottom;
@@ -1086,8 +1086,9 @@ bst_gmask_pack (BstGMask *mask)
     }
   
   /* pack gmask children, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
-  c = 6 * gmask->column;
-  row = table_max_bottom_row (table, c, c + 5);
+  gboolean span_multi_columns = aux2 && gmask->gpack == BST_GMASK_MULTI_SPAN;
+  c = span_multi_columns ? 0 : 6 * gmask->column;
+  row = table_max_bottom_row (table, c, 6 * gmask->column + 6);
   if (prompt)
     {
       gtk_table_attach (table, prompt, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
@@ -1121,8 +1122,11 @@ bst_gmask_pack (BstGMask *mask)
     }
   if (aux2)
     {
+      guint left_col = c;
+      if (span_multi_columns)
+        c += 6 * gmask->column;
       gtk_table_attach (table, aux2,
-                        c, c + 1,
+                        left_col, c + 1,
                         row, row + 1, GTK_EXPAND | GTK_FILL, 0, 0, 0);
       if (dummy_aux2)
         aux2 = NULL;

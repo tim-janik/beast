@@ -102,6 +102,13 @@ GxkParam* gxk_param_new_constant_value (GParamSpec          *pspec,
                                         GxkParamValueNotify  notify,
                                         gpointer             notify_data);
 
+/* --- param object binding --- */
+GxkParam* gxk_param_new_object          (GParamSpec         *pspec,
+                                         GObject            *object);
+void      gxk_param_set_object          (GxkParam           *param,
+                                         GObject            *object);
+GObject*  gxk_param_get_object          (GxkParam           *param);
+
 
 /* --- param view/editor --- */
 typedef struct {

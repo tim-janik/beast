@@ -1,3 +1,21 @@
+Tue Nov 30 21:45:54 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstscrollgraph.[hc]: support adjustment of scrolling
+	direction, value boost and spectrum flipping. added parameter GUI
+	creation code. resizing fixes. 
+
+	* beast-gtk/dialogs/radgets-beast.xml: scrollgraph GUI changes.
+
+	* beast-gtk/gxk/gxkparam.[hc]: support GObject property parameters.
+
+	* beast-gtk/bstutils.[hc]: added support for gmasks spanning multiple
+	gmask columns. added bst_object_class_install_property().
+
+	* beast-gtk/bstparam.[hc]: support param gmask creations in specific
+	columns. wrap provide size-grouped object param constructor.
+
+	* beast-gtk/bstsnetrouter.c: use new GUI creation code for scrollgraphs.
+
 Mon Nov 29 20:55:07 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbuseditor.c:

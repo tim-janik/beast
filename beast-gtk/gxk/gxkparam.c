@@ -409,6 +409,113 @@ gxk_param_new_constant_value (GParamSpec          *pspec,
 }
 
 
+/* --- param object binding --- */
+static void
+object_binding_set_value (GxkParam     *param,
+                          const GValue *value)
+{
+  GObject *object = param->bdata[0].v_pointer;
+  if (object)
+    g_object_set_property (object, param->pspec->name, value);
+}
+
+static void
+object_binding_get_value (GxkParam *param,
+                          GValue   *value)
+{
+  GObject *object = param->bdata[0].v_pointer;
+  if (object)
+    {
+      GValue tmpv = { 0, };
+      g_value_init (&tmpv, G_PARAM_SPEC_VALUE_TYPE (param->pspec));
+      g_object_get_property (object, param->pspec->name, &tmpv);
+      g_value_transform (&tmpv, value);
+      g_value_unset (&tmpv);
+    }
+  else
+    g_value_reset (value);
+}
+
+static void
+object_binding_weakref (gpointer data,
+                        GObject *junk)
+{
+  GxkParam *param = data;
+  param->bdata[0].v_pointer = NULL;
+  param->bdata[1].v_long = 0;   /* already disconnected */
+}
+
+static void
+object_binding_destroy (GxkParam *param)
+{
+  GObject *object = param->bdata[0].v_pointer;
+  if (object)
+    {
+      g_signal_handler_disconnect (object, param->bdata[1].v_long);
+      g_object_weak_unref (object, object_binding_weakref, param);
+      param->bdata[0].v_pointer = NULL;
+      param->bdata[1].v_long = 0;
+    }
+}
+
+static gboolean
+object_binding_check_writable (GxkParam *param)
+{
+  GObject *object = param->bdata[0].v_pointer;
+  if (object)
+    return TRUE;        /* could check via method */
+  else
+    return FALSE;
+}
+
+static GxkParamBinding g_object_binding = {
+  .n_data_fields        = 2,
+  .set_value            = object_binding_set_value,
+  .get_value            = object_binding_get_value,
+  .destroy              = object_binding_destroy,
+  .check_writable       = object_binding_check_writable,
+};
+
+GxkParam*
+gxk_param_new_object (GParamSpec         *pspec,
+                      GObject            *object)
+{
+  GxkParam *param = gxk_param_new (pspec, &g_object_binding, (gpointer) FALSE);
+  gxk_param_set_object (param, object);
+  return param;
+}
+
+void
+gxk_param_set_object (GxkParam           *param,
+                      GObject            *object)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  g_return_if_fail (param->binding == &g_object_binding);
+  if (object)
+    g_return_if_fail (G_IS_OBJECT (object));
+
+  object_binding_destroy (param);
+  param->bdata[0].v_pointer = object;
+  if (object)
+    {
+      gchar *sig = g_strconcat ("notify::", param->pspec->name, NULL);
+      param->bdata[1].v_long = g_signal_connect_swapped (object, sig, G_CALLBACK (gxk_param_update), param);
+      g_free (sig);
+      g_object_weak_ref (object, object_binding_weakref, param);
+    }
+}
+
+GObject*
+gxk_param_get_object (GxkParam *param)
+{
+  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+
+  if (param->binding == &g_object_binding)
+    return param->bdata[0].v_pointer;
+  return 0;
+}
+
+
 /* --- param view/editor --- */
 static GSList *_param_editor_list = NULL;
 static void

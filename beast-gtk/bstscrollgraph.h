@@ -36,7 +36,9 @@ typedef struct _GtkWidgetClass BstScrollgraphClass;
 struct _BstScrollgraph
 {
   GtkWidget       parent_instance;
-  GtkPositionType update_position;
+  BstDirection    direction;
+  guint           flip : 1;
+  gdouble         boost;
   guint           n_points;
   guint           n_bars;
   guint           bar_offset; /* start of ring-buffer */
@@ -50,6 +52,10 @@ struct _BstScrollgraph
 GType	        bst_scrollgraph_get_type	(void);
 void            bst_scrollgraph_clear           (BstScrollgraph *self);
 void            bst_scrollgraph_set_source      (BstScrollgraph *self,
+                                                 SfiProxy        source,
+                                                 guint           ochannel);
+GtkWidget*      bst_scrollgraph_build_dialog    (const gchar    *radget_domain,
+                                                 const gchar    *radget_name,
                                                  SfiProxy        source,
                                                  guint           ochannel);
 

@@ -116,7 +116,8 @@ typedef enum /*< skip >*/
   BST_GMASK_FILL,
   BST_GMASK_INTERLEAVE, /* stretch */
   BST_GMASK_BIG,
-  BST_GMASK_CENTER
+  BST_GMASK_CENTER,
+  BST_GMASK_MULTI_SPAN
 } BstGMaskPack;
 BstGMask*       bst_gmask_form          (GtkWidget     *gmask_container,
                                          GtkWidget     *action,
@@ -157,6 +158,10 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define bst_gmask_ref           g_object_ref
 #define bst_gmask_unref         g_object_unref
 
+
+/* --- object utils --- */
+#define bst_object_class_install_property(oclass, group, property_id, pspec) \
+  g_object_class_install_property (oclass, property_id, sfi_pspec_set_group (pspec, group))
 
 /* --- stock icon aliases --- */
 #define BST_STOCK_QUESTION              GTK_STOCK_DIALOG_QUESTION

@@ -160,10 +160,18 @@
   </xdef:snet-palette>
 
   <!-- scrollgraph-dialog -->
-  <xdef:scrollgraph-dialog inherit="vbox">
-    <label label="test1"/>
-    <scrollgraph expand="1" />
-    <label label="test2"/>
+  <xdef:scrollgraph-dialog inherit="vbox" >
+    <alignment border-width="5" expand="1" >
+      <vbox>
+	<label label="test1"/>
+	<!-- Scrollgraph -->
+	<frame expand="1">
+	  <scrollgraph id="scrollgraph" />
+	</frame>
+	<!-- Parameters -->
+	<alignment id="scrollgraph-param-box" />
+      </vbox>
+    </alignment>
   </xdef:scrollgraph-dialog>
 
   <!-- profiler -->

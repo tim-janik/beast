@@ -80,10 +80,12 @@ static const GxkParamEditorSizes param_editor_homogeneous_sizes = {
   9, 3,         /* string */
 };
 
-BstGMask*
-bst_param_create_gmask (GxkParam    *param,
-                        const gchar *editor_name,
-                        GtkWidget   *parent)
+static BstGMask*
+bst_param_create_gmask_intern (GxkParam    *param,
+                               const gchar *editor_name,
+                               GtkWidget   *parent,
+                               guint        column,
+                               gboolean     multi_span)
 {
   SfiProxy proxy = bst_param_get_proxy (param);
   const gchar *group;
@@ -127,7 +129,8 @@ bst_param_create_gmask (GxkParam    *param,
     }
 
   expand_action = !prompt || gxk_widget_check_option (action, "hexpand");
-  gmask = bst_gmask_form (parent, action, expand_action ? BST_GMASK_BIG : BST_GMASK_INTERLEAVE);
+  gmask = bst_gmask_form (parent, action, multi_span ? BST_GMASK_MULTI_SPAN : expand_action ? BST_GMASK_BIG : BST_GMASK_INTERLEAVE);
+  bst_gmask_set_column (gmask, column);
   if (BSE_IS_SOURCE (proxy) && sfi_pspec_check_option (param->pspec, "automate"))
     {
       GtkWidget *automation = gxk_param_create_editor (param, "automation");
@@ -163,6 +166,32 @@ bst_param_create_gmask (GxkParam    *param,
   return gmask;
 }
 
+BstGMask*
+bst_param_create_gmask (GxkParam    *param,
+                        const gchar *editor_name,
+                        GtkWidget   *parent)
+{
+  return bst_param_create_gmask_intern (param, editor_name, parent, 0, FALSE);
+}
+
+BstGMask*
+bst_param_create_col_gmask (GxkParam    *param,
+                            const gchar *editor_name,
+                            GtkWidget   *parent,
+                            guint        column)
+{
+  return bst_param_create_gmask_intern (param, editor_name, parent, column, FALSE);
+}
+
+BstGMask*
+bst_param_create_span_gmask (GxkParam    *param,
+                             const gchar *editor_name,
+                             GtkWidget   *parent,
+                             guint        column)
+{
+  return bst_param_create_gmask_intern (param, editor_name, parent, column, TRUE);
+}
+
 /* --- value binding --- */
 GxkParam*
 bst_param_new_value (GParamSpec          *pspec,
@@ -175,6 +204,17 @@ bst_param_new_value (GParamSpec          *pspec,
   return param;
 }
 
+/* --- GObject binding --- */
+GxkParam*
+bst_param_new_object (GParamSpec  *pspec,
+                      GObject     *object)
+{
+  GxkParam *param = gxk_param_new_object (pspec, object);
+  if (param)
+    gxk_param_set_size_group (param, param_size_group);
+  return param;
+}
+
 /* --- proxy binding --- */
 static void
 proxy_binding_set_value (GxkParam     *param,
@@ -182,7 +222,7 @@ proxy_binding_set_value (GxkParam     *param,
 {
   SfiProxy proxy = param->bdata[0].v_long;
   if (proxy)
-    sfi_glue_proxy_set_property (param->bdata[0].v_long, param->pspec->name, value);
+    sfi_glue_proxy_set_property (proxy, param->pspec->name, value);
 }
 
 static void
@@ -192,7 +232,7 @@ proxy_binding_get_value (GxkParam *param,
   SfiProxy proxy = param->bdata[0].v_long;
   if (proxy)
     {
-      const GValue *cvalue = sfi_glue_proxy_get_property (param->bdata[0].v_long, param->pspec->name);
+      const GValue *cvalue = sfi_glue_proxy_get_property (proxy, param->pspec->name);
       if (cvalue)
 	g_value_transform (cvalue, value);
       else

@@ -22,14 +22,22 @@
 
 G_BEGIN_DECLS
 
-/* --- gmask parameters --- */
-BstGMask*    bst_param_create_gmask   (GxkParam    *param,
-                                       const gchar *editor_name,
-                                       GtkWidget   *parent);
+/* --- parameters gmasks --- */
+BstGMask*    bst_param_create_gmask      (GxkParam    *param,
+                                          const gchar *editor_name,
+                                          GtkWidget   *parent);
+BstGMask*    bst_param_create_col_gmask  (GxkParam    *param,
+                                          const gchar *editor_name,
+                                          GtkWidget   *parent,
+                                          guint        column);
+BstGMask*    bst_param_create_span_gmask (GxkParam    *param,
+                                          const gchar *editor_name,
+                                          GtkWidget   *parent,
+                                          guint        column);
 
 
 /* --- SfiValue parameters --- */
-GxkParam*    bst_param_new_value      (GParamSpec          *pspec,
+GxkParam*    bst_param_new_value      (GParamSpec          *pspec,      /* gxk_param_new_value() */
                                        GxkParamValueNotify  notify,
                                        gpointer             notify_data);
 
@@ -38,13 +46,16 @@ GxkParam*    bst_param_new_rec        (GParamSpec  *pspec,
                                        SfiRec      *rec);
 
 
+/* --- GObject parameters --- */
+GxkParam*    bst_param_new_object     (GParamSpec  *pspec,              /* gxk_param_new_object() */
+                                       GObject     *object);
 /* --- SfiProxy parameters --- */
 GxkParam*    bst_param_new_proxy      (GParamSpec  *pspec,
                                        SfiProxy     proxy);
 void         bst_param_set_proxy      (GxkParam    *param,
                                        SfiProxy     proxy);
 SfiProxy     bst_param_get_proxy      (GxkParam    *param);
-SfiProxy     bst_item_seq_list_match  (GSList      *proxy_seq_slist,
+SfiProxy     bst_item_seq_list_match  (GSList      *proxy_seq_slist,    /* bstparam-proxy.c */
                                        const gchar *text);
 
 

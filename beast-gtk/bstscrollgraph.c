@@ -17,15 +17,27 @@
  */
 #include "bstscrollgraph.h"
 #include "bstsnifferscope.h" // FIXME: remove include
+#include "bstparam.h"
 #include <math.h>
 
 #define N_VALUES(scg)   ((scg)->n_points * (scg)->n_bars)
 #define VALUE(scg,b,p)  (BAR (scg, b)[(p)])
 #define BAR(scg,nth)    ((scg)->values + (scg)->n_points * (((scg)->bar_offset + (nth)) % (scg)->n_bars))
-#define HORIZONTAL(scg) ((scg)->update_position == GTK_POS_LEFT || (scg)->update_position == GTK_POS_RIGHT)
-#define VERTICAL(scg)   ((scg)->update_position == GTK_POS_TOP || (scg)->update_position == GTK_POS_BOTTOM)
+#define HORIZONTAL(scg) ((scg)->direction == BST_RIGHT || (scg)->direction == BST_LEFT)
+#define VERTICAL(scg)   ((scg)->direction == BST_UP || (scg)->direction == BST_DOWN)
+#define FLIP(scg)       ((scg)->flip ^ HORIZONTAL (scg))
+#define FFT_SIZE 1024
+
+enum {
+  PROP_0,
+  PROP_FLIP,
+  PROP_DIRECTION,
+  PROP_BOOST,
+};
 
 /* --- prototypes --- */
+static void     bst_scrollgraph_resize_direction (BstScrollgraph *self,
+                                                  BstDirection    direction);
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstScrollgraph, bst_scrollgraph, GTK_TYPE_WIDGET);
@@ -38,6 +50,58 @@ bst_scrollgraph_destroy (GtkObject *object)
   // FIXME: delete buffers
   /* chain parent class' handler */
   GTK_OBJECT_CLASS (bst_scrollgraph_parent_class)->destroy (object);
+}
+
+static void
+bst_scrollgraph_set_property (GObject      *object,
+                              guint         prop_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+  BstScrollgraph *self = BST_SCROLLGRAPH (object);
+  GtkWidget *widget = GTK_WIDGET (self);
+  switch (prop_id)
+    {
+    case PROP_FLIP:
+      self->flip = sfi_value_get_bool (value);
+      gtk_widget_queue_draw (widget);
+      break;
+    case PROP_DIRECTION:
+      bst_scrollgraph_resize_direction (self, bst_direction_from_choice (sfi_value_get_choice (value)));
+      gtk_widget_queue_resize (widget);
+      break;
+    case PROP_BOOST:
+      self->boost = sfi_value_get_real (value);
+      gtk_widget_queue_draw (widget);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+bst_scrollgraph_get_property (GObject     *object,
+                              guint        prop_id,
+                              GValue      *value,
+                              GParamSpec  *pspec)
+{
+  BstScrollgraph *self = BST_SCROLLGRAPH (object);
+  switch (prop_id)
+    {
+    case PROP_FLIP:
+      sfi_value_set_bool (value, self->flip);
+      break;
+    case PROP_DIRECTION:
+      sfi_value_set_choice (value, bst_direction_to_choice (self->direction));
+      break;
+    case PROP_BOOST:
+      sfi_value_set_real (value, self->boost);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
 }
 
 static void
@@ -63,6 +127,33 @@ bst_scrollgraph_size_request (GtkWidget      *widget,
 }
 
 static void
+bst_scrollgraph_resize_direction (BstScrollgraph *self,
+                                  BstDirection    direction)
+{
+  GtkWidget *widget = GTK_WIDGET (self);
+  self->direction = direction;
+  self->n_points = VERTICAL (self) ? widget->allocation.width : widget->allocation.height;
+  self->n_bars = HORIZONTAL (self) ? widget->allocation.width : widget->allocation.height;
+  self->bar_offset %= self->n_bars;
+  g_free (self->values);
+  self->values = g_new0 (gfloat, N_VALUES (self));
+  if (self->pixbuf)
+    {
+      g_object_unref (self->pixbuf);
+      self->pixbuf = gdk_pixbuf_new_from_data (g_new (guint8, self->n_points * 3),
+                                               GDK_COLORSPACE_RGB, FALSE, 8,
+                                               VERTICAL (self) ? self->n_points : 1,
+                                               HORIZONTAL (self) ? self->n_points : 1,
+                                               3, (GdkPixbufDestroyNotify) g_free, NULL);
+    }
+  gtk_widget_queue_draw (widget);
+  guint i, j;
+  for (i = 0; i < self->n_bars; i++)
+    for (j = 0; j < self->n_points; j++)
+      VALUE (self, i, j) = j / (float) self->n_points;
+}
+
+static void
 bst_scrollgraph_size_allocate (GtkWidget     *widget,
                                GtkAllocation *allocation)
 {
@@ -77,27 +168,7 @@ bst_scrollgraph_size_allocate (GtkWidget     *widget,
   if (VERTICAL (self))
     need_resize = widget->allocation.width != self->n_points || widget->allocation.height != self->n_bars;
   if (need_resize)
-    {
-      self->n_points = VERTICAL (self) ? widget->allocation.width : widget->allocation.height;
-      self->n_bars = HORIZONTAL (self) ? widget->allocation.width : widget->allocation.height;
-      self->bar_offset %= self->n_bars;
-      g_free (self->values);
-      self->values = g_new0 (gfloat, N_VALUES (self));
-      if (self->pixbuf)
-        {
-          g_object_unref (self->pixbuf);
-          self->pixbuf = gdk_pixbuf_new_from_data (g_new (guint8, self->n_points * 3),
-                                                   GDK_COLORSPACE_RGB, FALSE, 8,
-                                                   VERTICAL (self) ? self->n_points : 1,
-                                                   HORIZONTAL (self) ? self->n_points : 1,
-                                                   3, (GdkPixbufDestroyNotify) g_free, NULL);
-        }
-      gtk_widget_queue_draw (widget);
-      guint i, j;
-      for (i = 0; i < self->n_bars; i++)
-        for (j = 0; j < self->n_points; j++)
-          VALUE (self, i, j) = j / (float) self->n_points;
-    }
+    bst_scrollgraph_resize_direction (self, self->direction);
 }
 
 static void
@@ -155,9 +226,9 @@ bst_scrollgraph_scroll_bars (BstScrollgraph *self)
     {
       GdkWindow *drawable = widget->window;
       if (HORIZONTAL (self))
-        gdk_window_scroll (drawable, self->update_position == GTK_POS_RIGHT ? -1 : 1, 0);
+        gdk_window_scroll (drawable, self->direction == BST_LEFT ? -1 : 1, 0);
       else
-        gdk_window_scroll (drawable, 0, self->update_position == GTK_POS_BOTTOM ? -1 : 1);
+        gdk_window_scroll (drawable, 0, self->direction == BST_UP ? -1 : 1);
     }
 }
 
@@ -181,12 +252,13 @@ bst_scrollgraph_draw_bar (BstScrollgraph *self,
   GdkWindow *drawable = widget->window;
   guint8 *rgb = gdk_pixbuf_get_pixels (self->pixbuf);
   guint i, n = nth;
-  if (self->update_position == GTK_POS_RIGHT || self->update_position == GTK_POS_BOTTOM)
+  if (self->direction == BST_LEFT || self->direction == BST_UP)
     n = self->n_bars - 1 - (nth % self->n_bars);
   GxkColorDots *cdots = create_color_dots(); // FIXME
   for (i = 0; i < self->n_points; i++)
     {
-      double v = VALUE (self, nth, i);
+      double v = FLIP (self) ? VALUE (self, nth, self->n_points - 1 - i) : VALUE (self, nth, i);
+      v *= self->boost;
       v = v > 0.0 ? log10 (v) : -999;
       v = MAX (v * 20, -120);
       guint col = gxk_color_dots_interpolate (cdots, v, 1.0);
@@ -215,7 +287,7 @@ bst_scrollgraph_bar_from_coord (BstScrollgraph *self,
       y -= widget->allocation.y;
     }
   gint n = HORIZONTAL (self) ? x : y;
-  if (n < self->n_bars && (self->update_position == GTK_POS_RIGHT || self->update_position == GTK_POS_BOTTOM))
+  if (n < self->n_bars && (self->direction == BST_LEFT || self->direction == BST_UP))
     n = ((gint) self->n_bars) - 1 - n;
   return n;
 }
@@ -260,8 +332,6 @@ bst_scrollgraph_clear (BstScrollgraph *self)
       VALUE (self, i, j) = 0;
   gtk_widget_queue_draw (widget);
 }
-
-#define FFT_SIZE 1024
 
 static void
 bst_scrollgraph_probes_notify (SfiProxy     source,
@@ -366,8 +436,9 @@ static void
 bst_scrollgraph_init (BstScrollgraph *self)
 {
   GtkWidget *widget = GTK_WIDGET (self);
-  self->update_position = GTK_POS_RIGHT;
-  self->n_points = 1;
+  self->direction = BST_LEFT;
+  self->boost = 1;
+  self->n_points = FFT_SIZE / 2 + 1;
   self->n_bars = 1;
   self->bar_offset = 0;
   self->values = g_new0 (gfloat, N_VALUES (self));
@@ -377,8 +448,12 @@ bst_scrollgraph_init (BstScrollgraph *self)
 static void
 bst_scrollgraph_class_init (BstScrollgraphClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+
+  gobject_class->set_property = bst_scrollgraph_set_property;
+  gobject_class->get_property = bst_scrollgraph_get_property;
 
   object_class->destroy = bst_scrollgraph_destroy;
   
@@ -390,4 +465,50 @@ bst_scrollgraph_class_init (BstScrollgraphClass *class)
   widget_class->button_press_event = bst_scrollgraph_button_press;
   widget_class->button_release_event = bst_scrollgraph_button_release;
   widget_class->motion_notify_event = bst_scrollgraph_motion_notify;
+
+  bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_FLIP,
+                                     sfi_pspec_bool ("flip", _("Flip Spectrum"), _("Flip Spectrum display,  interchaging low and high frequencies"),
+                                                     FALSE, SFI_PARAM_STANDARD));
+  bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_DIRECTION,
+                                     sfi_pspec_choice ("direction", _("Direction"), _("Choose display scrolling direction"),
+                                                       "BST_LEFT", bst_direction_get_values(), SFI_PARAM_STANDARD));
+  bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_BOOST,
+                                     sfi_pspec_real ("boost", _("Boost"), _("Adjust frequency level threshold"),
+                                                     1.0, 1.0 / 256., 256, 0.1, SFI_PARAM_STANDARD ":scale:db-range"));
+}
+
+static GxkParam*
+scrollgraph_build_param (BstScrollgraph *self,
+                         const gchar    *property)
+{
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (self), property);
+  GxkParam *param = bst_param_new_object (pspec, G_OBJECT (self));
+  return param;
+}
+
+GtkWidget*
+bst_scrollgraph_build_dialog (const gchar *radget_domain,
+                              const gchar *radget_name,
+                              SfiProxy     source,
+                              guint        ochannel)
+{
+  if (source)
+    g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+
+  GxkRadget *radget = gxk_radget_create (radget_domain, radget_name, NULL);
+  BstScrollgraph *scg = gxk_radget_find (radget, "scrollgraph");
+  if (BST_IS_SCROLLGRAPH (scg))
+    {
+      bst_scrollgraph_set_source (scg, source, ochannel);
+      GxkRadget *pbox = gxk_radget_find (radget, "scrollgraph-param-box");
+      if (pbox)
+        pbox = gxk_radget_find_area (pbox, NULL);       /* find pbox' default child-area */
+      if (GTK_IS_CONTAINER (pbox))
+        {
+          bst_param_create_span_gmask (scrollgraph_build_param (scg, "boost"), NULL, pbox, 1);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "flip"), NULL, pbox, 0);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "direction"), NULL, pbox, 1);
+        }
+    }
+  return radget;
 }
