@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-29 14:37-0400\n"
-"PO-Revision-Date: 2004-08-29 19:50-0400\n"
+"POT-Creation-Date: 2004-09-01 13:27-0400\n"
+"PO-Revision-Date: 2004-09-01 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -745,16 +745,16 @@ msgstr "Loading \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:723
+#: beast-gtk/bstmain.c:725
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:724
+#: beast-gtk/bstmain.c:726
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:725
+#: beast-gtk/bstmain.c:727
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -1403,7 +1403,7 @@ msgstr "Procedure"
 msgid "Totals"
 msgstr "Totals"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:385
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:390
 msgid "Thread Name"
 msgstr "Thread Name"
 
@@ -2847,7 +2847,7 @@ msgstr "The widget to be activated when the label's mnemonic key is pressed"
 msgid "..."
 msgstr "..."
 
-#: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
+#: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26 plugins/bsenoise.idl:27
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public Licence"
@@ -3187,85 +3187,89 @@ msgid "List of available synthesis signals to be used as bus input"
 msgstr "List of available synthesis signals to be used as bus input"
 
 #. FIXME: fix volume
-#: bse/bsebus.c:502 bse/bsebus.c:507 bse/bsemidisynth.c:439
+#: bse/bsebus.c:506 bse/bsebus.c:511 bse/bsemidisynth.c:439
 #: bse/bsemidisynth.c:445 bse/bsemidisynth.c:452 bse/bsesong.c:706
 #: bse/bsesong.c:712 bse/bsesong.c:719 bse/bsetrack.c:875
 msgid "Adjustments"
 msgstr "Adjustments"
 
-#: bse/bsebus.c:504
+#: bse/bsebus.c:508
 msgid "Left Volume [dB]"
 msgstr "Left Volume [dB]"
 
-#: bse/bsebus.c:504
+#: bse/bsebus.c:508
 msgid "Volume adjustment of left bus channel"
 msgstr "Volume adjustment of left bus channel"
 
-#: bse/bsebus.c:509
+#: bse/bsebus.c:513
 msgid "Right Volume [dB]"
 msgstr "Right Volume [dB]"
 
-#: bse/bsebus.c:509
+#: bse/bsebus.c:513
 msgid "Volume adjustment of right bus channel"
 msgstr "Volume adjustment of right bus channel"
 
-#: bse/bsebus.c:512
+#: bse/bsebus.c:516
 msgid "Signal Inputs"
 msgstr "Signal Inputs"
 
-#: bse/bsebus.c:514
+#. SYNC: type partitions determine the order of displayed objects
+#: bse/bsebus.c:519
 msgid "Input Signals"
 msgstr "Input Signals"
 
-#: bse/bsebus.c:514
-msgid "Synthesis signals used as bus input"
-msgstr "Synthesis signals used as bus input"
+#. TRANSLATORS: the "tracks and busses" order in this tooltip needs
+#. * to be preserved to match the GUI order of displayed objects.
+#.
+#: bse/bsebus.c:523
+msgid "Synthesis signals (from tracks and busses) used as bus input"
+msgstr "Synthesis signals (from tracks and busses) used as bus input"
 
-#: bse/bsebus.c:517
+#: bse/bsebus.c:526
 msgid "Internals"
 msgstr "Internals"
 
-#: bse/bsebus.c:519
+#: bse/bsebus.c:528
 msgid "Master Output"
 msgstr "Master Output"
 
-#: bse/bsebus.c:522 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:531 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
-#: bse/bsebus.c:522 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:531 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: bse/bsebus.c:524 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:533 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Right Audio In"
 
-#: bse/bsebus.c:524
+#: bse/bsebus.c:533
 msgid "Right channel input"
 msgstr "Right channel input"
 
-#: bse/bsebus.c:526 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:535 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
-#: bse/bsebus.c:526 bse/bsepcminput.c:128
+#: bse/bsebus.c:535 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: bse/bsebus.c:528 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:537 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
-#: bse/bsebus.c:528 bse/bsepcminput.c:130
+#: bse/bsebus.c:537 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Right channel output"
 
-#: bse/bsebus.c:547
+#: bse/bsebus.c:556
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3296,27 +3300,27 @@ msgstr "Frequency"
 msgid "Const Out%u"
 msgstr "Const Out%u"
 
-#: bse/bsecore.idl:386
+#: bse/bsecore.idl:391
 msgid "State"
 msgstr "State"
 
-#: bse/bsecore.idl:386
+#: bse/bsecore.idl:391
 msgid "The execution state of the thread"
 msgstr "The execution state of the thread"
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:392
 msgid "Thread ID"
 msgstr "Thread ID"
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:392
 msgid "A unique number identifying this thread"
 msgstr "A unique number identifying this thread"
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:394
 msgid "Priority"
 msgstr "Priority"
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:394
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -3324,51 +3328,51 @@ msgstr ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:397
 msgid "Processor"
 msgstr "Processor"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:397
 msgid "The processor that this thread is currently being executed on"
 msgstr "The processor that this thread is currently being executed on"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:399
 msgid "User Time"
 msgstr "User Time"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:399
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "The CPU time spent executing instructions of this thread"
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:401
 msgid "System Time"
 msgstr "System Time"
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:401
 msgid "The CPU time spent in the system for this thread"
 msgstr "The CPU time spent in the system for this thread"
 
-#: bse/bsecore.idl:398
+#: bse/bsecore.idl:403
 msgid "Child User Time"
 msgstr "Child User Time"
 
-#: bse/bsecore.idl:398
+#: bse/bsecore.idl:403
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "The CPU time spent executing instructions of children of this thread"
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:405
 msgid "Child System Time"
 msgstr "Child System Time"
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:405
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:441
+#: bse/bsecore.idl:446
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:442
+#: bse/bsecore.idl:447
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3376,19 +3380,19 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:445
+#: bse/bsecore.idl:450
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:446
+#: bse/bsecore.idl:451
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:448
+#: bse/bsecore.idl:453
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:449
+#: bse/bsecore.idl:454
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3637,7 +3641,8 @@ msgstr "Available Synthesizers"
 
 #: bse/bsemidisynth.c:226
 msgid "List of available synthesis networks to choose a MIDI instrument from"
-msgstr "List of available synthesis networks from which to choose a MIDI instrument"
+msgstr ""
+"List of available synthesis networks from which to choose a MIDI instrument"
 
 #: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:279
 msgid "Available Postprocessors"
@@ -4469,11 +4474,19 @@ msgstr "Audio In4"
 msgid "Audio Input 4"
 msgstr "Audio Input 4"
 
-#: plugins/bsenoise.c:64
+#: plugins/bsenoise.idl:28
+msgid "/Audio Sources/Noise"
+msgstr "/Audio Sources/Noise"
+
+#: plugins/bsenoise.idl:29
+msgid "Noise is a generator of (supposedly) white noise"
+msgstr "Noise is a generator of (supposedly) white noise"
+
+#: plugins/bsenoise.idl:30
 msgid "Noise Out"
 msgstr "Noise Out"
 
-#: plugins/bsenoise.c:64
+#: plugins/bsenoise.idl:30
 msgid "Noise Output"
 msgstr "Noise Output"
 
