@@ -377,6 +377,7 @@ all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 
 # --- GSL targets ---
 GSL_progs_ldadd = $(progs_LDADD)
+GSL_cc_dummy=
 include gslmakefile.inc
 # GSL_H_SRC = gslcommon.h ...
 # GSL_PRIVATE_H_SRC = gsloputil.h ...
