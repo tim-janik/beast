@@ -365,6 +365,25 @@ sfi_rstore_new_open (const gchar *fname)
       gint fd = open (fname, O_RDONLY);
       if (fd >= 0)
         {
+          struct stat st = { 0, };
+          if (fstat (fd, &st) < 0 ||
+              S_ISDIR (st.st_mode))
+            {
+              close (fd);
+              fd = -1;
+              errno = EISDIR;
+            }
+          if (fd >= 0 &&
+              (S_ISBLK (st.st_mode) ||
+               S_ISLNK (st.st_mode)))
+            {
+              close (fd);
+              fd = -1;
+              errno = ENXIO;
+            }
+        }
+      if (fd >= 0)
+        {
           rstore = sfi_rstore_new ();
           rstore->close_fd = fd;
           sfi_rstore_input_fd (rstore, fd, fname);
