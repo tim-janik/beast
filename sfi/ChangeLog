@@ -1,3 +1,11 @@
+Tue Jun 29 01:52:14 2004  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.h: added G_DEFINE_DATA_TYPE() and variants to have
+	simple type creation macros for types that use class_data or
+	real_class in the init functions.
+
+	* sfiparams.h: added SFI_PARAM_GUI_READABLE.
+
 Fri Jun 11 04:40:08 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: procedure generation fix.

@@ -247,12 +247,13 @@ GParamSpec*  sfi_boxed_type_get_seq_element (GType               boxed_type);
  * "searchpath"         - indicates colon seperated directory list
  */
 /* common option combinations: */
-#define	SFI_PARAM_READWRITE      ":r:w:"
-#define	SFI_PARAM_STORAGE	 ":r:w:S:"
+#define	SFI_PARAM_READWRITE       ":r:w:"
+#define	SFI_PARAM_STORAGE	  ":r:w:S:"
 #define	SFI_PARAM_STANDARD        ":r:w:G:S:"
-#define	SFI_PARAM_GUI		 ":r:w:G:"
+#define	SFI_PARAM_GUI		  ":r:w:G:"
+#define	SFI_PARAM_GUI_READABLE	  ":r:G:"
 #define SFI_PARAM_STANDARD_RDONLY ":r:w:G:S:ro:"
-#define	SFI_PARAM_GUI_RDONLY	 ":r:w:G:ro:"
+#define	SFI_PARAM_GUI_RDONLY	  ":r:w:G:ro:"
 
 
 /* --- serializable categories --- */
