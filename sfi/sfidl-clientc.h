@@ -29,8 +29,6 @@
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
 
-using namespace std;    // FIXME: stefan, kill using in header files
-
 namespace Sfidl {
   
   class CodeGenerator {
@@ -38,12 +36,12 @@ namespace Sfidl {
     const Parser& parser;
     const Options& options;
     
-    vector<string> splitName (const string& name);
-    string makeNamespaceSubst (const string& name);
-    string makeLowerName (const string& name, char seperator = '_');
-    string makeUpperName (const string& name);
-    string makeMixedName (const string& name);
-    string makeLMixedName (const string& name);
+    std::vector<std::string> splitName (const std::string& name);
+    std::string makeNamespaceSubst (const std::string& name);
+    std::string makeLowerName (const std::string& name, char seperator = '_');
+    std::string makeUpperName (const std::string& name);
+    std::string makeMixedName (const std::string& name);
+    std::string makeLMixedName (const std::string& name);
     
     CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
     }
@@ -56,14 +54,14 @@ namespace Sfidl {
   class CodeGeneratorC : public CodeGenerator {
   protected:
     
-    void printInfoStrings (const string& name, const map<string,string>& infos);
-    void printProcedure (const Method& mdef, bool proto = false, const string& className = "");
+    void printInfoStrings (const std::string& name, const std::map<std::string,std::string>& infos);
+    void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
     
     bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
-    string makeGTypeName (const string& name);
+    std::string makeGTypeName (const std::string& name);
   public:
-    string makeParamSpec (const Param& pdef);
-    string createTypeCode (const string& type, const string& name, int model);
+    std::string makeParamSpec (const Param& pdef);
+    std::string createTypeCode (const std::string& type, const std::string& name, int model);
     
   public:
     CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {

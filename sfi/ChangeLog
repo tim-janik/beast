@@ -1,3 +1,11 @@
+Sat Aug  9 20:06:57 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-namespace.cc sfidl-parser.*: fix parsing type names from
+	different namespaces (such as Foo::Bar).
+	don't generate code after printing parse errors.
+
+	* sfidl.h: remove using namespace std; from header
+
 Sat Aug  9 17:29:45 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.cc: support string concatenation in {I|J|O}Stream

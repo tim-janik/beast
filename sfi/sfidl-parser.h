@@ -161,6 +161,7 @@ protected:
   void addPrototype (const std::string& type, TypeDeclaration typeDecl);
   void addType (const std::string& type, TypeDeclaration typeDecl);
 
+  GTokenType parseTypeName (std::string& s);
   GTokenType parseStringOrConst (std::string &s);
   GTokenType parseConstant ();
   GTokenType parseNamespace ();

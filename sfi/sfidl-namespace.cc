@@ -110,11 +110,6 @@ string ModuleHelper::qualify(const char *name)
     {
       result = name;
     }
-  else
-    {
-      g_error ("unknown identifier \"%s\" (qualifyName failed)\n",name);
-      result = name;
-    }
   
   return result;
 }

@@ -215,7 +215,7 @@ Parser::Parser () : options (*Options::the())
   for (int n = 0; syms[n]; n++)
     g_scanner_add_symbol (scanner, syms[n], GUINT_TO_POINTER (G_TOKEN_LAST + 1 + n));
   
-  scanner->max_parse_errors = 1;
+  scanner->max_parse_errors = 10;
   scanner->parse_errors = 0;
   scanner->msg_handler = scannerMsgHandler;
   scanner->user_data = this;
@@ -495,6 +495,9 @@ bool Parser::parse (const string& filename)
       return false;
     }
 
+  if (scanner->parse_errors > 0)
+    return false;
+
   return true;
 }
 
@@ -571,12 +574,37 @@ GTokenType Parser::parseNamespace()
   return G_TOKEN_NONE;
 }
 
+GTokenType Parser::parseTypeName (string& type)
+{
+  parse_or_return (G_TOKEN_IDENTIFIER);
+  type = scanner->value.v_identifier;
+  while (g_scanner_peek_next_token (scanner) == GTokenType(':'))
+    {
+      parse_or_return (':');
+      parse_or_return (':');
+      type += "::";
+
+      parse_or_return (G_TOKEN_IDENTIFIER);
+      type += scanner->value.v_identifier;
+    }
+
+  string qtype = ModuleHelper::qualify (type.c_str());
+
+  if (qtype == "")
+    printError ("can't find prior definition for type '%s'", type.c_str());
+  else
+    type = qtype;
+
+  return G_TOKEN_NONE;
+}
+
 GTokenType Parser::parseStringOrConst (string &s)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
-      parse_or_return (G_TOKEN_IDENTIFIER);
-      s = ModuleHelper::qualify (scanner->value.v_identifier);
+      GTokenType expected_token = parseTypeName (s);
+      if (expected_token != G_TOKEN_NONE)
+	return expected_token;
 
       for(vector<Constant>::iterator ci = constants.begin(); ci != constants.end(); ci++)
 	{
@@ -817,8 +845,10 @@ GTokenType Parser::parseRecordField (Param& def, const string& group)
      50, 0.0, 100.0, 5.0,
      ":dial:readwrite"); */
   
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  def.type = ModuleHelper::qualify (scanner->value.v_identifier);
+  GTokenType expected_token = parseTypeName (def.type);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token;
+
   def.pspec = def.type;
   def.group = group;
   def.line = scanner->line;
@@ -1004,8 +1034,10 @@ GTokenType Parser::parseClass ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(':'))
     {
       parse_or_return (':');
-      parse_or_return (G_TOKEN_IDENTIFIER);
-      cdef.inherits = ModuleHelper::qualify (scanner->value.v_identifier);
+
+      GTokenType expected_token = parseTypeName (cdef.inherits);
+      if (expected_token != G_TOKEN_NONE)
+	return expected_token;
     }
 
   parse_or_return ('{');
@@ -1080,14 +1112,23 @@ GTokenType Parser::parseClass ()
 
 GTokenType Parser::parseMethod (Method& method)
 {
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  if (strcmp (scanner->value.v_identifier, "signal") == 0)
+  peek_or_return (G_TOKEN_IDENTIFIER);
+  if (strcmp (scanner->next_value.v_identifier, "signal") == 0)
+  {
+    parse_or_return (G_TOKEN_IDENTIFIER);
     method.result.type = "signal";
-  else if (strcmp (scanner->value.v_identifier, "void") == 0)
+  }
+  else if (strcmp (scanner->next_value.v_identifier, "void") == 0)
+  {
+    parse_or_return (G_TOKEN_IDENTIFIER);
     method.result.type = "void";
+  }
   else
     {
-      method.result.type = ModuleHelper::qualify (scanner->value.v_identifier);
+      GTokenType expected_token = parseTypeName (method.result.type);
+      if (expected_token != G_TOKEN_NONE)
+	return expected_token;
+
       method.result.name = "result";
     }
 
@@ -1101,8 +1142,10 @@ GTokenType Parser::parseMethod (Method& method)
     {
       Param def;
 
-      parse_or_return (G_TOKEN_IDENTIFIER);
-      def.type = ModuleHelper::qualify (scanner->value.v_identifier);
+      GTokenType expected_token = parseTypeName (def.type);
+      if (expected_token != G_TOKEN_NONE)
+	return expected_token;
+
       def.pspec = def.type;
   
       parse_or_return (G_TOKEN_IDENTIFIER);
@@ -1321,7 +1364,7 @@ void Parser::addPrototype (const std::string& type, TypeDeclaration typeDecl)
     }
   else
     {
-      printError ("double definition of '%s' as different types\n", type.c_str());
+      printError ("double definition of '%s' as different types", type.c_str());
     }
 }
 
