@@ -582,6 +582,7 @@ const GxkGadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
 
 
 /* --- GxkMenuButton --- */
+G_DEFINE_TYPE (GxkMenuButton, gxk_menu_button, GTK_TYPE_BUTTON);
 enum {
   MENU_BUTTON_PROP_0,
   MENU_BUTTON_PROP_MENU,
@@ -900,6 +901,11 @@ menu_button_dispose (GObject *object)
 }
 
 static void
+gxk_menu_button_init (GxkMenuButton *self)
+{
+}
+
+static void
 gxk_menu_button_class_init (GxkMenuButtonClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
@@ -924,26 +930,4 @@ gxk_menu_button_class_init (GxkMenuButtonClass *class)
   menu_button_signal_changed = g_signal_new ("changed", G_OBJECT_CLASS_TYPE (class),
                                              G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
                                              gtk_signal_default_marshaller, G_TYPE_NONE, 0);
-}
-
-GType
-gxk_menu_button_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (GxkMenuButtonClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gxk_menu_button_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (GxkMenuButton),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
-      type = g_type_register_static (GTK_TYPE_BUTTON, "GxkMenuButton", &type_info, 0);
-    }
-  return type;
 }

@@ -1,3 +1,7 @@
+Wed Feb 25 03:40:00 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkauxwidgets.c: use G_DEFINE_TYPE() for menu button.
+
 Tue Feb 24 07:51:04 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterncolumns.[hc]: added focus-position to key
