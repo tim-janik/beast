@@ -598,9 +598,9 @@ xinfo_data_handle_new (GslDataHandle *src_handle,
     {
       chandle->dhandle.name = g_strconcat (src_handle->name,
                                            "// #xinfo",
-                                           clear_xinfos ? "-clear" : "",
-                                           remove_xinfos ? "-remove" : "",
-                                           added_xinfos ? "-add" : "",
+                                           clear_xinfos ? "-cleared" : "",
+                                           remove_xinfos ? "-removed" : "",
+                                           added_xinfos ? "-added" : "",
                                            " /", NULL);
       chandle->dhandle.vtable = &xinfo_handle_vtable;
       chandle->src_handle = gsl_data_handle_ref (src_handle);

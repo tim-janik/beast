@@ -41,7 +41,8 @@ struct _BseStorageDBlock
 {
   gulong         id;
   GslDataHandle *dhandle;
-  guint          n_channels;
+  guint          n_channels : 16;
+  guint          needs_close : 1;
   gfloat         mix_freq;
   gfloat         osc_freq;
 };
@@ -218,6 +219,8 @@ bse_storage_reset (BseStorage *self)
   for (i = 0; i < self->n_dblocks; i++)
     {
       bse_id_free (self->dblocks[i].id);
+      if (self->dblocks[i].needs_close)
+        gsl_data_handle_close (self->dblocks[i].dhandle);
       gsl_data_handle_unref (self->dblocks[i].dhandle);
     }
   g_free (self->dblocks);
@@ -238,6 +241,14 @@ bse_storage_add_dblock (BseStorage    *self,
   self->dblocks = g_renew (BseStorageDBlock, self->dblocks, self->n_dblocks);
   self->dblocks[i].id = bse_id_alloc ();
   self->dblocks[i].dhandle = gsl_data_handle_ref (dhandle);
+  if (GSL_DATA_HANDLE_OPENED (dhandle))
+    {
+      /* keep data handles opened to protect against rewrites */
+      gsl_data_handle_open (dhandle);
+      self->dblocks[i].needs_close = TRUE;
+    }
+  else
+    self->dblocks[i].needs_close = FALSE;
   self->dblocks[i].n_channels = gsl_data_handle_n_channels (dhandle);
   self->dblocks[i].mix_freq = gsl_data_handle_mix_freq (dhandle);
   self->dblocks[i].osc_freq = gsl_data_handle_osc_freq (dhandle);

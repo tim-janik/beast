@@ -67,6 +67,7 @@ bse_wave_init (BseWave *wave)
   wave->xinfos = NULL;
   wave->n_wchunks = 0;
   wave->wave_chunks = NULL;
+  wave->open_handles = NULL;
   wave->request_count = 0;
   wave->index_dirty = FALSE;
   wave->index_list = NULL;
@@ -140,6 +141,18 @@ bse_wave_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static BseErrorType
+bse_wave_add_inlined_wave_chunk (BseWave      *self,
+                                 GslWaveChunk *wchunk)
+{
+  g_return_val_if_fail (BSE_IS_WAVE (self), BSE_ERROR_INTERNAL);
+  BseErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
+  if (!error)
+    self->open_handles = sfi_ring_append (self->open_handles, wchunk->dcache->dhandle);
+  return error;
+}
+
+
 GslWaveChunk*
 bse_wave_lookup_chunk (BseWave *wave,
 		       gfloat   mix_freq,
@@ -167,6 +180,15 @@ bse_wave_remove_chunk (BseWave      *wave,
   
   wave->wave_chunks = sfi_ring_remove (wave->wave_chunks, wchunk);
   wave->n_wchunks--;
+
+  SfiRing *ring;
+  for (ring = wave->open_handles; ring; ring = sfi_ring_walk (ring, wave->open_handles))
+    if (ring->data == (void*) wchunk->dcache->dhandle)
+      {
+        gsl_data_handle_close (wchunk->dcache->dhandle);
+        wave->open_handles = sfi_ring_remove_node (wave->open_handles, ring);
+        break;
+      }
   
   gsl_wave_chunk_unref (wchunk);
   wave->index_dirty = TRUE;
@@ -225,6 +247,8 @@ bse_wave_clear (BseWave *wave)
   /* delete all wave chunks */
   while (wave->wave_chunks)
     bse_wave_remove_chunk (wave, wave->wave_chunks->data);
+  while (wave->open_handles)
+    gsl_data_handle_close (sfi_ring_pop_head (&wave->open_handles));
 
   /* free fields */
   g_free (wave->file_name);
@@ -619,7 +643,16 @@ bse_wave_restore_private (BseObject  *object,
           GslWaveChunk *wchunk = gsl_wave_chunk_new (dcache, parsed_wchunk.wh_mix_freq, parsed_wchunk.wh_osc_freq,
                                                      loop_type, loop_start, loop_end, loop_count);
 	  gsl_data_cache_unref (dcache);
-	  bse_wave_add_chunk (wave, wchunk);
+          /* we need to keep inlined data handles open to protect against storage (.bse file) overwriting */
+          BseErrorType error = bse_wave_add_inlined_wave_chunk (wave, wchunk);
+          if (!error)
+            bse_wave_add_chunk (wave, wchunk);
+          else
+            {
+              bse_storage_error (storage, "failed to reopen inlined data handle (%s): %s",
+                                 gsl_data_handle_name (wchunk->dcache->dhandle), bse_error_blurb (error));
+              gsl_wave_chunk_unref (wchunk);
+            }
 	}
       if (parsed_wchunk.data_handle)
 	gsl_data_handle_unref (parsed_wchunk.data_handle);

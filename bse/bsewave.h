@@ -58,6 +58,7 @@ struct _BseWave
   /* wave chunks */
   guint		     n_wchunks;
   SfiRing           *wave_chunks;       /* data=GslWaveChunk* */
+  SfiRing           *open_handles;      /* data=GslDataHandle* */
 };
 struct _BseWaveClass
 {

@@ -1,3 +1,11 @@
+Thu Jan  6 19:51:36 2005  Tim Janik  <timj@gtk.org>
+
+	* bsewave.[hc]: keep inlined data handles opened, to protect against
+	.bse file overwriting.
+
+	* bsestorage.c (bse_storage_add_dblock): keep opened data handles
+	open to protect against overwriting.
+
 Thu Jan  6 18:37:16 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c: store/parse Ogg/Vorbis data handles as in compressed
