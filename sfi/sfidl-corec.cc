@@ -276,9 +276,6 @@ class CodeGeneratorCoreC : public CodeGenerator {
             printf ("  %s = %d,\n", ename.c_str(), value);
           }
         printf ("} %s;\n", mname.c_str());
-        
-        printf ("const gchar* %s_to_choice (%s value);\n", lname.c_str(), mname.c_str());
-        printf ("%s %s_from_choice (const gchar *choice);\n", mname.c_str(), lname.c_str());
       }
   }
   void
