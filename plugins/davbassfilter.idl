@@ -43,4 +43,4 @@ class BassFilter : Bse::Effect {
 
 }; // Dav
 
-/* vim:set ts=8 sw=2 sts=2: */
+/* vim:set ts=8 sw=2 sts=2 syntax=cpp: */
