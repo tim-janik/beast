@@ -164,7 +164,7 @@ If you have questions/comments/feedback, @uref{mailto://timj@@beast.gtk.org,,con
 
 @news_title{Sunday 12 March 2000, Version @strong{0.3.2} released}
 
-See the Gnotice @uref{http://news.gnome.org:80/gnome-news/953148210/,,here}.
+See the Gnotice @uref{http://beast.gtk.org/mirror/gnome-news/953148210.html,,here (mirrored from http://news.gnome.org:80/gnome-news/953148210/)}.
 
 Plenty of work has been put into this new version, so BEAST is coming closer to ALPHA stage ;)
 the highlights of this release include new synthesizer modules submitted by David A. Bartold 
@@ -209,7 +209,7 @@ As usual, the ChangeLogs are always available for your perusal (see the links in
 @news_title{Friday 31 December 1999,}
 
 Version 0.3.0 (pre-alpha) released.  For details, see the 
-@uref{http://news.gnome.org/gnome-news/946616649/index_html,, announcement}
+@uref{http://beast.gtk.org/mirror/gnome-news/946616649.html,,announcement (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)}
 on @uref{http://news.gnome.org/gnome-news,, Gnotices}.
 
 @bye

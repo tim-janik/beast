@@ -1,3 +1,12 @@
+Wed Feb  5 16:48:55 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-about.texi: 
+	* docs/site-oldnews.texi: changed links to point to a mirror of
+	http://news.gnome.org because that site got discontinued. referenced
+	articles are kept at http://beast.gtk.org/mirror/gnome-news/.
+
+	* docs/site-historic.texi: updates.
+
 Wed Feb  5 14:38:52 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-historic.texi: added article links.

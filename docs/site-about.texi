@@ -28,7 +28,7 @@ You may want to check out the @uref{beast-doc://screenshots/index,, screenshots}
 idea of how it looks like.
 
 For a summary from a conversation with the developer, see this
-@uref{http://news.gnome.org/gnome-news/946276088/index_html,, article}
+@uref{http://beast.gtk.org/mirror/gnome-news/946276088.html,, article (mirrored from http://news.gnome.org/gnome-news/946276088/index_html)}
 on @uref{http://news.gnome.org/gnome-news,, Gnotices}.
 
 @bye
