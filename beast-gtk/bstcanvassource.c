@@ -690,7 +690,9 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   x2 = x1 + CHANNEL_WIDTH (csource);
   y2 = y1 + CHANNEL_HEIGHT (csource);
   d_y = y2 - y1;
-  d_y /= n_channels;
+  if (n_channels)
+    d_y /= n_channels;
+
   if (n_channels > 1)
     {
       gint cd_red, cd_blue, cd_green;

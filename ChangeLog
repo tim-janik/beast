@@ -1,3 +1,9 @@
+Mon Sep  8 14:23:50 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_build_channels): catch
+	division by zero with causes a SIGFPE on alpha, reported by
+	Marius Hillenbrand.
+
 Mon Sep  8 05:29:43 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c: make icon sizes configurable.
