@@ -33,7 +33,7 @@ static gulong       memory_allocated = 0;
 
 
 /* --- functions --- */
-const guint
+const gulong
 sfi_alloc_upper_power2 (const gulong number)
 {
   return number ? 1 << g_bit_storage (number - 1) : 0;

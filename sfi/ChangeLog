@@ -1,3 +1,7 @@
+Mon Feb 17 15:20:10 2003  Tim Janik  <timj@gtk.org>
+
+	* sfimemory.[hc] (sfi_alloc_upper_power2): fix return type.
+
 Fri Feb 14 07:46:01 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiserial.c (sfi_value_store_param): newline and indent before

@@ -47,7 +47,7 @@ gpointer        sfi_alloc_memblock0     (gsize           size);
 void            sfi_free_memblock       (gsize           size,
 					 gpointer        memblock);
 void            sfi_alloc_report        (void);
-const guint     sfi_alloc_upper_power2  (const gulong    number);
+const gulong    sfi_alloc_upper_power2  (const gulong    number);
 void		_sfi_free_node_list	(gpointer	 mem,
 					 gsize		 node_size);
 void		_sfi_init_memory	(void);
