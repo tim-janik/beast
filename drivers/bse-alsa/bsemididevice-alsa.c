@@ -40,7 +40,8 @@ typedef struct
 static void bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class);
 static void bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
 static void alsa_midi_io_handler            (AlsaMidiHandle         *alsa,
-                                             GPollFD                *pfd);
+                                             guint                   n_pfds,
+                                             GPollFD                *pfds);
 
 /* --- define object type and export to BSE --- */
 BSE_REGISTER_OBJECT (BseMidiDeviceALSA, BseMidiDevice, NULL, NULL, NULL, bse_midi_device_alsa_class_init, NULL, bse_midi_device_alsa_init);
@@ -241,7 +242,8 @@ bse_midi_device_alsa_finalize (GObject *object)
 
 static void
 alsa_midi_io_handler (AlsaMidiHandle *alsa,
-                      GPollFD        *pfd)
+                      guint           n_pfds,
+                      GPollFD        *pfds)
 {
   // BseMidiHandle *handle = &alsa->handle;
   const gsize buf_size = 8192;
