@@ -1779,14 +1779,14 @@ bst_piano_roll_key_press (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
-  gboolean handled = TRUE;
+  gboolean handled = FALSE;
 
   if (event->keyval == GDK_Escape)
     {
       bst_piano_roll_canvas_drag_abort (self);
       bst_piano_roll_piano_drag_abort (self);
+      handled = TRUE;
     }
-
   return handled;
 }
 
@@ -1795,7 +1795,7 @@ bst_piano_roll_key_release (GtkWidget   *widget,
 			    GdkEventKey *event)
 {
   // BstPianoRoll *self = BST_PIANO_ROLL (widget);
-  gboolean handled = TRUE;
+  gboolean handled = FALSE;
 
   return handled;
 }

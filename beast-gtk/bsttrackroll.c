@@ -1713,11 +1713,13 @@ bst_track_roll_key_press (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
-  gboolean handled = TRUE;
+  gboolean handled = FALSE;
 
   if (event->keyval == GDK_Escape)
-    bst_track_roll_drag_abort (self);
-
+    {
+      bst_track_roll_drag_abort (self);
+      handled = TRUE;
+    }
   return handled;
 }
 
@@ -1726,7 +1728,7 @@ bst_track_roll_key_release (GtkWidget   *widget,
 			    GdkEventKey *event)
 {
   // BstTrackRoll *self = BST_TRACK_ROLL (widget);
-  gboolean handled = TRUE;
+  gboolean handled = FALSE;
 
   return handled;
 }

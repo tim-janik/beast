@@ -1,3 +1,9 @@
+Thu Jan 15 23:48:01 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsteventroll.c:
+	* beast-gtk/bstpianoroll.c:
+	* beast-gtk/bsttrackroll.c: fixed key-event return values.
+
 Wed Jan 14 13:31:27 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-historic.texi: link updates.

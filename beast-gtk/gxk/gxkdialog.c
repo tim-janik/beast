@@ -560,7 +560,7 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
     }
 
 #if defined (__linux__)         // FIXME: use gtk_window_activate_key() once exposed
-  /* we're iverriding the GtkWindow implementation here to give
+  /* we're overriding the GtkWindow implementation here to give
    * the focus widget precedence over unmodified accelerators
    * before the accelerator activation scheme.
    */

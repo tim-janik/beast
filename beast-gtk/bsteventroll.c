@@ -1226,14 +1226,14 @@ bst_event_roll_key_press (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
   BstEventRoll *self = BST_EVENT_ROLL (widget);
-  gboolean handled = TRUE;
+  gboolean handled = FALSE;
 
   if (event->keyval == GDK_Escape)
     {
       bst_event_roll_canvas_drag_abort (self);
       bst_event_roll_vpanel_drag_abort (self);
+      handled = TRUE;
     }
-
   return handled;
 }
 
@@ -1242,7 +1242,7 @@ bst_event_roll_key_release (GtkWidget   *widget,
 			    GdkEventKey *event)
 {
   // BstEventRoll *self = BST_EVENT_ROLL (widget);
-  gboolean handled = TRUE;
+  gboolean handled = FALSE;
 
   return handled;
 }
