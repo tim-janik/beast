@@ -222,7 +222,7 @@ dmod_trigger (DavSynDrumModule *dmod,
 {
   dmod->spring_vel = dmod->params.trigger_vel;
   dmod->env = dmod->params.trigger_vel;
-  dmod->freq_rad = freq * 2.0 * PI / BSE_MIX_FREQ_f;
+  dmod->freq_rad = freq * 2.0 * PI / bse_engine_sample_freq();
   dmod->freq_shift = dmod->freq_rad * dmod->params.ratio * CLAMP (ratio, 0, 1.0);
 }
 
@@ -355,23 +355,24 @@ static void
 dav_syn_drum_update_modules (DavSynDrum *self,
                              gboolean    force_trigger)
 {
-  /* Calculate the half life rate given:
-   *  half - the length of the half life
-   *  rate - time divisor (usually the # calcs per second)
-   *
-   * Basically, find r given 1/2 = e^(-r*(half/rate))
-   *
-   * ln(1/2) = -ln(2) = -BSE_LN2 = -0.693147...
-   */
-  self->params.res = exp (-BSE_LN2 / (self->half * BSE_MIX_FREQ));
   if (BSE_SOURCE_PREPARED (self))
     {
+      DavSynDrumParams params = self->params;
+      /* Calculate the half life rate given:
+       *  half - the length of the half life
+       *  rate - time divisor (usually the # calcs per second)
+       *
+       * Basically, find r given 1/2 = e^(-r*(half/rate))
+       *
+       * ln(1/2) = -ln(2) = -BSE_LN2 = -0.693147...
+       */
+      params.res = exp (-BSE_LN2 / (self->half * bse_engine_sample_freq()));
       /* update all DavSynDrumModules. take a look at davxtalstrings.c
        * if you don't understand what this code does.
        */
       bse_source_access_modules (BSE_SOURCE (self),
                                  force_trigger ? dmod_access_trigger : dmod_access,
-                                 g_memdup (&self->params, sizeof (self->params)),
+                                 g_memdup (&params, sizeof (params)),
                                  g_free,
                                  NULL);
     }

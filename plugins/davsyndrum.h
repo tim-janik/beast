@@ -38,11 +38,11 @@ typedef struct {
   gfloat freq;
   gfloat trigger_vel;
   gfloat ratio;
-  gfloat res;
+  gfloat res; /* sample rate specific */
 } DavSynDrumParams;
 typedef struct {
   BseSource        parent_object;
-  DavSynDrumParams params;
+  DavSynDrumParams params; /* .res is unused (due to its sample rate dependency) */
   gfloat           half;
   gboolean         force_trigger;
 } DavSynDrum;
