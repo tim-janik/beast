@@ -29,14 +29,51 @@ using namespace Bse;
 
 class BassFilter : public BassFilterBase {
   class Module : public SynthesisModule {
-    double decay;
-    double resonance;
+    /* proeprties */
+    double filt_cutoff, filt_reso, env_mod, env_decay;
+    /* satte */
+    double decay, resonance;
     double a, b, c0;
     double d1, d2;
     double e0, e1;
-    gfloat last_trigger;
+    float last_trigger;
     gint envbound; /* 64 at 44100 */
     gint envpos;
+    inline void
+    recalc_resonance ()
+    {
+      /* Update resonance. */
+      resonance = exp (-1.20 + 3.455 * filt_reso);
+    }
+    inline void
+    recalc_filter ()
+    {
+      /* Update vars given envmod, cutoff, and reso. */
+      e0 = exp (5.613 - 0.8 * env_mod + 2.1553 * filt_cutoff - 0.7696 * (1.0 - filt_reso));
+      e1 = exp (6.109 + 1.5876 * env_mod + 2.1553 * filt_cutoff - 1.2 * (1.0 - filt_reso));
+      e0 *= PI / mix_freq();
+      e1 *= PI / mix_freq();
+      e1 -= e0;
+    }
+    inline void
+    recalc_decay ()
+    {
+      /* Update decay given envdecay. */
+      envbound = dtoi (0.001452 * mix_freq()); // 64 at 44100;
+      envbound = MAX (envbound, 1);
+      double d = env_decay;
+      d = 0.2 + (2.3 * d);
+      d *= mix_freq();
+      decay = pow (0.1, envbound / d);
+    }
+    inline void
+    recalc_a_b ()
+    {
+      double whopping = e0 + c0;
+      double k = exp (-whopping / resonance);
+      a = 2.0 * cos (2.0 * whopping) * k;
+      b = -k * k;
+    }
   public:
     void
     reset ()
@@ -47,41 +84,17 @@ class BassFilter : public BassFilterBase {
       envpos = 0;
     }
     void
-    recalc_a_b ()
-    {
-      double whopping = e0 + c0;
-      double k = exp (-whopping / resonance);
-      a = 2.0 * cos (2.0 * whopping) * k;
-      b = -k * k;
-    }
-    void
     config (BassFilterProperties *props)
     {
-      double filt_cutoff = props->cutoff_perc * 0.01;
-      double filt_reso = props->reso_perc * 0.01;
-      double env_mod = props->env_mod * 0.01;
-      double env_decay = props->env_decay * 0.01;
-      
-      /* Update vars given envmod, cutoff, and reso. */
-      e0 = exp (5.613 - 0.8 * env_mod + 2.1553 * filt_cutoff - 0.7696 * (1.0 - filt_reso));
-      e1 = exp (6.109 + 1.5876 * env_mod + 2.1553 * filt_cutoff - 1.2 * (1.0 - filt_reso));
-      e0 *= PI / mix_freq();
-      e1 *= PI / mix_freq();
-      e1 -= e0;
-      
-      /* Update decay given envdecay. */
-      envbound = dtoi (0.001452 * mix_freq()); // 64 at 44100;
-      envbound = MAX (envbound, 1);
-      double d = env_decay;
-      d = 0.2 + (2.3 * d);
-      d *= mix_freq();
-      decay = pow (0.1, envbound / d);
-      
-      /* Update resonance. */
-      resonance = exp (-1.20 + 3.455 * filt_reso);
+      filt_cutoff = props->cutoff_perc * 0.01;
+      filt_reso = props->reso_perc * 0.01;
+      env_mod = props->env_mod * 0.01;
+      env_decay = props->env_decay * 0.01;
 
-      /* remaining coefficients */
-      recalc_a_b ();
+      recalc_resonance();
+      recalc_filter();
+      recalc_decay();
+      recalc_a_b();
 
       if (props->trigger)
         {
@@ -91,9 +104,37 @@ class BassFilter : public BassFilterBase {
         }
     }
     void
-    process (unsigned int n_values)
+    auto_update (BassFilterPropertyID prop_id,
+                 double               value)
     {
-      /* this function runs in various synthesis threads */
+      switch (prop_id)
+        {
+        case PROP_CUTOFF_PERC:
+          filt_cutoff = value * 0.01;
+          recalc_filter();
+          recalc_a_b();
+          break;
+        case PROP_RESO_PERC:
+          filt_reso = value * 0.01;
+          recalc_resonance();
+          recalc_filter();
+          recalc_a_b();
+          break;
+        case PROP_ENV_MOD:
+          env_mod = value * 0.01;
+          recalc_filter();
+          recalc_a_b();
+          break;
+        case PROP_ENV_DECAY:
+          env_decay = value * 0.01;
+          recalc_decay();
+          break;
+        default: ;
+        }
+    }
+    void
+    process (unsigned int n_values)
+    {   /* this function runs in various synthesis threads */
       const float *in = istream (ICHANNEL_AUDIO_IN).values;
       const float *trigger = istream (ICHANNEL_TRIGGER_IN).values;
       float *out = ostream (OCHANNEL_AUDIO_OUT).values;

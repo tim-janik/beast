@@ -35,10 +35,10 @@ class BassFilter : Effect {
   IStream trigger_in = (_("Trigger In"), _("Trigger input"));
   OStream audio_out  = (_("Audio Out"), _("Filtered audio output"));
   group _("Parameters") {
-    Real cutoff_perc = Perc (_("Cutoff [%]"), _("Set the cutoff frequency percentage"), 50, STANDARD);
-    Real reso_perc   = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 99.5, STANDARD);
-    Real env_mod     = Perc (_("Envelope Modulation [%]"), _("Set the envelope magnitude in percent"), 90, STANDARD);
-    Real env_decay   = Perc (_("Decay [%]"), _("Set the decay length in percent"), 20, STANDARD);
+    Real cutoff_perc = Perc (_("Cutoff [%]"), _("Set the cutoff frequency percentage"), 50, STANDARD ":automate:");
+    Real reso_perc   = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 99.5, STANDARD ":automate:");
+    Real env_mod     = Perc (_("Envelope Modulation [%]"), _("Set the envelope magnitude in percent"), 90, STANDARD ":automate:");
+    Real env_decay   = Perc (_("Decay [%]"), _("Set the decay length in percent"), 20, STANDARD ":automate:");
     Bool trigger     = Trigger (_("Trigger filter"), NULL, GUI);
   };
 };
