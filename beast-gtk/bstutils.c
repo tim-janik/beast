@@ -1269,17 +1269,17 @@ _bst_log_scan_keys (void)
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, hints), group)
 #define sfidl_pspec_String_default(group, name)                                 \
   sfi_pspec_set_group (sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_STANDARD), group)
+#define sfidl_pspec_Choice(group, name, nick, blurb, dval, options, cvalues)    \
+  sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, dval, cvalues, SFI_PARAM_STANDARD), group)
+#define sfidl_pspec_Choice_default(group, name, cvalues)        \
+  sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
 #define sfidl_pspec_Proxy_default(group, name)                                          \
   sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Seq(group, name, nick, blurb, hints, element_pspec)         \
+#define sfidl_pspec_Sequence(group, name, nick, blurb, hints, element_pspec)         \
   sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element_pspec, hints), group)
-#define sfidl_pspec_Rec(group, name, nick, blurb, hints, fields)                        \
+#define sfidl_pspec_Record(group, name, nick, blurb, hints, fields)                        \
   sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, hints), group)
-#define sfidl_pspec_Rec_default(group, name, fields)                                    \
-  sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_BoxedRec(group, name, nick, blurb, hints, fields)       \
-  sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_BoxedRec_default(group, name, fields)       \
+#define sfidl_pspec_Record_default(group, name, fields)                                    \
   sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_BBlock(group, name, nick, blurb, hints)                             \
   sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, hints), group)

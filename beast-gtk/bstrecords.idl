@@ -17,7 +17,15 @@
  */
 
 namespace Bst {
-
+/*
+choice Test1 {
+  FOO1,
+  FOO2,
+};
+record Test2 {
+  Test1 tval;
+};
+*/
 using namespace Sfi;
 
 /* BEAST Global Config */

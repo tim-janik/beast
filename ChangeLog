@@ -1,3 +1,12 @@
+Fri Jan 23 02:28:12 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.c: added more sfidl pspec constructors.
+
+	* tests/Makefile.am: disabled C++ API generation which still
+	breaks, though most of the core C++ binding works now.
+
+	* tests/testplugin.idl: added more test code.
+
 Thu Jan 22 03:40:51 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-navigation.xml: added search and wiki pages.
