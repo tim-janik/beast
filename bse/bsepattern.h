@@ -42,19 +42,19 @@ struct _BsePatternNote
 {
   BseInstrument *instrument;
   guint		 note : 20;
-  guint		 selected : 1;
   guint		 n_effects : 8;
+  guint		 selected : 1;
   BseEffect    **effects;
 };
 struct _BsePattern
 {
-  BseItem	parent_object;
+  BseItem parent_object;
   
-  guint n_channels		/* mirrored from BseSong */;
-  guint n_rows			/* mirrored from BseSong.pattern_length */;
+  guint   n_channels		/* mirrored from BseSong */;
+  guint   n_rows		/* mirrored from BseSong.pattern_length */;
   
-  guint	current_channel;
-  guint current_row;
+  guint	  current_channel;
+  guint   current_row;
 
   BsePatternNote *notes		/* ->notes [ row * n_channels + channel] */;
 };
@@ -72,6 +72,7 @@ BsePatternNote*	bse_pattern_peek_note	    (BsePattern		*pattern,
 					     guint               channel,
 					     guint               row);
 GList* /*fl*/	bse_pattern_list_selection  (BsePattern		*pattern);
+gboolean	bse_pattern_has_selection   (BsePattern		*pattern);
 
 
 /* --- procedure short hands --- */
@@ -95,6 +96,13 @@ void		bse_pattern_modify_note	    (BsePattern		*pattern,
 					     guint		 row,
 					     gint		 note,
 					     BseInstrument	*instrument);
+void		bse_pattern_select_note     (BsePattern		*pattern,
+					     guint      	 channel,
+					     guint      	 row);
+void		bse_pattern_unselect_note   (BsePattern		*pattern,
+					     guint      	 channel,
+					     guint      	 row);
+     
 
 /* --- selections --- */
 /* selections within a BsePattern are supplied for procedure invocation

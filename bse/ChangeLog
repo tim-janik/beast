@@ -1,3 +1,15 @@
+Mon Feb  7 02:57:43 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepattern.[hc]: reintroduce bse_pattern_select_note() and
+	bse_pattern_unselect_note() to modify note selections on individual
+	notes.
+	(bse_pattern_restore_selection): use bse_pattern_select_note() or
+	bse_pattern_unselect_note() so notifiers get invoked.
+	(bse_pattern_has_selection): new function to quickly check whether
+	selected notes are present at all.
+
+	* bsedefs.h: introduced BseNotify_note_selection_changed() notifier.
+
 Thu Feb  3 09:19:49 2000  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]:

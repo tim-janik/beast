@@ -164,12 +164,11 @@ bse_pattern_reset_note (BsePattern *pattern,
       note->instrument = NULL;
     }
 
-  /* leave selected */
-
   if (note->effects || note->n_effects)
     g_warning ("effects are not yet imlemented, bogus non-NULL pointer encountered");
   note->effects = NULL;
   note->n_effects = 0;
+  /* leave note->selected state */
 }
 
 void
@@ -202,8 +201,8 @@ bse_pattern_set_n_channels (BsePattern *pattern,
 	      {
 		notes[INDX (n_channels, c, r)].note = BSE_NOTE_VOID;
 		notes[INDX (n_channels, c, r)].instrument = NULL;
-		notes[INDX (n_channels, c, r)].selected = FALSE;
 		notes[INDX (n_channels, c, r)].n_effects = 0;
+		notes[INDX (n_channels, c, r)].selected = FALSE;
 		notes[INDX (n_channels, c, r)].effects = NULL;
 	      }
 	  }
@@ -246,8 +245,8 @@ bse_pattern_set_n_rows (BsePattern *pattern,
 	      {
 		notes[INDX (pattern->n_channels, c, r)].note = BSE_NOTE_VOID;
 		notes[INDX (pattern->n_channels, c, r)].instrument = NULL;
-		notes[INDX (pattern->n_channels, c, r)].selected = FALSE;
 		notes[INDX (pattern->n_channels, c, r)].n_effects = 0;
+		notes[INDX (pattern->n_channels, c, r)].selected = FALSE;
 		notes[INDX (pattern->n_channels, c, r)].effects = NULL;
 	      }
 	  }
@@ -337,6 +336,44 @@ bse_pattern_set_instrument (BsePattern    *pattern,
 			   channel,
 			   row,
 			   instrument);
+}
+
+void
+bse_pattern_select_note (BsePattern *pattern,
+			 guint       channel,
+			 guint       row)
+{
+  BsePatternNote *note;
+
+  g_return_if_fail (BSE_IS_PATTERN (pattern));
+  g_return_if_fail (channel < pattern->n_channels);
+  g_return_if_fail (row < pattern->n_rows);
+
+  note = &PNOTE (pattern, channel, row);
+  if (!note->selected)
+    {
+      note->selected = TRUE;
+      BSE_NOTIFY (pattern, note_selection_changed, NOTIFY (OBJECT, channel, row, DATA));
+    }
+}
+
+void
+bse_pattern_unselect_note (BsePattern *pattern,
+			   guint       channel,
+			   guint       row)
+{
+  BsePatternNote *note;
+
+  g_return_if_fail (BSE_IS_PATTERN (pattern));
+  g_return_if_fail (channel < pattern->n_channels);
+  g_return_if_fail (row < pattern->n_rows);
+
+  note = &PNOTE (pattern, channel, row);
+  if (note->selected)
+    {
+      note->selected = FALSE;
+      BSE_NOTIFY (pattern, note_selection_changed, NOTIFY (OBJECT, channel, row, DATA));
+    }
 }
 
 guint32*
@@ -430,8 +467,12 @@ bse_pattern_restore_selection (BsePattern *pattern,
     for (r = 0; r < pattern->n_rows; r++)
       {
 	BsePatternNote *note = &PNOTE (pattern, c, r);
+	gboolean selected = BSE_PATTERN_SELECTION_TEST (selection, c, r);
 
-	note->selected = BSE_PATTERN_SELECTION_TEST (selection, c, r);
+	if (note->selected && !selected)
+	  bse_pattern_unselect_note (pattern, c, r);
+	else if (!note->selected && selected)
+	  bse_pattern_select_note (pattern, c, r);
       }
 }
 
@@ -453,6 +494,24 @@ bse_pattern_list_selection (BsePattern *pattern)
       }
 
   return g_list_reverse (list);
+}
+
+gboolean
+bse_pattern_has_selection (BsePattern *pattern)
+{
+  guint c, r;
+
+  g_return_val_if_fail (BSE_IS_PATTERN (pattern), FALSE);
+
+  for (c = 0; c < pattern->n_channels; c++)
+    for (r = 0; r < pattern->n_rows; r++)
+      {
+	BsePatternNote *note = &PNOTE (pattern, c, r);
+
+	if (note->selected)
+	  return TRUE;
+      }
+  return FALSE;
 }
 
 BsePatternNote*
