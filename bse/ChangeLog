@@ -1,3 +1,7 @@
+Thu Dec 30 17:06:29 2004  Tim Janik  <timj@gtk.org>
+
+	* gslloader.c (gsl_wave_dsc_free): remove bogus struct modification.
+
 Thu Dec 30 04:05:50 2004  Tim Janik  <timj@gtk.org>
 
 	* gslloader.c (gsl_wave_dsc_free): removed bogus g_strfreev().

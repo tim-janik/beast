@@ -301,14 +301,11 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 void
 gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
 {
-  GslWaveFileInfo *file_info;
-
   g_return_if_fail (wave_dsc != NULL);
   g_return_if_fail (wave_dsc->file_info != NULL);
 
-  file_info = wave_dsc->file_info;
-  wave_dsc->file_info = NULL;
-  
+  GslWaveFileInfo *file_info = wave_dsc->file_info;
+
   file_info->loader->free_wave_dsc (file_info->loader->data, wave_dsc);
 
   gsl_wave_file_info_unref (file_info);
