@@ -40,9 +40,9 @@ int main(int argc, char **argv)
     {
       printf("file = %s, loader = %s\n", info->file.c_str(), info->loader.c_str());
       printf("%d waves contained:\n", info->waves.size());
-      for (StringSeq::iterator si = info->waves.begin(); si != info->waves.end(); si++)
+      for (unsigned int i = 0; i < info->waves.length(); i++)
 	{
-	  printf("  - %s\n", si->c_str());
+	  printf("  - %s\n", info->waves[i].c_str());
 	}
     }
   else

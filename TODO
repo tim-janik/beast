@@ -320,14 +320,6 @@ sfidl:
 05  - everything
   C++ language binding:
     - defaults for records (should be fetched remotely ; missing type blurb)
-    - sequence Iterator ++ operator (return value broken)
-    - sequence accesses of Iterator
-      Iter x = s.begin() + 5;
-      *x = foo;
-      s[5] = bar;
-      *x is still foo here...
-    - sequence:
-      *(x + 5) == x[5] doesn't hold (cause *(begin() + 5) is of type Value whereas x[5] is ValPtr&)
     - serialization: can we _really_ only use a template thing?
       => reorganization of the createTypeCode function
     - should objects _really_ be values?
@@ -337,6 +329,7 @@ sfidl:
     - set bse-preferences BSE::GConfig property.
     - records in bseprocidl: how can we figure out the type?
     - dynamic invocation interface missing in C++ binding (properties, methods)
+    - later: introduce iterators into sequences
     - port arts driver from csl to port-audio
     - write port-audio driver for beast
 
