@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-04 18:11+0200\n"
+"POT-Creation-Date: 2004-09-04 19:55+0200\n"
 "PO-Revision-Date: 2004-01-04 22:01+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -56,9 +56,8 @@ msgid "_Close"
 msgstr "S_chließen"
 
 #: beast-gtk/bstapp.c:76
-#, fuzzy
 msgid "Close the project"
-msgstr "Ein neues Projekt anlegen"
+msgstr "Projekt schließen"
 
 #: beast-gtk/bstapp.c:80
 msgid "_Save"
@@ -66,7 +65,7 @@ msgstr "_Speichern"
 
 #: beast-gtk/bstapp.c:80
 msgid "Write project to disk"
-msgstr ""
+msgstr "Projekt speichern"
 
 #: beast-gtk/bstapp.c:82
 msgid "Save _As..."
@@ -74,7 +73,7 @@ msgstr "Speichern _unter..."
 
 #: beast-gtk/bstapp.c:82
 msgid "Write project to a specific file"
-msgstr ""
+msgstr "Projekt in einer bestimmten Datei speichern"
 
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
@@ -82,7 +81,7 @@ msgstr "_Beenden"
 
 #: beast-gtk/bstapp.c:86
 msgid "Close all windows and quit"
-msgstr ""
+msgstr "Alle Fenster schließen und beenden"
 
 #: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
@@ -90,7 +89,7 @@ msgstr "_Einstellungen..."
 
 #: beast-gtk/bstapp.c:90
 msgid "Adjust overall program behaviour"
-msgstr ""
+msgstr "Allgemeine Programmeinstellungen vornehmen"
 
 #: beast-gtk/bstapp.c:94
 msgid "Rebuild"
@@ -102,7 +101,7 @@ msgstr "_Info..."
 
 #: beast-gtk/bstapp.c:97
 msgid "Display developer and contributor credits"
-msgstr ""
+msgstr "Entwickler und Mitwirkende anzeigen"
 
 #: beast-gtk/bstapp.c:101
 msgid "_Undo"
@@ -110,7 +109,7 @@ msgstr "_Rückgängig"
 
 #: beast-gtk/bstapp.c:101
 msgid "Undo the effect of the last action"
-msgstr ""
+msgstr "Die letzte Aktion rückgängig machen"
 
 #: beast-gtk/bstapp.c:103
 msgid "_Redo"
@@ -128,19 +127,19 @@ msgstr "Rückgängig-Chronik _löschen"
 
 #: beast-gtk/bstapp.c:107
 msgid "Delete the complete undo history"
-msgstr ""
+msgstr "Die komplette Rückgängig-Chronik löschen"
 
 #: beast-gtk/bstapp.c:111
 msgid "Procedure _Browser"
-msgstr "Prozedur-_Browser"
+msgstr "Prozedur_browser"
 
 #: beast-gtk/bstapp.c:111
 msgid "Display an overview of all procedures"
-msgstr ""
+msgstr "Eine Übersicht über alle Prozeduren geben"
 
 #: beast-gtk/bstapp.c:113
 msgid "Rack Editor"
-msgstr "Ablageeditor"
+msgstr "Baugruppeneditor"
 
 # CHECK
 #: beast-gtk/bstapp.c:115 beast-gtk/bstprofiler.c:225
@@ -150,7 +149,7 @@ msgstr "Filter-Ordnung"
 
 #: beast-gtk/bstapp.c:115
 msgid "Display statistics and timing information"
-msgstr ""
+msgstr "Statistik- und Zeitmessinformationen anzeigen"
 
 #: beast-gtk/bstapp.c:117
 msgid "New View"
@@ -167,7 +166,7 @@ msgstr "_Wiedergabe"
 
 #: beast-gtk/bstapp.c:121
 msgid "Play or restart playback of the project"
-msgstr ""
+msgstr "Wiedergabe des projektes starten oder neustarten"
 
 #: beast-gtk/bstapp.c:123
 msgid "_Stop"
@@ -175,7 +174,7 @@ msgstr "_Stopp"
 
 #: beast-gtk/bstapp.c:123
 msgid "Stop playback of the project"
-msgstr ""
+msgstr "Wiedergabe des Projektes anhalten"
 
 #: beast-gtk/bstapp.c:127
 msgid "New Song"
@@ -184,6 +183,7 @@ msgstr "Neuer Titel"
 #: beast-gtk/bstapp.c:127
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr ""
+"Einen neuen Titel, betehend aus Mixer, Spuren, Parts und Noten, anlegen"
 
 #: beast-gtk/bstapp.c:129
 msgid "New Custom Synthesizer"
@@ -192,7 +192,7 @@ msgstr "Neuer benutzerdef. Synthesizer"
 #: beast-gtk/bstapp.c:129
 msgid ""
 "Create a new synthesizer mesh to be used as effect or instrument in songs"
-msgstr ""
+msgstr "Ein neues Synthesenetz zur Effekt- oder Instrumentbenutzung anlegen"
 
 #: beast-gtk/bstapp.c:131
 msgid "New MIDI Synthesizer"
@@ -203,15 +203,16 @@ msgid ""
 "Create a new MIDI synthesizer to control an instrument from external MIDI "
 "events"
 msgstr ""
+"Einen neuen MIDI-Synthsizer zur Instrumentbenutzung durch externe MIDI-"
+"Events anlegen"
 
 #: beast-gtk/bstapp.c:133
 msgid "Remove Song or Synthesizer"
 msgstr "Titel oder Synthesizer entfernen"
 
 #: beast-gtk/bstapp.c:133
-#, fuzzy
 msgid "Remove the currently selected synthesizer (song)"
-msgstr "Die momentan gewählte Wave löschen"
+msgstr "Lösche den momentan ausgewählten Synthesizer oder Titel"
 
 #: beast-gtk/bstapp.c:137
 msgid "Load _Instrument"
@@ -219,7 +220,7 @@ msgstr "_Instrument laden"
 
 #: beast-gtk/bstapp.c:137
 msgid "Load synthesizer mesh from instruments folder"
-msgstr ""
+msgstr "Synthesizernetz aus dem Instrumentverzeichnis laden"
 
 #: beast-gtk/bstapp.c:139
 msgid "Load _Effect"
@@ -227,7 +228,7 @@ msgstr "_Effekt laden"
 
 #: beast-gtk/bstapp.c:139
 msgid "Load synthesizer mesh from effects folder"
-msgstr ""
+msgstr "Synthesizernetz aus dem Effektverzeichnis laden"
 
 #: beast-gtk/bstapp.c:141
 msgid "Save As Instrument"
@@ -235,7 +236,7 @@ msgstr "Als Instrument speichern"
 
 #: beast-gtk/bstapp.c:141
 msgid "Save synthesizer mesh to instruments folder"
-msgstr ""
+msgstr "Synthesizernetz im Instrumentverzeichnis abspeichern"
 
 #: beast-gtk/bstapp.c:143
 msgid "Save As Effect"
@@ -243,7 +244,7 @@ msgstr "Als Effekt speichern"
 
 #: beast-gtk/bstapp.c:143
 msgid "Save synthesizer mesh to effects folder"
-msgstr ""
+msgstr "Synthesizernetz im Effektverzeichnis abspeichern"
 
 #: beast-gtk/bstapp.c:147
 msgid "_Release Notes..."
@@ -251,7 +252,7 @@ msgstr "_Release-Hinweise..."
 
 #: beast-gtk/bstapp.c:147
 msgid "Notes and informations about this release cycle"
-msgstr ""
+msgstr "Hinweise und Bemerkungen zu diesem Releasezyklus"
 
 #: beast-gtk/bstapp.c:149
 msgid "Quick Start..."
@@ -270,18 +271,16 @@ msgid "Frequently asked questions"
 msgstr ""
 
 #: beast-gtk/bstapp.c:155
-#, fuzzy
 msgid "DSP Engine..."
-msgstr "GSL-Engine..."
+msgstr "DSP Engine..."
 
 #: beast-gtk/bstapp.c:155
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
 #: beast-gtk/bstapp.c:286
-#, fuzzy
 msgid "Export Audio"
-msgstr "Audio-Ein, links"
+msgstr "Audioexport"
 
 #: beast-gtk/bstapp.c:613 beast-gtk/bstapp.c:620 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
@@ -290,9 +289,9 @@ msgid "Opening project `%s'"
 msgstr "Projekt »%s« wird geöffnet"
 
 #: beast-gtk/bstapp.c:680
-#, fuzzy, c-format
+#, c-format
 msgid "Loading skin `%s'"
-msgstr "Wave »%s« wird geladen"
+msgstr "Oberfläche »%s« wird geladen"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:847
@@ -363,10 +362,9 @@ msgstr "Eingabe"
 msgid "Output"
 msgstr "Ausgabe"
 
-# CHECK
 #: beast-gtk/bstcanvassource.c:976
 msgid "(Hint)"
-msgstr "(Wink)"
+msgstr "(Hinweis)"
 
 #: beast-gtk/bstdbmeter.c:765
 msgid "Draw Values"
@@ -378,23 +376,21 @@ msgstr ""
 
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
 #: beast-gtk/bstdbmeter.c:1525
-#, fuzzy
 msgid "Orientation"
-msgstr "_Verzerren"
+msgstr "Ausrichtung"
 
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
 #: beast-gtk/bstdbmeter.c:1525
 msgid "Choose horizontal or vertical orientation"
-msgstr ""
+msgstr "Horizontale oder vertikale Ausrichtung auswählen"
 
 #: beast-gtk/bstdbmeter.c:771
-#, fuzzy
 msgid "Justify"
-msgstr "Ausrichtung"
+msgstr "Bündigkeit"
 
 #: beast-gtk/bstdbmeter.c:771
 msgid "Adjust relative alignment of the values or bars to be drawn"
-msgstr ""
+msgstr "Relative Bündikgeit der Werte und Skalen einstellen"
 
 #: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
 #: beast-gtk/bsteventrollctrl.c:427
@@ -458,9 +454,8 @@ msgid "Open Project"
 msgstr "Projekt öffnen"
 
 #: beast-gtk/bstfiledialog.c:396
-#, fuzzy
 msgid "Select File"
-msgstr "Auswahl"
+msgstr "Dateiauswahl"
 
 #: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
@@ -611,28 +606,24 @@ msgid "Type"
 msgstr "Typ"
 
 #: beast-gtk/bstkeybindings.c:51
-#, fuzzy
 msgid "Add..."
-msgstr "Hinzufügen"
+msgstr "Hinzufügen..."
 
 #: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
 msgstr ""
 
 #: beast-gtk/bstkeybindings.c:53
-#, fuzzy
 msgid "Change..."
-msgstr "Ladevorgang..."
+msgstr "Ändern..."
 
 #: beast-gtk/bstkeybindings.c:53
-#, fuzzy
 msgid "Change the currently selected key binding"
-msgstr "Die momentan gewählte Wave löschen"
+msgstr "Tastenverknüpfung ändern"
 
 #: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:24
-#, fuzzy
 msgid "Raise"
-msgstr "Kompressionsverhältnis"
+msgstr "Erhöhen"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
@@ -640,21 +631,19 @@ msgstr ""
 
 #: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Lower"
-msgstr ""
+msgstr "Absenken"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
 msgstr ""
 
 #: beast-gtk/bstkeybindings.c:59
-#, fuzzy
 msgid "Delete the currently selected key binding"
-msgstr "Die momentan gewählte Wave löschen"
+msgstr "Tastenverknüpfung löschen"
 
 #: beast-gtk/bstkeybindings.c:61
-#, fuzzy
 msgid "Load"
-msgstr "Laden..."
+msgstr "Laden"
 
 #: beast-gtk/bstkeybindings.c:61
 msgid "Load a key binding set"
@@ -673,16 +662,14 @@ msgid "Key combinations used to activate a function"
 msgstr ""
 
 #: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
-#, fuzzy
 msgid "Function"
-msgstr "Frage"
+msgstr "Funktion"
 
 #: beast-gtk/bstkeybindings.c:436
 msgid "Functions to be activated for a key binding"
 msgstr ""
 
 #: beast-gtk/bstkeybindings.c:438
-#, fuzzy
 msgid "Parameter"
 msgstr "Parameter"
 
@@ -718,7 +705,6 @@ msgstr ""
 
 #. parse rc file
 #: beast-gtk/bstmain.c:148
-#, fuzzy
 msgid "RC Files"
 msgstr "RC-Datei"
 
@@ -778,9 +764,8 @@ msgid "Contributions made by:"
 msgstr "Mitwirkende:"
 
 #: beast-gtk/bstparam-choice.c:143
-#, fuzzy
 msgid "Drop Down Combo"
-msgstr "Drop-Down-Knopf"
+msgstr "Drop-Down-Liste"
 
 #: beast-gtk/bstparam-choice.c:149
 msgid "Drop Down Button"
@@ -795,14 +780,23 @@ msgid "Standard Option Menu"
 msgstr ""
 
 #: beast-gtk/bstparam-color-spinner.c:67
-#, fuzzy
 msgid "Select Color"
-msgstr "Auswahl"
+msgstr "Farbauswahl"
 
 #: beast-gtk/bstparam-color-spinner.c:116
-#, fuzzy
 msgid "Color Entry"
-msgstr "Noteneintrag"
+msgstr "Farbeintrag"
+
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/bstparam-item-seq.c:71 beast-gtk/gxk/gxksimplelabel.c:598
+msgid "..."
+msgstr "..."
+
+#: beast-gtk/bstparam-item-seq.c:146
+msgid "Item List"
+msgstr ""
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -818,19 +812,19 @@ msgstr "Drop-Down-Feld des Objekts"
 
 #: beast-gtk/bstparam-scale.c:60
 msgid "Knob"
-msgstr ""
+msgstr "Knopf"
 
 #: beast-gtk/bstparam-scale.c:66
-msgid "Knob (Logarithmic"
-msgstr ""
+msgid "Knob (Logarithmic)"
+msgstr "Knopf (logarithmisch)"
 
 #: beast-gtk/bstparam-scale.c:78
 msgid "Dial"
-msgstr ""
+msgstr "Zeiger"
 
 #: beast-gtk/bstparam-scale.c:84
-msgid "Dial (Logarithmic"
-msgstr ""
+msgid "Dial (Logarithmic)"
+msgstr "Zeiger (logarithmisch)"
 
 #: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
@@ -841,13 +835,12 @@ msgid "Searchpath Text Entry"
 msgstr "Suchpfad-Texteintrag"
 
 #: beast-gtk/bstparam-searchpath.c:154
-#, fuzzy
 msgid "Filename Text Entry"
-msgstr "Texteintrag"
+msgstr "Dateinameneingabe"
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
-msgstr "Zeiteintrag"
+msgstr "Zeiteingabe"
 
 # CHECK
 #: beast-gtk/bstpartdialog.c:60
@@ -1035,7 +1028,7 @@ msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:729
 msgid "EXAMPLE:"
-msgstr ""
+msgstr "BEISPIEL:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:731
@@ -1056,9 +1049,8 @@ msgid "The tick/note length per line"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:123
-#, fuzzy
 msgid "Steps"
-msgstr "_Stopp"
+msgstr "Schritte"
 
 #: beast-gtk/bstpatternctrl.c:124
 msgid ""
@@ -1066,9 +1058,8 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:128
-#, fuzzy
 msgid "Direction"
-msgstr "_Verzerren"
+msgstr "Richtung"
 
 #: beast-gtk/bstpatternctrl.c:129
 msgid "The direction of cell movement each time an event or note was edited"
@@ -1084,9 +1075,8 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:137
-#, fuzzy
 msgid "Base Octave"
-msgstr "Oktaven"
+msgstr "Basisoktave"
 
 #: beast-gtk/bstpatternctrl.c:138
 msgid "Controls the octave relative to which notes are entered"
@@ -1179,9 +1169,8 @@ msgid "Remove any events in the focus cell"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:351 beast-gtk/bstpatternctrl.c:365
-#, fuzzy
 msgid "Set the focus cell note"
-msgstr "Ganze Noten einfügen"
+msgstr "Note in der Fokuszelle zuweisen"
 
 #: beast-gtk/bstpatternctrl.c:355 beast-gtk/bstpatternctrl.c:369
 msgid "Sets the value of the focus digit"
@@ -1229,9 +1218,8 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-#, fuzzy
 msgid "Insert whole notes"
-msgstr "Halbe Noten einfügen"
+msgstr "Ganze Noten einfügen"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1266,29 +1254,24 @@ msgid "Insert sixteenth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "1\\/32"
-msgstr "1\\/2"
+msgstr "1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "Insert thirty-second note"
-msgstr "Sechzentelnoten einfügen"
+msgstr "Zweiunddreißigstelnote einfügen"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "1\\/64"
-msgstr "1\\/4"
+msgstr "1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "Insert sixty-fourth note"
-msgstr "Sechzentelnoten einfügen"
+msgstr "Vierundsechzigstelnote einfügen"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "1\\/128"
-msgstr "1\\/1"
+msgstr "1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:81
 #, fuzzy
@@ -1316,9 +1299,8 @@ msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
-#, fuzzy
 msgid "Quantize to whole note boundaries"
-msgstr "Auf halbe Noten quantisieren"
+msgstr "Auf ganze Noten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
@@ -1353,9 +1335,8 @@ msgid "Quantize to sixteenth note boundaries"
 msgstr "Auf Sechzehntelnoten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Q: 1\\/32"
-msgstr "Q: 1\\/2"
+msgstr "Q: 1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
 #, fuzzy
@@ -1363,9 +1344,8 @@ msgid "Quantize to thirty-second note boundaries"
 msgstr "Auf Sechzehntelnoten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Q: 1\\/64"
-msgstr "Q: 1\\/4"
+msgstr "Q: 1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
 #, fuzzy
@@ -1373,9 +1353,8 @@ msgid "Quantize to sixty-fourth note boundaries"
 msgstr "Auf Sechzehntelnoten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Q: 1\\/128"
-msgstr "Q: 1\\/1"
+msgstr "Q: 1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
 #, fuzzy
@@ -1418,7 +1397,6 @@ msgid "Playback"
 msgstr "Wiedergabe"
 
 #: beast-gtk/bstpreferences.c:76
-#, fuzzy
 msgid "Piano Keys"
 msgstr "Klaviernoten"
 
@@ -1440,18 +1418,16 @@ msgid "Procedure"
 msgstr "Prozedur"
 
 #: beast-gtk/bstprofiler.c:166
-#, fuzzy
 msgid "Totals"
-msgstr "_Werkzeuge"
+msgstr "Summen"
 
 #: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:409
 msgid "Thread Name"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
-#, fuzzy
 msgid "TID"
-msgstr "Kennung"
+msgstr "TID"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "Thread ID (on some systems the process ID)"
@@ -1526,16 +1502,15 @@ msgid "Stopping Playback"
 msgstr "Wiedergabe wird unterbrochen"
 
 #: beast-gtk/bstrackeditor.c:95
-#, fuzzy
 msgid ""
 "The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Der Ablageeditor ist nach wie vor extrem experimentell und in zukünftigen "
-"Releases garantiert fehlerhaft. Verlassen Sie sich also nicht darauf, dass "
-"der Inhalt des Ablageeditors in zukünftigen Versionen ähnlich aussieht. "
+"Der Baugruppeneditor ist nach wie vor sehr experimentell und nicht "
+"kompatibel mit zukünftigen Releases. Verlassen Sie sich also nicht darauf, "
+"dass der Inhalt des Ablageeditors in zukünftigen Versionen ähnlich aussieht. "
 "Machen Sie Sich außerdem darauf gefasst, mögliche Instabilitäten zu umgehen "
 "(sprich: Projekte regelmäßig speichern)"
 
@@ -1580,102 +1555,87 @@ msgstr "Beschriftung"
 
 #: beast-gtk/bstrecords.idl:35
 msgid "Up"
-msgstr ""
+msgstr "Hoch"
 
 #: beast-gtk/bstrecords.idl:35
-#, fuzzy
 msgid "Move upwards"
-msgstr "Part verschieben"
+msgstr "Nach oben bewegen"
 
 #: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
 msgid "Left"
 msgstr "Links"
 
 #: beast-gtk/bstrecords.idl:36
-#, fuzzy
 msgid "Move to the left"
-msgstr "Note verschieben"
+msgstr "Nach links bewegen"
 
 #: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
 msgid "Right"
 msgstr "Rechts"
 
 #: beast-gtk/bstrecords.idl:37
-#, fuzzy
 msgid "Move to the right"
-msgstr "Note verschieben"
+msgstr "Nach rechts bewegen"
 
 #: beast-gtk/bstrecords.idl:38
 msgid "Down"
-msgstr ""
+msgstr "Runter"
 
 #: beast-gtk/bstrecords.idl:38
-msgid "Step downwards"
-msgstr ""
+msgid "Move downwards"
+msgstr "Nach unten bewegen"
 
 #: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70
-#, fuzzy
 msgid "None"
-msgstr "Note"
+msgstr "Nichts"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "Unspecified length"
-msgstr ""
+msgstr "Unspezifizierte Länge"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "1/1"
-msgstr "1\\/1"
+msgstr "1/1"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "Whole note"
-msgstr "Note wiedergeben"
+msgstr "Ganze Note"
 
 #: beast-gtk/bstrecords.idl:44
-#, fuzzy
 msgid "1/2"
-msgstr "1\\/2"
+msgstr "1/2"
 
 #: beast-gtk/bstrecords.idl:44
-#, fuzzy
 msgid "Half note"
-msgstr "Note wiedergeben"
+msgstr "Halbe Note"
 
 #: beast-gtk/bstrecords.idl:45
-#, fuzzy
 msgid "1/4"
-msgstr "1\\/4"
+msgstr "1/4"
 
 #: beast-gtk/bstrecords.idl:45
-#, fuzzy
 msgid "Quarter note"
-msgstr "Viertelnoten einfügen"
+msgstr "Viertelnote"
 
 #: beast-gtk/bstrecords.idl:46
-#, fuzzy
 msgid "1/8"
-msgstr "1\\/8"
+msgstr "1/8"
 
 #: beast-gtk/bstrecords.idl:46
-#, fuzzy
 msgid "Eighths note"
-msgstr "Achtelnoten einfügen"
+msgstr "Achtelnote"
 
 #: beast-gtk/bstrecords.idl:47
-#, fuzzy
 msgid "1/16"
-msgstr "1\\/16"
+msgstr "1/16"
 
 #: beast-gtk/bstrecords.idl:47
-#, fuzzy
 msgid "Sixteenth note"
-msgstr "Sechzentelnoten einfügen"
+msgstr "Sechzentelnote"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "1/32"
-msgstr "1\\/2"
+msgstr "1/2"
 
 #: beast-gtk/bstrecords.idl:48
 #, fuzzy
@@ -1683,9 +1643,8 @@ msgid "Thirty-secondth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "1/64"
-msgstr "1\\/4"
+msgstr "1/4"
 
 #: beast-gtk/bstrecords.idl:49
 #, fuzzy
@@ -1693,9 +1652,8 @@ msgid "Sixty-fourth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/128"
-msgstr "1\\/1"
+msgstr "1/128"
 
 #: beast-gtk/bstrecords.idl:50
 #, fuzzy
@@ -1703,18 +1661,16 @@ msgid "Hundred twenty-eighth note"
 msgstr "Achtelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:51
-#, fuzzy
 msgid "1/1."
-msgstr "1\\/1"
+msgstr "1/1."
 
 #: beast-gtk/bstrecords.idl:51
 msgid "Dotted whole note"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:52
-#, fuzzy
 msgid "1/2."
-msgstr "1\\/2"
+msgstr "1/2."
 
 #: beast-gtk/bstrecords.idl:52
 #, fuzzy
@@ -1722,9 +1678,8 @@ msgid "Dotted half note"
 msgstr "Halbe Noten einfügen"
 
 #: beast-gtk/bstrecords.idl:53
-#, fuzzy
 msgid "1/4."
-msgstr "1\\/4"
+msgstr "1/4."
 
 #: beast-gtk/bstrecords.idl:53
 #, fuzzy
@@ -1732,9 +1687,8 @@ msgid "Dotted quarter note"
 msgstr "Viertelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:54
-#, fuzzy
 msgid "1/8."
-msgstr "1\\/8"
+msgstr "1/8."
 
 #: beast-gtk/bstrecords.idl:54
 #, fuzzy
@@ -1742,9 +1696,8 @@ msgid "Dotted eighths note"
 msgstr "Achtelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:55
-#, fuzzy
 msgid "1/16."
-msgstr "1\\/16"
+msgstr "1/16."
 
 #: beast-gtk/bstrecords.idl:55
 #, fuzzy
@@ -1752,9 +1705,8 @@ msgid "Dotted sixteenth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "1/32."
-msgstr "1\\/2"
+msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:56
 #, fuzzy
@@ -1762,9 +1714,8 @@ msgid "Dotted thirty-secondth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "1/64."
-msgstr "1\\/4"
+msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:57
 #, fuzzy
@@ -1772,9 +1723,8 @@ msgid "Dotted sixty-fourth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/128."
-msgstr "1\\/1"
+msgstr "1/128."
 
 #: beast-gtk/bstrecords.idl:58
 #, fuzzy
@@ -1782,18 +1732,16 @@ msgid "Dotted hundred twenty-eighth note"
 msgstr "Achtelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:59
-#, fuzzy
 msgid "1/1T"
-msgstr "1\\/1"
+msgstr "1/1T"
 
 #: beast-gtk/bstrecords.idl:59
 msgid "Triplet whole note"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:60
-#, fuzzy
 msgid "1/2T"
-msgstr "1\\/2"
+msgstr "1/2T"
 
 #: beast-gtk/bstrecords.idl:60
 #, fuzzy
@@ -1803,7 +1751,7 @@ msgstr "Halbe Noten einfügen"
 #: beast-gtk/bstrecords.idl:61
 #, fuzzy
 msgid "1/4T"
-msgstr "1\\/4"
+msgstr "1/4T"
 
 #: beast-gtk/bstrecords.idl:61
 #, fuzzy
@@ -1811,9 +1759,8 @@ msgid "Triplet quarter note"
 msgstr "Viertelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:62
-#, fuzzy
 msgid "1/8T"
-msgstr "1\\/8"
+msgstr "1/8T"
 
 #: beast-gtk/bstrecords.idl:62
 #, fuzzy
@@ -1821,9 +1768,8 @@ msgid "Triplet eighths note"
 msgstr "Achtelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:63
-#, fuzzy
 msgid "1/16T"
-msgstr "1\\/16"
+msgstr "1/16T"
 
 #: beast-gtk/bstrecords.idl:63
 #, fuzzy
@@ -1831,9 +1777,8 @@ msgid "Triplet sixteenth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:64
-#, fuzzy
 msgid "1/32T"
-msgstr "1\\/2"
+msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:64
 #, fuzzy
@@ -1841,9 +1786,8 @@ msgid "Triplet thirty-secondth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:65
-#, fuzzy
 msgid "1/64T"
-msgstr "1\\/4"
+msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:65
 #, fuzzy
@@ -1851,9 +1795,8 @@ msgid "Triplet sixty-fourth note"
 msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "1/128T"
-msgstr "1\\/1"
+msgstr "1/128T"
 
 #: beast-gtk/bstrecords.idl:66
 #, fuzzy
@@ -1862,7 +1805,7 @@ msgstr "Achtelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "Every second row"
@@ -1870,7 +1813,7 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:72
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #: beast-gtk/bstrecords.idl:72
 msgid "Every fourth row"
@@ -1878,7 +1821,7 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:73
 msgid "8"
-msgstr ""
+msgstr "8"
 
 #: beast-gtk/bstrecords.idl:73
 #, fuzzy
@@ -1886,9 +1829,8 @@ msgid "Every eighth row"
 msgstr "Achtelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:74
-#, fuzzy
 msgid "16"
-msgstr "1\\/4"
+msgstr "1/16"
 
 #: beast-gtk/bstrecords.idl:74
 #, fuzzy
@@ -1897,7 +1839,7 @@ msgstr "Sechzentelnoten einfügen"
 
 #: beast-gtk/bstrecords.idl:75
 msgid "2 & 4"
-msgstr ""
+msgstr "2 & 4"
 
 #: beast-gtk/bstrecords.idl:75
 msgid "Every second and fourth row"
@@ -1905,7 +1847,7 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:76
 msgid "4 & 8"
-msgstr ""
+msgstr "4 & 8"
 
 #: beast-gtk/bstrecords.idl:76
 msgid "Every fourth and eighth row"
@@ -1985,9 +1927,8 @@ msgid "Every sixth and twelfth row"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:90
-#, fuzzy
 msgid "Release counter"
-msgstr "_Release-Hinweise..."
+msgstr "Releasezähler"
 
 #: beast-gtk/bstrecords.idl:92
 msgid "Font Size"
@@ -2022,9 +1963,8 @@ msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:102
-#, fuzzy
 msgid "Tab Width"
-msgstr "Pulsbreite"
+msgstr "Tabulatorbreite"
 
 #: beast-gtk/bstrecords.idl:102
 msgid "Specify project tab width in pixels"
@@ -2041,9 +1981,8 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:113
-#, fuzzy
 msgid "Skin Name"
-msgstr "Name"
+msgstr "Oberflächenname"
 
 #: beast-gtk/bstrecords.idl:113
 msgid "Name for the current skin configuration (used for skin selections)."
@@ -2086,9 +2025,8 @@ msgid "Empty Field Color"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:121
-#, fuzzy
 msgid "Text Color"
-msgstr "Auswahl"
+msgstr "Textfarbe"
 
 #: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
 #, fuzzy
@@ -2198,7 +2136,7 @@ msgstr "Umrissmaximum"
 #.
 #: beast-gtk/bstsampleeditor.c:539
 msgid "Preview"
-msgstr "Vorschau"
+msgstr "Vorhöhren"
 
 #: beast-gtk/bstsnetrouter.c:42
 msgid ""
@@ -2357,19 +2295,19 @@ msgid "Wave Repository"
 msgstr ""
 
 #: beast-gtk/bstsupershell.c:167
-#, fuzzy, c-format
+#, c-format
 msgid "Song: %s"
-msgstr "Speichern: %s"
+msgstr "Titel: %s"
 
 #: beast-gtk/bstsupershell.c:172
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Synthesizer: %s"
-msgstr "Neuer MIDI-Synthesizer"
+msgstr "MIDI-Synthesizer: %s"
 
 #: beast-gtk/bstsupershell.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "Synthesizer: %s"
-msgstr "_Synthesizer"
+msgstr "Synthesizer: %s"
 
 #: beast-gtk/bstsupershell.c:257
 msgid "Tracks"
@@ -2377,7 +2315,7 @@ msgstr "Spuren"
 
 #: beast-gtk/bstsupershell.c:262
 msgid "Mixer"
-msgstr ""
+msgstr "Mischpult"
 
 #: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
 #: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
@@ -2543,7 +2481,7 @@ msgstr ""
 #. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
 msgid "Debug"
-msgstr ""
+msgstr "Debug"
 
 #: beast-gtk/bstusermessage.c:111
 msgid "Miscellaneous Message"
@@ -2600,8 +2538,8 @@ msgid "Adjust the zoom factor of the router display"
 msgstr "Die Ansichtsgröße der Router-Anzeige anpassen"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:2
-msgid "Aplly configuration changes to the pattern editor layout"
-msgstr ""
+msgid "Apply configuration changes to the pattern editor layout"
+msgstr "Konfigurationsänderungen für das Patternlayout übernehmen"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Available Items:"
@@ -3014,14 +2952,6 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 "Das Widget, das aktiviert werden soll, wenn die dem Kürzelbuchstaben der "
 "Beschriftung entsprechende Taste gedrückt wird"
-
-#. TRANSLATORS: this is the string that is appended to the end
-#. * of a clipped label if it does not fit its assigned width.
-#.
-#: beast-gtk/gxk/gxksimplelabel.c:598
-#, fuzzy
-msgid "..."
-msgstr "Bibliothek..."
 
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26 plugins/bsenoise.idl:27
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
