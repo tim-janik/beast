@@ -311,7 +311,7 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 # end of the build process
 #
 bsehack.idl: bsecore.idl bseprocidl
-	grep -v bsehack.idl bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-tlist
+	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-tlist
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
 	&& ./bseprocidl xgen-tlist >> xgen-bgasi \
 	&& (cmp -s xgen-bgasi bsehack.idl || cp xgen-bgasi bsehack.idl) \
