@@ -44,6 +44,22 @@ canonify_name (const string& s,
   return g_intern_string (d.c_str());
 }
 
+static const gchar*
+UPPER_CASE (const string &s)
+{
+  string d = s;
+  for (guint i = 0; i < d.size(); i++)
+    if (d[i] >= 'a' && d[i] <= 'z')
+      d[i] += 'A' - 'a';
+    else if (d[i] >= 'A' && d[i] <= 'Z')
+      ;
+    else if (d[i] >= '0' && d[i] <= '9')
+      ;
+    else
+      d[i] = '_';
+  return g_intern_string (d.c_str());
+}
+
 static const char*
 intern_escape (const string &s)
 {
@@ -106,6 +122,36 @@ class LanguageBindingCoreCxx : public CodeGenerator {
   };
   vector<Image> images;
   vector<const Method*> procs;
+  vector<string> alltypes;
+  void
+  push_type (const string &kind,
+             const string &type_name)
+  {
+    string s;
+    s += kind + " (" + type_name + ")";
+    alltypes.push_back (s);
+  }
+  OptionVector
+  getOptions()
+  {
+    OptionVector opts = CodeGenerator::getOptions();    // FIXME: adopt parent type
+    opts.push_back (make_pair ("--macro", true));
+    return opts;
+  }
+  string alltypes_macro;
+  void
+  setOption (const string& option,
+             const string& value)
+  {
+    if (option == "--macro")
+      {
+        alltypes_macro = value;
+      }
+    else
+      {
+        CodeGenerator::setOption (option, value);       // FIXME: adopt parent type
+      }
+  }
 public:
   LanguageBindingCoreCxx (const Parser &p)
     : CodeGenerator (p)
@@ -475,6 +521,7 @@ public:
         // const char *name = nspace.printable_form (ci->name);
         printf ("#define %s (BSE_CXX_DECLARED_ENUM_TYPE (%s))\n",
                 make_TYPE_NAME (ci->name), pure_TypeName (ci->name));
+        push_type ("ENUM", pure_TypeName (ci->name));
       }
   }
   void
@@ -527,21 +574,7 @@ public:
         printf ("typedef Sfi::RecordHandle<%s> %sHandle;\n", name, name);
         printf ("#define %s BSE_CXX_DECLARED_RECORD_TYPE (%s)\n",
                 make_TYPE_NAME (ri->name), pure_TypeName (ri->name));
-      }
-  }
-  void
-  generate_sequence_prototypes (NamespaceHelper& nspace)
-  {
-    printf ("\n\n/* sequence prototypes */\n");
-    for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-      {
-        if (parser.fromInclude (si->name))
-          continue;
-        nspace.setFromSymbol(si->name);
-        
-        printf ("class %s;\n", pure_TypeName (si->name));
-        printf ("#define %s BSE_CXX_DECLARED_SEQUENCE_TYPE (%s)\n",
-                make_TYPE_NAME (si->name), pure_TypeName (si->name));
+        push_type ("RECORD", pure_TypeName (ri->name));
       }
   }
   void
@@ -575,29 +608,16 @@ public:
       }
   }
   void
-  generate_sequence_definitions (NamespaceHelper& nspace)
+  generate_record_declarations (NamespaceHelper& nspace)
   {
-    printf ("\n\n/* sequence definitions */\n");
-    for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+    printf ("\n\n/* record type declarations */\n");
+    for (vector<Record>::const_iterator ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
       {
-        if (parser.fromInclude (si->name))
+        if (parser.fromInclude (ri->name))
           continue;
-        nspace.setFromSymbol(si->name);
+        nspace.setFromSymbol(ri->name);
         
-        printf ("class %s : public Sfi::Sequence< %s > {\n", pure_TypeName (si->name), TypeField (si->content.type));
-        printf ("public:\n");
-        /* TODO: make this a constructor? */
-        printf ("  static inline %s from_seq (SfiSeq *seq);\n", TypeRet (si->name));
-        printf ("  static inline SfiSeq *to_seq (%s seq);\n", TypeArg (si->name));
-        printf ("  static inline %s value_get_boxed (const GValue *value);\n", TypeRet (si->name));
-        printf ("  static inline void value_set_boxed (GValue *value, %s self);\n", TypeArg (si->name));
-        printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
-        printf ("  static inline const char* blurb     () { return %s; }\n", si->infos.get("blurb").escaped().c_str());
-        printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
-        printf ("  static inline const char* license   () { return %s; }\n", si->infos.get("license").escaped().c_str());
-        printf ("  static inline const char* type_name () { return \"%s\"; }\n", make_PrefixedTypeName (si->name));
-        printf ("  static inline GParamSpec* get_element ();\n");
-        printf ("};\n");
+        printf ("BSE_CXX_DECLARE_RECORD (%s);\n", pure_TypeName (ri->name));
         printf ("\n");
       }
   }
@@ -612,7 +632,6 @@ public:
         nspace.setFromSymbol(ri->name);
         const char *nname = nspace.printable_form (ri->name);
         
-        printf ("BSE_CXX_DECLARE_RECORD (%s);\n", pure_TypeName (ri->name));
         printf ("%s\n", TypeRet (ri->name));
         printf ("%s::from_rec (SfiRec *sfi_rec)\n", nname);
         printf ("{\n");
@@ -681,6 +700,63 @@ public:
       }
   }
   void
+  generate_sequence_prototypes (NamespaceHelper& nspace)
+  {
+    printf ("\n\n/* sequence prototypes */\n");
+    for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+      {
+        if (parser.fromInclude (si->name))
+          continue;
+        nspace.setFromSymbol(si->name);
+        
+        printf ("class %s;\n", pure_TypeName (si->name));
+        printf ("#define %s BSE_CXX_DECLARED_SEQUENCE_TYPE (%s)\n",
+                make_TYPE_NAME (si->name), pure_TypeName (si->name));
+        push_type ("SEQUENCE", pure_TypeName (si->name));
+      }
+  }
+  void
+  generate_sequence_definitions (NamespaceHelper& nspace)
+  {
+    printf ("\n\n/* sequence definitions */\n");
+    for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+      {
+        if (parser.fromInclude (si->name))
+          continue;
+        nspace.setFromSymbol(si->name);
+        
+        printf ("class %s : public Sfi::Sequence< %s > {\n", pure_TypeName (si->name), TypeField (si->content.type));
+        printf ("public:\n");
+        /* TODO: make this a constructor? */
+        printf ("  static inline %s from_seq (SfiSeq *seq);\n", TypeRet (si->name));
+        printf ("  static inline SfiSeq *to_seq (%s seq);\n", TypeArg (si->name));
+        printf ("  static inline %s value_get_boxed (const GValue *value);\n", TypeRet (si->name));
+        printf ("  static inline void value_set_boxed (GValue *value, %s self);\n", TypeArg (si->name));
+        printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
+        printf ("  static inline const char* blurb     () { return %s; }\n", si->infos.get("blurb").escaped().c_str());
+        printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
+        printf ("  static inline const char* license   () { return %s; }\n", si->infos.get("license").escaped().c_str());
+        printf ("  static inline const char* type_name () { return \"%s\"; }\n", make_PrefixedTypeName (si->name));
+        printf ("  static inline GParamSpec* get_element ();\n");
+        printf ("};\n");
+        printf ("\n");
+      }
+  }
+  void
+  generate_sequence_declarations (NamespaceHelper& nspace)
+  {
+    printf ("\n\n/* sequence type declarations */\n");
+    for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+      {
+        if (parser.fromInclude (si->name))
+          continue;
+        nspace.setFromSymbol(si->name);
+
+        printf ("BSE_CXX_DECLARE_SEQUENCE (%s);\n", pure_TypeName (si->name));
+        printf ("\n");
+      }
+  }
+  void
   generate_sequence_implementations (NamespaceHelper& nspace)
   {
     printf ("\n\n/* sequence implementations */\n");
@@ -691,7 +767,6 @@ public:
         nspace.setFromSymbol(si->name);
         const char *nname = nspace.printable_form (si->name);
         
-        printf ("BSE_CXX_DECLARE_SEQUENCE (%s);\n", pure_TypeName (si->name));
         printf ("%s\n", TypeRet (si->name));
         printf ("%s::from_seq (SfiSeq *sfi_seq)\n", nname);
         printf ("{\n");
@@ -760,6 +835,7 @@ public:
                 make_TYPE_NAME (ci->name), pure_TypeName (ci->name));
         printf ("#define %s(o) (::Bse::CxxBase::instance_is_a (o, %s))\n",
                 make_IS_NAME (ci->name), make_TYPE_NAME (ci->name));
+        push_type ("EFFECT", pure_TypeName (ci->name));
       }
   }
   void
@@ -1030,6 +1106,7 @@ public:
         printf ("#define %s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
                 make_TYPE_NAME (mi->name), pure_lower (mi->name));
         printf ("} // Procedure\n\n");
+        push_type ("PROCEDURE", pure_TypeName (mi->name));
       }
   }
   void
@@ -1148,17 +1225,21 @@ public:
     NamespaceHelper nsh(stdout);
 
     /* prototypes */
-    generate_enum_prototypes (nsh);
-    generate_choice_prototypes (nsh);
-    generate_record_prototypes (nsh);
-    generate_sequence_prototypes (nsh);
-    generate_class_prototypes (nsh);
+    generate_enum_prototypes (nsh);             /* adds to alltypes */
+    generate_choice_prototypes (nsh);           
+    generate_record_prototypes (nsh);           /* adds to alltypes */
+    generate_sequence_prototypes (nsh);         /* adds to alltypes */
+    generate_class_prototypes (nsh);            /* adds to alltypes */
 
     /* definitions */
     generate_enum_definitions (nsh);
-    generate_record_definitions (nsh);
     generate_sequence_definitions (nsh);
+    generate_record_definitions (nsh);
     generate_class_definitions (nsh);           /* adds to images, procs */
+
+    /* (type) declarations */
+    generate_sequence_declarations (nsh);
+    generate_record_declarations (nsh);
 
     /* procedure handling */
     for (vector<Method>::const_iterator mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
@@ -1172,6 +1253,16 @@ public:
     generate_sequence_implementations (nsh);
     generate_class_implementations (nsh);
     generate_procedure_implementations (nsh);   /* adds to images */
+
+    /* alltypes macro */
+    printf ("\n\n/* %s type registrations */\n", alltypes_macro.c_str());
+    if (alltypes_macro != "" && alltypes.size())
+      {
+        printf ("#define BSE_CXX_REGISTER_ALL_TYPES_FROM_%s() \\\n", UPPER_CASE (alltypes_macro));
+        for (vector<string>::const_iterator si = alltypes.begin(); si != alltypes.end(); si++)
+          printf ("  BSE_CXX_REGISTER_%s; \\\n", si->c_str());
+        printf ("  /* %s type registrations done */\n", alltypes_macro.c_str());
+      }
 
     /* close namespace state */
     nsh.leaveAll();

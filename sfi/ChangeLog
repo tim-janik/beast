@@ -1,3 +1,8 @@
+Fri Feb 27 13:57:52 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: added --macro option wich generates a macro to
+	register all types contained in an idl file.
+
 Fri Feb 27 13:54:56 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corec.h: 
