@@ -1,4 +1,7 @@
-Sat Jul 27 18:22:32 2002  Tim Janik  <timj@gtk.org>
+Sat Jul 27 18:42:26 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/Makefile.am: fix build rules for massive parallel
+	builds. fix clean rules.
 
 	* Makefile.am: fix gsl -> bse link.
 

@@ -70,7 +70,7 @@ bsw_extra_sources = @STRIP_BEGIN@ \
 bsw_h_sources = $(bsw_private_h_sources) $(bsw_public_h_sources) $(bsw_built_public_sources)
 libbswinclude_HEADERS = $(bsw_public_h_sources) $(bsw_built_public_sources)
 libbsw_la_SOURCES = $(bsw_c_sources)
-MAINTAINERCLEANFILES += $(bsw_built_public_sources) $(bsw_built_sources)
+CLEANFILES += $(bsw_built_public_sources) $(bsw_built_sources)
 EXTRA_HEADERS +=
 EXTRA_DIST += $(bsw_private_h_sources)
 EXTRA_DIST += $(bsw_built_sources) $(bsw_built_public_sources) $(bsw_extra_sources)
@@ -81,8 +81,6 @@ EXTRA_DIST += $(bsw_built_sources) $(bsw_built_public_sources) $(bsw_extra_sourc
 # setup autogeneration dependancies
 gen_sources = xgen-sbpah xgen-bpac
 CLEANFILES += $(gen_sources)
-COPYING: $(bsw_built_public_sources) $(bsw_built_sources)
-$(libbsw_la_OBJECTS): COPYING # this is our oldest-source-stamp
 # initial creation of the real stamp-* files
 bswgenapi.h: stamp-bswgenapi.h ;
 # normal autogeneration rules
@@ -120,6 +118,7 @@ noinst_PROGRAMS = mkapi testbsw
 # source files
 mkapi_SOURCES = mkapi.c
 testbsw_SOURCES = testbsw.c
+$(srcdir)/testbsw.c: bswgenapi.h
 # link programs against BSW
 progs_LDADD = $(top_builddir)/bse/libbse.la
 mkapi_LDADD = $(progs_LDADD)
