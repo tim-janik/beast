@@ -40,6 +40,7 @@ SfiThread*    sfi_thread_run		(const gchar    *name,
 					 gpointer	 user_data);
 SfiThread*    sfi_thread_self		(void);
 gint          sfi_thread_self_pid	(void);
+void	      sfi_thread_set_name	(const gchar    *name);
 void	      sfi_thread_set_wakeup	(SfiThreadWakeup wakeup_func,
 					 gpointer	 wakeup_data,
 					 GDestroyNotify	 destroy);
@@ -62,6 +63,34 @@ gpointer      sfi_thread_steal_qdata	(GQuark		 quark);
 #define	      sfi_thread_steal_data(     name)		sfi_thread_steal_qdata (g_quark_try_string (name))
 
 
+/* --- thread info --- */
+typedef enum /*< skip >*/
+{
+  SFI_THREAD_UNKNOWN    = '?',
+  SFI_THREAD_RUNNING    = 'R',
+  SFI_THREAD_SLEEPING   = 'S',
+  SFI_THREAD_DISKWAIT   = 'D',
+  SFI_THREAD_TRACED     = 'T',
+  SFI_THREAD_PAGING     = 'W',
+  SFI_THREAD_ZOMBIE     = 'Z',
+  SFI_THREAD_DEAD       = 'X',
+} SfiThreadState;
+typedef struct {
+  gint           thread_id;
+  gchar         *name;
+  guint          aborted : 1;
+  SfiThreadState state;
+  gint           priority;      /* nice value */
+  gint           processor;     /* running processor # */
+  SfiTime        utime;         /* user time */
+  SfiTime        stime;         /* system time */
+  SfiTime        cutime;        /* user time of dead children */
+  SfiTime        cstime;        /* system time of dead children */
+} SfiThreadInfo;
+SfiThreadInfo*  sfi_thread_info_collect (SfiThread      *thread);
+void            sfi_thread_info_free    (SfiThreadInfo  *info);
+
+
 /* --- SfiMutex & SfiCond --- */
 #define sfi_mutex_init(mutex)		(sfi_thread_table.mutex_init (mutex))
 #define SFI_SPIN_LOCK(mutex)		(sfi_thread_table.mutex_lock (mutex))
@@ -78,9 +107,9 @@ gpointer      sfi_thread_steal_qdata	(GQuark		 quark);
 #define sfi_cond_init(cond)		(sfi_thread_table.cond_init (cond))
 #define sfi_cond_signal(cond)		(sfi_thread_table.cond_signal (cond))
 #define sfi_cond_broadcast(cond)	(sfi_thread_table.cond_broadcast (cond))
-#define sfi_cond_wait(cond, mutex)	(sfi_thread_table.cond_wait ((cond), (mutex)))
+#define sfi_cond_wait(cond, mutex)      (sfi_thread_table.cond_wait ((cond), (mutex)))
 #define sfi_cond_destroy(cond)		(sfi_thread_table.cond_destroy (cond))
-void	sfi_cond_wait_timed		(SfiCond  *cond,
+void    sfi_cond_wait_timed		(SfiCond  *cond,
 					 SfiMutex *mutex,
 					 glong	   max_useconds);
 
@@ -121,9 +150,9 @@ struct _SfiThreadTable
   void		(*cond_init)		(SfiCond	*cond);
   void		(*cond_signal)		(SfiCond	*cond);
   void		(*cond_broadcast)	(SfiCond	*cond);
-  void		(*cond_wait)		(SfiCond	*cond,
+  void  	(*cond_wait)    	(SfiCond	*cond,
 					 SfiMutex	*mutex);
-  void		(*cond_wait_timed)	(SfiCond	*cond,
+  void  	(*cond_wait_timed)	(SfiCond	*cond,
 					 SfiMutex	*mutex,
 					 gulong		 abs_secs,
 					 gulong		 abs_usecs);

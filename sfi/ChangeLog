@@ -1,3 +1,9 @@
+Fri Jun 11 04:40:08 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: procedure generation fix.
+
+	* sfithreads.[hc]: implemented thread naming and usage accounting.
+
 Thu May 20 14:11:01 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: use sfi_category_concat() to fixup categories.

@@ -1131,7 +1131,7 @@ public:
                 nspace.namespaceOf (mi->name).c_str(),
                 pure_lower (mi->name));
         printf ("} // Procedure\n\n");
-        push_type ("PROCEDURE", pure_TypeName (mi->name));
+        push_type ("PROCEDURE", pure_lower (mi->name));
       }
   }
   void
