@@ -96,7 +96,7 @@ bst_snet_router_init (BstSNetRouter      *router,
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   
-  canvas->aa = TRUE;
+  canvas->aa = TRUE; /* FIXME: need preference settings for this */
   router->toolbar = NULL;
   router->adjustment = NULL;
   router->snet = NULL;

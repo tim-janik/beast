@@ -348,29 +348,6 @@ bst_canvas_source_build (BstCanvasSource *csource)
 		  "height", (gdouble) 64,
 		  "object_signal::event", bst_canvas_source_child_event, csource,
 		  NULL);
-#if 0
-  bse_icon_ref (icon);
-  group = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
-				 GNOME_TYPE_CANVAS_IMAGE,
-				 "x", (gdouble) CONNECTOR_WIDTH + 1,
-				 "y", 0.0 + 1,
-				 "width", (gdouble) 64,
-				 "height", (gdouble) 64,
-				 "anchor", GTK_ANCHOR_NORTH_WEST,
-				 "pixbuf", (icon->bytes_per_pixel > 3
-					    ? art_pixbuf_new_const_rgba
-					    : art_pixbuf_new_const_rgb) (icon->pixels,
-									 icon->width,
-									 icon->height,
-									 icon->width *
-									 icon->bytes_per_pixel),
-				 "object_signal::event", bst_canvas_source_child_event, csource,
-				 NULL);
-  gtk_object_set_data_full (GTK_OBJECT (group),
-			    "BseIcon",
-			    icon,
-			    (GtkDestroyNotify) bse_icon_unref);
-#endif
   gtk_object_set_data (GTK_OBJECT (group), "csource", csource);
   csource->text = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
 					 GNOME_TYPE_CANVAS_TEXT,

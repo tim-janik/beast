@@ -318,15 +318,14 @@ bst_canvas_link_adjust_arrow (BstCanvasLink *clink)
   gpoints = gnome_canvas_points_new (4);
   points = gpoints->coords;
   
-  *(points)++ = px;
-  *(points)++ = py;
-  *(points)++ = x - ARROW_WIDTH * sin_theta;
-  *(points)++ = y + ARROW_WIDTH * cos_theta;
-  *(points)++ = x + ARROW_WIDTH * sin_theta;
-  *(points)++ = y - ARROW_WIDTH * cos_theta;
-  *(points)++ = px;
-  *(points)++ = py;
-  points = gpoints->coords;
+  *(points++) = px;
+  *(points++) = py;
+  *(points++) = x - ARROW_WIDTH * sin_theta;
+  *(points++) = y + ARROW_WIDTH * cos_theta;
+  *(points++) = x + ARROW_WIDTH * sin_theta;
+  *(points++) = y - ARROW_WIDTH * cos_theta;
+  *(points++) = px;
+  *(points++) = py;
   
   bst_object_set (clink->arrow, "points", gpoints, NULL);
   gnome_canvas_points_free (gpoints);
