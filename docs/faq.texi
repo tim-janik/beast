@@ -133,7 +133,7 @@ their GnomeCanvas Library to at least 2.2.0.2.
 of recent releases, it works out of the box with properly setup MIDI drivers
 and MIDI pianos. Setting up MIDI drivers can be a tough task on its own but is
 beyond the scope of this FAQ and is already taken care of by
-@url{http://www.midi-howto.com/,,The Linux MIDI-HOWTO},
+@uref{http://www.midi-howto.com/,,The Linux MIDI-HOWTO},
 which provides good descriptions and further links to related documentation.
 
 @bye
