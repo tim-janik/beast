@@ -277,34 +277,34 @@ CxxBaseClass::add_signal (const gchar *signal_name,
 }
 
 void
-CxxBaseClass::add_ochannel (const char *name,
+CxxBaseClass::add_ochannel (const char *ident,
+                            const char *label,
                             const char *blurb,
                             int         assert_id)
 {
-  int channel_id = bse_source_class_add_ochannel ((BseSourceClass*) this,
-                                                  name, blurb);
+  int channel_id = bse_source_class_add_ochannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
     g_assert (assert_id == channel_id);
 }
 
 void
-CxxBaseClass::add_ichannel (const char *name,
+CxxBaseClass::add_ichannel (const char *ident,
+                            const char *label,
                             const char *blurb,
                             int         assert_id)
 {
-  int channel_id = bse_source_class_add_ichannel ((BseSourceClass*) this,
-                                                  name, blurb);
+  int channel_id = bse_source_class_add_ichannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
     g_assert (assert_id == channel_id);
 }
 
 void
-CxxBaseClass::add_jchannel (const char *name,
+CxxBaseClass::add_jchannel (const char *ident,
+                            const char *label,
                             const char *blurb,
                             int         assert_id)
 {
-  int channel_id = bse_source_class_add_jchannel ((BseSourceClass*) this,
-                                                  name, blurb);
+  int channel_id = bse_source_class_add_jchannel ((BseSourceClass*) this, ident, label, blurb);
   if (assert_id >= 0)
     g_assert (assert_id == channel_id);
 }

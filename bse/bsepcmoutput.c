@@ -130,9 +130,9 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 					     1, SFI_PARAM_GUI ":dial"));
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left channel input");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
   g_assert (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_LEFT);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Right Audio In", "Right channel Input");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right channel Input"));
   g_assert (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_RIGHT);
 }
 

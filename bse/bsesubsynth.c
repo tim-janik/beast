@@ -124,47 +124,48 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
   source_class->context_connect = bse_sub_synth_context_connect;
   source_class->context_dismiss = bse_sub_synth_context_dismiss;
   
-  bse_object_class_add_param (object_class, "Assignments",
+  bse_object_class_add_param (object_class, _("Assignments"),
 			      PARAM_SNET,
-			      bse_param_spec_object ("snet", "Synthesis Network", "The synthesis network to interface to",
+			      bse_param_spec_object ("snet", _("Synthesis Network"),
+                                                     _("The synthesis network to interface to"),
 						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
-      gchar *string, *name, *value;
+      gchar *ident, *label, *value;
       
-      string = g_strdup_printf ("in_port_%u", i + 1);
-      name = g_strdup_printf ("Input Port %u", i + 1);
+      ident = g_strdup_printf ("in_port_%u", i + 1);
+      label = g_strdup_printf (_("Input Port %u"), i + 1);
       value = g_strdup_printf ("synth_in_%u", i + 1);
-      bse_object_class_add_param (object_class, "Input Assignments", PARAM_IPORT_NAME + i * 2,
-				  sfi_pspec_string (string, name, "Output port name to interface from",
+      bse_object_class_add_param (object_class, _("Input Assignments"), PARAM_IPORT_NAME + i * 2,
+				  sfi_pspec_string (ident, label, _("Output port name to interface from"),
 						    value, SFI_PARAM_STANDARD ":skip-default"));
-      g_free (string);
-      g_free (name);
+      g_free (ident);
+      g_free (label);
       g_free (value);
       
-      string = g_strdup_printf ("out_port_%u", i + 1);
-      name = g_strdup_printf ("Output Port %u", i + 1);
+      ident = g_strdup_printf ("out_port_%u", i + 1);
+      label = g_strdup_printf (_("Output Port %u"), i + 1);
       value = g_strdup_printf ("synth_out_%u", i + 1);
-      bse_object_class_add_param (object_class, "Output Assignments", PARAM_OPORT_NAME + i * 2,
-				  sfi_pspec_string (string, name, "Input port name to interface to",
+      bse_object_class_add_param (object_class, _("Output Assignments"), PARAM_OPORT_NAME + i * 2,
+				  sfi_pspec_string (ident, label, _("Input port name to interface to"),
 						    value, SFI_PARAM_STANDARD ":skip-default"));
-      g_free (string);
-      g_free (name);
+      g_free (ident);
+      g_free (label);
       g_free (value);
       
-      string = g_strdup_printf ("Input %u", i + 1);
-      name = g_strdup_printf ("Virtual input %u", i + 1);
-      channel_id = bse_source_class_add_ichannel (source_class, string, name);
+      ident = g_strdup_printf ("input-%u", i + 1);
+      label = g_strdup_printf (_("Virtual input %u"), i + 1);
+      channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
       g_assert (channel_id == i);
-      g_free (string);
-      g_free (name);
+      g_free (ident);
+      g_free (label);
       
-      string = g_strdup_printf ("Output %u", i + 1);
-      name = g_strdup_printf ("Virtual output %u", i + 1);
-      channel_id = bse_source_class_add_ochannel (source_class, string, name);
+      ident = g_strdup_printf ("output-%u", i + 1);
+      label = g_strdup_printf (_("Virtual output %u"), i + 1);
+      channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
       g_assert (channel_id == i);
-      g_free (string);
-      g_free (name);
+      g_free (ident);
+      g_free (label);
     }
 }
 
@@ -175,7 +176,7 @@ bse_sub_synth_init (BseSubSynth *synth)
   
   synth->snet = NULL;
   synth->null_shortcut = FALSE;
-
+  
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       synth->input_ports[i] = g_strdup_printf ("synth_in_%u", i + 1);

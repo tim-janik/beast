@@ -103,13 +103,13 @@ bse_instrument_output_class_init (BseInstrumentOutputClass *class)
   
   oport_class->n_output_ports = 4;
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Left Audio", "Left Channel Output");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "left-audio", _("Left Audio"), _("Left Channel Output"));
   g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Right Audio", "Right Channel Output");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "right-audio", _("Right Audio"), _("Right Channel Output"));
   g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_RIGHT);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Unused", NULL);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "unused", _("Unused"), NULL);
   g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_UNUSED);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Synth Done", "High indicates the instrument is done synthesizing");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "synth-done", _("Synth Done"), _("High indicates the instrument is done synthesizing"));
   g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE);
 }
 

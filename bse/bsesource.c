@@ -142,13 +142,13 @@ bse_source_class_base_init (BseSourceClass *class)
 {
   class->channel_defs.n_ichannels = 0;
   class->channel_defs.ichannel_idents = NULL;
-  class->channel_defs.ichannel_names = NULL;
+  class->channel_defs.ichannel_labels = NULL;
   class->channel_defs.ichannel_blurbs = NULL;
   class->channel_defs.ijstreams = NULL;
   class->channel_defs.n_jstreams = 0;
   class->channel_defs.n_ochannels = 0;
   class->channel_defs.ochannel_idents = NULL;
-  class->channel_defs.ochannel_names = NULL;
+  class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
   class->gsl_class = NULL;
 }
@@ -161,31 +161,31 @@ bse_source_class_base_finalize (BseSourceClass *class)
   for (i = 0; i < class->channel_defs.n_ichannels; i++)
     {
       g_free (class->channel_defs.ichannel_idents[i]);
-      g_free (class->channel_defs.ichannel_names[i]);
+      g_free (class->channel_defs.ichannel_labels[i]);
       g_free (class->channel_defs.ichannel_blurbs[i]);
     }
   g_free (class->channel_defs.ichannel_idents);
-  g_free (class->channel_defs.ichannel_names);
+  g_free (class->channel_defs.ichannel_labels);
   g_free (class->channel_defs.ichannel_blurbs);
   g_free (class->channel_defs.ijstreams);
   class->channel_defs.n_jstreams = 0;
   class->channel_defs.n_ichannels = 0;
   class->channel_defs.ichannel_idents = NULL;
-  class->channel_defs.ichannel_names = NULL;
+  class->channel_defs.ichannel_labels = NULL;
   class->channel_defs.ichannel_blurbs = NULL;
   class->channel_defs.ijstreams = NULL;
   for (i = 0; i < class->channel_defs.n_ochannels; i++)
     {
       g_free (class->channel_defs.ochannel_idents[i]);
-      g_free (class->channel_defs.ochannel_names[i]);
+      g_free (class->channel_defs.ochannel_labels[i]);
       g_free (class->channel_defs.ochannel_blurbs[i]);
     }
   g_free (class->channel_defs.ochannel_idents);
-  g_free (class->channel_defs.ochannel_names);
+  g_free (class->channel_defs.ochannel_labels);
   g_free (class->channel_defs.ochannel_blurbs);
   class->channel_defs.n_ochannels = 0;
   class->channel_defs.ochannel_idents = NULL;
-  class->channel_defs.ochannel_names = NULL;
+  class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
   g_free (class->gsl_class);
   class->gsl_class = NULL;
@@ -318,6 +318,20 @@ bse_source_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static gboolean
+bse_source_class_has_channel (BseSourceClass *class,
+                              const gchar    *channel_ident)
+{
+  guint i;
+  for (i = 0; i < class->channel_defs.n_ichannels; i++)
+    if (strcmp (channel_ident, class->channel_defs.ichannel_idents[i]) == 0)
+      return TRUE;
+  for (i = 0; i < class->channel_defs.n_ochannels; i++)
+    if (strcmp (channel_ident, class->channel_defs.ochannel_idents[i]) == 0)
+      return TRUE;
+  return FALSE;
+}
+
 static gchar*
 channel_dup_canonify (const gchar *name)
 {
@@ -340,7 +354,7 @@ channel_dup_canonify (const gchar *name)
 static guint
 bse_source_class_add_ijchannel (BseSourceClass *source_class,
 				const gchar    *ident,
-				const gchar    *name,
+				const gchar    *label,
 				const gchar    *blurb,
 				gboolean        is_joint_channel)
 {
@@ -350,29 +364,25 @@ bse_source_class_add_ijchannel (BseSourceClass *source_class,
 
   g_return_val_if_fail (BSE_IS_SOURCE_CLASS (source_class), 0);
   g_return_val_if_fail (ident != NULL, 0);
-  if (!name)
-    name = ident;
-  if (!blurb)
-    blurb = name;
+  if (!label)
+    label = ident;
 
   cname = channel_dup_canonify (ident);
-  i = 0; // FIXME: bse_source_find_ichannel (source, cname);
-  if (i == ~0)
+  if (bse_source_class_has_channel (source_class, cname))
     {
-      g_warning ("source class `%s' already has a channel \"%s\" with identifier \"%s\"",
-		 G_OBJECT_CLASS_NAME (source_class),
-		 name, cname);
+      g_warning ("%s: attempt to reregister channel \"%s\" with source class `%s'",
+                 G_STRFUNC, cname, G_OBJECT_CLASS_NAME (source_class));
       g_free (cname);
       return ~0;
     }
   defs = &source_class->channel_defs;
   i = defs->n_ichannels++;
   defs->ichannel_idents = g_renew (gchar*, defs->ichannel_idents, defs->n_ichannels);
-  defs->ichannel_names = g_renew (gchar*, defs->ichannel_names, defs->n_ichannels);
+  defs->ichannel_labels = g_renew (gchar*, defs->ichannel_labels, defs->n_ichannels);
   defs->ichannel_blurbs = g_renew (gchar*, defs->ichannel_blurbs, defs->n_ichannels);
   defs->ijstreams = g_renew (guint, defs->ijstreams, defs->n_ichannels);
   defs->ichannel_idents[i] = cname;
-  defs->ichannel_names[i] = g_strdup (name);
+  defs->ichannel_labels[i] = g_strdup (label);
   defs->ichannel_blurbs[i] = g_strdup (blurb);
   if (is_joint_channel)
     {
@@ -386,37 +396,21 @@ bse_source_class_add_ijchannel (BseSourceClass *source_class,
 }
 
 guint
-bse_source_class_add_ichannel_ident (BseSourceClass *source_class,
-				     const gchar    *ident,
-				     const gchar    *name,
-				     const gchar    *blurb)
-{
-  return bse_source_class_add_ijchannel (source_class, ident, name, blurb, FALSE);
-}
-
-guint
 bse_source_class_add_ichannel (BseSourceClass *source_class,
-			       const gchar    *name,
-			       const gchar    *blurb)
+                               const gchar    *ident,
+                               const gchar    *label,
+                               const gchar    *blurb)
 {
-  return bse_source_class_add_ijchannel (source_class, name, name, blurb, FALSE);
-}
-
-guint
-bse_source_class_add_jchannel_ident (BseSourceClass *source_class,
-				     const gchar    *ident,
-				     const gchar    *name,
-				     const gchar    *blurb)
-{
-  return bse_source_class_add_ijchannel (source_class, ident, name, blurb, TRUE);
+  return bse_source_class_add_ijchannel (source_class, ident, label, blurb, FALSE);
 }
 
 guint
 bse_source_class_add_jchannel (BseSourceClass *source_class,
-			       const gchar    *name,
-			       const gchar    *blurb)
+                               const gchar    *ident,
+                               const gchar    *label,
+                               const gchar    *blurb)
 {
-  return bse_source_class_add_ijchannel (source_class, name, name, blurb, TRUE);
+  return bse_source_class_add_ijchannel (source_class, ident, label, blurb, TRUE);
 }
 
 guint
@@ -435,10 +429,10 @@ bse_source_find_ichannel (BseSource   *source,
 }
 
 guint
-bse_source_class_add_ochannel_ident (BseSourceClass *source_class,
-				     const gchar    *ident,
-				     const gchar    *name,
-				     const gchar    *blurb)
+bse_source_class_add_ochannel (BseSourceClass *source_class,
+                               const gchar    *ident,
+                               const gchar    *label,
+                               const gchar    *blurb)
 {
   BseSourceChannelDefs *defs;
   guint i;
@@ -446,39 +440,27 @@ bse_source_class_add_ochannel_ident (BseSourceClass *source_class,
   
   g_return_val_if_fail (BSE_IS_SOURCE_CLASS (source_class), 0);
   g_return_val_if_fail (ident != NULL, 0);
-  if (!name)
-    name = ident;
-  if (!blurb)
-    blurb = name;
+  if (!label)
+    label = ident;
   
   cname = channel_dup_canonify (ident);
-  i = 0; // FIXME: bse_source_find_ochannel (source, cname);
-  if (i == ~0)
+  if (bse_source_class_has_channel (source_class, cname))
     {
-      g_warning ("source class `%s' already has a channel \"%s\" with identifier \"%s\"",
-		 G_OBJECT_CLASS_NAME (source_class),
-		 name, cname);
+      g_warning ("%s: attempt to reregister channel \"%s\" with source class `%s'",
+                 G_STRFUNC, cname, G_OBJECT_CLASS_NAME (source_class));
       g_free (cname);
       return ~0;
     }
   defs = &source_class->channel_defs;
   i = defs->n_ochannels++;
   defs->ochannel_idents = g_renew (gchar*, defs->ochannel_idents, defs->n_ochannels);
-  defs->ochannel_names = g_renew (gchar*, defs->ochannel_names, defs->n_ochannels);
+  defs->ochannel_labels = g_renew (gchar*, defs->ochannel_labels, defs->n_ochannels);
   defs->ochannel_blurbs = g_renew (gchar*, defs->ochannel_blurbs, defs->n_ochannels);
   defs->ochannel_idents[i] = cname;
-  defs->ochannel_names[i] = g_strdup (name);
+  defs->ochannel_labels[i] = g_strdup (label);
   defs->ochannel_blurbs[i] = g_strdup (blurb);
   
   return i;
-}
-
-guint
-bse_source_class_add_ochannel (BseSourceClass *source_class,
-			       const gchar    *name,
-			       const gchar    *blurb)
-{
-  return bse_source_class_add_ochannel_ident (source_class, name, name, blurb);
 }
 
 void
@@ -1658,9 +1640,9 @@ typedef struct _DeferredInput DeferredInput;
 struct _DeferredInput
 {
   DeferredInput *next;
-  gchar		*ichannel_name;
+  gchar		*ichannel_ident;
   gchar         *osource_path;
-  gchar         *ochannel_name;
+  gchar         *ochannel_ident;
 };
 
 
@@ -1678,9 +1660,9 @@ resolve_osource_input (gpointer     data,
   if (error)
     bse_storage_warn (storage,
 		      "failed to connect input \"%s\" of `%s' to output \"%s\" of unknown object: %s",
-		      dinput->ichannel_name ? dinput->ichannel_name : "???",
+		      dinput->ichannel_ident ? dinput->ichannel_ident : "???",
 		      BSE_OBJECT_UNAME (source),
-		      dinput->ochannel_name ? dinput->ochannel_name : "???",
+		      dinput->ochannel_ident ? dinput->ochannel_ident : "???",
 		      error);
   else
     {
@@ -1688,28 +1670,28 @@ resolve_osource_input (gpointer     data,
 
       if (!osource)
 	cerror = BSE_ERROR_SOURCE_NO_SUCH_MODULE;
-      else if (!dinput->ichannel_name)
+      else if (!dinput->ichannel_ident)
 	cerror = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
-      else if (!dinput->ochannel_name)
+      else if (!dinput->ochannel_ident)
 	cerror = BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
       else
 	cerror = bse_source_set_input (source,
-				       bse_source_find_ichannel (source, dinput->ichannel_name),
+				       bse_source_find_ichannel (source, dinput->ichannel_ident),
 				       osource,
-				       bse_source_find_ochannel (osource, dinput->ochannel_name));
+				       bse_source_find_ochannel (osource, dinput->ochannel_ident));
       if (cerror)
 	bse_storage_warn (storage,
 			  "failed to connect input \"%s\" of `%s' to output \"%s\" of `%s': %s",
-			  dinput->ichannel_name ? dinput->ichannel_name : "???",
+			  dinput->ichannel_ident ? dinput->ichannel_ident : "???",
 			  BSE_OBJECT_UNAME (source),
-			  dinput->ochannel_name ? dinput->ochannel_name : "???",
+			  dinput->ochannel_ident ? dinput->ochannel_ident : "???",
 			  osource ? BSE_OBJECT_UNAME (osource) : ":<NULL>:",
 			  bse_error_blurb (cerror));
     }
 
-  g_free (dinput->ichannel_name);
+  g_free (dinput->ichannel_ident);
   g_free (dinput->osource_path);
-  g_free (dinput->ochannel_name);
+  g_free (dinput->ochannel_ident);
   g_free (dinput);
 }
 
@@ -1730,7 +1712,7 @@ bse_source_restore_private (BseObject  *object,
       /* parse ichannel name */
       parse_or_return (scanner, G_TOKEN_STRING);
       dinput = g_new0 (DeferredInput, 1);
-      dinput->ichannel_name = g_strdup (scanner->value.v_string);
+      dinput->ichannel_ident = g_strdup (scanner->value.v_string);
       
       /* parse osource upath and queue handler */
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)	/* bad, bad, hack */
@@ -1749,7 +1731,7 @@ bse_source_restore_private (BseObject  *object,
       /* parse ochannel name */
       parse_or_return (scanner, G_TOKEN_STRING);
       peek_or_return (scanner, ')');
-      dinput->ochannel_name = g_strdup (scanner->value.v_string);
+      dinput->ochannel_ident = g_strdup (scanner->value.v_string);
       
       /* close statement */
       parse_or_return (scanner, ')');

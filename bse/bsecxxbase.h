@@ -38,13 +38,16 @@ public:
                       GSignalFlags flags,
                       guint        n_params,
                       ...);
-  void  add_ochannel (const char  *name,
+  void  add_ochannel (const char  *ident,
+                      const char  *label,
                       const char  *blurb,
                       int          assert_id = -1);
-  void  add_ichannel (const char  *name,
+  void  add_ichannel (const char  *ident,
+                      const char  *label,
                       const char  *blurb,
                       int          assert_id = -1);
-  void  add_jchannel (const char  *name,
+  void  add_jchannel (const char  *ident,
+                      const char  *label,
                       const char  *blurb,
                       int          assert_id = -1);
 };

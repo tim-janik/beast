@@ -472,7 +472,7 @@ show_objdoc (void)
           if (!in_itemize++)
             g_print ("@itemize\n");
           g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_ICHANNEL_IDENT (source, j));
-          g_print ("@item @strong{@emph{%s %s}}\n", BSE_SOURCE_ICHANNEL_NAME (source, j),
+          g_print ("@item @strong{@emph{%s %s}}\n", BSE_SOURCE_ICHANNEL_LABEL (source, j),
                    BSE_SOURCE_IS_JOINT_ICHANNEL (source, j) ? _("(Joint Input)") : "");
           g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), BSE_SOURCE_ICHANNEL_IDENT (source, j));
           string = BSE_SOURCE_ICHANNEL_BLURB (source, j);
@@ -490,7 +490,7 @@ show_objdoc (void)
           if (!in_itemize++)
             g_print ("@itemize\n");
           g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_OCHANNEL_IDENT (source, j));
-          g_print ("@item @strong{@emph{%s}} \n", BSE_SOURCE_OCHANNEL_NAME (source, j));
+          g_print ("@item @strong{@emph{%s}} \n", BSE_SOURCE_OCHANNEL_LABEL (source, j));
           g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), BSE_SOURCE_OCHANNEL_IDENT (source, j));
           string = BSE_SOURCE_OCHANNEL_BLURB (source, j);
           if (string)

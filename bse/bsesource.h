@@ -40,13 +40,13 @@ G_BEGIN_DECLS
 #define BSE_SOURCE_COLLECTED(src)	  ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_COLLECTED) != 0)
 #define BSE_SOURCE_N_ICHANNELS(src)	  (BSE_SOURCE (src)->channel_defs->n_ichannels)
 #define BSE_SOURCE_ICHANNEL_IDENT(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_idents[(id)])
-#define BSE_SOURCE_ICHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ichannel_names[(id)])
+#define BSE_SOURCE_ICHANNEL_LABEL(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_labels[(id)])
 #define BSE_SOURCE_ICHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_blurbs[(id)])
 #define BSE_SOURCE_IS_JOINT_ICHANNEL(s,i) ((BSE_SOURCE (s)->channel_defs->ijstreams[(i)] & BSE_SOURCE_JSTREAM_FLAG) != 0)
 #define BSE_SOURCE_N_JOINT_ICHANNELS(src) (BSE_SOURCE (src)->channel_defs->n_jstreams)
 #define BSE_SOURCE_N_OCHANNELS(src)	  (BSE_SOURCE (src)->channel_defs->n_ochannels)
 #define BSE_SOURCE_OCHANNEL_IDENT(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_idents[(id)])
-#define BSE_SOURCE_OCHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ochannel_names[(id)])
+#define BSE_SOURCE_OCHANNEL_LABEL(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_labels[(id)])
 #define BSE_SOURCE_OCHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_blurbs[(id)])
 /*< private >*/
 #define	BSE_SOURCE_INPUT(src,id)	  (BSE_SOURCE (src)->inputs + (guint) (id))
@@ -105,13 +105,13 @@ struct _BseSourceChannelDefs
 {
   guint   n_ichannels;
   gchar **ichannel_idents;
-  gchar **ichannel_names;
+  gchar **ichannel_labels;
   gchar **ichannel_blurbs;
   guint  *ijstreams;
   guint	  n_jstreams;
   guint   n_ochannels;
   gchar **ochannel_idents;
-  gchar **ochannel_names;
+  gchar **ochannel_labels;
   gchar **ochannel_blurbs;
 };
 struct _BseSourceClass
@@ -172,17 +172,17 @@ BseErrorType	bse_source_unset_input		(BseSource	*source,
 
 
 /* --- source implementations --- */
-guint	    bse_source_class_add_ichannel_ident	(BseSourceClass	*source_class,
+guint	    bse_source_class_add_ichannel      	(BseSourceClass	*source_class,
 						 const gchar	*ident,
-						 const gchar	*name,
+						 const gchar	*label,
 						 const gchar	*blurb);
-guint	    bse_source_class_add_jchannel_ident	(BseSourceClass	*source_class,
+guint	    bse_source_class_add_jchannel      	(BseSourceClass	*source_class,
 						 const gchar	*ident,
-						 const gchar	*name,
+						 const gchar	*label,
 						 const gchar	*blurb);
-guint	    bse_source_class_add_ochannel_ident	(BseSourceClass	*source_class,
+guint	    bse_source_class_add_ochannel      	(BseSourceClass	*source_class,
 						 const gchar	*ident,
-						 const gchar	*name,
+						 const gchar	*label,
 						 const gchar	*blurb);
 void		bse_source_set_context_imodule	(BseSource	*source,
 						 guint		 context_handle,
@@ -223,15 +223,6 @@ void       bse_source_input_backup_to_undo      (BseSource      *source,
                                                  BseSource      *osource,
                                                  guint           ochannel);
 /* convenience */
-guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
-						 const gchar	*name,
-						 const gchar	*blurb);
-guint		bse_source_class_add_jchannel	(BseSourceClass	*source_class,
-						 const gchar	*name,
-						 const gchar	*blurb);
-guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,
-						 const gchar	*name,
-						 const gchar	*blurb);
 void    	bse_source_class_cache_gsl_class(BseSourceClass	*source_class,
 						 const GslClass *gsl_class);
 void		bse_source_set_context_module	(BseSource	*source,

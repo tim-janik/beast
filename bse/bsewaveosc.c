@@ -124,26 +124,26 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   
   source_class->context_create = bse_wave_osc_context_create;
   
-  bse_object_class_add_param (object_class, "Wave",
+  bse_object_class_add_param (object_class, _("Wave"),
                               PARAM_WAVE,
-                              bse_param_spec_object ("wave", "Wave", "Wave to play",
+                              bse_param_spec_object ("wave", _("Wave"), _("Wave to play"),
                                                      BSE_TYPE_WAVE, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
                               PARAM_FM_PERC,
-                              sfi_pspec_real ("fm_perc", "Input Modulation [%]",
-                                              "Modulation Strength for linear frequency modulation",
+                              sfi_pspec_real ("fm_perc", _("Input Modulation [%]"),
+                                              _("Modulation Strength for linear frequency modulation"),
                                               10.0, 0, 100.0,5.0,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
                               PARAM_FM_EXP,
-                              sfi_pspec_bool ("exponential_fm", "Exponential FM",
-                                              "Perform exponential frequency modulation"
-                                              "instead of linear",
+                              sfi_pspec_bool ("exponential_fm", _("Exponential FM"),
+                                              _("Perform exponential frequency modulation"
+                                                "instead of linear"),
                                               FALSE, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
                               PARAM_FM_OCTAVES,
-                              sfi_pspec_real ("fm_n_octaves", "Octaves",
-                                              "Number of octaves to be affected by exponential frequency modulation",
+                              sfi_pspec_real ("fm_n_octaves", _("Octaves"),
+                                              _("Number of octaves to be affected by exponential frequency modulation"),
                                               1.0, 0, 3.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
   
@@ -152,15 +152,15 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
                                                             SFI_TYPE_NUM,
                                                             G_TYPE_INT);
   
-  ichannel = bse_source_class_add_ichannel (source_class, "Freq In", "Frequency Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
-  ichannel = bse_source_class_add_ichannel (source_class, "Sync In", "Syncronization Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "sync-in", _("Sync In"), _("Syncronization Input"));
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
-  ichannel = bse_source_class_add_ichannel (source_class, "Mod In", "Modulation Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "mod-in", _("Mod In"), _("Modulation Input"));
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
-  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Wave Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Wave Output"));
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
-  ochannel = bse_source_class_add_ochannel (source_class, "Gate Out", "Gate Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), _("Gate Output"));
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
 }
 

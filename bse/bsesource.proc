@@ -87,21 +87,21 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseSource *isource   = bse_value_get_object (in_values++);
-  gchar *ichannel_name = sfi_value_get_string (in_values++);
+  gchar *ichannel_ident = sfi_value_get_string (in_values++);
   BseSource *osource   = bse_value_get_object (in_values++);
-  gchar *ochannel_name = sfi_value_get_string (in_values++);
+  gchar *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
   BseErrorType error;
   
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
-      !ichannel_name || !ochannel_name)
+      !ichannel_ident || !ochannel_ident)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* connect */
-  ichannel = bse_source_find_ichannel (isource, ichannel_name);
-  ochannel = bse_source_find_ochannel (osource, ochannel_name);
+  ichannel = bse_source_find_ichannel (isource, ichannel_ident);
+  ochannel = bse_source_find_ochannel (osource, ochannel_ident);
   error = bse_source_set_input (isource, ichannel, osource, ochannel);
   if (error == BSE_ERROR_NONE)
     bse_item_push_undo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
@@ -178,20 +178,20 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseSource *isource   = bse_value_get_object (in_values++);
-  gchar *ichannel_name = sfi_value_get_string (in_values++);
+  gchar *ichannel_ident = sfi_value_get_string (in_values++);
   BseSource *osource   = bse_value_get_object (in_values++);
-  gchar *ochannel_name = sfi_value_get_string (in_values++);
+  gchar *ochannel_ident = sfi_value_get_string (in_values++);
   guint ichannel, ochannel;
   BseErrorType error = BSE_ERROR_NONE;
   
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
-      !ichannel_name || !ochannel_name)
+      !ichannel_ident || !ochannel_ident)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  ichannel = bse_source_find_ichannel (isource, ichannel_name);
-  ochannel = bse_source_find_ochannel (osource, ochannel_name);
+  ichannel = bse_source_find_ichannel (isource, ichannel_ident);
+  ochannel = bse_source_find_ochannel (osource, ochannel_ident);
   error = bse_source_check_input (isource, ichannel, osource, ochannel);
   if (error == BSE_ERROR_NONE)
     {
@@ -310,13 +310,13 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, ichannel-name) {
+METHOD (BseSource, ichannel-label) {
   HELP	= "Get input channel name.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+  OUT   = sfi_pspec_string ("channel_label", "Channel Name", NULL,
 			    NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -332,7 +332,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_NAME (source, ichannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_LABEL (source, ichannel));
   
   return BSE_ERROR_NONE;
 }
@@ -343,7 +343,7 @@ METHOD (BseSource, ichannel-ident) {
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+  OUT   = sfi_pspec_string ("channel_ident", "Channel Name", NULL,
 			    NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -578,13 +578,13 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, ochannel-name) {
+METHOD (BseSource, ochannel-label) {
   HELP	= "Get output channel name.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+  OUT   = sfi_pspec_string ("channel_label", "Channel Name", NULL,
 			    NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
@@ -600,7 +600,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_NAME (source, ochannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_LABEL (source, ochannel));
   
   return BSE_ERROR_NONE;
 }
@@ -611,7 +611,7 @@ METHOD (BseSource, ochannel-ident) {
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
-  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+  OUT   = sfi_pspec_string ("channel_ident", "Channel Name", NULL,
 			    NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,

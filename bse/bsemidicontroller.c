@@ -139,13 +139,13 @@ bse_midi_controller_class_init (BseMidiControllerClass *class)
 						    BSE_MIDI_SIGNAL_PRESSURE,
 						    SFI_PARAM_STANDARD));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out1", "MIDI Signal 1");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl-out1", _("Ctrl Out1"), _("MIDI Signal 1"));
   g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL1);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out2", "MIDI Signal 2");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl-out2", _("Ctrl Out2"), _("MIDI Signal 2"));
   g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL2);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out3", "MIDI Signal 3");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl-out3", _("Ctrl Out3"), _("MIDI Signal 3"));
   g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL3);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out4", "MIDI Signal 4");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl-out4", _("Ctrl Out4"), _("MIDI Signal 4"));
   g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL4);
 }
 

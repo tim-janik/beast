@@ -187,15 +187,15 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":scale"));
   
-  channel_id = bse_source_class_add_ichannel (source_class, "Audio In", _("Unfiltered Audio Signal"));
+  channel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Audio Signal"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);
-  channel_id = bse_source_class_add_ichannel (source_class, "Freq In", _("Center Frequency Input"));
+  channel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Center Frequency Input"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_FREQ);
-  channel_id = bse_source_class_add_ichannel (source_class, "Freq Mod In", _("Frequency Modulation Input"));
+  channel_id = bse_source_class_add_ichannel (source_class, "freq-mod-in", _("Freq Mod In"), _("Frequency Modulation Input"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD);
-  channel_id = bse_source_class_add_ichannel (source_class, "Gain Mod In", _("Gain Modulation Input"));
+  channel_id = bse_source_class_add_ichannel (source_class, "gain-mod-in", _("Gain Mod In"), _("Gain Modulation Input"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
-  channel_id = bse_source_class_add_ochannel (source_class, "Audio Out", _("Filtered Audio Signal"));
+  channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Filtered Audio Signal"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_OCHANNEL_AUDIO);
 }
 

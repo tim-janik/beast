@@ -234,9 +234,9 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
     {
       BseLadspaPort *port = bli->aports + i;
       if (port->input)
-	ichannel = bse_source_class_add_ichannel_ident (source_class, port->ident, port->name, NULL);
+	ichannel = bse_source_class_add_ichannel (source_class, port->ident, port->name, NULL);
       else /* port->output */
-	ochannel = bse_source_class_add_ochannel_ident (source_class, port->ident, port->name, NULL);
+	ochannel = bse_source_class_add_ochannel (source_class, port->ident, port->name, NULL);
     }
 }
 

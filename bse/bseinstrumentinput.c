@@ -103,13 +103,13 @@ bse_instrument_input_class_init (BseInstrumentInputClass *class)
   
   iport_class->n_input_ports = 4;
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Frequency", "Note Frequency");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
   g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Gate", "High if the note is currently being pressed");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
   g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_GATE);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Velocity", "Velocity of the note press");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "velocity", _("Velocity"), _("Velocity of the note press"));
   g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Aftertouch", NULL);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
   g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
 }
 

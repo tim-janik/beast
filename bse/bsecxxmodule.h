@@ -110,10 +110,10 @@ public:
   guint         ichannels_jstream (guint i)     { return BSE_SOURCE_ICHANNEL_JSTREAM (gobject(), i); }
   guint         ochannels_ostream (guint i)     { return BSE_SOURCE_OCHANNEL_OSTREAM (gobject(), i); }
   const gchar*  ichannel_ident (guint i)        { return BSE_SOURCE_ICHANNEL_IDENT (gobject(), i); }
-  const gchar*  ichannel_name (guint i)         { return BSE_SOURCE_ICHANNEL_NAME (gobject(), i); }
+  const gchar*  ichannel_label (guint i)        { return BSE_SOURCE_ICHANNEL_LABEL (gobject(), i); }
   const gchar*  ichannel_blurb (guint i)        { return BSE_SOURCE_ICHANNEL_BLURB (gobject(), i); }
   const gchar*  ochannel_ident (guint i)        { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
-  const gchar*  ochannel_name (guint i)         { return BSE_SOURCE_OCHANNEL_NAME (gobject(), i); }
+  const gchar*  ochannel_label (guint i)        { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
   const gchar*  ochannel_blurb (guint i)        { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
   virtual SynthesisModule*  create_module        (unsigned int     context_handle,
                                                   GslTrans        *trans) = 0;

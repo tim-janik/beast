@@ -111,13 +111,13 @@ bse_midi_input_class_init (BseMidiInputClass *class)
 					     0, 0, BSE_MIDI_MAX_CHANNELS, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Frequency", "Note Frequency");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
   g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_FREQUENCY);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Gate", "High if the note is currently being pressed");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
   g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_GATE);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Velocity", "Velocity of the note press");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "velocity", _("Velocity"), _("Velocity of the note press"));
   g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_VELOCITY);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Aftertouch", NULL);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
   g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_AFTERTOUCH);
 }
 

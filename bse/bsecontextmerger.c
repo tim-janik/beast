@@ -74,17 +74,17 @@ bse_context_merger_class_init (BseContextMergerClass *class)
   
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
     {
-      gchar *string;
+      gchar *ident;
       
-      string = g_strdup_printf ("Input %u", i + 1);
-      channel_id = bse_source_class_add_jchannel (source_class, string, NULL);
+      ident = g_strdup_printf ("input-%u", i + 1);
+      channel_id = bse_source_class_add_jchannel (source_class, ident, NULL, NULL);
       g_assert (channel_id == i);
-      g_free (string);
+      g_free (ident);
       
-      string = g_strdup_printf ("Output %u", i + 1);
-      channel_id = bse_source_class_add_ochannel (source_class, string, NULL);
+      ident = g_strdup_printf ("output-%u", i + 1);
+      channel_id = bse_source_class_add_ochannel (source_class, ident, NULL, NULL);
       g_assert (channel_id == i);
-      g_free (string);
+      g_free (ident);
     }
 }
 

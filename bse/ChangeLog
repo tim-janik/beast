@@ -1,3 +1,33 @@
+Fri Feb 27 06:19:32 2004  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c:
+	* bsebiquadfilter.c:
+	* bseconstant.c:
+	* bsecontextmerger.c:
+	* bsecxxbase.cc:
+	* bsecxxbase.h:
+	* bsecxxmodule.h:
+	* bseinstrumentinput.c:
+	* bseinstrumentoutput.c:
+	* bseladspamodule.c:
+	* bsemidicontroller.c:
+	* bsemidiinput.c:
+	* bsemidivoice.c:
+	* bsepcminput.c:
+	* bsepcmoutput.c:
+	* bsesnooper.c:
+	* bsesource.c:
+	* bsesource.h:
+	* bsesource.proc:
+	* bsestandardosc.c:
+	* bsesubiport.c:
+	* bsesuboport.c:
+	* bsesubsynth.c:
+	* bsewaveosc.c: grand fix of channel names. channels have ident,
+	label and blurb, where label and blurb are subject to i18n. this fixes
+	the demo song not working in locales!=C due to channel identifiers
+	being translated. added missing i18n markups.
+
 Thu Feb 26 20:35:51 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepart.c:
@@ -447,7 +477,7 @@ Mon Dec 29 21:00:23 2003  Tim Janik  <timj@gtk.org>
 	* bsemidireceiver.cc (voice_switch_module_free): fix free'd
 	memory access.
 
-	* bse/bsetype.h: support FBlock pspecs.
+	* bsetype.h: support FBlock pspecs.
 
 	* bseprocidl.cc: guard against already-destroyed signals.
 
