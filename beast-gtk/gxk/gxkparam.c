@@ -281,6 +281,7 @@ param_value_binding_get_value (GxkParam *param,
                                GValue   *value)
 {
   g_value_copy (&param->value, value);
+  g_param_value_validate (param->pspec, value);
 }
 
 static void

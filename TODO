@@ -1,7 +1,7 @@
 FIXMES:
+- PatternEditor: load default keytable
 - PatternEditor: implement vzoom
 - PatternEditor: fix entering the first note for channels > 1
-- PatternEditor: implement base octave
 - PatternEditor: implement last tick changes
 - PatternEditor: implement focus to mouse clicks
 - remove bse_glue_make_rorecord() and siblings

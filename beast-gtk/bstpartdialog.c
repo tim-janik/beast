@@ -214,6 +214,8 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->hwrap, NULL));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, "name"));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, NULL));
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);

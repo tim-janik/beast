@@ -26,6 +26,7 @@ typedef struct {
   GxkParam        *steps;
   GxkParam        *step_dir;
   GxkParam        *hwrap;
+  GxkParam        *base_octave;
   /* misc data */
   guint            ref_count;
   BstPatternView  *pview;

@@ -50,6 +50,10 @@ bst_pattern_controller_new (BstPatternView         *pview,
                                                      _("Toggle whether horizontal movement of the focus cell will "
                                                        "wrap around edges"), FALSE, SFI_PARAM_STANDARD),
                                      NULL, NULL);
+  self->base_octave = gxk_param_new_value (sfi_pspec_int ("base_octave", _("Base Octave"),
+                                                          _("Controls the octave relative to which notes are entered"),
+                                                          1, -4, +6, 1, SFI_PARAM_STANDARD),
+                                           NULL, NULL);
   self->pview = pview;
   self->ref_count = 1;
 
@@ -101,12 +105,11 @@ pattern_controller_key_press (BstPatternController *self,
                               GdkEventKey          *event)
 {
   BstPatternView *pview = self->pview;
-  gdouble param = 0;
-  BstPatternFunction ftype = 0;
-  BstPatternFunction action;
-  BstPatternFunction movement;
   BstPatternColumn *col = bst_pattern_view_get_focus_cell (pview, NULL, NULL);
+  BstPatternFunction movement, ftype = 0;
+  gdouble param = 0;
   gboolean handled;
+  gint base_octave, note;
   guint state = event->state, g = col->klass->collision_group;
   if (!ftype && g)
     ftype = bst_key_binding_lookup_id (bst_pattern_controller_piano_keys(), event->keyval, state, g, &param);
@@ -125,9 +128,35 @@ pattern_controller_key_press (BstPatternController *self,
     ftype = bst_key_binding_lookup_id (bst_pattern_controller_generic_keys(), event->keyval, state, g, &param);
   if (!ftype)
     ftype = bst_key_binding_lookup_id (bst_pattern_controller_generic_keys(), event->keyval, state, 0, &param);
-  action = ftype & BST_PATTERN_MASK_ACTION;
+  switch (ftype & BST_PATTERN_MASK_ACTION)
+    {
+    case BST_PATTERN_SET_NOTE:
+      base_octave = sfi_value_get_int (&self->base_octave->value);
+      note = param + 0.5;
+      note += base_octave * 12;
+      while (note < SFI_MIN_NOTE)
+        note += 12;
+      while (note > SFI_MAX_NOTE)
+        note -= 12;
+      param = note;
+      break;
+    }
+  switch (ftype & BST_PATTERN_MASK_CONTROLS)
+    {
+    case BST_PATTERN_CHANGE_BASE_OCTAVE:
+      base_octave = sfi_value_get_int (&self->base_octave->value);
+      base_octave += param;
+      sfi_value_set_int (&self->base_octave->value, base_octave);
+      gxk_param_update (self->base_octave);     /* we poked the params value */
+      break;
+    case BST_PATTERN_SET_BASE_OCTAVE:
+      base_octave = param;
+      sfi_value_set_int (&self->base_octave->value, base_octave);
+      gxk_param_update (self->base_octave);     /* we poked the params value */
+      break;
+    }
   movement = ftype & BST_PATTERN_MASK_MOVEMENT;
-  handled = bst_pattern_view_dispatch_key (pview, event->keyval, event->state, action, param, &movement);
+  handled = bst_pattern_view_dispatch_key (pview, event->keyval, event->state, ftype & BST_PATTERN_MASK_ACTION, param, &movement);
   if (movement == BST_PATTERN_MOVE_NEXT &&      /* if the standard step-next movement */
       (event->state & GDK_SHIFT_MASK) &&        /* is blocked by shift */
       (movement != ftype || handled))           /* and this is not purely "next" */

@@ -206,15 +206,18 @@ pattern_column_note_key_event (BstPatternColumn       *column,
       bse_item_ungroup_undo (proxy);
       return TRUE;
     case BST_PATTERN_SET_NOTE:
+      bse_item_group_undo (proxy, "Set Note");
       if (pseq->n_pnotes == 1)
         {
           BsePartNote *pnote = pseq->pnotes[0];
-          bse_part_delete_event (proxy, pnote->id);
+          bse_part_change_note (proxy, pnote->id, pnote->tick, pnote->duration,
+                                SFI_NOTE_CLAMP (iparam), pnote->fine_tune, pnote->velocity);
         }
-      if (pseq->n_pnotes <= 1)
+      else if (pseq->n_pnotes <= 1)
         bse_part_insert_note (proxy, column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
       else
         gdk_beep();
+      bse_item_ungroup_undo (proxy);
       return TRUE;
     default: ;
     }
