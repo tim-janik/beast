@@ -1,5 +1,5 @@
 # BEAST - Bedevilled Audio System
-# Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+# Copyright (C) 1998-2002 Tim Janik
 #
 ## Makefile.am for BEAST
  
@@ -246,8 +246,7 @@ EXTRA_DIST += $(beast_built_sources)
 #
 gen_source = gen-source.tmp
 CLEANFILES += $(gen_source)
-COPYING: $(beast_built_sources)
-$(OBJECTS): COPYING # this is our oldest-source-stamp
+$(beast_sources): $(beast_built_sources)
 
 
 #

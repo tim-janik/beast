@@ -1,3 +1,22 @@
+Fri Aug 30 03:21:31 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to v0.4.1rc4.
+
+	* bsw-shell/*.[hc]: 
+	* bsw/*.[hc]: 
+	* beast-gtk/*.[hc]: update copyrights and license headers.
+	
+	* AUTHORS: make this the canonical AUTHORS file for the whole
+	package, update names.
+	
+	* put notes about licensing into COPYING. ship COPYING.GPL
+	and COPYING.LGPL.
+
+Thu Aug 29 11:52:04 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: remove built_tools from
+	MAINTAINERCLEANFILES.
+
 Sat Aug 24 12:02:21 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttexttools.c (text_buffer_tagdef): support empty tagdefs.

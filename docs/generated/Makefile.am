@@ -57,6 +57,6 @@ html-targets:	$(html_targets)
 
 CLEANFILES += $(conditional_clean) $(html_targets)
 
-MAINTAINERCLEANFILES += $(build_tools)
+MAINTAINERCLEANFILES += # $(build_tools)
 
 EXTRA_DIST = ${public_docs} ${build_tools}
