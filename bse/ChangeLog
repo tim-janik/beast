@@ -1,3 +1,11 @@
+Sat Oct 16 08:34:40 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c: allow ::solo property editing on master.
+
+	* bsesong.c: allow master as solo track which makes sense since tracks,
+	can be connected directly to master. don't mute master if another track 
+	is the solo track.
+
 Sat Oct 16 00:50:40 2004  Tim Janik  <timj@gtk.org>
 
 	* bseproject.[hc]: provide bse_project_clear_undo().

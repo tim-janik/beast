@@ -167,7 +167,6 @@ bse_bus_editable_property (BseObject      *object,
   switch (param_id)
     {
       BseItem *parent;
-    case PROP_SOLO:
     case PROP_OUTPUTS:
       parent = BSE_ITEM (self)->parent;
       if (BSE_IS_SONG (parent))

@@ -600,7 +600,7 @@ bse_song_set_solo_bus (BseSong        *self,
                        BseBus         *bus)
 {
   BseBus *master = bse_song_find_master (self);
-  if (bus == master || (bus && BSE_ITEM (bus)->parent != BSE_ITEM (self)))
+  if (bus && BSE_ITEM (bus)->parent != BSE_ITEM (self))
     bus = NULL;
   SfiRing *ring;
   self->solo_bus = bus;
