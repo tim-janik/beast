@@ -11,6 +11,23 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@newsTitle{Thursday 27 February 2003, LinuxForum 2003}
+
+Stefan Westerfeld and Tim Janik are going to the
+@uref{http://www.linuxforum.dk,,Linux Forum 2003} this Saturday
+(1 March). We'll probably hang out at the debian booth if people
+want to catch us to talk about @beast{},
+@uref{http://www.arts-project.org,,aRts} or
+@uref{http://sfk.evilplan.org/csl/,,CSL}.
+
+@strong{UPDATE:} Stefan Westerfeld posted a summary of our
+discussions with Leon Shiman, who leads the
+@uref{http://www.mediaapplicationserver.net,,Media Application Server}
+development group, to the
+@uref{http://lists.kde.org/?l=kde-multimedia&m=104669966423967&w=2,,kde-multimedia}
+list.
+
+
 @newsTitle{Friday 21 February 2003, Recent Development}
 
 Lots of website content has been improved recently. The

@@ -11,6 +11,21 @@
 @unnumbered What's New?
 
 
+@newsTitle{Monday 14 Apr 2003, BEAST Featuring LADSPA}
+
+BEAST/BSE version 0.5.1 is available in the
+@uref{beast-doc://download,,download section}.
+
+The most exciting new feature in this release is the support for
+@uref{http://www.ladspa.org/,, LADSPA} plugins. With that, @beast
+gains support for a wide variety of excellent plugins available on
+the net, for instance the
+@uref{http://plugin.org.uk/,,plugin collection from Steve Harris}.
+
+As usual, more release details are outlined in the
+@uref{beast-doc://release-news,,NEWS section}.
+
+
 @newsTitle{Wednesday 19 Mar 2003, List move and site updates}
 
 The @beast mailing list has moved. People may subscribe to the
@@ -36,23 +51,6 @@ support to simplify song edits.
 
 More details can be found in the
 @uref{beast-doc://release-news,,NEWS section}.
-
-
-@newsTitle{Thursday 27 February 2003, LinuxForum 2003}
-
-Stefan Westerfeld and Tim Janik are going to the
-@uref{http://www.linuxforum.dk,,Linux Forum 2003} this Saturday
-(1 March). We'll probably hang out at the debian booth if people
-want to catch us to talk about @beast{},
-@uref{http://www.arts-project.org,,aRts} or
-@uref{http://sfk.evilplan.org/csl/,,CSL}.
-
-@strong{UPDATE:} Stefan Westerfeld posted a summary of our
-discussions with Leon Shiman, who leads the
-@uref{http://www.mediaapplicationserver.net,,Media Application Server}
-development group, to the
-@uref{http://lists.kde.org/?l=kde-multimedia&m=104669966423967&w=2,,kde-multimedia}
-list.
 
 
 @bye

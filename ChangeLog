@@ -1,3 +1,10 @@
+Mon Apr 14 02:17:03 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce v0.5.1.
+
+	* docs/site-download.texi: update dependancy list (ogg/vorbis and
+	gtk versiosns) and comment on LADSPA support.
+
 Mon Apr 14 00:11:43 2003  Tim Janik  <timj@gtk.org>
 
 	* released beast-0.5.1.tar.gz.

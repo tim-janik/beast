@@ -24,11 +24,20 @@ found at:
 
 @itemize
 @item @uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas} (GNOME-2.0)
-@item @uref{ftp://ftp.gtk.org/pub/gtk/v2.0/,, Gtk+-2.0}
+@item @uref{ftp://ftp.gtk.org/pub/gtk/v2.2/,, Gtk+-2.2}
 @item @uref{http://www.gnu.org/software/guile/guile.html,, Guile-1.4}
-@item @uref{http://www.xiph.org/ogg/vorbis/download/,, Ogg/Vorbis} (at least version 1.0rc3)
+@item @uref{http://www.xiph.org/ogg/vorbis/download/,, Ogg/Vorbis} (at least version 1.0)
 @item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD} (@bse was developed against libmad-0.14.2)
 @end itemize
+
+BEAST also supports the
+@uref{http://www.ladspa.org/,, LADSPA} plugin API, so various kinds of
+third party plugins can be loaded and executed. A collection
+of links to LADSPA plugins is kept at
+@uref{http://www.ladspa.org}.
+BEAST will look for LADSPA plugins under @file{lib/ladspa/} of it's own
+installation prefix, and in the directories listed in @code{$LADSPA_PATH}.
+
 
 @unnumbered Bleeding Edge
 
