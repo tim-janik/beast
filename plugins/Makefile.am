@@ -42,16 +42,16 @@ if IF_HAVE_PERL5
 	  --iprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"\n" \
 	  --eprod "/* @EnumName@\n */\n" \
 	  --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
-	  --vhead "static Bse@Type@Value @enum_name@_values[] = {" \
+	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	  --vtail "static GType   BSE_TYPE_ID (@EnumName@);" \
+	  --vtail "static GType BSE_TYPE_ID (@EnumName@);" \
 	    $< > xgen-enums \
 	&& $(PERL) $(mkenums) \
 	  --hprod "\n#include\t<bse/bseexports.h>\n" \
 	  --hprod "\nBSE_EXPORT_STATIC_ENUMS = {" \
 	  --eprod "  { &BSE_TYPE_ID (@EnumName@), \"@EnumName@\",\n" \
-	  --eprod "    BSE_TYPE_@TYPE@, @enum_name@_values }," \
+	  --eprod "    G_TYPE_@TYPE@, @enum_name@_values }," \
 	  --tprod "  { NULL, },\n};" \
 	    $< >> xgen-enums \
 	&& cp xgen-enums $(@F) \
