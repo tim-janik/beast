@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-28 03:00+0200\n"
+"POT-Creation-Date: 2004-07-29 11:02+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -47,7 +47,6 @@ msgstr ""
 msgid "Import a standard MIDI file into the current project"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr "_Mbyll"
@@ -663,7 +662,6 @@ msgstr ""
 msgid "Time Entry"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
 msgstr "Pastro"
@@ -1235,7 +1233,6 @@ msgstr ""
 msgid "Procedure"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstprofiler.c:166
 msgid "Totals"
 msgstr "Totalet"
@@ -2337,7 +2334,6 @@ msgstr ""
 msgid "Wave_s"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Zoom"
 msgstr "Shkalla e zmadhimit"
@@ -3212,7 +3208,6 @@ msgstr ""
 msgid "Item"
 msgstr ""
 
-#. GRUT modified this item
 #: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
 #: bse/bseparasite.proc:90
 msgid "Path"
@@ -3559,9 +3554,10 @@ msgstr ""
 msgid "Copyright license applying to this object"
 msgstr ""
 
+#. GRUT modified this item
 #: bse/bsesuper.c:114
 msgid "Creation Time"
-msgstr ""
+msgstr "Koha e Krijimit"
 
 #: bse/bsesuper.c:118
 msgid "Last modification time"
@@ -3612,7 +3608,6 @@ msgstr ""
 msgid "Music Composer"
 msgstr ""
 
-#. GRUT modified this item
 #: data/bse.keys.in.h:1
 msgid "Audio"
 msgstr "Zëri"
