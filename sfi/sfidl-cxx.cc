@@ -150,7 +150,7 @@ void CodeGeneratorCxx::run ()
 	                                  name.c_str(), name.c_str(), init.c_str());
 	  printf("  SfiProxy _proxy() const { return _object_id; }\n");
 	  printf("  operator bool() const { return _object_id != 0; }\n");
-	  printMethods(ci);
+	  printMethods(*ci);
 	  printf("};\n");
 	}
 
@@ -250,7 +250,7 @@ void CodeGeneratorCxx::run ()
       for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
 	{
 	  if (parser.fromInclude (ci->name)) continue;
-	  printMethods(ci);
+	  printMethods(*ci);
 	}
 
     }
