@@ -2,6 +2,7 @@ FIXME(release-critical):
 - implement Monitor Output Signal dialogs:
   - histogram
   - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
+- s/gslwave/bsewave/ (filenames also)  
 TODO:
 - test engine block size changes (Subject: blocksize vs. cpu)
 - probes only need to deliver (sample frames) 25 times per second, and need not be continuous
