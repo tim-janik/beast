@@ -1,4 +1,5 @@
 FIXMES:
+- find track for part should reveal NULL for orphans
 - change [M] toggle tooltip in the track-view to explain *sequencer* muting (i.e. ignore notes)
 - optimize BseAdder according to BseSummation
 - verify that no IO channel buffer memory is being allocated for virtual modules
