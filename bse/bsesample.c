@@ -254,7 +254,7 @@ bse_sample_fillup_munks (BseSample *sample)
   if (!munk)
     {
       g_warning ("BseSample: attempt to fillup \"%s\", with empty BseMunks",
-		 BSE_OBJECT_NAME (sample));
+		 BSE_OBJECT_ULOC (sample));
       return;
     }
   

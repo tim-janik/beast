@@ -85,7 +85,7 @@ BSE_BUILTIN_TYPE (BseInPort)
 					      "Virtual input port connector, used to provide a synthesis network "
 					      "with input signals from other synthesis networks",
 					      &in_port_info);
-  bse_categories_register_icon ("/Source/Plug/Virtual Input",
+  bse_categories_register_icon ("/Modules/Plug/Virtual Input",
 				in_port_type_id,
 				&pixdata);
   return in_port_type_id;

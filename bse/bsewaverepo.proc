@@ -48,7 +48,9 @@ load_file (BseWaveRepo *wrepo,
   if (!wdsc)
     return error;
   
-  wave = g_object_new (BSE_TYPE_WAVE, NULL);
+  wave = g_object_new (BSE_TYPE_WAVE,
+		       "name", g_basename (file_name),
+		       NULL);
   for (i = 0; i < wdsc->n_chunks; i++)
     {
       GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, error ? NULL : &error);

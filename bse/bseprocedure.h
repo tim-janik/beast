@@ -108,10 +108,10 @@ void	bse_procedure_notifier_remove	(guint			 notifier_id);
 
 
 /* --- internal --- */
-BseErrorType bse_procedure_execva_item	(BseProcedureClass	*proc,
-					 BseItem		*item,
-					 va_list		 var_args,
-					 gboolean		 skip_oparams);
+BseErrorType bse_procedure_execva_object (BseProcedureClass	*proc,
+					  BseObject	        *object,
+					  va_list		 var_args,
+					  gboolean		 skip_oparams);
 const gchar* bse_procedure_type_register (const gchar		*name,
 					  const gchar		*blurb,
 					  BsePlugin		*plugin,

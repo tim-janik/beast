@@ -365,7 +365,7 @@ bse_pattern_group_restore_private (BseObject  *object,
   if (!item || !BSE_IS_PATTERN (item))
     bse_storage_warn (storage,
 		      "%s: unable to determine pattern from \"%s\"",
-		      BSE_OBJECT_NAME (pgroup),
+		      BSE_OBJECT_ULOC (pgroup),
 		      pattern_path);
   else
     bse_pattern_group_insert_pattern (pgroup, BSE_PATTERN (item), pgroup->n_entries);

@@ -45,7 +45,7 @@ extern "C" {
 /* --- object member/convenience macros --- */
 #define BSE_OBJECT_TYPE(object)		  (G_TYPE_FROM_INSTANCE (object))
 #define BSE_OBJECT_TYPE_NAME(object)	  (g_type_name (BSE_OBJECT_TYPE (object)))
-#define BSE_OBJECT_NAME(object)		  ((gchar*) g_datalist_id_get_data (&((GObject*) (object))->qdata, bse_quark_name))
+#define BSE_OBJECT_ULOC(object)		  ((gchar*) g_datalist_id_get_data (&((GObject*) (object))->qdata, bse_quark_uloc))
 #define BSE_OBJECT_FLAGS(object)	  (((BseObject*) (object))->flags)
 #define BSE_OBJECT_SET_FLAGS(object, f)	  (BSE_OBJECT_FLAGS (object) |= (f))
 #define BSE_OBJECT_UNSET_FLAGS(object, f) (BSE_OBJECT_FLAGS (object) &= ~(f))
@@ -56,7 +56,7 @@ extern "C" {
 /* --- bse object flags --- */
 typedef enum				/*< skip >*/
 {
-  BSE_OBJECT_FLAG_CONSTRUCTED		= 1 << 0
+  BSE_OBJECT_FLAG_FIXED_ULOC		= 1 << 0
 } BseObjectFlags;
 #define BSE_OBJECT_FLAGS_USHIFT	    (2)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
@@ -92,8 +92,8 @@ struct _BseObjectClass
 						 BseStorage	*storage);
 
   /* custom methods for specific object needs, most of them require chaining */
-  void			(*set_name)		(BseObject	*object,
-						 const gchar	*name);
+  void			(*set_uloc)		(BseObject	*object,
+						 const gchar	*uloc);
   void			(*store_private)	(BseObject	*object,
 						 BseStorage	*storage);
   BseTokenType		(*restore_private)	(BseObject	*object,
@@ -140,8 +140,6 @@ void		bse_object_get			(BseObject	*object,
 #define 	bse_object_param_changed(o,pn)	g_object_notify ((GObject*) (o), (pn))
 void		bse_object_lock			(BseObject	*object);
 void		bse_object_unlock		(BseObject	*object);
-void		bse_object_set_name		(BseObject	*object,
-						 const gchar	*name);
 gpointer	bse_object_get_data		(BseObject	*object,
 						 const gchar	*key);
 void		bse_object_set_data		(BseObject	*object,
@@ -155,8 +153,8 @@ BseIcon*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
 gpointer	bse_object_from_id		(guint		 unique_id);
 GList*		bse_objects_list		(GType		 type);
-GList*		bse_objects_list_by_name	(GType		 type,
-						 const gchar	*name);
+GList*		bse_objects_list_by_uloc	(GType		 type,
+						 const gchar	*uloc);
 void		bse_object_store		(BseObject	*object,
 						 BseStorage	*storage);
 GTokenType	bse_object_restore		(BseObject	*object,
@@ -175,7 +173,7 @@ const gchar*	bse_object_type_register	(const gchar *name,
 #define	bse_object_set_qdata(obj, quark, data)	(g_object_set_qdata ((gpointer) (obj), (quark), (data)))
 #define	bse_object_set_qdata_full(o, q, d, y)	(g_object_set_qdata_full ((gpointer) (o), (q), (d), (y)))
 #define	bse_object_steal_qdata(obj, quark)	(g_object_steal_qdata ((gpointer) (obj), (quark)))
-extern GQuark bse_quark_name;
+extern GQuark bse_quark_uloc;
 
 
 #ifdef __cplusplus

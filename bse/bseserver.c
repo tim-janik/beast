@@ -237,7 +237,7 @@ bse_server_find_project (BseServer   *server,
     {
       BseProject *project = node->data;
 
-      if (strcmp (name, BSE_OBJECT_NAME (project)) == 0)
+      if (strcmp (name, BSE_OBJECT_ULOC (project)) == 0)
 	return project;
     }
   return NULL;

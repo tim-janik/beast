@@ -270,7 +270,7 @@ _bse_voice_activate (BseVoice      *voice,
   switch (instrument->type)
     {
       BseSample *sample;
-      BseSInstrument *sinstrument;
+      // BseSInstrument *sinstrument;
       
     case BSE_INSTRUMENT_SAMPLE:
       sample = BSE_SAMPLE (instrument->input);

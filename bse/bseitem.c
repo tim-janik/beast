@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ static void	bse_item_class_init		(BseItemClass	*class);
 static void	bse_item_init			(BseItem		*item);
 static void	bse_item_do_dispose		(GObject		*object);
 static void	bse_item_do_destroy		(BseObject		*object);
-static void	bse_item_do_set_name		(BseObject		*object,
-						 const gchar		*name);
+static void	bse_item_do_set_uloc		(BseObject		*object,
+						 const gchar		*uloc);
 static guint	bse_item_do_get_seqid		(BseItem		*item);
 static void	bse_item_do_set_parent		(BseItem                *item,
 						 BseItem                *parent);
@@ -85,7 +85,7 @@ bse_item_class_init (BseItemClass *class)
 
   gobject_class->dispose = bse_item_do_dispose;
 
-  object_class->set_name = bse_item_do_set_name;
+  object_class->set_uloc = bse_item_do_set_uloc;
   object_class->destroy = bse_item_do_destroy;
 
   class->set_parent = bse_item_do_set_parent;
@@ -133,18 +133,18 @@ bse_item_do_destroy (BseObject *object)
 }
 
 static void
-bse_item_do_set_name (BseObject   *object,
-		      const gchar *name)
+bse_item_do_set_uloc (BseObject   *object,
+		      const gchar *uloc)
 {
   BseItem *item = BSE_ITEM (object);
 
-  /* ensure that item names within this container are unique
+  /* ensure that item ulocs within this container are unique
    */
   if (!BSE_IS_CONTAINER (item->parent) ||
-      (name && !bse_container_lookup_item (BSE_CONTAINER (item->parent), name)))
+      (uloc && !bse_container_lookup_item (BSE_CONTAINER (item->parent), uloc)))
     {
-      /* chain parent class' set_name handler */
-      BSE_OBJECT_CLASS (parent_class)->set_name (object, name);
+      /* chain parent class' set_uloc handler */
+      BSE_OBJECT_CLASS (parent_class)->set_uloc (object, uloc);
     }
 }
 
@@ -414,7 +414,7 @@ bse_item_make_handle (BseItem *item,
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
 
   if (persistent)
-    return g_strconcat (BSE_OBJECT_TYPE_NAME (item), "::", BSE_OBJECT_NAME (item), NULL);
+    return g_strconcat (BSE_OBJECT_TYPE_NAME (item), "::", BSE_OBJECT_ULOC (item), NULL);
   else
     {
       gchar buffer[10];
@@ -439,7 +439,7 @@ bse_item_make_nick_path (BseItem *item)
     {
       gchar *string = nick;
 
-      nick = g_strconcat (BSE_OBJECT_NAME (item), string ? "." : NULL, string, NULL);
+      nick = g_strconcat (BSE_OBJECT_ULOC (item), string ? "." : NULL, string, NULL);
       g_free (string);
       item = item->parent;
     }
@@ -485,7 +485,7 @@ bse_item_execva_i (BseItem     *item,
       return BSE_ERROR_INTERNAL;
     }
 
-  error = bse_procedure_execva_item (proc, item, var_args, FALSE);
+  error = bse_procedure_execva_object (proc, BSE_OBJECT (item), var_args, FALSE);
 
   bse_procedure_unref (proc);
 

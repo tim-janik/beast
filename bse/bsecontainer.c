@@ -126,8 +126,6 @@ bse_container_class_init (BseContainerClass *class)
   class->add_item = bse_container_do_add_item;
   class->remove_item = bse_container_do_remove_item;
   class->forall_items = NULL;
-  class->item_seqid = NULL;
-  class->get_item = NULL;
   
   container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
 								      bse_marshal_VOID__OBJECT,
@@ -223,26 +221,26 @@ container_add_item (BseContainer *container,
   g_object_freeze_notify (G_OBJECT (container));
   g_object_freeze_notify (G_OBJECT (item));
   
-  /* ensure that item names per container are unique
+  /* ensure that item ulocs per container are unique
    */
-  if (!BSE_OBJECT_NAME (item) || bse_container_lookup_item (container, BSE_OBJECT_NAME (item)))
+  if (!BSE_OBJECT_ULOC (item) || bse_container_lookup_item (container, BSE_OBJECT_ULOC (item)))
     {
-      gchar *name = BSE_OBJECT_NAME (item);
+      gchar *uloc = BSE_OBJECT_ULOC (item);
       gchar *buffer, *p;
       guint i = 0, l;
       
-      if (!name)
-	name = BSE_OBJECT_TYPE_NAME (item);
+      if (!uloc)
+	uloc = BSE_OBJECT_TYPE_NAME (item);
       
-      l = strlen (name);
+      l = strlen (uloc);
       buffer = g_new (gchar, l + 12);
-      strcpy (buffer, name);
+      strcpy (buffer, uloc);
       p = buffer + l;
       do
 	g_snprintf (p, 11, "-%u", ++i);
       while (bse_container_lookup_item (container, buffer));
       
-      bse_object_set_name (BSE_OBJECT (item), buffer);
+      g_object_set (item, "uloc", buffer, NULL);
       g_free (buffer);
     }
 
@@ -424,10 +422,17 @@ count_item_seqid (BseItem *item,
 		  gpointer data_p)
 {
   gpointer *data = data_p;
-  
-  data[1] = GUINT_TO_POINTER (GPOINTER_TO_UINT (data[1]) + 1);
-  
-  return item != data[0];
+
+  if (G_OBJECT_TYPE (item) == (GType) data[2])
+    data[0] = GUINT_TO_POINTER (GPOINTER_TO_UINT (data[0]) + 1);
+
+  if (item == data[1])
+    {
+      data[1] = NULL;
+      return FALSE;
+    }
+  else
+    return TRUE;
 }
 
 guint
@@ -438,20 +443,19 @@ bse_container_get_item_seqid (BseContainer *container,
   g_return_val_if_fail (BSE_IS_ITEM (item), 0);
   g_return_val_if_fail (item->parent == BSE_ITEM (container), 0);
   
-  if (BSE_CONTAINER_GET_CLASS (container)->item_seqid)
-    return BSE_CONTAINER_GET_CLASS (container)->item_seqid (container, item);
-  else if (container->n_items)
+  if (container->n_items)
     {
-      gpointer data[2];
+      gpointer data[3];
       
       g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, 0); /* paranoid */
       
-      data[0] = item;
-      data[1] = GUINT_TO_POINTER (0);
+      data[0] = GUINT_TO_POINTER (0);
+      data[1] = item;
+      data[2] = (gpointer) G_OBJECT_TYPE (item);
       
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, count_item_seqid, data);
 
-      return GPOINTER_TO_UINT (data[1]);
+      return data[1] == NULL ? GPOINTER_TO_UINT (data[0]) : 0;
     }
   else
     return 0;
@@ -462,19 +466,17 @@ find_nth_item (BseItem *item,
 	       gpointer data_p)
 {
   gpointer *data = data_p;
-  guint n = GPOINTER_TO_UINT (data[1]);
 
-  n -= 1;
-  data[1] = GUINT_TO_POINTER (n);
-
-  if (!n)
+  if (G_OBJECT_TYPE (item) == (GType) data[2])
     {
-      data[0] = item;
-
-      return FALSE;
+      data[0] = GUINT_TO_POINTER (GPOINTER_TO_UINT (data[0]) - 1);
+      if (GPOINTER_TO_UINT (data[0]) == 0)
+	{
+	  data[1] = item;
+	  return FALSE;
+	}
     }
-  else
-    return TRUE;
+  return TRUE;
 }
 
 BseItem*
@@ -486,20 +488,19 @@ bse_container_get_item (BseContainer *container,
   g_return_val_if_fail (seqid > 0, NULL);
   g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
-  if (BSE_CONTAINER_GET_CLASS (container)->get_item)
-    return BSE_CONTAINER_GET_CLASS (container)->get_item (container, item_type, seqid);
-  else if (container->n_items)
+  if (container->n_items)
     {
-      gpointer data[2];
+      gpointer data[3];
 
       g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
 
-      data[0] = NULL;
-      data[1] = GUINT_TO_POINTER (seqid);
+      data[0] = GUINT_TO_POINTER (seqid);
+      data[1] = NULL;
+      data[2] = (gpointer) item_type;
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, find_nth_item, data);
 
-      return data[0];
+      return data[1];
     }
   else
     return NULL;
@@ -596,13 +597,13 @@ bse_container_try_statement (BseObject  *object,
 }
 
 static gboolean
-find_named_item (BseItem *item,
-		 gpointer data_p)
+find_uloc_named_item (BseItem *item,
+		      gpointer data_p)
 {
   gpointer *data = data_p;
-  gchar *name = data[1];
+  gchar *uloc = data[1];
 
-  if (bse_string_equals (BSE_OBJECT_NAME (item), name))
+  if (bse_string_equals (BSE_OBJECT_ULOC (item), uloc))
     {
       data[0] = item;
       return FALSE;
@@ -612,31 +613,31 @@ find_named_item (BseItem *item,
 
 BseItem*
 bse_container_lookup_item (BseContainer *container,
-			   const gchar  *name)
+			   const gchar  *uloc)
 {
   gpointer data[2] = { NULL, };
 
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (uloc != NULL, NULL);
 
   /* FIXME: better use a hashtable here */
   
-  data[1] = (gpointer) name;
-  bse_container_forall_items (container, find_named_item, data);
+  data[1] = (gpointer) uloc;
+  bse_container_forall_items (container, find_uloc_named_item, data);
 
   return data[0];
 }
 
 static gboolean
-find_named_typed_item (BseItem *item,
-		       gpointer data_p)
+find_uloc_named_typed_item (BseItem *item,
+			    gpointer data_p)
 {
   gpointer *data = data_p;
-  gchar *name = data[1];
+  gchar *uloc = data[1];
   GType type = (GType) data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), type) &&
-      bse_string_equals (BSE_OBJECT_NAME (item), name))
+      bse_string_equals (BSE_OBJECT_ULOC (item), uloc))
     {
       data[0] = item;
       return FALSE;
@@ -648,7 +649,7 @@ BseItem*
 bse_container_item_from_handle (BseContainer *container,
 				const gchar  *handle)
 {
-  gchar *type_name, *ident, *name = NULL;
+  gchar *type_name, *ident, *uloc = NULL;
   BseItem *item = NULL;
   GType   type;
 
@@ -656,15 +657,15 @@ bse_container_item_from_handle (BseContainer *container,
   g_return_val_if_fail (handle != NULL, NULL);
 
   /* handle syntax:
-   * <TYPE> [ <:> { <SeqId> | <:> <NAME> } ]
+   * <TYPE> [ <:> { <SeqId> | <:> <ULOC> } ]
    * examples:
    * "BseItem"	     generic handle    -> create item of type BseItem
    * "BseItem:3"     sequential handle -> get third item of type BseItem
-   * "BseItem::foo"  named handle      -> create/get item of type BseItem, named "foo"
+   * "BseItem::foo"  uloc named handle -> create/get item of type BseItem with uloc "foo"
    *
-   * to get unique matches for named handles, items of a specific
-   * container need to have unique names (enforced in bse_container_add_item()
-   * and bse_item_do_set_name()).
+   * to get unique matches for uloc named handles, items of a specific
+   * container need to have unique ulocs (enforced in bse_container_add_item()
+   * and bse_item_do_set_uloc()).
    */
 
   type_name = g_strdup (handle);
@@ -673,22 +674,22 @@ bse_container_item_from_handle (BseContainer *container,
     {
       *(ident++) = 0;
       if (*ident == ':')
-	name = ident + 1;
+	uloc = ident + 1;
     }
   type = g_type_from_name (type_name);
   if (g_type_is_a (type, BSE_TYPE_ITEM))
     {
-      if (name)
+      if (uloc)
 	{
 	  gpointer data[3] = { NULL, };
 	  
-	  data[1] = name;
+	  data[1] = uloc;
 	  data[2] = (gpointer) type;
-	  bse_container_forall_items (container, find_named_typed_item, data);
+	  bse_container_forall_items (container, find_uloc_named_typed_item, data);
 	  item = data[0];
 
 	  if (!item)
-	    item = bse_container_new_item (container, type, "name", name, NULL);
+	    item = bse_container_new_item (container, type, "uloc", uloc, NULL);
 	}
       else if (ident)
 	{

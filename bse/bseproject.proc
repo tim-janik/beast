@@ -103,7 +103,7 @@ METHOD (BseProject, store-bse, "File/Store") {
   IN	= g_param_spec_string ("file-name", "File", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_boolean ("self-contained", "Self Contained", NULL,
-				NULL, BSE_PARAM_DEFAULT);
+				FALSE, BSE_PARAM_DEFAULT);
   OUT	= g_param_spec_enum ("error", "Error", NULL,
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
@@ -191,9 +191,7 @@ METHOD (BseProject, ensure-wave-repo) {
       }
   if (!wrepo)
     {
-      wrepo = bse_object_new (BSE_TYPE_WAVE_REPO,
-			      "name", "Default",
-			      NULL);
+      wrepo = bse_object_new (BSE_TYPE_WAVE_REPO, NULL);
       bse_project_add_super (project, BSE_SUPER (wrepo));
       g_object_unref (wrepo);
     }

@@ -55,11 +55,6 @@ struct _BseContainerClass
   void		(*forall_items)		(BseContainer		*container,
 					 BseForallItemsFunc	 func,
 					 gpointer		 data);
-  guint		(*item_seqid)		(BseContainer		*container,
-					 BseItem		*item);
-  BseItem*	(*get_item)		(BseContainer		*container,
-					 GType  		 item_type,
-					 guint			 seq_id);
 };
 
 
@@ -86,7 +81,7 @@ BseItem*	bse_container_get_item		(BseContainer	*container,
 void		bse_container_store_items	(BseContainer	*container,
 						 BseStorage	*storage);
 BseItem*	bse_container_lookup_item	(BseContainer	*container,
-						 const gchar	*name);
+						 const gchar	*uloc);
 BseItem*	bse_container_item_from_handle	(BseContainer	*container,
 						 const gchar	*handle);
 BseItem*	bse_container_item_from_path	(BseContainer	*container,

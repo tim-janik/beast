@@ -88,7 +88,7 @@ BSE_BUILTIN_TYPE (BseMidiKeyboard)
 						    "Virtual input module for synthesis networks which are "
 						    "used as subnetworks for MIDI synthesis",
 						    &midi_keyboard_info);
-  bse_categories_register_icon ("/Source/MIDI/Keyboard",
+  bse_categories_register_icon ("/Modules/MIDI/Keyboard",
 				midi_keyboard_type_id,
 				&pixdata);
   return midi_keyboard_type_id;

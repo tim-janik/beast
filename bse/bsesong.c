@@ -67,11 +67,6 @@ static void	 bse_song_forall_items		(BseContainer	   *container,
 						 gpointer	    data);
 static void	 bse_song_remove_item		(BseContainer	   *container,
 						 BseItem	   *item);
-static guint	 bse_song_item_seqid		(BseContainer	   *container,
-						 BseItem	   *item);
-static BseItem*	 bse_song_get_item		(BseContainer	   *container,
-						 GType  	    item_type,
-						 guint		    seqid);
 static void	 bse_song_remove_pgroup_links	(BseSong           *song,
 						 BsePatternGroup   *pgroup);
 static BseTokenType bse_song_restore_private    (BseObject         *object,
@@ -139,8 +134,6 @@ bse_song_class_init (BseSongClass *class)
   container_class->add_item = bse_song_add_item;
   container_class->remove_item = bse_song_remove_item;
   container_class->forall_items = bse_song_forall_items;
-  container_class->item_seqid = bse_song_item_seqid;
-  container_class->get_item = bse_song_get_item;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_CHANNELS,
@@ -499,43 +492,6 @@ bse_song_remove_item (BseContainer *container,
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
 
-static guint
-bse_song_item_seqid (BseContainer *container,
-		     BseItem	  *item)
-     
-{
-  BseSong *song = BSE_SONG (container);
-  
-  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
-    return 1 + g_list_index (song->instruments, item);
-  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
-    return 1 + g_list_index (song->patterns, item);
-  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN_GROUP))
-    return 1 + g_list_index (song->pattern_groups, item);
-  else
-    return 0;
-}
-
-static BseItem*
-bse_song_get_item (BseContainer *container,
-		   GType  	 item_type,
-		   guint	 seqid)
-{
-  BseSong *song = BSE_SONG (container);
-  GList *list;
-  
-  if (g_type_is_a (item_type, BSE_TYPE_INSTRUMENT))
-    list = g_list_nth (song->instruments, seqid - 1);
-  else if (g_type_is_a (item_type, BSE_TYPE_PATTERN))
-    list = g_list_nth (song->patterns, seqid - 1);
-  else if (g_type_is_a (item_type, BSE_TYPE_PATTERN_GROUP))
-    list = g_list_nth (song->pattern_groups, seqid - 1);
-  else
-    list = NULL;
-  
-  return list ? list->data : NULL;
-}
-
 BsePattern*
 bse_song_get_pattern (BseSong *song,
 		      guint    seqid)
@@ -562,7 +518,7 @@ bse_song_get_default_pattern_group (BseSong *song)
       GList *list;
 
       for (list = song->pattern_groups; list; list = list->next)
-	if (bse_string_equals (BSE_OBJECT_NAME (list->data), "Default"))
+	if (bse_string_equals (BSE_OBJECT_ULOC (list->data), "Default"))
 	  return list->data;
 
       return song->pgroups[song->n_pgroups - 1];
@@ -705,7 +661,7 @@ bse_song_insert_pattern_group_copy (BseSong         *song,
 
   g_object_get (G_OBJECT (src_pgroup), "blurb", &blurb, NULL);
   item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_PATTERN_GROUP,
-				 "name", BSE_OBJECT_NAME (src_pgroup),
+				 "name", BSE_OBJECT_ULOC (src_pgroup),
 				 "blurb", blurb,
 				 NULL);
   pgroup = BSE_PATTERN_GROUP (item);
@@ -875,7 +831,7 @@ bse_song_restore_private (BseObject  *object,
   if (!item || !BSE_IS_PATTERN_GROUP (item))
     bse_storage_warn (storage,
 		      "%s: unable to determine pattern group from \"%s\"",
-		      BSE_OBJECT_NAME (song),
+		      BSE_OBJECT_ULOC (song),
 		      pgroup_path);
   else
     bse_song_insert_pattern_group_link (song, BSE_PATTERN_GROUP (item), song->n_pgroups);

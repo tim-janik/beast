@@ -1,3 +1,23 @@
+Sun Feb  3 23:01:45 2002  Tim Janik  <timj@gtk.org>
+
+	* bseitem.[hc]:
+	* bseprocedure.[hc]: support procedures up to BseObject.
+
+	* bseobject.proc: new file to implement BseObject+is_a().
+
+	* *.c:
+	* bseobject.[hc]: changed object->name to object->uloc, a non
+	user-editable propety which is a unique identifier for the
+	objects whithin its container. added a simple string property
+	object::name that has no uniquenes or character constrains
+	anymore.
+
+	* bsecontainer.[hc]: nuke item_seqid() and get_item() methods,
+	we solve this once and for all here and don't need special casing
+	in derived objects anymore.
+	sequential ids are now handed out per exact type of a child in
+	a container.
+
 Sat Feb  2 12:22:11 2002  Tim Janik  <timj@gtk.org>
 
 	* bseproject.[hc]:

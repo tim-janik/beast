@@ -27,6 +27,7 @@
 enum
 {
   PROPERTY_0,
+  PROPERTY_ULOC,
   PROPERTY_NAME,
   PROPERTY_BLURB
 };
@@ -63,8 +64,8 @@ static void		bse_object_do_get_property	(BseObject	*object,
 							 guint           property_id,
 							 GValue         *value,
 							 GParamSpec     *pspec);
-static void		bse_object_do_set_name		(BseObject	*object,
-							 const gchar	*name);
+static void		bse_object_do_set_uloc		(BseObject	*object,
+							 const gchar	*uloc);
 static void		bse_object_do_store_private	(BseObject	*object,
 							 BseStorage	*storage);
 static void		bse_object_do_store_after	(BseObject	*object,
@@ -80,9 +81,10 @@ static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
 
 /* --- variables --- */
 static gpointer	   parent_class = NULL;
-GQuark		   bse_quark_name = 0;
+GQuark		   bse_quark_uloc = 0;
 static GQuark	   quark_blurb = 0;
-static GHashTable *object_names_ht = NULL;
+static GQuark	   quark_name = 0;
+static GHashTable *object_ulocs_ht = NULL;
 static GHashTable *object_id_ht = NULL;
 static GQuark	   quark_property_changed_queue = 0;
 static guint       object_signals[SIGNAL_LAST] = { 0, };
@@ -177,9 +179,11 @@ bse_object_class_init (BseObjectClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  bse_quark_name = g_quark_from_static_string ("bse-object-name");
+  bse_quark_uloc = g_quark_from_static_string ("bse-object-uloc");
   quark_property_changed_queue = g_quark_from_static_string ("bse-property-changed-queue");
-  object_names_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
+  quark_name = g_quark_from_static_string ("bse-object-name");
+  quark_blurb = g_quark_from_static_string ("bse-object-blurb");
+  object_ulocs_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
   object_id_ht = g_hash_table_new (NULL, NULL);
   
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_object_do_get_property;
@@ -190,7 +194,7 @@ bse_object_class_init (BseObjectClass *class)
   class->try_statement = bse_object_do_try_statement;
   class->restore = bse_object_do_restore;
   
-  class->set_name = bse_object_do_set_name;
+  class->set_uloc = bse_object_do_set_uloc;
   class->store_private = bse_object_do_store_private;
   class->restore_private = bse_object_do_restore_private;
   class->unlocked = NULL;
@@ -198,16 +202,21 @@ bse_object_class_init (BseObjectClass *class)
   class->destroy = bse_object_do_destroy;
   
   bse_object_class_add_param (class, NULL,
-			      PROPERTY_NAME,
-			      bse_param_spec_cstring ("name", "Name", NULL,
+			      PROPERTY_ULOC,
+			      bse_param_spec_cstring ("uloc", "ULoc", NULL,
 						      NULL,
-						      BSE_PARAM_GUI | G_PARAM_LAX_VALIDATION
+						      BSE_PARAM_GUI | G_PARAM_LAX_VALIDATION | BSE_PARAM_HINT_RDONLY
 						      /* this is only half way true,
-						       * ->name is *very* specially
+						       * ->uloc is specially
 						       * treated within the various
 						       * objects, especially BseItem
 						       * and BseContainer.
 						       */));
+  bse_object_class_add_param (class, NULL,
+			      PROPERTY_NAME,
+			      bse_param_spec_string ("name", "Name", NULL,
+						     NULL,
+						     BSE_PARAM_DEFAULT));
   bse_object_class_add_param (class, NULL,
 			      PROPERTY_BLURB,
 			      bse_param_spec_string ("blurb", "Comment", NULL,
@@ -253,15 +262,15 @@ bse_object_debug_leaks (void)
 }
 
 static inline void
-object_names_ht_insert (BseObject *object)
+object_ulocs_ht_insert (BseObject *object)
 {
   GSList *object_slist;
   
-  object_slist = g_hash_table_lookup (object_names_ht, BSE_OBJECT_NAME (object));
+  object_slist = g_hash_table_lookup (object_ulocs_ht, BSE_OBJECT_ULOC (object));
   if (object_slist)
-    g_hash_table_remove (object_names_ht, BSE_OBJECT_NAME (object_slist->data));
+    g_hash_table_remove (object_ulocs_ht, BSE_OBJECT_ULOC (object_slist->data));
   object_slist = g_slist_prepend (object_slist, object);
-  g_hash_table_insert (object_names_ht, BSE_OBJECT_NAME (object_slist->data), object_slist);
+  g_hash_table_insert (object_ulocs_ht, BSE_OBJECT_ULOC (object_slist->data), object_slist);
 }
 
 static void
@@ -269,29 +278,29 @@ bse_object_init (BseObject *object)
 {
   static guint unique_id = 1;
   
-  object->flags = BSE_OBJECT_FLAG_CONSTRUCTED;
+  object->flags = 0;
   object->lock_count = 0;
   object->unique_id = unique_id++;
   if (!unique_id)
     g_error ("object ID overflow"); // FIXME
   g_hash_table_insert (object_id_ht, (gpointer) object->unique_id, object);
   
-  object_names_ht_insert (object);
+  object_ulocs_ht_insert (object);
 }
 
 static inline void
-object_names_ht_remove (BseObject *object)
+object_ulocs_ht_remove (BseObject *object)
 {
   GSList *object_slist, *orig_slist;
   
-  object_slist = g_hash_table_lookup (object_names_ht, BSE_OBJECT_NAME (object));
+  object_slist = g_hash_table_lookup (object_ulocs_ht, BSE_OBJECT_ULOC (object));
   orig_slist = object_slist;
   object_slist = g_slist_remove (object_slist, object);
   if (object_slist != orig_slist)
     {
-      g_hash_table_remove (object_names_ht, BSE_OBJECT_NAME (object));
+      g_hash_table_remove (object_ulocs_ht, BSE_OBJECT_ULOC (object));
       if (object_slist)
-	g_hash_table_insert (object_names_ht, BSE_OBJECT_NAME (object_slist->data), object_slist);
+	g_hash_table_insert (object_ulocs_ht, BSE_OBJECT_ULOC (object_slist->data), object_slist);
     }
 }
 
@@ -326,16 +335,16 @@ bse_object_do_destroy (BseObject *object)
   g_hash_table_remove (object_id_ht, (gpointer) object->unique_id);
   
   /* remove object from hash list *before* clearing data list,
-   * since the object name is kept in the datalist!
+   * since the object uloc is kept in the datalist!
    */
-  object_names_ht_remove (object);
+  object_ulocs_ht_remove (object);
 }
 
 static void
-bse_object_do_set_name (BseObject   *object,
-			const gchar *name)
+bse_object_do_set_uloc (BseObject   *object,
+			const gchar *uloc)
 {
-  bse_object_set_qdata_full (object, bse_quark_name, g_strdup (name), name ? g_free : NULL);
+  bse_object_set_qdata_full (object, bse_quark_uloc, g_strdup (uloc), uloc ? g_free : NULL);
 }
 
 static void
@@ -348,12 +357,27 @@ bse_object_do_set_property (BseObject   *object,
     {
       gchar *string;
       
-    case PROPERTY_NAME:
-      object_names_ht_remove (object);
+    case PROPERTY_ULOC:
+      object_ulocs_ht_remove (object);
       string = bse_strdup_stripped (g_value_get_string (value));
-      BSE_OBJECT_GET_CLASS (object)->set_name (object, string);
+      BSE_OBJECT_GET_CLASS (object)->set_uloc (object, string);
       g_free (string);
-      object_names_ht_insert (object);
+      object_ulocs_ht_insert (object);
+      if (!bse_object_get_qdata (object, quark_name) &&
+	  !(object->flags & BSE_OBJECT_FLAG_FIXED_ULOC))
+	{
+	  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_ULOC);
+	  g_object_set (object, "name", BSE_OBJECT_ULOC (object), NULL);
+	  BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_ULOC);
+	}
+      break;
+    case PROPERTY_NAME:
+      string = bse_strdup_stripped (g_value_get_string (value));
+      if (g_value_get_string (value) && !string) /* preserve NULL vs. "" distinction */
+	string = g_strdup ("");
+      bse_object_set_qdata_full (object, quark_name, string, string ? g_free : NULL);
+      if (string && !(object->flags & BSE_OBJECT_FLAG_FIXED_ULOC))
+	g_object_set (object, "uloc", string, NULL);
       break;
     case PROPERTY_BLURB:
       if (!quark_blurb)
@@ -377,8 +401,11 @@ bse_object_do_get_property (BseObject   *object,
 {
   switch (property_id)
     {
+    case PROPERTY_ULOC:
+      g_value_set_string (value, BSE_OBJECT_ULOC (object));
+      break;
     case PROPERTY_NAME:
-      g_value_set_string (value, BSE_OBJECT_NAME (object));
+      g_value_set_string (value, bse_object_get_qdata (object, quark_name));
       break;
     case PROPERTY_BLURB:
       g_value_set_string (value, bse_object_get_qdata (object, quark_blurb));
@@ -557,18 +584,18 @@ bse_object_from_id (guint unique_id)
 }
 
 GList*
-bse_objects_list_by_name (GType	       type,
-			  const gchar *name)
+bse_objects_list_by_uloc (GType	       type,
+			  const gchar *uloc)
 {
   GList *object_list = NULL;
   
   g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
   
-  if (object_names_ht)
+  if (object_ulocs_ht)
     {
       GSList *object_slist, *slist;
       
-      object_slist = g_hash_table_lookup (object_names_ht, name);
+      object_slist = g_hash_table_lookup (object_ulocs_ht, uloc);
       
       for (slist = object_slist; slist; slist = slist->next)
 	if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), type))
@@ -596,28 +623,16 @@ bse_objects_list (GType	  type)
 {
   g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
   
-  if (object_names_ht)
+  if (object_ulocs_ht)
     {
       gpointer data[2] = { NULL, (gpointer) type, };
       
-      g_hash_table_foreach (object_names_ht, list_objects, data);
+      g_hash_table_foreach (object_ulocs_ht, list_objects, data);
       
       return data[0];
     }
   
   return NULL;
-}
-
-void
-bse_object_set_name (BseObject	 *object,
-		     const gchar *name)
-{
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (name != NULL);
-  
-  bse_object_set (object,
-		  "name", name,
-		  NULL);
 }
 
 void
@@ -905,6 +920,7 @@ bse_object_do_restore_private (BseObject  *object,
   GParamSpec *pspec;
   GValue value = { 0, };
   GTokenType expected_token;
+  gboolean fixed_uloc;
   
   /* we only feature parameter parsing here,
    * so lets figure whether there is something to parse for us
@@ -937,7 +953,11 @@ bse_object_do_restore_private (BseObject  *object,
       /* failed to parse the parameter value */
       return expected_token;
     }
+  fixed_uloc = object->flags & BSE_OBJECT_FLAG_FIXED_ULOC;
+  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_ULOC);
   g_object_set_property (G_OBJECT (object), pspec->name, &value);
+  if (!fixed_uloc)
+    BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_ULOC);
   g_value_unset (&value);
   
   return G_TOKEN_NONE;

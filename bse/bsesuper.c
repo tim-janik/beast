@@ -139,8 +139,11 @@ bse_super_init (BseSuper *super,
   
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
 
-  /* we want Unnamed-xxx default names */
-  bse_object_set_name (object, "Unnamed");
+  /* we want Unnamed-xxx default ulocs */
+  g_object_set (object,
+		"uloc", "Unnamed",
+		"name", NULL,
+		NULL);
 }
 
 static void

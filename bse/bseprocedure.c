@@ -18,7 +18,7 @@
 #include        "bseprocedure.h"
 
 #include	<gobject/gvaluecollector.h>
-#include	"bseitem.h"
+#include	"bseobject.h"
 #include	"bseexports.h"
 #include	<string.h>
 
@@ -513,10 +513,10 @@ bse_procedure_void_exec (const gchar *name,
 }
 
 BseErrorType
-bse_procedure_execva_item (BseProcedureClass *proc,
-			   BseItem           *item,
-			   va_list            var_args,
-			   gboolean           skip_oparams)
+bse_procedure_execva_object (BseProcedureClass *proc,
+			     BseObject         *object,
+			     va_list            var_args,
+			     gboolean           skip_oparams)
 {
   GValue preset_value = { 0, };
   BseErrorType ret_val;
@@ -524,16 +524,16 @@ bse_procedure_execva_item (BseProcedureClass *proc,
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (proc->n_in_params >= 1, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (G_IS_PARAM_SPEC_OBJECT (proc->in_param_specs[0]), BSE_ERROR_INTERNAL);
-  if (item)
+  if (object)
     {
-      g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
-      g_return_val_if_fail (g_type_is_a (BSE_OBJECT_TYPE (item),
+      g_return_val_if_fail (BSE_IS_OBJECT (object), BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (g_type_is_a (BSE_OBJECT_TYPE (object),
 					 G_PARAM_SPEC_VALUE_TYPE (proc->in_param_specs[0])),
 			    BSE_ERROR_INTERNAL);
     }
 
   g_value_init (&preset_value, G_PARAM_SPEC_VALUE_TYPE (proc->in_param_specs[0]));
-  g_value_set_object (&preset_value, G_OBJECT (item));
+  g_value_set_object (&preset_value, object);
 
   ret_val = bse_procedure_execva_i (proc, 1, &preset_value, var_args, skip_oparams);
 
@@ -637,14 +637,14 @@ bse_procedure_type_register (const gchar *name,
   p = strchr (name, '+');
   if (p)
     {
-      /* enforce <ITEM>+<METHOD> syntax */
+      /* enforce <OBJECT>+<METHOD> syntax */
       if (!p[1])
 	return "Procedure name invalid";
 
       p = g_strndup (name, p - name);
       base_type = g_type_from_name (p);
       g_free (p);
-      if (!g_type_is_a (base_type, BSE_TYPE_ITEM))
+      if (!g_type_is_a (base_type, BSE_TYPE_OBJECT))
 	return "Procedure base type invalid";
     }
   

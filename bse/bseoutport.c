@@ -85,7 +85,7 @@ BSE_BUILTIN_TYPE (BseOutPort)
 					       "Virtual output port connector, used to interface synthesis network "
 					       "output to other synthesis networks (as inputs)",
 					       &out_port_info);
-  bse_categories_register_icon ("/Source/Plug/Virtual Output",
+  bse_categories_register_icon ("/Modules/Plug/Virtual Output",
 				out_port_type_id,
 				&pixdata);
   return out_port_type_id;

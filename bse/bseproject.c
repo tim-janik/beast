@@ -50,11 +50,6 @@ static void	bse_project_remove_item	(BseContainer		*container,
 static void	bse_project_forall_items(BseContainer		*container,
 					 BseForallItemsFunc	 func,
 					 gpointer		 data);
-static guint	bse_project_item_seqid	(BseContainer		*container,
-					 BseItem		*item);
-static BseItem*	bse_project_get_item	(BseContainer		*container,
-					 GType  		 item_type,
-					 guint		         seqid);
 static void	bse_project_prepare	(BseSource		*source);
 
 
@@ -102,8 +97,6 @@ bse_project_class_init (BseProjectClass *class)
   container_class->add_item = bse_project_add_item;
   container_class->remove_item = bse_project_remove_item;
   container_class->forall_items = bse_project_forall_items;
-  container_class->item_seqid = bse_project_item_seqid;
-  container_class->get_item = bse_project_get_item;
 
   project_signals[SIGNAL_COMPLETE_RESTORE] = bse_object_class_add_signal (object_class, "complete-restore",
 									  bse_marshal_VOID__POINTER_BOOLEAN,
@@ -117,10 +110,15 @@ bse_project_init (BseProject *project,
 		  gpointer    rclass)
 {
   BseObject *object;
-  
+  BseWaveRepo *wrepo;
+
   object = BSE_OBJECT (project);
 
   project->supers = NULL;
+
+  wrepo = bse_object_new (BSE_TYPE_WAVE_REPO, NULL);
+  bse_project_add_super (project, BSE_SUPER (wrepo));
+  g_object_unref (wrepo);
 }
 
 static void
@@ -211,30 +209,6 @@ bse_project_forall_items (BseContainer      *container,
     }
 }
 
-static guint
-bse_project_item_seqid (BseContainer *container,
-			BseItem      *item)
-{
-  BseProject *project = BSE_PROJECT (container);
-
-  return 1 + g_slist_index (project->supers, item);
-}
-
-static BseItem*
-bse_project_get_item (BseContainer *container,
-		      GType         item_type,
-		      guint         seqid)
-{
-  BseProject *project = BSE_PROJECT (container);
-  GSList *slist;
-
-  slist = (g_type_is_a (item_type, BSE_TYPE_SUPER) ?
-	   g_slist_nth (project->supers, seqid - 1) :
-	   NULL);
-
-  return slist ? slist->data : NULL;
-}
-
 GList*
 bse_project_list_supers (BseProject *project,
 			 GType       super_type)
@@ -261,10 +235,10 @@ make_nick_paths (BseItem *item,
   gchar *prefix = data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
-    data[0] = g_list_prepend (data[0], g_strconcat (prefix, BSE_OBJECT_NAME (item), NULL));
+    data[0] = g_list_prepend (data[0], g_strconcat (prefix, BSE_OBJECT_ULOC (item), NULL));
   if (BSE_IS_CONTAINER (item))
     {
-      data[2] = g_strconcat (prefix, BSE_OBJECT_NAME (item), ".", NULL);
+      data[2] = g_strconcat (prefix, BSE_OBJECT_ULOC (item), ".", NULL);
       bse_container_forall_items (BSE_CONTAINER (item), make_nick_paths, data);
       g_free (data[2]);
       data[2] = prefix;

@@ -97,7 +97,7 @@ store_parasite_list (BseObject  *object,
 	  g_warning (G_STRLOC ": unknown parasite type `%c' for \"%s\" in \"%s\"",
 		     parasite->type,
 		     name,
-		     BSE_OBJECT_NAME (object));
+		     BSE_OBJECT_ULOC (object));
 	  break;
 	}
       g_free (name);

@@ -177,6 +177,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 bse_proc_sources = @STRIP_BEGIN@ \
 	bseenums.proc \
 	bsehelloworld.proc \
+	bseobject.proc \
 	bseproject.proc \
 	bseserver.proc \
 	bsesource.proc \
@@ -188,6 +189,7 @@ bse_proc_sources = @STRIP_BEGIN@ \
 bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bseenums.gen-proc.c \
 	bsehelloworld.gen-proc.c \
+	bseobject.gen-proc.c \
 	bseproject.gen-proc.c \
 	bseserver.gen-proc.c \
 	bsesource.gen-proc.c \

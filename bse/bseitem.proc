@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -15,8 +15,6 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * bseitem.proc: BSE Item procedures
  */
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
@@ -27,32 +25,6 @@ AUTHOR	= "Tim Janik <timj@gtk.org>";
 CRIGHTS	= "Tim Janik <timj@gtk.org>";
 DATE	= "2001";
 
-
-METHOD (BseItem, is-a) {
-  HELP	= "Check item type";
-  IN	= g_param_spec_object ("item", "Item", NULL,
-			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("type_name", "Type Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_boolean ("is_a_check", NULL, NULL,
-				FALSE, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-	GValue            *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseItem *item    = (BseItem*) g_value_get_object (in_values++);
-  gchar *type_name = g_value_get_string (in_values++);
-  
-  /* check parameters */
-  if (!type_name)  /* we do allow NULL items here, to comlpy with g_type_instance_is_a() semantics */
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* set output parameters */
-  g_value_set_boolean (out_values++, G_TYPE_CHECK_INSTANCE_TYPE (item, g_type_from_name (type_name)));
-  
-  return BSE_ERROR_NONE;
-}
 
 METHOD (BseItem, get-type) {
   HELP	= "Retrive Type ID";
@@ -237,13 +209,15 @@ METHOD (BseItem, get-name) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) g_value_get_object (in_values++);
-  
+  gchar *name = NULL;
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_OBJECT_NAME (item));
+  g_object_get (item, "name", &name, NULL);
+  g_value_set_string_take_ownership (out_values++, name);
   
   return BSE_ERROR_NONE;
 }
@@ -260,14 +234,16 @@ METHOD (BseItem, get-name-or-type) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) g_value_get_object (in_values++);
-  
+  gchar *name = NULL;
+
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  if (BSE_OBJECT_NAME (item))
-    g_value_set_string (out_values++, BSE_OBJECT_NAME (item));
+  g_object_get (item, "name", &name, NULL);
+  if (name)
+    g_value_set_string_take_ownership (out_values++, name);
   else
     g_value_set_string (out_values++, BSE_OBJECT_TYPE_NAME (item));
   

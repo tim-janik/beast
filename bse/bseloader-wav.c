@@ -491,7 +491,6 @@ load_wave (const gchar *file_name,
       close (fd);
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
-  g_print ("wav: n_channels: %d sample_freq: %d\n", fmt_header.n_channels, fmt_header.sample_freq);
 
   data_width = (fmt_header.bit_per_sample + 7) / 8;
   error = read_data_header (fd, &data_header, data_width * fmt_header.n_channels);

@@ -1161,26 +1161,23 @@ resolve_dinput (BseSource  *source,
 	  if (!aborted)
 	    bse_storage_warn (storage,
 			      "%s: unable to determine input source from \"%s\"",
-			      BSE_OBJECT_NAME (source),
+			      BSE_OBJECT_ULOC (source),
 			      dinput->osource_path);
 	  continue;
 	}
       error = _bse_source_set_input (source,
-				    dinput->ichannel,
-				    BSE_SOURCE (item),
-				    bse_source_find_ochannel (BSE_SOURCE (item),
-							      dinput->ochannel_name));
+				     dinput->ichannel,
+				     BSE_SOURCE (item),
+				     bse_source_find_ochannel (BSE_SOURCE (item),
+							       dinput->ochannel_name));
       if (error && !aborted)
-	{
-	  bse_storage_warn (storage,
-			    "failed to connect input \"%s\" of \"%s\" to output \"%s\" of \"%s\": %s",
+	bse_storage_warn (storage,
+			  "failed to connect input \"%s\" of \"%s\" to output \"%s\" of \"%s\": %s",
 			  dinput->ichannel < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_ICHANNEL_CNAME (source, dinput->ichannel) : "???",
-			  BSE_OBJECT_NAME (source),
+			  BSE_OBJECT_ULOC (source),
 			  dinput->ochannel_name,
-			  BSE_OBJECT_NAME (item),
-			    bse_error_blurb (error));
-	  item = bse_container_item_from_path (BSE_CONTAINER (project), dinput->osource_path);
-	}
+			  BSE_OBJECT_ULOC (item),
+			  bse_error_blurb (error));
     }
   
   bse_object_set_qdata (object, quark_deferred_input, NULL);
