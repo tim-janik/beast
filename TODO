@@ -3,13 +3,11 @@ FIXMES:
 - nuke frequency fine-tune for biquad filter
 - fix syndrum parameter scale
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
-
-- /library/: effects,instruments,scripts
-
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - fix forcing unique names for children of a project 
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball
+- /library/: effects,instruments,scripts
 - add toplevel menu /Synthesizers/:
   /Synthesizers/Load from Effect Library
   /Synthesizers/Load from Instrument Library
@@ -47,8 +45,6 @@ FIXMES:
 - get rid of super->mod_time
 - rename *.gslwave files appropriately
 - don't always rebuild lib-list [Rebuild]-button
-- nuke BSE file crawling functions
-- fix API for file matching in SFI
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - fix BST_OP_PROJECT_SAVE
 - implement (GUI for) locked properties
