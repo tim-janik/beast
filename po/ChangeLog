@@ -1,3 +1,7 @@
+2003-12-19  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
+
+	* es.po: Updated Spanish translation by Ismael Andrés Rubio Rojas.
+
 2003-12-19  Danilo Šegan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
@@ -30,6 +34,7 @@ Mon Dec 15 15:05:15 2003  Tim Janik  <timj@gtk.org>
 
 	* *.po: merged with .po file from po-bse/.
 
+>>>>>>> 1.54
 2003-12-14  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
 
 	* es.po Updated Spanish translation.
