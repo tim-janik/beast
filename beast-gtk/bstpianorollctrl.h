@@ -29,6 +29,7 @@ typedef enum /*< skip >*/
   /* choose IDs that are unlikely to clash with category IDs */
   BST_PIANO_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
   BST_PIANO_ROLL_TOOL_RESIZE,
+  BST_PIANO_ROLL_TOOL_ALIGN,
   BST_PIANO_ROLL_TOOL_MOVE,
   BST_PIANO_ROLL_TOOL_DELETE,
   BST_PIANO_ROLL_TOOL_SELECT,

@@ -595,6 +595,7 @@ controller_canvas_drag (BstPianoRollController *self,
     DragFunc start, motion, abort;
   } tool_table[] = {
     { BST_PIANO_ROLL_TOOL_INSERT,	insert_start,	NULL,		NULL,		},
+    { BST_PIANO_ROLL_TOOL_ALIGN,	insert_start,	NULL,		NULL,		},
     { BST_PIANO_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
     { BST_PIANO_ROLL_TOOL_MOVE,		move_start,	move_motion,	move_abort,	},
     { BST_PIANO_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},

@@ -8,6 +8,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	cdrom.xcf		\
 	clipboard.xcf		\
 	editor.xcf		\
+	event-control.xcf	\
 	knob.xcf		\
 	loopleft.xcf		\
 	mouse_tool.xcf		\
@@ -35,6 +36,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 
 STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_EDIT_TOOL			$(srcdir)/editor.png		\
+	STOCK_EVENT_CONTROL		$(srcdir)/event-control.png	\
 	STOCK_INFO			$(srcdir)/bulb.png		\
 	STOCK_INSTRUMENT		$(srcdir)/aguitar.png		\
 	STOCK_KNOB			$(srcdir)/knob.png		\

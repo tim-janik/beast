@@ -1,3 +1,18 @@
+Tue Jul 29 14:00:37 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsteventroll.[hc]: added support for segment
+	display in the canvas.
+
+	* beast-gtk/bsteventrollctrl.[hc]: implement alignment
+	tool to align events to a given segment.
+
+	* beast-gtk/bstpartdialog.c: add button and menu item
+	to select event-alignment tool.
+
+	* beast-gtk/gxk/gxkutils.c: disabled
+	gxk_tree_selection_force_browse() for now, since it aparently
+	triggers a segfaulting bug in the Gtk+-2.2.2 treeview.
+
 Mon Jul 28 12:56:40 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: rewrote OSS pcm and midi device checks for

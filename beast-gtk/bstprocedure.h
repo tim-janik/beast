@@ -93,4 +93,4 @@ GParamSpec*        bst_procedure_ref_pspec      (const gchar    *procedure_name,
 }
 #endif /* __cplusplus */
 
-#endif /* __BST_PARAM_VIEW_H__ */
+#endif /* __BST_PROCEDURE_H__ */

@@ -1482,6 +1482,7 @@ gxk_tree_selection_force_browse (GtkTreeSelection *selection,
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   if (model)
     g_return_if_fail (GTK_IS_TREE_MODEL (model));
+  return; // FIXME: hack disabled
 
   if (!gxk_signal_handler_pending (selection, "changed", G_CALLBACK (browse_selection_changed), selection))
     g_signal_connect_data (selection, "changed", G_CALLBACK (browse_selection_changed), selection, NULL, 0);

@@ -29,6 +29,7 @@ typedef enum /*< skip >*/
   /* choose IDs that are unlikely to clash with category IDs */
   BST_EVENT_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
   BST_EVENT_ROLL_TOOL_RESIZE,
+  BST_EVENT_ROLL_TOOL_ALIGN,
   BST_EVENT_ROLL_TOOL_MOVE,
   BST_EVENT_ROLL_TOOL_DELETE,
   BST_EVENT_ROLL_TOOL_SELECT
@@ -48,6 +49,7 @@ typedef struct {
   guint		     tool_index;
   guint		     obj_id, obj_tick;
   gfloat             obj_value;
+  BstSegment        *segment;
 } BstEventRollController;
 
 

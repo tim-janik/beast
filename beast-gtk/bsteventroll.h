@@ -19,6 +19,7 @@
 #define __BST_EVENT_ROLL_H__
 
 #include	"bstdragutils.h"
+#include	"bstsegment.h"
 
 G_BEGIN_DECLS
 
@@ -48,6 +49,7 @@ typedef struct {
   guint		start_valid : 1;
   guint         current_tick;
   gfloat        current_value;          /* between -1 and +1 if valid */
+  gfloat        current_value_raw;
   guint		current_valid : 1;	/* value out of range */
   /* user data */
   BstDragStatus state;		        /* request type: unhandled/continue/handled/error */
@@ -79,6 +81,8 @@ struct _BstEventRoll
   GdkCursorType	 canvas_cursor, vpanel_cursor;
 #define BST_EVENT_ROLL_N_COLORS (2)
   GdkGC		*color_gc[BST_EVENT_ROLL_N_COLORS];
+
+  BstSegment     segment;
 
   GtkAdjustment	*hadjustment;
   guint		 scroll_timer;
@@ -118,31 +122,44 @@ struct _BstEventRollClass
 
 
 /* --- prototypes --- */
-GType	bst_event_roll_get_type			(void);
-void	bst_event_roll_set_proxy		(BstEventRoll	*self,
-						 SfiProxy	 proxy);
-void	bst_event_roll_set_hadjustment		(BstEventRoll	*self,
-						 GtkAdjustment	*adjustment);
-gfloat	bst_event_roll_set_hzoom		(BstEventRoll	*self,
-						 gfloat		 hzoom);
-void	bst_event_roll_set_canvas_cursor	(BstEventRoll	*self,
-						 GdkCursorType	 cursor);
-void	bst_event_roll_set_vpanel_cursor	(BstEventRoll	*self,
-						 GdkCursorType	 cursor);
-void	bst_event_roll_set_quantization		(BstEventRoll	*self,
-						 guint		 note_fraction);
-void	bst_event_roll_set_view_selection	(BstEventRoll	*self,
-						 guint		 tick,
-						 guint		 duration);
-void    bst_event_roll_set_vpanel_width_hook    (BstEventRoll   *self,
-                                                 gint          (*fetch_vpanel_width) (gpointer data),
-                                                 gpointer        data);
-guint	bst_event_roll_quantize			(BstEventRoll	*self,
-						 guint		 fine_tick);
-void	bst_event_roll_set_control_type		(BstEventRoll	*self,
-						 guint		 control_type);
+GType       bst_event_roll_get_type              (void);
+void        bst_event_roll_set_proxy             (BstEventRoll   *self,
+                                                  SfiProxy        proxy);
+void        bst_event_roll_set_hadjustment       (BstEventRoll   *self,
+                                                  GtkAdjustment  *adjustment);
+gfloat      bst_event_roll_set_hzoom             (BstEventRoll   *self,
+                                                  gfloat          hzoom);
+void        bst_event_roll_set_canvas_cursor     (BstEventRoll   *self,
+                                                  GdkCursorType   cursor);
+void        bst_event_roll_set_vpanel_cursor     (BstEventRoll   *self,
+                                                  GdkCursorType   cursor);
+void        bst_event_roll_set_quantization      (BstEventRoll   *self,
+                                                  guint           note_fraction);
+void        bst_event_roll_set_view_selection    (BstEventRoll   *self,
+                                                  guint           tick,
+                                                  guint           duration);
+void        bst_event_roll_set_vpanel_width_hook (BstEventRoll   *self,
+                                                  gint          (*fetch_vpanel_width) (gpointer data),
+                                                  gpointer        data);
+guint       bst_event_roll_quantize              (BstEventRoll   *self,
+                                                  guint           fine_tick);
+void        bst_event_roll_set_control_type      (BstEventRoll   *self,
+                                                  guint           control_type);
+void        bst_event_roll_init_segment          (BstEventRoll   *self,
+                                                  BstSegmentType  type);
+void        bst_event_roll_segment_start         (BstEventRoll   *self,
+                                                  guint           tick,
+                                                  gfloat          value);
+void        bst_event_roll_segment_move_to       (BstEventRoll   *self,
+                                                  guint           tick,
+                                                  gfloat          value);
+void        bst_event_roll_segment_tick_range    (BstEventRoll   *self,
+                                                  guint          *tick,
+                                                  guint          *duration);
+gdouble     bst_event_roll_segment_value         (BstEventRoll   *self,
+                                                  guint           tick);
+void        bst_event_roll_clear_segment         (BstEventRoll   *self);
 
-     
 G_END_DECLS
 
 #endif /* __BST_EVENT_ROLL_H__ */

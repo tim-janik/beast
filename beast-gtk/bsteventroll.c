@@ -747,14 +747,16 @@ bst_event_roll_draw_canvas (BstEventRoll *self,
       gdk_draw_line (drawable, xlight_gc, x1, y1, x1, y2);
 #define TICK_WIDTH(self)        (pixels_to_ticks (self, XTHICKNESS (self) * 2 + 1))
     }
-  // FIXME: redraw area needs to be fudged by value-rectangle width around edges */
+
+  if (bst_segment_initialized (&self->segment))
+    bst_segment_draw (&self->segment, STYLE (self));
 }
 
 static void
 bst_event_roll_overlap_grow_canvas_area (BstEventRoll *self,
 					 GdkRectangle *area)
 {
-  gint i, x = area->x, xbound = x + area->width;
+  gint x = area->x, xbound = x + area->width;
 
   /* grow canvas paint area by value bar width, so we don't clear out parts of neighbouring bars */
   x -= TICK_WIDTH (self);
@@ -861,6 +863,8 @@ event_roll_adjustment_value_changed (BstEventRoll  *self,
 	  area.height = CANVAS_HEIGHT (self);
 	  gdk_window_invalidate_rect (self->canvas, &area, TRUE);
 	}
+      if (bst_segment_initialized (&self->segment))
+        bst_segment_translate (&self->segment, diff, 0);
     }
 }
 
@@ -1008,9 +1012,9 @@ bst_event_roll_canvas_drag (BstEventRoll *self,
     {
       gint mid = (CANVAS_HEIGHT (self) - 1) / 2, range = mid;
       self->drag.current_tick = coord_to_tick (self, MAX (coord_x, 0), FALSE);
-      self->drag.current_value = mid - coord_y;
-      self->drag.current_value /= range;
-      self->drag.current_value = CLAMP (self->drag.current_value, -1, +1);
+      self->drag.current_value_raw = mid - coord_y;
+      self->drag.current_value_raw /= range;
+      self->drag.current_value = CLAMP (self->drag.current_value_raw, -1, +1);
       self->drag.current_valid = ABS (self->drag.current_value) <= 1;
       if (initial)
 	{
@@ -1050,7 +1054,8 @@ bst_event_roll_vpanel_drag (BstEventRoll *self,
   if (self->vpanel_drag)
     {
       self->drag.current_tick = 0;
-      self->drag.current_value = coord_y;
+      self->drag.current_value_raw = coord_y;
+      self->drag.current_value = self->drag.current_value_raw;
       self->drag.current_valid = ABS (self->drag.current_value) <= 1;
       if (initial)
 	{
@@ -1482,5 +1487,77 @@ bst_event_roll_set_vpanel_cursor (BstEventRoll *self,
       self->vpanel_cursor = cursor_type;
       if (GTK_WIDGET_REALIZED (self))
 	gxk_window_set_cursor_type (self->vpanel, self->vpanel_cursor);
+    }
+}
+
+void
+bst_event_roll_init_segment (BstEventRoll   *self,
+                             BstSegmentType  type)
+{
+  bst_event_roll_clear_segment (self);
+  bst_segment_init (&self->segment, type, self->canvas);
+}
+
+void
+bst_event_roll_segment_start (BstEventRoll   *self,
+                              guint           tick,
+                              gfloat          value)
+{
+  gint mid = (CANVAS_HEIGHT (self) - 1) / 2, range = mid;
+  if (bst_segment_initialized (&self->segment))
+    bst_segment_start (&self->segment,
+                       tick_to_coord (self, tick),
+                       mid - value * range);
+}
+
+void
+bst_event_roll_segment_move_to (BstEventRoll   *self,
+                                guint           tick,
+                                gfloat          value)
+{
+  gint mid = (CANVAS_HEIGHT (self) - 1) / 2, range = mid;
+  if (bst_segment_initialized (&self->segment))
+    bst_segment_move_to (&self->segment,
+                         tick_to_coord (self, tick),
+                         mid - value * range);
+}
+
+void
+bst_event_roll_segment_tick_range (BstEventRoll   *self,
+                                   guint          *tick_p,
+                                   guint          *duration_p)
+{
+  gdouble x = 0, w = 0;
+  guint t;
+  if (bst_segment_initialized (&self->segment))
+    bst_segment_xrange (&self->segment, &x, &w);
+  t = coord_to_tick (self, x, FALSE);
+  if (tick_p)
+    *tick_p = t;
+  if (duration_p)
+    *duration_p = coord_to_tick (self, x + w, TRUE) - t;
+}
+
+gdouble
+bst_event_roll_segment_value (BstEventRoll   *self,
+                              guint           tick)
+{
+  gint mid = (CANVAS_HEIGHT (self) - 1) / 2, range = mid;
+  gdouble y = 0, v;
+  if (bst_segment_initialized (&self->segment))
+    y = bst_segment_calcy (&self->segment, tick_to_coord (self, tick));
+  v = mid - y;
+  v /= range;
+  v = CLAMP (v, -1, +1);
+  return v;
+}
+
+void
+bst_event_roll_clear_segment (BstEventRoll *self)
+{
+  if (bst_segment_initialized (&self->segment))
+    {
+      bst_segment_expose (&self->segment);
+      bst_segment_clear (&self->segment);
     }
 }

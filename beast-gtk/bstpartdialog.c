@@ -72,6 +72,7 @@ static BstMenuConfigEntry popup_entries[] =
   { "/_Tools",		NULL,		NULL,   0,		"<Branch>",	0 },
   { "/Tools/Insert",	"I",		MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
   { "/Tools/Delete",	"D",		MENU_CB (DELETE),	"<StockItem>",	BST_STOCK_TRASHCAN },
+  { "/Tools/Align Events", "A",		MENU_CB (ALIGN),	"<StockItem>",	BST_STOCK_EVENT_CONTROL },
   { "/Tools/Select",	"S",		MENU_CB (SELECT),	"<StockItem>",	BST_STOCK_RECT_SELECT },
   { "/Tools/Vertical Select",	"V",	MENU_CB (VSELECT),	"<StockItem>",	BST_STOCK_VERT_SELECT },
   { "/_Edit",		NULL,		NULL,   0,		"<Branch>",	0 },
@@ -302,6 +303,9 @@ bst_part_dialog_init (BstPartDialog *self)
   bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_DELETE,
 				  "Delete", "Delete note (mouse button 1)", NULL,
 				  BST_STOCK_TRASHCAN, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_ALIGN,
+				  "Align", "Draw a line to align events to", NULL,
+				  BST_STOCK_EVENT_CONTROL, BST_RADIO_TOOLS_EVERYWHERE);
   bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_SELECT,
 				  "Select", "Rectangle select notes", NULL,
 				  BST_STOCK_RECT_SELECT, BST_RADIO_TOOLS_EVERYWHERE);
@@ -484,6 +488,24 @@ part_dialog_update_tool (BstPartDialog *self)
 					      BST_EVENT_ROLL_TOOL_MOVE,		/* error */
 					      BST_EVENT_ROLL_TOOL_NONE);
       break;
+    case BST_PIANO_ROLL_TOOL_ALIGN:
+      bst_piano_roll_controller_set_obj_tools (self->pctrl,
+					       BST_PIANO_ROLL_TOOL_ALIGN,
+					       BST_PIANO_ROLL_TOOL_MOVE,
+					       BST_PIANO_ROLL_TOOL_NONE);
+      bst_piano_roll_controller_set_bg_tools (self->pctrl,
+					      BST_PIANO_ROLL_TOOL_ALIGN,
+					      BST_PIANO_ROLL_TOOL_MOVE,		/* error */
+					      BST_PIANO_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_obj_tools (self->ectrl,
+					       BST_EVENT_ROLL_TOOL_ALIGN,
+					       BST_EVENT_ROLL_TOOL_MOVE,
+					       BST_EVENT_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_bg_tools (self->ectrl,
+					      BST_EVENT_ROLL_TOOL_ALIGN,
+					      BST_EVENT_ROLL_TOOL_MOVE,		/* error */
+					      BST_EVENT_ROLL_TOOL_NONE);
+      break;
     case BST_PIANO_ROLL_TOOL_SELECT:
       bst_piano_roll_controller_set_obj_tools (self->pctrl,
 					       BST_PIANO_ROLL_TOOL_SELECT,
@@ -658,6 +680,7 @@ bst_part_dialog_can_activate (BstActivatable         *activatable,
     case BST_PIANO_ROLL_TOOL_RESIZE:
     case BST_PIANO_ROLL_TOOL_MOVE:
     case BST_PIANO_ROLL_TOOL_DELETE:
+    case BST_PIANO_ROLL_TOOL_ALIGN:
     case BST_PIANO_ROLL_TOOL_SELECT:
     case BST_PIANO_ROLL_TOOL_VSELECT:
       return TRUE;

@@ -331,6 +331,49 @@ move_abort (BstEventRollController *self,
 }
 
 static void
+align_start (BstEventRollController *self,
+             BstEventRollDrag       *drag)
+{
+  bst_event_roll_init_segment (self->eroll, BST_SEGMENT_LINE);
+  bst_event_roll_segment_start (self->eroll, drag->start_tick, drag->start_value);
+  drag->state = BST_DRAG_CONTINUE;
+  gxk_status_set (GXK_STATUS_WAIT, "Align Control Events", NULL);
+}
+
+static void
+align_motion (BstEventRollController *self,
+              BstEventRollDrag       *drag)
+{
+  bst_event_roll_segment_move_to (self->eroll, drag->current_tick, drag->current_value_raw);
+  if (drag->type == BST_DRAG_DONE)
+    {
+      SfiProxy part = self->eroll->proxy;
+      guint tick, duration, i;
+      BsePartControlSeq *cseq;
+      
+      bse_item_group_undo (part, "Align Control Events");
+      bst_event_roll_segment_tick_range (self->eroll, &tick, &duration);
+      cseq = bse_part_get_range_controls (part, tick, duration, CONTROL_TYPE (self));
+      for (i = 0; i < cseq->n_pcontrols; i++)
+        {
+          BsePartControl *pctrl = cseq->pcontrols[i];
+          gdouble v = bst_event_roll_segment_value (self->eroll, pctrl->tick);
+          bse_part_change_control (part, pctrl->id, pctrl->tick, CONTROL_TYPE (self), v);
+        }
+      bst_event_roll_clear_segment (self->eroll);
+      bse_item_ungroup_undo (part);
+    }
+}
+
+static void
+align_abort (BstEventRollController *self,
+             BstEventRollDrag       *drag)
+{
+  bst_event_roll_clear_segment (self->eroll);
+  gxk_status_set (GXK_STATUS_ERROR, "Align Control Events", "Aborted");
+}
+
+static void
 insert_start (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
@@ -478,6 +521,7 @@ controller_canvas_drag (BstEventRollController *self,
     DragFunc start, motion, abort;
   } tool_table[] = {
     { BST_EVENT_ROLL_TOOL_INSERT, insert_resize_start,	resize_motion,  resize_abort,	},
+    { BST_EVENT_ROLL_TOOL_ALIGN,	align_start,	align_motion,	align_abort,	},
     { BST_EVENT_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
     { BST_EVENT_ROLL_TOOL_MOVE,		move_start,	move_motion,	move_abort,	},
     { BST_EVENT_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
