@@ -66,8 +66,6 @@ FIXMES:
 - need tact number entry widget
 - fade in/out of samples in sample editor
 - wave editor: provide transpose spinner for wave preview
-- collect flow jobs from unscheduled nodes, i.e. call
-  collect_trash_timed_jobs_L() not only from _engine_push_processed_node()
 
 DOCS:
 - pressing browsing hotkeys in release-notes dialog does stuff

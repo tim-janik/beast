@@ -161,7 +161,7 @@ bst_stock_register_icon (const gchar    *stock_id,
   
   if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id))
     {
-      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data (g_memdup (pixels, rowstride * height * bytes_per_pixel),
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data (g_memdup (pixels, rowstride * height),
                                                     GDK_COLORSPACE_RGB, bytes_per_pixel == 4,
                                                     8, width, height,
                                                     width * bytes_per_pixel,
@@ -392,7 +392,6 @@ bst_hpack0 (const gchar *first_location,
   gtk_widget_show_all (box);
   return box;
 }
-
 
 void
 bst_action_list_add_cat (GxkActionList          *alist,
