@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include	"bstutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SUPER_SHELL		(bst_super_shell_get_type ())
@@ -50,6 +47,7 @@ struct _BstSuperShellClass
 {
   GtkVBoxClass	parent_class;
   
+  gchar*        (*get_title)     (BstSuperShell  *super_shell);
   void		(*setup_super)	 (BstSuperShell  *super_shell,
 				  SfiProxy	  super);
   void		(*release_super) (BstSuperShell  *super_shell,
@@ -63,22 +61,15 @@ struct _BstSuperShellClass
 
 
 /* --- prototypes --- */
-GtkType		bst_super_shell_get_type	(void);
+GType		bst_super_shell_get_type	(void);
 void		bst_super_shell_operate		(BstSuperShell	*super_shell,
 						 BstOps		 op);
 gboolean	bst_super_shell_can_operate	(BstSuperShell	*super_shell,
 						 BstOps		 op);
 void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
 						 SfiProxy	 super);
-BstSuperShell*	bst_super_shell_from_super	(SfiProxy	 super);
 void            bst_super_shell_update_label    (BstSuperShell  *super_shell);
 
-     
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_SUPER_SHELL_H__ */

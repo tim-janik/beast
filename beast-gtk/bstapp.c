@@ -525,14 +525,6 @@ bst_app_update_can_operate (BstApp *app)
 }
 
 static void
-foreach_super_shell_operate (BstSuperShell *shell,
-			     gpointer       data)
-{
-  if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data)))
-    bst_super_shell_operate (shell, GPOINTER_TO_UINT (data));
-}
-
-static void
 rebuild_super_shell (BstSuperShell *super_shell)
 {
   SfiProxy proxy;
@@ -588,7 +580,6 @@ bst_app_operate (BstApp *app,
 
   switch (op)
     {
-      BstSuperShell *super_shell;
       SfiProxy proxy;
       GtkWidget *any;
     case BST_OP_PROJECT_NEW:
@@ -629,15 +620,12 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_PROJECT_NEW_SONG:
       proxy = bse_project_create_song (app->project, NULL);
-      super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_NEW_SNET:
       proxy = bse_project_create_snet (app->project, NULL);
-      super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_NEW_MIDI_SYNTH:
       proxy = bse_project_create_midi_synth (app->project, NULL);
-      super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_PLAY:
       bst_project_ctrl_play (BST_PROJECT_CTRL (app->pcontrols));
@@ -794,33 +782,6 @@ bst_app_operate (BstApp *app,
   bst_update_can_operate (widget);
 
   gtk_widget_unref (widget);
-}
-
-#define NONE ((void*) -1)
-
-static void
-forwhich_super_shell_can_operate (BstSuperShell *shell,
-				  gpointer       data_p)
-{
-  gpointer *data = data_p;
-
-  if (data[1] == NONE || data[1] == NULL)
-    {
-      if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data[0])))
-	data[1] = shell;
-      else
-	data[1] = NULL;
-    }
-}
-
-static void
-forany_super_shell_can_operate (BstSuperShell *shell,
-				gpointer       data_p)
-{
-  gpointer *data = data_p;
-
-  if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data[0])))
-    data[1] = shell;
 }
 
 gboolean

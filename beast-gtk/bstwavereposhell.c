@@ -29,6 +29,7 @@ static void	bst_wave_repo_shell_operate	(BstSuperShell		*super_shell,
 						 BstOps			 sop);
 static gboolean	bst_wave_repo_shell_can_operate	(BstSuperShell		*super_shell,
 						 BstOps			 sop);
+static gchar*   bst_wave_repo_shell_get_title   (BstSuperShell          *super_shell);
 
 
 /* --- static variables --- */
@@ -65,6 +66,7 @@ bst_wave_repo_shell_class_init (BstWaveRepoShellClass *class)
 
   parent_class = g_type_class_peek_parent (class);
 
+  super_shell_class->get_title = bst_wave_repo_shell_get_title;
   super_shell_class->operate = bst_wave_repo_shell_operate;
   super_shell_class->can_operate = bst_wave_repo_shell_can_operate;
   super_shell_class->rebuild = bst_wave_repo_shell_rebuild;
@@ -124,6 +126,14 @@ bst_wave_repo_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Parameters",
 					    "visible", TRUE,
 					    NULL));
+}
+
+static gchar*
+bst_wave_repo_shell_get_title (BstSuperShell *super_shell)
+{
+  // BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
+
+  return g_strdup ("Waves");
 }
 
 static void

@@ -6,17 +6,21 @@ FIXMES:
 - nuke BSE file crawling functions
 - fix API for file matching in SFI
 - redesign object operations and updating object operations
-- alow snet flagging as aggregate
 - show aggregates with BST_DBG_EXT
 - mark intern synths as INTERNAL (track's mono-synth)
+- alow snet flagging as aggregate
 - fix internal items (snets) being listed as tentative property values / fix internal synths being displayed by beast
+- fix SNet derivation
+- fix sub-synth "snet" property setter
+- fix snet property changes in sub synth and instrument
+- implement snet removal
+- fix name of BSE_SNET_FLAG_USER_SYNTH
+- bse_item_gather_proxies() could simply have container and child type (no callbacks) once midi/song don't derive from BseSNet
 - never gather INTERNAL items in bse_item_gather_proxies()
 - fix BST_OP_PROJECT_SAVE
 - get compilation with guile-1.6 to work
 - add new test song containing a wave track
 - fix saving of internal objects
-- fix sub-synth "snet" property setter
-- fix SNet derivation
 - implement (GUI for) locked properties
 - fixup filemenu/dialog for WAVE recording
 - loading cmt LADSPA plugins from the cmt debian package causes beast abort:
@@ -26,7 +30,6 @@ FIXMES:
 - fix main menubar which contains a lot of wrongly enabled menu items
 - register category IDs via ID mechanism
 - register drivers with categories
-- implement snet removal
 - fix compillation without texitheque
 - fix gsl wave osc
 - install bsw/* into bse/.
@@ -48,8 +51,6 @@ FIXMES:
 - allow .bse files to start out with #bsesh ?
 - update /Help index to cover new docs
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
-- fix name of BSE_SNET_FLAG_USER_SYNTH
-- merge snet specifics down to super
 - registering the same script function twice triggers GType assertion
 - fix procbrowser
 - fix bseplugin.c:bse_plugin_use():need_reinit
@@ -109,7 +110,6 @@ Random:
 - cleanup all glue generation code in bsw-shell
 - complete and intergrate piano-script
 - portamento-to-note in piano roll? probably need special effects
-- bse_item_gather_proxies() could simply have container and child type (no callbacks) once midi/song don't derive from BseSNet
 * move mix_freq and recording_freq into datahandle
 * fix reversed data handle wrg n_channels
 : propagate mtime changes through cascaded data handles (e.g. for dcache)
@@ -126,12 +126,11 @@ MEETING-RESULTS:
                             
 General BSE:
 - object tree backbone/trunk/tribe type for project, server and workbench (treeroot storageroot)
-- item_get_toplevel() function for toplevel parent quries
+- item_get_toplevel() function for toplevel parent queries
 - level-o-meter visualizer at links (adjustable?)
   needs linear (red >1) and logarithmic display
 - frequency shifter/multiplier (*2 etc.)
 - fix fine-tune settings (from gsl)
-- fix snet property changes in sub synth and instrument
 - replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
 - provide proper dB functions in GSL
 - adjust stepping and type for all percentage settings

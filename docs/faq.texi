@@ -32,6 +32,7 @@ Initial markup was done by Dave Seidel, until
 a new markup parser for @beast documentation. Around the
 0.4.1 release, the docs got migrated to texinfo format.
 
+@anchor{contacts}
 @section Contact Information and Resources
 @itemize
 @item WWW: @uref{http://beast.gtk.org}
@@ -87,6 +88,7 @@ The song support was completely rewritten for this version. If lots of
 compatiblity problem reports occur, a converter might be implemented
 at some point.
 
+@anchor{bse-file}
 @section What is a @code{.bse} file?
 
 @beast stores saved data in @bse files. These files can hold
@@ -100,6 +102,7 @@ appendix used to store wave data doesn't get corrupted.
 The recommended mime type image for @bse files looks like this:
 @image{bse-mime,,,BSE-Mime-Logo,png}
 
+@anchor{beast-hardware-requirements}
 @section What are the minimum hardware requirements for @beast{}?
 
 This depends a lot on how you utilise @beast{}.  If you simply want to
@@ -122,5 +125,15 @@ aborting...}
 This issue got fixed with version 2.2.0.2, so users encountering crashes
 with @beast upon creation of synthesis networks will need to upgrade
 their GnomeCanvas Library to at least 2.2.0.2.
+
+@anchor{midi-howto}
+@section How do i get MIDI to work?
+
+@beast comes with a @file{test/midi-test.bse} file in the @file{test/} directory
+of recent releases, it works out of the box with properly setup MIDI drivers
+and MIDI pianos. Setting up MIDI drivers can be a tough task on its own but is
+beyond the scope of this FAQ and is already taken care of by
+@url{http://www.midi-howto.com/,,The Linux MIDI-HOWTO},
+which provides good descriptions and further links to related documentation.
 
 @bye
