@@ -1,7 +1,6 @@
 FIXMES:
 - fix copyright/license in song-parts-operations.scm
 - fix copyright/license in party-monster.bse
-- remove test.scm
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
