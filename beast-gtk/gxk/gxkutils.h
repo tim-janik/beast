@@ -177,6 +177,13 @@ void         gxk_widget_showraise                 (GtkWidget        *widget);
 void         gxk_idle_showraise                   (GtkWidget        *widget);
 void         gxk_idle_show_widget                 (GtkWidget        *widget);
 void         gxk_idle_unrealize_widget            (GtkWidget        *widget);
+GtkWidget*   gxk_notebook_create_tabulator        (const gchar      *label_text,
+                                                   const gchar      *stock_image,
+                                                   const gchar      *tooltip);
+void         gxk_notebook_change_tabulator        (GtkWidget        *tabulator,
+                                                   const gchar      *label_text,
+                                                   const gchar      *stock_image,
+                                                   const gchar      *tooltip);
 void         gxk_notebook_add_page                (GtkNotebook      *notebook,
                                                    GtkWidget        *child,
                                                    const gchar      *tab_text,

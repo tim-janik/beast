@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- remove BST_TAB_WIDTH
 - ensure there always is a master
 - auto-conenct new busses to master
 - help menu updates (email) add plugin-devel menu item

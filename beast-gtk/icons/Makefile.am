@@ -6,6 +6,7 @@
 SRC_IMAGES = @STRIP_BEGIN@	\
 	aguitar.xcf		\
 	browse-image.xcf	\
+	bus-add.xcf		\
 	cdrom.xcf		\
 	clipboard.xcf		\
 	diag.xcf		\
@@ -14,6 +15,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	knob.xcf		\
 	ladspa.xcf		\
 	loopleft.xcf		\
+	mesh.xcf		\
 	mini-csynth.xcf		\
 	mini-song.xcf		\
 	mini-waverepo.xcf	\
@@ -49,6 +51,8 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_NOTE_ICON			$(srcdir)/binote.png		\
 	STOCK_BROWSE_IMAGE		$(srcdir)/browse-image.png	\
+	STOCK_BUS_ADD			$(srcdir)/bus-add.png		\
+	STOCK_BUS			$(srcdir)/bus.png		\
 	STOCK_COLOR_SELECTOR		$(srcdir)/colorselector.png	\
 	STOCK_ARROW_UP			$(srcdir)/arrow_up.png		\
 	STOCK_ARROW_LEFT		$(srcdir)/arrow_left.png	\
@@ -64,6 +68,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_KNOB			$(srcdir)/knob.png		\
 	STOCK_LOAD			$(srcdir)/cdrom.png		\
 	STOCK_LOAD_LIB			$(srcdir)/cdroms.png		\
+	STOCK_MESH			$(srcdir)/mesh.png		\
 	STOCK_MINI_CSYNTH		$(srcdir)/mini-csynth.png	\
 	STOCK_MINI_MIDI_SYNTH		$(srcdir)/mini-midi-synth.png	\
 	STOCK_MINI_SONG			$(srcdir)/mini-song.png		\

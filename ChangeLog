@@ -1,3 +1,21 @@
+Wed Sep  8 09:02:59 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbusmixer.c: tooltip updates.
+
+	* beast-gtk/bstsupershell.c: use gxk_notebook_change_tabulator() and
+	gxk_notebook_create_tabulator(). added icons to notebook tabs.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_notebook_create_tabulator()
+	and gxk_notebook_change_tabulator().
+
+	* beast-gtk/gxk/splinetest.c: more tests.
+
+	* beast-gtk/icons/bus-add.png:
+	* beast-gtk/icons/bus-add.xcf:
+	* beast-gtk/icons/bus.png:
+	* beast-gtk/icons/mesh.png:
+	* beast-gtk/icons/mesh.xcf: added new icons from Artem Popov.
+
 Tue Sep  7 01:07:31 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbusmixer.[hc]: implemented bus selection indication,

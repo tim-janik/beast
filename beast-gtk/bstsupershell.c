@@ -149,9 +149,7 @@ bst_super_shell_update_label (BstSuperShell *self)
 
   GtkWidget *widget = GTK_WIDGET (self);
   GtkWidget *tab = gxk_notebook_descendant_get_tab (widget);
-  GtkWidget *box = tab ? GTK_BIN (tab)->child : NULL;
-  GtkWidget *label = tab ? gtk_box_get_nth_child (GTK_BOX (box), 1) : NULL;
-  if (GTK_IS_LABEL (label) && self->super)
+  if (tab && self->super)
     {
       /* discriminate super */
       const gchar *stock, *name = bse_item_get_name (self->super);
@@ -177,25 +175,8 @@ bst_super_shell_update_label (BstSuperShell *self)
           tip = g_strdup_printf (_("Synthesizer: %s"), name);
           stock = BST_STOCK_MINI_CSYNTH;
         }
-      /* update tooltip */
-      gxk_widget_set_tooltip (tab, tip);
+      gxk_notebook_change_tabulator (tab, name, stock, tip);
       g_free (tip);
-      /* update image */
-      GtkWidget *image = gtk_box_get_nth_child (GTK_BOX (box), 0);
-      if (GTK_IS_IMAGE (image))
-        {
-          gchar *ostock = NULL;
-          GtkIconSize isize = 0;
-          gtk_image_get_stock (GTK_IMAGE (image), &ostock, &isize);
-          if (!ostock || strcmp (ostock, stock) != 0 || isize != GXK_ICON_SIZE_TABULATOR)
-            gtk_image_set_from_stock (GTK_IMAGE (image), stock, GXK_ICON_SIZE_TABULATOR);
-        }
-      /* update label */
-      if (BSE_IS_WAVE_REPO (self->super))
-        name = _("Waves");
-      else if (self->super)
-        name = bse_item_get_name (self->super);
-      g_object_set (label, "label", name, NULL);
     }
 }
 
@@ -230,31 +211,10 @@ bst_super_shell_set_super (BstSuperShell *self,
     }
 }
 
-static GtkWidget*
-create_notebook_label (const gchar *label_text,
-                       const gchar *stock_image,
-                       const gchar *tooltip)
-{
-  GtkWidget *ev = g_object_new (GTK_TYPE_EVENT_BOX, NULL);
-  GtkWidget *image = gtk_image_new();
-  if (stock_image)
-    gtk_image_set_from_stock (GTK_IMAGE (image), stock_image, GXK_ICON_SIZE_TABULATOR);
-  GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
-                                   "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
-                                   "label", label_text,
-                                   NULL);
-  GtkWidget *box = g_object_new (GTK_TYPE_HBOX, "parent", ev, NULL);
-  gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
-  gxk_widget_set_tooltip (ev, tooltip);
-  gtk_widget_show_all (ev);
-  return ev;
-}
-
 GtkWidget*
 bst_super_shell_create_label (BstSuperShell *super_shell)
 {
-  return create_notebook_label ("SuperShell", NULL, NULL);
+  return gxk_notebook_create_tabulator ("SuperShell", NULL, NULL);
 }
 
 static void
@@ -265,24 +225,24 @@ super_shell_build_song (BstSuperShell *self,
 
   gtk_notebook_append_page (notebook,
                             bst_track_view_new (song),
-                            create_notebook_label (_("Tracks"), BST_STOCK_TRACKS, _("Tracks contain instrument definitions and parts with notes")));
+                            gxk_notebook_create_tabulator (_("Tracks"), BST_STOCK_TRACKS, _("Tracks contain instrument definitions and parts with notes")));
   gtk_notebook_append_page (notebook,
                             bst_bus_mixer_new (song),
-                            create_notebook_label (_("Mixer"), BST_STOCK_MIXER, _("Mix track outputs, adjust volume and add effects")));
+                            gxk_notebook_create_tabulator (_("Mixer"), BST_STOCK_MIXER, _("Mix track outputs, adjust volume and add effects")));
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (song),
-                            create_notebook_label (_("Parameters"), NULL, _("Adjust general song parameters")));
+                            gxk_notebook_create_tabulator (_("Parameters"), BST_STOCK_PROPERTIES, _("Adjust general song parameters")));
   gtk_notebook_append_page (notebook,
                             bst_part_view_new (song),
-                            create_notebook_label (_("Parts"), BST_STOCK_PART, NULL));
+                            gxk_notebook_create_tabulator (_("Parts"), BST_STOCK_PART, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               bst_bus_view_new (song),
-                              create_notebook_label (_("Busses"), NULL, NULL));
+                              gxk_notebook_create_tabulator (_("Busses"), BST_STOCK_BUS, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (song))),
-                              create_notebook_label (_("Routing"), NULL, NULL));
+                              gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, NULL));
 }
 
 static void
@@ -295,19 +255,15 @@ super_shell_build_snet (BstSuperShell *self,
   if (BST_DBG_EXT && bse_snet_supports_user_synths (snet))
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (bst_rack_view_new (snet)),
-                              g_object_new (GTK_TYPE_LABEL, "label", _("Rack"), NULL));
+                              gxk_notebook_create_tabulator (_("Rack"), NULL, NULL));
   if (bse_snet_supports_user_synths (snet) || BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),
-                              g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                            "label", _("Routing"),
-                                            NULL));
+                              gxk_notebook_create_tabulator (_("Routing"), BST_STOCK_MESH, _("Add, edit and connect synthsizer mesh components")));
   param_view = bst_param_view_new (snet);
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (snet),
-                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Parameters"),
-                                          NULL));
+                            gxk_notebook_create_tabulator (_("Parameters"), BST_STOCK_PROPERTIES, _("Adjust synthesizer parameters")));
 }
 
 static void

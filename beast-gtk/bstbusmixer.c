@@ -32,8 +32,8 @@ enum {
   ACTION_DELETE_BUS,
 };
 static const GxkStockAction bus_mixer_actions[] = {
-  { N_("Add"),          NULL,   NULL,   ACTION_ADD_BUS,        BST_STOCK_MIXER },
-  { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
+  { N_("Add"),          NULL,   N_("Add a new bus to the mixer"),        ACTION_ADD_BUS,        BST_STOCK_BUS_ADD },
+  { N_("Delete"),       NULL,   N_("Delete the currently selected bus"), ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
 };
 
 

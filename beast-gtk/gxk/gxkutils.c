@@ -19,6 +19,7 @@
 #include "gxkutils.h"
 #include "glewidgets.h"
 #include "gxkmenubutton.h"
+#include "gxkstock.h"
 #include "gxkcellrendererpopup.h"
 #include <string.h>
 
@@ -715,6 +716,54 @@ gxk_idle_unrealize_widget (GtkWidget *widget)
 		      GTK_SIGNAL_FUNC (gtk_widget_destroyed),
 		      widget_p);
   gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_unrealizer, widget_p);
+}
+
+GtkWidget*
+gxk_notebook_create_tabulator (const gchar *label_text,
+                               const gchar *stock_image,
+                               const gchar *tooltip)
+{
+  GtkWidget *ev = g_object_new (GTK_TYPE_EVENT_BOX, NULL);
+  GtkWidget *image = gtk_image_new();
+  GtkWidget *label = g_object_new (GTK_TYPE_LABEL, NULL);
+  GtkWidget *box = g_object_new (GTK_TYPE_HBOX, "parent", ev, NULL);
+  gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
+  gtk_widget_show_all (ev);
+  gxk_notebook_change_tabulator (ev, label_text, stock_image, tooltip);
+  return ev;
+}
+
+void
+gxk_notebook_change_tabulator (GtkWidget        *tabulator,
+                               const gchar      *label_text,
+                               const gchar      *stock_image,
+                               const gchar      *tooltip)
+{
+  if (GTK_IS_EVENT_BOX (tabulator))
+    {
+      GtkWidget *image = gxk_parent_find_descendant (tabulator, GTK_TYPE_IMAGE);
+      GtkWidget *label = gxk_parent_find_descendant (tabulator, GTK_TYPE_LABEL);
+      if (image && label)
+        {
+          if (label_text && strcmp (gtk_label_get_text (GTK_LABEL (label)), label_text) != 0)
+            gtk_label_set_text (GTK_LABEL (label), label_text);
+          if (label_text)
+            gtk_widget_show (label);
+          else
+            gtk_widget_hide (label);
+          gchar *ostock = NULL;
+          GtkIconSize isize = 0;
+          gtk_image_get_stock (GTK_IMAGE (image), &ostock, &isize);
+          if (stock_image && (!ostock || strcmp (ostock, stock_image) != 0 || isize != GXK_ICON_SIZE_TABULATOR))
+            gtk_image_set_from_stock (GTK_IMAGE (image), stock_image, GXK_ICON_SIZE_TABULATOR);
+          if (stock_image)
+            gtk_widget_show (image);
+          else
+            gtk_widget_hide (image);
+          gxk_widget_set_tooltip (tabulator, tooltip);
+        }
+    }
 }
 
 void
