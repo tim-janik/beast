@@ -1,3 +1,7 @@
+Wed Feb 18 01:40:53 2004  Tim Janik  <timj@gtk.org>
+
+	* sfinote.c (is_note_letter): fixed missing to_lower().
+
 Wed Feb 18 01:36:01 2004  Tim Janik  <timj@gtk.org>
 
 	* sfinote.c (sfi_note_from_string_err): in addition to parsing notes

@@ -26,7 +26,7 @@
           ((guchar)(c))                                                 \
         )                                                               \
 )
-#define is_note_letter(c)       (strchr ("cdefgabh", c) != NULL) /* + german alias */
+#define is_note_letter(c)       (strchr ("cdefgabh", to_lower (c)) != NULL) /* + german alias */
 
 
 /* --- variables --- */
