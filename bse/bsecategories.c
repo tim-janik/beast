@@ -148,7 +148,10 @@ bse_categories_register_icon (const gchar      *category,
     {
       centry->type = type;
       if (pixdata->type && pixdata->width && pixdata->height && pixdata->encoded_pix_data)
-	centry->icon = bse_icon_from_pixdata (pixdata);
+	{
+	  centry->icon = bse_icon_from_pixdata (pixdata); /* static reference */
+	  bse_icon_static_ref (centry->icon);
+	}
       else
 	centry->icon = NULL;
     }

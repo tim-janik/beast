@@ -28,7 +28,7 @@
  */
 
 /* WARNING: some functions (some internal variants and non-static ones)
- * invalidate data potions of the TypeNodes. if external functions/callbacks
+ * invalidate data portions of the TypeNodes. if external functions/callbacks
  * are called, pointers to memory maintained by TypeNodes have to be looked up
  * again. this affects most of the struct TypeNode fields, e.g. ->children or
  * ->ifaces (not ->supers[] as of recently), as all those memory portions can
@@ -65,7 +65,6 @@ struct _TypeNode
   BseType     supers[1]; /* flexible array */
 };
 #define SIZEOF_BASE_TYPE_NODE()    (G_STRUCT_OFFSET (TypeNode, supers))
-
 #define MAX_N_SUPERS    127
 #define MAX_N_CHILDREN  4095
 #define MAX_N_IFACES    511

@@ -1,3 +1,27 @@
+Wed Nov  3 21:50:38 1999  Tim Janik  <timj@gtk.org>
+
+	* bseenums.[hc]: don't return const strings, this is extremely annoying.
+
+	* bseplugin.c (bse_plugin_get_export_spec): fixed a bad bad bug here,
+	we were walking the export specs by sizeof(BseExportSpec) instead of
+	the appropriate sizeof(BseExportObject) or sizeof(BseExportProcedure),
+	depending on what type of specs we actually handle. this lead to only
+	the first type being recognized (which was moderatedly mild, could
+	have insanely crashed instead ;).
+
+Wed Nov  3 20:05:14 1999  Tim Janik  <timj@gtk.org>
+
+	* bsecategories.c (bse_categories_register_icon): category icons stay
+	alive throught a programs life time.
+
+	* bseobject.c (bse_object_get_icon): removed icon cruft from object
+	class and simply provided bse_object_get_icon(). there might be a
+	notifier someday to indicate that an object's icon should get
+	refetched.
+
+	* bseutils.h: provide simple refcounting functions for BseIcons,
+	facilitate permanent icon ref_counts.
+
 Sun Oct 31 16:20:49 1999  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (bse_storage_parse_bin_data): eeek, fixed a bad bad bug.

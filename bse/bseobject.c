@@ -20,7 +20,7 @@
 #include	"bseexports.h"
 #include	"bseparamcol.c" /* FIXME */
 #include	"bsestorage.h"
-
+#include	"bsecategories.h" /* FIXME */
 
 enum
 {
@@ -181,8 +181,6 @@ bse_object_class_base_init (BseObjectClass *class)
 {
   guint i;
   
-  class->icon = NULL;
-
   class->n_params = 0;
   class->param_specs = NULL;
   
@@ -213,8 +211,6 @@ static void
 bse_object_class_base_destroy (BseObjectClass *class)
 {
   guint i;
-
-  g_free (class->icon);
 
   for (i = 0; i < class->n_params; i++)
     {
@@ -969,6 +965,37 @@ bse_object_class_get_parser (BseObjectClass *class,
   return NULL;
 }
 
+BseIcon*
+bse_object_get_icon (BseObject *object)
+{
+  BseCategory *cats;
+  guint n_cats, i;
+
+  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+
+  /* FIXME: this is a gross hack, we should store the first per-type
+   * category icon as static type-data and fetch that through a default
+   * handler BseObjectClass.get_icon()
+   */
+
+  cats = bse_categories_from_type (BSE_OBJECT_TYPE (object), &n_cats);
+  for (i = 0; i < n_cats; i++)
+    {
+      BseIcon *icon = cats[i].icon;
+
+      if (icon)
+	{
+	  g_free (cats);
+
+	  return icon;
+	}
+    }
+
+  g_free (cats);
+
+  return NULL;
+}
+
 gpointer
 bse_object_ensure_interface_data (BseObject          *object,
 				  BseType             interface_type,
@@ -1049,39 +1076,6 @@ bse_object_get_interface (BseObject *object,
     }
 
   return iface_table;
-}
-
-void
-bse_object_class_set_icon (BseObjectClass *class,
-			   guint	   width,
-			   guint	   height,
-			   gboolean	   has_alpha,
-			   const guint8	  *pixel_data)
-{
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
-  g_return_if_fail (width < 16384 && height < 16384);
-  if (!width || !height)
-    g_return_if_fail (pixel_data == NULL);
-  else
-    g_return_if_fail (pixel_data != NULL);
-
-  FIXME (broken);
-
-  if (class->icon && !pixel_data)
-    {
-      g_free (class->icon);
-      class->icon = NULL;
-    }
-
-  if (pixel_data)
-    {
-      if (!class->icon)
-	class->icon = g_new (BseIcon, 1);
-      class->icon->width = width;
-      class->icon->height = height;
-      class->icon->bytes_per_pixel = has_alpha ? 4 : 3;
-      // class->icon->pixel_data = pixel_data;
-    }
 }
 
 void

@@ -182,6 +182,7 @@ struct _BsePixdata
 struct _BseIcon
 {
   guint   bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  guint   ref_count;       /* &(1<<31) indicates permanent ref counts */
   guint   width;
   guint   height;
   guint8 *pixels;

@@ -110,7 +110,7 @@ typedef enum
   BSE_ERROR_DATA_CORRUPT,
   BSE_ERROR_BINARY_DATA_CORRUPT,
   BSE_ERROR_PARSE_ERROR,
-  /* BseSTream errors */
+  /* BseStream errors */
   BSE_ERROR_STREAM_INVALID,
   BSE_ERROR_STREAM_SUSPENDED,
   BSE_ERROR_STREAM_DEVICE_BUSY,
@@ -162,9 +162,9 @@ BseFlagsValue*	bse_flags_get_value_by_nick	(BseFlagsClass	*flags_class,
 
 
 /* --- convenience functions --- */
-const gchar*	bse_error_name			(BseErrorType	 error_value);
-const gchar*	bse_error_nick			(BseErrorType	 error_value);
-const gchar*	bse_error_blurb			(BseErrorType	 error_value);
+gchar*		bse_error_name			(BseErrorType	 error_value);
+gchar*		bse_error_nick			(BseErrorType	 error_value);
+gchar*		bse_error_blurb			(BseErrorType	 error_value);
 
 
 

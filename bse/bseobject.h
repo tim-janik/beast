@@ -104,8 +104,6 @@ struct _BseObjectClass
 {
   BseTypeClass		 bse_class;
 
-  BseIcon		*icon;
-  
   guint			 n_params;
   BseParamSpec	       **param_specs;
 
@@ -144,11 +142,6 @@ struct _BseParseHook
 
 
 /* --- object class prototypes ---*/
-void		bse_object_class_set_icon	(BseObjectClass	*oclass,
-						 guint		 width,
-						 guint		 height,
-						 gboolean	 has_alpha,
-						 const guint8	*pixel_data);
 void		bse_object_class_add_param	(BseObjectClass	*oclass,
 						 const gchar	*param_group,
 						 guint		 param_id,
@@ -205,6 +198,7 @@ void		bse_object_set_qdata_full	(BseObject	*object,
 						 GQuark		 quark,
 						 gpointer	 data,
 						 GDestroyNotify	 destroy);
+BseIcon*	bse_object_get_icon		(BseObject      *object);
 gpointer	bse_object_ensure_interface_data(BseObject	*object,
 						 BseType	 interface_type,
 						 BseInterfaceDataNew new_func,

@@ -332,16 +332,21 @@ bse_plugin_unref (BsePlugin *plugin)
     bse_plugin_unload (plugin);
 }
 
+#define POINTER_ADD(p,n_bytes)	((void*) (((const char*) (p)) + (unsigned long) (n_bytes)))
+
 static inline const BseExportSpec*
-bse_plugin_get_export_specs (BsePlugin    *plugin,
-			     BseType       type,
-			     gconstpointer export_specs)
+bse_plugin_get_export_spec (BsePlugin    *plugin,
+			    BseType       type,
+			    gconstpointer export_specs,
+			    guint         spec_size)
 {
+  g_return_val_if_fail (export_specs && spec_size > sizeof (BseExportAny), NULL);
+
   if (export_specs)
     {
       const BseExportSpec* spec;
 
-      for (spec = export_specs; spec->type_p; spec++)
+      for (spec = export_specs; spec->type_p; spec = POINTER_ADD (spec, spec_size))
 	if (*(spec->type_p) == type)
 	  return spec;
     }
@@ -356,30 +361,35 @@ bse_plugin_complete_info (BsePlugin   *plugin,
 {
   const BseExportSpec *export_spec = NULL;
   gconstpointer specs_p = NULL;
+  guint spec_size = 0;
   void (*complete_info) (const BseExportSpec *, BseTypeInfo *) = NULL;
   
   g_return_if_fail (plugin != NULL);
   g_return_if_fail (plugin->module_refs > 0);
 
   /* we are an internal function, and thusly need to behave pretty conservative,
-   * so in effect we only guarrantee to always fill the type_info
+   * so in effect we only guarrantee to always fill the type_info structure we
+   * get passed.
    */
   
   switch (BSE_FUNDAMENTAL_TYPE (type))
     {
     case BSE_TYPE_PROCEDURE:
       specs_p = plugin->e_procs;
+      spec_size = sizeof (BseExportProcedure);
       complete_info = bse_procedure_complete_info;
       break;
     case BSE_TYPE_OBJECT:
       specs_p = plugin->e_objects;
+      spec_size = sizeof (BseExportObject);
       complete_info = bse_object_complete_info;
       break;
     default:
       g_assert_not_reached ();
       break;
     }
-  export_spec = bse_plugin_get_export_specs (plugin, type, specs_p);
+
+  export_spec = bse_plugin_get_export_spec (plugin, type, specs_p, spec_size);
   if (!export_spec || !complete_info)
     g_error ("unable to find export spec for `%s' in \"%s\"",
 	     bse_type_name (type),

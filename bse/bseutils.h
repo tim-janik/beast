@@ -65,6 +65,9 @@ guint	bse_note_from_string	(const gchar	*note_string);
 
 /* --- icons --- */
 BseIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
+void     bse_icon_static_ref   (BseIcon          *icon);
+void     bse_icon_ref          (BseIcon          *icon);
+void     bse_icon_unref        (BseIcon          *icon);
 
 
 /* --- miscellaeous --- */

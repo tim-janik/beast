@@ -660,6 +660,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 
   icon = g_new0 (BseIcon, 1);
   icon->bytes_per_pixel = bpp;
+  icon->ref_count = 1;
   icon->width = pixdata->width;
   icon->height = pixdata->height;
   icon->pixels = g_new (guint8, icon->width * icon->height * icon->bytes_per_pixel);
@@ -715,6 +716,45 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
     memcpy (icon->pixels, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
   
   return icon;
+}
+
+#define STATIC_REF_COUNT (1 << 31)
+
+void
+bse_icon_static_ref (BseIcon *icon)
+{
+  g_return_if_fail (icon != NULL);
+  g_return_if_fail (icon->ref_count > 0);
+
+  icon->ref_count |= STATIC_REF_COUNT;
+}
+
+void
+bse_icon_ref (BseIcon *icon)
+{
+  g_return_if_fail (icon != NULL);
+  g_return_if_fail (icon->ref_count > 0);
+
+  if (!(icon->ref_count & STATIC_REF_COUNT))
+    icon->ref_count += 1;
+}
+
+void
+bse_icon_unref (BseIcon *icon)
+{
+  g_return_if_fail (icon != NULL);
+  g_return_if_fail (icon->ref_count > 0);
+
+  if (!(icon->ref_count & STATIC_REF_COUNT))
+    {
+      icon->ref_count -= 1;
+      if (!icon->ref_count)
+	{
+	  g_print ("freeing ixon\n");
+	  g_free (icon->pixels);
+	  g_free (icon);
+	}
+    }
 }
 
 

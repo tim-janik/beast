@@ -84,7 +84,7 @@ bse_type_register_enums (void)
 
 static void
 bse_enum_class_init (BseEnumClass *class,
-  gpointer	   class_data)
+		     gpointer	   class_data)
 {
   BseEnumValue *values;
   
@@ -124,11 +124,11 @@ bse_enum_get_value (BseEnumClass *enum_class,
 {
   g_return_val_if_fail (enum_class != NULL, NULL);
   g_return_val_if_fail (BSE_IS_ENUM_CLASS (enum_class), NULL);
-
+  
   if (enum_class->n_values)
     {
       BseEnumValue *enum_value;
-
+      
       for (enum_value = enum_class->values; enum_value->value_name; enum_value++)
 	if (enum_value->value == value)
 	  return enum_value;
@@ -144,11 +144,11 @@ bse_enum_get_value_by_name (BseEnumClass *enum_class,
   g_return_val_if_fail (enum_class != NULL, NULL);
   g_return_val_if_fail (BSE_IS_ENUM_CLASS (enum_class), NULL);
   g_return_val_if_fail (name != NULL, NULL);
-
+  
   if (enum_class->n_values)
     {
       BseEnumValue *enum_value;
-
+      
       for (enum_value = enum_class->values; enum_value->value_name; enum_value++)
 	if (strcmp (name, enum_value->value_name) == 0)
 	  return enum_value;
@@ -164,11 +164,11 @@ bse_enum_get_value_by_nick (BseEnumClass *enum_class,
   g_return_val_if_fail (enum_class != NULL, NULL);
   g_return_val_if_fail (BSE_IS_ENUM_CLASS (enum_class), NULL);
   g_return_val_if_fail (nick != NULL, NULL);
-
+  
   if (enum_class->n_values)
     {
       BseEnumValue *enum_value;
-
+      
       for (enum_value = enum_class->values; enum_value->value_nick; enum_value++)
 	if (strcmp (nick, enum_value->value_nick) == 0)
 	  return enum_value;
@@ -183,11 +183,11 @@ bse_flags_get_first_value (BseFlagsClass *flags_class,
 {
   g_return_val_if_fail (flags_class != NULL, NULL);
   g_return_val_if_fail (BSE_IS_FLAGS_CLASS (flags_class), NULL);
-
+  
   if (flags_class->n_values)
     {
       BseFlagsValue *flags_value;
-
+      
       for (flags_value = flags_class->values; flags_value->value_name; flags_value++)
 	if ((flags_value->value & value) > 0)
 	  return flags_value;
@@ -207,7 +207,7 @@ bse_flags_get_value_by_name (BseFlagsClass *flags_class,
   if (flags_class->n_values)
     {
       BseFlagsValue *flags_value;
-
+      
       for (flags_value = flags_class->values; flags_value->value_name; flags_value++)
 	if (strcmp (name, flags_value->value_name) == 0)
 	  return flags_value;
@@ -227,7 +227,7 @@ bse_flags_get_value_by_nick (BseFlagsClass *flags_class,
   if (flags_class->n_values)
     {
       BseFlagsValue *flags_value;
-
+      
       for (flags_value = flags_class->values; flags_value->value_nick; flags_value++)
 	if (strcmp (nick, flags_value->value_nick) == 0)
 	  return flags_value;
@@ -239,11 +239,11 @@ bse_flags_get_value_by_nick (BseFlagsClass *flags_class,
 /* BseErrorType is a static type */
 static BseEnumClass *bse_error_class = NULL;
 
-const gchar*
+gchar*
 bse_error_name (BseErrorType error_value)
 {
   BseEnumValue *ev;
-
+  
   if (!bse_error_class)
     bse_error_class = bse_type_class_ref (BSE_TYPE_ERROR_TYPE);
   
@@ -251,11 +251,11 @@ bse_error_name (BseErrorType error_value)
   return ev ? ev->value_name : NULL;
 }
 
-const gchar*
+gchar*
 bse_error_nick (BseErrorType error_value)
 {
   BseEnumValue *ev;
-
+  
   if (!bse_error_class)
     bse_error_class = bse_type_class_ref (BSE_TYPE_ERROR_TYPE);
   
@@ -263,7 +263,7 @@ bse_error_nick (BseErrorType error_value)
   return ev ? ev->value_nick : NULL;
 }
 
-const gchar*
+gchar*
 bse_error_blurb (BseErrorType error_value)
 {
   BseEnumValue *ev;
