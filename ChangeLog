@@ -1,3 +1,7 @@
+Mon Feb 23 23:39:27 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am: Adapt to sfidl option changes.
+
 Mon Feb 23 04:46:12 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatternview.[hc]: improved default layout. reset

@@ -27,15 +27,15 @@ CLEANFILES += $(gen_sources)
 bsecxxapi.h: $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <sfi/sficxx.h>\n" > xgen-bcah \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header --prefix test_ $(top_srcdir)/bse/bse.idl >> xgen-bcah \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcah \
+	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-bcah \
+	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(srcdir)/testplugin.idl >> xgen-bcah \
 	&& cp xgen-bcah $@ \
 	&& rm -f xgen-bcah
 bsecxxapi.cc: bsecxxapi.h $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include \"bsecxxapi.h\"\n" > xgen-bcac \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source --prefix test_ $(top_srcdir)/bse/bse.idl >> xgen-bcac \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcac \
+	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-bcac \
+	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(srcdir)/testplugin.idl >> xgen-bcac \
 	&& cp xgen-bcac $@ \
 	&& rm -f xgen-bcac
 CLEANFILES += bsecxxapi.h bsecxxapi.cc
