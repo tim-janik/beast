@@ -1,3 +1,8 @@
+Sat Dec 25 17:14:15 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Handle format field correclty (support 8bit and
+	unsigned samples). Fix bug in tuning.
+
 Fri Dec 24 22:39:48 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.c (bse_container_remove_backedup): force project 

@@ -171,6 +171,8 @@ namespace
   };
 
   enum {
+    PAT_FORMAT_16BIT = (1 << 0),
+    PAT_FORMAT_UNSIGNED = (1 << 1),
     PAT_FORMAT_LOOPED = (1 << 2),
     PAT_FORMAT_LOOP_BIDI = (1 << 3),
     PAT_FORMAT_LOOP_BACKWARDS = (1 << 4)
@@ -287,13 +289,19 @@ struct FileInfo
   GslWaveFormatType
   wave_format (int wave_format)
   {
-    return GSL_WAVE_FORMAT_SIGNED_16; /* FIXME */
+    switch (wave_format & (PAT_FORMAT_UNSIGNED | PAT_FORMAT_16BIT))
+      {
+      case 0:					    return GSL_WAVE_FORMAT_SIGNED_8;
+      case PAT_FORMAT_UNSIGNED:			    return GSL_WAVE_FORMAT_UNSIGNED_8;
+      case PAT_FORMAT_16BIT:			    return GSL_WAVE_FORMAT_SIGNED_16;
+      case PAT_FORMAT_UNSIGNED | PAT_FORMAT_16BIT:  return GSL_WAVE_FORMAT_UNSIGNED_16;
+      }
   }
 
   int
   bytes_per_frame (int wave_format)
   {
-    return 2 * header->channels;
+    return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1) * header->channels;
   }
 
   FileInfo (FILE *patfile, const gchar *file_name)
@@ -335,7 +343,14 @@ struct FileInfo
       {
 	/* fill GslWaveChunk */
 	wdsc.chunks[i].mix_freq = patches[i]->sampleRate;
-	wdsc.chunks[i].osc_freq = patches[i]->origFreq / 1024.0;
+	wdsc.chunks[i].osc_freq = patches[i]->origFreq / 1000.0;
+
+	printf ("orig_freq = %f (%d) \n", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
+	printf ("min_freq = %f\n", patches[i]->minFreq / 1000.0);
+	printf ("max_freq = %f\n", patches[i]->maxFreq / 1000.0);
+	printf ("fine_tune = %d\n", patches[i]->fineTune);
+	printf ("scale_freq = %d\n", patches[i]->freqScale);
+	printf ("scale_factor = %d\n", patches[i]->freqScaleFactor);
 
 	int frame_size = bytes_per_frame (patches[i]->waveFormat);
 	wdsc.chunks[i].loop_type = loop_type (patches[i]->waveFormat);
@@ -345,7 +360,7 @@ struct FileInfo
 	printf ("loop settings: from %ld to %ld (total %d) type %d\n",
 	                      wdsc.chunks[i].loop_start,
 			      wdsc.chunks[i].loop_end,
-			      patches[i]->wavesize,
+			      patches[i]->wavesize / frame_size,
 			      wdsc.chunks[i].loop_type);
       }
 
