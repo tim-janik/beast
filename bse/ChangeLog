@@ -1,3 +1,8 @@
+Mon Mar  3 22:42:25 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsepcmdevice-csl.c: initialize CSL with a mutex, as BSE is
+	multithreaded.
+
 Wed Feb 26 22:57:54 2003  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: provide a pspec nick as blurb if no blurb is given.

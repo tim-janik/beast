@@ -37,6 +37,8 @@ BSE_DUMMY_TYPE (BsePcmDeviceCSL);
 typedef struct
 {
   BsePcmHandle	    handle;
+  SfiMutex          sfi_mutex;
+  CslMutex          csl_mutex;
   CslDriver        *driver;
   CslPcmStream     *input_stream;
   CslPcmStream     *output_stream;
@@ -142,8 +144,14 @@ bse_pcm_device_csl_open (BsePcmDevice *pdev)
   csl->frag_size = 1024;
   csl->bytes_per_value = 4;
   csl->frag_buf = NULL;
- 
-  csl_error = csl_driver_init (NULL, &csl->driver);
+
+  sfi_mutex_init (&csl->sfi_mutex);
+  csl->csl_mutex.user_data = &csl->sfi_mutex;
+  csl->csl_mutex.lock = (CslMutexLock) sfi_thread_table.mutex_lock;
+  csl->csl_mutex.unlock = (CslMutexUnlock) sfi_thread_table.mutex_unlock;
+  csl->csl_mutex.destroy = NULL;
+
+  csl_error = csl_driver_init_mutex (NULL, CSL_DRIVER_CAP_PCM, &csl->csl_mutex, &csl->driver);
   if (csl_error)
     error = BSE_ERROR_FILE_OPEN_FAILED;
 
@@ -276,6 +284,10 @@ bse_pcm_device_csl_close (BsePcmDevice *pdev)
     csl_pcm_close (csl->input_stream);
   if (csl->output_stream)
     csl_pcm_close (csl->output_stream);
+  if (csl->driver)
+    csl_driver_shutdown (csl->driver);
+  if (csl->csl_mutex.user_data)
+    sfi_mutex_destroy (csl->csl_mutex.user_data);
 
   g_free (csl->frag_buf);
   g_free (csl);
