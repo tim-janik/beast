@@ -82,6 +82,7 @@ main (int   argc,
   gle_init (&argc, &argv);
   gnome_type_init ();
   // gnome_init (PROGRAM, VERSION, argc, argv);
+  bst_free_radio_button_get_type ();
   bst_parse_args (&argc, &argv);
   
   /* check load BSE plugins to register types

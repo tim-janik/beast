@@ -60,7 +60,7 @@ bst_master_init (void)
   BseStream *stream;
   BseErrorType error;
   GPollFD *pfd;
-  
+
   g_return_val_if_fail (bst_master == NULL, NULL);
 
   if (!bse_pcm_stream_default_type ())

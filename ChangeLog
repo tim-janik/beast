@@ -1,3 +1,8 @@
+Mon Nov 15 22:50:38 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfreeradiobutton.[hc]: new radio button type that allowes
+	for free toggeling (i.e. working stand-alone, radio->group is unused).
+
 Sun Nov 14 19:59:53 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstkeytable-us.c (bst_key_table_us_101): 
