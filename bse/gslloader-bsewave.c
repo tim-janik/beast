@@ -134,12 +134,12 @@ gsl_wave_token (GslWaveTokenType token)
   if (token >= 768)
     {
       token -= 768;
-      return token > sizeof (wave_tokens_768) / sizeof (wave_tokens_768[0]) ? NULL : wave_tokens_768[token];
+      return token >= sizeof (wave_tokens_768) / sizeof (wave_tokens_768[0]) ? NULL : wave_tokens_768[token];
     }
   else
     {
       token -= 512;
-      return token > sizeof (wave_tokens_512) / sizeof (wave_tokens_512[0]) ? NULL : wave_tokens_512[token];
+      return token >= sizeof (wave_tokens_512) / sizeof (wave_tokens_512[0]) ? NULL : wave_tokens_512[token];
     }
 }
 

@@ -1,3 +1,8 @@
+Mon Dec 27 00:12:44 2004  Tim Janik  <timj@gtk.org>
+
+	* gslloader-bsewave.c (gsl_wave_token): fix off-by-one error in reverse
+	token lookup.
+
 Sun Dec 26 19:23:05 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader-pat.cc: Fixes/Code cleanups: the deinitialization
