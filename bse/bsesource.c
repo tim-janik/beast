@@ -1645,7 +1645,7 @@ resolve_osource_input (gpointer     data,
 
   if (error)
     bse_storage_warn (storage,
-		      "failed to connect input \"%s\" of `%s' to output \"%s\" of unknown object: %s",
+		      "failed to connect input \"%s\" of `%s' to output \"%s\" of unresolved object: %s",
 		      dinput->ichannel_ident ? dinput->ichannel_ident : "???",
 		      BSE_OBJECT_UNAME (source),
 		      dinput->ochannel_ident ? dinput->ochannel_ident : "???",
@@ -1663,10 +1663,17 @@ resolve_osource_input (gpointer     data,
       else if (BSE_SOURCE_PRIVATE_INPUTS (source))
         cerror = BSE_ERROR_SOURCE_PRIVATE_ICHANNEL;
       else
-	cerror = bse_source_set_input (source,
-				       bse_source_find_ichannel (source, dinput->ichannel_ident),
-				       osource,
-				       bse_source_find_ochannel (osource, dinput->ochannel_ident));
+        {
+          const gchar *itype = bse_storage_item_get_compat_type (BSE_ITEM (source));
+          const gchar *otype = bse_storage_item_get_compat_type (BSE_ITEM (osource));
+          gchar *compat_ichannel_ident = bse_compat_rewrite_ichannel_ident (storage, itype, dinput->ichannel_ident);
+          gchar *compat_ochannel_ident = bse_compat_rewrite_ochannel_ident (storage, otype, dinput->ochannel_ident);
+          guint ichannel = bse_source_find_ichannel (source, compat_ichannel_ident ? compat_ichannel_ident : dinput->ichannel_ident);
+          guint ochannel = bse_source_find_ochannel (osource, compat_ochannel_ident ? compat_ochannel_ident : dinput->ochannel_ident);
+          g_free (compat_ichannel_ident);
+          g_free (compat_ochannel_ident);
+          cerror = bse_source_set_input (source, ichannel, osource, ochannel);
+        }
       if (cerror)
 	bse_storage_warn (storage,
 			  "failed to connect input \"%s\" of `%s' to output \"%s\" of `%s': %s",

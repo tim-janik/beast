@@ -40,10 +40,15 @@ G_BEGIN_DECLS
   bse_pspec_note (name, nick, blurb, SFI_KAMMER_NOTE, hints)
 
 /* --- BSE format changes --- */
-gchar*  bse_compat_rewrite_type_name (guint          vmajor,
-                                      guint          vminor,
-                                      guint          vmicro,
-                                      const gchar   *type_name);
+gchar*  bse_compat_rewrite_type_name            (BseStorage    *storage,
+                                                 const gchar   *type_name);
+gchar*  bse_compat_rewrite_ichannel_ident       (BseStorage    *storage,
+                                                 const gchar   *type_name,
+                                                 const gchar   *ichannel_ident);
+gchar*  bse_compat_rewrite_ochannel_ident       (BseStorage    *storage,
+                                                 const gchar   *type_name,
+                                                 const gchar   *ochannel_ident);
+
 
 G_END_DECLS
 

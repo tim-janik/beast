@@ -119,6 +119,7 @@ void         bse_storage_store_item             (BseStorage             *self,
                                                  gpointer                item);
 void         bse_storage_store_child            (BseStorage             *self,
                                                  gpointer                item);
+const gchar* bse_storage_item_get_compat_type   (BseItem                *item);
 
 
 /* --- writing --- */

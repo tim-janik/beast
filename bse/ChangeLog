@@ -1,3 +1,20 @@
+Wed Sep  8 21:50:10 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecompat.[hc]: added bse_compat_rewrite_ichannel_ident() and
+	bse_compat_rewrite_ochannel_ident() with compat code for the
+	new BseArtsCompressor.
+	bse_compat_rewrite_type_name(): take a BseStorage argument. added
+	ArtsCompressor => BseArtsCompressor and 
+	ArtsStereoCompressor => BseArtsCompressor rules for versions <= 0.6.2.
+
+	* bsesource.[hc]:
+	resolve_osource_input(): improved error messages, call input/
+	output channel compat code.
+
+	* bsestorage.[hc]: provide bse_storage_item_get_compat_type() to
+	figure the original module type to be restored, prior to compat
+	code type name rewriting.
+
 Wed Sep  8 16:52:32 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecxxutils.h: changed TEMPLATE_ERROR::invalid_type() and

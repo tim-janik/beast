@@ -433,6 +433,15 @@ bse_storage_resolve_item_links (BseStorage *self)
     }
 }
 
+const gchar*
+bse_storage_item_get_compat_type (BseItem *item)
+{
+  const gchar *type = g_object_get_data (item, "BseStorage-compat-type");
+  if (!type)
+    type = G_OBJECT_TYPE_NAME (item);
+  return type;
+}
+
 typedef struct {
   BseContainer *container;
   gchar        *uname;
@@ -627,7 +636,7 @@ restore_container_child (BseContainer *container,
   GTokenType expected_token;
   BseItem *item;
   const gchar *uname;
-  gchar *type_name, *tmp;
+  gchar *type_name, *tmp, *compat_type = NULL;
 
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
@@ -647,10 +656,10 @@ restore_container_child (BseContainer *container,
   uname += 2;
 
   /* handle different versions */
-  tmp = bse_compat_rewrite_type_name (self->major_version, self->minor_version, self->micro_version, type_name);
+  tmp = bse_compat_rewrite_type_name (self, type_name);
   if (tmp)
     {
-      g_free (type_name);
+      compat_type = type_name;
       type_name = tmp;
     }
   
@@ -658,6 +667,7 @@ restore_container_child (BseContainer *container,
   if (!bse_container_check_restore (container, type_name))
     {
       g_free (type_name);
+      g_free (compat_type);
       return bse_storage_warn_skip (self, "ignoring child: \"%s\"", scanner->value.v_string);
     }
 
@@ -665,6 +675,10 @@ restore_container_child (BseContainer *container,
   tmp = g_strconcat (type_name, "::", uname, NULL);
   g_free (type_name);
   item = bse_container_retrieve_child (container, tmp);
+  if (item)
+    g_object_set_data_full (item, "BseStorage-compat-type", compat_type, g_free);
+  else
+    g_free (compat_type);
   g_free (tmp);
   if (!item)
     return bse_storage_warn_skip (self, "failed to create object from (invalid?) handle: \"%s\"",
