@@ -19,21 +19,14 @@
 #define __BSW_PROXY_H__
 
 extern char *bsw_log_domain_bsw;
-#include        <bse/glib-extra.h>
+#include        <bse/bswcommon.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 
-#define	BSW_TYPE_PROXY		(bsw_proxy_get_type ())
 #define	BSW_SERVER		(bsw_proxy_get_server ())
-
-#if     GLIB_SIZEOF_LONG == GLIB_SIZEOF_SIZE_T
-typedef gulong                          BswProxy;
-#else   /* hm, shouldn't happen? */
-typedef gsize                           BswProxy;
-#endif
 
 typedef struct
 {
@@ -52,7 +45,6 @@ typedef struct
 void		bsw_init			(gint			*argc,
 						 gchar		       **argv[],
 						 const BswLockFuncs	*lock_funcs);
-GType		bsw_proxy_get_type		(void);
 void		bsw_proxy_call_procedure	(BswProxyProcedureCall	*closure);
 BswProxy	bsw_proxy_get_server		(void)	G_GNUC_CONST;
 void		bsw_proxy_set			(BswProxy		 proxy,
@@ -60,13 +52,14 @@ void		bsw_proxy_set			(BswProxy		 proxy,
 						 ...);
 GParamSpec*	bsw_proxy_get_pspec		(BswProxy		 proxy,
 						 const gchar		*name);
+GType		bsw_proxy_type			(BswProxy		 proxy);
 
 
 /* --- garbage collection --- */
-gchar*		bsw_proxy_collector_get_string	(GValue			*value);
+gchar*		bsw_collector_get_string	(GValue			*value);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __BSE_PROXY_H__ */
+#endif /* __BSW_PROXY_H__ */

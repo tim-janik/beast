@@ -149,6 +149,118 @@ print_enums (void)
   fprintf (f_out, "\n");
 }
 
+typedef struct {
+  GType  type;
+  gchar *macro; /* uppercase type macro */
+  gchar *rtype;	/* C return type */
+  gchar *set_func;
+  gchar *get_func;
+  gchar *ctype;	/* C argument type */
+  gpointer next;
+} MarshalType;
+
+static MarshalType* marshal_type_list = NULL;
+
+static void
+marshal_add (GType  type,
+	     gchar *macro,
+	     gchar *rtype,
+	     gchar *setter,
+	     gchar *getter,
+	     gchar *ctype)
+{
+  MarshalType *m = g_new (MarshalType, 1);
+  m->type = type;
+  m->macro = macro;
+  m->rtype = rtype;
+  m->set_func = setter;
+  m->get_func = getter;
+  m->ctype = ctype ? ctype : rtype;
+  m->next = marshal_type_list;
+  marshal_type_list = m;
+}
+
+static const gchar *cfile_header =
+("#include \"bsw.h\"\n"
+ "#include <bse/bse.h>\n"
+ "#define bsw_value_initset_boolean(val,t,vbool)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_boolean ((val), (vbool)); }\n"
+ "#define bsw_value_initset_char(val,t,vchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_char ((val), (vchar)); }\n"
+ "#define bsw_value_initset_uchar(val,t,vuchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vuchar)); }\n"
+ "#define bsw_value_initset_int(val,t,vint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_int ((val), (vint)); }\n"
+ "#define bsw_value_initset_uint(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uint ((val), (vuint)); }\n"
+ "#define bsw_value_initset_ulong(val,t,vulong)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_ulong ((val), (vulong)); }\n"
+ "#define bsw_value_initset_enum(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_enum ((val), (vuint)); }\n"
+ "#define bsw_value_initset_float(val,t,vfloat)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vfloat)); }\n"
+ "#define bsw_value_initset_double(val,t,vdouble) { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vdouble)); }\n"
+ "#define bsw_value_initset_string(val,t,string)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_static_string ((val), (string)); }\n"
+ "#define bsw_value_initset_boxed(val,t,b)        { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_static_boxed ((val), (b)); }\n"
+ "#define bsw_value_initset_proxy(val,t,vproxy)	  { (val)->g_type = 0; g_value_init ((val), BSW_TYPE_PROXY); bsw_value_set_proxy ((val), (vproxy)); }\n"
+ );
+
+static void
+init_marshal_types (void)
+{
+#define add(t,r,s,g,c)	marshal_add (t, #t, r, s, g, c)
+  add (G_TYPE_NONE,      "void     ",	0, 0, 0);
+  add (G_TYPE_BOOLEAN,   "gboolean ",	"bsw_value_initset_boolean",	"g_value_get_boolean", 0);
+  add (G_TYPE_CHAR,      "gchar    ",	"bsw_value_initset_char",	"g_value_get_char", 0);
+  add (G_TYPE_UCHAR,     "guchar   ",	"bsw_value_initset_uchar",	"g_value_get_uchar", 0);
+  add (G_TYPE_INT,       "gint     ",	"bsw_value_initset_int",	"g_value_get_int", 0);
+  add (G_TYPE_UINT,      "guint    ",	"bsw_value_initset_uint",	"g_value_get_uint", 0);
+  add (G_TYPE_ULONG,     "gulong    ",	"bsw_value_initset_ulong",	"g_value_get_ulong", 0);
+  add (G_TYPE_ENUM,      "gint     ",	"bsw_value_initset_enum",	"g_value_get_enum", 0);
+  add (G_TYPE_FLOAT,     "gfloat   ",	"bsw_value_initset_float",	"g_value_get_float", 0);
+  add (G_TYPE_DOUBLE,    "gdouble  ",	"bsw_value_initset_double",	"g_value_get_double", 0);
+  add (G_TYPE_STRING,    "gchar*",	"bsw_value_initset_string",	"bsw_collector_get_string", "const gchar*");
+  add (G_TYPE_OBJECT,    "BswProxy ",	"bsw_value_initset_proxy",	"bsw_value_get_proxy", 0);
+  add (BSW_TYPE_VITER_INT,    "BswVIterInt*",    "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_VITER_STRING, "BswVIterString*", "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_VITER_PROXY,  "BswVIterProxy*",  "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+#undef add
+}
+
+static MarshalType*
+marshal_find (GType    type,
+	      gboolean match_fundamental)
+{
+  MarshalType *m = marshal_type_list;
+
+  for (m = marshal_type_list; m; m = m->next)
+    if (m->type == type)
+      return m;
+
+  if (match_fundamental)
+    for (m = marshal_type_list; m; m = m->next)
+      if (m->type == G_TYPE_FUNDAMENTAL (type))
+	return m;
+  
+  return NULL;
+}
+
+static const gchar*
+marshal_type_name (GType    type,
+		   gboolean return_value)
+{
+  MarshalType *m = NULL;
+
+  if (G_TYPE_IS_DERIVED (type) && (G_TYPE_FUNDAMENTAL (type) == G_TYPE_ENUM ||
+				   G_TYPE_FUNDAMENTAL (type) == G_TYPE_FLAGS))
+    {
+      gchar *name = g_type_name (type);
+
+      if (name[0] == 'B' && name[1] == 's' && name[2] == 'e')
+	{
+	  name = g_strdup (name);
+	  name[2] = 'w';
+	}
+      return name;
+    }
+  else
+    m = marshal_find (type, TRUE);
+
+  return m ? (return_value ? m->rtype : m->ctype) : NULL;
+}
+
 /* BseSomeObject        - type name (tname)
  * BSE_TYPE_SOME_OBJECT - type macro (tmacro)
  * do-funky-stuff	- proc name (pname)
@@ -159,28 +271,21 @@ print_enums (void)
 static gchar*
 tmacro_from_type (GType type)
 {
-  gchar *result, *p;
-  const gchar *s;
+  MarshalType *m = marshal_find (type, FALSE);
+  gchar *s, *result, *p;
   guint was_upper;
-  
-  switch (type)
-    {
-    case G_TYPE_CHAR:		return "G_TYPE_CHAR";
-    case G_TYPE_UCHAR:		return "G_TYPE_UCHAR";
-    case G_TYPE_INT:		return "G_TYPE_INT";
-    case G_TYPE_UINT:		return "G_TYPE_UINT";
-    case G_TYPE_FLOAT:		return "G_TYPE_FLOAT";
-    case G_TYPE_DOUBLE:		return "G_TYPE_DOUBLE";
-    case G_TYPE_BOOLEAN:	return "G_TYPE_BOOLEAN";
-    case G_TYPE_STRING:		return "G_TYPE_STRING";
-    }
 
-  s = g_type_name (type);
+  if (m)
+    return m->macro;
+
+  s = (gchar*) g_type_name (type);
+
   if (!is_upper (s[0]))
-    g_error ("unable to handle type \"%s\"", g_type_name (type));
+    g_error ("first char of type \"%s\" is not upper case", g_type_name (type));
+
   result = g_new (gchar, strlen (s) * 2 + 12);
   p = result;
-
+  
   *p++ = *s++;
   while (!is_upper (*s))
     {
@@ -207,7 +312,7 @@ tmacro_from_type (GType type)
       s++;
     }
   *p++ = 0;
-
+  
   return result;
 }
 
@@ -270,11 +375,14 @@ cfunc_from_proc_name (const gchar *string)
 }
 
 static gchar*
-cident_canonify (const gchar *string)
+cident_canonify (GType        type,
+		 const gchar *string)
 {
   const gchar *s;
-  gchar *result = g_new (gchar, strlen (string) * 2), *p = result;
+  gchar *result, *p;
 
+  result = g_new (gchar, strlen (string) * 2);
+  p = result;
   for (s = string; *s; s++)
     switch (*s)
       {
@@ -289,65 +397,6 @@ cident_canonify (const gchar *string)
   *p++ = 0;
 
   return result;
-}
-
-typedef struct {
-  GType	 type;
-  gchar *ctype;
-  gchar *set_func;
-  gchar *get_func;
-} MarshalType;
-static MarshalType marshal_types[] = {
-  { G_TYPE_NONE,      "void     ",	NULL,			NULL,			},
-  { G_TYPE_STRING,    "gchar*   ",	"bsw_value_initset_string",	"bsw_proxy_collector_get_string", },
-  { G_TYPE_INT,	      "gint     ",	"bsw_value_initset_int",	"g_value_get_int", },
-  { G_TYPE_UINT,      "guint    ",	"bsw_value_initset_uint",	"g_value_get_uint", },
-  { G_TYPE_ENUM,      "gint     ",	"bsw_value_initset_enum",	"g_value_get_enum", },
-  { G_TYPE_BOOLEAN,   "gboolean ",	"bsw_value_initset_boolean",	"g_value_get_boolean", },
-  { G_TYPE_CHAR,      "gchar    ",	"bsw_value_initset_char",	"g_value_get_char", },
-  { G_TYPE_UCHAR,     "guchar   ",	"bsw_value_initset_uchar",	"g_value_get_uchar", },
-  { G_TYPE_FLOAT,     "gfloat   ",	"bsw_value_initset_float",	"g_value_get_float", },
-  { G_TYPE_DOUBLE,    "gdouble  ",	"bsw_value_initset_double",	"g_value_get_double", },
-  { G_TYPE_OBJECT,    "BswProxy ",	"bsw_value_initset_proxy",	"(BswProxy) g_value_get_pointer", },
-};
-
-static MarshalType*
-find_marshal_type (GType type)
-{
-  guint i;
-
-  for (i = 0; i < sizeof (marshal_types) / sizeof (marshal_types[0]); i++)
-    if (marshal_types[i].type == type)
-      return marshal_types + i;
-  for (i = 0; i < sizeof (marshal_types) / sizeof (marshal_types[0]); i++)
-    if (marshal_types[i].type == G_TYPE_FUNDAMENTAL (type))
-      return marshal_types + i;
-  return NULL;
-}
-
-static const gchar*
-marshal_type_name (GParamSpec *pspec,
-		   gboolean    return_value)
-{
-  GType type = pspec->value_type;
-  gchar *name = NULL;
-
-  if (G_TYPE_IS_DERIVED (type))
-    {
-      switch (G_TYPE_FUNDAMENTAL (type))
-	{
-	case G_TYPE_ENUM:	name = g_type_name (type);
-	case G_TYPE_FLAGS:	name = g_type_name (type);
-	}
-      if (name && name[0] == 'B' && name[1] == 's' && name[2] == 'e')
-	{
-	  name = g_strdup (name);
-	  name[2] = 'w';
-	}
-    }
-  else if (G_TYPE_FUNDAMENTAL (type) == G_TYPE_STRING)
-    name = return_value ? "gchar*" : "const gchar *";
-  return name ? name : find_marshal_type (type)->ctype;
 }
 
 static void
@@ -366,7 +415,7 @@ print_proc (GType              type,
     }
 
   s = g_strdup_printf ("%s %s_%s (",
-		       class->n_out_params ? marshal_type_name (class->out_param_specs[0], TRUE) : "void",
+		       class->n_out_params ? marshal_type_name (class->out_param_specs[0]->value_type, TRUE) : "void",
 		       prefix,
 		       cname);
   n = strlen (s);
@@ -377,8 +426,8 @@ print_proc (GType              type,
       add_type_wrapper (G_PARAM_SPEC_VALUE_TYPE (class->in_param_specs[i]));
       fprintf (f_out, "%s%s %s%s\n",
 	       i ? indent (n) : "",
-	       marshal_type_name (class->in_param_specs[i], FALSE),
-	       cident_canonify (class->in_param_specs[i]->name),
+	       marshal_type_name (class->in_param_specs[i]->value_type, FALSE),
+	       cident_canonify (class->in_param_specs[i]->value_type, class->in_param_specs[i]->name),
 	       i + 1 < class->n_in_params ? "," : gen_body ? ")" : ");");
     }
   if (!class->n_in_params)
@@ -389,25 +438,25 @@ print_proc (GType              type,
     {
       fprintf (f_out, "{\n");
       if (class->n_out_params)
-	fprintf (f_out, "  %s result;\n", marshal_type_name (class->out_param_specs[0], TRUE));
+	fprintf (f_out, "  %s result;\n", marshal_type_name (class->out_param_specs[0]->value_type, TRUE));
       fprintf (f_out, "  BswProxyProcedureCall cl;\n");
       fprintf (f_out, "  GValue *value = cl.in_params;\n");
       for (i = 0; i < class->n_in_params; i++)
 	fprintf (f_out, "  %s (value, %s, %s); value++;\n",
-		 find_marshal_type (class->in_param_specs[i]->value_type)->set_func,
+		 marshal_find (class->in_param_specs[i]->value_type, TRUE)->set_func,
 		 tmacro_from_type (class->in_param_specs[i]->value_type),
-		 cident_canonify (class->in_param_specs[i]->name));
+		 cident_canonify (class->in_param_specs[i]->value_type, class->in_param_specs[i]->name));
       fprintf (f_out, "  cl.n_in_params = value - cl.in_params;\n");
       if (class->n_out_params)
-	fprintf (f_out, "  %s (&cl.out_param, %s, 0); value++;\n",
-		 find_marshal_type (class->out_param_specs[0]->value_type)->set_func,
+	fprintf (f_out, "  %s (&cl.out_param, %s, 0);\n",
+		 marshal_find (class->out_param_specs[0]->value_type, TRUE)->set_func,
 		 tmacro_from_type (class->out_param_specs[0]->value_type));
       fprintf (f_out, "  cl.proc_name = \"%s\";\n", class->name);
       fprintf (f_out, "  bsw_proxy_call_procedure (&cl);\n");
       if (class->n_out_params)
 	{
 	  fprintf (f_out, "  result = %s (&cl.out_param);\n",
-		   find_marshal_type (class->out_param_specs[0]->value_type)->get_func);
+		   marshal_find (class->out_param_specs[0]->value_type, TRUE)->get_func);
 	  fprintf (f_out, "  g_value_unset (&cl.out_param);\n");
 	  fprintf (f_out, "  return result;\n");
 	}
@@ -437,7 +486,7 @@ print_procs (const gchar *pattern)
 	  can_wrap = FALSE;
 	}
       for (j = 0; j < class->n_out_params; j++)
-	if (!find_marshal_type (G_PARAM_SPEC_VALUE_TYPE (class->out_param_specs[j])))
+	if (!marshal_type_name (G_PARAM_SPEC_VALUE_TYPE (class->out_param_specs[j]), TRUE))
 	  {
 	    g_message ("ignoring procedure `%s' with unwrappable output arg \"%s\" of type `%s'",
 		       class->name,
@@ -447,7 +496,7 @@ print_procs (const gchar *pattern)
 	    break;
 	  }
       for (j = 0; j < class->n_in_params; j++)
-	if (!find_marshal_type (G_PARAM_SPEC_VALUE_TYPE (class->in_param_specs[j])))
+	if (!marshal_type_name (G_PARAM_SPEC_VALUE_TYPE (class->in_param_specs[j]), FALSE))
 	  {
 	    g_message ("ignoring procedure `%s' with unwrappable input arg \"%s\" of type `%s'",
 		       class->name,
@@ -463,22 +512,6 @@ print_procs (const gchar *pattern)
   g_free (categories);
 }
 
-static const gchar *cfile_header =
-("#include \"bswproxy.h\"\n"
- "#include \"bswgenapi.h\"\n"
- "#include <bse/bse.h>\n"
- "#define bsw_value_initset_string(val,t,string)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_string ((val), (string)); }\n"
- "#define bsw_value_initset_int(val,t,vint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_int ((val), (vint)); }\n"
- "#define bsw_value_initset_uint(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uint ((val), (vuint)); }\n"
- "#define bsw_value_initset_enum(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_enum ((val), (vuint)); }\n"
- "#define bsw_value_initset_boolean(val,t,vbool)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_boolean ((val), (vbool)); }\n"
- "#define bsw_value_initset_char(val,t,vchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_char ((val), (vchar)); }\n"
- "#define bsw_value_initset_uchar(val,t,vuchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vuchar)); }\n"
- "#define bsw_value_initset_float(val,t,vfloat)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vfloat)); }\n"
- "#define bsw_value_initset_double(val,t,vdouble) { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vdouble)); }\n"
- "#define bsw_value_initset_proxy(val,t,vproxy)	  { (val)->g_type = 0; g_value_init ((val), BSW_TYPE_PROXY); g_value_set_pointer ((val), (gpointer) (vproxy)); }\n"
- );
-
 int
 main (gint   argc,
       gchar *argv[])
@@ -493,6 +526,8 @@ main (gint   argc,
   bse_init (&argc, &argv, NULL);
 
   type_wrapper_ht = g_hash_table_new (NULL, NULL);
+
+  init_marshal_types ();
 
   for (i = 1; i < argc; i++)
     {

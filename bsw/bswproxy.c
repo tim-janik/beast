@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bswproxy.h"
+#include "bswproxy.h"
 
-#include	<bse/bse.h>
-#include	<gobject/gvaluecollector.h>
+#include <bse/bse.h>
+#include <gobject/gvaluecollector.h>
 
+#include <bse/bswprivate.h>
 
 
 /* --- variables --- */
@@ -27,21 +28,6 @@ gchar *bsw_log_domain_bsw = "BSW";
 
 
 /* --- functions --- */
-GType
-bsw_proxy_get_type (void)
-{
-  static GType proxy_type = 0;
-
-  if (!proxy_type)
-    {
-      static const GTypeInfo proxy_info = { 0, };
-
-      proxy_type = g_type_register_static (G_TYPE_POINTER, "BswProxy", &proxy_info, 0);
-    }
-
-  return proxy_type;
-}
-
 void
 bsw_init (gint               *argc,
 	  gchar             **argv[],
@@ -60,32 +46,6 @@ bsw_init (gint               *argc,
     }
   
   bse_init (argc, argv, lock_funcs ? &lfuncs : NULL);
-}
-
-static inline void
-value_transform_to_proxy (GValue  *value)
-{
-  if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
-    {
-      GObject *object = g_value_get_object (value);
-
-      g_value_unset (value);
-      g_value_init (value, BSW_TYPE_PROXY);
-      g_value_set_pointer (value, (gpointer) (BSE_IS_OBJECT (object) ? BSE_OBJECT_ID (object) : 0));
-    }
-}
-static inline void
-value_transform_to_object (GValue *value,
-			   GType   object_type)
-{
-  if (G_VALUE_TYPE (value) == BSW_TYPE_PROXY)
-    {
-      guint object_id = (BswProxy) g_value_get_pointer (value);
-
-      g_value_unset (value);
-      g_value_init (value, object_type);
-      g_value_set_object (value, bse_object_from_id (object_id));
-    }
 }
 
 void
@@ -112,19 +72,19 @@ bsw_proxy_call_procedure (BswProxyProcedureCall *closure)
 	{
 	  GValue *value = closure->in_params + i;
 
-	  value_transform_to_object (value, proc->in_param_specs[i]->value_type);
+	  bsw_value_glue2bse (value, value, proc->in_param_specs[i]->value_type);
 	  param_list = g_slist_prepend (param_list, value);
 	}
       param_list = g_slist_reverse (param_list);
       if (proc->n_out_params)
-	value_transform_to_object (&closure->out_param, proc->out_param_specs[0]->value_type);
+	bsw_value_glue2bse (&closure->out_param, &closure->out_param, proc->out_param_specs[0]->value_type);
       out_list.data = &closure->out_param;
       result = bse_procedure_execvl (proc, param_list, &out_list);
       for (node = param_list; node; node = node->next)
 	g_value_unset (node->data);
       g_slist_free (param_list);
       if (proc->n_out_params)
-	value_transform_to_proxy (&closure->out_param);
+	bsw_value_glue2bsw (&closure->out_param, &closure->out_param);
     }
   else
     g_warning ("closure parameters mismatch procedure");
@@ -150,7 +110,7 @@ bsw_proxy_get_server (void)
 }
 
 gchar*
-bsw_proxy_collector_get_string (GValue *value)	// FIXME
+bsw_collector_get_string (GValue *value)	// FIXME
 {
   return g_value_dup_string (value);
 }
@@ -194,10 +154,7 @@ bsw_proxy_set (BswProxy     proxy,
 	  g_warning (G_STRLOC ": invalid property name `%s'", prop);
 	  break;
 	}
-      if (mask_proxy)
-	g_value_init (&value, BSW_TYPE_PROXY);
-      else
-	g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      g_value_init (&value, bsw_property_type_from_bse (G_PARAM_SPEC_VALUE_TYPE (pspec)));
       G_VALUE_COLLECT (&value, var_args, 0, &error);
       if (error)
 	{
@@ -209,8 +166,7 @@ bsw_proxy_set (BswProxy     proxy,
 	   */
 	  break;
 	}
-      if (mask_proxy)
-	value_transform_to_object (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      bsw_value_glue2bse (&value, &value, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_object_set_property (object, pspec->name, &value);
       g_value_unset (&value);
       prop = va_arg (var_args, gchar*);
@@ -230,4 +186,12 @@ bsw_proxy_get_pspec (BswProxy     proxy,
   g_return_val_if_fail (G_IS_OBJECT (object), NULL);
 
   return g_object_class_find_property (G_OBJECT_GET_CLASS (object), name);
+}
+
+GType
+bsw_proxy_type (BswProxy proxy)
+{
+  GObject *object = bse_object_from_id (proxy);
+
+  return BSE_IS_OBJECT (object) ? G_OBJECT_TYPE (object) : 0;
 }

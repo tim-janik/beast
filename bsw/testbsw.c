@@ -27,11 +27,11 @@ main (int   argc,
   g_thread_init (NULL);
   bsw_init (&argc, &argv, NULL);	// FIXME
 
-  g_print ("server id: %lu\n", BSW_SERVER);
+  g_print ("server id: %u\n", BSW_SERVER);
 
   bsw_hello_world ();
   project = bsw_server_use_new_project (BSW_SERVER, "test-project");
-  g_print ("project id: %lu\n", project);
+  g_print ("project id: %u\n", project);
   error = bsw_project_restore_from_file (project, "/usr/src/beast/test/geekworld.bse");
   g_print ("load project result: %s\n", bsw_error_blurb (error));
 

@@ -19,6 +19,7 @@
 
 #include <bse/bseobject.h>
 #include <bse/bsemain.h>
+#include <bse/bswprivate.h>
 #include <gsl/gslcommon.h>
 #include <string.h>
 
@@ -41,18 +42,8 @@ event_free (Event *event)
 {
   guint i;
 
-  g_value_unset (event->values + 0);
-  for (i = 1; i < event->n_values; i++)
-    {
-      if (g_type_is_a (G_VALUE_TYPE (event->values + i), BSW_TYPE_PROXY))
-	{
-	  BswProxy proxy = (BswProxy) g_value_get_pointer (event->values + i);
-	  GObject *object = bse_object_from_id (proxy);
-
-	  g_object_unref (object);
-	}
-      g_value_unset (event->values + i);
-    }
+  for (i = 0; i < event->n_values; i++)
+    g_value_unset (event->values + i);
   g_free (event->values);
   g_closure_unref (event->closure);
   g_free (event);
@@ -85,7 +76,7 @@ proxy_meta_marshal (GClosure     *closure,
 		    gpointer      invocation_hint,
 		    gpointer      marshal_data)
 {
-  BswProxy proxy = (BswProxy) closure->data;
+  /* BswProxy proxy = (BswProxy) closure->data; */
   GClosure *user_closure = marshal_data;
   Event *event = g_new0 (Event, 1);
   guint i;
@@ -96,29 +87,8 @@ proxy_meta_marshal (GClosure     *closure,
 
   event->n_values = n_param_values;
   event->values = g_new0 (GValue, event->n_values);
-  g_value_init (event->values, BSW_TYPE_PROXY);
-  g_value_set_pointer (event->values, (gpointer) proxy);
-  for (i = 1; i < event->n_values; i++)
-    {
-      GValue *value = event->values + i;
-
-      if (g_type_is_a (G_VALUE_TYPE (param_values + i), G_TYPE_OBJECT))
-	{
-	  GObject *object = g_value_get_object (value);
-
-	  g_value_init (value, BSW_TYPE_PROXY);
-	  if (BSE_IS_OBJECT (object))
-	    {
-	      g_object_ref (object);
-	      g_value_set_pointer (value, (gpointer) BSE_OBJECT_ID (object));
-	    }
-	}
-      else
-	{
-	  g_value_init (value, G_VALUE_TYPE (param_values + i));
-	  g_value_copy (param_values + i, value);
-	}
-    }
+  for (i = 0; i < event->n_values; i++)
+    bsw_value_glue2bsw (param_values + i, event->values + i);
   event->closure = g_closure_ref (user_closure);
   if (G_CLOSURE_NEEDS_MARSHAL (event->closure))
     g_closure_set_marshal (event->closure, closure->marshal);
