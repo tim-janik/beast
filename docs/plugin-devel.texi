@@ -3,6 +3,7 @@
 @settitle BSE Plugin Development
 @footnotestyle end
 @c %**end of header
+@c revision-date: $Id: plugin-devel.texi,v 1.4 2004/09/05 12:53:37 timj Exp $
 
 @include texiutils.texi
 
