@@ -21,7 +21,8 @@ system, the constantly evolving
 function, structure and external API links.
 
 In actual program development, Stefan Westerfeld has hacked up
-a new @beast backend, supporting PCM output through CSL, so
+a new @beast backend, supporting PCM output through
+@uref{http://sfk.evilplan.org/csl/,,CSL}, so
 @beast can now benefit from CSLs sound server support.
 Also, there's a new track editor widget developing in CVS,
 enabling more complex arrangements of songs. We'll post
