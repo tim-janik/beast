@@ -1,5 +1,5 @@
 /* BSE-SCM - Bedevilled Sound Engine Scheme Wrapper
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,7 @@
 #include <bsw/bswproxy.h>
 #include <guile/gh.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* guard around GC-protected code portions,
  * with incremental int-blocking. guile recovers
@@ -70,14 +68,14 @@ SCM	bse_scm_context_pending		(void);
 SCM	bse_scm_context_iteration	(SCM		 s_may_block);
 SCM	bse_scm_glue_rec_get		(SCM		  scm_rec,
 					 SCM		  s_field);
+SCM     bse_scm_glue_rec_set            (SCM              scm_rec,
+                                         SCM              s_field,
+                                         SCM              s_value);
 SCM	bse_scm_glue_rec_print		(SCM		  scm_rec);
 SCM	bse_scm_make_gc_plateau		(guint		  size_hint);
 void	bse_scm_destroy_gc_plateau	(SCM		  s_gcplateau);
 
-					 
+G_END_DECLS
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_SCM_INTERP_H__ */

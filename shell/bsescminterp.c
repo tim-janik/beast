@@ -1,5 +1,5 @@
 /* BSE-SCM - Bedevilled Sound Engine Scheme Wrapper
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
 
 /* --- prototypes --- */
 static SCM	bse_scm_from_value		(const GValue	*value);
-
+static GValue*	bse_value_from_scm		(SCM		 sval);
 
 
 /* --- SCM GC hooks --- */
@@ -167,7 +167,7 @@ bse_scm_gc_plateau_free (SCM s_gcplateau)
 static gulong tc_glue_rec = 0;
 #define SCM_IS_GLUE_REC(sval)   (SCM_NIMP (sval) && SCM_CAR (sval) == tc_glue_rec)
 static SCM
-bse_scm_make_glue_rec (SfiRec *rec)
+bse_scm_from_glue_rec (SfiRec *rec)
 {
   SCM s_rec = 0;
 
@@ -175,6 +175,28 @@ bse_scm_make_glue_rec (SfiRec *rec)
 
   sfi_rec_ref (rec);
   SCM_NEWSMOB (s_rec, tc_glue_rec, rec);
+  return s_rec;
+}
+
+static SCM
+bse_scm_glue_rec_new (SCM sfields)
+{
+  SfiRec *rec;
+  if (!SCM_UNBNDP (sfields))
+    SCM_ASSERT (SCM_CONSP (sfields) || SCM_EQ_P (sfields, SCM_EOL), sfields, SCM_ARG1, "bse-rec-new");
+  rec = sfi_rec_new ();
+  SCM s_rec = bse_scm_from_glue_rec (rec);
+  sfi_rec_unref (rec);
+  if (!SCM_UNBNDP (sfields))
+    {
+      SCM node;
+      for (node = sfields; SCM_CONSP (node); node = SCM_CDR (node))
+        {
+          SCM scons = SCM_CAR (node);
+          SCM_ASSERT (SCM_CONSP (scons), sfields, SCM_ARG1, "bse-rec-new");
+          bse_scm_glue_rec_set (s_rec, SCM_CAR (scons), SCM_CDR (scons));
+        }
+    }
   return s_rec;
 }
 
@@ -194,7 +216,7 @@ bse_scm_glue_rec_print (SCM scm_rec)
   SfiRec *rec;
   guint i;
 
-  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-record-print");
+  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-rec-print");
 
   rec = (SfiRec*) SCM_CDR (scm_rec);
   scm_puts ("'(", port);
@@ -203,6 +225,8 @@ bse_scm_glue_rec_print (SCM scm_rec)
       const gchar *name = rec->field_names[i];
       GValue *value = rec->fields + i;
 
+      if (i)
+        scm_puts (" ", port);
       scm_puts ("(", port);
       scm_puts (name, port);
       scm_puts (" . ", port);
@@ -224,8 +248,8 @@ bse_scm_glue_rec_get (SCM scm_rec,
   gchar *name;
   SCM s_val;
 
-  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-record-get");
-  SCM_ASSERT (SCM_SYMBOLP (s_field),  s_field,  SCM_ARG2, "bse-record-get");
+  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-rec-get");
+  SCM_ASSERT (SCM_SYMBOLP (s_field),  s_field,  SCM_ARG2, "bse-rec-get");
 
   rec = (SfiRec*) SCM_CDR (scm_rec);
   name = g_strndup (SCM_ROCHARS (s_field), SCM_LENGTH (s_field));
@@ -238,6 +262,30 @@ bse_scm_glue_rec_get (SCM scm_rec,
 
   bse_scm_destroy_gc_plateau (gcplateau);
   return s_val;
+}
+
+SCM
+bse_scm_glue_rec_set (SCM scm_rec,
+		      SCM s_field,
+                      SCM s_value)
+{
+  SCM gcplateau = bse_scm_make_gc_plateau (1024);
+  GValue *val;
+  SfiRec *rec;
+  gchar *name;
+
+  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-rec-set");
+  SCM_ASSERT (SCM_SYMBOLP (s_field),  s_field,  SCM_ARG2, "bse-rec-set");
+
+  rec = (SfiRec*) SCM_CDR (scm_rec);
+  val = bse_value_from_scm (s_value);
+  if (!val)
+    SCM_ASSERT (FALSE, s_value, SCM_ARG3, "bse-rec-set");
+  name = g_strndup (SCM_ROCHARS (s_field), SCM_LENGTH (s_field));
+  sfi_rec_set (rec, name, val);
+  g_free (name);
+  bse_scm_destroy_gc_plateau (gcplateau);
+  return SCM_UNSPECIFIED;
 }
 
 
@@ -399,7 +447,7 @@ bse_scm_from_value (const GValue *value)
     case SFI_SCAT_REC:
       rec = sfi_value_get_rec (value);
       if (rec)
-	sval = bse_scm_make_glue_rec (rec);
+	sval = bse_scm_from_glue_rec (rec);
       else
 	sval = BSE_SCM_NIL;
       break;
@@ -791,8 +839,10 @@ bse_scm_interp_init (void)
 
   tc_glue_rec = scm_make_smob_type ("BseGlueRec", 0);
   scm_set_smob_free (tc_glue_rec, bse_scm_free_glue_rec);
-  gh_new_procedure ("bse-record-get", bse_scm_glue_rec_get, 2, 0, 0);
-  gh_new_procedure ("bse-record-print", bse_scm_glue_rec_print, 1, 0, 0);
+  gh_new_procedure ("bse-rec-get", bse_scm_glue_rec_get, 2, 0, 0);
+  gh_new_procedure ("bse-rec-set", bse_scm_glue_rec_set, 3, 0, 0);
+  gh_new_procedure ("bse-rec-new", bse_scm_glue_rec_new, 0, 1, 0);
+  gh_new_procedure ("bse-rec-print", bse_scm_glue_rec_print, 1, 0, 0);
 
   tc_glue_proxy = scm_make_smob_type ("SfiProxy", 0);
   SCM_NEWSMOB (glue_null_proxy, tc_glue_proxy, 0);

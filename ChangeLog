@@ -1,3 +1,9 @@
+Sun May 18 05:16:26 2003  Tim Janik  <timj@gtk.org>
+
+	* shell/bsescminterp.[hc]: added bse-rec-get, bse-rec-set,
+	bse-rec-new and bse-rec-print to allow scheme code to properly
+	deal with our record types.
+
 Sun May 11 20:07:05 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkdialog.c (gxk_dialog_show): take away focus from
