@@ -39,23 +39,23 @@ enum
 
 
 /* --- prototypes --- */
-static void	 bse_midi_icontroller_init		(BseMidiIController	 *self);
-static void	 bse_midi_icontroller_class_init	(BseMidiIControllerClass *class);
-static void	 bse_midi_icontroller_set_property	(GObject		 *object,
-							 guint			  param_id,
-							 const GValue		 *value,
-							 GParamSpec		 *pspec);
-static void	 bse_midi_icontroller_get_property	(GObject		 *object,
-							 guint			  param_id,
-							 GValue			 *value,
-							 GParamSpec		 *pspec);
-static void	 bse_midi_icontroller_context_create	(BseSource		 *source,
-							 guint			  instance_id,
-							 GslTrans		 *trans);
-static void	 bse_midi_icontroller_context_connect	(BseSource		 *source,
-							 guint			  instance_id,
-							 GslTrans		 *trans);
-static void	 bse_midi_icontroller_update_modules	(BseMidiIController	 *self);
+static void bse_midi_controller_init            (BseMidiController      *self);
+static void bse_midi_controller_class_init      (BseMidiControllerClass *class);
+static void bse_midi_controller_set_property    (GObject                *object,
+                                                 guint                   param_id,
+                                                 const GValue           *value,
+                                                 GParamSpec             *pspec);
+static void bse_midi_controller_get_property    (GObject                *object,
+                                                 guint                   param_id,
+                                                 GValue                 *value,
+                                                 GParamSpec             *pspec);
+static void bse_midi_controller_context_create  (BseSource              *source,
+                                                 guint                   instance_id,
+                                                 GslTrans               *trans);
+static void bse_midi_controller_context_connect (BseSource              *source,
+                                                 guint                   instance_id,
+                                                 GslTrans               *trans);
+static void bse_midi_controller_update_modules  (BseMidiController      *self);
 
 
 /* --- variables --- */
@@ -63,20 +63,20 @@ static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BseMidiIController)
+BSE_BUILTIN_TYPE (BseMidiController)
 {
-  static const GTypeInfo midi_icontroller_info = {
-    sizeof (BseMidiIControllerClass),
+  static const GTypeInfo midi_controller_info = {
+    sizeof (BseMidiControllerClass),
     
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_midi_icontroller_class_init,
+    (GClassInitFunc) bse_midi_controller_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
-    sizeof (BseMidiIController),
+    sizeof (BseMidiController),
     0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_midi_icontroller_init,
+    (GInstanceInitFunc) bse_midi_controller_init,
   };
   static const BsePixdata pixdata = {
     MIDIICTRL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
@@ -84,16 +84,16 @@ BSE_BUILTIN_TYPE (BseMidiIController)
     MIDIICTRL_IMAGE_RLE_PIXEL_DATA,
   };
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
-                                         "BseMidiIController",
+                                         "BseMidiController",
                                          "MIDI controller input module. With this module, "
                                          "MIDI control signals can be used in synthesis networks.",
-                                         &midi_icontroller_info);
-  bse_categories_register_icon ("/Modules/MIDI/Control Input", type, &pixdata);
+                                         &midi_controller_info);
+  bse_categories_register_icon ("/Modules/Input & Output/MIDI Control Input", type, &pixdata);
   return type;
 }
 
 static void
-bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
+bse_midi_controller_class_init (BseMidiControllerClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
@@ -102,11 +102,11 @@ bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = bse_midi_icontroller_set_property;
-  gobject_class->get_property = bse_midi_icontroller_get_property;
+  gobject_class->set_property = bse_midi_controller_set_property;
+  gobject_class->get_property = bse_midi_controller_get_property;
   
-  source_class->context_create = bse_midi_icontroller_context_create;
-  source_class->context_connect = bse_midi_icontroller_context_connect;
+  source_class->context_create = bse_midi_controller_context_create;
+  source_class->context_connect = bse_midi_controller_context_connect;
   
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_MIDI_CHANNEL,
@@ -140,17 +140,17 @@ bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
 						    SFI_PARAM_DEFAULT));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out1", "MIDI Signal 1");
-  g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL1);
+  g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL1);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out2", "MIDI Signal 2");
-  g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL2);
+  g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL2);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out3", "MIDI Signal 3");
-  g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL3);
+  g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL3);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out4", "MIDI Signal 4");
-  g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL4);
+  g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL4);
 }
 
 static void
-bse_midi_icontroller_init (BseMidiIController *self)
+bse_midi_controller_init (BseMidiController *self)
 {
   self->midi_channel = 0;
   self->controls[0] = BSE_MIDI_SIGNAL_PITCH_BEND;
@@ -160,34 +160,34 @@ bse_midi_icontroller_init (BseMidiIController *self)
 }
 
 static void
-bse_midi_icontroller_set_property (GObject      *object,
-				   guint         param_id,
-				   const GValue *value,
-				   GParamSpec   *pspec)
+bse_midi_controller_set_property (GObject      *object,
+                                  guint         param_id,
+                                  const GValue *value,
+                                  GParamSpec   *pspec)
 {
-  BseMidiIController *self = BSE_MIDI_ICONTROLLER (object);
+  BseMidiController *self = BSE_MIDI_CONTROLLER (object);
   
   switch (param_id)
     {
     case PROP_MIDI_CHANNEL:
       self->midi_channel = sfi_value_get_int (value);
-      bse_midi_icontroller_update_modules (self);
+      bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_1:
       self->controls[0] = g_value_get_enum (value);
-      bse_midi_icontroller_update_modules (self);
+      bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_2:
       self->controls[1] = g_value_get_enum (value);
-      bse_midi_icontroller_update_modules (self);
+      bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_3:
       self->controls[2] = g_value_get_enum (value);
-      bse_midi_icontroller_update_modules (self);
+      bse_midi_controller_update_modules (self);
       break;
     case PROP_CONTROL_4:
       self->controls[3] = g_value_get_enum (value);
-      bse_midi_icontroller_update_modules (self);
+      bse_midi_controller_update_modules (self);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -196,12 +196,12 @@ bse_midi_icontroller_set_property (GObject      *object,
 }
 
 static void
-bse_midi_icontroller_get_property (GObject    *object,
-				   guint       param_id,
-				   GValue     *value,
-				   GParamSpec *pspec)
+bse_midi_controller_get_property (GObject    *object,
+                                  guint       param_id,
+                                  GValue     *value,
+                                  GParamSpec *pspec)
 {
-  BseMidiIController *self = BSE_MIDI_ICONTROLLER (object);
+  BseMidiController *self = BSE_MIDI_CONTROLLER (object);
   
   switch (param_id)
     {
@@ -245,16 +245,16 @@ module_data_free (gpointer data)
 }
 
 static void
-bse_midi_icontroller_context_create (BseSource *source,
-				     guint      context_handle,
-				     GslTrans  *trans)
+bse_midi_controller_context_create (BseSource *source,
+                                    guint      context_handle,
+                                    GslTrans  *trans)
 {
-  BseMidiIController *self = BSE_MIDI_ICONTROLLER (source);
+  BseMidiController *self = BSE_MIDI_CONTROLLER (source);
   ModuleData *mdata = g_new (ModuleData, 1);
-  GslModule *module = gsl_module_new_virtual (BSE_MIDI_ICONTROLLER_N_OCHANNELS, mdata, module_data_free);
+  GslModule *module = gsl_module_new_virtual (BSE_MIDI_CONTROLLER_N_OCHANNELS, mdata, module_data_free);
   BseItem *parent = BSE_ITEM (self)->parent;
   BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (parent), context_handle);
-
+  
   /* setup module data */
   mdata->midi_receiver = mcontext.midi_receiver;
   mdata->default_channel = mcontext.midi_channel;
@@ -275,9 +275,9 @@ bse_midi_icontroller_context_create (BseSource *source,
 }
 
 static void
-bse_midi_icontroller_context_connect (BseSource *source,
-				      guint      context_handle,
-				      GslTrans  *trans)
+bse_midi_controller_context_connect (BseSource *source,
+                                     guint      context_handle,
+                                     GslTrans  *trans)
 {
   GslModule *module = bse_source_get_context_omodule (source, context_handle);
   ModuleData *mdata = module->user_data;
@@ -293,7 +293,7 @@ bse_midi_icontroller_context_connect (BseSource *source,
 }
 
 static void
-bse_midi_icontroller_update_modules (BseMidiIController *self)
+bse_midi_controller_update_modules (BseMidiController *self)
 {
   if (BSE_SOURCE_PREPARED (self))
     {
@@ -321,7 +321,7 @@ bse_midi_icontroller_update_modules (BseMidiIController *self)
 	  
           /* update midi channel */
           mdata->midi_channel = self->midi_channel > 0 ? self->midi_channel : mdata->default_channel;
-
+          
           /* fetch new module */
 	  mdata->control_module = bse_midi_receiver_retrieve_control_module (mdata->midi_receiver,
 									     mdata->midi_channel,

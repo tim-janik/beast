@@ -26,25 +26,25 @@ G_BEGIN_DECLS
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_MIDI_ICONTROLLER	       (BSE_TYPE_ID (BseMidiIController))
-#define BSE_MIDI_ICONTROLLER(object)	       (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_ICONTROLLER, BseMidiIController))
-#define BSE_MIDI_ICONTROLLER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MIDI_ICONTROLLER, BseMidiIControllerClass))
-#define BSE_IS_ICONTROLLER(object)	       (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_ICONTROLLER))
-#define BSE_IS_ICONTROLLER_CLASS(class)	       (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_ICONTROLLER))
-#define BSE_MIDI_ICONTROLLER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_ICONTROLLER, BseMidiIControllerClassOut))
+#define BSE_TYPE_MIDI_CONTROLLER	      (BSE_TYPE_ID (BseMidiController))
+#define BSE_MIDI_CONTROLLER(object)	      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_CONTROLLER, BseMidiController))
+#define BSE_MIDI_CONTROLLER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MIDI_CONTROLLER, BseMidiControllerClass))
+#define BSE_IS_CONTROLLER(object)	      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_CONTROLLER))
+#define BSE_IS_CONTROLLER_CLASS(class)	      (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_CONTROLLER))
+#define BSE_MIDI_CONTROLLER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_CONTROLLER, BseMidiControllerClassOut))
 
 
-/* --- BseMidiIController source --- */
-typedef struct _BseMidiIController      BseMidiIController;
-typedef struct _BseMidiIControllerClass BseMidiIControllerClass;
-struct _BseMidiIController
+/* --- BseMidiController source --- */
+typedef struct _BseMidiController      BseMidiController;
+typedef struct _BseMidiControllerClass BseMidiControllerClass;
+struct _BseMidiController
 {
   BseSource          parent_object;
-
+  
   guint		     midi_channel;
   BseMidiSignalType  controls[4];
 };
-struct _BseMidiIControllerClass
+struct _BseMidiControllerClass
 {
   BseSourceClass  parent_class;
 };
@@ -53,11 +53,11 @@ struct _BseMidiIControllerClass
 /* --- channels --- */
 enum
 {
-  BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL1,
-  BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL2,
-  BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL3,
-  BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL4,
-  BSE_MIDI_ICONTROLLER_N_OCHANNELS
+  BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL1,
+  BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL2,
+  BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL3,
+  BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL4,
+  BSE_MIDI_CONTROLLER_N_OCHANNELS
 };
 
 

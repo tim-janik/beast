@@ -27,7 +27,11 @@ bse_compat_rewrite_type_name (guint          vmajor,
                               const gchar   *type_name)
 {
   struct { guint vmajor, vminor, vmicro; gchar *old, *new; } type_changes[] = {
-    { 0, 5, 1,  "BseSNet",      "BseCSynth" },
+    { 0, 5, 1,  "BseSNet",              "BseCSynth"             },
+    { 0, 5, 4,  "BseMonoKeyboard",      "BseMidiInput"          },
+    { 0, 5, 4,  "BseMidiIController",   "BseMidiController"     },
+    { 0, 5, 4,  "BseSubKeyboard",       "BseInstrumentInput"    },
+    { 0, 5, 4,  "BseSubInstrument",     "BseInstrumentOutput"   },
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (type_changes); i++)

@@ -257,7 +257,11 @@ bse_container_add_item (BseContainer *container,
       guint i = 0, l;
       
       if (!uname)
-        uname = BSE_OBJECT_TYPE_NAME (item);
+        {
+          uname = BSE_OBJECT_TYPE_NAME (item);
+          if (strncmp (uname, "Bse", 3) == 0 && uname[3])
+            uname += 3; /* strip namespace for convenient naming */
+        }
       
       l = strlen (uname);
       buffer = g_new (gchar, l + 12);

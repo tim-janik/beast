@@ -24,22 +24,22 @@
 G_BEGIN_DECLS
 
 /* --- object type macros --- */
-#define BSE_TYPE_SUB_INSTRUMENT		     (BSE_TYPE_ID (BseSubInstrument))
-#define BSE_SUB_INSTRUMENT(object)	     (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SUB_INSTRUMENT, BseSubInstrument))
-#define BSE_SUB_INSTRUMENT_CLASS(class)	     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SUB_INSTRUMENT, BseSubInstrumentClass))
-#define BSE_IS_INSTRUMENT(object)	     (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUB_INSTRUMENT))
-#define BSE_IS_INSTRUMENT_CLASS(class)	     (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_INSTRUMENT))
-#define BSE_SUB_INSTRUMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_INSTRUMENT, BseSubInstrumentClass))
+#define BSE_TYPE_INSTRUMENT_OUTPUT		(BSE_TYPE_ID (BseInstrumentOutput))
+#define BSE_INSTRUMENT_OUTPUT(object)	        (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_INSTRUMENT_OUTPUT, BseInstrumentOutput))
+#define BSE_INSTRUMENT_OUTPUT_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_INSTRUMENT_OUTPUT, BseInstrumentOutputClass))
+#define BSE_IS_OUTPUT(object)	                (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_INSTRUMENT_OUTPUT))
+#define BSE_IS_OUTPUT_CLASS(class)	        (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_INSTRUMENT_OUTPUT))
+#define BSE_INSTRUMENT_OUTPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_INSTRUMENT_OUTPUT, BseInstrumentOutputClass))
 
 
-/* --- BseSubInstrument source --- */
-typedef struct _BseSubInstrument      BseSubInstrument;
-typedef struct _BseSubInstrumentClass BseSubInstrumentClass;
-struct _BseSubInstrument
+/* --- BseInstrumentOutput source --- */
+typedef struct _BseInstrumentOutput      BseInstrumentOutput;
+typedef struct _BseInstrumentOutputClass BseInstrumentOutputClass;
+struct _BseInstrumentOutput
 {
   BseSubOPort parent_object;
 };
-struct _BseSubInstrumentClass
+struct _BseInstrumentOutputClass
 {
   BseSubOPortClass parent_class;
 };
@@ -48,10 +48,10 @@ struct _BseSubInstrumentClass
 /* --- channels --- */
 enum
 {
-  BSE_SUB_INSTRUMENT_ICHANNEL_LEFT,
-  BSE_SUB_INSTRUMENT_ICHANNEL_RIGHT,
-  BSE_SUB_INSTRUMENT_ICHANNEL_UNUSED,
-  BSE_SUB_INSTRUMENT_ICHANNEL_DONE
+  BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT,
+  BSE_INSTRUMENT_OUTPUT_ICHANNEL_RIGHT,
+  BSE_INSTRUMENT_OUTPUT_ICHANNEL_UNUSED,
+  BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE
 };
 
 G_END_DECLS

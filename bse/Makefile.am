@@ -44,7 +44,7 @@ bse_public_h_sources = $(strip \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
-	bsemain.h		bsemath.h		bsemidiicontroller.h		bsemididevice.h \
+	bsemain.h		bsemath.h		bsemidicontroller.h		bsemididevice.h \
 	bsemididevice-null.h	bsemididevice-oss.h	bsemidievent.h			bsemidinotifier.h \
 	bsemidireceiver.h	bsemidisynth.h		bseobject.h			bsepart.h \
 	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
@@ -52,11 +52,11 @@ bse_public_h_sources = $(strip \
 	bseprocedure.h		bseproject.h		bsescripthelper.h		bseserver.h \
 	bsesnet.h		bsesnooper.h		bsesong.h			bsessequencer.h \
 	bsesource.h		bsestandardosc.h	bsestandardsynths.h		bsestorage.h \
-	bsesubinstrument.h	bsesubiport.h		bsesubkeyboard.h		bsesuboport.h \
+	bseinstrumentoutput.h	bsesubiport.h		bseinstrumentinput.h		bsesuboport.h \
 	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
-	bsecompat.h		bseundostack.h		bsemonokeyboard.h		bsemididecoder.h \
+	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
 	bsenote.h		\
 	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
 	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			examplepeakfilter.h \
@@ -71,7 +71,7 @@ bse_c_sources = $(strip \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
-	bsemain.c		bsemath.c		bsemidiicontroller.c		bsemididevice.c \
+	bsemain.c		bsemath.c		bsemidicontroller.c		bsemididevice.c \
 	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
 	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
@@ -79,11 +79,11 @@ bse_c_sources = $(strip \
 	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
 	bsesnet.c		bsesnooper.c		bsesong.c			bsessequencer.c \
 	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
-	bsesubinstrument.c	bsesubiport.c		bsesubkeyboard.c		bsesuboport.c \
+	bseinstrumentoutput.c	bsesubiport.c		bseinstrumentinput.c		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
 	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
-	bsecompat.c		bseundostack.c		bsemonokeyboard.c		bsemididecoder.c \
+	bsecompat.c		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
 	bsenote.c		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			examplepeakfilter.cc \

@@ -26,24 +26,24 @@
 G_BEGIN_DECLS
 
 /* --- object type macros --- */
-#define BSE_TYPE_MONO_KEYBOARD	            (BSE_TYPE_ID (BseMonoKeyboard))
-#define BSE_MONO_KEYBOARD(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MONO_KEYBOARD, BseMonoKeyboard))
-#define BSE_MONO_KEYBOARD_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MONO_KEYBOARD, BseMonoKeyboardClass))
-#define BSE_IS_KEYBOARD(object)	            (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MONO_KEYBOARD))
-#define BSE_IS_KEYBOARD_CLASS(class)	    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MONO_KEYBOARD))
-#define BSE_MONO_KEYBOARD_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MONO_KEYBOARD, BseMonoKeyboardClassOut))
+#define BSE_TYPE_MIDI_INPUT	         (BSE_TYPE_ID (BseMidiInput))
+#define BSE_MIDI_INPUT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIDI_INPUT, BseMidiInput))
+#define BSE_MIDI_INPUT_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MIDI_INPUT, BseMidiInputClass))
+#define BSE_IS_INPUT(object)	         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_INPUT))
+#define BSE_IS_INPUT_CLASS(class)	 (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_INPUT))
+#define BSE_MIDI_INPUT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_INPUT, BseMidiInputClassOut))
 
 
-/* --- BseMonoKeyboard source --- */
-typedef struct _BseMonoKeyboard      BseMonoKeyboard;
-typedef struct _BseMonoKeyboardClass BseMonoKeyboardClass;
-struct _BseMonoKeyboard
+/* --- BseMidiInput source --- */
+typedef struct _BseMidiInput      BseMidiInput;
+typedef struct _BseMidiInputClass BseMidiInputClass;
+struct _BseMidiInput
 {
   BseSource          parent_object;
   
   guint		     midi_channel;
 };
-struct _BseMonoKeyboardClass
+struct _BseMidiInputClass
 {
   BseSourceClass  parent_class;
 };
@@ -52,11 +52,11 @@ struct _BseMonoKeyboardClass
 /* --- channels --- */
 enum
 {
-  BSE_MONO_KEYBOARD_OCHANNEL_FREQUENCY,
-  BSE_MONO_KEYBOARD_OCHANNEL_GATE,
-  BSE_MONO_KEYBOARD_OCHANNEL_VELOCITY,
-  BSE_MONO_KEYBOARD_OCHANNEL_AFTERTOUCH,
-  BSE_MONO_KEYBOARD_N_OCHANNELS
+  BSE_MIDI_INPUT_OCHANNEL_FREQUENCY,
+  BSE_MIDI_INPUT_OCHANNEL_GATE,
+  BSE_MIDI_INPUT_OCHANNEL_VELOCITY,
+  BSE_MIDI_INPUT_OCHANNEL_AFTERTOUCH,
+  BSE_MIDI_INPUT_N_OCHANNELS
 };
 
 

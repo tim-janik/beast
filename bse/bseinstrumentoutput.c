@@ -33,10 +33,10 @@ enum
 
 
 /* --- prototypes --- */
-static void	 bse_sub_instrument_init		(BseSubInstrument	*self);
-static void	 bse_sub_instrument_class_init		(BseSubInstrumentClass	*class);
-static void	 bse_sub_instrument_set_parent		(BseItem		*item,
-							 BseItem		*parent);
+static void bse_instrument_output_init       (BseInstrumentOutput      *self);
+static void bse_instrument_output_class_init (BseInstrumentOutputClass *class);
+static void bse_instrument_output_set_parent (BseItem                  *item,
+                                              BseItem                  *parent);
 
 
 /* --- variables --- */
@@ -45,20 +45,20 @@ static gpointer		 parent_class = NULL;
 
 /* --- functions --- */
 #include "./icons/instrument.c"
-BSE_BUILTIN_TYPE (BseSubInstrument)
+BSE_BUILTIN_TYPE (BseInstrumentOutput)
 {
   static const GTypeInfo type_info = {
-    sizeof (BseSubInstrumentClass),
+    sizeof (BseInstrumentOutputClass),
     
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_sub_instrument_class_init,
+    (GClassInitFunc) bse_instrument_output_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
-    sizeof (BseSubInstrument),
+    sizeof (BseInstrumentOutput),
     0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_sub_instrument_init,
+    (GInstanceInitFunc) bse_instrument_output_init,
   };
   static const BsePixdata pixdata = {
     INSTRUMENT_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
@@ -66,16 +66,16 @@ BSE_BUILTIN_TYPE (BseSubInstrument)
     INSTRUMENT_IMAGE_RLE_PIXEL_DATA,
   };
   GType type = bse_type_register_static (BSE_TYPE_SUB_OPORT,
-                                         "BseSubInstrument",
+                                         "BseInstrumentOutput",
                                          "Virtual output module for synthesis networks which "
                                          "implement instruments",
                                          &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Instrument Output", type, &pixdata);
+  bse_categories_register_icon ("/Modules/Input & Output/Instrument Output", type, &pixdata);
   return type;
 }
 
 static void
-bse_sub_instrument_class_init (BseSubInstrumentClass *class)
+bse_instrument_output_class_init (BseInstrumentOutputClass *class)
 {
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseItemClass *item_class = BSE_ITEM_CLASS (class);
@@ -85,7 +85,7 @@ bse_sub_instrument_class_init (BseSubInstrumentClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  item_class->set_parent = bse_sub_instrument_set_parent;
+  item_class->set_parent = bse_instrument_output_set_parent;
   
   /* override parent properties with NOP properties */
   for (i = 0; i < oport_class->n_output_ports; i++)
@@ -104,23 +104,23 @@ bse_sub_instrument_class_init (BseSubInstrumentClass *class)
   oport_class->n_output_ports = 4;
   
   ichannel_id = bse_source_class_add_ichannel (source_class, "Left Audio", "Left Channel Output");
-  g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_LEFT);
+  g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_LEFT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "Right Audio", "Right Channel Output");
-  g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_RIGHT);
+  g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_RIGHT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "Unused", NULL);
-  g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_UNUSED);
+  g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_UNUSED);
   ichannel_id = bse_source_class_add_ichannel (source_class, "Synth Done", "High indicates the instrument is done synthesizing");
-  g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_DONE);
+  g_assert (ichannel_id == BSE_INSTRUMENT_OUTPUT_ICHANNEL_DONE);
 }
 
 static void
-bse_sub_instrument_reset_names (BseSubInstrument *self)
+bse_instrument_output_reset_names (BseInstrumentOutput *self)
 {
   BseSubOPort *oport = BSE_SUB_OPORT (self);
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = item->parent ? BSE_SNET (item->parent) : NULL;
   const gchar *name;
-
+  
   g_object_freeze_notify (G_OBJECT (self));
   name = BSE_SOURCE_ICHANNEL_IDENT (self, 0);
   if (strcmp (oport->output_ports[0], name) != 0 &&
@@ -146,27 +146,27 @@ bse_sub_instrument_reset_names (BseSubInstrument *self)
 }
 
 static void
-bse_sub_instrument_init (BseSubInstrument *self)
+bse_instrument_output_init (BseInstrumentOutput *self)
 {
-  bse_sub_instrument_reset_names (self);
+  bse_instrument_output_reset_names (self);
 }
 
 
 static void
-bse_sub_instrument_set_parent (BseItem *item,
-			       BseItem *parent)
+bse_instrument_output_set_parent (BseItem *item,
+                                  BseItem *parent)
 {
-  BseSubInstrument *self = BSE_SUB_INSTRUMENT (item);
-
+  BseInstrumentOutput *self = BSE_INSTRUMENT_OUTPUT (item);
+  
   if (item->parent)
-    g_signal_handlers_disconnect_by_func (item->parent, bse_sub_instrument_reset_names, self);
-
+    g_signal_handlers_disconnect_by_func (item->parent, bse_instrument_output_reset_names, self);
+  
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
-
+  
   if (item->parent)
     g_signal_connect_swapped (item->parent, "port_unregistered",
-			      G_CALLBACK (bse_sub_instrument_reset_names), self);
+			      G_CALLBACK (bse_instrument_output_reset_names), self);
   else
-    bse_sub_instrument_reset_names (self);
+    bse_instrument_output_reset_names (self);
 }

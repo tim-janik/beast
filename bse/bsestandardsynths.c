@@ -19,8 +19,6 @@
 
 #include "bsesnet.h"
 #include "bsestandardosc.h"
-#include "bsesubinstrument.h"
-#include "bsesubkeyboard.h"
 #include <zlib.h>
 #include <string.h>
 

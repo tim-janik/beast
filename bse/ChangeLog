@@ -1,3 +1,23 @@
+Sat Oct  4 04:13:00 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecompat.c (bse_compat_rewrite_type_name): enter renamed
+	object type names.
+
+	* bseinstrumentinput.[hc]: implement BseInstrumentInput.
+	* bsesubkeyboard.[hc]: removed.
+
+	* bseinstrumentoutput.[hc]: implement BseInstrumentOutput.
+	* bsesubinstrument.[hc]: removed.
+
+	* bsemidiinput.[hc]: implement BseMidiInput.
+	* bsemonokeyboard.[hc]: removed.
+	
+	* bsemidicontroller.[hc]: implement BseMidiController.
+	* bsemidiicontroller.[hc]: removed.
+
+	* bsecontainer.c (bse_container_add_item): when creating
+	automatic names for modules, strip "Bse" namespace.
+
 Sat Oct  4 03:00:03 2003  Tim Janik  <timj@gtk.org>
 
 	* copied files in CVS repository for object renames:

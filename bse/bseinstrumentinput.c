@@ -33,10 +33,10 @@ enum
 
 
 /* --- prototypes --- */
-static void	 bse_sub_keyboard_init			(BseSubKeyboard		*self);
-static void	 bse_sub_keyboard_class_init		(BseSubKeyboardClass	*class);
-static void	 bse_sub_keyboard_set_parent		(BseItem		*item,
-							 BseItem		*parent);
+static void bse_instrument_input_init       (BseInstrumentInput      *self);
+static void bse_instrument_input_class_init (BseInstrumentInputClass *class);
+static void bse_instrument_input_set_parent (BseItem                 *item,
+                                             BseItem                 *parent);
 
 
 /* --- variables --- */
@@ -45,20 +45,20 @@ static gpointer		 parent_class = NULL;
 
 /* --- functions --- */
 #include "./icons/keyboard.c"
-BSE_BUILTIN_TYPE (BseSubKeyboard)
+BSE_BUILTIN_TYPE (BseInstrumentInput)
 {
   static const GTypeInfo type_info = {
-    sizeof (BseSubKeyboardClass),
+    sizeof (BseInstrumentInputClass),
     
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_sub_keyboard_class_init,
+    (GClassInitFunc) bse_instrument_input_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
-    sizeof (BseSubKeyboard),
+    sizeof (BseInstrumentInput),
     0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_sub_keyboard_init,
+    (GInstanceInitFunc) bse_instrument_input_init,
   };
   static const BsePixdata pixdata = {
     KEYBOARD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
@@ -66,16 +66,16 @@ BSE_BUILTIN_TYPE (BseSubKeyboard)
     KEYBOARD_IMAGE_RLE_PIXEL_DATA,
   };
   GType type = bse_type_register_static (BSE_TYPE_SUB_IPORT,
-                                         "BseSubKeyboard",
+                                         "BseInstrumentInput",
                                          "Virtual input module for synthesis networks which "
                                          "implement instruments",
                                          &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Keyboard Input", type, &pixdata);
+  bse_categories_register_icon ("/Modules/Input & Output/Instrument Voice Input", type, &pixdata);
   return type;
 }
 
 static void
-bse_sub_keyboard_class_init (BseSubKeyboardClass *class)
+bse_instrument_input_class_init (BseInstrumentInputClass *class)
 {
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseItemClass *item_class = BSE_ITEM_CLASS (class);
@@ -85,7 +85,7 @@ bse_sub_keyboard_class_init (BseSubKeyboardClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  item_class->set_parent = bse_sub_keyboard_set_parent;
+  item_class->set_parent = bse_instrument_input_set_parent;
   
   /* override parent properties with NOP properties */
   for (i = 0; i < iport_class->n_input_ports; i++)
@@ -104,17 +104,17 @@ bse_sub_keyboard_class_init (BseSubKeyboardClass *class)
   iport_class->n_input_ports = 4;
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "Frequency", "Note Frequency");
-  g_assert (ochannel_id == BSE_SUB_KEYBOARD_OCHANNEL_FREQUENCY);
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Gate", "High if the note is currently being pressed");
-  g_assert (ochannel_id == BSE_SUB_KEYBOARD_OCHANNEL_GATE);
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_GATE);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Velocity", "Velocity of the note press");
-  g_assert (ochannel_id == BSE_SUB_KEYBOARD_OCHANNEL_VELOCITY);
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Aftertouch", NULL);
-  g_assert (ochannel_id == BSE_SUB_KEYBOARD_OCHANNEL_AFTERTOUCH);
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
 }
 
 static void
-bse_sub_keyboard_reset_names (BseSubKeyboard *self)
+bse_instrument_input_reset_names (BseInstrumentInput *self)
 {
   BseSubIPort *iport = BSE_SUB_IPORT (self);
   BseItem *item = BSE_ITEM (self);
@@ -146,26 +146,26 @@ bse_sub_keyboard_reset_names (BseSubKeyboard *self)
 }
 
 static void
-bse_sub_keyboard_init (BseSubKeyboard *self)
+bse_instrument_input_init (BseInstrumentInput *self)
 {
-  bse_sub_keyboard_reset_names (self);
+  bse_instrument_input_reset_names (self);
 }
 
 static void
-bse_sub_keyboard_set_parent (BseItem *item,
-			     BseItem *parent)
+bse_instrument_input_set_parent (BseItem *item,
+                                 BseItem *parent)
 {
-  BseSubKeyboard *self = BSE_SUB_KEYBOARD (item);
+  BseInstrumentInput *self = BSE_INSTRUMENT_INPUT (item);
   
   if (item->parent)
-    g_signal_handlers_disconnect_by_func (item->parent, bse_sub_keyboard_reset_names, self);
+    g_signal_handlers_disconnect_by_func (item->parent, bse_instrument_input_reset_names, self);
   
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
   
   if (item->parent)
     g_signal_connect_swapped (item->parent, "port_unregistered",
-			      G_CALLBACK (bse_sub_keyboard_reset_names), self);
+			      G_CALLBACK (bse_instrument_input_reset_names), self);
   else
-    bse_sub_keyboard_reset_names (self);
+    bse_instrument_input_reset_names (self);
 }
