@@ -1,4 +1,6 @@
 FIXMES:
+- make VIew/Rebuild --devel or -:d only
+- provide "+"/"-" buttons for "path" property editors with own tooltips
 - fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
 - beast depends on texithequemacros.texi but texitheque doesn't install it
 - add tooltip and Filedialog-button to "WAVE File" entry
