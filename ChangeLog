@@ -1,3 +1,8 @@
+Mon May 26 02:40:39 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: update version to 0.5.2-rc1 already, to properly
+	reflect file format changes upon saving.
+
 Mon May 26 01:52:10 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.[hc]: nuke operate/can_operate cruft, implement
