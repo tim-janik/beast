@@ -31,6 +31,10 @@ Const SKIP_DEFAULT = ":skip-default:";
 Const SKIP_UNDO = ":skip-undo:";
 
 Const STANDARD = DEFAULT;
+Const MAXINT = +2147483647;
+Const MININT = -2147483648;
+Const MAXNUM = +9223372036854775807;
+Const MINNUM = -9223372036854775808;
 
 using namespace Sfi;
 
@@ -358,6 +362,7 @@ record SampleFileInfo {
   StringSeq     waves   = (NULL, NULL, SFI_PARAM_STANDARD);
   Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_STANDARD); // FIXME: use BseErrorType here
 };
+
 
 /* BSE Global Config */
 record GConfig {

@@ -648,7 +648,7 @@ bse_parasite_restore (BseObject  *object,
     case PARASITE_FLOAT:
       if (g_scanner_get_next_token (scanner) != G_TOKEN_INT)
 	return G_TOKEN_INT;
-      n_values = scanner->value.v_int;
+      n_values = scanner->value.v_int64;
       if (n_values >= MAX_PARASITE_VALUES)
 	return G_TOKEN_INT;
       floats = g_new (gfloat, n_values);
@@ -663,7 +663,7 @@ bse_parasite_restore (BseObject  *object,
 	      negate = TRUE;
 	    }
 	  if (scanner->token == G_TOKEN_INT)
-	    vfloat = scanner->config->store_int64 ? scanner->value.v_int64 : scanner->value.v_int;
+	    vfloat = scanner->value.v_int64;
 	  else if (scanner->token == G_TOKEN_FLOAT)
 	    vfloat = scanner->value.v_float;
 	  else

@@ -519,7 +519,7 @@ parse_wave_chunk (BseWave         *wave,
     {
       g_scanner_get_next_token (scanner); /* eat quark identifier */
       parse_or_return (scanner, G_TOKEN_INT);
-      bse_storage_compat_dhchannels (storage, scanner->value.v_int);
+      bse_storage_compat_dhchannels (storage, scanner->value.v_int64);
     }
   else if (quark == quark_loop || quark == quark_ping_pong_loop)
     {
@@ -527,11 +527,11 @@ parse_wave_chunk (BseWave         *wave,
       pwchunk->jump_loop = quark == quark_loop;
       pwchunk->ping_pong_loop = quark == quark_ping_pong_loop;
       parse_or_return (scanner, G_TOKEN_INT);
-      pwchunk->loop_count = scanner->value.v_int;
+      pwchunk->loop_count = scanner->value.v_int64;
       parse_or_return (scanner, G_TOKEN_INT);
-      pwchunk->loop_start = scanner->value.v_int;
+      pwchunk->loop_start = scanner->value.v_int64;
       parse_or_return (scanner, G_TOKEN_INT);
-      pwchunk->loop_end = scanner->value.v_int;
+      pwchunk->loop_end = scanner->value.v_int64;
     }
   else if (bse_storage_match_data_handle (storage, quark) ||
            (quark == quark_wave_handle && BSE_STORAGE_COMPAT (storage, 0, 5, 1))) /* VERSION-FIXME: 0.5.1 compat */
@@ -687,7 +687,7 @@ bse_wave_restore_private (BseObject  *object,
 		     g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
 		{
 		  g_scanner_get_next_token (scanner); /* int or float */
-		  bse_freq_array_append (array, scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int);
+		  bse_freq_array_append (array, scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int64);
 		}
 	    }
 	  else
@@ -745,14 +745,14 @@ bse_wave_restore_private (BseObject  *object,
         {
           g_scanner_get_next_token (scanner);
           bse_storage_compat_dhoscf (storage, (scanner->token == G_TOKEN_INT ?
-                                               scanner->value.v_int : scanner->value.v_float));
+                                               scanner->value.v_int64 : scanner->value.v_float));
           g_scanner_peek_next_token (scanner);
 
           if (scanner->next_token == G_TOKEN_FLOAT || scanner->next_token == G_TOKEN_INT)
             {
               g_scanner_get_next_token (scanner);
               bse_storage_compat_dhmixf (storage, (scanner->token == G_TOKEN_INT ?
-                                                   scanner->value.v_int : scanner->value.v_float));
+                                                   scanner->value.v_int64 : scanner->value.v_float));
             }
         }
 

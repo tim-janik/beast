@@ -1,3 +1,16 @@
+Thu Feb 26 20:35:51 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.c:
+	* bsewave.c:
+	* bsetrack.c:
+	* bseplugin.c:
+	* bsestorage.c: 
+	* bseparasite.c:
+	* bsedatapocket.c:
+	* gslloader-gslwave.c: fixed 64bit integer scanning.
+
+	* bserecords.idl: added MAXINT, MININT, MAXNUM and MINNUM constants.
+
 Wed Feb 25 14:43:23 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemain.[hc]: new function bse_main_getpid() which returns a thread id.

@@ -904,7 +904,7 @@ bse_track_restore_private (BseObject  *object,
       g_scanner_get_next_token (scanner);       /* eat quark */
       
       parse_or_return (scanner, G_TOKEN_INT);
-      tick = scanner->value.v_int;
+      tick = scanner->value.v_int64;
       token = bse_storage_parse_item_link (storage, BSE_ITEM (self), part_link_resolved, GUINT_TO_POINTER (tick));
       if (token != G_TOKEN_NONE)
 	return token;

@@ -483,7 +483,7 @@ bse_plugin_check_load (const gchar *const_file_name)
                 "Unable to access plugin");
       
       /* and search libtool's dlname specification */
-      scanner = g_scanner_new (NULL);
+      scanner = g_scanner_new64 (NULL);
       g_scanner_input_file (scanner, fd);
       scanner->config->symbol_2_token = TRUE;
       g_scanner_add_symbol (scanner, "dlname", GUINT_TO_POINTER (TOKEN_DLNAME));

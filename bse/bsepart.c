@@ -1385,7 +1385,7 @@ bse_part_restore_private (BseObject  *object,
       guint channel;
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
       parse_or_return (scanner, G_TOKEN_INT);           /* channel */
-      channel = scanner->value.v_int;
+      channel = scanner->value.v_int64;
       if (channel >= self->n_channels)
         return bse_storage_warn_skip (storage, "ignoring notes with invalid channel: %u", channel);
       while (g_scanner_peek_next_token (scanner) != ')')
@@ -1395,16 +1395,16 @@ bse_part_restore_private (BseObject  *object,
           gboolean negate;
           parse_or_return (scanner, '(');
           parse_or_return (scanner, G_TOKEN_INT);       /* tick */
-          tick = scanner->value.v_int;
+          tick = scanner->value.v_int64;
           parse_or_return (scanner, G_TOKEN_INT);       /* duration */
-          duration = scanner->value.v_int;
+          duration = scanner->value.v_int64;
           parse_or_return (scanner, G_TOKEN_INT);       /* note */
-          note = scanner->value.v_int;
+          note = scanner->value.v_int64;
           negate = bse_storage_check_parse_negate (storage);
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               g_scanner_get_next_token (scanner);       /* fine_tune */
-              fine_tune = negate ? -scanner->value.v_int : scanner->value.v_int;
+              fine_tune = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
               negate = bse_storage_check_parse_negate (storage);
               if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
                 {
@@ -1431,14 +1431,14 @@ bse_part_restore_private (BseObject  *object,
           GError *error = NULL;
           parse_or_return (scanner, '(');
           parse_or_return (scanner, G_TOKEN_INT);       /* tick */
-          tick = scanner->value.v_int;
+          tick = scanner->value.v_int64;
           parse_or_return (scanner, G_TOKEN_IDENTIFIER); /* type */
           ctype = sfi_choice2enum_checked (scanner->value.v_identifier, BSE_TYPE_MIDI_SIGNAL_TYPE, &error);
           negate = bse_storage_check_parse_negate (storage);
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               g_scanner_get_next_token (scanner);       /* value as int */
-              value = negate ? -scanner->value.v_int : scanner->value.v_int;
+              value = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
             }
           else if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
             {
@@ -1470,16 +1470,16 @@ bse_part_restore_private (BseObject  *object,
 
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
       parse_or_return (scanner, G_TOKEN_INT);
-      tick = scanner->value.v_int;
+      tick = scanner->value.v_int64;
       parse_or_return (scanner, G_TOKEN_INT);
-      duration = scanner->value.v_int;
+      duration = scanner->value.v_int64;
       parse_or_return (scanner, G_TOKEN_INT);
-      note = scanner->value.v_int;
+      note = scanner->value.v_int64;
       negate = bse_storage_check_parse_negate (storage);
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
 	{
 	  g_scanner_get_next_token (scanner);		/* eat int */
-	  fine_tune = negate ? -scanner->value.v_int : scanner->value.v_int;
+	  fine_tune = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
           negate = bse_storage_check_parse_negate (storage);
 	  if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
 	    {
@@ -1502,14 +1502,14 @@ bse_part_restore_private (BseObject  *object,
 
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
       parse_or_return (scanner, G_TOKEN_INT);
-      tick = scanner->value.v_int;
+      tick = scanner->value.v_int64;
       parse_or_return (scanner, G_TOKEN_IDENTIFIER);
       ctype = sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_SIGNAL_TYPE);
       negate = bse_storage_check_parse_negate (storage);
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
 	{
 	  g_scanner_get_next_token (scanner);		/* eat int */
-	  value = negate ? -scanner->value.v_int : scanner->value.v_int;
+	  value = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
         }
       else if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
         {

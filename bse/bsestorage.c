@@ -907,7 +907,7 @@ bse_storage_parse_item_link (BseStorage           *self,
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               g_scanner_get_next_token (scanner);       /* eat int */
-              pbackup = scanner->value.v_int;
+              pbackup = scanner->value.v_int64;
             }
 
           parse_or_goto (G_TOKEN_STRING, error_parse_link);
@@ -1186,7 +1186,7 @@ parse_dblock_data_handle (BseStorage     *self,
   gulong id;
 
   parse_or_return (scanner, G_TOKEN_INT);
-  id = scanner->value.v_int;
+  id = scanner->value.v_int64;
 
   parse_or_return (scanner, ')');
 
@@ -1330,7 +1330,7 @@ parse_raw_data_handle (BseStorage     *self,
   GTokenType token;
 
   parse_or_return (scanner, G_TOKEN_INT);
-  n_channels = scanner->value.v_int;
+  n_channels = scanner->value.v_int64;
   if (n_channels <= 0 || n_channels > 256)
     return bse_storage_warn_skip (self, "invalid number of channels: %u", n_channels);
 
@@ -1346,7 +1346,7 @@ parse_raw_data_handle (BseStorage     *self,
 
   g_scanner_get_next_token (scanner);
   if (scanner->token == G_TOKEN_INT)
-    mix_freq = scanner->value.v_int;
+    mix_freq = scanner->value.v_int64;
   else if (scanner->token == G_TOKEN_FLOAT)
     mix_freq = scanner->value.v_float;
   else
@@ -1354,7 +1354,7 @@ parse_raw_data_handle (BseStorage     *self,
 
   g_scanner_get_next_token (scanner);
   if (scanner->token == G_TOKEN_INT)
-    osc_freq = scanner->value.v_int;
+    osc_freq = scanner->value.v_int64;
   else if (scanner->token == G_TOKEN_FLOAT)
     osc_freq = scanner->value.v_float;
   else
@@ -1517,7 +1517,7 @@ compat_parse_data_handle (BseStorage     *self,
   gchar *string;
 
   parse_or_return (scanner, G_TOKEN_INT);
-  offset = scanner->value.v_int;
+  offset = scanner->value.v_int64;
 
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
   string = scanner->value.v_identifier;
@@ -1544,14 +1544,14 @@ compat_parse_data_handle (BseStorage     *self,
                                   scanner->value.v_identifier);
 
   parse_or_return (scanner, G_TOKEN_INT);
-  length = scanner->value.v_int;
+  length = scanner->value.v_int64;
   if (length < bytes_per_value)
     return G_TOKEN_INT;
 
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
     {
       g_scanner_get_next_token (scanner);
-      vlength = scanner->value.v_int;
+      vlength = scanner->value.v_int64;
       if (vlength < 1 || vlength * bytes_per_value > length)
         return G_TOKEN_INT;
     }

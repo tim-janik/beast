@@ -590,7 +590,7 @@ parse_set_data (BseDataPocket *pocket,
       gboolean negate;
     case BSE_DATA_POCKET_INT:
       parse_or_return (scanner, G_TOKEN_INT);
-      value.v_int = scanner->value.v_int;
+      value.v_int = scanner->value.v_int64;
       break;
     case BSE_DATA_POCKET_FLOAT:
       negate = g_scanner_peek_next_token (scanner) == '-';
@@ -602,10 +602,10 @@ parse_set_data (BseDataPocket *pocket,
     case BSE_DATA_POCKET_INT64:
       parse_or_return (scanner, G_TOKEN_INT);
       peek_or_return (scanner, G_TOKEN_INT);
-      value.v_int64 = scanner->value.v_int;
+      value.v_int64 = scanner->value.v_int64;
       value.v_int64 <<= 32;
       g_scanner_get_next_token (scanner); /* read next int */
-      value.v_int64 |= scanner->value.v_int & 0xffffffff;
+      value.v_int64 |= scanner->value.v_int64 & 0xffffffff;
       break;
     case BSE_DATA_POCKET_STRING:
       parse_or_return (scanner, G_TOKEN_STRING);
