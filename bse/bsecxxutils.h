@@ -67,6 +67,14 @@ assert_derivation()
   /* this generates a compiler error if Derived is not derived from Parent */
   _parent = _derived;
 }
+template<class Derived, class Parent> inline void
+assert_ptr_derivation()
+{
+  register Derived _derived = 0;
+  register Parent _parent;
+  /* this generates a compiler error if Derived is not derived from Parent */
+  _parent = _derived;
+}
 
 
 /* --- exceptions --- */

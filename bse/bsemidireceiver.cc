@@ -525,9 +525,11 @@ change_voice_input (VoiceInput      *vinput,
           g_assert (vinput->iter == table->end());
           vinput->next = (*table)[freq_value];
           vinput->iter = table->find (freq_value);
+          g_assert (vinput->iter != table->end());
           vinput->iter->second = vinput;
         }
       vinput->queue_state = VSTATE_BUSY;
+      break;
     case VOICE_PRESSURE:
       if (table)
         g_assert (vinput->iter != table->end());

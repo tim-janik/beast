@@ -291,8 +291,9 @@ void printInterface (const std::string& iface, const std::string& parent = "")
 {
   std::string idliface = removeBse (iface);
 
-  if (iface == "BseAmplifier")
-    return;
+  if (iface == "BseAmplifier" ||
+      iface == "BseSniffer")
+    return;     /* FIXME: hack to skip predefined classes */
 
   setActiveInterface (idliface, parent);
   printMethods (idliface);
@@ -374,7 +375,8 @@ printChoices (void)
       gboolean regular_choice = strcmp (name, "BseErrorType") != 0;
       GEnumValue *val;
 
-      if (children[i] == BSE_TYPE_MIDI_SIGNAL_TYPE)
+      if (children[i] == BSE_TYPE_MIDI_SIGNAL_TYPE ||
+          children[i] == g_type_from_name ("BseSnifferType"))
         continue;       /* FIXME: hack to skip predefined enums */
       
       if (needTypes.count (name))

@@ -19,6 +19,9 @@
 #include "gslengine.h"
 #include "gslcommon.h" /* for gsl_tick_stamp() */
 #include <stdexcept>
+#include <queue>
+using namespace std;
+using namespace Sfi;
 
 namespace Bse {
 
@@ -54,82 +57,88 @@ class Sniffer : public SnifferBase {
       if (jstream (JCHANNEL_AUDIO_IN1).n_connections !=
           jstream (JCHANNEL_AUDIO_IN2).n_connections)
         return;
-      g_printerr ("SNIFFER: %u connections\n", jstream (JCHANNEL_AUDIO_IN1).n_connections);
 
       SnifferData *data = static_cast<SnifferData*> (gsl_module_peek_reply (gslmodule()));
-      if (!data || data->tick_stamp >= tick_stamp() + n_values)
-        return;
-
-      guint64 offset = data->tick_stamp > tick_stamp() ? data->tick_stamp - tick_stamp() : 0;
-      guint left = MIN (data->fblock1->n_values - data->n_filled, n_values - offset);
-
-      if (!data->n_filled && data->tick_stamp < tick_stamp())
-        data->tick_stamp = tick_stamp();        /* returned tick_stamp */
-
-      const float *values1, *values2;
-      switch (data->stype)
+      while (data && data->tick_stamp < tick_stamp() + n_values)
         {
-        case REQUIRE_SINGLE_INPUT:
-          if (jstream (JCHANNEL_AUDIO_IN1).n_connections > 1)
-            {
-              data->fblock1->n_values = 0;
-              data->fblock2->n_values = 0;
-              gsl_module_process_reply (gslmodule());
-              return;
-            }
-          /* fall through */
-        default: 
-        case PICK_FIRST_INPUT:
-          if (jstream (JCHANNEL_AUDIO_IN1).n_connections)
-            {
-              values1 = jstream (JCHANNEL_AUDIO_IN1).values[0];
-              values2 = jstream (JCHANNEL_AUDIO_IN2).values[0];
-            }
-          else
-            values1 = values2 = const_values (0);
-          memcpy (data->fblock1->values + data->n_filled, values1, left * sizeof (values1[0]));
-          memcpy (data->fblock2->values + data->n_filled, values2, left * sizeof (values2[0]));
-          break;
-        case AVERAGE_INPUTS:
-          if (jstream (JCHANNEL_AUDIO_IN1).n_connections > 1)
-            {
-              double nf = 1.0 / (double) jstream (JCHANNEL_AUDIO_IN1).n_connections;
-              guint j;
+          guint64 offset = data->tick_stamp > tick_stamp() ? data->tick_stamp - tick_stamp() : 0;
+          if (!data->n_filled && data->tick_stamp < tick_stamp())
+            data->tick_stamp = tick_stamp();        /* returned tick_stamp */
+          guint left = MIN (data->fblock1->n_values - data->n_filled, n_values - offset);
 
-              memcpy (buffer, jstream (JCHANNEL_AUDIO_IN1).values[0], left * sizeof (buffer[0]));
-              for (j = 1; j + 1 < jstream (JCHANNEL_AUDIO_IN1).n_connections; j++)
-                for (guint i = 0; i < left; i++)
-                  buffer[i] += jstream (JCHANNEL_AUDIO_IN1).values[j][offset + i];
-              for (guint i = 0; i < left; i++) /* j == n_connections */
-                buffer[i] = nf * (buffer[i] + jstream (JCHANNEL_AUDIO_IN1).values[j][offset + i]);
-              memcpy (data->fblock1->values + data->n_filled, buffer, left * sizeof (buffer[0]));
+          // FIXME: don't return overlapping blocks of sample data
 
-              memcpy (buffer, jstream (JCHANNEL_AUDIO_IN2).values[0], left * sizeof (buffer[0]));
-              for (j = 1; j + 1 < jstream (JCHANNEL_AUDIO_IN2).n_connections; j++)
-                for (guint i = 0; i < left; i++)
-                  buffer[i] += jstream (JCHANNEL_AUDIO_IN2).values[j][offset + i];
-              for (guint i = 0; i < left; i++) /* j == n_connections */
-                buffer[i] = nf * (buffer[i] + jstream (JCHANNEL_AUDIO_IN2).values[j][offset + i]);
-              memcpy (data->fblock2->values + data->n_filled, buffer, left * sizeof (buffer[0]));
-            }
-          else
+          const float *values1, *values2;
+          switch (data->stype)
             {
-              if (jstream (JCHANNEL_AUDIO_IN1).n_connections) /* == 1 */
+            case SNIFFER_REQUIRE_SINGLE_INPUT:
+              if (jstream (JCHANNEL_AUDIO_IN1).n_connections > 1)
                 {
-                  values1 = jstream (JCHANNEL_AUDIO_IN1).values[0] + offset;
-                  values2 = jstream (JCHANNEL_AUDIO_IN2).values[0] + offset;
+                  data->fblock1->n_values = 0;
+                  data->fblock2->n_values = 0;
+                  data->n_filled = 0;
+                  left = 0;
+                  break;
+                }
+              /* fall through */
+            default: 
+            case SNIFFER_PICK_FIRST_INPUT:
+              if (jstream (JCHANNEL_AUDIO_IN1).n_connections)
+                {
+                  values1 = jstream (JCHANNEL_AUDIO_IN1).values[0];
+                  values2 = jstream (JCHANNEL_AUDIO_IN2).values[0];
                 }
               else
                 values1 = values2 = const_values (0);
               memcpy (data->fblock1->values + data->n_filled, values1, left * sizeof (values1[0]));
               memcpy (data->fblock2->values + data->n_filled, values2, left * sizeof (values2[0]));
+              break;
+            case SNIFFER_AVERAGE_INPUTS:
+              if (jstream (JCHANNEL_AUDIO_IN1).n_connections > 1)
+                {
+                  double nf = 1.0 / (double) jstream (JCHANNEL_AUDIO_IN1).n_connections;
+                  guint j;
+                  
+                  memcpy (buffer, jstream (JCHANNEL_AUDIO_IN1).values[0], left * sizeof (buffer[0]));
+                  for (j = 1; j + 1 < jstream (JCHANNEL_AUDIO_IN1).n_connections; j++)
+                    for (guint i = 0; i < left; i++)
+                      buffer[i] += jstream (JCHANNEL_AUDIO_IN1).values[j][offset + i];
+                  for (guint i = 0; i < left; i++) /* j == n_connections */
+                    buffer[i] = nf * (buffer[i] + jstream (JCHANNEL_AUDIO_IN1).values[j][offset + i]);
+                  memcpy (data->fblock1->values + data->n_filled, buffer, left * sizeof (buffer[0]));
+                  
+                  memcpy (buffer, jstream (JCHANNEL_AUDIO_IN2).values[0], left * sizeof (buffer[0]));
+                  for (j = 1; j + 1 < jstream (JCHANNEL_AUDIO_IN2).n_connections; j++)
+                    for (guint i = 0; i < left; i++)
+                      buffer[i] += jstream (JCHANNEL_AUDIO_IN2).values[j][offset + i];
+                  for (guint i = 0; i < left; i++) /* j == n_connections */
+                    buffer[i] = nf * (buffer[i] + jstream (JCHANNEL_AUDIO_IN2).values[j][offset + i]);
+                  memcpy (data->fblock2->values + data->n_filled, buffer, left * sizeof (buffer[0]));
+                }
+              else
+                {
+                  if (jstream (JCHANNEL_AUDIO_IN1).n_connections) /* == 1 */
+                    {
+                      values1 = jstream (JCHANNEL_AUDIO_IN1).values[0] + offset;
+                      values2 = jstream (JCHANNEL_AUDIO_IN2).values[0] + offset;
+                    }
+                  else
+                    values1 = values2 = const_values (0);
+                  memcpy (data->fblock1->values + data->n_filled, values1, left * sizeof (values1[0]));
+                  memcpy (data->fblock2->values + data->n_filled, values2, left * sizeof (values2[0]));
+                }
+              break;
             }
-          break;
+          data->n_filled += left;
+          
+          if (data->n_filled >= data->fblock1->n_values)
+            {
+              gsl_module_process_reply (gslmodule());
+              data = static_cast<SnifferData*> (gsl_module_peek_reply (gslmodule()));
+            }
+          else
+            data = NULL;
         }
-      data->n_filled += left;
-
-      if (data->n_filled >= data->fblock1->n_values)
-        gsl_module_process_reply (gslmodule());
     }
   };
   GslModule *single_sniff;         /* context-singleton per instance */
@@ -144,6 +153,7 @@ class Sniffer : public SnifferBase {
         m->set_module (single_sniff);
         gsl_trans_add (trans, gsl_job_integrate (single_sniff));
         gsl_trans_add (trans, gsl_job_set_consumer (single_sniff, TRUE));
+        commit_queue (trans);
       }
     single_sniff_ref_count++;
     return single_sniff;
@@ -154,11 +164,68 @@ class Sniffer : public SnifferBase {
     g_return_if_fail (single_sniff_ref_count > 0);
     single_sniff_ref_count--;
     if (!single_sniff_ref_count)
-      gsl_trans_add (trans, gsl_job_discard (single_sniff));
+      {
+        gsl_trans_add (trans, gsl_job_discard (single_sniff));
+        single_sniff = NULL;
+      }
+  }
+  struct SRequest {
+    Num      tick_stamp;
+    Int      n_samples;
+    SnifferType stype;
+  };
+  queue<SRequest> queued_jobs;
+  static void
+  sniffer_reply (gpointer cdata,
+                 gboolean processed)
+  {
+    SnifferData *data = static_cast<SnifferData*> (cdata);
+    if (processed)
+      data->sniffer->emit_notify_pcm_data (data->tick_stamp, data->fblock1, data->fblock2);
+    sfi_fblock_unref (data->fblock1);
+    sfi_fblock_unref (data->fblock2);
+    delete data;
+  }
+  void
+  commit_queue (GslTrans *trans = NULL)
+  {
+    if (!single_sniff)
+      return;
+    GslTrans *tmptrans = NULL;
+    if (!trans)
+      trans = tmptrans = gsl_trans_open();
+    while (!queued_jobs.empty())
+      {
+        SRequest sr = queued_jobs.front();
+        queued_jobs.pop();
+        SnifferData *data = new SnifferData();
+        data->sniffer = this;
+        data->tick_stamp = sr.tick_stamp;
+        data->n_filled = 0;
+        data->fblock1 = sfi_fblock_new_sized (sr.n_samples);
+        data->fblock2 = sfi_fblock_new_sized (sr.n_samples);
+        data->stype = sr.stype;
+        gsl_trans_add (trans, gsl_job_request_reply (single_sniff, data, sniffer_reply));
+      }
+    if (tmptrans)
+      gsl_trans_commit (tmptrans);
   }
 public:
+  void
+  queue_job (Num      tick_stamp,
+             Int      n_samples,
+             SnifferType stype)
+  {
+    SRequest sr;
+    sr.tick_stamp = tick_stamp;
+    sr.n_samples = n_samples;
+    sr.stype = stype;
+    queued_jobs.push (sr);
+    commit_queue();
+  }
   GslModule* get_sniffer_module () { return is_prepared() ? single_sniff : NULL; }
   Sniffer() :
+    single_sniff (NULL),
     single_sniff_ref_count (0)
   {
   }
@@ -200,18 +267,6 @@ public:
 
 namespace Procedure {
 
-static void
-sniffer_reply (gpointer cdata,
-               gboolean processed)
-{
-  SnifferData *data = static_cast<SnifferData*> (cdata);
-  if (processed)
-    data->sniffer->emit_notify_pcm_data (data->tick_stamp, data->fblock1, data->fblock2);
-  sfi_fblock_unref (data->fblock1);
-  sfi_fblock_unref (data->fblock2);
-  delete data;
-}
-
 void
 sniffer_request_samples::exec (Sniffer *self,
                                Num      tick_stamp,
@@ -220,26 +275,23 @@ sniffer_request_samples::exec (Sniffer *self,
 {
   if (!self || n_samples < 1)
     throw std::runtime_error ("invalid arguments");
-  GslModule *sniffer = self->get_sniffer_module ();
-  if (sniffer)
-    {
-      SnifferData *data = new SnifferData();
-      data->sniffer = self;
-      data->tick_stamp = tick_stamp;
-      data->n_filled = 0;
-      data->fblock1 = sfi_fblock_new_sized (n_samples);
-      data->fblock2 = sfi_fblock_new_sized (n_samples);
-      data->stype = stype;
-      gsl_transact (gsl_job_request_reply (sniffer, data, sniffer_reply),
-                    NULL);
-    }
-  g_printerr ("sniffer_start_shooting()\n");
+  self->queue_job (tick_stamp, n_samples, stype);
+  // g_printerr ("sniffer_request_samples(%llu, %u)\n", tick_stamp, n_samples);
 }
 
 Num
 sniffer_get_tick_stamp::exec (Sniffer *obj)     // FIXME there should be a global procedure for this
 {
   return gsl_tick_stamp ();
+}
+
+Int
+sniffer_get_mix_freq::exec (Sniffer *self)
+{
+  if (!self)
+    throw std::runtime_error ("invalid arguments");
+  GslModule *module = self->get_sniffer_module ();
+  return module ? gsl_engine_sample_freq() : 0;
 }
 
 } // Procedure
@@ -249,5 +301,6 @@ BSE_CXX_REGISTER_ENUM (SnifferType);
 BSE_CXX_REGISTER_EFFECT (Sniffer);
 BSE_CXX_REGISTER_PROCEDURE (sniffer_request_samples);
 BSE_CXX_REGISTER_PROCEDURE (sniffer_get_tick_stamp);
+BSE_CXX_REGISTER_PROCEDURE (sniffer_get_mix_freq);
 
 } // Bse

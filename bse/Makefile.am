@@ -158,6 +158,7 @@ bse_extra_sources = $(strip \
 	bseconfig.h.in \
 	bsepcmmodule.c \
 	bserecords.idl \
+	bse.idl \
 )
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
 # since handles BUILT_SOURCES strange and wrong on some occasions (mostly
@@ -188,7 +189,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 # setup sources, their dependancies and commands
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
-libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources)
+libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl
 libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
@@ -278,15 +279,15 @@ BSEPGEN = ../sfi/bse-plugin-generator
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bse.idl: $(srcdir)/bserecords.idl bseprocidl
+bsehack.idl: $(srcdir)/bserecords.idl bseprocidl
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
-	&& cat $(srcdir)/bserecords.idl >> xgen-bgasi \
 	&& ./bseprocidl >> xgen-bgasi \
-	&& (cmp -s xgen-bgasi bse.idl || cp xgen-bgasi bse.idl) \
+	&& (cmp -s xgen-bgasi bsehack.idl || cp xgen-bgasi bsehack.idl) \
 	&& rm -f xgen-bgasi
-CLEANFILES += bse.idl
-noinst_DATA = bse.idl
+CLEANFILES += bsehack.idl
+noinst_DATA = bsehack.idl
 
+#	&& cat $(srcdir)/bserecords.idl >> xgen-bgasi 
 
 #
 # convenience targets for generated source files

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// FIXME: #include <bse/bse.idl>
+#include <bse/bserecords.idl>
 namespace Bse { // FIXME: bad workaround
   class Effect;
   Const STANDARD = ":r:w:G:S:";
@@ -49,11 +49,11 @@ class Sniffer : Effect {
   }
 };
 
-// test enum
+
 choice SnifferType {
-  REQUIRE_SINGLE_INPUT,
-  PICK_FIRST_INPUT,
-  AVERAGE_INPUTS,
+  SNIFFER_REQUIRE_SINGLE_INPUT,
+  SNIFFER_PICK_FIRST_INPUT,
+  SNIFFER_AVERAGE_INPUTS,
 };
 
 void sniffer_request_samples (Sniffer     obj,
@@ -61,5 +61,26 @@ void sniffer_request_samples (Sniffer     obj,
                               Int         n_samples,
                               SnifferType stype);
 Num  sniffer_get_tick_stamp  (Sniffer obj);
+Int  sniffer_get_mix_freq    (Sniffer obj);
 
+/* FIXME: need records and sequences in plugins
+choice SnifferTimeType {
+  SNIFFER_TIME_ABSOLUTE_TICK_STAMP,
+  SNIFFER_TIME_RELATIVE_TICK_STAMP,
+  SNIFFER_TIME_RELATIVE_USECS,
+};
+
+record SnifferRequest {
+  Sniffer         sniffer;
+  SnifferTimeType time_type;
+  Num             variable_time;
+  Int             n_samples;
+  SnifferType     sniffer_type;
+};
+sequence SnifferRequestSeq {
+  SnifferRequest requests;
+};
+
+void sniffer_request_combined (SnifferRequestSeq srs);
+*/
 };

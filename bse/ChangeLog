@@ -1,3 +1,24 @@
+Mon Jan 19 18:54:11 2004  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: generate bsehack.idl from procidl.
+	made bse.idl the canonical client-binding API idl file.
+
+	* bsecxxutils.h: provide assert_ptr_derivation().
+
+	* bsecxxvalue.h: use assert_ptr_derivation() in
+	g_value_get_object<>() to fix object offset.
+
+	* bsemidireceiver.cc: fix assertion.
+
+	* bseprocidl.cc: skip BseSniffer and BseSnifferType.
+
+	* bsesniffer.cc, bsesniffer.idl: recode process() to handle multiple
+	requests per block. queue requests before prepare(). added
+	sniffer_get_mix_freq().
+
+	* bsesong.proc:
+	* bsetrack.proc: moved sniffer creation from song to track.
+
 Mon Jan 19 15:31:20 2004  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: beautify float output. s/Name/Identifier/ for
