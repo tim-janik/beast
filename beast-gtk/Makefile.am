@@ -74,6 +74,7 @@ beast_sources = $(strip \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip 						\
+	bstparam-automation.c						\
 	bstparam-choice.c		bstparam-note-sequence.c	\
 	bstparam-note-spinner.c		bstparam-proxy.c		\
 	bstparam-color-spinner.c	bstparam-scale.c		\
