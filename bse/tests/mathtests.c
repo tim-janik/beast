@@ -16,11 +16,14 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#define GSL_EXTENSIONS
 #include <bse/gslmath.h>
 #include <bse/gslcommon.h>
 #include <bse/gslmath.h>
 #include <bse/gslfilter.h>
 #include <bse/gslloader.h>
+#include <bse/gslsignal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -63,16 +66,16 @@ main (int   argc,
       char *argv[])
 {
   const gchar *arg;
-  
   /* iir filter parameters */
   enum { FILTER_GNUPLOT, FILTER_SCAN } filter_mode = FILTER_GNUPLOT;
   const gchar *filter_label = 0;
   gdouble *a, *b;
-  guint order = 0;
+  guint i, order = 0;
   
   shift_argc = argc;
   shift_argv = (const gchar**) argv;
   
+  /* initialize GSL */
   g_thread_init (NULL);
   gsl_init (NULL);
   
@@ -83,7 +86,34 @@ main (int   argc,
  restart:
   a = b = 0;
   
-  if (strcmp (arg, "wave-scan") == 0)
+  if (strcmp (arg, "approx-exp2-run") == 0)
+    {
+      gfloat f;
+      gdouble r = 0;
+      for (i = 0; i < 10; i++)
+	for (f = -1; f <= 1.0; f += 1.0 / 10000000.0)
+	  r += gsl_approx_exp2 (f);
+      return (r > 0) & 8;
+    }
+  else if (strcmp (arg, "old-exp2-run") == 0)
+    {
+      gfloat f;
+      gdouble r = 0;
+      for (i = 0; i < 10; i++)
+	for (f = -1; f <= 1.0; f += 1.0 / 10000000.0)
+	  r += _gsl_signal_exp2_fraction (f); // gsl_signal_exp2 (f);
+      return (r > 0) & 8;
+    }
+  else if (strcmp (arg, "libc-exp-run") == 0)
+    {
+      gfloat f;
+      gdouble r = 0;
+      for (i = 0; i < 10; i++)
+	for (f = -1; f <= 1.0; f += 1.0 / 10000000.0)
+	  r += exp (f);
+      return (r > 0) & 8;
+    }
+  else if (strcmp (arg, "wave-scan") == 0)
     {
       const gchar *file = pshift ();
       

@@ -1,3 +1,10 @@
+Mon Apr 28 22:15:52 2003  Tim Janik  <timj@gtk.org>
+
+	* gsltests.c (main): added exp() timing loops.
+
+	* gslcommon.c (gsl_init): properly initialize random numbers by
+	calling srand() with usec fractions.
+
 Mon Apr 28 05:02:28 2003  Tim Janik  <timj@gtk.org>
 
 	* zintern/mono-wave.bse: updates to be used by BseTrack.

@@ -20,9 +20,10 @@
 
 #include "gsldatacache.h"
 #include <unistd.h>
-#include <fcntl.h>
 #include <sys/utsname.h>
 #include <string.h>
+#include <fcntl.h>
+#include <stdlib.h>
 #include <sched.h>
 #include <errno.h>
 #include <sys/poll.h>
@@ -306,6 +307,7 @@ gsl_get_config (void)
 void
 gsl_init (const GslConfigValue values[])
 {
+  struct timeval tv;
   const GslConfigValue *config = values;
   static GslConfig pconfig = {	/* DEFAULTS */
     1,				/* n_processors */
@@ -354,6 +356,10 @@ gsl_init (const GslConfigValue values[])
 
   /* export GSL configuration */
   gsl_config = &pconfig;
+
+  /* initialize random numbers */
+  gettimeofday (&tv, NULL);
+  srand (tv.tv_sec ^ tv.tv_usec);
 
   /* initialize subsystems */
   sfi_mutex_init (&global_tick_stamp_mutex);
