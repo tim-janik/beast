@@ -20,7 +20,7 @@ The archives of the mailing list can be read at
 @unnumbered IRC
 
 There's a @code{#beast} channel on the
-@uref{http://beast.gtk.org/wiki.php?id=GimpNet,,GimpNet} IRC Network
+@uref{http://beast.gtk.org/wiki:GimpNet,,GimpNet} IRC Network
 (Server: @code{irc.gimp.org}, Port: @code{6666}), used to
 discuss BEAST/BSE development issues and user questions.
 The core developers usually hang out there, though they may

@@ -19,10 +19,10 @@ PHPX
 <INPUT type=submit VALUE=''Google Search''></FORM>
 XPHP
 
-@unnumberedsubsec Search the @uref{http://beast.gtk.org/wiki.php,,wiki area}
+@unnumberedsubsec Search the @uref{http://beast.gtk.org/wiki:,,wiki area}
 @itemize
-@item Search @uref{http://beast.gtk.org/wiki.php?id=SearchPages,, Wiki Pages}
-@item Search @uref{http://beast.gtk.org/wiki.php?id=PowerSearch,, Wiki Page Text}
+@item Search @uref{http://beast.gtk.org/wiki:SearchPages,, Wiki Pages}
+@item Search @uref{http://beast.gtk.org/wiki:PowerSearch,, Wiki Page Text}
 @end itemize
 
 @bye

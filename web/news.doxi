@@ -14,12 +14,12 @@
 
 @multitable {IRC Channel:} {}
 @item IRC Channel:
-@tab	@code{#beast} on @uref{http://beast.gtk.org/wiki.php?id=GimpNet,,GimpNet}
+@tab	@code{#beast} on @uref{http://beast.gtk.org/wiki:GimpNet,,GimpNet}
 @item Email:
 @tab	@uref{http://mail.gnome.org/mailman/listinfo/beast/,, Mailing List} and @uref{http://mail.gnome.org/archives/beast/,, Archive}
 @item Feedback:
-@tab	Wiki 	@uref{http://beast.gtk.org/wiki.php?id=Discussion,,Discussion} and
-		@uref{http://beast.gtk.org/wiki.php?id=HelpDesk,,HelpDesk} pages
+@tab	Wiki 	@uref{http://beast.gtk.org/wiki:Discussion,,Discussion} and
+		@uref{http://beast.gtk.org/wiki:HelpDesk,,HelpDesk} pages
 @end multitable
 
 
@@ -58,8 +58,8 @@ widgets, so we've opened up a
 @uref{http://beast.gtk.org/browse-bse-files.html?d=skins,, place to collect skin packages}.
 The
 @uref{http://beast.gtk.org/wiki.php,, wiki} also had changes on the
-@uref{http://beast.gtk.org/wiki.php?id=BeastFeatures,, BeastFeatures} and
-@uref{http://beast.gtk.org/wiki.php?id=FeatureRequests,, FeatureRequests} pages
+@uref{http://beast.gtk.org/wiki:BeastFeatures,, BeastFeatures} and
+@uref{http://beast.gtk.org/wiki:FeatureRequests,, FeatureRequests} pages
 and the 
 @uref{beast-doc://links-synthesis,, synthesis links section} was updated.
 
@@ -85,9 +85,9 @@ As always, the @uref{beast-doc://release-news,,NEWS section} has all the glory d
 
 The @beast website has a
 @uref{http://beast.gtk.org/wiki.php,, Wiki Area} now, all users and
-visitors are invited to @uref{http://beast.gtk.org/wiki.php?id=Discussion,, discuss}
+visitors are invited to @uref{http://beast.gtk.org/wiki:Discussion,, discuss}
 various topics or to sign the
-@uref{http://beast.gtk.org/wiki.php?id=GuestBook,, GuestBook}.
+@uref{http://beast.gtk.org/wiki:GuestBook,, GuestBook}.
 
 
 @newsTitle{Saturday 10 Jan 2004, BSE Sound Archive}

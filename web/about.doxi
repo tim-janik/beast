@@ -28,7 +28,7 @@ and full scriptability in scheme.
 The plugins, synthesis core and the user interface are actively being developed
 and translated into a variety of languages, regularly assimilating user feedback
 such as from our
-@uref{http://beast.gtk.org/wiki.php?id=FeatureRequests,,FeatureRequests} page.
+@uref{http://beast.gtk.org/wiki:FeatureRequests,,FeatureRequests} page.
 
 Here is an extensive
 @uref{beast-doc://screenshots/index,, screenshots}
@@ -41,7 +41,7 @@ the names has no religious background, but merely refers to the complexity invol
 implementing such a ``BEAST'' (pun intended ;).
 
 For discussions/feedback relating to @beast or this page, refer to our
-@uref{http://beast.gtk.org/wiki.php?id=Discussion,,Discussion} page.
+@uref{http://beast.gtk.org/wiki:Discussion,,Discussion} page.
 
 For a collection of articles relating to @beast and past news about the project,
 refer to our
