@@ -23,6 +23,7 @@ make-paths.h: $(top_builddir)/config.status Makefile
 	cd $(top_builddir) \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \
+	&& echo "#define SFIDL_PATH_STDINC     \"${sfidlstdincdir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_PLUGINS      \"${bseplugindir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_LADSPA       \"${bseladspadir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_SCRIPTS      \"${bsescriptdir}\"" >> xgen-pph \

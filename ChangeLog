@@ -1,3 +1,7 @@
+Sun Sep 21 03:50:13 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in Makefile.am: Define SFIDL_PATH_STDINC in make-paths.h.
+
 Sun Sep 21 02:34:26 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/Makefile.am: get section 1 manual pages to

@@ -228,6 +228,8 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(bseplugindir)
     bseladspadir=${libdir}/ladspa
     AC_SUBST(bseladspadir)
+    sfidlstdincdir=${includedir}
+    AC_SUBST(sfidlstdincdir)
 ])
 AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
 [
