@@ -16,6 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#define _GNU_SOURCE     /* syscall() */
 #include <sfi/sficonfig.h>
 #if	(SFI_HAVE_MUTEXATTR_SETTYPE > 0)
 #define	_XOPEN_SOURCE   600	/* for full pthread facilities */
@@ -120,9 +121,6 @@ sfi_thread_handle_new (const gchar *name)
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <linux/unistd.h>
-#ifdef  __NR_gettid                     /* present on linux >= 2.4.20 */
-static inline _syscall0(pid_t,gettid);  /* declares gettid(); */
-#endif
 #endif
 static void
 thread_get_tid (SfiThread *thread)
@@ -131,7 +129,7 @@ thread_get_tid (SfiThread *thread)
   gint tid = -1;
   
 #if     defined (__linux__) && defined (__NR_gettid)    /* present on linux >= 2.4.20 */
-  tid = gettid ();
+  tid = syscall (__NR_gettid);
 #endif
   if (tid < 0)
     tid = getpid();
@@ -140,29 +138,6 @@ thread_get_tid (SfiThread *thread)
     thread->tid = tid;
   else
     thread->tid = 0;            /* failed to figure id */
-}
-
-static gpointer
-sfi_thread_exec (gpointer thread)
-{
-  SfiThread *self;
-  sfi_thread_table.thread_set_handle (thread);
-  
-  self = sfi_thread_self ();
-  g_assert (self == thread);
-  
-  thread_get_tid (thread);
-  
-  SFI_SYNC_LOCK (&global_thread_mutex);
-  global_thread_list = sfi_ring_append (global_thread_list, self);
-  sfi_cond_broadcast (&global_thread_cond);
-  SFI_SYNC_UNLOCK (&global_thread_mutex);
-  
-  self->func (self->data);
-  
-  g_datalist_clear (&self->qdata);
-  /* sfi_thread_handle_deleted() does final destruction */
-  return NULL;
 }
 
 static inline unsigned long long int
@@ -188,14 +163,14 @@ thread_info_from_stat_L (SfiThread *self,
   char state = 0, command[8192 + 1] = { 0 };
   FILE *file = NULL;
   int n = 0;
-  static int success = 1;
-  if (success)
+  static int have_stat = 1;
+  if (have_stat)
     {
       gchar *filename = g_strdup_printf ("/proc/%u/stat", self->tid);
       file = fopen (filename, "r");
       g_free (filename);
       if (!file)
-        success = 0;    /* reading /proc/self/stat should _always_ succeed */
+        have_stat = 0;  /* reading /proc/self/stat should always succeed, so try only once */
     }
   if (file)
     n = fscanf (file,
@@ -230,7 +205,8 @@ thread_info_from_stat_L (SfiThread *self,
 #define ACCOUNTING_MSECS        (500)
 
 static inline void
-sfi_thread_accounting_L (SfiThread *self)
+sfi_thread_accounting_L (SfiThread *self,
+                         gboolean   force_update)
 {
   struct timeval stamp, ostamp = self->ac.stamp;
   guint diff = 0;
@@ -240,12 +216,12 @@ sfi_thread_accounting_L (SfiThread *self)
       diff = timeval_usecs (&stamp) - timeval_usecs (&ostamp);
       diff = MAX (diff, 0);
     }
-  if (diff >= ACCOUNTING_MSECS * 1000)  /* limit accounting to a few times per second */
+  if (force_update || diff >= ACCOUNTING_MSECS * 1000)  /* limit accounting to a few times per second */
     {
       struct rusage res = { { 0 } };
       gint64 utime = self->ac.utime;
       gint64 stime = self->ac.stime;
-      gdouble dfact = 1000000.0 / diff;
+      gdouble dfact = 1000000.0 / MAX (diff, 1);
       self->ac.stamp = stamp;
       getrusage (RUSAGE_SELF, &res);
       self->ac.utime = timeval_usecs (&res.ru_utime); /* user time used */
@@ -263,6 +239,31 @@ sfi_thread_accounting_L (SfiThread *self)
       thread_info_from_stat_L (self, dfact);
       self->accounting--;
     }
+}
+
+static gpointer
+sfi_thread_exec (gpointer thread)
+{
+  SfiThread *self;
+  sfi_thread_table.thread_set_handle (thread);
+  
+  self = sfi_thread_self ();
+  g_assert (self == thread);
+  
+  thread_get_tid (thread);
+  
+  SFI_SYNC_LOCK (&global_thread_mutex);
+  global_thread_list = sfi_ring_append (global_thread_list, self);
+  self->accounting = 1;
+  sfi_thread_accounting_L (self, TRUE);
+  sfi_cond_broadcast (&global_thread_cond);
+  SFI_SYNC_UNLOCK (&global_thread_mutex);
+  
+  self->func (self->data);
+  
+  g_datalist_clear (&self->qdata);
+  /* sfi_thread_handle_deleted() does final destruction */
+  return NULL;
 }
 
 void
@@ -459,7 +460,7 @@ sfi_thread_sleep (glong max_useconds)
       sfi_cond_init (self->wakeup_cond);
     }
   
-  sfi_thread_accounting_L (self);
+  sfi_thread_accounting_L (self, FALSE);
   
   if (!self->got_wakeup && max_useconds != 0)
     {
@@ -636,7 +637,7 @@ sfi_thread_aborted (void)
   gboolean aborted;
   
   SFI_SYNC_LOCK (&global_thread_mutex);
-  sfi_thread_accounting_L (self);
+  sfi_thread_accounting_L (self, FALSE);
   aborted = self->aborted != FALSE;
   SFI_SYNC_UNLOCK (&global_thread_mutex);
   
