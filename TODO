@@ -1,8 +1,6 @@
 FIXMES:
 - BseCategories need to provide an untranslated version (for menu paths)
 - get rid of root_category in idl files once BseCategories has an untranslated version
-- remove SfiGlueProc.blurb
-- fix procedure blurb display (GUI in execution dialog)
 - get rid of hardcoded server id (1) by means of an object-less procedure
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION

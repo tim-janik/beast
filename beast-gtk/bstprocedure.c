@@ -201,21 +201,21 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
    */
   if (proc->help)
     {
-      GtkWidget *hbox, *text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER, proc->help);
-
-      hbox = gtk_widget_new (GTK_TYPE_HBOX,
-                             "visible", TRUE,
-                             NULL);
-      gtk_box_pack_start (GTK_BOX (hbox), text, TRUE, TRUE, 5);
-      gtk_widget_new (GTK_TYPE_FRAME,
-                      "visible", TRUE,
-                      "label", _("Description"),
-                      "label_xalign", 0.0,
-                      "width_request", 1,
-                      "height_request", 50,
-                      "child", hbox,
-                      "parent", param_box,
-                      NULL);
+      GtkWidget *frame = gtk_widget_new (GTK_TYPE_FRAME,
+                                         "visible", TRUE,
+                                         "label", _("Description"),
+                                         "label_xalign", 0.0,
+                                         "width_request", 1,
+                                         "height_request", 120,
+                                         "parent", param_box,
+                                         NULL);
+      g_object_new (GTK_TYPE_ALIGNMENT,
+                    "visible", TRUE,
+                    "parent", frame,
+                    "border_width", 3,
+                    "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER,
+                                                     proc->help),
+                    NULL);
     }
   
   /* parameter fields

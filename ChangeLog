@@ -1,3 +1,7 @@
+Tue Dec 23 06:06:54 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c: fixed minor GUI quirks.
+
 Tue Dec 23 05:22:09 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c: use proc->help instead of proc->blurb (which
