@@ -183,7 +183,7 @@ bse_container_finalize (GObject *gobject)
   BseContainer *container = BSE_CONTAINER (gobject);
 
   if (container->n_items)
-    g_message ("%s: finalize handlers missed to remove %u items from %s",
+    g_warning ("%s: finalize handlers missed to remove %u items from %s",
 	       G_STRLOC,
 	       container->n_items,
 	       BSE_OBJECT_TYPE_NAME (container));

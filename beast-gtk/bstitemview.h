@@ -46,7 +46,7 @@ struct _BstItemView
 
   GtkPaned       *paned;
   GtkWidget	 *pview;
-  GtkBox	 *op_box;
+  GtkWidget	 *tools;
 
   const gchar	*item_type;
   SfiProxy	 container;
@@ -75,9 +75,10 @@ struct _BstItemViewClass
 };
 struct _BstItemViewOp
 {
-  gchar	      *op_name;
+  const gchar *op_name;
   guint	       op;
   const gchar *stock_icon;
+  const gchar *tooltip;
 };
 
 

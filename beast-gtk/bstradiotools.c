@@ -21,12 +21,6 @@
 #include <ctype.h>
 
 
-/* --- signals --- */
-enum {
-  SIGNAL_SET_TOOL,
-  SIGNAL_LAST
-};
-
 struct _BstRadioToolEntry
 {
   guint             tool_id;
@@ -43,73 +37,65 @@ struct _BstRadioToolEntry
 static void	  bst_radio_tools_class_init		(BstRadioToolsClass	*klass);
 static void	  bst_radio_tools_init			(BstRadioTools		*rtools,
 							 BstRadioToolsClass     *class);
-static void	  bst_radio_tools_destroy		(GtkObject		*object);
 static void	  bst_radio_tools_finalize		(GObject		*object);
 static void	  bst_radio_tools_do_set_tool		(BstRadioTools		*rtools,
 							 guint         		 tool_id);
 
 
 /* --- static variables --- */
-static gpointer            parent_class = NULL;
-static guint               radio_tools_signals[SIGNAL_LAST] = { 0 };
+static gpointer parent_class = NULL;
+static guint    signal_set_tool = 0;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_radio_tools_get_type (void)
 {
-  static GtkType radio_tools_type = 0;
-  
-  if (!radio_tools_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo radio_tools_info =
-      {
-	"BstRadioTools",
-	sizeof (BstRadioTools),
+      static const GTypeInfo type_info = {
 	sizeof (BstRadioToolsClass),
-	(GtkClassInitFunc) bst_radio_tools_class_init,
-	(GtkObjectInitFunc) bst_radio_tools_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_radio_tools_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstRadioTools),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_radio_tools_init,
       };
-      
-      radio_tools_type = gtk_type_unique (GTK_TYPE_OBJECT, &radio_tools_info);
+      type = g_type_register_static (G_TYPE_OBJECT,
+				     "BstRadioTools",
+				     &type_info, 0);
     }
-  
-  return radio_tools_type;
+  return type;
 }
 
 static void
 bst_radio_tools_class_init (BstRadioToolsClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_radio_tools_finalize;
 
-  object_class->destroy = bst_radio_tools_destroy;
-  
   class->set_tool = bst_radio_tools_do_set_tool;
 
-  radio_tools_signals[SIGNAL_SET_TOOL] =
-    gtk_signal_new ("set_tool",
-		    GTK_RUN_LAST | GTK_RUN_NO_RECURSE,
-		    GTK_CLASS_TYPE (object_class),
-		    GTK_SIGNAL_OFFSET (BstRadioToolsClass, set_tool),
-		    bst_marshal_NONE__UINT,
-		    GTK_TYPE_NONE,
-		    1, GTK_TYPE_UINT);
+  signal_set_tool = g_signal_new ("set-tool",
+				  G_OBJECT_CLASS_TYPE (class),
+				  G_SIGNAL_RUN_LAST | GTK_RUN_NO_RECURSE,
+				  G_STRUCT_OFFSET (BstRadioToolsClass, set_tool),
+				  NULL, NULL,
+				  bst_marshal_NONE__UINT,
+				  G_TYPE_NONE, 1, G_TYPE_UINT);
 }
 
 static void
 bst_radio_tools_init (BstRadioTools      *rtools,
 		      BstRadioToolsClass *class)
 {
-  // GtkObject *object = GTK_OBJECT (rtools);
-
   rtools->block_tool_id = FALSE;
   rtools->tool_id = 0;
   rtools->n_tools = 0;
@@ -118,22 +104,14 @@ bst_radio_tools_init (BstRadioTools      *rtools,
 }
 
 static void
-bst_radio_tools_destroy (GtkObject *object)
-{
-  BstRadioTools *rtools = BST_RADIO_TOOLS (object);
-
-  bst_radio_tools_clear_tools (rtools);
-
-  while (rtools->widgets)
-    gtk_widget_destroy (rtools->widgets->data);
-  
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-static void
 bst_radio_tools_finalize (GObject *object)
 {
-  /* BstRadioTools *rtools = BST_RADIO_TOOLS (object); */
+  BstRadioTools *self = BST_RADIO_TOOLS (object);
+
+  bst_radio_tools_clear_tools (self);
+
+  while (self->widgets)
+    gtk_widget_destroy (self->widgets->data);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -179,7 +157,7 @@ bst_radio_tools_set_tool (BstRadioTools *rtools,
       if (!rtools->n_tools || rtools->tool_id != tool_id)
 	{
 	  rtools->tool_id = tool_id;
-	  gtk_signal_emit (GTK_OBJECT (rtools), radio_tools_signals[SIGNAL_SET_TOOL], tool_id);
+	  g_signal_emit (rtools, signal_set_tool, 0, tool_id);
 	}
     }
 }
@@ -320,9 +298,16 @@ rtools_toggle_toggled (BstRadioTools   *rtools,
 
   if (!rtools->block_tool_id)
     {
+      GdkEvent *event = gtk_get_current_event ();
       tool_id = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (toggle)));
-      bst_radio_tools_set_tool (rtools, toggle->active ? tool_id : 0);
-      /* enforce depressed state */
+      /* ignore untoggeling through the GUI (button release on depressed toggle) */
+      if (toggle->active ||
+	  (gtk_get_event_widget (event) == GTK_WIDGET (toggle) &&
+	   event->type == GDK_BUTTON_RELEASE))
+	bst_radio_tools_set_tool (rtools, tool_id);
+      else
+	bst_radio_tools_set_tool (rtools, 0);
+      /* enforce depressed state in case tool_id didn't change */
       if (rtools->tool_id == tool_id && !toggle->active)
 	{
 	  rtools->block_tool_id = TRUE;
@@ -481,7 +466,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
 						 NULL),
 				 "swapped_signal::toggled", rtools_toggle_toggled, rtools,
 				 "swapped_signal::destroy", rtools_widget_destroyed, rtools,
-				 text ? "signal::toggled" : NULL, toggle_apply_blurb, text,
+				 text ? "signal_after::toggled" : NULL, toggle_apply_blurb, text,
 				 NULL);
       gtk_tooltips_set_tip (BST_TOOLTIPS, button, rtools->tools[i].tip, NULL);
       gtk_object_set_data_full (GTK_OBJECT (button), "blurb", g_strdup (rtools->tools[i].blurb), g_free);

@@ -29,6 +29,7 @@ typedef enum /*< skip >*/
   /* choose IDs that are unlikely to clash with category IDs */
   BST_TRACK_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
   BST_TRACK_ROLL_TOOL_EDIT_NAME,
+  BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
   BST_TRACK_ROLL_TOOL_MOVE,
   BST_TRACK_ROLL_TOOL_DELETE
 } BstTrackRollTool;
@@ -43,6 +44,9 @@ typedef struct {
   guint		   ref_count;
   BstTrackRoll	  *troll;
   guint		   note_length;
+  /* reset */
+  void (*reset)   (gpointer data);
+  gpointer         reset_data;
   /* drag data */
   guint		   tool_index;
   SfiProxy	   obj_track, obj_part;
@@ -64,6 +68,9 @@ void                    bst_track_roll_controller_set_obj_tools (BstTrackRollCon
 								 BstTrackRollTool        tool1,
 								 BstTrackRollTool        tool2,
 								 BstTrackRollTool        tool3);
+void			bst_track_roll_controller_reset_handler	(BstTrackRollController	*self,
+								 void (*handler) (gpointer data),
+								 gpointer                data);
 
 
 G_END_DECLS

@@ -1,6 +1,36 @@
+Sun Feb  9 18:33:11 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstradiotools.c (rtools_toggle_toggled): keep current radio
+	tool if users click on an already depressed toggle button.
+
+	* beast-gtk/bsttrackrollctrl.c: support firing up part editor and
+	part deletion (from a track).
+
+	* beast-gtk/bsttrackview.c: more GUI work, added toolbar for part
+	operations.
+
+	* beast-gtk/bstpianoroll.c (bst_piano_roll_realize): force cursor
+	updates in ::realize.
+
+	* beast-gtk/bstitemview.[hc]: unconditionally create the tools
+	container, the widget holding action buttons (renamed from op_box).
+	support tooltips on action buttons.
+	allow derived classes to pack the tool box away.
+
+	* beast-gtk/icons/text.xcf: 
+	* beast-gtk/icons/text.png: 
+	* beast-gtk/icons/Makefile.am: added BST_STOCK_TEXT icon.
+
+	* beast-gtk/bstradiotools.[hc]: made BstRadioTools derive from
+	GObject (instead of GtkObject).
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_init): 
+	* beast-gtk/bstpartdialog.c (bst_part_dialog_init): adapted
+	callers.
+
 Thu Feb  6 22:49:01 2003  Tim Janik  <timj@gtk.org>
 
-	* beast-gtk/bstmain.c (main): fix GtkObject user_data wihch is broken in
+	* beast-gtk/bstmain.c (main): fix GtkObject user_data which is broken in
 	gtk+2.2.
 
 Thu Feb  6 20:08:02 2003  Tim Janik  <timj@gtk.org>

@@ -48,7 +48,7 @@ typedef	struct	_BstRadioTools		BstRadioTools;
 typedef	struct	_BstRadioToolsClass	BstRadioToolsClass;
 struct _BstRadioTools
 {
-  GtkObject	     parent_object;
+  GObject	     parent_object;
 
   guint              tool_id;
   gpointer           tool_data;
@@ -60,7 +60,7 @@ struct _BstRadioTools
 };
 struct _BstRadioToolsClass
 {
-  GtkObjectClass parent_class;
+  GObjectClass parent_class;
 
   void         (*set_tool)	(BstRadioTools*	rtools,
 				 guint          tool_id);

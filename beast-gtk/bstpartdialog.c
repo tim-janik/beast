@@ -190,8 +190,6 @@ bst_part_dialog_init (BstPartDialog *self)
 
   /* radio tools */
   self->rtools = bst_radio_tools_new ();
-  g_object_ref (self->rtools);
-  gtk_object_sink (GTK_OBJECT (self->rtools));
   g_object_connect (self->rtools,
 		    "swapped_signal::set_tool", part_dialog_update_tool, self,
 		    NULL);

@@ -21,6 +21,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	railway.xcf		\
 	rect-select.xcf		\
 	target.xcf		\
+	text.xcf		\
 	trash-scissors.xcf	\
 	trashcan.xcf		\
 	vert-select.xcf		\
@@ -64,6 +65,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_QNOTE_16			$(srcdir)/qnote-16.png		\
 	STOCK_RECT_SELECT		$(srcdir)/rect-select.png	\
 	STOCK_TARGET			$(srcdir)/target.png		\
+	STOCK_TEXT			$(srcdir)/text.png		\
 	STOCK_TRACK			$(srcdir)/railway.png		\
 	STOCK_TRASH_SCISSORS		$(srcdir)/trash-scissors.png	\
 	STOCK_TRASHCAN			$(srcdir)/trashcan.png		\

@@ -570,10 +570,13 @@ bst_piano_roll_realize (GtkWidget *widget)
 
   /* update cursors */
   cursor_type = self->canvas_cursor;
+  self->canvas_cursor = -1;
   bst_piano_roll_set_canvas_cursor (self, cursor_type);
   cursor_type = self->vpanel_cursor;
+  self->vpanel_cursor = -1;
   bst_piano_roll_set_vpanel_cursor (self, cursor_type);
   cursor_type = self->hpanel_cursor;
+  self->hpanel_cursor = -1;
   bst_piano_roll_set_hpanel_cursor (self, cursor_type);
 }
 

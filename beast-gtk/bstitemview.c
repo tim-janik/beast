@@ -110,17 +110,24 @@ static void
 bst_item_view_init (BstItemView      *self,
 		    BstItemViewClass *ITEM_VIEW_CLASS)
 {
+  GtkWidget *tool_box;
+  gboolean vpack = ITEM_VIEW_CLASS->horizontal_ops;
   guint i;
-  
+
   /* action buttons */
   self->op_widgets = g_new0 (GtkWidget*, ITEM_VIEW_CLASS->n_ops);
-  if (ITEM_VIEW_CLASS->n_ops)
-    self->op_box = g_object_new (ITEM_VIEW_CLASS->horizontal_ops ? GTK_TYPE_HBOX : GTK_TYPE_VBOX,
-				 "homogeneous", TRUE,
-				 "spacing", 5,
-				 "border_width", 0,
-				 "visible", TRUE,
-				 NULL);
+  self->tools = g_object_new (GTK_TYPE_ALIGNMENT, /* don't want tool buttons to resize */
+			      "visible", TRUE,
+			      "xscale", 0.0,
+			      "yscale", 0.0,
+			      "xalign", vpack ? 0.0 : 0.5,
+			      "yalign", vpack ? 0.5 : 0.0,
+			      NULL);
+  tool_box = g_object_new (vpack ? GTK_TYPE_HBOX : GTK_TYPE_VBOX,
+			   "homogeneous", TRUE,
+			   "spacing", 3,
+			   "parent", self->tools,
+			   NULL);
   for (i = 0; i < ITEM_VIEW_CLASS->n_ops; i++)
     {
       BstItemViewOp *bop = ITEM_VIEW_CLASS->ops + i;
@@ -128,7 +135,8 @@ bst_item_view_init (BstItemView      *self,
 				       "label", bop->op_name,
 				       NULL);
       self->op_widgets[i] = g_object_new (GTK_TYPE_BUTTON,
-					  "parent", self->op_box,
+					  "can_focus", FALSE,
+					  "parent", tool_box,
 					  NULL);
       g_object_connect (self->op_widgets[i],
 			"signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
@@ -144,7 +152,10 @@ bst_item_view_init (BstItemView      *self,
 		      "child", label,
 		      "parent", self->op_widgets[i],
 		      NULL);
+      if (bop->tooltip)
+	gtk_tooltips_set_tip (GXK_TOOLTIPS, self->op_widgets[i], bop->tooltip, NULL);
     }
+  gtk_widget_show_all (self->tools);
   
   /* pack list view + button box */
   self->paned = g_object_new (GTK_TYPE_VPANED,
@@ -327,7 +338,7 @@ complete_tree (BstItemView *self)
 			    NULL);
 
 	  /* pack list view + button box */
-	  if (self->op_box)
+	  if (!self->tools->parent)
 	    {
 	      gboolean vpack = BST_ITEM_VIEW_GET_CLASS (self)->horizontal_ops;
 	      GtkWidget *lbox = g_object_new (vpack ? GTK_TYPE_VBOX : GTK_TYPE_HBOX,
@@ -337,23 +348,16 @@ complete_tree (BstItemView *self)
 					      NULL);
 	      if (!vpack)
 		gtk_box_pack_start (GTK_BOX (lbox), widget, TRUE, TRUE, 0);
-	      gtk_widget_show_all (GTK_WIDGET (self->op_box));
-	      gtk_box_pack_start (GTK_BOX (lbox),
-				  g_object_new (GTK_TYPE_ALIGNMENT, /* don't want vexpand */
-						"visible", TRUE,
-						"xscale", 0.0,
-						"yscale", 0.0,
-						"xalign", 0.0,
-						"yalign", 0.0,
-						"child", self->op_box,
-						NULL),
-				  FALSE, FALSE, 0);
+	      gtk_box_pack_start (GTK_BOX (lbox), self->tools, FALSE, FALSE, 0);
 	      if (vpack)
 		gtk_box_pack_start (GTK_BOX (lbox), widget, TRUE, TRUE, 0);
 	      gtk_paned_pack1 (self->paned, lbox, FALSE, FALSE);
 	    }
 	  else
 	    gtk_paned_pack1 (self->paned, widget, FALSE, FALSE);
+
+	  /* adapt param view */
+	  pview_selection_changed (self);
 	}
     }
 }

@@ -17,6 +17,7 @@
  */
 #include "bsttrackrollctrl.h"
 
+#include "bstpartdialog.h"
 
 
 /* --- prototypes --- */
@@ -77,6 +78,18 @@ bst_track_roll_controller_unref (BstTrackRollController *self)
 }
 
 void
+bst_track_roll_controller_reset_handler (BstTrackRollController   *self,
+					 void (*handler) (gpointer data),
+					 gpointer                  data)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (self->ref_count >= 1);
+
+  self->reset = handler;
+  self->reset_data = self->reset ? data : NULL;
+}
+
+void
 bst_track_roll_controller_set_obj_tools (BstTrackRollController *self,
 					 BstTrackRollTool        tool1,
 					 BstTrackRollTool        tool2,
@@ -120,6 +133,9 @@ controller_update_cursor (BstTrackRollController *self,
       break;
     case BST_TRACK_ROLL_TOOL_DELETE:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_TARGET);
+      break;
+    case BST_TRACK_ROLL_TOOL_EDITOR_ONCE:
+      bst_track_roll_set_canvas_cursor (self->troll, GDK_HAND2);
       break;
     default:
       bst_track_roll_set_canvas_cursor (self->troll, GXK_DEFAULT_CURSOR);
@@ -181,17 +197,33 @@ insert_start (BstTrackRollController *self,
     }
   else
     {
-      /* might be over a part or not have a track at all */
-      gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "No Position");
+      if (self->obj_part)
+	gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Position taken");
+      else
+	gxk_status_set (GXK_STATUS_ERROR, "Insert part", "No Track");
       drag->state = BST_DRAG_HANDLED;
     }
+}
+
+static void
+delete_start (BstTrackRollController *self,
+	      BstTrackRollDrag       *drag)
+{
+  if (self->obj_part)	/* got part to delete */
+    {
+      bse_track_remove_tick (self->obj_track, self->obj_tick);
+      gxk_status_set (GXK_STATUS_WAIT, "Delete Part", NULL);
+    }
+  else
+    gxk_status_set (GXK_STATUS_ERROR, "Delete Part", "No target");
+  drag->state = BST_DRAG_HANDLED;
 }
 
 static void
 move_start (BstTrackRollController *self,
 	    BstTrackRollDrag       *drag)
 {
-  if (self->obj_part)	/* got note to move */
+  if (self->obj_part)	/* got part to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
       controller_update_cursor (self, BST_TRACK_ROLL_TOOL_MOVE);
@@ -235,6 +267,25 @@ move_abort (BstTrackRollController *self,
   gxk_status_set (GXK_STATUS_ERROR, "Move Part", "Lost Part");
 }
 
+static void
+editor_once (BstTrackRollController *self,
+	     BstTrackRollDrag       *drag)
+{
+  if (self->obj_part)	/* got part */
+    {
+      GtkWidget *pdialog = g_object_new (BST_TYPE_PART_DIALOG, NULL);
+      bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), self->obj_part);
+      g_signal_connect_object (self->troll, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
+      gxk_status_set (GXK_STATUS_DONE, "Start Editor", NULL);
+      if (self->reset)
+	self->reset (self->reset_data);
+      gtk_widget_show (pdialog);
+    }
+  else
+    gxk_status_set (GXK_STATUS_ERROR, "Start Editor", "No target");
+  drag->state = BST_DRAG_HANDLED;
+}
+
 typedef void (*DragFunc) (BstTrackRollController *,
 			  BstTrackRollDrag       *);
 
@@ -246,10 +297,11 @@ controller_canvas_drag (BstTrackRollController *self,
     BstTrackRollTool tool;
     DragFunc start, motion, abort;
   } tool_table[] = {
-    { BST_TRACK_ROLL_TOOL_INSERT,     insert_start,	NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_MOVE,	      move_start,	move_motion,	move_abort,	},
-    // { BST_TRACK_ROLL_TOOL_DELETE,  delete_start,	NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_EDIT_NAME,  edit_name_start,	NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_INSERT,      insert_start,	NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_MOVE,	       move_start,	move_motion,	move_abort,	},
+    { BST_TRACK_ROLL_TOOL_DELETE,      delete_start,	NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_EDIT_NAME,   edit_name_start,	NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_EDITOR_ONCE, editor_once,	NULL,		NULL,		},
   };
   guint i;
 

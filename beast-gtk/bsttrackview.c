@@ -32,6 +32,7 @@ static void	track_view_listen_on		(BstItemView		*iview,
 						 SfiProxy		 item);
 static void	track_view_unlisten_on		(BstItemView		*iview,
 						 SfiProxy		 item);
+static void     track_view_update_tool          (BstTrackView		*self);
 
 
 /* --- columns --- */
@@ -45,14 +46,16 @@ enum {
 
 /* --- track ops --- */
 static BstItemViewOp track_view_ops[] = {
-  { "Add",		BST_OP_TRACK_ADD,	BST_STOCK_TRACK		},
-  { "Delete",		BST_OP_TRACK_DELETE,	BST_STOCK_TRASHCAN	},
+  { "Add",		BST_OP_TRACK_ADD,	BST_STOCK_TRACK,
+    "Add a new track to this song" },
+  { "Delete",		BST_OP_TRACK_DELETE,	BST_STOCK_TRASHCAN,
+    "Delete the currently selected track" },
 };
 static guint n_track_view_ops = sizeof (track_view_ops) / sizeof (track_view_ops[0]);
 
 
-/* --- static variables --- */
-static gpointer		       parent_class = NULL;
+/* --- variables --- */
+static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
@@ -103,12 +106,30 @@ bst_track_view_class_init (BstTrackViewClass *class)
 }
 
 static void
-bst_track_view_init (BstTrackView *track_view)
+bst_track_view_init (BstTrackView *self)
 {
-  BstItemView *item_view = BST_ITEM_VIEW (track_view);
+  BstItemView *iview = BST_ITEM_VIEW (self);
 
-  item_view->item_type = "BseTrack";
-  bst_item_view_set_id_format (item_view, "%02X");
+  /* configure item view for tracks */
+  iview->item_type = "BseTrack";
+  bst_item_view_set_id_format (iview, "%02X");
+
+  /* radio tools */
+  self->rtools = bst_radio_tools_new ();
+  g_object_connect (self->rtools,
+		    "swapped_signal::set_tool", track_view_update_tool, self,
+		    NULL);
+
+  /* register tools */
+  bst_radio_tools_add_stock_tool (self->rtools, BST_TRACK_ROLL_TOOL_INSERT,
+				  "Insert", "Insert/rename/move parts (mouse button 1 and 2)", NULL,
+				  BST_STOCK_PART, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->rtools, BST_TRACK_ROLL_TOOL_DELETE,
+				  "Delete", "Delete part", NULL,
+				  BST_STOCK_TRASHCAN, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->rtools, BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
+				  "Editor", "Start part editor", NULL,
+				  BST_STOCK_PART_EDITOR, BST_RADIO_TOOLS_EVERYWHERE);
 }
 
 static void
@@ -191,7 +212,7 @@ static void
 bst_track_view_create_tree (BstItemView *iview)
 {
   BstTrackView *self = BST_TRACK_VIEW (iview);
-  GtkWidget *hscroll1, *hscroll2, *vscroll, *trframe, *tlframe, *vb1, *vb2, *vb3, *hb, *alignment;
+  GtkWidget *hscroll1, *hscroll2, *vscroll, *trframe, *tlframe, *vb1, *vb2, *vb3, *hb, *align1, *align2;
   GtkPaned *paned;
   GtkTreeSelection *tsel;
 
@@ -209,7 +230,8 @@ bst_track_view_create_tree (BstItemView *iview)
   hscroll1 = gtk_hscrollbar_new (NULL);
   hscroll2 = gtk_hscrollbar_new (NULL);
   vscroll = gtk_vscrollbar_new (NULL);
-  alignment = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
+  align1 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
+  align2 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
 
   /* tree view (track list) */
   tlframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
@@ -219,6 +241,7 @@ bst_track_view_create_tree (BstItemView *iview)
 			      "parent", tlframe,
 			      "rules_hint", TRUE,
 			      "height_request", BST_ITEM_VIEW_TREE_HEIGHT,
+			      "width_request", 200,
 			      NULL);
   gxk_nullify_on_destroy (iview->tree, &iview->tree);
   gtk_tree_view_set_hadjustment (iview->tree, gtk_range_get_adjustment (GTK_RANGE (hscroll1)));
@@ -261,46 +284,40 @@ bst_track_view_create_tree (BstItemView *iview)
 
   /* track roll controller */
   self->troll_ctrl = bst_track_roll_controller_new (self->troll);
-  bst_track_roll_controller_set_bg_tools (self->troll_ctrl,
-					  BST_TRACK_ROLL_TOOL_INSERT,
-					  BST_TRACK_ROLL_TOOL_NONE,
-					  BST_TRACK_ROLL_TOOL_NONE);
-  bst_track_roll_controller_set_obj_tools (self->troll_ctrl,
-					   BST_TRACK_ROLL_TOOL_EDIT_NAME,
-					   BST_TRACK_ROLL_TOOL_MOVE,
-					   BST_TRACK_ROLL_TOOL_NONE);
+  bst_radio_tools_set_tool (self->rtools, BST_TRACK_ROLL_TOOL_INSERT);
+
+  /* create toolbar */
+  self->toolbar = gxk_toolbar_new (&self->toolbar);
+  /* add radio tools to toolbar */
+  bst_radio_tools_build_toolbar (self->rtools, self->toolbar);
 
   /* tree view box */
-  vb1 = g_object_new (GTK_TYPE_VBOX,
-		      "child", tlframe,
-		      "spacing", SCROLLBAR_SPACING,
-		      NULL);
+  vb1 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  gtk_box_pack_start (GTK_BOX (vb1), iview->tools, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vb1), tlframe, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vb1), hscroll1, FALSE, TRUE, 0);
   
   /* track roll box */
-  vb2 = g_object_new (GTK_TYPE_VBOX,
-		      "child", trframe,
-		      "spacing", SCROLLBAR_SPACING,
-		      NULL);
+  vb2 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  gtk_box_pack_start (GTK_BOX (vb2), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vb2), trframe, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vb2), hscroll2, FALSE, TRUE, 0);
 
   /* vscrollbar box */
-  vb3 = g_object_new (GTK_TYPE_VBOX,
-		      "child", vscroll,
-		      "spacing", SCROLLBAR_SPACING,
-		      NULL);
-  gtk_box_pack_start (GTK_BOX (vb3), alignment, FALSE, TRUE, 0);
+  vb3 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  gtk_box_pack_start (GTK_BOX (vb3), align1, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vb3), vscroll, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vb3), align2, FALSE, TRUE, 0);
 
   /* pack boxes and group sizes */
   gxk_size_group (GTK_SIZE_GROUP_VERTICAL,
-		  tlframe,
-		  trframe,
-		  vscroll,
+		  iview->tools, self->toolbar, align1,
 		  NULL);
   gxk_size_group (GTK_SIZE_GROUP_VERTICAL,
-		  hscroll1,
-		  hscroll2,
-		  alignment,
+		  tlframe, trframe, vscroll,
+		  NULL);
+  gxk_size_group (GTK_SIZE_GROUP_VERTICAL,
+		  hscroll1, hscroll2, align2,
 		  NULL);
   paned = g_object_new (GTK_TYPE_HPANED,
 			"height_request", 120,
@@ -410,5 +427,67 @@ bst_track_view_can_operate (BstItemView *item_view,
       return item != 0;
     default:
       return FALSE;
+    }
+}
+
+static void
+reset_rtools (gpointer data)
+{
+  BstTrackView *self = BST_TRACK_VIEW (data);
+  if (self->rtools)
+    bst_radio_tools_set_tool (self->rtools, BST_TRACK_ROLL_TOOL_INSERT);
+}
+
+static void
+track_view_update_tool (BstTrackView *self)
+{
+  if (!self->troll_ctrl)
+    return;
+  switch (self->rtools->tool_id)
+    {
+    case BST_TRACK_ROLL_TOOL_INSERT:
+      bst_track_roll_controller_set_obj_tools (self->troll_ctrl,
+					       BST_TRACK_ROLL_TOOL_EDIT_NAME,
+					       BST_TRACK_ROLL_TOOL_MOVE,
+					       BST_TRACK_ROLL_TOOL_NONE);
+      bst_track_roll_controller_set_bg_tools (self->troll_ctrl,
+					      BST_TRACK_ROLL_TOOL_INSERT,
+					      BST_TRACK_ROLL_TOOL_MOVE,		/* error */
+					      BST_TRACK_ROLL_TOOL_NONE);
+      break;
+    case BST_TRACK_ROLL_TOOL_EDIT_NAME:
+      bst_track_roll_controller_set_obj_tools (self->troll_ctrl,
+					       BST_TRACK_ROLL_TOOL_EDIT_NAME,
+					       BST_TRACK_ROLL_TOOL_MOVE,
+					       BST_TRACK_ROLL_TOOL_NONE);
+      bst_track_roll_controller_set_bg_tools (self->troll_ctrl,
+					      BST_TRACK_ROLL_TOOL_EDIT_NAME,	/* error */
+					      BST_TRACK_ROLL_TOOL_MOVE,		/* error */
+					      BST_TRACK_ROLL_TOOL_NONE);
+      break;
+    case BST_TRACK_ROLL_TOOL_DELETE:
+      bst_track_roll_controller_set_obj_tools (self->troll_ctrl,
+					       BST_TRACK_ROLL_TOOL_DELETE,
+					       BST_TRACK_ROLL_TOOL_MOVE,
+					       BST_TRACK_ROLL_TOOL_NONE);
+      bst_track_roll_controller_set_bg_tools (self->troll_ctrl,
+					      BST_TRACK_ROLL_TOOL_DELETE,	/* error */
+					      BST_TRACK_ROLL_TOOL_MOVE,		/* error */
+					      BST_TRACK_ROLL_TOOL_NONE);
+      break;
+    case BST_TRACK_ROLL_TOOL_EDITOR_ONCE:
+      bst_track_roll_controller_set_obj_tools (self->troll_ctrl,
+					       BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
+					       BST_TRACK_ROLL_TOOL_MOVE,
+					       BST_TRACK_ROLL_TOOL_NONE);
+      bst_track_roll_controller_set_bg_tools (self->troll_ctrl,
+					      BST_TRACK_ROLL_TOOL_EDITOR_ONCE,	/* error */
+					      BST_TRACK_ROLL_TOOL_MOVE,		/* error */
+					      BST_TRACK_ROLL_TOOL_NONE);
+      bst_track_roll_controller_reset_handler (self->troll_ctrl, reset_rtools, self);
+      break;
+    default:    /* fallback */
+      bst_radio_tools_set_tool (self->rtools, BST_TRACK_ROLL_TOOL_INSERT);
+      break;
     }
 }

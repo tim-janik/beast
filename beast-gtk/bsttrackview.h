@@ -20,6 +20,7 @@
 
 #include	"bstitemview.h"
 #include	"bsttrackroll.h"
+#include	"bstradiotools.h"
 #include	"bsttrackrollctrl.h"
 
 G_BEGIN_DECLS
@@ -38,9 +39,11 @@ typedef	struct	_BstTrackView	   BstTrackView;
 typedef	struct	_BstTrackViewClass BstTrackViewClass;
 struct _BstTrackView
 {
-  BstItemView	 parent_object;
-  BstTrackRoll	*troll;
+  BstItemView	          parent_object;
+  BstTrackRoll	         *troll;
   BstTrackRollController *troll_ctrl;
+  BstRadioTools		 *rtools;
+  GxkToolbar		 *toolbar;
 };
 struct _BstTrackViewClass
 {

@@ -49,7 +49,7 @@ static void	  bst_snet_router_reset_tool	(BstSNetRouter		*router);
 static void	  bst_snet_router_update_links	(BstSNetRouter		*router,
 						 BstCanvasSource        *csource);
 static void	  bst_snet_router_adjust_zoom	(BstSNetRouter		*router);
-static void	  bst_router_set_tool		(BstSNetRouter		*router);
+static void	  bst_router_tool_set		(BstSNetRouter		*router);
 static void	  bst_router_popup_select       (GtkWidget		*widget,
 						 gulong                  category_id,
 						 gpointer                popup_data);
@@ -158,10 +158,8 @@ bst_snet_router_init (BstSNetRouter      *self,
   self->link_list = NULL;
 
   self->rtools = bst_radio_tools_new ();
-  g_object_ref (self->rtools);
-  gtk_object_sink (GTK_OBJECT (self->rtools));
   g_object_connect (self->rtools,
-		    "swapped_signal_after::set_tool", bst_router_set_tool, self,
+		    "swapped_signal_after::set_tool", bst_router_tool_set, self,
 		    NULL);
   
   g_object_connect (GTK_OBJECT (canvas->root),
@@ -798,7 +796,7 @@ update_tmp_line (BstSNetRouter *router)
 }
 
 static void
-bst_router_set_tool (BstSNetRouter *router)
+bst_router_tool_set (BstSNetRouter *router)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
 
