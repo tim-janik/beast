@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997, 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,8 +100,10 @@ void		bse_pattern_modify_note	    (BsePattern		*pattern,
 					     guint		 channel,
 					     guint		 row,
 					     gint		 note,
-					     BseInstrument	*instrument,
-					     gboolean		 selected);
+					     BseInstrument	*instrument);
+void		bse_pattern_unselect_except (BsePattern		*pattern,
+					     guint               channel,
+					     guint               row);
 
 
 

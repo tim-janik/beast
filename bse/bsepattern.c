@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997, 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -265,8 +265,7 @@ bse_pattern_modify_note (BsePattern    *pattern,
 			 guint          channel,
 			 guint          row,
 			 gint           note_val,
-			 BseInstrument *instrument,
-			 gboolean       selected)
+			 BseInstrument *instrument)
 {
   BsePatternNote *note;
   guint notify_changed = 0;
@@ -298,17 +297,6 @@ bse_pattern_modify_note (BsePattern    *pattern,
 
   if (notify_changed)
     BSE_NOTIFY (pattern, note_changed, NOTIFY (OBJECT, channel, row, DATA));
-
-  if (!note->selected && selected)
-    {
-      note->selected = TRUE;
-      BSE_NOTIFY (pattern, note_selected, NOTIFY (OBJECT, channel, row, DATA));
-    }
-  else if (note->selected && !selected)
-    {
-      note->selected = FALSE;
-      BSE_NOTIFY (pattern, note_unselected, NOTIFY (OBJECT, channel, row, DATA));
-    }
 
   bse_object_unlock (BSE_OBJECT (pattern));
 }
@@ -362,21 +350,16 @@ bse_pattern_select_note (BsePattern *pattern,
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
 
+  bse_object_lock (BSE_OBJECT (pattern));
+
   note = &PNOTE (pattern, channel, row);
   if (!note->selected)
-    bse_pattern_modify_note (pattern,
-			     channel, row,
-			     note->note,
-			     note->instrument,
-			     TRUE);
-  
-  /*
-    if (!PNOTE (pattern, channel, row).selected)
-    bse_item_exec_void_proc (BSE_ITEM (pattern),
-			     "select-note",
-			     channel,
-			     row);
-  */
+    {
+      note->selected = TRUE;
+      BSE_NOTIFY (pattern, note_selected, NOTIFY (OBJECT, channel, row, DATA));
+    }
+
+  bse_object_unlock (BSE_OBJECT (pattern));
 }
 
 void
@@ -389,21 +372,36 @@ bse_pattern_unselect_note (BsePattern *pattern,
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
-  
+
+  bse_object_lock (BSE_OBJECT (pattern));
+
   note = &PNOTE (pattern, channel, row);
   if (note->selected)
-    bse_pattern_modify_note (pattern,
-			     channel, row,
-			     note->note,
-			     note->instrument,
-			     FALSE);
-  /*
-      if (PNOTE (pattern, channel, row).selected)
-    bse_item_exec_void_proc (BSE_ITEM (pattern),
-			     "unselect-note",
-			     channel,
-			     row);
-  */
+    {
+      note->selected = FALSE;
+      BSE_NOTIFY (pattern, note_unselected, NOTIFY (OBJECT, channel, row, DATA));
+    }
+
+  bse_object_unlock (BSE_OBJECT (pattern));
+}
+
+void
+bse_pattern_unselect_except (BsePattern *pattern,
+			     guint       channel,
+			     guint       row)
+{
+  guint c, r;
+  
+  g_return_if_fail (BSE_IS_PATTERN (pattern));
+  
+  for (c = 0; c < pattern->n_channels; c++)
+    for (r = 0; r < pattern->n_rows; r++)
+      {
+	BsePatternNote *note = &PNOTE (pattern, c, r);
+	
+	if (note->selected && channel != c && row != r)
+	  bse_pattern_unselect_note (pattern, c, r);
+      }
 }
 
 GList* /* free list */

@@ -48,11 +48,14 @@ struct _BseProcedureClass
   BseTypeClass    bse_class;
   gchar          *name;
   gchar          *blurb;
+
+  /* setup upon init */
   gchar          *help;
   gchar          *author;
   gchar          *copyright;
   gchar          *date; /* copyright date */
   
+  /* implementation */
   guint           n_in_params;
   BseParamSpec	**in_param_specs;
   guint           n_out_params;

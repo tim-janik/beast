@@ -1,3 +1,17 @@
+Wed Feb  2 05:37:02 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepattern.[hc]:
+	(bse_pattern_unselect_except): new (internal) function.
+
+	* *.c: altered seom copyright years.
+
+Tue Feb  1 02:35:04 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepattern.[hc] (bse_pattern_modify_note): disentangle note selection
+	from note modifications.
+
+	* builtin_bsepattern.c: change accordingly.
+
 Mon Jan 31 19:09:37 2000  Tim Janik  <timj@gtk.org>
 
         * bsesongsequencer.[hc]:

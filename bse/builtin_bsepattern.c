@@ -1,5 +1,5 @@
-/* Count Notes - Test BSE Plugin
- * Copyright (C) 1999 Tim Janik
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 1999, 2000 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * bsepattern.c: implement basic BsePattern procedures
+ * builtin_bsepattern.c: implement basic BsePattern procedures
  */
 #include        <bse/bseplugin.h>
 
@@ -28,6 +28,7 @@
 /* --- BSE types --- */
 static BseType type_id_set_note = 0;
 static BseType type_id_set_instrument = 0;
+static BseType type_id_clear_content = 0;
 
 
 /* --- set-note --- */
@@ -88,8 +89,7 @@ set_note_exec (BseProcedureClass *proc,
   bse_pattern_modify_note (pattern,
 			   channel, row,
 			   note_val,
-			   note->instrument,
-			   note->selected);
+			   note->instrument);
   /* FIXME: end undo */
 
   /* set output parameters */
@@ -154,8 +154,58 @@ set_instrument_exec (BseProcedureClass *proc,
   bse_pattern_modify_note (pattern,
 			   channel, row,
 			   note->note,
-			   instrument,
-			   note->selected);
+			   instrument);
+  /* FIXME: end undo */
+
+  /* set output parameters */
+
+  return BSE_ERROR_NONE;
+}
+
+
+/* --- clear-content --- */
+static void
+clear_content_setup (BseProcedureClass *proc,
+		     BseParamSpec     **ipspecs,
+		     BseParamSpec     **opspecs)
+{
+  proc->help      = ("Reset note and instrument contents of the selection"
+		     "to none");
+  proc->author    = "Tim Janik <timj@gtk.org>";
+  proc->copyright = "Tim Janik <timj@gtk.org>";
+  proc->date      = "2000";
+  
+  /* input parameters */
+  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
+				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  /* output parameters */
+}
+
+static BseErrorType
+clear_content_exec (BseProcedureClass *proc,
+		    BseParam          *iparams,
+		    BseParam          *oparams)
+{
+  /* extract parameter values */
+  BsePattern *pattern	= (BsePattern*) (iparams++)->value.v_item;
+  guint c, r;
+
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* FIXME: start undo */
+
+  /* iterate over the whole pattern, affecting only selected notes */
+  for (c = 0; c < pattern->n_channels; c++)
+    for (r = 0; r < pattern->n_rows; r++)
+      {
+	BsePatternNote *note = bse_pattern_peek_note (pattern, c, r);
+
+	if (note->selected)
+	  bse_pattern_modify_note (pattern, c, r, BSE_NOTE_VOID, NULL);
+      }
+  
   /* FIXME: end undo */
 
   /* set output parameters */
@@ -176,6 +226,11 @@ BSE_EXPORT_PROCEDURES = {
     "Set a specific instrument to play",
     set_instrument_setup, set_instrument_exec, NULL,
     "/Method/BsePattern/Set Instrument",
+  },
+  { &type_id_clear_content, "BsePattern::clear-content",
+    "Reset note and instrument contents",
+    clear_content_setup, clear_content_exec, NULL,
+    "/Method/BsePattern/Edit/Clear",
   },
   { NULL, },
 };
