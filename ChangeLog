@@ -1,3 +1,11 @@
+Thu Dec  9 06:18:48 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): use the new
+	BstCanvasSource API to properly connect links with input/output ids.
+
+	* beast-gtk/bstcanvassource.[hc]: major rework, we deal with multiple
+	input/output channels now.
+
 Tue Dec  7 02:46:21 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c (bst_canvas_source_build): erk, don't

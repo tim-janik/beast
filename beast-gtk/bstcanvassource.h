@@ -48,11 +48,11 @@ struct _BstCanvasSource
 
   GtkWidget	  *source_view;
 
-  GnomeCanvasItem *rect;
   GnomeCanvasItem *text;
+  GSList	  *channel_items;
 
-  guint         in_move : 1;
-  gdouble	move_dx, move_dy;
+  guint            in_move : 1;
+  gdouble	   move_dx, move_dy;
 };
 struct _BstCanvasSourceClass
 {
@@ -77,16 +77,17 @@ void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
 						 guint             ichannel_id,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
+guint		 bst_canvas_source_ichannel_at  (BstCanvasSource  *csource,
+						 gdouble           world_x,
+						 gdouble           world_y);
+guint		 bst_canvas_source_ochannel_at  (BstCanvasSource  *csource,
+						 gdouble           world_x,
+						 gdouble           world_y);
+BstCanvasSource* bst_canvas_source_at  		(GnomeCanvas      *csource,
+						 gdouble           world_x,
+						 gdouble           world_y);
 void		 bst_canvas_source_popup_view	(BstCanvasSource  *csource);
 
-
-/* --- FIXME: ugly hackery to store coords --- */
-void     bst_object_set_coords (BseObject *object,
-				gdouble    x,
-				gdouble    y);
-gboolean bst_object_get_coords (BseObject *object,
-				gdouble   *x,
-				gdouble   *y);
      
      
 

@@ -119,11 +119,15 @@ extern void bst_object_set         (gpointer     object,
 
 /* --- canvas utils/workarounds --- */
 extern GnomeCanvasPoints* gnome_canvas_points_new0 (guint num_points);
+extern GnomeCanvasPoints* gnome_canvas_points_newv (guint num_points, ...);
 extern void gnome_canvas_request_full_update (GnomeCanvas *canvas);
 extern guint gnome_canvas_item_get_stacking (GnomeCanvasItem *item);
 extern void gnome_canvas_item_keep_between (GnomeCanvasItem *between,
 					    GnomeCanvasItem *item1,
 					    GnomeCanvasItem *item2);
+extern void gnome_canvas_item_keep_above (GnomeCanvasItem *above,
+					  GnomeCanvasItem *item1,
+					  GnomeCanvasItem *item2);
 
 
 

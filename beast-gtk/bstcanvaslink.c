@@ -204,10 +204,10 @@ bst_canvas_link_update (BstCanvasLink *clink)
       gnome_canvas_item_w2i (item, &end_x, &end_y);
     }
   if (clink->ocsource && clink->icsource)
-    gnome_canvas_item_keep_between (GNOME_CANVAS_ITEM (clink),
-				    GNOME_CANVAS_ITEM (clink->ocsource),
-				    GNOME_CANVAS_ITEM (clink->icsource));
-				    
+    gnome_canvas_item_keep_above (GNOME_CANVAS_ITEM (clink),
+				  GNOME_CANVAS_ITEM (clink->ocsource),
+				  GNOME_CANVAS_ITEM (clink->icsource));
+  
   
   if (!clink->arrow)
     clink->arrow = gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),

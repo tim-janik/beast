@@ -736,21 +736,22 @@ bst_snet_router_root_event (BstSNetRouter   *router,
       event->button.button == 1 &&
       router->mode == 0) /* start link */
     {
-      GnomeCanvasItem *item;
-      BstCanvasSource *csource = NULL;
+      BstCanvasSource *csource;
+      guint ochannel_id;
 
       g_return_val_if_fail (router->tmp_line == NULL, FALSE);
       
-      item = gnome_canvas_get_item_at (canvas, event->button.x, event->button.y);
-      if (item)
-	csource = gtk_object_get_data (GTK_OBJECT (item), "csource_oconnector");
+      csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
+      ochannel_id = (csource
+		     ? bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y)
+		     : 0);
       
-      if (csource)
+      if (csource && ochannel_id)
 	{
 	  GnomeCanvasPoints *gpoints = gnome_canvas_points_new (2);
 
 	  router->mode = 1;
-	  router->ochannel_id = 1;
+	  router->ochannel_id = ochannel_id;
 	  router->ocsource = csource;
 	  bst_canvas_source_ochannel_pos (csource,
 					  router->ochannel_id,
@@ -778,16 +779,22 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	   event->button.button == 1 &&
 	   router->mode == 1) /* finish link */
     {
-      GnomeCanvasItem *item;
-      BstCanvasSource *csource = NULL;
+      BstCanvasSource *csource;
+      guint ichannel_id;
       
-      item = gnome_canvas_get_item_at (canvas, event->button.x, event->button.y);
-      if (item)
-	csource = gtk_object_get_data (GTK_OBJECT (item), "csource_iconnector");
+      csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
+      ichannel_id = (csource
+		     ? bst_canvas_source_ichannel_at (csource, event->button.x, event->button.y)
+		     : 0);
+      /* eliminate button releases on the point we started from */
+      if (event->type == GDK_BUTTON_RELEASE &&
+	  csource == router->ocsource &&
+	  bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y) ==
+	  router->ochannel_id)
+	csource = NULL;
       
       if (csource)
 	{
-	  guint ichannel_id = 1;
 	  BseErrorType error;
 
 	  error = bse_source_set_input (csource->source, ichannel_id,
@@ -801,12 +808,9 @@ bst_snet_router_root_event (BstSNetRouter   *router,
   else if (event->type == GDK_BUTTON_PRESS &&
 	   event->button.button == 3)
     {
-      GnomeCanvasItem *item;
-      BstCanvasSource *csource = NULL;
+      BstCanvasSource *csource;
 
-      item = gnome_canvas_get_item_at (canvas, event->button.x, event->button.y);
-      if (item)
-	csource = gtk_object_get_data (GTK_OBJECT (item), "csource");
+      csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
 
       if (csource && csource->source != (BseSource*) router->snet)
 	bst_canvas_source_popup_view (csource);
