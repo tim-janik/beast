@@ -44,7 +44,7 @@ beast_headers = $(strip \
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
 				bstwaveview.h				bstxkb.h	\
-	bstzoomedwindow.h			bsttrackrollctrl.h	bstxframe.h	\
+	bstzoomedwindow.h	bstskinconfig.h	bsttrackrollctrl.h	bstxframe.h	\
 				bstrackview.h	bsttreestores.h		bstutils.h	\
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstmarshal.h bstdefs.h \
@@ -63,18 +63,18 @@ beast_sources = $(strip \
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
 				bstwaveview.c				bstxkb.c	\
-	bstzoomedwindow.c			bsttrackrollctrl.c	bstxframe.c	\
+	bstzoomedwindow.c	bstskinconfig.c	bsttrackrollctrl.c	bstxframe.c	\
 				bstrackview.c	bsttreestores.c		bstutils.c	\
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
-beast_extra_sources = $(strip \
-	bstparam-choice.c	bstparam-note-sequence.c	\
-	bstparam-note-spinner.c	bstparam-proxy.c		\
-	bstparam-scale.c	bstparam-searchpath.c		\
-	bstparam-time.c		\
-	bstrackeditor-covers.c	bstmarshal.c \
+beast_extra_sources = $(strip 						\
+	bstparam-choice.c		bstparam-note-sequence.c	\
+	bstparam-note-spinner.c		bstparam-proxy.c		\
+	bstparam-color-spinner.c	bstparam-scale.c		\
+	bstparam-searchpath.c		bstparam-time.c			\
+	bstrackeditor-covers.c		bstmarshal.c 			\
 )
 beast_extra_files = $(strip \
 	bstmarshal.list		stamp-bstenum_arrays.c	\

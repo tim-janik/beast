@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkscrollcanvas.h"
+#include "gxkimagecache.h"
 #include <gdk/gdkkeysyms.h>
 
 
@@ -255,6 +256,7 @@ scroll_canvas_set_scroll_adjustments (GxkScrollCanvas *self,
 static void
 scroll_canvas_reset_backgrounds (GxkScrollCanvas *self)
 {
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   GtkWidget *widget = GTK_WIDGET (self);
   if (GTK_WIDGET_REALIZED (self))
     {
@@ -279,6 +281,16 @@ scroll_canvas_reset_backgrounds (GxkScrollCanvas *self)
         gdk_window_clear (self->bottom_panel);
       gdk_window_clear (self->canvas);
       gtk_widget_queue_draw (widget);
+      if (self->canvas_pixmap)
+        gxk_image_cache_unuse_pixmap (self->canvas_pixmap);
+      self->canvas_pixmap = gxk_image_cache_use_pixmap (class->image_file_name,
+                                                        class->image_tint, class->image_saturation,
+                                                        gdk_drawable_get_colormap (self->canvas));
+      /* revert to an empty pixbuf to let the shading still take effect */
+      if (!self->canvas_pixmap)
+        self->canvas_pixmap = gxk_image_cache_use_pixmap (GXK_IMAGE_BLACK32,
+                                                          class->image_tint, class->image_saturation,
+                                                          gdk_drawable_get_colormap (self->canvas));
     }
 }
 
@@ -497,6 +509,23 @@ scroll_canvas_realize (GtkWidget *widget)
 
   /* setup backgrounds */
   scroll_canvas_reset_backgrounds (self);
+
+  /* catch skin changes */
+  class->realized_widgets = g_slist_prepend (class->realized_widgets, self);
+}
+
+static void
+scroll_canvas_skin_changed (GxkScrollCanvas *self)
+{
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  guint i;
+  for (i = 0; i < class->n_colors; i++)
+    {
+      GdkColor color = class->colors[i];
+      gdk_gc_set_rgb_fg_color (self->color_gc[i], &color);
+    }
+  /* reset backgrounds and pixmap */
+  scroll_canvas_reset_backgrounds (self);
 }
 
 static void
@@ -505,6 +534,9 @@ scroll_canvas_unrealize (GtkWidget *widget)
   GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
   GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   guint i;
+
+  /* ignore skin changes */
+  class->realized_widgets = g_slist_prepend (class->realized_widgets, self);
 
   /* release color GCs */
   for (i = 0; i < class->n_colors; i++)
@@ -538,6 +570,11 @@ scroll_canvas_unrealize (GtkWidget *widget)
       gdk_window_set_user_data (self->bottom_panel, NULL);
       gdk_window_destroy (self->bottom_panel);
       self->bottom_panel = NULL;
+    }
+  if (self->canvas_pixmap)
+    {
+      gxk_image_cache_unuse_pixmap (self->canvas_pixmap);
+      self->canvas_pixmap = NULL;
     }
   GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->unrealize (widget);
 }
@@ -607,11 +644,29 @@ scroll_canvas_draw_canvas (GxkScrollCanvas        *self,
                            GdkWindow              *drawable,
                            GdkRectangle           *area)
 {
-  // GtkWidget *widget = GTK_WIDGET (self);
-  GdkGC *fg_gc = STYLE (self)->fg_gc[STATE (self)];
-  
-  gdk_draw_line (drawable, fg_gc, 0, 0, CANVAS_WIDTH (self)-1, CANVAS_HEIGHT (self)-1);
-  gdk_draw_line (drawable, fg_gc, CANVAS_WIDTH (self)-1, 0, 0, CANVAS_HEIGHT (self)-1);
+  GdkGC *bg_gc = STYLE (self)->bg_gc[STATE (self)];
+
+  if (self->canvas_pixmap)
+    {
+      gint x, y, pwidth, pheight;
+      gdk_gc_set_clip_rectangle (bg_gc, area);
+      gdk_drawable_get_size (self->canvas_pixmap, &pwidth, &pheight);
+      for (y = area->y; y < area->y + area->height; )
+        {
+          gint dy = (y + self->y_offset) % pheight;
+          gint dheight = pheight - dy;
+          for (x = area->x; x < area->x + area->width; )
+            {
+              gint dx = (x + self->x_offset) % pwidth;
+              gint dwidth = pwidth - dx;
+              gdk_draw_drawable (drawable, bg_gc, self->canvas_pixmap,
+                                 dx, dy, x, y, dwidth, dheight);
+              x += dwidth;
+            }
+          y += dheight;
+        }
+      gdk_gc_set_clip_rectangle (bg_gc, NULL);
+    }
 }
 
 static void
@@ -642,88 +697,102 @@ scroll_canvas_expose (GtkWidget      *widget,
 {
   GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
   GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
-  GdkRectangle area = event->area;
-
+  GdkRectangle *areas;
+  gint j, n_areas;
+  
   if (!GTK_WIDGET_DRAWABLE (widget))
     return FALSE;
+  
+  if (!event->region)
+    gdk_region_get_rectangles (event->region, &areas, &n_areas);
+  else
+    {
+      n_areas = 1;
+      areas = g_memdup (&event->area, sizeof (event->area));
+    }
 
   /* with gtk_widget_set_double_buffered (self, FALSE) in init and
    * with gdk_window_begin_paint_region()/gdk_window_end_paint()
    * around our redraw functions, we can decide on our own what
    * windows we want double buffering on.
    */
-  if (event->window == widget->window)
+  for (j = 0; j < n_areas; j++)
     {
-      if (class->double_buffer_window)
-        gdk_window_begin_paint_rect (event->window, &area);
-      else if (class->auto_clear)
-        gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
-      class->draw_window (self, event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      if (class->double_buffer_window)
-        gdk_window_end_paint (event->window);
+      GdkRectangle area = areas[j];
+      if (event->window == widget->window)
+        {
+          if (class->double_buffer_window)
+            gdk_window_begin_paint_rect (event->window, &area);
+          else if (class->auto_clear)
+            gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
+          class->draw_window (self, event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          if (class->double_buffer_window)
+            gdk_window_end_paint (event->window);
+        }
+      else if (event->window == self->canvas)
+        {
+          if (class->double_buffer_canvas)
+            gdk_window_begin_paint_rect (event->window, &area);
+          else if (class->auto_clear)
+            gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
+          class->draw_canvas (self, event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          if (class->double_buffer_canvas)
+            gdk_window_end_paint (event->window);
+        }
+      else if (event->window == self->top_panel)
+        {
+          if (class->double_buffer_top_panel)
+            gdk_window_begin_paint_rect (event->window, &area);
+          else if (class->auto_clear)
+            gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
+          class->draw_top_panel (self, event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          if (class->double_buffer_top_panel)
+            gdk_window_end_paint (event->window);
+        }
+      else if (event->window == self->left_panel)
+        {
+          if (class->double_buffer_left_panel)
+            gdk_window_begin_paint_rect (event->window, &area);
+          else if (class->auto_clear)
+            gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
+          class->draw_left_panel (self, event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          if (class->double_buffer_left_panel)
+            gdk_window_end_paint (event->window);
+        }
+      else if (event->window == self->right_panel)
+        {
+          if (class->double_buffer_right_panel)
+            gdk_window_begin_paint_rect (event->window, &area);
+          else if (class->auto_clear)
+            gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
+          class->draw_right_panel (self, event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          if (class->double_buffer_right_panel)
+            gdk_window_end_paint (event->window);
+        }
+      else if (event->window == self->bottom_panel)
+        {
+          if (class->double_buffer_bottom_panel)
+            gdk_window_begin_paint_rect (event->window, &area);
+          else if (class->auto_clear)
+            gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
+          class->draw_bottom_panel (self, event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          if (class->double_buffer_bottom_panel)
+            gdk_window_end_paint (event->window);
+        }
+      else
+        {
+          gdk_window_begin_paint_rect (event->window, &area);
+          GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          gdk_window_end_paint (event->window);
+        }
     }
-  else if (event->window == self->canvas)
-    {
-      if (class->double_buffer_canvas)
-        gdk_window_begin_paint_rect (event->window, &area);
-      else if (class->auto_clear)
-        gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
-      class->draw_canvas (self, event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      if (class->double_buffer_canvas)
-        gdk_window_end_paint (event->window);
-    }
-  else if (event->window == self->top_panel)
-    {
-      if (class->double_buffer_top_panel)
-        gdk_window_begin_paint_rect (event->window, &area);
-      else if (class->auto_clear)
-        gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
-      class->draw_top_panel (self, event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      if (class->double_buffer_top_panel)
-        gdk_window_end_paint (event->window);
-    }
-  else if (event->window == self->left_panel)
-    {
-      if (class->double_buffer_left_panel)
-        gdk_window_begin_paint_rect (event->window, &area);
-      else if (class->auto_clear)
-        gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
-      class->draw_left_panel (self, event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      if (class->double_buffer_left_panel)
-        gdk_window_end_paint (event->window);
-    }
-  else if (event->window == self->right_panel)
-    {
-      if (class->double_buffer_right_panel)
-        gdk_window_begin_paint_rect (event->window, &area);
-      else if (class->auto_clear)
-        gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
-      class->draw_right_panel (self, event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      if (class->double_buffer_right_panel)
-        gdk_window_end_paint (event->window);
-    }
-  else if (event->window == self->bottom_panel)
-    {
-      if (class->double_buffer_bottom_panel)
-        gdk_window_begin_paint_rect (event->window, &area);
-      else if (class->auto_clear)
-        gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
-      class->draw_bottom_panel (self, event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      if (class->double_buffer_bottom_panel)
-        gdk_window_end_paint (event->window);
-    }
-  else
-    {
-      gdk_window_begin_paint_rect (event->window, &area);
-      GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
-      gdk_window_end_paint (event->window);
-    }
+  g_free (areas);
   return FALSE;
 }
 
@@ -832,7 +901,7 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
   if (adjustment == self->hadjustment)
     {
       gint x = self->x_offset, diff;
-      self->x_offset = adjustment->value;       // FIXME: translate
+      self->x_offset = adjustment->value;
       diff = x - self->x_offset;
       if (diff && GTK_WIDGET_DRAWABLE (self))
         {
@@ -863,7 +932,7 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
   if (adjustment == self->vadjustment)
     {
       gint y = self->y_offset, diff;
-      self->y_offset = adjustment->value;       // FIXME: translate
+      self->y_offset = adjustment->value;
       diff = y - self->y_offset;
       if (diff && GTK_WIDGET_DRAWABLE (self))
         {
@@ -892,7 +961,14 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
         }
     }
   if (need_realloc)
-    ; // FIXME: scroll_canvas_reallocate_children (self);
+    {
+      /* we want the canvas to be updated immediately, to avoid
+       * big expose rectangles later on, due to rectangle-joins
+       * of L-shaped regions.
+       */
+      gdk_window_process_updates (self->canvas, TRUE);
+      // FIXME: scroll_canvas_reallocate_children (self);
+    }
 }
 
 void
@@ -1247,6 +1323,7 @@ gxk_scroll_canvas_class_init (GxkScrollCanvasClass *class)
   widget_class->button_release_event = scroll_canvas_button_release;
   widget_class->key_press_event = scroll_canvas_key_press;
   
+  /* widget config */
   class->double_buffer_top_panel = TRUE;
   class->double_buffer_left_panel = TRUE;
   class->double_buffer_right_panel = TRUE;
@@ -1255,6 +1332,13 @@ gxk_scroll_canvas_class_init (GxkScrollCanvasClass *class)
   class->double_buffer_window = TRUE;
   class->auto_clear = TRUE;
   class->grab_focus = TRUE;
+  /* skin config */
+  class->image_file_name = NULL;
+  class->image_tint.red = 0xff00;
+  class->image_tint.green = 0xff00;
+  class->image_tint.blue = 0xff00;
+  class->image_saturation = 0.9;
+  /* virtual methods */
   class->get_layout = (gpointer) dummy_handler;
   class->set_scroll_adjustments = scroll_canvas_set_scroll_adjustments;
   class->update_adjustments = scroll_canvas_update_adjustments;
@@ -1273,4 +1357,13 @@ gxk_scroll_canvas_class_init (GxkScrollCanvasClass *class)
                     GTK_SIGNAL_OFFSET (GxkScrollCanvasClass, set_scroll_adjustments),
                     gxk_marshal_NONE__OBJECT_OBJECT,
                     GTK_TYPE_NONE, 2, GTK_TYPE_ADJUSTMENT, GTK_TYPE_ADJUSTMENT);
+}
+
+void
+gxk_scroll_canvas_class_skin_changed (GxkScrollCanvasClass *class)
+{
+  GSList *slist;
+  g_return_if_fail (GXK_IS_SCROLL_CANVAS_CLASS (class));
+  for (slist = class->realized_widgets; slist; slist = slist->next)
+    scroll_canvas_skin_changed (slist->data);
 }

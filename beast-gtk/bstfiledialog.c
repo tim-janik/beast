@@ -386,6 +386,20 @@ bst_file_dialog_popup_open_project (gpointer parent_widget)
 }
 
 GtkWidget*
+bst_file_dialog_popup_select_file (gpointer parent_widget)
+{
+  BstFileDialog *self = bst_file_dialog_global_project ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+			    BST_FILE_DIALOG_SELECT_FILE,
+			    _("Select File"), 0);
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+GtkWidget*
 bst_file_dialog_popup_select_dir (gpointer parent_widget)
 {
   BstFileDialog *self = bst_file_dialog_global_project ();
@@ -842,6 +856,7 @@ bst_file_dialog_activate (BstFileDialog *self)
     case BST_FILE_DIALOG_SAVE_INSTRUMENT:
       popdown = bst_file_dialog_save_instrument (self, file_name);
       break;
+    case BST_FILE_DIALOG_SELECT_FILE:
     case BST_FILE_DIALOG_SELECT_DIR:
       popdown = TRUE;   /* handled via BstFileDialogHandler and ->selected */
       break;

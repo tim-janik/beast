@@ -1,3 +1,5 @@
+* Moved RC file from ~/.beastrc to ~/.beast/beastrc
+        
 Overview of Changes in BEAST/BSE 0.5.6:
 
 * New (or ported) modules:

@@ -34,8 +34,15 @@ GtkWidget*     bst_list_popup_new    (const gchar            *title,
                                       GDestroyNotify          destroy);
 void           bst_list_popup_add    (GtkWidget              *widget,
                                       const gchar            *string);
-
-
+typedef void (*BstColorPopupHandler) (GtkWidget              *dialog,
+                                      GdkColor               *color,
+                                      gpointer                user_data);
+GtkWidget*     bst_color_popup_new   (const gchar            *title,
+                                      GtkWidget              *transient_parent,
+                                      GdkColor                color,
+                                      BstColorPopupHandler    handler,
+                                      gpointer                data,
+                                      GDestroyNotify          destroy);
 
 
 G_END_DECLS

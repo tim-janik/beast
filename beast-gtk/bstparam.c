@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002-2003 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -317,6 +317,7 @@ bst_param_xframe_check_button (GxkParam *param,
 
 /* --- param editor registration --- */
 #include "bstparam-choice.c"
+#include "bstparam-color-spinner.c"
 #include "bstparam-note-sequence.c"
 #include "bstparam-note-spinner.c"
 #include "bstparam-proxy.c"
@@ -333,6 +334,7 @@ _bst_init_params (void)
   gxk_param_register_editor (&param_choice1, NULL);
   gxk_param_register_editor (&param_choice2, NULL);
   gxk_param_register_aliases (param_choice_aliases1);
+  gxk_param_register_editor (&param_color_spinner, NULL);
   gxk_param_register_editor (&param_note_sequence, NULL);
   gxk_param_register_editor (&param_note_spinner, NULL);
   gxk_param_register_editor (&param_proxy, NULL);
@@ -343,5 +345,6 @@ _bst_init_params (void)
   gxk_param_register_aliases (param_scale_aliases1);
   gxk_param_register_aliases (param_scale_aliases2);
   gxk_param_register_editor (&param_searchpath, NULL);
+  gxk_param_register_editor (&param_filename, NULL);
   gxk_param_register_editor (&param_time, NULL);
 }

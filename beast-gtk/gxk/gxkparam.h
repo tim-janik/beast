@@ -157,9 +157,11 @@ void           gxk_param_entry_connect_handlers (GxkParam    *param,
                                                  GtkWidget   *entry,
                                                  void       (*changed) (GtkWidget*,
                                                                         GxkParam*));
-gboolean       gxk_param_ensure_focus           (GtkWidget   *widget);
-GtkAdjustment* gxk_param_get_adjustment         (GxkParam    *param);
-GtkAdjustment* gxk_param_get_log_adjustment     (GxkParam    *param);
+gboolean       gxk_param_ensure_focus                 (GtkWidget *widget);
+GtkAdjustment* gxk_param_get_adjustment               (GxkParam  *param);
+GtkAdjustment* gxk_param_get_adjustment_with_stepping (GxkParam  *param,
+                                                       gdouble    pstepping);
+GtkAdjustment* gxk_param_get_log_adjustment           (GxkParam  *param);
 
 G_END_DECLS
 

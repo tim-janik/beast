@@ -62,7 +62,8 @@ typedef enum /*< skip >*/
 
 /* --- constants & defines --- */
 #define	BST_TAG_DIAMETER	  (20)
-#define BST_STRDUP_RC_FILE()	  (g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
+#define BST_STRDUP_RC_FILE()	  (g_strconcat (g_get_home_dir (), "/.beast/beastrc", NULL))
+
 
 /* --- configuration candidates --- */
 /* mouse button numbers and masks for drag operations */

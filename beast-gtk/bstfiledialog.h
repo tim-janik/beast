@@ -44,6 +44,7 @@ typedef enum {
   BST_FILE_DIALOG_MERGE_PROJECT	   = 0x0002,
   BST_FILE_DIALOG_SAVE_PROJECT	   = 0x0003,
   BST_FILE_DIALOG_IMPORT_MIDI	   = 0x0004,
+  BST_FILE_DIALOG_SELECT_FILE	   = 0x0008,
   BST_FILE_DIALOG_SELECT_DIR	   = 0x0009,
   BST_FILE_DIALOG_LOAD_WAVE	   = 0x0011,
   BST_FILE_DIALOG_LOAD_WAVE_LIB	   = 0x0012,
@@ -101,6 +102,7 @@ GtkWidget*	bst_file_dialog_popup_save_instrument	(gpointer	   parent_widget,
                                                          SfiProxy          super);
 GtkWidget*      bst_file_dialog_popup_merge_instrument  (gpointer          parent_widget,
                                                          SfiProxy          project);
+GtkWidget*	bst_file_dialog_popup_select_file  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_select_dir  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
 							 SfiProxy	   wave_repo,

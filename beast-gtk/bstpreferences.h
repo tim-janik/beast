@@ -19,13 +19,9 @@
 #ifndef __BST_PREFERENCES_H__
 #define __BST_PREFERENCES_H__
 
-#include	"bstparamview.h"
-#include	"bstgconfig.h"
+#include "bstparamview.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_PREFERENCES		(bst_preferences_get_type ())
@@ -48,6 +44,9 @@ struct _BstPreferences
   SfiRec	*bstrec;
   SfiRing	*bstparams;
 
+  SfiRec        *skinrec;
+  SfiRing       *skinparams;
+
   GParamSpec    *bsepspec;
   SfiRec	*bserec;
   SfiRing	*bseparams;
@@ -62,8 +61,6 @@ struct _BstPreferencesClass
 
 /* --- prototypes --- */
 GtkType		 bst_preferences_get_type	(void);
-void		 bst_preferences_set_gconfig	(BstPreferences *prefs,
-						 BstGConfig     *gconf);
 void		 bst_preferences_apply		(BstPreferences *prefs);
 void		 bst_preferences_save		(BstPreferences *prefs);
 void		 bst_preferences_revert		(BstPreferences *prefs);
@@ -71,9 +68,6 @@ void		 bst_preferences_default_revert	(BstPreferences *prefs);
 void		 bst_preferences_create_buttons (BstPreferences *prefs,
 						 GxkDialog      *dialog);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PREFERENCES_H__ */

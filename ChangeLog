@@ -1,3 +1,61 @@
+Sun Feb  1 15:46:45 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstskinconfig.[hc]: skin configuration handling,
+	implemented skinrc with versioning. skinrc filename can be
+	overridden via BEAST_SKINRC environment variable.
+
+	* beast-gtk/bstparam-color-spinner.c: provide input widget
+	to edit colors.
+
+	* beast-gtk/bstauxdialogs.[hc]: provide auxillary colorselection
+	dialog. patched up GtkColorSelection to have activate-default
+	behaviour for Return and KP_Enter.
+
+	* beast-gtk/bstdefs.h: moved beast rcfile from ~/.beastrc to
+	~/.beast/beastrc.
+
+	* beast-gtk/bstfiledialog.[hc]: implement simple file selection case.
+
+	* beast-gtk/bstgconfig.[hc]: started internal versioning for beastrc.
+	(bst_rc_dump): ensure path-to-rc-file exists (~/.beast).
+
+	* beast-gtk/bstmain.c: load skinrc, only save beastrc at program
+	end if it was saved from a different beast version. save
+	.bserc unconditionally.
+
+	* beast-gtk/bstparam-searchpath.c: grab focus o nbutton clicks.
+	implemented "filename" pspec option.
+
+	* beast-gtk/bstpianoroll.[hc]: made h/v grid colors and background
+	configurable through BstSkinConfig, based on GxkScrollCanvasClass
+	skin support. draw h/v grid in multiple passes to have lines
+	properly overlapping.
+
+	* beast-gtk/bstpreferences.[hc]: added editing facilities for
+	skin settings.
+
+	* beast-gtk/bstrecords.idl: some cleanups.
+	added SkinConfig - skin configuration record.
+
+	* beast-gtk/gxk/gxkimagecache.[hc]: implement caching of
+	pixmaps, rendered from image file names.
+
+	* beast-gtk/gxk/gxkparam.[hc]: support explicit page-stepping
+	specification for linear adjustments.
+
+	* beast-gtk/gxk/gxkscrollcanvas.[hc]: implemented background
+	rendering based on pixmaps. added skin-change support
+	by means of rerendering background pixmap and recreating
+	color GCs for all currently realized scroll-canvas widgets. 
+	optimized redrawing of L-shaped regions during scrolling.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added convenience functions
+	to fill GdkColor structures.
+
+	* beast-gtk/icons/colorselector.png:
+	* beast-gtk/icons/browse-image.png:
+	* beast-gtk/icons/browse-image.xcf: added stock images.
+
 Sat Jan 31 23:06:39 2004  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh (check_version): applied fix to not append trailing

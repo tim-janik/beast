@@ -715,9 +715,10 @@ param_adjustment_value_changed (GtkAdjustment *adjustment,
 }
 
 GtkAdjustment*
-gxk_param_get_adjustment (GxkParam *param)
+gxk_param_get_adjustment_with_stepping (GxkParam  *param,
+                                        gdouble    pstepping)
 {
-  gdouble min, max, dfl, stepping, pstepping;
+  gdouble min, max, dfl, stepping;
   GParamSpec *pspec = param->pspec;
   GtkObject *adjustment;
   gboolean isint = TRUE;
@@ -783,7 +784,8 @@ gxk_param_get_adjustment (GxkParam *param)
     return NULL;
 #undef EXTRACT_FIELDS
 
-  pstepping = isint ? 1.0 : 0.1;
+  if (pstepping <= 0)
+    pstepping = isint ? 1.0 : 0.1;
   if (pstepping == stepping)
     {
       pstepping = ABS (max - min) / 10;
@@ -802,6 +804,12 @@ gxk_param_get_adjustment (GxkParam *param)
                     "signal_after::value-changed", param_adjustment_value_changed, param,
                     NULL);
   return GTK_ADJUSTMENT (adjustment);
+}
+
+GtkAdjustment*
+gxk_param_get_adjustment (GxkParam *param)
+{
+  return gxk_param_get_adjustment_with_stepping (param, 0);
 }
 
 GtkAdjustment*

@@ -17,8 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bstpreferences.h"
-
 #include "bstgconfig.h"
+#include "bstskinconfig.h"
 #include "bstparam.h"
 
 
@@ -63,6 +63,11 @@ bst_preferences_init (BstPreferences *prefs)
   pchild = bst_preferences_build_rec_editor (prefs->bstrec, sfi_pspec_get_rec_fields (pspec), &prefs->bstparams);
   gxk_notebook_append (prefs->notebook, pchild, "BEAST");
 
+  pspec = bst_skin_config_pspec ();
+  prefs->skinrec = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  pchild = bst_preferences_build_rec_editor (prefs->skinrec, sfi_pspec_get_rec_fields (pspec), &prefs->skinparams);
+  gxk_notebook_append (prefs->notebook, pchild, _("Skin"));
+
   pspec = bse_proxy_get_pspec (BSE_SERVER, "bse-preferences");
   prefs->bsepspec = g_param_spec_ref (pspec);
   bse_proxy_get (BSE_SERVER, "bse-preferences", &rec, NULL);
@@ -83,6 +88,14 @@ bst_preferences_destroy (GtkObject *object)
     }
   sfi_ring_free (prefs->bstparams);
   prefs->bstparams = NULL;
+
+  if (prefs->skinrec)
+    {
+      sfi_rec_unref (prefs->skinrec);
+      prefs->skinrec = NULL;
+    }
+  sfi_ring_free (prefs->skinparams);
+  prefs->skinparams = NULL;
 
   if (prefs->bsepspec)
     {
@@ -141,6 +154,8 @@ bst_preferences_update (BstPreferences *prefs)
   SfiRing *ring;
   for (ring = prefs->bstparams; ring; ring = sfi_ring_walk (ring, prefs->bstparams))
     gxk_param_update (ring->data);
+  for (ring = prefs->skinparams; ring; ring = sfi_ring_walk (ring, prefs->skinparams))
+    gxk_param_update (ring->data);
   for (ring = prefs->bseparams; ring; ring = sfi_ring_walk (ring, prefs->bseparams))
     gxk_param_update (ring->data);
 }
@@ -159,6 +174,13 @@ bst_preferences_revert (BstPreferences *prefs)
   sfi_rec_unref (crec);
   bst_preferences_update (prefs);
 
+  rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
+  crec = sfi_rec_copy_deep (rec);
+  sfi_rec_unref (rec);
+  sfi_rec_swap_fields (prefs->skinrec, crec);
+  sfi_rec_unref (crec);
+  bst_preferences_update (prefs);
+
   bse_proxy_get (BSE_SERVER, "bse-preferences", &rec, NULL);
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_swap_fields (prefs->bserec, crec);
@@ -172,6 +194,7 @@ bst_preferences_apply (BstPreferences *prefs)
   g_return_if_fail (BST_IS_PREFERENCES (prefs));
 
   bst_gconfig_apply (prefs->bstrec);
+  bst_skin_config_apply (prefs->skinrec, NULL);
   bse_proxy_set (BSE_SERVER, "bse-preferences", prefs->bserec, NULL);
   bst_preferences_revert (prefs);
 }
@@ -186,6 +209,11 @@ bst_preferences_default_revert (BstPreferences *prefs)
   rec = sfi_rec_new ();
   sfi_rec_validate (rec, sfi_pspec_get_rec_fields (bst_gconfig_pspec ()));
   sfi_rec_swap_fields (prefs->bstrec, rec);
+  sfi_rec_unref (rec);
+
+  rec = sfi_rec_new ();
+  sfi_rec_validate (rec, sfi_pspec_get_rec_fields (bst_skin_config_pspec ()));
+  sfi_rec_swap_fields (prefs->skinrec, rec);
   sfi_rec_unref (rec);
 
   rec = sfi_rec_new ();
@@ -204,11 +232,18 @@ bst_preferences_save (BstPreferences *prefs)
 
   g_return_if_fail (BST_IS_PREFERENCES (prefs));
 
-  file_name = BST_STRDUP_RC_FILE ();
   bse_server_save_preferences (BSE_SERVER);
+
+  file_name = BST_STRDUP_RC_FILE ();
   error = bst_rc_dump (file_name);
   if (error)
     g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+  g_free (file_name);
+
+  file_name = g_strdup (bst_skin_config_rcfile ());
+  error = bst_skin_dump (file_name);
+  if (error)
+    g_warning ("failed to save skinrc \"%s\": %s", file_name, bse_error_blurb (error));
   g_free (file_name);
 }
 

@@ -21,6 +21,7 @@
 #include "bstsplash.h"
 #include "bstxkb.h"
 #include "bstgconfig.h"
+#include "bstskinconfig.h"
 #include "bstusermessage.h"
 #include "bstparam.h"
 #include "bstpreferences.h"
@@ -81,6 +82,8 @@ main (int   argc,
   SfiRec *bseconfig;
   gchar *string;
   GSource *source;
+  gboolean parse_rc_file = TRUE;
+  gboolean save_rc_file = FALSE;
   guint i;
 
   /* initialize i18n */
@@ -140,16 +143,19 @@ main (int   argc,
   _bst_init_utils ();
   _bst_init_params ();
   _bst_gconfig_init ();
+  _bst_skin_config_init ();
   bst_splash_update_item (beast_splash, _("Language"));
 
   /* parse rc file
    */
-  if (TRUE)
+  if (parse_rc_file)
     {
       gchar *file_name = BST_STRDUP_RC_FILE ();
       bst_splash_update_item (beast_splash, _("RC File"));
       bst_rc_parse (file_name);
       g_free (file_name);
+      bst_splash_update_item (beast_splash, _("Skin RC"));
+      bst_skin_parse (bst_skin_config_rcfile ());
     }
 
   /* show splash images
@@ -327,6 +333,7 @@ main (int   argc,
    */
   if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
     {
+      save_rc_file = TRUE;
       bst_app_trigger_action (app, BST_ACTION_HELP_RELEASE_NOTES);
       bst_gconfig_set_rc_version (BST_VERSION);
     }
@@ -362,13 +369,13 @@ main (int   argc,
     }
   GDK_THREADS_ENTER ();
   
-  /* save rc file
+  /* save config files
    */
-  if (TRUE)
+  bse_server_save_preferences (BSE_SERVER);
+  if (save_rc_file)
     {
       gchar *file_name = BST_STRDUP_RC_FILE ();
       BseErrorType error = bst_rc_dump (file_name);
-      bse_server_save_preferences (BSE_SERVER);
       if (error)
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bstauxdialogs.h"
+#include <gdk/gdkkeysyms.h>
 
 
 /* --- list popup dialog --- */
@@ -34,9 +35,9 @@ tree_view_remove_selection (GtkTreeView *tview)
 }
 
 static void
-list_dialog_commit_list (GtkWidget *dialog)
+widget_flag_data_valid (GtkWidget *dialog)
 {
-  g_object_set_long (dialog, "list-valid", 1);
+  g_object_set_long (dialog, "data-valid", 1);
 }
 
 static void
@@ -76,7 +77,7 @@ ensure_list_popups (void)
       gxk_dialog_set_default (GXK_DIALOG (dialog), bc);
       g_object_set_data (dialog, "tree-view", tview);
       g_object_connect (br, "swapped_signal::clicked", tree_view_remove_selection, tview, NULL);
-      g_object_connect (bc, "swapped_signal::clicked", list_dialog_commit_list, dialog, NULL);
+      g_object_connect (bc, "swapped_signal::clicked", widget_flag_data_valid, dialog, NULL);
       g_object_connect (bc, "swapped_signal_after::clicked", gxk_toplevel_delete, bc, NULL);
       tsel = gtk_tree_view_get_selection (tview);
       gtk_tree_selection_set_mode (tsel, GTK_SELECTION_BROWSE);
@@ -87,16 +88,16 @@ ensure_list_popups (void)
 }
 
 typedef struct {
-  BstListPopupHandler handler;
-  gpointer            data;
-  GDestroyNotify      destroy;
-} BstListPopupData;
+  GCallback      handler;
+  gpointer       data;
+  GDestroyNotify destroy;
+} CustomPopupData;
 
 static void
-bst_list_popup_hidden (GtkWidget        *dialog,
-                       BstListPopupData *data)
+bst_list_popup_hidden (GtkWidget       *dialog,
+                       CustomPopupData *data)
 {
-  glong valid = g_object_get_long (dialog, "list-valid");
+  glong valid = g_object_get_long (dialog, "data-valid");
   if (valid && data->handler)
     {
       GtkTreeView *tview = g_object_get_data (dialog, "tree-view");
@@ -113,7 +114,7 @@ bst_list_popup_hidden (GtkWidget        *dialog,
             gtk_tree_model_get (model, &iter, 0, &(strings[p]), -1);
           }
         while (gtk_tree_model_iter_next (model, &iter));
-      data->handler (dialog, strings, data->data);
+      ((BstListPopupHandler) data->handler) (dialog, strings, data->data);
       g_strfreev (strings);
     }
   if (data->destroy)
@@ -138,15 +139,15 @@ bst_list_popup_new (const gchar              *title,
       GtkTreeView *tview = g_object_get_data (dialog, "tree-view");
       GtkTreeModel *model = gtk_tree_view_get_model (tview);
       GtkListStore *lstore = GTK_LIST_STORE (model);
-      BstListPopupData *data = g_new0 (BstListPopupData, 1);
+      CustomPopupData *data = g_new0 (CustomPopupData, 1);
       gtk_list_store_clear (lstore);
-      g_object_set_long (dialog, "list-valid", 0);
+      g_object_set_long (dialog, "data-valid", 0);
       if (transient_parent)
         transient_parent = gtk_widget_get_ancestor (transient_parent, GTK_TYPE_WINDOW);
       if (transient_parent)
         gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (transient_parent));
       gxk_dialog_set_title (GXK_DIALOG (dialog), title);
-      data->handler = handler;
+      data->handler = (GCallback) handler;
       data->data = handler_data;
       data->destroy = destroy;
       g_object_connect (dialog, "signal_after::hide", bst_list_popup_hidden, data, NULL);
@@ -166,4 +167,133 @@ bst_list_popup_add (GtkWidget      *dialog,
   gtk_list_store_set (lstore, &iter,
                       0, string,
                       -1);
+}
+
+
+/* --- enable activates-default --- */
+static void     colorsel_enable_activates_default (GtkWidget *widget);
+
+static gboolean
+idle_activate_toplevel (gpointer data)
+{
+  GtkWidget *widget = data;
+  GDK_THREADS_ENTER ();
+  gxk_toplevel_activate_default (widget);
+  g_object_unref (widget);
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+static gboolean
+colorsel_drawing_area_key_event (GtkWidget *widget,
+                                 GdkEvent  *event)
+{
+  if (event->type == GDK_KEY_PRESS &&
+      (event->key.keyval == GDK_Return ||
+       event->key.keyval == GDK_KP_Enter))
+    g_idle_add (idle_activate_toplevel, g_object_ref (widget));
+  return FALSE;
+}
+
+static void
+recurse_set_activates_default (GtkWidget *child,
+                               gpointer   user_data)
+{
+  colorsel_enable_activates_default (child);
+}
+
+static void
+colorsel_enable_activates_default (GtkWidget *widget)
+{
+  if (GTK_IS_DRAWING_AREA (widget))
+    {
+      // gtk_widget_add_events (widget, GDK_KEY_PRESS_MASK);
+      g_signal_connect (widget, "event", G_CALLBACK (colorsel_drawing_area_key_event), NULL);
+    }
+  if (GTK_IS_ENTRY (widget))
+    g_object_set (widget, "activates-default", TRUE, NULL);
+  if (GTK_IS_CONTAINER (widget))
+    gtk_container_forall (GTK_CONTAINER (widget), recurse_set_activates_default, NULL);
+}
+
+
+/* --- color popup dialog --- */
+static GSList *color_popups = NULL;
+static void
+ensure_color_popups (void)
+{
+  if (!color_popups)
+    {
+      GtkWidget *widget = gtk_color_selection_new ();
+      GtkColorSelection *csel = GTK_COLOR_SELECTION (widget);
+      GtkWidget *bx, *bc;
+      GtkWidget *content = bst_vpack ("1:*",    csel,
+                                      "0:",     g_object_new (GTK_TYPE_HSEPARATOR, NULL),
+                                      "1:",     bst_hpack ("0:H",       bx = bst_stock_dbutton (BST_STOCK_CANCEL),
+                                                           "0:H",       bc = bst_stock_dbutton (BST_STOCK_CLOSE),
+                                                           NULL),
+                                      NULL);
+      GtkWidget *dialog = gxk_dialog_new (NULL, NULL,
+                                          GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_MODAL,
+                                          NULL, content);
+      g_object_set_data (dialog, "color-selection", csel);
+      colorsel_enable_activates_default (widget);
+      gtk_widget_show (widget);
+      gxk_dialog_set_default (GXK_DIALOG (dialog), bc);
+      g_object_connect (bc, "swapped_signal::clicked", widget_flag_data_valid, dialog, NULL);
+      g_object_connect (bc, "swapped_signal_after::clicked", gxk_toplevel_delete, bc, NULL);
+      g_object_connect (bx, "swapped_signal_after::clicked", gxk_toplevel_delete, bc, NULL);
+      gtk_color_selection_set_has_opacity_control (csel, FALSE);
+      gtk_color_selection_set_has_palette (csel, TRUE);
+      color_popups = g_slist_prepend (color_popups, dialog);
+    }
+}
+
+static void
+color_popup_hidden (GtkWidget       *dialog,
+                    CustomPopupData *data)
+{
+  glong valid = g_object_get_long (dialog, "data-valid");
+  if (valid && data->handler)
+    {
+      GtkColorSelection *csel = g_object_get_data (dialog, "color-selection");
+      GdkColor color;
+      gtk_color_selection_get_current_color (csel, &color);
+      ((BstColorPopupHandler) data->handler) (dialog, &color, data->data);
+    }
+  if (data->destroy)
+    data->destroy (data->data);
+  g_object_disconnect (dialog, "any_signal", color_popup_hidden, data, NULL);
+  g_free (data);
+  color_popups = g_slist_prepend (color_popups, dialog);
+}
+
+GtkWidget*
+bst_color_popup_new (const gchar            *title,
+                     GtkWidget              *transient_parent,
+                     GdkColor                color,
+                     BstColorPopupHandler    handler,
+                     gpointer                handler_data,
+                     GDestroyNotify          destroy)
+{
+  GtkWidget *dialog;
+  ensure_color_popups ();
+  dialog = g_slist_pop_head (&color_popups);
+  if (dialog)
+    {
+      GtkColorSelection *csel = g_object_get_data (dialog, "color-selection");
+      CustomPopupData *data = g_new0 (CustomPopupData, 1);
+      g_object_set_long (dialog, "data-valid", 0);
+      gtk_color_selection_set_current_color (csel, &color);
+      if (transient_parent)
+        transient_parent = gtk_widget_get_ancestor (transient_parent, GTK_TYPE_WINDOW);
+      if (transient_parent)
+        gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (transient_parent));
+      gxk_dialog_set_title (GXK_DIALOG (dialog), title);
+      data->handler = (GCallback) handler;
+      data->data = handler_data;
+      data->destroy = destroy;
+      g_object_connect (dialog, "signal_after::hide", color_popup_hidden, data, NULL);
+    }
+  return dialog;
 }

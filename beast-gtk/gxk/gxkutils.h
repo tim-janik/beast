@@ -144,12 +144,15 @@ gboolean gxk_widget_viewable		(GtkWidget		*widget);
 
 /* --- Gdk convenience --- */
 #define	GXK_DEFAULT_CURSOR	GDK_LAST_CURSOR	/* revert to default (inherited) cursor */
-void	gxk_window_set_cursor_type	(GdkWindow		*window,
+void	 gxk_window_set_cursor_type	(GdkWindow		*window,
 					 GdkCursorType		 cursor);
-void	gxk_window_process_next		(GdkWindow		*window,
+void	 gxk_window_process_next	(GdkWindow		*window,
 					 gboolean		 update_children);
-void	gxk_color_alloc			(GdkColormap		*colormap,
+void	 gxk_color_alloc		(GdkColormap		*colormap,
 					 GdkColor		*color);
+GdkColor gdk_color_from_rgb             (guint                   rgb_value);
+GdkColor gdk_color_from_argb            (guint                   rgb_value);
+GdkColor gdk_color_from_rgba            (guint                   rgb_value);
 
 
 /* --- Gtk convenience --- */

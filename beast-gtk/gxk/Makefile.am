@@ -22,7 +22,7 @@ gxk_headers = $(strip \
 	gxkrackeditor.h	gxkutils.h		gxkpolygon.h	gxkcellrendererpopup.h \
 	gxkgadget.h	gxkaction.h		gxkglobals.h	gxkgadgetfactory.h \
 	glewidgets.h	gxkracktable.h		gxkrackitem.h	gxksimplelabel.h \
-	gxkparam.h	gxkscrollcanvas.h			gxklogadjustment.h \
+	gxkparam.h	gxkscrollcanvas.h	gxkimagecache.h	gxklogadjustment.h \
 	gxk.h \
 )
 gxk_c_sources = $(strip \
@@ -31,7 +31,7 @@ gxk_c_sources = $(strip \
 	gxkrackeditor.c	gxkutils.c		gxkpolygon.c	gxkcellrendererpopup.c \
 	gxkgadget.c	gxkaction.c		gxkglobals.c	gxkgadgetfactory.c \
 	glewidgets.c	gxkracktable.c		gxkrackitem.c	gxksimplelabel.c \
-	gxkparam.c	gxkscrollcanvas.c			gxklogadjustment.c \
+	gxkparam.c	gxkscrollcanvas.c	gxkimagecache.c	gxklogadjustment.c \
 )
 gxk_extra_sources = $(strip \
 	gxkparam-entry.c	gxkparam-label.c	\

@@ -5,6 +5,7 @@
 
 SRC_IMAGES = @STRIP_BEGIN@	\
 	aguitar.xcf		\
+	browse-image.xcf	\
 	cdrom.xcf		\
 	clipboard.xcf		\
 	editor.xcf		\
@@ -37,6 +38,8 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 
 STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_NOTE_ICON			$(srcdir)/binote.png		\
+	STOCK_BROWSE_IMAGE		$(srcdir)/browse-image.png	\
+	STOCK_COLOR_SELECTOR		$(srcdir)/colorselector.png	\
 	STOCK_EDIT_TOOL			$(srcdir)/editor.png		\
 	STOCK_EVENT_CONTROL		$(srcdir)/event-control.png	\
 	STOCK_FOLDER			$(srcdir)/folder.png		\

@@ -36,7 +36,7 @@ _bst_gconfig_init (void)
   g_return_if_fail (bst_global_config == NULL);
 
   /* global config record description */
-  pspec_global_config = sfi_pspec_rec ("beast-preferences", NULL, NULL,
+  pspec_global_config = sfi_pspec_rec ("beast-preferences-v1", NULL, NULL,
 				       bst_gconfig_fields, SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_global_config);
   g_param_spec_sink (pspec_global_config);
@@ -80,17 +80,6 @@ set_gconfig (BstGConfig *gconfig)
   BstGConfig *oldconfig = bst_global_config;
   bst_global_config = gconfig;
   bst_gconfig_free (oldconfig);
-  if (0)
-    {
-      SfiRec *prec = bst_gconfig_to_rec (bst_global_config);
-      GValue *v = sfi_value_rec (prec);
-      GString *gstring = g_string_new (NULL);
-      sfi_value_store_param (v, gstring, pspec_global_config, 2);
-      g_print ("CONFIG:\n%s\n", gstring->str);
-      g_string_free (gstring, TRUE);
-      sfi_value_free (v);
-      sfi_rec_unref (prec);
-    }
 }
 
 void
@@ -169,6 +158,7 @@ bst_rc_dump (const gchar *file_name)
 
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
 
+  sfi_make_dirname_path (file_name);
   fd = open (file_name,
 	     O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
 	     0666);
@@ -182,9 +172,9 @@ bst_rc_dump (const gchar *file_name)
 
   /* store BstGConfig */
   sfi_wstore_puts (wstore, "\n; BstGConfig Dump\n");
-  rec = bst_gconfig_to_rec (bst_global_config);
+  rec = bst_gconfig_to_rec (bst_gconfig_get_global ());
   value = sfi_value_rec (rec);
-  sfi_wstore_put_param (wstore, value, bst_gconfig_pspec ());
+  sfi_wstore_put_param (wstore, value, bst_gconfig_pspec());
   sfi_value_free (value);
   sfi_rec_unref (rec);
   sfi_wstore_puts (wstore, "\n");
@@ -198,7 +188,7 @@ bst_rc_dump (const gchar *file_name)
   sfi_wstore_puts (wstore, ")\n");
   sfi_wstore_pop_level (wstore);
 
-  /* flush stuff to rc file */
+  /* flush buffers to file */
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
@@ -212,7 +202,7 @@ rc_file_try_statement (gpointer   context_data,
 		       gpointer   user_data)
 {
   g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
-  if (strcmp ("beast-preferences", scanner->next_value.v_identifier) == 0)
+  if (strcmp (bst_gconfig_pspec ()->name, scanner->next_value.v_identifier) == 0)
     {
       GValue *value = sfi_value_rec (NULL);
       GTokenType token;

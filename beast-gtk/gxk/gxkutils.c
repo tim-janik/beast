@@ -388,6 +388,45 @@ gxk_color_alloc (GdkColormap *colormap,
     g_message ("failed to allocate color: { %d, %d, %d }", color->red, color->green, color->blue);
 }
 
+GdkColor
+gdk_color_from_rgb (guint rgb_value)
+{
+  GdkColor c = { 0, };
+  c.red = (rgb_value >> 16) & 0xff;
+  c.green = (rgb_value >> 8) & 0xff;
+  c.blue = rgb_value & 0xff;
+  c.red *= 0x0101;
+  c.green *= 0x0101;
+  c.blue *= 0x0101;
+  return c;
+}
+
+GdkColor
+gdk_color_from_argb (guint rgb_value)
+{
+  GdkColor c = { 0, };
+  c.red = (rgb_value >> 16) & 0xff;
+  c.green = (rgb_value >> 8) & 0xff;
+  c.blue = rgb_value & 0xff;
+  c.red *= 0x0101;
+  c.green *= 0x0101;
+  c.blue *= 0x0101;
+  return c;
+}
+
+GdkColor
+gdk_color_from_rgba (guint rgb_value)
+{
+  GdkColor c = { 0, };
+  c.red = (rgb_value >> 24) & 0xff;
+  c.green = (rgb_value >> 16) & 0xff;
+  c.blue = (rgb_value >> 8) & 0xff;
+  c.red *= 0x0101;
+  c.green *= 0x0101;
+  c.blue *= 0x0101;
+  return c;
+}
+
 /**
  * gxk_widget_make_insensitive
  * @widget: a valid GtkWidget

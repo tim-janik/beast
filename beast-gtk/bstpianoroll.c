@@ -17,6 +17,7 @@
  */
 #include "bstpianoroll.h"
 #include "bstasciipixbuf.h"
+#include "bstskinconfig.h"
 #include <string.h>
 
 
@@ -35,6 +36,11 @@
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
 #define COLOR_GC(self, i)       (GXK_SCROLL_CANVAS (self)->color_gc[i])
+#define COLOR_GC_HGRID(self)    (COLOR_GC (self, INDEX_HGRID))
+#define COLOR_GC_VGRID(self)    (COLOR_GC (self, INDEX_VGRID))
+#define COLOR_GC_HBAR(self)     (COLOR_GC (self, INDEX_HBAR))
+#define COLOR_GC_VBAR(self)     (COLOR_GC (self, INDEX_VBAR))
+#define COLOR_GC_MBAR(self)     (COLOR_GC (self, INDEX_MBAR))
 #define CANVAS(self)            (GXK_SCROLL_CANVAS (self)->canvas)
 #define HPANEL(self)            (GXK_SCROLL_CANVAS (self)->top_panel)
 #define VPANEL(self)            (GXK_SCROLL_CANVAS (self)->left_panel)
@@ -75,6 +81,56 @@ static guint	signal_piano_clicked = 0;
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstPianoRoll, bst_piano_roll, GXK_TYPE_SCROLL_CANVAS);
+
+static void
+piano_roll_class_setup_skin (BstPianoRollClass *class)
+{
+  static GdkColor colors[] = {
+    /* C: */
+    { 0, 0x8080, 0x0000, 0x0000 },  /* dark red */
+    { 0, 0xa000, 0x0000, 0xa000 },  /* dark magenta */
+    /* D: */
+    { 0, 0x0000, 0x8000, 0x8000 },  /* dark turquoise */
+    { 0, 0x0000, 0xff00, 0xff00 },  /* light turquoise */
+    /* E: */
+    { 0, 0xff00, 0xff00, 0x0000 },  /* bright yellow */
+    /* F: */
+    { 0, 0xff00, 0x4000, 0x4000 },  /* light red */
+    { 0, 0xff00, 0x8000, 0x0000 },  /* bright orange */
+    /* G: */
+    { 0, 0xb000, 0x0000, 0x6000 },  /* dark pink */
+    { 0, 0xff00, 0x0000, 0x8000 },  /* light pink */
+    /* A: */
+    { 0, 0x0000, 0x7000, 0x0000 },  /* dark green */
+    { 0, 0x4000, 0xff00, 0x4000 },  /* bright green */
+    /* B: */
+    { 0, 0x4000, 0x4000, 0xff00 },  /* light blue */
+    /* drawing colors, index: 12+ */
+    { 0, 0x9e00, 0x9a00, 0x9100 },  /* hgrid */
+    { 0, 0x9e00, 0x9a00, 0x9100 },  /* vgrid */
+    { 0, 0x8000, 0x0000, 0x0000 },  /* hbar */
+    { 0, 0x9e00, 0x9a00, 0x9100 },  /* vbar */
+    { 0, 0xff00, 0x8000, 0x0000 },  /* mbar */
+#define INDEX_HGRID     12
+#define INDEX_VGRID     13
+#define INDEX_HBAR      14
+#define INDEX_VBAR      15
+#define INDEX_MBAR      16
+  };
+  GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
+  scroll_canvas_class->n_colors = G_N_ELEMENTS (colors);
+  scroll_canvas_class->colors = colors;
+  colors[INDEX_HGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hgrid));
+  colors[INDEX_VGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_vgrid));
+  colors[INDEX_HBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hbar));
+  colors[INDEX_VBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_vbar));
+  colors[INDEX_MBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_mbar));
+  g_free (scroll_canvas_class->image_file_name);
+  scroll_canvas_class->image_file_name = BST_SKIN_CONFIG_STRDUP_PATH (piano_image);
+  scroll_canvas_class->image_tint = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_color));
+  scroll_canvas_class->image_saturation = BST_SKIN_CONFIG (piano_shade) * 0.01;
+  gxk_scroll_canvas_class_skin_changed (scroll_canvas_class);
+}
 
 static void
 bst_piano_roll_init (BstPianoRoll *self)
@@ -566,9 +622,10 @@ bst_piano_roll_draw_canvas (GxkScrollCanvas *scc,
 {
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
   GdkGC *light_gc, *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  gint i, dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
+  gint pass, i, dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
   BsePartNoteSeq *pseq;
-  
+  GXK_SCROLL_CANVAS_CLASS (bst_piano_roll_parent_class)->draw_canvas (scc, drawable, area);
+
   /* draw selection */
   if (self->selection_duration)
     {
@@ -582,75 +639,78 @@ bst_piano_roll_draw_canvas (GxkScrollCanvas *scc,
       gdk_draw_rectangle (drawable, GTK_WIDGET (self)->style->bg_gc[GTK_STATE_SELECTED], TRUE,
 			  x1, y1, MAX (x2 - x1, 0), MAX (y2 - y1, 0));
     }
-  
-  /* draw horizontal grid lines */
-  for (i = area->y; i < area->y + area->height; i++)
+
+  /* we do multiple passes to draw h/v grid lines for them to properly ovrlay */
+  for (pass = 1; pass <= 3; pass++)
     {
-      NoteInfo info;
-      
-      coord_to_note (self, i, &info);
-      if (info.wstate != DRAW_START)
-	continue;
-      
-      if (info.semitone == 0)	/* C */
-	{
-          GdkGC *draw_gc = COLOR_GC (self, 0 /* C */);
-	  gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  gdk_draw_line (drawable, draw_gc, area->x, i, area->x + area->width - 1, i);
-	}
-      else if (info.semitone == 5) /* F */
-	{
-          GdkGC *draw_gc = COLOR_GC (self, 6 /* F */);
-	  guint8 dash[3] = { 2, 2, 0 };
-	  
-	  gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  dlen = dash[0] + dash[1];
-	  gdk_gc_set_dashes (draw_gc, (X_OFFSET (self) + area->x + 1) % dlen, dash, 2);
-	  gdk_draw_line (drawable, draw_gc, area->x, i, area->x + area->width - 1, i);
-	  gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	}
-      else
-	{
-	  guint8 dash[3] = { 1, 1, 0 };
-	  
-	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  dlen = dash[0] + dash[1];
-	  gdk_gc_set_dashes (dark_gc, (X_OFFSET (self) + area->x + 1) % dlen, dash, 2);
-	  gdk_draw_line (drawable, dark_gc, area->x, i, area->x + area->width - 1, i);
-	  gdk_gc_set_line_attributes (dark_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	}
+      /* draw vertical grid lines */
+      for (i = area->x; i < area->x + area->width; i++)
+        {
+          if (pass == 3 && coord_check_crossing (self, i, CROSSING_TACT))
+            {
+              GdkGC *draw_gc = COLOR_GC_VBAR (self);
+              gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+              gdk_draw_line (drawable, draw_gc, i, area->y, i, area->y + area->height - 1);
+            }
+          else if (pass == 1 && self->draw_qn_grid && coord_check_crossing (self, i, CROSSING_QNOTE))
+            {
+              GdkGC *draw_gc = COLOR_GC_VGRID (self);
+              guint8 dash[3] = { 2, 2, 0 };
+              gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
+              dlen = dash[0] + dash[1];
+              gdk_gc_set_dashes (draw_gc, (Y_OFFSET (self) + area->y + 1) % dlen, dash, 2);
+              gdk_draw_line (drawable, draw_gc, i, area->y, i, area->y + area->height - 1);
+              gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+            }
+          else if (pass == 1 && self->draw_qqn_grid && coord_check_crossing (self, i, CROSSING_QNOTE_Q))
+            {
+              GdkGC *draw_gc = COLOR_GC_VGRID (self);
+              guint8 dash[3] = { 1, 1, 0 };
+              gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
+              dlen = dash[0] + dash[1];
+              gdk_gc_set_dashes (draw_gc, (Y_OFFSET (self) + area->y + 1) % dlen, dash, 2);
+              gdk_draw_line (drawable, draw_gc, i, area->y, i, area->y + area->height - 1);
+              gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+            }
+        }
+      /* draw horizontal grid lines */
+      for (i = area->y; i < area->y + area->height; i++)
+        {
+          NoteInfo info;
+          coord_to_note (self, i, &info);
+          if (info.wstate != DRAW_START)
+            continue;
+          if (pass == 3 && info.semitone == 0)	/* C */
+            {
+              GdkGC *draw_gc = COLOR_GC_HBAR (self);
+              gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+              gdk_draw_line (drawable, draw_gc, area->x, i, area->x + area->width - 1, i);
+            }
+          else if (pass == 2 && info.semitone == 5) /* F */
+            {
+              GdkGC *draw_gc = COLOR_GC_MBAR (self);
+              guint8 dash[3] = { 2, 2, 0 };
+              
+              gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
+              dlen = dash[0] + dash[1];
+              gdk_gc_set_dashes (draw_gc, (X_OFFSET (self) + area->x + 1) % dlen, dash, 2);
+              gdk_draw_line (drawable, draw_gc, area->x, i, area->x + area->width - 1, i);
+              gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+            }
+          else if (pass == 1)
+            {
+              GdkGC *draw_gc = COLOR_GC_HGRID (self);
+              guint8 dash[3] = { 1, 1, 0 };
+              
+              gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
+              dlen = dash[0] + dash[1];
+              gdk_gc_set_dashes (draw_gc, (X_OFFSET (self) + area->x + 1) % dlen, dash, 2);
+              gdk_draw_line (drawable, draw_gc, area->x, i, area->x + area->width - 1, i);
+              gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+            }
+        }
     }
-  
-  /* draw vertical grid lines */
-  for (i = area->x; i < area->x + area->width; i++)
-    {
-      if (coord_check_crossing (self, i, CROSSING_TACT))
-	{
-	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  gdk_draw_line (drawable, dark_gc, i, area->y, i, area->y + area->height - 1);
-	}
-      else if (self->draw_qn_grid && coord_check_crossing (self, i, CROSSING_QNOTE))
-	{
-	  guint8 dash[3] = { 2, 2, 0 };
-          
-	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  dlen = dash[0] + dash[1];
-	  gdk_gc_set_dashes (dark_gc, (Y_OFFSET (self) + area->y + 1) % dlen, dash, 2);
-	  gdk_draw_line (drawable, dark_gc, i, area->y, i, area->y + area->height - 1);
-	  gdk_gc_set_line_attributes (dark_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	}
-      else if (self->draw_qqn_grid && coord_check_crossing (self, i, CROSSING_QNOTE_Q))
-	{
-	  guint8 dash[3] = { 1, 1, 0 };
-          
-	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  dlen = dash[0] + dash[1];
-	  gdk_gc_set_dashes (dark_gc, (Y_OFFSET (self) + area->y + 1) % dlen, dash, 2);
-	  gdk_draw_line (drawable, dark_gc, i, area->y, i, area->y + area->height - 1);
-	  gdk_gc_set_line_attributes (dark_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	}
-    }
-  
+
   /* draw notes */
   light_gc = STYLE (self)->light_gc[GTK_STATE_NORMAL];
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
@@ -1174,37 +1234,15 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
   widget_class->focus_in_event = bst_piano_roll_focus_in;
   widget_class->focus_out_event = bst_piano_roll_focus_out;
   
-  {
-    static const GdkColor colors[12] = {
-      /* C: */
-      { 0, 0x8080, 0x0000, 0x0000 },  /* dark red */
-      { 0, 0xa000, 0x0000, 0xa000 },  /* dark magenta */
-      /* D: */
-      { 0, 0x0000, 0x8000, 0x8000 },  /* dark turquoise */
-      { 0, 0x0000, 0xff00, 0xff00 },  /* light turquoise */
-      /* E: */
-      { 0, 0xff00, 0xff00, 0x0000 },  /* bright yellow */
-      /* F: */
-      { 0, 0xff00, 0x4000, 0x4000 },  /* light red */
-      { 0, 0xff00, 0x8000, 0x0000 },  /* bright orange */
-      /* G: */
-      { 0, 0xb000, 0x0000, 0x6000 },  /* dark pink */
-      { 0, 0xff00, 0x0000, 0x8000 },  /* light pink */
-      /* A: */
-      { 0, 0x0000, 0x7000, 0x0000 },  /* dark green */
-      { 0, 0x4000, 0xff00, 0x4000 },  /* bright green */
-      /* B: */
-      { 0, 0x4000, 0x4000, 0xff00 },  /* light blue */
-    };
-    scroll_canvas_class->n_colors = G_N_ELEMENTS (colors);
-    scroll_canvas_class->colors = colors;
-  }
   scroll_canvas_class->get_layout = piano_roll_get_layout;
   scroll_canvas_class->draw_canvas = bst_piano_roll_draw_canvas;
   scroll_canvas_class->draw_top_panel = bst_piano_roll_draw_hpanel;
   scroll_canvas_class->draw_left_panel = bst_piano_roll_draw_vpanel;
   scroll_canvas_class->update_adjustments = piano_roll_update_adjustments;
   scroll_canvas_class->handle_drag = piano_roll_handle_drag;
+
+  bst_skin_config_add_notify ((BstSkinConfigNotify) piano_roll_class_setup_skin, class);
+  piano_roll_class_setup_skin (class);
   
   class->canvas_clicked = NULL;
   

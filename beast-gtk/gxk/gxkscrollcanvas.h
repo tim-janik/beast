@@ -104,6 +104,7 @@ struct _GxkScrollCanvas
   GtkContainer          parent_instance;
   GxkScrollCanvasLayout layout;
   GdkWindow            *canvas, *top_panel, *left_panel, *right_panel, *bottom_panel;
+  GdkPixmap            *canvas_pixmap;
   GdkGC               **color_gc;
   /* scroll offset */
   gint                  x_offset, y_offset;
@@ -113,14 +114,21 @@ struct _GxkScrollCanvas
 typedef struct
 {
   GtkContainerClass     parent_class;
+  /* widget config */
   GdkEventMask          canvas_events, top_panel_events, left_panel_events, right_panel_events, bottom_panel_events;
   guint                 double_buffer_window : 1, double_buffer_canvas : 1;
   guint                 double_buffer_top_panel : 1, double_buffer_left_panel : 1;
   guint                 double_buffer_right_panel : 1, double_buffer_bottom_panel : 1;
   guint                 auto_clear : 1; /* automatically clear non-double-buffered areas */
   guint                 grab_focus : 1; /* automatically grab focus on button-press */
-  guint                 n_colors;
+  /* skin config */
+  guint                 n_colors;       /* must be const across skin changes */
   const GdkColor       *colors;
+  gchar                *image_file_name;
+  GdkColor              image_tint;
+  gdouble               image_saturation;
+  GSList               *realized_widgets;
+  /* virtual methods */
   void          (*get_layout)                   (GxkScrollCanvas        *self,
                                                  GxkScrollCanvasLayout  *layout);
   void          (*set_scroll_adjustments)       (GxkScrollCanvas        *self,
@@ -177,7 +185,7 @@ void     gxk_scroll_canvas_set_right_panel_cursor  (GxkScrollCanvas *self,
                                                     GdkCursorType    cursor);
 void     gxk_scroll_canvas_set_bottom_panel_cursor (GxkScrollCanvas *self,
                                                     GdkCursorType    cursor);
-
+void     gxk_scroll_canvas_class_skin_changed      (GxkScrollCanvasClass*);
 
 G_END_DECLS
 
