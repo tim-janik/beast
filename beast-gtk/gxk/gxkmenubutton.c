@@ -50,6 +50,14 @@ menu_button_save_snapshot (GxkMenuButton *self)
   GdkGCValues gc_values;
   GdkGC *gc;
   gint width, height;
+  if (self->button)
+    {
+      GTK_BUTTON (self->button)->in_button = FALSE;
+      gtk_button_leave (GTK_BUTTON (self->button));
+      gtk_button_set_relief (GTK_BUTTON (self->button), GTK_RELIEF_NORMAL);
+    }
+  if (!self->cslot || !GTK_WIDGET_DRAWABLE (self))
+    return;
   gdk_window_get_user_data (self->cslot->parent->window, (void*) &widget);
   gdk_drawable_get_size (widget->window, &width, &height);
   if (!self->bwindow)
@@ -82,7 +90,7 @@ menu_button_save_snapshot (GxkMenuButton *self)
 }
 
 static void
-menu_button_destroy_backing (GxkMenuButton *self)
+menu_button_restore_backing (GxkMenuButton *self)
 {
   if (self->bwindow)
     {
@@ -90,6 +98,8 @@ menu_button_destroy_backing (GxkMenuButton *self)
       gdk_window_destroy (self->bwindow);
       self->bwindow = NULL;
     }
+  if (self->button)
+    gtk_button_set_relief (GTK_BUTTON (self->button), self->relief);
 }
 
 static void
@@ -115,9 +125,8 @@ menu_button_popup (GxkMenuButton *self,
   gint x, y;
   menu_button_grab_focus (self);
   /* handle expose events and snapshot background */
-  menu_button_destroy_backing (self);
-  if (self->cslot && GTK_WIDGET_DRAWABLE (self))
-    menu_button_save_snapshot (self);
+  menu_button_restore_backing (self);
+  menu_button_save_snapshot (self);
   /* fixate sizes across removing child */
   if (self->islot)
     g_object_set (self->islot,
@@ -243,7 +252,7 @@ void
 gxk_menu_button_update (GxkMenuButton *self)
 {
   GtkWidget *old_menu_item = self->menu_item;
-  menu_button_destroy_backing (self);
+  menu_button_restore_backing (self);
   if (self->menu)
     {
       menu_button_remove_contents (self);
@@ -299,7 +308,7 @@ menu_button_detacher (GtkWidget *widget,
                       GtkMenu   *menu)
 {
   GxkMenuButton *self = GXK_MENU_BUTTON (widget);
-  menu_button_destroy_backing (self);
+  menu_button_restore_backing (self);
   menu_button_remove_contents (self);
   g_signal_handlers_disconnect_by_func (self->menu, gxk_menu_button_update, self);
   g_signal_handlers_disconnect_by_func (self->menu, menu_button_max_size, self);
@@ -440,7 +449,7 @@ menu_button_layout (GxkMenuButton *self)
   GxkMenuButtonMode mode = self->mode;
   GtkTable *table = g_object_new (GTK_TYPE_TABLE, NULL);
   /* remove old contents */
-  menu_button_destroy_backing (self);
+  menu_button_restore_backing (self);
   menu_button_remove_contents (self);
   gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
   /* setup button & focus frame */
