@@ -367,7 +367,7 @@ dav_syn_drum_update_modules (DavSynDrum *self,
   self->params.res = exp (-GSL_LN2 / (self->half * BSE_MIX_FREQ));
   if (BSE_SOURCE_PREPARED (self))
     {
-      /* update all DavSynDrumModules. take a llok at davxtalstrings.c
+      /* update all DavSynDrumModules. take a look at davxtalstrings.c
        * if you don't understand what this code does.
        */
       bse_source_access_modules (BSE_SOURCE (self),

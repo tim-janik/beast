@@ -22,7 +22,6 @@ UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
 	bseloader-wave.[hc]	\
 	davbassfilter.[hc]	\
-	davcanyondelay.[hc]	\
 	davchorus.[hc]		\
 	davguitar.[hc]		\
 )
@@ -38,6 +37,7 @@ PLUGIN_CFILES = $(strip		\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
 	davsyndrum.[hc]		\
+	davcanyondelay.[hc]	\
 )
 EXTRA_CFILES = $(strip		\
 	bsesimpleadsr-aux.c	\

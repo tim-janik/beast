@@ -1,3 +1,8 @@
+Sun Jul 27 04:31:23 2003  Tim Janik  <timj@gtk.org>
+
+	* davcanyondelay.[hc]: resurrected canyon-delay plugin,
+	adjusted user visible comments.
+
 Fri Jul 18 18:14:57 2003  Tim Janik  <timj@gtk.org>
 
 	* davsyndrum.[hc]: resurrected David A. Bartold's SynDrum plugin.

@@ -1,5 +1,5 @@
 /* DavCanyonDelay - DAV Canyon Delay
- * Copyright (c) 1999, 2000 David A. Bartold
+ * Copyright (c) 1999, 2000 David A. Bartold, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -16,15 +16,13 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __DAV_CANYONDELAY_H__
-#define __DAV_CANYONDELAY_H__
+#ifndef __DAV_CANYON_DELAY_H__
+#define __DAV_CANYON_DELAY_H__
 
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define DAV_TYPE_CANYON_DELAY              (type_id_canyon_delay)
@@ -35,63 +33,57 @@ extern "C" {
 #define DAV_CANYON_DELAY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
 
 /* --- DavCanyonDelay source --- */
-typedef struct _DavCanyonDelay      DavCanyonDelay;
-typedef struct _DavCanyonDelayClass DavCanyonDelayClass;
-
-struct _DavCanyonDelay
+typedef struct {
+  gdouble l_to_r_mag;
+  gdouble l_to_r_invmag;
+  gdouble r_to_l_mag;
+  gdouble r_to_l_invmag;
+  gint32  l_to_r_pos;
+  gint32  r_to_l_pos;
+  gdouble filter_mag;
+  gdouble filter_invmag;
+} DavCanyonDelayParams;
+typedef struct
 {
   BseSource parent_object;
-  
-  BseSampleValue *data_l;
-  BseSampleValue *data_r;
-  BseSampleValue accum_l;
-  BseSampleValue accum_r;
 
-  gfloat l_to_r_seconds;
-  gfloat r_to_l_seconds;
-  gint32 l_to_r_pos;
-  gint32 r_to_l_pos;
-
-  gfloat l_to_r_feedback;
-  gfloat r_to_l_feedback;
-  gint32 l_to_r_mag;
-  gint32 r_to_l_mag;
-  gint32 l_to_r_invmag;
-  gint32 r_to_l_invmag;
-
-  gfloat filter_freq;
-  gint32 filter_mag;
-  gint32 filter_invmag;
-
-  gint32 datasize;
-  gint32 pos;
-};
-
-struct _DavCanyonDelayClass
-{
+  gdouble l_to_r_seconds;
+  gdouble l_to_r_feedback;
+  gdouble r_to_l_seconds;
+  gdouble r_to_l_feedback;
+  gdouble filter_freq;
+  DavCanyonDelayParams params;
+} DavCanyonDelay;
+typedef struct {
+  gint32   pos;
+  gint32   datasize;
+  gdouble  accum_l;
+  gdouble  accum_r;
+  gdouble *data_l;
+  gdouble *data_r;
+  DavCanyonDelayParams params;
+} DavCanyonDelayModule;
+typedef struct {
   BseSourceClass parent_class;
-};
+} DavCanyonDelayClass;
 
 
 /* --- channels --- */
 enum
 {
-  DAV_CANYON_DELAY_ICHANNEL_NONE,
-  DAV_CANYON_DELAY_ICHANNEL_MULTI
+  DAV_CANYON_DELAY_ICHANNEL_LEFT,
+  DAV_CANYON_DELAY_ICHANNEL_RIGHT,
+  DAV_CANYON_DELAY_N_ICHANNELS
 };
 enum
 {
-  DAV_CANYON_DELAY_OCHANNEL_NONE,
-  DAV_CANYON_DELAY_OCHANNEL_STEREO
+  DAV_CANYON_DELAY_OCHANNEL_LEFT,
+  DAV_CANYON_DELAY_OCHANNEL_RIGHT,
+  DAV_CANYON_DELAY_N_OCHANNELS
 };
 
 
-/* --- prototypes --- */
 
+G_END_DECLS
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* __DAV_CANYONDELAY_H__ */
+#endif /* __DAV_CANYON_DELAY_H__ */

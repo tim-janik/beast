@@ -69,6 +69,19 @@ extern "C" {
 #  define GSL_SIGNAL_FROM_FREQ(x)	(x)
 #endif
 
+#define GSL_SIGNAL_CLIP(v)      gsl_signal_value_clip (v)
+
+static inline double   gsl_signal_value_clip (register double x)  G_GNUC_CONST;
+static inline double G_GNUC_CONST
+gsl_signal_value_clip (register double x)
+{
+  if_reject (x > 1.0)
+    return 1.0;
+  if_reject (x < -1.0)
+    return -1.0;
+  return x;
+}
+
 
 /* --- frequency modulation --- */
 typedef struct {
