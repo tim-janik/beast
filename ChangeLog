@@ -1,3 +1,7 @@
+Tue Feb 18 01:11:12 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in: cleanups of the libcsl configure stuff.
+
 Mon Feb 17 22:52:02 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in: libcsl support
