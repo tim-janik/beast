@@ -118,7 +118,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	  gfloat d, d0, d1, d2, d3, d4, d5, d6, d7;
 	  gfloat *x;
 
-	  if_reject (wosc->x == boundary)       /* wchunk block boundary */
+	  if_reject (wosc->x >= boundary)       /* wchunk block boundary */
 	    {
 	      GslLong next_offset = block->next_offset;
 
@@ -126,9 +126,8 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      block->play_dir = wosc->config.play_dir;
 	      block->offset = next_offset;
 	      gsl_wave_chunk_use_block (wosc->wchunk, block);
-	      wosc->x = block->start;
+	      wosc->x = block->start + wosc->config.channel;
 	      boundary = block->end;
-	      /* FIXME: g_assert (ABS (block->dirstride) == 1); */
 	    }
 	  
 	  if_expect (block->dirstride > 0)

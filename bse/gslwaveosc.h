@@ -32,7 +32,7 @@ extern "C" {
 typedef struct
 {
   GslLong	  start_offset;
-  gint            play_dir;
+  gint            play_dir, channel;
 
   gpointer	  wchunk_data;
   GslWaveChunk* (*wchunk_from_freq) (gpointer	wchunk_data,

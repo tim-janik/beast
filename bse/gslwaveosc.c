@@ -332,7 +332,7 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   wosc->block.play_dir = wosc->config.play_dir;
   wosc->block.offset = wosc->config.start_offset;
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
-  wosc->x = wosc->block.start;
+  wosc->x = wosc->block.start + wosc->config.channel;
 
   DEBUG ("wave lookup: want=%f got=%f length=%lu\n",
 	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
@@ -350,7 +350,8 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
   g_return_if_fail (config != NULL);
 
   if (wosc->config.wchunk_data != config->wchunk_data ||
-      wosc->config.wchunk_from_freq != config->wchunk_from_freq)
+      wosc->config.wchunk_from_freq != config->wchunk_from_freq ||
+      wosc->config.channel != config->channel)
     {
       if (wosc->wchunk)
 	gsl_wave_chunk_unuse_block (wosc->wchunk, &wosc->block);

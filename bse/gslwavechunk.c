@@ -105,7 +105,7 @@ fill_block (GslWaveChunk *wchunk,
   GslDataCacheNode *dnode;
   WPos wpos;
   
-  wpos.dir = wchunk->n_channels;
+  wpos.dir = 1; // wchunk->n_channels;
   if (backward)
     wpos.dir = -wpos.dir;
   wpos.pos = offset;
@@ -237,11 +237,6 @@ setup_pblocks (GslWaveChunk *wchunk)
     }
   else
     {
-      /*
-	wchunk->enter.first = wchunk->head.last;
-	wchunk->enter.last = wchunk->head.last;
-	wchunk->enter.length = 0;
-      */
       wchunk->enter.first = wchunk->tail.first;
       wchunk->enter.last = wchunk->head.last;
       wchunk->enter.length = 0;
