@@ -1,3 +1,20 @@
+Sun Jun  8 17:59:56 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiserial.c: fixup superfluous newlines.
+
+	* sfistore.[hc]:
+	(sfi_rstore_new):
+	(sfi_rstore_parse_param):
+	(sfi_rstore_ensure_bin_offset):
+	(sfi_rstore_get_bin_offset):
+	(sfi_rstore_parse_binary): fixed up binary appendix position handling.
+	(sfi_rstore_parse_until): marged parse_all() and parse_rest() into this.
+	(sfi_rstore_input_fd): fixup file name.
+	(sfi_wstore_peek_text): implemented.
+	(sfi_wstore_printf):
+	(sfi_wstore_puts): update needs-break state.
+	(sfi_wstore_destroy): destroy bin data readers.
+
 Tue May 20 15:11:19 2003  Tim Janik  <timj@gtk.org>
 
 	* adapted code to compile with gcc-3.3 and g++-3.3.

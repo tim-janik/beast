@@ -115,10 +115,11 @@ gstring_break (GString  *gstring,
   g_free (s);
   *needs_break = FALSE;
 }
+
 static void
 gstring_check_break (GString  *gstring,
-		     gboolean *needs_break,
-		     guint     indent)
+                     gboolean *needs_break,
+                     guint     indent)
 {
   if (*needs_break)
     gstring_break (gstring, needs_break, indent);
@@ -789,7 +790,7 @@ sfi_value_store_param (const GValue *value,
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
 
-  gstring_break (gstring, &needs_break, indent);
+  gstring_check_break (gstring, &needs_break, indent);
   gstring_printf (gstring, "(%s ", pspec->name);
   value_store_param (value, gstring, &needs_break, pspec, indent + 2);
   gstring_putc (gstring, ')');
