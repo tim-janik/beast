@@ -90,6 +90,7 @@ static GPollFD         master_pollfds[BSE_ENGINE_MAX_POLLFDS];
 static EngineSchedule *master_schedule = NULL;
 static SfiRing        *boundary_node_list = NULL;
 static gboolean        master_new_boundary_jobs = FALSE;
+static SfiRing        *probe_node_list = NULL;
 
 
 /* --- node state functions --- */
@@ -285,15 +286,6 @@ node_insert_flow_job (EngineNode      *node,
   node->flow_jobs = insert_timed_job (node->flow_jobs, tjob);
 }
 
-static void
-node_insert_boundary_job (EngineNode      *node,
-                          EngineTimedJob  *tjob)
-{
-  if (!node->boundary_jobs)
-    boundary_node_list = sfi_ring_append (boundary_node_list, node);
-  node->boundary_jobs = insert_timed_job (node->boundary_jobs, tjob);
-}
-
 static inline guint64
 node_peek_flow_job_stamp (EngineNode *node)
 {
@@ -404,6 +396,19 @@ master_process_job (BseJob *job)
       do
         tjob = node_pop_flow_job (node, GSL_MAX_TICK_STAMP);
       while (tjob);
+      /* nuke probe jobs */
+      if (node->probe_jobs)
+        {
+          while (node->probe_jobs)
+            {
+              pjob = node->probe_jobs;
+              node->probe_jobs = pjob->next;
+              pjob->n_values = pjob->oblock_length;
+              insert_trash_job (node, (EngineUserJob*) pjob);
+            }
+          probe_node_list = sfi_ring_remove (probe_node_list, node);
+        }
+      /* nuke boundary jobs */
       if (node->boundary_jobs)
         do
           tjob = node_pop_boundary_job (node, GSL_MAX_TICK_STAMP, sfi_ring_find (boundary_node_list, node));
@@ -555,7 +560,10 @@ master_process_job (BseJob *job)
       job->probe_job.pjob = NULL;  /* ownership taken over */
       last_pjob = node->probe_jobs;
       if (!last_pjob)   /* insert first */
-        node->probe_jobs = pjob;
+        {
+          node->probe_jobs = pjob;
+          probe_node_list = sfi_ring_append (probe_node_list, node);
+        }
       else
         {               /* append after tail */
           while (last_pjob->next)
@@ -578,8 +586,10 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("add boundary_job(%p,%p)", node, tjob);
       g_return_if_fail (node->integrated == TRUE);
       job->timed_job.tjob = NULL;	/* ownership taken over */
-      node_insert_boundary_job (node, tjob);
       master_new_boundary_jobs = TRUE;
+      if (!node->boundary_jobs)
+        boundary_node_list = sfi_ring_append (boundary_node_list, node);
+      node->boundary_jobs = insert_timed_job (node->boundary_jobs, tjob);
       break;
     case ENGINE_JOB_MESSAGE:
       if (job->data.message)
@@ -744,17 +754,16 @@ master_take_probes (EngineNode   *node,
     {
       guint i, n;
     case PROBE_SCHEDULED:
-      n = MIN (pjob->value_counter, n_values - offset);
+      n = MIN (pjob->oblock_length - pjob->n_values, n_values - offset);
       /* fill probe data */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         if (pjob->oblocks[i])
           memcpy (pjob->oblocks[i] + pjob->n_values, node->module.ostreams[i].values + offset, n * sizeof (gfloat));
       pjob->n_values += n;
-      pjob->value_counter -= n;
       /* jobs are collected upon push_processd */
       break;
     case PROBE_VIRTUAL:
-      n = MIN (pjob->value_counter, n_values - offset);
+      n = MIN (pjob->oblock_length - pjob->n_values, n_values - offset);
       /* fill probe data */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         if (pjob->oblocks[i])
@@ -765,19 +774,19 @@ master_take_probes (EngineNode   *node,
 		      input->real_node->module.ostreams[input->real_stream].values + offset, n * sizeof (gfloat));
 	  }
       pjob->n_values += n;
-      pjob->value_counter -= n;
       need_collect = TRUE;
       break;
     case PROBE_UNSCHEDULED:
-      pjob->value_counter = 0;
-      pjob->n_values = 0;
+      pjob->n_values = pjob->oblock_length;
       need_collect = TRUE;
       break;
     }
   /* pop probe job */
-  if (!pjob->value_counter)
+  if (pjob->oblock_length - pjob->n_values == 0)
     {
       node->probe_jobs = pjob->next;
+      if (!node->probe_jobs)
+        probe_node_list = sfi_ring_remove (probe_node_list, node);
       insert_trash_job (node, (EngineUserJob*) pjob);
       if (need_collect)
         _engine_node_collect_jobs (node);
@@ -944,7 +953,7 @@ master_process_flow (void)
 	  EngineNode *tmp = node->mnl_next;
           node->counter = final_counter;
           master_update_node_state (node, node->counter - 1);
-          master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
+          // master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
 	  _engine_mnl_node_changed (node);      /* collects trash jobs and reorders */
 	  node = tmp;
 	}
@@ -952,10 +961,19 @@ master_process_flow (void)
       /* nothing new to process, wait for slaves */
       _engine_wait_on_unprocessed ();
       
-      /* take virtual node probes */
-      SfiRing *ring;
-      for (ring = master_schedule->vnodes; ring; ring = sfi_ring_walk (ring, master_schedule->vnodes))
-        master_take_probes (ring->data, current_stamp, n_values, PROBE_VIRTUAL);
+      /* take remaining probes */
+      SfiRing *ring = probe_node_list;
+      while (ring)
+        {
+          node = ring->data; /* current ring may be removed during master_take_probes() */
+          ring = sfi_ring_walk (ring, probe_node_list);
+          if (BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))
+            master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
+          else if (ENGINE_NODE_IS_VIRTUAL (node)) /* scheduled && virtual */
+            master_take_probes (node, current_stamp, n_values, PROBE_VIRTUAL);
+          else
+            /* already_handled */; // master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);
+        }
       
       if (UNLIKELY (profile_modules))
 	{

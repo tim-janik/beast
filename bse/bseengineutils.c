@@ -61,7 +61,7 @@ bse_engine_free_user_job (EngineUserJob *ujob)
     case ENGINE_JOB_PROBE_JOB:
       pjob = (EngineProbeJob*) ujob;
       if (pjob->probe_func)
-        pjob->probe_func (pjob->data, pjob->tick_stamp, pjob->n_values, pjob->oblocks);
+        pjob->probe_func (pjob->data, pjob->tick_stamp, pjob->n_values, pjob->oblocks, pjob->oblock_length);
       for (i = 0; i < pjob->n_oblocks; i++)
         if (pjob->oblocks[i])
           g_free (pjob->oblocks[i]);
@@ -92,15 +92,11 @@ bse_engine_free_node (EngineNode *node)
   g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->sched_tag == FALSE);
   g_return_if_fail (node->sched_recurse_tag == FALSE);
-  g_return_if_fail (node->flow_jobs == NULL && node->boundary_jobs == NULL && node->ujob_first == NULL);
-  
-  while (node->probe_jobs)
-    {
-      EngineProbeJob *ujob = node->probe_jobs;
-      node->probe_jobs = ujob->next;
-      bse_engine_free_user_job ((EngineUserJob*) ujob);
-    }
-  
+  g_return_if_fail (node->flow_jobs == NULL);
+  g_return_if_fail (node->boundary_jobs == NULL);
+  g_return_if_fail (node->ujob_first == NULL);
+  g_return_if_fail (node->probe_jobs == NULL);
+
   sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {

@@ -57,7 +57,8 @@ typedef gboolean (*BseEngineTimerFunc)  (gpointer       data,
 typedef void     (*BseEngineProbeFunc)  (gpointer       data,
                                          guint64        tick_stamp,
                                          guint          n_values,
-                                         gfloat       **oblocks); /* [ENGINE_NODE_N_OSTREAMS()] */
+                                         gfloat       **oblocks,        /* [ENGINE_NODE_N_OSTREAMS()] */
+                                         guint          oblock_length); /* n_requested_values */
 typedef void     (*BseProcessFunc)      (BseModule     *module,
                                          guint          n_values);
 typedef guint    (*BseProcessDeferFunc) (BseModule     *module,

@@ -1,3 +1,16 @@
+Sat Dec 11 15:35:16 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengine.[hc]: added block-size argument to probe callback.
+
+	* bseenginemaster.c: properly probe unscheduled nodes. optimized
+	probing by keeping a list of nodes with probe jobs.
+	altered probe job value counter maintenance.
+	clean up probe jobs upon discarding.
+
+	* bseengineutils.c: assert NULL probe jobs on discarded nodes.
+
+	* bseprobe.cc: properly handle probes from unscheduled nodes.
+
 Fri Dec 10 15:24:35 2004  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: fixed bugs, print out signals. print out

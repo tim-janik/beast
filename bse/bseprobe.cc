@@ -154,23 +154,37 @@ private:
   handle_probes (ProbeData &pdata,
                  guint64    tick_stamp,
                  guint      n_values,
-                 gfloat   **oblocks) /* [ENGINE_NODE_N_OSTREAMS()] */
+                 gfloat   **oblocks, /* [ENGINE_NODE_N_OSTREAMS()] */
+                 guint      oblock_length)
   {
+    // g_printerr ("BseProbe: got probe: %d %d (left=%d)\n", n_values, oblock_length, pdata.n_pending);
     if (pdata.n_pending == pdata.n_modules - 1) /* setup fblocks from first module */
       for (ProbeSeq::iterator it = pdata.pseq.begin(); it != pdata.pseq.end(); it++)
         {
           Probe &probe = **it;
+          gboolean need_zero_setup = FALSE; /* n_values == 0 */
           gfloat *block = oblocks[probe.channel_id];
           if (probe.probe_features->probe_samples || probe.probe_features->probe_fft)
             {
-              probe.sample_data.take (sfi_fblock_new_foreign (n_values, block, g_free));
+              probe.sample_data.take (sfi_fblock_new_foreign (oblock_length, block, g_free));
               oblocks[probe.channel_id] = NULL; /* steal from engine */
-              fill_probe (probe, n_values, block, FALSE);
+              if (n_values)
+                fill_probe (probe, n_values, block, FALSE);
+              else
+                need_zero_setup = TRUE;
             }
-          else
+          else if (n_values)
             fill_probe (probe, n_values, block, FALSE);
+          else
+            need_zero_setup = TRUE;
+          if (need_zero_setup && (probe.probe_features->probe_range || probe.probe_features->probe_energie))
+            {
+              probe.min = 0;
+              probe.max = 0;
+              probe.energie = -999;
+            }
         }
-    else
+    else if (n_values)
       for (ProbeSeq::iterator it = pdata.pseq.begin(); it != pdata.pseq.end(); it++)
         fill_probe (**it, n_values, oblocks[(*it)->channel_id], TRUE);
     if (!pdata.n_pending)       /* last module */
@@ -239,14 +253,15 @@ private:
   source_probe_callback (gpointer       data,
                          guint64        tick_stamp,
                          guint          n_values,
-                         gfloat       **oblocks) /* [ENGINE_NODE_N_OSTREAMS()] */
+                         gfloat       **oblocks, /* [ENGINE_NODE_N_OSTREAMS()] */
+                         guint          oblock_length)
   {
     ProbeData *pdata = reinterpret_cast<ProbeData*> (data);
     g_assert (pdata->n_pending > 0);
     pdata->n_pending--;
     SourceProbes *probes = peek_from_source (pdata->source);
     if (probes)
-      probes->handle_probes (*pdata, tick_stamp, n_values, oblocks);
+      probes->handle_probes (*pdata, tick_stamp, n_values, oblocks, oblock_length);
     if (!pdata->n_pending)
       delete pdata;
   }

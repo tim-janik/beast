@@ -572,12 +572,12 @@ bse_job_probe_request (BseModule         *module,
   pjob->data = data;
   pjob->tick_stamp = 0;
   pjob->delay_counter = n_delay_samples;
-  pjob->value_counter = n_probe_values;
+  pjob->oblock_length = n_probe_values;
   pjob->n_values = 0;
   pjob->n_oblocks = n_oblocks;
   for (i = 0; i < n_oblocks; i++)
     if (ochannel_bytemask[i])
-      pjob->oblocks[i] = g_new0 (gfloat, n_probe_values);
+      pjob->oblocks[i] = g_new0 (gfloat, pjob->oblock_length);
   
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
