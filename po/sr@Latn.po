@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 22:59+0100\n"
-"PO-Revision-Date: 2003-10-27 14:27+0100\n"
+"POT-Creation-Date: 2003-11-01 17:10+0100\n"
+"PO-Revision-Date: 2003-11-01 17:26+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -234,31 +234,31 @@ msgstr "/Pomoć/Razvoj/GSL struktura..."
 msgid "/Help/_About..."
 msgstr "/Pomoć/_O programu..."
 
-#: beast-gtk/bstapp.c:631 beast-gtk/bstapp.c:638 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:604 beast-gtk/bstapp.c:611 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otvara projekat „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:810
+#: beast-gtk/bstapp.c:783
 msgid "Rack editor"
 msgstr "Uređivač polica"
 
-#: beast-gtk/bstapp.c:824
+#: beast-gtk/bstapp.c:797
 msgid "Preferences"
 msgstr "Postavke"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:838
+#: beast-gtk/bstapp.c:811
 msgid "Device Monitor"
 msgstr "Praćenje uređaja"
 
-#: beast-gtk/bstapp.c:853
+#: beast-gtk/bstapp.c:826
 msgid "Procedure Browser"
 msgstr "Razgledač procedura"
 
-#: beast-gtk/bstapp.c:910
+#: beast-gtk/bstapp.c:883
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ZVER-%s Objava izdanja"
@@ -271,19 +271,19 @@ msgstr "Veza sa modulom:"
 msgid "Module link"
 msgstr "Veza sa modulom"
 
-#: beast-gtk/bstcanvassource.c:484
+#: beast-gtk/bstcanvassource.c:483
 msgid "Module Info"
 msgstr "Podaci o modulu"
 
-#: beast-gtk/bstcanvassource.c:972
+#: beast-gtk/bstcanvassource.c:971
 msgid "Input"
 msgstr "Ulaz"
 
-#: beast-gtk/bstcanvassource.c:981
+#: beast-gtk/bstcanvassource.c:980
 msgid "Output"
 msgstr "Izlaz"
 
-#: beast-gtk/bstcanvassource.c:985
+#: beast-gtk/bstcanvassource.c:984
 msgid "(Hint)"
 msgstr "(savet)"
 
@@ -456,14 +456,14 @@ msgid "Loading wave `%s'"
 msgstr "Učitavam Wave „%s“"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bsttrackview.c:60
 msgid "Add"
 msgstr "Dodaj"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
 #: beast-gtk/bstpartview.c:38 beast-gtk/bstrackitem.c:182
 #: beast-gtk/bstsnetrouter.c:1017 beast-gtk/bstsnetrouter.c:1059
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:62
 msgid "Delete"
 msgstr "Obriši"
 
@@ -520,16 +520,16 @@ msgstr "Skripte"
 msgid "Dialogs"
 msgstr "Prozorčići"
 
-#: beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:280
 msgid "Loading..."
 msgstr "Učitavam..."
 
-#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#: beast-gtk/bstmain.c:310 beast-gtk/bstmain.c:312
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Učitavam „%s“"
 
-#: beast-gtk/bstmain.c:328
+#: beast-gtk/bstmain.c:329
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
@@ -849,10 +849,9 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
-"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
-"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
-"vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
+"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
+"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109
 msgid "_Edit"
@@ -994,20 +993,20 @@ msgstr "Ukloni vezu"
 msgid "Insert Module"
 msgstr "Umetni modul"
 
-#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:165
 msgid "Routing"
 msgstr "Usmeravanje"
 
-#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
-#: beast-gtk/bstwavereposhell.c:146
+#: beast-gtk/bstsnetshell.c:128 beast-gtk/bstsongshell.c:149
+#: beast-gtk/bstwavereposhell.c:143
 msgid "Parameters"
 msgstr "Parametri"
 
-#: beast-gtk/bstsongshell.c:152
+#: beast-gtk/bstsongshell.c:144
 msgid "Tracks"
 msgstr "Pesme"
 
-#: beast-gtk/bstsongshell.c:162
+#: beast-gtk/bstsongshell.c:154
 msgid "Parts"
 msgstr "Delovi"
 
@@ -1093,15 +1092,31 @@ msgstr "Premesti deo"
 msgid "Start Editor"
 msgstr "Pokreni uređivač"
 
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr "Dodaj novu melodiju u ovu pesmu"
 
-#: beast-gtk/bsttrackview.c:64
+#: beast-gtk/bsttrackview.c:63
 msgid "Delete the currently selected track"
 msgstr "Obriši trenutno izabranu melodiju"
 
-#: beast-gtk/bsttrackview.c:640
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat"
+msgstr "Ponovi"
+
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat playback within loop points"
+msgstr "Ponovo pusti u tačkama vrtenja"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Zoom"
+msgstr "Uvećanje"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Horizontal Zoom"
+msgstr "Vodoravno uvećanje"
+
+#: beast-gtk/bsttrackview.c:589
 msgid "Comment"
 msgstr "Primedba"
 
@@ -1146,7 +1161,7 @@ msgid "Scroll Right"
 msgstr "Klizaj desno"
 
 #. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
-#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
+#: beast-gtk/bstwavereposhell.c:138 beast-gtk/bstwavereposhell.c:153
 msgid "Waves"
 msgstr "Talasi"
 

@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 22:59+0100\n"
-"PO-Revision-Date: 2003-10-27 14:27+0100\n"
+"POT-Creation-Date: 2003-11-01 17:10+0100\n"
+"PO-Revision-Date: 2003-11-01 17:26+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -234,31 +234,31 @@ msgstr "/Помоћ/Развој/GSL структура..."
 msgid "/Help/_About..."
 msgstr "/Помоћ/_О програму..."
 
-#: beast-gtk/bstapp.c:631 beast-gtk/bstapp.c:638 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:604 beast-gtk/bstapp.c:611 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Отвара пројекат „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:810
+#: beast-gtk/bstapp.c:783
 msgid "Rack editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:824
+#: beast-gtk/bstapp.c:797
 msgid "Preferences"
 msgstr "Поставке"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:838
+#: beast-gtk/bstapp.c:811
 msgid "Device Monitor"
 msgstr "Праћење уређаја"
 
-#: beast-gtk/bstapp.c:853
+#: beast-gtk/bstapp.c:826
 msgid "Procedure Browser"
 msgstr "Разгледач процедура"
 
-#: beast-gtk/bstapp.c:910
+#: beast-gtk/bstapp.c:883
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ЗВЕР-%s Објава издања"
@@ -271,19 +271,19 @@ msgstr "Веза са модулом:"
 msgid "Module link"
 msgstr "Веза са модулом"
 
-#: beast-gtk/bstcanvassource.c:484
+#: beast-gtk/bstcanvassource.c:483
 msgid "Module Info"
 msgstr "Подаци о модулу"
 
-#: beast-gtk/bstcanvassource.c:972
+#: beast-gtk/bstcanvassource.c:971
 msgid "Input"
 msgstr "Улаз"
 
-#: beast-gtk/bstcanvassource.c:981
+#: beast-gtk/bstcanvassource.c:980
 msgid "Output"
 msgstr "Излаз"
 
-#: beast-gtk/bstcanvassource.c:985
+#: beast-gtk/bstcanvassource.c:984
 msgid "(Hint)"
 msgstr "(савет)"
 
@@ -456,14 +456,14 @@ msgid "Loading wave `%s'"
 msgstr "Учитавам Wave „%s“"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bsttrackview.c:60
 msgid "Add"
 msgstr "Додај"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
 #: beast-gtk/bstpartview.c:38 beast-gtk/bstrackitem.c:182
 #: beast-gtk/bstsnetrouter.c:1017 beast-gtk/bstsnetrouter.c:1059
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:62
 msgid "Delete"
 msgstr "Обриши"
 
@@ -520,16 +520,16 @@ msgstr "Скрипте"
 msgid "Dialogs"
 msgstr "Прозорчићи"
 
-#: beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:280
 msgid "Loading..."
 msgstr "Учитавам..."
 
-#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#: beast-gtk/bstmain.c:310 beast-gtk/bstmain.c:312
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Учитавам „%s“"
 
-#: beast-gtk/bstmain.c:328
+#: beast-gtk/bstmain.c:329
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
@@ -993,20 +993,20 @@ msgstr "Уклони везу"
 msgid "Insert Module"
 msgstr "Уметни модул"
 
-#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:165
 msgid "Routing"
 msgstr "Усмеравање"
 
-#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
-#: beast-gtk/bstwavereposhell.c:146
+#: beast-gtk/bstsnetshell.c:128 beast-gtk/bstsongshell.c:149
+#: beast-gtk/bstwavereposhell.c:143
 msgid "Parameters"
 msgstr "Параметри"
 
-#: beast-gtk/bstsongshell.c:152
+#: beast-gtk/bstsongshell.c:144
 msgid "Tracks"
 msgstr "Песме"
 
-#: beast-gtk/bstsongshell.c:162
+#: beast-gtk/bstsongshell.c:154
 msgid "Parts"
 msgstr "Делови"
 
@@ -1092,15 +1092,31 @@ msgstr "Премести део"
 msgid "Start Editor"
 msgstr "Покрени уређивач"
 
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr "Додај нову мелодију у ову песму"
 
-#: beast-gtk/bsttrackview.c:64
+#: beast-gtk/bsttrackview.c:63
 msgid "Delete the currently selected track"
 msgstr "Обриши тренутно изабрану мелодију"
 
-#: beast-gtk/bsttrackview.c:640
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat"
+msgstr "Понови"
+
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat playback within loop points"
+msgstr "Поново пусти у тачкама вртења"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Zoom"
+msgstr "Увећање"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Horizontal Zoom"
+msgstr "Водоравно увећање"
+
+#: beast-gtk/bsttrackview.c:589
 msgid "Comment"
 msgstr "Примедба"
 
@@ -1145,7 +1161,7 @@ msgid "Scroll Right"
 msgstr "Клизај десно"
 
 #. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
-#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
+#: beast-gtk/bstwavereposhell.c:138 beast-gtk/bstwavereposhell.c:153
 msgid "Waves"
 msgstr "Таласи"
 
