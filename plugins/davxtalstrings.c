@@ -32,7 +32,7 @@
  */
 #include "davxtalstrings.h"
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslsignal.h>
 
 #include <string.h>

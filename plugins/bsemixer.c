@@ -18,7 +18,7 @@
  */
 #include "bsemixer.h"
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 
 #include <string.h>
 

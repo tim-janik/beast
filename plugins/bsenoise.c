@@ -18,7 +18,7 @@
  */
 #include "bsenoise.h"
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <stdlib.h>
 
 

@@ -18,7 +18,7 @@
  */
 #include "bseiirfilter.h"
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslfilter.h>
 
 #include <string.h>

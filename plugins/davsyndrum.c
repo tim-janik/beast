@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "davsyndrum.h"
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslsignal.h>
 
 /* --- parameters --- */

@@ -18,7 +18,7 @@
  */
 #include "bsesequencer.h"
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslieee754.h>
 
 
