@@ -543,6 +543,30 @@ sfi_rstore_warn_skip (SfiRStore   *rstore,
   return scanner_skip_statement (rstore->scanner, 1);
 }
 
+void
+sfi_rstore_quick_scan (SfiRStore         *rstore,
+                       const gchar       *identifier,
+                       SfiRStoreQuickScan qcheck,
+                       gpointer           data)
+{
+  g_return_if_fail (rstore);
+
+  while (g_scanner_peek_next_token (rstore->scanner) == '(')
+    {
+      g_scanner_get_next_token (rstore->scanner);
+      if (g_scanner_peek_next_token (rstore->scanner) == G_TOKEN_IDENTIFIER)
+        {
+          g_scanner_get_next_token (rstore->scanner);
+          if (strcmp (identifier, rstore->scanner->value.v_identifier) == 0)
+            {
+              if (!qcheck (rstore, data))
+                return;
+            }
+        }
+      scanner_skip_statement (rstore->scanner, 1);
+    }
+}
+
 GTokenType
 sfi_rstore_parse_param (SfiRStore  *rstore,
 			GValue     *value,

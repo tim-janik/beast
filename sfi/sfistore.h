@@ -125,6 +125,12 @@ void            sfi_rstore_warn               (SfiRStore      *rstore,
 GTokenType      sfi_rstore_warn_skip          (SfiRStore      *rstore,
                                                const gchar    *format,
                                                ...) G_GNUC_PRINTF (2,3);
+typedef gboolean (SfiRStoreQuickScan)         (SfiRStore      *rstore,
+                                               gpointer        data);
+void            sfi_rstore_quick_scan         (SfiRStore      *rstore,
+                                               const gchar    *identifier,
+                                               SfiRStoreQuickScan qcheck,
+                                               gpointer        data);
 
 
 /* --- convenience --- */
