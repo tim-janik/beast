@@ -39,6 +39,7 @@ FIXMES:
 - fix and canonify decibell naming everywhere
 - need volume properties per track
 - pressing browsing hotkeys in release-notes dialog does stuff
+- don't generate .markup files for NEWS and gsl-mplan.txt
 - sample chunk display should show note names not only midi notes
 - bstusermessage.c:user_message() signal handler takes choice argument, fix connections
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
