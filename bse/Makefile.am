@@ -60,7 +60,7 @@ bse_public_h_sources = $(strip \
 	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
 	bsenote.h		\
 	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
-	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			examplepeakfilter.h \
+	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			\
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -87,7 +87,7 @@ bse_c_sources = $(strip \
 	bsecompat.c		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
 	bsenote.c		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
-	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			examplepeakfilter.cc \
+	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			\
 )
 # Synthesis Modules
 bse_idl_sources = $(strip \
@@ -105,7 +105,6 @@ bse_proc_sources = $(strip \
 	bsedatapocket.proc \
 	bseeditablesample.proc \
 	bseenums.proc \
-	bsehelloworld.proc \
 	bsemidinotifier.proc \
 	bsejanitor.proc \
 	bseobject.proc \
@@ -130,7 +129,6 @@ bse_proc_gen_sources = $(strip \
 	bsedatapocket.gen-proc.c \
 	bseenums.gen-proc.c \
 	bseeditablesample.gen-proc.c \
-	bsehelloworld.gen-proc.c \
 	bsemidinotifier.gen-proc.c \
 	bsejanitor.gen-proc.c \
 	bseobject.gen-proc.c \
@@ -288,12 +286,12 @@ noinst_DATA = bse.idl
 
 
 #
-# convenience targets for the builtsources
+# convenience targets for generated source files
 #
-.PHONY: builtsources clean-builtsources
-clean-builtsources: clean
+.PHONY: generated clean-generated
+clean-generated: clean
 	rm -f $(bse_built_c_sources) $(bse_built_h_sources) stamp-*
-builtsources: clean-builtsources $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
+generated: clean-generated $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
 
 
 #

@@ -1,3 +1,11 @@
+Tue Oct 14 21:16:44 2003  Tim Janik  <timj@gtk.org>
+
+	* examplepeakfilter.[hc]*: removed first c++ example module, there's
+	plenty of other example code now (bsebalance.[ic]*, bseamplifier.[ic]*).
+	
+	* bsehelloworld.proc: removed first example procedures, there're plenty
+	of others available, examples in scheme even.
+	
 Mon Oct 13 16:09:38 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.proc: use bse_undo_stack_push_add_on() to push the undo step

@@ -1,6 +1,5 @@
 #include <bse/bsecxxbase.h>
 #include <bse/bsemain.h>
-#include <bse/examplepeakfilter.h>
 
 namespace {
 using namespace Bse;

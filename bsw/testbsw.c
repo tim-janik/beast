@@ -36,7 +36,7 @@ main (int   argc,
   g_print ("server id: %lu\n", BSE_SERVER);
   ASSERT (BSE_SERVER > 0);
 
-  bse_hello_world ();
+  // bse_hello_world ();
   project = bse_server_use_new_project (BSE_SERVER, "test-project");
   g_print ("project id: %lu\n", project);
   ASSERT (project > BSE_SERVER);
