@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 #
 # makefaq.py
-# Revision:  0.2
-# Rev Date:  2 January 2000
+# Revision:  0.3
+# Rev Date:  22 January 2000
 #
 # This program is designed to take a text file and generate
 # a single-page formatted Frequently-Asked-Question file.
 #
-# It simply dumps the text to standard output - it was done
-# that way to be used as a CGI script on a web browser.
-# To capture it in a file, you will need to do:
-#
-#  makefaq.py > faq.html    (or whatever name you choose)
+# It reads in FAQ categories, questions and answers from
+# a file called "faq.dat", adds an HTML header and footer, and
+# writes the information to "faq.html".  As of this version
+# there is also the ability to write out a text version.
 #
 # See the "Notes" section below for more details.
 #
@@ -21,6 +20,10 @@
 #
 # Copyright (c) 1999-2000 Dan York, dyork@Lodestar2.com
 # http://www.Lodestar2.com/software/makefaq/
+#
+# The author acknowledges significant contributions to the
+# code by Dave Seidel (dave@superluminal.com) and he can
+# definitely be considered as the co-author of this code.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,15 +37,24 @@
 # http://www.gnu.org/copyleft/gpl.html
 #
 # -------------------------------------------------------------
-# Notes
 #
-# This script is really a beta script and is made available purely
-# so that others might be saved the frustration of building FAQ
-# pages by hand.  An example of its use can be found at:
+# If you use this script to generate a FAQ page for a public
+# web site, please do send the URL to dyork@lodestar2.com so
+# that your FAQ can be listed on the home page for makefaq as
+# another example.
+#
+# -------------------------------------------------------------
+# NOTES
+#
+#
+# This script is made available purely so that others might 
+# be saved the frustration of building FAQ pages by hand.  
+# Examples of its use can be found at:
 #
 #   http://www.lpi.org/faq.html
+#   http://beast.gtk.org/docs/faq.html
 #
-# The input file must be called "faq.txt". It uses the pipe character
+# The input file must be called "faq.dat". It uses the pipe character
 # as the delimiter and must have the format:
 #
 #  Category|Question|Answer
@@ -51,68 +63,52 @@
 # wraps text. The Question and Answer sections can use HTML.
 #
 # In the directory where the script is run, there must be three
-# files:
+# files (in the default configuration):
 #
-# - faq.txt         - the text file with the questions and answers
+# - faq.dat         - the text file with the questions and answers
 # - faqheader.html  - an HTML file with the top of the file
 # - faqfooter.html  - an HTML file with the bottom of the file
 #
 # Sample files should have been provided with this code.
-# Ultimately, my goal is to have it read in filenames from the 
-# command line.
+#
+# Please read the accompanying "ChangeLog" file to understand
+# the substantial changes that have been made to the code base.
+#
+# Also please look at the README file before using this script.
+#
+# -------------------------------------------------------------
+# BUGS
 #
 # Note that currently the Categories may not appear in the correct
-# order (as they appear in the faq.txt file). I'm still working on it.
+# order (as they appear in the faq.dat file). I'm still working on it.
 #
 # -------------------------------------------------------------
-# Revision History
+# REVISION HISTORY
 #
-# 3 Jan 2000 - Uploaded in beta state to web site
+# 22 Jan 2000 - 0.3 uploaded after substantantial modifications
+#               by Dave Seidel (dave@superluminal.com)
+# 14 Jan 2000 - (dave) added command line processing, error handling,
+#               comments
+# 13 Jan 2000 - (dave) submitted to BEAST project
+#  3 Jan 2000 - 0.2 uploaded in beta state to web site
 #
 # -------------------------------------------------------------
-
-# -------------------------------------------------------------
+# QUICK SUMMARY OF CHANGES TO VERSION 0.3
 #
-# Modified almost beyond recognition by
-# Dave Seidel (dave@superluminal.org).
-#
-# Any bugs in this version are my fault, and shoud be reported
-# to dave@superluminal.com
-#
-# Notes:
-# - I wanted to preserve backward-compatility from the user's
-#   point of view.  If you use makefaq without *any* command line
-#   switches, it should behave exactly as described above, i.e., it
-#   uses the filenames faq.txt, faqheader.html, and faqfooter.html as
-#   inputs, and prints to standard output. However, there are minor
-#   changes in the output, as described below.
-#
-# Output changes from Dan's version:
-# - All HTML tags are now lowercase.  But this can be easily
-#   changed by editing configuration classes.  Just a preference
-#   on my part.
-# - I added a "Table of Contents" header.
-# - I added closing tags for <li> and <p> because I'm anal-retentive. :-)
+# See the accompanying "ChangeLog" file for full details.
 #
 # New features:
 # - Moved all formatting strings into classes or "configurations".
 #   The base class, DefaultConfig, corresponds to Dan's original
-#   settings.  I have added two additional subclasses, BEASTConfig
+#   settings.  Dave added two additional subclasses, BEASTConfig
 #   and TextConfig, that respectively define a fancy HTML format
-#   (designed for http://beast.gtk.org, where I am the webmaster)
+#   (designed for http://beast.gtk.org, where Dave is the webmaster)
 #   and a plain text output.
 # - Added command line processing.  It is possible to select
 #   a configuration, and to override a configuration's settings
 #   for input, output, header, and footer files.  Use the "-h"
 #   switch for help on the options.
 # - Added some simple error handling.
-#
-# Todo:
-# - 
-#
-# 13 Jan 2000 - submitted to BEAST project
-# 14 Jan 2000 - added command line processing, error handling,
-#               comments
 #
 # -------------------------------------------------------------
 
@@ -149,106 +145,79 @@ class DefaultConfig:
    def __repr__(self):
       return self.name;
 
-   # name
-   name = "Default"
-
-   # if this is FALSE, two things happen:
-   # - <a></a> tags get stripped out (but not their content)
-   # - <br> tags are converted to '\n'
-   hasLinks = TRUE
-
-   # default filenames
-   headfile = 'faqheader.html'
-   footfile = 'faqfooter.html'
-   infile   = 'faq.txt'
-   outfile  = 'STDOUT'
-
-   # timestamp
-   TS = {
-      'Pre'   : '<p><i>',
-      'Post'  : '</i></p>',
-      'Pre+'  : '',
-      'Post+' : ''
-      }
-
-   # headings
-   Head = {
-      'Pre'   : '<hr><h2>',
-      'Post'  : '</h2>',
-      'Pre+'  : '',
-      'Post+' : ''
-      }
-
-   # sections
-   Sec = {
-      'Pre'   : '<dl>',
-      'Post'  : '</dl>',
-      'Pre+'  : '',
-      'Post+' : ''
-      }
-
-   # table of contents
-   TOC = {
-      'Pre'       : '<dl>',
-      'Post'      : '</dl>',
-      'Pre+'      : '',
-      'Post+'     : '',
-      'CatPre'    : '<dt><b>',
-      'CatPost'   : '</b></dt>',
-      'ListPre'   : '<dd><ul>',
-      'ListPost'  : '</ul></dd>',
-      'EntryPre'  : '<li><a href="#',
-      'EntryIn'   : '">',
-      'EntryPost' : '</a></li>'
-      }
-
-   # questions
-   Q = {
-      'Pre'  : '<dt><b><a name="',
-      'In'   : '\">',
-      'Post' : '</a></b></dt>'
-      }
-
-   # answers
-   A = {
-      'Pre'  : '<dd>',
-      'Post' : '<br><br></dd>'
-      }
-
-
-# -------------------------------------------------------------
-#
-# BEAST configuration
-#
-# -------------------------------------------------------------
-class BEASTConfig(DefaultConfig):
    def __init__(self):
-      # ID
-      self.name = 'BEAST'
-      
-      # filenames
-      self.headfile = 'html.1.faq'
-      self.footfile = 'html.2.faq'
-      self.infile   = 'faq.src'
+      # name
+      self.name = "default"
+
+      # if this is FALSE, two things happen:
+      # - <a></a> tags get stripped out (but not their content)
+      # - <br> tags are converted to '\n'
+      self.hasLinks = TRUE
+
+      # default filenames
+      self.headfile = 'faqheader.html'
+      self.footfile = 'faqfooter.html'
+      self.infile   = 'faq.dat'
+
+      #If you want the default behaviour of makefaq 0.2, 
+      #which was to dump the output to stdout, change the outfile
+      #line to:
+      #
+      #self.outfile  = 'STDOUT'
+      #
       self.outfile  = 'faq.html'
 
       # timestamp
-      self.TS['Pre+']  = '<tr><td>'
-      self.TS['Post+'] = '</td></tr>'
+      self.TS = {
+         'Pre'   : '<p><i>',
+         'Post'  : '</i></p>',
+         'Pre+'  : '',
+         'Post+' : ''
+         }
 
       # headings
-      self.Head['Pre']   = ''
-      self.Head['Post']  = ''
-      self.Head['Pre+']  = '<tr><td bgcolor="#005D5D"><font face="Lucida, Verdana, Arial, sans-serif" color="#D0E4D0" size="+2">'
-      self.Head['Post+'] = '</font></td></tr>'
+      self.Head = {
+         'Pre'   : '<hr><h2>',
+         'Post'  : '</h2>',
+         'Pre+'  : '',
+         'Post+' : ''
+         }
 
       # sections
-      self.Sec['Pre+']  = '<tr><td><font face="Lucida, Verdana, Arial, sans-serif">'
-      self.Sec['Post+'] = '</font></td></tr>'
+      self.Sec = {
+         'Pre'   : '<dl>',
+         'Post'  : '</dl>',
+         'Pre+'  : '',
+         'Post+' : ''
+         }
 
       # table of contents
-      self.TOC['Pre+']  = '<tr><td><font face="Lucida, Verdana, Arial, sans-serif">'
-      self.TOC['Post+'] = '</font></td></tr>'
+      self.TOC = {
+         'Pre'       : '<dl>',
+         'Post'      : '</dl>',
+         'Pre+'      : '',
+         'Post+'     : '',
+         'CatPre'    : '<dt><b>',
+         'CatPost'   : '</b></dt>',
+         'ListPre'   : '<dd><ul>',
+         'ListPost'  : '</ul></dd>',
+         'EntryPre'  : '<li><a href="#',
+         'EntryIn'   : '">',
+         'EntryPost' : '</a></li>'
+         }
+
+      # questions
+      self.Q = {
+         'Pre'  : '<dt><b><a name="',
+         'In'   : '\">',
+         'Post' : '</a></b></dt>'
+         }
+
+      # answers
+      self.A = {
+         'Pre'  : '<dd>',
+         'Post' : '<br><br></dd>'
+         }
 
 
 # -------------------------------------------------------------
@@ -258,16 +227,80 @@ class BEASTConfig(DefaultConfig):
 # -------------------------------------------------------------
 class TextConfig(DefaultConfig):
    def __init__(self):
+      DefaultConfig.__init__(self)
+
       # ID
-      self.name = 'Text'
+      self.name = 'text'
 
       # flags
       self.hasLinks = FALSE
 
       # filenames
-      self.headfile = 'text.1.faq'
-      self.footfile = 'text.2.faq'
-      self.infile   = 'faq.src'
+      self.headfile = 'faqheader.txt'
+      self.footfile = 'faqfooter.txt'
+      self.infile   = 'faq.dat'
+      self.outfile  = 'faq.txt'
+
+      # timestamp
+      self.TS['Pre']   = '\n'
+      self.TS['Post']  = '\n\n'
+      self.TS['Pre+']  = ''
+      self.TS['Post+'] = ''
+
+      # heading
+      self.Head['Pre']  = ''
+      self.Head['Post'] = '\n'
+      self.Head['Pre+']  = ''
+      self.Head['Post+'] = ''
+
+      # sections
+      self.Sec['Pre']  = ''
+      self.Sec['Post'] = ''
+      self.Sec['Pre+']  = ''
+      self.Sec['Post+'] = ''
+
+      # TOC
+      self.TOC['Pre']       = ''
+      self.TOC['Post']      = '\n'
+      self.TOC['Pre+']      = ''
+      self.TOC['Post+']     = ''
+      self.TOC['CatPre']    = ''
+      self.TOC['CatPost']   = ''
+      self.TOC['ListPre']   = ''
+      self.TOC['ListPost']  = '\n'
+      self.TOC['EntryPre']  = ''
+      self.TOC['EntryIn']   = ''
+      self.TOC['EntryPost'] = ''
+
+      # questions
+      self.Q['Pre']  = ''
+      self.Q['In']   = ''
+      self.Q['Post'] = '\n'
+
+      # answers
+      self.A['Pre']  = ''
+      self.A['Post'] = '\n'
+
+
+# -------------------------------------------------------------
+#
+# screen (text) output configuration
+#
+# -------------------------------------------------------------
+class ScreenConfig(DefaultConfig):
+   def __init__(self):
+      DefaultConfig.__init__(self)
+
+      # ID
+      self.name = 'screen'
+
+      # flags
+      self.hasLinks = FALSE
+
+      # filenames
+      self.headfile = 'faqheader.txt'
+      self.footfile = 'faqfooter.txt'
+      self.infile   = 'faq.dat'
       self.outfile  = 'STDOUT'
 
       # timestamp
@@ -313,6 +346,46 @@ class TextConfig(DefaultConfig):
 
 # -------------------------------------------------------------
 #
+# BEAST configuration
+# 
+# Sample configuration provided by Dave Seidel
+# (dave@superluminal.com)
+#
+# -------------------------------------------------------------
+class BEASTConfig(DefaultConfig):
+   def __init__(self):
+      DefaultConfig.__init__(self)
+
+      # ID
+      self.name = 'BEAST'
+      
+      # filenames
+      self.headfile = 'html.1.faq'
+      self.footfile = 'html.2.faq'
+      self.infile   = 'faq.dat'
+      self.outfile  = 'faq.html'
+
+      # timestamp
+      self.TS['Pre+']  = '<tr><td>'
+      self.TS['Post+'] = '</td></tr>'
+
+      # headings
+      self.Head['Pre']   = ''
+      self.Head['Post']  = ''
+      self.Head['Pre+']  = '<tr><td bgcolor="#005D5D"><font face="Lucida, Verdana, Arial, sans-serif" color="#D0E4D0" size="+2">'
+      self.Head['Post+'] = '</font></td></tr>'
+
+      # sections
+      self.Sec['Pre+']  = '<tr><td><font face="Lucida, Verdana, Arial, sans-serif">'
+      self.Sec['Post+'] = '</font></td></tr>'
+
+      # table of contents
+      self.TOC['Pre+']  = '<tr><td><font face="Lucida, Verdana, Arial, sans-serif">'
+      self.TOC['Post+'] = '</font></td></tr>'
+
+
+# -------------------------------------------------------------
+#
 # table of available configurations; if you add a new
 # configuration, please add its class name to this list
 #
@@ -320,8 +393,9 @@ class TextConfig(DefaultConfig):
 
 configTab = [
    DefaultConfig,
-   BEASTConfig,
-   TextConfig
+   TextConfig,
+   ScreenConfig,
+   BEASTConfig
    ]
 
 #
@@ -448,7 +522,7 @@ def PrintTOC(cfg, out, faq1):
    out.write("%s%s\n" % (cfg.Sec['Post'], cfg.Sec['Post+']))
 
 
-def PrintQA(cfg, out, faq1):
+def PrintQA(cfg, out, faq1, feedback):
    catlist = faq1.keys()
 
    i = 1
@@ -476,13 +550,16 @@ def PrintQA(cfg, out, faq1):
          out.write("%s%s%s\n" % (cfg.A['Pre'],
                                  faq1[x][y].answer,
                                  cfg.A['Post']))
+         if feedback == TRUE:
+             sys.stdout.write('.')
       out.write("%s%s\n" % (cfg.Sec['Post'], cfg.Sec['Post+']))
       i = i + 1
 
 
-def BuildFAQ(cfg):
+def BuildFAQ(cfg, feedback):
    if cfg.outfile == "STDOUT":
       out = sys.stdout
+      feedback = FALSE
    else:
       try:
          out = open(cfg.outfile, 'w')
@@ -497,39 +574,49 @@ def BuildFAQ(cfg):
    IncludeFile(out, cfg.headfile)
    PrintTimeStamp(cfg, out)
    PrintTOC(cfg, out, faq)
-   PrintQA(cfg, out, faq)
+
+   if feedback == TRUE:
+      print "\nWriting FAQ info to "+ cfg.outfile,
+
+   PrintQA(cfg, out, faq, feedback)
    IncludeFile(out, cfg.footfile)
 
+   if feedback == TRUE:
+      print "done.\n"
 
 def main():
    # flags
    do_nothing = FALSE
    verbose = FALSE
+   feedback = TRUE
 
    # storage for user choices on command line
    user = {
       'cfg' : None,  # configuration instance
       'i'   : None,  # input filename
       'o'   : None,  # output filename
-      '1'   : None,  # header filename
-      '2'   : None   # footer filename
+      't'   : None,  # header filename
+      'b'   : None   # footer filename
       }
 
    # process the command line
    try:
-      opts, args = getopt.getopt(sys.argv[1:], "hvnc:o:1:2:")
+      opts, args = getopt.getopt(sys.argv[1:], "hvnlc:i:o:t:b:")
    except getopt.error, msg:
       print 'Error: ' + msg
       sys.exit(2)
    for i in opts:
       if i[0] == '-h':
-         print 'Usage: makefaq [-h] [-v] [-n] [-c config-name] [-i input-file] [-o output-file] [-1 header-file] [-2 footer-file]\n' + \
+         print 'Usage: makefaq [-h] [-v] [-n] [-l] [-c config-name] [-i input-file] [-o output-file] [-t header-file] [-b footer-file]\n' + \
                '\n' + \
                'Hints:\n' + \
-               '  - If you say "-v" (verbose), the config settings will be displayed.\n' + \
-               '  - Use -i, -o, -1, and -2 to override config settings.\n' + \
+               '  - If you say "-v" (verbose), the default config settings will be displayed.\n' + \
+               '  - Use -l to list all the configurations.\n' + \
+               '  - Use -i, -o, -t, and -b to override config settings.\n' + \
                '  - You can say: "-o STDOUT".\n' + \
                '  - Use "-n" to test your config settings without doing anything.\n'
+         sys.exit(0)
+      elif i[0] =='-l':
          PrintConfigs()
          sys.exit(0)
       elif i[0] == '-v':
@@ -545,10 +632,10 @@ def main():
          user['i'] = i[1]
       elif i[0] == '-o':
          user['o'] = i[1]
-      elif i[0] == '-1':
-         user['1'] = i[1]
-      elif i[0] == '-2':
-         user['2'] = i[1]
+      elif i[0] == '-t':
+         user['t'] = i[1]
+      elif i[0] == '-b':
+         user['b'] = i[1]
 
    # commit the user choices; we do it this way to ensure that cfg
    # gets set before we try to set its attributes
@@ -560,17 +647,17 @@ def main():
       cfg.infile = user['i']
    if user['o']:
       cfg.outfile = user['o']
-   if user['1']:
-      cfg.headfile = user['1']
-   if user['2']:
-      cfg.footfile = user['2']
+   if user['t']:
+      cfg.headfile = user['t']
+   if user['b']:
+      cfg.footfile = user['b']
 
    if verbose:
       cfg.show()
    if do_nothing:
       print 'Skipping file processing.'
    else:
-      BuildFAQ(cfg)
+      BuildFAQ(cfg, feedback)
 
 
 # Start main loop

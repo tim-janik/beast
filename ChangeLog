@@ -1,3 +1,11 @@
+Wed Feb  9 00:47:06 2000  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am:
+	* docs/makefaq.py:
+	* docs/faq.src:
+	* docs/faq.dat:
+	faq stuff from Dave: makefaq.py updates, renamed faq.src to faq.dat.
+
 Tue Feb  8 09:24:11 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstradiotools.[hc]: new widget to maintain radio selections
