@@ -1,3 +1,8 @@
+Tue Sep 21 03:11:53 2004  Tim Janik  <timj@gtk.org>
+
+	* library/demo/partymonster.bse: adjusted volume levels of the
+	various tracks to better faciltate the availably dynamic range.
+
 Mon Sep 20 01:09:35 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/plugin-devel.texi: updated Trigger() property docu.
