@@ -486,7 +486,9 @@ sfi_thread_sleep (glong max_useconds)
  * Set the wakeup function for the current thread. This enables
  * the thread to be woken up through sfi_thread_wakeup() even
  * if not sleeping in sfi_thread_sleep(). The wakeup function
- * must be thread-safe, so it may be called from any thread.
+ * must be thread-safe, so it may be called from any thread,
+ * and it should be fast, because the global thread system lock
+ * is held during its invokation.
  * Per thread, the wakeup function may be set only once.
  */
 void
