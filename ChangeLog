@@ -1,12 +1,9 @@
 Fri Dec  5 01:41:00 2003  Tim Janik  <timj@gtk.org>
 
-	* beast-gtk/gxk/gxkparam-choice.c:
 	* beast-gtk/gxk/gxkparam-entry.c:
 	* beast-gtk/gxk/gxkparam-label.c:
-	* beast-gtk/gxk/gxkparam-proxy.c:
 	* beast-gtk/gxk/gxkparam-scale.c:
 	* beast-gtk/gxk/gxkparam-spinner.c:
-	* beast-gtk/gxk/gxkparam-strnum.c:
 	* beast-gtk/gxk/gxkparam-toggle.c:
 	* beast-gtk/gxk/gxkparam.c:
 	* beast-gtk/gxk/gxkparam.h: CVS copied here from beast-gtk/.
