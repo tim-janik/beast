@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-04 18:11+0200\n"
-"PO-Revision-Date: 2004-09-03 14:16+0200\n"
+"POT-Creation-Date: 2004-09-05 11:03+0200\n"
+"PO-Revision-Date: 2004-09-05 16:53+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr "_Zpět"
 
 #: beast-gtk/bstapp.c:101
 msgid "Undo the effect of the last action"
-msgstr "Vrátit zpět efekt přechozí akce"
+msgstr "Vrátit zpět efekt předchozí akce"
 
 #: beast-gtk/bstapp.c:103
 msgid "_Redo"
@@ -174,7 +174,7 @@ msgstr "Nová skladba"
 
 #: beast-gtk/bstapp.c:127
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
-msgstr "Vytvořit novou skladbu, skládájící se z mixéru, stop, částí a poznámek"
+msgstr "Vytvořit novou skladbu, skládající se z mixéru, stop, částí a poznámek"
 
 #: beast-gtk/bstapp.c:129
 msgid "New Custom Synthesizer"
@@ -375,7 +375,7 @@ msgstr "Orientace"
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
 #: beast-gtk/bstdbmeter.c:1525
 msgid "Choose horizontal or vertical orientation"
-msgstr "Zvolte vodorovnou nebo smislou orientaci"
+msgstr "Zvolte vodorovnou nebo svislou orientaci"
 
 #: beast-gtk/bstdbmeter.c:771
 msgid "Justify"
@@ -569,11 +569,11 @@ msgstr "Načítám vlnu `%s'"
 
 #: beast-gtk/bstgrowbar.c:91
 msgid "Shrink the scrollable area"
-msgstr "Zmenšit posunovatelnou oblast"
+msgstr "Zmenšit posouvatelnou oblast"
 
 #: beast-gtk/bstgrowbar.c:93
 msgid "Grow the scrollable area"
-msgstr "Zvětšit posunovatelnou oblast"
+msgstr "Zvětšit posouvatelnou oblast"
 
 #: beast-gtk/bstitemseqdialog.c:139
 #, c-format
@@ -619,11 +619,11 @@ msgstr "Změnit momentálně vybranou klávesovou zkratku"
 
 #: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Raise"
-msgstr "Zvyšit"
+msgstr "Zvýšit"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
-msgstr "Zvýšit momentálně vybranou klávesouvou zkratku relativně vůči sousedům"
+msgstr "Zvýšit momentálně vybranou klávesovou zkratku relativně vůči sousedům"
 
 #: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Lower"
@@ -631,7 +631,7 @@ msgstr "Snížit"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
-msgstr "Snížit momentálně vybranou klávesouvou zkratku relativně vůči sousedům"
+msgstr "Snížit momentálně vybranou klávesovou zkratku relativně vůči sousedům"
 
 #: beast-gtk/bstkeybindings.c:59
 msgid "Delete the currently selected key binding"
@@ -783,6 +783,17 @@ msgstr "Vyberte barvu"
 msgid "Color Entry"
 msgstr "Zadání barvy"
 
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/bstparam-item-seq.c:71 beast-gtk/gxk/gxksimplelabel.c:598
+msgid "..."
+msgstr "..."
+
+#: beast-gtk/bstparam-item-seq.c:146
+msgid "Item List"
+msgstr "Seznam položek"
+
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
 msgstr "Editor sekvence not v mřížce"
@@ -800,16 +811,16 @@ msgid "Knob"
 msgstr "Knoflík"
 
 #: beast-gtk/bstparam-scale.c:66
-msgid "Knob (Logarithmic"
-msgstr "Knoflík (logaritmický"
+msgid "Knob (Logarithmic)"
+msgstr "Knoflík (logaritmický)"
 
 #: beast-gtk/bstparam-scale.c:78
 msgid "Dial"
 msgstr "Ciferník"
 
 #: beast-gtk/bstparam-scale.c:84
-msgid "Dial (Logarithmic"
-msgstr "Ciferník (Logaritmický"
+msgid "Dial (Logarithmic)"
+msgstr "Ciferník (Logaritmický)"
 
 #: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
@@ -1072,7 +1083,7 @@ msgstr "Základní oktáva"
 
 #: beast-gtk/bstpatternctrl.c:138
 msgid "Controls the octave relative to which notes are entered"
-msgstr "Ovládá oktávu, relativně ke které se zadávájí noty"
+msgstr "Ovládá oktávu, relativně ke které se zadávají noty"
 
 #: beast-gtk/bstpatternctrl.c:141
 msgid "Row Shading"
@@ -1475,7 +1486,7 @@ msgstr "#CPU"
 
 #: beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
-msgstr "CPU, na kterám vlákno právě běží"
+msgstr "CPU, na kterém vlákno právě běží"
 
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
@@ -1568,8 +1579,8 @@ msgid "Down"
 msgstr "Dolů"
 
 #: beast-gtk/bstrecords.idl:38
-msgid "Step downwards"
-msgstr "Krok dolů"
+msgid "Move downwards"
+msgstr "Posunout dolů"
 
 #: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70
 msgid "None"
@@ -1825,7 +1836,7 @@ msgstr "4 a 12"
 
 #: beast-gtk/bstrecords.idl:77
 msgid "Every fourth and twelfth row"
-msgstr "Každý čtvrtý a dvanáctý rádek"
+msgstr "Každý čtvrtý a dvanáctý řádek"
 
 #: beast-gtk/bstrecords.idl:78
 msgid "4 & 16"
@@ -1833,7 +1844,7 @@ msgstr "4 a 16"
 
 #: beast-gtk/bstrecords.idl:78
 msgid "Every fourth and sixteenth row"
-msgstr "Každý čtvrtý a šestnáctý rádek"
+msgstr "Každý čtvrtý a šestnáctý řádek"
 
 #: beast-gtk/bstrecords.idl:79
 msgid "8 & 16"
@@ -1873,7 +1884,7 @@ msgstr "3 a 6"
 
 #: beast-gtk/bstrecords.idl:83
 msgid "Every third and sixth row"
-msgstr "Každý tředí a šestý řádek"
+msgstr "Každý třetí a šestý řádek"
 
 #: beast-gtk/bstrecords.idl:84
 msgid "3 & 12"
@@ -2385,16 +2396,15 @@ msgstr "Odstranit momentálně vybranou stopu"
 #: beast-gtk/bsttrackview.c:514
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
-msgstr ""
+msgstr "Noty z nezaškrtnutých stop sekvencer při přehrávání ignoruje"
 
 #: beast-gtk/bsttrackview.c:517 bse/bsemidisynth.c:427 bse/bsetrack.c:887
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximální počet hlasů pro současné přehrávání"
 
 #: beast-gtk/bsttrackview.c:520
-#, fuzzy
 msgid "Synthesis network or wave to be used as instrument by this track"
-msgstr "Síť syntézy, kterou používat jako nástroj"
+msgstr "Síť syntézy nebo vlna, kterou v této stopě používat jako nástroj"
 
 #: beast-gtk/bsttrackview.c:523 bse/bsetrack.c:893
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
@@ -2480,7 +2490,7 @@ msgid "Adjust the zoom factor of the router display"
 msgstr "Upravit faktor zvětšení zobrazení routeru"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:2
-msgid "Aplly configuration changes to the pattern editor layout"
+msgid "Apply configuration changes to the pattern editor layout"
 msgstr "Použít změny nastavení rozložení editoru vzorků"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
@@ -2872,13 +2882,6 @@ msgstr "Widget mnemoniky"
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Widget, který aktivovat, když je stisknuta mnemonická klávesa popisku"
-
-#. TRANSLATORS: this is the string that is appended to the end
-#. * of a clipped label if it does not fit its assigned width.
-#.
-#: beast-gtk/gxk/gxksimplelabel.c:598
-msgid "..."
-msgstr "..."
 
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26 plugins/bsenoise.idl:27
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
@@ -3502,7 +3505,7 @@ msgstr "Takový vstupní kanál neexistuje"
 
 #: bse/bseenums.c:109
 msgid "No such output channel"
-msgstr "Takový výstupn kanál neexistuje"
+msgstr "Takový výstupní kanál neexistuje"
 
 #: bse/bseenums.c:110
 msgid "Input/Output channels not connected"
@@ -3521,9 +3524,8 @@ msgid "Input/Output channels already connected"
 msgstr "Vstupní/výstupní kanály jsou již připojeny"
 
 #: bse/bseenums.c:114
-#, fuzzy
 msgid "Invalid synthesis module connection"
-msgstr "Neplatný typ modulu syntézy"
+msgstr "Neplatné připojení modulu syntézy"
 
 #: bse/bseenums.c:115
 msgid "Parent mismatch"
