@@ -497,7 +497,8 @@ bst_procedure_exec_internal (const gchar *procedure_name,
 	  g_free (error);
 	  break;
 	}
-      bst_procedure_shell_preset (shell, preset_param, &value, TRUE);
+      if (preset_param[0])
+        bst_procedure_shell_preset (shell, preset_param, &value, TRUE);
       g_value_unset (&value);
       preset_param = va_arg (var_args, const gchar*);
     }

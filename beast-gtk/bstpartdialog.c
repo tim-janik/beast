@@ -83,7 +83,6 @@ static BstMenuConfigEntry popup_entries[] =
   { "/Edit/-----1",	NULL,     	NULL,   0,           	"<Separator>",	0 },
   { "/Edit/Undo",	"<ctrl>Z",      ACTION_CB (UNDO),	"<StockItem>",	BST_STOCK_UNDO },
   { "/Edit/Redo",	"<ctrl>R",      ACTION_CB (REDO),	"<StockItem>",	BST_STOCK_REDO },
-  { "/Edit/Clear Undo",	NULL,	        ACTION_CB (CLEAR_UNDO),	"<Item>",	0 },
   { "/-----1",		NULL,		NULL,	0,		"<Separator>",	0 },
   { "/Scripts",		NULL,		NULL,   0,		"<Title>",	0 },
   { "/Test",		NULL,		NULL,	0,		"<Branch>",	0 },
@@ -139,8 +138,8 @@ bst_part_dialog_class_init (BstPartDialogClass *class)
   /* standard entries */
   m1 = bst_menu_config_from_entries (G_N_ELEMENTS (popup_entries), popup_entries);
   /* procedures */
-  cseq = bse_categories_match_typed ("/Scripts/*", "BseProcedure");
-  m2 = bst_menu_config_from_cats (cseq, part_dialog_run_proc, 1);
+  cseq = bse_categories_match ("/Part/*");
+  m2 = bst_menu_config_from_cats (cseq, part_dialog_run_proc, 1, NULL, BST_STOCK_EXECUTE);
   bst_menu_config_sort (m2);
   /* merge */
   m1 = bst_menu_config_merge (m1, m2);

@@ -1,3 +1,24 @@
+Mon Oct  6 02:58:14 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/bse-categories.txt: revamped category conventions to better
+	reflect module, script and procedure types we now have. described
+	automatic arguments upon procedure invocation.
+
+	* beast-gtk/bstapp.c: major menu cleanup. offer csynth/snet/song
+	utility procedures.
+
+	* beast-gtk/bstmenus.[hc] (bst_menu_config_from_cats): allow fallback
+	stock icon and partial path substitution.
+
+	* beast-gtk/bstprocedure.c: ignore unnamed preset args.
+
+	* beast-gtk/bstsnetrouter.c: improved utility handling in popup menu.
+
+	* beast-gtk/bstutils.h: add more stock aliases. a bunch of the icons
+	used are just workarounds for missing icons.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_item_factory_sensitize().
+
 Sun Oct  5 10:34:54 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/quickstart.texi: adapt to changes in beast.

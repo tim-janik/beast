@@ -1,70 +1,76 @@
 BSE Categories
 ==============
 
-The purpose of BSE Categories is to provide a mapping of the functionality
-provided by BSE and its plugins to the GUI frontends. They are used to
-give the front-ends a hirarchical structure to group certain services and
-to aid the user in finding required functionality.
+The purpose of BSE Categories is to provide a mapping of functionality
+provided by BSE and its plugins to GUI frontends. Categories are used to
+provide a hirarchical structure, to group certain services and to aid
+the user in finding required functionality.
 
 Object Categories
 -----------------
 
-Exported BSE objects (and some internal ones) and procedures are
-"categorized" to easily integrate them into menu or similar operation
-structures in GUIs.
+BSE objects and procedures are "categorized" to easily integrate them
+into menu or similar operation structures in GUIs.
 
 Objects that are derived from the BseSource class with the main intend
-to be used as signal modules (filters) in a synthesis network are
-categorized under the "/Modules/" toplevel category, ordered by operational
+to be used as synthesis modules in a synthesis network are categorized
+under the "/Modules/" toplevel category, ordered by operational
 categories.
 
-Procedure Categories
---------------------
+Core Procedures
+---------------
 
-Procedures are categorized in a similar way under the "/Proc/" toplevel
-category.
-Such procedures that serve as object methods, e.g. to alter the object's
-state in a certain way, get their name prefixed with the object type
-they take as first argument and get categorized under "<OType>/".
-The prefixing works by constructing the final procedure name out of
-<OBJECT_TYPE> a prefix seperator "+" and the actuall procedure name.
-The prefixing keeps a name space seperation for similar procedure names
-across hirarchy branches, so equally named procedures can be introduced
-for different purposes, with different implemenatations or argument lists
-for classes that do not inherit from each other.
+Procedures provided by the BSE core are categorized under a
+subcategory of the "/Methods/" toplevel category.
+The object type a procedure operates on is appended to
+the toplevel category to form a category name starting with
+"/Methods/<ObjectType>/".
+Procedures implementing object methods need to take the
+object as first argument and follow a special naming convention
+(for the procedure name). To construct the procedure type name,
+the object type and method named are concatenated to form
+"<ObjectType>+<MethodName>". This ensure proper namespacing
+of method names to avoid clashes with equally named methods
+of distinct object types.
+Some special internal procedures may also be entered under
+the "/Proc/" toplevel category.
+
+Utility Procedures
+------------------
+
+Procedures implementing utility functionality, usually implemented
+as scripts, are entered into one of the below listed categories.
+Depending on the category, some procedure arguments are automatically
+provided by the GUI, the name and type of automatic arguments are
+listed with the category in the following table:
+
+Category		Automatic arguments as (name:type) pairs
+------------------------------------------------------------------------------
+/Project/		project:BseProject
+/SNet/			snet:BseSNet
+/Song/			song:BseSong
+/Part/			part:BsePart
+/CSynth/		csynth:BseCSynth
+/WaveRepo/		wave_repo:BseWaveRepo
+/Wave/			wave:BseWave
+
+The set of automatic arguments provided upon invocation is not restricted
+by te above lists, so caution should be taken when naming multiple arguments
+to a procedure auto_*.
 
 Aliasing/Mapping
 ----------------
 
-A certain BSE type (procedure or object) may have certain categories
-applying to it, thus a category->type aliasing is allowed.
-While the reverse does not hold true, i.e. a specific category always
-maps to one single type, not all types need to have a category
-assigned to them.
+A certain BSE type (procedure or object) may be entered under several
+categories simultaneously, thus allowing multiple categories to
+refer (alias) to the same type (functionality).
 
 
-Examples to show the above schemata
------------------------------------
+Examples
+--------
 
-{M|P}[A] Module, Procedure, Effect or Aliasing tag
-|  Name					Category
--------------------------------------------------------------------------------
-M  BseSine				/Modules/Generators/Sine
-M  BseNoise				/Modules/Generators/Noise
-M  BseLowPass				/Modules/Filters/Low Pass
-M  BseRoom				/Modules/Effects/Echo/Room
-M  BseResonance				/Modules/Effects/Echo/Resonance
-M  BseVocoder				/Modules/Filters/Vocoder
-MA BseVocoder				/Modules/Effects/Misc/Vocoder
-
-P  hello-world				/Proc/Test/Hello World
-P  load-wave				/Proc/Loader/WAVE
-P  BsePattern+set-instrument		/Method/BsePattern/Basic/Set Instrument
-P  BsePattern+set-note			/Method/BsePattern/Basic/Set Note
-P  BsePattern+select-all		/Method/BsePattern/Select/All
-P  BsePattern+cut-selection		/Method/BsePattern/Edit/Cut
-
-E  BseEffectFineTune			/Effect/Fine Tune
-E  BseEffectNoteVolume			/Effect/Note Volume
-E  BseEffectPatternBreak		/Effect/Pattern Break
-E  BseEffectVolumeDelta			/Effect/Volume Delta
+Category			TypeName		Comment
+------------------------------------------------------------------------------
+/Methods/BseProject/File/Store	BseProject+store-bse	BseProject procedure
+/Modules/Spatial/Balance	BseBalance		synthesis module
+/SNet Utility/Utils/Grid Align	modules2grid		scheme script

@@ -48,6 +48,27 @@ typedef struct {
 #define	BST_STOCK_WARNING		GTK_STOCK_DIALOG_WARNING
 #define	BST_STOCK_ERROR			GTK_STOCK_DIALOG_ERROR
 
+#define BST_STOCK_NEW	                GTK_STOCK_NEW
+#define BST_STOCK_OPEN	                GTK_STOCK_OPEN
+#define BST_STOCK_MERGE	                GTK_STOCK_OPEN // FIXME
+#define BST_STOCK_SAVE	                GTK_STOCK_SAVE
+#define BST_STOCK_SAVE_AS	        GTK_STOCK_SAVE_AS
+#define BST_STOCK_PREFERENCES	        GTK_STOCK_PREFERENCES
+#define BST_STOCK_QUIT	                GTK_STOCK_QUIT
+#define BST_STOCK_CLEAR_UNDO	        GTK_STOCK_DELETE // FIXME
+#define BST_STOCK_PREFERENCES	        GTK_STOCK_PREFERENCES
+#define BST_STOCK_PLAY	                GTK_STOCK_GO_FORWARD // FIXME
+#define BST_STOCK_STOP	                GTK_STOCK_STOP
+#define BST_STOCK_NEW_SONG	        GTK_STOCK_NEW // FIXME
+#define BST_STOCK_NEW_CSYNTH	        GTK_STOCK_NEW // FIXME
+#define BST_STOCK_NEW_MIDI_SYNTH	GTK_STOCK_NEW // FIXME
+#define BST_STOCK_REMOVE_SYNTH	        GTK_STOCK_REMOVE // REMOVE
+#define BST_STOCK_DOC_NEWS	        GTK_STOCK_NEW // FIXME
+#define BST_STOCK_HELP	                GTK_STOCK_HELP
+#define BST_STOCK_DOC_FAQ	        GTK_STOCK_NEW // FIXME
+#define BST_STOCK_DOC_DEVEL	        GTK_STOCK_NEW // FIXME
+#define BST_STOCK_ABOUT	                GTK_STOCK_YES // FIXME
+
 
 /* --- stock actions and aliases --- */
 #define	BST_STOCK_NONE			(NULL)

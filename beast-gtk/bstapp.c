@@ -63,63 +63,72 @@ static BstMenuConfigEntry menubar_entries[] =
 #define CB(action) (bst_app_menu_callback), (BST_ACTION_ ## action)
   { "/_File",                           NULL,           NULL, 0,                        "<Branch>" },
   { "/File/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
-  { "/File/_New",                       "<ctrl>N",      CB (NEW_PROJECT),               "<Item>" },
-  { "/File/_Open...",                   "<ctrl>O",      CB (OPEN_PROJECT),              "<Item>" },
-  { "/File/_Merge...",                  "<ctrl>M",      CB (MERGE_PROJECT),             "<Item>" },
-  { "/File/_Save",                      NULL,           CB (SAVE_PROJECT),              "<Item>" },
-  { "/File/Save _As...",                NULL,           CB (SAVE_PROJECT_AS),           "<Item>" },
+  { "/File/_New",                       "<ctrl>N",      CB (NEW_PROJECT),               "<StockItem>", BST_STOCK_NEW },
+  { "/File/_Open...",                   "<ctrl>O",      CB (OPEN_PROJECT),              "<StockItem>", BST_STOCK_OPEN },
+  { "/File/_Merge...",                  "<ctrl>M",      CB (MERGE_PROJECT),             "<StockItem>", BST_STOCK_MERGE },
+  { "/File/_Close",                     "<ctrl>W",      CB (CLOSE_PROJECT),             "<StockItem>", BST_STOCK_CLOSE },
   { "/File/-----",                      NULL,           NULL, 0,                        "<Separator>" },
-  { "/File/_Dialogs",                   NULL,           NULL, 0,                        "<Branch>" },
-  { "/File/Dialogs/<<<<<<",             NULL,           NULL, 0,                        "<Tearoff>" },
-  { "/File/Dialogs/Procedure _Browser...", NULL,        CB (SHOW_PROC_BROWSER),         "<Item>" },
-  { "/File/Dialogs/_Preferences...",    NULL,           CB (SHOW_PREFERENCES),          "<Item>" },
-  { "/File/Dialogs/Device _Monitor...", NULL,           CB (SHOW_DEVICE_MONITOR),       "<Item>" },
+  { "/File/_Save",                      NULL,           CB (SAVE_PROJECT),              "<StockItem>", BST_STOCK_SAVE },
+  { "/File/Save _As...",                NULL,           CB (SAVE_PROJECT_AS),           "<StockItem>", BST_STOCK_SAVE_AS },
   { "/File/-----",                      NULL,           NULL, 0,                        "<Separator>" },
-  { "/File/_Close",                     "<ctrl>W",      CB (CLOSE_PROJECT),             "<Item>" },
-  { "/File/_Exit",                      "<ctrl>Q",      CB (EXIT),                      "<Item>" },
-  { "/_Project",                        NULL,           NULL, 0,                        "<Branch>" },
-  { "/Project/<<<<<<",                  NULL,           NULL, 0,                        "<Tearoff>" },
-  { "/Project/_Play",                   "<ctrl>P",      CB (START_PLAYBACK),            "<Item>" },
-  { "/Project/_Stop",                   "<ctrl>S",      CB (STOP_PLAYBACK),             "<Item>" },
-  { "/Project/-----",                   NULL,           NULL, 0,                        "<Separator>" },
-  { "/Project/New Song",                NULL,           CB (NEW_SONG),                  "<Item>" },
-  { "/Project/New Custom Synthesizer",  NULL,           CB (NEW_CSYNTH),                "<Item>" },
-  { "/Project/New MIDI Synthesizer",    NULL,           CB (NEW_MIDI_SYNTH),            "<Item>" },
-  { "/Project/Remove Synth",            NULL,           CB (REMOVE_SYNTH),              "<Item>" },
-  { "/Project/-----",                   NULL,           NULL, 0,                        "<Separator>" },
-  { "/Project/Rack Editor",             NULL,           CB (RACK_EDITOR),               "<Item>" },
-  { "/Project/-----",                   NULL,           NULL, 0,                        "<Separator>" },
-  { "/Project/Rebuild",                 NULL,           CB (REBUILD),                   "<Item>" },
+  { "/File/Preferences...",             NULL,           CB (SHOW_PREFERENCES),          "<StockItem>", BST_STOCK_PREFERENCES },
+  { "/File/-----",                      NULL,           NULL, 0,                        "<Separator>" },
+  { "/File/_Quit",                      "<ctrl>Q",      CB (EXIT),                      "<StockItem>", BST_STOCK_QUIT },
   { "/_Edit",                           NULL,           NULL, 0,                        "<Branch>" },
   { "/Edit/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
-  { "/Edit/_Undo",                      "<ctrl>Z",      CB (UNDO),                      "<Item>" },
-  { "/Edit/_Redo",                      "<ctrl>R",      CB (REDO),                      "<Item>" },
-  { "/Edit/_Clear Undo",                NULL,           CB (CLEAR_UNDO),                "<Item>" },
-  { "/S_ong",                           NULL,           NULL, 0,                        "<Branch>" },
+  { "/Edit/_Undo",                      "<ctrl>Z",      CB (UNDO),                      "<StockItem>", BST_STOCK_UNDO },
+  { "/Edit/_Redo",                      "<ctrl>R",      CB (REDO),                      "<StockItem>", BST_STOCK_REDO },
+  { "/Edit/_Clear Undo",                NULL,           CB (CLEAR_UNDO),                "<StockItem>", BST_STOCK_CLEAR_UNDO },
+  { "/Edit/-----",                      NULL,           NULL, 0,                        "<Separator>" },
+  { "/Edit/Preferences...",             NULL,           CB (SHOW_PREFERENCES),          "<StockItem>", BST_STOCK_PREFERENCES },
+  { "/_View",                           NULL,           NULL, 0,                        "<Branch>" },
+  { "/View/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
+  { "/View/Procedure _Browser",         NULL,           CB (SHOW_PROC_BROWSER),         "<Item>" },
+  { "/View/Rack Editor",                NULL,           CB (RACK_EDITOR),               "<Item>" },
+  { "/View/Device _Monitor",            NULL,           CB (SHOW_DEVICE_MONITOR),       "<Item>" },
+  { "/View/-----",                      NULL,           NULL, 0,                        "<Separator>" },
+  { "/View/Preferences",                NULL,           CB (SHOW_PREFERENCES),          "<Item>" },
+  { "/View/-----",                      NULL,           NULL, 0,                        "<Separator>" },
+  { "/View/Rebuild",                    NULL,           CB (REBUILD),                   "<Item>" },
+  { "/_Project",                        NULL,           NULL, 0,                        "<Branch>" },
+  { "/Project/<<<<<<",                  NULL,           NULL, 0,                        "<Tearoff>" },
+  { "/Project/_Play",                   "<ctrl>P",      CB (START_PLAYBACK),            "<StockItem>", BST_STOCK_PLAY },
+  { "/Project/_Stop",                   "<ctrl>S",      CB (STOP_PLAYBACK),             "<StockItem>", BST_STOCK_STOP },
+  { "/Project/-----",                   NULL,           NULL, 0,                        "<Separator>" },
+  { "/Project/New Song",                NULL,           CB (NEW_SONG),                  "<StockItem>", BST_STOCK_NEW_SONG },
+  { "/Project/New Custom Synthesizer",  NULL,           CB (NEW_CSYNTH),                "<StockItem>", BST_STOCK_NEW_CSYNTH },
+  { "/Project/New MIDI Synthesizer",    NULL,           CB (NEW_MIDI_SYNTH),            "<StockItem>", BST_STOCK_NEW_MIDI_SYNTH },
+  { "/Project/Remove Synth",            NULL,           CB (REMOVE_SYNTH),              "<StockItem>", BST_STOCK_REMOVE_SYNTH },
+#if 0
+  { "/_Song",                           NULL,           NULL, 0,                        "<Branch>" },
   { "/Song/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
   { "/Song/Add _Part",                  NULL,           CB (ADD_PART),                  "<Item>" },
   { "/Song/Delete _Part",               NULL,           CB (DELETE_PART),               "<Item>" },
   { "/Song/Add _Track",                 NULL,           CB (ADD_TRACK),                 "<Item>" },
   { "/Song/Delete _Track",              NULL,           CB (DELETE_TRACK),              "<Item>" },
-  { "/_Waves",                          NULL,           NULL, 0,                        "<Branch>" },
+  { "/_Synth",                          NULL,           NULL, 0,                        "<Branch>" },
+  { "/Synth/<<<<<<",                    NULL,           NULL, 0,                        "<Tearoff>" },
+  { "/Synth/_Test",                     "",             CB (NONE),                      "<Item>" },
+  { "/Wave_s",                          NULL,           NULL, 0,                        "<Branch>" },
   { "/Waves/<<<<<<",                    NULL,           NULL, 0,                        "<Tearoff>" },
   { "/Waves/_Load Wave...",             "",             CB (LOAD_WAVE),                 "<Item>" },
   { "/Waves/Delete Wave",               NULL,           CB (DELETE_WAVE),               "<Item>" },
   { "/Waves/_Edit Wave...",             "",             CB (EDIT_WAVE),                 "<Item>" },
-  { "/_Scripts",                        NULL,           NULL, 0,                        "<Branch>" },
-  // { "/S_Net",                        NULL,           NULL, 0,                        "<Branch>" },
-  // { "/SNet/<<<<<<",                  NULL,           NULL, 0,                        "<Tearoff>" },
-  // { "/SNet/_Test",                   "",             CB (NONE),                      "<Item>" },
+#endif
+  { "/_Tools",                          NULL,           NULL, 0,                        "<Branch>" },
+  { "/Tools/_Song",                     NULL,           NULL, 0,                        "<Branch>" },
+  { "/Tools/_Synth",                    NULL,           NULL, 0,                        "<Branch>" },
+  { "/Tools/Wave_s",                    NULL,           NULL, 0,                        "<Branch>" },
 };
 static BstMenuConfigEntry menubar_help_entries[] = {
   { "/_Help",                           NULL,           NULL, 0,                        "<LastBranch>" },
   { "/Help/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
-  { "/Help/_Release Notes...",          NULL,           CB (HELP_RELEASE_NOTES),        "<Item>" },
-  { "/Help/Quick Start...",             NULL,           CB (HELP_QUICK_START),          "<Item>" },
-  { "/Help/_FAQ...",                    NULL,           CB (HELP_FAQ),                  "<Item>" },
-  { "/Help/Development/GSL Engine...",  NULL,           CB (HELP_GSL_PLAN),             "<Item>" },
+  { "/Help/_Release Notes...",          NULL,           CB (HELP_RELEASE_NOTES),        "<StockItem>", BST_STOCK_DOC_NEWS },
+  { "/Help/Quick Start...",             NULL,           CB (HELP_QUICK_START),          "<StockItem>", BST_STOCK_HELP },
+  { "/Help/_FAQ...",                    NULL,           CB (HELP_FAQ),                  "<StockItem>", BST_STOCK_DOC_FAQ },
+  { "/Help/Development/GSL Engine...",  NULL,           CB (HELP_GSL_PLAN),             "<StockItem>", BST_STOCK_DOC_DEVEL },
   { "/Help/-----",                      NULL,           NULL, 0,                        "<Separator>" },
-  { "/Help/_About...",                  NULL,           CB (HELP_ABOUT),                "<Item>" },
+  { "/Help/_About...",                  NULL,           CB (HELP_ABOUT),                "<StockItem>", BST_STOCK_ABOUT },
 #undef  CB
 };
 
@@ -241,11 +250,37 @@ bst_app_init (BstApp *app)
                             (GtkDestroyNotify) gtk_object_unref);
   /* standard entries */
   m1 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_entries), menubar_entries);
-  /* script entries */
-  cseq = bse_categories_match_typed ("/Scripts/*", "BseProcedure");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, FALSE);
+  /* Project utilities */
+  cseq = bse_categories_match ("/Project/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/", BST_STOCK_EXECUTE);
   bst_menu_config_sort (m2);
-  /* merge and sort up */
+  m1 = bst_menu_config_merge (m1, m2);
+  /* Song utilities */
+  cseq = bse_categories_match ("/Song/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Song/", BST_STOCK_EXECUTE);
+  bst_menu_config_sort (m2);
+  m1 = bst_menu_config_merge (m1, m2);
+  /* CSynth utilities */
+  cseq = bse_categories_match ("/CSynth/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Synth/", BST_STOCK_EXECUTE);
+  bst_menu_config_sort (m2);
+  m1 = bst_menu_config_merge (m1, m2);
+  /* SNet utilities */
+  cseq = bse_categories_match ("/SNet/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Synth/", BST_STOCK_EXECUTE);
+  bst_menu_config_sort (m2);
+  m1 = bst_menu_config_merge (m1, m2);
+#if 0
+  /* Wave utilities */
+  cseq = bse_categories_match ("/Wave/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Waves/", BST_STOCK_EXECUTE);
+  bst_menu_config_sort (m2);
+  m1 = bst_menu_config_merge (m1, m2);
+#endif
+  /* WaveRepo utilities */
+  cseq = bse_categories_match ("/WaveRepo/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Waves/", BST_STOCK_EXECUTE);
+  bst_menu_config_sort (m2);
   m1 = bst_menu_config_merge (m1, m2);
   /* add help entries */
   m2 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_help_entries), menubar_help_entries);
@@ -546,9 +581,27 @@ bst_app_run_script_proc (GtkWidget *widget,
 {
   BstApp *self = BST_APP (widget);
   BseCategory *cat = bse_category_from_id (category_id);
+  GtkWidget *shell = bst_app_get_current_shell (self);
+  SfiProxy super = shell ? BST_SUPER_SHELL (shell)->super : 0;
+  const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
+
+  if (BST_IS_SONG_SHELL (shell) && super)
+    song = "song";
+  else if (BST_IS_WAVE_REPO_SHELL (shell) && super)
+    wave_repo = "wrepo";
+  else if (BST_IS_SNET_SHELL (shell) && super)
+    {
+      snet = "snet";
+      if (BSE_IS_CSYNTH (super))
+        csynth = "csynth";
+    }
 
   bst_procedure_exec_auto (cat->type,
                            "project", SFI_TYPE_PROXY, self->project,
+                           song, SFI_TYPE_PROXY, super,
+                           wave_repo, SFI_TYPE_PROXY, super,
+                           snet, SFI_TYPE_PROXY, super,
+                           csynth, SFI_TYPE_PROXY, super,
                            NULL);
 }
 
@@ -676,6 +729,16 @@ bst_app_activate (BstActivatable *activatable,
         bst_preferences_revert (BST_PREFERENCES (gxk_dialog_get_child (GXK_DIALOG (bst_preferences))));
       gxk_widget_showraise (bst_preferences);
       break;
+    case BST_ACTION_SHOW_DEVICE_MONITOR:
+      any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
+      gtk_widget_show (any);
+      any = gxk_dialog_new (NULL,
+                            GTK_OBJECT (self),
+                            GXK_DIALOG_DELETE_BUTTON, // FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+                            "Device Monitor",
+                            any);
+      gtk_widget_show (any);
+      break;
     case BST_ACTION_SHOW_PROC_BROWSER:
 #if 0 // FIXME
       if (!bst_proc_browser)
@@ -693,16 +756,6 @@ bst_app_activate (BstActivatable *activatable,
         }
       gxk_widget_showraise (bst_proc_browser);
 #endif
-      break;
-    case BST_ACTION_SHOW_DEVICE_MONITOR:
-      any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
-      gtk_widget_show (any);
-      any = gxk_dialog_new (NULL,
-                            GTK_OBJECT (self),
-                            GXK_DIALOG_DELETE_BUTTON, // FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-                            "Device Monitor",
-                            any);
-      gtk_widget_show (any);
       sfi_alloc_report ();
 #if 0 // FIXME
       {
@@ -884,12 +937,12 @@ bst_app_update_activatable (BstActivatable *activatable)
     return;
 
   /* update menu bar menu items */
-  widget = gxk_item_factory_get_item (factory, "/Song");
-  if (widget)
-    gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
-  widget = gxk_item_factory_get_item (factory, "/Waves");
-  if (widget)
-    gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
+  gxk_item_factory_sensitize (factory, "/Song", BST_IS_SONG_SHELL (shell));
+  gxk_item_factory_sensitize (factory, "/Tools/Song", BST_IS_SONG_SHELL (shell));
+  gxk_item_factory_sensitize (factory, "/Synth", BST_IS_SNET_SHELL (shell));
+  gxk_item_factory_sensitize (factory, "/Tools/Synth", BST_IS_SNET_SHELL (shell));
+  gxk_item_factory_sensitize (factory, "/Waves", BST_IS_WAVE_REPO_SHELL (shell));
+  gxk_item_factory_sensitize (factory, "/Tools/Waves", BST_IS_WAVE_REPO_SHELL (shell));
 
   /* special adjustments */
   widget = gxk_item_factory_get_item (factory, "/Edit/Clear Undo");

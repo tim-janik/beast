@@ -102,21 +102,43 @@ menu_config_copy_icon (BstMenuConfig *config,
 BstMenuConfig*
 bst_menu_config_from_cats (BseCategorySeq *cseq,
 			   BstMenuCatFunc  callback,
-			   guint           skip_levels)
+			   guint           skip_levels,
+                           const gchar    *new_prefix,
+                           const gchar    *stock_fallback)
 {
   BstMenuConfig *config = g_new0 (BstMenuConfig, 1);
   guint i;
 
+  if (!new_prefix)
+    new_prefix = "/";
   for (i = 0; i < cseq->n_cats; i++)
     {
       BstMenuConfigEntry e = { 0, };
-      e.path = cseq->cats[i]->category + (skip_levels ? cseq->cats[i]->mindex : 0);
+      const gchar *p = cseq->cats[i]->category[0] == '/' ? cseq->cats[i]->category + 1 : cseq->cats[i]->category;
+      guint sl = skip_levels;
+      gboolean have_icon;       // FIXME: optimize once we support NULL icons
+      while (sl--)
+        {
+          const gchar *d = strchr (p, '/');
+          p = d ? d + 1 : p;
+        }
+      e.path = g_strconcat (new_prefix, p, NULL);
       e.accelerator = NULL;
       e.callback = (BstMenuUserFunc) callback;
       e.callback_action = cseq->cats[i]->category_id;
-      e.item_type = bstmenu_category_item;
-      e.extra_data = menu_config_copy_icon (config, cseq->cats[i]->icon);
+      have_icon = cseq->cats[i]->icon && (cseq->cats[i]->icon->width + cseq->cats[i]->icon->height) > 0;
+      if (!have_icon && stock_fallback)
+        {
+          e.item_type = "<StockItem>";
+          e.extra_data = stock_fallback;
+        }
+      else
+        {
+          e.item_type = bstmenu_category_item;
+          e.extra_data = menu_config_copy_icon (config, cseq->cats[i]->icon);
+        }
       menu_config_append (config, &e);
+      g_free (e.path);
     }
 
   return config;

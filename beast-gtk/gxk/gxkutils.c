@@ -1949,6 +1949,44 @@ path_fix_uline (const gchar *str)
 }
 
 /**
+ * gxk_item_factory_sensitize
+ * @ifactory:  valid #GtkItemFactory
+ * @path:      item factory path
+ * @sensitive: whether menu item should be sensitive
+ * @RETURNS:   menu item according to @path
+ *
+ * This function turns the menu item found via
+ * gxk_item_factory_get_item() (in-)sensitive
+ * according to @sensitive. Additional checks
+ * are performed before making a menu item sensitive
+ * to avoid showing e.g. empty submenus.
+ */
+GtkWidget*
+gxk_item_factory_sensitize (GtkItemFactory  *ifactory,
+                            const gchar     *path,
+                            gboolean         sensitive)
+{
+  GtkWidget *item = gxk_item_factory_get_item (ifactory, path);
+  if (item)
+    {
+      if (GTK_IS_MENU_ITEM (item) && sensitive)
+        {
+          GtkWidget *menu = gtk_menu_item_get_submenu ((GtkMenuItem*) item);
+          if (menu && GTK_IS_MENU (menu))
+            {
+              GList *list = gtk_container_get_children (GTK_CONTAINER (menu));
+              if (list)
+                g_list_free (list);
+              else
+                sensitive = FALSE;
+            }
+        }
+      gtk_widget_set_sensitive (item, sensitive);
+    }
+  return item;
+}
+
+/**
  * gxk_item_factory_get_item
  * @ifactory: valid #GtkItemFactory
  * @path:     item factory path

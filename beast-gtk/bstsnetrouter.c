@@ -63,7 +63,7 @@ static void	  bst_router_run_method         (GtkWidget		*widget,
 /* --- menus --- */
 static BstMenuConfigEntry popup_entries[] =
 {
-  { "/Scripts",		NULL,		NULL,	0,	"<Title>",	0 },
+  { "/Tools",		NULL,		NULL,	0,	"<Title>",	0 },
   { "/_Utils",		NULL,		NULL,	0,	"<Branch>",	0 },
   { "/-----",		NULL,		NULL,	0,	"<Separator>",	0 },
   { "/Modules",		NULL,		NULL,	0,	"<Title>",	0 },
@@ -122,7 +122,7 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   BseCategorySeq *cseq;
-  BstMenuConfig *m1, *m2, *m3;
+  BstMenuConfig *m1, *m2, *m3, *m4;
 
   parent_class = g_type_class_peek_parent (class);
   bst_snet_router_class = class;
@@ -139,16 +139,21 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   /* standard entries */
   m1 = bst_menu_config_from_entries (G_N_ELEMENTS (popup_entries), popup_entries);
   /* module entries */
-  cseq = bse_categories_match_typed ("/Modules/*", "BseSource");
-  m2 = bst_menu_config_from_cats (cseq, bst_router_popup_select, 1);
+  cseq = bse_categories_match ("/Modules/*");
+  m2 = bst_menu_config_from_cats (cseq, bst_router_popup_select, 1, NULL, NULL);
   bst_menu_config_sort (m2);
-  /* methods */
-  cseq = bse_categories_match_method ("/Scripts/Utils/*", "BseSNet");
-  m3 = bst_menu_config_from_cats (cseq, bst_router_run_method, 1);
+  /* SNet utilities */
+  cseq = bse_categories_match ("/SNet/*");
+  m3 = bst_menu_config_from_cats (cseq, bst_router_run_method, 1, NULL, BST_STOCK_EXECUTE);
   bst_menu_config_sort (m3);
+  /* CSynth utilities */
+  cseq = bse_categories_match ("/CSynth/*");
+  m4 = bst_menu_config_from_cats (cseq, bst_router_run_method, 1, NULL, BST_STOCK_EXECUTE);
+  bst_menu_config_sort (m4);
   /* merge them */
   m1 = bst_menu_config_merge (m1, m2);
   m1 = bst_menu_config_merge (m1, m3);
+  m1 = bst_menu_config_merge (m1, m4);
   /* create menu items */
   bst_menu_config_create_items (m1, class->popup_factory, NULL);
   /* cleanup */
@@ -349,6 +354,7 @@ bst_router_run_method (GtkWidget *widget,
 
   bst_procedure_exec_auto (cat->type,
                            "snet", SFI_TYPE_PROXY, self->snet,
+                           BSE_IS_CSYNTH (self->snet) ? "csynth" : "", SFI_TYPE_PROXY, self->snet,
                            NULL);
 }
 

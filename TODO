@@ -1,4 +1,10 @@
 FIXMES:
+- add menu item for scripts
+- add menu item for demo song
+- add menu item for instruments
+- allow extra plugin path in env variable and rc file
+- make multiple notes visible in piano roll
+- add Songs/Scripts
 - freeverb bypass toggle
 - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 - add facility to add/remove/edit sample search paths at the GUI (and save to rc file)
@@ -78,6 +84,7 @@ FIXMES:
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
+- add tag to load/play bse files
 - fix various manual page markup problems [Alper]
   these are flagged as FIXME in docs/*.[13]
 - add QuickStart section on wave selection

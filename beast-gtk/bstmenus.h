@@ -77,7 +77,9 @@ typedef struct {
 /* --- item factory helpers --- */
 BstMenuConfig*	bst_menu_config_from_cats	(BseCategorySeq		*cseq,
 						 BstMenuCatFunc		 callback,
-						 guint			 skip_levels);
+						 guint			 skip_levels,
+                                                 const gchar            *new_prefix,
+                                                 const gchar            *stock_fallback);
 BstMenuConfig*	bst_menu_config_from_entries	(guint			 n_entries,
 						 BstMenuConfigEntry	*entries);
 void		bst_menu_config_sort		(BstMenuConfig		*config);
