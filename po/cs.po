@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-21 11:01+0200\n"
-"PO-Revision-Date: 2004-09-21 14:07+0200\n"
+"POT-Creation-Date: 2004-09-23 19:01+0200\n"
+"PO-Revision-Date: 2004-09-24 01:05+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -817,16 +817,16 @@ msgstr "Načítám \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:725
+#: beast-gtk/bstmain.c:788
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:726
+#: beast-gtk/bstmain.c:789
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:727
+#: beast-gtk/bstmain.c:790
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -2532,7 +2532,7 @@ msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro
 msgid "Mixer busses connected to track output"
 msgstr "Sběrnice mixéru připojené k výstupu stopy"
 
-#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:739
+#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:729
 #: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Síť syntézy, kterou používat jako postprocesor"
@@ -3350,8 +3350,8 @@ msgstr "Seznam dostupných sběrnic mixérů, které používat jako výstup sb�
 #. FIXME: fix volume
 #: bse/bsebus.c:825 bse/bsebus.c:827 bse/bsebus.c:829 bse/bsebus.c:831
 #: bse/bsebus.c:835 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
-#: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
-#: bse/bsesong.c:712 bse/bsetrack.c:925
+#: bse/bsemidisynth.c:452 bse/bsesong.c:689 bse/bsesong.c:695
+#: bse/bsesong.c:702 bse/bsetrack.c:925
 msgid "Adjustments"
 msgstr "Úpravy"
 
@@ -4684,7 +4684,7 @@ msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Seznam dostupných sítí syntézy, ze které zvolit postprocesor"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:944
+#: bse/bsemidisynth.c:434 bse/bsesong.c:727 bse/bsetrack.c:944
 #: bse/bsetrack.c:950
 msgid "MIDI Instrument"
 msgstr "Nástroj MIDI"
@@ -4705,23 +4705,23 @@ msgstr "Syntetizér"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj MIDI"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:952
+#: bse/bsemidisynth.c:436 bse/bsesong.c:729 bse/bsetrack.c:952
 msgid "Postprocessor"
 msgstr "Postprocesor"
 
-#: bse/bsemidisynth.c:441 bse/bsesong.c:701
+#: bse/bsemidisynth.c:441 bse/bsesong.c:691
 msgid "Master [float]"
 msgstr "Hlavní [float]"
 
-#: bse/bsemidisynth.c:447 bse/bsesong.c:707
+#: bse/bsemidisynth.c:447 bse/bsesong.c:697
 msgid "Master [dB]"
 msgstr "Hlavní [dB]"
 
-#: bse/bsemidisynth.c:454 bse/bsesong.c:714
+#: bse/bsemidisynth.c:454 bse/bsesong.c:704
 msgid "Master [%]"
 msgstr "Hlavní [%]"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:741
+#: bse/bsemidisynth.c:458 bse/bsesong.c:731
 msgid "Playback Settings"
 msgstr "Nastavení přehrávání"
 
@@ -4805,23 +4805,36 @@ msgstr "Soubor WAVE"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Název souboru WAVE používaného pro záznam výstupu zvuku BSE"
 
-#: bse/bseserver.c:504
-msgid "Advice about MIDI device selections"
-msgstr "Rada o výběru zařízení MIDI"
+#: bse/bseserver.c:460
+msgid "Advice about PCM device selections problems"
+msgstr "Rada o problémech s výběrem zařízení PCM"
 
-#: bse/bseserver.c:505
-msgid "Alert me about MIDI device selections"
-msgstr "Upozorni mě na výběr zařízení MIDI"
+#: bse/bseserver.c:461
+msgid "Alert me about PCM device selections problems"
+msgstr "Upozorni mě na problémy s výběrem zařízení PCM"
 
-#: bse/bseserver.c:506
+#: bse/bseserver.c:462
 #, c-format
-msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr "nemohu otevřít zařízení midi %s (používám zařízení null): %s"
+msgid "Failed to open PCM devices, givng up: %s"
+msgstr "Nemohu otevřít zařízení PCM, vzdávám to: %s"
 
-#: bse/bseserver.c:548
+#: bse/bseserver.c:481
+msgid "Advice about MIDI device selections problems"
+msgstr "Rada o problémech s výběrem zařízení MIDI"
+
+#: bse/bseserver.c:482
+msgid "Alert me about MIDI device selections problems"
+msgstr "Upozorni mě na problémy s výběrem zařízení MIDI"
+
+#: bse/bseserver.c:483
 #, c-format
-msgid "failed to open output file \"%s\": %s"
-msgstr "nemohu otevřít výstupní soubor \"%s\": %s"
+msgid "Failed to open MIDI devices (reverting to null driver): %s"
+msgstr "Nemohu otevřít zařízení MIDI (používám ovladač null): %s"
+
+#: bse/bseserver.c:521
+#, c-format
+msgid "Failed to open output file \"%s\": %s"
+msgstr "Nemohu otevřít výstupní soubor \"%s\": %s"
 
 #: bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
@@ -4835,41 +4848,41 @@ msgstr "Signál In"
 msgid "Snoop Signal"
 msgstr ""
 
-#: bse/bsesong.c:718 bse/bsesong.c:722 bse/bsesong.c:726 bse/bsesong.c:730
+#: bse/bsesong.c:708 bse/bsesong.c:712 bse/bsesong.c:716 bse/bsesong.c:720
 msgid "Timing"
 msgstr "Časování"
 
-#: bse/bsesong.c:720
+#: bse/bsesong.c:710
 msgid "Ticks"
 msgstr "Doby"
 
-#: bse/bsesong.c:720
+#: bse/bsesong.c:710
 msgid "Number of ticks per quarter note"
 msgstr "Počet dob na čtvrťovou notu"
 
-#: bse/bsesong.c:724
+#: bse/bsesong.c:714
 msgid "Numerator"
 msgstr "Čitatel"
 
-#: bse/bsesong.c:724
+#: bse/bsesong.c:714
 msgid "Measure numerator"
 msgstr "Čitatel taktu"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:718
 msgid "Denominator"
 msgstr "Jmenovatel"
 
-#: bse/bsesong.c:728
+#: bse/bsesong.c:718
 msgid "Measure denominator, must be a power of 2"
 msgstr "Jmenovatel taktu, musí být mocnina 2"
 
-#: bse/bsesong.c:732
+#: bse/bsesong.c:722
 msgid "Beats per minute"
 msgstr "Úderů za minutu"
 
 #. change default
 #. override parent property
-#: bse/bsesong.c:746 bse/bsesong.c:750 bse/bsesong.c:755 bse/bsesong.c:760
+#: bse/bsesong.c:736 bse/bsesong.c:740 bse/bsesong.c:745 bse/bsesong.c:750
 msgid "Looping"
 msgstr "Opakování"
 
@@ -5103,27 +5116,27 @@ msgstr "Přiřazení výstupů"
 msgid "Input port name to interface to"
 msgstr "Název vstupního portu, se kterým se spojit"
 
-#: bse/bsesuper.c:101
+#: bse/bsesuper.c:174
 msgid "Author"
 msgstr "Autor"
 
-#: bse/bsesuper.c:101
+#: bse/bsesuper.c:174
 msgid "Person changing or creating this object"
 msgstr "Osoba měnící nebo vytvářející tento objekt"
 
-#: bse/bsesuper.c:106
+#: bse/bsesuper.c:179
 msgid "License"
 msgstr "Licence"
 
-#: bse/bsesuper.c:106
+#: bse/bsesuper.c:179
 msgid "Copyright license applying to this object"
 msgstr "Licence týkající se tohoto objektu"
 
-#: bse/bsesuper.c:114
+#: bse/bsesuper.c:187
 msgid "Creation Time"
 msgstr "Čas vytvoření"
 
-#: bse/bsesuper.c:118
+#: bse/bsesuper.c:191
 msgid "Last modification time"
 msgstr "Čas poslední změny"
 
