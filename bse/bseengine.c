@@ -1393,6 +1393,9 @@ bse_engine_configure (guint            latency_ms,
   sync_lock = FALSE;
   sfi_cond_signal (&sync_cond);
   GSL_SPIN_UNLOCK (&sync_mutex);
+  /* ensure SYNC job got collected */
+  bse_engine_wait_on_trans();
+  bse_engine_garbage_collect();
   
   if (success)
     DEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
