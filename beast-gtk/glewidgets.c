@@ -1147,7 +1147,7 @@ gtk_clue_hunter_set_clist (GtkClueHunter *clue_hunter,
     {
       if (clue_hunter->clist->parent)
 	gtk_container_remove (GTK_CONTAINER (clue_hunter->clist->parent), clue_hunter->clist);
-      if (!GTK_OBJECT_DESTROYED (clue_hunter->clist))
+      if (clue_hunter->clist)
 	gtk_signal_disconnect_by_func (GTK_OBJECT (clue_hunter->clist),
 				       GTK_SIGNAL_FUNC (gtk_clue_hunter_clist_click),
 				       clue_hunter);
@@ -1303,13 +1303,12 @@ gtk_clue_hunter_set_entry (GtkClueHunter *clue_hunter,
   if (entry)
     {
       g_return_if_fail (GTK_IS_ENTRY (entry));
-      g_return_if_fail (GTK_OBJECT_DESTROYED (entry) == FALSE);
       g_return_if_fail (gtk_clue_hunter_from_entry (entry) == NULL);
     }
   
   if (clue_hunter->entry)
     {
-      if (!GTK_OBJECT_DESTROYED (clue_hunter->entry))
+      if (!clue_hunter->entry)
 	{
 	  gtk_signal_disconnect_by_func (GTK_OBJECT (clue_hunter->entry),
 					 GTK_SIGNAL_FUNC (gtk_clue_hunter_entry_changed),

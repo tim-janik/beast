@@ -29,6 +29,8 @@ extern "C" {
 #pragma }
 #endif /* __cplusplus */
 
+#define	GTK_OBJECT_DESTROYED(x)	(0)
+
 /* --- generated type ids --- */
 #include	"bstgentypes.h"
 void		bst_init_gentypes	(void);

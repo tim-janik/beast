@@ -1376,7 +1376,7 @@ forest_idle_update (gpointer func_data)
 
   forest->update_queued = 0;
   
-  if (GTK_WIDGET_VISIBLE (forest) && forest->buffer && !GTK_OBJECT_DESTROYED (forest))
+  if (GTK_WIDGET_VISIBLE (forest) && forest->buffer)
     {
       gboolean need_cd = FALSE;
       
@@ -1825,7 +1825,7 @@ queue_animator (GnomeForest *forest,
 {
   g_return_if_fail (actrl->handler_id == 0);
   
-  if (!GTK_OBJECT_DESTROYED (forest))
+  if (TRUE /* !GTK_OBJECT_DESTROYED (forest) */ )
     {
       AnimData *adata = nth_animdata (actrl, actrl->nth_adata);
       

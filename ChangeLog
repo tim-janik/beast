@@ -1,3 +1,10 @@
+Tue Nov 20 14:02:42 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.h (GTK_OBJECT_DESTROYED): bad, bad GTK_OBJECT_DESTROYED()
+	hack, needs to be backed out again.
+	
+	* beast-gtk/bstwaveeditor.c: tree view column resizing API fixes.
+
 Wed Nov 14 03:51:37 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_create): s/param_get/param_spec_get/.
