@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-16 11:52-0400\n"
-"PO-Revision-Date: 2004-07-15 16:24-0300\n"
+"POT-Creation-Date: 2004-08-12 16:40-0400\n"
+"PO-Revision-Date: 2004-08-12 13:09-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -2078,7 +2078,7 @@ msgstr "Redefinir repetição"
 
 #: beast-gtk/bststest.c:590
 msgid "Score"
-msgstr "Marcação"
+msgstr "Partitura"
 
 #: beast-gtk/bststest.c:598
 msgid "Find"
@@ -3413,7 +3413,7 @@ msgstr "Entrada do canal direito"
 
 #: bse/bsebus.c:294
 msgid ""
-"Bus implementation for songs, used to to route track audio signals to the "
+"Bus implementation for songs, used to route track audio signals to the "
 "master output."
 msgstr ""
 "Implementação de barramentos para músicas, usados para rotear sinais de "
