@@ -1,3 +1,9 @@
+Fri Jul  2 02:24:13 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added $LIBZ to $GXK_LIBS, since sooner or later we need
+	libgxk to explicitely depend on libz anyways, and -lz was missing when
+	linking gxktest.
+
 Fri Jul  2 01:33:00 2004  Tim Janik  <timj@gtk.org>
 
 	* test/velocity-test.bse: fixed gross disharmonies,
