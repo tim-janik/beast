@@ -375,7 +375,7 @@ sfi_rstore_input_fd (SfiRStore   *rstore,
   g_return_if_fail (fd >= 0);
 
   g_free (rstore->fname);
-  rstore->fname = g_strdup (fname ? fname : "<memory>");
+  rstore->fname = g_strdup (fname ? fname : "<anon-fd>");
   rstore->scanner->input_name = rstore->fname;
   rstore->scanner->parse_errors = 0;
   rstore->fd = fd;
@@ -384,13 +384,14 @@ sfi_rstore_input_fd (SfiRStore   *rstore,
 
 void
 sfi_rstore_input_text (SfiRStore   *rstore,
-		       const gchar *text)
+		       const gchar *text,
+                       const gchar *text_name)
 {
   g_return_if_fail (rstore != NULL);
   g_return_if_fail (text != NULL);
 
   g_free (rstore->fname);
-  rstore->fname = g_strdup ("<text>");
+  rstore->fname = g_strdup (text_name ? text_name : "<memory>");
   rstore->scanner->input_name = rstore->fname;
   rstore->scanner->parse_errors = 0;
   g_scanner_input_text (rstore->scanner, text, strlen (text));
@@ -622,7 +623,13 @@ sfi_rstore_ensure_bin_offset (SfiRStore *rstore)
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
 
   if (!rstore_ensure_bin_offset (rstore))
-    return G_TOKEN_ERROR;
+    {
+      /* this is _bad_, we can't actually continue parsing after
+       * here because the read position is probably screwed
+       */
+      sfi_rstore_error (rstore, "failed to detect binary appendix");
+      return G_TOKEN_ERROR;
+    }
   return G_TOKEN_NONE;
 }
 
@@ -641,6 +648,7 @@ sfi_rstore_parse_binary (SfiRStore *rstore,
 			 SfiNum    *length_p)
 {
   SfiNum offset, length;
+  GTokenType token;
 
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (offset_p && length_p, G_TOKEN_ERROR);
@@ -658,8 +666,9 @@ sfi_rstore_parse_binary (SfiRStore *rstore,
   length = rstore->scanner->value.v_int64;
   if (g_scanner_get_next_token (rstore->scanner) != ')')
     return ')';
-  if (!rstore_ensure_bin_offset (rstore))
-    return G_TOKEN_ERROR;
+  token = sfi_rstore_ensure_bin_offset (rstore);
+  if (token != G_TOKEN_NONE)
+    return token;
   *offset_p = rstore->bin_offset + offset;
   *length_p = length;
   return G_TOKEN_NONE;

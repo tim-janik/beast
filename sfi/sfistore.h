@@ -93,7 +93,8 @@ void            sfi_rstore_input_fd           (SfiRStore      *rstore,
                                                gint            fd,
                                                const gchar    *fname);
 void            sfi_rstore_input_text         (SfiRStore      *rstore,
-                                               const gchar    *text);
+                                               const gchar    *text,
+                                               const gchar    *text_name);
 gboolean        sfi_rstore_eof                (SfiRStore      *rstore);
 GTokenType      sfi_rstore_parse_param        (SfiRStore      *rstore,
                                                GValue         *value,

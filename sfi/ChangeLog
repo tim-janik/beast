@@ -1,3 +1,7 @@
+Sun Jun  8 19:56:11 2003  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]: error cosmetics.
+
 Sun Jun  8 17:59:56 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiserial.c: fixup superfluous newlines.
