@@ -122,6 +122,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_NO_SEEK_INFO:                return _("Failed to retrieve seek information");
     case BSE_ERROR_NO_DATA:                     return _("No data available");
     case BSE_ERROR_DATA_CORRUPT:                return _("Data corrupt");
+    case BSE_ERROR_WRONG_N_CHANNELS:            return _("Wrong number of channels");
     case BSE_ERROR_FORMAT_INVALID:              return _("Invalid format");
     case BSE_ERROR_FORMAT_UNKNOWN:              return _("Unknown format");
       /* miscellaneous errors */

@@ -468,6 +468,7 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
     switch (g_scanner_get_next_token (scanner))
       {
 	guint i, token;
+        gchar *key;
       case '}':
 	return G_TOKEN_NONE;
       default:
@@ -532,6 +533,22 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
 	  default:		return G_TOKEN_FLOAT;
 	  }
 	break;
+      case BSEWAVE_TOKEN_XINFO:
+        parse_or_return (scanner, '[');
+        parse_or_return (scanner, G_TOKEN_STRING);
+        key = g_strdup (scanner->value.v_string);
+        if (g_scanner_peek_next_token (scanner) != ']')
+          g_free (key);
+        parse_or_return (scanner, ']');
+        if (g_scanner_peek_next_token (scanner) != '=')
+          g_free (key);
+        parse_or_return (scanner, '=');
+        if (g_scanner_peek_next_token (scanner) != G_TOKEN_STRING)
+          g_free (key);
+        parse_or_return (scanner, G_TOKEN_STRING);
+        dsc->wdsc.xinfos = bse_xinfos_add_value (dsc->wdsc.xinfos, key, scanner->value.v_string);
+        g_free (key);
+        break;
       case BSEWAVE_TOKEN_CHUNK:
         if (dsc->wdsc.n_channels < 1)   /* must have n_channels specification */
           {
@@ -670,7 +687,8 @@ static GslDataHandle*
 bsewave_load_singlechunk_wave (GslWaveFileInfo *fi,
 			       const gchar     *wave_name,
                                gfloat           osc_freq,
-			       BseErrorType    *error_p)
+			       BseErrorType    *error_p,
+                               guint           *n_channelsp)
 {
   GslWaveDsc *wdsc;
   guint i;
@@ -699,6 +717,7 @@ bsewave_load_singlechunk_wave (GslWaveFileInfo *fi,
   
   if (wdsc->n_chunks == 1)
     {
+      *n_channelsp = wdsc->n_channels;
       GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, 0, error_p);
       if (dhandle && osc_freq > 0)
         {
@@ -736,6 +755,7 @@ bsewave_create_chunk_handle (gpointer      data,
     {
       gchar *string;
     case AUTO_FILE_MAGIC:
+      *error_p = BSE_ERROR_IO;
       /* construct chunk file name from (hopefully) relative path */
       if (g_path_is_absolute (LOADER_FILE (chunk)))
         string = g_strdup (LOADER_FILE (chunk));
@@ -745,16 +765,23 @@ bsewave_create_chunk_handle (gpointer      data,
       GslWaveFileInfo *cfi = gsl_wave_file_info_load (string, error_p);
       if (cfi)
 	{
+          guint nch = 0;
 	  /* FIXME: there's a potential attack here, in letting a single chunk
 	   * wave's chunk point to its own wave. this'll trigger recursions until
 	   * stack overflow
 	   */
-	  dhandle = bsewave_load_singlechunk_wave (cfi, LOADER_INDEX (chunk), chunk->osc_freq, error_p);
+	  dhandle = bsewave_load_singlechunk_wave (cfi, LOADER_INDEX (chunk), chunk->osc_freq, error_p, &nch);
           if (dhandle && chunk->xinfos)
             {
               GslDataHandle *tmp_handle = dhandle;
               dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
               gsl_data_handle_unref (tmp_handle);
+            }
+          if (dhandle && nch != dsc->wdsc.n_channels)
+            {
+              *error_p = BSE_ERROR_WRONG_N_CHANNELS;
+              gsl_data_handle_unref (dhandle);
+              dhandle = NULL;
             }
 	  gsl_wave_file_info_unref (cfi);
 	}
@@ -799,17 +826,25 @@ bsewave_create_chunk_handle (gpointer      data,
     case OGG_LINK_MAGIC:
       if (LOADER_LENGTH (chunk))        /* inlined binary data */
 	{
+          *error_p = BSE_ERROR_IO;
+          guint vnch = 0;
 	  dhandle = gsl_data_handle_new_ogg_vorbis_zoffset (fi->wfi.file_name,
                                                             chunk->osc_freq,
                                                             LOADER_BOFFSET (chunk),     /* byte offset */
-                                                            LOADER_LENGTH (chunk));     /* byte length */
+                                                            LOADER_LENGTH (chunk),      /* byte length */
+                                                            &vnch);
+          if (dhandle && vnch != dsc->wdsc.n_channels)
+            {
+              *error_p = BSE_ERROR_WRONG_N_CHANNELS;
+              gsl_data_handle_unref (dhandle);
+              dhandle = NULL;
+            }
           if (dhandle && chunk->xinfos)
             {
               GslDataHandle *tmp_handle = dhandle;
               dhandle = gsl_data_handle_new_add_xinfos (dhandle, chunk->xinfos);
               gsl_data_handle_unref (tmp_handle);
             }
-	  *error_p = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
 	}
       else
         *error_p = BSE_ERROR_WAVE_NOT_FOUND;
@@ -818,6 +853,8 @@ bsewave_create_chunk_handle (gpointer      data,
       *error_p = BSE_ERROR_FORMAT_UNKNOWN;
       break;
     }
+  if (dhandle)
+    *error_p = BSE_ERROR_NONE;
   return dhandle;
 }
 

@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2003 Tim Janik
+ * Copyright (C) 2001-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -374,8 +374,11 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
                                     gfloat       osc_freq,
                                     gboolean     add_zoffset,
                                     guint        byte_offset,
-                                    guint        byte_size)
+                                    guint        byte_size,
+                                    guint       *n_channelsp)
 {
+  if (n_channelsp)
+    *n_channelsp = 0;
   VorbisHandle *vhandle = sfi_new_struct0 (VorbisHandle, 1);
   gboolean success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
@@ -396,6 +399,8 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
       error = gsl_data_handle_open (&vhandle->dhandle);
       if (!error)
 	{
+          if (n_channelsp)
+            *n_channelsp = vhandle->dhandle.setup.n_channels;
 	  gsl_data_handle_close (&vhandle->dhandle);
 	  return &vhandle->dhandle;
 	}
@@ -419,20 +424,21 @@ gsl_data_handle_new_ogg_vorbis_muxed (const gchar *file_name,
 {
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0);
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0, NULL);
 }
 
 GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
                                         gfloat       osc_freq,
                                         GslLong      byte_offset,
-                                        GslLong      byte_size)
+                                        GslLong      byte_size,
+                                        guint       *n_channelsp)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (byte_size > 0, NULL);
 
-  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size);
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size, n_channelsp);
 }
 
 /* --- writing vorbis files --- */

@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2003 Tim Janik
+ * Copyright (C) 2001-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,8 @@ GslDataHandle* gsl_data_handle_new_ogg_vorbis_muxed   (const gchar      *file_na
 GslDataHandle* gsl_data_handle_new_ogg_vorbis_zoffset (const gchar      *file_name,
                                                        gfloat            osc_freq,
                                                        GslLong           byte_offset,
-                                                       GslLong           byte_size);
+                                                       GslLong           byte_size,
+                                                       guint            *n_channelsp);
 
 /* --- writing vorbis files --- */
 typedef struct GslVorbis1Handle GslVorbis1Handle;

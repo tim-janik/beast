@@ -331,7 +331,7 @@ bse_wave_load_wave_file (BseWave      *self,
                     else
 		      {
 			error = tmp_error;
-			sfi_warning (_("wave \"%s\": failed to load wave chunk for frequency %f: %s"),
+			sfi_warning (_("Wave \"%s\": failed to load wave chunk for frequency %f: %s"),
                                      wdsc->name, wdsc->chunks[i].osc_freq, bse_error_blurb (error));
 		      }
                   }

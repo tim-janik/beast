@@ -1,3 +1,15 @@
+Wed Jan  5 01:10:54 2005  Tim Janik  <timj@gtk.org>
+
+	* bseenums.[hc]: added BSE_ERROR_WRONG_N_CHANNELS.
+
+	* gslloader-bsewave.c: make sure that chunks carry the required number
+	of channels.
+
+	* gsldatahandle-vorbis.c: pass on number of channels for
+	gsl_data_handle_new_ogg_vorbis_zoffset() handles.
+
+	* bsewave.c: slight warning fixup.
+
 Mon Jan  3 23:59:39 2005  Tim Janik  <timj@gtk.org>
 
 	* bsewave.header: document format changes.

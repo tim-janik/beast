@@ -1,20 +1,13 @@
 FIXME(urgent):
-- add check to gslloader-bsewave.c for chunks confomring to wdsc->n_channels
 - save ogglinks in .bse files
-- test xinfo saving and parsing for raw/ogg-links in bse and bsewave files
-- rewrite bwtwave::store()
+- test xinfo saving and parsing for raw/ogg-links in bse and bsewave files for waves and chunks
 - remove leftovers in : bse/zintern/
 - remove BseWave::wave_chunk_urls
-- text xinfos saving in bse files for waves and and chunks
-- parse bsewave xinfos and bsewave chunk xinfos
-- gslloader implementations should check that chunk->n_channels==wdsc->n_channels
 - remove bsewave compat code
 - copy xinfos in set_dhandle_from_temporary
-- bsewave.c: FIXME: set authors, license, comment
 - nuke data handle qdata
 - fix serialno generation for ogg/vorbis encoder and cutter
 - fix bsewavetool oggenc saving osc_freq, not midi_note
-- consolidate bsewave tokens
 - install bsewavetool, bsewavetool.1
 - gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - fix float saving with de_DE
