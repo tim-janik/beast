@@ -97,7 +97,7 @@ glue_untyped_pspec_constructor (const Parser &parser,
     {
     case OBJECT:
       {
-        /* FIXME: the ParamSpec doesn't transport the type of the objects we require */
+        /* FIXME(stw): the ParamSpec doesn't transport the type of the objects we require */
         string pspec = "sfidl_pspec_Proxy";
         if (param.args == "")
           pspec += "_default (" + group + ",\"" + param.name + "\")";
@@ -208,10 +208,12 @@ public:
     return intern (s);
   }
   const char*
-  make_PrefixedTypeName (const string &type_name)
+  make_PrefixedTypeName (const string &type_name,
+                         const string &append = "")
   {
     vector<string> empty;
     string s = rename (ABSOLUTE, type_name, Capitalized, "", empty, Capitalized, "");
+    s += append;
     return intern (s);
   }
   const char*
@@ -252,6 +254,28 @@ public:
   {
     vector<string> empty;
     return intern (rename (NONE, type_name, lower, "_", empty, lower, "_").c_str());
+  }
+  const Class*
+  find_class (const string &type_name)
+  {
+    for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+      if (ci->name == type_name)
+        return &*ci;
+    return NULL;
+  }
+  bool
+  is_cxx_class (const string &type_name)
+  {
+    const string cxxbase = "Bse::CxxBase";      // FIXME: hardcoding Bse C++ base type
+    const Class *cc = find_class (type_name);
+    while (cc)
+      {
+        if (cc->name == cxxbase)
+          return true;
+        string xxx = cc->inherits;
+        cc = find_class (cc->inherits);
+      }
+    return false;
   }
   string
   typed_pspec_constructor (const Param &param)
@@ -325,7 +349,7 @@ public:
       case SFIREC:      return "Sfi::Rec";
       case RECORD:      return make_fqtn (type, "Handle");
       case SEQUENCE:    return make_fqtn (type);
-      case OBJECT:      return make_fqtn (type, "*");
+      case OBJECT:      return is_cxx_class (type) ? make_fqtn (type, "*") : make_PrefixedTypeName (type, "*");
       default:          g_assert_not_reached(); return NULL;
       }
   }
@@ -346,7 +370,7 @@ public:
       case SFIREC:
       case RECORD:
       case SEQUENCE:    return intern (string ("const ") + TypeField (type) + " &");
-      case OBJECT:      return make_fqtn (type, "*");
+      case OBJECT:      return TypeField (type);
       default:          g_assert_not_reached(); return NULL;
       }
   }
@@ -374,13 +398,17 @@ public:
       case SFIREC:      return "::Sfi::Rec::value_set_rec";
       case RECORD:
       case SEQUENCE:    return intern (make_fqtn (param.type) + string ("::value_set_boxed"));
-      case OBJECT:      return "g_value_set_object";
+      case OBJECT:
+        if (is_cxx_class (param.type))
+          return intern (string() + "::Bse::CxxBase::value_set_casted< " + param.type + ", " + param.type + "Base>");
+        else
+          return intern ("g_value_set_object");
       default:          g_assert_not_reached(); return NULL;
       }
   }
   const char*
   func_value_get_param (const Param &param,
-                        const string dest = "")
+                        const string dest = "") // FIXME
   {
     switch (parser.typeOf (param.type))
       {
@@ -396,10 +424,11 @@ public:
       case RECORD:
       case SEQUENCE:    return intern (make_fqtn (param.type) + string ("::value_get_boxed"));
       case OBJECT:
-        if (dest != "")
-          return intern ("(" + dest + "*) ::Bse::g_value_get_object< " + dest + "Base*>");
+        if (is_cxx_class (param.type))
+          return intern (string ("(") + make_fqtn (param.type) + "*) " +
+                         "::Bse::CxxBase::value_get_object< " + make_fqtn (param.type) + "Base* >");
         else
-          return "(GObject*) g_value_get_object";
+          return intern (string ("(") + make_PrefixedTypeName (param.type, "*") + ") g_value_get_object");
       default:          g_assert_not_reached(); return NULL;
       }
   }

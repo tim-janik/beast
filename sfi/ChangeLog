@@ -1,3 +1,14 @@
+Mon Jan 26 02:42:32 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc:
+	(make_PrefixedTypeName): allow string appends.
+	(find_class): new class to get class structure from type name.
+	(is_cxx_class): new function, figure whether a class type is implemented
+	in C++ in Bse. (should make use of an extra commandline option once
+	possible).
+	(OBJECT): implemented ordinary object pointers, respecting C/C++
+	class implementations. this misses out cross-reference support though.
+
 Sun Jan 25 21:13:16 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-namespace.cc: Add closing comment when closing namespaces.
