@@ -1,3 +1,8 @@
+Tue Jun 17 14:40:26 2003  Tim Janik  <timj@gtk.org>
+
+	* bseserver.c (engine_init): turn assertion into warning, so we don't
+	take down the whole application upon mix frequency changes.
+
 Tue Jun 17 04:33:46 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecategories.[hc]:

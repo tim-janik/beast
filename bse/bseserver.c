@@ -1102,9 +1102,10 @@ engine_init (BseServer *server,
       engine_is_initialized = TRUE;
       gsl_engine_init (1, BSE_GCONFIG (synth_block_size), mix_freq, 63);
     }
-  else
-    g_assert (mix_freq == gsl_engine_sample_freq () && BSE_GCONFIG (synth_block_size) == gsl_engine_block_size ());
-  
+  else if (mix_freq != gsl_engine_sample_freq () || BSE_GCONFIG (synth_block_size) != gsl_engine_block_size ())
+    g_warning ("mix frequency or block size mistmatch (%f == %u, %u == %u) restart recommended", /* FIXME */
+               mix_freq, gsl_engine_sample_freq (), BSE_GCONFIG (synth_block_size), gsl_engine_block_size ());
+
   g_source_attach (server->engine_source, bse_main_context);
 }
 
