@@ -14,8 +14,9 @@ Exported BSE objects (and some internal ones) and procedures are
 structures in GUIs.
 
 Objects that are derived from the BseSource class with the main intend
-to be used as signal filters in a source network are categorized under
-the "/Source/" toplevel category and by operational categories.
+to be used as signal modules (filters) in a synthesis network are
+categorized under the "/Modules/" toplevel category, ordered by operational
+categories.
 
 Procedure Categories
 --------------------
@@ -45,16 +46,16 @@ assigned to them.
 Examples to show the above schemata
 -----------------------------------
 
-{S|P}[A] Source, Procedure, Effect or Aliasing tag
+{M|P}[A] Module, Procedure, Effect or Aliasing tag
 |  Name					Category
 -------------------------------------------------------------------------------
-S  BseSine				/Source/Generators/Sine
-S  BseNoise				/Source/Generators/Noise
-S  BseLowPass				/Source/Filters/Low Pass
-S  BseRoom				/Source/Effects/Echo/Room
-S  BseResonance				/Source/Effects/Echo/Resonance
-S  BseVocoder				/Source/Filters/Vocoder
-SA BseVocoder				/Source/Effects/Misc/Vocoder
+M  BseSine				/Modules/Generators/Sine
+M  BseNoise				/Modules/Generators/Noise
+M  BseLowPass				/Modules/Filters/Low Pass
+M  BseRoom				/Modules/Effects/Echo/Room
+M  BseResonance				/Modules/Effects/Echo/Resonance
+M  BseVocoder				/Modules/Filters/Vocoder
+MA BseVocoder				/Modules/Effects/Misc/Vocoder
 
 P  hello-world				/Proc/Test/Hello World
 P  load-wave				/Proc/Loader/WAVE

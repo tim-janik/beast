@@ -1,3 +1,13 @@
+Thu Jan 24 01:10:35 2002  Tim Janik  <timj@gtk.org>
+
+	* dosc/bse-categories.txt: changed top category policy for synthesis
+	modules from /Source/ to /Modules/.
+
+	* beast-gtk/bstsnetrouter.c: use new /Modules/ categories. still
+	support, but verbosely deprecate /Source/.
+
+	* beast-gtk/bststest.c: minor wave handle loading fix.
+
 Tue Jan 15 17:41:28 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: popup the info window of a synth module
