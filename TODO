@@ -1,5 +1,4 @@
 FIXMES:
-- assign numbers to all enum values in sfidl-parser (email to stefan)
 - make sfidl/bse-plugin-generator manual pages match new/changed options
 - rc setting for canvas font sizes
 - bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
