@@ -1,3 +1,13 @@
+Sun Aug 22 13:46:53 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_reload_supers): hide the toplevel notebook
+	while reordering its children. this greatly reduces flicker and improves
+	reordering performance.
+
+	* beast-gtk/gxk/gxkradget.c (radget_widget_hierarchy_changed): make sure
+	a widget is added to a size group only once. at least Gtk+<=2.4.4 messes
+	up otherwise.
+
 Sun Aug 22 04:59:08 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.[hc]: improved notebook page selection logic.

@@ -1002,16 +1002,19 @@ radget_widget_hierarchy_changed (GtkWidget *widget,
     {
       GtkSizeGroup *sg = toplevel_get_size_group (toplevel, hgroup, 'h');
       gtk_size_group_add_widget (sg, widget);
+      g_object_set_data (widget, "gxk-window-hgroup", NULL);    /* gtk_size_group_add_widget() <= 2.4.4 may not be called twice */
     }
   if (vgroup)
     {
       GtkSizeGroup *sg = toplevel_get_size_group (toplevel, vgroup, 'v');
       gtk_size_group_add_widget (sg, widget);
+      g_object_set_data (widget, "gxk-window-vgroup", NULL);    /* gtk_size_group_add_widget() <= 2.4.4 may not be called twice */
     }
   if (bgroup)
     {
       GtkSizeGroup *sg = toplevel_get_size_group (toplevel, bgroup, 'b');
       gtk_size_group_add_widget (sg, widget);
+      g_object_set_data (widget, "gxk-window-hvgroup", NULL);   /* gtk_size_group_add_widget() <= 2.4.4 may not be called twice */
     }
 }
 

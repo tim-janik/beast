@@ -460,6 +460,9 @@ bst_app_reload_supers (BstApp *self)
   if (old_focus)
     gtk_widget_ref (old_focus);
   old_page = gtk_notebook_current_widget (self->notebook);
+
+  gtk_widget_hide (GTK_WIDGET (self->notebook));
+
   while (gtk_notebook_current_widget (self->notebook))
     {
       g_object_ref (gtk_notebook_current_widget (self->notebook));
@@ -532,6 +535,8 @@ bst_app_reload_supers (BstApp *self)
       gtk_widget_unref (slist->data);
     }
   g_slist_free (page_list);
+
+  gtk_widget_show (GTK_WIDGET (self->notebook));
 }
 
 static gboolean
