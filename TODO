@@ -1,6 +1,4 @@
 FIXMES:
-- RENAMES: instrument-input + instrument-output,
-           midi-input       + midi-controller
 - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 - add facility to add/remove/edit sample search paths at the GUI (and save to rc file)
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver

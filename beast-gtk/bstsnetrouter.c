@@ -74,7 +74,6 @@ static BstMenuConfigEntry popup_entries[] =
   { "/_Enhance",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Distortion",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
-  { "/_MIDI",		NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Virtualization",	NULL,		NULL,	0,	"<Branch>",	0 },
 };
 
@@ -565,7 +564,7 @@ bst_snet_router_build_tools (BstSNetRouter *self)
       };
       static const gchar *palette_cats[] = {
 	"/Modules/Audio Sources/", "/Modules/Filters/",
-	"/Modules/Input & Output/", "/Modules/MIDI/",
+	"/Modules/Input & Output/",
 	"/Modules/Other Sources/", "/Modules/Routing/",
 	"/Modules/Enhance/", "/Modules/Distortion/",
 	"/Modules/Virtualization/",
