@@ -129,7 +129,7 @@ main (int   argc,
           GslWaveDsc *wdsc = gsl_wave_dsc_load (winfo, 0, TRUE, &error);
           if (wdsc)
             {
-              wave = new Wave (wdsc->name, wdsc->n_channels);
+              wave = new Wave (wdsc->name, wdsc->n_channels, wdsc->xinfos);
               guint i;
               for (i = 0; i < wdsc->n_chunks; i++)
                 {
@@ -412,7 +412,7 @@ public:
         g_free (name);
       }
     /* create wave */
-    Wave *wave = new Wave (wave_name.c_str(), n_channels);
+    Wave *wave = new Wave (wave_name.c_str(), n_channels, NULL);
     return wave;
   }
   void
@@ -580,13 +580,22 @@ public:
 } cmd_oggenc ("oggenc");
 
 /* FIXME: TODO items:
-   bsewavetool <file.bsewave> merge <second.bsewave>
-   bsewavetool <file.bsewave> add-wave <wavefile> [-n note] ...
-   bsewavetool <file.bsewave> del-wave {<note>|-f <freq>} ...
-   bsewavetool <file.bsewave> loop [-a loop-algorithm] ...
-   bsewavetool <file.bsewave> clip [-c clip-config] ...
-   bsewavetool <file.bsewave> omit [-a remove-algorithm] ...
-   bsewavetool.1 # need manual page
-*/
+ * bsewavetool config-gus-patch <file.bsewave> {--chunk=<freq>|--all-chunks}
+ *   --chunk=<freq>             select chunk to modify by frequency
+ *   --all-chunks               select all chunks for modifications
+ *   --envelope=<a,d,s,r>       set envelope
+ *   --sustain-envelope=<a,d,s,r> set envelope
+ *   --reset-envelope           set envelope
+ *   --panning=<p>              set output panning
+ *   --tremolo=<s,r,d>          tremolo, s.., r..., d...
+ *   --vibrato=<s,r,d>          vibrato, s.., r..., d...
+ * bsewavetool merge <file.bsewave> <second.bsewave>
+ * bsewavetool add-wave <file.bsewave> <wavefile> [-n note] ...
+ * bsewavetool del-wave <file.bsewave> {<note>|-f <freq>} ...
+ * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
+ * bsewavetool clip <file.bsewave> [-c clip-config] ...
+ * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...
+ * bsewavetool.1 # need manual page
+ */
 
 } // BseWaveTool

@@ -1,3 +1,14 @@
+Tue Jan  4 23:58:20 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c:
+	* beast-gtk/bstfiledialog.c: throw proper error message after 
+	failing to load a wave file.
+
+	* tools/bwtwave.cc (store): adapt to .bsewave format changes.
+	if possible, store mix-freq only once.
+
+	* tools/bsewavetool.cc: added xinfo handling.
+
 Sun Jan  2 15:24:17 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/dialogs/Makefile.am: Use Scheme identifier style for

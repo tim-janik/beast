@@ -43,9 +43,11 @@ struct Wave {
   guint           n_channels;
   string          name;
   list<WaveChunk> chunks;
+  gchar         **xinfos;
 public:
   /*Con*/       Wave            (const gchar    *wave_name,
-                                 guint           n_channels);
+                                 guint           n_channels,
+                                 gchar         **xinfos);
   void          add_chunk       (GslDataHandle  *dhandle);
   void          remove          (list<WaveChunk>::iterator it);
   void          sort            ();

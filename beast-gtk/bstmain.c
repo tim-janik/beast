@@ -269,7 +269,16 @@ main (int   argc,
       /* load waves into the last project */
       if (bse_server_can_load (BSE_SERVER, argv[i]))
 	{
-	  if (!app)
+	  if (app)
+	    {
+	      SfiProxy wrepo = bse_project_get_wave_repo (app->project);
+	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
+	      error = bse_wave_repo_load_file (wrepo, argv[i]);
+              bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
+              if (error)
+                sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+	    }
+          else
 	    {
 	      project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
 	      wrepo = bse_project_get_wave_repo (project);
@@ -280,21 +289,17 @@ main (int   argc,
 		  gxk_idle_show_widget (GTK_WIDGET (app));
 		  bse_item_unuse (project);
 		  gtk_widget_hide (beast_splash);
-		  continue;
 		}
-	      bse_item_unuse (project);
+              else
+                {
+                  bse_item_unuse (project);
+                  sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
+                }
 	    }
-	  else
-	    {
-	      SfiProxy wrepo = bse_project_get_wave_repo (app->project);
-	      
-	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
-	      error = bse_wave_repo_load_file (wrepo, argv[i]);
-	      bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
-	      if (!error)
-		continue;
-	    }
+          continue;
 	}
+
+      /* load projects */
       project = bse_server_use_new_project (BSE_SERVER, argv[i]);
       error = bst_project_restore_from_file (project, argv[i]);
       

@@ -737,7 +737,9 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   gxk_status_printf (0, NULL, _("Loading wave `%s'"), file_name);
   error = bse_wave_repo_load_file (self->proxy, file_name);
   bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
-
+  if (error)
+    sfi_error (_("Failed to load wave file \"%s\": %s"), file_name, bse_error_blurb (error));
+  
   return TRUE;
 }
 

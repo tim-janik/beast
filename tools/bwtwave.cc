@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <algorithm>
 #include <vector>
+#include <map>
 
 
 namespace BseWaveTool {
@@ -108,9 +109,11 @@ WaveChunk::~WaveChunk ()
 }
 
 Wave::Wave (const gchar    *wave_name,
-            guint           n_ch) :
+            guint           n_ch,
+            gchar         **xinfos_init) :
   n_channels (n_ch),
-  name (wave_name)
+  name (wave_name),
+  xinfos (bse_xinfos_dup_consolidated (xinfos_init, FALSE))
 {
 }
 
@@ -178,6 +181,33 @@ Wave::store (const string file_name)
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
 
+  /* figure default mix_freq */
+  map<float, guint> mf_counters;
+  for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
+    {
+      WaveChunk *chunk = &*it;
+      GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
+      do        /* skip comment or cache handles */
+        {
+          dhandle = tmp_handle;
+          tmp_handle = gsl_data_handle_get_source (dhandle);
+        }
+      while (tmp_handle);
+      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle); // FIXME: deamnd certain serialno
+      if (!vhandle)
+        mf_counters[gsl_data_handle_mix_freq (chunk->dhandle)] += 1;
+      else
+        gsl_vorbis1_handle_destroy (vhandle);
+    }
+  float dfl_mix_freq = 0;
+  guint max_count = 3;
+  for (map<float, guint>::iterator it = mf_counters.begin(); it != mf_counters.end(); it++)
+    if (it->second > max_count)
+      {
+        max_count = it->second;
+        dfl_mix_freq = it->first;
+      }
+
   SfiWStore *wstore = sfi_wstore_new ();
   wstore->comment_start = '#';
   sfi_wstore_puts (wstore, "#BseWave\n\n");
@@ -185,8 +215,11 @@ Wave::store (const string file_name)
   gchar *str = g_strescape (name.c_str(), NULL);
   sfi_wstore_printf (wstore, "  name = \"%s\"\n", str);
   g_free (str);
-  sfi_wstore_printf (wstore, "  n_channels = %u\n", n_channels);
-  sfi_wstore_printf (wstore, "  byte_order = %s\n", gsl_byte_order_to_string (BYTE_ORDER));
+  sfi_wstore_printf (wstore, "  n-channels = %u\n", n_channels);
+  guint byte_order = G_LITTLE_ENDIAN;
+  sfi_wstore_printf (wstore, "  byte-order = %s\n", gsl_byte_order_to_string (byte_order));
+  if (dfl_mix_freq > 0)
+    sfi_wstore_printf (wstore, "  mix-freq = %.3f\n", dfl_mix_freq);
 
   for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
     {
@@ -194,9 +227,9 @@ Wave::store (const string file_name)
       sfi_wstore_puts (wstore, "  chunk {\n");
       int midi_note = bse_xinfos_get_num (chunk->dhandle->setup.xinfos, "midi-note");
       if (midi_note)
-        sfi_wstore_printf (wstore, "    midi_note = %u\n", midi_note);
+        sfi_wstore_printf (wstore, "    midi-note = %u\n", midi_note);
       else
-        sfi_wstore_printf (wstore, "    osc_freq = %.3f\n", gsl_data_handle_osc_freq (chunk->dhandle));
+        sfi_wstore_printf (wstore, "    osc-freq = %.3f\n", gsl_data_handle_osc_freq (chunk->dhandle));
 
       GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
       do        /* skip comment or cache handles */
@@ -208,7 +241,7 @@ Wave::store (const string file_name)
       GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle); // FIXME: deamnd certain serialno
       if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
-          sfi_wstore_puts (wstore, "    ogglink = ");
+          sfi_wstore_puts (wstore, "    ogg-link = ");
           struct Sub {
             static void
             vhandle_destroy (gpointer data)
@@ -231,10 +264,12 @@ Wave::store (const string file_name)
         }
       else
         {
-          sfi_wstore_puts (wstore, "    rawlink = ");
-          gsl_data_handle_dump_wstore (chunk->dhandle, wstore, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN);
+          sfi_wstore_puts (wstore, "    raw-link = ");
+          gsl_data_handle_dump_wstore (chunk->dhandle, wstore, GSL_WAVE_FORMAT_SIGNED_16, byte_order);
           sfi_wstore_puts (wstore, "\n");
-          sfi_wstore_printf (wstore, "    mix_freq = %.3f\n", gsl_data_handle_mix_freq (chunk->dhandle));
+          gfloat mix_freq = gsl_data_handle_mix_freq (chunk->dhandle);
+          if (mix_freq != dfl_mix_freq)
+            sfi_wstore_printf (wstore, "    mix-freq = %.3f\n", mix_freq);
         }
 
       if (chunk->dhandle->setup.xinfos)
@@ -245,7 +280,7 @@ Wave::store (const string file_name)
               const gchar *value = strchr (key, '=') + 1;
               gchar *ckey = g_strndup (key, value - key - 1);
               static const gchar *skip_keys[] = {
-                "midi-note",
+                "midi-note", "osc-freq", "mix-freq",
               };
               guint j;
               for (j = 0; j < G_N_ELEMENTS (skip_keys); j++)
@@ -289,6 +324,7 @@ Wave::store (const string file_name)
 
 Wave::~Wave ()
 {
+  g_strfreev (xinfos);
 }
 
 } // BseWaveTool
