@@ -1,3 +1,10 @@
+Tue Feb 22 07:44:17 2000  Tim Janik  <timj@gtk.org>
+
+	* test/davorgan.bse: updates from David A. Bartold.
+
+	* test/complex-wave.bse: new file from David A. Bartold
+	<foxx@mail.utexas.edu>.
+
 Tue Feb 22 04:02:46 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/glewidgets.[hc]: pulled new widgets.

@@ -4,4 +4,5 @@ EXTRA_DIST = $(strip \
 	testmixer.bse \
 	davorgan.bse \
 	osc-test.bse \
+	complex-wave.bse \
 )
