@@ -11,9 +11,9 @@ FIXMES:
 - registering the same procedure twice triggers a g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - fix forcing unique names for children of a project 
+- create ~/beast/instruments ~/beast/effects when saving effect/instrument
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball
-- create ~/beast/instruments ~/beast/effects when saving effect/instrument
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - File/Open should merge if issued on an empty project
 - add author and license information to module types just like we do for procedures
