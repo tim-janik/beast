@@ -1,6 +1,4 @@
 FIXMES:
-- the idl compiler doesn't support parsing group _("i18n string") {...}
-- the idl compiler writes out _("foo") as _ ("foo") but the additional space confuses gettext
 - remove hpack and vpack
 - make plugins/Makefile.am actually pick up *.idl files in distribution tarballs
 - remove 64bit data fields from BseUndoStep if possible
@@ -284,45 +282,75 @@ Effects:
 
 sfidl:
 90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
-60- bse.idl defines bseamplifier, for which there is an idl file
-    (touch bseamplifier.idl; make breaks)
-50- error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
-    indicate where the previous definition was
 89- #include "/absolute/path" is handled as relative path
 85- support records and sequences in bse-plugin-generator and bseprocidl
-51- reenable signals in bseprocidl
-  - choice type should have validation function
-  - handle non-validated sequences and records in generation code (things
-    can be demarshalled in non-validated form after incompatible changes)
-98- generate foo-i18n.c files for foo.idl to be translated
-  - install sfidl
-  fixes:
-49- support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
+60- bse.idl defines bseamplifier, for which there is an idl file
+    (touch bseamplifier.idl; make breaks)
 59- Const lookups don't honour namespacing
-58- namespace using doesn't work:
-    namespace Dav {
-    using namespace Bse;
-    Num x = (STANDARD);
-    };
 59- namespace prefixing in ParamHints doesn't work:
     namespace Dav {
     Num x = (::Bse::STANDARD);
     Num y = (Bse::STANDARD);
     Num z = (::STANDARD);
     };
+58- namespace using doesn't work:
+    namespace Dav {
+    using namespace Bse;
+    Num x = (STANDARD);
+    };
+51- reenable signals in bseprocidl
+50- error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
+    indicate where the previous definition was
+49- support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
+  - choice type should have validation function
+  - handle non-validated sequences and records in generation code (things
+    can be demarshalled in non-validated form after incompatible changes)
+  - sfidl-parser.cc: property keyword should be nuked
+  - install sfidl
   extensions:
 30- choices need support for icons per value
 30- choices need support for tooltips per value
 20- signals should be specified in idl files (and have to be documentable)
   - beautify procedure skeletons
+  - sfidl --output=foo.cc should be implemented
   code generation:
     - extra namespace for C++ client code
     - restructure name generation to example-based output:
       foo-bar, foo_bar, fooBar, FOO_BAR, FooBar
   C language binding:
 99  - review Rec primitive types
+    - NULL pointer handling is broken
   Qt language binding:
 05  - everything
+  C++ language binding:
+    - defaults for records (should be fetched remotely ; missing type blurb)
+    - sequence Iterator ++ operator (return value broken)
+    - sequence accesses of Iterator
+      Iter x = s.begin() + 5;
+      *x = foo;
+      s[5] = bar;
+      *x is still foo here...
+    - sequence:
+      *(x + 5) == x[5] doesn't hold (cause *(begin() + 5) is of type Value whereas x[5] is ValPtr&)
+    - serialization: can we _really_ only use a template thing?
+      => reorganization of the createTypeCode function
+    - should objects _really_ be values?
+    - bse-plugin-generator as extra binary?
+      => should be sfidl --module
+    - bindings miss testing.
+    - set bse-preferences BSE::GConfig property.
+    - records in bseprocidl: how can we figure out the type?
+    - #include-impl should be implemented
+    - dynamic invocation interface missing in C++ binding (properties, methods)
+
+bseprocidl:
+  - doesn't really work when it comes to implementing _some_ objects yourself
+  - should output lower case vars (Info help instead of Info HELP)
+
+other stuff:
+  - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
+    libtool
+  - Bse::MidiEvent: should be wire-passable
 
 LEGAL:
 - email RMS about plugins covered by patents
