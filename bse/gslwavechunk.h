@@ -36,7 +36,7 @@ typedef enum /*< skip >*/
 } GslWaveLoopType;
 typedef struct
 {
-  GslLong start, end, length;
+  GslLong first, last, length;
   gfloat *mem;
 } GslWaveChunkMem;
 struct _GslWaveChunk
@@ -44,22 +44,22 @@ struct _GslWaveChunk
   /* wave chunk data residency */
   GslDataCache   *dcache;
   GslLong	  length;	/* number of per-channel-values * n-channels */
-
+  
   /* chunk specific parameters */
   gint		  n_channels;
   GslLong	  n_pad_values;	/* guaranteed pad values around blocks */
   GslLong	  wave_length;	/* start + loop duration + end (single channel) */
-
+  
   /* flags */
   guint		  pploop_ends_backwards : 1;
   guint		  mini_loop : 1;
-
+  
   /* loop spec */
   GslWaveLoopType loop_type;
   GslLong	  loop_first;
   GslLong	  loop_last;
   guint		  loop_count;
-
+  
   /* preformatted blocks */
   GslWaveChunkMem head;
   GslWaveChunkMem enter;
@@ -69,7 +69,7 @@ struct _GslWaveChunk
   GslWaveChunkMem tail;
   GslLong	  leave_end_norm;
   GslLong	  tail_start_norm;
-
+  
   GslWaveLoopType requested_loop_type;
   GslLong         requested_loop_first;
   GslLong         requested_loop_last;
