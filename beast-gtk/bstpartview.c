@@ -34,9 +34,9 @@ static gboolean bst_part_view_can_activate      (BstActivatable         *activat
 
 /* --- variables --- */
 static BstItemViewOp part_view_ops[] = {
-  { "Add",		BST_ACTION_ADD_PART,	BST_STOCK_PART,		},
-  { "Delete",		BST_ACTION_DELETE_PART,	BST_STOCK_TRASHCAN,	},
-  { "Editor",		BST_ACTION_EDIT_PART,	BST_STOCK_PART_EDITOR,	},
+  { N_("Add"),		BST_ACTION_ADD_PART,	BST_STOCK_PART,		},
+  { N_("Delete"),	BST_ACTION_DELETE_PART,	BST_STOCK_TRASHCAN,	},
+  { N_("Editor"),	BST_ACTION_EDIT_PART,	BST_STOCK_PART_EDITOR,	},
 };
 static gpointer	parent_class = NULL;
 

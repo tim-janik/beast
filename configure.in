@@ -118,6 +118,7 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
     AC_SUBST(BSE_GETTEXT_DOMAIN)
     dnl versioned BEAST gettext domain (po/)
     BST_GETTEXT_DOMAIN=beast-v$BSE_VERSION    # version without -rcZ
+    AC_SUBST(BST_GETTEXT_DOMAIN)
     AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
     GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
     AC_SUBST(GETTEXT_PACKAGE)
@@ -561,10 +562,11 @@ beast-gtk/icons/Makefile
 beast-gtk/images/Makefile
 docs/Makefile
 docs/generated/Makefile
-po/Makefile.in
-po-bse/Makefile.in
 test/Makefile
 bse/bseconfig.h
+po/Makefile.in
+po-bse/Makefile.in
+po-helper.sh
 sfi.pc
 bse.pc
 ])

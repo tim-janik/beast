@@ -88,23 +88,23 @@ message_title (BseUserMsgType mtype,
     {
     case BSE_USER_MSG_INFO:
       *stock = BST_STOCK_INFO;
-      msg = "Notice";
+      msg = _("Notice");
       break;
     case BSE_USER_MSG_QUESTION:
       *stock = BST_STOCK_QUESTION;
-      msg = "Question";
+      msg = _("Question");
       break;
     case BSE_USER_MSG_WARNING:
       *stock = BST_STOCK_WARNING;
-      msg ="Warning";
+      msg =_("Warning");
       break;
     case BSE_USER_MSG_ERROR:
       *stock = BST_STOCK_ERROR;
-      msg ="Error";
+      msg =_("Error");
       break;
     default:
       *stock = NULL;
-      msg = "Miscellaneous Message";
+      msg = _("Miscellaneous Message");
       break;
     }
   return msg;
@@ -216,9 +216,9 @@ janitor_progress (GxkDialog *dialog,
   // bse_janitor_get_proc_name (janitor);
   gxk_status_window_push (dialog);
   if (progress < 0)
-    gxk_status_set (GXK_STATUS_PROGRESS, exec_name, "processing");
+    gxk_status_set (GXK_STATUS_PROGRESS, exec_name, _("processing"));
   else
-    gxk_status_set (progress * 100.0, exec_name, "processing");
+    gxk_status_set (progress * 100.0, exec_name, _("processing"));
   gxk_status_window_pop ();
   g_free (exec_name);
 }

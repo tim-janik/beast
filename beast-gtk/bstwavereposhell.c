@@ -153,7 +153,7 @@ bst_wave_repo_shell_get_title (BstSuperShell *super_shell)
 {
   // BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
 
-  return g_strdup ("Waves");
+  return g_strdup (_("Waves"));
 }
 
 static void

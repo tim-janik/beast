@@ -90,7 +90,7 @@ param_toggle_create_widget (BstParam    *bparam,
 		    NULL);
   prompt = g_object_new (GTK_TYPE_LABEL,
 			 "visible", TRUE,
-			 "label", bparam->pspec->name,
+			 "label", g_param_spec_get_nick (bparam->pspec),
 			 "parent", action,
 			 NULL);
   return action;

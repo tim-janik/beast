@@ -1,3 +1,40 @@
+Wed Oct 15 02:41:24 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.c (bst_item_view_init): translate BstItemViewOp
+	strings.
+
+	* po-helper.sh.in:
+	* po-helper.sh:
+	* configure.in: make configure create po-helper.sh from po-helper.sh.in
+	to define BST_GETTEXT_DOMAIN and BSE_GETTEXT_DOMAIN which are required
+	by the update scripts in the po*/ directories. add po-helper.sh.in
+	_and_ po-helper.sh to CVS, so translation efforts don't require a
+	beast package build.
+
+	* beast-gtk/bstapp.c:
+	* beast-gtk/bstcanvaslink.c:
+	* beast-gtk/bstcanvassource.c:
+	* beast-gtk/bsteventrollctrl.c:
+	* beast-gtk/bstfiledialog.c:
+	* beast-gtk/bstinstrumentview.c:
+	* beast-gtk/bstitemview.c:
+	* beast-gtk/bstparam-entry.c:
+	* beast-gtk/bstparam-toggle.c:
+	* beast-gtk/bstpartview.c:
+	* beast-gtk/bstpianorollctrl.c:
+	* beast-gtk/bstplayback.c:
+	* beast-gtk/bstprocedure.c:
+	* beast-gtk/bstprojectctrl.c:
+	* beast-gtk/bstrackitem.c:
+	* beast-gtk/bstsampleeditor.c:
+	* beast-gtk/bstsnetrouter.c:
+	* beast-gtk/bstsplash.c:
+	* beast-gtk/bsttrackrollctrl.c:
+	* beast-gtk/bsttrackview.c:
+	* beast-gtk/bstusermessage.c:
+	* beast-gtk/bstwaveeditor.c:
+	* beast-gtk/bstwavereposhell.c: label fixes and i18n markup.
+	
 Mon Oct 13 12:18:11 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcatalog.[hc]: return BstCatalogTool by value, so we

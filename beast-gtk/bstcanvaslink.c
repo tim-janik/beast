@@ -174,7 +174,7 @@ clink_view_update (BstCanvasLink *clink,
        */
       iname = clink->icsource ? bse_item_get_name_or_type (clink->icsource->source) : "<???>";
       oname = clink->ocsource ? bse_item_get_name_or_type (clink->ocsource->source) : "<???>";
-      string = g_strconcat ("Module Link: ", iname, " <=> ", oname, NULL);
+      string = g_strconcat (_("Module Link: "), iname, " <=> ", oname, NULL);
       gxk_dialog_set_title (GXK_DIALOG (clink->link_view), string);
       g_free (string);
 

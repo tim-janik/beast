@@ -199,7 +199,7 @@ bst_wave_editor_init (BstWaveEditor *self)
 		      "digits", 5,
 		      "visible", TRUE,
 		      NULL);
-  gmask = bst_gmask_quick (self->gmask_parent, 0, "Zoom:", any, NULL);
+  gmask = bst_gmask_quick (self->gmask_parent, 0, _("Zoom:"), any, NULL);
 
   /* qsampler vscale */
   self->vscale_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 1, 10, 0));
@@ -210,20 +210,20 @@ bst_wave_editor_init (BstWaveEditor *self)
 		      "digits", 5,
 		      "visible", TRUE,
 		      NULL);
-  gmask = bst_gmask_quick (self->gmask_parent, 1, "VScale:", any, NULL);
+  gmask = bst_gmask_quick (self->gmask_parent, 1, _("VScale:"), any, NULL);
 
   /* qsampler draw type choice */
   any = g_object_new (GTK_TYPE_OPTION_MENU, "visible", TRUE, NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-WaveEditor>/QSamplerDrawType",
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, "Shape Range", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, "Shape Average", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, "Shape Minimum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, "Shape Maximum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, "Sketch Range", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, "Sketch Average", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, "Sketch Minimum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, "Sketch Maximum", NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any, "swapped_signal::changed", change_draw_mode, self, NULL);
   gtk_option_menu_set_history (GTK_OPTION_MENU (any), 0);
@@ -238,10 +238,10 @@ bst_wave_editor_init (BstWaveEditor *self)
   any = g_object_new (GTK_TYPE_OPTION_MENU, "visible", TRUE, NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-WaveEditor>/PreviewScrollType",
-						     BST_CHOICE (SCROLL_NONE, "Scroll None", NONE),
-						     BST_CHOICE (SCROLL_BOTH, "Scroll Both", NONE),
-						     BST_CHOICE (SCROLL_LEFT, "Scroll Left", NONE),
-						     BST_CHOICE (SCROLL_RIGHT, "Scroll Right", NONE),
+						     BST_CHOICE (SCROLL_NONE, _("Scroll None"), NONE),
+						     BST_CHOICE (SCROLL_BOTH, _("Scroll Both"), NONE),
+						     BST_CHOICE (SCROLL_LEFT, _("Scroll Left"), NONE),
+						     BST_CHOICE (SCROLL_RIGHT, _("Scroll Right"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any, "swapped_signal::changed", change_scroll_mode, self, NULL);
   gtk_option_menu_set_history (GTK_OPTION_MENU (any), 1);

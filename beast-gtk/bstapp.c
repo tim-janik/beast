@@ -98,14 +98,14 @@ static BstMenuConfigEntry menubar_entries[] =
   { N_("/Project/New Song"),            NULL,           CB (NEW_SONG),                  "<StockItem>", BST_STOCK_NEW_SONG },
   { N_("/Project/New Custom Synthesizer"), NULL,        CB (NEW_CSYNTH),                "<StockItem>", BST_STOCK_NEW_CSYNTH },
   { N_("/Project/New MIDI Synthesizer"), NULL,          CB (NEW_MIDI_SYNTH),            "<StockItem>", BST_STOCK_NEW_MIDI_SYNTH },
-  { N_("/Project/Remove Synth"),        NULL,           CB (REMOVE_SYNTH),              "<StockItem>", BST_STOCK_REMOVE_SYNTH },
+  { N_("/Project/Remove Synthesizer"),  NULL,           CB (REMOVE_SYNTH),              "<StockItem>", BST_STOCK_REMOVE_SYNTH },
 #if 0
   { N_("/_Song"),                       NULL,           NULL, 0,                        "<Branch>" },
   {    "/Song/<<<<<<",                  NULL,           NULL, 0,                        "<Tearoff>" },
   { N_("/Song/Add _Part"),              NULL,           CB (ADD_PART),                  "<Item>" },
   { N_("/Song/Delete _Part"),           NULL,           CB (DELETE_PART),               "<Item>" },
   { N_("/Song/Add _Track"),             NULL,           CB (ADD_TRACK),                 "<Item>" },
-  { N_("/Song/Delete _Track"),          NULL,           CB (DELETE_TRACK),              "<Item>" },
+  { N_("/Song/_Delete Track"),          NULL,           CB (DELETE_TRACK),              "<Item>" },
   { N_("/_Synth"),                      NULL,           NULL, 0,                        "<Branch>" },
   {    "/Synth/<<<<<<",                 NULL,           NULL, 0,                        "<Tearoff>" },
   { N_("/Synth/_Test"),                 "",             CB (NONE),                      "<Item>" },
@@ -707,7 +707,7 @@ bst_app_activate (BstActivatable *activatable,
           self->rack_dialog = gxk_dialog_new (&self->rack_dialog,
                                               GTK_OBJECT (self),
                                               0, // FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-                                              "Rack editor",
+                                              _("Rack editor"),
                                               self->rack_editor);
         }
       gxk_widget_showraise (self->rack_dialog);
@@ -721,7 +721,7 @@ bst_app_activate (BstActivatable *activatable,
           bst_preferences = gxk_dialog_new (&bst_preferences,
                                             NULL,
                                             GXK_DIALOG_HIDE_ON_DELETE,
-                                            "Preferences",
+                                            _("Preferences"),
                                             widget);
           bst_preferences_create_buttons (BST_PREFERENCES (widget), GXK_DIALOG (bst_preferences));
         }
@@ -735,7 +735,7 @@ bst_app_activate (BstActivatable *activatable,
       any = gxk_dialog_new (NULL,
                             GTK_OBJECT (self),
                             GXK_DIALOG_DELETE_BUTTON, // FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-                            "Device Monitor",
+                            _("Device Monitor"),
                             any);
       gtk_widget_show (any);
       break;
@@ -750,7 +750,7 @@ bst_app_activate (BstActivatable *activatable,
           bst_proc_browser = gxk_dialog_new (&bst_proc_browser,
                                              NULL,
                                              GXK_DIALOG_HIDE_ON_DELETE,
-                                             "Procedure Browser",
+                                             _("Procedure Browser"),
                                              widget);
           bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), GXK_DIALOG (bst_proc_browser));
         }
@@ -807,7 +807,7 @@ bst_app_activate (BstActivatable *activatable,
       goto HELP_DIALOG;
     case BST_ACTION_HELP_RELEASE_NOTES:
       help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
-      help_title = g_strdup_printf ("BEAST-%s Release Notes", BST_VERSION);
+      help_title = g_strdup_printf (_("BEAST-%s Release Notes"), BST_VERSION);
       goto HELP_DIALOG;
     HELP_DIALOG:
       if (!bst_help_dialogs[action - BST_ACTION_HELP_FIRST])

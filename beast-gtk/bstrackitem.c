@@ -169,17 +169,17 @@ bst_rack_item_button_press (BstRackItem    *item,
 	{
 	  item->controller_choice = create_controller_menu ();
 	  item->choice = bst_choice_menu_createv ("<BEAST-RackItem>/EditPopup",
-						  BST_CHOICE_TITLE ("Edit Rack Item"),
+						  BST_CHOICE_TITLE (_("Edit Rack Item")),
 						  BST_CHOICE_SEPERATOR,
-						  BST_CHOICE_SUBMENU ("Controller", item->controller_choice),
-						  BST_CHOICE_S (1005, "Duplicate", NONE, FALSE),
+						  BST_CHOICE_SUBMENU (_("Controller"), item->controller_choice),
+						  BST_CHOICE_S (1005, _("Duplicate"), NONE, FALSE),
 						  BST_CHOICE_SEPERATOR,
-						  BST_CHOICE_S (1001, "Grow Horizontally", NONE, TRUE),
-						  BST_CHOICE_S (1002, "Grow Vertically", NONE, TRUE),
-						  BST_CHOICE_S (1003, "Shrink Horizontally", NONE, TRUE),
-						  BST_CHOICE_S (1004, "Shrink Vertically", NONE, TRUE),
+						  BST_CHOICE_S (1001, _("Grow Horizontally"), NONE, TRUE),
+						  BST_CHOICE_S (1002, _("Grow Vertically"), NONE, TRUE),
+						  BST_CHOICE_S (1003, _("Shrink Horizontally"), NONE, TRUE),
+						  BST_CHOICE_S (1004, _("Shrink Vertically"), NONE, TRUE),
 						  BST_CHOICE_SEPERATOR,
-						  BST_CHOICE (1006, "Delete", DELETE),
+						  BST_CHOICE (1006, _("Delete"), DELETE),
 						  BST_CHOICE_END);
 	}
       bst_choice_menu_set_item_sensitive (item->choice, 1005, can_clone);

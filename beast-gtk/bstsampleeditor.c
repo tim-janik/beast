@@ -474,7 +474,7 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 			"digits", 5,
 			"visible", TRUE,
 			NULL);
-  gmask = bst_gmask_quick (mask_parent, 0, "Zoom:", entry, NULL);
+  gmask = bst_gmask_quick (mask_parent, 0, _("Zoom:"), entry, NULL);
   editor->vscale_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 1, 10, 0));
   g_object_connect (editor->vscale_adjustment,
 		    "swapped_signal_after::value_changed", adjustments_changed, editor,
@@ -485,7 +485,7 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 			"digits", 5,
 			"visible", TRUE,
 			NULL);
-  gmask = bst_gmask_quick (mask_parent, 1, "VScale:", entry, NULL);
+  gmask = bst_gmask_quick (mask_parent, 1, _("VScale:"), entry, NULL);
   
   
   /* setup qsampler selection start and end
@@ -496,14 +496,14 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
   g_object_connect (editor->sstart,
 		    "swapped_signal::destroy", g_nullify_pointer, &editor->sstart,
 		    NULL);
-  gmask = bst_gmask_quick (mask_parent, 0, "Start:", editor->sstart, NULL);
+  gmask = bst_gmask_quick (mask_parent, 0, _("Start:"), editor->sstart, NULL);
   editor->send = g_object_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
 			       NULL);
   g_object_connect (editor->send,
 		    "swapped_signal::destroy", g_nullify_pointer, &editor->sstart,
 		    NULL);
-  gmask = bst_gmask_quick (mask_parent, 1, "End:", editor->send, NULL);
+  gmask = bst_gmask_quick (mask_parent, 1, _("End:"), editor->send, NULL);
   
   
   /* setup sample display type
@@ -513,14 +513,14 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 		      NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
 			    bst_choice_menu_createv ("<BEAST-SampleEditor>/Popup",
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, "Shape Range", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, "Shape Average", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, "Shape Minimum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, "Shape Maximum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, "Sketch Range", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, "Sketch Average", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, "Sketch Minimum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, "Sketch Maximum", NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, _("Shape Range"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, _("Shape Average"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, _("Shape Minimum"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, _("Shape Maximum"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, _("Sketch Range"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, _("Sketch Average"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, _("Sketch Minimum"), NONE),
+						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, _("Sketch Maximum"), NONE),
 						     BST_CHOICE_END));
   g_object_connect (any,
 		    "swapped_signal::changed", change_draw_mode, editor,
@@ -533,7 +533,10 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
    */
   any = g_object_new (GTK_TYPE_BUTTON,
 		      "visible", TRUE,
-		      "label", _("Preview"),
+		      /* TRANSLATORS: here "Preview" is meant audible, i.e. to
+                       * playback the current sample version and listen to it.
+                       */
+                      "label", _("Preview"),
 		      NULL);
   g_object_connect (any,
 		    "swapped_signal::clicked", play_back_wchunk, editor,

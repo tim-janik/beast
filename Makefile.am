@@ -63,6 +63,7 @@ EXTRA_DIST += $(strip		\
 	acbeast.m4		\
 	sfi.pc.in		\
 	bse.pc.in		\
+ 	po-helper.sh.in		\
 	topconfig.h		\
 	intltool-extract.in     \
 	intltool-merge.in       \

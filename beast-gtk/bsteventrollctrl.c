@@ -256,14 +256,14 @@ move_start (BstEventRollController *self,
   if (self->obj_id)	/* got control event to move */
     {
       controller_update_cursor (self, BST_EVENT_ROLL_TOOL_MOVE);
-      gxk_status_set (GXK_STATUS_WAIT, "Move Control Event", NULL);
+      gxk_status_set (GXK_STATUS_WAIT, _("Move Control Event"), NULL);
       drag->state = BST_DRAG_CONTINUE;
       if (bse_part_is_selected_event (part, self->obj_id))
 	self->sel_cseq = bse_part_control_seq_copy_shallow (bse_part_list_selected_controls (part, CONTROL_TYPE (self)));
     }
   else
     {
-      gxk_status_set (GXK_STATUS_ERROR, "Move Control Event", "No target");
+      gxk_status_set (GXK_STATUS_ERROR, _("Move Control Event"), _("No target"));
       drag->state = BST_DRAG_HANDLED;
     }
 }
@@ -327,7 +327,7 @@ move_abort (BstEventRollController *self,
       bse_part_control_seq_free (self->sel_cseq);
       self->sel_cseq = NULL;
     }
-  gxk_status_set (GXK_STATUS_ERROR, "Move Control Event", "Lost Event");
+  gxk_status_set (GXK_STATUS_ERROR, _("Move Control Event"), _("Lost Event"));
 }
 
 static void
@@ -337,7 +337,7 @@ align_start (BstEventRollController *self,
   bst_event_roll_init_segment (self->eroll, BST_SEGMENT_LINE);
   bst_event_roll_segment_start (self->eroll, drag->start_tick, drag->start_value);
   drag->state = BST_DRAG_CONTINUE;
-  gxk_status_set (GXK_STATUS_WAIT, "Align Control Events", NULL);
+  gxk_status_set (GXK_STATUS_WAIT, _("Align Control Events"), NULL);
 }
 
 static void
@@ -370,7 +370,7 @@ align_abort (BstEventRollController *self,
              BstEventRollDrag       *drag)
 {
   bst_event_roll_clear_segment (self->eroll);
-  gxk_status_set (GXK_STATUS_ERROR, "Align Control Events", "Aborted");
+  gxk_status_set (GXK_STATUS_ERROR, _("Align Control Events"), _("Aborted"));
 }
 
 static void
@@ -396,7 +396,7 @@ insert_start (BstEventRollController *self,
     error = BSE_ERROR_NO_TARGET;
   else /* no insertion */
     self->obj_id = 0;
-  bst_status_eprintf (error, "Insert Control Event");
+  bst_status_eprintf (error, _("Insert Control Event"));
   drag->state = BST_DRAG_HANDLED;
 }
 
@@ -407,12 +407,12 @@ resize_start (BstEventRollController *self,
   if (self->obj_id)	/* got control event for resize */
     {
       controller_update_cursor (self, BST_EVENT_ROLL_TOOL_RESIZE);
-      gxk_status_set (GXK_STATUS_WAIT, "Resize Control Event", NULL);
+      gxk_status_set (GXK_STATUS_WAIT, _("Resize Control Event"), NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
   else
     {
-      gxk_status_set (GXK_STATUS_ERROR, "Resize Control Event", "No target");
+      gxk_status_set (GXK_STATUS_ERROR, _("Resize Control Event"), _("No target"));
       drag->state = BST_DRAG_HANDLED;
     }
 }
@@ -448,7 +448,7 @@ static void
 resize_abort (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Resize Control Event", "Lost Event");
+  gxk_status_set (GXK_STATUS_ERROR, _("Resize Control Event"), _("Lost Event"));
 }
 
 static void
@@ -459,10 +459,10 @@ delete_start (BstEventRollController *self,
   if (self->obj_id)	/* got control event to delete */
     {
       BseErrorType error = bse_part_delete_event (part, self->obj_id);
-      bst_status_eprintf (error, "Delete Control Event");
+      bst_status_eprintf (error, _("Delete Control Event"));
     }
   else
-    gxk_status_set (GXK_STATUS_ERROR, "Delete Control Event", "No target");
+    gxk_status_set (GXK_STATUS_ERROR, _("Delete Control Event"), _("No target"));
   drag->state = BST_DRAG_HANDLED;
 }
 
@@ -472,7 +472,7 @@ select_start (BstEventRollController *self,
 {
   drag->start_tick = bst_event_roll_quantize (drag->eroll, drag->start_tick);
   bst_event_roll_set_view_selection (drag->eroll, drag->start_tick, 0);
-  gxk_status_set (GXK_STATUS_WAIT, "Select Region", NULL);
+  gxk_status_set (GXK_STATUS_WAIT, _("Select Region"), NULL);
   drag->state = BST_DRAG_CONTINUE;
 }
 
@@ -496,7 +496,7 @@ static void
 select_abort (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Select Region", "Aborted");
+  gxk_status_set (GXK_STATUS_ERROR, _("Select Region"), _("Aborted"));
   bst_event_roll_set_view_selection (drag->eroll, 0, 0);
 }
 
@@ -505,7 +505,7 @@ static void
 generic_abort (BstEventRollController *self,
 	       BstEventRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Abortion", NULL);
+  gxk_status_set (GXK_STATUS_ERROR, _("Abortion"), NULL);
 }
 #endif
 

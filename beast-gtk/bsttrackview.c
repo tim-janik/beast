@@ -58,10 +58,10 @@ enum {
 
 /* --- track ops --- */
 static BstItemViewOp track_view_ops[] = {
-  { "Add",		BST_ACTION_ADD_TRACK,   	BST_STOCK_TRACK,
-    "Add a new track to this song" },
-  { "Delete",		BST_ACTION_DELETE_TRACK,	BST_STOCK_TRASHCAN,
-    "Delete the currently selected track" },
+  { N_("Add"),		BST_ACTION_ADD_TRACK,   	BST_STOCK_TRACK,
+    N_("Add a new track to this song") },
+  { N_("Delete"),	BST_ACTION_DELETE_TRACK,	BST_STOCK_TRASHCAN,
+    N_("Delete the currently selected track") },
 };
 static guint n_track_view_ops = sizeof (track_view_ops) / sizeof (track_view_ops[0]);
 

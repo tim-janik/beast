@@ -296,14 +296,14 @@ move_start (BstPianoRollController *self,
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
       controller_update_cursor (self, BST_PIANO_ROLL_TOOL_MOVE);
-      gxk_status_set (GXK_STATUS_WAIT, "Move Note", NULL);
+      gxk_status_set (GXK_STATUS_WAIT, _("Move Note"), NULL);
       drag->state = BST_DRAG_CONTINUE;
       if (bse_part_is_selected_event (part, self->obj_id))
 	self->sel_pseq = bse_part_note_seq_copy_shallow (bse_part_list_selected_notes (part));
     }
   else
     {
-      gxk_status_set (GXK_STATUS_ERROR, "Move Note", "No target");
+      gxk_status_set (GXK_STATUS_ERROR, _("Move Note"), _("No target"));
       drag->state = BST_DRAG_HANDLED;
     }
 }
@@ -391,7 +391,7 @@ move_abort (BstPianoRollController *self,
       bse_part_note_seq_free (self->sel_pseq);
       self->sel_pseq = NULL;
     }
-  gxk_status_set (GXK_STATUS_ERROR, "Move Note", "Lost Note");
+  gxk_status_set (GXK_STATUS_ERROR, _("Move Note"), _("Lost Note"));
 }
 
 static void
@@ -408,12 +408,12 @@ resize_start (BstPianoRollController *self,
       else
 	self->tick_bound = self->obj_tick;
       controller_update_cursor (self, BST_PIANO_ROLL_TOOL_RESIZE);
-      gxk_status_set (GXK_STATUS_WAIT, "Resize Note", NULL);
+      gxk_status_set (GXK_STATUS_WAIT, _("Resize Note"), NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
   else
     {
-      gxk_status_set (GXK_STATUS_ERROR, "Resize Note", "No target");
+      gxk_status_set (GXK_STATUS_ERROR, _("Resize Note"), _("No target"));
       drag->state = BST_DRAG_HANDLED;
     }
 }
@@ -462,7 +462,7 @@ static void
 resize_abort (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Resize Note", "Lost Note");
+  gxk_status_set (GXK_STATUS_ERROR, _("Resize Note"), _("Lost Note"));
 }
 
 static void
@@ -473,10 +473,10 @@ delete_start (BstPianoRollController *self,
   if (self->obj_id)	/* got note to delete */
     {
       BseErrorType error = bse_part_delete_event (part, self->obj_id);
-      bst_status_eprintf (error, "Delete Note");
+      bst_status_eprintf (error, _("Delete Note"));
     }
   else
-    gxk_status_set (GXK_STATUS_ERROR, "Delete Note", "No target");
+    gxk_status_set (GXK_STATUS_ERROR, _("Delete Note"), _("No target"));
   drag->state = BST_DRAG_HANDLED;
 }
 
@@ -498,7 +498,7 @@ insert_start (BstPianoRollController *self,
 	  error = BSE_ERROR_NONE;
 	}
     }
-  bst_status_eprintf (error, "Insert Note");
+  bst_status_eprintf (error, _("Insert Note"));
   drag->state = BST_DRAG_HANDLED;
 }
 
@@ -508,7 +508,7 @@ select_start (BstPianoRollController *self,
 {
   drag->start_tick = bst_piano_roll_quantize (drag->proll, drag->start_tick);
   bst_piano_roll_set_view_selection (drag->proll, drag->start_tick, 0, 0, 0);
-  gxk_status_set (GXK_STATUS_WAIT, "Select Region", NULL);
+  gxk_status_set (GXK_STATUS_WAIT, _("Select Region"), NULL);
   drag->state = BST_DRAG_CONTINUE;
 }
 
@@ -534,7 +534,7 @@ static void
 select_abort (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Select Region", "Aborted");
+  gxk_status_set (GXK_STATUS_ERROR, _("Select Region"), _("Aborted"));
   bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
 }
 
@@ -544,7 +544,7 @@ vselect_start (BstPianoRollController *self,
 {
   drag->start_tick = bst_piano_roll_quantize (drag->proll, drag->start_tick);
   bst_piano_roll_set_view_selection (drag->proll, drag->start_tick, 0, drag->proll->min_note, drag->proll->max_note);
-  gxk_status_set (GXK_STATUS_WAIT, "Vertical Select", NULL);
+  gxk_status_set (GXK_STATUS_WAIT, _("Vertical Select"), NULL);
   drag->state = BST_DRAG_CONTINUE;
 }
 
@@ -570,7 +570,7 @@ static void
 vselect_abort (BstPianoRollController *self,
 	       BstPianoRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Vertical Region", "Aborted");
+  gxk_status_set (GXK_STATUS_ERROR, _("Vertical Region"), _("Aborted"));
   bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
 }
 
@@ -579,7 +579,7 @@ static void
 generic_abort (BstPianoRollController *self,
 	       BstPianoRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Abortion", NULL);
+  gxk_status_set (GXK_STATUS_ERROR, _("Abortion"), NULL);
 }
 #endif
 
@@ -705,7 +705,7 @@ controller_piano_drag (BstPianoRollController *self,
 	  self->obj_note = drag->current_note;
 	  if (error == BSE_ERROR_NONE)
 	    bse_song_synthesize_note (song, track, 384 * 4, self->obj_note, 0, 1.0);
-	  bst_status_eprintf (error, "Play note");
+	  bst_status_eprintf (error, _("Play note"));
 	  drag->state = BST_DRAG_CONTINUE;
 	}
     }

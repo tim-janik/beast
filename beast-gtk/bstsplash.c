@@ -124,7 +124,7 @@ bst_splash_init (BstSplash *self)
   gtk_box_pack_end (GTK_BOX (self->vbox), any, FALSE, TRUE, 5);
   self->item = g_object_new (GTK_TYPE_LABEL,
 			     "visible", TRUE,
-			     "label", "Item",
+			     "label", "Item",           /* untranslated template name */
 			     "width_request", 1,
 			     "parent", any,
 			     NULL);
@@ -138,7 +138,7 @@ bst_splash_init (BstSplash *self)
   gtk_box_pack_end (GTK_BOX (self->vbox), any, FALSE, TRUE, 10);
   self->entity = g_object_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
-			       "label", "Entity",
+			       "label", "Entity",       /* untranslated template name */
 			       "width_request", 1,
 			       "parent", any,
 			       NULL);

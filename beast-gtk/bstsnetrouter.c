@@ -404,7 +404,7 @@ bst_snet_router_toggle_palette (BstSNetRouter *self)
 	  self->palette = g_object_connect (gxk_dialog_new (&self->palette,
 							    GTK_OBJECT (self),
 							    GXK_DIALOG_HIDE_ON_DELETE,
-							    "Palette",
+							    _("Palette"),
 							    bst_radio_tools_build_palette (self->rtools, ebox,
 											   TRUE, GTK_RELIEF_NORMAL)),
 					    "swapped_signal::hide", palette_reset, self,
@@ -923,7 +923,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	  router->drag_is_input = ichannel != ~0;
 	  if (csource && at_channel && router->drag_is_input &&  /* ichannel in use */
 	      !bst_canvas_source_ichannel_free (csource, ichannel))
-	    gxk_status_set (GXK_STATUS_ERROR, "Input channel in use", NULL);
+	    gxk_status_set (GXK_STATUS_ERROR, _("Input channel in use"), NULL);
 	  else if (csource && at_channel) /* i/o link */
 	    {
 	      GnomeCanvasPoints *gpoints = gnome_canvas_points_new (2);
@@ -950,9 +950,9 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      router->world_y = event->button.y;	/* event coords are world already */
 	      bst_radio_tools_set_tool (router->rtools, ROUTER_TOOL_CREATE_LINK);
 	      if (router->drag_is_input)
-		gxk_status_set (GXK_STATUS_WAIT, "Create Link", "Select output module");
+		gxk_status_set (GXK_STATUS_WAIT, _("Create Link"), _("Select output module"));
 	      else
-		gxk_status_set (GXK_STATUS_WAIT, "Create Link", "Select input module");
+		gxk_status_set (GXK_STATUS_WAIT, _("Create Link"), _("Select input module"));
 	      handled = TRUE;
 	    }
 	  else if (csource && csource->source != router->snet)
@@ -988,7 +988,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      router->drag_csource = NULL;
 	      router->drag_channel = ~0;
 	      bst_snet_router_reset_tool (router);
-	      bst_status_eprintf (error, "Create Link");
+	      bst_status_eprintf (error, _("Create Link"));
 	    }
 	  handled = TRUE;
 	}
@@ -1008,13 +1008,13 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
 						BST_CHOICE_TITLE (source_name),
 						BST_CHOICE_SEPERATOR,
-						BST_CHOICE (2, "Properties", PROPERTIES),
-						BST_CHOICE (6, "Reset Properties", PROPERTIES_RESET),
-						BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, has_inputs),
-						BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, bse_source_has_outputs (csource->source)),
-						BST_CHOICE (5, "Show Info", INFO),
+						BST_CHOICE (2, _("Properties"), PROPERTIES),
+						BST_CHOICE (6, _("Reset Properties"), PROPERTIES_RESET),
+						BST_CHOICE_S (3, _("Delete Inputs"), NO_ILINK, has_inputs),
+						BST_CHOICE_S (4, _("Delete Outputs"), NO_OLINK, bse_source_has_outputs (csource->source)),
+						BST_CHOICE (5, _("Show Info"), INFO),
 						BST_CHOICE_SEPERATOR,
-						BST_CHOICE_S (1, "Delete", DELETE, csource->source != router->snet),
+						BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != router->snet),
 						BST_CHOICE_END);
 	      g_free (source_name);
 	      i = bst_choice_modal (choice, event->button.button, event->button.time);
@@ -1038,7 +1038,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		  break;
 		case 1:
 		  error = bse_snet_remove_source (router->snet, csource->source);
-		  bst_status_eprintf (error, "Remove Module");
+		  bst_status_eprintf (error, _("Remove Module"));
 		  break;
 		}
 	      bst_choice_destroy (choice);
@@ -1052,11 +1052,11 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      guint i;
 
 	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/LinkPopup",
-						BST_CHOICE_TITLE ("Module link"),
+						BST_CHOICE_TITLE (_("Module link")),
 						BST_CHOICE_SEPERATOR,
-                                                BST_CHOICE (2, "Show Info", INFO),
+                                                BST_CHOICE (2, _("Show Info"), INFO),
 						BST_CHOICE_SEPERATOR,
-						BST_CHOICE (1, "Delete", DELETE),
+						BST_CHOICE (1, _("Delete"), DELETE),
 						BST_CHOICE_END);
 	      i = bst_choice_modal (choice, event->button.button, event->button.time);
 	      switch (i)
@@ -1065,7 +1065,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		case 1:
 		  error = bse_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
 							clink->ocsource->source, clink->ochannel);
-		  bst_status_eprintf (error, "Delete Link");
+		  bst_status_eprintf (error, _("Delete Link"));
 		  break;
 		case 2:
 		  bst_canvas_link_popup_view (clink);
@@ -1119,7 +1119,7 @@ bst_snet_router_event (GtkWidget *widget,
 	    bst_radio_tools_set_tool (router->rtools, 0);
 	  router->world_x = 0;
 	  router->world_y = 0;
-	  bst_status_eprintf (error, "Insert Module");
+	  bst_status_eprintf (error, _("Insert Module"));
 	}
       else if (event->button.button != 1 && router->rtools->tool_id == ROUTER_TOOL_CREATE_LINK)
 	{

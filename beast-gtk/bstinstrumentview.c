@@ -30,8 +30,8 @@ static gboolean	bst_instrument_view_can_operate	(BstItemView		*item_view,
 
 /* --- instrument ops --- */
 static BstItemViewOp instrument_view_ops[] = {
-  { "Add",		BST_OP_INSTRUMENT_ADD,		BST_STOCK_INSTRUMENT	},
-  { "Delete",		BST_OP_INSTRUMENT_DELETE,	BST_STOCK_TRASHCAN	},
+  { N_("Add"),		BST_OP_INSTRUMENT_ADD,		BST_STOCK_INSTRUMENT	},
+  { N_("Delete"),	BST_OP_INSTRUMENT_DELETE,	BST_STOCK_TRASHCAN	},
 };
 static guint n_instrument_view_ops = sizeof (instrument_view_ops) / sizeof (instrument_view_ops[0]);
 

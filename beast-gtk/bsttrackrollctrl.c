@@ -385,7 +385,7 @@ edit_name_start (BstTrackRollController *self,
       controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_RENAME);
     }
   else
-    gxk_status_set (GXK_STATUS_ERROR, "Edit Part", "No Part");
+    gxk_status_set (GXK_STATUS_ERROR, _("Edit Part"), _("No Part"));
   drag->state = BST_DRAG_HANDLED;
 }
 
@@ -397,7 +397,7 @@ controller_stop_edit (BstTrackRollController *self,
   if (!canceled)
     {
       bse_item_set_name (self->obj_part, gtk_entry_get_text (GTK_ENTRY (ecell)));
-      gxk_status_set (GXK_STATUS_DONE, "Edit Part", NULL);
+      gxk_status_set (GXK_STATUS_DONE, _("Edit Part"), NULL);
     }
   controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
 }
@@ -416,21 +416,21 @@ insert_start (BstTrackRollController *self,
           bse_item_group_undo (song, "Insert part");
 	  item = bse_song_create_part (song);
 	  if (item && bse_track_insert_part (drag->current_track, tick, item) > 0)
-	    gxk_status_set (GXK_STATUS_DONE, "Insert Part", NULL);
+	    gxk_status_set (GXK_STATUS_DONE, _("Insert Part"), NULL);
 	  else
-	    gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Lost Part");
+	    gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Lost Part"));
           bse_item_ungroup_undo (song);
 	  drag->state = BST_DRAG_HANDLED;
 	}
       else
-	gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Position taken");
+	gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Position taken"));
     }
   else
     {
       if (self->obj_part)
-	gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Position taken");
+	gxk_status_set (GXK_STATUS_ERROR, _("Insert Part"), _("Position taken"));
       else
-	gxk_status_set (GXK_STATUS_ERROR, "Insert part", "No Track");
+	gxk_status_set (GXK_STATUS_ERROR, _("Insert part"), _("No Track"));
       drag->state = BST_DRAG_HANDLED;
     }
 }
@@ -442,10 +442,10 @@ delete_start (BstTrackRollController *self,
   if (self->obj_part)	/* got part to delete */
     {
       bse_track_remove_tick (self->obj_track, self->obj_tick);
-      gxk_status_set (GXK_STATUS_DONE, "Delete Part", NULL);
+      gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
   else
-    gxk_status_set (GXK_STATUS_ERROR, "Delete Part", "No target");
+    gxk_status_set (GXK_STATUS_ERROR, _("Delete Part"), _("No target"));
   drag->state = BST_DRAG_HANDLED;
 }
 
@@ -454,7 +454,7 @@ move_link_start (BstTrackRollController *self,
 		 BstTrackRollDrag       *drag,
 		 gboolean		 link_pending)
 {
-  const gchar *action = link_pending ? "Link Part" : "Move Part";
+  const gchar *action = link_pending ? _("Link Part") : _("Move Part");
   if (self->obj_part)	/* got part to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
@@ -465,7 +465,7 @@ move_link_start (BstTrackRollController *self,
     }
   else
     {
-      gxk_status_set (GXK_STATUS_ERROR, action, "No target");
+      gxk_status_set (GXK_STATUS_ERROR, action, _("No target"));
       drag->state = BST_DRAG_HANDLED;
     }
 }
@@ -488,7 +488,7 @@ static void
 move_motion (BstTrackRollController *self,
 	     BstTrackRollDrag       *drag)
 {
-  const gchar *action = self->skip_deletion ? "Link Part" : "Move Part";
+  const gchar *action = self->skip_deletion ? _("Link Part") : _("Move Part");
   gint new_tick;
   gboolean track_changed;
 
@@ -520,7 +520,7 @@ static void
 move_abort (BstTrackRollController *self,
 	    BstTrackRollDrag       *drag)
 {
-  gxk_status_set (GXK_STATUS_ERROR, "Move Part", "Lost Part");
+  gxk_status_set (GXK_STATUS_ERROR, _("Move Part"), _("Lost Part"));
 }
 
 static void
@@ -532,12 +532,12 @@ editor_create (BstTrackRollController *self,
       GtkWidget *pdialog = g_object_new (BST_TYPE_PART_DIALOG, NULL);
       bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), self->obj_part);
       g_signal_connect_object (self->troll, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
-      gxk_status_set (GXK_STATUS_DONE, "Start Editor", NULL);
+      gxk_status_set (GXK_STATUS_DONE, _("Start Editor"), NULL);
       gtk_widget_show (pdialog);
       bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
     }
   else
-    gxk_status_set (GXK_STATUS_ERROR, "Start Editor", "No target");
+    gxk_status_set (GXK_STATUS_ERROR, _("Start Editor"), _("No target"));
   drag->state = BST_DRAG_HANDLED;
 }
 

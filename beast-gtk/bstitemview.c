@@ -138,7 +138,7 @@ bst_item_view_init (BstItemView      *self,
     {
       BstItemViewOp *bop = ITEM_VIEW_CLASS->ops + i;
       GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
-				       "label", bop->op_name,
+				       "label", gettext (bop->op_name),
 				       NULL);
       self->op_widgets[i] = g_object_new (GTK_TYPE_BUTTON,
 					  "can_focus", FALSE,
@@ -160,7 +160,7 @@ bst_item_view_init (BstItemView      *self,
 		      "parent", self->op_widgets[i],
 		      NULL);
       if (bop->tooltip)
-	gtk_tooltips_set_tip (GXK_TOOLTIPS, self->op_widgets[i], bop->tooltip, NULL);
+	gtk_tooltips_set_tip (GXK_TOOLTIPS, self->op_widgets[i], gettext (bop->tooltip), NULL);
     }
   gtk_widget_show_all (self->tools);
   

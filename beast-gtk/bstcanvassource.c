@@ -969,7 +969,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	    {
 	      name = bse_source_ichannel_name (csource->source, channel);
 	      cname = bse_source_ichannel_ident (csource->source, channel);
-	      prefix = "Input";
+	      prefix = _("Input");
 	    }
 	  else
 	    {
@@ -978,11 +978,11 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 		{
 		  name = bse_source_ochannel_name (csource->source, channel);
 		  cname = bse_source_ochannel_ident (csource->source, channel);
-		  prefix = "Output";
+		  prefix = _("Output");
 		}
 	    }
 	  if (name)
-	    gxk_status_printf (GXK_STATUS_IDLE_HINT, "(Hint)", "%s[%s]: %s", prefix, cname, name);
+	    gxk_status_printf (GXK_STATUS_IDLE_HINT, _("(Hint)"), "%s[%s]: %s", prefix, cname, name);
 	  else
 	    gxk_status_set (GXK_STATUS_IDLE_HINT, NULL, NULL);
 	}

@@ -58,7 +58,7 @@ param_entry_path_popup_remove (GtkWidget *action)
 {
   GtkEntry *entry = GTK_ENTRY (action);
   gchar **paths = g_strsplit (gtk_entry_get_text (entry), G_SEARCHPATH_SEPARATOR_S, -1);
-  GtkWidget *dialog = bst_list_popup_new ("Remove Paths", action,
+  GtkWidget *dialog = bst_list_popup_new (_("Remove Paths"), action,
                                           param_entry_path_assign,
                                           action, NULL);
   guint i;

@@ -225,7 +225,7 @@ bst_file_dialog_init (BstFileDialog *self)
   gxk_dialog_set_focus (GXK_DIALOG (self), self->fs->selection_entry);
   
   /* setup remaining bits */
-  bst_file_dialog_set_mode (self, NULL, 0, "File Selection", 0);
+  bst_file_dialog_set_mode (self, NULL, 0, _("File Selection"), 0);
   gtk_window_set_type_hint (GTK_WINDOW (self), GDK_WINDOW_TYPE_HINT_DIALOG);
 }
 
@@ -340,7 +340,7 @@ bst_file_dialog_popup_open_project (gpointer parent_widget)
 
   bst_file_dialog_set_mode (self, parent_widget,
 			    BST_FILE_DIALOG_OPEN_PROJECT,
-			    "Open Project", 0);
+			    _("Open Project"), 0);
   gxk_widget_showraise (widget);
 
   return widget;
@@ -354,7 +354,7 @@ bst_file_dialog_popup_select_dir (gpointer parent_widget)
 
   bst_file_dialog_set_mode (self, parent_widget,
 			    BST_FILE_DIALOG_SELECT_DIR | BST_FILE_DIALOG_ALLOW_DIRS,
-			    "Select Directory", 0);
+			    _("Select Directory"), 0);
   gxk_widget_showraise (widget);
 
   return widget;
@@ -368,14 +368,14 @@ bst_file_dialog_open_project (BstFileDialog *self,
   BseErrorType error = bse_project_restore_from_file (project, file_name);
 
   if (error)
-    bst_status_eprintf (error, "Opening project `%s'", file_name);
+    bst_status_eprintf (error, _("Opening project `%s'"), file_name);
   else
     {
       BstApp *app;
       bse_project_get_wave_repo (project);
       app = bst_app_new (project);
       gxk_status_window_push (app);
-      bst_status_eprintf (error, "Opening project `%s'", file_name);
+      bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       gxk_status_window_pop ();
       gxk_idle_show_widget (GTK_WIDGET (app));
     }
@@ -393,7 +393,7 @@ bst_file_dialog_popup_merge_project (gpointer   parent_widget,
 
   bst_file_dialog_set_mode (self, parent_widget,
 			    BST_FILE_DIALOG_MERGE_PROJECT,
-			    "Merge: %s", project);
+			    _("Merge: %s"), project);
   gxk_widget_showraise (widget);
 
   return widget;
@@ -406,7 +406,7 @@ bst_file_dialog_merge_project (BstFileDialog *self,
   SfiProxy project = bse_item_use (self->proxy);
   BseErrorType error = bse_project_restore_from_file (project, file_name);
 
-  bst_status_eprintf (error, "Merging project `%s'", file_name);
+  bst_status_eprintf (error, _("Merging project `%s'"), file_name);
 
   bse_item_unuse (project);
 
@@ -422,7 +422,7 @@ bst_file_dialog_popup_save_project (gpointer   parent_widget,
 
   bst_file_dialog_set_mode (self, parent_widget,
 			    BST_FILE_DIALOG_SAVE_PROJECT,
-			    "Save: %s", project);
+			    _("Save: %s"), project);
   /* resetting: gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->radio1), TRUE); */
   gtk_widget_show (self->osave);
   gxk_widget_showraise (widget);
@@ -443,8 +443,8 @@ bst_file_dialog_save_project (BstFileDialog *self,
   /* offer retry if file exists */
   if (error == BSE_ERROR_FILE_EXISTS)
     {
-      gchar *title = g_strdup_printf ("Saving project `%s'", bse_item_get_name (project));
-      gchar *text = g_strdup_printf ("Failed to save\n`%s'\nto\n`%s':\n%s",
+      gchar *title = g_strdup_printf (_("Saving project `%s'"), bse_item_get_name (project));
+      gchar *text = g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
 				     bse_item_get_name (project),
 				     file_name,
 				     bse_error_blurb (error));
@@ -460,8 +460,8 @@ bst_file_dialog_save_project (BstFileDialog *self,
 	  bst_choice_destroy (choice);
 	  if (unlink (file_name) < 0)
 	    {
-	      title = g_strdup_printf ("Deleting file `%s'", bse_item_get_name (project));
-	      text = g_strdup_printf ("Failed to delete file\n`%s'\ndue to:\n%s",
+	      title = g_strdup_printf (_("Deleting file `%s'"), bse_item_get_name (project));
+	      text = g_strdup_printf (_("Failed to delete file\n`%s'\ndue to:\n%s"),
 				      file_name, bse_error_blurb (error));
 	      choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
 						  BST_CHOICE_TEXT (text),
@@ -478,7 +478,7 @@ bst_file_dialog_save_project (BstFileDialog *self,
       handled = FALSE;
     }
   else
-    bst_status_eprintf (error, "Saving project `%s'", file_name);
+    bst_status_eprintf (error, _("Saving project `%s'"), file_name);
   bse_item_unuse (project);
 
   return handled;
@@ -494,7 +494,7 @@ bst_file_dialog_popup_load_wave (gpointer parent_widget,
 
   bst_file_dialog_set_mode (self, parent_widget,
 			    show_lib ? BST_FILE_DIALOG_LOAD_WAVE_LIB : BST_FILE_DIALOG_LOAD_WAVE,
-			    "Load Wave", wave_repo);
+			    _("Load Wave"), wave_repo);
   gxk_widget_showraise (widget);
 
   return widget;
@@ -506,9 +506,9 @@ bst_file_dialog_load_wave (BstFileDialog *self,
 {
   BseErrorType error;
 
-  gxk_status_printf (0, NULL, "Loading wave `%s'", file_name);
+  gxk_status_printf (0, NULL, _("Loading wave `%s'"), file_name);
   error = bse_wave_repo_load_file (self->proxy, file_name);
-  bst_status_eprintf (error, "Loading wave `%s'", file_name);
+  bst_status_eprintf (error, _("Loading wave `%s'"), file_name);
 
   return TRUE;
 }
