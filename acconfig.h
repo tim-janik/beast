@@ -1,6 +1,4 @@
-/* acconfig.h for BEAST - Bedevilled Audio System
- * here we list all symbols, which get introduced by configure.in
- */
+/* acconfig.h for BEAST - here we list all symbols, which get introduced by configure.in */
 
 #include "PKG_paths.h"
 
