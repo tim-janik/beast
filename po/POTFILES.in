@@ -42,6 +42,7 @@ beast-gtk/bstrackitem.c
 beast-gtk/bstrackview.c
 beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.c
+beast-gtk/bstscrollgraph.c
 beast-gtk/bstsnetrouter.c
 beast-gtk/bststest.c
 beast-gtk/bstsupershell.c
@@ -99,6 +100,7 @@ data/beast.xml.in
 data/bse.keys.in
 drivers/bse-alsa/bsemididevice-alsa.c
 drivers/bse-alsa/bsepcmdevice-alsa.c
+drivers/bse-portaudio/bsepcmdevice-portaudio.cc
 plugins/artscompressor.idl
 plugins/bseadder.c
 plugins/bseatandistort.c
