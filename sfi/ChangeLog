@@ -1,3 +1,25 @@
+Sun Jul 11 23:37:46 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]:
+	added SfiCompareFunc(), sfi_compare_pointers() and a set of
+	new ring methods:
+	sfi_ring_copy_rest(): copy a partial ring.
+	sfi_ring_uniq(): remove duplicate ring elements.
+	sfi_ring_union(): produce a union of two rings.
+	sfi_ring_intersection(): produce an intersection of two rings.
+	sfi_ring_difference(): produce a set-difference on rings.
+	sfi_ring_symmetric_difference(): produce a symmetric set-difference
+	on rings.
+	sfi_ring_includes(): test super/sub set relation.
+	sfi_ring_equals(): test ring equality.
+	sfi_ring_mismatch(): find mismatching ring elements.
+	sfi_ring_min_node():
+	sfi_ring_min():
+	sfi_ring_max_node():
+	sfi_ring_max(): find minimum/maximum in rings respectively.
+
+	* testsfi.c: added SfiRing implementation test.
+
 Sat Jul 10 18:23:25 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: generate *Properties structure for synthesis modules

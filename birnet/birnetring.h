@@ -241,6 +241,15 @@ SfiProxy     sfi_rec_get_proxy	(SfiRec		*rec,
 				 const gchar	*field_name);
 
 
+/* --- basic comparisons --- */
+typedef gint (*SfiCompareFunc)          (gconstpointer   value1,
+                                         gconstpointer   value2,
+                                         gpointer        data);
+gint     sfi_compare_pointers           (gconstpointer   value1,
+                                         gconstpointer   value2,
+                                         gpointer        dummy);
+
+
 /* --- ring (circular-list) --- */
 typedef gpointer (*SfiRingDataFunc)	(gpointer	 data,
 					 gpointer	 func_data);
@@ -258,9 +267,6 @@ SfiRing*        sfi_ring_append         (SfiRing        *head,
 					 gpointer        data);
 SfiRing*        sfi_ring_append_uniq    (SfiRing        *head,
 					 gpointer        data);
-SfiRing*        sfi_ring_insert_sorted  (SfiRing        *head,
-					 gpointer        data,
-					 GCompareFunc    func);
 SfiRing*        sfi_ring_remove_node    (SfiRing        *head,
 					 SfiRing        *node);
 SfiRing*        sfi_ring_remove         (SfiRing        *head,
@@ -272,6 +278,8 @@ SfiRing*        sfi_ring_copy           (SfiRing        *head);
 SfiRing*        sfi_ring_copy_deep      (SfiRing        *head,
 					 SfiRingDataFunc copy,
 					 gpointer	 func_data);
+SfiRing*        sfi_ring_copy_rest      (SfiRing        *ring,
+                                         SfiRing        *head);
 SfiRing*        sfi_ring_concat         (SfiRing        *head1,
 					 SfiRing        *head2);
 SfiRing*        sfi_ring_find           (SfiRing        *head,
@@ -282,11 +290,6 @@ gpointer        sfi_ring_nth_data       (SfiRing        *head,
 					 guint           n);
 SfiRing*        sfi_ring_split          (SfiRing        *head1,
 					 SfiRing        *head2);
-SfiRing*	sfi_ring_merge_sorted	(SfiRing	*head1,
-					 SfiRing	*head2,
-					 GCompareFunc	 func);
-SfiRing*        sfi_ring_sort           (SfiRing        *head,
-					 GCompareFunc    func);
 SfiRing*        sfi_ring_reverse        (SfiRing        *head);
 gpointer        sfi_ring_pop_head       (SfiRing       **head);
 gpointer        sfi_ring_pop_tail       (SfiRing       **head);
@@ -298,6 +301,64 @@ void            sfi_ring_free_deep      (SfiRing        *head,
 #define sfi_ring_tail(head)             ((head) ? (head)->prev : NULL)
 #define sfi_ring_walk(node,head_bound)  ((node)->next != (head_bound) ? (node)->next : NULL)
 #define sfi_ring_next                   sfi_ring_walk
+
+/* ring-modifying cmp-based operations */
+SfiRing* sfi_ring_insert_sorted         (SfiRing        *head,
+					 gpointer        insertion_data,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        cmp_data);
+SfiRing* sfi_ring_merge_sorted	        (SfiRing	*head1,
+					 SfiRing	*head2,
+					 SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_sort                  (SfiRing        *head,
+					 SfiCompareFunc  cmp,
+                                         gpointer        data);
+/* ring-copying cmp-based operations */
+SfiRing* sfi_ring_uniq                  (SfiRing        *sorted_ring1,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_union                 (SfiRing        *sorted_set1,
+                                         SfiRing        *sorted_set2,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_intersection          (SfiRing        *sorted_set1,
+                                         SfiRing        *sorted_set2,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_difference            (SfiRing        *sorted_set1,
+                                         SfiRing        *sorted_set2,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_symmetric_difference  (SfiRing        *sorted_set1,
+                                         SfiRing        *sorted_set2,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+/* const-result cmp-based operations */
+gboolean sfi_ring_includes              (SfiRing        *sorted_super_set,
+                                         SfiRing        *sorted_sub_set,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+gboolean sfi_ring_mismatch              (SfiRing       **sorted_ring1_p,
+                                         SfiRing       **sorted_ring2_p,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+gboolean sfi_ring_equals                (SfiRing        *sorted_set1,
+                                         SfiRing        *sorted_set2,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_min_node              (SfiRing        *head,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+SfiRing* sfi_ring_max_node              (SfiRing        *head,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+gpointer sfi_ring_min                   (SfiRing        *head,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
+gpointer sfi_ring_max                   (SfiRing        *head,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
 
 G_END_DECLS
 
