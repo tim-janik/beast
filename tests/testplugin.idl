@@ -1,4 +1,4 @@
-/* TestPlugin - used to test the C++ language binding
+/* TestPlugin - used to test the C++ language binding           -*-mode: c++;-*-
  * Copyright (C) 2003 Stefan Westerfeld <stefan@space.twc.de>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,12 +18,25 @@
  */
 #include <bse/bse.idl>
 
-namespace Test {
+namespace Namespace {
 
-class Plugin : Bse::Effect {
-  Info    category  = "/Modules/Test/Plugin";
+// test enum
+choice FunkynessType {
+  REALLY_FUNKY,
+  MODERATELY_FUNKY,
+  NON_FUNKY = (42, "No Funk At All"),
+};
+
+// test effect
+class TestObject : Bse::Effect {
+  Info    category  = "/Test/Plugin";
   // required because otherwise the bse-plugin-generator generated thing doesn't compile
   property Int fixme;
 };
+
+// test procedure
+Int test_exception (Int i, TestObject o, Int bar, FunkynessType ft) {
+  Info category = "/Toys/Test Exception";
+}
 
 };

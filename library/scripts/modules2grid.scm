@@ -15,12 +15,12 @@
 ;; otherwise) arising in any way out of the use of this software, even
 ;; if advised of the possibility of such damage.
 
-;; (bse-script-register <func> <category> <blurb> <help> <author> <license> ARGS...)
+;; (bse-script-register <func> <options> <category> <blurb> <author> <license> ARGS...)
 (bse-script-register 'modules2grid
+		     ""
                      "/SNet/Grid Align"
-		     "Align modules to grid"
-		     (string-append "This function rounds module positions to their nearest grid position "
-				    "and thusly aligns all modules within a synthesis network.")
+		     (string-append "Round module positions to their nearest grid position, "
+				    "so to aligns all modules within a synthesis network.")
 		     "Tim Janik"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
 		     (bse-param-snet "snet"))

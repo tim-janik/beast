@@ -1,6 +1,9 @@
 FIXMES:
-- fix category() for procedures in sfidl-module.cc
-- remove proc->authors and licene
+- BseCategories need to provide an untranslated version (for menu paths)
+- get rid of root_category in idl files once BseCategories has an untranslated version
+- remove SfiGlueProc.blurb
+- fix procedure blurb display (GUI in execution dialog)
+- get rid of hardcoded server id (1) by means of an object-less procedure
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
 - apply editable and sensitive to params
@@ -13,7 +16,6 @@ FIXMES:
 - auto-connect viewable-changed to gadget notebooks
 - add one-shot property to gxk-gadget-factories
 - make the plugin loader match on *.so and not *.la files
-- remove blurb/authors/license fields from BseProcedure if possible
 - remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
@@ -24,7 +26,6 @@ FIXMES:
 - registering the same procedure twice triggers a g_warning()
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - File/Open should merge if issued on an empty project
-- add author and license information to module types just like we do for procedures
 - fix non-NULL icons at 0x0, GUI breaks in lots of places for them
 - move non-infrastructure synthesis modules out of the core into plugins/
 - freeverb bypass toggle

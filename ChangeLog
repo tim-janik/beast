@@ -1,3 +1,25 @@
+Tue Dec 23 05:22:09 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c: use proc->help instead of proc->blurb (which
+	is gone now).
+
+	* library/scripts/record-midi.scm:
+	* library/scripts/modules2grid.scm:
+	* library/scripts/progressor-example.scm:
+	* library/scripts/song-parts-operations.scm: introduced options field
+	and switched category position to unify field order with plugins.
+
+	* tests/Makefile.am: build plugin as lib_LTLIBRARIES, so it can actually
+	be loaded (is a proper .so file).
+
+	* tests/cxxbinding.cc: added a bunch of cleanups. added plugin procedure
+	test. actually error out if things fail.
+
+	* tests/testplugin.cc: implemented test_exception() procedure.
+
+	* tests/testplugin.idl: declare test_exception() procedure, added
+	test enum.
+
 Mon Dec 22 23:59:03 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: don't show unstable plugins without

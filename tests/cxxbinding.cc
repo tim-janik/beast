@@ -26,75 +26,96 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+  std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   g_thread_init (NULL);
   sfi_init ();
+  sfi_log_allow_debug ("misc");
   bse_init_async (&argc, &argv, NULL);
   bse_context = bse_init_glue_context (argv[0]);
 
   sfi_glue_context_push (bse_context);
 
-  printf ("BseContainer: %s\n", type_blurb("BseContainer").c_str());
+  g_print ("type_blurb(BseContainer)=%s\n", type_blurb("BseContainer").c_str());
 
-  SampleFileInfoPtr info = sample_file_info ("empty.ogg");
+  const gchar *file_name = "empty.ogg";
+  SampleFileInfoPtr info = sample_file_info (file_name);
   if (info)
     {
-      printf("file = %s, loader = %s\n", info->file.c_str(), info->loader.c_str());
-      printf("%d waves contained:\n", info->waves.size());
+      g_print ("sample_file_info(\"%s\"): file = %s, loader = %s\n",
+               file_name, info->file.c_str(), info->loader.c_str());
+      g_print ("  %d waves contained:\n", info->waves.size());
       for (unsigned int i = 0; i < info->waves.length(); i++)
-	{
-	  printf("  - %s\n", info->waves[i].c_str());
-	}
+        g_print ("  - %s\n", info->waves[i].c_str());
     }
   else
     {
-      printf("no samplefileinfo for x.mp3\n");
+      g_print ("sample_file_info(\"%s\"): failed\n", file_name);
     }
 
-  printf ("error_blurb: %s\n", error_blurb (ERROR_DEVICE_ASYNC).c_str());
+  g_print ("error_blurb(ERROR_DEVICE_ASYNC): %s\n", error_blurb (ERROR_DEVICE_ASYNC).c_str());
 
-  Server server = 1;
-  /*
-   * FIXME: the plugin path should probably
-   *  (a) be relative to $(top_builddir)
-   *  (b) include the directories containing plugins as well
-   */
+  Server server = 1;    // FIXME: users may not hardcode this
+
+  g_print ("server.get_custom_instrument_dir()=%s\n", server.get_custom_instrument_dir().c_str());
+
   GConfigPtr prefs = GConfig::_from_rec (server.bse_preferences ());
-  prefs->plugin_path = "./.libs:" + prefs->plugin_path;
+  prefs->plugin_path = "./.libs/testplugin.so";
   SfiRec *rec = GConfig::_to_rec (prefs);
   server.set_bse_preferences (rec);
   sfi_rec_unref (rec);
   prefs = GConfig::_from_rec (server.bse_preferences());
 
-  printf ("plugin path = %s\n", prefs->plugin_path.c_str());
-  printf ("register core plugins ... "); fflush (stdout);
+  printf ("server.bse_preferences().plugin_path=%s\n", prefs->plugin_path.c_str());
+  printf ("register core plugins...\n");
   server.register_core_plugins();
-  sleep(2);
-  printf ("register ladspa plugins ... "); fflush (stdout);
-  server.register_ladspa_plugins();
-  sleep(2);
-  printf ("register scripts ... "); fflush (stdout);
-  server.register_scripts();
-  sleep(2);
-  printf("done\n");
+  printf ("waiting... (FIXME: need to connect to server signals here)\n");
+  sleep (2);
+  g_print ("done.\n");
 
   /* ... test plugin ... */
-  Project test_project = server.use_new_project("test_project");
-  CSynth synth = test_project.create_csynth("synth");
+  Project test_project = server.use_new_project ("test_project");
+  CSynth synth = test_project.create_csynth ("synth");
 
-  // FIXME: dynamic_cast me
-  Test::Plugin plugin = synth.create_source("TestPlugin")._proxy();
-  if (plugin)
-    printf("success creating plugin.\n");
+  g_print ("--- creating TestObject ---\n");
+  Namespace::TestObject to = synth.create_source("NamespaceTestObject")._proxy(); // FIXME: dynamic_cast me
+  if (to)
+    g_print ("success creating TestObject: %ld\n", to._proxy());
+  else
+    g_error ("failed.");
+
+  g_print ("--- calling procedure test_exception() ---\n");
+  g_print ("invoking as: result = test_exception (21, %ld, 42, \"moderately-funky\");\n", to._proxy());
+  SfiSeq *pseq = sfi_seq_new ();
+  sfi_seq_append_int (pseq, 21);
+  sfi_seq_append_proxy (pseq, to._proxy());
+  sfi_seq_append_int (pseq, 42);
+  sfi_seq_append_choice (pseq, "moderately-funky");
+  GValue *rvalue = sfi_glue_call_seq ("NamespaceProcedure-test-exception", pseq);
+  sfi_seq_unref (pseq);
+  if (!rvalue || !SFI_VALUE_HOLDS_INT (rvalue))
+    g_error ("failed (no result).");
+  SfiInt result = sfi_value_get_int (rvalue);
+  g_print ("result=%d\n", result);
+  if (result != 21 + 42)
+    g_error ("wrong result.");
+  g_print ("invoking to trigger exception: result = test_exception ();\n");
+  pseq = sfi_seq_new ();
+  rvalue = sfi_glue_call_seq ("NamespaceProcedure-test-exception", pseq);
+  sfi_seq_unref (pseq);
+  if (!rvalue || !SFI_VALUE_HOLDS_INT (rvalue))
+    g_error ("failed (no result).");
+  result = sfi_value_get_int (rvalue);
+  g_print ("result=%d\n", result);
 
   /* ... */
-  printf("playing test-song.bse ... "); fflush(stdout);
-  Project project = server.use_new_project("foo");
-  project.restore_from_file("../test/test-song.bse");
+  file_name = "../test/test-song.bse";
+  g_print ("--- playing %s... ---\n", file_name);
+  Project project = server.use_new_project ("foo");
+  project.restore_from_file (file_name);
   project.play();
-  sleep(5);
-  printf("done\n");
+  sleep (3);
+  g_print ("done.\n");
 
-  printf ("instrument dir: %s\n", server.get_custom_instrument_dir().c_str());
   sfi_glue_context_pop ();
 }
 

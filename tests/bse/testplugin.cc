@@ -17,18 +17,18 @@
  *
  */
 #include "testplugin.gen-idl.h"
-
+#include <stdexcept>
 #include <math.h>
 #include <string.h>
 
-namespace Test {
+namespace Namespace {
 using namespace std;
 using namespace Bse;
 
-class Plugin : public PluginBase
+class TestObject : public TestObjectBase
 {
 public:
-  //BSE_EFFECT_INTEGRATE_MODULE (Plugin, Module, Properties);
+  //BSE_EFFECT_INTEGRATE_MODULE (TestObject, Module, Properties);
 
   /* FIXME */
   Bse::SynthesisModule* create_module(unsigned int, GslTrans*)
@@ -45,8 +45,25 @@ public:
   }
 };
 
+SfiInt
+Procedure_test_exception::exec (SfiInt        i,
+                                TestObject*   o,
+                                SfiInt        bar,
+                                FunkynessType ft)
+{
+  g_print ("testplugin.cc: test_exception: i=%d obj=%p bar=%d ft=%d (MODERATELY_FUNKY=%d)\n",
+           i, o, bar, ft, (int) MODERATELY_FUNKY);
+  if (ft != MODERATELY_FUNKY)
+    throw std::runtime_error ("need to be moderately funky");
+  if (!o)
+    throw std::runtime_error ("object pointer is NULL");
+  return i + bar;
+}
+
 BSE_CXX_DEFINE_EXPORTS();
-BSE_CXX_REGISTER_EFFECT (Plugin);
+BSE_CXX_REGISTER_ENUM (FunkynessType);
+BSE_CXX_REGISTER_EFFECT (TestObject);
+BSE_CXX_REGISTER_PROC (test_exception);
 
 } // Test
 

@@ -17,22 +17,22 @@
 ;;
 
 ;;
-;; (bse-script-register <func> <category> <blurb> <help> <author> <license> ARGS...)
+;; (bse-script-register <func> <options> <category> <blurb> <author> <license> ARGS...)
 ;;
 
 (bse-script-register 'song-parts-crop
+		     ""
                      "/Song/Crop parts (loop range)"
-		     "Crop parts within the loop range"
-		     (string-append "This function crops all parts within the loop range "
+		     (string-append "Crops all parts within the loop range "
 				    "and moves parts after the loop range backwards accordingly.")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"
 		     (bse-param-song "song"))
 
 (bse-script-register 'song-parts-duplicate
+		     ""
                      "/Song/Duplicate parts (loop range)"
-		     "Duplicate parts within the loop range"
-		     (string-append "This function duplicates all parts within the loop range "
+		     (string-append "Duplicate all parts within the loop range "
 				    "and moves parts after the loop range forward accordingly.")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"

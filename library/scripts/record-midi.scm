@@ -16,8 +16,8 @@
 ;; if advised of the possibility of such damage.
 
 (bse-script-register 'record-midi
+		     ""
                      "/Part/Record Midi..."
-		     "Record midi events"
 		     (string-append "Record midi events, currently being played on the default external "
 				    "midi device, into a given song part. The MIDI recorder is still work in progress.")
 		     "Tim Janik"

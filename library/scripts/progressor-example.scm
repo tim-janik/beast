@@ -16,9 +16,9 @@
 ;; if advised of the possibility of such damage.
 
 ;; (bse-script-register 'script-function
+;;                      "unstable"                          ; Options
 ;;                      "/Project/Toys/My Script"
-;;                      "Simple blurb line"
-;;                      "Long Help chunk, describing what's up with this"
+;;                      "Blurb, describing what's up with this"
 ;;                      "Tim Janik"                         ; Author
 ;;                      "GNU General Public License"        ; License
 ;;                      (bse-param-string "Text" "Default")
@@ -28,11 +28,11 @@
 ;;                      (bse-param-note   "Note" "C-7"))
 
 (bse-script-register 'progressor
+		     ""
                      "/Project/Toys/Progressor..."
-		     "Progressor is a quick example script"
 		     (string-append "Progressor takes two seed values and then starts progressing. "
 				    "It doesn't do anything particularly usefull, other than "
-				    "ticking the main program from time to time.")
+				    "ticking the main program from time to time. It is a funny example though.")
                      "Tim Janik"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
 		     (bse-param-irange "N Iterations" '(512 0 65536 128))
