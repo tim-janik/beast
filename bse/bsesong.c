@@ -35,6 +35,8 @@ enum
   PARAM_VOLUME_f,
   PARAM_VOLUME_dB,
   PARAM_VOLUME_PERC,
+  PARAM_TPQN,
+  PARAM_QNPT,
   PARAM_BPM,
   PARAM_AUTO_ACTIVATE
 };
@@ -151,7 +153,15 @@ bse_song_class_init (BseSongClass *class)
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
-  bse_object_class_add_param (object_class, "Adjustments",
+  bse_object_class_add_param (object_class, "Timing",
+			      PARAM_TPQN,
+			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
+					     384, 384, 384, 0, SFI_PARAM_DEFAULT_RDONLY));
+  bse_object_class_add_param (object_class, "Timing",
+			      PARAM_QNPT,
+			      sfi_pspec_int ("qnpt", "Quarters", "Number of quarter notes per tact",
+					     4, 3, 4, 1, SFI_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Timing",
 			      PARAM_BPM,
 			      sfi_pspec_int ("bpm", "Beats per minute", NULL,
 					     BSE_DFL_SONG_BPM,
@@ -170,6 +180,8 @@ bse_song_init (BseSong *self)
 {
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
+  self->tpqn = 384;
+  self->qnpt = 4;
   self->bpm = BSE_DFL_SONG_BPM;
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
@@ -258,6 +270,12 @@ bse_song_set_property (GObject      *object,
       self->bpm = bpm;
       bse_song_update_tpsi_SL (self);
       break;
+    case PARAM_QNPT:
+      self->qnpt = sfi_value_get_int (value);
+      break;
+    case PARAM_TPQN:
+      self->tpqn = sfi_value_get_int (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -284,6 +302,12 @@ bse_song_get_property (GObject     *object,
       break;
     case PARAM_BPM:
       sfi_value_set_int (value, self->bpm);
+      break;
+    case PARAM_QNPT:
+      sfi_value_set_int (value, self->qnpt);
+      break;
+    case PARAM_TPQN:
+      sfi_value_set_int (value, self->tpqn);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);

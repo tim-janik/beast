@@ -40,8 +40,6 @@ struct _BsePart
 {
   BseItem	parent_instance;
 
-  guint		ppqn;
-
   guint		n_ids;
   guint	       *ids;
   guint		head_id, tail_id;	/* free id list */

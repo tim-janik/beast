@@ -139,6 +139,7 @@ typedef enum
   /* miscellaneous errors */
   BSE_ERROR_PARSE_ERROR,
   BSE_ERROR_SPAWN,
+  BSE_ERROR_POS_ALLOC,
   /* various procedure errors */
   BSE_ERROR_NO_ENTRY,
   BSE_ERROR_NO_EVENT,

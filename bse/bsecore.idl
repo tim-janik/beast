@@ -109,6 +109,16 @@ namespace Bse {
     Dot dots;
   };
 
+  /* BSE Track structures */
+  record TrackPart {
+    Int		tick	 @= ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+    Proxy	part;
+    Int		duration @= ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  };
+  sequence TrackPartSeq {
+    TrackPart tparts;
+  };
+
   /* BSE Global Config */
   record GConfig {
     /* stepping rates */

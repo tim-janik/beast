@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsetrack.h"
+#include "bsetrack.h"
 
-#include	"bseglobals.h"
-#include	"bsesnet.h"
-#include	"bsepart.h"
-#include	"bsemain.h"
-#include	"gslcommon.h"
-#include	"bsesubsynth.h"
-#include	"bseproject.h"
-#include	"bsesong.h"
-#include        "bsemidivoice.h"
-#include	"bsecontextmerger.h"
-#include        "bsemidireceiver.h"
+#include "bseglobals.h"
+#include "bsestorage.h"
+#include "bsesnet.h"
+#include "bsepart.h"
+#include "bsemain.h"
+#include "gslcommon.h"
+#include "bsesubsynth.h"
+#include "bseproject.h"
+#include "bsesong.h"
+#include "bsemidivoice.h"
+#include "bsecontextmerger.h"
+#include "bsemidireceiver.h"
+#include <string.h>
+
+
+#define upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
+#define parse_or_return		bse_storage_scanner_parse_or_return
+#define peek_or_return		bse_storage_scanner_peek_or_return
 
 
 enum {
@@ -37,27 +44,32 @@ enum {
   PARAM_N_SYNTH_VOICES
 };
 
-
 /* --- prototypes --- */
-static void		bse_track_class_init	(BseTrackClass		*class);
-static void		bse_track_init		(BseTrack		*self);
-static void		bse_track_dispose	(GObject		*object);
-static void		bse_track_finalize	(GObject		*object);
-static void		bse_track_set_property	(GObject		*object,
+static void	      bse_track_class_init	(BseTrackClass		*class);
+static void	      bse_track_init		(BseTrack		*self);
+static void	      bse_track_dispose		(GObject		*object);
+static void	      bse_track_finalize	(GObject		*object);
+static void	      bse_track_set_property	(GObject		*object,
 						 guint                   param_id,
 						 const GValue           *value,
 						 GParamSpec             *pspec);
-static void		bse_track_get_property	(GObject		*object,
+static void	      bse_track_get_property	(GObject		*object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
-static BseProxySeq*	bse_track_list_proxies	(BseItem        	*item,
+static BseProxySeq*   bse_track_list_proxies	(BseItem        	*item,
 						 guint          	 param_id,
 						 GParamSpec     	*pspec);
+static void	      bse_track_store_private	(BseObject		*object,
+						 BseStorage		*storage);
+static BseTokenType   bse_track_restore_private	(BseObject		*object,
+						 BseStorage		*storage);
 
 
 /* --- variables --- */
-static GTypeClass	*parent_class = NULL;
+static GTypeClass *parent_class = NULL;
+static guint	   signal_changed = 0;
+static GQuark      quark_insert_part = 0;
 
 
 /* --- functions --- */
@@ -92,10 +104,15 @@ bse_track_class_init (BseTrackClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
+  quark_insert_part = g_quark_from_static_string ("insert-part");
+
   gobject_class->set_property = bse_track_set_property;
   gobject_class->get_property = bse_track_get_property;
   gobject_class->dispose = bse_track_dispose;
   gobject_class->finalize = bse_track_finalize;
+
+  object_class->store_private = bse_track_store_private;
+  object_class->restore_private = bse_track_restore_private;
   
   item_class->list_proxies = bse_track_list_proxies;
   
@@ -113,6 +130,8 @@ bse_track_class_init (BseTrackClass *class)
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 					     8, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
+  signal_changed = bse_object_class_add_signal (object_class, "changed",
+						G_TYPE_NONE, 0);
 }
 
 static void
@@ -120,6 +139,8 @@ bse_track_init (BseTrack *self)
 {
   self->snet = NULL;
   self->max_voices = 8;
+  self->n_entries_SL = 0;
+  self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));
   self->part_SL = NULL;
   self->midi_receiver_SL = bse_midi_receiver_new ("intern");
   self->track_done_SL = FALSE;
@@ -147,12 +168,83 @@ static void
 bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
-  
+
+  g_warning ("%s: leaking object refs, FIXME", G_STRLOC);
+
+  g_free (self->entries_SL);	// FIXME
   bse_midi_receiver_unref (self->midi_receiver_SL);
   self->midi_receiver_SL = NULL;
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
+track_add_entry (BseTrack *self,
+		 guint     index,
+		 guint     tick,
+		 BsePart  *part)
+{
+  guint n, size;
+
+  g_return_if_fail (index <= self->n_entries_SL);
+  if (index > 0)
+    g_return_if_fail (self->entries_SL[index - 1].tick < tick);
+  if (index < self->n_entries_SL)
+    g_return_if_fail (self->entries_SL[index].tick > tick);
+
+  BSE_SEQUENCER_LOCK ();
+  n = self->n_entries_SL++;
+  size = upper_power2 (self->n_entries_SL);
+  if (size > upper_power2 (n))
+    self->entries_SL = g_renew (BseTrackEntry, self->entries_SL, size);
+  g_memmove (self->entries_SL + index + 1, self->entries_SL + index, (n - index) * sizeof (self->entries_SL[0]));
+  self->entries_SL[index].tick = tick;
+  self->entries_SL[index].part = part;
+  BSE_SEQUENCER_UNLOCK ();
+}
+
+static void
+track_delete_entry (BseTrack *self,
+		    guint     index)
+{
+  guint n;
+
+  g_return_if_fail (index < self->n_entries_SL);
+
+  BSE_SEQUENCER_LOCK ();
+  n = self->n_entries_SL--;
+  g_memmove (self->entries_SL + index, self->entries_SL + index + 1, (self->n_entries_SL - index) * sizeof (self->entries_SL[0]));
+  BSE_SEQUENCER_UNLOCK ();
+}
+
+static BseTrackEntry*
+track_lookup_entry (BseTrack *self,
+		    guint     tick)
+{
+  BseTrackEntry *nodes = self->entries_SL;
+  guint n = self->n_entries_SL, offs = 0, i = 0;
+  
+  while (offs < n)
+    {
+      gint cmp;
+      i = (offs + n) >> 1;
+      cmp = tick > nodes[i].tick ? +1 : tick < nodes[i].tick ? -1 : 0;
+      if (!cmp)
+	return nodes + i;
+      else if (cmp < 0)
+	n = i;
+      else /* (cmp > 0) */
+	offs = i + 1;
+    }
+  
+  /* return the closest entry with tick <= requested tick if possible */
+  if (!self->n_entries_SL)
+    return NULL;
+  if (nodes[i].tick > tick)
+    return i > 0 ? nodes + i - 1 : NULL;	/* previous entry */
+  else
+    return nodes + i;				/* closest match */
 }
 
 static gboolean
@@ -329,6 +421,79 @@ bse_track_get_property (GObject    *object,
     }
 }
 
+BseErrorType
+bse_track_insert_part (BseTrack *self,
+		       guint     tick,
+		       BsePart  *part)
+{
+  BseTrackEntry *entry;
+  gint i;
+
+  g_return_val_if_fail (BSE_IS_TRACK (self), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PART (part), BSE_ERROR_INTERNAL);
+
+  entry = track_lookup_entry (self, tick);
+  if (entry && entry->tick == tick)
+    return BSE_ERROR_POS_ALLOC;
+  else
+    {
+      i = entry ? entry - self->entries_SL : 0;
+      track_add_entry (self, entry ? i + 1 : 0, tick, part);
+    }
+  g_signal_emit (self, signal_changed, 0);
+  return BSE_ERROR_NONE;
+}
+
+void
+bse_track_remove_tick (BseTrack *self,
+		       guint     tick)
+{
+  BseTrackEntry *entry;
+
+  g_return_if_fail (BSE_IS_TRACK (self));
+
+  entry = track_lookup_entry (self, tick);
+  if (entry && entry->tick == tick)
+    {
+      track_delete_entry (self, entry - self->entries_SL);
+      g_signal_emit (self, signal_changed, 0);
+    }
+}
+
+BseTrackPartSeq*
+bse_track_list_parts (BseTrack *self)
+{
+  BseTrackPartSeq *tps;
+  BseItem *item;
+  guint mindur = 384 * 4;
+  gint i;
+
+  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+
+  item = BSE_ITEM (self);
+  if (BSE_IS_SONG (item->parent))
+    {
+      BseSong *song = BSE_SONG (item->parent);
+      mindur = song->tpqn * song->qnpt;
+    }
+  tps = bse_track_part_seq_new ();
+  for (i = 0; i < self->n_entries_SL; i++)
+    {
+      BseTrackEntry *entry = self->entries_SL + i;
+      if (entry->part)
+	{
+	  BseTrackPart tp = { 0, };
+	  tp.tick = entry->tick;
+	  tp.part = BSE_OBJECT_ID (entry->part);
+	  tp.duration = MAX (mindur, entry->part->last_tick_SL);
+	  if (i + 1 < self->n_entries_SL)
+	    tp.duration = MIN (tp.duration, entry[1].tick - entry->tick);
+	  bse_track_part_seq_append (tps, &tp);
+	}
+    }
+  return tps;
+}
+
 void
 bse_track_add_modules (BseTrack     *self,
 		       BseContainer *container,
@@ -431,4 +596,96 @@ bse_track_clone_voices (BseTrack *self,
   
   for (i = 0; i < self->max_voices - 1; i++)
     bse_snet_context_clone_branch (snet, context, self->context_merger, self->midi_receiver_SL, 0, trans);
+}
+
+static void
+bse_track_store_private (BseObject  *object,
+			 BseStorage *storage)
+{
+  BseTrack *self = BSE_TRACK (object);
+  BseItem *item = BSE_ITEM (self);
+  guint i;
+
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->store_private)
+    BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
+
+  for (i = 0; i < self->n_entries_SL; i++)
+    {
+      BseTrackEntry *e = self->entries_SL + i;
+      if (e->part)
+	{
+	  bse_storage_break (storage);
+	  bse_storage_printf (storage, "(insert-part %u ",
+			      e->tick);
+	  bse_storage_put_item_link (storage, item, BSE_ITEM (e->part));
+	  bse_storage_putc (storage, ')');
+	}
+    }
+}
+
+static void
+part_link_resolved (gpointer        data,
+		    BseStorage     *storage,
+		    BseItem        *from_item,
+		    BseItem        *to_item,
+		    const gchar    *error)
+{
+  BseTrack *self = BSE_TRACK (from_item);
+
+  if (error)
+    bse_storage_warn (storage, error);
+  else if (!BSE_IS_PART (to_item))
+    bse_storage_warn (storage, "skipping invalid part reference: %s", bse_object_debug_name (to_item));
+  else if (to_item->parent != from_item->parent)
+    bse_storage_warn (storage, "skipping out-of-branch part reference: %s", bse_object_debug_name (to_item));
+  else
+    {
+      guint tick = GPOINTER_TO_UINT (data);
+      BseErrorType error = bse_track_insert_part (self, tick, BSE_PART (to_item));
+      if (error)
+	bse_storage_warn (storage, "failed to insert part reference to \"%s\": %s",
+			  bse_object_debug_name (to_item),
+			  bse_error_blurb (error));
+    }
+}
+
+static BseTokenType
+bse_track_restore_private (BseObject  *object,
+			   BseStorage *storage)
+{
+  BseTrack *self = BSE_TRACK (object);
+  GScanner *scanner = storage->scanner;
+  GTokenType token;
+  GQuark token_quark;
+  
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
+    token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+  else
+    token = BSE_TOKEN_UNMATCHED;
+  
+  if (token != BSE_TOKEN_UNMATCHED ||
+      g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return token;
+  
+  token_quark = g_quark_try_string (scanner->next_value.v_identifier);
+  
+  if (token_quark == quark_insert_part)
+    {
+      guint tick;
+
+      g_scanner_get_next_token (scanner);       /* eat quark */
+      
+      parse_or_return (scanner, G_TOKEN_INT);
+      tick = scanner->value.v_int;
+      token = bse_storage_parse_item_link (storage, BSE_ITEM (self), part_link_resolved, GUINT_TO_POINTER (tick));
+      if (token != G_TOKEN_NONE)
+	return token;
+      if (g_scanner_get_next_token (scanner) != ')')
+	return ')';
+      return G_TOKEN_NONE;
+    }
+  else
+    return BSE_TOKEN_UNMATCHED;
 }

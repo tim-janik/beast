@@ -121,7 +121,6 @@ bse_part_class_init (BsePartClass *class)
 static void
 bse_part_init (BsePart *self)
 {
-  self->ppqn = 384;
   self->n_ids = 1;
   self->ids = g_renew (guint, NULL, 1);
   self->ids[0] = BSE_PART_INVAL_TICK_FLAG + 0;
@@ -475,19 +474,6 @@ ensure_tick_SL (BsePart *self,
 	insert_tick_SL (self, index, tick);
       return index;
     }
-}
-
-static void
-remove_tick (BsePart *self,
-	     guint    index)
-{
-  guint n;
-  
-  g_return_if_fail (index < self->n_nodes);
-  g_return_if_fail (self->nodes[index].events == NULL);
-  
-  n = self->n_nodes--;
-  g_memmove (self->nodes + index, self->nodes + index + 1, (self->n_nodes - index) * sizeof (self->nodes[0]));
 }
 
 static void

@@ -1,0 +1,112 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2003 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bsetrack.h>
+#include        <bse/bsepart.h>
+
+
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2003 Tim Janik";
+
+
+METHOD (BseTrack, insert-part) {
+  HELP  = "Insert a part into a track.";
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("tick", "Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseTrack *self = bse_value_get_object (in_values++);
+  guint     tick = sfi_value_get_int (in_values++);
+  BsePart  *part = bse_value_get_object (in_values++);
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_TRACK (self) || !BSE_IS_PART (part) ||
+      !BSE_ITEM (self)->parent ||
+      BSE_ITEM (self)->parent != BSE_ITEM (part)->parent)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  error = bse_track_insert_part (self, tick, part);
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseTrack, remove-tick) {
+  HELP  = "Remove a part at specified tick from a track.";
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("tick", "Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseTrack *self = bse_value_get_object (in_values++);
+  guint     tick = sfi_value_get_int (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_TRACK (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_track_remove_tick (self, tick);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseTrack, list-parts) {
+  HELP  = "List parts scheduled in a track.";
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("part_list", "Part List", NULL,
+				BSE_TYPE_TRACK_PART_SEQ, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseTrack *self = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_TRACK (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_value_take_boxed (out_values++, bse_track_list_parts (self));
+
+  return BSE_ERROR_NONE;
+}

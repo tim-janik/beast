@@ -105,6 +105,7 @@ static inline double	gsl_approx_exp2	(float ex)	G_GNUC_CONST;
 
 /**
  * gsl_approx_atan1
+ * @x: x as in atan(x)
  * Fast atan(x)/(PI/2) approximation, with maximum error < 0.01 and
  * gsl_approx_atan1(0)==0, according to the formula:
  * n1 = -0.41156875521951602506487246309908;

@@ -1337,6 +1337,33 @@ bse_storage_parse_param_value (BseStorage *storage,
   return token;
 }
 
+/**
+ * BseStorageRestoreLink
+ * @data:      user data
+ * @storage:   #BseStorage instance
+ * @from_item: link owner
+ * @to_item:   link target or NULL
+ * @error:     error string describing failing link lookups
+ *
+ * BseStorageRestoreLink() is a user supplied handler to be called
+ * at the end of a parsing stage, once object references could be
+ * resolved. Failing resolutions are indicated by non %NULL @error
+ * strings.
+ */
+
+/**
+ * bse_storage_parse_item_link
+ * @storage:      valid #BseStorage
+ * @from_item:    link owner
+ * @restore_link: BseStorageRestoreLink handler to be called once the link was resolved
+ * @data:         user data passed into @restore_link()
+ * @RETURNS:      expected token in case of a parsing error (%G_TOKEN_NONE on success)
+ *
+ * Parse an item link statement and return the expected token if a parsing
+ * error occours. Item links are resolved at the end of the parsing stage
+ * by calling the user supplied handler @restore_link() with the link target
+ * amongst its arguments (see BseStorageRestoreLink()).
+ */
 GTokenType
 bse_storage_parse_item_link (BseStorage           *storage,
 			     BseItem              *from_item,

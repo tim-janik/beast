@@ -1,3 +1,20 @@
+Tue Feb  4 18:20:31 2003  Tim Janik  <timj@gtk.org>
+
+	* bseitem.proc: provide bse-item-set-name().
+
+Fri Jan 31 19:37:31 2003  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.[hcp]*: implemented part lists.
+
+	* bsetrack.proc: added track procedures to modified part list.
+
+	* bsepart.[hc]: get rid of ppqn which is provided by songs now.
+
+	* bsesong.[hc]: provide tpqn (ticks per quarter note) and qnpt
+	(quarter notes per tact) properties.
+
+	* misc doc fixes.
+
 Thu Jan 23 01:40:09 2003  Alper Ersoy <dirt@gtk.org>
 
 	* bseautodoc.c: adjusted linebreaks around revision lines.

@@ -221,6 +221,31 @@ METHOD (BseItem, unuse) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseItem, set-name) {
+  HELP	= "Set an item's name.";
+  IN	= bse_param_spec_object ("item", "Item", NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("name", "Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item     = bse_value_get_object (in_values++);
+  const gchar *name = g_value_get_string (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  g_object_set (item, "uname", name, NULL);
+
+  return BSE_ERROR_NONE;
+}
+
+
 METHOD (BseItem, get-name) {
   HELP	= "Retrieve an item's name.";
   IN	= bse_param_spec_object ("item", "Item", NULL,

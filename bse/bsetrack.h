@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,10 @@ extern "C" {
 
 
 /* --- BseTrack --- */
+typedef struct {
+  guint    tick;
+  BsePart *part;
+} BseTrackEntry;
 struct _BseTrack
 {
   BseItem	   parent_instance;
@@ -49,6 +53,8 @@ struct _BseTrack
   BseSource       *context_merger;
 
   /* fields protected by sequencer mutex */
+  guint		   n_entries_SL;
+  BseTrackEntry	  *entries_SL;
   BsePart	  *part_SL;
   BseMidiReceiver *midi_receiver_SL;
   gboolean	   track_done_SL;
@@ -69,7 +75,12 @@ void	bse_track_clone_voices		(BseTrack		*self,
 					 BseSNet		*snet,
 					 guint			 context,
 					 GslTrans		*trans);
-
+BseErrorType	 bse_track_insert_part	(BseTrack		*self,
+					 guint			 tick,
+					 BsePart		*part);
+void		 bse_track_remove_tick	(BseTrack		*self,
+					 guint			 tick);
+BseTrackPartSeq* bse_track_list_parts	(BseTrack		*self);
 
 #ifdef __cplusplus
 }

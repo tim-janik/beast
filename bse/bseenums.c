@@ -136,6 +136,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_PROC_ABORT:			return "Procedure execution aborted";
     case BSE_ERROR_PARSE_ERROR:			return "Parsing error";
     case BSE_ERROR_SPAWN:			return "Failed to spawn child process";
+    case BSE_ERROR_POS_ALLOC:			return "Position already allocated";
       /* various procedure errors */
     case BSE_ERROR_NO_ENTRY:			return "No such entry";
     case BSE_ERROR_NO_EVENT:			return "No such event";

@@ -201,7 +201,6 @@ gsl_hfile_close (GslHFile *hfile)
  * @offset:  offset in bytes within 0 and file end
  * @n_bytes: number of bytes to read
  * @bytes:   buffer to store read bytes
- * @error_p: pointer to GslErrorType location
  * @RETURNS: amount of bytes read or -1 if an error occoured (errno set)
  *
  * Read a block of bytes from a GslHFile.
@@ -452,7 +451,6 @@ gsl_rfile_length (GslRFile *rfile)
  * @offset:  offset in bytes within 0 and gsl_rfile_length()
  * @n_bytes: number of bytes to read
  * @bytes:   buffer to store read bytes
- * @error_p: pointer to GslErrorType location
  * @RETURNS: amount of bytes read or -1 if an error occoured (errno set)
  *
  * Read a block of bytes from a GslRFile at a specified position.
@@ -474,7 +472,6 @@ gsl_rfile_pread (GslRFile *rfile,
  * @rfile:   valid GslRFile
  * @n_bytes: number of bytes to read
  * @bytes:   buffer to store read bytes
- * @error_p: pointer to GslErrorType location
  * @RETURNS: amount of bytes read or -1 if an error occoured (errno set)
  *
  * Read a block of bytes from a GslRFile from the current seek position

@@ -42,8 +42,9 @@ static void wakeup_master (void);
 /* --- UserThread --- */
 /**
  * gsl_module_new
- * @klass:   the GslClass which determines the module's behaviour
- * @RETURNS: a newly created module
+ * @klass:     the GslClass which determines the module's behaviour
+ * @user_data: user data pointer
+ * @RETURNS:   a newly created module
  *
  * Create a new module with methods specified in @klass and
  * a user_data field set to @user_data. The returned module
@@ -482,8 +483,9 @@ gsl_job_suspend (GslModule *module)
 
 /**
  * gsl_flow_job_resume
- * @module: Module not currently suspended
- * @Returns: New job suitable for gsl_trans_add()
+ * @module:     Module not currently suspended
+ * @tick_stamp: Sample tick at which to resume @module
+ * @Returns:    New job suitable for gsl_trans_add()
  *
  * Create a new transaction job which inserts a resumption
  * event into the flow job queue of @module.
@@ -1019,7 +1021,10 @@ guint			gsl_externvar_sub_sample_steps = 0;
 
 /**
  * gsl_engine_init
- * @block_size: number of values to process block wise
+ * @run_threaded:    whether the engine should be run threaded
+ * @block_size:      number of values to process block wise
+ * @sample_freq:     mixing frequency
+ * @sub_sample_mask: not yet funcitonal
  *
  * Initialize the GSL engine, this function must be called prior to
  * any other engine related function and can only be invoked once.

@@ -193,6 +193,7 @@ bse_proc_sources = $(strip \
 	bsesong.proc \
 	bsesource.proc \
 	bsesnet.proc \
+	bsetrack.proc \
 	bseitem.proc \
 	bsewave.proc \
 	bsewaveosc.proc \
@@ -216,6 +217,7 @@ bse_proc_gen_sources = $(strip \
 	bsesong.gen-proc.c \
 	bsesource.gen-proc.c \
 	bsesnet.gen-proc.c \
+	bsetrack.gen-proc.c \
 	bseitem.gen-proc.c \
 	bsewave.gen-proc.c \
 	bsewaveosc.gen-proc.c \
@@ -312,11 +314,11 @@ bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl bserecords.sfidl $(SFIDL
 	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
 	&& cat $(bse_c_sources)		>> xgen-dbk.c \
-	&& echo "static const gchar **bse_gen_debug_keys[] = {" >> xgen-bgtc \
+	&& echo "static const gchar *bse_gen_debug_keys[] = {" >> xgen-bgtc \
 	&& $(PPROCESS) 2>/dev/null -DSFI_LOG_PROTECT_KEY_VARIANTS xgen-dbk.c \
 	| $(GREP_DEBUG_KEYS) >> xgen-bgtc \
 	&& echo "  NULL };" >> xgen-bgtc \
-	&& echo "static const gchar **bse_gen_info_keys[] = {" >> xgen-bgtc \
+	&& echo "static const gchar *bse_gen_info_keys[] = {" >> xgen-bgtc \
 	&& $(PPROCESS) 2>/dev/null -DSFI_LOG_PROTECT_KEY_VARIANTS xgen-dbk.c \
 	| $(GREP_INFO_KEYS) >> xgen-bgtc \
 	&& echo "  NULL };" >> xgen-bgtc \

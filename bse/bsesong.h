@@ -44,6 +44,8 @@ struct _BseSong
 {
   BseSNet           parent_instance;
   
+  guint		    tpqn;		/* ticks per querter note */
+  guint		    qnpt;		/* quarter notes per tact */
   guint             bpm;
   gfloat            volume_factor;      /* 1-based factor */
   
