@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 19:37+0200\n"
+"POT-Creation-Date: 2004-05-20 20:11+0200\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -2585,7 +2585,7 @@ msgstr "Излазни канали:"
 
 #: bse/bsebiquadfilter.c:105
 #, fuzzy
-msgid "Filters/Biquad Types"
+msgid "/Filters/Biquad Types"
 msgstr "Врста филтера"
 
 #: bse/bsebiquadfilter.c:124
@@ -2705,7 +2705,7 @@ msgstr "Филтрирани звучни сигнал"
 
 #: bse/bseconstant.c:84
 #, fuzzy
-msgid "Other Sources/Constant"
+msgid "/Other Sources/Constant"
 msgstr "_Остали извори"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
@@ -2727,9 +2727,41 @@ msgstr "Учестаност"
 msgid "Const Out%u"
 msgstr "Конст. из.%u"
 
-#: bse/bseinstrumentinput.c:68
-msgid "Input & Output/Instrument Voice Input"
+#: bse/bsecore.idl:395
+#, fuzzy
+msgid "Latency [ms]"
+msgstr "Напад [ms]"
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
 msgstr ""
+
+#: bse/bsecore.idl:399
+#, fuzzy
+msgid "Synth Mixing Frequency"
+msgstr "Средишња учестаност"
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: bse/bsecore.idl:402
+#, fuzzy
+msgid "Synth Control Frequency"
+msgstr "Средишња учестаност"
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:68
+#, fuzzy
+msgid "/Input & Output/Instrument Voice Input"
+msgstr "_Улаз и излаз"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2760,8 +2792,9 @@ msgid "Velocity while the note is pressed"
 msgstr "Брзина док је нота притиснута"
 
 #: bse/bseinstrumentoutput.c:68
-msgid "Input & Output/Instrument Output"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/Instrument Output"
+msgstr "_Улаз и излаз"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2792,8 +2825,9 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr "Високо означава да је инструмент завршио са синтезом"
 
 #: bse/bsemidicontroller.c:86
-msgid "Input & Output/MIDI Control Input"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/MIDI Control Input"
+msgstr "_Улаз и излаз"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2829,7 +2863,7 @@ msgstr "МИДИ сигнал 4"
 
 #: bse/bsemidiinput.c:82
 #, fuzzy
-msgid "Input & Output/MIDI Voice Input"
+msgid "/Input & Output/MIDI Voice Input"
 msgstr "_Улаз и излаз"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
@@ -2876,7 +2910,7 @@ msgstr "Из. искључен"
 
 #: bse/bsepcminput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Input"
+msgid "/Input & Output/PCM Input"
 msgstr "_Улаз и излаз"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
@@ -2899,7 +2933,7 @@ msgstr "Излаз десног канала"
 
 #: bse/bsepcmoutput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Output"
+msgid "/Input & Output/PCM Output"
 msgstr "_Улаз и излаз"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
@@ -2920,40 +2954,27 @@ msgstr "Десни улаз звука"
 msgid "Right channel Input"
 msgstr "Улаз десног канала"
 
-#: bse/bsecore.idl:395
-#, fuzzy
-msgid "Latency [ms]"
-msgstr "Напад [ms]"
-
-#: bse/bsecore.idl:396
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
+#: bse/bseserver.c:503
+msgid "Advice about MIDI device selections"
 msgstr ""
 
-#: bse/bsecore.idl:399
-#, fuzzy
-msgid "Synth Mixing Frequency"
-msgstr "Средишња учестаност"
-
-#: bse/bsecore.idl:400
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+#: bse/bseserver.c:504
+msgid "Alert me about MIDI device selections"
 msgstr ""
 
-#: bse/bsecore.idl:402
-#, fuzzy
-msgid "Synth Control Frequency"
-msgstr "Средишња учестаност"
+#: bse/bseserver.c:505
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
+msgstr ""
 
-#: bse/bsecore.idl:403
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
+#: bse/bseserver.c:547
+#, c-format
+msgid "failed to open output file \"%s\": %s"
 msgstr ""
 
 #: bse/bsesnooper.c:77
 #, fuzzy
-msgid "Misc/Snooper"
+msgid "/Misc/Snooper"
 msgstr "Њушкало"
 
 #: bse/bsesnooper.c:108
@@ -2974,7 +2995,7 @@ msgstr ""
 
 #: bse/bsestandardosc.c:109
 #, fuzzy
-msgid "Audio Sources/Standard Oscillator"
+msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Модули/Извори звука/Стандардни осцилатор"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
@@ -3084,7 +3105,7 @@ msgstr "Усклађени излаз"
 
 #: bse/bsesubiport.c:90
 #, fuzzy
-msgid "Virtualization/Virtual Input"
+msgid "/Virtualization/Virtual Input"
 msgstr "_Виртуелизација"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
@@ -3110,7 +3131,7 @@ msgstr "Виртуелни улаз %u"
 
 #: bse/bsesuboport.c:90
 #, fuzzy
-msgid "Virtualization/Virtual Output"
+msgid "/Virtualization/Virtual Output"
 msgstr "_Виртуелизација"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
@@ -3124,8 +3145,9 @@ msgid "Virtual output %u"
 msgstr "Виртуелни излаз %u"
 
 #: bse/bsesubsynth.c:97
-msgid "Virtualization/Virtual Sub Synth"
-msgstr ""
+#, fuzzy
+msgid "/Virtualization/Virtual Sub Synth"
+msgstr "_Виртуелизација"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
@@ -3177,7 +3199,7 @@ msgstr "Време последње измене"
 
 #: bse/bsewaveosc.c:97
 #, fuzzy
-msgid "Audio Sources/Wave Oscillator"
+msgid "/Audio Sources/Wave Oscillator"
 msgstr "/Модули/Извори звука/Стандардни осцилатор"
 
 #: bse/bsewaveosc.c:123

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 19:37+0200\n"
+"POT-Creation-Date: 2004-05-20 20:11+0200\n"
 "PO-Revision-Date: 2003-12-08 17:11+0800\n"
 "Last-Translator: Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>\n"
 "Language-Team: Mongolian <openmn-core@lists.sf.net>\n"
@@ -2582,7 +2582,7 @@ msgstr "Оролтын суваг ашиглагдаж байна"
 
 #: bse/bsebiquadfilter.c:105
 #, fuzzy
-msgid "Filters/Biquad Types"
+msgid "/Filters/Biquad Types"
 msgstr "_Шүүлтүүрүүд"
 
 #: bse/bsebiquadfilter.c:124
@@ -2706,7 +2706,7 @@ msgstr ""
 
 #: bse/bseconstant.c:84
 #, fuzzy
-msgid "Other Sources/Constant"
+msgid "/Other Sources/Constant"
 msgstr "_Бусад эхүүд"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
@@ -2728,9 +2728,38 @@ msgstr ""
 msgid "Const Out%u"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:68
-msgid "Input & Output/Instrument Voice Input"
+#: bse/bsecore.idl:395
+msgid "Latency [ms]"
 msgstr ""
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+
+#: bse/bsecore.idl:399
+msgid "Synth Mixing Frequency"
+msgstr ""
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: bse/bsecore.idl:402
+msgid "Synth Control Frequency"
+msgstr ""
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:68
+#, fuzzy
+msgid "/Input & Output/Instrument Voice Input"
+msgstr "_Орол ба гаралт"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2761,8 +2790,9 @@ msgid "Velocity while the note is pressed"
 msgstr ""
 
 #: bse/bseinstrumentoutput.c:68
-msgid "Input & Output/Instrument Output"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/Instrument Output"
+msgstr "_Орол ба гаралт"
 
 #: bse/bseinstrumentoutput.c:101
 #, fuzzy
@@ -2798,8 +2828,9 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
 #: bse/bsemidicontroller.c:86
-msgid "Input & Output/MIDI Control Input"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/MIDI Control Input"
+msgstr "_Орол ба гаралт"
 
 #: bse/bsemidicontroller.c:137
 #, fuzzy
@@ -2839,7 +2870,7 @@ msgstr ""
 
 #: bse/bsemidiinput.c:82
 #, fuzzy
-msgid "Input & Output/MIDI Voice Input"
+msgid "/Input & Output/MIDI Voice Input"
 msgstr "_Орол ба гаралт"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
@@ -2893,7 +2924,7 @@ msgstr ""
 
 #: bse/bsepcminput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Input"
+msgid "/Input & Output/PCM Input"
 msgstr "_Орол ба гаралт"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
@@ -2916,7 +2947,7 @@ msgstr ""
 
 #: bse/bsepcmoutput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Output"
+msgid "/Input & Output/PCM Output"
 msgstr "_Орол ба гаралт"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
@@ -2939,36 +2970,26 @@ msgstr ""
 msgid "Right channel Input"
 msgstr "Оролтын суваг ашиглагдаж байна"
 
-#: bse/bsecore.idl:395
-msgid "Latency [ms]"
+#: bse/bseserver.c:503
+msgid "Advice about MIDI device selections"
 msgstr ""
 
-#: bse/bsecore.idl:396
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
+#: bse/bseserver.c:504
+msgid "Alert me about MIDI device selections"
 msgstr ""
 
-#: bse/bsecore.idl:399
-msgid "Synth Mixing Frequency"
+#: bse/bseserver.c:505
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
 
-#: bse/bsecore.idl:400
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr ""
-
-#: bse/bsecore.idl:402
-msgid "Synth Control Frequency"
-msgstr ""
-
-#: bse/bsecore.idl:403
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
+#: bse/bseserver.c:547
+#, c-format
+msgid "failed to open output file \"%s\": %s"
 msgstr ""
 
 #: bse/bsesnooper.c:77
-msgid "Misc/Snooper"
+msgid "/Misc/Snooper"
 msgstr ""
 
 #: bse/bsesnooper.c:108
@@ -2986,7 +3007,7 @@ msgid ""
 msgstr ""
 
 #: bse/bsestandardosc.c:109
-msgid "Audio Sources/Standard Oscillator"
+msgid "/Audio Sources/Standard Oscillator"
 msgstr ""
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
@@ -3094,7 +3115,7 @@ msgid "Syncronization Output"
 msgstr ""
 
 #: bse/bsesubiport.c:90
-msgid "Virtualization/Virtual Input"
+msgid "/Virtualization/Virtual Input"
 msgstr ""
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
@@ -3117,7 +3138,7 @@ msgid "Virtual input %u"
 msgstr ""
 
 #: bse/bsesuboport.c:90
-msgid "Virtualization/Virtual Output"
+msgid "/Virtualization/Virtual Output"
 msgstr ""
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
@@ -3131,7 +3152,7 @@ msgid "Virtual output %u"
 msgstr ""
 
 #: bse/bsesubsynth.c:97
-msgid "Virtualization/Virtual Sub Synth"
+msgid "/Virtualization/Virtual Sub Synth"
 msgstr ""
 
 #: bse/bsesubsynth.c:124
@@ -3183,7 +3204,7 @@ msgid "Last modification time"
 msgstr ""
 
 #: bse/bsewaveosc.c:97
-msgid "Audio Sources/Wave Oscillator"
+msgid "/Audio Sources/Wave Oscillator"
 msgstr ""
 
 #: bse/bsewaveosc.c:123

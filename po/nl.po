@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 19:37+0200\n"
+"POT-Creation-Date: 2004-05-20 20:11+0200\n"
 "PO-Revision-Date: 2004-05-06 17:39+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
@@ -2605,7 +2605,7 @@ msgstr "Uitvoerkanalen:"
 # Soort filter
 #: bse/bsebiquadfilter.c:105
 #, fuzzy
-msgid "Filters/Biquad Types"
+msgid "/Filters/Biquad Types"
 msgstr "Filtertype"
 
 # filteren?
@@ -2728,7 +2728,7 @@ msgstr "Gefilterd audiosignaal"
 
 #: bse/bseconstant.c:84
 #, fuzzy
-msgid "Other Sources/Constant"
+msgid "/Other Sources/Constant"
 msgstr "Overige _bronnen"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
@@ -2750,9 +2750,45 @@ msgstr "Frequentie"
 msgid "Const Out%u"
 msgstr "Const uit%u"
 
-#: bse/bseinstrumentinput.c:68
-msgid "Input & Output/Instrument Voice Input"
+#: bse/bsecore.idl:395
+msgid "Latency [ms]"
+msgstr "Vertraging [ms]"
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
 msgstr ""
+"Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere "
+"waarden geven een hogere CPU-belasting"
+
+#: bse/bsecore.idl:399
+msgid "Synth Mixing Frequency"
+msgstr "Mixfrequentie synthese"
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+"De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, "
+"48000"
+
+#: bse/bsecore.idl:402
+msgid "Synth Control Frequency"
+msgstr "Controlefrequentie synthese"
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"Frequentie waarmee controlewaardes worden geëvalueerd. Deze moet veel "
+"kleiner zijn dan de Mixfrequentie voor synthese zijn om de processor niet te "
+"zwaar te belasten"
+
+#: bse/bseinstrumentinput.c:68
+#, fuzzy
+msgid "/Input & Output/Instrument Voice Input"
+msgstr "_Invoer & uitvoer"
 
 # frequentie van de toets
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
@@ -2784,8 +2820,9 @@ msgid "Velocity while the note is pressed"
 msgstr "Velocity terwijl de toets wordt ingedrukt"
 
 #: bse/bseinstrumentoutput.c:68
-msgid "Input & Output/Instrument Output"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/Instrument Output"
+msgstr "_Invoer & uitvoer"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2816,8 +2853,9 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr "Hoog geeft aan dat het instrument klaar is met de synthese"
 
 #: bse/bsemidicontroller.c:86
-msgid "Input & Output/MIDI Control Input"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/MIDI Control Input"
+msgstr "_Invoer & uitvoer"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2853,7 +2891,7 @@ msgstr "MIDI signaal 4"
 
 #: bse/bsemidiinput.c:82
 #, fuzzy
-msgid "Input & Output/MIDI Voice Input"
+msgid "/Input & Output/MIDI Voice Input"
 msgstr "_Invoer & uitvoer"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
@@ -2900,7 +2938,7 @@ msgstr "Disconnect uit"
 
 #: bse/bsepcminput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Input"
+msgid "/Input & Output/PCM Input"
 msgstr "_Invoer & uitvoer"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
@@ -2923,7 +2961,7 @@ msgstr "Rechter kanaaluitgang"
 
 #: bse/bsepcmoutput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Output"
+msgid "/Input & Output/PCM Output"
 msgstr "_Invoer & uitvoer"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
@@ -2944,44 +2982,27 @@ msgstr "Rechts audio in"
 msgid "Right channel Input"
 msgstr "Rechter kanaalingag"
 
-#: bse/bsecore.idl:395
-msgid "Latency [ms]"
-msgstr "Vertraging [ms]"
-
-#: bse/bsecore.idl:396
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
+#: bse/bseserver.c:503
+msgid "Advice about MIDI device selections"
 msgstr ""
-"Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere "
-"waarden geven een hogere CPU-belasting"
 
-#: bse/bsecore.idl:399
-msgid "Synth Mixing Frequency"
-msgstr "Mixfrequentie synthese"
-
-#: bse/bsecore.idl:400
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+#: bse/bseserver.c:504
+msgid "Alert me about MIDI device selections"
 msgstr ""
-"De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, "
-"48000"
 
-#: bse/bsecore.idl:402
-msgid "Synth Control Frequency"
-msgstr "Controlefrequentie synthese"
-
-#: bse/bsecore.idl:403
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
+#: bse/bseserver.c:505
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
-"Frequentie waarmee controlewaardes worden geëvalueerd. Deze moet veel "
-"kleiner zijn dan de Mixfrequentie voor synthese zijn om de processor niet te "
-"zwaar te belasten"
+
+#: bse/bseserver.c:547
+#, c-format
+msgid "failed to open output file \"%s\": %s"
+msgstr ""
 
 #: bse/bsesnooper.c:77
 #, fuzzy
-msgid "Misc/Snooper"
+msgid "/Misc/Snooper"
 msgstr "Snooper"
 
 #: bse/bsesnooper.c:108
@@ -3004,7 +3025,7 @@ msgstr ""
 
 #: bse/bsestandardosc.c:109
 #, fuzzy
-msgid "Audio Sources/Standard Oscillator"
+msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Modules/Geluidsbronnen/Standaard oscillator"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
@@ -3114,7 +3135,7 @@ msgstr "Synchronisatie-uitgang"
 
 #: bse/bsesubiport.c:90
 #, fuzzy
-msgid "Virtualization/Virtual Input"
+msgid "/Virtualization/Virtual Input"
 msgstr "_Virtualisatie"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
@@ -3140,7 +3161,7 @@ msgstr "Virtuele ingang %u"
 
 #: bse/bsesuboport.c:90
 #, fuzzy
-msgid "Virtualization/Virtual Output"
+msgid "/Virtualization/Virtual Output"
 msgstr "_Virtualisatie"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
@@ -3154,8 +3175,9 @@ msgid "Virtual output %u"
 msgstr "Virtuele uitgang %u"
 
 #: bse/bsesubsynth.c:97
-msgid "Virtualization/Virtual Sub Synth"
-msgstr ""
+#, fuzzy
+msgid "/Virtualization/Virtual Sub Synth"
+msgstr "_Virtualisatie"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
@@ -3207,7 +3229,7 @@ msgstr "Laatste modificatietijd"
 
 #: bse/bsewaveosc.c:97
 #, fuzzy
-msgid "Audio Sources/Wave Oscillator"
+msgid "/Audio Sources/Wave Oscillator"
 msgstr "/Modules/Geluidsbronnen/Standaard oscillator"
 
 #: bse/bsewaveosc.c:123

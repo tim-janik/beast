@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 19:37+0200\n"
+"POT-Creation-Date: 2004-05-20 20:11+0200\n"
 "PO-Revision-Date: 2004-05-06 14:05+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -2541,7 +2541,7 @@ msgstr "Výstupní kanály:"
 
 #: bse/bsebiquadfilter.c:105
 #, fuzzy
-msgid "Filters/Biquad Types"
+msgid "/Filters/Biquad Types"
 msgstr "Typ filtru"
 
 #: bse/bsebiquadfilter.c:124
@@ -2659,7 +2659,7 @@ msgstr "Filtrovaný signál zvuku"
 
 #: bse/bseconstant.c:84
 #, fuzzy
-msgid "Other Sources/Constant"
+msgid "/Other Sources/Constant"
 msgstr "_Jiné zdroje"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
@@ -2681,9 +2681,42 @@ msgstr "Frekvence"
 msgid "Const Out%u"
 msgstr "Konst Out%u"
 
-#: bse/bseinstrumentinput.c:68
-msgid "Input & Output/Instrument Voice Input"
+#: bse/bsecore.idl:395
+msgid "Latency [ms]"
+msgstr "Zpoždění [ms]"
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
 msgstr ""
+"Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
+"zvyšují zátěž CPU"
+
+#: bse/bsecore.idl:399
+msgid "Synth Mixing Frequency"
+msgstr "Frekvence mixování syntézy"
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
+
+#: bse/bsecore.idl:402
+msgid "Synth Control Frequency"
+msgstr "Frekvence řízení syntézy"
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže "
+"CPU by měla mít mnohem menší než frekvence mixování syntézy"
+
+#: bse/bseinstrumentinput.c:68
+#, fuzzy
+msgid "/Input & Output/Instrument Voice Input"
+msgstr "_Vstup a výstup"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2714,8 +2747,9 @@ msgid "Velocity while the note is pressed"
 msgstr "Rychlost při stisknutí noty"
 
 #: bse/bseinstrumentoutput.c:68
-msgid "Input & Output/Instrument Output"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/Instrument Output"
+msgstr "_Vstup a výstup"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2746,8 +2780,9 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr "High znamená, že nástroj dosyntetizoval"
 
 #: bse/bsemidicontroller.c:86
-msgid "Input & Output/MIDI Control Input"
-msgstr ""
+#, fuzzy
+msgid "/Input & Output/MIDI Control Input"
+msgstr "_Vstup a výstup"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2783,7 +2818,7 @@ msgstr "MIDI signál 4"
 
 #: bse/bsemidiinput.c:82
 #, fuzzy
-msgid "Input & Output/MIDI Voice Input"
+msgid "/Input & Output/MIDI Voice Input"
 msgstr "_Vstup a výstup"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
@@ -2830,7 +2865,7 @@ msgstr "Odpojení Out"
 
 #: bse/bsepcminput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Input"
+msgid "/Input & Output/PCM Input"
 msgstr "_Vstup a výstup"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
@@ -2853,7 +2888,7 @@ msgstr "Výstup pravého kanálu"
 
 #: bse/bsepcmoutput.c:85
 #, fuzzy
-msgid "Input & Output/PCM Output"
+msgid "/Input & Output/PCM Output"
 msgstr "_Vstup a výstup"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
@@ -2874,40 +2909,26 @@ msgstr "Pravý zvuk In"
 msgid "Right channel Input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsecore.idl:395
-msgid "Latency [ms]"
-msgstr "Zpoždění [ms]"
-
-#: bse/bsecore.idl:396
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
+#: bse/bseserver.c:503
+msgid "Advice about MIDI device selections"
 msgstr ""
-"Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
-"zvyšují zátěž CPU"
 
-#: bse/bsecore.idl:399
-msgid "Synth Mixing Frequency"
-msgstr "Frekvence mixování syntézy"
-
-#: bse/bsecore.idl:400
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
-
-#: bse/bsecore.idl:402
-msgid "Synth Control Frequency"
-msgstr "Frekvence řízení syntézy"
-
-#: bse/bsecore.idl:403
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
+#: bse/bseserver.c:504
+msgid "Alert me about MIDI device selections"
 msgstr ""
-"Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže "
-"CPU by měla mít mnohem menší než frekvence mixování syntézy"
+
+#: bse/bseserver.c:505
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
+msgstr ""
+
+#: bse/bseserver.c:547
+#, c-format
+msgid "failed to open output file \"%s\": %s"
+msgstr ""
 
 #: bse/bsesnooper.c:77
-msgid "Misc/Snooper"
+msgid "/Misc/Snooper"
 msgstr ""
 
 #: bse/bsesnooper.c:108
@@ -2928,7 +2949,7 @@ msgstr ""
 
 #: bse/bsestandardosc.c:109
 #, fuzzy
-msgid "Audio Sources/Standard Oscillator"
+msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Moduly/Zdroje zvuku/Standardní oscilátor"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
@@ -3037,7 +3058,7 @@ msgstr "Výstup synchronizace"
 
 #: bse/bsesubiport.c:90
 #, fuzzy
-msgid "Virtualization/Virtual Input"
+msgid "/Virtualization/Virtual Input"
 msgstr "_Virtualizace"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
@@ -3061,7 +3082,7 @@ msgstr "Virtuální vstup %u"
 
 #: bse/bsesuboport.c:90
 #, fuzzy
-msgid "Virtualization/Virtual Output"
+msgid "/Virtualization/Virtual Output"
 msgstr "_Virtualizace"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
@@ -3075,8 +3096,9 @@ msgid "Virtual output %u"
 msgstr "Virtuální výstup %u"
 
 #: bse/bsesubsynth.c:97
-msgid "Virtualization/Virtual Sub Synth"
-msgstr ""
+#, fuzzy
+msgid "/Virtualization/Virtual Sub Synth"
+msgstr "_Virtualizace"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
@@ -3128,7 +3150,7 @@ msgstr "Čas poslední změny"
 
 #: bse/bsewaveosc.c:97
 #, fuzzy
-msgid "Audio Sources/Wave Oscillator"
+msgid "/Audio Sources/Wave Oscillator"
 msgstr "/Moduly/Zdroje zvuku/Standardní oscilátor"
 
 #: bse/bsewaveosc.c:123

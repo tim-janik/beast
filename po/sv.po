@@ -2,13 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.21 2004/05/20 17:45:14 timj Exp $
+# $Id: sv.po,v 1.22 2004/05/20 18:13:26 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 19:37+0200\n"
+"POT-Creation-Date: 2004-05-20 20:11+0200\n"
 "PO-Revision-Date: 2003-11-02 01:49+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -2687,7 +2687,7 @@ msgstr "Utmatning"
 
 #: bse/bsebiquadfilter.c:105
 #, fuzzy
-msgid "Filters/Biquad Types"
+msgid "/Filters/Biquad Types"
 msgstr "Filtertyp"
 
 #: bse/bsebiquadfilter.c:124
@@ -2809,7 +2809,7 @@ msgid "Filtered Audio Signal"
 msgstr "Filtrerad ljudsignal"
 
 #: bse/bseconstant.c:84
-msgid "Other Sources/Constant"
+msgid "/Other Sources/Constant"
 msgstr ""
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
@@ -2832,8 +2832,38 @@ msgstr "Centerfrekvens"
 msgid "Const Out%u"
 msgstr ""
 
+#: bse/bsecore.idl:395
+msgid "Latency [ms]"
+msgstr ""
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+
+#: bse/bsecore.idl:399
+#, fuzzy
+msgid "Synth Mixing Frequency"
+msgstr "Centerfrekvens"
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: bse/bsecore.idl:402
+#, fuzzy
+msgid "Synth Control Frequency"
+msgstr "Centerfrekvens"
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+
 #: bse/bseinstrumentinput.c:68
-msgid "Input & Output/Instrument Voice Input"
+msgid "/Input & Output/Instrument Voice Input"
 msgstr ""
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
@@ -2867,7 +2897,7 @@ msgid "Velocity while the note is pressed"
 msgstr ""
 
 #: bse/bseinstrumentoutput.c:68
-msgid "Input & Output/Instrument Output"
+msgid "/Input & Output/Instrument Output"
 msgstr ""
 
 #: bse/bseinstrumentoutput.c:101
@@ -2904,7 +2934,7 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
 #: bse/bsemidicontroller.c:86
-msgid "Input & Output/MIDI Control Input"
+msgid "/Input & Output/MIDI Control Input"
 msgstr ""
 
 #: bse/bsemidicontroller.c:137
@@ -2944,7 +2974,7 @@ msgid "MIDI Signal 4"
 msgstr ""
 
 #: bse/bsemidiinput.c:82
-msgid "Input & Output/MIDI Voice Input"
+msgid "/Input & Output/MIDI Voice Input"
 msgstr ""
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
@@ -2997,7 +3027,7 @@ msgid "Disconnect Out"
 msgstr ""
 
 #: bse/bsepcminput.c:85
-msgid "Input & Output/PCM Input"
+msgid "/Input & Output/PCM Input"
 msgstr ""
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
@@ -3019,7 +3049,7 @@ msgid "Right channel output"
 msgstr ""
 
 #: bse/bsepcmoutput.c:85
-msgid "Input & Output/PCM Output"
+msgid "/Input & Output/PCM Output"
 msgstr ""
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
@@ -3042,38 +3072,26 @@ msgstr ""
 msgid "Right channel Input"
 msgstr "Inmatningskanal att använda"
 
-#: bse/bsecore.idl:395
-msgid "Latency [ms]"
+#: bse/bseserver.c:503
+msgid "Advice about MIDI device selections"
 msgstr ""
 
-#: bse/bsecore.idl:396
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
+#: bse/bseserver.c:504
+msgid "Alert me about MIDI device selections"
 msgstr ""
 
-#: bse/bsecore.idl:399
-#, fuzzy
-msgid "Synth Mixing Frequency"
-msgstr "Centerfrekvens"
-
-#: bse/bsecore.idl:400
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+#: bse/bseserver.c:505
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
 
-#: bse/bsecore.idl:402
-#, fuzzy
-msgid "Synth Control Frequency"
-msgstr "Centerfrekvens"
-
-#: bse/bsecore.idl:403
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
+#: bse/bseserver.c:547
+#, c-format
+msgid "failed to open output file \"%s\": %s"
 msgstr ""
 
 #: bse/bsesnooper.c:77
-msgid "Misc/Snooper"
+msgid "/Misc/Snooper"
 msgstr ""
 
 #: bse/bsesnooper.c:108
@@ -3091,7 +3109,7 @@ msgid ""
 msgstr ""
 
 #: bse/bsestandardosc.c:109
-msgid "Audio Sources/Standard Oscillator"
+msgid "/Audio Sources/Standard Oscillator"
 msgstr ""
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
@@ -3209,7 +3227,7 @@ msgid "Syncronization Output"
 msgstr ""
 
 #: bse/bsesubiport.c:90
-msgid "Virtualization/Virtual Input"
+msgid "/Virtualization/Virtual Input"
 msgstr ""
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
@@ -3233,7 +3251,7 @@ msgid "Virtual input %u"
 msgstr ""
 
 #: bse/bsesuboport.c:90
-msgid "Virtualization/Virtual Output"
+msgid "/Virtualization/Virtual Output"
 msgstr ""
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
@@ -3247,7 +3265,7 @@ msgid "Virtual output %u"
 msgstr ""
 
 #: bse/bsesubsynth.c:97
-msgid "Virtualization/Virtual Sub Synth"
+msgid "/Virtualization/Virtual Sub Synth"
 msgstr ""
 
 # "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
@@ -3301,7 +3319,7 @@ msgid "Last modification time"
 msgstr "Tid för senaste ändring"
 
 #: bse/bsewaveosc.c:97
-msgid "Audio Sources/Wave Oscillator"
+msgid "/Audio Sources/Wave Oscillator"
 msgstr ""
 
 #: bse/bsewaveosc.c:123
