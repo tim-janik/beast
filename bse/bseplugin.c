@@ -502,7 +502,7 @@ bse_plugin_check_load (const gchar *_file_name)
       g_module_close (gmodule);
       g_free (file_name);
 
-      return "Plugin already loaded";
+      return "Plugin already registered (clone?)";
     }
 
   /* create plugin and feature type registration
@@ -546,6 +546,7 @@ bse_plugin_lookup (const gchar *name)
 /* --- directory scanning --- */
 #include <sys/types.h>
 #include <dirent.h>
+
 GList*
 bse_plugin_dir_list_files (const gchar *_dir_list)
 {
@@ -579,11 +580,10 @@ bse_plugin_dir_list_files (const gchar *_dir_list)
 		  d_entry->d_name[l - 3] == '.' &&
 		  d_entry->d_name[l - 2] == 'l' &&
 		  d_entry->d_name[l - 1] == 'a')
-		file_list = g_list_prepend (file_list,
-					    g_strconcat (name,
-							 "/",
-							 d_entry->d_name,
-							 NULL));
+		file_list = g_list_prepend (file_list, g_strconcat (name,
+								    "/",
+								    d_entry->d_name,
+								    NULL));
 	      d_entry = readdir (dd);
 	    }
 	  closedir (dd);
@@ -591,5 +591,5 @@ bse_plugin_dir_list_files (const gchar *_dir_list)
     }
   g_free (free_me);
 
-  return file_list;
+  return g_list_sort (file_list, strcmp);
 }

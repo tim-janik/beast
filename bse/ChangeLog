@@ -1,3 +1,8 @@
+Thu Dec 16 10:08:25 1999  Tim Janik  <timj@gtk.org>
+
+	* bseplugin.c (bse_plugin_dir_list_files): return a sorted list of
+	file names.
+
 Sun Dec 12 09:06:29 1999  Tim Janik  <timj@gtk.org>
 
 	* bsesource.c (bse_source_set_input): don't calc history here,
