@@ -143,6 +143,7 @@ bstgentypes.h: stamp-bstenum_arrays.c $(srcdir)/bstrecords.idl $(SFIDL)
 	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
+bstutils.c:	bstgentypes.c
 bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
@@ -151,6 +152,7 @@ bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
+bstutils.c:	bstenum_list.c
 bstenum_list.c: stamp-bstenum_arrays.c
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
@@ -178,6 +180,7 @@ bstmarshal.h: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-bmh \
 	&& cp xgen-bmh $@ \
 	&& rm -f xgen-bmh
+bstutils.c:	bstmarshal.c
 bstmarshal.c: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-bmc \
 	&& cp xgen-bmc $@ \
