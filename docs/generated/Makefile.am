@@ -28,7 +28,7 @@ TAGS2DOC = $(srcdir)/../tags2doc.pl
 faq.markup: $(TAGS2DOC) $(srcdir)/faq-header.markup $(srcdir)/faq.dat
 	$(TAGS2DOC) --config $(srcdir)/faq-conf.pl < $(srcdir)/faq.dat > $@
 
-release-notes.markup: $(srcdir)/release-notes.dat
+release-notes.markup: $(srcdir)/release-notes.dat $(srcdir)/../../NEWS
 	cat $(srcdir)/release-notes.dat $(srcdir)/../../NEWS > $@
 
 # ok, this is a bit odd, gsl-mplan.txt sits in bse/ for a couple reasons

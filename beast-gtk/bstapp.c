@@ -457,7 +457,7 @@ bst_app_update_can_operate (BstApp *app)
   widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Song");
   gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
   widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Waves");
-  /* gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell)); */
+  gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
 
   for (i = BST_OP_NONE; i < BST_OP_LAST; i++)
     {
