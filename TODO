@@ -38,6 +38,7 @@ URGENT:
 
 DOCS:
 - s/Document Revision/Document Revised/
+- implement @path{} for file paths in xsl files
 - try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
 - turn off word-wrapping for normal files (e.g. /etc/profile) in
@@ -47,6 +48,7 @@ DOCS:
 - @important should have a blue more distinct from clickable link blue
   (especially since it's also underlined) [alper]
 - bse-structs.ps has broken struct braces indentation [alper]
+- keep old news item links working after the site move (docs/cvs-news.html)
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq

@@ -1,3 +1,8 @@
+Tue Dec 31 10:47:04 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: merge current and old website news into
+	this place.
+
 Tue Dec 31 09:11:19 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/faq.texi: provide web-site banner.

@@ -10,35 +10,206 @@
 
 @unnumbered What's New?
 
+
+@news_title{Monday 2 Sep 2002, New Development Release}
+
+BEAST/BSE version 0.4.1 is available in the
+@uref{http://beast.gtk.org/download.html,,download section}.
+
+Much has changed in the new development version of BEAST.
+In brief (specifics can be found in the NEWS section), the
+GUI was majorly polished, many new synthesis features have
+been added and support for various external wave file formats
+was implemented.@*
+The current version is already good enough to perform
+interesting synthesis tasks and to have lots of fun with
+songs, external MIDI devices and samples.
+However, this is still an ALPHA version, so things might
+not always work as expected, reports about misbehaviour
+are welcome.@*
+Be warned though, the .bse file format hasn't fully stabelized
+yet, so incompatibilities whith future versions may occour.
+
+A good starting point are the test files shipped in the
+@path{tests/} subdirectory of the source package or the new
+Quick Start Guide in the Help menu.
+
+
+@news_title{Friday 23 Aug 2002, Logo Contest Winner}
+
+And the winner is... @strong{jimmac}!
+
+jimmac's entry is decided to be the official logo for Beast/BSE. The upcoming
+release will feature the winner image as a splash screen, and the logo will
+appear here once the website is facelifted. The current release candidates are
+actually featuring the winner image.
+
+We want to specially thank everyone who sent an entry. You may visit the
+contest entries at the
+@uref{http://beast.gtk.org/logo-submissions.html,,logo submissions} page.
+
+
+@news_title{Saturday 27 Jul 2002, Hold your breath}
+
+Tim has put lots of work into our new toy, Piano Roll Editor, and it shows.
+Also, Beast is able to playback songs once again. Enjoy, all.
+
+
+@news_title{Saturday 1 Jun 2002, Going on with the new features}
+
+BSE now has a Guile based scheme shell called bswshell. In parallel,
+BEAST supports the execution of Scheme scripts.@*
+On the other news, there is a new filter called @strong{Biquad Filter}.
+
+
 @news_title{Monday 13 May 2002, Recovering from an ill-willed harddisk}
 
-We've been having a disk outage at gtk.org, which unfortunately took
-some recent work on the BEAST website with it.
-Nevertheless, BEAST development continues in various areas, and we're
-focussing on a new development release, shortly after official stable
-libgnomecanvas tarballs are out (i.e. around the release of GNOME 2.0).
-Amongst the highlights that were recently completed in the CVS version
-are,
-
-new synthesis modules: FreeVerb, BiquadFilter, ADSR Envelope, IIR Filter,
-IOPorts/SubSynth, Constant, WaveOsc and a simple Sequencer.
-The majority of the original plugins got ported to the new engine which
-meanwhile gained joint (multi-connect) channel support (that is, multiple
+We've been having a disk outage at gtk.org, which unfortunately took some
+recent work on the BEAST website with it. Nevertheless, BEAST development
+continues in various areas, and we're focussing on a new development release,
+shortly after official stable libgnomecanvas tarballs are out (i.e. around the
+release of GNOME 2.0). Amongst the highlights that were recently completed in
+the CVS version are, new synthesis modules: FreeVerb, BiquadFilter, ADSR
+Envelope, IIR Filter, IOPorts/SubSynth, Constant, WaveOsc and a simple
+Sequencer. The majority of the original plugins got ported to the new engine
+which meanwhile gained joint (multi-connect) channel support (that is, multiple
 signals may be routed to a single input channel which then automatically sums
 them up). Also the new 19"-rack alike GUI front-end is already usable to some
-extend and a lot of overall GUI polishing has also been done.
+extend and a lot of overall GUI polishing has also been done. 
 
 
 @news_title{Sunday 3 March 2002, General Site Overhaul}
 
-We worked on the site to improve its structure so it will be easier for us to
-add new content or update the existing easier. Also, we now have some neat new
-content, namely the API docs and the screenshots page. FAQ is updated too. Last
-but not least, logo submissions page is more browsable, thanks to the
-thumbnails.
+We worked on the site to improve its structure so it will be easier
+for us to add new content or update the existing easier. Also, we now
+have some neat new content, namely the API docs and the screenshots page.
+FAQ is updated too. Last but not least, logo submissions page is more
+browsable, thanks to the thumbnails.
 
-On the CVS side, the rack editor is slowly becoming usable, .ogg and .wav files
-are supported, new synthesis modules (IIR filter, Resonance filter) available,
-and right now Tim is working on an MP3 loader. 
+On the CVS side, the rack editor is slowly becoming usable,
+.ogg and .wav files are supported, new synthesis modules (IIR filter, Resonance
+filter) available, and right now Tim is working on an MP3 loader.
+
+
+@news_title{Monday 14 January 2002, Recent Going-Ons}
+
+There were many major changes in the core of BEAST/BSE in the
+CVS recently. The core engine has been replaced with a new one
+which is shared between BEAST and the aRts of KDE. Most plugins
+have been ported to this new engine. Unfortunately this change
+also made the song format which is supported in the 0.3.3
+release not being adequately supported right now.
+
+Along with that, we now have MIDI support, too.
+
+Other works-in-progress are: rather limited support of the 0.3.3
+release, which is around .bse sample files, is being replaced
+with a more sophisticated sample support. At first BEAST will
+read wav, ogg and raw formats, and these will become usable in
+Synth networks.  Also loaded samples can be edited. Syth networks
+will finally be used as instruments in the songs.
+
+Also, Tim is working on an easy to use GUI extension, visually
+modeled after real-world 19" racks.
+
+Besides beast.gtk.org has a new webmaster, so hopefully it will
+get more frequent updates in the future.
+
+
+@news_title{Monday  2 July 2001, The-fix-the-loop-Release}
+
+BEAST was packaged up and got included into
+@uref{http://www.debian.org,,Debian}
+some while ago, which drove the issue home: a bug in newer libart versions
+resulted in BEAST hanging when synthesis networks are used.
+So despite plans to concentrate all effords on the
+Gtk+-1.3.x based development version, a 0.3.2 based workaround
+release 0.3.3 is now out. This is expected to be the last Gtk+-1.2.x based
+release being made.
+
+In other news, the development version is shaping
+quite well, it gained MIDI and threading support based on a new synthesis core.
+However it's got a lot of rough edges still and needs a bunch work before
+being publically consumable.
+
+Once again, beast.gtk.org is looking for a new webmaster, so if you have skills
+in this area and love contributing, send off an
+@uref{mailto://timj@@beast.gtk.org,,email}.
+
+
+@news_title{Monday 30 October 2000, BEASTIE BITS}
+
+We've recently had a few more logo submissions, so
+@uref{http://beast.gtk.org/logo-submissions.html,,} FXIEM:url?
+is still worth checking out ;)
+
+BEAST/BSE development has been quite laging recently, mostly because it's type system got
+moved into GLib's development branch to find widened public consumption with the
+release of GLib 2.0.
+BEAST itself is currently being ported to the development version of Gtk+, a new release
+is scheduled shortly after the release of Gtk+ 2.0.
+
+On the artistic side, we're still looking for icon submissions for plugins that still use
+placeholders, and some of the older ones could stand polishing. If you're interested in
+helping out in this area, please send @uref{mailto://timj@@beast.gtk.org,,us} email.
+
+
+@news_title{Monday 9 May 2000, Logo Contest in Progress}
+
+As announced on Sunday 12 March, we are in search of a decent logo.  Submissions are accepted to
+@uref{ftp://beast.gtk.org/incoming/} and are shown on 
+@uref{http://beast.gtk.org/logo-submissions.html}.
+If you have questions/comments/feedback, @uref{mailto://timj@@beast.gtk.org,,contact us}.
+
+
+@news_title{Sunday 12 March 2000, Version @strong{0.3.2} released}
+
+See the Gnotice @uref{http://news.gnome.org:80/gnome-news/953148210/,,here}.
+
+Plenty of work has been put into this new version, so BEAST is coming closer to ALPHA stage ;)
+the highlights of this release include new synthesizer modules submitted by David A. Bartold 
+and major GUI improvements.
+
+Though we are happy to have received a few icons so far, BEAST's GUI is still in desperate need for 
+several more. If the placeholder icons [?] annoy you enough, sit down, or get one of your friends
+to sit down, and create some decent icons. Submissions are greatly appreciated.
+
+
+@news_title{Sunday 12 March 2000, We need an @strong{ICON}!}
+
+For the more adventurous ones, BEAST also lacks a decent logo. So if anyone feels like drawing up a cool 
+BEAST with BSE (having some musical tendencies), it could earn you an email alias at gtk.org,
+magnificent fame and of course immense personal satisfaction ;) (plus a couple of beers if you come around 
+to GUADEC ;)
+
+@uref{mailto://timj@@beast.gtk.org,, Contact us} if you're interested.
+
+
+@news_title{Thursday 9 March 2000,}
+
+We're currently seeking artists to help us with icons and logos.  Here are a couple of new screen shots (from the 
+current development version in CVS) to show what things currently look like:
+@itemize
+@item @uref{http://beast.gtk.org/images/oldshots/beast-shot-icons1.png,, This one}
+      shows the icons used in synthesis networks and some other things.
+@item The @uref{http://beast.gtk.org/images/oldshots/beast-shot-dnd1.png,, other one}
+      shows drag and drop of patterns into arrangements.
+@end itemize
+
+If you'd like to help, please @uref{mailto://timj@@beast.gtk.org,,email us}.
+
+
+@news_title{Friday 14 January 2000,}
+
+Version 0.3.1 released. See the @uref{http://beast.gtk.org/docs/cvs-news.html,, NEWS page}
+for details.
+As usual, the ChangeLogs are always available for your perusal (see the links in the left column).
+
+
+@news_title{Friday 31 December 1999,}
+
+Version 0.3.0 (pre-alpha) released.  For details, see the 
+@uref{http://news.gnome.org/gnome-news/946616649/index_html,, announcement}
+on @uref{http://news.gnome.org/gnome-news,, Gnotices}.
 
 @bye
