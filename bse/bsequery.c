@@ -19,6 +19,7 @@
 #include        "bsesource.h"
 #include        "bseprocedure.h"
 #include        "bsemain.h"
+#include        "bsestandardsynths.h"
 #include        "../PKG_config.h"
 #include	<stdio.h>
 #include	<stdlib.h>
@@ -187,10 +188,12 @@ help (gchar *arg)
   fprintf (stderr, "       -i       specifiy incremental indent string\n");
   fprintf (stderr, "       -s       specifiy line spacing\n");
   fprintf (stderr, "qualifiers:\n");
-  fprintf (stderr, "       froots   iterate over fundamental roots\n");
-  fprintf (stderr, "       tree     print BSE type tree\n");
-  fprintf (stderr, "       cats     print categories\n");
-  fprintf (stderr, "       procdoc  print procedure documentation\n");
+  fprintf (stderr, "       froots     iterate over fundamental roots\n");
+  fprintf (stderr, "       tree       print BSE type tree\n");
+  fprintf (stderr, "       cats       print categories\n");
+  fprintf (stderr, "       procdoc    print procedure documentation\n");
+  fprintf (stderr, "       synthlist  list standard synths\n");
+  fprintf (stderr, "       synth <x>  dump standard synth <x> definition\n");
 
   return arg != NULL;
 }
@@ -203,6 +206,8 @@ main (gint   argc,
   gboolean gen_tree = 0;
   gboolean gen_cats = 0;
   gboolean gen_procdoc = 0;
+  gboolean list_synths = 0;
+  gchar *show_synth = NULL;
   guint i;
   gchar *iindent = "";
   
@@ -271,6 +276,14 @@ main (gint   argc,
 	{
 	  gen_froots = 1;
 	}
+      else if (strcmp ("synthlist", argv[i]) == 0)
+	{
+	  list_synths = 1;
+	}
+      else if (strcmp ("synth", argv[i]) == 0 && i + 1 < argc)
+	{
+	  show_synth = argv[++i];
+	}
       else if (strcmp ("tree", argv[i]) == 0)
 	{
 	  gen_tree = 1;
@@ -298,7 +311,7 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-  if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc)
+  if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc && !list_synths && !show_synth)
     return help (argv[i-1]);
 
   if (!indent_inc)
@@ -327,6 +340,18 @@ main (gint   argc,
     show_cats ();
   if (gen_procdoc)
     show_procdoc ();
+  if (list_synths)
+    {
+      GSList *node = bse_standard_synth_get_list ();
+      for (; node; node = node->next)
+	g_print ("  %s\n", (gchar*) node->data);
+    }
+  if (show_synth)
+    {
+      gchar *text = bse_standard_synth_lookup (show_synth, NULL);
+      g_print ("%s", text);
+      g_free (text);
+    }
   
   return 0;
 }

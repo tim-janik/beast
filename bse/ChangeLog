@@ -1,3 +1,20 @@
+Thu Feb 13 10:43:23 2003  Tim Janik  <timj@gtk.org>
+
+	* bsequery.c: support "synthlist" and "synth" qualifiers to retrieve
+	dumps of standard synth definitions.
+
+	* bsestandardsynths.[hc]: nuked old synth generation code. added
+	bse_standard_synth_get_list() and bse_standard_synth_lookup() to
+	retrieve standard synth definitions.
+
+	* zintern/mono-wave.bse: added mono wave synth.
+
+	* zintern/zintern.c: small utility to generate C source to inline
+	file contents, supporting libz compression of the file contents.
+
+	* zintern/Makefile.am: added new subdir zintern/ for inlined BSE
+	files (synth definitions).
+
 Thu Feb 13 02:22:41 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.[hc]: provide bse_midi_receiver_voices_pending()

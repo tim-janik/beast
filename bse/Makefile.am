@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BSE
 
-SUBDIRS = icons
+SUBDIRS = icons zintern
 
 # need -I$(top_srcdir) for <gsl/gsldefs.h>
 # need -I. for "../PKG_config.h"

@@ -1,0 +1,22 @@
+;BseProjectV1
+
+
+(bse-storage-support "v0.4.2")
+
+(bse-storage-restore "BseWaveRepo::Wave-Repository"(modification-time "1965-07-20 07:32:36")(creation-time "1965-07-20 07:32:36"))
+(bse-storage-restore "BseSNet::InternWave"(modification-time "1965-07-20 07:04:35")(creation-time "1965-07-20 07:04:35")
+  (bse-storage-restore "BseSubInstrument::SubInstr"(pos-y 0.450000000000000011)(pos-x 2.31000000000000005)
+    (source-input "left-audio" (bse-upath-resolve 1 "Mult") "audio-out")
+    (source-input "right-audio" (bse-upath-resolve 1 "Mult") "audio-out")
+    (source-input "synth-done" (bse-upath-resolve 1 "ADSR") "done-out"))
+  (bse-storage-restore "BseSubKeyboard::MidiIn"(pos-y 0.770000000000000018)(pos-x -2.85999999999999988))
+  (bse-storage-restore "BseWaveOsc::WaveOsc"(pos-y 1.10000000000000009)(pos-x -1.22999999999999998)
+    (source-input "freq-in" (bse-upath-resolve 1 "MidiIn") "frequency"))
+  (bse-storage-restore "BseMult::Mult"(pos-y 1.07000000000000006)(pos-x 0.520000000000000018)
+    (source-input "audio-in1" (bse-upath-resolve 1 "WaveOsc") "audio-out")
+    (source-input "audio-in2" (bse-upath-resolve 1 "Volume") "const-out1")
+    (source-input "audio-in3" (bse-upath-resolve 1 "MidiIn") "velocity")
+    (source-input "audio-in4" (bse-upath-resolve 1 "ADSR") "ctrl-out"))
+  (bse-storage-restore "BseSimpleADSR::ADSR"(release-time 40.0000005960464478)(decay-time 25.9999990463256836)(attack-time 0.100000004749745131)(pos-y -0.309999999999999998)(pos-x -0.709999999999999964)
+    (source-input "gate-in" (bse-upath-resolve 1 "MidiIn") "gate"))
+  (bse-storage-restore "BseConstant::Volume"(value-1 0.507420003414154053)(pos-y 2.45500000000000007)(pos-x -1.27000000000000002)))

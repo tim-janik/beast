@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,24 +20,15 @@
 
 #include        <bse/bseproject.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
-
-/* --- typedefs & structures --- */
-typedef struct
-{
-  BseSNet	*snet;
-  BseSource	*wave;
-} BseStandardSynth;
-
-BseStandardSynth*	bse_project_standard_piano	(BseProject	*project);
+GSList*	bse_standard_synth_get_list	(void);
+gchar*	bse_standard_synth_lookup	(const gchar	*synth_name,
+					 guint		*text_len);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
+
 
 #endif /* __BSE_STANDARD_SYNTHS_H__ */
