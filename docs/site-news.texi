@@ -11,6 +11,17 @@
 @unnumbered What's New?
 
 
+@newsTitle{Friday 18 Jul 2003, BEAST RPM Packages}
+
+After visiting the @beast talk at LinuxTag 2003,
+@uref{mailto://gwaluga@@computerbraxas.de,,Gregor Waluga} 
+wrote a small
+@uref{http://linux.waluga.de/beast/BEAST-installation under-SuSE 82.txt,,HOWTO (english and german)}
+about getting @beast to run under SuSE 8.2.
+Assorted RPMs build by him are available from the
+@uref{beast-doc://download,, Download section}.
+
+
 @newsTitle{Thursday 10 Jul 2003, BEAST IRC Channel & LinuxTag 2003}
 
 Stefan Westerfeld and Tim Janik are going to the
@@ -46,25 +57,6 @@ Aparently version 0.5.2 crashed during script initialization on some systems
 due to bugs in the child communication code. So here is a quick update, fixing
 the crash and
 @uref{beast-doc://release-news,,other minor bugs}.
-
-
-@newsTitle{Saturday 21 Jun 2003, The i-didn't-mean-to Realease}
-
-BEAST/BSE version 0.5.2 is available in the
-@uref{beast-doc://download,,download section}, here is the
-@uref{http://www.gnomedesktop.org/article.php?sid=1176,,FootNotes announcement}.
-
-Tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.2.tar.gz,, beast-0.5.2.tar.gz}
-and patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.1-0.5.2.bz2,, patch-beast-0.5.1-0.5.2.bz2}.
-
-With this release, @beast allowes to gracefully backup from erroneous
-user actions, by offering unlimited Undo/Redo facilities for all operations.
-Other highlights are greatly simplified sample and synthesizer
-selection for tracks and WAV recording abilities.
-As usual, more release details are outlined in the
-@uref{beast-doc://release-news,,NEWS section}.
 
 
 @bye

@@ -11,6 +11,25 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@newsTitle{Saturday 21 Jun 2003, The i-didn't-mean-to Realease}
+
+BEAST/BSE version 0.5.2 is available in the
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://www.gnomedesktop.org/article.php?sid=1176,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.2.tar.gz,, beast-0.5.2.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.1-0.5.2.bz2,, patch-beast-0.5.1-0.5.2.bz2}.
+
+With this release, @beast allowes to gracefully backup from erroneous
+user actions, by offering unlimited Undo/Redo facilities for all operations.
+Other highlights are greatly simplified sample and synthesizer
+selection for tracks and WAV recording abilities.
+As usual, more release details are outlined in the
+@uref{beast-doc://release-news,,NEWS section}.
+
+
 @newsTitle{Sunday 20 Apr 2003, BEAST-0.5.1 patch fixed}
 
 The @beast patch to update from version 0.5.0 to 0.5.1 unfortunately
