@@ -5,7 +5,7 @@
 
 SUBDIRS =
 
-INCLUDES = -I.. $(GXK_CFLAGS) -I.
+INCLUDES = -I${top_srcdir} -I. -I.. $(GXK_CFLAGS) # -I.. for <gxk/*.h> includes
 
 DEFS += $(strip \
 	-DGTK_DISABLE_COMPAT_H \
@@ -16,34 +16,20 @@ DEFS += $(strip \
 noinst_LIBRARIES = libgxk.a
 
 gxk_headers = $(strip \
-	gxk.h \
-	gxkcanvas.h \
-	gxkdialog.h \
-	gxkglobals.h \
-	gxkstatusbar.h \
-	gxkstock.h \
-	gxktexttools.h \
-	gxktoolbar.h \
-	gxkutils.h \
+	gxkled.h	gxkcanvas.h	gxkdialog.h	gxkglobals.h \
+	gxkstatusbar.h	gxkstock.h	gxktexttools.h	gxktoolbar.h \
+	gxkutils.h	gxkpolygon.h	gxk.h \
 )
 gxk_c_sources = $(strip \
-	gxkcanvas.c \
-	gxkdialog.c \
-	gxkglobals.c \
-	gxkstatusbar.c \
-	gxkstock.c \
-	gxktexttools.c \
-	gxktoolbar.c \
-	gxkutils.c \
+	gxkled.c	gxkcanvas.c	gxkdialog.c	gxkglobals.c \
+	gxkstatusbar.c	gxkstock.c	gxktexttools.c	gxktoolbar.c \
+	gxkutils.c	gxkpolygon.c \
 )
 gxk_extra_sources = $(strip \
 	gxkmarshal.list \
 )
 gxk_built_sources = $(strip \
-	gxkmarshal.h \
-	gxkmarshal.c \
-	gxkgentypes.h \
-	gxkgentypes.c \
+	gxkmarshal.h	gxkmarshal.c	gxkgentypes.h	gxkgentypes.c \
 )
 
 GLIB_MKENUMS = glib-mkenums
@@ -92,6 +78,16 @@ $(srcdir)/gxkgentypes.c: $(gxk_headers)
 	&& rm -f xgen-ggtc
 
 libgxk_a_SOURCES = $(gxk_c_sources)
+
+progs_LDADD = $(strip \
+        libgxk.a \
+        $(top_builddir)/sfi/libsfi.la \
+        $(LDFLAGS) $(BEAST_LIBS) \
+)
+
+noinst_PROGRAMS = gxktest
+gxktest_SOURCES = gxktest.c
+gxktest_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(gxk_headers) $(gxk_extra_sources) $(gxk_built_sources)
 MAINTAINERCLEANFILES += $(gxk_built_sources) $(stamp_files)

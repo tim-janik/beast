@@ -1,3 +1,26 @@
+Tue Jan  7 00:17:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: setup BstAppControl, update led.
+
+	* beast-gtk/bstappcontrol.[hc]: new files, providing a tape-control
+	alike GUI interface to project playback (not currently functional).
+
+	* beast-gtk/gxk/gxkled.[hc]: implemented led display widget.
+
+	* beast-gtk/gxk/gxkpolygon.[hc]: new widget that can display
+	unfilled lines and arcs, comes with preset polygons for tape
+	controls.
+
+	* beast-gtk/gxk/gxktest.c: test program for GXK code.
+
+	* */Makefile.am: general INCLUDE fixes.
+
+	* beast-gtk/Makefile.am: maintain same source file order for headers
+	and C sources.
+
+	* beast-gtk/gxk/Makefile.am: compact source file listing, build
+	gxktest.
+
 Sun Jan  5 23:50:56 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/teximacros.texi: fix @path{} macro handling.

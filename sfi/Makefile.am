@@ -5,7 +5,7 @@
 
 SUBDIRS =
 
-INCLUDES += -I.. $(SFI_CFLAGS) -I.
+INCLUDES += -I${top_srcdir} $(SFI_CFLAGS) -I.
 
 # supported defines: SFI_DISABLE_DEBUG
 

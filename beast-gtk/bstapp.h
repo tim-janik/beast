@@ -18,7 +18,8 @@
 #ifndef __BST_APP_H__
 #define __BST_APP_H__
 
-#include        "bstutils.h"
+#include "bstutils.h"
+#include "bstappcontrol.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,15 +43,16 @@ typedef struct  _BstAppClass  BstAppClass;
 /* --- structures --- */
 struct _BstApp
 {
-  GxkDialog      window;
+  GxkDialog       window;
 
-  SfiProxy	 project;
+  SfiProxy	  project;
 
-  GtkWidget	*main_vbox;
-  GtkNotebook	*notebook;
+  GtkWidget	 *main_vbox;
+  GtkNotebook	 *notebook;
 
-  GtkWidget	*rack_dialog;
-  GtkWidget	*rack_editor;
+  GtkWidget	 *rack_dialog;
+  GtkWidget	 *rack_editor;
+  BstAppControl  *pcontrols;
 };
 struct _BstAppClass
 {

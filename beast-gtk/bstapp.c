@@ -229,8 +229,14 @@ bst_app_init (BstApp *app)
   bst_menu_config_create_items (m1, factory, GTK_WIDGET (app));
   bst_menu_config_free (m1);
 
-  /* setup the main notebook
-   */
+  /* setup playback controls */
+  app->pcontrols = bst_app_control_new ();
+  gtk_container_add_with_properties (GTK_CONTAINER (app->main_vbox),
+				     app->pcontrols->box,
+				     "expand", FALSE,
+				     "position", 1,
+				     NULL);
+  /* setup the main notebook */
   app->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
 				"visible", TRUE,
 				"parent", app->main_vbox,
@@ -246,6 +252,27 @@ bst_app_init (BstApp *app)
 }
 
 static void
+bst_app_state_changed (BstApp   *self,
+		       SfiChoice schoice)
+{
+  BseProjectState state = bse_project_state_from_choice (schoice);
+
+  if (self->pcontrols && self->pcontrols->led)
+    switch (state)
+      {
+      case BSE_PROJECT_ACTIVE:
+	gxk_led_set_color (self->pcontrols->led, GXK_LED_BLUE);
+	break;
+      case BSE_PROJECT_PLAYING:
+	  gxk_led_set_color (self->pcontrols->led, GXK_LED_GREEN);
+	break;
+      default:
+	  gxk_led_set_color (self->pcontrols->led, GXK_LED_OFF);
+	break;
+      }
+}
+
+static void
 bst_app_destroy (GtkObject *object)
 {
   BstApp *app = BST_APP (object);
@@ -258,6 +285,7 @@ bst_app_destroy (GtkObject *object)
       bse_server_halt_project (BSE_SERVER, app->project);
       bse_proxy_disconnect (app->project,
 			   "any_signal", bst_app_reload_supers, app,
+			   "any_signal", bst_app_state_changed, app,
 			   NULL);
       bse_item_unuse (app->project);
       app->project = 0;
@@ -298,10 +326,12 @@ bst_app_new (SfiProxy project)
   bse_proxy_connect (app->project,
 		     "swapped_signal::item-added", bst_app_reload_supers, app,
 		     "swapped_signal::item-removed", bst_app_reload_supers, app,
+		     "swapped_signal::state-changed", bst_app_state_changed, app,
 		     NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (app), app->project, "%s");
 
   bst_app_reload_supers (app);
+  bst_app_state_changed (app, bse_project_state_to_choice (bse_project_get_state (app->project)));
 
   /* update menu entries
    */

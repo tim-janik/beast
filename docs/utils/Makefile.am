@@ -5,7 +5,7 @@
 
 SUBDIRS =
 
-INCLUDES += -I. $(GLIB_CFLAGS)
+INCLUDES += -I${top_srcdir} -I. $(GLIB_CFLAGS)
 
 #
 # programs to build

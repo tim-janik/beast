@@ -40,9 +40,9 @@ progs_LDADD = $(strip \
 beast_headers = $(strip \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
-				bstcluehunter.h bstdefs.h		bstdial.h	\
+	bstappcontrol.h		bstcluehunter.h				bstdial.h	\
 	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
-	bstlogadjustment.h	bstitemview.h	bstknob.h		bstmarshal.h	\
+	bstlogadjustment.h	bstitemview.h	bstknob.h \
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
@@ -51,23 +51,24 @@ beast_headers = $(strip \
 	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
 	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
 	bstzoomedwindow.h	glewidgets.h	gtklistwrapper.h	bstxframe.h	\
+	bstdefs.h bstmarshal.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
-	bstparam.c \
-	bstlogadjustment.c	bstdragutils.c	gtklistwrapper.c	bstutils.c	\
-	bstzoomedwindow.c	bstxframe.c	glewidgets.c		bstxkb.c	\
-	bstfiledialog.c		bstgconfig.c	bstitemview.c		bstknob.c	\
-	bstparamview.c		bstpartdialog.c	bstpartview.c		bstpianoroll.c	\
-	bsttrackview.c		bstsplash.c	bstsupershell.c		bstwavedialog.c	\
-	bstsampleeditor.c	bstrackitem.c	bstracktable.c		bstsequence.c	\
-	bstpianorollctrl.c	bstplayback.c	bstpreferences.c	bstprocedure.c	\
-	bstprocbrowser.c	bstqsampler.c	bstradiotools.c		bstrackeditor.c	\
-	bstservermonitor.c	bstsnetshell.c	bstsnetrouter.c		bstsongshell.c	\
-	bstusermessage.c	bstwaveeditor.c	bstwavereposhell.c	bstwaveview.c	\
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
-	bstfreeradiobutton.c	bstdial.c				bstcluehunter.c	\
-	bstmenus.c		$(PROFILE_SOURCE) \
+	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	bstsnetshell.c	\
+	bstappcontrol.c		bstcluehunter.c				bstdial.c	\
+	bstfreeradiobutton.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
+	bstlogadjustment.c	bstitemview.c	bstknob.c \
+	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
+	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
+	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
+	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstradiotools.c	\
+	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
+	bstusermessage.c	bstutils.c	bstwavedialog.c		bstwaveeditor.c	\
+	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
+	bstzoomedwindow.c	glewidgets.c	gtklistwrapper.c	bstxframe.c	\
+	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \

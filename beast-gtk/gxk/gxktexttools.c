@@ -22,9 +22,8 @@
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
-#include <gdk/gdkkeysyms.h>
-#include <gtk/gtk.h>
 #include "gxktexttools.h"
+#include <gdk/gdkkeysyms.h>
 #include "gxktoolbar.h"
 #include "gxkutils.h"
 
