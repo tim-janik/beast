@@ -140,14 +140,6 @@ index.lst: $(REFERENCE_XMLS)
 	groff -man -t $< >$@
 %.pdf: %.ps
 	ps2pdf13 $< $@
-# where to get *.texi docs from
-%.texi: $(srcdir)/../%.texi
-	sed -e "s#@sedfix{top_srcdir}#${top_srcdir}#" <$< >$@
-	touch $@ -r $<
-# where to get website *.texi from
-%.texi: $(srcdir)/../site-%.texi
-	sed -e "s#@sedfix{top_srcdir}#${top_srcdir}#" <$< >$@
-	touch $@ -r $<
 # where to get website *.xml from
 %.xml: $(srcdir)/../site-%.xml
 	cp -p $< $@
