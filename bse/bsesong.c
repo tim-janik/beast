@@ -486,6 +486,8 @@ bse_song_remove_item (BseContainer *container,
       for (tmp = sfi_ring_walk (ring, self->busses); tmp; tmp = sfi_ring_walk (tmp, self->busses))
 	bse_item_queue_seqid_changed (tmp->data);
       self->busses = sfi_ring_remove_node (self->busses, ring);
+      if (item == (BseItem*) self->master_bus)
+        self->master_bus = NULL;
     }
   else
     /* parent class manages BseSources */;
@@ -600,6 +602,17 @@ bse_song_create_merger (BseSong *self)
   return merger;
 }
 
+BseSource*
+bse_song_get_master (BseSong *self)
+{
+  if (!self->master_bus)
+    {
+      self->master_bus = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_SONG_BUS, "Master", NULL);
+      bse_snet_intern_child (BSE_SNET (self), self->master_bus);
+    }
+  return self->master_bus;
+}
+
 static void
 bse_song_init (BseSong *self)
 {
@@ -619,6 +632,7 @@ bse_song_init (BseSong *self)
   
   self->parts = NULL;
   self->busses = NULL;
+  self->master_bus = NULL;
 
   self->pnet = NULL;
 

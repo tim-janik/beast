@@ -238,15 +238,16 @@ void		bse_source_clear_ochannels	(BseSource	*source);
 
 
 /* --- internal --- */
-SfiRing* bse_source_collect_inputs_recursive	(BseSource	*source);
-void     bse_source_free_collection		(SfiRing	*ring);
+SfiRing* bse_source_collect_inputs_flat 	(BseSource	*source);       /* sets mark */
+SfiRing* bse_source_collect_inputs_recursive	(BseSource	*source);       /* sets mark */
+void     bse_source_free_collection		(SfiRing	*ring);         /* unsets mark */
+gpointer bse_source_get_context_data		(BseSource	*source,
+						 guint		 context_handle);
 void	 bse_source_create_context_with_data	(BseSource	*source,
 						 guint		 context_handle,
 						 gpointer	 data,
 						 BseSourceFreeContextData free_data,
 						 GslTrans	*trans);
-gpointer bse_source_get_context_data		(BseSource	*source,
-						 guint		 context_handle);
 void		bse_source_create_context	(BseSource	*source,
 						 guint		 context_handle,
 						 GslTrans	*trans);

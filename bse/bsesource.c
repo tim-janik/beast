@@ -1345,8 +1345,8 @@ bse_source_unset_input (BseSource *source,
 }
 
 static SfiRing*
-add_inputs_recurse (SfiRing   *ring,
-		    BseSource *source)
+collect_inputs_flat (SfiRing   *ring,
+                     BseSource *source)
 {
   guint i, j;
 
@@ -1378,15 +1378,22 @@ add_inputs_recurse (SfiRing   *ring,
 }
 
 SfiRing*
+bse_source_collect_inputs_flat (BseSource *source)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  return collect_inputs_flat (NULL, source);
+}
+
+SfiRing*
 bse_source_collect_inputs_recursive (BseSource *source)
 {
   SfiRing *node, *ring = NULL;
 
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
 
-  ring = add_inputs_recurse (ring, source);
+  ring = collect_inputs_flat (ring, source);
   for (node = ring; node; node = sfi_ring_walk (node, ring))
-    ring = add_inputs_recurse (ring, node->data);
+    ring = collect_inputs_flat (ring, node->data);
   return ring;
 }
 

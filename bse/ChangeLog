@@ -1,3 +1,10 @@
+Sun Jul 11 23:42:58 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesource.[hc]: support flat (direct) input object collection.
+
+	* bsesong.proc:
+	* bsesong.[hc]: added master-bus concept.
+
 Sat Jul 10 20:01:47 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.[hc]: added bse_container_new_child_bname() which allowes
