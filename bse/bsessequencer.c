@@ -257,76 +257,116 @@ bse_ssequencer_thread (gpointer data)
 }
 
 static void
+bse_ssequencer_process_track_SL (BseTrack *track,
+				 gdouble   start_stamp,
+				 guint	   start_tick,
+				 guint     n_ticks,
+				 gdouble   stamps_per_tick);
+static void
 bse_ssequencer_process_song_SL (BseSong *song,
 				guint    n_ticks)
 {
-  guint current_tick = song->tick_SL;
-  guint tick_bound = current_tick + n_ticks;
-  gdouble stamp_delta = n_ticks / song->tpsi_SL;
-  SfiTime next_stamp = song->start_SL + song->delta_stamp_SL + stamp_delta;
-  SfiRing *ring;
+  gdouble current_stamp = song->start_SL + song->delta_stamp_SL;
+  gdouble stamps_per_tick = 1.0 / song->tpsi_SL;
+  SfiTime next_stamp = current_stamp + n_ticks * stamps_per_tick;
+  guint tick_bound = song->tick_SL + n_ticks;
   guint n_done_tracks = 0, n_tracks = 0;
-
+  SfiRing *ring;
   for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
     {
       BseTrack *track = ring->data;
-      BsePart *part = track->part_SL;
-      BseMidiReceiver *midi_receiver = track->midi_receiver_SL;
-      guint i;
       n_tracks++;
-      if (!part || !midi_receiver)
+      if (!track->midi_receiver_SL)
 	track->track_done_SL = TRUE;
-      if (!track->track_done_SL && part->last_tick_SL < current_tick &&
-	  !bse_midi_receiver_has_active_voices (midi_receiver))
-	track->track_done_SL = TRUE;
+      else if (!track->track_done_SL)
+	{
+	  bse_ssequencer_process_track_SL (track, current_stamp,
+					   song->tick_SL, tick_bound,
+					   stamps_per_tick);
+	  bse_midi_receiver_process_events (track->midi_receiver_SL, next_stamp);
+	}
       if (track->track_done_SL)
-	{
-	  n_done_tracks++;
-	  continue;
-	}
-      if (track->muted_SL)
-	{
-	  bse_midi_receiver_process_events (midi_receiver, next_stamp);
-	  continue;
-	}
-      i = bse_part_node_lookup_SL (part, current_tick);
-      while (i < part->n_nodes && part->nodes[i].tick < tick_bound)
-	{
-	  BsePartEvent *ev = part->nodes[i].events;
-	  guint tick = part->nodes[i].tick;
-	  for (ev = part->nodes[i].events; ev; ev = ev->any.next)
-	    if (ev && ev->type == BSE_PART_EVENT_NOTE)
-	      {
-		BseMidiEvent *eon, *eoff;
-		eon  = bse_midi_event_note_on (0,
-					       song->start_SL +
-					       song->delta_stamp_SL +
-					       (tick - current_tick) / song->tpsi_SL,
-					       BSE_PART_NOTE_EVENT_FREQ (&ev->note),
-					       1.0);
-		eoff = bse_midi_event_note_off (0,
-						song->start_SL +
-						song->delta_stamp_SL +
-						(tick - current_tick + ev->note.duration) / song->tpsi_SL,
-						BSE_PART_NOTE_EVENT_FREQ (&ev->note));
-		bse_midi_receiver_push_event (midi_receiver, eon);
-		bse_midi_receiver_push_event (midi_receiver, eoff);
-		DEBUG ("note: %llu till %llu freq=%f (note=%d)",
-		       eon->tick_stamp,
-		       eoff->tick_stamp,
-		       BSE_PART_NOTE_EVENT_FREQ (&ev->note),
-		       ev->note.note);
-	      }
-	  i = bse_part_node_lookup_SL (part, tick + 1);
-	}
-      bse_midi_receiver_process_events (midi_receiver, next_stamp);
+	n_done_tracks++;
     }
   song->tick_SL += n_ticks;
-  song->delta_stamp_SL += stamp_delta;
+  song->delta_stamp_SL += n_ticks * stamps_per_tick;
   if (!song->song_done_SL)
     {
       song->song_done_SL = n_done_tracks == n_tracks;
       if (song->song_done_SL)
 	bse_song_stop_sequencing_SL (song);
+    }
+}
+
+static void
+bse_ssequencer_process_part_SL (BsePart         *part,
+				gdouble          start_stamp,
+				guint	         start_tick,
+				guint            bound, /* start_tick + n_ticks */
+				gdouble          stamps_per_tick,
+				BseMidiReceiver *midi_receiver);
+static void
+bse_ssequencer_process_track_SL (BseTrack *track,
+				 gdouble   start_stamp,
+				 guint	   start_tick,
+				 guint     bound, /* start_tick + n_ticks */
+				 gdouble   stamps_per_tick)
+{
+  guint start, next;
+  BsePart *part = bse_track_get_part_SL (track, start_tick, &start, &next);
+  /* advance to first part */
+  if (!part && next)
+    part = bse_track_get_part_SL (track, next, &start, &next);
+  if (!part || start + part->last_tick_SL < start_tick)
+    {
+      track->track_done_SL = !bse_midi_receiver_voices_pending (track->midi_receiver_SL);
+      part = NULL;
+    }
+  while (part && start < bound)
+    {
+      guint part_start, part_bound;
+      gdouble part_stamp;
+      if (start_tick > start)
+	part_start = start_tick - start;
+      else
+	part_start = 0;
+      part_stamp = start_stamp + (start + part_start - start_tick) * stamps_per_tick;
+      part_bound = next ? MIN (bound, next) : bound;
+      part_bound -= start;
+      if (!track->muted_SL)
+	bse_ssequencer_process_part_SL (part, part_stamp,
+					part_start, part_bound, stamps_per_tick,
+					track->midi_receiver_SL);
+      part = next ? bse_track_get_part_SL (track, next, &start, &next) : NULL;
+    }
+}
+
+static void
+bse_ssequencer_process_part_SL (BsePart         *part,
+				gdouble          start_stamp,
+				guint	         start_tick,
+				guint            bound, /* start_tick + n_ticks */
+				gdouble          stamps_per_tick,
+				BseMidiReceiver *midi_receiver)
+{
+  guint i = bse_part_node_lookup_SL (part, start_tick);
+  while (i < part->n_nodes && part->nodes[i].tick < bound)
+    {
+      BsePartEvent *ev = part->nodes[i].events;
+      guint etick = part->nodes[i].tick - start_tick;
+      for (ev = part->nodes[i].events; ev; ev = ev->any.next)
+	if (ev && ev->type == BSE_PART_EVENT_NOTE)
+	  {
+	    BseMidiEvent *eon, *eoff;
+	    eon  = bse_midi_event_note_on (0, start_stamp + etick * stamps_per_tick,
+					   BSE_PART_NOTE_EVENT_FREQ (&ev->note), 1.0);
+	    eoff = bse_midi_event_note_off (0, start_stamp + (etick + ev->note.duration) * stamps_per_tick,
+					    BSE_PART_NOTE_EVENT_FREQ (&ev->note));
+	    bse_midi_receiver_push_event (midi_receiver, eon);
+	    bse_midi_receiver_push_event (midi_receiver, eoff);
+	    DEBUG ("note: %llu till %llu freq=%f (note=%d)",
+		   eon->tick_stamp, eoff->tick_stamp, BSE_PART_NOTE_EVENT_FREQ (&ev->note), ev->note.note);
+	  }
+      i = bse_part_node_lookup_SL (part, part->nodes[i].tick + 1);
     }
 }

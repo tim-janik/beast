@@ -1,3 +1,21 @@
+Thu Feb 13 02:22:41 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.[hc]: provide bse_midi_receiver_voices_pending()
+	which also accounts for pending events, instead of
+	bse_midi_receiver_has_active_voices().
+
+	* bsesong.proc (find-track-for-part): adapt to using
+	bse_track_find_part().
+
+	* bsessequencer.c: split sequencing code into distinct functions for
+	songs, tracks and parts. use bse_track_get_part_SL() to step through
+	the parts of a track.
+
+	* bsetrack.[hc]: provide bse_track_find_part() to retrieve the tick
+	start of a certain part. provide bse_track_get_part_SL() for sequencer
+	lookups.
+	got rid of ->part_SL member.
+
 Tue Feb 11 06:58:09 2003  Tim Janik  <timj@gtk.org>
 
 	* bseobject.[hc]: added bse_object_reemit_signal() and

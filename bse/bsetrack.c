@@ -354,10 +354,8 @@ bse_track_set_property (GObject      *object,
       BSE_SEQUENCER_UNLOCK ();
       break;
     case PROP_PART:
-      BSE_SEQUENCER_LOCK ();
-      self->part_SL = bse_value_get_object (value);
-      self->track_done_SL = FALSE;	/* let sequencer recheck if playing */
-      BSE_SEQUENCER_UNLOCK ();
+      if (!self->n_entries_SL)
+	bse_track_insert_part (self, 0, bse_value_get_object (value));
       break;
     case PROP_SYNTH_NET:
       if (self->snet)
@@ -399,7 +397,7 @@ bse_track_get_property (GObject    *object,
       sfi_value_set_bool (value, self->muted_SL);
       break;
     case PROP_PART:
-      bse_value_set_object (value, self->part_SL);
+      bse_value_set_object (value, NULL);
       break;
     case PROP_SYNTH_NET:
       bse_value_set_object (value, self->snet);
@@ -484,6 +482,56 @@ bse_track_list_parts (BseTrack *self)
 	}
     }
   return tps;
+}
+
+gboolean
+bse_track_find_part (BseTrack *self,
+		     BsePart  *part,
+		     guint    *start_p)
+{
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_TRACK (self), FALSE);
+  g_return_val_if_fail (BSE_IS_PART (part), FALSE);
+
+  for (i = 0; i < self->n_entries_SL; i++)
+    if (self->entries_SL[i].part == part)
+      {
+	if (start_p)
+	  *start_p = self->entries_SL[i].tick;
+	return TRUE;
+      }
+  return FALSE;
+}
+
+BsePart*
+bse_track_get_part_SL (BseTrack *self,
+		       guint     tick,
+		       guint    *start,
+		       guint    *next)
+{
+  BseTrackEntry *entry;
+
+  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+
+  /* we return the nearest part with start <= tick and
+   * set *next to the start of the following part if any
+   */
+
+  entry = track_lookup_entry (self, tick);
+  if (entry)
+    {
+      guint i = entry - self->entries_SL;
+      if (i + 1 < self->n_entries_SL)
+	*next = self->entries_SL[i + 1].tick;
+      else
+	*next = 0;	/* no next part */
+      *start = entry->tick;
+      return entry->part;
+    }
+  *start = 0;
+  *next = self->n_entries_SL ? self->entries_SL[0].tick : 0;
+  return NULL;
 }
 
 void

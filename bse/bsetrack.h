@@ -56,7 +56,6 @@ struct _BseTrack
   guint		   n_entries_SL : 30;
   guint		   muted_SL : 1;
   BseTrackEntry	  *entries_SL;
-  BsePart	  *part_SL;
   BseMidiReceiver *midi_receiver_SL;
   gboolean	   track_done_SL;
 };
@@ -82,6 +81,13 @@ BseErrorType	 bse_track_insert_part	(BseTrack		*self,
 void		 bse_track_remove_tick	(BseTrack		*self,
 					 guint			 tick);
 BseTrackPartSeq* bse_track_list_parts	(BseTrack		*self);
+gboolean	 bse_track_find_part	(BseTrack		*self,
+					 BsePart		*part,
+					 guint			*start_p);
+BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
+					 guint			 tick,
+					 guint			*start,
+					 guint			*next);
 
 #ifdef __cplusplus
 }

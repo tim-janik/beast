@@ -1062,11 +1062,14 @@ bse_midi_receiver_get_output_module (BseMidiReceiver *self,
 }
 
 gboolean
-bse_midi_receiver_has_active_voices (BseMidiReceiver *self)
+bse_midi_receiver_voices_pending (BseMidiReceiver *self)
 {
   guint i;
 
   g_return_val_if_fail (self != NULL, FALSE);
+
+  if (self->events)
+    return TRUE;
 
   BSE_MIDI_RECEIVER_LOCK (self);
   /* find busy voice */
@@ -1078,7 +1081,7 @@ bse_midi_receiver_has_active_voices (BseMidiReceiver *self)
     }
   BSE_MIDI_RECEIVER_UNLOCK (self);
 
-  return i < self->n_voices;
+  return i < self->n_voices || self->events;
 }
 
 

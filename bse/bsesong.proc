@@ -163,6 +163,7 @@ METHOD (BseSong, find-track-for-part) {
   BseSong *self = bse_value_get_object (in_values++);
   BsePart *part = bse_value_get_object (in_values++);
   BseTrack *track = NULL;
+  guint tick = 0;
   SfiRing *ring;
 
   /* check parameters */
@@ -174,10 +175,12 @@ METHOD (BseSong, find-track-for-part) {
   for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
     {
       BseTrack *test_track = ring->data;
-      if (test_track->part_SL == part)
+      guint start;
+      if (bse_track_find_part (test_track, part, &start) &&
+	  (!track || start < tick))
 	{
 	  track = test_track;
-	  break;
+	  tick = start;
 	}
     }
   if (!track)
