@@ -9,7 +9,7 @@ Overview of Changes in BEAST/BSE 0.4.1:
   module calculations between processors and process cycles
 * New synthesis modules:
   FreeVerb	  - a reverb based on code by Jeremy Wakefield
-  ResonanceFilter - IIR resonance filter
+  BiquadFilter    - various basic IIR (resonance) filter types
   ADSR Envelope   - a simple envelope generator
   IIR Filter      - various IIR filter types
   Ports/SubSynth  - allows synthesis network rerouting
