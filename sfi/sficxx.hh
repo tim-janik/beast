@@ -892,7 +892,7 @@ cxx_boxed_to_seq (const GValue *src_value,
       typename SeqType::CSeq *t = reinterpret_cast<typename SeqType::CSeq*> (boxed);
       SeqType cxxseq;
       cxxseq.take(t);   /* temporarily re-own */
-      seq = cxxseq.to_seq();
+      seq = SeqType::to_seq (cxxseq);
       cxxseq.steal();   /* get back */
     }
   sfi_value_take_seq (dest_value, seq);
@@ -947,7 +947,7 @@ template<typename SeqType> void
 cxx_value_set_sequence (GValue        *value,
                         const SeqType &self)
 {
-  sfi_value_take_seq (value, self.to_seq ());
+  sfi_value_take_seq (value, SeqType::to_seq (self));
 }
 
 } // Sfi

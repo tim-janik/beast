@@ -144,7 +144,7 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
       case SEQUENCE:
 	switch (model)
 	  {
-	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+name+".to_seq ())";
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+type+"::to_seq ("+name+"))";
 	    case MODEL_FROM_VALUE:  return type + "::from_seq (sfi_value_get_seq ("+name+"))";
 	    case MODEL_VCALL_CONV:  return type + "::to_seq ("+name+")";
 	    case MODEL_VCALL_RCONV: return type + "::from_seq ("+name+")";
@@ -459,7 +459,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("public:\n");
       /* TODO: make this a constructor? */
       printf ("  static inline %s from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
-      printf ("  inline SfiSeq *to_seq () const;\n");
+      printf ("  static inline SfiSeq *to_seq (%s seq);\n", cTypeArg (si->name));
       printf ("  static inline %s value_get (const GValue *value);\n", cTypeRet (si->name));
       printf ("  static inline void value_set (GValue *value, %s self);\n", cTypeArg (si->name));
       printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
@@ -544,13 +544,12 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  return seq;\n");
       printf("}\n\n");
 
-      /* FIXME: ugly code (*this[i]) */
-      string elementToValue = createTypeCode (si->content.type, "(*this)[i]", MODEL_TO_VALUE);
+      string elementToValue = createTypeCode (si->content.type, "seq[i]", MODEL_TO_VALUE);
       printf("SfiSeq *\n");
-      printf("%s::to_seq () const\n", nname.c_str());
+      printf("%s::to_seq (%s seq)\n", nname.c_str(), cTypeArg (si->name));
       printf("{\n");
       printf("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
-      printf("  for (guint i = 0; i < length(); i++)\n");
+      printf("  for (guint i = 0; i < seq.length(); i++)\n");
       printf("  {\n");
       printf("    GValue *element = %s;\n", elementToValue.c_str());
       printf("    sfi_seq_append (sfi_seq, element);\n");
