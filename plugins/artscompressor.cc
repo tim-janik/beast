@@ -19,7 +19,7 @@
  */
 #include "artscompressor.gen-idl.h"
 
-#include <math.h>
+#include <bse/bsemath.h>
 #include <string.h>
 
 
@@ -30,7 +30,7 @@ using namespace std;
 /*
  * constants
  */
-static const double LN2 = 0.693147180559945;	/* log(2) */
+#define LN2                        (BSE_LN2)    /* ln(2) */
 static const double MUG_CORR_FACT = 0.4;	/* makeup gain correction factor (from jamin-0.9.0 source)
 						 * dampens the makeup gain correction to stop it over correcting */
 

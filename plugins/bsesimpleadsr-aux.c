@@ -41,6 +41,7 @@ typedef struct
 #define	BSE_MIX_RAMP_WITH_TRIG	(4)
 #define	BSE_MIX_RAMP_WITH_INC	(8)
 #define	BSE_MIX_RAMP_WITH_DEC	(16)
+#define BSE_MIX_EPSILON         (1e-8 /* threshold, coined for 24 bit */)
 #endif	/* __BSE_MIX_RAMP_AUX__ */
 
 
@@ -63,7 +64,7 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
   const gfloat *bound = ramp->bound;
   register gfloat value = ramp->level;
   gfloat level_step = ramp->level_step;
-  gfloat eps = STEP_DOWN ? ramp->level_border + BSE_EPSILON : ramp->level_border - BSE_EPSILON;
+  gfloat eps = STEP_DOWN ? ramp->level_border + BSE_MIX_EPSILON : ramp->level_border - BSE_MIX_EPSILON;
   
   if (wave_out >= bound)
     return BSE_MIX_RAMP_REACHED_BOUND;

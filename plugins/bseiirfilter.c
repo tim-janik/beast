@@ -335,7 +335,7 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
   if (BSE_SOURCE_PREPARED (filt))
     {
       FilterModule *fmod = g_new0 (FilterModule, 1);
-      gfloat nyquist_fact = GSL_PI / (0.5 * bse_engine_sample_freq ());
+      gfloat nyquist_fact = PI / (0.5 * bse_engine_sample_freq ());
       gfloat freq1 = MIN (filt->cut_off_freq1, 0.5 * bse_engine_sample_freq ());
       gfloat freq2 = MIN (filt->cut_off_freq2, 0.5 * bse_engine_sample_freq ());
       gfloat steepness = 1.1;
@@ -386,10 +386,10 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 	default:
 	  g_assert_not_reached ();
 	}
-      if (1)
+      if (0)
 	g_print ("F(z)=%s/%s\n",
-		 gsl_poly_str (filt->order, filt->a, "z"),
-		 gsl_poly_str (filt->order, filt->b, "z"));
+		 bse_poly_str (filt->order, filt->a, "z"),
+		 bse_poly_str (filt->order, filt->b, "z"));
       
       fmod->iir.order = filt->order;
       fmod->iir.a = fmod->dummy;

@@ -1,3 +1,11 @@
+Fri Oct  8 11:25:30 2004  Tim Janik  <timj@gtk.org>
+
+	* artscompressor.cc: include bse/bsemath.h instead of math.h
+	and use BSE_LN2.
+
+	* bseiirfilter.c (bse_iir_filter_update_modules): disabled
+	debugging printout.
+
 Mon Sep 20 15:54:10 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* artscompressor.cc: Keep output_db property fixed when auto_output is

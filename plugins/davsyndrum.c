@@ -18,7 +18,7 @@
  */
 #include "davsyndrum.h"
 #include <bse/bseengine.h>
-#include <bse/gslsignal.h>
+#include <bse/bsemathsignal.h>
 
 /* --- parameters --- */
 enum
@@ -254,7 +254,7 @@ dmod_process (BseModule *module,
       gfloat cur_freq;
 
       /* check input triggers */
-      if (G_UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i])))
+      if (G_UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i])))
         {
           /* trigger drum */
           dmod_trigger (dmod,
@@ -361,9 +361,9 @@ dav_syn_drum_update_modules (DavSynDrum *self,
    *
    * Basically, find r given 1/2 = e^(-r*(half/rate))
    *
-   * ln(1/2) = -ln(2) = -GSL_LN2 = -0.693147...
+   * ln(1/2) = -ln(2) = -BSE_LN2 = -0.693147...
    */
-  self->params.res = exp (-GSL_LN2 / (self->half * BSE_MIX_FREQ));
+  self->params.res = exp (-BSE_LN2 / (self->half * BSE_MIX_FREQ));
   if (BSE_SOURCE_PREPARED (self))
     {
       /* update all DavSynDrumModules. take a look at davxtalstrings.c

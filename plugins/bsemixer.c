@@ -320,7 +320,7 @@ mixer_process (BseModule *module,
 	    gfloat *w = wave_out;
 	    gfloat volume = mixer->volumes[n];
 	    
-	    if (BSE_EPSILON_CMP (volume, 1.0))
+	    if (volume != 1.0)
 	      do { *w++ = volume * *wave_in++; } while (w < wave_bound);
 	    else
 	      do { *w++ = *wave_in++; } while (w < wave_bound);
@@ -335,7 +335,7 @@ mixer_process (BseModule *module,
 	    gfloat *w = wave_out;
 	    gfloat volume = mixer->volumes[n];
 	    
-	    if (BSE_EPSILON_CMP (volume, 1.0))
+	    if (volume != 1.0)
 	      do { *w++ += volume * *wave_in++; } while (w < wave_bound);
 	    else
 	      do { *w++ += *wave_in++; } while (w < wave_bound);

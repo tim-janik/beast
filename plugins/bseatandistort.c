@@ -19,7 +19,7 @@
 #include "bseatandistort.h"
 
 #include <bse/bseengine.h>
-#include <bse/gslsignal.h>
+#include <bse/bsemathsignal.h>
 
 
 /* --- parameters --- */
@@ -97,7 +97,7 @@ static void
 bse_atan_distort_init (BseAtanDistort *self)
 {
   self->boost_amount = 0.5;
-  self->prescale = gsl_approx_atan1_prescale (self->boost_amount);
+  self->prescale = bse_approx_atan1_prescale (self->boost_amount);
 }
 
 static void
@@ -112,7 +112,7 @@ bse_atan_distort_set_property (GObject      *object,
     {
     case PARAM_BOOST_AMOUNT:
       self->boost_amount = sfi_value_get_real (value) / 100.0;
-      self->prescale = gsl_approx_atan1_prescale (self->boost_amount);
+      self->prescale = bse_approx_atan1_prescale (self->boost_amount);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -195,7 +195,7 @@ atan_distort_process (BseModule *module,
   
   /* do the mixing */
   do
-    *sig_out++ = gsl_approx_atan1 (prescale * *sig_in++);
+    *sig_out++ = bse_approx_atan1 (prescale * *sig_in++);
   while (sig_out < bound);
 }
 

@@ -19,7 +19,7 @@
 #include "davcanyondelay.h"
 
 #include <bse/bseengine.h>
-#include <bse/gslsignal.h>
+#include <bse/bsemathsignal.h>
 #include <string.h>
 
 
@@ -245,9 +245,9 @@ canyon_delay_process (BseModule *module,
 
       /* Low-pass filter output. */
       accum_l = cmod->accum_l * cmod->params.filter_invmag + accum_l * cmod->params.filter_mag;
-      accum_l = GSL_SIGNAL_CLIP (accum_l);
+      accum_l = BSE_SIGNAL_CLIP (accum_l);
       accum_r = cmod->accum_r * cmod->params.filter_invmag + accum_r * cmod->params.filter_mag;
-      accum_r = GSL_SIGNAL_CLIP (accum_r);
+      accum_r = BSE_SIGNAL_CLIP (accum_r);
       
       /* Store IIR samples. */
       cmod->accum_l = accum_l;
@@ -359,9 +359,9 @@ dav_canyon_delay_update_modules (DavCanyonDelay *self)
        *   half         - the length of the half life
        *   BSE_MIX_FREQ - time divisor (usually the # calcs per second)
        * Basically, find r given 1/2 = e^(-r*(half/rate))
-       * ln(1/2) = -ln(2) = -GSL_LN2 = -0.693147...
+       * ln(1/2) = -ln(2) = -BSE_LN2 = -0.693147...
        */
-      self->params.filter_invmag = exp (-GSL_LN2 / (half * BSE_MIX_FREQ));
+      self->params.filter_invmag = exp (-BSE_LN2 / (half * BSE_MIX_FREQ));
       self->params.filter_mag = 1.0 - self->params.filter_invmag;
       
       /* update all DavCanyonDelayModules. take a look at davxtalstrings.c
