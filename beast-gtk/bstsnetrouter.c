@@ -32,6 +32,13 @@ static GtkWidget* bst_snet_router_build_toolbar	(BstSNetRouter		*router);
 static gboolean   bst_snet_router_adjust_region	(BstSNetRouter		*router,
 						 gboolean                zoom_in,
 						 GtkScrolledWindow      *zoomed_window);
+static void	  bst_snet_router_item_added    (BstSNetRouter          *router,
+						 BseItem                *item,
+						 BseContainer           *container);
+static gboolean	  bst_snet_router_canvas_event  (BstSNetRouter          *router,
+						 GdkEvent               *event);
+static gboolean	  bst_snet_router_root_event    (BstSNetRouter          *router,
+						 GdkEvent               *event);
 
 
 /* --- static variables --- */
@@ -91,6 +98,8 @@ bst_snet_router_init (BstSNetRouter      *router,
   router->radio_action = 0;
   router->canvas = NULL;
   router->root = NULL;
+  router->world_x = 0;
+  router->world_y = 0;
   
   gtk_widget_set (widget,
 		  "homogeneous", FALSE,
@@ -124,8 +133,8 @@ bst_snet_router_destroy (GtkObject *object)
   BstSNetRouter *router = BST_SNET_ROUTER (object);
   
   bst_snet_router_destroy_contents (router);
-  
-  router->snet = NULL;
+
+  bst_snet_router_set_snet (router, NULL);
 
   gtk_object_unref (GTK_OBJECT (BST_SNET_ROUTER_GET_CLASS (router)->tooltips));
   
@@ -140,11 +149,46 @@ bst_snet_router_new (BseSNet *snet)
   g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
   
   router = gtk_widget_new (BST_TYPE_SNET_ROUTER, NULL);
-  BST_SNET_ROUTER (router)->snet = snet;
-  
-  bst_snet_router_rebuild (BST_SNET_ROUTER (router));
+  bst_snet_router_set_snet (BST_SNET_ROUTER (router), snet);
   
   return router;
+}
+
+void
+bst_snet_router_set_snet (BstSNetRouter *router,
+			  BseSNet       *snet)
+{
+  g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  if (snet)
+    g_return_if_fail (BSE_IS_SNET (snet));
+
+  if (router->snet)
+    {
+      BseObject *object = BSE_OBJECT (router->snet);
+
+      bst_snet_router_destroy_contents (router);
+      
+      bse_object_remove_notifiers_by_func (BSE_CONTAINER (router->snet),
+					   bst_snet_router_item_added,
+					   router);
+
+      router->snet = NULL;
+      bse_object_unref (object);
+    }
+  if (snet)
+    {
+      BseObject *object = BSE_OBJECT (snet);
+      
+      bse_object_ref (object);
+      router->snet = snet;
+
+      bse_object_add_data_notifier (BSE_CONTAINER (snet),
+				    "item_added",
+				    bst_snet_router_item_added,
+				    router);
+      
+      bst_snet_router_rebuild (BST_SNET_ROUTER (router));
+    }
 }
 
 static void
@@ -190,7 +234,7 @@ zoomed_add_xpm (BstZoomedWindow *zoomed)
 void
 bst_snet_router_rebuild (BstSNetRouter *router)
 {
-  GtkWidget *toolbar;
+  GtkWidget *toolbar, *zoomed_window;
   GnomeCanvasPoints *points;
   GnomeCanvasItem *link;
   GnomeCanvasItem *item;
@@ -203,22 +247,25 @@ bst_snet_router_rebuild (BstSNetRouter *router)
   router->root = gnome_canvas_root (router->canvas);
   bst_object_set (GTK_OBJECT (router->root),
 		  "signal::destroy", gtk_widget_destroyed, &router->root,
+		  "object_signal::event", bst_snet_router_root_event, router,
 		  NULL);
 
   toolbar = bst_snet_router_build_toolbar (router);
   gtk_box_pack_start (GTK_BOX (router), toolbar, FALSE, TRUE, 0);
   
+  zoomed_window = gtk_widget_new (BST_TYPE_ZOOMED_WINDOW,
+				  "visible", TRUE,
+				  "hscrollbar_policy", GTK_POLICY_ALWAYS,
+				  "vscrollbar_policy", GTK_POLICY_ALWAYS,
+				  "parent", router,
+				  "object_signal::zoom", bst_snet_router_adjust_region, router,
+				  "signal::realize", zoomed_add_xpm, NULL,
+				  NULL);
   gtk_widget_set (GTK_WIDGET (router->canvas),
 		  "visible", TRUE,
 		  "signal::destroy", gtk_widget_destroyed, &router->canvas,
-		  "parent", gtk_widget_new (BST_TYPE_ZOOMED_WINDOW,
-					    "visible", TRUE,
-					    "hscrollbar_policy", GTK_POLICY_ALWAYS,
-					    "vscrollbar_policy", GTK_POLICY_ALWAYS,
-					    "parent", router,
-					    "object_signal::zoom", bst_snet_router_adjust_region, router,
-					    "signal::realize", zoomed_add_xpm, NULL,
-					    NULL),
+		  "object_signal::event", bst_snet_router_canvas_event, router,
+		  "parent", zoomed_window,
 		  NULL);
   
   points = gnome_canvas_points_new (2);
@@ -230,23 +277,74 @@ bst_snet_router_rebuild (BstSNetRouter *router)
   
   bst_snet_router_update (router);
 
+#if 0 /* FIXME */
   link = bst_canvas_link_new (router->root);
   bst_canvas_link_set_start (BST_CANVAS_LINK (link),
-			     bst_canvas_source_new (router->root, NULL));
-  item = bst_canvas_source_new (router->root, NULL);
+			     bst_canvas_source_new (router->root, bse_object_new (BSE_TYPE_SOURCE,
+										  NULL),0,0));
+  item = bst_canvas_source_new (router->root, bse_object_new (BSE_TYPE_SOURCE, NULL),0,0);
   bst_canvas_link_set_end (BST_CANVAS_LINK (link), item);
   link = bst_canvas_link_new (router->root);
   bst_canvas_link_set_start (BST_CANVAS_LINK (link), item);
   bst_canvas_link_set_end (BST_CANVAS_LINK (link),
-			   bst_canvas_source_new (router->root, NULL));
+			   bst_canvas_source_new (router->root, bse_object_new (BSE_TYPE_SOURCE,
+										NULL),0,0));
 
-  bst_snet_router_adjust_region (router, TRUE, NULL);
+#endif
+  bst_snet_router_adjust_region (router, TRUE, GTK_SCROLLED_WINDOW (zoomed_window));
+}
+
+static void
+bst_snet_router_item_added (BstSNetRouter *router,
+			    BseItem       *item,
+			    BseContainer  *container)
+{
+  if (!BSE_IS_SOURCE (item))
+    {
+      g_warning ("Can't handle non-source snet items");
+      return;
+    }
+
+  bst_canvas_source_new (router->root,
+			 BSE_SOURCE (item),
+			 router->world_x,
+			 router->world_y);
+}
+
+static gboolean
+bst_snet_router_walk_itmes (BseItem  *item,
+			    gpointer  data)
+{
+  BstSNetRouter *router = BST_SNET_ROUTER (data);
+
+  if (!BSE_IS_SOURCE (item))
+    g_warning ("Can't handle non-source snet items");
+  else
+    bst_canvas_source_new (router->root,
+			   BSE_SOURCE (item),
+			   router->world_x,
+			   router->world_y);
+  return TRUE;
 }
 
 void
 bst_snet_router_update (BstSNetRouter *router)
 {
+  GnomeCanvasItem *item;
+  
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  g_return_if_fail (GNOME_IS_CANVAS_GROUP (router->root));
+
+  while (router->root->item_list)
+    gtk_object_destroy (router->root->item_list->data);
+
+  /* add the snet itself */
+  item = bst_canvas_source_new (router->root, BSE_SOURCE (router->snet), 0, 0);
+
+  /* add all child sources */
+  bse_container_forall_items (BSE_CONTAINER (router->snet),
+			      bst_snet_router_walk_itmes,
+			      router);
 }
 
 static void
@@ -255,8 +353,6 @@ toolbar_radio_toggle (GtkWidget *radio,
 {
   if (GTK_TOGGLE_BUTTON (radio)->active)
     *radio_active = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (radio)));
-  if (GTK_TOGGLE_BUTTON (radio)->active)
-    g_print ("radio active: %d\n", *radio_active);
 }
 
 #define EPSILON 1e-6
@@ -356,6 +452,9 @@ toolbar_add_category (GtkWidget	  *parent,
   GtkWidget *radio;
   gchar *tip;
 
+  if (bse_type_is_a (category->type, BSE_TYPE_SUPER))
+    return last_radio;
+
   tip = g_strconcat (bse_type_name (category->type),
 		     " [",
 		     category->category + category->mindex + 1,
@@ -392,7 +491,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 			"toolbar_style", GTK_TOOLBAR_BOTH,
 			NULL);
 
-  /* add link/move/property tool
+  /* add link/move/property edit tool
    */
   radio = toolbar_add_radio (bar,
 			     radio,
@@ -406,7 +505,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 			     BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
 			     &router->radio_action);
 
-  /* add BseSource types
+  /* add BseSource types from categories
    */
   cats = bse_categories_match ("/Source/*", &n_cats);
   for (i = 0; i < n_cats; i++)
@@ -422,7 +521,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
   if (1)
     {
 #include "../bse/icons/song.c"
-      BseIcon icon = { gimp_image.bytes_per_pixel,
+      BseIcon icon = { gimp_image.bytes_per_pixel, ~0,
 		       gimp_image.width, gimp_image.height,
 		       (void*) gimp_image.pixel_data };
       radio = toolbar_add_radio (bar,
@@ -483,4 +582,45 @@ bst_snet_router_adjust_region (BstSNetRouter     *router,
     }
 
   return FALSE;
+}
+
+static gboolean
+bst_snet_router_root_event (BstSNetRouter   *router,
+			    GdkEvent        *event)
+{
+  gboolean handled = FALSE;
+
+  return handled;
+}
+
+static gboolean
+bst_snet_router_canvas_event (BstSNetRouter   *router,
+			      GdkEvent        *event)
+{
+  gboolean handled = FALSE;
+
+  switch (event->type)
+    {
+    case GDK_BUTTON_PRESS:
+      if (event->button.button == 1)
+	{
+	  if (bse_type_is_a (router->radio_action, BSE_TYPE_SOURCE))
+	    {
+	      gnome_canvas_window_to_world (router->canvas,
+					    event->button.x, event->button.y,
+					    &router->world_x, &router->world_y);
+	      bse_snet_new_source (router->snet,
+				   router->radio_action,
+				   NULL);
+	      router->world_x = 0;
+	      router->world_y = 0;
+	      handled = TRUE;
+	    }
+	}
+      break;
+    default:
+      break;
+    }
+
+  return handled;
 }

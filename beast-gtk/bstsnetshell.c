@@ -255,7 +255,7 @@ static gboolean
 bst_snet_shell_can_operate (BstSuperShell *super_shell,
 			    BstOps	   op)
 {
-  BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
+  // BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
   BseSNet *snet = BSE_SNET (super_shell->super);
 
   switch (op)

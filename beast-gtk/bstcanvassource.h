@@ -61,7 +61,9 @@ struct _BstCanvasSourceClass
 /* --- prototypes --- */
 GtkType		 bst_canvas_source_get_type	(void);
 GnomeCanvasItem* bst_canvas_source_new		(GnomeCanvasGroup *group,
-						 BseSource	  *source);
+						 BseSource	  *source,
+						 gdouble           world_x,
+						 gdouble           world_y);
 void		 bst_canvas_source_link_start	(BstCanvasSource  *csource,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
@@ -70,6 +72,15 @@ void		 bst_canvas_source_link_end	(BstCanvasSource  *csource,
 						 gdouble          *world_y);
 
 
+/* --- FIXME: ugly hackery to store coords --- */
+void     bst_object_set_coords (BseObject *object,
+				gdouble    x,
+				gdouble    y);
+gboolean bst_object_get_coords (BseObject *object,
+				gdouble   *x,
+				gdouble   *y);
+     
+     
 
 
 #ifdef __cplusplus

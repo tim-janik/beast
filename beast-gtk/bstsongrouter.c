@@ -1,3 +1,4 @@
+#if 0
 /* BEAST - Bedevilled Audio System
  * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
  *
@@ -311,3 +312,4 @@ bst_song_router_adjust_region (BstSongRouter *router,
   
   return FALSE;
 }
+#endif 

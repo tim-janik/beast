@@ -1,3 +1,29 @@
+Thu Nov  4 00:18:05 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (toolbar_add_category): ignore supers,
+	so they don't pop up in the toolbar.
+
+	* beast-gtk/bstcanvassource.c: set/get canvas coordinate in bse object,
+	we need parasites in bse.
+
+	* beast-gtk/bstsongrouter.c: completely disable source file for now
+
+	* beast-gtk/bstsnetrouter.c: ok, the canvas now actually reflects the
+	real objects held in an snet. we also feature *adding* new objects now.
+	the canvas apparently has redraw problems with newly created or
+	destroyed items.
+
+Wed Nov  3 18:37:17 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: don't accept NULL sources anymore.
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_build): fetch the
+	source's object and only revert to BST_ICON_NOICON if none could
+	be fetched. properly ref/unref the icon.
+
+	* beast-gtk/bstmain.c (bst_icon_from_stock): stock icons stay alive
+	throughout a programs life time.
+
 Sat Oct 30 16:16:55 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_toolbar): hum,

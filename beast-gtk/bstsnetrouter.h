@@ -49,6 +49,8 @@ struct _BstSNetRouter
 
   GnomeCanvas	   *canvas;
   GnomeCanvasGroup *root;
+
+  gdouble           world_x, world_y;
 };
 struct _BstSNetRouterClass
 {
@@ -61,6 +63,8 @@ struct _BstSNetRouterClass
 /* --- prototypes --- */
 GtkType		bst_snet_router_get_type	(void);
 GtkWidget*	bst_snet_router_new		(BseSNet	*snet);
+void		bst_snet_router_set_snet 	(BstSNetRouter  *router,
+						 BseSNet        *snet);
 void		bst_snet_router_update		(BstSNetRouter	*snet_router);
 void		bst_snet_router_rebuild		(BstSNetRouter	*snet_router);
      

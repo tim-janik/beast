@@ -393,7 +393,7 @@ bst_parse_args (int    *argc_p,
 }
 
 BseIcon*
-bst_icon_from_stock (BstIconId _id)
+bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting needed */
 {
 #include "./icons/noicon.c"
 #include "./icons/mouse_tool.c"
@@ -415,7 +415,10 @@ bst_icon_from_stock (BstIconId _id)
   g_return_val_if_fail (icon_id < n_stock_icons, NULL);
 
   if (!icons[icon_id])
-    icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id);
+    {
+      icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id); /* static reference */
+      bse_icon_static_ref (icons[icon_id]);
+    }
 
   return icons[icon_id];
 }
