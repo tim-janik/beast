@@ -388,17 +388,23 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
             gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
           if (GTK_IS_WIDGET (gadget))
             {
-              GxkGadget *child = self->activatable ? gxk_gadget_find (gadget, self->activatable) : NULL;
-              if (GTK_IS_WIDGET (child))
+              GxkGadget *achild = self->activatable ? gxk_gadget_find (gadget, self->activatable) : NULL;
+              GxkGadget *rchild = self->regulate ? gxk_gadget_find (gadget, self->regulate) : NULL;
+              if (GTK_IS_WIDGET (achild))
                 {
-                  const gchar *signal = GTK_IS_BUTTON (child) ? "clicked" : "activate"; /* work around buttons */
-                  g_signal_connect_swapped (child, signal,
+                  const gchar *signal = GTK_IS_BUTTON (achild) ? "clicked" : "activate"; /* work around buttons */
+                  g_signal_connect_swapped (achild, signal,
                                             G_CALLBACK (gxk_action_activate_callback),
                                             (gpointer) action.action_data);
                 }
-              child = self->regulate ? gxk_gadget_find (gadget, self->regulate) : NULL;
-              if (GTK_IS_WIDGET (child))
-                gxk_action_list_regulate_widget (alist, i, child);
+              if (GTK_IS_WIDGET (rchild))
+                {
+                  gxk_action_list_regulate_widget (alist, i, rchild);
+                  const gchar *signal = GTK_IS_BUTTON (rchild) ? "clicked" : "activate"; /* work around buttons */
+                  if (g_signal_lookup (signal, G_OBJECT_TYPE (rchild)))
+                    g_signal_connect_after (rchild, signal,
+                                            G_CALLBACK (gxk_action_list_force_regulate), NULL);
+                }
             }
         }
       g_free (path_prefix);

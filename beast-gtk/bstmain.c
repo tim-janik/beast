@@ -83,7 +83,7 @@ main (int   argc,
   gchar *string;
   GSource *source;
   gboolean parse_rc_file = TRUE;
-  gboolean save_rc_file = FALSE;
+  gboolean save_rc_file = TRUE;
   guint i;
 
   /* initialize i18n */
@@ -369,11 +369,11 @@ main (int   argc,
     }
   GDK_THREADS_ENTER ();
   
-  /* save config files
-   */
+  /* save BSE configuration */
   bse_server_save_preferences (BSE_SERVER);
   if (save_rc_file)
     {
+      /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
       BseErrorType error = bst_rc_dump (file_name);
       if (error)

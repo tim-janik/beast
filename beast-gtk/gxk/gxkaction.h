@@ -86,6 +86,7 @@ void            gxk_action_list_get_action      (GxkActionList          *alist,
 void            gxk_action_list_regulate_widget (GxkActionList          *alist,
                                                  guint                   nth,
                                                  GtkWidget              *widget);
+void            gxk_action_list_force_regulate  (GtkWidget              *widget);
 void            gxk_action_list_free            (GxkActionList          *alist);
 void            gxk_action_activate_callback    (gconstpointer          action_data);
 void            gxk_window_add_action_factory   (GtkWindow              *window,

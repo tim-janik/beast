@@ -333,6 +333,22 @@ gxk_action_list_regulate_widget (GxkActionList          *alist,
 }
 
 void
+gxk_action_list_force_regulate (GtkWidget *widget)
+{
+  ActionEntry *e = g_object_get_qdata (widget, quark_action_entry);
+  if (e)
+    {
+      gboolean sensitive = !e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id);
+      gboolean active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
+      if (e->klass->agroup)
+        gxk_action_group_lock (e->klass->agroup);
+      gxk_widget_regulate (widget, sensitive, active);
+      if (e->klass->agroup)
+        gxk_action_group_unlock (e->klass->agroup);
+    }
+}
+
+void
 gxk_action_list_free (GxkActionList *alist)
 {
   guint i;

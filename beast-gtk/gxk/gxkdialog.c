@@ -564,8 +564,11 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
    * the focus widget precedence over unmodified accelerators
    * before the accelerator activation scheme.
    */
-  if (!handled && event->state & ~GDK_SHIFT_MASK)
+
+  /* invoke control/alt accelerators */
+  if (!handled && event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))
     handled = _gtk_window_activate_key (window, event);
+  /* invoke focus widget handlers */
   if (!handled)
     {
       GtkWidget *focus = window->focus_widget;
@@ -587,9 +590,10 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
       if (focus)
         g_object_unref (focus);
     }
-  if (!handled && !(event->state & ~GDK_SHIFT_MASK))
+  /* invoke non-(control/alt) accelerators */
+  if (!handled && !(event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
     handled = _gtk_window_activate_key (window, event);
-  /* chain up bypassing gtk_window_key_press(), invokes binding set */
+  /* chain up, bypassing gtk_window_key_press(), to invoke binding set */
   if (!handled)
     handled = GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_WINDOW)))->key_press_event (widget, event);
 #else

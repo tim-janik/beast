@@ -1,3 +1,19 @@
+Fri Feb  6 20:53:09 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkaction.[hc] (gxk_action_list_force_regulate): new
+	function, forcing updates on widgets which are regulated by
+	action lists via gxk_action_list_regulate_widget().
+
+	* beast-gtk/gxk/gxkgadgetfactory.c: force post-activate (for
+	buttons, post-clicked) regulation of regulate= target widgets.
+
+	* beast-gtk/gxk/gxkdialog.c (gxk_dialog_key_press_event): only
+	give control/alt accelerators precedence over focus widget (ignoring
+	modifiers like num lock).
+
+	* beast-gtk/bstmain.c (main): reverted recent change, always save
+	rc-file.
+
 Fri Feb  6 15:29:42 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c:
