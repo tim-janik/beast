@@ -111,7 +111,7 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
     dnl TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
     dnl the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
-    ALL_LINGUAS="az ca cs de el es fr hr mn nl pt sq sr sr@Latn sv ru"
+    ALL_LINGUAS="az ca cs de el en_CA es fr hr mn nl pt sq sr sr@Latn sv ru"
     dnl TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
     dnl the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
     AC_SUBST(ALL_LINGUAS)
