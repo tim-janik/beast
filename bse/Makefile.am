@@ -44,6 +44,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsebindata.h \
 	bsebiquadfilter.h \
 	bsecategories.h \
+	bsecomwire.h \
 	bseconfig.h \
 	bseconstant.h \
 	bsecontainer.h \
@@ -86,6 +87,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
+	bsescripthelper.h \
 	bseserver.h \
 	bsesnet.h \
 	bsesnooper.h \
@@ -120,6 +122,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsebindata.c \
 	bsebiquadfilter.c \
 	bsecategories.c \
+	bsecomwire.c \
 	bseconstant.c \
 	bsecontainer.c \
 	bsedatapocket.c \
@@ -159,6 +162,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \
+	bsescripthelper.c \
 	bseserver.c \
 	bsesnet.c \
 	bsesnooper.c \
@@ -193,6 +197,7 @@ bse_proc_sources = @STRIP_BEGIN@ \
 	bsehelloworld.proc \
 	bseobject.proc \
 	bsepart.proc \
+	bseprocedure.proc \
 	bseproject.proc \
 	bseserver.proc \
 	bsesong.proc \
@@ -211,6 +216,7 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bsehelloworld.gen-proc.c \
 	bseobject.gen-proc.c \
 	bsepart.gen-proc.c \
+	bseprocedure.gen-proc.c \
 	bseproject.gen-proc.c \
 	bseserver.gen-proc.c \
 	bsesong.gen-proc.c \

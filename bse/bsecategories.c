@@ -68,9 +68,9 @@ category_strip_toplevels (const gchar *category)
       if (p && p[1])
 	return p - category + 1;
     }
-  else if (l > 8 && strncmp (category, "/Source/", 8) == 0)
-    return 8;
   else if (l > 8 && strncmp (category, "/Modules/", 9) == 0)
+    return 9;
+  else if (l > 8 && strncmp (category, "/Scripts/", 9) == 0)
     return 9;
   else if (l > 8 && strncmp (category, "/Effect/", 8) == 0)
     return 8;
@@ -109,7 +109,7 @@ centry_new (const gchar *caller,
   mindex = category_strip_toplevels (category);
   if (!mindex)
     {
-      g_warning ("%s(): unable to add non-conforming category `%s'", caller, category);
+      g_warning ("%s(): refusing to add non-conforming category `%s'", caller, category);
       return NULL;
     }
   quark = g_quark_try_string (category);

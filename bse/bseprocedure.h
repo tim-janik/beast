@@ -100,17 +100,6 @@ BseErrorType bse_procedure_marshal        (GType		 proc_type,
 BseErrorType bse_procedure_execvl	  (BseProcedureClass	*proc,
 					   GSList		*in_value_list,
 					   GSList		*out_value_list);
-/* functions to call from very time consuming procedures to keep the
- * main program (and playback) alive.
- * "progress"    - value in the range from 0...1 to indicate how far
- *                 the procedure has proceeded yet (*100 = %).
- *		   values <0 indidicate progress of unknown amount.
- * return value  - if the return value is TRUE, the procedure is requested
- *                 to abort, and should return BSE_ERROR_PROC_ABORT
- * FIXME: bse_procedure_status() has to become bse_server_script_status()
- */
-gboolean bse_procedure_status		(BseProcedureClass	*proc,
-					 gfloat			 progress);
 
 
 /* --- internal --- */
@@ -127,6 +116,11 @@ gchar*	bse_procedure_marshal_retval	(BseErrorType		 error,
 gchar*	bse_procedure_unmarshal_retval	(const gchar		*string,
 					 BseErrorType		*error_p,
 					 GValue			*value);
+
+void	bse_procedure_block_exec_status		(void);
+void	bse_procedure_skip_next_exec_status	(void);
+void	bse_procedure_unblock_exec_status	(void);
+
 
 
 #ifdef __cplusplus

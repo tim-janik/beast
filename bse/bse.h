@@ -26,6 +26,7 @@
 #include        <bse/bseglobals.h>
 #include        <bse/bsebindata.h>
 #include        <bse/bsecategories.h>
+#include        <bse/bsecomwire.h>
 #include        <bse/bseconfig.h>
 #include        <bse/bsecontainer.h>
 #include        <bse/bsedatapocket.h>
@@ -52,6 +53,7 @@
 #include        <bse/bseprocedure.h>
 #include        <bse/bseproject.h>
 #include        <bse/bseserver.h>
+#include        <bse/bsescripthelper.h>
 #include        <bse/bsesnet.h>
 #include        <bse/bsesong.h>
 #include        <bse/bsesource.h>

@@ -62,6 +62,7 @@ typedef struct  _BseBinData             BseBinData;
 typedef struct  _BseBinDataClass        BseBinDataClass;
 typedef struct  _BseCapture             BseCapture;
 typedef struct  _BseCaptureClass        BseCaptureClass;
+typedef struct  _BseComWire             BseComWire;
 typedef struct  _BseContainer           BseContainer;
 typedef struct  _BseContainerClass      BseContainerClass;
 typedef struct  _BseEffect              BseEffect;

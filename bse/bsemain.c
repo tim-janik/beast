@@ -21,8 +21,9 @@
 #endif	/* defining _XOPEN_SOURCE on random systems can have bad effects */
 #include	"bsemain.h"
 
-#include	"bseplugin.h"
 #include	"bseserver.h"
+#include	"bsecomwire.h"
+#include	"bseplugin.h"
 #include	"gslcommon.h"
 #include	"gslengine.h"
 #include	<string.h>
@@ -180,6 +181,7 @@ bse_init (int	             *argc_p,
 	  const BseLockFuncs *lock_funcs)
 {
   struct timeval tv;
+  gchar *dir;
 
   g_return_if_fail (bse_is_initialized == FALSE);
 
@@ -204,6 +206,10 @@ bse_init (int	             *argc_p,
   bse_globals_init ();
   
   bse_type_init ();
+
+  dir = g_get_current_dir ();
+  bse_com_set_spawn_dir (dir);
+  g_free (dir);
 
   bse_plugins_init ();
 

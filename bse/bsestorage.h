@@ -173,8 +173,6 @@ GTokenType	bse_storage_parse_item_link	(BseStorage	*storage,
 						 BseItem	*from_item,
 						 BseStorageRestoreLink restore_link,
 						 gpointer	  data);
-GTokenType	bse_storage_parse_eval		(BseStorage	*storage,
-						 GValue		*retval);
 void		bse_storage_resolve_item_links	(BseStorage	*storage);
 
 

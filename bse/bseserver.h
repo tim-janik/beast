@@ -23,6 +23,7 @@
 #include        <bse/bsesuper.h>
 #include        <bse/bsepcmdevice.h>
 #include        <bse/bsemididevice.h>
+#include        <bse/bsecomwire.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,7 +49,8 @@ struct _BseServer
   GSource	*engine_source;
 
   GList	         *projects;
-
+  GSList	 *interpreters;
+  
   guint		  dev_use_count;
 
   BsePcmDevice   *pcm_device;
@@ -69,9 +71,12 @@ struct _BseServerClass
 {
   BseItemClass parent_class;
 
-  void		(*script_status)	(BseServer	*server,
-					 BseScriptStatus status,
-					 const gchar	*script_name,
+  void		(*user_message)		(BseServer	*server,
+					 BseUserMsgType	 msg_type,
+					 const gchar	*message);
+  void		(*exec_status)		(BseServer	*server,
+					 BseExecStatus   status,
+					 const gchar	*exec_name,
 					 gfloat		 progress,
 					 BseErrorType	 error);
 };
@@ -113,11 +118,23 @@ void		bse_server_remove_io_watch		(BseServer	*server,
 							 gpointer	 data);
 
 /* --- internal --- */
-gboolean	bse_server_script_status		(BseServer	*server,
-							 BseScriptStatus status,
-							 const gchar	*script_name,
+void		bse_server_exec_status			(BseServer	*server,
+							 BseExecStatus   status,
+							 const gchar	*exec_name,
 							 gfloat		 progress,
 							 BseErrorType	 error);
+gchar*		bse_server_run_remote			(BseServer	*server,
+							 const gchar	*wire_name,
+							 const gchar	*process_name,
+							 BseComDispatch  dispatcher,
+							 gpointer        dispatch_data,
+							 GDestroyNotify  destroy_data,
+							 GSList		*params);
+void		bse_server_queue_kill_wire		(BseServer	*server,
+							 BseComWire	*wire);
+void		bse_server_user_message			(BseServer	*server,
+							 BseUserMsgType  msg_type,
+							 const gchar    *message);
 
 
 #ifdef __cplusplus

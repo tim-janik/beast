@@ -72,22 +72,7 @@ main (gint   argc,
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
-	{
-	  GList *free_list, *list;
-
-	  /* check load BSE plugins to register types */
-	  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-	  for (list = free_list; list; list = list->next)
-	    {
-	      gchar *error, *string = list->data;
-	      
-	      error = bse_plugin_check_load (string);
-	      if (error)
-		g_error ("failed to load plugin \"%s\": %s", string, error);
-	      g_free (string);
-	    }
-	  g_list_free (free_list);
-	}
+	bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL);
       else if (strcmp ("-h", argv[i]) == 0)
 	{
 	  return help (NULL);

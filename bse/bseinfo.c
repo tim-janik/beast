@@ -95,7 +95,8 @@ main (gint   argc,
       GSList *plist, *slist;
 
       g_print ("search path: \"%s\"\n", argv[1]);
-      plist = bse_search_path_list_files (argv[1], NULL);
+      // plist = bse_search_path_list_files (argv[1], NULL);
+      plist = bse_path_pattern_list_matches (argv[1], NULL, 0);
       for (slist = plist; slist; slist = slist->next)
 	g_print ("%s\n", (char*) slist->data);
       bse_str_slist_free (plist);

@@ -1,3 +1,55 @@
+Mon May 27 08:34:28 2002  Tim Janik  <timj@gtk.org>
+
+	* bseprocedure.c (call_proc): provide the procedure execution status
+	from the procedure's BseErrorType output if any.
+
+	* bseprocedure.[hc]: allow NULL values for
+	bse_procedure_marshal_retval() and bse_procedure_unmarshal_retval().
+
+	* bseserver.[hcp]*: added ::user-message signal with wrapper function
+	bse_server_user_message(). added bse_server_run_remote() to start
+	a script interpreter. added bse_server_queue_kill_wire() to kill the
+	connection to a currently running child process. added interpreter
+	wire dispatch source to handle remote connections from the main loop.
+	renamed script-status to exec-status.
+
+	* bsestorage.[hc]: fix precision in float/double value storage.
+	fix validation of storage values to support G_PARAM_LAX_VALIDATION.
+
+	* bseutils.[hc]: provide documentation for bse_search_path_*().
+
+	* bswcommon.h[hc]: added bsw_register_scripts().
+	moved bsw_type_name_to_sname() into this place.
+
+	* bseplugin.[hc] (bse_plugin_dir_list_files): simply use
+	bse_search_path_list_files() to find plugin libraries.
+
+	* bseparam.c (param_note_validate): fix validation code to revert
+	to BSE_NOTE_VOID.
+
+	* bsemain.c (bse_init): record the current directory for spawning
+	child processes.
+
+	* bsemagictest.c (main): use bsw_register_plugins() to load plugins.
+
+	* bsecategories.c (category_strip_toplevels): added /Scripts/ toplevel
+	category.
+
+	* bsescripthelper.[hc]: implementation of script registration (currently
+	limited to scheme) and wrapper stubs to invoke script functions as
+	BseProcedure.
+
+	* bsecomwire.[hc]: implementation of communication stubs to spawn a
+	child and talk with it through pipes.
+	
+	* bseprocedure.proc: implement utility procedures, mostly for scripts.
+
+	* bsehelloworld.proc: remove bse-progressor a left-over from test-cases
+	of an old procedure concept.
+
+	* bsestorage.c (bse_storage_parse_param_value): fix negating unsigned
+	ints bug in FLOAT or DOUBLE parsing.
+
 Wed May 22 07:49:50 2002  Tim Janik  <timj@gtk.org>
 
 	* bsequery.c: use bsw_register_plugins() to load plugins and convert
@@ -527,7 +579,7 @@ Sun Mar 10 10:08:32 2002  Tim Janik  <timj@gtk.org>
 	* bseplugin.[hc]: fix type registration order, so newly introduced
 	procedures can use newly introduced objects.
 
-	* bseserver.proc: supply a procuder to check for loader matches.
+	* bseserver.proc: supply a procedure to check for loader matches.
 
 	* bsewave.proc: added procedure to retrive a BseEditableSample.
 

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2001 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseproject.h: Coordinator for distinct super objects
  */
 #ifndef __BSE_PROJECT_H__
 #define __BSE_PROJECT_H__
 
 #include        <bse/bsecontainer.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 
 /* --- object type macros --- */

@@ -23,9 +23,8 @@
 /* --- preliminary BSE defines --- */
 #define BSE_INTERN_MIN_TIME	(631148400)	/* 1990-01-01 00:00:00 */
 #define BSE_INTERN_MAX_TIME	(2147483647)	/* 2038-01-19 04:14:07 */
-#define BSE_INTERN_MIN_NOTE	(-32767)
-#define BSE_INTERN_MAX_NOTE	(+32767)
-#define BSE_INTERN_NOTE_VOID	(-32768)
+#define BSE_INTERN_MIN_NOTE	(-512)
+#define BSE_INTERN_MAX_NOTE	(+512)
 #define BSE_INTERN_MAX_DOTS	(4096)		/* FIXME: artificial test limit */
 
 
@@ -138,7 +137,7 @@ param_note_validate (GParamSpec *pspec,
     value->data[0].v_int = CLAMP (value->data[0].v_int, nspec->minimum, nspec->maximum);
   else if (value->data[0].v_int < nspec->minimum ||
 	   value->data[0].v_int > nspec->maximum)
-    value->data[0].v_int = BSE_INTERN_NOTE_VOID;
+    value->data[0].v_int = BSE_NOTE_VOID;
   
   return value->data[0].v_int != oval;
 }
@@ -328,7 +327,7 @@ value_time_lcopy_value (const GValue *value,
 static void
 value_note_init (GValue *value)
 {
-  value->data[0].v_int = BSE_INTERN_NOTE_VOID;
+  value->data[0].v_int = BSE_NOTE_VOID;
 }
 
 static void

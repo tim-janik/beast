@@ -60,6 +60,14 @@ slist_prepend_uniq_dedup (GSList *slist,
   return slist_prepend_uniq (slist, dupstr, TRUE);
 }
 
+/**
+ * bse_search_path_list_matches
+ * @search_path: semicolon seperated search path with '?' and '*' wildcards
+ * @cwd:         assumed current working directoy (to interpret './' in search_path)
+ * @RETURNS:     a singly linked list with newly allocated strings
+ * This function takes a search path with wildcards and lists all existing
+ * directories matching components of the search path.
+ */
 GSList*
 bse_search_path_list_matches (const gchar *search_path,
 			      const gchar *cwd)
@@ -90,9 +98,22 @@ bse_search_path_list_matches (const gchar *search_path,
   return g_slist_reverse (matches);
 }
 
+/**
+ * bse_search_path_list_files
+ * @search_path:  semicolon seperated search path with '?' and '*' wildcards
+ * @file_pattern: wildcard pattern for file names
+ * @cwd:          assumed current working directoy (to interpret './' in search_path)
+ * @file_test:    GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
+ * @RETURNS:      a singly linked list with newly allocated strings
+ * Given a search path with wildcards, list all files matching @file_pattern,
+ * contained in the directories which the search path matches. Files that do
+ * not pass @file_test are not listed.
+ */
 GSList*
 bse_search_path_list_files (const gchar *search_path,
-			    const gchar *cwd)
+			    const gchar *file_pattern,
+			    const gchar *cwd,
+			    GFileTest    file_test)
 {
   GSList *search_dirs, *slist, *node, *files = NULL;
   GHashTable *fhash;
@@ -100,6 +121,8 @@ bse_search_path_list_files (const gchar *search_path,
   
   g_return_val_if_fail (search_path != NULL, NULL);
 
+  if (!file_pattern)
+    file_pattern = "*";
   if (!cwd)
     {
       free_me = g_get_current_dir ();
@@ -110,8 +133,8 @@ bse_search_path_list_files (const gchar *search_path,
   search_dirs = bse_search_path_list_matches (search_path, cwd);
   for (slist = search_dirs; slist; slist = slist->next)
     {
-      gchar *pattern = g_strconcat (slist->data, G_DIR_SEPARATOR_S, "*", NULL);
-      GSList *pfiles = bse_path_pattern_list_matches (pattern, cwd, G_FILE_TEST_IS_REGULAR);
+      gchar *pattern = g_strconcat (slist->data, G_DIR_SEPARATOR_S, file_pattern, NULL);
+      GSList *pfiles = bse_path_pattern_list_matches (pattern, cwd, file_test);
 
       g_free (pattern);
       for (node = pfiles; node; node = node->next)
@@ -136,6 +159,13 @@ bse_search_path_list_files (const gchar *search_path,
   return g_slist_reverse (files);
 }
 
+/**
+ * bse_search_path_list_entries
+ * @search_path: semicolon seperated search path
+ * @RETURNS:     a singly linked list with newly allocated strings
+ * This function takes a search path and returns a singly linked list
+ * containing the seperated path entries.
+ */
 GSList*
 bse_search_path_list_entries (const gchar *search_path)
 {
@@ -283,6 +313,16 @@ match_abs_path (gchar    *p,
   return slist;
 }
 
+/**
+ * bse_path_pattern_list_matches
+ * @file_pattern: a filename spanning directories containing wildcards '?' or '*'
+ * @cwd:          assumed current working directoy (to interpret relative file_pattern)
+ * @file_test:	  GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
+ * @RETURNS:      a singly linked list with newly allocated strings
+ * This function takes filename with wildcards, transforms it into an absolute
+ * pathname using @cwd if necessary and lists all files matching the resulting
+ * file name pattern and passing @file_test.
+ */
 GSList*
 bse_path_pattern_list_matches (const gchar *file_pattern,
 			       const gchar *cwd,

@@ -791,49 +791,10 @@ bse_plugin_lookup (const gchar *name)
 #include <sys/types.h>
 #include <dirent.h>
 
-GList*
-bse_plugin_dir_list_files (const gchar *_dir_list)
+GSList*
+bse_plugin_dir_list_files (const gchar *dir_list)
 {
-  GList *file_list = NULL;
-  gchar *free_me, *dir_list = g_strdup (_dir_list);
-
-  g_return_val_if_fail (dir_list != NULL, NULL);
-
-  free_me = dir_list;
-
-  while (dir_list && dir_list[0])
-    {
-      gchar *name = dir_list;
-      DIR *dd;
-
-      dir_list = strchr (dir_list, G_SEARCHPATH_SEPARATOR);
-      if (dir_list)
-	*(dir_list++) = 0;
-
-      dd = opendir (name);
-      if (dd)
-	{
-	  struct dirent *d_entry = readdir (dd);
-
-	  while (d_entry)
-	    {
-	      guint l = strlen (d_entry->d_name);
-
-	      /* select libtool archives */
-	      if (l > 3 &&
-		  d_entry->d_name[l - 3] == '.' &&
-		  d_entry->d_name[l - 2] == 'l' &&
-		  d_entry->d_name[l - 1] == 'a')
-		file_list = g_list_prepend (file_list, g_strconcat (name,
-								    "/",
-								    d_entry->d_name,
-								    NULL));
-	      d_entry = readdir (dd);
-	    }
-	  closedir (dd);
-	}
-    }
-  g_free (free_me);
-
-  return g_list_sort (file_list, (GCompareFunc) strcmp);
+  GSList *slist = bse_search_path_list_files (dir_list, "*.la", NULL, 0);
+  
+  return g_slist_sort (slist, (GCompareFunc) strcmp);
 }

@@ -14,15 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseserver.proc: BSE Server procedures
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bseserver.h>
-#include        <bse/bseproject.h>
-#include        <bse/gslloader.h>
-#include        <bse/bswprivate.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bseserver.h>
+#include <bse/bseproject.h>
+#include <bse/gslloader.h>
+#include <bse/bswprivate.h>
+#include <string.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";

@@ -102,6 +102,7 @@ bse_error_blurb (BseErrorType error_value)
     {
     case BSE_ERROR_NONE:	/* GSL */	return "Everything went well";
     case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not imlemented";
+    case BSE_ERROR_SPAWN:			return "Failed to spawn child process";
     case BSE_ERROR_NOT_OWNER:			return "Ownership mismatch";
     case BSE_ERROR_FILE_EXISTS:			return "File exists";
     case BSE_ERROR_FILE_TOO_SHORT:		return "File too short";

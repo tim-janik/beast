@@ -21,6 +21,7 @@
 #include "bswprivate.h"
 #include "gslcommon.h"
 #include "bseplugin.h"
+#include "bsescripthelper.h"
 #include <string.h>
 
 
@@ -755,7 +756,7 @@ bsw_icon_unref (BswIcon *icon)
 }
 
 
-/* --- handle plugins --- */
+/* --- initialize scripts and plugins --- */
 static void
 handle_message (GString *gstring,
 		gpointer captured)
@@ -772,13 +773,13 @@ bsw_register_plugins (const gchar *path,
 		      gboolean     verbose,
 		      gchar      **messages)
 {
-  GList *free_list, *list;
+  GSList *free_list, *list;
   GString *gstring = g_string_new (NULL);
 
   if (!path)
     path = BSE_PATH_PLUGINS;
 
-  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+  free_list = bse_plugin_dir_list_files (path);
   for (list = free_list; list; list = list->next)
     {
       gchar *string = list->data;
@@ -793,10 +794,52 @@ bsw_register_plugins (const gchar *path,
       handle_message (gstring, messages);
       g_free (string);
     }
-  g_list_free (free_list);
+  g_slist_free (free_list);
   if (!free_list && verbose)
     {
       g_string_printfa (gstring, "strange, can't find any plugins, please check %s", path);
+      handle_message (gstring, messages);
+    }
+  if (messages && gstring->len)
+    *messages = g_string_free (gstring, FALSE);
+  else
+    {
+      if (messages)
+	*messages = NULL;
+      g_string_free (gstring, TRUE);
+    }
+}
+
+void
+bsw_register_scripts (const gchar *path,
+		      gboolean     verbose,
+		      gchar      **messages)
+{
+  GSList *free_list, *list;
+  GString *gstring = g_string_new (NULL);
+
+  if (!path)
+    path = BSW_PATH_SCRIPTS;
+
+  free_list = bse_script_dir_list_files (path);
+  for (list = free_list; list; list = list->next)
+    {
+      gchar *string = list->data;
+      const gchar *error;
+
+      if (verbose)
+	g_string_printfa (gstring, "loading script \"%s\"...", string);
+      handle_message (gstring, messages);
+      error = bse_script_file_register (string);
+      if (error)
+	g_string_printfa (gstring, "error encountered loading script \"%s\": %s", string, error);
+      handle_message (gstring, messages);
+      g_free (string);
+    }
+  g_slist_free (free_list);
+  if (!free_list && verbose)
+    {
+      g_string_printfa (gstring, "strange, can't find any scripts, please check %s", path);
       handle_message (gstring, messages);
     }
   if (messages && gstring->len)
@@ -947,4 +990,15 @@ g_type_name_to_type_macro (const gchar *type_name)
   g_return_val_if_fail (type_name != NULL, NULL);
 
   return type_name_to_cname (type_name, "_TYPE", '_', TRUE);
+}
+
+gchar*
+bsw_type_name_to_sname (const gchar *type_name)
+{
+  gchar *name = g_type_name_to_sname (type_name);
+
+  if (name && name[0] == 'b' && name[1] == 's' && name[2] == 'e')
+    name[2] = 'w';
+
+  return name;
 }

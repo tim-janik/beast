@@ -57,11 +57,18 @@ typedef enum
 } BseMagicFlags;
 typedef enum
 {
-  BSE_SCRIPT_STATUS_START	= 1,
-  BSE_SCRIPT_STATUS_PROGRESS	= 2,
-  BSE_SCRIPT_STATUS_END		= 3,
-  BSE_SCRIPT_STATUS_PROC_END	= 4	/* script was a single procedure call */
-} BseScriptStatus;
+  BSE_EXEC_STATUS_START		= 1,
+  BSE_EXEC_STATUS_PROGRESS	= 2,
+  BSE_EXEC_STATUS_DONE		= 3
+} BseExecStatus;
+typedef enum
+{
+  BSE_USER_MSG_DISCARD,
+  BSE_USER_MSG_INFO,
+  BSE_USER_MSG_QUESTION,
+  BSE_USER_MSG_WARNING,
+  BSE_USER_MSG_ERROR
+} BseUserMsgType;
 typedef enum
 {
   /* GSL errors are mirrored into BSE */
@@ -86,6 +93,7 @@ typedef enum
 
   /* BSE errors */
   BSE_ERROR_UNIMPLEMENTED	= GSL_ERROR_LAST,
+  BSE_ERROR_SPAWN,
   BSE_ERROR_NOT_OWNER,
   /* File, Loading/Saving errors */
 #define BSE_ERROR_FILE_IO		BSE_ERROR_IO

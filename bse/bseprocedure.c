@@ -38,6 +38,11 @@ static void     bse_procedure_init		  (BseProcedureClass	    *proc,
 						   const BseExportProcedure *pspec);
 
 
+/* --- variables --- */
+static guint exec_status_skip_oneshot = 0;
+static guint exec_status_blocker = 0;
+
+
 /* --- functions --- */
 extern void
 bse_type_register_procedure_info (GTypeInfo *info)
@@ -196,15 +201,6 @@ bse_procedure_complete_info (const BseExportSpec *spec,
   info->class_data = pspec;
 }
 
-gboolean
-bse_procedure_status (BseProcedureClass *proc,
-		      gfloat             progress)
-{
-  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), TRUE);
-
-  return FALSE;
-}
-
 const gchar*
 bse_procedure_type_register (const gchar *name,
 			     const gchar *blurb,
@@ -258,6 +254,52 @@ bse_procedure_lookup (const gchar *proc_name)
   return BSE_TYPE_IS_PROCEDURE (type) ? type : 0;
 }
 
+void
+bse_procedure_block_exec_status (void)
+{
+  exec_status_blocker++;
+}
+
+void
+bse_procedure_skip_next_exec_status (void)
+{
+  exec_status_skip_oneshot++;
+}
+
+void
+bse_procedure_unblock_exec_status (void)
+{
+  g_return_if_fail (exec_status_blocker > 0);
+
+  exec_status_blocker--;
+}
+
+static void
+signal_exec_status (BseErrorType       error,
+		    BseProcedureClass *proc,
+		    GValue            *first_ovalue)
+{
+  if (exec_status_skip_oneshot)
+    {
+      exec_status_skip_oneshot--;
+      return;
+    }
+  else if (exec_status_blocker)
+    return;
+
+  /* signal script status, supporting BseErrorType-outparam procedures
+   */
+  if (!error && proc->n_out_pspecs == 1 &&
+      g_type_is_a (G_VALUE_TYPE (first_ovalue), BSE_TYPE_ERROR_TYPE))
+    {
+      BseErrorType verror = g_value_get_enum (first_ovalue);
+      
+      bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, proc->name, verror ? 0 : 1, verror);
+    }
+  else
+    bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, proc->name, error ? 0 : 1, error);
+}
+
 static BseErrorType
 call_proc (BseProcedureClass  *proc,
 	   GValue             *ivalues,
@@ -289,7 +331,6 @@ call_proc (BseProcedureClass  *proc,
 	error = marshal (marshal_data, proc, ivalues, ovalues);
       else
 	error = proc->execute (proc, ivalues, ovalues);
-      bse_server_script_status (bse_server_get (), BSE_SCRIPT_STATUS_PROC_END, proc->name, error ? 0 : 1, error);
     }
   
   for (i = 0; i < proc->n_in_pspecs; i++)
@@ -347,6 +388,7 @@ bse_procedure_marshal (GType               proc_type,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     error = call_proc (proc, tmp_ivalues, tmp_ovalues, marshal, marshal_data);
+  signal_exec_status (error, proc, tmp_ovalues);
 
   for (i = 0; i < proc->n_in_pspecs; i++)
     g_value_unset (tmp_ivalues + i);
@@ -436,6 +478,7 @@ bse_procedure_marshal_valist (GType               proc_type,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     error = call_proc (proc, tmp_ivalues, tmp_ovalues, marshal, marshal_data);
+  signal_exec_status (error, proc, tmp_ovalues);
 
   for (i = 0; i < proc->n_in_pspecs; i++)
     g_value_unset (tmp_ivalues + i);
@@ -690,9 +733,20 @@ bse_procedure_marshal_retval (BseErrorType error,
 			      const gchar *warnings)
 {
   BseStorage *storage;
+  GValue proxy_value = { 0, };
   gchar *str;
 
-  g_return_val_if_fail (G_IS_VALUE (value), NULL);
+  if (value)
+    g_return_val_if_fail (G_IS_VALUE (value), NULL);
+  else
+    {
+      /* we demand a value here, but there's not always
+       * one present, so we marshal an error dummy
+       */
+      g_value_init (&proxy_value, BSE_TYPE_ERROR_TYPE);
+      g_value_set_enum (&proxy_value, error);
+      value = &proxy_value;
+    }
 
   storage = bse_storage_new ();
   bse_storage_enable_proxies (storage);
@@ -724,6 +778,8 @@ bse_procedure_marshal_retval (BseErrorType error,
   /* done, return string */
   str = g_strdup (bse_storage_peek_text (storage, NULL));
   bse_storage_destroy (storage);
+  if (G_VALUE_TYPE (&proxy_value))
+    g_value_unset (&proxy_value);
 
   return str;
 }
@@ -737,10 +793,14 @@ bse_procedure_unmarshal_retval (const gchar  *string,
   GScanner *scanner;
   BseErrorType error;
   GType rtype;
+  GValue proxy_value = { 0, };
   gchar *warnings = NULL;
 
   g_return_val_if_fail (string != NULL, NULL);
-  g_return_val_if_fail (G_VALUE_TYPE (value) == 0, NULL);
+  if (value)
+    g_return_val_if_fail (G_VALUE_TYPE (value) == 0, NULL);
+  else
+    value = &proxy_value;
 
   storage = bse_storage_new ();
   bse_storage_enable_proxies (storage);
@@ -768,7 +828,13 @@ bse_procedure_unmarshal_retval (const gchar  *string,
   /* return value */
   g_value_init (value, rtype);
   if (bse_storage_parse_param_value (storage, value, NULL, FALSE) != G_TOKEN_NONE)
-    goto data_corrupt;
+    {
+      if (value == &proxy_value)
+	g_value_unset (&proxy_value);
+      goto data_corrupt;
+    }
+  if (value == &proxy_value)
+    g_value_unset (&proxy_value);
 
   /* errors and warnings */
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
