@@ -13,7 +13,6 @@ FIXMES:
 - fix sub-synth "snet" property setter
 - fix snet property changes in sub synth and instrument
 - fix name of BSE_SNET_FLAG_USER_SYNTH
-- bse_item_gather_proxies() could simply have container and child type (no callbacks) once midi/song don't derive from BseSNet
 - never gather INTERNAL items in bse_item_gather_proxies()
 - fix BST_OP_PROJECT_SAVE
 - add new test song containing a wave track
@@ -66,7 +65,6 @@ FIXMES:
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - RackEditor covers are broken for rack-items close to right table boundary
 - delay class destruction and plugin unloading through async handlers (slight timeout)
-- replace Balance settings with 3d room position?
 - check for non-xref object links which should be turned into xrefs
 - fix the word "tact" vs. measure
 - clenup piano roll code
@@ -135,7 +133,8 @@ General BSE:
 - add pre-amplification (0..1) to freeverb for clip prevention
 - fix scanner error messages for deferred channel resolution to include the *correct* line number
 - fix update_suspension_state() recursion for ordinary cycles
-- BseSubinstrument contains pixel artefact
+- replace Balance settings with 3d room position?
+- BseSubInstrument contains pixel artefact
 BseWaveChunk:
   if (pos > wchunk->tail.end)                                   /* outside wave boundaries */
     {
