@@ -14,9 +14,9 @@ The signal streams are value quantized and time discrete, where
 floats are used to store the quantized values and the samples are
 taken at arbitrary but equidistant points in time. Also, the
 sampling periods are assumed to be synchronous for all nodes.
-In the public GSL C API, engine modules are exposed as GslModule
+In the public BSE C API, engine modules are exposed as BseModule
 structures, for the internal engine implementation, each
-GslModule is embedded in an OpNode structure.
+BseModule is embedded in an EngineNode structure.
 
 Node Model:
 -----------
@@ -210,7 +210,7 @@ Thread types:
   at a time.
   i.e. if more than one user thread need to call engine API
   functions, the user has to take measures to avoid concurrency
-  in calling these functions, e.g. by using a GslMutex which is
+  in calling these functions, e.g. by using a SfiMutex which is
   to be locked around engine API calls.
 * MasterThread; the engine, if configured accordingly,
   sets up one master thread which
@@ -260,6 +260,8 @@ TODO:
 - needs description of pollfd/callback jobs
 - load control for slave threads
 
+Nov 27 2004	Tim Janik
+	* reflect renames in the code base
 Sep 06 2003	Tim Janik
 	* introduce time stamps indicating suspend state
 	  of a node (activation time)
@@ -280,5 +282,5 @@ Jul 29 2001	Tim Janik
 May 05 2001	Tim Janik
 	* initial writeup
 
-LocalWords:  GSL API GslModule OpNode istreams ostreams A's B's sync
-LocalWords:  bseengine GslMutex UserThread MasterThread SlaveThread SlaveThreads
+LocalWords:  BSE API BseModule EngineNode istreams ostreams A's B's sync
+LocalWords:  bseengine SfiMutex UserThread MasterThread SlaveThread SlaveThreads
