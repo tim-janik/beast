@@ -374,9 +374,9 @@ AC_DEFUN(AC_DOC_REQUIREMENTS,
     AC_CHECK_PROGS(XSLTPROC,xsltproc,)
     AC_CHECK_PROGS(GROFF,groff,)
     AC_CHECK_PROGS(SOELIM,soelim,)
-    AM_CONDITIONAL(HAVE_DOC_TOOLS, test -n "$XSLTPROC" -a -n "$XMLMAKEINFO" -a \
-                                        -n "$GROFF" -a -n "$SOELIM")
-    if test "x$enable_devel_rules" = "xyes" -a -z "$HAVE_DOC_TOOLS_FALSE" ; then
+    AM_CONDITIONAL(IF_BUILDDOCS, test -n "$XSLTPROC" -a -n "$XMLMAKEINFO" -a \
+                                      -n "$GROFF" -a -n "$SOELIM" -a -z "$DVLBUILD")
+    if test "x$enable_devel_rules" = "xyes" -a -z "$IF_BUILDDOCS_FALSE" ; then
 	AC_MSG_ERROR([one of the devel tools (makeinfo, xsltproc, groff, soelim) is missing])
     fi
 ])
@@ -427,19 +427,6 @@ AC_SUBST(STRIP_END)
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
-# Check requirement sets
-AC_SFI_REQUIREMENTS
-AC_GSL_REQUIREMENTS
-AC_BSE_REQUIREMENTS
-AC_BSE_SHELL_REQUIREMENTS
-AC_BSE_SNDDEV_CHECK
-AC_GXK_REQUIREMENTS
-AC_BEAST_REQUIREMENTS
-AC_DOC_REQUIREMENTS
-
-# architecture information
-AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}")
-
 # check whether development build rules can be used
 AC_CHECK_PROGS(PERL, perl5 perl)
 AC_MSG_CHECKING(whether develoment build rules can be used)
@@ -455,6 +442,19 @@ else
 fi
 AC_SUBST(DVLBUILD)
 AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
+
+# Check requirement sets
+AC_SFI_REQUIREMENTS
+AC_GSL_REQUIREMENTS
+AC_BSE_REQUIREMENTS
+AC_BSE_SHELL_REQUIREMENTS
+AC_BSE_SNDDEV_CHECK
+AC_GXK_REQUIREMENTS
+AC_BEAST_REQUIREMENTS
+AC_DOC_REQUIREMENTS
+
+# architecture information
+AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}")
 
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)

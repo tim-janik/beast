@@ -1,3 +1,8 @@
+Mon Mar 10 11:14:28 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: don't build docs if we're not configured for @DVLBUILD@.
+	provide am-conditional IF_BUILDDOCS to special case doc builds.
+
 Mon Mar 10 09:24:27 2003  Tim Janik  <timj@gtk.org>
 
 	* remove topdir gsl/ link, fixed includes.

@@ -113,7 +113,7 @@ temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 #
 XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
 REFERENCE_XMLS = $(patsubst %.3, %.3.crossfix.xml, $(man_MANS))
-if HAVE_DOC_TOOLS
+if IF_BUILDDOCS
 gnome-index.lst.gz: # default-generate if not present to avoid build breakage
 	echo | gzip -9 >$@
 gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
