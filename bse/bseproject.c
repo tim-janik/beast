@@ -430,17 +430,41 @@ bse_project_list_upaths (BseProject *self,
   return sseq;
 }
 
+static GSList*
+compute_missing_supers (BseProject *self,
+                        BseStorage *storage)
+{
+  BseItem *project_item = BSE_ITEM (self);
+  GSList *targets = NULL, *missing = sfi_ppool_slist (storage->referenced_items);
+  while (missing)
+    {
+      BseItem *item = g_slist_pop_head (&missing);
+      BseSuper *super = bse_item_get_super (item);
+      if (BSE_ITEM (super)->parent == project_item &&
+          !sfi_ppool_lookup (storage->stored_items, super))
+        targets = g_slist_prepend (targets, super);
+    }
+  return targets;
+}
+
 BseErrorType
 bse_project_store_bse (BseProject  *self,
+                       BseSuper    *super,
 		       const gchar *bse_file,
 		       gboolean     self_contained)
 {
   BseStorage *storage;
-  gint fd;
+  GSList *slist = NULL;
   gchar *string;
   guint l, flags;
+  gint fd;
   
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
+  if (super)
+    {
+      g_return_val_if_fail (BSE_IS_SUPER (super), BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (self), BSE_ERROR_INTERNAL);
+    }
   g_return_val_if_fail (bse_file != NULL, BSE_ERROR_INTERNAL);
 
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
@@ -452,7 +476,17 @@ bse_project_store_bse (BseProject  *self,
   if (self_contained)
     flags |= BSE_STORAGE_SELF_CONTAINED;
   bse_storage_prepare_write (storage, flags);
-  bse_storage_store_item (storage, self);
+
+  slist = g_slist_prepend (slist, super ? (void*) super : (void*) self);
+  while (slist)
+    {
+      BseItem *item = g_slist_pop_head (&slist);
+      if (item == (BseItem*) self)
+        bse_storage_store_item (storage, item);
+      else
+        bse_storage_store_child (storage, item);
+      slist = g_slist_concat (compute_missing_supers (self, storage), slist);
+    }
 
   string = g_strdup_printf ("; BseProject\n\n"); /* %010o mflags */
   do

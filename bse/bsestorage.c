@@ -126,6 +126,8 @@ bse_storage_init (BseStorage *self)
 {
   /* writing */
   self->wstore = NULL;
+  self->stored_items = NULL;
+  self->referenced_items = NULL;
   /* reading */
   self->rstore = NULL;
   self->item_links = NULL;
@@ -199,7 +201,13 @@ bse_storage_reset (BseStorage *self)
   if (self->wstore)
     sfi_wstore_destroy (self->wstore);
   self->wstore = NULL;
-  
+  if (self->stored_items)
+    sfi_ppool_destroy (self->stored_items);
+  self->stored_items = NULL;
+  if (self->referenced_items)
+    sfi_ppool_destroy (self->referenced_items);
+  self->referenced_items = NULL;
+
   self->major_version = BSE_MAJOR_VERSION;
   self->minor_version = BSE_MINOR_VERSION;
   self->micro_version = BSE_MICRO_VERSION;
@@ -252,6 +260,8 @@ bse_storage_prepare_write (BseStorage    *self,
 
   bse_storage_reset (self);
   self->wstore = sfi_wstore_new ();
+  self->stored_items = sfi_ppool_new ();
+  self->referenced_items = sfi_ppool_new ();
   mode &= BSE_STORAGE_MODE_MASK;
   if (mode & BSE_STORAGE_DBLOCK_CONTAINED)
     mode |= BSE_STORAGE_SELF_CONTAINED;
@@ -813,6 +823,8 @@ bse_storage_put_item_link (BseStorage *self,
       common_ancestor = bse_item_common_ancestor (from_item, to_item);
       g_return_if_fail (BSE_IS_CONTAINER (common_ancestor));
 
+      sfi_ppool_set (self->referenced_items, to_item);
+
       /* figure number of parent backup levels to reach common ancestor */
       for (tmp = from_item; tmp != common_ancestor; tmp = tmp->parent)
         pbackup++;
@@ -1049,6 +1061,8 @@ bse_storage_store_item (BseStorage *self,
 
   g_object_ref (self);
   g_object_ref (item);
+
+  sfi_ppool_set (self->stored_items, item);
 
   store_item_properties (item, self);
 

@@ -126,9 +126,12 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
 }
 
 METHOD (BseProject, store-bse, "File/Store") {
-  HELP  = "Save a project into a BSE file";
-  IN    = bse_param_spec_object ("project", "Project", "The project",
+  HELP  = "Save supers of a project into a BSE file. "
+          "If no super is specified, the project itself is stored.";
+  IN    = bse_param_spec_object ("project", "Project", NULL,
                                  BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("super", "Super", NULL,
+                                 BSE_TYPE_SUPER, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("file-name", "File", "Destination file name",
                             NULL, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_bool ("self-contained", "Self Contained",
@@ -144,6 +147,7 @@ METHOD (BseProject, store-bse, "File/Store") {
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
+  BseSuper *super = bse_value_get_object (in_values++);
   gchar *file_name = sfi_value_get_string (in_values++);
   gboolean self_contained = sfi_value_get_bool (in_values++);
   BseErrorType error;
@@ -151,8 +155,10 @@ METHOD (BseProject, store-bse, "File/Store") {
   /* check parameters */
   if (!BSE_IS_PROJECT (project) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  error = bse_project_store_bse (project, file_name, self_contained);
+  if (super && BSE_ITEM (super)->parent != BSE_ITEM (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  error = bse_project_store_bse (project, super, file_name, self_contained);
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);

@@ -709,7 +709,6 @@ bglue_exec_proc (SfiGlueContext *context,
       
       if (error)
         g_message ("while executing \"%s\": %s\n", proc->name, bse_error_blurb (error));
-      
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);
       for (i = 0; i < proc->n_out_pspecs; i++)

@@ -69,6 +69,9 @@ struct _BseStorage
   BseObject           parent_instance;
   /* writing */
   SfiWStore          *wstore;
+  SfiUPool           *stored_items2;
+  SfiPPool           *stored_items;
+  SfiPPool           *referenced_items;
   /* parsing */
   SfiRStore          *rstore;
   guint               major_version;

@@ -83,6 +83,7 @@ BseItem*	bse_project_item_from_upath	(BseProject	*project,
 BseErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 BseErrorType	bse_project_store_bse		(BseProject	*project,
+						 BseSuper       *super,
 						 const gchar	*bse_file,
 						 gboolean        self_contained);
 BseObject*	bse_project_upath_resolver	(gpointer        project /* func_data */,
