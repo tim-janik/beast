@@ -16,11 +16,14 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <bse/bse.idl>
+
+// FIXME: #include <bse/bse.idl>
 
 namespace Bse {
 
-class Amplifier : Bse::Effect {
+class Effect; // FIXME: bad workaround
+
+class Amplifier : Effect {
   Info    icon      = "icons/ampctrl.png";
   Info    category  = "/Modules/Routing/Amplifier";
   Info    blurb     = ("BseAmplifier provides input signal controlled amplification or "
