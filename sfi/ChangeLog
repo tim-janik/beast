@@ -1,3 +1,8 @@
+Fri Dec 31 01:35:09 2004  Tim Janik  <timj@gtk.org>
+
+	* sfifilecrawler.c (errno_check_file): fixed mode="e", which
+	didn't proeprly call access() due to F_OK==0.
+
 Mon Dec 27 23:57:29 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]: call sfi_ring_uniq() from sfi_ring_uniq_free_deep()

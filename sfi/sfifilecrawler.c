@@ -579,22 +579,22 @@ static gint
 errno_check_file (const gchar *file_name,
                   const gchar *mode)
 {
-  guint access_mask = 0;
+  guint access_mask = 0, nac = 0;
 
   if (strchr (mode, 'e'))       /* exists */
-    access_mask |= F_OK;
+    nac++, access_mask |= F_OK;
   if (strchr (mode, 'r'))       /* readable */
-    access_mask |= R_OK;
+    nac++, access_mask |= R_OK;
   if (strchr (mode, 'w'))       /* writable */
-    access_mask |= W_OK;
+    nac++, access_mask |= W_OK;
   gboolean check_exec = strchr (mode, 'x') != NULL;
   if (check_exec)               /* executable */
-    access_mask |= X_OK;
+    nac++, access_mask |= X_OK;
 
   /* on some POSIX systems, X_OK may succeed for root without any
    * executable bits set, so we also check via stat() below.
    */
-  if (access_mask && access (file_name, access_mask) < 0)
+  if (nac && access (file_name, access_mask) < 0)
     return -errno;
 
   gboolean check_file = strchr (mode, 'f') != NULL;     /* open as file */
