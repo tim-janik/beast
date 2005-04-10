@@ -285,7 +285,7 @@ sfi_ppool_foreach (SfiPPool        *pool,
   g_return_if_fail (pool != NULL);
   pdata.data = data;
   pdata.foreach = foreach;
-  g_tree_foreach (ppool_tree (pool), ppool_foreach_wrapper, data);
+  g_tree_foreach (ppool_tree (pool), ppool_foreach_wrapper, &pdata);
 }
 
 static gboolean
