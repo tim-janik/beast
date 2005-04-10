@@ -1,3 +1,14 @@
+Sun Apr 10 23:23:27 2005  Tim Janik  <timj@gtk.org>
+
+	* bsebus.h, bsebux.c: save syncronization state across restore.
+	re-syncronize in restore_finish if required. 
+
+	* bseobject.h, bseobject.c: introduced restore_start and resotore_finish
+	methods, and IN_RESTORE state. 
+
+	* bsestorage.h, bsestorage.c: call restore_start before restoring 
+	objects and call restore_finish after restoring.
+
 Mon Mar  7 08:35:41 2005  Tim Janik  <timj@gtk.org>
 
 	* renamed every occourance of *.gen-idl.h (C++ headers generated from 

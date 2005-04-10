@@ -171,7 +171,10 @@ bse_object_do_dispose (GObject *gobject)
   BseObject *object = BSE_OBJECT (gobject);
   
   BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
-  
+
+  if (BSE_OBJECT_IN_RESTORE (object))
+    g_warning ("%s: object in restore state while disposing: %s", G_STRLOC, bse_object_debug_name (object));
+
   /* perform release notification */
   g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
   
@@ -598,12 +601,46 @@ bse_object_store_private (BseObject	*object,
 {
 }
 
+void
+bse_object_restore_start (BseObject  *object,
+                          BseStorage *storage)
+{
+  g_return_if_fail (BSE_IS_STORAGE (storage));
+  if (!BSE_OBJECT_IN_RESTORE (object))
+    {
+      BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
+      bse_storage_add_restorable (storage, object);
+      BSE_OBJECT_GET_CLASS (object)->restore_start (object, storage);
+    }
+}
+
+static void
+object_restore_start (BseObject      *object,
+                      BseStorage     *storage)
+{
+}
+
 static SfiTokenType
-bse_object_restore_private (BseObject  *object,
-			    BseStorage *storage,
-                            GScanner   *scanner)
+object_restore_private (BseObject      *object,
+                        BseStorage     *storage,
+                        GScanner       *scanner)
 {
   return SFI_TOKEN_UNMATCHED;
+}
+
+static void
+object_restore_finish (BseObject      *object)
+{
+}
+
+void
+bse_object_restore_finish (BseObject *object)
+{
+  if (BSE_OBJECT_IN_RESTORE (object))
+    {
+      BSE_OBJECT_GET_CLASS (object)->restore_finish (object);
+      BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
+    }
 }
 
 typedef struct {
@@ -787,7 +824,9 @@ bse_object_class_init (BseObjectClass *class)
   class->check_pspec_editable = object_check_pspec_editable;
   class->set_uname = bse_object_do_set_uname;
   class->store_private = bse_object_store_private;
-  class->restore_private = bse_object_restore_private;
+  class->restore_start = object_restore_start;
+  class->restore_private = object_restore_private;
+  class->restore_finish = object_restore_finish;
   class->unlocked = NULL;
   class->get_icon = bse_object_do_get_icon;
   

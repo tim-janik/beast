@@ -1200,7 +1200,7 @@ undo_restore_item (BseUndoStep  *ustep,
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
   
-  bse_storage_resolve_item_links (storage);
+  bse_storage_finish_parsing (storage);
 }
 
 static void

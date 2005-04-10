@@ -37,7 +37,6 @@ G_BEGIN_DECLS
 #define BSE_IS_OBJECT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_OBJECT))
 #define BSE_OBJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_OBJECT, BseObjectClass))
 
-
 /* --- object member/convenience macros --- */
 #define BSE_OBJECT_TYPE(object)		  (G_TYPE_FROM_INSTANCE (object))
 #define BSE_OBJECT_TYPE_NAME(object)	  (g_type_name (BSE_OBJECT_TYPE (object)))
@@ -47,19 +46,18 @@ G_BEGIN_DECLS
 #define BSE_OBJECT_UNSET_FLAGS(object, f) (BSE_OBJECT_FLAGS (object) &= ~(f))
 #define BSE_OBJECT_IS_LOCKED(object)	  (((BseObject*) (object))->lock_count > 0)
 #define BSE_OBJECT_DISPOSING(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DISPOSING) > 0)
+#define BSE_OBJECT_IN_RESTORE(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_IN_RESTORE) > 0)
 #define BSE_OBJECT_ID(object)		  (((BseObject*) (object))->unique_id)
 
-
-/* --- bse object flags --- */
+/* --- object flags --- */
 typedef enum				/*< skip >*/
 {
   BSE_OBJECT_FLAG_FIXED_UNAME		= 1 << 0,
-  BSE_OBJECT_FLAG_DISPOSING		= 1 << 1
+  BSE_OBJECT_FLAG_DISPOSING		= 1 << 1,
+  BSE_OBJECT_FLAG_IN_RESTORE		= 1 << 2
 } BseObjectFlags;
-#define BSE_OBJECT_FLAGS_USHIFT	    (2)
+#define BSE_OBJECT_FLAGS_USHIFT	    (3)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
-
-
 
 /* --- typedefs & structures --- */
 struct _BseObject
@@ -85,15 +83,17 @@ struct _BseObjectClass
 						 const gchar	*uname);
   void			(*store_private)	(BseObject	*object,
 						 BseStorage	*storage);
+  void                  (*restore_start)        (BseObject      *object,
+                                                 BseStorage     *storage);
   SfiTokenType		(*restore_private)	(BseObject	*object,
 						 BseStorage	*storage,
                                                  GScanner       *scanner);
+  void                  (*restore_finish)       (BseObject      *object);
   void			(*unlocked)		(BseObject	*object);
   BseIcon*		(*get_icon)		(BseObject	*object);
 };
 
-
-/* --- object class prototypes ---*/
+/* --- object class API ---*/
 void	bse_object_class_add_property		(BseObjectClass *oclass,
 						 const gchar	*property_group,
 						 guint		 property_id,
@@ -101,25 +101,25 @@ void	bse_object_class_add_property		(BseObjectClass *oclass,
 void	bse_object_class_add_grouped_property	(BseObjectClass *oclass,
 						 guint		 property_id,
 						 GParamSpec	*pspec);
-#define	bse_object_class_add_param	bse_object_class_add_property
-guint		bse_object_class_add_signal	(BseObjectClass	*oclass,
+#define	bse_object_class_add_param	         bse_object_class_add_property
+guint	bse_object_class_add_signal	        (BseObjectClass	*oclass,
 						 const gchar	*signal_name,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
-guint		bse_object_class_add_asignal	(BseObjectClass	*oclass,
+guint	bse_object_class_add_asignal    	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
-guint		bse_object_class_add_dsignal	(BseObjectClass	*oclass,
+guint	bse_object_class_add_dsignal    	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
 
 
-/* --- object prototypes --- */
+/* --- object API --- */
 void		bse_object_lock			(gpointer	 object);
 void		bse_object_unlock		(gpointer	 object);
 gboolean        bse_object_editable_property	(gpointer	 object,
@@ -133,6 +133,9 @@ GList*		bse_objects_list_by_uname	(GType		 type,
 void		bse_object_debug_leaks		(void);
 const gchar*	bse_object_debug_name		(gpointer	 object);
 gchar*	        bse_object_strdup_debug_handle 	(gpointer	 object);
+void            bse_object_restore_start        (BseObject      *object,
+                                                 BseStorage     *storage);
+void            bse_object_restore_finish       (BseObject      *object);
 void		bse_object_reemit_signal	(gpointer	 src_object,
 						 const gchar	*src_signal,
 						 gpointer	 dest_obejct,

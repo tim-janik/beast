@@ -134,7 +134,9 @@ bse_storage_init (BseStorage *self)
   self->referenced_items = NULL;
   /* reading */
   self->rstore = NULL;
+  self->path_table = NULL;
   self->item_links = NULL;
+  self->restorable_objects = NULL;
   /* misc */
   self->dblocks = NULL;
   self->n_dblocks = 0;
@@ -195,11 +197,14 @@ bse_storage_reset (BseStorage *self)
 
   if (self->rstore)
     {
-      bse_storage_resolve_item_links (self);
+      bse_storage_finish_parsing (self);
       g_hash_table_destroy (self->path_table);
       self->path_table = NULL;
       sfi_rstore_destroy (self->rstore);
       self->rstore = NULL;
+      if (self->restorable_objects)
+        sfi_ppool_destroy (self->restorable_objects);
+      self->restorable_objects = NULL;
     }
 
   if (self->wstore)
@@ -299,6 +304,7 @@ bse_storage_input_text (BseStorage  *self,
   self->rstore->parser_this = self;
   sfi_rstore_input_text (self->rstore, text, text_name);
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
+  self->restorable_objects = sfi_ppool_new ();
 }
 
 BseErrorType
@@ -314,6 +320,7 @@ bse_storage_input_file (BseStorage  *self,
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
   self->rstore->parser_this = self;
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
+  self->restorable_objects = sfi_ppool_new ();
 
   return BSE_ERROR_NONE;
 }
@@ -384,7 +391,30 @@ storage_add_item_link (BseStorage           *self,
 }
 
 void
-bse_storage_resolve_item_links (BseStorage *self)
+bse_storage_add_restorable (BseStorage             *self,
+                            BseObject              *object)
+{
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (self->rstore);
+  g_return_if_fail (self->restorable_objects);
+  g_return_if_fail (BSE_IS_OBJECT (object));
+  g_return_if_fail (BSE_OBJECT_IN_RESTORE (object));
+
+  sfi_ppool_set (self->restorable_objects, object);
+}
+
+static gboolean
+storage_restorable_objects_foreach (gpointer        data,
+                                    gpointer        pointer)
+{
+  // BseStorage *self = BSE_STORAGE (data);
+  BseObject *object = BSE_OBJECT (pointer);
+  bse_object_restore_finish (object);
+  return TRUE;
+}
+
+void
+bse_storage_finish_parsing (BseStorage *self)
 {
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->rstore != NULL);
@@ -446,6 +476,12 @@ bse_storage_resolve_item_links (BseStorage *self)
       g_free (ilink->upath);
       g_free (ilink);
     }
+
+  /* finish restorables */
+  sfi_ppool_foreach (self->restorable_objects, storage_restorable_objects_foreach, self);
+  /* clear pool */
+  sfi_ppool_destroy (self->restorable_objects);
+  self->restorable_objects = sfi_ppool_new();
 }
 
 const gchar*
@@ -741,7 +777,7 @@ restore_container_child (BseContainer *container,
   bse_item_compat_setup (item, self->major_version, self->minor_version, self->micro_version);
 
   storage_path_table_insert (self, container, uname, item);
-
+  
   /* restore_item reads out closing parenthesis */
   g_object_ref (item);
   expected_token = bse_storage_parse_rest (self, item, item_restore_try_statement, NULL);
@@ -771,6 +807,8 @@ item_restore_try_statement (gpointer    item,
    * SFI_TOKEN_UNMATCHED - statement not recognized, try further
    * anything else       - encountered (syntax/semantic) error during parsing
    */
+
+  bse_object_restore_start (BSE_OBJECT (item), self);
 
   if (expected_token == SFI_TOKEN_UNMATCHED)
     expected_token = restore_item_property (item, self);
@@ -957,6 +995,7 @@ bse_storage_parse_item_link (BseStorage           *self,
 
   g_scanner_get_next_token (scanner);
 
+  bse_object_restore_start (BSE_OBJECT (from_item), self);
   if (sfi_serial_check_parse_null_token (scanner))
     {
       ilink = storage_add_item_link (self, from_item, restore_link, data, NULL);

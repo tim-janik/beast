@@ -63,6 +63,7 @@ bse_bus_init (BseBus *self)
   self->left_volume = 1.0;
   self->right_volume = 1.0;
   self->synced = TRUE;
+  self->saved_sync = self->synced;
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self), TRUE);
 }
 
@@ -302,6 +303,7 @@ bse_bus_set_property (GObject      *object,
       SfiRing *inputs, *candidates, *ring, *saved_inputs;
       BseItemSeq *iseq;
       BseItem *parent;
+      gboolean vbool;
     case PROP_INPUTS:
       /* save user provided order */
       saved_inputs = bse_item_seq_to_ring (g_value_get_boxed (value));
@@ -354,12 +356,17 @@ bse_bus_set_property (GObject      *object,
         }
       break;
     case PROP_SYNC:
-      self->synced = sfi_value_get_bool (value);
-      if (self->synced)
-        self->right_volume = self->left_volume = center_volume (self->right_volume, self->left_volume);
-      bus_volume_changed (self);
-      g_object_notify (self, "left-volume");
-      g_object_notify (self, "right-volume");
+      vbool = sfi_value_get_bool (value);
+      if (vbool != self->synced)
+        {
+          self->synced = vbool;
+          if (self->synced)
+            self->right_volume = self->left_volume = center_volume (self->right_volume, self->left_volume);
+          bus_volume_changed (self);
+          g_object_notify (self, "left-volume");
+          g_object_notify (self, "right-volume");
+        }
+      self->saved_sync = self->synced;
       break;
     case PROP_LEFT_VOLUME:
       self->left_volume = sfi_value_get_real (value);
@@ -764,6 +771,17 @@ bus_restore_add_input (gpointer     data,
     }
 }
 
+static void
+bus_restore_start (BseObject  *object,
+                   BseStorage *storage)
+{
+  BseBus *self = BSE_BUS (object);
+  self->saved_sync = self->synced;
+  /* support seperate left & right volumes */
+  self->synced = FALSE;
+  BSE_OBJECT_CLASS (bus_parent_class)->restore_start (object, storage);
+}
+
 static SfiTokenType
 bus_restore_private (BseObject  *object,
                      BseStorage *storage,
@@ -785,6 +803,17 @@ bus_restore_private (BseObject  *object,
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (bus_parent_class)->restore_private (object, storage, scanner);
+}
+
+static void
+bus_restore_finish (BseObject *object)
+{
+  BseBus *self = BSE_BUS (object);
+  /* restore real sync setting */
+  g_object_set (self, /* no undo */
+                "sync", self->saved_sync,
+                NULL);
+  BSE_OBJECT_CLASS (bus_parent_class)->restore_finish (object);
 }
 
 static void
@@ -826,7 +855,9 @@ bse_bus_class_init (BseBusClass *class)
   
   object_class->editable_property = bse_bus_editable_property;
   object_class->store_private = bus_store_private;
+  object_class->restore_start = bus_restore_start;
   object_class->restore_private = bus_restore_private;
+  object_class->restore_finish = bus_restore_finish;
 
   item_class->set_parent = bse_bus_set_parent;
   item_class->get_candidates = bse_bus_get_candidates;

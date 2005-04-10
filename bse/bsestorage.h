@@ -64,27 +64,27 @@ typedef void (*BseStorageRestoreLink)   (gpointer        data,
                                          const gchar    *error);
 struct _BseStorage
 {
-  BseObject           parent_instance;
+  BseObject              parent_instance;
   /* writing */
-  SfiWStore          *wstore;
-  SfiUPool           *stored_items2;
-  SfiPPool           *stored_items;
-  SfiPPool           *referenced_items;
+  SfiWStore             *wstore;
+  SfiPPool              *stored_items;
+  SfiPPool              *referenced_items;
   /* parsing */
-  SfiRStore          *rstore;
-  guint               major_version;
-  guint               minor_version;
-  guint               micro_version;
-  GHashTable         *path_table;
-  SfiRing            *item_links;
+  SfiRStore             *rstore;
+  guint                  major_version;
+  guint                  minor_version;
+  guint                  micro_version;
+  GHashTable            *path_table;
+  SfiRing               *item_links;
+  SfiPPool              *restorable_objects;
   /* internal data */
-  guint               n_dblocks;
-  BseStorageDBlock   *dblocks;
-  gchar              *free_me;
+  guint                  n_dblocks;
+  BseStorageDBlock      *dblocks;
+  gchar                 *free_me;
   /* compat */ // VERSION-FIXME: needed only for <= 0.5.1
-  gfloat          mix_freq;
-  gfloat          osc_freq;
-  guint           n_channels;
+  gfloat                 mix_freq;
+  gfloat                 osc_freq;
+  guint                  n_channels;
 };
 struct _BseStorageClass
 {
@@ -165,7 +165,9 @@ GTokenType   bse_storage_parse_item_link        (BseStorage             *self,
                                                  BseItem                *from_item,
                                                  BseStorageRestoreLink   restore_link,
                                                  gpointer                data);
-void         bse_storage_resolve_item_links     (BseStorage             *self);
+void         bse_storage_add_restorable         (BseStorage             *self,
+                                                 BseObject              *object);
+void         bse_storage_finish_parsing         (BseStorage             *self);
 GTokenType   bse_storage_parse_data_handle      (BseStorage             *self,
                                                  GslDataHandle         **data_handle_p,
                                                  guint                  *n_channels_p,
