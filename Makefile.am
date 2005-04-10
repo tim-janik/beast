@@ -1,5 +1,5 @@
 # BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
-# Copyright (C) 1998-2003 and Tim Janik
+# Copyright (C) 1998-2005 Tim Janik
 #
 ## Makefile.am for BEAST/BSE
 

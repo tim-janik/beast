@@ -1,3 +1,8 @@
+Mon Apr 11 00:51:33 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/radgets-standard.xml: support $show-tabs 
+	for notebooks.
+
 2005-04-01  Steve Murphy  <murf@e-tools.com>
 
         * configure.in: Added "rw" to ALL_LINGUAS.

@@ -162,6 +162,7 @@
   <!-- decks (notebook) -->
   <xdef:notebook              inherit="GxkNotebook"
     prop:scrollable="1"
+    prop:show-tabs="$(first-occupied,$show-tabs,1)"
     prop:homogeneous="$(first-occupied,$homogeneous,0)"
     prop:assortment="$(null-collapse,$assortment)"
     />
