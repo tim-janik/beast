@@ -1,3 +1,25 @@
+Overview of Changes in BEAST/BSE 0.6.5:
+
+* New supported file formats:
+  GUS Patches  - Load patchfiles as ordinary samples [Stefan Westerfeld]
+  BseWave      - A new tool bsewavetool allows creation and compression
+                 of multi-sample files which can be loaded by beast.
+                 This tool is experimental and not currently being installed,
+                 ask questions or report problems with it on beast@gnome.org.
+* New Effects:
+  Saturator    - Saturate audio signals, implements various saturation types.
+* New scripts:
+  Track Busses - Automatically create mixer busses for tracks
+* Fixed MIDI file import to create required mixer setup
+* Added playback position indicator to piano roll
+* Fixate zoom position while zooming piano roll
+* Fixed saving of BseMixer state to BSE files
+* Improved sample file caching algorith
+* Improved BSE file parsing robustness
+* AMD64 fixes [Stefan Westerfeld]
+* Lots of miscellaneous bug fixes
+* Added Bulgarian translation [Alexander Shopov]
+
 Overview of Changes in BEAST/BSE 0.6.4:
 
 * Fixed storage logic that caused data loss when overwriting BSE files
