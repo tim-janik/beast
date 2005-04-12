@@ -1,3 +1,11 @@
+Tue Apr 12 19:50:22 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsteventrollctrl.c: guard code against proll->part becoming
+	0 during window/part destruction. 
+	* beast-gtk/bstpianorollctrl.c: same here.
+
+	* beast-gtk/bstsnifferscope.c: fix potential 0 proxy access.
+
 Tue Apr 12 18:31:29 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.c: import MIDI files via

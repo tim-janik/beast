@@ -283,9 +283,11 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
                                SfiProxy         proxy)
 {
   if (proxy)
-    g_return_if_fail (BSE_IS_SOURCE (proxy));
-  if (!bse_source_has_outputs (proxy))
-    proxy = 0;
+    {
+      g_return_if_fail (BSE_IS_SOURCE (proxy));
+      if (!bse_source_has_outputs (proxy))
+        proxy = 0;
+    }
   if (self->proxy)
     {
       bse_proxy_disconnect (self->proxy,

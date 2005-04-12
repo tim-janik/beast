@@ -374,9 +374,14 @@ bst_event_roll_controller_has_selection (BstEventRollController *self,
   if (self->cached_stamp != action_stamp)
     {
       SfiProxy part = self->eroll->proxy;
-      self->cached_stamp = action_stamp;
-      BsePartControlSeq *cseq = bse_part_list_selected_controls (part, CONTROL_TYPE (self));
-      self->cached_n_controls = cseq->n_pcontrols;
+      if (part)
+        {
+          self->cached_stamp = action_stamp;
+          BsePartControlSeq *cseq = bse_part_list_selected_controls (part, CONTROL_TYPE (self));
+          self->cached_n_controls = cseq->n_pcontrols;
+        }
+      else
+        self->cached_n_controls = 0;
     }
   return self->cached_n_controls > 0;
 }

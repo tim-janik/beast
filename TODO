@@ -1,19 +1,17 @@
 FIXME(urgent):
 - when resizing trackview, the left paned child (track treeview) should stay fixed in horizontal size
 - WaveView zoom-field should be vertically aligned with vscale-field
-- add mini list besides track add/del buttons that contains orphaned parts (sorted by most recently orphaned)
+- add mini list next to track add/del buttons that contains orphaned parts (sorted by most recently orphaned)
 - after laoding a sample from the instrument selection box, make it the default selection
 - display bpm only with float precision
 - add extra path handling for freepats packages
-- pianoroll: close pianoroll window in response to part::release  
 - skip and retrigger updates for scope visibility changes
-- MIDI-import: ensure mixer busses and tracks are setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - play + play doesn't reset wave oscillator state
 - start playback at play pointer position
 - TrackRoll: display only basename of wave files
 - WaveList: list items with basname in first col, add a col for full pathname
-- automatically change project name to basename fo saved file name
+- automatically change project name to basename for saved file name
 - add stock icons for Select/None Select/All Select/Invert
 - add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave
@@ -25,7 +23,7 @@ FIXME(urgent):
 - implement display of Note properties next to frequency properties (and nuke note properties from plugins)
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
-  compiler support and missing libc support will fail on accessing a __thread variable
+  compiler support and missing libc support will fail on accessing a __thread variable (kernel dependent!)
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 - registering the same script function twice triggers GType assertion
@@ -38,7 +36,6 @@ TODO:
 - FreeVerb: implement downsampling at in-/outputs to correctly apply the 44100Hz based coefficients
 - FreeVerb: fix parameter interpretation of freeverb
 - driver interface: support multilpe MIDI devices
-- add more menu tooltips
 - add editable text fields to snet router
 - implement ResetAll according to: http://www.midi.org/about-midi/rp15.shtml (more: http://www.midi.org/about-midi/specinfo.shtml)
 - provide a color/dB reference scale, next to the fft-scope view

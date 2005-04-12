@@ -469,9 +469,14 @@ bst_piano_roll_controller_has_selection (BstPianoRollController *self,
   if (self->cached_stamp != action_stamp)
     {
       SfiProxy part = self->proll->proxy;
-      self->cached_stamp = action_stamp;
-      BsePartNoteSeq *pseq = bse_part_list_selected_notes (part);
-      self->cached_n_notes = pseq->n_pnotes;
+      if (part)
+        {
+          self->cached_stamp = action_stamp;
+          BsePartNoteSeq *pseq = bse_part_list_selected_notes (part);
+          self->cached_n_notes = pseq->n_pnotes;
+        }
+      else
+        self->cached_n_notes = 0;
     }
   return self->cached_n_notes > 0;
 }
