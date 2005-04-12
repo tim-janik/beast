@@ -1,3 +1,9 @@
+Wed Apr 13 00:30:23 2005  Tim Janik  <timj@gtk.org>
+
+	* shell/bsescminterp.c (bse_scm_proxy_print): print out BSE object ID 
+	when displaying proxy handles. this helped figure that equal? is the 
+	correct predicate to compare proxies, rather than eq? or eqv?.
+
 Tue Apr 12 19:50:22 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsteventrollctrl.c: guard code against proll->part becoming

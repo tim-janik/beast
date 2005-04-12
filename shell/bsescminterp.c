@@ -317,8 +317,22 @@ bse_scm_proxy_equalp (SCM scm_p1,
   return SCM_BOOL (p1 == p2);
 }
 
+static int
+bse_scm_proxy_print (SCM              scm_p1,
+                     SCM              port,
+                     scm_print_state *pstate)
+{
+  SfiProxy p1 = SCM_GET_GLUE_PROXY (scm_p1);
+  char buffer[128];
+  g_snprintf (buffer, sizeof (buffer), "%08lx (ID:%04lx)", (unsigned long) &SCM_SMOB_DATA (scm_p1), (unsigned long) p1);
+  scm_puts ("#<SfiProxy ", port);
+  scm_puts (buffer, port);
+  scm_puts (">", port);
+  return 1;
+}
+
 static SCM
-bse_scm_null_proxyp (SCM scm_proxy)
+bse_scm_proxy_nullp (SCM scm_proxy)
 {
   if (SCM_IS_GLUE_PROXY (scm_proxy))
     {
@@ -896,7 +910,8 @@ bse_scm_interp_init (void)
   SCM_NEWSMOB (glue_null_proxy, tc_glue_proxy, 0);
   scm_permanent_object (glue_null_proxy);
   scm_set_smob_equalp (tc_glue_proxy, bse_scm_proxy_equalp);
-  gh_new_procedure ("bse-null-proxy?", bse_scm_null_proxyp, 1, 0, 0);
+  scm_set_smob_print (tc_glue_proxy, bse_scm_proxy_print);
+  gh_new_procedure ("bse-null-proxy?", bse_scm_proxy_nullp, 1, 0, 0);
 
   gh_new_procedure ("bse-glue-call", bse_scm_glue_call, 2, 0, 0);
   gh_new_procedure ("bse-glue-set-prop", bse_scm_glue_set_prop, 3, 0, 0);
