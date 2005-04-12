@@ -47,15 +47,17 @@ int main(int argc, char **argv)
 
   sfi_glue_context_push (bse_context);
 
-  const int MAX = 10000;
+  printf ("%s: testing remote glue layer calls via C++ interface:\n", argv[0]);
+
+  const int max_calls = 10000;
   double start = gettime ();
 
-  for(int i=0; i<MAX; i++)
+  for(int i=0; i < max_calls; i++)
     note_to_freq (60, 0);
 
   double t = gettime () - start;
-  printf ("%f seconds for %d invocations => %f invocations/second, %f sec per invocation\n",
-          t, MAX, MAX / t, t / MAX);
+  printf ("%f seconds for %d invocations => %f invocations/second, %f milli seconds per invocation\n",
+          t, max_calls, max_calls / t, t * 1000 / max_calls);
 
   sfi_glue_context_pop ();
 }
