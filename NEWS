@@ -18,7 +18,13 @@ Overview of Changes in BEAST/BSE 0.6.5:
 * Improved BSE file parsing robustness
 * AMD64 fixes [Stefan Westerfeld]
 * Lots of miscellaneous bug fixes
-* Added Bulgarian translation [Alexander Shopov]
+* Updated British English translation [David Lodge]
+* Updated Canadian English translation [Adam Weinberger] 
+* Updated Czech translation [Miloslav Trmac]
+* Updated Dutch translation [Tino Meinen]
+* Updated Spanish translation [Jorge Gonzalez]
+* Added Bulgarian translation [Iassen Pramatarov]
+* Added Kinyarwanda translation [Steve Murphy]
 
 Overview of Changes in BEAST/BSE 0.6.4:
 
