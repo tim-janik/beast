@@ -45,8 +45,10 @@ G_BEGIN_DECLS
 #define bse_proxy_set_data_full(p,n,d,f)        bse_proxy_set_qdata_full ((p), g_quark_from_string (n), (d), (f))
 
 /* --- BEAST utilities --- */
-BseErrorType   bst_project_restore_from_file  (SfiProxy         project,
-                                               const gchar     *file_name);
+BseErrorType    bst_project_restore_from_file   (SfiProxy        project,
+                                                 const gchar    *file_name);
+BseErrorType    bst_project_import_midi_file    (SfiProxy        project,
+                                                 const gchar    *file_name);
 
 G_END_DECLS
 

@@ -40,5 +40,26 @@ bst_project_restore_from_file (SfiProxy         project,
   return error;
 }
 
+BseErrorType
+bst_project_import_midi_file (SfiProxy        project,
+                              const gchar    *file_name)
+{
+  BseErrorType error = bse_project_import_midi_file (project, file_name);
+  /* regardless of how good the restoration worked, try to
+   * keep the resulting project in a GUI usable state.
+   */
+  BseItemSeq *iseq = bse_container_list_children (project);
+  guint i;
+  for (i = 0; i < iseq->n_items; i++)
+    if (BSE_IS_SONG (iseq->items[i]))
+      {
+        /* fixup orphaned parts */
+        bse_song_ensure_track_links (iseq->items[i]);
+        /* songs always need a master bus */
+        bse_song_ensure_master_bus (iseq->items[i]);
+      }
+  return error;
+}
+
 /* --- generated code --- */
 #include "bstgenbseapi.c"

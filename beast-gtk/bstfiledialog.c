@@ -482,7 +482,7 @@ static gboolean
 bst_file_dialog_import_midi (BstFileDialog *self,
                              const gchar   *file_name)
 {
-  BseErrorType error = bse_project_import_midi_file (self->proxy, file_name);
+  BseErrorType error = bst_project_import_midi_file (self->proxy, file_name);
   bst_status_eprintf (error, _("Importing MIDI file `%s'"), file_name);
   return TRUE;
 }

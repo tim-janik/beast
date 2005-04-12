@@ -1,6 +1,4 @@
 FIXME(urgent):
-- fix BseMixer sync behaviour across saving
-- importing MIDI files doesn't create a mixer
 - when resizing trackview, the left paned child (track treeview) should stay fixed in horizontal size
 - WaveView zoom-field should be vertically aligned with vscale-field
 - add mini list besides track add/del buttons that contains orphaned parts (sorted by most recently orphaned)
