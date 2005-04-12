@@ -1,4 +1,5 @@
 FIXME(urgent):
+- integrate or reimplement fan sliders: http://www.gazuga.net/phat.php
 - when resizing trackview, the left paned child (track treeview) should stay fixed in horizontal size
 - WaveView zoom-field should be vertically aligned with vscale-field
 - add mini list next to track add/del buttons that contains orphaned parts (sorted by most recently orphaned)
