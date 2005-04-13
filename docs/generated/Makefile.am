@@ -106,15 +106,15 @@ temp_ref_docu = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-stru
 #
 # ChangeLog generation
 #
-LOG2TEXI=$(TEXITHEQUE) log2texi
-log-beast.texi: $(top_srcdir)/ChangeLog
-	$(LOG2TEXI) --output=$@ --title="BEAST" $<
-log-bse.texi: $(top_srcdir)/bse/ChangeLog
-	$(LOG2TEXI) --output=$@ --title="BSE" $<
-log-plugins.texi: $(top_srcdir)/plugins/ChangeLog
-	$(LOG2TEXI) --output=$@ --title="Plugins" $<
-log-sfi.texi: $(top_srcdir)/sfi/ChangeLog
-	$(LOG2TEXI) --output=$@ --title="SFI" $<
+LOG2TEXI=log2markup.pl # -D "TexiStamp `date`"
+log-beast.texi: $(top_srcdir)/ChangeLog $(srcdir)/log2markup.pl
+	$(LOG2TEXI) --title "BEAST" $< >$@
+log-bse.texi: $(top_srcdir)/bse/ChangeLog $(srcdir)/log2markup.pl
+	$(LOG2TEXI) --title "BSE" $< >$@
+log-plugins.texi: $(top_srcdir)/plugins/ChangeLog $(srcdir)/log2markup.pl
+	$(LOG2TEXI) --title "Plugins" $< >$@
+log-sfi.texi: $(top_srcdir)/sfi/ChangeLog $(srcdir)/log2markup.pl
+	$(LOG2TEXI) --title "SFI" $< >$@
 temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 
 

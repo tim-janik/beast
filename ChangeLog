@@ -1,3 +1,13 @@
+Wed Apr 13 02:31:40 2005  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/log2markup.pl: new script to generate texi markup 
+	from Changelogs, based on docs/generated/scandocs.pl and
+	log2texi.sh from texitheque.
+
+	* docs/generated/Makefile.am: use log2markup.pl to generate texi
+	source from changelogs, since texitheque aborts when processing
+	the toplevel ChangeLog.
+
 Wed Apr 13 00:30:23 2005  Tim Janik  <timj@gtk.org>
 
 	* shell/bsescminterp.c (bse_scm_proxy_print): print out BSE object ID 
