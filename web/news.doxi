@@ -26,6 +26,34 @@
 @unnumbered What's New?
 @c ----------------------------- START -----------------------------
 
+@newsTitle{Wednesday 13 April 2005, A new release - we finaly made it!}
+
+BEAST/BSE version 0.6.5 is available from the
+@uref{beast-doc://download,,download section}.
+@c , here is the @uref{http://www.gnomedesktop.org/article.php?sid=1870,,FootNotes announcement}.
+
+BEAST tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.5.tar.gz,, beast-0.6.5.tar.gz}
+@* BEAST patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.4-0.6.5.bz2,, patch-beast-0.6.4-0.6.5.bz2}
+@* @uref{http://alsa-project.org,, ALSA} driver:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.4.tar.gz,, bse-alsa-0.6.4.tar.gz}
+@* @uref{http://www.portaudio.com/,, PortAudio} driver:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.4.tar.gz,, bse-portaudio-0.6.4.tar.gz}
+
+This release introduces support for GUS Patch files, has a new tool ``bsewavetool'' to
+create BseWave files - a multi-sample file format that can be read by @beast{} - it has a new
+saturator effect and a new script to automatically assign mixer busses to tracks.
+Apart from that, there also were lots of minor improvements and bug fixes, and the usual
+set of language updates. Translation updates in particular were made to british english,
+canadian english, czech, dutch and spanish.
+Newly started translations are bulgarian and kinyarwanda.
+The
+@uref{beast-doc://release-news,,Release NEWS section} has the exact change list, so enjoy
+the new code and please report bugs to our
+@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
+
+
 @newsTitle{Friday 4 February 2005, From the ``I'll be back'' dept.}
 
 Our @uref{http://beast.gtk.org/wiki:Discussion,, Wiki} is back!
@@ -42,65 +70,6 @@ Due to a recent
 So currently the search facility and the beast wiki are not available.
 We apologize for the inconvenience and will put stuff back to work once
 debian packages the new PHP versions that plug all known security holes.
-
-@newsTitle{Saturday 18 Dec 2004, The ``Clean up your mind'' Release}
-
-BEAST/BSE version 0.6.4 is available from the
-@uref{beast-doc://download,,download section}.
-@c , here is the @uref{http://www.gnomedesktop.org/article.php?sid=1870,,FootNotes announcement}.
-
-BEAST tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.4.tar.gz,, beast-0.6.4.tar.gz}
-@* BEAST patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.3-0.6.4.bz2,, patch-beast-0.6.3-0.6.4.bz2}
-@* @uref{http://alsa-project.org,, ALSA} driver:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.4.tar.gz,, bse-alsa-0.6.4.tar.gz}
-@* @uref{http://www.portaudio.com/,, PortAudio} driver:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.4.tar.gz,, bse-portaudio-0.6.4.tar.gz}
-
-The most important change in this release is probably the reduced CPU consumption due to
-lowered scope updating priority. Very convenient are the newly added -n<nicelevel> and
--N (don't renice) options which may be used to adjust or bypass the scheduling priority
-raising effects of the suid launcher executables.
-A nice bonus in this release are the 
-@uref{http://beast.gtk.org/images/screenshots/stwZ04-fft_scopes.png,, FFT based spectrographs},
-available for all synthesis
-modules with output channels via the context menu.
-New with this release is the experimental
-@uref{http://www.portaudio.com/,, PortAudio} driver, Stefan Westerfeld put
-a lot of work into making this happen, so please give the driver a try and
-supply us with @uref{mailto://beast@@gnome.org,, positive and negative feedback}.
-And as usual, we've had quite a number of language translation updates,
-in particular canadian english, british english, czech, dutch and spanish.
-Behind the scenes, we've also been doing some code cleanups, removed libbsw from the
-build process and applied GCC-3.4 compilation fixes.
-As always, the
-@uref{beast-doc://release-news,,NEWS section} has the exact changes, enjoy the new code and
-please report bugs to our
-@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
-
-
-@newsTitle{Thursday 18 Nov 2004, The ``Legends may sleep@comma{} but they never die!'' Release}
-
-BEAST/BSE version 0.6.3 and BSE-ALSA version 0.6.3 are available from the
-@uref{beast-doc://download,,download section}, here is the
-@uref{http://gnomedesktop.org/node/2049,,FootNotes announcement}.
-
-BEAST tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.3.tar.gz,, beast-0.6.3.tar.gz}
-@* BEAST patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.2-0.6.3.bz2,, patch-beast-0.6.2-0.6.3.bz2}
-@* @uref{http://alsa-project.org,, ALSA} driver:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.3.tar.gz,, bse-alsa-0.6.3.tar.gz}
-
-It took a long time to get this release out, but the new features and the bug fixes
-are definitely worth it! As usual, we've had lots of language updates, many GUI
-fixes, but also some critical stability fixes. Major new features are: a stereo mixer
-for songs, DB meters, MIDI automation and a new sample-and-hold module by Artem Popov.
-As always, the
-@uref{beast-doc://release-news,,NEWS section} has the exact changes, enjoy the new code and
-please report bugs to our
-@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
 
 
 @c ----------------------------- END -----------------------------
