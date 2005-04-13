@@ -1296,19 +1296,19 @@ tnav_update_vpos (GtkAdjustment  *a,
  *
  * Create a scrollable text view. Behaviour and apperance can
  * be tweaked by specifying various @flags:
- @* GXK_SCROLL_TEXT_MONO - use a fixed width font;
- @* GXK_SCROLL_TEXT_SANS - use a sans serif font;
- @* GXK_SCROLL_TEXT_SERIF - use a serif font;
- @* GXK_SCROLL_TEXT_WRAP - allow word wrapping of @string;
- @* GXK_SCROLL_TEXT_CENTER - center @string;
- @* GXK_SCROLL_TEXT_WIDGET_BG - do not use white as background,
+ * @* GXK_SCROLL_TEXT_MONO - use a fixed width font;
+ * @* GXK_SCROLL_TEXT_SANS - use a sans serif font;
+ * @* GXK_SCROLL_TEXT_SERIF - use a serif font;
+ * @* GXK_SCROLL_TEXT_WRAP - allow word wrapping of @string;
+ * @* GXK_SCROLL_TEXT_CENTER - center @string;
+ * @* GXK_SCROLL_TEXT_WIDGET_BG - do not use white as background,
  * but keep the usual (grey) widget background;
- @* GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
+ * @* GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
  * the user to navigate through clickable links;
- @* GXK_SCROLL_TEXT_EDITABLE - permit modifications of the text;
- @* GXK_SCROLL_TEXT_HFIXED - make horizontal dimension unscrollable
- @* GXK_SCROLL_TEXT_VFIXED - make vertical dimension unscrollable
- @* GXK_SCROLL_TEXT_WIDGET_LOOK - this is a combination of flags
+ * @* GXK_SCROLL_TEXT_EDITABLE - permit modifications of the text;
+ * @* GXK_SCROLL_TEXT_HFIXED - make horizontal dimension unscrollable
+ * @* GXK_SCROLL_TEXT_VFIXED - make vertical dimension unscrollable
+ * @* GXK_SCROLL_TEXT_WIDGET_LOOK - this is a combination of flags
  * to adjust the scroll text to look like an ordinary #GtkLabel,
  * which amounts to using a sans serif font, normal widget
  * background and allowing word wrapping.
