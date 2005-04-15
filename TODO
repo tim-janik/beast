@@ -241,7 +241,7 @@ Alper:
 - what kind of texi macros should be used to markup manual page contents?
   could WRITING.3 have a set of default macros showing this?
 - allow commas in @refBlurb{}, respectively Info BLURB = ","; texts
-- make navigation.xml on gtk.org: obsolete
+- make navigation.xml on gtk.org: obsolete (transfer site-navigation.xml somehow)
 - write manual pages with doxygen, improvement over .texi?
 
 MONITORING DIALOG:
