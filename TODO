@@ -220,7 +220,6 @@ TODO:
 
 DOCS:
 - fix urls in ChangeLogs ending up after .texi conversion as @uref{@uref{URLS}}
-- command line option arguments in manual pages are incorrectly spaced
 - Provide an "Architecture Overview" that describes how SFI, SFIDL, GSL, BSE,
   the engine, BSESH, Scheme, BSW, BEAST, GTK and GXK work together.
   rough outline: http://mail.gnome.org/archives/beast/2003-October/msg00007.html
@@ -234,12 +233,16 @@ DOCS:
 - add QuickStart-Samples docs once we support sample editing [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
-- what kind of texi macros should be used to markup manual page contents?
-  could WRITING.3 have a set of default macros showing this? [alper]
-- allow commas in @refBlurb{}, respectively Info BLURB = ","; texts [alper]
 - plugin-devel: mention possibility of deriving from BassFilterProperties() for expensive
   table etc. calculations
 - automate uploading of images from docs/ to gtk.org:/web/beast/html/cvs-images/
+Alper:
+- command line option arguments in manual pages are incorrectly spaced
+- what kind of texi macros should be used to markup manual page contents?
+  could WRITING.3 have a set of default macros showing this?
+- allow commas in @refBlurb{}, respectively Info BLURB = ","; texts
+- make navigation.xml on gtk.org: obsolete
+- write manual pages with doxygen, improvement over .texi?
 
 MONITORING DIALOG:
 * Frame "Thread Info"
