@@ -1,3 +1,7 @@
+Mon Apr 18 23:22:44 2005  Tim Janik  <timj@gtk.org>
+
+	* configure.in: version 0.6.6-rc1.
+
 Wed Apr 13 03:28:43 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: released beast 0.6.5, binary 0, interface 0.
