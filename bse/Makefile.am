@@ -40,7 +40,7 @@ libbse_la_LIBADD = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = $(strip \
 	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
-	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h \
+	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h $(GSL_PUBLIC_headers) \
 	bseengine.h		bseenginemaster.h	bseengineschedule.h		bseengineutils.h \
 	bsebus.h		            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \

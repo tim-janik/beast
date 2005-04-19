@@ -1,3 +1,7 @@
+Tue Apr 19 16:30:51 2005  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am, gslmakefile.inc: fixed gsl headers not being uninstalled.
+
 Tue Apr 19 15:44:46 2005  Tim Janik  <timj@gtk.org>
 
 	* bsedefs.h: prototype BseLoader structures.

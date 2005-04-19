@@ -1,6 +1,7 @@
 # this makefile defines:
 #
 # GSL_C_SRC		C source files which need to be added to *_SOURCES
+# GSL_PUBLIC_headers	Header files that need to be installed
 # GSL_NOINST_PROGS	GSL test programs, needs to be added to noinst_PROGRAMS
 #
 # this makefile supports:
@@ -53,12 +54,12 @@ gslconfig.h: $(top_srcdir)/configure Makefile
 CLEANFILES += gslconfig.h xgen-gch
 $(OBJECTS): gslconfig.h
 
-gsl_public_headers = $(GSL_H_SRC) gslconfig.h
+GSL_PUBLIC_headers = $(GSL_H_SRC) gslconfig.h
 
 #install-data-local:	gsl-install-data-local
 #gsl-install-data-local:
 #	$(mkinstalldirs) $(DESTDIR)$(gslincludedir)
-#	@list='$(gsl_public_headers)'; \
+#	@list='$(GSL_PUBLIC_headers)'; \
 #	test -z "$(gslincludedir)" || for hfile in $$list ; do \
 #	  if test -f "$$hfile"; then d= ; else d="$(srcdir)/"; fi; \
 #	  echo " $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile"; \
