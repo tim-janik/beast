@@ -1,3 +1,9 @@
+Tue Apr 19 16:16:53 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.hh: CVS copied from tools/bsewavetool.h.
+
+	* tools/bwtwave.hh: CVS copied from tools/bwtwave.h.
+
 Tue Apr 19 16:13:37 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefcompare.cc, tools/bsefextract.cc:
