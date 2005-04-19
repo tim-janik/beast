@@ -22,16 +22,15 @@ GSL_H_SRC     = $(strip \
 	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
 	gslfilter.h		gslcommon.h \
 	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
-	gsldatahandle-mad.h	gslloader.h	gslfilehash.h	gsldatautils.h	\
+	gsldatahandle-mad.h	           	gslfilehash.h	gsldatautils.h	\
 	gslwaveosc.h		gslosctable.h	gslmagic.h	\
 )
 GSL_C_SRC     =	$(strip \
 	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
 	gslfilter.c		gslcommon.c \
-	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-bsewave.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
-	gsldatahandle-mad.c	gslloader.c	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.c		gslosctable.c	gslmagic.c	gslloader-aiff.c \
+	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
+	gslwaveosc.c		gslosctable.c	gslmagic.c	                 \
 )
 GSL_EXTRA_SRC =	gslconfig.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
 GSL_EXTRA_DAT = gsl.gnuplot gslarrows bsewave.header \
@@ -56,17 +55,17 @@ $(OBJECTS): gslconfig.h
 
 gsl_public_headers = $(GSL_H_SRC) gslconfig.h
 
-install-data-local:	gsl-install-data-local
-gsl-install-data-local:
-	$(mkinstalldirs) $(DESTDIR)$(gslincludedir)
-	@list='$(gsl_public_headers)'; \
-	test -z "$(gslincludedir)" || for hfile in $$list ; do \
-	  if test -f "$$hfile"; then d= ; else d="$(srcdir)/"; fi; \
-	  echo " $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile"; \
-	  $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile; \
-	done
+#install-data-local:	gsl-install-data-local
+#gsl-install-data-local:
+#	$(mkinstalldirs) $(DESTDIR)$(gslincludedir)
+#	@list='$(gsl_public_headers)'; \
+#	test -z "$(gslincludedir)" || for hfile in $$list ; do \
+#	  if test -f "$$hfile"; then d= ; else d="$(srcdir)/"; fi; \
+#	  echo " $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile"; \
+#	  $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile; \
+#	done
 
-.PHONY:	gsltestoutput gsl-install-data-local
+.PHONY:	gsltestoutput # gsl-install-data-local
 
 gsltestoutput:
 	@./gsltests blp     7 0.3		0.1211

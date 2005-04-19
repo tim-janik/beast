@@ -19,7 +19,7 @@
 #include <bse/bseprocedure.h>
 #include <bse/bseserver.h>
 #include <bse/bseproject.h>
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/bsemidinotifier.h>
 #include <bse/bsemidievent.h>
 #include <bse/bsejanitor.h>
@@ -131,17 +131,17 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseServer *server	= bse_value_get_object (in_values++);
   gchar *file_name	= sfi_value_get_string (in_values++);
-  GslWaveFileInfo *finfo;
+  BseWaveFileInfo *finfo;
   
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* find a loader */
-  finfo = gsl_wave_file_info_load (file_name, NULL);
+  finfo = bse_wave_file_info_load (file_name, NULL);
   sfi_value_set_bool (out_values++, finfo != NULL);
   if (finfo)
-    gsl_wave_file_info_unref (finfo);
+    bse_wave_file_info_unref (finfo);
   
   return BSE_ERROR_NONE;
 }

@@ -1,4 +1,4 @@
-/* GSL - Generic Sound Layer
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2001-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslloader.h"
+#include "bseloader.h"
 
 #include "gslcommon.h"
 #include "gsldatahandle.h"
@@ -26,25 +26,25 @@
 
 
 /* --- variables --- */
-static GslLoader *gsl_loader_list = NULL;
+static BseLoader *bse_loader_list = NULL;
 static SfiRing   *gsl_magic_list1 = NULL;
 static SfiRing   *gsl_magic_list2 = NULL;
 
 
 /* --- functions --- */
-static GslLoader*
+static BseLoader*
 loader_find_by_name (const gchar *name)
 {
-  GslLoader *loader;
+  BseLoader *loader;
 
-  for (loader = gsl_loader_list; loader != NULL; loader = loader->next)
+  for (loader = bse_loader_list; loader != NULL; loader = loader->next)
     if (strcmp (name, loader->name) == 0)
       return loader;
   return NULL;
 }
 
 void
-gsl_loader_register (GslLoader *loader)
+bse_loader_register (BseLoader *loader)
 {
   g_return_if_fail (loader != NULL);
   g_return_if_fail (loader->name != NULL);
@@ -57,8 +57,8 @@ gsl_loader_register (GslLoader *loader)
   g_return_if_fail (loader->free_wave_dsc != NULL);
   g_return_if_fail (loader->create_chunk_handle != NULL);
   
-  loader->next = gsl_loader_list;
-  gsl_loader_list = loader;
+  loader->next = bse_loader_list;
+  bse_loader_list = loader;
 
   if (loader->magic_specs)
     {
@@ -73,7 +73,7 @@ gsl_loader_register (GslLoader *loader)
 		magic = gsl_magic_create (loader, loader->priority,
 					  loader->extensions[j], loader->magic_specs[i]);
 		gsl_magic_list1 = sfi_ring_append (gsl_magic_list1, magic);
-		if (loader->flags & GSL_LOADER_SKIP_PRECEEDING_NULLS)
+		if (loader->flags & BSE_LOADER_SKIP_PRECEEDING_NULLS)
 		  gsl_magic_list2 = sfi_ring_append (gsl_magic_list2, magic);
 	      }
 	  else
@@ -81,7 +81,7 @@ gsl_loader_register (GslLoader *loader)
 	      magic = gsl_magic_create (loader, loader->priority,
 					NULL, loader->magic_specs[i]);
 	      gsl_magic_list1 = sfi_ring_append (gsl_magic_list1, magic);
-	      if (loader->flags & GSL_LOADER_SKIP_PRECEEDING_NULLS)
+	      if (loader->flags & BSE_LOADER_SKIP_PRECEEDING_NULLS)
 		gsl_magic_list2 = sfi_ring_append (gsl_magic_list2, magic);
 	    }
 	}
@@ -101,8 +101,8 @@ skipchr (const guint8 *mem,
   return NULL;
 }
 
-GslLoader*
-gsl_loader_match (const gchar *file_name)
+BseLoader*
+bse_loader_match (const gchar *file_name)
 {
   GslMagic *magic = NULL;
 
@@ -146,19 +146,19 @@ gsl_loader_match (const gchar *file_name)
   return magic ? magic->data : NULL;
 }
 
-GslWaveFileInfo*
-gsl_wave_file_info_load (const gchar  *file_name,
+BseWaveFileInfo*
+bse_wave_file_info_load (const gchar  *file_name,
 			 BseErrorType *error_p)
 {
-  GslWaveFileInfo *finfo = NULL;
+  BseWaveFileInfo *finfo = NULL;
   BseErrorType error = BSE_ERROR_NONE;
-  GslLoader *loader;
+  BseLoader *loader;
   
   if (error_p)
     *error_p = BSE_ERROR_INTERNAL;
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  loader = gsl_loader_match (file_name);
+  loader = bse_loader_match (file_name);
   if (loader)
     {
       finfo = loader->load_file_info (loader->data, file_name, &error);
@@ -209,7 +209,7 @@ gsl_wave_file_info_load (const gchar  *file_name,
 }
 
 void
-gsl_wave_file_info_unref (GslWaveFileInfo *wave_file_info)
+bse_wave_file_info_unref (BseWaveFileInfo *wave_file_info)
 {
   g_return_if_fail (wave_file_info != NULL);
   g_return_if_fail (wave_file_info->ref_count > 0);
@@ -217,7 +217,7 @@ gsl_wave_file_info_unref (GslWaveFileInfo *wave_file_info)
   wave_file_info->ref_count--;
   if (!wave_file_info->ref_count)
     {
-      GslLoader *loader = wave_file_info->loader;
+      BseLoader *loader = wave_file_info->loader;
 
       g_free (wave_file_info->file_name);
       wave_file_info->file_name = NULL;
@@ -229,8 +229,8 @@ gsl_wave_file_info_unref (GslWaveFileInfo *wave_file_info)
     }
 }
 
-GslWaveFileInfo*
-gsl_wave_file_info_ref (GslWaveFileInfo *wave_file_info)
+BseWaveFileInfo*
+bse_wave_file_info_ref (BseWaveFileInfo *wave_file_info)
 {
   g_return_val_if_fail (wave_file_info != NULL, NULL);
   g_return_val_if_fail (wave_file_info->ref_count > 0, NULL);
@@ -241,22 +241,22 @@ gsl_wave_file_info_ref (GslWaveFileInfo *wave_file_info)
 }
 
 const gchar*
-gsl_wave_file_info_loader (GslWaveFileInfo *fi)
+bse_wave_file_info_loader (BseWaveFileInfo *fi)
 {
   g_return_val_if_fail (fi != NULL, NULL);
 
   return fi->loader->name;
 }
 
-GslWaveDsc*
-gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
+BseWaveDsc*
+bse_wave_dsc_load (BseWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
                    gboolean         accept_empty,
                    BseErrorType    *error_p)
 {
   BseErrorType error = BSE_ERROR_NONE;
-  GslWaveDsc *wdsc;
-  GslLoader *loader;
+  BseWaveDsc *wdsc;
+  BseLoader *loader;
 
   if (error_p)
     *error_p = BSE_ERROR_INTERNAL;
@@ -283,7 +283,7 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 	  g_return_val_if_fail (wdsc->name && strcmp (wdsc->name, wave_file_info->waves[nth_wave].name) == 0, NULL);
 	  
 	  wdsc->file_info = wave_file_info;
-	  gsl_wave_file_info_ref (wave_file_info);
+	  bse_wave_file_info_ref (wave_file_info);
 	}
       else
 	{
@@ -300,26 +300,26 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 }
 
 void
-gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
+bse_wave_dsc_free (BseWaveDsc *wave_dsc)
 {
   g_return_if_fail (wave_dsc != NULL);
   g_return_if_fail (wave_dsc->file_info != NULL);
 
-  GslWaveFileInfo *file_info = wave_dsc->file_info;
+  BseWaveFileInfo *file_info = wave_dsc->file_info;
 
   file_info->loader->free_wave_dsc (file_info->loader->data, wave_dsc);
 
-  gsl_wave_file_info_unref (file_info);
+  bse_wave_file_info_unref (file_info);
 }
 
 GslDataHandle*
-gsl_wave_handle_create (GslWaveDsc   *wave_dsc,
+bse_wave_handle_create (BseWaveDsc   *wave_dsc,
 			guint	      nth_chunk,
 			BseErrorType *error_p)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslDataHandle *dhandle;
-  GslLoader *loader;
+  BseLoader *loader;
 
   if (error_p)
     *error_p = BSE_ERROR_INTERNAL;
@@ -349,7 +349,7 @@ gsl_wave_handle_create (GslWaveDsc   *wave_dsc,
 }
 
 GslWaveChunk*
-gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
+bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
 		       guint         nth_chunk,
 		       BseErrorType *error_p)
 {
@@ -362,11 +362,11 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
   g_return_val_if_fail (wave_dsc != NULL, NULL);
   g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
 
-  dhandle = gsl_wave_handle_create (wave_dsc, nth_chunk, error_p);
+  dhandle = bse_wave_handle_create (wave_dsc, nth_chunk, error_p);
   if (!dhandle)
     return NULL;
 
-  GslWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
+  BseWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
 
   if (error_p)
     *error_p = BSE_ERROR_IO;

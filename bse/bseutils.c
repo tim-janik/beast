@@ -207,7 +207,7 @@ bse_debug_dump_floats (guint   debug_stream,
       debug_fds[debug_stream] = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
       g_free (file);
       if (debug_fds[debug_stream] >= 0)
-        gsl_wave_file_dump_header (debug_fds[debug_stream], 0x7fff0000, 16, n_channels, mix_freq);
+        bse_wave_file_dump_header (debug_fds[debug_stream], 0x7fff0000, 16, n_channels, mix_freq);
     }
   if (debug_fds[debug_stream] >= 0)
     {

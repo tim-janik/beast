@@ -1,4 +1,4 @@
-/* GSL - Generic Sound Layer
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2001-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_LOADER_H__
-#define __GSL_LOADER_H__
+#ifndef __BSE_LOADER_H__
+#define __BSE_LOADER_H__
 
 #include <bse/bseutils.h>
 #include <bse/gslwavechunk.h>
@@ -25,7 +25,7 @@
 G_BEGIN_DECLS
 
 /* --- structures --- */
-struct _GslWaveFileInfo
+struct _BseWaveFileInfo
 {
   guint	   n_waves;
   struct {
@@ -36,20 +36,20 @@ struct _GslWaveFileInfo
 
   /*< private >*/
   gchar     *file_name;
-  GslLoader *loader;
+  BseLoader *loader;
   guint      ref_count;
 };
-struct _GslWaveDsc
+struct _BseWaveDsc
 {
   gchar		  *name;
   guint	           n_chunks;
-  GslWaveChunkDsc *chunks;
+  BseWaveChunkDsc *chunks;
   guint            n_channels;
   gchar          **xinfos;
   /*< private >*/
-  GslWaveFileInfo *file_info;
+  BseWaveFileInfo *file_info;
 };
-struct _GslWaveChunkDsc
+struct _BseWaveChunkDsc
 {
   gfloat	  osc_freq;
   gfloat	  mix_freq;
@@ -64,20 +64,20 @@ struct _GslWaveChunkDsc
 
 
 /* --- functions --- */
-GslWaveFileInfo*      gsl_wave_file_info_load	(const gchar	 *file_name,
+BseWaveFileInfo*      bse_wave_file_info_load	(const gchar	 *file_name,
 						 BseErrorType	 *error);
-GslWaveFileInfo*      gsl_wave_file_info_ref	(GslWaveFileInfo *wave_file_info);
-void                  gsl_wave_file_info_unref	(GslWaveFileInfo *wave_file_info);
-const gchar*	      gsl_wave_file_info_loader	(GslWaveFileInfo *fi);
-GslWaveDsc*	      gsl_wave_dsc_load		(GslWaveFileInfo *wave_file_info,
+BseWaveFileInfo*      bse_wave_file_info_ref	(BseWaveFileInfo *wave_file_info);
+void                  bse_wave_file_info_unref	(BseWaveFileInfo *wave_file_info);
+const gchar*	      bse_wave_file_info_loader	(BseWaveFileInfo *fi);
+BseWaveDsc*	      bse_wave_dsc_load		(BseWaveFileInfo *wave_file_info,
 						 guint		  nth_wave,
                                                  gboolean         accept_empty,
 						 BseErrorType	 *error);
-void		      gsl_wave_dsc_free		(GslWaveDsc	 *wave_dsc);
-GslDataHandle*	      gsl_wave_handle_create	(GslWaveDsc	 *wave_dsc,
+void		      bse_wave_dsc_free		(BseWaveDsc	 *wave_dsc);
+GslDataHandle*	      bse_wave_handle_create	(BseWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
 						 BseErrorType	 *error);
-GslWaveChunk*	      gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
+GslWaveChunk*	      bse_wave_chunk_create	(BseWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
 						 BseErrorType	 *error);
 
@@ -85,10 +85,10 @@ GslWaveChunk*	      gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
 /* --- loader impl --- */
 typedef enum /*< skip >*/
 {
-  GSL_LOADER_NO_FLAGS              = 0,
-  GSL_LOADER_SKIP_PRECEEDING_NULLS = 1 << 0
-} GslLoaderFlags;
-struct _GslLoader
+  BSE_LOADER_NO_FLAGS              = 0,
+  BSE_LOADER_SKIP_PRECEEDING_NULLS = 1 << 0
+} BseLoaderFlags;
+struct _BseLoader
 {
   const gchar *name;		/* format/loader name, e.g. "BseWave" or "WAVE audio, RIFF (little-endian)" */
 
@@ -98,34 +98,34 @@ struct _GslLoader
    */
   const gchar **extensions;	/* e.g.: "mp3", "ogg" or "bsewave" */
   const gchar **mime_types;	/* e.g.: "audio/x-mpg3" or "audio/x-wav" */
-  GslLoaderFlags flags;
+  BseLoaderFlags flags;
   const gchar **magic_specs;	/* e.g.: "0 string RIFF\n8 string WAVE\n" or "0 string #BseWave1\n" */
 
   gint   priority;   /* -100=high, +100=low, 0=default */
 
   /*< private >*/
   gpointer		  data;
-  GslWaveFileInfo*	(*load_file_info)	(gpointer	   data,
+  BseWaveFileInfo*	(*load_file_info)	(gpointer	   data,
 						 const gchar	  *file_name,
 						 BseErrorType	  *error);
   void			(*free_file_info)	(gpointer	   data,
-						 GslWaveFileInfo  *file_info);
-  GslWaveDsc*		(*load_wave_dsc)	(gpointer	   data,
-						 GslWaveFileInfo  *file_info,
+						 BseWaveFileInfo  *file_info);
+  BseWaveDsc*		(*load_wave_dsc)	(gpointer	   data,
+						 BseWaveFileInfo  *file_info,
 						 guint		   nth_wave,
 						 BseErrorType	  *error);
   void			(*free_wave_dsc)	(gpointer	   data,
-						 GslWaveDsc	  *wave_dsc);
+						 BseWaveDsc	  *wave_dsc);
   GslDataHandle*	(*create_chunk_handle)	(gpointer	   data,
-						 GslWaveDsc	  *wave_dsc,
+						 BseWaveDsc	  *wave_dsc,
 						 guint		   nth_chunk,
 						 BseErrorType	  *error);
-  GslLoader   *next;	/* must be NULL */
+  BseLoader   *next;	/* must be NULL */
 };
 
-void	      gsl_loader_register	        (GslLoader	 *loader);
-GslLoader*    gsl_loader_match	                (const gchar	 *file_name);
+void	      bse_loader_register	        (BseLoader	 *loader);
+BseLoader*    bse_loader_match	                (const gchar	 *file_name);
 
 G_END_DECLS
 
-#endif /* __GSL_LOADER_H__ */
+#endif /* __BSE_LOADER_H__ */

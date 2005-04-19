@@ -73,19 +73,19 @@ gint /* errno */     gsl_data_handle_dump	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 GslWaveFormatType	 format,
 						 guint			 byte_order);
-gint /* errno */     gsl_wave_file_dump_header	(gint			 fd,
+gint /* errno */     bse_wave_file_dump_header	(gint			 fd,
 						 guint			 n_data_bytes,
 						 guint			 n_bits,
 						 guint			 n_channels,
 						 guint		         sample_freq);
-gint /* errno */     gsl_wave_file_patch_length (gint			 fd,
+gint /* errno */     bse_wave_file_patch_length (gint			 fd,
 						 guint			 n_data_bytes);
 gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 guint			 n_bits,
 						 guint			 n_channels,
 						 guint			 sample_freq);
-gint /* errno */     gsl_wave_file_dump_data	(gint			 fd,
+gint /* errno */     bse_wave_file_dump_data	(gint			 fd,
 						 guint			 n_bits,
 						 guint			 n_values,
 						 const gfloat		*values);

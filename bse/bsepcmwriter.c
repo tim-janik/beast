@@ -117,7 +117,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
 
-  errno = gsl_wave_file_dump_header (fd, 0x7fff0000, 16, n_channels, sample_freq);
+  errno = bse_wave_file_dump_header (fd, 0x7fff0000, 16, n_channels, sample_freq);
   if (errno)
     {
       close (fd);
@@ -139,7 +139,7 @@ bse_pcm_writer_close (BsePcmWriter *self)
   g_return_if_fail (self->open);
 
   SFI_SYNC_LOCK (&self->mutex);
-  gsl_wave_file_patch_length (self->fd, self->n_bytes);
+  bse_wave_file_patch_length (self->fd, self->n_bytes);
   close (self->fd);
   self->fd = -1;
   self->open = FALSE;

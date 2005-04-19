@@ -111,6 +111,12 @@ typedef struct  _BseModuleClass            BseModuleClass;
 /* dereference BseModule.user_data without including bseengine.h */
 #define	BSE_MODULE_GET_USER_DATA(bsemodule)	(((gpointer*) bsemodule)[1])
 
+/* --- Bse Loader --- */
+typedef struct _BseLoader               BseLoader;
+typedef struct _BseWaveFileInfo         BseWaveFileInfo;
+typedef struct _BseWaveDsc              BseWaveDsc;
+typedef struct _BseWaveChunkDsc         BseWaveChunkDsc;
+
 
 /* --- BSE aux structures --- */
 typedef struct  _BseExportNode          BseExportNode;

@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslloader.h"
+#include "bseloader.h"
 
 #include "gsldatahandle.h"
 
@@ -265,11 +265,11 @@ wav_read_data_header (gint        fd,
 
 typedef struct
 {
-  GslWaveFileInfo wfi;
+  BseWaveFileInfo wfi;
   gint            fd;
 } FileInfo;
 
-static GslWaveFileInfo*
+static BseWaveFileInfo*
 wav_load_file_info (gpointer      data,
 		    const gchar  *file_name,
 		    BseErrorType *error_p)
@@ -303,7 +303,7 @@ wav_load_file_info (gpointer      data,
 
 static void
 wav_free_file_info (gpointer         data,
-		    GslWaveFileInfo *file_info)
+		    BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   
@@ -315,15 +315,15 @@ wav_free_file_info (gpointer         data,
 
 typedef struct
 {
-  GslWaveDsc wdsc;
+  BseWaveDsc wdsc;
   GslLong    data_offset;
   GslLong    n_values;
   GslWaveFormatType format;
 } WaveDsc;
 
-static GslWaveDsc*
+static BseWaveDsc*
 wav_load_wave_dsc (gpointer         data,
-		   GslWaveFileInfo *file_info,
+		   BseWaveFileInfo *file_info,
 		   guint            nth_wave,
 		   BseErrorType    *error_p)
 {
@@ -392,7 +392,7 @@ wav_load_wave_dsc (gpointer         data,
 
 static void
 wav_free_wave_dsc (gpointer    data,
-		   GslWaveDsc *wave_dsc)
+		   BseWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   guint i;
@@ -405,7 +405,7 @@ wav_free_wave_dsc (gpointer    data,
 
 static GslDataHandle*
 wav_create_chunk_handle (gpointer      data,
-			 GslWaveDsc   *wave_dsc,
+			 BseWaveDsc   *wave_dsc,
 			 guint         nth_chunk,
 			 BseErrorType *error_p)
 {
@@ -455,7 +455,7 @@ _gsl_init_loader_wav (void)
      ),
     NULL,
   };
-  static GslLoader loader = {
+  static BseLoader loader = {
     "RIFF, WAVE audio, PCM",
     file_exts,
     mime_types,
@@ -474,5 +474,5 @@ _gsl_init_loader_wav (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
   
-  gsl_loader_register (&loader);
+  bse_loader_register (&loader);
 }

@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslloader.h"
+#include "bseloader.h"
 
 #include "gsldatahandle.h"
 #include "gsldatahandle-vorbis.h"
@@ -97,19 +97,19 @@ static const char *bsewave_tokens[] = {
 /* --- structures --- */
 typedef struct
 {
-  GslWaveFileInfo wfi;
+  BseWaveFileInfo wfi;
   gchar          *cwd;
 } FileInfo;
 
 typedef struct
 {
-  GslWaveDsc        wdsc;
+  BseWaveDsc        wdsc;
   GslWaveFormatType dfl_format;
   guint		    dfl_byte_order;
   gfloat	    dfl_mix_freq;
 } WaveDsc;
 
-/* GslWaveChunkDsc accessors */
+/* BseWaveChunkDsc accessors */
 #define LOADER_TYPE(wcd)        ((wcd)->loader_data[0].uint)
 #define LOADER_FILE(wcd)        ((wcd)->loader_data[1].ptr)
 #define LOADER_INDEX(wcd)       ((wcd)->loader_data[2].ptr)
@@ -145,7 +145,7 @@ bsewave_skip_rest_statement (GScanner *scanner,
   return G_TOKEN_NONE;
 }
 
-static GslWaveFileInfo*
+static BseWaveFileInfo*
 bsewave_load_file_info (gpointer      data,
 			const gchar  *_file_name,
 			BseErrorType *error_p)
@@ -255,7 +255,7 @@ bsewave_load_file_info (gpointer      data,
 
 static void
 bsewave_free_file_info (gpointer         data,
-			GslWaveFileInfo *file_info)
+			BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   guint i;
@@ -269,7 +269,7 @@ bsewave_free_file_info (gpointer         data,
 
 static guint
 bsewave_parse_chunk_dsc (GScanner        *scanner,
-			 GslWaveChunkDsc *chunk)
+			 BseWaveChunkDsc *chunk)
 {
   parse_or_return (scanner, '{');
   do
@@ -564,9 +564,9 @@ bsewave_wave_dsc_free (WaveDsc *dsc)
   sfi_delete_struct (WaveDsc, dsc);
 }
 
-static GslWaveDsc*
+static BseWaveDsc*
 bsewave_load_wave_dsc (gpointer         data,
-		       GslWaveFileInfo *file_info,
+		       BseWaveFileInfo *file_info,
 		       guint            nth_wave,
 		       BseErrorType    *error_p)
 {
@@ -632,7 +632,7 @@ bsewave_load_wave_dsc (gpointer         data,
 
 static void
 bsewave_free_wave_dsc (gpointer    data,
-		       GslWaveDsc *wave_dsc)
+		       BseWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   
@@ -640,13 +640,13 @@ bsewave_free_wave_dsc (gpointer    data,
 }
 
 static GslDataHandle*
-bsewave_load_singlechunk_wave (GslWaveFileInfo *fi,
+bsewave_load_singlechunk_wave (BseWaveFileInfo *fi,
 			       const gchar     *wave_name,
                                gfloat           osc_freq,
 			       BseErrorType    *error_p,
                                guint           *n_channelsp)
 {
-  GslWaveDsc *wdsc;
+  BseWaveDsc *wdsc;
   guint i;
   
   if (fi->n_waves == 1 && !wave_name)
@@ -667,14 +667,14 @@ bsewave_load_singlechunk_wave (GslWaveFileInfo *fi,
       return NULL;
     }
   
-  wdsc = gsl_wave_dsc_load (fi, i, FALSE, error_p);
+  wdsc = bse_wave_dsc_load (fi, i, FALSE, error_p);
   if (!wdsc)
     return NULL;
   
   if (wdsc->n_chunks == 1)
     {
       *n_channelsp = wdsc->n_channels;
-      GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, 0, error_p);
+      GslDataHandle *dhandle = bse_wave_handle_create (wdsc, 0, error_p);
       if (dhandle && osc_freq > 0)
         {
           gchar **xinfos = NULL;
@@ -684,27 +684,27 @@ bsewave_load_singlechunk_wave (GslWaveFileInfo *fi,
           gsl_data_handle_unref (dhandle);
           dhandle = tmp_handle;
         }
-      gsl_wave_dsc_free (wdsc);
+      bse_wave_dsc_free (wdsc);
       return dhandle;
     }
   
   /* this is ridiculous, letting the chunk of a wave
    * point to a wave with multiple chunks...
    */
-  gsl_wave_dsc_free (wdsc);
+  bse_wave_dsc_free (wdsc);
   *error_p = BSE_ERROR_FORMAT_INVALID;
   return NULL;
 }
 
 static GslDataHandle*
 bsewave_create_chunk_handle (gpointer      data,
-			     GslWaveDsc   *wave_dsc,
+			     BseWaveDsc   *wave_dsc,
 			     guint         nth_chunk,
 			     BseErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
-  GslWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
+  BseWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
   
   GslDataHandle *dhandle = NULL;
   switch (LOADER_TYPE (chunk))
@@ -718,7 +718,7 @@ bsewave_create_chunk_handle (gpointer      data,
       else
         string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) LOADER_FILE (chunk));
       /* try to load the chunk via registered loaders */
-      GslWaveFileInfo *cfi = gsl_wave_file_info_load (string, error_p);
+      BseWaveFileInfo *cfi = bse_wave_file_info_load (string, error_p);
       if (cfi)
 	{
           guint nch = 0;
@@ -739,7 +739,7 @@ bsewave_create_chunk_handle (gpointer      data,
               gsl_data_handle_unref (dhandle);
               dhandle = NULL;
             }
-	  gsl_wave_file_info_unref (cfi);
+	  bse_wave_file_info_unref (cfi);
 	}
       g_free (string);
       break;
@@ -820,7 +820,7 @@ _gsl_init_loader_gslwave (void)
   static const gchar *file_exts[] = { "bsewave", NULL, };
   static const gchar *mime_types[] = { "audio/x-bsewave", NULL, };
   static const gchar *magics[] = { "0 string #BseWave1", NULL, };
-  static GslLoader loader = {
+  static BseLoader loader = {
     "BseWave",
     file_exts,
     mime_types,
@@ -839,5 +839,5 @@ _gsl_init_loader_gslwave (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
   
-  gsl_loader_register (&loader);
+  bse_loader_register (&loader);
 }

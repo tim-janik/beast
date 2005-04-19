@@ -19,7 +19,7 @@
 #define GSL_EXTENSIONS
 #include <bse/gslcommon.h>
 #include <bse/gslfilter.h>
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/bsemathsignal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -108,10 +108,10 @@ main (int   argc,
       
       while (file)
 	{
-	  GslWaveFileInfo *fi;
+	  BseWaveFileInfo *fi;
 	  BseErrorType error;
 	  
-	  fi = gsl_wave_file_info_load (file, &error);
+	  fi = bse_wave_file_info_load (file, &error);
 	  if (fi)
 	    {
 	      guint i;
@@ -119,7 +119,7 @@ main (int   argc,
 	      g_print ("Loader \"%s\" found %u waves in \"%s\":\n", fi->loader->name, fi->n_waves, file);
 	      for (i = 0; i < fi->n_waves; i++)
 		g_print ("%u) %s\n", i + 1, fi->waves[i].name);
-	      gsl_wave_file_info_unref (fi);
+	      bse_wave_file_info_unref (fi);
 	    }
 	  else
 	    g_print ("Failed to scan \"%s\": %s\n", file, bse_error_blurb (error));

@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslloader.h"
+#include "bseloader.h"
 
 #include "gsldatahandle.h"
 #include "bsemath.h"
@@ -360,11 +360,11 @@ aiff_file_free (AiffFile *afile)
 
 typedef struct
 {
-  GslWaveFileInfo wfi;
+  BseWaveFileInfo wfi;
   AiffFile       *afile;
 } FileInfo;
 
-static GslWaveFileInfo*
+static BseWaveFileInfo*
 aiff_load_file_info (gpointer      data,
                      const gchar  *file_name,
                      BseErrorType *error_p)
@@ -420,7 +420,7 @@ aiff_load_file_info (gpointer      data,
 
 static void
 aiff_free_file_info (gpointer         data,
-                     GslWaveFileInfo *file_info)
+                     BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   
@@ -432,15 +432,15 @@ aiff_free_file_info (gpointer         data,
 
 typedef struct
 {
-  GslWaveDsc wdsc;
+  BseWaveDsc wdsc;
   GslLong    data_offset;
   GslLong    n_values;
   GslWaveFormatType format;
 } WaveDsc;
 
-static GslWaveDsc*
+static BseWaveDsc*
 aiff_load_wave_dsc (gpointer         data,
-                    GslWaveFileInfo *file_info,
+                    BseWaveFileInfo *file_info,
                     guint            nth_wave,
                     BseErrorType    *error_p)
 {
@@ -500,7 +500,7 @@ aiff_load_wave_dsc (gpointer         data,
 
 static void
 aiff_free_wave_dsc (gpointer    data,
-                    GslWaveDsc *wave_dsc)
+                    BseWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   
@@ -513,7 +513,7 @@ aiff_free_wave_dsc (gpointer    data,
 
 static GslDataHandle*
 aiff_create_chunk_handle (gpointer      data,
-                          GslWaveDsc   *wave_dsc,
+                          BseWaveDsc   *wave_dsc,
                           guint         nth_chunk,
                           BseErrorType *error_p)
 {
@@ -545,7 +545,7 @@ _gsl_init_loader_aiff (void)
      ),
     NULL,
   };
-  static GslLoader loader = {
+  static BseLoader loader = {
     "Audio Interchange File Format",
     file_exts,
     mime_types,
@@ -564,5 +564,5 @@ _gsl_init_loader_aiff (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
   
-  gsl_loader_register (&loader);
+  bse_loader_register (&loader);
 }

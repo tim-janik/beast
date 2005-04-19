@@ -135,7 +135,7 @@ write_uint16_le (gint    fd,
 }
 
 gint /* errno */
-gsl_wave_file_dump_header (gint           fd,
+bse_wave_file_dump_header (gint           fd,
 			   guint	  n_data_bytes,
 			   guint          n_bits,
 			   guint          n_channels,
@@ -174,7 +174,7 @@ gsl_wave_file_dump_header (gint           fd,
 }
 
 gint /* errno */
-gsl_wave_file_patch_length (gint           fd,
+bse_wave_file_patch_length (gint           fd,
 			    guint	   n_data_bytes)
 {
   guint file_length;
@@ -212,7 +212,7 @@ gsl_wave_file_patch_length (gint           fd,
 }
 
 gint /* errno */
-gsl_wave_file_dump_data (gint           fd,
+bse_wave_file_dump_data (gint           fd,
 			 guint		n_bits,
 			 guint	        n_values,
 			 const gfloat  *values)
@@ -252,7 +252,7 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
   data_length = dhandle->setup.n_values * (n_bits == 16 ? 2 : 1);
 
   errno = 0;
-  errno = gsl_wave_file_dump_header (fd, data_length, n_bits, n_channels, sample_freq);
+  errno = bse_wave_file_dump_header (fd, data_length, n_bits, n_channels, sample_freq);
   if (errno)
     return errno;
 

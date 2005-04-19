@@ -22,7 +22,7 @@
 #include "gslwavechunk.h"
 #include "gsldatahandle.h"
 #include "bseserver.h"
-#include <bse/gslloader.h>
+#include "bseloader.h"
 
 #include <string.h>
 
@@ -274,7 +274,7 @@ bse_wave_load_wave_file (BseWave      *self,
 
   bse_wave_clear (self);
 
-  GslWaveFileInfo *fi = gsl_wave_file_info_load (file_name, &error);
+  BseWaveFileInfo *fi = bse_wave_file_info_load (file_name, &error);
   if (fi)
     {
       guint i = 0;
@@ -288,7 +288,7 @@ bse_wave_load_wave_file (BseWave      *self,
         i = fi->n_waves;        /* behind boundary: no wave */
       if (i < fi->n_waves)
 	{
-	  GslWaveDsc *wdsc = gsl_wave_dsc_load (fi, i, FALSE, &error);
+	  BseWaveDsc *wdsc = bse_wave_dsc_load (fi, i, FALSE, &error);
           wave_name = fi->waves[i].name;
 	  if (wdsc && wdsc->n_chunks)
 	    {
@@ -296,7 +296,7 @@ bse_wave_load_wave_file (BseWave      *self,
 		if (bse_freq_arrays_match_freq (wdsc->chunks[i].osc_freq, list_array, skip_array))
 		  {
 		    BseErrorType tmp_error;
-		    GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, &tmp_error);
+		    GslWaveChunk *wchunk = bse_wave_chunk_create (wdsc, i, &tmp_error);
 		    if (wchunk)
                       bse_wave_add_chunk (self, wchunk);
                     else
@@ -314,15 +314,15 @@ bse_wave_load_wave_file (BseWave      *self,
                   bse_wave_set_locator (self, file_name, wave_name);
                 }
               else
-                ; /* error still set from gsl_wave_chunk_create() */
-	      gsl_wave_dsc_free (wdsc);
+                ; /* error still set from bse_wave_chunk_create() */
+	      bse_wave_dsc_free (wdsc);
 	    }
           else if (wdsc)
             error = BSE_ERROR_FILE_EMPTY;
 	}
       else
 	error = BSE_ERROR_FILE_NOT_FOUND;
-      gsl_wave_file_info_unref (fi);
+      bse_wave_file_info_unref (fi);
     }
   else
     {

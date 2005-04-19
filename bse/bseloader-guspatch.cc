@@ -17,7 +17,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslloader.h"
+#include "bseloader.h"
 #include <stdio.h>
 #include <errno.h>
 #include <vector>
@@ -299,8 +299,8 @@ namespace {
  */
 struct FileInfo
 {
-  GslWaveFileInfo wfi;
-  GslWaveDsc      wdsc;
+  BseWaveFileInfo wfi;
+  BseWaveDsc      wdsc;
   
   PatHeader          *header;
   PatInstrument      *instrument;
@@ -429,7 +429,7 @@ struct FileInfo
         return;
       }
     
-    /* allocate GslWaveDsc */
+    /* allocate BseWaveDsc */
     wdsc.n_chunks = instrument->sampleCount;
     wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
     
@@ -454,12 +454,12 @@ struct FileInfo
       }
     fclose (patfile);
     
-    /* allocate and fill GslWaveFileInfo */
+    /* allocate and fill BseWaveFileInfo */
     wfi.n_waves = 1;
     wfi.waves = (typeof (wfi.waves)) g_malloc0 (sizeof (wfi.waves[0]) * wfi.n_waves);
     wfi.waves[0].name = g_strdup (file_name);
     
-    /* fill GslWaveDsc */
+    /* fill BseWaveDsc */
     wdsc.name = g_strdup (file_name);
     /* header->channels means output channels, GUS Patches are mono only */
     wdsc.n_channels = 1;
@@ -528,7 +528,7 @@ struct FileInfo
     delete instrument;
     delete header;
     
-    /* free GslWaveDsc */
+    /* free BseWaveDsc */
     for (guint i = 0; i < wdsc.n_chunks; i++)
       g_strfreev (wdsc.chunks[i].xinfos);
     
@@ -536,7 +536,7 @@ struct FileInfo
     g_free (wdsc.name);
     g_free (wdsc.chunks);
     
-    /* free GslWaveFileInfo */
+    /* free BseWaveFileInfo */
     if (wfi.waves)
       {
 	g_free (wfi.waves[0].name);
@@ -545,7 +545,7 @@ struct FileInfo
   }
 };
 
-static GslWaveFileInfo*
+static BseWaveFileInfo*
 pat_load_file_info (gpointer      data,
 		    const gchar  *file_name,
 		    BseErrorType *error_p)
@@ -562,15 +562,15 @@ pat_load_file_info (gpointer      data,
 
 static void
 pat_free_file_info (gpointer         data,
-		    GslWaveFileInfo *wave_file_info)
+		    BseWaveFileInfo *wave_file_info)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
   delete file_info;
 }
 
-static GslWaveDsc*
+static BseWaveDsc*
 pat_load_wave_dsc (gpointer         data,
-		   GslWaveFileInfo *wave_file_info,
+		   BseWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
 		   BseErrorType    *error_p)
 {
@@ -580,13 +580,13 @@ pat_load_wave_dsc (gpointer         data,
 
 static void
 pat_free_wave_dsc (gpointer    data,
-		   GslWaveDsc *wave_dsc)
+		   BseWaveDsc *wave_dsc)
 {
 }
 
 static GslDataHandle*
 pat_create_chunk_handle (gpointer      data,
-			 GslWaveDsc   *wave_dsc,
+			 BseWaveDsc   *wave_dsc,
 			 guint         nth_chunk,
 			 BseErrorType *error_p)
 {
@@ -594,7 +594,7 @@ pat_create_chunk_handle (gpointer      data,
   
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   const PatPatch *patch = file_info->patches[nth_chunk];
-  const GslWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
+  const BseWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
   
   GUS_PATCH_DEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %u %d",
                    nth_chunk,
@@ -632,11 +632,11 @@ bse_init_loader_gus_patch (void)
     "0  string  GF1PATCH100\0ID#000002\0",      // GUS patch V1.0
     NULL,
   };
-  static GslLoader loader = {
+  static BseLoader loader = {
     "GUS Patch",
     file_exts,
     mime_types,
-    GSL_LOADER_NO_FLAGS,
+    BSE_LOADER_NO_FLAGS,
     magics,
     0,  /* priority */
     NULL,
@@ -651,5 +651,5 @@ bse_init_loader_gus_patch (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
   
-  gsl_loader_register (&loader);
+  bse_loader_register (&loader);
 }

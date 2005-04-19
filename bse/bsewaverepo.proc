@@ -18,7 +18,7 @@
 #include <bse/bseplugin.h>
 #include <bse/bseprocedure.h>
 #include <bse/bsewaverepo.h>
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/bsewave.h>
 
 #include <sys/types.h>
@@ -143,7 +143,7 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   gchar *filename = sfi_value_get_string (in_values++);
   BseSampleFileInfo info = { 0, };
-  GslWaveFileInfo *wfi = NULL;
+  BseWaveFileInfo *wfi = NULL;
   struct stat sbuf = { 0, };
 
   /* check parameters */
@@ -159,13 +159,13 @@ BODY (BseProcedureClass *proc,
     {
       info.size = sbuf.st_size;
       info.mtime = sbuf.st_mtime * SFI_USEC_FACTOR;
-      wfi = gsl_wave_file_info_load (filename, (BseErrorType*) &info.error);
+      wfi = bse_wave_file_info_load (filename, (BseErrorType*) &info.error);
       if (wfi)
 	{
 	  guint i;
 	  for (i = 0; i < wfi->n_waves; i++)
 	    bse_string_seq_append (info.waves, wfi->waves[i].name);
-	  info.loader = (gchar*) gsl_wave_file_info_loader (wfi);
+	  info.loader = (gchar*) bse_wave_file_info_loader (wfi);
 	}
     }
 
@@ -175,7 +175,7 @@ BODY (BseProcedureClass *proc,
   /* cleanup */
   bse_string_seq_free (info.waves);
   if (wfi)
-    gsl_wave_file_info_unref (wfi);
+    bse_wave_file_info_unref (wfi);
 
   return BSE_ERROR_NONE;
 }

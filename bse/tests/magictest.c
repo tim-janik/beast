@@ -19,7 +19,7 @@
 #include "topconfig.h"
 #include <bse/gslmagic.h>
 #include <bse/gslcommon.h>
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/gsldatahandle.h>
 #include <stdio.h>
 #include <string.h>
@@ -82,7 +82,7 @@ main (gint   argc,
 	}
       else
 	{
-	  GslLoader *loader = gsl_loader_match (argv[i]);
+	  BseLoader *loader = bse_loader_match (argv[i]);
 	  GslMagic *magic = gsl_magic_list_match_file (magic_list, argv[i]);
 	  guint l = strlen (argv[i]);
 	  gchar *pad;
@@ -101,12 +101,12 @@ main (gint   argc,
                 {
                   if (test_open)
                     {
-                      GslWaveFileInfo *wfi;
+                      BseWaveFileInfo *wfi;
                       BseErrorType error = 0;
                       g_print ("\n  LOADER: %s\n", loader->name);
-                      wfi = gsl_wave_file_info_load (argv[i], &error);
+                      wfi = bse_wave_file_info_load (argv[i], &error);
                       if (wfi)
-                        gsl_wave_file_info_unref (wfi);
+                        bse_wave_file_info_unref (wfi);
                       g_print ("  ERROR: %s", bse_error_blurb (error));
                     }
                   else

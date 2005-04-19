@@ -62,7 +62,7 @@ bse_public_h_sources = $(strip \
 	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
 	bsenote.h		bsemidifile.h		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
-	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			\
+	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -91,8 +91,9 @@ bse_c_sources = $(strip \
 	bsecompat.c		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
 	bsenote.c		bsemidifile.c		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
-	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			\
-	bseloader-guspatch.cc	\
+	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.c \
+	bseloader-aiff.c	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.c \
+	bseloader-mad.c		bseloader-wav.c		\
 )
 # Synthesis Modules
 bse_idl_sources = $(strip \

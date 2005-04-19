@@ -1,3 +1,20 @@
+Tue Apr 19 15:44:46 2005  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h: prototype BseLoader structures.
+
+	* bseloader.h, bseloader*.c:
+	* tests/magictest.c, tests/mathtests.c: loader rename to Bse.
+
+	* bsepcmwriter.c, bseserver.proc, bseutils.c, bsewave.c:
+	* bsewaverepo.proc, gsldatautils.c, gsldatautils.h: renamed loader
+	and wave file from gsl to bse.
+
+	* gslloader.c, gslloader.h:
+	* gslloader-wav.c, gslloader-oggvorbis.c:
+	* gslloader-aiff.c, gslloader-bsewave.c, gslloader-mad.c: removed.
+
+	* gslmakefile.inc: removed gslloader files and local install hook.
+
 Tue Apr 19 14:39:39 2005  Tim Janik  <timj@gtk.org>
 
 	* bseloader.h: CVS copied from gslloader.h.

@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "bse/gslloader.h"
+#include "bse/bseloader.h"
 
 #include <bse/gsldatahandle.h>
 #include "gsldatahandle-vorbis.h"
@@ -30,13 +30,13 @@
 /* --- structures --- */
 typedef struct
 {
-  GslWaveFileInfo wfi;
+  BseWaveFileInfo wfi;
   OggVorbis_File  ofile;
 } FileInfo;
 #define LOADER_LOGICAL_BIT_STREAM(chunk)    ((chunk).loader_data[0].uint)
 
 /* --- functions --- */
-static GslWaveFileInfo*
+static BseWaveFileInfo*
 oggv_load_file_info (gpointer      data,
 		     const gchar  *file_name,
 		     BseErrorType *error_p)
@@ -83,7 +83,7 @@ oggv_load_file_info (gpointer      data,
 
 static void
 oggv_free_file_info (gpointer         data,
-		     GslWaveFileInfo *file_info)
+		     BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   guint i;
@@ -95,20 +95,20 @@ oggv_free_file_info (gpointer         data,
   sfi_delete_struct (FileInfo, fi);
 }
 
-static GslWaveDsc*
+static BseWaveDsc*
 oggv_load_wave_dsc (gpointer         data,
-		    GslWaveFileInfo *file_info,
+		    BseWaveFileInfo *file_info,
 		    guint            nth_wave,
 		    BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  GslWaveDsc *wdsc = sfi_new_struct0 (GslWaveDsc, 1);
+  BseWaveDsc *wdsc = sfi_new_struct0 (BseWaveDsc, 1);
   vorbis_info *vi = ov_info (&fi->ofile, nth_wave);
 
   wdsc->name = g_strdup (fi->wfi.waves[nth_wave].name);
   wdsc->n_channels = vi->channels;
   wdsc->n_chunks = 1;
-  wdsc->chunks = g_new0 (GslWaveChunkDsc, 1);
+  wdsc->chunks = g_new0 (BseWaveChunkDsc, 1);
   wdsc->chunks[0].osc_freq = 440.0; /* FIXME */
   wdsc->chunks[0].mix_freq = vi->rate;
   LOADER_LOGICAL_BIT_STREAM (wdsc->chunks[0]) = nth_wave;
@@ -118,19 +118,19 @@ oggv_load_wave_dsc (gpointer         data,
 
 static void
 oggv_free_wave_dsc (gpointer    data,
-		    GslWaveDsc *wdsc)
+		    BseWaveDsc *wdsc)
 {
   guint i;
   for (i = 0; i < wdsc->n_chunks; i++)
     g_strfreev (wdsc->chunks[i].xinfos);
   g_free (wdsc->chunks);
   g_free (wdsc->name);
-  sfi_delete_struct (GslWaveDsc, wdsc);
+  sfi_delete_struct (BseWaveDsc, wdsc);
 }
 
 static GslDataHandle*
 oggv_create_chunk_handle (gpointer      data,
-			  GslWaveDsc   *wdsc,
+			  BseWaveDsc   *wdsc,
 			  guint         nth_chunk,
 			  BseErrorType *error_p)
 {
@@ -159,7 +159,7 @@ _gsl_init_loader_oggvorbis (void)
   static const gchar *file_exts[] = { "ogg", NULL, };
   static const gchar *mime_types[] = { "application/ogg", "application/x-ogg", "audio/x-vorbis", "audio/x-ogg", NULL, };
   static const gchar *magics[] = { "0 string OggS\n" "29 string vorbis", NULL, };
-  static GslLoader loader = {
+  static BseLoader loader = {
     "Ogg/Vorbis",
     file_exts,
     mime_types,
@@ -178,5 +178,5 @@ _gsl_init_loader_oggvorbis (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
 
-  gsl_loader_register (&loader);
+  bse_loader_register (&loader);
 }

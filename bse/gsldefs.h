@@ -33,12 +33,8 @@ typedef struct _GslMagic		GslMagic;
 typedef struct _GslDataCache		GslDataCache;
 typedef struct _GslDataHandle		GslDataHandle;
 typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;
-typedef struct _GslLoader		GslLoader;
 typedef struct _GslWaveChunk		GslWaveChunk;
 typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
-typedef struct _GslWaveFileInfo         GslWaveFileInfo;
-typedef struct _GslWaveDsc              GslWaveDsc;
-typedef struct _GslWaveChunkDsc         GslWaveChunkDsc;
 /* ssize_t/off_t type used within Gsl */
 typedef glong			  GslLong;
 #define	GSL_MAXLONG		  G_MAXLONG

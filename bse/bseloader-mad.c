@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "bse/gslloader.h"
+#include "bse/bseloader.h"
 
 #include <bse/gsldatahandle.h>
 #include "gsldatahandle-mad.h"
@@ -27,7 +27,7 @@
 /* --- structures --- */
 typedef struct
 {
-  GslWaveFileInfo wfi;
+  BseWaveFileInfo wfi;
   guint           n_channels;
   gfloat	  mix_freq;
   gfloat	  osc_freq;
@@ -35,7 +35,7 @@ typedef struct
 
 
 /* --- functions --- */
-static GslWaveFileInfo*
+static BseWaveFileInfo*
 mad_load_file_info (gpointer      data,
 		    const gchar  *file_name,
 		    BseErrorType *error_p)
@@ -65,7 +65,7 @@ mad_load_file_info (gpointer      data,
 
 static void
 mad_free_file_info (gpointer         data,
-		    GslWaveFileInfo *file_info)
+		    BseWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   guint i;
@@ -76,19 +76,19 @@ mad_free_file_info (gpointer         data,
   sfi_delete_struct (FileInfo, fi);
 }
 
-static GslWaveDsc*
+static BseWaveDsc*
 mad_load_wave_dsc (gpointer         data,
-		   GslWaveFileInfo *file_info,
+		   BseWaveFileInfo *file_info,
 		   guint            nth_wave,
 		   BseErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  GslWaveDsc *wdsc = sfi_new_struct0 (GslWaveDsc, 1);
+  BseWaveDsc *wdsc = sfi_new_struct0 (BseWaveDsc, 1);
 
   wdsc->name = g_strdup (fi->wfi.waves[0].name);
   wdsc->n_channels = fi->n_channels;
   wdsc->n_chunks = 1;
-  wdsc->chunks = g_new0 (GslWaveChunkDsc, 1);
+  wdsc->chunks = g_new0 (BseWaveChunkDsc, 1);
   wdsc->chunks[0].osc_freq = fi->osc_freq;
   wdsc->chunks[0].mix_freq = fi->mix_freq;
 
@@ -97,19 +97,19 @@ mad_load_wave_dsc (gpointer         data,
 
 static void
 mad_free_wave_dsc (gpointer    data,
-		   GslWaveDsc *wdsc)
+		   BseWaveDsc *wdsc)
 {
   guint i;
   for (i = 0; i < wdsc->n_chunks; i++)
     g_strfreev (wdsc->chunks[i].xinfos);
   g_free (wdsc->chunks);
   g_free (wdsc->name);
-  sfi_delete_struct (GslWaveDsc, wdsc);
+  sfi_delete_struct (BseWaveDsc, wdsc);
 }
 
 static GslDataHandle*
 mad_create_chunk_handle (gpointer      data,
-			 GslWaveDsc   *wdsc,
+			 BseWaveDsc   *wdsc,
 			 guint         nth_chunk,
 			 BseErrorType *error_p)
 {
@@ -195,11 +195,11 @@ _gsl_init_loader_mad (void)
     MAGIC_MPEG_ID3,
     NULL,
   };
-  static GslLoader loader = {
+  static BseLoader loader = {
     "MPEG Audio (MAD: MPEG 1.0/2.0/2.5 Layer III/II/I Decoder)",
     file_exts,
     mime_types,
-    GSL_LOADER_SKIP_PRECEEDING_NULLS,	/* some mp3's have preceeding 0s (partial silence frames?) */
+    BSE_LOADER_SKIP_PRECEEDING_NULLS,	/* some mp3's have preceeding 0s (partial silence frames?) */
     magics,
     0,	/* priority */
     NULL,
@@ -215,5 +215,5 @@ _gsl_init_loader_mad (void)
   initialized = TRUE;
 
   if (GSL_HAVE_LIBMAD)
-    gsl_loader_register (&loader);
+    bse_loader_register (&loader);
 }
