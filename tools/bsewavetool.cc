@@ -20,7 +20,7 @@
 #include "sfiutils.h"
 #include "bwtwave.h"
 #include <bse/bsemain.h>	/* for bse_init_intern() */
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/gslvorbis-enc.h>
 #include <bse/gsldatahandle-vorbis.h>
 #include <stdlib.h>
@@ -141,21 +141,21 @@ main (int   argc,
   BseErrorType error = BSE_ERROR_NONE;
   if (!wave)
     {
-      GslWaveFileInfo *winfo = gsl_wave_file_info_load (input_file.c_str(), &error);
+      BseWaveFileInfo *winfo = bse_wave_file_info_load (input_file.c_str(), &error);
       if (winfo && winfo->n_waves == 1)
         {
-          GslWaveDsc *wdsc = gsl_wave_dsc_load (winfo, 0, TRUE, &error);
+          BseWaveDsc *wdsc = bse_wave_dsc_load (winfo, 0, TRUE, &error);
           if (wdsc)
             {
               wave = new Wave (wdsc->name, wdsc->n_channels, wdsc->xinfos);
               guint i;
               for (i = 0; i < wdsc->n_chunks; i++)
                 {
-                  GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, i, &error);
+                  GslDataHandle *dhandle = bse_wave_handle_create (wdsc, i, &error);
                   if (!dhandle)
                     {
                       sfi_warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
-                                   wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), gsl_wave_file_info_loader (winfo));
+                                   wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
                       if (continue_on_error)
                         error = BSE_ERROR_NONE;
                       else
@@ -171,15 +171,15 @@ main (int   argc,
                       gsl_data_handle_unref (dhandle);
                     }
                 }
-              gsl_wave_dsc_free (wdsc);
+              bse_wave_dsc_free (wdsc);
             }
           else
             {
               sfi_warning ("failed to load wave description from file \"%s\": %s (loader: %s)",
-                           input_file.c_str(), bse_error_blurb (error), gsl_wave_file_info_loader (winfo));
+                           input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
               error = BSE_ERROR_NONE;
             }
-          gsl_wave_file_info_unref (winfo);
+          bse_wave_file_info_unref (winfo);
         }
     }
   if (!wave && !error)
@@ -812,21 +812,21 @@ public:
     GslDataHandle *dhandle = NULL;
     const char *sample_file = opt.sample_file;
     /* load sample file, auto-detecting file type */
-    GslWaveFileInfo *winfo = gsl_wave_file_info_load (sample_file, &error);
+    BseWaveFileInfo *winfo = bse_wave_file_info_load (sample_file, &error);
     if (winfo && winfo->n_waves == 1)
       {
-        GslWaveDsc *wdsc = gsl_wave_dsc_load (winfo, 0, TRUE, &error);
+        BseWaveDsc *wdsc = bse_wave_dsc_load (winfo, 0, TRUE, &error);
         if (wdsc && wdsc->n_chunks == 1)
-          dhandle = gsl_wave_handle_create (wdsc, 0, &error);
+          dhandle = bse_wave_handle_create (wdsc, 0, &error);
         else if (wdsc)
           error = BSE_ERROR_FORMAT_INVALID;
         if (wdsc)
-          gsl_wave_dsc_free (wdsc);
+          bse_wave_dsc_free (wdsc);
       }
     else if (winfo)
       error = BSE_ERROR_FORMAT_INVALID;
     if (winfo)
-      gsl_wave_file_info_unref (winfo);
+      bse_wave_file_info_unref (winfo);
     return dhandle;
   }
   GslDataHandle*

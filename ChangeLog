@@ -1,3 +1,9 @@
+Tue Apr 19 16:13:37 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefcompare.cc, tools/bsefextract.cc:
+	* tools/bsewavetool.cc, tools/bwtwave.cc: 
+	loader and wave file rename from gsl to bse.
+
 Mon Apr 18 23:22:44 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version 0.6.6-rc1.

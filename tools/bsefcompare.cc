@@ -20,7 +20,6 @@
 #include <bse/bsemathsignal.h>
 
 #include <bse/gsldatautils.h>
-#include <bse/gslloader.h>
 #include <bse/gslfft.h>
 #include <stdio.h>
 #include <errno.h>

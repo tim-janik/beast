@@ -20,7 +20,7 @@
 #include <bse/bsemathsignal.h>
 
 #include <bse/gsldatautils.h>
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/gslfft.h>
 #include <stdio.h>
 #include <errno.h>
@@ -597,21 +597,21 @@ int main (int argc, char **argv)
   /* open input */
   BseErrorType error;
 
-  GslWaveFileInfo *waveFileInfo = gsl_wave_file_info_load (argv[1], &error);
+  BseWaveFileInfo *waveFileInfo = bse_wave_file_info_load (argv[1], &error);
   if (!waveFileInfo)
     {
       fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
-  GslWaveDsc *waveDsc = gsl_wave_dsc_load (waveFileInfo, 0, FALSE, &error);
+  BseWaveDsc *waveDsc = bse_wave_dsc_load (waveFileInfo, 0, FALSE, &error);
   if (!waveDsc)
     {
       fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
-  GslDataHandle *dhandle = gsl_wave_handle_create (waveDsc, 0, &error);
+  GslDataHandle *dhandle = bse_wave_handle_create (waveDsc, 0, &error);
   if (!dhandle)
     {
       fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));

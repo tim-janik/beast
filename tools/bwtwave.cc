@@ -19,7 +19,7 @@
 #include <bse/bsemath.h>
 #include <bse/gsldatautils.h>
 #include <bse/gsldatahandle-vorbis.h>
-#include <bse/gslloader.h>
+#include <bse/bseloader.h>
 #include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -86,17 +86,17 @@ WaveChunk::set_dhandle_from_file (const string &fname,
                                   gchar       **xinfos)
 {
   BseErrorType error = BSE_ERROR_NONE;
-  GslWaveFileInfo *wfi = gsl_wave_file_info_load (fname.c_str(), &error);
+  BseWaveFileInfo *wfi = bse_wave_file_info_load (fname.c_str(), &error);
   GslDataHandle *xhandle = NULL;
   if (wfi)
     {
-      GslWaveDsc *wdc = gsl_wave_dsc_load (wfi, 0, FALSE, &error);
+      BseWaveDsc *wdc = bse_wave_dsc_load (wfi, 0, FALSE, &error);
       if (wdc)
         {
-          xhandle = gsl_wave_handle_create (wdc, 0, &error);
-          gsl_wave_dsc_free (wdc);
+          xhandle = bse_wave_handle_create (wdc, 0, &error);
+          bse_wave_dsc_free (wdc);
         }
-      gsl_wave_file_info_unref  (wfi);
+      bse_wave_file_info_unref  (wfi);
     }
   if (xhandle)
     return change_dhandle (xhandle, osc_freq, xinfos);
