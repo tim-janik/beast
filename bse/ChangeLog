@@ -1,3 +1,13 @@
+Tue Apr 19 14:39:39 2005  Tim Janik  <timj@gtk.org>
+
+	* bseloader.h: CVS copied from gslloader.h.
+	* bseloader.c: CVS copied from gslloader.c.
+	* bseloader-aiff.c: CVS copied from bseloader-aiff.c.
+	* bseloader-bsewave.c: CVS copied from gslloader-bsewave.c.
+	* bseloader-mad.c: CVS copied from gslloader-mad.c.
+	* bseloader-oggvorbis.c: CVS copied from gslloader-oggvorbis.c.
+	* bseloader-wav.c: CVS copied from gslloader-wav.c.
+
 Sun Apr 10 23:23:27 2005  Tim Janik  <timj@gtk.org>
 
 	* bsebus.h, bsebux.c: save syncronization state across restore.
