@@ -23,8 +23,8 @@ bsefcompare_LDADD = $(programs_ldadd)
 programs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 
 headers = $(strip	\
-	bsewavetool.h	\
-	bwtwave.h	\
+	bsewavetool.hh	\
+	bwtwave.hh	\
 	sfiutils.h	\
 	bseloopfuncs.h	\
 )

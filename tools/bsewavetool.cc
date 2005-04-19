@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bsewavetool.h"
+#include "bsewavetool.hh"
 #include "topconfig.h"
 #include "sfiutils.h"
-#include "bwtwave.h"
+#include "bwtwave.hh"
 #include <bse/bsemain.h>	/* for bse_init_intern() */
 #include <bse/bseloader.h>
 #include <bse/gslvorbis-enc.h>
