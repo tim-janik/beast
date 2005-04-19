@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.6.6:
+
+* Fixed stale header files, left out by make uninstall
+
 Overview of Changes in BEAST/BSE 0.6.5:
 
 * New supported file formats:
