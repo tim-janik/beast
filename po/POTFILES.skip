@@ -1,3 +1,6 @@
 # List of source files that should *not* be translated.
 # Please keep this file sorted alphabetically
+beast-gtk/bststest.c
+plugins/bsefirfilter.c
+plugins/davguitar.c
 sfi/testidl.c
