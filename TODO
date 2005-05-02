@@ -1,3 +1,5 @@
+RELEASE(0.6.6):
+- fix/re-enable midi note recording into piano roll
 FIXME(urgent):
 - tools/song/track-busses needs to stop playback befgore operating
 - integrate or reimplement fan sliders: http://www.gazuga.net/phat.php
