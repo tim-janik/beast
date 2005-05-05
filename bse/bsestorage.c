@@ -1462,10 +1462,8 @@ bse_storage_put_data_handle (BseStorage    *self,
   if (vhandle)  /* save already compressed Ogg/Vorbis data */
     {
       bse_storage_break (self);
-      bse_storage_printf (self,
-                          "(%s %.7g",
-                          g_quark_to_string (quark_vorbis_data_handle),
-                          gsl_data_handle_osc_freq (dhandle));
+      bse_storage_printf (self, "(%s ", g_quark_to_string (quark_vorbis_data_handle));
+      bse_storage_putf (self, gsl_data_handle_osc_freq (dhandle));
       bse_storage_push_level (self);
       bse_storage_break (self);
       gsl_vorbis1_handle_put_wstore (vhandle, self->wstore);
