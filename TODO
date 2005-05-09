@@ -1,42 +1,44 @@
 RELEASE(0.6.6):
 - fix/re-enable midi note recording into piano roll
-FIXME(urgent):
-- implement window position and size save/restore
+BUGS(FIXME):
+- fix undo/redo/Save vs. Save As
+- automatically change project name to basename for saved file name
+- add stock icons for Select/None Select/All Select/Invert
+- bsewavetool: fix per-command docu to properly account for input.bsewave
+- install bsewavetool, bsewavetool.1
+- add midi control numbers to midi control enum values as tooltips
 - popping up two modal dialogs (error and warning) allowes closing of only one
 - implement combinatoric selections with shift+control
 - need repeater script similar to harmonic transposer
 - tools/song/track-busses needs to stop playback befgore operating
 - integrate or reimplement fan sliders: http://www.gazuga.net/phat.php
 - when resizing trackview, the left paned child (track treeview) should stay fixed in horizontal size
-- WaveView zoom-field should be vertically aligned with vscale-field
-- add mini list next to track add/del buttons that contains orphaned parts (sorted by most recently orphaned)
-- after laoding a sample from the instrument selection box, make it the default selection
 - display bpm only with float precision
-- add extra path handling for freepats packages
 - skip and retrigger updates for scope visibility changes
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - play + play doesn't reset wave oscillator state
-- start playback at play pointer position
-- TrackRoll: display only basename of wave files
+- playback should start at play pointer position (wrap around to start if pointer is at/after song end),
+  pause should stop playback, stop should stop playback and warp pointer to start
 - WaveList: list items with basname in first col, add a col for full pathname
-- automatically change project name to basename for saved file name
-- add stock icons for Select/None Select/All Select/Invert
-- add a "Creating Skins" section to the beast manual page
-- bsewavetool: fix per-command docu to properly account for input.bsewave
-- install bsewavetool, bsewavetool.1
-- add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
-- sfidl --client: generate: extern "C" ifdef's, include sfi/sfi.h
 - provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
-- add midi control numbers to midi control enum values as tooltips
 - implement display of Note properties next to frequency properties (and nuke note properties from plugins)
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
   compiler support and missing libc support will fail on accessing a __thread variable (kernel dependent!)
-- add Left and Right channels to BseAmplifier to allow stereo amplification
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 - registering the same script function twice triggers GType assertion
-- Mixer: add raise/lower equivalents: right/left move
+- sfidl --client: should generate: extern "C" ifdef's, include sfi/sfi.h
 TODO:
+- add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
+- add a "Creating Skins" section to the beast manual page
+- implement window position and size save/restore
+- add mini list next to track add/del buttons that contains orphaned parts (sorted by most recently orphaned)
+- after laoding a sample from the instrument selection box, make it the default selection
+- WaveView zoom-field should be vertically aligned with vscale-field
+- Mixer: add raise/lower equivalents: right/left move
+- add Left and Right channels to BseAmplifier to allow stereo amplification
+- TrackRoll: display only basename of wave files
+- add extra path handling for freepats packages
 - TrackRoll: support shift/ctrl/alt modifier to copy/link/move parts
 - TrackRoll: disallow instrument field editing or dialog box during playback (simply gdk_beep())
 - TrackRoll: add Lower and Raise buttons to move tracks relative to each other
