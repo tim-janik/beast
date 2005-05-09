@@ -92,6 +92,8 @@ GtkWidget*	bst_file_dialog_popup_import_midi	(gpointer	   parent_widget,
 							 SfiProxy	   project);
 GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);
+GtkWidget*      bst_file_dialog_save_project_update     (gpointer	   parent_widget,
+							 SfiProxy	   project);
 GtkWidget*      bst_file_dialog_popup_merge_effect      (gpointer          parent_widget,
                                                          SfiProxy          project);
 GtkWidget*	bst_file_dialog_popup_save_effect	(gpointer	   parent_widget,

@@ -1,3 +1,13 @@
+Mon May  9 21:07:06 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.h, beast-gtk/bstfiledialog.c:
+	added bst_file_dialog_save_project_update() to save projects
+	without file-name input dialog (not yet working).
+	reset project dirty state in bst_file_dialog_save_project().
+
+	* beast-gtk/bstapp.c: use different file dialog fucntions for /Save
+	vs. /Save As. toggle /Save sensitivity depending on project dirty state.
+
 Tue Apr 19 16:19:29 2005  Tim Janik  <timj@gtk.org>
 
 	* more renames of C++ header files from .h to .hh.

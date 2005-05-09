@@ -586,9 +586,18 @@ bst_file_dialog_save_project (BstFileDialog *self,
   SfiProxy project = bse_item_use (self->proxy);
   gboolean self_contained = GTK_TOGGLE_BUTTON (self->radio1)->active;
   gboolean handled = store_bse_file (self, project, 0, file_name, _("Saving project `%s'"), self_contained);
+  if (handled)
+    bse_project_clean_dirty (project);
   bse_item_unuse (project);
 
   return handled;
+}
+
+GtkWidget*
+bst_file_dialog_save_project_update (gpointer          parent_widget,
+                                     SfiProxy          project)
+{
+  return bst_file_dialog_popup_save_project (parent_widget, project);
 }
 
 GtkWidget*

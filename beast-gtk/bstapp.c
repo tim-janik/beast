@@ -864,6 +864,8 @@ app_action_exec (gpointer data,
       bst_file_dialog_popup_import_midi (self, self->project);
       break;
     case BST_ACTION_SAVE_PROJECT:
+      bst_file_dialog_save_project_update (self, self->project);
+      break;
     case BST_ACTION_SAVE_PROJECT_AS:
       bst_file_dialog_popup_save_project (self, self->project);
       break;
@@ -1101,12 +1103,13 @@ app_action_check (gpointer data,
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
     case BST_ACTION_IMPORT_MIDI:
-    case BST_ACTION_SAVE_PROJECT:
     case BST_ACTION_SAVE_PROJECT_AS:
     case BST_ACTION_NEW_CSYNTH:
     case BST_ACTION_NEW_MIDI_SYNTH:
     case BST_ACTION_CLOSE_PROJECT:
       return TRUE;
+    case BST_ACTION_SAVE_PROJECT:
+      return bse_project_dirty (self->project);
     case BST_ACTION_NEW_SONG:
       iseq = bse_container_list_children (self->project);
       for (i = 0; i < iseq->n_items; i++)
