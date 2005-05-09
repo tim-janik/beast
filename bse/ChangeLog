@@ -1,3 +1,8 @@
+Mon May  9 18:24:00 2005  Tim Janik  <timj@gtk.org>
+
+	* bsewave.c (bse_wave_get_index_for_modules): fixed stupid bug that 
+	caused every second sample to be lost when saving.
+
 Thu May  5 19:03:41 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (bse_storage_put_data_handle): fix floats being saved via

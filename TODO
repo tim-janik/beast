@@ -5,7 +5,6 @@ FIXME(urgent):
 - popping up two modal dialogs (error and warning) allowes closing of only one
 - implement combinatoric selections with shift+control
 - need repeater script similar to harmonic transposer
-- loading GMKit (~/bse/gmkitbroken.bsewave) and saving inlined in .bse breaks the samples
 - tools/song/track-busses needs to stop playback befgore operating
 - integrate or reimplement fan sliders: http://www.gazuga.net/phat.php
 - when resizing trackview, the left paned child (track treeview) should stay fixed in horizontal size

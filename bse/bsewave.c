@@ -358,7 +358,7 @@ bse_wave_store_private (BseObject  *object,
         }
       bse_storage_break (storage);
       SfiRing *ring;
-      for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring->next, wave->wave_chunks))
+      for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
         {
           GslWaveChunk *wchunk = ring->data;
           BseErrorType error = gsl_data_handle_open (wchunk->dcache->dhandle);
@@ -691,14 +691,14 @@ bse_wave_get_index_for_modules (BseWave *wave)
       index->n_wchunks = 0;
       index->wchunks = (gpointer) (index + 1);
       SfiRing *ring;
-      for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring->next, wave->wave_chunks))
+      for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
 	{
 	  BseErrorType error = gsl_wave_chunk_open (ring->data);
 	  if (!error)
 	    index->wchunks[index->n_wchunks++] = ring->data;
 	}
       wave->index_list = g_slist_prepend (wave->index_list, index);
-      // FIXME: add dummy wave chunk if none was opened succesfully
+      // FIXME: add dummy wave chunk if none was opened succesfully?
       wave->index_dirty = FALSE;
     }
   return wave->index_list->data;
