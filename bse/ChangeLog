@@ -1,3 +1,14 @@
+Mon May  9 21:05:02 2005  Tim Janik  <timj@gtk.org>
+
+	* bseproject.h, bseproject.c: properly implemented project dirty
+	state, based on the project's undo stack.
+
+	* bseproject.proc: added procedures to query and reset project 
+	dirty state.
+
+	* bseundostack.h, bseundostack.c: implemented dirt counter plus
+	counter modification methods.
+
 Mon May  9 18:24:00 2005  Tim Janik  <timj@gtk.org>
 
 	* bsewave.c (bse_wave_get_index_for_modules): fixed stupid bug that 

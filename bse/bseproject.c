@@ -168,7 +168,10 @@ undo_notify (BseProject     *project,
 {
   g_object_notify (project, "dirty");
   if (step_added && !project->in_redo)
-    bse_undo_stack_clear (project->redo_stack);
+    {
+      bse_undo_stack_force_dirty (project->undo_stack);
+      bse_undo_stack_clear (project->redo_stack);
+    }
 }
 
 static void
@@ -233,7 +236,7 @@ bse_project_get_property (GObject                *object,
   switch (param_id)
     {
     case PARAM_DIRTY:
-      sfi_value_set_bool (value, bse_undo_stack_depth (self->undo_stack) > 0);
+      sfi_value_set_bool (value, bse_undo_stack_dirty (self->undo_stack));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -301,6 +304,15 @@ bse_project_clear_undo (BseProject *self)
       bse_undo_stack_clear (self->redo_stack);
       g_object_notify (self, "dirty");
     }
+}
+
+void
+bse_project_clean_dirty (BseProject *self)
+{
+  g_return_if_fail (BSE_IS_PROJECT (self));
+  bse_undo_stack_clean_dirty (self->undo_stack);
+  bse_undo_stack_clean_dirty (self->redo_stack);
+  g_object_notify (self, "dirty");
 }
 
 static void

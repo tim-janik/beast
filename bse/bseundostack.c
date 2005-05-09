@@ -42,6 +42,7 @@ bse_undo_stack_dummy (void)
       dummy_ustack->debug_names = NULL;
       dummy_ustack->n_undo_groups = 0;
       dummy_ustack->undo_groups = NULL;
+      dummy_ustack->dirt_counter = 0;
       dummy_ustack->n_merge_requests = 0;
       dummy_ustack->merge_name = NULL;
       dummy_ustack->merge_next = FALSE;
@@ -87,6 +88,28 @@ bse_undo_stack_clear (BseUndoStack *self)
   guint max_steps = self->max_steps;
   bse_undo_stack_limit (self, 0);
   self->max_steps = max_steps;
+}
+
+gboolean
+bse_undo_stack_dirty (BseUndoStack *self)
+{
+  return self->dirt_counter || (self->group && self->group->undo_steps);
+}
+
+void
+bse_undo_stack_clean_dirty (BseUndoStack *self)
+{
+  self->dirt_counter = 0;
+}
+
+void
+bse_undo_stack_force_dirty (BseUndoStack *self)
+{
+  if (self->dirt_counter <= 0)
+    {
+      /* make unrecoverably dirty */
+      self->dirt_counter = self->n_undo_groups + 1;
+    }
 }
 
 void
@@ -152,6 +175,11 @@ bse_undo_stack_push_add_on (BseUndoStack *self,
 {
   g_return_if_fail (ustep != NULL);
 
+  /* add-ons are generally used as state-guards. that is, if a an already added
+   * undo-steps requires the object to be in a certain state, an add-on step
+   * can be queued after the fact, to ensure the required object state.
+   */
+
   /* add this step to the last undo step if we have one */
   if (self->group && self->group->undo_steps)
     {
@@ -210,12 +238,15 @@ bse_undo_group_close (BseUndoStack *self)
                                                     mgroup->undo_steps);
               g_free (self->group->name);
               g_free (self->group);
+              if (!self->dirt_counter)  /* ensure dirty */
+                bse_undo_stack_force_dirty (self);
             }
           else
             {
               self->n_undo_groups++;
               self->undo_groups = sfi_ring_push_head (self->undo_groups, self->group);
               self->merge_next = self->n_merge_requests > 0;
+              self->dirt_counter++;
             }
           bse_undo_stack_limit (self, self->max_steps);
           UNDO_DEBUG ("undo close }");
@@ -297,8 +328,8 @@ bse_undo_stack_undo (BseUndoStack *self)
   group = sfi_ring_pop_head (&self->undo_groups);
   if (group)
     {
-      gboolean step_removed = FALSE;
       self->n_undo_groups--;
+      self->dirt_counter--;
       UNDO_DEBUG ("EXECUTE UNDO: %s", group->name);
       if (sfi_debug_check ("undo"))
         {
@@ -312,13 +343,12 @@ bse_undo_stack_undo (BseUndoStack *self)
       while (group->undo_steps)
         {
           BseUndoStep *ustep = sfi_ring_pop_head (&group->undo_steps);
-          step_removed = TRUE;
           bse_undo_step_exec (ustep, self);
           bse_undo_step_free (ustep);
         }
       g_free (group->name);
       g_free (group);
-      if (self->notify && step_removed)
+      if (self->notify)
         self->notify (self->project, self, FALSE);
     }
 

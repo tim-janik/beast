@@ -99,6 +99,7 @@ gpointer	bse_project_create_intern_synth	(BseProject	*project,
 BseCSynth*      bse_project_create_intern_csynth(BseProject     *project,
                                                  const char     *base_name);
 void            bse_project_clear_undo          (BseProject     *project);
+void            bse_project_clean_dirty         (BseProject     *project);
 void    bse_project_push_undo_silent_deactivate (BseProject     *self);
 
 

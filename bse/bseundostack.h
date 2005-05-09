@@ -46,6 +46,7 @@ struct _BseUndoStack
   guint         ignore_steps;
   guint         n_undo_groups;
   SfiRing      *undo_groups;
+  gint          dirt_counter; /* signed! */
   guint         n_merge_requests;
   gchar        *merge_name;
   guint         merge_next : 1;
@@ -85,6 +86,9 @@ void               bse_undo_stack_add_merger     (BseUndoStack   *self,
                                                   const gchar    *name);
 void               bse_undo_stack_remove_merger  (BseUndoStack   *self);
 void               bse_undo_stack_clear          (BseUndoStack   *self);
+gboolean           bse_undo_stack_dirty          (BseUndoStack   *self);
+void               bse_undo_stack_clean_dirty    (BseUndoStack   *self);
+void               bse_undo_stack_force_dirty    (BseUndoStack   *self);
 void               bse_undo_stack_destroy        (BseUndoStack   *self);
 guint              bse_undo_stack_depth          (BseUndoStack   *self);
 void               bse_undo_stack_undo           (BseUndoStack   *self);
