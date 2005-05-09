@@ -1,5 +1,6 @@
 RELEASE(0.6.6):
 - fix/re-enable midi note recording into piano roll
+- refuse to close windows with changed projects
 BUGS(FIXME):
 - fix undo/redo/Save vs. Save As
 - automatically change project name to basename for saved file name
