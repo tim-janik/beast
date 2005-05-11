@@ -25,7 +25,7 @@ G_BEGIN_DECLS
 /* --- prototypes --- */
 void	   bst_catch_scripts_and_msgs		(void);
 void	   bst_user_messages_kill		(void);
-void       bst_user_message_log_handler         (SfiLogMessage  *message);
+void       bst_user_message_log_handler         (const SfiLogMessage  *message);
 
 G_END_DECLS
 

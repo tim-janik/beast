@@ -480,6 +480,8 @@ gxk_dialog_set_default (GxkDialog *self,
     g_signal_handlers_disconnect_by_func (self->default_widget, g_nullify_pointer, &self->default_widget);
   self->default_widget = default_widget;
   g_signal_connect_swapped (self->default_widget, "destroy", G_CALLBACK (g_nullify_pointer), &self->default_widget);
+  if (!self->focus_widget && default_widget)
+    gxk_dialog_set_focus (self, default_widget);
 }
 
 static void
@@ -669,7 +671,7 @@ gxk_dialog_action_multi (GxkDialog          *self,
 
       /* catch installation of a Close button */
       if (strcmp (action, GTK_STOCK_CLOSE) == 0)
-	self->flags |= GXK_DIALOG_DELETE_BUTTON;
+        self->flags |= GXK_DIALOG_DELETE_BUTTON;
 
       /* setup button */
       button = g_object_new (GTK_TYPE_BUTTON,

@@ -1,3 +1,21 @@
+Thu May 12 00:11:44 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: issue a warning when closing the window
+	of a dirty project and prevent window closing.
+
+	* beast-gtk/bstusermessage.c, beast-gtk/bstusermessage.h:
+	handle rich log messages properly.
+
+	* beast-gtk/gxk/gxkdialog.c: set the default widget also
+	as focus widget if none was specified. otheriwse the default 
+	widget setting may not properly take effect.
+
+	* beast-gtk/gxk/gxkutils.h, beast-gtk/gxk/gxkutils.c:
+	added gxk_label_set_attributes(), based on 
+	gimp_label_set_attributes().
+
+	* tools/bsewavetool.cc: adapt log message handler.
+
 Wed May 11 14:55:44 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.h, beast-gtk/bstfiledialog.c:

@@ -598,7 +598,7 @@ bst_file_dialog_popup_save_project (gpointer   parent_widget,
     {
       gboolean handled = bst_file_dialog_save_project (project, !store_references, filename, FALSE, TRUE);
       if (handled)
-        return NULL; // FIXME: check save to EPERM filename
+        return NULL;
     }
   /* the usual Save As scenario */
   BstFileDialog *self = bst_file_dialog_global_project ();

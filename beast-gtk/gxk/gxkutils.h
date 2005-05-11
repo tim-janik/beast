@@ -108,6 +108,8 @@ void            gxk_window_set_geometry_height_inc (GtkWindow       *window,
                                                     guint            height_increment);
 void            gxk_expander_connect_to_widget     (GtkWidget       *expander,
                                                     GtkWidget       *widget);
+void            gxk_label_set_attributes           (GtkLabel        *label,
+                                                    ...);
 
 guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
 void            gxk_container_slot_reorder_child   (GtkContainer    *container,

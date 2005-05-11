@@ -52,12 +52,19 @@ list<string>   unlink_file_list;
 
 /* --- main program --- */
 static void
-wavetool_log_handler (SfiLogMessage  *msg)
+wavetool_log_handler (const SfiLogMessage  *msg)
 {
   if (msg->level == SFI_LOG_INFO)
     {
       if (!quiet_infos)
-        g_printerr ("%s\n", msg->message);
+        {
+          if (msg->primary)
+            g_printerr ("%s\n", msg->primary);
+          if (msg->secondary)
+            g_printerr ("%s\n", msg->secondary);
+          if (msg->details)
+            g_printerr ("%s\n", msg->details);
+        }
     }
   else
     sfi_log_default_handler (msg);

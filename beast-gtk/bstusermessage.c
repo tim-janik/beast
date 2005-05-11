@@ -53,11 +53,14 @@ script_error (SfiProxy     server,
 	      const gchar *reason)
 {
   BseUserMsg umsg = { 0, };
-  umsg.message = g_strdup_printf ("Invocation of %s() from \"%s\" failed: %s",
-                                  proc_name, script_name, reason);
+  umsg.title = (char*) script_name;
+  umsg.primary = g_strdup_printf (_("Failure in script \"%s\""), script_name);
+  umsg.secondary = g_strdup_printf (_("Failed to start %s() of script \"%s\": %s"),
+                                    proc_name, script_name, reason);
   umsg.msg_type = BSE_USER_MSG_ERROR;
   bst_user_message_popup (&umsg);
-  g_free (umsg.message);
+  g_free (umsg.primary);
+  g_free (umsg.secondary);
 }
 
 void
@@ -83,12 +86,12 @@ dialog_destroyed (GtkWidget *dialog)
   msg_windows = g_slist_remove (msg_windows, dialog);
 }
 
-static const gchar*
-message_title (BseUserMsgType mtype,
-	       const gchar  **stock)
+static gchar*
+message_title (const BseUserMsg *umsg,
+	       const gchar     **stock)
 {
-  gchar *msg;
-  switch (mtype)
+  const gchar *msg;
+  switch (umsg->msg_type)
     {
     case BSE_USER_MSG_ERROR:
       *stock = BST_STOCK_ERROR;
@@ -108,7 +111,10 @@ message_title (BseUserMsgType mtype,
       msg = _("Miscellaneous Message"); // _("Diagnostic");
       break;
     }
-  return msg;
+  if (umsg->title)
+    return g_strconcat (msg, ": ", umsg->title, NULL);
+  else
+    return g_strdup (msg);
 }
 
 static void
@@ -124,69 +130,96 @@ static void
 toggle_update_filter (GtkWidget *toggle,
                       gpointer   data)
 {
-  const gchar *config_blurb = data;
-  if (config_blurb && bst_msg_absorb_config_adjust (config_blurb, GTK_TOGGLE_BUTTON (toggle)->active, TRUE))
+  const gchar *config_check = data;
+  if (config_check && bst_msg_absorb_config_adjust (config_check, GTK_TOGGLE_BUTTON (toggle)->active, TRUE))
     bst_msg_absorb_config_save();
 }
 
 static gchar*
-right_space_message (const gchar *message)
+adapt_message_spacing (const gchar *head,
+                       const gchar *message,
+                       const gchar *tail)
 {
   GString *gstring = g_string_new (message);
-  /* first, strip whitespaces */
+  /* strip whitespaces */
   while (gstring->len && (gstring->str[0] == ' ' || gstring->str[0] == '\t' || gstring->str[0] == '\n'))
     g_string_erase (gstring, 0, 1);
   while (gstring->len && (gstring->str[gstring->len-1] == ' ' || gstring->str[gstring->len-1] == '\t' || gstring->str[gstring->len-1] == '\n'))
     g_string_erase (gstring, gstring->len-1, 1);
-  /* now, place deliberate whitespaces */
-  g_string_insert (gstring, 0, "\n");
+  /* combine parts */
+  if (head)
+    g_string_insert (gstring, 0, head);
+  if (tail)
+    g_string_append (gstring, tail);
   return g_string_free (gstring, FALSE);
+}
+
+static gchar*
+strdup_umsg_hashkey (const BseUserMsg *umsg)
+{
+  return g_strdup_printf ("## %x ## %s ## %s ## %x", umsg->msg_type, umsg->primary, umsg->secondary, umsg->pid);
 }
 
 static void
 update_dialog (GxkDialog        *dialog,
-	       BseUserMsgType    msg_type,
-	       const gchar      *message,
                const BseUserMsg *umsg,
 	       SfiProxy          janitor)
 {
-  const gchar *stock, *title = message_title (msg_type, &stock);
+  const gchar *stock;
+  gchar *title = message_title (umsg, &stock);
   gxk_dialog_remove_actions (dialog);
-
+  /* create new dialog layout from scratch */
   GtkWidget *table = gtk_table_new (1, 1, FALSE);
   g_object_set (table,
                 "visible", TRUE,
-                "border-width", 5,
+                "border-width", 11,
                 NULL);
+  guint row = 0;
+  /* stock icon (left from title/text) */
   if (stock)
     gtk_table_attach (GTK_TABLE (table), gxk_stock_image (stock, GXK_ICON_SIZE_INFO_SIGN),
-                      0, 1, 0, 1, /* left/right, top/bottom */
+                      0, 1, row, row + 1, /* left/right, top/bottom */
                       GTK_FILL, GTK_FILL, 0, 0);
-  gchar *text_message = right_space_message (message);
+  /* pure primary text */
+  if (umsg->primary && umsg->secondary)
+    {
+      gchar *text = adapt_message_spacing (NULL, umsg->primary, NULL);
+      GtkWidget *label = g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", text, "selectable", TRUE, NULL);
+      gxk_label_set_attributes (GTK_LABEL (label),
+                                PANGO_ATTR_SCALE,  PANGO_SCALE_LARGE,
+                                PANGO_ATTR_WEIGHT, PANGO_WEIGHT_BOLD,
+                                0);
+      gtk_table_attach (GTK_TABLE (table), label,
+                        1, 2, row, row + 1, /* left/right, top/bottom */
+                        GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+      row++;
+    }
+  /* main (secondary) text */
+  gchar *text_message = adapt_message_spacing ("\n", umsg->secondary ? umsg->secondary : umsg->primary, NULL);
   GtkWidget *text = g_object_new (GTK_TYPE_ALIGNMENT,
                                   "visible", TRUE,
                                   "xalign", 0.5,
                                   "yalign", 0.5,
                                   "xscale", 1.0,
                                   "yscale", 1.0,
-                                  "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_CENTER |
-                                                                   GXK_SCROLL_TEXT_WIDGET_LOOK |
+                                  "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK |
+                                                                   // GXK_SCROLL_TEXT_CENTER |
                                                                    GXK_SCROLL_TEXT_VFIXED,
                                                                    text_message),
                                   NULL);
   g_free (text_message);
   gtk_table_attach (GTK_TABLE (table), text,
-                    1, 2, 0, 1, /* left/right, top/bottom */
+                    1, 2, row, row + 1, /* left/right, top/bottom */
                     GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+  row++;
   if (!janitor) /* setup data for recognition and repetition */
     {
-      g_object_set_int (dialog, "BEAST-user-message-type", msg_type);
-      g_object_set_int (dialog, "BEAST-user-message-pid", umsg ? umsg->pid : 0);
-      g_object_set_data_full (dialog, "BEAST-user-message-text", g_strdup (message), g_free);
+      g_object_set_data_full (dialog, "BEAST-user-message-hashkey", strdup_umsg_hashkey (umsg), g_free);
       GtkWidget *label = g_object_new (GTK_TYPE_LABEL, "visible", FALSE, "xalign", 1.0, "label", "", NULL);
       gtk_table_attach (GTK_TABLE (table), label,
-                        1, 2, 1, 2, /* left/right, top/bottom */
+                        1, 2, row, row + 1, /* left/right, top/bottom */
                         GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+      row++;
       g_object_set_data_full (dialog, "BEAST-user-message-repeater", g_object_ref (label), g_object_unref);
       g_object_set_int (dialog, "BEAST-user-message-count", 1);
     }
@@ -195,9 +228,13 @@ update_dialog (GxkDialog        *dialog,
       GtkWidget *exp = gtk_expander_new (_("Details:"));
       gtk_widget_show (exp);
       gtk_table_attach (GTK_TABLE (table), exp,
-                        1, 2, 2, 3, /* left/right, top/bottom */
+                        1, 2, row, row + 1, /* left/right, top/bottom */
                         GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
-      GString *gstring = g_string_new ("");
+      row++;
+      GString *gstring = g_string_new (umsg->details);
+      if (gstring->str[gstring->len - 1] != '\n')
+        g_string_aprintf (gstring, "\n");
+      g_string_aprintf (gstring, "\n");
       if (umsg->log_domain)
         g_string_aprintf (gstring, _("Origin:  %s\n"), umsg->log_domain);
       if (umsg->process)
@@ -211,7 +248,11 @@ update_dialog (GxkDialog        *dialog,
                            "yalign", 0.5,
                            "xscale", 1.0,
                            "yscale", 1.0,
-                           "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_BG | GXK_SCROLL_TEXT_MONO | GXK_SCROLL_TEXT_VFIXED, gstring->str),
+                           "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_BG |
+                                                            GXK_SCROLL_TEXT_MONO |
+                                                            GXK_SCROLL_TEXT_WRAP |
+                                                            GXK_SCROLL_TEXT_VFIXED,
+                                                            gstring->str),
                            NULL);
       g_string_free (gstring, TRUE);
       if (0) // GTKFIX: the expander child isn't properly visible with container_add in gtk+2.4.9
@@ -219,31 +260,35 @@ update_dialog (GxkDialog        *dialog,
       else
         {
           gtk_table_attach (GTK_TABLE (table), text,
-                            1, 2, 3, 4, /* left/right, top/bottom */
+                            1, 2, row, row + 1, /* left/right, top/bottom */
                             GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+          row++;
           gxk_expander_connect_to_widget (exp, text);
         }
-    }
-  if (umsg && umsg->config_blurb)
-    {
-      GtkWidget *cb = gtk_check_button_new_with_label (umsg->config_blurb);
-      gxk_widget_set_tooltip (cb, _("This setting can be changed in the \"Messages\" section of the preferences dialog"));
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb), !bst_msg_absorb_config_match (umsg->config_blurb));
-      g_signal_connect_data (cb, "unrealize", G_CALLBACK (toggle_update_filter), g_strdup (umsg->config_blurb), (GClosureNotify) g_free, G_CONNECT_AFTER);
-      gtk_widget_show (cb);
-      gtk_table_attach (GTK_TABLE (table), cb,
-                        1, 2, 8, 9, /* left/right, top/bottom */
-                        GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
     }
   if (1) /* table vexpansion */
     {
       GtkWidget *space = g_object_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
       gtk_table_attach (GTK_TABLE (table), space,
-                        1, 2, 6, 7, /* left/right, top/bottom */
+                        1, 2, row, row + 1, /* left/right, top/bottom */
                         0, GTK_EXPAND, 0, 0);
+      row++;
+    }
+  if (umsg && umsg->config_check)
+    {
+      GtkWidget *cb = gtk_check_button_new_with_label (umsg->config_check);
+      gxk_widget_set_tooltip (cb, _("This setting can be changed in the \"Messages\" section of the preferences dialog"));
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb), !bst_msg_absorb_config_match (umsg->config_check));
+      g_signal_connect_data (cb, "unrealize", G_CALLBACK (toggle_update_filter), g_strdup (umsg->config_check), (GClosureNotify) g_free, G_CONNECT_AFTER);
+      gtk_widget_show (cb);
+      gtk_table_attach (GTK_TABLE (table), cb,
+                        1, 2, row, row + 1, /* left/right, top/bottom */
+                        GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+      row++;
     }
   gxk_dialog_set_child (dialog, table);
   gxk_dialog_set_title (dialog, title);
+  g_free (title);
   if (BSE_IS_JANITOR (janitor))
     {
       guint i, n = bse_janitor_n_actions (janitor);
@@ -284,23 +329,22 @@ repeat_dialog (GxkDialog *dialog)
 
 static GtkWidget*
 find_dialog (GSList           *dialog_list,
-             BseUserMsgType    msg_type,
-             const gchar      *message,
-             gint              pid)
+             const BseUserMsg *umsg)
 {
+  gchar *umid = strdup_umsg_hashkey (umsg);
+  GtkWidget *widget = NULL;
   GSList *slist;
   for (slist = dialog_list; slist; slist = slist->next)
     {
-      GtkWidget *widget = slist->data;
-      if (g_object_get_int (widget, "BEAST-user-message-type") == msg_type &&
-          g_object_get_int (widget, "BEAST-user-message-pid") == pid)
+      const gchar *hk = g_object_get_data (slist->data, "BEAST-user-message-hashkey");
+      if (hk && strcmp (hk, umid) == 0)
         {
-          const gchar *text = g_object_get_data (widget, "BEAST-user-message-text");
-          if (text && strcmp (text, message) == 0)
-            return widget;
+          widget = slist->data;
+          break;
         }
     }
-  return NULL;
+  g_free (umid);
+  return widget;
 }
 
 static void
@@ -318,17 +362,17 @@ dialog_show_above_modals (GxkDialog *dialog)
 static void
 bst_user_message_popup (const BseUserMsg *umsg)
 {
-  GxkDialog *dialog = (GxkDialog*) find_dialog (msg_windows, umsg->msg_type, umsg->message, umsg->pid);
+  GxkDialog *dialog = (GxkDialog*) find_dialog (msg_windows, umsg);
   if (dialog)
     repeat_dialog (dialog);
-  else if (umsg && umsg->config_blurb && bst_msg_absorb_config_match (umsg->config_blurb))
-    bst_msg_absorb_config_update (umsg->config_blurb); /* message absorbed by configuration */
+  else if (umsg && umsg->config_check && bst_msg_absorb_config_match (umsg->config_check))
+    bst_msg_absorb_config_update (umsg->config_check); /* message absorbed by configuration */
   else
     {
       dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);
       gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
       
-      update_dialog (dialog, umsg->msg_type, umsg->message, umsg, 0); /* deletes actions */
+      update_dialog (dialog, umsg, 0); /* deletes actions */
       gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
       g_object_connect (dialog,
                         "signal::destroy", dialog_destroyed, NULL,
@@ -339,20 +383,22 @@ bst_user_message_popup (const BseUserMsg *umsg)
 }
 
 void
-bst_user_message_log_handler (SfiLogMessage *msg)
+bst_user_message_log_handler (const SfiLogMessage *msg)
 {
   BseUserMsg umsg = { 0, };
-  umsg.log_domain = SFI_LOG_DOMAIN;
+  umsg.log_domain = msg->log_domain;
   switch (msg->level)
     {
     case SFI_LOG_ERROR:   umsg.msg_type = BSE_USER_MSG_ERROR;   break;
     case SFI_LOG_WARNING: umsg.msg_type = BSE_USER_MSG_WARNING; break;
     case SFI_LOG_INFO:    umsg.msg_type = BSE_USER_MSG_INFO;    break;
-    default:
-    case SFI_LOG_DEBUG:
-    case SFI_LOG_DIAG:    umsg.msg_type = BSE_USER_MSG_MISC;    break;
+    default:              umsg.msg_type = BSE_USER_MSG_MISC;    break;
     }
-  umsg.message = (char*) msg->message;
+  umsg.config_check = msg->config_check;
+  umsg.title = msg->title;
+  umsg.primary = msg->primary;
+  umsg.secondary = msg->secondary;
+  umsg.details = msg->details;
   umsg.pid = sfi_thread_get_pid (NULL);
   umsg.process = (char*) sfi_thread_get_name (NULL);
   bst_user_message_popup (&umsg);
@@ -362,14 +408,17 @@ static void
 janitor_actions_changed (GxkDialog *dialog)
 {
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
-  BseUserMsgType msg_type;
-  gchar *message;
-  
+  BseUserMsg umsg = { 0, };
+  umsg.title = (char*) bse_janitor_get_script_name (janitor);
   bse_proxy_get (janitor,
-		 "user-msg-type", &msg_type,
-		 "user-msg", &message,
+		 "user-msg-type", &umsg.msg_type,
+		 "user-msg", &umsg.primary,
 		 NULL);
-  update_dialog (dialog, msg_type, message, NULL, janitor);
+  umsg.details = g_strdup_printf (_("Procedure: %s\nScript: %s"), bse_janitor_get_proc_name (janitor), bse_janitor_get_script_name (janitor));
+  umsg.pid = 0;
+  umsg.process = NULL;
+  update_dialog (dialog, &umsg, janitor);
+  g_free (umsg.details);
 }
 
 static void

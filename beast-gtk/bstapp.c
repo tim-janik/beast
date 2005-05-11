@@ -612,14 +612,18 @@ static gboolean
 bst_app_handle_delete_event (GtkWidget   *widget,
                              GdkEventAny *event)
 {
-  BstApp *app;
-  
-  g_return_val_if_fail (BST_IS_APP (widget), FALSE);
-  
-  app = BST_APP (widget);
-  
-  gtk_widget_destroy (widget);
-  
+  BstApp *self = BST_APP (widget);
+  if (bse_project_dirty (self->project))
+    {
+      sfi_log_msg (SFI_MSG_WARNING,
+                   SFI_MSG_TITLE (_("Close %s"), bse_item_get_name (self->project)),
+                   SFI_MSG_TEXT1 (_("The project has been modified.")),
+                   SFI_MSG_TEXT2 (_("Changes were made to project \"%s\" since the last time it was saved to disk."),
+                                  bse_item_get_name (self->project)),
+                   SFI_MSG_TEXT2 (_("Save the project before closing its window.")));
+    }
+  else
+    gtk_widget_destroy (widget);
   return TRUE;
 }
 
