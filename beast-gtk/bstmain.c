@@ -301,7 +301,7 @@ main (int   argc,
 
       /* load projects */
       project = bse_server_use_new_project (BSE_SERVER, argv[i]);
-      error = bst_project_restore_from_file (project, argv[i]);
+      error = bst_project_restore_from_file (project, argv[i], TRUE);
       
       if (!error)
 	{

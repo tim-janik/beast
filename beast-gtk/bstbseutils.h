@@ -46,7 +46,8 @@ G_BEGIN_DECLS
 
 /* --- BEAST utilities --- */
 BseErrorType    bst_project_restore_from_file   (SfiProxy        project,
-                                                 const gchar    *file_name);
+                                                 const gchar    *file_name,
+                                                 gboolean        apply_project_file_name);
 BseErrorType    bst_project_import_midi_file    (SfiProxy        project,
                                                  const gchar    *file_name);
 

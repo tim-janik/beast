@@ -1,3 +1,17 @@
+Wed May 11 14:55:44 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.h, beast-gtk/bstfiledialog.c:
+	properly handle "Save" case (as opposed to "Save As").
+	when saving, project files may be overwritten. don't pop
+	up file selection dialog if the project already was saved.
+	preserve fully-include-waves/store-references for projects.
+
+	* beast-gtk/bstbseutils.h, beast-gtk/bstbseutils.c:
+	allow to preserve filename when loading projects.
+
+	* beast-gtk/bstmain.c:
+	* beast-gtk/bstapp.c: adapt to new file handling API.
+
 Mon May  9 21:07:06 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.h, beast-gtk/bstfiledialog.c:

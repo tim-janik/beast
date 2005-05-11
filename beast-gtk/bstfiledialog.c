@@ -415,15 +415,14 @@ bst_file_dialog_open_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
-  BseErrorType error = bst_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE);
 
   if (error)
     bst_status_eprintf (error, _("Opening project `%s'"), file_name);
   else
     {
-      BstApp *app;
       bse_project_get_wave_repo (project);
-      app = bst_app_new (project);
+      BstApp *app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error, _("Opening project `%s'"), file_name);
       gxk_status_window_pop ();
@@ -454,7 +453,7 @@ bst_file_dialog_merge_project (BstFileDialog *self,
 			       const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  BseErrorType error = bst_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name, FALSE);
 
   bst_status_eprintf (error, _("Merging project `%s'"), file_name);
 
@@ -488,12 +487,12 @@ bst_file_dialog_import_midi (BstFileDialog *self,
 }
 
 static gboolean
-store_bse_file (BstFileDialog *self,
-                SfiProxy       project,
+store_bse_file (SfiProxy       project,
                 SfiProxy       super,
                 const gchar   *file_name,
                 const gchar   *saving_message_format,
-                gboolean       self_contained)
+                gboolean       self_contained,
+                gboolean       want_overwrite)
 {
   BseErrorType error = bse_project_store_bse (project, super, file_name, self_contained);
   gchar *title = g_strdup_printf (saving_message_format, bse_item_get_name (super ? super : project));
@@ -502,15 +501,18 @@ store_bse_file (BstFileDialog *self,
   /* handle file exists cases */
   if (error == BSE_ERROR_FILE_EXISTS)
     {
-      gchar *text = g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project), file_name, bse_error_blurb (error));
-      GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
-                                                     BST_CHOICE_TEXT (text),
-                                                     BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
-                                                     BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
-                                                     BST_CHOICE_END);
-      g_free (text);
-      gboolean want_overwrite = bst_choice_modal (choice, 0, 0) == 1;
-      bst_choice_destroy (choice);
+      if (!want_overwrite)
+        {
+          gchar *text = g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project), file_name, bse_error_blurb (error));
+          GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
+                                                         BST_CHOICE_TEXT (text),
+                                                         BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
+                                                         BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
+                                                         BST_CHOICE_END);
+          g_free (text);
+          want_overwrite = bst_choice_modal (choice, 0, 0) == 1;
+          bst_choice_destroy (choice);
+        }
       if (want_overwrite)
         {
           /* save to temporary file */
@@ -559,33 +561,23 @@ store_bse_file (BstFileDialog *self,
   return handled;
 }
 
-GtkWidget*
-bst_file_dialog_popup_save_project (gpointer   parent_widget,
-				    SfiProxy   project)
-{
-  BstFileDialog *self = bst_file_dialog_global_project ();
-  GtkWidget *widget = GTK_WIDGET (self);
-
-  bst_file_dialog_set_mode (self, parent_widget,
-			    BST_FILE_DIALOG_SAVE_PROJECT,
-			    _("Save: %s"), project);
-  /* setup radio buttons */
-  g_object_set (GTK_BIN (self->radio1)->child, "label", _("Fully include wave files"), NULL);
-  g_object_set (GTK_BIN (self->radio2)->child, "label", _("Store references to wave files"), NULL);
-  gtk_widget_show (self->osave);
-  /* show dialog */
-  gxk_widget_showraise (widget);
-
-  return widget;
-}
-
 static gboolean
-bst_file_dialog_save_project (BstFileDialog *self,
-			      const gchar   *file_name)
+bst_file_dialog_save_project (SfiProxy     proxy,
+                              gboolean     self_contained,
+			      const gchar *file_name,
+                              gboolean     apply_project_name,
+                              gboolean     want_overwrite)
 {
-  SfiProxy project = bse_item_use (self->proxy);
-  gboolean self_contained = GTK_TOGGLE_BUTTON (self->radio1)->active;
-  gboolean handled = store_bse_file (self, project, 0, file_name, _("Saving project `%s'"), self_contained);
+  SfiProxy project = bse_item_use (proxy);
+  gboolean handled = store_bse_file (project, 0, file_name, _("Saving project `%s'"), self_contained, want_overwrite);
+  if (apply_project_name)
+    {
+      bse_proxy_set_data_full (project, "beast-project-file-name", g_strdup (file_name), g_free);
+      bse_proxy_set_data (project, "beast-project-store-references", (void*) !self_contained);
+      gchar *bname = g_path_get_basename (file_name);
+      bse_project_change_name (project, bname);
+      g_free (bname);
+    }
   if (handled)
     bse_project_clean_dirty (project);
   bse_item_unuse (project);
@@ -594,10 +586,39 @@ bst_file_dialog_save_project (BstFileDialog *self,
 }
 
 GtkWidget*
-bst_file_dialog_save_project_update (gpointer          parent_widget,
-                                     SfiProxy          project)
+bst_file_dialog_popup_save_project (gpointer   parent_widget,
+				    SfiProxy   project,
+                                    gboolean   query_project_name,
+                                    gboolean   apply_project_name)
 {
-  return bst_file_dialog_popup_save_project (parent_widget, project);
+  /* handle non-popup case */
+  const gchar *filename = bse_proxy_get_data (project, "beast-project-file-name");
+  gboolean store_references = (int) bse_proxy_get_data (project, "beast-project-store-references");
+  if (filename && !query_project_name)
+    {
+      gboolean handled = bst_file_dialog_save_project (project, !store_references, filename, FALSE, TRUE);
+      if (handled)
+        return NULL; // FIXME: check save to EPERM filename
+    }
+  /* the usual Save As scenario */
+  BstFileDialog *self = bst_file_dialog_global_project ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+			    BST_FILE_DIALOG_SAVE_PROJECT,
+			    _("Save: %s"), project);
+  self->apply_project_name = apply_project_name != FALSE;
+  gtk_file_selection_set_filename (self->fs, filename ? filename : "");
+  /* setup radio buttons */
+  g_object_set (GTK_BIN (self->radio1)->child, "label", _("Fully include wave files"), NULL);
+  g_object_set (GTK_BIN (self->radio2)->child, "label", _("Store references to wave files"), NULL);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->radio2), store_references);
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->radio1), !store_references);
+  gtk_widget_show (self->osave);
+  /* show dialog */
+  gxk_widget_showraise (widget);
+
+  return widget;
 }
 
 GtkWidget*
@@ -620,7 +641,7 @@ bst_file_dialog_merge_effect (BstFileDialog *self,
                               const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  BseErrorType error = bst_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name, FALSE);
 
   bst_status_eprintf (error, _("Merging effect `%s'"), file_name);
 
@@ -653,7 +674,7 @@ bst_file_dialog_save_effect (BstFileDialog *self,
 {
   SfiProxy project = bse_item_use (self->proxy);
   gboolean self_contained = TRUE;
-  gboolean handled = store_bse_file (self, project, self->super, file_name, _("Saving effect `%s'"), self_contained);
+  gboolean handled = store_bse_file (project, self->super, file_name, _("Saving effect `%s'"), self_contained, FALSE);
   bse_item_unuse (project);
 
   return handled;
@@ -679,7 +700,7 @@ bst_file_dialog_merge_instrument (BstFileDialog *self,
                                   const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  BseErrorType error = bst_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name, FALSE);
 
   bst_status_eprintf (error, _("Merging instrument `%s'"), file_name);
 
@@ -712,7 +733,7 @@ bst_file_dialog_save_instrument (BstFileDialog *self,
 {
   SfiProxy project = bse_item_use (self->proxy);
   gboolean self_contained = TRUE;
-  gboolean handled = store_bse_file (self, project, self->super, file_name, _("Saving instrument `%s'"), self_contained);
+  gboolean handled = store_bse_file (project, self->super, file_name, _("Saving instrument `%s'"), self_contained, FALSE);
   bse_item_unuse (project);
 
   return handled;
@@ -871,7 +892,7 @@ bst_file_dialog_activate (BstFileDialog *self)
       popdown = bst_file_dialog_merge_instrument (self, file_name);
       break;
     case BST_FILE_DIALOG_SAVE_PROJECT:
-      popdown = bst_file_dialog_save_project (self, file_name);
+      popdown = bst_file_dialog_save_project (self->proxy, GTK_TOGGLE_BUTTON (self->radio1)->active, file_name, self->apply_project_name, FALSE);
       break;
     case BST_FILE_DIALOG_SAVE_EFFECT:
       popdown = bst_file_dialog_save_effect (self, file_name);

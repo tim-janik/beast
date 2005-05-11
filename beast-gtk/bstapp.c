@@ -691,7 +691,7 @@ demo_play_song (gpointer data,
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
-  BseErrorType error = bst_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name, TRUE);
   if (error)
     bst_status_eprintf (error, _("Opening project `%s'"), file_name);
   else
@@ -864,10 +864,10 @@ app_action_exec (gpointer data,
       bst_file_dialog_popup_import_midi (self, self->project);
       break;
     case BST_ACTION_SAVE_PROJECT:
-      bst_file_dialog_save_project_update (self, self->project);
+      bst_file_dialog_popup_save_project (self, self->project, FALSE, TRUE);
       break;
     case BST_ACTION_SAVE_PROJECT_AS:
-      bst_file_dialog_popup_save_project (self, self->project);
+      bst_file_dialog_popup_save_project (self, self->project, TRUE, TRUE);
       break;
     case BST_ACTION_MERGE_EFFECT:
       bst_file_dialog_popup_merge_effect (self, self->project);

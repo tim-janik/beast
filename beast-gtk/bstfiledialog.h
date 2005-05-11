@@ -71,6 +71,7 @@ struct _BstFileDialog
   BstFileDialogMode mode : 16;
   guint		    ignore_activate : 1;
   guint		    using_file_store : 1;
+  guint             apply_project_name : 1;
   GtkTreeModel     *file_store;
   gchar            *search_path;
   const gchar      *search_filter;
@@ -91,9 +92,9 @@ GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer	   parent_widget,
 GtkWidget*	bst_file_dialog_popup_import_midi	(gpointer	   parent_widget,
 							 SfiProxy	   project);
 GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
-							 SfiProxy	   project);
-GtkWidget*      bst_file_dialog_save_project_update     (gpointer	   parent_widget,
-							 SfiProxy	   project);
+							 SfiProxy	   project,
+                                                         gboolean          query_project_name,
+                                                         gboolean          apply_project_name);
 GtkWidget*      bst_file_dialog_popup_merge_effect      (gpointer          parent_widget,
                                                          SfiProxy          project);
 GtkWidget*	bst_file_dialog_popup_save_effect	(gpointer	   parent_widget,

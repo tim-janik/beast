@@ -20,8 +20,9 @@
 
 /* --- BEAST utilities --- */
 BseErrorType
-bst_project_restore_from_file (SfiProxy         project,
-                               const gchar     *file_name)
+bst_project_restore_from_file (SfiProxy        project,
+                               const gchar    *file_name,
+                               gboolean        apply_project_file_name)
 {
   BseErrorType error = bse_project_restore_from_file (project, file_name);
   /* regardless of how good the restoration worked, try to
@@ -37,6 +38,13 @@ bst_project_restore_from_file (SfiProxy         project,
         /* songs always need a master bus */
         bse_song_ensure_master_bus (iseq->items[i]);
       }
+  if (!error && apply_project_file_name)
+    {
+      bse_proxy_set_data_full (project, "beast-project-file-name", g_strdup (file_name), g_free);
+      gchar *bname = g_path_get_basename (file_name);
+      bse_project_change_name (project, bname);
+      g_free (bname);
+    }
   return error;
 }
 
