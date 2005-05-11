@@ -52,6 +52,19 @@ static inline void sfi_warning_msg      (const char     *config_blurb,
 static inline void sfi_info_msg         (const char     *config_blurb,
                                          const char     *format,
                                          ...) G_GNUC_PRINTF (2, 3);
+#define            sfi_log_msg(          bit1, ...)         sfi_log_msg_valist (SFI_LOG_DOMAIN, bit1, __VA_ARGS__, NULL);
+#define            SFI_MSG_TITLE(...)    sfi_log_bit_printf ('t', __VA_ARGS__)
+#define            SFI_MSG_TEXT1(...)    sfi_log_bit_printf ('1', __VA_ARGS__)
+#define            SFI_MSG_TEXT2(...)    sfi_log_bit_printf ('2', __VA_ARGS__)
+#define            SFI_MSG_TEXT3(...)    sfi_log_bit_printf ('3', __VA_ARGS__)
+#define            SFI_MSG_CHECK(...)    sfi_log_bit_printf ('c', __VA_ARGS__)
+#define            SFI_MSG_ERROR        ((SfiLogBit*) SFI_LOG_ERROR)
+#define            SFI_MSG_WARNING      ((SfiLogBit*) SFI_LOG_WARNING)
+#define            SFI_MSG_INFO         ((SfiLogBit*) SFI_LOG_INFO)
+#define            SFI_MSG_DIAG         ((SfiLogBit*) SFI_LOG_DIAG)
+#define            SFI_MSG_PRIMARY       SFI_MSG_TEXT1
+#define            SFI_MSG_SECOND        SFI_MSG_TEXT2
+#define            SFI_MSG_DETAIL        SFI_MSG_TEXT1
 
 /* --- logging configuration --- */
 typedef enum /*< skip >*/
@@ -66,7 +79,7 @@ void    sfi_log_set_stdlog              (gboolean        stdlog_to_stderr,
                                          const char     *stdlog_filename,
                                          guint           syslog_priority); /* if != 0, stdlog to syslog */
 typedef struct SfiLogMessage             SfiLogMessage;
-typedef void (*SfiLogHandler)           (SfiLogMessage  *message);
+typedef void (*SfiLogHandler)           (const SfiLogMessage *message);
 void    sfi_log_set_thread_handler      (SfiLogHandler   handler);
 
 /* --- logging internals --- */
@@ -76,26 +89,38 @@ void    sfi_log_set_thread_handler      (SfiLogHandler   handler);
 #define	SFI_LOG_DIAG	('A')
 #define	SFI_LOG_DEBUG	('D')
 struct SfiLogMessage {
-  const gchar  *log_domain;
-  unsigned char level;
-  const char   *key;            /* maybe generated */
-  const char   *config_blurb;   /* translated */
-  const char   *message;
+  gchar  *log_domain;
+  guint8  level;
+  char   *key;            /* maybe generated */
+  char   *title;          /* translated */
+  char   *primary;        /* translated */
+  char   *secondary;      /* translated */
+  char   *details;        /* translated */
+  char   *config_check;   /* translated */
 };
+typedef struct SfiLogBit SfiLogBit;
 
-void    sfi_log_valist                  (const char     *log_domain,
+void       sfi_log_valist               (const char     *log_domain,
                                          unsigned char   level,
                                          const char     *key,
                                          const char     *config_blurb,
                                          const char     *format,
                                          va_list         args);
-void    sfi_log_string                  (const char     *log_domain,
+void       sfi_log_string               (const char     *log_domain,
                                          unsigned char   level,
                                          const char     *key,
                                          const char     *config_blurb,
                                          const char     *string);
-void    sfi_log_default_handler         (SfiLogMessage  *message);
-void    _sfi_init_logging               (void);
+void       sfi_log_default_handler      (const SfiLogMessage *message);
+SfiLogBit* sfi_log_bit_printf           (char            log_bit_type,
+                                         const char     *format,
+                                         ...) G_GNUC_PRINTF (2, 3);
+void       sfi_log_msg_valist           (const char     *domain,
+                                         SfiLogBit      *lbit1,
+                                         SfiLogBit      *lbit2,
+                                         SfiLogBit      *lbit3,
+                                         ...);
+void       _sfi_init_logging            (void);
 #ifndef SFI_LOG_DOMAIN
 #define SFI_LOG_DOMAIN  G_LOG_DOMAIN
 #endif

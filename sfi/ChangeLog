@@ -1,3 +1,10 @@
+Thu May 12 00:07:51 2005  Tim Janik  <timj@gtk.org>
+
+	* sfilog.h, sfilog.c: made log message much richer.
+	messages now carry a title, a primary, a secondary message and
+	details messages. added sfi_log_msg() and a set of log message
+	formating macros SFI_MSG_*() to facilitate rich log messages.
+
 Mon Apr 11 00:49:40 2005  Tim Janik  <timj@gtk.org>
 
 	* sfi/sfiustore.c: fixed data pointer in sfi_ppool_foreach().
