@@ -810,6 +810,29 @@ METHOD (BseProject, inject-midi-control) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseProject, change-name) {
+  HELP  = "Change a project name without recording undo steps.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_string ("name", NULL, NULL, NULL, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  gchar *name = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  g_object_set (project, "uname", name, NULL); /* no undo */
+
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseProject, undo-depth) {
   HELP  = "Check whether a project can perform undo steps";
   IN    = bse_param_spec_object ("project", "Project", "The project",

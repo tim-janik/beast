@@ -1,3 +1,8 @@
+Wed May 11 15:01:28 2005  Tim Janik  <timj@gtk.org>
+
+	* bseproject.proc: added change-name() to alter a project name without
+	affecting undo.
+
 Mon May  9 21:05:02 2005  Tim Janik  <timj@gtk.org>
 
 	* bseproject.h, bseproject.c: properly implemented project dirty
