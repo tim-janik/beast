@@ -586,12 +586,15 @@ choice UserMsgType {
   USER_MSG_ERROR
 };
 record UserMsg {
-  String      log_domain;
-  UserMsgType msg_type;
-  String      config_blurb;
-  String      message;
-  Int         pid;
-  String      process;
+  String        log_domain;
+  UserMsgType   msg_type;
+  String        config_check;
+  String        title;
+  String        primary;
+  String        secondary;
+  String        details;
+  Int           pid;
+  String        process;
 };
 
 /* thread info */

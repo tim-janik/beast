@@ -483,9 +483,13 @@ server_open_pcm_device (BseServer *server,
                                                                bse_main_args->pcm_drivers,
                                                                pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
-    sfi_error_msg (_("Show messages about PCM device selections problems"),
-                   _("Failed to open PCM devices, giving up: %s"),
-                   bse_error_blurb (error));
+    sfi_log_msg (SFI_MSG_ERROR,
+                 SFI_MSG_TITLE (_("No Audio")),
+                 SFI_MSG_TEXT1 (_("No available audio device was found.")),
+                 SFI_MSG_TEXT2 (_("No available audio device could be found and opened successfully. "
+                                   "Sorry, no fallback selection can be made for audio devices, giving up.")),
+                 SFI_MSG_TEXT3 (_("Failed to open PCM devices: %s"), bse_error_blurb (error)),
+                 SFI_MSG_CHECK (_("Show messages about PCM device selections problems")));
   server->pcm_input_checked = FALSE;
   return server->pcm_device ? BSE_ERROR_NONE : error;
 }
@@ -503,9 +507,13 @@ server_open_midi_device (BseServer *server)
       server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
       sfi_ring_free (ring);
       if (server->midi_device)
-	sfi_warning_msg (_("Show messages about MIDI device selections problems"),
-                         _("Failed to open MIDI devices (reverting to null device): %s"),
-                         bse_error_blurb (error));
+        sfi_log_msg (SFI_MSG_WARNING,
+                     SFI_MSG_TITLE (_("No MIDI")),
+                     SFI_MSG_TEXT1 (_("MIDI input or oputput is not available.")),
+                     SFI_MSG_TEXT2 (_("No available MIDI device could be found and opened successfully. "
+                                      "Reverting to null device, no MIDI events will be received or sent.")),
+                     SFI_MSG_TEXT3 (_("Failed to open MIDI devices: %s"), bse_error_blurb (error)),
+                     SFI_MSG_CHECK (_("Show messages about MIDI device selections problems")));
     }
   return server->midi_device ? BSE_ERROR_NONE : error;
 }
@@ -722,26 +730,38 @@ bse_server_script_error (BseServer   *server,
 }
 
 void
+bse_server_send_user_message (BseServer          *server,
+                              const BseUserMsg   *umsg)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (umsg != NULL);
+  g_signal_emit (server, signal_user_message, 0, umsg);
+}
+
+void
 bse_server_user_message (BseServer          *server,
                          const gchar        *log_domain,
                          BseUserMsgType      msg_type,
                          const gchar        *config_blurb,
-                         const gchar        *message,
+                         const gchar        *primary,
+                         const gchar        *secondary,
+                         const gchar        *details,
                          gint                pid,
                          const gchar        *process_name)
 {
   g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (message != NULL);
+  g_return_if_fail (primary != NULL);
 
   BseUserMsg umsg = { 0, };
   umsg.log_domain = (char*) log_domain;
   umsg.msg_type = msg_type;
-  umsg.config_blurb = (char*) config_blurb;
-  umsg.message = (char*) message;
+  umsg.config_check = (char*) config_blurb;
+  umsg.primary = (char*) primary;
+  umsg.secondary = (char*) secondary;
+  umsg.details = (char*) details;
   umsg.pid = pid;
   umsg.process = (char*) process_name;
-
-  g_signal_emit (server, signal_user_message, 0, &umsg);
+  bse_server_send_user_message (server, &umsg);
 }
 
 void

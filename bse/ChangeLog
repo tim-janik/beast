@@ -1,3 +1,14 @@
+Thu May 12 00:13:05 2005  Tim Janik  <timj@gtk.org>
+
+	* bseserver.h, bseserver.c: support emission of user mesage signal 
+	without constructing a user message via bse_server_send_user_message().
+	turned log messages about failure during PCM and MIDI device selection
+	into rich log message with primary, secondary text and details.
+
+	* bsecore.idl: adapted UserMsg record according to SfiLogMessage.
+
+	* bsemain.h, bsemain.c: adapted log handler.
+
 Wed May 11 15:01:28 2005  Tim Janik  <timj@gtk.org>
 
 	* bseproject.proc: added change-name() to alter a project name without

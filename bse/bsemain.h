@@ -42,7 +42,7 @@ void		bse_init_intern		(gint		*argc,
 guint           bse_main_getpid         (void);
 
 /* MT-safe log handler */
-void            bse_log_handler         (SfiLogMessage  *message);
+void            bse_log_handler         (const SfiLogMessage *message);
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()

@@ -107,11 +107,15 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
+void		bse_server_send_user_message	        (BseServer	    *server,
+                                                         const BseUserMsg   *umsg);
 void		bse_server_user_message		        (BseServer	    *server,
                                                          const gchar        *log_domain,
                                                          BseUserMsgType      msg_type,
                                                          const gchar        *config_blurb,
-                                                         const gchar        *message,
+                                                         const gchar        *primary,
+                                                         const gchar        *secondary,
+                                                         const gchar        *details,
                                                          gint                pid,
                                                          const gchar        *process_name);
 BseErrorType	bse_server_run_remote			(BseServer	    *server,

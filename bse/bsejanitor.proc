@@ -416,7 +416,7 @@ METHOD (BseJanitor, exit) {
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
-  bse_server_user_message (bse_server_get (), "BSE-SCRIPT", mtype, NULL, message, self->port ? self->port->remote_pid : 0, self->script_name);
+  bse_server_user_message (bse_server_get (), "BSE-SCRIPT", mtype, NULL, message, NULL, NULL, self->port ? self->port->remote_pid : 0, self->script_name);
   bse_janitor_close (self);
   
   return BSE_ERROR_NONE;

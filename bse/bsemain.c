@@ -359,16 +359,10 @@ bse_main_getpid (void)
 }
 
 static gboolean
-core_thread_send_message (gpointer data)
+core_thread_send_message_async (gpointer data)
 {
   BseUserMsg *umsg = data;
-  bse_server_user_message (bse_server_get(),
-                           umsg->log_domain,
-                           umsg->msg_type,
-                           umsg->config_blurb,
-                           umsg->message,
-                           umsg->pid,
-                           umsg->process);
+  bse_server_send_user_message (bse_server_get(), umsg);
   bse_user_msg_free (umsg);
   return FALSE;
 }
@@ -379,9 +373,9 @@ core_thread_send_message (gpointer data)
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_log_handler (SfiLogMessage *message)
+bse_log_handler (const SfiLogMessage *message)
 {
-  if (!message->message)
+  if (!message->primary && !message->secondary)
     return;
   BseUserMsg *umsg = bse_user_msg_new();
   g_free (umsg->log_domain);
@@ -393,14 +387,20 @@ bse_log_handler (SfiLogMessage *message)
     case SFI_LOG_INFO:    umsg->msg_type = BSE_USER_MSG_INFO;    break;
     default:              umsg->msg_type = BSE_USER_MSG_MISC;    break;
     }
-  g_free (umsg->config_blurb);
-  umsg->config_blurb = g_strdup (message->config_blurb);
-  g_free (umsg->message);
-  umsg->message = g_strdup (message->message);
+  g_free (umsg->config_check);
+  umsg->config_check = g_strdup (message->config_check);
+  g_free (umsg->title);
+  umsg->title = g_strdup (message->title);
+  g_free (umsg->primary);
+  umsg->primary = g_strdup (message->primary);
+  g_free (umsg->secondary);
+  umsg->secondary = g_strdup (message->secondary);
+  g_free (umsg->details);
+  umsg->details = g_strdup (message->details);
   umsg->pid = sfi_thread_get_pid (NULL);
   g_free (umsg->process);
   umsg->process = g_strdup (sfi_thread_get_name (NULL));
-  bse_idle_now (core_thread_send_message, umsg);
+  bse_idle_now (core_thread_send_message_async, umsg);
 }
 
 static void
