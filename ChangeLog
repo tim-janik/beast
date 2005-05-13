@@ -1,3 +1,7 @@
+Fri May 13 11:51:00 2005  Iñaki Larrañaga  <dooteo@euskalgnu.org>
+
+	* configure.in: Added "eu" (Basque) to ALL_LINGUAS.
+
 Thu May 12 00:11:44 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: issue a warning when closing the window
