@@ -33,6 +33,7 @@ translations can be obtained from the following pages.
 @uref{http://l10n-status.gnome.org/HEAD/en_GB/extras/index.html,, en_GB},
 @uref{http://l10n-status.gnome.org/HEAD/eo/extras/index.html,, eo},
 @uref{http://l10n-status.gnome.org/HEAD/es/extras/index.html,, es},
+@uref{http://l10n-status.gnome.org/HEAD/es/extras/index.html,, eu},
 @uref{http://l10n-status.gnome.org/HEAD/fr/extras/index.html,, fr},
 @uref{http://l10n-status.gnome.org/HEAD/hr/extras/index.html,, hr},
 @uref{http://l10n-status.gnome.org/HEAD/it/extras/index.html,, it},

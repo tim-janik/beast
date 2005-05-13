@@ -794,6 +794,8 @@ beast_show_about_box (void)
     "Francisco Javier F. Serrador",
     "Gareth Owen",
     "Iassen Pramatarov",
+    // "I\xc3\261aki Larra\xc3\261aga Murgotio",
+    // "Hizkuntza Politikarako Sailburuordetza",
     "Ismael Andres Rubio Rojas",
     "Jorge Gonzalez",
     "Kees van den Broek",
