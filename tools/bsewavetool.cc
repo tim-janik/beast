@@ -54,7 +54,7 @@ list<string>   unlink_file_list;
 static void
 wavetool_log_handler (const SfiLogMessage  *msg)
 {
-  if (msg->level == SFI_LOG_INFO)
+  if (msg->level == SFI_MSG_INFO)
     {
       if (!quiet_infos)
         {
@@ -88,7 +88,7 @@ main (int   argc,
   bse_init_intern (&argc, &argv, NULL);
   sfi_debug_allow ("main"); // FIXME
   sfi_log_set_thread_handler (wavetool_log_handler);
-  sfi_log_assign_level (SFI_LOG_INFO, SFI_LOG_TO_HANDLER);
+  sfi_log_assign_level (SFI_MSG_INFO, SFI_LOG_TO_HANDLER);
   
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
@@ -926,8 +926,9 @@ public:
             }
           if (error)
             {
-              (continue_on_error ? sfi_warning : sfi_error) ("failed to add wave chunk from file \"%s\": %s",
-                                                             ochunk.sample_file, bse_error_blurb (error));
+              sfi_log_msg (continue_on_error ? SFI_MSG_WARNING : SFI_MSG_ERROR,
+                           SFI_MSG_PRIMARY (_("failed to add wave chunk from file \"%s\": %s"),
+                                            ochunk.sample_file, bse_error_blurb (error)));
               if (!continue_on_error)
                 exit (1);
             }

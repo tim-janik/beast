@@ -613,7 +613,7 @@ bst_app_handle_delete_event (GtkWidget   *widget,
                              GdkEventAny *event)
 {
   BstApp *self = BST_APP (widget);
-  if (bse_project_dirty (self->project))
+  if (bse_project_is_dirty (self->project))
     {
       sfi_log_msg (SFI_MSG_WARNING,
                    SFI_MSG_TITLE (_("Close %s"), bse_item_get_name (self->project)),
@@ -1113,7 +1113,7 @@ app_action_check (gpointer data,
     case BST_ACTION_CLOSE_PROJECT:
       return TRUE;
     case BST_ACTION_SAVE_PROJECT:
-      return bse_project_dirty (self->project);
+      return bse_project_is_dirty (self->project);
     case BST_ACTION_NEW_SONG:
       iseq = bse_container_list_children (self->project);
       for (i = 0; i < iseq->n_items; i++)

@@ -389,9 +389,9 @@ bst_user_message_log_handler (const SfiLogMessage *msg)
   umsg.log_domain = msg->log_domain;
   switch (msg->level)
     {
-    case SFI_LOG_ERROR:   umsg.msg_type = BSE_USER_MSG_ERROR;   break;
-    case SFI_LOG_WARNING: umsg.msg_type = BSE_USER_MSG_WARNING; break;
-    case SFI_LOG_INFO:    umsg.msg_type = BSE_USER_MSG_INFO;    break;
+    case SFI_MSG_ERROR:   umsg.msg_type = BSE_USER_MSG_ERROR;   break;
+    case SFI_MSG_WARNING: umsg.msg_type = BSE_USER_MSG_WARNING; break;
+    case SFI_MSG_INFO:    umsg.msg_type = BSE_USER_MSG_INFO;    break;
     default:              umsg.msg_type = BSE_USER_MSG_MISC;    break;
     }
   umsg.config_check = msg->config_check;

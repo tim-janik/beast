@@ -1,3 +1,9 @@
+Sat May 14 21:03:47 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c:
+	* beast-gtk/bstusermessage.c:
+	* tools/bsewavetool.cc: minor API adaptions.
+
 Fri May 13 11:51:00 2005  Inaki Larranaga  <dooteo@euskalgnu.org>
 
 	* configure.in: Added "eu" (Basque) to ALL_LINGUAS.
