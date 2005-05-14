@@ -1,3 +1,8 @@
+Sat May 14 18:07:39 2005  Tim Janik  <timj@gtk.org>
+
+	* configure.in: version upgrade to 0.6.6. use PACKAGE_ as variable
+	prefix instead of PKG_ which aparently produces problems for autoconf.
+
 Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
 
         * removed obsolete .h C++ headers.
