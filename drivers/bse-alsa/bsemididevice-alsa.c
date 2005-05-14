@@ -201,12 +201,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
   /* setup MIDI handle or shutdown */
   if (!error)
     {
-      BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
-      if (alsa->read_handle)
-        BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
-      if (alsa->write_handle)
-        BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
-      BSE_MIDI_DEVICE (device)->handle = handle;
+      bse_device_set_opened (device, dname, alsa->read_handle != NULL, alsa->write_handle != NULL);
       BSE_MIDI_DEVICE (device)->handle = handle;
       if (alsa->read_handle || alsa->write_handle)
         {

@@ -223,17 +223,11 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   if (!error)
     {
       alsa->period_buffer = g_malloc (alsa->period_size * alsa->frame_size);
-      BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
+      bse_device_set_opened (device, dname, handle->readable, handle->writable);
       if (handle->readable)
-        {
-          BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
-          handle->read = alsa_device_read;
-        }
+        handle->read = alsa_device_read;
       if (handle->writable)
-        {
-          BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
-          handle->write = alsa_device_write;
-        }
+        handle->write = alsa_device_write;
       handle->check_io = alsa_device_check_io;
       handle->latency = alsa_device_latency;
       BSE_PCM_DEVICE (device)->handle = handle;

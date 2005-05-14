@@ -1,3 +1,11 @@
+Sat May 14 20:47:52 2005  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c:
+	* bsemididevice-alsa.c: use bse_device_set_opened().
+
+	* configure.in: version upgrade to 0.6.6, use PACKAGE_ as variable
+	prefix instead of PKG_ to circumvent autoconf errors.
+
 Sat Dec 18 00:09:49 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: released 0.6.4, interface 0, binary 0.
