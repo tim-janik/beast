@@ -70,7 +70,7 @@ static std::string
 port_audio_host_api_name (PaHostApiIndex host_api_index)
 {
   const PaHostApiInfo *host_api_info = Pa_GetHostApiInfo (host_api_index);
-
+  
   switch (host_api_info->type)
     {
     case paOSS:   return "oss";
@@ -78,7 +78,7 @@ port_audio_host_api_name (PaHostApiIndex host_api_index)
     case paALSA:  return "alsa";
     default:      ;
     }
-
+  
   char *api_str = g_strdup_printf ("pa%02d", host_api_info->type);
   string name = api_str;
   g_free (api_str);
@@ -94,12 +94,12 @@ static vector<string>
 port_audio_devices()
 {
   vector<string> devices (Pa_GetDeviceCount());
-
+  
   for (PaHostApiIndex host_api_index = 0; host_api_index < Pa_GetHostApiCount(); host_api_index++)
     {
       int host_api_device_index = 0; /* host api specific index */
       string host_api_name = port_audio_host_api_name (host_api_index);
-
+      
       for (PaDeviceIndex device_index = 0; device_index < Pa_GetDeviceCount(); device_index++)
 	{
 	  const PaDeviceInfo *device_info = Pa_GetDeviceInfo (device_index);
@@ -111,7 +111,7 @@ port_audio_devices()
 	    }
 	}
     }
-
+  
   return devices;
 }
 
@@ -120,19 +120,19 @@ bse_pcm_device_port_audio_list_devices (BseDevice *device)
 {
   vector<string> devices = port_audio_devices();
   SfiRing *ring = NULL;
-
+  
   int default_device_index = Pa_GetDefaultOutputDevice();
-
+  
   for (PaDeviceIndex device_index = 0; device_index < Pa_GetDeviceCount(); device_index++)
     {
       const PaDeviceInfo *device_info = Pa_GetDeviceInfo (device_index);
       const PaHostApiInfo *host_api_info = Pa_GetHostApiInfo (device_info->hostApi);
       char *device_args = g_strdup (devices[device_index].c_str());
-
+      
       BseDeviceEntry *entry = bse_device_group_entry_new (device, device_args,
 							  g_strdup (host_api_info->name),
 							  g_strdup_printf ("%-10s%s%s", device_args, device_info->name,
-							                                device_index == default_device_index ? " (default)": ""));
+                                                                           device_index == default_device_index ? " (default)": ""));
       ring = sfi_ring_append (ring, entry);
     }
   if (!ring)
@@ -150,18 +150,18 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
   PortAudioPcmHandle *portaudio = g_new0 (PortAudioPcmHandle, 1);
   BsePcmHandle *handle = &portaudio->handle;
   BsePcmDevice *pdev = BSE_PCM_DEVICE (device);
-
+  
   handle->readable = require_readable;
   handle->writable = require_writable;
   handle->n_channels = 2;   /* TODO: mono */
   handle->mix_freq = pdev->req_mix_freq;
-
+  
   PaStreamParameters inputParameters;
   PaStreamParameters outputParameters;
-
+  
   inputParameters.device = Pa_GetDefaultInputDevice();
   outputParameters.device = Pa_GetDefaultOutputDevice();
-
+  
   /* choose device from string ("alsa:1" means use the second device offered by the alsa host api) */
   if (n_args >= 1)
     {
@@ -193,42 +193,42 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
 	  handle->writable = TRUE;
 	}
     }
-
+  
   inputParameters.channelCount  = handle->n_channels;
   outputParameters.channelCount = handle->n_channels;
-
+  
   inputParameters.sampleFormat  = paFloat32;
   outputParameters.sampleFormat = paFloat32;
-
+  
   inputParameters.suggestedLatency  = BSE_PCM_DEVICE (device)->req_latency_ms * 0.001;
   outputParameters.suggestedLatency = BSE_PCM_DEVICE (device)->req_latency_ms * 0.001;
-
+  
   inputParameters.hostApiSpecificStreamInfo  = NULL;
   outputParameters.hostApiSpecificStreamInfo = NULL;
-
+  
   BseErrorType error = BSE_ERROR_NONE;
   PaError pa_error;
   pa_error = Pa_OpenStream (&portaudio->stream, 
-      handle->readable ? &inputParameters : NULL,
-      handle->writable ? &outputParameters : NULL,
-      handle->mix_freq,
-      pdev->req_block_length,
-      paDitherOff,
-      NULL,	/* no callback -> blocking api */
-      NULL);
+                            handle->readable ? &inputParameters : NULL,
+                            handle->writable ? &outputParameters : NULL,
+                            handle->mix_freq,
+                            pdev->req_block_length,
+                            paDitherOff,
+                            NULL,	/* no callback -> blocking api */
+                            NULL);
   Pa_StartStream (portaudio->stream);
   /*
-  printf ("latency input: %f\n", Pa_GetStreamInfo (portaudio->stream)->inputLatency);
-  printf ("latency output: %f\n", Pa_GetStreamInfo (portaudio->stream)->outputLatency);
+    printf ("latency input: %f\n", Pa_GetStreamInfo (portaudio->stream)->inputLatency);
+    printf ("latency output: %f\n", Pa_GetStreamInfo (portaudio->stream)->outputLatency);
   */
-
+  
   if (pa_error != paNoError)
     error = BSE_ERROR_DEVICE_NOT_AVAILABLE; /* _DEVICE_BUSY? */
-
+  
   if (!error)
     {
       BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_OPEN);
-
+      
       if (handle->readable)
 	{
 	  BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_READABLE);
@@ -243,7 +243,7 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
       handle->latency = port_audio_device_latency;
       pdev->handle = handle;
     }
-
+  
   return error;
 }
 
@@ -252,7 +252,7 @@ bse_pcm_device_port_audio_close (BseDevice *device)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) BSE_PCM_DEVICE (device)->handle;
   BSE_PCM_DEVICE (device)->handle = NULL;
-
+  
   if (portaudio->stream)
     {
       Pa_StopStream (portaudio->stream);
@@ -276,7 +276,7 @@ port_audio_device_retrigger (PortAudioPcmHandle *portaudio)
   /* silence fill output, to resynchronize output and input streams to the desired latency */
   guint write_frames_avail = Pa_GetStreamWriteAvailable (portaudio->stream);
   float *silence = (float *)g_malloc0 (portaudio->handle.block_length * sizeof (float) * portaudio->handle.n_channels);
-
+  
   while (write_frames_avail >= portaudio->handle.block_length)
     {
       Pa_WriteStream (portaudio->stream, silence, portaudio->handle.block_length);
@@ -293,7 +293,7 @@ port_audio_device_check_io (BsePcmHandle *handle,
   guint read_frames_avail = handle->readable ? Pa_GetStreamReadAvailable (portaudio->stream) : 0;
   guint write_frames_avail = handle->writable ? Pa_GetStreamWriteAvailable (portaudio->stream) : 0;
   guint n_frames_avail = handle->readable ? read_frames_avail : write_frames_avail;
-
+  
   if (handle->readable && handle->writable && write_frames_avail >= (2 * handle->block_length) && read_frames_avail == 0)
     {
       /* underrun occured (or stream just initialized) */
@@ -314,7 +314,7 @@ static guint
 port_audio_device_latency (BsePcmHandle *handle)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
-
+  
   /* return total latency in frames */
   /* -> this is probably an estimate, as I don't think the PortAudio API exports a precise value at any place */
   return guint (max (Pa_GetStreamInfo (portaudio->stream)->inputLatency, Pa_GetStreamInfo (portaudio->stream)->outputLatency) * handle->mix_freq);
