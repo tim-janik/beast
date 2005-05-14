@@ -56,11 +56,7 @@ bse_midi_device_null_open (BseDevice     *device,
   handle->readable = require_readable;
   handle->writable = require_writable;
   
-  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
-  if (handle->readable)
-    BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
-  if (handle->writable)
-    BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
+  bse_device_set_opened (device, "null", handle->readable, handle->writable);
   BSE_MIDI_DEVICE (device)->handle = handle;
   MIDI_DEBUG ("NULL: opening MIDI readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
   return BSE_ERROR_NONE;

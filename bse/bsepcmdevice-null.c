@@ -67,12 +67,8 @@ bse_pcm_device_null_open (BseDevice     *device,
   handle->writable = require_writable;
   handle->n_channels = 2;
   handle->mix_freq = BSE_PCM_DEVICE (device)->req_mix_freq;
-  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
-  if (handle->readable)
-    BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
+  bse_device_set_opened (device, "null", handle->readable, handle->writable);
   handle->read = null_device_read;
-  if (handle->writable)
-    BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
   handle->write = null_device_write;
   handle->check_io = null_device_check_io;
   handle->latency = null_device_latency;

@@ -20,6 +20,7 @@
 #include	"topconfig.h"
 
 #include	"gsldatautils.h"
+#include	"gslcommon.h" // FIXME: remove
 
 #ifndef	BSE_PCM_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BsePcmDeviceOSS);
@@ -208,17 +209,11 @@ bse_pcm_device_oss_open (BseDevice     *device,
     {
       oss->frag_buf = g_malloc (FRAG_BUF_SIZE (oss));
       handle->block_length = 0; /* setup after open */
-      BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
+      bse_device_set_opened (device, dname, handle->readable, handle->writable);
       if (handle->readable)
-	{
-	  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
-	  handle->read = oss_device_read;
-	}
+        handle->read = oss_device_read;
       if (handle->writable)
-	{
-	  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
-	  handle->write = oss_device_write;
-	}
+        handle->write = oss_device_write;
       handle->check_io = oss_device_check_io;
       handle->latency = oss_device_latency;
       BSE_PCM_DEVICE (device)->handle = handle;

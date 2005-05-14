@@ -985,7 +985,7 @@ METHOD (BseProject, clean-dirty) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, dirty) {
+METHOD (BseProject, is-dirty) {
   HELP  = "Check whether a project is dirty (needs saving).";
   IN    = bse_param_spec_object ("project", "Project", "The project",
                                  BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);

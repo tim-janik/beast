@@ -50,7 +50,10 @@ typedef struct _BseDevice       BseDevice;
 typedef struct _BseDeviceClass  BseDeviceClass;
 struct _BseDevice
 {
-  BseObject             parent_object;
+  BseObject              parent_object;
+  /* valid while BSE_DEVICE_OPEN() */
+  gchar                 *open_device_name;
+  gchar                 *open_device_args;
 };
 struct _BseDeviceClass
 {
@@ -89,6 +92,10 @@ BseErrorType    bse_device_open            (BseDevice      *device,
                                             gboolean        need_readable,
                                             gboolean        need_writable,
                                             const gchar    *arg_string);
+void            bse_device_set_opened      (BseDevice      *device,
+                                            const gchar    *device_name,
+                                            gboolean        readable,
+                                            gboolean        writable);
 void            bse_device_close           (BseDevice      *device);
 BseDeviceEntry* bse_device_entry_new       (BseDevice      *device,
                                             gchar          *orphan_args,

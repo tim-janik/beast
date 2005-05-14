@@ -75,6 +75,9 @@ device_open_args (BseDevice      *self,
   if (!error)
     {
       g_return_val_if_fail (BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
+      g_return_val_if_fail (self->open_device_name != NULL, BSE_ERROR_INTERNAL); /* bse_device_set_opened() was not called */
+      if (!self->open_device_args)
+        self->open_device_args = g_strdup (arg_string);
       if (BSE_DEVICE_GET_CLASS (self)->post_open)
         BSE_DEVICE_GET_CLASS (self)->post_open (self);
     }
@@ -121,6 +124,26 @@ bse_device_open (BseDevice      *self,
 }
 
 void
+bse_device_set_opened (BseDevice      *self,
+                       const gchar    *device_name,
+                       gboolean        readable,
+                       gboolean        writable)
+{
+  g_return_if_fail (BSE_IS_DEVICE (self));
+  g_return_if_fail (!BSE_DEVICE_OPEN (self));
+  g_return_if_fail (device_name != NULL);
+  g_return_if_fail (readable || writable);
+  self->open_device_name = g_strdup (device_name);
+  BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_OPEN);
+  if (readable)
+    BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_READABLE);
+  if (writable)
+    BSE_OBJECT_SET_FLAGS (self, BSE_DEVICE_FLAG_WRITABLE);
+  g_free (self->open_device_args);
+  self->open_device_args = NULL;
+}
+
+void
 bse_device_close (BseDevice *self)
 {
   g_return_if_fail (BSE_IS_DEVICE (self));
@@ -130,6 +153,11 @@ bse_device_close (BseDevice *self)
     BSE_DEVICE_GET_CLASS (self)->pre_close (self);
 
   BSE_DEVICE_GET_CLASS (self)->close (self);
+
+  g_free (self->open_device_name);
+  self->open_device_name = NULL;
+  g_free (self->open_device_args);
+  self->open_device_args = NULL;
 
   BSE_OBJECT_UNSET_FLAGS (self, (BSE_DEVICE_FLAG_OPEN |
                                  BSE_DEVICE_FLAG_READABLE |

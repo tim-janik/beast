@@ -18,7 +18,7 @@
 #include "bsemididevice-oss.h"
 #include "bseserver.h"
 #include "bsemididecoder.h"
-#include "gslcommon.h"
+#include "gslcommon.h" // FIXME: remove
 #include "bsesequencer.h"
 #include "topconfig.h"
 
@@ -178,11 +178,7 @@ bse_midi_device_oss_open (BseDevice     *device,
   /* setup MIDI handle or shutdown */
   if (!error)
     {
-      BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
-      if (handle->readable)
-	BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
-      if (handle->writable)
-	BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
+      bse_device_set_opened (device, dname, handle->readable, handle->writable);
       BSE_MIDI_DEVICE (device)->handle = handle;
       GPollFD pfd = { 0, };
       pfd.fd = oss->fd;

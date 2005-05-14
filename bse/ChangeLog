@@ -1,3 +1,20 @@
+Sat May 14 20:52:56 2005  Tim Janik  <timj@gtk.org>
+
+	* bseserver.c: improved error messages.
+
+	* bsedevice.c, bsedevice.h: 
+	bse_device_set_opened(): enter OPEN state, stores device name.
+	device_open_args(): store device opening argument list, assert
+	bse_device_set_opened() is used.
+	bse_device_close(): cleanup device anme and device opening arguments.
+
+	* bseproject.proc: renamed bse-project-dirty to bse-project-is-dirty
+	to circumvent name coliisions in the C++ binding.
+
+	* bse*device-*.c: use bse_device_set_opened().
+
+	* *.c: adaptions to sfilog.h API changes.
+
 Thu May 12 00:13:05 2005  Tim Janik  <timj@gtk.org>
 
 	* bseserver.h, bseserver.c: support emission of user mesage signal 

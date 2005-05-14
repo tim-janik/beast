@@ -436,13 +436,19 @@ bse_server_require_pcm_input (BseServer *server)
     {
       server->pcm_input_checked = TRUE;
       if (!BSE_DEVICE_READABLE (server->pcm_device))
-        sfi_warning_msg (_("Show messages about audio recording problems"),
-                         _("An audio input module is in use, but the audio device "
-                           "has not been opened in recording mode. "
-                           "A quiet audio signal is used as input instead of a "
-                           "recorded signal, so playback operation may produce "
-                           "results not actually intended (such as reducing the "
-                           "output signal to pure silence)."));
+        sfi_log_msg (SFI_MSG_WARNING,
+                     SFI_MSG_TITLE (_("Recording Audio Input")),
+                     SFI_MSG_TEXT1 (_("Failed to start recording from audio device.")),
+                     SFI_MSG_TEXT2 (_("An audio project is in use which processes an audio input signal, but the audio device "
+                                      "has not been opened in recording mode. "
+                                      "An audio signal of silence will be used instead of a recorded signal, "
+                                      "so playback operation may produce results not actually intended "
+                                      "(such as a silent output signal).")),
+                     SFI_MSG_TEXT3 (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
+                                    BSE_DEVICE (server->pcm_device)->open_device_name,
+                                    BSE_DEVICE_GET_CLASS (server->pcm_device)->driver_name,
+                                    BSE_DEVICE (server->pcm_device)->open_device_args),
+                     SFI_MSG_CHECK (_("Show messages about audio input problems")));
     }
 }
 
@@ -563,9 +569,13 @@ bse_server_open_devices (BseServer *self)
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, bse_engine_sample_freq ());
 	  if (error)
 	    {
-              sfi_error_msg (_("Show recording file errors"),
-                             _("Failed to open output file \"%s\": %s"),
-                             self->wave_file, bse_error_blurb (error));
+              sfi_log_msg (SFI_MSG_ERROR,
+                           SFI_MSG_TITLE (_("Start Disk Recording")),
+                           SFI_MSG_TEXT1 (_("Failed to start recording to disk.")),
+                           SFI_MSG_TEXT2 (_("An error occoured while opening the recording file, selecting a different "
+                                            "file might fix this situation.")),
+                           SFI_MSG_TEXT3 (_("Failed to open file \"%s\" for output: %s"), self->wave_file, bse_error_blurb (error)),
+                           SFI_MSG_CHECK (_("Show recording file errors")));
 	      g_object_unref (self->pcm_writer);
 	      self->pcm_writer = NULL;
 	    }
