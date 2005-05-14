@@ -1,3 +1,9 @@
+Sat May 14 20:49:59 2005  Tim Janik  <timj@gtk.org>
+
+	* sfilog.h, sfilog.c:
+	cleanups. API cleanups and consolidations. allow custom log bits.
+	renamed message types from SFI_LOG_* to SFI_MSG_*. 
+
 Thu May 12 00:07:51 2005  Tim Janik  <timj@gtk.org>
 
 	* sfilog.h, sfilog.c: made log message much richer.

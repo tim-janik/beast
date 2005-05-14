@@ -24,187 +24,92 @@
 G_BEGIN_DECLS
 
 /* --- standard logging --- */
-static inline void sfi_error            (const char     *format,
-                                         ...) G_GNUC_PRINTF (1, 2);
-static inline void sfi_warning          (const char     *format,
-                                         ...) G_GNUC_PRINTF (1, 2);
-static inline void sfi_info             (const char     *format,
-                                         ...) G_GNUC_PRINTF (1, 2);
-static inline void sfi_diag             (const char     *format,
-                                         ...) G_GNUC_PRINTF (1, 2);
+#define sfi_error(        ...)          sfi_log_printf (SFI_LOG_DOMAIN, SFI_MSG_ERROR,   NULL, __VA_ARGS__)
+#define sfi_warning(      ...)          sfi_log_printf (SFI_LOG_DOMAIN, SFI_MSG_WARNING, NULL, __VA_ARGS__)
+#define sfi_info(         ...)          sfi_log_printf (SFI_LOG_DOMAIN, SFI_MSG_INFO,    NULL, __VA_ARGS__)
+#define sfi_diag(         ...)          sfi_log_printf (SFI_LOG_DOMAIN, SFI_MSG_DIAG,    NULL, __VA_ARGS__)
+#define sfi_debug(   key, ...)          do { if (sfi_debug_check (key)) sfi_log_printf (SFI_LOG_DOMAIN, SFI_MSG_DEBUG, NULL, __VA_ARGS__); } while (0)
+#define sfi_nodebug( key, ...)          do { /* nothing */ } while (0)
 
 /* --- debugging --- */
-static inline void sfi_debug            (const char     *key,
-                                         const char     *format,
-                                         ...) G_GNUC_PRINTF (2, 3);
 gboolean           sfi_debug_check      (const char     *key);
 void               sfi_debug_allow      (const char     *key_list);
 void               sfi_debug_deny       (const char     *key_list);
-#define            sfi_nodebug(key, ...) do { /* nothing */ } while (0)
 
 /* --- user interface messages --- */
-static inline void sfi_error_msg        (const char     *config_blurb,
-                                         const char     *format,
-                                         ...) G_GNUC_PRINTF (2, 3);
-static inline void sfi_warning_msg      (const char     *config_blurb,
-                                         const char     *format,
-                                         ...) G_GNUC_PRINTF (2, 3);
-static inline void sfi_info_msg         (const char     *config_blurb,
-                                         const char     *format,
-                                         ...) G_GNUC_PRINTF (2, 3);
-#define            sfi_log_msg(          bit1, ...)         sfi_log_msg_valist (SFI_LOG_DOMAIN, bit1, __VA_ARGS__, NULL);
-#define            SFI_MSG_TITLE(...)    sfi_log_bit_printf ('t', __VA_ARGS__)
-#define            SFI_MSG_TEXT1(...)    sfi_log_bit_printf ('1', __VA_ARGS__)
-#define            SFI_MSG_TEXT2(...)    sfi_log_bit_printf ('2', __VA_ARGS__)
-#define            SFI_MSG_TEXT3(...)    sfi_log_bit_printf ('3', __VA_ARGS__)
-#define            SFI_MSG_CHECK(...)    sfi_log_bit_printf ('c', __VA_ARGS__)
-#define            SFI_MSG_ERROR        ((SfiLogBit*) SFI_LOG_ERROR)
-#define            SFI_MSG_WARNING      ((SfiLogBit*) SFI_LOG_WARNING)
-#define            SFI_MSG_INFO         ((SfiLogBit*) SFI_LOG_INFO)
-#define            SFI_MSG_DIAG         ((SfiLogBit*) SFI_LOG_DIAG)
-#define            SFI_MSG_PRIMARY       SFI_MSG_TEXT1
-#define            SFI_MSG_SECOND        SFI_MSG_TEXT2
-#define            SFI_MSG_DETAIL        SFI_MSG_TEXT1
+#define sfi_log_msg(level, ...)         sfi_log_msg_valist (SFI_LOG_DOMAIN, level, __VA_ARGS__, NULL);
+#define SFI_MSG_ERROR                   ('E')
+#define SFI_MSG_WARNING                 ('W')
+#define SFI_MSG_INFO                    ('I')
+#define SFI_MSG_DIAG                    ('A')
+#define SFI_MSG_DEBUG                   ('D')
+#define SFI_MSG_TEXT0(...)              sfi_log_bit_printf ('0', __VA_ARGS__) /* message title */
+#define SFI_MSG_TEXT1(...)              sfi_log_bit_printf ('1', __VA_ARGS__) /* primary message */
+#define SFI_MSG_TEXT2(...)              sfi_log_bit_printf ('2', __VA_ARGS__) /* secondary message */
+#define SFI_MSG_TEXT3(...)              sfi_log_bit_printf ('3', __VA_ARGS__) /* message details */
+#define SFI_MSG_CHECK(...)              sfi_log_bit_printf ('c', __VA_ARGS__) /* user switch */
+#define SFI_MSG_TITLE                   SFI_MSG_TEXT0 /* alias */
+#define SFI_MSG_PRIMARY                 SFI_MSG_TEXT1 /* alias */
+#define SFI_MSG_SECONDARY               SFI_MSG_TEXT2 /* alias */
+#define SFI_MSG_DETAIL                  SFI_MSG_TEXT3 /* alias */
 
 /* --- logging configuration --- */
+typedef struct SfiLogMessage        SfiLogMessage;
+typedef void (*SfiLogHandler)      (const SfiLogMessage *message);
 typedef enum /*< skip >*/
 {
   SFI_LOG_TO_STDERR     = 1,
   SFI_LOG_TO_STDLOG     = 2,
   SFI_LOG_TO_HANDLER    = 4,
 } SfiLogFlags;
-void    sfi_log_assign_level            (unsigned char   level,
-                                         SfiLogFlags     channel_mask);
-void    sfi_log_set_stdlog              (gboolean        stdlog_to_stderr,
-                                         const char     *stdlog_filename,
-                                         guint           syslog_priority); /* if != 0, stdlog to syslog */
-typedef struct SfiLogMessage             SfiLogMessage;
-typedef void (*SfiLogHandler)           (const SfiLogMessage *message);
-void    sfi_log_set_thread_handler      (SfiLogHandler   handler);
+void    sfi_log_assign_level       (unsigned char        level,
+                                    SfiLogFlags          channel_mask);
+void    sfi_log_set_stdlog         (gboolean             stdlog_to_stderr,
+                                    const char          *stdlog_filename,
+                                    guint                syslog_priority); /* if != 0, stdlog to syslog */
+void    sfi_log_set_thread_handler (SfiLogHandler        handler);
+void    sfi_log_default_handler    (const SfiLogMessage *message);
+gchar*  sfi_log_msg_level_name     (guint                level);
 
 /* --- logging internals --- */
-#define	SFI_LOG_ERROR   ('E')
-#define	SFI_LOG_WARNING	('W')
-#define	SFI_LOG_INFO	('I')
-#define	SFI_LOG_DIAG	('A')
-#define	SFI_LOG_DEBUG	('D')
-struct SfiLogMessage {
-  gchar  *log_domain;
-  guint8  level;
-  char   *key;            /* maybe generated */
-  char   *title;          /* translated */
-  char   *primary;        /* translated */
-  char   *secondary;      /* translated */
-  char   *details;        /* translated */
-  char   *config_check;   /* translated */
-};
 typedef struct SfiLogBit SfiLogBit;
+struct SfiLogMessage {
+  gchar         *log_domain;
+  guint          level;
+  char          *key;            /* maybe generated */
+  char          *title;          /* translated */
+  char          *primary;        /* translated */
+  char          *secondary;      /* translated */
+  char          *details;        /* translated */
+  char          *config_check;   /* translated */
+  guint          n_log_bits;
+  SfiLogBit    **log_bits;
+};
+struct SfiLogBit {
+  gconstpointer  owner;
+  gpointer       data;
+};
 
-void       sfi_log_valist               (const char     *log_domain,
-                                         unsigned char   level,
+void       sfi_log_printf               (const char     *log_domain,
+                                         guint           level,
                                          const char     *key,
-                                         const char     *config_blurb,
                                          const char     *format,
-                                         va_list         args);
-void       sfi_log_string               (const char     *log_domain,
-                                         unsigned char   level,
-                                         const char     *key,
-                                         const char     *config_blurb,
-                                         const char     *string);
-void       sfi_log_default_handler      (const SfiLogMessage *message);
-SfiLogBit* sfi_log_bit_printf           (char            log_bit_type,
-                                         const char     *format,
-                                         ...) G_GNUC_PRINTF (2, 3);
-void       sfi_log_msg_valist           (const char     *domain,
+                                         ...) G_GNUC_PRINTF (4, 5);
+void       sfi_log_msg_valist           (const char     *log_domain,
+                                         guint           level,
                                          SfiLogBit      *lbit1,
                                          SfiLogBit      *lbit2,
-                                         SfiLogBit      *lbit3,
                                          ...);
+SfiLogBit* sfi_log_bit_appoint          (gconstpointer   owner,
+                                         gpointer        data,
+                                         void          (*data_free) (gpointer));
+SfiLogBit* sfi_log_bit_printf           (guint8          log_msg_tag,
+                                         const char     *format,
+                                         ...) G_GNUC_PRINTF (2, 3);
 void       _sfi_init_logging            (void);
 #ifndef SFI_LOG_DOMAIN
 #define SFI_LOG_DOMAIN  G_LOG_DOMAIN
 #endif
-
-/* --- implementations --- */
-static inline void
-sfi_error (const char *format,
-           ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_ERROR, NULL, NULL, format, args);
-  va_end (args);
-}
-static inline void
-sfi_warning (const char *format,
-             ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_WARNING, NULL, NULL, format, args);
-  va_end (args);
-}
-static inline void
-sfi_info (const char *format,
-          ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_INFO, NULL, NULL, format, args);
-  va_end (args);
-}
-static inline void
-sfi_diag (const char *format,
-          ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_DIAG, NULL, NULL, format, args);
-  va_end (args);
-}
-static inline void
-sfi_debug (const char *key,
-           const char *format,
-          ...)
-{
-  if (sfi_debug_check (key))
-    {
-      va_list args;
-      va_start (args, format);
-      sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_DEBUG, key, NULL, format, args);
-      va_end (args);
-    }
-}
-static inline void
-sfi_error_msg (const char *config_blurb,
-               const char *format,
-               ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_ERROR, NULL, config_blurb, format, args);
-  va_end (args);
-}
-static inline void
-sfi_warning_msg (const char *config_blurb,
-                 const char *format,
-                 ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_WARNING, NULL, config_blurb, format, args);
-  va_end (args);
-}
-static inline void
-sfi_info_msg (const char *config_blurb,
-              const char *format,
-              ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (SFI_LOG_DOMAIN, SFI_LOG_INFO, NULL, config_blurb, format, args);
-  va_end (args);
-}
 
 G_END_DECLS
 

@@ -31,12 +31,13 @@ typedef struct {
   char        **keys;
 } KeyList;
 
+#define INVALID_KEYSTRING       ((char*) 256) /* NULL also is a valid keystring */
 
 /* --- variables --- */
 static SfiMutex       logging_mutex;
 static KeyList        key_list = { 0, 0, 0 };
-static const char    *last_enabled_cache = (char*) 1;
-static const char    *last_disabled_cache = (char*) 1;
+static const char    *last_enabled_cache = INVALID_KEYSTRING;
+static const char    *last_disabled_cache = INVALID_KEYSTRING;
 static guint          error_actions = SFI_LOG_TO_STDLOG | SFI_LOG_TO_HANDLER;
 static guint          warn_actions  = SFI_LOG_TO_STDLOG | SFI_LOG_TO_HANDLER;
 static guint          info_actions  = SFI_LOG_TO_STDLOG | SFI_LOG_TO_HANDLER;
@@ -48,12 +49,8 @@ static FILE          *stdlog_file = NULL;
 static GQuark         quark_log_handler = 0;
 static GQuark         quark_log_bits = 0;
 
-/* --- prototypes --- */
-static void     sfi_log_string_intern  (const char     *log_domain,
-                                        unsigned char   level,
-                                        const char     *key,
-                                        const char     *config_blurb,
-                                        const char     *string);
+/* --- prototypoes --- */
+static void     sfi_log_msg_process (const SfiLogMessage *msgp);
 
 /* --- functions --- */
 void
@@ -212,8 +209,8 @@ sfi_debug_allow (const char *key)
   if (key)
     {
       SFI_SPIN_LOCK (&logging_mutex);
-      last_disabled_cache = (char*) 1;
-      last_enabled_cache = (char*) 1;
+      last_disabled_cache = INVALID_KEYSTRING;
+      last_enabled_cache = INVALID_KEYSTRING;
       key_list_allow (&key_list, key);
       SFI_SPIN_UNLOCK (&logging_mutex);
     }
@@ -225,8 +222,8 @@ sfi_debug_deny (const char *key)
   if (key)
     {
       SFI_SPIN_LOCK (&logging_mutex);
-      last_disabled_cache = (char*) 1;
-      last_enabled_cache = (char*) 1;
+      last_disabled_cache = INVALID_KEYSTRING;
+      last_enabled_cache = INVALID_KEYSTRING;
       key_list_deny (&key_list, key);
       SFI_SPIN_UNLOCK (&logging_mutex);
     }
@@ -255,12 +252,32 @@ sfi_log_assign_level (unsigned char level,
 {
   switch (level)
     {
-    case SFI_LOG_ERROR:   error_actions = actions; break;
-    case SFI_LOG_WARNING: warn_actions  = actions; break;
-    case SFI_LOG_INFO:    info_actions  = actions; break;
-    case SFI_LOG_DIAG:    diag_actions  = actions; break;
-    case SFI_LOG_DEBUG:   debug_actions = actions; break;
+    case SFI_MSG_ERROR:   error_actions = actions; break;
+    case SFI_MSG_WARNING: warn_actions  = actions; break;
+    case SFI_MSG_INFO:    info_actions  = actions; break;
+    case SFI_MSG_DIAG:    diag_actions  = actions; break;
+    case SFI_MSG_DEBUG:   debug_actions = actions; break;
     }
+}
+
+static const gchar*
+log_msg_level_classify (guint  level,
+                        guint *actionsp)
+{
+  guint actions;
+  const gchar *slevel;
+  switch (level)
+    {
+    case SFI_MSG_ERROR:   actions = error_actions;     slevel = "ERROR";   break;
+    case SFI_MSG_WARNING: actions = warn_actions;      slevel = "WARNING"; break;
+    case SFI_MSG_INFO:    actions = info_actions;      slevel = "INFO";    break;
+    case SFI_MSG_DIAG:    actions = diag_actions;      slevel = "DIAG";    break;
+    case SFI_MSG_DEBUG:   actions = debug_actions;     slevel = "DEBUG";   break;
+    default:              actions = SFI_LOG_TO_STDERR; slevel = NULL;      break;
+    }
+  if (actionsp)
+    *actionsp = actions;
+  return slevel;
 }
 
 void
@@ -286,12 +303,12 @@ sfi_log_set_thread_handler (SfiLogHandler handler)
 }
 
 /**
- * sfi_log_string
+ * sfi_log_printf
  * @log_domain:   log domain
- * @level:        one of %SFI_LOG_ERROR, %SFI_LOG_WARNING, %SFI_LOG_INFO, %SFI_LOG_DIAG or %SFI_LOG_DEBUG
+ * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG or %SFI_MSG_DEBUG
  * @key:          identifier string for the log message type
- * @config_blurb: GUI-usable testblurb about enabling the log message type
- * @string:       the actual log message
+ * @format:       printf-like format
+ * @...:          printf-like arguments
  *
  * Log a message through SFIs logging mechanism. The current
  * value of errno is preserved around calls to this function.
@@ -302,36 +319,238 @@ sfi_log_set_thread_handler (SfiLogHandler handler)
  * This function is MT-safe and may be called from any thread.
  */
 void
-sfi_log_string (const char     *log_domain,
-                unsigned char   level,
+sfi_log_printf (const char     *log_domain,
+                guint           level,
                 const char     *key,
-                const char     *config_blurb,
-                const char     *string)
+                const char     *format,
+                ...)
 {
   gint saved_errno = errno;
-  sfi_log_string_intern (log_domain, level, key, config_blurb, string);
+  /* construct message */
+  SfiLogMessage msg = { 0, };
+  msg.log_domain = (char*) log_domain;
+  msg.level = level;
+  msg.key = (char*) key;
+  msg.config_check = NULL;
+  va_list args;
+  va_start (args, format);
+  msg.primary = g_strdup_vprintf (format, args);
+  va_end (args);
+  /* handle message */
+  sfi_log_msg_process (&msg);
+  g_free (msg.primary);
+  /* purge thread local log bit list */
+  sfi_thread_set_qdata (quark_log_bits, NULL);
+  errno = saved_errno;
+}
+
+/**
+ * sfi_log_msg_level_name
+ * @level:      one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG or %SFI_MSG_DEBUG
+ * @RETURN:     newly allocated string naming level
+ *
+ * Construct a string describing the log message level passed as
+ * @level. The string is newly allocated and must be freed with g_free().
+ * This function is MT-safe and may be called from any thread.
+ */
+gchar*
+sfi_log_msg_level_name (guint level)
+{
+  const gchar *clevel = log_msg_level_classify (level, NULL);
+  gchar *slevel;
+  if (clevel)
+    slevel = g_strdup (clevel);
+  else if (level >= 32 && level <= 126)
+    slevel = g_strdup_printf ("LOG<%c>", level);
+  else
+    slevel = g_strdup_printf ("LOG<0x%02x>", level);
+  return slevel;
+}
+
+typedef struct LogBit LogBit;
+struct LogBit {
+  SfiLogBit bit;
+  void    (*data_free) (void*);
+  LogBit   *next;
+};
+
+static void
+free_lbits (LogBit *first)
+{
+  while (first)
+    {
+      LogBit *current = first;
+      first = current->next;
+      if (current->data_free)
+        current->data_free (current->bit.data);
+      g_free (current);
+    }
+}
+
+SfiLogBit*
+sfi_log_bit_appoint (gconstpointer   owner,
+                     gpointer        data,
+                     void          (*data_free) (gpointer))
+{
+  gint saved_errno = errno;
+  LogBit *lbit = g_new0 (LogBit, 1);
+  lbit->bit.owner = owner;
+  lbit->bit.data = data;
+  lbit->data_free = data_free;
+  lbit->next = sfi_thread_steal_qdata (quark_log_bits);
+  sfi_thread_set_qdata_full (quark_log_bits, lbit, (GDestroyNotify) free_lbits);
+  errno = saved_errno;
+  return &lbit->bit;
+}
+
+SfiLogBit*
+sfi_log_bit_printf (guint8      log_msg_tag,
+                    const char *format,
+                    ...)
+{
+  gint saved_errno = errno;
+  va_list args;
+  va_start (args, format);
+  gchar *string = g_strdup_vprintf (format, args);
+  va_end (args);
+  errno = saved_errno;
+  return sfi_log_bit_appoint ((void*) (gsize) log_msg_tag, string, g_free);
+}
+
+static inline char*
+log_msg_concat (char       *former,
+                const char *next)
+{
+  if (former && !next)
+    return former;
+  if (!former && next)
+    return g_strdup (next);
+  char *result = g_strconcat (former, "\n", next, NULL);
+  g_free (former);
+  return result;
+}
+
+static inline void
+sfi_log_msg_apply_bit (SfiLogMessage *msg,
+                       SfiLogBit     *lbit)
+{
+  gsize ltype = (gsize) lbit->owner;
+  if (ltype < 256)
+    {
+      switch (ltype)
+        {
+        case '0': msg->title = log_msg_concat (msg->title, lbit->data);               break;
+        case '1': msg->primary = log_msg_concat (msg->primary, lbit->data);           break;
+        case '2': msg->secondary = log_msg_concat (msg->secondary, lbit->data);       break;
+        case '3': msg->details = log_msg_concat (msg->details, lbit->data);           break;
+        case 'c': msg->config_check = log_msg_concat (msg->config_check, lbit->data); break;
+        }
+    }
+  else
+    {
+      guint i = msg->n_log_bits++;
+      msg->log_bits = g_renew (SfiLogBit*, msg->log_bits, msg->n_log_bits);
+      msg->log_bits[i] = lbit;
+    }
+}
+
+/**
+ * sfi_log_msg_valist
+ * @log_domain:   log domain
+ * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
+ * @lbit1:        log bit
+ * @lbit2:        log bit
+ * @...:          list of more log bits, NULL terminated
+ *
+ * Log a message through SFIs logging mechanism. The current value of errno
+ * is preserved around calls to this function. Usually this function isn't
+ * used directly, but sfi_log_msg() is called instead which does not require
+ * %NULL termination of its argument list and automates the @log_domain argument.
+ * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
+ * as used by g_log().
+ * The log bit arguments passed in form various parts of the log message, the
+ * following macro set is provided to construct the parts from printf-style
+ * argument lists:
+ * - SFI_MSG_TITLE(): format message title
+ * - SFI_MSG_TEXT1(): format primary message (also SFI_MSG_PRIMARY())
+ * - SFI_MSG_TEXT2(): format secondary message, optional (also SFI_MSG_SECONDARY())
+ * - SFI_MSG_TEXT3(): format details of the message, optional (also SFI_MSG_DETAIL())
+ * - SFI_MSG_CHECK(): format configuration check statement to enable/disable log messages of this type.
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+sfi_log_msg_valist (const char     *log_domain,
+                    guint           level,      /* SFI_MSG_DEBUG is not really useful here */
+                    SfiLogBit      *lbit1,
+                    SfiLogBit      *lbit2,
+                    ...)
+{
+  gint saved_errno = errno;
+  /* construct message */
+  SfiLogMessage msg = { 0, };
+  msg.log_domain = (char*) log_domain;
+  msg.level = level;
+  if (lbit1)
+    {
+      sfi_log_msg_apply_bit (&msg, lbit1);
+      SfiLogBit *lbit = lbit2;
+      va_list args;
+      va_start (args, lbit2);
+      while (lbit)
+        {
+          sfi_log_msg_apply_bit (&msg, lbit);
+          lbit = va_arg (args, SfiLogBit*);
+        }
+      va_end (args);
+    }
+  /* reset thread local log bit list */
+  LogBit *lbit_list = sfi_thread_steal_qdata (quark_log_bits);
+  /* handle message */
+  sfi_log_msg_process (&msg);
+  /* clean up */
+  g_free (msg.title);
+  g_free (msg.primary);
+  g_free (msg.secondary);
+  g_free (msg.details);
+  g_free (msg.config_check);
+  g_free (msg.log_bits);
+  free_lbits (lbit_list);
+  /* restore errno */
   errno = saved_errno;
 }
 
 void
-sfi_log_valist (const char     *log_domain,
-                unsigned char   level,
-                const char     *key,
-                const char     *config_blurb,
-                const char     *format,
-                va_list         args)
+sfi_log_default_handler (const SfiLogMessage *msg)
 {
-  gint saved_errno = errno;
-  char *message = g_strdup_vprintf (format, args);
-  sfi_log_string_intern (log_domain, level, key, config_blurb, message);
-  g_free (message);
-  errno = saved_errno;
+  gchar *level_name = sfi_log_msg_level_name (msg->level);
+  g_printerr ("********************************************************************************\n");
+  g_printerr ("** %s: %s\n", level_name, msg->title ? msg->title : "");
+  if (msg->primary)
+    g_printerr ("** %s\n", msg->primary);
+  if (msg->secondary)
+    g_printerr ("** %s\n", msg->secondary);
+  if (msg->details)
+    g_printerr ("** %s\n", msg->details);
+  g_printerr ("********************************************************************************\n");
+  g_free (level_name);
+}
+
+static const gchar*
+prgname (gboolean maystrip)
+{
+  const gchar *pname = g_get_prgname();
+  if (pname && maystrip)
+    {
+      const gchar *p = strrchr (pname, '/');
+      pname = p ? p + 1 : pname;
+    }
+  return pname;
 }
 
 static char*
 log_prefix (const char  *prg_name,
             guint        pid,
-            guchar       level,
+            guint        level,
             const char  *log_domain,
             const char  *postfix,
             const char  *key)
@@ -341,8 +560,10 @@ log_prefix (const char  *prg_name,
     g_string_append_printf (gstring, "[%u]", pid);
   if (gstring->len)
     g_string_append (gstring, ":");
-  if (level)
-    g_string_append_printf (gstring, "%02x:", level);
+  if (level >= 32 && level <= 126)
+    g_string_append_printf (gstring, "LOG<%c>:", level);
+  else if (level)
+    g_string_append_printf (gstring, "LOG<0x%02x>:", level);
   if (log_domain)
     g_string_append (gstring, log_domain);
   if (log_domain && postfix)
@@ -358,21 +579,11 @@ log_prefix (const char  *prg_name,
     }
   if (log_domain || postfix || key)
     g_string_append (gstring, ":");
-  if (gstring->str[gstring->len - 1] == ':')
+  /* more components can come here */
+  /* ... */
+  if (gstring->str[gstring->len - 1] == ':') /* strip final ':' */
     gstring->str[gstring->len - 1] = 0;
   return g_string_free (gstring, FALSE);
-}
-
-static const gchar*
-prgname (gboolean maystrip)
-{
-  const gchar *pname = g_get_prgname();
-  if (pname && maystrip)
-    {
-      const gchar *p = strrchr (pname, '/');
-      pname = p ? p + 1 : pname;
-    }
-  return pname;
 }
 
 static void
@@ -380,17 +591,8 @@ sfi_log_msg_process (const SfiLogMessage *msgp)
 {
   const SfiLogMessage msg = *msgp;
   /* determine log actions */
-  const char *slevel;
-  guint actions;
-  switch (msg.level)
-    {
-    case SFI_LOG_ERROR:   actions = error_actions;     slevel = "ERROR";   break;
-    case SFI_LOG_WARNING: actions = warn_actions;      slevel = "WARNING"; break;
-    case SFI_LOG_INFO:    actions = info_actions;      slevel = "INFO";    break;
-    case SFI_LOG_DIAG:    actions = diag_actions;      slevel = "DIAG";    break;
-    case SFI_LOG_DEBUG:   actions = debug_actions;     slevel = "DEBUG";   break;
-    default:              actions = SFI_LOG_TO_STDERR; slevel = NULL;      break;
-    }
+  guint actions = 0;
+  const char *slevel = log_msg_level_classify (msg.level, &actions);
   /* log to syslog */
   if ((msg.primary || msg.secondary) && stdlog_syslog_priority && (actions & SFI_LOG_TO_STDLOG))
     {
@@ -410,25 +612,12 @@ sfi_log_msg_process (const SfiLogMessage *msgp)
   tostderr |= (actions & SFI_LOG_TO_STDLOG) && stdlog_to_stderr;
   if ((msg.primary || msg.secondary) && tostderr)
     {
-      unsigned char print_level = 0;
-      const gchar *print_domain = msg.log_domain, *lname = NULL, *log_key = NULL;
-      switch (msg.level)
-        {
-        case SFI_LOG_ERROR:         lname = "ERROR";        break;
-        case SFI_LOG_WARNING:       lname = "WARNING";      break;
-        case SFI_LOG_INFO:          lname = "INFO";         break;
-        case SFI_LOG_DIAG:          log_key = msg.key;      break;
-        case SFI_LOG_DEBUG:
-          print_domain = NULL;
-          lname = "DEBUG";
-          log_key = msg.key;
-          break;
-        default:
-          print_level = msg.level;
-          log_key = msg.key;
-          break;
-        }
-      gchar *prefix = log_prefix (prgname (msg.level == SFI_LOG_DEBUG), sfi_thread_self_pid(), print_level, print_domain, lname, log_key);
+      gchar *prefix = log_prefix (prgname (msg.level == SFI_MSG_DEBUG),                 /* strip prgname path for debugging */
+                                  sfi_thread_self_pid(),                                /* always print pid */
+                                  slevel ? 0 : msg.level,                               /* print numeric level for custom levels */
+                                  msg.level == SFI_MSG_DEBUG ? NULL : msg.log_domain,   /* print domain except when debugging */
+                                  msg.level == SFI_MSG_DIAG ? NULL : slevel,            /* skip domain postfix for diagnosis */
+                                  msg.key);                                             /* print debugging key */
       if (msg.title)
         fprintf (stderr, "%s:0: %s\n", prefix, msg.title);
       if (msg.primary)
@@ -461,172 +650,4 @@ sfi_log_msg_process (const SfiLogMessage *msgp)
         log_handler = sfi_log_default_handler;
       log_handler (&msg);
     }
-}
-
-static void
-sfi_log_string_intern (const char     *log_domain,
-                       unsigned char   level,
-                       const char     *key,
-                       const char     *config_blurb,
-                       const char     *string)
-{
-  /* construct message */
-  SfiLogMessage msg = { 0, };
-  msg.log_domain = (char*) log_domain;
-  msg.level = level;
-  msg.key = (char*) key;
-  msg.config_check = (char*) config_blurb;
-  msg.primary = (char*) string;
-  /* handle message */
-  sfi_log_msg_process (&msg);
-}
-
-static inline char*
-log_msg_concat (char       *former,
-                const char *next)
-{
-  if (former && !next)
-    return former;
-  if (!former && next)
-    return g_strdup (next);
-  char *result = g_strconcat (former, "\n", next, NULL);
-  g_free (former);
-  return result;
-}
-
-struct SfiLogBit {
-  guint type;
-  gchar *string;
-  SfiLogBit *next;
-};
-
-static void
-free_lbits (gpointer data)
-{
-  SfiLogBit *lbit = data;
-  while (lbit)
-    {
-      SfiLogBit *current = lbit;
-      lbit = current->next;
-      g_free (current->string);
-      g_free (current);
-    }
-}
-
-SfiLogBit*
-sfi_log_bit_printf (char            log_bit_type,
-                    const char     *format,
-                    ...)
-{
-  gint saved_errno = errno;
-  SfiLogBit *lbit = g_new0 (SfiLogBit, 1);
-  lbit->type = log_bit_type;
-  va_list args;
-  va_start (args, format);
-  lbit->string = g_strdup_vprintf (format, args);
-  va_end (args);
-  lbit->next = sfi_thread_steal_qdata (quark_log_bits);
-  sfi_thread_set_qdata_full (quark_log_bits, lbit, free_lbits);
-  errno = saved_errno;
-  return lbit;
-}
-
-static void
-purge_log_bits (void)
-{
-  sfi_thread_set_qdata (quark_log_bits, NULL);
-}
-
-static inline void
-sfi_log_msg_apply_bit (SfiLogMessage   *msg,
-                       const SfiLogBit *lbit)
-{
-  gsize lbs = (gsize) lbit;
-  if (lbs < 256)
-    msg->level = lbs;
-  else switch (lbit->type)
-    {
-    case 't': msg->title = log_msg_concat (msg->title, lbit->string);               break;
-    case '1': msg->primary = log_msg_concat (msg->primary, lbit->string);           break;
-    case '2': msg->secondary = log_msg_concat (msg->secondary, lbit->string);       break;
-    case '3': msg->details = log_msg_concat (msg->details, lbit->string);           break;
-    case 'c': msg->config_check = log_msg_concat (msg->config_check, lbit->string); break;
-    }
-}
-
-void
-sfi_log_msg_valist (const char     *domain,
-                    SfiLogBit      *lbit1,
-                    SfiLogBit      *lbit2,
-                    SfiLogBit      *lbit3,
-                    ...)
-{
-  gint saved_errno = errno;
-  /* construct message */
-  SfiLogMessage msg = { 0, };
-  msg.log_domain = (char*) domain;
-  msg.level = SFI_LOG_INFO;
-  if (lbit1)
-    {
-      sfi_log_msg_apply_bit (&msg, lbit1);
-      if (lbit2)
-        {
-          sfi_log_msg_apply_bit (&msg, lbit2);
-          if (lbit3)
-            {
-              const SfiLogBit *lbit = lbit3;
-              va_list args;
-              va_start (args, lbit3);
-              while (lbit)
-                {
-                  sfi_log_msg_apply_bit (&msg, lbit);
-                  lbit = va_arg (args, const SfiLogBit*);
-                }
-              va_end (args);
-            }
-        }
-    }
-  purge_log_bits();
-  /* handle message */
-  sfi_log_msg_process (&msg);
-  /* clean up */
-  g_free (msg.title);
-  g_free (msg.primary);
-  g_free (msg.secondary);
-  g_free (msg.details);
-  g_free (msg.config_check);
-  /* restore errno */
-  errno = saved_errno;
-}
-
-void
-sfi_log_default_handler (const SfiLogMessage *msg)
-{
-  const gchar *level_name;
-  switch (msg->level)
-    {
-    case SFI_LOG_ERROR:   level_name = "ERROR";      break;
-    case SFI_LOG_WARNING: level_name = "WARNING";    break;
-    case SFI_LOG_INFO:    level_name = "INFO";       break;
-    case SFI_LOG_DIAG:    level_name = "DIAGNOSTIC"; break;
-    case SFI_LOG_DEBUG:   level_name = "DEBUG";      break;
-    default:              level_name = NULL;         break;
-    }
-  g_printerr ("********************************************************************************\n");
-  char *prefix;
-  if (level_name)
-    prefix = g_strdup (level_name);
-  else if (msg->level >= 32 && msg->level <= 126)
-    prefix = g_strdup_printf ("LOG<%c>", msg->level);
-  else
-    prefix = g_strdup_printf ("LOG<0x%02x>", msg->level);
-  g_printerr ("** %s: %s\n", prefix, msg->title ? msg->title : "");
-  if (msg->primary)
-    g_printerr ("** %s\n", msg->primary);
-  if (msg->secondary)
-    g_printerr ("** %s\n", msg->secondary);
-  if (msg->details)
-    g_printerr ("** %s\n", msg->details);
-  g_free (prefix);
-  g_printerr ("********************************************************************************\n");
 }
