@@ -1,3 +1,10 @@
+Sat May 14 19:30:36 2005  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-portaudio.cc (bse_pcm_device_port_audio_open): fixed 
+	memory leaks if device opening failed. fixed error case handling all
+	over the place, return proper BSE errors. allow "default" as device
+	name. use bse_device_set_opened().
+
 Sat May 14 18:07:39 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version upgrade to 0.6.6. use PACKAGE_ as variable

@@ -66,6 +66,45 @@ bse_pcm_device_port_audio_init (BsePcmDevicePortAudio *self)
   Pa_Initialize();
 }
 
+static BseErrorType
+bse_error_from_pa_error (PaError      pa_error,
+                         BseErrorType fallback)
+{
+  switch (pa_error)
+    {
+    case paNoError:                     		return BSE_ERROR_NONE;
+    case paNotInitialized:              		return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paUnanticipatedHostError:      		return fallback;
+    case paInvalidChannelCount:         		return BSE_ERROR_DEVICE_CHANNELS;
+    case paInvalidSampleRate:           		return BSE_ERROR_DEVICE_FREQUENCY;
+    case paInvalidDevice:               		return BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    case paInvalidFlag:                 		return fallback;
+    case paSampleFormatNotSupported:    		return BSE_ERROR_DEVICE_FORMAT;
+    case paBadIODeviceCombination:      		return BSE_ERROR_DEVICES_MISMATCH;
+    case paInsufficientMemory:          		return BSE_ERROR_NO_MEMORY;
+    case paBufferTooBig:                		return BSE_ERROR_DEVICE_BUFFER;
+    case paBufferTooSmall:                              return BSE_ERROR_DEVICE_BUFFER;
+    case paNullCallback:                                return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paBadStreamPtr:                                return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paTimedOut:                                    return fallback;
+    case paInternalError:                               return fallback;                /* puhh, portaudio internal... */
+    case paDeviceUnavailable:                           return BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    case paIncompatibleHostApiSpecificStreamInfo:       return fallback;                /* portaudio has odd errors... */
+    case paStreamIsStopped:                             return fallback;
+    case paStreamIsNotStopped:                          return fallback;
+    case paInputOverflowed:                             return BSE_ERROR_IO;            /* driver should recover */
+    case paOutputUnderflowed:                           return BSE_ERROR_IO;            /* driver should recover */
+    case paHostApiNotFound:                             return BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    case paInvalidHostApi:                              return BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    case paCanNotReadFromACallbackStream:               return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paCanNotWriteToACallbackStream:                return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paCanNotReadFromAnOutputOnlyStream:            return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paCanNotWriteToAnInputOnlyStream:              return BSE_ERROR_INTERNAL;      /* wrong portaudio usage */
+    case paIncompatibleStreamHostApi:                   return fallback;
+    }
+  return fallback;
+}
+
 static std::string
 port_audio_host_api_name (PaHostApiIndex host_api_index)
 {
@@ -155,26 +194,6 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
   handle->writable = require_writable;
   handle->n_channels = 2;   /* TODO: mono */
   handle->mix_freq = pdev->req_mix_freq;
-  
-  PaStreamParameters inputParameters;
-  PaStreamParameters outputParameters;
-  
-  inputParameters.device = Pa_GetDefaultInputDevice();
-  outputParameters.device = Pa_GetDefaultOutputDevice();
-  
-  /* choose device from string ("alsa:1" means use the second device offered by the alsa host api) */
-  if (n_args >= 1)
-    {
-      vector<string> devs = port_audio_devices();
-      vector<string>::iterator di = find (devs.begin(), devs.end(), args[0]);
-      if (di != devs.end())
-	{
-	  outputParameters.device = di - devs.begin();
-	  inputParameters.device = di - devs.begin();
-	}
-      else
-	return BSE_ERROR_DEVICE_NOT_AVAILABLE;
-    }
   if (n_args >= 2)
     {
       if (strcmp (args[1], "rw") == 0)
@@ -194,56 +213,80 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
 	}
     }
   
-  inputParameters.channelCount  = handle->n_channels;
-  outputParameters.channelCount = handle->n_channels;
-  
-  inputParameters.sampleFormat  = paFloat32;
-  outputParameters.sampleFormat = paFloat32;
-  
-  inputParameters.suggestedLatency  = BSE_PCM_DEVICE (device)->req_latency_ms * 0.001;
-  outputParameters.suggestedLatency = BSE_PCM_DEVICE (device)->req_latency_ms * 0.001;
-  
-  inputParameters.hostApiSpecificStreamInfo  = NULL;
-  outputParameters.hostApiSpecificStreamInfo = NULL;
-  
   BseErrorType error = BSE_ERROR_NONE;
-  PaError pa_error;
-  pa_error = Pa_OpenStream (&portaudio->stream, 
-                            handle->readable ? &inputParameters : NULL,
-                            handle->writable ? &outputParameters : NULL,
-                            handle->mix_freq,
-                            pdev->req_block_length,
-                            paDitherOff,
-                            NULL,	/* no callback -> blocking api */
-                            NULL);
-  Pa_StartStream (portaudio->stream);
-  /*
-    printf ("latency input: %f\n", Pa_GetStreamInfo (portaudio->stream)->inputLatency);
-    printf ("latency output: %f\n", Pa_GetStreamInfo (portaudio->stream)->outputLatency);
-  */
-  
-  if (pa_error != paNoError)
-    error = BSE_ERROR_DEVICE_NOT_AVAILABLE; /* _DEVICE_BUSY? */
+
+  PaStreamParameters inputParameters = { 0, };
+  inputParameters.device = Pa_GetDefaultInputDevice();
+  PaStreamParameters outputParameters = { 0, };
+  outputParameters.device = Pa_GetDefaultOutputDevice();
+  string device_name = "default";
+  if (!error && n_args >= 1 && strcmp (args[0], "default") != 0)
+    {
+      /* choose device from string ("alsa:1" means use the second device offered by the alsa host api) */
+      vector<string> devs = port_audio_devices();
+      vector<string>::iterator di = find (devs.begin(), devs.end(), args[0]);
+      if (di != devs.end())
+	{
+	  outputParameters.device = di - devs.begin();
+	  inputParameters.device = di - devs.begin();
+          device_name = args[0];
+	}
+      else
+	error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+    }
+  if (!error)
+    {
+      inputParameters.channelCount  = handle->n_channels;
+      outputParameters.channelCount = handle->n_channels;
+      inputParameters.sampleFormat  = paFloat32;
+      outputParameters.sampleFormat = paFloat32;
+      inputParameters.suggestedLatency  = BSE_PCM_DEVICE (device)->req_latency_ms * 0.001;
+      outputParameters.suggestedLatency = BSE_PCM_DEVICE (device)->req_latency_ms * 0.001;
+      inputParameters.hostApiSpecificStreamInfo  = NULL;
+      outputParameters.hostApiSpecificStreamInfo = NULL;
+      PaError pa_error = Pa_OpenStream (&portaudio->stream, 
+                                        handle->readable ? &inputParameters : NULL,
+                                        handle->writable ? &outputParameters : NULL,
+                                        handle->mix_freq,
+                                        pdev->req_block_length,
+                                        paDitherOff,
+                                        NULL,	/* no callback -> blocking api */
+                                        NULL);
+      if (pa_error != paNoError || !portaudio->stream)
+        error = bse_error_from_pa_error (pa_error, BSE_ERROR_FILE_OPEN_FAILED);
+    }
+  if (!error)
+    {
+      PaError pa_error = Pa_StartStream (portaudio->stream);
+      if (pa_error != paNoError)
+        {
+          error = bse_error_from_pa_error (pa_error, BSE_ERROR_FILE_OPEN_FAILED);
+          Pa_CloseStream (portaudio->stream);
+          portaudio->stream = NULL;
+        }
+    }
   
   if (!error)
     {
-      BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_OPEN);
-      
+      bse_device_set_opened (device, device_name.c_str(), handle->readable, handle->writable);
       if (handle->readable)
-	{
-	  BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_READABLE);
-	  handle->read = port_audio_device_read;
-	}
+        handle->read = port_audio_device_read;
       if (handle->writable)
-	{
-	  BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_WRITABLE);
-	  handle->write = port_audio_device_write;
-	}
+        handle->write = port_audio_device_write;
       handle->check_io = port_audio_device_check_io;
       handle->latency = port_audio_device_latency;
       pdev->handle = handle;
     }
-  
+  else
+    {
+      if (portaudio->stream)
+        Pa_CloseStream (portaudio->stream);
+      g_free (portaudio);
+    }
+  PCM_DEBUG ("PortAudio: opening PCM \"%s\" readable=%d writable=%d: %s", device_name.c_str(), require_readable, require_writable, bse_error_blurb (error));
+  if (!error)
+    PCM_DEBUG ("PortAudio: input-latency=%fms output-latency=%fms", Pa_GetStreamInfo (portaudio->stream)->inputLatency, Pa_GetStreamInfo (portaudio->stream)->outputLatency);
+
   return error;
 }
 
@@ -275,7 +318,7 @@ port_audio_device_retrigger (PortAudioPcmHandle *portaudio)
 {
   /* silence fill output, to resynchronize output and input streams to the desired latency */
   guint write_frames_avail = Pa_GetStreamWriteAvailable (portaudio->stream);
-  float *silence = (float *)g_malloc0 (portaudio->handle.block_length * sizeof (float) * portaudio->handle.n_channels);
+  float *silence = (float*) g_malloc0 (portaudio->handle.block_length * sizeof (float) * portaudio->handle.n_channels);
   
   while (write_frames_avail >= portaudio->handle.block_length)
     {
@@ -352,7 +395,7 @@ bse_pcm_device_port_audio_class_init (BsePcmDevicePortAudioClass *klass)
   const gchar *syntax = _("DEVICE,MODE");
   const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
                                        _("PortAudio PCM driver, using %s.\n"
-                                         "  DEVICE - the PortAudio device to use, 'default' selects a default device\n"
+                                         "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
                                          "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"),
                                        Pa_GetVersionText());
   bse_device_class_setup (klass, BSE_RATING_FALLBACK, name, syntax, info);
