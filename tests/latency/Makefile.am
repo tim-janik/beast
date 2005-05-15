@@ -22,7 +22,7 @@ BSESH     = $(top_builddir)/shell/bsesh-$(BIN_VERSION)
 # bselatencytest:
 bselatencytest_la_SOURCES = bselatencytest.cc
 bselatencytest_la_LDFLAGS = -module -avoid-version
-bselatencytest_la_LIBADD  = $(BSE_LIBS) -lm
+bselatencytest_la_LIBADD  = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 EXTRA_HEADERS += bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.idl
 $(srcdir)/bselatencytest.cc: bselatencytest.genidl.hh

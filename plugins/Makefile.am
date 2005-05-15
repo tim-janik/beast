@@ -72,7 +72,7 @@ include Makefile.plugins
 ##plugin_LTLIBRARIES    += foo.la
 #
 plugin_ldflags = -avoid-version
-plugin_libs    = $(BSE_LIBS) -lm # $(top_builddir)/bse/libbse.la
+plugin_libs    = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 
 EXTRA_DIST += $(strip \
         $(EXTRA_HEADERS) \

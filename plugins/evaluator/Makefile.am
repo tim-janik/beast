@@ -17,7 +17,7 @@ EVALUATE_SOURCES = instruction.cc compiler.cc cpu.cc
 
 bseevaluator_la_SOURCES = bseevaluator.cc $(EVALUATE_SOURCES)
 bseevaluator_la_LDFLAGS = -module -avoid-version
-bseevaluator_la_LIBADD  = $(BSE_LIBS) -lm
+bseevaluator_la_LIBADD  = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 plugins_built_sources += bseevaluator.genidl.hh
 EXTRA_HEADERS += bseevaluator.idl symbols.hh token.hh instruction.hh compiler.hh cpu.hh
 $(bseevaluator_la_OBJECTS): bseevaluator.genidl.hh
