@@ -1,3 +1,7 @@
+Sun May 15 15:51:13 2005  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added --enable-toyprof option, defaulting to no.
+
 Sat May 14 21:03:47 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c:
