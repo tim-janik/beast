@@ -1,3 +1,8 @@
+Sun May 15 16:21:13 2005  Tim Janik  <timj@gtk.org>
+
+	* configure.in: pass --no-undefined to the linker if devel rules are
+	enabled and we're building without toyprof (toyprof uses _r_debug).
+
 Sun May 15 15:51:13 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: added --enable-toyprof option, defaulting to no.

@@ -581,6 +581,13 @@ AC_BEAST_REQUIREMENTS
 AC_SUIDMAIN_REQUIREMENTS
 AC_DOC_REQUIREMENTS
 
+# Decide on global --no-undefined linking
+# we only force all libraries and symbols to be present for development builds,
+# except for when building with toyprof which uses the GLIBC symbol _r_debug.
+if test "x$enable_devel_rules" = "xyes" -a x"$enable_toyprof" != xyes ; then
+	MC_EVAR_ADD(LDFLAGS, --no-undefined, -Xlinker --no-undefined)
+fi
+
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
