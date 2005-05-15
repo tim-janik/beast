@@ -120,3 +120,4 @@ plugins/davsyndrum.c
 plugins/davxtalstrings.c
 plugins/evaluator/bseevaluator.idl
 plugins/freeverb/bsefreeverb.c
+tools/bsewavetool.cc
