@@ -33,7 +33,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include "sfi/toyprof-mem.h"
+// #include "sfi/toyprof-mem.h"
 
 
 /* --- prototypes --- */
@@ -96,8 +96,7 @@ main (int   argc,
   setlocale (LC_ALL, "");
 
   /* initialize GLib guts */
-  if (0)
-    toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
+  // toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
   g_thread_init (NULL);
   g_type_init ();
 
