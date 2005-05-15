@@ -34,7 +34,7 @@ sfi_c_sources = $(strip \
 	sfinote.c	sfiparams.c	sfiprimitives.c	sfiserial.c	\
 	sfitime.c	sfitypes.c	sfivalues.c	sfiustore.c	\
 	sfilog.c	sfithreads.c	sfimemory.c	sficomport.c	\
-	$(TOYPROF_C_SOURCES)	\
+	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
 	gbsearcharray.h \
@@ -117,6 +117,9 @@ TESTS = testsfi testcxx testsfidl
 TOYPROF_H_SOURCES = toyprof.h toyprof-mem.h
 TOYPROF_C_SOURCES = toyprof.c toyprof-mem.c
 EXTRA_DIST += toyprof.pl toyprof.README $(TOYPROF_H_SOURCES)
+if IF_TOYPROF
+conditional_toyprof_sources = $(TOYPROF_C_SOURCES)
+endif
 
 
 EXTRA_DIST += $(sfi_public_headers) $(sfi_extra_sources) $(progs_extra_sources) $(sfi_built_sources)
