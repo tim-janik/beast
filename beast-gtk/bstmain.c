@@ -249,11 +249,11 @@ main (int   argc,
 
   /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
-  bst_catch_scripts_and_msgs ();
+  bst_message_connect_to_server ();
   _bst_init_radgets ();
 
   /* install message dialog handler */
-  sfi_log_set_thread_handler (bst_user_message_log_handler);
+  sfi_log_set_thread_handler (bst_message_log_handler);
 
   /* open files given on command line */
   if (argc > 1)
@@ -352,7 +352,7 @@ main (int   argc,
   
   /* take down GUI */
   sfi_log_set_thread_handler (NULL);
-  bst_user_messages_kill ();
+  bst_message_dialogs_popdown ();
   
   /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();

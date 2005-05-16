@@ -1,3 +1,13 @@
+- add janitor to user messages
+- the GUI SfiLogMessage handler should add janitor field to BseMessage
+- allow scripts to issue errors diagnosis etc. then check bse-script-exit
+- two different procedures of the same script executing with the same message trigger repeat count
+- update PID in repeated message dialogs
+- compare details from "loop range is empty" with details from "bse-script-progressor"
+- add/remove actions to/from shadow storage and require a script to issue actions-commit/gui-update or similar for the actions to really appear on-screen
+- get rid of usr-msg-type. change usr-msg to something like action-text or similar (primary + secondary might make sense)
+- sync log-domain with thrwead name in profiler
+- remove janitor::close
 RELEASE(0.6.6):
 - fix/re-enable midi note recording into piano roll
 - refuse to close windows with changed projects

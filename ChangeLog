@@ -1,3 +1,12 @@
+Mon May 16 17:24:28 2005  Tim Janik  <timj@gtk.org>
+
+	* bstusermessage.h, bstusermessage.c: API cleanups. define BstMessage
+	and BstMsgType which are used as canonical message representation
+	internally now.
+	display details through a GtkLabel which doesn't have the size-request
+	problems of a scroll text. added bst_message_dialog_elist() to pop up
+	message dialogs. 
+
 Sun May 15 16:21:13 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: pass --no-undefined to the linker if devel rules are
