@@ -214,8 +214,8 @@ bst_msg_dialog_update (GxkDialog        *dialog,
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
       g_string_aprintf (gstring, "\n\n");
-      const gchar *proc_name = bse_janitor_get_proc_name (msg->janitor);
-      const gchar *script_name = bse_janitor_get_script_name (msg->janitor);
+      const gchar *proc_name = !msg->janitor ? NULL : bse_janitor_get_proc_name (msg->janitor);
+      const gchar *script_name = !msg->janitor ? NULL : bse_janitor_get_script_name (msg->janitor);
       if (hastext (proc_name))
         g_string_aprintf (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
       if (hastext (msg->process))
