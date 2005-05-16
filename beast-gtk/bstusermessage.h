@@ -41,8 +41,9 @@ typedef struct {
   gchar         *primary;
   gchar         *secondary;
   gchar         *details;
-  guint          pid;
+  SfiProxy       janitor;
   gchar         *process;
+  guint          pid;
   guint          n_msg_bits;
   SfiMsgBit    **msg_bits;
 } BstMessage;

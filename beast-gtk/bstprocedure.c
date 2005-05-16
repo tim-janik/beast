@@ -293,7 +293,7 @@ bst_procedure_shell_execute (BstProcedureShell *self)
       rvalue = sfi_glue_call_seq (self->proc->name, pseq);
       self->in_execution = FALSE;
 
-      bst_status_eprintf (error, _("Executing `%s'"), self->proc->name);
+      bst_status_eprintf (error, _("Executing '%s'"), self->proc->name);
 
       sfi_seq_unref (pseq);
       if (rvalue && proc->ret_param)
@@ -444,7 +444,7 @@ bst_procedure_shell_global (void)
       gtk_object_sink (GTK_OBJECT (global_proc_shell));
       dialog = gxk_dialog_new (NULL, NULL,
                                GXK_DIALOG_STATUS_BAR | GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_MODAL, // | GXK_DIALOG_WINDOW_GROUP,
-                               _("Procedure"), NULL);
+                               _("Start Procedure"), NULL);
       gxk_dialog_set_sizes (GXK_DIALOG (dialog), -1, -1, 320, -1);
       
       gtk_container_add (GTK_CONTAINER (GXK_DIALOG (dialog)->vbox), GTK_WIDGET (global_proc_shell));

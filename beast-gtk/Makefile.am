@@ -10,7 +10,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BEAST_CFLAGS) -DG
 
 # we specify the logging domain here
 DEFS += $(strip 			\
-	-DG_LOG_DOMAIN="\"BEAST\"" 	\
+	-DG_LOG_DOMAIN="\"BST\"" 	\
 )
 
 # special profiling hooks

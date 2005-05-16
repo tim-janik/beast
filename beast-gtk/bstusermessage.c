@@ -119,10 +119,24 @@ adapt_message_spacing (const gchar *head,
 static gchar*
 strdup_msg_hashkey (const BstMessage *msg)
 {
-  if (msg->process) /* prefer hashing by process name over PID */
-    return g_strdup_printf ("## %x ## %s ## %s ## %s", msg->type, msg->primary, msg->secondary, msg->process);
+  /* prefer hashing by janitor/process name over PID */
+  if (msg->janitor)
+    return g_strdup_printf ("## %x ## %s ## %s ## J%s:%s", msg->type, msg->primary, msg->secondary,
+                            bse_janitor_get_script_name (msg->janitor), bse_janitor_get_proc_name (msg->janitor));
+  else if (msg->process)
+    return g_strdup_printf ("## %x ## %s ## %s ## P%s", msg->type, msg->primary, msg->secondary, msg->process);
   else
-    return g_strdup_printf ("## %x ## %s ## %s ## %x", msg->type, msg->primary, msg->secondary, msg->pid);
+    return g_strdup_printf ("## %x ## %s ## %s ## N%x", msg->type, msg->primary, msg->secondary, msg->pid);
+}
+
+static inline gboolean
+hastext (const gchar *string)
+{
+  if (!string || !string[0])
+    return FALSE;
+  while (string[0] == '\t' || string[0] == ' ' || string[0] == '\n' || string[0] == '\r')
+    string++;
+  return string[0] != 0;
 }
 
 static void
@@ -188,7 +202,7 @@ bst_msg_dialog_update (GxkDialog        *dialog,
       g_object_set_int (dialog, "BEAST-user-message-count", 1);
     }
   /* add details section */
-  if (msg->log_domain || msg->details || msg->process || msg->pid)
+  if (msg->log_domain || msg->details || msg->janitor || msg->process || msg->pid)
     {
       GtkWidget *exp = gtk_expander_new (_("Details:"));
       gtk_widget_show (exp);
@@ -197,15 +211,19 @@ bst_msg_dialog_update (GxkDialog        *dialog,
                         GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
       row++;
       GString *gstring = g_string_new (msg->details);
-      if (gstring->str[gstring->len - 1] != '\n')
-        g_string_aprintf (gstring, "\n");
-      g_string_aprintf (gstring, "\n");
-      if (msg->log_domain)
-        g_string_aprintf (gstring, _("Origin:  %s\n"), msg->log_domain);
-      if (msg->process)
+      while (gstring->len && gstring->str[gstring->len - 1] == '\n')
+        g_string_erase (gstring, gstring->len - 1, 1);
+      g_string_aprintf (gstring, "\n\n");
+      const gchar *proc_name = bse_janitor_get_proc_name (msg->janitor);
+      const gchar *script_name = bse_janitor_get_script_name (msg->janitor);
+      if (hastext (proc_name))
+        g_string_aprintf (gstring, _("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+      if (hastext (msg->process))
         g_string_aprintf (gstring, _("Process: %s\n"), msg->process);
-      if (msg->pid)
-        g_string_aprintf (gstring, _("PID:     %u\n"), msg->pid);
+      if (hastext (msg->log_domain) && !hastext (proc_name) && !hastext (msg->process))
+        g_string_aprintf (gstring, _("Origin:  %s\n"), msg->log_domain);
+      if (msg->pid && BST_DVL_HINTS)
+          g_string_aprintf (gstring, _("PID:     %u\n"), msg->pid);
       while (gstring->len && gstring->str[gstring->len - 1] == '\n')
         g_string_erase (gstring, gstring->len - 1, 1);
       gchar *text = adapt_message_spacing (NULL, gstring->str, NULL);
@@ -376,6 +394,7 @@ message_free_fields (BstMessage *msg)
 static void
 message_fill_from_script (BstMessage    *msg,
                           BstMsgType     mtype,
+                          SfiProxy       janitor,
                           const gchar   *primary,
                           const gchar   *script_name,
                           const gchar   *proc_name,
@@ -394,9 +413,13 @@ message_fill_from_script (BstMessage    *msg,
       msg->secondary = g_strdup_printf (_("Executing procedure '%s' from script '%s'."), proc_name, script_base);
       g_free (script_base);
     }
-  msg->details = g_strdup_printf (_("Procedure: %s\nScript: %s"), proc_name, script_name);
-  msg->pid = 0;
+  if (!janitor && hastext (proc_name))
+    msg->details = g_strdup_printf (_("Procedure: %s\nScript: %s\n"), proc_name, script_name);
+  else
+    msg->details = NULL;
+  msg->janitor = janitor;
   msg->process = NULL;
+  msg->pid = 0;
   msg->n_msg_bits = 0;
   msg->msg_bits = NULL;
 }
@@ -411,7 +434,7 @@ janitor_actions_changed (GxkDialog *dialog)
   bse_proxy_get (janitor, "user-msg-type", &utype, "user-msg", &user_msg, NULL);
   const gchar *proc_name = bse_janitor_get_proc_name (janitor);
   const gchar *script_name = bse_janitor_get_script_name (janitor);
-  message_fill_from_script (&msg, bst_msg_type_from_user_msg_type (utype), proc_name, script_name, proc_name, NULL);
+  message_fill_from_script (&msg, bst_msg_type_from_user_msg_type (utype), janitor, proc_name, script_name, proc_name, NULL);
   bst_msg_dialog_update (dialog, &msg, FALSE);
   bst_msg_dialog_janitor_update (dialog, janitor);
   message_free_fields (&msg);
@@ -455,7 +478,7 @@ janitor_unconnected (GxkDialog *dialog)
         {
           BstMessage msg = { 0, };
           gchar *error_msg = g_strdup_printf (_("An error occoured during execution of script procedure '%s': %s"), proc_name, exit_reason);
-          message_fill_from_script (&msg, BST_MSG_ERROR, _("Script execution error."), script_name, proc_name, error_msg);
+          message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
           g_free (error_msg);
           bst_message_handler (&msg);
           message_free_fields (&msg);
@@ -513,8 +536,9 @@ bst_message_log_handler (const SfiLogMessage *lmsg)
   msg.primary = lmsg->primary;
   msg.secondary = lmsg->secondary;
   msg.details = lmsg->details;
-  msg.pid = sfi_thread_get_pid (NULL);
+  msg.janitor = bse_janitor_get_specific();
   msg.process = (char*) sfi_thread_get_name (NULL);
+  msg.pid = sfi_thread_get_pid (NULL);
   msg.n_msg_bits = lmsg->n_msg_bits;
   msg.msg_bits = lmsg->msg_bits;
   bst_message_handler (&msg);
@@ -531,8 +555,9 @@ bst_message_user_msg_handler (const BseUserMsg *umsg)
   msg.primary = umsg->primary;
   msg.secondary = umsg->secondary;
   msg.details = umsg->details;
-  msg.pid = umsg->pid;
+  msg.janitor = umsg->janitor;
   msg.process = umsg->process;
+  msg.pid = umsg->pid;
   bst_message_handler (&msg);
 }
 
@@ -607,7 +632,7 @@ server_script_error (SfiProxy     server,
   /* this signal is emitted (without janitor) when script execution failed */
   BstMessage msg = { 0, };
   gchar *error_msg = g_strdup_printf (_("Failed to execute script procedure '%s': %s"), proc_name, reason);
-  message_fill_from_script (&msg, BST_MSG_ERROR, _("Script execution error."), script_name, proc_name, error_msg);
+  message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
   g_free (error_msg);
   bst_message_handler (&msg);
   message_free_fields (&msg);

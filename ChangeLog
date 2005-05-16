@@ -1,3 +1,13 @@
+Mon May 16 20:10:47 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstusermessage.c: include script name and procedure name 
+	when constructing message hashkey. added janitor to BseMessage, make
+	use of additional message information supplied by janitor.
+
+	* beast-gtk/bstprocedure.c: fixed dialog title.
+
+	* beast-gtk/Makefile.am: changed log-domain to "BST".
+
 Mon May 16 17:24:28 2005  Tim Janik  <timj@gtk.org>
 
 	* bstusermessage.h, bstusermessage.c: API cleanups. define BstMessage
