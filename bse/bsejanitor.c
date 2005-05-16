@@ -385,9 +385,9 @@ static void
 janitor_shutdown (BseJanitor *self)
 {
   gfloat n_seconds = 1;
-  self->port_closed = TRUE; /* protectes further (recursive) janitor_shutdown() calls */
+  self->port_closed = TRUE; /* protects further (recursive) janitor_shutdown() calls */
   sfi_com_port_close_remote (self->port, self->force_kill);
-  if (self->port->reaped)
+  if (sfi_com_port_test_reap_child (self->port))
     n_seconds = 0;
   bse_idle_timed (n_seconds * SFI_USEC_FACTOR, janitor_idle_clean_jsource, g_object_ref (self));
   g_signal_emit (self, signal_closed, 0);
@@ -590,5 +590,4 @@ janitor_port_closed (SfiComPort *port,
   /* this function is called by the SfiComPort */
   if (!self->port_closed)
     bse_janitor_close (self);
-  g_object_notify (self, "connected");
 }

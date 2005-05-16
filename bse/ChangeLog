@@ -1,3 +1,11 @@
+Mon May 16 21:01:35 2005  Tim Janik  <timj@gtk.org>
+
+	* bsejanitor.c: try early reaping of child. removed unneccessary
+	::notify::connected notification.
+	
+	* bseglue.c: use g_warning() for procedure invocation errors so
+	this can be properly traced in a debugger.
+
 Mon May 16 20:12:51 2005  Tim Janik  <timj@gtk.org>
 
 	* bsecore.idl: added janitor to UserMsg. 
