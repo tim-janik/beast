@@ -118,6 +118,7 @@ void		sfi_com_port_close_remote	(SfiComPort	*port,
 						 gboolean	 terminate_child);
 void		sfi_com_port_reap_child 	(SfiComPort	*port,
 						 gboolean	 kill_child);
+gboolean	sfi_com_port_test_reap_child 	(SfiComPort	*port);
 
 
 G_END_DECLS

@@ -736,3 +736,11 @@ sfi_com_port_reap_child (SfiComPort *port,
     }
   com_port_try_reap (port, TRUE);
 }
+
+gboolean
+sfi_com_port_test_reap_child (SfiComPort *port)
+{
+  g_return_if_fail (port != NULL);
+  com_port_try_reap (port, FALSE);
+  return port->reaped;
+}

@@ -1,3 +1,7 @@
+Mon May 16 21:01:01 2005  Tim Janik  <timj@gtk.org>
+
+	* sficomport.h, sficomport.c: added sfi_com_port_test_reap_child().
+
 Mon May 16 17:32:24 2005  Tim Janik  <timj@gtk.org>
 
 	* sfilog.h, sfilog.c: API renames for consistency.
