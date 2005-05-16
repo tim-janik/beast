@@ -1,3 +1,10 @@
+Mon May 16 17:27:49 2005  Tim Janik  <timj@gtk.org>
+
+	* bsejanitor.h, bsejanitor.c, bsejanitor.proc: 
+	added exit-code and exit-reason properties. logic cleanups so the
+	exit state is available for read outs once connected becomes FALSE.
+	API change so script_name and proc_name are always set together.
+
 Sat May 14 20:52:56 2005  Tim Janik  <timj@gtk.org>
 
 	* bseserver.c: improved error messages.

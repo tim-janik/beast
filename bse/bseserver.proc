@@ -339,7 +339,7 @@ static void
 script_janitor_closed (BseJanitor *janitor,
 		       BseServer  *server)
 {
-  bse_server_registration (server, BSE_REGISTER_SCRIPT, bse_janitor_get_script (janitor), NULL);
+  bse_server_registration (server, BSE_REGISTER_SCRIPT, janitor->script_name, NULL);
   bse_idle_normal (register_scripts, server);
 }
 

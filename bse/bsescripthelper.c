@@ -207,7 +207,7 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 	  
 	  for (i = 6; i < seq->n_elements; i++)
 	    params = sfi_ring_append (params, sfi_value_get_string (sfi_seq_get (seq, i)));
-	  type = bse_script_proc_register (bse_janitor_get_script (janitor),
+	  type = bse_script_proc_register (janitor->script_name,
 					   sfi_value_get_string (sfi_seq_get (seq, 0)),
 					   sfi_value_get_string (sfi_seq_get (seq, 1)),
 					   sfi_value_get_string (sfi_seq_get (seq, 2)),

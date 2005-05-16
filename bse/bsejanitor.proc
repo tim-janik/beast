@@ -70,7 +70,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  sfi_value_set_string (out_values++, bse_janitor_get_script (self));
+  sfi_value_set_string (out_values++, self->script_name);
   
   return BSE_ERROR_NONE;
 }
@@ -261,7 +261,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* check execution context */
-  if (!self->port || self->close_pending)
+  if (!self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
@@ -290,7 +290,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* check execution context */
-  if (!self->port || self->close_pending)
+  if (!self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
@@ -311,7 +311,7 @@ BODY (BseProcedureClass *proc,
   BseJanitor *self = bse_janitor_get_current ();
   
   /* check execution context */
-  if (!self || !self->port || self->close_pending)
+  if (!self || !self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
 
   /* set output parameters */
@@ -343,7 +343,7 @@ METHOD (BseJanitor, set-msg) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
-  if (!self->port || self->close_pending)
+  if (!self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
   if (!message)
     {
@@ -380,7 +380,7 @@ METHOD (BseJanitor, progress) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
-  if (!self->port || self->close_pending)
+  if (!self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
@@ -412,11 +412,12 @@ METHOD (BseJanitor, exit) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* check execution context */
-  if (!BSE_IS_JANITOR (self) || !self->port || self->close_pending)
+  if (!BSE_IS_JANITOR (self) || !self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
-  bse_server_user_message (bse_server_get (), "BSE-SCRIPT", mtype, NULL, message, NULL, NULL, self->port ? self->port->remote_pid : 0, self->script_name);
+  bse_server_user_message (bse_server_get (), "BSE-SCRIPT", mtype, NULL, message, NULL, NULL, self->port->remote_pid, self->script_name);
+  self->force_normal_exit = TRUE;
   bse_janitor_close (self);
   
   return BSE_ERROR_NONE;

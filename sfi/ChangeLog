@@ -1,3 +1,9 @@
+Mon May 16 17:32:24 2005  Tim Janik  <timj@gtk.org>
+
+	* sfilog.h, sfilog.c: API renames for consistency.
+	added sfi_log_msg_trampoline() to construct a message and then
+	hand it over to a message handler.
+
 Sun May 15 15:52:18 2005  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: compile toyprof conditionally.

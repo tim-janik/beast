@@ -47,7 +47,7 @@ static guint          stdlog_syslog_priority = 0; // LOG_USER | LOG_INFO;
 static gboolean       stdlog_to_stderr = TRUE;
 static FILE          *stdlog_file = NULL;
 static GQuark         quark_log_handler = 0;
-static GQuark         quark_log_bits = 0;
+static GQuark         quark_msg_bits = 0;
 
 /* --- prototypoes --- */
 static void     sfi_log_msg_process (const SfiLogMessage *msgp);
@@ -58,7 +58,7 @@ _sfi_init_logging (void)
 {
   g_assert (quark_log_handler == 0);
   quark_log_handler = g_quark_from_static_string ("SfiLogHandler");
-  quark_log_bits = g_quark_from_static_string ("SfiLogBit-threadlist");
+  quark_msg_bits = g_quark_from_static_string ("SfiMsgBit-threadlist");
   sfi_mutex_init (&logging_mutex);
 }
 
@@ -260,26 +260,6 @@ sfi_log_assign_level (unsigned char level,
     }
 }
 
-static const gchar*
-log_msg_level_classify (guint  level,
-                        guint *actionsp)
-{
-  guint actions;
-  const gchar *slevel;
-  switch (level)
-    {
-    case SFI_MSG_ERROR:   actions = error_actions;     slevel = "ERROR";   break;
-    case SFI_MSG_WARNING: actions = warn_actions;      slevel = "WARNING"; break;
-    case SFI_MSG_INFO:    actions = info_actions;      slevel = "INFO";    break;
-    case SFI_MSG_DIAG:    actions = diag_actions;      slevel = "DIAG";    break;
-    case SFI_MSG_DEBUG:   actions = debug_actions;     slevel = "DEBUG";   break;
-    default:              actions = SFI_LOG_TO_STDERR; slevel = NULL;      break;
-    }
-  if (actionsp)
-    *actionsp = actions;
-  return slevel;
-}
-
 void
 sfi_log_set_stdlog (gboolean    stdlog_to_stderr_bool,
                     const char *stdlog_filename,
@@ -339,9 +319,68 @@ sfi_log_printf (const char     *log_domain,
   /* handle message */
   sfi_log_msg_process (&msg);
   g_free (msg.primary);
-  /* purge thread local log bit list */
-  sfi_thread_set_qdata (quark_log_bits, NULL);
+  /* purge thread local msg bit list */
+  sfi_thread_set_qdata (quark_msg_bits, NULL);
   errno = saved_errno;
+}
+
+/**
+ * sfi_log_msg_elist
+ * @log_domain:   log domain
+ * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
+ * @lbit1:        msg bit
+ * @lbit2:        msg bit
+ * @...:          list of more msg bits, NULL terminated
+ *
+ * Log a message through SFIs logging mechanism. The current value of errno
+ * is preserved around calls to this function. Usually this function isn't
+ * used directly, but sfi_log_msg() is called instead which does not require
+ * %NULL termination of its argument list and automates the @log_domain argument.
+ * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
+ * as used by g_log().
+ * The msg bit arguments passed in form various parts of the log message, the
+ * following macro set is provided to construct the parts from printf-style
+ * argument lists:
+ * - SFI_MSG_TITLE(): format message title
+ * - SFI_MSG_TEXT1(): format primary message (also SFI_MSG_PRIMARY())
+ * - SFI_MSG_TEXT2(): format secondary message, optional (also SFI_MSG_SECONDARY())
+ * - SFI_MSG_TEXT3(): format details of the message, optional (also SFI_MSG_DETAIL())
+ * - SFI_MSG_CHECK(): format configuration check statement to enable/disable log messages of this type.
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+sfi_log_msg_elist (const char     *log_domain,
+                   guint           level,       /* SFI_MSG_DEBUG is not really useful here */
+                   SfiMsgBit      *lbit1,
+                   SfiMsgBit      *lbit2,
+                   ...)
+{
+  gint saved_errno = errno;
+  va_list args;
+  va_start (args, lbit2);
+  sfi_log_msg_trampoline (log_domain, level, lbit1, lbit2, args, sfi_log_msg_process, NULL);
+  va_end (args);
+  errno = saved_errno;
+}
+
+static const gchar*
+log_msg_level_classify (guint  level,
+                        guint *actionsp)
+{
+  guint actions;
+  const gchar *slevel;
+  switch (level)
+    {
+    case SFI_MSG_ERROR:   actions = error_actions;     slevel = "ERROR";   break;
+    case SFI_MSG_WARNING: actions = warn_actions;      slevel = "WARNING"; break;
+    case SFI_MSG_INFO:    actions = info_actions;      slevel = "INFO";    break;
+    case SFI_MSG_DIAG:    actions = diag_actions;      slevel = "DIAG";    break;
+    case SFI_MSG_DEBUG:   actions = debug_actions;     slevel = "DEBUG";   break;
+    default:              actions = SFI_LOG_TO_STDERR; slevel = NULL;      break;
+    }
+  if (actionsp)
+    *actionsp = actions;
+  return slevel;
 }
 
 /**
@@ -369,7 +408,7 @@ sfi_log_msg_level_name (guint level)
 
 typedef struct LogBit LogBit;
 struct LogBit {
-  SfiLogBit bit;
+  SfiMsgBit bit;
   void    (*data_free) (void*);
   LogBit   *next;
 };
@@ -387,8 +426,8 @@ free_lbits (LogBit *first)
     }
 }
 
-SfiLogBit*
-sfi_log_bit_appoint (gconstpointer   owner,
+SfiMsgBit*
+sfi_msg_bit_appoint (gconstpointer   owner,
                      gpointer        data,
                      void          (*data_free) (gpointer))
 {
@@ -397,14 +436,14 @@ sfi_log_bit_appoint (gconstpointer   owner,
   lbit->bit.owner = owner;
   lbit->bit.data = data;
   lbit->data_free = data_free;
-  lbit->next = sfi_thread_steal_qdata (quark_log_bits);
-  sfi_thread_set_qdata_full (quark_log_bits, lbit, (GDestroyNotify) free_lbits);
+  lbit->next = sfi_thread_steal_qdata (quark_msg_bits);
+  sfi_thread_set_qdata_full (quark_msg_bits, lbit, (GDestroyNotify) free_lbits);
   errno = saved_errno;
   return &lbit->bit;
 }
 
-SfiLogBit*
-sfi_log_bit_printf (guint8      log_msg_tag,
+SfiMsgBit*
+sfi_msg_bit_printf (guint8      log_msg_tag,
                     const char *format,
                     ...)
 {
@@ -414,7 +453,7 @@ sfi_log_bit_printf (guint8      log_msg_tag,
   gchar *string = g_strdup_vprintf (format, args);
   va_end (args);
   errno = saved_errno;
-  return sfi_log_bit_appoint ((void*) (gsize) log_msg_tag, string, g_free);
+  return sfi_msg_bit_appoint ((void*) (gsize) log_msg_tag, string, g_free);
 }
 
 static inline char*
@@ -432,7 +471,7 @@ log_msg_concat (char       *former,
 
 static inline void
 sfi_log_msg_apply_bit (SfiLogMessage *msg,
-                       SfiLogBit     *lbit)
+                       SfiMsgBit     *lbit)
 {
   gsize ltype = (gsize) lbit->owner;
   if (ltype < 256)
@@ -448,72 +487,84 @@ sfi_log_msg_apply_bit (SfiLogMessage *msg,
     }
   else
     {
-      guint i = msg->n_log_bits++;
-      msg->log_bits = g_renew (SfiLogBit*, msg->log_bits, msg->n_log_bits);
-      msg->log_bits[i] = lbit;
+      guint i = msg->n_msg_bits++;
+      msg->msg_bits = g_renew (SfiMsgBit*, msg->msg_bits, msg->n_msg_bits);
+      msg->msg_bits[i] = lbit;
     }
 }
 
 /**
- * sfi_log_msg_valist
+ * sfi_log_msg_trampoline
  * @log_domain:   log domain
  * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
- * @lbit1:        log bit
- * @lbit2:        log bit
- * @...:          list of more log bits, NULL terminated
+ * @lbit1:        msg bit
+ * @lbit2:        msg bit
+ * @lbitargs:     va_list list of more msg bits, NULL terminated
+ * @handler:      message handler
+ * @lbit3:        msg bit
+ * @...:          list of more msg bits, NULL terminated
  *
- * Log a message through SFIs logging mechanism. The current value of errno
- * is preserved around calls to this function. Usually this function isn't
- * used directly, but sfi_log_msg() is called instead which does not require
- * %NULL termination of its argument list and automates the @log_domain argument.
- * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
- * as used by g_log().
- * The log bit arguments passed in form various parts of the log message, the
- * following macro set is provided to construct the parts from printf-style
- * argument lists:
- * - SFI_MSG_TITLE(): format message title
- * - SFI_MSG_TEXT1(): format primary message (also SFI_MSG_PRIMARY())
- * - SFI_MSG_TEXT2(): format secondary message, optional (also SFI_MSG_SECONDARY())
- * - SFI_MSG_TEXT3(): format details of the message, optional (also SFI_MSG_DETAIL())
- * - SFI_MSG_CHECK(): format configuration check statement to enable/disable log messages of this type.
+ * Construct a log message from the arguments given and let @handler process
+ * it. This function performs no logging on its own, it is used internally by
+ * sfi_log_msg_elist() to collect arguments and construct a message. All logging
+ * functionality has to be implemented by @handler. Note that all thread-local
+ * msg bits are deleted after invokation of this funtcion, so all msg bits
+ * created in the current thread are invalid after calling this function.
+ * Direct use of this function is not recommended except for implementations
+ * of logging mechanisms.
  * This function is MT-safe and may be called from any thread.
  */
 void
-sfi_log_msg_valist (const char     *log_domain,
-                    guint           level,      /* SFI_MSG_DEBUG is not really useful here */
-                    SfiLogBit      *lbit1,
-                    SfiLogBit      *lbit2,
-                    ...)
+sfi_log_msg_trampoline (const char     *log_domain,
+                        guint           level,
+                        SfiMsgBit      *lbit1,
+                        SfiMsgBit      *lbit2,
+                        va_list         lbitargs,
+                        SfiLogHandler   handler,
+                        SfiMsgBit      *lbit3,
+                        ...)
 {
   gint saved_errno = errno;
+  g_assert (handler != NULL);
   /* construct message */
   SfiLogMessage msg = { 0, };
   msg.log_domain = (char*) log_domain;
   msg.level = level;
+  /* apply msg bits */
   if (lbit1)
     {
       sfi_log_msg_apply_bit (&msg, lbit1);
-      SfiLogBit *lbit = lbit2;
-      va_list args;
-      va_start (args, lbit2);
+      SfiMsgBit *lbit = lbit2;
       while (lbit)
         {
           sfi_log_msg_apply_bit (&msg, lbit);
-          lbit = va_arg (args, SfiLogBit*);
+          lbit = va_arg (lbitargs, SfiMsgBit*);
+        }
+    }
+  /* apply extra bits */
+  if (lbit3)
+    {
+      SfiMsgBit *lbit = lbit3;
+      va_list args;
+      va_start (args, lbit3);
+      while (lbit)
+        {
+          sfi_log_msg_apply_bit (&msg, lbit);
+          lbit = va_arg (args, SfiMsgBit*);
         }
       va_end (args);
     }
-  /* reset thread local log bit list */
-  LogBit *lbit_list = sfi_thread_steal_qdata (quark_log_bits);
+  /* reset thread local msg bit list */
+  LogBit *lbit_list = sfi_thread_steal_qdata (quark_msg_bits);
   /* handle message */
-  sfi_log_msg_process (&msg);
+  handler (&msg);
   /* clean up */
   g_free (msg.title);
   g_free (msg.primary);
   g_free (msg.secondary);
   g_free (msg.details);
   g_free (msg.config_check);
-  g_free (msg.log_bits);
+  g_free (msg.msg_bits);
   free_lbits (lbit_list);
   /* restore errno */
   errno = saved_errno;

@@ -843,7 +843,7 @@ bse_server_run_remote (BseServer         *server,
       else
 	{
 	  janitor = bse_janitor_new (port);
-	  bse_janitor_set_script (janitor, script_name);
+	  bse_janitor_set_procedure (janitor, script_name, proc_name);
 	  sfi_com_port_unref (port);
 	  /* already owned by server */
 	  g_object_unref (janitor);

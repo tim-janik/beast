@@ -35,8 +35,9 @@ G_BEGIN_DECLS
 struct _BseJanitor
 {
   BseItem         parent_instance;
-  guint		  close_pending : 1;
+  guint		  port_closed : 1;
   guint		  force_kill : 1;
+  guint		  force_normal_exit : 1;
   SfiComPort	 *port;
   SfiGlueContext *context;
   SfiGlueDecoder *decoder;
@@ -46,6 +47,9 @@ struct _BseJanitor
   gchar          *script_name;
   gchar          *proc_name;
   GSList         *actions;
+  /* closed connections (port==NULL) */
+  gint           exit_code;
+  gchar         *exit_reason;
 };
 struct _BseJanitorClass
 {
@@ -63,9 +67,9 @@ BseJanitor*  bse_janitor_new		(SfiComPort	*port);
 void	     bse_janitor_kill   	(BseJanitor	*self);
 void	     bse_janitor_close  	(BseJanitor	*self);
 const gchar* bse_janitor_get_ident	(BseJanitor	*self);
-void	     bse_janitor_set_script	(BseJanitor	*self,
-					 const gchar	*script);
-const gchar* bse_janitor_get_script	(BseJanitor	*self);
+void	     bse_janitor_set_procedure  (BseJanitor	*self,
+					 const gchar	*script,
+					 const gchar	*proc);
 BseJanitor*  bse_janitor_get_current	(void);
 void	     bse_janitor_progress	(BseJanitor	*self,
 					 gfloat		 progress);

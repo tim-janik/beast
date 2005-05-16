@@ -37,17 +37,17 @@ void               sfi_debug_allow      (const char     *key_list);
 void               sfi_debug_deny       (const char     *key_list);
 
 /* --- user interface messages --- */
-#define sfi_log_msg(level, ...)         sfi_log_msg_valist (SFI_LOG_DOMAIN, level, __VA_ARGS__, NULL);
+#define sfi_log_msg(level, ...)         sfi_log_msg_elist (SFI_LOG_DOMAIN, level, __VA_ARGS__, NULL)
 #define SFI_MSG_ERROR                   ('E')
 #define SFI_MSG_WARNING                 ('W')
 #define SFI_MSG_INFO                    ('I')
 #define SFI_MSG_DIAG                    ('A')
 #define SFI_MSG_DEBUG                   ('D')
-#define SFI_MSG_TEXT0(...)              sfi_log_bit_printf ('0', __VA_ARGS__) /* message title */
-#define SFI_MSG_TEXT1(...)              sfi_log_bit_printf ('1', __VA_ARGS__) /* primary message */
-#define SFI_MSG_TEXT2(...)              sfi_log_bit_printf ('2', __VA_ARGS__) /* secondary message */
-#define SFI_MSG_TEXT3(...)              sfi_log_bit_printf ('3', __VA_ARGS__) /* message details */
-#define SFI_MSG_CHECK(...)              sfi_log_bit_printf ('c', __VA_ARGS__) /* user switch */
+#define SFI_MSG_TEXT0(...)              sfi_msg_bit_printf ('0', __VA_ARGS__) /* message title */
+#define SFI_MSG_TEXT1(...)              sfi_msg_bit_printf ('1', __VA_ARGS__) /* primary message */
+#define SFI_MSG_TEXT2(...)              sfi_msg_bit_printf ('2', __VA_ARGS__) /* secondary message */
+#define SFI_MSG_TEXT3(...)              sfi_msg_bit_printf ('3', __VA_ARGS__) /* message details */
+#define SFI_MSG_CHECK(...)              sfi_msg_bit_printf ('c', __VA_ARGS__) /* user switch */
 #define SFI_MSG_TITLE                   SFI_MSG_TEXT0 /* alias */
 #define SFI_MSG_PRIMARY                 SFI_MSG_TEXT1 /* alias */
 #define SFI_MSG_SECONDARY               SFI_MSG_TEXT2 /* alias */
@@ -72,7 +72,7 @@ void    sfi_log_default_handler    (const SfiLogMessage *message);
 gchar*  sfi_log_msg_level_name     (guint                level);
 
 /* --- logging internals --- */
-typedef struct SfiLogBit SfiLogBit;
+typedef struct SfiMsgBit SfiMsgBit;
 struct SfiLogMessage {
   gchar         *log_domain;
   guint          level;
@@ -82,10 +82,10 @@ struct SfiLogMessage {
   char          *secondary;      /* translated */
   char          *details;        /* translated */
   char          *config_check;   /* translated */
-  guint          n_log_bits;
-  SfiLogBit    **log_bits;
+  guint          n_msg_bits;
+  SfiMsgBit    **msg_bits;
 };
-struct SfiLogBit {
+struct SfiMsgBit {
   gconstpointer  owner;
   gpointer       data;
 };
@@ -95,15 +95,23 @@ void       sfi_log_printf               (const char     *log_domain,
                                          const char     *key,
                                          const char     *format,
                                          ...) G_GNUC_PRINTF (4, 5);
-void       sfi_log_msg_valist           (const char     *log_domain,
+void       sfi_log_msg_elist            (const char     *log_domain,
                                          guint           level,
-                                         SfiLogBit      *lbit1,
-                                         SfiLogBit      *lbit2,
+                                         SfiMsgBit      *lbit1,
+                                         SfiMsgBit      *lbit2,
                                          ...);
-SfiLogBit* sfi_log_bit_appoint          (gconstpointer   owner,
+void       sfi_log_msg_trampoline       (const char     *log_domain,
+                                         guint           level,
+                                         SfiMsgBit      *lbit1,
+                                         SfiMsgBit      *lbit2,
+                                         va_list         lbitargs,
+                                         SfiLogHandler   handler,
+                                         SfiMsgBit      *lbit3,
+                                         ...);
+SfiMsgBit* sfi_msg_bit_appoint          (gconstpointer   owner,
                                          gpointer        data,
                                          void          (*data_free) (gpointer));
-SfiLogBit* sfi_log_bit_printf           (guint8          log_msg_tag,
+SfiMsgBit* sfi_msg_bit_printf           (guint8          log_msg_tag,
                                          const char     *format,
                                          ...) G_GNUC_PRINTF (2, 3);
 void       _sfi_init_logging            (void);

@@ -27,10 +27,12 @@
 enum
 {
   PROP_0,
+  PROP_IDENT,
   PROP_USER_MSG_TYPE,
   PROP_USER_MSG,
   PROP_CONNECTED,
-  PROP_IDENT,
+  PROP_EXIT_CODE,
+  PROP_EXIT_REASON,
 };
 
 
@@ -105,23 +107,18 @@ bse_janitor_class_init (BseJanitorClass *class)
   
   item_class->set_parent = bse_janitor_set_parent;
   
-  bse_object_class_add_param (object_class, NULL,
-			      PROP_USER_MSG_TYPE,
-			      bse_param_spec_genum ("user-msg-type", "User Message Type", NULL,
-						    BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO,
-						    SFI_PARAM_GUI));
-  bse_object_class_add_param (object_class, NULL,
-			      PROP_USER_MSG,
-			      sfi_pspec_string ("user-msg", "User Message", NULL,
-						NULL, SFI_PARAM_GUI));
-  bse_object_class_add_param (object_class, NULL,
-			      PROP_CONNECTED,
-			      sfi_pspec_bool ("connected", "Connected", NULL,
-					      FALSE, "G:r"));
-  bse_object_class_add_param (object_class, NULL,
-			      PROP_IDENT,
-			      sfi_pspec_string ("ident", "Script Identifier", NULL,
-						NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, NULL, PROP_IDENT,
+			      sfi_pspec_string ("ident", "Script Identifier", NULL, NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, NULL, PROP_USER_MSG_TYPE,
+			      bse_param_spec_genum ("user-msg-type", "User Message Type", NULL, BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, NULL, PROP_USER_MSG,
+			      sfi_pspec_string ("user-msg", "User Message", NULL, NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, NULL, PROP_CONNECTED,
+			      sfi_pspec_bool ("connected", "Connected", NULL, FALSE, "G:r"));
+  bse_object_class_add_param (object_class, NULL, PROP_EXIT_CODE,
+			      sfi_pspec_int ("exit-code", "Exit Code", NULL, 0, -256, 256, 0, "G:r"));
+  bse_object_class_add_param (object_class, NULL, PROP_EXIT_REASON,
+			      sfi_pspec_string ("exit-reason", "Exit Reason", NULL, NULL, "G:r"));
   
   signal_progress = bse_object_class_add_signal (object_class, "progress",
 						 G_TYPE_NONE, 1, G_TYPE_FLOAT);
@@ -138,8 +135,9 @@ bse_janitor_class_init (BseJanitorClass *class)
 static void
 bse_janitor_init (BseJanitor *self)
 {
-  self->close_pending = FALSE;
+  self->port_closed = FALSE;
   self->force_kill = FALSE;
+  self->force_normal_exit = FALSE;
   self->port = NULL;
   self->context = NULL;
   self->decoder = NULL;
@@ -149,6 +147,8 @@ bse_janitor_init (BseJanitor *self)
   self->script_name = NULL;
   self->proc_name = NULL;
   self->actions = NULL;
+  self->exit_code = 0;
+  self->exit_reason = NULL;
 }
 
 static void
@@ -184,6 +184,9 @@ bse_janitor_get_property (GObject    *object,
   
   switch (param_id)
     {
+    case PROP_IDENT:
+      sfi_value_set_string (value, bse_janitor_get_ident (self));
+      break;
     case PROP_USER_MSG_TYPE:
       g_value_set_enum (value, self->user_msg_type);
       break;
@@ -191,10 +194,13 @@ bse_janitor_get_property (GObject    *object,
       sfi_value_set_string (value, self->user_msg);
       break;
     case PROP_CONNECTED:
-      sfi_value_set_bool (value, self->port && self->port->connected);
+      sfi_value_set_bool (value, self->port != NULL);
       break;
-    case PROP_IDENT:
-      sfi_value_set_string (value, bse_janitor_get_ident (self));
+    case PROP_EXIT_CODE:
+      sfi_value_set_int (value, self->exit_code);
+      break;
+    case PROP_EXIT_REASON:
+      sfi_value_set_string (value, self->exit_reason);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -219,7 +225,8 @@ bse_janitor_finalize (GObject *object)
   g_free (self->user_msg);
   g_free (self->script_name);
   g_free (self->proc_name);
-  
+  g_free (self->exit_reason);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -249,26 +256,17 @@ bse_janitor_new (SfiComPort *port)
 }
 
 void
-bse_janitor_set_script (BseJanitor  *self,
-			const gchar *script_name)
+bse_janitor_set_procedure (BseJanitor  *self,
+                           const gchar *script_name,
+                           const gchar *proc_name)
 {
   g_return_if_fail (BSE_IS_JANITOR (self));
   
+  g_free (self->proc_name);
+  self->proc_name = g_strdup (proc_name);
   g_free (self->script_name);
   self->script_name = g_strdup (script_name);
-  if (!self->user_msg && script_name)
-    {
-      self->user_msg = g_strdup (script_name);
-      g_object_notify (self, "user-msg");
-    }
-}
-
-const gchar*
-bse_janitor_get_script (BseJanitor *self)
-{
-  g_return_val_if_fail (BSE_IS_JANITOR (self), NULL);
-  
-  return self->script_name;
+  g_object_notify (self, "user-msg");
 }
 
 const gchar*
@@ -387,24 +385,19 @@ static void
 janitor_shutdown (BseJanitor *self)
 {
   gfloat n_seconds = 1;
-  self->close_pending = TRUE;
+  self->port_closed = TRUE; /* protectes further (recursive) janitor_shutdown() calls */
   sfi_com_port_close_remote (self->port, self->force_kill);
   if (self->port->reaped)
     n_seconds = 0;
   bse_idle_timed (n_seconds * SFI_USEC_FACTOR, janitor_idle_clean_jsource, g_object_ref (self));
   g_signal_emit (self, signal_closed, 0);
-  g_object_notify (self, "connected");
 }
 
 void
 bse_janitor_close (BseJanitor *self)
 {
   g_return_if_fail (BSE_IS_JANITOR (self));
-  g_return_if_fail (self->close_pending == FALSE);
-
-  if (BSE_ITEM (self)->parent)
-    bse_container_remove_item (BSE_CONTAINER (BSE_ITEM (self)->parent), BSE_ITEM (self));
-  else
+  if (self->port && !self->port_closed)
     janitor_shutdown (self);
 }
 
@@ -413,7 +406,7 @@ bse_janitor_kill (BseJanitor *self)
 {
   g_return_if_fail (BSE_IS_JANITOR (self));
 
-  if (!self->close_pending)
+  if (!self->port_closed)
     {
       self->force_kill = TRUE;
       bse_janitor_close (self);
@@ -427,7 +420,7 @@ bse_janitor_set_parent (BseItem *item,
   BseJanitor *self = BSE_JANITOR (item);
   
   if (!parent &&	/* removal */
-      !self->close_pending)
+      !self->port_closed)
     janitor_shutdown (self);
 
   /* chain parent class' handler */
@@ -497,7 +490,7 @@ janitor_dispatch (GSource    *source,
       g_string_truncate (port->gstring_stderr, 0);
     }
 #endif
-  if (!port->connected && !self->close_pending)
+  if (!port->connected && !self->port_closed)
     bse_janitor_close (self);
   return TRUE;
 }
@@ -548,23 +541,43 @@ janitor_idle_clean_jsource (gpointer data)
   sfi_com_port_reap_child (port, TRUE);
   if (port->remote_pid)
     {
-      if (port->exit_signal_sent)
-        {
-          /* here, sigterm_sent and/or sigkill_sent is TRUE */
-          if (port->sigkill_sent)
-            g_printerr ("%s: killed by janitor\n", port->ident);
-          else
-            g_printerr ("%s: connection terminated\n", port->ident);
-        }
+      self->exit_code = 256; /* exit code used for signals */
+      if (port->exit_signal_sent && port->sigkill_sent)
+        self->exit_reason = g_strdup_printf (_("killed by janitor"));
+      else if (port->exit_signal_sent && port->sigterm_sent)
+        self->exit_reason = g_strdup_printf (_("connection terminated"));
       else if (port->exit_signal && port->dumped_core)
-        g_printerr ("%s: %s (core dumped)\n", port->ident, g_strsignal (port->exit_signal));
+        self->exit_reason = g_strdup_printf (_("%s (core dumped)"), g_strsignal (port->exit_signal));
       else if (port->exit_signal)
-        g_printerr ("%s: %s\n", port->ident, g_strsignal (port->exit_signal));
-      else if (port->exit_code || self->force_kill)
-        g_printerr ("%s: exit status: %d\n", port->ident, port->exit_code);
+        self->exit_reason = g_strdup_printf ("%s", g_strsignal (port->exit_signal));
+      else
+        {
+          self->exit_code = port->exit_code;
+          if (port->exit_code || self->force_kill)
+            self->exit_reason = g_strdup_printf ("Exit status (%d)", port->exit_code);
+          else
+            self->exit_reason = NULL; /* all OK */
+        }
+      if (self->force_normal_exit)
+        {
+          self->exit_code = 0;
+          g_free (self->exit_reason);
+          self->exit_reason = NULL;
+        }
+      if (self->exit_reason)
+        sfi_diag ("%s: %s", port->ident, self->exit_reason);
+    }
+  else
+    {
+      /* not a janitor for a remote process */
+      self->exit_code = -256;
+      self->exit_reason = g_strdup_printf ("unknown intern termination");
     }
   sfi_com_port_unref (port);
   self->port = NULL;
+  g_object_notify (self, "connected");
+  if (BSE_ITEM (self)->parent)
+    bse_container_remove_item (BSE_CONTAINER (BSE_ITEM (self)->parent), BSE_ITEM (self));
   g_object_unref (self);
   return FALSE;
 }
@@ -574,6 +587,8 @@ janitor_port_closed (SfiComPort *port,
 		     gpointer    close_data)
 {
   BseJanitor *self = BSE_JANITOR (close_data);
-  if (!self->close_pending)
+  /* this function is called by the SfiComPort */
+  if (!self->port_closed)
     bse_janitor_close (self);
+  g_object_notify (self, "connected");
 }
