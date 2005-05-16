@@ -578,6 +578,8 @@ record SampleFileInfo {
   Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 
+class Janitor;
+
 /* user messages */
 choice UserMsgType {
   USER_MSG_MISC = Neutral,
@@ -593,8 +595,9 @@ record UserMsg {
   String        primary;
   String        secondary;
   String        details;
-  Int           pid;
+  Janitor       janitor;
   String        process;
+  Int           pid;
 };
 
 /* thread info */

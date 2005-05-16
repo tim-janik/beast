@@ -752,12 +752,14 @@ void
 bse_server_user_message (BseServer          *server,
                          const gchar        *log_domain,
                          BseUserMsgType      msg_type,
-                         const gchar        *config_blurb,
+                         const gchar        *title,
                          const gchar        *primary,
                          const gchar        *secondary,
                          const gchar        *details,
-                         gint                pid,
-                         const gchar        *process_name)
+                         const gchar        *config_blurb,
+                         BseJanitor         *janitor,
+                         const gchar        *process_name,
+                         gint                pid)
 {
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (primary != NULL);
@@ -765,12 +767,14 @@ bse_server_user_message (BseServer          *server,
   BseUserMsg umsg = { 0, };
   umsg.log_domain = (char*) log_domain;
   umsg.msg_type = msg_type;
-  umsg.config_check = (char*) config_blurb;
+  umsg.title = (char*) title;
   umsg.primary = (char*) primary;
   umsg.secondary = (char*) secondary;
   umsg.details = (char*) details;
-  umsg.pid = pid;
+  umsg.config_check = (char*) config_blurb;
+  umsg.janitor = janitor;
   umsg.process = (char*) process_name;
+  umsg.pid = pid;
   bse_server_send_user_message (server, &umsg);
 }
 

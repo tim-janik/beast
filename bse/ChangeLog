@@ -1,3 +1,15 @@
+Mon May 16 20:12:51 2005  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: added janitor to UserMsg. 
+
+	* bsemain.c: add janitor to user messages.
+
+	* bseserver.h, bseserver.c: made bse_server_user_message() reflect
+	(newly added) UserMsg fields.
+
+	* bsejanitor.proc: added (bse-janitor-message) to allow scripts to send
+	real error, warning etc. messages.
+
 Mon May 16 17:27:49 2005  Tim Janik  <timj@gtk.org>
 
 	* bsejanitor.h, bsejanitor.c, bsejanitor.proc: 

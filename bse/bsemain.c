@@ -397,9 +397,10 @@ bse_log_handler (const SfiLogMessage *message)
   umsg->secondary = g_strdup (message->secondary);
   g_free (umsg->details);
   umsg->details = g_strdup (message->details);
-  umsg->pid = sfi_thread_get_pid (NULL);
+  umsg->janitor = NULL;
   g_free (umsg->process);
   umsg->process = g_strdup (sfi_thread_get_name (NULL));
+  umsg->pid = sfi_thread_get_pid (NULL);
   bse_idle_now (core_thread_send_message_async, umsg);
 }
 
