@@ -5,21 +5,21 @@
 # Ismael Rubio Rojas <ismael_rubio_rojas@hotmail.com>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2003, 2004.
 # Yelitza Louze <ylouze@redhat.com>, 2003.
-# Jorge Gonzalez Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005.
+# Jorge Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005.
 #
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-04-26 02:50+0000\n"
-"PO-Revision-Date: 2005-04-26 12:19+0200\n"
+"POT-Creation-Date: 2005-05-12 18:51+0000\n"
+"PO-Revision-Date: 2005-05-12 21:27+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>\n"
-"es>\n"
 "Language-Team:  <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"es>\n"
 "es>\n"
 "es>\n"
 "X-Generator: KBabel 1.9.1\n"
@@ -368,31 +368,49 @@ msgstr "Sintetizador MIDI: %s"
 msgid "Synthesizer: %s"
 msgstr "Sintetizador: %s"
 
-#: ../beast-gtk/bstapp.c:696 ../beast-gtk/bstapp.c:703
-#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:428
+#: ../beast-gtk/bstapp.c:619
+#, c-format
+msgid "Close %s"
+msgstr "Cerrar %s"
+
+#: ../beast-gtk/bstapp.c:620
+msgid "The project has been modified."
+msgstr "El proyecto se ha modificado."
+
+#: ../beast-gtk/bstapp.c:621
+#, c-format
+msgid "Changes were made to project \"%s\" since the last time it was saved to disk."
+msgstr "Los cambios realizados en el proyecto «%s» desde la última vez que se guardó en el disco."
+
+#: ../beast-gtk/bstapp.c:623
+msgid "Save the project before closing its window."
+msgstr "Guarde el proyecto antes de cerrar esta ventana."
+
+#: ../beast-gtk/bstapp.c:700 ../beast-gtk/bstapp.c:707
+#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Abriendo el proyecto «%s»"
 
-#: ../beast-gtk/bstapp.c:763
+#: ../beast-gtk/bstapp.c:767
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Cargando piel «%s»"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:932
+#: ../beast-gtk/bstapp.c:938
 msgid "Rack editor"
 msgstr "Editor de racks"
 
-#: ../beast-gtk/bstapp.c:946
+#: ../beast-gtk/bstapp.c:952
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: ../beast-gtk/bstapp.c:973
+#: ../beast-gtk/bstapp.c:979
 msgid "Procedure Browser"
 msgstr "Examinador de procedimientos"
 
-#: ../beast-gtk/bstapp.c:1030
+#: ../beast-gtk/bstapp.c:1036
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Notas de publicación de BEAST-%s"
@@ -581,27 +599,27 @@ msgstr "Seleccionar archivo"
 msgid "Select Directory"
 msgstr "Seleccionar directorio"
 
-#: ../beast-gtk/bstfiledialog.c:446
+#: ../beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Merge: %s"
 msgstr "Mezclar: %s"
 
-#: ../beast-gtk/bstfiledialog.c:459
+#: ../beast-gtk/bstfiledialog.c:458
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Mezclando proyecto: «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:475
+#: ../beast-gtk/bstfiledialog.c:474
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Importar MIDI: %s"
 
-#: ../beast-gtk/bstfiledialog.c:486
+#: ../beast-gtk/bstfiledialog.c:485
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importando archivo MIDI «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:505
+#: ../beast-gtk/bstfiledialog.c:506
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -617,7 +635,7 @@ msgstr ""
 "%s "
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:529 ../beast-gtk/bstfiledialog.c:543
+#: ../beast-gtk/bstfiledialog.c:531 ../beast-gtk/bstfiledialog.c:545
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -630,7 +648,7 @@ msgstr ""
 "debido a:\n"
 "%s"
 
-#: ../beast-gtk/bstfiledialog.c:534
+#: ../beast-gtk/bstfiledialog.c:536
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -643,71 +661,71 @@ msgstr ""
 "debido a:\n"
 "%s"
 
-#: ../beast-gtk/bstfiledialog.c:571
+#: ../beast-gtk/bstfiledialog.c:572
+#, c-format
+msgid "Saving project `%s'"
+msgstr "Guardando el proyecto  «%s»"
+
+#: ../beast-gtk/bstfiledialog.c:609
 #, c-format
 msgid "Save: %s"
 msgstr "Guardar: %s"
 
 #. setup radio buttons
-#: ../beast-gtk/bstfiledialog.c:573
+#: ../beast-gtk/bstfiledialog.c:613
 msgid "Fully include wave files"
 msgstr "Incluir completamente los archivos de onda"
 
-#: ../beast-gtk/bstfiledialog.c:574
+#: ../beast-gtk/bstfiledialog.c:614
 msgid "Store references to wave files"
 msgstr "Almacenar referencias a archivos de onda"
 
-#: ../beast-gtk/bstfiledialog.c:588
-#, c-format
-msgid "Saving project `%s'"
-msgstr "Guardando el proyecto  «%s»"
-
-#: ../beast-gtk/bstfiledialog.c:603
+#: ../beast-gtk/bstfiledialog.c:633
 msgid "Load Effect"
 msgstr "Cargar efecto"
 
-#: ../beast-gtk/bstfiledialog.c:616
+#: ../beast-gtk/bstfiledialog.c:646
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Mezclando efecto «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:633
+#: ../beast-gtk/bstfiledialog.c:663
 msgid "Save Effect"
 msgstr "Guardar efecto"
 
-#: ../beast-gtk/bstfiledialog.c:647
+#: ../beast-gtk/bstfiledialog.c:677
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Guardando efecto «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:662
+#: ../beast-gtk/bstfiledialog.c:692
 msgid "Load Instrument"
 msgstr "Cargar instrumento"
 
-#: ../beast-gtk/bstfiledialog.c:675
+#: ../beast-gtk/bstfiledialog.c:705
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Mezclando instrumento «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:692
+#: ../beast-gtk/bstfiledialog.c:722
 msgid "Save Instrument"
 msgstr "Guardar instrumento"
 
-#: ../beast-gtk/bstfiledialog.c:706
+#: ../beast-gtk/bstfiledialog.c:736
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Guardando instrumento «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:722
+#: ../beast-gtk/bstfiledialog.c:752
 msgid "Load Wave"
 msgstr "Cargar onda"
 
-#: ../beast-gtk/bstfiledialog.c:734 ../beast-gtk/bstfiledialog.c:736
+#: ../beast-gtk/bstfiledialog.c:764 ../beast-gtk/bstfiledialog.c:766
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Cargando onda «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:738 ../beast-gtk/bstmain.c:279
+#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:279
 #: ../beast-gtk/bstmain.c:296
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -1642,7 +1660,7 @@ msgstr "Procedimiento"
 msgid "Totals"
 msgstr "Totales"
 
-#: ../beast-gtk/bstprofiler.c:246 ../bse/bsecore.idl:609
+#: ../beast-gtk/bstprofiler.c:246 ../bse/bsecore.idl:612
 msgid "Thread Name"
 msgstr "Nombre de la hebra"
 
@@ -2506,7 +2524,9 @@ msgstr "Invertir el espectro"
 
 #: ../beast-gtk/bstscrollgraph.c:568
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
-msgstr "Invertir visualizador del espectro, intercambiando las frecuencias altas y bajas"
+msgstr ""
+"Invertir visualizador del espectro, intercambiando las frecuencias altas y "
+"bajas"
 
 #: ../beast-gtk/bstscrollgraph.c:571
 msgid "Choose display scrolling direction"
@@ -2835,42 +2855,52 @@ msgstr "Buses de mezcla conectados a la salida de la pista"
 msgid "Synthesis network to be used as postprocessor"
 msgstr "La red se síntesis que se va a usar como post-procesador"
 
-#: ../beast-gtk/bstusermessage.c:95
+#: ../beast-gtk/bstusermessage.c:57
+#, c-format
+msgid "Failure in script \"%s\""
+msgstr "Fallo en el script «%s»"
+
+#: ../beast-gtk/bstusermessage.c:58
+#, c-format
+msgid "Failed to start %s() of script \"%s\": %s"
+msgstr "Error al iniciar %s() del script «%s»: %s"
+
+#: ../beast-gtk/bstusermessage.c:98
 msgid "Error"
 msgstr "Error"
 
-#: ../beast-gtk/bstusermessage.c:99
+#: ../beast-gtk/bstusermessage.c:102
 msgid "Warning"
 msgstr "Advertencia"
 
-#: ../beast-gtk/bstusermessage.c:103
+#: ../beast-gtk/bstusermessage.c:106
 msgid "Info"
 msgstr "Información"
 
-#: ../beast-gtk/bstusermessage.c:108
+#: ../beast-gtk/bstusermessage.c:111
 msgid "Miscellaneous Message"
 msgstr "Mensaje de miscelánea"
 
-#: ../beast-gtk/bstusermessage.c:195
+#: ../beast-gtk/bstusermessage.c:228
 msgid "Details:"
 msgstr "Detalles:"
 
-#: ../beast-gtk/bstusermessage.c:202
+#: ../beast-gtk/bstusermessage.c:239
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "Origen:  %s\n"
 
-#: ../beast-gtk/bstusermessage.c:204
+#: ../beast-gtk/bstusermessage.c:241
 #, c-format
 msgid "Process: %s\n"
 msgstr "Proceso: %s\n"
 
-#: ../beast-gtk/bstusermessage.c:206
+#: ../beast-gtk/bstusermessage.c:243
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: ../beast-gtk/bstusermessage.c:230
+#: ../beast-gtk/bstusermessage.c:280
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -2878,17 +2908,26 @@ msgstr ""
 "Este ajuste se puede cambiar en la sección de «Mensajes» del diálogo de "
 "preferencias"
 
-#: ../beast-gtk/bstusermessage.c:277
+#: ../beast-gtk/bstusermessage.c:322
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "El mensaje ha sido repetido %u vez"
 
-#: ../beast-gtk/bstusermessage.c:277
+#: ../beast-gtk/bstusermessage.c:322
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "El mensaje ha sido repetido %u veces"
 
-#: ../beast-gtk/bstusermessage.c:386 ../beast-gtk/bstusermessage.c:388
+#: ../beast-gtk/bstusermessage.c:417
+#, c-format
+msgid ""
+"Procedure: %s\n"
+"Script: %s"
+msgstr ""
+"Procedimiento: %s\n"
+"Script: %s"
+
+#: ../beast-gtk/bstusermessage.c:435 ../beast-gtk/bstusermessage.c:437
 msgid "processing"
 msgstr "procesando"
 
@@ -4550,27 +4589,27 @@ msgstr "Control 127 Modo de voces polifónico activado en ITrigger"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Modo de control MIDI continuo #1 - Selección de banco"
 
-#: ../bse/bsecore.idl:610
+#: ../bse/bsecore.idl:613
 msgid "State"
 msgstr "Estado"
 
-#: ../bse/bsecore.idl:610
+#: ../bse/bsecore.idl:613
 msgid "The execution state of the thread"
 msgstr "El estado de ejecución de la hebra"
 
-#: ../bse/bsecore.idl:611
+#: ../bse/bsecore.idl:614
 msgid "Thread ID"
 msgstr "ID de la hebra"
 
-#: ../bse/bsecore.idl:611
+#: ../bse/bsecore.idl:614
 msgid "A unique number identifying this thread"
 msgstr "Un único número que identifique esta hebra"
 
-#: ../bse/bsecore.idl:613
+#: ../bse/bsecore.idl:616
 msgid "Priority"
 msgstr "Prioridad"
 
-#: ../bse/bsecore.idl:613
+#: ../bse/bsecore.idl:616
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -4578,66 +4617,66 @@ msgstr ""
 "Prioridad de la hebra, -20 indica una alta prioridad en la hebra y +19 una "
 "prioridad muy baja"
 
-#: ../bse/bsecore.idl:616
+#: ../bse/bsecore.idl:619
 msgid "Processor"
 msgstr "Procesador"
 
-#: ../bse/bsecore.idl:616
+#: ../bse/bsecore.idl:619
 msgid "The processor that this thread is currently being executed on"
 msgstr "El procesador en el que esta hebra está siendo ejecutada"
 
-#: ../bse/bsecore.idl:618
+#: ../bse/bsecore.idl:621
 msgid "User Time"
 msgstr "Tiempo del usuario"
 
-#: ../bse/bsecore.idl:618
+#: ../bse/bsecore.idl:621
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "Tiempo que la CPU gasta ejecutando las instrucciones de esta hebra"
 
-#: ../bse/bsecore.idl:620
+#: ../bse/bsecore.idl:623
 msgid "System Time"
 msgstr "Tiempo del sistema"
 
-#: ../bse/bsecore.idl:620
+#: ../bse/bsecore.idl:623
 msgid "The CPU time spent in the system for this thread"
 msgstr "Tiempo que la CPU gasta en el sistema para esta hebra"
 
-#: ../bse/bsecore.idl:622
+#: ../bse/bsecore.idl:625
 msgid "Child User Time"
 msgstr "Tiempo de los procesos hijos del usuario"
 
-#: ../bse/bsecore.idl:622
+#: ../bse/bsecore.idl:625
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "Tiempo que la CPU gasta ejecutando las instrucciones hijas de esta hebra"
 
-#: ../bse/bsecore.idl:624
+#: ../bse/bsecore.idl:627
 msgid "Child System Time"
 msgstr "Tiempo de los procesos hijos del sistema"
 
-#: ../bse/bsecore.idl:624
+#: ../bse/bsecore.idl:627
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "Tiempo que la CPU gasta en el sistema para los hijos de esta hebra"
 
-#: ../bse/bsecore.idl:639
+#: ../bse/bsecore.idl:642
 msgid "Search Paths"
 msgstr "Buscar rutas"
 
-#: ../bse/bsecore.idl:640
+#: ../bse/bsecore.idl:643
 msgid "Sample Path"
 msgstr "Ruta de ejemplo"
 
-#: ../bse/bsecore.idl:641
+#: ../bse/bsecore.idl:644
 #, c-format
 msgid "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 "Buscar rutas de directorios, separados por «%s», usados para encontrar "
 "ejemplos de sonidos."
 
-#: ../bse/bsecore.idl:644
+#: ../bse/bsecore.idl:647
 msgid "Effect Path"
 msgstr "Ruta de efecto"
 
-#: ../bse/bsecore.idl:645
+#: ../bse/bsecore.idl:648
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -4646,11 +4685,11 @@ msgstr ""
 "Buscar rutas de directorios, separados por «%s», usados para encontrar "
 "archivos de efectos BSE."
 
-#: ../bse/bsecore.idl:648
+#: ../bse/bsecore.idl:651
 msgid "Instrument Path"
 msgstr "Ruta de instrumento"
 
-#: ../bse/bsecore.idl:649
+#: ../bse/bsecore.idl:652
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -4659,11 +4698,11 @@ msgstr ""
 "Buscar rutas de directorios, separados por «%s», usados para encontrar "
 "archivos de instrumentos BSE."
 
-#: ../bse/bsecore.idl:652
+#: ../bse/bsecore.idl:655
 msgid "Script Path"
 msgstr "Ruta de script"
 
-#: ../bse/bsecore.idl:653
+#: ../bse/bsecore.idl:656
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
@@ -4672,11 +4711,11 @@ msgstr ""
 "Buscar rutas de directorios, separados por «%s», usados para encontrar "
 "esquemas de scripts BSE."
 
-#: ../bse/bsecore.idl:656
+#: ../bse/bsecore.idl:659
 msgid "Plugin Path"
 msgstr "Ruta de complementos"
 
-#: ../bse/bsecore.idl:657
+#: ../bse/bsecore.idl:660
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -4687,11 +4726,11 @@ msgstr ""
 "complementos para BSE. Esta ruta se busca como complemento a la localización "
 "estándar de complementos BSE en el sistema."
 
-#: ../bse/bsecore.idl:661
+#: ../bse/bsecore.idl:664
 msgid "LADSPA Path"
 msgstr "Ruta de LADSPA"
 
-#: ../bse/bsecore.idl:662
+#: ../bse/bsecore.idl:665
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -4707,15 +4746,15 @@ msgstr ""
 "informaciones sobre los complementos LADSPA se pueden encontrar en http://"
 "www.ladspa.org/."
 
-#: ../bse/bsecore.idl:668
+#: ../bse/bsecore.idl:671
 msgid "Synthesis Settings"
 msgstr "Ajustes de síntesis"
 
-#: ../bse/bsecore.idl:669
+#: ../bse/bsecore.idl:672
 msgid "Latency [ms]"
 msgstr "Latencia [ms]"
 
-#: ../bse/bsecore.idl:670
+#: ../bse/bsecore.idl:673
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -4723,21 +4762,21 @@ msgstr ""
 "Duración del proceso entre la entrada y la salida de una muestra sencilla, "
 "valores pequeños incrementan la carga de CPU"
 
-#: ../bse/bsecore.idl:672
+#: ../bse/bsecore.idl:675
 msgid "Synth Mixing Frequency"
 msgstr "Frecuencia de mezcla de síntesis"
 
-#: ../bse/bsecore.idl:673
+#: ../bse/bsecore.idl:676
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "Frecuencia de mezcla de síntesis, los valores comunes son: 22050, 44100, "
 "48000"
 
-#: ../bse/bsecore.idl:675
+#: ../bse/bsecore.idl:678
 msgid "Synth Control Frequency"
 msgstr "Frecuencia de control de síntesis"
 
-#: ../bse/bsecore.idl:676
+#: ../bse/bsecore.idl:679
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -4745,38 +4784,38 @@ msgstr ""
 "Frecuencia a la que los valores de control se evalúan, debería ser mucho más "
 "pequeño que La Frecuencia de mezcla de síntesis para reducir la carga de CPU"
 
-#: ../bse/bsecore.idl:680
+#: ../bse/bsecore.idl:683
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../bse/bsecore.idl:681
+#: ../bse/bsecore.idl:684
 msgid "Invert Sustain Pedal"
 msgstr "Invertir el pedal fuerte"
 
-#: ../bse/bsecore.idl:682
+#: ../bse/bsecore.idl:685
 msgid "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 "Invertir el estado del pedal fuerte (apagador) de manera que el significado "
 "de encendido/apagado se invierte"
 
-#: ../bse/bsecore.idl:685
+#: ../bse/bsecore.idl:688
 #, fuzzy
 msgid "Stepping Rates"
 msgstr "Índice de pasos"
 
-#: ../bse/bsecore.idl:686
+#: ../bse/bsecore.idl:689
 msgid "Volume [dB] Steps"
 msgstr "Volumen de pasos [dB]"
 
-#: ../bse/bsecore.idl:686
+#: ../bse/bsecore.idl:689
 msgid "Step width for volume in decibel"
 msgstr "Anchura del paso para el volumen en decibelios"
 
-#: ../bse/bsecore.idl:688
+#: ../bse/bsecore.idl:691
 msgid "BPM Steps"
 msgstr "Pasos BPM"
 
-#: ../bse/bsecore.idl:688
+#: ../bse/bsecore.idl:691
 msgid "Step width for beats per minute"
 msgstr "Anchura del paso para los golpes por minuto"
 
@@ -5401,29 +5440,62 @@ msgstr ""
 "no puede dar un resultado no esperado (como bajar la señal de salida hasta "
 "el silencio)."
 
-#: ../bse/bseserver.c:486
+#: ../bse/bseserver.c:487
+msgid "No Audio"
+msgstr "Sin sonido"
+
+#: ../bse/bseserver.c:488
+msgid "No available audio device was found."
+msgstr "No se encontró ningún dispositivo de sonido disponible."
+
+#: ../bse/bseserver.c:489
+msgid ""
+"No available audio device could be found and opened successfully. Sorry, no "
+"fallback selection can be made for audio devices, giving up."
+msgstr ""
+"No se encontró ningún dispositivo de sonido disponible y que se pudiera abrir para la reproducción. "
+"No se puede realizar una selección alternativa para los dispositivos de sonido, abortando."
+
+#: ../bse/bseserver.c:491
+#, c-format
+msgid "Failed to open PCM devices: %s"
+msgstr "Error al abrir los dispositivos PCM: %s"
+
+#: ../bse/bseserver.c:492
 msgid "Show messages about PCM device selections problems"
 msgstr "Mostrar mensajes sobre problemas con la selección del dispositivo PCM"
 
-#: ../bse/bseserver.c:487
-#, c-format
-msgid "Failed to open PCM devices, giving up: %s"
-msgstr "Error al abrir los dispositivos PCM, abortando: %s"
+#: ../bse/bseserver.c:511
+msgid "No MIDI"
+msgstr "Sin MIDI"
 
-#: ../bse/bseserver.c:506
+#: ../bse/bseserver.c:512
+msgid "MIDI input or oputput is not available."
+msgstr "La entrada o salida MIDI no está disponible."
+
+#: ../bse/bseserver.c:513
+#, fuzzy
+msgid ""
+"No available MIDI device could be found and opened successfully. Reverting "
+"to null device, no MIDI events will be received or sent."
+msgstr ""
+"No se encontró ningún dispositivo MIDI disponible y que se pudiera abrir para la reproducción. "
+"Se revierte al dispositivo nulo, no se enviará o recibiriá ningún evento MIDI."
+
+#: ../bse/bseserver.c:515
+#, c-format
+msgid "Failed to open MIDI devices: %s"
+msgstr "Error al abrir los dispositivos MIDI: %s"
+
+#: ../bse/bseserver.c:516
 msgid "Show messages about MIDI device selections problems"
 msgstr "Mostrar mensajes sobre problemas con la selección del dispositivo MIDI"
 
-#: ../bse/bseserver.c:507
-#, c-format
-msgid "Failed to open MIDI devices (reverting to null device): %s"
-msgstr "Error al abrir el dispositivo MIDI (volviendo a dispositivo nulo): %s"
-
-#: ../bse/bseserver.c:558
+#: ../bse/bseserver.c:566
 msgid "Show recording file errors"
 msgstr "Mostrar los errores ocurridos al grabar archivos"
 
-#: ../bse/bseserver.c:559
+#: ../bse/bseserver.c:567
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Error al abrir el archivo de salida «%s»: %s"
