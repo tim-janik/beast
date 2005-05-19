@@ -102,7 +102,7 @@ main (int   argc,
 
   /* initialize Sfi guts */
   sfi_init ();
-  sfi_debug_allow ("misc");
+  sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
   sfi_thread_set_name ("Beast GUI");
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
@@ -253,7 +253,7 @@ main (int   argc,
   _bst_init_radgets ();
 
   /* install message dialog handler */
-  sfi_log_set_thread_handler (bst_message_log_handler);
+  sfi_msg_set_thread_handler (bst_message_log_handler);
 
   /* open files given on command line */
   if (argc > 1)
@@ -351,7 +351,7 @@ main (int   argc,
     }
   
   /* take down GUI */
-  sfi_log_set_thread_handler (NULL);
+  sfi_msg_set_thread_handler (NULL);
   bst_message_dialogs_popdown ();
   
   /* perform necessary cleanup cycles */
@@ -404,16 +404,16 @@ bst_early_parse_args (int    *argc_p,
   
   envar = getenv ("BST_DEBUG");
   if (envar)
-    sfi_debug_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BST_NO_DEBUG");
   if (envar)
-    sfi_debug_deny (envar);
+    sfi_msg_deny (envar);
   envar = getenv ("BEAST_DEBUG");
   if (envar)
-    sfi_debug_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BEAST_NO_DEBUG");
   if (envar)
-    sfi_debug_deny (envar);
+    sfi_msg_deny (envar);
 
   gboolean initialize_bse_and_exit = FALSE;
   for (i = 1; i < argc; i++)
@@ -482,11 +482,11 @@ bst_early_parse_args (int    *argc_p,
 	  gchar *equal = argv[i] + 7;
 	  
 	  if (*equal == '=')
-            sfi_debug_allow (equal + 1);
+            sfi_msg_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_debug_allow (argv[i]);
+	      sfi_msg_allow (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -496,11 +496,11 @@ bst_early_parse_args (int    *argc_p,
 	  gchar *equal = argv[i] + 7;
 	  
 	  if (*equal == '=')
-            sfi_debug_deny (equal + 1);
+            sfi_msg_deny (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_debug_deny (argv[i]);
+	      sfi_msg_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}

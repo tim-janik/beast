@@ -713,6 +713,114 @@ bse_scm_choice_match (SCM s_ch1,
   return SCM_BOOL (res);
 }
 
+static void
+scm_script_send_message_handler (const SfiMessage *msg)
+{
+  SfiSeq *args = sfi_seq_new ();
+  /* keep arguments in sync with bsejanitor.proc */
+  sfi_seq_append_string (args, msg->log_domain);
+  sfi_seq_append_string (args, sfi_msg_type_ident (msg->type));
+  sfi_seq_append_string (args, msg->title);
+  sfi_seq_append_string (args, msg->primary);
+  sfi_seq_append_string (args, msg->secondary);
+  sfi_seq_append_string (args, msg->details);
+  sfi_seq_append_string (args, msg->config_check);
+  sfi_glue_call_seq ("bse-script-send-message", args);
+  sfi_seq_unref (args);
+}
+
+static guint8
+msg_bit_type_match (const gchar *string)
+{
+  if (sfi_choice_match_detailed ("bse-msg-text0", string, TRUE) ||
+      sfi_choice_match_detailed ("bse-msg-title", string, TRUE))
+    return '0';
+  if (sfi_choice_match_detailed ("bse-msg-text1", string, TRUE) ||
+      sfi_choice_match_detailed ("bse-msg-primary", string, TRUE))
+    return '1';
+  if (sfi_choice_match_detailed ("bse-msg-text2", string, TRUE) ||
+      sfi_choice_match_detailed ("bse-msg-secondary", string, TRUE))
+    return '2';
+  if (sfi_choice_match_detailed ("bse-msg-text3", string, TRUE) ||
+      sfi_choice_match_detailed ("bse-msg-detail", string, TRUE))
+    return '3';
+  if (sfi_choice_match_detailed ("bse-msg-check", string, TRUE))
+    return 'c';
+  return 0;
+}
+
+SCM
+bse_scm_script_message (SCM s_type,
+                        SCM s_bits)
+{
+  SCM gcplateau = bse_scm_make_gc_plateau (4096);
+
+  SCM_ASSERT (SCM_SYMBOLP (s_type),   s_type,   SCM_ARG2, "bse-script-message");
+
+  /* figure message level */
+  BSE_SCM_DEFER_INTS();
+  gchar *strtype = g_strndup (SCM_ROCHARS (s_type), SCM_LENGTH (s_type));
+  guint mtype = sfi_msg_type_lookup (strtype);
+  g_free (strtype);
+  BSE_SCM_ALLOW_INTS();
+  if (!mtype)
+    scm_wrong_type_arg ("bse-script-message", 2, s_type);
+
+  /* figure argument list length */
+  guint i = 0;
+  SCM node = s_bits;
+  while (SCM_CONSP (node))
+    node = SCM_CDR (node), i++;
+  if (i == 0)
+    scm_misc_error ("bse-script-message", "Wrong number of arguments", SCM_BOOL_F);
+
+  /* build message bit list */
+  BSE_SCM_DEFER_INTS();
+  SfiMsgBit **mbits = g_new0 (SfiMsgBit*, i / 2 + 1);
+  sfi_glue_gc_add (mbits, g_free); /* free mbits automatically */
+  BSE_SCM_ALLOW_INTS();
+  guint n = 0;
+  i = 2;
+  node = s_bits;
+  while (SCM_CONSP (node))
+    {
+      /* read first arg, a symbol */
+      SCM arg1 = SCM_CAR (node);
+      node = SCM_CDR (node);
+      i++;
+      if (!SCM_SYMBOLP (arg1))
+	scm_wrong_type_arg ("bse-script-message", i, arg1);
+      /* check symbol contents */
+      BSE_SCM_DEFER_INTS();
+      gchar *mtag = g_strndup (SCM_ROCHARS (arg1), SCM_LENGTH (arg1));
+      gsize tag = msg_bit_type_match (mtag);
+      g_free (mtag);
+      BSE_SCM_ALLOW_INTS();
+      if (!tag)
+        scm_wrong_type_arg ("bse-script-message", i, arg1);
+      /* list must continue */
+      if (!SCM_CONSP (node))
+        scm_misc_error ("bse-script-message", "Wrong number of arguments", SCM_BOOL_F);
+      /* read second arg, a string */
+      SCM arg2 = SCM_CAR (node);
+      node = SCM_CDR (node);
+      i++;
+      if (!SCM_STRINGP (arg2))
+        scm_wrong_type_arg ("bse-script-message", i, arg2);
+      /* add message bit from string */
+      BSE_SCM_DEFER_INTS();
+      mbits[n++] = sfi_msg_bit_appoint ((void*) tag, g_strndup (SCM_ROCHARS (arg2), SCM_LENGTH (arg2)), g_free);
+      BSE_SCM_ALLOW_INTS();
+    }
+
+  BSE_SCM_DEFER_INTS ();
+  sfi_msg_log_trampoline (SFI_LOG_DOMAIN, mtype, mbits, scm_script_send_message_handler);
+  BSE_SCM_ALLOW_INTS ();
+
+  bse_scm_destroy_gc_plateau (gcplateau);
+  return SCM_UNSPECIFIED;
+}
+
 static gboolean script_register_enabled = FALSE;
 
 void
@@ -723,12 +831,11 @@ bse_scm_enable_script_register (gboolean enabled)
 
 SCM
 bse_scm_script_register (SCM s_name,
+			 SCM s_options,
 			 SCM s_category,
 			 SCM s_blurb,
-			 SCM s_help,
 			 SCM s_author,
 			 SCM s_license,
-			 SCM s_date,
 			 SCM s_params)
 {
   SCM gcplateau = bse_scm_make_gc_plateau (4096);
@@ -736,13 +843,12 @@ bse_scm_script_register (SCM s_name,
   guint i;
 
   SCM_ASSERT (SCM_SYMBOLP (s_name),      s_name,      SCM_ARG1, "bse-script-register");
-  SCM_ASSERT (SCM_STRINGP (s_category),  s_category,  SCM_ARG2, "bse-script-register");
-  SCM_ASSERT (SCM_STRINGP (s_blurb),     s_blurb,     SCM_ARG3, "bse-script-register");
-  SCM_ASSERT (SCM_STRINGP (s_help),      s_help,      SCM_ARG4, "bse-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_options),   s_options,   SCM_ARG2, "bse-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_category),  s_category,  SCM_ARG3, "bse-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_blurb),     s_blurb,     SCM_ARG4, "bse-script-register");
   SCM_ASSERT (SCM_STRINGP (s_author),    s_author,    SCM_ARG5, "bse-script-register");
   SCM_ASSERT (SCM_STRINGP (s_license),   s_license,   SCM_ARG6, "bse-script-register");
-  SCM_ASSERT (SCM_STRINGP (s_date),      s_date,      SCM_ARG7, "bse-script-register");
-  for (node = s_params, i = 8; SCM_CONSP (node); node = SCM_CDR (node), i++)
+  for (node = s_params, i = 7; SCM_CONSP (node); node = SCM_CDR (node), i++)
     {
       SCM arg = SCM_CAR (node);
       if (!SCM_STRINGP (arg))
@@ -757,17 +863,15 @@ bse_scm_script_register (SCM s_name,
 
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_name), SCM_LENGTH (s_name)));
       sfi_value_free (val);
+      sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_options), SCM_LENGTH (s_options)));
+      sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_category), SCM_LENGTH (s_category)));
       sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_blurb), SCM_LENGTH (s_blurb)));
       sfi_value_free (val);
-      sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_help), SCM_LENGTH (s_help)));
-      sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_author), SCM_LENGTH (s_author)));
       sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_license), SCM_LENGTH (s_license)));
-      sfi_value_free (val);
-      sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_date), SCM_LENGTH (s_date)));
       sfi_value_free (val);
       
       for (node = s_params; SCM_CONSP (node); node = SCM_CDR (node))
@@ -933,11 +1037,12 @@ bse_scm_interp_init (void)
   register_types (procs2);
 
   gh_new_procedure0_0 ("bse-server-get", bse_scm_server_get);
-  gh_new_procedure ("bse-script-register", bse_scm_script_register, 7, 0, 1);
+  gh_new_procedure ("bse-script-register", bse_scm_script_register, 6, 0, 1);
   gh_new_procedure ("bse-script-fetch-args", bse_scm_script_args, 0, 0, 0);
   gh_new_procedure ("bse-choice-match?", bse_scm_choice_match, 2, 0, 0);
   gh_new_procedure ("bse-signal-connect", bse_scm_signal_connect, 3, 0, 0);
   gh_new_procedure ("bse-signal-disconnect", bse_scm_signal_disconnect, 2, 0, 0);
   gh_new_procedure ("bse-context-pending", bse_scm_context_pending, 0, 0, 0);
   gh_new_procedure ("bse-context-iteration", bse_scm_context_iteration, 1, 0, 0);
+  gh_new_procedure ("bse-script-message", bse_scm_script_message, 1, 0, 1);
 }

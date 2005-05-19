@@ -1,12 +1,12 @@
 ;; -*- scheme -*-
 
+;; allow i18n markup of strings
+(define _ (lambda arglist (apply string-append arglist)))
+
 ;; cache invocations to avoid extra round trips
-(define bse-janitor-get-specific
-  (let ((result (bse-janitor-get-specific)))
+(define bse-script-janitor
+  (let ((result (bse-script-janitor)))
     (lambda () result)))
-;; script convenience
-(define (bse-script-exit msg-type message) (bse-janitor-exit (bse-janitor-get-specific) msg-type message))
-(define (bse-script-progress progress) (bse-janitor-progress (bse-janitor-get-specific) progress))
 
 (define bse-server (bse-server-get))
 (define (bse-param-string name dflt) (string-append "BseParamString:" name ":" dflt))

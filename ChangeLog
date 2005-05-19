@@ -1,3 +1,26 @@
+Thu May 19 20:10:15 2005  Tim Janik  <timj@gtk.org>
+
+	* shell/bse-scm-glue.boot: adapted to janitor API changes.
+	allow translatable string markup as (_ "string1" "string2").
+
+	* shell/bsescminterp.h, shell/bsescminterp.c: 
+	implemented (bse-script-message) with support for SfiMsgBit-style 
+	message construction, on top of (bse-script-send-message).
+	(bse_scm_script_register): fixed argument list.
+
+	* shell/Makefile.am: upper case log domain.
+
+	* beast-gtk/bstusermessage.c: extract message dialog title from
+	procedure category if a script is the origin. adapt to message
+	API changes.
+
+	* beast-gtk/bstapp.c:
+	* beast-gtk/bstmain.c:
+	* tests/perftest.cc:
+	* tests/cxxbinding.cc: 
+	* beast-gtk/testgui.c:
+	* tools/bsewavetool.cc: adapt to sfilog.h API changes.
+
 Mon May 16 20:10:47 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstusermessage.c: include script name and procedure name 

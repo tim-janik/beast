@@ -24,23 +24,26 @@ G_BEGIN_DECLS
 
 /* --- structures --- */
 typedef enum {
-  BST_MSG_ERROR         = SFI_MSG_ERROR,        /* 'E' */
-  BST_MSG_WARNING       = SFI_MSG_WARNING,      /* 'W' */
-  BST_MSG_INFO          = SFI_MSG_INFO,         /* 'I' */
-  BST_MSG_DIAG          = SFI_MSG_DIAG,         /* 'A' */
-  BST_MSG_DEBUG         = SFI_MSG_DEBUG,        /* 'D' */
-  BST_MSG_SCRIPT        = 'S',                  /* 'S' */
-  BST_MSG_MISC          = 'M',
+  BST_MSG_NONE          = SFI_MSG_NONE,
+  BST_MSG_FATAL         = SFI_MSG_FATAL,
+  BST_MSG_ERROR         = SFI_MSG_ERROR,
+  BST_MSG_WARNING       = SFI_MSG_WARNING,
+  BST_MSG_SCRIPT        = SFI_MSG_SCRIPT,
+  BST_MSG_INFO          = SFI_MSG_INFO,
+  BST_MSG_DIAG          = SFI_MSG_DIAG,
+  BST_MSG_DEBUG         = SFI_MSG_DEBUG,
 } BstMsgType;
 
 typedef struct {
-  gchar*         log_domain;
+  gchar         *log_domain;
   BstMsgType     type;
-  gchar         *config_check;
+  gchar         *ident;         /* type identifier */
+  gchar         *label;         /* type label (translated) */
   gchar         *title;
   gchar         *primary;
   gchar         *secondary;
   gchar         *details;
+  gchar         *config_check;
   SfiProxy       janitor;
   gchar         *process;
   guint          pid;
@@ -53,10 +56,10 @@ typedef struct {
 void    bst_message_connect_to_server		(void);
 void    bst_message_dialogs_popdown	        (void);
 void    bst_message_handler                     (const BstMessage       *message);
-void    bst_message_log_handler                 (const SfiLogMessage    *lmsg);
-void    bst_message_user_msg_handler            (const BseUserMsg       *umsg);
+void    bst_message_log_handler                 (const SfiMessage       *lmsg);
+void    bst_message_synth_msg_handler           (const BseMessage       *umsg);
 void    bst_message_dialog_elist                (const char             *log_domain,
-                                                 guint                   type,
+                                                 BstMsgType              type,
                                                  SfiMsgBit              *lbit1,
                                                  SfiMsgBit              *lbit2,
                                                  ...);

@@ -58,14 +58,15 @@ SCM	bse_scm_signal_connect		(SCM		 s_proxy,
 					 SCM		 s_lambda);
 SCM     bse_scm_signal_disconnect       (SCM             s_proxy,
                                          SCM             s_handler_id);
-SCM	bse_scm_script_register		(SCM		 name,
-					 SCM		 category,
-					 SCM		 blurb,
-					 SCM		 help,
-					 SCM		 author,
-					 SCM		 license,
-					 SCM		 date,
-					 SCM		 params);
+SCM     bse_scm_script_message          (SCM             s_type,
+                                         SCM             s_bits);
+SCM	bse_scm_script_register		(SCM             s_name,
+                                         SCM             s_options,
+                                         SCM             s_category,
+                                         SCM             s_blurb,
+                                         SCM             s_author,
+                                         SCM             s_license,
+                                         SCM             s_params);
 SCM	bse_scm_context_pending		(void);
 SCM	bse_scm_context_iteration	(SCM		 s_may_block);
 SCM	bse_scm_glue_rec_get		(SCM		  scm_rec,

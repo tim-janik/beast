@@ -52,9 +52,9 @@ list<string>   unlink_file_list;
 
 /* --- main program --- */
 static void
-wavetool_log_handler (const SfiLogMessage  *msg)
+wavetool_log_handler (const SfiMessage  *msg)
 {
-  if (msg->level == SFI_MSG_INFO)
+  if (msg->type == SFI_MSG_INFO)
     {
       if (!quiet_infos)
         {
@@ -67,7 +67,7 @@ wavetool_log_handler (const SfiLogMessage  *msg)
         }
     }
   else
-    sfi_log_default_handler (msg);
+    sfi_msg_default_handler (msg);
 }
 
 extern "C" int
@@ -86,9 +86,9 @@ main (int   argc,
   sfi_init ();
   int orig_argc = argc;
   bse_init_intern (&argc, &argv, NULL);
-  sfi_debug_allow ("main"); // FIXME
-  sfi_log_set_thread_handler (wavetool_log_handler);
-  sfi_log_assign_level (SFI_MSG_INFO, SFI_LOG_TO_HANDLER);
+  sfi_msg_allow ("main"); // FIXME
+  sfi_msg_set_thread_handler (wavetool_log_handler);
+  sfi_msg_type_configure (SFI_MSG_INFO, SFI_MSG_TO_HANDLER, NULL);
   
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
@@ -304,10 +304,10 @@ wavetool_parse_args (int    *argc_p,
 
   envar = getenv ("BSEWAVETOOL_DEBUG");
   if (envar)
-    sfi_debug_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BSEWAVETOOL_NO_DEBUG");
   if (envar)
-    sfi_debug_deny (envar);
+    sfi_msg_deny (envar);
   
   for (i = 1; i < argc; i++)
     {
@@ -324,9 +324,9 @@ wavetool_parse_args (int    *argc_p,
           exit (0);
         }
       else if (parse_str_option (argv, i, "--debug", str, argc))
-        sfi_debug_allow (str);
+        sfi_msg_allow (str);
       else if (parse_str_option (argv, i, "--no-debug", str, argc))
-        sfi_debug_deny (str);
+        sfi_msg_deny (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
         {
@@ -926,7 +926,7 @@ public:
             }
           if (error)
             {
-              sfi_log_msg (continue_on_error ? SFI_MSG_WARNING : SFI_MSG_ERROR,
+              sfi_msg_log (continue_on_error ? SFI_MSG_WARNING : SFI_MSG_ERROR,
                            SFI_MSG_PRIMARY (_("failed to add wave chunk from file \"%s\": %s"),
                                             ochunk.sample_file, bse_error_blurb (error)));
               if (!continue_on_error)

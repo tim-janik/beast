@@ -615,7 +615,7 @@ bst_app_handle_delete_event (GtkWidget   *widget,
   BstApp *self = BST_APP (widget);
   if (bse_project_is_dirty (self->project))
     {
-      sfi_log_msg (SFI_MSG_WARNING,
+      sfi_msg_log (SFI_MSG_WARNING,
                    SFI_MSG_TITLE (_("Close %s"), bse_item_get_name (self->project)),
                    SFI_MSG_TEXT1 (_("The project has been modified.")),
                    SFI_MSG_TEXT2 (_("Changes were made to project \"%s\" since the last time it was saved to disk."),

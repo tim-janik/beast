@@ -1,3 +1,6 @@
+- Preferences/Messages allow configuration of info (on) and diag (off) GUI handlers
+- test bse-script-set-status, bse-script-quit
+- rempve debugkey.lst
 - allow scripts to issue errors diagnosis etc. then check bse-script-exit
 - compare details from "loop range is empty" with details from "bse-script-progressor"
 - add/remove actions to/from shadow storage and require a script to issue actions-commit/gui-update or similar for the actions to really appear on-screen
