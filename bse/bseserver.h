@@ -46,8 +46,9 @@ struct _BseServer
   gchar		  *wave_file;
   
   guint		   dev_use_count;
-  BsePcmDevice    *pcm_device;
+  guint            log_messages : 1;
   guint            pcm_input_checked : 1;
+  BsePcmDevice    *pcm_device;
   BseModule       *pcm_imodule;
   BseModule       *pcm_omodule;
   BsePcmWriter	  *pcm_writer;
@@ -107,11 +108,11 @@ void		bse_server_script_error			(BseServer	    *server,
 							 const gchar	    *script_name,
 							 const gchar	    *proc_name,
 							 const gchar        *reason);
-void		bse_server_send_user_message	        (BseServer	    *server,
-                                                         const BseUserMsg   *umsg);
-void		bse_server_user_message		        (BseServer	    *server,
+void		bse_server_send_message	                (BseServer	    *server,
+                                                         const BseMessage   *umsg);
+void		bse_server_message		        (BseServer	    *server,
                                                          const gchar        *log_domain,
-                                                         BseUserMsgType      msg_type,
+                                                         BseMsgType          msg_type,
                                                          const gchar        *title,
                                                          const gchar        *primary,
                                                          const gchar        *secondary,

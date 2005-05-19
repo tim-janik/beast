@@ -39,7 +39,8 @@ extern "C" { SfiThread *bse_sequencer_thread = NULL; }
 namespace { // Anon
 using namespace std;
 
-#define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_sequencer, "sequencer", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_sequencer, __VA_ARGS__)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 
@@ -400,7 +401,7 @@ bse_sequencer_thread_main (gpointer data)
 {
   DEBUG ("SST: start\n");
   sfi_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
-  sfi_log_set_thread_handler (bse_log_handler);
+  sfi_msg_set_thread_handler (bse_msg_handler);
   BSE_SEQUENCER_LOCK ();
   do
     {

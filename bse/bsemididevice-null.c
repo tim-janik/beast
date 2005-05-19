@@ -19,7 +19,8 @@
 
 #include	"bseserver.h"
 
-#define MIDI_DEBUG(...) sfi_debug ("midi", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_NONE, NULL);
+#define MIDI_DEBUG(...) sfi_debug (debug_midi, __VA_ARGS__)
 
 /* --- structs --- */
 typedef struct

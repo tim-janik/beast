@@ -110,7 +110,7 @@ bse_janitor_class_init (BseJanitorClass *class)
   bse_object_class_add_param (object_class, NULL, PROP_IDENT,
 			      sfi_pspec_string ("ident", "Script Identifier", NULL, NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, NULL, PROP_USER_MSG_TYPE,
-			      bse_param_spec_genum ("user-msg-type", "User Message Type", NULL, BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO, SFI_PARAM_GUI));
+			      bse_param_spec_genum ("user-msg-type", "User Message Type", NULL, BSE_TYPE_MSG_TYPE, BSE_MSG_INFO, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, NULL, PROP_USER_MSG,
 			      sfi_pspec_string ("user-msg", "User Message", NULL, NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, NULL, PROP_CONNECTED,
@@ -142,7 +142,7 @@ bse_janitor_init (BseJanitor *self)
   self->context = NULL;
   self->decoder = NULL;
   self->source = NULL;
-  self->user_msg_type = BSE_USER_MSG_INFO;
+  self->user_msg_type = BSE_MSG_INFO;
   self->user_msg = NULL;
   self->script_name = NULL;
   self->proc_name = NULL;

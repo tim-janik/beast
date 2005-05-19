@@ -24,6 +24,8 @@
 #include <string.h>
 #include <errno.h>
 
+static SFI_MSG_TYPE_DEFINE (debug_vorbisenc, "vorbisenc", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_vorbisenc, __VA_ARGS__)
 
 /* --- structures --- */
 typedef struct {
@@ -270,8 +272,8 @@ gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
   
   self->serial = serial;
   vorbis_info_init (&self->vinfo);
-  sfi_debug ("vorbisenc", "init: channels=%u mixfreq=%u quality=%f bitrate=%d\n",
-             self->n_channels, self->sample_freq, self->vbr_quality, self->vbr_nominal);
+  DEBUG ("init: channels=%u mixfreq=%u quality=%f bitrate=%d\n",
+         self->n_channels, self->sample_freq, self->vbr_quality, self->vbr_nominal);
   if (self->vbr_nominal > 0)    /* VBR setup by nominal bitrate */
     result = vorbis_encode_setup_managed (&self->vinfo,
                                           self->n_channels,

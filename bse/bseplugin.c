@@ -29,7 +29,8 @@
 #include <unistd.h>
 
 
-#define DEBUG(...)      sfi_debug ("plugins", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_plugins, "plugins", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_plugins, __VA_ARGS__)
 
 
 /* --- prototypes --- */

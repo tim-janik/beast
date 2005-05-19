@@ -22,7 +22,8 @@
 #include "bseengine.h"	/* for bse_engine_sample_freq() */
 #include <string.h>
 
-#define DEBUG(...)      sfi_debug ("waveosc", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_waveosc, "waveosc", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_waveosc, __VA_ARGS__)
 
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)

@@ -24,6 +24,8 @@
 #include "bseexports.h"
 #include <string.h>
 
+static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_procs, __VA_ARGS__)
 
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
@@ -264,13 +266,13 @@ bse_procedure_call (BseProcedureClass  *proc,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     {
-      if (sfi_debug_check ("procs"))
+      if (sfi_msg_check (debug_procs))
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
-            sfi_debug ("procs", "executing procedure \"%s\" on object %s",
-                       BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
+            DEBUG ("executing procedure \"%s\" on object %s",
+                   BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
           else
-            sfi_debug ("procs", "executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
+            DEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
         }
       if (marshal)
         error = marshal (marshal_data, proc, ivalues, ovalues);

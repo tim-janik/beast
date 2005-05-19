@@ -29,8 +29,10 @@
 #include <sys/time.h>
 #include <errno.h>
 
-#define JOB_DEBUG(...)  sfi_debug ("job", __VA_ARGS__)
-#define TJOB_DEBUG(...) sfi_debug ("tjob", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_job, "job", SFI_MSG_NONE, NULL);
+#define JOB_DEBUG(...)  sfi_debug (debug_job, __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_tjob, "tjob", SFI_MSG_NONE, NULL);
+#define TJOB_DEBUG(...) sfi_debug (debug_tjob, __VA_ARGS__)
 
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = TRUE*/; } G_STMT_END
 
@@ -1155,7 +1157,7 @@ _engine_master_dispatch (void)
 void
 bse_engine_master_thread (EngineMasterData *mdata)
 {
-  sfi_log_set_thread_handler (bse_log_handler);
+  sfi_msg_set_thread_handler (bse_msg_handler);
 
   /* assert pollfd equality, since we're simply casting structures */
   g_static_assert (sizeof (struct pollfd) == sizeof (GPollFD));

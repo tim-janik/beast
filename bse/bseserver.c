@@ -42,7 +42,8 @@ enum
 {
   PROP_0,
   PROP_GCONFIG,
-  PROP_WAVE_FILE
+  PROP_WAVE_FILE,
+  PROP_LOG_MESSAGES
 };
 
 
@@ -85,7 +86,7 @@ static void	engine_shutdown			(BseServer	   *server);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_registration = 0;
-static guint       signal_user_message = 0;
+static guint       signal_message = 0;
 static guint       signal_script_start = 0;
 static guint       signal_script_error = 0;
 
@@ -143,14 +144,17 @@ bse_server_class_init (BseServerClass *class)
 			      sfi_pspec_string ("wave_file", _("WAVE File"),
                                                 _("Name of the WAVE file used for recording BSE sound output"),
 						NULL, SFI_PARAM_GUI ":filename"));
-  
+  bse_object_class_add_param (object_class, "Misc",
+			      PROP_LOG_MESSAGES,
+			      sfi_pspec_bool ("log-messages", "Log Messages", "Log messages through the log system", TRUE, SFI_PARAM_GUI));
+
   signal_registration = bse_object_class_add_signal (object_class, "registration",
 						     G_TYPE_NONE, 3,
 						     BSE_TYPE_REGISTRATION_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_user_message = bse_object_class_add_signal (object_class, "user-message",
-						     G_TYPE_NONE, 1, BSE_TYPE_USER_MSG | G_SIGNAL_TYPE_STATIC_SCOPE);
+  signal_message = bse_object_class_add_signal (object_class, "message",
+                                                G_TYPE_NONE, 1, BSE_TYPE_MESSAGE | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_script_start = bse_object_class_add_signal (object_class, "script-start",
 						     G_TYPE_NONE, 1,
 						     BSE_TYPE_JANITOR);
@@ -198,6 +202,7 @@ bse_server_init (BseServer *self)
   self->engine_source = NULL;
   self->projects = NULL;
   self->dev_use_count = 0;
+  self->log_messages = TRUE;
   self->pcm_device = NULL;
   self->pcm_imodule = NULL;
   self->pcm_omodule = NULL;
@@ -243,7 +248,7 @@ bse_server_set_property (GObject      *object,
 			 const GValue *value,
 			 GParamSpec   *pspec)
 {
-  BseServer *server = BSE_SERVER (object);
+  BseServer *self = BSE_SERVER (object);
   switch (param_id)
     {
       SfiRec *rec;
@@ -255,16 +260,19 @@ bse_server_set_property (GObject      *object,
     case PROP_WAVE_FILE:
       if (!bse_gconfig_locked ())
 	{
-	  server->wave_file = g_strdup_stripped (g_value_get_string (value));
-	  if (!server->wave_file[0])
+	  self->wave_file = g_strdup_stripped (g_value_get_string (value));
+	  if (!self->wave_file[0])
 	    {
-	      g_free (server->wave_file);
-	      server->wave_file = NULL;
+	      g_free (self->wave_file);
+	      self->wave_file = NULL;
 	    }
 	}
       break;
+    case PROP_LOG_MESSAGES:
+      self->log_messages = sfi_value_get_bool (value);
+      break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -275,7 +283,7 @@ bse_server_get_property (GObject    *object,
 			 GValue     *value,
 			 GParamSpec *pspec)
 {
-  BseServer *server = BSE_SERVER (object);
+  BseServer *self = BSE_SERVER (object);
   switch (param_id)
     {
       SfiRec *rec;
@@ -285,10 +293,13 @@ bse_server_get_property (GObject    *object,
       sfi_rec_unref (rec);
       break;
     case PROP_WAVE_FILE:
-      g_value_set_string (value, server->wave_file);
+      g_value_set_string (value, self->wave_file);
+      break;
+    case PROP_LOG_MESSAGES:
+      sfi_value_set_bool (value, self->log_messages);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -436,7 +447,7 @@ bse_server_require_pcm_input (BseServer *server)
     {
       server->pcm_input_checked = TRUE;
       if (!BSE_DEVICE_READABLE (server->pcm_device))
-        sfi_log_msg (SFI_MSG_WARNING,
+        sfi_msg_log (SFI_MSG_WARNING,
                      SFI_MSG_TITLE (_("Recording Audio Input")),
                      SFI_MSG_TEXT1 (_("Failed to start recording from audio device.")),
                      SFI_MSG_TEXT2 (_("An audio project is in use which processes an audio input signal, but the audio device "
@@ -489,7 +500,7 @@ server_open_pcm_device (BseServer *server,
                                                                bse_main_args->pcm_drivers,
                                                                pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
-    sfi_log_msg (SFI_MSG_ERROR,
+    sfi_msg_log (SFI_MSG_ERROR,
                  SFI_MSG_TITLE (_("No Audio")),
                  SFI_MSG_TEXT1 (_("No available audio device was found.")),
                  SFI_MSG_TEXT2 (_("No available audio device could be found and opened successfully. "
@@ -513,7 +524,7 @@ server_open_midi_device (BseServer *server)
       server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
       sfi_ring_free (ring);
       if (server->midi_device)
-        sfi_log_msg (SFI_MSG_WARNING,
+        sfi_msg_log (SFI_MSG_WARNING,
                      SFI_MSG_TITLE (_("No MIDI")),
                      SFI_MSG_TEXT1 (_("MIDI input or oputput is not available.")),
                      SFI_MSG_TEXT2 (_("No available MIDI device could be found and opened successfully. "
@@ -569,7 +580,7 @@ bse_server_open_devices (BseServer *self)
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, bse_engine_sample_freq ());
 	  if (error)
 	    {
-              sfi_log_msg (SFI_MSG_ERROR,
+              sfi_msg_log (SFI_MSG_ERROR,
                            SFI_MSG_TITLE (_("Start Disk Recording")),
                            SFI_MSG_TEXT1 (_("Failed to start recording to disk.")),
                            SFI_MSG_TEXT2 (_("An error occoured while opening the recording file, selecting a different "
@@ -740,33 +751,47 @@ bse_server_script_error (BseServer   *server,
 }
 
 void
-bse_server_send_user_message (BseServer          *server,
-                              const BseUserMsg   *umsg)
+bse_server_send_message (BseServer        *self,
+                         const BseMessage *umsg)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (BSE_IS_SERVER (self));
   g_return_if_fail (umsg != NULL);
-  g_signal_emit (server, signal_user_message, 0, umsg);
+  g_signal_emit (self, signal_message, 0, umsg);
+  if (self->log_messages)
+    {
+      SfiMessage lmsg = { 0, };
+      lmsg.log_domain = umsg->log_domain;
+      lmsg.type = umsg->type;
+      lmsg.title = umsg->title;
+      lmsg.primary = umsg->primary;
+      lmsg.secondary = umsg->secondary;
+      lmsg.details = umsg->details;
+      lmsg.config_check = umsg->config_check;
+      sfi_msg_default_handler (&lmsg);
+    }
 }
 
 void
-bse_server_user_message (BseServer          *server,
-                         const gchar        *log_domain,
-                         BseUserMsgType      msg_type,
-                         const gchar        *title,
-                         const gchar        *primary,
-                         const gchar        *secondary,
-                         const gchar        *details,
-                         const gchar        *config_blurb,
-                         BseJanitor         *janitor,
-                         const gchar        *process_name,
-                         gint                pid)
+bse_server_message (BseServer          *server,
+                    const gchar        *log_domain,
+                    BseMsgType          msg_type,
+                    const gchar        *title,
+                    const gchar        *primary,
+                    const gchar        *secondary,
+                    const gchar        *details,
+                    const gchar        *config_blurb,
+                    BseJanitor         *janitor,
+                    const gchar        *process_name,
+                    gint                pid)
 {
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (primary != NULL);
 
-  BseUserMsg umsg = { 0, };
+  BseMessage umsg = { 0, };
   umsg.log_domain = (char*) log_domain;
-  umsg.msg_type = msg_type;
+  umsg.type = msg_type;
+  umsg.ident = (char*) sfi_msg_type_ident (msg_type);
+  umsg.label = (char*) sfi_msg_type_label (msg_type);
   umsg.title = (char*) title;
   umsg.primary = (char*) primary;
   umsg.secondary = (char*) secondary;
@@ -775,7 +800,7 @@ bse_server_user_message (BseServer          *server,
   umsg.janitor = janitor;
   umsg.process = (char*) process_name;
   umsg.pid = pid;
-  bse_server_send_user_message (server, &umsg);
+  bse_server_send_message (server, &umsg);
 }
 
 void

@@ -1,3 +1,19 @@
+Thu May 19 23:07:12 2005  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: renamed UserMsgType to MsgType and synced message types
+	with SFI message types. renamed UserMsg to Message. added message type
+	identifier and label to Message.
+
+	* bsejanitor.proc: removed janitor arg from script internal methods.
+	renamed script internal methods to bse-script- procedures. changed
+	message handling to not require a round trip (for janitor handle) and
+	to support all fields of BseMessage. 
+
+	* bseserver.h, bseserver.c: print out messages emitted as ::message
+	signal via sfi_msg_default_handler().
+
+	* *.h, *.c: adapted to new message and debugging API.
+
 Mon May 16 21:01:35 2005  Tim Janik  <timj@gtk.org>
 
 	* bsejanitor.c: try early reaping of child. removed unneccessary

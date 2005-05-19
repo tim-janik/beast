@@ -21,7 +21,8 @@
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
 
-#define	DEBUG(...)      sfi_debug ("biquadfilter", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_biquadfilter, "biquadfilter", SFI_MSG_NONE, NULL);
+#define	DEBUG(...)      sfi_debug (debug_biquadfilter, __VA_ARGS__)
 #define FREQ_DELTA      0.1
 
 /* --- parameters --- */

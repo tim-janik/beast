@@ -31,8 +31,10 @@ namespace {
 using namespace Bse;
 using namespace std;
 
-#define	DEBUG(...)              sfi_debug ("midi-receiver", __VA_ARGS__)
-#define	DEBUG_EVENTS(...)       sfi_debug ("midi-events", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", SFI_MSG_NONE, NULL);
+#define DEBUG(...)              sfi_debug (debug_midi_receiver, __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_midi_events, "midi-events", SFI_MSG_NONE, NULL);
+#define DEBUG_EVENTS(...)       sfi_debug (debug_midi_events, __VA_ARGS__)
 
 /* --- variables --- */
 static SfiMutex                         global_midi_mutex = { 0, };

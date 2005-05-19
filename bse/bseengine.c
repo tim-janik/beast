@@ -24,7 +24,8 @@
 #include <unistd.h>
 
 
-#define DEBUG(...)      sfi_debug ("engine", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_engine, __VA_ARGS__)
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,

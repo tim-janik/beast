@@ -25,6 +25,9 @@
 #include "bsesource.h"		/* debug hack */
 #include <string.h>
 
+static SFI_MSG_TYPE_DEFINE (debug_leaks, "leaks", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_leaks, __VA_ARGS__)
+
 enum
 {
   PROP_0,
@@ -61,7 +64,7 @@ static guint       object_signals[SIGNAL_LAST] = { 0, };
 void
 bse_object_debug_leaks (void)
 {
-  if (sfi_debug_check ("leaks"))
+  if (sfi_msg_check (debug_leaks))
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       
@@ -69,13 +72,13 @@ bse_object_debug_leaks (void)
 	{
 	  BseObject *object = list->data;
 	  
-	  sfi_debug ("leaks", "stale %s:\t prepared=%u locked=%u ref_count=%u id=%u ((BseObject*)%p)",
-		     G_OBJECT_TYPE_NAME (object),
-		     BSE_IS_SOURCE (object) && BSE_SOURCE_PREPARED (object),
-		     object->lock_count > 0,
-		     G_OBJECT (object)->ref_count,
-		     BSE_OBJECT_ID (object),
-                     object);
+	  DEBUG ("stale %s:\t prepared=%u locked=%u ref_count=%u id=%u ((BseObject*)%p)",
+                 G_OBJECT_TYPE_NAME (object),
+                 BSE_IS_SOURCE (object) && BSE_SOURCE_PREPARED (object),
+                 object->lock_count > 0,
+                 G_OBJECT (object)->ref_count,
+                 BSE_OBJECT_ID (object),
+                 object);
 	}
       g_list_free (objects);
     }

@@ -45,11 +45,9 @@ typedef struct {
   GSList  *items;
 } StorageTrap;
 
-
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
-#define	DEBUG			sfi_debug
 
 enum {
   PARAM_0,
@@ -436,7 +434,7 @@ bse_project_retrieve_child (BseContainer *container,
       for (slist = self->supers; slist; slist = slist->next)
 	if (g_type_is_a (G_OBJECT_TYPE (slist->data), BSE_TYPE_WAVE_REPO))
 	  return slist->data;
-      DEBUG ("%s: eeeeeek! wave-repo not found\n", G_STRLOC);
+      g_warning ("%s: no wave-repo found in project\n", G_STRLOC);
       return NULL;	/* shouldn't happen */
     }
   else

@@ -23,7 +23,8 @@
 
 #include "ladspa.h"
 
-#define DEBUG(...)      sfi_debug ("ladspa", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_ladspa, "ladspa", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_ladspa, __VA_ARGS__)
 
 #define	LADSPA_TYPE_NAME	"BseLadspaModule_"
 

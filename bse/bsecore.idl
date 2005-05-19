@@ -581,20 +581,26 @@ record SampleFileInfo {
 class Janitor;
 
 /* user messages */
-choice UserMsgType {
-  USER_MSG_MISC = Neutral,
-  USER_MSG_INFO,
-  USER_MSG_WARNING,
-  USER_MSG_ERROR
+choice MsgType {
+  MSG_NONE = Neutral,
+  MSG_FATAL,
+  MSG_ERROR,
+  MSG_WARNING,
+  MSG_SCRIPT,
+  MSG_INFO,
+  MSG_DIAG,
+  MSG_DEBUG
 };
-record UserMsg {
+record Message {
   String        log_domain;
-  UserMsgType   msg_type;
-  String        config_check;
+  MsgType       type;
+  String        ident;
+  String        label;
   String        title;
   String        primary;
   String        secondary;
   String        details;
+  String        config_check;
   Janitor       janitor;
   String        process;
   Int           pid;

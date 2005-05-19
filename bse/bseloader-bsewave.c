@@ -32,7 +32,8 @@
                                           if (g_scanner_get_next_token (scanner) != _t) \
                                             return _t; \
                                         }
-#define DEBUG(...)                      sfi_debug ("bsewave", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_bsewave, "bsewave", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_bsewave, __VA_ARGS__)
 
 
 /* --- token types --- */

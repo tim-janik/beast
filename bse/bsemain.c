@@ -204,7 +204,7 @@ bse_init_core (void)
   bse_main_context = g_main_context_new ();
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
-  sfi_log_set_thread_handler (bse_log_handler);
+  sfi_msg_set_thread_handler (bse_msg_handler);
 
   /* initialize random numbers */
   {
@@ -361,46 +361,50 @@ bse_main_getpid (void)
 static gboolean
 core_thread_send_message_async (gpointer data)
 {
-  BseUserMsg *umsg = data;
-  bse_server_send_user_message (bse_server_get(), umsg);
-  bse_user_msg_free (umsg);
+  BseMessage *umsg = data;
+  bse_server_send_message (bse_server_get(), umsg);
+  bse_message_free (umsg);
   return FALSE;
 }
 
 /**
- * bse_log_handler
- * BSE log handler, suitable for sfi_log_set_thread_handler().
+ * bse_msg_handler
+ * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_log_handler (const SfiLogMessage *message)
+bse_msg_handler (const SfiMessage *lmsg)
 {
-  if (!message->primary && !message->secondary)
+  /* this functions is called from multiple threads */
+  if (!lmsg->primary && !lmsg->secondary)
     return;
-  BseUserMsg *umsg = bse_user_msg_new();
+  BseMessage *umsg = bse_message_new();
   g_free (umsg->log_domain);
-  umsg->log_domain = g_strdup (message->log_domain);
-  switch (message->level)
-    {
-    case SFI_MSG_ERROR:   umsg->msg_type = BSE_USER_MSG_ERROR;   break;
-    case SFI_MSG_WARNING: umsg->msg_type = BSE_USER_MSG_WARNING; break;
-    case SFI_MSG_INFO:    umsg->msg_type = BSE_USER_MSG_INFO;    break;
-    default:              umsg->msg_type = BSE_USER_MSG_MISC;    break;
-    }
+  umsg->log_domain = g_strdup (lmsg->log_domain);
+  g_static_assert (BSE_MSG_NONE    == SFI_MSG_NONE);
+  g_static_assert (BSE_MSG_FATAL   == SFI_MSG_FATAL);
+  g_static_assert (BSE_MSG_ERROR   == SFI_MSG_ERROR);
+  g_static_assert (BSE_MSG_WARNING == SFI_MSG_WARNING);
+  g_static_assert (BSE_MSG_SCRIPT  == SFI_MSG_SCRIPT);
+  g_static_assert (BSE_MSG_INFO    == SFI_MSG_INFO);
+  g_static_assert (BSE_MSG_DIAG    == SFI_MSG_DIAG);
+  g_static_assert (BSE_MSG_DEBUG   == SFI_MSG_DEBUG);
+  umsg->type = lmsg->type;
   g_free (umsg->config_check);
-  umsg->config_check = g_strdup (message->config_check);
+  umsg->config_check = g_strdup (lmsg->config_check);
   g_free (umsg->title);
-  umsg->title = g_strdup (message->title);
+  umsg->title = g_strdup (lmsg->title);
   g_free (umsg->primary);
-  umsg->primary = g_strdup (message->primary);
+  umsg->primary = g_strdup (lmsg->primary);
   g_free (umsg->secondary);
-  umsg->secondary = g_strdup (message->secondary);
+  umsg->secondary = g_strdup (lmsg->secondary);
   g_free (umsg->details);
-  umsg->details = g_strdup (message->details);
+  umsg->details = g_strdup (lmsg->details);
   umsg->janitor = NULL;
   g_free (umsg->process);
   umsg->process = g_strdup (sfi_thread_get_name (NULL));
   umsg->pid = sfi_thread_get_pid (NULL);
+  /* queue an idle handler in the BSE Core thread */
   bse_idle_now (core_thread_send_message_async, umsg);
 }
 
@@ -421,10 +425,10 @@ bse_async_parse_args (gint        *argc_p,
 
   envar = getenv ("BSE_DEBUG");
   if (envar)
-    sfi_debug_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
-    sfi_debug_deny (envar);
+    sfi_msg_deny (envar);
 
   for (i = 1; i < argc; i++)
     {
@@ -441,11 +445,11 @@ bse_async_parse_args (gint        *argc_p,
 	{
 	  gchar *equal = argv[i] + 11;
 	  if (*equal == '=')
-            sfi_debug_allow (equal + 1);
+            sfi_msg_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_debug_allow (argv[i]);
+	      sfi_msg_allow (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -454,11 +458,11 @@ bse_async_parse_args (gint        *argc_p,
 	{
 	  gchar *equal = argv[i] + 14;
 	  if (*equal == '=')
-            sfi_debug_deny (equal + 1);
+            sfi_msg_deny (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_debug_deny (argv[i]);
+	      sfi_msg_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}

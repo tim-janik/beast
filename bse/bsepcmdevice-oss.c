@@ -47,7 +47,8 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define PCM_DEBUG(...)  sfi_debug ("pcm", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
 
 
 /* --- OSS PCM handle --- */
@@ -225,7 +226,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
       g_free (oss->frag_buf);
       g_free (oss);
     }
-  PCM_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   
   return error;
 }
@@ -349,15 +350,15 @@ oss_device_setup (OSSHandle *oss,
       oss->queue_length = CLAMP (25 * handle->mix_freq / 1000, req_queue_length, oss->queue_length);
     }
 
-  PCM_DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u",
-	     handle->writable,
-	     handle->readable,
-	     handle->n_channels,
-	     handle->mix_freq,
-             oss->queue_length,
-	     oss->n_frags,
-	     oss->frag_size / oss->frame_size,
-	     info.bytes / oss->frame_size);
+  DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u",
+         handle->writable,
+         handle->readable,
+         handle->n_channels,
+         handle->mix_freq,
+         oss->queue_length,
+         oss->n_frags,
+         oss->frag_size / oss->frame_size,
+         info.bytes / oss->frame_size);
   
   return BSE_ERROR_NONE;
 }
@@ -413,7 +414,7 @@ oss_device_retrigger (OSSHandle *oss)
   g_free (silence);
 
   glong d_long = fcntl (oss->fd, F_GETFL);
-  PCM_DEBUG ("OSS: retriggering device (blocking=%u, r=%d, w=%d)...", (int) !(d_long & O_NONBLOCK), handle->readable, handle->writable);
+  DEBUG ("OSS: retriggering device (blocking=%u, r=%d, w=%d)...", (int) !(d_long & O_NONBLOCK), handle->readable, handle->writable);
 
   oss->needs_trigger = FALSE;
 }

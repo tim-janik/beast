@@ -20,7 +20,8 @@
 #include "bseengine.h"
 #include <string.h>
 
-#define DEBUG(...)      sfi_debug ("midi-decoder", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_midi_decoder, "midi-decoder", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_midi_decoder, __VA_ARGS__)
 
 /* --- prototypes --- */
 static void     bse_midi_decoder_construct_event   (BseMidiDecoder *self);

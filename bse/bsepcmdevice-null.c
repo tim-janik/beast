@@ -20,7 +20,8 @@
 #include "bseengine.h"
 #include <string.h>
 
-#define PCM_DEBUG(...)  sfi_debug ("pcm", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
 
 typedef struct
 {
@@ -74,7 +75,7 @@ bse_pcm_device_null_open (BseDevice     *device,
   handle->latency = null_device_latency;
   null->busy_us = 0;
   BSE_PCM_DEVICE (device)->handle = handle;
-  PCM_DEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
+  DEBUG ("NULL: opening PCM readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
   return BSE_ERROR_NONE;
 }
 

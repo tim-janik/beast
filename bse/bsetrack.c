@@ -33,7 +33,8 @@
 #include "bsewaverepo.h"
 #include <string.h>
 
-#define	XREF_DEBUG(...) sfi_debug ("xref", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_xref, "xref", SFI_MSG_NONE, NULL);
+#define XREF_DEBUG(...) sfi_debug (debug_xref, __VA_ARGS__)
 
 #define upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
 #define parse_or_return		bse_storage_scanner_parse_or_return

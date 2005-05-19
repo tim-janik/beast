@@ -18,6 +18,7 @@
 #include "bseengineschedule.h"
 #include "bseengineutils.h"
 
+static SFI_MSG_TYPE_DEFINE (debug_sched, "sched", SFI_MSG_NONE, NULL);
 
 /* --- prototypes --- */
 static void	schedule_node		(EngineSchedule	*schedule,
@@ -303,7 +304,7 @@ _engine_schedule_secure (EngineSchedule *sched)
   sched->secured = TRUE;
   sched->cur_leaf_level = sched->leaf_levels;
   
-  if (sfi_debug_check ("sched"))
+  if (sfi_msg_check (debug_sched))
     _engine_schedule_debug_dump (sched);
 }
 
