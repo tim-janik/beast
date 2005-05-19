@@ -24,7 +24,8 @@
 #include <string.h>
 #include <errno.h>
 
-#define MIDI_DEBUG(...) sfi_debug ("midi", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_pcm, "midi", SFI_MSG_NONE, NULL);
+#define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
 
 
 /* --- structs --- */
@@ -234,7 +235,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
         snd_rawmidi_close (alsa->write_handle);
       g_free (alsa);
     }
-  MIDI_DEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  DEBUG ("ALSA: opening MIDI \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   g_free (dname);
   
   return error;

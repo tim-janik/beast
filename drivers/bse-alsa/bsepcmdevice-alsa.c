@@ -31,7 +31,8 @@
 #error  unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define PCM_DEBUG(...)          sfi_debug ("pcm", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_NONE, NULL);
+#define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
 
 
 /* --- ALSA PCM handle --- */
@@ -241,7 +242,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
       g_free (alsa->period_buffer);
       g_free (alsa);
     }
-  PCM_DEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  DEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   g_free (dname);
   
   return error;
@@ -346,13 +347,13 @@ alsa_device_setup (AlsaPcmHandle       *alsa,
   *mix_freq = rate;
   *n_periodsp = nperiods;
   *period_sizep = period_size;
-  PCM_DEBUG ("ALSA: setup: w=%d r=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
-             phandle == alsa->write_handle,
-             phandle == alsa->read_handle,
-             handle->n_channels,
-             *mix_freq, *n_periodsp, *period_sizep,
-             (guint) (nperiods * period_size),
-             (guint) buffer_size);
+  DEBUG ("ALSA: setup: w=%d r=%d n_channels=%d sample_freq=%d nperiods=%u period=%u (%u) bufsz=%u",
+         phandle == alsa->write_handle,
+         phandle == alsa->read_handle,
+         handle->n_channels,
+         *mix_freq, *n_periodsp, *period_sizep,
+         (guint) (nperiods * period_size),
+         (guint) buffer_size);
   return BSE_ERROR_NONE;
 }
 
@@ -360,10 +361,10 @@ static void
 alsa_device_retrigger (AlsaPcmHandle *alsa)
 {
   snd_lib_error_set_handler (silent_error_handler);
-
-  PCM_DEBUG ("ALSA: retriggering device (r=%s w=%s)...",
-             !alsa->read_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->read_handle)),
-             !alsa->write_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->write_handle)));
+  
+  DEBUG ("ALSA: retriggering device (r=%s w=%s)...",
+         !alsa->read_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->read_handle)),
+         !alsa->write_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->write_handle)));
   snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle);
   
   /* first, clear io buffers */
@@ -469,7 +470,7 @@ alsa_device_read (BsePcmHandle *handle,
       gssize n_frames = snd_pcm_readi (alsa->read_handle, buf, n);
       if (n_frames < 0) /* errors during read, could be underrun (-EPIPE) */
         {
-          PCM_DEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
+          DEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
           snd_lib_error_set_handler (silent_error_handler);
           snd_pcm_prepare (alsa->read_handle);  /* force retrigger */
           snd_lib_error_set_handler (NULL);
@@ -517,7 +518,7 @@ alsa_device_write (BsePcmHandle *handle,
         {
           if (n < 0)    /* errors during read, could be underrun (-EPIPE) */
             {
-              PCM_DEBUG ("ALSA: write() error: %s", snd_strerror (n));
+              DEBUG ("ALSA: write() error: %s", snd_strerror (n));
               snd_lib_error_set_handler (silent_error_handler);
               snd_pcm_prepare (alsa->read_handle);  /* force retrigger */
               snd_lib_error_set_handler (NULL);
