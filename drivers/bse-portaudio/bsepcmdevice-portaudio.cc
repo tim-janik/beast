@@ -31,7 +31,8 @@ using std::string;
 using std::vector;
 using std::max;
 
-#define PCM_DEBUG(...)          sfi_debug ("pcm", __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_NONE, NULL);
+#define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
 
 
 /* --- PortAudio PCM handle --- */
@@ -283,9 +284,9 @@ bse_pcm_device_port_audio_open (BseDevice     *device,
         Pa_CloseStream (portaudio->stream);
       g_free (portaudio);
     }
-  PCM_DEBUG ("PortAudio: opening PCM \"%s\" readable=%d writable=%d: %s", device_name.c_str(), require_readable, require_writable, bse_error_blurb (error));
+  DEBUG ("PortAudio: opening PCM \"%s\" readable=%d writable=%d: %s", device_name.c_str(), require_readable, require_writable, bse_error_blurb (error));
   if (!error)
-    PCM_DEBUG ("PortAudio: input-latency=%fms output-latency=%fms", Pa_GetStreamInfo (portaudio->stream)->inputLatency, Pa_GetStreamInfo (portaudio->stream)->outputLatency);
+    DEBUG ("PortAudio: input-latency=%fms output-latency=%fms", Pa_GetStreamInfo (portaudio->stream)->inputLatency, Pa_GetStreamInfo (portaudio->stream)->outputLatency);
 
   return error;
 }
