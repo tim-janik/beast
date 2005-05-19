@@ -1,3 +1,17 @@
+Thu May 19 17:53:48 2005  Tim Janik  <timj@gtk.org>
+
+	* sfilog.h, sfilog.c:
+	major (and hopefully final) revamp of the message/logging API.
+	got rid of log message keys. instead, added mechanism to create 
+	new message types. added globally accessible message type bitmask
+	to quickly figure whether logging is neccessary. moved the API to
+	SfiMessage and sfi_msg_* namespace.
+
+	* sfithreads.h: added wrapper macros (and auxillary functions) to
+	access atomic integers and atomic pointers in a typesafe way.
+
+	* *.c: adapted to new debugging API.
+
 Mon May 16 21:01:01 2005  Tim Janik  <timj@gtk.org>
 
 	* sficomport.h, sficomport.c: added sfi_com_port_test_reap_child().

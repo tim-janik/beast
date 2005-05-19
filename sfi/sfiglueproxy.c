@@ -27,6 +27,8 @@
 
 
 /* --- macros --- */
+SFI_MSG_TYPE_DEFINE (debug_signals, "signals", SFI_MSG_NONE, NULL);
+#define SIGNAL_DEBUG(...)       sfi_debug (debug_signals, __VA_ARGS__)
 #define	sfi_proxy_warn_inval(where,proxy)       sfi_diag ("%s: invalid proxy id (%lu)", (where), (proxy))
 
 
@@ -550,7 +552,7 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
 	}
 
       if (!slist)
-	sfi_debug ("signals", "%s: signal handler %p(%p) is not connected", G_STRLOC, callback, data);
+	SIGNAL_DEBUG ("%s: signal handler %p(%p) is not connected", G_STRLOC, callback, data);
       signal = va_arg (var_args, gchar*);
     }
   va_end (var_args);

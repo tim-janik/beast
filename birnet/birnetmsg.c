@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2004 Tim Janik
+ * Copyright (C) 2002-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,247 +24,295 @@
 #include <errno.h>
 #include <syslog.h>
 
+#ifndef _ // FIXME
+#define _(x) x
+#endif
 
 typedef struct {
-  int           match_all;
-  unsigned int  n_keys;
-  char        **keys;
-} KeyList;
+  gchar         *ident;
+  gchar         *label;
+  SfiMsgType     default_type;
+  SfiMsgLogFlags log_flags : 16;
+  guint          disabled : 1;
+} MsgType;
 
-#define INVALID_KEYSTRING       ((char*) 256) /* NULL also is a valid keystring */
 
 /* --- variables --- */
-static SfiMutex       logging_mutex;
-static KeyList        key_list = { 0, 0, 0 };
-static const char    *last_enabled_cache = INVALID_KEYSTRING;
-static const char    *last_disabled_cache = INVALID_KEYSTRING;
-static guint          error_actions = SFI_LOG_TO_STDLOG | SFI_LOG_TO_HANDLER;
-static guint          warn_actions  = SFI_LOG_TO_STDLOG | SFI_LOG_TO_HANDLER;
-static guint          info_actions  = SFI_LOG_TO_STDLOG | SFI_LOG_TO_HANDLER;
-static guint          diag_actions  = SFI_LOG_TO_STDLOG;
-static guint          debug_actions = SFI_LOG_TO_STDERR;
-static guint          stdlog_syslog_priority = 0; // LOG_USER | LOG_INFO;
-static gboolean       stdlog_to_stderr = TRUE;
-static FILE          *stdlog_file = NULL;
-static GQuark         quark_log_handler = 0;
-static GQuark         quark_msg_bits = 0;
+static SfiMutex          logging_mutex;
+static GQuark            quark_log_handler = 0;
+static GQuark            quark_msg_bits = 0;
+static guint             n_msg_types = 0;
+static MsgType          *msg_types = NULL;
+guint8        * volatile sfi_msg_flags = NULL;
+volatile guint           sfi_msg_flags_max = 0;
+static guint             stdlog_syslog_priority = 0; // LOG_USER | LOG_INFO;
+static gboolean          stdlog_to_stderr = TRUE;
+static FILE             *stdlog_file = NULL;
 
 /* --- prototypoes --- */
-static void     sfi_log_msg_process (const SfiLogMessage *msgp);
+static void     sfi_log_msg_process     (const SfiMessage *msgp);
+static void     sfi_msg_type_set        (SfiMsgType     mtype,
+                                         SfiMsgLogFlags log_flags,
+                                         gboolean       enabled);
 
 /* --- functions --- */
+static void
+sfi_msg_type_init_internals ()
+{
+  static volatile guint initialized = FALSE;
+  if (initialized || !sfi_atomic_int_compare_and_swap (&initialized, FALSE, TRUE))
+    return;
+  guint mtype;
+  /* SFI_MSG_NONE (always disabled) */
+  mtype = sfi_msg_type_register ("none", 0, NULL);
+  g_assert (mtype == SFI_MSG_NONE);
+  sfi_msg_type_set (SFI_MSG_NONE, 0, FALSE);
+  /* SFI_MSG_FATAL (always enabled) */
+  mtype = sfi_msg_type_register ("fatal", 1, _("Fatal Error"));
+  g_assert (mtype == SFI_MSG_FATAL);
+  sfi_msg_type_set (SFI_MSG_FATAL, SFI_MSG_TO_STDERR | SFI_MSG_TO_STDLOG | SFI_MSG_TO_HANDLER, TRUE);
+  /* SFI_MSG_ERROR (enabled) */
+  mtype = sfi_msg_type_register ("error", 1, _("Error"));
+  g_assert (mtype == SFI_MSG_ERROR);
+  sfi_msg_type_set (SFI_MSG_ERROR, SFI_MSG_TO_STDERR | SFI_MSG_TO_STDLOG | SFI_MSG_TO_HANDLER, TRUE);
+  /* SFI_MSG_WARNING (enabled) */
+  mtype = sfi_msg_type_register ("warning", 1, _("Warning"));
+  g_assert (mtype == SFI_MSG_WARNING);
+  sfi_msg_type_set (SFI_MSG_WARNING, SFI_MSG_TO_STDERR | SFI_MSG_TO_STDLOG | SFI_MSG_TO_HANDLER, TRUE);
+  /* SFI_MSG_SCRIPT (enabled) */
+  mtype = sfi_msg_type_register ("script", 1, _("Script"));
+  g_assert (mtype == SFI_MSG_SCRIPT);
+  sfi_msg_type_set (SFI_MSG_SCRIPT, SFI_MSG_TO_STDERR | SFI_MSG_TO_STDLOG | SFI_MSG_TO_HANDLER, TRUE);
+  /* SFI_MSG_INFO (enabled) */
+  mtype = sfi_msg_type_register ("info", 1, _("Information"));
+  g_assert (mtype == SFI_MSG_INFO);
+  sfi_msg_type_set (SFI_MSG_INFO, SFI_MSG_TO_STDERR | SFI_MSG_TO_STDLOG | SFI_MSG_TO_HANDLER, TRUE);
+  /* SFI_MSG_DIAG (enabled) */
+  mtype = sfi_msg_type_register ("diag", 1, _("Diagnostic"));
+  g_assert (mtype == SFI_MSG_DIAG);
+  sfi_msg_type_set (SFI_MSG_DIAG, SFI_MSG_TO_STDERR | SFI_MSG_TO_STDLOG, TRUE);
+  /* SFI_MSG_DEBUG (disabled) */
+  mtype = sfi_msg_type_register ("debug", 0, "Debug");
+  g_assert (mtype == SFI_MSG_DEBUG);
+  sfi_msg_type_set (SFI_MSG_DEBUG, SFI_MSG_TO_STDERR, FALSE);
+  
+#if 0
+  for (mtype = 0; mtype < n_msg_types; mtype++)
+    g_printerr ("% 2d) %s: disabled=%d log_flags=0x%x label=%s cache=%d\n", mtype,
+                msg_types[mtype].ident, msg_types[mtype].disabled,
+                msg_types[mtype].log_flags, msg_types[mtype].label,
+                sfi_msg_check (mtype));
+#endif
+}
+
 void
 _sfi_init_logging (void)
 {
   g_assert (quark_log_handler == 0);
-  quark_log_handler = g_quark_from_static_string ("SfiLogHandler");
+  quark_log_handler = g_quark_from_static_string ("SfiMsgHandler");
   quark_msg_bits = g_quark_from_static_string ("SfiMsgBit-threadlist");
   sfi_mutex_init (&logging_mutex);
+  sfi_msg_type_init_internals();
 }
 
-static inline char**
-key_list_lookup (KeyList    *self,
-                 const char *key)
+static inline void
+msg_type_set_intern (SfiMsgType     mtype,
+                     SfiMsgLogFlags log_flags,
+                     gboolean       enabled,
+                     gboolean       uncouple_default)
 {
-  int offs = 0, n = self->n_keys;
-  while (offs < n)
+  if (mtype < n_msg_types)
     {
-      int i = (offs + n) >> 1;
-      int cmp = strcmp (key, self->keys[i]);
-      if (cmp < 0)
-	n = i;
-      else if (cmp > 0)
-	offs = i + 1;
+      msg_types[mtype].log_flags = log_flags;
+      msg_types[mtype].disabled = !enabled;
+      enabled = msg_types[mtype].log_flags && !msg_types[mtype].disabled;
+      if (enabled)
+        sfi_msg_flags[mtype / 8] |= 1 << mtype % 8;
       else
-	return self->keys + i;
+        sfi_msg_flags[mtype / 8] &= ~(1 << mtype % 8);
+      if (uncouple_default)
+        msg_types[mtype].default_type = mtype;
     }
-  return NULL;
 }
 
 static void
-key_list_reset (KeyList *self)
+sfi_msg_type_set (SfiMsgType     mtype,
+                  SfiMsgLogFlags log_flags,
+                  gboolean       enabled)
 {
-  unsigned int i = self->n_keys;
-  self->n_keys = 0;
-  while (i--)
-    g_free (self->keys[i]);
-  g_free (self->keys);
-  self->keys = NULL;
-  self->match_all = FALSE;
-}
-
-static void
-key_list_allow (KeyList    *self,
-                const char *string)
-{
-  char *s, *k, *p;
-  GSList *slist = NULL;
-
-  /* handle :all: special case */
-  s = g_strconcat (":", string, ":", NULL);
-  if (self->match_all || strstr (s, ":all:"))
-    {
-      g_free (s);
-      key_list_reset (self);
-      self->match_all = TRUE;
-      return;
-    }
-
-  /* list all old keys */
-  guint l;
-  for (l = 0; l < self->n_keys; l++)
-    slist = g_slist_prepend (slist, self->keys[l]);
-
-  /* and list all new kyes */
-  k = s + 1;
-  p = strchr (k, ':');
-  while (p)
-    {
-      if (k < p)
-	{
-	  *p = 0;
-	  slist = g_slist_prepend (slist, g_strdup (k));
-	  l++;
-	}
-      k = p + 1;
-      p = strchr (k, ':');
-    }
-  g_free (s);
-
-  /* sort away */
-  slist = g_slist_sort (slist, (GCompareFunc) strcmp);
-
-  /* and reinsert, dedup */
-  self->keys = g_renew (gchar*, self->keys, l);
+  msg_type_set_intern (mtype, log_flags, enabled, TRUE);
   guint i;
-  for (i = 0; slist; i++)
+  for (i = mtype + 1; i < n_msg_types; i++)
+    if (msg_types[i].default_type == mtype)
+      msg_type_set_intern (mtype, log_flags, enabled, FALSE);
+}
+
+/**
+ * sfi_msg_type_register
+ * @ident:              message identifier
+ * @default_ouput:      an existing #SfiMsgType or %FALSE or %TRUE
+ * @label:              a translated version of @ident
+ * @RETURN:             message type id
+ *
+ * Register a new message type with identifier @ident and user digestible
+ * name @label. If this function is called multiple times with the same
+ * identifier, the type id acquired by the first call will be returned
+ * and the other arguments are ignored.
+ * As long as the new message type isn't configured individually via
+ * sfi_msg_enable(), sfi_msg_allow() or their complements, it shares
+ * the configuration of @default_ouput. If %FALSE or %TRUE is passed as
+ * @default_ouput, this corresponds to %SFI_MSG_NONE or %SFI_MSG_FATAL
+ * respectively which are unconfigrable and always have their output
+ * disabled or enabled respectively.
+ * As an exception to the rest of the message API, this function may be
+ * called before sfi_init(). However note, that MT-safety is only ensured
+ * for calls occouring after sfi_init().
+ * This function is MT-safe and may be called from any thread.
+ */
+SfiMsgType
+sfi_msg_type_register (const gchar *ident,
+                       SfiMsgType   default_ouput, /* FALSE, TRUE, SFI_MSG_* */
+                       const gchar *label)
+{
+  /* ensure standard types are registered */
+  sfi_msg_type_init_internals();
+  /* check arguments */
+  g_return_val_if_fail (ident != NULL, 0);
+  if (default_ouput >= n_msg_types)
+    default_ouput = 0;
+  /* support concurrency after _sfi_init_logging() */
+  gboolean need_unlock = FALSE;
+  if (quark_log_handler)
     {
-      k = g_slist_pop_head (&slist);
-      if (i && strcmp (k, self->keys[i - 1]) == 0)
-	{
-	  l--;
-	  g_free (k);
-	  i--;
-	}
-      else
-	self->keys[i] = k;
+      SFI_SPIN_LOCK (&logging_mutex);
+      need_unlock = TRUE;
     }
-  self->n_keys = l;
-  self->keys = g_renew (char*, self->keys, self->n_keys);
+  /* allow duplicate registration */
+  guint i;
+  for (i = SFI_MSG_LAST; i < n_msg_types; i++)
+    if (strcmp (ident, msg_types[i].ident) == 0)
+      {
+        /* found duplicate */
+        if (need_unlock)
+          SFI_SPIN_UNLOCK (&logging_mutex);
+        return i;
+      }
+  /* add new message type */
+  guint mtype = n_msg_types++;
+  msg_types = g_renew (MsgType, msg_types, n_msg_types);
+  memset (&msg_types[mtype], 0, sizeof (msg_types[mtype]));
+  guint old_flags_size = (mtype + 7) / 8;
+  guint new_flags_size = (n_msg_types + 7) / 8;
+  if (old_flags_size < new_flags_size)
+    {
+      guint8 *msg_flags = g_new (guint8, new_flags_size);
+      memcpy (msg_flags, (guint8*) sfi_msg_flags, sizeof (msg_flags[0]) * old_flags_size);
+      msg_flags[new_flags_size - 1] = 0;
+      guint8 *old_msg_flags = sfi_msg_flags;
+      /* we are holding a lock in the multi-threaded case so no need for compare_and_swap */
+      sfi_atomic_pointer_set (guint8*, &sfi_msg_flags, msg_flags);
+      // FIXME: sfi_msg_flags should be registered as hazard pointer so we don't g_free() while other threads read old_msg_flags[*]
+      g_free (old_msg_flags);
+    }
+  msg_types[mtype].ident = g_strdup (ident);
+  msg_types[mtype].label = label ? g_strdup (label) : msg_types[mtype].ident;
+  sfi_msg_type_set (mtype, msg_types[default_ouput].log_flags, !msg_types[default_ouput].disabled);
+  msg_types[mtype].default_type = default_ouput;
+  sfi_atomic_int_set (&sfi_msg_flags_max, mtype);
+  /* out of here */
+  if (need_unlock)
+    SFI_SPIN_UNLOCK (&logging_mutex);
+  return mtype;
 }
 
 static void
-key_list_deny (KeyList    *self,
-               const char *string)
+key_list_change (const char *string,
+                 gboolean    flag_value)
 {
-  char *s, *k, *p, **pp;
-  GSList *slist = NULL;
-  guint i, j;
-
+  guint i;
   /* handle :all: special case */
-  s = g_strconcat (":", string, ":", NULL);
+  char *s = g_strconcat (":", string, ":", NULL);
   if (strstr (s, ":all:"))
     {
       g_free (s);
-      key_list_reset (self);
+      for (i = SFI_MSG_DEBUG; i < n_msg_types; i++)
+        sfi_msg_type_set (i, msg_types[i].log_flags, flag_value);
       return;
     }
 
-  /* find all places containing keys to be removed */
-  k = s + 1;
-  p = strchr (k, ':');
+  /* walk all kyes */
+  char *k = s + 1;
+  char *p = strchr (k, ':');
   while (p)
     {
       if (k < p)
 	{
 	  *p = 0;
-          pp = key_list_lookup (self, k);
-	  if (pp)
-            slist = g_slist_prepend (slist, pp);
+          for (i = SFI_MSG_DEBUG; i < n_msg_types; i++)
+            if (strcmp (k, msg_types[i].ident) == 0)
+              break;
+          if (i < n_msg_types)
+            sfi_msg_type_set (i, msg_types[i].log_flags, flag_value);
 	}
       k = p + 1;
       p = strchr (k, ':');
     }
   g_free (s);
-
-  /* remove keys */
-  while (slist)
-    {
-      char **pp = g_slist_pop_head (&slist);
-      g_free (*pp);
-      *pp = NULL;
-    }
-
-  /* collapse list */
-  for (i = 0, j = 0; i < self->n_keys; i++)
-    if (self->keys[i])
-      self->keys[j++] = self->keys[i];
-  self->n_keys = j;
-  self->keys = g_renew (char*, self->keys, self->n_keys);
 }
 
 void
-sfi_debug_allow (const char *key)
+sfi_msg_allow (const char *key)
 {
-  if (key)
-    {
-      SFI_SPIN_LOCK (&logging_mutex);
-      last_disabled_cache = INVALID_KEYSTRING;
-      last_enabled_cache = INVALID_KEYSTRING;
-      key_list_allow (&key_list, key);
-      SFI_SPIN_UNLOCK (&logging_mutex);
-    }
-}
-
-void
-sfi_debug_deny (const char *key)
-{
-  if (key)
-    {
-      SFI_SPIN_LOCK (&logging_mutex);
-      last_disabled_cache = INVALID_KEYSTRING;
-      last_enabled_cache = INVALID_KEYSTRING;
-      key_list_deny (&key_list, key);
-      SFI_SPIN_UNLOCK (&logging_mutex);
-    }
-}
-
-int
-sfi_debug_check (const char *key)
-{
-  if (key == last_disabled_cache)
-    return FALSE;
-  if (key == last_enabled_cache || key_list.match_all || !key)
-    return TRUE;
   SFI_SPIN_LOCK (&logging_mutex);
-  gboolean match = key_list_lookup (&key_list, key) != NULL;
-  if (match)
-    last_enabled_cache = key;
-  else
-    last_disabled_cache = key;
+  if (key)
+    key_list_change (key, TRUE);
   SFI_SPIN_UNLOCK (&logging_mutex);
-  return match;
 }
 
 void
-sfi_log_assign_level (unsigned char level,
-                      SfiLogFlags   actions)
+sfi_msg_deny (const char *key)
 {
-  switch (level)
-    {
-    case SFI_MSG_ERROR:   error_actions = actions; break;
-    case SFI_MSG_WARNING: warn_actions  = actions; break;
-    case SFI_MSG_INFO:    info_actions  = actions; break;
-    case SFI_MSG_DIAG:    diag_actions  = actions; break;
-    case SFI_MSG_DEBUG:   debug_actions = actions; break;
-    }
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (key)
+    key_list_change (key, FALSE);
+  SFI_SPIN_UNLOCK (&logging_mutex);
 }
 
 void
-sfi_log_set_stdlog (gboolean    stdlog_to_stderr_bool,
-                    const char *stdlog_filename,
-                    guint       syslog_priority)
+sfi_msg_enable (SfiMsgType mtype)
 {
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (mtype > 1 && mtype < n_msg_types)
+    sfi_msg_type_set (mtype, msg_types[mtype].log_flags, TRUE);
+  SFI_SPIN_UNLOCK (&logging_mutex);
+}
+
+void
+sfi_msg_disable (SfiMsgType mtype)
+{
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (mtype > 1 && mtype < n_msg_types)
+    sfi_msg_type_set (mtype, msg_types[mtype].log_flags, FALSE);
+  SFI_SPIN_UNLOCK (&logging_mutex);
+}
+
+void
+sfi_msg_type_configure (SfiMsgType        mtype,
+                        SfiMsgLogFlags    channel_mask,
+                        const gchar      *dummy_filename)
+{
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (mtype > 1 && mtype < n_msg_types)
+    sfi_msg_type_set (mtype, channel_mask, !msg_types[mtype].disabled);
+  SFI_SPIN_UNLOCK (&logging_mutex);
+}
+
+void
+sfi_msg_configure_stdlog (gboolean          stdlog_to_stderr_bool,
+                          const char       *stdlog_filename,
+                          guint             syslog_priority) /* if != 0, stdlog to syslog */
+{
+  SFI_SPIN_LOCK (&logging_mutex);
   stdlog_to_stderr = stdlog_to_stderr_bool != 0;
   stdlog_syslog_priority = syslog_priority;
   if (stdlog_file && stdlog_file != stdout)
@@ -274,136 +322,133 @@ sfi_log_set_stdlog (gboolean    stdlog_to_stderr_bool,
     stdlog_file = stdout;
   else if (stdlog_filename)
     stdlog_file = fopen (stdlog_filename, "a");
+  SFI_SPIN_UNLOCK (&logging_mutex);
 }
 
+/**
+ * sfi_msg_type_ident
+ * @type:       message type, e.g. %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, etc...
+ * @RETURN:     message identifier
+ *
+ * Retrive the string identifying the message type @type. For invalid
+ * (non registered) message types, %NULL is returned.
+ * This function is MT-safe and may be called from any thread.
+ */
+const gchar*
+sfi_msg_type_ident (SfiMsgType mtype)
+{
+  const gchar *string = NULL;
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (mtype >= 0 && mtype < n_msg_types)
+    string = msg_types[mtype].ident;
+  SFI_SPIN_UNLOCK (&logging_mutex);
+  return string;
+}
+
+/**
+ * sfi_msg_type_label
+ * @type:       message type, e.g. %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, etc...
+ * @RETURN:     translated message identifier or %NULL
+ *
+ * Retrive the label identifying the message type @type. Usually,
+ * this is a translated version of sfi_msg_type_ident() or %NULL
+ * if non was registered with the message type.
+ * This function is MT-safe and may be called from any thread.
+ */
+const gchar*
+sfi_msg_type_label (SfiMsgType mtype)
+{
+  const gchar *string = NULL;
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (mtype >= 0 && mtype < n_msg_types)
+    string = msg_types[mtype].label;
+  SFI_SPIN_UNLOCK (&logging_mutex);
+  return string;
+}
+
+/**
+ * sfi_msg_type_lookup
+ * @ident:      message identifier, e.g. "error", "warning", "info", etc...
+ * @RETURN:     corresponding #SfiMsgType or 0
+ *
+ * Find the message type correspondign to @ident. If no message
+ * type was found 0 is returned (note that 0 is also the value of
+ * %SFI_MSG_NONE).
+ * This function is MT-safe and may be called from any thread.
+ */
+SfiMsgType
+sfi_msg_type_lookup (const gchar *ident)
+{
+  g_return_val_if_fail (ident != NULL, 0);
+  guint i;
+  SFI_SPIN_LOCK (&logging_mutex);
+  for (i = 0; i < n_msg_types; i++)
+    if (strcmp (ident, msg_types[i].ident) == 0)
+      break;
+  if (i >= n_msg_types)
+    i = 0;
+  SFI_SPIN_UNLOCK (&logging_mutex);
+  return i;
+}
+
+/**
+ * sfi_msg_set_thread_handler
+ * @handler:    a valid #SfiMsgHandler or %NULL
+ *
+ * Set the handler function for messages logged in the current
+ * thread. If %NULL is specified as handler, the standard handler
+ * will be used. For handler implementations that require an extra
+ * data argument, see sfi_thread_set_qdata().
+ * This function is MT-safe and may be called from any thread.
+ */
 void
-sfi_log_set_thread_handler (SfiLogHandler handler)
+sfi_msg_set_thread_handler (SfiMsgHandler handler)
 {
   sfi_thread_set_qdata (quark_log_handler, handler);
 }
 
 /**
- * sfi_log_printf
- * @log_domain:   log domain
- * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG or %SFI_MSG_DEBUG
- * @key:          identifier string for the log message type
- * @format:       printf-like format
- * @...:          printf-like arguments
+ * sfi_msg_default_handler
+ * @message:    a valid #SfiMessage
  *
- * Log a message through SFIs logging mechanism. The current
- * value of errno is preserved around calls to this function.
- * Usually this function isn't used directly, but through one
- * of sfi_debug(), sfi_diag(), sfi_info(), sfi_warn() or sfi_error().
- * The @log_domain indicates the calling module and relates to
- * %G_LOG_DOMAIN as used by g_log().
+ * This is the standard message handler, it produces @message
+ * in a prominent way on stderr.
  * This function is MT-safe and may be called from any thread.
  */
 void
-sfi_log_printf (const char     *log_domain,
-                guint           level,
-                const char     *key,
-                const char     *format,
-                ...)
+sfi_msg_default_handler (const SfiMessage *msg)
 {
-  gint saved_errno = errno;
-  /* construct message */
-  SfiLogMessage msg = { 0, };
-  msg.log_domain = (char*) log_domain;
-  msg.level = level;
-  msg.key = (char*) key;
-  msg.config_check = NULL;
-  va_list args;
-  va_start (args, format);
-  msg.primary = g_strdup_vprintf (format, args);
-  va_end (args);
-  /* handle message */
-  sfi_log_msg_process (&msg);
-  g_free (msg.primary);
-  /* purge thread local msg bit list */
-  sfi_thread_set_qdata (quark_msg_bits, NULL);
-  errno = saved_errno;
-}
-
-/**
- * sfi_log_msg_elist
- * @log_domain:   log domain
- * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
- * @lbit1:        msg bit
- * @lbit2:        msg bit
- * @...:          list of more msg bits, NULL terminated
- *
- * Log a message through SFIs logging mechanism. The current value of errno
- * is preserved around calls to this function. Usually this function isn't
- * used directly, but sfi_log_msg() is called instead which does not require
- * %NULL termination of its argument list and automates the @log_domain argument.
- * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
- * as used by g_log().
- * The msg bit arguments passed in form various parts of the log message, the
- * following macro set is provided to construct the parts from printf-style
- * argument lists:
- * - SFI_MSG_TITLE(): format message title
- * - SFI_MSG_TEXT1(): format primary message (also SFI_MSG_PRIMARY())
- * - SFI_MSG_TEXT2(): format secondary message, optional (also SFI_MSG_SECONDARY())
- * - SFI_MSG_TEXT3(): format details of the message, optional (also SFI_MSG_DETAIL())
- * - SFI_MSG_CHECK(): format configuration check statement to enable/disable log messages of this type.
- * This function is MT-safe and may be called from any thread.
- */
-void
-sfi_log_msg_elist (const char     *log_domain,
-                   guint           level,       /* SFI_MSG_DEBUG is not really useful here */
-                   SfiMsgBit      *lbit1,
-                   SfiMsgBit      *lbit2,
-                   ...)
-{
-  gint saved_errno = errno;
-  va_list args;
-  va_start (args, lbit2);
-  sfi_log_msg_trampoline (log_domain, level, lbit1, lbit2, args, sfi_log_msg_process, NULL);
-  va_end (args);
-  errno = saved_errno;
-}
-
-static const gchar*
-log_msg_level_classify (guint  level,
-                        guint *actionsp)
-{
-  guint actions;
-  const gchar *slevel;
-  switch (level)
-    {
-    case SFI_MSG_ERROR:   actions = error_actions;     slevel = "ERROR";   break;
-    case SFI_MSG_WARNING: actions = warn_actions;      slevel = "WARNING"; break;
-    case SFI_MSG_INFO:    actions = info_actions;      slevel = "INFO";    break;
-    case SFI_MSG_DIAG:    actions = diag_actions;      slevel = "DIAG";    break;
-    case SFI_MSG_DEBUG:   actions = debug_actions;     slevel = "DEBUG";   break;
-    default:              actions = SFI_LOG_TO_STDERR; slevel = NULL;      break;
-    }
-  if (actionsp)
-    *actionsp = actions;
-  return slevel;
-}
-
-/**
- * sfi_log_msg_level_name
- * @level:      one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG or %SFI_MSG_DEBUG
- * @RETURN:     newly allocated string naming level
- *
- * Construct a string describing the log message level passed as
- * @level. The string is newly allocated and must be freed with g_free().
- * This function is MT-safe and may be called from any thread.
- */
-gchar*
-sfi_log_msg_level_name (guint level)
-{
-  const gchar *clevel = log_msg_level_classify (level, NULL);
-  gchar *slevel;
-  if (clevel)
-    slevel = g_strdup (clevel);
-  else if (level >= 32 && level <= 126)
-    slevel = g_strdup_printf ("LOG<%c>", level);
+  const gchar *level_name = sfi_msg_type_label (msg->type);
+  g_printerr ("********************************************************************************\n");
+  if (msg->log_domain)
+    g_printerr ("** %s-%s: %s\n", msg->log_domain, level_name, msg->title ? msg->title : "");
   else
-    slevel = g_strdup_printf ("LOG<0x%02x>", level);
-  return slevel;
+    g_printerr ("** %s: %s\n", level_name, msg->title ? msg->title : "");
+  if (msg->primary)
+    g_printerr ("** %s\n", msg->primary);
+  if (msg->secondary)
+    {
+      GString *gstring = g_string_new (msg->secondary);
+      guint i;
+      for (i = 0; i < gstring->len; i++)
+        if (gstring->str[i] == '\n')
+          g_string_insert (gstring, i + 1, "**   ");
+      g_printerr ("**   %s\n", gstring->str);
+      g_string_free (gstring, TRUE);
+    }
+  if (msg->details)
+    {
+      GString *gstring = g_string_new (msg->details);
+      guint i;
+      for (i = 0; i < gstring->len; i++)
+        if (gstring->str[i] == '\n')
+          g_string_insert (gstring, i + 1, "** > ");
+      g_printerr ("** > %s\n", gstring->str);
+      g_string_free (gstring, TRUE);
+    }
+  if (msg->config_check)
+    g_printerr ("** [X] %s\n", msg->config_check);
+  g_printerr ("********************************************************************************\n");
 }
 
 typedef struct LogBit LogBit;
@@ -426,34 +471,100 @@ free_lbits (LogBit *first)
     }
 }
 
-SfiMsgBit*
-sfi_msg_bit_appoint (gconstpointer   owner,
-                     gpointer        data,
-                     void          (*data_free) (gpointer))
-{
-  gint saved_errno = errno;
-  LogBit *lbit = g_new0 (LogBit, 1);
-  lbit->bit.owner = owner;
-  lbit->bit.data = data;
-  lbit->data_free = data_free;
-  lbit->next = sfi_thread_steal_qdata (quark_msg_bits);
-  sfi_thread_set_qdata_full (quark_msg_bits, lbit, (GDestroyNotify) free_lbits);
-  errno = saved_errno;
-  return &lbit->bit;
-}
-
-SfiMsgBit*
-sfi_msg_bit_printf (guint8      log_msg_tag,
-                    const char *format,
+/**
+ * sfi_msg_log_printf
+ * @log_domain:   log domain
+ * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG or %SFI_MSG_DEBUG
+ * @format:       printf-like format
+ * @...:          printf-like arguments
+ *
+ * Log a message through SFIs logging mechanism. The current
+ * value of errno is preserved around calls to this function.
+ * Usually this function isn't used directly, but through one
+ * of sfi_debug(), sfi_diag(), sfi_info(), sfi_warn() or sfi_error().
+ * The @log_domain indicates the calling module and relates to
+ * %G_LOG_DOMAIN as used by g_log().
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+sfi_msg_log_printf (const char       *log_domain,
+                    SfiMsgType        mtype,
+                    const char       *format,
                     ...)
 {
   gint saved_errno = errno;
+  /* construct message */
+  SfiMessage msg = { 0, };
+  msg.type = mtype;
+  msg.log_domain = (char*) log_domain;
   va_list args;
   va_start (args, format);
-  gchar *string = g_strdup_vprintf (format, args);
+  msg.primary = g_strdup_vprintf (format, args);
   va_end (args);
+  msg.config_check = NULL;
+  /* handle message */
+  LogBit *lbit_list = sfi_thread_steal_qdata (quark_msg_bits);
+  sfi_log_msg_process (&msg);
+  g_free (msg.primary);
+  free_lbits (lbit_list); /* purge thread local msg bit list */
   errno = saved_errno;
-  return sfi_msg_bit_appoint ((void*) (gsize) log_msg_tag, string, g_free);
+}
+
+/**
+ * sfi_msg_log_elist
+ * @log_domain:   log domain
+ * @mtype:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
+ * @lbit1:        msg bit
+ * @lbit2:        msg bit
+ * @...:          list of more msg bits, NULL terminated
+ *
+ * Log a message through SFIs logging mechanism. The current value of errno
+ * is preserved around calls to this function. Usually this function isn't
+ * used directly, but sfi_log_msg() is called instead which does not require
+ * %NULL termination of its argument list and automates the @log_domain argument.
+ * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
+ * as used by g_log().
+ * The msg bit arguments passed in form various parts of the log message, the
+ * following macro set is provided to construct the parts from printf-style
+ * argument lists:
+ * - SFI_MSG_TITLE(): format message title
+ * - SFI_MSG_TEXT1(): format primary message (also SFI_MSG_PRIMARY())
+ * - SFI_MSG_TEXT2(): format secondary message, optional (also SFI_MSG_SECONDARY())
+ * - SFI_MSG_TEXT3(): format details of the message, optional (also SFI_MSG_DETAIL())
+ * - SFI_MSG_CHECK(): format configuration check statement to enable/disable log messages of this type.
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+sfi_msg_log_elist (const char     *log_domain,
+                   SfiMsgType      mtype,       /* SFI_MSG_DEBUG is not really useful here */
+                   SfiMsgBit      *lbit1,
+                   SfiMsgBit      *lbit2,
+                   ...)
+{
+  gint saved_errno = errno;
+  guint n = 0;
+  SfiMsgBit **bits = NULL;
+  /* collect msg bits */
+  if (lbit1)
+    {
+      bits = g_renew (SfiMsgBit*, bits, n + 1);
+      bits[n++] = lbit1;
+      SfiMsgBit *lbit = lbit2;
+      va_list args;
+      va_start (args, lbit2);
+      while (lbit)
+        {
+          bits = g_renew (SfiMsgBit*, bits, n + 1);
+          bits[n++] = lbit;
+          lbit = va_arg (args, SfiMsgBit*);
+        }
+      va_end (args);
+    }
+  bits = g_renew (SfiMsgBit*, bits, n + 1);
+  bits[n] = NULL;
+  sfi_msg_log_trampoline (log_domain, mtype, bits, sfi_log_msg_process);
+  g_free (bits);
+  errno = saved_errno;
 }
 
 static inline char*
@@ -470,8 +581,8 @@ log_msg_concat (char       *former,
 }
 
 static inline void
-sfi_log_msg_apply_bit (SfiLogMessage *msg,
-                       SfiMsgBit     *lbit)
+msg_apply_bit (SfiMessage *msg,
+               SfiMsgBit  *lbit)
 {
   gsize ltype = (gsize) lbit->owner;
   if (ltype < 256)
@@ -494,15 +605,14 @@ sfi_log_msg_apply_bit (SfiLogMessage *msg,
 }
 
 /**
- * sfi_log_msg_trampoline
+ * sfi_msg_log_trampoline
  * @log_domain:   log domain
- * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
+ * @mtype:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
  * @lbit1:        msg bit
  * @lbit2:        msg bit
  * @lbitargs:     va_list list of more msg bits, NULL terminated
  * @handler:      message handler
- * @lbit3:        msg bit
- * @...:          list of more msg bits, NULL terminated
+ * @vbitlist:     NULL terminated array of msg bits
  *
  * Construct a log message from the arguments given and let @handler process
  * it. This function performs no logging on its own, it is used internally by
@@ -515,48 +625,28 @@ sfi_log_msg_apply_bit (SfiLogMessage *msg,
  * This function is MT-safe and may be called from any thread.
  */
 void
-sfi_log_msg_trampoline (const char     *log_domain,
-                        guint           level,
-                        SfiMsgBit      *lbit1,
-                        SfiMsgBit      *lbit2,
-                        va_list         lbitargs,
-                        SfiLogHandler   handler,
-                        SfiMsgBit      *lbit3,
-                        ...)
+sfi_msg_log_trampoline (const char     *log_domain,
+                        SfiMsgType      mtype,       /* SFI_MSG_DEBUG is not really useful here */
+                        SfiMsgBit     **lbits,
+                        SfiMsgHandler   handler)
 {
   gint saved_errno = errno;
-  g_assert (handler != NULL);
   /* construct message */
-  SfiLogMessage msg = { 0, };
+  SfiMessage msg = { 0, };
+  msg.type = mtype;
   msg.log_domain = (char*) log_domain;
-  msg.level = level;
   /* apply msg bits */
-  if (lbit1)
+  if (lbits)
     {
-      sfi_log_msg_apply_bit (&msg, lbit1);
-      SfiMsgBit *lbit = lbit2;
-      while (lbit)
-        {
-          sfi_log_msg_apply_bit (&msg, lbit);
-          lbit = va_arg (lbitargs, SfiMsgBit*);
-        }
-    }
-  /* apply extra bits */
-  if (lbit3)
-    {
-      SfiMsgBit *lbit = lbit3;
-      va_list args;
-      va_start (args, lbit3);
-      while (lbit)
-        {
-          sfi_log_msg_apply_bit (&msg, lbit);
-          lbit = va_arg (args, SfiMsgBit*);
-        }
-      va_end (args);
+      guint j;
+      for (j = 0; lbits[j]; j++)
+        msg_apply_bit (&msg, lbits[j]);
     }
   /* reset thread local msg bit list */
   LogBit *lbit_list = sfi_thread_steal_qdata (quark_msg_bits);
   /* handle message */
+  if (!handler)
+    handler = sfi_log_msg_process;
   handler (&msg);
   /* clean up */
   g_free (msg.title);
@@ -570,20 +660,34 @@ sfi_log_msg_trampoline (const char     *log_domain,
   errno = saved_errno;
 }
 
-void
-sfi_log_default_handler (const SfiLogMessage *msg)
+SfiMsgBit*
+sfi_msg_bit_appoint (gconstpointer   owner,
+                     gpointer        data,
+                     void          (*data_free) (gpointer))
 {
-  gchar *level_name = sfi_log_msg_level_name (msg->level);
-  g_printerr ("********************************************************************************\n");
-  g_printerr ("** %s: %s\n", level_name, msg->title ? msg->title : "");
-  if (msg->primary)
-    g_printerr ("** %s\n", msg->primary);
-  if (msg->secondary)
-    g_printerr ("** %s\n", msg->secondary);
-  if (msg->details)
-    g_printerr ("** %s\n", msg->details);
-  g_printerr ("********************************************************************************\n");
-  g_free (level_name);
+  gint saved_errno = errno;
+  LogBit *lbit = g_new0 (LogBit, 1);
+  lbit->bit.owner = owner;
+  lbit->bit.data = data;
+  lbit->data_free = data_free;
+  lbit->next = sfi_thread_steal_qdata (quark_msg_bits);
+  sfi_thread_set_qdata_full (quark_msg_bits, lbit, (GDestroyNotify) free_lbits);
+  errno = saved_errno;
+  return &lbit->bit;
+}
+
+SfiMsgBit*
+sfi_msg_bit_printf (guint8      msg_bit_type,
+                    const char *format,
+                    ...)
+{
+  gint saved_errno = errno;
+  va_list args;
+  va_start (args, format);
+  gchar *string = g_strdup_vprintf (format, args);
+  va_end (args);
+  errno = saved_errno;
+  return sfi_msg_bit_appoint ((void*) (gsize) msg_bit_type, string, g_free);
 }
 
 static const gchar*
@@ -601,34 +705,29 @@ prgname (gboolean maystrip)
 static char*
 log_prefix (const char  *prg_name,
             guint        pid,
-            guint        level,
             const char  *log_domain,
-            const char  *postfix,
-            const char  *key)
+            const char  *label,
+            const char  *ident)
 {
   GString *gstring = g_string_new (prg_name);
   if (pid)
     g_string_append_printf (gstring, "[%u]", pid);
   if (gstring->len)
     g_string_append (gstring, ":");
-  if (level >= 32 && level <= 126)
-    g_string_append_printf (gstring, "LOG<%c>:", level);
-  else if (level)
-    g_string_append_printf (gstring, "LOG<0x%02x>:", level);
   if (log_domain)
     g_string_append (gstring, log_domain);
-  if (log_domain && postfix)
+  if (log_domain && label)
     g_string_append (gstring, "-");
-  if (postfix)
-    g_string_append (gstring, postfix);
-  if (key)
+  if (label)
+    g_string_append (gstring, label);
+  if (ident)
     {
-      if (log_domain || postfix)
-        g_string_append_printf (gstring, "(%s)", key);
+      if (log_domain || label)
+        g_string_append_printf (gstring, "(%s)", ident);
       else
-        g_string_append (gstring, key);
+        g_string_append (gstring, ident);
     }
-  if (log_domain || postfix || key)
+  if (log_domain || label || ident)
     g_string_append (gstring, ":");
   /* more components can come here */
   /* ... */
@@ -637,17 +736,30 @@ log_prefix (const char  *prg_name,
   return g_string_free (gstring, FALSE);
 }
 
-static void
-sfi_log_msg_process (const SfiLogMessage *msgp)
+static guint
+sfi_msg_type_actions (SfiMsgType mtype)
 {
-  const SfiLogMessage msg = *msgp;
-  /* determine log actions */
   guint actions = 0;
-  const char *slevel = log_msg_level_classify (msg.level, &actions);
+  SFI_SPIN_LOCK (&logging_mutex);
+  if (mtype >= 0 && mtype < n_msg_types &&
+      !msg_types[mtype].disabled)
+    actions = msg_types[mtype].log_flags;
+  SFI_SPIN_UNLOCK (&logging_mutex);
+  return actions;
+}
+
+static void
+sfi_log_msg_process (const SfiMessage *msgp)
+{
+  const SfiMessage msg = *msgp;
+  /* determine log actions */
+  guint actions = sfi_msg_type_actions (msg.type);
+  const char *ident = sfi_msg_type_ident (msg.type);
+  const char *label = sfi_msg_type_label (msg.type);
   /* log to syslog */
-  if ((msg.primary || msg.secondary) && stdlog_syslog_priority && (actions & SFI_LOG_TO_STDLOG))
+  if ((msg.primary || msg.secondary) && stdlog_syslog_priority && (actions & SFI_MSG_TO_STDLOG))
     {
-      char *prefix = log_prefix (NULL, 0, slevel ? 0 : msg.level, msg.log_domain, slevel, msg.key);
+      char *prefix = log_prefix (NULL, 0, msg.log_domain, NULL, ident);
       if (msg.title && FALSE) // skip title in syslog
         syslog (stdlog_syslog_priority, "%s:0: %s\n", prefix, msg.title);
       if (msg.primary)
@@ -659,16 +771,16 @@ sfi_log_msg_process (const SfiLogMessage *msgp)
       g_free (prefix);
     }
   /* log to stderr */
-  gboolean tostderr = (actions & SFI_LOG_TO_STDERR) != 0;
-  tostderr |= (actions & SFI_LOG_TO_STDLOG) && stdlog_to_stderr;
+  gboolean tostderr = (actions & SFI_MSG_TO_STDERR) != 0;
+  tostderr |= (actions & SFI_MSG_TO_STDLOG) && stdlog_to_stderr;
   if ((msg.primary || msg.secondary) && tostderr)
     {
-      gchar *prefix = log_prefix (prgname (msg.level == SFI_MSG_DEBUG),                 /* strip prgname path for debugging */
+      gboolean is_debug = msg.type == SFI_MSG_DEBUG, is_diag = msg.type == SFI_MSG_DIAG;
+      gchar *prefix = log_prefix (prgname (is_debug),                                   /* strip prgname path for debugging */
                                   sfi_thread_self_pid(),                                /* always print pid */
-                                  slevel ? 0 : msg.level,                               /* print numeric level for custom levels */
-                                  msg.level == SFI_MSG_DEBUG ? NULL : msg.log_domain,   /* print domain except when debugging */
-                                  msg.level == SFI_MSG_DIAG ? NULL : slevel,            /* skip domain postfix for diagnosis */
-                                  msg.key);                                             /* print debugging key */
+                                  is_debug ? NULL : msg.log_domain,                     /* print domain except when debugging */
+                                  is_debug || is_diag ? NULL : label,                   /* print translated message type execpt for debug/diagnosis */
+                                  is_debug ? ident : NULL);                             /* print identifier if debugging */
       if (msg.title)
         fprintf (stderr, "%s:0: %s\n", prefix, msg.title);
       if (msg.primary)
@@ -680,9 +792,13 @@ sfi_log_msg_process (const SfiLogMessage *msgp)
       g_free (prefix);
     }
   /* log to logfile */
-  if (stdlog_file && (actions & SFI_LOG_TO_STDLOG))
+  if (stdlog_file && (actions & SFI_MSG_TO_STDLOG))
     {
-      char *prefix = log_prefix (prgname (FALSE), sfi_thread_self_pid(), slevel ? 0 : msg.level, msg.log_domain, slevel, msg.key);
+      char *prefix = log_prefix (prgname (FALSE),                                       /* printf fully qualified program name */
+                                 sfi_thread_self_pid(),                                 /* always print pid */
+                                 msg.log_domain,                                        /* always print log domain */
+                                 NULL,                                                  /* skip translated message type */
+                                 ident);                                                /* print machine readable message type */
       if (msg.title)
         fprintf (stdlog_file, "%s:0: %s\n", prefix, msg.title);
       if (msg.primary)
@@ -694,11 +810,11 @@ sfi_log_msg_process (const SfiLogMessage *msgp)
       g_free (prefix);
     }
   /* log to log handler */
-  if (actions & SFI_LOG_TO_HANDLER)
+  if (actions & SFI_MSG_TO_HANDLER)
     {
-      SfiLogHandler log_handler = sfi_thread_get_qdata (quark_log_handler);
+      SfiMsgHandler log_handler = sfi_thread_get_qdata (quark_log_handler);
       if (!log_handler)
-        log_handler = sfi_log_default_handler;
+        log_handler = sfi_msg_default_handler;
       log_handler (&msg);
     }
 }

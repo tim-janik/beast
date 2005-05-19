@@ -124,6 +124,36 @@ void    sfi_cond_wait_timed		(SfiCond  *cond,
 					 SfiMutex *mutex,
 					 glong	   max_useconds);
 
+/* --- atomic operations --- */
+#define sfi_atomic_pointer_set(PtrType, atomic_ptr_adr, new_ptr)        ((void(*)(PtrType volatile*,PtrType)) sfi_atomic_pointer_set_func) (atomic_ptr_adr, new_ptr)
+#define sfi_atomic_pointer_get(PtrType, atomic_ptr_adr)                 ((PtrType(*)(PtrType volatile*)) sfi_atomic_pointer_get_func) (atomic_ptr_adr)
+#define sfi_atomic_pointer_compare_and_swap(PtrType, apadr, optr, nptr) ((gboolean(*)(PtrType volatile*, PtrType, PtrType)) g_atomic_pointer_compare_and_exchange) (apadr, optr, nptr)
+#define sfi_atomic_int_set(atomic_int_ptr, value)                       ((void(*)(volatile gint*,gint)) sfi_atomic_int_set_func) (atomic_int_ptr, value)
+#define sfi_atomic_int_get(atomic_int_ptr)                              ((gint(*)(volatile gint*))      sfi_atomic_int_get_func) (atomic_int_ptr)
+#define sfi_atomic_int_add(atomic_int_ptr, signed_delta)                ((void(*)(volatile gint*,gint)) g_atomic_int_add) (atomic_int_ptr, signed_delta)
+#define sfi_atomic_int_swap_and_add(atomic_int_ptr, value)              ((gint(*)(volatile gint*,gint)) g_atomic_int_exchange_and_add) (atomic_int_ptr, value)
+#define sfi_atomic_int_compare_and_swap(atomic_int_ptr, oldval, nwval)  ((gboolean(*)(volatile gint*,gint,gint)) g_atomic_int_compare_and_exchange) (atomic_int_ptr, oldval, nwval)
+static inline gint G_GNUC_UNUSED
+sfi_atomic_int_get_func (gint *atomic)
+{
+  return g_atomic_int_get (atomic);
+}
+static inline void G_GNUC_UNUSED
+sfi_atomic_int_set_func (gint *atomic, gint value)
+{
+  while (!g_atomic_int_compare_and_exchange (atomic, *atomic, value));
+}
+static inline gpointer G_GNUC_UNUSED
+sfi_atomic_pointer_get_func (gpointer *atomic)
+{
+  return g_atomic_pointer_get (atomic);
+}
+static inline void G_GNUC_UNUSED
+sfi_atomic_pointer_set_func (gpointer *atomic, gpointer value)
+{
+  while (!g_atomic_pointer_compare_and_exchange (atomic, *atomic, value));
+}
+
 /* --- implementation --- */
 #include <sfi/sficonfig.h>
 union _SfiCond

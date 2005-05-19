@@ -31,7 +31,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define	DEBUG(...)      sfi_debug ("comport", __VA_ARGS__)
+SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_NONE, NULL);
+#define DEBUG(...)      sfi_debug (debug_comport, __VA_ARGS__)
 
 /* define the io bottle neck (for writes) to a small value
  * (e.g. 20) to trigger and test blocking IO on fast systems
@@ -740,7 +741,7 @@ sfi_com_port_reap_child (SfiComPort *port,
 gboolean
 sfi_com_port_test_reap_child (SfiComPort *port)
 {
-  g_return_if_fail (port != NULL);
+  g_return_val_if_fail (port != NULL, FALSE);
   com_port_try_reap (port, FALSE);
   return port->reaped;
 }
