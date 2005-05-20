@@ -22,27 +22,27 @@
 
 (bse-script-register 'song-parts-crop
 		     ""
-                     "/Song/Crop parts (loop range)"
-		     (string-append "Crops all parts within the loop range "
-				    "and moves parts after the loop range backwards accordingly.")
+                     (N_ "/Song/Crop parts (loop range)")
+		     (N_ "Crops all parts within the loop range "
+			 "and moves parts after the loop range backwards accordingly.")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"
-		     (bse-param-song "song"))
+		     (bse-param-song (N_ "Song")))
 
 (bse-script-register 'song-parts-duplicate
 		     ""
-                     "/Song/Duplicate parts (loop range)"
-		     (string-append "Duplicate all parts within the loop range "
-				    "and moves parts after the loop range forward accordingly.")
+                     (N_ "/Song/Duplicate parts (loop range)")
+		     (N_ "Duplicate all parts within the loop range "
+			 "and moves parts after the loop range forward accordingly.")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"
-		     (bse-param-song "song"))
+		     (bse-param-song (N_ "Song")))
 
 ;; common code for duplicate & crop:
 ;; error checking, computing boundaries, undo, applying algorithm to each track
-(define (song-parts-operation song operation)
+(define (song-parts-operation song errtitle operation)
   (if (not (bse-is-song song))
-      (bse-script-exit 'error "no valid song supplied"))
+      (bse-exit-error 'text1 (_ "No valid song supplied")))
   (let* ((marker1 (max 0 (bse-item-get song "loop-left")))  ; handle loop marker -1 (unset) as 0 (set to start)
          (marker2 (max 0 (bse-item-get song "loop-right")))
 	 (start   (min marker1 marker2))                    ; sort markers
@@ -57,11 +57,15 @@
 	(bse-item-group-undo song "song-parts-operation")
         (for-each process-track (bse-container-list-children song))
         (bse-item-ungroup-undo song))
-      (bse-script-exit 'error "loop range is empty"))))
+      (bse-exit-message 'warning
+			'text1 errtitle
+			'text2 (_ "The loop range of the specified song contains no parts "
+				  "or is unset, so no parts can be identified to operate on.")
+			'check (_ "Show messages about empty part range")))))
 
 ;; algorithm for cropping parts
 (define (song-parts-crop song)
-  (song-parts-operation song
+  (song-parts-operation song (_ "Failed to crop part range.")
     (lambda (track start end len)
       (for-each
         (lambda (track-part) (let ((tick (bse-rec-get track-part 'tick))
@@ -73,7 +77,7 @@
 
 ;; algorithm for duplication of parts
 (define (song-parts-duplicate song)
-  (song-parts-operation song
+  (song-parts-operation song (_ "Failed to duplicate part range.")
     (lambda (track start end len)
       (for-each
         (lambda (track-part) (let ((tick (bse-rec-get track-part 'tick))

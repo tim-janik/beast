@@ -22,12 +22,12 @@
 
 (bse-script-register 'mixer-splitup-by-track
 		     ""
-                     "/Song/Assign Tracks to individual Mixer Busses"
-		     (string-append "This script will create a new Mixer Bus for each track "
-                                    "in the song that is currently using the Master Bus as output")
+                     (N_ "/Song/Assign Tracks to individual Mixer Busses")
+		     (N_ "This script will create a new Mixer Bus for each track "
+			 "in the song that is currently using the Master Bus as output")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"
-		     (bse-param-song "song"))
+		     (bse-param-song (N_ "Song")))
 
 ;; function to get song for a track (improves readability)
 (define (track-get-song track)
@@ -54,7 +54,7 @@
 ;; create a new mixer channel for each track assigned (only) to the master bus
 (define (mixer-splitup-by-track song)
   (if (not (bse-is-song song))
-      (bse-script-exit 'error "no valid song supplied"))
+      (bse-exit-error 'text1 (_ "No valid song supplied")))
   (bse-item-group-undo song "mixer-splitup-by-track")
   (for-each (lambda (track)
               (if

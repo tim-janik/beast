@@ -22,34 +22,34 @@
 
 (bse-script-register 'part-harmonic-transposer
 		     ""
-                     "/Part/Harmonic Transposer"
+                     (N_ "/Part/Harmonic Transposer")
 		     ;; FIXME: the description may be suboptimal; the problem is
 		     ;; that I can't precisely describe details of musical theory
 		     ;; in english. -- stw
-		     (string-append "The harmonic transposer takes the selection of a part "
-				    "and transposes it to different harmonies. If you for "
-				    "instance have selected a measure filled with C major "
-				    "chords, and enter \"C,Am,F,G\" as harmonic sequence, "
-				    "the result will be four measures, filled with C major, "
-				    "A minor, F major and G major chords. "
-				    "\n\n"
-				    "This also works for melodies, so you can transpose a "
-				    "whole melody written in G major to D minor. The standard "
-				    "scales used in church music (ionian, dorian, phrygian, "
-				    "lydian, mixolydian, aeolian, locrian) are also supported: "
-				    "it is for instance possible to write Ddorian or Caeolian. "
-				    "The aeolian scale is equivalent to minor and the ionian "
-				    "scale is equivalent to major. "
-				    "\n\n"
-				    "Since musically, there is no preference on whether to transpose up or "
-				    "down it is possible to specify the first harmony that will be transposed "
-				    "down (all harmonies below this will be transposed up). It is possible "
-				    "to omit this value. Then all notes will be transposed up.")
+		     (N_ "The harmonic transposer takes the selection of a part "
+			 "and transposes it to different harmonies. If you for "
+			 "instance have selected a measure filled with C major "
+			 "chords, and enter \"C,Am,F,G\" as harmonic sequence, "
+			 "the result will be four measures, filled with C major, "
+			 "A minor, F major and G major chords. "
+			 "\n\n"
+			 "This also works for melodies, so you can transpose a "
+			 "whole melody written in G major to D minor. The standard "
+			 "scales used in church music (ionian, dorian, phrygian, "
+			 "lydian, mixolydian, aeolian, locrian) are also supported: "
+			 "it is for instance possible to write Ddorian or Caeolian. "
+			 "The aeolian scale is equivalent to minor and the ionian "
+			 "scale is equivalent to major. "
+			 "\n\n"
+			 "Since musically, there is no preference on whether to transpose up or "
+			 "down it is possible to specify the first harmony that will be transposed "
+			 "down (all harmonies below this will be transposed up). It is possible "
+			 "to omit this value. Then all notes will be transposed up.")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"
-		     (bse-param-part "part")
-		     (bse-param-string "Harmony Sequence" "C,Amin,F,G")
-		     (bse-param-string "Transpose down starting at" "F"))
+		     (bse-param-part   (N_ "Part"))
+		     (bse-param-string (N_ "Harmony Sequence") "C,Amin,F,G")
+		     (bse-param-string (N_ "Transpose down starting at") "F"))
 
 ;; ------------------- parser for harmony strings ------------------------
 
@@ -206,19 +206,19 @@
 ;; harmonic transposer: implementation
 (define (part-harmonic-transposer part harmony-string down-string)
   (if (not (bse-is-part part))
-    (bse-script-exit 'error "no valid part supplied"))
+      (bse-exit-error 'text1 (_ "No valid part supplied")))
   (let* ((notes             (bse-part-list-selected-notes part))
-	 (error-check-1     (if (< (length notes) 1) (bse-script-exit 'error "no notes selected")))
+	 (error-check-1     (if (< (length notes) 1) (bse-exit-error 'text1 (_ "No notes selected"))))
 	 (get-note-start    (lambda (rec) (bse-rec-get rec 'tick)))
 	 (get-note-end      (lambda (rec) (+ (get-note-start rec) (bse-rec-get rec 'duration))))
 	 (start             (apply min (map get-note-start notes)))
 	 (end               (apply max (map get-note-end notes)))
 	 (len               (- end start))
 	 (harmony-list-all  (harmony-list-from-string harmony-string))
-	 (error-check-2     (if (not harmony-list-all) (bse-script-exit 'error "can't parse harmony list")))
+	 (error-check-2     (if (not harmony-list-all) (bse-exit-error 'text1 (_ "Failed to parse harmony list"))))
 	 (base-harmony      (car harmony-list-all))
 	 (harmony-list      (cdr harmony-list-all))
-	 (error-check-3     (if (< (length harmony-list) 1) (bse-script-exit 'error "harmony list too short")))
+	 (error-check-3     (if (< (length harmony-list) 1) (bse-exit-error 'text1 (_ "Harmony list is too short"))))
 	 (down-harmony-list (harmony-list-from-string down-string))
 	 (down-harmony      (if down-harmony-list (car (harmony-list-from-string down-string)) #f))
 	 (process-note

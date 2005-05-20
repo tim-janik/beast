@@ -2,6 +2,8 @@
 
 ;; allow i18n markup of strings
 (define _ (lambda arglist (apply string-append arglist)))
+(define N_ (lambda arglist (apply string-append arglist)))
+(define Q_ (lambda arglist (apply string-append arglist)))
 
 ;; cache invocations to avoid extra round trips
 (define bse-script-janitor
@@ -10,6 +12,7 @@
 
 ;; leave a message and exit
 (define bse-exit-message (lambda arglist (apply bse-script-message arglist) (bse-script-quit)))
+(define bse-exit-error   (lambda arglist (apply bse-script-message 'error arglist) (bse-script-quit)))
 
 (define bse-server (bse-server-get))
 (define (bse-param-string name dflt) (string-append "BseParamString:" name ":" dflt))

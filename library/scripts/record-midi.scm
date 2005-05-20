@@ -1,4 +1,4 @@
-;; Copyright (C) 2002 Tim Janik
+;; Copyright (C) 2002,2005 Tim Janik
 ;;
 ;; This software is provided "as is"; redistribution and modification
 ;; is permitted, provided that the following disclaimer is retained.
@@ -17,13 +17,13 @@
 
 (bse-script-register 'record-midi
 		     ""
-                     "/Part/Record Midi..."
-		     (string-append "Record midi events, currently being played on the default external "
-				    "midi device, into a given song part. The MIDI recorder is still work in progress.")
+                     (N_ "/Part/Record Midi...")
+		     (N_ "Record midi events, currently being played on the default external "
+			 "midi device, into a given song part. The MIDI recorder is still work in progress.")
 		     "Tim Janik"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
-		     (bse-param-part "Part")
-		     (bse-param-bool "Start Now" #t))
+		     (bse-param-part (N_ "Part"))
+		     (bse-param-bool (N_ "Start Now") #t))
 
 (define (record-midi part start-now)
   (define do-recording #f)
@@ -43,9 +43,8 @@
 	(note-vector (make-vector 128 0))
 	(start-stamp 0))
     (if (not (bse-is-item part))
-	(bse-script-exit 'error
-			 (string-append "record-midi: not a valid part object supplied.\n"
-					"You probably want to start this script from a part editor")))
+	(bse-exit-error 'text1 (_ "No valid part object supplied")
+			'text2 (_ "You probably want to start this script from a part editor.")))
     (bse-script-add-action "start" "Start Recording")
     (bse-script-add-action "stop" "Stop Recording")
     (bse-script-set-msg 'info (string-append "Not currently recording...\n\n"

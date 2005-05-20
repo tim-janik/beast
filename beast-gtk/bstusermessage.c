@@ -272,19 +272,12 @@ bst_msg_dialog_update (GxkDialog        *dialog,
                         0, GTK_EXPAND, 0, 0);
       row++;
     }
-  const gchar *config_check = msg->config_check;
-  if (!config_check && msg->type == BST_MSG_INFO)
-    config_check = _("Display dialogs with information messages");
-  if (!config_check && msg->type == BST_MSG_DIAG)
-    config_check = _("Display dialogs with dignostic messages");
-  if (!config_check && msg->type == BST_MSG_DEBUG)
-    config_check = _("Display dialogs with debugging messages");
-  if (config_check)
+  if (msg->config_check)
     {
-      GtkWidget *cb = gtk_check_button_new_with_label (config_check);
+      GtkWidget *cb = gtk_check_button_new_with_label (msg->config_check);
       gxk_widget_set_tooltip (cb, _("This setting can be changed in the \"Messages\" section of the preferences dialog"));
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb), !bst_msg_absorb_config_match (config_check));
-      g_signal_connect_data (cb, "unrealize", G_CALLBACK (toggle_update_filter), g_strdup (config_check), (GClosureNotify) g_free, G_CONNECT_AFTER);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb), !bst_msg_absorb_config_match (msg->config_check));
+      g_signal_connect_data (cb, "unrealize", G_CALLBACK (toggle_update_filter), g_strdup (msg->config_check), (GClosureNotify) g_free, G_CONNECT_AFTER);
       gtk_widget_show (cb);
       gtk_table_attach (GTK_TABLE (table), cb,
                         1, 2, row, row + 1, /* left/right, top/bottom */
@@ -370,19 +363,37 @@ dialog_show_above_modals (GxkDialog *dialog)
 }
 
 void
-bst_message_handler (const BstMessage *msg)
+bst_message_handler (const BstMessage *const_msg)
 {
-  GxkDialog *dialog = (GxkDialog*) find_dialog (msg_windows, msg);
+  BstMessage msg = *const_msg;
+  /* perform slight message patch ups */
+  if (!hastext (msg.title))
+    msg.title = NULL;
+  if (!hastext (msg.primary))
+    msg.primary = NULL;
+  if (!hastext (msg.secondary))
+    msg.secondary = NULL;
+  if (!hastext (msg.details))
+    msg.details = NULL;
+  if (!hastext (msg.config_check))
+    msg.config_check = NULL;
+  if (!msg.config_check && msg.type == BST_MSG_INFO)
+    msg.config_check = _("Display dialogs with information messages");
+  if (!msg.config_check && msg.type == BST_MSG_DIAG)
+    msg.config_check = _("Display dialogs with dignostic messages");
+  if (!msg.config_check && msg.type == BST_MSG_DEBUG)
+    msg.config_check = _("Display dialogs with debugging messages");
+  GxkDialog *dialog = (GxkDialog*) find_dialog (msg_windows, &msg);
   if (dialog)
     repeat_dialog (dialog);
-  else if (msg && msg->config_check && bst_msg_absorb_config_match (msg->config_check))
-    bst_msg_absorb_config_update (msg->config_check); /* message absorbed by configuration */
+  else if (msg.config_check && bst_msg_absorb_config_match (msg.config_check))
+    bst_msg_absorb_config_update (msg.config_check); /* message absorbed by configuration */
   else
     {
       dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);
       gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
       
-      bst_msg_dialog_update (dialog, msg, TRUE); /* deletes actions */
+      bst_msg_dialog_update (dialog, &msg, TRUE); /* deletes actions */
       gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
       g_object_connect (dialog,
                         "signal::destroy", dialog_destroyed, NULL,

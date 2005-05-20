@@ -17,27 +17,27 @@
 
 ;; (bse-script-register 'script-function
 ;;                      "unstable"                          ; Options
-;;                      "/Project/Toys/My Script"
-;;                      "Blurb, describing what's up with this"
+;;                      (N_ "/Project/Toys/My Script")
+;;                      (N_ "Blurb, describing what's up with this")
 ;;                      "Tim Janik"                         ; Author
 ;;                      "GNU General Public License"        ; License
-;;                      (bse-param-string "Text" "Default")
-;;                      (bse-param-bool   "Mark-me" #f)
-;;                      (bse-param-irange "IntNum" '(16 -100 +100 5))
-;;                      (bse-param-frange "FloatNum" '(42 0 1000 10))
-;;                      (bse-param-note   "Note" "C-7"))
+;;                      (bse-param-string (N_ "Text") "Default")
+;;                      (bse-param-bool   (N_ "Mark-me") #f)
+;;                      (bse-param-irange (N_ "IntNum") '(16 -100 +100 5))
+;;                      (bse-param-frange (N_ "FloatNum") '(42 0 1000 10))
+;;                      (bse-param-note   (_ "Note") "C-7"))
 
 (bse-script-register 'progressor
 		     ""
-                     "/Project/Toys/Progressor..."
-		     (string-append "Progressor takes two seed values and then starts progressing. "
-				    "It doesn't do anything particularly usefull, other than "
-				    "ticking the main program from time to time. It is a funny example though.")
+                     (N_ "/Project/Toys/Progressor...")
+		     (N_ "Progressor takes two seed values and then starts progressing. "
+			 "It doesn't do anything particularly usefull, other than "
+			 "ticking the main program from time to time. It is a funny example though.")
                      "Tim Janik"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
-		     (bse-param-irange "N Iterations" '(512 0 65536 128))
-		     (bse-param-irange "N Wait Spins" '(256 0 65536 64))
-		     (bse-param-bool   "Update Percentage" #t))
+		     (bse-param-irange (N_ "N Iterations") '(512 0 65536 128))
+		     (bse-param-irange (N_ "N Wait Spins") '(256 0 65536 64))
+		     (bse-param-bool   (N_ "Update Percentage") #t))
 
 (define (progressor niter nwait uperc)
   (do ((i niter (- i 1)))

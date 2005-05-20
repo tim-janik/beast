@@ -346,6 +346,7 @@ bst_router_run_method (gpointer user_data,
   BseCategory *cat = bse_category_from_id (action_id);
   bst_procedure_exec_auto (cat->type,
                            "snet", SFI_TYPE_PROXY, self->snet,
+                           "synth-net", SFI_TYPE_PROXY, self->snet,
                            BSE_IS_CSYNTH (self->snet) ? "csynth" : "", SFI_TYPE_PROXY, self->snet,
                            NULL);
 }
