@@ -514,7 +514,6 @@ janitor_unconnected (GxkDialog *dialog)
   const gchar *exit_reason = NULL;
   gint exit_code;
   bse_proxy_get (janitor, "connected", &connected, "exit-code", &exit_code, "exit-reason", &exit_reason, NULL);
-  g_printerr ("GUI:janitor: connected=%d exit-code=%d exit-reason=%s\n", connected, exit_code, exit_reason);
   if (!connected)
     {
       const gchar *proc_name = bse_janitor_get_proc_name (janitor);
@@ -531,8 +530,6 @@ janitor_unconnected (GxkDialog *dialog)
           bst_message_handler (&msg);
           message_free_fields (&msg);
         }
-      else
-        g_printerr ("successful script: %s (%s) (exit: %d)\n", script_name, proc_name, exit_code);
     }
 }
 
