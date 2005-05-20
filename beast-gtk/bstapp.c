@@ -646,7 +646,7 @@ bst_app_handle_delete_event (GtkWidget   *widget,
                                      BST_MSG_TEXT1 (_("The project has been modified.")),
                                      BST_MSG_TEXT2 (_("Changes were made to project \"%s\" since the last time it was saved to disk."),
                                                     bse_item_get_name (self->project)),
-                                     BST_MSG_TEXT2 (_("Save the project before closing its window.")),
+                                     BST_MSG_TEXT2 (_("Save the project before closing its window?")),
                                      BST_MSG_CHOICE   (2, _("Save Changes"), BST_STOCK_SAVE),
                                      BST_MSG_CHOICE   (1, _("Discard Changes"), BST_STOCK_DELETE),
                                      BST_MSG_CHOICE_D (0, _("Cancel"), BST_STOCK_CANCEL));
