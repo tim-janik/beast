@@ -69,5 +69,18 @@ bst_project_import_midi_file (SfiProxy        project,
   return error;
 }
 
+const gchar*
+bst_procedure_get_title (const gchar *procedure)
+{
+  if (procedure)
+    {
+      BseCategorySeq *cseq = bse_categories_match_typed ("*", procedure);
+      if (cseq->n_cats)
+        return cseq->cats[0]->category + cseq->cats[0]->lindex + 1;
+    }
+  return NULL;
+}
+
+
 /* --- generated code --- */
 #include "bstgenbseapi.c"

@@ -159,7 +159,6 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
   SfiGlueProc *proc;
   GtkWidget *param_box;
   SfiRing *ring, *pspecs = NULL;
-  gchar *string;
   guint i;
   
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
@@ -181,17 +180,15 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
 		  "border_width", 5,
 		  NULL);
   
-  /* put procedure title
-   */
-  string = strchr (proc->name, ':');
-  if (string && string[1] == ':')
-    string +=2;
-  else
+  /* put procedure title */
+  const gchar *string = bst_procedure_get_title (proc->name);
+  if (!string)
     string = proc->name;
   gtk_box_pack_start (GTK_BOX (param_box),
                       gtk_widget_new (GTK_TYPE_LABEL,
                                       "visible", TRUE,
                                       "label", string,
+                                      "xpad", 6,
                                       NULL),
                       FALSE,
                       TRUE,

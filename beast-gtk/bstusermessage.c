@@ -46,18 +46,6 @@ hastext (const gchar *string)
   return string[0] != 0;
 }
 
-static const gchar*
-procedure_get_title (const gchar *procedure)
-{
-  if (hastext (procedure))
-    {
-      BseCategorySeq *cseq = bse_categories_match_typed ("*", procedure);
-      if (cseq->n_cats)
-        return cseq->cats[0]->category + cseq->cats[0]->lindex + 1;
-    }
-  return NULL;
-}
-
 static gchar*
 message_title (const BstMessage *msg,
 	       const gchar     **stock,
@@ -96,7 +84,7 @@ message_title (const BstMessage *msg,
   else
     {
       const gchar *proc_name = msg->janitor ? bse_janitor_get_proc_name (msg->janitor) : NULL;
-      const gchar *proc_title = procedure_get_title (proc_name);
+      const gchar *proc_title = bst_procedure_get_title (proc_name);
       if (proc_title)
         return g_strconcat (message, ": ", proc_title, NULL);
       else

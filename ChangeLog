@@ -1,3 +1,13 @@
+Fri May 20 17:17:21 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c: changed procedure dialog title.
+
+	* beast-gtk/bstbseutils.c:
+	* beast-gtk/bstapp.c: renamed automatic script arguments to "song",
+	"wave-repo", "synth-net" and "custom-synth".
+
+	* beast-gtk/bstbseutils.[hc]: added bst_procedure_get_title().
+
 Fri May 20 16:38:31 2005  Tim Janik  <timj@gtk.org>
 
 	* library/scripts/*.scm: added translation markup, fixed error messages.

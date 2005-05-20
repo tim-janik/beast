@@ -50,6 +50,7 @@ BseErrorType    bst_project_restore_from_file   (SfiProxy        project,
                                                  gboolean        apply_project_file_name);
 BseErrorType    bst_project_import_midi_file    (SfiProxy        project,
                                                  const gchar    *file_name);
+const gchar*    bst_procedure_get_title         (const gchar    *procedure);
 
 G_END_DECLS
 

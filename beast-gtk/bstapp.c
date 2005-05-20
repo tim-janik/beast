@@ -818,12 +818,12 @@ bst_app_run_script_proc (gpointer data,
   if (BSE_IS_SONG (super))
     song = "song";
   else if (BSE_IS_WAVE_REPO (super))
-    wave_repo = "wrepo";
+    wave_repo = "wave-repo";
   else if (BSE_IS_SNET (super))
     {
-      snet = "snet";
+      snet = "synth-net";
       if (BSE_IS_CSYNTH (super))
-        csynth = "csynth";
+        csynth = "custom-synth";
     }
   
   bst_procedure_exec_auto (cat->type,
@@ -1117,6 +1117,7 @@ app_action_exec (gpointer data,
     case ACTION_DEMO_DIALOG_DEBUG:
       switch (action)
         {
+        default: /* silence compiler */
         case ACTION_DEMO_DIALOG_FATAL:   demo_type = BST_MSG_FATAL;   break;
         case ACTION_DEMO_DIALOG_ERROR:   demo_type = BST_MSG_ERROR;   break;
         case ACTION_DEMO_DIALOG_WARNING: demo_type = BST_MSG_WARNING; break;
