@@ -467,11 +467,14 @@ bst_early_parse_args (int    *argc_p,
 	}
       else if (strcmp ("--debug-list", argv[i]) == 0)
 	{
-	  const gchar **keys = _bst_log_debug_keys ();
+	  const BstMsgID *mids = bst_message_list_types (NULL);
 	  guint j;
-	  g_print ("debug keys: all");
-	  for (j = 0; keys[j]; j++)
-	    g_print (":%s", keys[j]);
+	  g_print ("BEAST debug keys: all");
+	  for (j = 0; mids[j].ident; j++)
+            if (mids[j].type >= SFI_MSG_DEBUG && mids[j].label)
+              g_print (", %s (%s)", mids[j].ident, mids[j].label);
+            else if (mids[j].type >= SFI_MSG_DEBUG)
+              g_print (", %s", mids[j].ident);
 	  g_print ("\n");
 	  exit (0);
 	  argv[i] = NULL;

@@ -60,13 +60,18 @@ procedure_get_title (const gchar *procedure)
 
 static gchar*
 message_title (const BstMessage *msg,
-	       const gchar     **stock)
+	       const gchar     **stock,
+	       const gchar     **prefix)
 {
   switch (msg->type)
     {
     case BST_MSG_FATAL:
+      *stock = BST_STOCK_ERROR;
+      *prefix = _("Fatal Error: ");
+      break;
     case BST_MSG_ERROR:
       *stock = BST_STOCK_ERROR;
+      *prefix = _("Error: ");
       break;
     case BST_MSG_WARNING:
       *stock = BST_STOCK_WARNING;
@@ -154,8 +159,8 @@ bst_msg_dialog_update (GxkDialog        *dialog,
                        const BstMessage *msg,
                        gboolean          accumulate_repetitions)
 {
-  const gchar *stock;
-  gchar *title = message_title (msg, &stock);
+  const gchar *stock, *primary_prefix = NULL;
+  gchar *title = message_title (msg, &stock, &primary_prefix);
   gxk_dialog_remove_actions (dialog);
   /* create new dialog layout from scratch */
   GtkWidget *table = gtk_table_new (1, 1, FALSE);
@@ -166,10 +171,12 @@ bst_msg_dialog_update (GxkDialog        *dialog,
     gtk_table_attach (GTK_TABLE (table), gxk_stock_image (stock, GXK_ICON_SIZE_INFO_SIGN),
                       0, 1, row, row + 1, /* left/right, top/bottom */
                       GTK_FILL, GTK_FILL, 0, 0);
-  /* pure primary text */
-  if (msg->primary && msg->secondary)
+  const gchar *primary = (msg->primary || msg->secondary) ? msg->primary : msg->secondary;
+  const gchar *secondary = (msg->primary && msg->secondary) ? msg->secondary : NULL;
+  /* primary text */
+  if (primary)
     {
-      gchar *text = adapt_message_spacing (NULL, msg->primary, NULL);
+      gchar *text = adapt_message_spacing (primary_prefix, primary, NULL);
       GtkWidget *label = g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", text, "selectable", TRUE, NULL);
       gxk_label_set_attributes (GTK_LABEL (label),
                                 PANGO_ATTR_SCALE,  PANGO_SCALE_LARGE,
@@ -180,25 +187,28 @@ bst_msg_dialog_update (GxkDialog        *dialog,
                         GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
       row++;
     }
-  /* main (secondary) text */
-  gchar *text_message = adapt_message_spacing ("\n", msg->secondary ? msg->secondary : msg->primary, NULL);
-  GtkWidget *scroll_text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK |
-                                                   // GXK_SCROLL_TEXT_CENTER |
-                                                   GXK_SCROLL_TEXT_VFIXED,
-                                                   text_message);
-  GtkWidget *main_text = g_object_new (GTK_TYPE_ALIGNMENT,
-                                       "visible", TRUE,
-                                       "xalign", 0.5,
-                                       "yalign", 0.5,
-                                       "xscale", 1.0,
-                                       "yscale", 1.0,
-                                       "child", scroll_text,
-                                       NULL);
-  g_free (text_message);
-  gtk_table_attach (GTK_TABLE (table), main_text,
-                    1, 2, row, row + 1, /* left/right, top/bottom */
-                    GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
-  row++;
+  /* secondary text */
+  if (secondary)
+    {
+      gchar *text_message = adapt_message_spacing ("\n", secondary, NULL);
+      GtkWidget *scroll_text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK |
+                                                       // GXK_SCROLL_TEXT_CENTER |
+                                                       GXK_SCROLL_TEXT_VFIXED,
+                                                       text_message);
+      GtkWidget *main_text = g_object_new (GTK_TYPE_ALIGNMENT,
+                                           "visible", TRUE,
+                                           "xalign", 0.5,
+                                           "yalign", 0.5,
+                                           "xscale", 1.0,
+                                           "yscale", 1.0,
+                                           "child", scroll_text,
+                                           NULL);
+      g_free (text_message);
+      gtk_table_attach (GTK_TABLE (table), main_text,
+                        1, 2, row, row + 1, /* left/right, top/bottom */
+                        GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+      row++;
+    }
   /* setup data for recognition and message repetition counter */
   if (accumulate_repetitions)
     {
@@ -262,12 +272,19 @@ bst_msg_dialog_update (GxkDialog        *dialog,
                         0, GTK_EXPAND, 0, 0);
       row++;
     }
-  if (msg->config_check)
+  const gchar *config_check = msg->config_check;
+  if (!config_check && msg->type == BST_MSG_INFO)
+    config_check = _("Display dialogs with information messages");
+  if (!config_check && msg->type == BST_MSG_DIAG)
+    config_check = _("Display dialogs with dignostic messages");
+  if (!config_check && msg->type == BST_MSG_DEBUG)
+    config_check = _("Display dialogs with debugging messages");
+  if (config_check)
     {
-      GtkWidget *cb = gtk_check_button_new_with_label (msg->config_check);
+      GtkWidget *cb = gtk_check_button_new_with_label (config_check);
       gxk_widget_set_tooltip (cb, _("This setting can be changed in the \"Messages\" section of the preferences dialog"));
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb), !bst_msg_absorb_config_match (msg->config_check));
-      g_signal_connect_data (cb, "unrealize", G_CALLBACK (toggle_update_filter), g_strdup (msg->config_check), (GClosureNotify) g_free, G_CONNECT_AFTER);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (cb), !bst_msg_absorb_config_match (config_check));
+      g_signal_connect_data (cb, "unrealize", G_CALLBACK (toggle_update_filter), g_strdup (config_check), (GClosureNotify) g_free, G_CONNECT_AFTER);
       gtk_widget_show (cb);
       gtk_table_attach (GTK_TABLE (table), cb,
                         1, 2, row, row + 1, /* left/right, top/bottom */
@@ -688,4 +705,44 @@ bst_message_connect_to_server (void)
 		     "signal::script_start", server_script_start, NULL,
 		     "signal::script_error", server_script_error, NULL,
 		     NULL);
+}
+
+static int
+msg_id_compare (const void *v1, const void *v2)
+{
+  const BstMsgID *mid1 = v1;
+  const BstMsgID *mid2 = v2;
+  return strcmp (mid1->ident, mid2->ident);
+}
+
+const BstMsgID*
+bst_message_list_types (guint *n_types)
+{
+  static const BstMsgID *const_msg_ids = NULL;
+  static guint           const_n_msg_ids = 0;
+  if (!const_msg_ids)
+    {
+      BstMsgID *msg_ids = NULL;
+      guint i = 0;
+      const gchar *ident = sfi_msg_type_ident (i);
+      while (ident)
+        {
+          msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
+          msg_ids[i].type = i;
+          msg_ids[i].ident = ident;
+          msg_ids[i].label = sfi_msg_type_label (msg_ids[i].type);
+          i++;
+          ident = sfi_msg_type_ident (i);
+        }
+      msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
+      msg_ids[i].type = 0;
+      msg_ids[i].ident = NULL;
+      msg_ids[i].label = NULL;
+      qsort (msg_ids, i, sizeof (msg_ids[0]), msg_id_compare);
+      const_msg_ids = msg_ids;
+      const_n_msg_ids = i;
+    }
+  if (n_types)
+    *n_types = const_n_msg_ids;
+  return const_msg_ids;
 }

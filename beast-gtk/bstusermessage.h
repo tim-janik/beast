@@ -50,15 +50,20 @@ typedef struct {
   guint          n_msg_bits;
   SfiMsgBit    **msg_bits;
 } BstMessage;
-
+typedef struct {
+  guint        type;
+  const gchar *ident;
+  const gchar *label; /* maybe NULL */
+} BstMsgID;
 
 /* --- prototypes --- */
-void    bst_message_connect_to_server		(void);
-void    bst_message_dialogs_popdown	        (void);
-void    bst_message_handler                     (const BstMessage       *message);
-void    bst_message_log_handler                 (const SfiMessage       *lmsg);
-void    bst_message_synth_msg_handler           (const BseMessage       *umsg);
-void    bst_message_dialog_elist                (const char             *log_domain,
+void              bst_message_connect_to_server	(void);
+void              bst_message_dialogs_popdown	(void);
+void              bst_message_handler           (const BstMessage       *message);
+void              bst_message_log_handler       (const SfiMessage       *lmsg);
+void              bst_message_synth_msg_handler (const BseMessage       *umsg);
+const BstMsgID*   bst_message_list_types        (guint                  *n_types);
+void              bst_message_dialog_elist      (const char             *log_domain,
                                                  BstMsgType              type,
                                                  SfiMsgBit              *lbit1,
                                                  SfiMsgBit              *lbit2,

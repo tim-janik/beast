@@ -30,6 +30,7 @@
 #include "bstprocedure.h"
 #include "bstprojectctrl.h"
 #include "bstprofiler.h"
+#include "bstusermessage.h"
 #include <string.h>
 
 
@@ -69,6 +70,13 @@ enum {
   ACTION_URL_BEAST_SITE,
   ACTION_URL_ONLINE_SYNTHESIZERS,
   ACTION_URL_ONLINE_DEMOS,
+  ACTION_DEMO_DIALOG_FATAL,
+  ACTION_DEMO_DIALOG_ERROR,
+  ACTION_DEMO_DIALOG_WARNING,
+  ACTION_DEMO_DIALOG_SCRIPT,
+  ACTION_DEMO_DIALOG_INFO,
+  ACTION_DEMO_DIALOG_DIAG,
+  ACTION_DEMO_DIALOG_DEBUG,
 };
 static const GxkStockAction file_open_actions[] = {
   { N_("_New"),                 "<ctrl>N",      N_("Create new project"),
@@ -176,10 +184,25 @@ static const GxkStockAction online_synthesizers[] = {
     ACTION_URL_ONLINE_SYNTHESIZERS, BST_STOCK_ONLINE_SOUND_ARCHIVE },
 };
 static const GxkStockAction online_demos[] = {
-  { N_("Online Demos..."),          NULL,           N_("Start a web browser pointing to online demo songs"),
+  { N_("Online Demos..."),      NULL,           N_("Start a web browser pointing to online demo songs"),
     ACTION_URL_ONLINE_DEMOS,        BST_STOCK_ONLINE_SOUND_ARCHIVE },
 };
-
+static const GxkStockAction demo_dialogs[] = {
+  { "Demo Fatal Error Dialog",  NULL,           "Fire up a fatal error dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_FATAL,   BST_STOCK_ERROR },
+  { "Demo Error Dialog",        NULL,           "Fire up an error dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_ERROR,   BST_STOCK_ERROR },
+  { "Demo Warning Dialog",      NULL,           "Fire up a warning dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_WARNING, BST_STOCK_WARNING },
+  { "Demo Script Dialog",       NULL,           "Fire up a script dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_SCRIPT,  BST_STOCK_EXECUTE },
+  { "Demo Info Dialog",         NULL,           "Fire up an information dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_INFO,    BST_STOCK_INFO },
+  { "Demo Diag Dialog",         NULL,           "Fire up a diagnostics dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_DIAG,    BST_STOCK_DIAG },
+  { "Demo Debug Dialog",        NULL,           "Fire up a debug dialog for demonstration purposes",
+    ACTION_DEMO_DIALOG_DEBUG,   BST_STOCK_DIAG },
+};
 
 /* --- variables --- */
 static BstAppClass    *bst_app_class = NULL;
@@ -249,6 +272,9 @@ bst_app_init (BstApp *self)
                               NULL, app_action_check, app_action_exec);
   gxk_widget_publish_actions (self, "online-demos", G_N_ELEMENTS (online_demos), online_demos,
                               NULL, app_action_check, app_action_exec);
+  if (BST_DVL_HINTS)
+    gxk_widget_publish_actions (self, "demo-dialogs", G_N_ELEMENTS (demo_dialogs), demo_dialogs,
+                                NULL, app_action_check, app_action_exec);
   /* Project utilities */
   cseq = bse_categories_match ("/Project/*");
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
@@ -832,6 +858,7 @@ app_action_exec (gpointer data,
     {
       SfiProxy proxy;
       GtkWidget *any;
+      guint demo_type;
     case BST_ACTION_EXIT:
       if (bst_app_class)
         {
@@ -1081,6 +1108,32 @@ app_action_exec (gpointer data,
     case ACTION_URL_ONLINE_DEMOS:
       gxk_show_url ("http://beast.gtk.org/browse-bse-files.html");
       break;
+    case ACTION_DEMO_DIALOG_FATAL:
+    case ACTION_DEMO_DIALOG_ERROR:
+    case ACTION_DEMO_DIALOG_WARNING:
+    case ACTION_DEMO_DIALOG_SCRIPT:
+    case ACTION_DEMO_DIALOG_INFO:
+    case ACTION_DEMO_DIALOG_DIAG:
+    case ACTION_DEMO_DIALOG_DEBUG:
+      switch (action)
+        {
+        case ACTION_DEMO_DIALOG_FATAL:   demo_type = BST_MSG_FATAL;   break;
+        case ACTION_DEMO_DIALOG_ERROR:   demo_type = BST_MSG_ERROR;   break;
+        case ACTION_DEMO_DIALOG_WARNING: demo_type = BST_MSG_WARNING; break;
+        case ACTION_DEMO_DIALOG_SCRIPT:  demo_type = BST_MSG_SCRIPT;  break;
+        case ACTION_DEMO_DIALOG_INFO:    demo_type = BST_MSG_INFO;    break;
+        case ACTION_DEMO_DIALOG_DIAG:    demo_type = BST_MSG_DIAG;    break;
+        case ACTION_DEMO_DIALOG_DEBUG:   demo_type = BST_MSG_DEBUG;   break;
+        }
+      bst_msg_dialog (demo_type,
+                      SFI_MSG_TEXT0 ("Demonstration Dialog"),
+                      SFI_MSG_TEXT1 ("This is a demonstrative dialog"),
+                      SFI_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
+                                     "fired up for pure demonstration purposes. This is such a dialog, so if you "
+                                     "are currently looking at a prominent warning or error message, there's no "
+                                     "real merit to it."),
+                      SFI_MSG_TEXT3 ("Demo-Dialog-Type: %s", sfi_msg_type_label (demo_type)));
+      break;
     default:
       g_assert_not_reached ();
       break;
@@ -1097,7 +1150,8 @@ app_action_check (gpointer data,
                   guint64  action_stamp)
 {
   BstApp *self = BST_APP (data);
-  
+  if (!self->project)
+    return FALSE;
   switch (action)
     {
       SfiProxy super;
@@ -1165,6 +1219,13 @@ app_action_check (gpointer data,
     case ACTION_URL_BEAST_SITE:
     case ACTION_URL_ONLINE_SYNTHESIZERS:
     case ACTION_URL_ONLINE_DEMOS:
+    case ACTION_DEMO_DIALOG_FATAL:
+    case ACTION_DEMO_DIALOG_ERROR:
+    case ACTION_DEMO_DIALOG_WARNING:
+    case ACTION_DEMO_DIALOG_SCRIPT:
+    case ACTION_DEMO_DIALOG_INFO:
+    case ACTION_DEMO_DIALOG_DIAG:
+    case ACTION_DEMO_DIALOG_DEBUG:
       return TRUE;
     case BST_ACTION_EXIT:
       /* abuse generic "Exit" update to sync Tools menu items */

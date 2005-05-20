@@ -232,7 +232,6 @@ BstGConfig*     bst_gconfig_get_global (void);
 /* --- internal --- */
 void            _bst_init_utils         (void);
 void            _bst_init_radgets       (void);
-const gchar**   _bst_log_debug_keys     (void);
 
 G_END_DECLS
 

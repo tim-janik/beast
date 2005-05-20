@@ -532,7 +532,7 @@ check_ancestor (GtkWidget *widget,
 }
 
 static gboolean
-window_action_update_timer (gpointer data)
+gxk_action_timer_update_window (gpointer data)
 {
   GDK_THREADS_ENTER ();
   gxk_action_inc_cache_stamp();
@@ -631,7 +631,7 @@ window_queue_action_updates (GtkWidget *window,
   if (need_timer && !g_slist_find (window_queue, window))
     {
       if (!window_queue)
-        g_timeout_add (50, window_action_update_timer, NULL);
+        g_timeout_add (50, gxk_action_timer_update_window, NULL);
       window_queue = g_slist_prepend (window_queue, g_object_ref (window));
     }
 }

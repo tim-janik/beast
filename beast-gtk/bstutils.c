@@ -1442,18 +1442,6 @@ bst_file_scan_find_key (const gchar *file,
 }
 
 
-/* --- source file key scans --- */
-const gchar**
-_bst_log_debug_keys (void)
-{
-  static const gchar *debug_keys[] = { 
-#include "bstdebugkeys.defs"
-    NULL
-  };
-  return debug_keys;
-}
-
-
 /* --- generated marshallers --- */
 #include "bstmarshal.c"
 

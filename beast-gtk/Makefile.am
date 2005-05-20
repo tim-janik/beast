@@ -81,8 +81,8 @@ beast_extra_sources = $(strip 						\
 	bstparam-item-seq.c		bstrackeditor-covers.c		\
 )
 beast_extra_files = $(strip \
-	bstmarshal.list					\
-	bstdebugkeys.defs	bstrecords.idl		\
+	bstmarshal.list		\
+	bstrecords.idl		\
 )
 # BEAST built sources needed by all objects
 beast_built_depend_sources = $(strip \
@@ -185,21 +185,6 @@ bstmarshal.c: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-bmc \
 	&& cp xgen-bmc $@ \
 	&& rm -f xgen-bmc
-
-SCANKEYS=$(TEXITHEQUE) scankeys --
-
-debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/bse/*.cc $(top_srcdir)/sfi/*.[hc] $(top_srcdir)/sfi/*.cc
-bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)
-	cd $(srcdir) \
-	&& echo > xgen-bdkd \
-	&& grep -E 'sfi_debug(|_check)\b' $(debug_key_globs) \
-	| $(SCANKEYS) --key sfi_debug --key sfi_log_check \
-	     --tmplkey   '  %s,\n' \
-	     --needkeys - \
-	| sort >> xgen-bdkd \
-	&& cp xgen-bdkd $@ \
-	&& rm -f xgen-bdkd
-$(srcdir)/bstutils.c: bstdebugkeys.defs
 
 #
 # setup BEAST sources and their dependancies

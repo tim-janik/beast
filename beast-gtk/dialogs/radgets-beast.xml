@@ -640,6 +640,7 @@
       <menu-tearoff />
       <menu-factory action-root="" actions="demo-songs" />
       <menu-factory action-root="" actions="online-demos" separator="1" />
+      <menu-factory action-root="" actions="demo-dialogs" separator="1" />
     </submenu>
     <submenu-last _label="_Help">
       <menu-tearoff />

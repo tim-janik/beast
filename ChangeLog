@@ -1,3 +1,33 @@
+Fri May 20 14:06:01 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/Makefile.am: removed bstdebugkeys.defs and build rule.
+
+	* beast-gtk/bstapp.c: added menu items to popup demo dialogs for
+	--devel mode. 
+	(app_action_check): don't invoke procedures on 0 project.
+
+	* beast-gtk/bstmain.c: use bst_message_list_types() to display
+	debugging keys.
+
+	* beast-gtk/bstusermessage.h:
+	* beast-gtk/bstusermessage.c: improved fatal error title. prefix
+	primary text with message type for errors. adapted primary vs. 
+	secondary text display styles once more. allow configuration of
+	all info, diag and debugging message dialogs.
+	(bst_message_list_types): list all message types, sorted 
+	by identifier name.
+
+	* beast-gtk/dialogs/radgets-beast.xml: append demo dialog menu items
+	to the /Demo menu.
+
+	* beast-gtk/bstutils.h, beast-gtk/bstutils.c: 
+	removed _bst_log_debug_keys().
+
+	* beast-gtk/gxk/gxkaction.c: slight rename.
+
+	* shell/bse-scm-glue.boot: define (bse-exit-message) to conveniently
+	leave a message and exit at once.
+
 Thu May 19 20:10:15 2005  Tim Janik  <timj@gtk.org>
 
 	* shell/bse-scm-glue.boot: adapted to janitor API changes.

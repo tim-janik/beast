@@ -8,6 +8,9 @@
   (let ((result (bse-script-janitor)))
     (lambda () result)))
 
+;; leave a message and exit
+(define bse-exit-message (lambda arglist (apply bse-script-message arglist) (bse-script-quit)))
+
 (define bse-server (bse-server-get))
 (define (bse-param-string name dflt) (string-append "BseParamString:" name ":" dflt))
 (define (bse-param-bool   name dflt) (string-append "BseParamBool:" name ":" (if dflt "1" "0")))
