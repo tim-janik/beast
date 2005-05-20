@@ -1,3 +1,13 @@
+Fri May 20 14:12:19 2005  Tim Janik  <timj@gtk.org>
+
+	* sficomport.c: disable debugging message that log every
+	communication bit. these are of not much use really and hide
+	the sensible debugging messages.
+
+	* sfilog.c: don't let the message type label default to ident if
+	NULL is specified. callers of sfi_msg_type_label() can handle NULLs.
+	key_list_change(): allow key seperation by ',' and ignore spaces.
+
 Thu May 19 17:53:48 2005  Tim Janik  <timj@gtk.org>
 
 	* sfilog.h, sfilog.c:

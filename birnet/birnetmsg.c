@@ -95,14 +95,6 @@ sfi_msg_type_init_internals ()
   mtype = sfi_msg_type_register ("debug", 0, "Debug");
   g_assert (mtype == SFI_MSG_DEBUG);
   sfi_msg_type_set (SFI_MSG_DEBUG, SFI_MSG_TO_STDERR, FALSE);
-  
-#if 0
-  for (mtype = 0; mtype < n_msg_types; mtype++)
-    g_printerr ("% 2d) %s: disabled=%d log_flags=0x%x label=%s cache=%d\n", mtype,
-                msg_types[mtype].ident, msg_types[mtype].disabled,
-                msg_types[mtype].log_flags, msg_types[mtype].label,
-                sfi_msg_check (mtype));
-#endif
 }
 
 void
@@ -215,7 +207,7 @@ sfi_msg_type_register (const gchar *ident,
       g_free (old_msg_flags);
     }
   msg_types[mtype].ident = g_strdup (ident);
-  msg_types[mtype].label = label ? g_strdup (label) : msg_types[mtype].ident;
+  msg_types[mtype].label = g_strdup (label);
   sfi_msg_type_set (mtype, msg_types[default_ouput].log_flags, !msg_types[default_ouput].disabled);
   msg_types[mtype].default_type = default_ouput;
   sfi_atomic_int_set (&sfi_msg_flags_max, mtype);
@@ -229,9 +221,17 @@ static void
 key_list_change (const char *string,
                  gboolean    flag_value)
 {
-  guint i;
-  /* handle :all: special case */
+  guint i, n;
+  /* ensure all keywords are enclosed in ':' */
   char *s = g_strconcat (":", string, ":", NULL);
+  /* allow ',' seperation and collapse spaces */
+  for (i = 0, n = 0; s[i]; i++)
+    if (s[i] == ',')
+      s[n++] = ':';
+    else if (s[i] != ' ' && s[i] != '\t' && s[i] != '\n' && s[i] != '\r')
+      s[n++] = s[i];
+  s[n] = 0;
+  /* handle :all: special case */
   if (strstr (s, ":all:"))
     {
       g_free (s);
@@ -267,6 +267,15 @@ sfi_msg_allow (const char *key)
   if (key)
     key_list_change (key, TRUE);
   SFI_SPIN_UNLOCK (&logging_mutex);
+  
+#if 0
+  guint i;
+  for (i = 0; i < n_msg_types; i++)
+    g_printerr ("% 2d) %s: disabled=%d log_flags=0x%x label=%s cache=%d\n", i,
+                msg_types[i].ident, msg_types[i].disabled,
+                msg_types[i].log_flags, msg_types[i].label,
+                sfi_msg_check (i));
+#endif
 }
 
 void

@@ -33,6 +33,7 @@
 
 static SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_comport, __VA_ARGS__)
+#define MASS_DEBUG(...) // DEBUG (__VA_ARGS__)          // log every communicated value
 
 /* define the io bottle neck (for writes) to a small value
  * (e.g. 20) to trigger and test blocking IO on fast systems
@@ -401,7 +402,7 @@ sfi_com_port_send_bulk (SfiComPort   *port,
       else
 	thread = first ? link->thread2 : link->thread1;
       SFI_SPIN_UNLOCK (&link->mutex);
-      DEBUG ("[%s: sent values]", port->ident);
+      MASS_DEBUG ("[%s: sent values]", port->ident);
       if (thread)
 	sfi_thread_wakeup (thread);
     }
@@ -569,7 +570,7 @@ static GValue*
 sfi_com_port_recv_intern (SfiComPort *port,
 			  gboolean    blocking)
 {
-  DEBUG ("[%s: START receiving]", port->ident);
+  MASS_DEBUG ("[%s: START receiving]", port->ident);
   if (!port->rvalues && port->link)
     {
       SfiComPortLink *link = port->link;
@@ -629,7 +630,7 @@ sfi_com_port_recv_intern (SfiComPort *port,
           goto loop_blocking;
         }
     }
-  DEBUG ("[%s: DONE receiving]", port->ident);
+  MASS_DEBUG ("[%s: DONE receiving]", port->ident);
   return port->connected ? sfi_ring_pop_head (&port->rvalues) : NULL;
 }
 
