@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-23 10:04+0200\n"
+"POT-Creation-Date: 2005-05-21 00:19+0200\n"
 "PO-Revision-Date: 2005-02-23 10:04+0200\n"
 "Last-Translator: Iassen Pramatarov <turin@fsa-bg.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -17,364 +17,397 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: ../beast-gtk/bstapp.c:74
+#: ../beast-gtk/bstapp.c:82
 msgid "_New"
 msgstr "_Нов"
 
-#: ../beast-gtk/bstapp.c:74
+#: ../beast-gtk/bstapp.c:82
 msgid "Create new project"
 msgstr "Създаване на нов проект"
 
-#: ../beast-gtk/bstapp.c:76
+#: ../beast-gtk/bstapp.c:84
 msgid "_Open..."
 msgstr "_Отваряне..."
 
-#: ../beast-gtk/bstapp.c:76
+#: ../beast-gtk/bstapp.c:84
 msgid "Open existing project"
 msgstr "Отваряне на съществуващ проект"
 
-#: ../beast-gtk/bstapp.c:78
+#: ../beast-gtk/bstapp.c:86
 msgid "_Merge..."
 msgstr "_Сливане..."
 
-#: ../beast-gtk/bstapp.c:78
+#: ../beast-gtk/bstapp.c:86
 msgid "Merge an existing project into the current project"
 msgstr "Сливане на съществуващ проект с текущия"
 
-#: ../beast-gtk/bstapp.c:80
+#: ../beast-gtk/bstapp.c:88
 msgid "_Import MIDI..."
 msgstr "_Внасяне на MIDI..."
 
-#: ../beast-gtk/bstapp.c:80
+#: ../beast-gtk/bstapp.c:88
 msgid "Import a standard MIDI file into the current project"
 msgstr "Внасяне на стандартен MIDI файл в текущия проект"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:90
 msgid "_Close"
 msgstr "_Затваряне"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:90
 msgid "Close the project"
 msgstr "Затваряне на проекта"
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:94
 msgid "_Save"
 msgstr "_Запазване"
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:94
 msgid "Write project to disk"
 msgstr "Записване на проекта в диска"
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:96
 msgid "Save _As..."
 msgstr "Запазване _като..."
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:96
 msgid "Write project to a specific file"
 msgstr "Записване на проекта в зададен файл"
 
-#: ../beast-gtk/bstapp.c:92
+#: ../beast-gtk/bstapp.c:100
 msgid "_Quit"
 msgstr "_Изход"
 
-#: ../beast-gtk/bstapp.c:92
+#: ../beast-gtk/bstapp.c:100
 msgid "Close all windows and quit"
 msgstr "Затваряне на всички прозорци и изход"
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:104
 msgid "_Preferences..."
 msgstr "_Настройки..."
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:104
 msgid "Adjust overall program behaviour"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:108
 msgid "Rebuild"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:103
+#: ../beast-gtk/bstapp.c:111
 msgid "_About..."
 msgstr "_Относно..."
 
-#: ../beast-gtk/bstapp.c:103
+#: ../beast-gtk/bstapp.c:111
 msgid "Display developer and contributor credits"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:107
+#: ../beast-gtk/bstapp.c:115
 msgid "_Undo"
 msgstr "_Връщане"
 
-#: ../beast-gtk/bstapp.c:107
+#: ../beast-gtk/bstapp.c:115
 msgid "Undo the effect of the last action"
 msgstr "Отмяна на последното действие"
 
-#: ../beast-gtk/bstapp.c:109
+#: ../beast-gtk/bstapp.c:117
 msgid "_Redo"
 msgstr "_Връщане"
 
-#: ../beast-gtk/bstapp.c:109
+#: ../beast-gtk/bstapp.c:117
 msgid "Redo the last undone action"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:113 ../beast-gtk/bstpartdialog.c:72
+#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "_Изчистване на историята"
 
-#: ../beast-gtk/bstapp.c:113
+#: ../beast-gtk/bstapp.c:121
 msgid "Delete the complete undo history"
 msgstr "Изтриване на историята на промените"
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:125
 msgid "Procedure _Browser"
 msgstr "Преглед на _процедурите"
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:125
 msgid "Display an overview of all procedures"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:119
+#: ../beast-gtk/bstapp.c:127
 msgid "Rack Editor"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstprofiler.c:225
+#: ../beast-gtk/bstapp.c:129 ../beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:121
+#: ../beast-gtk/bstapp.c:129
 msgid "Display statistics and timing information"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:123
+#: ../beast-gtk/bstapp.c:131
 msgid "New View"
 msgstr "Нов изглед"
 
-#: ../beast-gtk/bstapp.c:123
+#: ../beast-gtk/bstapp.c:131
 msgid "Create an extra view of the project"
 msgstr "Създаване допълнителен изглед на проекта"
 
-#: ../beast-gtk/bstapp.c:127
+#: ../beast-gtk/bstapp.c:135
 msgid "_Play"
 msgstr "_Възпроизвеждане"
 
-#: ../beast-gtk/bstapp.c:127
+#: ../beast-gtk/bstapp.c:135
 msgid "Play or restart playback of the project"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:129
+#: ../beast-gtk/bstapp.c:137
 msgid "_Stop"
 msgstr "_Спиране"
 
-#: ../beast-gtk/bstapp.c:129
+#: ../beast-gtk/bstapp.c:137
 msgid "Stop playback of the project"
 msgstr "Спиране възпроизвеждането на проекта"
 
-#: ../beast-gtk/bstapp.c:133
+#: ../beast-gtk/bstapp.c:141
 msgid "New Song"
 msgstr "Нова песен"
 
-#: ../beast-gtk/bstapp.c:133
+#: ../beast-gtk/bstapp.c:141
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Създаване на нова песен, състояща се от смесител, писти, откъси и ноти"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:143
 msgid "Add Custom Synthesizer"
 msgstr "Добавяне на потребителски синтезатор"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:143
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:145
 msgid "Add MIDI Synthesizer"
 msgstr "Добавяне на MIDI синтезатор"
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:145
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:139
+#: ../beast-gtk/bstapp.c:147
 msgid "Remove Song or Synthesizer"
 msgstr "Премахване на песен или синтезатор"
 
-#: ../beast-gtk/bstapp.c:139
+#: ../beast-gtk/bstapp.c:147
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Премахване на избрания синтезатор (или песен)"
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:151
 msgid "Load _Instrument..."
 msgstr "Зареждане на _инструмент..."
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:151
 msgid "Load synthesizer mesh from instruments folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:153
 msgid "Load _Effect..."
 msgstr "Зареждане на ефект..."
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:153
 msgid "Load synthesizer mesh from effects folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:155
 msgid "Save As Instrument..."
 msgstr "Запазване като инструмент..."
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:155
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:149
+#: ../beast-gtk/bstapp.c:157
 msgid "Save As Effect..."
 msgstr "Запазване като ефект..."
 
-#: ../beast-gtk/bstapp.c:149
+#: ../beast-gtk/bstapp.c:157
 msgid "Save synthesizer mesh to effects folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:161
 msgid "Document _Index..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:161
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Преглед на съдържанието на цялата документация на BEAST"
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:163
 msgid "_Quick Start..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:163
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:165
 msgid "_FAQ..."
 msgstr "_Често задавани въпроси..."
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:165
 msgid "Answers to frequently asked questions"
 msgstr "Отговори на често задавани въпроси"
 
-#: ../beast-gtk/bstapp.c:159
+#: ../beast-gtk/bstapp.c:167
 msgid "Online _Help Desk..."
 msgstr "_Интернет-помощинк..."
 
-#: ../beast-gtk/bstapp.c:159
+#: ../beast-gtk/bstapp.c:167
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Зареждане в уеб-четец на интернет-помощника от страницата на BEAST"
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:169
 msgid "_BEAST Website..."
 msgstr "Интернет страница на _BEAST"
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:169
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Зареждане в уеб-четец на интернет страницата на BEAST"
 
-#: ../beast-gtk/bstapp.c:164
+#: ../beast-gtk/bstapp.c:172
 msgid "_Release Notes..."
 msgstr "_Данни за версията..."
 
-#: ../beast-gtk/bstapp.c:164
+#: ../beast-gtk/bstapp.c:172
 msgid "Notes and informations about this release cycle"
 msgstr "Бележки и подробности за текущата версия"
 
-#: ../beast-gtk/bstapp.c:166
+#: ../beast-gtk/bstapp.c:174
 msgid "Developing Plugins..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:166
+#: ../beast-gtk/bstapp.c:174
 msgid "A guide to synthesis plugin development"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:168
+#: ../beast-gtk/bstapp.c:176
 msgid "DSP Engine..."
 msgstr "DSP машина..."
 
-#: ../beast-gtk/bstapp.c:168
+#: ../beast-gtk/bstapp.c:176
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:171
+#: ../beast-gtk/bstapp.c:179
 msgid "Development..."
 msgstr "Разработка..."
 
-#: ../beast-gtk/bstapp.c:171
+#: ../beast-gtk/bstapp.c:179
 msgid "Provide an overview of development related topics and documents"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:175
+#: ../beast-gtk/bstapp.c:183
 msgid "Online Sound Archive..."
 msgstr "Архив със звуци в Интернет..."
 
-#: ../beast-gtk/bstapp.c:175
+#: ../beast-gtk/bstapp.c:183
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Зареждане в уеб-четец на архива със звуци в Интернет"
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:187
 msgid "Online Demos..."
 msgstr "Примери от Интернет..."
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:187
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Зареждане в уеб-четец на примерните песни в Интернет"
 
-#: ../beast-gtk/bstapp.c:300
+#: ../beast-gtk/bstapp.c:326
 msgid "Export Audio"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:492 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:518 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:494
+#: ../beast-gtk/bstapp.c:520
 msgid "Wave Repository"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:499
+#: ../beast-gtk/bstapp.c:525
 #, c-format
 msgid "Song: %s"
 msgstr "Песен: %s"
 
-#: ../beast-gtk/bstapp.c:504
+#: ../beast-gtk/bstapp.c:530
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI синтезатор: %s"
 
-#: ../beast-gtk/bstapp.c:509
+#: ../beast-gtk/bstapp.c:535
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Синтезатор: %s"
 
-#: ../beast-gtk/bstapp.c:696 ../beast-gtk/bstapp.c:703
-#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:428
+#: ../beast-gtk/bstapp.c:645
+#, fuzzy, c-format
+msgid "Close %s"
+msgstr "_Затваряне"
+
+#: ../beast-gtk/bstapp.c:646
+msgid "The project has been modified."
+msgstr ""
+
+#: ../beast-gtk/bstapp.c:647
+#, c-format
+msgid ""
+"Changes were made to project \"%s\" since the last time it was saved to disk."
+msgstr ""
+
+#: ../beast-gtk/bstapp.c:649
+msgid "Save the project before closing its window?"
+msgstr ""
+
+#: ../beast-gtk/bstapp.c:650
+#, fuzzy
+msgid "Save Changes"
+msgstr "Запазване: %s"
+
+#: ../beast-gtk/bstapp.c:651
+msgid "Discard Changes"
+msgstr ""
+
+#: ../beast-gtk/bstapp.c:652
+#, fuzzy
+msgid "Cancel"
+msgstr "_Отказ"
+
+#: ../beast-gtk/bstapp.c:737 ../beast-gtk/bstapp.c:744
+#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Отваряне на проекта `%s'"
 
-#: ../beast-gtk/bstapp.c:763
+#: ../beast-gtk/bstapp.c:804
 #, c-format
 msgid "Loading skin `%s'"
 msgstr ""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:932
+#: ../beast-gtk/bstapp.c:976
 msgid "Rack editor"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:946
+#: ../beast-gtk/bstapp.c:990
 msgid "Preferences"
 msgstr "Настройки"
 
-#: ../beast-gtk/bstapp.c:973
+#: ../beast-gtk/bstapp.c:1017
 msgid "Procedure Browser"
 msgstr "Преглед на процедурите"
 
-#: ../beast-gtk/bstapp.c:1030
+#: ../beast-gtk/bstapp.c:1074
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s - данни за версията"
@@ -389,18 +422,17 @@ msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Моля натиснете новата клавишна комбинация..."
 
 #: ../beast-gtk/bstbuseditor.c:38 ../beast-gtk/bstbusmixer.c:35
-#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstinstrumentview.c:33
-#: ../beast-gtk/bstpartview.c:39 ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstpartview.c:39
+#: ../beast-gtk/bsttrackview.c:63
 msgid "Add"
 msgstr "Добавяне"
 
 #: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
-#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstinstrumentview.c:34
-#: ../beast-gtk/bstkeybindings.c:59 ../beast-gtk/bstpartview.c:40
-#: ../beast-gtk/bstpianorollctrl.c:80 ../beast-gtk/bstrackitem.c:216
-#: ../beast-gtk/bstsnetrouter.c:712 ../beast-gtk/bstsnetrouter.c:760
-#: ../beast-gtk/bsttrackrollctrl.c:51 ../beast-gtk/bsttrackview.c:66
-#: ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstkeybindings.c:59
+#: ../beast-gtk/bstpartview.c:40 ../beast-gtk/bstpianorollctrl.c:80
+#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
+#: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
+#: ../beast-gtk/bsttrackview.c:66 ../beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Изтриване"
 
@@ -495,51 +527,51 @@ msgstr "Обръщане"
 msgid "Invert the current seleciton"
 msgstr "Обръщане на избраното в момента"
 
-#: ../beast-gtk/bsteventrollctrl.c:441 ../beast-gtk/bsteventrollctrl.c:448
-#: ../beast-gtk/bsteventrollctrl.c:517
+#: ../beast-gtk/bsteventrollctrl.c:446 ../beast-gtk/bsteventrollctrl.c:453
+#: ../beast-gtk/bsteventrollctrl.c:522
 msgid "Move Control Event"
 msgstr ""
 
-#: ../beast-gtk/bsteventrollctrl.c:448 ../beast-gtk/bsteventrollctrl.c:602
-#: ../beast-gtk/bsteventrollctrl.c:652 ../beast-gtk/bstpianorollctrl.c:575
-#: ../beast-gtk/bstpianorollctrl.c:685 ../beast-gtk/bstpianorollctrl.c:748
+#: ../beast-gtk/bsteventrollctrl.c:453 ../beast-gtk/bsteventrollctrl.c:607
+#: ../beast-gtk/bsteventrollctrl.c:657 ../beast-gtk/bstpianorollctrl.c:580
+#: ../beast-gtk/bstpianorollctrl.c:690 ../beast-gtk/bstpianorollctrl.c:753
 #: ../beast-gtk/bsttrackrollctrl.c:480 ../beast-gtk/bsttrackrollctrl.c:500
 #: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:170
 msgid "No target"
 msgstr ""
 
-#: ../beast-gtk/bsteventrollctrl.c:517 ../beast-gtk/bsteventrollctrl.c:638
+#: ../beast-gtk/bsteventrollctrl.c:522 ../beast-gtk/bsteventrollctrl.c:643
 msgid "Lost Event"
 msgstr ""
 
-#: ../beast-gtk/bsteventrollctrl.c:527 ../beast-gtk/bsteventrollctrl.c:560
+#: ../beast-gtk/bsteventrollctrl.c:532 ../beast-gtk/bsteventrollctrl.c:565
 msgid "Align Control Events"
 msgstr ""
 
-#: ../beast-gtk/bsteventrollctrl.c:560 ../beast-gtk/bsteventrollctrl.c:686
-#: ../beast-gtk/bstpianorollctrl.c:806 ../beast-gtk/bstpianorollctrl.c:842
+#: ../beast-gtk/bsteventrollctrl.c:565 ../beast-gtk/bsteventrollctrl.c:691
+#: ../beast-gtk/bstpianorollctrl.c:811 ../beast-gtk/bstpianorollctrl.c:847
 msgid "Aborted"
 msgstr "Прекъснато"
 
-#: ../beast-gtk/bsteventrollctrl.c:586
+#: ../beast-gtk/bsteventrollctrl.c:591
 msgid "Insert Control Event"
 msgstr "Вмъкване на управляващо събитие"
 
-#: ../beast-gtk/bsteventrollctrl.c:597 ../beast-gtk/bsteventrollctrl.c:602
-#: ../beast-gtk/bsteventrollctrl.c:638
+#: ../beast-gtk/bsteventrollctrl.c:602 ../beast-gtk/bsteventrollctrl.c:607
+#: ../beast-gtk/bsteventrollctrl.c:643
 msgid "Resize Control Event"
 msgstr ""
 
-#: ../beast-gtk/bsteventrollctrl.c:649 ../beast-gtk/bsteventrollctrl.c:652
+#: ../beast-gtk/bsteventrollctrl.c:654 ../beast-gtk/bsteventrollctrl.c:657
 msgid "Delete Control Event"
 msgstr "Изтриване на управляващо събитие"
 
-#: ../beast-gtk/bsteventrollctrl.c:662 ../beast-gtk/bsteventrollctrl.c:686
-#: ../beast-gtk/bstpianorollctrl.c:780 ../beast-gtk/bstpianorollctrl.c:806
+#: ../beast-gtk/bsteventrollctrl.c:667 ../beast-gtk/bsteventrollctrl.c:691
+#: ../beast-gtk/bstpianorollctrl.c:785 ../beast-gtk/bstpianorollctrl.c:811
 msgid "Select Region"
 msgstr "Избиране на област"
 
-#: ../beast-gtk/bsteventrollctrl.c:695 ../beast-gtk/bstpianorollctrl.c:851
+#: ../beast-gtk/bsteventrollctrl.c:700 ../beast-gtk/bstpianorollctrl.c:856
 msgid "Abortion"
 msgstr "Прекъсване"
 
@@ -564,27 +596,27 @@ msgstr "Избор на файл"
 msgid "Select Directory"
 msgstr "Избор на папка"
 
-#: ../beast-gtk/bstfiledialog.c:446
+#: ../beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Merge: %s"
 msgstr "Сливане: %s"
 
-#: ../beast-gtk/bstfiledialog.c:459
+#: ../beast-gtk/bstfiledialog.c:458
 #, c-format
 msgid "Merging project `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:475
+#: ../beast-gtk/bstfiledialog.c:474
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Внасяне на MIDI: %s"
 
-#: ../beast-gtk/bstfiledialog.c:486
+#: ../beast-gtk/bstfiledialog.c:485
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Внасяне на MIDI файла `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:505
+#: ../beast-gtk/bstfiledialog.c:506
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -600,7 +632,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:529 ../beast-gtk/bstfiledialog.c:543
+#: ../beast-gtk/bstfiledialog.c:531 ../beast-gtk/bstfiledialog.c:545
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -613,7 +645,7 @@ msgstr ""
 "поради:\n"
 "%s"
 
-#: ../beast-gtk/bstfiledialog.c:534
+#: ../beast-gtk/bstfiledialog.c:536
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -626,72 +658,72 @@ msgstr ""
 "поради:\n"
 "%s"
 
-#: ../beast-gtk/bstfiledialog.c:571
+#: ../beast-gtk/bstfiledialog.c:572
+#, c-format
+msgid "Saving project `%s'"
+msgstr "Запазване на проекта `%s'"
+
+#: ../beast-gtk/bstfiledialog.c:609
 #, c-format
 msgid "Save: %s"
 msgstr "Запазване: %s"
 
 #. setup radio buttons
-#: ../beast-gtk/bstfiledialog.c:573
+#: ../beast-gtk/bstfiledialog.c:613
 msgid "Fully include wave files"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:574
+#: ../beast-gtk/bstfiledialog.c:614
 msgid "Store references to wave files"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:588
-#, c-format
-msgid "Saving project `%s'"
-msgstr "Запазване на проекта `%s'"
-
-#: ../beast-gtk/bstfiledialog.c:603
+#: ../beast-gtk/bstfiledialog.c:633
 msgid "Load Effect"
 msgstr "Зареждане на ефект"
 
-#: ../beast-gtk/bstfiledialog.c:616
+#: ../beast-gtk/bstfiledialog.c:646
 #, c-format
 msgid "Merging effect `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:633
+#: ../beast-gtk/bstfiledialog.c:663
 msgid "Save Effect"
 msgstr "Запазване на ефекта"
 
-#: ../beast-gtk/bstfiledialog.c:647
+#: ../beast-gtk/bstfiledialog.c:677
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Запазване на ефекта `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:662
+#: ../beast-gtk/bstfiledialog.c:692
 msgid "Load Instrument"
 msgstr "Зареждане на инструмент"
 
-#: ../beast-gtk/bstfiledialog.c:675
+#: ../beast-gtk/bstfiledialog.c:705
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:692
+#: ../beast-gtk/bstfiledialog.c:722
 msgid "Save Instrument"
 msgstr "Запазване на инструмента"
 
-#: ../beast-gtk/bstfiledialog.c:706
+#: ../beast-gtk/bstfiledialog.c:736
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Запазване на инструмента `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:722
+#: ../beast-gtk/bstfiledialog.c:752
 msgid "Load Wave"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:734 ../beast-gtk/bstfiledialog.c:736
+#: ../beast-gtk/bstfiledialog.c:764 ../beast-gtk/bstfiledialog.c:766
 #, c-format
 msgid "Loading wave `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:738 ../beast-gtk/bstmain.c:279
-#: ../beast-gtk/bstmain.c:296
+#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:278
+#: ../beast-gtk/bstmain.c:295
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr ""
@@ -814,84 +846,84 @@ msgstr ""
 msgid "Function used to create new key bindings"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:462 ../beast-gtk/bstprocedure.c:206
+#: ../beast-gtk/bstkeybindings.c:462 ../beast-gtk/bstprocedure.c:203
 msgid "Description"
 msgstr "Описание"
 
 #. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:119 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:118 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:131
+#: ../beast-gtk/bstmain.c:130
 msgid "BEAST Startup"
 msgstr "Зареждане на BEAST"
 
-#: ../beast-gtk/bstmain.c:138
+#: ../beast-gtk/bstmain.c:137
 msgid "Startup"
 msgstr "Зареждане"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:142
+#: ../beast-gtk/bstmain.c:141
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:150
+#: ../beast-gtk/bstmain.c:149
 msgid "RC Files"
 msgstr ""
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:154
+#: ../beast-gtk/bstmain.c:153
 msgid "Splash Image"
 msgstr "Начално изображение"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:166
+#: ../beast-gtk/bstmain.c:165
 msgid "BSE Core"
 msgstr "Ядро на BSE"
 
-#: ../beast-gtk/bstmain.c:188
+#: ../beast-gtk/bstmain.c:187
 msgid "Plugins"
 msgstr "Приставки"
 
-#: ../beast-gtk/bstmain.c:207
+#: ../beast-gtk/bstmain.c:206
 msgid "LADSPA Plugins"
 msgstr "Приставки LADSPA"
 
-#: ../beast-gtk/bstmain.c:235
+#: ../beast-gtk/bstmain.c:234
 msgid "Scripts"
 msgstr "Скриптове"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:252
+#: ../beast-gtk/bstmain.c:251
 msgid "Dialogs"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:261
+#: ../beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Зареждане..."
 
-#: ../beast-gtk/bstmain.c:275 ../beast-gtk/bstmain.c:277
+#: ../beast-gtk/bstmain.c:274 ../beast-gtk/bstmain.c:276
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Зареждане на \"%s\""
 
-#: ../beast-gtk/bstmain.c:315
+#: ../beast-gtk/bstmain.c:314
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Грешка при зареждане на проекта \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:816
+#: ../beast-gtk/bstmain.c:822
 msgid "BEAST About"
 msgstr "Относно BEAST"
 
-#: ../beast-gtk/bstmain.c:817
+#: ../beast-gtk/bstmain.c:823
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST версия %s"
 
-#: ../beast-gtk/bstmain.c:818
+#: ../beast-gtk/bstmain.c:824
 msgid "Contributions made by:"
 msgstr "Със съдействието на:"
 
@@ -1404,7 +1436,7 @@ msgstr "Избиране"
 msgid "Rectangle select notes"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:86 ../beast-gtk/bstpianorollctrl.c:816
+#: ../beast-gtk/bstpianorollctrl.c:86 ../beast-gtk/bstpianorollctrl.c:821
 msgid "Vertical Select"
 msgstr ""
 
@@ -1556,33 +1588,33 @@ msgstr ""
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:568 ../beast-gtk/bstpianorollctrl.c:575
-#: ../beast-gtk/bstpianorollctrl.c:663
+#: ../beast-gtk/bstpianorollctrl.c:573 ../beast-gtk/bstpianorollctrl.c:580
+#: ../beast-gtk/bstpianorollctrl.c:668
 msgid "Move Note"
 msgstr "Преместване на нота"
 
-#: ../beast-gtk/bstpianorollctrl.c:663 ../beast-gtk/bstpianorollctrl.c:734
+#: ../beast-gtk/bstpianorollctrl.c:668 ../beast-gtk/bstpianorollctrl.c:739
 msgid "Lost Note"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:680 ../beast-gtk/bstpianorollctrl.c:685
-#: ../beast-gtk/bstpianorollctrl.c:734
+#: ../beast-gtk/bstpianorollctrl.c:685 ../beast-gtk/bstpianorollctrl.c:690
+#: ../beast-gtk/bstpianorollctrl.c:739
 msgid "Resize Note"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:745 ../beast-gtk/bstpianorollctrl.c:748
+#: ../beast-gtk/bstpianorollctrl.c:750 ../beast-gtk/bstpianorollctrl.c:753
 msgid "Delete Note"
 msgstr "Изтриване на нота"
 
-#: ../beast-gtk/bstpianorollctrl.c:770
+#: ../beast-gtk/bstpianorollctrl.c:775
 msgid "Insert Note"
 msgstr "Вмъкване на нота"
 
-#: ../beast-gtk/bstpianorollctrl.c:842
+#: ../beast-gtk/bstpianorollctrl.c:847
 msgid "Vertical Region"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:963
+#: ../beast-gtk/bstpianorollctrl.c:968
 msgid "Play note"
 msgstr "Просвирване на нота"
 
@@ -1606,21 +1638,22 @@ msgstr "Съобщения"
 msgid "Skin"
 msgstr ""
 
-#: ../beast-gtk/bstprocedure.c:296
-#, c-format
-msgid "Executing `%s'"
+#: ../beast-gtk/bstprocedure.c:293
+#, fuzzy, c-format
+msgid "Executing '%s'"
 msgstr "Изпълнение на \"%s\""
 
 #. | GXK_DIALOG_WINDOW_GROUP,
-#: ../beast-gtk/bstprocedure.c:447
-msgid "Procedure"
+#: ../beast-gtk/bstprocedure.c:444
+#, fuzzy
+msgid "Start Procedure"
 msgstr "Процедура"
 
 #: ../beast-gtk/bstprofiler.c:166
 msgid "Totals"
 msgstr "Общо"
 
-#: ../beast-gtk/bstprofiler.c:246 ../bse/bsecore.idl:609
+#: ../beast-gtk/bstprofiler.c:246 ../bse/bsecore.idl:621
 msgid "Thread Name"
 msgstr ""
 
@@ -2589,42 +2622,6 @@ msgstr "Описания на каналите"
 msgid "Toggle channel name hints"
 msgstr ""
 
-#: ../beast-gtk/bststest.c:553
-msgid "Selection to Loop"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:561
-msgid "Loop to Selection"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:569
-msgid "Zoom Selection"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:577
-msgid "Apply Loop"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:585
-msgid "Reset Loop"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:593
-msgid "Score"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:601
-msgid "Find"
-msgstr "Търсене"
-
-#: ../beast-gtk/bststest.c:619
-msgid "Mark Signal (Head)"
-msgstr ""
-
-#: ../beast-gtk/bststest.c:629
-msgid "Mark Signal (Tail)"
-msgstr ""
-
 #: ../beast-gtk/bstsupershell.c:183
 msgid "Tracks"
 msgstr "Писти"
@@ -2771,7 +2768,7 @@ msgstr "Добавяне на нова писта към песента"
 msgid "Delete the currently selected track"
 msgstr "Изтриване на избраната писта"
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:282
+#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
 #: ../bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr ""
@@ -2786,7 +2783,7 @@ msgid ""
 msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1012
+#: ../bse/bsetrack.c:1013
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
@@ -2803,46 +2800,46 @@ msgid "Mixer busses connected to track output"
 msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:743 ../bse/bsetrack.c:1023
+#: ../bse/bsesong.c:743 ../bse/bsetrack.c:1024
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:95
-msgid "Error"
-msgstr "Грешка"
-
-#: ../beast-gtk/bstusermessage.c:99
-msgid "Warning"
-msgstr "Предупреждение"
-
-#: ../beast-gtk/bstusermessage.c:103
-msgid "Info"
-msgstr "Данни"
-
-#: ../beast-gtk/bstusermessage.c:108
-msgid "Miscellaneous Message"
+#: ../beast-gtk/bstusermessage.c:58
+msgid "Fatal Error: "
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:195
+#: ../beast-gtk/bstusermessage.c:62
+#, fuzzy
+msgid "Error: "
+msgstr "Грешка"
+
+#: ../beast-gtk/bstusermessage.c:215
 msgid "Details:"
 msgstr "Подробности:"
 
-#: ../beast-gtk/bstusermessage.c:202
-#, c-format
-msgid "Origin:  %s\n"
-msgstr ""
+#: ../beast-gtk/bstusermessage.c:228 ../beast-gtk/bstusermessage.c:537
+#, fuzzy, c-format
+msgid ""
+"Procedure: %s\n"
+"Script: %s\n"
+msgstr "Процедурата в момента е заета"
 
-#: ../beast-gtk/bstusermessage.c:204
+#: ../beast-gtk/bstusermessage.c:230
 #, c-format
 msgid "Process: %s\n"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:206
+#: ../beast-gtk/bstusermessage.c:232
+#, c-format
+msgid "Origin:  %s\n"
+msgstr ""
+
+#: ../beast-gtk/bstusermessage.c:234
 #, c-format
 msgid "PID:     %u\n"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:230
+#: ../beast-gtk/bstusermessage.c:266
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
@@ -2850,19 +2847,51 @@ msgstr ""
 "Тази настройка може да бъде променена в раздела \"Съобщения\" на прозореца "
 "за настройки"
 
-#: ../beast-gtk/bstusermessage.c:277
+#: ../beast-gtk/bstusermessage.c:354
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "Съобщението е повторено %u път"
 
-#: ../beast-gtk/bstusermessage.c:277
+#: ../beast-gtk/bstusermessage.c:354
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "Съобщението е повторено %u пъти"
 
-#: ../beast-gtk/bstusermessage.c:386 ../beast-gtk/bstusermessage.c:388
+#: ../beast-gtk/bstusermessage.c:411
+msgid "Display dialogs with information messages"
+msgstr ""
+
+#: ../beast-gtk/bstusermessage.c:413
+msgid "Display dialogs with dignostic messages"
+msgstr ""
+
+#: ../beast-gtk/bstusermessage.c:415
+msgid "Display dialogs with debugging messages"
+msgstr ""
+
+#: ../beast-gtk/bstusermessage.c:533
+#, c-format
+msgid "Executing procedure '%s' from script '%s'."
+msgstr ""
+
+#: ../beast-gtk/bstusermessage.c:575 ../beast-gtk/bstusermessage.c:577
 msgid "processing"
 msgstr "обработка"
+
+#: ../beast-gtk/bstusermessage.c:600
+#, c-format
+msgid "An error occoured during execution of script procedure '%s': %s"
+msgstr ""
+
+#: ../beast-gtk/bstusermessage.c:601 ../beast-gtk/bstusermessage.c:789
+#, fuzzy
+msgid "Script execution error."
+msgstr "Изпълнението на процедурата е прекъснато"
+
+#: ../beast-gtk/bstusermessage.c:788
+#, fuzzy, c-format
+msgid "Failed to execute script procedure '%s': %s"
+msgstr "Грешка при отваряне на изходния файл \"%s\": %s"
 
 #: ../beast-gtk/bstutils.c:297 ../beast-gtk/bstutils.c:319
 #: ../beast-gtk/bstutils.c:322
@@ -3360,7 +3389,7 @@ msgstr "Упр. вх. 2"
 msgid "Second control input"
 msgstr "Втори управляващ вход"
 
-#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:192
+#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:193
 #: ../bse/bsestandardosc.c:196 ../bse/bsewaveosc.c:596
 #: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
@@ -3514,261 +3543,261 @@ msgstr "BSE обекти"
 msgid " Object Reference"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:105
+#: ../bse/bsebiquadfilter.c:106
 msgid "/Filters/Biquad Types"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:124
+#: ../bse/bsebiquadfilter.c:125
 msgid "Filter"
 msgstr "Филтър"
 
-#: ../bse/bsebiquadfilter.c:126 ../plugins/bseiirfilter.c:127
+#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:127
 msgid "Filter Type"
 msgstr "Вид филтър"
 
-#: ../bse/bsebiquadfilter.c:126 ../plugins/bseiirfilter.c:121
+#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:121
 msgid "The filter design type"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:130 ../bse/bsebiquadfilter.c:138
+#: ../bse/bsebiquadfilter.c:131 ../bse/bsebiquadfilter.c:139
 msgid "Center Frequency"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:132 ../plugins/bseiirfilter.c:143
+#: ../bse/bsebiquadfilter.c:133 ../plugins/bseiirfilter.c:143
 #: ../plugins/bseiirfilter.c:153
 msgid "Cutoff [Hz]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:140 ../bse/bseconstant.c:128
+#: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:128
 #: ../bse/bsestandardosc.c:146 ../plugins/bseiirfilter.c:148
 #: ../plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Нота"
 
-#: ../bse/bsebiquadfilter.c:145 ../bse/bsebiquadfilter.c:150
+#: ../bse/bsebiquadfilter.c:146 ../bse/bsebiquadfilter.c:151
 msgid "Emphasis"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:147
+#: ../bse/bsebiquadfilter.c:148
 msgid "Gain [dB]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:152
+#: ../bse/bsebiquadfilter.c:153
 msgid "Norm Type"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:153
+#: ../bse/bsebiquadfilter.c:154
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:158 ../bse/bsebiquadfilter.c:164
-#: ../bse/bsebiquadfilter.c:170 ../bse/bsebiquadfilter.c:176
+#: ../bse/bsebiquadfilter.c:159 ../bse/bsebiquadfilter.c:165
+#: ../bse/bsebiquadfilter.c:171 ../bse/bsebiquadfilter.c:177
 #: ../bse/bsestandardosc.c:153 ../bse/bsestandardosc.c:158
 #: ../bse/bsestandardosc.c:163 ../bse/bsestandardosc.c:168
 #: ../bse/bsewaveosc.c:566 ../bse/bsewaveosc.c:572 ../bse/bsewaveosc.c:578
 msgid "Modulation"
 msgstr "Модулация"
 
-#: ../bse/bsebiquadfilter.c:161 ../bse/bsestandardosc.c:155
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsestandardosc.c:155
 msgid "Strength of linear frequency modulation"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:167 ../bse/bsestandardosc.c:160
+#: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:160
 #: ../bse/bsewaveosc.c:575
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Прилагане на експоненциална честотна модулация вместо линейна"
 
-#: ../bse/bsebiquadfilter.c:173 ../bse/bsestandardosc.c:165
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:165
 #: ../bse/bsewaveosc.c:581
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Брой октави, които да се повлияят от експоненциалната честотна модулация"
 
-#: ../bse/bsebiquadfilter.c:179
+#: ../bse/bsebiquadfilter.c:180
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:180
+#: ../bse/bsebiquadfilter.c:181
 msgid "Strength of gain modulation"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:184 ../plugins/bseatandistort.c:90
+#: ../bse/bsebiquadfilter.c:185 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Звуков вх."
 
-#: ../bse/bsebiquadfilter.c:184
+#: ../bse/bsebiquadfilter.c:185
 msgid "Unfiltered Audio Signal"
 msgstr "Нефилтриран звуков сигнал"
 
-#: ../bse/bsebiquadfilter.c:186 ../bse/bsestandardosc.c:188
+#: ../bse/bsebiquadfilter.c:187 ../bse/bsestandardosc.c:188
 #: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
 msgstr "Вх. честота"
 
-#: ../bse/bsebiquadfilter.c:186
+#: ../bse/bsebiquadfilter.c:187
 msgid "Center Frequency Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
 msgid "Freq Mod In"
 msgstr "Вх. чест. мод."
 
-#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
 msgid "Frequency Modulation Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:190
+#: ../bse/bsebiquadfilter.c:191
 msgid "Gain Mod In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:190
+#: ../bse/bsebiquadfilter.c:191
 msgid "Gain Modulation Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:193
 msgid "Filtered Audio Signal"
 msgstr "Филтриран звуков сигнал"
 
-#: ../bse/bsebus.c:135
+#: ../bse/bsebus.c:136
 msgid "Available Inputs"
 msgstr "Налични входове"
 
-#: ../bse/bsebus.c:135
+#: ../bse/bsebus.c:136
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: ../bse/bsebus.c:146 ../bse/bsetrack.c:299
+#: ../bse/bsebus.c:147 ../bse/bsetrack.c:300
 msgid "Available Outputs"
 msgstr "Налични изходи"
 
-#: ../bse/bsebus.c:146
+#: ../bse/bsebus.c:147
 msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
-#: ../bse/bsebus.c:839 ../bse/bsebus.c:841 ../bse/bsebus.c:843
-#: ../bse/bsebus.c:845 ../bse/bsebus.c:849 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:996
+#: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
+#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
 msgid "Adjustments"
 msgstr ""
 
-#: ../bse/bsebus.c:840
+#: ../bse/bsebus.c:871
 msgid "Mute"
 msgstr "Заглушаване"
 
-#: ../bse/bsebus.c:840
+#: ../bse/bsebus.c:871
 msgid "Mute: turn off the bus volume"
 msgstr "Заглушаване: изключване на звука"
 
-#: ../bse/bsebus.c:842
+#: ../bse/bsebus.c:873
 msgid "Solo"
 msgstr ""
 
-#: ../bse/bsebus.c:842
+#: ../bse/bsebus.c:873
 msgid "Solo: mute all other busses"
 msgstr ""
 
-#: ../bse/bsebus.c:844
+#: ../bse/bsebus.c:875
 msgid "Sync"
 msgstr ""
 
-#: ../bse/bsebus.c:844
+#: ../bse/bsebus.c:875
 msgid "Syncronize left and right volume"
 msgstr ""
 
-#: ../bse/bsebus.c:846
+#: ../bse/bsebus.c:877
 msgid "Left Volume"
 msgstr ""
 
-#: ../bse/bsebus.c:846
+#: ../bse/bsebus.c:877
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "Настройка силата на звука на левия канал в децибели"
 
-#: ../bse/bsebus.c:850
+#: ../bse/bsebus.c:881
 msgid "Right Volume"
 msgstr ""
 
-#: ../bse/bsebus.c:850
+#: ../bse/bsebus.c:881
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Настройка силата на звука на десния канал в децибели"
 
-#: ../bse/bsebus.c:853
+#: ../bse/bsebus.c:884
 msgid "Signal Inputs"
 msgstr ""
 
 #. SYNC: type partitions determine the order of displayed objects
-#: ../bse/bsebus.c:856
+#: ../bse/bsebus.c:887
 msgid "Input Signals"
 msgstr "Входни сигнали"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: ../bse/bsebus.c:860
+#: ../bse/bsebus.c:891
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: ../bse/bsebus.c:862 ../bse/bsetrack.c:1025
+#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
 msgid "Signal Outputs"
 msgstr ""
 
-#: ../bse/bsebus.c:864 ../bse/bsetrack.c:1027
+#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
 msgid "Output Signals"
 msgstr "Изходни сигнали"
 
-#: ../bse/bsebus.c:865
+#: ../bse/bsebus.c:896
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: ../bse/bsebus.c:868
+#: ../bse/bsebus.c:899
 msgid "Internals"
 msgstr ""
 
-#: ../bse/bsebus.c:870
+#: ../bse/bsebus.c:901
 msgid "Master Output"
 msgstr ""
 
-#: ../bse/bsebus.c:873 ../bse/bsepcmoutput.c:128
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:128
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr ""
 
-#: ../bse/bsebus.c:873 ../bse/bsepcmoutput.c:128
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr ""
 
-#: ../bse/bsebus.c:875 ../bse/bsepcmoutput.c:130
+#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:130
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr ""
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:906
 msgid "Right channel input"
 msgstr ""
 
-#: ../bse/bsebus.c:877 ../bse/bsepcminput.c:128
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:128
 #: ../plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr ""
 
-#: ../bse/bsebus.c:877 ../bse/bsepcminput.c:128
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr ""
 
-#: ../bse/bsebus.c:879 ../bse/bsepcminput.c:130
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:130
 #: ../plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr ""
 
-#: ../bse/bsebus.c:879 ../bse/bsepcminput.c:130
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr ""
 
-#: ../bse/bsebus.c:898
+#: ../bse/bsebus.c:929
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -4494,92 +4523,92 @@ msgstr ""
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr ""
 
-#: ../bse/bsecore.idl:610
+#: ../bse/bsecore.idl:622
 msgid "State"
 msgstr "Състояние"
 
-#: ../bse/bsecore.idl:610
+#: ../bse/bsecore.idl:622
 msgid "The execution state of the thread"
 msgstr ""
 
-#: ../bse/bsecore.idl:611
+#: ../bse/bsecore.idl:623
 msgid "Thread ID"
 msgstr ""
 
-#: ../bse/bsecore.idl:611
+#: ../bse/bsecore.idl:623
 msgid "A unique number identifying this thread"
 msgstr ""
 
-#: ../bse/bsecore.idl:613
+#: ../bse/bsecore.idl:625
 msgid "Priority"
 msgstr ""
 
-#: ../bse/bsecore.idl:613
+#: ../bse/bsecore.idl:625
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 msgstr ""
 
-#: ../bse/bsecore.idl:616
+#: ../bse/bsecore.idl:628
 msgid "Processor"
 msgstr ""
 
-#: ../bse/bsecore.idl:616
+#: ../bse/bsecore.idl:628
 msgid "The processor that this thread is currently being executed on"
 msgstr ""
 
-#: ../bse/bsecore.idl:618
+#: ../bse/bsecore.idl:630
 msgid "User Time"
 msgstr ""
 
-#: ../bse/bsecore.idl:618
+#: ../bse/bsecore.idl:630
 msgid "The CPU time spent executing instructions of this thread"
 msgstr ""
 
-#: ../bse/bsecore.idl:620
+#: ../bse/bsecore.idl:632
 msgid "System Time"
 msgstr "Системно време"
 
-#: ../bse/bsecore.idl:620
+#: ../bse/bsecore.idl:632
 msgid "The CPU time spent in the system for this thread"
 msgstr ""
 
-#: ../bse/bsecore.idl:622
+#: ../bse/bsecore.idl:634
 msgid "Child User Time"
 msgstr ""
 
-#: ../bse/bsecore.idl:622
+#: ../bse/bsecore.idl:634
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr ""
 
-#: ../bse/bsecore.idl:624
+#: ../bse/bsecore.idl:636
 msgid "Child System Time"
 msgstr ""
 
-#: ../bse/bsecore.idl:624
+#: ../bse/bsecore.idl:636
 msgid "The CPU time spent in the system for children of this thread"
 msgstr ""
 
-#: ../bse/bsecore.idl:639
+#: ../bse/bsecore.idl:651
 msgid "Search Paths"
 msgstr "Пътища за търсене"
 
-#: ../bse/bsecore.idl:640
+#: ../bse/bsecore.idl:652
 msgid "Sample Path"
 msgstr "Път до семплите"
 
-#: ../bse/bsecore.idl:641
+#: ../bse/bsecore.idl:653
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 "Списък с папки, разделени с \"%s\", в които ще бъдат търсени звукови семпли."
 
-#: ../bse/bsecore.idl:644
+#: ../bse/bsecore.idl:656
 msgid "Effect Path"
 msgstr "Път до ефектите"
 
-#: ../bse/bsecore.idl:645
+#: ../bse/bsecore.idl:657
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -4587,11 +4616,11 @@ msgid ""
 msgstr ""
 "Списък с папки, разделени с \"%s\", в които ще бъдат търсени BSE ефекти."
 
-#: ../bse/bsecore.idl:648
+#: ../bse/bsecore.idl:660
 msgid "Instrument Path"
 msgstr ""
 
-#: ../bse/bsecore.idl:649
+#: ../bse/bsecore.idl:661
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -4599,22 +4628,22 @@ msgid ""
 msgstr ""
 "Списък с папки, разделени с \"%s\", в които ще бъдат търсени BSE инструменти."
 
-#: ../bse/bsecore.idl:652
+#: ../bse/bsecore.idl:664
 msgid "Script Path"
 msgstr "Път до скриптовете"
 
-#: ../bse/bsecore.idl:653
+#: ../bse/bsecore.idl:665
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
 "scripts."
 msgstr ""
 
-#: ../bse/bsecore.idl:656
+#: ../bse/bsecore.idl:668
 msgid "Plugin Path"
 msgstr "Път до приставките"
 
-#: ../bse/bsecore.idl:657
+#: ../bse/bsecore.idl:669
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -4625,11 +4654,11 @@ msgstr ""
 "приставки. Този списък е допълнение към стандартното местоположение на BSE "
 "приставките на вашата система."
 
-#: ../bse/bsecore.idl:661
+#: ../bse/bsecore.idl:673
 msgid "LADSPA Path"
 msgstr "Път до LADSPA"
 
-#: ../bse/bsecore.idl:662
+#: ../bse/bsecore.idl:674
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -4643,73 +4672,73 @@ msgstr ""
 "системата ви. LADSPA е Linux Audio Developer's Simple Plugin API. Повече за "
 "LADSPA приставките можете да намерите на адрес http://www.ladspa.org/."
 
-#: ../bse/bsecore.idl:668
+#: ../bse/bsecore.idl:680
 msgid "Synthesis Settings"
 msgstr ""
 
-#: ../bse/bsecore.idl:669
+#: ../bse/bsecore.idl:681
 msgid "Latency [ms]"
 msgstr ""
 
-#: ../bse/bsecore.idl:670
+#: ../bse/bsecore.idl:682
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 
-#: ../bse/bsecore.idl:672
+#: ../bse/bsecore.idl:684
 msgid "Synth Mixing Frequency"
 msgstr ""
 
-#: ../bse/bsecore.idl:673
+#: ../bse/bsecore.idl:685
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: ../bse/bsecore.idl:675
+#: ../bse/bsecore.idl:687
 msgid "Synth Control Frequency"
 msgstr ""
 
-#: ../bse/bsecore.idl:676
+#: ../bse/bsecore.idl:688
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 msgstr ""
 
-#: ../bse/bsecore.idl:680
+#: ../bse/bsecore.idl:692
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ../bse/bsecore.idl:681
+#: ../bse/bsecore.idl:693
 msgid "Invert Sustain Pedal"
 msgstr ""
 
-#: ../bse/bsecore.idl:682
+#: ../bse/bsecore.idl:694
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 
-#: ../bse/bsecore.idl:685
+#: ../bse/bsecore.idl:697
 msgid "Stepping Rates"
 msgstr ""
 
-#: ../bse/bsecore.idl:686
+#: ../bse/bsecore.idl:698
 msgid "Volume [dB] Steps"
 msgstr "Стъпки [dB] на контрола на силата на звука"
 
-#: ../bse/bsecore.idl:686
+#: ../bse/bsecore.idl:698
 msgid "Step width for volume in decibel"
 msgstr ""
 
-#: ../bse/bsecore.idl:688
+#: ../bse/bsecore.idl:700
 msgid "BPM Steps"
 msgstr ""
 
-#: ../bse/bsecore.idl:688
+#: ../bse/bsecore.idl:700
 msgid "Step width for beats per minute"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../bse/bsedevice.c:312
+#: ../bse/bsedevice.c:340
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
 "automatic driver selection."
@@ -5109,14 +5138,14 @@ msgid "MIDI Signal 4"
 msgstr "MIDI сигнал 4"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../bse/bsemididevice-null.c:92
+#: ../bse/bsemididevice-null.c:89
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../bse/bsemididevice-oss.c:270
+#: ../bse/bsemididevice-oss.c:267
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -5133,7 +5162,7 @@ msgstr ""
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Вход и изход/Звуков MIDI вход"
 
-#: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:157 ../bse/bsetrack.c:291
+#: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:157 ../bse/bsetrack.c:292
 msgid "Available Synthesizers"
 msgstr "Налични синтезатори"
 
@@ -5141,21 +5170,21 @@ msgstr "Налични синтезатори"
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:138 ../bse/bsetrack.c:295
+#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:138 ../bse/bsetrack.c:296
 msgid "Available Postprocessors"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:138 ../bse/bsetrack.c:295
+#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:138 ../bse/bsetrack.c:296
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
 #: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
 #: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:741
-#: ../bse/bsetrack.c:1015 ../bse/bsetrack.c:1021
+#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
 msgid "MIDI Instrument"
 msgstr "MIDI инструмент"
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1017
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
 msgid "MIDI Channel"
 msgstr "MIDI канал"
 
@@ -5163,7 +5192,7 @@ msgstr "MIDI канал"
 msgid "Max Voices"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:513 ../bse/bsetrack.c:1002
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:513 ../bse/bsetrack.c:1003
 msgid "Synthesizer"
 msgstr "Синтезатор"
 
@@ -5171,7 +5200,7 @@ msgstr "Синтезатор"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:743 ../bse/bsetrack.c:1023
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:743 ../bse/bsetrack.c:1024
 msgid "Postprocessor"
 msgstr ""
 
@@ -5254,19 +5283,19 @@ msgstr ""
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../bse/bsepcmdevice-null.c:145
+#: ../bse/bsepcmdevice-null.c:142
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list."
 msgstr ""
 
-#: ../bse/bsepcmdevice-oss.c:651
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:352
+#: ../bse/bsepcmdevice-oss.c:647
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:396
 msgid "DEVICE,MODE"
 msgstr "УСТРОЙСТВО,РЕЖИМ"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../bse/bsepcmdevice-oss.c:653
+#: ../bse/bsepcmdevice-oss.c:649
 msgid ""
 "Open Sound System PCM driver:\n"
 "  DEVICE - PCM device file name\n"
@@ -5293,52 +5322,111 @@ msgstr "/Вход и изход/PCM изход"
 msgid "Right channel Input"
 msgstr ""
 
-#: ../bse/bseserver.c:143
+#: ../bse/bseserver.c:144
 msgid "WAVE File"
 msgstr ""
 
-#: ../bse/bseserver.c:144
+#: ../bse/bseserver.c:145
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
-#: ../bse/bseserver.c:439
-msgid "Show messages about audio recording problems"
-msgstr "Показване на съобщения за проблеми при звукозапис"
+#: ../bse/bseserver.c:451
+#, fuzzy
+msgid "Recording Audio Input"
+msgstr "Втори звуков вход"
 
-#: ../bse/bseserver.c:440
-msgid ""
-"An audio input module is in use, but the audio device has not been opened in "
-"recording mode. A quiet audio signal is used as input instead of a recorded "
-"signal, so playback operation may produce results not actually intended "
-"(such as reducing the output signal to pure silence)."
+#: ../bse/bseserver.c:452
+msgid "Failed to start recording from audio device."
 msgstr ""
 
-#: ../bse/bseserver.c:486
+#: ../bse/bseserver.c:453
+msgid ""
+"An audio project is in use which processes an audio input signal, but the "
+"audio device has not been opened in recording mode. An audio signal of "
+"silence will be used instead of a recorded signal, so playback operation may "
+"produce results not actually intended (such as a silent output signal)."
+msgstr ""
+
+#: ../bse/bseserver.c:458
+#, c-format
+msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
+msgstr ""
+
+#: ../bse/bseserver.c:462
+#, fuzzy
+msgid "Show messages about audio input problems"
+msgstr "Показване на съобщения за проблеми при звукозапис"
+
+#: ../bse/bseserver.c:504
+#, fuzzy
+msgid "No Audio"
+msgstr "Звуков вх."
+
+#: ../bse/bseserver.c:505
+msgid "No available audio device was found."
+msgstr ""
+
+#: ../bse/bseserver.c:506
+msgid ""
+"No available audio device could be found and opened successfully. Sorry, no "
+"fallback selection can be made for audio devices, giving up."
+msgstr ""
+
+#: ../bse/bseserver.c:508
+#, fuzzy, c-format
+msgid "Failed to open PCM devices: %s"
+msgstr "Грешка при отваряне на PCM устройства, операцията е прекратена: %s"
+
+#: ../bse/bseserver.c:509
 msgid "Show messages about PCM device selections problems"
 msgstr "Показване на съобщения за проблеми при избирането на PCM устройство"
 
-#: ../bse/bseserver.c:487
-#, c-format
-msgid "Failed to open PCM devices, giving up: %s"
+#: ../bse/bseserver.c:528
+#, fuzzy
+msgid "No MIDI"
+msgstr "MIDI"
+
+#: ../bse/bseserver.c:529
+msgid "MIDI input or oputput is not available."
+msgstr ""
+
+#: ../bse/bseserver.c:530
+msgid ""
+"No available MIDI device could be found and opened successfully. Reverting "
+"to null device, no MIDI events will be received or sent."
+msgstr ""
+
+#: ../bse/bseserver.c:532
+#, fuzzy, c-format
+msgid "Failed to open MIDI devices: %s"
 msgstr "Грешка при отваряне на PCM устройства, операцията е прекратена: %s"
 
-#: ../bse/bseserver.c:506
+#: ../bse/bseserver.c:533
 msgid "Show messages about MIDI device selections problems"
 msgstr "показване на съобщения за проблеми при избирането на MIDI устройство"
 
-#: ../bse/bseserver.c:507
-#, c-format
-msgid "Failed to open MIDI devices (reverting to null device): %s"
+#: ../bse/bseserver.c:584
+msgid "Start Disk Recording"
 msgstr ""
 
-#: ../bse/bseserver.c:558
+#: ../bse/bseserver.c:585
+msgid "Failed to start recording to disk."
+msgstr ""
+
+#: ../bse/bseserver.c:586
+msgid ""
+"An error occoured while opening the recording file, selecting a different "
+"file might fix this situation."
+msgstr ""
+
+#: ../bse/bseserver.c:588
+#, fuzzy, c-format
+msgid "Failed to open file \"%s\" for output: %s"
+msgstr "Грешка при отваряне на изходния файл \"%s\": %s"
+
+#: ../bse/bseserver.c:589
 msgid "Show recording file errors"
 msgstr "Показване на грешки при запазване на файл"
-
-#: ../bse/bseserver.c:559
-#, c-format
-msgid "Failed to open output file \"%s\": %s"
-msgstr "Грешка при отваряне на изходния файл \"%s\": %s"
 
 #: ../bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
@@ -5474,7 +5562,7 @@ msgstr "/Звукови източници/Стандартен осцилато
 msgid "Wave Form"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1007 ../bse/bsewaveosc.c:558
+#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:558
 #: ../bse/bsewaveosc.c:560 ../bse/bsewaveosc.c:562
 msgid "Wave"
 msgstr ""
@@ -5678,43 +5766,43 @@ msgstr "Създадено на"
 msgid "Last modification time"
 msgstr "Последна промяна"
 
-#: ../bse/bsetrack.c:282
+#: ../bse/bsetrack.c:283
 msgid "List of available waves to choose as track instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:291
+#: ../bse/bsetrack.c:292
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 
-#: ../bse/bsetrack.c:299
+#: ../bse/bsetrack.c:300
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 
-#: ../bse/bsetrack.c:998
+#: ../bse/bsetrack.c:999
 msgid "Muted"
 msgstr "Заглушено"
 
-#: ../bse/bsetrack.c:1000 ../bse/bsetrack.c:1005 ../bse/bsetrack.c:1010
+#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
 msgid "Synth Input"
 msgstr ""
 
-#: ../bse/bsetrack.c:1002
+#: ../bse/bsetrack.c:1003
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1007
+#: ../bse/bsetrack.c:1008
 msgid "Wave to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1012
+#: ../bse/bsetrack.c:1013
 msgid "Max Voixes"
 msgstr ""
 
-#: ../bse/bsetrack.c:1018
+#: ../bse/bsetrack.c:1019
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: ../bse/bsetrack.c:1028
+#: ../bse/bsetrack.c:1029
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -5787,13 +5875,13 @@ msgstr "BSE синтезаторен файл"
 msgid "Audio"
 msgstr ""
 
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:309
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:554
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:305
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:549
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:311
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -5811,7 +5899,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:556
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -5829,17 +5917,202 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:354
-#, c-format
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:398
+#, fuzzy, c-format
 msgid ""
 "PortAudio PCM driver, using %s.\n"
-"  DEVICE - the PortAudio device to use, 'default' selects a default device\n"
+"  DEVICE - the PortAudio device to use, 'default' selects default device\n"
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
 "PortAudio PCM драйвер, използващ %s.\n"
 "  УСТРОЙСТВО - PortAudio устройството, което се използва, 'default' избира "
 "устройството по подразбиране\n"
 "  РЕЖИМ   - rw = четене/запис, ro = само за четене, wo = само за запис\n"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:25
+msgid "/Song/Assign Tracks to individual Mixer Busses"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:26
+msgid ""
+"This script will create a new Mixer Bus for each track in the song that is "
+"currently using the Master Bus as output"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:39
+#, fuzzy
+msgid "Song"
+msgstr "_Песен"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:57
+#: ../library/scripts/song-parts-operations.scm.h:45
+msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:21
+msgid "/SNet/Grid Align"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:22
+msgid ""
+"Round module positions to their nearest grid position, so to aligns all "
+"modules within a synthesis network."
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:26
+#, fuzzy
+msgid "Synth Net"
+msgstr "_Синтезатор"
+
+#: ../library/scripts/modules2grid.scm.h:30
+#, fuzzy
+msgid "No valid synthesis network supplied"
+msgstr "Няма такъв синтезаторен модул"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:25
+msgid "/Part/Harmonic Transposer"
+msgstr ""
+
+#. ; FIXME: the description may be suboptimal; the problem is
+#. ; that I can't precisely describe details of musical theory
+#. ; in english. -- stw
+#: ../library/scripts/part-harmonic-transposer.scm.h:29
+msgid ""
+"The harmonic transposer takes the selection of a part and transposes it to "
+"different harmonies. If you for instance have selected a measure filled with "
+"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
+"be four measures, filled with C major, A minor, F major and G major "
+"chords. \n"
+"\n"
+"This also works for melodies, so you can transpose a whole melody written in "
+"G major to D minor. The standard scales used in church music (ionian, "
+"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
+"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
+"is equivalent to minor and the ionian scale is equivalent to major. \n"
+"\n"
+"Since musically, there is no preference on whether to transpose up or down "
+"it is possible to specify the first harmony that will be transposed down "
+"(all harmonies below this will be transposed up). It is possible to omit "
+"this value. Then all notes will be transposed up."
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:50
+#: ../library/scripts/record-midi.scm.h:25
+#, fuzzy
+msgid "Part"
+msgstr "Откъси"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:51
+msgid "Harmony Sequence"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:52
+msgid "Transpose down starting at"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:209
+msgid "No valid part supplied"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:211
+msgid "No notes selected"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:218
+msgid "Failed to parse harmony list"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:221
+msgid "Harmony list is too short"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:32
+msgid "/Project/Toys/Progressor..."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:33
+msgid ""
+"Progressor takes two seed values and then starts progressing. It doesn't do "
+"anything particularly usefull, other than ticking the main program from time "
+"to time. It is a funny example though."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:38
+msgid "N Iterations"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:39
+msgid "N Wait Spins"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:40
+msgid "Update Percentage"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:20
+msgid "/Part/Record Midi..."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:21
+msgid ""
+"Record midi events, currently being played on the default external midi "
+"device, into a given song part. The MIDI recorder is still work in progress."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:26
+#, fuzzy
+msgid "Start Now"
+msgstr "Зареждане на редактора"
+
+#: ../library/scripts/record-midi.scm.h:46
+#, fuzzy
+msgid "No valid part object supplied"
+msgstr "Грешна настройка на обект"
+
+#: ../library/scripts/record-midi.scm.h:47
+msgid "You probably want to start this script from a part editor."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:25
+msgid "/Song/Crop parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:26
+msgid ""
+"Crops all parts within the loop range and moves parts after the loop range "
+"backwards accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:34
+msgid "/Song/Duplicate parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:35
+msgid ""
+"Duplicate all parts within the loop range and moves parts after the loop "
+"range forward accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:62
+msgid ""
+"The loop range of the specified song contains no parts or is unset, so no "
+"parts can be identified to operate on."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:64
+#, fuzzy
+msgid "Show messages about empty part range"
+msgstr "Показване на съобщения за проблеми при звукозапис"
+
+#: ../library/scripts/song-parts-operations.scm.h:68
+msgid "Failed to crop part range."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:80
+msgid "Failed to duplicate part range."
+msgstr ""
 
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
@@ -6032,22 +6305,6 @@ msgstr ""
 
 #: ../plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
-msgstr ""
-
-#: ../plugins/bsefirfilter.c:143
-msgid "Mono Out"
-msgstr ""
-
-#: ../plugins/bsefirfilter.c:143
-msgid "Mono Filtered Output"
-msgstr ""
-
-#: ../plugins/bsefirfilter.c:145
-msgid "Mono In"
-msgstr ""
-
-#: ../plugins/bsefirfilter.c:145
-msgid "Mono Signal Input"
 msgstr ""
 
 #: ../plugins/bseiirfilter.c:119 ../plugins/bseiirfilter.c:125
@@ -6309,10 +6566,6 @@ msgstr ""
 msgid "Set the amount of modified data to mix"
 msgstr ""
 
-#: ../plugins/davguitar.c:303
-msgid "Guitar Output"
-msgstr ""
-
 #: ../plugins/davorgan.c:133
 msgid "Organ Output"
 msgstr ""
@@ -6396,3 +6649,17 @@ msgstr ""
 #: ../plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr ""
+
+#: ../tools/bsewavetool.cc:930
+#, fuzzy, c-format
+msgid "failed to add wave chunk from file \"%s\": %s"
+msgstr "Грешка при отваряне на изходния файл \"%s\": %s"
+
+#~ msgid "Find"
+#~ msgstr "Търсене"
+
+#~ msgid "Warning"
+#~ msgstr "Предупреждение"
+
+#~ msgid "Info"
+#~ msgstr "Данни"
