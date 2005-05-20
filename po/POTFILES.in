@@ -100,6 +100,12 @@ data/bse.keys.in
 drivers/bse-alsa/bsemididevice-alsa.c
 drivers/bse-alsa/bsepcmdevice-alsa.c
 drivers/bse-portaudio/bsepcmdevice-portaudio.cc
+[type: gettext/scm-funcs] library/scripts/mixer-splitup-by-track.scm
+[type: gettext/scm-funcs] library/scripts/modules2grid.scm
+[type: gettext/scm-funcs] library/scripts/part-harmonic-transposer.scm
+[type: gettext/scm-funcs] library/scripts/progressor-example.scm
+[type: gettext/scm-funcs] library/scripts/record-midi.scm
+[type: gettext/scm-funcs] library/scripts/song-parts-operations.scm
 plugins/artscompressor.idl
 plugins/bseadder.c
 plugins/bseatandistort.c

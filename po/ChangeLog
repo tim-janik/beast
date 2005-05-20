@@ -1,3 +1,8 @@
+Sat May 21 00:26:15 2005  Tim Janik  <timj@gtk.org>
+
+	* POTFILES.in: added .scm scripts with type gettext/scm-funcs, so these
+	currently need a hacked intltool-extract that can handle gettext/scm-funcs.
+
 2005-05-19  Adam Weinberger  <adamw@gnome.org>
 
 	* en_CA.po: Updated Canadian English translation.
