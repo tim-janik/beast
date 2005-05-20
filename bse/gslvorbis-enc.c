@@ -24,7 +24,7 @@
 #include <string.h>
 #include <errno.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_vorbisenc, "vorbisenc", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_vorbisenc, "vorbisenc", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_vorbisenc, __VA_ARGS__)
 
 /* --- structures --- */

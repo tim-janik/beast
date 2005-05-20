@@ -19,7 +19,7 @@
 
 #include	"bseserver.h"
 
-static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_midi, "midi", SFI_MSG_DEBUG, NULL);
 #define MIDI_DEBUG(...) sfi_debug (debug_midi, __VA_ARGS__)
 
 /* --- structs --- */

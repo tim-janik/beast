@@ -31,7 +31,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_comport, __VA_ARGS__)
 
 /* define the io bottle neck (for writes) to a small value

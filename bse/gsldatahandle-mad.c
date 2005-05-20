@@ -36,7 +36,7 @@
 
 
 /* --- debugging and errors --- */
-static SFI_MSG_TYPE_DEFINE (debug_mad, "mad", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_mad, "mad", SFI_MSG_DEBUG, NULL);
 #define MAD_DEBUG(...)  sfi_debug (debug_mad, __VA_ARGS__)
 
 

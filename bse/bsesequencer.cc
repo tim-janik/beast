@@ -39,7 +39,7 @@ extern "C" { SfiThread *bse_sequencer_thread = NULL; }
 namespace { // Anon
 using namespace std;
 
-static SFI_MSG_TYPE_DEFINE (debug_sequencer, "sequencer", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_sequencer, "sequencer", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_sequencer, __VA_ARGS__)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)

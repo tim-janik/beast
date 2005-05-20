@@ -18,7 +18,7 @@
 #include "bseengineschedule.h"
 #include "bseengineutils.h"
 
-static SFI_MSG_TYPE_DEFINE (debug_sched, "sched", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_sched, "sched", SFI_MSG_DEBUG, NULL);
 
 /* --- prototypes --- */
 static void	schedule_node		(EngineSchedule	*schedule,

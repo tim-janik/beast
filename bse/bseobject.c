@@ -25,7 +25,7 @@
 #include "bsesource.h"		/* debug hack */
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_leaks, "leaks", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_leaks, "leaks", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_leaks, __VA_ARGS__)
 
 enum

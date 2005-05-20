@@ -26,7 +26,7 @@
 #include <string.h>
 #include <errno.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_midi_file, "midi-file", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_midi_file, "midi-file", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_midi_file, __VA_ARGS__)
 
 typedef struct {

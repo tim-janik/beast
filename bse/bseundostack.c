@@ -20,7 +20,7 @@
 #include "bsecontainer.h"
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_undo, "undo", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_undo, "undo", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_undo, __VA_ARGS__)
 
 /* --- variables --- */

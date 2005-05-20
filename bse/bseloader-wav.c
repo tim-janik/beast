@@ -46,7 +46,7 @@ typedef guint16 Word;
 
 
 /* --- debugging and errors --- */
-static SFI_MSG_TYPE_DEFINE (debug_wav, "wav", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_wav, "wav", SFI_MSG_DEBUG, NULL);
 #define WAV_DEBUG(...)  sfi_debug (debug_wav, __VA_ARGS__)
 
 

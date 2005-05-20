@@ -24,7 +24,7 @@
 #include "bseexports.h"
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_procs, __VA_ARGS__)
 
 /* --- macros --- */

@@ -22,7 +22,7 @@
 #include <string.h>
 #include <errno.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_vorbis, "vorbis", SFI_MSG_NONE, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_vorbis, "vorbis", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_vorbis, __VA_ARGS__)
 #define DIAG(...)       sfi_diag (__VA_ARGS__)
 
