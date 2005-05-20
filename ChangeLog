@@ -1,3 +1,10 @@
+Fri May 20 18:39:17 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_handle_delete_event): 
+	fixed save/discard/cancel btton order for close-dirty-project dialog.
+	this matches mozilla and open-ofice and puts the most destructive
+	option in the middle (the spot "hardest" to navigate to).
+
 Fri May 20 18:32:13 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: added discard-changes and save-changes choices to 
