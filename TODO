@@ -1,4 +1,3 @@
-- change procedure dialog title to procedures catgeory name
 - get rid of usr-msg-type. change usr-msg to something like action-text or similar (primary + secondary might make sense)
 - test bse-script-set-status, bse-script-quit
 - remove janitor::close
@@ -13,10 +12,7 @@
   programatically at the GUI (no midi, no pcm, no plugins, no scripts)
 RELEASE(0.6.6):
 - fix/re-enable midi note recording into piano roll
-- refuse to close windows with changed projects
 BUGS(FIXME):
-- fix undo/redo/Save vs. Save As
-- automatically change project name to basename for saved file name
 - add stock icons for Select/None Select/All Select/Invert
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - install bsewavetool, bsewavetool.1
@@ -147,7 +143,6 @@ TODO:
 - lock band-width property for lp/hp filters
 - when loading/merging bse files, make sure all orphan parts are in a new muted track and delete part-item-view
 - delete parts upon their last unlink from a track
-- implement ordinary save functionality
 - pattern editor: pressing G+1 on G+1, should delete old note (and its length) and insert new note (and its length)
 - pattern editor: add note LENGTH editing!
 - pattern editor: keep focus line (i.e. tick) across zoom changes
@@ -162,7 +157,7 @@ TODO:
 - add DSP engine module stats to profiler dialog
 - add tooltips to categories and use that for bst_action_list_add_cat()
 - take a look at the cdrecord source for their __dtoa() implementation
-- if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
+- implement auto-save feature: if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
 - make View/Rebuild --devel or -:d only
 - fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
 - beast depends on texithequemacros.texi but texitheque doesn't install it
@@ -183,7 +178,6 @@ TODO:
 - default-initialize authors field of objects with user name
 - add default-settings config preference (authors, license)
 - evaluate elimination of seqid
-- implement auto-save feature
 - undo across midi file import is broken
 - add clone tool for csynths
 - fix undo for: BseDataPocket
@@ -222,7 +216,6 @@ TODO:
 - get rid of super->mod_time
 - don't always rebuild lib-list [Rebuild]-button
 - fix name of BSE_SNET_FLAG_USER_SYNTH
-- fix BST_OP_PROJECT_SAVE
 - register drivers with categories
 - fix gsl wave osc
 - nuke SFI memblocks, malloc() is good enough
@@ -323,8 +316,6 @@ TASKS:
     chn5 - lfe
     chn7 - side left
     chn8 - side right
-- App: closing the BEAST window should ask (close/save/abort) for unsaved changes
-- App: file->save as should change the file name in the title bar
 - Project: file open on an unmodified project should not open a new project window but
   reuse the existing one
 - TrackRoll: implement copying of parts

@@ -303,6 +303,47 @@ bst_msg_dialog_janitor_update (GxkDialog        *dialog,
   gxk_dialog_set_focus (dialog, bwidget);
 }
 
+typedef struct {
+  guint             id;
+  gchar            *name;
+  gchar            *stock_icon;
+  gchar            *options;
+} BstMsgBit;
+
+static void
+bst_msg_bit_free (gpointer data)
+{
+  BstMsgBit *mbit = data;
+  g_free (mbit->name);
+  g_free (mbit->stock_icon);
+  g_free (mbit->options);
+  g_free (mbit);
+}
+
+SfiMsgBit*
+bst_message_bit_appoint (guint                   id,
+                         const gchar            *name,
+                         const gchar            *stock_icon,
+                         const gchar            *options)
+{
+  BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
+  mbit->id = id;
+  mbit->name = g_strdup (name);
+  mbit->stock_icon = g_strdup (stock_icon);
+  mbit->options = g_strdup (options);
+  return sfi_msg_bit_appoint (bst_message_bit_appoint, mbit, bst_msg_bit_free);
+}
+
+static void
+message_dialog_choice_triggered (GtkWidget *choice,
+                                 gpointer   data)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (choice);
+  if (GXK_IS_DIALOG (toplevel))
+    g_object_set_data (toplevel, "bst-modal-choice-result", data);
+  gxk_toplevel_delete (choice);
+}
+
 static void
 repeat_dialog (GxkDialog *dialog)
 {
@@ -339,7 +380,8 @@ find_dialog (GSList           *dialog_list,
 }
 
 static void
-dialog_show_above_modals (GxkDialog *dialog)
+dialog_show_above_modals (GxkDialog *dialog,
+                          gboolean   must_return_visible)
 {
   /* if a grab is in effect, we need to override it */
   GtkWidget *grab = gtk_grab_get_current();
@@ -371,23 +413,66 @@ bst_message_handler (const BstMessage *const_msg)
     msg.config_check = _("Display dialogs with dignostic messages");
   if (!msg.config_check && msg.type == BST_MSG_DEBUG)
     msg.config_check = _("Display dialogs with debugging messages");
-  GxkDialog *dialog = (GxkDialog*) find_dialog (msg_windows, &msg);
-  if (dialog)
-    repeat_dialog (dialog);
-  else if (msg.config_check && bst_msg_absorb_config_match (msg.config_check))
-    bst_msg_absorb_config_update (msg.config_check); /* message absorbed by configuration */
+  /* find choice result message bit */
+  guint j, *choice_result = NULL;
+  for (j = 0; j < msg.n_msg_bits; j++)
+    if (msg.msg_bits[j]->owner == bst_message_dialog_elist)
+      {
+        choice_result = msg.msg_bits[j]->data;
+        break;
+      }
+  GxkDialog *dialog;
+  /* check the simple non-choice dialog types */
+  if (!choice_result)
+    {
+      dialog = (GxkDialog*) find_dialog (msg_windows, &msg);
+      if (dialog)
+        {
+          repeat_dialog (dialog);
+          return;
+        }
+      else if (msg.config_check && bst_msg_absorb_config_match (msg.config_check))
+        {
+          bst_msg_absorb_config_update (msg.config_check); /* message absorbed by configuration */
+          return;
+        }
+    }
+  /* create new dialog */
+  dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);
+  gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
+  bst_msg_dialog_update (dialog, &msg, TRUE); /* deletes actions */
+  g_object_connect (dialog, "signal::destroy", dialog_destroyed, NULL, NULL);
+  msg_windows = g_slist_prepend (msg_windows, dialog);
+  /* add choices */
+  for (j = 0; choice_result && j < msg.n_msg_bits; j++)
+    if (msg.msg_bits[j]->owner == bst_message_bit_appoint)
+      {
+        BstMsgBit *mbit = msg.msg_bits[j]->data;
+        GtkWidget *widget = gxk_dialog_action_multi (dialog, mbit->name, message_dialog_choice_triggered, (gpointer) mbit->id, mbit->stock_icon,
+                                                     mbit->options && strchr (mbit->options, 'D') ? GXK_DIALOG_MULTI_DEFAULT : 0);
+        if (mbit->options && strchr (mbit->options, 'I'))
+          gtk_widget_set_sensitive (widget, FALSE);
+      }
+  /* fire up dialog */
+  if (!choice_result)
+    {
+      gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
+      dialog_show_above_modals (dialog, FALSE);
+    }
   else
     {
-      dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);
-      gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
-      
-      bst_msg_dialog_update (dialog, &msg, TRUE); /* deletes actions */
-      gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
-      g_object_connect (dialog,
-                        "signal::destroy", dialog_destroyed, NULL,
-                        NULL);
-      msg_windows = g_slist_prepend (msg_windows, dialog);
-      dialog_show_above_modals (dialog);
+      g_object_set_data (dialog, "bst-modal-choice-result", (gpointer) 0);
+      gxk_dialog_add_flags (dialog, GXK_DIALOG_POPUP_POS | GXK_DIALOG_MODAL);
+      g_object_ref (dialog);
+      dialog_show_above_modals (dialog, TRUE);
+      while (GTK_WIDGET_VISIBLE (dialog))
+        {
+          GDK_THREADS_LEAVE ();
+          g_main_iteration (TRUE);
+          GDK_THREADS_ENTER ();
+        }
+      *choice_result = (guint) g_object_get_data (dialog, "bst-modal-choice-result");
+      g_object_unref (dialog);
     }
 }
 
@@ -553,7 +638,7 @@ create_janitor_dialog (SfiProxy janitor)
   janitor_actions_changed (dialog);
   bse_item_use (janitor);
   g_object_connect (dialog, "swapped_signal::destroy", janitor_window_deleted, dialog, NULL);
-  dialog_show_above_modals (dialog);
+  dialog_show_above_modals (dialog, FALSE);
   
   return GTK_WIDGET (dialog);
 }
@@ -620,9 +705,12 @@ bst_message_synth_msg_handler (const BseMessage *umsg)
  * - BST_MSG_TEXT2(): format secondary message, optional (also BST_MSG_SECONDARY())
  * - BST_MSG_TEXT3(): format details of the message, optional (also BST_MSG_DETAIL())
  * - BST_MSG_CHECK(): format configuration check statement to enable/disable log messages of this type.
+ * - BST_MSG_CHOICE():   add buttons other than cancel to the message dialog
+ * - BST_MSG_CHOICE_D(): same as BST_MSG_CHOICE(), for default buttons
+ * - BST_MSG_CHOICE_S(): same as BST_MSG_CHOICE(), for insensitive buttons
  * This function is MT-safe and may be called from any thread.
  */
-void
+guint
 bst_message_dialog_elist (const char     *log_domain,
                           BstMsgType      type, /* BST_MSG_DEBUG is not really useful here */
                           SfiMsgBit      *lbit1,
@@ -648,11 +736,22 @@ bst_message_dialog_elist (const char     *log_domain,
         }
       va_end (args);
     }
+  guint i;
+  /* add message bit to catch choice result */
+  guint dialog_result = 0;
+  for (i = 0; i < n; i++)
+    if (bits[i]->owner == bst_message_bit_appoint)
+      {
+        bits = g_renew (SfiMsgBit*, bits, n + 1);
+        bits[n++] = sfi_msg_bit_appoint (bst_message_dialog_elist, &dialog_result, NULL);
+        break;
+      }
   bits = g_renew (SfiMsgBit*, bits, n + 1);
   bits[n] = NULL;
   sfi_msg_log_trampoline (log_domain, type, bits, bst_message_log_handler);
   g_free (bits);
   errno = saved_errno;
+  return dialog_result;
 }
 
 void

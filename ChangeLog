@@ -1,3 +1,13 @@
+Fri May 20 18:32:13 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: added discard-changes and save-changes choices to 
+	the close-dirty-project message dialog. 
+	save or discard data accordingly.
+
+	* beast-gtk/bstusermessage.c, beast-gtk/bstusermessage.c: 
+	allow choice widgets to be added to message dialogs popped up with
+	bst_message_bit_appoint(). return the id of the selected choice.
+
 Fri May 20 17:17:21 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c: changed procedure dialog title.

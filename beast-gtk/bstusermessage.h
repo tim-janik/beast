@@ -63,12 +63,17 @@ void              bst_message_handler           (const BstMessage       *message
 void              bst_message_log_handler       (const SfiMessage       *lmsg);
 void              bst_message_synth_msg_handler (const BseMessage       *umsg);
 const BstMsgID*   bst_message_list_types        (guint                  *n_types);
-void              bst_message_dialog_elist      (const char             *log_domain,
+guint             bst_message_dialog_elist      (const char             *log_domain,
                                                  BstMsgType              type,
                                                  SfiMsgBit              *lbit1,
                                                  SfiMsgBit              *lbit2,
                                                  ...);
+SfiMsgBit*        bst_message_bit_appoint       (guint                   id,
+                                                 const gchar            *name,
+                                                 const gchar            *stock_icon,
+                                                 const gchar            *options);
 #define bst_msg_dialog(level, ...)              bst_message_dialog_elist (SFI_LOG_DOMAIN, level, __VA_ARGS__, NULL)
+/* SFI message bit equivalents */
 #define BST_MSG_TEXT0(...)                      SFI_MSG_TEXT0 (__VA_ARGS__)
 #define BST_MSG_TEXT1(...)                      SFI_MSG_TEXT1 (__VA_ARGS__)
 #define BST_MSG_TEXT2(...)                      SFI_MSG_TEXT2 (__VA_ARGS__)
@@ -78,6 +83,10 @@ void              bst_message_dialog_elist      (const char             *log_dom
 #define BST_MSG_PRIMARY                         BST_MSG_TEXT1 /* alias */
 #define BST_MSG_SECONDARY                       BST_MSG_TEXT2 /* alias */
 #define BST_MSG_DETAIL                          BST_MSG_TEXT3 /* alias */
+/* BST specific message bits */
+#define BST_MSG_CHOICE(id, name, stock_icon)    bst_message_bit_appoint (id, name, stock_icon, "")
+#define BST_MSG_CHOICE_D(id, name, stock_icon)  bst_message_bit_appoint (id, name, stock_icon, "D")          /* default */
+#define BST_MSG_CHOICE_S(id, name, sticn, sens) bst_message_bit_appoint (id, name, sticn, (sens) ? "" : "I") /* insensitive */
 
 G_END_DECLS
 
