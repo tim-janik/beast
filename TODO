@@ -10,6 +10,7 @@
 - popup prominent error message upon startup scripts could not be found, same if plugins could not be found
 - add enum BseMessageCode to bsecore.idl (enum and BseMessage field) to identify messages via BSE_MSG_CODE(nnn) that may be usefull to handle
   programatically at the GUI (no midi, no pcm, no plugins, no scripts)
+- remove i18n_category from bsecategories.c and attempt translation automatically
 RELEASE(0.6.6):
 - fix/re-enable midi note recording into piano roll
 BUGS(FIXME):

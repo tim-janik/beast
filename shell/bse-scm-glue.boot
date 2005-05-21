@@ -1,9 +1,10 @@
 ;; -*- scheme -*-
 
 ;; allow i18n markup of strings
-(define _ (lambda arglist (apply string-append arglist)))
-(define N_ (lambda arglist (apply string-append arglist)))
-(define Q_ (lambda arglist (apply string-append arglist)))
+(define _  (lambda arglist (bse-gettext (apply string-append arglist))))   ;; translate concatenated string
+(define U_ (lambda arglist (bse-gettext (apply string-append arglist))))   ;; for UTF-8 strings
+(define Q_ (lambda arglist (bse-gettext-q (apply string-append arglist)))) ;; for context sensitive translations
+(define N_ (lambda arglist (apply string-append arglist)))                 ;; not translated (or later)
 
 ;; cache invocations to avoid extra round trips
 (define bse-script-janitor

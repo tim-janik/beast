@@ -20,8 +20,10 @@
 #include <unistd.h>
 #include <guile/gh.h>
 #include <bse/bse.h>
+#include <bse/bsemain.h>  /* for bse_init_textdomain_only() */
 #include <sfi/sfistore.h> /* no bin-compat */
 #include <sys/time.h>
+#include <libintl.h>
 #include <sys/resource.h>
 #include "bsescminterp.h"
 #include "topconfig.h"
@@ -68,6 +70,8 @@ main (int   argc,
   g_thread_init (NULL);
   g_set_prgname (PRG_NAME);
   sfi_init ();
+  bse_init_textdomain_only();
+  setlocale (LC_ALL, "");
 
   env_str = g_getenv ("BSE_SHELL_SLEEP4GDB");
   if (env_str && atoi (env_str) > 0)

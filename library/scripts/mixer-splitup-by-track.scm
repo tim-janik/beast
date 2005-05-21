@@ -23,8 +23,8 @@
 (bse-script-register 'mixer-splitup-by-track
 		     ""
                      (N_ "/Song/Assign Tracks to individual Mixer Busses")
-		     (N_ "This script will create a new Mixer Bus for each track "
-			 "in the song that is currently using the Master Bus as output")
+		     (N_ "This script creates a new Mixer Bus for each track in the "
+			 "song that is currently using the Master Bus as output.")
 		     "Stefan Westerfeld"
 		     "GNU General Public License"
 		     (bse-param-song (N_ "Song")))

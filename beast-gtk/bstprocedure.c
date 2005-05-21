@@ -210,8 +210,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
                     "visible", TRUE,
                     "parent", frame,
                     "border_width", 2,
-                    "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER,
-                                                     proc->help),
+                    "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, proc->help),
                     NULL);
     }
   

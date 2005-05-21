@@ -898,6 +898,37 @@ bse_scm_script_register (SCM s_name,
   return SCM_UNSPECIFIED;
 }
 
+SCM
+bse_scm_gettext (SCM s_string)
+{
+  SCM_ASSERT (SCM_STRINGP (s_string), s_string, SCM_ARG1, "bse-gettext");
+  BSE_SCM_DEFER_INTS ();
+  gchar *string = g_strndup (SCM_ROCHARS (s_string), SCM_LENGTH (s_string));
+  const gchar *cstring = bse_gettext (string);
+  SCM s_ret = scm_makfrom0str (cstring);
+  g_free (string);
+  BSE_SCM_ALLOW_INTS ();
+  return s_ret;
+}
+
+SCM
+bse_scm_gettext_q (SCM s_string)
+{
+  SCM_ASSERT (SCM_STRINGP (s_string), s_string, SCM_ARG1, "bse-gettext-q");
+  BSE_SCM_DEFER_INTS ();
+  gchar *string = g_strndup (SCM_ROCHARS (s_string), SCM_LENGTH (s_string));
+  const gchar *cstring = bse_gettext (string);
+  if (string == cstring)
+    {
+      const gchar *c = strchr (cstring, '|');
+      cstring = c ? c + 1 : cstring;
+    }
+  SCM s_ret = scm_makfrom0str (cstring);
+  g_free (string);
+  BSE_SCM_ALLOW_INTS ();
+  return s_ret;
+}
+
 static SCM
 bse_scm_script_args (void)
 {
@@ -1045,4 +1076,6 @@ bse_scm_interp_init (void)
   gh_new_procedure ("bse-context-pending", bse_scm_context_pending, 0, 0, 0);
   gh_new_procedure ("bse-context-iteration", bse_scm_context_iteration, 1, 0, 0);
   gh_new_procedure ("bse-script-message", bse_scm_script_message, 1, 0, 1);
+  gh_new_procedure ("bse-gettext", bse_scm_gettext, 1, 0, 0);
+  gh_new_procedure ("bse-gettext-q", bse_scm_gettext_q, 1, 0, 0);
 }

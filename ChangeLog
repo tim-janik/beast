@@ -1,3 +1,20 @@
+Sat May 21 02:38:37 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c: don't center normal description text.
+
+	* library/scripts/modules2grid.scm:
+	* library/scripts/mixer-splitup-by-track.scm: message fixups. 
+
+	* shell/bse-scm-glue.boot: really translate strings with the
+	functions _, U_ and Q_ (the context is stripped from the untranslated
+	string for the latter).
+
+	* shell/bsescminterp.h, shell/bsescminterp.c:
+	implemented bse_scm_gettext() and bse_scm_gettext_q(). 
+
+	* shell/bsesh.c: initialize translation domains, so translations 
+	with bse_gettext() actually work.
+
 Fri May 20 18:39:17 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (bst_app_handle_delete_event): 

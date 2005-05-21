@@ -20,7 +20,7 @@
 		     ""
                      (N_ "/SNet/Grid Align")
 		     (N_ "Round module positions to their nearest grid position, "
-			 "so to aligns all modules within a synthesis network.")
+			 "so to align all modules within a synthesis network.")
 		     "Tim Janik"
 		     "Provided \"as is\", WITHOUT ANY WARRANTY;"
 		     (bse-param-snet (N_ "Synth Net")))

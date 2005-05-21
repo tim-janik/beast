@@ -67,6 +67,8 @@ SCM	bse_scm_script_register		(SCM             s_name,
                                          SCM             s_author,
                                          SCM             s_license,
                                          SCM             s_params);
+SCM	bse_scm_gettext 		(SCM		  scm_string);
+SCM	bse_scm_gettext_q 		(SCM		  scm_string);
 SCM	bse_scm_context_pending		(void);
 SCM	bse_scm_context_iteration	(SCM		 s_may_block);
 SCM	bse_scm_glue_rec_get		(SCM		  scm_rec,
