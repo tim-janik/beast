@@ -1,3 +1,16 @@
+Sat May 21 02:39:14 2005  Tim Janik  <timj@gtk.org>
+
+	* bsemain.[hc]: introduced bse_init_textdomain_only(), which is used 
+	internally and is usefull for programs like bsesh.
+
+	* bsescripthelper.c: translate script blurb and script parameter names
+	which are not translated by the scripts themselves. the reason is that
+	scripts shouldn't translate any strings during procedure registration
+	phase (only markup for translation). this allowes us to generate 
+	reliable keywords for parameter names and procedure categories from 
+	the english names, and provide the translated version by deferred
+	translation.
+
 Thu May 19 23:07:12 2005  Tim Janik  <timj@gtk.org>
 
 	* bsecore.idl: renamed UserMsgType to MsgType and synced message types

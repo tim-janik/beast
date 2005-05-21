@@ -129,7 +129,7 @@ bse_script_proc_register (const gchar *script_file,
       if (options && options[0])
         bse_type_add_options (type, options);
       if (blurb && blurb[0])
-        bse_type_add_blurb (type, blurb);
+        bse_type_add_blurb (type, _(blurb));
       if (authors && authors[0])
         bse_type_add_authors (type, authors);
       if (license && license[0])
@@ -301,20 +301,21 @@ bse_script_param_spec (gchar       *pspec_desc,
 		       gchar      **free1,
 		       gchar      **free2)
 {
-  gchar *nick = strchr (pspec_desc, ':');
-  gchar *dflt, *cname, *blurb;
+  gchar *pstring = strchr (pspec_desc, ':');
+  gchar *dflt, *cname;
 
-  if (!nick)
+  if (!pstring)
     return NULL;
-  *nick++ = 0;
-  dflt = strchr (nick, ':');
+  *pstring++ = 0;
+  dflt = strchr (pstring, ':');
   if (!dflt)
     return NULL;
   *dflt++ = 0;
-  cname = make_sname (nick);
+  cname = make_sname (pstring);
+  const gchar *nick = _(pstring);
   *free1 = cname;
-  blurb = g_strdup_printf ("Parameter \"%s\" to function <%s> in script \"%s\"",
-			   cname, func_name, script_name);
+  gchar *blurb = g_strdup_printf ("Parameter \"%s\" to function <%s> in script \"%s\"",
+                                  cname, func_name, script_name);
   *free2 = blurb;
   if (strcmp (pspec_desc, "BseParamString") == 0)	/* "BseParamString:Text:Default" */
     return sfi_pspec_string (cname, nick, blurb, dflt, PARAM_HINTS);

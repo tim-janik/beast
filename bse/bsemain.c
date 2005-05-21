@@ -64,6 +64,14 @@ BseMainArgs             *bse_main_args = &default_main_args;
 
 
 /* --- functions --- */
+void
+bse_init_textdomain_only (void)
+{
+  bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
+  textdomain_setup = TRUE;
+}
+
 const gchar*
 bse_gettext (const gchar *text)
 {
@@ -78,15 +86,13 @@ bse_init_async (gint    *argc,
 {
   SfiThread *thread;
 
+  bse_init_textdomain_only();
+
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_async");
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_async");
-
-  bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
-  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  textdomain_setup = TRUE;
 
   /* this function is running in the user program and needs to start the main BSE thread */
   
@@ -281,16 +287,15 @@ bse_init_intern (gint    *argc,
 		 SfiRec  *config)
 {
   SfiRec *unref_me = NULL;
+
+  bse_init_textdomain_only();
+
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_intern");
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_intern");
 
-  bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
-  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  textdomain_setup = TRUE;
-  
   /* initialize submodules */
   sfi_init ();
   if (!config)

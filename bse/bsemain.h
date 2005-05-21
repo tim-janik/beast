@@ -24,6 +24,7 @@ G_BEGIN_DECLS
 
 
 /* --- initialization --- */
+void		bse_init_textdomain_only (void);
 #if 0	// prototyped in bse.h */
 void		bse_init_async		(gint		*argc,
 					 gchar	      ***argv,
