@@ -800,6 +800,7 @@ bst_message_connect_to_server (void)
 		     "signal::script_start", server_script_start, NULL,
 		     "signal::script_error", server_script_error, NULL,
 		     NULL);
+  bse_proxy_set (BSE_SERVER, "log-messages", FALSE, NULL);
 }
 
 static int
