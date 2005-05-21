@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-21 00:19+0200\n"
+"POT-Creation-Date: 2005-05-21 01:49+0200\n"
 "PO-Revision-Date: 2004-10-04 11:24+0200\n"
 "Last-Translator: Moritz Mekelburger <moritz@unix-ag.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -5430,14 +5430,14 @@ msgstr ""
 msgid "/Input & Output/Instrument Output"
 msgstr "_Ein- und Ausgabe"
 
-#: ../bse/bsemain.c:271
+#: ../bse/bsemain.c:277
 #, fuzzy
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr "_Synthesizer"
 
-#: ../bse/bsemain.c:273
+#: ../bse/bsemain.c:279
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6330,14 +6330,14 @@ msgstr ""
 #: ../library/scripts/mixer-splitup-by-track.scm.h:30
 #: ../library/scripts/song-parts-operations.scm.h:30
 #: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
 msgid "Song"
-msgstr "_Titel"
+msgstr "Titel"
 
 #: ../library/scripts/mixer-splitup-by-track.scm.h:57
 #: ../library/scripts/song-parts-operations.scm.h:45
+#, fuzzy
 msgid "No valid song supplied"
-msgstr ""
+msgstr "Synthesemodule"
 
 #: ../library/scripts/modules2grid.scm.h:21
 msgid "/SNet/Grid Align"
@@ -6345,9 +6345,12 @@ msgstr ""
 
 #: ../library/scripts/modules2grid.scm.h:22
 msgid ""
-"Round module positions to their nearest grid position, so to aligns all "
+"Round module positions to their nearest grid position, so to align all "
 "modules within a synthesis network."
 msgstr ""
+"Modulpositionen werden auf die naheliegensten Gitterkoordinaten gerundet, so "
+"dass alle Module in einem Synthesenetzwerk an einem Gitter ausgerichtet "
+"werden."
 
 #: ../library/scripts/modules2grid.scm.h:26
 #, fuzzy
@@ -6401,8 +6404,9 @@ msgid "Transpose down starting at"
 msgstr ""
 
 #: ../library/scripts/part-harmonic-transposer.scm.h:209
+#, fuzzy
 msgid "No valid part supplied"
-msgstr ""
+msgstr "Synthesemodule"
 
 #: ../library/scripts/part-harmonic-transposer.scm.h:211
 #, fuzzy
@@ -6456,8 +6460,9 @@ msgid "Start Now"
 msgstr "Editor starten"
 
 #: ../library/scripts/record-midi.scm.h:46
+#, fuzzy
 msgid "No valid part object supplied"
-msgstr ""
+msgstr "Synthesemodule"
 
 #: ../library/scripts/record-midi.scm.h:47
 msgid "You probably want to start this script from a part editor."

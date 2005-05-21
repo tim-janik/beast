@@ -1,3 +1,11 @@
+Sat May 21 02:45:50 2005  Tim Janik  <timj@gtk.org>
+
+	* po/update.sh: call ../intltool-update, so we're really updating
+	with the correct intltool-version (the patched one that ships with
+	beast and can parse gettext/scm-funcs).
+
+	* de.po: translation updates.
+
 Sat May 21 00:26:15 2005  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: added .scm scripts with type gettext/scm-funcs, so these

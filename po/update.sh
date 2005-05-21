@@ -11,5 +11,5 @@
 PACKAGE="$BST_GETTEXT_DOMAIN"
 PATH="$PATH:.."
 
-echo "intltool-update --gettext-package $PACKAGE $*"
-intltool-update --gettext-package $PACKAGE $*
+echo "../intltool-update --gettext-package $PACKAGE $*"
+../intltool-update --gettext-package $PACKAGE $*
