@@ -1,3 +1,7 @@
+2005-05-23  Adam Weinberger  <adamw@gnome.org>
+
+	* en_CA.po: Updated Canadian English translation.
+
 Mon May 23 02:37:17 2005  Tim Janik  <timj@gtk.org>
 
 	* cs.po: update cs.po which was missing scm strings.

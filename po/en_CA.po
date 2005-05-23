@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-21 00:19+0200\n"
-"PO-Revision-Date: 2005-05-19 19:50-0400\n"
+"POT-Creation-Date: 2005-05-23 12:59-0400\n"
+"PO-Revision-Date: 2005-05-23 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -367,23 +367,20 @@ msgstr ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 
 #: ../beast-gtk/bstapp.c:649
-#, fuzzy
 msgid "Save the project before closing its window?"
-msgstr "Save the project before closing its window."
+msgstr "Save the project before closing its window?"
 
 #: ../beast-gtk/bstapp.c:650
-#, fuzzy
 msgid "Save Changes"
-msgstr "Shape Range"
+msgstr "Save Changes"
 
 #: ../beast-gtk/bstapp.c:651
 msgid "Discard Changes"
-msgstr ""
+msgstr "Discard Changes"
 
 #: ../beast-gtk/bstapp.c:652
-#, fuzzy
 msgid "Cancel"
-msgstr "_Cancel"
+msgstr "Cancel"
 
 #: ../beast-gtk/bstapp.c:737 ../beast-gtk/bstapp.c:744
 #: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
@@ -1641,13 +1638,13 @@ msgstr "Messages"
 msgid "Skin"
 msgstr "Skin"
 
-#: ../beast-gtk/bstprocedure.c:293
+#: ../beast-gtk/bstprocedure.c:292
 #, c-format
 msgid "Executing '%s'"
 msgstr "Executing '%s'"
 
 #. | GXK_DIALOG_WINDOW_GROUP,
-#: ../beast-gtk/bstprocedure.c:444
+#: ../beast-gtk/bstprocedure.c:443
 msgid "Start Procedure"
 msgstr "Start Procedure"
 
@@ -2831,12 +2828,11 @@ msgstr "Synthesis network to be used as postprocessor"
 
 #: ../beast-gtk/bstusermessage.c:58
 msgid "Fatal Error: "
-msgstr ""
+msgstr "Fatal Error: "
 
 #: ../beast-gtk/bstusermessage.c:62
-#, fuzzy
 msgid "Error: "
-msgstr "Error"
+msgstr "Error: "
 
 #: ../beast-gtk/bstusermessage.c:215
 msgid "Details:"
@@ -2886,15 +2882,15 @@ msgstr "Message has been repeated %u times"
 
 #: ../beast-gtk/bstusermessage.c:411
 msgid "Display dialogs with information messages"
-msgstr ""
+msgstr "Display dialogues with information messages"
 
 #: ../beast-gtk/bstusermessage.c:413
 msgid "Display dialogs with dignostic messages"
-msgstr ""
+msgstr "Display dialogues with diagnostic messages"
 
 #: ../beast-gtk/bstusermessage.c:415
 msgid "Display dialogs with debugging messages"
-msgstr ""
+msgstr "Display dialogues with debugging messages"
 
 #: ../beast-gtk/bstusermessage.c:533
 #, c-format
@@ -5145,7 +5141,7 @@ msgstr "High indicates the instrument is done synthesizing"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Input & Output/Instrument Output"
 
-#: ../bse/bsemain.c:271
+#: ../bse/bsemain.c:277
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5153,7 +5149,7 @@ msgstr ""
 "\n"
 "Available PCM drivers:\n"
 
-#: ../bse/bsemain.c:273
+#: ../bse/bsemain.c:279
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6032,195 +6028,6 @@ msgstr ""
 "  DEVICE - the PortAudio device to use. 'default' selects default device\n"
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script will create a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "_Song"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to aligns all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "Synth Done"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Draw synthesis networks anti-aliased?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Parts"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "No quantization selected"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "Failed to start recording to disk."
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-msgid "N Iterations"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Start Editor"
-
-#: ../library/scripts/record-midi.scm.h:46
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Invalid object property"
-
-#: ../library/scripts/record-midi.scm.h:47
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Show messages about audio input problems"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "Failed to start recording to disk."
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-#, fuzzy
-msgid "Failed to duplicate part range."
-msgstr "Failed to detect (start of) header"
-
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "GNU General Public Licence"
@@ -6804,21 +6611,3 @@ msgstr "Right Output"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "failed to add wave chunk from file \"%s\": %s"
-
-#~ msgid "Warning"
-#~ msgstr "Warning"
-
-#~ msgid "Info"
-#~ msgstr "Info"
-
-#~ msgid "Diagnostic"
-#~ msgstr "Diagnostic"
-
-#~ msgid "Debug"
-#~ msgstr "Debug"
-
-#~ msgid "Script"
-#~ msgstr "Script"
-
-#~ msgid "Miscellaneous Message"
-#~ msgstr "Miscellaneous Message"
