@@ -1,3 +1,7 @@
+Mon May 23 02:37:17 2005  Tim Janik  <timj@gtk.org>
+
+	* cs.po: update cs.po which was missing scm strings.
+
 2005-05-22  Miloslav Trmac  <mitr@volny.cz>
 
 	* cs.po: Updated Czech translation.
