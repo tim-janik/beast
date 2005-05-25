@@ -1,3 +1,10 @@
+Wed May 25 22:46:07 2005  Tim Janik  <timj@gtk.org>
+
+	* sfithreads.h: gcc-3.4 produces segfaulting code intentionally for
+	funciton casts it doesn't like (eventhough the *casting* programmer
+	should know better). so, cast all function pointers to (void*) before
+	casting them to the target type, which effectively makes gcc blind.
+
 Fri May 20 14:12:19 2005  Tim Janik  <timj@gtk.org>
 
 	* sficomport.c: disable debugging message that log every

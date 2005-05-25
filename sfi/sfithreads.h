@@ -125,14 +125,14 @@ void    sfi_cond_wait_timed		(SfiCond  *cond,
 					 glong	   max_useconds);
 
 /* --- atomic operations --- */
-#define sfi_atomic_pointer_set(PtrType, atomic_ptr_adr, new_ptr)        ((void(*)(PtrType volatile*,PtrType)) sfi_atomic_pointer_set_func) (atomic_ptr_adr, new_ptr)
-#define sfi_atomic_pointer_get(PtrType, atomic_ptr_adr)                 ((PtrType(*)(PtrType volatile*)) sfi_atomic_pointer_get_func) (atomic_ptr_adr)
-#define sfi_atomic_pointer_compare_and_swap(PtrType, apadr, optr, nptr) ((gboolean(*)(PtrType volatile*, PtrType, PtrType)) g_atomic_pointer_compare_and_exchange) (apadr, optr, nptr)
-#define sfi_atomic_int_set(atomic_int_ptr, value)                       ((void(*)(volatile gint*,gint)) sfi_atomic_int_set_func) (atomic_int_ptr, value)
-#define sfi_atomic_int_get(atomic_int_ptr)                              ((gint(*)(volatile gint*))      sfi_atomic_int_get_func) (atomic_int_ptr)
-#define sfi_atomic_int_add(atomic_int_ptr, signed_delta)                ((void(*)(volatile gint*,gint)) g_atomic_int_add) (atomic_int_ptr, signed_delta)
-#define sfi_atomic_int_swap_and_add(atomic_int_ptr, value)              ((gint(*)(volatile gint*,gint)) g_atomic_int_exchange_and_add) (atomic_int_ptr, value)
-#define sfi_atomic_int_compare_and_swap(atomic_int_ptr, oldval, nwval)  ((gboolean(*)(volatile gint*,gint,gint)) g_atomic_int_compare_and_exchange) (atomic_int_ptr, oldval, nwval)
+#define sfi_atomic_pointer_set(PtrType, atomic_ptr_adr, new_ptr)        ((void(*)(PtrType volatile*,PtrType)) (void*) sfi_atomic_pointer_set_func) (atomic_ptr_adr, new_ptr)
+#define sfi_atomic_pointer_get(PtrType, atomic_ptr_adr)                 ((PtrType(*)(PtrType volatile*)) (void*) sfi_atomic_pointer_get_func) (atomic_ptr_adr)
+#define sfi_atomic_pointer_compare_and_swap(PtrType, apadr, optr, nptr) ((gboolean(*)(PtrType volatile*, PtrType, PtrType)) (void*) g_atomic_pointer_compare_and_exchange) (apadr, optr, nptr)
+#define sfi_atomic_int_set(atomic_int_ptr, value)                       ((void(*)(volatile gint*,gint)) (void*) sfi_atomic_int_set_func) (atomic_int_ptr, value)
+#define sfi_atomic_int_get(atomic_int_ptr)                              ((gint(*)(volatile gint*))      (void*) sfi_atomic_int_get_func) (atomic_int_ptr)
+#define sfi_atomic_int_add(atomic_int_ptr, signed_delta)                ((void(*)(volatile gint*,gint)) (void*) g_atomic_int_add) (atomic_int_ptr, signed_delta)
+#define sfi_atomic_int_swap_and_add(atomic_int_ptr, value)              ((gint(*)(volatile gint*,gint)) (void*) g_atomic_int_exchange_and_add) (atomic_int_ptr, value)
+#define sfi_atomic_int_compare_and_swap(atomic_int_ptr, oldval, nwval)  ((gboolean(*)(volatile gint*,gint,gint)) (void*) g_atomic_int_compare_and_exchange) (atomic_int_ptr, oldval, nwval)
 static inline gint G_GNUC_UNUSED
 sfi_atomic_int_get_func (gint *atomic)
 {
