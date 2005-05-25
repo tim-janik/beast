@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2003 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "bsemain.h"
 #include "bsestandardsynths.h"
 #include "bsemidireceiver.h"
+#include "bsemidinotifier.h"
 #include "gslcommon.h"
 #include "bseengine.h"
 #include <string.h>
@@ -723,6 +724,20 @@ bse_project_create_intern_csynth (BseProject *self,
                                                      NULL);
   bse_item_set_internal (BSE_ITEM (csynth), TRUE);
   return csynth;
+}
+
+BseMidiNotifier*
+bse_project_get_midi_notifier (BseProject *self)
+{
+  GSList *slist;
+  for (slist = self->items; slist; slist = slist->next)
+    if (BSE_IS_MIDI_NOTIFIER (slist->data))
+      return slist->data;
+
+  BseMidiNotifier *mnot = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_MIDI_NOTIFIER, "%bse-intern-midi-notifier", NULL);
+  bse_midi_notifier_set_receiver (mnot, self->midi_receiver);
+  bse_item_set_internal (BSE_ITEM (mnot), TRUE);
+  return mnot;
 }
 
 static void

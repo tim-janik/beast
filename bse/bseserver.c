@@ -230,6 +230,9 @@ bse_server_init (BseServer *self)
 
   /* integrate argv overides */
   bse_gconfig_merge_args (bse_main_args);
+
+  /* dispatch midi notifiers */
+  bse_midi_notifiers_attach_source();
 }
 
 static void

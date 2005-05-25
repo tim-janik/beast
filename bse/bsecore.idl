@@ -57,7 +57,20 @@ ConstIdent NOTE_Ais = SFI_NOTE_Ais;
 ConstIdent NOTE_Bes = SFI_NOTE_Bes;
 ConstIdent NOTE_B   = SFI_NOTE_B;
 
+/* standard sequences */
+sequence IntSeq {
+  Int    ints;
+};
+sequence TypeSeq {
+  String types;
+};
 
+sequence StringSeq {
+  String strings;
+};
+
+
+/* various MIDI specific definitions */
 choice MidiSignalType {
   /* special cased signals */
   MIDI_SIGNAL_PROGRAM                         = (1,   _("Program Change")),     /* 7bit */
@@ -408,18 +421,55 @@ choice MidiControlType {
   MIDI_CONTROL_127                             = (255, _("Control 127 Polyphonic Mode On ITrigger")),
 };
 
-sequence IntSeq {
-  Int    ints;
-};
-sequence NoteSeq {
-  Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
-};
-sequence StringSeq {
-  String strings;
+choice MidiChannelEventType {
+  MIDI_EVENT_NONE = Neutral,
+  /* channel voice messages */
+  MIDI_EVENT_NOTE_OFF,
+  MIDI_EVENT_NOTE_ON,
+  MIDI_EVENT_KEY_PRESSURE,
+  MIDI_EVENT_CONTROL_CHANGE,
+  MIDI_EVENT_PROGRAM_CHANGE,
+  MIDI_EVENT_CHANNEL_PRESSURE,
+  MIDI_EVENT_PITCH_BEND,
+  /* system common messages */
+  MIDI_EVENT_SYS_EX,
+  MIDI_EVENT_SONG_POINTER,
+  MIDI_EVENT_SONG_SELECT,
+  MIDI_EVENT_TUNE,
+  /* system realtime messages */
+  MIDI_EVENT_TIMING_CLOCK,
+  MIDI_EVENT_SONG_START,
+  MIDI_EVENT_SONG_CONTINUE,
+  MIDI_EVENT_SONG_STOP,
+  MIDI_EVENT_ACTIVE_SENSING,
+  MIDI_EVENT_SYSTEM_RESET,
 };
 
-sequence TypeSeq {
-  String types;
+record MidiChannelEvent
+{
+  MidiChannelEventType  event_type;
+  Int                   channel         = ("Channel", "", 0, 0, 99, 1, ":readwrite"); // FIXME: MAX_MIDI_CHANNEL
+  Num                   tick_stamp      = ("Time Stamp", NULL, 0, 0, SFI_MAXNUM, 0, STANDARD);
+  /* note (on/off/pressure) */
+  Real                  frequency       = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
+  Real                  velocity        = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+  /* control change */
+  Int                   control         = ("Control Number", "", 0, 0, 1024, 8, ":readwrite");
+  Real                  value           = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
+  /* program change */
+  Int                   program         = ("Program", "", 0, 0, 0x7f, 0x10, ":readwrite");
+  /* channel pressure */
+  Real                  intensity       = ("Intensity", "", 0, 0, 1.0, 0.1, ":readwrite");
+  /* pitch bend */
+  Real                  pitch_bend      = ("Pitch Bend", "", 0, -1, +1, 0.1, ":readwrite");
+  /* song pointer */
+  Int                   song_pointer    = ("Song Pointer", "", 0, 0, 0x3fff, 0x80, ":readwrite");
+  /* song select */
+  Int                   song_number     = ("Song Number", "", 0, 0, 0x7f, 0x10, ":readwrite");
+};
+
+sequence NoteSeq {
+  Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
 
 class Item;

@@ -28,9 +28,8 @@ enum
 {
   PROP_0,
   PROP_IDENT,
-  PROP_USER_MSG_TYPE,
-  PROP_USER_MSG,
   PROP_CONNECTED,
+  PROP_STATUS_MESSAGE,
   PROP_EXIT_CODE,
   PROP_EXIT_REASON,
 };
@@ -65,7 +64,6 @@ static GTypeClass *parent_class = NULL;
 static GSList     *janitor_stack = NULL;
 static guint       signal_action = 0;
 static guint       signal_action_changed = 0;
-static guint       signal_closed = 0;
 static guint       signal_progress = 0;
 
 
@@ -109,12 +107,10 @@ bse_janitor_class_init (BseJanitorClass *class)
   
   bse_object_class_add_param (object_class, NULL, PROP_IDENT,
 			      sfi_pspec_string ("ident", "Script Identifier", NULL, NULL, SFI_PARAM_GUI));
-  bse_object_class_add_param (object_class, NULL, PROP_USER_MSG_TYPE,
-			      bse_param_spec_genum ("user-msg-type", "User Message Type", NULL, BSE_TYPE_MSG_TYPE, BSE_MSG_INFO, SFI_PARAM_GUI));
-  bse_object_class_add_param (object_class, NULL, PROP_USER_MSG,
-			      sfi_pspec_string ("user-msg", "User Message", NULL, NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, NULL, PROP_CONNECTED,
 			      sfi_pspec_bool ("connected", "Connected", NULL, FALSE, "G:r"));
+  bse_object_class_add_param (object_class, NULL, PROP_STATUS_MESSAGE,
+			      sfi_pspec_string ("status-message", "Status Message", NULL, "", SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, NULL, PROP_EXIT_CODE,
 			      sfi_pspec_int ("exit-code", "Exit Code", NULL, 0, -256, 256, 0, "G:r"));
   bse_object_class_add_param (object_class, NULL, PROP_EXIT_REASON,
@@ -128,8 +124,6 @@ bse_janitor_class_init (BseJanitorClass *class)
   signal_action = bse_object_class_add_dsignal (object_class, "action",
 						G_TYPE_NONE, 2,
 						G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE, G_TYPE_INT);
-  signal_closed = bse_object_class_add_signal (object_class, "closed",
-					       G_TYPE_NONE, 0);
 }
 
 static void
@@ -142,8 +136,7 @@ bse_janitor_init (BseJanitor *self)
   self->context = NULL;
   self->decoder = NULL;
   self->source = NULL;
-  self->user_msg_type = BSE_MSG_INFO;
-  self->user_msg = NULL;
+  self->status_message = g_strdup ("");
   self->script_name = NULL;
   self->proc_name = NULL;
   self->actions = NULL;
@@ -161,12 +154,9 @@ bse_janitor_set_property (GObject      *object,
   
   switch (param_id)
     {
-    case PROP_USER_MSG_TYPE:
-      self->user_msg_type = g_value_get_enum (value);
-      break;
-    case PROP_USER_MSG:
-      g_free (self->user_msg);
-      self->user_msg = g_value_dup_string (value);
+    case PROP_STATUS_MESSAGE:
+      g_free (self->status_message);
+      self->status_message = g_value_dup_string (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -187,11 +177,8 @@ bse_janitor_get_property (GObject    *object,
     case PROP_IDENT:
       sfi_value_set_string (value, bse_janitor_get_ident (self));
       break;
-    case PROP_USER_MSG_TYPE:
-      g_value_set_enum (value, self->user_msg_type);
-      break;
-    case PROP_USER_MSG:
-      sfi_value_set_string (value, self->user_msg);
+    case PROP_STATUS_MESSAGE:
+      sfi_value_set_string (value, self->status_message);
       break;
     case PROP_CONNECTED:
       sfi_value_set_bool (value, self->port != NULL);
@@ -222,7 +209,7 @@ bse_janitor_finalize (GObject *object)
       bse_janitor_remove_action (self, g_quark_to_string (a->action));
     }
   
-  g_free (self->user_msg);
+  g_free (self->status_message);
   g_free (self->script_name);
   g_free (self->proc_name);
   g_free (self->exit_reason);
@@ -266,7 +253,7 @@ bse_janitor_set_procedure (BseJanitor  *self,
   self->proc_name = g_strdup (proc_name);
   g_free (self->script_name);
   self->script_name = g_strdup (script_name);
-  g_object_notify (self, "user-msg");
+  g_object_notify (self, "status-message");
 }
 
 const gchar*
@@ -390,7 +377,6 @@ janitor_shutdown (BseJanitor *self)
   if (sfi_com_port_test_reap_child (self->port))
     n_seconds = 0;
   bse_idle_timed (n_seconds * SFI_USEC_FACTOR, janitor_idle_clean_jsource, g_object_ref (self));
-  g_signal_emit (self, signal_closed, 0);
 }
 
 void

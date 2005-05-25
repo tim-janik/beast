@@ -22,6 +22,7 @@
 #include "bseengine.h"
 #include "bsemathsignal.h"
 #include "bsecxxutils.hh"
+#include "bsemidinotifier.h"
 #include <string.h>
 #include <sfi/gbsearcharray.h>
 #include <map>
@@ -1368,20 +1369,6 @@ bse_midi_receiver_set_notifier (BseMidiReceiver *self,
   BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
-BseMidiNotifier*
-bse_midi_receiver_get_notifier (BseMidiReceiver *self)
-{
-  BseMidiNotifier *notifier;
-  
-  g_return_val_if_fail (self != NULL, NULL);
-  
-  BSE_MIDI_RECEIVER_LOCK ();
-  notifier = self->notifier;
-  BSE_MIDI_RECEIVER_UNLOCK ();
-  
-  return notifier;
-}
-
 gboolean
 bse_midi_receiver_has_notify_events (BseMidiReceiver *self)
 {
@@ -2069,7 +2056,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 	}
       if (self->notifier)
 	{
-	  self->notifier_events = sfi_ring_prepend (self->notifier_events, event);
+	  self->notifier_events = sfi_ring_append (self->notifier_events, event);
 	  need_wakeup = TRUE;
 	}
       else
@@ -2079,11 +2066,9 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
   else
     return FALSE;
   
-#if 0   /* FIXME: wake up midi notifer if necessary */
   if (need_wakeup)
-    sfi_thread_wakeup (sfi_thread_main ());
-#endif
-  
+    bse_midi_notifiers_wakeup();
+
   return TRUE;
 }
 

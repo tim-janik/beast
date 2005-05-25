@@ -34,14 +34,6 @@ typedef SfiSeq*	(*BseGlueBoxedToSeq)	 (gpointer	    boxed);
 GType			bse_glue_pspec_get_original_enum (GParamSpec *pspec);
 guint			bse_glue_enum_index	 (GType		    enum_type,
 						  gint		    enum_value);
-GType			bse_glue_make_rorecord	 (const gchar	   *rec_name,
-						  GBoxedCopyFunc    copy,
-						  GBoxedFreeFunc    free,
-						  BseGlueBoxedToRec to_record);
-GType			bse_glue_make_rosequence (const gchar	   *seq_name,
-						  GBoxedCopyFunc    copy,
-						  GBoxedFreeFunc    free,
-						  BseGlueBoxedToSeq to_sequence);
 GValue*			bse_glue_boxed_to_value	 (GType		    boxed_type,
 						  gpointer	    boxed);
 

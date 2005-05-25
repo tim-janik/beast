@@ -269,100 +269,11 @@ boxed_free_midi_event (gpointer boxed)
   bse_midi_free_event (event);
 }
 
-static SfiRec*
-midi_event_to_record (gpointer crecord)
-{
-  SfiRec *rec = sfi_rec_new ();
-#if 0 // FIXME
-  BseMidiEvent *event = crecord;
-  GslGlueValue *val;
-  
-  /* status */
-  val = gsl_glue_value_enum (g_type_name (BSE_TYPE_MIDI_EVENT_TYPE),
-			     bse_glue_enum_index (BSE_TYPE_MIDI_EVENT_TYPE, event->status));
-  gsl_glue_rec_set (rec, "status", val);
-  /* channel */
-  val = gsl_glue_value_int (event->channel);
-  gsl_glue_rec_set (rec, "channel", val);
-  /* msec_stamp */
-  val = gsl_glue_value_int (event->tick_stamp / 1000); // FIXME: broken tick_stamp
-  gsl_glue_rec_set (rec, "stamp", val); // FIXME: "tick_stamp"
-  switch (event->status)
-    {
-    case BSE_MIDI_NOTE_OFF:
-    case BSE_MIDI_NOTE_ON:
-    case BSE_MIDI_KEY_PRESSURE:
-      val = gsl_glue_value_float (event->data.note.frequency);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_float (event->data.note.velocity);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    case BSE_MIDI_CONTROL_CHANGE:
-      val = gsl_glue_value_int (event->data.control.control);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_float (event->data.control.value);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    case BSE_MIDI_PROGRAM_CHANGE:
-      val = gsl_glue_value_int (event->data.program);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    case BSE_MIDI_CHANNEL_PRESSURE:
-      val = gsl_glue_value_float (event->data.intensity);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    case BSE_MIDI_PITCH_BEND:
-      val = gsl_glue_value_float (event->data.pitch_bend);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    case BSE_MIDI_SONG_POINTER:
-      val = gsl_glue_value_int (event->data.song_pointer);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data1", val);
-      break;
-    case BSE_MIDI_SONG_SELECT:
-      val = gsl_glue_value_int (event->data.song_number);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    case BSE_MIDI_SYS_EX:
-    case BSE_MIDI_TUNE:
-    case BSE_MIDI_TIMING_CLOCK:
-    case BSE_MIDI_SONG_START:
-    case BSE_MIDI_SONG_CONTINUE:
-    case BSE_MIDI_SONG_STOP:
-    case BSE_MIDI_ACTIVE_SENSING:
-    case BSE_MIDI_SYSTEM_RESET:
-    case BSE_MIDI_END_EX:
-    default:
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data1", val);
-      val = gsl_glue_value_int (0);
-      gsl_glue_rec_set (rec, "data2", val);
-      break;
-    }
-#endif
-  return rec;
-}
-
 GType
 bse_midi_event_get_type (void)
 {
   static GType type = 0;
-  
   if (!type)
-    type = bse_glue_make_rorecord ("BseMidiEvent",
-				   boxed_copy_midi_event,
-				   boxed_free_midi_event,
-				   midi_event_to_record);
-  
+    type = g_boxed_type_register_static ("BseMidiEvent", boxed_copy_midi_event, boxed_free_midi_event);
   return type;
 }

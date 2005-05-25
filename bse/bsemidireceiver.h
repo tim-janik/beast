@@ -104,7 +104,6 @@ void             bse_midi_receiver_discard_sub_voice       (BseMidiReceiver   *s
                                                             BseTrans          *trans);
 void             bse_midi_receiver_set_notifier            (BseMidiReceiver   *self,
                                                             BseMidiNotifier   *notifier);
-BseMidiNotifier* bse_midi_receiver_get_notifier            (BseMidiReceiver   *self);
 gboolean         bse_midi_receiver_has_notify_events       (BseMidiReceiver   *self);
 SfiRing*         bse_midi_receiver_fetch_notify_events     (BseMidiReceiver   *self);
 gboolean         bse_midi_receiver_voices_pending          (BseMidiReceiver   *self,

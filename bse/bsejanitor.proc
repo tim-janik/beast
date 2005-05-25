@@ -318,9 +318,6 @@ BODY (BseProcedureClass *proc,
 
 PROCEDURE (bse-script-set-status, "Script/Set Status") {
   HELP  = "Alter script status message.";
-  IN    = bse_param_spec_genum ("msg_type", "Message Type", NULL,
-				BSE_TYPE_MSG_TYPE, BSE_MSG_INFO,
-				SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("message", "Message", NULL,
 			    NULL, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
@@ -329,7 +326,6 @@ PROCEDURE (bse-script-set-status, "Script/Set Status") {
 {
   /* extract parameter values */
   BseJanitor    *self    = bse_janitor_get_current ();
-  BseMsgType     mtype   = g_value_get_enum (in_values++);
   const gchar   *message = sfi_value_get_string (in_values++);
   
   /* check parameters */
@@ -340,16 +336,10 @@ PROCEDURE (bse-script-set-status, "Script/Set Status") {
   if (!self->port || self->port_closed)
     return BSE_ERROR_PROC_EXECUTION;
   if (!message)
-    {
-      message = bse_janitor_get_ident (self);
-      mtype = BSE_MSG_INFO;
-    }
+    message = "";
   
   /* action */
-  bse_item_set (self,
-		"user_msg_type", mtype,
-		"user_msg", message,
-		NULL);
+  bse_item_set (self, "status-message", message, NULL);
   
   return BSE_ERROR_NONE;
 }

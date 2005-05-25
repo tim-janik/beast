@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2003 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,7 @@ gpointer	bse_project_create_intern_synth	(BseProject	*project,
 						 GType           check_type);
 BseCSynth*      bse_project_create_intern_csynth(BseProject     *project,
                                                  const char     *base_name);
+BseMidiNotifier*bse_project_get_midi_notifier   (BseProject     *project);
 void            bse_project_clear_undo          (BseProject     *project);
 void            bse_project_clean_dirty         (BseProject     *project);
 void    bse_project_push_undo_silent_deactivate (BseProject     *self);

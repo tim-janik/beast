@@ -42,8 +42,7 @@ struct _BseJanitor
   SfiGlueContext *context;
   SfiGlueDecoder *decoder;
   GSource        *source;
-  BseMsgType      user_msg_type;
-  gchar          *user_msg;
+  gchar          *status_message;
   gchar          *script_name;
   gchar          *proc_name;
   GSList         *actions;

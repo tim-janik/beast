@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002,2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 #include <bse/bsemidireceiver.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_NOTIFIER              (BSE_TYPE_ID (BseMidiNotifier))
@@ -39,7 +36,8 @@ extern "C" {
 /* --- BseMidiNotifier structs --- */
 struct _BseMidiNotifier
 {
-  BseItem	parent_instance;
+  BseItem	   parent_instance;
+  BseMidiReceiver *midi_receiver;
 };
 struct _BseMidiNotifierClass
 {
@@ -51,12 +49,12 @@ struct _BseMidiNotifierClass
 
 
 /* --- prototypes --- */
-void		bse_midi_notifier_dispatch		(BseMidiNotifier	*self,
-							 BseMidiReceiver	*midi_receiver);
+void bse_midi_notifier_set_receiver     (BseMidiNotifier      *self,
+                                         BseMidiReceiver      *midi_receiver);
+void bse_midi_notifier_dispatch         (BseMidiNotifier      *self);
+void bse_midi_notifiers_attach_source   (void);
+void bse_midi_notifiers_wakeup          (void);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MIDI_NOTIFIER_H__ */

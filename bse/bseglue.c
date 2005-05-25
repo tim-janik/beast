@@ -378,34 +378,6 @@ bse_value_to_sfi (const GValue *value)
   return bglue_value_to_serializable (value);
 }
 
-GType
-bse_glue_make_rorecord (const gchar      *rec_name,
-			GBoxedCopyFunc    copy,
-			GBoxedFreeFunc    free,
-			BseGlueBoxedToRec to_record)
-{
-  GType type;
-  
-  type = g_boxed_type_register_static (rec_name, copy, free);
-  g_type_set_qdata (type, g_quark_from_string ("BseGlueBoxedToRec"), to_record);
-  
-  return type;
-}
-
-GType
-bse_glue_make_rosequence (const gchar      *seq_name,
-			  GBoxedCopyFunc    copy,
-			  GBoxedFreeFunc    free,
-			  BseGlueBoxedToSeq to_sequence)
-{
-  GType type;
-  
-  type = g_boxed_type_register_static (seq_name, copy, free);
-  g_type_set_qdata (type, g_quark_from_string ("BseGlueBoxedToSeq"), to_sequence);
-  
-  return type;
-}
-
 /**
  * BseGlueBoxedToRec
  * @boxed:   the boxed value to be converted into a record
@@ -1081,6 +1053,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	      sfi_diag ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
 	      return TRUE;
 	    }
+          /* disable notify, disconnect closure */
 	  closure = (GClosure*) bclosure;
 	  if (last)
 	    last->next = slist->next;

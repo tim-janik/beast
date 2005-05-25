@@ -1,3 +1,30 @@
+Mon May 23 19:37:50 2005  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: added MidiChannelEventType and MidiChannelEvent to export
+	midi events.
+
+	* bseproject.h, bseproject.c, bseproject.proc: allow fetching a projects
+	midi notifier.
+
+	* bsejanitor.[hc]: removed user-msg* properties and added status
+	message string property. removed ::close signal (which was unused and
+	stopped to provide proper notification).
+
+	* bsejanitor.proc: removed msg type from bse-script-set-status.
+
+	* bsemidireceiver.hh, bsemidireceiver.cc: removed notifier getter.
+	notify events in the correct order. properly wake up midi notifiers.
+
+	* bsemidinotifier.[hc]: emit notification about MIDI events, using a
+	MidiChannelEvent structure.
+
+	* bsemidievent.c: removed cruft.
+
+	* bseserver.c: setup midi notifier main loop source.
+
+	* bseglue.[hc]: removed rorecord and rosequence type registration
+	which were now unused.
+
 Sat May 21 02:39:14 2005  Tim Janik  <timj@gtk.org>
 
 	* bsemain.[hc]: introduced bse_init_textdomain_only(), which is used 
