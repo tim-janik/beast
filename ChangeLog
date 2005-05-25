@@ -1,3 +1,7 @@
+Wed May 25 23:28:22 2005  Tim Janik  <timj@gtk.org>
+
+	* released beast 0.6.6.
+
 Wed May 25 21:51:16 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version 0.6.6, interface age 0, binary age 0.
