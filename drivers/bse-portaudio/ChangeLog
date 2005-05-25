@@ -1,3 +1,7 @@
+Wed May 25 23:30:43 2005  Tim Janik  <timj@gtk.org>
+
+	* released bse-portaudio 0.6.6.
+
 Sat May 14 19:30:36 2005  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-portaudio.cc (bse_pcm_device_port_audio_open): fixed 
