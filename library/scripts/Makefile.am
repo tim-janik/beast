@@ -5,6 +5,7 @@
 
 
 scripts_DATA = $(strip			\
+	record-midi.scm			\
 	progressor-example.scm		\
 	modules2grid.scm		\
 	song-parts-operations.scm	\

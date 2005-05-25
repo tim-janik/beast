@@ -550,12 +550,11 @@ janitor_actions_changed (GxkDialog *dialog)
 {
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
   BstMessage msg = { 0, };
-  BseMsgType utype = 0;
   const gchar *user_msg = NULL;
-  bse_proxy_get (janitor, "user-msg-type", &utype, "user-msg", &user_msg, NULL);
+  bse_proxy_get (janitor, "status-message", &user_msg, NULL);
   const gchar *proc_name = bse_janitor_get_proc_name (janitor);
   const gchar *script_name = bse_janitor_get_script_name (janitor);
-  message_fill_from_script (&msg, BST_MSG_SCRIPT, 0, NULL, script_name, proc_name, NULL);
+  message_fill_from_script (&msg, BST_MSG_SCRIPT, 0, NULL, script_name, proc_name, user_msg);
   bst_msg_dialog_update (dialog, &msg, FALSE);
   bst_msg_dialog_janitor_update (dialog, janitor);
   message_free_fields (&msg);

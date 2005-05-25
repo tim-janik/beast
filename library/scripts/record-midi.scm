@@ -27,19 +27,21 @@
 
 (define (record-midi part start-now)
   (define do-recording #f)
-  (define (record-note note freq start duration)
+  (define (record-note start duration note freq fine-tune velocity)
     (if do-recording
-	(begin (display "rec-note: ")
-	       (display note)
-	       (display " ")
-	       (display freq)
-	       (display " ")
+	(begin (display "MIDI Event recorded: ")
 	       (display start)
 	       (display " ")
 	       (display duration)
+	       (display " ")
+	       (display note)
+	       (display " ")
+	       (display fine-tune)
+	       (display " ")
+	       (display velocity)
 	       (newline)
-	       (bse-part-insert-note part start duration freq 0))))
-  (let ((mrec (bse-server-get-midi-notifier bse-server))
+	       (bse-part-insert-note-auto part start duration note fine-tune velocity))))
+  (let ((midi-nofifier (bse-project-get-midi-notifier (bse-item-get-project part)))
 	(note-vector (make-vector 128 0))
 	(start-stamp 0))
     (if (not (bse-is-item part))
@@ -47,44 +49,44 @@
 			'text2 (_ "You probably want to start this script from a part editor.")))
     (bse-script-add-action "start" "Start Recording")
     (bse-script-add-action "stop" "Stop Recording")
-    (bse-script-set-msg 'info (string-append "Not currently recording...\n\n"
-					     "The MIDI recorder is still work in progress.\n"
-					     "Currently, you need a MIDI Synthesizer network "
-					     "running, in order for this script to catch the "
-					     "events currently being played back."))
-    (bse-signal-connect (bse-script-control) "action::start" (lambda (proxy . rest)
+    (bse-script-set-status (_ "Not currently recording...\n\n"
+			      "The MIDI recorder is still work in progress.\n"
+			      "Currently, you need a MIDI Synthesizer network "
+			      "running, in order for this script to catch the "
+			      "events currently being played back."))
+    (bse-signal-connect (bse-script-janitor) "action::start" (lambda (proxy . rest)
 							       (set! do-recording #t)
-							       (bse-script-set-msg 'info "Currently recording...")))
-    (bse-signal-connect (bse-script-control) "action::stop" (lambda (proxy . rest)
+							       (bse-script-set-status "Currently recording...")))
+    (bse-signal-connect (bse-script-janitor) "action::stop" (lambda (proxy . rest)
 							      (set! do-recording #f)
 							      (set! start-stamp 0)
-							      (bse-script-set-msg 'info "Stopped recording...")))
-    (bse-signal-connect mrec "midi-event"
+							      (bse-script-set-status "Stopped recording...")))
+    (bse-signal-connect midi-nofifier "midi-event"
 			(lambda (proxy event)
-			  (let ((status  (bse-record-get event 'status))
-				(channel (bse-record-get event 'channel))
-				(stamp   (bse-record-get event 'stamp))
-				(data1   (bse-record-get event 'data1))
-				(data2   (bse-record-get event 'data2)))
-			    (cond ((bse-enum-match? status 'note-on)
-				   (let ((note (bse-note-from-freq data1)))
+			  (let ((etype     (bse-rec-get event 'event-type))
+				(channel   (bse-rec-get event 'channel))
+				(stamp     (bse-rec-get event 'tick-stamp))
+				(frequency (bse-rec-get event 'frequency))
+				(velocity  (bse-rec-get event 'velocity)))
+			    (cond ((bse-choice-match? etype 'note-on)
+				   (let ((note (bse-note-from-freq frequency)))
 				     (vector-set! note-vector note stamp)
 				     (if (= start-stamp 0)
 					 (set! start-stamp stamp))))
-				  ((bse-enum-match? status 'note-off)
-				   (let ((note (bse-note-from-freq data1)))
+				  ((bse-choice-match? etype 'note-off)
+				   (let ((note (bse-note-from-freq frequency)))
 				     (if (not (= 0 (vector-ref note-vector note)))
 					 (let ((diff (- stamp (vector-ref note-vector note)))
 					       (start (- (vector-ref note-vector note) start-stamp)))
 					   (vector-set! note-vector note 0)
-					   (record-note note data1 start diff)))))
+					   (record-note start diff note frequency 0 velocity)))))
 				  (else
 				   (display (string-append "MIDI Event ignored: "
-							   status " "
-							   (number->string channel) " "
+							   (symbol->string etype) "("
+							   (number->string channel) ") "
 							   (number->string stamp) " "
-							   (number->string data1) " "
-							   (number->string data2)))
+							   (number->string frequency) " "
+							   (number->string velocity)))
 				   (newline))))))
     (while (or (bse-context-pending) #t)
 	   (bse-context-iteration #t))))

@@ -1,19 +1,16 @@
-- get rid of usr-msg-type. change usr-msg to something like action-text or similar (primary + secondary might make sense)
-- test bse-script-set-status, bse-script-quit
-- remove janitor::close
-- allow scripts to issue errors diagnosis etc. then check bse-script-exit
-- compare details from "loop range is empty" with details from "bse-script-progressor"
+RELEASE(0.6.6):
+- fix/re-enable midi note recording into piano roll
+- update status message of recording script according to is/isnot recording
+- look into adding BseJanitor::status-caption (which could become primary text for status message display)
+BUGS(FIXME):
 - add/remove actions to/from shadow storage and require a script to issue actions-commit/gui-update or similar for the actions to really appear on-screen
-- sync log-domain with thrwead name in profiler
 - add BST_MSG_PROXY(project) for detail section
 - start bsesh with nice level reduced by exactly 1 (must be configurable, default:on)
 - popup prominent error message upon startup scripts could not be found, same if plugins could not be found
 - add enum BseMessageCode to bsecore.idl (enum and BseMessage field) to identify messages via BSE_MSG_CODE(nnn) that may be usefull to handle
   programatically at the GUI (no midi, no pcm, no plugins, no scripts)
 - remove i18n_category from bsecategories.c and attempt translation automatically
-RELEASE(0.6.6):
-- fix/re-enable midi note recording into piano roll
-BUGS(FIXME):
+- check envelope module enum value names (nick, blurb/tooltips)
 - add stock icons for Select/None Select/All Select/Invert
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - install bsewavetool, bsewavetool.1

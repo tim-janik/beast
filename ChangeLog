@@ -1,3 +1,12 @@
+Mon May 23 19:37:50 2005  Tim Janik  <timj@gtk.org>
+
+	* library/scripts/record-midi.scm: updated according to API changes 
+	sine 2002.
+
+	* library/scripts/Makefile.am: install record-midi.scm.
+
+	* beast-gtk/bstusermessage.c: display janitor status messages.
+
 Sat May 21 02:38:37 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c: don't center normal description text.
