@@ -1,4 +1,4 @@
-Overview of Changes in BEAST/BSE 0.6.6:
+Overview of Changes in BSE-PortAudio 0.6.6:
 
 * Build fixes for BEAST-0.6.6
 * Plugged memory leaks
