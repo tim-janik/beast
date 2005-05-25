@@ -1,3 +1,10 @@
+Wed May 25 21:51:16 2005  Tim Janik  <timj@gtk.org>
+
+	* configure.in: version 0.6.6, interface age 0, binary age 0.
+
+	* library/scripts/record-midi.scm: convert MIDI event timming to 
+	song ticks when adding notes.
+
 Mon May 23 19:37:50 2005  Tim Janik  <timj@gtk.org>
 
 	* library/scripts/record-midi.scm: updated according to API changes 

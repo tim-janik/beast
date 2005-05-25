@@ -7,8 +7,9 @@ Overview of Changes in BEAST/BSE 0.6.6:
 * Fixed project Save vs. Save As behaviour
 * Fixed localized numbers being written to .bse files
 * Fixed sample embedding in .bse files (0.6.5 did not store all samples)
-* Rewrote message dialogs and message mechanisms
 * Fixed stale header files, left out by make uninstall
+* Rewrote message dialogs and message mechanisms
+* Ported MIDI event recording script to new BSE core
 * Updated Canadian English translation [Adam Weinberger] 
 * Updated Czech translation [Miloslav Trmac]
 * Updated Italian translation [Petrecca Michele]

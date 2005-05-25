@@ -43,7 +43,8 @@
 	       (bse-part-insert-note-auto part start duration note fine-tune velocity))))
   (let ((midi-nofifier (bse-project-get-midi-notifier (bse-item-get-project part)))
 	(note-vector (make-vector 128 0))
-	(start-stamp 0))
+	(start-stamp 0)
+	(stamp-ticks 0))
     (if (not (bse-is-item part))
 	(bse-exit-error 'text1 (_ "No valid part object supplied")
 			'text2 (_ "You probably want to start this script from a part editor.")))
@@ -68,6 +69,11 @@
 				(stamp     (bse-rec-get event 'tick-stamp))
 				(frequency (bse-rec-get event 'frequency))
 				(velocity  (bse-rec-get event 'velocity)))
+			    (if (= 0 stamp-ticks)
+				;; timing->stamp_ticks maybe 0 before the first MIDI event
+				(let ((timing (bse-part-get-timing part 0)))
+				  (bse-rec-print timing) (newline)
+				  (set! stamp-ticks (bse-rec-get timing 'stamp-ticks))))
 			    (cond ((bse-choice-match? etype 'note-on)
 				   (let ((note (bse-note-from-freq frequency)))
 				     (vector-set! note-vector note stamp)
@@ -79,7 +85,7 @@
 					 (let ((diff (- stamp (vector-ref note-vector note)))
 					       (start (- (vector-ref note-vector note) start-stamp)))
 					   (vector-set! note-vector note 0)
-					   (record-note start diff note frequency 0 velocity)))))
+					   (record-note (* stamp-ticks start) (* stamp-ticks diff) note frequency 0 velocity)))))
 				  (else
 				   (display (string-append "MIDI Event ignored: "
 							   (symbol->string etype) "("
