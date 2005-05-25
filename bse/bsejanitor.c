@@ -64,6 +64,7 @@ static GTypeClass *parent_class = NULL;
 static GSList     *janitor_stack = NULL;
 static guint       signal_action = 0;
 static guint       signal_action_changed = 0;
+static guint       signal_shutdown = 0;
 static guint       signal_progress = 0;
 
 
@@ -124,6 +125,7 @@ bse_janitor_class_init (BseJanitorClass *class)
   signal_action = bse_object_class_add_dsignal (object_class, "action",
 						G_TYPE_NONE, 2,
 						G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE, G_TYPE_INT);
+  signal_shutdown = bse_object_class_add_signal (object_class, "shutdown", G_TYPE_NONE, 0);
 }
 
 static void
@@ -377,6 +379,7 @@ janitor_shutdown (BseJanitor *self)
   if (sfi_com_port_test_reap_child (self->port))
     n_seconds = 0;
   bse_idle_timed (n_seconds * SFI_USEC_FACTOR, janitor_idle_clean_jsource, g_object_ref (self));
+  g_signal_emit (self, signal_shutdown, 0);
 }
 
 void

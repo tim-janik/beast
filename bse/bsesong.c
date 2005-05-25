@@ -93,6 +93,7 @@ bse_song_timing_get_default (BseSongTiming *timing)
   timing->denominator = 4;
   timing->tpqn = 384;
   timing->tpt = timing->tpqn * 4 * timing->numerator / timing->denominator;
+  timing->stamp_ticks = 0;
 }
 
 static void
@@ -318,6 +319,10 @@ bse_song_get_timing (BseSong       *self,
   timing->denominator = self->denominator;
   timing->tpqn = self->tpqn;
   timing->tpt = timing->tpqn * 4 * timing->numerator / timing->denominator;
+  if (!bse_engine_sample_freq())
+    timing->stamp_ticks = 0;
+  else /* see update_tpsi */
+    timing->stamp_ticks = timing->tpqn * timing->bpm / (60.0 * bse_engine_sample_freq());
 }
 
 BseSong*

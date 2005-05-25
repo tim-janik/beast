@@ -617,6 +617,8 @@ record SongTiming {
   /* sequencer timing */
   Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, STANDARD);
   Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, STANDARD);
+  /* playback timing */
+  Real  stamp_ticks = ("Ticks per stamp increment (valid only during playback)", NULL, 384, 1, G_MAXINT, 12, STANDARD);
 };
 
 record SampleFileInfo {

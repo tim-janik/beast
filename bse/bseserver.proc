@@ -325,7 +325,7 @@ register_scripts (gpointer data)
   if (!janitor)
     bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
   else
-    g_object_connect (janitor, "signal::closed", script_janitor_closed, server, NULL);
+    g_object_connect (janitor, "signal::shutdown", script_janitor_closed, server, NULL);
   g_free (scr->script);
   g_free (scr);
   return !janitor;
