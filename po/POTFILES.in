@@ -70,6 +70,7 @@ bse/bsedevice.c
 bse/bseenums.c
 bse/bseinstrumentinput.c
 bse/bseinstrumentoutput.c
+bse/bsejanitor.c
 bse/bsemain.c
 bse/bsemidicontroller.c
 bse/bsemididevice-null.c
@@ -126,4 +127,5 @@ plugins/davsyndrum.c
 plugins/davxtalstrings.c
 plugins/evaluator/bseevaluator.idl
 plugins/freeverb/bsefreeverb.c
+sfi/sfilog.c
 tools/bsewavetool.cc
