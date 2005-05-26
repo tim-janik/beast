@@ -105,11 +105,6 @@ Selected @uref{http://www.soundonsound.com,,Sound On Sound} Articles:
 	@uref{http://www.soundonsound.com/sos/may04/articles/synthsecrets.htm,,Part61}
 	@uref{http://www.soundonsound.com/sos/jun04/articles/synthsecrets.htm,,Part62}
 	@uref{http://www.soundonsound.com/sos/jul04/articles/synthsecrets.htm,,Part63}
-	@c @uref{http://www.soundonsound.com/sos/aug04/articles/synthsecrets.htm,,Part64}
-	@c @uref{http://www.soundonsound.com/sos/sep04/articles/synthsecrets.htm,,Part65}
-	@c @uref{http://www.soundonsound.com/sos/oct04/articles/synthsecrets.htm,,Part66}
-	@c @uref{http://www.soundonsound.com/sos/nov04/articles/synthsecrets.htm,,Part67}
-	@c @uref{http://www.soundonsound.com/sos/dec04/articles/synthsecrets.htm,,Part68}
 @end itemize
 
 

@@ -26,6 +26,32 @@
 @unnumbered What's New?
 @c ----------------------------- START -----------------------------
 
+@newsTitle{Thursday 26 May 2005, Important bug fix release}
+
+BEAST/BSE version 0.6.6 is available from the
+@uref{beast-doc://download,,download section}.
+@c , here is the @uref{http://gnomedesktop.org/node/2225,,FootNotes announcement}.
+
+BEAST tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.6.tar.gz,, beast-0.6.6.tar.gz}
+@* BEAST patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.5-0.6.6.bz2,, patch-beast-0.6.5-0.6.6.bz2}
+@* @uref{http://alsa-project.org,, ALSA} driver:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.6.tar.gz,, bse-alsa-0.6.6.tar.gz}
+@* @uref{http://www.portaudio.com/,, PortAudio} driver:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.6.tar.gz,, bse-portaudio-0.6.6.tar.gz}
+
+This release contains important bug fixes. Major bugs in the @bse file saving mechanism
+got fixed, so updating to 0.6.6 is recommended to prevent data loss. Also, some
+important GUI fixes were made, such as fixing the logic around dealing with modified
+projects and all message dialogs got a major overhaul.
+Translation updates were made to canadian english, czech, italian and spanish, and
+a basque translations was newly started.
+The
+@uref{beast-doc://release-news,,Release NEWS section} has the exact change list, so enjoy
+the new code as always and please report bugs to our
+@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
+
 @newsTitle{Wednesday 13 April 2005, A new release - we finaly made it!}
 
 BEAST/BSE version 0.6.5 is available from the
@@ -52,24 +78,6 @@ The
 @uref{beast-doc://release-news,,Release NEWS section} has the exact change list, so enjoy
 the new code and please report bugs to our
 @uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
-
-
-@newsTitle{Friday 4 February 2005, From the ``I'll be back'' dept.}
-
-Our @uref{http://beast.gtk.org/wiki:Discussion,, Wiki} is back!
-@uref{http://www.gtk.org/,,Gtk.org} is running new @uref{http://www.php.net/,,PHP}
-packages now, so the wiki and search facility could be re-enabled. 
-In other news, we're working on the next release, so expect 0.6.5 soon.
-
-
-@newsTitle{Sunday 26 Dec 2004, From the ``security first'' dept.}
-
-Due to a recent
-@uref{http://www.hardened-php.net/advisories/012004.txt,,security advisory},
-@uref{http://www.php.net/,,PHP} support has been taken down on gtk.org.
-So currently the search facility and the beast wiki are not available.
-We apologize for the inconvenience and will put stuff back to work once
-debian packages the new PHP versions that plug all known security holes.
 
 
 @c ----------------------------- END -----------------------------

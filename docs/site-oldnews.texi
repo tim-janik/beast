@@ -9,6 +9,25 @@
 @navigation{navigation.xml}
 
 @unnumbered What Was New? (Ancient News)
+@c ----------------------------- START -----------------------------
+
+
+@newsTitle{Friday 4 February 2005, From the ``I'll be back'' dept.}
+
+Our @uref{http://beast.gtk.org/wiki:Discussion,, Wiki} is back!
+@uref{http://www.gtk.org/,,Gtk.org} is running new @uref{http://www.php.net/,,PHP}
+packages now, so the wiki and search facility could be re-enabled. 
+In other news, we're working on the next release, so expect 0.6.5 soon.
+
+
+@newsTitle{Sunday 26 Dec 2004, From the ``security first'' dept.}
+
+Due to a recent
+@uref{http://www.hardened-php.net/advisories/012004.txt,,security advisory},
+@uref{http://www.php.net/,,PHP} support has been taken down on gtk.org.
+So currently the search facility and the beast wiki are not available.
+We apologize for the inconvenience and will put stuff back to work once
+debian packages the new PHP versions that plug all known security holes.
 
 
 @newsTitle{Saturday 18 Dec 2004, The ``Clean up your mind'' Release}
@@ -689,4 +708,5 @@ Version 0.3.0 (pre-alpha) released.  For details, see the
 @uref{http://beast.gtk.org/mirror/gnome-news/946616649.html,,announcement (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)}
 on @uref{http://news.gnome.org/gnome-news,, Gnotices}.
 
+@c ----------------------------- END -----------------------------
 @bye
