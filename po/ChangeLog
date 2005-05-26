@@ -1,3 +1,7 @@
+Thu May 26 20:07:04 2005  Tim Janik  <timj@gtk.org>
+
+	* *.po: re-add missing translation strings from scm files.
+
 2005-05-26  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
 
 	* es.po: Updated Spanish translation.
