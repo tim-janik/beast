@@ -29,8 +29,7 @@
 @newsTitle{Thursday 26 May 2005, Important bug fix release}
 
 BEAST/BSE version 0.6.6 is available from the
-@uref{beast-doc://download,,download section}.
-@c , here is the @uref{http://gnomedesktop.org/node/2225,,FootNotes announcement}.
+@uref{beast-doc://download,,download section}, here is the @uref{http://gnomedesktop.org/node/2267,,FootNotes announcement}.
 
 BEAST tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.6.tar.gz,, beast-0.6.6.tar.gz}
