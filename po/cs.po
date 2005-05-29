@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-25 23:38+0200\n"
-"PO-Revision-Date: 2005-05-22 12:59+0200\n"
+"POT-Creation-Date: 2005-05-29 02:51+0000\n"
+"PO-Revision-Date: 2005-05-29 12:28+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -369,23 +369,20 @@ msgstr ""
 "změny."
 
 #: ../beast-gtk/bstapp.c:649
-#, fuzzy
 msgid "Save the project before closing its window?"
-msgstr "Uložit projekt před zavřením tohoto okna."
+msgstr "Uložit projekt před zavřením tohoto okna?"
 
 #: ../beast-gtk/bstapp.c:650
-#, fuzzy
 msgid "Save Changes"
-msgstr "Rozsah tvaru"
+msgstr "Uložit změny"
 
 #: ../beast-gtk/bstapp.c:651
 msgid "Discard Changes"
-msgstr ""
+msgstr "Zahodit změny"
 
 #: ../beast-gtk/bstapp.c:652
-#, fuzzy
 msgid "Cancel"
-msgstr "_Zrušit"
+msgstr "Zrušit"
 
 #: ../beast-gtk/bstapp.c:737 ../beast-gtk/bstapp.c:744
 #: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
@@ -2826,12 +2823,11 @@ msgstr "Síť syntézy, kterou používat jako postprocesor"
 
 #: ../beast-gtk/bstusermessage.c:58
 msgid "Fatal Error: "
-msgstr ""
+msgstr "Fatální chyba: "
 
 #: ../beast-gtk/bstusermessage.c:62
-#, fuzzy
 msgid "Error: "
-msgstr "Chyba"
+msgstr "Chyba: "
 
 #: ../beast-gtk/bstusermessage.c:215
 msgid "Details:"
@@ -2879,15 +2875,16 @@ msgstr "Zpráva byla zopakována %u-krát"
 
 #: ../beast-gtk/bstusermessage.c:411
 msgid "Display dialogs with information messages"
-msgstr ""
+msgstr "Zobrazovat dialogy s informativními zprávami"
 
+# FIXME: s/dignostic/diagnostic/
 #: ../beast-gtk/bstusermessage.c:413
 msgid "Display dialogs with dignostic messages"
-msgstr ""
+msgstr "Zobrazovat dialogy s diagnostickými zprávami"
 
 #: ../beast-gtk/bstusermessage.c:415
 msgid "Display dialogs with debugging messages"
-msgstr ""
+msgstr "Zobrazovat dialogy s ladicími zprávami"
 
 #: ../beast-gtk/bstusermessage.c:533
 #, c-format
@@ -5142,16 +5139,16 @@ msgstr "/Vstup a výstup/Výstup nástroje"
 
 #: ../bse/bsejanitor.c:535
 msgid "killed by janitor"
-msgstr ""
+msgstr "zabito údržbářem"
 
 #: ../bse/bsejanitor.c:537
 msgid "connection terminated"
-msgstr ""
+msgstr "spojení přerušeno"
 
 #: ../bse/bsejanitor.c:539
 #, c-format
 msgid "%s (core dumped)"
-msgstr ""
+msgstr "%s (uložen core)"
 
 #: ../bse/bsemain.c:277
 msgid ""
@@ -6038,204 +6035,6 @@ msgstr ""
 "             zařízení\n"
 "  REŽIM    - rw = čtení i zápis, ro = jen čtení, wo = jen zápis\n"
 
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "_Skladba"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "Syntéza dokončena"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Kreslit sítě syntézy vyhlazované?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Party"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Nevybrána žádná kvantizace"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "Nemohu spustit zaznamenávání na disk."
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-msgid "N Iterations"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Spustit editor"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Neplatná vlastnost objektu"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Zobrazovat zprávy o problémech se vstupem zvuku"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "Nemohu spustit zaznamenávání na disk."
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-#, fuzzy
-msgid "Failed to duplicate part range."
-msgstr "Nemohu detekovat (začátek) hlavičky"
-
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "GNU General Public License"
@@ -6815,11 +6614,10 @@ msgstr "Pravý výstup"
 #. SFI_MSG_FATAL (always enabled)
 #: ../sfi/sfilog.c:71
 msgid "Fatal Error"
-msgstr ""
+msgstr "Fatální chyba"
 
 #. SFI_MSG_ERROR (enabled)
 #: ../sfi/sfilog.c:75
-#, fuzzy
 msgid "Error"
 msgstr "Chyba"
 
@@ -6835,9 +6633,8 @@ msgstr "Skript"
 
 #. SFI_MSG_INFO (enabled)
 #: ../sfi/sfilog.c:87
-#, fuzzy
 msgid "Information"
-msgstr "Neplatný formát"
+msgstr "Informace"
 
 #. SFI_MSG_DIAG (enabled)
 #: ../sfi/sfilog.c:91
