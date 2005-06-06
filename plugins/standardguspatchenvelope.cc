@@ -62,6 +62,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
     BseWaveIndex *wave_index;
     GslWaveChunk *wave_chunk;
     bool retrigger;
+    gfloat last_retrigger_level;
     bool in_attack_or_sustain_phase;
 
     vector<float> envelope_rates;
@@ -70,17 +71,26 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
     int envelope_phase;
 
   public:
+    Module() : wave_index (NULL), wave_chunk (NULL)
+    {
+      /* other relevant data members will be initialized in reset() */
+    }
+
     void
     config (Properties *properties)
     {
       wave_index = properties->wave_index;
     }
+
     void
     reset()
     {
       envelope_valid = false;
       retrigger = true;
       wave_chunk = 0;
+
+      envelope_value = 0.0;
+      last_retrigger_level = 0.0;
     }
 
     enum EnvelopeConversion { CONVERT_RATE, CONVERT_OFFSET };
@@ -161,9 +171,9 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
     void
     process (unsigned int n_values)
     {
+      const gfloat *frequency = istream (ICHANNEL_FREQUENCY).values;
       if (retrigger)
 	{
-	  const gfloat *frequency = istream (ICHANNEL_FREQUENCY).values;
 	  update_envelope (frequency[0]);
 	  retrigger = false;
 	}
@@ -175,13 +185,23 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
             {
 	      const gfloat *gate = istream (ICHANNEL_GATE_IN).values;
               const gfloat *in = istream (ICHANNEL_AUDIO_IN).values;
+              const gfloat *retrigger_in = istream (ICHANNEL_RETRIGGER_IN).values;
 	      gfloat *out1 = ostream (OCHANNEL_AUDIO_OUT1).values, *bound = out1 + n_values;
 	      gfloat *out2 = ostream (OCHANNEL_AUDIO_OUT2).values;
 	      gfloat *done = ostream (OCHANNEL_DONE_OUT).values;
 
-
 	      while (out1 < bound)
 		{
+		  /* handle retrigger signal (works even within blocks) */
+		  gfloat retrigger_level = *retrigger_in++;
+		  if (UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_retrigger_level, retrigger_level)))
+		    {
+		      guint position = out1 - (bound - n_values);
+
+		      update_envelope (frequency[position]);
+		      last_retrigger_level = retrigger_level;
+		    }
+
 		  bool gate_active = (*gate++ > 0.5);
 		  gdouble output;
 
@@ -234,12 +254,14 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 			    {
 			      envelope_value = new_value;
 			    }
-			  output =  bse_approx3_exp2 (envelope_value*6) / 64.0;
+			  output = bse_approx3_exp2 (envelope_value*6) / 64.0;
 			}
 		      *done++ = (!gate_active && envelope_phase == 5) ? 1.0 : 0.0;
 		    }
 		  else
 		    {
+		      /* envelope invalid? use 100 sample ramp */
+
 		      const gfloat envelope_incr = 0.01;
 		      const gfloat epsilon       = envelope_incr / 2;
 

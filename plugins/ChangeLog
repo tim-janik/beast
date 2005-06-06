@@ -1,3 +1,13 @@
+Mon Jun  6 17:54:22 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* standardguspatchenvelope.cc: Fix initialization bugs: added a
+	constructor to initialize some members variables, and properly
+	initialize others upon reset().
+	Added support for the retrigger input signal (though currently this is
+	not necessary, as the current midi code will never retrigger a voice
+	within a block; only block boundary retrigger in combination with
+	reset() is used).
+
 Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
 
         * removed obsolete .h C++ headers.
