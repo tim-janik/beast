@@ -3471,7 +3471,7 @@ msgid ""
 "This does NOT affect the alignment of the label within its allocation."
 msgstr ""
 "Die interne, relative Zeilenausrichtung des Beschriftungstexts. Dies "
-"betrifft NICHT die Ausrichtung der Beschriftung innerhalb ihrer Alloziierung"
+"betrifft NICHT die Ausrichtung der Beschriftung innerhalb ihrer Allozierung"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"

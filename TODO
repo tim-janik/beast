@@ -1,4 +1,6 @@
-RELEASE(0.6.6):
+RELEASE(0.6.7):
+- FAQ: answer status of windows and MacOS port
+- WEB: add LAD-2005 paper to website
 - fix/re-enable midi note recording into piano roll
 - update status message of recording script according to is/isnot recording
 - look into adding BseJanitor::status-caption (which could become primary text for status message display)
