@@ -272,6 +272,40 @@ MONITORING DIALOG:
   (Beast DSP Engine ---> Membrane)
   (Beast DSP Engine ---> Output Driver)
 
+GarageBand ideas and concepts:
+- MusikKeyboard:
+                [|||||||||||||||||||IIIIIIIIIIII|||||||||||||||||||||||||] {GlobalKeyboard with Octave highlighted}
+  Pitchbend: __ [1 (-)][2 (+)][3 off][4    ][5    ][6    ][7    ][8 max] Modulation {keys 3..8(highlighted key for seleciton)}
+    [tab (sustain)] | [W][E] | [T][Z][U] | [O][P] |  |
+                    |A |S |D |F |G |H |J |K |L |Oe|Ae|
+                    +--+--+--+--+--+--+--+--+--+--+--+
+        Octave: C-1   [Y-][X+][C-][V+] 127: Anschlag
+        {OctaveRange: C-2..C0..C7}     {AnschlagRange: 1..127, Step:5}
+   {Pitchbend slides between -20..0..20}                 
+- support multiple solo tracks
+- Property editor with presets:
+  [On/Off] {DisableFilter} [ Preset-OptionMenu{Ellipsis} v ] (LoaderProgressWheel)
+    {... ordinary properties... }
+  OptionMenu:	  Save Preset
+             	  Delete Preset {insensitive for system presets}
+             	--------------
+             	  Manuell
+             	--------------
+             	  Alphabetically Sorted
+             	* Preset List
+             	  Z-Something
+  Dialog for changing presets which replace manual settings:
+    [?] The preset settings have been changed
+        you may save the current presets or you can discard them.
+        [x] ask again
+        [save] [cancel] [discard]
+- maybe allow hidden properties (GUI flag) show only for --devel (but saved/loaded presets)
+- recording gui:
+  * each track has recording knob (exclusively activated)
+  * global recording knob: activates metronome, activates count in, inserts notes into current track (demand creates part)      
+- global volume meter and slider
+- MIDI notes are always played back with the current track (or track's instrument)    
+    
 TASKS:
 - TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
