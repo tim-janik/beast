@@ -1,3 +1,10 @@
+Wed Jun 15 19:12:34 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* standardguspatchenvelope.cc: Improvements in envelope rate handling,
+	which make the envelope sound more like timidity.
+	If there is no envelope in the GUS patch, then pass sample data
+	literally.
+
 Mon Jun  6 17:54:22 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: Fix initialization bugs: added a

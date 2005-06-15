@@ -69,6 +69,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
     vector<float> envelope_offsets;
     bool envelope_valid;
     int envelope_phase;
+    float current_envelope_rate;
 
   public:
     Module() : wave_index (NULL), wave_chunk (NULL)
@@ -106,7 +107,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	  r *= 3;
 	  r = (gint32)(byte & 0x3f) << r; /* 6.9 fixed point */
 
-	  return r * 44100 / mix_freq() / 512.0 / 1024.0;
+	  return (r * 44100.0) / (mix_freq() * 2048.0 * 1024.0);
 	}
       return byte / 256.0;
     }
@@ -152,12 +153,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	  if (envelope_rates.size() == 6 && envelope_offsets.size() == 6)
 	    {
 	      envelope_valid = true;
-
-	      for (int i = 1; i < 6; i++)
-		{
-		  if (envelope_offsets[i-1] > envelope_offsets[i]) /* rate needs to be negative if envelope offset gets smaller */
-		    envelope_rates[i] *= -1;
-		}
+	      current_envelope_rate = envelope_rates[0];
 
 	      /*
 	      printf ("envelope:\n");
@@ -168,6 +164,17 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	    }
 	}
     }
+
+    void
+    increment_envelope_phase()
+    {
+      envelope_phase++;
+      current_envelope_rate = envelope_rates[envelope_phase];
+
+      if (envelope_offsets[envelope_phase] < envelope_value)
+	current_envelope_rate *= -1;
+    }
+
     void
     process (unsigned int n_values)
     {
@@ -186,6 +193,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	      const gfloat *gate = istream (ICHANNEL_GATE_IN).values;
               const gfloat *in = istream (ICHANNEL_AUDIO_IN).values;
               const gfloat *retrigger_in = istream (ICHANNEL_RETRIGGER_IN).values;
+              const gfloat *audio_gate = istream (ICHANNEL_AUDIO_GATE).values;
 	      gfloat *out1 = ostream (OCHANNEL_AUDIO_OUT1).values, *bound = out1 + n_values;
 	      gfloat *out2 = ostream (OCHANNEL_AUDIO_OUT2).values;
 	      gfloat *done = ostream (OCHANNEL_DONE_OUT).values;
@@ -209,14 +217,14 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 		    {
 		      if (gate_active)
 			{
-			  gdouble new_value = envelope_value + envelope_rates[envelope_phase];
+			  gdouble new_value = envelope_value + current_envelope_rate;
 
-			  if ((new_value > envelope_offsets[envelope_phase]) ^ (envelope_rates[envelope_phase] < 0))
+			  if ((new_value > envelope_offsets[envelope_phase]) ^ (current_envelope_rate < 0))
 			    {
 			      envelope_value = envelope_offsets[envelope_phase];
 
 			      if (envelope_phase < 2)
-				envelope_phase++;
+				increment_envelope_phase();
 			    }
 			  else
 			    {
@@ -239,16 +247,18 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 			      printf ("to exponential scale which is with approx: %f\n", bse_approx3_exp2 (envelope_value*6) / 64.0);
 			      */
 			      in_attack_or_sustain_phase = false;
-			      envelope_phase++;
+
+			      if (envelope_phase < 5)
+				increment_envelope_phase();
 			    }
 
-			  gdouble new_value = envelope_value + envelope_rates[envelope_phase];
-			  if ((new_value > envelope_offsets[envelope_phase]) ^ (envelope_rates[envelope_phase] < 0))
+			  gdouble new_value = envelope_value + current_envelope_rate;
+			  if ((new_value > envelope_offsets[envelope_phase]) ^ (current_envelope_rate < 0))
 			    {
 			      envelope_value = envelope_offsets[envelope_phase];
 
 			      if (envelope_phase < 5)
-				envelope_phase++;
+				increment_envelope_phase();
 			    }
 			  else
 			    {
@@ -260,18 +270,8 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 		    }
 		  else
 		    {
-		      /* envelope invalid? use 100 sample ramp */
-
-		      const gfloat envelope_incr = 0.01;
-		      const gfloat epsilon       = envelope_incr / 2;
-
-		      if (gate_active)
-			envelope_value = min<gfloat> (envelope_value + envelope_incr, 1.0);
-		      else
-			envelope_value = max<gfloat> (envelope_value - envelope_incr, 0.0);
-
-		      output = envelope_value;
-		      *done++ = (!gate_active && envelope_value < epsilon) ? 1.0 : 0.0;
+		      output = 1.0;
+		      *done++ = *audio_gate++ < 0.5;
 		    }
 
 		  output *= *in++;
