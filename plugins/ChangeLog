@@ -1,3 +1,9 @@
+Wed Jun 15 19:18:46 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* standardguspatchenvelope.cc: License clarification: as I wrote the
+	code by looking at timidity's code, it is GPL (like timidity), not
+	LGPL.
+
 Wed Jun 15 19:12:34 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: Improvements in envelope rate handling,
