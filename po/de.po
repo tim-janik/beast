@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the beast package.
 # Christian Neumair <chris@gnome-de.org>, 2003, 2004.
 # Moritz Mekelburger <moritz@unix-ag.org>, 2004.
+# Hendrik Richter <hendi@gnome-de.org>, 2005.
 #
 # Strittige Übersetzungen, bitte gegenprüfen!
 #  Part => Part
@@ -11,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-25 23:38+0200\n"
-"PO-Revision-Date: 2004-10-04 11:24+0200\n"
-"Last-Translator: Moritz Mekelburger <moritz@unix-ag.org>\n"
+"POT-Creation-Date: 2005-06-17 12:27+0200\n"
+"PO-Revision-Date: 2005-06-17 11:47+0200\n"
+"Last-Translator: Hendrik Richter <hendi@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -254,20 +255,19 @@ msgstr "Synthesizernetz im Effektverzeichnis abspeichern"
 
 #: ../beast-gtk/bstapp.c:161
 msgid "Document _Index..."
-msgstr ""
+msgstr "_Inhaltsverzeichnis"
 
 #: ../beast-gtk/bstapp.c:161
 msgid "Provide an overview of all BEAST documentation contents"
-msgstr ""
+msgstr "Eine Übersicht der Inhalte der BEAST-Dokumentation"
 
 #: ../beast-gtk/bstapp.c:163
-#, fuzzy
 msgid "_Quick Start..."
-msgstr "Schnelleinstieg..."
+msgstr "_Schnelleinstieg..."
 
 #: ../beast-gtk/bstapp.c:163
 msgid "Provides an introduction about how to accomplish the most common tasks"
-msgstr ""
+msgstr "Eine Einführung in die meist verwendeten Aufgaben"
 
 #: ../beast-gtk/bstapp.c:165
 msgid "_FAQ..."
@@ -275,24 +275,24 @@ msgstr "_FAQ..."
 
 #: ../beast-gtk/bstapp.c:165
 msgid "Answers to frequently asked questions"
-msgstr ""
+msgstr "Antworten zu häufig gestellten Fragen"
 
 #: ../beast-gtk/bstapp.c:167
 msgid "Online _Help Desk..."
-msgstr ""
+msgstr "_Online-Hilfe"
 
 #: ../beast-gtk/bstapp.c:167
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
-msgstr ""
+msgstr "Einen Browser starten und die Online-Hilfe der BEAST-Webseite anzeigen"
 
 #: ../beast-gtk/bstapp.c:169
 msgid "_BEAST Website..."
-msgstr ""
+msgstr "_BEAST Webseite..."
 
 #: ../beast-gtk/bstapp.c:169
 msgid "Start a web browser pointing to the BEAST website"
-msgstr ""
+msgstr "Einen Browser starten und die BEAST-Webseite anzeigen"
 
 #: ../beast-gtk/bstapp.c:172
 msgid "_Release Notes..."
@@ -304,11 +304,11 @@ msgstr "Hinweise und Bemerkungen zu diesem Releasezyklus"
 
 #: ../beast-gtk/bstapp.c:174
 msgid "Developing Plugins..."
-msgstr ""
+msgstr "Plugins entwickeln..."
 
 #: ../beast-gtk/bstapp.c:174
 msgid "A guide to synthesis plugin development"
-msgstr ""
+msgstr "Ein Leitfaden zum Entwickeln von Plugins"
 
 #: ../beast-gtk/bstapp.c:176
 msgid "DSP Engine..."
@@ -319,9 +319,8 @@ msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
 #: ../beast-gtk/bstapp.c:179
-#, fuzzy
 msgid "Development..."
-msgstr "Entwicklung"
+msgstr "Entwicklung..."
 
 #: ../beast-gtk/bstapp.c:179
 msgid "Provide an overview of development related topics and documents"
@@ -329,11 +328,11 @@ msgstr ""
 
 #: ../beast-gtk/bstapp.c:183
 msgid "Online Sound Archive..."
-msgstr ""
+msgstr "Online Sound-Archiv..."
 
 #: ../beast-gtk/bstapp.c:183
 msgid "Start a web browser pointing to the online sound archive"
-msgstr ""
+msgstr "Einen Browser öffnen und das Online Sound-Archiv anzeigen"
 
 #: ../beast-gtk/bstapp.c:187
 msgid "Online Demos..."
@@ -341,7 +340,7 @@ msgstr "Online Demos..."
 
 #: ../beast-gtk/bstapp.c:187
 msgid "Start a web browser pointing to online demo songs"
-msgstr ""
+msgstr "Einen Browser öffnen und die Online Demo-Songs anzeigen"
 
 #: ../beast-gtk/bstapp.c:326
 msgid "Export Audio"
@@ -351,9 +350,10 @@ msgstr "Audio exportieren"
 msgid "Waves"
 msgstr "Waves"
 
+# CHECK
 #: ../beast-gtk/bstapp.c:520
 msgid "Wave Repository"
-msgstr ""
+msgstr "Wave-Verzeichnis"
 
 #: ../beast-gtk/bstapp.c:525
 #, c-format
@@ -377,33 +377,30 @@ msgstr "S_chließen"
 
 #: ../beast-gtk/bstapp.c:646
 msgid "The project has been modified."
-msgstr ""
+msgstr "Das Projekt wurde modifiziert."
 
 #: ../beast-gtk/bstapp.c:647
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
+"Am Projekt »%s« wurden seit dem letzten Speichern Änderungen vorgenommen."
 
 #: ../beast-gtk/bstapp.c:649
 msgid "Save the project before closing its window?"
-msgstr ""
+msgstr "Änderungen am Projekt vor dem Schließen speichern?"
 
-# CHECK
 #: ../beast-gtk/bstapp.c:650
-#, fuzzy
 msgid "Save Changes"
-msgstr "Formbereich"
+msgstr "Speichern"
 
 #: ../beast-gtk/bstapp.c:651
 msgid "Discard Changes"
-msgstr ""
+msgstr "Nicht speichern"
 
-# CHECK
 #: ../beast-gtk/bstapp.c:652
-#, fuzzy
 msgid "Cancel"
-msgstr "Auf_bessern"
+msgstr "Abbrechen"
 
 #: ../beast-gtk/bstapp.c:737 ../beast-gtk/bstapp.c:744
 #: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
@@ -503,11 +500,11 @@ msgstr "(Hinweis)"
 
 #: ../beast-gtk/bstdbmeter.c:765
 msgid "Draw Values"
-msgstr ""
+msgstr "Werte anzeigen"
 
 #: ../beast-gtk/bstdbmeter.c:765
 msgid "Adjust whether to draw dB values instead of lines"
-msgstr ""
+msgstr "Legt fest, ob dB-Werte anstatt Linien angezeigt werden"
 
 #: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
 #: ../beast-gtk/bstdbmeter.c:1563
@@ -529,12 +526,11 @@ msgstr "Relative Bündikgeit der Werte und Skalen einstellen"
 
 #: ../beast-gtk/bsteventrollctrl.c:58 ../beast-gtk/bstpianorollctrl.c:58
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 #: ../beast-gtk/bsteventrollctrl.c:58
-#, fuzzy
 msgid "Select all events"
-msgstr "Datei auswählen"
+msgstr "Alle Ereignisse auswählen"
 
 #. special cased signals
 #: ../beast-gtk/bsteventrollctrl.c:60 ../beast-gtk/bstpianorollctrl.c:60
@@ -544,20 +540,16 @@ msgid "None"
 msgstr "Nichts"
 
 #: ../beast-gtk/bsteventrollctrl.c:60
-#, fuzzy
 msgid "Unselect all events"
-msgstr "Halbe Noten einfügen"
+msgstr "Alle Ereignisse abwählen"
 
 #: ../beast-gtk/bsteventrollctrl.c:62 ../beast-gtk/bstpianorollctrl.c:62
-#, fuzzy
 msgid "Invert"
-msgstr "Einfügen"
+msgstr "Umkehren"
 
-# CHECK
 #: ../beast-gtk/bsteventrollctrl.c:62 ../beast-gtk/bstpianorollctrl.c:62
-#, fuzzy
 msgid "Invert the current seleciton"
-msgstr "Die momentane Auswahl löschen"
+msgstr "Die momentane Auswahl umkehren"
 
 #: ../beast-gtk/bsteventrollctrl.c:446 ../beast-gtk/bsteventrollctrl.c:453
 #: ../beast-gtk/bsteventrollctrl.c:522
@@ -769,18 +761,19 @@ msgstr "Scrollbaren Bereich vergrößern"
 #: ../beast-gtk/bstitemseqdialog.c:159
 #, c-format
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
-msgstr ""
+msgstr "Die Auswahl der Liste »%s« in die Liste »%s« einfügen"
 
 #: ../beast-gtk/bstitemseqdialog.c:162
 #, c-format
 msgid "Removes the selection from the \"%s\" list"
 msgstr "Entfernt die Auswahl aus der Liste \"%s\""
 
+# CHECK
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: ../beast-gtk/bstitemseqdialog.c:169
-#, fuzzy, c-format
+#, c-format
 msgid "Object Selection: %s"
-msgstr "Datei wählen"
+msgstr "Objekt-Auswahl: %s"
 
 #: ../beast-gtk/bstitemview.c:205
 msgid "ID"
@@ -961,19 +954,19 @@ msgstr "Mitwirkende:"
 #: ../beast-gtk/bstmsgabsorb.c:226
 msgid "Enable or disable message display of a specific message type"
 msgstr ""
+"Legt fest, ob Nachrichten eines bestimmten Typs angezeigt werden sollen"
 
 #: ../beast-gtk/bstmsgabsorb.c:228
 msgid "Message Type"
-msgstr ""
+msgstr "Nachrichtentyp"
 
 #: ../beast-gtk/bstmsgabsorb.c:231
-#, fuzzy
 msgid "Version"
-msgstr "Frage"
+msgstr "Version"
 
 #: ../beast-gtk/bstmsgabsorb.c:232
 msgid "The last program version that displayed this message type"
-msgstr ""
+msgstr "Die letzte Programmversion die diesen Nachrichtentyp anzeigte"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: ../beast-gtk/bstparam-automation.c:97
@@ -1074,15 +1067,15 @@ msgstr "Pfade entfernen"
 
 #: ../beast-gtk/bstparam-searchpath.c:128
 msgid "Remove directory from searchpath"
-msgstr ""
+msgstr "Verzeichnis aus dem Suchpfad entfernen"
 
 #: ../beast-gtk/bstparam-searchpath.c:129
 msgid "Add directory to searchpath"
-msgstr ""
+msgstr "Verzeichnis dem Suchpfad hinzufügen"
 
 #: ../beast-gtk/bstparam-searchpath.c:139
 msgid "Open file browser"
-msgstr ""
+msgstr "Dateiwähler öffnen"
 
 #: ../beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
@@ -1155,7 +1148,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpatterncolumns.c:688
 msgid "COLUMN TYPES:"
-msgstr ""
+msgstr "SPALTENTYPEN"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:690
@@ -1164,7 +1157,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpatterncolumns.c:691
 msgid "  display notes of the first, second, ... channel"
-msgstr ""
+msgstr "  Zeige Noten im ersten, zweiten, ... Kanal"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:693
@@ -1229,7 +1222,6 @@ msgid "  balance, volume, cc-8, ..."
 msgstr "  Balance, Lautstärke, cc-8, ..."
 
 #: ../beast-gtk/bstpatterncolumns.c:710
-#, fuzzy
 msgid "MODIFIERS:"
 msgstr "WANDLER:"
 
@@ -1287,9 +1279,11 @@ msgstr "  wählt eine von 3 vordefinierten Farben"
 msgid "lfold, rfold"
 msgstr ""
 
+# CHECK
 #: ../beast-gtk/bstpatterncolumns.c:728
 msgid "  allow folding the column into left/right neighbour"
 msgstr ""
+"  das Zusammenlegen von Spalten mit dem linken/rechten Nachbarn erlauben"
 
 #: ../beast-gtk/bstpatterncolumns.c:729
 msgid "EXAMPLE:"
@@ -1301,10 +1295,11 @@ msgstr "BEISPIEL:"
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr "Note-1 | Beweglichkeit-1=hex2 | Note-2 | Lautstärke=hex4"
 
+# CHECK
 #. GXK_DIALOG_MODAL
 #: ../beast-gtk/bstpatterncolumns.c:741
 msgid "Pattern Editor Layout"
-msgstr ""
+msgstr "Layout des Muster-Editors"
 
 #: ../beast-gtk/bstpatternctrl.c:119
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:29
@@ -1350,9 +1345,10 @@ msgstr ""
 msgid "Base Octave"
 msgstr "Basisoktave"
 
+# CHECK
 #: ../beast-gtk/bstpatternctrl.c:138
 msgid "Controls the octave relative to which notes are entered"
-msgstr ""
+msgstr "Regelt die Oktave abhängig von den eingegebenen Noten"
 
 #: ../beast-gtk/bstpatternctrl.c:141
 msgid "Row Shading"
@@ -1700,11 +1696,11 @@ msgstr "Klaviertasten"
 
 #: ../beast-gtk/bstpreferences.c:81
 msgid "Generic Keys"
-msgstr ""
+msgstr "Tastaturbelegung"
 
 #: ../beast-gtk/bstpreferences.c:85
 msgid "Messages"
-msgstr ""
+msgstr "Nachrichten"
 
 #: ../beast-gtk/bstpreferences.c:90
 msgid "Skin"
@@ -1735,7 +1731,7 @@ msgstr "TID"
 
 #: ../beast-gtk/bstprofiler.c:248
 msgid "Thread ID (on some systems the process ID)"
-msgstr ""
+msgstr "Thread-ID (auf manchen Systemen die Prozess-ID)"
 
 #: ../beast-gtk/bstprofiler.c:249
 msgid "CPU%"
@@ -1747,26 +1743,25 @@ msgstr "CPU-Auslastung in Prozent"
 
 #: ../beast-gtk/bstprofiler.c:250
 msgid "UTime"
-msgstr ""
+msgstr "Nutzer-Zeit"
 
 #: ../beast-gtk/bstprofiler.c:250
-#, fuzzy
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
-"Durchschnittliche Anzahl der Millisekunden pro Sekunde, der Nutzer-CPU-Zeit, "
+"Durchschnittliche Anzahl der Millisekunden pro Sekunde der Nutzer-CPU-Zeit, "
 "die vom Prozess verwendet wird"
 
 #: ../beast-gtk/bstprofiler.c:251
 msgid "STime"
-msgstr ""
+msgstr "System-Zeit"
 
 #: ../beast-gtk/bstprofiler.c:251
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 "Durchschnittliche Anzahl der Millisekunden pro Sekunde, die von der "
-"systemweiten CPU-Zeit vom Prozess genutzt werden"
+"systemweiten CPU-Zeit vom Prozess verwendet wird"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
@@ -2037,7 +2032,6 @@ msgid ""
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:61
-#, fuzzy
 msgid "Unspecified length"
 msgstr "Nicht festgelegte Länge"
 
@@ -2110,7 +2104,6 @@ msgid "1/1."
 msgstr "1/1."
 
 #: ../beast-gtk/bstrecords.idl:70
-#, fuzzy
 msgid "Dotted whole note"
 msgstr "Verlängerte ganze Note"
 
@@ -2119,63 +2112,56 @@ msgid "1/2."
 msgstr "1/2."
 
 #: ../beast-gtk/bstrecords.idl:71
-#, fuzzy
 msgid "Dotted half note"
-msgstr "Verlängerte Halbe Noten einfügen"
+msgstr "Verlängerte halbe Note"
 
 #: ../beast-gtk/bstrecords.idl:72
 msgid "1/4."
 msgstr "1/4."
 
 #: ../beast-gtk/bstrecords.idl:72
-#, fuzzy
 msgid "Dotted quarter note"
-msgstr "Verlängerte Viertelnoten einfügen"
+msgstr "Verlängerte Viertelnote"
 
 #: ../beast-gtk/bstrecords.idl:73
 msgid "1/8."
 msgstr "1/8."
 
 #: ../beast-gtk/bstrecords.idl:73
-#, fuzzy
 msgid "Dotted eighths note"
-msgstr "Verlängerte Achtelnoten einfügen"
+msgstr "Verlängerte Achtelnote"
 
 #: ../beast-gtk/bstrecords.idl:74
 msgid "1/16."
 msgstr "1/16."
 
 #: ../beast-gtk/bstrecords.idl:74
-#, fuzzy
 msgid "Dotted sixteenth note"
-msgstr "Verlängerte Sechzentelnoten einfügen"
+msgstr "Verlängerte Sechzentelnote"
 
 #: ../beast-gtk/bstrecords.idl:75
 msgid "1/32."
 msgstr "1/32."
 
 #: ../beast-gtk/bstrecords.idl:75
-#, fuzzy
 msgid "Dotted thirty-secondth note"
-msgstr "Verlängerte Zweiunddreißigstelnoten einfügen"
+msgstr "Verlängerte Zweiunddreißigstelnote"
 
 #: ../beast-gtk/bstrecords.idl:76
 msgid "1/64."
 msgstr "1/64."
 
 #: ../beast-gtk/bstrecords.idl:76
-#, fuzzy
 msgid "Dotted sixty-fourth note"
-msgstr "Verlängerte Vierundsechzigstelnoten einfügen"
+msgstr "Verlängerte Vierundsechzigstelnote"
 
 #: ../beast-gtk/bstrecords.idl:77
 msgid "1/128."
 msgstr "1/128."
 
 #: ../beast-gtk/bstrecords.idl:77
-#, fuzzy
 msgid "Dotted hundred twenty-eighth note"
-msgstr "Verlängerte Hundertachtundzwanzigstelnoten einfügen"
+msgstr "Verlängerte Hundertachtundzwanzigstelnote"
 
 #: ../beast-gtk/bstrecords.idl:78
 msgid "1/1T"
@@ -2190,64 +2176,56 @@ msgid "1/2T"
 msgstr "1/2T"
 
 #: ../beast-gtk/bstrecords.idl:79
-#, fuzzy
 msgid "Triplet half note"
-msgstr "Dreifache Halbe Noten einfügen"
+msgstr "Dreifache halbe Note"
 
 #: ../beast-gtk/bstrecords.idl:80
-#, fuzzy
 msgid "1/4T"
 msgstr "1/4T"
 
 #: ../beast-gtk/bstrecords.idl:80
-#, fuzzy
 msgid "Triplet quarter note"
-msgstr "Dreifache Viertelnoten einfügen"
+msgstr "Dreifache Viertelnote"
 
 #: ../beast-gtk/bstrecords.idl:81
 msgid "1/8T"
 msgstr "1/8T"
 
 #: ../beast-gtk/bstrecords.idl:81
-#, fuzzy
 msgid "Triplet eighths note"
-msgstr "Dreifache Achtelnoten einfügen"
+msgstr "Dreifache Achtelnote"
 
 #: ../beast-gtk/bstrecords.idl:82
 msgid "1/16T"
 msgstr "1/16T"
 
 #: ../beast-gtk/bstrecords.idl:82
-#, fuzzy
 msgid "Triplet sixteenth note"
-msgstr "Dreifache Sechzentelnoten einfügen"
+msgstr "Dreifache Sechzentelnote"
 
 #: ../beast-gtk/bstrecords.idl:83
 msgid "1/32T"
 msgstr "1/32T"
 
 #: ../beast-gtk/bstrecords.idl:83
-#, fuzzy
 msgid "Triplet thirty-secondth note"
-msgstr "Dreifache Zweiunddreißigstelnoten einfügen"
+msgstr "Dreifache Zweiunddreißigstelnote"
 
 #: ../beast-gtk/bstrecords.idl:84
 msgid "1/64T"
 msgstr "1/64T"
 
 #: ../beast-gtk/bstrecords.idl:84
-#, fuzzy
 msgid "Triplet sixty-fourth note"
-msgstr "Dreifache Vierundsechzigstelnoten einfügen"
+msgstr "Dreifache Vierundsechzigstelnote"
 
 #: ../beast-gtk/bstrecords.idl:85
 msgid "1/128T"
 msgstr "1/128T"
 
 #: ../beast-gtk/bstrecords.idl:85
-#, fuzzy
 msgid "Triplet hundred twenty-eighth note"
-msgstr "Dreifache Hundertachtundzwanzigstelnoten einfügen"
+msgstr "Dreifache Hundertachtundzwanzigstelnote"
 
 #: ../beast-gtk/bstrecords.idl:90
 msgid "2"
@@ -2270,7 +2248,6 @@ msgid "8"
 msgstr "8"
 
 #: ../beast-gtk/bstrecords.idl:92
-#, fuzzy
 msgid "Every eighth row"
 msgstr "Jede achte Zeile"
 
@@ -2279,7 +2256,6 @@ msgid "16"
 msgstr "16"
 
 #: ../beast-gtk/bstrecords.idl:93
-#, fuzzy
 msgid "Every sixteenth row"
 msgstr "Jede sechzehnte Zeile"
 
@@ -2384,7 +2360,6 @@ msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:113
-#, fuzzy
 msgid "Anti-Alias"
 msgstr "Anti-Alias"
 
@@ -2400,8 +2375,8 @@ msgstr ""
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr ""
 
+# CHECK
 #: ../beast-gtk/bstrecords.idl:117
-#, fuzzy
 msgid "Swap IO"
 msgstr "Tausche IO (Eingang/Ausgang)"
 
@@ -6330,204 +6305,6 @@ msgid ""
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
 
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-msgid "Song"
-msgstr "Titel"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-#, fuzzy
-msgid "No valid song supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-"Modulpositionen werden auf die naheliegensten Gitterkoordinaten gerundet, so "
-"dass alle Module in einem Synthesenetzwerk an einem Gitter ausgerichtet "
-"werden."
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "_Synth"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Parts"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-#, fuzzy
-msgid "No valid part supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Keine Quantisierung gewählt"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-msgid "Failed to parse harmony list"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-msgid "N Iterations"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Editor starten"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Synthesemodule"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-msgid "Show messages about empty part range"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-msgid "Failed to crop part range."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-msgid "Failed to duplicate part range."
-msgstr ""
-
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "GNU General Public-Lizenz"
@@ -7168,6 +6945,49 @@ msgstr "Diagnose"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Öffnen der Ausgangsdatei \"%s\" fehlgeschlagen:%s"
+
+#~ msgid "Song"
+#~ msgstr "Titel"
+
+#, fuzzy
+#~ msgid "No valid song supplied"
+#~ msgstr "Synthesemodule"
+
+#~ msgid ""
+#~ "Round module positions to their nearest grid position, so to align all "
+#~ "modules within a synthesis network."
+#~ msgstr ""
+#~ "Modulpositionen werden auf die naheliegensten Gitterkoordinaten gerundet, "
+#~ "so dass alle Module in einem Synthesenetzwerk an einem Gitter "
+#~ "ausgerichtet werden."
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "_Synth"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Synthesemodule"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Parts"
+
+#, fuzzy
+#~ msgid "No valid part supplied"
+#~ msgstr "Synthesemodule"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "Keine Quantisierung gewählt"
+
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Editor starten"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Synthesemodule"
 
 #~ msgid "Selection to Loop"
 #~ msgstr "Loop aus Auswahl"
