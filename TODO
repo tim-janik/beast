@@ -282,7 +282,6 @@ GarageBand ideas and concepts:
         Octave: C-1   [Y-][X+][C-][V+] 127: Anschlag
         {OctaveRange: C-2..C0..C7}     {AnschlagRange: 1..127, Step:5}
    {Pitchbend slides between -20..0..20}                 
-- support multiple solo tracks
 - Property editor with presets:
   [On/Off] {DisableFilter} [ Preset-OptionMenu{Ellipsis} v ] (LoaderProgressWheel)
     {... ordinary properties... }
@@ -299,6 +298,7 @@ GarageBand ideas and concepts:
         you may save the current presets or you can discard them.
         [x] ask again
         [save] [cancel] [discard]
+- support multiple solo tracks (all solos play together)
 - maybe allow hidden properties (GUI flag) show only for --devel (but saved/loaded presets)
 - recording gui:
   * each track has recording knob (exclusively activated)

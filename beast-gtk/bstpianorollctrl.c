@@ -59,7 +59,7 @@ bst_piano_roll_controller_select_actions (BstPianoRollController *self)
       ACTION_SELECT_ALL,        BST_STOCK_SELECT_ALL },
     { N_("None"),               "<shift><ctrl>A",       N_("Unselect all notes"),
       ACTION_SELECT_NONE,       BST_STOCK_SELECT_NONE },
-    { N_("Invert"),             "<ctrl>I",              N_("Invert the current seleciton"),
+    { N_("Invert"),             "<ctrl>I",              N_("Invert the current selection"),
       ACTION_SELECT_INVERT,     BST_STOCK_SELECT_INVERT },
   };
   gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
