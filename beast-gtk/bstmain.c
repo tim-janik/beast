@@ -795,6 +795,7 @@ beast_show_about_box (void)
     "Dulmandakh Sukhbaatar",
     "Francisco Javier F. Serrador",
     "Gareth Owen",
+    "Hendrik Richter",
     "Hizkuntza Politikarako Sailburuordetza",
     "Iassen Pramatarov",
     // "I\xc3\261aki Larra\xc3\261aga Murgotio",
