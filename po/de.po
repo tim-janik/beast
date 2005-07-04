@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-06-17 12:27+0200\n"
-"PO-Revision-Date: 2005-06-17 11:47+0200\n"
+"PO-Revision-Date: 2005-07-04 17:11+0200\n"
 "Last-Translator: Hendrik Richter <hendi@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -184,7 +184,7 @@ msgstr "Neuer Titel"
 #: ../beast-gtk/bstapp.c:141
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr ""
-"Einen neuen Titel, betehend aus Mixer, Spuren, Parts und Noten, anlegen"
+"Einen neuen Titel, bestehend aus Mixer, Spuren, Parts und Noten, anlegen"
 
 #: ../beast-gtk/bstapp.c:143
 #, fuzzy
@@ -206,7 +206,7 @@ msgstr "Neuer MIDI-Synthesizer"
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
-"Einen neuen MIDI-Synthsizer zur Instrumentbenutzung durch externe MIDI-"
+"Einen neuen MIDI-Synthesizer zur Instrumentbenutzung durch externe MIDI-"
 "Events anlegen"
 
 #: ../beast-gtk/bstapp.c:147
@@ -522,7 +522,7 @@ msgstr "Bündigkeit"
 
 #: ../beast-gtk/bstdbmeter.c:771
 msgid "Adjust relative alignment of the values or bars to be drawn"
-msgstr "Relative Bündikgeit der Werte und Skalen einstellen"
+msgstr "Relative Bündigkeit der Werte und Skalen einstellen"
 
 #: ../beast-gtk/bsteventrollctrl.c:58 ../beast-gtk/bstpianorollctrl.c:58
 msgid "All"
@@ -868,7 +868,7 @@ msgstr "Parameter, die Funktionen bei der ausführung übergeben werden"
 
 #: ../beast-gtk/bstkeybindings.c:460
 msgid "Function used to create new key bindings"
-msgstr "Funktion um neue Tastenkombinatonen zu erstellen"
+msgstr "Funktion um neue Tastenkombinationen zu erstellen"
 
 #: ../beast-gtk/bstkeybindings.c:462 ../beast-gtk/bstprocedure.c:203
 msgid "Description"
@@ -1546,7 +1546,7 @@ msgstr "1\\/16"
 
 #: ../beast-gtk/bstpianorollctrl.c:107
 msgid "Insert sixteenth note"
-msgstr "Sechzentelnoten einfügen"
+msgstr "Sechzehntelnoten einfügen"
 
 #: ../beast-gtk/bstpianorollctrl.c:109
 msgid "1\\/32"
@@ -2073,7 +2073,7 @@ msgstr "1/16"
 
 #: ../beast-gtk/bstrecords.idl:66
 msgid "Sixteenth note"
-msgstr "Sechzentelnote"
+msgstr "Sechzehntelnote"
 
 #: ../beast-gtk/bstrecords.idl:67
 msgid "1/32"
@@ -2137,7 +2137,7 @@ msgstr "1/16."
 
 #: ../beast-gtk/bstrecords.idl:74
 msgid "Dotted sixteenth note"
-msgstr "Verlängerte Sechzentelnote"
+msgstr "Verlängerte Sechzehntelnote"
 
 #: ../beast-gtk/bstrecords.idl:75
 msgid "1/32."
@@ -2201,7 +2201,7 @@ msgstr "1/16T"
 
 #: ../beast-gtk/bstrecords.idl:82
 msgid "Triplet sixteenth note"
-msgstr "Dreifache Sechzentelnote"
+msgstr "Dreifache Sechzehntelnote"
 
 #: ../beast-gtk/bstrecords.idl:83
 msgid "1/32T"
@@ -3766,13 +3766,13 @@ msgstr "Ausprägung der linearen Frequenzmodulation"
 #: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:160
 #: ../bse/bsewaveosc.c:575
 msgid "Perform exponential frequency modulation instead of linear"
-msgstr "Exponentielle Frequenzmodulation statt linearer durchführen"
+msgstr "Exponenzielle Frequenzmodulation statt linearer durchführen"
 
 #: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:165
 #: ../bse/bsewaveosc.c:581
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
-"Anzahl der von der exponentiellen Frequenzmodulation betroffenen Oktaven"
+"Anzahl der von der exponenziellen Frequenzmodulation betroffenen Oktaven"
 
 # CHECK
 #: ../bse/bsebiquadfilter.c:180
@@ -4840,7 +4840,7 @@ msgstr "Prozedur"
 #: ../bse/bsecore.idl:680
 #, fuzzy
 msgid "The processor that this thread is currently being executed on"
-msgstr "Der Przessor, auf dem dieser Prozess derzeit ausgeführt wird"
+msgstr "Der Prozessor, auf dem dieser Prozess derzeit ausgeführt wird"
 
 #: ../bse/bsecore.idl:682
 msgid "User Time"
@@ -5961,7 +5961,7 @@ msgstr "Eingangsmodulation [%]"
 
 #: ../bse/bsestandardosc.c:160 ../bse/bsewaveosc.c:574
 msgid "Exponential FM"
-msgstr "Exponentielle FM"
+msgstr "Exponenzielle FM"
 
 #: ../bse/bsestandardosc.c:165 ../bse/bsewaveosc.c:580
 msgid "Octaves"
@@ -6002,7 +6002,7 @@ msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
-"Stärke des Pulsbreitenmodulationseingabekanals (es muß Puls als Wellenform "
+"Stärke des Pulsbreitenmodulationseingabekanals (es muss Puls als Wellenform "
 "ausgewählt sein, damit diese Einstellung wirksam wird)"
 
 #: ../bse/bsestandardosc.c:188
@@ -6480,7 +6480,7 @@ msgstr ""
 "resultierende Ausgangsbalance wird durch eine Balanceeinstellung und die "
 "Summe der Kontrolleingänge bestimmt. Um Aliasing-Artefakte bei schnellen "
 "Balanceänderungen zu verhindern, wird das Kontrollsignal zunächst von einem "
-"einfachen Tiefpass mit einstellbarer Grenzfrequenz verabeitet."
+"einfachen Tiefpass mit einstellbarer Grenzfrequenz verarbeitet."
 
 #: ../plugins/bsebalance.idl:40
 msgid "Left audio output"
@@ -7113,7 +7113,7 @@ msgstr "Öffnen der Ausgangsdatei \"%s\" fehlgeschlagen:%s"
 
 #, fuzzy
 #~ msgid "Perform exponential frequency modulationinstead of linear"
-#~ msgstr "Exponentielle Frequenzmodulation statt linearer durchführen"
+#~ msgstr "Exponenzielle Frequenzmodulation statt linearer durchführen"
 
 #~ msgid "Device _Monitor"
 #~ msgstr "Geräte ü_berwachen"
