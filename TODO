@@ -566,6 +566,9 @@ modules:
     - parameters are broken (it _says_ dB, but it definitely _is not_ dB)
     - parameters don't appear to change sound (bug?)
     - the category for freeverb should probably not be filters (enhance?)
+  bseamplifier:
+    - exponential controls should be expnential (bse_approx_qcircle4 is
+      definitely better than what we have, but not good enough)
 
 gui:
   general:
