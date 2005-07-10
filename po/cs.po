@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-29 02:51+0000\n"
-"PO-Revision-Date: 2005-05-29 12:28+0200\n"
+"POT-Creation-Date: 2005-07-05 10:50+0000\n"
+"PO-Revision-Date: 2005-07-05 19:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -525,9 +525,8 @@ msgstr "Zrušit výběr všech událostí"
 msgid "Invert"
 msgstr "Invertovat"
 
-# FIXME: s/seleciton/selection/
 #: ../beast-gtk/bsteventrollctrl.c:62 ../beast-gtk/bstpianorollctrl.c:62
-msgid "Invert the current seleciton"
+msgid "Invert the current selection"
 msgstr "Invertovat aktuální výběr"
 
 #: ../beast-gtk/bsteventrollctrl.c:446 ../beast-gtk/bsteventrollctrl.c:453
@@ -917,16 +916,16 @@ msgstr "Načítám \"%s\""
 msgid "Failed to load project \"%s\": %s"
 msgstr "Nemohu načíst projekt \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:822
+#: ../beast-gtk/bstmain.c:823
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: ../beast-gtk/bstmain.c:823
+#: ../beast-gtk/bstmain.c:824
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: ../beast-gtk/bstmain.c:824
+#: ../beast-gtk/bstmain.c:825
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
