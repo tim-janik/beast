@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-08 21:36+0200\n"
-"PO-Revision-Date: 2005-07-08 21:42+0200\n"
+"POT-Creation-Date: 2005-07-26 19:00+0200\n"
+"PO-Revision-Date: 2005-07-25 15:55+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -1677,9 +1677,8 @@ msgstr "S'està executant '%s'"
 
 #. | GXK_DIALOG_WINDOW_GROUP,
 #: ../beast-gtk/bstprocedure.c:443
-#, fuzzy
 msgid "Start Procedure"
-msgstr "Procediment"
+msgstr "Inicia el procediment"
 
 #: ../beast-gtk/bstprofiler.c:166
 msgid "Totals"
@@ -2901,7 +2900,7 @@ msgstr "Xarxa de síntesi a utilitzar de postprocessador"
 
 #: ../beast-gtk/bstusermessage.c:58
 msgid "Fatal Error: "
-msgstr ""
+msgstr "Error fatal: "
 
 #: ../beast-gtk/bstusermessage.c:62
 msgid "Error: "
@@ -2955,20 +2954,20 @@ msgstr "El missatge s'ha estat repetint durant %u vegades"
 
 #: ../beast-gtk/bstusermessage.c:411
 msgid "Display dialogs with information messages"
-msgstr ""
+msgstr "Mostra diàlegs amb missatges d'informació"
 
 #: ../beast-gtk/bstusermessage.c:413
 msgid "Display dialogs with dignostic messages"
-msgstr ""
+msgstr "Mostra diàlegs amb missatges de diagnòstic"
 
 #: ../beast-gtk/bstusermessage.c:415
 msgid "Display dialogs with debugging messages"
-msgstr ""
+msgstr "Mostra diàlegs amb missatges de depuració"
 
 #: ../beast-gtk/bstusermessage.c:533
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
-msgstr ""
+msgstr "Executant el procediment '%s' del fitxer de seqüència d'ordres '%s'."
 
 #: ../beast-gtk/bstusermessage.c:574 ../beast-gtk/bstusermessage.c:576
 msgid "processing"
@@ -2978,15 +2977,19 @@ msgstr "s'està processant"
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
+"S'ha produït un error durant l'execució del procediment '%s' del fitxer de "
+"seqüència d'ordres: %s"
 
 #: ../beast-gtk/bstusermessage.c:600 ../beast-gtk/bstusermessage.c:788
 msgid "Script execution error."
 msgstr "S'ha produït un error en executar el fitxer de seqüència."
 
 #: ../beast-gtk/bstusermessage.c:787
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to execute script procedure '%s': %s"
-msgstr "No s'ha pogut obrir el fitxer de sortida \"%s\": %s"
+msgstr ""
+"No s'ha pogut executar el procediment del fitxer de seqüència d'ordres '%s': "
+"%s"
 
 #: ../beast-gtk/bstutils.c:297 ../beast-gtk/bstutils.c:319
 #: ../beast-gtk/bstutils.c:322
@@ -5232,16 +5235,16 @@ msgstr "/Entrada i sortida/Sortida d'instrument"
 
 #: ../bse/bsejanitor.c:535
 msgid "killed by janitor"
-msgstr ""
+msgstr "matat per janitor"
 
 #: ../bse/bsejanitor.c:537
 msgid "connection terminated"
-msgstr ""
+msgstr "connexió acabada"
 
 #: ../bse/bsejanitor.c:539
 #, c-format
 msgid "%s (core dumped)"
-msgstr ""
+msgstr "%s (s'ha bolcat el nucli)"
 
 #: ../bse/bsemain.c:277
 msgid ""
@@ -5505,31 +5508,31 @@ msgstr "S'esta enregistrant l'àudio d'entrada"
 
 #: ../bse/bseserver.c:455
 msgid "Failed to start recording from audio device."
-msgstr ""
+msgstr "S'ha produït un error al començar a gravar des del dispositiu d'àudio."
 
 #: ../bse/bseserver.c:456
-#, fuzzy
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
 "silence will be used instead of a recorded signal, so playback operation may "
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
-"Un mòdul d'entrada d'àudio s'està utilitzant, però el dispositiu d'àudio no "
-"s'ha obert en mode d'enregistrament. Una senyal d'àudio silenciós s'està "
-"utilitzant com a entrada enlloc del senyal enregistrat, per tan reproduir "
-"l'operació pot produir uns resultats no desitjats (com reduir el senyal de "
-"sortida a silenci)."
+"S'està fent servir un projecte d'àudio que processa un senyal d'àudio "
+"d'entrada, però el dispositiu d'àudio no s'ha obert en mode de gravació. Es "
+"farà servir un senyal d'àudio de silenci enlloc del senyal gravat, per tant "
+"l'operació de reproducció pot produir resultats no desitjats (com un senyal "
+"de sortida de silenci)."
 
 #: ../bse/bseserver.c:461
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
+"El dispositiu d'àudio \"%s\" no està obert per entrada, controlador d'àudio: "
+"%s=%s"
 
 #: ../bse/bseserver.c:465
-#, fuzzy
 msgid "Show messages about audio input problems"
-msgstr "Mostra missatges sobre els problemes enregistrant l'àudio"
+msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
 
 #: ../bse/bseserver.c:507
 msgid "No Audio"
@@ -5537,18 +5540,20 @@ msgstr "Sense àudio"
 
 #: ../bse/bseserver.c:508
 msgid "No available audio device was found."
-msgstr ""
+msgstr "No s'ha trobat cap dispositiu d'àudio disponible."
 
 #: ../bse/bseserver.c:509
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
+"No s'ha pogut trobar i obrir cap dispositiu d'àudio disponible. No s'ha "
+"pogut fer cap selecció per defecte per dispositius d'àudio, sortint."
 
 #: ../bse/bseserver.c:511
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open PCM devices: %s"
-msgstr "No s'ha progut obrir els dispositius PCM, s'ha rebut: %s"
+msgstr "No s'ha progut obrir els dispositius PCM: %s"
 
 #: ../bse/bseserver.c:512
 msgid "Show messages about PCM device selections problems"
@@ -5560,13 +5565,15 @@ msgstr "Sense MIDI"
 
 #: ../bse/bseserver.c:532
 msgid "MIDI input or oputput is not available."
-msgstr ""
+msgstr "No està disponible l'entrada o sortida MIDI."
 
 #: ../bse/bseserver.c:533
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
+"No s'ha pogut trobar i obrir cap dispositiu MIDI. Tornant al dispositiu nul, "
+"no es rebran o s'enviaran esdeveniments MIDI."
 
 #: ../bse/bseserver.c:535
 #, c-format
@@ -5579,22 +5586,24 @@ msgstr "Mostra missatges sobre els problemes de selecció del dispositiu MIDI"
 
 #: ../bse/bseserver.c:587
 msgid "Start Disk Recording"
-msgstr ""
+msgstr "Inicia la gravació a disc"
 
 #: ../bse/bseserver.c:588
 msgid "Failed to start recording to disk."
-msgstr ""
+msgstr "S'ha produït un error al iniciar la gravació a disc."
 
 #: ../bse/bseserver.c:589
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr ""
+"S'ha produït un error en obrir el fitxer on es gravava. Si seleccioneu un "
+"altre fitxer potser ho solucionareu."
 
 #: ../bse/bseserver.c:591
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file \"%s\" for output: %s"
-msgstr "No s'ha pogut obrir el fitxer de sortida \"%s\": %s"
+msgstr "No s'ha pogut obrir el fitxer \"%s\" de sortida: %s"
 
 #: ../bse/bseserver.c:592
 msgid "Show recording file errors"
@@ -6131,16 +6140,17 @@ msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:398
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "PortAudio PCM driver, using %s.\n"
 "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
 "Controlador del port d'àudio PCM, utilitzant %s.\n"
-" DISPOSITIU - el controlador del port d'àudio a utilitzar, \n"
-"            'default' selecciona un dispositiu per defecte\n"
-" MODE   - rw = lectura/escriptura, ro = sols lectura, wo = sols escriptura\n"
+" DISPOSITIU - el dispositiu del port d'àudio a utilitzar, \n"
+"            'default' selecciona el dispositiu per defecte\n"
+" MODE   - rw = lectura/escriptura, ro = sols lectura, \n"
+"                  wo = sols escriptura\n"
 
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
@@ -6725,9 +6735,8 @@ msgstr "Sortida dreta"
 
 #. SFI_MSG_FATAL (always enabled)
 #: ../sfi/sfilog.c:71
-#, fuzzy
 msgid "Fatal Error"
-msgstr "Error"
+msgstr "Error fatal"
 
 #. SFI_MSG_ERROR (enabled)
 #: ../sfi/sfilog.c:75
@@ -6741,9 +6750,8 @@ msgstr "Avís"
 
 #. SFI_MSG_SCRIPT (enabled)
 #: ../sfi/sfilog.c:83
-#, fuzzy
 msgid "Script"
-msgstr "Fitxers de seqüència d'ordres"
+msgstr "Fitxer de seqüència d'ordres"
 
 #. SFI_MSG_INFO (enabled)
 #: ../sfi/sfilog.c:87
@@ -6756,9 +6764,9 @@ msgid "Diagnostic"
 msgstr "Diagnòstic"
 
 #: ../tools/bsewavetool.cc:930
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
-msgstr "No s'ha pogut obrir el fitxer d'ona \"%s\": %s"
+msgstr "No s'ha pogut afegir un tros d'ona des del fitxer \"%s\": %s"
 
 #~ msgid "Selection to Loop"
 #~ msgstr "Selecció a bucle"
