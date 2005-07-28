@@ -33,10 +33,14 @@ G_BEGIN_DECLS
 
 /* --- BseWave --- */
 typedef struct _BseWaveClass      BseWaveClass;
-typedef struct
-{
-  guint		 n_wchunks;
-  GslWaveChunk **wchunks;
+typedef struct {
+  GslWaveChunk *wchunk;
+  gfloat        osc_freq;
+  gfloat        velocity; /* 0..1 */
+} BseWaveEntry;
+typedef struct {
+  guint		n_entries;
+  BseWaveEntry  entries[1];     /* flexible array */
 } BseWaveIndex;
 struct _BseWave
 {
@@ -78,7 +82,8 @@ void		bse_wave_add_chunk		(BseWave	*wave,
 						 GslWaveChunk	*wchunk);
 GslWaveChunk*   bse_wave_lookup_chunk           (BseWave        *wave,
 						 gfloat		 mix_freq,
-						 gfloat		 osc_freq);
+						 gfloat		 osc_freq,
+                                                 gfloat          velocity);
 void            bse_wave_remove_chunk           (BseWave        *wave,
 						 GslWaveChunk   *wchunk);
 void		bse_wave_request_index		(BseWave	*wave);
@@ -87,7 +92,8 @@ void		bse_wave_drop_index		(BseWave	*wave);
 
 /* BseWaveIndex is safe to use from BseModules (self-contained constant structure) */
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
-						 gfloat		 osc_freq);
+						 gfloat		 osc_freq,
+                                                 gfloat          velocity);
 						 
 G_END_DECLS
 

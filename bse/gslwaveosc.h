@@ -35,8 +35,9 @@ typedef struct
   gint            play_dir, channel;
 
   gpointer	  wchunk_data;
-  GslWaveChunk* (*wchunk_from_freq) (gpointer	wchunk_data,
-				     gfloat     freq);
+  GslWaveChunk* (*lookup_wchunk) (gpointer	wchunk_data,
+                                  gfloat        freq,
+                                  gfloat        velocity);
 
   gfloat	  fm_strength;	/* linear: 0..1, exponential: n_octaves */
   guint		  exponential_fm : 1;

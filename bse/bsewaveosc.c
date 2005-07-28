@@ -107,7 +107,7 @@ bse_wave_osc_init (BseWaveOsc *self)
   self->config.play_dir = +1;
   self->config.channel = 0;
   self->config.wchunk_data = NULL;
-  self->config.wchunk_from_freq = NULL;
+  self->config.lookup_wchunk = NULL;
   self->config.fm_strength = self->fm_strength / 100.0;
   self->config.exponential_fm = FALSE;
   self->config.cfreq = 440.;
@@ -345,7 +345,8 @@ wosc_access (BseModule *module,
 
 static GslWaveChunk*
 wchunk_from_data (gpointer wchunk_data,
-                  gfloat   freq)
+                  gfloat   freq,
+                  gfloat   velocity)
 {
   return wchunk_data;
 }
@@ -354,18 +355,18 @@ static void
 bse_wave_osc_update_config_wchunk (BseWaveOsc *self)
 {
   self->config.wchunk_data = NULL;
-  self->config.wchunk_from_freq = NULL;
+  self->config.lookup_wchunk = NULL;
   if (self->wave)
     {
       BseWaveIndex *index = bse_wave_get_index_for_modules (self->wave);
-      self->config.wchunk_data = index && index->n_wchunks ? index : NULL;
+      self->config.wchunk_data = index && index->n_entries ? index : NULL;
       if (self->config.wchunk_data)
-        self->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
+        self->config.lookup_wchunk = (gpointer) bse_wave_index_lookup_best;
     }
   else if (self->esample_wchunk)
     {
       self->config.wchunk_data = self->esample_wchunk;
-      self->config.wchunk_from_freq = wchunk_from_data;
+      self->config.lookup_wchunk = wchunk_from_data;
     }
 }
 

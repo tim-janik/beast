@@ -156,7 +156,8 @@ bse_wave_add_inlined_wave_chunk (BseWave      *self,
 GslWaveChunk*
 bse_wave_lookup_chunk (BseWave *wave,
 		       gfloat   mix_freq,
-		       gfloat   osc_freq)
+		       gfloat   osc_freq,
+		       gfloat   velocity)
 {
   BseWaveIndex *index;
   GslWaveChunk *wchunk;
@@ -165,7 +166,7 @@ bse_wave_lookup_chunk (BseWave *wave,
   
   bse_wave_request_index (wave);
   index = bse_wave_get_index_for_modules (wave);
-  wchunk = index ? bse_wave_index_lookup_best (index, osc_freq) : NULL;
+  wchunk = index ? bse_wave_index_lookup_best (index, osc_freq, velocity) : NULL;
   bse_wave_drop_index (wave);
   
   return wchunk;
@@ -687,15 +688,19 @@ bse_wave_get_index_for_modules (BseWave *wave)
     return NULL;
   if (wave->index_dirty || !wave->index_list)
     {
-      BseWaveIndex *index = g_malloc (sizeof (BseWaveIndex) + sizeof (index->wchunks) * wave->n_wchunks);
-      index->n_wchunks = 0;
-      index->wchunks = (gpointer) (index + 1);
+      BseWaveIndex *index = g_malloc (sizeof (BseWaveIndex) + sizeof (index->entries[0]) * (wave->n_wchunks - 1));
+      index->n_entries = 0;
       SfiRing *ring;
       for (ring = wave->wave_chunks; ring; ring = sfi_ring_walk (ring, wave->wave_chunks))
 	{
 	  BseErrorType error = gsl_wave_chunk_open (ring->data);
 	  if (!error)
-	    index->wchunks[index->n_wchunks++] = ring->data;
+            {
+              index->entries[index->n_entries].wchunk = ring->data;
+              index->entries[index->n_entries].osc_freq = index->entries[index->n_entries].wchunk->osc_freq;
+              index->entries[index->n_entries].velocity = 1; // FIXME: velocity=1 hardcoded
+              index->n_entries++;
+            }
 	}
       wave->index_list = g_slist_prepend (wave->index_list, index);
       // FIXME: add dummy wave chunk if none was opened succesfully?
@@ -719,8 +724,8 @@ bse_wave_drop_index (BseWave *wave)
 	  BseWaveIndex *index = wave->index_list->data;
 	  guint i;
 	  
-	  for (i = 0; i < index->n_wchunks; i++)
-	    gsl_wave_chunk_close (index->wchunks[i]);
+	  for (i = 0; i < index->n_entries; i++)
+	    gsl_wave_chunk_close (index->entries[i].wchunk);
 	  g_free (index);
 	  g_slist_free_1 (wave->index_list);
 	  wave->index_list = tmp;
@@ -731,17 +736,18 @@ bse_wave_drop_index (BseWave *wave)
 
 GslWaveChunk*
 bse_wave_index_lookup_best (BseWaveIndex *windex,
-			    gfloat        osc_freq)
+			    gfloat        osc_freq,
+                            gfloat        velocity)
 {
   gfloat best_diff = 1e+9;
-  GslWaveChunk *best_chunk = NULL;
+  const BseWaveEntry *best_chunk = NULL;
   
   g_return_val_if_fail (windex != NULL, NULL);
   
-  if (windex->n_wchunks > 0)
+  if (windex->n_entries > 0)
     {
-      GslWaveChunk **check, **nodes = windex->wchunks;
-      guint n_nodes = windex->n_wchunks;
+      const BseWaveEntry *check, *nodes = &windex->entries[0];
+      guint n_nodes = windex->n_entries;
       
       nodes -= 1;
       do
@@ -751,13 +757,13 @@ bse_wave_index_lookup_best (BseWaveIndex *windex,
 	  
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
-	  cmp = osc_freq - (*check)->osc_freq;
+	  cmp = osc_freq - check->wchunk->osc_freq;
 	  if (cmp > 0)
 	    {
 	      if (cmp < best_diff)
 		{
 		  best_diff = cmp;
-		  best_chunk = *check;
+		  best_chunk = check;
 		}
 	      n_nodes -= i;
 	      nodes = check;
@@ -768,16 +774,16 @@ bse_wave_index_lookup_best (BseWaveIndex *windex,
 	      if (cmp < best_diff)
 		{
 		  best_diff = cmp;
-		  best_chunk = *check;
+		  best_chunk = check;
 		}
 	      n_nodes = i - 1;
 	    }
 	  else if (cmp == 0)
-	    return *check;      /* exact match, prolly seldom for floats */
+	    return check->wchunk;       /* exact match, prolly seldom for floats */
 	}
       while (n_nodes);
     }
-  return best_chunk;
+  return best_chunk->wchunk;
 }
 
 static void

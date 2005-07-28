@@ -114,7 +114,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
   g_return_val_if_fail (n_values > 0, FALSE);
   g_return_val_if_fail (mono_out != NULL, FALSE);
 
-  if (UNLIKELY (!wosc->config.wchunk_from_freq))
+  if (UNLIKELY (!wosc->config.lookup_wchunk))
     return FALSE;
 
   /* mode changes:
@@ -248,7 +248,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 
   g_return_if_fail (play_freq > 0);
 
-  if (UNLIKELY (!wosc->config.wchunk_from_freq))
+  if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
 
   wosc->step_factor = zero_padding * wosc->wchunk->mix_freq;
@@ -325,12 +325,12 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
 {
   g_return_if_fail (wosc != NULL);
 
-  if (UNLIKELY (!wosc->config.wchunk_from_freq))
+  if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
 
   if (wosc->wchunk)
     gsl_wave_chunk_unuse_block (wosc->wchunk, &wosc->block);
-  wosc->wchunk = wosc->config.wchunk_from_freq (wosc->config.wchunk_data, base_freq);
+  wosc->wchunk = wosc->config.lookup_wchunk (wosc->config.wchunk_data, base_freq, 1); // FIXME: velocity=1 hardcoded
   wosc->block.play_dir = wosc->config.play_dir;
   wosc->block.offset = wosc->config.start_offset;
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
@@ -352,7 +352,7 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
   g_return_if_fail (config != NULL);
 
   if (wosc->config.wchunk_data != config->wchunk_data ||
-      wosc->config.wchunk_from_freq != config->wchunk_from_freq ||
+      wosc->config.lookup_wchunk != config->lookup_wchunk ||
       wosc->config.channel != config->channel)
     {
       if (wosc->wchunk)

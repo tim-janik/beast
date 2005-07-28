@@ -315,12 +315,11 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
       const guint8 *rle_buffer = pixdata->encoded_pix_data;
       guint8 *image_buffer = icon->pixels->bytes;
       guint8 *image_limit = image_buffer + icon->width * icon->height * bpp;
-      gboolean check_overrun = FALSE;
       
       while (image_buffer < image_limit)
 	{
 	  guint length = *(rle_buffer++);
-	  
+          gboolean check_overrun = FALSE;
 	  if (length & 128)
 	    {
 	      length = length - 128;
@@ -353,9 +352,9 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 	      image_buffer += length;
 	      rle_buffer += length;
 	    }
-	}
-      if (check_overrun)
-	g_warning (G_GNUC_PRETTY_FUNCTION "(): `pixdata' encoding screwed");
+          if (check_overrun)
+            g_warning (G_GNUC_PRETTY_FUNCTION "(): `pixdata' encoding screwed");
+        }
     }
   else
     memcpy (icon->pixels->bytes, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
