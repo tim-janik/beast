@@ -131,6 +131,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	  values.push_back (convert_envelope_value (convert, atoi (val_string.c_str())));
 	}
     }
+
     void
     update_envelope (gfloat frequency)
     {
@@ -138,7 +139,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
       envelope_phase = 0;
       in_attack_or_sustain_phase = true;
 
-      wave_chunk = bse_wave_index_lookup_best (wave_index, frequency);
+      wave_chunk = bse_wave_index_lookup_best (wave_index, frequency, 1); // FIXME: velocity=1 hardcoded
       if (wave_chunk)
 	{
 	  parse_envelope_floats (envelope_rates, "gus-patch-envelope-rates", CONVERT_RATE);

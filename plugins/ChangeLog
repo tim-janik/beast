@@ -1,3 +1,8 @@
+Wed Jun 22 23:12:00 2005  Tim Janik  <timj@gtk.org>                                                                                                           
+
+	* standardguspatchenvelope.cc: wave chunk lookups currently are done
+	with a hardcoded velocity of 1.
+        
 Wed Jun 15 19:18:46 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: License clarification: as I wrote the
