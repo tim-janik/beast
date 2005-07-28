@@ -1,4 +1,5 @@
 RELEASE(0.6.7):
+- sometimes unneccessarily the song-changed flag is set.
 - FAQ: answer status of windows and MacOS port
 - WEB: add LAD-2005 paper to website
 - fix/re-enable midi note recording into piano roll
