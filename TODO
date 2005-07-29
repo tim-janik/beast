@@ -1,4 +1,5 @@
 RELEASE(0.6.7):
+- store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
 - sometimes unneccessarily the song-changed flag is set.
 - FAQ: answer status of windows and MacOS port
 - WEB: add LAD-2005 paper to website
@@ -63,7 +64,6 @@ TODO:
 - provide a color/dB reference scale, next to the fft-scope view
 - add "..." to new dialog items in View/
 - show note and timing position of current mouse pointer in piano roll status bar
-- store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
 - add play button to pianoroll to start song-playback at pianoroll->pattern start
 - need note-specific undo per part in pianoroll
 - change projectname in accordance to file name (and change beast-project-window-title accordingly)
@@ -649,8 +649,33 @@ documentation:
   - sfidl-manual.texi: complete the documentation
  - bsewavetool needs to be documented with documentation tool on code level (gsl_data_find_loop*)
 
-bsefcompare:
-- base frequency feature
+tests, bsefcompare:
+- rewrite Makefile.am to not need feature-test.sh [tim]:
+  balance-test:
+        bse2wav balance.bse -o balance.wav
+        bsefextract balance.wav --channel 0 --avg-energy >balance.tmp
+        bsefextract balance.wav --channel 1 --avg-energy >>balance.tmp
+        bsefcompare balance.feature balance.tmp --threshold 99.99
+  * initial case:
+    $ make balance-test
+    bsefcompare: no such file: banace.feature
+    $ mv balance.tmp balance.feature
+- move tests from test directory into automated feature test dir
+- fix option docu:
+  --spectrum		generate 30ms spaced frequency spectrums
+- base frequency feature:
+Partial Features:
+  --focus-center=X	center focus region around X% [50]
+  --focus-width=Y	width of focus region in % [100]
+Frequency:
+  --base-freq		try detect keynote of a signal
+  --base-freq-smear	inaccuracy of keynote detection
+  --base-freq-wobble	rate of changes in the keynote over time
+Volume:
+  --volume		determine average signal volume
+  --volume-smear	variation of signal volume
+  --volume-wobble	rate of changes in signal volume over time
+  
 
 Misc Buglets/Feature Requests:
  - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
@@ -661,7 +686,6 @@ Misc Buglets/Feature Requests:
  - silencing out an instrument (in drum maps) should be easier
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
  - make check for test thingy
- - move tests from test directory into automated feature test dir
  - remove test directory
  - create a roadmap document for BEAST
  - documentation itemize bullets are ugly (need space after bullet)
