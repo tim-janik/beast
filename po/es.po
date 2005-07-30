@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-26 10:50+0000\n"
-"PO-Revision-Date: 2005-06-26 14:27+0200\n"
+"POT-Creation-Date: 2005-07-27 10:50+0000\n"
+"PO-Revision-Date: 2005-07-27 19:08+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>\n"
 "Language-Team:  <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -4838,7 +4838,7 @@ msgstr "Pasos BPM"
 
 #: ../bse/bsecore.idl:752
 msgid "Step width for beats per minute"
-msgstr "Anchura del paso para los golpes por minuto"
+msgstr "Anchura del paso para el tempo"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsedevice.c:340
@@ -5472,10 +5472,11 @@ msgid ""
 "silence will be used instead of a recorded signal, so playback operation may "
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
-"Hay un proyecto de sonido en uso que está procesando una señal de entrada, pero "
-"el dispositivo de sonido no se ha abierto en modo de grabación. Una señal de sonido "
-"silenciosa se usará como entrada en lugar de una señal grabada, de tal forma que la "
-"reproducción no puede dar un resultado no esperado (como silenciar la señal de salida)."
+"Hay un proyecto de sonido en uso que está procesando una señal de entrada, "
+"pero el dispositivo de sonido no se ha abierto en modo de grabación. Una "
+"señal de sonido silenciosa se usará como entrada en lugar de una señal "
+"grabada, de tal forma que la reproducción no puede dar un resultado no "
+"esperado (como silenciar la señal de salida)."
 
 #: ../bse/bseserver.c:461
 #, c-format
@@ -5613,7 +5614,7 @@ msgstr "Medida del denominador, debe ser potencia de 2"
 
 #: ../bse/bsesong.c:741
 msgid "Beats per minute"
-msgstr "Compases por minuto"
+msgstr "Tempo"
 
 #. change default
 #. override parent property
@@ -6105,8 +6106,10 @@ msgid ""
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
 "Controlador del puerto de sonido PCM, usando %s.\n"
-"  DISPOSITIVO - el puerto de sonido a usar, «predeterminado» selecciona el dispositivo predeterminado\n"
-"  MODO            - rw = lectura/escritura, ro = sólo lectura, wo = sólo escritura\n"
+"  DISPOSITIVO - el puerto de sonido a usar, «predeterminado» selecciona el "
+"dispositivo predeterminado\n"
+"  MODO            - rw = lectura/escritura, ro = sólo lectura, wo = sólo "
+"escritura\n"
 
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
