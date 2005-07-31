@@ -1,5 +1,6 @@
 RELEASE(0.6.7):
 - store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
+- fix "../../tools/bsefextract --", this needs bse_init_intern()
 - sometimes unneccessarily the song-changed flag is set.
 - FAQ: answer status of windows and MacOS port
 - WEB: add LAD-2005 paper to website

@@ -1,3 +1,7 @@
+Sun Jul 31 16:11:13 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkradget.c: added some documentation.
+
 2005-07-16  Pawan Chitrakar  <pawan@nplinux.org>
 
 	* configure.in: Added ne in ALL_LINGUAS
