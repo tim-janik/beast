@@ -1,3 +1,11 @@
+Mon Aug  1 21:27:24 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Introduced --silence-threshold option, which
+	can be used to customize zerocutting. Another new feature is
+	--raw-signal, which just prints out the individual sample values.
+	This is useful for using another program (i.e. gnuplot) to process
+	sample data.
+
 Sun Jul 31 16:11:13 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkradget.c: added some documentation.

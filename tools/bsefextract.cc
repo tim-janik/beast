@@ -40,6 +40,7 @@ struct Options {
   guint               channel;
   bool                cut_zeros_head;
   bool                cut_zeros_tail;
+  gdouble             silence_threshold;
 
   map<string, FILE*>  outputFiles;
 
@@ -62,7 +63,7 @@ class Signal
   bool head_is_silent()
   {
     for (guint i = 0; i < signal_n_channels; i++)
-      if ((*this)[i] != 0)
+      if (fabs ((*this)[i]) > options.silence_threshold)
 	return false;
 
     return true;
@@ -72,7 +73,7 @@ class Signal
   bool tail_is_silent()
   {
     for (guint i = 0; i < signal_n_channels; i++)
-      if ((*this)[signal_length - signal_n_channels + i] != 0)
+      if (fabs ((*this)[signal_length - signal_n_channels + i]) > options.silence_threshold)
 	return false;
 
     return true;
@@ -409,12 +410,34 @@ struct MinMaxPeakFeature : public Feature
   }
 };
 
+struct RawSignalFeature : public Feature
+{
+  vector<double> raw_signal;
+
+  RawSignalFeature() : Feature ("--raw-signal", "extract raw signal")
+  {
+  }
+
+  void compute (const Signal& signal)
+  {
+    for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
+      raw_signal.push_back (signal[l]);
+  }
+
+  void printResults() const
+  {
+    for (guint i = 0; i < raw_signal.size(); i++)
+      fprintf (outputFile, "%f\n", raw_signal[i]);
+  }
+};
+
 Options::Options ()
 {
   programName = "bsefextract";
   channel = 0;
   cut_zeros_head = false;
   cut_zeros_tail = false;
+  silence_threshold = 0.0;
 }
 
 FILE *Options::openOutputFile (const char *filename)
@@ -486,6 +509,16 @@ void Options::parse (int *argc_p, char **argv_p[])
 	  cut_zeros_tail = true;
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--silence-threshold", opt) == 0)
+	{
+	  if (!arg)
+	    {
+	      printUsage();
+	      exit (1);
+	    }
+	  silence_threshold = atof (arg) / 32767.0;
+	  argv[i] = NULL;
+	}
       else if (strcmp ("--channel", opt) == 0)
 	{
 	  if (!arg)
@@ -544,6 +577,7 @@ void Options::printUsage ()
   fprintf (stderr, " --cut-zeros                 cut zero samples at start/end of the signal\n");
   fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
   fprintf (stderr, " --cut-zeros-tail            cut zero samples at end of the signal\n");
+  fprintf (stderr, " --silence-threshold         threshold for zero cutting (as 16bit sample value)\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "If you want to write an extracted feature to a seperate files, you can\n");
   fprintf (stderr, "append =<filename> to a feature (example: %s --start-time=t.start t.wav).\n", programName.c_str());
@@ -585,6 +619,7 @@ int main (int argc, char **argv)
   featureList.push_back (new AvgSpectrumFeature (spectrumFeature));
   featureList.push_back (new AvgEnergyFeature());
   featureList.push_back (new MinMaxPeakFeature());
+  featureList.push_back (new RawSignalFeature());
 
   /* parse options */
   options.parse (&argc, &argv);
