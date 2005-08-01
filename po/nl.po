@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-25 23:38+0200\n"
+"POT-Creation-Date: 2005-08-01 02:50+0000\n"
 "PO-Revision-Date: 2005-02-18 03:07+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -556,7 +556,8 @@ msgid "Invert"
 msgstr "Omkeren"
 
 #: ../beast-gtk/bsteventrollctrl.c:62 ../beast-gtk/bstpianorollctrl.c:62
-msgid "Invert the current seleciton"
+#, fuzzy
+msgid "Invert the current selection"
 msgstr "De huidige selectie omkeren"
 
 #: ../beast-gtk/bsteventrollctrl.c:446 ../beast-gtk/bsteventrollctrl.c:453
@@ -957,16 +958,16 @@ msgstr "Bezig met laden van \"%s\""
 msgid "Failed to load project \"%s\": %s"
 msgstr "Laden van project \"%s\" mislukt: %s"
 
-#: ../beast-gtk/bstmain.c:822
+#: ../beast-gtk/bstmain.c:823
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: ../beast-gtk/bstmain.c:823
+#: ../beast-gtk/bstmain.c:824
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: ../beast-gtk/bstmain.c:824
+#: ../beast-gtk/bstmain.c:825
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
@@ -3351,7 +3352,7 @@ msgstr "Naar browser-index"
 
 #: ../beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
-msgstr "Lokatie"
+msgstr "Locatie"
 
 #: ../beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
@@ -3572,7 +3573,7 @@ msgid "Second control input"
 msgstr "Tweede controle-ingang"
 
 #: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:193
-#: ../bse/bsestandardosc.c:196 ../bse/bsewaveosc.c:596
+#: ../bse/bsestandardosc.c:196 ../bse/bsewaveosc.c:597
 #: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
 #: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
@@ -3788,7 +3789,7 @@ msgstr ""
 #: ../bse/bsebiquadfilter.c:171 ../bse/bsebiquadfilter.c:177
 #: ../bse/bsestandardosc.c:153 ../bse/bsestandardosc.c:158
 #: ../bse/bsestandardosc.c:163 ../bse/bsestandardosc.c:168
-#: ../bse/bsewaveosc.c:566 ../bse/bsewaveosc.c:572 ../bse/bsewaveosc.c:578
+#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
 msgid "Modulation"
 msgstr "Modulatie"
 
@@ -3797,12 +3798,12 @@ msgid "Strength of linear frequency modulation"
 msgstr "Mate van lineaire frequentiemodulatie"
 
 #: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:160
-#: ../bse/bsewaveosc.c:575
+#: ../bse/bsewaveosc.c:576
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
 
 #: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:165
-#: ../bse/bsewaveosc.c:581
+#: ../bse/bsewaveosc.c:582
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Aantal octaven dat wordt beïnvloed door de exponentiële frequentiemodulatie"
@@ -3827,7 +3828,7 @@ msgid "Unfiltered Audio Signal"
 msgstr "Ongefilterd audiosignaal"
 
 #: ../bse/bsebiquadfilter.c:187 ../bse/bsestandardosc.c:188
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
 msgstr "Freq in"
@@ -5490,7 +5491,7 @@ msgstr "Afspeelinstellingen"
 msgid "Freq Out"
 msgstr "Freq uit"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:598
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
 msgid "Gate Out"
 msgstr "Gate uit"
 
@@ -5861,8 +5862,8 @@ msgstr "/Geluidsbronnen/Standaard oscillator"
 msgid "Wave Form"
 msgstr "Golfvorm"
 
-#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:558
-#: ../bse/bsewaveosc.c:560 ../bse/bsewaveosc.c:562
+#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
+#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
 msgid "Wave"
 msgstr "Wave"
 
@@ -5899,15 +5900,15 @@ msgstr "Fijnstelling"
 msgid "Amount of detuning in cent (hundredth part of a note)"
 msgstr "Valsheid in cent (honderste deel van een een hele noot)"
 
-#: ../bse/bsestandardosc.c:155 ../bse/bsewaveosc.c:568
+#: ../bse/bsestandardosc.c:155 ../bse/bsewaveosc.c:569
 msgid "Input Modulation [%]"
 msgstr "Invoermodulatie [%]"
 
-#: ../bse/bsestandardosc.c:160 ../bse/bsewaveosc.c:574
+#: ../bse/bsestandardosc.c:160 ../bse/bsewaveosc.c:575
 msgid "Exponential FM"
 msgstr "Exponentiële FM"
 
-#: ../bse/bsestandardosc.c:165 ../bse/bsewaveosc.c:580
+#: ../bse/bsestandardosc.c:165 ../bse/bsewaveosc.c:581
 msgid "Octaves"
 msgstr "Octaven"
 
@@ -5960,11 +5961,11 @@ msgstr "PWM In"
 msgid "Pulse Width Modulation Input"
 msgstr "Pulsbreedte modulatie-ingang"
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:593
 msgid "Sync In"
 msgstr "Sync In"
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:593
 msgid "Syncronization Input"
 msgstr "Synchronisatie-ingang"
 
@@ -6123,7 +6124,7 @@ msgstr ""
 msgid "Mixer busses used as output for this track"
 msgstr "Mixerbussen die gebruikt worden als uitgang voor dit spoor"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:306
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "Wave-bestand \"%s\": laden van wave-deelvoor frequentie %f mislukt: %s"
@@ -6137,39 +6138,39 @@ msgid "List of available waves to choose as oscillator source"
 msgstr ""
 "Lijst met beschikbare waves die als oscillatorbron kunnen worden gebruikt"
 
-#: ../bse/bsewaveosc.c:560
+#: ../bse/bsewaveosc.c:561
 msgid "Wave used as oscillator source"
 msgstr "Wave die als oscillatorbron gebruikt wordt"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:565
 msgid "Channel"
 msgstr "Kanaal"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:565
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr "Het te beluisteren geluidskanaal, gewoonlijk is 1 links en 2 rechts"
 
-#: ../bse/bsewaveosc.c:569
+#: ../bse/bsewaveosc.c:570
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Modulatiesterkte voor lineaire frequentiemodulatie"
 
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Frequentie ingang"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:595
 msgid "Mod In"
 msgstr "Mod In"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:595
 msgid "Modulation Input"
 msgstr "Modulatie ingang"
 
-#: ../bse/bsewaveosc.c:596
+#: ../bse/bsewaveosc.c:597
 msgid "Wave Output"
 msgstr "Wave uitgang"
 
-#: ../bse/bsewaveosc.c:598
+#: ../bse/bsewaveosc.c:599
 msgid "Gate Output"
 msgstr "Gate uitgang"
 
@@ -6274,203 +6275,6 @@ msgstr ""
 "  APPARAAT - het PortAudio-apparaat, 'default' selecteert een\n"
 "             standaard apparaat\n"
 "  MODUS    - rw = lezen/schrijven, ro = alleen lezen, wo = alleen schrijven\n"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "_Nummer"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "Synth voltooid"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Synthese-netwerken met anti-alias weergeven?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Delen"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Geen quantisatie geselecteerd"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-msgid "Failed to parse harmony list"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-msgid "N Iterations"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Editor starten"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Ongeldige objecteigenschap"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Berichten tonen over problemen bij opname van geluid"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "Detecteren van (begin van) header mislukt"
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-#, fuzzy
-msgid "Failed to duplicate part range."
-msgstr "Detecteren van (begin van) header mislukt"
 
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
@@ -7103,6 +6907,46 @@ msgstr "Diagnostiek"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Laden van wave-bestand \"%s\" mislukt: %s"
+
+#, fuzzy
+#~ msgid "Song"
+#~ msgstr "_Nummer"
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "Synth voltooid"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Synthese-netwerken met anti-alias weergeven?"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Delen"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "Geen quantisatie geselecteerd"
+
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Editor starten"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Ongeldige objecteigenschap"
+
+#, fuzzy
+#~ msgid "Show messages about empty part range"
+#~ msgstr "Berichten tonen over problemen bij opname van geluid"
+
+#, fuzzy
+#~ msgid "Failed to crop part range."
+#~ msgstr "Detecteren van (begin van) header mislukt"
+
+#, fuzzy
+#~ msgid "Failed to duplicate part range."
+#~ msgstr "Detecteren van (begin van) header mislukt"
 
 #~ msgid "Selection to Loop"
 #~ msgstr "Selectie naar lus"
