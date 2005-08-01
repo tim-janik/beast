@@ -99,7 +99,7 @@ Sat May 21 00:26:15 2005  Tim Janik  <timj@gtk.org>
 
 	* en_CA.po: Updated Canadian English translation.
 
-2005-05-13  I�aki Larra�aga  <dooteo@euskalgnu.org>
+2005-05-13  Iñaki Larrañaga  <dooteo@euskalgnu.org>
 
 	* eu.po:  Added Basque translation.
 
@@ -890,7 +890,7 @@ Fri Apr 23 19:26:04 2004  Tim Janik  <timj@gtk.org>
 
 	* zh_CN.po: Added Simplified Chinese translation.
 
-2004-02-27  Danilo Šegan  <dsegan@gmx.net>
+2004-02-27  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -898,7 +898,7 @@ Fri Apr 23 19:26:04 2004  Tim Janik  <timj@gtk.org>
 
 	* nl.po: Translation updated by Kees van den Broek.
 
-2004-02-25  Danilo Šegan  <dsegan@gmx.net>
+2004-02-25  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -919,7 +919,7 @@ Fri Apr 23 19:26:04 2004  Tim Janik  <timj@gtk.org>
 
 	* cs.po: Updated Czech translation.
 
-2004-02-20  Danilo Šegan  <dsegan@gmx.net>
+2004-02-20  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -927,7 +927,7 @@ Fri Apr 23 19:26:04 2004  Tim Janik  <timj@gtk.org>
 
 	* cs.po: Updated Czech translation.
 
-2004-02-12  Danilo Šegan  <dsegan@gmx.net>
+2004-02-12  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -951,7 +951,7 @@ Fri Apr 23 19:26:04 2004  Tim Janik  <timj@gtk.org>
 
 	* nl.po: Translation updated by Tino Meinen.
 
-2004-01-23  Danilo Šegan  <dsegan@gmx.net>
+2004-01-23  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -983,7 +983,7 @@ Fri Apr 23 19:26:04 2004  Tim Janik  <timj@gtk.org>
 
 	* cs.po: Updated Czech translation.
 
-2004-01-05  Danilo Šegan  <dsegan@gmx.net>
+2004-01-05  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1019,7 +1019,7 @@ Mon Jan  5 01:21:18 2004  Tim Janik  <timj@gtk.org>
 
 	* cs.po: Updated Czech translation.
 
-2003-12-29  Danilo Šegan  <dsegan@gmx.net>
+2003-12-29  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1036,19 +1036,19 @@ Mon Jan  5 01:21:18 2004  Tim Janik  <timj@gtk.org>
 	* es.po: Merged translation from Ismael and some 
 	         correctios from compendia
 
-2003-12-22  Danilo Šegan  <dsegan@gmx.net>
+2003-12-22  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
 2003-12-20  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
 
-	* es.po: Updated Spanish translation by Ismael Andrés Rubio Rojas.
+	* es.po: Updated Spanish translation by Ismael AndrÃ©s Rubio Rojas.
 
 2003-12-19  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
 
-	* es.po: Updated Spanish translation by Ismael Andrés Rubio Rojas.
+	* es.po: Updated Spanish translation by Ismael AndrÃ©s Rubio Rojas.
 
-2003-12-19  Danilo Šegan  <dsegan@gmx.net>
+2003-12-19  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1064,7 +1064,7 @@ Mon Jan  5 01:21:18 2004  Tim Janik  <timj@gtk.org>
 
 	* cs.po: Updated Czech translation.
 
-2003-12-15  Danilo Šegan  <dsegan@gmx.net>
+2003-12-15  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1086,17 +1086,17 @@ Mon Dec 15 15:05:15 2003  Tim Janik  <timj@gtk.org>
 
 2003-12-13  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
 
-	* es.po: Updated Spanish translation by Ismael Andrés Rubio Rojas
+	* es.po: Updated Spanish translation by Ismael AndrÃ©s Rubio Rojas
 
 2003-12-11  Duarte Loreto <happyguy_pt@hotmail.com>
 
 	* pt.po: Updated Portuguese translation.
 
-2003-12-11  Danilo Šegan  <dsegan@gmx.net>
+2003-12-11  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
-2003-12-07  Danilo Šegan  <dsegan@gmx.net>
+2003-12-07  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1118,7 +1118,7 @@ Mon Dec 15 15:05:15 2003  Tim Janik  <timj@gtk.org>
 
 	* nl.po: Dutch translation updated by Vincent van Adrighem.
 
-2003-11-22  Danilo Šegan  <dsegan@gmx.net>
+2003-11-22  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1126,7 +1126,7 @@ Mon Dec 15 15:05:15 2003  Tim Janik  <timj@gtk.org>
 
 	* de.po: Updated German translation.
 
-2003-11-22  Danilo Šegan  <dsegan@gmx.net>
+2003-11-22  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1136,7 +1136,7 @@ Fri Nov 21 16:54:24 2003  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: removed UTF-8 encoding setting.
 
-2003-11-21  Danilo Šegan  <dsegan@gmx.net>
+2003-11-21  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1149,7 +1149,7 @@ Fri Nov 21 16:54:24 2003  Tim Janik  <timj@gtk.org>
 
 	* pt.po: Added Portuguese translation.
 
-2003-11-18  Danilo Šegan  <dsegan@gmx.net>
+2003-11-18  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1161,7 +1161,7 @@ Fri Nov 21 16:54:24 2003  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: Add missing file and remove non-existant ones.
 
-2003-11-14  Danilo Šegan  <dsegan@gmx.net>
+2003-11-14  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1176,7 +1176,7 @@ Fri Nov 21 16:54:24 2003  Tim Janik  <timj@gtk.org>
 	* ca.po: Updated Catalan translation by
 	Xavier Conde Rueda <xaviconde@eresmas.com>.
 
-2003-11-02  Danilo Šegan  <dsegan@gmx.net>
+2003-11-02  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1185,7 +1185,7 @@ Fri Nov 21 16:54:24 2003  Tim Janik  <timj@gtk.org>
 	* POTFILES.in: Added a missing file.
 	* sv.po: Updated Swedish translation.
 
-2003-11-01  Danilo Šegan  <dsegan@gmx.net>
+2003-11-01  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1198,7 +1198,7 @@ Mon Oct 27 20:46:50 2003  Tim Janik  <timj@gtk.org>
 
 	* ru.po: added russian translation from Alexandre Prokoudine <avp@altlinux.ru>.
 
-2003-10-27  Danilo Šegan  <dsegan@gmx.net>
+2003-10-27  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1207,7 +1207,7 @@ Mon Oct 27 20:46:50 2003  Tim Janik  <timj@gtk.org>
 	* POTFILES.skip: Added this.
 	* sv.po: Updated Swedish translation.
 
-2003-10-27  Danilo Šegan  <dsegan@gmx.net>
+2003-10-27  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1215,7 +1215,7 @@ Mon Oct 27 20:46:50 2003  Tim Janik  <timj@gtk.org>
 
 	* az.po: Added Azerbaijani translation.
 
-2003-10-26  Danilo Šegan  <dsegan@gmx.net>
+2003-10-26  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1235,7 +1235,7 @@ Mon Oct 27 20:46:50 2003  Tim Janik  <timj@gtk.org>
 
 	* de.po: Added German translation.
 
-2003-10-18  Danilo Šegan  <dsegan@gmx.net>
+2003-10-18  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.
 
@@ -1254,7 +1254,7 @@ Mon Oct 27 20:46:50 2003  Tim Janik  <timj@gtk.org>
 	* POTFILES.skip: Added.
 	* sv.po: Updated Swedish translation.
 
-2003-10-16  Danilo Šegan  <dsegan@gmx.net>
+2003-10-16  Danilo Å egan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Added Serbian translation.
 
