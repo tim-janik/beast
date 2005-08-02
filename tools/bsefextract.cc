@@ -1,5 +1,5 @@
 /* BSE Feature Extraction Tool
- * Copyright (C) 2004 Stefan Westerfeld
+ * Copyright (C) 2004-2005 Stefan Westerfeld
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,15 @@
 #include <vector>
 #include <utility>
 #include <list>
+#include <complex>
 
-using namespace std;
+// using namespace std;
+using std::string;
+using std::map;
+using std::list;
+using std::vector;
+using std::min;
+using std::max;
 
 struct Options {
   string	      programName;
@@ -431,6 +438,165 @@ struct RawSignalFeature : public Feature
   }
 };
 
+struct ComplexSignalFeature : public Feature
+{
+  static const int HSIZE = 256;
+
+  vector< std::complex<double> > complex_signal;
+  double hilbert[2*HSIZE+1];
+
+  /*
+   * Evaluates the FIR frequency response of the hilbert filter.
+   *
+   * freq = [0..pi] corresponds to [0..mix_freq/2]
+   */
+  std::complex<double>
+  evaluate_hilbert_response (gdouble freq)
+  {
+    std::complex<double> response = hilbert[HSIZE];
+
+    for (int i = 1; i <= HSIZE; i++)
+      {
+	response += std::exp (std::complex<double> (0, -i * freq)) * hilbert[HSIZE-i];
+	response += std::exp (std::complex<double> (0, i * freq)) * hilbert[HSIZE+i];
+      }
+    return response;
+  }
+
+  /* returns a blackman window: x is supposed to be in the interval [0..1] */
+  static float blackmanWindow (float x)
+  {
+    if(x < 0) return 0;
+    if(x > 1) return 0;
+    return 0.42-0.5*cos(M_PI*x*2)+0.08*cos(4*M_PI*x);
+  }
+
+  /* blackman window with x in [-1 .. 1] */
+  static float bwindow (float x)
+  {
+    return blackmanWindow((x+1.0)/2.0);
+  }
+
+  ComplexSignalFeature() : Feature ("--complex-signal", "extract complex signal (hilbert filtered)")
+  {
+    /* compute hilbert fir coefficients */
+    for (int i = 0; i <= HSIZE; i++)
+      {
+	double x;
+	if (i & 1)
+	  x = 1./double(i) * bwindow(double(i) / double(HSIZE));
+	else
+	  x = 0.0;
+	hilbert[HSIZE+i] = x;
+	hilbert[HSIZE-i] = -x;
+      }
+
+    /* normalize the filter coefficients */
+    double gain = std::abs (evaluate_hilbert_response (M_PI/2.0));
+    for (int i = 0; i <= HSIZE; i++)
+      {
+	hilbert[HSIZE+i] /= gain;
+	hilbert[HSIZE-i] /= gain;
+      }
+  }
+
+  void compute (const Signal& signal)
+  {
+    if (complex_signal.size()) /* already finished? */
+      return;
+
+    /*
+     * performance: this loop could be rewritten to be faster, especially by
+     *
+     * (a) special casing head and tail computation, so that the if can be
+     *     removed from the innermost loop
+     * (b) taking into account that half of the hilbert filter coefficients
+     *     are zero anyway
+     */
+    for (unsigned int i = options.channel; i < signal.length(); i += signal.n_channels())
+      {
+	double re = signal[i];
+	double im = 0;
+
+	int pos = i - HSIZE * signal.n_channels();
+	for (int k = -HSIZE; k <= HSIZE; k++)
+	  {
+	    if (pos >= 0 && pos < signal.length())
+	      im += signal[pos] * hilbert[k + HSIZE];
+
+	    pos += signal.n_channels();
+	  }
+	complex_signal.push_back (std::complex<double> (re, im));
+      }
+  }
+
+  void printResults() const
+  {
+    for (guint i = 0; i < complex_signal.size(); i++)
+      fprintf (outputFile, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
+  }
+};
+
+struct BaseFreqFeature : public Feature
+{
+  ComplexSignalFeature *complexSignalFeature;
+  vector<double> freq;
+  double base_freq;
+
+  BaseFreqFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--base-freq", "try detect keynote of a signal"),
+								 complexSignalFeature (complexSignalFeature)
+  {
+    base_freq = 0;
+  }
+
+  void compute (const Signal& signal)
+  {
+    /*
+     * dependancy: we need the complex signal to compute the base frequency
+     */
+    complexSignalFeature->compute (signal);
+
+    double last_phase = 0.0;
+    double base_freq_div = 0.01; /* avoid division by zero */
+
+    for (vector< std::complex<double> >::const_iterator si = complexSignalFeature->complex_signal.begin();
+	                                                si != complexSignalFeature->complex_signal.end(); si++)
+    {
+      double phase = std::arg (*si);
+      double phase_diff = last_phase - phase;
+
+      if (phase_diff > M_PI)
+	phase_diff -= 2.0*M_PI;
+      else if(phase_diff < -M_PI)
+	phase_diff += 2.0*M_PI;
+
+      last_phase = phase;
+
+      double current_freq = fabs (phase_diff / 2.0 / M_PI) * signal.mix_freq();
+      freq.push_back (current_freq);
+
+      /*
+       * The following if-statement does something similar like --cut-zeros: (FIXME?)
+       * 
+       * It cuts away those parts of the signal where no sane frequency was detected.
+       * I am not sure whether it is necessary, but I suppose it's safe to leave it here.
+       */
+      if (current_freq > 1.0)
+	{
+	  base_freq += current_freq;
+	  base_freq_div += 1.0;
+	}
+    }
+
+    base_freq /= base_freq_div;
+  }
+
+  void printResults() const
+  {
+    printValue (base_freq);
+  }
+};
+
 Options::Options ()
 {
   programName = "bsefextract";
@@ -612,6 +778,7 @@ int main (int argc, char **argv)
 
   /* supported features */
   SpectrumFeature *spectrumFeature = new SpectrumFeature;
+  ComplexSignalFeature *complexSignalFeature = new ComplexSignalFeature;
 
   featureList.push_back (new StartTimeFeature());
   featureList.push_back (new EndTimeFeature());
@@ -620,6 +787,8 @@ int main (int argc, char **argv)
   featureList.push_back (new AvgEnergyFeature());
   featureList.push_back (new MinMaxPeakFeature());
   featureList.push_back (new RawSignalFeature());
+  featureList.push_back (complexSignalFeature);
+  featureList.push_back (new BaseFreqFeature (complexSignalFeature));
 
   /* parse options */
   options.parse (&argc, &argv);
