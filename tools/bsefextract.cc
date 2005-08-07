@@ -22,6 +22,7 @@
 #include <bse/gsldatautils.h>
 #include <bse/bseloader.h>
 #include <bse/gslfft.h>
+#include <bse/gslfilter.h>
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
@@ -48,6 +49,7 @@ struct Options {
   bool                cut_zeros_head;
   bool                cut_zeros_tail;
   gdouble             silence_threshold;
+  gdouble             base_freq_hint;
 
   map<string, FILE*>  outputFiles;
 
@@ -556,13 +558,65 @@ struct BaseFreqFeature : public Feature
      */
     complexSignalFeature->compute (signal);
 
+    /*
+     * if the user specified a base frequency hint, we search especially in
+     * a +/- 10% range around that hint; to do so, we use a 2nd order
+     * butterworth bandpass
+     */
+    const int BANDPASS_ORDER = 2;
+    double a[BANDPASS_ORDER + 1] = { 0, };
+    double b[BANDPASS_ORDER + 1] = { 0, };
+
+    if (options.base_freq_hint > 0)
+      {
+	gsl_filter_butter_bp (BANDPASS_ORDER,
+	    options.base_freq_hint / signal.mix_freq() * 2 * M_PI * 0.90, /* -10 % */
+	    options.base_freq_hint / signal.mix_freq() * 2 * M_PI * 1.10, /* +10 % */
+	    0.1, a, b);
+      }
+
+    std::complex<double> x0, x1, x2, y0, y1, y2;
+
     double last_phase = 0.0;
     double base_freq_div = 0.01; /* avoid division by zero */
+
+#if 0 // test filter
+    for (double i = 1.0; i < 10000; i = i * 11 / 10)
+      {
+	double vol = 0.0;
+	int s;
+	for (s = 0; s < 10000; s++)
+	  {
+	    std::complex<double> sig = std::complex<double> (sin (s * i / 44100.0 * 2 * M_PI), cos (s * i / 44100.0 * 2 * M_PI));
+
+	    /* evaluate butterworth filter */
+	    x0 = sig;
+	    y0 = x0 * a[0] + x1 * a[1] + x2 * a[2] - y1 * b[1] - y2 * b[2];
+	    x2 = x1; x1 = x0; y2 = y1; y1 = y0;
+
+	    vol += std::abs (y0);
+	  }
+	printf ("%f %f\n", i, vol / s);
+      }
+    exit (1);
+#endif
 
     for (vector< std::complex<double> >::const_iterator si = complexSignalFeature->complex_signal.begin();
 	                                                si != complexSignalFeature->complex_signal.end(); si++)
     {
-      double phase = std::arg (*si);
+      if (options.base_freq_hint > 0)
+	{
+	  x0 = *si;
+	  y0 = x0 * a[0] + x1 * a[1] + x2 * a[2] - y1 * b[1] - y2 * b[2];
+	  x2 = x1; x1 = x0; y2 = y1; y1 = y0;
+	}
+      else
+	{
+	  y0 = *si;
+	}
+
+      /* determine frequency value from phase difference */
+      double phase = std::arg (y0);
       double phase_diff = last_phase - phase;
 
       if (phase_diff > M_PI)
@@ -604,6 +658,7 @@ Options::Options ()
   cut_zeros_head = false;
   cut_zeros_tail = false;
   silence_threshold = 0.0;
+  base_freq_hint = 0.0;
 }
 
 FILE *Options::openOutputFile (const char *filename)
@@ -685,6 +740,16 @@ void Options::parse (int *argc_p, char **argv_p[])
 	  silence_threshold = atof (arg) / 32767.0;
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--base-freq-hint", opt) == 0)
+	{
+	  if (!arg)
+	    {
+	      printUsage();
+	      exit (1);
+	    }
+	  base_freq_hint = atof (arg);
+	  argv[i] = NULL;
+	}
       else if (strcmp ("--channel", opt) == 0)
 	{
 	  if (!arg)
@@ -744,6 +809,7 @@ void Options::printUsage ()
   fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
   fprintf (stderr, " --cut-zeros-tail            cut zero samples at end of the signal\n");
   fprintf (stderr, " --silence-threshold         threshold for zero cutting (as 16bit sample value)\n");
+  fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "If you want to write an extracted feature to a seperate files, you can\n");
   fprintf (stderr, "append =<filename> to a feature (example: %s --start-time=t.start t.wav).\n", programName.c_str());

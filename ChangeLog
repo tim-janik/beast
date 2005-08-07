@@ -1,3 +1,11 @@
+Sun Aug  7 14:32:03 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: To improve reliability and accuracy of the
+	pitch detection, the user can now specify the expected base frequency.
+	Specifying this hint is recommended whenever the base frequency is
+	known, and only secondary features which depend on the base frequency,
+	such as vibrato features, should be detected.
+
 Tue Aug  2 18:22:07 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Added initial implementation for --base-freq,
