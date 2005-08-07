@@ -1,3 +1,12 @@
+Sun Aug  7 18:15:55 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Implemented --base-freq-smear and
+	--base-freq-wobble to represent inaccuracy and rate of change for the
+	pitch detector. These should be usable to detect the characteristics
+	of a vibrato.
+	Changed documentation to refer to the --base-freq* options as "pitch"
+	related (instead of the old term: "keynote").
+
 Sun Aug  7 14:32:03 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: To improve reliability and accuracy of the

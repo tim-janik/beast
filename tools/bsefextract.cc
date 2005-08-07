@@ -543,12 +543,17 @@ struct BaseFreqFeature : public Feature
 {
   ComplexSignalFeature *complexSignalFeature;
   vector<double> freq;
-  double base_freq;
 
-  BaseFreqFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--base-freq", "try detect keynote of a signal"),
+  double base_freq;
+  double base_freq_smear;
+  double base_freq_wobble;
+
+  BaseFreqFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--base-freq", "try detect pitch of a signal"),
 								 complexSignalFeature (complexSignalFeature)
   {
     base_freq = 0;
+    base_freq_smear = 0;
+    base_freq_wobble = 0;
   }
 
   void compute (const Signal& signal)
@@ -643,11 +648,114 @@ struct BaseFreqFeature : public Feature
     }
 
     base_freq /= base_freq_div;
+
+    compute_smear_and_wobble (signal);
+  }
+
+  void compute_smear_and_wobble (const Signal& signal)
+  {
+    const int window_size = int (signal.mix_freq() / base_freq + 0.5);
+    const int window_step = max (window_size / 3, 30);
+
+    double last_avg_base_freq = 0.0;
+
+    double smear_sum = 0.0, wobble_sum = 0.0;
+    double window_count = 0.0;
+
+    for (size_t offset = 0; (offset + 2 * window_step) < freq.size(); offset += window_step)
+      {
+	// compute average value of the base frequency of window_size samples
+	double avg_base_freq = 0.0, avg_base_freq_div = 0.0;
+
+	for (int i = 0; i < window_size; i++)
+	  {
+	    if (offset + i < freq.size())
+	      {
+		avg_base_freq += freq[offset + i];
+		avg_base_freq_div += 1.0;
+	      }
+	  }
+	if (avg_base_freq_div > 0.0)
+	  avg_base_freq /= avg_base_freq_div;
+
+	// --base-freq-smear computation
+	smear_sum += fabs (avg_base_freq - base_freq);
+	wobble_sum += fabs (last_avg_base_freq - avg_base_freq);
+
+	window_count += 1.0;
+
+	last_avg_base_freq = avg_base_freq;
+      }
+
+    if (window_count > 0.0)
+      {
+	base_freq_smear = smear_sum / window_count;
+	base_freq_wobble = wobble_sum / window_count;
+      }
+    else
+      {
+	base_freq_smear = 0.0;
+	base_freq_wobble = 0.0;
+      }
   }
 
   void printResults() const
   {
     printValue (base_freq);
+  }
+};
+
+struct BaseFreqSmear : public Feature
+{
+  BaseFreqFeature *baseFreqFeature;
+  double base_freq_smear;
+
+  BaseFreqSmear (BaseFreqFeature *baseFreqFeature) : Feature ("--base-freq-smear", "inaccuracy of pitch detection"),
+							      baseFreqFeature (baseFreqFeature)
+  {
+    base_freq_smear = 0;
+  }
+
+  void compute (const Signal& signal)
+  {
+    /*
+     * dependancy: we need the base frequency feature to compute the base frequency smear
+     */
+    baseFreqFeature->compute (signal);
+
+    base_freq_smear = baseFreqFeature->base_freq_smear;
+  }
+
+  void printResults() const
+  {
+    printValue (base_freq_smear);
+  }
+};
+
+struct BaseFreqWobble : public Feature
+{
+  BaseFreqFeature *baseFreqFeature;
+  double base_freq_wobble;
+
+  BaseFreqWobble (BaseFreqFeature *baseFreqFeature) : Feature ("--base-freq-wobble", "rate of changes in the pitch over time"),
+							      baseFreqFeature (baseFreqFeature)
+  {
+    base_freq_wobble = 0;
+  }
+
+  void compute (const Signal& signal)
+  {
+    /*
+     * dependancy: we need the base frequency feature to compute the base frequency smear
+     */
+    baseFreqFeature->compute (signal);
+
+    base_freq_wobble = baseFreqFeature->base_freq_wobble;
+  }
+
+  void printResults() const
+  {
+    printValue (base_freq_wobble);
   }
 };
 
@@ -845,6 +953,7 @@ int main (int argc, char **argv)
   /* supported features */
   SpectrumFeature *spectrumFeature = new SpectrumFeature;
   ComplexSignalFeature *complexSignalFeature = new ComplexSignalFeature;
+  BaseFreqFeature *baseFreqFeature = new BaseFreqFeature (complexSignalFeature);
 
   featureList.push_back (new StartTimeFeature());
   featureList.push_back (new EndTimeFeature());
@@ -854,7 +963,9 @@ int main (int argc, char **argv)
   featureList.push_back (new MinMaxPeakFeature());
   featureList.push_back (new RawSignalFeature());
   featureList.push_back (complexSignalFeature);
-  featureList.push_back (new BaseFreqFeature (complexSignalFeature));
+  featureList.push_back (baseFreqFeature);
+  featureList.push_back (new BaseFreqSmear (baseFreqFeature));
+  featureList.push_back (new BaseFreqWobble (baseFreqFeature));
 
   /* parse options */
   options.parse (&argc, &argv);
