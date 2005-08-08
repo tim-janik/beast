@@ -548,7 +548,7 @@ struct BaseFreqFeature : public Feature
   double base_freq_smear;
   double base_freq_wobble;
 
-  BaseFreqFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--base-freq", "try detect pitch of a signal"),
+  BaseFreqFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--base-freq", "try to detect pitch of a signal"),
 								 complexSignalFeature (complexSignalFeature)
   {
     base_freq = 0;
@@ -558,6 +558,9 @@ struct BaseFreqFeature : public Feature
 
   void compute (const Signal& signal)
   {
+    if (freq.size()) /* already finished? */
+      return;
+
     /*
      * dependancy: we need the complex signal to compute the base frequency
      */
@@ -708,12 +711,10 @@ struct BaseFreqFeature : public Feature
 struct BaseFreqSmear : public Feature
 {
   BaseFreqFeature *baseFreqFeature;
-  double base_freq_smear;
 
   BaseFreqSmear (BaseFreqFeature *baseFreqFeature) : Feature ("--base-freq-smear", "inaccuracy of pitch detection"),
 							      baseFreqFeature (baseFreqFeature)
   {
-    base_freq_smear = 0;
   }
 
   void compute (const Signal& signal)
@@ -722,25 +723,21 @@ struct BaseFreqSmear : public Feature
      * dependancy: we need the base frequency feature to compute the base frequency smear
      */
     baseFreqFeature->compute (signal);
-
-    base_freq_smear = baseFreqFeature->base_freq_smear;
   }
 
   void printResults() const
   {
-    printValue (base_freq_smear);
+    printValue (baseFreqFeature->base_freq_smear);
   }
 };
 
 struct BaseFreqWobble : public Feature
 {
   BaseFreqFeature *baseFreqFeature;
-  double base_freq_wobble;
 
   BaseFreqWobble (BaseFreqFeature *baseFreqFeature) : Feature ("--base-freq-wobble", "rate of changes in the pitch over time"),
 							      baseFreqFeature (baseFreqFeature)
   {
-    base_freq_wobble = 0;
   }
 
   void compute (const Signal& signal)
@@ -749,15 +746,152 @@ struct BaseFreqWobble : public Feature
      * dependancy: we need the base frequency feature to compute the base frequency smear
      */
     baseFreqFeature->compute (signal);
-
-    base_freq_wobble = baseFreqFeature->base_freq_wobble;
   }
 
   void printResults() const
   {
-    printValue (base_freq_wobble);
+    printValue (baseFreqFeature->base_freq_wobble);
   }
 };
+
+struct VolumeFeature : public Feature
+{
+  ComplexSignalFeature *complexSignalFeature;
+  vector<double> vol;
+
+  double volume;
+  double volume_smear;
+  double volume_wobble;
+
+  VolumeFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--volume", "determine average signal volume"),
+							       complexSignalFeature (complexSignalFeature)
+  {
+    volume = 0;
+    volume_smear = 0;
+    volume_wobble = 0;
+  }
+
+  void compute (const Signal& signal)
+  {
+    if (vol.size()) /* already finished? */
+      return;
+
+    /*
+     * dependancy: we need the complex signal to compute the base frequency
+     */
+    complexSignalFeature->compute (signal);
+
+    volume = 0.0;
+
+    for (vector< std::complex<double> >::const_iterator si = complexSignalFeature->complex_signal.begin();
+	                                                si != complexSignalFeature->complex_signal.end(); si++)
+      {
+	double v = std::abs (*si); //sqrt (si->real() * si->real() + si->imag() * si->imag()); //std::abs (*si);
+
+	vol.push_back (v);
+	volume += v;
+      }
+
+    if (vol.size())
+      volume /= vol.size();
+
+    compute_smear_and_wobble (signal);
+  }
+
+  void compute_smear_and_wobble (const Signal& signal)
+  {
+    const double window_size_ms = 30; /* window size in milliseconds */
+    const int window_size = int (signal.mix_freq() * window_size_ms / 1000.0 + 0.5);
+    const int window_step = max (window_size / 3, 30);
+
+    double last_avg_volume = 0.0;
+    double window_count = 0.0;
+
+    volume_smear = 0.0;
+    volume_wobble = 0.0;
+
+    for (size_t offset = 0; (offset + 2 * window_step) < vol.size(); offset += window_step)
+      {
+	// compute average value of the base frequency of window_size samples
+	double avg_volume = 0.0, avg_volume_div = 0.0;
+
+	for (int i = 0; i < window_size; i++)
+	  {
+	    if (offset + i < vol.size())
+	      {
+		avg_volume += vol[offset + i];
+		avg_volume_div += 1.0;
+	      }
+	  }
+	if (avg_volume_div > 0.0)
+	  avg_volume /= avg_volume_div;
+
+	volume_smear += fabs (avg_volume - volume);
+	volume_wobble += fabs (last_avg_volume - avg_volume);
+
+	window_count += 1.0;
+
+	last_avg_volume = avg_volume;
+      }
+
+    if (window_count > 0.0)
+      {
+	volume_smear /= window_count;
+	volume_wobble /= window_count;
+      }
+  }
+
+  void printResults() const
+  {
+    printValue (volume);
+  }
+};
+
+struct VolumeSmear : public Feature
+{
+  VolumeFeature *volumeFeature;
+
+        
+
+  VolumeSmear (VolumeFeature *volumeFeature) : Feature ("--volume-smear", "variation of signal volume"),
+					       volumeFeature (volumeFeature)
+  {
+  }
+
+  void compute (const Signal& signal)
+  {
+    // dependancy: we need the volume feature to compute the volume smear
+    volumeFeature->compute (signal);
+  }
+
+  void printResults() const
+  {
+    printValue (volumeFeature->volume_smear);
+  }
+};
+
+struct VolumeWobble : public Feature
+{
+  VolumeFeature *volumeFeature;
+
+
+  VolumeWobble (VolumeFeature *volumeFeature) : Feature ("--volume-wobble", "rate of changes in signal volume over time"),
+						volumeFeature (volumeFeature)
+  {
+  }
+
+  void compute (const Signal& signal)
+  {
+    // dependancy: we need the volume feature to compute the volume wobble
+    volumeFeature->compute (signal);
+  }
+
+  void printResults() const
+  {
+    printValue (volumeFeature->volume_wobble);
+  }
+};
+
 
 Options::Options ()
 {
@@ -954,6 +1088,7 @@ int main (int argc, char **argv)
   SpectrumFeature *spectrumFeature = new SpectrumFeature;
   ComplexSignalFeature *complexSignalFeature = new ComplexSignalFeature;
   BaseFreqFeature *baseFreqFeature = new BaseFreqFeature (complexSignalFeature);
+  VolumeFeature *volumeFeature = new VolumeFeature (complexSignalFeature);
 
   featureList.push_back (new StartTimeFeature());
   featureList.push_back (new EndTimeFeature());
@@ -966,6 +1101,9 @@ int main (int argc, char **argv)
   featureList.push_back (baseFreqFeature);
   featureList.push_back (new BaseFreqSmear (baseFreqFeature));
   featureList.push_back (new BaseFreqWobble (baseFreqFeature));
+  featureList.push_back (volumeFeature);
+  featureList.push_back (new VolumeSmear (volumeFeature));
+  featureList.push_back (new VolumeWobble (volumeFeature));
 
   /* parse options */
   options.parse (&argc, &argv);

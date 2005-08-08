@@ -1,3 +1,12 @@
+Mon Aug  8 13:36:27 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Implemented --volume, --volume-smear and
+	--volume-wobble, which work pretty much like the pitch detector, but
+	are based on the volume (absolute value of the analytic signal from
+	hilbert filter).
+	These features should be usable to detect the characteristics of a
+	tremolo.
+
 Sun Aug  7 18:15:55 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Implemented --base-freq-smear and
