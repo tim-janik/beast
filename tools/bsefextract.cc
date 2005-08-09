@@ -50,12 +50,15 @@ struct Options {
   bool                cut_zeros_tail;
   gdouble             silence_threshold;
   gdouble             base_freq_hint;
+  gdouble             focus_center;
+  gdouble             focus_width;
 
   map<string, FILE*>  outputFiles;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
   void printUsage ();
+  void validatePercent (const string& option, gdouble value);
 
   FILE *openOutputFile (const char *filename);
 } options;
@@ -116,6 +119,26 @@ public:
 	    signal_length -= signal_n_channels;
 	  }
       }
+
+    // calculate focus - first: make sure focus region is inside the signal
+    if (options.focus_center - (options.focus_width / 2.0) < 0.0)
+      options.focus_center = (options.focus_width / 2.0);
+
+    if (options.focus_center + (options.focus_width / 2.0) > 100.0)
+      options.focus_center = 100.0 - (options.focus_width / 2.0);
+
+    // cut samples which are outside the focus region
+    double start = options.focus_center - (options.focus_width / 2.0);
+    double end = options.focus_center + (options.focus_width / 2.0);
+
+    GslLong istart = GslLong (start / 100.0 * signal_length + 0.5);
+    GslLong iend = GslLong (end / 100.0 * signal_length + 0.5);
+
+    istart -= istart % signal_n_channels;
+    iend -= iend % signal_n_channels;
+
+    signal_offset += istart;
+    signal_length = iend - istart;
   }
 
   GslLong length() const
@@ -228,7 +251,7 @@ struct SpectrumFeature : public Feature
 {
   vector< vector<double> > spectrum;
 
-  SpectrumFeature() : Feature ("--spectrum", "frequency spectrum")
+  SpectrumFeature() : Feature ("--spectrum", "enerate 30ms spaced frequency spectrums")
   {
   }
 
@@ -901,6 +924,8 @@ Options::Options ()
   cut_zeros_tail = false;
   silence_threshold = 0.0;
   base_freq_hint = 0.0;
+  focus_center = 50.0;
+  focus_width = 100.0;
 }
 
 FILE *Options::openOutputFile (const char *filename)
@@ -919,6 +944,17 @@ FILE *Options::openOutputFile (const char *filename)
 	}
     }
   return outfile;
+}
+
+void Options::validatePercent (const string& option, gdouble value)
+{
+  if (value < 0.0 || value > 100.0)
+    {
+      fprintf (stderr, "%s: invalid argument `%f' for `%s'\n\n", programName.c_str(), value, option.c_str());
+      fprintf (stderr, "Valid arguments are percent values (between 0 and 100).\n", value, option.c_str());
+      fprintf (stderr, "Try `%s --help' for more information.\n", programName.c_str());
+      exit (1);
+    }
 }
 
 void Options::parse (int *argc_p, char **argv_p[])
@@ -980,6 +1016,26 @@ void Options::parse (int *argc_p, char **argv_p[])
 	      exit (1);
 	    }
 	  silence_threshold = atof (arg) / 32767.0;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--focus-width", opt) == 0)
+	{
+	  if (!arg)
+	    {
+	      printUsage();
+	      exit (1);
+	    }
+	  validatePercent ("--focus-width", focus_width = atof (arg));
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--focus-center", opt) == 0)
+	{
+	  if (!arg)
+	    {
+	      printUsage();
+	      exit (1);
+	    }
+	  validatePercent ("--focus-center", focus_center = atof (arg));
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--base-freq-hint", opt) == 0)
@@ -1051,10 +1107,12 @@ void Options::printUsage ()
   fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
   fprintf (stderr, " --cut-zeros-tail            cut zero samples at end of the signal\n");
   fprintf (stderr, " --silence-threshold         threshold for zero cutting (as 16bit sample value)\n");
+  fprintf (stderr, " --focus-center=X            center focus region around X% [50]\n");
+  fprintf (stderr, " --focus-width=Y             width of focus region in % [100]\n");
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
   fprintf (stderr, "\n");
-  fprintf (stderr, "If you want to write an extracted feature to a seperate files, you can\n");
-  fprintf (stderr, "append =<filename> to a feature (example: %s --start-time=t.start t.wav).\n", programName.c_str());
+  fprintf (stderr, "Appending =<filename> to a feature writes this feature to a separate file\n");
+  fprintf (stderr, "(example: %s --start-time=t.start t.wav).\n", programName.c_str());
 }
 
 void printHeader (FILE *file, const char *src)

@@ -662,20 +662,6 @@ tests, bsefcompare:
     bsefcompare: no such file: banace.feature
     $ mv balance.tmp balance.feature
 - move tests from test directory into automated feature test dir
-- fix option docu:
-  --spectrum		generate 30ms spaced frequency spectrums
-- base frequency feature:
-Partial Features:
-  --focus-center=X	center focus region around X% [50]
-  --focus-width=Y	width of focus region in % [100]
-Frequency:
-  --base-freq		try detect keynote of a signal
-  --base-freq-smear	inaccuracy of keynote detection
-  --base-freq-wobble	rate of changes in the keynote over time
-Volume:
-  --volume		determine average signal volume
-  --volume-smear	variation of signal volume
-  --volume-wobble	rate of changes in signal volume over time
   
 
 Misc Buglets/Feature Requests:

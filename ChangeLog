@@ -1,3 +1,9 @@
+Tue Aug  9 16:12:00 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Implemented --focus-center and --focus-width
+	options. They can be used to extract features from a part of the
+	signal only. Small documentation fixes.
+
 Mon Aug  8 13:36:27 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Implemented --volume, --volume-smear and
