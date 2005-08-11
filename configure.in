@@ -316,20 +316,29 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
     AC_SUBST(BSESH_BINARY)
 
     dnl --- libguile check ---
-    # require guile-config
-    AC_PATH_PROG(GUILE_CONFIG, guile-1.6-config)
-    AC_PATH_PROG(GUILE_CONFIG, guile-config)
-    MC_ASSERT_NONEMPTY(GUILE_CONFIG, guile-config, [guile-config is supplied by libguile at http://www.gnu.org/software/guile/guile.html])
-    GUILE_VERSION=`$GUILE_CONFIG info guileversion`
-    GUILE_CFLAGS=`$GUILE_CONFIG compile`
-    GUILE_LDFLAGS=`$GUILE_CONFIG link`
+    guile_tests=0
+    GUILE_VERSION=none
     REQUIRED_VERSION=1.6
-    MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [
-      BSE_SHELL_CFLAGS="$GUILE_CFLAGS $BSE_SHELL_CFLAGS"
-      BSE_SHELL_LIBS="$GUILE_LDFLAGS $BSE_SHELL_LIBS"
-    ],
-      AC_MSG_ERROR([failed to find guile library v$REQUIRED_VERSION - detected version: $GUILE_VERSION])
-    )
+    AC_PATH_PROG(GUILE_CONFIG, guile-config)
+    if test -n "$GUILE_CONFIG"; then
+	guile_tests=`expr $guile_tests + 1`
+	GUILE_VERSION=`$GUILE_CONFIG info guileversion`
+	GUILE_CFLAGS=`$GUILE_CONFIG compile`
+	GUILE_LDFLAGS=`$GUILE_CONFIG link`
+	MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [guile_tests=`expr $guile_tests + 1`])
+	dnl check headers seperately, since some distributions ship on-devel guile packages with guile-config
+	AC_CHECK_HEADER(guile/gh.h, guile_tests=`expr $guile_tests + 1`)
+	AC_CHECK_HEADER(libguile/properties.h, guile_tests=`expr $guile_tests + 1`) dnl guile-1.6 headerfile
+    fi
+    if test $guile_tests = 4 ; then
+	BSE_SHELL_CFLAGS="$GUILE_CFLAGS $BSE_SHELL_CFLAGS"
+	BSE_SHELL_LIBS="$GUILE_LDFLAGS $BSE_SHELL_LIBS" 
+    else
+	EMSG="failed to detect guile headers and library v$REQUIRED_VERSION"
+	EMSG="$EMSG (available from http://www.gnu.org/software/guile/guile.html)"
+	EMSG="$EMSG - detected library version: $GUILE_VERSION"
+	AC_MSG_ERROR([$EMSG])
+    fi
 
     AC_SUBST(BSE_SHELL_CFLAGS)
     AC_SUBST(BSE_SHELL_LIBS)
