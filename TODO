@@ -662,6 +662,7 @@ tests, bsefcompare:
     bsefcompare: no such file: banace.feature
     $ mv balance.tmp balance.feature
 - move tests from test directory into automated feature test dir
+- vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
   
 
 Misc Buglets/Feature Requests:
