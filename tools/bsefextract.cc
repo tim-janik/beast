@@ -251,7 +251,7 @@ struct SpectrumFeature : public Feature
 {
   vector< vector<double> > spectrum;
 
-  SpectrumFeature() : Feature ("--spectrum", "enerate 30ms spaced frequency spectrums")
+  SpectrumFeature() : Feature ("--spectrum", "generate 30ms spaced frequency spectrums")
   {
   }
 
