@@ -1,4 +1,6 @@
 RELEASE(0.6.7):
+- gxk_tree_view_append_text_columns: s/on or of/on or off/
+- the properties dialog should have a "CANCEL" button, not close (since there's "apply")
 - store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
 - fix "../../tools/bsefextract --", this needs bse_init_intern()
 - sometimes unneccessarily the song-changed flag is set.
