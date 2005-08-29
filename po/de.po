@@ -1319,7 +1319,7 @@ msgstr "Schritte"
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
-"Die Anzahl der Zellen, die jedesmal hinüberbewegt werden, wenn ein Ereignis "
+"Die Anzahl der Zellen, die jedes Mal hinüberbewegt werden, wenn ein Ereignis "
 "oder eine Note editiert wurde"
 
 #: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:571
