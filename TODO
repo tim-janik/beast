@@ -666,6 +666,8 @@ tests, bsefcompare:
 - move tests from test directory into automated feature test dir
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
   
+win32 port:
+- beast --bse-driver-list freezes the windows system completely
 
 Misc Buglets/Feature Requests:
  - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
