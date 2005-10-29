@@ -311,6 +311,8 @@ GarageBand ideas and concepts:
 - MIDI notes are always played back with the current track (or track's instrument)    
     
 TASKS:
+- loop finder:
+  email: (Subject: bsewavetool, Date: Fri, 3 Sep 2004 04:51:23 +0200)
 - TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
 - TableSynth(note mapping): allow multiple synths and presets per
@@ -650,7 +652,7 @@ design instruments:
 documentation:
  - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
   - sfidl-manual.texi: complete the documentation
- - bsewavetool needs to be documented with documentation tool on code level (gsl_data_find_loop*)
+ - bsewavetool needs to be documented with documentation tool in the source code (at least gsl_data_find_loop*)
 
 tests, bsefcompare:
 - rewrite Makefile.am to not need feature-test.sh [tim]:
