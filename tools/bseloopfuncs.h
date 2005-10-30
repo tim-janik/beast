@@ -44,7 +44,7 @@ gboolean        gsl_data_find_loop5             (GslDataHandle          *dhandle
                                                  gpointer                pdata,
                                                  GslProgressFunc         pfunc);
 /* mem-cached loop position and size finder. tests through all possible
- * loop sizes around center points determined by block/(repetitions+1).
+ * loop sizes around center points determined by block/(analysis_points+1).
  * uses full-block comparisons (centering comparison area around the
  * loop) and can produce non-acceptable results. looping 6 seconds in
  * 61 samples runs roughly 6 hours on 2500MHz.
