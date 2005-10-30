@@ -1,3 +1,12 @@
+Sun Oct 30 19:14:22 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/Makefile.am: Compile bse loop functions into bsewavetool.
+
+	* tools/bseloopfuncs.c: Error codes are nowerdays defined in bse
+	namespace.
+
+	* tools/bsewavetool.cc: Implemented loop command.
+
 Thu Aug 11 22:41:23 2005  Tim Janik  <timj@gtk.org>
 
 	* configure.in: extended libguile check to check for guile-1.6 header

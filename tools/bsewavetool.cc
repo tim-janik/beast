@@ -1230,7 +1230,6 @@ public:
   }
 } cmd_clip ("clip");
 
-#if 0
 class LoopCmd : public Command {
   bool all_chunks;
   vector<gfloat> freq_list;
@@ -1296,11 +1295,36 @@ public:
       if (all_chunks || wave->match (*it, freq_list))
         {
           WaveChunk *chunk = &*it;
-          sfi_info ("LOOP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+	  GslDataHandle *dhandle = chunk->dhandle;
+          sfi_info ("LOOP: chunk %f", gsl_data_handle_osc_freq (dhandle));
+	  gdouble mix_freq = gsl_data_handle_mix_freq (dhandle);
+	  GslDataLoopConfig lconfig;
+	  lconfig.block_start = (GslLong) mix_freq;  /* skip first second */
+	  lconfig.block_length = -1; 	             /* to end */
+	  lconfig.analysis_points = 7;
+	  lconfig.repetitions = 2;
+	  lconfig.min_loop = (GslLong) MAX (mix_freq / 10, /* at least 100ms */
+			                    8820 /* FIXME: hardcoded values in gsl_data_loop*() -> 200ms */);
+
+	  gboolean found_loop = gsl_data_find_loop1 (dhandle, &lconfig, NULL, gsl_progress_printerr);
+	  if (found_loop)
+	    {
+	      /* FIXME: assumes n_channels == 1 */
+              gchar **xinfos = bse_xinfos_dup_consolidated (dhandle->setup.xinfos, FALSE);
+	      xinfos = bse_xinfos_add_num (xinfos, "loop-count", 1000000);
+	      xinfos = bse_xinfos_add_num (xinfos, "loop-start", lconfig.loop_start);
+	      xinfos = bse_xinfos_add_num (xinfos, "loop-end", lconfig.loop_start + lconfig.loop_length);
+	      xinfos = bse_xinfos_add_value (xinfos, "loop-type", gsl_wave_loop_type_to_string (GSL_WAVE_LOOP_JUMP));
+
+	      gsl_data_handle_ref (dhandle);
+	      BseErrorType error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
+	      if (error)
+		sfi_error ("looping failed: %s", bse_error_blurb (error));
+	      g_strfreev (xinfos);
+	    }
         }
   }
 } cmd_loop ("loop");
-#endif
 
 /* TODO commands:
  * bsewavetool.1 # need manual page
@@ -1321,3 +1345,5 @@ public:
  */
 
 } // BseWaveTool
+
+/* vim:set ts=8 sts=2 sw=2: */

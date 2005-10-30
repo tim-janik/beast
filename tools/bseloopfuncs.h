@@ -20,6 +20,7 @@
 #define __BSE_LOOPFUNCS_H__
 
 #include <bse/gsldatautils.h>
+#include <bse/gslcommon.h>
 
 G_BEGIN_DECLS
 

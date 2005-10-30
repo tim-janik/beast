@@ -10,7 +10,7 @@ DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS #   """""""
 # programs to build
 #
 noinst_PROGRAMS = bsewavetool bsefextract bsefcompare
-bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc # sfiutils.c bseloopfuncs.c
+bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.c
 bsewavetool_LDADD = $(programs_ldadd)
 
 bsefextract_SOURCES = bsefextract.cc
