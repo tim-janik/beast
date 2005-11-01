@@ -2,9 +2,8 @@ Source: beast
 Section: gnome
 Priority: extra
 Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
-Build-Depends: debhelper (>= 3.0), libgtk2.0-dev (>= 2.2.2-2), libglib2.0-dev (>= 2.2.2-1), libaudiofile-dev, libvorbis-dev, guile-1.6-dev (>= 1.6.4-2.1), libart-2.0-dev, libgnomecanvas2-dev, libmad0-dev, libxml-parser-perl
-Build-Conflicts: beast (<< ${Source-Version})
-Standards-Version: 3.6.1.0
+Build-Depends: debhelper (>= 3.0), libgtk2.0-dev (>= 2.2.2-2), libglib2.0-dev (>= 2.2.2-1), libaudiofile-dev, libvorbis-dev, guile-1.6-dev (>= 1.6.4-2.1), libart-2.0-dev, libgnomecanvas2-dev, libmad0-dev, libxml-parser-perl, libxml2-utils, imagemagick
+Standards-Version: 3.6.2.1
 
 Package: beast
 Section: gnome

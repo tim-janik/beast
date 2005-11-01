@@ -1,2 +1,2 @@
 ?package(beast):needs="x11" section="Apps/Sound" \
-  title="BEAST" command="/usr/bin/beast"
+  title="BEAST" command="/usr/bin/beast" icon="/usr/share/pixmaps/beast.xpm"

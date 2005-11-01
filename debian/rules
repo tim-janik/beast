@@ -1,8 +1,5 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper.
-# This file is public domain software, originally written by Joey Hess. 
 
-# Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
@@ -15,64 +12,44 @@ else
   CFLAGS += -O3
 endif
 
+confflags = --prefix=/usr --mandir=/usr/share/man
 ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
-config_args = $(DEB_HOST_GNU_TYPE)
+confflags += $(DEB_HOST_GNU_TYPE)
 else
-config_args = --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-
 	# Remove stuff
 	rm -f config.cache config.log
-
 	# Touch timestamps
-	touch configure.in
 	touch aclocal.m4
 	touch configure
 	touch configure.h.in bse/bseconfig.h.in
 	touch `find -name Makefile.in` dummy-stamp
-
 	# Configure the package.
 	CFLAGS="$(CFLAGS)" CXXFLAGS="$(CFLAGS)" ./configure \
-	  --prefix=/usr --mandir=/usr/share/man \
 	  --enable-devdsp --enable-devmidi \
 	  --enable-osspcm=/dev/dsp --enable-ossmidi=/dev/midi \
-	  $(config_args)
-
+	  $(confflags)
 	touch configure-stamp
 
 build: configure-stamp build-stamp
 build-stamp:
 	dh_testdir
-
-	# Hack for GCC bug #10681
-ifeq ($(shell dpkg-architecture -qDEB_BUILD_GNU_CPU),ia64)
-	cd bse \
-	&& sed 's/-O2  *-/-O2 $$(patsubst %, -O1, $$(filter $$(<F), gslfft.c)) -/g' Makefile > Makefile.tmp \
-	&& rm -f Makefile \
-	&& mv Makefile.tmp Makefile
-endif
-
 	# Compile the package.
 	$(MAKE)
-
-	# For debugging purposes
-	-ldd beast-gtk/.libs/beast
-
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
-
 	# Clean up after the build process.
 	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -f data/beast-audio-x-bse.png
-
 	dh_clean
 
 install: build
@@ -80,9 +57,11 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-
 	# Install the package into debian/beast
 	$(MAKE) DESTDIR=$(CURDIR)/debian/beast install
+	ln -s beast.1.gz debian/beast/usr/share/man/man1/beast-0.6.6.1.gz
+	ln -s bsesh.1.gz debian/beast/usr/share/man/man1/bsesh-0.6.6.1.gz
+	convert debian/beast/usr/share/pixmaps/beast.png debian/beast/usr/share/pixmaps/beast.xpm
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -106,7 +85,7 @@ binary-arch: build install
 #	dh_installcron
 #	dh_installinfo
 #	dh_undocumented
-	dh_installman debian/beast.1 debian/bsesh.1
+	dh_installman
 	dh_link
 	dh_strip
 	dh_compress

@@ -1,3 +1,58 @@
+beast (0.6.6-1) unstable; urgency=low
+
+  * New upstream release (Closes: #307254). This version fixes an old
+    FTBFS (Closes: #292971) and uses tput in the configure script instead
+    of an ncurses program that mangled the terminal (Closes: #297275).
+  * debian/control:
+    + Set policy to 3.6.2.1.
+    + Build-depend on libxml2-utils (xmllint).
+    + libtool is a lot nicer now; no longer build-conflict on beast.
+  * debian/rules:
+    + Got rid of an old workaround for GCC bug #10681 that was fixed
+      ages ago.
+    + Add an icon to the menu entry (Closes: #299413).
+  * bse/bsesequencer.cc:
+    + Comment out asserts using G_STRUCT_OFFSET.
+  * bse/bsesong.cc:
+    + Declare functions in the main scope.
+  * po/de.po:
+    + Fixed a typo, thanks to Jens Seidel (Closes: #314147).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue,  1 Nov 2005 00:39:52 +0100
+
+beast (0.6.2-3) unstable; urgency=low
+
+  * bse/bsemidireceiver.cc:
+    + Fix from upstream for a bug causing demosong to crash beast on AMD64.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri,  6 Aug 2004 09:11:14 +0200
+
+beast (0.6.2-2) unstable; urgency=low
+
+  * sfi/sfithreads.c:
+    + Re-added a patch that had gone missing.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon,  2 Aug 2004 12:05:39 +0200
+
+beast (0.6.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Reverted the wrapper changes I introduced in 0.6.1-4 due to unexpected
+    breaks, also at upstream's request (Closes: #262181).
+  * debian/control:
+    + Set policy to 3.6.1.1.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 30 Jul 2004 10:40:31 +0200
+
+beast (0.6.1-4) unstable; urgency=low
+
+  * launchers/*:
+    + Moved real binaries to /usr/lib/beast, leavin only wrappers in /usr/bin.
+  * debian/beast.1 debian/bsesh.1:
+    + Removed these legacy files.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue,  1 Jun 2004 16:22:19 -0300
+
 beast (0.6.1-3) unstable; urgency=low
 
   * sfi/glib-extra.h:
