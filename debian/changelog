@@ -1,3 +1,15 @@
+beast (0.6.6-2) unstable; urgency=low
+
+  * debian/postinst:
+    + Setuid the wrapper binaries.
+  * debian/control:
+    + Recommend bse-alsa which is a far better output driver.
+    + Build-depend on gettext because of the patched de.po file.
+  * debian/rules:
+    + Set the XPM icon size to 32x32 as per policy instead of 48x48.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue,  1 Nov 2005 16:21:11 +0100
+
 beast (0.6.6-1) unstable; urgency=low
 
   * New upstream release (Closes: #307254). This version fixes an old

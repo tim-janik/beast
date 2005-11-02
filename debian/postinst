@@ -1,0 +1,22 @@
+#!/bin/sh -e
+
+set -e
+
+#DEBHELPER#
+
+action="$1"
+oldversion="$2"
+
+setuid() {
+  if ! [ -x /usr/sbin/dpkg-statoverride ] || \
+      ! dpkg-statoverride --list "$1" >/dev/null ; then
+    chmod 4755 "$1"
+  fi
+}
+
+if [ "$action" = "configure" ]; then
+  setuid /usr/bin/beast
+  setuid /usr/bin/bsesh
+fi
+
+exit 0

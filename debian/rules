@@ -50,6 +50,8 @@ clean:
 	# Clean up after the build process.
 	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -f data/beast-audio-x-bse.png
+	rm -f bse/bsegencore.cc beast-gtk/gxk/gxkgentypes.stamp
+	rm -f po/de.gmo
 	dh_clean
 
 install: build
@@ -61,7 +63,7 @@ install: build
 	$(MAKE) DESTDIR=$(CURDIR)/debian/beast install
 	ln -s beast.1.gz debian/beast/usr/share/man/man1/beast-0.6.6.1.gz
 	ln -s bsesh.1.gz debian/beast/usr/share/man/man1/bsesh-0.6.6.1.gz
-	convert debian/beast/usr/share/pixmaps/beast.png debian/beast/usr/share/pixmaps/beast.xpm
+	convert debian/beast/usr/share/pixmaps/beast.png -geometry 32x32 debian/beast/usr/share/pixmaps/beast.xpm
 
 # Build architecture-independent files here.
 binary-indep: build install
