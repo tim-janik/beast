@@ -9,6 +9,7 @@ RELEASE(0.6.7):
 - fix/re-enable midi note recording into piano roll
 - update status message of recording script according to is/isnot recording
 - look into adding BseJanitor::status-caption (which could become primary text for status message display)
+- xtest
 BUGS(FIXME):
 - add/remove actions to/from shadow storage and require a script to issue actions-commit/gui-update or similar for the actions to really appear on-screen
 - add BST_MSG_PROXY(project) for detail section
