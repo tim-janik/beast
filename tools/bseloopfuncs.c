@@ -125,16 +125,17 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
                      GslProgressFunc    pfunc)
 {
   GslLong bstart, blength, min_llength, max_llength, i, dhandle_n_values, clength, pcount, score_pcount = 0;
+  GslLong frame = 4410 * 2; // 4410; // FIXME: need assertion for frame vs. block length
   GslProgressState pstate = gsl_progress_state (pdata, pfunc, 1);
   GslDataPeekBuffer pbuf = { +1, };
   gdouble pdist, fcenter, bfrac;
-  gfloat *bstart_block;
-  guint apoints, frame = 4410 * 2; // 4410; // FIXME: need assertion for frame vs. block length
-  const gfloat *block;
+  guint apoints;
+  gfloat *block;
   gboolean found_loop = FALSE;
 
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (config != NULL, FALSE);
+  g_return_val_if_fail (frame <= config->block_start, FALSE);
   config->n_details = 0;
 
   /* check out data handle */
@@ -145,9 +146,9 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
   /* confine parameters */
   bstart = CLAMP (config->block_start, 0, dhandle_n_values - 1);
   if (config->block_length < 0)
-    blength = dhandle_n_values - bstart;
+    blength = dhandle_n_values - bstart - frame;
   else
-    blength = MIN (dhandle_n_values - bstart, config->block_length);
+    blength = MIN (dhandle_n_values - bstart - frame, config->block_length);
   if (blength < 4)
     return FALSE;
 
@@ -163,10 +164,9 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
   clength = blength / 2;
 
   /* provide fully cached area for comparisons */
-  bstart_block = g_new (gfloat, blength);
-  for (i = 0; i < blength; i++)
-    bstart_block[i] = gsl_data_handle_peek_value (dhandle, bstart + i, &pbuf);
-  block = bstart_block - bstart;
+  block = g_new (gfloat, dhandle_n_values);
+  for (i = 0; i < dhandle_n_values; i++)
+    block[i] = gsl_data_handle_peek_value (dhandle, i, &pbuf);
 
   /* upper boundary for amount of comparisons */
   pdist = apoints * (max_llength + 1 - min_llength);
@@ -195,7 +195,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
           pcount++;
           /* confine to block boundaries */
           if (lstart < bstart || lstart + llength > bstart + blength)
-            break;
+            continue;
           /* center head/tail comparison areas around loop */
           hstart = lstart - clength / 2;
           hlength = clength / 2;
@@ -248,7 +248,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
               config->score, score_pcount * 100.0 / pdist);
 
   /* cleanups */
-  g_free (bstart_block);
+  g_free (block);
   gsl_data_handle_close (dhandle);
 
   return found_loop;

@@ -1,3 +1,9 @@
+Tue Nov 15 21:57:46 2005  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.h: 
+	* sfimemory.c: changed ring links to mimick GSList links, so we will
+	be able to make use of chained g_slice_free() functions.
+
 Wed May 25 22:46:07 2005  Tim Janik  <timj@gtk.org>
 
 	* sfithreads.h: gcc-3.4 produces segfaulting code intentionally for

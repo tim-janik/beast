@@ -193,7 +193,7 @@ void
 _sfi_free_node_list (gpointer mem,
 		     gsize    node_size)
 {
-  struct { gpointer next, data; } *tmp, *node = mem;
+  struct { gpointer data, next; } *tmp, *node = mem;
   
   g_return_if_fail (node != NULL);
   g_return_if_fail (node_size >= 2 * sizeof (gpointer));

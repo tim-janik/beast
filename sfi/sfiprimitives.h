@@ -261,9 +261,9 @@ typedef gpointer (*SfiRingDataFunc)	(gpointer	 data,
 					 gpointer	 func_data);
 struct _SfiRing		// FIXME: move SfiRing into its own object file
 {
+  gpointer  data;
   SfiRing  *next;
   SfiRing  *prev;
-  gpointer  data;
 };
 SfiRing*        sfi_ring_prepend        (SfiRing        *head,
                                          gpointer        data);

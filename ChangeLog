@@ -1,3 +1,12 @@
+Tue Nov 15 21:59:52 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bseloopfuncs.c (gsl_data_find_loop5): fixed loop bounds 
+	calculations to properly account for frame lengths. fixed premature
+	loop aborts (was buggy due to load balancing in the inner loop).
+	fixed accomplished with assitence of stefan.
+
+	* tools/bseloopfuncs.h: properly document loop5.
+
 Tue Nov 15 19:58:00 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsescminterp.c: Added functions bse-proxy-is-null? and
