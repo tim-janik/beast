@@ -135,6 +135,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
 
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (config != NULL, FALSE);
+  config->n_details = 0;
 
   /* check out data handle */
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
@@ -185,7 +186,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
            */
           GslLong llength = ipp & 1 ? max_llength - ipp / 2 : min_llength + ipp / 2;
           GslLong hstart, hlength, tstart, tlength;
-          gdouble weight, score;
+          gdouble weight;
           /* determine loop center as 0-relative position */
           GslLong lstart = fcenter - 0.5;
           /* offset loop around center */
@@ -217,16 +218,22 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
             }
           /* accumulate score */
           weight = 1.0 * (tlength + hlength) / (gdouble) frame;
-          score  = weight * score_tailloop (dhandle, block + lstart - frame, frame, llength, config->score);
-          score += weight * score_headloop (dhandle, block + lstart, llength, frame, config->score - score);
-          score += score_headloop (dhandle, block + lstart, llength, tlength, config->score - score);
-          score += score_tailloop (dhandle, block + hstart, hlength, llength, config->score - score);
+          double score1 = weight * score_tailloop (dhandle, block + lstart - frame, frame, llength, config->score);
+          score1       += weight * score_headloop (dhandle, block + lstart, llength, frame, config->score - score1);
+          double score2 = score_headloop (dhandle, block + lstart, llength, tlength, config->score - score1);
+          score2       += score_tailloop (dhandle, block + hstart, hlength, llength, config->score - score1 - score2);
+	  double score  = score1 + score2;
           /* apply score */
           if (score < config->score)
             {
               config->loop_start = lstart;
               config->loop_length = llength;
               config->score = score;
+	      config->n_details = 2;
+	      config->detail_names[0] = "score1 (proximity score)";
+	      config->detail_names[1] = "score2 (loop comparision)";
+	      config->detail_scores[0] = score1;
+	      config->detail_scores[1] = score2;
               score_pcount = pcount;
               found_loop = TRUE;
             }
@@ -263,6 +270,7 @@ gsl_data_find_loop4 (GslDataHandle     *dhandle,
 
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (config != NULL, FALSE);
+  config->n_details = 0;
 
   /* check out data handle */
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
@@ -378,6 +386,7 @@ gsl_data_find_loop3 (GslDataHandle     *dhandle,
 
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (config != NULL, FALSE);
+  config->n_details = 0;
 
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
     return FALSE;
@@ -442,6 +451,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
 
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (config != NULL, FALSE);
+  config->n_details = 0;
 
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
     return FALSE;
@@ -625,6 +635,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
 
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (config != NULL, FALSE);
+  config->n_details = 0;
 
   if (gsl_data_handle_open (dhandle) != BSE_ERROR_NONE)
     return FALSE;

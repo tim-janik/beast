@@ -1,3 +1,26 @@
+Tue Nov 15 19:58:00 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsescminterp.c: Added functions bse-proxy-is-null? and
+	bse-proxy-get-null, to deal with SfiProxy values for a NULL proxy.
+	Removed obsolete functions bse-is-null and bse-null-proxy?.
+
+	* tools/bseloopfuncs.[hc]: Provide the necessary API to export a
+	number of score details which the loop code used to determine the
+	overall loop score.
+
+	* tools/bsewavetool.cc: Use loop5 instead of loop1 as loop algorithm;
+	store loop algorithm, score and score details within the resulting
+	looped sample.
+	Implemented a new "thinout" command, which reduces the number of
+	chunks in an instrument. An error criterium is used to determine
+	removing (and keeping) which chunks results in an "optimal" chunk
+	subset. Currently, this error criterium is based mainly on the loop
+	score, but it remains to be seen whether this will be appropriate for
+	our use case.
+	There are two implemented optimization algorithms to actually find the
+	"optimal" subset: a simple greedy algorithm, which is fast, and a
+	slower but better genetic algorithm.
+
 Sun Oct 30 19:14:22 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/Makefile.am: Compile bse loop functions into bsewavetool.

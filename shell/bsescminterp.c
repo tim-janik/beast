@@ -332,7 +332,7 @@ bse_scm_proxy_print (SCM              scm_p1,
 }
 
 static SCM
-bse_scm_proxy_nullp (SCM scm_proxy)
+bse_scm_proxy_is_null (SCM scm_proxy)
 {
   if (SCM_IS_GLUE_PROXY (scm_proxy))
     {
@@ -342,6 +342,11 @@ bse_scm_proxy_nullp (SCM scm_proxy)
   return SCM_BOOL_F;
 }
 
+static SCM
+bse_scm_proxy_get_null (SCM scm_proxy)
+{
+  return glue_null_proxy;
+}
 
 /* --- SCM procedures --- */
 static gboolean server_enabled = FALSE;
@@ -1046,14 +1051,13 @@ bse_scm_interp_init (void)
   scm_permanent_object (glue_null_proxy);
   scm_set_smob_equalp (tc_glue_proxy, bse_scm_proxy_equalp);
   scm_set_smob_print (tc_glue_proxy, bse_scm_proxy_print);
-  gh_new_procedure ("bse-null-proxy?", bse_scm_proxy_nullp, 1, 0, 0);
+  gh_new_procedure ("bse-proxy-is-null?", bse_scm_proxy_is_null, 1, 0, 0);
+  gh_new_procedure ("bse-proxy-get-null", bse_scm_proxy_get_null, 0, 1, 0);
 
   gh_new_procedure ("bse-glue-call", bse_scm_glue_call, 2, 0, 0);
   gh_new_procedure ("bse-glue-set-prop", bse_scm_glue_set_prop, 3, 0, 0);
   gh_new_procedure ("bse-glue-get-prop", bse_scm_glue_get_prop, 2, 0, 0);
 
-  gh_eval_str ("(define (bse-is-null proxy) (= proxy 0))");
-  
   procs = sfi_glue_list_proc_names ();
   for (i = 0; procs[i]; i++)
     if (strncmp (procs[i], "bse-", 4) == 0)

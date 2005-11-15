@@ -1306,7 +1306,8 @@ public:
 	  lconfig.min_loop = (GslLong) MAX (mix_freq / 10, /* at least 100ms */
 			                    8820 /* FIXME: hardcoded values in gsl_data_loop*() -> 200ms */);
 
-	  gboolean found_loop = gsl_data_find_loop1 (dhandle, &lconfig, NULL, gsl_progress_printerr);
+	  gboolean found_loop = gsl_data_find_loop5 (dhandle, &lconfig, NULL, gsl_progress_printerr);
+	  const char *loop_algorithm =       "loop5";
 	  if (found_loop)
 	    {
 	      /* FIXME: assumes n_channels == 1 */
@@ -1315,6 +1316,12 @@ public:
 	      xinfos = bse_xinfos_add_num (xinfos, "loop-start", lconfig.loop_start);
 	      xinfos = bse_xinfos_add_num (xinfos, "loop-end", lconfig.loop_start + lconfig.loop_length);
 	      xinfos = bse_xinfos_add_value (xinfos, "loop-type", gsl_wave_loop_type_to_string (GSL_WAVE_LOOP_JUMP));
+	      xinfos = bse_xinfos_add_float (xinfos, "loop-score", lconfig.score);
+	      if (lconfig.n_details > 0)
+		xinfos = bse_xinfos_add_float (xinfos, "loop-score-detail1", lconfig.detail_scores[0]);
+	      if (lconfig.n_details > 1)
+		xinfos = bse_xinfos_add_float (xinfos, "loop-score-detail2", lconfig.detail_scores[1]);
+	      xinfos = bse_xinfos_add_value (xinfos, "loop-algorithm", loop_algorithm);
 
 	      gsl_data_handle_ref (dhandle);
 	      BseErrorType error = chunk->change_dhandle (dhandle, gsl_data_handle_osc_freq (dhandle), xinfos);
@@ -1325,6 +1332,346 @@ public:
         }
   }
 } cmd_loop ("loop");
+
+class ThinOutCmd : public Command {
+  GslLong max_total_size;
+  gdouble max_chunk_error;
+  guint64 gal_iterations; /* genetic algorithm iterations (should we use "time" as API)? */
+public:
+  ThinOutCmd (const char *command_name) :
+    Command (command_name),
+    max_total_size (-1),
+    max_chunk_error (-1),
+    gal_iterations (5000)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-s=max_total_size|-e=max_chunk_error|-g=gal_iterations} [options]\n");
+    if (bshort)
+      return;
+    g_print ("    Thin out bsewave file by omitting some chunks.\n");
+    g_print ("    Options:\n");
+    g_print ("    -s <max-total-size>     restrict the resulting bsewave file to a max size\n");
+    g_print ("    -e <max-chunk-error>    ensure that no chunk exceeds this error margin\n");
+    g_print ("    -g <gal-iterations>     iterations for genetic algorithm optimizer [5000]\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    for (guint i = 1; i < argc; i++)
+      {
+        const gchar *str;
+        if (parse_str_option (argv, i, "-s", str, argc))
+          {
+            max_total_size = g_ascii_strtoull (str, NULL, 10);
+          }
+	else if (parse_str_option (argv, i, "-g", str, argc))
+          {
+	    gal_iterations = g_ascii_strtoull (str, NULL, 10);
+          }
+        else if (parse_str_option (argv, i, "-e", str, argc))
+          {
+            max_chunk_error = g_ascii_strtod (str, NULL);
+          }
+      }
+    return 0; /* # args missing */
+  }
+
+  struct ChunkData
+  {
+    vector<GslLong> sizes;
+    vector<gdouble> errors;
+    vector<gdouble> freqs;
+    vector<list<WaveChunk>::iterator> iterators;
+
+    int
+    n_chunks() const
+    {
+      return sizes.size();
+    }
+  };
+
+  struct ChunkSet
+  {
+    /*
+    ChunkSet (const ChunkSet& s)
+      : chunks (s.chunks),
+	error (s.error)
+    {
+    }
+
+    ChunkSet ()
+    {
+      error = -1;
+    }
+
+    const ChunkSet& operator =(const ChunkSet& s)
+    {
+      chunks = s.chunks;
+      error = s.error;
+      return *this;
+    }
+    */
+
+    vector<guint8> chunks; /* which chunks should be used */
+    double error;	   /* total_error (chunk_data, chunks) <- to be minimized */
+
+    /* syntactic sugar */
+    guint8& operator[] (size_t n)
+    {
+      return chunks[n];
+    }
+    const guint8& operator[] (size_t n) const
+    {
+      return chunks[n];
+    }
+  };
+
+  void
+  exec (Wave *wave)
+  {
+    ChunkData chunk_data;
+
+    /* level clipping */
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      {
+	WaveChunk *chunk = &*it;
+	GslDataHandle *dhandle = chunk->dhandle;
+
+	gfloat error = bse_xinfos_get_float (dhandle->setup.xinfos, "loop-score");
+	GslLong size = 1;
+	gdouble freq = gsl_data_handle_osc_freq (chunk->dhandle);
+
+	sfi_info ("THINOUT: chunk %f: error %f, size %ld", freq, error, size);
+
+	chunk_data.sizes.push_back (size);
+	chunk_data.errors.push_back (error);
+	chunk_data.freqs.push_back (freq);
+	chunk_data.iterators.push_back (it);
+      }
+
+    g_assert (chunk_data.sizes.size() > 0);
+    g_assert (chunk_data.sizes.size() == chunk_data.errors.size());
+
+    ChunkSet chunk_set;
+    init_empty_set (chunk_data, chunk_set);
+
+    if (gal_iterations)
+      gal_optimize (chunk_data, chunk_set);
+    else
+      optimize (chunk_data, chunk_set);
+
+    /* really delete chunks */
+    for (int i = 0; i < chunk_data.n_chunks(); i++)
+      {
+        if (!chunk_set[i])
+	  wave->remove (chunk_data.iterators[i]);
+      }
+  }
+
+  void
+  init_empty_set (const ChunkData& chunk_data, ChunkSet& chunk_set)
+  {
+    chunk_set.chunks.resize (chunk_data.n_chunks());
+    chunk_set.error = total_error (chunk_data, chunk_set);
+  }
+
+  void gal_create_child (const ChunkSet& father, const ChunkSet& mother, ChunkSet& child)
+  {
+    if (rand() % 2)
+      {
+	child.chunks = father.chunks;
+      }
+    else
+      {
+	for (size_t i = 0; i < child.chunks.size(); i++)
+	  {
+	    if (rand() % 2)
+	      child.chunks[i] = father.chunks[i];
+	    else
+	      child.chunks[i] = mother.chunks[i];
+	  }
+      }
+
+    int mutations = (rand() % 7) + 1;
+    for (int i = 0; i < mutations; i++)
+      {
+	int k = rand() % child.chunks.size();
+	child.chunks[k] = !child.chunks[k];
+      }
+  }
+
+  struct GalErrorSort
+  {
+    bool operator () (const ChunkSet& set1, const ChunkSet& set2) const
+    {
+      return set1.error < set2.error;
+    }
+  };
+
+  void gal_optimize (const ChunkData& chunk_data, ChunkSet& chunk_set)
+  {
+    const int POPULATION_SIZE = 64;
+    vector<ChunkSet> population;
+
+    for (int i = 0; i < POPULATION_SIZE; i++)
+      population.push_back (chunk_set);
+
+    for (guint64 giteration = 0; giteration < gal_iterations; giteration++)
+      {
+	/*
+	 * the upper half of the individuums are "loosers", and are replaced by
+	 * new candidates
+	 */
+	for (int i = POPULATION_SIZE / 2; i < POPULATION_SIZE; i++)
+	  {
+	    int father = rand() % (POPULATION_SIZE / 2);
+	    int mother = rand() % (POPULATION_SIZE / 2);
+
+	    gal_create_child (population[father], population[mother], population[i]);
+	    population[i].error = total_error (chunk_data, population[i]);
+	  }
+
+	sort (population.begin(), population.end(), GalErrorSort());
+
+	/*
+	 * if one individuum is present more than once in the population
+	 * replace it with "less fit" individuums
+	 */
+	int k = 0;
+	int p = POPULATION_SIZE/2;
+	for (int i = 1; i < POPULATION_SIZE/2; i++)
+	  {
+	    if (population[i].chunks == population[i-1].chunks)
+	      {
+		population[i] = population[p++];
+		k++;
+	      }
+	  }
+#if 0
+	printf ("k = %d, p = %d\n", k, p);
+
+	printf ("giteration %lld error %.5f (middle: %.5f, worst: %.5f)\n -> %s\n", giteration,
+		population[0].error, population[POPULATION_SIZE/2-1].error, population.back().error,
+		set_to_string (chunk_data, population[0]).c_str());
+#endif
+      }
+
+    /*
+     * better individuums are at the beginning of the population after sort
+     */
+    chunk_set = population[0];
+
+    sfi_info ("THINOUT: error %.5f %s", chunk_set.error, set_to_string (chunk_data, chunk_set).c_str());
+  }
+
+  double
+  total_error (const ChunkData& chunk_data, const ChunkSet& chunk_set)
+  {
+    double error = 0;
+
+    /*
+     * approximation error (created by replacing S original chunks with R looped and
+     * resampled chunks, where S is often a lot smaller than R)
+     */
+    for (int source_chunk = 0; source_chunk < chunk_data.n_chunks(); source_chunk++)
+      {
+	double best_fdiff = 44100;
+	double best_fdiff_error = 1000; /* should be a lot more than conventional loop scores */
+
+	/* FIXME: speed! */
+	for (int replacement_chunk = 0; replacement_chunk < chunk_data.n_chunks(); replacement_chunk++)
+	  {
+	    if (chunk_set[replacement_chunk])
+	      {
+		double fdiff = fabs (chunk_data.freqs[source_chunk] - chunk_data.freqs[replacement_chunk]);
+		if (fdiff < best_fdiff &&
+		    abs (source_chunk - replacement_chunk) <= 4) /* <- make me configurable, and/or use frequencies */
+		  {
+		    best_fdiff = fdiff;
+		    best_fdiff_error = chunk_data.errors[replacement_chunk];
+		  }
+	      }
+	  }
+	error += best_fdiff_error;
+      }
+
+    /*
+     * user constraint: maximal total size
+     */
+    if (max_total_size > 0)
+      {
+	GslLong total_size = 0;
+	for (int i = 0; i < chunk_data.n_chunks(); i++)
+	  if (chunk_set[i])
+	    total_size += chunk_data.sizes[i];
+
+	if (total_size > max_total_size)
+	  error += (total_size - max_total_size) * 1000.0;
+      }
+
+    /*
+     * user constraint: maximum chunk error
+     */
+    if (max_chunk_error > 0)
+      {
+	for (int i = 0; i < chunk_data.n_chunks(); i++)
+	  if (chunk_set[i] && chunk_data.errors[i] > max_chunk_error)
+	    error += 1000.0;
+      }
+    return error;
+  }
+
+  string
+  set_to_string (const ChunkData& chunk_data, const ChunkSet& chunk_set)
+  {
+    string result = "[ ";
+    for (int i = 0; i < chunk_data.n_chunks(); i++)
+      {
+	if (chunk_set[i])
+	  {
+	    char *x = g_strdup_printf ("%4.2f ", chunk_data.freqs[i]);
+	    result += x;
+	    g_free (x);
+	  }
+      }
+    result += "]";
+
+    return result;
+  }
+
+  void
+  optimize (const ChunkData& chunk_data, ChunkSet& chunk_set)
+  {
+    double best_error = total_error (chunk_data, chunk_set);
+    int toggle = -1;
+
+    for (int i = 0; i < chunk_data.n_chunks(); i++)
+      {
+	chunk_set[i] = !chunk_set[i];
+	double error = total_error (chunk_data, chunk_set);
+	chunk_set[i] = !chunk_set[i];
+
+	if (error < best_error)
+	  {
+	    best_error = error;
+	    toggle = i;
+	  }
+      }
+
+    if (toggle >= 0)
+      {
+	chunk_set[toggle] = !chunk_set[toggle];
+	printf ("toggle %d error %.5f -> %s\n", toggle, best_error,
+	        set_to_string (chunk_data, chunk_set).c_str());
+	optimize (chunk_data, chunk_set);
+      }
+  }
+} cmd_thinout ("thinout");
 
 /* TODO commands:
  * bsewavetool.1 # need manual page

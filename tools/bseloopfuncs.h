@@ -38,6 +38,10 @@ typedef struct {
   gdouble       score;
   GslLong       loop_start;
   GslLong       loop_length;
+  /* score details */
+  guint         n_details;
+  const char   *detail_names[64];
+  double        detail_scores[64];
 } GslDataLoopConfig;
 
 gboolean        gsl_data_find_loop5             (GslDataHandle          *dhandle,
