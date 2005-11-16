@@ -1,3 +1,9 @@
+Wed Nov 16 19:51:39 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bseloopfuncs.c (gsl_data_find_loop5): Fixed score
+	normalization to a per-sample error. Adapted the "premature abort
+	score" for the headloop/tailloop functions accordingly.
+
 Wed Nov 16 19:36:59 2005  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am: disable docu build system.

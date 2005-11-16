@@ -186,7 +186,6 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
            */
           GslLong llength = ipp & 1 ? max_llength - ipp / 2 : min_llength + ipp / 2;
           GslLong hstart, hlength, tstart, tlength;
-          gdouble weight;
           /* determine loop center as 0-relative position */
           GslLong lstart = fcenter - 0.5;
           /* offset loop around center */
@@ -217,12 +216,26 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
               hlength += diff;
             }
           /* accumulate score */
-          weight = 1.0 * (tlength + hlength) / (gdouble) frame;
-          double score1 = weight * score_tailloop (dhandle, block + lstart - frame, frame, llength, config->score);
-          score1       += weight * score_headloop (dhandle, block + lstart, llength, frame, config->score - score1);
-          double score2 = score_headloop (dhandle, block + lstart, llength, tlength, config->score - score1);
-          score2       += score_tailloop (dhandle, block + hstart, hlength, llength, config->score - score1 - score2);
-	  double score  = score1 + score2;
+	  double score = 0, score1 = 0, score2 = 0;
+          double human_size = 1e6;
+          double score1_weight = human_size / (2.0 * frame);
+          double score2_weight = human_size / (1.0 * tlength + hlength);
+
+	  /* compute proximity score */
+	  score1  = score_tailloop (dhandle, block + lstart - frame, frame, llength,
+			            (config->score - score) / score1_weight);
+	  score   = score1 * score1_weight + score2 * score2_weight;
+          score1 += score_headloop (dhandle, block + lstart, llength, frame,
+			            (config->score - score) / score1_weight);
+	  score   = score1 * score1_weight + score2 * score2_weight;
+	  /* loop comparision score */
+          score2  = score_headloop (dhandle, block + lstart, llength, tlength,
+			            (config->score - score) / score2_weight);
+	  score   = score1 * score1_weight + score2 * score2_weight;
+          score2 += score_tailloop (dhandle, block + hstart, hlength, llength,
+			            (config->score - score) / score2_weight);
+	  score   = score1 * score1_weight + score2 * score2_weight;
+
           /* apply score */
           if (score < config->score)
             {
@@ -232,8 +245,8 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
 	      config->n_details = 2;
 	      config->detail_names[0] = "score1 (proximity score)";
 	      config->detail_names[1] = "score2 (loop comparision)";
-	      config->detail_scores[0] = score1;
-	      config->detail_scores[1] = score2;
+	      config->detail_scores[0] = score1 * score1_weight;
+	      config->detail_scores[1] = score2 * score2_weight;
               score_pcount = pcount;
               found_loop = TRUE;
             }
