@@ -125,7 +125,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
                      GslProgressFunc    pfunc)
 {
   GslLong bstart, blength, min_llength, max_llength, i, dhandle_n_values, clength, pcount, score_pcount = 0;
-  GslLong frame = 4410 * 2; // 4410; // FIXME: need assertion for frame vs. block length
+  GslLong frame = 441; // FIXME: need assertion for frame vs. block length
   GslProgressState pstate = gsl_progress_state (pdata, pfunc, 1);
   GslDataPeekBuffer pbuf = { +1, };
   gdouble pdist, fcenter, bfrac;

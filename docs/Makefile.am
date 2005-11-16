@@ -1,4 +1,4 @@
-SUBDIRS = generated
+SUBDIRS = # generated
 
 texi_docs = $(strip						\
 	WRITING.3.texi			beast-index.texi	\

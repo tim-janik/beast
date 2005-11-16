@@ -1291,7 +1291,7 @@ public:
     sort (freq_list.begin(), freq_list.end());
     vector<list<WaveChunk>::iterator> deleted;
     /* level clipping */
-    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+    for (list<WaveChunk>::reverse_iterator it = wave->chunks.rbegin(); it != wave->chunks.rend(); it++)
       if (all_chunks || wave->match (*it, freq_list))
         {
           WaveChunk *chunk = &*it;

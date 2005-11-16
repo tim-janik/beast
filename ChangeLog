@@ -1,3 +1,15 @@
+Wed Nov 16 19:36:59 2005  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: disable docu build system.
+
+	* tools/bseloopfuncs.c (gsl_data_find_loop5): adjust frame size to 
+	roughly 10ms.
+
+Wed Nov 16 00:01:12 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: loop through chunks in ascending order in the
+	loop finder.
+
 Tue Nov 15 21:59:52 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bseloopfuncs.c (gsl_data_find_loop5): fixed loop bounds 
