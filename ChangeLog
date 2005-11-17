@@ -1,3 +1,9 @@
+Thu Nov 17 18:51:32 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bseloopfuncs.[hc]: Started implementing a FIR filter, which
+	can be used to make high frequencies "more important" in the overall
+	loop score.
+
 Wed Nov 16 19:51:39 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bseloopfuncs.c (gsl_data_find_loop5): Fixed score

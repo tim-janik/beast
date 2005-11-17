@@ -18,7 +18,11 @@
  */
 #include "bseloopfuncs.h"
 #include <bse/gsldatacache.h>
+#include <bse/gslfilter.h>
+#include <complex.h>
 #include <string.h>
+#include <stdio.h>
+#include <math.h>
 
 typedef struct {
   gdouble score;
@@ -31,6 +35,103 @@ typedef struct {
   gdouble    worst_score;
   LoopEntry  entries[1];        /* flexible array */
 } LoopStack;
+
+/*
+ * 0db ----------           __________
+ *                         /
+ *                        /
+ *                       /
+ * f1_level (dB) - _____/
+ *
+ *                      |   |
+ *                      f1 f2
+ *
+ * @f1: high pass start frequency [0:PI] (SR = 2*PI)
+ * @f2: high pass end frequency [0:PI] (SR = 2*PI)
+ */
+
+static void
+fir_hp (const gfloat *src,
+	const guint   n_samples,
+	gfloat       *dest,
+	gdouble       f1,
+	gdouble       f1_level,
+	gdouble       f2)
+{
+  /* FIXME: const */ guint iorder = 64;
+  double a[iorder + 1];
+
+  //const guint transfer_func_length = 64;
+  const guint transfer_func_length = 4;
+  double transfer_func_freqs[transfer_func_length];
+  double transfer_func_values[transfer_func_length];
+  float f1_level_factor = bse_db_to_factor (f1_level);
+
+  transfer_func_freqs[0]  = 0;
+  transfer_func_values[0] = f1_level_factor;
+
+  transfer_func_freqs[1]  = f1;
+  transfer_func_values[1] = f1_level_factor;
+
+  transfer_func_freqs[2]  = f2;
+  transfer_func_values[2] = 1.0; // 0 dB
+
+  transfer_func_freqs[3]  = PI;
+  transfer_func_values[3] = 1.0; // 0 dB
+
+  gsl_filter_fir_approx (iorder, a, transfer_func_length, transfer_func_freqs, transfer_func_values, TRUE);
+
+#if 0 // GNUPLOT debugging
+  gfloat freq;
+  for (freq = 0; freq < PI; freq += 0.01)
+    {
+      complex z = cexp (I * freq);
+      complex r = 0;
+
+      guint i;
+      for (i = 0; i <= iorder; i++)
+	{
+	  r /= z;
+	  r += a[i];
+	}
+      printf ("%f %f\n", freq, cabs (r));
+    }
+#endif
+
+  /* tiny FIR evaluation: not optimized for speed */
+  guint i, j;
+  for (i = 0; i < n_samples; i++)
+    {
+      gdouble accu = 0;
+      for (j = 0; j <= iorder; j++)
+	{
+	  GslLong p = i + j;
+	  p -= iorder / 2;
+
+	  if (p >= 0 && p < n_samples)
+	    accu += src[p];
+	}
+      dest[i] = accu;
+    }
+}
+
+GslDataHandle *gsl_loop_highpass_handle (GslDataHandle *src_handle,
+				         gdouble       freq1,
+				         gdouble       freq1_level_db,
+				         gdouble       freq2)
+{
+#if 0
+  gfloat *block_raw = g_new (gfloat, dhandle_n_values);
+  for (i = 0; i < dhandle_n_values; i++)
+    block_raw[i] = gsl_data_handle_peek_value (dhandle, i, &pbuf);
+
+  block = g_new (gfloat, dhandle_n_values);
+  fir_hp (block_raw, dhandle_n_values, block, 50.0 / 22050.0 * PI, -48, PI/2);
+  g_free (block_raw);
+#endif
+
+  return NULL; // TODO
+}
 
 static gdouble
 score_headloop (GslDataHandle *dhandle,
