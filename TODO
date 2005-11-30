@@ -1,3 +1,5 @@
+- resources: http://packages.qa.debian.org/b/bse-alsa.html
+- s/deleet inputs/disconnect inputs/
 - print detail score with loop range (in progress printing)
 - save detail_names as comment with scroe_details
 - adjust inner loop abortion according to normed score values
