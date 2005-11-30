@@ -317,8 +317,6 @@ GarageBand ideas and concepts:
 - MIDI notes are always played back with the current track (or track's instrument)    
     
 TASKS:
-- loop finder:
-  email: (Subject: bsewavetool, Date: Fri, 3 Sep 2004 04:51:23 +0200)
 - TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
 - TableSynth(note mapping): allow multiple synths and presets per
@@ -513,6 +511,27 @@ GSL:
   - [timj]        4   gsltests: change freq input, so that [0..1] => [0..pi]
   - [timj]        5   gsltest: swap epsilon and steepness params for t2* filters
   - [timj]        7 6 Async DCache read-ahead thread creation
+
+AutoLooper:
+- bsewavetool: fix thinout command to document the 4-halftone distance criteria and make it configurable
+- bsewavetool: implement highpass command
+- bsewavetool: implement export command (writes chunk to wav with --duration <seconds> option to feature looping)
+- bsewavetool: fix highpass command (needs normalization for target signal)
+- bsewavetool: implement lowpass command
+- commit tranfer function evaluator for fillter FIR coefficients
+- implement tranfer function evaluator for fillter IIR coefficients
+- implement FIR sine-scanner for GSL
+- implement high performance version of gsl_data_find_loop3() (by loop reordeing)
+- implement oversampling version of high performance loop finder (with stepping to avoid fractional loops)
+- google for 'liftering'
+- read: DIGITISING THE SOUND OF THE ERHU
+- read: Tempo and beat analysis of acoustic musical signals
+- implement small fft window click detector to identify bad loop boundaries
+- possible refinements:
+  - half-side FFT caching
+  - pregenerate 1000 possible loops for offline FFT selection
+- create loop finder usage script:
+  email: (From: Tim Janik, Subject: bsewavetool, Date: Fri, 3 Sep 2004 04:51:23 +0200)
 
 sfidl:
   - there's no generic way to retrieve sequence pspecs with the hostc binding,
