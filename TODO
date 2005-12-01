@@ -533,6 +533,7 @@ AutoLooper:
   - pregenerate 1000 possible loops for offline FFT selection
 - create loop finder usage script:
   email: (From: Tim Janik, Subject: bsewavetool, Date: Fri, 3 Sep 2004 04:51:23 +0200)
+- bsewavetool: make sfi_warning look nicer
 
 sfidl:
   - there's no generic way to retrieve sequence pspecs with the hostc binding,

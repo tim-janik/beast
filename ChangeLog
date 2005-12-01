@@ -1,3 +1,9 @@
+Thu Dec  1 16:43:07 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Initial implementation of bsewavetool export
+	command, which can be used to export chunks from a bsewave to wav
+	files.
+
 Thu Dec  1 13:17:34 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Added highpass command based on a FIR filter.

@@ -1,5 +1,6 @@
 /* BseWaveTool - BSE Wave creation tool
  * Copyright (C) 2001-2004 Tim Janik
+ * Copyright (C) 2005 Stefan Westerfeld
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +28,11 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <vector>
+#include <map>
 
 
 namespace BseWaveTool {
@@ -1741,6 +1746,203 @@ public:
   }
 } cmd_highpass ("highpass");
 
+class Export : public Command {
+public:
+  vector<gfloat> freq_list;
+  bool           all_chunks;
+  string         export_filename;
+
+  Export (const char *command_name) :
+    Command (command_name)
+  {
+    all_chunks = false;
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks|-x=filename} [options]\n");
+    if (bshort)
+      return;
+    g_print ("    Export chunks from bsewave file.\n");
+    g_print ("    Options:\n");
+    g_print ("    -x <filename>       set export filename (supports %%N %%F and %%C, see below)\n");
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --all-chunks        try to export all chunks\n");
+    g_print ("    The export filename can contain the following extra information:\n");
+    g_print ("      %%F  -  the frequency of the chunk\n");
+    g_print ("      %%N  -  the midi note of the chunk\n");
+    g_print ("      %%C  -  cent detuning of the midi note\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    bool seen_selection = false;
+    bool seen_export_filename = false;
+
+    for (guint i = 1; i < argc; i++)
+      {
+        const gchar *str;
+        if (parse_bool_option (argv, i, "--all-chunks"))
+          {
+            all_chunks = true;
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-f", str, argc))
+          {
+            freq_list.push_back (g_ascii_strtod (str, NULL));
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-m", str, argc))
+          {
+            SfiNum num = g_ascii_strtoull (str, NULL, 10);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+            freq_list.push_back (osc_freq);
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-x", str, argc))
+	  {
+	    export_filename = str;
+	    seen_export_filename = true;
+	  }
+      }
+    guint missing_args = 0;
+    if (!seen_selection)
+      missing_args++;
+    if (!seen_export_filename)
+      missing_args++;
+    return missing_args; /* # args missing */
+  }
+  /*
+   * for ch == 'X', substitute searches for occurrences of %X
+   * in pattern and replaces them with the string subst
+   */
+  void
+  substitute (string& pattern,
+              char    ch,
+	      const   string& subst)
+  {
+    string result;
+    bool need_subst = false;
+
+    for (size_t i = 0; i < pattern.size(); i++)
+      { 
+	if (need_subst)
+	  {
+	    if (pattern[i] == ch)
+	      result += subst;
+	    else
+	      {
+		result += '%';
+		result += pattern[i];
+	      }
+	    need_subst = false;
+	  }
+	else if (pattern[i] == '%')
+	  need_subst = true;
+	else
+	  result += pattern[i];
+      }
+    if (need_subst)
+      pattern += '%';
+    pattern = result;
+  }
+
+  void
+  exec (Wave *wave)
+  {
+    map<string,bool> used_filenames;
+
+    /* validate format */
+    bool have_export_pattern = false;
+    for (int i = 0; i < int(export_filename.size()) - 1; i++)
+      if (export_filename[i] == '%')
+	{
+	  if (export_filename[i+1] == 'N'
+	   || export_filename[i+1] == 'F' 
+	   || export_filename[i+1] == 'C')
+	    have_export_pattern = true;
+	  else
+	    {
+	      sfi_error ("export filename contains bad formatting expression %%%c", export_filename[i+1]);
+	      exit (1);
+	    }
+      }
+
+    /* validate that we have a pattern if more than one chunk gets exported */
+    if ((all_chunks && wave->chunks.size() > 1) || (freq_list.size() > 1))
+      {
+	if (!have_export_pattern)
+	  {
+	    sfi_error ("when exporting more than one chunk, the output filename needs to contain %%N %%C or %%F");
+	    exit (1);
+	  }
+      }
+    /* get the wave into storage order */
+    wave->sort();
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      if (all_chunks || wave->match (*it, freq_list))
+        {
+          WaveChunk *chunk = &*it;
+	  GslDataHandle *dhandle = chunk->dhandle;
+
+	  gchar *name_addon = NULL;
+	  string filename = export_filename;
+	  int note = bse_xinfos_get_num (dhandle->setup.xinfos, "midi-note");
+	  int cent = 0;
+
+	  if (!note)
+	    {
+	      note = bse_note_from_freq_bounded (gsl_data_handle_osc_freq (dhandle));
+	      cent = bse_note_fine_tune_from_note_freq (note, gsl_data_handle_osc_freq (dhandle));
+	    }
+
+	  name_addon = g_strdup_printf ("%d", note);
+	  substitute (filename, 'N', name_addon);
+	  g_free (name_addon);
+
+	  name_addon = g_strdup_printf ("%.2f", gsl_data_handle_osc_freq (dhandle));
+	  substitute (filename, 'F', name_addon);
+	  g_free (name_addon);
+
+	  if (cent >= 0)
+	    name_addon = g_strdup_printf ("u%03d", cent); /* up */
+	  else
+	    name_addon = g_strdup_printf ("d%03d", cent); /* down */
+	  substitute (filename, 'C', name_addon);
+	  g_free (name_addon);
+
+          sfi_info ("EXPORTING: chunk %f to %s", gsl_data_handle_osc_freq (dhandle), filename.c_str());
+
+	  if (used_filenames[filename])
+	    {
+	      sfi_warning ("another chunk was already exported to %s. skipping this chunk export.", filename.c_str());
+	      continue;
+	    }
+	  else
+	    {
+	      used_filenames[filename] = true;
+	    }
+
+	  int fd = open (filename.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	  if (fd < 0)
+	    {
+	      BseErrorType error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
+	    }
+
+	  int xerrno = gsl_data_handle_dump_wav (dhandle, fd, 16, dhandle->setup.n_channels, (guint) dhandle->setup.mix_freq);
+	  if (xerrno)
+	    {
+	      BseErrorType error = bse_error_from_errno (xerrno, BSE_ERROR_FILE_WRITE_FAILED);
+	      sfi_error ("export to file %s failed: %s", filename.c_str(), bse_error_blurb (error));
+	    }
+	  close (fd);
+        }
+  }
+} cmd_export ("export");
 
 /* TODO commands:
  * bsewavetool.1 # need manual page
