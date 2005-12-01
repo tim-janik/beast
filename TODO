@@ -514,9 +514,10 @@ GSL:
 
 AutoLooper:
 - bsewavetool: fix thinout command to document the 4-halftone distance criteria and make it configurable
-- bsewavetool: implement highpass command
 - bsewavetool: implement export command (writes chunk to wav with --duration <seconds> option to feature looping)
 - bsewavetool: fix highpass command (needs normalization for target signal)
+- bsewavetool: highpass command: add iorder parameters 
+- bsewavetool: highpass command: specify "real" frequencies instead of PI-relative
 - bsewavetool: implement lowpass command
 - commit tranfer function evaluator for fillter FIR coefficients
 - implement tranfer function evaluator for fillter IIR coefficients
