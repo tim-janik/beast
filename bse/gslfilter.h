@@ -149,7 +149,8 @@ void	gsl_filter_fir_approx	(unsigned int  iorder,
 				 double       *a,	/* [0..iorder] */
 				 unsigned int  n_points,
 				 const double *freq,
-				 const double *value);
+				 const double *value,
+				 gboolean      interpolate_db);
 
 
 /* --- IIR Filter Evaluation --- */

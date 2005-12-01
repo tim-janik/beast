@@ -1,3 +1,11 @@
+Thu Nov 17 18:10:56 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslfilter.[hc]: Added new argument to gsl_filter_fir_approx, to
+	enable interpolation not "value linear" between the values in the
+	transfer functions, but "dB linear".
+
+	* tests/mathtests.c: Changed due to gsl_filter_fir_approx API change.
+
 Sat Jul 23 17:04:06 2005  Tim Janik  <timj@gtk.org>
 
 	* bseutils.c: 

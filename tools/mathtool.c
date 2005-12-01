@@ -593,7 +593,7 @@ main (int   argc,
 	}
       while (f[0] && v[0]);
       
-      gsl_filter_fir_approx (iorder, a, n_points, freq, value);
+      gsl_filter_fir_approx (iorder, a, n_points, freq, value, FALSE);
       g_print ("FIR%u(z)=%s\n", iorder, bse_poly_str (iorder, a, "z"));
     }
   else

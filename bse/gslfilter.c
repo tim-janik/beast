@@ -860,6 +860,7 @@ gsl_blackman_window (double x)
  * @iorder: order of the filter (must be oven, >= 2)
  * @freq:   the frequencies of the transfer function
  * @value:  the desired value of the transfer function
+ * @interpolate_db:  whether to interpolate the transfer function "value linear" or "dB linear"
  *
  * Approximates a given transfer function with an iorder-coefficient FIR filter.
  * It is recommended to provide enough frequency values, so that
@@ -870,7 +871,8 @@ gsl_filter_fir_approx (unsigned int  iorder,
 		       double       *a,	/* [0..iorder] */
 		       unsigned int  n_points,
 		       const double *freq,
-		       const double *value)
+		       const double *value,
+		       gboolean      interpolate_db)
 {
   /* TODO:
    *
@@ -909,7 +911,10 @@ gsl_filter_fir_approx (unsigned int  iorder,
 	}
       
       pos = (f - lfreq) / (rfreq - lfreq);
-      val = lval * (1.0 - pos) + rval * pos;
+      if (interpolate_db)
+	val = bse_db_to_factor (bse_db_from_factor (lval, -96) * (1.0 - pos) + bse_db_from_factor (rval, -96) * pos);
+      else
+	val = lval * (1.0 - pos) + rval * pos;
       
       if (i != fft_size / 2)
 	{
