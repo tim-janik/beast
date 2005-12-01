@@ -58,7 +58,7 @@ fir_hp (const gfloat *src,
 	gdouble       f1_level,
 	gdouble       f2)
 {
-  /* FIXME: const */ guint iorder = 64;
+  const guint iorder = 64;
   double a[iorder + 1];
 
   //const guint transfer_func_length = 64;
@@ -81,7 +81,7 @@ fir_hp (const gfloat *src,
 
   gsl_filter_fir_approx (iorder, a, transfer_func_length, transfer_func_freqs, transfer_func_values, TRUE);
 
-#if 0 // GNUPLOT debugging
+#if 0 // debugging
   gfloat freq;
   for (freq = 0; freq < PI; freq += 0.01)
     {
@@ -96,6 +96,16 @@ fir_hp (const gfloat *src,
 	}
       printf ("%f %f\n", freq, cabs (r));
     }
+
+  /* normalize */
+  gdouble norm = 0;
+  guint k;
+  for (k = 0; k <= iorder; k++)
+    norm += fabs (a[k]);
+
+  printf ("# norm = %f\n", norm);
+  for (k = 0; k <= iorder; k++)
+    a[k] /= norm;
 #endif
 
   /* tiny FIR evaluation: not optimized for speed */
@@ -120,17 +130,41 @@ GslDataHandle *gsl_loop_highpass_handle (GslDataHandle *src_handle,
 				         gdouble       freq1_level_db,
 				         gdouble       freq2)
 {
-#if 0
-  gfloat *block_raw = g_new (gfloat, dhandle_n_values);
-  for (i = 0; i < dhandle_n_values; i++)
-    block_raw[i] = gsl_data_handle_peek_value (dhandle, i, &pbuf);
+  g_return_val_if_fail (src_handle != NULL, NULL);
 
-  block = g_new (gfloat, dhandle_n_values);
-  fir_hp (block_raw, dhandle_n_values, block, 50.0 / 22050.0 * PI, -48, PI/2);
-  g_free (block_raw);
-#endif
+  /* check out data handle */
+  if (gsl_data_handle_open (src_handle) != BSE_ERROR_NONE)
+    return NULL;
 
-  return NULL; // TODO
+  GslLong src_handle_n_values   = gsl_data_handle_n_values (src_handle);
+  GslLong src_handle_n_channels = gsl_data_handle_n_channels (src_handle);
+  GslLong src_handle_mix_freq   = gsl_data_handle_mix_freq (src_handle);
+  GslLong src_handle_osc_freq   = gsl_data_handle_osc_freq (src_handle);
+  gchar **src_handle_xinfos     = src_handle->setup.xinfos;
+
+  /* read input */
+  gfloat *src_values  = g_new (gfloat, src_handle_n_values);
+  GslLong i;
+  GslDataPeekBuffer pbuf = { +1, };
+  for (i = 0; i < src_handle_n_values; i++)
+    src_values[i] = gsl_data_handle_peek_value (src_handle, i, &pbuf);
+
+  /* apply fir filter to new memory buffer */
+  gfloat *dest_values = g_new (gfloat, src_handle_n_values);
+  fir_hp (src_values, src_handle_n_values, dest_values, freq1, freq1_level_db, freq2);
+  g_free (src_values);
+
+  /* create a mem handle with filtered data */
+  GslDataHandle *dest_handle = gsl_data_handle_new_mem (src_handle_n_channels,
+							32, // bit_depth: possibly increased by filtering
+						        src_handle_mix_freq,
+							src_handle_osc_freq,
+							src_handle_n_values,
+							dest_values,
+							g_free);
+
+  gsl_data_handle_close (src_handle);
+  return gsl_data_handle_new_add_xinfos (dest_handle, src_handle_xinfos);
 }
 
 static gdouble

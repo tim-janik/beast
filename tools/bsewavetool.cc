@@ -1673,6 +1673,75 @@ public:
   }
 } cmd_thinout ("thinout");
 
+class Highpass : public Command {
+public:
+  gdouble freq1, freq1_level, freq2; 
+  Highpass (const char *command_name) :
+    Command (command_name)
+  {
+    freq1 = 50.0 / 22050.0 * PI;
+    freq1_level = -48;
+    freq2 = PI / 2.0;
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("[options]\n");
+    if (bshort)
+      return;
+    g_print ("    Apply highpass filter to wave data\n");
+    g_print ("    --freq1 <f>          stopband end freqency [%f]\n", freq1);
+    g_print ("    --freq1-level <db>   stopband attenuation in dB [%f]\n", freq1_level);
+    g_print ("    --freq2 <f>          passband start freqency [%f]\n", freq2);
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    for (guint i = 1; i < argc; i++)
+      {
+	const gchar *str;
+	if (parse_str_option (argv, i, "--freq1-level", str, argc))
+	  {
+	    freq1_level = g_ascii_strtod (str, NULL);
+	  }
+	else if (parse_str_option (argv, i, "--freq1", str, argc))
+	  {
+	    freq1 = g_ascii_strtod (str, NULL);
+	  }
+	else if (parse_str_option (argv, i, "--freq2", str, argc))
+	  {
+	    freq2 = g_ascii_strtod (str, NULL);
+	  }
+      }
+    return 0; // no missing args
+  }
+  void
+  exec (Wave *wave)
+  {
+    /* get the wave into storage order */
+    wave->sort();
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      {
+        WaveChunk *chunk = &*it;
+        GslDataHandle *dhandle = chunk->dhandle;
+	sfi_info ("HIGHPASS: chunk %f: freq1=%f freq1_level=%f freq2=%f", gsl_data_handle_osc_freq (chunk->dhandle),
+									  freq1, freq1_level, freq2);
+
+        BseErrorType error = chunk->change_dhandle (gsl_loop_highpass_handle (dhandle, freq1, freq1_level, freq2), 0, 0);
+        if (error)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: %s",
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                       bse_error_blurb (error));
+            exit (1);
+          }
+      }
+  }
+} cmd_highpass ("highpass");
+
+
 /* TODO commands:
  * bsewavetool.1 # need manual page
  * bsewavetool merge <file.bsewave> <second.bsewave>

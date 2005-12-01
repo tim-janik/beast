@@ -1,3 +1,10 @@
+Thu Dec  1 13:17:34 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Added highpass command based on a FIR filter.
+	Currently, normalization seems to be still broken.
+
+	* tools/bseloopfuncs.c: Implemented gsl_loop_highpass_handle.
+
 Thu Nov 17 18:51:32 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bseloopfuncs.[hc]: Started implementing a FIR filter, which
