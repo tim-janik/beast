@@ -644,6 +644,7 @@ tests/Makefile
 tests/audio/Makefile
 tests/latency/Makefile
 tests/scripts/Makefile
+tests/bse/Makefile
 test/Makefile
 ])
 

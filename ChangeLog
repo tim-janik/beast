@@ -1,3 +1,15 @@
+Sun Dec  4 18:07:03 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in:
+	* tests/Makefile.am tests/bse/Makefile.am: Added new directory for bse
+	related tests.
+
+	* tests/bse/loophandle.c: Copied implementation of the "old" bse loop
+	handle to this file (called LoopHandleReference here), and compare its
+	output with the output of bse loop handle itself. This is useful
+	because the next thing I'll add is a new loop handle implementation
+	for bse.
+
 Thu Dec  1 16:43:07 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Initial implementation of bsewavetool export
