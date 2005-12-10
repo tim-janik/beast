@@ -1,3 +1,21 @@
+Sat Dec 10 18:34:41 2005  Tim Janik  <timj@gtk.org>
+
+	* docs/web/about.texi:
+	* docs/web/contact.texi:
+	* docs/web/development.texi:
+	* docs/web/documentation.texi:
+	* docs/web/download.texi:
+	* docs/web/historic.texi:
+	* docs/web/news.texi:
+	* docs/web/oldnews.texi:
+	* docs/web/related-links.texi:
+	* docs/web/resources.texi:
+	* docs/web/search.texi:
+	* docs/web/sound-browser.texi:
+	* docs/web/sound-upload.texi:
+	* docs/web/synthesis-links.texi:
+	* docs/web/wiki.texi: CVS copied these files from docs/site-*.
+
 Sun Dec  4 18:07:03 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in:
