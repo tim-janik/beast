@@ -245,6 +245,10 @@ TODO:
 - Time Counter: Measure,QuarterNote,SixteenthNote,3840ticks
 - PianoRoll: when moving selecitons reaches the left border (tick 0), stop movement instead of clinching notes
 
+WHISHLIST:
+- beast should export .ly (lillypond) files
+- beast should export .mid (MIDI) files
+
 DOCS:
 - fix urls in ChangeLogs ending up after .texi conversion as @uref{@uref{URLS}}
 - Provide an "Architecture Overview" that describes how SFI, SFIDL, GSL, BSE,
