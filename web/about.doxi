@@ -1,24 +1,19 @@
-\input texinfo
-@c %**start of header
-@settitle About BEAST/BSE
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@include "webmenu.doxi"
+@doxer_set{title}	About BEAST/BSE
 
-@include texiutils.texi
-
-@hasbanner{large}
-@navigation{navigation.xml}
-
-@unnumbered What are @beast{} and @bse{}?
+@section0 What are @beast{} and @bse{}?
 
 Beast is a powerful music composition and modular synthesis application
 released as free software under the
-@uref{http://www.gnu.org/copyleft/gpl.html,, GNU GPL}
+@uri{http://www.gnu.org/copyleft/gpl.html, GNU GPL}
 and
-@uref{http://www.gnu.org/copyleft/lesser.html,, GNU LGPL}, that runs under unix.
+@uri{http://www.gnu.org/copyleft/lesser.html, GNU LGPL}, that runs under unix.
 It supports a wide range of standards in the field, such as MIDI,
-@uref{beast-doc://links-related,,  WAV/AIFF/MP3/OggVorbis/etc}
+@uri{beast-doc://related-links, WAV/AIFF/MP3/OggVorbis/etc}
 audio files and
-@uref{http://www.ladspa.org/,, LADSPA}
+@uri{http://www.ladspa.org/, LADSPA}
 modules.
 It has excellent technical abilities like multitrack editing, unlimited
 undo/redo support, real-time synthesis support, 32bit audio rendering,
@@ -28,10 +23,10 @@ stereo mixing, FFT scopes, MIDI automation and full scriptability in scheme.
 The plugins, synthesis core and the user interface are actively being developed
 and translated into a variety of languages, regularly assimilating user feedback
 such as from our
-@uref{http://beast.gtk.org/wiki:FeatureRequests,,FeatureRequests} page.
+@uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} page.
 
 Here is an extensive
-@uref{beast-doc://screenshots/index,, screenshots}
+@uri{beast-doc://screenshots/index, screenshots}
 page, showing beast in action.
 
 @beast is an abbreviation for @emph{Bedevilled Audio System}. @bse an abbreviation for
@@ -41,10 +36,8 @@ the names has no religious background, but merely refers to the complexity invol
 implementing such a ``BEAST'' (pun intended ;).
 
 For discussions/feedback relating to @beast or this page, refer to our
-@uref{http://beast.gtk.org/wiki:Discussion,,Discussion} page.
+@uri{http://beast.gtk.org/wiki:Discussion, Discussion} page.
 
 For a collection of articles relating to @beast and past news about the project,
 refer to our
-@uref{beast-doc://historic,,historic section}.
-
-@bye
+@uri{historic.html, historic section}.

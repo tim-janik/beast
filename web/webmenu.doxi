@@ -1,0 +1,101 @@
+@doxer_dnl	# emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+
+@doxer_add{html-stylesheets}	BEAST Style 	<style/beast-style.css>
+@doxer_add{html-stylesheets}	Plain	 	<style/plain.css>
+
+@section0{group=header,span=nomargin}
+@rawhtml{
+<table id="header-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none"
+       style="background-image: url(style/beast-bg.png); height: 130px;
+	      background-position: top right; background-repeat: repeat-x; margin-top: 3px;">
+  <tr>
+    <td width="50%" align="left" ><img src="style/beast-left.png" alt="&lt;&lt;&lt; BEAST &lt;&lt;&lt;"/></td>
+    <td width="50%" align="right"><img src="style/beast-right.png" alt="&gt;&gt;&gt; Bedevilled Audio System &gt;&gt;&gt;"/></td>
+  </tr>
+</table>
+}
+
+@section0{group=footer}
+@*
+@center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@beast.gtk.org, Tim Janik}.
+Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jigsaw.w3.org/css-validator/check/referer,CSS}.
+}
+
+@section0{group=left,body-span=webmenu}
+
+@defalias{menu_branch}	@doxer_visible{@doxer_cmatch{\b@doxer_args{1}\b,@doxer_get{menu-open}}}
+
+@doxer_command	menuuri		@dnl conditionalized uris {FILE_URI, TITLE}
+@doxer_visible{@doxer_cmatch{.*@doxer_get{destination-basename},@doxer_args{1}}}
+@doxer_span{thispage,@uri{@doxer_args{1},@doxer_args{2:}}}
+@done
+@doxer_hidden{@doxer_cmatch{.*@doxer_get{destination-basename},@doxer_args{1}}}
+@uri{@doxer_args{1},@doxer_args{2:}}
+@done
+@done
+
+@*
+@deflist
+@item 		@menuuri{news.html, 				News}
+@item		@menuuri{about.html,				About}
+@item		@menuuri{screenshots/index.html,		Screenshots}
+@item		@menuuri{browse-bse-files.html,			Sound Archive}
+    @menu_branch{sound-archive}
+	@deflist
+	@item	@menuuri{upload-bse-files.html,			Contribute}
+	@done
+    @done
+@item		@menuuri{documentation.html,			Documentation}
+    @menu_branch{documentation}
+	@deflist
+	@item 	@menuuri{faq.html,				FAQ}
+	@item 							Introduction
+	@item 	@menuuri{overview-de.html,			Overview (German)}
+	@item 	@menuuri{quickstart.html,			Quick Start}
+	@item 							Manual Pages
+	@item 	@menuuri{beast.1.html,				beast(1)}
+	@item 	@menuuri{bsesh.1.html,				bsesh(1)}
+	@item 							API Reference
+	@item 	@menuuri{objdoc.html,				BSE Objects}
+	@item 	@menuuri{bse-structs.3.html,			BSE Structs}
+	@item 	@menuuri{bse-procs.3.html,	  		BSE Procedures}
+	@item 	@menuuri{sfi.3.html,	  			SFI Functions}
+	@done
+    @done
+@item 		@menuuri{resources.html, 			Resources}
+    @menu_branch{resources}
+	@deflist
+	@item 	@menuuri{synthesis-links.html,			Synthesis Links}
+	@item 	@menuuri{related-links.html,			Related Links}
+	@done
+    @done
+@item 		@menuuri{development.html, 			Development}
+    @menu_branch{development}
+	@deflist
+	@item 	@menuuri{release-news.html,			Release NEWS}
+	@item 							ChangeLogs
+	@item 	@menuuri{log-beast.html,			BEAST Changes}
+	@item 	@menuuri{log-plugins.html,			Plugin Changes}
+	@item 	@menuuri{log-bse.html,				BSE Changes}
+	@item 	@menuuri{log-sfi.html,				SFI Changes}
+	@item 							BEAST/BSE Development
+	@item 	@menuuri{architecture.html,			Architecture}
+	@item 	@menuuri{plugin-devel.html,			Writing Plugins}
+	@item 	@menuuri{sfidl-manual.html,			IDL Compiler}
+	@item 	@menuuri{beast-gxk.3.html,			GXK Functions}
+	@item 	@menuuri{bse.3.html,				BSE Functions}
+	@item 	@menuuri{engine-mplan.html,			Synth Engine}
+	@done
+    @done
+@item 		@menuuri{historic.html,				Historic}
+    @menu_branch{historic-menu}
+	@deflist
+	@item 	@menuuri{oldnews.html,				Old News}
+	@item 	@menuuri{logo-submissions/index.html, 		Logo Contest}
+	@done
+  @done
+@item 		@menuuri{download.html,				Download}
+@item 		@menuuri{contact.html,				Contact}
+@item 		@menuuri{search.php,				Search}
+@item 		@menuuri{http://beast.gtk.org/wiki:BeastBse, 	Wiki}
+@done

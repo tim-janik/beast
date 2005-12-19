@@ -1,0 +1,82 @@
+@doxer_hidden	# emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+#
+# Copyright (C) 2005 Tim Janik <timj@@gtk.org>
+#
+# This software is provided ``as is''; redistribution and modification
+# is permitted, provided that the following disclaimer is retained.
+# 
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# In no event shall the authors or contributors be liable for any
+# direct, indirect, incidental, special, exemplary, or consequential
+# damages (including, but not limited to, procurement of substitute
+# goods or services; loss of use, data, or profits; or business
+# interruption) however caused and on any theory of liability, whether
+# in contract, strict liability, or tort (including negligence or
+# otherwise) arising in any way out of the use of this software, even
+# if advised of the possibility of such damage.
+@include <doxer-standard.doxi>
+
+#
+#	BEAST/BSE macros
+#
+
+#	Component names
+@defalias{beastbse}	@emph{BEAST/BSE}
+@defalias{beast} 	@emph{BEAST}
+@defalias{gxk}	 	@emph{GXK}
+@defalias{gtk}	 	@emph{GTK+}
+@defalias{bse}	 	@emph{BSE}
+@defalias{sfi}	 	@emph{SFI}
+@defalias{bsesh} 	@emph{BSESH}
+@defalias{arts} 	@emph{aRts}
+
+##	semantic tags
+@doxer_command     	firstterm
+@doxer_italic{@doxer_args{*}}
+@done
+@doxer_command     	path			@dnl file name paths
+@doxer_bold{@doxer_monospace{@doxer_args{*}}}
+@done
+@doxer_command     	key			@dnl source code identifier
+@doxer_bold{@doxer_span{key,@doxer_args{*}}}
+@done
+@doxer_command     	ident			@dnl source code identifier
+@doxer_monospace{@doxer_args{*}}
+@done
+@doxer_command     	type			@dnl source code type name
+@doxer_bold{@doxer_monospace{@doxer_args{*}}}
+@done
+@doxer_command     	object			@dnl source code object name
+@doxer_bold{@doxer_monospace{@doxer_args{*}}}
+@done
+@doxer_command     	label			@dnl GUI labels
+@doxer_italic{"@doxer_args{*}"}
+@done
+@doxer_command     	channel			@dnl GUI channel label
+@doxer_italic{"@doxer_args{*}"}
+@done
+@doxer_command     	prop			@dnl GUI property label
+@doxer_italic{"@doxer_args{*}"}
+@done
+@doxer_command     	module			@dnl GUI object name
+@doxer_bold{@doxer_monospace{@doxer_args{*}}}
+@done
+@doxer_command     	tab			@dnl notebook tabulators
+@doxer_bold{@doxer_span{tabulator,@doxer_args{*}}}
+@done
+@doxer_command     	menu			@dnl GUI menu paths, '/'-seperated
+@doxer_bold{@doxer_sub{"\\/","/",@doxer_sub{"(?<!\\)/", " -> ",@doxer_args{*}}}}
+@done
+@doxer_command     	important
+@doxer_fontsize{+1,@doxer_bold{@doxer_args{*}}}
+@done
+
+## special style tags
+@doxer_command newsentry	@dnl { NEWS-DATE , NEWS-DEPARTEMENT }
+@doxer_bold{@doxer_args{1}}@*
+@doxer_bold{@doxer_args{2:}}@*@*
+@done
+
+@done	# finishes doxer_hidden section

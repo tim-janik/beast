@@ -1,3 +1,20 @@
+Mon Dec 19 02:00:44 2005  Tim Janik  <timj@gtk.org>
+
+	* docs/web/synthesis-links.doxi:
+	* docs/web/related-links.doxi:
+	* docs/web/resources.doxi:
+	* docs/web/historic.doxi:
+	* docs/web/oldnews.doxi:
+	* docs/web/about.doxi: converted to doxer markup.
+
+	* docs/web/documentation.doxi: link fixes.
+
+	* docs/web/beastdefs.doxi: new file, containing semantic
+	markup definitions.
+
+	* docs/web/webmenu.doxi: new file, containing website
+	navigation markup.
+	
 Mon Dec 19 01:56:45 2005  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh:

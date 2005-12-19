@@ -1,21 +1,16 @@
-\input texinfo
-@settitle Resources
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@doxer_set{menu-open} resources
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST/BSE Resources
 
-@include texiutils.texi
-@hasbanner{large}
-@navigation{navigation.xml}
+@section0 Links
 
-
-@unnumbered Links
-
-We're maintaining a
-@uref{beast-doc://links-synthesis,, collection of selected links}
+We are maintaining a
+@uri{synthesis-links.html, collection of selected links}
 to articles and other writings about audio synthesis for people
 interested in reading up on the topics.
 
 And there is of course a
-@uref{beast-doc://links-related,, collection} of links to related
+@uri{related-links.html, collection} of links to related
 or subsidiary projects.
-
-
-@bye
