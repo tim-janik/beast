@@ -18,7 +18,7 @@ INTLTOOLIZE=intltoolize
 INTLTOOLIZE_VERSION=0.28
 LIBTOOLIZE=libtoolize
 LIBTOOLIZE_VERSION=1.5.0
-CONFIGURE_OPTIONS=--enable-devel-rules=yes
+CONFIGURE_OPTIONS=
 
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.

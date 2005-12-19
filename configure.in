@@ -86,8 +86,6 @@ AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,       [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
 AC_ARG_ENABLE(toyprof,     [  --enable-toyprof=[no/yes]       turn on toy profiler, see sfi/toyprof.README],,)
-AC_ARG_ENABLE(devel-rules, [  --enable-devel-rules=[no/yes]   turn on developer build rules],,)
-# $enable_devel_rules
 
 dnl setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
@@ -487,13 +485,13 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 AC_DEFUN(AC_DOC_REQUIREMENTS,
 [
     TEXITHEQUE=""
-    if test "x$enable_devel_rules" = "xyes" ; then
+    if test x"$enable_maintainer_mode" = xyes ; then
 	AC_CHECK_PROGS(TEXITHEQUE, texitheque)
-	PKG_CHECK_MODULES(TEXITHEQUE, texitheque >= 0.3)
+	# _CHECK_MODULES(TEXITHEQUE, texitheque >= 0.3)
     fi
     AM_CONDITIONAL(IF_BUILDDOCS, test -n "$TEXITHEQUE" -a -z "$DVLBUILD")
     if test x"$enable_devel_rules" = xyes -a -z "$IF_BUILDDOCS_FALSE" ; then
-       AC_MSG_ERROR([texitheque is required to build documentation])
+       AC_MSG_WARN([texitheque is required to build documentation])
     fi
 ])
 
@@ -543,9 +541,9 @@ AC_SUBST(STRIP_END)
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
-# check for development build rules (autogen.sh based builds from CVS)
-AC_MSG_CHECKING(whether develoment build rules are to be used)
-if test x"$enable_devel_rules" = xyes ; then
+# check for maintainer/development build rules
+AC_MSG_CHECKING(whether maintainer and develoment build rules are to be used)
+if test x"$enable_maintainer_mode" = xyes ; then
     AC_MSG_RESULT(yes)
     TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
     TEST_BUILDDIR=$(cd . ; /bin/pwd)
@@ -554,22 +552,22 @@ if test x"$enable_devel_rules" = xyes ; then
 	AC_MSG_RESULT(yes)
     else
 	AC_MSG_RESULT(no)
-	AC_MSG_ERROR([source dir must be the same as build dir for development build rules])
+	AC_MSG_ERROR([source dir must be the same as build dir for maintainer mode])
     fi
     AC_CHECK_PROGS(PERL, perl5 perl)
-    if test -z "$PERL" || $PERL -e 'exit !($] < 5.002)' > /dev/null ; then
-	AC_MSG_ERROR([failed to detect correct perl version (>= 5.002)])
+    if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
+	AC_MSG_ERROR([failed to detect perl (version >= 5.002) required for maintainer mode])
+    fi
+    AC_CHECK_PROGS(PYTHON, python2.4 python)
+    if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
+	AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for maintainer mode])
     fi
     AC_CHECK_PROGS(XMLLINT, xmllint)
     if test -z "$XMLLINT" ; then
-	AC_MSG_ERROR([failed to find xmllint, which is required for development builds of beast])
+	AC_MSG_ERROR([failed to detect xmllint required for maintainer mode])
     fi
-    DVLBUILD=""
-    NOTDVLBUILD=#
 else
     AC_MSG_RESULT(no)
-    DVLBUILD=#
-    NOTDVLBUILD=""
 fi
 AC_SUBST(DVLBUILD)
 AC_SUBST(NOTDVLBUILD)
@@ -593,7 +591,7 @@ AC_DOC_REQUIREMENTS
 # Decide on global --no-undefined linking
 # we only force all libraries and symbols to be present for development builds,
 # except for when building with toyprof which uses the GLIBC symbol _r_debug.
-if test "x$enable_devel_rules" = "xyes" -a x"$enable_toyprof" != xyes ; then
+if test x"$enable_maintainer_mode" = xyes -a x"$enable_toyprof" != xyes ; then
 	MC_EVAR_ADD(LDFLAGS, --no-undefined, -Xlinker --no-undefined)
 fi
 

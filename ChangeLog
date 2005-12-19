@@ -1,3 +1,11 @@
+Mon Dec 19 01:56:45 2005  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh:
+	* configure.in: get rid of --enable-devel-rules, only build 
+	documentation if --enable-maintainer-mode was specified.
+	make missing texitheque a warning, not an error.
+	added python2.4 dependency.
+
 Sat Dec 10 18:42:50 2005  Tim Janik  <timj@gtk.org>
 
 	* docs/web/*.texi: renamed to docs/web/*.doxi.
