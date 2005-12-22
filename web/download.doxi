@@ -1,110 +1,115 @@
-\input texinfo
-@c %**start of header
-@settitle Downloading BEAST/BSE
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@doxer_set{menu-open} download
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST/BSE Software Download
 
-@include texiutils.texi
-
-@hasbanner{large}
-@navigation{navigation.xml}
-
-@unnumbered Where Can I Get @beastbse{}?
+@section0 Where Can I Get @beastbse?		@anchor{tarballs}
 
 Publically consumable releases can be found via ftp:
-@uref{ftp://beast.gtk.org/pub/beast/}.
-@* Or alternatively via http:
-@uref{http://beast.gtk.org/beast-ftp/}.
+@uri{ftp://beast.gtk.org/pub/beast/}.
 
-The packages provided in the download directory have the following puposes:
+Or alternatively via http:
+@uri{http://beast.gtk.org/beast-ftp/}.
+
+The packages provided in the download directory have the following purposes:
+
 @itemize
 @item beast-VERSION.tar.gz - the main @beast tarball, this needs to be installed first.
 @item bse-alsa-VERSION.tar.gz - an add-on package for @beast which allowes it to use
-      the @uref{http://www.alsa-project.org,, ALSA} sound driver if installed.
+      the @uri{http://www.alsa-project.org, ALSA} sound driver if installed.
 @item bse-portaudio-VERSION.tar.gz - an experimental add-on package to make use of
-      recent CVS versions of the @uref{http://www.portaudio.com/,, PortAudio} sound driver.
-@end itemize
+      recent CVS versions of the @uri{http://www.portaudio.com/, PortAudio} sound driver.
+@done
 
-@anchor{requirements}
-@unnumbered Requirements
+@section0 Requirements
 
-To get a basic start, you'll also need Gtk+-2.4, a recent version
-of the Gtk+-2.4 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
+To get a basic start, you'll also need Gtk+ >= 2.6, a recent version
+of the Gtk+-2.6 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST. Most distributions
 already ship these packages, their sources can be found at:
 
 @itemize
-@item @uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas} (use >= 2.4)
-@item @uref{ftp://ftp.gtk.org/pub/gtk/v2.4/,, Gtk+-2.4}
-@item @uref{http://www.gnu.org/software/guile/guile.html,, Guile-1.6}
-@item @uref{http://www.xiph.org/ogg/vorbis/download/,, Ogg/Vorbis} (at least version 1.0)
-@item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD} (@bse requires libmad-0.15.1b)
-@end itemize
+@item @uri{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/, GnomeCanvas} (use >= 2.4)
+@item @uri{ftp://ftp.gtk.org/pub/gtk/v2.6/, Gtk+-2.6}
+@item @uri{http://www.gnu.org/software/guile/guile.html, Guile-1.6}
+@item @uri{http://www.xiph.org/ogg/vorbis/download/, Ogg/Vorbis} (at least version 1.0)
+@item @uri{http://www.mars.org/home/rob/proj/mpeg/, MAD} (@bse requires >= libmad-0.15.1b)
+@done
+
 
 BEAST also supports the
-@uref{http://www.ladspa.org/,, LADSPA} plugin API, so various kinds of
+@uri{http://www.ladspa.org/, LADSPA} plugin API, so various kinds of
 third party plugins can be loaded and executed.
 A collection of links to LADSPA plugins is kept at
-@uref{http://www.ladspa.org/}.
+@uri{http://www.ladspa.org/}.
 BEAST will look for LADSPA plugins under @file{lib/ladspa/} of it's own
 installation prefix, and in the directories listed in @code{$LADSPA_PATH}.
 
-@unnumbered Packages
+@section0 Packages
 
 Stock
-@uref{http://www.debian.org,,Debian}
-@uref{http://packages.debian.org/unstable/,,unstable} and
-@uref{http://packages.debian.org/testing/,,testing} already ship
-recent @uref{http://packages.qa.debian.org/b/beast.html,,beast package}s,
-so to install beast, a simple: @example
+@uri{http://www.debian.org,Debian}
+@uri{http://packages.debian.org/stable/,stable},
+@uri{http://packages.debian.org/testing/,testing} and
+@uri{http://packages.debian.org/unstable/,unstable} already ship
+recent
+@uri{http://packages.qa.debian.org/b/beast.html, beast} and
+@uri{http://packages.qa.debian.org/b/bse-alsa.html, bse-alsa} packages,
+so to install beast, a simple:
+
+@example
 $ apt-get update
-$ apt-get install beast
-@end example
+$ apt-get install beast bse-alsa
+@done
+
 should do.
 
 For SuSE,
-@uref{mailto://gwaluga@@computerbraxas.de,,Gregor Waluga}
+@uri{mailto://gwaluga@@computerbraxas.de,Gregor Waluga}
 has written a small
-@uref{http://linux.waluga.de/beast/beast-install-howto.htm,,HOWTO in english and german}
-about installing @beast{} and created the related RPMs.
+@uri{http://linux.waluga.de/beast/beast-install-howto.htm,HOWTO in english and german}
+about installing @beast and created the related RPMs.
 
-@uref{mailto://collver1@@comcast.net,,Ben Collver}
+@uri{mailto://collver1@@comcast.net,Ben Collver}
 is working on a
-@uref{http://www.netbsd.org,,NetBSD}
-package of @beast{}, it's current development stage can be tracked at
-@uref{http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pkgsrc-wip/wip/beast/}.
+@uri{http://www.netbsd.org,NetBSD}
+package of @beast, it's current development stage can be tracked at
+@uri{http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pkgsrc-wip/wip/beast/}.
 
 
-@unnumbered Bleeding Edge
+@section0 Bleeding Edge
 
 The @beastbse source code tree is hosted on the
-@uref{http://www.gnome.org,, GNOME project}'s CVS server.
+@uri{http://www.gnome.org, GNOME project}'s CVS server.
 The module name is @code{beast}. You can get it like this:
 
-@lisp
+@example
 $ export CVSROOT=':pserver:anonymous@@anoncvs.gnome.org:/cvs/gnome'
 $ cvs login # there is no password, just hit return
 $ cvs -z3 checkout beast
-@end lisp
+@done
 
-We recommend that you read the @uref{http://developer.gnome.org/tools/cvs.html,, tutorial}
+We recommend that you read the @uri{http://developer.gnome.org/tools/cvs.html, tutorial}
 on using, getting, and building GNOME projects from CVS.
 
 Building from CVS requires additional tools than building the
 release tarballs. The reason for this is due to building documentation
 and auto-generating code that are included in releases. In particular,
 building @beast from CVS now requires the texitheque module hosted in
-@uref{http://cvs.freedesktop.org/,, freedesktop.org CVS}. Anonymous
+@uri{http://cvs.freedesktop.org/, freedesktop.org CVS}. Anonymous
 CVS access to freedesktop.org is described on their
-@uref{http://www.freedesktop.org/Main/GettingInvolved,, getting involved}
+@uri{http://www.freedesktop.org/Main/GettingInvolved, getting involved}
+@dnl FIXME: //www.freedesktop.org/Main/GettingInvolved is broken, remove texitheque entirely
 page, however to just get texitheque, you do:
 
-@lisp
+@example
 $ export CVSROOT=':pserver:anoncvs@@pdx.freedesktop.org:/cvs/texitheque'
 $ cvs login # there is no password, just hit return
 $ cvs -z3 checkout texitheque
-@end lisp
+@done
 
 Unlike release tarballs, the CVS version of @beast has to be build
 in place, because enabling srcdir!=builddir setups for the CVS version would
@@ -112,5 +117,3 @@ unnecessarily complicate the already non-trivial documentation and code
 generation rules.
 Beware though, CVS versions may behave way less stable than release tarballs,
 and on occasions may produce invalid or incompatible @file{.bse} files.
-
-@bye

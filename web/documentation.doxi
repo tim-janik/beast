@@ -1,48 +1,38 @@
-\input texinfo
-@c %**start of header
-@settitle BEAST/BSE Documentation
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@doxer_set{menu-open} documentation
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST/BSE Documentation
 
-@include texiutils.texi
+@section0 Synthesis
 
-@hasbanner{large}
-@navigation{navigation.xml}
-
-
-@unnumbered Synthesis
-
-@beast comes with a very basic synthesis tutorial about how
+@beast comes with a basic synthesis tutorial about how
 to get synthesis going for new users, the
-@uref{beast-doc://quickstart,, BEAST/BSE Quick Start Guide}.
+@uri{quickstart.html, BEAST/BSE Quick Start Guide}.
 
 Tutorials and documentation about audio synthesis in general is
 currently not covered by @beast or this website, we've collected
 a number of interesting links to articles on this subject in the
-@uref{beast-doc://synthesis-links,, Synthesis Links}
+@uri{synthesis-links.html, Synthesis Links}
 section however.
 
 
-@unnumbered Development with @beastbse
+@section0 Development with @beastbse
 
 With the development release 0.4.1, @bse added support for the
-@uref{http://www.gnu.org,, GNU} extension language
-@uref{http://www.gnu.org/software/guile/guile.html,, Guile} and
+@uri{http://www.gnu.org, GNU} extension language
+@uri{http://www.gnu.org/software/guile/guile.html, Guile} and
 since can be scripted in Scheme.
 
 The
-@uref{beast-man://3/bse-procs,, procedure} and
-@uref{beast-man://3/bse-structs,, structure} references
+@uri{bse-procs.html, procedure} and
+@uri{bse-structs.html, structure} references
 cover the supported interfaces to access @bse functionality from C or
 Scheme.
 
 For C specifically,
-@uref{beast-man://3/sfi,, SFI} provides the necessary
-@uref{http://gtk.org,, GLib} based framework to deal with
+@uri{sfi.html, SFI} provides the necessary
+@uri{http://gtk.org, GLib} based framework to deal with
 threads, notes, parameters (properties), records, sequences, time stamps
 and generic values. Users of SFI will probably also appreciate the
-@uref{http://developer.gnome.org/doc/API/,, GLib and GObject API Reference}.
-
-
-
- 
-@bye
+@uri{http://developer.gnome.org/doc/API/, GLib and GObject API Reference}.

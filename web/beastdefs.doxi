@@ -22,6 +22,12 @@
 #	BEAST/BSE macros
 #
 
+#	Fundamental structure
+@defalias{heading}		@doxer_start_section{level=1,@doxer_args{*}}
+@defalias{subheading}		@doxer_start_section{level=2,@doxer_args{*}}
+@defalias{subsubheading}	@doxer_start_section{level=3,@doxer_args{*}}
+@defalias{section0}		@heading{@doxer_args{*}}
+
 #	Component names
 @defalias{beastbse}	@emph{BEAST/BSE}
 @defalias{beast} 	@emph{BEAST}
@@ -39,6 +45,7 @@
 @doxer_command     	path			@dnl file name paths
 @doxer_bold{@doxer_monospace{@doxer_args{*}}}
 @done
+@defalias{file}		@path{@doxer_args{*}}
 @doxer_command     	key			@dnl source code identifier
 @doxer_bold{@doxer_span{key,@doxer_args{*}}}
 @done
@@ -74,9 +81,12 @@
 @done
 
 ## special style tags
+@doxer_command newstag		@dnl { NEWS-TITLE }
+@doxer_span{newstitle,@doxer_bold{@doxer_args{1}}}@*@*
+@done
 @doxer_command newsentry	@dnl { NEWS-DATE , NEWS-DEPARTEMENT }
-@doxer_bold{@doxer_args{1}}@*
-@doxer_bold{@doxer_args{2:}}@*@*
+@doxer_span{newstitle,@doxer_bold{@doxer_args{1}}}@*
+@doxer_span{newsdptmt,@doxer_bold{@doxer_args{2:}}}@*@*
 @done
 
 @done	# finishes doxer_hidden section

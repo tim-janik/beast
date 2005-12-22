@@ -1,28 +1,27 @@
-\input texinfo
-@c %**start of header
-@settitle About BEAST/BSE
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST/BSE - Search The Website
 
-@include texiutils.texi
+@heading Website Search
 
-@hasbanner{large}
-@navigation{navigation.xml}
+@subsubheading Search this website with Google
 
-@c @unnumbered Website searches
+@*
+@rawhtml{
+<form method="GET" action="http://www.google.de/custom">
+<a href="http://www.google.de">
+<img src="http://www.google.de/logos/Logo_40wht.gif" border="0" alt="Google" align="absmiddle"></a>
+<input type="hidden" name="sitesearch" value="beast.gtk.org">
+<input type="text" name="q" size="31" value="">
+<input type="submit" value="Google Search">
+</form>
+}
 
-@unnumberedsubsec Search this website with Google
+@subsubheading Search the @uri{http://beast.gtk.org/wiki:,wiki area}
 
-PHPX
-<FORM method=GET action=''http://www.google.de/custom''><A HREF=''http://www.google.de''>
-<IMG SRC=''http://www.google.de/logos/Logo_40wht.gif'' border=''0'' ALT=''Google'' align=''absmiddle''></A>
-<INPUT TYPE=hidden name=sitesearch value=beast.gtk.org><INPUT TYPE=text name=q size=31 value=''''>
-<INPUT type=submit VALUE=''Google Search''></FORM>
-XPHP
-
-@unnumberedsubsec Search the @uref{http://beast.gtk.org/wiki:,,wiki area}
+@*
 @itemize
-@item Search @uref{http://beast.gtk.org/wiki:SearchPages,, Wiki Pages}
-@item Search @uref{http://beast.gtk.org/wiki:PowerSearch,, Wiki Page Text}
-@end itemize
-
-@bye
+@item Search @uri{http://beast.gtk.org/wiki:SearchPages, Wiki Pages}
+@item Search @uri{http://beast.gtk.org/wiki:PowerSearch, Wiki Page Text}
+@done

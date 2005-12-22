@@ -1,3 +1,20 @@
+Thu Dec 22 23:20:01 2005  Tim Janik  <timj@gtk.org>
+
+	* docs/web/news.doxi:
+	* docs/web/search.doxi:
+	* docs/web/download.doxi:
+	* docs/web/development.doxi:
+	* docs/web/documentation.doxi:
+	* docs/web/contact.doxi: converted to doxer markup.
+
+	* docs/web/oldnews.doxi:
+	* docs/web/webmenu.doxi: small fixups.
+	
+	* docs/web/historic.doxi:
+	* docs/web/about.doxi: adapted page title.
+
+	* docs/web/beastdefs.doxi: more markup facilities.
+
 Mon Dec 19 02:00:44 2005  Tim Janik  <timj@gtk.org>
 
 	* docs/web/synthesis-links.doxi:

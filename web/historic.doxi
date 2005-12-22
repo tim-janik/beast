@@ -2,7 +2,7 @@
 @include "beastdefs.doxi"
 @doxer_set{menu-open} historic-menu
 @include "webmenu.doxi"
-@doxer_set{title}	BEAST/BSE Historic
+@doxer_set{title}	BEAST/BSE History
 
 @dnl @titlesection
 @dnl @doctitle Historic

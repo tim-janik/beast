@@ -1,7 +1,7 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 @include "beastdefs.doxi"
 @include "webmenu.doxi"
-@doxer_set{title}	About BEAST/BSE
+@doxer_set{title}	BEAST/BSE - About the Project
 
 @section0 What are @beast{} and @bse{}?
 

@@ -22,6 +22,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 }
 
 @section0{group=left,body-span=webmenu}
+@doxer_fontsize{+1,@*}
 
 @defalias{menu_branch}	@doxer_visible{@doxer_cmatch{\b@doxer_args{1}\b,@doxer_get{menu-open}}}
 
@@ -34,20 +35,19 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 @done
 @done
 
-@*
-@deflist
+@itemize{none}
 @item 		@menuuri{news.html, 				News}
 @item		@menuuri{about.html,				About}
 @item		@menuuri{screenshots/index.html,		Screenshots}
 @item		@menuuri{browse-bse-files.html,			Sound Archive}
     @menu_branch{sound-archive}
-	@deflist
+	@itemize{none}
 	@item	@menuuri{upload-bse-files.html,			Contribute}
 	@done
     @done
 @item		@menuuri{documentation.html,			Documentation}
     @menu_branch{documentation}
-	@deflist
+	@itemize{none}
 	@item 	@menuuri{faq.html,				FAQ}
 	@item 							Introduction
 	@item 	@menuuri{overview-de.html,			Overview (German)}
@@ -64,14 +64,14 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
     @done
 @item 		@menuuri{resources.html, 			Resources}
     @menu_branch{resources}
-	@deflist
+	@itemize{none}
 	@item 	@menuuri{synthesis-links.html,			Synthesis Links}
 	@item 	@menuuri{related-links.html,			Related Links}
 	@done
     @done
 @item 		@menuuri{development.html, 			Development}
     @menu_branch{development}
-	@deflist
+	@itemize{none}
 	@item 	@menuuri{release-news.html,			Release NEWS}
 	@item 							ChangeLogs
 	@item 	@menuuri{log-beast.html,			BEAST Changes}
@@ -89,13 +89,32 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
     @done
 @item 		@menuuri{historic.html,				Historic}
     @menu_branch{historic-menu}
-	@deflist
+	@itemize{none}
 	@item 	@menuuri{oldnews.html,				Old News}
 	@item 	@menuuri{logo-submissions/index.html, 		Logo Contest}
 	@done
   @done
 @item 		@menuuri{download.html,				Download}
 @item 		@menuuri{contact.html,				Contact}
-@item 		@menuuri{search.php,				Search}
+@item 		@menuuri{search.phtml,				Search}
 @item 		@menuuri{http://beast.gtk.org/wiki:BeastBse, 	Wiki}
 @done
+
+@rawhtml{
+<div style="background-image:url(style/beast-bg-h5.png); height:5px;
+            background-position:top; background-repeat:repeat-x; padding-bottom:1.5em"></div>
+
+<form method="GET" action="http://www.google.de/custom" name="searchform">
+<input type="hidden" name="sitesearch" value="beast.gtk.org">
+<table border="0">
+<tr><td align="center"><input type="text" name="q" maxlength="255" size="15" value="Search Website"
+        onFocus="if(this.value=='Search Website')this.value=''"/></td></tr>
+<tr><td align="center"><small><input type="submit" value="Quick Search"></small></td></tr>
+</table>
+</form>
+}
+
+
+@section0{group=right,body-span=infobox}
+@dnl INFOBOX
+

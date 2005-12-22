@@ -1,70 +1,64 @@
-\input texinfo
-@c %**start of header
-@settitle BEAST/BSE Development
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@doxer_set{menu-open} development
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST/BSE Development
 
-@include texiutils.texi
-
-@hasbanner{large}
-@navigation{navigation.xml}
-
-@unnumbered Current Development State
+@section0 Current Development State
 
 There are various documents in CVS that track the current development state.
 Every major part has it's own ChangeLog (see links in the sidebar) and for
 overall track keeping, the release specific
-@uref{beast-doc://release-news,, NEWS file} is used.
+@uri{release-news.html, NEWS file} is used.
 
 
-@unnumbered Translations
+@section0 Translations
 
 @beast is being translated into various different languages. Status of individual
 translations can be obtained from the following pages.
 
-@uref{http://l10n-status.gnome.org/HEAD/index.html,, Translation statistics for the GNOME release: }
-@c status page links to all translations listed in ALL_LINGUAS:
-@uref{http://l10n-status.gnome.org/HEAD/az/extras/index.html,, az},
-@uref{http://l10n-status.gnome.org/HEAD/bg/extras/index.html,, bg},
-@uref{http://l10n-status.gnome.org/HEAD/ca/extras/index.html,, ca},
-@uref{http://l10n-status.gnome.org/HEAD/cs/extras/index.html,, cs},
-@uref{http://l10n-status.gnome.org/HEAD/de/extras/index.html,, de},
-@uref{http://l10n-status.gnome.org/HEAD/el/extras/index.html,, el},
-@uref{http://l10n-status.gnome.org/HEAD/en_CA/extras/index.html,, en_CA},
-@uref{http://l10n-status.gnome.org/HEAD/en_GB/extras/index.html,, en_GB},
-@uref{http://l10n-status.gnome.org/HEAD/eo/extras/index.html,, eo},
-@uref{http://l10n-status.gnome.org/HEAD/es/extras/index.html,, es},
-@uref{http://l10n-status.gnome.org/HEAD/eu/extras/index.html,, eu},
-@uref{http://l10n-status.gnome.org/HEAD/fr/extras/index.html,, fr},
-@uref{http://l10n-status.gnome.org/HEAD/hr/extras/index.html,, hr},
-@uref{http://l10n-status.gnome.org/HEAD/it/extras/index.html,, it},
-@uref{http://l10n-status.gnome.org/HEAD/ja/extras/index.html,, ja},
-@uref{http://l10n-status.gnome.org/HEAD/mn/extras/index.html,, mn},
-@uref{http://l10n-status.gnome.org/HEAD/nl/extras/index.html,, nl},
-@uref{http://l10n-status.gnome.org/HEAD/pa/extras/index.html,, pa},
-@uref{http://l10n-status.gnome.org/HEAD/pt/extras/index.html,, pt},
-@uref{http://l10n-status.gnome.org/HEAD/pt_BR/extras/index.html,, pt_BR},
-@uref{http://l10n-status.gnome.org/HEAD/ru/extras/index.html,, ru},
-@uref{http://l10n-status.gnome.org/HEAD/rw/extras/index.html,, rw},
-@uref{http://l10n-status.gnome.org/HEAD/sq/extras/index.html,, sq},
-@uref{http://l10n-status.gnome.org/HEAD/sr/extras/index.html,, sr},
-@uref{http://l10n-status.gnome.org/HEAD/sr/extras/index.html,, sr@@Latn},
-@uref{http://l10n-status.gnome.org/HEAD/sv/extras/index.html,, sv}.
+@uri{http://l10n-status.gnome.org/HEAD/index.html, Translation statistics for the GNOME release: }
+@dnl status page links to all translations listed in ALL_LINGUAS:
+@uri{http://l10n-status.gnome.org/HEAD/az/extras/index.html, az},
+@uri{http://l10n-status.gnome.org/HEAD/bg/extras/index.html, bg},
+@uri{http://l10n-status.gnome.org/HEAD/ca/extras/index.html, ca},
+@uri{http://l10n-status.gnome.org/HEAD/cs/extras/index.html, cs},
+@uri{http://l10n-status.gnome.org/HEAD/de/extras/index.html, de},
+@uri{http://l10n-status.gnome.org/HEAD/el/extras/index.html, el},
+@uri{http://l10n-status.gnome.org/HEAD/en_CA/extras/index.html, en_CA},
+@uri{http://l10n-status.gnome.org/HEAD/en_GB/extras/index.html, en_GB},
+@uri{http://l10n-status.gnome.org/HEAD/eo/extras/index.html, eo},
+@uri{http://l10n-status.gnome.org/HEAD/es/extras/index.html, es},
+@uri{http://l10n-status.gnome.org/HEAD/eu/extras/index.html, eu},
+@uri{http://l10n-status.gnome.org/HEAD/fr/extras/index.html, fr},
+@uri{http://l10n-status.gnome.org/HEAD/hr/extras/index.html, hr},
+@uri{http://l10n-status.gnome.org/HEAD/it/extras/index.html, it},
+@uri{http://l10n-status.gnome.org/HEAD/ja/extras/index.html, ja},
+@uri{http://l10n-status.gnome.org/HEAD/mn/extras/index.html, mn},
+@uri{http://l10n-status.gnome.org/HEAD/nl/extras/index.html, nl},
+@uri{http://l10n-status.gnome.org/HEAD/pa/extras/index.html, pa},
+@uri{http://l10n-status.gnome.org/HEAD/pt/extras/index.html, pt},
+@uri{http://l10n-status.gnome.org/HEAD/pt_BR/extras/index.html, pt_BR},
+@uri{http://l10n-status.gnome.org/HEAD/ru/extras/index.html, ru},
+@uri{http://l10n-status.gnome.org/HEAD/rw/extras/index.html, rw},
+@uri{http://l10n-status.gnome.org/HEAD/sq/extras/index.html, sq},
+@uri{http://l10n-status.gnome.org/HEAD/sr/extras/index.html, sr},
+@uri{http://l10n-status.gnome.org/HEAD/sr/extras/index.html, sr@@Latn},
+@uri{http://l10n-status.gnome.org/HEAD/sv/extras/index.html, sv}.
 
 
-@unnumbered Web Site Development
+@section0 Web Site Development
 
 Most of the BEAST website is kept in CVS, to aid development, here're
 the links to various validator results:
 
 @itemize
-@item @uref{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org,
-	    ,(beast.gtk.org) W3C CSS Validation}
-@item @uref{http://validator.w3.org/check?uri=http://beast.gtk.org,
-	    ,(beast.gtk.org) W3C Markup Validation}
-@item @uref{http://validator.w3.org/checklink?uri=http://beast.gtk.org/&summary=on&hide_type=all&no_accept_language=on&recursive=on&depth=&check=Check,
-            ,(beast.gtk.org) W3C Link Checker}
-@item @uref{http://www.htmlhelp.com/cgi-bin/validate.cgi?url=http://beast.gtk.org&warnings=yes&spider=yes&hidevalid=yes,
-	    ,(beast.gtk.org) WDG HTML Validation}
-@end itemize
-
-@bye
+@item @uri{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org,
+	    (beast.gtk.org) W3C CSS Validation}
+@item @uri{http://validator.w3.org/check?uri=http://beast.gtk.org,
+	    (beast.gtk.org) W3C Markup Validation}
+@item @uri{http://validator.w3.org/checklink?uri=http://beast.gtk.org/&summary=on&hide_type=all&no_accept_language=on&recursive=on&depth=&check=Check,
+            (beast.gtk.org) W3C Link Checker}
+@item @uri{http://www.htmlhelp.com/cgi-bin/validate.cgi?url=http://beast.gtk.org&warnings=yes&spider=yes&hidevalid=yes,
+	    (beast.gtk.org) WDG HTML Validation}
+@done
