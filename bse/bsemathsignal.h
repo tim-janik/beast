@@ -381,10 +381,13 @@ static inline double    bse_saturate_hard       (double value,
 static inline double    bse_saturate_branching (double value,
                                                 double limit)   G_GNUC_CONST;
 
-/* --- cents (1/100th of a semitone) --- */
-#define	bse_cent_factor(index /* -100..100 */)	(bse_cent_table[index])
-extern const gdouble *bse_cent_table;
+/* --- semitone factors (for +-11 octaves) --- */
+extern const double * const bse_semitone_table;
+#define bse_transpose_factor(index /* -132..+132*/)	(bse_semitone_table[index])
 
+/* --- cents (1/100th of a semitone) --- */
+extern const double * const bse_cent_table;
+#define	bse_cent_factor(index /* -100..+100 */)		(bse_cent_table[index])
 
 /* --- implementation details --- */
 static inline double  G_GNUC_CONST

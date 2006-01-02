@@ -45,7 +45,10 @@ G_BEGIN_DECLS
 #define BSE_FREQUENCY_EPSILON		(0.001)
 
 
-/* --- fine tune --- */
+/* --- transpose / fine tune --- */
+#define	BSE_MIN_TRANSPOSE		(-72)
+#define	BSE_MAX_TRANSPOSE		(+72)
+#define BSE_TRANSPOSE_IS_VALID(n)	((n) >= BSE_MIN_TRANSPOSE && (n) <= BSE_MAX_TRANSPOSE)
 /* fine tune in cents of a semitone */
 #define	BSE_MIN_FINE_TUNE		(-BSE_MAX_FINE_TUNE)
 #define	BSE_MAX_FINE_TUNE		(+100)

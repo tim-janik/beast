@@ -1,3 +1,28 @@
+Fri Dec 23 00:57:58 2005  Tim Janik  <timj@gtk.org>
+
+	* bseconstvalues.h: provide BSE_MIN_TRANSPOSE and BSE_MAX_TRANSPOSE
+	which currently allow a transposition range of 2 * 72 semitones, i.e.
+	+- 6 octaves.
+
+	* bseglobals.h: implement BSE_TRANSPOSE_FACTOR() which provides
+	the transposition factor for a semitone in the range -72..0..+72.
+	implement BSE_FINE_TUNE_FACTOR() and BSE_SEMITONE_FACTOR() in terms
+	of bsemathsignal.h functions.
+
+	* bseglobals.c: removed transposition and fine tune factor tables.
+
+	* bsemathsignal.c: added double precision tables for cent fine tune
+	factors and transposition by +-11 octaves. removed slow and sub-accurate
+	table initialization routines.
+
+	* bsemathsignal.h: const fixes for factor table pointers. added 
+	transposition factor function for +-11 octaves.
+
+	* bsestandardosc.c: added transpose property.
+
+	* gsloscillator-aux.c, gsloscillator.h: added config setting for 
+	transposition in semitones.
+
 Thu Nov 17 18:10:56 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslfilter.[hc]: Added new argument to gsl_filter_fir_approx, to

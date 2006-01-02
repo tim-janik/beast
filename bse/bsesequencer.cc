@@ -17,6 +17,7 @@
  */
 #include "bsesequencer.h"
 #include "gslcommon.h"
+#include "bsemathsignal.h"
 #include "bseengine.h"
 #include "bsetrack.h"
 #include "bsepart.h"

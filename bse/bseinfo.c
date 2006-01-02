@@ -17,6 +17,7 @@
  */
 #include "bseutils.h"
 #include "bsemain.h"
+#include "bsemathsignal.h"
 
 #define	PREC_SHIFT	16
 #define	FLF	"26.20"

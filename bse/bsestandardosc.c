@@ -34,6 +34,7 @@ enum
   PROP_PHASE,
   PROP_BASE_FREQ,
   PROP_BASE_NOTE,
+  PROP_TRANSPOSE,
   PROP_FINE_TUNE,
   PROP_FM_PERC,
   PROP_FM_EXP,
@@ -69,6 +70,7 @@ static void	bse_standard_osc_update_modules	(BseStandardOsc		*standard_osc,
 /* --- variables --- */
 static gpointer	    parent_class = NULL;
 static const gfloat osc_table_freqs[] = {
+  /* FIXME */
   BSE_KAMMER_FREQUENCY,
   BSE_KAMMER_FREQUENCY / 2.0,
   BSE_KAMMER_FREQUENCY / 4.0,
@@ -146,8 +148,13 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      bse_pspec_note_simple ("base_note", _("Note"), _("Musical notation corresponding to the oscillator frequency"),
                                                      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Base Frequency"),
+			      PROP_TRANSPOSE,
+			      sfi_pspec_int ("transpose", _("Transpose"), _("Transposition of the oscillator frequency in semitones"),
+					     0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12,
+					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
+  bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_FINE_TUNE,
-			      sfi_pspec_int ("fine_tune", _("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"),
+			      sfi_pspec_int ("fine_tune", _("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
 					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, _("Modulation"),
@@ -249,6 +256,10 @@ bse_standard_osc_set_property (GObject      *object,
       if (bse_note_from_freq (self->config.cfreq) != sfi_value_get_note (value))
 	g_object_notify (self, "base_note");
       break;
+    case PROP_TRANSPOSE:
+      self->config.transpose = sfi_value_get_int (value);
+      bse_standard_osc_update_modules (self, FALSE, NULL);
+      break;
     case PROP_FINE_TUNE:
       self->config.fine_tune = sfi_value_get_int (value);
       bse_standard_osc_update_modules (self, FALSE, NULL);
@@ -304,6 +315,9 @@ bse_standard_osc_get_property (GObject    *object,
       break;
     case PROP_BASE_NOTE:
       sfi_value_set_note (value, bse_note_from_freq (self->config.cfreq));
+      break;
+    case PROP_TRANSPOSE:
+      sfi_value_set_int (value, self->config.transpose);
       break;
     case PROP_FINE_TUNE:
       sfi_value_set_int (value, self->config.fine_tune);

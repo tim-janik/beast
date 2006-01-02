@@ -75,18 +75,9 @@ guint	  bse_idle_timed	(guint64	usec_delay,
  * (SFI_KAMMER_NOTE + 12) -> 2.0
  * etc...
  */
-extern const gdouble* _bse_semitone_factor_table;
-#define	BSE_SEMITONE_FACTOR(ht)		((ht) > SFI_MAX_NOTE ? \
-				         _bse_semitone_factor_table[SFI_MAX_NOTE] : \
-				         (ht) < SFI_MIN_NOTE ? \
-				         _bse_semitone_factor_table[SFI_MIN_NOTE] : \
-				         _bse_semitone_factor_table[(ht)])
-extern const gdouble* _bse_fine_tune_factor_table;
-#define	BSE_FINE_TUNE_FACTOR(ft)	((ft) > BSE_MAX_FINE_TUNE ? \
-                                         _bse_fine_tune_factor_table[BSE_MAX_FINE_TUNE] : \
-                                         (ft) < BSE_MIN_FINE_TUNE ? \
-                                         _bse_fine_tune_factor_table[BSE_MIN_FINE_TUNE] : \
-                                         _bse_fine_tune_factor_table[(ft)])
+#define	BSE_SEMITONE_FACTOR(st)		(bse_transpose_factor (CLAMP (st, SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE))
+#define	BSE_FINE_TUNE_FACTOR(ft)	(bse_cent_factor (CLAMP ((ft), BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE)))
+#define	BSE_TRANSPOSE_FACTOR(st)	(bse_transpose_factor (CLAMP (st, -132, +132)))	/* BSE_MAX_TRANSPOSE */
 #define	BSE_FREQ_FROM_LINEAR_VALUE(v)	(SFI_KAMMER_FREQ_d * BSE_SEMITONE_FACTOR (BSE_NOTE_FROM_VALUE (v) - SFI_KAMMER_NOTE))
 
 

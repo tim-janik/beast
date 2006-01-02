@@ -38,6 +38,7 @@ typedef struct
   gfloat	 cfreq;			/* for ifreq == NULL */
   gfloat	 pulse_width;		/* 0..1 */
   gfloat	 pulse_mod_strength;	/* 0..0.5 */
+  gint		 transpose;		/* -132..0..+132 */
   gint		 fine_tune;		/* -100..+100 */
 } GslOscConfig;
 typedef struct

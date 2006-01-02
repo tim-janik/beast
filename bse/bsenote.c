@@ -18,6 +18,7 @@
 #include "bsenote.h"
 #include "bseutils.h"
 #include "bseieee754.h"
+#include "bsemathsignal.h"
 #include <string.h>
 
 

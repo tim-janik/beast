@@ -18,6 +18,7 @@
  */
 #include <bse/bseplugin.h>
 #include <bse/bseprocedure.h>
+#include <bse/bsemathsignal.h>
 #include <bse/bsesong.h>
 #include <bse/bsebus.h>
 #include <bse/bsepart.h>
