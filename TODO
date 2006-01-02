@@ -1,3 +1,5 @@
+- remove biquad normalization
+- reduce constant to 4
 - resources: http://packages.qa.debian.org/b/bse-alsa.html
 - s/deleet inputs/disconnect inputs/
 - print detail score with loop range (in progress printing)
