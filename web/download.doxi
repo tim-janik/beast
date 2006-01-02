@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Software Download
 
-@section0 Where Can I Get @beastbse?		@anchor{tarballs}
+@heading Where Can I Get @beastbse?		@anchor{tarballs}
 
 Publically consumable releases can be found via ftp:
 @uri{ftp://beast.gtk.org/pub/beast/}.
@@ -22,7 +22,7 @@ The packages provided in the download directory have the following purposes:
       recent CVS versions of the @uri{http://www.portaudio.com/, PortAudio} sound driver.
 @done
 
-@section0 Requirements
+@heading Requirements
 
 To get a basic start, you'll also need Gtk+ >= 2.6, a recent version
 of the Gtk+-2.6 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
@@ -48,7 +48,7 @@ A collection of links to LADSPA plugins is kept at
 BEAST will look for LADSPA plugins under @file{lib/ladspa/} of it's own
 installation prefix, and in the directories listed in @code{$LADSPA_PATH}.
 
-@section0 Packages
+@heading Packages
 
 Stock
 @uri{http://www.debian.org,Debian}
@@ -80,7 +80,7 @@ package of @beast, it's current development stage can be tracked at
 @uri{http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pkgsrc-wip/wip/beast/}.
 
 
-@section0 Bleeding Edge
+@heading Bleeding Edge
 
 The @beastbse source code tree is hosted on the
 @uri{http://www.gnome.org, GNOME project}'s CVS server.

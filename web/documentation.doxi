@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Documentation
 
-@section0 Synthesis
+@heading Synthesis
 
 @beast comes with a basic synthesis tutorial about how
 to get synthesis going for new users, the
@@ -17,7 +17,7 @@ a number of interesting links to articles on this subject in the
 section however.
 
 
-@section0 Development with @beastbse
+@heading Development with @beastbse
 
 With the development release 0.4.1, @bse added support for the
 @uri{http://www.gnu.org, GNU} extension language

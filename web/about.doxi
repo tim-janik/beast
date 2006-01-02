@@ -3,7 +3,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE - About the Project
 
-@section0 What are @beast{} and @bse{}?
+@heading What are @beast{} and @bse{}?
 
 Beast is a powerful music composition and modular synthesis application
 released as free software under the
@@ -26,7 +26,7 @@ such as from our
 @uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} page.
 
 Here is an extensive
-@uri{beast-doc://screenshots/index, screenshots}
+@uri{beast-doc://screenshots.phtml, screenshots}
 page, showing beast in action.
 
 @beast is an abbreviation for @emph{Bedevilled Audio System}. @bse an abbreviation for

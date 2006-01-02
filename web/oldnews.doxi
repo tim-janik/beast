@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Ancient News
 
-@section0 What Was New? (Ancient News)
+@heading What Was New? (Ancient News)
 @dnl ----------------------------- START -----------------------------
 
 
@@ -259,7 +259,7 @@ Please @uri{mailto://beast@@gnome.org,, drop us a line} at our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list} if you're willing
 to contribute.
 
-And finally, the @uri{screenshots/index.html,screen shot area} has had
+And finally, the @uri{screenshots.phtml,screen shot area} has had
 some updates, to reflect newer @beast versions.
 
 
@@ -424,7 +424,7 @@ now, or just read the archives at @uri{http://mail.gnome.org/archives/beast/}.
 Also, the @uri{synthesis-links.html, link section}
 has been updated, and we got new or updated screen shots
 (amongst them the new track editor) in the
-@uri{screenshots/index.html,screen shot area}.
+@uri{screenshots.phtml,screen shot area}.
 
 
 @newsentry{Thursday 13 Mar 2003, New Development Release}

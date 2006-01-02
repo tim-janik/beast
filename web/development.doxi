@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Development
 
-@section0 Current Development State
+@heading Current Development State
 
 There are various documents in CVS that track the current development state.
 Every major part has it's own ChangeLog (see links in the sidebar) and for
@@ -12,7 +12,7 @@ overall track keeping, the release specific
 @uri{release-news.html, NEWS file} is used.
 
 
-@section0 Translations
+@heading Translations
 
 @beast is being translated into various different languages. Status of individual
 translations can be obtained from the following pages.
@@ -47,7 +47,7 @@ translations can be obtained from the following pages.
 @uri{http://l10n-status.gnome.org/HEAD/sv/extras/index.html, sv}.
 
 
-@section0 Web Site Development
+@heading Web Site Development
 
 Most of the BEAST website is kept in CVS, to aid development, here're
 the links to various validator results:

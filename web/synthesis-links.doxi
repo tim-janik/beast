@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Synthesis Links
 
-@section0 About Synthesis
+@heading About Synthesis
 
 
 Miscellaneous Links:
@@ -108,7 +108,7 @@ Selected @uri{http://www.soundonsound.com,Sound On Sound} Articles:
 @done
 
 
-@section0 Synthesis Development
+@heading Synthesis Development
 
 @itemize
 @item @uri{http://www-ccrma.stanford.edu/~jos/pubs.html, Julius O. Smith Publications}

@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE News
 
-@section0 @beast - Your Solution for Music Composition and Synthesis
+@heading @beast - Your Solution for Music Composition and Synthesis
 
 @table{noframe}
 @row
@@ -23,7 +23,7 @@
 @done
 
 
-@section0 What's New?
+@heading What's New?
 @dnl ----------------------------- START -----------------------------
 
 @newsentry{Thursday 26 May 2005, Important bug fix release}

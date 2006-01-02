@@ -3,7 +3,7 @@
 @doxer_add{html-stylesheets}	BEAST Style 	<style/beast-style.css>
 @doxer_add{html-stylesheets}	Plain	 	<style/plain.css>
 
-@section0{group=header,span=nomargin}
+@heading{group=header,span=nomargin}
 @rawhtml{
 <table id="header-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none"
        style="background-image: url(style/beast-bg.png); height: 130px;
@@ -15,13 +15,13 @@
 </table>
 }
 
-@section0{group=footer}
+@heading{group=footer}
 @*
 @center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@beast.gtk.org, Tim Janik}.
 Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jigsaw.w3.org/css-validator/check/referer,CSS}.
 }
 
-@section0{group=left,body-span=webmenu}
+@heading{group=left,body-span=webmenu}
 @doxer_fontsize{+1,@*}
 
 @defalias{menu_branch}	@doxer_visible{@doxer_cmatch{\b@doxer_args{1}\b,@doxer_get{menu-open}}}
@@ -38,7 +38,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 @itemize{none}
 @item 		@menuuri{news.html, 				News}
 @item		@menuuri{about.html,				About}
-@item		@menuuri{screenshots/index.html,		Screenshots}
+@item		@menuuri{screenshots.phtml,			Screenshots}
 @item		@menuuri{browse-bse-files.html,			Sound Archive}
     @menu_branch{sound-archive}
 	@itemize{none}
@@ -115,6 +115,6 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 }
 
 
-@section0{group=right,body-span=infobox}
+@heading{group=right,body-span=infobox}
 @dnl INFOBOX
 

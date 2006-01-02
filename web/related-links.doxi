@@ -4,7 +4,7 @@
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Related Links
 
-@section0 Related Projects
+@heading Related Projects
 
 @itemize
 @item @uri{http://www.ladspa.org/, LADSPA - Linux Audio Developer's Simple Plugin API}
@@ -27,14 +27,14 @@
 @done
 
 
-@section0 Dedicated Link Sites
+@heading Dedicated Link Sites
 
 @itemize
 @item @longuri{http://linux-sound.org, Sound & MIDI Software For Linux}
 @done
 
 
-@section0 Miscellaneous related pages
+@heading Miscellaneous related pages
 
 @itemize
 @item @uri{http://freshmeat.net/projects/beastbse/, BEAST at Freshmeat}

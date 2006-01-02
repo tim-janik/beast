@@ -26,7 +26,6 @@
 @defalias{heading}		@doxer_start_section{level=1,@doxer_args{*}}
 @defalias{subheading}		@doxer_start_section{level=2,@doxer_args{*}}
 @defalias{subsubheading}	@doxer_start_section{level=3,@doxer_args{*}}
-@defalias{section0}		@heading{@doxer_args{*}}
 
 #	Component names
 @defalias{beastbse}	@emph{BEAST/BSE}
