@@ -1,0 +1,72 @@
+srcdir = .
+
+all:	all-targets
+
+
+GENERATED = $(strip			\
+	screenshots.phpini		\
+)
+PHP_TARGETS = $(strip			\
+	php/gallery.php			\
+	php/screenshots.phpini		\
+)
+HTML_TARGETS = $(strip			\
+	html/about.html			\
+	html/contact.html		\
+	html/download.html		\
+	html/documentation.html		\
+	html/development.html		\
+	html/news.html 			\
+	html/historic.html		\
+	html/oldnews.html 		\
+	html/resources.html		\
+	html/related-links.html		\
+	html/synthesis-links.html	\
+	html/search.phtml		\
+	html/screenshots.phtml		\
+)
+${HTML_TARGETS}: webmenu.doxi beastdefs.doxi
+
+all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files style-files test-install
+
+.DELETE_ON_ERROR: ${PHP_TARGETS} ${HTML_TARGETS} ${GENERATED}
+
+target-dirs:	# rule to create directories
+	mkdir -p php/ html/ html/style/ html/screenshots/
+
+php/%.php: %.php
+	cp -v $< $@
+
+php/%.phpini: %.phpini
+	cp -v $< $@
+%.phpini: %/ scanimages.sh
+	$(srcdir)/scanimages.sh $<
+
+html/%.html: %.doxi
+	doxer doxi2html $< -o html/
+html/%.phtml: %.doxi
+	doxer doxi2html $< -o html/ -e .phtml
+
+style-files: target-dirs
+	cp -a style/* html/style/
+
+screenshot-files: target-dirs
+	cp -a screenshots/* html/screenshots/
+
+TEST_INSTALL_DIR=~/public_html/beast/
+test-install: ${TEST_INSTALL_DIR}
+	rm -rf ${TEST_INSTALL_DIR}/*
+	cp -av php/ html/ ${TEST_INSTALL_DIR}
+
+.PHONY: all-targets target-dirs screenshot-files clean style-files test-install
+
+clean:
+	rm -f html/style/*
+	-rmdir -p html/style/
+	rm -f html/screenshots/*
+	-rmdir -p html/screenshots/
+	rm -f html/*
+	-rmdir -p html/
+	rm -f php/*
+	-rmdir -p php/
+	rm -f ${GENERATED}

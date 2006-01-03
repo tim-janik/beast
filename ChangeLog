@@ -1,3 +1,16 @@
+Wed Jan  4 00:23:51 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile: new file with rules to build new web site docs.
+	also generates screenshots.phpini.
+
+	* web/gallery.php: php implementation of a picture gallery browser
+	with thumbnail and description support.
+
+	* web/scanimages.sh: script to generate a .phpini file from a picture
+	gallery directory, needed by gallery.php.
+
+	* web/screenshots.doxi: added screenshot gallery page.
+
 Mon Jan  2 23:36:54 2006  Tim Janik  <timj@gtk.org>
 
 	* web/*.doxi: CVS moved here from docs/web/.

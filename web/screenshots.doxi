@@ -1,0 +1,14 @@
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST - Screenshots
+
+@subheading @center BEAST Screenshots
+
+@*
+@rawhtml{
+<?php
+  define ('GALLERY_FILE', '../php/screenshots.phpini');
+  include '../php/gallery.php';
+?>
+}
