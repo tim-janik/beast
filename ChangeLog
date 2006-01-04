@@ -1,3 +1,10 @@
+Wed Jan  4 01:18:35 2006  Tim Janik  <timj@gtk.org>
+
+	* web/gallery.php: fixes for MSIE applying "<center>" recursively.
+	padding fixes.
+
+	* web/scanimages.sh: padding fixes.
+
 Wed Jan  4 00:23:51 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile: new file with rules to build new web site docs.

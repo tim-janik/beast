@@ -23,7 +23,7 @@ IMAGEDIR=`echo "$1" | sed 's,/*$,,'`
 }
 
 THUMB_SIZE=160x160
-GEOMETRY=160x160+10+10
+GEOMETRY=160x160+8+8
 
 VERBOSE=/dev/null
 

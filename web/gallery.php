@@ -47,6 +47,8 @@
   // markup image
   //
   if (@$_GET['image']) {
+
+    // full size image
     for ($i = 0; $i < $n_images; $i++) {
       if ($images[$i]['fname'] == $_GET['image']) {
         $image = $images[$i];
@@ -58,15 +60,16 @@
           echo '<table border="0">';
           printf ('<tr><td align="center"> %u x %u - %s </td></tr>',
                   $image['width'], $image['height'], size_name ($image['bytes']));
-          printf ('<tr><td width="%u"><br>', $image['width']);
+          printf ('<tr><td align="left" width="%u"><br>', $image['width']);	// MSIE6 would recursively apply "center" here
           echo $blurb, "</td></tr></table>";
         }
         break;
       }
     }
     $current = $i + 1;
-    echo "<br>Images: &nbsp; <b>";
 
+    // image links
+    echo "<br>Images: &nbsp; <b>";
     // link left
     if ($current > 1) {
       printf ('<a href="%s?image=%s">&lt;&lt;&lt;</a>', $page_url, $images[$current - 1 - 1]['fname']);
@@ -104,7 +107,7 @@
   if (!@$_GET['image']) {
     // display all images
     echo '<table cellspacing="10" cellpadding="0">';
-    $cellsize = $thumb_width + 2 * 10 + 2 * 2; // image pixels + 2 * padding + 2 * border-width
+    $cellsize = $thumb_width + 2 * 12 + 2 * 2; // image pixels + 2 * padding + 2 * border-width
     for ($j = $first_image; $j < $first_image + $page_images; $j += $images_per_line) {
       echo "<tr>\n";
       $k = min ($j + $images_per_line, $first_image + $page_images);
@@ -120,7 +123,7 @@
       echo "</tr><tr>\n";
       for ($i = $j; $i < $k; $i++) {
         $image = $images[$i];
-        printf ('<td valign="top" width="%u">', $cellsize);
+        printf ('<td align="left" valign="top" width="%u">', $cellsize);	// MSIE6 would recursively apply "center" here
 	$blurb = @$image['blurb'];
         if ($blurb) {
           if (strlen ($blurb) > $maxlen)
