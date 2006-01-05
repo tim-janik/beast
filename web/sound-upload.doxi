@@ -1,14 +1,19 @@
-\input texinfo
-@c %**start of header
-@settitle BSE Sound Archive File Upload
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@doxer_set{menu-open} sound-archive
+@include "webmenu.doxi"
+@doxer_set{title}	BSE Sound File Upload
 
-@include texiutils.texi
+@subheading @center BSE Sound File Upload
 
-@hasbanner{large}
-@navigation{navigation.xml}
-@docfont{tech}
-
-@cgitemplate
-
-@bye
+@*
+@doxer_raw{html,
+<?php
+  define ('DESTINATIONDIR', '/tmp/');
+  define ('NAME_TIP', 'e.g. Tim Janik');
+  define ('EMAIL_TIP', 'e.g. timj@beast.gtk.org');
+  define ('DESCRIPTION_TIP', 'e.g. FunnyTune is a funny test song');
+  define ('FILE_TIP', 'Name of BSE or OGG file');
+  include '../php/file-upload.php';
+?>
+}

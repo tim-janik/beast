@@ -155,7 +155,7 @@ languages and more bug fixes are listed in the
 BEAST v0.6.0 supports skins for the
 @uri{http://beast.gtk.org/screenshots/image-zoom-5.html,,  piano roll and event roll}
 widgets, so we've opened up a
-@uri{http://beast.gtk.org/browse-bse-files.html?d=skins,, place to collect skin packages}.
+@uri{http://beast.gtk.org/sound-browser.phtml?d=skins,, place to collect skin packages}.
 The
 @uri{http://beast.gtk.org/wiki.php,, wiki} also had changes on the
 @uri{http://beast.gtk.org/wiki:BeastFeatures,, BeastFeatures} and
@@ -193,9 +193,9 @@ various topics or to sign the
 @newsentry{Saturday 10 Jan 2004, BSE Sound Archive}
 
 We just opened up the
-@uri{browse-bse-files.html,BSE Sound Archive}.
+@uri{sound-browser.phtml,BSE Sound Archive}.
 Here, users can
-@uri{upload-bse-files.html, contribute and exchange}
+@uri{sound-upload.phtml, contribute and exchange}
 BSE songs, samples or instrument and effect files.
 For demonstration purposes, we will also take
 @uri{http://www.xiph.org/ogg/vorbis/,, Ogg/Vorbis}
@@ -206,7 +206,7 @@ of the BEAST demo song
 @uri{http://beast.gtk.org/beast-ftp/bse-files/partymonster.bse,, Party Monster}.
 
 Have fun and
-@uri{upload-bse-files.html, start contributing}! ;-)
+@uri{sound-upload.phtml, start contributing}! ;-)
 
 
 @newsentry{Monday 29 Dec 2003, intltool add-on for beast-0.5.6}

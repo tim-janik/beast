@@ -1,3 +1,19 @@
+Thu Jan  5 01:22:36 2006  Tim Janik  <timj@gtk.org>
+
+	* web/sound-browser.doxi: build sound browser page with included php.
+
+	* web/sound-upload.doxi: build sound upload page with included php.
+
+	* web/file-upload.php: file upload facility implementation.
+
+	* web/file-browser.php: subdirectory file browser implementation.
+
+	* web/Makefile: process and install sound browser and upload files.
+
+	* web/webmenu.doxi:
+	* web/oldnews.doxi:
+	* web/news.doxi: uri fixes.
+
 Wed Jan  4 01:18:35 2006  Tim Janik  <timj@gtk.org>
 
 	* web/gallery.php: fixes for MSIE applying "<center>" recursively.

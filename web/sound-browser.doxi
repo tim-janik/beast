@@ -1,14 +1,23 @@
-\input texinfo
-@c %**start of header
-@settitle BSE Sound Archive
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@doxer_set{menu-open} sound-archive
+@include "webmenu.doxi"
+@doxer_set{title}	BSE Sound Archive
 
-@include texiutils.texi
+@subheading @center BSE Sound Archive
 
-@hasbanner{large}
-@navigation{navigation.xml}
-@docfont{tech}
-
-@cgitemplate
-
-@bye
+@*
+@rawhtml{
+<?php
+  define ('PAGEURL',     '');			// use page-relative addressing
+  define ('SRCDIR',      './test-files/');	// script-relative path
+  define ('SRCURL',      'test-files/'); 	// use site-relative addressing
+  define ('PARENTMARK',  '<img src="http://birgrave/icons/back.gif" alt="DIR" />');
+  define ('CURRENTMARK', '<img src="http://birgrave/icons/folder.open.png" alt="DIR" />');
+  define ('DIRMARK',     '<img src="http://birgrave/icons/folder.png" alt="DIR"/>');
+  define ('FILEMARK',    '<img src="http://birgrave/icons/text.png" alt="DAT"/>');
+  define ('SOUNDMARK',   '<img src="http://birgrave/icons/sound2.png" alt="SND"/>');
+  define ('ARCHIVEMARK', '<img src="http://birgrave/icons/compressed.png" alt="ARC"/>');
+  include '../php/file-browser.php';
+?>
+}

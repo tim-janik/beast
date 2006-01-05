@@ -7,6 +7,8 @@ GENERATED = $(strip			\
 	screenshots.phpini		\
 )
 PHP_TARGETS = $(strip			\
+	php/file-browser.php		\
+	php/file-upload.php		\
 	php/gallery.php			\
 	php/screenshots.phpini		\
 )
@@ -24,6 +26,8 @@ HTML_TARGETS = $(strip			\
 	html/synthesis-links.html	\
 	html/search.phtml		\
 	html/screenshots.phtml		\
+	html/sound-browser.phtml	\
+	html/sound-upload.phtml		\
 )
 ${HTML_TARGETS}: webmenu.doxi beastdefs.doxi
 
@@ -56,7 +60,9 @@ screenshot-files: target-dirs
 TEST_INSTALL_DIR=~/public_html/beast/
 test-install: ${TEST_INSTALL_DIR}
 	rm -rf ${TEST_INSTALL_DIR}/*
+	cp -av ${TEST_INSTALL_DIR}/.htaccess-html html/.htaccess
 	cp -av php/ html/ ${TEST_INSTALL_DIR}
+	ln -s ../../doxer-pics/bse-files ${TEST_INSTALL_DIR}/html/test-files
 
 .PHONY: all-targets target-dirs screenshot-files clean style-files test-install
 

@@ -83,5 +83,5 @@ the new code and please report bugs to our
 
 @dnl ----------------------------- END -----------------------------
 @newstag{NEWS Archive}
-Old news entries are archived in the @uri{beast-doc://oldnews,Ancient News} section.
+Old news entries are archived in the @uri{oldnews.html,Ancient News} section.
 @dnl LocalWords:  website Alper Ersoy efford sid

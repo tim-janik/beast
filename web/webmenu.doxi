@@ -39,10 +39,10 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 @item 		@menuuri{news.html, 				News}
 @item		@menuuri{about.html,				About}
 @item		@menuuri{screenshots.phtml,			Screenshots}
-@item		@menuuri{browse-bse-files.html,			Sound Archive}
+@item		@menuuri{sound-browser.phtml,			Sound Archive}
     @menu_branch{sound-archive}
 	@itemize{none}
-	@item	@menuuri{upload-bse-files.html,			Contribute}
+	@item	@menuuri{sound-upload.phtml,			Contribute}
 	@done
     @done
 @item		@menuuri{documentation.html,			Documentation}
