@@ -91,7 +91,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
     @menu_branch{historic-menu}
 	@itemize{none}
 	@item 	@menuuri{oldnews.html,				Old News}
-	@item 	@menuuri{logo-submissions/index.html, 		Logo Contest}
+	@item 	@menuuri{logogallery.phtml, 			Logo Contest}
 	@done
   @done
 @item 		@menuuri{download.html,				Download}

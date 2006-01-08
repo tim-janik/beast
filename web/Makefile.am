@@ -5,12 +5,14 @@ all:	all-targets
 
 GENERATED = $(strip			\
 	screenshots.phpini		\
+	logogallery.phpini		\
 )
 PHP_TARGETS = $(strip			\
 	php/file-browser.php		\
 	php/file-upload.php		\
 	php/gallery.php			\
 	php/screenshots.phpini		\
+	php/logogallery.phpini		\
 )
 HTML_TARGETS = $(strip			\
 	html/about.html			\
@@ -18,6 +20,7 @@ HTML_TARGETS = $(strip			\
 	html/download.html		\
 	html/documentation.html		\
 	html/development.html		\
+	html/logogallery.phtml		\
 	html/news.html 			\
 	html/historic.html		\
 	html/oldnews.html 		\
@@ -31,12 +34,12 @@ HTML_TARGETS = $(strip			\
 )
 ${HTML_TARGETS}: webmenu.doxi beastdefs.doxi
 
-all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files style-files test-install
+all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files logogallery-files style-files test-install
 
 .DELETE_ON_ERROR: ${PHP_TARGETS} ${HTML_TARGETS} ${GENERATED}
 
 target-dirs:	# rule to create directories
-	mkdir -p php/ html/ html/style/ html/screenshots/
+	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/
 
 php/%.php: %.php
 	cp -v $< $@
@@ -57,6 +60,9 @@ style-files: target-dirs
 screenshot-files: target-dirs
 	cp -a screenshots/* html/screenshots/
 
+logogallery-files: target-dirs
+	cp -a logogallery/* html/logogallery/
+
 TEST_INSTALL_DIR=~/public_html/beast/
 test-install: ${TEST_INSTALL_DIR}
 	rm -rf ${TEST_INSTALL_DIR}/*
@@ -64,13 +70,13 @@ test-install: ${TEST_INSTALL_DIR}
 	cp -av php/ html/ ${TEST_INSTALL_DIR}
 	ln -s ../../doxer-pics/bse-files ${TEST_INSTALL_DIR}/html/test-files
 
-.PHONY: all-targets target-dirs screenshot-files clean style-files test-install
+.PHONY: all-targets target-dirs screenshot-files logogallery-files clean style-files test-install
 
 clean:
 	rm -f html/style/*
 	-rmdir -p html/style/
-	rm -f html/screenshots/*
-	-rmdir -p html/screenshots/
+	rm -f html/screenshots/* html/logogallery/*
+	-rmdir -p html/screenshots/ html/logogallery/
 	rm -f html/*
 	-rmdir -p html/
 	rm -f php/*

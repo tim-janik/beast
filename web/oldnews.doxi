@@ -542,7 +542,7 @@ actually featuring the winner image.
 
 We want to specially thank everyone who sent an entry. You may visit the
 contest entries at the
-@uri{logo-submissions/.html,logo submissions} page.
+@uri{logogallery.phtml,logo submissions} page.
 
 
 @newsentry{Saturday 27 Jul 2002, Hold your breath}
@@ -636,7 +636,7 @@ in this area and love contributing, send off an
 @newsentry{Monday 30 October 2000, BEASTIE BITS}
 
 We've recently had a few more logo submissions, so
-@uri{logo-submissions/.html,logo submissions page}
+@uri{logogallery.phtml,logo submissions page}
 is still worth checking out ;)
 
 BEAST/BSE development has been quite laging recently, mostly because it's type system got
@@ -654,7 +654,7 @@ helping out in this area, please send @uri{mailto://timj@@beast.gtk.org,,us} ema
 
 As announced on Sunday 12 March, we are in search of a decent logo.  Submissions are accepted to
 @uri{ftp://beast.gtk.org/incoming/} and are shown on 
-@uri{beast-doc://logo-submissions/}.
+@uri{logogallery.phtml}.
 If you have questions/comments/feedback, @uri{mailto://timj@@beast.gtk.org,,contact us}.
 
 

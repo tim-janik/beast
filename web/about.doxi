@@ -11,7 +11,7 @@ released as free software under the
 and
 @uri{http://www.gnu.org/copyleft/lesser.html, GNU LGPL}, that runs under unix.
 It supports a wide range of standards in the field, such as MIDI,
-@uri{beast-doc://related-links, WAV/AIFF/MP3/OggVorbis/etc}
+@uri{related-links.html, WAV/AIFF/MP3/OggVorbis/etc}
 audio files and
 @uri{http://www.ladspa.org/, LADSPA}
 modules.
@@ -26,7 +26,7 @@ such as from our
 @uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} page.
 
 Here is an extensive
-@uri{beast-doc://screenshots.phtml, screenshots}
+@uri{screenshots.phtml, screenshots}
 page, showing beast in action.
 
 @beast is an abbreviation for @emph{Bedevilled Audio System}. @bse an abbreviation for

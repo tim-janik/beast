@@ -1,0 +1,20 @@
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST - Logo Contest (Closed)
+
+@subheading @center BEAST - Logo Contest (Closed)
+
+@center{
+The logo contest is now over.@*
+Special thanks to all who have contributed an entry.@*
+As announced on Friday 23 Aug 2002, the winner is @strong{jimmac}.
+}
+
+@*
+@rawhtml{
+<?php
+  define ('GALLERY_FILE', '../php/logogallery.phpini');
+  include '../php/gallery.php';
+?>
+}

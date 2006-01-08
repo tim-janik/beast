@@ -1,3 +1,14 @@
+Sat Jan  7 18:25:00 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile: build logogallery files.
+
+	* web/logogallery.doxi: new file, showing the logo gallery.
+
+	* web/webmenu.doxi:
+	* web/oldnews.doxi:
+	* web/historic.doxi:
+	* web/about.doxi: link fixes.
+
 Thu Jan  5 01:22:36 2006  Tim Janik  <timj@gtk.org>
 
 	* web/sound-browser.doxi: build sound browser page with included php.
