@@ -323,6 +323,9 @@ GarageBand ideas and concepts:
 - MIDI notes are always played back with the current track (or track's instrument)    
     
 TASKS:
+- Preset implementation:
+  - save per-module presets under ~/bse/presets/TypeName.bse
+  - save BseSNet-wide presets by attaching serialized object state to objects (recursively) as generic data, using a string key (preset name)
 - TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
 - TableSynth(note mapping): allow multiple synths and presets per
