@@ -1,16 +1,29 @@
+# translation of it.po to ITALIANO
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
 # Italian translation for the BEAST package.
 # This file is distributed under the same license as the beast package.
-# Copyright (C) 2004 Petrecca Michele <petrecca@interfree.it> OR <michelinux@aliceposta.it>.
-# Copyright (C) 2005 Petrecca Michele <petrecca@interfree.it> OR <michelinux@alice.it>.
+# Copyright (C) 2004 Petrecca Michele <petrecca@interfree.it OR michelinux@aliceposta.it>.
+# Copyright (C) 2005 Petrecca Michele <petrecca@interfree.it OR michelinux@alice.it>.
+# , 2005.
+# michele, 2005.
+# michele, 2005.
+# Michele Petrecca <michelinux@alice.it>, 2005, 2006.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-05-25 23:38+0200\n"
-"PO-Revision-Date: 2005-06-25 22:23+0200\n"
-"Last-Translator: Michele Petrecca\n"
-"Language-Team:  <michelinux@alice.it>\n"
+"PO-Revision-Date: 2006-01-09 23:26+0100\n"
+"Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
+"Language-Team: ITALIANO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,7 +39,7 @@ msgstr "Crea un nuovo progetto"
 
 #: ../beast-gtk/bstapp.c:84
 msgid "_Open..."
-msgstr "_Apri..."
+msgstr "Apri..."
 
 #: ../beast-gtk/bstapp.c:84
 msgid "Open existing project"
@@ -34,7 +47,7 @@ msgstr "Apri un progetto esistente"
 
 #: ../beast-gtk/bstapp.c:86
 msgid "_Merge..."
-msgstr "_Fondi..."
+msgstr "Fondi..."
 
 #: ../beast-gtk/bstapp.c:86
 msgid "Merge an existing project into the current project"
@@ -130,7 +143,7 @@ msgstr "Procedura _Browser"
 
 #: ../beast-gtk/bstapp.c:125
 msgid "Display an overview of all procedures"
-msgstr "Visualizza un insieme delle procedure"
+msgstr "Visualizza un insieme di tutte le procedure"
 
 #: ../beast-gtk/bstapp.c:127
 msgid "Rack Editor"
@@ -174,7 +187,7 @@ msgstr "Nuova Canzone"
 
 #: ../beast-gtk/bstapp.c:141
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
-msgstr "Crea una nuova canzone consitente di un mixer, delle tracce, parti e note"
+msgstr "Crea una nuova canzone consistente di un mixer, tracce, parti e note"
 
 #: ../beast-gtk/bstapp.c:143
 msgid "Add Custom Synthesizer"
@@ -194,7 +207,7 @@ msgstr "Aggiungi un nuovo sintetizzatore MIDI per controllare uno strumento da u
 
 #: ../beast-gtk/bstapp.c:147
 msgid "Remove Song or Synthesizer"
-msgstr "Rimuovi Canzone o SIntetizzatore"
+msgstr "Rimuovi Canzone o Sintetizzatore"
 
 #: ../beast-gtk/bstapp.c:147
 msgid "Remove the currently selected synthesizer (song)"
@@ -474,7 +487,7 @@ msgstr "Disegna Valori"
 
 #: ../beast-gtk/bstdbmeter.c:765
 msgid "Adjust whether to draw dB values instead of lines"
-msgstr ""
+msgstr "Imposta se visualizzare il valore in dB invece che lineare"
 
 #: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
 #: ../beast-gtk/bstdbmeter.c:1563
@@ -1806,131 +1819,131 @@ msgstr "Sposta In Giù"
 
 #: ../beast-gtk/bstrecords.idl:42
 msgid "2 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 2 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:42
 msgid "A 2 value FFT window corresponds to a spectrum with 2 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 2 valori FFT corrisponde ad uno spettro con 2 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:43
 msgid "4 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 4 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:43
 msgid "A 4 value FFT window corresponds to a spectrum with 3 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 4 valori FFT corrisponde ad uno spettro con 3 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:44
 msgid "8 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 8 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:44
 msgid "A 8 value FFT window corresponds to a spectrum with 5 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 8 valori FFT corrisponde ad uno spettro con 5 pichi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:45
 msgid "16 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 16 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:45
 msgid "A 16 value FFT window corresponds to a spectrum with 9 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 16 valori FFT corrisponde ad uno spettro con 9 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:46
 msgid "32 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 32 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:46
 msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 32 valori FFT corrisponde ad uno spettro con 17 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:47
 msgid "64 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 64 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:47
 msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 64 valori FFT corrisponde ad uno spettro con 33 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:48
 msgid "128 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 128 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:48
 msgid "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 128 valori FFT corrisponde ad uno spettro con 65 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:49
 msgid "256 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 256 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:49
 msgid "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 256 valori FFT corrisponde ad uno spettro con 129 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:50
 msgid "512 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 512 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:50
 msgid "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 512 valori FFT corrisponde ad uno spettro con 257 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:51
 msgid "1024 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 1024 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:51
 msgid "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 1024 valori FFT corrisponde ad uno spettro con 513 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:52
 msgid "2048 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 2048 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:52
 msgid "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 2048 valori FFT corrisponde ad uno spettro con 1025 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:53
 msgid "4096 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 4096 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:53
 msgid "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 4096 valori FFT corrisponde ad uno spettro con 2049 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:54
 msgid "8192 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 8192 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:54
 msgid "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 8192 valori FFT corrisponde ad uno spettro con 4097 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:55
 msgid "16384 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 16384 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:55
 msgid "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 16384 valori FFT corrisponde ad uno spettro con 8193 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:56
 msgid "32768 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 32768 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:56
 msgid "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 32768 valori FFT corrisponde ad uno spettro con 16385 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:57
 msgid "65536 Value FFT Window"
-msgstr ""
+msgstr "Finestra con 65536 valori FFT"
 
 #: ../beast-gtk/bstrecords.idl:57
 msgid "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
-msgstr ""
+msgstr "Una finestra con 65536 valori FFT corrisponde ad uno spettro con 32769 picchi di frequenze"
 
 #: ../beast-gtk/bstrecords.idl:61
 msgid "Unspecified length"
@@ -3860,7 +3873,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:86 ../bse/bsecore.idl:263
 msgid "Foot Controller"
-msgstr ""
+msgstr "Controller Pedale"
 
 #: ../bse/bsecore.idl:87 ../bse/bsecore.idl:264
 msgid "Portamento Time"
@@ -3880,7 +3893,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:92 ../bse/bsecore.idl:269
 msgid "Panorama"
-msgstr ""
+msgstr "Panorama"
 
 #: ../bse/bsecore.idl:93 ../bse/bsecore.idl:270
 msgid "Expression"
@@ -4014,7 +4027,7 @@ msgstr "controllo-3"
 
 #: ../bse/bsecore.idl:127 ../bse/bsecore.idl:296
 msgid "Control 4 Foot Controller MSB"
-msgstr ""
+msgstr "Controllo 4 Controllo Pedale MSB"
 
 #: ../bse/bsecore.idl:128 ../bse/bsecore.idl:297
 msgid "Control 5 Portamento Time MSB"
@@ -4038,7 +4051,7 @@ msgstr "controllo-9"
 
 #: ../bse/bsecore.idl:133 ../bse/bsecore.idl:302
 msgid "Control 10 Panorama MSB"
-msgstr ""
+msgstr "Controllo 10 Panorama MSB"
 
 #: ../bse/bsecore.idl:134 ../bse/bsecore.idl:303
 msgid "Control 11 Expression MSB"
@@ -4062,19 +4075,19 @@ msgstr "controllo-15"
 
 #: ../bse/bsecore.idl:139 ../bse/bsecore.idl:308
 msgid "Control 16 General Purpose Controller 1 MSB"
-msgstr ""
+msgstr "Controllo 16 Controllo d'Uso Generale 1 MSB"
 
 #: ../bse/bsecore.idl:140 ../bse/bsecore.idl:309
 msgid "Control 17 General Purpose Controller 2 MSB"
-msgstr ""
+msgstr "Controllo 17 Controllo d'Uso Generale 2 MSB"
 
 #: ../bse/bsecore.idl:141 ../bse/bsecore.idl:310
 msgid "Control 18 General Purpose Controller 3 MSB"
-msgstr ""
+msgstr "Controllo 18 Controllo d'Uso Generale 3 MSB"
 
 #: ../bse/bsecore.idl:142 ../bse/bsecore.idl:311
 msgid "Control 19 General Purpose Controller 4 MSB"
-msgstr ""
+msgstr "Controllo 19 Controllo d'Uso Generale 4 MSB"
 
 #: ../bse/bsecore.idl:143 ../bse/bsecore.idl:312
 msgid "control-20"
@@ -4143,7 +4156,7 @@ msgstr "controllo-35"
 
 #: ../bse/bsecore.idl:160 ../bse/bsecore.idl:329
 msgid "Control 36 Foot Controller LSB"
-msgstr ""
+msgstr "Controllo 36 Controllo Pedale LSB"
 
 #: ../bse/bsecore.idl:161 ../bse/bsecore.idl:330
 msgid "Control 37 Portamento Time LSB"
@@ -4167,7 +4180,7 @@ msgstr "controllo-41"
 
 #: ../bse/bsecore.idl:166 ../bse/bsecore.idl:335
 msgid "Control 42 Panorama LSB"
-msgstr ""
+msgstr "Controllo 42 Panorama LSB"
 
 #: ../bse/bsecore.idl:167 ../bse/bsecore.idl:336
 msgid "Control 43 Expression LSB"
@@ -4191,19 +4204,19 @@ msgstr "controllo-47"
 
 #: ../bse/bsecore.idl:172 ../bse/bsecore.idl:341
 msgid "Control 48 General Purpose Controller 1 LSB"
-msgstr ""
+msgstr "Controllo 48 Controllo d'Uso Generale 1 LSB"
 
 #: ../bse/bsecore.idl:173 ../bse/bsecore.idl:342
 msgid "Control 49 General Purpose Controller 2 LSB"
-msgstr ""
+msgstr "Controllo 49 Controllo d'Uso Generale 2 LSB"
 
 #: ../bse/bsecore.idl:174 ../bse/bsecore.idl:343
 msgid "Control 50 General Purpose Controller 3 LSB"
-msgstr ""
+msgstr "Controllo 50 Controllo d'Uso Generale 3 LSB"
 
 #: ../bse/bsecore.idl:175 ../bse/bsecore.idl:344
 msgid "Control 51 General Purpose Controller 4 LSB"
-msgstr ""
+msgstr "Controllo 51 Controllo d'Uso Generale 4 LSB"
 
 #: ../bse/bsecore.idl:176 ../bse/bsecore.idl:345
 msgid "control-52"
@@ -4528,7 +4541,7 @@ msgstr "ID Thread"
 
 #: ../bse/bsecore.idl:675
 msgid "A unique number identifying this thread"
-msgstr "Un numero unico identfica questo thread"
+msgstr "Un numero unico identifica questo thread"
 
 #: ../bse/bsecore.idl:677
 msgid "Priority"
@@ -5430,9 +5443,9 @@ msgid ""
 msgstr ""
 
 #: ../bse/bseserver.c:591
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file \"%s\" for output: %s"
-msgstr "Fallita l'apertura del file d'uscita \"%s\": %s"
+msgstr "Fallita apertura del file \"%s\" per l'uscita: %s"
 
 #: ../bse/bseserver.c:592
 msgid "Show recording file errors"
@@ -5763,7 +5776,7 @@ msgstr "Licenza"
 
 #: ../bse/bsesuper.c:188
 msgid "Copyright license applying to this object"
-msgstr ""
+msgstr "Licenza del Copyright applicato a questo oggetto"
 
 #: ../bse/bsesuper.c:196
 msgid "Creation Time"
@@ -5874,7 +5887,7 @@ msgstr ""
 
 #: ../data/beast.xml.in.h:1 ../data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
-msgstr ""
+msgstr "File BSE Multi-Part Wave"
 
 #: ../data/beast.xml.in.h:2 ../data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
@@ -5933,6 +5946,9 @@ msgid ""
 "  DEVICE - the PortAudio device to use, 'default' selects default device\n"
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
+"PortAudio PCM driver, in uso %s.\n"
+"  DEVICE - the dispositivo PortAudio da usare, 'default' seleziona il dispositivo predefinito\n"
+"  MODALITA'   - rw = lettura/scrittura, ro = solo in lettura, wo = solo in scrittura\n"
 
 #: ../library/scripts/mixer-splitup-by-track.scm.h:25
 msgid "/Song/Assign Tracks to individual Mixer Busses"
@@ -6072,7 +6088,7 @@ msgstr ""
 
 #: ../library/scripts/record-midi.scm.h:50
 msgid "You probably want to start this script from a part editor."
-msgstr ""
+msgstr "Probabilmente vuoi lanciare questo script da un editor di parti."
 
 #: ../library/scripts/record-midi.scm.h:53
 msgid ""
@@ -6516,11 +6532,11 @@ msgstr "Ingresso audio"
 #: ../plugins/davbassfilter.idl:34 ../plugins/davsyndrum.c:120
 #: ../plugins/davxtalstrings.c:143
 msgid "Trigger In"
-msgstr ""
+msgstr "Ingresso Trigger"
 
 #: ../plugins/davbassfilter.idl:34
 msgid "Trigger input"
-msgstr ""
+msgstr "Ingresso Trigger"
 
 #: ../plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
@@ -6560,7 +6576,7 @@ msgstr "Imposta la durata del decadimento in %"
 
 #: ../plugins/davbassfilter.idl:41
 msgid "Trigger filter"
-msgstr ""
+msgstr "Filtro Trigger"
 
 #: ../plugins/davcanyondelay.c:116
 msgid "Left Audio Input"

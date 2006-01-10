@@ -1,3 +1,8 @@
+Tue Jan 10 08:44:23 2006  Tim Janik  <timj@gtk.org>
+
+	* it.po: translation updates from Michele
+	Petrecca <michelinux@alice.it>.
+
 2006-01-04  Adam Weinberger  <adamw@gnome.org>
 
 	* POTFILES.skip: Removed missing file.
