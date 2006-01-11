@@ -5,21 +5,21 @@
 # Ismael Rubio Rojas <ismael_rubio_rojas@hotmail.com>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2003, 2004.
 # Yelitza Louze <ylouze@redhat.com>, 2003.
-# Jorge Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005.
+# Jorge González <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005, 2006.
 #
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-27 10:50+0000\n"
-"PO-Revision-Date: 2005-07-27 19:08+0200\n"
-"Last-Translator: Jorge Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>\n"
-"Language-Team:  <traductores@es.gnome.org>\n"
+"POT-Creation-Date: 2006-01-11 18:05+0100\n"
+"PO-Revision-Date: 2006-01-11 20:18+0100\n"
+"Last-Translator: Jorge González <jorge.gonzalez.gonzalez@hispalinux.es>\n"
+"Language-Team: Español <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
+"X-Generator: KBabel 1.10.2\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: ../beast-gtk/bstapp.c:82
@@ -3470,7 +3470,7 @@ msgid "Second control input"
 msgstr "Segunda entrada de control"
 
 #: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:193
-#: ../bse/bsestandardosc.c:196 ../bse/bsewaveosc.c:596
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:597
 #: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
 #: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
@@ -3651,7 +3651,7 @@ msgid "Cutoff [Hz]"
 msgstr "Corte [Hz]"
 
 #: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:128
-#: ../bse/bsestandardosc.c:146 ../plugins/bseiirfilter.c:148
+#: ../bse/bsestandardosc.c:148 ../plugins/bseiirfilter.c:148
 #: ../plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Nota"
@@ -3676,23 +3676,23 @@ msgstr ""
 
 #: ../bse/bsebiquadfilter.c:159 ../bse/bsebiquadfilter.c:165
 #: ../bse/bsebiquadfilter.c:171 ../bse/bsebiquadfilter.c:177
-#: ../bse/bsestandardosc.c:153 ../bse/bsestandardosc.c:158
-#: ../bse/bsestandardosc.c:163 ../bse/bsestandardosc.c:168
-#: ../bse/bsewaveosc.c:566 ../bse/bsewaveosc.c:572 ../bse/bsewaveosc.c:578
+#: ../bse/bsestandardosc.c:160 ../bse/bsestandardosc.c:165
+#: ../bse/bsestandardosc.c:170 ../bse/bsestandardosc.c:175
+#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
 msgid "Modulation"
 msgstr "Modulación"
 
-#: ../bse/bsebiquadfilter.c:162 ../bse/bsestandardosc.c:155
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsestandardosc.c:162
 msgid "Strength of linear frequency modulation"
 msgstr "Fuerza de modulación de frecuencia lineal"
 
-#: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:160
-#: ../bse/bsewaveosc.c:575
+#: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:167
+#: ../bse/bsewaveosc.c:576
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Realiza modulación de frecuencia exponencial en vez de lineal"
 
-#: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:165
-#: ../bse/bsewaveosc.c:581
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:172
+#: ../bse/bsewaveosc.c:582
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
 
@@ -3715,8 +3715,8 @@ msgstr "Entrada de sonido"
 msgid "Unfiltered Audio Signal"
 msgstr "Señal de sonido sin filtrar"
 
-#: ../bse/bsebiquadfilter.c:187 ../bse/bsestandardosc.c:188
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsebiquadfilter.c:187 ../bse/bsestandardosc.c:195
+#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
 msgstr "Frecuencia entrada"
@@ -3725,11 +3725,11 @@ msgstr "Frecuencia entrada"
 msgid "Center Frequency Input"
 msgstr "Entrada de frecuencia central"
 
-#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:197
 msgid "Freq Mod In"
 msgstr "Entrada de modulación de frecuencia"
 
-#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:197
 msgid "Frequency Modulation Input"
 msgstr "Entrada de modulación de frecuencia"
 
@@ -3905,7 +3905,7 @@ msgid "Value [float]"
 msgstr "Valor [flotante]"
 
 #: ../bse/bseconstant.c:117 ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:109 ../bse/bsestandardosc.c:142
+#: ../bse/bsemidiinput.c:109 ../bse/bsestandardosc.c:144
 msgid "Frequency"
 msgstr "Frecuencia"
 
@@ -5348,7 +5348,7 @@ msgstr "Ajustes de reproducción"
 msgid "Freq Out"
 msgstr "Frecuencia de salida"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:598
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
 msgid "Gate Out"
 msgstr "Puerta de salida"
 
@@ -5623,72 +5623,72 @@ msgstr "Tempo"
 msgid "Looping"
 msgstr "Realimentación"
 
-#: ../bse/bsesong.proc:36
+#: ../bse/bsesong.proc:37
 msgid "Create a new mixer bus for a Song."
 msgstr "Crear un nuevo bus mezclador para una canción."
 
-#: ../bse/bsesong.proc:73
+#: ../bse/bsesong.proc:74
 msgid "Delete a mixer bus from a Song."
 msgstr "Borrar un bus mezclador de una canción."
 
-#: ../bse/bsesong.proc:113
+#: ../bse/bsesong.proc:114
 msgid "Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr ""
 "Recuperar la salida del bus maestro de una canción, se creará uno si no "
 "existe."
 
-#: ../bse/bsesong.proc:140
+#: ../bse/bsesong.proc:141
 msgid "Retrieve master output bus of a song if it exists."
 msgstr "Recuperar la salida del bus maestro de una canción si existe."
 
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: ../bse/bsesong.proc:171
+#: ../bse/bsesong.proc:172
 msgid "Orphan Parts"
 msgstr "Partes huérfanas"
 
-#: ../bse/bsesong.proc:209
+#: ../bse/bsesong.proc:210
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr ""
 "Asegúrese de que cada parte de la canción esté insertada en al menos una "
 "pista."
 
-#: ../bse/bsesong.proc:244
+#: ../bse/bsesong.proc:245
 msgid "Create a new Part in a Song."
 msgstr "Crear una nueva pieza en una canción."
 
-#: ../bse/bsesong.proc:275
+#: ../bse/bsesong.proc:276
 msgid "Delete a Part from a Song."
 msgstr "Borrar una pieza de una canción."
 
-#: ../bse/bsesong.proc:313
+#: ../bse/bsesong.proc:314
 msgid "Create a new Track for a Song."
 msgstr "Crear una pista nueva para una canción."
 
-#: ../bse/bsesong.proc:349
+#: ../bse/bsesong.proc:350
 msgid "Delete a Track from a Song."
 msgstr "Borrar una pista de una canción."
 
-#: ../bse/bsesong.proc:388
+#: ../bse/bsesong.proc:389
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "Encontrar una pista conveniente para reproducir notas de una pieza dada."
 
-#: ../bse/bsesong.proc:431
+#: ../bse/bsesong.proc:432
 msgid "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
 "Encontrar la primera pista que contenga una pieza, conveniente para "
 "comprobar con las piezas huérfanas."
 
-#: ../bse/bsesong.proc:458
+#: ../bse/bsesong.proc:459
 msgid "Synthesize a note on a song of an active project."
 msgstr "Sintetizar una nota en una canción de un proyecto activo."
 
-#: ../bse/bsesong.proc:508
+#: ../bse/bsesong.proc:509
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Obtener información de la sincronización de una señal específica."
 
-#: ../bse/bsestandardosc.c:105
+#: ../bse/bsestandardosc.c:107
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
@@ -5696,84 +5696,92 @@ msgstr ""
 "EstándarOsc es el oscilador base de BSE que soporta varios tipos de formas "
 "de onda y entradas de modulación."
 
-#: ../bse/bsestandardosc.c:108
+#: ../bse/bsestandardosc.c:110
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Fuentes de sonido/Oscilador estándar"
 
-#: ../bse/bsestandardosc.c:129 ../bse/bsestandardosc.c:135
+#: ../bse/bsestandardosc.c:131 ../bse/bsestandardosc.c:137
 msgid "Wave Form"
 msgstr "Forma de la onda"
 
-#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:558
-#: ../bse/bsewaveosc.c:560 ../bse/bsewaveosc.c:562
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
+#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
 msgid "Wave"
 msgstr "Onda"
 
-#: ../bse/bsestandardosc.c:131
+#: ../bse/bsestandardosc.c:133
 msgid "Oscillator wave form"
 msgstr "Forma de onda del oscilador"
 
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:139
 msgid "Phase"
 msgstr "Fase"
 
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:139
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 "Fase inicial de la forma de onda del oscilador (ciclos de desplazamiento, en "
 "grados)"
 
-#: ../bse/bsestandardosc.c:140 ../bse/bsestandardosc.c:144
-#: ../bse/bsestandardosc.c:148
+#: ../bse/bsestandardosc.c:142 ../bse/bsestandardosc.c:146
+#: ../bse/bsestandardosc.c:150 ../bse/bsestandardosc.c:155
 msgid "Base Frequency"
 msgstr "Frecuencia base"
 
-#: ../bse/bsestandardosc.c:142
+#: ../bse/bsestandardosc.c:144
 msgid "Number of oscillator cycles per second"
 msgstr "Número de ciclos del oscilador por segundo"
 
-#: ../bse/bsestandardosc.c:146
+#: ../bse/bsestandardosc.c:148
 msgid "Musical notation corresponding to the oscillator frequency"
 msgstr "Notación musical correspondiente a la frecuencia del oscilador"
 
-#: ../bse/bsestandardosc.c:150
+#: ../bse/bsestandardosc.c:152
+msgid "Transpose"
+msgstr "Transponer"
+
+#: ../bse/bsestandardosc.c:152
+msgid "Transposition of the oscillator frequency in semitones"
+msgstr "Transponer la frecuencia del oscilador en semitonos"
+
+#: ../bse/bsestandardosc.c:157
 msgid "Fine Tune"
 msgstr "Ajuste fino"
 
-#: ../bse/bsestandardosc.c:150
-msgid "Amount of detuning in cent (hundredth part of a note)"
-msgstr "Porcentaje de desentonación (centésima parte de una nota)"
+#: ../bse/bsestandardosc.c:157
+msgid "Amount of detuning in cent (hundredth part of a semitone)"
+msgstr "Porcentaje de desentonación (centésima parte de un semitono)"
 
-#: ../bse/bsestandardosc.c:155 ../bse/bsewaveosc.c:568
+#: ../bse/bsestandardosc.c:162 ../bse/bsewaveosc.c:569
 msgid "Input Modulation [%]"
 msgstr "Modulación de entrada [%]"
 
-#: ../bse/bsestandardosc.c:160 ../bse/bsewaveosc.c:574
+#: ../bse/bsestandardosc.c:167 ../bse/bsewaveosc.c:575
 msgid "Exponential FM"
 msgstr "FM exponencial"
 
-#: ../bse/bsestandardosc.c:165 ../bse/bsewaveosc.c:580
+#: ../bse/bsestandardosc.c:172 ../bse/bsewaveosc.c:581
 msgid "Octaves"
 msgstr "Octavas"
 
-#: ../bse/bsestandardosc.c:170
+#: ../bse/bsestandardosc.c:177
 msgid "Self Modulation [%]"
 msgstr "Automodulación [%]"
 
-#: ../bse/bsestandardosc.c:170
+#: ../bse/bsestandardosc.c:177
 msgid "Strength of self modulation"
 msgstr "Fuerza de automodulación"
 
 #. disabled
-#: ../bse/bsestandardosc.c:173 ../bse/bsestandardosc.c:180
+#: ../bse/bsestandardosc.c:180 ../bse/bsestandardosc.c:187
 msgid "Pulse Modulation"
 msgstr "Modulación de pulsos"
 
-#: ../bse/bsestandardosc.c:175
+#: ../bse/bsestandardosc.c:182
 msgid "Pulse Width"
 msgstr "Anchura del pulso"
 
-#: ../bse/bsestandardosc.c:176
+#: ../bse/bsestandardosc.c:183
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -5781,11 +5789,11 @@ msgstr ""
 "Proporción de la componente positiva de la forma de onda del pulso (El pulso "
 "tiene que ser seleccionado como forma de onda para que esto surta efecto)"
 
-#: ../bse/bsestandardosc.c:182
+#: ../bse/bsestandardosc.c:189
 msgid "Pulse Modulation [%]"
 msgstr "Modulación de pulso [%]"
 
-#: ../bse/bsestandardosc.c:183
+#: ../bse/bsestandardosc.c:190
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -5793,35 +5801,35 @@ msgstr ""
 "Fuerza del pulso de entrada de modulación (El pulso tiene que tener "
 "seleccionada una forma de onda para que esto tenga efecto)"
 
-#: ../bse/bsestandardosc.c:188
+#: ../bse/bsestandardosc.c:195
 msgid "Oscillating Frequency Input"
 msgstr "Entrada de frecuencia de oscilación"
 
-#: ../bse/bsestandardosc.c:192
+#: ../bse/bsestandardosc.c:199
 msgid "PWM In"
 msgstr "Entrada PWM"
 
-#: ../bse/bsestandardosc.c:192
+#: ../bse/bsestandardosc.c:199
 msgid "Pulse Width Modulation Input"
 msgstr "Ancho de la entrada de modulación del pulso (PWM)"
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:201 ../bse/bsewaveosc.c:593
 msgid "Sync In"
 msgstr "Entrada de sincronización"
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:201 ../bse/bsewaveosc.c:593
 msgid "Syncronization Input"
 msgstr "Entrada de sincronización"
 
-#: ../bse/bsestandardosc.c:196
+#: ../bse/bsestandardosc.c:203
 msgid "Oscillated Output"
 msgstr "Salidas oscilantes"
 
-#: ../bse/bsestandardosc.c:198
+#: ../bse/bsestandardosc.c:205
 msgid "Sync Out"
 msgstr "Salida de sincronización"
 
-#: ../bse/bsestandardosc.c:198
+#: ../bse/bsestandardosc.c:205
 msgid "Syncronization Output"
 msgstr "Salida de sincronización"
 
@@ -5957,7 +5965,7 @@ msgstr "Canales MIDI asignados a esta pista, 0 usa un canal privado por pista"
 msgid "Mixer busses used as output for this track"
 msgstr "Buses mezcladores usados como salida para esta pista"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:306
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "Onda «%s»: error al cargar parte de la onda para la frecuencia %f: %s"
@@ -5970,41 +5978,41 @@ msgstr "/Fuentes de sonido/Oscilador de onda"
 msgid "List of available waves to choose as oscillator source"
 msgstr "Lista de ondas disponibles para elegir como fuente del oscilador"
 
-#: ../bse/bsewaveosc.c:560
+#: ../bse/bsewaveosc.c:561
 msgid "Wave used as oscillator source"
 msgstr "Onda usada como fuente del oscilador"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:565
 msgid "Channel"
 msgstr "Canal"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:565
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 "Canal de sonido para reproducir, usualmente 1 es el izquierdo, 2 es el "
 "derecho"
 
-#: ../bse/bsewaveosc.c:569
+#: ../bse/bsewaveosc.c:570
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Fuerza de modulación para la modulación de frecuencia lineal"
 
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Entrada de frecuencia"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:595
 msgid "Mod In"
 msgstr "Entrada del módulo"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:595
 msgid "Modulation Input"
 msgstr "Entrada de modulación"
 
-#: ../bse/bsewaveosc.c:596
+#: ../bse/bsewaveosc.c:597
 msgid "Wave Output"
 msgstr "Salida de onda"
 
-#: ../bse/bsewaveosc.c:598
+#: ../bse/bsewaveosc.c:599
 msgid "Gate Output"
 msgstr "Salida de puerta"
 
@@ -6721,7 +6729,7 @@ msgstr "Información"
 msgid "Diagnostic"
 msgstr "Diagnóstico"
 
-#: ../tools/bsewavetool.cc:930
+#: ../tools/bsewavetool.cc:935
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
