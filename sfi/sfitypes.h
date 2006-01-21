@@ -25,6 +25,16 @@ G_BEGIN_DECLS
 
 
 /* --- Sfi typedefs --- */
+
+/* 64 bit types - FIXME: assert in configure script that sizeof (long long) == 8 */
+typedef long long               sfi_int64;
+typedef unsigned long long      sfi_uint64;
+
+#if (1) /* internal: do not make these available when compiling third party code */
+#define int64                   sfi_int64
+#define uint64                  sfi_uint64
+#endif
+
 typedef gboolean		SfiBool;
 typedef gint			SfiInt;
 #define	SFI_MAXINT		(+2147483647)
