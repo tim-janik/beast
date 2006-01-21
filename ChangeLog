@@ -1,3 +1,7 @@
+Sat Jan 21 21:32:23 2006  Tim Janik  <timj@gtk.org>
+
+	* web/synthesis-links.doxi: added synth secret title comments.
+
 Fri Jan 20 20:45:13 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/bse/loophandle.c:
