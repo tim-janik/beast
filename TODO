@@ -5,7 +5,13 @@
 - print detail score with loop range (in progress printing)
 - save detail_names as comment with scroe_details
 - adjust inner loop abortion according to normed score values
+INCOMPAT:
+- merge 2 * BseSimpleADSR into 1
+- move BseConstant to 4 channels
+- delete BseAtanDistort
+- nuke compat code
 RELEASE(0.6.7):
+- BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
 - gxk_tree_view_append_text_columns: s/on or of/on or off/
 - the properties dialog should have a "CANCEL" button, not close (since there's "apply")
 - store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
@@ -326,6 +332,26 @@ TASKS:
 - Preset implementation:
   - save per-module presets under ~/bse/presets/TypeName.bse
   - save BseSNet-wide presets by attaching serialized object state to objects (recursively) as generic data, using a string key (preset name)
+- InstrumentPresets -- Stefan
+  Instrument presets are a way to specify multiple useful parameter sets for one instruments.
+  GUI:
+    * in the SNet View, the user can edit the properties of the modules in the SNet - here, a new combo box is added where the user can choose between multiple parameter sets: presets
+    * choosing a preset will set all properties in the SNet to the preset values
+    * editing properties will switch the combo box to a new entry called "modified" (be consistent with ModulePresets? here)
+    * modified presets can be saved over an existing preset in the combo box or to a new preset
+    * modifying the SNet when there are already presets will try to do the least destructive operation to the presets, that is
+          o adding a new module will add its default parameters to all presets: the user needs to check and possibly adapt all presets if he adds (and connects) new modules
+          o removing a module will remove it from all presets
+          o changing connections will change them in all presets
+  Implementation details:
+    * presets are implemented as parasite data, which is added to the modules in the SNet - that way, in an SNet with the Presets "A, B, C", each module will have three complete sets of parasite data specifying all values of all module properties
+    * presets are always included into the SNet - there are no seperate "preset files" - instead, an SNet for which three presets are available will be one .bse file, containing all parasite data for all three presets
+    * including an instrument into a Song will include all its presets into the Song
+  Remarks:
+    * for getting an even more intuitive interface to presets, the following things could be added:
+          o a GUI editor, that allows the user to provide a GUI for a synthesis network
+          o presets that work together with the GUI editor
+    * however, as implementing this will take a lot of time, we decided to go with an easier approach to presets right now, and add the extensive version later
 - TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
 - TableSynth(note mapping): allow multiple synths and presets per
