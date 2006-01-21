@@ -1,3 +1,7 @@
+Sat Jan 21 18:50:44 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsldatacache.[hc]: Change caching code to handle 64 bit offsets.
+
 Fri Jan 20 14:46:43 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsldefs.h: GslLong is now 64-bit on any platform (before, it was

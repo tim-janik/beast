@@ -59,7 +59,7 @@
 /* --- prototypes --- */
 static void			dcache_free		(GslDataCache	*dcache);
 static GslDataCacheNode*	data_cache_new_node_L	(GslDataCache	*dcache,
-							 gsize		 offset,
+							 int64		 offset,
 							 guint		 pos,
 							 gboolean	 demand_load);
 
@@ -252,7 +252,7 @@ gsl_data_cache_unref (GslDataCache *dcache)
 
 static inline GslDataCacheNode**
 data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
-				   gsize         offset)
+				   int64         offset)
 {
   if (dcache->n_nodes > 0)
     {
@@ -288,14 +288,14 @@ data_cache_lookup_nextmost_node_L (GslDataCache *dcache,
 
 static inline GslDataCacheNode*
 data_cache_new_node_L (GslDataCache *dcache,
-		       gsize	     offset,
+		       int64	     offset,
 		       guint	     pos,
 		       gboolean	     demand_load)
 {
   GslDataCacheNode **node_p, *dnode;
   GslDataType *data, *node_data;
   guint new_node_array_size, old_node_array_size = UPPER_POWER2 (dcache->n_nodes);
-  GslLong dhandle_length;
+  int64 dhandle_length;
   guint i, size;
   gint result;
 
@@ -335,8 +335,8 @@ data_cache_new_node_L (GslDataCache *dcache,
   GslDataCacheNode *prev_node = pos ? dcache->nodes[pos - 1] : NULL;
   if (prev_node)
     {
-      GslLong prev_node_size = dcache->node_size;
-      GslLong prev_node_offset = prev_node->offset;
+      int64 prev_node_size = dcache->node_size;
+      int64 prev_node_offset = prev_node->offset;
       GslDataType *prev_node_data = prev_node->data;
       
       /* padding around prev_node */
@@ -347,7 +347,7 @@ data_cache_new_node_L (GslDataCache *dcache,
       /* check for overlap */
       if (offset < prev_node_offset + prev_node_size)
         {
-          GslLong overlap = prev_node_offset + prev_node_size - offset;
+          int64 overlap = prev_node_offset + prev_node_size - offset;
           memcpy (data, prev_node_data + offset - prev_node_offset, overlap * sizeof (data[0]));
           size -= overlap;
           offset += overlap;
@@ -387,7 +387,7 @@ data_cache_new_node_L (GslDataCache *dcache,
 
 GslDataCacheNode*
 gsl_data_cache_ref_node (GslDataCache       *dcache,
-			 gsize               offset,
+			 int64               offset,
 			 GslDataCacheRequest load_request)
 {
   GslDataCacheNode **node_p, *node;

@@ -45,7 +45,7 @@ struct _GslDataCache
 };
 struct _GslDataCacheNode
 {
-  gsize		offset;
+  int64	        offset;
   guint		ref_count;
   guint		age;
   GslDataType  *data;	/* NULL while busy */
@@ -66,7 +66,7 @@ void		  gsl_data_cache_unref		(GslDataCache	    *dcache);
 void		  gsl_data_cache_open		(GslDataCache	    *dcache);
 void		  gsl_data_cache_close		(GslDataCache	    *dcache);
 GslDataCacheNode* gsl_data_cache_ref_node	(GslDataCache	    *dcache,
-						 gsize		     offset,
+						 int64		     offset,
 						 GslDataCacheRequest load_request);
 void		  gsl_data_cache_unref_node	(GslDataCache	    *dcache,
 						 GslDataCacheNode   *node);
