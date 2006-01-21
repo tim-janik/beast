@@ -390,7 +390,7 @@ gsl_data_find_loop5 (GslDataHandle     *dhandle,
         }
     }
   gsl_progress_wipe (&pstate);
-  g_printerr ("  LOOP: %6lu - %6lu [%6lu] (block: %6lu - %6lu [%6lu]) (score:%+g at:%5.1f%%)\n",
+  g_printerr ("  LOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g at:%5.1f%%)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               bstart, bstart + blength, blength,
               config->score, score_pcount * 100.0 / pdist);
@@ -507,7 +507,7 @@ gsl_data_find_loop4 (GslDataHandle     *dhandle,
                              config->score, config->loop_length, lstart, llength);
       }
   gsl_progress_wipe (&pstate);
-  g_printerr ("  LOOP: %6lu - %6lu [%6lu] (block: %6lu - %6lu [%6lu]) (score:%+g at:%5.1f%%)\n",
+  g_printerr ("  LOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g at:%5.1f%%)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               bstart, bstart + blength, blength,
               config->score, score_pcount * 100.0 / pdist);
@@ -645,7 +645,7 @@ gsl_data_find_loop2 (GslDataHandle     *dhandle,
     }
   gsl_progress_wipe (&pstate);
   ll = config->loop_length;
-  g_printerr ("loop size: %lu\n", ll);
+  g_printerr ("loop size: %llu\n", ll);
 
   /* test every possible position */
   minll = ll;
@@ -832,7 +832,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
   gsl_progress_wipe (&pstate);
   if (!found_loop)
     goto seek_loop_done;
-  g_printerr ("  lLOOP: %6lu - %6lu [%6lu] (block: %6lu - %6lu [%6lu]) (score:%+g)\n",
+  g_printerr ("  lLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (score:%+g)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               config->block_start, config->block_start + config->block_length, config->block_length,
               config->score);
@@ -860,7 +860,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
         }
     }
   gsl_progress_wipe (&pstate);
-  g_printerr ("  pLOOP: %6lu - %6lu [%6lu] (block: %6lu - %6lu [%6lu]) (weighted-frame-score:%+g)\n",
+  g_printerr ("  pLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (weighted-frame-score:%+g)\n",
               config->loop_start, config->loop_start + config->loop_length, config->loop_length,
               config->block_start, config->block_start + config->block_length, config->block_length,
               config->score);
@@ -894,7 +894,7 @@ gsl_data_find_loop1 (GslDataHandle    *dhandle,
           gsl_progress_notify (&pstate, ++pcount * 100.0 / pdist, "frame-score:%+g", config->score);
         }
       gsl_progress_wipe (&pstate);
-      g_printerr ("  sLOOP: %6lu - %6lu [%6lu] (block: %6lu - %6lu [%6lu]) (frame[%d]-score:%+g)\n",
+      g_printerr ("  sLOOP: %6llu - %6llu [%6llu] (block: %6llu - %6llu [%6llu]) (frame[%d]-score:%+g)\n",
                   config->loop_start, config->loop_start + config->loop_length, config->loop_length,
                   config->block_start, config->block_start + config->block_length, config->block_length,
                   frame, config->score);
@@ -1048,10 +1048,10 @@ gsl_data_find_loop0 (GslDataHandle         *dhandle,
 	{
 	  perc_count = 0;
 	  perc_val++;
-	  g_printerr ("processed %lu%%       \r", perc_val);
+	  g_printerr ("processed %llu%%       \r", perc_val);
 	}
     }
-  g_printerr ("\nbest match (%s): len in samples=%ld, len=%ld, score=%f\n",
+  g_printerr ("\nbest match (%s): len in samples=%lld, len=%lld, score=%f\n",
 	      (cfg->cmp_strategy == GSL_DATA_TAIL_LOOP_CMP_CORRELATION) ? "correlation" : "least squares",
 	      bestloopsize, bestloopsize, bestscore);
 

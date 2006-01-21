@@ -1451,7 +1451,7 @@ public:
 	GslLong size = 1;
 	gdouble freq = gsl_data_handle_osc_freq (chunk->dhandle);
 
-	sfi_info ("THINOUT: chunk %f: error %f, size %ld", freq, error, size);
+	sfi_info ("THINOUT: chunk %f: error %f, size %lld", freq, error, size);
 
 	chunk_data.sizes.push_back (size);
 	chunk_data.errors.push_back (error);

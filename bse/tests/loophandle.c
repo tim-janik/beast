@@ -127,7 +127,7 @@ gsl_data_handle_new_looped_reference (GslDataHandle *src_handle,
   success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
   if (success)
     {
-      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%lx:0x%lx) /", src_handle->name, loop_first, loop_last);
+      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%llx:0x%llx) /", src_handle->name, loop_first, loop_last);
       lhandle->dhandle.vtable = &loop_handle_reference_vtable;
       lhandle->src_handle = gsl_data_handle_ref (src_handle);
       lhandle->requested_first = loop_first;
@@ -161,7 +161,7 @@ check_loop (GslDataHandle *src_handle,
 
   GslDataPeekBuffer peek_buffer		  = { +1 /* incremental direction */, 0, };
   GslDataPeekBuffer peek_buffer_reference = { +1 /* incremental direction */, 0, };
-  sfi_info ("check_loop<%ld,%ld>", loop_start, loop_end);
+  sfi_info ("check_loop<%lld,%lld>", loop_start, loop_end);
 
   BseErrorType error;
   error = gsl_data_handle_open (loop_handle);
@@ -186,7 +186,7 @@ check_loop (GslDataHandle *src_handle,
 
       if (a != b)
 	{
-	  sfi_error ("bad read in loop<%ld,%ld> position %ld: a = %f, b = %f", loop_start, loop_end, i, a, b);
+	  sfi_error ("bad read in loop<%lld,%lld> position %lld: a = %f, b = %f", loop_start, loop_end, i, a, b);
 	  exit (1);
 	}
     }

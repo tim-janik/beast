@@ -1,3 +1,10 @@
+Fri Jan 20 20:45:13 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/bse/loophandle.c:
+	* tools/bseloopfuncs.c:
+	* tools/bsewavetool.cc: Adapted printf format strings to the GslLong
+	change ("%ld" -> "%lld").
+	
 Sat Jan  7 18:25:00 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile: build logogallery files.
