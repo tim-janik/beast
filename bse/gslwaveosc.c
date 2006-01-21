@@ -336,7 +336,7 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
   wosc->x = wosc->block.start + CLAMP (wosc->config.channel, 0, wosc->wchunk->n_channels - 1);
 
-  DEBUG ("wave lookup: want=%f got=%f length=%lu\n",
+  DEBUG ("wave lookup: want=%f got=%f length=%llu\n",
 	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
 
   wosc->last_freq_level = BSE_SIGNAL_FROM_FREQ (base_freq);

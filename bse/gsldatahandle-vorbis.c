@@ -186,7 +186,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   if (err < 0)
     {
       if (0)
-        g_printerr ("failed to open ogg at offset %d (real offset=%ld) (add-zoffset=%d): %s\n",
+        g_printerr ("failed to open ogg at offset %d (real offset=%lld) (add-zoffset=%d): %s\n",
                     vhandle->rfile_byte_offset,
                     vfile->byte_offset,
                     vhandle->rfile_add_zoffset,
@@ -263,7 +263,7 @@ dh_vorbis_coarse_seek (GslDataHandle *dhandle,
       vhandle->pcm_length = 0;
     }
   if (0)
-    g_printerr ("OggS-SEEK: at %lu want %lu got %lu (diff-requested %ld)\n",
+    g_printerr ("OggS-SEEK: at %llu want %llu got %llu (diff-requested %lld)\n",
 		opos, pos, vhandle->pcm_pos, pos - opos);
 
   return vhandle->pcm_pos * dhandle->setup.n_channels;

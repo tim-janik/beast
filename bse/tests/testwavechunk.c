@@ -76,7 +76,7 @@ run_tests (GslWaveLoopType loop_type,
     g_error ("failed to open wave chunk: %s", bse_error_blurb (error));
   gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
-    g_print ("SETUP: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d playdir=%+d\n",
+    g_print ("SETUP: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d playdir=%+d\n",
 	     wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, play_dir);
   gsl_wave_chunk_debug_block (wchunk, - DEBUG_SIZE / 2, DEBUG_SIZE, cmpblock - DEBUG_SIZE / 2);
 
@@ -112,13 +112,13 @@ run_tests (GslWaveLoopType loop_type,
 	      verbosity = 99;
 	    }
 	  if (verbosity >= VERBOSITY_CHECKS)
-	    g_print ("%s: offset=%d (block.offset=%ld) value=%.16f found=%.16f\n",
+	    g_print ("%s: offset=%d (block.offset=%lld) value=%.16f found=%.16f\n",
 		     fabs (cmpblock[i] - v) > 1e-15 ? "MISMATCH" : "match",
 		     i, (i - block.offset), cmpblock[i], v);
 	}
       if (abort)
 	{
-	  g_error ("mismatches occoured, setup: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d (length=%ld)",
+	  g_error ("mismatches occoured, setup: loop_type=%u loop_first=%lld loop_last=%lld loop_count=%d (length=%lld)",
 		   wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count,
 		   gsl_data_handle_length (wchunk->dcache->dhandle));
 	}
@@ -144,8 +144,8 @@ print_block (GslWaveChunk      *wchunk,
   if (verbosity >= VERBOSITY_BLOCKS)
     {
       g_print ("BLOCK:");
-      g_print (" offset=%ld", block->offset);
-      g_print (" length=%ld", block->length);
+      g_print (" offset=%lld", block->offset);
+      g_print (" length=%lld", block->length);
       g_print (" dirstride=%d", block->dirstride);
     }
 

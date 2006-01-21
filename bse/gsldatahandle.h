@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 /* --- typedefs & structures --- */
 typedef struct {
   guint		n_channels;
-  GslLong	n_values;
+  int64		n_values;
   gchar       **xinfos;
   guint         bit_depth : 8;
   guint         needs_cache : 1;
@@ -56,9 +56,9 @@ struct _GslDataHandleFuncs
 {
   BseErrorType	 (*open)		(GslDataHandle		*data_handle,
 					 GslDataHandleSetup	*setup);
-  GslLong	 (*read)		(GslDataHandle		*data_handle,
-					 GslLong		 voffset, /* in values */
-					 GslLong		 n_values,
+  int64		 (*read)		(GslDataHandle		*data_handle,
+					 int64			 voffset, /* in values */
+					 int64			 n_values,
 					 gfloat			*values);
   void		 (*close)		(GslDataHandle		*data_handle);
   GslDataHandle* (*get_source)          (GslDataHandle          *data_handle);
@@ -72,7 +72,7 @@ GslDataHandle*	  gsl_data_handle_ref		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		(GslDataHandle	  *dhandle);
 BseErrorType	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_close		(GslDataHandle	  *dhandle);
-GslLong		  gsl_data_handle_length	(GslDataHandle	  *data_handle);
+int64		  gsl_data_handle_length	(GslDataHandle	  *data_handle);
 #define	          gsl_data_handle_n_values(      dh) \
 		                                 gsl_data_handle_length (dh)
 guint		  gsl_data_handle_n_channels	(GslDataHandle	  *data_handle);
@@ -80,36 +80,36 @@ guint		  gsl_data_handle_bit_depth	(GslDataHandle	  *data_handle);
 gfloat		  gsl_data_handle_mix_freq	(GslDataHandle	  *data_handle);
 gfloat		  gsl_data_handle_osc_freq	(GslDataHandle	  *data_handle);
 const gchar*	  gsl_data_handle_name		(GslDataHandle	  *data_handle);
-GslLong		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
-						 GslLong	   value_offset,
-						 GslLong	   n_values,
+int64		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
+						 int64		   value_offset,
+						 int64		   n_values,
 						 gfloat		  *values);
 GslDataHandle*    gsl_data_handle_get_source    (GslDataHandle    *dhandle);
 GslDataHandle*	  gsl_data_handle_new_cut	(GslDataHandle	  *src_handle,
-						 GslLong	   cut_offset,
-						 GslLong	   n_cut_values);
+						 int64		   cut_offset,
+						 int64		   n_cut_values);
 GslDataHandle*	  gsl_data_handle_new_crop	(GslDataHandle	  *src_handle,
-						 GslLong	   n_head_cut,
-						 GslLong	   n_tail_cut);
+						 int64  	   n_head_cut,
+						 int64		   n_tail_cut);
 GslDataHandle*	  gsl_data_handle_new_reverse	(GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
 						 guint             pasted_bit_depth,
-						 GslLong	   insertion_offset,
-						 GslLong	   n_paste_values,
+						 int64		   insertion_offset,
+						 int64		   n_paste_values,
 						 const gfloat	  *paste_values,
 						 void            (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_mem	(guint		   n_channels,
 						 guint             bit_depth,
                                                  gfloat            mix_freq,
                                                  gfloat            osc_freq,
-						 GslLong	   n_values,
+						 int64		   n_values,
 						 const gfloat	  *values,
 						 void            (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_dcached	(GslDataCache	  *dcache);
 /* cheap and inefficient, testpurpose only */
 GslDataHandle*	  gsl_data_handle_new_looped	(GslDataHandle	  *src_handle,
-						 GslLong	   loop_first,
-						 GslLong	   loop_last);
+						 int64		   loop_first,
+						 int64		   loop_last);
 
 /* --- xinfo handling --- */
 GslDataHandle* gsl_data_handle_new_add_xinfos     (GslDataHandle *src_handle,
@@ -144,8 +144,8 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 guint		   byte_order,
                                                  gfloat            mix_freq,
                                                  gfloat            osc_freq,
-						 GslLong	   byte_offset,
-						 GslLong	   n_values,
+						 int64		   byte_offset,
+						 int64		   n_values,
                                                  gchar           **xinfos);
 GslDataHandle*	  gsl_wave_handle_new_zoffset	(const gchar	  *file_name,
 						 guint		   n_channels,
@@ -153,8 +153,8 @@ GslDataHandle*	  gsl_wave_handle_new_zoffset	(const gchar	  *file_name,
 						 guint		   byte_order,
                                                  gfloat            mix_freq,
                                                  gfloat            osc_freq,
-						 GslLong	   byte_offset,
-						 GslLong	   byte_size,
+						 int64		   byte_offset,
+						 int64		   byte_size,
                                                  gchar           **xinfos);
 guint		  gsl_wave_format_bit_depth	(GslWaveFormatType format);
 guint		  gsl_wave_format_byte_width	(GslWaveFormatType format);

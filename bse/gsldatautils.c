@@ -379,7 +379,7 @@ gsl_data_detect_signal (GslDataHandle *handle,
     }
   if (xcheck - minsamp > 0)
     g_printerr("###################");
-  g_printerr ("active area %ld .. %ld, signal>16 at: %ld\t diff: %ld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
+  g_printerr ("active area %lld .. %lld, signal>16 at: %lld\t diff: %lld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
 
   /* release open reference */
   gsl_data_handle_close (handle);
@@ -540,7 +540,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	    {
 	      start = offset + l;
 	      end = offset + l + lsize - 1;
-	      g_print ("\nimproved: %f < %f: [0x%lx..0x%lx] (%lu)\n", score, best_score, start, end, lsize);
+	      g_print ("\nimproved: %f < %f: [0x%llx..0x%llx] (%llu)\n", score, best_score, start, end, lsize);
 	      best_score = score;
 	    }
 	  else
@@ -556,7 +556,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
     }
   gsl_data_handle_close (shandle);
 
-  g_print ("\nhalted: %f: [0x%lx..0x%lx] (%lu)\n", best_score, start, end, end - start + 1);
+  g_print ("\nhalted: %f: [0x%llx..0x%llx] (%llu)\n", best_score, start, end, end - start + 1);
   
   *loop_start_p = start;
   *loop_end_p = end;
@@ -766,7 +766,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
   gsl_data_handle_open (clip_handle);
   gsl_data_handle_unref (clip_handle);
   if (info)
-    sfi_info ("Clipping: start=%llu end=%llu length=%ld (delta=%ld)", head, tail, gsl_data_handle_n_values (clip_handle),
+    sfi_info ("Clipping: start=%llu end=%llu length=%lld (delta=%lld)", head, tail, gsl_data_handle_n_values (clip_handle),
               gsl_data_handle_n_values (clip_handle) - gsl_data_handle_n_values (dhandle));
   result->clipped_head = head > 0;
   result->clipped_tail = last_value != tail;
@@ -794,7 +794,7 @@ gsl_data_clip_sample (GslDataHandle     *dhandle,
       gsl_data_handle_open (fade_handle);
       gsl_data_handle_unref (fade_handle);
       if (info)
-        sfi_info ("Adding fade-in ramp: ramp_length=%ld length=%ld", l, gsl_data_handle_n_values (fade_handle));
+        sfi_info ("Adding fade-in ramp: ramp_length=%lld length=%lld", l, gsl_data_handle_n_values (fade_handle));
     }
   else
     {

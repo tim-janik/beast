@@ -1,3 +1,18 @@
+Fri Jan 20 14:46:43 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsldefs.h: GslLong is now 64-bit on any platform (before, it was
+	only 64 bit on 64 bit platforms).
+
+	* tests/testwavechunk.c:
+	* gsldatahandle-mad.c:
+	* gsldatahandle-vorbis.c:
+	* gsldatautils.c:
+	* gslwavechunk.c:
+	* gslwaveosc.c: Adapted printf format strings to the GslLong change
+	("%ld" -> "%lld").
+
+	* gsldatahandle.[hc]: Changed GslLong -> int64.
+
 Fri Dec 23 00:57:58 2005  Tim Janik  <timj@gtk.org>
 
 	* bseconstvalues.h: provide BSE_MIN_TRANSPOSE and BSE_MAX_TRANSPOSE

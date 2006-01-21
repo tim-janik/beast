@@ -557,7 +557,7 @@ dh_mad_read (GslDataHandle *dhandle,
     }
   else /* something went wrong here, _badly_ */
     {
-      sfi_diag ("MAD-init: pcm position screwed (pos: %lu, handle-pos: %lu), aborting read",
+      sfi_diag ("MAD-init: pcm position screwed (pos: %llu, handle-pos: %llu), aborting read",
                 pos, handle->pcm_pos);	
       return -1;
     }
@@ -624,7 +624,7 @@ dh_mad_coarse_seek (GslDataHandle *dhandle,
 	    }
 	}
 
-      MAD_DEBUG ("seek-done: at %lu (f:%lu) want %lu (f:%lu) got %lu (f:%lu) diff %ld (diff-requested %ld)",
+      MAD_DEBUG ("seek-done: at %llu (f:%llu) want %llu (f:%llu) got %llu (f:%llu) diff %lld (diff-requested %lld)",
 		 opos, opos / handle->frame_size,
 		 pos, pos / handle->frame_size,
 		 handle->pcm_pos, handle->pcm_pos / handle->frame_size,

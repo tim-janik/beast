@@ -292,7 +292,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
       iter->rel_pos = wchunk->n_pad_values;
       iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, wchunk->head.first - pos);
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_UNDEF, pre-head %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	g_print ("PHASE_UNDEF, pre-head %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_UNDEF (wchunk);
     }
   if (UNLIKELY (pos > wchunk->tail.last))					/* outside wave boundaries */
@@ -301,14 +301,14 @@ wave_identify_offset (GslWaveChunk *wchunk,
       iter->rel_pos = wchunk->n_pad_values;
       iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.last);
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	g_print ("PHASE_UNDEF, post-tail %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_UNDEF (wchunk);
     }
   if (pos <= wchunk->head.last)
     {
       iter->rel_pos = pos - wchunk->head.first;
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_HEAD %ld %ld %ld\n", wchunk->head.first, iter->rel_pos, wchunk->head.last);
+	g_print ("PHASE_HEAD %lld %lld %lld\n", wchunk->head.first, iter->rel_pos, wchunk->head.last);
       return PHASE_HEAD (wchunk);
     }
   else if (pos <= wchunk->enter.last)					/* before loop */
@@ -317,21 +317,21 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	{
 	  iter->rel_pos = pos - wchunk->enter.first;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_ENTER %ld %ld %ld\n", wchunk->enter.first, iter->rel_pos, wchunk->enter.last);
+	    g_print ("PHASE_ENTER %lld %lld %lld\n", wchunk->enter.first, iter->rel_pos, wchunk->enter.last);
 	  return PHASE_ENTER (wchunk);
 	}
       iter->rel_pos = pos - wchunk->head.last;
       iter->lbound = wchunk->head.last;
       iter->ubound = wchunk->enter.first;
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_NORM, pre-enter %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	g_print ("PHASE_NORM, pre-enter %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
   else if (pos >= wchunk->tail.first)
     {
       iter->rel_pos = pos - wchunk->tail.first;
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_TAIL %ld %ld %ld\n", wchunk->tail.first, iter->rel_pos, wchunk->tail.last);
+	g_print ("PHASE_TAIL %lld %lld %lld\n", wchunk->tail.first, iter->rel_pos, wchunk->tail.last);
       return PHASE_TAIL (wchunk);
     }
   else if (pos >= wchunk->leave.first)				/* after loop */
@@ -340,7 +340,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	{
 	  iter->rel_pos = pos - wchunk->leave.first;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_LEAVE %ld %ld %ld\n", wchunk->leave.first, iter->rel_pos, wchunk->leave.last);
+	    g_print ("PHASE_LEAVE %lld %lld %lld\n", wchunk->leave.first, iter->rel_pos, wchunk->leave.last);
 	  return PHASE_LEAVE (wchunk);
 	}
       iter->rel_pos = pos - wchunk->leave.last;
@@ -349,7 +349,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	  iter->lbound = wchunk->tail_start_norm;
 	  iter->ubound = wchunk->leave_end_norm;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_NORM_BACKWARD, post-leave %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	    g_print ("PHASE_NORM_BACKWARD, post-leave %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
 	  return PHASE_NORM_BACKWARD (wchunk);
 	}
       else
@@ -357,7 +357,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	  iter->lbound = wchunk->leave_end_norm;
 	  iter->ubound = wchunk->tail_start_norm;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_NORM, post-leave %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	    g_print ("PHASE_NORM, post-leave %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
 	  return PHASE_NORM (wchunk);
 	}
     }
@@ -373,35 +373,35 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	    {
 	      iter->rel_pos = wchunk->wrap.length - one - wchunk->wrap.last + pos;
 	      if (PRINT_DEBUG_INFO)
-		g_print ("PHASE_WRAP %ld %ld %ld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+		g_print ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	      return PHASE_WRAP (wchunk);
 	    }
 	  if (pos >= wchunk->ppwrap.first)
 	    {
 	      iter->rel_pos = pos - wchunk->ppwrap.first;
 	      if (PRINT_DEBUG_INFO)
-		g_print ("PHASE_PPWRAP %ld %ld %ld\n", wchunk->ppwrap.first, iter->rel_pos, wchunk->ppwrap.last);
+		g_print ("PHASE_PPWRAP %lld %lld %lld\n", wchunk->ppwrap.first, iter->rel_pos, wchunk->ppwrap.last);
 	      return PHASE_PPWRAP (wchunk);
 	    }
 	  iter->ubound = wchunk->loop_last - one - wchunk->wrap.last;
 	  iter->lbound = wchunk->loop_last - one - wchunk->ppwrap.first;
 	  iter->rel_pos = pos - wchunk->wrap.last;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_NORM_BACKWARD, pploop %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	    g_print ("PHASE_NORM_BACKWARD, pploop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
 	  return PHASE_NORM_BACKWARD (wchunk);
 	}
       if (pos >= wchunk->wrap.first)
 	{
 	  iter->rel_pos = pos - wchunk->wrap.first;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_WRAP %ld %ld %ld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+	    g_print ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	  return PHASE_WRAP (wchunk);
 	}
       iter->rel_pos = pos - wchunk->ppwrap.last;
       iter->ubound = wchunk->loop_first + one + wchunk->wrap.first - loop_width;
       iter->lbound = wchunk->loop_first + one + wchunk->ppwrap.last - loop_width;
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_NORM, pploop %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	g_print ("PHASE_NORM, pploop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
   else if (wchunk->loop_type == GSL_WAVE_LOOP_JUMP)		/* in jump loop */
@@ -414,28 +414,28 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	{
 	  iter->rel_pos = pos - wchunk->wrap.first;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_WRAP %ld %ld %ld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+	    g_print ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	  return PHASE_WRAP (wchunk);
 	}
       if (pos <= wchunk->wrap.last)
 	{
 	  iter->rel_pos = wchunk->wrap.length - one - wchunk->wrap.last + pos;
 	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_WRAP %ld %ld %ld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
+	    g_print ("PHASE_WRAP %lld %lld %lld\n", wchunk->wrap.first, iter->rel_pos, wchunk->wrap.last);
 	  return PHASE_WRAP (wchunk);
 	}
       iter->rel_pos = pos - wchunk->wrap.last;
       iter->lbound = wchunk->loop_first + wchunk->wrap.last;
       iter->ubound = wchunk->loop_first + wchunk->wrap.first;
       if (PRINT_DEBUG_INFO)
-	g_print ("PHASE_NORM, jloop %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+	g_print ("PHASE_NORM, jloop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
   iter->rel_pos = pos - wchunk->head.last;
   iter->lbound = wchunk->head.last;
   iter->ubound = wchunk->enter.first;
   if (PRINT_DEBUG_INFO)
-    g_print ("PHASE_NORM, noloop %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+    g_print ("PHASE_NORM, noloop %lld %lld %lld\n", iter->lbound, iter->rel_pos, iter->ubound);
   return PHASE_NORM (wchunk);
 }
 

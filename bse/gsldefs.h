@@ -36,9 +36,15 @@ typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;
 typedef struct _GslWaveChunk		GslWaveChunk;
 typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
 /* ssize_t/off_t type used within Gsl */
-typedef glong			  GslLong;
-#define	GSL_MAXLONG		  G_MAXLONG
-#define	GSL_MINLONG		  G_MINLONG
+
+/*
+ * FIXME: GslLong is a temporary typedef - it should go away after all
+ * code that uses GslLong has been ported to use int64 (as defined in
+ * sfitypes.h).
+ */
+typedef int64			  GslLong;
+#define	GSL_MAXLONG		  G_MAXINT64;
+#define	GSL_MINLONG		  G_MININT64;
 
 
 /* --- functions --- */
