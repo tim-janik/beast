@@ -1,3 +1,7 @@
+Mon Jan 23 23:58:08 2006  Tim Janik  <timj@gtk.org>
+
+	* web/overview2003de.doxi: CVS moved here from ../docs/
+
 Mon Jan 23 23:33:52 2006  Tim Janik  <timj@gtk.org>
 
 	* web/documentation.doxi: converted to doxer markup.
