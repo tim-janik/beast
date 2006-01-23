@@ -1,30 +1,25 @@
-\input texinfo   @c emacs: -*-texinfo-*-
-@c %**start of header
-@settitle BEAST/BSE Quick Start Guide
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/23 22:35:24 $
+@include "beastdefs.doxi"
+@doxer_set{menu-open}	documentation
+@include "webmenu.doxi"
+@doxer_set{title}       BEAST/BSE Quick Start Guide
 
-@include texiutils.texi
-
-@doctitle @beastbse Quick Start Guide
-@docauthor Tim Janik
-
-@node Top,,,
-@center @revision{Document revised:}
+@titlesection
+@doctitle		@beastbse Quick Start Guide
+@*
+@docauthor              Tim Janik
+@*
+@center 		Document revised: @doxer_get{rvstamp}
+@*
 
 This guide attempts to give a few brief hints for new users,
 in order to get started with the most basic tasks that can be
 accomplished with @beast{}.
 
-@contents
+@tocsection Table of Contents
 
-@menu
-* First Start::
-* Setting Up Songs::
-@end menu
-
-@node First Start, Setting Up Songs, Top, Top
-@chapter First Start At Synthesis
+@section First Start At Synthesis
 
 The most basic task @beast is able to accomplish is the creation
 of new musical sounds which is done by using a variety of music
@@ -32,25 +27,18 @@ producers, called "Modules". Forming a network of multiple modules
 to create a new sound is most generally being refered to
 as "Synthesis".
 
-@menu
-* Creating A Network::
-* Creating Modules::
-* Playback::
-@end menu
+@subsection Creating A Synthesizer Network
 
-@node Creating A Network, Creating Modules,, First Start
-@section Creating A Synthesizer Network
 @enumerate
-@item Select @menupath{/Project/New Custom Synthesizer} from the menu to
+@item Select @menu{/Project/Add Custom Synthesizer} from the menu to
       create a new network.
-@item In the newly created synthesizer network @pagepath{BseCSynth:Unnamed},
-      on the notebook page @pagepath{Parameters}, enable the @prop{Auto Activate}
+@item In the newly created synthesizer network @label{Unnamed},
+      on the notebook page @tab{Properties}, enable the @label{Auto Activate}
       property to enable automated playback of this network.
-@item Select the @pagepath{Routing} notebook page.
-@end enumerate
+@item Select the @tab{Routing} notebook page.
+@done
 
-@node Creating Modules, Playback, Creating A Network, First Start
-@section Creating And Connecting Synthesis Modules
+@subsection Creating And Connecting Synthesis Modules
 The synthesis network routing editor allowes for creation of
 synthesis modules, establishing connections between module
 inputs and outputs, and for adjustment of a module's parameter set.
@@ -59,36 +47,27 @@ Here's how to setup a very simple test case:
 @enumerate
 @item	Create two modules by selecting them from either the
 	pallete window or from the Button-3 popup menu of the
-	@pagepath{Routing} notebook page and then clicking
+	@tab{Routing} notebook page and then clicking
 	into the routing area. The two modules you need
 	are @module{PcmOutput} and @module{StandardOsc}.
 @item	Connect the @channel{Audio Out} output channel of the oscillator
 	to the input channels @channel{Left Audio In} and
 	@channel{Right Audio In} of the output module.
-@end enumerate
+@done
 
-@node Playback,, Creating Modules, First Start
-@section Starting And Stopping Playback
+@subsection Starting And Stopping Playback
 Playback of a @beast project can be started or
-restarted by selecting the menu item @menupath{/Project/Play}.
-Similarly, playback is halted by selecting @menupath{/Project/Stop}.
+restarted by selecting the menu item @menu{/Project/Play}.
+Similarly, playback is halted by selecting @menu{/Project/Stop}.
 
-@node Setting Up Songs,, First Start, Top
-@chapter Setting Up Songs
+@section Setting Up Songs
 
 To be able to playback songs with @beast{}, synthesis instruments have to
 be created which are used to playback the notes contained in the parts
 of a song. Songs are created through the menu by selecting
-@menupath{/Project/New Song}.
+@menu{/Project/New Song}.
 
-@menu
-* What Is An Instrument::
-* Creating An Instrument::
-* Parts And Tracks::
-@end menu
-
-@node What Is An Instrument, Creating An Instrument,, Setting Up Songs
-@section What Is A Synthesis Instrument?
+@subsection What Is A Synthesis Instrument?
 A synthesis instrument is a special kind of synthesizer network,
 it has particular properties:
 
@@ -101,18 +80,17 @@ it has particular properties:
 @item	A dedicated module type is used as output of the synthesis instrument
 	to jointly compose the sound output together with other synthesis
 	instruments being used.
-@end itemize
+@done
 
-@node Creating An Instrument, Parts And Tracks, What Is An Instrument, Setting Up Songs
-@section Creating A Synthesis Instrument
+@subsection Creating A Synthesis Instrument
 Here is how to create a simple synthesis instrument with one oscillator
 producing the basic tone, an envelope to control a note's volume, and
 an amplifier to adjust overall volume and apply the envelope to the
 oscillator.
 
 @enumerate
-@item	Select @menupath{/Project/New Custom Synthesizer} from the menu.
-@item	Switch to the networks's @pagepath{Routing} notebook page.
+@item	Select @menu{/Project/New Custom Synthesizer} from the menu.
+@item	Switch to the networks's @tab{Routing} notebook page.
 @item	Create an @module{InstrumentInput} and an @module{InstrumentOutput} module.
 @item   Create the three modules making up the actual instrument:
         a @module{StandardOsc}, a @module{SimpleADSR} (the
@@ -148,35 +126,34 @@ oscillator.
 	of the @module{SimpleADSR} module, this output channel produces a signal
 	which is low while the envelope is active and goes high past the envelope
 	end.
-@end enumerate
+@done
 
 While the synthesis instrument is ready for use now, it can't be
-used or tested directly, but has to be deployed in a song or @object{MidiSynth}
-(offered by the main menu under @menupath{/Project/New MIDI Synthesizer}) which
+used or tested directly, but has to be deployed in a song or @module{MidiSynth}
+(offered by the main menu under @menu{/Project/New MIDI Synthesizer}) which
 leads us to the next Topic.
 
-@node Parts And Tracks,, Creating An Instrument, Setting Up Songs
-@section Setting Up Parts And Tracks
-Songs basically consist of notes kept in @object{Part}s which are arranged in
-@object{Track}s. The tracks control the order in which parts are played and
+@subsection Setting Up Parts And Tracks
+Songs basically consist of notes kept in @firstterm{Parts} which are arranged in
+@firstterm{Tracks}. The tracks control the order in which parts are played and
 what instrument is used to play a certain part.
 So the steps to a simple test setup for a synthesis instrument are:
 
 @enumerate
-@item	Switch to the @pagepath{Tracks} notebook page of a song and add
-	a @object{Track} to the song.
-@item   Click into the track's tact area to create a new @object{Part} within it.
-@item   Click onto the newly created @object{Part} to start up a piano
+@item	Switch to the @tab{Tracks} notebook page of a song and add
+	a track to the song.
+@item   Click into the track's tact area to create a new part within it.
+@item   Click onto the newly created part to start up a piano
         roll editor to arrange notes within parts.
 @item	Use the piano roll editor to create some notes in the part to be played back.
 @item	Select a synthesis network (created as shown in the last section) as
 	synthesis input for this track by editing the @prop{Synth} property.
-@end enumerate
+@done
 
 A song with parts, instruments and tracks setup can be played back via
-the main menu by selecting the menu item @menupath{/Project/Play}.
+the main menu by selecting the menu item @menu{/Project/Play}.
 
-@section Postprocessing tracks and songs
+@subsection Postprocessing tracks and songs
 
 The sound generated by the tracks of a song and the song itself can be
 postprocessed by synthesis networks to add effects and adjust the sound
@@ -184,7 +161,7 @@ to your needs.
 Postprocessing networks are created as follows:
 
 @enumerate
-@item 	Select @menupath{/Project/New Custom Synthesizer} from the menu to
+@item 	Select @menu{/Project/New Custom Synthesizer} from the menu to
 	create a new network.
 @item	Add a virtual input and output, i.e. a @module{BseSubIPort}
 	and a @module{BseSubOPort} module, to the network.
@@ -194,12 +171,10 @@ Postprocessing networks are created as follows:
 @item	Alternatively, rather than simply connecting the inputs to the outputs,
 	you may use an effect such as the free reverb module @module{BseFreeVerb}
 	inbetween the input and output connections.
-@end enumerate
+@done
 
 To postprocess the sound of a single track in a song, select the synthesis
-network as postprocessing network for the track by editing the tracks ``Post''
+network as postprocessing network for the track by editing the tracks "Post"
 property.
 To apply the network to a song, select it as postprocessing network for the
-song by editing the songs ``Custom Postprocess Net'' property.
-
-@bye
+song by editing the songs "Custom Postprocess Net" property.

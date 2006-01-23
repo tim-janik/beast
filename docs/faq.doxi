@@ -1,6 +1,7 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/01/23 21:55:39 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/23 22:35:24 $
 @include "beastdefs.doxi"
+@doxer_set{menu-open}	documentation
 @include "webmenu.doxi"
 @doxer_set{title}       BEAST/BSE FAQ - Frequently Asked Questions
 
@@ -45,7 +46,7 @@ Some versions of gdb have problems figuring dynamic plugins, we can only hope
 that this is going to be fixed some time soon. Newer versions of gdb may
 already figure what's going on with the plugins if you simply restart @beast
 within gdb.
-@* @strong{UPDATE:} This problem has not been reproduced with gdb versions newer than 5.
+@* @important{UPDATE:} This problem has not been reproduced with gdb versions newer than 5.
 
 @subsection Why doesn't my synthesis network produce any sound?
 There are various possible causes for this. First, make sure you have
