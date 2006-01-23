@@ -1,53 +1,53 @@
-\input texinfo   @c -*-texinfo-*-
-@c %**start of header
-@c @setfilename INFO-FILE-NAME
-@settitle BEAST/BSE FAQ
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/23 21:55:39 $
+@include "beastdefs.doxi"
+@include "webmenu.doxi"
+@doxer_set{title}       BEAST/BSE FAQ - Frequently Asked Questions
 
-@include texiutils.texi
-
-@hasbanner{large}
-@navigation{navigation.xml}
-
-@docfont{tech}
-
-@majorheading @beastbse FAQ - Frequently Asked Questions
-@center @revision{Document revised:}
+@titlesection
+@doctitle		@beastbse FAQ - Frequently Asked Questions
+@*
+@docauthor              Tim Janik
+@*
+@center 		Document revised: @doxer_get{rvstamp}
 @*
 
-@contents
+@tocsection Table of Contents
 
-@chapter @beastbse FAQ
-                
-@section Authors
+@section Introduction
+
+@subsection Authors
 The main author of @beastbse is Tim Janik.
 A list of the various contributions is given in the
-About box of @beast{}.
+About box of @beast.
 
-@section Document History
-This FAQ was written by @uref{mailto://timj@@beast.gtk.org,Tim Janik}.
+@subsection Document History
+This FAQ was written by @uri{mailto://timj@@beast.gtk.org, Tim Janik}.
 Initial markup was done by Dave Seidel, until
-@uref{mailto://dirt@@gtk.org,Alper Ersoy} implemented
+@uri{mailto://dirt@@gtk.org, Alper Ersoy} implemented
 a new markup parser for @beast documentation. Around the
 0.4.1 release, the docs got migrated to texinfo format.
+After the 0.6.6 release, the documentation system was rewritten, so
+all docs inclusing the FAQ got migrated to doxer format.
 
 @anchor{contacts}
-@section Contact Information and Resources
+@subsection Contact Information and Resources
 @itemize
-@item WWW: @uref{http://beast.gtk.org}
-@item FTP: @uref{ftp://beast.gtk.org/pub/beast}
-@item Mailing List: @uref{http://mail.gnome.org/mailman/listinfo/beast/}.
-@end itemize
+@item WWW: @uri{http://beast.gtk.org}
+@item FTP: @uri{ftp://beast.gtk.org/pub/beast}
+@item Mailing List: @uri{http://mail.gnome.org/mailman/listinfo/beast/}.
+@done
 
-@section Why do I get "Cannot access memory at address 0x706f6e6d" when running @beast in gdb?
+@section Questions & Answers
+
+@subsection Why do I get "Cannot access memory at address 0x706f6e6d" when running @beast in gdb?
 Some versions of gdb have problems figuring dynamic plugins, we can only hope
 that this is going to be fixed some time soon. Newer versions of gdb may
 already figure what's going on with the plugins if you simply restart @beast
 within gdb.
-@* @strong{UPDATE:} This problem hasn't yet been reproduced with gdb versions newer than 5.
+@* @strong{UPDATE:} This problem has not been reproduced with gdb versions newer than 5.
 
-@section Why doesn't my synthesis network produce any sound?
+@subsection Why doesn't my synthesis network produce any sound?
 There are various possible causes for this. First, make sure you have
 @beast correctly installed and accessing your sound card by running
 one of the synthesis tests in the ./test/ subdirectory.
@@ -56,7 +56,7 @@ the audio output of an oscillator) hooked up to a PcmOutput module, and
 have the network's "Auto Activate" parameter (on it's "Parameters"
 notebook page, section "Playback Settings") enabled.
 
-@section Why can't I get the synthesis networks to work?
+@subsection Why can't I get the synthesis networks to work?
 This is probably a plugin loading problem, most synthesis networks
 require plugins and won't work if there are any problems loading/finding
 them.
@@ -64,10 +64,10 @@ them.
 needs to be properly installed before you can make use of its plugins. Simply
 starting it from within the build directory is not sufficient.
 
-@section Why do I see @code{BEAST-WARNING **: strange, can't find any plugins, please check .../plugins} on startup?
+@subsection Why do I see @code{BEAST-WARNING **: strange, can't find any plugins, please check .../plugins} on startup?
 See previous item.
 
-@section Why can't I get @beast to load my .mp3, .aiff, .something sample files?
+@subsection Why can't I get @beast to load my .mp3, .aiff, .something sample files?
 Import functionality for foreign sample types is always being worked on, but due
 to the sheer multitude of formats out there chances are that a specific format
 is not yet supported.
@@ -75,7 +75,7 @@ However, sample file loaders have much improved in the last versions, and at
 this point exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5 Layer I/II/III,
 RIFF/WAVE, and .bsewave (@bse multi sample format) files.
 
-@section Why does @beast sometimes crash with a segmentation fault on startup?
+@subsection Why does @beast sometimes crash with a segmentation fault on startup?
 This was due to a bug in the X Keyboard extension. @beast tries to figure the
 country specifics of the keyboard layout, using the XKB extension. Apparently,
 there are some allocation problems in XkbFreeKeyboard() or XkbFreeClientMap()
@@ -83,13 +83,13 @@ in libX11, which can cause random crashes. Usually @beast will run fine when
 restarted.
 @* @strong{UPDATE:} Recent versions of XKB seem to have fixed this problem.
 
-@section Why doesn't @beast 0.4.0 play songs from earlier versions?
+@subsection Why doesn't @beast 0.4.0 play songs from earlier versions?
 The song support was completely rewritten for this version. If lots of
 compatiblity problem reports occur, a converter might be implemented
 at some point.
 
 @anchor{bse-file}
-@section What is a @code{.bse} file?
+@subsection What is a @code{.bse} file?
 
 @beast stores saved data in @bse files. These files can hold
 everything associated with a project, such as the definition of
@@ -103,7 +103,7 @@ The recommended mime type image for @bse files looks like this:
 @image{bse-mime,,,BSE-Mime-Logo,png}
 
 @anchor{beast-hardware-requirements}
-@section What are the minimum hardware requirements for @beast{}?
+@subsection What are the minimum hardware requirements for @beast{}?
 
 This depends a lot on how you utilise @beast{}.  If you simply want to
 create synthesis networks or very simple songs, any Pentium II ought to
@@ -111,10 +111,10 @@ suffice. If you want to lay down a few tracks with effects you may need
 something more modern like a CPU with 1 GHz or higher core frequency.
 
 @anchor{gnome-canvas-idle-id-crash}
-@section @beast crashes upon creation of new synthesis networks?
+@subsection @beast crashes upon creation of new synthesis networks?
 
 @beast uses the
-@uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas Library}
+@uri{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/, GnomeCanvas Library}
 to display synthesis networks. That library has a malicious redrawing bug
 in versions up to (including) 2.2.0.1 triggering an assertion if the code
 is compiled with debugging output, which looks like:
@@ -127,17 +127,17 @@ with @beast upon creation of synthesis networks will need to upgrade
 their GnomeCanvas Library to at least 2.2.0.2.
 
 @anchor{midi-howto}
-@section How do i get MIDI to work?
+@subsection How do i get MIDI to work?
 
 @beast comes with a @file{test/midi-test.bse} file in the @file{test/} directory
 of recent releases, it works out of the box with properly setup MIDI drivers
 and MIDI pianos. Setting up MIDI drivers can be a tough task on its own but is
 beyond the scope of this FAQ and is already taken care of by
-@uref{http://www.midi-howto.com/,,The Linux MIDI-HOWTO},
+@uri{http://www.midi-howto.com/, The Linux MIDI-HOWTO},
 which provides good descriptions and further links to related documentation.
 
 @anchor{c++-weakness}
-@section Gcc/g++ crashes or leaks or hangs when compiling @beast
+@subsection GCC/G++ crashes or leaks or hangs when compiling @beast
 
 Recent versions of @beast make use of C++ templates pretty heavily.
 This allowes us to greatly simplify some code portions (for instance
@@ -146,7 +146,7 @@ compilers out there. So people encountering problems compiling C++ code
 in @beast should try to upgrade their compilers as a first meassure.
 
 @anchor{hard-output-limiting}
-@section Unwanted signal distortion when using multiple tracks
+@subsection Unwanted signal distortion when using multiple tracks
 
 The signal output of a song's tracks in @beast are added up before they are
 routed to the sound output driver. If this added-up signal exceeds the maximum
@@ -160,5 +160,3 @@ right). The Quick Start Guide has a section detailing the setup of postprocessin
 networks.
 For future versions, a mixer is already in development, which will allow to
 handle this situation in much more flexible and adequate ways.
-
-@bye

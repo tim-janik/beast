@@ -1,3 +1,7 @@
+Mon Jan 23 22:55:15 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.doxi: converted to doxer markup.
+
 Mon Jan 23 21:41:21 2006  Tim Janik  <timj@gtk.org>
 
 	* architecture.texi:

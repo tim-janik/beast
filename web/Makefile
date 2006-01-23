@@ -55,6 +55,8 @@ html/%.html: %.doxi
 	doxer doxi2html $< -o html/
 html/%.phtml: %.doxi
 	doxer doxi2html $< -o html/ -e .phtml
+html/%.html: ../docs/%.doxi
+	doxer doxi2html $< -o html/
 
 style-files: target-dirs
 	cp -a style/* html/style/
