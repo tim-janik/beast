@@ -5,6 +5,11 @@
 - print detail score with loop range (in progress printing)
 - save detail_names as comment with scroe_details
 - adjust inner loop abortion according to normed score values
+MODULES:
+- trigger-button module
+- joystick module
+- allow output-only modules to have their connection bar at the top
+- BseSimpleADSR: support 5-stage sforzando: http://www.soundonsound.com/sos/jul04/articles/synthsecrets.htm
 INCOMPAT:
 - merge 2 * BseSimpleADSR into 1
 - move BseConstant to 4 channels
