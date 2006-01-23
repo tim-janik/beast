@@ -1,3 +1,33 @@
+Mon Jan 23 21:41:21 2006  Tim Janik  <timj@gtk.org>
+
+	* architecture.texi:
+	* beast-index.texi:
+	* beast.1.texi:
+	* bsesh.1.texi:
+	* faq.texi:
+	* overview-de.texi:
+	* plugin-devel.texi:
+	* quickstart.texi:
+	* release-notes.texi:
+	* sfidl-manual.texi:
+	* sfidl.1.texi:
+	* site-about.texi:
+	* site-browse-bse-files.texi:
+	* site-contact.texi:
+	* site-development.texi:
+	* site-documentation.texi:
+	* site-download.texi:
+	* site-historic.texi:
+	* site-links-related.texi:
+	* site-links-synthesis.texi:
+	* site-news.texi:
+	* site-oldnews.texi:
+	* site-resources.texi:
+	* site-search.texi:
+	* site-upload-bse-files.texi:
+	* site-wiki.texi: 
+	removed all files which have been replaced by a .doxi version.
+
 Mon Jan 23 21:34:36 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/release-notes.doxi:

@@ -31,6 +31,8 @@ HTML_TARGETS = $(strip			\
 	html/screenshots.phtml		\
 	html/sound-browser.phtml	\
 	html/sound-upload.phtml		\
+	\
+	html/faq.html			\
 )
 ${HTML_TARGETS}: webmenu.doxi beastdefs.doxi
 
