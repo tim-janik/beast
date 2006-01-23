@@ -1,3 +1,17 @@
+Mon Jan 23 21:34:36 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/release-notes.doxi:
+	* docs/architecture.doxi:
+	* docs/plugin-devel.doxi:
+	* docs/sfidl-manual.doxi:
+	* docs/overview-de.doxi:
+	* docs/beast-index.doxi:
+	* docs/quickstart.doxi:
+	* docs/beast.1.doxi:
+	* docs/bsesh.1.doxi:
+	* docs/sfidl.1.doxi:
+	* docs/faq.doxi: CVS copied these files from docs/*.texi.
+
 Sat Jan 21 21:32:23 2006  Tim Janik  <timj@gtk.org>
 
 	* web/synthesis-links.doxi: added synth secret title comments.

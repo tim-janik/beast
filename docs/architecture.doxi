@@ -3,7 +3,7 @@
 @settitle BEAST Architecture
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: architecture.doxi,v 1.7 2005/01/07 13:18:46 timj Exp $
+@c revision-date: $Id: architecture.doxi,v 1.8 2006/01/23 20:36:54 timj Exp $
 
 @include texiutils.texi
 
