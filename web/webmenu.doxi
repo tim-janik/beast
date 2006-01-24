@@ -50,7 +50,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 	@itemize{none}
 	@item 	@menuuri{faq.html,				FAQ}
 	@item 							Introduction
-	@item 	@menuuri{overview-de.html,			Overview (German)}
+	@item 	@menuuri{overview2003de.html,			Overview (German)}
 	@item 	@menuuri{quickstart.html,			Quick Start}
 	@item 							Manual Pages
 	@item 	@menuuri{beast.1.html,				beast(1)}
@@ -113,8 +113,3 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 </table>
 </form>
 }
-
-
-@heading{group=right,body-span=infobox}
-@dnl INFOBOX
-

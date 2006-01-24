@@ -1,3 +1,17 @@
+Tue Jan 24 03:25:26 2006  Tim Janik  <timj@gtk.org>
+
+	* web/overview2003de.doxi: converted to doxer markup.
+
+	* web/Makefile: added overview2003de and web-image rules.
+
+	* web/oldnews.doxi: uri fixup.
+
+	* web/webframe.doxi: implement small web banner.
+
+	* docs/quickstart.doxi: use small web banner.
+
+	* web/webmenu.doxi: minor fixups.
+
 Mon Jan 23 23:58:08 2006  Tim Janik  <timj@gtk.org>
 
 	* web/overview2003de.doxi: CVS moved here from ../docs/

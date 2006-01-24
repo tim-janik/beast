@@ -24,6 +24,7 @@ HTML_TARGETS = $(strip			\
 	html/news.html 			\
 	html/historic.html		\
 	html/oldnews.html 		\
+	html/overview2003de.html	\
 	html/resources.html		\
 	html/related-links.html		\
 	html/synthesis-links.html	\
@@ -35,14 +36,14 @@ HTML_TARGETS = $(strip			\
 	html/faq.html			\
 	html/quickstart.html		\
 )
-${HTML_TARGETS}: webmenu.doxi beastdefs.doxi
+${HTML_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
 
-all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files logogallery-files style-files test-install
+all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files logogallery-files web-image-files style-files test-install
 
 .DELETE_ON_ERROR: ${PHP_TARGETS} ${HTML_TARGETS} ${GENERATED}
 
 target-dirs:	# rule to create directories
-	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/
+	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/
 
 php/%.php: %.php
 	cp -v $< $@
@@ -68,6 +69,9 @@ screenshot-files: target-dirs
 logogallery-files: target-dirs
 	cp -a logogallery/* html/logogallery/
 
+web-image-files:
+	cp -a web-images/* html/web-images/
+
 TEST_INSTALL_DIR=~/public_html/beast/
 test-install: ${TEST_INSTALL_DIR}
 	rm -rf ${TEST_INSTALL_DIR}/*
@@ -75,13 +79,13 @@ test-install: ${TEST_INSTALL_DIR}
 	cp -av php/ html/ ${TEST_INSTALL_DIR}
 	ln -s ../../doxer-pics/bse-files ${TEST_INSTALL_DIR}/html/test-files
 
-.PHONY: all-targets target-dirs screenshot-files logogallery-files clean style-files test-install
+.PHONY: all-targets target-dirs screenshot-files logogallery-files web-image-files clean style-files test-install
 
 clean:
 	rm -f html/style/*
 	-rmdir -p html/style/
-	rm -f html/screenshots/* html/logogallery/*
-	-rmdir -p html/screenshots/ html/logogallery/
+	rm -f html/screenshots/* html/logogallery/* html/web-images/*
+	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/
 	rm -f html/*
 	-rmdir -p html/
 	rm -f php/*

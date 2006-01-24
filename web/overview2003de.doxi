@@ -1,17 +1,18 @@
-\input texinfo   @c emacs: -*-texinfo-*-
-@c %**start of header
-@settitle BEAST - Musiksynthese unter Linux
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/24 02:29:12 $
+@include "beastdefs.doxi"
+@include "webframe.doxi"
+@doxer_set{title}       BEAST - Musiksynthese unter Linux
 
-@include texiutils.texi
+@titlesection
+@doctitle		@beast - Musiksynthese unter Linux
+@*
+@docauthor              Tim Janik
+@*
+@center 		Document revised: @doxer_get{rvstamp}
+@*
 
-@doctitle @beast - Musiksynthese unter Linux
-@docauthor Tim Janik
-
-@center @revision{Document revised:}
-
-@unnumbered @center Abstract
+@header @center Abstract
 
 Während Linux in verschiedenen Bereichen Desktopsoftware hervorbringt, die von
 vielen Endusern produktiv eingesetzt wird, ist dies bei Musiksoftware zur
@@ -46,13 +47,13 @@ zu überholen.
 @center   Tim Janik, Stefan Westerfeld
 
 [Dieses Dokument wurde als Begleitmaterial zu einem Vortrag im Rahmen des LinuxTag 2003 verfaßt.]
-@c Publikumsorientierung: User.
-@c Praktische Vorführung: Ja.
+@dnl Publikumsorientierung: User.
+@dnl Praktische Vorführung: Ja.
 
-@c @contents
+@dnl @tocsection Table of Contents
 
 @anchor{BEAST-BSE-Overview}
-@unnumbered @center Ein Überblick über BEAST und BSE
+@header @center Ein Überblick über BEAST und BSE
 
 @anchor{BEAST-BSE-Blurb}
 BEAST ist ein graphisches Frontend zu BSE, einem Synthese- und Sequenzingkern,
@@ -83,8 +84,8 @@ zum Erstellen und Bearbeiten von BSEWAVE Dateien sind im Moment in der
 Fertigstellung um mit den nächsten BEAST Versionen zusammen freigegeben zu
 werden.
 
-@anchor{SampleView} @c
-@image{LT-WaveView512,,,BEAST Wave View,png}
+@anchor{SampleView} @dnl
+@center @image{web-images/LT-WaveView512.png, BEAST Wave View}
 
 Im 0.5er Entwicklungszweig bietet BEAST Zeitbereichsanzeige für Audiosamples
 mit Zoomfunktion und Vorhörmöglichkeiten.
@@ -121,26 +122,26 @@ vollständig zu automatisieren. Hier hat das Script-Fu Plugin von Gimp Pate
 gestanden.
 
 @anchor{BEAST-Songs}
-@unnumbered @center Erstellen von Liedern
+@header @center Erstellen von Liedern
 
 @anchor{Tracks-and-Parts}
 Lieder sind in BEAST in Spuren (Tracks) unterteilt, wobei jeder Spur ein
 Instrument zugeordnet ist und eine Spur mehrere Parts enthält. Ein Part
 bestimmt die Noten die in einem bestimmten zeitlichen Abschnitt gespielt
 werden.
-@c
-@anchor{Instruments} @c
+@dnl
+@anchor{Instruments} @dnl
 Als Instrument sind innerhalb der Spuren entweder Syntheseinstrumente
 oder AudioSamples verwendbar. Syntheseinstrumente sind Teil des selben
 Projekts und müßen separat erstellt werden.
 Zur Nachbearbeitung von Liedern oder einzelnen Spuren, können sogenannte
-``Postprocessing'' Synthesizer angegeben werden, um beispielsweise den
+"Postprocessing" Synthesizer angegeben werden, um beispielsweise den
 Klang zu komprimieren oder einzelne Spuren zu verhallen.
 
 @anchor{PianoRoll}
-@image{LT-PartView512,,,BEAST Piano Roll,png}
+@center @image{web-images/LT-PartView512.png, BEAST Piano Roll}
 
-Zum Editieren von Parts existiert eine zoombare ``Piano Roll''-Ansicht,
+Zum Editieren von Parts existiert eine zoombare "Piano Roll"-Ansicht,
 in der Noten durch klicken und Drag-and-Drop relativ zu einer
 Klaviertastatur erstellt bzw. verändert werden können.
 Die Klaviertastatur ermöglicht ein Vorhöhren der zu spielenden
@@ -149,7 +150,7 @@ Funktionen zum Selektieren von Notengruppen, Ausschneiden, Einfügen und
 Quantisieren stehen hier, einfach erreichbar über eine Werkzeugleiste,
 zur Verfügung.
 
-@anchor{TrackView} @c
+@anchor{TrackView} @dnl
 Die einzelnen Parts werden in der zoombaren Spuransicht ebenfalls per
 Drag-and-Drop zugeordnet und erlauben Verknüpfungen, um einen Part in
 verschiedenen Spuren mehrmals verwenden zu können. Um die klangliche
@@ -157,7 +158,7 @@ Editierung zu erleichtern, können Spuren einzeln an und abgeschaltet
 und mit Kommentaren versehen werden.
 
 @anchor{Synthesis}
-@unnumbered @center Syntheseeigenschaften
+@header @center Syntheseeigenschaften
 
 Die Synthesemöglichkeiten der Standard BEAST Distribution in der 0.5er
 Version entsprechen in etwa dem Funktionsumfang die einfache Modulare
@@ -194,7 +195,7 @@ Signals als Audio- oder Kontrollsignal aus der Benutzerdefinierten
 Verwendung.
 
 @anchor{Module-Editing}
-@image{LT-SynthView512,,,BEAST Synth View,png}
+@center @image{web-images/LT-SynthView512.png, BEAST Synth View}
 
 An der Oberfläche gestaltet sich das Erstellen von Synthesenetzwerken
 relativ einfach. Module werden aus einer Palette oder einem Menü ausgewählt
@@ -231,13 +232,13 @@ Einsetzen von Noten eines Liedes nicht auf Berechnungsblockgrenzen beschränkt
 ist, können liedspezifisches Zeitvorgaben bestmöglich eingehalten werden.
 
 @anchor{User-Help}
-@unnumbered @center Benutzerführung und Dokumentation
+@header @center Benutzerführung und Dokumentation
 
 Wie bei den meisten Audiosynthese- und Sequenzingapplikationen, erfordert
 auch BEAST eine gewisse Einarbeitung seitens des Benutzers, die allerdings
 durch vorherige Erfahrung mit verwandten Applikation beträchtlich verkürzt
 werden kann. Es gibt im momentanen Stadium der BEAST Entwicklung noch kein
-umfassendes Manual, allerdings steht ein ``Quick Start''-Handbuch zur Verfügung,
+umfassendes Manual, allerdings steht ein "Quick Start"-Handbuch zur Verfügung,
 das die grundsätzlichen Editierfunktionen erläutert, und die Oberfläche
 ist konsequent mit Werkzeugtipps (Tooltips) ausgestattet, die die jeweiligen
 Funktionen erläutern. Eine FAQ und einige Designdokumente stehen ebenfalls zur
@@ -245,7 +246,7 @@ Verfügung, sowie Dokumentation zur Programmierung der Syntheseschnittstelle
 BSE, sowohl für C als auch für Scheme.
 
 @anchor{Project-TODO}
-@unnumbered @center Zukunftspläne
+@header @center Zukunftspläne
 
 Auch wenn BEAST bereits in der Lage ist gute Funktionalität zur Liedkomposition
 bereitzustellen, so gibt es doch eine lange Liste an Merkmalen die es in BEAST
@@ -261,17 +262,15 @@ hier einige aufgeführt:
 @item Erweiterte Soundtreiberanbindung, z.B. an Jack
 @item Verschiedene Detailoptimierungen an Modulen im Prototypstadium
 @item Erweiterte Dateiformatunterstützung z.B. für Timidity Samples
-@item Velocity und MIDI Control Event Editierung in der ``Piano Roll''-Ansicht
+@item Velocity und MIDI Control Event Editierung in der "Piano Roll"-Ansicht
 @item Erweiterte Sprachanbindung und Interoperabilität
-@end itemize
+@done
 
 
 @anchor{Contact}
-@unnumbered @center Internetpräsenz
+@header @center Internetpräsenz
 
 Die Homepage des BEAST Projekts befindet sich auf
-@uref{http://beast.gtk.org/}.
+@uri{http://beast.gtk.org/}.
 Weitere Kontakte, Links zur Mailingliste u.a. sind unter
-@uref{http://beast.gtk.org/contact.html} zu finden.
-
-@bye
+@uri{http://beast.gtk.org/contact.html} zu finden.
