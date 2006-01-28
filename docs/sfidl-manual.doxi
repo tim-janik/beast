@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 19:01:43 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 22:09:33 $
 @include "beastdefs.doxi"
 @include "webframe.doxi"
 @doxer_set{title}	BEAST - SFIDL Documentation
@@ -19,7 +19,7 @@ in @beast for two purposes:
 @item	Describe the API in a language independant fashion, to make
 	it possible to access the @bse functionality from C, C++, Scheme
 	and possibly other languages.
-@item	Provide an easy way to fully define the API of modules, @dnl FIXME: link
+@item	Provide an easy way to fully define the API of @uri{plugin-devel.html, plugin modules},
 	specifying all necessary information to generate a useful GUI
 	automatically.
 @done
