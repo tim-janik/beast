@@ -1,3 +1,12 @@
+Sat Jan 28 18:07:14 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/images/beast-components.dia:
+	* docs/images/beast-components.png:
+	* docs/images/module-voices.dia:
+	* docs/images/module-voices.png:
+	* docs/images/beast-progs.dia:
+	* docs/images/beast-progs.png: CVS copied here freom docs/.
+
 Sat Jan 28 17:34:59 2006  Tim Janik  <timj@gtk.org>
 
 	* web/wiki.doxi: converted to doxer markup.
