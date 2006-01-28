@@ -73,7 +73,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 @item 		@menuuri{development.html, 			Development}
     @menu_branch{development}
 	@itemize{none}
-	@item 	@menuuri{release-news.html,			Release NEWS}
+	@item 	@menuuri{news-file.html,			NEWS File}
 	@item 							ChangeLogs
 	@item 	@menuuri{log-beast.html,			BEAST Changes}
 	@item 	@menuuri{log-plugins.html,			Plugin Changes}

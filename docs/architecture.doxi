@@ -1,34 +1,34 @@
-\input texinfo   @c emacs: -*-texinfo-*-
-@c %**start of header
-@settitle BEAST Architecture
-@footnotestyle end
-@c %**end of header
-@c revision-date: $Id: architecture.doxi,v 1.8 2006/01/23 20:36:54 timj Exp $
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 17:22:38 $
+@include "beastdefs.doxi"
+@include "webframe.doxi"
+@doxer_set{title}	BEAST - Project Architecture
 
-@include texiutils.texi
-
-@doctitle @beast Architecture
-@docauthor Tim Janik
-@docauthor Stefan Westerfeld
-
-@center @revision{Document revised:}
+@titlesection
+@doctitle		@beast - Project Architecture
+@*
+@docauthor              Tim Janik
+@docauthor              Stefan Westerfeld
+@*
+@center 		Document revised: @doxer_get{rvstamp}
+@*
 
 This document provides an architectural overview of the @beast
 audio synthesis package and related components.
 
-@contents
+@tocsection Table of Contents
 
+@section Programs and Libraries
 
-@chapter Programs and Libraries
-
-@center @image{./beast-progs,,,Programs and Libraries,png}
+@center @image{images/beast-progs.png, Programs and Libraries}
+@*
 
 @enumerate
-@item SFIDL - The IDL compiler (@uref{beast-man://1/sfidl,,sfidl}) used for language bindings and plugins
+@item SFIDL - The IDL compiler (@uri{sfidl.1.html,sfidl(1)}) used for language bindings and plugins
 @item BseWaveTool - A small program to generate multi-sample .BSEWAVE files
-@item BEAST - a Gtk+ based GUI front-end (@uref{beast-man://1/beast,,beast}) for @bse
+@item BEAST - a Gtk+ based GUI front-end (@uri{beast.1.html,beast(1)}) for @bse
 @item GXK - a library containing extensions to Gtk+, such as XML-parser for widget templates or an action administration system
-@item BSESH - a Guile based scheme shell (@uref{beast-man://1/bsesh,,bsesh}) for @bse
+@item BSESH - a Guile based scheme shell (@uri{bsesh.1.html,bsesh(1)}) for @bse
 @item @bse - synthesis and sequencing library
 @item @sfi - Interface library, consisting of:
 @itemize
@@ -40,17 +40,18 @@ audio synthesis package and related components.
 @item a simple communication layer based on SfiValue for process boundaries
 @item basic serialization mechanisms to allow implementations of persistent object storage
 @item miscellaneous utilities.
-@end itemize
+@done
 @item GLib-Extra - utility functions which are subject to be folded back into GLib at some point.
-@end enumerate
+@done
 
-@chapter Components
+@section Components
 
-@center @image{./beast-components,,,Components,png}
+@center @image{images/beast-components.png, Components}
+@*
 
 @enumerate
-@item BSE-Shell - a Guile based scheme shell (@uref{beast-man://1/bsesh,,bsesh}) for @bse used for scripting @beast and to run standalone scripts
-@item @beast - a Gtk+ based GUI front-end (@uref{beast-man://1/beast,,beast}) for @bse
+@item BSE-Shell - a Guile based scheme shell (@uri{bsesh.1.html,bsesh(1)}) for @bse used for scripting @beast and to run standalone scripts
+@item @beast - a Gtk+ based GUI front-end (@uri{beast.1.html,beast(1)}) for @bse
 @item @bse - the sequencing and synthesis core, consisting of:
 @itemize
 @item Plugin interface
@@ -66,10 +67,10 @@ audio synthesis package and related components.
 @item Input output drivers for PCM and MIDI
 @item OSS MIDI and PCM driver
 @item Standard synthesis modules
-@end itemize
-@end enumerate
+@done
+@done
 
-@chapter Samples and Wave Files
+@section Samples and Wave Files
 
 Sample Data is organized at three levels:
 
@@ -78,15 +79,15 @@ Sample Data is organized at three levels:
 @item Waves - multiple chunks can be put into a wave; this allows storing different samples
               which should be played for different notes
 @item Wave Libraries - multiple waves can be put into a wave library
-@end enumerate
+@done
 
-@section Extra Information (XInfo Strings) for Wave Files
+@subsection Extra Information (XInfo Strings) for Wave Files
 
-XInfos consist of a list of ``key=value'' pairs.
+XInfos consist of a list of "key=value" pairs.
 Values need to be valid UTF-8 strings, while keys may consist only
 of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 
-@subsection Wave Chunk specific XInfos
+@subsubsection Wave Chunk specific XInfos
 
 @itemize
 @item @strong{osc-freq} -
@@ -98,7 +99,7 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
   @item "none" - no loop
   @item "jump" - plays from loop start to loop end, then jumps back to loop start
   @item "ping-pong" - plays from loop start to loop end and then backwards from loop end to loop start
-@end enumerate
+@done
 @item @strong{loop-start} -
 	The offset in samples for the start of the loop.
 @item @strong{loop-end} -
@@ -107,9 +108,9 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 	A maximum limit for how often the loop should be repeated.
 @item @strong{gus-patch-envelope} -
 	Contains the envelope points for a GUS Patch envelope.
-@end itemize
+@done
 
-@subsection Wave specific XInfos
+@subsubsection Wave specific XInfos
 
 @itemize
 @item @strong{authors} - A list of the authors who participated in creating the wave file.
@@ -121,12 +122,10 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 @enumerate
   @item wave-mono - for mono wave files,
   @item gus-patch - for GUS Patches (which need a special envelope).
-@end enumerate
-@end itemize
+@done
+@done
 
-@subsection Wave Library specific XInfos
+@subsubsection Wave Library specific XInfos
 
-There are currently no XInfos defined for Wave Libraries, as Wave Libraries are not yet
-supported.
-
-@bye
+There are currently no XInfos defined for Wave Libraries, because Wave Libraries are not
+yet supported.

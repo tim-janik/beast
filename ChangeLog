@@ -1,3 +1,19 @@
+Sat Jan 28 18:20:18 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/architecture.doxi: converted to doxer markup.
+
+	* web/Makefile: install docs/images/* under html/images/.
+
+	* web/webmenu.doxi: renamed "NEWS File" menu entry which had a very
+	confusing name before.
+
+	* docs/beast-components.dia:
+	* docs/beast-components.png:
+	* docs/module-voices.dia:
+	* docs/module-voices.png:
+	* docs/beast-progs.dia:
+	* docs/beast-progs.png: removed.
+
 Sat Jan 28 18:07:14 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/images/beast-components.dia:

@@ -38,6 +38,7 @@ HTML_TARGETS = $(strip			\
 	\
 	html/faq.html			\
 	html/quickstart.html		\
+	html/architecture.html		\
 	\
 	html/beast.1.html		\
 	html/bsesh.1.html		\
@@ -58,12 +59,12 @@ unportet_targets = $(strip	\
 )
 ${HTML_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
 
-all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files logogallery-files web-image-files style-files test-install
+all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files logogallery-files web-image-files docs-image-files style-files test-install
 
 .DELETE_ON_ERROR: ${PHP_TARGETS} ${HTML_TARGETS} ${GENERATED}
 
 target-dirs:	# rule to create directories
-	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/
+	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/ html/images/
 
 php/%.php: %.php
 	cp -v $< $@
@@ -98,6 +99,9 @@ logogallery-files: target-dirs
 web-image-files:
 	cp -a web-images/* html/web-images/
 
+docs-image-files:
+	cp -a $(srcdir)/../docs/images/*.png html/images/
+
 TEST_INSTALL_DIR=~/public_html/beast/
 test-install: ${TEST_INSTALL_DIR}
 	rm -rf ${TEST_INSTALL_DIR}/*
@@ -105,13 +109,13 @@ test-install: ${TEST_INSTALL_DIR}
 	cp -av php/ html/ ${TEST_INSTALL_DIR}
 	ln -s ../../doxer-pics/bse-files ${TEST_INSTALL_DIR}/html/test-files
 
-.PHONY: all-targets target-dirs screenshot-files logogallery-files web-image-files clean style-files test-install
+.PHONY: all-targets target-dirs screenshot-files logogallery-files web-image-files docs-image-files clean style-files test-install
 
 clean:
 	rm -f html/style/*
 	-rmdir -p html/style/
-	rm -f html/screenshots/* html/logogallery/* html/web-images/*
-	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/
+	rm -f html/screenshots/* html/logogallery/* html/web-images/* html/images/*
+	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/ html/images/
 	rm -f html/*
 	-rmdir -p html/
 	rm -f php/*
