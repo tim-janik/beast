@@ -1,83 +1,86 @@
-\input texinfo
-@c %**start of header
-@settitle SFIDL - SFI IDL Compiler
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 15:12:00 $
+@include "beastdefs.doxi"
+@include "webframe.doxi"
+@doxer_set{title}	SFIDL - SFI IDL Compiler
+@doxer_set{man-title}	SFIDL
+@doxer_set{man-date}	@doxer_get{rvstamp}
+@doxer_set{man-source}	beast-@doxer_get{BST_VERSION}
+@doxer_set{man-manual}	BEAST Manual Pages
 
-@include texiutils.texi
-
-@docpackage{BEAST-@value{BST_VERSION}}
-
-@unnumbered NAME
+@heading NAME
 SFIDL - SFI IDL Compiler
 
-@unnumbered SYNOPSIS
-	@command{sfidl} [@var{options}] <@var{input.idl}>
+@heading SYNOPSIS
+	@manb{sfidl} [@mani{OPTIONS}] @mani{input.idl}
 
-@unnumbered DESCRIPTION
+@heading DESCRIPTION
 
-	@command{sfidl} generates glue code for @bse objects and
+	@manb{sfidl} generates glue code for @bse objects and
 	plugins from interface definition language files.
 
-@unnumbered OPTIONS
+@heading OPTIONS
 
-@table @option
-@item ---help
-	Print general usage information.
-@item ---help <binding>
-	Print usage information for a language binding.
-@item ---version
+@itemize{none}
+@item @manb{--help} [@mani{binding}] @*
+	Print general usage information. Or, if @mani{binding} was specified,
+	print usage information for this language binding.
+@item @manb{--version} @*
 	Print program version.
-@c Include Path:
-@item -I <@var{DIRECTORY}>
-	Add @var{DIRECTORY} to include path.
-@item ---print-include-path
+@item @manb{-I} @mani{DIRECTORY} @*
+	Add @mani{DIRECTORY} to include path.
+@item @manb{--print-include-path} @*
 	Print include path.
-@item ---nostdinc
+@item @manb{--nostdinc} @*
 	Prevents standard include path from being used.
-@c Language bindings:
-@item ---client-c
+@done
+
+@subheading Language bindings:
+
+@itemize{none}
+@item @manb{--client-c} @*
 	Generate C client language binding.
-@item ---client-c
+@item @manb{--client-c} @*
 	Generate C core language binding.
-@item ---host-c
+@item @manb{--host-c} @*
 	Generate C host language binding.
-@item ---client-cxx
+@item @manb{--client-cxx} @*
 	Generate C++ client language binding.
-@item ---core-cxx
+@item @manb{--core-cxx} @*
 	Generate C++ core language binding.
-@item ---plugin
+@item @manb{--plugin} @*
 	Generate C++ plugin language binding.
-@item ---list-types
+@item @manb{--list-types} @*
 	Print all types defined in the idlfile. This option is used only
 	for BSE internally to ease transition from C to C++ types.
-@c Language binding options:
-@item ---header (default)
-	Generate header file.
-@item ---source
+@done
+
+@subheading Language binding options:
+
+@itemize{none}
+@item @manb{--header} @*
+	Generate header file, this is the default.
+@item @manb{--source} @*
 	Generate source file.
-@item ---prefix <@var{prefix}>
+@item @manb{--prefix} @mani{prefix} @*
 	C host/client language binding option, sets the prefix for C functions. The prefix
 	ensures that no symbol clashes will occur between different programs/libraries
 	which are using a binding, so it is important to set it to something unique to your
 	application/library.
-@item ---init <@var{name}>
+@item @manb{--init} @mani{name} @*
 	Set the name of the init function for C host/core bindings.
-@item ---namespace <@var{namespace}>
+@item @manb{--namespace} @mani{namespace} @*
 	C++ client language binding, sets the namespace to use for the code. The namespace
 	ensures that no symbol clashes will occur between different programs/libraries
 	which are using a binding, so it is important to set it to something unique to your
 	application/library.
-@item ---lower (default)
-	Select lower case identifiers in the C++ client language binding (create_midi_synth).
-@item ---mixed
+@item @manb{--lower} @*
+	Select lower case identifiers in the C++ client language binding (create_midi_synth), this is the default.
+@item @manb{--mixed} @*
 	Select mixed case identifiers in the C++ client language binding (createMidiSynth).
-@end table
+@done
 
-@unnumbered SEE ALSO
-@uref{beast-man://1/bsesh,BSE Scheme Shell},
-@uref{beast-man://3/bse-procs,BSE Procedures},
-@uref{beast-man://3/bse-structs,BSE Structures}
-@*
-@revision{Document Revised:}
-@bye
+@heading SEE ALSO
+@uri{bsesh.1.html,bsesh(1)},
+@uri{bse-procs.3.html,bse-procs(3)},
+@uri{bse-structs.3.html,bse-structs(3)}

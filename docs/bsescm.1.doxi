@@ -1,125 +1,120 @@
-\input texinfo
-@c %**start of header
-@settitle BSESH - BSE Scheme Shell
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 15:12:00 $
+@include "beastdefs.doxi"
+@include "webframe.doxi"
+@doxer_set{title}	BSESH - BSE Scheme Shell
+@doxer_set{man-title}	BSESH
+@doxer_set{man-date}	@doxer_get{rvstamp}
+@doxer_set{man-source}	beast-@doxer_get{BST_VERSION}
+@doxer_set{man-manual}	BEAST Manual Pages
 
-@include texiutils.texi
+@heading NAME
+bsesh - A Guile based scheme shell for @beast and @bse.
 
-@docpackage{BEAST-@value{BST_VERSION}}
+@heading SYNOPSIS
+	@manb{bsesh} [@mani{OPTIONS}] [@manb{--}] @manb{...}
 
-@unnumbered NAME
-bsesh -- A Guile based scheme shell for @beast and @bse{}.
-
-@unnumbered SYNOPSIS
-	@command{bsesh} [@var{OPTIONS}] [@option{---}] ...
-
-@unnumbered DESCRIPTION
-	@command{bsesh} is a @uref{man://1/guile} based scheme shell for @bse{},
+@heading DESCRIPTION
+	@manb{bsesh} is a @uri{http://www.gnu.org/software/guile/docs/,Guile} based scheme shell for @bse,
 	the Bedevilled Sound Engine.
 
-	@command{bsesh} provides a shell interface to all procedures exported by the
+	@manb{bsesh} provides a shell interface to all procedures exported by the
 	@bse library, so scripts are able to access the full range of functionality
-	provided by it, from simple playback of a @file{.bse} file to
+	provided by it, from simple playback of a @mani{.bse} file to
 	full fledged automated creation or editing of synthesis networks.
 
-	Alternatively to the linked in @bse library, the @command{bsesh} language interface
+	Alternatively to the linked in @bse library, the @manb{bsesh} language interface
 	can also talk to a remotely running @bse library host, for instance
-	@uref{beast-man://1/beast}.
-	By operating on a remotely running @bse core, @command{bsesh} can be used to script
+	@uri{beast.1.html,beast(1)}.
+	By operating on a remotely running @bse core, @manb{bsesh} can be used to script
 	arbitrary @bse programs. The shell is also used directly by the @bse library to
-	execute procedures on its behalf, this allows
-	@bse procedures to be written in scheme.
+	execute procedures on its behalf, this allows @bse procedures to be written in scheme.
 
-	When started, @command{bsesh} tests whether the first non-option argument is a @file{.bse}
+	When started, @manb{bsesh} tests whether the first non-option argument is a @mani{.bse}
 	file and if the test succeeds, attempts to play the command line arguments as
-	@file{.bse} files.
+	@mani{.bse} files.
 
-@unnumbered OPTIONS
-	@command{bsesh} follows the usual GNU command line syntax, with long options starting with two dashes (`--').
+@heading OPTIONS
+	@manb{bsesh} follows the usual GNU command line syntax, with long options starting with two dashes ('--').
 
-@table @option 
-@item ---bse-pipe @var{INFD OUTFD}
+@itemize{none}
+@item @manb{--bse-pipe} @mani{INFD} @mani{OUTFD} @*
 	Provide the input and output communication filedescriptors
 	for remote operation.
-@item ---bse-eval @var{STRING}
-	Execute (eval-string @var{STRING}) instead of going into interactive mode.
-@item ---bse-enable-register
+@item @manb{--bse-eval} @mani{STRING} @*
+	Execute (eval-string @mani{STRING}) instead of going into interactive mode.
+@item @manb{--bse-enable-register} @*
 	Allowes registration of procedures with the @bse core.
-@item ---bse-no-load
+@item @manb{--bse-no-load} @*
 	Prevent automated loading of plugins and scripts at startup time in interactive mode.
-@item ---bse-no-play
-	Prevent automated detection and playback of @file{.bse} file command line arguments.
-@item ---g-fatal-warnings
+@item @manb{--bse-no-play} @*
+	Prevent automated detection and playback of @mani{.bse} file command line arguments.
+@item @manb{--g-fatal-warnings} @*
 	Make runtime warnings fatal (abort).
-@item -h, ---help
+@item @manb{-h}, @manb{--help} @*
 	Describe command line options and exit.
-@item -v, ---version
+@item @manb{-v}, @manb{--version} @*
 	Display version and exit.
-@item -n=@var{NICELEVEL}
-        Execute with priority NICELEVEL, this option only takes effect for the root suid wrapper ``beast''.
-@item -N
+@item @manb{-n}=@mani{NICELEVEL} @*
+        Execute with priority NICELEVEL, this option only takes effect for the root suid wrapper 'beast'.
+@item @manb{-N} @*
         Disables renicing to execute with existing priority.
-@item ---bse-latency=@var{USECONDS}
+@item @manb{--bse-latency}=@mani{USECONDS} @*
 	Set the allowed synthesis latency for @bse in milliseconds.
-@item ---bse-mixing-freq=@var{FREQUENCY}
+@item @manb{--bse-mixing-freq}=@mani{FREQUENCY} @*
 	Set the desired synthesis mixing frequency in Hz.
-@item ---bse-control-freq=@var{FREQUENCY}
+@item @manb{--bse-control-freq}=@mani{FREQUENCY} @*
 	Set the desired control frequency in Hz, this should be much smaller than the
 	synthesis mixing frequency to reduce CPU load. The default value of approximately
 	1000 Hz is usually a good choice.
-@item ---bse-pcm-driver @var{DRIVER-CONF}
-@item -p @var{DRIVER-CONF}
-	This options results in an attempt to open the PCM driver @var{DRIVER-CONF}
+@item @manb{--bse-pcm-driver} @mani{DRIVER-CONF} @*
+@item @manb{-p} @mani{DRIVER-CONF} @*
+	This options results in an attempt to open the PCM driver @mani{DRIVER-CONF}
 	when playback is started.
 	Multiple options may be supplied to try a variety of drivers and
-	unless @var{DRIVER-CONF} is specified as `auto', only the drivers
+	unless @mani{DRIVER-CONF} is specified as `auto', only the drivers
 	listed by options are used.
-	Each @var{DRIVER-CONF} consists of a driver name and an optional comma
+	Each @mani{DRIVER-CONF} consists of a driver name and an optional comma
 	seperated list of arguments attached to the driver withan equal sign, e.g.:
-	@option{-p oss=/dev/dsp2,rw -p auto}
-@item ---bse-midi-driver @var{DRIVER-CONF}
-@item -m @var{DRIVER-CONF}
-	This option is similar to the @option{---bse-pcm-driver} option,
+	@manb{-p oss=/dev/dsp2,rw -p auto}
+@item @manb{--bse-midi-driver} @mani{DRIVER-CONF} @*
+@item @manb{-m} @mani{DRIVER-CONF} @*
+	This option is similar to the @manb{--bse-pcm-driver} option,
 	but applies to MIDI drivers and devices. It also may be specified multiple
 	times and features an `auto' driver.
-@item ---bse-driver-list
+@item @manb{--bse-driver-list} @*
 	Produce a list of all available PCM and MIDI drivers and available devices.
-@end table
+@done
 
-	Guile Options:
+@subheading Guile Options:
 	
-@table @option
-@item -l @var{FILE}
+@itemize{none}
+@item @manb{-l} @mani{FILE} @*
 	Load scheme source code from file.
-@item -e @var{FUNCTION}
-	After reading script, apply @var{FUNCTION} to command-line arguments.
-@item -ds
-	Do -s @var{SCRIPT} at this point (note that this argument must be
+@item @manb{-e} @mani{FUNCTION} @*
+	After reading script, apply @mani{FUNCTION} to command-line arguments.
+@item @manb{-ds} @*
+	Do -s @mani{SCRIPT} at this point (note that this argument must be
 	used in conjuction with -s).
-@item ---debug
+@item @manb{--debug} @*
 	Start with debugging evaluator and backtraces enabled (useful for debugging scripts).
-@item ---emacs
+@item @manb{--emacs} @*
 	Enable emacs protocol for use from within emacs (experimental).
-@end table
+@done
 
 	The remaining Guile options stop argument processing, and pass all
 	remaining arguments as the value of (command-line):
 	
-@table @option
-@item ---
+@itemize{none}
+@item @manb{--} @*
 	Stop argument processing, start in interactive mode.
-@item -c @var{EXPR}
-	Stop argument processing, evaluate @var{EXPR} as a scheme expression.
-@item -s @var{SCRIPT}
-	Load Scheme source from @var{SCRIPT} and execute as a script.
-@end table
+@item @manb{-c} @mani{EXPR} @*
+	Stop argument processing, evaluate @mani{EXPR} as a scheme expression.
+@item @manb{-s} @mani{SCRIPT} @*
+	Load Scheme source from @mani{SCRIPT} and execute as a script.
+@done
 
-@unnumbered SEE ALSO
-@uref{man://1/guile},
-@uref{beast-man://1/beast},
-@uref{beast-man://1/sfidl}
-
-@*
-@revision{Document Revised:}
-@bye
+@heading SEE ALSO
+@uri{beast.1.html,beast(1)},
+@uri{sfidl.1.html,sfidl(1)},
+@longuri{http://www.gnu.org/software/guile/docs/,Guile Documentation}

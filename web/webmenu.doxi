@@ -55,6 +55,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 	@item 							Manual Pages
 	@item 	@menuuri{beast.1.html,				beast(1)}
 	@item 	@menuuri{bsesh.1.html,				bsesh(1)}
+	@item 	@menuuri{sfidl.1.html,				sfidl(1)}
 	@item 							API Reference
 	@item 	@menuuri{objdoc.html,				BSE Objects}
 	@item 	@menuuri{bse-structs.3.html,			BSE Structs}

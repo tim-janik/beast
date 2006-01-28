@@ -88,4 +88,18 @@
 @doxer_span{newsdptmt,@doxer_bold{@doxer_args{2:}}}@*@*
 @done
 
+## manual page markup
+@doxer_command     	mani	@dnl### manual page italic
+@doxer_italic{@doxer_args{*}}
+@done
+@doxer_command     	manb	@dnl### manual page bold
+@doxer_bold{@doxer_args{*}}
+@done
+@doxer_command     	manr	@dnl### manual page roman (normal)
+@doxer_args{*}
+@done
+@doxer_command     	mans	@dnl### manual page small
+@doxer_args{*}
+@done
+
 @done	# finishes doxer_hidden section

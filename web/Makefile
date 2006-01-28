@@ -1,4 +1,6 @@
+# FIXME: remove:
 srcdir = .
+BST_VERSION = 0.6.6
 
 all:	all-targets
 
@@ -35,6 +37,24 @@ HTML_TARGETS = $(strip			\
 	\
 	html/faq.html			\
 	html/quickstart.html		\
+	\
+	html/beast.1.html		\
+	html/bsesh.1.html		\
+	html/sfidl.1.html		\
+)
+unportet_targets = $(strip	\
+	wiki.php		\
+	log-beast.html		\
+	log-bse.html		\
+	log-plugins.html	\
+	log-sfi.html		\
+	objdoc.html		\
+	release-news.html	\
+	architecture.html	\
+	plugin-devel.html	\
+	sfidl-manual.html	\
+	plugin-devel.html	\
+	engine-mplan.html	\
 )
 ${HTML_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
 
@@ -53,12 +73,18 @@ php/%.phpini: %.phpini
 %.phpini: %/ scanimages.sh
 	$(srcdir)/scanimages.sh $<
 
+DOXIDEFS = -D BST_VERSION ${BST_VERSION} -I $(srcdir)
+
 html/%.html: %.doxi
-	doxer doxi2html $< -o html/
+	doxer doxi2html $< -o html/ $(DOXIDEFS)
 html/%.phtml: %.doxi
-	doxer doxi2html $< -o html/ -e .phtml
+	doxer doxi2html $< -o html/ -e .phtml $(DOXIDEFS)
+html/%.1.html: ../docs/%.1.doxi
+	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
+html/%.3.html: ../docs/%.3.doxi
+	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
 html/%.html: ../docs/%.doxi
-	doxer doxi2html $< -o html/
+	doxer doxi2html $< -o html/ $(DOXIDEFS)
 
 style-files: target-dirs
 	cp -a style/* html/style/

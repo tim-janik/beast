@@ -1,120 +1,118 @@
-\input texinfo
-@c %**start of header
-@settitle BEAST - Bedevilled Audio System
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 15:12:00 $
+@include "beastdefs.doxi"
+@include "webframe.doxi"
+@doxer_set{title}	BEAST - Bedevilled Audio System
+@doxer_set{man-title}	BEAST
+@doxer_set{man-date}	@doxer_get{rvstamp}
+@doxer_set{man-source}	beast-@doxer_get{BST_VERSION}
+@doxer_set{man-manual}	BEAST Manual Pages
 
-@include texiutils.texi
+@heading NAME
+beast - Music composition and modular synthesis application.
 
-@docpackage{BEAST-@value{BST_VERSION}}
+@heading SYNOPSIS
+	@manb{beast} [@mani{OPTIONS}] [@mani{FILES...}]
 
-@unnumbered NAME
-beast -- Graphical program to simulate audio synthesis and compose music.
-
-@unnumbered SYNOPSIS
-	@command{beast} [@var{OPTIONS}] [@var{FILES...}]
-
-@unnumbered DESCRIPTION
-	@beast is the BEdevilled Audio SysTem. It is a music composition and
+@heading DESCRIPTION
+	@manb{beast} is the BEdevilled Audio SysTem. It is a music composition and
 	modular synthesis application released as free software under the
 	GNU GPL and GNU LGPL.
 
-	@beast comes with various synthesis modules which can be arranged in
+	@manb{beast} comes with various synthesis modules which can be arranged in
 	networks for modular synthesis. It is capable of monophonic and polyphonic
 	voice processing, provides MIDI sequencer functionality and supports
 	external sequencer sources. A huge set of extra modules is available through
 	the support for LADSPA (Linux Audio Developer's Simple Plugin API) plugins.
 
-	@beast{}'s underlying sound engine @bse also comes with a scheme scripting
+	@manb{beast}'s underlying sound engine @bse also comes with a scheme scripting
 	extension which allows for advanced non-interactive processing via
-	@uref{beast-man://1/bsesh} and creation of additional GUI functionality for @beast{}.
+	@uri{bsesh.1.html,bsesh(1)} and creation of additional GUI functionality for @manb{beast}.
 
-@unnumbered OPTIONS
-	@beast follows the usual GNU command line syntax, with long options starting with two dashes (`-').
+@heading OPTIONS
+	@manb{beast} follows the usual GNU command line syntax, with long options starting with two dashes ('-').
 
-@table @option
-@item ---skinrc[=@var{FILENAME}]
-	Read skin resources from @var{FILENAME}.
-@item ---print-dir[=@var{RESOURCE}]
-	Print the directory for a specific resource (e.g. `plugins' or `images').
-	Giving just @option{---print-dir} without an extra argument causes @beast
+@itemize{none}
+@item @manb{--skinrc} @mani{FILENAME} @*
+	Read skin resources from @mani{FILENAME}.
+@item @manb{--print-dir} @mani{RESOURCE} @*
+	Print the directory for a specific resource (e.g. 'plugins' or 'images').
+	Giving just @manb{--print-dir} without an extra argument causes @manb{beast}
 	to print the list of available resources.
-@item ---devel
+@item @manb{--devel} @*
 	Enrich the GUI with hints usefull for (script) developers
-@item -h, ---help
+@item @manb{-h}, @manb{--help} @*
 	Shows a brief help message.
-@item -v, ---version
-	Prints out @beast and component versions and file paths.
-@item -n=@var{NICELEVEL}
-        Execute with priority NICELEVEL, this option only takes effect for the root suid wrapper ``beast''.
-@item -N
+@item @manb{-v}, @manb{--version} @*
+	Prints out @manb{beast} and component versions and file paths.
+@item @manb{-n} @mani{NICELEVEL} @*
+        Execute with priority @mani{NICELEVEL}, this option only takes effect for the root suid wrapper 'beast'.
+@item @manb{-N} @*
         Disables renicing to execute with existing priority.
-@item ---display=@var{DISPLAY}
-	X server for the GUI; see @uref{man://1/X}.
-@item ---bse-latency=@var{USECONDS}
+@item @manb{--display} @mani{DISPLAY} @*
+	X server display for the GUI; see @uri{http://www.xfree86.org/current/X.7.html,X(7)}.
+@item @manb{--bse-latency} @mani{USECONDS} @*
 	Set the allowed synthesis latency for @bse in milliseconds.
-@item ---bse-mixing-freq=@var{FREQUENCY}
+@item @manb{--bse-mixing-freq} @mani{FREQUENCY} @*
 	Set the desired synthesis mixing frequency in Hz.
-@item ---bse-control-freq=@var{FREQUENCY}
+@item @manb{--bse-control-freq} @mani{FREQUENCY} @*
 	Set the desired control frequency in Hz, this should be much smaller than the
 	synthesis mixing frequency to reduce CPU load. The default value of approximately
 	1000 Hz is usually a good choice.
-@item ---bse-pcm-driver @var{DRIVER-CONF}
-@item -p @var{DRIVER-CONF}
-	This options results in an attempt to open the PCM driver @var{DRIVER-CONF}
+@item @manb{--bse-pcm-driver} @mani{DRIVER-CONF} @*
+@item @manb{-p} @mani{DRIVER-CONF} @*
+	This options results in an attempt to open the PCM driver @mani{DRIVER-CONF}
 	when playback is started.
 	Multiple options may be supplied to try a variety of drivers and
-	unless @var{DRIVER-CONF} is specified as `auto', only the drivers
+	unless @mani{DRIVER-CONF} is specified as 'auto', only the drivers
 	listed by options are used.
-	Each @var{DRIVER-CONF} consists of a driver name and an optional comma
+	Each @mani{DRIVER-CONF} consists of a driver name and an optional comma
 	seperated list of arguments attached to the driver withan equal sign, e.g.:
-	@option{-p oss=/dev/dsp2,rw -p auto}
-@item ---bse-midi-driver @var{DRIVER-CONF}
-@item -m @var{DRIVER-CONF}
-	This option is similar to the @option{---bse-pcm-driver} option,
+	@manb{-p oss=/dev/dsp2,rw -p auto}
+@item @manb{--bse-midi-driver} @mani{DRIVER-CONF} @*
+@item @manb{-m} @mani{DRIVER-CONF} @*
+	This option is similar to the @manb{--bse-pcm-driver} option,
 	but applies to MIDI drivers and devices. It also may be specified multiple
-	times and features an `auto' driver.
-@item ---bse-driver-list
+	times and features an 'auto' driver.
+@item @manb{--bse-driver-list} @*
 	Produce a list of all available PCM and MIDI drivers and available devices.
-@item ---
+@item @manb{--} @*
 	Stop argument processing, interpret all remaining arguments as file names.
-@end table
+@done
 
-	Development Options:
+@subheading Development Options:
 
-@table @option
-@item ---debug=@var{KEYS}
+@itemize{none}
+@item @manb{--debug} @mani{KEYS} @*
 	Enable certain verbosity stages.
-@item ---debug-list
+@item @manb{--debug-list} @*
 	List possible debug keys.
-@item -:[@var{flags}]
-	This option enables or disables various debugging specific flags.
-	Use of @option{-:} is not recommended, as the supported flags may
-	change between versions and cause possibly harmful misbehaviour.
-@end table
+@item @manb{-:}[@mani{flags}] @*
+	This option enables or disables various debugging specific flags for
+	qbeast core developers. Use of @manb{-:} is not recommended, because
+	the supported flags may change between versions and cause possibly
+	harmful misbehaviour.
+@done
 
-	Gtk+ Options:
+@subheading Gtk+ Options:
 
-@table @option
-@item ---gtk-debug=@var{FLAGS}
+@itemize{none}
+@item @manb{--gtk-debug} @mani{FLAGS} @*
 	Gtk+ debugging flags to enable.
-@item ---gtk-no-debug=@var{FLAGS}
+@item @manb{--gtk-no-debug} @mani{FLAGS} @*
 	Gtk+ debugging flags to disable.
-@item ---gtk-module=@var{MODULE}
+@item @manb{--gtk-module} @mani{MODULE} @*
 	Load additional Gtk+ modules.
-@item ---gdk-debug=@var{FLAGS}
+@item @manb{--gdk-debug} @mani{FLAGS} @*
 	Gdk debugging flags to enable.
-@item ---gdk-no-debug=@var{FLAGS}
+@item @manb{--gdk-no-debug} @mani{FLAGS} @*
 	Gdk debugging flags to disable.
-@item ---g-fatal-warnings
+@item @manb{--g-fatal-warnings} @*
 	Make warnings fatal (abort).
-@item ---sync
+@item @manb{--sync} @*
 	Do all X calls synchronously.
-@end table
+@done
 
-@unnumbered SEE ALSO
-@uref{beast-man://1/bsesh},
-@uref{beast-man://1/sfidl}
-@*
-@revision{Document Revised:}
-@bye
+@heading SEE ALSO
+@uri{bsesh.1.html,bsesh(1)},
+@uri{sfidl.1.html,sfidl(1)}
