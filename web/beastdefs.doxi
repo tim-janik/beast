@@ -30,6 +30,7 @@
 #	Component names
 @defalias{beastbse}	@emph{BEAST/BSE}
 @defalias{beast} 	@emph{BEAST}
+@defalias{sfidl} 	@emph{sfidl}
 @defalias{gxk}	 	@emph{GXK}
 @defalias{gtk}	 	@emph{GTK+}
 @defalias{bse}	 	@emph{BSE}
@@ -42,13 +43,28 @@
 @doxer_italic{@doxer_args{*}}
 @done
 @doxer_command     	path			@dnl file name paths
-@doxer_bold{@doxer_monospace{@doxer_args{*}}}
+@doxer_italic{@doxer_monospace{@doxer_args{*}}}
 @done
 @defalias{file}		@path{@doxer_args{*}}
 @doxer_command     	key			@dnl source code identifier
 @doxer_bold{@doxer_span{key,@doxer_args{*}}}
 @done
 @doxer_command     	ident			@dnl source code identifier
+@doxer_monospace{@doxer_args{*}}
+@done
+@doxer_command     	var			@dnl shorthand for variable identifiers
+@doxer_monospace{@doxer_args{*}}
+@done
+@doxer_command     	const			@dnl source code constant
+@doxer_monospace{@doxer_args{*}}
+@done
+@doxer_command     	macro			@dnl source code macro
+@doxer_monospace{@doxer_args{*}}
+@done
+@doxer_command     	option			@dnl source code identifier as string
+@doxer_monospace{:@doxer_args{*}:}
+@done
+@doxer_command     	func			@dnl source code function
 @doxer_monospace{@doxer_args{*}}
 @done
 @doxer_command     	type			@dnl source code type name
@@ -61,10 +77,10 @@
 @doxer_italic{"@doxer_args{*}"}
 @done
 @doxer_command     	channel			@dnl GUI channel label
-@doxer_italic{"@doxer_args{*}"}
+@doxer_bold{@doxer_italic{"@doxer_args{*}"}}
 @done
 @doxer_command     	prop			@dnl GUI property label
-@doxer_italic{"@doxer_args{*}"}
+@doxer_bold{@doxer_italic{"@doxer_args{*}"}}
 @done
 @doxer_command     	module			@dnl GUI object name
 @doxer_bold{@doxer_monospace{@doxer_args{*}}}

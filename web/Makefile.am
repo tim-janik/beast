@@ -36,9 +36,11 @@ HTML_TARGETS = $(strip			\
 	html/sound-upload.phtml		\
 	html/wiki.phtml			\
 	\
-	html/faq.html			\
-	html/quickstart.html		\
 	html/architecture.html		\
+	html/faq.html			\
+	html/plugin-devel.html		\
+	html/quickstart.html		\
+	html/sfidl-manual.html		\
 	\
 	html/beast.1.html		\
 	html/bsesh.1.html		\
@@ -51,9 +53,6 @@ unportet_targets = $(strip	\
 	log-sfi.html		\
 	objdoc.html		\
 	release-news.html	\
-	architecture.html	\
-	plugin-devel.html	\
-	sfidl-manual.html	\
 	plugin-devel.html	\
 	engine-mplan.html	\
 )
@@ -116,7 +115,7 @@ clean:
 	-rmdir -p html/style/
 	rm -f html/screenshots/* html/logogallery/* html/web-images/* html/images/*
 	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	rm -f html/*
+	rm -f html/* html/.htaccess
 	-rmdir -p html/
 	rm -f php/*
 	-rmdir -p php/
