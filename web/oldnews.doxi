@@ -1,6 +1,6 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 @include "beastdefs.doxi"
-@doxer_set{menu-open} historic-menu
+@doxer_set{webmenu} historic-menu
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Ancient News
 

@@ -1,4 +1,5 @@
 # FIXME: remove:
+top_srcdir = ..
 srcdir = .
 BST_VERSION = 0.6.6
 
@@ -22,8 +23,10 @@ HTML_TARGETS = $(strip			\
 	html/download.html		\
 	html/documentation.html		\
 	html/development.html		\
+	html/engine-mplan.html		\
 	html/logogallery.phtml		\
 	html/news.html 			\
+	html/news-file.html		\
 	html/historic.html		\
 	html/oldnews.html 		\
 	html/overview2003de.html	\
@@ -36,15 +39,15 @@ HTML_TARGETS = $(strip			\
 	html/sound-upload.phtml		\
 	html/wiki.phtml			\
 	\
+	html/beast.1.html		\
+	html/bsesh.1.html		\
+	html/sfidl.1.html		\
+	\
 	html/architecture.html		\
 	html/faq.html			\
 	html/plugin-devel.html		\
 	html/quickstart.html		\
 	html/sfidl-manual.html		\
-	\
-	html/beast.1.html		\
-	html/bsesh.1.html		\
-	html/sfidl.1.html		\
 )
 unportet_targets = $(strip	\
 	log-beast.html		\
@@ -52,9 +55,7 @@ unportet_targets = $(strip	\
 	log-plugins.html	\
 	log-sfi.html		\
 	objdoc.html		\
-	release-news.html	\
 	plugin-devel.html	\
-	engine-mplan.html	\
 )
 ${HTML_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
 
@@ -119,4 +120,35 @@ clean:
 	-rmdir -p html/
 	rm -f php/*
 	-rmdir -p php/
-	rm -f ${GENERATED}
+	rm -f ${GENERATED} ${intermediate_files}
+
+html/%.html: %.tmpdoxi
+	doxer doxi2html $< -o html/ $(DOXIDEFS)
+news-file.tmpdoxi: $(top_srcdir)/NEWS Makefile
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@include "beastdefs.doxi"'			>>$@ \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST/BSE - NEWS'		>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& echo '@example'					>>$@ \
+	&& sed  's/@/@@/g' <$(top_srcdir)/NEWS			>>$@ \
+	&& echo '@done'						>>$@
+engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt Makefile
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@include "beastdefs.doxi"'			>>$@ \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - BSE Engine'		>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& echo '@example'					>>$@ \
+	&& sed  's/@/@@/g' <$(top_srcdir)/bse/engine-mplan.txt	>>$@ \
+	&& echo '@done'						>>$@
+intermediate_files = $(strip	\
+	news-file.tmpdoxi	\
+	engine-mplan.tmpdoxi	\
+)
+
+.INTERMEDIATE: $(intermediate_files)

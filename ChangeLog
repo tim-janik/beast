@@ -1,3 +1,11 @@
+Sun Jan 29 00:06:22 2006  Tim Janik  <timj@gtk.org>
+
+	* web/webmenu.doxi: page rename, moved footer to bottom.
+
+	* web/Makefile: generate and build NEWS and engine-mplan web docs.
+
+	* docs/*.doxi, web/*.doxi: renamed webmenu branch variable to "webmenu".
+
 Sat Jan 28 19:59:41 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/sfidl-manual.doxi:

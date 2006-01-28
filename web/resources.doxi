@@ -1,6 +1,6 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 @include "beastdefs.doxi"
-@doxer_set{menu-open} resources
+@doxer_set{webmenu} resources
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Resources
 

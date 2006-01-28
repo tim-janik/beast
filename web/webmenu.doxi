@@ -15,16 +15,10 @@
 </table>
 }
 
-@heading{group=footer}
-@*
-@center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@beast.gtk.org, Tim Janik}.
-Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jigsaw.w3.org/css-validator/check/referer,CSS}.
-}
-
 @heading{group=left,body-span=webmenu}
 @doxer_fontsize{+1,@*}
 
-@defalias{menu_branch}	@doxer_visible{@doxer_cmatch{\b@doxer_args{1}\b,@doxer_get{menu-open}}}
+@defalias{menu_branch}	@doxer_visible{@doxer_cmatch{\b@doxer_args{1}\b,@doxer_get{webmenu}}}
 
 @doxer_command	menuuri		@dnl conditionalized uris {FILE_URI, TITLE}
 @doxer_visible{@doxer_cmatch{.*@doxer_get{destination-basename},@doxer_args{1}}}
@@ -73,7 +67,7 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 @item 		@menuuri{development.html, 			Development}
     @menu_branch{development}
 	@itemize{none}
-	@item 	@menuuri{news-file.html,			NEWS File}
+	@item 	@menuuri{news-file.html,			Release NEWS}
 	@item 							ChangeLogs
 	@item 	@menuuri{log-beast.html,			BEAST Changes}
 	@item 	@menuuri{log-plugins.html,			Plugin Changes}
@@ -114,4 +108,10 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
     <tr><td align="center"><small><input type="submit" value="Google Search"></small></td></tr>
   </table>
 </form>
+}
+
+@heading{group=footer}
+@*
+@center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@beast.gtk.org, Tim Janik}.
+Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jigsaw.w3.org/css-validator/check/referer,CSS}.
 }
