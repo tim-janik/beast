@@ -5,16 +5,33 @@
 
 @heading Website Search
 
-@subsubheading Search this website with Google
+@subsubheading Search with Google
 
 @*
 @rawhtml{
-<form method="GET" action="http://www.google.de/custom">
-<a href="http://www.google.de">
-<img src="http://www.google.de/logos/Logo_40wht.gif" border="0" alt="Google" align="absmiddle"></a>
-<input type="hidden" name="sitesearch" value="beast.gtk.org">
-<input type="text" name="q" size="31" value="">
-<input type="submit" value="Google Search">
+<form method="GET" action="http://www.google.com/custom">
+  <input type="hidden" name="domains" value="beast.gtk.org">
+  <table cellpadding=0 cellspacing=0 border=0>
+  <tr>
+    <td>
+      <a href="http://www.google.com"><img src="http://www.google.com/logos/Logo_40wht.gif" border="0" alt="Google" align="middle"></a>
+    </td><td>
+      <input type="text" name="q" size="31" value="">
+    </td><td>
+      <input type="submit" value="Google Search">
+    </td></tr>
+  <tr>
+    <td>
+      <!-- -->
+    </td><td colspan=2><font size=-1>
+      <input id=srch1 type=radio name=sitesearch value="">
+      <label for=srch1>Search WWW</label>
+      &nbsp;
+      <input id=srch2 type=radio name=sitesearch value="beast.gtk.org"  checked>
+      <label for=srch2>Search beast.gtk.org</label>
+    </font></td>
+  </tr>
+  </table>
 </form>
 }
 

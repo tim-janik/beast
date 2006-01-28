@@ -98,19 +98,20 @@ Validate the @uri{http://validator.w3.org/check/referer,HTML} or @uri{http://jig
 @item 		@menuuri{download.html,				Download}
 @item 		@menuuri{contact.html,				Contact}
 @item 		@menuuri{search.phtml,				Search}
-@item 		@menuuri{http://beast.gtk.org/wiki:BeastBse, 	Wiki}
+@item 		@menuuri{wiki.phtml, 				Wiki}
 @done
 
 @rawhtml{
 <div style="background-image:url(style/beast-bg-h5.png); height:5px;
             background-position:top; background-repeat:repeat-x; padding-bottom:1.5em"></div>
 
-<form method="GET" action="http://www.google.de/custom" name="searchform">
-<input type="hidden" name="sitesearch" value="beast.gtk.org">
-<table border="0">
-<tr><td align="center"><input type="text" name="q" maxlength="255" size="15" value="Search Website"
-        onFocus="if(this.value=='Search Website')this.value=''"/></td></tr>
-<tr><td align="center"><small><input type="submit" value="Quick Search"></small></td></tr>
-</table>
+<form method="GET" action="http://www.google.com/custom" name="searchform">
+  <input type="hidden" name="domains" value="beast.gtk.org">
+  <input type="hidden" name="sitesearch" value="beast.gtk.org">
+  <table border="0">
+    <tr><td align="center"><input type="text" name="q" maxlength="255" size="15" value="Search Website"
+          onFocus="if(this.value=='Search Website')this.value=''"/></td></tr>
+    <tr><td align="center"><small><input type="submit" value="Google Search"></small></td></tr>
+  </table>
 </form>
 }

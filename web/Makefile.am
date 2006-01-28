@@ -34,6 +34,7 @@ HTML_TARGETS = $(strip			\
 	html/screenshots.phtml		\
 	html/sound-browser.phtml	\
 	html/sound-upload.phtml		\
+	html/wiki.phtml			\
 	\
 	html/faq.html			\
 	html/quickstart.html		\
@@ -43,7 +44,6 @@ HTML_TARGETS = $(strip			\
 	html/sfidl.1.html		\
 )
 unportet_targets = $(strip	\
-	wiki.php		\
 	log-beast.html		\
 	log-bse.html		\
 	log-plugins.html	\

@@ -1,16 +1,13 @@
-\input texinfo
-@c %**start of header
-@settitle BEAST/BSE Wiki
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@include "beastdefs.doxi"
+@include "webmenu.doxi"
+@doxer_set{title}	BEAST/BSE Wiki
 
-@include texiutils.texi
+@subheading
 
-@hasbanner{large}
-@navigation{navigation.xml}
-
-PHPX<?php
-include(``../ewiki-current/config.php'');
-echo ewiki_page();
-?>XPHP
-
-@bye
+@rawhtml{
+<?php
+  echo 'include("../ewiki-current/config.php")',"\n<br>\n";
+  echo 'ewiki_page()';
+?>
+}
