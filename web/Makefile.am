@@ -48,12 +48,13 @@ HTML_TARGETS = $(strip			\
 	html/plugin-devel.html		\
 	html/quickstart.html		\
 	html/sfidl-manual.html		\
+	\
+	html/log-beast.html		\
+	html/log-bse.html		\
+	html/log-plugins.html		\
+	html/log-sfi.html		\
 )
 unportet_targets = $(strip	\
-	log-beast.html		\
-	log-bse.html		\
-	log-plugins.html	\
-	log-sfi.html		\
 	objdoc.html		\
 	plugin-devel.html	\
 )
@@ -133,7 +134,7 @@ news-file.tmpdoxi: $(top_srcdir)/NEWS Makefile
 	&& echo '@doxer_set{title} BEAST/BSE - NEWS'		>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& echo '@example'					>>$@ \
-	&& sed  's/@/@@/g' <$(top_srcdir)/NEWS			>>$@ \
+	&& sed  's/@/@@/g' 		<$<			>>$@ \
 	&& echo '@done'						>>$@
 engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt Makefile
 	cd . \
@@ -144,11 +145,52 @@ engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt Makefile
 	&& echo '@doxer_set{title} BEAST - BSE Engine'		>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& echo '@example'					>>$@ \
-	&& sed  's/@/@@/g' <$(top_srcdir)/bse/engine-mplan.txt	>>$@ \
+	&& sed  's/@/@@/g' 		<$<			>>$@ \
 	&& echo '@done'						>>$@
+CHANGELOG2DOXI = ~/sources/doxer/ChangeLog2Doxi.py # FIXME
+log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@include "beastdefs.doxi"'			>>$@ \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - ChangeLog'		>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& $(CHANGELOG2DOXI) 		<$<			>>$@
+log-bse.tmpdoxi: $(top_srcdir)/bse/ChangeLog $(CHANGELOG2DOXI)
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@include "beastdefs.doxi"'			>>$@ \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - BSE ChangeLog'	>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& $(CHANGELOG2DOXI) 		<$<			>>$@
+log-plugins.tmpdoxi: $(top_srcdir)/plugins/ChangeLog $(CHANGELOG2DOXI)
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@include "beastdefs.doxi"'			>>$@ \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - Plugin ChangeLog'	>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& $(CHANGELOG2DOXI) 		<$<			>>$@
+log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@include "beastdefs.doxi"'			>>$@ \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - SFI ChangeLog'	>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& $(CHANGELOG2DOXI) 		<$<			>>$@
 intermediate_files = $(strip	\
 	news-file.tmpdoxi	\
 	engine-mplan.tmpdoxi	\
+	log-beast.tmpdoxi	\
+	log-bse.tmpdoxi		\
+	log-plugins.tmpdoxi	\
+	log-sfi.tmpdoxi		\
 )
 
 .INTERMEDIATE: $(intermediate_files)

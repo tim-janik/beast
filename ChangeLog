@@ -1,3 +1,11 @@
+Sun Jan 29 20:04:47 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile: generate html files form ChangeLogs.
+
+	* web/beastdefs.doxi: removed bogus heading aliases.
+
+	* web/overview2003de.doxi: fixed headings.
+
 Sun Jan 29 00:06:22 2006  Tim Janik  <timj@gtk.org>
 
 	* web/webmenu.doxi: page rename, moved footer to bottom.
