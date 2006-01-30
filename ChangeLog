@@ -1,3 +1,10 @@
+Mon Jan 30 01:27:17 2006  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: patch intltool to support .scm internationalization.
+
+	* po/intltool-scm.diff: added diff which allowes intltool to extract
+	internationalizable strings from .scm files.
+
 Sun Jan 29 20:04:47 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile: generate html files form ChangeLogs.

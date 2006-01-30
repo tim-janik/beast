@@ -1,0 +1,106 @@
+--- po/Makefile.in.in.orig	2005-01-25 23:56:20.000000000 +0100
++++ po/Makefile.in.in	2005-05-20 23:32:52.692141362 +0200
+@@ -239,7 +239,7 @@ POTFILES: POTFILES.in
+ 	  fi; \
+ 	  rm -f $@-t $@ \
+ 	    && (sed -e '/^#/d' 						\
+-		    -e "s/^\[.*\] +//" 					\
++		    -e "s/^\[.*\] \+//" 				\
+ 		    -e '/^[ 	]*$$/d' 				\
+ 		    -e "s@.*@	$$posrcprefix& \\\\@" < $(srcdir)/$@.in	\
+ 		| sed -e '$$s/\\$$//') > $@-t \
+--- intltool-extract.in.orig	2005-01-25 23:56:20.000000000 +0100
++++ intltool-extract.in	2005-05-21 00:32:24.695400050 +0200
+@@ -183,10 +183,12 @@ sub message {
+ sub extract {
+     &determine_type;
+ 
+-    &convert;
+-
+     open OUT, ">$OUTFILE";
+-    &msg_write;
++
++    my $need_msg_write;
++    $need_msg_write = convert();
++
++    &msg_write if $need_msg_write;
+     close OUT;
+ 
+     print "Wrote $OUTFILE\n" unless $QUIET_ARG;
+@@ -202,6 +204,11 @@ sub convert {
+ 	$input = <IN>;
+     }
+ 
++    if ($gettext_type eq "scm-funcs") {
++      &transform_scm_funcs;
++      return 0; # no need for msg_write()
++    }
++    
+     &type_ini if $gettext_type eq "ini";
+     &type_keys if $gettext_type eq "keys";
+     &type_xml if $gettext_type eq "xml";
+@@ -209,6 +216,7 @@ sub convert {
+     &type_scheme if $gettext_type eq "scheme";
+     &type_schemas  if $gettext_type eq "schemas";
+     &type_rfc822deb  if $gettext_type eq "rfc822deb";
++    return 1; # need msg_write()
+ }
+ 
+ sub entity_decode_minimal
+@@ -461,6 +469,56 @@ sub type_scheme {
+     }
+ }
+ 
++sub transform_scm_funcs {
++  my $scheme_subident = "abcdefghijklmnopqrstuvwxyz"."ABCDEFGHIJKLMNOPQRSTUVWXYZ".'!$%&*/:<=>?^_~'."0123456789".'+-.@';
++  my $state = 0;
++  my $letter = "";
++  for (my $i = 0; $i < length($input); $i++) {
++    my $char = substr($input,$i,1);
++    # here, we process the input char by char
++    # print $char;
++    # we use a simple state machine, states:
++    # 0 - normal state
++    # 1 - in string
++    # 2 - in backslash escape within string
++    # 3 - in comment
++    # 4 - in scheme expresssion after i18n letter
++    # 5 - maybe reading gettext identifier
++    # 6 - in scheme expresssion
++    if      ($state == 0) { # normal reading
++      $letter = "";
++      if    ($char eq "'")  { print OUT "&";	 	$state = 0; }
++      elsif ($char eq "#")  { print OUT "&";	 	$state = 0; }
++      elsif ($char eq '"')  { print OUT $char;	 	$state = 1; }
++      elsif ($char eq ";")  { print OUT '/*';	 	$state = 3; }
++      elsif ($char eq "(")  {                  	 	$state = 6; }
++      else                  { print OUT $char; }
++    } elsif ($state == 1) { # in string
++      if    ($char eq '"')  { print OUT $char;   	$state = 0; }
++      elsif ($char eq '\\') { print OUT $char;    	$state = 2; }
++      else                  { print OUT $char; }
++    } elsif ($state == 2) { # backslash escape
++      if    (1)             { print OUT $char;    	$state = 1; }
++    } elsif ($state == 3) { # comment
++      if    ($char eq "\n") { print OUT "*/\n";   	$state = 0; }
++      else                  { print OUT $char; }
++    } elsif ($state == 4) { # expression, consumed i18n letter, unprinted: '(?'
++      if    ($char eq "_")  {                  	 	$state = 5; }
++      else                  { print OUT "($letter";	$state = 0; $i -= 1; }
++    } elsif ($state == 5) { # maybe gettext, unprinted: '(_' or '(?_'
++      if    (index ($scheme_subident, $char) > -1)
++                            { print OUT "($letter"."_"; $state = 0; $i -= 1; }
++      else 		    { print OUT "$letter"."_(";	$state = 0; $i -= 1; }
++    } elsif ($state == 6) { # expression, unprinted: '('
++      if    ($char eq "_")  {                  	 	$state = 5; }
++      elsif ($char eq "N")  { $letter = "N";   	 	$state = 4; }
++      elsif ($char eq "Q")  { $letter = "Q";   	 	$state = 4; }
++      elsif ($char eq "U")  { $letter = "U";   	 	$state = 4; }
++      else                  { print OUT "(";      	$state = 0; $i -= 1; }
++    }
++  }
++}
++
+ sub msg_write {
+     my @msgids;
+     if (%count)
