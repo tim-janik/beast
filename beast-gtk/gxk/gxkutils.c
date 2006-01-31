@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2003 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -123,11 +123,10 @@ gxk_init_utils (void)
 }
 
 /**
- * gxk_widget_ancestry_viewable
- * @widget:  a valid %GtkWidget
- * @RETURNS: whether @widget is visible on screen
+ * @param widget	a valid GtkWidget
+ * @return		whether @a widget is visible on screen
  *
- * Checks for @widget to be effectively visible on screen.
+ * Checks for @a widget to be effectively visible on screen.
  * This function works around a bug in Gtk+ versions <= 2.4.10,
  * with newer Gtk+ versions, (gdk_window_is_viewable(widget->window) &&
  * GTK_WIDGET_DRAWABLE(widget)) is a suitable replacement.
@@ -148,14 +147,13 @@ gxk_widget_ancestry_viewable (GtkWidget *widget)
 }
 
 /**
- * gxk_type_register_generated
- * @n_entries: number of generated types to register
- * @entries:   GxkTypeGenerated type descriptions
+ * @param n_entries	number of generated types to register
+ * @param entries	GxkTypeGenerated type descriptions
  *
  * Register each of the generated type entries with the
  * type system. Currently supported parent types are
- * %G_TYPE_ENUM and %G_TYPE_FLAGS in which cases the
- * @type_data member must point to a %NULL terminated
+ * G_TYPE_ENUM and G_TYPE_FLAGS in which cases the
+ * @a type_data member must point to a NULL terminated
  * array of GEnumValue or GFlagValue structures. No
  * extra copying is performed, so the passed in
  * structures have to persist throughout runtime.
@@ -187,10 +185,9 @@ gxk_type_register_generated (guint                   n_entries,
 }
 
 /**
- * g_object_set_double
- * @object: a valid GObject
- * @name:   name of the double value to set
- * @v_double: the actual value
+ * @param object	a valid GObject
+ * @param name	name of the double value to set
+ * @param v_double	the actual value
  *
  * Convenience variant of g_object_set_data() to set
  * a double instead of a pointer.
@@ -215,10 +212,9 @@ g_object_set_double (gpointer     object,
 }
 
 /**
- * g_object_get_double
- * @object:  a valid GObject
- * @name:    name of the double value to retrieve
- * @RETURNS: the actual value
+ * @param object	a valid GObject
+ * @param name	name of the double value to retrieve
+ * @return		the actual value
  *
  * Convenience variant of g_object_get_data() to retrieve
  * a double instead of a pointer.
@@ -236,10 +232,9 @@ g_object_get_double (gpointer     object,
 }
 
 /**
- * g_object_set_long
- * @object: a valid GObject
- * @name:   name of the long value to set
- * @v_long: the actual value
+ * @param object	a valid GObject
+ * @param name	name of the long value to set
+ * @param v_long	the actual value
  *
  * Convenience variant of g_object_set_data() to set
  * a long instead of a pointer.
@@ -255,10 +250,9 @@ g_object_set_long (gpointer     object,
 }
 
 /**
- * g_object_get_long
- * @object:  a valid GObject
- * @name:    name of the long value to retrieve
- * @RETURNS: the actual value
+ * @param object	a valid GObject
+ * @param name	name of the long value to retrieve
+ * @return		the actual value
  *
  * Convenience variant of g_object_get_data() to retrieve
  * a long instead of a pointer.
@@ -344,9 +338,8 @@ gxk_factory_path_unescape_uline (const gchar *path)
 
 /* --- Gtk+ Utilities --- */
 /**
- * gxk_widget_viewable
- * @widget: valid #GtkWidget
- * RETURNS: %TRUE if the widget is viewable, %FALSE otherwise
+ * @param widget	valid GtkWidget
+ * RETURNS: TRUE if the widget is viewable, FALSE otherwise
  *
  * Check whether a widget is viewable by verifying the mapped
  * state of the widget and all its parent widgets.
@@ -366,15 +359,14 @@ gxk_widget_viewable (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_viewable_changed
- * @widget: valid #GtkWidget
+ * @param widget	valid GtkWidget
  *
  * A widget should call this function if it changed
  * the mapped state of one of its children (or if it
  * is a toplevel and gets show or hidden) to emit the
  * ::viewable-changed signal on the related sub-tree.
- * #GxkDialog properly emits this signal if show or
- * hidden, containers like #GtkNotebook need this
+ * GxkDialog properly emits this signal if show or
+ * hidden, containers like GtkNotebook need this
  * function be explicitely connected to their ::switch-page
  * signal, in order for their children to get properly
  * notified.
@@ -396,8 +388,7 @@ gxk_traverse_viewable_changed (GtkWidget *widget,
 }
 
 /**
- * gxk_widget_attached_hierarchy_changed
- * @widget: valid #GtkWidget
+ * @param widget	valid GtkWidget
  *
  * Setting or unsetting a parent on a widget leads to emission
  * of the ::hirarchy-changed signal on the widget and any children
@@ -459,11 +450,10 @@ gxk_widget_proxy_hierarchy_changed_to_attached (GtkWidget *widget)
 }
 
 /**
- * gxk_window_set_cursor_type
- * @window: valid #GdkWindow*
- * @cursor: #GdkCursorType cursor type
+ * @param window	valid GdkWindow*
+ * @param cursor	GdkCursorType cursor type
  *
- * Set a window's cursor type. If %GXK_DEFAULT_CURSOR is specified
+ * Set a window's cursor type. If GXK_DEFAULT_CURSOR is specified
  * the window's cursor will be inherited from it's parent.
  */
 void
@@ -508,11 +498,10 @@ expose_handler (gpointer data)
 }
 
 /**
- * gxk_window_process_next
- * @window:          valid #GdkWindow
- * @update_children: whether to also process updates for child windows
+ * @param window	valid GdkWindow
+ * @param update_children	whether to also process updates for child windows
  *
- * Cause @window to be updated asyncronously as soon as possible via
+ * Cause @a window to be updated asyncronously as soon as possible via
  * gdk_window_process_updates().
  */
 void
@@ -529,6 +518,9 @@ gxk_window_process_next (GdkWindow *window,
     expose_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, expose_handler, NULL, NULL);
 }
 
+/**
+ * Convenience variant of gdk_draw_line() to draw a horizontal line.
+ */
 void
 gdk_draw_hline (GdkDrawable            *drawable,
                 GdkGC                  *gc,
@@ -540,6 +532,9 @@ gdk_draw_hline (GdkDrawable            *drawable,
     gdk_draw_line (drawable, gc, x, y, x + width - 1, y);
 }
 
+/**
+ * Convenience variant of gdk_draw_line() to draw a vertical line.
+ */
 void
 gdk_draw_vline (GdkDrawable            *drawable,
                 GdkGC                  *gc,
@@ -552,9 +547,8 @@ gdk_draw_vline (GdkDrawable            *drawable,
 }
 
 /**
- * gxk_color_alloc
- * @colormap: valid #GdkColormap
- * @color:    valid #GdkColor
+ * @param colormap	valid GdkColormap
+ * @param color	valid GdkColor
  *
  * Allocate a color like gdk_color_alloc() with automated
  * error checking.
@@ -567,6 +561,13 @@ gxk_color_alloc (GdkColormap *colormap,
     g_message ("failed to allocate color: { %d, %d, %d }", color->red, color->green, color->blue);
 }
 
+/**
+ * @param rgb_value 0xRrGgBb color value
+ *
+ * Fill out a GdkColor with red, green and blue color values,
+ * from Rr, Gg and Bb respectively.
+ * GdkColor.pixel will be 0-initialized.
+ */
 GdkColor
 gdk_color_from_rgb (guint rgb_value)
 {
@@ -580,6 +581,13 @@ gdk_color_from_rgb (guint rgb_value)
   return c;
 }
 
+/**
+ * @param rgb_value 0xAaRrGgBb color value
+ *
+ * Fill out a GdkColor with red, green and blue color values,
+ * from Rr, Gg and Bb respectively. Aa maybe an alpha value
+ * and will be ignored. GdkColor.pixel will be 0-initialized.
+ */
 GdkColor
 gdk_color_from_argb (guint rgb_value)
 {
@@ -593,6 +601,13 @@ gdk_color_from_argb (guint rgb_value)
   return c;
 }
 
+/**
+ * @param rgb_value 0xRrGgBbAa color value
+ *
+ * Fill out a GdkColor with red, green and blue color values,
+ * from Rr, Gg and Bb respectively. Aa maybe an alpha value
+ * and will be ignored. GdkColor.pixel will be 0-initialized.
+ */
 GdkColor
 gdk_color_from_rgba (guint rgb_value)
 {
@@ -680,10 +695,9 @@ gxk_color_dots_destroy (GxkColorDots *cdots)
 /* --- Gtk convenience --- */
 
 /**
- * gxk_widget_make_insensitive
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
- * This function is euqivalent to gtk_widget_set_sensitive (@widget, #FALSE);
+ * This function is euqivalent to gtk_widget_set_sensitive (@a widget, FALSE);
  * It exists as a convenient signal connection callback.
  */
 void
@@ -696,10 +710,9 @@ gxk_widget_make_insensitive (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_make_sensitive
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
- * This function is euqivalent to gtk_widget_set_sensitive (@widget, #TRUE);
+ * This function is euqivalent to gtk_widget_set_sensitive (@a widget, TRUE);
  * It exists as a convenient signal connection callback.
  */
 void
@@ -732,8 +745,7 @@ idle_showraiser (gpointer data)
 }
 
 /**
- * gxk_idle_showraise
- * @widget: a valid #GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Defers showing and raising this widget like gxk_widget_showraise()
  * until the next idle handler is run. This is useful if other things
@@ -776,8 +788,7 @@ idle_shower (GtkWidget **widget_p)
 }
 
 /**
- * gxk_idle_show_widget
- * @widget: a valid #GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Defer showing this widget until the next idle handler
  * is run. This is useful if other things are pending
@@ -823,8 +834,7 @@ idle_unrealizer (GtkWidget **widget_p)
 }
 
 /**
- * gxk_idle_unrealize_widget
- * @widget: a valid #GtkWindow
+ * @param widget	a valid GtkWindow
  *
  * Defer unrealizing this widget until the next idle handler
  * is run. This is useful if other things are pending
@@ -898,14 +908,13 @@ gxk_notebook_change_tabulator (GtkWidget        *tabulator,
 
 
 /**
- * gxk_notebook_append
- * @notebook:   a valid notebook
- * @child:      a valid parent-less widget
- * @label:      notebook page name
- * @fillexpand: whether the tab label should expand
+ * @param notebook	a valid notebook
+ * @param child	a valid parent-less widget
+ * @param label	notebook page name
+ * @param fillexpand	whether the tab label should expand
  *
- * Add a new page containing @child to @notebook,
- * naming the page @label.
+ * Add a new page containing @a child to @a notebook,
+ * naming the page @a label.
  */
 void
 gxk_notebook_append (GtkNotebook *notebook,
@@ -920,9 +929,8 @@ gxk_notebook_append (GtkNotebook *notebook,
 }
 
 /**
- * gxk_notebook_set_current_page_widget
- * @notebook: valid #GtkNotebook
- * @page:     @notebook page widget
+ * @param notebook	valid GtkNotebook
+ * @param page	@a notebook page widget
  *
  * Set the current notebook page from a page widget, instead
  * of a page number.
@@ -946,11 +954,10 @@ vseparator_space_request (GtkWidget      *widget,
 }
 
 /**
- * gxk_vseparator_space_new
- * @draw_seperator: enable visible vertical seperator
- * @RETURNS:        visible vertical space/seperator widget
+ * @param draw_seperator	enable visible vertical seperator
+ * @return		visible vertical space/seperator widget
  *
- * Create a vertical seperator widget. @draw_seperator indicates
+ * Create a vertical seperator widget. @a draw_seperator indicates
  * whether the seperator should be amount to simple space or not.
  */
 GtkWidget*
@@ -965,9 +972,8 @@ gxk_vseparator_space_new (gboolean draw_seperator)
 }
 
 /**
- * gtk_notebook_current_widget
- * @notebook: valid #GtkNotebook
- * @RETURNS:  the widget corresponding to the current page
+ * @param notebook	valid GtkNotebook
+ * @return		the widget corresponding to the current page
  *
  * This function is essentially a shortcut for
  * gtk_notebook_get_current_page() and gtk_notebook_get_nth_page().
@@ -979,11 +985,10 @@ gtk_notebook_current_widget (GtkNotebook *notebook)
 }
 
 /**
- * gxk_notebook_descendant_get_page
- * @widget:  valid #GtkWidget
- * @RETURNS: notebook page widget or %NULL
+ * @param widget	valid GtkWidget
+ * @return		notebook page widget or NULL
  *
- * Find the innermost notebook page widget that contains @widget.
+ * Find the innermost notebook page widget that contains @a widget.
  */
 GtkWidget*
 gxk_notebook_descendant_get_page (GtkWidget *widget)
@@ -994,11 +999,10 @@ gxk_notebook_descendant_get_page (GtkWidget *widget)
 }
 
 /**
- * gxk_notebook_descendant_get_tab
- * @widget:  valid #GtkWidget
- * @RETURNS: notebook page tab widget or %NULL
+ * @param widget	valid GtkWidget
+ * @return		notebook page tab widget or NULL
  *
- * Find the innermost notebook page widget that contains @widget
+ * Find the innermost notebook page widget that contains @a widget
  * and return its tabulator widget.
  */
 GtkWidget*
@@ -1009,14 +1013,13 @@ gxk_notebook_descendant_get_tab (GtkWidget *widget)
 }
 
 /**
- * gtk_box_get_nth_child
- * @box:     a valid GtkBox
- * @pos:     position of the requested child
- * @RETURNS: a child of @box or %NULL
+ * @param box	a valid GtkBox
+ * @param pos	position of the requested child
+ * @return		a child of @a box or NULL
  *
- * Find the child at position @pos (0 indicates the first child) of
- * @box and return it. To retrieve the last xchild of @box, -1
- * may be passed as @pos.
+ * Find the child at position @a pos (0 indicates the first child) of
+ * @a box and return it. To retrieve the last xchild of @a box, -1
+ * may be passed as @a pos.
  */
 GtkWidget*
 gtk_box_get_nth_child (GtkBox *box,
@@ -1035,8 +1038,7 @@ gtk_box_get_nth_child (GtkBox *box,
 }
 
 /**
- * gxk_widget_showraise
- * @widget: a valid widget
+ * @param widget	a valid widget
  *
  * Show the widget. If the widget is a toplevel,
  * also raise its window to top.
@@ -1071,12 +1073,11 @@ async_delete_event_handler (gpointer data)
 }
 
 /**
- * gxk_toplevel_delete
- * @widget: a widget having a toplevel
+ * @param widget	a widget having a toplevel
  *
  * This function is useful to produce the an effect
  * similar to user caused window manager triggered
- * window deletion on the toplevel of @widget.
+ * window deletion on the toplevel of @a widget.
  * Note that this function will cause window deletion
  * despite any grabs in effect however.
  */
@@ -1091,10 +1092,9 @@ gxk_toplevel_delete (GtkWidget *widget)
 }
 
 /**
- * gxk_toplevel_activate_default
- * @widget: a widget having a toplevel
+ * @param widget	a widget having a toplevel
  *
- * Activate the default widget of the toplevel of @widget.
+ * Activate the default widget of the toplevel of @a widget.
  */
 void
 gxk_toplevel_activate_default (GtkWidget *widget)
@@ -1107,10 +1107,9 @@ gxk_toplevel_activate_default (GtkWidget *widget)
 }
 
 /**
- * gxk_toplevel_hide
- * @widget: a widget having a toplevel
+ * @param widget	a widget having a toplevel
  *
- * Hide the toplevel of @widget.
+ * Hide the toplevel of @a widget.
  */
 void
 gxk_toplevel_hide (GtkWidget *widget)
@@ -1151,13 +1150,15 @@ gxk_parent_find_descendant (GtkWidget        *parent,
   return dsearch.child;
 }
 
+///@hidden
 enum {
-  STYLE_MODIFY_FG_AS_SENSITIVE,
+  STYLE_MODIFY_FG_AS_SENSITIVE, ///< sensitive foreground
   STYLE_MODIFY_BASE_AS_BG,
   STYLE_MODIFY_BG_AS_BASE,
   STYLE_MODIFY_NORMAL_BG_AS_BASE,
   STYLE_MODIFY_BG_AS_ACTIVE,
 };
+///@endhidden
 
 static void
 widget_modify_style (GtkWidget *widget)
@@ -1223,12 +1224,11 @@ widget_modify_style (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_modify_as_title
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Modify the widget and it's style, so that it is insensitive,
  * but doesn't quite look that way. Useful for inactive title
- * menu items in menus (@widget should be the menu item's label).
+ * menu items in menus (@a widget should be the menu item's label).
  */
 void
 gxk_widget_modify_as_title (GtkWidget *widget)
@@ -1248,8 +1248,7 @@ gxk_widget_modify_as_title (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_modify_bg_as_base
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Modify the widget's background to look like the background
  * of a text or list widget (usually white). This is useful
@@ -1271,8 +1270,7 @@ gxk_widget_modify_bg_as_base (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_modify_normal_bg_as_base
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Modify the widget's background like gxk_widget_modify_bg_as_base()
  * does, as long as the widget isn't activated or selected.
@@ -1292,8 +1290,7 @@ gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_modify_base_as_bg
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Modify the widget's base background (used by list and
  * text widgets) to look like an ordinary widget background.
@@ -1316,8 +1313,7 @@ gxk_widget_modify_base_as_bg (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_modify_bg_as_active
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Modify the widget's background to look like the background
  * of depressed button.
@@ -1347,8 +1343,7 @@ expose_bg_clear (GtkWidget      *widget,
 }
 
 /**
- * gxk_widget_force_bg_clear
- * @widget: a valid GtkWidget
+ * @param widget	a valid GtkWidget
  *
  * Enforce drawing of a widget's background.
  * Some widgets do not explicitely draw their background,
@@ -1367,12 +1362,11 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
 }
 
 /**
- * gxk_widget_set_tooltip
- * @widget:  a valid #GtkWidget
- * @tooltip: descriptive tooltip
+ * @param widget	a valid GtkWidget
+ * @param tooltip	descriptive tooltip
  *
- * As a convenience function, this sets the @tooltip for @widget
- * on %GXK_TOOLTIPS, if @widget is supposed to have tooltips
+ * As a convenience function, this sets the @a tooltip for @a widget
+ * on GXK_TOOLTIPS, if @a widget is supposed to have tooltips
  * according to the system configuration and also sets the latent tooltip.
  */
 void
@@ -1385,9 +1379,8 @@ gxk_widget_set_tooltip (gpointer     widget,
 }
 
 /**
- * gxk_widget_set_latent_tooltip
- * @widget:  a valid GtkWidget
- * @tooltip: descriptive tooltip
+ * @param widget	a valid GtkWidget
+ * @param tooltip	descriptive tooltip
  *
  * Set the latent tooltip for this widget. A latent tooltip
  * will not be shown on mouse over for this widget. Instead
@@ -1406,11 +1399,10 @@ gxk_widget_set_latent_tooltip (GtkWidget   *widget,
 }
 
 /**
- * gxk_widget_get_latent_tooltip
- * @widget:  a valid GtkWidget
- * @RETUSN: descriptive tooltip
+ * @param widget	a valid GtkWidget
+ * @return      	descriptive tooltip
  *
- * Retrieve the latent tooltip for @widget. See
+ * Retrieve the latent tooltip for @a widget. See
  * gxk_widget_set_latent_tooltip() for the purpose of latent
  * tooltips.
  */
@@ -1441,15 +1433,15 @@ gxk_activate_accel_group (GtkWidget     *widget,
 }
 
 /**
- * gxk_widget_activate_accel_group
- * @widget:      a valid #GtkWidget
- * @accel_group: a valid #GtkAccelGroup
+ * @param widget	a valid GtkWidget
+ * @param accel_group	a valid GtkAccelGroup
  *
- * Activate accelerators within accel group when @widget
+ * Activate accelerators within accel group when @a widget
  * receives key press events. This function isn't pure
- * convenience, as it works around Gtk+-2.2 not exporting
- * _gtk_accel_group_activate(), _gtk_accel_group_attach()
- * or _gtk_accel_group_detach().
+ * convenience, as it works around Gtk+ version prior to
+ * Gtk+-2.4 not exporting
+ * gtk_accel_group_activate(), gtk_accel_group_attach()
+ * and gtk_accel_group_detach().
  */
 void
 gxk_widget_activate_accel_group (GtkWidget     *widget,
@@ -1470,11 +1462,10 @@ gxk_widget_activate_accel_group (GtkWidget     *widget,
 }
 
 /**
- * gxk_size_group
- * @sgmode: size group mode, one of %GTK_SIZE_GROUP_NONE,
- *          %GTK_SIZE_GROUP_HORIZONTAL, %GTK_SIZE_GROUP_VERTICAL or
- *	    %GTK_SIZE_GROUP_BOTH
- * @...:    %NULL terminated list of widgets to group together
+ * @param sgmode	size group mode, one of GTK_SIZE_GROUP_NONE,
+ *          GTK_SIZE_GROUP_HORIZONTAL, GTK_SIZE_GROUP_VERTICAL or
+ *	    GTK_SIZE_GROUP_BOTH
+ * @param ...:    NULL terminated list of widgets to group together
  *
  * Group horizontal and/or vertical resizing behaviour of
  * widgets. See gtk_size_group_set_mode() on the effect of
@@ -1503,10 +1494,9 @@ gxk_size_group (GtkSizeGroupMode sgmode,
 }
 
 /**
- * gxk_tree_spath_index0
- * @strpath: stringified #GtkTreePath
+ * @param strpath	stringified GtkTreePath
  *
- * Return index[0] of @strpath. Useful for paths in lists,
+ * Return index[0] of @a strpath. Useful for paths in lists,
  * where index[0] usually corresponds to the nth row.
  */
 gint
@@ -1524,11 +1514,10 @@ gxk_tree_spath_index0 (const gchar *strpath)
 }
 
 /**
- * gxk_tree_model_get_iter
  *
  * This function is a replacement for gtk_tree_model_get_iter()
  * for Gtk+-2.4. For sort models, gtk_tree_model_get_iter() can
- * erroneously return %TRUE which is corrected by calling this
+ * erroneously return TRUE which is corrected by calling this
  * function instead.
  */
 gboolean
@@ -1550,8 +1539,7 @@ gxk_tree_model_get_iter (GtkTreeModel          *tree_model,
 
 
 /**
- * gxk_tree_path_prev
- * @path: valid #GtkTreePath
+ * @param path	valid GtkTreePath
  *
  * Workaround for gtk_tree_path_prev() which corrupts memory
  * if called on empty paths (up to version Gtk+-2.4 at least).
@@ -1565,16 +1553,15 @@ gxk_tree_path_prev (GtkTreePath *path)
 }
 
 /**
- * gxk_tree_view_add_column
- * @tree_view: valid #GtkTreeView
- * @position:  column position (or -1 to append)
- * @column:    valid #GtkTreeViewColumn
- * @cell:      valid #GtkCellRenderer
- * @...:       attribute mappings
+ * @param tree_view	valid GtkTreeView
+ * @param position	column position (or -1 to append)
+ * @param column	valid GtkTreeViewColumn
+ * @param cell	valid GtkCellRenderer
+ * @param ...:       attribute mappings
  *
- * Appends @cell to @column and adds @column
- * to @tree_view at the specified @position.
- * This function takes a %NULL-terminated list
+ * Appends @a cell to @a column and adds @a column
+ * to @a tree_view at the specified @a position.
+ * This function takes a NULL-terminated list
  * of attribute mappings consisting of a string
  * and a guint, mapping cell attributes to
  * model columns as documented in
@@ -1621,36 +1608,37 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
 }
 
 /**
- * gxk_tree_view_append_text_columns
- * @tree_view: valid #GtkTreeView
- * @n_cols:    number of columns to append
- * @...:       column arguments
+ * @param tree_view	valid GtkTreeView
+ * @param n_cols	number of columns to append
+ * @param ...:       column arguments
  *
- * Add @n_cols new columns with text cells to
- * @tree_view (a short hand version for multiple
+ * Add @a n_cols new columns with text cells to
+ * @a tree_view (a short hand version for multiple
  * calls to gxk_tree_view_add_text_column()).
  * Per column, the caller needs to
- * supply a #guint, a string, a #gdouble and another
+ * supply a guint, a string, a gdouble and another
  * string. The Arguments are used as model column
  * number (for the text to be displayed), the column
  * specific flags, the horizontal cell alignment
  * (between 0 and 1) and the column title respectively.
  *
- * The @column_flags argument is a combination of letters that
+ * The @a column_flags argument is a combination of letters that
  * are able to switch certain characteristics on or of,
  * currently supported are:
- * @* %F - column is fixed in sizing;
- * @* %A - column resizes automatically;
- * @* %G - columns sizing behaviour is grow only;
- * @* %S - column is sortable;
- * @* %s - column is unsortable;
- * @* %O - column is reorderable;
- * @* %o - column is not reorderable;
- * @* %R - column is user-resizable;
- * @* %r - column is not user-resizable;
- * @* %P - add extra padding between multiple cells of the same column;
- * @* %p - cancel a previous %P flag;
- * @* %# - automatically popup dialogs for popup cell renderers.
+ * @itemize
+ * @item F - column is fixed in sizing;
+ * @item A - column resizes automatically;
+ * @item G - columns sizing behaviour is grow only;
+ * @item S - column is sortable;
+ * @item s - column is unsortable;
+ * @item O - column is reorderable;
+ * @item o - column is not reorderable;
+ * @item R - column is user-resizable;
+ * @item r - column is not user-resizable;
+ * @item P - add extra padding between multiple cells of the same column;
+ * @item p - cancel a previous #P flag;
+ * @item # - automatically popup dialogs for popup cell renderers.
+ * @done
  */
 void
 gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
@@ -1799,28 +1787,27 @@ tree_view_add_column (GtkTreeView  *tree_view,
 }
 
 /**
- * gxk_tree_view_add_text_column
- * @tree_view:        valid #GtkTreeView
- * @model_column:     model column
- * @column_flags:     column flags
- * @xalign:	      horizontal text alignment
- * @title:            column title
- * @tooltip:          column tooltip
- * @edited_callback:  notification callback 
- * @data:             data passed in to toggled_callback
- * @cflags:           connection flags
- * @RETURNS:          a newly added #GtkTreeViewColumn
+ * @param tree_view	valid GtkTreeView
+ * @param model_column	model column
+ * @param column_flags	column flags
+ * @param xalign	horizontal text alignment
+ * @param title	column title
+ * @param tooltip	column tooltip
+ * @param edited_callback	notification callback 
+ * @param data	data passed in to toggled_callback
+ * @param cflags	connection flags
+ * @return		a newly added GtkTreeViewColumn
  *
- * Add a new column with text cell to a @tree_view.
- * The @model_column indicates the column number
+ * Add a new column with text cell to a @a tree_view.
+ * The @a model_column indicates the column number
  * of the tree model containing the text to be
- * displayed, the @column_flags toggle specific
+ * displayed, the @a column_flags toggle specific
  * column characteristics (see
  * gxk_tree_view_append_text_columns() for details)
- * and @xalign controls the horizontal cell alignment
+ * and @a xalign controls the horizontal cell alignment
  * (between 0 and 1).
- * If non-%NULL, @edited_callback(@data) is connected
- * with @cflags (see g_signal_connect_data()) to the
+ * If non-NULL, @a edited_callback(@a data) is connected
+ * with @a cflags (see g_signal_connect_data()) to the
  * "::edited" signal of the text cell and the cell is
  * made editable.
  */
@@ -1843,21 +1830,20 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
 }
 
 /**
- * gxk_tree_view_add_popup_column
- * @tree_view:        valid #GtkTreeView
- * @model_column:     model column
- * @xalign:	      horizontal text alignment
- * @title:            column title
- * @tooltip:          column tooltip
- * @edited_callback:  edit notification callback 
- * @popup_callback:   popup notification callback 
- * @data:             data passed in to toggled_callback
- * @cflags:           connection flags
- * @RETURNS:          a newly added #GtkTreeViewColumn
+ * @param tree_view	valid GtkTreeView
+ * @param model_column	model column
+ * @param xalign	horizontal text alignment
+ * @param title	column title
+ * @param tooltip	column tooltip
+ * @param edited_callback	edit notification callback 
+ * @param popup_callback	popup notification callback 
+ * @param data	data passed in to toggled_callback
+ * @param cflags	connection flags
+ * @return		a newly added GtkTreeViewColumn
  *
  * Add a text column with popup facility, similar to
  * gxk_tree_view_add_text_column(). This function takes
- * an additional argument @popup_callback() which is
+ * an additional argument @a popup_callback() which is
  * called when the user clicks on the cells "popup"
  * button.
  */
@@ -1881,23 +1867,22 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 }
 
 /**
- * gxk_tree_view_add_toggle_column
- * @tree_view:        valid #GtkTreeView
- * @model_column:     model column
- * @xalign:	      horizontal text alignment
- * @title:            column title
- * @tooltip:          column tooltip
- * @toggled_callback: notification callback 
- * @data:             data passed in to toggled_callback
- * @cflags:           connection flags
- * @RETURNS:          a newly added #GtkTreeViewColumn
+ * @param tree_view	valid GtkTreeView
+ * @param model_column	model column
+ * @param xalign	horizontal text alignment
+ * @param title	column title
+ * @param tooltip	column tooltip
+ * @param toggled_callback	notification callback 
+ * @param data	data passed in to toggled_callback
+ * @param cflags	connection flags
+ * @return		a newly added GtkTreeViewColumn
  *
  * Add a toggle button column, similar
  * to gxk_tree_view_add_text_column(), however
  * the model column is expected to be of type
- * %G_TYPE_BOOLEAN, and instead of an @edited_callback(),
+ * G_TYPE_BOOLEAN, and instead of an @a edited_callback(),
  * this function has a
- * void @toggled_callback(#GtkCellRendererToggle*, const gchar *strpath, @data)
+ * void @a toggled_callback(GtkCellRendererToggle*, const gchar *strpath, @a data)
  * callback which is connected to the "toggled" signal of
  * the new cell.
  */
@@ -1963,10 +1948,9 @@ fixup_tcolumn_title (GtkWidget   *widget,
 }
 
 /**
- * gxk_tree_view_column_set_tip_title
- * @tree_column: valid #GtkTreeViewColumn
- * @title:       column title
- * @tooltip:     column tooltip
+ * @param tree_column	valid GtkTreeViewColumn
+ * @param title	column title
+ * @param tooltip	column tooltip
  *
  * Set a tree view column title and its tooltip.
  * This is a bug workaroud for missing tree view
@@ -1996,11 +1980,10 @@ gxk_tree_view_column_set_tip_title (GtkTreeViewColumn   *tree_column,
 }
 
 /**
- * gxk_tree_selection_select_spath
- * @selection: GtkTreeSelection to modify
- * @str_path:  a stringified GtkTreePath
+ * @param selection	GtkTreeSelection to modify
+ * @param str_path	a stringified GtkTreePath
  *
- * Select the row denoted by @str_path.
+ * Select the row denoted by @a str_path.
  */
 void
 gxk_tree_selection_select_spath (GtkTreeSelection *selection,
@@ -2017,11 +2000,10 @@ gxk_tree_selection_select_spath (GtkTreeSelection *selection,
 }
 
 /**
- * gxk_tree_selection_unselect_spath
- * @selection: GtkTreeSelection to modify
- * @str_path:  a stringified GtkTreePath
+ * @param selection	GtkTreeSelection to modify
+ * @param str_path	a stringified GtkTreePath
  *
- * Unselect the row denoted by @str_path.
+ * Unselect the row denoted by @a str_path.
  */
 void
 gxk_tree_selection_unselect_spath (GtkTreeSelection *selection,
@@ -2038,9 +2020,8 @@ gxk_tree_selection_unselect_spath (GtkTreeSelection *selection,
 }
 
 /**
- * gxk_tree_selection_select_ipath
- * @selection: GtkTreeSelection to modify
- * @...:       GtkTreePath indices
+ * @param selection	GtkTreeSelection to modify
+ * @param ...:       GtkTreePath indices
  *
  * Select the row denoted by the path to be constructed from the
  * -1 terminated indices.
@@ -2070,9 +2051,8 @@ gxk_tree_selection_select_ipath (GtkTreeSelection *selection,
 }
 
 /**
- * gxk_tree_selection_unselect_ipath
- * @selection: GtkTreeSelection to modify
- * @...:       GtkTreePath indices
+ * @param selection	GtkTreeSelection to modify
+ * @param ...:       GtkTreePath indices
  *
  * Select the row denoted by the path to be constructed from the
  * -1 terminated indices.
@@ -2232,9 +2212,8 @@ browse_selection_changed (GtkTreeSelection *selection)
 }
 
 /**
- * gxk_tree_selection_force_browse
- * @selection: GtkTreeSelection to watch
- * @model:     tree model used with @selection
+ * @param selection	GtkTreeSelection to watch
+ * @param model	tree model used with @a selection
  *
  * Watch deletion and insertions into empty trees to
  * ensure valid selections across these events.
@@ -2254,13 +2233,12 @@ gxk_tree_selection_force_browse (GtkTreeSelection *selection,
 }
 
 /**
- * gxk_tree_view_get_bin_window_pos
- * @tree: valid #GtkTreeView
- * @x_p:  x position
- * @y_p:  y position
+ * @param tree	valid GtkTreeView
+ * @param x_p	x position
+ * @param y_p	y position
  *
  * Retrieve the position of the bin window (row display area) of
- * a #GtkTreeView widget once it's realized.
+ * a GtkTreeView widget once it's realized.
  */
 void
 gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
@@ -2293,15 +2271,14 @@ gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
 }
 
 /**
- * gxk_tree_view_get_row_area
- * @tree:         valid #GtkTreeView
- * @row:          row to retrieve area coordinates for
- * @y_p:          y position of @row
- * @height_p:     height of @row
- * @content_area: whether the cell background area or content area is returned
+ * @param tree	valid GtkTreeView
+ * @param row	row to retrieve area coordinates for
+ * @param y_p	y position of @a row
+ * @param height_p	height of @a row
+ * @param content_area	whether the cell background area or content area is returned
  *
  * Retrieve the position and height of a row of a
- * #GtkTreeView widget within its bin window.
+ * GtkTreeView widget within its bin window.
  */
 gboolean
 gxk_tree_view_get_row_area (GtkTreeView *tree,
@@ -2340,12 +2317,11 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
 }
 
 /**
- * gxk_tree_view_focus_row
- * @tree:     valid #GtkTreeView
- * @row:      row to focus
+ * @param tree	valid GtkTreeView
+ * @param row	row to focus
  *
- * Force focus to @row, causes automatic selection of
- * @row in browse mode.
+ * Force focus to @a row, causes automatic selection of
+ * @a row in browse mode.
  */
 void
 gxk_tree_view_focus_row (GtkTreeView *tree,
@@ -2362,12 +2338,11 @@ gxk_tree_view_focus_row (GtkTreeView *tree,
 }
 
 /**
- * gxk_tree_view_is_row_selected
- * @tree:    valid #GtkTreeView
- * @row:     row to test
- * @RETURNS: whether @row is selected
+ * @param tree	valid GtkTreeView
+ * @param row	row to test
+ * @return		whether @a row is selected
  *
- * Check whether @row in @tree is selected.
+ * Check whether @a row in @a tree is selected.
  */
 gboolean
 gxk_tree_view_is_row_selected (GtkTreeView *tree,
@@ -2389,9 +2364,8 @@ gxk_tree_view_is_row_selected (GtkTreeView *tree,
 }
 
 /**
- * gxk_tree_view_get_selected_row
- * @tree:    valid #GtkTreeView
- * @RETURNS: first selected row or -1
+ * @param tree	valid GtkTreeView
+ * @return		first selected row or -1
  *
  * Retrieve the selected row in browse mode (for other
  * selection modes, return the first selected row if any).
@@ -2417,13 +2391,12 @@ gxk_tree_view_get_selected_row (GtkTreeView *tree)
 }
 
 /**
- * gxk_tree_view_get_row_from_coord
- * @tree:    valid #GtkTreeView
- * @y:       bin window y coordinate
- * @row_p:   row pointed to by @y
- * @RETURNS: whether y lies within the visible area
+ * @param tree	valid GtkTreeView
+ * @param y	bin window y coordinate
+ * @param row_p	row pointed to by @a y
+ * @return		whether y lies within the visible area
  *
- * Retrieve the row within which @y lies. If @y lies
+ * Retrieve the row within which @a y lies. If @a y lies
  * outside the visible area, the row is clamped to
  * visible rows.
  */
@@ -2484,18 +2457,17 @@ gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
 }
 
 /**
- * gxk_signal_handler_exists
- * @instance:        object instance with signals
- * @detailed_signal: signal name
- * @callback:        custom callback function
- * @data:            callback data
- * @RETURNS:         whether callback is connected
+ * @param instance	object instance with signals
+ * @param detailed_signal	signal name
+ * @param callback	custom callback function
+ * @param data	callback data
+ * @return		whether callback is connected
  *
- * Find out whether a specific @callback is connected to a
+ * Find out whether a specific @a callback is connected to a
  * specific signal on an instance, the callback may be blocked.
- * @detailed_signal may be
- * %NULL to act as a wildcard. %TRUE is returned if
- * the @callback is found, %FALSE otherwise.
+ * @a detailed_signal may be
+ * NULL to act as a wildcard. TRUE is returned if
+ * the @a callback is found, FALSE otherwise.
  */
 gboolean
 gxk_signal_handler_exists (gpointer     instance,
@@ -2530,18 +2502,17 @@ gxk_signal_handler_exists (gpointer     instance,
 }
 
 /**
- * gxk_signal_handler_pending
- * @instance:        object instance with signals
- * @detailed_signal: signal name
- * @callback:        custom callback function
- * @data:            callback data
- * @RETURNS:         whether callback is connected
+ * @param instance	object instance with signals
+ * @param detailed_signal	signal name
+ * @param callback	custom callback function
+ * @param data	callback data
+ * @return		whether callback is connected
  *
- * Find out whether a specific @callback is pending
+ * Find out whether a specific @a callback is pending
  * (connected and unblocked) for a
- * specific signal on an instance. @detailed_signal may be
- * %NULL to act as a wildcard. %TRUE is returned if
- * the @callback is found, %FALSE otherwise.
+ * specific signal on an instance. @a detailed_signal may be
+ * NULL to act as a wildcard. TRUE is returned if
+ * the @a callback is found, FALSE otherwise.
  */
 gboolean
 gxk_signal_handler_pending (gpointer     instance,
@@ -2577,9 +2548,8 @@ gxk_signal_handler_pending (gpointer     instance,
 
 /* --- Gtk bug fixes --- */
 /**
- * gxk_cell_editable_canceled
- * @ecell:   valid #GtkCellEditable
- * @RETURNS: whether editing got aborted
+ * @param ecell	valid GtkCellEditable
+ * @return		whether editing got aborted
  *
  * Return whether editing was canceled (currently supported
  * by GtkEntry and triggered by pressing Escape during editing).
@@ -2595,13 +2565,12 @@ gxk_cell_editable_canceled (GtkCellEditable *ecell)
 }
 
 /**
- * gxk_cell_editable_is_focus_handler
- * @ecell:   valid #GtkCellEditable
- * @RETURNS: returns %FALSE
+ * @param ecell	valid GtkCellEditable
+ * @return		returns FALSE
  *
- * Call gtk_cell_editable_editing_done() if necessary and return %FALSE.
+ * Call gtk_cell_editable_editing_done() if necessary and return FALSE.
  * This function is meant to be used to handle "notify::is-focus" signals
- * on #GtkCellEditable widgets.
+ * on GtkCellEditable widgets.
  */
 void
 gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell)
@@ -2641,15 +2610,14 @@ path_fix_uline (const gchar *str)
 }
 
 /**
- * gxk_item_factory_sensitize
- * @ifactory:  valid #GtkItemFactory
- * @path:      item factory path
- * @sensitive: whether menu item should be sensitive
- * @RETURNS:   menu item according to @path
+ * @param ifactory	valid GtkItemFactory
+ * @param path	item factory path
+ * @param sensitive	whether menu item should be sensitive
+ * @return		menu item according to @a path
  *
  * This function turns the menu item found via
  * gxk_item_factory_get_item() (in-)sensitive
- * according to @sensitive. Additional checks
+ * according to @a sensitive. Additional checks
  * are performed before making a menu item sensitive
  * to avoid showing e.g. empty submenus.
  */
@@ -2679,12 +2647,11 @@ gxk_item_factory_sensitize (GtkItemFactory  *ifactory,
 }
 
 /**
- * gxk_item_factory_get_item
- * @ifactory: valid #GtkItemFactory
- * @path:     item factory path
- * @RETURNS:  menu item according to @path
+ * @param ifactory	valid GtkItemFactory
+ * @param path	item factory path
+ * @return		menu item according to @a path
  *
- * This function strips unescaped underlines ('_') from @path
+ * This function strips unescaped underlines ('_') from @a path
  * and then calls gtk_item_factory_get_item().
  */
 GtkWidget*
@@ -2698,12 +2665,11 @@ gxk_item_factory_get_item (GtkItemFactory *ifactory,
 }
 
 /**
- * gxk_item_factory_get_widget
- * @ifactory: valid #GtkItemFactory
- * @path:     item factory path
- * @RETURNS:  widget according to @path
+ * @param ifactory	valid GtkItemFactory
+ * @param path	item factory path
+ * @return		widget according to @a path
  *
- * This function strips unescaped underlines ('_') from @path
+ * This function strips unescaped underlines ('_') from @a path
  * and then calls gtk_item_factory_get_widget().
  */
 GtkWidget*
@@ -2754,18 +2720,17 @@ requisition_to_aux_info (GtkWidget      *widget,
 }
 
 /**
- * gxk_widget_proxy_requisition
- * @widget: valid #GtkWidget
- * @xscale: fractional factor for screen width
- * @yscale: fractional factor for screen height
+ * @param widget	valid GtkWidget
+ * @param xscale	fractional factor for screen width
+ * @param yscale	fractional factor for screen height
  *
- * Proxy the size requisition of @widget through the ::width-request
+ * Proxy the size requisition of @a widget through the ::width-request
  * and ::height-request properties. This is useful only for immediate
- * children of a #GtkScrolledWindow (e.g. a #GtkViewport), to have
- * the #GtkScrolledWindow honour the widgets size requisition.
- * If @xscale or @yscale is passed as -1, the corresponding dimension
+ * children of a GtkScrolledWindow (e.g. a GtkViewport), to have
+ * the GtkScrolledWindow honour the widgets size requisition.
+ * If @a xscale or @a yscale is passed as -1, the corresponding dimension
  * ::width-request or ::height-request is left unset.
- * If @xscale or @yscale is passed a value between 0 and +1, it is
+ * If @a xscale or @a yscale is passed a value between 0 and +1, it is
  * interpreted as a fraction of the screen width or screen height to
  * constrain the corresponding requested dimension.
  */
@@ -2804,10 +2769,10 @@ scrolled_window_size_request_spare_space (GtkScrolledWindow *scwin,
 }
 
 /**
- * gxk_scrolled_window_spare_space
- * @scwin:  valid #GtkScrolledWindow
- * A normal #GtkScrolledWindow requests extra space for a horizontal scrollbar
- * if the vertical scroll policy is set to %GTK_POLICY_NEVER and vice versa,
+ * @param scwin	valid GtkScrolledWindow
+ *
+ * A normal GtkScrolledWindow requests extra space for a horizontal scrollbar
+ * if the vertical scroll policy is set to GTK_POLICY_NEVER and vice versa,
  * regardless of whether the scrollbars have to be shown or not.
  * This function patches up this behaviour to spare the extra requested space
  * from the outer scrolled window requisition if possible (that is, if the
@@ -2821,8 +2786,9 @@ gxk_scrolled_window_spare_space (GtkScrolledWindow*scwin)
 }
 
 /**
- * gxk_scrolled_window_unspare_space
- * @scwin:  valid #GtkScrolledWindow
+ *
+ * @param scwin	valid GtkScrolledWindow
+ *
  * Undo the effect of a call to gxk_scrolled_window_spare_space().
  */
 void
@@ -2833,16 +2799,15 @@ gxk_scrolled_window_unspare_space (GtkScrolledWindow*scwin)
 }
 
 /**
- * gxk_scrolled_window_create
- * @child:       valid #GtkWidget
- * @shadow_type: shadow around the #GtkViewport
- * @xrequest:    fractional factor for screen width
- * @yrequest:    fractional factor for screen height
- * @spare_space: whether to call gxk_scrolled_window_spare_space()
- * @RETURNS:     the newly created #GtkScrolledWindow
+ * @param child	valid GtkWidget
+ * @param shadow_type	shadow around the GtkViewport
+ * @param xrequest	fractional factor for screen width
+ * @param yrequest	fractional factor for screen height
+ * @param spare_space	whether to call gxk_scrolled_window_spare_space()
+ * @return		the newly created GtkScrolledWindow
  *
- * Create a #GtkScrolledWindow with a #GtkViewport as parent of @child.
- * The @xrequest and @yrequest arguments are passed on
+ * Create a GtkScrolledWindow with a GtkViewport as parent of @a child.
+ * The @a xrequest and @a yrequest arguments are passed on
  * to gxk_widget_proxy_requisition().
  */
 GtkWidget*
@@ -2880,12 +2845,11 @@ request_hclient_height (GtkWidget      *widget,
 }
 
 /**
- * gxk_widget_request_hclient_height
- * @widget: valid #GtkWidget
- * @client: valid #GtkWidget
+ * @param widget	valid GtkWidget
+ * @param client	valid GtkWidget
  *
- * Request the horizontal size of @client as height
- * for @widget.
+ * Request the horizontal size of @a client as height
+ * for @a widget.
  */
 void
 gxk_widget_request_hclient_height (GtkWidget       *widget,
@@ -2906,12 +2870,11 @@ request_vclient_width (GtkWidget      *widget,
 }
 
 /**
- * gxk_widget_request_vclient_width
- * @widget: valid #GtkWidget
- * @client: valid #GtkWidget
+ * @param widget	valid GtkWidget
+ * @param client	valid GtkWidget
  *
- * Request the vertical size of @client as width
- * for @widget.
+ * Request the vertical size of @a client as width
+ * for @a widget.
  */
 void
 gxk_widget_request_vclient_width (GtkWidget       *widget,
@@ -2922,13 +2885,12 @@ gxk_widget_request_vclient_width (GtkWidget       *widget,
 }
 
 /**
- * gxk_widget_has_ancestor
- * @widget:   valid #GtkWidget
- * @ancestor: valid #GtkWidget
- * @RETURNS:  whether @ancestor is ancestor of @widget
+ * @param widget	valid GtkWidget
+ * @param ancestor	valid GtkWidget
+ * @return		whether @a ancestor is ancestor of @a widget
  *
- * This function checks whether @widget and @ancestor are equal,
- * or whether @ancestor is an ancestor of @widget, in the same
+ * This function checks whether @a widget and @a ancestor are equal,
+ * or whether @a ancestor is an ancestor of @a widget, in the same
  * way gtk_widget_is_ancestor() tests it.
  */
 gboolean
@@ -2949,11 +2911,10 @@ gxk_widget_has_ancestor (gpointer widget,
 }
 
 /**
- * gxk_menu_set_active
- * @menu:   valid #GtkMenu
- * @child:  an immediate child of @menu
+ * @param menu	valid GtkMenu
+ * @param child	an immediate child of @a menu
  *
- * This function replaces gtk_menu_set_active(). The @child to be
+ * This function replaces gtk_menu_set_active(). The @a child to be
  * set as last selection is passed in as ordinary child pointer
  * and if the menu is attached to an option menu or menu button,
  * the attach widget is updated after the selection changed, due
@@ -2983,14 +2944,13 @@ gxk_menu_set_active (GtkMenu         *menu,
 }
 
 /**
- * gxk_widget_regulate
- * @widget:    valid #GtkWidget
- * @sensitive: whether @widget should be sensitive
- * @active:    whether @widget should be active
+ * @param widget	valid GtkWidget
+ * @param sensitive	whether @a widget should be sensitive
+ * @param active	whether @a widget should be active
  *
- * Regulate a widgets state. The @sensitive parameter
+ * Regulate a widgets state. The @a sensitive parameter
  * controls sensitivity like gtk_widget_set_sensitive()
- * and @active controls whether the widget is active
+ * and @a active controls whether the widget is active
  * like gtk_toggle_button_set_active() or
  * gtk_check_menu_item_set_active().
  * For menu items, the menu item is also made the
@@ -3023,13 +2983,12 @@ gxk_widget_regulate (GtkWidget      *widget,
 }
 
 /**
- * gxk_widget_regulate_uses_active
- * @widget:  valid #GtkWidget
- * @RETURNS: %TRUE if gxk_widget_regulate() uses @active for @widget
+ * @param widget	valid GtkWidget
+ * @return		TRUE if gxk_widget_regulate() uses @a active for @a widget
  *
  * Check whether gxk_widget_regulate() will actually make
- * use of its @active argument for @widget. If not,
- * %FALSE is returned, and gxk_widget_regulate() is
+ * use of its @a active argument for @a widget. If not,
+ * FALSE is returned, and gxk_widget_regulate() is
  * fully equivalent to just gtk_widget_set_sensitive().
  */
 gboolean
@@ -3040,11 +2999,10 @@ gxk_widget_regulate_uses_active (GtkWidget *widget)
 }
 
 /**
- * gxk_window_get_menu_accel_group
- * @window:  valid #GtkWindow
- * @RETURNS: valid #GtkAccelGroup
+ * @param window	valid GtkWindow
+ * @return		valid GtkAccelGroup
  *
- * This function hands out an accel group for @window
+ * This function hands out an accel group for @a window
  * specifically targeted at holding accelerators of
  * menu items in this window.
  */
@@ -3138,11 +3096,11 @@ adjust_visibility (GtkWidget  *expander,
 }
 
 /**
- * gxk_expander_connect_to_widget
- * @expander: valid #GtkWidget with boolean ::expanded property
- * @widget:   valid #GtkWidget
- * Setup signal connections, so that the visibility of @widget
- * is controlled by the ::expanded property of @expander.
+ * @param expander	valid GtkWidget with boolean ::expanded property
+ * @param widget	valid GtkWidget
+ *
+ * Setup signal connections, so that the visibility of @a widget
+ * is controlled by the ::expanded property of @a expander.
  */
 void
 gxk_expander_connect_to_widget (GtkWidget       *expander,
@@ -3154,15 +3112,14 @@ gxk_expander_connect_to_widget (GtkWidget       *expander,
 }
 
 /**
- * gxk_label_set_attributes:
- * @label: a #GtkLabel
- * @...:   a list of PangoAttrType and value pairs terminated by -1.
+ * @param label a GtkLabel
+ * @param ...   a list of PangoAttrType and value pairs terminated by -1.
  *
- * Sets Pango attributes on a #GtkLabel in a more convenient way than
+ * Sets Pango attributes on a GtkLabel in a more convenient way than
  * gtk_label_set_attributes().
  *
  * This function is useful if you want to change the font attributes
- * of a #GtkLabel. This is an alternative to using PangoMarkup which
+ * of a GtkLabel. This is an alternative to using PangoMarkup which
  * is slow to parse and akward to handle in an i18n-friendly way.
  *
  * The attributes are set on the complete label, from start to end. If
@@ -3310,14 +3267,13 @@ gxk_container_slot_reorder_child (GtkContainer    *container,
 }
 
 /**
- * gxk_grab_pointer_and_keyboard
- * @window:       the window receiving the grab
- * @owner_events: if %TRUE, events will be reported relative to @window
- * @event_mask:   mask of interesting events
- * @confine_to:   limits the pointer to the specified window
- * @cursor:       cursor to use for the duration of the grab
- * @time:         event time when grab is requested
- * @RETURNS:      %TRUE if pointer and keyboard could successfully be grabbed
+ * @param window	the window receiving the grab
+ * @param owner_events	if TRUE, events will be reported relative to @a window
+ * @param event_mask	mask of interesting events
+ * @param confine_to	limits the pointer to the specified window
+ * @param cursor	cursor to use for the duration of the grab
+ * @param time	event time when grab is requested
+ * @return		TRUE if pointer and keyboard could successfully be grabbed
  *
  * This function grabs the pointer and keyboard simultaneously.
  * This is recommended over plain pointer grabs, to reduce the
@@ -3344,12 +3300,11 @@ gxk_grab_pointer_and_keyboard (GdkWindow    *window,
 }
 
 /**
- * gxk_ungrab_pointer_and_keyboard
- * @window: window pointer was previously grabed on
+ * @param window	window pointer was previously grabed on
  *
  * This function releases a pointer and keyboard grab
  * acquired through gxk_grab_pointer_and_keyboard().
- * The @window is used to release grabs on the correct
+ * The @a window is used to release grabs on the correct
  * display, see gdk_display_pointer_ungrab() and
  * gdk_display_keyboard_ungrab() on this.
  */
@@ -3363,9 +3318,8 @@ gxk_ungrab_pointer_and_keyboard (GdkWindow *window,
 }
 
 /**
- * gxk_menu_check_sensitive
- * @menu:    valid #GtkMenu
- * @RETURNS: TRUE if @menu contains selectable items
+ * @param menu	valid GtkMenu
+ * @return		TRUE if @a menu contains selectable items
  *
  * This function tests whether a menu contains
  * selectable menu items. It can be used to determine
@@ -3414,18 +3368,17 @@ gxk_menu_refetch_accel_group (GtkMenu *menu)
 }
 
 /**
- * gxk_menu_attach_as_submenu
- * @menu:      valid #GtkMenu
- * @menu_item: valid #GtkMenuItem
+ * @param menu	valid GtkMenu
+ * @param menu_item	valid GtkMenuItem
  *
  * This function is a replacement for
  * gtk_menu_item_set_submenu(). It installs
- * the necessary hooks on the @menu to automatically
- * update sensitivity of @menu_item in response
- * to children being deleted or added to the @menu.
+ * the necessary hooks on the @a menu to automatically
+ * update sensitivity of @a menu_item in response
+ * to children being deleted or added to the @a menu.
  * The rationale behind this is to avoid empty
  * submenus popups.
- * Also, a propagation mechanism is set up, so @menu
+ * Also, a propagation mechanism is set up, so @a menu
  * and submenus thereof automatically fetch their
  * accelerator groups via gxk_window_get_menu_accel_group()
  * from the toplevel window.
@@ -3451,14 +3404,13 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
 }
 
 /**
- * gxk_option_menu_set_menu
- * @option_menu: valid #GtkOptionMenu
- * @menu:        valid #GtkMenu
+ * @param option_menu	valid GtkOptionMenu
+ * @param menu	valid GtkMenu
  *
  * This function is a replacement for
  * gtk_option_menu_set_menu(). Similar to
  * gxk_menu_attach_as_submenu(), it sets up
- * a propagation mechanism, so @menu
+ * a propagation mechanism, so @a menu
  * and submenus thereof automatically fetch their
  * accelerator groups via gxk_window_get_menu_accel_group()
  * from the toplevel window.
@@ -3504,12 +3456,11 @@ popup_menu_detacher (GtkWidget *widget,
 }
 
 /**
- * gxk_menu_attach_as_popup_with_func
- * @menu:      valid #GtkMenu
- * @menu_item: valid #GtkMenuItem
- * @mdfunc:    a #GtkMenuDetachFunc func as in gtk_menu_attach_to_widget()
+ * @param menu	valid GtkMenu
+ * @param menu_item	valid GtkMenuItem
+ * @param mdfunc	a GtkMenuDetachFunc func as in gtk_menu_attach_to_widget()
  *
- * Variant of gxk_menu_attach_as_popup() which preserves the #GtkMenuDetachFunc.
+ * Variant of gxk_menu_attach_as_popup() which preserves the GtkMenuDetachFunc.
  */
 void
 gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
@@ -3530,13 +3481,12 @@ gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
 }
 
 /**
- * gxk_menu_attach_as_popup
- * @menu:      valid #GtkMenu
- * @menu_item: valid #GtkMenuItem
+ * @param menu	valid GtkMenu
+ * @param menu_item	valid GtkMenuItem
  *
  * This function is a replacement for gtk_menu_attach_to_widget().
  * Similar to gxk_menu_attach_as_submenu(), it sets up a propagation
- * mechanism, so @menu and submenus thereof automatically fetch their
+ * mechanism, so @a menu and submenus thereof automatically fetch their
  * accelerator groups via gxk_window_get_menu_accel_group() from the
  * toplevel window. In addition, this function allowes
  * gxk_widget_find_level_ordered() to also consider popup menus
@@ -3729,12 +3679,11 @@ widget_find_level_ordered (GtkWidget   *widget,
 }
 
 /**
- * gxk_widget_find_level_ordered
- * @toplevel: valid #GtkWidget
- * @name:     name of the widget being looked for
- * @RETURNS:  a widget named @name or %NULL
+ * @param toplevel	valid GtkWidget
+ * @param name	name of the widget being looked for
+ * @return		a widget named @a name or NULL
  *
- * Search for a widget named @name, child of @toplevel.
+ * Search for a widget named @a name, child of @a toplevel.
  * The search is ordered by looking at all children of
  * a container before increasing depth.
  * This function also considers submenus in menu items
@@ -3754,21 +3703,20 @@ gxk_widget_find_level_ordered (GtkWidget   *toplevel,
 }
 
 /**
- * gxk_widget_get_attach_toplevel
- * @widget: valid #GtkWidget
+ * @param widget	valid GtkWidget
  *
  * This function returns the topmost container widget
- * for @widget, much like gtk_widget_get_toplevel().
+ * for @a widget, much like gtk_widget_get_toplevel().
  * The only difference is that for menus, not the immediate
- * parent is returned (the #GtkWindow used to display a
+ * parent is returned (the GtkWindow used to display a
  * menu) but the tree walk continues on the menu item
  * using the menu as submenu.
  * For example, for a window containing a menubar with
  * submenus, gtk_widget_get_toplevel() invoked on one
- * of the menu items will return the #GtkWindow widgets
+ * of the menu items will return the GtkWindow widgets
  * for the corresponding submenus, while
  * gxk_widget_get_attach_toplevel() will return the
- * actual #GtkWindow containing the menubar.
+ * actual GtkWindow containing the menubar.
  */
 GtkWidget*
 gxk_widget_get_attach_toplevel (GtkWidget *widget)
@@ -3799,15 +3747,14 @@ widget_add_font_requisition (GtkWidget      *widget,
 }
 
 /**
- * gxk_widget_add_font_requisition
- * @widget:   valid #GtkWidget
- * @n_chars:  number of characters to request space for
- * @n_digits: number of digits to request space for
+ * @param widget	valid GtkWidget
+ * @param n_chars	number of characters to request space for
+ * @param n_digits	number of digits to request space for
  *
  * This function adds up extra space to the widget size
  * requisition. The space is an approximation of the space
- * required by @n_chars characters and @n_digits digits
- * written with the widgets font.
+ * required by @a n_chars characters and @a n_digits digits
+ * written with the widget's font.
  */
 void
 gxk_widget_add_font_requisition (GtkWidget       *widget,
@@ -3823,9 +3770,8 @@ gxk_widget_add_font_requisition (GtkWidget       *widget,
 }
 
 /**
- * gxk_widget_get_options
- * @widget:   valid #GtkWidget
- * @RETURNS:  custom options set on the widget
+ * @param widget	valid GtkWidget
+ * @return		custom options set on the widget
  *
  * This function returns the set of custom options
  * currently set on the widget.
@@ -3838,12 +3784,11 @@ gxk_widget_get_options (gpointer widget)
 }
 
 /**
- * gxk_widget_add_option
- * @widget:   valid #GtkWidget
- * @option:   option to add to widget
- * @value:    value of @option (currently just "+" and "-" are supported)
+ * @param widget	valid GtkWidget
+ * @param option	option to add to widget
+ * @param value	value of @a option (currently just "+" and "-" are supported)
  *
- * Add/set a custom @option of @widget to a particular @value.
+ * Add/set a custom @a option of @a widget to a particular @a value.
  * Custom options on widgets are used to attach extra information
  * to widgets which may be useful to otherwise disjoint code
  * portions. The actual options are implemented by means of
@@ -3881,12 +3826,11 @@ gxk_widget_add_option (gpointer         widget,
 }
 
 /**
- * gxk_widget_check_option
- * @widget:   valid #GtkWidget
- * @option:   option to check for
- * @RETURNS:  whether @option is set
+ * @param widget	valid GtkWidget
+ * @param option	option to check for
+ * @return		whether @a option is set
  *
- * Test whether the custom @option is set on @widget.
+ * Test whether the custom @a option is set on @a widget.
  */
 gboolean
 gxk_widget_check_option (gpointer         widget,
@@ -3961,18 +3905,17 @@ gxk_file_selection_split (GtkFileSelection *fs,
 }
 
 /**
- * gxk_file_selection_heal
- * @fs:      valid #GtkFileSelection
- * @RETURNS: new toplevel VBox of the file selection
+ * @param fs	valid GtkFileSelection
+ * @return		new toplevel VBox of the file selection
  *
  * Fixup various oddities that happened to the Gtk+
  * file selection widget over time. This function
  * corrects container border widths, spacing, button
  * placement and the default and focus widgets.
  * Also, the lifetime of the file selection window
- * is tied to the returned #GtkVBox, enabling removal
- * of the #GtkVBox from it's parent and thus using the
- * file selection widgets in a custom #GtkWindow.
+ * is tied to the returned GtkVBox, enabling removal
+ * of the GtkVBox from it's parent and thus using the
+ * file selection widgets in a custom GtkWindow.
  */
 GtkWidget*
 gxk_file_selection_heal (GtkFileSelection *fs)

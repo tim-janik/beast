@@ -1,3 +1,9 @@
+Wed Feb  1 00:21:38 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.c: converted documentation markup to doxer.
+
+	* web/webframe.doxi: fixed relative URIs.
+
 Tue Jan 31 02:36:17 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: generate docs/images/Makefile.

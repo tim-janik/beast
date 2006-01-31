@@ -11,7 +11,7 @@
               background-position: 0px 55px; background-repeat: repeat-x; margin-top: 3px;">
   <tr>
     <td width="50%" align="left" > 
-      <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="." class="home-title">Home</a> </td></tr></table>
+      <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="@top_webdir/" class="home-title">Home</a> </td></tr></table>
     </td>
     <td width="50%" align="right"><img src="@top_styledir/beast-small.png" alt="&lt;&lt;&lt; BEAST/BSE &gt;&gt;&gt;"/></td>
   </tr>
@@ -25,7 +25,7 @@
 <table id="footer-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none">
   <tr>
     <td width="15%" align="left">
-      <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="." class="home-title">Home</a> </td></tr></table>
+      <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="@top_webdir/" class="home-title">Home</a> </td></tr></table>
     </td>
     <td width="85%" align="right">
 }
