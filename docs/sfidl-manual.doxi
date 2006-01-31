@@ -1,6 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/01/28 22:09:33 $
-@include "beastdefs.doxi"
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/31 01:51:21 $
 @include "webframe.doxi"
 @doxer_set{title}	BEAST - SFIDL Documentation
 

@@ -1,5 +1,4 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@include "beastdefs.doxi"
 @doxer_set{webmenu} historic-menu
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE History
@@ -11,13 +10,13 @@
 
 For the sake of completeness, and for curious readers, we're
 keeping
-@uri{oldnews.html, old website news}.
+@uri{@top_webdir/oldnews.html, old website news}.
 @*@*
 
 In March 2000 we started a contest to find a logo for BEAST, and beyond
 the actually selected logo, we also got a number of other interesting
 submissions, which can still be found on the
-@uri{logogallery.phtml,logo contest gallery} page.
+@uri{@top_webdir/logogallery.phtml, logo contest gallery} page.
 @*@*
 
 Finally, here's a collection of past articles related to BEAST:

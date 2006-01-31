@@ -22,6 +22,10 @@
 #	BEAST/BSE macros
 #
 
+# path definitions
+@defalias{top_webdir}	@doxer_get{TOP_WEBDIR}
+@defalias{top_styledir}	@top_webdir{}/style
+
 #	Component names
 @defalias{beastbse}	@emph{BEAST/BSE}
 @defalias{beast} 	@emph{BEAST}

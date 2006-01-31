@@ -23,6 +23,7 @@ HTML_TARGETS = $(strip			\
 	html/download.html		\
 	html/documentation.html		\
 	html/development.html		\
+	html/doxer-docu.html		\
 	html/engine-mplan.html		\
 	html/logogallery.phtml		\
 	html/news.html 			\
@@ -54,18 +55,24 @@ HTML_TARGETS = $(strip			\
 	html/log-plugins.html		\
 	html/log-sfi.html		\
 )
+RDOCU_TARGETS = $(strip			\
+	html/rdocu-gxk/alphaindex.html	\
+)
 unportet_targets = $(strip	\
 	objdoc.html		\
 	plugin-devel.html	\
 )
-${HTML_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
+${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
 
-all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} screenshot-files logogallery-files web-image-files docs-image-files style-files test-install
+gallery-targets: screenshot-files logogallery-files
+image-targets:	 web-image-files docs-image-files
+all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} style-files gallery-targets image-targets ${RDOCU_TARGETS} test-install
 
 .DELETE_ON_ERROR: ${PHP_TARGETS} ${HTML_TARGETS} ${GENERATED}
 
 target-dirs:	# rule to create directories
 	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/ html/images/
+	mkdir -p html/rdocu-gxk/
 
 php/%.php: %.php
 	cp -v $< $@
@@ -75,7 +82,7 @@ php/%.phpini: %.phpini
 %.phpini: %/ scanimages.sh
 	$(srcdir)/scanimages.sh $<
 
-DOXIDEFS = -D BST_VERSION ${BST_VERSION} -I $(srcdir)
+DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir)
 
 html/%.html: %.doxi
 	doxer doxi2html $< -o html/ $(DOXIDEFS)
@@ -90,6 +97,7 @@ html/%.html: ../docs/%.doxi
 
 style-files: target-dirs
 	cp -a style/* html/style/
+	doxer writecss -o html/style/
 
 screenshot-files: target-dirs
 	cp -a screenshots/* html/screenshots/
@@ -112,11 +120,15 @@ test-install: ${TEST_INSTALL_DIR}
 
 .PHONY: all-targets target-dirs screenshot-files logogallery-files web-image-files docs-image-files clean style-files test-install
 
+.INTERMEDIATE: $(intermediate_files)
+
 clean:
 	rm -f html/style/*
 	-rmdir -p html/style/
 	rm -f html/screenshots/* html/logogallery/* html/web-images/* html/images/*
 	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/ html/images/
+	rm -f html/rdocu-gxk/*
+	-rmdir -p html/rdocu-gxk/
 	rm -f html/* html/.htaccess
 	-rmdir -p html/
 	rm -f php/*
@@ -128,7 +140,6 @@ html/%.html: %.tmpdoxi
 news-file.tmpdoxi: $(top_srcdir)/NEWS Makefile
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@include "beastdefs.doxi"'			>>$@ \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
 	&& echo '@doxer_set{title} BEAST/BSE - NEWS'		>>$@ \
@@ -139,7 +150,6 @@ news-file.tmpdoxi: $(top_srcdir)/NEWS Makefile
 engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt Makefile
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@include "beastdefs.doxi"'			>>$@ \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
 	&& echo '@doxer_set{title} BEAST - BSE Engine'		>>$@ \
@@ -151,7 +161,6 @@ CHANGELOG2DOXI = ~/sources/doxer/ChangeLog2Doxi.py # FIXME
 log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@include "beastdefs.doxi"'			>>$@ \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
 	&& echo '@doxer_set{title} BEAST - ChangeLog'		>>$@ \
@@ -160,7 +169,6 @@ log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
 log-bse.tmpdoxi: $(top_srcdir)/bse/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@include "beastdefs.doxi"'			>>$@ \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
 	&& echo '@doxer_set{title} BEAST - BSE ChangeLog'	>>$@ \
@@ -169,7 +177,6 @@ log-bse.tmpdoxi: $(top_srcdir)/bse/ChangeLog $(CHANGELOG2DOXI)
 log-plugins.tmpdoxi: $(top_srcdir)/plugins/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@include "beastdefs.doxi"'			>>$@ \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
 	&& echo '@doxer_set{title} BEAST - Plugin ChangeLog'	>>$@ \
@@ -178,7 +185,6 @@ log-plugins.tmpdoxi: $(top_srcdir)/plugins/ChangeLog $(CHANGELOG2DOXI)
 log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@include "beastdefs.doxi"'			>>$@ \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
 	&& echo '@doxer_set{title} BEAST - SFI ChangeLog'	>>$@ \
@@ -193,4 +199,12 @@ intermediate_files = $(strip	\
 	log-sfi.tmpdoxi		\
 )
 
-.INTERMEDIATE: $(intermediate_files)
+gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxkutil*.[hc] # $(top_srcdir)/beast-gtk/bstutils.[hc] $(top_srcdir)/beast-gtk/gxk/gxk*.[hc]
+
+gxk_rdocu_files = $(shell echo $(gxk_rdocu_globs))
+html/rdocu-gxk/alphaindex.html: $(gxk_rdocu_files) rdocu-template.doxi
+	doxer src2html -o html/rdocu-gxk/ $(DOXIDEFS)	\
+	      -T rdocu-template.doxi -D MODULE GXK	\
+	      -D TOP_WEBDIR ".."			\
+	         $(filter %.h %.hh, $(gxk_rdocu_files)) \
+	      -A $(filter %.c %.cc, $(gxk_rdocu_files))

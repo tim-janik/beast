@@ -1,3 +1,22 @@
+Tue Jan 31 02:36:17 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: generate docs/images/Makefile.
+
+	* docs/Makefile.am: adapt to recent file renames/moves.
+
+	* docs/images/Makefile.am: ship documentation images.
+
+	* web/*.doxi:
+	* docs/*.doxi: fixed includes. fixed URIs to be @top_webdir/ relative.
+
+	* web/beastdefs.doxi: provide @top_webdir and @top_styledir macros,
+	based on the TOP_WEBDIR definition passed in from Makefile.
+
+	* web/rdocu-template.doxi:
+	* web/doxer-docu.doxi:
+	* web/Makefile: 
+	generate doxer docu. generate GXK source code documentation. 
+
 Mon Jan 30 01:27:17 2006  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: patch intltool to support .scm internationalization.

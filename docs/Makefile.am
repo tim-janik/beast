@@ -1,32 +1,30 @@
-SUBDIRS = # generated
+# BEAST - Bedevilled Audio System
+# Copyright (C) 1998-2006 Tim Janik
+#
+# GNU General Public License version 2 or (at your option) any later version.
+#
+## Makefile.am for beast/docs/
 
-texi_docs = $(strip						\
-	WRITING.3.texi			beast-index.texi	\
-	quickstart.texi			plugin-devel.texi	\
-	release-notes.texi		faq.texi		\
-	sfidl.1.texi			sfidl-manual.texi	\
-	architecture.texi					\
+SUBDIRS = images
+
+doxi_files = $(strip		\
+	architecture.doxi	\
+	beast.1.doxi		\
+	faq.doxi		\
+	quickstart.doxi		\
+	sfidl-manual.doxi	\
+	beast-index.doxi	\
+	bsesh.1.doxi		\
+	plugin-devel.doxi	\
+	release-notes.doxi	\
+	sfidl.1.doxi		\
 )
-texi_images = $(strip		\
-	module-voices.png	\
-	beast-components.png	\
-	beast-progs.png		\
-)
+
 EXTRA_DIST += $(strip		\
-	beast-components.dia	\
-	beast-progs.dia		\
-	module-voices.dia	\
+	$(doxi_files)		\
 	bse-categories.txt	\
 	interpolation.txt	\
-	${texi_docs}		\
-	$(texi_images)		\
 )
-
-docimages_DATA = ${texi_images}
-docimagesdir = ${beastimagesdir}
 
 site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
 	$(MAKE) -C generated/ $(AM_MAKEFLAGS) $@
-
-overview-de.texi: linuxtag-2003.texi
-	recode latin1..utf8 <$< >$@

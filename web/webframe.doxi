@@ -1,18 +1,19 @@
 @doxer_dnl	# emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 
-@doxer_add{html-stylesheets}	BEAST Style 	<style/beast-style.css>
-@doxer_add{html-stylesheets}	Plain	 	<style/plain.css>
+@include "beastdefs.doxi"
+@doxer_add{html-stylesheets}	BEAST Style	<@top_styledir/beast-style.css>
+@doxer_add{html-stylesheets}	Plain	 	<@top_styledir/plain.css>
 
 @heading{group=header,span=nomargin}
 @rawhtml{
 <table id="header-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none"
-       style="background-image: url(style/beast-dot.png); 
+       style="background-image: url(@top_styledir/beast-dot.png); 
               background-position: 0px 55px; background-repeat: repeat-x; margin-top: 3px;">
   <tr>
     <td width="50%" align="left" > 
       <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="." class="home-title">Home</a> </td></tr></table>
     </td>
-    <td width="50%" align="right"><img src="style/beast-small.png" alt="&lt;&lt;&lt; BEAST/BSE &gt;&gt;&gt;"/></td>
+    <td width="50%" align="right"><img src="@top_styledir/beast-small.png" alt="&lt;&lt;&lt; BEAST/BSE &gt;&gt;&gt;"/></td>
   </tr>
 </table>
 }

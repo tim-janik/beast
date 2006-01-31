@@ -1,5 +1,4 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@include "beastdefs.doxi"
 @doxer_set{webmenu} development
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE Development
@@ -9,7 +8,7 @@
 There are various documents in CVS that track the current development state.
 Every major part has it's own ChangeLog (see links in the sidebar) and for
 overall track keeping, the release specific
-@uri{release-news.html, NEWS file} is used.
+@uri{@top_webdir/release-news.html, NEWS file} is used.
 
 
 @heading Translations

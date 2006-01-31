@@ -1,5 +1,4 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@include "beastdefs.doxi"
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE - About the Project
 
@@ -11,7 +10,7 @@ released as free software under the
 and
 @uri{http://www.gnu.org/copyleft/lesser.html, GNU LGPL}, that runs under unix.
 It supports a wide range of standards in the field, such as MIDI,
-@uri{related-links.html, WAV/AIFF/MP3/OggVorbis/etc}
+@uri{@top_webdir/related-links.html, WAV/AIFF/MP3/OggVorbis/etc}
 audio files and
 @uri{http://www.ladspa.org/, LADSPA}
 modules.
@@ -26,7 +25,7 @@ such as from our
 @uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} page.
 
 Here is an extensive
-@uri{screenshots.phtml, screenshots}
+@uri{@top_webdir/screenshots.phtml, screenshots}
 page, showing beast in action.
 
 @beast is an abbreviation for @emph{Bedevilled Audio System}. @bse an abbreviation for
@@ -40,4 +39,4 @@ For discussions/feedback relating to @beast or this page, refer to our
 
 For a collection of articles relating to @beast and past news about the project,
 refer to our
-@uri{historic.html, historic section}.
+@uri{@top_webdir/historic.html, historic section}.

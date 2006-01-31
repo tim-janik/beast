@@ -1,5 +1,4 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@include "beastdefs.doxi"
 @doxer_set{webmenu} news
 @include "webmenu.doxi"
 @doxer_set{title}	BEAST/BSE News
@@ -29,7 +28,7 @@
 @newsentry{Thursday 26 May 2005, Important bug fix release}
 
 BEAST/BSE version 0.6.6 is available from the
-@uri{beast-doc://download,download section}, here is the @uri{http://gnomedesktop.org/node/2267,FootNotes announcement}.
+@uri{@top_webdir/download.html,download section}, here is the @uri{http://gnomedesktop.org/node/2267,FootNotes announcement}.
 
 BEAST tarball:
 @uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.6.tar.gz, beast-0.6.6.tar.gz}
@@ -48,14 +47,14 @@ projects and all message dialogs got a major overhaul.
 Translation updates were made to canadian english, czech, italian and spanish, and
 a basque translations was newly started.
 The
-@uri{beast-doc://release-news,Release NEWS section} has the exact change list, so enjoy
+@uri{@top_webdir/release-news.html,Release NEWS section} has the exact change list, so enjoy
 the new code as always and please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
 @newsentry{Wednesday 13 April 2005, A new release - we finaly made it!}
 
 BEAST/BSE version 0.6.5 is available from the
-@uri{beast-doc://download,download section},
+@uri{@top_webdir/download.html,download section},
 here is the @uri{http://gnomedesktop.org/node/2225,FootNotes announcement}.
 
 BEAST tarball:
@@ -76,12 +75,12 @@ set of language updates. Translation updates in particular were made to british 
 canadian english, czech, dutch and spanish.
 Newly started translations are bulgarian and kinyarwanda.
 The
-@uri{beast-doc://release-news,Release NEWS section} has the exact change list, so enjoy
+@uri{@top_webdir/release-news.html,Release NEWS section} has the exact change list, so enjoy
 the new code and please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
 
 @dnl ----------------------------- END -----------------------------
 @newstag{NEWS Archive}
-Old news entries are archived in the @uri{oldnews.html,Ancient News} section.
+Old news entries are archived in the @uri{@top_webdir/oldnews.html,Ancient News} section.
 @dnl LocalWords:  website Alper Ersoy efford sid
