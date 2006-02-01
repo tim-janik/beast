@@ -1,5 +1,5 @@
 /* Splines - Spline creation and evaluation routines
- * Copyright (C) 2004 Tim Janik
+ * Copyright (C) 2004-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

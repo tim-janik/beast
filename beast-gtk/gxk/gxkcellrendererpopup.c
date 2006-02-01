@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2003-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -76,10 +76,9 @@ static guint    signal_popup = 0;
 
 /* --- functions --- */
 /**
- * gxk_cell_renderer_popup_get_type
- * @RETURNS: %GXK_TYPE_CELL_RENDERER_POPUP
+ * @return		GXK_TYPE_CELL_RENDERER_POPUP
  *
- * #GxkCellRendererPopup is an editable text cell renderer which
+ * GxkCellRendererPopup is an editable text cell renderer which
  * supports popping up an auxillary window.
  */
 GType
@@ -473,13 +472,12 @@ gxk_proxy_editable_proxy_editing_done (GtkCellEditable *cell_editable)
 }
 
 /**
- * gxk_proxy_editable_set_cell_editable
- * @self:  valid #GxkProxyEditable
- * @ecell: valid #GtkCellEditable
+ * @param self	valid GxkProxyEditable
+ * @param ecell	valid GtkCellEditable
  *
- * Set the backend @ecell onto which #GtkCellEditable
- * methods issued on @self are to be forwarded.
- * This function may only be called once per #GxkProxyEditable.
+ * Set the backend @a ecell onto which GtkCellEditable
+ * methods issued on @a self are to be forwarded.
+ * This function may only be called once per GxkProxyEditable.
  */
 void
 gxk_proxy_editable_set_cell_editable (GxkProxyEditable *self,
@@ -507,12 +505,11 @@ gxk_proxy_editable_init_cell_editable (GtkCellEditableIface *iface)
 }
 
 /**
- * gxk_proxy_editable_get_type
- * @RETURNS: %GXK_TYPE_PROXY_EDITABLE
+ * @return GXK_TYPE_PROXY_EDITABLE
  *
- * #GxkProxyEditable is a #GtkEventBox which proxies
- * the #GtkCellEditable interface onto a backend
- * widget which also implements the #GtkCellEditable
+ * GxkProxyEditable is a GtkEventBox which proxies
+ * the GtkCellEditable interface onto a backend
+ * widget which also implements the GtkCellEditable
  * interface.
  */
 GType

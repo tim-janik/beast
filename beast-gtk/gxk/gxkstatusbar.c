@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -66,8 +66,7 @@ sbar_free (gpointer data)
 }
 
 /**
- * gxk_status_bar_create
- * @RETURNS: status bar container
+ * @return		status bar container
  *
  * Create a status bar suitable to be packed into windows
  * with status bar support.
@@ -161,8 +160,6 @@ status_bar_queue_clear (GxkStatusBar *sbar,
 }
 
 /**
- * gxk_status_clear
- *
  * Clear the current status bar.
  */
 void
@@ -250,15 +247,14 @@ status_bar_set (GxkStatusBar *sbar,
 }
 
 /**
- * gxk_status_set
- * @percentage: progress percentage
- * @message:    message to be displayed
- * @status_msg: error status
+ * @param percentage	progress percentage
+ * @param message	message to be displayed
+ * @param status_msg	error status
  *
  * Set the current status bar message, progress percentage
  * (usually 0% - 100% or one of the special values:
- * %GXK_STATUS_ERROR, %GXK_STATUS_WAIT, %GXK_STATUS_IDLE,
- * %GXK_STATUS_IDLE_HINT or %GXK_STATUS_PROGRESS) and
+ * GXK_STATUS_ERROR, GXK_STATUS_WAIT, GXK_STATUS_IDLE,
+ * GXK_STATUS_IDLE_HINT or GXK_STATUS_PROGRESS) and
  * error status.
  */
 void
@@ -273,10 +269,9 @@ gxk_status_set (gfloat       percentage,
 }
 
 /**
- * gxk_status_printf
- * @percentage:  progress percentage
- * @status_msg:  error status
- * @message_fmt: printf style message to be displayed
+ * @param percentage	progress percentage
+ * @param status_msg	error status
+ * @param message_fmt	printf style message to be displayed
  *
  * Similar to gxk_status_set() but supports construction of
  * the message through a printf(3) style argument list.
@@ -304,12 +299,11 @@ gxk_status_printf (gfloat       percentage,
 }
 
 /**
- * gxk_status_errnoprintf
- * @libc_errno:  errno value
- * @message_fmt: printf style message to be displayed
+ * @param libc_errno	errno value
+ * @param message_fmt	printf style message to be displayed
  *
  * Similar to gxk_status_printf() but figures the error
- * status automatically from the passed in @libc_errno.
+ * status automatically from the passed in @a libc_errno.
  */
 void
 gxk_status_errnoprintf (gint         libc_errno,
@@ -336,8 +330,7 @@ gxk_status_errnoprintf (gint         libc_errno,
 }
 
 /**
- * gxk_status_window_push
- * @widget: status bar window
+ * @param widget	status bar window
  *
  * Push a window onto the stack of windows that have
  * the current status bar.
@@ -354,8 +347,6 @@ gxk_status_window_push (gpointer widget)
 }
 
 /**
- * gxk_status_window_pop
- *
  * Pop the most recently pushed window from the status bar
  * window stack.
  */

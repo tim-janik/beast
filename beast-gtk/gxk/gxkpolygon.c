@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2003-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -101,8 +101,7 @@ gxk_polygon_finalize (GObject *object)
 }
 
 /**
- * gxk_polygon_new
- * @polygon_graph: set of lines and arcs
+ * @param polygon_graph	set of lines and arcs
  *
  * Create a new polygon widget.
  */
@@ -115,10 +114,9 @@ gxk_polygon_new (GxkPolygonGraph *polygon_graph)
 }
 
 /**
- * gxk_polygon_set_lines
- * @self:    valid #GxkPolygon
- * @n_lines: number of lines
- * @lines:   array of lines
+ * @param self	valid GxkPolygon
+ * @param n_lines	number of lines
+ * @param lines	array of lines
  *
  * Set the lines for this polygon. The direction
  * of a line determines it's shadow type.
@@ -139,10 +137,9 @@ gxk_polygon_set_lines (GxkPolygon     *self,
 }
 
 /**
- * gxk_polygon_set_arcs
- * @self:   valid #GxkPolygon
- * @n_arcs: number of arcs
- * @arcs:   array of arcs
+ * @param self	valid GxkPolygon
+ * @param n_arcs	number of arcs
+ * @param arcs	array of arcs
  *
  * Set the arcs for this polygon. The direction
  * of an arc determines it's shadow type.
@@ -163,9 +160,8 @@ gxk_polygon_set_arcs (GxkPolygon    *self,
 }
 
 /**
- * gxk_polygon_set_graph
- * @self:          valid #GxkPolygon
- * @polygon_graph: set of lines and arcs
+ * @param self	valid GxkPolygon
+ * @param polygon_graph	set of lines and arcs
  *
  * Set the lines and arcs for this polygon, see
  * gxk_polygon_set_lines() and gxk_polygon_set_arcs().
@@ -190,12 +186,11 @@ gxk_polygon_set_graph (GxkPolygon      *self,
 }
 
 /**
- * gxk_polygon_set_length
- * @self:   valid #GxkPolygon
- * @length: set of lines and arcs
+ * @param self	valid GxkPolygon
+ * @param length	set of lines and arcs
  *
  * Set the desired width and height for this polygon
- * to @length.
+ * to @a length.
  */
 void
 gxk_polygon_set_length (GxkPolygon *self,

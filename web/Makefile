@@ -1,3 +1,8 @@
+# BEAST - Bedevilled Audio System
+# Copyright (C) 2005-2006 Tim Janik
+#
+# GNU General Public License version 2 or (at your option) any later version.
+
 # FIXME: remove:
 top_srcdir = ..
 srcdir = .
@@ -56,7 +61,7 @@ HTML_TARGETS = $(strip			\
 	html/log-sfi.html		\
 )
 RDOCU_TARGETS = $(strip			\
-	html/rdocu-gxk/alphaindex.html	\
+	html/rdocu-gxk/index.html	\
 )
 unportet_targets = $(strip	\
 	objdoc.html		\
@@ -111,12 +116,14 @@ web-image-files:
 docs-image-files:
 	cp -a $(srcdir)/../docs/images/*.png html/images/
 
+TEST_INSTALL_DIR=/ptmp/beast-preview/
 TEST_INSTALL_DIR=~/public_html/beast/
 test-install: ${TEST_INSTALL_DIR}
 	rm -rf ${TEST_INSTALL_DIR}/*
 	cp -av ${TEST_INSTALL_DIR}/.htaccess-html html/.htaccess
 	cp -av php/ html/ ${TEST_INSTALL_DIR}
 	ln -s ../../doxer-pics/bse-files ${TEST_INSTALL_DIR}/html/test-files
+	ln -s news.html ${TEST_INSTALL_DIR}/html/index.html
 
 .PHONY: all-targets target-dirs screenshot-files logogallery-files web-image-files docs-image-files clean style-files test-install
 
@@ -157,7 +164,7 @@ engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt Makefile
 	&& echo '@example'					>>$@ \
 	&& sed  's/@/@@/g' 		<$<			>>$@ \
 	&& echo '@done'						>>$@
-CHANGELOG2DOXI = ~/sources/doxer/ChangeLog2Doxi.py # FIXME
+CHANGELOG2DOXI = ~/sources/doxer/changelog2doxi.py # FIXME
 log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
@@ -199,10 +206,11 @@ intermediate_files = $(strip	\
 	log-sfi.tmpdoxi		\
 )
 
-gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxkutil*.[hc] # $(top_srcdir)/beast-gtk/bstutils.[hc] $(top_srcdir)/beast-gtk/gxk/gxk*.[hc]
+gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxk*.[hc] $(top_srcdir)/beast-gtk/bstutils.[hc]
+gxk_rdocu_exclude = gxkgentypes.h gxkmarshal.[hc]
 
-gxk_rdocu_files = $(shell echo $(gxk_rdocu_globs))
-html/rdocu-gxk/alphaindex.html: $(gxk_rdocu_files) rdocu-template.doxi
+gxk_rdocu_files = $(filter-out $(foreach f, $(gxk_rdocu_exclude), $(wildcard $(top_srcdir)/beast-gtk/gxk/$(f))), $(wildcard $(gxk_rdocu_globs)))
+html/rdocu-gxk/index.html: $(gxk_rdocu_files) rdocu-template.doxi
 	doxer src2html -o html/rdocu-gxk/ $(DOXIDEFS)	\
 	      -T rdocu-template.doxi -D MODULE GXK	\
 	      -D TOP_WEBDIR ".."			\

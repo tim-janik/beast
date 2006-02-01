@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2004 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -238,25 +238,26 @@ gxk_dialog_finalize (GObject *object)
 }
 
 /**
- * gxk_dialog_new
- * @pointer_loc:  pointer to nullify upon dialog destruction
- * @alive_object: object which upon destruction, takes the dialog with it
- * @flags:        dialog flags
- * @title:        window title for the dialog
- * @child:        child to pack into the dialog
+ * @param pointer_loc	pointer to nullify upon dialog destruction
+ * @param alive_object	object which upon destruction, takes the dialog with it
+ * @param flags	dialog flags
+ * @param title	window title for the dialog
+ * @param child	child to pack into the dialog
  *
  * Create a new configurable dialog. Possible values for the
  * flags are:
- * @* %GXK_DIALOG_HIDE_ON_DELETE: only hide and not destroy the
+ * @itemize
+ * @item GXK_DIALOG_HIDE_ON_DELETE - only hide and not destroy the
  * dialog upon window manager delete events;
- * @* %GXK_DIALOG_IGNORE_ESCAPE: prevents delete event generation on Escape key presses;
- * @* %GXK_DIALOG_DELETE_BUTTON: add a "Close" button to the dialog;
- * @* %GXK_DIALOG_STATUS_BAR: add a status bar widget to the dialog;
- * @* %GXK_DIALOG_WINDOW_GROUP: open up an extra window group for the dialog;
- * @* %GXK_DIALOG_MODAL: the dialog is modal while visible;
- * @* %GXK_DIALOG_POPUP_POS: popup the dialog below mouse pointer;
- * @* %GXK_DIALOG_PRESERVE_STATE: prevents unrealization of the dialog upon hiding,
+ * @item GXK_DIALOG_IGNORE_ESCAPE - prevents delete event generation on Escape key presses;
+ * @item GXK_DIALOG_DELETE_BUTTON - add a "Close" button to the dialog;
+ * @item GXK_DIALOG_STATUS_BAR - add a status bar widget to the dialog;
+ * @item GXK_DIALOG_WINDOW_GROUP - open up an extra window group for the dialog;
+ * @item GXK_DIALOG_MODAL - the dialog is modal while visible;
+ * @item GXK_DIALOG_POPUP_POS - popup the dialog below mouse pointer;
+ * @item GXK_DIALOG_PRESERVE_STATE - prevents unrealization of the dialog upon hiding,
  * which preserves properties like the window size.
+ * @done
  */
 gpointer
 gxk_dialog_new (gpointer       pointer_loc,
@@ -312,12 +313,11 @@ gxk_dialog_set_min_size (GxkDialog      *self,
 }
 
 /**
- * gxk_dialog_set_sizes
- * @dialog:         valid GxkDialog
- * @min_width:      minimum dialog width or -1
- * @min_height:     minimum dialog height or -1
- * @default_width:  default dialog width or -1
- * @default_height: default dialog height or -1
+ * @param dialog	valid GxkDialog
+ * @param min_width	minimum dialog width or -1
+ * @param min_height	minimum dialog height or -1
+ * @param default_width	default dialog width or -1
+ * @param default_height	default dialog height or -1
  *
  * Set the dialog's minimum and default sizes, constrained to not exceed the
  * screen dimensions.
@@ -346,9 +346,8 @@ gxk_dialog_set_sizes (GxkDialog      *dialog,
 }
 
 /**
- * gxk_dialog_set_title
- * @dialog: valid GxkDialog
- * @title: dialog window manager title
+ * @param dialog	valid GxkDialog
+ * @param title	dialog window manager title
  *
  * Change the dialog's window manager title and role.
  */
@@ -362,9 +361,8 @@ gxk_dialog_set_title (GxkDialog   *dialog,
 }
 
 /**
- * gxk_dialog_add_flags
- * @dialog: valid GxkDialog
- * @flags: additional flags to set on the dialog.
+ * @param dialog	valid GxkDialog
+ * @param flags	additional flags to set on the dialog.
  *
  * Alter dialog flags, see gxk_dialog_new().
  */
@@ -382,9 +380,8 @@ gxk_dialog_add_flags (GxkDialog     *dialog,
 }
 
 /**
- * gxk_dialog_clear_flags
- * @dialog: valid GxkDialog
- * @flags: flags to unset on the dialog.
+ * @param dialog	valid GxkDialog
+ * @param flags	flags to unset on the dialog.
  *
  * Alter dialog flags, see gxk_dialog_new().
  */
@@ -402,8 +399,7 @@ gxk_dialog_clear_flags (GxkDialog     *dialog,
 }
 
 /**
- * gxk_dialog_get_child
- * @dialog: valid GxkDialog
+ * @param dialog	valid GxkDialog
  *
  * Retrieve the primary child of the dialog.
  */
@@ -416,11 +412,10 @@ gxk_dialog_get_child (GxkDialog *dialog)
 }
 
 /**
- * gxk_dialog_set_child
- * @dialog: valid GxkDialog
- * @child:  new child
+ * @param dialog	valid GxkDialog
+ * @param child	new child
  *
- * Change the dialog's primary child to @child.
+ * Change the dialog's primary child to @a child.
  * Destroys the old child if any.
  */
 void
@@ -441,12 +436,11 @@ gxk_dialog_set_child (GxkDialog *dialog,
 }
 
 /**
- * gxk_dialog_set_focus
- * @dialog:        valid #GxkDialog
- * @focus_widget:  valid #GtkWidget
+ * @param dialog	valid GxkDialog
+ * @param focus_widget	valid GtkWidget
  *
- * A #GxkDialog will automatically unset the focus
- * everytime it is shown, unless @focus_widget is
+ * A GxkDialog will automatically unset the focus
+ * everytime it is shown, unless @a focus_widget is
  * a valid widget that can be focused each time.
  */
 void
@@ -462,9 +456,8 @@ gxk_dialog_set_focus (GxkDialog *self,
 }
 
 /**
- * gxk_dialog_set_default
- * @dialog:         valid #GxkDialog
- * @default_widget: valid #GtkWidget
+ * @param dialog	 valid GxkDialog
+ * @param default_widget valid GtkWidget
  *
  * This function is similar to gxk_dialog_set_focus(),
  * it just affects the widget taking the default
@@ -602,8 +595,7 @@ gxk_dialog_enter_notify_event (GtkWidget        *widget,
 }
 
 /**
- * gxk_dialog_get_status_window
- * @RETURNS: a valid GxkDialog or %NULL
+ * @return	a valid GxkDialog or NULL
  *
  * Retrieve the most recently entered GxkDialog if any.
  */
@@ -623,8 +615,7 @@ gxk_dialog_get_status_window (void)
 }
 
 /**
- * gxk_dialog_remove_actions
- * @dialog: valid GxkDialog
+ * @param dialog valid GxkDialog
  *
  * Remove all action buttons setup for this dialog.
  */
@@ -639,11 +630,10 @@ gxk_dialog_remove_actions (GxkDialog *dialog)
 }
 
 /**
- * gxk_dialog_action*
- * @dialog:   valid GxkDialog
- * @action:   button label or stock ID
- * @callback: callback function for button activation
- * @data:     callback data
+ * @param dialog	valid GxkDialog
+ * @param action	button label or stock ID
+ * @param callback	callback function for button activation
+ * @param data	callback data
  *
  * Add a new (stock) button to a dialog.
  */

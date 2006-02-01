@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -59,9 +59,8 @@ gxk_init_stock (void)
 }
 
 /**
- * gxk_size_width
- * @icon_size:     image size id
- * @RETURNS:       image size width
+ * @param icon_size	image size id
+ * @return		image size width
  *
  * Return the width of a specific image size.
  */
@@ -74,9 +73,8 @@ gxk_size_width (GtkIconSize icon_size)
 }
 
 /**
- * gxk_size_height
- * @icon_size:     image size id
- * @RETURNS:       image size height
+ * @param icon_size	image size id
+ * @return		image size height
  *
  * Return the height of a specific image size.
  */
@@ -89,13 +87,12 @@ gxk_size_height (GtkIconSize icon_size)
 }
 
 /**
- * gxk_stock_image
- * @stock_icon_id: stock name
- * @icon_size:     image size
- * @RETURNS:       a visible GtkImage widget or %NULL
+ * @param stock_icon_id	stock name
+ * @param icon_size	image size
+ * @return		a visible GtkImage widget or NULL
  *
  * Create a GtkImage widget with a stock image of a
- * certain size, or return %NULL if the image doesn't exist.
+ * certain size, or return NULL if the image doesn't exist.
  * The returned image widget correctly displays the stock
  * icon, honouring prelight and sensitivity state of the widget.
  */
@@ -114,10 +111,9 @@ gxk_stock_image (const gchar *stock_icon_id,
 }
 
 /**
- * gxk_stock_button
- * @stock_id: stock name
- * @label:    button text
- * @RETURNS:  a visible GtkButton widget
+ * @param stock_id	stock name
+ * @param label	button text
+ * @return		a visible GtkButton widget
  *
  * Create a GtkButton widget with a stock image and custom label text.
  */
@@ -139,10 +135,9 @@ gxk_stock_button (const gchar *stock_id,
 }
 
 /**
- * gxk_stock_button_child
- * @stock_id: stock name
- * @label:    button text
- * @RETURNS:  a visible widget suitable as GtkButton child
+ * @param stock_id	stock name
+ * @param label	button text
+ * @return		a visible widget suitable as GtkButton child
  *
  * This function does the same as gxk_stock_button() except
  * for creating the actual button. The button's child is instead
@@ -176,8 +171,7 @@ gxk_stock_button_child (const gchar *stock_id,
 }
 
 /**
- * gxk_stock_register_icon
- * @icon: a validly filled out GxkStockIcon
+ * @param icon	a validly filled out GxkStockIcon
  *
  * Register a new stock icon from an inlined pixbuf.
  * The inlined pixbuf pixels are not copied, so the
@@ -199,11 +193,10 @@ gxk_stock_register_icon (const GxkStockIcon *icon)
 }
 
 /**
- * gxk_stock_register_icons
- * @n_icons: number of icons to register
- * @icons:   a validly filled out array of GxkStockIcon
+ * @param n_icons	number of icons to register
+ * @param icons	a validly filled out array of GxkStockIcon
  *
- * For all @n_icons contained in @icons, call gxk_stock_register_icon().
+ * For all @a n_icons contained in @a icons, call gxk_stock_register_icon().
  */
 void
 gxk_stock_register_icons (guint               n_icons,
@@ -221,15 +214,14 @@ gxk_stock_register_icons (guint               n_icons,
 }
 
 /**
- * gxk_stock_register_item
- * @item: a validly filled out GxkStockItem
+ * @param item	a validly filled out GxkStockItem
  *
  * Register a new stock item. The new stock item
- * @item->stock_id is registered with an item label
- * of @item->label and the stock icon @item->stock_fallback.
- * If @item->label is %NULL, @item->stock_fallback must
- * not be %NULL, and @item->stock_id becomes merely an
- * alias of @item->stock_fallback.
+ * @a item->stock_id is registered with an item label
+ * of @a item->label and the stock icon @a item->stock_fallback.
+ * If @a item->label is NULL, @a item->stock_fallback must
+ * not be NULL, and @a item->stock_id becomes merely an
+ * alias of @a item->stock_fallback.
  */
 void
 gxk_stock_register_item (const GxkStockItem *item)
@@ -259,11 +251,10 @@ gxk_stock_register_item (const GxkStockItem *item)
 }
 
 /**
- * gxk_stock_register_items
- * @n_items: number of items to register
- * @items:   a validly filled out array of GxkStockItem
+ * @param n_items	number of items to register
+ * @param items	a validly filled out array of GxkStockItem
  *
- * For all @n_items contained in @items, call gxk_stock_register_item().
+ * For all @a n_items contained in @a items, call gxk_stock_register_item().
  */
 void
 gxk_stock_register_items (guint               n_items,
@@ -297,11 +288,10 @@ gxk_stock_item (const gchar *stock_id)
 }
 
 /**
- * gxk_stock_fallback_pixbuf
- * @stock_id: stock name
- * @RETURNS:  this @stock_id's pixbuf (or %NULL for invalid stock ids)
+ * @param stock_id	stock name
+ * @return		this @a stock_id's pixbuf (or NULL for invalid stock ids)
  *
- * Return the pixbuf associated with @stock_id, the pixbuf is
+ * Return the pixbuf associated with @a stock_id, the pixbuf is
  * owned by the stock system and persists throughout runtime.
  * To display stock icons in widgets use gxk_stock_image() and not
  * this pixbuf.
@@ -369,9 +359,8 @@ gdk_pixbuf_create_bitmap_data (GdkPixbuf *pixbuf,
 }
 
 /**
- * gxk_stock_icon_window
- * @stock_id: a valid stock icon name
- * @RETURNS:  a window showing the stock icon
+ * @param stock_id	a valid stock icon name
+ * @return		a window showing the stock icon
  *
  * Create a window displaying a stock icon which is transparent
  * according to the icon's alpha mask. Such windows are mostly

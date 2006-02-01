@@ -1,5 +1,5 @@
 /* Splines - Spline creation and evaluation routines
- * Copyright (C) 2004 Tim Janik
+ * Copyright (C) 2004-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -57,10 +57,9 @@ segment_eval (const GxkSplineSegment *xseg,     /* must not be last segment */
 }
 
 /**
- * gxk_spline_new_natural
- * @n_points: number of fix points
- * @points:   fix points
- * @RETURNS:  newly allocated spline
+ * @param n_points	number of fix points
+ * @param points	fix points
+ * @return		newly allocated spline
  * Create a natural spline based on a given set of fix points.
  */
 GxkSpline*
@@ -71,9 +70,8 @@ gxk_spline_new_natural (guint                   n_points,
 }
 
 /**
- * gxk_spline_copy
- * @spline:  correctly setup #GxkSpline
- * @RETURNS: newly allocated spline
+ * @param spline	correctly setup GxkSpline
+ * @return		newly allocated spline
  * Produce a copy of an already setup spline.
  */
 GxkSpline*
@@ -92,12 +90,11 @@ spline_segment_cmp (const void *v1,
 }
 
 /**
- * gxk_spline_new
- * @n_points: number of fix points
- * @points:   fix points
- * @dy_start: first derivatives at point[0]
- * @dy_end:   first derivatives at point[n_points - 1]
- * @RETURNS:  newly allocated spline
+ * @param n_points	number of fix points
+ * @param points	fix points
+ * @param dy_start	first derivatives at point[0]
+ * @param dy_end	first derivatives at point[n_points - 1]
+ * @return		newly allocated spline
  * Create a not-a-knot spline based on a given set of fix points and the
  * first derivative of the first and last point of the interpolating function.
  */
@@ -194,13 +191,12 @@ gxk_spline_new (guint                   n_points,
 }
 
 /**
- * gxk_spline_eval
- * @spline:  correctly setup #GxkSpline
- * @x:       x position for evaluation
- * @dy1:     location to store first derivative of y
- * @RETURNS: y of @spline at position x
+ * @param spline	correctly setup GxkSpline
+ * @param x	x position for evaluation
+ * @param dy1	location to store first derivative of y
+ * @return		y of @a spline at position x
  *
- * Evaluate the @spline polynomial at position @x and
+ * Evaluate the @a spline polynomial at position @a x and
  * return the interpolated value y, as well as its first derivative.
  */
 double
@@ -225,12 +221,11 @@ gxk_spline_eval (const GxkSpline *spline,
 }
 
 /**
- * gxk_spline_y
- * @spline:  correctly setup #GxkSpline
- * @x:       x position for evaluation
- * @RETURNS: y of @spline at position x
+ * @param spline	correctly setup GxkSpline
+ * @param x	x position for evaluation
+ * @return		y of @a spline at position x
  *
- * Evaluate the @spline polynomial at position @x and
+ * Evaluate the @a spline polynomial at position @a x and
  * return the interpolated value y.
  */
 double
@@ -248,10 +243,9 @@ round_to_double (double vin)
 }
 
 /**
- * gxk_spline_findx
- * @spline:  correctly setup #GxkSpline
- * @y:       interpolated y value
- * @RETURNS: x position to yield y or NAN
+ * @param spline	correctly setup GxkSpline
+ * @param y	interpolated y value
+ * @return		x position to yield y or NAN
  *
  * Find an x position for which spline evaluation yields y.
  * Due to round off, calling gxk_spline_y() on the result may
@@ -396,10 +390,9 @@ gxk_spline_findx (const GxkSpline *spline,
 }
 
 /**
- * gxk_spline_free
- * @spline: correctly setup #GxkSpline
+ * @param spline	correctly setup GxkSpline
  *
- * Free a @spline structure.
+ * Free a @a spline structure.
  */
 void
 gxk_spline_free (GxkSpline *spline)
@@ -409,10 +402,9 @@ gxk_spline_free (GxkSpline *spline)
 }
 
 /**
- * gxk_spline_dump
- * @spline: correctly setup #GxkSpline
+ * @param spline	correctly setup GxkSpline
  *
- * Produce a debugging printout of @spline on stderr.
+ * Produce a debugging printout of @a spline on stderr.
  */
 void
 gxk_spline_dump (GxkSpline *spline)

@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2003-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -110,11 +110,10 @@ gxk_led_finalize (GObject *object)
 }
 
 /**
- * gxk_led_new
- * @color:	rgb color
+ * @param color	rgb color
  *
  * Create a new led widget. It's active color can be specified
- * as 24bit RGB @color value.
+ * as 24bit RGB @a color value.
  */
 gpointer
 gxk_led_new (guint color)
@@ -125,9 +124,8 @@ gxk_led_new (guint color)
 }
 
 /**
- * gxk_led_set_color
- * @self:  valid GxkLed
- * @color: color as RGB byte triple
+ * @param self	valid GxkLed
+ * @param color	color as RGB byte triple
  *
  * Set the current led color as 24bit RGB values.
  */

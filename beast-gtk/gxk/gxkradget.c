@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 2002-2004 Tim Janik
+ * Copyright (C) 2002-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -932,12 +932,12 @@ radget_parser (Domain      *domain,
 static GData *domains = NULL;
 
 /**
- * gxk_radget_parse
- * @domain_name: radget domain name
- * @file_name:   file containing ragdet definitions
- * @i18n_domain: i18n domain to translate labels
- * @error:       #GError location
- * Parse radget definitions from @file_name. See gxk_radget_create() and
+ * @param domain_name	radget domain name
+ * @param file_name	file containing ragdet definitions
+ * @param i18n_domain	i18n domain to translate labels
+ * @param error	        GError location
+ *
+ * Parse radget definitions from @a file_name. See gxk_radget_create() and
  * gxk_radget_complete() to make use of the definitions.
  */
 void
@@ -966,13 +966,13 @@ gxk_radget_parse (const gchar    *domain_name,
 }
 
 /**
- * gxk_radget_parse_text
- * @domain_name: radget domain name
- * @text:        radget definition string
- * @text_len:    length of @text or -1
- * @i18n_domain: i18n domain to translate labels
- * @error:       #GError location
- * Parse radget definitions from @text. See gxk_radget_create() and
+ * @param domain_name	radget domain name
+ * @param text	radget definition string
+ * @param text_len	length of @a text or -1
+ * @param i18n_domain	i18n domain to translate labels
+ * @param error	GError location
+ *
+ * Parse radget definitions from @a text. See gxk_radget_create() and
  * gxk_radget_complete() to make use of the definitions.
  */
 void
@@ -1680,12 +1680,12 @@ gxk_radget_creator (GxkRadget          *radget,
 }
 
 /**
- * gxk_radget_create
- * @domain_name:        radget domain
- * @name:               radget definition name
- * @...:                %NULL terminated list of variable (name, value) strings pairs
- * Create the radget (#GtkWidget or #GObject) defined as @name within @domain,
- * using the variable bindings as defined in the @... paired string list.
+ * @param domain_name	radget domain
+ * @param name	        radget definition name
+ * @param ...           NULL terminated list of variable (name, value) strings pairs
+ *
+ * Create the radget (GtkWidget or GObject) defined as @a name within @a domain,
+ * using the variable bindings as defined in the @a ... paired string list.
  */
 GxkRadget*
 gxk_radget_create (const gchar        *domain_name,
@@ -1707,14 +1707,14 @@ gxk_radget_create (const gchar        *domain_name,
 }
 
 /**
- * gxk_radget_complete
- * @radget:             toplevel ragdet container
- * @domain_name:        radget domain
- * @name:               radget definition name
- * @...:                %NULL terminated list of variable (name, value) strings pairs
- * Create the children/contents of the radget defined under @name within @domain
- * as part of the container object passed in as @radget,
- * using the variable bindings as defined in the @... paired string list.
+ * @param radget       toplevel ragdet container
+ * @param domain_name  radget domain
+ * @param name	       radget definition name
+ * @param ...          NULL terminated list of variable (name, value) strings pairs
+ *
+ * Create the children/contents of the radget defined under @a name within @a domain
+ * as part of the container object passed in as @a radget,
+ * using the variable bindings as defined in the @a ... paired string list.
  */
 GxkRadget*
 gxk_radget_complete (GxkRadget          *radget,
@@ -1736,10 +1736,10 @@ gxk_radget_complete (GxkRadget          *radget,
 }
 
 /**
- * gxk_radget_get_domain
- * @radget:     a valid radget
- * @RETURNS:    radget domain
- * Return the domain within which the definition was found @radget
+ * @param radget	a valid radget
+ * @return		radget domain
+ *
+ * Return the domain within which the definition was found @a radget
  * was created from.
  */
 const gchar*
@@ -1770,12 +1770,12 @@ gxk_radget_sensitize (GxkRadget      *radget,
 }
 
 /**
- * gxk_radget_find
- * @radget:     a valid radget
- * @name:       radget name
- * @RETURNS:    radget named @name or %NULL
- * Recursively find the radget named @name within the container radget @radget.
- * The @name may consist of a list of parent radget names, seperated by a dot '.'.
+ * @param radget	a valid radget
+ * @param name	radget name
+ * @return		radget named @a name or NULL
+ *
+ * Recursively find the radget named @a name within the container radget @a radget.
+ * The @a name may consist of a list of parent radget names, seperated by a dot '.'.
  */
 gpointer
 gxk_radget_find (GxkRadget      *radget,
@@ -1803,11 +1803,11 @@ gxk_radget_find (GxkRadget      *radget,
 }
 
 /**
- * gxk_radget_find_area
- * @radget:     a valid radget
- * @area:       radget name
- * @RETURNS:    radget named @name or %NULL
- * Recursively find the radget named @name within the container radget @radget.
+ * @param radget	a valid radget
+ * @param area	radget name
+ * @return		radget named @a name or NULL
+ *
+ * Recursively find the radget named @a name within the container radget @a radget.
  */
 gpointer
 gxk_radget_find_area (GxkRadget      *radget,
@@ -1827,11 +1827,11 @@ gxk_radget_find_area (GxkRadget      *radget,
 }
 
 /**
- * gxk_radget_add
- * @radget:     a valid radget
- * @area:       radget name
- * @widget:     valid #GtkWidget
- * Add the unparanted widget @widget to @radget within area @area.
+ * @param radget	a valid radget
+ * @param area	radget name
+ * @param widget	valid GtkWidget
+ *
+ * Add the unparanted widget @a widget to @a radget within area @a area.
  */
 void
 gxk_radget_add (GxkRadget      *radget,

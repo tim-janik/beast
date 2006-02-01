@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -175,9 +175,8 @@ gnome_canvas_item_keep_above (GnomeCanvasItem *above,
 }
 
 /**
- * gnome_canvas_text_set_zoom_size
- * @item:   canvas text item
- * @pixels: default font size
+ * @param item	 canvas text item
+ * @param pixels default font size
  *
  * Set the default font size in pixels of a canvas text
  * item. The size will be adjusted when the canvas zoomed
@@ -213,9 +212,8 @@ canvas_adjust_text_zoom (GnomeCanvasGroup *group,
 }
 
 /**
- * gnome_canvas_set_zoom
- * @canvas:          valid #GnomeCanvas
- * @pixels_per_unit: zoom factor (defaults to 1.0)
+ * @param canvas          valid GnomeCanvas
+ * @param pixels_per_unit zoom factor (defaults to 1.0)
  *
  * This function calls gnome_canvas_set_pixels_per_unit()
  * with its arguments and in addition adjusts the font sizes

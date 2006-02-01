@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2003 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -168,7 +168,7 @@ void     gxk_widget_attached_hierarchy_changed  (GtkWidget   *widget);
 
 
 /* --- Gdk convenience --- */
-#define	GXK_DEFAULT_CURSOR	GDK_LAST_CURSOR	/* revert to default (inherited) cursor */
+#define	GXK_DEFAULT_CURSOR	GDK_LAST_CURSOR	///< Indicates default (inherited) cursor
 void	 gxk_window_set_cursor_type	(GdkWindow		*window,
 					 GdkCursorType		 cursor);
 void	 gxk_window_process_next	(GdkWindow		*window,

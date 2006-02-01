@@ -1150,15 +1150,13 @@ gxk_parent_find_descendant (GtkWidget        *parent,
   return dsearch.child;
 }
 
-///@hidden
 enum {
-  STYLE_MODIFY_FG_AS_SENSITIVE, ///< sensitive foreground
+  STYLE_MODIFY_FG_AS_SENSITIVE,
   STYLE_MODIFY_BASE_AS_BG,
   STYLE_MODIFY_BG_AS_BASE,
   STYLE_MODIFY_NORMAL_BG_AS_BASE,
   STYLE_MODIFY_BG_AS_ACTIVE,
 };
-///@endhidden
 
 static void
 widget_modify_style (GtkWidget *widget)

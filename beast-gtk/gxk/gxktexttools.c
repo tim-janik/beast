@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1131,8 +1131,7 @@ text_view_key_event (GtkTextView *tview,
 }
 
 /**
- * gxk_text_view_enter_browse_mode
- * @tview:  a GtkTextView object
+ * @param tview	a GtkTextView object
  *
  * Install key press handlers on a text view which
  * allow scrolling its contents into any direction.
@@ -1150,8 +1149,7 @@ gxk_text_view_enter_browse_mode (GtkTextView *tview)
 }
 
 /**
- * gxk_text_view_leave_browse_mode
- * @tview:  a GtkTextView object
+ * @param tview	a GtkTextView object
  *
  * Deinstall key press handlers previously installed
  * with gxk_text_view_enter_browse_mode().
@@ -1166,8 +1164,7 @@ gxk_text_view_leave_browse_mode (GtkTextView *tview)
 }
 
 /**
- * gxk_text_view_cursor_to_start
- * @tview:  a GtkTextView object
+ * @param tview	a GtkTextView object
  *
  * Move the insertion and selection bound mark to
  * the start of the text view's buffer and keep
@@ -1186,8 +1183,7 @@ gxk_text_view_cursor_to_start (GtkTextView *tview)
 }
 
 /**
- * gxk_text_view_cursor_to_end
- * @tview:  a GtkTextView object
+ * @param tview	a GtkTextView object
  *
  * Move the insertion and selection bound mark to
  * the end of the text view's buffer and keep
@@ -1290,28 +1286,29 @@ tnav_update_vpos (GtkAdjustment  *a,
 }
 
 /**
- * gxk_scroll_text_create
- * @flags:  scroll text flags
- * @string: default contents
+ * @param flags	scroll text flags
+ * @param string	default contents
  *
  * Create a scrollable text view. Behaviour and apperance can
- * be tweaked by specifying various @flags:
- * @* GXK_SCROLL_TEXT_MONO - use a fixed width font;
- * @* GXK_SCROLL_TEXT_SANS - use a sans serif font;
- * @* GXK_SCROLL_TEXT_SERIF - use a serif font;
- * @* GXK_SCROLL_TEXT_WRAP - allow word wrapping of @string;
- * @* GXK_SCROLL_TEXT_CENTER - center @string;
- * @* GXK_SCROLL_TEXT_WIDGET_BG - do not use white as background,
+ * be tweaked by specifying various @a flags:
+ * @itemize
+ * @item GXK_SCROLL_TEXT_MONO - use a fixed width font;
+ * @item GXK_SCROLL_TEXT_SANS - use a sans serif font;
+ * @item GXK_SCROLL_TEXT_SERIF - use a serif font;
+ * @item GXK_SCROLL_TEXT_WRAP - allow word wrapping of @a string;
+ * @item GXK_SCROLL_TEXT_CENTER - center @a string;
+ * @item GXK_SCROLL_TEXT_WIDGET_BG - do not use white as background,
  * but keep the usual (grey) widget background;
- * @* GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
+ * @item GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
  * the user to navigate through clickable links;
- * @* GXK_SCROLL_TEXT_EDITABLE - permit modifications of the text;
- * @* GXK_SCROLL_TEXT_HFIXED - make horizontal dimension unscrollable
- * @* GXK_SCROLL_TEXT_VFIXED - make vertical dimension unscrollable
- * @* GXK_SCROLL_TEXT_WIDGET_LOOK - this is a combination of flags
- * to adjust the scroll text to look like an ordinary #GtkLabel,
+ * @item GXK_SCROLL_TEXT_EDITABLE - permit modifications of the text;
+ * @item GXK_SCROLL_TEXT_HFIXED - make horizontal dimension unscrollable
+ * @item GXK_SCROLL_TEXT_VFIXED - make vertical dimension unscrollable
+ * @item GXK_SCROLL_TEXT_WIDGET_LOOK - this is a combination of flags
+ * to adjust the scroll text to look like an ordinary GtkLabel,
  * which amounts to using a sans serif font, normal widget
  * background and allowing word wrapping.
+ * @done
  */
 GtkWidget*
 gxk_scroll_text_create (GxkScrollTextFlags flags,
@@ -1444,10 +1441,9 @@ text_tag_remove (GtkTextTag *tag,
 }
 
 /**
- * gxk_scroll_text_clear
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
  *
- * Clear the textual contents of this @sctext and reset the indentation level.
+ * Clear the textual contents of this @a sctext and reset the indentation level.
  */
 void
 gxk_scroll_text_clear (GtkWidget *sctext)
@@ -1475,11 +1471,10 @@ gxk_scroll_text_clear (GtkWidget *sctext)
 }
 
 /**
- * gxk_scroll_text_set
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @string: the new text to be displayed
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param string	the new text to be displayed
  *
- * Replace the textual contents of this @sctext with @string.
+ * Replace the textual contents of this @a sctext with @a string.
  */
 void
 gxk_scroll_text_set (GtkWidget   *sctext,
@@ -1492,12 +1487,11 @@ gxk_scroll_text_set (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_set_tsm
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @string: the new text to be displayed in tag-span-markup
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param string	the new text to be displayed in tag-span-markup
  *
- * Replace the textual contents of this @sctext with @string, where
- * @string is marked up with tag-span-markup.
+ * Replace the textual contents of this @a sctext with @a string, where
+ * @a string is marked up with tag-span-markup.
  */
 void
 gxk_scroll_text_set_tsm (GtkWidget   *sctext,
@@ -1510,11 +1504,10 @@ gxk_scroll_text_set_tsm (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_append
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @string: the text to be displayed
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param string	the text to be displayed
  *
- * Append @string to the textual contents of this @sctext.
+ * Append @a string to the textual contents of this @a sctext.
  */
 void
 gxk_scroll_text_append (GtkWidget   *sctext,
@@ -1536,12 +1529,11 @@ gxk_scroll_text_append (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_append_tsm
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @string: the text to be displayed in tag-span-markup
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param string	the text to be displayed in tag-span-markup
  *
- * Append @string to the textual contents of this @sctext, where
- * @string is marked up with tag-span-markup.
+ * Append @a string to the textual contents of this @a sctext, where
+ * @a string is marked up with tag-span-markup.
  */
 void
 gxk_scroll_text_append_tsm (GtkWidget   *sctext,
@@ -1563,12 +1555,11 @@ gxk_scroll_text_append_tsm (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_append_file
- * @sctext:    a scroll text widget as returned from gxk_scroll_text_create()
- * @file_name: file holding the text to be displayed
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param file_name	file holding the text to be displayed
  *
- * Append the contents of @file_name to the textual
- * contents of this @sctext.
+ * Append the contents of @a file_name to the textual
+ * contents of this @a sctext.
  */
 void
 gxk_scroll_text_append_file (GtkWidget   *sctext,
@@ -1590,12 +1581,11 @@ gxk_scroll_text_append_file (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_append_file_tsm
- * @sctext:    a scroll text widget as returned from gxk_scroll_text_create()
- * @file_name: file holding the text to be displayed in tag-span-markup
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param file_name	file holding the text to be displayed in tag-span-markup
  *
- * Append the contents of @file_name to the textual contents of
- * this @sctext, where those contents are marked up with tag-span-markup.
+ * Append the contents of @a file_name to the textual contents of
+ * this @a sctext, where those contents are marked up with tag-span-markup.
  */
 void
 gxk_scroll_text_append_file_tsm (GtkWidget   *sctext,
@@ -1617,11 +1607,10 @@ gxk_scroll_text_append_file_tsm (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_aprintf
- * @sctext:   a scroll text widget as returned from gxk_scroll_text_create()
- * @text_fmt: printf(3) style format string
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param text_fmt	printf(3) style format string
  *
- * Append @text_fmt to the textual contents of this @sctext.
+ * Append @a text_fmt to the textual contents of this @a sctext.
  */
 void
 gxk_scroll_text_aprintf (GtkWidget   *sctext,
@@ -1645,11 +1634,10 @@ gxk_scroll_text_aprintf (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_get_text_view
- * @sctext:  a scroll text widget as returned from gxk_scroll_text_create()
- * @RETURNS: a GtkTextView widget
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @return		a GtkTextView widget
  *
- * Return the internally used GtkTextView of this @sctext.
+ * Return the internally used GtkTextView of this @a sctext.
  */
 GtkTextView*
 gxk_scroll_text_get_text_view (GtkWidget *sctext)
@@ -1667,8 +1655,7 @@ gxk_scroll_text_get_text_view (GtkWidget *sctext)
 }
 
 /**
- * gxk_scroll_text_push_indent
- * @sctext:  a scroll text widget as returned from gxk_scroll_text_create()
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
  *
  * Increment the global indentation level, which affects overall
  * indentation of text added with gxk_scroll_text_append() and friends.
@@ -1687,8 +1674,7 @@ gxk_scroll_text_push_indent (GtkWidget *sctext)
 }
 
 /**
- * gxk_scroll_text_pop_indent
- * @sctext:  a scroll text widget as returned from gxk_scroll_text_create()
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
  *
  * Decrement the global indentation level after a previous
  * increment with gxk_scroll_text_push_indent().
@@ -2065,11 +2051,10 @@ scroll_text_reload (GtkWidget *sctext)
 }
 
 /**
- * gxk_scroll_text_display
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @uri:    resource locator
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param uri	resource locator
  *
- * Load and display the resource from @uri without
+ * Load and display the resource from @a uri without
  * altering the navigation history.
  */
 void
@@ -2088,13 +2073,12 @@ gxk_scroll_text_display (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_advance
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @uri:    resource locator
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param uri	resource locator
  *
  * Relative to the url currently being displayed
  * load and display the possibly partial (relative)
- * url @uri. Navigation history is affected.
+ * url @a uri. Navigation history is affected.
  */
 void
 gxk_scroll_text_advance (GtkWidget   *sctext,
@@ -2143,11 +2127,10 @@ gxk_scroll_text_advance (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_enter
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @uri:    resource locator
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param uri	resource locator
  *
- * Load and display the url @uri.
+ * Load and display the url @a uri.
  * Navigation history is affected.
  */
 void
@@ -2165,9 +2148,8 @@ gxk_scroll_text_enter (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_set_index
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
- * @uri:    resource locator
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
+ * @param uri	resource locator
  *
  * Affect what uri is being displayed by pressing
  * on the "Index" navigation button.
@@ -2188,8 +2170,7 @@ gxk_scroll_text_set_index (GtkWidget   *sctext,
 }
 
 /**
- * gxk_scroll_text_rewind
- * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @param sctext	a scroll text widget as returned from gxk_scroll_text_create()
  *
  * Go back in navigation history as far as possible.
  */

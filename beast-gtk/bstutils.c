@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2003 Tim Janik
+ * Copyright (C) 1998-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -625,16 +625,15 @@ gmask_form (GtkWidget   *parent,
 }
 
 /**
- * bst_gmask_container_create
- * @border_width:     Border width of this GUI mask
- * @dislodge_columns: Provide expandable space between columns
- * @RETURNS:          GUI field mask container
+ * @param border_width	   Border width of this GUI mask
+ * @param dislodge_columns Provide expandable space between columns
+ * @return		   GUI field mask container
  *
  * Create a container capable to hold GUI field masks.
  * This is the container to be passed into bst_gmask_form().
  * In case multiple field mask columns are packed into the
  * container (by using bst_gmask_set_column() on the filed
- * masks), @dislodge_columns specifies whether the field
+ * masks), @a dislodge_columns specifies whether the field
  * mask columns are to be closely aligned.
  */
 GtkWidget*
@@ -654,32 +653,31 @@ bst_gmask_container_create (guint    border_width,
 }
 
 /**
- * bst_gmask_form
- * @gmask_container: container created with bst_gmask_container_create()
- * @action:          valid #GtkWidget
- * @gpack:           #BstGMaskPack packing type
- * @RETURNS:         a new GUI field mask
+ * @param gmask_container    container created with bst_gmask_container_create()
+ * @param action             valid GtkWidget
+ * @param gpack	BstGMaskPack packing type
+ * @return		     a new GUI field mask
  *
- * Create a new GUI field mask with @action as action widget.
+ * Create a new GUI field mask with @a action as action widget.
  * Each GUI field mask consists of an action widget which may
  * be neighboured by pre and post action widgets, the action
- * widget is usually something like a #GtkEntry input widget.
+ * widget is usually something like a GtkEntry input widget.
  * Also, most field masks have a prompt widget, usually a
- * #GtkLabel, labeling the field mask with a name.
+ * GtkLabel, labeling the field mask with a name.
  * Optionally, up to three auxillary widgets are supported
  * per field mask, layed out between the prompt and the
  * action widgets.
  * The second auxillary widget will expand if additional
  * space is available. Other layout details are configured
- * through the @gpack packing type:
- * @* %BST_GMASK_FIT - the action widget is not expanded,
- * @* %BST_GMASK_INTERLEAVE - allow the action widget to expand across auxillary
+ * through the @a gpack packing type:
+ * @* BST_GMASK_FIT - the action widget is not expanded,
+ * @* BST_GMASK_INTERLEAVE - allow the action widget to expand across auxillary
  * columns if it requests that much space,
- * @* %BST_GMASK_BIG - force expansion of the action widget across all possible
+ * @* BST_GMASK_BIG - force expansion of the action widget across all possible
  * columns up to the prompt,
- * @* %BST_GMASK_CENTER - center the action widget within space across all possible
+ * @* BST_GMASK_CENTER - center the action widget within space across all possible
  * columns up to the prompt.
- * @* %BST_GMASK_MULTI_SPAN - span aux2 widget across multiple gmask columns.
+ * @* BST_GMASK_MULTI_SPAN - span aux2 widget across multiple gmask columns.
  */
 BstGMask*
 bst_gmask_form (GtkWidget   *gmask_container,
@@ -690,11 +688,10 @@ bst_gmask_form (GtkWidget   *gmask_container,
 }
 
 /**
- * bst_gmask_set_tip
- * @mask:     valid #BstGMask
- * @tip_text: tooltip text
+ * @param mask	   valid BstGMask
+ * @param tip_text tooltip text
  *
- * Set the tooltip text of this GUI field @mask.
+ * Set the tooltip text of this GUI field @a mask.
  */
 void
 bst_gmask_set_tip (BstGMask    *mask,
@@ -711,11 +708,10 @@ bst_gmask_set_tip (BstGMask    *mask,
 }
 
 /**
- * bst_gmask_set_prompt
- * @mask:     valid #BstGMask
- * @widget:   valid #GtkWidget
+ * @param mask	 valid BstGMask
+ * @param widget valid GtkWidget
  *
- * Set the prompt widget of this GUI field @mask.
+ * Set the prompt widget of this GUI field @a mask.
  */
 void
 bst_gmask_set_prompt (BstGMask *mask,
@@ -735,11 +731,10 @@ bst_gmask_set_prompt (BstGMask *mask,
 }
 
 /**
- * bst_gmask_set_aux1
- * @mask:     valid #BstGMask
- * @widget:   valid #GtkWidget
+ * @param mask	 valid BstGMask
+ * @param widget valid GtkWidget
  *
- * Set the first auxillary widget of this GUI field @mask.
+ * Set the first auxillary widget of this GUI field @a mask.
  */
 void
 bst_gmask_set_aux1 (BstGMask *mask,
@@ -759,11 +754,10 @@ bst_gmask_set_aux1 (BstGMask *mask,
 }
 
 /**
- * bst_gmask_set_aux2
- * @mask:     valid #BstGMask
- * @widget:   valid #GtkWidget
+ * @param mask	 valid BstGMask
+ * @param widget valid GtkWidget
  *
- * Set the second auxillary widget of this GUI field @mask.
+ * Set the second auxillary widget of this GUI field @a mask.
  * In contrast to the first and third auxillary widget, this
  * one is expanded if extra space is available.
  */
@@ -785,11 +779,10 @@ bst_gmask_set_aux2 (BstGMask *mask,
 }
 
 /**
- * bst_gmask_set_aux3
- * @mask:     valid #BstGMask
- * @widget:   valid #GtkWidget
+ * @param mask	 valid BstGMask
+ * @param widget valid GtkWidget
  *
- * Set the third auxillary widget of this GUI field @mask.
+ * Set the third auxillary widget of this GUI field @a mask.
  */
 void
 bst_gmask_set_aux3 (BstGMask *mask,
@@ -809,9 +802,8 @@ bst_gmask_set_aux3 (BstGMask *mask,
 }
 
 /**
- * bst_gmask_set_column
- * @mask:     valid #BstGMask
- * @column:   column number
+ * @param mask	 valid BstGMask
+ * @param column column number
  *
  * Set the field mask column. By default all field masks are
  * packed into column 0, so that only vertical packing occours.
@@ -830,11 +822,10 @@ bst_gmask_set_column (BstGMask *mask,
 }
 
 /**
- * bst_gmask_get_prompt
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
+ * @param mask	valid BstGMask
+ * @return	the requested GtkWidget or NULL
  *
- * Retrieve the prompt widget of this GUI field @mask.
+ * Retrieve the prompt widget of this GUI field @a mask.
  */
 GtkWidget*
 bst_gmask_get_prompt (BstGMask *mask)
@@ -849,11 +840,10 @@ bst_gmask_get_prompt (BstGMask *mask)
 }
 
 /**
- * bst_gmask_get_aux1
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
+ * @param mask	valid BstGMask
+ * @return	the requested GtkWidget or NULL
  *
- * Retrieve the first auxillary widget of this GUI field @mask.
+ * Retrieve the first auxillary widget of this GUI field @a mask.
  */
 GtkWidget*
 bst_gmask_get_aux1 (BstGMask *mask)
@@ -868,11 +858,10 @@ bst_gmask_get_aux1 (BstGMask *mask)
 }
 
 /**
- * bst_gmask_get_aux2
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
+ * @param mask	valid BstGMask
+ * @return	the requested GtkWidget or NULL
  *
- * Retrieve the second auxillary widget of this GUI field @mask.
+ * Retrieve the second auxillary widget of this GUI field @a mask.
  */
 GtkWidget*
 bst_gmask_get_aux2 (BstGMask *mask)
@@ -887,11 +876,10 @@ bst_gmask_get_aux2 (BstGMask *mask)
 }
 
 /**
- * bst_gmask_get_aux3
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
+ * @param mask	valid BstGMask
+ * @return	the requested GtkWidget or NULL
  *
- * Retrieve the third auxillary widget of this GUI field @mask.
+ * Retrieve the third auxillary widget of this GUI field @a mask.
  */
 GtkWidget*
 bst_gmask_get_aux3 (BstGMask *mask)
@@ -906,11 +894,10 @@ bst_gmask_get_aux3 (BstGMask *mask)
 }
 
 /**
- * bst_gmask_get_action
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
+ * @param mask	valid BstGMask
+ * @return	the requested GtkWidget or NULL
  *
- * Retrieve the action widget of this GUI field @mask.
+ * Retrieve the action widget of this GUI field @a mask.
  */
 GtkWidget*
 bst_gmask_get_action (BstGMask *mask)
@@ -925,10 +912,9 @@ bst_gmask_get_action (BstGMask *mask)
 }
 
 /**
- * bst_gmask_foreach
- * @mask:     valid #BstGMask
- * @func:     foreach function as: void func(GtkWidget*, gpointer data);
- * @data:     data passed in to @func
+ * @param mask	valid BstGMask
+ * @param func	foreach function as: void func(GtkWidget*, gpointer data);
+ * @param data	data passed in to @a func
  *
  * Invoke @func() with each of the widgets set for this
  * field mask.
@@ -1007,8 +993,7 @@ table_max_bottom_row (GtkTable *table,
 }
 
 /**
- * bst_gmask_pack
- * @mask:     valid #BstGMask
+ * @param mask	valid BstGMask
  *
  * After the GUI field mask is fully configured, by setting
  * all associated widgets on it, column tooltip text, etc.,
@@ -1166,16 +1151,15 @@ bst_gmask_pack (BstGMask *mask)
 }
 
 /**
- * bst_gmask_quick
- * @gmask_container: container created with bst_gmask_container_create()
- * @column:          column number for bst_gmask_set_column()
- * @prompt:          valid #GtkWidget for bst_gmask_set_prompt()
- * @action:          valid #GtkWidget as with bst_gmask_form()
- * @tip_text:        text for bst_gmask_set_tip()
- * @RETURNS:         an already packed GUI field mask
+ * @param gmask_container container created with bst_gmask_container_create()
+ * @param column	  column number for bst_gmask_set_column()
+ * @param prompt	  valid GtkWidget for bst_gmask_set_prompt()
+ * @param action	  valid GtkWidget as with bst_gmask_form()
+ * @param tip_text	  text for bst_gmask_set_tip()
+ * @return		  an already packed GUI field mask
  *
- * Shorthand to form a GUI field mask in @column of type %BST_GMASK_INTERLEAVE,
- * with @prompt and @tip_text. Note that this function already calls
+ * Shorthand to form a GUI field mask in @a column of type BST_GMASK_INTERLEAVE,
+ * with @a prompt and @a tip_text. Note that this function already calls
  * bst_gmask_pack(), so the returned field mask already can't be modified
  * anymore.
  */
