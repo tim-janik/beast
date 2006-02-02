@@ -80,7 +80,7 @@
 	@item 	@menuuri{@top_webdir/doxer-docu.html,			Doxer Manual}
 	@item 	@menuuri{@top_webdir/sfidl-manual.html,			IDL Compiler}
 	@item 	@menuuri{@top_webdir/rdocu-gxk/,			GXK API}
-	@item 	@menuuri{@top_webdir/bse.3.html,			BSE Functions}
+	@item 	@menuuri{@top_webdir/rdocu-bse/,			BSE API}
 	@item 	@menuuri{@top_webdir/engine-mplan.html,			Synth Engine}
 	@done
     @done

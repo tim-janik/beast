@@ -28,7 +28,9 @@ G_BEGIN_DECLS
 
 SfiGlueContext*	bse_glue_context_intern	 (const gchar	*user);
 
+/* Construct a new #SfiRec from a boxed value. */
 typedef SfiRec*	(*BseGlueBoxedToRec)	 (gpointer	    boxed);
+/* Construct a new #SfiSeq from a boxed value. */
 typedef SfiSeq*	(*BseGlueBoxedToSeq)	 (gpointer	    boxed);
 
 GType			bse_glue_pspec_get_original_enum (GParamSpec *pspec);

@@ -30,8 +30,7 @@ static GEnumClass      *bse_midi_signal_class = NULL;
 
 /* --- functions --- */
 /**
- * bse_midi_signal_default
- * @type: BseMidiSignalType type
+ * @param type BseMidiSignalType type
  *
  * Get the initial default value for a midi signal.
  * This function is MT-safe and may be called from any thread.
@@ -94,10 +93,9 @@ bse_midi_signal_nick (BseMidiSignalType signal)
 
 /* --- BseMidiEvents --- */
 /**
- * bse_midi_free_event
- * @event: BseMidiEvent structure
+ * @param event BseMidiEvent structure
  *
- * Free the @event and all data associated with it.
+ * Free the @a event and all data associated with it.
  * This function is MT-safe and may be called from any thread.
  */
 void

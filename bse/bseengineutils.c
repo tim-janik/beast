@@ -354,8 +354,6 @@ _engine_pop_job (gboolean update_commit_stamp)
 
 /* --- user thread garbage collection --- */
 /**
- * bse_engine_garbage_collect
- *
  * BSE Engine user thread function. Collects processed jobs
  * and transactions from the engine and frees them. This
  * involves callback invocation of BseFreeFunc() functions,

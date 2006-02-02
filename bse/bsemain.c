@@ -373,7 +373,6 @@ core_thread_send_message_async (gpointer data)
 }
 
 /**
- * bse_msg_handler
  * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
  */

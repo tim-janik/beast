@@ -247,9 +247,8 @@ bse_item_update_state (BseItem *self)
 }
 
 /**
- * bse_item_set_internal
- * @item:      valid #BseItem
- * @internal:  %TRUE or %FALSE
+ * @param item	   valid BseItem
+ * @param internal TRUE or FALSE
  *
  * Set whether an item should be considered internal to the BSE
  * implementation (or implementation of another BSE object).
@@ -326,18 +325,17 @@ gather_child (BseItem *child,
 }
 
 /**
- * bse_item_gather_items
- * @item:      valid #BseItem from which to start gathering
- * @items:     sequence of items to append to
- * @base_type: base type of the items to gather
- * @ccheck:    container filter function
- * @pcheck:    proxy filter function
- * @data:      @data pointer to @ccheck and @pcheck
- * @RETURNS:   returns @items
+ * @param item	        valid BseItem from which to start gathering
+ * @param items	        sequence of items to append to
+ * @param base_type	base type of the items to gather
+ * @param ccheck	container filter function
+ * @param pcheck	proxy filter function
+ * @param data	        @a data pointer to @a ccheck and @a pcheck
+ * @return		returns @a items
  *
  * This function gathers items from an object hirachy, walking upwards,
- * starting out with @item. For each container passing @ccheck(), all
- * immediate children are tested for addition with @pcheck.
+ * starting out with @a item. For each container passing @a ccheck(), all
+ * immediate children are tested for addition with @a pcheck.
  */
 BseItemSeq*
 bse_item_gather_items (BseItem              *item,
@@ -389,18 +387,17 @@ gather_typed_acheck (BseItem  *proxy,
 }
 
 /**
- * bse_item_gather_items_typed
- * @item:           valid #BseItem from which to start gathering
- * @items:          sequence of items to append to
- * @proxy_type:     base type of the items to gather
- * @container_type: base type of the containers to check for items
- * @allow_ancestor: if %FALSE, ancestors of @item are omitted
- * @RETURNS:   returns @items
+ * @param item	         valid BseItem from which to start gathering
+ * @param items	         sequence of items to append to
+ * @param proxy_type	 base type of the items to gather
+ * @param container_type base type of the containers to check for items
+ * @param allow_ancestor if FALSE, ancestors of @a item are omitted
+ * @return		 returns @a items
  *
  * Variant of bse_item_gather_items(), the containers and items
- * are simply filtered by checking derivation from @container_type
- * and @proxy_type respectively. Gathered items may not be ancestors
- * of @item if @allow_ancestor is %FALSE.
+ * are simply filtered by checking derivation from @a container_type
+ * and @a proxy_type respectively. Gathered items may not be ancestors
+ * of @a item if @a allow_ancestor is FALSE.
  */
 BseItemSeq*
 bse_item_gather_items_typed (BseItem              *item,
@@ -569,15 +566,14 @@ bse_item_common_ancestor (BseItem *item1,
 }
 
 /**
- * bse_item_cross_link
- * @owner:    reference owner
- * @link:     item to be referenced by @owner
- * @uncross_func: notifier to be executed on uncrossing
+ * @param owner	        reference owner
+ * @param link	        item to be referenced by @a owner
+ * @param uncross_func	notifier to be executed on uncrossing
  *
- * Install a weak cross reference from @owner to @link.
+ * Install a weak cross reference from @a owner to @a link.
  * The two items must have a common ancestor when the cross
  * link is installed. Once their ancestry changes so that
- * they don't have a common ancestor anymore, @uncross_func()
+ * they don't have a common ancestor anymore, @a uncross_func()
  * is executed.
  */
 void
@@ -602,13 +598,12 @@ bse_item_cross_link (BseItem         *owner,
 }
 
 /**
- * bse_item_cross_unlink
- * @owner:    reference owner
- * @link:     item referenced by @owner
- * @uncross_func: notifier queued to be executed on uncrossing
+ * @param owner	        reference owner
+ * @param link	        item referenced by @a owner
+ * @param uncross_func	notifier queued to be executed on uncrossing
  *
  * Removes a cross link previously installed via
- * bse_item_cross_link() without executing @uncross_func().
+ * bse_item_cross_link() without executing @a uncross_func().
  */
 void
 bse_item_cross_unlink (BseItem        *owner,
@@ -632,12 +627,11 @@ bse_item_cross_unlink (BseItem        *owner,
 }
 
 /**
- * bse_item_uncross_links
- * @owner:    reference owner
- * @link:     item referenced by @owner
+ * @param owner	reference owner
+ * @param link	item referenced by @a owner
  *
- * Destroys all existing cross links from @owner to
- * @link by executing the associated notifiers.
+ * Destroys all existing cross links from @a owner to
+ * @a link by executing the associated notifiers.
  */
 void
 bse_item_uncross_links (BseItem *owner,

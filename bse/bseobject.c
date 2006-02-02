@@ -85,12 +85,12 @@ bse_object_debug_leaks (void)
 }
 
 /**
- * bse_object_strdup_debug_handle
- * @object:  supposedly valid #GObject pointer
- * @RETURNS: newly allocated string
- * Construct a debugging identifier for @object. No mutable
+ * @param object supposedly valid #GObject pointer
+ * @return       newly allocated string
+ *
+ * Construct a debugging identifier for @a object. No mutable
  * object members are accessed, so as long as the caller
- * keeps @object alive for the duration of the function call,
+ * keeps @a object alive for the duration of the function call,
  * this function is MT-safe and may be called from any thread.
  */
 gchar*

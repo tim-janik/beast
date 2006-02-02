@@ -100,11 +100,10 @@ bse_snet_init (BseSNet *snet)
 }
 
 /**
- * bse_snet_intern_child
- * @self:  valid #BseSNet
- * @child: valid #BseItem, which is a child of @self
+ * @param self	valid BseSNet
+ * @param child	valid BseItem, which is a child of @a self
  *
- * Mark @child as internal via bse_item_set_internal() and
+ * Mark @a child as internal via bse_item_set_internal() and
  * add special protection so to not destroy it automatically
  * upon g_object_dispose().
  */

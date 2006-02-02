@@ -376,8 +376,7 @@ bse_server_release_children (BseContainer *container)
 }
 
 /**
- * bse_server_get
- * @Returns: Global BSE Server
+ * @returns Global BSE Server
  *
  * Retrieve the global BSE server object.
  **/

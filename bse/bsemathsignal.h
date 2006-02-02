@@ -25,35 +25,48 @@
 
 G_BEGIN_DECLS
 
-/* smallest value of a signal sample, greater than zero
+/**
+ * smallest value of a signal sample, greater than zero
  */
 #define BSE_SIGNAL_EPSILON      (1.15e-14)      /* 1.16415321826934814453125e-9 ~= 1/2^33 */
 
-/* maximum value of a signal sample
+/**
+ * maximum value of a signal sample
  */
 #define BSE_SIGNAL_KAPPA        (1.5)
 
-/* catch edges in sync signals.
+/**
+ * Catch edges in sync signals.
  * sync signals should be constant, do comparing against
- * an epsilon just hurts speed in the common case
+ * an epsilon just hurts speed in the common case.
  */
 #define BSE_SIGNAL_RAISING_EDGE(v1,v2)	((v1) < (v2))
+/**
+ * Inverse variant of BSE_SIGNAL_RAISING_EDGE().
+ */
 #define BSE_SIGNAL_FALLING_EDGE(v1,v2)	((v1) > (v2))
 
-/* value changes in signals which represent frequencies
+/**
+ * Value changes in signals which represent frequencies.
  */
 #define BSE_SIGNAL_FREQ_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-7)
+/**
+ * Inverse variant of BSE_SIGNAL_FREQ_CHANGED().
+ */
 #define BSE_SIGNAL_FREQ_EQUALS(v1,v2)	(!BSE_SIGNAL_FREQ_CHANGED (v1, v2))
 
-/* value changes in signals which represent modulation
+/**
+ * Value changes in signals which represent modulation.
  */
 #define BSE_SIGNAL_MOD_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-8)
 
-/* value changes in signals which represent dB ranges
+/**
+ * Value changes in signals which represent dB ranges.
  */
 #define BSE_SIGNAL_GAIN_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-8)
 
-/* convert between literal frequencies and signal values
+/**
+ * Convert between literal frequencies and signal values.
  */
 #define BSE_SIGNAL_TO_FREQ_FACTOR	(BSE_MAX_FREQUENCY)
 #define BSE_SIGNAL_FROM_FREQ_FACTOR	(1.0 / BSE_MAX_FREQUENCY)
@@ -101,8 +114,8 @@ double	bse_window_rect		(double x);	/* widest */
 /* --- function approximations --- */
 
 /**
- * bse_approx_atan1
- * @x: x as in atan(x)
+ * @param x	x as in atan(x)
+ *
  * Fast atan(x)/(PI/2) approximation, with maximum error < 0.01 and
  * bse_approx_atan1(0)==0, according to the formula:
  * n1 = -0.41156875521951602506487246309908;
@@ -114,9 +127,9 @@ double	bse_window_rect		(double x);	/* widest */
 static inline double	bse_approx_atan1 	  (register double x)  G_GNUC_CONST;
 
 /**
- * bse_approx_atan1_prescale
- * @boost_amount: boost amount between [0..1]
- * @RETURNS:      prescale factor for bse_approx_atan1()
+ * @param boost_amount	boost amount between [0..1]
+ * @return		prescale factor for bse_approx_atan1()
+ *
  * Calculate the prescale factor for bse_approx_atan1(x*prescale) from
  * a linear boost factor, where 0.5 amounts to prescale=1.0, 1.0 results
  * in maximum boost and 0.0 results in maximum attenuation.
@@ -124,9 +137,9 @@ static inline double	bse_approx_atan1 	  (register double x)  G_GNUC_CONST;
 double			bse_approx_atan1_prescale (double	   boost_amount);
 
 /**
- * bse_approx_qcircle1
- * @x:       x within [0..1]
- * @RETURNS: y for circle approximation within [0..1]
+ * @param x	x within [0..1]
+ * @return	y for circle approximation within [0..1]
+ *
  * Fast approximation of the upper right quadrant of a circle.
  * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
  * wasn't minimized, but distributed to best fit the curverture of a
@@ -135,9 +148,9 @@ double			bse_approx_atan1_prescale (double	   boost_amount);
 static inline double	bse_approx_qcircle1	  (register double x)  G_GNUC_CONST;
 
 /**
- * bse_approx_qcircle2
- * @x:       x within [0..1]
- * @RETURNS: y for circle approximation within [0..1]
+ * @param x	x within [0..1]
+ * @return	y for circle approximation within [0..1]
+ *
  * Fast approximation of the upper left quadrant of a circle.
  * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
  * wasn't minimized, but distributed to best fit the curverture of a
@@ -146,9 +159,9 @@ static inline double	bse_approx_qcircle1	  (register double x)  G_GNUC_CONST;
 static inline double	bse_approx_qcircle2	  (register double x)  G_GNUC_CONST;
 
 /**
- * bse_approx_qcircle3
- * @x:       x within [0..1]
- * @RETURNS: y for circle approximation within [0..1]
+ * @param x	x within [0..1]
+ * @return	y for circle approximation within [0..1]
+ *
  * Fast approximation of the lower left quadrant of a circle.
  * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
  * wasn't minimized, but distributed to best fit the curverture of a
@@ -157,9 +170,9 @@ static inline double	bse_approx_qcircle2	  (register double x)  G_GNUC_CONST;
 static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
 
 /**
- * bse_approx_qcircle4
- * @x:       x within [0..1]
- * @RETURNS: y for circle approximation within [0..1]
+ * @param x	x within [0..1]
+ * @return	y for circle approximation within [0..1]
+ *
  * Fast approximation of the lower right quadrant of a circle.
  * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
  * wasn't minimized, but distributed to best fit the curverture of a
@@ -168,107 +181,107 @@ static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
 static inline double	bse_approx_qcircle4	  (register double x)  G_GNUC_CONST;
 
 /**
- * bse_approx2_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 0.01275 which corresponds to a sample
  * precision of 6.2 bit, the average error amounts to 0.001914.
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 12.81 ns.
  */
 static inline double    bse_approx2_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx3_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 0.001123415 which corresponds to a sample
  * precision of 9.7 bit, the average error amounts to 0.000133.
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 13.74 ns.
  */
 static inline double    bse_approx3_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx4_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 7.876055e-05 which corresponds to a sample
  * precision of 13.6 bit, the average error amounts to 7.7012792e-06.
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 16.46 ns.
  */
 static inline double    bse_approx4_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx5_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 4.60807023e-06 which corresponds to a sample
  * precision of 17.7 bit, the average error amounts to 3.842199e-07.
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 18.51 ns.
  */
 static inline double    bse_approx5_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx6_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 2.5505813e-07 which corresponds to a sample
  * precision of 21.9 bit, the average error amounts to 2.1028377e-08.
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 21.84 ns.
  */
 static inline double    bse_approx6_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx7_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 4.1074325e-08 which corresponds to a sample
  * precision of 24.5 bit, the average error amounts to 7.7448985e-09.
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 23.79 ns.
  */
 static inline double    bse_approx7_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx8_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 4.1074325e-08 which corresponds to a sample
  * precision of 24.5 bit, the average error amounts to 7.6776048e-09.
  * Note that there is no significant precision increment over bse_approx7_exp2().
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 26.59 ns.
  */
 static inline double    bse_approx8_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx9_exp2
- * @ex:      exponent within [-127..+127]
- * @RETURNS: y approximating 2^ex
+ * @param ex	exponent within [-127..+127]
+ * @return	y approximating 2^ex
+ *
  * Fast approximation of 2 raised to the power of ex.
  * Within -1..+1, the error stays below 4.1074325e-08 which corresponds to a sample
  * precision of 24.5 bit, the average error amounts to 7.677515903e-09.
  * Note that there is no significant precision increment over bse_approx7_exp2().
- * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * For integer values of @a ex (i.e. @a ex - floor (@a ex) -> 0), the error
  * approaches zero. On a 2GHz machine, execution takes roughly 29.40 ns.
  */
 static inline double    bse_approx9_exp2        (float ex)      G_GNUC_CONST;
 
 /**
- * bse_approx2_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 0.00436 which corresponds to a sample
  * precision of 7.8 bit, the average error amounts to 0.00069220.
@@ -277,9 +290,9 @@ static inline double    bse_approx9_exp2        (float ex)      G_GNUC_CONST;
 static inline double    bse_approx2_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx3_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 0.0003857 which corresponds to a sample
  * precision of 7.8 bit, the average error amounts to 0.00004827.
@@ -288,9 +301,9 @@ static inline double    bse_approx2_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx3_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx4_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 2.7017507e-05 which corresponds to a sample
  * precision of 15.1 bit, the average error amounts to 2.799594e-06.
@@ -299,9 +312,9 @@ static inline double    bse_approx3_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx4_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx5_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 1.582042006e-06 which corresponds to a sample
  * precision of 19.2 bit, the average error amounts to 1.42780810e-07.
@@ -310,9 +323,9 @@ static inline double    bse_approx4_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx5_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx6_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 9.7878796e-08 which corresponds to a sample
  * precision of 23.2 bit, the average error amounts to 1.3016999e-08.
@@ -321,9 +334,9 @@ static inline double    bse_approx5_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx6_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx7_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 4.4375671e-08 which corresponds to a sample
  * precision of 24.4 bit, the average error amounts to 9.5028421e-09.
@@ -332,9 +345,9 @@ static inline double    bse_approx6_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx7_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx8_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 4.4375671e-08 which corresponds to a sample
  * precision of 24.4 bit, the average error amounts to 9.49155722e-09.
@@ -344,9 +357,9 @@ static inline double    bse_approx7_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx8_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_approx9_tanh
- * @x:       exponent within [-127..+127]
- * @RETURNS: y approximating tanh(x)
+ * @param x	exponent within [-127..+127]
+ * @return	y approximating tanh(x)
+ *
  * Fast approximation of the hyperbolic tangent of x.
  * Within -1..+1, the error stays below 4.4375671e-08 which corresponds to a sample
  * precision of 24.4 bit, the average error amounts to 9.49141881e-09.
@@ -356,11 +369,11 @@ static inline double    bse_approx8_tanh        (float x)       G_GNUC_CONST;
 static inline double    bse_approx9_tanh        (float x)       G_GNUC_CONST;
 
 /**
- * bse_saturate_hard
- * @value:   value to saturate
- * @limit:   limit not to be exceeded by value
- * @RETURNS: @value bounded by -@limit and @limit
- * Clamp @value within -@limit and +@limit. Limiting is performed
+ * @param value		value to saturate
+ * @param limit		limit not to be exceeded by value
+ * @return		@a value bounded by -limit and @a limit
+ *
+ * Clamp @a value within -limit and +limit. Limiting is performed
  * by floating point operations only, thus executing faster than
  * condition based branching code on most modern architectures.
  * On a 2GHz machine, execution takes roughly 6.86 ns.
@@ -369,11 +382,11 @@ static inline double    bse_saturate_hard       (double value,
                                                  double limit)  G_GNUC_CONST;
 
 /**
- * bse_saturate_branching
- * @value:   value to saturate
- * @limit:   limit not to be exceeded by value
- * @RETURNS: @value bounded by -@limit and @limit
- * Clamp @value within -@limit and +@limit. Limiting is performed
+ * @param value		value to saturate
+ * @param limit		limit not to be exceeded by value
+ * @return		@a value bounded by -limit and @a limit
+ *
+ * Clamp @a value within -limit and +limit. Limiting is performed
  * by executing conditions and branches, so it will probably run
  * slower than bse_saturate_hard() on many machines.
  * On a 2GHz machine, execution takes roughly 8.29 ns.

@@ -79,11 +79,10 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
  */
 
 /**
- * bse_idle_now
- * @function: user function
- * @data:     user data
- * @RETURNS:  idle handler id, suitable for bse_idle_remove()
- * Execute @function(@data) inside the main BSE thread as soon as possible.
+ * @param function	user function
+ * @param data	user data
+ * @return		idle handler id, suitable for bse_idle_remove()
+ * Execute @a function (@a data) inside the main BSE thread as soon as possible.
  * This funciton is intended to be used by code which for some reason has
  * to be executed asyncronously.
  * This funciton is MT-safe and may be called from any thread.
@@ -102,11 +101,10 @@ bse_idle_now (GSourceFunc function,
 }
 
 /**
- * bse_idle_notify
- * @function: user function
- * @data:     user data
- * @RETURNS:  idle handler id, suitable for bse_idle_remove()
- * Queue @function(@data) for execution inside the main BSE thread,
+ * @param function	user function
+ * @param data	user data
+ * @return		idle handler id, suitable for bse_idle_remove()
+ * Queue @a function (@a data) for execution inside the main BSE thread,
  * similar to bse_idle_now(), albeit with a lower priority.
  * This funciton is intended to be used by code which emits
  * asyncronous notifications.
@@ -165,13 +163,12 @@ bse_idle_background (GSourceFunc function,
 }
 
 /**
- * bse_idle_timed
- * @usec_delay: microsecond delay
- * @function:   user function
- * @data:       user data
- * @RETURNS:    idle handler id, suitable for bse_idle_remove()
- * Execute @function(@data) with the main BSE thread, similar to
- * bse_idle_now(), after a delay period of @usec_delay has passed.
+ * @param usec_delay	microsecond delay
+ * @param function	user function
+ * @param data	user data
+ * @return		idle handler id, suitable for bse_idle_remove()
+ * Execute @a function (@a data) with the main BSE thread, similar to
+ * bse_idle_now(), after a delay period of @a usec_delay has passed.
  * This funciton is MT-safe and may be called from any thread.
  */
 guint
@@ -189,8 +186,7 @@ bse_idle_timed (guint64     usec_delay,
 }
 
 /**
- * bse_idle_remove
- * @id: idle handler id
+ * @param id	idle handler id
  * Remove or unqueue an idle handler queued by bse_idle_now()
  * or one of its variants.
  * This funciton is MT-safe and may be called from any thread.

@@ -378,29 +378,6 @@ bse_value_to_sfi (const GValue *value)
   return bglue_value_to_serializable (value);
 }
 
-/**
- * BseGlueBoxedToRec
- * @boxed:   the boxed value to be converted into a record
- * @RETURNS: a GC owned SfiRec*
- *
- * Construct a new #SfiRec from a boxed value.
- */
-/**
- * BseGlueBoxedToSeq
- * @boxed:   the boxed value to be converted into a sequence
- * @RETURNS: a GC owned SfiSeq*
- *
- * Construct a new #SfiSeq from a boxed value.
- */
-/**
- * bse_glue_boxed_to_value
- * @boxed_type: type of the boxed value
- * @boxed:      the boxed value
- *
- * Covert a boxed value into a #SfiGlueValue (usually holding
- * either a sequence or a record). The returned value is owned
- * by the GC.
- */
 GValue*
 bse_glue_boxed_to_value (GType    boxed_type,
 			 gpointer boxed)
@@ -409,6 +386,11 @@ bse_glue_boxed_to_value (GType    boxed_type,
   BseGlueBoxedToSeq b2seq;
   GValue *value;
   
+  /* Convert a boxed value into a #SfiGlueValue (usually holding
+   * either a sequence or a record). The returned value is owned
+   * by the GC.
+   */
+
   g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type) && G_TYPE_IS_DERIVED (boxed_type), NULL);
   g_return_val_if_fail (boxed != NULL, NULL);
   

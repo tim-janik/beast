@@ -943,31 +943,36 @@ bse_storage_put_item_link (BseStorage *self,
     }
 }
 
+#ifdef DOXER
 /**
- * BseStorageRestoreLink
- * @data:      user data
- * @storage:   #BseStorage instance
- * @from_item: link owner
- * @to_item:   link target or NULL
- * @error:     error string describing failing link lookups
+ * @param data	        user data
+ * @param storage	BseStorage instance
+ * @param from_item	link owner
+ * @param to_item	link target or NULL
+ * @param error	error string describing failing link lookups
  *
  * BseStorageRestoreLink() is a user supplied handler to be called
  * at the end of a parsing stage, once object references could be
- * resolved. Failing resolutions are indicated by non %NULL @error
+ * resolved. Failing resolutions are indicated by non NULL @a error
  * strings.
  */
+typedef void (*BseStorageRestoreLink)   (gpointer        data,
+                                         BseStorage     *storage,
+                                         BseItem        *from_item,
+                                         BseItem        *to_item,
+                                         const gchar    *error);
+#endif
 
 /**
- * bse_storage_parse_item_link
- * @storage:      valid #BseStorage
- * @from_item:    link owner
- * @restore_link: BseStorageRestoreLink handler to be called once the link was resolved
- * @data:         user data passed into @restore_link()
- * @RETURNS:      expected token in case of a parsing error (%G_TOKEN_NONE on success)
+ * @param self  	valid BseStorage
+ * @param from_item	link owner
+ * @param restore_link	BseStorageRestoreLink handler to be called once the link was resolved
+ * @param data	        user data passed into @a restore_link()
+ * @return		expected token in case of a parsing error (G_TOKEN_NONE on success)
  *
  * Parse an item link statement and return the expected token if a parsing
  * error occours. Item links are resolved at the end of the parsing stage
- * by calling the user supplied handler @restore_link() with the link target
+ * by calling the user supplied handler @a restore_link() with the link target
  * amongst its arguments (see BseStorageRestoreLink()).
  */
 GTokenType

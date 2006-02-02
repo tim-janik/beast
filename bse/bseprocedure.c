@@ -468,19 +468,18 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
 }
 
 /**
- * bse_procedure_marshal_valist
- * @proc_type:    a type derived from %BSE_TYPE_PROCEDURE
- * @first_value:  the first input argument if not to be collected
- * @marshal:      function marshalling the procedure call or %NULL
- * @marshal_data: data passed in to @marshal
- * @skip_ovalues: whether return value locations should be collected and filled in
- * @var_args:     #va_list to collect input args from
- * @RETURNS:      #BseErrorType value of error if any occoured
+ * @param proc_type	a type derived from BSE_TYPE_PROCEDURE
+ * @param first_value	the first input argument if not to be collected
+ * @param marshal	function marshalling the procedure call or NULL
+ * @param marshal_data	data passed in to @a marshal
+ * @param skip_ovalues	whether return value locations should be collected and filled in
+ * @param var_args	va_list to collect input args from
+ * @return		BseErrorType value of error if any occoured
  *
- * Collect input arguments for a procedure call from a #va_list and
- * call the procedure, optionally via @marshal. If @skip_ovalues is
- * %FALSE, the procedure return values will be stored in return
- * value locations also collected from @var_args.
+ * Collect input arguments for a procedure call from a va_list and
+ * call the procedure, optionally via @a marshal. If @a skip_ovalues is
+ * FALSE, the procedure return values will be stored in return
+ * value locations also collected from @a var_args.
  */
 BseErrorType
 bse_procedure_marshal_valist (GType               proc_type,
@@ -505,18 +504,17 @@ bse_procedure_marshal_valist (GType               proc_type,
 }
 
 /**
- * bse_procedure_collect_input_args
- * @proc:        valid #BseProcedureClass
- * @first_value: the first input argument if not to be collected
- * @var_args:    #va_list to collect input args from
- * @ivalues:     uninitialized GValue array with at least proc->n_in_pspecs members
- * @RETURNS:     #BseErrorType value of error if any occoured during collection
+ * @param proc	        valid BseProcedureClass
+ * @param first_value	the first input argument if not to be collected
+ * @param var_args	va_list to collect input args from
+ * @param ivalues	uninitialized GValue array with at least proc->n_in_pspecs members
+ * @return		BseErrorType value of error if any occoured during collection
  *
- * Collect input arguments for a procedure call from a #va_list. The first
- * value may be supplied as @first_value and will then not be collected.
- * @ivalues must be at least @proc->n_in_pspecs elements long and all elements
+ * Collect input arguments for a procedure call from a va_list. The first
+ * value may be supplied as @a first_value and will then not be collected.
+ * @a ivalues must be at least @a proc->n_in_pspecs elements long and all elements
  * will be initialized after the function returns (even in error cases).
- * @first_value may be the same adress as @ivalues, in whic hcase the first
+ * @a first_value may be the same adress as @a ivalues, in whic hcase the first
  * argument is entirely ignored and collection simply starts out with the
  * second argument.
  */

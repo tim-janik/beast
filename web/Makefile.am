@@ -61,6 +61,7 @@ HTML_TARGETS = $(strip			\
 	html/log-sfi.html		\
 )
 RDOCU_TARGETS = $(strip			\
+	html/rdocu-bse/index.html	\
 	html/rdocu-gxk/index.html	\
 )
 unportet_targets = $(strip	\
@@ -77,7 +78,7 @@ all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} style-files gallery-targ
 
 target-dirs:	# rule to create directories
 	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	mkdir -p html/rdocu-gxk/
+	mkdir -p html/rdocu-gxk/ html/rdocu-bse/
 
 php/%.php: %.php
 	cp -v $< $@
@@ -134,8 +135,8 @@ clean:
 	-rmdir -p html/style/
 	rm -f html/screenshots/* html/logogallery/* html/web-images/* html/images/*
 	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	rm -f html/rdocu-gxk/*
-	-rmdir -p html/rdocu-gxk/
+	rm -f html/rdocu-gxk/* html/rdocu-bse/*
+	-rmdir -p html/rdocu-gxk/ html/rdocu-bse/
 	rm -f html/* html/.htaccess
 	-rmdir -p html/
 	rm -f php/*
@@ -208,6 +209,10 @@ intermediate_files = $(strip	\
 
 gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxk*.[hc] $(top_srcdir)/beast-gtk/bstutils.[hc]
 gxk_rdocu_exclude = gxkgentypes.h gxkmarshal.[hc]
+bse_rdocu_globs = $(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/bse*.[hc][hc]
+bse_rdocu_exclude = *.gen-proc.c *.genidl.hh bsegentypes.h
+
+docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
 
 gxk_rdocu_files = $(filter-out $(foreach f, $(gxk_rdocu_exclude), $(wildcard $(top_srcdir)/beast-gtk/gxk/$(f))), $(wildcard $(gxk_rdocu_globs)))
 html/rdocu-gxk/index.html: $(gxk_rdocu_files) rdocu-template.doxi
@@ -216,3 +221,11 @@ html/rdocu-gxk/index.html: $(gxk_rdocu_files) rdocu-template.doxi
 	      -D TOP_WEBDIR ".."			\
 	         $(filter %.h %.hh, $(gxk_rdocu_files)) \
 	      -A $(filter %.c %.cc, $(gxk_rdocu_files))
+bse_rdocu_files = $(filter-out $(foreach f, $(bse_rdocu_exclude), $(wildcard $(top_srcdir)/bse/$(f))), $(wildcard $(bse_rdocu_globs)))
+bse_rdocu_dscrs = $(call docu_filter, $(bse_rdocu_files))
+html/rdocu-bse/index.html: $(bse_rdocu_files) rdocu-template.doxi
+	doxer src2html -o html/rdocu-bse/ $(DOXIDEFS)	--debug \
+	      -T rdocu-template.doxi -D MODULE BSE	\
+	      -D TOP_WEBDIR ".."			\
+	         $(filter %.h %.hh, $(bse_rdocu_files)) \
+	      -A $(filter %.c %.cc, $(bse_rdocu_dscrs))
