@@ -27,6 +27,8 @@
 
 namespace Sfidl {
 
+const std::string string_from_int (long long int lli);
+
 /* we implement a get() function since operator[] is not const */
 template<typename Key, typename Value>
 class Map : public std::map<Key,Value> {

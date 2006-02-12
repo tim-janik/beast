@@ -1,3 +1,9 @@
+Sun Feb 12 03:31:04 2006  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: pass file/line information to pspec constructors.
+
+	* sfidl-parser.[hc]*: added string_from_int function.
+
 Tue Jan 17 23:38:02 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfitypes.h: Introduce int64 and uint64 types - within the scope of

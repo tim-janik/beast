@@ -28,6 +28,16 @@
 #include <set>
 #include <stack>
 
+const std::string
+Sfidl::string_from_int (long long int lli)
+{
+  gchar *cstr = g_strdup_printf ("%lld", lli);
+  std::string str = cstr;
+  g_free (cstr);
+  return str;
+}
+
+
 namespace {
 using namespace Sfidl;
 using namespace std;

@@ -87,24 +87,25 @@ glue_untyped_pspec_constructor (const Parser &parser,
                                 const Param  &param)
 {
   const string group = (param.group != "") ? param.group.escaped() : "NULL";
+  const string file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
   switch (parser.typeOf (param.type))
     {
     case OBJECT:
       {
         string pspec = "sfidl_pspec_Object";
         if (param.args == "")
-          pspec += "_default (" + group + ",\"" + param.name + "\")";
+          pspec += "_default (" + group + file_line_args + ",\"" + param.name + "\")";
         else
-          pspec += " (" + group + ",\"" + param.name + "\"," + param.args + ")";
+          pspec += " (" + group + file_line_args + ",\"" + param.name + "\"," + param.args + ")";
         return pspec;
       }
     default:
       {
         string pspec = "sfidl_pspec_" + param.pspec;
         if (param.args == "")
-          pspec += "_default (" + group + ",\"" + param.name + "\")";
+          pspec += "_default (" + group + file_line_args + ",\"" + param.name + "\")";
         else
-          pspec += " (" + group + ",\"" + param.name + "\"," + param.args + ")";
+          pspec += " (" + group + file_line_args + ",\"" + param.name + "\"," + param.args + ")";
         return pspec;
       }
     }
@@ -165,6 +166,7 @@ public:
   untyped_pspec_constructor (const Param &param)
   {
     const string group = (param.group != "") ? param.group.escaped() : "NULL";
+    const string file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
     switch (parser.typeOf (param.type))
       {
       case CHOICE:
@@ -172,7 +174,7 @@ public:
           string pspec = "sfidl_pspec_Choice";
           if (param.args == "")
             pspec += "_default";
-          pspec += " (" + group + ", \"" + param.name + "\", ";
+          pspec += " (" + group + file_line_args + ", \"" + param.name + "\", ";
           if (param.args != "")
             pspec += param.args + ", ";
           pspec += param.type + "_choice_values()";
@@ -183,9 +185,9 @@ public:
         {
           string pspec = "sfidl_pspec_Rec";
           if (param.args == "")
-            pspec += "_default (" + group + ", \"" + param.name + "\", ";
+            pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
-            pspec += " (" + group + ", \"" + param.name + "\", " + param.args;
+            pspec += " (" + group + file_line_args + ", \"" + param.name + "\", " + param.args;
           pspec += ")";
           return pspec;
         }
@@ -193,9 +195,9 @@ public:
         {
           string pspec = "sfidl_pspec_Record";
           if (param.args == "")
-            pspec += "_default (" + group + ", \"" + param.name + "\", ";
+            pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
-            pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+            pspec += " (" + group + file_line_args + ", \"" + param.name + "\", " + param.args + ", ";
           pspec += param.type + "::get_fields()";
           pspec += ")";
           return pspec;
@@ -204,9 +206,9 @@ public:
         {
           string pspec = "sfidl_pspec_Sequence";
           if (param.args == "")
-            pspec += "_default (" + group + ", \"" + param.name + "\", ";
+            pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
-            pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+            pspec += " (" + group + file_line_args + ", \"" + param.name + "\", " + param.args + ", ";
           pspec += param.type + "::get_element()";
           pspec += ")";
           return pspec;
@@ -311,6 +313,7 @@ public:
   typed_pspec_constructor (const Param &param)
   {
     const string group = (param.group != "") ? param.group.escaped() : "NULL";
+    const string file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
     switch (parser.typeOf (param.type))
       {
       case CHOICE:
@@ -318,7 +321,7 @@ public:
           string pspec = "sfidl_pspec_GEnum";
           if (param.args == "")
             pspec += "_default";
-          pspec += " (" + group + ", \"" + param.name + "\", ";
+          pspec += " (" + group + file_line_args + ", \"" + param.name + "\", ";
           if (param.args != "")
             pspec += param.args + ", ";
           pspec += make_TYPE_NAME (param.type);
@@ -329,9 +332,9 @@ public:
         {
           string pspec = "sfidl_pspec_BoxedRec";
           if (param.args == "")
-            pspec += "_default (" + group + ", \"" + param.name + "\", ";
+            pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
-            pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+            pspec += " (" + group + file_line_args + ", \"" + param.name + "\", " + param.args + ", ";
           pspec += make_TYPE_NAME (param.type);
           pspec += ")";
           return pspec;
@@ -340,9 +343,9 @@ public:
         {
           string pspec = "sfidl_pspec_BoxedSeq";
           if (param.args == "")
-            pspec += "_default (" + group + ", \"" + param.name + "\", ";
+            pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
-            pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+            pspec += " (" + group + file_line_args + ", \"" + param.name + "\", " + param.args + ", ";
           pspec += make_TYPE_NAME (param.type);
           pspec += ")";
           return pspec;
@@ -352,7 +355,7 @@ public:
           string pspec = "sfidl_pspec_TypedObject";
           if (param.args == "")
             pspec += "_default";
-          pspec += " (" + group + ", \"" + param.name + "\", ";
+          pspec += " (" + group + file_line_args + ", \"" + param.name + "\", ";
           if (param.args != "")
             pspec += param.args + ", ";
           pspec += make_TYPE_NAME (param.type);
