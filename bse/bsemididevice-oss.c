@@ -293,7 +293,8 @@ BSE_BUILTIN_TYPE (BseMidiDeviceOSS)
   midi_device_oss_type = bse_type_register_static (BSE_TYPE_MIDI_DEVICE,
 						   "BseMidiDeviceOSS",
 						   "MIDI device implementation for OSS Lite /dev/midi*",
-						   &midi_device_oss_info);
+                                                   __FILE__, __LINE__,
+                                                   &midi_device_oss_info);
   return midi_device_oss_type;
 }
 

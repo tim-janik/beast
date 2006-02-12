@@ -41,6 +41,9 @@ typedef struct {
   const char       *authors;
   const char       *license;
   const char       *i18n_category;
+  /* definition location */
+  const char       *file;
+  guint             line;
 } BseExportStrings;
 typedef void (*BseExportStringsFunc) (BseExportStrings *strings);
 struct _BseExportNode {

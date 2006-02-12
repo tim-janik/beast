@@ -93,5 +93,6 @@ BSE_BUILTIN_TYPE (BseMidiDevice)
   return bse_type_register_abstract (BSE_TYPE_DEVICE,
                                      "BseMidiDevice",
                                      "MIDI device base type",
+                                     __FILE__, __LINE__,
                                      &midi_device_info);
 }

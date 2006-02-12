@@ -220,5 +220,6 @@ BSE_BUILTIN_TYPE (BseSuper)
   return bse_type_register_abstract (BSE_TYPE_CONTAINER,
                                      "BseSuper",
                                      "Base type for item managers",
+                                     __FILE__, __LINE__,
                                      &super_info);
 }

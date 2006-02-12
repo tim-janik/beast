@@ -55,7 +55,8 @@ BSE_BUILTIN_TYPE (BsePcmWriter)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BsePcmWriter",
 				   "PCM writer",
-				   &pcm_writer_info);
+                                   __FILE__, __LINE__,
+                                   &pcm_writer_info);
 }
 
 static void

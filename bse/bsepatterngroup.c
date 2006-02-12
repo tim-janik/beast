@@ -82,7 +82,8 @@ BSE_BUILTIN_TYPE (BsePatternGroup)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BsePatternGroup",
 				   "BSE patternary group container",
-				   &pattern_group_info);
+                                   __FILE__, __LINE__,
+                                   &pattern_group_info);
 }
 
 static void

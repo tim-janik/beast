@@ -75,7 +75,8 @@ BSE_BUILTIN_TYPE (BseWaveRepo)
   wave_repo_type = bse_type_register_static (BSE_TYPE_SUPER,
 					     "BseWaveRepo",
 					     "BSE Wave Repository",
-					     &snet_info);
+                                             __FILE__, __LINE__,
+                                             &snet_info);
   return wave_repo_type;
 }
 

@@ -874,5 +874,6 @@ BSE_BUILTIN_TYPE (BseObject)
   return bse_type_register_abstract (G_TYPE_OBJECT,
                                      "BseObject",
                                      "BSE Object Hierarchy base type",
+                                     __FILE__, __LINE__,
                                      &object_info);
 }

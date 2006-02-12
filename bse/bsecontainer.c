@@ -100,6 +100,7 @@ BSE_BUILTIN_TYPE (BseContainer)
   return bse_type_register_abstract (BSE_TYPE_SOURCE,
                                      "BseContainer",
                                      "Base type to manage BSE items",
+                                     __FILE__, __LINE__,
                                      &container_info);
 }
 

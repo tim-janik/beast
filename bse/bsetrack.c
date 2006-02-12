@@ -98,7 +98,8 @@ BSE_BUILTIN_TYPE (BseTrack)
   return bse_type_register_static (BSE_TYPE_CONTEXT_MERGER,
 				   "BseTrack",
 				   "BSE track type",
-				   &track_info);
+                                   __FILE__, __LINE__,
+                                   &track_info);
 }
 
 static gulong

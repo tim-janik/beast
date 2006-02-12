@@ -676,7 +676,8 @@ BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
   pcm_device_oss_type = bse_type_register_static (BSE_TYPE_PCM_DEVICE,
 						  "BsePcmDeviceOSS",
 						  "PCM device implementation for OSS Lite /dev/dsp",
-						  &pcm_device_oss_info);
+                                                  __FILE__, __LINE__,
+                                                  &pcm_device_oss_info);
   return pcm_device_oss_type;
 }
 

@@ -83,6 +83,8 @@ bse_script_proc_register (const gchar *script_file,
 			  const gchar *options,
 			  const gchar *category,
 			  const gchar *blurb,
+                          const gchar *file,
+                          guint        line,
 			  const gchar *authors,
 			  const gchar *license,
 			  SfiRing     *params)
@@ -129,7 +131,7 @@ bse_script_proc_register (const gchar *script_file,
       if (options && options[0])
         bse_type_add_options (type, options);
       if (blurb && blurb[0])
-        bse_type_add_blurb (type, _(blurb));
+        bse_type_add_blurb (type, _(blurb), file, line);
       if (authors && authors[0])
         bse_type_add_authors (type, authors);
       if (license && license[0])
@@ -196,8 +198,9 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
     {
       SfiSeq *seq = sfi_value_get_seq (value);
       GValue *retval;
+      const guint vargs_pos = 8;
 
-      if (!seq || seq->n_elements < 6 || !sfi_seq_check (seq, SFI_TYPE_STRING))
+      if (!seq || seq->n_elements < vargs_pos || !sfi_seq_check (seq, SFI_TYPE_STRING))
 	retval = sfi_value_string ("invalid arguments supplied");
       else
 	{
@@ -205,7 +208,7 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 	  GType type;
 	  guint i;
 	  
-	  for (i = 6; i < seq->n_elements; i++)
+	  for (i = vargs_pos; i < seq->n_elements; i++)
 	    params = sfi_ring_append (params, sfi_value_get_string (sfi_seq_get (seq, i)));
 	  type = bse_script_proc_register (janitor->script_name,
 					   sfi_value_get_string (sfi_seq_get (seq, 0)),
@@ -213,7 +216,9 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 					   sfi_value_get_string (sfi_seq_get (seq, 2)),
 					   sfi_value_get_string (sfi_seq_get (seq, 3)),
 					   sfi_value_get_string (sfi_seq_get (seq, 4)),
-					   sfi_value_get_string (sfi_seq_get (seq, 5)),
+					   g_ascii_strtoull (sfi_value_get_string (sfi_seq_get (seq, 5)), NULL, 10),
+					   sfi_value_get_string (sfi_seq_get (seq, 6)),
+					   sfi_value_get_string (sfi_seq_get (seq, 7)),
 					   params);
 	  sfi_ring_free (params);
 	  retval = sfi_value_bool (TRUE);	// success

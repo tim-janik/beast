@@ -281,6 +281,27 @@ bse_init_core (void)
     }
 }
 
+static gboolean single_thread_registration_done = FALSE;
+
+static void
+server_registration (SfiProxy            server,
+                     BseRegistrationType rtype,
+                     const gchar        *what,
+                     const gchar        *error,
+                     gpointer            data)
+{
+  // BseRegistrationType rtype = bse_registration_type_from_choice (rchoice);
+  if (rtype == BSE_REGISTER_DONE)
+    single_thread_registration_done = TRUE;
+  else
+    {
+      //gchar *base = strrchr (what, '/');
+      //g_message (data, "%s", base ? base + 1 : what);
+      if (error && error[0])
+        sfi_diag ("failed to register \"%s\": %s", what, error);
+    }
+}
+
 void
 bse_init_intern (gint    *argc,
 		 gchar ***argv,
@@ -312,9 +333,15 @@ bse_init_intern (gint    *argc,
   
   bse_init_core ();
 
-  /* initialize core plugins */
-  if (sfi_rec_get_bool (config, "load-core-plugins"))
+  gboolean load_plugins = sfi_rec_get_bool (config, "load-core-plugins");
+  gboolean load_scripts = sfi_rec_get_bool (config, "load-core-scripts");
+
+  /* initialize core plugins & scripts */
+  if (load_plugins || load_scripts)
+      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
+  if (load_plugins)
     {
+      g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
       SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
       while (ring)
         {
@@ -325,8 +352,20 @@ bse_init_intern (gint    *argc,
           g_free (name);
         }
     }
+  if (load_scripts)
+    {
+      BseErrorType error = bse_item_exec (bse_server_get(), "register-scripts", NULL);
+      if (error)
+        sfi_diag ("during script registration: %s", bse_error_blurb (error));
+      while (!single_thread_registration_done)
+        {
+          g_main_context_iteration (bse_main_context, TRUE);
+          // sfi_glue_gc_run ();
+        }
+    }
   if (unref_me)
     sfi_rec_unref (unref_me);
+  // sfi_glue_gc_run ();
 }
 
 static void

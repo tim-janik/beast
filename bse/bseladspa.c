@@ -71,7 +71,8 @@ BSE_BUILTIN_TYPE (BseLadspaPlugin)
   type = bse_type_register_static (G_TYPE_OBJECT,
 				   "BseLadspaPlugin",
 				   "LADSPA Plugin Loader",
-				   &type_info);
+                                   __FILE__, __LINE__,
+                                   &type_info);
   g_type_add_interface_static (type, G_TYPE_TYPE_PLUGIN, &iface_info);
   
   return type;

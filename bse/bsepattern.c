@@ -85,7 +85,8 @@ BSE_BUILTIN_TYPE (BsePattern)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BsePattern",
 				   "BSE pattern type",
-				   &pattern_info);
+                                   __FILE__, __LINE__,
+                                   &pattern_info);
 }
 
 static void

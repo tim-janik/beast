@@ -513,5 +513,6 @@ BSE_BUILTIN_TYPE (BseDevice)
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseDevice",
                                      "Abstract device base type",
+                                     __FILE__, __LINE__,
                                      &device_info);
 }

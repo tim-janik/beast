@@ -91,7 +91,8 @@ BSE_BUILTIN_TYPE (BseMidiSynth)
   midi_synth_type = bse_type_register_static (BSE_TYPE_SNET,
 					      "BseMidiSynth",
 					      "BSE Midi Synthesizer",
-					      &snet_info);
+                                              __FILE__, __LINE__,
+                                              &snet_info);
   
   return midi_synth_type;
 }

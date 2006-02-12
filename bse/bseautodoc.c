@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,35 +136,26 @@ type_name (GParamSpec *pspec)
   return NULL;
 }
 
+static GSList *all_strings = NULL;
+
+static const gchar*
+qescape (const gchar *name)
+{
+  char *str = g_strescape (name, NULL);
+  char *s = g_strconcat ("\"", str, "\"", NULL);
+  g_free (str);
+  all_strings = g_slist_prepend (all_strings, s);
+  return s;
+}
+
 static void
 show_procdoc (void)
 {
   BseCategorySeq *cseq;
   guint i;
   
-  g_print ("\\input texinfo\n"
-	   "@c %%**start of header\n"
-	   "@settitle BSE-Procedures\n"
-	   "@footnotestyle end\n"
-	   "@c %%**end of header\n"
-	   "\n"
-	   "@include texiutils.texi\n"
-	   "\n"
-	   "@docpackage{BEAST-%s}\n"
-	   "@docfont{tech}\n"
-	   "\n"
-	   "@unnumbered NAME\n"
-	   "BSE-Procedures - BSE Procedures Reference\n"
-	   "\n"
-	   "@revision{Document Revised:}\n"
-	   "\n"
-	   "@unnumbered SYNOPSIS\n"
-	   "@printplainindex fn\n"
-	   "\n"
-	   "@unnumbered DESCRIPTION\n"
-	   "@ftable @asis\n",
-	   BST_VERSION);
-  
+  g_print ("functions = (\n");
+
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
@@ -175,91 +166,85 @@ show_procdoc (void)
       gchar *sname = g_type_name_to_sname (cseq->cats[i]->type);
       guint j;
       
-      g_print ("@item @anchor{%s}(@refFunctionNoLink{%s}@ ", sname, sname);
+      g_print ("{\n");
+      g_print ("  'name': '%s',\n", cname);
+      g_print ("  'aliases': [ ('%s', 'scheme'), ], # aliases\n", sname);
+      g_print ("  'args': [ # input arguments\n");
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
-	  gchar *sarg = g_type_name_to_sname (pspec->name);
-	  if (j)
-	    g_print ("@ ");
-	  g_print ("@refParameter{%s}", sarg);
-	  g_free (sarg);
-	}
-      g_print (") ");
-      
-      g_print ("@findex @refFunctionNoLink{%s} (", cname);
-      for (j = 0; j < class->n_in_pspecs; j++)
-	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
-	  if (j)
-	    g_print (", ");
-	  g_print ("@refParameter{%s}", pspec->name);
-	}
-      g_print (");");
-      
-#if 0
-      if (class->blurb)
-	g_print (" - @refBlurb{%s}", class->blurb);
-#endif
-      
-      g_print ("\n");
-      
-      g_print ("@itemx @anchor{%s}@refFunctionNoLink{%s} (", cname, cname);
-      for (j = 0; j < class->n_in_pspecs; j++)
-	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
-	  gchar *carg = g_type_name_to_cname (pspec->name);
-	  if (j)
-	    g_print (", ");
-	  g_print ("@refParameter{%s}", carg);
-	  g_free (carg);
-	}
-      g_print (");\n");
-      
-      if (class->n_in_pspecs + class->n_out_pspecs)
-	{
-	  g_print ("@multitable @columnfractions .3 .3 .3\n");
-	  for (j = 0; j < class->n_in_pspecs; j++)
-	    {
-	      GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
-	      gchar *tname = type_name (pspec);
-	      const gchar *blurb = g_param_spec_get_blurb (pspec);
-	      const gchar *nick = g_param_spec_get_nick (pspec);
-	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @refType{%s} @tab @refParameter{%s}; @tab %s\n",
-		       tname, carg, blurb ? blurb : nick ? nick : "");
-	      g_free (tname);
-	      g_free (carg);
-	    }
-	  if (class->n_out_pspecs)
-	    g_print ("@item @refReturns @tab @tab\n");
-	  for (j = 0; j < class->n_out_pspecs; j++)
-	    {
-	      GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[j]);
-	      gchar *tname = type_name (pspec);
-	      const gchar *blurb = g_param_spec_get_blurb (pspec);
-	      const gchar *nick = g_param_spec_get_blurb (pspec);
-              gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @refType{%s} @tab @refParameter{%s}; @tab %s\n",
-		       tname, carg, blurb ? blurb : nick ? nick : "");
-	      g_free (tname);
-              g_free (carg);
-	    }
-	  g_print ("@end multitable\n\n");
-	}
+          GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
+          gchar *tname = type_name (pspec);
+          gchar *carg = g_type_name_to_cname (pspec->name);
+          const gchar *blurb = g_param_spec_get_blurb (pspec);
+          if (blurb && strcmp (blurb, carg) == 0)
+            blurb = NULL;
+          const gchar *nick = g_param_spec_get_nick (pspec);
+          if (nick && strcmp (nick, carg) == 0)
+            nick = NULL;
+          g_print ("  ('%s',\n", carg);
+          g_print ("   '%s',\n", tname);
+          if (blurb || nick)
+            g_print ("   (%s, '', 0),\n", qescape (blurb ? blurb : nick));
+          g_print ("  ),\n");
+          g_free (tname);
+          g_free (carg);
+        }
+      g_print ("  ],\n");
+
+      if (class->n_out_pspecs == 1)
+        {
+          g_print ("  'return': \n");
+          GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[0]);
+          gchar *tname = type_name (pspec);
+          gchar *carg = g_type_name_to_cname (pspec->name);
+          const gchar *blurb = g_param_spec_get_blurb (pspec);
+          if (blurb && strcmp (blurb, carg) == 0)
+            blurb = NULL;
+          const gchar *nick = g_param_spec_get_blurb (pspec);
+          if (nick && strcmp (nick, carg) == 0)
+            nick = NULL;
+          g_print ("  ('%s', # name\n", carg);
+          g_print ("   '%s', # type\n", tname);
+          if (blurb || nick)
+            g_print ("   (%s, '', 0),\n", qescape (blurb ? blurb : nick));
+          g_print ("  ),\n");
+          g_free (tname);
+          g_free (carg);
+        }
+      else if (class->n_out_pspecs > 1)
+        {
+          g_print ("  'return': \n");
+          g_print ("  ('RETURNS',\n");
+          g_print ("   'MultiReturn',\n");
+          g_print ("  ),\n");
+        }
       
       if (blurb)
-	g_print ("%s\n", blurb);
+        g_print ("  'description': (%s, '', 0),\n", qescape (blurb));
+      
+      /* procedures/%s:0 is a lame substitute for the real file/line location */
+      if (bse_type_get_file (type))
+        {
+          /* advance file to ->lastdir/basename.ext */
+          const gchar *last = bse_type_get_file (type), *slash = strchr (last, '/');
+          while (slash)
+            {
+              const gchar *base = slash + 1;
+              slash = strchr (base, '/');
+              if (slash)
+                last = base;
+            }
+          g_print ("  'location': ('%s', %u),\n", last, bse_type_get_line (type));
+        }
       else
-	g_print ("@*\n");
+        g_print ("  'location': ('procedures/%s', 0),\n", cseq->cats[i]->type);
       
-      g_print ("\n");
-      
+      g_print ("},\n");
       g_type_class_unref (class);
       g_free (cname);
       g_free (sname);
     }
-  g_print ("@end ftable\n");
+  g_print ("); # end of functions\n");
   bse_category_seq_free (cseq);
 }
 
@@ -269,29 +254,8 @@ show_structdoc (void)
   GType *children;
   guint i;
   
-  g_print ("\\input texinfo\n"
-	   "@c %%**start of header\n"
-	   "@settitle BSE-Structures\n"
-	   "@footnotestyle end\n"
-	   "@c %%**end of header\n"
-	   "\n"
-	   "@include texiutils.texi\n"
-	   "\n"
-	   "@docpackage{BEAST-%s}\n"
-	   "@docfont{tech}\n"
-	   "\n"
-	   "@unnumbered NAME\n"
-	   "BSE-Structures - BSE Structure Reference\n"
-	   "\n"
-	   "@revision{Document Revised:}\n"
-	   "\n"
-	   "@unnumbered SYNOPSIS\n"
-	   "@printplainindex fn\n"
-	   "\n"
-	   "@unnumbered DESCRIPTION\n"
-	   "@ftable @asis\n",
-	   BST_VERSION);
-  
+  g_print ("structures = (\n");
+
   children = g_type_children (G_TYPE_BOXED, NULL);
   for (i = 0; children[i]; i++)
     {
@@ -308,69 +272,104 @@ show_structdoc (void)
 	  const gchar *cstring;
 	  SfiRing *ring, *pspecs = NULL;
 	  guint j;
-
-	  g_print ("@item @anchor{%s}@refStructType{%s} @refStructName{%s} @refStructOpen ", name, dname, name);
-
-	  g_print ("@findex @refStructType{%s}@ @refStructName{%s};", dname, name);
-#if 0
-	  cstring = bse_type_get_blurb (type);
-	  if (cstring)
-	    g_print (" - @refBlurb{%s}", cstring);
-#endif
+          
+          g_print ("{\n");
+          g_print ("  'name': '%s',\n", name);
+          g_print ("  'hint': '%s',\n", dname);
+          g_print ("  'aliases': [ ('%s', 'scheme'), ], # aliases\n", sname);
+          g_print ("  'fields': [\n");
 	  g_print ("\n");
 
           for (j = 0; j < rfields.n_fields; j++)
             pspecs = sfi_ring_append (pspecs, rfields.fields[j]);
           if (element)
 	    pspecs = sfi_ring_append (pspecs, element);
-
-	  g_print ("@multitable @columnfractions .3 .3 .3\n");
+          
 	  if (element)
 	    {
 	      GParamSpec *pspec = pspecs->data;
 	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @refType{guint} @tab @refParameter{n_%s}; @tab %s\n",
-		       carg,
-		       "C language specific number of elements\n");
+              g_print ("  ('n_%s',\n", carg);
+              g_print ("   '%s',\n", "guint");
+              g_print ("   (%s, '', 0),\n", qescape ("Number of elements (C specific)"));
+              g_print ("  ),\n");
 	      g_free (carg);
 	    }
 	  for (ring = pspecs; ring; ring = sfi_ring_walk (ring, pspecs))
 	    {
 	      GParamSpec *pspec = ring->data;
 	      gchar *tname = type_name (pspec);
-	      const gchar *blurb = g_param_spec_get_blurb (pspec);
-	      const gchar *nick = g_param_spec_get_nick (pspec);
 	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @refType{%s%s} @tab @refParameter{%s}; @tab %s\n",
-		       tname, element ? "*" : "",
-		       carg, blurb ? blurb : nick ? nick : "");
+	      gchar *sname = g_type_name_to_sname (pspec->name);
+	      const gchar *blurb = g_param_spec_get_blurb (pspec);
+              if (blurb && (strcmp (blurb, carg) == 0 || strcmp (blurb, sname) == 0))
+                blurb = NULL;
+	      const gchar *nick = g_param_spec_get_nick (pspec);
+              if (nick && (strcmp (nick, carg) == 0 || strcmp (nick, sname) == 0))
+                nick = NULL;
+              g_print ("  ('%s',\n", carg);
+              g_print ("   '%s%s',\n", tname, element ? "*" : "");
+              if (blurb || nick)
+                g_print ("   (%s, '', 0),\n", qescape (blurb ? blurb : nick));
+              g_print ("  ),\n");
 	      g_free (tname);
+	      g_free (sname);
 	      g_free (carg);
 	    }
-	  g_print ("@end multitable\n");
-	  g_print ("@refStructClose\n");
+          g_print ("  ],\n");
 
+          GString *full_description = g_string_new ("");
 	  cstring = bse_type_get_blurb (type);
-	  if (cstring)
-	    g_print ("\n%s\n", cstring);
-	  g_print ("\n");
-
+          if (cstring)
+            g_string_append (full_description, cstring);
           cstring = bse_type_get_authors (type);
           if (cstring)
-            g_print ("\n%s %s\n", _("Authors:"), cstring);
-          g_print ("\n");
-
+            {
+              if (full_description->str[0])
+                g_string_append (full_description, "\n\n");
+              g_string_append (full_description, _("Authors:"));
+              g_string_append (full_description, " ");
+              g_string_append (full_description, cstring);
+            }
           cstring = bse_type_get_license (type);
           if (cstring)
-            g_print ("\n%s %s\n", _("License:"), cstring);
-          g_print ("\n");
-
+            {
+              if (full_description->str[0])
+                g_string_append (full_description, "\n\n");
+              g_string_append (full_description, _("License:"));
+              g_string_append (full_description, " ");
+              g_string_append (full_description, cstring);
+            }
+          
+          if (full_description->str[0])
+            g_print ("  'description': (%s, '', 0),\n", qescape (full_description->str));
+          
+          /* structures/%s:0 is a lame substitute for the real file/line location */
+          if (bse_type_get_file (type))
+            {
+              /* advance file to ->lastdir/basename.ext */
+              const gchar *last = bse_type_get_file (type), *slash = strchr (last, '/');
+              while (slash)
+                {
+                  const gchar *base = slash + 1;
+                  slash = strchr (base, '/');
+                  if (slash)
+                    last = base;
+                }
+              g_print ("  'location': ('%s', %u),\n", last, bse_type_get_line (type));
+            }
+          else
+            g_print ("  'location': ('structures/%s', 0),\n", g_type_name (type));
+          
+          g_print ("},\n");
+          g_string_free (full_description, TRUE);
+          
 	  g_free (cname);
 	  g_free (sname);
 	  sfi_ring_free (pspecs);
 	}
     }
-  g_print("@end ftable\n");
+  g_print ("); # end of structures\n");
   g_free (children);
 }
 
@@ -568,41 +567,6 @@ showdoc_alltypes (void)
   showdoc_descendants (BSE_TYPE_OBJECT);
 }
 
-#if 0
-static void
-showdoc_plugins (void)
-{
-  g_print ("\\input texinfo\n"
-	   "@c %%**start of header\n"
-	   "@settitle %s\n"
-	   "@footnotestyle end\n"
-	   "@c %%**end of header\n"
-	   "\n"
-	   "@include texiutils.texi\n"
-	   "\n"
-	   "@docpackage{BEAST-%s}\n"
-	   "@docfont{tech}\n"
-	   "\n"
-	   "@majorheading %s - %s\n"
-	   "\n"
-	   "@revision{Document Revised:}\n"
-	   "\n"
-           "@contents\n"
-	   "\n",
-           _("BSE-Objects"),
-	   BST_VERSION,
-           _("BSE-Objects"), _(" Object Reference"));
-  BseCategorySeq *cseq = bse_categories_match_typed ("*", BSE_TYPE_SOURCE);
-  guint i;
-  for (i = 0; i < cseq->n_cats; i++)
-    {
-      BseCategory *cat = cseq->cats[i];
-      GType type = g_type_from_name (cat->type);
-      showdoc_print_type (type, TRUE);
-    }
-}
-#endif
-
 static gint
 help (const gchar *name,
       const gchar *arg)
@@ -611,6 +575,7 @@ help (const gchar *name,
     fprintf (stderr, "%s: unknown argument: %s\n", name, arg);
   fprintf (stderr, "usage: %s [-h] [-p] {procs|structs|objects}\n", name);
   fprintf (stderr, "  -p                  include plugins\n");
+  fprintf (stderr, "  -s                  include scripts\n");
   fprintf (stderr, "  -h                  show help\n");
   fprintf (stderr, "  --seealso <link>    add a SEE ALSO section link\n");
   
@@ -638,6 +603,10 @@ main (gint   argc,
       if (strcmp ("-p", argv[i]) == 0)
 	{
           sfi_rec_set_bool (config, "load-core-plugins", TRUE);
+	}
+      else if (strcmp ("-s", argv[i]) == 0)
+	{
+          sfi_rec_set_bool (config, "load-core-scripts", TRUE);
 	}
       else if (strcmp ("procs", argv[i]) == 0)
 	{
@@ -682,21 +651,6 @@ main (gint   argc,
     showdoc_alltypes ();
   else
     return help (argv[0], NULL);
-
-  if (seealso)
-    {
-      GSList *slist;
-      g_print ("\n@unnumbered SEE ALSO\n");
-      for (slist = seealso; slist; slist = slist->next)
-	g_print ("@uref{%s}%s",
-		 (char*) slist->data,
-		 slist == seealso ? "" : ", ");
-    }
-
-  g_print ("\n"
-           "@*\n"
-	   "@revision{Document Revised:}\n"
-	   "@bye\n");
 
   return 0;
 }

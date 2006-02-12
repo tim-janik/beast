@@ -57,7 +57,7 @@ BSE_BUILTIN_TYPE (BseCSynth)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_csynth_init,
   };
-  return bse_type_register_static (BSE_TYPE_SNET, "BseCSynth", "BSE Synthesis (Filter) Network", &type_info);
+  return bse_type_register_static (BSE_TYPE_SNET, "BseCSynth", "BSE Synthesis (Filter) Network", __FILE__, __LINE__, &type_info);
 }
 
 static void

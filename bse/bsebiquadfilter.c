@@ -102,7 +102,8 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
 				   "Various types of filters are supported with "
 				   "modulatable center (Cut-Off) frequency and "
 				   "gain input signals.",
-				   &type_info);
+                                   __FILE__, __LINE__,
+                                   &type_info);
   bse_categories_register_stock_module (N_("/Filters/Biquad Types"), type, biquad_pixstream);
   return type;
 }

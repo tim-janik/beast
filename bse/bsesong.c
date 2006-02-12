@@ -79,7 +79,8 @@ BSE_BUILTIN_TYPE (BseSong)
   return bse_type_register_static (BSE_TYPE_SNET,
 				   "BseSong",
 				   "BSE Song type",
-				   &song_info);
+                                   __FILE__, __LINE__,
+                                   &song_info);
 }
 
 void

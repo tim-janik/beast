@@ -88,7 +88,8 @@ BSE_BUILTIN_TYPE (BseJanitor)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseJanitor",
 				   "BSE connection interface object",
-				   &janitor_info);
+                                   __FILE__, __LINE__,
+                                   &janitor_info);
 }
 
 static void

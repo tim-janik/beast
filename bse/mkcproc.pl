@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+use Cwd 'abs_path';
+
 my $gen_preprocess = 0;
 my $gen_externs = 0;
 my $gen_funcs = 0;
@@ -99,6 +101,36 @@ sub get_variable {
     }
     return "$val";
 }
+sub get_variable_file {
+    my $var = shift;
+    my $fallback = shift;
+    my $val;
+    my $vfile;
+    my $vline;
+    if (defined $proc_defs{$var}) {
+	( $val, $vfile, $vline ) = @{$proc_defs{$var}};
+    } elsif (defined $var_defs{$var}) {
+	( $val, $vfile, $vline ) = @{$var_defs{$var}};
+    } else {
+	$vfile = $fallback;
+    }
+    return "$vfile";
+}
+sub get_variable_line {
+    my $var = shift;
+    my $fallback = shift;
+    my $val;
+    my $vfile;
+    my $vline;
+    if (defined $proc_defs{$var}) {
+	( $val, $vfile, $vline ) = @{$proc_defs{$var}};
+    } elsif (defined $var_defs{$var}) {
+	( $val, $vfile, $vline ) = @{$var_defs{$var}};
+    } else {
+	$vline = $fallback;
+    }
+    return "$vline";
+}
 
 my $proc_name;
 my $proc_method;
@@ -113,6 +145,7 @@ while (<>) {
     my $type = 0;
     my $line = $.;
     $file = $ARGV;
+    $afile = abs_path ($file);
     
     if (eof) {
 	close (ARGV);          # reset line numbering
@@ -200,6 +233,8 @@ while (<>) {
 	$externs .= "__enode_". ncanon ($proc_name) ."__fill_strings (BseExportStrings *es)\n";
         $externs .= "{\n";
 	$externs .= "  es->blurb = ". get_variable ("HELP", "NULL") .";\n";
+	$externs .= "  es->file = \"". get_variable_file ("HELP", "") ."\";\n";
+	$externs .= "  es->line = ". get_variable_line ("HELP", "0") .";\n";
 	$externs .= "  es->authors = ". get_variable ("AUTHORS", "NULL") .";\n";
 	$externs .= "  es->license = ". get_variable ("LICENSE", "NULL") .";\n";
         $externs .= "}\n";
@@ -240,9 +275,9 @@ while (<>) {
 	$value =~ s/^.*$var[^=]*=\s*//;
 	$value =~ s/;\s*$//;
 	if (defined $proc_name) {
-	    $proc_defs{$var} = [ $value, $file, $line ];
+	    $proc_defs{$var} = [ $value, $afile, $line ];
 	} else {
-	    $var_defs{$var} = [ $value, $file, $line ];
+	    $var_defs{$var} = [ $value, $afile, $line ];
 	}
 
 	$match_contents = 1; $line_jump = 1; next;

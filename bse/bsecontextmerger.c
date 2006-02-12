@@ -58,7 +58,8 @@ BSE_BUILTIN_TYPE (BseContextMerger)
   return bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseContextMerger",
 				   "Internal CONTEXT Voice glue object (merger)",
-				   &type_info);
+                                   __FILE__, __LINE__,
+                                   &type_info);
 }
 
 static void

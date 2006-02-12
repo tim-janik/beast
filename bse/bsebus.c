@@ -928,6 +928,7 @@ BSE_BUILTIN_TYPE (BseBus)
                                          "BseBus",
                                          _("Bus implementation for songs, used to route track audio signals "
                                            "to the master output."),
+                                         __FILE__, __LINE__,
                                          &bus_info);
   return type;
 }

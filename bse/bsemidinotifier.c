@@ -52,7 +52,8 @@ BSE_BUILTIN_TYPE (BseMidiNotifier)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseMidiNotifier",
 				   "MIDI Event Notifier",
-				   &midi_notifier_info);
+                                   __FILE__, __LINE__,
+                                   &midi_notifier_info);
 }
 
 static void

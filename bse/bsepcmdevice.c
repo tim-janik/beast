@@ -230,5 +230,6 @@ BSE_BUILTIN_TYPE (BsePcmDevice)
   return bse_type_register_abstract (BSE_TYPE_DEVICE,
                                      "BsePcmDevice",
                                      "PCM device base type",
+                                     __FILE__, __LINE__,
                                      &pcm_device_info);
 }

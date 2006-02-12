@@ -66,7 +66,8 @@ BSE_BUILTIN_TYPE (BseEditableSample)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseEditableSample",
 				   "Editable sample type",
-				   &editable_sample_info);
+                                   __FILE__, __LINE__,
+                                   &editable_sample_info);
 }
 
 static void

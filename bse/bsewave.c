@@ -847,5 +847,6 @@ BSE_BUILTIN_TYPE (BseWave)
   return bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseWave",
 				   "BSE wave type",
-				   &wave_info);
+                                   __FILE__, __LINE__,
+                                   &wave_info);
 }

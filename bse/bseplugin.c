@@ -450,7 +450,7 @@ bse_plugin_init_types (BsePlugin *plugin)
               BseExportStrings export_strings = { 0, };
               node->fill_strings (&export_strings);
               if (export_strings.blurb && export_strings.blurb[0])
-                bse_type_add_blurb (type, export_strings.blurb);
+                bse_type_add_blurb (type, export_strings.blurb, export_strings.file, export_strings.line);
               if (export_strings.authors && export_strings.authors[0])
                 bse_type_add_authors (type, export_strings.authors);
               if (export_strings.license && export_strings.license[0])

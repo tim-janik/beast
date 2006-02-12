@@ -113,6 +113,7 @@ BSE_BUILTIN_TYPE (BseMidiDeviceNULL)
   type = bse_type_register_static (BSE_TYPE_MIDI_DEVICE,
 				   "BseMidiDeviceNULL",
 				   "MIDI device implementation that does nothing",
-				   &type_info);
+                                   __FILE__, __LINE__,
+                                   &type_info);
   return type;
 }

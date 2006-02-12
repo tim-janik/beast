@@ -68,7 +68,8 @@ BSE_BUILTIN_TYPE (BseLadspaModule)
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseLadspaModule",
 				   "LADSPA Module base type",
-				   &type_info);
+                                   __FILE__, __LINE__,
+                                   &type_info);
   return type;
 }
 

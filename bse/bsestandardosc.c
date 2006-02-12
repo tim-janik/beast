@@ -106,7 +106,8 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
 				   "BseStandardOsc",
 				   _("StandardOsc is the BSE basis oscillator which supports various types "
                                      "of wave forms and modulation inputs."),
-				   &type_info);
+                                   __FILE__, __LINE__,
+                                   &type_info);
   bse_categories_register_stock_module (N_("/Audio Sources/Standard Oscillator"), type, osc_pixstream);
   return type;
 }

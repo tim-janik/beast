@@ -95,7 +95,8 @@ BSE_BUILTIN_TYPE (BsePart)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BsePart",
 				   "BSE part type",
-				   &info);
+                                   __FILE__, __LINE__,
+                                   &info);
 }
 
 static void

@@ -91,6 +91,7 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
                                    "The plaback frequency can be specified through a frequency input, and be "
                                    "modulated by another control signal with linear or exponential frequency "
                                    "response.",
+                                   __FILE__, __LINE__,
                                    &type_info);
   bse_categories_register_stock_module(N_("/Audio Sources/Wave Oscillator"), type, waveosc_pixstream);
   return type;

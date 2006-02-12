@@ -86,6 +86,7 @@ BSE_BUILTIN_TYPE (BseItem)
   return bse_type_register_abstract (BSE_TYPE_OBJECT,
                                      "BseItem",
                                      "Base type for objects managed by a container",
+                                     __FILE__, __LINE__,
                                      &item_info);
 }
 

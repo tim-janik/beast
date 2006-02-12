@@ -203,11 +203,17 @@ struct ClassInfo
 {
   const char *category;
   const char *blurb;
+  const char *file;
+  int         line;
   ClassInfo (const char *category,
-             const char *blurb)
+             const char *blurb,
+             const char *file,
+             int         line)
   {
     this->category = category;
     this->blurb = blurb;
+    this->file = file;
+    this->line = line;
   }
 };
 

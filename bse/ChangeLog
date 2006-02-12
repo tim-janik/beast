@@ -1,3 +1,24 @@
+Sun Feb 12 03:01:09 2006  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: write out procedure and structure docu as python
+	parsable hash table/tuples. this allowes doxer to generate ordinary
+	API documentation from it.
+
+	* bsemain.c: allow script registratrion for bse_init_intern().
+
+	* *.c: added __FILE__ and __LINE__ when registering type blurbs.
+
+	* bseplugin.c:
+	* bseexports.h:
+	* bsecxxutils.[hc]*:
+	* bsescripthelper.[hc]:
+	store and pass on file/line information for type blurbs.
+
+	* bsetype.[hc]: store file and line information together with type blurbs.
+	adaped IDL compiler pspec constructors.
+
+	* mkcproc.pl: generate type blurb with file/line information.
+
 Sat Jan 21 18:50:44 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsldatacache.[hc]: Change caching code to handle 64 bit offsets.

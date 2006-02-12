@@ -82,6 +82,7 @@ BSE_BUILTIN_TYPE (BseMidiController)
                                          "BseMidiController",
                                          "MIDI controller input module. With this module, "
                                          "MIDI control signals can be used in synthesis networks.",
+                                         __FILE__, __LINE__,
                                          &midi_controller_info);
   bse_categories_register_stock_module (N_("/Input & Output/MIDI Control Input"), type, midi_ctrl_input_pixstream);
   return type;

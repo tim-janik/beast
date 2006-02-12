@@ -25,6 +25,8 @@
 /* --- variables --- */
 static GQuark	quark_options = 0;
 static GQuark	quark_blurb = 0;
+static GQuark	quark_loc_file = 0;
+static GQuark	quark_loc_line = 0;
 static GQuark	quark_authors = 0;
 static GQuark	quark_license = 0;
 static GQuark	quark_boxed_export_node = 0;
@@ -52,12 +54,28 @@ bse_type_get_blurb (GType   type)
   return g_type_get_qdata (type, quark_blurb);
 }
 
+const gchar*
+bse_type_get_file (GType   type)
+{
+  return g_type_get_qdata (type, quark_loc_file);
+}
+
+guint
+bse_type_get_line (GType   type)
+{
+  return (guint) g_type_get_qdata (type, quark_loc_line);
+}
+
 void
 bse_type_add_blurb (GType        type,
-		    const gchar *blurb)
+		    const gchar *blurb,
+                    const gchar *file,
+                    guint        line)
 {
   g_return_if_fail (bse_type_get_blurb (type) == NULL);
   g_type_set_qdata (type, quark_blurb, g_strdup (blurb));
+  g_type_set_qdata (type, quark_loc_file, g_strdup (file));
+  g_type_set_qdata (type, quark_loc_line, (gpointer) line);
 }
 
 const gchar*
@@ -92,7 +110,9 @@ GType
 bse_type_register_static (GType            parent_type,
 			  const gchar     *type_name,
 			  const gchar     *type_blurb,
-			  const GTypeInfo *info)
+                          const gchar     *file,
+                          guint            line,
+                          const GTypeInfo *info)
 {
   GType type;
   
@@ -110,7 +130,7 @@ bse_type_register_static (GType            parent_type,
   
   type = g_type_register_static (parent_type, type_name, info, 0);
   
-  bse_type_add_blurb (type, type_blurb);
+  bse_type_add_blurb (type, type_blurb, file, line);
   
   return type;
 }
@@ -119,6 +139,8 @@ GType
 bse_type_register_abstract (GType            parent_type,
                             const gchar     *type_name,
                             const gchar     *type_blurb,
+                            const gchar     *file,
+                            guint            line,
                             const GTypeInfo *info)
 {
   GType type;
@@ -137,7 +159,7 @@ bse_type_register_abstract (GType            parent_type,
   
   type = g_type_register_static (parent_type, type_name, info, G_TYPE_FLAG_ABSTRACT);
   
-  bse_type_add_blurb (type, type_blurb);
+  bse_type_add_blurb (type, type_blurb, file, line);
   
   return type;
 }
@@ -413,6 +435,8 @@ bse_type_init (void)
    */
   quark_options = g_quark_from_static_string ("BseType-options");
   quark_blurb = g_quark_from_static_string ("BseType-blurb");
+  quark_loc_file = g_quark_from_static_string ("BseType-file");
+  quark_loc_line = g_quark_from_static_string ("BseType-line");
   quark_authors = g_quark_from_static_string ("BseType-authors");
   quark_license = g_quark_from_static_string ("BseType-license");
   quark_boxed_export_node = g_quark_from_static_string ("BseType-boxed-export-node");
@@ -431,7 +455,7 @@ bse_type_init (void)
   memset (&info, 0, sizeof (info));
   bse_type_register_procedure_info (&info);
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, 0);
-  bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
+  bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type", __FILE__, __LINE__);
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
   /* initialize extra types */

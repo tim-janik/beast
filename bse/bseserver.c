@@ -111,7 +111,8 @@ BSE_BUILTIN_TYPE (BseServer)
   return bse_type_register_static (BSE_TYPE_CONTAINER,
 				   "BseServer",
 				   "BSE Server type",
-				   &server_info);
+                                   __FILE__, __LINE__,
+                                   &server_info);
 }
 
 static void

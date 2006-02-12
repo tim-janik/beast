@@ -114,7 +114,8 @@ BSE_BUILTIN_TYPE (BseProject)
   return bse_type_register_static (BSE_TYPE_CONTAINER,
 				   "BseProject",
 				   "BSE Super container type",
-				   &project_info);
+                                   __FILE__, __LINE__,
+                                   &project_info);
 }
 
 static void

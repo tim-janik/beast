@@ -332,6 +332,7 @@ BSE_BUILTIN_TYPE (BseSubOPort)
                                          "BseSubOPort",
                                          "Virtual output port connector, used to provide a synthesis network "
                                          "with output signals from other synthesis networks",
+                                         __FILE__, __LINE__,
                                          &type_info);
   bse_categories_register_stock_module (N_("/Virtualization/Virtual Output"), type, virtual_output_pixstream);
   return type;

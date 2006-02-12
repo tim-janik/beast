@@ -119,7 +119,8 @@ BSE_BUILTIN_TYPE (BseInstrument)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseInstrument",
 				   "BSE instrument type",
-				   &instrument_info);
+                                   __FILE__, __LINE__,
+                                   &instrument_info);
 }
 
 static void

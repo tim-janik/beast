@@ -73,7 +73,8 @@ BSE_BUILTIN_TYPE (BseSnooper)
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,
 				      "BseSnooper",
 				      "The Snooper module prints statistics about the incoming signal",
-				      &type_info);
+                                      __FILE__, __LINE__,
+                                      &type_info);
   bse_categories_register_stock_module (N_("/Misc/Snooper"), type_id, snooper_pixstream);
   
   return type_id;

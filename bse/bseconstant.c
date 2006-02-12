@@ -80,7 +80,8 @@ BSE_BUILTIN_TYPE (BseConstant)
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,
 				      "BseConstant",
 				      "This module provides constant signal outputs",
-				      &type_info);
+                                      __FILE__, __LINE__,
+                                      &type_info);
   bse_categories_register_stock_module (N_("/Other Sources/Constant"), type_id, const_pixstream);
   
   return type_id;

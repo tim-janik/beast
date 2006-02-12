@@ -2070,5 +2070,6 @@ BSE_BUILTIN_TYPE (BseSource)
   return bse_type_register_abstract (BSE_TYPE_ITEM,
                                      "BseSource",
                                      "Base type for sound sources",
+                                     __FILE__, __LINE__,
                                      &source_info);
 }

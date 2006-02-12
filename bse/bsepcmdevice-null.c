@@ -164,6 +164,7 @@ BSE_BUILTIN_TYPE (BsePcmDeviceNull)
   pcm_device_null_type = bse_type_register_static (BSE_TYPE_PCM_DEVICE,
                                                    "BsePcmDeviceNull",
                                                    "Null PCM device implementation",
+                                                   __FILE__, __LINE__,
                                                    &pcm_device_null_info);
   return pcm_device_null_type;
 }

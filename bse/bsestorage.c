@@ -107,6 +107,7 @@ BSE_BUILTIN_TYPE (BseStorage)
 
   return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
                                    "Storage object for item serialization",
+                                   __FILE__, __LINE__,
                                    &storage_info);
 }
 

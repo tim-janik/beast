@@ -147,6 +147,7 @@ BSE_BUILTIN_TYPE (BseInstrumentOutput)
                                          "BseInstrumentOutput",
                                          "Virtual output module for synthesis networks which "
                                          "implement instruments",
+                                         __FILE__, __LINE__,
                                          &type_info);
   bse_categories_register_stock_module (N_("/Input & Output/Instrument Output"), type, instrument_pixstream);
   return type;

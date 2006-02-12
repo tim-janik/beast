@@ -81,7 +81,8 @@ BSE_BUILTIN_TYPE (BseDataPocket)
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseDataPocket",
 				   "Data pocket type",
-				   &data_pocket_info);
+                                   __FILE__, __LINE__,
+                                   &data_pocket_info);
 }
 
 static void

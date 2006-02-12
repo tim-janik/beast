@@ -92,6 +92,7 @@ BSE_BUILTIN_TYPE (BseSubSynth)
                                          "BseSubSynth",
                                          "This module encapsulates whole synthesizer networks, by "
                                          "interfacing to/from their virtual input and output ports",
+                                         __FILE__, __LINE__,
                                          &sub_synth_info);
   bse_categories_register_stock_module (N_("/Virtualization/Virtual Sub Synth"), type, virtual_synth_pixstream);
   return type;

@@ -967,5 +967,5 @@ BSE_BUILTIN_TYPE (BseSNet)
     (GInstanceInitFunc) bse_snet_init,
   };
   g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
-  return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", &type_info);
+  return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", __FILE__, __LINE__, &type_info);
 }

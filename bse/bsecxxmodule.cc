@@ -23,7 +23,7 @@
 namespace {
 using namespace Bse;
 
-const ClassInfo cinfo (NULL, "BseEffect implements an abstract C++ effect base.");
+const ClassInfo cinfo (NULL, "BseEffect implements an abstract C++ effect base.", __FILE__, __LINE__);
 BSE_CXX_TYPE_REGISTER_ABSTRACT (Effect, "BseCxxBase", &cinfo);
 
 Effect::Effect() :

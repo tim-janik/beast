@@ -45,6 +45,8 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*options,
 						 const gchar	*category,
 						 const gchar	*blurb,
+						 const gchar    *file,
+						 guint           line,
 						 const gchar	*authors,
 						 const gchar	*license,
 						 SfiRing	*params);
