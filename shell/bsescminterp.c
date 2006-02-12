@@ -832,6 +832,14 @@ void
 bse_scm_enable_script_register (gboolean enabled)
 {
   script_register_enabled = enabled != FALSE;
+  if (script_register_enabled)
+    {
+      /* enable position recording wchih is required for __FILE__ and __LINE__ emulation */
+      SCM_DEVAL_P = 1;
+      SCM_BACKTRACE_P = 1;
+      SCM_RECORD_POSITIONS_P = 1;
+      SCM_RESET_DEBUG_MODE;
+    }
 }
 
 SCM
@@ -860,6 +868,22 @@ bse_scm_script_register (SCM s_name,
 	scm_wrong_type_arg ("bse-script-register", i, arg);
     }
 
+
+  // implement: (source-properties (frame-source (stack-ref (make-stack #t) 0)))
+  // to get at the source properties 'file and 'line of the registration caller
+  SCM s_stack = scm_make_stack (SCM_BOOL_T, SCM_EOL); // scm_cons (scm_int2num (4), SCM_EOL));
+  SCM s_file = SCM_BOOL_F, s_line = SCM_BOOL_F;
+  if (SCM_STACKP (s_stack))
+    {
+      SCM s_frame = scm_stack_ref (s_stack, scm_int2num (0));
+      if (SCM_FRAMEP (s_frame))
+        {
+          SCM s_fsrc  = scm_frame_source (s_frame);
+          s_file = scm_source_property (s_fsrc, scm_sym_filename);
+          s_line = scm_source_property (s_fsrc, scm_sym_line);
+        }
+    }
+
   BSE_SCM_DEFER_INTS ();
   if (script_register_enabled)
     {
@@ -873,6 +897,15 @@ bse_scm_script_register (SCM s_name,
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_category), SCM_LENGTH (s_category)));
       sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_blurb), SCM_LENGTH (s_blurb)));
+      sfi_value_free (val);
+      if (SCM_STRINGP (s_file))
+        sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_file), SCM_LENGTH (s_file)));
+      else
+        sfi_seq_append (seq, val = sfi_value_string ("Scheme"));
+      sfi_value_free (val);
+      char buffer[64] = "";
+      g_snprintf (buffer, 64, "%u", SCM_INUMP (s_line) ? SCM_INUM (s_line) + 1 : 0);
+      sfi_seq_append (seq, val = sfi_value_string (buffer));
       sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_author), SCM_LENGTH (s_author)));
       sfi_value_free (val);

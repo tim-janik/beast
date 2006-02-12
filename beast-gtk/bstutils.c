@@ -918,7 +918,7 @@ bst_gmask_get_action (BstGMask *mask)
  * @param func	foreach function as: void func(GtkWidget*, gpointer data);
  * @param data	data passed in to @a func
  *
- * Invoke @func() with each of the widgets set for this
+ * Invoke @a func() with each of the widgets set for this
  * field mask.
  */
 void

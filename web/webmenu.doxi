@@ -52,10 +52,9 @@
 	@item 	@menuuri{@top_webdir/bsesh.1.html,			bsesh(1)}
 	@item 	@menuuri{@top_webdir/sfidl.1.html,			sfidl(1)}
 	@item 							API Reference
-	@item 	@menuuri{@top_webdir/objdoc.html,			BSE Objects}
-	@item 	@menuuri{@top_webdir/bse-structs.3.html,		BSE Structs}
-	@item 	@menuuri{@top_webdir/bse-procs.3.html,	  		BSE Procedures}
-	@item 	@menuuri{@top_webdir/sfi.3.html,	  		SFI Functions}
+	@item 	@menuuri{@top_webdir/bse-objects.html,			BSE Objects}
+	@item 	@menuuri{@top_webdir/bse-interface.html,	  	BSE Interface}
+	@item 	@menuuri{@top_webdir/rdocu-sfi/,	  		SFI Functions}
 	@done
     @done
 @item 		@menuuri{@top_webdir/resources.html, 			Resources}
@@ -79,8 +78,8 @@
 	@item 	@menuuri{@top_webdir/plugin-devel.html,			Writing Plugins}
 	@item 	@menuuri{@top_webdir/doxer-docu.html,			Doxer Manual}
 	@item 	@menuuri{@top_webdir/sfidl-manual.html,			IDL Compiler}
-	@item 	@menuuri{@top_webdir/rdocu-gxk/,			GXK API}
-	@item 	@menuuri{@top_webdir/rdocu-bse/,			BSE API}
+	@item 	@menuuri{@top_webdir/rdocu-gxk/,			GXK Reference}
+	@item 	@menuuri{@top_webdir/rdocu-bse/,			BSE Reference}
 	@item 	@menuuri{@top_webdir/engine-mplan.html,			Synth Engine}
 	@done
     @done
