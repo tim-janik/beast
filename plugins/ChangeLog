@@ -1,3 +1,14 @@
+Wed Feb 15 23:35:26 2006  Tim Janik  <timj@gtk.org>
+
+	* evaluator/: Building of this plugin has been completely disabled
+	because it never left pre-prototype stage, and it contains mallicious
+	code that gets into the way of normal program operations (such as
+	printf() statements that spew into the stdout channel).
+
+	* Makefile.am: removed evaluator/ from SUBDIRS.
+
+	* evaluator/Makefile.am: disabled build rules.
+
 Thu Jul 28 14:13:50 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: License reverted to LGPL since the code
