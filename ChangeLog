@@ -1,3 +1,10 @@
+Wed Feb 15 23:45:48 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile: generate BSE object documentation. 
+	generate SFI reference documentation.
+
+	* configure.in: removed plugins/evaluator/Makefile generation.
+
 Sun Feb 12 03:33:18 2006  Tim Janik  <timj@gtk.org>
 
 	* shell/bsescminterp.c: turn on guile debugging mode for script registration,

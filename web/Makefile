@@ -61,11 +61,13 @@ HTML_TARGETS = $(strip			\
 	html/log-plugins.html		\
 	html/log-sfi.html		\
 	\
+	html/bse-objects.html		\
 	html/bse-interface.html		\
 )
 RDOCU_TARGETS = $(strip			\
-	html/rdocu-gxk/index.html	\
+	html/rdocu-sfi/index.html	\
 	html/rdocu-bse/index.html	\
+	html/rdocu-gxk/index.html	\
 )
 unportet_targets = $(strip	\
 	objdoc.html		\
@@ -81,8 +83,8 @@ all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} style-files gallery-targ
 
 target-dirs:	# rule to create directories
 	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	mkdir -p tmpdoxi-gxk/ tmpdoxi-bse/
-	mkdir -p html/rdocu-gxk/ html/rdocu-bse/
+	mkdir -p tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
+	mkdir -p html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
 
 php/%.php: %.php
 	cp -v $< $@
@@ -122,8 +124,8 @@ web-image-files:
 docs-image-files:
 	cp -a $(srcdir)/../docs/images/*.png html/images/
 
-TEST_INSTALL_DIR=~/public_html/beast/
 TEST_INSTALL_DIR=/ptmp/beast-preview/
+TEST_INSTALL_DIR=~/public_html/beast/
 test-install: ${TEST_INSTALL_DIR}
 	rm -rf ${TEST_INSTALL_DIR}/*
 	cp -av ${TEST_INSTALL_DIR}/.htaccess-html html/.htaccess
@@ -133,7 +135,7 @@ test-install: ${TEST_INSTALL_DIR}
 
 html/%.html: %.tmpdoxi
 	doxer doxi2html $< -o html/ $(DOXIDEFS)
-news-file.tmpdoxi: $(top_srcdir)/NEWS Makefile
+news-file.tmpdoxi: $(top_srcdir)/NEWS # Makefile
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
@@ -143,7 +145,7 @@ news-file.tmpdoxi: $(top_srcdir)/NEWS Makefile
 	&& echo '@example'					>>$@ \
 	&& sed  's/@/@@/g' 		<$<			>>$@ \
 	&& echo '@done'						>>$@
-engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt Makefile
+engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt # Makefile
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
@@ -188,59 +190,98 @@ log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
 
 
+AUTODOC = $(top_builddir)/bse/bseautodoc
 docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
 
+# SFI reference docu
+sfi_rdocu_globs = $(top_srcdir)/sfi/sfi*.[hc]
+sfi_rdocu_exclude = sfidl*.*
+sfi_rdocu_files = $(filter-out $(foreach f, $(sfi_rdocu_exclude), $(wildcard $(top_srcdir)/sfi/$(f))), $(wildcard $(sfi_rdocu_globs)))
+tmpdoxi-sfi/index.tmpdoxi: $(sfi_rdocu_files) rdocu-template.doxi
+	rm -f tmpdoxi-sfi/*
+	doxer src2doxi $(strip 						\
+	      -d .tmpdoxi -o tmpdoxi-sfi/ -T rdocu-template.doxi	\
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
+	         $(filter     %.h %.hh, $(sfi_rdocu_files))		\
+	      -Y $(filter-out %.h %.hh, $(sfi_rdocu_files)) )
+html/rdocu-sfi/index.html: tmpdoxi-sfi/index.tmpdoxi $(wildcard tmpdoxi-sfi/*.tmpdoxi)
+	rm -f html/rdocu-sfi/*
+	doxer doxi2html $(strip						\
+	      -o html/rdocu-sfi/					\
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
+	      $(filter-out $<, $(shell echo tmpdoxi-sfi/*.tmpdoxi)) )
+	doxer doxi2html $(strip						\
+	      -o html/rdocu-sfi/					\
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
+	      $< )
+
+# GXK reference docu
 gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxk*.[hc] $(top_srcdir)/beast-gtk/bstutils.[hc]
 gxk_rdocu_exclude = gxkgentypes.h gxkmarshal.[hc]
 gxk_rdocu_files = $(filter-out $(foreach f, $(gxk_rdocu_exclude), $(wildcard $(top_srcdir)/beast-gtk/gxk/$(f))), $(wildcard $(gxk_rdocu_globs)))
 tmpdoxi-gxk/index.tmpdoxi: $(gxk_rdocu_files) rdocu-template.doxi
 	rm -f tmpdoxi-gxk/*
-	doxer src2doxi -d .tmpdoxi -o tmpdoxi-gxk/ -T rdocu-template.doxi	\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK			\
-	         $(filter %.h %.hh, $(gxk_rdocu_files))				\
-	      -Y $(filter %.c %.cc, $(gxk_rdocu_files))
+	doxer src2doxi $(strip						\
+	      -d .tmpdoxi -o tmpdoxi-gxk/ -T rdocu-template.doxi	\
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
+	         $(filter %.h %.hh, $(gxk_rdocu_files))			\
+	      -Y $(filter %.c %.cc, $(gxk_rdocu_files)) )
 html/rdocu-gxk/index.html: tmpdoxi-gxk/index.tmpdoxi $(wildcard tmpdoxi-gxk/*.tmpdoxi)
-html/rdocu-gxk/%.html: tmpdoxi-gxk/%.tmpdoxi
 	rm -f html/rdocu-gxk/*
-	doxer doxi2html -o html/rdocu-gxk/				\
+	doxer doxi2html $(strip						\
+	      -o html/rdocu-gxk/					\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
-	      $(filter-out $<, $(shell echo tmpdoxi-gxk/*.tmpdoxi))
-	doxer doxi2html -o html/rdocu-gxk/				\
+	      $(filter-out $<, $(shell echo tmpdoxi-gxk/*.tmpdoxi)) )
+	doxer doxi2html $(strip						\
+	      -o html/rdocu-gxk/					\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
-	      $<
+	      $< )
 
+# BSE reference docu
 bse_rdocu_globs = $(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/bse*.[hc][hc]
 bse_rdocu_exclude = *.gen-proc.c *.genidl.hh bsegentypes.h bseautodoc.c
 bse_rdocu_files = $(filter-out $(foreach f, $(bse_rdocu_exclude), $(wildcard $(top_srcdir)/bse/$(f))), $(wildcard $(bse_rdocu_globs)))
 bse_rdocu_dscrs = $(call docu_filter, $(bse_rdocu_files))
 tmpdoxi-bse/index.tmpdoxi: $(bse_rdocu_files) rdocu-template.doxi
 	rm -f tmpdoxi-bse/*
-	doxer src2doxi -d .tmpdoxi -o tmpdoxi-bse/ -T rdocu-template.doxi	\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE			\
-	         $(filter %.h %.hh, $(bse_rdocu_files))				\
-	      -Y $(filter %.c %.cc, $(bse_rdocu_dscrs))
+	doxer src2doxi $(strip						\
+	      -d .tmpdoxi -o tmpdoxi-bse/ -T rdocu-template.doxi	\
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
+	         $(filter %.h %.hh, $(bse_rdocu_files))			\
+	      -Y $(filter %.c %.cc, $(bse_rdocu_dscrs)) )
 html/rdocu-bse/index.html: tmpdoxi-bse/index.tmpdoxi $(wildcard tmpdoxi-bse/*.tmpdoxi)
 	rm -f html/rdocu-bse/*
-	doxer doxi2html -o html/rdocu-bse/				\
+	doxer doxi2html $(strip						\
+	      -o html/rdocu-bse/					\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
-	      $(filter-out $<, $(shell echo tmpdoxi-bse/*.tmpdoxi))
-	doxer doxi2html -o html/rdocu-bse/				\
+	      $(filter-out $<, $(shell echo tmpdoxi-bse/*.tmpdoxi)) )
+	doxer doxi2html $(strip						\
+	      -o html/rdocu-bse/					\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
-	      $<
+	      $< )
 
-AUTODOC = $(top_builddir)/bse/bseautodoc
-.PHONY: $(AUTODOC) bse-interface.scad bse-interface.tmpdoxi  # FIXME
-
+# BSE procedure and object docu
+bse-objects.scad: $(AUTODOC) $(top_builddir)/config.status
+	cd . \
+	&& $(AUTODOC) -p -s objects	 >xgen-bojs	\
+	&& cp xgen-bojs $@				\
+	&& rm -f xgen-bojs
+CLEANFILES += xgen-bojs
+bse-objects.tmpdoxi: bse-objects.scad $(top_builddir)/config.status
+	doxer scad2doxi -d .tmpdoxi $< -T rdocu-template.doxi		\
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE "BSE OBJECTS"
 bse-interface.scad: $(AUTODOC) $(top_builddir)/config.status
 	cd . \
-	&& $(AUTODOC) -p -s procs	 >xgen-atd	\
-	&& $(AUTODOC) -p -s structs	>>xgen-atd	\
-	&& cp xgen-atd $@				\
-	&& rm -f xgen-atd
-CLEANFILES += xgen-atd
+	&& $(AUTODOC) -p -s procs	 >xgen-bifs	\
+	&& $(AUTODOC) -p -s structs	>>xgen-bifs	\
+	&& cp xgen-bifs $@				\
+	&& rm -f xgen-bifs
+CLEANFILES += xgen-bifs
 bse-interface.tmpdoxi: bse-interface.scad $(top_builddir)/config.status
 	doxer scad2doxi -d .tmpdoxi $< -T rdocu-template.doxi		\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE "BSE API"
+	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE "BSE INTERFACE"
+
+.PHONY: bse-objects.scad bse-objects.tmpdoxi bse-interface.scad bse-interface.tmpdoxi # FIXME
 
 intermediate_files = $(strip	\
 	news-file.tmpdoxi	\
@@ -249,6 +290,8 @@ intermediate_files = $(strip	\
 	log-bse.tmpdoxi		\
 	log-plugins.tmpdoxi	\
 	log-sfi.tmpdoxi		\
+	bse-objects.scad	\
+	bse-objects.tmpdoxi	\
 	bse-interface.scad	\
 	bse-interface.tmpdoxi	\
 )
@@ -261,10 +304,10 @@ clean:
 	-rmdir -p html/style/
 	rm -f html/screenshots/* html/logogallery/* html/web-images/* html/images/*
 	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	rm -f html/rdocu-gxk/* html/rdocu-bse/*
-	-rmdir -p html/rdocu-gxk/ html/rdocu-bse/
-	rm -f tmpdoxi-gxk/* tmpdoxi-bse/*
-	-rmdir -p tmpdoxi-gxk/ tmpdoxi-bse/
+	rm -f html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
+	-rmdir -p html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
+	rm -f tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
+	-rmdir -p tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
 	rm -f html/* html/.htaccess
 	-rmdir -p html/
 	rm -f php/*

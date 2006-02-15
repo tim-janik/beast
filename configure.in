@@ -614,7 +614,6 @@ bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
-plugins/evaluator/Makefile
 shell/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
