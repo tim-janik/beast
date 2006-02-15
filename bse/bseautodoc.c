@@ -31,7 +31,11 @@
 static const gchar*
 beauty_float (gdouble f)
 {
-  gchar *s = g_strdup_printf ("%.7f", f);
+  gchar *s;
+  if (ABS (f) <= 18446744073709551616.)
+    s = g_strdup_printf ("%.7f", f);
+  else
+    s = g_strdup_printf ("%.7g", f);
   const gchar *c;
   if (strchr (s, '.'))
     {
@@ -148,6 +152,79 @@ qescape (const gchar *name)
   return s;
 }
 
+static gchar*
+pspec_construct_description (GParamSpec  *pspec,
+                             const gchar *cname,
+                             const gchar *sname)
+{
+  const gchar *blurb = g_param_spec_get_blurb (pspec);
+  const gchar *nick = g_param_spec_get_nick (pspec);
+
+  if (blurb && (strcmp (blurb, cname) == 0 || strcmp (blurb, sname) == 0))
+    blurb = NULL;
+  if (nick && (strcmp (nick, cname) == 0 || strcmp (nick, sname) == 0))
+    nick = NULL;
+
+  GString *gstring = g_string_new ("");
+
+  if (blurb || nick)
+    {
+      if (gstring->str[0])
+        g_string_append (gstring, "\n");
+      if (blurb)
+        g_string_append (gstring, blurb);
+      else
+        g_string_append (gstring, nick);
+    }
+  while (gstring->len && gstring->str[gstring->len - 1] == '\n')
+    gstring->str[--gstring->len] = 0;
+
+  if (SFI_IS_PSPEC_INT (pspec))
+    {
+      SfiInt imin, imax;
+      sfi_pspec_get_int_range (pspec, &imin, &imax, NULL);
+      g_string_append_printf (gstring, " (%s %d .. %d)\n", _("Range:"), imin, imax);
+    }
+  else if (SFI_IS_PSPEC_REAL (pspec))
+    {
+      SfiReal fmin, fmax;
+      sfi_pspec_get_real_range (pspec, &fmin, &fmax, NULL);
+      g_string_append_printf (gstring, " (%s %s .. %s)\n", _("Range:"), beauty_float (fmin), beauty_float (fmax));
+    }
+  while (gstring->len && gstring->str[gstring->len - 1] == '\n')
+    gstring->str[--gstring->len] = 0;
+
+  if (gstring->len)
+    return g_string_free (gstring, FALSE);
+  g_string_free (gstring, TRUE);
+  return NULL;
+}
+
+static void
+print_pspec (GParamSpec  *pspec,
+             const gchar *indent,
+             const gchar *type_postfix)
+{
+  gchar *cname = g_type_name_to_cname (pspec->name);
+  gchar *sname = g_type_name_to_sname (pspec->name);
+  gchar *tname = type_name (pspec);
+  const gchar *argstrig = "";
+  const gchar *initializer = "";
+  const gchar *group = sfi_pspec_get_group (pspec);
+  gchar *blurb = pspec_construct_description (pspec, cname, sname);
+  const gchar *label = g_param_spec_get_nick (pspec);
+  if (label && (strcmp (label, cname) == 0 || strcmp (label, sname) == 0))
+    label = NULL;
+  g_print ("%s('%s', '%s%s', '%s', '%s',\n", indent, cname, tname, type_postfix, argstrig, initializer);
+  g_print ("%s (%s, '', 0),\n", indent, qescape (blurb ? blurb : ""));
+  g_print ("%s '%s', '%s',\n", indent, label ? label : "", group ? group : "");
+  g_print ("),\n");
+  g_free (cname);
+  g_free (sname);
+  g_free (tname);
+  g_free (blurb);
+}
+
 static void
 show_procdoc (void)
 {
@@ -173,21 +250,7 @@ show_procdoc (void)
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
           GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
-          gchar *tname = type_name (pspec);
-          gchar *carg = g_type_name_to_cname (pspec->name);
-          const gchar *blurb = g_param_spec_get_blurb (pspec);
-          if (blurb && strcmp (blurb, carg) == 0)
-            blurb = NULL;
-          const gchar *nick = g_param_spec_get_nick (pspec);
-          if (nick && strcmp (nick, carg) == 0)
-            nick = NULL;
-          g_print ("  ('%s',\n", carg);
-          g_print ("   '%s',\n", tname);
-          if (blurb || nick)
-            g_print ("   (%s, '', 0),\n", qescape (blurb ? blurb : nick));
-          g_print ("  ),\n");
-          g_free (tname);
-          g_free (carg);
+          print_pspec (pspec, "    ", "");
         }
       g_print ("  ],\n");
 
@@ -195,30 +258,11 @@ show_procdoc (void)
         {
           g_print ("  'return': \n");
           GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[0]);
-          gchar *tname = type_name (pspec);
-          gchar *carg = g_type_name_to_cname (pspec->name);
-          const gchar *blurb = g_param_spec_get_blurb (pspec);
-          if (blurb && strcmp (blurb, carg) == 0)
-            blurb = NULL;
-          const gchar *nick = g_param_spec_get_blurb (pspec);
-          if (nick && strcmp (nick, carg) == 0)
-            nick = NULL;
-          g_print ("  ('%s', # name\n", carg);
-          g_print ("   '%s', # type\n", tname);
-          if (blurb || nick)
-            g_print ("   (%s, '', 0),\n", qescape (blurb ? blurb : nick));
-          g_print ("  ),\n");
-          g_free (tname);
-          g_free (carg);
+          print_pspec (pspec, "    ", "");
         }
       else if (class->n_out_pspecs > 1)
-        {
-          g_print ("  'return': \n");
-          g_print ("  ('RETURNS',\n");
-          g_print ("   'MultiReturn',\n");
-          g_print ("  ),\n");
-        }
-      
+        g_print ("  'return': ('RETURNS', 'MultiReturn', '', '', ('%s', '', 0), ),\n", _("This procedure has multiple return values."));
+
       if (blurb)
         g_print ("  'description': (%s, '', 0),\n", qescape (blurb));
       
@@ -288,33 +332,14 @@ show_structdoc (void)
 	  if (element)
 	    {
 	      GParamSpec *pspec = pspecs->data;
-	      gchar *carg = g_type_name_to_cname (pspec->name);
-              g_print ("  ('n_%s',\n", carg);
-              g_print ("   '%s',\n", "guint");
-              g_print ("   (%s, '', 0),\n", qescape ("Number of elements (C specific)"));
-              g_print ("  ),\n");
-	      g_free (carg);
+	      gchar *cname = g_type_name_to_cname (pspec->name);
+              g_print ("  ('n_%s', 'guint', '', '', (%s, '', 0), ),\n", cname, qescape (_("Number of elements (C specific)")));
+              g_free (cname);
 	    }
 	  for (ring = pspecs; ring; ring = sfi_ring_walk (ring, pspecs))
 	    {
 	      GParamSpec *pspec = ring->data;
-	      gchar *tname = type_name (pspec);
-	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      gchar *sname = g_type_name_to_sname (pspec->name);
-	      const gchar *blurb = g_param_spec_get_blurb (pspec);
-              if (blurb && (strcmp (blurb, carg) == 0 || strcmp (blurb, sname) == 0))
-                blurb = NULL;
-	      const gchar *nick = g_param_spec_get_nick (pspec);
-              if (nick && (strcmp (nick, carg) == 0 || strcmp (nick, sname) == 0))
-                nick = NULL;
-              g_print ("  ('%s',\n", carg);
-              g_print ("   '%s%s',\n", tname, element ? "*" : "");
-              if (blurb || nick)
-                g_print ("   (%s, '', 0),\n", qescape (blurb ? blurb : nick));
-              g_print ("  ),\n");
-	      g_free (tname);
-	      g_free (sname);
-	      g_free (carg);
+              print_pspec (pspec, "    ", "*");
 	    }
           g_print ("  ],\n");
 
@@ -387,20 +412,38 @@ showdoc_print_type (GObjectClass *oclass,
                     gboolean      show_channels)
 {
   GType btype, type = G_OBJECT_CLASS_TYPE (oclass);
-  guint j, in_itemize = 0;
-  const gchar *string, *pgroup = NULL;
-  g_print ("\n\n@anchor{%s} ", g_type_name (type));
-  g_print ("@unnumbered %s\n", g_type_name (type));
-  string = bse_type_get_authors (type);
-  if (string)
-    g_print ("@* @emph{%s} %s\n", _("Authors:"), string);
-  string = bse_type_get_license (type);
-  if (string)
-    g_print ("@* @emph{%s} %s\n", _("License:"), string);
-  string = bse_type_get_blurb (type);
-  if (string)
-    g_print ("@* %s\n", string);
-  g_print ("@heading %s\n", _("Properties:"));
+  guint j;
+  const gchar *string;
+  g_print ("{\n");
+  g_print ("  'name': '%s',\n", g_type_name (type));
+
+  GString *full_description = g_string_new ("");
+  const gchar *cstring = bse_type_get_blurb (type);
+  if (cstring)
+    g_string_append (full_description, cstring);
+  cstring = bse_type_get_authors (type);
+  if (cstring)
+    {
+      if (full_description->str[0])
+        g_string_append (full_description, "\n\n");
+      g_string_append (full_description, _("Authors:"));
+      g_string_append (full_description, " ");
+      g_string_append (full_description, cstring);
+    }
+  cstring = bse_type_get_license (type);
+  if (cstring)
+    {
+      if (full_description->str[0])
+        g_string_append (full_description, "\n\n");
+      g_string_append (full_description, _("License:"));
+      g_string_append (full_description, " ");
+      g_string_append (full_description, cstring);
+    }
+  if (full_description->str[0])
+    g_print ("  'description': (%s, '', 0),\n", qescape (full_description->str));
+  g_string_free (full_description, TRUE);
+
+  g_print ("  'properties': [\n");
   btype = G_TYPE_OBJECT;
   do
     {
@@ -408,125 +451,75 @@ showdoc_print_type (GObjectClass *oclass,
       btype = g_type_next_base (type, btype);
       pspecs = g_object_class_list_properties (g_type_class_peek (btype), NULL);
       /* show GUI properties */
-      for (j = 0; pspecs[j]; j++)
-        {
-          GParamSpec *pspec = g_object_class_find_property (oclass, pspecs[j]->name);
-          const gchar *group = sfi_pspec_get_group (pspec);
-          if (pspec->owner_type != btype || !sfi_pspec_check_option (pspec, "G"))
-            continue;
-          if (!strequals (group, pgroup))
-            {
-              if (in_itemize)
-                g_print ("@end itemize\n");
-              in_itemize = 0;
-              pgroup = group;
-              if (group)
-                g_print ("@strong{%s:}\n", group);
-            }
-          if (!in_itemize++)
-            g_print ("@itemize\n");
-          g_print ("@anchor{%s::%s} ", g_type_name (type), sfi_pspec_get_name (pspec));
-          g_print ("@item @strong{@emph{%s}}\n", sfi_pspec_get_nick (pspec));
-          g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), sfi_pspec_get_name (pspec));
-          if (SFI_IS_PSPEC_INT (pspec))
-            {
-              SfiInt imin, imax;
-              sfi_pspec_get_int_range (pspec, &imin, &imax, NULL);
-              g_print ("@* @emph{%s} %d .. %d\n", _("Range:"), imin, imax);
-            }
-          else if (SFI_IS_PSPEC_REAL (pspec))
-            {
-              SfiReal fmin, fmax;
-              sfi_pspec_get_real_range (pspec, &fmin, &fmax, NULL);
-              g_print ("@* @emph{%s} %s .. %s\n", _("Range:"), beauty_float (fmin), beauty_float (fmax));
-            }
-          string = sfi_pspec_get_blurb (pspec);
-          if (string)
-            g_print ("@* @emph{%s} %s\n", _("Description:"), string);
-        }
-      if (in_itemize)
-        {
-          g_print ("@end itemize\n");
-          in_itemize = 0;
-        }
+      if (type == btype || FALSE) /* always show all properties? */
+        for (j = 0; pspecs[j]; j++)
+          {
+            GParamSpec *pspec = g_object_class_find_property (oclass, pspecs[j]->name);
+            if (pspec->owner_type != btype || !sfi_pspec_check_option (pspec, "G"))
+              continue;
+            print_pspec (pspec, "    ", "");
+          }
       g_free (pspecs);
     }
   while (btype != type);
+  g_print ("  ],\n");
+
   /* show signals */
-  guint n, ns, *sigs = g_signal_list_ids (type, &n);
-  if (n)
+  guint n = 0, ns, *sigs = g_signal_list_ids (type, &n);
+  g_print ("  'signals': [\n");
+  for (ns = 0; ns < n; ns++)
     {
-      g_print ("@heading %s\n", _("Signals:"));
-      for (ns = 0; ns < n; ns++)
-        {
-          GSignalQuery query;
-          if (!in_itemize++)
-            g_print ("@itemize\n");
-          g_signal_query (sigs[ns], &query);
-          g_print ("@item %s @strong{@emph{%s}} (\n", g_type_name (query.return_type & ~G_SIGNAL_TYPE_STATIC_SCOPE), query.signal_name);
-          guint np;
-          for (np = 0; np < query.n_params; np++)
-            {
-              if (np)
-                g_print (", ");
-              g_print ("%s", g_type_name (query.param_types[np] & ~G_SIGNAL_TYPE_STATIC_SCOPE));
-            }
-          g_print (");\n");
-        }
-      if (in_itemize)
-        {
-          g_print ("@end itemize\n");
-          in_itemize = 0;
-        }
+      GSignalQuery query;
+      g_signal_query (sigs[ns], &query);
+      g_print ("  ('%s',\n", query.signal_name);
+      g_print ("   '%s',\n", g_type_name (query.return_type & ~G_SIGNAL_TYPE_STATIC_SCOPE));
+      g_print ("   (");
+      guint np;
+      for (np = 0; np < query.n_params; np++)
+        g_print ("'%s',", g_type_name (query.param_types[np] & ~G_SIGNAL_TYPE_STATIC_SCOPE));
+      g_print ("),\n");
+      g_print ("  ),\n");
     }
   g_free (sigs);
+  g_print ("  ],\n");
+
   /* show input and output channels */
+  g_print ("  'channels': [\n");
   if (show_channels &&
       !G_TYPE_IS_ABSTRACT (type) &&
       g_type_is_a (type, BSE_TYPE_SOURCE) &&
       !strequals ("BseServer", g_type_name (type)))
     {
       BseSource *source = g_object_new (type, NULL);
-      if (BSE_SOURCE_N_ICHANNELS (source))
-        g_print ("@heading %s\n", _("Input Channels:"));
       for (j = 0; j < BSE_SOURCE_N_ICHANNELS (source); j++)
         {
-          if (!in_itemize++)
-            g_print ("@itemize\n");
-          g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_ICHANNEL_IDENT (source, j));
-          g_print ("@item @strong{@emph{%s %s}}\n", BSE_SOURCE_ICHANNEL_LABEL (source, j),
-                   BSE_SOURCE_IS_JOINT_ICHANNEL (source, j) ? _("(Joint Input)") : "");
-          g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), BSE_SOURCE_ICHANNEL_IDENT (source, j));
+          g_print ("  {\n");
+          g_print ("    'id': %u,\n", j + 1);
+          g_print ("    'name': '%s',\n", BSE_SOURCE_ICHANNEL_IDENT (source, j));
+          g_print ("    'kind': '%s',\n", BSE_SOURCE_IS_JOINT_ICHANNEL (source, j) ? "JointInput" : "Input");
+          g_print ("    'label': '%s',\n", BSE_SOURCE_ICHANNEL_LABEL (source, j));
           string = BSE_SOURCE_ICHANNEL_BLURB (source, j);
           if (string)
-            g_print ("@* @emph{%s} %s\n", _("Description:"), string);
+            g_print ("    'description': (%s, '', 0),\n", qescape (string));
+          g_print ("  },\n");
         }
-      if (in_itemize)
-        {
-          g_print ("@end itemize\n");
-          in_itemize = 0;
-        }
-      if (BSE_SOURCE_N_OCHANNELS (source))
-        g_print ("@heading %s\n", _("Output Channels:"));
       for (j = 0; j < BSE_SOURCE_N_OCHANNELS (source); j++)
         {
-          if (!in_itemize++)
-            g_print ("@itemize\n");
-          g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_OCHANNEL_IDENT (source, j));
-          g_print ("@item @strong{@emph{%s}} \n", BSE_SOURCE_OCHANNEL_LABEL (source, j));
-          g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), BSE_SOURCE_OCHANNEL_IDENT (source, j));
+          g_print ("  {\n");
+          g_print ("    'id': %u,\n", j + 1);
+          g_print ("    'name': '%s',\n", BSE_SOURCE_OCHANNEL_IDENT (source, j));
+          g_print ("    'kind': '%s',\n", "Output");
+          g_print ("    'label': '%s',\n", BSE_SOURCE_OCHANNEL_LABEL (source, j));
           string = BSE_SOURCE_OCHANNEL_BLURB (source, j);
           if (string)
-            g_print ("@* @emph{%s} %s\n", _("Description:"), string);
+            g_print ("    'description': (%s, '', 0),\n", qescape (string));
+          g_print ("  },\n");
         }
-      if (in_itemize)
-        {
-          g_print ("@end itemize\n");
-          in_itemize = 0;
-        }
-      g_print ("\n");
       g_object_unref (source);
     }
+  g_print ("  ],\n");
+
+  g_print ("},\n");
 }
 
 static void
@@ -539,32 +532,6 @@ showdoc_descendants (GType type)
     showdoc_descendants (*child);
   g_free (children);
   g_type_class_unref (oclass);
-}
-
-static void
-showdoc_alltypes (void)
-{
-  g_print ("\\input texinfo\n"
-	   "@c %%**start of header\n"
-	   "@settitle %s\n"
-	   "@footnotestyle end\n"
-	   "@c %%**end of header\n"
-	   "\n"
-	   "@include texiutils.texi\n"
-	   "\n"
-	   "@docpackage{BEAST-%s}\n"
-	   "@docfont{tech}\n"
-	   "\n"
-	   "@majorheading %s - %s\n"
-	   "\n"
-	   "@revision{Document Revised:}\n"
-	   "\n"
-           "@contents\n"
-	   "\n",
-           _("BSE-Objects"),
-	   BST_VERSION,
-           _("BSE-Objects"), _(" Object Reference"));
-  showdoc_descendants (BSE_TYPE_OBJECT);
 }
 
 static gint
@@ -648,7 +615,11 @@ main (gint   argc,
   else if (gen_structs)
     show_structdoc ();
   else if (gen_objects)
-    showdoc_alltypes ();
+    {
+      g_print ("objects = (\n");
+      showdoc_descendants (BSE_TYPE_OBJECT);
+      g_print (");\n");
+    }
   else
     return help (argv[0], NULL);
 
