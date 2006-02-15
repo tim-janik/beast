@@ -1506,13 +1506,13 @@ sfi_ring_concat (SfiRing *head1,
 }
 
 /**
- * sfi_ring_split
- * @head1:   a non-empty ring
- * @head2:   a ring node different from @head1 contained in @head1
- * @returns: @head2 for convenience
- * Split a ring into two parts, starting the second ring with @head2.
- * @head2 must therefore be non-NULL and must be contained in the ring
- * formed by @head1.
+ * @param head1	a non-empty ring
+ * @param head2	a ring node different from @a head1 contained in @a head1
+ * @param returns	@a head2 for convenience
+ *
+ * Split a ring into two parts, starting the second ring with @a head2.
+ * @a head2 must therefore be non-NULL and must be contained in the ring
+ * formed by @a head1.
  */
 SfiRing*
 sfi_ring_split (SfiRing *head1,

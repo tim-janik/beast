@@ -140,20 +140,19 @@ sfi_msg_type_set (SfiMsgType     mtype,
 }
 
 /**
- * sfi_msg_type_register
- * @ident:              message identifier
- * @default_ouput:      an existing #SfiMsgType or %FALSE or %TRUE
- * @label:              a translated version of @ident
- * @RETURN:             message type id
+ * @param ident	message identifier
+ * @param default_ouput	an existing SfiMsgType or FALSE or TRUE
+ * @param label	a translated version of @a ident
+ * @return		message type id
  *
- * Register a new message type with identifier @ident and user digestible
- * name @label. If this function is called multiple times with the same
+ * Register a new message type with identifier @a ident and user digestible
+ * name @a label. If this function is called multiple times with the same
  * identifier, the type id acquired by the first call will be returned
  * and the other arguments are ignored.
  * As long as the new message type isn't configured individually via
  * sfi_msg_enable(), sfi_msg_allow() or their complements, it shares
- * the configuration of @default_ouput. If %FALSE or %TRUE is passed as
- * @default_ouput, this corresponds to %SFI_MSG_NONE or %SFI_MSG_FATAL
+ * the configuration of @a default_ouput. If FALSE or TRUE is passed as
+ * @a default_ouput, this corresponds to SFI_MSG_NONE or SFI_MSG_FATAL
  * respectively which are unconfigrable and always have their output
  * disabled or enabled respectively.
  * As an exception to the rest of the message API, this function may be
@@ -335,12 +334,11 @@ sfi_msg_configure_stdlog (gboolean          stdlog_to_stderr_bool,
 }
 
 /**
- * sfi_msg_type_ident
- * @type:       message type, e.g. %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, etc...
- * @RETURN:     message identifier
+ * @param type	message type, e.g. SFI_MSG_ERROR, SFI_MSG_WARNING, SFI_MSG_INFO, etc...
+ * @return		message identifier
  *
- * Retrive the string identifying the message type @type. For invalid
- * (non registered) message types, %NULL is returned.
+ * Retrive the string identifying the message type @a type. For invalid
+ * (non registered) message types, NULL is returned.
  * This function is MT-safe and may be called from any thread.
  */
 const gchar*
@@ -355,12 +353,11 @@ sfi_msg_type_ident (SfiMsgType mtype)
 }
 
 /**
- * sfi_msg_type_label
- * @type:       message type, e.g. %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, etc...
- * @RETURN:     translated message identifier or %NULL
+ * @param type	message type, e.g. SFI_MSG_ERROR, SFI_MSG_WARNING, SFI_MSG_INFO, etc...
+ * @return		translated message identifier or NULL
  *
- * Retrive the label identifying the message type @type. Usually,
- * this is a translated version of sfi_msg_type_ident() or %NULL
+ * Retrive the label identifying the message type @a type. Usually,
+ * this is a translated version of sfi_msg_type_ident() or NULL
  * if non was registered with the message type.
  * This function is MT-safe and may be called from any thread.
  */
@@ -376,13 +373,12 @@ sfi_msg_type_label (SfiMsgType mtype)
 }
 
 /**
- * sfi_msg_type_lookup
- * @ident:      message identifier, e.g. "error", "warning", "info", etc...
- * @RETURN:     corresponding #SfiMsgType or 0
+ * @param ident	message identifier, e.g. "error", "warning", "info", etc...
+ * @return		corresponding SfiMsgType or 0
  *
- * Find the message type correspondign to @ident. If no message
+ * Find the message type correspondign to @a ident. If no message
  * type was found 0 is returned (note that 0 is also the value of
- * %SFI_MSG_NONE).
+ * SFI_MSG_NONE).
  * This function is MT-safe and may be called from any thread.
  */
 SfiMsgType
@@ -401,11 +397,10 @@ sfi_msg_type_lookup (const gchar *ident)
 }
 
 /**
- * sfi_msg_set_thread_handler
- * @handler:    a valid #SfiMsgHandler or %NULL
+ * @param handler	a valid SfiMsgHandler or NULL
  *
  * Set the handler function for messages logged in the current
- * thread. If %NULL is specified as handler, the standard handler
+ * thread. If NULL is specified as handler, the standard handler
  * will be used. For handler implementations that require an extra
  * data argument, see sfi_thread_set_qdata().
  * This function is MT-safe and may be called from any thread.
@@ -417,10 +412,9 @@ sfi_msg_set_thread_handler (SfiMsgHandler handler)
 }
 
 /**
- * sfi_msg_default_handler
- * @message:    a valid #SfiMessage
+ * @param message	a valid SfiMessage
  *
- * This is the standard message handler, it produces @message
+ * This is the standard message handler, it produces @a message
  * in a prominent way on stderr.
  * This function is MT-safe and may be called from any thread.
  */
@@ -481,18 +475,17 @@ free_lbits (LogBit *first)
 }
 
 /**
- * sfi_msg_log_printf
- * @log_domain:   log domain
- * @level:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG or %SFI_MSG_DEBUG
- * @format:       printf-like format
- * @...:          printf-like arguments
+ * @param log_domain    log domain
+ * @param level         one of SFI_MSG_ERROR, SFI_MSG_WARNING, SFI_MSG_INFO, SFI_MSG_DIAG or SFI_MSG_DEBUG
+ * @param format        printf-like format
+ * @param ...           printf-like arguments
  *
  * Log a message through SFIs logging mechanism. The current
  * value of errno is preserved around calls to this function.
  * Usually this function isn't used directly, but through one
  * of sfi_debug(), sfi_diag(), sfi_info(), sfi_warn() or sfi_error().
- * The @log_domain indicates the calling module and relates to
- * %G_LOG_DOMAIN as used by g_log().
+ * The @a log_domain indicates the calling module and relates to
+ * G_LOG_DOMAIN as used by g_log().
  * This function is MT-safe and may be called from any thread.
  */
 void
@@ -520,18 +513,17 @@ sfi_msg_log_printf (const char       *log_domain,
 }
 
 /**
- * sfi_msg_log_elist
- * @log_domain:   log domain
- * @mtype:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
- * @lbit1:        msg bit
- * @lbit2:        msg bit
- * @...:          list of more msg bits, NULL terminated
+ * @param log_domain    log domain
+ * @param mtype         one of SFI_MSG_ERROR, SFI_MSG_WARNING, SFI_MSG_INFO, SFI_MSG_DIAG
+ * @param lbit1         msg bit
+ * @param lbit2         msg bit
+ * @param ...           list of more msg bits, NULL terminated
  *
  * Log a message through SFIs logging mechanism. The current value of errno
  * is preserved around calls to this function. Usually this function isn't
  * used directly, but sfi_log_msg() is called instead which does not require
- * %NULL termination of its argument list and automates the @log_domain argument.
- * The @log_domain indicates the calling module and relates to %G_LOG_DOMAIN
+ * NULL termination of its argument list and automates the @a log_domain argument.
+ * The @a log_domain indicates the calling module and relates to G_LOG_DOMAIN
  * as used by g_log().
  * The msg bit arguments passed in form various parts of the log message, the
  * following macro set is provided to construct the parts from printf-style
@@ -614,19 +606,18 @@ msg_apply_bit (SfiMessage *msg,
 }
 
 /**
- * sfi_msg_log_trampoline
- * @log_domain:   log domain
- * @mtype:        one of %SFI_MSG_ERROR, %SFI_MSG_WARNING, %SFI_MSG_INFO, %SFI_MSG_DIAG
- * @lbit1:        msg bit
- * @lbit2:        msg bit
- * @lbitargs:     va_list list of more msg bits, NULL terminated
- * @handler:      message handler
- * @vbitlist:     NULL terminated array of msg bits
+ * @param log_domain	log domain
+ * @param mtype	one of SFI_MSG_ERROR, SFI_MSG_WARNING, SFI_MSG_INFO, SFI_MSG_DIAG
+ * @param lbit1	msg bit
+ * @param lbit2	msg bit
+ * @param lbitargs	va_list list of more msg bits, NULL terminated
+ * @param handler	message handler
+ * @param vbitlist	NULL terminated array of msg bits
  *
- * Construct a log message from the arguments given and let @handler process
+ * Construct a log message from the arguments given and let @a handler process
  * it. This function performs no logging on its own, it is used internally by
  * sfi_log_msg_elist() to collect arguments and construct a message. All logging
- * functionality has to be implemented by @handler. Note that all thread-local
+ * functionality has to be implemented by @a handler. Note that all thread-local
  * msg bits are deleted after invokation of this funtcion, so all msg bits
  * created in the current thread are invalid after calling this function.
  * Direct use of this function is not recommended except for implementations

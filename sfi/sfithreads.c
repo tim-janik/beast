@@ -307,12 +307,12 @@ filter_priority_warning (const gchar    *log_domain,
 }
 
 /**
- * sfi_thread_run
- * @name:      thread name
- * @func:      function to execute in new thread
- * @user_data: user data to pass into @func
- * @returns:   new thread handle or %NULL in case of error
- * Create a new thread running @func.
+ * @param name	thread name
+ * @param func	function to execute in new thread
+ * @param user_data	user data to pass into @a func
+ * @param returns	new thread handle or NULL in case of error
+ *
+ * Create a new thread running @a func.
  */
 SfiThread*
 sfi_thread_run (const gchar  *name,
@@ -371,8 +371,8 @@ sfi_thread_run (const gchar  *name,
 }
 
 /**
- * sfi_thread_self
- * @RETURNS: thread handle
+ * @return		thread handle
+ *
  * Return the thread handle of the currently running thread.
  */
 SfiThread*
@@ -408,8 +408,8 @@ sfi_thread_set_name (const gchar *name)
 }
 
 /**
- * sfi_thread_self_pid
- * @RETURNS: thread id
+ * @return		thread id
+ *
  * Return the thread specific id. This function is highly
  * system dependant. The thread id may deviate from the overall
  * process id or not. On linux, threads have their own id,
@@ -422,10 +422,10 @@ sfi_thread_self_pid (void)
 }
 
 /**
- * sfi_thread_get_pid
- * @thread:  a valid %SfiThread handle
- * @RETURNS: thread id
- * Return the specific id for @thread. This function is highly
+ * @param thread	a valid SfiThread handle
+ * @return		thread id
+ *
+ * Return the specific id for @a thread. This function is highly
  * system dependant. The thread id may deviate from the overall
  * process id or not. On linux, threads have their own id,
  * allthough since kernel 2.6, they share the same process id.
@@ -438,10 +438,10 @@ sfi_thread_get_pid (SfiThread *thread)
 }
 
 /**
- * sfi_thread_get_name
- * @thread:  a valid %SfiThread handle
- * @RETURNS: thread name
- * Return the name of @thread as specified upon invokation of
+ * @param thread	a valid SfiThread handle
+ * @return		thread name
+ *
+ * Return the name of @a thread as specified upon invokation of
  * sfi_thread_run() or assigned by sfi_thread_set_name().
  */
 const gchar*
@@ -462,9 +462,9 @@ sfi_thread_wakeup_L (SfiThread *thread)
 }
 
 /**
- * sfi_thread_sleep
- * @max_useconds: maximum amount of micro seconds to sleep (-1 for infinite time)
- * @returns:      %TRUE while the thread should continue execution
+ * @param max_useconds	maximum amount of micro seconds to sleep (-1 for infinite time)
+ * @param returns	TRUE while the thread should continue execution
+ *
  * Sleep for the amount of time given.
  * This function may get interrupted by wakeup requests from
  * sfi_thread_wakeup(), abort requests from sfi_thread_queue_abort()
@@ -506,10 +506,10 @@ sfi_thread_sleep (glong max_useconds)
 }
 
 /**
- * sfi_thread_set_wakeup
- * @wakeup_func: wakeup function to be called by sfi_thread_wakeup()
- * @wakeup_data: data passed into wakeup_func()
- * @destroy:     destroy handler for @wakeup_data
+ * @param wakeup_func	wakeup function to be called by sfi_thread_wakeup()
+ * @param wakeup_data	data passed into wakeup_func()
+ * @param destroy	destroy handler for @a wakeup_data
+ *
  * Set the wakeup function for the current thread. This enables
  * the thread to be woken up through sfi_thread_wakeup() even
  * if not sleeping in sfi_thread_sleep(). The wakeup function
@@ -536,11 +536,11 @@ sfi_thread_set_wakeup (SfiThreadWakeup wakeup_func,
 }
 
 /**
- * sfi_thread_wakeup
- * @thread: thread to wake up
+ * @param thread	thread to wake up
+ *
  * Wake up a currently sleeping thread. In practice, this
  * function simply causes the next call to sfi_thread_sleep()
- * within @thread to last for 0 seconds.
+ * within @a thread to last for 0 seconds.
  */
 void
 sfi_thread_wakeup (SfiThread *thread)
@@ -554,11 +554,11 @@ sfi_thread_wakeup (SfiThread *thread)
 }
 
 /**
- * sfi_thread_awake_after
- * @stamp: stamp to trigger wakeup
+ * @param stamp	stamp to trigger wakeup
+ *
  * Wake the current thread up at the next invocation
  * of sfi_thread_emit_wakeups() with a wakup_stamp
- * greater than @stamp.
+ * greater than @a stamp.
  */
 void
 sfi_thread_awake_after (guint64 stamp)
@@ -579,11 +579,11 @@ sfi_thread_awake_after (guint64 stamp)
 }
 
 /**
- * sfi_thread_emit_wakeups
- * @wakeup_stamp: wakeup stamp to trigger wakeups
+ * @param wakeup_stamp	wakeup stamp to trigger wakeups
+ *
  * Wake all currently sleeping threads up which queued
  * a wakeup through sfi_thread_awake_after() with a
- * stamp smaller than @wakeup_stamp.
+ * stamp smaller than @a wakeup_stamp.
  */
 void
 sfi_thread_emit_wakeups (guint64 wakeup_stamp)
@@ -608,8 +608,8 @@ sfi_thread_emit_wakeups (guint64 wakeup_stamp)
 }
 
 /**
- * sfi_thread_abort
- * @thread: thread to abort
+ * @param thread	thread to abort
+ *
  * Abort a currently running thread. This function does not
  * return until the thread in question terminated execution.
  * Note that the thread handle gets invalidated with invocation
@@ -631,8 +631,8 @@ sfi_thread_abort (SfiThread *thread)
 }
 
 /**
- * sfi_thread_queue_abort
- * @thread: thread to abort
+ * @param thread	thread to abort
+ *
  * Same as sfi_thread_abort(), but returns as soon as possible,
  * even if thread hasn't stopped execution yet.
  * Note that the thread handle gets invalidated with invocation
@@ -651,8 +651,8 @@ sfi_thread_queue_abort (SfiThread *thread)
 }
 
 /**
- * sfi_thread_aborted
- * @returns: %TRUE if the thread should abort execution
+ * @param returns	TRUE if the thread should abort execution
+ *
  * Find out if the currently running thread should be aborted (the thread is
  * supposed to return from its main thread function). This function or
  * alternatively sfi_thread_sleep() should be called periodically, to
@@ -780,9 +780,9 @@ static gint       volatile guard_list_length = 0;
 #define values2guard(ptr)       G_STRUCT_MEMBER_P (ptr, -G_STRUCT_OFFSET (SfiGuard, values[0]))
 
 /**
- * sfi_guard_register
- * @n_hazards: number of required hazard pointers
- * @RETURNS:   a valid #SfiGuard
+ * @param n_hazards	number of required hazard pointers
+ * @return		a valid SfiGuard
+ *
  * Retrieve a new guard for node protection of the current thread.
  * The exact mechanism of protection is described in sfi_guard_protect().
  * Note that sfi_guard_snap_values() will walk the hazard pointer
@@ -825,8 +825,8 @@ sfi_guard_register (guint n_hazards)
 }
 
 /**
- * sfi_guard_deregister
- * @guard: a valid #SfiGuard as returned from sfi_guard_register()
+ * @param guard	a valid SfiGuard as returned from sfi_guard_register()
+ *
  * Deregister a guard previously registered by a call to sfi_guard_register().
  * Deregistration is performed in constant time.
  */
@@ -857,14 +857,14 @@ sfi_guard_deregister_all (SfiThread *thread)
 }
 
 /**
- * sfi_guard_protect
- * @guard:      a valid #SfiGuard as returned from sfi_guard_register()
- * @nth_hazard: index of the hazard pointer to use for protection
- * @value:      a hazardous pointer value or %NULL to reset protection
- * Protect the node pointed to by @value from being destroyed by another
+ * @param guard	a valid SfiGuard as returned from sfi_guard_register()
+ * @param nth_hazard	index of the hazard pointer to use for protection
+ * @param value	a hazardous pointer value or NULL to reset protection
+ *
+ * Protect the node pointed to by @a value from being destroyed by another
  * thread and against the ABA problem caused by premature reuse.
  * For this to work, threads destroying nodes of the type pointed to by
- * @value need to suspend destruction as long as nodes are protected,
+ * @a value need to suspend destruction as long as nodes are protected,
  * which can by checked by calls to sfi_guard_is_protected() or by
  * searching the values returned from sfi_guard_snap_values().
  * Descriptions of safe memory reclamation and ABA problem detection
@@ -894,8 +894,8 @@ void sfi_guard_protect (SfiGuard *guard,  /* defined in sfithreads.h */
 #endif
 
 /**
- * sfi_guard_n_snap_values
- * @RETURNS:   an upper bound on the number of registered hazard pointers
+ * @return		an upper bound on the number of registered hazard pointers
+ *
  * Retrieve an upper bound on the number of hazard pointer value slots
  * currently required for a successfull call to sfi_guard_snap_values().
  * Note that a subsequent call to sfi_guard_snap_values() may still fail
@@ -910,17 +910,17 @@ sfi_guard_n_snap_values (void)
 }
 
 /**
- * sfi_guard_snap_values
- * @n_values:  location of n_values variable
- * @values:    value array to fill in
- * @RETURNS:   %TRUE if @values provided enough space and is filled
+ * @param n_values	location of n_values variable
+ * @param values	value array to fill in
+ * @return		TRUE if @a values provided enough space and is filled
+ *
  * Make a snapshot of all non-NULL hazard pointer values.
- * %TRUE is returned if the number of non-NULL hazard pointer
+ * TRUE is returned if the number of non-NULL hazard pointer
  * values didn't exceed the size of the input value array provided
- * by @n_values, and all values are returned in the array pointed
- * to by @values.
- * The number of values filled in is returned in @n_values.
- * %FALSE is returned if not enough space was available to return
+ * by @a n_values, and all values are returned in the array pointed
+ * to by @a values.
+ * The number of values filled in is returned in @a n_values.
+ * FALSE is returned if not enough space was available to return
  * all non-NULL values. sfi_guard_n_snap_values() may be used to
  * retrieve the current upper bound on the number of registered
  * guards. Note that a successive call to sfi_guard_snap_values() with
@@ -961,10 +961,10 @@ sfi_guard_snap_values (guint          *n_values,
 }
 
 /**
- * sfi_guard_is_protected
- * @value:    hazard pointer value
- * @RETURNS:  %TRUE if a hazard pointer protecting @value has been found
- * Check whether @value is protected by a hazard pointer guard.
+ * @param value	hazard pointer value
+ * @return		TRUE if a hazard pointer protecting @a value has been found
+ *
+ * Check whether @a value is protected by a hazard pointer guard.
  * If multiple pointer values are to be checked, use sfi_guard_snap_values()
  * instead, as this function has O(n_hazard_pointers) time complexity.
  * If only one pointer value needs to be looked up though,

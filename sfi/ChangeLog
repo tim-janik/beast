@@ -1,3 +1,11 @@
+Wed Feb 15 23:18:42 2006  Tim Janik  <timj@gtk.org>
+
+	* sfifilecrawler.c: 
+	* sfilog.c: 
+	* sfiprimitives.c: 
+	* sfithreads.c: 
+	* sfitime.c: ported documentation to doxer format.
+
 Sun Feb 12 03:31:04 2006  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: pass file/line information to pspec constructors.

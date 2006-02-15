@@ -53,12 +53,10 @@ _sfi_init_file_crawler (void)
 }
 
 /**
- * sfi_file_crawler_new
- *
  * Create a new file crawler. A file crawler collects all files matching
  * a given search path and file test.
  * sfi_file_crawler_crawl() needs to be called as long as
- * sfi_file_crawler_needs_crawl() returns %TRUE to collect all
+ * sfi_file_crawler_needs_crawl() returns TRUE to collect all
  * matching files.
  */
 SfiFileCrawler*
@@ -71,11 +69,10 @@ sfi_file_crawler_new (void)
 }
 
 /**
- * sfi_file_crawler_pop
- * @self:   valid #SfiFileCrawler
+ * @param self	valid SfiFileCrawler
  * RETURNS: newly allocated string containig resulting filename
  *
- * Fetch next result if any or %NULL.
+ * Fetch next result if any or NULL.
  */
 gchar*
 sfi_file_crawler_pop (SfiFileCrawler *self)
@@ -85,9 +82,8 @@ sfi_file_crawler_pop (SfiFileCrawler *self)
 }
 
 /**
- * sfi_file_crawler_set_cwd
- * @self: valid #SfiFileCrawler
- * @cwd:  absolute path
+ * @param self	valid SfiFileCrawler
+ * @param cwd	absolute path
  *
  * Set the path to be assumed the current working directory.
  */
@@ -103,11 +99,10 @@ sfi_file_crawler_set_cwd (SfiFileCrawler *self,
 }
 
 /**
- * sfi_file_crawler_add_tests
- * @self:       valid #SfiFileCrawler
- * @tests:      #GFileTest test flags
+ * @param self	valid SfiFileCrawler
+ * @param tests	GFileTest test flags
  *
- * By default, results returned by @self are only tested
+ * By default, results returned by @a self are only tested
  * for existence. If additional file tests have to be met
  * by the results, they can be set by this function.
  */
@@ -121,18 +116,17 @@ sfi_file_crawler_add_tests (SfiFileCrawler *self,
 }
 
 /**
- * sfi_file_crawler_add_search_path
- * @self:          valid #SfiFileCrawler
- * @pattern_paths: colon (semicolon under win32) seperated search path
- * @file_pattern:  wildcard pattern for file names
- * @RETURNS:       a singly linked list with newly allocated strings
+ * @param self	valid SfiFileCrawler
+ * @param pattern_paths	colon (semicolon under win32) seperated search path
+ * @param file_pattern	wildcard pattern for file names
+ * @return		a singly linked list with newly allocated strings
  *
  * This function takes a search path (possibly containing wildcards)
  * and adds them to the file crawlers search list.
- * If @file_pattern is non %NULL, it is appended to each directory
- * element extracted from @pattern_paths, before attempting file
+ * If @a file_pattern is non NULL, it is appended to each directory
+ * element extracted from @a pattern_paths, before attempting file
  * system searches.
- * sfi_file_crawler_needs_crawl() may return %TRUE after calling
+ * sfi_file_crawler_needs_crawl() may return TRUE after calling
  * this function.
  */
 void
@@ -386,13 +380,12 @@ file_crawler_crawl_dpatterns (SfiFileCrawler *self)
 }
 
 /**
- * sfi_file_crawler_needs_crawl
- * @self:   valid #SfiFileCrawler
- * RETURNS: %TRUE if sfi_file_crawler_crawl() should be called
+ * @param self	valid SfiFileCrawler
+ * RETURNS: TRUE if sfi_file_crawler_crawl() should be called
  *
  * Figure whether collecting all matching files has finished
  * now. If not, sfi_file_crawler_crawl() needs to be called
- * until this function returns %FALSE.
+ * until this function returns FALSE.
  */
 gboolean
 sfi_file_crawler_needs_crawl (SfiFileCrawler *self)
@@ -405,14 +398,13 @@ sfi_file_crawler_needs_crawl (SfiFileCrawler *self)
 }
 
 /**
- * sfi_file_crawler_crawl
- * @self: valid #SfiFileCrawler
+ * @param self	valid SfiFileCrawler
  *
  * Collect the next file or directory if possible,
  * new results need not arrive after calling this
  * function, and more than one may. This function
  * does nothing if sfi_file_crawler_needs_crawl()
- * returns %FALSE.
+ * returns FALSE.
  */
 void
 sfi_file_crawler_crawl (SfiFileCrawler *self)
@@ -434,8 +426,7 @@ sfi_file_crawler_crawl (SfiFileCrawler *self)
 }
 
 /**
- * sfi_file_crawler_destroy
- * @self: valid #SfiFileCrawler
+ * @param self	valid SfiFileCrawler
  *
  * Destroy an existing file crawler and free any resources
  * allocated by it.
@@ -458,15 +449,15 @@ sfi_file_crawler_destroy (SfiFileCrawler *self)
 }
 
 /**
- * sfi_file_crawler_list_files
- * @search_path:  colon (semicolon under win32) seperated search path with '?' and '*' wildcards
- * @file_pattern: wildcard pattern for file names
- * @cwd:          assumed current working directoy (to interpret './' in search_path)
- * @file_test:    GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
- * @RETURNS:      an #SfiRing with newly allocated strings
- * Given a search path with wildcards, list all files matching @file_pattern,
+ * @param search_path	colon (semicolon under win32) seperated search path with '?' and '*' wildcards
+ * @param file_pattern	wildcard pattern for file names
+ * @param cwd	assumed current working directoy (to interpret './' in search_path)
+ * @param file_test	GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
+ * @return		an SfiRing with newly allocated strings
+ *
+ * Given a search path with wildcards, list all files matching @a file_pattern,
  * contained in the directories which the search path matches. Files that do
- * not pass @file_test are not listed.
+ * not pass @a file_test are not listed.
  */
 SfiRing*
 sfi_file_crawler_list_files (const gchar *search_path,
@@ -541,12 +532,12 @@ sfi_make_dirname_path (const gchar  *file_name)
 }
 
 /**
- * sfi_path_get_filename
- * @filename:   possibly relative filename
- * @parentdir:  possibly relative parent directory path
- * @RETURNS:    a newly allocated absolute pathname
- * Construct an absolute filename from @filename, using @parentdir as
- * parent directory if @filename is not absolute. If @parentdir is
+ * @param filename	possibly relative filename
+ * @param parentdir	possibly relative parent directory path
+ * @return		a newly allocated absolute pathname
+ *
+ * Construct an absolute filename from @a filename, using @a parentdir as
+ * parent directory if @a filename is not absolute. If @a parentdir is
  * not absolute, it is assumed to be current directory relative.
  * An exception are filenames starting out with '~' and '~USER', these
  * are interpreted to refer to '/home' or '/home/USER' respectively.
@@ -652,24 +643,26 @@ errno_check_file (const gchar *file_name,
 }
 
 /**
- * sfi_file_check
- * @file:       possibly relative filename
- * @mode:       feature string
- * @RETURNS:    %TRUE if @file adhears to @mode
- * Perform various checks on @file and return whether all
+ * @param file	possibly relative filename
+ * @param mode	feature string
+ * @return		TRUE if @a file adhears to @a mode
+ *
+ * Perform various checks on @a file and return whether all
  * checks passed. On failure, errno is set appropriately, and
- * %FALSE is returned. Available features to be checked for are:
- * @* e - @file must exist
- * @* r - @file must be readable
- * @* w - @file must be writable
- * @* x - @file must be executable
- * @* f - @file must be a regular file
- * @* d - @file must be a directory
- * @* l - @file must be a symbolic link
- * @* c - @file must be a character device
- * @* b - @file must be a block device
- * @* p - @file must be a named pipe
- * @* s - @file must be a socket.
+ * FALSE is returned. Available features to be checked for are:
+ * @itemize
+ * @item e - @a file must exist
+ * @item r - @a file must be readable
+ * @item w - @a file must be writable
+ * @item x - @a file must be executable
+ * @item f - @a file must be a regular file
+ * @item d - @a file must be a directory
+ * @item l - @a file must be a symbolic link
+ * @item c - @a file must be a character device
+ * @item b - @a file must be a block device
+ * @item p - @a file must be a named pipe
+ * @item s - @a file must be a socket.
+ * @done
  */
 gboolean
 sfi_file_check (const gchar *file,
@@ -706,21 +699,22 @@ sfi_file_equals (const gchar    *file1,
 #include <sys/stat.h>
 
 /**
- * g_file_test_all
- * @file: a file to test
- * @test: bitfield of #GFileTest flags
+ * @param file	a file to test
+ * @param test	bitfield of GFileTest flags
  *
  * This is the AND version of g_file_test(). That is, all file tests
- * specified in the @test bits have to succed for this function to
- * return %TRUE. This function is implemented via sfi_file_check(),
+ * specified in the @a test bits have to succed for this function to
+ * return TRUE. This function is implemented via sfi_file_check(),
  * which allowes for more detailed mode tests and is recommended
  * over use of this function.
- * Here is the list of possible #GFileTest flags:
- * @* G_FILE_TEST_IS_REGULAR    - test for a recular file
- * @* G_FILE_TEST_IS_SYMLINK    - test for a symlink
- * @* G_FILE_TEST_IS_DIR        - test for a directory
- * @* G_FILE_TEST_IS_EXECUTABLE - test for an executable
- * @* G_FILE_TEST_EXISTS        - test whether the file exists
+ * Here is the list of possible GFileTest flags:
+ * @itemize
+ * @item G_FILE_TEST_IS_REGULAR    - test for a recular file
+ * @item G_FILE_TEST_IS_SYMLINK    - test for a symlink
+ * @item G_FILE_TEST_IS_DIR        - test for a directory
+ * @item G_FILE_TEST_IS_EXECUTABLE - test for an executable
+ * @item G_FILE_TEST_EXISTS        - test whether the file exists
+ * @done
  */
 gboolean
 g_file_test_all (const gchar  *file,

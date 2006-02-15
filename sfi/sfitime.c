@@ -82,8 +82,7 @@ _sfi_init_time (void)
 }
 
 /**
- * sfi_time_system
- * @RETURNS: Current system time in micro seconds
+ * @return		Current system time in micro seconds
  *
  * Get the current system time in micro seconds.
  * Subsequent calls to this function do not necessarily
@@ -108,11 +107,10 @@ sfi_time_system (void)
 }
 
 /**
- * sfi_time_to_utc
- * @ustime:  local standard time in micro seconds
- * @RETURNS: UTC relative time in micro seconds
+ * @param ustime	local standard time in micro seconds
+ * @return		UTC relative time in micro seconds
  *
- * Convert the local standard time @ustime into
+ * Convert the local standard time @a ustime into
  * Coordinated Universal Time (UTC).
  * This function is MT-safe and may be called from any thread.
  */
@@ -123,12 +121,11 @@ sfi_time_to_utc (SfiTime ustime)
 }
 
 /**
- * sfi_time_from_utc
- * @ustime:  UTC relative time in micro seconds
- * @RETURNS: local standard time in micro seconds
+ * @param ustime	UTC relative time in micro seconds
+ * @return		local standard time in micro seconds
  *
  * Convert the Coordinated Universal Time (UTC)
- * @ustime into local standard time.
+ * @a ustime into local standard time.
  * This function is MT-safe and may be called from any thread.
  */
 SfiTime
@@ -138,11 +135,10 @@ sfi_time_from_utc (SfiTime ustime)
 }
 
 /**
- * sfi_time_to_string
- * @ustime:  time in micro seconds
- * @RETURNS: newly allocated string
+ * @param ustime	time in micro seconds
+ * @return		newly allocated string
  *
- * Retrieve the time @ustime in human readable form.
+ * Retrieve the time @a ustime in human readable form.
  * The returned time string describes UTC time and
  * thus contains no time zone or UTC offset information.
  */
@@ -164,9 +160,8 @@ sfi_time_to_string (SfiTime ustime)
 }
 
 /**
- * sfi_time_from_string
- * @time_string: string containing human readable date and time
- * @RETURNS:     parsed time in micro seconds or 0 on error
+ * @param time_string	string containing human readable date and time
+ * @return		parsed time in micro seconds or 0 on error
  *
  * Simple variant of sfi_time_from_string_err().
  */
@@ -177,10 +172,9 @@ sfi_time_from_string (const gchar *time_string)
 }
 
 /**
- * sfi_time_from_string_err
- * @time_string: string containing human readable date and time
- * @error_p:     location for newly allocated string containing conversion errors
- * @RETURNS:     parsed time in micro seconds, may be 0 on error
+ * @param time_string	string containing human readable date and time
+ * @param error_p	location for newly allocated string containing conversion errors
+ * @return		parsed time in micro seconds, may be 0 on error
  *
  * Parse date and time from a string of characters and indicate possible errors.
  * Several attempts are made to reconstruct a valid date and time despite possible
