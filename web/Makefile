@@ -9,13 +9,9 @@ top_builddir = ..
 srcdir = .
 BST_VERSION = 0.6.6
 
-all:	all-targets
+all:	site
 
 
-GENERATED = $(strip			\
-	screenshots.phpini		\
-	logogallery.phpini		\
-)
 PHP_TARGETS = $(strip			\
 	php/file-browser.php		\
 	php/file-upload.php		\
@@ -24,6 +20,7 @@ PHP_TARGETS = $(strip			\
 	php/logogallery.phpini		\
 )
 HTML_TARGETS = $(strip			\
+	html/.htaccess			\
 	html/about.html			\
 	html/contact.html		\
 	html/download.html		\
@@ -69,69 +66,110 @@ RDOCU_TARGETS = $(strip			\
 	html/rdocu-bse/index.html	\
 	html/rdocu-gxk/index.html	\
 )
-unportet_targets = $(strip	\
-	objdoc.html		\
-	plugin-devel.html	\
+TARGET_DIRS = $(strip					\
+	php/ html/ html/style/				\
+	html/web-images/ html/images/			\
+	html/screenshots/ html/logogallery/		\
+	tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/		\
+	html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/	\
 )
 ${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
 
-gallery-targets: screenshot-files logogallery-files
-image-targets:	 web-image-files docs-image-files
-all-targets: target-dirs ${PHP_TARGETS} ${HTML_TARGETS} style-files gallery-targets image-targets ${RDOCU_TARGETS} test-install
+# tarball targets
+beastweb-galleries.tar.bz2: ${TARGET_DIRS} html/screenshots/.md5sum html/logogallery/.md5sum
+	tar jcf $@ html/screenshots/ html/logogallery/
+beastweb-pages.tar.bz2: ${TARGET_DIRS} html/style/.md5sum html/web-images/.md5sum html/images/.md5sum ${PHP_TARGETS} ${HTML_TARGETS} ${RDOCU_TARGETS}
+	tar jcf $@ php/ html/ --anchored --exclude='html/screenshots/*' --exclude='html/logogallery/*'
+CLEANFILES += beastweb-galleries.tar.bz2 beastweb-pages.tar.bz2
 
-.DELETE_ON_ERROR: ${PHP_TARGETS} ${HTML_TARGETS} ${GENERATED}
+# website targets
+site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
+.PHONY: site site-preview site-update site-update-all site-update-galleries site-update-pages
+# remote installation
+ACCOUNT=${USER}@beast.gtk.org
+ACDEST=/web/beast/html/
+ACTMP=xgen-tmp
+site-update-pages: beastweb-pages.tar.bz2
+	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
+	ssh ${ACCOUNT} 					\
+	 "set -ex "					\
+	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
+	 "&& rm ${ACTMP}-$(<F)"
+site-update-galleries: beastweb-galleries.tar.bz2
+	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
+	ssh ${ACCOUNT} 					\
+	 "set -ex "					\
+	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
+	 "&& rm ${ACTMP}-$(<F)"
+site-update-all: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2 site-update-pages site-update-galleries
+site-update: site-update-pages
+# preview installation
+BEAST_PREVIEW=~/public_html/beast-preview/
+site-preview: ${BEAST_PREVIEW}/. beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
+	rm -rf ${BEAST_PREVIEW}/*
+	mkdir -p ${BEAST_PREVIEW}/html/
+	tar jxmpf beastweb-pages.tar.bz2 -C ${BEAST_PREVIEW}
+	tar jxmpf beastweb-galleries.tar.bz2 -C ${BEAST_PREVIEW}
+	ln -s ../../doxer-pics/bse-files ${BEAST_PREVIEW}/html/test-files
+	ln -s news.html ${BEAST_PREVIEW}/html/index.html
 
-target-dirs:	# rule to create directories
-	mkdir -p php/ html/ html/style/ html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	mkdir -p tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
-	mkdir -p html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
+${TARGET_DIRS}:	# rule to create directories
+	mkdir -p $@
 
 php/%.php: %.php
-	cp -v $< $@
-
-php/%.phpini: %.phpini
-	cp -v $< $@
-%.phpini: %/ scanimages.sh
-	$(srcdir)/scanimages.sh $<
+	cp $< $@
+php/%.phpini: %/ scanimages.sh
+	$(srcdir)/scanimages.sh $< >xgen-$(@F)
+	cp xgen-$(@F) $@
+	rm -f xgen-$(@F)
 
 DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir)
 
-html/%.html: %.doxi
-	doxer doxi2html $< -o html/ $(DOXIDEFS)
-html/%.phtml: %.doxi
-	doxer doxi2html $< -o html/ -e .phtml $(DOXIDEFS)
 html/%.1.html: ../docs/%.1.doxi
 	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
 html/%.3.html: ../docs/%.3.doxi
 	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
+html/%.phtml: %.doxi
+	doxer doxi2html $< -o html/ -e .phtml $(DOXIDEFS)
+html/%.html: %.doxi
+	doxer doxi2html $< -o html/ $(DOXIDEFS)
 html/%.html: ../docs/%.doxi
 	doxer doxi2html $< -o html/ $(DOXIDEFS)
+html/.htaccess: htaccess.in
+	cp $< $@
 
-style-files: target-dirs
-	rm -f html/style/*
-	cp -a style/* html/style/
+# copy rules
+html/style/.md5sum: $(wildcard style/*)
+	rm -fr html/style/
+	mkdir -p html/style/
+	cp style/*.png style/*.css html/style/
 	doxer writecss -o html/style/
-
-screenshot-files: target-dirs
-	cp -a screenshots/* html/screenshots/
-
-logogallery-files: target-dirs
-	cp -a logogallery/* html/logogallery/
-
-web-image-files:
-	cp -a web-images/* html/web-images/
-
-docs-image-files:
-	cp -a $(srcdir)/../docs/images/*.png html/images/
-
-TEST_INSTALL_DIR=/ptmp/beast-preview/
-TEST_INSTALL_DIR=~/public_html/beast/
-test-install: ${TEST_INSTALL_DIR}
-	rm -rf ${TEST_INSTALL_DIR}/*
-	cp -av ${TEST_INSTALL_DIR}/.htaccess-html html/.htaccess
-	cp -av php/ html/ ${TEST_INSTALL_DIR}
-	ln -s ../../doxer-pics/bse-files ${TEST_INSTALL_DIR}/html/test-files
-	ln -s news.html ${TEST_INSTALL_DIR}/html/index.html
+	md5sum html/style/* >xgen-html-style-md5sum
+	mv xgen-html-style-md5sum $@		# atomic
+html/web-images/.md5sum: $(wildcard web-images/*)
+	rm -fr html/web-images/
+	mkdir -p html/web-images/
+	cp web-images/*.png html/web-images/
+	md5sum html/web-images/* >xgen-html-web-images-md5sum
+	mv xgen-html-web-images-md5sum $@	# atomic
+html/images/.md5sum: $(wildcard ../docs/images/*)
+	rm -fr html/images/
+	mkdir -p html/images/
+	cp ../docs/images/*.png html/images/
+	md5sum html/images/* >xgen-html-images-md5sum
+	mv xgen-html-images-md5sum $@		# atomic
+html/screenshots/.md5sum: $(wildcard screenshots/*)
+	rm -fr html/screenshots/
+	mkdir -p html/screenshots/
+	cp screenshots/* html/screenshots/
+	md5sum html/screenshots/* >xgen-html-screenshots-md5sum
+	mv xgen-html-screenshots-md5sum $@	# atomic
+html/logogallery/.md5sum: $(wildcard logogallery/*)
+	rm -fr html/logogallery/
+	mkdir -p html/logogallery/
+	cp logogallery/* html/logogallery/
+	md5sum html/logogallery/* >xgen-html-logogallery-md5sum
+	mv xgen-html-logogallery-md5sum $@	# atomic
 
 html/%.html: %.tmpdoxi
 	doxer doxi2html $< -o html/ $(DOXIDEFS)
@@ -200,7 +238,7 @@ sfi_rdocu_files = $(filter-out $(foreach f, $(sfi_rdocu_exclude), $(wildcard $(t
 tmpdoxi-sfi/index.tmpdoxi: $(sfi_rdocu_files) rdocu-template.doxi
 	rm -f tmpdoxi-sfi/*
 	doxer src2doxi $(strip 						\
-	      -d .tmpdoxi -o tmpdoxi-sfi/ -T rdocu-template.doxi	\
+	      -d .tmpdoxi -o tmpdoxi-sfi/ -T rdocu-template.doxi -i	\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
 	         $(filter     %.h %.hh, $(sfi_rdocu_files))		\
 	      -Y $(filter-out %.h %.hh, $(sfi_rdocu_files)) )
@@ -222,7 +260,7 @@ gxk_rdocu_files = $(filter-out $(foreach f, $(gxk_rdocu_exclude), $(wildcard $(t
 tmpdoxi-gxk/index.tmpdoxi: $(gxk_rdocu_files) rdocu-template.doxi
 	rm -f tmpdoxi-gxk/*
 	doxer src2doxi $(strip						\
-	      -d .tmpdoxi -o tmpdoxi-gxk/ -T rdocu-template.doxi	\
+	      -d .tmpdoxi -o tmpdoxi-gxk/ -T rdocu-template.doxi -i	\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
 	         $(filter %.h %.hh, $(gxk_rdocu_files))			\
 	      -Y $(filter %.c %.cc, $(gxk_rdocu_files)) )
@@ -245,7 +283,7 @@ bse_rdocu_dscrs = $(call docu_filter, $(bse_rdocu_files))
 tmpdoxi-bse/index.tmpdoxi: $(bse_rdocu_files) rdocu-template.doxi
 	rm -f tmpdoxi-bse/*
 	doxer src2doxi $(strip						\
-	      -d .tmpdoxi -o tmpdoxi-bse/ -T rdocu-template.doxi	\
+	      -d .tmpdoxi -o tmpdoxi-bse/ -T rdocu-template.doxi -i	\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
 	         $(filter %.h %.hh, $(bse_rdocu_files))			\
 	      -Y $(filter %.c %.cc, $(bse_rdocu_dscrs)) )
@@ -281,7 +319,7 @@ bse-interface.tmpdoxi: bse-interface.scad $(top_builddir)/config.status
 	doxer scad2doxi -d .tmpdoxi $< -T rdocu-template.doxi		\
 	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE "BSE INTERFACE"
 
-.PHONY: bse-objects.scad bse-objects.tmpdoxi bse-interface.scad bse-interface.tmpdoxi # FIXME
+.PHONY: # $(AUTODOC) bse-objects.scad bse-objects.tmpdoxi bse-interface.scad bse-interface.tmpdoxi # FIXME
 
 intermediate_files = $(strip	\
 	news-file.tmpdoxi	\
@@ -297,13 +335,9 @@ intermediate_files = $(strip	\
 )
 .INTERMEDIATE: $(intermediate_files)
 
-.PHONY: all-targets target-dirs screenshot-files logogallery-files web-image-files docs-image-files clean style-files test-install
-
 clean:
-	rm -f html/style/*
-	-rmdir -p html/style/
-	rm -f html/screenshots/* html/logogallery/* html/web-images/* html/images/*
-	-rmdir -p html/screenshots/ html/logogallery/ html/web-images/ html/images/
+	rm -fr html/style/
+	rm -fr html/screenshots/ html/logogallery/ html/web-images/ html/images/
 	rm -f html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
 	-rmdir -p html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
 	rm -f tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
@@ -312,4 +346,5 @@ clean:
 	-rmdir -p html/
 	rm -f php/*
 	-rmdir -p php/
-	rm -f ${GENERATED} ${intermediate_files}
+	rm -f ${intermediate_files} ${CLEANFILES}
+.PHONY: clean

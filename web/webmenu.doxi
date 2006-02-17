@@ -1,5 +1,6 @@
 @doxer_dnl	# emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 
+@doxer_add{html-classes}	beast-website beast-webpage
 @include "beastdefs.doxi"
 @doxer_add{html-stylesheets}	BEAST Style	<@top_styledir/beast-style.css>
 @doxer_add{html-stylesheets}	Plain	 	<@top_styledir/plain.css>

@@ -1,0 +1,115 @@
+# BEAST - Bedevilled Audio System		# emacs: -*- mode: apache; -*-
+# Copyright (C) 2000-2006 Tim Janik
+#
+# GNU General Public License version 2 or (at your option) any later version.
+
+AddDefaultCharset utf-8
+
+# --- enable mod_rewrite ---
+RewriteEngine On
+
+# --- Wiki rewriting ---
+# rewrite beast.gtk.org/wiki:BeastFeatures?action=edit to beast.gtk.org/wiki.phtml?action=edit&id=BeastFeatures
+RewriteRule wiki:(.*)$		wiki.phtml?id=$1  [L,QSA]	# append query parameters  
+
+# --- PHP configuration ---
+# config values are setup before PHP starts
+# allow uploads for up to ~8MB
+php_value  upload_max_filesize 8388608
+php_value  post_max_size       8912896
+php_value  memory_limit        9437184
+
+
+# --- Redirects ---
+# 301 - Moved Permanently
+# 302 - Found (resides temporarily under different URI)
+
+# Miscellaneous redirects
+Redirect 301 /wiki				http://beast.gtk.org/wiki:
+Redirect 301 /wiki/				http://beast.gtk.org/wiki:
+Redirect 301 /wiki.php				http://beast.gtk.org/wiki:
+Redirect 301 /wiki.phtml			http://beast.gtk.org/wiki:
+Redirect 301 /wiki:RamboKidBlog			http://blogs.gnome.org/timj
+Redirect 302 /xmlns:xdef			http://beast.gtk.org/documentation.html
+Redirect 302 /screenshots.html			http://beast.gtk.org/screenshots.phtml
+Redirect 302 /mailinglist.html			http://beast.gtk.org/contact.html
+Redirect 302 /bugs.html				http://beast.gtk.org/contact.html
+# in the above, the following list of entry points should be made sure to exist:
+# download.html, screenshots.html, mailinglist.html, bugs.html, faq.html, about.html
+
+# Compat redirects for links pre-2006
+Redirect 301 /browse-bse-files.html			http://beast.gtk.org/sound-browser.phtml
+Redirect 301 /upload-bse-files.html			http://beast.gtk.org/sound-upload.phtml
+Redirect 301 /links-related.html			http://beast.gtk.org/related-links.html
+Redirect 301 /links-synthesis.html			http://beast.gtk.org/synthesis-links.html
+Redirect 301 /search.php				http://beast.gtk.org/search.phtml
+Redirect 301 /release-news.html				http://beast.gtk.org/news-file.html
+Redirect 301 /overview-de.html				http://beast.gtk.org/overview2003de.html
+Redirect 301 /objdoc.html				http://beast.gtk.org/bse-objects.html
+Redirect 301 /bse-structs.3.html			http://beast.gtk.org/bse-interface.html
+Redirect 301 /bse-procs.3.html				http://beast.gtk.org/bse-interface.html
+Redirect 301 /sfi.3.html				http://beast.gtk.org/rdocu-sfi/
+Redirect 301 /bse.3.html				http://beast.gtk.org/rdocu-bse/
+Redirect 301 /beast-gxk.3.html				http://beast.gtk.org/rdocu-gxk/
+Redirect 301 /screenshots/image-zoom-1.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ01-modular_synth_bass.png
+Redirect 301 /screenshots/image-zoom-2.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ02-track_view.png
+Redirect 301 /screenshots/image-zoom-3.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ03-piano_roll.png
+Redirect 301 /screenshots/image-zoom-4.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ04-fft_scopes.png
+Redirect 301 /screenshots/image-zoom-5.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ05-wave_editor.png
+Redirect 301 /screenshots/image-zoom-6.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ06-skin_support.png
+Redirect 301 /screenshots/image-zoom-7.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ07-audio_mixer.png
+Redirect 301 /screenshots/image-zoom-8.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ08-pattern_editor.png
+Redirect 301 /screenshots/image-zoom-9.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ09-post_processing_network.png
+Redirect 301 /screenshots/image-zoom-10.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-01-simple-loop.png
+Redirect 301 /screenshots/image-zoom-11.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-02-wave-play.png
+Redirect 301 /screenshots/image-zoom-12.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-03-synthnet.png
+Redirect 301 /screenshots/image-zoom-13.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-04-piano-roll.png
+Redirect 301 /screenshots/image-zoom-14.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-05-red-flash.png
+Redirect 301 /screenshots/image-zoom-15.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-06-track-roll.png
+Redirect 301 /screenshots/image-zoom-16.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-07-patterned.png
+Redirect 301 /screenshots/image-zoom-17.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-08-synth-fm.png
+Redirect 301 /screenshots/image-zoom-18.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-95-preferences.png
+Redirect 301 /screenshots/image-zoom-19.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/z2003-96-trackedit.png
+Redirect 301 /logo-submissions/image-zoom-1.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/anon-beast-iktome-long.png
+Redirect 301 /logo-submissions/image-zoom-2.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/anon-beast-iktome.png
+Redirect 301 /logo-submissions/image-zoom-3.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/cyria-bse2.png
+Redirect 301 /logo-submissions/image-zoom-4.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/cyria-bse3.png
+Redirect 301 /logo-submissions/image-zoom-5.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/cyria-bse4.png
+Redirect 301 /logo-submissions/image-zoom-6.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/dlundin-beast2.png
+Redirect 301 /logo-submissions/image-zoom-7.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/dlundin-beast2_noshades.png
+Redirect 301 /logo-submissions/image-zoom-8.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/dlundin-beast_large.png
+Redirect 301 /logo-submissions/image-zoom-9.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/dlundin-beast_logo.png
+Redirect 301 /logo-submissions/image-zoom-10.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/dlundin-logo.png
+Redirect 301 /logo-submissions/image-zoom-11.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/drc-beast.png
+Redirect 301 /logo-submissions/image-zoom-12.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/jimmac-01.png
+Redirect 301 /logo-submissions/image-zoom-13.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/jimmac-02.png
+Redirect 301 /logo-submissions/image-zoom-14.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/jimmac-03.png
+Redirect 301 /logo-submissions/image-zoom-15.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/jimmac-icon.png
+Redirect 301 /logo-submissions/image-zoom-16.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/jimmac-logo.png
+Redirect 301 /logo-submissions/image-zoom-17.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/jimmac-splash.png
+Redirect 301 /logo-submissions/image-zoom-18.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/mrogers-beast-head.jpg
+Redirect 301 /logo-submissions/image-zoom-19.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/mrogers-beast-large.jpg
+Redirect 301 /logo-submissions/image-zoom-20.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/mythor-beast.png
+Redirect 301 /logo-submissions/image-zoom-21.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/swamp-bse-skull.jpg
+Redirect 301 /logo-submissions/image-zoom-22.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/sylane-beast-compo.png
+Redirect 301 /logo-submissions/image-zoom-23.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/tk_beast_01.png
+Redirect 301 /logo-submissions/image-zoom-24.html	http://beast.gtk.org/logogallery.phtml?image=logogallery/tk_beast_02.png
+
+# Compat redirects for links pre-2004
+Redirect 301 /pub/beast				http://beast.gtk.org/beast-ftp/
+
+# Compat redirects for links pre-2003
+Redirect 301 /docs/cvs-changelog-plugins.html	http://beast.gtk.org/log-plugins.html
+Redirect 301 /docs/cvs-changelog-bse.html	http://beast.gtk.org/log-bse.html
+Redirect 301 /docs/cvs-changelog-beast.html	http://beast.gtk.org/log-beast.html
+Redirect 301 /docs/ref-bse.html			http://beast.gtk.org/bse.3.html
+Redirect 301 /docs/ref-bsw-procs.html		http://beast.gtk.org/bse-procs.3.html
+Redirect 301 /docs/ref-gsl.html			http://beast.gtk.org/bse.3.html
+Redirect 301 /docs/ref-gxk.html			http://beast.gtk.org/beast-gxk.3.html
+Redirect 301 /docs/cvs-news.html		http://beast.gtk.org/release-news.html
+Redirect 301 /docs/cvs-faq.html			http://beast.gtk.org/faq.html
+Redirect 301 /logo-submissions.html		http://beast.gtk.org/logo-submissions/index.html
+
+# Compat redirects for links pre-2001
+Redirect 301 /beast-shot1.png			http://beast.gtk.org/screenshots/index.html
+Redirect 301 /docs/beast.html			http://beast.gtk.org/development.html

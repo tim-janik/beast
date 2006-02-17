@@ -25,6 +25,3 @@ EXTRA_DIST += $(strip		\
 	bse-categories.txt	\
 	interpolation.txt	\
 )
-
-site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
-	$(MAKE) -C generated/ $(AM_MAKEFLAGS) $@

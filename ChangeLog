@@ -1,3 +1,46 @@
+Fri Feb 17 23:09:43 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile: fixed site update rules.
+
+	* web/Makefile: consolidated build rules. added website tarball build
+	rules. added remote website update rules. fixes for index file generation.
+
+	* web/htaccess.in: new file, covering wiki rewrite rules, compatibility
+	redirections and PHP size constraints.
+
+	* web/scanimages.sh: issue file list to stdout.
+
+	* web/webframe.doxi: use CSS classes beast-website and beast-webframe.
+
+	* web/webmenu.doxi: use CSS classes beast-website and beast-webpage.
+
+	* web/web-images/LT-PartView512.png:
+	* web/web-images/LT-WaveView512.png:
+	* web/web-images/LT-SynthView512.png: image required by overview2003de.doxi.
+	
+	* web/style/beast-style.css: new beast website CSS stylesheet.
+
+	* web/style/plain.css: alternative beast website CSS stylesheet.
+
+	* web/style/beast-small.png: "beast" logo writing by jimmac (Jakub Steiner).
+
+	* web/style/beast-left.png: "beast" logo drawing by Alper Ersoy.
+
+	* web/style/beast-right.png: "Bedevilled Audio System" drawing by Alper Ersoy.
+
+	* web/style/title-arrow-24x64.png: right arrow for section titles by Alper Ersoy.
+
+	* web/style/home-arrow-24x64.png: left arrow for 'Home' links by Alper Ersoy.
+
+	* web/style/square.png: square news item bullet by Alper Ersoy.
+
+	* web/style/beast-bg.png:
+	* web/style/beast-dot.png:
+	* web/style/beast-bg-h5.png: auxillary pictures for the beast website
+	logo backgrounds by Alper Ersoy.
+
+	* docs/Makefile.am: removed outdated rules.
+
 Wed Feb 15 23:45:48 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile: generate BSE object documentation. 
