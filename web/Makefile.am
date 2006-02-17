@@ -87,7 +87,7 @@ site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
 .PHONY: site site-preview site-update site-update-all site-update-galleries site-update-pages
 # remote installation
 ACCOUNT=${USER}@beast.gtk.org
-ACDEST=/web/beast/html/
+ACDEST=/web/beast/
 ACTMP=xgen-tmp
 site-update-pages: beastweb-pages.tar.bz2
 	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
@@ -106,11 +106,10 @@ site-update: site-update-pages
 # preview installation
 BEAST_PREVIEW=~/public_html/beast-preview/
 site-preview: ${BEAST_PREVIEW}/. beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
-	rm -rf ${BEAST_PREVIEW}/*
-	mkdir -p ${BEAST_PREVIEW}/html/
+	rm -rf ${BEAST_PREVIEW}/html/ ${BEAST_PREVIEW}/php/
 	tar jxmpf beastweb-pages.tar.bz2 -C ${BEAST_PREVIEW}
 	tar jxmpf beastweb-galleries.tar.bz2 -C ${BEAST_PREVIEW}
-	ln -s ../../doxer-pics/bse-files ${BEAST_PREVIEW}/html/test-files
+	ln -s ../beast-ftp ${BEAST_PREVIEW}/html/beast-ftp
 	ln -s news.html ${BEAST_PREVIEW}/html/index.html
 
 ${TARGET_DIRS}:	# rule to create directories

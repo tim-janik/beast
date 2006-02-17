@@ -8,9 +8,9 @@
 @*
 @rawhtml{
 <?php
-  define ('PAGEURL',     '');			// use page-relative addressing
-  define ('SRCDIR',      './test-files/');	// script-relative path
-  define ('SRCURL',      'test-files/'); 	// use site-relative addressing
+  define ('PAGEURL',     '');				// use page-relative addressing
+  define ('SRCDIR',      './beast-ftp/bse-files/');	// script-relative path
+  define ('SRCURL',      'beast-ftp/bse-files/'); 	// use site-relative addressing
   define ('PARENTMARK',  '<img src="http://birgrave/icons/back.gif" alt="DIR" />');
   define ('CURRENTMARK', '<img src="http://birgrave/icons/folder.open.png" alt="DIR" />');
   define ('DIRMARK',     '<img src="http://birgrave/icons/folder.png" alt="DIR"/>');

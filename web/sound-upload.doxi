@@ -8,7 +8,7 @@
 @*
 @doxer_raw{html,
 <?php
-  define ('DESTINATIONDIR', '/tmp/');
+  define ('DESTINATIONDIR', '/web/beast/contrib-queue/');
   define ('NAME_TIP', 'e.g. Tim Janik');
   define ('EMAIL_TIP', 'e.g. timj@beast.gtk.org');
   define ('DESCRIPTION_TIP', 'e.g. FunnyTune is a funny test song');
