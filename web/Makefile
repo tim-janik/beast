@@ -161,13 +161,13 @@ html/images/.md5sum: $(wildcard ../docs/images/*)
 html/screenshots/.md5sum: $(wildcard screenshots/*)
 	rm -fr html/screenshots/
 	mkdir -p html/screenshots/
-	cp screenshots/* html/screenshots/
+	cp screenshots/*.png screenshots/*.jpg html/screenshots/
 	md5sum html/screenshots/* >xgen-html-screenshots-md5sum
 	mv xgen-html-screenshots-md5sum $@	# atomic
 html/logogallery/.md5sum: $(wildcard logogallery/*)
 	rm -fr html/logogallery/
 	mkdir -p html/logogallery/
-	cp logogallery/* html/logogallery/
+	cp logogallery/*.png logogallery/*.jpg html/logogallery/
 	md5sum html/logogallery/* >xgen-html-logogallery-md5sum
 	mv xgen-html-logogallery-md5sum $@	# atomic
 
