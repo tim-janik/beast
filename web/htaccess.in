@@ -25,10 +25,10 @@ php_value  memory_limit        9437184
 # 302 - Found (resides temporarily under different URI)
 
 # Miscellaneous redirects
-Redirect 301 /wiki				http://beast.gtk.org/wiki:
-Redirect 301 /wiki/				http://beast.gtk.org/wiki:
-Redirect 301 /wiki.php				http://beast.gtk.org/wiki:
-Redirect 301 /wiki.phtml			http://beast.gtk.org/wiki:
+Redirect 301 /wiki				http://beast.gtk.org/wiki:BeastBse
+Redirect 301 /wiki/				http://beast.gtk.org/wiki:BeastBse
+Redirect 301 /wiki.php				http://beast.gtk.org/wiki:BeastBse
+#Redirect 301 /wiki.phtml			http://beast.gtk.org/wiki:
 Redirect 301 /wiki:RamboKidBlog			http://blogs.gnome.org/timj
 Redirect 302 /xmlns:xdef			http://beast.gtk.org/documentation.html
 Redirect 302 /screenshots.html			http://beast.gtk.org/screenshots.phtml
@@ -102,14 +102,14 @@ Redirect 301 /pub/beast				http://beast.gtk.org/beast-ftp/
 Redirect 301 /docs/cvs-changelog-plugins.html	http://beast.gtk.org/log-plugins.html
 Redirect 301 /docs/cvs-changelog-bse.html	http://beast.gtk.org/log-bse.html
 Redirect 301 /docs/cvs-changelog-beast.html	http://beast.gtk.org/log-beast.html
-Redirect 301 /docs/ref-bse.html			http://beast.gtk.org/bse.3.html
-Redirect 301 /docs/ref-bsw-procs.html		http://beast.gtk.org/bse-procs.3.html
-Redirect 301 /docs/ref-gsl.html			http://beast.gtk.org/bse.3.html
-Redirect 301 /docs/ref-gxk.html			http://beast.gtk.org/beast-gxk.3.html
-Redirect 301 /docs/cvs-news.html		http://beast.gtk.org/release-news.html
+Redirect 301 /docs/ref-bse.html			http://beast.gtk.org/rdocu-bse/
+Redirect 301 /docs/ref-bsw-procs.html		http://beast.gtk.org/bse-interface.html
+Redirect 301 /docs/ref-gsl.html			http://beast.gtk.org/rdocu-bse/
+Redirect 301 /docs/ref-gxk.html			http://beast.gtk.org/rdocu-gxk/
+Redirect 301 /docs/cvs-news.html		http://beast.gtk.org/news-file.html
 Redirect 301 /docs/cvs-faq.html			http://beast.gtk.org/faq.html
-Redirect 301 /logo-submissions.html		http://beast.gtk.org/logo-submissions/index.html
+Redirect 301 /logo-submissions.html		http://beast.gtk.org/logogallery.phtml
 
 # Compat redirects for links pre-2001
-Redirect 301 /beast-shot1.png			http://beast.gtk.org/screenshots/index.html
+Redirect 301 /beast-shot1.png			http://beast.gtk.org/screenshots.phtml
 Redirect 301 /docs/beast.html			http://beast.gtk.org/development.html

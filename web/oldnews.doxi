@@ -154,9 +154,9 @@ languages and more bug fixes are listed in the
 BEAST v0.6.0 supports skins for the
 @uri{http://beast.gtk.org/screenshots/image-zoom-5.html, piano roll and event roll}
 widgets, so we've opened up a
-@uri{http://beast.gtk.org/sound-browser.phtml?d=skins, place to collect skin packages}.
+@uri{http://beast.gtk.org/sound-browser.phtml?loc=/skins, place to collect skin packages}.
 The
-@uri{http://beast.gtk.org/wiki.php, wiki} also had changes on the
+@uri{http://beast.gtk.org/wiki:BeastBse, wiki} also had changes on the
 @uri{http://beast.gtk.org/wiki:BeastFeatures, BeastFeatures} and
 @uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} pages
 and the 
@@ -183,7 +183,7 @@ As always, the @uri{@top_webdir/news-file.html, NEWS section} has all the glory 
 @newsentry{Thursday 22 Jan 2004, Wiki openings}
 
 The @beast website has a
-@uri{http://beast.gtk.org/wiki.php, Wiki Area} now, all users and
+@uri{http://beast.gtk.org/wiki:BeastBse, Wiki Area} now, all users and
 visitors are invited to @uri{http://beast.gtk.org/wiki:Discussion, discuss}
 various topics or to sign the
 @uri{http://beast.gtk.org/wiki:GuestBook, GuestBook}.

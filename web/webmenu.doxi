@@ -98,7 +98,7 @@
 @item 		@fmenuuri{@top_webdir/download.html,		Download}
 @item 		@fmenuuri{@top_webdir/contact.html,		Contact}
 @item 		@fmenuuri{@top_webdir/search.phtml,		Search}
-@item 		@fmenuuri{@top_webdir/wiki.phtml,		Wiki}
+@item 		@fmenuuri{@top_webdir/wiki:BeastBse,		Wiki}
 @done
 
 @rawhtml{

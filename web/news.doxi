@@ -67,7 +67,7 @@ BEAST tarball:
 @uri{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.4.tar.gz, bse-portaudio-0.6.4.tar.gz}
 
 
-This release introduces support for GUS Patch files, has a new tool ``bsewavetool'' to
+This release introduces support for GUS Patch files, has a new tool "bsewavetool" to
 create BseWave files - a multi-sample file format that can be read by @beast{} - it has a new
 saturator effect and a new script to automatically assign mixer busses to tracks.
 Apart from that, there also were lots of minor improvements and bug fixes, and the usual

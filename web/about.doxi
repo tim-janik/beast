@@ -30,9 +30,9 @@ page, showing beast in action.
 
 @beast is an abbreviation for @emph{Bedevilled Audio System}. @bse an abbreviation for
 @emph{Bedevilled Sound Engine}, it implements all the neccessary music processing logic
-required by @beast in a seperate reusable library. The ``Bedevilled'' portion of
+required by @beast in a seperate reusable library. The "Bedevilled" portion of
 the names has no religious background, but merely refers to the complexity involved
-implementing such a ``BEAST'' (pun intended ;).
+implementing such a "BEAST" (pun intended ;).
 
 For discussions/feedback relating to @beast or this page, refer to our
 @uri{http://beast.gtk.org/wiki:Discussion, Discussion} page.
