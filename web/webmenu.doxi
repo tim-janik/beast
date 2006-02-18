@@ -22,79 +22,83 @@
 
 @defalias{menu_branch}	@doxer_visible{@doxer_cmatch{\b@doxer_args{1}\b,@doxer_get{webmenu}}}
 
-@doxer_command	menuuri		@dnl conditionalized uris {FILE_URI, TITLE}
+@doxer_command	fmenuuri	@dnl flat uris {FILE_URI, TITLE}
+@doxer_span{menu-leaf,@uri{@doxer_args{1},@doxer_args{2:}}}
+@done
+
+@doxer_command	dmenuuri	@dnl conditionalized uris {FILE_URI, TITLE}
 @doxer_visible{@doxer_cmatch{.*@doxer_get{destination-basename},@doxer_args{1}}}
-@doxer_span{thispage,@uri{@doxer_args{1},@doxer_args{2:}}}
+@doxer_span{menu-expand,@uri{@doxer_args{1},@doxer_args{2:}}}
 @done
 @doxer_hidden{@doxer_cmatch{.*@doxer_get{destination-basename},@doxer_args{1}}}
-@uri{@doxer_args{1},@doxer_args{2:}}
+@doxer_span{menu-collapse,@uri{@doxer_args{1},@doxer_args{2:}}}
 @done
 @done
 
 @itemize{none}
-@item 		@menuuri{@top_webdir/news.html,				News}
-@item		@menuuri{@top_webdir/about.html,			About}
-@item		@menuuri{@top_webdir/screenshots.phtml,			Screenshots}
-@item		@menuuri{@top_webdir/sound-browser.phtml,		Sound Archive}
+@item 		@fmenuuri{@top_webdir/news.html,		News}
+@item		@fmenuuri{@top_webdir/about.html,		About}
+@item		@fmenuuri{@top_webdir/screenshots.phtml,	Screenshots}
+@item		@dmenuuri{@top_webdir/sound-browser.phtml,	Sound Archive}
     @menu_branch{sound-archive}
 	@itemize{none}
-	@item	@menuuri{@top_webdir/sound-upload.phtml,		Contribute}
+	@item	@fmenuuri{@top_webdir/sound-upload.phtml,	Contribute}
 	@done
     @done
-@item		@menuuri{@top_webdir/documentation.html,		Documentation}
+@item		@dmenuuri{@top_webdir/documentation.html,	Documentation}
     @menu_branch{documentation}
 	@itemize{none}
-	@item 	@menuuri{@top_webdir/faq.html,				FAQ}
-	@item 							Introduction
-	@item 	@menuuri{@top_webdir/overview2003de.html,		Overview (German)}
-	@item 	@menuuri{@top_webdir/quickstart.html,			Quick Start}
-	@item 							Manual Pages
-	@item 	@menuuri{@top_webdir/beast.1.html,			beast(1)}
-	@item 	@menuuri{@top_webdir/bsesh.1.html,			bsesh(1)}
-	@item 	@menuuri{@top_webdir/sfidl.1.html,			sfidl(1)}
-	@item 							API Reference
-	@item 	@menuuri{@top_webdir/bse-objects.html,			BSE Objects}
-	@item 	@menuuri{@top_webdir/bse-interface.html,	  	BSE Interface}
-	@item 	@menuuri{@top_webdir/rdocu-sfi/,	  		SFI Functions}
+	@item 	@fmenuuri{@top_webdir/faq.html,				FAQ}
+	@item 	@doxer_span{menu-leaf,				Introduction}
+	@item 	@fmenuuri{@top_webdir/overview2003de.html,		Overview (German)}
+	@item 	@fmenuuri{@top_webdir/quickstart.html,			Quick Start}
+	@item 	@doxer_span{menu-leaf,				Manual Pages}
+	@item 	@fmenuuri{@top_webdir/beast.1.html,			beast(1)}
+	@item 	@fmenuuri{@top_webdir/bsesh.1.html,			bsesh(1)}
+	@item 	@fmenuuri{@top_webdir/sfidl.1.html,			sfidl(1)}
+	@item 	@doxer_span{menu-leaf,				API Reference}
+	@item 	@fmenuuri{@top_webdir/bse-objects.html,			BSE Objects}
+	@item 	@fmenuuri{@top_webdir/bse-interface.html,	  	BSE Interface}
+	@item 	@fmenuuri{@top_webdir/rdocu-sfi/,	  		SFI Functions}
 	@done
     @done
-@item 		@menuuri{@top_webdir/resources.html, 			Resources}
+@item 		@dmenuuri{@top_webdir/resources.html, 		Resources}
     @menu_branch{resources}
 	@itemize{none}
-	@item 	@menuuri{@top_webdir/synthesis-links.html,		Synthesis Links}
-	@item 	@menuuri{@top_webdir/related-links.html,		Related Links}
+	@item 	@fmenuuri{@top_webdir/synthesis-links.html,		Synthesis Links}
+	@item 	@fmenuuri{@top_webdir/related-links.html,		Related Links}
 	@done
     @done
-@item 		@menuuri{@top_webdir/development.html, 			Development}
+@item 		@dmenuuri{@top_webdir/development.html, 	Development}
     @menu_branch{development}
 	@itemize{none}
-	@item 	@menuuri{@top_webdir/news-file.html,			Release NEWS}
-	@item 							ChangeLogs
-	@item 	@menuuri{@top_webdir/log-beast.html,			BEAST Changes}
-	@item 	@menuuri{@top_webdir/log-plugins.html,			Plugin Changes}
-	@item 	@menuuri{@top_webdir/log-bse.html,			BSE Changes}
-	@item 	@menuuri{@top_webdir/log-sfi.html,			SFI Changes}
-	@item 							BEAST/BSE Development
-	@item 	@menuuri{@top_webdir/architecture.html,			Architecture}
-	@item 	@menuuri{@top_webdir/plugin-devel.html,			Writing Plugins}
-	@item 	@menuuri{@top_webdir/doxer-docu.html,			Doxer Manual}
-	@item 	@menuuri{@top_webdir/sfidl-manual.html,			IDL Compiler}
-	@item 	@menuuri{@top_webdir/rdocu-gxk/,			GXK Reference}
-	@item 	@menuuri{@top_webdir/rdocu-bse/,			BSE Reference}
-	@item 	@menuuri{@top_webdir/engine-mplan.html,			Synth Engine}
+	@item 	@fmenuuri{@top_webdir/news-file.html,			Release NEWS}
+	@item 	@doxer_span{menu-leaf,				ChangeLogs}
+	@item 	@fmenuuri{@top_webdir/log-beast.html,			BEAST Changes}
+	@item 	@fmenuuri{@top_webdir/log-plugins.html,			Plugin Changes}
+	@item 	@fmenuuri{@top_webdir/log-bse.html,			BSE Changes}
+	@item 	@fmenuuri{@top_webdir/log-sfi.html,			SFI Changes}
+	@item 	@doxer_span{menu-leaf,				BEAST/BSE Development}
+	@item 	@fmenuuri{@top_webdir/architecture.html,		Architecture}
+	@item 	@fmenuuri{@top_webdir/plugin-devel.html,		Writing Plugins}
+	@item 	@fmenuuri{@top_webdir/doxer-docu.html,			Doxer Manual}
+	@item 	@fmenuuri{@top_webdir/sfidl-manual.html,		IDL Compiler}
+	@item 	@fmenuuri{@top_webdir/rdocu-gxk/,			GXK Reference}
+	@item 	@fmenuuri{@top_webdir/rdocu-bse/,			BSE Reference}
+	@item 	@fmenuuri{@top_webdir/engine-mplan.html,		Synth Engine}
 	@done
     @done
-@item 		@menuuri{@top_webdir/historic.html,			Historic}
+@item 		@dmenuuri{@top_webdir/historic.html,		Historic}
     @menu_branch{historic-menu}
 	@itemize{none}
-	@item 	@menuuri{@top_webdir/oldnews.html,			Old News}
-	@item 	@menuuri{@top_webdir/logogallery.phtml, 		Logo Contest}
+	@item 	@fmenuuri{@top_webdir/oldnews.html,			Old News}
+	@item 	@fmenuuri{@top_webdir/logogallery.phtml, 		Logo Contest}
 	@done
   @done
-@item 		@menuuri{@top_webdir/download.html,			Download}
-@item 		@menuuri{@top_webdir/contact.html,			Contact}
-@item 		@menuuri{@top_webdir/search.phtml,			Search}
-@item 		@menuuri{@top_webdir/wiki.phtml,			Wiki}
+@item 		@fmenuuri{@top_webdir/download.html,		Download}
+@item 		@fmenuuri{@top_webdir/contact.html,		Contact}
+@item 		@fmenuuri{@top_webdir/search.phtml,		Search}
+@item 		@fmenuuri{@top_webdir/wiki.phtml,		Wiki}
 @done
 
 @rawhtml{

@@ -1,3 +1,24 @@
+Sat Feb 18 19:41:00 2006  Tim Janik  <timj@gtk.org>
+
+	* web/style/beast-style.css: IE and indentaiton fixes. added tree 
+	expanders for web menus.
+
+	* web/webmenu.doxi: added different CSS classes for submenus and expand
+	vs. collapsed state. 
+
+	* web/sound-browser.doxi: fixed up file type icon links.
+
+	* web/web-images/back.png:
+	* web/web-images/compressed.png:
+	* web/web-images/folder-open.png:
+	* web/web-images/folder.png:
+	* web/web-images/sound2.png:
+	* web/web-images/text.png: added public domain icons from apache.
+
+	* web/style/triangle-down-blue.png: tree expand icon by Alper Ersoy.
+
+	* web/style/triangle-right-blue.png: tree collapsed icon by Alper Ersoy.
+
 Fri Feb 17 23:15:42 2006  Tim Janik  <timj@gtk.org>
 
 	* web/screenshots/: new directory containing screenshots for the beast website.

@@ -11,12 +11,12 @@
   define ('PAGEURL',     '');				// use page-relative addressing
   define ('SRCDIR',      './beast-ftp/bse-files/');	// script-relative path
   define ('SRCURL',      'beast-ftp/bse-files/'); 	// use site-relative addressing
-  define ('PARENTMARK',  '<img src="http://birgrave/icons/back.gif" alt="DIR" />');
-  define ('CURRENTMARK', '<img src="http://birgrave/icons/folder.open.png" alt="DIR" />');
-  define ('DIRMARK',     '<img src="http://birgrave/icons/folder.png" alt="DIR"/>');
-  define ('FILEMARK',    '<img src="http://birgrave/icons/text.png" alt="DAT"/>');
-  define ('SOUNDMARK',   '<img src="http://birgrave/icons/sound2.png" alt="SND"/>');
-  define ('ARCHIVEMARK', '<img src="http://birgrave/icons/compressed.png" alt="ARC"/>');
+  define ('PARENTMARK',  '<img src="web-images/back.png" alt="BACK" />');
+  define ('CURRENTMARK', '<img src="web-images/folder-open.png" alt="DIR" />');
+  define ('DIRMARK',     '<img src="web-images/folder.png" alt="DIR"/>');
+  define ('FILEMARK',    '<img src="web-images/text.png" alt="DATA"/>');
+  define ('SOUNDMARK',   '<img src="web-images/sound2.png" alt="SOUND"/>');
+  define ('ARCHIVEMARK', '<img src="web-images/compressed.png" alt="ARCHIVE"/>');
   include '../php/file-browser.php';
 ?>
 }

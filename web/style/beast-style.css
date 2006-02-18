@@ -47,22 +47,41 @@ body {
 .infobox { width:1em; }  
 
 /* navigation menu */
-.webmenu       { font-weight: bold; }
-.webmenu       { white-space:nowrap; } /* needed because mozilla ignores padding during text wrapping */
-.webmenu ul    { padding-left:0; margin-left:0; }
-.webmenu li    { min-width:12.1em; margin-bottom:0.2em; text-indent:0; }
-.webmenu li li { padding-left:1em; }
+.webmenu            { font-weight: bold; }
+.webmenu            { white-space:nowrap; /* needed because mozilla ignores padding during text wrapping */ }
+.webmenu ul         { margin-left:0.3em; padding-left:0; }
+.webmenu ul ul      { margin-left:1em;   padding-left:0; }
+.webmenu li         { margin-left:0; padding-left:0; min-width:12.1em; margin-bottom:0.2em; }
+.webmenu li li      { margin-left:0; padding-left:0; }
+* html .webmenu li  { /* IE-switch */
+  white-space:normal; /* needed because IE nowrap creates bogus newlines */
+}
+/* tree-expanders for web menus */
+.webmenu .menu-leaf {
+  padding-left:14px;
+  background-image:none;
+}
+.webmenu .menu-expand a,
+.webmenu .menu-collapse a {
+  padding-left:14px;
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+.webmenu .menu-expand   a { background-image: url(triangle-down-blue.png); }
+.webmenu .menu-collapse a { background-image: url(triangle-right-blue.png); }
 
 /* standard links */
-a         { text-decoration:underline; color: #0000ff; }
+a           { text-decoration:underline; color: #0000ff; }
 /* navigation links */
-.webmenu a  { text-decoration:none; color: #0000ff; padding: 0.3em 1em; }
-.webmenu a  { margin-right:1em; } /* work around Firefox/1.0.4 ignoring anchor padding due to an over-wide table column */
+.webmenu a  { text-decoration:none; color: #0000ff; /* padding: 0.3em 1em; */ }
+.webmenu a  {
+  margin-right:1em; /* work around Firefox/1.0.4 ignoring anchor padding due to an over-wide table column */
+}
 /* link states */
 a:hover   { background-color: #e8e8ff; }
 a:visited { color: #460086; }
 /* links linking to the same page */
-.thispage a  { text-decoration:none; color: #000000; }
+.webmenu .menu-expand a  { text-decoration:none; color: #000000; }
 /* link states */
 a:active  { color: #8000ff; background-color: transparent; }
 
