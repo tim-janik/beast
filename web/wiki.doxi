@@ -6,7 +6,7 @@
 
 @rawhtml{
 <?php
-  echo 'include("../ewiki-current/config.php")',"\n<br>\n";
-  echo 'ewiki_page()';
+  include("../ewiki-current/config.php");
+  ewiki_page();
 ?>
 }
