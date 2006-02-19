@@ -25,6 +25,26 @@
 @heading What's New?
 @dnl ----------------------------- START -----------------------------
 
+
+@newsentry{Sunday 19 February 2006, Website move}
+
+The @beast website has been moved to a new documentation tool which will fix the
+current build problems with @beast documentation and can be better tailored to
+the project needs. Many small things have been fixed all over the site, and
+we are finally able to produce reference documentation from the central @beast
+components:
+@uri{@top_webdir/rdocu-sfi/, SFI},
+@uri{@top_webdir/rdocu-bse/, BSE},
+@uri{@top_webdir/rdocu-gxk/, GXK} and for script development:
+@uri{@top_webdir/bse-interface.html, BSE structures and procedures} and
+@uri{@top_webdir/bse-objects.html, BSE Objects}.
+
+The site layout and HTML have also been improved during the move, the website should
+be much more portable across different browsers now.
+Please feel free to explore the new site and report any problems you encounter
+(broken links, missing redirects, layout problems, etc).
+
+
 @newsentry{Thursday 26 May 2005, Important bug fix release}
 
 BEAST/BSE version 0.6.6 is available from the
@@ -47,38 +67,9 @@ projects and all message dialogs got a major overhaul.
 Translation updates were made to canadian english, czech, italian and spanish, and
 a basque translations was newly started.
 The
-@uri{@top_webdir/release-news.html,Release NEWS section} has the exact change list, so enjoy
+@uri{@top_webdir/news-file.html,Release NEWS section} has the exact change list, so enjoy
 the new code as always and please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
-
-@newsentry{Wednesday 13 April 2005, A new release - we finaly made it!}
-
-BEAST/BSE version 0.6.5 is available from the
-@uri{@top_webdir/download.html,download section},
-here is the @uri{http://gnomedesktop.org/node/2225,FootNotes announcement}.
-
-BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.5.tar.gz, beast-0.6.5.tar.gz}
-@* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.4-0.6.5.bz2, patch-beast-0.6.4-0.6.5.bz2}
-@* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.4.tar.gz, bse-alsa-0.6.4.tar.gz}
-@* @uri{http://www.portaudio.com/, PortAudio} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.4.tar.gz, bse-portaudio-0.6.4.tar.gz}
-
-
-This release introduces support for GUS Patch files, has a new tool "bsewavetool" to
-create BseWave files - a multi-sample file format that can be read by @beast{} - it has a new
-saturator effect and a new script to automatically assign mixer busses to tracks.
-Apart from that, there also were lots of minor improvements and bug fixes, and the usual
-set of language updates. Translation updates in particular were made to british english,
-canadian english, czech, dutch and spanish.
-Newly started translations are bulgarian and kinyarwanda.
-The
-@uri{@top_webdir/release-news.html,Release NEWS section} has the exact change list, so enjoy
-the new code and please report bugs to our
-@uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
-
 
 @dnl ----------------------------- END -----------------------------
 @newstag{NEWS Archive}

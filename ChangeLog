@@ -1,3 +1,13 @@
+Sun Feb 19 01:26:19 2006  Tim Janik  <timj@gtk.org>
+
+	* web/news.doxi: announce website move.
+
+Sun Feb 19 00:20:15 2006  Tim Janik  <timj@gtk.org>
+
+	* web/*.doxi: misc wording and link fixes.
+
+	* web/htaccess.in: wiki redirection fixes, updated older redirects.
+
 Sat Feb 18 19:41:00 2006  Tim Janik  <timj@gtk.org>
 
 	* web/style/beast-style.css: IE and indentaiton fixes. added tree 
