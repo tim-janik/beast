@@ -1,3 +1,7 @@
+Tue Feb 21 01:31:42 2006  Tim Janik  <timj@gtk.org>
+
+	* web/beastdefs.doxi: removed.
+
 Tue Feb 21 01:29:38 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/beastdefs.doxi: CVS copied here from web/.
