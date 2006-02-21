@@ -1,6 +1,6 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/01/31 01:51:21 $
-@include "webframe.doxi"
+@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - Project Architecture
 
 @titlesection

@@ -1,21 +1,19 @@
-\input texinfo   @c -*-texinfo-*-
-@c %**start of header
-@c @setfilename INFO-FILE-NAME
-@settitle RELEASE-NOTES
-@footnotestyle end
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@include "docframe.doxi"
+@doxer_set{title}       BEAST/BSE Release Notes
 
-@include texiutils.texi
+@titlesection
+@doctitle		@beastbse Release Notes
 
-@docfont{tech}
-
-@unnumbered @center RELEASE-NOTES
+@heading
+@*
 
 This new development series of BEAST comes with a lot of the internals
 redone, many new GUI features and a sound generation back-end separated
 from all GUI activities.
 Specifics can be found in the
-@uref{beast-doc://release-news,,NEWS section}.
+@uri{@top_webdir/release-news.html, NEWS section}.
 
 Outstanding new features include support for skins, many sample
 file formats, MIDI file import abilities, an improved piano roll
@@ -25,15 +23,13 @@ various scope types and unlimited Undo/Redo capabilities.
 
 Good starting points are the effects and instruments or the demo
 song shipped with BEAST, and of course the
-@uref{beast-doc://quickstart,,Quick Start Guide} in the
-@menupath{Help} menu.
+@uri{@top_webdir/quickstart.html, Quick Start Guide} in the
+@menu{Help} menu.
 
 For uptodate information on BEAST development, please visit:
 
-@center	@uref{http://beast.gtk.org}
+@center	@uri{http://beast.gtk.org}
 
 Questions, comments, bug reports and similar stuff should be sent to:
 
-@center	@uref{mailto://beast@@gnome.org}
-
-@bye
+@center	@uri{mailto://beast@@gnome.org}

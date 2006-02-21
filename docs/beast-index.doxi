@@ -1,53 +1,49 @@
-\input texinfo   @c -*-texinfo-*-
-@c %**start of header
-@settitle BEAST-INDEX
-@c %**end of header
+@doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@include "docframe.doxi"
+@doxer_set{title}       BEAST/BSE - Documentation Index
 
-@include texiutils.texi
-
-@unnumbered Documents
+@heading Documents
 @itemize
-@item @uref{beast-doc://beast-index,,   Index}
-@item @uref{beast-doc://faq,,           FAQ (Frequently Asked Questions)}
-@item @uref{beast-doc://release-notes,, Release Notes}
-@item @uref{beast-doc://release-news,,  NEWS File}
-@item @uref{beast-doc://quickstart,,    Quick Start Guide}
-@end itemize
+@item @uri{@top_webdir/beast-index.html,	Index}
+@item @uri{@top_webdir/faq.html,		FAQ (Frequently Asked Questions)}
+@item @uri{@top_webdir/release-notes.html,	Release Notes}
+@item @uri{@top_webdir/quickstart.html,		Quick Start Guide}
+@done
 
-@unnumbered Commands
+@heading Commands
 @itemize
-@item @uref{beast-man://1/beast,,       BEAST - Bedevilled Audio System}
-@item @uref{beast-man://1/bsesh,,       BSESH - BSE Scheme Shell}
-@item @uref{beast-man://1/sfidl,,       SFIDL - SFI IDL Compiler}
-@end itemize
+@item @uri{@top_webdir/beast.1.html,		BEAST - Bedevilled Audio System}
+@item @uri{@top_webdir/bsesh.1.html,		BSESH - BSE Scheme Shell}
+@item @uri{@top_webdir/sfidl.1.html,		SFIDL - SFI IDL Compiler}
+@done
 
 @anchor{development}
-@unnumbered Development Documents
+@heading Development Documents
 @itemize
-@item @uref{beast-doc://architecture,,  BEAST Architecture}
-@item @uref{beast-doc://plugin-devel,,  BSE Plugin Development}
-@item @uref{beast-doc://sfidl-manual,,  SFIDL - Manual}
-@item @uref{beast-doc://engine-mplan,,  DSP Synthesis Engine (Concepts)}
-@end itemize
+@item @uri{beast-doc://release-news,		NEWS File}
+@item @uri{@top_webdir/architecture.html,	BEAST Architecture}
+@item @uri{@top_webdir/plugin-devel.html,	BSE Plugin Development}
+@item @uri{@top_webdir/sfidl-manual.html,	SFIDL - Manual}
+@item @uri{@top_webdir/engine-mplan.html,	DSP Synthesis Engine} (Conceptual development notes)
+@done
 
-@unnumbered Reference
+@heading Reference
 @itemize
-@item @uref{beast-doc://objdoc,,        BSE Objects and Plugins} (Properties, Signals, Channels)
-@item @uref{beast-man://3/bse-structs,, BSE Structures (public API)}
-@item @uref{beast-man://3/bse-procs,,   BSE Procedures (public API)}
-@item @uref{beast-man://3/bse,,         BSE - Bedevilled Sound Engine (internal API)}
-@item @uref{beast-man://3/sfi,,         SFI - Synthesis Fusion Kit Interface (API)}
-@item @uref{beast-man://3/beast-gxk,,   GXK - Gtk+ Extension Kit (API)}
-@end itemize
+@item @uri{beast-doc://objdoc,        BSE Objects and Plugins} (Properties, Signals, Channels)
+@item @uri{beast-man://3/bse-structs, BSE Structures (public API)}
+@item @uri{beast-man://3/bse-procs,   BSE Procedures (public API)}
+@item @uri{beast-man://3/bse,         BSE - Bedevilled Sound Engine (internal API)}
+@item @uri{beast-man://3/sfi,         SFI - Synthesis Fusion Kit Interface (API)}
+@item @uri{beast-man://3/beast-gxk,   GXK - Gtk+ Extension Kit (API)}
+@done
 
-@unnumbered Online Resources
+@heading Online Resources
 @itemize
-@item @uref{http://beast.gtk.org/,,                       BEAST Website}
-@item @uref{http://beast.gtk.org/browse-bse-files.html,,  Sound Archive}
-@item @uref{http://beast.gtk.org/wiki:HelpDesk,,          Help Desk}
-@item @uref{http://beast.gtk.org/wiki:FeatureRequests,,   Feature Requests}
-@item @uref{http://beast.gtk.org/wiki:BeastTodo,,         Community TODO}
-@item @uref{http://beast.gtk.org/links-synthesis.html,,   Synthesis Links}
-@end itemize
-
-@bye
+@item @uri{http://beast.gtk.org/,                       BEAST Website}
+@item @uri{http://beast.gtk.org/sound-browser.phtml,	Sound Archive}
+@item @uri{http://beast.gtk.org/wiki:HelpDesk,          Help Desk}
+@item @uri{http://beast.gtk.org/wiki:FeatureRequests,   Feature Requests}
+@item @uri{http://beast.gtk.org/wiki:BeastTodo,         Community TODO}
+@item @uri{http://beast.gtk.org/synthesis-links.html,   Synthesis Links}
+@done

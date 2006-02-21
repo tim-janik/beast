@@ -122,7 +122,11 @@ php/%.phpini: %/ scanimages.sh
 	cp xgen-$(@F) $@
 	rm -f xgen-$(@F)
 
-DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir)
+WEBMENU_DOXI_FILES = faq.doxi
+WEBMENU_DEFS  = $(patsubst %, -D DOXI_INCLUDE_FILE \"webframe.doxi\" , $(findstring $(<F), ${WEBMENU_DOXI_FILES}))
+WEBFRAME_DOXI_FILES = quickstart.doxi
+WEBFRAME_DEFS = $(patsubst %, -D DOXI_INCLUDE_FILE \"webframe.doxi\" , $(findstring $(<F), ${WEBFRAME_DOXI_FILES}))
+DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call WEBFRAME_DEFS) $(call WEBMENU_DEFS)
 
 html/%.1.html: ../docs/%.1.doxi
 	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)

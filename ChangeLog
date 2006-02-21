@@ -1,3 +1,14 @@
+Tue Feb 21 01:26:43 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: build HTML docs with doxer.
+
+	* docs/release-notes.doxi: 
+	* docs/beast-index.doxi: ported to doxer markup.
+
+	* docs/*.doxi: include fixes.
+
+	* web/Makefile: include fixes.
+
 Sun Feb 19 01:26:19 2006  Tim Janik  <timj@gtk.org>
 
 	* web/news.doxi: announce website move.
