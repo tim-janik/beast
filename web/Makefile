@@ -73,7 +73,7 @@ TARGET_DIRS = $(strip					\
 	tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/		\
 	html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/	\
 )
-${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi beastdefs.doxi
+${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi ../docs/beastdefs.doxi
 
 # tarball targets
 beastweb-galleries.tar.bz2: ${TARGET_DIRS} html/screenshots/.md5sum html/logogallery/.md5sum
@@ -123,21 +123,19 @@ php/%.phpini: %/ scanimages.sh
 	rm -f xgen-$(@F)
 
 WEBMENU_DOXI_FILES = faq.doxi
-WEBMENU_DEFS  = $(patsubst %, -D DOXI_INCLUDE_FILE \"webframe.doxi\" , $(findstring $(<F), ${WEBMENU_DOXI_FILES}))
-WEBFRAME_DOXI_FILES = quickstart.doxi
-WEBFRAME_DEFS = $(patsubst %, -D DOXI_INCLUDE_FILE \"webframe.doxi\" , $(findstring $(<F), ${WEBFRAME_DOXI_FILES}))
-DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call WEBFRAME_DEFS) $(call WEBMENU_DEFS)
+DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE $(if $(findstring $(<F), ${WEBMENU_DOXI_FILES}), \"webmenu.doxi\", \"webframe.doxi\")
+DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir)
 
 html/%.1.html: ../docs/%.1.doxi
-	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
+	doxer doxi2htmlman $(strip $< -o html/ $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.3.html: ../docs/%.3.doxi
-	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
-html/%.phtml: %.doxi
-	doxer doxi2html $< -o html/ -e .phtml $(DOXIDEFS)
-html/%.html: %.doxi
-	doxer doxi2html $< -o html/ $(DOXIDEFS)
+	doxer doxi2htmlman $(strip $< -o html/ $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.html: ../docs/%.doxi
-	doxer doxi2html $< -o html/ $(DOXIDEFS)
+	doxer doxi2html $(strip $< -o html/ $(DOXIDEFS) $(call DOCFRAME_DEFS))
+html/%.phtml: %.doxi
+	doxer doxi2html $(strip $< -o html/ -e .phtml $(DOXIDEFS))
+html/%.html: %.doxi
+	doxer doxi2html $(strip $< -o html/ $(DOXIDEFS))
 html/.htaccess: htaccess.in
 	cp $< $@
 

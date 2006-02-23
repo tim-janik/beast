@@ -1,3 +1,13 @@
+Thu Feb 23 23:16:25 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile:
+	provide DOXI_INCLUDE_FILE definition for files generated from the 
+	docs/. directory. 
+
+	* web/webframe.doxi:
+	* web/webmenu.doxi:
+	* web/Makefile: adapt to moving beastdefs.doxi. 
+
 Tue Feb 21 01:31:42 2006  Tim Janik  <timj@gtk.org>
 
 	* web/beastdefs.doxi: removed.
