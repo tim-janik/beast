@@ -339,7 +339,7 @@ show_structdoc (void)
 	  for (ring = pspecs; ring; ring = sfi_ring_walk (ring, pspecs))
 	    {
 	      GParamSpec *pspec = ring->data;
-              print_pspec (pspec, "    ", "*");
+              print_pspec (pspec, "    ", element ? "*" : "");
 	    }
           g_print ("  ],\n");
 

@@ -1,3 +1,7 @@
+Thu Feb 23 23:15:32 2006  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c (show_structdoc): fixed records being treated like sequences.
+
 Wed Feb 15 23:43:08 2006  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: unify pspec output. generate doxer digestible object
