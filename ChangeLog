@@ -1,3 +1,7 @@
+Sat Feb 25 15:18:04 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/docu-template.doxi: CVS copied from web/.
+
 Thu Feb 23 23:16:25 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile:
