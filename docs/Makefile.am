@@ -36,7 +36,6 @@ STYLE_TARGETS = $(strip				\
 )
 CLEANFILES += ${STYLE_TARGETS}
 PSOURCE_TARGETS = $(strip			\
-	psource/				\
 	psource/sfi.psrc			\
 	psource/bse.psrc			\
 	psource/gxk.psrc			\
@@ -47,7 +46,7 @@ PSOURCE_TARGETS = $(strip			\
 htmldocsdir = ${beastdocsdir}
 htmldocs_DATA = ${HTML_TARGETS} ${STYLE_TARGETS}
 
-noinst_DATA = ${PSOURCE_TARGETS}
+# noinst_DATA = ${PSOURCE_TARGETS}
 
 DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE \"docframe.doxi\"
 DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call DOCFRAME_DEFS)
@@ -129,8 +128,6 @@ gendoxi/bse-interface.doxi: psource/bse-interface.psrc docu-template.doxi
 AUTODOC = $(top_builddir)/bse/bseautodoc
 has_docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
 make_psource = $(strip doxer src2pickle -o $(1) $(DOXIDEFS) $(2))
-psource/:
-	mkdir -p $@
 # SFI reference docu
 sfi_rdocu_globs = $(top_srcdir)/sfi/sfi*.[hc]
 sfi_rdocu_exclude = sfidl*.*

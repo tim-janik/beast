@@ -1,3 +1,9 @@
+Sat Feb 25 18:53:01 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: minor rule optimizations.
+
+	* docs/docframe.doxi: provide documentation frame.
+
 Sat Feb 25 17:40:00 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am: generate HTML documentation.

@@ -1,0 +1,40 @@
+@doxer_dnl	# emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+
+@doxer_add{html-classes}	beast-docs beast-docframe
+@include "beastdefs.doxi"
+@doxer_add{html-stylesheets}	BEAST Style	<@top_styledir/beast-style.css>
+@doxer_add{html-stylesheets}	Plain	 	<@top_styledir/plain.css>
+
+@heading{group=header,span=nomargin}
+@rawhtml{
+<table id="header-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none"
+       style="background-image: url(@top_styledir/beast-dot.png); 
+              background-position: 0px 55px; background-repeat: repeat-x; margin-top: 3px;">
+  <tr>
+    <td width="50%" align="left" > 
+      <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="@top_webdir/beast-index.html" class="home-title">Top</a> </td></tr></table>
+    </td>
+    <td width="50%" align="right"><img src="@top_styledir/beast-small.png" alt="&lt;&lt;&lt; BEAST/BSE &gt;&gt;&gt;"/></td>
+  </tr>
+</table>
+}
+@*
+
+@heading{group=footer,span=nomargin}
+@*
+@rawhtml{
+<table id="footer-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none">
+  <tr>
+    <td width="15%" align="left">
+      <table border="0" cellspacing="0" cellpadding="0"><tr><td> <a href="@top_webdir/beast-index.html" class="home-title">Top</a> </td></tr></table>
+    </td>
+    <td width="85%" align="right">
+}
+  @center @doxer_fontsize{-1, This document is part of the @uri{http://beast.gtk.org, @beast project}.
+  }
+@rawhtml{
+    </td>
+  </tr>
+  <tr><td style="padding: 5px"></td></tr>
+</table>
+}
