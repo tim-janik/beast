@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/02/25 17:48:21 $
 @include "docframe.doxi"
 @doxer_set{title}       BEAST/BSE - Documentation Index
 
@@ -21,7 +21,7 @@
 @anchor{development}
 @heading Development Documents
 @itemize
-@item @uri{beast-doc://release-news,		NEWS File}
+@item @uri{@top_webdir/news-file.html,		NEWS File}
 @item @uri{@top_webdir/architecture.html,	BEAST Architecture}
 @item @uri{@top_webdir/plugin-devel.html,	BSE Plugin Development}
 @item @uri{@top_webdir/sfidl-manual.html,	SFIDL - Manual}
@@ -30,12 +30,11 @@
 
 @heading Reference
 @itemize
-@item @uri{beast-doc://objdoc,        BSE Objects and Plugins} (Properties, Signals, Channels)
-@item @uri{beast-man://3/bse-structs, BSE Structures (public API)}
-@item @uri{beast-man://3/bse-procs,   BSE Procedures (public API)}
-@item @uri{beast-man://3/bse,         BSE - Bedevilled Sound Engine (internal API)}
-@item @uri{beast-man://3/sfi,         SFI - Synthesis Fusion Kit Interface (API)}
-@item @uri{beast-man://3/beast-gxk,   GXK - Gtk+ Extension Kit (API)}
+@item @uri{@top_webdir/bse-objects.html,	BSE Objects and Plugins} (Properties, Signals, Channels)
+@item @uri{@top_webdir/bse-interface.html,	BSE Interface (public API)}
+@item Online: @uri{http://beast.gtk.org/rdocu-sfi/,	SFI Reference Documentation}
+@item Online: @uri{http://beast.gtk.org/rdocu-bse/,	BSE Reference Documentation} - Bedevilled Sound Engine
+@item Online: @uri{http://beast.gtk.org/rdocu-gxk/,	GXK Reference Documentation} - Gtk+ Extension Kit
 @done
 
 @heading Online Resources

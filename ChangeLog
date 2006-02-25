@@ -1,3 +1,23 @@
+Sat Feb 25 17:40:00 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: generate HTML documentation.
+
+	* docs/docu-template.doxi: template fixups.
+
+	* docs/beast-index.doxi: links to HTML documentation.
+
+	* web/Makefile: consolidated generation rules, make use of the files
+	generated in ../docs/.
+
+	* web/rdocu-template.doxi: removed.
+
+	* docs/WRITING.3.texi:
+	* docs/teximacros.texi:
+	* docs/generated/*:
+	* docs/generated/css/*:
+	* docs/generated/cgi-bin/*:
+	* docs/generated/css/images/*: removed remainings of old documentation system.
+
 Sat Feb 25 15:18:04 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/docu-template.doxi: CVS copied from web/.

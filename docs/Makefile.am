@@ -7,9 +7,24 @@
 
 SUBDIRS = images
 
+HTML_TARGETS = $(strip				\
+	html/architecture.html			\
+	html/beast-index.html			\
+	html/bse-interface.html			\
+	html/bse-objects.html			\
+	html/news-file.html			\
+	html/engine-mplan.html			\
+	html/faq.html				\
+	html/plugin-devel.html			\
+	html/quickstart.html			\
+	html/release-notes.html			\
+	html/sfidl-manual.html			\
+)
+CLEANFILES += ${HTML_TARGETS}
 STYLE_TARGETS = $(strip				\
 	html/style/beast-style.css		\
 	html/style/plain.css			\
+	html/style/doxer-style.css		\
 	html/style/beast-dot.png		\
 	html/style/beast-small.png		\
 	html/style/title-arrow-24x64.png	\
@@ -20,20 +35,19 @@ STYLE_TARGETS = $(strip				\
 	html/sfidl.1.html			\
 )
 CLEANFILES += ${STYLE_TARGETS}
-HTML_TARGETS = $(strip				\
-	html/architecture.html			\
-	html/beast-index.html			\
-	html/engine-mplan.html			\
-	html/faq.html				\
-	html/plugin-devel.html			\
-	html/quickstart.html			\
-	html/release-notes.html			\
-	html/sfidl-manual.html			\
+PSOURCE_TARGETS = $(strip			\
+	psource/				\
+	psource/sfi.psrc			\
+	psource/bse.psrc			\
+	psource/gxk.psrc			\
+	psource/bse-objects.psrc		\
+	psource/bse-interface.psrc		\
 )
-CLEANFILES += ${HTML_TARGETS}
 
 htmldocsdir = ${beastdocsdir}
 htmldocs_DATA = ${HTML_TARGETS} ${STYLE_TARGETS}
+
+noinst_DATA = ${PSOURCE_TARGETS}
 
 DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE \"docframe.doxi\"
 DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call DOCFRAME_DEFS)
@@ -47,27 +61,48 @@ uninstall-hook:
 uninstall: uninstall-hook
 
 # some dependencies have to be written indirectly, to prevent automake from
-# changing it's rule generation (it sometimes automagically adapts its generation).
+# changing it's rule generation (which it sometimes automagically adapts).
 install_htmldocsDATA_VARIABLE = install-htmldocsDATA
 ${install_htmldocsDATA_VARIABLE}: make-install-dirs
 
+# CSS style sheet rules
 html/style/%: $(top_srcdir)/web/style/%
 	@mkdir -p html/style/
 	cp $< $@
+html/style/doxer-style.css:
+	doxer writecss -d html/style/
+
+# HTML generation rules
 html/%.1.html: %.1.doxi
-	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
+	doxer doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.3.html: %.3.doxi
-	doxer doxi2htmlman $< -o html/ $(DOXIDEFS)
+	doxer doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.html: %.doxi
 	@mkdir -p html/
-	doxer doxi2html $< -o html/ $(DOXIDEFS)
+	doxer doxi2html $< -d html/ $(DOXIDEFS)
+html/%.html: gendoxi/%.doxi
+	doxer doxi2html $< -d html/ $(DOXIDEFS)
 
-
-html/%.html: %.tmpdoxi
-	doxer doxi2html $< -o html/ $(DOXIDEFS)
-engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt # Makefile
+# Generated .doxi files
+gendoxi/:
+	mkdir -p $@
+# NEWS file
+gendoxi/news-file.doxi: $(top_srcdir)/NEWS # Makefile
+	@mkdir -p gendoxi/
 	cd . \
-	&& echo '@doxer_dnl'                                    >$@  \
+	&& echo '@doxer_dnl'                                    > $@ \
+	&& echo '@doxer_set{webmenu} development'               >>$@ \
+	&& echo '@include @doxer_get{DOXI_INCLUDE_FILE}'        >>$@ \
+	&& echo '@doxer_set{title} BEAST/BSE - NEWS'            >>$@ \
+	&& echo '@subheading'                                   >>$@ \
+	&& echo '@example'                                      >>$@ \
+	&& sed  's/@/@@/g'              <$<                     >>$@ \
+	&& echo '@done'                                         >>$@
+# engine-mplan
+gendoxi/engine-mplan.doxi: $(top_srcdir)/bse/engine-mplan.txt # Makefile
+	@mkdir -p gendoxi/
+	cd . \
+	&& echo '@doxer_dnl'                                    > $@ \
 	&& echo '@doxer_set{webmenu} development'               >>$@ \
 	&& echo '@include @doxer_get{DOXI_INCLUDE_FILE}'        >>$@ \
 	&& echo '@doxer_set{title} BEAST - BSE Engine'          >>$@ \
@@ -75,17 +110,75 @@ engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt # Makefile
 	&& echo '@example'                                      >>$@ \
 	&& sed  's/@/@@/g'              <$<                     >>$@ \
 	&& echo '@done'                                         >>$@
+# BSE object docu
+gendoxi/bse-objects.doxi: psource/bse-objects.psrc docu-template.doxi
+	@mkdir -p gendoxi/
+	doxer pickle2doxi $(strip	$<	-D TOP_WEBDIR ".."	\
+	      -d gendoxi/ $(DOXIDEFS)	-T docu-template.doxi		\
+	      -D DOCU_TEMPLATE_TITLE "BEAST - BSE Object Reference"	\
+	      -D DOCU_TEMPLATE_HEADING "BSE Object Reference" )
+# BSE interface docu
+gendoxi/bse-interface.doxi: psource/bse-interface.psrc docu-template.doxi
+	@mkdir -p gendoxi/
+	doxer pickle2doxi $(strip	$<	-D TOP_WEBDIR ".."	\
+	      -d gendoxi/ $(DOXIDEFS)	-T docu-template.doxi		\
+	      -D DOCU_TEMPLATE_TITLE "BEAST - BSE Interface Reference"	\
+	      -D DOCU_TEMPLATE_HEADING "BSE Interface Reference" )
+
+# Reference Documentation
+AUTODOC = $(top_builddir)/bse/bseautodoc
+has_docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
+make_psource = $(strip doxer src2pickle -o $(1) $(DOXIDEFS) $(2))
+psource/:
+	mkdir -p $@
+# SFI reference docu
+sfi_rdocu_globs = $(top_srcdir)/sfi/sfi*.[hc]
+sfi_rdocu_exclude = sfidl*.*
+sfi_rdocu_files = $(filter-out $(foreach f, $(sfi_rdocu_exclude), $(wildcard $(top_srcdir)/sfi/$(f))), $(wildcard $(sfi_rdocu_globs)))
+psource/sfi.psrc: $(sfi_rdocu_files)
+	@mkdir -p psource/
+	$(call make_psource, $@, $(filter %.h %.hh, $(sfi_rdocu_files)) -Y $(filter-out %.h %.hh, $(sfi_rdocu_files)) )
+# BSE reference docu
+bse_rdocu_globs = $(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/bse*.[hc][hc]
+bse_rdocu_exclude = *.gen-proc.c *.genidl.hh bsegentypes.h bseautodoc.c
+bse_rdocu_files = $(filter-out $(foreach f, $(bse_rdocu_exclude), $(wildcard $(top_srcdir)/bse/$(f))), $(wildcard $(bse_rdocu_globs)))
+bse_rdocu_dscrs = $(call has_docu_filter, $(bse_rdocu_files))
+psource/bse.psrc: $(bse_rdocu_files)
+	@mkdir -p psource/
+	$(call make_psource, $@, $(filter %.h %.hh, $(bse_rdocu_files)) -Y $(filter-out %.h %.hh, $(bse_rdocu_dscrs)) )
+# GXK reference docu
+gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxk*.[hc] $(top_srcdir)/beast-gtk/bstutils.[hc]
+gxk_rdocu_exclude = gxkgentypes.h gxkmarshal.[hc]
+gxk_rdocu_files = $(filter-out $(foreach f, $(gxk_rdocu_exclude), $(wildcard $(top_srcdir)/beast-gtk/gxk/$(f))), $(wildcard $(gxk_rdocu_globs)))
+psource/gxk.psrc: $(gxk_rdocu_files)
+	@mkdir -p psource/
+	$(call make_psource, $@, $(filter %.h %.hh, $(gxk_rdocu_files)) -Y $(filter-out %.h %.hh, $(gxk_rdocu_files)) )
+# BSE object docu
+psource/bse-objects.psrc: $(AUTODOC) $(top_builddir)/config.status
+	@mkdir -p psource/
+	cd . \
+	&& $(AUTODOC) -p -s objects	>psource/bse-objects.scad	\
+	&& doxer scad2pickle -o $@ psource/bse-objects.scad		\
+	&& rm -f psource/bse-objects.scad
+# BSE interface docu
+psource/bse-interface.psrc: $(AUTODOC) $(top_builddir)/config.status
+	@mkdir -p psource/
+	cd . \
+	&& $(AUTODOC) -p -s procs	 >psource/bse-interface.scad	\
+	&& $(AUTODOC) -p -s structs     >>psource/bse-interface.scad	\
+	&& doxer scad2pickle -o $@ psource/bse-interface.scad		\
+	&& rm -f psource/bse-interface.scad
+# Force AUTODOC builds
+.PHONY: # $(AUTODOC)
+CLEANFILES += psource/bse-objects.scad psource/bse-interface.scad
 
 intermediate_files = $(strip    \
         news-file.tmpdoxi       \
-        engine-mplan.tmpdoxi    \
-        bse-objects.scad        \
-        bse-objects.tmpdoxi     \
-        bse-interface.scad      \
-        bse-interface.tmpdoxi   \
 )
 .INTERMEDIATE: $(intermediate_files)
 
+clean:
+	rm -rf gendoxi/ html/ psource/
 
 doxi_files = $(strip		\
 	architecture.doxi	\

@@ -635,7 +635,6 @@ data/bse.pc
 data/beast.applications
 docs/Makefile
 docs/images/Makefile
-docs/generated/Makefile
 po/Makefile.in
 po-helper.sh
 tests/Makefile

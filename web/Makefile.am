@@ -82,36 +82,6 @@ beastweb-pages.tar.bz2: ${TARGET_DIRS} html/style/.md5sum html/web-images/.md5su
 	tar jcf $@ php/ html/ --anchored --exclude='html/screenshots/*' --exclude='html/logogallery/*'
 CLEANFILES += beastweb-galleries.tar.bz2 beastweb-pages.tar.bz2
 
-# website targets
-site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
-.PHONY: site site-preview site-update site-update-all site-update-galleries site-update-pages
-# remote installation
-ACCOUNT=${USER}@beast.gtk.org
-ACDEST=/web/beast/
-ACTMP=xgen-tmp
-site-update-pages: beastweb-pages.tar.bz2
-	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
-	ssh ${ACCOUNT} 					\
-	 "set -ex "					\
-	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
-	 "&& rm ${ACTMP}-$(<F)"
-site-update-galleries: beastweb-galleries.tar.bz2
-	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
-	ssh ${ACCOUNT} 					\
-	 "set -ex "					\
-	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
-	 "&& rm ${ACTMP}-$(<F)"
-site-update-all: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2 site-update-pages site-update-galleries
-site-update: site-update-pages
-# preview installation
-BEAST_PREVIEW=~/public_html/beast-preview/
-site-preview: ${BEAST_PREVIEW}/. beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
-	rm -rf ${BEAST_PREVIEW}/html/ ${BEAST_PREVIEW}/php/
-	tar jxmpf beastweb-pages.tar.bz2 -C ${BEAST_PREVIEW}
-	tar jxmpf beastweb-galleries.tar.bz2 -C ${BEAST_PREVIEW}
-	ln -s ../beast-ftp ${BEAST_PREVIEW}/html/beast-ftp
-	ln -s news.html ${BEAST_PREVIEW}/html/index.html
-
 ${TARGET_DIRS}:	# rule to create directories
 	mkdir -p $@
 
@@ -124,18 +94,18 @@ php/%.phpini: %/ scanimages.sh
 
 WEBMENU_DOXI_FILES = faq.doxi
 DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE $(if $(findstring $(<F), ${WEBMENU_DOXI_FILES}), \"webmenu.doxi\", \"webframe.doxi\")
-DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir)
+DOXIDEFS = -D BST_VERSION ${BST_VERSION} -I $(srcdir)
 
 html/%.1.html: ../docs/%.1.doxi
-	doxer doxi2htmlman $(strip $< -o html/ $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	doxer doxi2htmlman $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.3.html: ../docs/%.3.doxi
-	doxer doxi2htmlman $(strip $< -o html/ $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	doxer doxi2htmlman $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.html: ../docs/%.doxi
-	doxer doxi2html $(strip $< -o html/ $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	doxer doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.phtml: %.doxi
-	doxer doxi2html $(strip $< -o html/ -e .phtml $(DOXIDEFS))
+	doxer doxi2html $(strip $< -d html/ -j .phtml  -D TOP_WEBDIR "." $(DOXIDEFS))
 html/%.html: %.doxi
-	doxer doxi2html $(strip $< -o html/ $(DOXIDEFS))
+	doxer doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS))
 html/.htaccess: htaccess.in
 	cp $< $@
 
@@ -144,7 +114,7 @@ html/style/.md5sum: $(wildcard style/*)
 	rm -fr html/style/
 	mkdir -p html/style/
 	cp style/*.png style/*.css html/style/
-	doxer writecss -o html/style/
+	doxer writecss -d html/style/
 	md5sum html/style/* >xgen-html-style-md5sum
 	mv xgen-html-style-md5sum $@		# atomic
 html/web-images/.md5sum: $(wildcard web-images/*)
@@ -172,28 +142,20 @@ html/logogallery/.md5sum: $(wildcard logogallery/*)
 	md5sum html/logogallery/* >xgen-html-logogallery-md5sum
 	mv xgen-html-logogallery-md5sum $@	# atomic
 
+
+# Generated .doxi files
+../docs/gendoxi/bse-objects.doxi \
+../docs/gendoxi/bse-interface.doxi \
+../docs/gendoxi/engine-mplan.doxi \
+../docs/gendoxi/news-file.doxi: PHONY-TARGET
+	@$(MAKE) -C ../docs $(patsubst ../docs/%, %, $@)
+html/%.html: ../docs/gendoxi/%.doxi
+	doxer doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
+
+
 html/%.html: %.tmpdoxi
-	doxer doxi2html $< -o html/ $(DOXIDEFS)
-news-file.tmpdoxi: $(top_srcdir)/NEWS # Makefile
-	cd . \
-	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@doxer_set{webmenu} development'		>>$@ \
-	&& echo '@include "webframe.doxi"'			>>$@ \
-	&& echo '@doxer_set{title} BEAST/BSE - NEWS'		>>$@ \
-	&& echo '@subheading'					>>$@ \
-	&& echo '@example'					>>$@ \
-	&& sed  's/@/@@/g' 		<$<			>>$@ \
-	&& echo '@done'						>>$@
-engine-mplan.tmpdoxi: $(top_srcdir)/bse/engine-mplan.txt # Makefile
-	cd . \
-	&& echo '@doxer_dnl'					>$@  \
-	&& echo '@doxer_set{webmenu} development'		>>$@ \
-	&& echo '@include "webframe.doxi"'			>>$@ \
-	&& echo '@doxer_set{title} BEAST - BSE Engine'		>>$@ \
-	&& echo '@subheading'					>>$@ \
-	&& echo '@example'					>>$@ \
-	&& sed  's/@/@@/g' 		<$<			>>$@ \
-	&& echo '@done'						>>$@
+	doxer doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
+
 CHANGELOG2DOXI = ~/sources/doxer/changelog2doxi.py # FIXME
 log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
@@ -229,110 +191,63 @@ log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
 
 
-AUTODOC = $(top_builddir)/bse/bseautodoc
-docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
+.PHONY: PHONY-TARGET
 
+# Reference Documentation
+../docs/psource/bse-interface.psrc \
+../docs/psource/bse-objects.psrc \
+../docs/psource/sfi.psrc \
+../docs/psource/bse.psrc \
+../docs/psource/gxk.psrc: PHONY-TARGET
+	@$(MAKE) -C ../docs $(patsubst ../docs/%, %, $@)
 # SFI reference docu
-sfi_rdocu_globs = $(top_srcdir)/sfi/sfi*.[hc]
-sfi_rdocu_exclude = sfidl*.*
-sfi_rdocu_files = $(filter-out $(foreach f, $(sfi_rdocu_exclude), $(wildcard $(top_srcdir)/sfi/$(f))), $(wildcard $(sfi_rdocu_globs)))
-tmpdoxi-sfi/index.tmpdoxi: $(sfi_rdocu_files) rdocu-template.doxi
+tmpdoxi-sfi/index.doxi: ../docs/psource/sfi.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-sfi/*
-	doxer src2doxi $(strip 						\
-	      -d .tmpdoxi -o tmpdoxi-sfi/ -T rdocu-template.doxi -i	\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
-	         $(filter     %.h %.hh, $(sfi_rdocu_files))		\
-	      -Y $(filter-out %.h %.hh, $(sfi_rdocu_files)) )
-html/rdocu-sfi/index.html: tmpdoxi-sfi/index.tmpdoxi $(wildcard tmpdoxi-sfi/*.tmpdoxi)
+	doxer pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."	\
+	      -d tmpdoxi-sfi/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	      -D DOCU_TEMPLATE_TITLE "BEAST - SFI Interface Reference"  \
+	      -D DOCU_TEMPLATE_HEADING "SFI Interface Reference" )
+html/rdocu-sfi/index.html: tmpdoxi-sfi/index.doxi $(wildcard tmpdoxi-sfi/*.doxi)
 	rm -f html/rdocu-sfi/*
-	doxer doxi2html $(strip						\
-	      -o html/rdocu-sfi/					\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
-	      $(filter-out $<, $(shell echo tmpdoxi-sfi/*.tmpdoxi)) )
-	doxer doxi2html $(strip						\
-	      -o html/rdocu-sfi/					\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE SFI		\
-	      $< )
-
+	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	      -d html/rdocu-sfi/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
+	      $(filter-out $<, $(shell echo tmpdoxi-sfi/*.doxi)) )
+	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	      -d html/rdocu-sfi/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 # GXK reference docu
-gxk_rdocu_globs = $(top_srcdir)/beast-gtk/gxk/gxk*.[hc] $(top_srcdir)/beast-gtk/bstutils.[hc]
-gxk_rdocu_exclude = gxkgentypes.h gxkmarshal.[hc]
-gxk_rdocu_files = $(filter-out $(foreach f, $(gxk_rdocu_exclude), $(wildcard $(top_srcdir)/beast-gtk/gxk/$(f))), $(wildcard $(gxk_rdocu_globs)))
-tmpdoxi-gxk/index.tmpdoxi: $(gxk_rdocu_files) rdocu-template.doxi
+tmpdoxi-gxk/index.doxi: ../docs/psource/gxk.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-gxk/*
-	doxer src2doxi $(strip						\
-	      -d .tmpdoxi -o tmpdoxi-gxk/ -T rdocu-template.doxi -i	\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
-	         $(filter %.h %.hh, $(gxk_rdocu_files))			\
-	      -Y $(filter %.c %.cc, $(gxk_rdocu_files)) )
-html/rdocu-gxk/index.html: tmpdoxi-gxk/index.tmpdoxi $(wildcard tmpdoxi-gxk/*.tmpdoxi)
+	doxer pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."	\
+	      -d tmpdoxi-gxk/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	      -D DOCU_TEMPLATE_TITLE "BEAST - GXK Interface Reference"  \
+	      -D DOCU_TEMPLATE_HEADING "GXK Interface Reference" )
+html/rdocu-gxk/index.html: tmpdoxi-gxk/index.doxi $(wildcard tmpdoxi-gxk/*.doxi)
 	rm -f html/rdocu-gxk/*
-	doxer doxi2html $(strip						\
-	      -o html/rdocu-gxk/					\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
-	      $(filter-out $<, $(shell echo tmpdoxi-gxk/*.tmpdoxi)) )
-	doxer doxi2html $(strip						\
-	      -o html/rdocu-gxk/					\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE GXK		\
-	      $< )
-
+	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	      -d html/rdocu-gxk/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
+	      $(filter-out $<, $(shell echo tmpdoxi-gxk/*.doxi)) )
+	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	      -d html/rdocu-gxk/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 # BSE reference docu
-bse_rdocu_globs = $(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/bse*.[hc][hc]
-bse_rdocu_exclude = *.gen-proc.c *.genidl.hh bsegentypes.h bseautodoc.c
-bse_rdocu_files = $(filter-out $(foreach f, $(bse_rdocu_exclude), $(wildcard $(top_srcdir)/bse/$(f))), $(wildcard $(bse_rdocu_globs)))
-bse_rdocu_dscrs = $(call docu_filter, $(bse_rdocu_files))
-tmpdoxi-bse/index.tmpdoxi: $(bse_rdocu_files) rdocu-template.doxi
+tmpdoxi-bse/index.doxi: ../docs/psource/bse.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-bse/*
-	doxer src2doxi $(strip						\
-	      -d .tmpdoxi -o tmpdoxi-bse/ -T rdocu-template.doxi -i	\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
-	         $(filter %.h %.hh, $(bse_rdocu_files))			\
-	      -Y $(filter %.c %.cc, $(bse_rdocu_dscrs)) )
-html/rdocu-bse/index.html: tmpdoxi-bse/index.tmpdoxi $(wildcard tmpdoxi-bse/*.tmpdoxi)
+	doxer pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."	\
+	      -d tmpdoxi-bse/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	      -D DOCU_TEMPLATE_TITLE "BEAST - BSE Interface Reference"  \
+	      -D DOCU_TEMPLATE_HEADING "BSE Interface Reference" )
+html/rdocu-bse/index.html: tmpdoxi-bse/index.doxi $(wildcard tmpdoxi-bse/*.doxi)
 	rm -f html/rdocu-bse/*
-	doxer doxi2html $(strip						\
-	      -o html/rdocu-bse/					\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
-	      $(filter-out $<, $(shell echo tmpdoxi-bse/*.tmpdoxi)) )
-	doxer doxi2html $(strip						\
-	      -o html/rdocu-bse/					\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE BSE		\
-	      $< )
-
-# BSE procedure and object docu
-bse-objects.scad: $(AUTODOC) $(top_builddir)/config.status
-	cd . \
-	&& $(AUTODOC) -p -s objects	 >xgen-bojs	\
-	&& cp xgen-bojs $@				\
-	&& rm -f xgen-bojs
-CLEANFILES += xgen-bojs
-bse-objects.tmpdoxi: bse-objects.scad $(top_builddir)/config.status
-	doxer scad2doxi -d .tmpdoxi $< -T rdocu-template.doxi		\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE "BSE OBJECTS"
-bse-interface.scad: $(AUTODOC) $(top_builddir)/config.status
-	cd . \
-	&& $(AUTODOC) -p -s procs	 >xgen-bifs	\
-	&& $(AUTODOC) -p -s structs	>>xgen-bifs	\
-	&& cp xgen-bifs $@				\
-	&& rm -f xgen-bifs
-CLEANFILES += xgen-bifs
-bse-interface.tmpdoxi: bse-interface.scad $(top_builddir)/config.status
-	doxer scad2doxi -d .tmpdoxi $< -T rdocu-template.doxi		\
-	      $(DOXIDEFS) -D TOP_WEBDIR ".." -D MODULE "BSE INTERFACE"
-
-.PHONY: # $(AUTODOC) bse-objects.scad bse-objects.tmpdoxi bse-interface.scad bse-interface.tmpdoxi # FIXME
+	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	      -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
+	      $(filter-out $<, $(shell echo tmpdoxi-bse/*.doxi)) )
+	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	      -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 
 intermediate_files = $(strip	\
-	news-file.tmpdoxi	\
-	engine-mplan.tmpdoxi	\
 	log-beast.tmpdoxi	\
 	log-bse.tmpdoxi		\
 	log-plugins.tmpdoxi	\
 	log-sfi.tmpdoxi		\
-	bse-objects.scad	\
-	bse-objects.tmpdoxi	\
-	bse-interface.scad	\
-	bse-interface.tmpdoxi	\
 )
 .INTERMEDIATE: $(intermediate_files)
 
@@ -347,5 +262,36 @@ clean:
 	-rmdir -p html/
 	rm -f php/*
 	-rmdir -p php/
+	rm -f screenshots/*.THUMB.jpg logogallery/*.THUMB.jpg
 	rm -f ${intermediate_files} ${CLEANFILES}
 .PHONY: clean
+
+# website targets
+site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
+.PHONY: site site-preview site-update site-update-all site-update-galleries site-update-pages
+# remote installation
+ACCOUNT=${USER}@beast.gtk.org
+ACDEST=/web/beast/
+ACTMP=xgen-tmp
+site-update-pages: beastweb-pages.tar.bz2
+	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
+	ssh ${ACCOUNT} 					\
+	 "set -ex "					\
+	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
+	 "&& rm ${ACTMP}-$(<F)"
+site-update-galleries: beastweb-galleries.tar.bz2
+	scp -p $< ${ACCOUNT}:${ACTMP}-$(<F)
+	ssh ${ACCOUNT} 					\
+	 "set -ex "					\
+	 "&& tar jxmpf ${ACTMP}-$(<F) -C ${ACDEST} "	\
+	 "&& rm ${ACTMP}-$(<F)"
+site-update-all: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2 site-update-pages site-update-galleries
+site-update: site-update-pages
+# preview installation
+BEAST_PREVIEW=~/public_html/beast-preview/
+site-preview: ${BEAST_PREVIEW}/. beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
+	rm -rf ${BEAST_PREVIEW}/html/ ${BEAST_PREVIEW}/php/
+	tar jxmpf beastweb-pages.tar.bz2 -C ${BEAST_PREVIEW}
+	tar jxmpf beastweb-galleries.tar.bz2 -C ${BEAST_PREVIEW}
+	ln -s ../beast-ftp ${BEAST_PREVIEW}/html/beast-ftp
+	ln -s news.html ${BEAST_PREVIEW}/html/index.html
