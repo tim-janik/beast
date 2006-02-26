@@ -175,9 +175,9 @@ static const GxkStockAction simple_help_actions[] = {
     ACTION_HELP_PLUGIN_DEVEL,   BST_STOCK_DOC_DEVEL },
   { N_("DSP Engine..."),        NULL,           N_("Technical description of the multi-threaded synthesis engine innards"),
     ACTION_HELP_DSP_ENGINE,     BST_STOCK_DOC_DEVEL },
-#endif
   { N_("Development..."),       NULL,           N_("Provide an overview of development related topics and documents"),
     ACTION_HELP_DEVELOPMENT,    BST_STOCK_DOC_DEVEL },
+#endif
 };
 static const GxkStockAction online_synthesizers[] = {
   { N_("Online Sound Archive..."),  NULL,        N_("Start a web browser pointing to the online sound archive"),
@@ -229,6 +229,8 @@ bst_app_init (BstApp *self)
   GtkWidget *widget = GTK_WIDGET (self);
   BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
+
+  self->cookie = g_strdup ("");
   
   g_object_set (self,
                 "name", "BEAST-Application",
@@ -397,6 +399,7 @@ bst_app_finalize (GObject *object)
       g_object_unref (self->ppages);
       self->ppages = NULL;
     }
+  g_free (self->cookie);
   
   G_OBJECT_CLASS (bst_app_parent_class)->finalize (object);
 }
@@ -857,10 +860,9 @@ static void
 app_action_exec (gpointer data,
                  gulong   action)
 {
-  static GtkWidget *bst_help_dialogs[ACTION_HELP_LAST - ACTION_HELP_FIRST + 1] = { NULL, };
   static GtkWidget *bst_preferences = NULL;
   BstApp *self = BST_APP (data);
-  gchar *help_file = NULL, *help_title = NULL;
+  const gchar *docs_url = NULL, *docs_title = "";
   GtkWidget *widget = GTK_WIDGET (self);
   
   gxk_status_window_push (widget);
@@ -1058,66 +1060,55 @@ app_action_exec (gpointer data,
       gtk_widget_queue_draw (GTK_WIDGET (self->notebook));
       break;
     case ACTION_HELP_INDEX:
-      help_file = g_strconcat (BST_PATH_DOCS, "/beast-index.markup", NULL);
-      help_title = g_strdup (help_file);
-      goto HELP_DIALOG;
+      docs_url = "html/beast-index.html";
+      docs_title = "BEAST Index";
+      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_FAQ:
-      help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
-      help_title = g_strdup (help_file);
-      goto HELP_DIALOG;
+      docs_url = "html/faq.html";
+      docs_title = "BEAST FAQ";
+      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_QUICK_START:
-      help_file = g_strconcat (BST_PATH_DOCS, "/quickstart.markup", NULL);
-      help_title = g_strdup (help_file);
-      goto HELP_DIALOG;
+      docs_url = "html/quickstart.html";
+      docs_title = "BEAST Quick Start Guide";
+      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_RELEASE_NOTES:
-      help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
-      help_title = g_strdup_printf (_("BEAST-%s Release Notes"), BST_VERSION);
-      goto HELP_DIALOG;
+      docs_url = "html/release-notes.html";
+      docs_title = "BEAST Release Notes";
+      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_DSP_ENGINE:
-      help_file = g_strconcat (BST_PATH_DOCS, "/engine-mplan.markup", NULL);
-      help_title = g_strdup (help_file);
-      goto HELP_DIALOG;
+      docs_url = "html/engine-mplan.html";
+      docs_title = "BEAST DSP Engine";
+      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_PLUGIN_DEVEL:
-      help_file = g_strconcat (BST_PATH_DOCS, "/plugin-devel.markup", NULL);
-      help_title = g_strdup (help_file);
-      goto HELP_DIALOG;
+      docs_url = "html/plugin-devel.html";
+      docs_title = "BEAST Plugin Development";
+      goto BROWSE_LOCAL_URL;
     case ACTION_HELP_DEVELOPMENT:
-      help_file = g_strconcat (BST_PATH_DOCS, "/beast-index.markup#development", NULL);
-      help_title = g_strdup (help_file);
-      goto HELP_DIALOG;
-    HELP_DIALOG:
-      if (!bst_help_dialogs[action - ACTION_HELP_FIRST])
+      docs_url = "html/beast-index.html#development";
+      docs_title = "BEAST Development Index";
+      goto BROWSE_LOCAL_URL;
+    BROWSE_LOCAL_URL:
+      if (docs_url)
         {
-          GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE, NULL);
-          gchar *index = g_strconcat ("file://", BST_PATH_DOCS, "/beast-index.markup", NULL);
-          gxk_scroll_text_set_index (sctext, index);
-          g_free (index);
-          gxk_scroll_text_enter (sctext, help_file);
-          bst_help_dialogs[action - ACTION_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[action - ACTION_HELP_FIRST],
-                                                                         NULL,
-                                                                         GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_DELETE_BUTTON,
-                                                                         help_title, sctext);
-          gxk_dialog_set_sizes (GXK_DIALOG (bst_help_dialogs[action - ACTION_HELP_FIRST]), 500, 400, 560, 640);
+          gchar *local_url = g_strconcat ("file://", BST_PATH_DOCS, "/", docs_url, NULL);
+          gxk_url_show_with_cookie (local_url, docs_title, self->cookie);
+          g_free (local_url);
         }
-      g_free (help_file);
-      g_free (help_title);
-      gxk_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[action - ACTION_HELP_FIRST])));
-      gxk_widget_showraise (bst_help_dialogs[action - ACTION_HELP_FIRST]);
       break;
     case ACTION_HELP_ABOUT:
       beast_show_about_box ();
       break;
     case ACTION_URL_HELP_DESK:
-      gxk_show_url ("http://beast.gtk.org/wiki:HelpDesk");
+      gxk_url_show ("http://beast.gtk.org/wiki:HelpDesk");
       break;
     case ACTION_URL_BEAST_SITE:
-      gxk_show_url ("http://beast.gtk.org/");
+      gxk_url_show ("http://beast.gtk.org/");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
-      gxk_show_url ("http://beast.gtk.org/browse-bse-files.html");
+      gxk_url_show ("http://beast.gtk.org/sound-browser.phtml");
       break;
     case ACTION_URL_ONLINE_DEMOS:
-      gxk_show_url ("http://beast.gtk.org/browse-bse-files.html");
+      gxk_url_show ("http://beast.gtk.org/sound-browser.phtml");
       break;
     case ACTION_DEMO_DIALOG_FATAL:
     case ACTION_DEMO_DIALOG_ERROR:

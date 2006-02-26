@@ -1,3 +1,18 @@
+RELEASE(0.6.7):
+- fix beast popping up a help browser for release notes when new beast is installed
+- BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
+- gxk_tree_view_append_text_columns: s/on or of/on or off/
+- the properties dialog should have a "CANCEL" button, not close (since there's "apply")
+- store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
+- fix "../../tools/bsefextract --", this needs bse_init_intern()
+- sometimes unneccessarily the song-changed flag is set.
+- FAQ: answer status of windows and MacOS port
+- WEB: add LAD-2005 paper to website
+- fix/re-enable midi note recording into piano roll
+- update status message of recording script according to is/isnot recording
+- look into adding BseJanitor::status-caption (which could become primary text for status message display)
+- xtest
+MISC:
 - remove biquad normalization
 - reduce constant to 4
 - resources: http://packages.qa.debian.org/b/bse-alsa.html
@@ -15,19 +30,6 @@ INCOMPAT:
 - move BseConstant to 4 channels
 - delete BseAtanDistort
 - nuke compat code
-RELEASE(0.6.7):
-- BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
-- gxk_tree_view_append_text_columns: s/on or of/on or off/
-- the properties dialog should have a "CANCEL" button, not close (since there's "apply")
-- store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
-- fix "../../tools/bsefextract --", this needs bse_init_intern()
-- sometimes unneccessarily the song-changed flag is set.
-- FAQ: answer status of windows and MacOS port
-- WEB: add LAD-2005 paper to website
-- fix/re-enable midi note recording into piano roll
-- update status message of recording script according to is/isnot recording
-- look into adding BseJanitor::status-caption (which could become primary text for status message display)
-- xtest
 BUGS(FIXME):
 - add/remove actions to/from shadow storage and require a script to issue actions-commit/gui-update or similar for the actions to really appear on-screen
 - add BST_MSG_PROXY(project) for detail section

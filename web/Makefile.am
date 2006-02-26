@@ -3,15 +3,6 @@
 #
 # GNU General Public License version 2 or (at your option) any later version.
 
-# FIXME: remove:
-top_srcdir = ..
-top_builddir = ..
-srcdir = .
-BST_VERSION = 0.6.6
-
-all:	site
-
-
 PHP_TARGETS = $(strip			\
 	php/file-browser.php		\
 	php/file-upload.php		\

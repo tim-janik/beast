@@ -95,6 +95,13 @@ main (int   argc,
   textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
 
+  /* initialize random numbers */
+  struct timeval tv;
+  gettimeofday (&tv, NULL);
+  srand48 (tv.tv_usec + (tv.tv_sec << 16));
+  srand (tv.tv_usec + (tv.tv_sec << 16));
+  
+
   /* initialize GLib guts */
   // toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
   g_thread_init (NULL);
@@ -386,6 +393,7 @@ main (int   argc,
       sfi_glue_gc_run ();
       GDK_THREADS_LEAVE ();
     }
+  gxk_cleanup_force_handlers();
 
   bse_object_debug_leaks ();
   

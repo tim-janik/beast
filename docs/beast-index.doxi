@@ -1,7 +1,10 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/25 17:48:21 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/02/26 17:55:48 $
 @include "docframe.doxi"
 @doxer_set{title}       BEAST/BSE - Documentation Index
+
+@titlesection
+@doctitle               @beastbse - Documentation Index
 
 @heading Documents
 @itemize
@@ -23,12 +26,12 @@
 @itemize
 @item @uri{@top_webdir/news-file.html,		NEWS File}
 @item @uri{@top_webdir/architecture.html,	BEAST Architecture}
-@item @uri{@top_webdir/plugin-devel.html,	BSE Plugin Development}
+@item @uri{@top_webdir/plugin-devel.html,	Plugin Development}
 @item @uri{@top_webdir/sfidl-manual.html,	SFIDL - Manual}
-@item @uri{@top_webdir/engine-mplan.html,	DSP Synthesis Engine} (Conceptual development notes)
+@item @uri{@top_webdir/engine-mplan.html,	DSP Synthesis Engine} (plain text notes)
 @done
 
-@heading Reference
+@heading Programming Reference
 @itemize
 @item @uri{@top_webdir/bse-objects.html,	BSE Objects and Plugins} (Properties, Signals, Channels)
 @item @uri{@top_webdir/bse-interface.html,	BSE Interface (public API)}

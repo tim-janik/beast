@@ -1,3 +1,29 @@
+Sun Feb 26 18:26:47 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.6.7, binary 0, interface 0.
+
+	* Makefile.am: added web/ to build tree.
+
+	* beast-gtk/bstapp.[hc]: removed "/Help/Development..." menu option.
+	fire up web browser for installed help docuemnts.
+
+	* beast-gtk/bstmain.c: initialize random number generators properly.
+
+	* beast-gtk/gxk/gxkutils.c: added support for more web browsers,
+	"htmlview" for fedora, "gnome-open", "firefox", "mozilla-firefox", 
+	"opera" and native "konqueror" (as opposed to the already supported
+	"kfmclient").
+	gxk_url_show(): renamed.
+	gxk_url_show_with_cookie(): new function to show an url via a file:///
+	redirect, thereby setting a cookie.
+	gxk_cleanup_add(): new function to add a cleanup handler.
+	gxk_cleanup_force_handlers(): new function to trigger cleanup handlers
+	at program exit.
+
+	* docs/beast-index.doxi: beautifications.
+
+	* web/Makefile.am: fixed relicts.
+
 Sun Feb 26 18:23:35 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile: removed.
