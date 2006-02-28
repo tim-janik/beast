@@ -1,3 +1,49 @@
+Tue Feb 28 00:30:39 2006  Tim Janik  <timj@gtk.org>
+
+	* doxer.py: doxer executable, supports various commands to parse 
+	source code and to generate and process .doxi files.
+
+	* Code2Doxi.py: doxer markup generator for source code documentation.
+
+	* DoxiParser.py: .doxi parser implementation. also implements 
+	sectioning, line breaking, macro expansion, etc.
+
+	* HtmlGenerator.py: HTML generator backend.
+
+	* ManGenerator.py: generator for manual pages. a bit messy still
+	because it's just a tweaked version of HtmlGenerator.py. will be
+	extended and cleaned as needed.
+
+	* Data.py: doxer data structures, used by .doxi parser and
+	to hold information about source code and its documentation.
+
+	* Utils.py: utility functions for doxer.
+
+	* Config.py: configuration and debugging functions for doxer.
+
+	* ScadParser.py: parser for source code analysis dumps.
+        
+	* qxmlparser.py: parses doxygen XML into SrcFile and Docu structures.
+
+	* qdoxygen.py: Doxygen wrapper for doxer, generate XML descriptions
+	from source code documentation.
+
+	* qcomment.py: doxer helper program used by Doxygen to rip comments out
+	of source files.
+
+	* doxer-standard.doxi: standard macro short-forms for doxer usage.
+
+	* doxer-style.css: doxer CSS definitions, used by Code2Doxi.py and
+	the HTML generator.
+
+	* changelog2doxi.py: custom script to convert beast ChnageLogs to
+	doxer markup. due to symbol matching, it's glib/gtk/gnome/beast
+	namespace specific.
+
+	* linkdict.py: link target dictionary (not doxer specific).
+
+	* linkdict_gnome.py: gtk+ reference documentation link dictionary.
+
 Tue Jan 31 02:42:38 2006  Tim Janik  <timj@gtk.org>
 
 	* doxer/docu-main.doxi: start of doxer documentation.

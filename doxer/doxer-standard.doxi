@@ -1,0 +1,109 @@
+@doxer_hidden	# emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
+#
+# Doxer - Software documentation system
+# Copyright (C) 2005-2006 Tim Janik
+#
+# This software is provided "as is"; redistribution and modification
+# is permitted, provided that the following disclaimer is retained.
+#
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# In no event shall the authors or contributors be liable for any
+# direct, indirect, incidental, special, exemplary, or consequential
+# damages (including, but not limited to, procurement of substitute
+# goods or services; loss of use, data, or profits; or business
+# interruption) however caused and on any theory of liability, whether
+# in contract, strict liability, or tort (including negligence or
+# otherwise) arising in any way out of the use of this software, even
+# if advised of the possibility of such damage.
+
+# === Standard Doxer Definitions ===
+#
+# This file contains the standard doxer definitions set, sufficient for most
+# ordinary document writing needs. Rather than providing every imaginable
+# feature, the focus with doxer markup is in providing enough flexbility for
+# extensions and easy adaption to varying user needs.
+
+#
+# === convenience aliases ===
+#
+@doxer_alias{defalias}			@doxer_alias{@doxer_args{*}}
+@defalias{item}				@doxer_item{@doxer_args{*}}
+@defalias{dnl}				@doxer_dnl
+@defalias{done}				@doxer_done
+@defalias{anchor}			@doxer_anchor{@doxer_args{*}}
+@defalias{table}			@doxer_table{@doxer_args{*}}
+@defalias{row}				@doxer_row{@doxer_args{*}}
+@defalias{cell}				@doxer_cell{@doxer_args{*}}
+@defalias{list}				@doxer_list{@doxer_args{*}}
+@defalias{deflist}			@doxer_deflist{@doxer_args{*}}
+@defalias{item}				@doxer_item{@doxer_args{*}}
+@defalias{uri}				@doxer_uri{@doxer_args{*}}
+@defalias{longuri}			@doxer_longuri{@doxer_args{*}}
+@defalias{image}			@doxer_image{@doxer_args{*}}
+@defalias{rawhtml}			@doxer_raw{html,@doxer_args{*}}
+@defalias{s}				@doxer_monospace{ }
+
+#
+# === standard sections ===
+#
+@defalias{titlesection}			@doxer_start_section{level=0,@doxer_args{*}}
+@defalias{section}                      @doxer_start_section{level=1,numbered,@doxer_args{*}}
+@defalias{subsection}			@doxer_start_section{level=2,numbered,@doxer_args{*}}
+@defalias{subsubsection}		@doxer_start_section{level=3,numbered,@doxer_args{*}}
+@defalias{subsubsubsection}		@doxer_start_section{level=4,numbered,@doxer_args{*}}
+@defalias{heading}			@doxer_start_section{level=1,@doxer_args{*}}
+@defalias{subheading}			@doxer_start_section{level=2,@doxer_args{*}}
+@defalias{subsubheading}		@doxer_start_section{level=3,@doxer_args{*}}
+@defalias{subsubsubheading}		@doxer_start_section{level=4,@doxer_args{*}}
+@defalias{chapter}			@doxer_start_section{level=0,@doxer_args{*}}
+@defalias{blocksection}			@doxer_start_section{level=1,numbered,align=justify,@doxer_args{*}}
+@defalias{tocsection}			@doxer_start_section{level=1,generate-toc,@doxer_args{*}}
+@defalias{tocchapter}			@doxer_start_section{level=0,generate-toc,@doxer_args{*}}
+
+#
+# === tags for layout markup ===
+#
+@doxer_command     			strong
+@doxer_bold{@doxer_args{*}}
+@done
+@doxer_command     			emph
+@doxer_italic{@doxer_args{*}}
+@done
+@doxer_command     			u
+@doxer_underline{@doxer_args{*}}
+@done
+@doxer_command      			deleted
+@doxer_strikethrough{@doxer_args{*}}
+@done
+@doxer_command     			code
+@doxer_monospace{@doxer_args{*}}
+@done
+@doxer_command{scoped} 			example
+@doxer_preformatted{@doxer_monospace{@doxer_args{contents}}}
+@done
+@doxer_command     			pre
+@doxer_preformatted{@doxer_args{*}}
+@done
+@doxer_command{span_line}		center
+@doxer_center{@doxer_args{*}@doxer_args{line}}
+@done
+@doxer_command{span_line}		docauthor
+@center @strong{@doxer_fontsize{+1,@doxer_args{all}}}
+@done
+@doxer_command{span_line}		doctitle
+@center @strong{@doxer_fontsize{+3,@doxer_args{all}}}
+@done
+@doxer_command{scoped} 			enumerate
+@doxer_list{arabic} @doxer_args{line}
+@doxer_args{contents}
+@done
+@done
+@doxer_command{scoped} 			itemize
+@doxer_list{bullet,@doxer_args{1:}} @doxer_args{line}
+@doxer_args{contents}
+@done
+@done
+
+@done	# finishes doxer_hidden section
