@@ -633,8 +633,6 @@ data/Makefile
 data/sfi.pc
 data/bse.pc
 data/beast.applications
-docs/Makefile
-docs/images/Makefile
 po/Makefile.in
 po-helper.sh
 tests/Makefile
@@ -643,6 +641,9 @@ tests/latency/Makefile
 tests/scripts/Makefile
 tests/bse/Makefile
 test/Makefile
+doxer/Makefile
+docs/Makefile
+docs/images/Makefile
 web/Makefile
 ])
 
