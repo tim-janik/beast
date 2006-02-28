@@ -1,3 +1,8 @@
+Tue Feb 28 00:29:43 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile.am:
+	* docs/Makefile.am: use doxer from ../doxer/.
+
 Sun Feb 26 18:26:47 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to 0.6.7, binary 0, interface 0.

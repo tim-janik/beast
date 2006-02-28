@@ -48,6 +48,8 @@ htmldocs_DATA = ${HTML_TARGETS} ${STYLE_TARGETS}
 
 # noinst_DATA = ${PSOURCE_TARGETS}
 
+DOXER = $(top_srcdir)/doxer/doxer.py
+
 DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE \"docframe.doxi\"
 DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call DOCFRAME_DEFS)
 
@@ -69,18 +71,18 @@ html/style/%: $(top_srcdir)/web/style/%
 	@mkdir -p html/style/
 	cp $< $@
 html/style/doxer-style.css:
-	doxer writecss -d html/style/
+	$(DOXER) writecss -d html/style/
 
 # HTML generation rules
 html/%.1.html: %.1.doxi
-	doxer doxi2htmlman $< -d html/ $(DOXIDEFS)
+	$(DOXER) doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.3.html: %.3.doxi
-	doxer doxi2htmlman $< -d html/ $(DOXIDEFS)
+	$(DOXER) doxi2htmlman $< -d html/ $(DOXIDEFS)
 html/%.html: %.doxi
 	@mkdir -p html/
-	doxer doxi2html $< -d html/ $(DOXIDEFS)
+	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
 html/%.html: gendoxi/%.doxi
-	doxer doxi2html $< -d html/ $(DOXIDEFS)
+	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
 
 # Generated .doxi files
 gendoxi/:
@@ -112,22 +114,22 @@ gendoxi/engine-mplan.doxi: $(top_srcdir)/bse/engine-mplan.txt # Makefile
 # BSE object docu
 gendoxi/bse-objects.doxi: psource/bse-objects.psrc docu-template.doxi
 	@mkdir -p gendoxi/
-	doxer pickle2doxi $(strip	$<	-D TOP_WEBDIR ".."	\
-	      -d gendoxi/ $(DOXIDEFS)	-T docu-template.doxi		\
-	      -D DOCU_TEMPLATE_TITLE "BEAST - BSE Object Reference"	\
-	      -D DOCU_TEMPLATE_HEADING "BSE Object Reference" )
+	$(DOXER) pickle2doxi $(strip	$<	-D TOP_WEBDIR ".."		\
+	         -d gendoxi/ $(DOXIDEFS)	-T docu-template.doxi		\
+	         -D DOCU_TEMPLATE_TITLE "BEAST - BSE Object Reference"		\
+	         -D DOCU_TEMPLATE_HEADING "BSE Object Reference" )
 # BSE interface docu
 gendoxi/bse-interface.doxi: psource/bse-interface.psrc docu-template.doxi
 	@mkdir -p gendoxi/
-	doxer pickle2doxi $(strip	$<	-D TOP_WEBDIR ".."	\
-	      -d gendoxi/ $(DOXIDEFS)	-T docu-template.doxi		\
-	      -D DOCU_TEMPLATE_TITLE "BEAST - BSE Interface Reference"	\
-	      -D DOCU_TEMPLATE_HEADING "BSE Interface Reference" )
+	$(DOXER) pickle2doxi $(strip	$<	-D TOP_WEBDIR ".."		\
+	         -d gendoxi/ $(DOXIDEFS)	-T docu-template.doxi		\
+	         -D DOCU_TEMPLATE_TITLE "BEAST - BSE Interface Reference"	\
+	         -D DOCU_TEMPLATE_HEADING "BSE Interface Reference" )
 
 # Reference Documentation
 AUTODOC = $(top_builddir)/bse/bseautodoc
 has_docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
-make_psource = $(strip doxer src2pickle -o $(1) $(DOXIDEFS) $(2))
+make_psource = $(strip $(DOXER) src2pickle -o $(1) $(DOXIDEFS) $(2))
 # SFI reference docu
 sfi_rdocu_globs = $(top_srcdir)/sfi/sfi*.[hc]
 sfi_rdocu_exclude = sfidl*.*
@@ -155,7 +157,7 @@ psource/bse-objects.psrc: $(AUTODOC) $(top_builddir)/config.status
 	@mkdir -p psource/
 	cd . \
 	&& $(AUTODOC) -p -s objects	>psource/bse-objects.scad	\
-	&& doxer scad2pickle -o $@ psource/bse-objects.scad		\
+	&& $(DOXER) scad2pickle -o $@ psource/bse-objects.scad		\
 	&& rm -f psource/bse-objects.scad
 # BSE interface docu
 psource/bse-interface.psrc: $(AUTODOC) $(top_builddir)/config.status
@@ -163,7 +165,7 @@ psource/bse-interface.psrc: $(AUTODOC) $(top_builddir)/config.status
 	cd . \
 	&& $(AUTODOC) -p -s procs	 >psource/bse-interface.scad	\
 	&& $(AUTODOC) -p -s structs     >>psource/bse-interface.scad	\
-	&& doxer scad2pickle -o $@ psource/bse-interface.scad		\
+	&& $(DOXER) scad2pickle -o $@ psource/bse-interface.scad	\
 	&& rm -f psource/bse-interface.scad
 # Force AUTODOC builds
 .PHONY: # $(AUTODOC)

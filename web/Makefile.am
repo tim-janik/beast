@@ -83,20 +83,22 @@ php/%.phpini: %/ scanimages.sh
 	cp xgen-$(@F) $@
 	rm -f xgen-$(@F)
 
+DOXER = $(top_srcdir)/doxer/doxer.py
+
 WEBMENU_DOXI_FILES = faq.doxi
 DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE $(if $(findstring $(<F), ${WEBMENU_DOXI_FILES}), \"webmenu.doxi\", \"webframe.doxi\")
 DOXIDEFS = -D BST_VERSION ${BST_VERSION} -I $(srcdir)
 
 html/%.1.html: ../docs/%.1.doxi
-	doxer doxi2htmlman $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	$(DOXER) doxi2htmlman $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.3.html: ../docs/%.3.doxi
-	doxer doxi2htmlman $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	$(DOXER) doxi2htmlman $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.html: ../docs/%.doxi
-	doxer doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	$(DOXER) doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 html/%.phtml: %.doxi
-	doxer doxi2html $(strip $< -d html/ -j .phtml  -D TOP_WEBDIR "." $(DOXIDEFS))
+	$(DOXER) doxi2html $(strip $< -d html/ -j .phtml  -D TOP_WEBDIR "." $(DOXIDEFS))
 html/%.html: %.doxi
-	doxer doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS))
+	$(DOXER) doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS))
 html/.htaccess: htaccess.in
 	cp $< $@
 
@@ -105,7 +107,7 @@ html/style/.md5sum: $(wildcard style/*)
 	rm -fr html/style/
 	mkdir -p html/style/
 	cp style/*.png style/*.css html/style/
-	doxer writecss -d html/style/
+	$(DOXER) writecss -d html/style/
 	md5sum html/style/* >xgen-html-style-md5sum
 	mv xgen-html-style-md5sum $@		# atomic
 html/web-images/.md5sum: $(wildcard web-images/*)
@@ -141,13 +143,13 @@ html/logogallery/.md5sum: $(wildcard logogallery/*)
 ../docs/gendoxi/news-file.doxi: PHONY-TARGET
 	@$(MAKE) -C ../docs $(patsubst ../docs/%, %, $@)
 html/%.html: ../docs/gendoxi/%.doxi
-	doxer doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
+	$(DOXER) doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS) $(call DOCFRAME_DEFS))
 
 
 html/%.html: %.tmpdoxi
-	doxer doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
+	$(DOXER) doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
 
-CHANGELOG2DOXI = ~/sources/doxer/changelog2doxi.py # FIXME
+CHANGELOG2DOXI = $(top_srcdir)/doxer/changelog2doxi.py
 log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
@@ -194,45 +196,45 @@ log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
 # SFI reference docu
 tmpdoxi-sfi/index.doxi: ../docs/psource/sfi.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-sfi/*
-	doxer pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."	\
-	      -d tmpdoxi-sfi/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
-	      -D DOCU_TEMPLATE_TITLE "BEAST - SFI Interface Reference"  \
-	      -D DOCU_TEMPLATE_HEADING "SFI Interface Reference" )
+	$(DOXER) pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."		\
+	         -d tmpdoxi-sfi/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	         -D DOCU_TEMPLATE_TITLE "BEAST - SFI Interface Reference"  	\
+	         -D DOCU_TEMPLATE_HEADING "SFI Interface Reference" )
 html/rdocu-sfi/index.html: tmpdoxi-sfi/index.doxi $(wildcard tmpdoxi-sfi/*.doxi)
 	rm -f html/rdocu-sfi/*
-	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
-	      -d html/rdocu-sfi/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
-	      $(filter-out $<, $(shell echo tmpdoxi-sfi/*.doxi)) )
-	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
-	      -d html/rdocu-sfi/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-sfi/ $(DOXIDEFS) $(call DOCFRAME_DEFS)		\
+	         $(filter-out $<, $(shell echo tmpdoxi-sfi/*.doxi)) )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-sfi/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 # GXK reference docu
 tmpdoxi-gxk/index.doxi: ../docs/psource/gxk.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-gxk/*
-	doxer pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."	\
-	      -d tmpdoxi-gxk/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
-	      -D DOCU_TEMPLATE_TITLE "BEAST - GXK Interface Reference"  \
-	      -D DOCU_TEMPLATE_HEADING "GXK Interface Reference" )
+	$(DOXER) pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."		\
+	         -d tmpdoxi-gxk/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	         -D DOCU_TEMPLATE_TITLE "BEAST - GXK Interface Reference"  	\
+	         -D DOCU_TEMPLATE_HEADING "GXK Interface Reference" )
 html/rdocu-gxk/index.html: tmpdoxi-gxk/index.doxi $(wildcard tmpdoxi-gxk/*.doxi)
 	rm -f html/rdocu-gxk/*
-	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
-	      -d html/rdocu-gxk/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
-	      $(filter-out $<, $(shell echo tmpdoxi-gxk/*.doxi)) )
-	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
-	      -d html/rdocu-gxk/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-gxk/ $(DOXIDEFS) $(call DOCFRAME_DEFS)		\
+	         $(filter-out $<, $(shell echo tmpdoxi-gxk/*.doxi)) )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-gxk/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 # BSE reference docu
 tmpdoxi-bse/index.doxi: ../docs/psource/bse.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-bse/*
-	doxer pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."	\
-	      -d tmpdoxi-bse/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
-	      -D DOCU_TEMPLATE_TITLE "BEAST - BSE Interface Reference"  \
-	      -D DOCU_TEMPLATE_HEADING "BSE Interface Reference" )
+	$(DOXER) pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."		\
+	         -d tmpdoxi-bse/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	         -D DOCU_TEMPLATE_TITLE "BEAST - BSE Interface Reference"  	\
+	         -D DOCU_TEMPLATE_HEADING "BSE Interface Reference" )
 html/rdocu-bse/index.html: tmpdoxi-bse/index.doxi $(wildcard tmpdoxi-bse/*.doxi)
 	rm -f html/rdocu-bse/*
-	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
-	      -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
-	      $(filter-out $<, $(shell echo tmpdoxi-bse/*.doxi)) )
-	doxer doxi2html $(strip			-D TOP_WEBDIR ".."	\
-	      -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS)		\
+	         $(filter-out $<, $(shell echo tmpdoxi-bse/*.doxi)) )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 
 intermediate_files = $(strip	\
 	log-beast.tmpdoxi	\
