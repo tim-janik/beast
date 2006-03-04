@@ -1,3 +1,7 @@
+Sat Mar  4 14:13:27 2006  Tim Janik  <timj@gtk.org>
+
+	* web/htaccess.in: added .bse and .bsewave file types.
+
 Tue Feb 28 01:33:06 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am:

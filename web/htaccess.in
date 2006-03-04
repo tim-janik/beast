@@ -3,7 +3,10 @@
 #
 # GNU General Public License version 2 or (at your option) any later version.
 
+# --- setup charset and file types ---
 AddDefaultCharset utf-8
+AddType audio/x-bse .bse
+AddType audio/x-bsewave .bsewave
 
 # --- enable mod_rewrite ---
 RewriteEngine On
