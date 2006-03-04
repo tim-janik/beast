@@ -1,3 +1,8 @@
+Sat Mar  4 16:11:33 2006  Tim Janik  <timj@gtk.org>
+
+	* web/style/beast-style.css: turn the font-weight for unexisting
+	wiki pages from bold back to normal.
+
 Sat Mar  4 14:13:27 2006  Tim Janik  <timj@gtk.org>
 
 	* web/htaccess.in: added .bse and .bsewave file types.

@@ -177,3 +177,6 @@ h3.ChangeLog-title  { font-size:120%; color: #404040; }
 .php-file-browser .php-file-browser-file1 { background-color: #e8e8ff }
 .php-file-browser .php-file-browser-file2 { background-color: #f0f0ff }
 }
+
+/* wiki markup */
+.wiki .NotFound b { font-weight: normal; }
