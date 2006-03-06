@@ -1,0 +1,5 @@
+Mon Mar  6 20:24:04 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.[hc]: CVS copied from beast/sfi/sfithreads.[hc].
+
+	* birnetring.[hc]: CVS copied from beast/sfi/sfiprimitives.[hc].
