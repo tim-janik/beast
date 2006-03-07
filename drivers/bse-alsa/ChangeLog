@@ -1,3 +1,7 @@
+Tue Mar  7 03:05:45 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.7.0, depend on bse-0.7.0.
+
 Wed May 25 23:30:03 2005  Tim Janik  <timj@gtk.org>
 
 	* release bse-alsa 0.6.6.
