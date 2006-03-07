@@ -1,5 +1,5 @@
-/* BIRNET - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2005 Tim Janik
+/* BirnetMsg
+ * Copyright (C) 2002-2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,10 +16,10 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BIRNET_LOG_H__
-#define __BIRNET_LOG_H__
+#ifndef __BIRNET_MSG_H__
+#define __BIRNET_MSG_H__
 
-#include <birnet/birnetvalues.h>
+#include <birnet/birnetthread.h>
 
 G_BEGIN_DECLS
 
@@ -32,8 +32,7 @@ typedef enum {
   BIRNET_MSG_INFO,
   BIRNET_MSG_DIAG,
   BIRNET_MSG_DEBUG,
-  BIRNET_MSG_LAST,
-  BIRNET_MSG__UINT32TAG = 0xffffffff
+  BIRNET_MSG_LAST
 } BirnetMsgType;
 
 /* --- standard logging --- */
@@ -66,25 +65,25 @@ typedef enum {
 typedef struct  BirnetMessage                       BirnetMessage;
 typedef void  (*BirnetMsgHandler)                  (const BirnetMessage *message);
 static inline
-gboolean        birnet_msg_check                   (BirnetMsgType        mtype);
+bool            birnet_msg_check                   (BirnetMsgType        mtype);
 void            birnet_msg_enable                  (BirnetMsgType        mtype);
 void            birnet_msg_disable                 (BirnetMsgType        mtype);
-void            birnet_msg_allow                   (const gchar      *ident_list);
-void            birnet_msg_deny                    (const gchar      *ident_list);
+void            birnet_msg_allow                   (const gchar      	*ident_list);
+void            birnet_msg_deny                    (const gchar      	*ident_list);
 void            birnet_msg_set_thread_handler      (BirnetMsgHandler     handler);
 void            birnet_msg_default_handler         (const BirnetMessage *message);
-BirnetMsgType      birnet_msg_type_lookup             (const gchar      *ident);
+BirnetMsgType   birnet_msg_type_lookup             (const gchar      	*ident);
 const gchar*    birnet_msg_type_ident              (BirnetMsgType        mtype);
 const gchar*    birnet_msg_type_label              (BirnetMsgType        mtype);
 void            birnet_msg_type_configure          (BirnetMsgType        mtype,
-                                                 BirnetMsgLogFlags    channel_mask,
-                                                 const gchar      *dummy_filename);
-void            birnet_msg_configure_stdlog        (gboolean          stdlog_to_stderr,
-                                                 const char       *stdlog_filename,
-                                                 guint             syslog_priority); /* if != 0, stdlog to syslog */
-BirnetMsgType      birnet_msg_type_register           (const gchar      *ident,
-                                                 BirnetMsgType        default_ouput, /* FALSE, TRUE, ... */
-                                                 const gchar      *label);
+						    BirnetMsgLogFlags    channel_mask,
+						    const gchar      	*dummy_filename);
+void            birnet_msg_configure_stdlog        (bool             	 stdlog_to_stderr,
+						    const char       	*stdlog_filename,
+						    guint            	 syslog_priority); /* if != 0, stdlog to syslog */
+BirnetMsgType   birnet_msg_type_register           (const gchar      	*ident,
+						    BirnetMsgType        default_ouput, /* FALSE, TRUE, ... */
+						    const gchar      	*label);
 /* automatic registration */
 #define BIRNET_MSG_TYPE_DEFINE(variable, ident, default_ouput, label) BIRNET_MSG_TYPE__DEF (variable, ident, default_ouput, label)
 
@@ -92,14 +91,14 @@ BirnetMsgType      birnet_msg_type_register           (const gchar      *ident,
 typedef struct BirnetMsgBit BirnetMsgBit;
 struct BirnetMessage {
   gchar         *log_domain;
-  BirnetMsgType     type;
+  BirnetMsgType  type;
   char          *title;         /* translated */
   char          *primary;       /* translated */
   char          *secondary;     /* translated */
   char          *details;       /* translated */
   char          *config_check;  /* translated */
   guint          n_msg_bits;
-  BirnetMsgBit    **msg_bits;
+  BirnetMsgBit **msg_bits;
 };
 struct BirnetMsgBit {
   gconstpointer  owner;
@@ -107,26 +106,26 @@ struct BirnetMsgBit {
 };
 
 void            birnet_msg_log_printf              (const char       *log_domain,
-                                                 BirnetMsgType        mtype,
-                                                 const char       *format,
-                                                 ...) G_GNUC_PRINTF (3, 4);
+						    BirnetMsgType     mtype,
+						    const char       *format,
+						    ...) G_GNUC_PRINTF (3, 4);
 void            birnet_msg_log_elist               (const char       *log_domain,
-                                                 BirnetMsgType        mtype,
-                                                 BirnetMsgBit        *lbit1,
-                                                 BirnetMsgBit        *lbit2,
-                                                 ...);
+						    BirnetMsgType     mtype,
+						    BirnetMsgBit     *lbit1,
+						    BirnetMsgBit     *lbit2,
+						    ...);
 void            birnet_msg_log_trampoline          (const char       *log_domain,
-                                                 BirnetMsgType        mtype,
-                                                 BirnetMsgBit       **lbits,
-                                                 BirnetMsgHandler     handler);
-BirnetMsgBit*      birnet_msg_bit_appoint             (gconstpointer     owner,
-                                                 gpointer          data,
-                                                 void            (*data_free) (void*));
-BirnetMsgBit*      birnet_msg_bit_printf              (guint8            msg_bit_type,
-                                                 const char       *format,
-                                                 ...) G_GNUC_PRINTF (2, 3);
+						    BirnetMsgType     mtype,
+						    BirnetMsgBit    **lbits,
+						    BirnetMsgHandler  handler);
+BirnetMsgBit*   birnet_msg_bit_appoint             (gconstpointer     owner,
+						    gpointer          data,
+						    void            (*data_free) (void*));
+BirnetMsgBit*   birnet_msg_bit_printf              (guint8            msg_bit_type,
+						    const char       *format,
+						    ...) G_GNUC_PRINTF (2, 3);
 void            _birnet_init_logging               (void);
-static inline gboolean
+static inline bool    
 birnet_msg_check (BirnetMsgType mtype)
 {
   extern guint8 * volatile birnet_msg_flags;
@@ -152,6 +151,6 @@ birnet_msg_check (BirnetMsgType mtype)
 
 G_END_DECLS
 
-#endif /* __BIRNET_LOG_H__ */
+#endif /* __BIRNET_MSG_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */

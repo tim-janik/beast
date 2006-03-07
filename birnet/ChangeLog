@@ -1,3 +1,23 @@
+Tue Mar  7 02:34:38 2006  Tim Janik  <timj@gtk.org>
+
+        * Makefile.am: build rules for libbirnet.la.
+
+        * birnetmsg.[hc]: slight atomicity fixes.
+
+        * birnetring.[hc]: removed non ring related cruft.
+        added docs to some ring functions.
+
+        * birnetthread.[hc]: fixed atomic functions. fixed
+        birnet_thread_run() race by letting newly created threads
+        sleep until birnet_thread_run() completed its setup.
+        allocate per-thread BirnetCond as part of the thread structure.
+        fixed thread handle leaks in birnet_thread_run() by introducing
+        birnet_thread_handle_free(). 
+        fixed accounting accuracy in thread_info_from_stat_L() by reading
+        out /proc/%u/task/%u/stat files which provide per-thread info,
+        instead of using getrusage(). renamed mutex macros.
+	support GSlice. cache getpid(). added birnet_init().
+
 Tue Mar  7 02:45:06 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetmsg.[hc]:

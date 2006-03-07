@@ -1,5 +1,5 @@
-/* BIRNET - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2005 Tim Janik
+/* BirnetMsg
+ * Copyright (C) 2002-2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "birnetlog.h"
-#include "birnetthreads.h"
+#include "birnetmsg.h"
+#include "birnetthread.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
@@ -29,35 +29,35 @@
 #endif
 
 typedef struct {
-  gchar         *ident;
-  gchar         *label;
+  gchar            *ident;
+  gchar            *label;
   BirnetMsgType     default_type;
   BirnetMsgLogFlags log_flags : 16;
-  guint          disabled : 1;
+  guint             disabled : 1;
 } MsgType;
 
 
 /* --- variables --- */
-static BirnetMutex          logging_mutex;
+static BirnetMutex       logging_mutex;
 static GQuark            quark_log_handler = 0;
 static GQuark            quark_msg_bits = 0;
 static guint             n_msg_types = 0;
 static MsgType          *msg_types = NULL;
-guint8        * volatile birnet_msg_flags = NULL;
+guint8 * volatile        birnet_msg_flags = NULL;
 volatile guint           birnet_msg_flags_max = 0;
 static guint             stdlog_syslog_priority = 0; // LOG_USER | LOG_INFO;
-static gboolean          stdlog_to_stderr = TRUE;
+static bool              stdlog_to_stderr = TRUE;
 static FILE             *stdlog_file = NULL;
 
 /* --- prototypoes --- */
 static void     birnet_log_msg_process     (const BirnetMessage *msgp);
 static void     birnet_msg_type_set        (BirnetMsgType     mtype,
-                                         BirnetMsgLogFlags log_flags,
-                                         gboolean       enabled);
+                                            BirnetMsgLogFlags log_flags,
+                                            bool           enabled);
 
 /* --- functions --- */
 static void
-birnet_msg_type_init_internals ()
+birnet_msg_type_init_internals (void)
 {
   static volatile guint initialized = FALSE;
   if (initialized || !birnet_atomic_int_compare_and_swap (&initialized, FALSE, TRUE))
@@ -110,8 +110,8 @@ _birnet_init_logging (void)
 static inline void
 msg_type_set_intern (BirnetMsgType     mtype,
                      BirnetMsgLogFlags log_flags,
-                     gboolean       enabled,
-                     gboolean       uncouple_default)
+                     bool              enabled,
+                     bool              uncouple_default)
 {
   if (mtype < n_msg_types)
     {
@@ -129,8 +129,8 @@ msg_type_set_intern (BirnetMsgType     mtype,
 
 static void
 birnet_msg_type_set (BirnetMsgType     mtype,
-                  BirnetMsgLogFlags log_flags,
-                  gboolean       enabled)
+                     BirnetMsgLogFlags log_flags,
+                     bool              enabled)
 {
   msg_type_set_intern (mtype, log_flags, enabled, TRUE);
   guint i;
@@ -161,9 +161,9 @@ birnet_msg_type_set (BirnetMsgType     mtype,
  * This function is MT-safe and may be called from any thread.
  */
 BirnetMsgType
-birnet_msg_type_register (const gchar *ident,
-                       BirnetMsgType   default_ouput, /* FALSE, TRUE, BIRNET_MSG_* */
-                       const gchar *label)
+birnet_msg_type_register (const gchar   *ident,
+                          BirnetMsgType  default_ouput, /* FALSE, TRUE, BIRNET_MSG_* */
+                          const gchar   *label)
 {
   /* ensure standard types are registered */
   birnet_msg_type_init_internals();
@@ -172,10 +172,10 @@ birnet_msg_type_register (const gchar *ident,
   if (default_ouput >= n_msg_types)
     default_ouput = 0;
   /* support concurrency after _birnet_init_logging() */
-  gboolean need_unlock = FALSE;
+  bool     need_unlock = FALSE;
   if (quark_log_handler)
     {
-      BIRNET_SPIN_LOCK (&logging_mutex);
+      birnet_mutex_lock (&logging_mutex);
       need_unlock = TRUE;
     }
   /* allow duplicate registration */
@@ -185,7 +185,7 @@ birnet_msg_type_register (const gchar *ident,
       {
         /* found duplicate */
         if (need_unlock)
-          BIRNET_SPIN_UNLOCK (&logging_mutex);
+          birnet_mutex_unlock (&logging_mutex);
         return i;
       }
   /* add new message type */
@@ -201,7 +201,8 @@ birnet_msg_type_register (const gchar *ident,
       msg_flags[new_flags_size - 1] = 0;
       guint8 *old_msg_flags = birnet_msg_flags;
       /* we are holding a lock in the multi-threaded case so no need for compare_and_swap */
-      birnet_atomic_pointer_set (guint8*, &birnet_msg_flags, msg_flags);
+      typedef guint8* X;
+      birnet_atomic_set (guint8*volatile , &birnet_msg_flags, msg_flags);
       // FIXME: birnet_msg_flags should be registered as hazard pointer so we don't g_free() while other threads read old_msg_flags[*]
       g_free (old_msg_flags);
     }
@@ -209,16 +210,16 @@ birnet_msg_type_register (const gchar *ident,
   msg_types[mtype].label = g_strdup (label);
   birnet_msg_type_set (mtype, msg_types[default_ouput].log_flags, !msg_types[default_ouput].disabled);
   msg_types[mtype].default_type = default_ouput;
-  birnet_atomic_int_set (&birnet_msg_flags_max, mtype);
+  birnet_atomic_int_set (&birnet_msg_flags_max, mtype); /* only ever grows */
   /* out of here */
   if (need_unlock)
-    BIRNET_SPIN_UNLOCK (&logging_mutex);
+    birnet_mutex_unlock (&logging_mutex);
   return mtype;
 }
 
 static void
 key_list_change (const char *string,
-                 gboolean    flag_value)
+                 bool        flag_value)
 {
   guint i, n;
   /* ensure all keywords are enclosed in ':' */
@@ -238,7 +239,7 @@ key_list_change (const char *string,
         birnet_msg_type_set (i, msg_types[i].log_flags, flag_value);
       return;
     }
-
+  
   /* walk all kyes */
   char *k = s + 1;
   char *p = strchr (k, ':');
@@ -262,10 +263,10 @@ key_list_change (const char *string,
 void
 birnet_msg_allow (const char *key)
 {
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (key)
     key_list_change (key, TRUE);
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
   
 #if 0
   guint i;
@@ -280,47 +281,47 @@ birnet_msg_allow (const char *key)
 void
 birnet_msg_deny (const char *key)
 {
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (key)
     key_list_change (key, FALSE);
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
 }
 
 void
 birnet_msg_enable (BirnetMsgType mtype)
 {
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     birnet_msg_type_set (mtype, msg_types[mtype].log_flags, TRUE);
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
 }
 
 void
 birnet_msg_disable (BirnetMsgType mtype)
 {
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     birnet_msg_type_set (mtype, msg_types[mtype].log_flags, FALSE);
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
 }
 
 void
 birnet_msg_type_configure (BirnetMsgType        mtype,
-                        BirnetMsgLogFlags    channel_mask,
-                        const gchar      *dummy_filename)
+                           BirnetMsgLogFlags    channel_mask,
+                           const gchar         *dummy_filename)
 {
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     birnet_msg_type_set (mtype, channel_mask, !msg_types[mtype].disabled);
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
 }
 
 void
-birnet_msg_configure_stdlog (gboolean          stdlog_to_stderr_bool,
-                          const char       *stdlog_filename,
-                          guint             syslog_priority) /* if != 0, stdlog to syslog */
+birnet_msg_configure_stdlog (bool              stdlog_to_stderr_bool,
+                             const char       *stdlog_filename,
+                             guint             syslog_priority) /* if != 0, stdlog to syslog */
 {
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   stdlog_to_stderr = stdlog_to_stderr_bool != 0;
   stdlog_syslog_priority = syslog_priority;
   if (stdlog_file && stdlog_file != stdout)
@@ -330,7 +331,7 @@ birnet_msg_configure_stdlog (gboolean          stdlog_to_stderr_bool,
     stdlog_file = stdout;
   else if (stdlog_filename)
     stdlog_file = fopen (stdlog_filename, "a");
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
 }
 
 /**
@@ -345,10 +346,10 @@ const gchar*
 birnet_msg_type_ident (BirnetMsgType mtype)
 {
   const gchar *string = NULL;
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     string = msg_types[mtype].ident;
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
   return string;
 }
 
@@ -365,10 +366,10 @@ const gchar*
 birnet_msg_type_label (BirnetMsgType mtype)
 {
   const gchar *string = NULL;
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     string = msg_types[mtype].label;
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
   return string;
 }
 
@@ -386,13 +387,13 @@ birnet_msg_type_lookup (const gchar *ident)
 {
   g_return_val_if_fail (ident != NULL, 0);
   guint i;
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   for (i = 0; i < n_msg_types; i++)
     if (strcmp (ident, msg_types[i].ident) == 0)
       break;
   if (i >= n_msg_types)
     i = 0;
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
   return i;
 }
 
@@ -490,9 +491,9 @@ free_lbits (LogBit *first)
  */
 void
 birnet_msg_log_printf (const char       *log_domain,
-                    BirnetMsgType        mtype,
-                    const char       *format,
-                    ...)
+                       BirnetMsgType     mtype,
+                       const char       *format,
+                       ...)
 {
   gint saved_errno = errno;
   /* construct message */
@@ -537,10 +538,10 @@ birnet_msg_log_printf (const char       *log_domain,
  */
 void
 birnet_msg_log_elist (const char     *log_domain,
-                   BirnetMsgType      mtype,       /* BIRNET_MSG_DEBUG is not really useful here */
-                   BirnetMsgBit      *lbit1,
-                   BirnetMsgBit      *lbit2,
-                   ...)
+                      BirnetMsgType   mtype,       /* BIRNET_MSG_DEBUG is not really useful here */
+                      BirnetMsgBit   *lbit1,
+                      BirnetMsgBit   *lbit2,
+                      ...)
 {
   gint saved_errno = errno;
   guint n = 0;
@@ -625,10 +626,10 @@ msg_apply_bit (BirnetMessage *msg,
  * This function is MT-safe and may be called from any thread.
  */
 void
-birnet_msg_log_trampoline (const char     *log_domain,
-                        BirnetMsgType      mtype,       /* BIRNET_MSG_DEBUG is not really useful here */
-                        BirnetMsgBit     **lbits,
-                        BirnetMsgHandler   handler)
+birnet_msg_log_trampoline (const char        *log_domain,
+                           BirnetMsgType      mtype,       /* BIRNET_MSG_DEBUG is not really useful here */
+                           BirnetMsgBit     **lbits,
+                           BirnetMsgHandler   handler)
 {
   gint saved_errno = errno;
   /* construct message */
@@ -662,8 +663,8 @@ birnet_msg_log_trampoline (const char     *log_domain,
 
 BirnetMsgBit*
 birnet_msg_bit_appoint (gconstpointer   owner,
-                     gpointer        data,
-                     void          (*data_free) (gpointer))
+                        gpointer        data,
+                        void          (*data_free) (gpointer))
 {
   gint saved_errno = errno;
   LogBit *lbit = g_new0 (LogBit, 1);
@@ -678,8 +679,8 @@ birnet_msg_bit_appoint (gconstpointer   owner,
 
 BirnetMsgBit*
 birnet_msg_bit_printf (guint8      msg_bit_type,
-                    const char *format,
-                    ...)
+                       const char *format,
+                       ...)
 {
   gint saved_errno = errno;
   va_list args;
@@ -691,7 +692,7 @@ birnet_msg_bit_printf (guint8      msg_bit_type,
 }
 
 static const gchar*
-prgname (gboolean maystrip)
+prgname (bool     maystrip)
 {
   const gchar *pname = g_get_prgname();
   if (pname && maystrip)
@@ -740,11 +741,11 @@ static guint
 birnet_msg_type_actions (BirnetMsgType mtype)
 {
   guint actions = 0;
-  BIRNET_SPIN_LOCK (&logging_mutex);
+  birnet_mutex_lock (&logging_mutex);
   if (mtype >= 0 && mtype < n_msg_types &&
       !msg_types[mtype].disabled)
     actions = msg_types[mtype].log_flags;
-  BIRNET_SPIN_UNLOCK (&logging_mutex);
+  birnet_mutex_unlock (&logging_mutex);
   return actions;
 }
 
@@ -771,11 +772,11 @@ birnet_log_msg_process (const BirnetMessage *msgp)
       g_free (prefix);
     }
   /* log to stderr */
-  gboolean tostderr = (actions & BIRNET_MSG_TO_STDERR) != 0;
+  bool tostderr = (actions & BIRNET_MSG_TO_STDERR) != 0;
   tostderr |= (actions & BIRNET_MSG_TO_STDLOG) && stdlog_to_stderr;
   if ((msg.primary || msg.secondary) && tostderr)
     {
-      gboolean is_debug = msg.type == BIRNET_MSG_DEBUG, is_diag = msg.type == BIRNET_MSG_DIAG;
+      bool   is_debug = msg.type == BIRNET_MSG_DEBUG, is_diag = msg.type == BIRNET_MSG_DIAG;
       gchar *prefix = log_prefix (prgname (is_debug),                                   /* strip prgname path for debugging */
                                   birnet_thread_self_pid(),                                /* always print pid */
                                   is_debug ? NULL : msg.log_domain,                     /* print domain except when debugging */
