@@ -1,3 +1,8 @@
+Tue Mar  7 03:06:55 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.inc: define AC_BIRNET_REQUIREMENTS() to perform configure
+	checks for libbirnet.la.
+
 Tue Mar  7 02:56:25 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/threads.cc: added BirnetThread from sfi/testsfi.c.
