@@ -1,3 +1,9 @@
+Tue Mar  7 02:45:06 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetmsg.[hc]:
+	* birnetring.[hc]:
+	* birnetthread.[hc]: Sfi -> Birnet rename.
+
 Mon Mar  6 20:28:02 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetmsg.[hc]: CVS copied from beast/sfi/sfilog.[hc].
