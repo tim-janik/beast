@@ -1,3 +1,7 @@
+Tue Mar  7 22:42:52 2006  Tim Janik  <timj@gtk.org>
+
+	* sficxx.hh: CVS copied from sficxx.h, because this is a C++ header.
+
 Wed Feb 15 23:18:42 2006  Tim Janik  <timj@gtk.org>
 
 	* sfifilecrawler.c: 
