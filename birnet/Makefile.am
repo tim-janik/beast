@@ -33,7 +33,7 @@ noinst_LTLIBRARIES         = libbirnet.la
 libbirnetincludedir        = $(includedir)/birnet
 libbirnetinclude_HEADERS   = $(birnet_c_headers) $(birnet_cc_headers) $(birnet_generated_headers)
 libbirnet_la_SOURCES       = $(birnet_c_sources) $(birnet_cc_sources)
-libbirnet_la_DEPENDENCIES += ldscript.map
+libbirnet_la_DEPENDENCIES +=
 libbirnet_la_LIBADD        = $(BIRNET_LIBS) -lm
 libbirnet_la_LDFLAGS       = -no-undefined # -Wl,-Bsymbolic
 #

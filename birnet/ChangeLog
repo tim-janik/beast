@@ -1,3 +1,7 @@
+Tue Mar  7 19:50:01 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: fix dependency.
+
 Tue Mar  7 03:06:55 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.inc: define AC_BIRNET_REQUIREMENTS() to perform configure
