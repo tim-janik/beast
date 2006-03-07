@@ -1,3 +1,14 @@
+Tue Mar  7 02:56:25 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/threads.cc: added BirnetThread from sfi/testsfi.c.
+	also added a test for atomic integer increments.
+
+	* tests/testutils.h: utility functions for tests.
+
+	* tests/ring.cc: added BirnetRing tests from sfi/testsfi.c.
+
+	* tests/Makefile.am: build and check test programs.
+
 Tue Mar  7 02:34:38 2006  Tim Janik  <timj@gtk.org>
 
         * Makefile.am: build rules for libbirnet.la.
