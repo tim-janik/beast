@@ -28,7 +28,7 @@ EXTRA_PROGRAMS = bsesh-\$(BIN_VERSION)		# make automake-1.4 eat bsesh____BIN_VER
 bsesh____BIN_VERSION__SOURCES = bsesh.c bsescminterp.c cxxdummy.cc
 bsesh____BIN_VERSION__LDADD = $(programs_ldadd) $(BSE_SHELL_LIBS)
 # libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
+programs_ldadd = $(top_builddir)/bse/libbse.la
 # source setups
 bsescminterp.c: # bsescm-genglue.c
 EXTRA_DIST += bsescminterp.h

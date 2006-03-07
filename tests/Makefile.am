@@ -64,7 +64,7 @@ generated: $(tests_built_sources)
 #
 
 TESTS = cxxbinding perftest
-progs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
+progs_ldadd = $(top_builddir)/bse/libbse.la
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
 cxxbinding_LDADD = $(progs_ldadd)
 $(srcdir)/cxxbinding.cc: bsecxxapi.h
@@ -83,7 +83,7 @@ noinst_PROGRAMS = $(TESTS)
 # test plugin: library
 testplugin_la_SOURCES = testplugin.cc
 testplugin_la_LDFLAGS = -module -avoid-version
-testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
+testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
 EXTRA_HEADERS += testplugin.idl
 $(srcdir)/testplugin.cc: testplugin.idl
 

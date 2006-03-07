@@ -20,7 +20,7 @@ bsefcompare_SOURCES = bsefcompare.cc
 bsefcompare_LDADD = $(programs_ldadd)
 
 # libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
+programs_ldadd = $(top_builddir)/bse/libbse.la
 
 headers = $(strip	\
 	bsewavetool.hh	\

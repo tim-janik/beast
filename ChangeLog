@@ -1,3 +1,21 @@
+Tue Mar  7 02:31:18 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.7.0, binary 0, interface 0.
+
+	* merged libsfi.la and libbirnet.la into libbse.la, so only
+	libbse.so is installed as public library now.
+
+	* configure.in:
+	* Makefile.am: added birnet/.
+
+	* configure.in: execute checks from birnet/configure.inc.
+	comment fixups.
+	
+	* data/bse.pc.in: libbse.so doesn't link against libsfi.so anymore.
+
+	* data/Makefile.am:
+	* data/sfi.pc.in: removed.
+
 Sat Mar  4 16:11:33 2006  Tim Janik  <timj@gtk.org>
 
 	* web/style/beast-style.css: turn the font-weight for unexisting

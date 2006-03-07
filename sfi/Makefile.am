@@ -3,20 +3,8 @@
 #
 ## Makefile.am for SFI
 
-SUBDIRS =
-
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
-
-# public libraries
-lib_LTLIBRARIES = libsfi.la
-DEFS += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
-libsfiincludedir = $(includedir)/sfi
-libsfi_la_LDFLAGS = $(strip \
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-release $(LT_RELEASE) \
-	-export-dynamic \
-)
-libsfi_la_LIBADD = $(SFI_LIBS) -lm
+DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 
 sfi_public_headers = $(strip \
 	sfistore.h	sficomwire.h	sfifilecrawler.h \
@@ -44,37 +32,40 @@ sfi_built_sources = $(strip \
 
 $(sfi_c_sources): $(sfi_built_sources)
 
+# SFI library
+noinst_LTLIBRARIES    = libsfi.la
+libsfiincludedir      = $(includedir)/sfi
 libsfiinclude_HEADERS = $(sfi_public_headers) sficonfig.h
-libsfi_la_SOURCES = $(sfi_c_sources)
+libsfi_la_SOURCES     = $(sfi_c_sources)
+libsfi_la_LDFLAGS     = -no-undefined # -Wl,-Bsymbolic
+libsfi_la_LIBADD      = $(SFI_LIBS) -lm
 
 #
 # generated sources
 #
 SFIDL = $(top_builddir)/sfi/sfidl
-temp_files =  xgen-tih xgen-tic xgen-sch
-CLEANFILES += $(temp_files)
 CLEANFILES += testidl.h testidl.c
 testidl.h: $(srcdir)/testidl.idl sfidl
-	$(SFIDL) --host-c --header $(srcdir)/testidl.idl > xgen-tih \
-	&& mv xgen-tih testidl.h
+	$(SFIDL) --host-c --header $(srcdir)/testidl.idl > xgen-$(@F) \
+	&& mv xgen-$(@F) testidl.h
 testidl.c: $(srcdir)/testidl.idl sfidl
-	$(SFIDL) --host-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-tic \
-	&& mv xgen-tic testidl.c
+	$(SFIDL) --host-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-$(@F) \
+	&& mv xgen-$(@F) testidl.c
 EXTRA_DIST += testidl.idl
 
 sficonfig.h: $(top_builddir)/config.status Makefile
-	echo "/* Generated data from $< (by make $@) */" > xgen-sch \
-	&& echo >> xgen-sch \
-	&& echo "#define SFI_SIZEOF_PTH_MUTEX_T         (@SFI_SIZEOF_PTH_MUTEX_T@)" >> xgen-sch \
-	&& echo "#define SFI_SIZEOF_PTH_COND_T          (@SFI_SIZEOF_PTH_COND_T@)" >> xgen-sch \
-	&& echo "#define SFI_HAVE_MUTEXATTR_SETTYPE     (@SFI_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-sch \
-	&& echo "                                        SFI_SIZEOF_PTH_MUTEX_T && \\" >> xgen-sch \
-	&& echo "                                        SFI_SIZEOF_PTH_COND_T)" >> xgen-sch \
-	&& echo >> xgen-sch \
-	&& echo "/* Generated data ends here */" >> xgen-sch \
-	&& (cmp -s xgen-sch $@ || cp xgen-sch $@) \
-	&& rm -f xgen-sch
-CLEANFILES += sficonfig.h xgen-sch
+	echo "/* Generated data from $< (by make $@) */" > xgen-$(@F) \
+	&& echo >> xgen-$(@F) \
+	&& echo "#define SFI_SIZEOF_PTH_MUTEX_T         (@SFI_SIZEOF_PTH_MUTEX_T@)" >> xgen-$(@F) \
+	&& echo "#define SFI_SIZEOF_PTH_COND_T          (@SFI_SIZEOF_PTH_COND_T@)" >> xgen-$(@F) \
+	&& echo "#define SFI_HAVE_MUTEXATTR_SETTYPE     (@SFI_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-$(@F) \
+	&& echo "                                        SFI_SIZEOF_PTH_MUTEX_T && \\" >> xgen-$(@F) \
+	&& echo "                                        SFI_SIZEOF_PTH_COND_T)" >> xgen-$(@F) \
+	&& echo >> xgen-$(@F) \
+	&& echo "/* Generated data ends here */" >> xgen-$(@F) \
+	&& (cmp -s xgen-$(@F) $@ || cp xgen-$(@F) $@) \
+	&& rm -f xgen-$(@F)
+CLEANFILES += sficonfig.h
 $(srcdir)/sfithreads.c: sficonfig.h
 $(OBJECTS): sficonfig.h
 
@@ -88,7 +79,7 @@ common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfid
 
 noinst_PROGRAMS = testsfi testcxx testsfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
-sfidl_LDADD = $(SFI_LIBS) -lm
+sfidl_LDADD = $(SFI_LIBS) -lm # libsfi.la
 
 bin_PROGRAMS = sfidl
 
@@ -97,13 +88,13 @@ EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-corec.hh 
 
 progs_extra_sources += sfidl-namespace.hh
 testsfi_SOURCES = testsfi.c
-testsfi_LDADD = libsfi.la
+testsfi_LDADD = libsfi.la $(SFI_LIBS) -lm
 $(srcdir)/testsfi.c: testidl.h testidl.c
 testcxx_SOURCES = testcxx.cc
-testcxx_LDADD = libsfi.la
+testcxx_LDADD = libsfi.la $(SFI_LIBS) -lm
 $(srcdir)/testcxx.cc: testidl.h testidl.c
 testsfidl_SOURCES = testsfidl.cc $(common_idl_sources)
-testsfidl_LDADD = libsfi.la
+testsfidl_LDADD = libsfi.la $(SFI_LIBS) -lm
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 
 #

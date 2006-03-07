@@ -22,7 +22,6 @@ LIBS += # -lefence # -pg
 progs_LDADD = $(strip 			\
 	./gxk/libgxk.a 			\
 	$(top_builddir)/bse/libbse.la 	\
-	$(top_builddir)/sfi/libsfi.la 	\
 	$(LDFLAGS) $(BEAST_LIBS) 	\
 )
 

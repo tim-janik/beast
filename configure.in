@@ -1,6 +1,6 @@
-dnl ************************************
-dnl *** include special BEAST macros ***
-dnl ************************************
+dnl #####################################
+dnl #### include special BEAST macros ###
+dnl #####################################
 builtin(include, acbeast.m4)dnl
 
 #
@@ -16,8 +16,8 @@ AC_PREREQ(2.57)
 #
 AC_DIVERT_BEFORE_HELP([
 BSE_MAJOR_VERSION=0
-BSE_MINOR_VERSION=6
-BSE_MICRO_VERSION=7
+BSE_MINOR_VERSION=7
+BSE_MICRO_VERSION=0
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 ])
@@ -59,7 +59,7 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-dnl figure debugging default, prior to $ac_help setup
+dnl # figure debugging default, prior to $ac_help setup
 dnl
 AC_DIVERT_BEFORE_HELP([
 if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
@@ -87,7 +87,7 @@ AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 AC_ARG_ENABLE(debug,       [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
 AC_ARG_ENABLE(toyprof,     [  --enable-toyprof=[no/yes]       turn on toy profiler, see sfi/toyprof.README],,)
 
-dnl setup DEBUG defaults
+dnl # setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
   DEBUG_FLAGS="-g -DG_ENABLE_DEBUG"
 else if test "x$enable_debug" = "xno"; then
@@ -106,32 +106,90 @@ else
   CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
 fi
 
-dnl Foreign defaults:
+dnl # Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
 MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
 
+# check compilers and their behaviour, setup CFLAGS
+MC_PROG_CC_WITH_CFLAGS
+MC_PROG_CXX_WITH_CXXFLAGS
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_C_CONST
+AC_C_INLINE
+AC_HEADER_STDC
 
-dnl
-dnl Define package requirements.
-dnl
+# Checks for programs
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+# initialize libtool, we need dynamic module support
+AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
+
+# Check for package requirements.
+MC_IF_VAR_EQ(GCC, yes,,
+    AC_MSG_ERROR(This package requires GNU gcc)
+)
+MC_IF_VAR_EQ(GXX, yes,,
+    AC_MSG_ERROR(This package requires GNU g++)
+)
+
+# Figure build requirement
+AC_MSG_CHECKING(whether make is GNU Make)
+STRIP_BEGIN=
+STRIP_END=
+if $ac_make --version 2>/dev/null | grep '^GNU Make ' >/dev/null ; then
+        STRIP_BEGIN='$(strip $(STRIP_DUMMY)'
+        STRIP_END=')'
+        AC_MSG_RESULT(yes)
+else
+        AC_MSG_RESULT(no)
+fi
+dnl # some Make 3.79 $(strip ) versions are broken and require an empty arg
+STRIP_DUMMY=
+AC_SUBST(STRIP_DUMMY)
+AC_SUBST(STRIP_BEGIN)
+AC_SUBST(STRIP_END)
+
+# require pkg-config
+MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
+
+
+dnl #
+dnl # Include sub-package macro definitions
+dnl #
+builtin(include, birnet/configure.inc)dnl
+#include(birnet/configure.inc)
+AC_DEFUN(DUMMY_DEFS,
+[
+    # work around stupid automake (doesn't figure includes)
+    AC_SUBST(BIRNET_CFLAGS)
+    AC_SUBST(BIRNET_LIBS)
+])
+
+dnl #
+dnl # Define package requirements.
+dnl #
 AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
-    dnl TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
-    dnl the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
+    dnl # TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
+    dnl # the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
     ALL_LINGUAS="az bg ca cs de el en_CA en_GB eo es eu fr hr it ja mn ne nl pa pt pt_BR ru rw sq sr sr@Latn sv"
-    dnl TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
-    dnl the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
+    dnl # TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
+    dnl # the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
     AC_SUBST(ALL_LINGUAS)
 
-    dnl versioned BEAST gettext domain (po/)
+    dnl # versioned BEAST gettext domain (po/)
     BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
     AC_SUBST(BST_GETTEXT_DOMAIN)
     AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
     GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
     AC_SUBST(GETTEXT_PACKAGE)
 
-    dnl locale directory for all domains
-    dnl (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
+    dnl # locale directory for all domains
+    dnl # (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
     saved_prefix="$prefix"
     saved_exec_prefix="$exec_prefix"
     test "x$prefix" = xNONE && prefix=$ac_default_prefix
@@ -145,37 +203,37 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
     prefix="$saved_prefix"
     AC_SUBST(beastlocaledir)
 
-    dnl do gettext checks and provide INTLLIBS
+    dnl # do gettext checks and provide INTLLIBS
     AM_GLIB_GNU_GETTEXT
     AC_PROG_INTLTOOL
 ])
 AC_DEFUN(AC_SFI_REQUIREMENTS,
 [
-    dnl We need GLib with friends
-    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.4.0 gobject-2.0 gmodule-2.0 gthread-2.0)
-    AC_SUBST(GLIB_CFLAGS)
-    AC_SUBST(GLIB_LIBS)
-    SFI_CFLAGS="$GLIB_CFLAGS"
-    SFI_LIBS="$GLIB_LIBS"
+    dnl # We need GLib with friends
+    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.4.11 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
+    AC_SUBST(GLIB_GOMT_CFLAGS)
+    AC_SUBST(GLIB_GOMT_LIBS)
+    SFI_CFLAGS="$GLIB_GOMT_CFLAGS"
+    SFI_LIBS="$GLIB_GOMT_LIBS"
     AC_SUBST(SFI_CFLAGS)
     AC_SUBST(SFI_LIBS)
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
     AC_CHECK_FUNCS(timegm)
     
-    dnl --- toy profiler ---
+    dnl # --- toy profiler ---
     AM_CONDITIONAL(IF_TOYPROF, test x"$enable_toyprof" = xyes)
 
-    dnl --- SFI directories ---
+    dnl # --- SFI directories ---
     sfidlstdincdir=${includedir}
     AC_SUBST(sfidlstdincdir)
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
-    dnl --- BSE version ---
+    dnl # --- BSE version ---
     AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
 
-    dnl --- Ogg/Vorbis check ---
+    dnl # --- Ogg/Vorbis check ---
     OV_LIBS=
     ov_tests=0
     AC_CHECK_LIB(vorbisfile, ogg_stream_reset_serialno,
@@ -190,14 +248,14 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
 	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0) or headers])
     fi
     
-    dnl --- libmad MPEG decoder check ---
-    dnl libmad doesn't come with a mad.pc file (just its debian package)
-    dnl PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
-    dnl     GSL_HAVE_LIBMAD=1
-    dnl     ,
-    dnl     GSL_HAVE_LIBMAD=0
-    dnl     AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
-    dnl )
+    dnl # --- libmad MPEG decoder check ---
+    dnl # libmad doesn't come with a mad.pc file (just its debian package)
+    dnl # PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
+    dnl #     GSL_HAVE_LIBMAD=1
+    dnl #     ,
+    dnl #     GSL_HAVE_LIBMAD=0
+    dnl #     AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+    dnl # )
     MAD_LIBS=
     LIBMAD_XXX_0=""
     LIBMAD_XXX_1=""
@@ -219,7 +277,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(LIBMAD_XXX_0)
     AC_SUBST(LIBMAD_XXX_1)
 
-    dnl --- check codec requirements ---
+    dnl # --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
     if echo " $OV_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
       AC_MSG_RESULT([complete])
@@ -228,7 +286,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
 
-    dnl --- require libz ---
+    dnl # --- require libz ---
     if test -z "$LIBZ"; then
 	AC_CHECK_LIB(z, gzsetparams,
 	    [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
@@ -239,12 +297,12 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     fi
     AC_SUBST(LIBZ)
 
-    dnl --- complete CFLAGS/LIBS setup ---
+    dnl # --- complete CFLAGS/LIBS setup ---
     BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS"
     BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS $LIBZ"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
-    dnl --- figure stuff for bse.pc ---
+    dnl # --- figure stuff for bse.pc ---
     BSE_PC_REQUIRE=
     if test $GSL_HAVE_LIBMAD = 1 ; then
 	BSE_PC_REQUIRE=mad
@@ -255,7 +313,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
 
-    dnl --- sizeof types ---
+    dnl # --- sizeof types ---
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
     SFI_SIZEOF_PTH_MUTEX_T="$glib_cv_sizeof_pth_mutex_t"
     AC_SUBST(SFI_SIZEOF_PTH_MUTEX_T)
@@ -266,7 +324,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     GSL_SIZEOF_STD_INTMAX_T="$glib_cv_sizeof_std_intmax_t"
     AC_SUBST(GSL_SIZEOF_STD_INTMAX_T)
 
-    dnl --- pthread_mutexattr_settype ---
+    dnl # --- pthread_mutexattr_settype ---
     AC_MSG_CHECKING([for pthread_mutexattr_settype()])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
       #define _XOPEN_SOURCE   600
@@ -284,7 +342,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
-    dnl --- setup BSE search/install paths ---
+    dnl # --- setup BSE search/install paths ---
     bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins
     AC_SUBST(bseplugindir)
     bsedriverdir=\${libdir}/bse/v$BIN_VERSION/drivers
@@ -313,7 +371,7 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
     BSESH_BINARY="bsesh-$BIN_VERSION"
     AC_SUBST(BSESH_BINARY)
 
-    dnl --- libguile check ---
+    dnl # --- libguile check ---
     guile_tests=0
     GUILE_VERSION=none
     REQUIRED_VERSION=1.6
@@ -324,9 +382,9 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
 	GUILE_CFLAGS=`$GUILE_CONFIG compile`
 	GUILE_LDFLAGS=`$GUILE_CONFIG link`
 	MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [guile_tests=`expr $guile_tests + 1`])
-	dnl check headers seperately, since some distributions ship on-devel guile packages with guile-config
+	dnl # check headers seperately, since some distributions ship on-devel guile packages with guile-config
 	AC_CHECK_HEADER(guile/gh.h, guile_tests=`expr $guile_tests + 1`)
-	AC_CHECK_HEADER(libguile/properties.h, guile_tests=`expr $guile_tests + 1`) dnl guile-1.6 headerfile
+	AC_CHECK_HEADER(libguile/properties.h, guile_tests=`expr $guile_tests + 1`) dnl # guile-1.6 headerfile
     fi
     if test $guile_tests = 4 ; then
 	BSE_SHELL_CFLAGS="$GUILE_CFLAGS $BSE_SHELL_CFLAGS"
@@ -343,13 +401,13 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
 ])
 AC_DEFUN(AC_GXK_REQUIREMENTS,
 [
-    dnl required libraries
+    dnl # required libraries
     DEPENDANCIES=
     DEPENDANCIES="$DEPENDANCIES gtk+-2.0 >= 2.4.11"
     DEPENDANCIES="$DEPENDANCIES pangoft2 >= 1.4.0"
     DEPENDANCIES="$DEPENDANCIES libart-2.0 >= 2.3.8"
     DEPENDANCIES="$DEPENDANCIES libgnomecanvas-2.0 >= 2.4.0"
-    dnl define GUI_CFLAGS and GUI_LIBS:
+    dnl # define GUI_CFLAGS and GUI_LIBS:
     PKG_CHECK_MODULES(GUI, $DEPENDANCIES)
     
     GXK_CFLAGS="$GUI_CFLAGS"
@@ -359,7 +417,7 @@ AC_DEFUN(AC_GXK_REQUIREMENTS,
 ])
 AC_DEFUN(AC_BEAST_REQUIREMENTS,
 [
-    dnl start where GXK left off
+    dnl # start where GXK left off
     BEAST_CFLAGS="$GXK_CFLAGS"
     BEAST_LIBS="$GXK_LIBS"
     AC_SUBST(BEAST_CFLAGS)
@@ -368,7 +426,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     BEAST_BINARY="beast-$BIN_VERSION"
     AC_SUBST(BEAST_BINARY)
 
-    dnl Feature XKB extension if present
+    dnl # Feature XKB extension if present
     cflags=$CFLAGS
     ldflags=$LDFLAGS
     CFLAGS=$BEAST_CFLAGS
@@ -413,17 +471,17 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 ])
 AC_DEFUN(AC_SUIDMAIN_REQUIREMENTS,
 [
-    dnl figure everything required by the suid wrapper
+    dnl # figure everything required by the suid wrapper
     AC_CHECK_FUNCS(seteuid)
     AC_CHECK_FUNCS(setreuid)
 ])
 AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 [
-    dnl Check for potential pcm devices
+    dnl # Check for potential pcm devices
 	
     bse_have_pcmdev=
 	
-    dnl OSS-Lite driver check
+    dnl # OSS-Lite driver check
     AC_CHECK_HEADERS(sys/soundcard.h soundcard.h, have_oss_header=yes, have_oss_header=no)
     AC_ARG_ENABLE(osspcm,
 	[  --enable-osspcm=DEVICE  force DEVICE as OSS PCM device name],
@@ -435,7 +493,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 	[enable_ossmidi=""])
     AC_MSG_CHECKING([for available OSS sound devices])
     result=
-    dnl Figure PCM device
+    dnl # Figure PCM device
     if test -n "$enable_osspcm" ; then
 	dev="$enable_osspcm"
     else
@@ -455,7 +513,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     else
 	result="$result""PCM:none "
     fi
-    dnl Figure MIDI device
+    dnl # Figure MIDI device
     if test -n "$enable_ossmidi" ; then
         dev="$enable_ossmidi"
     else
@@ -477,7 +535,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     fi
     AC_MSG_RESULT($result)
 
-    dnl Error out if there is no sound device at all
+    dnl # Error out if there is no sound device at all
     if test "x$bse_have_pcmdev" \!= "xyes"; then
 	AC_MSG_ERROR([unable to find any sound drivers/devices])
     fi
@@ -495,51 +553,8 @@ AC_DEFUN(AC_DOC_REQUIREMENTS,
     fi
 ])
 
-# check compilers and their behaviour, setup CFLAGS
-MC_PROG_CC_WITH_CFLAGS
-MC_PROG_CXX_WITH_CXXFLAGS
-AC_PROG_CPP
-AC_PROG_CXX
-AC_PROG_CXXCPP
-AC_C_CONST
-AC_C_INLINE
-AC_HEADER_STDC
-
-# Checks for programs
-AC_PROG_INSTALL
-AC_PROG_LN_S
-
-# initialize libtool, we need dynamic module support
-AC_LIBTOOL_DLOPEN
-AM_PROG_LIBTOOL
-
-# Check for package requirements.
-MC_IF_VAR_EQ(GCC, yes,,
-    AC_MSG_ERROR(This package requires GNU gcc)
-)
-MC_IF_VAR_EQ(GXX, yes,,
-    AC_MSG_ERROR(This package requires GNU g++)
-)
-
-# Figure build requirement
-AC_MSG_CHECKING(whether make is GNU Make)
-STRIP_BEGIN=
-STRIP_END=
-if $ac_make --version 2>/dev/null | grep '^GNU Make ' >/dev/null ; then
-        STRIP_BEGIN='$(strip $(STRIP_DUMMY)'
-        STRIP_END=')'
-        AC_MSG_RESULT(yes)
-else
-        AC_MSG_RESULT(no)
-fi
-dnl some Make 3.79 $(strip ) versions are broken and require an empty arg
-STRIP_DUMMY=
-AC_SUBST(STRIP_DUMMY)
-AC_SUBST(STRIP_BEGIN)
-AC_SUBST(STRIP_END)
-
-# require pkg-config
-MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
+# find installation utilities
+AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
 # check for maintainer/development build rules
 AC_MSG_CHECKING(whether maintainer and develoment build rules are to be used)
@@ -574,8 +589,8 @@ AC_SUBST(NOTDVLBUILD)
 AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
 AM_CONDITIONAL(IF_NOTDVLBUILD, test -z "$NOTDVLBUILD")
 
-# find installation utilities
-AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
+# Check sub-package requirements
+AC_BIRNET_REQUIREMENTS
 
 # Check requirement sets
 AC_I18N_REQUIREMENTS
@@ -605,6 +620,11 @@ AC_SUBST(LDFLAGS)
 # create output files
 AC_CONFIG_FILES([
 Makefile
+data/Makefile
+data/bse.pc
+data/beast.applications
+birnet/Makefile
+birnet/tests/Makefile
 sfi/Makefile
 bse/bseconfig.h
 bse/Makefile
@@ -629,10 +649,6 @@ library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
 tools/Makefile
-data/Makefile
-data/sfi.pc
-data/bse.pc
-data/beast.applications
 po/Makefile.in
 po-helper.sh
 tests/Makefile

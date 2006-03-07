@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST/BSE
 
-SUBDIRS = . data sfi bse plugins shell beast-gtk launchers library tools po tests test doxer docs web
+SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test doxer docs web
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
@@ -17,7 +17,7 @@ test:
 .PHONY: test
         
 # extra dependancies
-configure: acbeast.m4
+configure: acbeast.m4 birnet/configure.inc
 
 CLEANFILES += $(strip		\
 	intltool-extract	\
