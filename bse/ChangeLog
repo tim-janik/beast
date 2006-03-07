@@ -1,3 +1,9 @@
+Tue Mar  7 03:04:13 2006  Tim Janik  <timj@gtk.org>
+
+	* ldscript.map: 
+	* Makefile.am: link libsfi.la and libbirnet.la into libbse.la.
+	export only symbols from the public namespaces.
+
 Sat Mar  4 18:47:30 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/Makefile.am (plottest): added plottest rule

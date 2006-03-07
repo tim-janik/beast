@@ -10,29 +10,10 @@ SUBDIRS = icons zintern . tests
 # need -I$(srcdir) for "bseserver.h" in .gen-proc.c
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
-
-#
-# libraries to compile and install
-#
-lib_LTLIBRARIES = libbse.la
-
-# due to automake-1.3 not featuring target specific defines,
-# the G_LOG_DOMAIN needs to be special cased, depending on
-# the source file sets ;(
 DEFS += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_c_sources) $(bse_cc_sources))) \
 )
-
-# libtool stuff: set version and export symbols for resolving
-libbseincludedir = $(includedir)/bse
-libbse_la_LDFLAGS = $(strip \
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-release $(LT_RELEASE) \
-	-export-dynamic -no-undefined \
-)
-libbse_la_LIBADD = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
-
 
 #
 # setup source file variables
@@ -208,20 +189,28 @@ $(srcdir)/bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
 $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 
 #
-# setup sources, their dependancies and commands
+# BSE library
 #
-bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
+lib_LTLIBRARIES       = libbse.la
+libbseincludedir      = $(includedir)/bse
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.genidl.hh
-libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
+libbse_la_SOURCES     = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
+libbse_la_LIBADD      = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS)
+libbse_la_LDFLAGS     = $(strip					\
+	-Wl,--version-script=$(srcdir)/ldscript.map		\
+	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
+	-release $(LT_RELEASE) 					\
+	-no-undefined 						\
+)
+#	-Wl,-Bsymbolic
+# setup sources, their dependancies and commands
+bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources) engine-mplan.txt
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
-# WATCH OUT: $(SFIDL) works only builddir relative
-SFIDL = $(top_builddir)/sfi/sfidl
-SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 
 #
@@ -232,6 +221,9 @@ tmp_files = xgen-sbgth xgen-bgtc xgen-bgcc xgen-bgtac xgen-sbeac xgen-belc xgen-
 	    xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi xgen-tlist
 CLEANFILES += $(tmp_files) @DVLBUILD@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
+# WATCH OUT: $(SFIDL) works only builddir relative
+SFIDL = $(top_builddir)/sfi/sfidl
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
 $(srcdir)/bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
 # normal autogeneration rules
@@ -353,7 +345,7 @@ bsequery_SOURCES = bsequery.c cxxdummy.cc
 bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
 bseinfo_SOURCES = bseinfo.c cxxdummy.cc
 # link programs against BSE
-progs_LDADD = libbse.la $(top_builddir)/sfi/libsfi.la
+progs_LDADD = libbse.la
 bseprocidl_LDADD = $(progs_LDADD)
 bsequery_LDADD = $(progs_LDADD)
 bseautodoc_LDADD = $(progs_LDADD)

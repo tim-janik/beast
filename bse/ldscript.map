@@ -1,0 +1,13 @@
+{
+  global:
+    extern "C++" {
+      Bse::*;
+      Sfi::*;
+      typeinfo*
+    };
+    bse_*;
+    gsl_*;
+    sfi_*;
+    g_*;
+  local: *;
+};
