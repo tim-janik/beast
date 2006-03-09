@@ -1,3 +1,9 @@
+Thu Mar  9 03:12:11 2006  Tim Janik  <timj@gtk.org>
+
+	* shell/bsescminterp.c: adapted to birnet_ namespace.
+
+	* shell/bsesh.c: initialization fixes.
+
 Tue Mar  7 02:31:18 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to 0.7.0, binary 0, interface 0.

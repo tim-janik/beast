@@ -67,9 +67,7 @@ main (int   argc,
 {
   const gchar *env_str;
 
-  g_thread_init (NULL);
-  g_set_prgname (PRG_NAME);
-  sfi_init ();
+  birnet_init (PRG_NAME);
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
 
