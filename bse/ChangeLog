@@ -1,3 +1,7 @@
+Thu Mar  9 23:38:29 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/*: added missing or changed the license to LGPL.
+
 Thu Mar  9 02:40:51 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: fix up -pthread -> -lpthread, required for libtool
