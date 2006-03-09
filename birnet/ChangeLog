@@ -1,3 +1,7 @@
+Thu Mar  9 02:57:33 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.cc (birnet_init): allow double initialization.
+
 Thu Mar  9 01:50:07 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: generate partial library libbirnet.o.

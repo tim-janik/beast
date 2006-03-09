@@ -30,7 +30,12 @@ static void (*birnet_init_cplusplus_func) (void) = NULL;
 void
 birnet_init (const gchar *prg_name)
 {
-  birnet_assert (birnet_init_initialization_entered == false);
+  if (birnet_init_initialization_entered)
+    {
+      if (prg_name && !g_get_prgname ())
+        g_set_prgname (prg_name);
+      return;
+    }
   birnet_init_initialization_entered = true;
 
   if (!g_threads_got_initialized)
