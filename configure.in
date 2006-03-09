@@ -542,15 +542,6 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 ])
 AC_DEFUN(AC_DOC_REQUIREMENTS,
 [
-    TEXITHEQUE=""
-    if test x"$enable_maintainer_mode" = xyes ; then
-	AC_CHECK_PROGS(TEXITHEQUE, texitheque)
-	# _CHECK_MODULES(TEXITHEQUE, texitheque >= 0.3)
-    fi
-    AM_CONDITIONAL(IF_BUILDDOCS, test -n "$TEXITHEQUE" -a -z "$DVLBUILD")
-    if test x"$enable_devel_rules" = xyes -a -z "$IF_BUILDDOCS_FALSE" ; then
-       AC_MSG_WARN([texitheque is required to build documentation])
-    fi
 ])
 
 # find installation utilities

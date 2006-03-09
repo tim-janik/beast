@@ -97,18 +97,8 @@ on using, getting, and building GNOME projects from CVS.
 Building from CVS requires additional tools than building the
 release tarballs. The reason for this is due to building documentation
 and auto-generating code that are included in releases. In particular,
-building @beast from CVS now requires the texitheque module hosted in
-@uri{http://cvs.freedesktop.org/, freedesktop.org CVS}. Anonymous
-CVS access to freedesktop.org is described on their
-@uri{http://www.freedesktop.org/Main/GettingInvolved, getting involved}
-@dnl FIXME: //www.freedesktop.org/Main/GettingInvolved is broken, remove texitheque entirely
-page, however to just get texitheque, you do:
-
-@example
-$ export CVSROOT=':pserver:anoncvs@@pdx.freedesktop.org:/cvs/texitheque'
-$ cvs login # there is no password, just hit return
-$ cvs -z3 checkout texitheque
-@done
+building @beast from CVS now requires
+@uri{http://www.python.org/, python-2.4}.
 
 Unlike release tarballs, the CVS version of @beast has to be build
 in place, because enabling srcdir!=builddir setups for the CVS version would

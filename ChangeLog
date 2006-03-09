@@ -1,3 +1,8 @@
+Thu Mar  9 18:19:02 2006  Tim Janik  <timj@gtk.org>
+
+	* web/download.doxi:
+	* configure.in: removed texitheque traces.
+
 Thu Mar  9 18:05:14 2006  Tim Janik  <timj@gtk.org>
 
 	* *.c: adapted to birnet_ namespace.

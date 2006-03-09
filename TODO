@@ -186,7 +186,6 @@ TODO:
 - implement auto-save feature: if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
 - make View/Rebuild --devel or -:d only
 - fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
-- beast depends on texithequemacros.texi but texitheque doesn't install it
 - add tooltip and Filedialog-button to "WAVE File" entry
 - big engine block sizes (>=1024) triggers sequencer race, causing clicks; in particular
   if (vinput->vstate == VSTATE_IDLE) g_printerr ("reading from idle\n"); in
