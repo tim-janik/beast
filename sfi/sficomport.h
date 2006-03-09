@@ -19,7 +19,7 @@
 #ifndef __SFI_COM_PORT_H__
 #define __SFI_COM_PORT_H__
 
-#include <sfi/sfithreads.h>
+#include <sfi/sfitypes.h>
 
 G_BEGIN_DECLS
 
@@ -64,16 +64,16 @@ struct _SfiComPort {
 };
 struct _SfiComPortLink
 {
-  SfiMutex    mutex;
+  BirnetMutex    mutex;
   guint       ref_count;
   SfiComPort *port1;
-  SfiThread  *thread1;
+  BirnetThread  *thread1;
   SfiComPort *port2;
-  SfiThread  *thread2;
+  BirnetThread  *thread2;
   SfiRing    *p1queue;
   SfiRing    *p2queue;
   gboolean    waiting;
-  SfiCond     wcond;
+  BirnetCond     wcond;
 };
 
 
@@ -87,10 +87,10 @@ SfiComPort*	sfi_com_port_from_child		(const gchar	*ident,
 						 gint		 remote_pid);
 /* create linked ports */
 void		sfi_com_port_create_linked	(const gchar	*ident1,
-						 SfiThread	*thread1,
+						 BirnetThread	*thread1,
 						 SfiComPort    **port1,
 						 const gchar	*ident2,
-						 SfiThread	*thread2,
+						 BirnetThread	*thread2,
 						 SfiComPort    **port2);
 SfiComPort*	sfi_com_port_ref		(SfiComPort	*port);
 void		sfi_com_port_unref		(SfiComPort	*port);

@@ -1,3 +1,29 @@
+Thu Mar  9 00:55:39 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: get rid of sficonfig.h. generate partial library libsfi.o.
+	* dummy.cc: dummy file used to force C++ program linkage.
+
+	* glib-extra.[hc]: removed GScanner clone.
+	g_scanner_new64(): turned into a g_scanner_new() wrapper that ensures 64bit mode.
+
+	* sfi/sfilog.[hc]:
+	* sfi/sfithreads.[hc]: removed, functionality is provided by libbirnet now.
+
+	* *.[hc]: use functions from the birnet_ namespace for threading and messages.
+
+	* sficxx.cc: new file, used to hook up _sfi_init_*() functions with birnet_init().
+
+	* sficxx.h: removed, contents are provided by sficxx.hh now.
+
+	* sfidl-parser.cc: fixed 64bit scanner config.
+
+	* sfitypes.c: removed old init code.
+
+	* sfitypes.h: provide message function aliases in the sfi namespace to ease
+	transition.
+
+	* testsfi.c: fixed initialization.
+
 Tue Mar  7 22:42:52 2006  Tim Janik  <timj@gtk.org>
 
 	* sficxx.hh: CVS copied from sficxx.h, because this is a C++ header.

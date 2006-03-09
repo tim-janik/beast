@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,28 +16,25 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __SFI_H__
-#define __SFI_H__
+#include "sficxx.hh"
+#include "sfi.h"
 
-/* no bin-compat: #include <sfi/sficomwire.h> */
-#include <sfi/sficomport.h>
-#include <sfi/sfifilecrawler.h>
-#include <sfi/sfiglue.h>
-#include <sfi/sfigluecodec.h>
-#include <sfi/sfiglueproxy.h>
-#include <sfi/sfimemory.h>
-#include <sfi/sfinote.h>
-#include <sfi/sfiparams.h>
-#include <sfi/sfiprimitives.h>
-/* #include <sfi/sfisclock.h> */
-#include <sfi/sfiserial.h>
-/* no bin-compat: #include <sfi/sfistore.h> */
-#include <sfi/sfitime.h>
-#include <sfi/sfitypes.h>
-#include <sfi/sfiustore.h>
-#include <sfi/sfivalues.h>
-#include <sfi/sfivmarshal.h>
+namespace Sfi {
 
-#endif /* __SFI_H__ */
+static void
+sfi_init (void)
+{
+  g_type_init ();       /* just in case this hasn't been called already */
+
+  _sfi_init_values ();
+  _sfi_init_params ();
+  _sfi_init_time ();
+  _sfi_init_glue ();
+  _sfi_init_file_crawler ();
+}
+
+static Birnet::InitHook sfi_init_hook (sfi_init);
+
+} // Sfi
 
 /* vim:set ts=8 sts=2 sw=2: */

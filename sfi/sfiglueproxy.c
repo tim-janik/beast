@@ -21,15 +21,14 @@
 #include "sfiglue.h"
 #include "sfiustore.h"
 #include "sfivmarshal.h"
-#include "sfilog.h"
 #include <gobject/gvaluecollector.h>
 #include <sfi/gbsearcharray.h>
 
 
 /* --- macros --- */
-static SFI_MSG_TYPE_DEFINE (debug_signals, "signals", SFI_MSG_DEBUG, NULL);
-#define SIGNAL_DEBUG(...)       sfi_debug (debug_signals, __VA_ARGS__)
-#define	sfi_proxy_warn_inval(where,proxy)       sfi_diag ("%s: invalid proxy id (%lu)", (where), (proxy))
+static BIRNET_MSG_TYPE_DEFINE (debug_signals, "signals", BIRNET_MSG_DEBUG, NULL);
+#define SIGNAL_DEBUG(...)                       birnet_debug (debug_signals, __VA_ARGS__)
+#define	sfi_proxy_warn_inval(where,proxy)       birnet_diag ("%s: invalid proxy id (%lu)", (where), (proxy))
 
 
 /* --- structures --- */

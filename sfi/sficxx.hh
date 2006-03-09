@@ -1,5 +1,5 @@
-/* SFI - Synthesis Fusion Kit Interface                 -*-mode: c++;-*-
- * Copyright (C) 2003-2004 Tim Janik and Stefan Westerfeld
+/* SFI - Synthesis Fusion Kit Interface
+ * Copyright (C) 2003-2006 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 #ifndef __SFI_CXX_H__
 #define __SFI_CXX_H__
 
+#include <birnet/birnet.h>
 #include <sfi/sfi.h>
 #include <string>
 #include <new>

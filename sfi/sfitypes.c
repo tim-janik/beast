@@ -20,10 +20,8 @@
 #include "sfivalues.h"
 #include "sfiparams.h"
 #include "sfiprimitives.h"
-#include "sfilog.h"
 #include "sfitime.h"
 #include "sfiglue.h"
-#include "sfithreads.h"
 #include "sfifilecrawler.h"
 #include <string.h>
 
@@ -33,25 +31,6 @@
 
 
 /* --- functions --- */
-void
-sfi_init (void)
-{
-  static gboolean initialized = FALSE;
-
-  if (!initialized)
-    {
-      initialized = TRUE;
-
-      _sfi_init_threads ();
-      g_type_init ();
-      _sfi_init_values ();
-      _sfi_init_params ();
-      _sfi_init_time ();
-      _sfi_init_glue ();
-      _sfi_init_file_crawler ();
-    }
-}
-
 
 /* --- FIXME: hacks! */
 void

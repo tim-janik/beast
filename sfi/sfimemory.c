@@ -17,7 +17,6 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfimemory.h"
-#include "sfithreads.h"
 #include <string.h>
 
 
@@ -28,7 +27,7 @@
 
 
 /* --- variables --- */
-static SfiMutex     global_memory_mutex = { 0, };
+static BirnetMutex     global_memory_mutex = { 0, };
 static GTrashStack *simple_cache[SIMPLE_CACHE_SIZE] = { 0, 0, 0, /* ... */ };
 static gulong       memory_allocated = 0;
 
@@ -52,31 +51,31 @@ low_alloc (gsize mem_size)
       
       mem_size = (mem_size + 7) & ~0x7;
       cell = (mem_size >> 3) - 1;
-      SFI_SPIN_LOCK (&global_memory_mutex);
+      birnet_mutex_lock (&global_memory_mutex);
       mem = g_trash_stack_pop (simple_cache + cell);
-      SFI_SPIN_UNLOCK (&global_memory_mutex);
+      birnet_mutex_unlock (&global_memory_mutex);
       if (!mem)
 	{
 	  guint8 *cache_mem = g_malloc (mem_size * PREALLOC);
 	  guint i;
 	  
-	  SFI_SPIN_LOCK (&global_memory_mutex);
+	  birnet_mutex_lock (&global_memory_mutex);
 	  memory_allocated += mem_size * PREALLOC;
 	  for (i = 0; i < PREALLOC - 1; i++)
 	    {
 	      g_trash_stack_push (simple_cache + cell, cache_mem);
 	      cache_mem += mem_size;
 	    }
-	  SFI_SPIN_UNLOCK (&global_memory_mutex);
+	  birnet_mutex_unlock (&global_memory_mutex);
 	  mem = cache_mem;
 	}
     }
   else
     {
       mem = g_malloc (mem_size);
-      SFI_SPIN_LOCK (&global_memory_mutex);
+      birnet_mutex_lock (&global_memory_mutex);
       memory_allocated += mem_size;
-      SFI_SPIN_UNLOCK (&global_memory_mutex);
+      birnet_mutex_unlock (&global_memory_mutex);
     }
   return mem;
 }
@@ -91,16 +90,16 @@ low_free (gsize    mem_size,
       
       mem_size = (mem_size + 7) & ~0x7;
       cell = (mem_size >> 3) - 1;
-      SFI_SPIN_LOCK (&global_memory_mutex);
+      birnet_mutex_lock (&global_memory_mutex);
       g_trash_stack_push (simple_cache + cell, mem);
-      SFI_SPIN_UNLOCK (&global_memory_mutex);
+      birnet_mutex_unlock (&global_memory_mutex);
     }
   else
     {
       g_free (mem);
-      SFI_SPIN_LOCK (&global_memory_mutex);
+      birnet_mutex_lock (&global_memory_mutex);
       memory_allocated -= mem_size;
-      SFI_SPIN_UNLOCK (&global_memory_mutex);
+      birnet_mutex_unlock (&global_memory_mutex);
     }
 }
 #else
@@ -156,7 +155,7 @@ sfi_alloc_report (void)
 {
   guint cell, cached = 0;
   
-  SFI_SPIN_LOCK (&global_memory_mutex);
+  birnet_mutex_lock (&global_memory_mutex);
   for (cell = 0; cell < SIMPLE_CACHE_SIZE; cell++)
     {
       GTrashStack *trash = simple_cache[cell];
@@ -176,7 +175,7 @@ sfi_alloc_report (void)
 	}
     }
   g_message ("%lu bytes allocated from system, %u bytes unused in cache", memory_allocated, cached);
-  SFI_SPIN_UNLOCK (&global_memory_mutex);
+  birnet_mutex_unlock (&global_memory_mutex);
 }
 
 gpointer
@@ -214,5 +213,5 @@ _sfi_init_memory (void)
   gboolean initialized = FALSE;
   g_assert (initialized == FALSE);
   initialized = TRUE;
-  sfi_mutex_init (&global_memory_mutex);
+  birnet_mutex_init (&global_memory_mutex);
 }

@@ -161,31 +161,31 @@ static void
 test_thread (gpointer data)
 {
   guint *tdata = data;
-  sfi_thread_sleep (-1);
+  birnet_thread_sleep (-1);
   *tdata += 1;
-  while (!sfi_thread_aborted ())
-    sfi_thread_sleep (-1);
+  while (!birnet_thread_aborted ())
+    birnet_thread_sleep (-1);
   XTICK ();
 }
 
 static void
 test_threads (void)
 {
-  static SfiMutex test_mutex;
+  static BirnetMutex test_mutex;
   guint thread_data = 0;
-  SfiThread *thread;
+  BirnetThread *thread;
   gboolean locked;
   MSG ("Threading:");
-  sfi_mutex_init (&test_mutex);
-  locked = sfi_mutex_trylock (&test_mutex);
+  birnet_mutex_init (&test_mutex);
+  locked = birnet_mutex_trylock (&test_mutex);
   ASSERT (locked);
-  SFI_SPIN_UNLOCK (&test_mutex);
-  sfi_mutex_destroy (&test_mutex);
-  thread = sfi_thread_run (NULL, test_thread, &thread_data);
+  birnet_mutex_unlock (&test_mutex);
+  birnet_mutex_destroy (&test_mutex);
+  thread = birnet_thread_run (NULL, test_thread, &thread_data);
   ASSERT (thread != NULL);
   ASSERT (thread_data == 0);
-  sfi_thread_wakeup (thread);
-  sfi_thread_abort (thread);
+  birnet_thread_wakeup (thread);
+  birnet_thread_abort (thread);
   ASSERT (thread_data > 0);
   DONE ();
 }
@@ -1019,10 +1019,9 @@ int
 main (int   argc,
       char *argv[])
 {
-  g_thread_init (NULL);
   g_log_set_always_fatal (g_log_set_always_fatal (G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+  birnet_init (argv[0]);
   
-  sfi_init ();
   test_types_init ();
 
   if (0)

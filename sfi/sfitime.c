@@ -19,7 +19,6 @@
 #include "topconfig.h"
 #include "sfitime.h"
 #include "sfiprimitives.h"
-#include "sfilog.h"
 #include <sys/time.h>
 #include <time.h>
 #include <errno.h>
