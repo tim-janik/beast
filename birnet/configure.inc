@@ -1,9 +1,9 @@
 dnl # Birnet                                       -*- Mode: shell-script; -*-
 dnl # Copyright (C) 2006 Tim Janik
 dnl #
-dnl # GNU General Public License version 2 or (at your option) any later version.
+dnl # GNU Lesser General Public License version 2 or any later version.
 
-AC_DEFUN(AC_BIRNET_REQUIREMENTS,
+AC_DEFUN([AC_BIRNET_REQUIREMENTS],
 [
     BIRNET_CFLAGS=""
     BIRNET_LIBS=""

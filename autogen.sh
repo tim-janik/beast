@@ -1,5 +1,5 @@
 #!/bin/sh
-# Run this to generate all the initial makefiles, etc.
+## GNU Lesser General Public License version 2 or any later version.
 
 PROJECT=BEAST
 TEST_TYPE=-d
@@ -154,6 +154,9 @@ if test -z "$ACLOCAL_FLAGS"; then
 		}
 	done
 fi
+
+echo "Cleaning configure cache..."
+rm -rf autom4te.cache/
 
 echo "Running: $LIBTOOLIZE"
 $LIBTOOLIZE --force || exit $?
