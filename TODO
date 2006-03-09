@@ -1,4 +1,5 @@
 RELEASE(0.6.7):
+- get rid of sfimemory
 - fix beast popping up a help browser for release notes when new beast is installed
 - BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
 - gxk_tree_view_append_text_columns: s/on or of/on or off/
