@@ -99,11 +99,11 @@ main (int   argc,
   g_type_init ();
 
   /* initialize Sfi */
-  sfi_init ();
-  sfi_msg_allow ("misc");
+  birnet_init (argv[0]);
+  birnet_msg_allow ("misc");
   /* ensure SFI can wake us up */
-  sfi_thread_set_name ("TestGUI");
-  sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup, g_main_context_default (), NULL);
+  birnet_thread_set_name ("TestGUI");
+  birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup, g_main_context_default (), NULL);
 
   /* initialize Gtk+ and enter threading mode */
   gtk_init (&argc, &argv);

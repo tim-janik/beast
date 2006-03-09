@@ -1129,13 +1129,13 @@ app_action_exec (gpointer data,
         case ACTION_DEMO_DIALOG_DEBUG:   demo_type = BST_MSG_DEBUG;   break;
         }
       bst_msg_dialog (demo_type,
-                      SFI_MSG_TEXT0 ("Demonstration Dialog"),
-                      SFI_MSG_TEXT1 ("This is a demonstrative dialog"),
-                      SFI_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
+                      BIRNET_MSG_TEXT0 ("Demonstration Dialog"),
+                      BIRNET_MSG_TEXT1 ("This is a demonstrative dialog"),
+                      BIRNET_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
                                      "fired up for pure demonstration purposes. This is such a dialog, so if you "
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
-                      SFI_MSG_TEXT3 ("Demo-Dialog-Type: %s", sfi_msg_type_label (demo_type)));
+                      BIRNET_MSG_TEXT3 ("Demo-Dialog-Type: %s", birnet_msg_type_label (demo_type)));
       break;
     default:
       g_assert_not_reached ();

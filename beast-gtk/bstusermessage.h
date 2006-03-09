@@ -24,14 +24,14 @@ G_BEGIN_DECLS
 
 /* --- structures --- */
 typedef enum {
-  BST_MSG_NONE          = SFI_MSG_NONE,
-  BST_MSG_FATAL         = SFI_MSG_FATAL,
-  BST_MSG_ERROR         = SFI_MSG_ERROR,
-  BST_MSG_WARNING       = SFI_MSG_WARNING,
-  BST_MSG_SCRIPT        = SFI_MSG_SCRIPT,
-  BST_MSG_INFO          = SFI_MSG_INFO,
-  BST_MSG_DIAG          = SFI_MSG_DIAG,
-  BST_MSG_DEBUG         = SFI_MSG_DEBUG,
+  BST_MSG_NONE          = BIRNET_MSG_NONE,
+  BST_MSG_FATAL         = BIRNET_MSG_FATAL,
+  BST_MSG_ERROR         = BIRNET_MSG_ERROR,
+  BST_MSG_WARNING       = BIRNET_MSG_WARNING,
+  BST_MSG_SCRIPT        = BIRNET_MSG_SCRIPT,
+  BST_MSG_INFO          = BIRNET_MSG_INFO,
+  BST_MSG_DIAG          = BIRNET_MSG_DIAG,
+  BST_MSG_DEBUG         = BIRNET_MSG_DEBUG,
 } BstMsgType;
 
 typedef struct {
@@ -48,7 +48,7 @@ typedef struct {
   gchar         *process;
   guint          pid;
   guint          n_msg_bits;
-  SfiMsgBit    **msg_bits;
+  BirnetMsgBit    **msg_bits;
 } BstMessage;
 typedef struct {
   guint        type;
@@ -60,25 +60,25 @@ typedef struct {
 void              bst_message_connect_to_server	(void);
 void              bst_message_dialogs_popdown	(void);
 void              bst_message_handler           (const BstMessage       *message);
-void              bst_message_log_handler       (const SfiMessage       *lmsg);
+void              bst_message_log_handler       (const BirnetMessage       *lmsg);
 void              bst_message_synth_msg_handler (const BseMessage       *umsg);
 const BstMsgID*   bst_message_list_types        (guint                  *n_types);
 guint             bst_message_dialog_elist      (const char             *log_domain,
                                                  BstMsgType              type,
-                                                 SfiMsgBit              *lbit1,
-                                                 SfiMsgBit              *lbit2,
+                                                 BirnetMsgBit              *lbit1,
+                                                 BirnetMsgBit              *lbit2,
                                                  ...);
-SfiMsgBit*        bst_message_bit_appoint       (guint                   id,
+BirnetMsgBit*        bst_message_bit_appoint       (guint                   id,
                                                  const gchar            *name,
                                                  const gchar            *stock_icon,
                                                  const gchar            *options);
-#define bst_msg_dialog(level, ...)              bst_message_dialog_elist (SFI_LOG_DOMAIN, level, __VA_ARGS__, NULL)
+#define bst_msg_dialog(level, ...)              bst_message_dialog_elist (BIRNET_LOG_DOMAIN, level, __VA_ARGS__, NULL)
 /* SFI message bit equivalents */
-#define BST_MSG_TEXT0(...)                      SFI_MSG_TEXT0 (__VA_ARGS__)
-#define BST_MSG_TEXT1(...)                      SFI_MSG_TEXT1 (__VA_ARGS__)
-#define BST_MSG_TEXT2(...)                      SFI_MSG_TEXT2 (__VA_ARGS__)
-#define BST_MSG_TEXT3(...)                      SFI_MSG_TEXT3 (__VA_ARGS__)
-#define BST_MSG_CHECK(...)                      SFI_MSG_CHECK (__VA_ARGS__)
+#define BST_MSG_TEXT0(...)                      BIRNET_MSG_TEXT0 (__VA_ARGS__)
+#define BST_MSG_TEXT1(...)                      BIRNET_MSG_TEXT1 (__VA_ARGS__)
+#define BST_MSG_TEXT2(...)                      BIRNET_MSG_TEXT2 (__VA_ARGS__)
+#define BST_MSG_TEXT3(...)                      BIRNET_MSG_TEXT3 (__VA_ARGS__)
+#define BST_MSG_CHECK(...)                      BIRNET_MSG_CHECK (__VA_ARGS__)
 #define BST_MSG_TITLE                           BST_MSG_TEXT0 /* alias */
 #define BST_MSG_PRIMARY                         BST_MSG_TEXT1 /* alias */
 #define BST_MSG_SECONDARY                       BST_MSG_TEXT2 /* alias */

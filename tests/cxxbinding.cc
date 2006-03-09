@@ -38,9 +38,8 @@ void do_sleep (int seconds)
 int main(int argc, char **argv)
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-  g_thread_init (NULL);
-  sfi_init ();
-  sfi_msg_allow ("misc");
+  birnet_init (argv[0]);
+  birnet_msg_allow ("misc");
   bse_init_async (&argc, &argv, NULL);
   bse_context = bse_init_glue_context (argv[0]);
 

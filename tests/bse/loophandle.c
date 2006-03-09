@@ -207,8 +207,8 @@ main (int argc, char **argv)
 
   /* init bse */
   g_thread_init (NULL);
-  sfi_init ();
-  sfi_msg_allow ("misc");
+  birnet_init (argv[0]);
+  birnet_msg_allow ("misc");
   bse_init_async (&argc, &argv, NULL);
 
   /* test loophandle against the reference implementation */

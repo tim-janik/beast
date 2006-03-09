@@ -1,3 +1,7 @@
+Thu Mar  9 18:05:14 2006  Tim Janik  <timj@gtk.org>
+
+	* *.c: adapted to birnet_ namespace.
+
 Thu Mar  9 03:12:11 2006  Tim Janik  <timj@gtk.org>
 
 	* shell/bsescminterp.c: adapted to birnet_ namespace.

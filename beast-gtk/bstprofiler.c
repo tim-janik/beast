@@ -47,14 +47,14 @@ char_state_from_thread_state (BseThreadState thread_state)
   switch (thread_state)
     {
     default:
-    case BSE_THREAD_STATE_UNKNOWN:      return SFI_THREAD_UNKNOWN;
-    case BSE_THREAD_STATE_RUNNING:      return SFI_THREAD_RUNNING;
-    case BSE_THREAD_STATE_SLEEPING:     return SFI_THREAD_SLEEPING;
-    case BSE_THREAD_STATE_DISKWAIT:     return SFI_THREAD_DISKWAIT;
-    case BSE_THREAD_STATE_TRACED:       return SFI_THREAD_TRACED;
-    case BSE_THREAD_STATE_PAGING:       return SFI_THREAD_PAGING;
-    case BSE_THREAD_STATE_ZOMBIE:       return SFI_THREAD_ZOMBIE;
-    case BSE_THREAD_STATE_DEAD:         return SFI_THREAD_DEAD;
+    case BSE_THREAD_STATE_UNKNOWN:      return BIRNET_THREAD_UNKNOWN;
+    case BSE_THREAD_STATE_RUNNING:      return BIRNET_THREAD_RUNNING;
+    case BSE_THREAD_STATE_SLEEPING:     return BIRNET_THREAD_SLEEPING;
+    case BSE_THREAD_STATE_DISKWAIT:     return BIRNET_THREAD_DISKWAIT;
+    case BSE_THREAD_STATE_TRACED:       return BIRNET_THREAD_TRACED;
+    case BSE_THREAD_STATE_PAGING:       return BIRNET_THREAD_PAGING;
+    case BSE_THREAD_STATE_ZOMBIE:       return BIRNET_THREAD_ZOMBIE;
+    case BSE_THREAD_STATE_DEAD:         return BIRNET_THREAD_DEAD;
     }
 }
 
@@ -64,14 +64,14 @@ thread_state_from_char_state (gchar thread_state)
   switch (thread_state)
     {
     default:
-    case SFI_THREAD_UNKNOWN:    return BSE_THREAD_STATE_UNKNOWN;
-    case SFI_THREAD_RUNNING:    return BSE_THREAD_STATE_RUNNING;
-    case SFI_THREAD_SLEEPING:   return BSE_THREAD_STATE_SLEEPING;
-    case SFI_THREAD_DISKWAIT:   return BSE_THREAD_STATE_DISKWAIT;
-    case SFI_THREAD_TRACED:     return BSE_THREAD_STATE_TRACED;
-    case SFI_THREAD_PAGING:     return BSE_THREAD_STATE_PAGING;
-    case SFI_THREAD_ZOMBIE:     return BSE_THREAD_STATE_ZOMBIE;
-    case SFI_THREAD_DEAD:       return BSE_THREAD_STATE_DEAD;
+    case BIRNET_THREAD_UNKNOWN:    return BSE_THREAD_STATE_UNKNOWN;
+    case BIRNET_THREAD_RUNNING:    return BSE_THREAD_STATE_RUNNING;
+    case BIRNET_THREAD_SLEEPING:   return BSE_THREAD_STATE_SLEEPING;
+    case BIRNET_THREAD_DISKWAIT:   return BSE_THREAD_STATE_DISKWAIT;
+    case BIRNET_THREAD_TRACED:     return BSE_THREAD_STATE_TRACED;
+    case BIRNET_THREAD_PAGING:     return BSE_THREAD_STATE_PAGING;
+    case BIRNET_THREAD_ZOMBIE:     return BSE_THREAD_STATE_ZOMBIE;
+    case BIRNET_THREAD_DEAD:       return BSE_THREAD_STATE_DEAD;
     }
 }
 
@@ -175,8 +175,8 @@ profiler_update (void)
 {
   GxkListWrapper *lwrapper = g_object_get_data (profiler_dialog, "list-wrapper");
   BseThreadTotals *tt = bse_collect_thread_totals ();
-  sfi_thread_sleep (0); /* update accounting for self */
-  SfiThreadInfo *si = sfi_thread_info_collect (sfi_thread_self());
+  birnet_thread_sleep (0); /* update accounting for self */
+  BirnetThreadInfo *si = birnet_thread_info_collect (birnet_thread_self());
   BseThreadInfo bi = { 0, };
   GSList *slist = NULL;
   guint i;
@@ -197,7 +197,7 @@ profiler_update (void)
   slist = g_slist_prepend (slist, &bi);
   update_infos (slist, lwrapper);
   g_slist_free (slist);
-  sfi_thread_info_free (si);
+  birnet_thread_info_free (si);
 }
 
 static gboolean
