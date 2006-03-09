@@ -98,7 +98,7 @@ bse_engine_free_node (EngineNode *node)
   g_return_if_fail (node->tjob_head == NULL);
   g_return_if_fail (node->probe_jobs == NULL);
 
-  sfi_rec_mutex_destroy (&node->rec_mutex);
+  birnet_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
       g_free (node->module.ostreams);   /* bse_engine_block_size() may have changed since allocation */
@@ -190,10 +190,10 @@ bse_engine_free_transaction (BseTrans *trans)
 
 
 /* --- job transactions --- */
-static SfiMutex        cqueue_trans = { 0, };
+static BirnetMutex        cqueue_trans = { 0, };
 static BseTrans       *cqueue_trans_pending_head = NULL;
 static BseTrans       *cqueue_trans_pending_tail = NULL;
-static SfiCond         cqueue_trans_cond = { 0, };
+static BirnetCond         cqueue_trans_cond = { 0, };
 static BseTrans       *cqueue_trans_trash_head = NULL;
 static BseTrans       *cqueue_trans_trash_tail = NULL;
 static BseTrans       *cqueue_trans_active_head = NULL;
@@ -221,7 +221,7 @@ _engine_enqueue_trans (BseTrans *trans)
   cqueue_trans_pending_tail = trans;
   guint64 base_stamp = cqueue_commit_base_stamp;
   GSL_SPIN_UNLOCK (&cqueue_trans);
-  sfi_cond_broadcast (&cqueue_trans_cond);
+  birnet_cond_broadcast (&cqueue_trans_cond);
   return base_stamp + bse_engine_block_size();  /* returns tick_stamp of when this transaction takes effect */
 }
 
@@ -230,7 +230,7 @@ _engine_wait_on_trans (void)
 {
   GSL_SPIN_LOCK (&cqueue_trans);
   while (cqueue_trans_pending_head || cqueue_trans_active_head)
-    sfi_cond_wait (&cqueue_trans_cond, &cqueue_trans);
+    birnet_cond_wait (&cqueue_trans_cond, &cqueue_trans);
   GSL_SPIN_UNLOCK (&cqueue_trans);
 }
 
@@ -313,7 +313,7 @@ _engine_pop_job (gboolean update_commit_stamp)
           if (!cqueue_trans_job && update_commit_stamp)
             cqueue_commit_base_stamp = gsl_tick_stamp();        /* last job has been handed out */
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
-	  sfi_cond_broadcast (&cqueue_trans_cond);
+	  birnet_cond_broadcast (&cqueue_trans_cond);
 	}
       else	/* not currently processing a transaction */
 	{
@@ -404,11 +404,11 @@ bse_engine_has_garbage (void)
 
 
 /* --- node processing queue --- */
-static SfiMutex          pqueue_mutex = { 0, };
+static BirnetMutex          pqueue_mutex = { 0, };
 static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
-static SfiCond		 pqueue_done_cond = { 0, };
+static BirnetCond		 pqueue_done_cond = { 0, };
 static EngineTimedJob   *pqueue_trash_tjobs_head = NULL;
 static EngineTimedJob   *pqueue_trash_tjobs_tail = NULL;
 
@@ -538,7 +538,7 @@ _engine_push_processed_node (EngineNode *node)
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    sfi_cond_signal (&pqueue_done_cond);
+    birnet_cond_signal (&pqueue_done_cond);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -561,7 +561,7 @@ _engine_wait_on_unprocessed (void)
 {
   GSL_SPIN_LOCK (&pqueue_mutex);
   while (pqueue_n_nodes || pqueue_n_cycles || !BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    sfi_cond_wait (&pqueue_done_cond, &pqueue_mutex);
+    birnet_cond_wait (&pqueue_done_cond, &pqueue_mutex);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -831,10 +831,10 @@ bse_engine_reinit_utils (void)
   if (!initialized)
     {
       initialized = TRUE;
-      sfi_mutex_init (&cqueue_trans);
-      sfi_cond_init (&cqueue_trans_cond);
-      sfi_mutex_init (&pqueue_mutex);
-      sfi_cond_init (&pqueue_done_cond);
+      birnet_mutex_init (&cqueue_trans);
+      birnet_cond_init (&cqueue_trans_cond);
+      birnet_mutex_init (&pqueue_mutex);
+      birnet_cond_init (&pqueue_done_cond);
     }
 }
 

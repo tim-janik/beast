@@ -20,7 +20,7 @@
 #include "bseengine.h"
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_pcm, "pcm", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
 
 typedef struct
@@ -92,7 +92,7 @@ null_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
 {
   /* keep the sequencer busy or we will constantly timeout */
-  sfi_thread_wakeup (bse_sequencer_thread);
+  birnet_thread_wakeup (bse_sequencer_thread);
   *timeoutp = 1;
   /* ensure sequencer fairness */
   return !bse_sequencer_thread_lagging (2);

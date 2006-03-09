@@ -52,9 +52,9 @@ const guint		 bse_interface_age = BSE_INTERFACE_AGE;
 const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
 GMainContext            *bse_main_context = NULL;
-SfiMutex	         bse_main_sequencer_mutex = { 0, };
+BirnetMutex	         bse_main_sequencer_mutex = { 0, };
 gboolean	         bse_main_debug_extensions = FALSE;
-SfiThread               *bse_main_thread = NULL;
+BirnetThread               *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
@@ -84,7 +84,7 @@ bse_init_async (gint    *argc,
 		gchar ***argv,
 		SfiRec  *config)
 {
-  SfiThread *thread;
+  BirnetThread *thread;
 
   bse_init_textdomain_only();
 
@@ -97,7 +97,7 @@ bse_init_async (gint    *argc,
   /* this function is running in the user program and needs to start the main BSE thread */
   
   /* initialize submodules */
-  sfi_init ();
+  birnet_init (argc && *argc ? (*argv)[0] : NULL);
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
@@ -113,13 +113,13 @@ bse_init_async (gint    *argc,
     }
   
   /* start main BSE thread */
-  thread = sfi_thread_run ("BSE Core", bse_main_loop, sfi_thread_self ());
+  thread = birnet_thread_run ("BSE Core", bse_main_loop, birnet_thread_self ());
   if (!thread)
     g_error ("failed to start seperate thread for BSE core");
 
   /* wait for initialization completion of the core thread */
   while (bse_initialization_stage < 2)
-    sfi_thread_sleep (-1);
+    birnet_thread_sleep (-1);
   /* cleanup */
   if (unref_me)
     sfi_rec_unref (unref_me);
@@ -148,7 +148,7 @@ bse_check_version (guint required_major,
 typedef struct {
   SfiGlueContext *context;
   const gchar *client;
-  SfiThread *thread;
+  BirnetThread *thread;
 } AsyncData;
 
 static gboolean
@@ -158,12 +158,12 @@ async_create_context (gpointer data)
   SfiComPort *port1, *port2;
 
   sfi_com_port_create_linked ("Client", adata->thread, &port1,
-			      "Server", sfi_thread_self (), &port2);
+			      "Server", birnet_thread_self (), &port2);
   adata->context = sfi_glue_encoder_context (port1);
   bse_janitor_new (port2);
 
   /* wakeup client */
-  sfi_thread_wakeup (adata->thread);
+  birnet_thread_wakeup (adata->thread);
 
   return FALSE; /* single-shot */
 }
@@ -187,7 +187,7 @@ bse_init_glue_context (const gchar *client)
   source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
   adata.client = client;
-  adata.thread = sfi_thread_self ();
+  adata.thread = birnet_thread_self ();
   g_source_set_callback (source, async_create_context, &adata, NULL);
   g_source_attach (source, bse_main_context);
   g_source_unref (source);
@@ -196,7 +196,7 @@ bse_init_glue_context (const gchar *client)
 
   /* wait til context creation */
   do
-    sfi_thread_sleep (-1);
+    birnet_thread_sleep (-1);
   while (!adata.context);
 
   return adata.context;
@@ -206,11 +206,11 @@ static void
 bse_init_core (void)
 {
   /* global threading things */
-  sfi_mutex_init (&bse_main_sequencer_mutex);
+  birnet_mutex_init (&bse_main_sequencer_mutex);
   bse_main_context = g_main_context_new ();
-  sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
+  birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
-  sfi_msg_set_thread_handler (bse_msg_handler);
+  birnet_msg_set_thread_handler (bse_msg_handler);
 
   /* initialize random numbers */
   {
@@ -318,7 +318,7 @@ bse_init_intern (gint    *argc,
     g_error ("%s() may only be called once", "bse_init_intern");
 
   /* initialize submodules */
-  sfi_init ();
+  birnet_init (argc && *argc ? (*argv)[0] : NULL);
   if (!config)
     config = unref_me = sfi_rec_new();
   /* paranoid assertions */
@@ -371,9 +371,9 @@ bse_init_intern (gint    *argc,
 static void
 bse_main_loop (gpointer data)
 {
-  SfiThread *client = data;
+  BirnetThread *client = data;
 
-  bse_main_thread = sfi_thread_self ();
+  bse_main_thread = birnet_thread_self ();
 
   bse_init_core ();
 
@@ -382,7 +382,7 @@ bse_main_loop (gpointer data)
 
   /* notify client about completion */
   bse_initialization_stage++;   /* =2 */
-  sfi_thread_wakeup (client);
+  birnet_thread_wakeup (client);
 
   /* and away into the main loop */
   do
@@ -390,14 +390,14 @@ bse_main_loop (gpointer data)
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
     }
-  while (!sfi_thread_aborted ());
+  while (!birnet_thread_aborted ());
 }
 
 guint
 bse_main_getpid (void)
 {
   if (bse_initialization_stage >= 2)
-    return sfi_thread_self_pid ();
+    return birnet_thread_self_pid ();
   else
     return 0;
 }
@@ -412,11 +412,11 @@ core_thread_send_message_async (gpointer data)
 }
 
 /**
- * BSE log handler, suitable for sfi_msg_set_thread_handler().
+ * BSE log handler, suitable for birnet_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_msg_handler (const SfiMessage *lmsg)
+bse_msg_handler (const BirnetMessage *lmsg)
 {
   /* this functions is called from multiple threads */
   if (!lmsg->primary && !lmsg->secondary)
@@ -424,14 +424,14 @@ bse_msg_handler (const SfiMessage *lmsg)
   BseMessage *umsg = bse_message_new();
   g_free (umsg->log_domain);
   umsg->log_domain = g_strdup (lmsg->log_domain);
-  g_static_assert (BSE_MSG_NONE    == SFI_MSG_NONE);
-  g_static_assert (BSE_MSG_FATAL   == SFI_MSG_FATAL);
-  g_static_assert (BSE_MSG_ERROR   == SFI_MSG_ERROR);
-  g_static_assert (BSE_MSG_WARNING == SFI_MSG_WARNING);
-  g_static_assert (BSE_MSG_SCRIPT  == SFI_MSG_SCRIPT);
-  g_static_assert (BSE_MSG_INFO    == SFI_MSG_INFO);
-  g_static_assert (BSE_MSG_DIAG    == SFI_MSG_DIAG);
-  g_static_assert (BSE_MSG_DEBUG   == SFI_MSG_DEBUG);
+  g_static_assert (BSE_MSG_NONE    == BIRNET_MSG_NONE);
+  g_static_assert (BSE_MSG_FATAL   == BIRNET_MSG_FATAL);
+  g_static_assert (BSE_MSG_ERROR   == BIRNET_MSG_ERROR);
+  g_static_assert (BSE_MSG_WARNING == BIRNET_MSG_WARNING);
+  g_static_assert (BSE_MSG_SCRIPT  == BIRNET_MSG_SCRIPT);
+  g_static_assert (BSE_MSG_INFO    == BIRNET_MSG_INFO);
+  g_static_assert (BSE_MSG_DIAG    == BIRNET_MSG_DIAG);
+  g_static_assert (BSE_MSG_DEBUG   == BIRNET_MSG_DEBUG);
   umsg->type = lmsg->type;
   g_free (umsg->config_check);
   umsg->config_check = g_strdup (lmsg->config_check);
@@ -445,8 +445,8 @@ bse_msg_handler (const SfiMessage *lmsg)
   umsg->details = g_strdup (lmsg->details);
   umsg->janitor = NULL;
   g_free (umsg->process);
-  umsg->process = g_strdup (sfi_thread_get_name (NULL));
-  umsg->pid = sfi_thread_get_pid (NULL);
+  umsg->process = g_strdup (birnet_thread_get_name (NULL));
+  umsg->pid = birnet_thread_get_pid (NULL);
   /* queue an idle handler in the BSE Core thread */
   bse_idle_now (core_thread_send_message_async, umsg);
 }
@@ -468,10 +468,10 @@ bse_async_parse_args (gint        *argc_p,
 
   envar = getenv ("BSE_DEBUG");
   if (envar)
-    sfi_msg_allow (envar);
+    birnet_msg_allow (envar);
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
-    sfi_msg_deny (envar);
+    birnet_msg_deny (envar);
 
   for (i = 1; i < argc; i++)
     {
@@ -488,11 +488,11 @@ bse_async_parse_args (gint        *argc_p,
 	{
 	  gchar *equal = argv[i] + 11;
 	  if (*equal == '=')
-            sfi_msg_allow (equal + 1);
+            birnet_msg_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_msg_allow (argv[i]);
+	      birnet_msg_allow (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -501,11 +501,11 @@ bse_async_parse_args (gint        *argc_p,
 	{
 	  gchar *equal = argv[i] + 14;
 	  if (*equal == '=')
-            sfi_msg_deny (equal + 1);
+            birnet_msg_deny (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_msg_deny (argv[i]);
+	      birnet_msg_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}

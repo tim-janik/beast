@@ -20,7 +20,7 @@
 #include "bsecontainer.h"
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_undo, "undo", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_undo, "undo", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_undo, __VA_ARGS__)
 
 /* --- variables --- */
@@ -332,7 +332,7 @@ bse_undo_stack_undo (BseUndoStack *self)
       self->n_undo_groups--;
       self->dirt_counter--;
       DEBUG ("EXECUTE UNDO: %s", group->name);
-      if (sfi_msg_check (debug_undo))
+      if (birnet_msg_check (debug_undo))
         {
           SfiRing *ring = group->undo_steps;
           for (ring = group->undo_steps; ring; ring = sfi_ring_walk (ring, group->undo_steps))

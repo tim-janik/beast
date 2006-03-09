@@ -27,7 +27,7 @@ typedef struct {
   SfiRing		*songs;
 } BseSequencer;
 
-extern SfiThread       *bse_sequencer_thread;
+extern BirnetThread       *bse_sequencer_thread;
 
 void			bse_sequencer_init_thread	(void);
 void                    bse_sequencer_add_io_watch      (guint           n_pfds,

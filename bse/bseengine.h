@@ -230,7 +230,7 @@ typedef struct
   GPollFD      *fds;
   gboolean      revents_filled;
 } BseEngineLoop;
-SfiThread** bse_engine_get_threads            (guint               *n_threads);
+BirnetThread** bse_engine_get_threads            (guint               *n_threads);
 gboolean    bse_engine_prepare                (BseEngineLoop       *loop);
 gboolean    bse_engine_check                  (const BseEngineLoop *loop);
 void        bse_engine_dispatch               (void);

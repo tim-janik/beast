@@ -25,7 +25,7 @@
 #include "bsesource.h"		/* debug hack */
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_leaks, "leaks", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_leaks, "leaks", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_leaks, __VA_ARGS__)
 
 enum
@@ -64,7 +64,7 @@ static guint       object_signals[SIGNAL_LAST] = { 0, };
 void
 bse_object_debug_leaks (void)
 {
-  if (sfi_msg_check (debug_leaks))
+  if (birnet_msg_check (debug_leaks))
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       

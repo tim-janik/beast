@@ -36,8 +36,8 @@ G_BEGIN_DECLS
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
 #define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & BSE_COST_CHEAP) != 0)
 #define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & BSE_COST_EXPENSIVE) != 0)
-#define	ENGINE_NODE_LOCK(node)		sfi_rec_mutex_lock (&(node)->rec_mutex)
-#define	ENGINE_NODE_UNLOCK(node)	sfi_rec_mutex_unlock (&(node)->rec_mutex)
+#define	ENGINE_NODE_LOCK(node)		birnet_rec_mutex_lock (&(node)->rec_mutex)
+#define	ENGINE_NODE_UNLOCK(node)	birnet_rec_mutex_unlock (&(node)->rec_mutex)
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
 
@@ -85,8 +85,8 @@ struct _BseJob
       gchar	     *message;
     } data;
     struct {
-      SfiMutex  *lock_mutex;
-      SfiCond   *lock_cond;
+      BirnetMutex  *lock_mutex;
+      BirnetCond   *lock_cond;
       gboolean  *lock_p;
     } sync;
     struct {
@@ -186,7 +186,7 @@ struct _EngineNode		/* fields sorted by order of processing access */
 {
   BseModule	 module;
   
-  SfiRecMutex	 rec_mutex;	/* processing lock */
+  BirnetRecMutex	 rec_mutex;	/* processing lock */
   guint64	 counter;	/* <= GSL_TICK_STAMP */
   EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
   EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */

@@ -188,6 +188,9 @@ $(srcdir)/bseenums.c: bseenum_arrays.c bseenum_list.c
 $(srcdir)/bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
 $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 
+# -pthread -> -lpthread hack (required for libtool library linkage)
+pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
+
 #
 # BSE library
 #
@@ -195,12 +198,13 @@ lib_LTLIBRARIES       = libbse.la
 libbseincludedir      = $(includedir)/bse
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.genidl.hh
 libbse_la_SOURCES     = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
-libbse_la_LIBADD      = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS)
+libbse_la_LIBADD      = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
 libbse_la_LDFLAGS     = $(strip					\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
 	-release $(LT_RELEASE) 					\
 	-no-undefined 						\
+	$(call pthread_2_lpthread, $(BSE_LIBS) $(SFI_LIBS))	\
 )
 #	-Wl,-Bsymbolic
 # setup sources, their dependancies and commands
@@ -339,15 +343,14 @@ include gslmakefile.inc
 # other programs, we want to compile
 #
 noinst_PROGRAMS = bsequery bseautodoc bseinfo bseprocidl
+progs_LDADD = libbse.la $(SFI_LIBS) -lm
 # source files
 bseprocidl_SOURCES = bseprocidl.cc
-bsequery_SOURCES = bsequery.c cxxdummy.cc
-bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
-bseinfo_SOURCES = bseinfo.c cxxdummy.cc
-# link programs against BSE
-progs_LDADD = libbse.la
 bseprocidl_LDADD = $(progs_LDADD)
+bsequery_SOURCES = bsequery.c cxxdummy.cc
 bsequery_LDADD = $(progs_LDADD)
+bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
 bseautodoc_LDADD = $(progs_LDADD)
+bseinfo_SOURCES = bseinfo.c cxxdummy.cc
 bseinfo_LDADD = $(progs_LDADD)
 

@@ -1,3 +1,12 @@
+Thu Mar  9 02:40:51 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: fix up -pthread -> -lpthread, required for libtool
+	library linkage. link against libbirnet.o and libsfi.o.
+
+	* bse/ldscript.map: export birnet symbols.
+
+	* *.[hc]*: adaptions to birnet_ namespace.
+
 Tue Mar  7 03:04:13 2006  Tim Janik  <timj@gtk.org>
 
 	* ldscript.map: 

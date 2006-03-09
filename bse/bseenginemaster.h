@@ -28,7 +28,7 @@ gboolean	_engine_master_check		(const BseEngineLoop	*loop);
 void		_engine_master_dispatch_jobs	(void);
 void		_engine_master_dispatch		(void);
 typedef struct {
-  SfiThread *user_thread;
+  BirnetThread *user_thread;
   gint       wakeup_pipe[2];	/* read(wakeup_pipe[0]), write(wakeup_pipe[1]) */
 } EngineMasterData;
 void		bse_engine_master_thread	(EngineMasterData	*mdata);

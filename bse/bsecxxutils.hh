@@ -19,7 +19,7 @@
 #define __BSE_CXX_UTILS_H__
 
 #include <bse/bseutils.h>
-#include <sfi/sficxx.h>
+#include <sfi/sficxx.hh>
 #include <vector>
 #include <algorithm>
 

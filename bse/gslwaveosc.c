@@ -22,7 +22,7 @@
 #include "bseengine.h"	/* for bse_engine_sample_freq() */
 #include <string.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_waveosc, "waveosc", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_waveosc, "waveosc", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_waveosc, __VA_ARGS__)
 
 #define FRAC_SHIFT		(16)

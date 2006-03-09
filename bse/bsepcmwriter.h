@@ -39,7 +39,7 @@ struct _BsePcmWriter
   guint		broken : 1;
   gint		fd;
   guint		n_bytes;
-  SfiMutex	mutex;
+  BirnetMutex	mutex;
 };
 struct _BsePcmWriterClass
 {

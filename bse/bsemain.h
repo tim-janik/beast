@@ -43,13 +43,13 @@ void		bse_init_intern		(gint		*argc,
 guint           bse_main_getpid         (void);
 
 /* MT-safe log handler */
-void            bse_msg_handler         (const SfiMessage *message);
+void            bse_msg_handler         (const BirnetMessage *message);
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
-#define	BSE_SEQUENCER_LOCK()			SFI_SYNC_LOCK (&bse_main_sequencer_mutex)
-#define	BSE_SEQUENCER_UNLOCK()			SFI_SYNC_UNLOCK (&bse_main_sequencer_mutex)
+#define	BSE_SEQUENCER_LOCK()			birnet_mutex_lock (&bse_main_sequencer_mutex)
+#define	BSE_SEQUENCER_UNLOCK()			birnet_mutex_unlock (&bse_main_sequencer_mutex)
 #define	BSE_DBG_EXT     			(bse_main_debug_extensions != FALSE)
 
 /* --- argc/argv overide settings --- */
@@ -71,9 +71,9 @@ typedef struct {
 void    _bse_init_c_wrappers    ();
 extern BseMainArgs  *bse_main_args;
 extern GMainContext *bse_main_context;
-extern SfiMutex	     bse_main_sequencer_mutex;
+extern BirnetMutex	     bse_main_sequencer_mutex;
 extern gboolean      bse_main_debug_extensions;
-extern SfiThread    *bse_main_thread;
+extern BirnetThread    *bse_main_thread;
 
 
 G_END_DECLS

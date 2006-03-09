@@ -561,7 +561,7 @@ main (gint   argc,
   guint i;
   
   g_thread_init (NULL);
-  sfi_init ();
+  birnet_init (argv[0]);
   config = sfi_rec_new();
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   

@@ -32,7 +32,7 @@
                                           if (g_scanner_get_next_token (scanner) != _t) \
                                             return _t; \
                                         }
-static SFI_MSG_TYPE_DEFINE (debug_bsewave, "bsewave", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_bsewave, "bsewave", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_bsewave, __VA_ARGS__)
 
 

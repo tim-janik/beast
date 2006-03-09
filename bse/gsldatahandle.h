@@ -44,7 +44,7 @@ struct _GslDataHandle
   GslDataHandleFuncs *vtable;
   gchar		     *name;
   /* common members */
-  SfiMutex	      mutex;
+  BirnetMutex	      mutex;
   guint		      ref_count;
   guint		      open_count;
   /* opened data handle setup (open_count > 0) */

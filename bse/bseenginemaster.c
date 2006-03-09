@@ -29,9 +29,9 @@
 #include <sys/time.h>
 #include <errno.h>
 
-static SFI_MSG_TYPE_DEFINE (debug_job, "job", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_job, "job", BIRNET_MSG_DEBUG, NULL);
 #define JOB_DEBUG(...)  sfi_debug (debug_job, __VA_ARGS__)
-static SFI_MSG_TYPE_DEFINE (debug_tjob, "tjob", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_tjob, "tjob", BIRNET_MSG_DEBUG, NULL);
 #define TJOB_DEBUG(...) sfi_debug (debug_tjob, __VA_ARGS__)
 
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = TRUE*/; } G_STMT_END
@@ -320,9 +320,9 @@ master_process_job (BseJob *job)
       master_schedule_discard();
       GSL_SPIN_LOCK (job->sync.lock_mutex);
       *job->sync.lock_p = TRUE;
-      sfi_cond_signal (job->sync.lock_cond);
+      birnet_cond_signal (job->sync.lock_cond);
       while (*job->sync.lock_p)
-        sfi_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
+        birnet_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
       GSL_SPIN_UNLOCK (job->sync.lock_mutex);
       break;
     case ENGINE_JOB_INTEGRATE:
@@ -1157,7 +1157,7 @@ _engine_master_dispatch (void)
 void
 bse_engine_master_thread (EngineMasterData *mdata)
 {
-  sfi_msg_set_thread_handler (bse_msg_handler);
+  birnet_msg_set_thread_handler (bse_msg_handler);
 
   /* assert pollfd equality, since we're simply casting structures */
   g_static_assert (sizeof (struct pollfd) == sizeof (GPollFD));
@@ -1178,7 +1178,7 @@ bse_engine_master_thread (EngineMasterData *mdata)
   
   toyprof_stampinit ();
   
-  while (!sfi_thread_aborted ())        /* also updates accounting information */
+  while (!birnet_thread_aborted ())        /* also updates accounting information */
     {
       BseEngineLoop loop;
       gboolean need_dispatch;
@@ -1211,7 +1211,7 @@ bse_engine_master_thread (EngineMasterData *mdata)
       
       /* wakeup user thread if necessary */
       if (bse_engine_has_garbage ())
-	sfi_thread_wakeup (mdata->user_thread);
+	birnet_thread_wakeup (mdata->user_thread);
     }
 }
 

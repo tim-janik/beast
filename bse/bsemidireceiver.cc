@@ -32,13 +32,13 @@ namespace {
 using namespace Bse;
 using namespace std;
 
-static SFI_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...)              sfi_debug (debug_midi_receiver, __VA_ARGS__)
-static SFI_MSG_TYPE_DEFINE (debug_midi_events, "midi-events", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_midi_events, "midi-events", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG_EVENTS(...)       sfi_debug (debug_midi_events, __VA_ARGS__)
 
 /* --- variables --- */
-static SfiMutex                         global_midi_mutex = { 0, };
+static BirnetMutex                         global_midi_mutex = { 0, };
 #define	BSE_MIDI_RECEIVER_LOCK()        GSL_SPIN_LOCK (&global_midi_mutex)
 #define	BSE_MIDI_RECEIVER_UNLOCK()      GSL_SPIN_UNLOCK (&global_midi_mutex)
 
@@ -1207,7 +1207,7 @@ _bse_midi_init (void)
   
   g_assert (initialized++ == FALSE);
   
-  sfi_mutex_init (&global_midi_mutex);
+  birnet_mutex_init (&global_midi_mutex);
 }
 
 static gint

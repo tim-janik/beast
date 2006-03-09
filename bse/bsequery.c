@@ -222,7 +222,7 @@ main (gint   argc,
 
   g_thread_init (NULL);
 
-  sfi_init ();
+  birnet_init (argv[0]);
   config = sfi_rec_new();
   
   for (i = 1; i < argc; i++)

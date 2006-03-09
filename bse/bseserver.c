@@ -450,19 +450,19 @@ bse_server_require_pcm_input (BseServer *server)
     {
       server->pcm_input_checked = TRUE;
       if (!BSE_DEVICE_READABLE (server->pcm_device))
-        sfi_msg_log (SFI_MSG_WARNING,
-                     SFI_MSG_TITLE (_("Recording Audio Input")),
-                     SFI_MSG_TEXT1 (_("Failed to start recording from audio device.")),
-                     SFI_MSG_TEXT2 (_("An audio project is in use which processes an audio input signal, but the audio device "
+        birnet_msg_log (BIRNET_MSG_WARNING,
+                     BIRNET_MSG_TITLE (_("Recording Audio Input")),
+                     BIRNET_MSG_TEXT1 (_("Failed to start recording from audio device.")),
+                     BIRNET_MSG_TEXT2 (_("An audio project is in use which processes an audio input signal, but the audio device "
                                       "has not been opened in recording mode. "
                                       "An audio signal of silence will be used instead of a recorded signal, "
                                       "so playback operation may produce results not actually intended "
                                       "(such as a silent output signal).")),
-                     SFI_MSG_TEXT3 (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
+                     BIRNET_MSG_TEXT3 (_("Audio device \"%s\" is not open for input, audio driver: %s=%s"),
                                     BSE_DEVICE (server->pcm_device)->open_device_name,
                                     BSE_DEVICE_GET_CLASS (server->pcm_device)->driver_name,
                                     BSE_DEVICE (server->pcm_device)->open_device_args),
-                     SFI_MSG_CHECK (_("Show messages about audio input problems")));
+                     BIRNET_MSG_CHECK (_("Show messages about audio input problems")));
     }
 }
 
@@ -503,13 +503,13 @@ server_open_pcm_device (BseServer *server,
                                                                bse_main_args->pcm_drivers,
                                                                pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
-    sfi_msg_log (SFI_MSG_ERROR,
-                 SFI_MSG_TITLE (_("No Audio")),
-                 SFI_MSG_TEXT1 (_("No available audio device was found.")),
-                 SFI_MSG_TEXT2 (_("No available audio device could be found and opened successfully. "
+    birnet_msg_log (BIRNET_MSG_ERROR,
+                 BIRNET_MSG_TITLE (_("No Audio")),
+                 BIRNET_MSG_TEXT1 (_("No available audio device was found.")),
+                 BIRNET_MSG_TEXT2 (_("No available audio device could be found and opened successfully. "
                                    "Sorry, no fallback selection can be made for audio devices, giving up.")),
-                 SFI_MSG_TEXT3 (_("Failed to open PCM devices: %s"), bse_error_blurb (error)),
-                 SFI_MSG_CHECK (_("Show messages about PCM device selections problems")));
+                 BIRNET_MSG_TEXT3 (_("Failed to open PCM devices: %s"), bse_error_blurb (error)),
+                 BIRNET_MSG_CHECK (_("Show messages about PCM device selections problems")));
   server->pcm_input_checked = FALSE;
   return server->pcm_device ? BSE_ERROR_NONE : error;
 }
@@ -527,13 +527,13 @@ server_open_midi_device (BseServer *server)
       server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
       sfi_ring_free (ring);
       if (server->midi_device)
-        sfi_msg_log (SFI_MSG_WARNING,
-                     SFI_MSG_TITLE (_("No MIDI")),
-                     SFI_MSG_TEXT1 (_("MIDI input or oputput is not available.")),
-                     SFI_MSG_TEXT2 (_("No available MIDI device could be found and opened successfully. "
+        birnet_msg_log (BIRNET_MSG_WARNING,
+                     BIRNET_MSG_TITLE (_("No MIDI")),
+                     BIRNET_MSG_TEXT1 (_("MIDI input or oputput is not available.")),
+                     BIRNET_MSG_TEXT2 (_("No available MIDI device could be found and opened successfully. "
                                       "Reverting to null device, no MIDI events will be received or sent.")),
-                     SFI_MSG_TEXT3 (_("Failed to open MIDI devices: %s"), bse_error_blurb (error)),
-                     SFI_MSG_CHECK (_("Show messages about MIDI device selections problems")));
+                     BIRNET_MSG_TEXT3 (_("Failed to open MIDI devices: %s"), bse_error_blurb (error)),
+                     BIRNET_MSG_CHECK (_("Show messages about MIDI device selections problems")));
     }
   return server->midi_device ? BSE_ERROR_NONE : error;
 }
@@ -583,13 +583,13 @@ bse_server_open_devices (BseServer *self)
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, bse_engine_sample_freq ());
 	  if (error)
 	    {
-              sfi_msg_log (SFI_MSG_ERROR,
-                           SFI_MSG_TITLE (_("Start Disk Recording")),
-                           SFI_MSG_TEXT1 (_("Failed to start recording to disk.")),
-                           SFI_MSG_TEXT2 (_("An error occoured while opening the recording file, selecting a different "
+              birnet_msg_log (BIRNET_MSG_ERROR,
+                           BIRNET_MSG_TITLE (_("Start Disk Recording")),
+                           BIRNET_MSG_TEXT1 (_("Failed to start recording to disk.")),
+                           BIRNET_MSG_TEXT2 (_("An error occoured while opening the recording file, selecting a different "
                                             "file might fix this situation.")),
-                           SFI_MSG_TEXT3 (_("Failed to open file \"%s\" for output: %s"), self->wave_file, bse_error_blurb (error)),
-                           SFI_MSG_CHECK (_("Show recording file errors")));
+                           BIRNET_MSG_TEXT3 (_("Failed to open file \"%s\" for output: %s"), self->wave_file, bse_error_blurb (error)),
+                           BIRNET_MSG_CHECK (_("Show recording file errors")));
 	      g_object_unref (self->pcm_writer);
 	      self->pcm_writer = NULL;
 	    }
@@ -762,7 +762,7 @@ bse_server_send_message (BseServer        *self,
   g_signal_emit (self, signal_message, 0, umsg);
   if (self->log_messages)
     {
-      SfiMessage lmsg = { 0, };
+      BirnetMessage lmsg = { 0, };
       lmsg.log_domain = umsg->log_domain;
       lmsg.type = umsg->type;
       lmsg.title = umsg->title;
@@ -770,7 +770,7 @@ bse_server_send_message (BseServer        *self,
       lmsg.secondary = umsg->secondary;
       lmsg.details = umsg->details;
       lmsg.config_check = umsg->config_check;
-      sfi_msg_default_handler (&lmsg);
+      birnet_msg_default_handler (&lmsg);
     }
 }
 
@@ -793,8 +793,8 @@ bse_server_message (BseServer          *server,
   BseMessage umsg = { 0, };
   umsg.log_domain = (char*) log_domain;
   umsg.type = msg_type;
-  umsg.ident = (char*) sfi_msg_type_ident (msg_type);
-  umsg.label = (char*) sfi_msg_type_label (msg_type);
+  umsg.ident = (char*) birnet_msg_type_ident (msg_type);
+  umsg.label = (char*) birnet_msg_type_label (msg_type);
   umsg.title = (char*) title;
   umsg.primary = (char*) primary;
   umsg.secondary = (char*) secondary;
