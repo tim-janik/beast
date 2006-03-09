@@ -1,3 +1,14 @@
+Thu Mar  9 21:08:13 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefcompare.cc:
+	* tools/bsefextract.cc:
+	* tools/bsewavetool.cc:
+	* tools/bsewavetool.hh:
+	* tools/bwtwave.cc:
+	* tools/bwtwave.hh:
+	fixed or changed the license to LGPL with permission from Stefan
+	Westerfeld (required for some files).
+
 Thu Mar  9 21:03:17 2006  Tim Janik  <timj@gtk.org>
 
 	* web/*: fix missing licenses.
