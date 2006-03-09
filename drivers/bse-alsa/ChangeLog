@@ -1,3 +1,8 @@
+Thu Mar  9 18:07:47 2006  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-alsa.c: 
+	* bsepcmdevice-alsa.c: adapted to birnet_ namespace.
+
 Tue Mar  7 03:05:45 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to 0.7.0, depend on bse-0.7.0.
