@@ -9,6 +9,7 @@ GLIB_MKENUMS    = glib-mkenums
 DEFS		= -DBIRNET_PRIVATE -DPARANOID
 
 birnet_c_headers = $(strip 		\
+	birnet.h			\
 	birnetmsg.h			\
 	birnetring.h			\
 	birnetthread.h			\
