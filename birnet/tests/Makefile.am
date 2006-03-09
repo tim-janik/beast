@@ -8,7 +8,7 @@ DEFS		= -DG_LOG_DOMAIN='"birnet/tests/"__FILE__":PRG"' -DPARANOID -DG_DISABLE_CO
 
 noinst_PROGRAMS = $(TESTS)
 TESTS 		= threads ring
-progs_ldadd 	= $(top_builddir)/birnet/libbirnet.la
+progs_ldadd 	= $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) -lm
 threads_SOURCES	= threads.cc testutils.h
 threads_LDADD	= $(progs_ldadd)
 ring_SOURCES	= ring.cc testutils.h

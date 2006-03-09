@@ -26,9 +26,6 @@
 
 G_BEGIN_DECLS
 
-/* --- global initializer --- */
-void	birnet_init (const gchar	*prg_name);
-
 /* --- typedefs --- */
 typedef struct _BirnetThreadTable	 BirnetThreadTable;
 typedef struct _BirnetThread		 BirnetThread;

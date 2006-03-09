@@ -130,7 +130,7 @@ birnet_msg_check (BirnetMsgType mtype)
 {
   extern guint8 * volatile birnet_msg_flags;
   extern volatile guint    birnet_msg_flags_max;
-  if (mtype >= 0 && mtype <= birnet_msg_flags_max)
+  if (mtype >= 0 && (unsigned) mtype <= birnet_msg_flags_max)
     return 0 != (birnet_msg_flags[mtype / 8] & (1 << mtype % 8));
   return 0;
 }

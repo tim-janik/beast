@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "testutils.h"
-#include <birnet/birnetthread.h>
+#include <birnet/birnet.h>
 
 static volatile guint atomic_count = 0;
 static BirnetMutex    atomic_mutex;

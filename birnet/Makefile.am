@@ -19,8 +19,10 @@ birnet_c_sources = $(strip 		\
 	birnetthread.c			\
 )
 birnet_cc_headers = $(strip 		\
+	birnetcore.hh			\
 )
 birnet_cc_sources = $(strip 		\
+	birnetcore.cc			\
 )
 birnet_private_headers = $(strip 	\
 )
@@ -29,6 +31,10 @@ birnet_generated_headers = $(strip 	\
 )
 
 # Birnet library
+# we want a partial shared library here. libtool creates that if the library
+# name ends in .lo or .o. however automake doesn't know .lo or .o libraries,
+# so we simply build an ordinary non-installed .la library and then use our
+# own rule to build the .o from the .la pieces.
 noinst_LTLIBRARIES         = libbirnet.la
 libbirnetincludedir        = $(includedir)/birnet
 libbirnetinclude_HEADERS   = $(birnet_c_headers) $(birnet_cc_headers) $(birnet_generated_headers)
@@ -36,7 +42,11 @@ libbirnet_la_SOURCES       = $(birnet_c_sources) $(birnet_cc_sources)
 libbirnet_la_DEPENDENCIES +=
 libbirnet_la_LIBADD        = $(BIRNET_LIBS) -lm
 libbirnet_la_LDFLAGS       = -no-undefined # -Wl,-Bsymbolic
-#
+# keep this .o rule in sync with the corresponding .la rule from Makefile.in
+libbirnet.o: $(libbirnet_la_OBJECTS) $(libbirnet_la_DEPENDENCIES)
+	$(CXXLINK)  $(libbirnet_la_LDFLAGS) $(libbirnet_la_OBJECTS) # $(libbirnet_la_LIBADD) $(LIBS)
+all-am: libbirnet.o
+CLEANFILES += libbirnet.lo libbirnet.o
 EXTRA_DIST += $(birnet_private_headers)
 
 birnetconfig.h: $(top_builddir)/config.status # Makefile

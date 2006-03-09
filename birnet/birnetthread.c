@@ -23,7 +23,6 @@
 #define	_XOPEN_SOURCE   600	/* for full pthread facilities */
 #endif	/* defining _XOPEN_SOURCE on random systems can have bad effects */
 #include "birnetthread.h"
-#include "birnetmsg.h"
 #include "birnetring.h"
 #include <sys/time.h>
 #include <sched.h>
@@ -76,6 +75,7 @@ static void	birnet_thread_handle_deleted	(BirnetThread	*thread);
 
 /* --- variables --- */
 static BirnetMutex global_thread_mutex = { 0, };
+static BirnetMutex global_startup_mutex = { 0, };
 static BirnetCond  global_thread_cond = { 0, };
 static BirnetRing *global_thread_list = NULL;
 static BirnetRing *thread_awaken_list = NULL;
@@ -294,7 +294,9 @@ birnet_thread_exec (gpointer thread)
   birnet_cond_broadcast (&global_thread_cond);
   birnet_mutex_unlock (&global_thread_mutex);
 
-  birnet_thread_sleep (-1);     /* wait for birnet_thread_run() to finish */
+  birnet_mutex_lock (&global_startup_mutex);
+  /* wait for birnet_thread_run() to finish */
+  birnet_mutex_unlock (&global_startup_mutex);
   
   self->func (self->data);
 
@@ -362,7 +364,8 @@ birnet_thread_run (const gchar     *name,
   
   /* silence those stupid priority warnings triggered by glib */
   hid = g_log_set_handler ("GLib", G_LOG_LEVEL_WARNING, filter_priority_warning, NULL);
-  
+  birnet_mutex_lock (&global_startup_mutex);
+
   /* create thread */
   thread = birnet_thread_handle_new (name);
   if (thread)
@@ -397,6 +400,7 @@ birnet_thread_run (const gchar     *name,
     }
   
   /* withdraw warning filter */
+  birnet_mutex_unlock (&global_startup_mutex);
   g_log_remove_handler ("GLib", hid);
   
   /* notify thread that we're done */
@@ -415,9 +419,12 @@ BirnetThread*
 birnet_thread_self (void)
 {
   BirnetThread *thread = birnet_thread_table.thread_get_handle ();
-  
+
   if (!thread)
     {
+      /* this function is also used during thread initialization,
+       * so not all library components are yet usable
+       */
       thread = birnet_thread_handle_new (NULL);
       thread_get_tid (thread);
       if (!thread)
@@ -1327,7 +1334,7 @@ get_pth_thread_table (void)
 {
   if (pthread_key_create (&pth_thread_table_key, (void(*)(void*)) birnet_thread_handle_deleted) != 0)
     {
-      birnet_diag ("failed to create pthread key, falling back to GLib threads");
+      g_message ("failed to create pthread key, falling back to GLib threads");
       return NULL;
     }
   return &pth_thread_table;
@@ -1345,19 +1352,8 @@ _birnet_init_threads (void)
   birnet_thread_table = *table;
   
   birnet_mutex_init (&global_thread_mutex);
+  birnet_mutex_init (&global_startup_mutex);
   birnet_cond_init (&global_thread_cond);
   
-  _birnet_init_logging ();
-  
   birnet_thread_self ();
-}
-
-void
-birnet_init (const gchar *prg_name)
-{
-  if (!g_threads_got_initialized)
-    g_thread_init (NULL);
-  if (prg_name)
-    g_set_prgname (prg_name);
-  _birnet_init_threads();
 }

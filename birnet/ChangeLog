@@ -1,3 +1,15 @@
+Thu Mar  9 01:50:07 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: generate partial library libbirnet.o.
+
+	* birnet.h: combine include header.
+
+	* birnetcore.hh:
+	* birnetcore.cc: provide birnet_init() and provide initialization
+	hook funcitonality for C++.
+
+	* birnetthread.c: fixed thread start syncronization races.
+
 Tue Mar  7 19:50:01 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: fix dependency.

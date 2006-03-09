@@ -17,8 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "testutils.h"
-#include <birnet/birnetthread.h>
-#include <birnet/birnetring.h>
+#include <birnet/birnet.h>
 
 static void
 print_ring_ints (BirnetRing *ring)
