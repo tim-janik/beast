@@ -1,3 +1,7 @@
+<!-- Copyright 2005-2006 Tim Janik
+  -- GNU Lesser General Public License version 2 or any later version.
+  -->
+
 <?PHP error_reporting (E_ALL); // FIXME ?>
 
 <div class="php-file-browser">

@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System		# emacs: -*- mode: apache; -*-
 # Copyright (C) 2000-2006 Tim Janik
 #
-# GNU General Public License version 2 or (at your option) any later version.
+## GNU Lesser General Public License version 2 or any later version.
 
 # --- setup charset and file types ---
 AddDefaultCharset utf-8

@@ -1,3 +1,7 @@
+Thu Mar  9 21:03:17 2006  Tim Janik  <timj@gtk.org>
+
+	* web/*: fix missing licenses.
+
 Thu Mar  9 20:52:59 2006  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4:
