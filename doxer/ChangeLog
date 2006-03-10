@@ -1,3 +1,8 @@
+Fri Mar 10 18:05:20 2006  Tim Janik  <timj@gtk.org>
+
+	* HtmlGenerator.py (HtmlGenerator.write_meta): allow raw-html head lines
+	to be generated from the env variable 'raw_html_head'.
+
 Fri Mar 10 02:51:21 2006  Tim Janik  <timj@gtk.org>
 
 	* HtmlGenerator.py (HtmlGenerator.write_meta): support 'raw_html_title'

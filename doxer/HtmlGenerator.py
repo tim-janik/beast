@@ -331,6 +331,10 @@ class HtmlGenerator:
       self.hstream.single ('<link rel="stylesheet" type="text/css" title="%s" href="%s">\n'
                            % (HtmlOStream.quote_string (title), HtmlOStream.quote_string (clist and clist or '')),
                            False)
+    content = environment.get ('raw_html_head')
+    if content:
+      for rhh_line in ensure_list (content):
+        self.hstream.single ('%s\n\n' % str (rhh_line), False)
     content = environment.get ('raw_html_title')
     if content:
       self.hstream.single ('<title>%s</title>\n' % str (content), False)
