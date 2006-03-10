@@ -1,3 +1,8 @@
+Fri Mar 10 02:51:21 2006  Tim Janik  <timj@gtk.org>
+
+	* HtmlGenerator.py (HtmlGenerator.write_meta): support 'raw_html_title'
+	env variable and give it precedence over 'title'.
+
 Tue Feb 28 01:34:13 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: add build rules here.

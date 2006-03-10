@@ -331,9 +331,13 @@ class HtmlGenerator:
       self.hstream.single ('<link rel="stylesheet" type="text/css" title="%s" href="%s">\n'
                            % (HtmlOStream.quote_string (title), HtmlOStream.quote_string (clist and clist or '')),
                            False)
-    content = environment.get ('title')
+    content = environment.get ('raw_html_title')
     if content:
-      self.hstream.single ('<title>%s</title>\n' % HtmlOStream.quote_string (str (content)), False)
+      self.hstream.single ('<title>%s</title>\n' % str (content), False)
+    else:
+      content = environment.get ('title')
+      if content:
+        self.hstream.single ('<title>%s</title>\n' % HtmlOStream.quote_string (str (content)), False)
   def manpage_header (self, data, transformer, node, environment):
     mtitle = environment.get ('man-title') or environment.get ('title')
     msection = environment.get ('man-section')
