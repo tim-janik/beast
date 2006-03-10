@@ -1,3 +1,9 @@
+Fri Mar 10 19:49:56 2006  Tim Janik  <timj@gtk.org>
+
+	* web/*.php: license fixups.
+	
+	* web/htaccess.in: redirect old screenshot links.
+
 Fri Mar 10 19:25:50 2006  Tim Janik  <timj@gtk.org>
 
 	* web/robots.txt: disallow temporary wiki pages and the sandbox.
