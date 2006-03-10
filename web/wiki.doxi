@@ -1,12 +1,24 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
 @include "webmenu.doxi"
-@doxer_set{title}	BEAST/BSE Wiki
+@doxer_set{raw_html_title}	<?php echo 'BEAST Wiki' . beast_wiki_title(); ?>
 
 @subheading
 
 @rawhtml{
 <?php
+  /* configure wiki */
   include("../ewiki-current/config.php");
+  /* put out wiki page */
   echo ewiki_page();
+
+  /* figure page title */
+  function beast_wiki_title () {
+    $id = @@$_REQUEST["id"];
+    if ($id) {
+      return ' - ' . $id;
+    } else {
+      return '';
+    }
+  }
 ?>
 }
