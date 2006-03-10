@@ -54,6 +54,7 @@ Redirect 301 /bse-procs.3.html				http://beast.gtk.org/bse-interface.html
 Redirect 301 /sfi.3.html				http://beast.gtk.org/rdocu-sfi/
 Redirect 301 /bse.3.html				http://beast.gtk.org/rdocu-bse/
 Redirect 301 /beast-gxk.3.html				http://beast.gtk.org/rdocu-gxk/
+Redirect 301 /screenshots/index.html			http://beast.gtk.org/screenshots.phtml
 Redirect 301 /images/screenshots/			http://beast.gtk.org/screenshots.phtml?image=screenshots/
 Redirect 301 /screenshots/image-zoom-1.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ01-modular_synth_bass.png
 Redirect 301 /screenshots/image-zoom-2.html		http://beast.gtk.org/screenshots.phtml?image=screenshots/stwZ02-track_view.png

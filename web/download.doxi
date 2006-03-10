@@ -78,6 +78,15 @@ is working on a
 package of @beast, it's current development stage can be tracked at
 @uri{http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pkgsrc-wip/wip/beast/}.
 
+A @uri{http://www.freebsd.org/, FreeBSD} packages there's also a
+@uri{http://www.freebsd.org/cgi/cvsweb.cgi/ports/audio/beast/, FreeBSD beast package}.
+
+Beast has also been packaged for
+@uri{http://aur.archlinux.org, Arch Linux}, here is the
+@uri{http://aur.archlinux.org/packages.php?K=beast, Arch Linux Beast Query}.
+
+For @uri{http://www.gentoo.org/, Gentoo} there exists a
+@uri{http://www.gentoo-portage.com/media-sound/beast, Beast Gentoo Portage Package}.
 
 @heading Bleeding Edge
 

@@ -1,3 +1,11 @@
+Fri Mar 10 21:48:03 2006  Tim Janik  <timj@gtk.org>
+
+	* web/download.doxi: added freebsd, arch and gentoo package links.
+
+	* web/htaccess.in: more screenshot redirections.
+
+	* web/related-links.doxi: link updates.
+
 Fri Mar 10 19:49:56 2006  Tim Janik  <timj@gtk.org>
 
 	* web/*.php: license fixups.

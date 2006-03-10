@@ -11,6 +11,7 @@
 @item @uri{http://www.arts-project.org, aRts - analog Realtime Synthesizer}
 @item @uri{http://www.gstreamer.net, GStreamer - Media Component Framework}
 @item @uri{http://www.glame.de, GLAME - GNU/Linux Audio Mechanics}
+@item @uri{http://www.buzztard.org, Buzztard - Free replacement/clone  of Buzz}
 @item @uri{http://www.xiph.org/ogg/vorbis/, Ogg/Vorbis - Open Audio Codec}
 @item @uri{http://www.mars.org/home/rob/proj/mpeg/, MAD - MPEG Audio Decoder}
 @item @uri{http://www.rapicorn.org/, Rapicorn}
@@ -43,6 +44,8 @@
 @dnl login for GNOME Admin Repo: http://www.gnome.org/account/login.php
 @item @uri{http://cvs.gnome.org/viewcvs/beast/, BEAST in the GNOME CVS repository}
 @item @uri{http://cia.navi.cx/stats/project/gnome/beast, BEAST at the CIA Open Source Notification System}
+@item @uri{http://freemusicsoftware.info/audio/applications/free/gpl/linux/beast, BEAST at freemusicsoftware.info}
 @item @uri{http://linuxaudioblog.jawebada.de/software/synthesis/, Linux Audio Blog - SYNTHESIS}
 @item @uri{http://packages.qa.debian.org/b/beast.html, BEAST package for Debian}
+@item @uri{http://directory.fsf.org/beast.html, BEAST at the FSF/UNESCO Free Software Directory}
 @done
