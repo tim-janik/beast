@@ -1,20 +1,20 @@
 ;; 
 ;; Copyright (C) 2003-2004 Stefan Westerfeld, stefan@space.twc.de
 ;; 
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2 of the License, or
-;; (at your option) any later version.
-;; 
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;; 
-;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, write to the Free Software
-;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+;; This software is provided "as is"; redistribution and modification
+;; is permitted, provided that the following disclaimer is retained.
 ;;
+;; This software is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; In no event shall the authors or contributors be liable for any
+;; direct, indirect, incidental, special, exemplary, or consequential
+;; damages (including, but not limited to, procurement of substitute
+;; goods or services; loss of use, data, or profits; or business
+;; interruption) however caused and on any theory of liability, whether
+;; in contract, strict liability, or tort (including negligence or
+;; otherwise) arising in any way out of the use of this software, even
+;; if advised of the possibility of such damage.
 
 ;;
 ;; (bse-script-register <func> <options> <category> <blurb> <author> <license> ARGS...)

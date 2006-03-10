@@ -1,3 +1,15 @@
+Fri Mar 10 01:21:09 2006  Tim Janik  <timj@gtk.org>
+
+	* library/scripts/mixer-splitup-by-track.scm:
+	* library/scripts/part-harmonic-transposer.scm:
+	* library/scripts/song-parts-operations.scm:
+	* tests/scripts/noteplaytest.scm:
+	* tests/scripts/waveloadtest.scm:
+	* tests/audio/bsetowav.scm:
+	* shell/bse-scm-glue.boot:
+	fixed or changed the license to a 'provided "as is"' disclaimer with
+	permission from Stefan Westerfeld.
+
 Thu Mar  9 23:42:19 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/*: fixed or changed the license to LGPL with permission
