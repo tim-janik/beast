@@ -4,6 +4,7 @@
 @include "../docs/beastdefs.doxi"
 @doxer_add{html-stylesheets}	BEAST Style	<@top_styledir/beast-style.css>
 @doxer_add{html-stylesheets}	Plain	 	<@top_styledir/plain.css>
+@doxer_add{raw_html_head}	<link href="/favicon.ico" rel="shortcut icon">
 
 @heading{group=header,span=nomargin}
 @rawhtml{

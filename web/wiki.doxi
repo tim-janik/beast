@@ -2,6 +2,9 @@
 @include "webmenu.doxi"
 @doxer_set{raw_html_title}	<?php echo 'BEAST Wiki' . beast_wiki_title(); ?>
 
+@dnl # avoid indexing of wiki-action pages
+@doxer_add{raw_html_head}	<?php echo beast_wiki_meta ($REQUEST_URI); ?>
+
 @subheading
 
 @rawhtml{
@@ -20,5 +23,12 @@
       return '';
     }
   }
+
+  /* generate meta tags for <head> */
+  function beast_wiki_meta ($uri) {
+    $is_query = strrchr ($uri, '?') !== false;
+    return $is_query ? '<meta name="robots" content="noindex">' : '';
+  }
 ?>
 }
+

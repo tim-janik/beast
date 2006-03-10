@@ -12,6 +12,9 @@ PHP_TARGETS = $(strip			\
 )
 HTML_TARGETS = $(strip			\
 	html/.htaccess			\
+	html/robots.txt			\
+	html/favicon.ico		\
+	\
 	html/about.html			\
 	html/contact.html		\
 	html/download.html		\
@@ -100,6 +103,10 @@ html/%.phtml: %.doxi
 html/%.html: %.doxi
 	$(DOXER) doxi2html $(strip $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS))
 html/.htaccess: htaccess.in
+	cp $< $@
+html/robots.txt: robots.txt
+	cp $< $@
+html/favicon.ico: web-images/favicon.ico
 	cp $< $@
 
 # copy rules
@@ -251,7 +258,7 @@ clean:
 	-rmdir -p html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
 	rm -f tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
 	-rmdir -p tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
-	rm -f html/* html/.htaccess
+	rm -f html/* html/.htaccess html/robots.txt html/favicon.ico
 	-rmdir -p html/
 	rm -f php/*
 	-rmdir -p php/

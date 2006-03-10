@@ -1,0 +1,3 @@
+# robots.txt for http://beast.gtk.org/
+User-agent: *
+Disallow:

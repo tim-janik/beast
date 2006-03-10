@@ -1,3 +1,18 @@
+Fri Mar 10 18:06:26 2006  Tim Janik  <timj@gtk.org>
+
+	* web/Makefile.am: install robots.txt and favicon.ico.
+
+	* web/robots.txt: new file to avoid constant web server errors.
+	allow access to everything for all spiders by default.
+
+	* web/wiki.doxi: added meta header to avoid indexing of generated
+	wiki pages.
+
+	* web/web-images/favicon.ico: transparent mini beast logo.
+
+	* web/webframe.doxi:
+	* web/webmenu.doxi: link to favicon.ico.
+	
 Fri Mar 10 02:52:18 2006  Tim Janik  <timj@gtk.org>
 
 	* web/wiki.doxi: use 'raw_html_title' doxer variable to set the
