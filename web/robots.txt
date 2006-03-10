@@ -1,3 +1,5 @@
 # robots.txt for http://beast.gtk.org/
 User-agent: *
-Disallow:
+Disallow: /wiki.php
+Disallow: /wiki.phtml
+Disallow: /wiki:SandBox
