@@ -2,7 +2,7 @@
 # Copyright (C) 2003 Stefan Westerfeld
 # Copyright (C) 2000-2006 Tim Janik
 #                                                                                                                                                             
-# GNU General Public License version 2 or (at your option) any later version.                                                                                 
+## GNU Lesser General Public License version 2 or any later version.
 
 #
 # Building of this plugin has been completely disabled because it never

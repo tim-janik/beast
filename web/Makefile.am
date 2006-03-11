@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 2005-2006 Tim Janik
 #
-# GNU General Public License version 2 or (at your option) any later version.
+## GNU Lesser General Public License version 2 or any later version.                                                                                          
 
 PHP_TARGETS = $(strip			\
 	php/file-browser.php		\

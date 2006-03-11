@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 1998-2002 Tim Janik
 #
-## Makefile.am for BEAST icons
+## GNU Lesser General Public License version 2 or any later version.
 
 SRC_IMAGES = @STRIP_BEGIN@	\
 	aguitar.xcf		\

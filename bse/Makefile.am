@@ -1,7 +1,7 @@
 # BSE - Bedevilled Sound Engine
 # Copyright (C) 1998-2002 Tim Janik
 #
-## Makefile.am for BSE
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS = icons zintern . tests
 

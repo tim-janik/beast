@@ -1,7 +1,7 @@
 # BSE-Plugins - Bedevilled Sound Engine dynamic Plugins
-# Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+# Copyright (C) 1998-2006 Tim Janik
 #
-## Makefile.am for BSE Plugin icons
+## GNU Lesser General Public License version 2 or any later version.
 
 icon_pattern = *.c *.png *.xcf
 icon_list = 

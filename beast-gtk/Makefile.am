@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 1998-2002 Tim Janik
 #
-## Makefile.am for BEAST
+## GNU Lesser General Public License version 2 or any later version.
  
 SUBDIRS = gxk dialogs icons
 

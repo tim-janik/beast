@@ -1,6 +1,6 @@
 # Beast Tests
 #
-## Makefile.am for BEAST audio tests
+## GNU Lesser General Public License version 2 or any later version.
 
 FEATURE_TEST_SH=$(srcdir)/featuretest.sh
 

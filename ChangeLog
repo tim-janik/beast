@@ -1,3 +1,10 @@
+Sat Mar 11 20:23:51 2006  Tim Janik  <timj@gtk.org>
+
+	* */Makefile.am: 
+	added missing copyright notices. 
+	changed/added LGPL license with permission
+	from Stefan Westerfeld (required for some files).
+
 Fri Mar 10 21:48:03 2006  Tim Janik  <timj@gtk.org>
 
 	* web/download.doxi: added freebsd, arch and gentoo package links.

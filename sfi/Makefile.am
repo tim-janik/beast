@@ -1,7 +1,7 @@
 # SFI - Synthesis Fusion Kit Interface
 # Copyright (C) 2002 Tim Janik
 #
-## Makefile.am for SFI
+## GNU Lesser General Public License version 2 or any later version.
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS

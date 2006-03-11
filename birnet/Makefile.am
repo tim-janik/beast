@@ -1,7 +1,7 @@
 # Birnet
 # Copyright (C) 2006 Tim Janik
 #
-# GNU General Public License version 2 or (at your option) any later version.
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS		= . tests
 INCLUDES  	= -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)

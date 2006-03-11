@@ -2,7 +2,7 @@
 # Copyright (C) 2003 Tim Janik
 # Copyright (C) 2005 Stefan Westerfeld
 #
-## Makefile.am for BEAST tests
+## GNU Lesser General Public License version 2 or any later version.
 
 TESTS = loophandle
 

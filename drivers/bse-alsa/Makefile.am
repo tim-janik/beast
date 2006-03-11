@@ -1,7 +1,7 @@
 # BSE-ALSA - Bedevilled Sound Engine ALSA Driver Package
 # Copyright (C) 2004 and Tim Janik
 #
-## Makefile.am for BSE-ALSA
+## GNU Lesser General Public License version 2 or any later version.
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4

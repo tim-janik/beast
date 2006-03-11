@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 2003 Tim Janik
 #
-## Makefile.am for beast dialog resources
+## GNU Lesser General Public License version 2 or any later version.
 
 
 ZFILE_DEFS = $(strip \

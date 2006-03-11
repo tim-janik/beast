@@ -1,6 +1,7 @@
 # launchers - program starters
 # Copyright (C) 2004 Tim Janik
 #
+## GNU Lesser General Public License version 2 or any later version.
 
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I. $(LAUNCHER_CFLAGS) -DG_DISABLE_CONST_RETURNS
 

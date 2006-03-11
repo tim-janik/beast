@@ -1,7 +1,7 @@
 # BSE - Bedevilled Sound Engine
 # Copyright (C) 2004 Tim Janik
 #
-## Makefile.am for BSE Tests
+## GNU Lesser General Public License version 2 or any later version.
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
 DEFS     += -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS

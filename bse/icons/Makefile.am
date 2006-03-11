@@ -1,7 +1,7 @@
 # BSE-Plugins - Bedevilled Sound Engine dynamic Plugins
 # Copyright (C) 1998-2004 Tim Janik
 #
-## Makefile.am for BSE icons
+## GNU Lesser General Public License version 2 or any later version.
 
 # extra images to ship with tarballs
 EXTRA_IMAGES = $(strip		\

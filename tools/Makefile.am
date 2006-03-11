@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 1996-2004 Tim Janik
 #
-## Makefile.am for beast/tools
+## GNU Lesser General Public License version 2 or any later version.
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS #   """""""

@@ -1,7 +1,7 @@
 # BSE - Bedevilled Sound Engine dynamic Plugins
 # Copyright (C) 2003 Tim Janik
 #
-## Makefile.am for BEAST tests
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS = audio latency scripts bse
 

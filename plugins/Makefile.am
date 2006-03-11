@@ -1,7 +1,7 @@
 # BSE-Plugins - Bedevilled Sound Engine dynamic Plugins
 # Copyright (C) 1998-2002 Tim Janik
 #
-## Makefile.am for BSE Plugins
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS = icons . freeverb # evaluator
 

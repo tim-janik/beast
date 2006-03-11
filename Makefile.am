@@ -1,7 +1,7 @@
 # BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
 # Copyright (C) 1998-2005 Tim Janik
 #
-## Makefile.am for BEAST/BSE
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test doxer docs web
 
@@ -15,7 +15,7 @@ test:
 	@$(MAKE) -C tests/ $(AM_MAKEFLAGS) $@
 
 .PHONY: test
-        
+
 # extra dependancies
 configure: acbeast.m4 birnet/configure.inc
 
@@ -30,7 +30,7 @@ EXTRA_DIST += $(strip		\
 	COPYING.GPL		\
 	COPYING.LGPL		\
 	acbeast.m4		\
- 	po-helper.sh.in		\
+	po-helper.sh.in		\
 	topconfig.h		\
 	intltool-extract.in     \
 	intltool-merge.in       \

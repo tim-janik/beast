@@ -2,7 +2,7 @@
 # Copyright (C) 2004 Tim Janik
 # Copyright (C) 2004 Stefan Westerfeld
 #
-## Makefile.am for BSE-PortAudio
+## GNU Lesser General Public License version 2 or any later version.
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4

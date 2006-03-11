@@ -1,9 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 1998-2006 Tim Janik
 #
-# GNU General Public License version 2 or (at your option) any later version.
-#
-## Makefile.am for beast/docs/
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS = # none
 

@@ -1,7 +1,7 @@
 # GXK - Gtk+ Extension Kit
 # Copyright (C) 2002 Tim Janik
 #
-## Makefile.am for GXK
+## GNU Lesser General Public License version 2 or any later version.
 
 SUBDIRS =
 

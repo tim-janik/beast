@@ -1,6 +1,6 @@
 # Beast Tests
 #
-## Makefile.am for BEAST test scripts
+## GNU Lesser General Public License version 2 or any later version.
 
 EXTRA_DIST += $(strip \
 	waveloadtest.scm \

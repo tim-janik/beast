@@ -1,7 +1,7 @@
 # BEAST - Bedevilled Audio System
 # Copyright (C) 2002-2003 Tim Janik
 #
-## Makefile.am for BEAST data files
+## GNU Lesser General Public License version 2 or any later version.
 
 private_images = $(strip	\
 	beast-logo.png		\

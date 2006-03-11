@@ -1,7 +1,7 @@
 # SHELL - Bedevilled Sound Engine Shell
 # Copyright (C) 2001-2003 Tim Janik
 #
-## Makefile.am for bsesh
+## GNU Lesser General Public License version 2 or any later version.
 
 INCLUDES = -I$(top_srcdir) -I. -I$(top_builddir) $(BSE_SHELL_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
