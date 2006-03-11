@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-01-30 01:31+0100\n"
-"PO-Revision-Date: 2006-01-29 16:07+0100\n"
+"PO-Revision-Date: 2006-03-10 22:26+0100\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
 "Language-Team: ITALIANO\n"
 "MIME-Version: 1.0\n"
@@ -1168,7 +1168,7 @@ msgstr "  seleziona diversi tipi di eventi (controlli, ecc)"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:699
 msgid "bar, |"
-msgstr "bat, |"
+msgstr "bar, |"
 
 #: ../beast-gtk/bstpatterncolumns.c:700
 msgid "  display solid vertical bar"
