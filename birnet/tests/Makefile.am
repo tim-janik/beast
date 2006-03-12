@@ -2,6 +2,7 @@
 # Copyright (C) 2006 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 INCLUDES	= -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
 DEFS		= -DG_LOG_DOMAIN='"birnet/tests/"__FILE__":PRG"' -DPARANOID -DG_DISABLE_CONST_RETURNS

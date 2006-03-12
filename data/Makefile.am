@@ -2,6 +2,7 @@
 # Copyright (C) 2002-2003 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 private_images = $(strip	\
 	beast-logo.png		\

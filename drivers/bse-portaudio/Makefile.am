@@ -3,6 +3,7 @@
 # Copyright (C) 2004 Stefan Westerfeld
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4

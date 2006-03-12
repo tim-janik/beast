@@ -2,6 +2,7 @@
 # Copyright (C) 2002 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
 INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""

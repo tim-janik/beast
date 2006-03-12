@@ -2,6 +2,7 @@
 # Copyright (C) 1998-2005 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test doxer docs web
 

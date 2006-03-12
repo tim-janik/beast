@@ -2,6 +2,7 @@
 # Copyright (C) 1998-2004 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 # extra images to ship with tarballs
 EXTRA_IMAGES = $(strip		\

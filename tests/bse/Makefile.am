@@ -3,6 +3,7 @@
 # Copyright (C) 2005 Stefan Westerfeld
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 TESTS = loophandle
 

@@ -2,6 +2,7 @@
 # Copyright (C) 1996-2004 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS #   """""""

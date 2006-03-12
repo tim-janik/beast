@@ -2,7 +2,8 @@
 # Copyright (C) 1998-2002 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
- 
+include $(top_srcdir)/Makefile.decl
+
 SUBDIRS = gxk dialogs icons
 
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
