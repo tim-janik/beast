@@ -1,3 +1,9 @@
+Sun Mar 12 12:02:47 2006  Tim Janik  <timj@gtk.org>
+
+	* updated source file lists and .po files.
+	
+	* eo.po: fixed Project-Id-Version.
+
 2006-03-11  Jens Seidel <jseidel@cvs.gnome.org>
 
 	* de.po: Updated German translation. There is still a lot to do ...

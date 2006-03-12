@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-25 23:38+0200\n"
+"POT-Creation-Date: 2006-03-12 12:00+0100\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -311,11 +311,11 @@ msgstr "DSP エンジン..."
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "マルチスレッドシンセエンジン内部の技術的な説明"
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "Development..."
 msgstr "開発..."
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "Provide an overview of development related topics and documents"
 msgstr "開発関連のトピックや文書の概要を提供します"
 
@@ -335,94 +335,89 @@ msgstr "オンラインデモ..."
 msgid "Start a web browser pointing to online demo songs"
 msgstr "オンラインデモ曲をブラウザで開く"
 
-#: ../beast-gtk/bstapp.c:326
+#: ../beast-gtk/bstapp.c:328
 msgid "Export Audio"
 msgstr "オーディオにエクスポート"
 
-#: ../beast-gtk/bstapp.c:518 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "Wave ファイル"
 
-#: ../beast-gtk/bstapp.c:520
+#: ../beast-gtk/bstapp.c:523
 msgid "Wave Repository"
 msgstr "Wav リポジトリ"
 
-#: ../beast-gtk/bstapp.c:525
+#: ../beast-gtk/bstapp.c:528
 #, c-format
 msgid "Song: %s"
 msgstr "曲: %s"
 
-#: ../beast-gtk/bstapp.c:530
+#: ../beast-gtk/bstapp.c:533
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI シンセサイザ: %s"
 
-#: ../beast-gtk/bstapp.c:535
+#: ../beast-gtk/bstapp.c:538
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "シンセサイザー: %s"
 
-#: ../beast-gtk/bstapp.c:645
+#: ../beast-gtk/bstapp.c:648
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "閉じる(_C)"
 
-#: ../beast-gtk/bstapp.c:646
+#: ../beast-gtk/bstapp.c:649
 msgid "The project has been modified."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:647
+#: ../beast-gtk/bstapp.c:650
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:649
+#: ../beast-gtk/bstapp.c:652
 msgid "Save the project before closing its window?"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:650
+#: ../beast-gtk/bstapp.c:653
 #, fuzzy
 msgid "Save Changes"
 msgstr "シェープ範囲"
 
-#: ../beast-gtk/bstapp.c:651
+#: ../beast-gtk/bstapp.c:654
 msgid "Discard Changes"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:655
 #, fuzzy
 msgid "Cancel"
 msgstr "取り消し(_C)"
 
-#: ../beast-gtk/bstapp.c:737 ../beast-gtk/bstapp.c:744
+#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
 #: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
 #, c-format
 msgid "Opening project `%s'"
 msgstr "プロジェクト '%s' を開く"
 
-#: ../beast-gtk/bstapp.c:804
+#: ../beast-gtk/bstapp.c:807
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "スキン `%s' を読み込み"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:976
+#: ../beast-gtk/bstapp.c:978
 msgid "Rack editor"
 msgstr "ラックエディタ"
 
-#: ../beast-gtk/bstapp.c:990
+#: ../beast-gtk/bstapp.c:992
 msgid "Preferences"
 msgstr "設定"
 
-#: ../beast-gtk/bstapp.c:1017
+#: ../beast-gtk/bstapp.c:1019
 msgid "Procedure Browser"
 msgstr "プロセスブラウザ"
-
-#: ../beast-gtk/bstapp.c:1074
-#, c-format
-msgid "BEAST-%s Release Notes"
-msgstr "BEAST-%s リリースノート"
 
 #: ../beast-gtk/bstauxdialogs.c:389
 #, c-format
@@ -542,7 +537,7 @@ msgstr "挿入"
 
 #: ../beast-gtk/bsteventrollctrl.c:62 ../beast-gtk/bstpianorollctrl.c:62
 #, fuzzy
-msgid "Invert the current seleciton"
+msgid "Invert the current selection"
 msgstr "選択をクリア"
 
 #: ../beast-gtk/bsteventrollctrl.c:446 ../beast-gtk/bsteventrollctrl.c:453
@@ -738,8 +733,8 @@ msgstr "WAVE を読み込み"
 msgid "Loading wave `%s'"
 msgstr "WAVE '%s' を読み込み中"
 
-#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:278
-#: ../beast-gtk/bstmain.c:295
+#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:285
+#: ../beast-gtk/bstmain.c:302
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -867,79 +862,79 @@ msgid "Description"
 msgstr "説明"
 
 #. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:118 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:130
+#: ../beast-gtk/bstmain.c:137
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:144
 msgid "Startup"
 msgstr "起動"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:141
+#: ../beast-gtk/bstmain.c:148
 msgid "Initializers"
 msgstr "初期化"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:149
+#: ../beast-gtk/bstmain.c:156
 msgid "RC Files"
 msgstr "初期化ファイル"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:153
+#: ../beast-gtk/bstmain.c:160
 msgid "Splash Image"
 msgstr "スプラッシュイメージ"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:165
+#: ../beast-gtk/bstmain.c:172
 msgid "BSE Core"
 msgstr "BSE コア"
 
-#: ../beast-gtk/bstmain.c:187
+#: ../beast-gtk/bstmain.c:194
 msgid "Plugins"
 msgstr "プラグイン"
 
-#: ../beast-gtk/bstmain.c:206
+#: ../beast-gtk/bstmain.c:213
 msgid "LADSPA Plugins"
 msgstr "LADSPA プラグイン"
 
-#: ../beast-gtk/bstmain.c:234
+#: ../beast-gtk/bstmain.c:241
 msgid "Scripts"
 msgstr "スクリプト"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:251
+#: ../beast-gtk/bstmain.c:258
 msgid "Dialogs"
 msgstr "ダイアログ"
 
-#: ../beast-gtk/bstmain.c:260
+#: ../beast-gtk/bstmain.c:267
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: ../beast-gtk/bstmain.c:274 ../beast-gtk/bstmain.c:276
+#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" を読み込み中"
 
-#: ../beast-gtk/bstmain.c:314
+#: ../beast-gtk/bstmain.c:321
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: ../beast-gtk/bstmain.c:822
+#: ../beast-gtk/bstmain.c:831
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
-#: ../beast-gtk/bstmain.c:823
+#: ../beast-gtk/bstmain.c:832
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
 
-#: ../beast-gtk/bstmain.c:824
+#: ../beast-gtk/bstmain.c:833
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 
@@ -2795,8 +2790,8 @@ msgstr "新しいトラックをこの曲に追加"
 msgid "Delete the currently selected track"
 msgstr "現在選択しているトラックを削除"
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
-#: ../bse/bsewaveosc.c:127
+#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:284
+#: ../bse/bsewaveosc.c:128
 msgid "Available Waves"
 msgstr "利用可能な波形"
 
@@ -2809,8 +2804,8 @@ msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "演奏中シーケンサは未検証のトラックのノートを無視します"
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1013
+#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:450
+#: ../bse/bsetrack.c:1014
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "同時再生する最大音声数"
 
@@ -2828,8 +2823,8 @@ msgstr ""
 msgid "Mixer busses connected to track output"
 msgstr "トラック出力に接続するミキサーバス"
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:748 ../bse/bsetrack.c:1024
+#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:459
+#: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr "ポストプロセッサとして使うシンセネットワーク"
 
@@ -3365,6 +3360,39 @@ msgstr "記憶ウィジェット"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "ラベルのニーモニックキーが押されたときにアクティブになるウィジェット"
 
+#. BIRNET_MSG_FATAL (always enabled)
+#: ../birnet/birnetmsg.c:71
+msgid "Fatal Error"
+msgstr ""
+
+#. BIRNET_MSG_ERROR (enabled)
+#: ../birnet/birnetmsg.c:75
+#, fuzzy
+msgid "Error"
+msgstr "エラー"
+
+#. BIRNET_MSG_WARNING (enabled)
+#: ../birnet/birnetmsg.c:79
+msgid "Warning"
+msgstr "警告"
+
+#. BIRNET_MSG_SCRIPT (enabled)
+#: ../birnet/birnetmsg.c:83
+#, fuzzy
+msgid "Script"
+msgstr "スクリプト"
+
+#. BIRNET_MSG_INFO (enabled)
+#: ../birnet/birnetmsg.c:87
+#, fuzzy
+msgid "Information"
+msgstr "不正なオーバーラップ"
+
+#. BIRNET_MSG_DIAG (enabled)
+#: ../birnet/birnetmsg.c:91
+msgid "Diagnostic"
+msgstr "診断"
+
 #: ../bse/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
 #: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
 #: ../plugins/davchorus.idl:27
@@ -3432,8 +3460,8 @@ msgstr "Ctrl In2"
 msgid "Second control input"
 msgstr "第二コントロール入力"
 
-#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:193
-#: ../bse/bsestandardosc.c:196 ../bse/bsewaveosc.c:596
+#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:194
+#: ../bse/bsestandardosc.c:204 ../bse/bsewaveosc.c:598
 #: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
 #: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
@@ -3540,172 +3568,142 @@ msgstr "主音量"
 msgid "Output stage amplification in decibel"
 msgstr "出力ステージアンプ"
 
-#: ../bse/bseautodoc.c:360 ../bse/bseautodoc.c:397
-msgid "Authors:"
-msgstr "作者:"
-
-#: ../bse/bseautodoc.c:365 ../bse/bseautodoc.c:400
-msgid "License:"
-msgstr "ライセンス:"
-
-#: ../bse/bseautodoc.c:404
-msgid "Properties:"
-msgstr "プロパティ:"
-
-#: ../bse/bseautodoc.c:431 ../bse/bseautodoc.c:500 ../bse/bseautodoc.c:518
-msgid "Identifier:"
-msgstr "識別子:"
-
-#: ../bse/bseautodoc.c:436 ../bse/bseautodoc.c:442
+#: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
 msgstr "範囲:"
 
-#: ../bse/bseautodoc.c:446 ../bse/bseautodoc.c:503 ../bse/bseautodoc.c:521
-msgid "Description:"
-msgstr "説明:"
+#: ../bse/bseautodoc.c:264
+msgid "This procedure has multiple return values."
+msgstr ""
 
-#: ../bse/bseautodoc.c:460
-#, fuzzy
-msgid "Signals:"
-msgstr "信号入力"
+#: ../bse/bseautodoc.c:336
+msgid "Number of elements (C specific)"
+msgstr ""
 
-#: ../bse/bseautodoc.c:492
-msgid "Input Channels:"
-msgstr "入力チャネル:"
+#: ../bse/bseautodoc.c:355 ../bse/bseautodoc.c:429
+msgid "Authors:"
+msgstr "作者:"
 
-#: ../bse/bseautodoc.c:499
-msgid "(Joint Input)"
-msgstr "(入力を結合)"
+#: ../bse/bseautodoc.c:364 ../bse/bseautodoc.c:438
+msgid "License:"
+msgstr "ライセンス:"
 
-#: ../bse/bseautodoc.c:511
-msgid "Output Channels:"
-msgstr "出力チャネル:"
-
-#: ../bse/bseautodoc.c:565 ../bse/bseautodoc.c:567 ../bse/bseautodoc.c:592
-#: ../bse/bseautodoc.c:594
-msgid "BSE-Objects"
-msgstr "BSE-オブジェクト"
-
-#: ../bse/bseautodoc.c:567 ../bse/bseautodoc.c:594
-msgid " Object Reference"
-msgstr " オブジェクトリファレンス"
-
-#: ../bse/bsebiquadfilter.c:106
+#: ../bse/bsebiquadfilter.c:107
 msgid "/Filters/Biquad Types"
 msgstr "/フィルター/四乗べき"
 
-#: ../bse/bsebiquadfilter.c:125
+#: ../bse/bsebiquadfilter.c:126
 msgid "Filter"
 msgstr "フィルター"
 
-#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:127
+#: ../bse/bsebiquadfilter.c:128 ../plugins/bseiirfilter.c:127
 msgid "Filter Type"
 msgstr "フィルタータイプ"
 
-#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:121
+#: ../bse/bsebiquadfilter.c:128 ../plugins/bseiirfilter.c:121
 msgid "The filter design type"
 msgstr "フィルターデザインタイプ"
 
-#: ../bse/bsebiquadfilter.c:131 ../bse/bsebiquadfilter.c:139
+#: ../bse/bsebiquadfilter.c:132 ../bse/bsebiquadfilter.c:140
 msgid "Center Frequency"
 msgstr "中央周波数"
 
-#: ../bse/bsebiquadfilter.c:133 ../plugins/bseiirfilter.c:143
+#: ../bse/bsebiquadfilter.c:134 ../plugins/bseiirfilter.c:143
 #: ../plugins/bseiirfilter.c:153
 msgid "Cutoff [Hz]"
 msgstr "カットオフ [Hz]"
 
-#: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:128
-#: ../bse/bsestandardosc.c:146 ../plugins/bseiirfilter.c:148
+#: ../bse/bsebiquadfilter.c:142 ../bse/bseconstant.c:129
+#: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:148
 #: ../plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "ノート"
 
-#: ../bse/bsebiquadfilter.c:146 ../bse/bsebiquadfilter.c:151
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:152
 msgid "Emphasis"
 msgstr "強調"
 
-#: ../bse/bsebiquadfilter.c:148
+#: ../bse/bsebiquadfilter.c:149
 msgid "Gain [dB]"
 msgstr "ゲイン [dB]"
 
-#: ../bse/bsebiquadfilter.c:153
+#: ../bse/bsebiquadfilter.c:154
 msgid "Norm Type"
 msgstr "基準タイプ"
 
-#: ../bse/bsebiquadfilter.c:154
+#: ../bse/bsebiquadfilter.c:155
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "フィルタゲイン正規化タイプ (高/低周波パスフィルタだけがサポート)"
 
-#: ../bse/bsebiquadfilter.c:159 ../bse/bsebiquadfilter.c:165
-#: ../bse/bsebiquadfilter.c:171 ../bse/bsebiquadfilter.c:177
-#: ../bse/bsestandardosc.c:153 ../bse/bsestandardosc.c:158
-#: ../bse/bsestandardosc.c:163 ../bse/bsestandardosc.c:168
-#: ../bse/bsewaveosc.c:566 ../bse/bsewaveosc.c:572 ../bse/bsewaveosc.c:578
+#: ../bse/bsebiquadfilter.c:160 ../bse/bsebiquadfilter.c:166
+#: ../bse/bsebiquadfilter.c:172 ../bse/bsebiquadfilter.c:178
+#: ../bse/bsestandardosc.c:161 ../bse/bsestandardosc.c:166
+#: ../bse/bsestandardosc.c:171 ../bse/bsestandardosc.c:176
+#: ../bse/bsewaveosc.c:568 ../bse/bsewaveosc.c:574 ../bse/bsewaveosc.c:580
 msgid "Modulation"
 msgstr "変調"
 
-#: ../bse/bsebiquadfilter.c:162 ../bse/bsestandardosc.c:155
+#: ../bse/bsebiquadfilter.c:163 ../bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "線形周波変調の強さ"
 
-#: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:160
-#: ../bse/bsewaveosc.c:575
+#: ../bse/bsebiquadfilter.c:169 ../bse/bsestandardosc.c:168
+#: ../bse/bsewaveosc.c:577
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "線形の代わりに指数関数的周波数変調を実行"
 
-#: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:165
-#: ../bse/bsewaveosc.c:581
+#: ../bse/bsebiquadfilter.c:175 ../bse/bsestandardosc.c:173
+#: ../bse/bsewaveosc.c:583
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "指数関数的周波数変調の影響を受けるオクターブ数"
 
-#: ../bse/bsebiquadfilter.c:180
+#: ../bse/bsebiquadfilter.c:181
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr "ゲイン変調 [%]"
 
-#: ../bse/bsebiquadfilter.c:181
+#: ../bse/bsebiquadfilter.c:182
 msgid "Strength of gain modulation"
 msgstr "ゲイン変調の強さ"
 
-#: ../bse/bsebiquadfilter.c:185 ../plugins/bseatandistort.c:90
+#: ../bse/bsebiquadfilter.c:186 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "オーティオ入力"
 
-#: ../bse/bsebiquadfilter.c:185
+#: ../bse/bsebiquadfilter.c:186
 msgid "Unfiltered Audio Signal"
 msgstr "未フィルターのオーディオ信号"
 
-#: ../bse/bsebiquadfilter.c:187 ../bse/bsestandardosc.c:188
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:196
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
 msgstr "周波数入力"
 
-#: ../bse/bsebiquadfilter.c:187
+#: ../bse/bsebiquadfilter.c:188
 msgid "Center Frequency Input"
 msgstr "中央周波数入力"
 
-#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
 msgid "Freq Mod In"
 msgstr "周波数変調入力"
 
-#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
 msgid "Frequency Modulation Input"
 msgstr "周波数変調の入力"
 
-#: ../bse/bsebiquadfilter.c:191
+#: ../bse/bsebiquadfilter.c:192
 msgid "Gain Mod In"
 msgstr "ゲイン変調入力"
 
-#: ../bse/bsebiquadfilter.c:191
+#: ../bse/bsebiquadfilter.c:192
 msgid "Gain Modulation Input"
 msgstr "ゲイン変調の入力"
 
-#: ../bse/bsebiquadfilter.c:193
+#: ../bse/bsebiquadfilter.c:194
 msgid "Filtered Audio Signal"
 msgstr "フィルター済みのオーディオ信号"
 
@@ -3717,7 +3715,7 @@ msgstr "利用可能な入力"
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "バス入力として使う、利用可能なシンセ信号のリスト"
 
-#: ../bse/bsebus.c:147 ../bse/bsetrack.c:300
+#: ../bse/bsebus.c:147 ../bse/bsetrack.c:301
 #, fuzzy
 msgid "Available Outputs"
 msgstr "利用可能な入力"
@@ -3728,8 +3726,8 @@ msgid "List of available mixer busses to be used as bus output"
 msgstr "バス入力として使う、利用可能なシンセ信号のリスト"
 
 #: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
-#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
+#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:462
+#: ../bse/bsemidisynth.c:468 ../bse/bsemidisynth.c:475 ../bse/bsetrack.c:998
 msgid "Adjustments"
 msgstr "調整"
 
@@ -3789,11 +3787,11 @@ msgstr "入力信号"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "バス入力として使う(トラックとバスからの)シンセ信号"
 
-#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1027
 msgid "Signal Outputs"
 msgstr "信号出力"
 
-#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1029
 msgid "Output Signals"
 msgstr "出力信号"
 
@@ -3809,16 +3807,16 @@ msgstr "内部"
 msgid "Master Output"
 msgstr "主出力"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:128
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "左オーディオ入力"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:128
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:129
 msgid "Left channel input"
 msgstr "左チャネル入力"
 
-#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:130
+#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:131
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "右オーディオ入力"
@@ -3827,21 +3825,21 @@ msgstr "右オーディオ入力"
 msgid "Right channel input"
 msgstr "右チャネル入力"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:128
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "左オーディオ出力"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:128
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:129
 msgid "Left channel output"
 msgstr "左チャネル出力"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:130
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:131
 #: ../plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "右オーディオ出力"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:130
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:131
 msgid "Right channel output"
 msgstr "右チャネル出力"
 
@@ -3852,25 +3850,25 @@ msgid ""
 msgstr ""
 "主出力にトラックオーディオ信号をルーティングするのに使用する、曲のバス実装"
 
-#: ../bse/bseconstant.c:84
+#: ../bse/bseconstant.c:85
 msgid "/Other Sources/Constant"
 msgstr "/他のソース/一定"
 
-#: ../bse/bseconstant.c:106 ../bse/bseconstant.c:137
+#: ../bse/bseconstant.c:107 ../bse/bseconstant.c:138
 #, c-format
 msgid "Constant Output %u"
 msgstr "一定出力 %u"
 
-#: ../bse/bseconstant.c:109
+#: ../bse/bseconstant.c:110
 msgid "Value [float]"
 msgstr "値 [浮動小数]"
 
-#: ../bse/bseconstant.c:117 ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:109 ../bse/bsestandardosc.c:142
+#: ../bse/bseconstant.c:118 ../bse/bseinstrumentinput.c:120
+#: ../bse/bsemidiinput.c:110 ../bse/bsestandardosc.c:145
 msgid "Frequency"
 msgstr "周波数"
 
-#: ../bse/bseconstant.c:136
+#: ../bse/bseconstant.c:137
 #, c-format
 msgid "Const Out%u"
 msgstr "一定出力%u"
@@ -5089,35 +5087,35 @@ msgstr "不正な持続期間"
 msgid "Invalid overlap"
 msgstr "不正なオーバーラップ"
 
-#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:109
+#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:110
 msgid "Note Frequency"
 msgstr "ノート周波数"
 
-#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:111
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Gate"
 msgstr "ゲート"
 
-#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:111
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "High if the note is currently being pressed"
 msgstr "ノートがプレスされていれば高"
 
-#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:113
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity"
 msgstr "ヴェロシティ"
 
-#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:113
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity of the note press"
 msgstr "ノートプレスのヴェロシティ"
 
-#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:115
+#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:116
 msgid "Aftertouch"
 msgstr "アフタータッチ"
 
-#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:115
+#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:116
 msgid "Velocity while the note is pressed"
 msgstr "ノートプレス間のヴェロシティ"
 
-#: ../bse/bseinstrumentinput.c:151
+#: ../bse/bseinstrumentinput.c:152
 msgid "/Input & Output/Instrument Voice Input"
 msgstr "/入出力/インストゥルメント音声入力"
 
@@ -5149,19 +5147,19 @@ msgstr "シンセ完了"
 msgid "High indicates the instrument is done synthesizing"
 msgstr "高ならインストゥルメントのシンセ完了を示す"
 
-#: ../bse/bseinstrumentoutput.c:151
+#: ../bse/bseinstrumentoutput.c:152
 msgid "/Input & Output/Instrument Output"
 msgstr "/入出力/インストゥルメント出力"
 
-#: ../bse/bsejanitor.c:535
+#: ../bse/bsejanitor.c:536
 msgid "killed by janitor"
 msgstr ""
 
-#: ../bse/bsejanitor.c:537
+#: ../bse/bsejanitor.c:538
 msgid "connection terminated"
 msgstr ""
 
-#: ../bse/bsejanitor.c:539
+#: ../bse/bsejanitor.c:540
 #, c-format
 msgid "%s (core dumped)"
 msgstr ""
@@ -5180,39 +5178,39 @@ msgid ""
 "Available MIDI drivers:\n"
 msgstr "利用可能なアイテム:"
 
-#: ../bse/bsemidicontroller.c:86
+#: ../bse/bsemidicontroller.c:87
 msgid "/Input & Output/MIDI Control Input"
 msgstr "/入出力/MIDI コントロール入力"
 
-#: ../bse/bsemidicontroller.c:137
+#: ../bse/bsemidicontroller.c:138
 msgid "Ctrl Out1"
 msgstr "コントロール出力 1"
 
-#: ../bse/bsemidicontroller.c:137
+#: ../bse/bsemidicontroller.c:138
 msgid "MIDI Signal 1"
 msgstr "MIDI 信号 1"
 
-#: ../bse/bsemidicontroller.c:139
+#: ../bse/bsemidicontroller.c:140
 msgid "Ctrl Out2"
 msgstr "コントロール出力 2"
 
-#: ../bse/bsemidicontroller.c:139
+#: ../bse/bsemidicontroller.c:140
 msgid "MIDI Signal 2"
 msgstr "MIDI 信号 2"
 
-#: ../bse/bsemidicontroller.c:141
+#: ../bse/bsemidicontroller.c:142
 msgid "Ctrl Out3"
 msgstr "コントロール出力 3"
 
-#: ../bse/bsemidicontroller.c:141
+#: ../bse/bsemidicontroller.c:142
 msgid "MIDI Signal 3"
 msgstr "MIDI 信号 3"
 
-#: ../bse/bsemidicontroller.c:143
+#: ../bse/bsemidicontroller.c:144
 msgid "Ctrl Out4"
 msgstr "コントロール出力 4"
 
-#: ../bse/bsemidicontroller.c:143
+#: ../bse/bsemidicontroller.c:144
 msgid "MIDI Signal 4"
 msgstr "MIDI 信号 4"
 
@@ -5232,114 +5230,114 @@ msgid ""
 "           read-only, read-write or write-only access."
 msgstr ""
 
-#: ../bse/bsemidiinput.c:82
+#: ../bse/bsemidiinput.c:83
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/入出力/MIDI 音声入力"
 
-#: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:157 ../bse/bsetrack.c:292
+#: ../bse/bsemidisynth.c:228 ../bse/bsesubsynth.c:158 ../bse/bsetrack.c:293
 msgid "Available Synthesizers"
 msgstr "利用可能なシンセサイザ"
 
-#: ../bse/bsemidisynth.c:227
+#: ../bse/bsemidisynth.c:228
 #, fuzzy
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "トラック情報を選択するための、利用可能なシンセネットワークのリスト"
 
-#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:139 ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:232 ../bse/bsesong.c:140 ../bse/bsetrack.c:297
 msgid "Available Postprocessors"
 msgstr "利用可能なポストプロセッサ"
 
-#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:139 ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:232 ../bse/bsesong.c:140 ../bse/bsetrack.c:297
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "ポストプロセッサを選択するための、利用可能なシンセネットワークのリスト"
 
-#: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
-#: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:746
-#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
+#: ../bse/bsemidisynth.c:443 ../bse/bsemidisynth.c:448
+#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:747
+#: ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1023
 msgid "MIDI Instrument"
 msgstr "MIDI インストゥルメント"
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:445 ../bse/bsetrack.c:1019
 msgid "MIDI Channel"
 msgstr "MIDI チャネル"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:450
 #, fuzzy
 msgid "Max Voices"
 msgstr "最大音数"
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:513 ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:455 ../bse/bsesubsynth.c:514 ../bse/bsetrack.c:1004
 msgid "Synthesizer"
 msgstr "シンセサイザ"
 
-#: ../bse/bsemidisynth.c:454
+#: ../bse/bsemidisynth.c:455
 #, fuzzy
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "インストゥルメントとして使うシンセネットワーク"
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:748 ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 msgid "Postprocessor"
 msgstr "ポストプロセッサ"
 
-#: ../bse/bsemidisynth.c:463
+#: ../bse/bsemidisynth.c:464
 #, fuzzy
 msgid "Master [float]"
 msgstr "値 [浮動小数]"
 
-#: ../bse/bsemidisynth.c:469
+#: ../bse/bsemidisynth.c:470
 #, fuzzy
 msgid "Master [dB]"
 msgstr "ゲイン [dB]"
 
-#: ../bse/bsemidisynth.c:476
+#: ../bse/bsemidisynth.c:477
 #, fuzzy
 msgid "Master [%]"
 msgstr "主音量"
 
-#: ../bse/bsemidisynth.c:480 ../bse/bsesong.c:750
+#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:751
 #, fuzzy
 msgid "Playback Settings"
 msgstr "再生"
 
-#: ../bse/bsemidivoice.c:109 ../plugins/bsesequencer.c:106
+#: ../bse/bsemidivoice.c:111 ../plugins/bsesequencer.c:106
 msgid "Freq Out"
 msgstr "周波数出力"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:598
+#: ../bse/bsemidivoice.c:113 ../bse/bsewaveosc.c:600
 msgid "Gate Out"
 msgstr "ゲート出力"
 
-#: ../bse/bsemidivoice.c:113
+#: ../bse/bsemidivoice.c:115
 msgid "Velocity Out"
 msgstr "ヴェロシティ出力"
 
-#: ../bse/bsemidivoice.c:115
+#: ../bse/bsemidivoice.c:117
 msgid "Aftertouch Out"
 msgstr "アフタータッチ出力"
 
-#: ../bse/bsemidivoice.c:133 ../plugins/davcanyondelay.c:116
+#: ../bse/bsemidivoice.c:135 ../plugins/davcanyondelay.c:116
 msgid "Left In"
 msgstr "左入力"
 
-#: ../bse/bsemidivoice.c:135 ../plugins/davcanyondelay.c:118
+#: ../bse/bsemidivoice.c:137 ../plugins/davcanyondelay.c:118
 msgid "Right In"
 msgstr "右入力"
 
-#: ../bse/bsemidivoice.c:137
+#: ../bse/bsemidivoice.c:139
 msgid "Disconnect In"
 msgstr "入力切断"
 
-#: ../bse/bsemidivoice.c:139 ../plugins/bsebalance.idl:40
+#: ../bse/bsemidivoice.c:141 ../plugins/bsebalance.idl:40
 #: ../plugins/davcanyondelay.c:120
 msgid "Left Out"
 msgstr "左出力"
 
-#: ../bse/bsemidivoice.c:141 ../plugins/bsebalance.idl:42
+#: ../bse/bsemidivoice.c:143 ../plugins/bsebalance.idl:42
 #: ../plugins/davcanyondelay.c:122
 msgid "Right Out"
 msgstr "右出力"
 
-#: ../bse/bsemidivoice.c:143
+#: ../bse/bsemidivoice.c:145
 msgid "Disconnect Out"
 msgstr "出力切断"
 
@@ -5385,23 +5383,23 @@ msgid ""
 "           adding \"hs\" forces hard sync on underruns.\n"
 msgstr ""
 
-#: ../bse/bsepcminput.c:85
+#: ../bse/bsepcminput.c:86
 msgid "/Input & Output/PCM Input"
 msgstr "/入出力/PCM 入力"
 
-#: ../bse/bsepcmoutput.c:85
+#: ../bse/bsepcmoutput.c:86
 msgid "/Input & Output/PCM Output"
 msgstr "/入出力/PCM 出力"
 
-#: ../bse/bsepcmoutput.c:130
+#: ../bse/bsepcmoutput.c:131
 msgid "Right channel Input"
 msgstr "右チャネル入力"
 
-#: ../bse/bseserver.c:144
+#: ../bse/bseserver.c:145
 msgid "WAVE File"
 msgstr "WAVE ファイル"
 
-#: ../bse/bseserver.c:145
+#: ../bse/bseserver.c:146
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "BSE 音声出力を録音する WAVE ファイル名"
 
@@ -5503,79 +5501,79 @@ msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 msgid "Show recording file errors"
 msgstr "録音ファイルエラーを表示"
 
-#: ../bse/bsesnooper.c:77
+#: ../bse/bsesnooper.c:78
 msgid "/Misc/Snooper"
 msgstr "/その他/スヌーパー"
 
-#: ../bse/bsesnooper.c:108
+#: ../bse/bsesnooper.c:109
 msgid "Signal In"
 msgstr "信号入力"
 
-#: ../bse/bsesnooper.c:108
+#: ../bse/bsesnooper.c:109
 msgid "Snoop Signal"
 msgstr "信号をスヌープ"
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: ../bse/bsesong.c:630
+#: ../bse/bsesong.c:631
 #, fuzzy
 msgid "Master"
 msgstr "主音量"
 
-#: ../bse/bsesong.c:727 ../bse/bsesong.c:731 ../bse/bsesong.c:735
-#: ../bse/bsesong.c:739
+#: ../bse/bsesong.c:728 ../bse/bsesong.c:732 ../bse/bsesong.c:736
+#: ../bse/bsesong.c:740
 msgid "Timing"
 msgstr "タイミング"
 
-#: ../bse/bsesong.c:729
+#: ../bse/bsesong.c:730
 msgid "Ticks"
 msgstr "ティック"
 
-#: ../bse/bsesong.c:729
+#: ../bse/bsesong.c:730
 msgid "Number of ticks per quarter note"
 msgstr "4分ノート当りのティック数"
 
-#: ../bse/bsesong.c:733
+#: ../bse/bsesong.c:734
 msgid "Numerator"
 msgstr ""
 
-#: ../bse/bsesong.c:733
+#: ../bse/bsesong.c:734
 msgid "Measure numerator"
 msgstr ""
 
-#: ../bse/bsesong.c:737
+#: ../bse/bsesong.c:738
 msgid "Denominator"
 msgstr ""
 
-#: ../bse/bsesong.c:737
+#: ../bse/bsesong.c:738
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: ../bse/bsesong.c:741
+#: ../bse/bsesong.c:742
 msgid "Beats per minute"
 msgstr "BPM"
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:755 ../bse/bsesong.c:759 ../bse/bsesong.c:764
-#: ../bse/bsesong.c:769
+#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:765
+#: ../bse/bsesong.c:770
 msgid "Looping"
 msgstr "ループ"
 
-#: ../bse/bsesong.proc:36
+#: ../bse/bsesong.proc:37
 msgid "Create a new mixer bus for a Song."
 msgstr "曲のための新しいミキサーバスを作成"
 
-#: ../bse/bsesong.proc:73
+#: ../bse/bsesong.proc:74
 msgid "Delete a mixer bus from a Song."
 msgstr "曲からミキサーバスを削除"
 
-#: ../bse/bsesong.proc:113
+#: ../bse/bsesong.proc:114
 #, fuzzy
 msgid ""
 "Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr "曲の主出力バスを取得"
 
-#: ../bse/bsesong.proc:140
+#: ../bse/bsesong.proc:141
 #, fuzzy
 msgid "Retrieve master output bus of a song if it exists."
 msgstr "曲の主出力バスを取得"
@@ -5583,130 +5581,138 @@ msgstr "曲の主出力バスを取得"
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: ../bse/bsesong.proc:171
+#: ../bse/bsesong.proc:172
 msgid "Orphan Parts"
 msgstr "パートを破棄"
 
-#: ../bse/bsesong.proc:209
+#: ../bse/bsesong.proc:210
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "曲中の各々のパートが少くとも一つのトラックに挿入されるようにする"
 
-#: ../bse/bsesong.proc:244
+#: ../bse/bsesong.proc:245
 msgid "Create a new Part in a Song."
 msgstr "曲中に新しいパートを作成"
 
-#: ../bse/bsesong.proc:275
+#: ../bse/bsesong.proc:276
 msgid "Delete a Part from a Song."
 msgstr "曲中のパートを削除"
 
-#: ../bse/bsesong.proc:313
+#: ../bse/bsesong.proc:314
 msgid "Create a new Track for a Song."
 msgstr "曲の新しいトラックを作成"
 
-#: ../bse/bsesong.proc:349
+#: ../bse/bsesong.proc:350
 msgid "Delete a Track from a Song."
 msgstr "曲中のトラックを削除"
 
-#: ../bse/bsesong.proc:388
+#: ../bse/bsesong.proc:389
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "与えられたパートのノートを演奏するための適切なトラックを検索"
 
-#: ../bse/bsesong.proc:431
+#: ../bse/bsesong.proc:432
 msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
 
-#: ../bse/bsesong.proc:458
+#: ../bse/bsesong.proc:459
 msgid "Synthesize a note on a song of an active project."
 msgstr "アクティブなプロジェクトの曲のノートをシンセサイズ"
 
-#: ../bse/bsesong.proc:508
+#: ../bse/bsesong.proc:509
 msgid "Retrieve song timing information at a specific tick."
 msgstr "指定したティックでの曲のタイミング情報を取得"
 
-#: ../bse/bsestandardosc.c:105
+#: ../bse/bsestandardosc.c:107
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
 msgstr ""
 "StandardOsc は様々な種類の波形と変調入力をサポートする BSE 基本発振器です。"
 
-#: ../bse/bsestandardosc.c:108
+#: ../bse/bsestandardosc.c:111
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/オーディオソース/標準発振器"
 
-#: ../bse/bsestandardosc.c:129 ../bse/bsestandardosc.c:135
+#: ../bse/bsestandardosc.c:132 ../bse/bsestandardosc.c:138
 msgid "Wave Form"
 msgstr "波形"
 
-#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:558
-#: ../bse/bsewaveosc.c:560 ../bse/bsewaveosc.c:562
+#: ../bse/bsestandardosc.c:134 ../bse/bsetrack.c:1009 ../bse/bsewaveosc.c:560
+#: ../bse/bsewaveosc.c:562 ../bse/bsewaveosc.c:564
 msgid "Wave"
 msgstr "波"
 
-#: ../bse/bsestandardosc.c:131
+#: ../bse/bsestandardosc.c:134
 msgid "Oscillator wave form"
 msgstr "発振器波形"
 
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:140
 msgid "Phase"
 msgstr "位相"
 
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:140
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:140 ../bse/bsestandardosc.c:144
-#: ../bse/bsestandardosc.c:148
+#: ../bse/bsestandardosc.c:143 ../bse/bsestandardosc.c:147
+#: ../bse/bsestandardosc.c:151 ../bse/bsestandardosc.c:156
 msgid "Base Frequency"
 msgstr "ベース周波数"
 
-#: ../bse/bsestandardosc.c:142
+#: ../bse/bsestandardosc.c:145
 msgid "Number of oscillator cycles per second"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:146
+#: ../bse/bsestandardosc.c:149
 msgid "Musical notation corresponding to the oscillator frequency"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:150
+#: ../bse/bsestandardosc.c:153
+msgid "Transpose"
+msgstr ""
+
+#: ../bse/bsestandardosc.c:153
+msgid "Transposition of the oscillator frequency in semitones"
+msgstr ""
+
+#: ../bse/bsestandardosc.c:158
 msgid "Fine Tune"
 msgstr "微細調整"
 
-#: ../bse/bsestandardosc.c:150
-msgid "Amount of detuning in cent (hundredth part of a note)"
+#: ../bse/bsestandardosc.c:158
+msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:155 ../bse/bsewaveosc.c:568
+#: ../bse/bsestandardosc.c:163 ../bse/bsewaveosc.c:570
 msgid "Input Modulation [%]"
 msgstr "入力変調 [%]"
 
-#: ../bse/bsestandardosc.c:160 ../bse/bsewaveosc.c:574
+#: ../bse/bsestandardosc.c:168 ../bse/bsewaveosc.c:576
 msgid "Exponential FM"
 msgstr "指数関数 FM"
 
-#: ../bse/bsestandardosc.c:165 ../bse/bsewaveosc.c:580
+#: ../bse/bsestandardosc.c:173 ../bse/bsewaveosc.c:582
 msgid "Octaves"
 msgstr "オクターブ"
 
-#: ../bse/bsestandardosc.c:170
+#: ../bse/bsestandardosc.c:178
 msgid "Self Modulation [%]"
 msgstr "自己変調 [%]"
 
-#: ../bse/bsestandardosc.c:170
+#: ../bse/bsestandardosc.c:178
 msgid "Strength of self modulation"
 msgstr "自己変調の強さ"
 
 #. disabled
-#: ../bse/bsestandardosc.c:173 ../bse/bsestandardosc.c:180
+#: ../bse/bsestandardosc.c:181 ../bse/bsestandardosc.c:188
 msgid "Pulse Modulation"
 msgstr "パルス変調"
 
-#: ../bse/bsestandardosc.c:175
+#: ../bse/bsestandardosc.c:183
 msgid "Pulse Width"
 msgstr "パルス幅"
 
-#: ../bse/bsestandardosc.c:176
+#: ../bse/bsestandardosc.c:184
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -5714,60 +5720,60 @@ msgstr ""
 "パルス波形の正コンポーネントデュレイションの比率(このエフェクトについてはパル"
 "ス波形を選択しなければなりません)"
 
-#: ../bse/bsestandardosc.c:182
+#: ../bse/bsestandardosc.c:190
 msgid "Pulse Modulation [%]"
 msgstr "パルス変調 [%]"
 
-#: ../bse/bsestandardosc.c:183
+#: ../bse/bsestandardosc.c:191
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
 "パルス幅変調入力の強さ (パルスの効果を得るにはこれについて波形を選ぶべき)"
 
-#: ../bse/bsestandardosc.c:188
+#: ../bse/bsestandardosc.c:196
 msgid "Oscillating Frequency Input"
 msgstr "発振器周波数入力"
 
-#: ../bse/bsestandardosc.c:192
+#: ../bse/bsestandardosc.c:200
 msgid "PWM In"
 msgstr "PWM 入力"
 
-#: ../bse/bsestandardosc.c:192
+#: ../bse/bsestandardosc.c:200
 msgid "Pulse Width Modulation Input"
 msgstr "パルス幅変調入力"
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:202 ../bse/bsewaveosc.c:594
 msgid "Sync In"
 msgstr "同期入力"
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:202 ../bse/bsewaveosc.c:594
 msgid "Syncronization Input"
 msgstr "同期入力"
 
-#: ../bse/bsestandardosc.c:196
+#: ../bse/bsestandardosc.c:204
 msgid "Oscillated Output"
 msgstr "発振された出力"
 
-#: ../bse/bsestandardosc.c:198
+#: ../bse/bsestandardosc.c:206
 msgid "Sync Out"
 msgstr "同期出力"
 
-#: ../bse/bsestandardosc.c:198
+#: ../bse/bsestandardosc.c:206
 msgid "Syncronization Output"
 msgstr "同期出力"
 
-#: ../bse/bsesubiport.c:294 ../bse/bsesubsynth.c:541
+#: ../bse/bsesubiport.c:294 ../bse/bsesubsynth.c:542
 #, c-format
 msgid "Virtual input %u"
 msgstr "仮想入力 %u"
 
-#: ../bse/bsesubiport.c:301 ../bse/bsesubsynth.c:521
+#: ../bse/bsesubiport.c:301 ../bse/bsesubsynth.c:522
 #, c-format
 msgid "Input Port %u"
 msgstr "入力ポート %u"
 
-#: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304 ../bse/bsesubsynth.c:511
+#: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304 ../bse/bsesubsynth.c:512
 msgid "Assignments"
 msgstr "割り当て"
 
@@ -5776,49 +5782,49 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr "入出力ポートの関係を確立するためにポート名として固有な名前を与えます"
 
-#: ../bse/bsesubiport.c:335
+#: ../bse/bsesubiport.c:336
 msgid "/Virtualization/Virtual Input"
 msgstr "/仮想化/仮想入力"
 
-#: ../bse/bsesuboport.c:295 ../bse/bsesubsynth.c:548
+#: ../bse/bsesuboport.c:295 ../bse/bsesubsynth.c:549
 #, c-format
 msgid "Virtual output %u"
 msgstr "仮想出力 %u"
 
-#: ../bse/bsesuboport.c:302 ../bse/bsesubsynth.c:531
+#: ../bse/bsesuboport.c:302 ../bse/bsesubsynth.c:532
 #, c-format
 msgid "Output Port %u"
 msgstr "出力ポート %u"
 
-#: ../bse/bsesuboport.c:336
+#: ../bse/bsesuboport.c:337
 msgid "/Virtualization/Virtual Output"
 msgstr "/仮想化/仮想出力"
 
-#: ../bse/bsesubsynth.c:96
+#: ../bse/bsesubsynth.c:97
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr "/仮想化/仮想サブシンセ"
 
-#: ../bse/bsesubsynth.c:157
+#: ../bse/bsesubsynth.c:158
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr "副ネットワークを選択するための、利用可能なネットワークのリスト"
 
-#: ../bse/bsesubsynth.c:514
+#: ../bse/bsesubsynth.c:515
 msgid "Synthesis network to use as embedded sub network"
 msgstr "組み込み副ネットワークとして使うシンセネットワーク"
 
-#: ../bse/bsesubsynth.c:523
+#: ../bse/bsesubsynth.c:524
 msgid "Input Assignments"
 msgstr "入力割り当て"
 
-#: ../bse/bsesubsynth.c:524
+#: ../bse/bsesubsynth.c:525
 msgid "Output port name to interface from"
 msgstr "インターフェースする出力ポート名"
 
-#: ../bse/bsesubsynth.c:533
+#: ../bse/bsesubsynth.c:534
 msgid "Output Assignments"
 msgstr "出力割り当て"
 
-#: ../bse/bsesubsynth.c:534
+#: ../bse/bsesubsynth.c:535
 msgid "Input port name to interface to"
 msgstr "インターフェースする入力ポート名"
 
@@ -5846,97 +5852,97 @@ msgstr "作成日時"
 msgid "Last modification time"
 msgstr "最終更新日時"
 
-#: ../bse/bsetrack.c:283
+#: ../bse/bsetrack.c:284
 msgid "List of available waves to choose as track instrument"
 msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
 
-#: ../bse/bsetrack.c:292
+#: ../bse/bsetrack.c:293
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr "トラック情報を選択するための、利用可能なシンセネットワークのリスト"
 
-#: ../bse/bsetrack.c:300
+#: ../bse/bsetrack.c:301
 #, fuzzy
 msgid "List of available mixer busses to be used as track output"
 msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
 
-#: ../bse/bsetrack.c:999
+#: ../bse/bsetrack.c:1000
 msgid "Muted"
 msgstr "ミュート"
 
-#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1002 ../bse/bsetrack.c:1007 ../bse/bsetrack.c:1012
 msgid "Synth Input"
 msgstr "シンセ入力"
 
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsetrack.c:1004
 msgid "Synthesis network to be used as instrument"
 msgstr "インストゥルメントとして使うシンセネットワーク"
 
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsetrack.c:1009
 msgid "Wave to be used as instrument"
 msgstr "インストゥルメントとして使う波形"
 
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1014
 msgid "Max Voixes"
 msgstr "最大音数"
 
-#: ../bse/bsetrack.c:1019
+#: ../bse/bsetrack.c:1020
 #, fuzzy
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "このトラック 0 に割当てられている MIDI チャネルはプライベートパートラックチャ"
 "ネルを使っています"
 
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsetrack.c:1030
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:306
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:95
+#: ../bse/bsewaveosc.c:96
 msgid "/Audio Sources/Wave Oscillator"
 msgstr "/オーディオソース/波形発振器"
 
-#: ../bse/bsewaveosc.c:127
+#: ../bse/bsewaveosc.c:128
 msgid "List of available waves to choose as oscillator source"
 msgstr "発振器ソースとして選択する、利用可能な波形のリスト"
 
-#: ../bse/bsewaveosc.c:560
+#: ../bse/bsewaveosc.c:562
 msgid "Wave used as oscillator source"
 msgstr "発振器ソースとして使う波形"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:566
 #, fuzzy
 msgid "Channel"
 msgstr "チャネル%u"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:566
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:569
+#: ../bse/bsewaveosc.c:571
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "線形周波数変調の変調強度"
 
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "周波数入力"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:596
 msgid "Mod In"
 msgstr "変調入力"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:596
 msgid "Modulation Input"
 msgstr "変調入力"
 
-#: ../bse/bsewaveosc.c:596
+#: ../bse/bsewaveosc.c:598
 msgid "Wave Output"
 msgstr "波形出力"
 
-#: ../bse/bsewaveosc.c:598
+#: ../bse/bsewaveosc.c:600
 msgid "Gate Output"
 msgstr "ゲート出力"
 
@@ -6765,43 +6771,41 @@ msgstr "左出力"
 msgid "Right Output"
 msgstr "右出力"
 
-#. SFI_MSG_FATAL (always enabled)
-#: ../sfi/sfilog.c:71
-msgid "Fatal Error"
-msgstr ""
-
-#. SFI_MSG_ERROR (enabled)
-#: ../sfi/sfilog.c:75
-#, fuzzy
-msgid "Error"
-msgstr "エラー"
-
-#. SFI_MSG_WARNING (enabled)
-#: ../sfi/sfilog.c:79
-msgid "Warning"
-msgstr "警告"
-
-#. SFI_MSG_SCRIPT (enabled)
-#: ../sfi/sfilog.c:83
-#, fuzzy
-msgid "Script"
-msgstr "スクリプト"
-
-#. SFI_MSG_INFO (enabled)
-#: ../sfi/sfilog.c:87
-#, fuzzy
-msgid "Information"
-msgstr "不正なオーバーラップ"
-
-#. SFI_MSG_DIAG (enabled)
-#: ../sfi/sfilog.c:91
-msgid "Diagnostic"
-msgstr "診断"
-
-#: ../tools/bsewavetool.cc:930
+#: ../tools/bsewavetool.cc:934
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
+
+#~ msgid "BEAST-%s Release Notes"
+#~ msgstr "BEAST-%s リリースノート"
+
+#~ msgid "Properties:"
+#~ msgstr "プロパティ:"
+
+#~ msgid "Identifier:"
+#~ msgstr "識別子:"
+
+#~ msgid "Description:"
+#~ msgstr "説明:"
+
+#, fuzzy
+#~ msgid "Signals:"
+#~ msgstr "信号入力"
+
+#~ msgid "Input Channels:"
+#~ msgstr "入力チャネル:"
+
+#~ msgid "(Joint Input)"
+#~ msgstr "(入力を結合)"
+
+#~ msgid "Output Channels:"
+#~ msgstr "出力チャネル:"
+
+#~ msgid "BSE-Objects"
+#~ msgstr "BSE-オブジェクト"
+
+#~ msgid " Object Reference"
+#~ msgstr " オブジェクトリファレンス"
 
 #~ msgid "Selection to Loop"
 #~ msgstr "ループ領域の選択"

@@ -60,6 +60,7 @@ beast-gtk/gxk/gxkparam-scale.c
 beast-gtk/gxk/gxkparam-spinner.c
 beast-gtk/gxk/gxkparam-toggle.c
 beast-gtk/gxk/gxksimplelabel.c
+birnet/birnetmsg.c
 bse/bseamplifier.idl
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
@@ -127,5 +128,4 @@ plugins/davsyndrum.c
 plugins/davxtalstrings.c
 plugins/evaluator/bseevaluator.idl
 plugins/freeverb/bsefreeverb.c
-sfi/sfilog.c
 tools/bsewavetool.cc

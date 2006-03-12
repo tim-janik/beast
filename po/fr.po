@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-05-25 23:38+0200\n"
+"POT-Creation-Date: 2006-03-12 12:00+0100\n"
 "PO-Revision-Date: 2004-01-17 23:28+0100\n"
 "Last-Translator: Christophe Merlet (RedFox) <redfox@redfoxcenter.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -314,12 +314,12 @@ msgstr "Moteur GSL..."
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 #, fuzzy
 msgid "Development..."
 msgstr "Développement"
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "Provide an overview of development related topics and documents"
 msgstr ""
 
@@ -339,97 +339,92 @@ msgstr ""
 msgid "Start a web browser pointing to online demo songs"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:326
+#: ../beast-gtk/bstapp.c:328
 #, fuzzy
 msgid "Export Audio"
 msgstr "Test Audio"
 
-#: ../beast-gtk/bstapp.c:518 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "Vagues"
 
-#: ../beast-gtk/bstapp.c:520
+#: ../beast-gtk/bstapp.c:523
 msgid "Wave Repository"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:525
+#: ../beast-gtk/bstapp.c:528
 #, fuzzy, c-format
 msgid "Song: %s"
 msgstr "Enregistrer : %s"
 
-#: ../beast-gtk/bstapp.c:530
+#: ../beast-gtk/bstapp.c:533
 #, fuzzy, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "_Synchroniser"
 
-#: ../beast-gtk/bstapp.c:535
+#: ../beast-gtk/bstapp.c:538
 #, fuzzy, c-format
 msgid "Synthesizer: %s"
 msgstr "_Synchroniser"
 
-#: ../beast-gtk/bstapp.c:645
+#: ../beast-gtk/bstapp.c:648
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "_Fermer"
 
-#: ../beast-gtk/bstapp.c:646
+#: ../beast-gtk/bstapp.c:649
 msgid "The project has been modified."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:647
+#: ../beast-gtk/bstapp.c:650
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:649
+#: ../beast-gtk/bstapp.c:652
 msgid "Save the project before closing its window?"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:650
+#: ../beast-gtk/bstapp.c:653
 #, fuzzy
 msgid "Save Changes"
 msgstr "Plages de balayage"
 
-#: ../beast-gtk/bstapp.c:651
+#: ../beast-gtk/bstapp.c:654
 msgid "Discard Changes"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:655
 #, fuzzy
 msgid "Cancel"
 msgstr "_Améliorer"
 
-#: ../beast-gtk/bstapp.c:737 ../beast-gtk/bstapp.c:744
+#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
 #: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Ouverture du projet « %s »"
 
-#: ../beast-gtk/bstapp.c:804
+#: ../beast-gtk/bstapp.c:807
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Chargement de l'image : %s"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:976
+#: ../beast-gtk/bstapp.c:978
 #, fuzzy
 msgid "Rack editor"
 msgstr "Éditeur de piste"
 
-#: ../beast-gtk/bstapp.c:990
+#: ../beast-gtk/bstapp.c:992
 msgid "Preferences"
 msgstr "Préférences"
 
-#: ../beast-gtk/bstapp.c:1017
+#: ../beast-gtk/bstapp.c:1019
 #, fuzzy
 msgid "Procedure Browser"
 msgstr "Retour de procédure"
-
-#: ../beast-gtk/bstapp.c:1074
-#, fuzzy, c-format
-msgid "BEAST-%s Release Notes"
-msgstr "_Notes de version de Nautilus"
 
 #: ../beast-gtk/bstauxdialogs.c:389
 #, c-format
@@ -556,7 +551,7 @@ msgstr "Insérer"
 
 #: ../beast-gtk/bsteventrollctrl.c:62 ../beast-gtk/bstpianorollctrl.c:62
 #, fuzzy
-msgid "Invert the current seleciton"
+msgid "Invert the current selection"
 msgstr "Découper la sélection courante"
 
 #: ../beast-gtk/bsteventrollctrl.c:446 ../beast-gtk/bsteventrollctrl.c:453
@@ -755,8 +750,8 @@ msgstr "Charge moyenne"
 msgid "Loading wave `%s'"
 msgstr "Chargement de l'image : %s"
 
-#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:278
-#: ../beast-gtk/bstmain.c:295
+#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:285
+#: ../beast-gtk/bstmain.c:302
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "La suppression de l'ancien fichier « %s » a échoué : %s"
@@ -892,84 +887,84 @@ msgid "Description"
 msgstr "Description"
 
 #. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:118 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
 #, fuzzy
 msgid "BEAST"
 msgstr "BASIQUE"
 
-#: ../beast-gtk/bstmain.c:130
+#: ../beast-gtk/bstmain.c:137
 msgid "BEAST Startup"
 msgstr "Démarrage de BEAST"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:144
 msgid "Startup"
 msgstr "Démarrage"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:141
+#: ../beast-gtk/bstmain.c:148
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:149
+#: ../beast-gtk/bstmain.c:156
 #, fuzzy
 msgid "RC Files"
 msgstr "Co_uper le fichier"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:153
+#: ../beast-gtk/bstmain.c:160
 #, fuzzy
 msgid "Splash Image"
 msgstr "Image de l'écran d'acceuil"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:165
+#: ../beast-gtk/bstmain.c:172
 #, fuzzy
 msgid "BSE Core"
 msgstr "Stocker"
 
-#: ../beast-gtk/bstmain.c:187
+#: ../beast-gtk/bstmain.c:194
 msgid "Plugins"
 msgstr "Greffons"
 
-#: ../beast-gtk/bstmain.c:206
+#: ../beast-gtk/bstmain.c:213
 #, fuzzy
 msgid "LADSPA Plugins"
 msgstr "Greffons"
 
-#: ../beast-gtk/bstmain.c:234
+#: ../beast-gtk/bstmain.c:241
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:251
+#: ../beast-gtk/bstmain.c:258
 msgid "Dialogs"
 msgstr "Boîtes de dialogue"
 
-#: ../beast-gtk/bstmain.c:260
+#: ../beast-gtk/bstmain.c:267
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: ../beast-gtk/bstmain.c:274 ../beast-gtk/bstmain.c:276
+#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Chargement de « %s »"
 
-#: ../beast-gtk/bstmain.c:314
+#: ../beast-gtk/bstmain.c:321
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "La suppression de l'ancien fichier « %s » a échoué : %s"
 
-#: ../beast-gtk/bstmain.c:822
+#: ../beast-gtk/bstmain.c:831
 msgid "BEAST About"
 msgstr "À propos de BEAST"
 
-#: ../beast-gtk/bstmain.c:823
+#: ../beast-gtk/bstmain.c:832
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
 
-#: ../beast-gtk/bstmain.c:824
+#: ../beast-gtk/bstmain.c:833
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "Contributeurs :"
@@ -2986,8 +2981,8 @@ msgstr "Ajouter un nouvel élement à ce menu"
 msgid "Delete the currently selected track"
 msgstr "Supprime le Pilot actuellement sélectionné"
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
-#: ../bse/bsewaveosc.c:127
+#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:284
+#: ../bse/bsewaveosc.c:128
 msgid "Available Waves"
 msgstr ""
 
@@ -3000,8 +2995,8 @@ msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1013
+#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:450
+#: ../bse/bsetrack.c:1014
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
@@ -3017,8 +3012,8 @@ msgstr ""
 msgid "Mixer busses connected to track output"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:748 ../bse/bsetrack.c:1024
+#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:459
+#: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -3592,6 +3587,39 @@ msgstr "Widget mnémonique"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Le widget à activer lorsque la touche mnémonique est activé"
 
+#. BIRNET_MSG_FATAL (always enabled)
+#: ../birnet/birnetmsg.c:71
+msgid "Fatal Error"
+msgstr ""
+
+#. BIRNET_MSG_ERROR (enabled)
+#: ../birnet/birnetmsg.c:75
+#, fuzzy
+msgid "Error"
+msgstr "Erreur"
+
+#. BIRNET_MSG_WARNING (enabled)
+#: ../birnet/birnetmsg.c:79
+msgid "Warning"
+msgstr "Avertissement"
+
+#. BIRNET_MSG_SCRIPT (enabled)
+#: ../birnet/birnetmsg.c:83
+#, fuzzy
+msgid "Script"
+msgstr "Scripts"
+
+#. BIRNET_MSG_INFO (enabled)
+#: ../birnet/birnetmsg.c:87
+#, fuzzy
+msgid "Information"
+msgstr "Emplacement"
+
+#. BIRNET_MSG_DIAG (enabled)
+#: ../birnet/birnetmsg.c:91
+msgid "Diagnostic"
+msgstr ""
+
 #: ../bse/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
 #: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
 #: ../plugins/davchorus.idl:27
@@ -3656,8 +3684,8 @@ msgstr "Ctrl In2"
 msgid "Second control input"
 msgstr "Ouvrir le panneau de contrôle"
 
-#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:193
-#: ../bse/bsestandardosc.c:196 ../bse/bsewaveosc.c:596
+#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:194
+#: ../bse/bsestandardosc.c:204 ../bse/bsewaveosc.c:598
 #: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
 #: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
@@ -3768,184 +3796,149 @@ msgstr "Volume système"
 msgid "Output stage amplification in decibel"
 msgstr ""
 
-#: ../bse/bseautodoc.c:360 ../bse/bseautodoc.c:397
-msgid "Authors:"
-msgstr "Auteurs :"
-
-#: ../bse/bseautodoc.c:365 ../bse/bseautodoc.c:400
-msgid "License:"
-msgstr "Licence :"
-
-#: ../bse/bseautodoc.c:404
-msgid "Properties:"
-msgstr "Propriétés :"
-
-#: ../bse/bseautodoc.c:431 ../bse/bseautodoc.c:500 ../bse/bseautodoc.c:518
-msgid "Identifier:"
-msgstr ""
-
-#: ../bse/bseautodoc.c:436 ../bse/bseautodoc.c:442
+#: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
 msgstr "Intervalle :"
 
-#: ../bse/bseautodoc.c:446 ../bse/bseautodoc.c:503 ../bse/bseautodoc.c:521
-msgid "Description:"
-msgstr "Description :"
+#: ../bse/bseautodoc.c:264
+msgid "This procedure has multiple return values."
+msgstr ""
 
-#: ../bse/bseautodoc.c:460
-#, fuzzy
-msgid "Signals:"
-msgstr "Entrée audio"
+#: ../bse/bseautodoc.c:336
+msgid "Number of elements (C specific)"
+msgstr ""
 
-#: ../bse/bseautodoc.c:492
-#, fuzzy
-msgid "Input Channels:"
-msgstr "Inverser le canal"
+#: ../bse/bseautodoc.c:355 ../bse/bseautodoc.c:429
+msgid "Authors:"
+msgstr "Auteurs :"
 
-#: ../bse/bseautodoc.c:499
-#, fuzzy
-msgid "(Joint Input)"
-msgstr "Entrée phone"
+#: ../bse/bseautodoc.c:364 ../bse/bseautodoc.c:438
+msgid "License:"
+msgstr "Licence :"
 
-#: ../bse/bseautodoc.c:511
-#, fuzzy
-msgid "Output Channels:"
-msgstr "Niveau de sortie :"
-
-#: ../bse/bseautodoc.c:565 ../bse/bseautodoc.c:567 ../bse/bseautodoc.c:592
-#: ../bse/bseautodoc.c:594
-#, fuzzy
-msgid "BSE-Objects"
-msgstr "Objets"
-
-#: ../bse/bseautodoc.c:567 ../bse/bseautodoc.c:594
-#, fuzzy
-msgid " Object Reference"
-msgstr "Fonctions de référence d'objets"
-
-#: ../bse/bsebiquadfilter.c:106
+#: ../bse/bsebiquadfilter.c:107
 #, fuzzy
 msgid "/Filters/Biquad Types"
 msgstr "Type de filtres"
 
-#: ../bse/bsebiquadfilter.c:125
+#: ../bse/bsebiquadfilter.c:126
 msgid "Filter"
 msgstr "Filtre"
 
-#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:127
+#: ../bse/bsebiquadfilter.c:128 ../plugins/bseiirfilter.c:127
 msgid "Filter Type"
 msgstr "Type de filtres"
 
-#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:121
+#: ../bse/bsebiquadfilter.c:128 ../plugins/bseiirfilter.c:121
 #, fuzzy
 msgid "The filter design type"
 msgstr "Le fichier n'existe pas."
 
-#: ../bse/bsebiquadfilter.c:131 ../bse/bsebiquadfilter.c:139
+#: ../bse/bsebiquadfilter.c:132 ../bse/bsebiquadfilter.c:140
 #, fuzzy
 msgid "Center Frequency"
 msgstr "Règler la fréquence"
 
-#: ../bse/bsebiquadfilter.c:133 ../plugins/bseiirfilter.c:143
+#: ../bse/bsebiquadfilter.c:134 ../plugins/bseiirfilter.c:143
 #: ../plugins/bseiirfilter.c:153
 msgid "Cutoff [Hz]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:128
-#: ../bse/bsestandardosc.c:146 ../plugins/bseiirfilter.c:148
+#: ../bse/bsebiquadfilter.c:142 ../bse/bseconstant.c:129
+#: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:148
 #: ../plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Note"
 
-#: ../bse/bsebiquadfilter.c:146 ../bse/bsebiquadfilter.c:151
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:152
 #, fuzzy
 msgid "Emphasis"
 msgstr "Encompass"
 
-#: ../bse/bsebiquadfilter.c:148
+#: ../bse/bsebiquadfilter.c:149
 msgid "Gain [dB]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:153
+#: ../bse/bsebiquadfilter.c:154
 msgid "Norm Type"
 msgstr "Type de normalisation"
 
-#: ../bse/bsebiquadfilter.c:154
+#: ../bse/bsebiquadfilter.c:155
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:159 ../bse/bsebiquadfilter.c:165
-#: ../bse/bsebiquadfilter.c:171 ../bse/bsebiquadfilter.c:177
-#: ../bse/bsestandardosc.c:153 ../bse/bsestandardosc.c:158
-#: ../bse/bsestandardosc.c:163 ../bse/bsestandardosc.c:168
-#: ../bse/bsewaveosc.c:566 ../bse/bsewaveosc.c:572 ../bse/bsewaveosc.c:578
+#: ../bse/bsebiquadfilter.c:160 ../bse/bsebiquadfilter.c:166
+#: ../bse/bsebiquadfilter.c:172 ../bse/bsebiquadfilter.c:178
+#: ../bse/bsestandardosc.c:161 ../bse/bsestandardosc.c:166
+#: ../bse/bsestandardosc.c:171 ../bse/bsestandardosc.c:176
+#: ../bse/bsewaveosc.c:568 ../bse/bsewaveosc.c:574 ../bse/bsewaveosc.c:580
 msgid "Modulation"
 msgstr "Modulation"
 
-#: ../bse/bsebiquadfilter.c:162 ../bse/bsestandardosc.c:155
+#: ../bse/bsebiquadfilter.c:163 ../bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:168 ../bse/bsestandardosc.c:160
-#: ../bse/bsewaveosc.c:575
+#: ../bse/bsebiquadfilter.c:169 ../bse/bsestandardosc.c:168
+#: ../bse/bsewaveosc.c:577
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:174 ../bse/bsestandardosc.c:165
-#: ../bse/bsewaveosc.c:581
+#: ../bse/bsebiquadfilter.c:175 ../bse/bsestandardosc.c:173
+#: ../bse/bsewaveosc.c:583
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:180
+#: ../bse/bsebiquadfilter.c:181
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:181
+#: ../bse/bsebiquadfilter.c:182
 #, fuzzy
 msgid "Strength of gain modulation"
 msgstr "Violation de segmentation"
 
-#: ../bse/bsebiquadfilter.c:185 ../plugins/bseatandistort.c:90
+#: ../bse/bsebiquadfilter.c:186 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Audio In"
 
-#: ../bse/bsebiquadfilter.c:185
+#: ../bse/bsebiquadfilter.c:186
 msgid "Unfiltered Audio Signal"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:187 ../bse/bsestandardosc.c:188
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:196
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 #, fuzzy
 msgid "Freq In"
 msgstr "Fréquence"
 
-#: ../bse/bsebiquadfilter.c:187
+#: ../bse/bsebiquadfilter.c:188
 #, fuzzy
 msgid "Center Frequency Input"
 msgstr "Entrée centre"
 
-#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
 msgid "Freq Mod In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:189 ../bse/bsestandardosc.c:190
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
 msgid "Frequency Modulation Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:191
+#: ../bse/bsebiquadfilter.c:192
 msgid "Gain Mod In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:191
+#: ../bse/bsebiquadfilter.c:192
 msgid "Gain Modulation Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:193
+#: ../bse/bsebiquadfilter.c:194
 msgid "Filtered Audio Signal"
 msgstr ""
 
@@ -3958,7 +3951,7 @@ msgstr "Sélectionner les _entrées"
 msgid "List of available synthesis signals to be used as bus input"
 msgstr ""
 
-#: ../bse/bsebus.c:147 ../bse/bsetrack.c:300
+#: ../bse/bsebus.c:147 ../bse/bsetrack.c:301
 #, fuzzy
 msgid "Available Outputs"
 msgstr "Sélectionner les _entrées"
@@ -3968,8 +3961,8 @@ msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
 #: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
-#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
+#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:462
+#: ../bse/bsemidisynth.c:468 ../bse/bsemidisynth.c:475 ../bse/bsetrack.c:998
 #, fuzzy
 msgid "Adjustments"
 msgstr "Alignement"
@@ -4035,12 +4028,12 @@ msgstr "Entrée audio"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1027
 #, fuzzy
 msgid "Signal Outputs"
 msgstr "Entrée centre"
 
-#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1029
 #, fuzzy
 msgid "Output Signals"
 msgstr "Entrée audio"
@@ -4058,18 +4051,18 @@ msgstr ""
 msgid "Master Output"
 msgstr "Supprimer le bouton"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:128
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:123
 #, fuzzy
 msgid "Left Audio In"
 msgstr "Test Audio"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:128
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:129
 #, fuzzy
 msgid "Left channel input"
 msgstr "Bourrage de gauche"
 
-#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:130
+#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:131
 #: ../plugins/freeverb/bsefreeverb.c:124
 #, fuzzy
 msgid "Right Audio In"
@@ -4080,22 +4073,22 @@ msgstr "Aligner à droite"
 msgid "Right channel input"
 msgstr "Bourrage de droite"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:128
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Sortie audio gauche"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:128
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:129
 #, fuzzy
 msgid "Left channel output"
 msgstr "Type de sortie audio à utiliser"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:130
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:131
 #: ../plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Sortie audio droite"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:130
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:131
 #, fuzzy
 msgid "Right channel output"
 msgstr "Texte aligné à droite"
@@ -4106,26 +4099,26 @@ msgid ""
 "master output."
 msgstr ""
 
-#: ../bse/bseconstant.c:84
+#: ../bse/bseconstant.c:85
 #, fuzzy
 msgid "/Other Sources/Constant"
 msgstr "_Autres sources"
 
-#: ../bse/bseconstant.c:106 ../bse/bseconstant.c:137
+#: ../bse/bseconstant.c:107 ../bse/bseconstant.c:138
 #, c-format
 msgid "Constant Output %u"
 msgstr ""
 
-#: ../bse/bseconstant.c:109
+#: ../bse/bseconstant.c:110
 msgid "Value [float]"
 msgstr ""
 
-#: ../bse/bseconstant.c:117 ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:109 ../bse/bsestandardosc.c:142
+#: ../bse/bseconstant.c:118 ../bse/bseinstrumentinput.c:120
+#: ../bse/bsemidiinput.c:110 ../bse/bsestandardosc.c:145
 msgid "Frequency"
 msgstr "Fréquence"
 
-#: ../bse/bseconstant.c:136
+#: ../bse/bseconstant.c:137
 #, c-format
 msgid "Const Out%u"
 msgstr ""
@@ -5407,37 +5400,37 @@ msgstr ""
 msgid "Invalid overlap"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:109
+#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:110
 #, fuzzy
 msgid "Note Frequency"
 msgstr "Règler la fréquence"
 
-#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:111
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 #, fuzzy
 msgid "Gate"
 msgstr "Coller"
 
-#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:111
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "High if the note is currently being pressed"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:113
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:113
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity of the note press"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:115
+#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:116
 msgid "Aftertouch"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:115
+#: ../bse/bseinstrumentinput.c:126 ../bse/bsemidiinput.c:116
 msgid "Velocity while the note is pressed"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:151
+#: ../bse/bseinstrumentinput.c:152
 #, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
 msgstr "_Entrée & Sortie"
@@ -5476,20 +5469,20 @@ msgstr "_Synth"
 msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
-#: ../bse/bseinstrumentoutput.c:151
+#: ../bse/bseinstrumentoutput.c:152
 #, fuzzy
 msgid "/Input & Output/Instrument Output"
 msgstr "_Entrée & Sortie"
 
-#: ../bse/bsejanitor.c:535
+#: ../bse/bsejanitor.c:536
 msgid "killed by janitor"
 msgstr ""
 
-#: ../bse/bsejanitor.c:537
+#: ../bse/bsejanitor.c:538
 msgid "connection terminated"
 msgstr ""
 
-#: ../bse/bsejanitor.c:539
+#: ../bse/bsejanitor.c:540
 #, c-format
 msgid "%s (core dumped)"
 msgstr ""
@@ -5507,44 +5500,44 @@ msgid ""
 "Available MIDI drivers:\n"
 msgstr ""
 
-#: ../bse/bsemidicontroller.c:86
+#: ../bse/bsemidicontroller.c:87
 #, fuzzy
 msgid "/Input & Output/MIDI Control Input"
 msgstr "_Entrée & Sortie"
 
-#: ../bse/bsemidicontroller.c:137
+#: ../bse/bsemidicontroller.c:138
 #, fuzzy
 msgid "Ctrl Out1"
 msgstr "Ctrl In1"
 
-#: ../bse/bsemidicontroller.c:137
+#: ../bse/bsemidicontroller.c:138
 msgid "MIDI Signal 1"
 msgstr ""
 
-#: ../bse/bsemidicontroller.c:139
+#: ../bse/bsemidicontroller.c:140
 #, fuzzy
 msgid "Ctrl Out2"
 msgstr "Ctrl In2"
 
-#: ../bse/bsemidicontroller.c:139
+#: ../bse/bsemidicontroller.c:140
 msgid "MIDI Signal 2"
 msgstr ""
 
-#: ../bse/bsemidicontroller.c:141
+#: ../bse/bsemidicontroller.c:142
 #, fuzzy
 msgid "Ctrl Out3"
 msgstr "Entrée centre"
 
-#: ../bse/bsemidicontroller.c:141
+#: ../bse/bsemidicontroller.c:142
 msgid "MIDI Signal 3"
 msgstr ""
 
-#: ../bse/bsemidicontroller.c:143
+#: ../bse/bsemidicontroller.c:144
 #, fuzzy
 msgid "Ctrl Out4"
 msgstr "Entrée centre"
 
-#: ../bse/bsemidicontroller.c:143
+#: ../bse/bsemidicontroller.c:144
 msgid "MIDI Signal 4"
 msgstr ""
 
@@ -5564,122 +5557,122 @@ msgid ""
 "           read-only, read-write or write-only access."
 msgstr ""
 
-#: ../bse/bsemidiinput.c:82
+#: ../bse/bsemidiinput.c:83
 #, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "_Entrée & Sortie"
 
-#: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:157 ../bse/bsetrack.c:292
+#: ../bse/bsemidisynth.c:228 ../bse/bsesubsynth.c:158 ../bse/bsetrack.c:293
 #, fuzzy
 msgid "Available Synthesizers"
 msgstr "_Synchroniser"
 
-#: ../bse/bsemidisynth.c:227
+#: ../bse/bsemidisynth.c:228
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:139 ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:232 ../bse/bsesong.c:140 ../bse/bsetrack.c:297
 msgid "Available Postprocessors"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:139 ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:232 ../bse/bsesong.c:140 ../bse/bsetrack.c:297
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
-#: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:746
-#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
+#: ../bse/bsemidisynth.c:443 ../bse/bsemidisynth.c:448
+#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:747
+#: ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1023
 #, fuzzy
 msgid "MIDI Instrument"
 msgstr "Enregistrer l'instrument"
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:445 ../bse/bsetrack.c:1019
 #, fuzzy
 msgid "MIDI Channel"
 msgstr "Liste des canaux"
 
-#: ../bse/bsemidisynth.c:449
+#: ../bse/bsemidisynth.c:450
 msgid "Max Voices"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:513 ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:455 ../bse/bsesubsynth.c:514 ../bse/bsetrack.c:1004
 #, fuzzy
 msgid "Synthesizer"
 msgstr "_Synchroniser"
 
-#: ../bse/bsemidisynth.c:454
+#: ../bse/bsemidisynth.c:455
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:748 ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 #, fuzzy
 msgid "Postprocessor"
 msgstr "Procédure"
 
-#: ../bse/bsemidisynth.c:463
+#: ../bse/bsemidisynth.c:464
 #, fuzzy
 msgid "Master [float]"
 msgstr "Liste des canaux"
 
-#: ../bse/bsemidisynth.c:469
+#: ../bse/bsemidisynth.c:470
 msgid "Master [dB]"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:476
+#: ../bse/bsemidisynth.c:477
 #, fuzzy
 msgid "Master [%]"
 msgstr "Volume système"
 
-#: ../bse/bsemidisynth.c:480 ../bse/bsesong.c:750
+#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:751
 #, fuzzy
 msgid "Playback Settings"
 msgstr "Jouer : "
 
-#: ../bse/bsemidivoice.c:109 ../plugins/bsesequencer.c:106
+#: ../bse/bsemidivoice.c:111 ../plugins/bsesequencer.c:106
 #, fuzzy
 msgid "Freq Out"
 msgstr "Let It"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:598
+#: ../bse/bsemidivoice.c:113 ../bse/bsewaveosc.c:600
 #, fuzzy
 msgid "Gate Out"
 msgstr "Let It"
 
-#: ../bse/bsemidivoice.c:113
+#: ../bse/bsemidivoice.c:115
 #, fuzzy
 msgid "Velocity Out"
 msgstr "Let It"
 
-#: ../bse/bsemidivoice.c:115
+#: ../bse/bsemidivoice.c:117
 msgid "Aftertouch Out"
 msgstr ""
 
-#: ../bse/bsemidivoice.c:133 ../plugins/davcanyondelay.c:116
+#: ../bse/bsemidivoice.c:135 ../plugins/davcanyondelay.c:116
 #, fuzzy
 msgid "Left In"
 msgstr "Gauche"
 
-#: ../bse/bsemidivoice.c:135 ../plugins/davcanyondelay.c:118
+#: ../bse/bsemidivoice.c:137 ../plugins/davcanyondelay.c:118
 #, fuzzy
 msgid "Right In"
 msgstr "Droite"
 
-#: ../bse/bsemidivoice.c:137
+#: ../bse/bsemidivoice.c:139
 msgid "Disconnect In"
 msgstr ""
 
-#: ../bse/bsemidivoice.c:139 ../plugins/bsebalance.idl:40
+#: ../bse/bsemidivoice.c:141 ../plugins/bsebalance.idl:40
 #: ../plugins/davcanyondelay.c:120
 #, fuzzy
 msgid "Left Out"
 msgstr "Let It"
 
-#: ../bse/bsemidivoice.c:141 ../plugins/bsebalance.idl:42
+#: ../bse/bsemidivoice.c:143 ../plugins/bsebalance.idl:42
 #: ../plugins/davcanyondelay.c:122
 msgid "Right Out"
 msgstr "Sortie droite"
 
-#: ../bse/bsemidivoice.c:143
+#: ../bse/bsemidivoice.c:145
 msgid "Disconnect Out"
 msgstr ""
 
@@ -5727,26 +5720,26 @@ msgid ""
 "           adding \"hs\" forces hard sync on underruns.\n"
 msgstr ""
 
-#: ../bse/bsepcminput.c:85
+#: ../bse/bsepcminput.c:86
 #, fuzzy
 msgid "/Input & Output/PCM Input"
 msgstr "_Entrée & Sortie"
 
-#: ../bse/bsepcmoutput.c:85
+#: ../bse/bsepcmoutput.c:86
 #, fuzzy
 msgid "/Input & Output/PCM Output"
 msgstr "_Entrée & Sortie"
 
-#: ../bse/bsepcmoutput.c:130
+#: ../bse/bsepcmoutput.c:131
 #, fuzzy
 msgid "Right channel Input"
 msgstr "Bourrage de droite"
 
-#: ../bse/bseserver.c:144
+#: ../bse/bseserver.c:145
 msgid "WAVE File"
 msgstr ""
 
-#: ../bse/bseserver.c:145
+#: ../bse/bseserver.c:146
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
@@ -5847,277 +5840,285 @@ msgstr "La suppression de l'ancien fichier « %s » a échoué : %s"
 msgid "Show recording file errors"
 msgstr ""
 
-#: ../bse/bsesnooper.c:77
+#: ../bse/bsesnooper.c:78
 #, fuzzy
 msgid "/Misc/Snooper"
 msgstr "Alarme"
 
-#: ../bse/bsesnooper.c:108
+#: ../bse/bsesnooper.c:109
 msgid "Signal In"
 msgstr ""
 
-#: ../bse/bsesnooper.c:108
+#: ../bse/bsesnooper.c:109
 msgid "Snoop Signal"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: ../bse/bsesong.c:630
+#: ../bse/bsesong.c:631
 #, fuzzy
 msgid "Master"
 msgstr "Volume système"
 
-#: ../bse/bsesong.c:727 ../bse/bsesong.c:731 ../bse/bsesong.c:735
-#: ../bse/bsesong.c:739
+#: ../bse/bsesong.c:728 ../bse/bsesong.c:732 ../bse/bsesong.c:736
+#: ../bse/bsesong.c:740
 msgid "Timing"
 msgstr ""
 
-#: ../bse/bsesong.c:729
+#: ../bse/bsesong.c:730
 #, fuzzy
 msgid "Ticks"
 msgstr "Pistes"
 
-#: ../bse/bsesong.c:729
+#: ../bse/bsesong.c:730
 #, fuzzy
 msgid "Number of ticks per quarter note"
 msgstr "Insére des caractères"
 
-#: ../bse/bsesong.c:733
+#: ../bse/bsesong.c:734
 msgid "Numerator"
 msgstr ""
 
-#: ../bse/bsesong.c:733
+#: ../bse/bsesong.c:734
 msgid "Measure numerator"
 msgstr ""
 
-#: ../bse/bsesong.c:737
+#: ../bse/bsesong.c:738
 msgid "Denominator"
 msgstr ""
 
-#: ../bse/bsesong.c:737
+#: ../bse/bsesong.c:738
 msgid "Measure denominator, must be a power of 2"
 msgstr ""
 
-#: ../bse/bsesong.c:741
+#: ../bse/bsesong.c:742
 msgid "Beats per minute"
 msgstr ""
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:755 ../bse/bsesong.c:759 ../bse/bsesong.c:764
-#: ../bse/bsesong.c:769
+#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:765
+#: ../bse/bsesong.c:770
 msgid "Looping"
 msgstr ""
 
-#: ../bse/bsesong.proc:36
+#: ../bse/bsesong.proc:37
 msgid "Create a new mixer bus for a Song."
 msgstr ""
 
-#: ../bse/bsesong.proc:73
+#: ../bse/bsesong.proc:74
 msgid "Delete a mixer bus from a Song."
 msgstr ""
 
-#: ../bse/bsesong.proc:113
+#: ../bse/bsesong.proc:114
 msgid ""
 "Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr ""
 
-#: ../bse/bsesong.proc:140
+#: ../bse/bsesong.proc:141
 msgid "Retrieve master output bus of a song if it exists."
 msgstr ""
 
 #. TRANSLATORS: this is the name of the track that is used to automatically
 #. * adopt orphan (unlinked) parts.
 #.
-#: ../bse/bsesong.proc:171
+#: ../bse/bsesong.proc:172
 msgid "Orphan Parts"
 msgstr ""
 
-#: ../bse/bsesong.proc:209
+#: ../bse/bsesong.proc:210
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr ""
 
-#: ../bse/bsesong.proc:244
+#: ../bse/bsesong.proc:245
 msgid "Create a new Part in a Song."
 msgstr ""
 
-#: ../bse/bsesong.proc:275
+#: ../bse/bsesong.proc:276
 msgid "Delete a Part from a Song."
 msgstr ""
 
-#: ../bse/bsesong.proc:313
+#: ../bse/bsesong.proc:314
 #, fuzzy
 msgid "Create a new Track for a Song."
 msgstr "Ajouter un nouvel élement à ce menu"
 
-#: ../bse/bsesong.proc:349
+#: ../bse/bsesong.proc:350
 msgid "Delete a Track from a Song."
 msgstr ""
 
-#: ../bse/bsesong.proc:388
+#: ../bse/bsesong.proc:389
 msgid "Find a track suitable for playing notes of a given part."
 msgstr ""
 
-#: ../bse/bsesong.proc:431
+#: ../bse/bsesong.proc:432
 msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
 
-#: ../bse/bsesong.proc:458
+#: ../bse/bsesong.proc:459
 msgid "Synthesize a note on a song of an active project."
 msgstr ""
 
-#: ../bse/bsesong.proc:508
+#: ../bse/bsesong.proc:509
 msgid "Retrieve song timing information at a specific tick."
 msgstr ""
 
-#: ../bse/bsestandardosc.c:105
+#: ../bse/bsestandardosc.c:107
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
 msgstr ""
 
-#: ../bse/bsestandardosc.c:108
+#: ../bse/bsestandardosc.c:111
 #, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "Sources _audio"
 
-#: ../bse/bsestandardosc.c:129 ../bse/bsestandardosc.c:135
+#: ../bse/bsestandardosc.c:132 ../bse/bsestandardosc.c:138
 #, fuzzy
 msgid "Wave Form"
 msgstr "Onde"
 
-#: ../bse/bsestandardosc.c:131 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:558
-#: ../bse/bsewaveosc.c:560 ../bse/bsewaveosc.c:562
+#: ../bse/bsestandardosc.c:134 ../bse/bsetrack.c:1009 ../bse/bsewaveosc.c:560
+#: ../bse/bsewaveosc.c:562 ../bse/bsewaveosc.c:564
 msgid "Wave"
 msgstr "Wave"
 
-#: ../bse/bsestandardosc.c:131
+#: ../bse/bsestandardosc.c:134
 msgid "Oscillator wave form"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:140
 msgid "Phase"
 msgstr "Phase"
 
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:140
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:140 ../bse/bsestandardosc.c:144
-#: ../bse/bsestandardosc.c:148
+#: ../bse/bsestandardosc.c:143 ../bse/bsestandardosc.c:147
+#: ../bse/bsestandardosc.c:151 ../bse/bsestandardosc.c:156
 #, fuzzy
 msgid "Base Frequency"
 msgstr "Dernière féquence"
 
-#: ../bse/bsestandardosc.c:142
+#: ../bse/bsestandardosc.c:145
 msgid "Number of oscillator cycles per second"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:146
+#: ../bse/bsestandardosc.c:149
 msgid "Musical notation corresponding to the oscillator frequency"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:150
+#: ../bse/bsestandardosc.c:153
+msgid "Transpose"
+msgstr ""
+
+#: ../bse/bsestandardosc.c:153
+msgid "Transposition of the oscillator frequency in semitones"
+msgstr ""
+
+#: ../bse/bsestandardosc.c:158
 msgid "Fine Tune"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:150
-msgid "Amount of detuning in cent (hundredth part of a note)"
+#: ../bse/bsestandardosc.c:158
+msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:155 ../bse/bsewaveosc.c:568
+#: ../bse/bsestandardosc.c:163 ../bse/bsewaveosc.c:570
 msgid "Input Modulation [%]"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:160 ../bse/bsewaveosc.c:574
+#: ../bse/bsestandardosc.c:168 ../bse/bsewaveosc.c:576
 msgid "Exponential FM"
 msgstr "FM exponentiel"
 
-#: ../bse/bsestandardosc.c:165 ../bse/bsewaveosc.c:580
+#: ../bse/bsestandardosc.c:173 ../bse/bsewaveosc.c:582
 msgid "Octaves"
 msgstr "Octaves"
 
-#: ../bse/bsestandardosc.c:170
+#: ../bse/bsestandardosc.c:178
 msgid "Self Modulation [%]"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:170
+#: ../bse/bsestandardosc.c:178
 msgid "Strength of self modulation"
 msgstr ""
 
 #. disabled
-#: ../bse/bsestandardosc.c:173 ../bse/bsestandardosc.c:180
+#: ../bse/bsestandardosc.c:181 ../bse/bsestandardosc.c:188
 #, fuzzy
 msgid "Pulse Modulation"
 msgstr "Manipulation de la souris"
 
-#: ../bse/bsestandardosc.c:175
+#: ../bse/bsestandardosc.c:183
 #, fuzzy
 msgid "Pulse Width"
 msgstr "Largeur de touche"
 
-#: ../bse/bsestandardosc.c:176
+#: ../bse/bsestandardosc.c:184
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:182
+#: ../bse/bsestandardosc.c:190
 msgid "Pulse Modulation [%]"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:183
+#: ../bse/bsestandardosc.c:191
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:188
+#: ../bse/bsestandardosc.c:196
 msgid "Oscillating Frequency Input"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:192
+#: ../bse/bsestandardosc.c:200
 msgid "PWM In"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:192
+#: ../bse/bsestandardosc.c:200
 msgid "Pulse Width Modulation Input"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:202 ../bse/bsewaveosc.c:594
 msgid "Sync In"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:194 ../bse/bsewaveosc.c:592
+#: ../bse/bsestandardosc.c:202 ../bse/bsewaveosc.c:594
 #, fuzzy
 msgid "Syncronization Input"
 msgstr "Options de synchronisation"
 
-#: ../bse/bsestandardosc.c:196
+#: ../bse/bsestandardosc.c:204
 #, fuzzy
 msgid "Oscillated Output"
 msgstr "Dernier traitement"
 
-#: ../bse/bsestandardosc.c:198
+#: ../bse/bsestandardosc.c:206
 msgid "Sync Out"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:198
+#: ../bse/bsestandardosc.c:206
 #, fuzzy
 msgid "Syncronization Output"
 msgstr "Options de synchronisation"
 
-#: ../bse/bsesubiport.c:294 ../bse/bsesubsynth.c:541
+#: ../bse/bsesubiport.c:294 ../bse/bsesubsynth.c:542
 #, fuzzy, c-format
 msgid "Virtual input %u"
 msgstr "Premier point"
 
-#: ../bse/bsesubiport.c:301 ../bse/bsesubsynth.c:521
+#: ../bse/bsesubiport.c:301 ../bse/bsesubsynth.c:522
 #, fuzzy, c-format
 msgid "Input Port %u"
 msgstr "Entrée 2 [%]"
 
-#: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304 ../bse/bsesubsynth.c:511
+#: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304 ../bse/bsesubsynth.c:512
 #, fuzzy
 msgid "Assignments"
 msgstr "Alignement"
@@ -6127,52 +6128,52 @@ msgid ""
 "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 
-#: ../bse/bsesubiport.c:335
+#: ../bse/bsesubiport.c:336
 #, fuzzy
 msgid "/Virtualization/Virtual Input"
 msgstr "_Virtualisation"
 
-#: ../bse/bsesuboport.c:295 ../bse/bsesubsynth.c:548
+#: ../bse/bsesuboport.c:295 ../bse/bsesubsynth.c:549
 #, c-format
 msgid "Virtual output %u"
 msgstr ""
 
-#: ../bse/bsesuboport.c:302 ../bse/bsesubsynth.c:531
+#: ../bse/bsesuboport.c:302 ../bse/bsesubsynth.c:532
 #, fuzzy, c-format
 msgid "Output Port %u"
 msgstr "Sortie"
 
-#: ../bse/bsesuboport.c:336
+#: ../bse/bsesuboport.c:337
 #, fuzzy
 msgid "/Virtualization/Virtual Output"
 msgstr "_Virtualisation"
 
-#: ../bse/bsesubsynth.c:96
+#: ../bse/bsesubsynth.c:97
 #, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr "_Virtualisation"
 
-#: ../bse/bsesubsynth.c:157
+#: ../bse/bsesubsynth.c:158
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr ""
 
-#: ../bse/bsesubsynth.c:514
+#: ../bse/bsesubsynth.c:515
 msgid "Synthesis network to use as embedded sub network"
 msgstr ""
 
-#: ../bse/bsesubsynth.c:523
+#: ../bse/bsesubsynth.c:524
 msgid "Input Assignments"
 msgstr ""
 
-#: ../bse/bsesubsynth.c:524
+#: ../bse/bsesubsynth.c:525
 msgid "Output port name to interface from"
 msgstr ""
 
-#: ../bse/bsesubsynth.c:533
+#: ../bse/bsesubsynth.c:534
 msgid "Output Assignments"
 msgstr ""
 
-#: ../bse/bsesubsynth.c:534
+#: ../bse/bsesubsynth.c:535
 msgid "Input port name to interface to"
 msgstr ""
 
@@ -6203,101 +6204,101 @@ msgstr "Enregistrer la date de création"
 msgid "Last modification time"
 msgstr ", heure de modification"
 
-#: ../bse/bsetrack.c:283
+#: ../bse/bsetrack.c:284
 msgid "List of available waves to choose as track instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:292
+#: ../bse/bsetrack.c:293
 msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 
-#: ../bse/bsetrack.c:300
+#: ../bse/bsetrack.c:301
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 
-#: ../bse/bsetrack.c:999
+#: ../bse/bsetrack.c:1000
 msgid "Muted"
 msgstr ""
 
-#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1002 ../bse/bsetrack.c:1007 ../bse/bsetrack.c:1012
 #, fuzzy
 msgid "Synth Input"
 msgstr "Let It"
 
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsetrack.c:1004
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsetrack.c:1009
 #, fuzzy
 msgid "Wave to be used as instrument"
 msgstr "Enregistrer en tant qu'instrument"
 
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1014
 msgid "Max Voixes"
 msgstr ""
 
-#: ../bse/bsetrack.c:1019
+#: ../bse/bsetrack.c:1020
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsetrack.c:1030
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:306
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:95
+#: ../bse/bsewaveosc.c:96
 #, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
 msgstr "Sources _audio"
 
-#: ../bse/bsewaveosc.c:127
+#: ../bse/bsewaveosc.c:128
 msgid "List of available waves to choose as oscillator source"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:560
+#: ../bse/bsewaveosc.c:562
 msgid "Wave used as oscillator source"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:566
 #, fuzzy
 msgid "Channel"
 msgstr "Liste des canaux"
 
-#: ../bse/bsewaveosc.c:564
+#: ../bse/bsewaveosc.c:566
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:569
+#: ../bse/bsewaveosc.c:571
 #, fuzzy
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Violation de segmentation"
 
-#: ../bse/bsewaveosc.c:590 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #, fuzzy
 msgid "Frequency Input"
 msgstr "Entrée centre"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:596
 #, fuzzy
 msgid "Mod In"
 msgstr "Plus d'Info"
 
-#: ../bse/bsewaveosc.c:594
+#: ../bse/bsewaveosc.c:596
 #, fuzzy
 msgid "Modulation Input"
 msgstr "Modulation"
 
-#: ../bse/bsewaveosc.c:596
+#: ../bse/bsewaveosc.c:598
 #, fuzzy
 msgid "Wave Output"
 msgstr "Sortie"
 
-#: ../bse/bsewaveosc.c:598
+#: ../bse/bsewaveosc.c:600
 #, fuzzy
 msgid "Gate Output"
 msgstr "Supprimer le bouton"
@@ -7179,43 +7180,44 @@ msgstr "Let It"
 msgid "Right Output"
 msgstr "Sortie droite"
 
-#. SFI_MSG_FATAL (always enabled)
-#: ../sfi/sfilog.c:71
-msgid "Fatal Error"
-msgstr ""
-
-#. SFI_MSG_ERROR (enabled)
-#: ../sfi/sfilog.c:75
-#, fuzzy
-msgid "Error"
-msgstr "Erreur"
-
-#. SFI_MSG_WARNING (enabled)
-#: ../sfi/sfilog.c:79
-msgid "Warning"
-msgstr "Avertissement"
-
-#. SFI_MSG_SCRIPT (enabled)
-#: ../sfi/sfilog.c:83
-#, fuzzy
-msgid "Script"
-msgstr "Scripts"
-
-#. SFI_MSG_INFO (enabled)
-#: ../sfi/sfilog.c:87
-#, fuzzy
-msgid "Information"
-msgstr "Emplacement"
-
-#. SFI_MSG_DIAG (enabled)
-#: ../sfi/sfilog.c:91
-msgid "Diagnostic"
-msgstr ""
-
-#: ../tools/bsewavetool.cc:930
+#: ../tools/bsewavetool.cc:934
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "La suppression de l'ancien fichier « %s » a échoué : %s"
+
+#, fuzzy
+#~ msgid "BEAST-%s Release Notes"
+#~ msgstr "_Notes de version de Nautilus"
+
+#~ msgid "Properties:"
+#~ msgstr "Propriétés :"
+
+#~ msgid "Description:"
+#~ msgstr "Description :"
+
+#, fuzzy
+#~ msgid "Signals:"
+#~ msgstr "Entrée audio"
+
+#, fuzzy
+#~ msgid "Input Channels:"
+#~ msgstr "Inverser le canal"
+
+#, fuzzy
+#~ msgid "(Joint Input)"
+#~ msgstr "Entrée phone"
+
+#, fuzzy
+#~ msgid "Output Channels:"
+#~ msgstr "Niveau de sortie :"
+
+#, fuzzy
+#~ msgid "BSE-Objects"
+#~ msgstr "Objets"
+
+#, fuzzy
+#~ msgid " Object Reference"
+#~ msgstr "Fonctions de référence d'objets"
 
 #, fuzzy
 #~ msgid "Selection to Loop"
