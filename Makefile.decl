@@ -1,0 +1,11 @@
+# BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
+# Copyright (C) 2006 Tim Janik
+#
+## GNU Lesser General Public License version 2 or any later version.
+
+# declare variables that we might want to use += on.
+INCLUDES=
+MAINTAINERCLEANFILES=
+CLEANFILES=
+EXTRA_HEADERS=
+EXTRA_DIST=
