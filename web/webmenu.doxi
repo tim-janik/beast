@@ -61,6 +61,7 @@
 	@item 	@fmenuuri{@top_webdir/bse-objects.html,			BSE Objects}
 	@item 	@fmenuuri{@top_webdir/bse-interface.html,	  	BSE Interface}
 	@item 	@fmenuuri{@top_webdir/rdocu-sfi/,	  		SFI Functions}
+	@item 	@fmenuuri{@top_webdir/rdocu-birnet/,	  		BIRNET Functions}
 	@done
     @done
 @item 		@dmenuuri{@top_webdir/resources.html, 		Resources}
@@ -79,6 +80,7 @@
 	@item 	@fmenuuri{@top_webdir/log-plugins.html,			Plugin Changes}
 	@item 	@fmenuuri{@top_webdir/log-bse.html,			BSE Changes}
 	@item 	@fmenuuri{@top_webdir/log-sfi.html,			SFI Changes}
+	@item 	@fmenuuri{@top_webdir/log-birnet.html,			BIRNET Changes}
 	@item 	@doxer_span{menu-leaf,				BEAST/BSE Development}
 	@item 	@fmenuuri{@top_webdir/architecture.html,		Architecture}
 	@item 	@fmenuuri{@top_webdir/plugin-devel.html,		Writing Plugins}

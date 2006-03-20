@@ -52,21 +52,23 @@ HTML_TARGETS = $(strip			\
 	html/log-bse.html		\
 	html/log-plugins.html		\
 	html/log-sfi.html		\
+	html/log-birnet.html		\
 	\
 	html/bse-objects.html		\
 	html/bse-interface.html		\
 )
 RDOCU_TARGETS = $(strip			\
+	html/rdocu-birnet/index.html	\
 	html/rdocu-sfi/index.html	\
 	html/rdocu-bse/index.html	\
 	html/rdocu-gxk/index.html	\
 )
-TARGET_DIRS = $(strip					\
-	php/ html/ html/style/				\
-	html/web-images/ html/images/			\
-	html/screenshots/ html/logogallery/		\
-	tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/		\
-	html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/	\
+TARGET_DIRS = $(strip								\
+	php/ html/ html/style/							\
+	html/web-images/ html/images/						\
+	html/screenshots/ html/logogallery/					\
+	tmpdoxi-birnet/ tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/			\
+	html/rdocu-birnet/ html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/	\
 )
 ${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi ../docs/beastdefs.doxi
 
@@ -158,12 +160,20 @@ html/%.html: %.tmpdoxi
 	$(DOXER) doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
 
 CHANGELOG2DOXI = $(top_srcdir)/doxer/changelog2doxi.py
-log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
+log-birnet.tmpdoxi: $(top_srcdir)/birnet/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
-	&& echo '@doxer_set{title} BEAST - ChangeLog'		>>$@ \
+	&& echo '@doxer_set{title} BEAST - BIRNET ChangeLog'	>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& $(CHANGELOG2DOXI) 		<$<			>>$@
+log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - SFI ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
 log-bse.tmpdoxi: $(top_srcdir)/bse/ChangeLog $(CHANGELOG2DOXI)
@@ -182,12 +192,12 @@ log-plugins.tmpdoxi: $(top_srcdir)/plugins/ChangeLog $(CHANGELOG2DOXI)
 	&& echo '@doxer_set{title} BEAST - Plugin ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
-log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
+log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
-	&& echo '@doxer_set{title} BEAST - SFI ChangeLog'	>>$@ \
+	&& echo '@doxer_set{title} BEAST - ChangeLog'		>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
 
@@ -195,12 +205,27 @@ log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
 .PHONY: PHONY-TARGET
 
 # Reference Documentation
-../docs/psource/bse-interface.psrc \
-../docs/psource/bse-objects.psrc \
+../docs/psource/birnet.psrc \
 ../docs/psource/sfi.psrc \
 ../docs/psource/bse.psrc \
+../docs/psource/bse-interface.psrc \
+../docs/psource/bse-objects.psrc \
 ../docs/psource/gxk.psrc: PHONY-TARGET
 	@$(MAKE) -C ../docs $(patsubst ../docs/%, %, $@)
+# BIRNET reference docu
+tmpdoxi-birnet/index.doxi: ../docs/psource/birnet.psrc ../docs/docu-template.doxi
+	rm -f tmpdoxi-birnet/*
+	$(DOXER) pickle2doxi $(strip -i	$<	-D TOP_WEBDIR ".."		\
+	         -d tmpdoxi-birnet/ $(DOXIDEFS) -T ../docs/docu-template.doxi	\
+	         -D DOCU_TEMPLATE_TITLE "BEAST - BIRNET Interface Reference"  	\
+	         -D DOCU_TEMPLATE_HEADING "BIRNET Interface Reference" )
+html/rdocu-birnet/index.html: tmpdoxi-birnet/index.doxi $(wildcard tmpdoxi-birnet/*.doxi)
+	rm -f html/rdocu-birnet/*
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-birnet/ $(DOXIDEFS) $(call DOCFRAME_DEFS)	\
+	         $(filter-out $<, $(shell echo tmpdoxi-birnet/*.doxi)) )
+	$(DOXER) doxi2html $(strip			-D TOP_WEBDIR ".."	\
+	         -d html/rdocu-birnet/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 # SFI reference docu
 tmpdoxi-sfi/index.doxi: ../docs/psource/sfi.psrc ../docs/docu-template.doxi
 	rm -f tmpdoxi-sfi/*
@@ -245,20 +270,21 @@ html/rdocu-bse/index.html: tmpdoxi-bse/index.doxi $(wildcard tmpdoxi-bse/*.doxi)
 	         -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 
 intermediate_files = $(strip	\
-	log-beast.tmpdoxi	\
+	log-birnet.tmpdoxi	\
+	log-sfi.tmpdoxi		\
 	log-bse.tmpdoxi		\
 	log-plugins.tmpdoxi	\
-	log-sfi.tmpdoxi		\
+	log-beast.tmpdoxi	\
 )
 .INTERMEDIATE: $(intermediate_files)
 
 clean:
 	rm -fr html/style/
 	rm -fr html/screenshots/ html/logogallery/ html/web-images/ html/images/
-	rm -f html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
-	-rmdir -p html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
-	rm -f tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
-	-rmdir -p tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
+	rm -f html/rdocu-birnet/* html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
+	-rmdir -p html/rdocu-birnet/ html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
+	rm -f tmpdoxi-birnet/* tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
+	-rmdir -p tmpdoxi-birnet/ tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
 	rm -f html/* html/.htaccess html/robots.txt html/favicon.ico
 	-rmdir -p html/
 	rm -f php/*

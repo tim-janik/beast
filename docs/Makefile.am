@@ -35,6 +35,7 @@ STYLE_TARGETS = $(strip				\
 )
 CLEANFILES += ${STYLE_TARGETS}
 PSOURCE_TARGETS = $(strip			\
+	psource/birnet.psrc			\
 	psource/sfi.psrc			\
 	psource/bse.psrc			\
 	psource/gxk.psrc			\
@@ -129,6 +130,13 @@ gendoxi/bse-interface.doxi: psource/bse-interface.psrc docu-template.doxi
 AUTODOC = $(top_builddir)/bse/bseautodoc
 has_docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
 make_psource = $(strip $(DOXER) src2pickle -o $(1) $(DOXIDEFS) $(2))
+# BIRNET reference docu
+birnet_rdocu_globs = $(top_srcdir)/birnet/birnet*.[hc] $(top_srcdir)/birnet/birnet*.[hc][hc]
+birnet_rdocu_exclude = birnetconfig.h
+birnet_rdocu_files = $(filter-out $(foreach f, $(birnet_rdocu_exclude), $(wildcard $(top_srcdir)/birnet/$(f))), $(wildcard $(birnet_rdocu_globs)))
+psource/birnet.psrc: $(birnet_rdocu_files)
+	@mkdir -p psource/
+	$(call make_psource, $@, $(filter %.h %.hh, $(birnet_rdocu_files)) -Y $(filter-out %.h %.hh, $(birnet_rdocu_files)) )
 # SFI reference docu
 sfi_rdocu_globs = $(top_srcdir)/sfi/sfi*.[hc]
 sfi_rdocu_exclude = sfidl*.*

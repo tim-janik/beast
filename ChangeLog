@@ -1,3 +1,9 @@
+Tue Mar 21 00:55:27 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am:
+	* web/Makefile.am:
+	* web/webmenu.doxi: generate documentation for birnet/.
+
 Sun Mar 12 12:21:40 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl: declare variables that are used in += statements.
