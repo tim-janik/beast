@@ -1,4 +1,5 @@
 RELEASE(0.6.7):
+-  fix birnet_thread_run uses (unref thread)
 - get rid of sfimemory
 - fix beast popping up a help browser for release notes when new beast is installed
 - BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
@@ -21,6 +22,10 @@ MISC:
 - print detail score with loop range (in progress printing)
 - save detail_names as comment with scroe_details
 - adjust inner loop abortion according to normed score values
+- THREADING: benchmark TLS vs. g_*private_set()/pthread_setspecific()
+- THREADING: make Birnet::Thread provide DataListContainer functionally, albeit thread-safe
+- THREADING: implement a --force-gthread-table option and use it for a test in make check
+- THREADING: properly document guards and wrap them in C++
 MODULES:
 - trigger-button module
 - joystick module
