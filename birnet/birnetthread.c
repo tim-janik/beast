@@ -37,23 +37,27 @@
 
 #define HAVE_GSLICE     (GLIB_MAJOR_VERSION >= 2 && GLIB_MINOR_VERSION >= 9)
 
+#define FLOATING_FLAG                           (1 << 31)
+#define THREAD_REF_COUNT(thread)                (thread->ref_field & ~FLOATING_FLAG)
+#define THREAD_CAS(thread, oldval, newval)      g_atomic_int_compare_and_exchange ((int*) &thread->ref_field, oldval, newval)
+
 /* --- structures --- */
 struct _BirnetThread
 {
-  gchar		 *name;
-  BirnetThreadFunc	  func;
-  gpointer	  data;
-  gint8		  aborted;
-  gint8		  got_wakeup;
-  gint8           accounting;
-  BirnetCond	  wakeup_cond;
-  BirnetThreadWakeup wakeup_func;
-  gpointer	  wakeup_data;
-  GDestroyNotify  wakeup_destroy;
-  guint64	  awake_stamp;
-  GData		 *qdata;
-  gint            tid;
-  volatile void*  guard_cache;
+  void                  *threadxx;
+  volatile uint32        ref_field;
+  gchar		        *name;
+  gint8		         aborted;
+  gint8		         got_wakeup;
+  gint8                  accounting;
+  volatile void*         guard_cache;
+  BirnetCond	         wakeup_cond;
+  BirnetThreadWakeup     wakeup_func;
+  gpointer	         wakeup_data;
+  GDestroyNotify         wakeup_destroy;
+  guint64	         awake_stamp;
+  gint                   tid;
+  GData		        *qdata;
   /* accounting */
   struct {
     struct timeval stamp;
@@ -70,8 +74,13 @@ struct _BirnetThread
 };
 
 /* --- prototypes --- */
-static void     birnet_guard_deregister_all     (BirnetThread      *thread);
-static void	birnet_thread_handle_deleted	(BirnetThread	*thread);
+static void             birnet_guard_deregister_all     (BirnetThread *thread);
+static void	        birnet_thread_handle_exit	(BirnetThread *thread);
+static void             birnet_thread_accounting_L      (BirnetThread *self,
+                                                         bool          force_update);
+static void             thread_get_tid                  (BirnetThread *thread);
+static inline guint     cached_getpid                   (void);
+
 
 /* --- variables --- */
 static BirnetMutex global_thread_mutex = { 0, };
@@ -83,250 +92,85 @@ BirnetThreadTable  birnet_thread_table = { NULL, };
 
 
 /* --- functions --- */
-static BirnetThread*
-birnet_thread_handle_new (const gchar *name)
+BirnetThread*
+birnet_thread_new (const gchar *name)
 {
+  g_return_val_if_fail (name && name[0], NULL);
   BirnetThread *thread;
-  
 #if HAVE_GSLICE
   thread = g_slice_new0 (BirnetThread);
 #else
   thread = g_new0 (BirnetThread, 1);
 #endif
-  thread->func = NULL;
-  thread->data = NULL;
+
+  thread->threadxx = NULL;
+  thread->ref_field = FLOATING_FLAG + 1;
+  thread->name = g_strdup (name);
   thread->aborted = FALSE;
   thread->got_wakeup = FALSE;
+  thread->accounting = 0;
+  thread->guard_cache = NULL;
   birnet_cond_init (&thread->wakeup_cond);
   thread->wakeup_func = NULL;
   thread->wakeup_destroy = NULL;
+  thread->awake_stamp = 0;
   thread->tid = -1;
-  if (!name)
-    {
-      static guint anon_count = 1;
-      guint id;
-      birnet_mutex_lock (&global_thread_mutex);
-      id = anon_count++;
-      birnet_mutex_unlock (&global_thread_mutex);
-      thread->name = g_strdup_printf ("Foreign%u", id);
-    }
-  else
-    thread->name = g_strdup (name);
   g_datalist_init (&thread->qdata);
   return thread;
 }
 
-static void
-birnet_thread_handle_free (BirnetThread *thread)
+BirnetThread*
+birnet_thread_ref (BirnetThread *thread)
 {
-  g_datalist_clear (&thread->qdata);
-  birnet_cond_destroy (&thread->wakeup_cond);
-  g_free (thread->name);
-  thread->name = NULL;
+  g_return_val_if_fail (thread != NULL, NULL);
+  BIRNET_ASSERT (THREAD_REF_COUNT (thread) > 0);
+  uint32 old_ref, new_ref;
+  do {
+    old_ref = g_atomic_int_get (&thread->ref_field);
+    new_ref = old_ref + 1;
+    BIRNET_ASSERT (new_ref & ~FLOATING_FLAG); /* catch overflow */
+  } while (!THREAD_CAS (thread, old_ref, new_ref));
+  return thread;
+}
+
+BirnetThread*
+birnet_thread_ref_sink (BirnetThread *thread)
+{
+  g_return_val_if_fail (thread != NULL, NULL);
+  BIRNET_ASSERT (THREAD_REF_COUNT (thread) > 0);
+  birnet_thread_ref (thread);
+  uint32 old_ref, new_ref;
+  do {
+    old_ref = g_atomic_int_get (&thread->ref_field);
+    new_ref = old_ref & ~FLOATING_FLAG;
+  } while (!THREAD_CAS (thread, old_ref, new_ref));
+  if (old_ref & FLOATING_FLAG)
+    birnet_thread_unref (thread);
+  return thread;
+}
+
+void
+birnet_thread_unref (BirnetThread *thread)
+{
+  BIRNET_ASSERT (THREAD_REF_COUNT (thread) > 0);
+  uint32 old_ref, new_ref;
+  do {
+    old_ref = g_atomic_int_get (&thread->ref_field);
+    BIRNET_ASSERT (old_ref & ~FLOATING_FLAG); /* catch underflow */
+    new_ref = old_ref - 1;
+  } while (!THREAD_CAS (thread, old_ref, new_ref));
+  if (0 == (new_ref & ~FLOATING_FLAG))
+    {
+      g_datalist_clear (&thread->qdata);
+      birnet_cond_destroy (&thread->wakeup_cond);
+      g_free (thread->name);
+      thread->name = NULL;
 #if HAVE_GSLICE
-  g_slice_free (BirnetThread, thread);
+      g_slice_free (BirnetThread, thread);
 #else
-  g_free (thread);
+      g_free (thread);
 #endif
-}
-
-static inline guint
-cached_getpid (void)
-{
-  static pid_t cached_pid = 0;
-  if (G_UNLIKELY (!cached_pid))
-    cached_pid = getpid();
-  return cached_pid;
-}
-
-#ifdef  __linux__
-#include <sys/types.h>
-#include <sys/syscall.h>
-#include <linux/unistd.h>
-#endif
-static void
-thread_get_tid (BirnetThread *thread)
-{
-  gint ppid = thread->tid;      /* creator process id */
-  gint tid = -1;
-  
-#if     defined (__linux__) && defined (__NR_gettid)    /* present on linux >= 2.4.20 */
-  tid = syscall (__NR_gettid);
-#endif
-  if (tid < 0)
-    tid = cached_getpid();
-  if (tid != ppid &&            /* thread pid different from creator pid, probably correct */
-      tid > 0)
-    thread->tid = tid;
-  else
-    thread->tid = 0;            /* failed to figure id */
-}
-
-static inline unsigned long long int
-timeval_usecs (const struct timeval *tv)
-{
-  return tv->tv_usec + tv->tv_sec * (guint64) 1000000;
-}
-
-static void
-thread_info_from_stat_L (BirnetThread *self,
-                         double     usec_norm)
-{
-  int pid = -1, ppid = -1, pgrp = -1, session = -1, tty_nr = -1, tpgid = -1;
-  int exit_signal = 0, processor = 0;
-  long cutime = 0, cstime = 0, priority = 0, nice = 0, dummyld = 0;
-  long itrealvalue = 0, rss = 0;
-  unsigned long flags = 0, minflt = 0, cminflt = 0, majflt = 0, cmajflt = 0;
-  unsigned long utime = 0, stime = 0, vsize = 0, rlim = 0, startcode = 0;
-  unsigned long endcode = 0, startstack = 0, kstkesp = 0, kstkeip = 0;
-  unsigned long signal = 0, blocked = 0, sigignore = 0, sigcatch = 0;
-  unsigned long wchan = 0, nswap = 0, cnswap = 0, rt_priority = 0, policy = 0;
-  unsigned long long starttime = 0;
-  char state = 0, command[8192 + 1] = { 0 };
-  FILE *file = NULL;
-  int n = 0;
-  static int have_stat = 1;
-  if (have_stat)
-    {
-      gchar *filename = g_strdup_printf ("/proc/%u/task/%u/stat", cached_getpid(), self->tid);
-      file = fopen (filename, "r");
-      g_free (filename);
-      if (!file)
-        have_stat = 0;  /* reading /proc/self/stat should always succeed, so try only once */
     }
-  if (file)
-    n = fscanf (file,
-                "%d %8192s %c "
-                "%d %d %d %d %d "
-                "%lu %lu %lu %lu %lu %lu %lu "
-                "%ld %ld %ld %ld %ld %ld "
-                "%llu %lu %ld "
-                "%lu %lu %lu %lu %lu "
-                "%lu %lu %lu %lu %lu "
-                "%lu %lu %lu %d %d "
-                "%lu %lu",
-                &pid, command, &state, /* n=3 */
-                &ppid, &pgrp, &session, &tty_nr, &tpgid, /* n=8 */
-                &flags, &minflt, &cminflt, &majflt, &cmajflt, &utime, &stime, /* n=15 */
-                &cutime, &cstime, &priority, &nice, &dummyld, &itrealvalue, /* n=21 */
-                &starttime, &vsize, &rss, /* n=24 */
-                &rlim, &startcode, &endcode, &startstack, &kstkesp, /* n=29 */
-                &kstkeip, &signal, &blocked, &sigignore, &sigcatch, /* n=34 */
-                &wchan, &nswap, &cnswap, &exit_signal, &processor, /* n=39 */
-                &rt_priority, &policy /* n=41 */
-                );
-  if (file)
-    fclose (file);
-
-  if (n >= 15)
-    {
-      self->ac.utime = utime * 10000;
-      self->ac.stime = stime * 10000;
-    }
-  if (n >= 17)
-    {
-      self->ac.cutime = cutime * 10000;
-      self->ac.cstime = cstime * 10000;
-    }
-  if (n >= 3)
-    self->info.state = state;
-  if (n >= 39)
-    self->info.processor = 1 + processor;
-}
-
-#define ACCOUNTING_MSECS        (500)
-
-static inline void
-birnet_thread_accounting_L (BirnetThread *self,
-                         gboolean   force_update)
-{
-  struct timeval stamp, ostamp = self->ac.stamp;
-  guint diff = 0;
-  if (self->accounting)
-    {
-      gettimeofday (&stamp, NULL);
-      diff = timeval_usecs (&stamp) - timeval_usecs (&ostamp);
-      diff = MAX (diff, 0);
-    }
-  if (force_update || diff >= ACCOUNTING_MSECS * 1000)  /* limit accounting to a few times per second */
-    {
-      gint64 old_utime = self->ac.utime;
-      gint64 old_stime = self->ac.stime;
-      gint64 old_cutime = self->ac.cutime;
-      gint64 old_cstime = self->ac.cstime;
-      gdouble dfact = 1000000.0 / MAX (diff, 1);
-      self->ac.stamp = stamp;
-      if (0)
-        {
-          struct rusage res = { { 0 } };
-          getrusage (RUSAGE_SELF, &res);
-          self->ac.utime = timeval_usecs (&res.ru_utime); /* user time used */
-          self->ac.stime = timeval_usecs (&res.ru_stime); /* system time used */
-          getrusage (RUSAGE_CHILDREN, &res);
-          self->ac.cutime = timeval_usecs (&res.ru_utime);
-          self->ac.cstime = timeval_usecs (&res.ru_stime);
-        }
-      thread_info_from_stat_L (self, dfact);
-      self->info.priority = getpriority (PRIO_PROCESS, self->tid);
-      self->info.utime = MAX (self->ac.utime - old_utime, 0) * dfact;
-      self->info.stime = MAX (self->ac.stime - old_stime, 0) * dfact;
-      self->info.cutime = MAX (self->ac.cutime - old_cutime, 0) * dfact;
-      self->info.cstime = MAX (self->ac.cstime - old_cstime, 0) * dfact;
-      self->accounting--;
-    }
-}
-
-static gpointer
-birnet_thread_exec (gpointer thread)
-{
-  BirnetThread *self;
-  birnet_thread_table.thread_set_handle (thread);
-  
-  self = birnet_thread_self ();
-  g_assert (self == thread);
-  
-  thread_get_tid (thread);
-  
-  birnet_mutex_lock (&global_thread_mutex);
-  global_thread_list = birnet_ring_append (global_thread_list, self);
-  self->accounting = 1;
-  birnet_thread_accounting_L (self, TRUE);
-  birnet_cond_broadcast (&global_thread_cond);
-  birnet_mutex_unlock (&global_thread_mutex);
-
-  birnet_mutex_lock (&global_startup_mutex);
-  /* wait for birnet_thread_run() to finish */
-  birnet_mutex_unlock (&global_startup_mutex);
-  
-  self->func (self->data);
-
-  /* birnet_thread_handle_deleted() does final destruction */
-  return NULL;
-}
-
-static void
-birnet_thread_handle_deleted (BirnetThread *thread)
-{
-  thread->wakeup_func = NULL;
-  if (thread->wakeup_destroy)
-    {
-      GDestroyNotify wakeup_destroy = thread->wakeup_destroy;
-      thread->wakeup_destroy = NULL;
-      wakeup_destroy (thread->wakeup_data);
-    }
-  
-  g_datalist_clear (&thread->qdata);
-  
-  birnet_guard_deregister_all (thread);
-
-  birnet_mutex_lock (&global_thread_mutex);
-  global_thread_list = birnet_ring_remove (global_thread_list, thread);
-  if (thread->awake_stamp)
-    thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
-  birnet_cond_broadcast (&global_thread_cond);
-  birnet_mutex_unlock (&global_thread_mutex);
-
-  birnet_thread_handle_free (thread);
 }
 
 static void
@@ -342,6 +186,139 @@ filter_priority_warning (const gchar    *log_domain,
     g_log_default_handler (log_domain, log_level, message, unused_data);
 }
 
+static gpointer
+birnet_thread_exec (gpointer data)
+{
+  void           **tfdx      = data;
+  BirnetThread    *thread    = tfdx[0];
+  BirnetThreadFunc func      = tfdx[1];
+  gpointer         user_data = tfdx[2];
+  birnet_thread_table.thread_set_handle (thread);
+  
+  BirnetThread *self = birnet_thread_self ();
+  g_assert (self == thread);
+  
+  thread_get_tid (thread);
+
+  birnet_thread_ref (thread);
+  
+  birnet_mutex_lock (&global_thread_mutex);
+  global_thread_list = birnet_ring_append (global_thread_list, self);
+  self->accounting = 1;
+  birnet_thread_accounting_L (self, TRUE);
+  birnet_cond_broadcast (&global_thread_cond);
+  birnet_mutex_unlock (&global_thread_mutex);
+  /* here, tfdx contents have become invalid */
+
+  birnet_mutex_lock (&global_startup_mutex);
+  /* acquiring this mutex waits for birnet_thread_run() to figure inlist (global_thread_list, self) */
+  birnet_mutex_unlock (&global_startup_mutex);
+  
+  func (user_data);
+  g_datalist_clear (&thread->qdata);
+
+  /* because func() can be prematurely exited via pthread_exit(),
+   * birnet_thread_handle_exit() does unref and final destruction
+   */
+  return NULL;
+}
+
+static void
+birnet_thread_handle_exit (BirnetThread *thread)
+{
+  /* run custom data cleanup handlers */
+  g_datalist_clear (&thread->qdata);
+  /* cleanup wakeup hook */
+  thread->wakeup_func = NULL;
+  while (thread->wakeup_destroy)
+    {
+      GDestroyNotify wakeup_destroy = thread->wakeup_destroy;
+      thread->wakeup_destroy = NULL;
+      wakeup_destroy (thread->wakeup_data);
+    }
+  /* cleanup custom data from destruction phase */
+  g_datalist_clear (&thread->qdata);
+
+  /* regular cleanup code, all custom hooks have been processed now */
+  birnet_guard_deregister_all (thread);
+  birnet_mutex_lock (&global_thread_mutex);
+  global_thread_list = birnet_ring_remove (global_thread_list, thread);
+  if (thread->awake_stamp)
+    thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
+  birnet_cond_broadcast (&global_thread_cond);
+  birnet_mutex_unlock (&global_thread_mutex);
+  /* free thread structure */
+  birnet_thread_unref (thread);
+}
+
+/**
+ * @param thread        a valid, unstarted BirnetThread
+ * @param func	        function to execute in new thread
+ * @param user_data     user data to pass into @a func
+ * @param returns       FALSE in case of error
+ *
+ * Create a new thread running @a func.
+ */
+bool
+birnet_thread_start (BirnetThread    *thread,
+                     BirnetThreadFunc func,
+                     gpointer         user_data)
+{
+  GThread *gthread = NULL;
+  GError *gerror = NULL;
+  
+  g_return_val_if_fail (thread != NULL, FALSE);
+  g_return_val_if_fail (thread->tid == -1, FALSE);
+  g_return_val_if_fail (func != NULL, FALSE);
+  
+  birnet_thread_ref (thread);
+
+  /* silence those stupid priority warnings triggered by glib */
+  guint hid = g_log_set_handler ("GLib", G_LOG_LEVEL_WARNING, filter_priority_warning, NULL);
+
+  /* thread creation context, protection by global_startup_mutex */
+  birnet_mutex_lock (&global_startup_mutex);
+  void **tfdx = g_new0 (void*, 4);
+  tfdx[0] = thread;
+  tfdx[1] = func;
+  tfdx[2] = user_data;
+  tfdx[3] = NULL;
+  
+  thread->tid = cached_getpid();
+
+  /* don't dare setting joinable to TRUE, that prevents the thread's
+   * resources from being freed, since we don't offer pthread_join().
+   * so we'd just run out of stack at some point.
+   */
+  const gboolean joinable = FALSE;
+  gthread = g_thread_create_full (birnet_thread_exec, tfdx, 0, joinable, FALSE,
+                                  G_THREAD_PRIORITY_NORMAL, &gerror);
+  if (gthread)
+    {
+      birnet_mutex_lock (&global_thread_mutex);
+      while (!birnet_ring_find (global_thread_list, thread))
+	birnet_cond_wait (&global_thread_cond, &global_thread_mutex);
+      birnet_mutex_unlock (&global_thread_mutex);
+    }
+  else
+    {
+      thread->tid = -1;
+      g_message ("failed to create thread \"%s\": %s", thread->name, gerror->message);
+      g_error_free (gerror);
+    }
+
+  /* let the new thread actually start out */
+  birnet_mutex_unlock (&global_startup_mutex);
+
+  /* withdraw warning filter */
+  g_free (tfdx);
+  g_log_remove_handler ("GLib", hid);
+
+  birnet_thread_unref (thread);
+
+  return gthread != NULL;
+}
+
 /**
  * @param name	     thread name
  * @param func	     function to execute in new thread
@@ -355,59 +332,17 @@ birnet_thread_run (const gchar     *name,
                    BirnetThreadFunc func,
                    gpointer         user_data)
 {
-  GThread *gthread = NULL;
-  BirnetThread *thread;
-  GError *gerror = NULL;
-  guint hid = 0;
-  
-  g_return_val_if_fail (func != NULL, FALSE);
-  
-  /* silence those stupid priority warnings triggered by glib */
-  hid = g_log_set_handler ("GLib", G_LOG_LEVEL_WARNING, filter_priority_warning, NULL);
-  birnet_mutex_lock (&global_startup_mutex);
+  g_return_val_if_fail (name && name[0], NULL);
 
-  /* create thread */
-  thread = birnet_thread_handle_new (name);
-  if (thread)
-    {
-      const gboolean joinable = FALSE;
-      
-      /* don't dare setting joinable to TRUE, that prevents the thread's
-       * resources from being freed, since we don't offer pthread_join().
-       * so we'd just run out of stack at some point.
-       */
-      thread->func = func;
-      thread->data = user_data;
-      thread->tid = cached_getpid();
-      gthread = g_thread_create_full (birnet_thread_exec, thread, 0, joinable, FALSE,
-				      G_THREAD_PRIORITY_NORMAL, &gerror);
-    }
-  
-  if (gthread)
-    {
-      birnet_mutex_lock (&global_thread_mutex);
-      while (!birnet_ring_find (global_thread_list, thread))
-	birnet_cond_wait (&global_thread_cond, &global_thread_mutex);
-      birnet_mutex_unlock (&global_thread_mutex);
-    }
+  BirnetThread *thread = birnet_thread_new (name);
+  birnet_thread_ref_sink (thread);
+  if (birnet_thread_start (thread, func, user_data))
+    return thread;
   else
     {
-      if (thread)
-        birnet_thread_handle_free (thread);
-      thread = NULL;
-      g_message ("failed to create thread \"%s\": %s", name ? name : "Anon", gerror->message);
-      g_error_free (gerror);
+      birnet_thread_unref (thread);
+      return NULL;
     }
-  
-  /* withdraw warning filter */
-  birnet_mutex_unlock (&global_startup_mutex);
-  g_log_remove_handler ("GLib", hid);
-  
-  /* notify thread that we're done */
-  if (thread)
-    birnet_thread_wakeup (thread);
-
-  return thread;
 }
 
 /**
@@ -419,22 +354,54 @@ BirnetThread*
 birnet_thread_self (void)
 {
   BirnetThread *thread = birnet_thread_table.thread_get_handle ();
-
-  if (!thread)
+  if G_UNLIKELY (!thread)
     {
       /* this function is also used during thread initialization,
        * so not all library components are yet usable
        */
-      thread = birnet_thread_handle_new (NULL);
+      static volatile int anon_count = 1;
+      guint id = birnet_atomic_int_swap_and_add (&anon_count, 1);
+      gchar name[256];
+      g_snprintf (name, 256, "Anon%u", id);
+      thread = birnet_thread_new (name);
+      birnet_thread_ref_sink (thread);
       thread_get_tid (thread);
-      if (!thread)
-	g_error ("failed to create thread handle for foreign thread");
       birnet_thread_table.thread_set_handle (thread);
       birnet_mutex_lock (&global_thread_mutex);
       global_thread_list = birnet_ring_append (global_thread_list, thread);
       birnet_mutex_unlock (&global_thread_mutex);
     }
   return thread;
+}
+
+void*
+_birnet_thread_self_cxx (void)
+{
+  BirnetThread *thread = birnet_thread_table.thread_get_handle ();
+  if (G_UNLIKELY (!thread))
+    thread = birnet_thread_self();
+  return g_atomic_pointer_get (&thread->threadxx);
+}
+
+void*
+_birnet_thread_get_cxx (BirnetThread *thread)
+{
+  return g_atomic_pointer_get (&thread->threadxx);
+}
+
+bool
+_birnet_thread_set_cxx (BirnetThread *thread,
+                        void         *xxdata)
+{
+  birnet_mutex_lock (&global_thread_mutex);
+  bool success = false;
+  if (!thread->threadxx || !xxdata)
+    {
+      thread->threadxx = xxdata;
+      success = true;
+    }
+  birnet_mutex_unlock (&global_thread_mutex);
+  return success;
 }
 
 void
@@ -517,10 +484,10 @@ birnet_thread_wakeup_L (BirnetThread *thread)
  * internal accounting information.
  */
 bool
-birnet_thread_sleep (glong max_useconds)
+birnet_thread_sleep (BirnetInt64 max_useconds)
 {
   BirnetThread *self = birnet_thread_self ();
-  gboolean aborted;
+  bool aborted;
   
   birnet_mutex_lock (&global_thread_mutex);
   
@@ -557,8 +524,8 @@ birnet_thread_sleep (glong max_useconds)
  */
 void
 birnet_thread_set_wakeup (BirnetThreadWakeup wakeup_func,
-		       gpointer        wakeup_data,
-		       GDestroyNotify  destroy)
+                          gpointer           wakeup_data,
+                          GDestroyNotify     destroy)
 {
   BirnetThread *self = birnet_thread_self ();
   
@@ -700,14 +667,48 @@ bool
 birnet_thread_aborted (void)
 {
   BirnetThread *self = birnet_thread_self ();
-  gboolean aborted;
-  
   birnet_mutex_lock (&global_thread_mutex);
   birnet_thread_accounting_L (self, FALSE);
-  aborted = self->aborted != FALSE;
+  bool aborted = self->aborted != FALSE;
   birnet_mutex_unlock (&global_thread_mutex);
-  
   return aborted;
+}
+
+/**
+ * @param thread	thread to abort
+ * @param returns	TRUE if the thread should abort execution
+ *
+ * Find out if the currently running thread should be aborted (the thread is
+ * supposed to return from its main thread function). This function or
+ * alternatively birnet_thread_sleep() should be called periodically, to
+ * react to thread abortion requests and to update internal accounting
+ * information.
+ */
+bool
+birnet_thread_get_aborted (BirnetThread *thread)
+{
+  birnet_mutex_lock (&global_thread_mutex);
+  bool aborted = thread->aborted != FALSE;
+  birnet_mutex_unlock (&global_thread_mutex);
+  return aborted;
+}
+
+bool
+birnet_thread_get_running (BirnetThread *thread)
+{
+  birnet_mutex_lock (&global_thread_mutex);
+  bool running = birnet_ring_find (global_thread_list, thread);
+  birnet_mutex_unlock (&global_thread_mutex);
+  return running;
+}
+
+void
+birnet_thread_wait_for_exit (BirnetThread *thread)
+{
+  birnet_mutex_lock (&global_thread_mutex);
+  while (birnet_ring_find (global_thread_list, thread))
+    birnet_cond_wait (&global_thread_cond, &global_thread_mutex);
+  birnet_mutex_unlock (&global_thread_mutex);
 }
 
 gpointer
@@ -719,8 +720,8 @@ birnet_thread_get_qdata (GQuark quark)
 
 void
 birnet_thread_set_qdata_full (GQuark         quark,
-			   gpointer       data,
-			   GDestroyNotify destroy)
+                              gpointer       data,
+                              GDestroyNotify destroy)
 {
   BirnetThread *self = birnet_thread_self ();
   g_return_if_fail (quark > 0);
@@ -737,16 +738,16 @@ birnet_thread_steal_qdata (GQuark quark)
 
 void
 birnet_cond_wait_timed (BirnetCond  *cond,
-		     BirnetMutex *mutex,
-		     glong     max_useconds)
+                        BirnetMutex *mutex,
+                        BirnetInt64  max_useconds)
 {
   if (max_useconds < 0)
     birnet_cond_wait (cond, mutex);
   else if (max_useconds > 0)
     {
       struct timeval now, limit;
-      glong secs = max_useconds / 1000000;
       gettimeofday (&now, NULL);
+      BirnetInt64 secs = max_useconds / 1000000;
       limit.tv_sec = now.tv_sec + secs;
       max_useconds -= secs * 1000000;
       limit.tv_usec = now.tv_usec + max_useconds;
@@ -755,13 +756,158 @@ birnet_cond_wait_timed (BirnetCond  *cond,
           limit.tv_usec -= 1000000;
           limit.tv_sec += 1;
         }
-      
       birnet_thread_table.cond_wait_timed (cond, mutex, limit.tv_sec, limit.tv_usec);
     }
 }
 
+static inline guint
+cached_getpid (void)
+{
+  static pid_t cached_pid = 0;
+  if (G_UNLIKELY (!cached_pid))
+    cached_pid = getpid();
+  return cached_pid;
+}
+
+#ifdef  __linux__
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <linux/unistd.h>
+#endif
+static void
+thread_get_tid (BirnetThread *thread)
+{
+  gint ppid = thread->tid;      /* creator process id */
+  gint tid = -1;
+  
+#if     defined (__linux__) && defined (__NR_gettid)    /* present on linux >= 2.4.20 */
+  tid = syscall (__NR_gettid);
+#endif
+  if (tid < 0)
+    tid = cached_getpid();
+  if (tid != ppid &&            /* thread pid different from creator pid, probably correct */
+      tid > 0)
+    thread->tid = tid;
+  else
+    thread->tid = 0;            /* failed to figure id */
+}
+
 
 /* --- thread info --- */
+static inline unsigned long long int
+timeval_usecs (const struct timeval *tv)
+{
+  return tv->tv_usec + tv->tv_sec * (guint64) 1000000;
+}
+
+static void
+thread_info_from_stat_L (BirnetThread *self,
+                         double     usec_norm)
+{
+  int pid = -1, ppid = -1, pgrp = -1, session = -1, tty_nr = -1, tpgid = -1;
+  int exit_signal = 0, processor = 0;
+  long cutime = 0, cstime = 0, priority = 0, nice = 0, dummyld = 0;
+  long itrealvalue = 0, rss = 0;
+  unsigned long flags = 0, minflt = 0, cminflt = 0, majflt = 0, cmajflt = 0;
+  unsigned long utime = 0, stime = 0, vsize = 0, rlim = 0, startcode = 0;
+  unsigned long endcode = 0, startstack = 0, kstkesp = 0, kstkeip = 0;
+  unsigned long signal = 0, blocked = 0, sigignore = 0, sigcatch = 0;
+  unsigned long wchan = 0, nswap = 0, cnswap = 0, rt_priority = 0, policy = 0;
+  unsigned long long starttime = 0;
+  char state = 0, command[8192 + 1] = { 0 };
+  FILE *file = NULL;
+  int n = 0;
+  static int have_stat = 1;
+  if (have_stat)
+    {
+      gchar *filename = g_strdup_printf ("/proc/%u/task/%u/stat", cached_getpid(), self->tid);
+      file = fopen (filename, "r");
+      g_free (filename);
+      if (!file)
+        have_stat = 0;  /* reading /proc/self/stat should always succeed, so try only once */
+    }
+  if (file)
+    n = fscanf (file,
+                "%d %8192s %c "
+                "%d %d %d %d %d "
+                "%lu %lu %lu %lu %lu %lu %lu "
+                "%ld %ld %ld %ld %ld %ld "
+                "%llu %lu %ld "
+                "%lu %lu %lu %lu %lu "
+                "%lu %lu %lu %lu %lu "
+                "%lu %lu %lu %d %d "
+                "%lu %lu",
+                &pid, command, &state, /* n=3 */
+                &ppid, &pgrp, &session, &tty_nr, &tpgid, /* n=8 */
+                &flags, &minflt, &cminflt, &majflt, &cmajflt, &utime, &stime, /* n=15 */
+                &cutime, &cstime, &priority, &nice, &dummyld, &itrealvalue, /* n=21 */
+                &starttime, &vsize, &rss, /* n=24 */
+                &rlim, &startcode, &endcode, &startstack, &kstkesp, /* n=29 */
+                &kstkeip, &signal, &blocked, &sigignore, &sigcatch, /* n=34 */
+                &wchan, &nswap, &cnswap, &exit_signal, &processor, /* n=39 */
+                &rt_priority, &policy /* n=41 */
+                );
+  if (file)
+    fclose (file);
+
+  if (n >= 15)
+    {
+      self->ac.utime = utime * 10000;
+      self->ac.stime = stime * 10000;
+    }
+  if (n >= 17)
+    {
+      self->ac.cutime = cutime * 10000;
+      self->ac.cstime = cstime * 10000;
+    }
+  if (n >= 3)
+    self->info.state = state;
+  if (n >= 39)
+    self->info.processor = 1 + processor;
+}
+
+#define ACCOUNTING_MSECS        (500)
+
+static void
+birnet_thread_accounting_L (BirnetThread *self,
+                            bool          force_update)
+{
+  struct timeval stamp, ostamp = self->ac.stamp;
+  guint diff = 0;
+  if (self->accounting)
+    {
+      gettimeofday (&stamp, NULL);
+      diff = timeval_usecs (&stamp) - timeval_usecs (&ostamp);
+      diff = MAX (diff, 0);
+    }
+  if (force_update || diff >= ACCOUNTING_MSECS * 1000)  /* limit accounting to a few times per second */
+    {
+      gint64 old_utime = self->ac.utime;
+      gint64 old_stime = self->ac.stime;
+      gint64 old_cutime = self->ac.cutime;
+      gint64 old_cstime = self->ac.cstime;
+      gdouble dfact = 1000000.0 / MAX (diff, 1);
+      self->ac.stamp = stamp;
+      if (0)
+        {
+          struct rusage res = { { 0 } };
+          getrusage (RUSAGE_SELF, &res);
+          self->ac.utime = timeval_usecs (&res.ru_utime); /* user time used */
+          self->ac.stime = timeval_usecs (&res.ru_stime); /* system time used */
+          getrusage (RUSAGE_CHILDREN, &res);
+          self->ac.cutime = timeval_usecs (&res.ru_utime);
+          self->ac.cstime = timeval_usecs (&res.ru_stime);
+        }
+      thread_info_from_stat_L (self, dfact);
+      self->info.priority = getpriority (PRIO_PROCESS, self->tid);
+      self->info.utime = MAX (self->ac.utime - old_utime, 0) * dfact;
+      self->info.stime = MAX (self->ac.stime - old_stime, 0) * dfact;
+      self->info.cutime = MAX (self->ac.cutime - old_cutime, 0) * dfact;
+      self->info.cstime = MAX (self->ac.cstime - old_cstime, 0) * dfact;
+      self->accounting--;
+    }
+}
+
 BirnetThreadInfo*
 birnet_thread_info_collect (BirnetThread *thread)
 {
@@ -1219,11 +1365,10 @@ fallback_cond_destroy (BirnetCond *cond)
 static void
 fallback_cond_wait_timed (BirnetCond  *cond,
                           BirnetMutex *mutex,
-                          gulong    abs_secs,
-                          gulong    abs_usecs)
+                          BirnetUInt64 abs_secs,
+                          BirnetUInt64 abs_usecs)
 {
   GTimeVal gtime;
-  
   gtime.tv_sec = abs_secs;
   gtime.tv_usec = abs_usecs;
   g_cond_timed_wait (cond->cond_pointer, mutex->mutex_pointer, &gtime);
@@ -1253,7 +1398,7 @@ static BirnetThreadTable fallback_thread_table = {
 static BirnetThreadTable*
 get_fallback_thread_table (void)
 {
-  fallback_thread_table_key = g_private_new ((GDestroyNotify) birnet_thread_handle_deleted);
+  fallback_thread_table_key = g_private_new ((GDestroyNotify) birnet_thread_handle_exit);
   return &fallback_thread_table;
 }
 
@@ -1268,7 +1413,7 @@ pth_thread_set_handle (BirnetThread *handle)
   BirnetThread *tmp = pthread_getspecific (pth_thread_table_key);
   pthread_setspecific (pth_thread_table_key, handle);
   if (tmp)
-    birnet_thread_handle_deleted (tmp);
+    birnet_thread_handle_exit (tmp);
 }
 static BirnetThread*
 pth_thread_get_handle (void)
@@ -1300,8 +1445,8 @@ pth_cond_init (BirnetCond *cond)
 static void
 pth_cond_wait_timed (BirnetCond  *cond,
 		     BirnetMutex *mutex,
-		     gulong    abs_secs,
-		     gulong    abs_usecs)
+		     BirnetUInt64 abs_secs,
+		     BirnetUInt64 abs_usecs)
 {
   struct timespec abstime;
   
@@ -1323,16 +1468,16 @@ static BirnetThreadTable pth_thread_table = {
   (void (*) (BirnetRecMutex*)) pthread_mutex_unlock,
   (void (*) (BirnetRecMutex*)) pthread_mutex_destroy,
   pth_cond_init,
-  (void (*)            (BirnetCond*)) pthread_cond_signal,
-  (void (*)            (BirnetCond*)) pthread_cond_broadcast,
+  (void (*) (BirnetCond*))               pthread_cond_signal,
+  (void (*) (BirnetCond*))               pthread_cond_broadcast,
   (void (*) (BirnetCond*, BirnetMutex*)) pthread_cond_wait,
   pth_cond_wait_timed,
-  (void (*)            (BirnetCond*)) pthread_cond_destroy,
+  (void (*) (BirnetCond*))               pthread_cond_destroy,
 };
 static BirnetThreadTable*
 get_pth_thread_table (void)
 {
-  if (pthread_key_create (&pth_thread_table_key, (void(*)(void*)) birnet_thread_handle_deleted) != 0)
+  if (pthread_key_create (&pth_thread_table_key, (void(*)(void*)) birnet_thread_handle_exit) != 0)
     {
       g_message ("failed to create pthread key, falling back to GLib threads");
       return NULL;

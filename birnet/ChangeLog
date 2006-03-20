@@ -1,3 +1,44 @@
+Sun Mar 19 22:26:02 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: compile with -DBIRNET_FEATURES.
+	fixed up birnetconfig.h generation.
+
+	* birnetthread.h:
+	* birnetthread.c:
+	moved BirnetThreads to a reference counted model, to
+	execute a thread, birnet_thread_start() must be called now.
+	birnet_thread_run() will now create a thread and automatically
+	start it, the returned thread structure must be unrefed.
+	always demand a well formed thread name. added C++ hooks. 
+	use 64bit data types for time ranges. some atomic fixes.
+	birnet_thread_get_aborted(): return whether a thread got aborted.
+	birnet_thread_get_running(): return whether a thread is
+	currently running.
+	birnet_thread_wait_for_exit(): block until the thread has exited.
+
+	* birnetthreadxx.hh:
+	* birnetthreadxx.cc: provide a C++ API for threads. added classes
+	Mutex, RecMutex, Cond, Atomic, Thread and Thread::Self.
+
+	* birnetutils.h:
+	* birnetutils.c: added for C utilities.
+
+	* birnetutilsxx.hh:
+	* birnetutilsxx.cc: define fundamental types in the Birnet:: namespace.
+	moved birnet_init() hook logic here. added ReferenceCountImpl class,
+	which implements atomic reference counting for objects.
+
+	* birnetcore.h: define BIRNET_STATIC_ASSERT() and
+	BIRNET_ASSERT(), removed C++ code. define standard types,
+	such as uint64 and unichar.
+
+	* birnetcore.c: removed birnet_init() implementation.
+
+	* birnetcore.hh:
+	* birnetcore.cc: removed entirely.
+
+	* tests/threads.cc: extended tests, added C++ tests.
+
 Fri Mar 17 19:41:50 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: CVS copied from birnetcore.hh.

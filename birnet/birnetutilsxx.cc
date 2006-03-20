@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "birnetcore.hh"
+#include "birnetutilsxx.hh"
 #include "birnetthread.h"
 #include "birnetmsg.h"
 #include <vector>
@@ -28,7 +28,7 @@ static bool birnet_init_initialization_entered = false;
 static void (*birnet_init_cplusplus_func) (void) = NULL;
 
 void
-birnet_init (const gchar *prg_name)
+birnet_init (const gchar *prg_name)     /* declared in birnetcore.h */
 {
   if (birnet_init_initialization_entered)
     {
@@ -62,7 +62,7 @@ InitHook::InitHook (InitHookFunc _func,
                     int          _priority) :
   next (NULL), priority (_priority), hook (_func)
 {
-  birnet_assert (birnet_init_initialization_entered == false);
+  BIRNET_ASSERT (birnet_init_initialization_entered == false);
   /* the above assertion guarantees single-threadedness */
   next = init_hooks;
   init_hooks = this;

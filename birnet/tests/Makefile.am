@@ -5,7 +5,7 @@
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES	= -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
-DEFS		= -DG_LOG_DOMAIN='"birnet/tests/"__FILE__":PRG"' -DPARANOID -DG_DISABLE_CONST_RETURNS
+DEFS		= -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
 
 noinst_PROGRAMS = $(TESTS)
 TESTS 		= threads ring

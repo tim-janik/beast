@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General
@@ -16,21 +16,14 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BIRNET_H__
-#define __BIRNET_H__
+#ifndef __BIRNET_UTILS_H__
+#define __BIRNET_UTILS_H__
 
-#include <birnet/birnetconfig.h>
 #include <birnet/birnetcore.h>
 
-#include <birnet/birnetutils.h>
-#include <birnet/birnetmsg.h>
-#include <birnet/birnetring.h>
-#include <birnet/birnetthread.h>
+BIRNET_EXTERN_C_BEGIN();
 
-#ifdef	__cplusplus
-#include <birnet/birnetutilsxx.hh>
-#include <birnet/birnetthreadxx.hh>
-#endif	/* __cplusplus */
+BIRNET_EXTERN_C_END();
 
-#endif /* __BIRNET_H__ */
+#endif /* __BIRNET_UTILS_H__ */
 /* vim:set ts=8 sts=2 sw=2: */

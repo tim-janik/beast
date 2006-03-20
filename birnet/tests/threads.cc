@@ -19,6 +19,9 @@
 #include "testutils.h"
 #include <birnet/birnet.h>
 
+namespace {
+using namespace Birnet;
+
 static volatile guint atomic_count = 0;
 static BirnetMutex    atomic_mutex;
 static BirnetCond     atomic_cond;
@@ -33,6 +36,7 @@ atomic_up_thread (gpointer data)
   atomic_count -= 1;
   birnet_cond_signal (&atomic_cond);
   birnet_mutex_unlock (&atomic_mutex);
+  TASSERT (strcmp (birnet_thread_get_name (birnet_thread_self()), "AtomicTest") == 0);
 }
 
 static void
@@ -45,6 +49,7 @@ atomic_down_thread (gpointer data)
   atomic_count -= 1;
   birnet_cond_signal (&atomic_cond);
   birnet_mutex_unlock (&atomic_mutex);
+  TASSERT (strcmp (birnet_thread_get_name (birnet_thread_self()), "AtomicTest") == 0);
 }
 
 static void
@@ -59,7 +64,7 @@ test_atomic (void)
   atomic_count = count;
   for (int i = 0; i < count; i++)
     {
-      threads[i] = birnet_thread_run (NULL, (i&1) ? atomic_up_thread : atomic_down_thread, (void*) &atomic_counter);
+      threads[i] = birnet_thread_run ("AtomicTest", (i&1) ? atomic_up_thread : atomic_down_thread, (void*) &atomic_counter);
       TASSERT (threads[i]);
     }
   birnet_mutex_lock (&atomic_mutex);
@@ -71,6 +76,8 @@ test_atomic (void)
   birnet_mutex_unlock (&atomic_mutex);
   int result = count / 2 * 25 * +3 + count / 2 * 25 * -4;
   // g_printerr ("{ %d ?= %d }", atomic_counter, result);
+  for (int i = 0; i < count; i++)
+    birnet_thread_unref (threads[i]);
   TASSERT (atomic_counter == result);
   TDONE ();
 }
@@ -99,17 +106,20 @@ test_threads (void)
   birnet_mutex_unlock (&test_mutex);
   birnet_mutex_destroy (&test_mutex);
   guint thread_data1 = 0;
-  BirnetThread *thread1 = birnet_thread_run (NULL, plus1_thread, &thread_data1);
+  BirnetThread *thread1 = birnet_thread_run ("plus1", plus1_thread, &thread_data1);
   guint thread_data2 = 0;
-  BirnetThread *thread2 = birnet_thread_run (NULL, plus1_thread, &thread_data2);
+  BirnetThread *thread2 = birnet_thread_run ("plus2", plus1_thread, &thread_data2);
   guint thread_data3 = 0;
-  BirnetThread *thread3 = birnet_thread_run (NULL, plus1_thread, &thread_data3);
+  BirnetThread *thread3 = birnet_thread_run ("plus3", plus1_thread, &thread_data3);
   TASSERT (thread1 != NULL);
   TASSERT (thread2 != NULL);
   TASSERT (thread3 != NULL);
   TASSERT (thread_data1 == 0);
   TASSERT (thread_data2 == 0);
   TASSERT (thread_data3 == 0);
+  TASSERT (birnet_thread_get_running (thread1) == TRUE);
+  TASSERT (birnet_thread_get_running (thread2) == TRUE);
+  TASSERT (birnet_thread_get_running (thread3) == TRUE);
   birnet_thread_wakeup (thread1);
   birnet_thread_wakeup (thread2);
   birnet_thread_wakeup (thread3);
@@ -119,8 +129,116 @@ test_threads (void)
   TASSERT (thread_data1 > 0);
   TASSERT (thread_data2 > 0);
   TASSERT (thread_data3 > 0);
+  birnet_thread_unref (thread1);
+  birnet_thread_unref (thread2);
+  birnet_thread_unref (thread3);
   TDONE ();
 }
+
+struct ThreadA : public virtual Birnet::Thread {
+  int value;
+  volatile int *counter;
+  ThreadA (volatile int *counterp,
+           int           v) :
+    Thread ("ThreadA"),
+    value (v), counter (counterp)
+  {}
+  virtual void
+  run ()
+  {
+    TASSERT (this->name() == "ThreadA");
+    TASSERT (this->name() == Thread::Self::name());
+    for (int j = 0; j < 17905; j++)
+      birnet_atomic_int_add (counter, value);
+  }
+};
+
+static void
+test_thread_cxx (void)
+{
+  TMSG ("C++Threading:");
+  volatile int atomic_counter = 0;
+  int result = 0;
+  int count = 60;
+  Birnet::Thread *threads[count];
+  for (int i = 0; i < count; i++)
+    {
+      int v = rand();
+      for (int j = 0; j < 17905; j++)
+        result += v;
+      threads[i] = new ThreadA (&atomic_counter, v);
+      TASSERT (threads[i]);
+      ref_sink (threads[i]);
+    }
+  TASSERT (atomic_counter == 0);
+  for (int i = 0; i < count; i++)
+    threads[i]->start();
+  for (int i = 0; i < count; i++)
+    {
+      threads[i]->wait_for_exit();
+      unref (threads[i]);
+    }
+  TASSERT (atomic_counter == result);
+  TDONE ();
+}
+
+static void
+test_thread_atomic_cxx (void)
+{
+  TMSG ("C++AtomicThreading:");
+  /* integer functions */
+  volatile int ai, r;
+  Atomic::int_set (&ai, 17);
+  TASSERT (ai == 17);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == 17);
+  Atomic::int_add (&ai, 9);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == 26);
+  Atomic::int_set (&ai, -1147483648);
+  TASSERT (ai == -1147483648);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == -1147483648);
+  Atomic::int_add (&ai, 9);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == -1147483639);
+  Atomic::int_add (&ai, -20);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == -1147483659);
+  r = Atomic::int_cas (&ai, 17, 19);
+  TASSERT (r == false);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == -1147483659);
+  r = Atomic::int_cas (&ai, -1147483659, 19);
+  TASSERT (r == true);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == 19);
+  r = Atomic::int_swap_add (&ai, 1);
+  TASSERT (r == 19);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == 20);
+  r = Atomic::int_swap_add (&ai, -20);
+  TASSERT (r == 20);
+  r = Atomic::int_get (&ai);
+  TASSERT (r == 0);
+  /* pointer functions */
+  volatile void *ap, *p;
+  Atomic::ptr_set (&ap, (void*) 119);
+  TASSERT (ap == (void*) 119);
+  p = Atomic::ptr_get (&ap);
+  TASSERT (p == (void*) 119);
+  r = Atomic::ptr_cas (&ap, (void*) 17, (void*) -42);
+  TASSERT (r == false);
+  p = Atomic::ptr_get (&ap);
+  TASSERT (p == (void*) 119);
+  r = Atomic::ptr_cas (&ap, (void*) 119, (void*) 4294967279U);
+  TASSERT (r == true);
+  p = Atomic::ptr_get (&ap);
+  TASSERT (p == (void*) 4294967279U);
+  TDONE ();
+}
+
+} // Anon
 
 int
 main (int   argc,
@@ -130,8 +248,10 @@ main (int   argc,
   g_log_set_always_fatal ((GLogLevelFlags) (g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
 
   test_threads();
-  test_atomic ();
-
+  test_atomic();
+  test_thread_cxx();
+  test_thread_atomic_cxx();
+  
   return 0;
 }
 

@@ -7,24 +7,26 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS		= . tests
 INCLUDES  	= -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
 GLIB_MKENUMS    = glib-mkenums
-DEFS		= -DBIRNET_PRIVATE -DPARANOID
+DEFS		= -DBIRNET_FEATURES -DPARANOID
 
-birnet_c_headers = $(strip 		\
+birnet_headers = $(strip 		\
 	birnet.h			\
+	birnetcore.h			\
 	birnetmsg.h			\
 	birnetring.h			\
 	birnetthread.h			\
+	birnetthreadxx.hh		\
+	birnetutils.h			\
+	birnetutilsxx.hh		\
 )
-birnet_c_sources = $(strip 		\
+birnet_sources = $(strip 		\
+	birnetcore.c			\
 	birnetmsg.c			\
 	birnetring.c			\
 	birnetthread.c			\
-)
-birnet_cc_headers = $(strip 		\
-	birnetcore.hh			\
-)
-birnet_cc_sources = $(strip 		\
-	birnetcore.cc			\
+	birnetthreadxx.cc		\
+	birnetutils.c			\
+	birnetutilsxx.cc		\
 )
 birnet_private_headers = $(strip 	\
 )
@@ -39,8 +41,8 @@ birnet_generated_headers = $(strip 	\
 # own rule to build the .o from the .la pieces.
 noinst_LTLIBRARIES         = libbirnet.la
 libbirnetincludedir        = $(includedir)/birnet
-libbirnetinclude_HEADERS   = $(birnet_c_headers) $(birnet_cc_headers) $(birnet_generated_headers)
-libbirnet_la_SOURCES       = $(birnet_c_sources) $(birnet_cc_sources)
+libbirnetinclude_HEADERS   = $(birnet_headers) $(birnet_generated_headers)
+libbirnet_la_SOURCES       = $(birnet_sources)
 libbirnet_la_DEPENDENCIES +=
 libbirnet_la_LIBADD        = $(BIRNET_LIBS) -lm
 libbirnet_la_LDFLAGS       = -no-undefined # -Wl,-Bsymbolic
@@ -56,12 +58,13 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "/* Generated data from $< (by make $@) */" 					 > xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
 	&& echo "#ifdef  __cplusplus"								>> xgen-$(@F) \
-	&& echo "#define BIRNET_BEGIN_EXTERN_C()	extern \"C\" {"				>> xgen-$(@F) \
-	&& echo "#define BIRNET_END_EXTERN_C()		}"					>> xgen-$(@F) \
+	&& echo '#define BIRNET_EXTERN_C_BEGIN()	extern "C" {'				>> xgen-$(@F) \
+	&& echo "#define BIRNET_EXTERN_C_END()		}"					>> xgen-$(@F) \
 	&& echo "#else"										>> xgen-$(@F) \
-	&& echo "#define BIRNET_BEGIN_EXTERN_C()"						>> xgen-$(@F) \
-	&& echo "#define BIRNET_END_EXTERN_C()"							>> xgen-$(@F) \
+	&& echo "#define BIRNET_EXTERN_C_BEGIN()"						>> xgen-$(@F) \
+	&& echo "#define BIRNET_EXTERN_C_END()"							>> xgen-$(@F) \
 	&& echo "#endif"									>> xgen-$(@F) \
+	&& echo ""										>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_MUTEX_T	(@BIRNET_SIZEOF_PTH_MUTEX_T@)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_COND_T	(@BIRNET_SIZEOF_PTH_COND_T@)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_HAVE_MUTEXATTR_SETTYPE	(@BIRNET_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-$(@F) \

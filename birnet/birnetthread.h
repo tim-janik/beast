@@ -22,7 +22,7 @@
 
 #include <stdbool.h>
 #include <glib.h>
-#include <birnet/birnetconfig.h>
+#include <birnet/birnetcore.h>
 
 G_BEGIN_DECLS
 
@@ -36,19 +36,29 @@ typedef struct _BirnetRecMutex		 BirnetRecMutex;
 /* --- BirnetThread --- */
 typedef void (*BirnetThreadFunc)		(gpointer	 user_data);
 typedef void (*BirnetThreadWakeup)		(gpointer	 wakeup_data);
-BirnetThread*	birnet_thread_run		(const gchar    *name,
-						 BirnetThreadFunc	 func,
+BirnetThread*	birnet_thread_new		(const gchar    *name);
+BirnetThread*	birnet_thread_ref		(BirnetThread	*thread);
+BirnetThread*	birnet_thread_ref_sink		(BirnetThread	*thread);
+void          	birnet_thread_unref		(BirnetThread	*thread);
+bool		birnet_thread_start		(BirnetThread   *thread,
+						 BirnetThreadFunc func,
+						 gpointer	 user_data);
+BirnetThread*	birnet_thread_run		(const gchar    *name, /* new + start */
+						 BirnetThreadFunc func,
 						 gpointer	 user_data);
 BirnetThread*   birnet_thread_self		(void);
 gint          	birnet_thread_self_pid		(void);
 gint	      	birnet_thread_get_pid		(BirnetThread      *thread);
 const gchar*  	birnet_thread_get_name		(BirnetThread      *thread);
 void	      	birnet_thread_set_name		(const gchar    *name);
-bool          	birnet_thread_sleep		(glong		 max_useconds);
+bool          	birnet_thread_sleep		(BirnetInt64	 max_useconds);
 bool          	birnet_thread_aborted		(void);
 void	      	birnet_thread_queue_abort	(BirnetThread	*thread);
 void	      	birnet_thread_abort		(BirnetThread	*thread);
 void	      	birnet_thread_wakeup		(BirnetThread	*thread);
+bool          	birnet_thread_get_aborted	(BirnetThread	*thread);
+bool          	birnet_thread_get_running	(BirnetThread	*thread);
+void	      	birnet_thread_wait_for_exit	(BirnetThread   *thread);
 void	      	birnet_thread_awake_after	(guint64	 stamp);
 void	      	birnet_thread_emit_wakeups	(guint64	 stamp);
 void	      	birnet_thread_set_wakeup	(BirnetThreadWakeup wakeup_func,
@@ -122,12 +132,12 @@ bool                  birnet_guard_is_protected  (gpointer             	value);
 #define birnet_cond_destroy(cond)		(birnet_thread_table.cond_destroy (cond))
 void    birnet_cond_wait_timed			(BirnetCond    *cond,
 						 BirnetMutex   *mutex,
-						 glong	   	max_useconds);
+						 BirnetInt64   	max_useconds);
 
 /* --- atomic operations --- */
 #define birnet_atomic_set(PtrType, atomic_ptr_adr, new_ptr)        	  ((void(*)(PtrType*,PtrType)) (void*) birnet_atomic_set_impl) (atomic_ptr_adr, new_ptr)
 #define birnet_atomic_get(PtrType, atomic_ptr_adr)                 	  ((PtrType(*)(PtrType*)) (void*) birnet_atomic_get_impl) (atomic_ptr_adr)
-#define birnet_atomic_compare_and_swap(PtrType, apadr, optr, nptr) 	  ((bool(*)(PtrType*, PtrType, PtrType)) (void*) g_atomic_compare_and_exchange) (apadr, optr, nptr)
+#define birnet_atomic_compare_and_swap(PtrType, apadr, optr, nptr) 	  ((bool(*)(PtrType*, PtrType, PtrType)) (void*) g_atomic_pointer_compare_and_exchange) (apadr, optr, nptr)
 #define birnet_atomic_int_set(atomic_int_ptr, value)                      ((void(*)(volatile gint*,gint)) (void*) birnet_atomic_int_set_impl) (atomic_int_ptr, value)
 #define birnet_atomic_int_get(atomic_int_ptr)                             ((gint(*)(volatile gint*))      (void*) birnet_atomic_int_get_impl) (atomic_int_ptr)
 #define birnet_atomic_int_add(atomic_int_ptr, signed_delta)               ((void(*)(volatile gint*,gint)) (void*) g_atomic_int_add) (atomic_int_ptr, signed_delta)
@@ -155,6 +165,10 @@ birnet_atomic_set_impl (volatile gpointer *atomic, gpointer value)
 }
 
 /* --- implementation --- */
+void* _birnet_thread_self_cxx  (void);
+void* _birnet_thread_get_cxx	(BirnetThread *thread);
+bool  _birnet_thread_set_cxx	(BirnetThread *thread,
+				 void         *xxdata);
 union _BirnetCond
 {
   gpointer cond_pointer;
@@ -192,8 +206,8 @@ struct _BirnetThreadTable
 					 BirnetMutex	*mutex);
   void  	(*cond_wait_timed)	(BirnetCond	*cond,
 					 BirnetMutex	*mutex,
-					 gulong		 abs_secs,
-					 gulong		 abs_usecs);
+					 BirnetUInt64	 abs_secs,
+					 BirnetUInt64	 abs_usecs);
   void		(*cond_destroy)		(BirnetCond	*cond);
 };
 extern BirnetThreadTable birnet_thread_table;
