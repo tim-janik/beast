@@ -181,12 +181,13 @@ test_threads (void)
   ASSERT (locked);
   birnet_mutex_unlock (&test_mutex);
   birnet_mutex_destroy (&test_mutex);
-  thread = birnet_thread_run (NULL, test_thread, &thread_data);
+  thread = birnet_thread_run ("sfi-test-thread", test_thread, &thread_data);
   ASSERT (thread != NULL);
   ASSERT (thread_data == 0);
   birnet_thread_wakeup (thread);
   birnet_thread_abort (thread);
   ASSERT (thread_data > 0);
+  birnet_thread_unref (thread);
   DONE ();
 }
 
