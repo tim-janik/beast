@@ -30,9 +30,10 @@ documentation as well as the
 cover the supported interfaces to access @bse functionality from C or
 Scheme.
 
-For C specifically,
-@uri{@top_webdir/rdocu-sfi/, SFI} provides the necessary
+For C and C++,
+@uri{@top_webdir/rdocu-birnet/, BIRNET} and
+@uri{@top_webdir/rdocu-sfi/, SFI} provide the necessary
 @uri{http://gtk.org, GLib} based framework to deal with
 threads, notes, parameters (properties), records, sequences, time stamps
-and generic values. Users of SFI will probably also appreciate the
+and generic values. Users of BIRNET or SFI will probably also appreciate the
 @uri{http://developer.gnome.org/doc/API/, GLib and GObject API Reference}.
