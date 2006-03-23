@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/03/23 01:03:17 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/03/23 01:47:53 $
 
 @titlesection
 @doctitle		Doxer - Software documentation system
@@ -22,13 +22,97 @@ source code.
 Also, doxer supports an '@@'-escape based markup sytsem which allowes for definition of custom
 markup macros and aliases, based on the set of standard macros supplied with doxer.
 
+@section Overall Laoyut
+
+Doxer first parses the raw input text (usually @doxer_italic{.doxi} files) and identifies and expands
+macros. Then it identifies structural macro definitions (e.g. lists and tables) and sections.
+After that, automcatic line breaks are generated, and sections are post-process to allow numbering
+and TOC (table of content) generation.
+
+Sections are usually hierarchically structured. However for canvas based layouts, groups
+can be assigned to sections, which directly manipulates the resulting layout area within
+a predetermined layout mask a section ends up in.
+Groups are supported by the HtmlGenerator backend.
+
+The possible groups supported in section definitions are:
+
+@* @@section0{group=header}  HEADER
+@* @@section0{group=lheader} LEFT HEADER
+@* @@section0{group=cheader} CONTENT HEADER
+@* @@section0{group=rheader} RIGHT HEADER
+@* @@section0{group=left}    LEFT
+@* @@section0{group=content} CONTENT (default)
+@* @@section0{group=right}   RIGHT
+@* @@section0{group=lfooter} LEFT FOOTER
+@* @@section0{group=cfooter} CONTENT FOOTER
+@* @@section0{group=rfooter} RIGHT FOOTER
+@* @@section0{group=footer}  FOOTER
+
+And are arranged in the predetermined layout mask as follows:
+
+@center @pre{
++----------------------------------------------+
+|                    HEADER                    |
++--------------+----------------+--------------+
+| LEFT  HEADER | CONTENT HEADER | RIGHT HEADER |
++--------------+----------------+--------------+
+|              |                |              |
+|     LEFT     |    CONTENT     |    RIGHT     |
+|              |   (default)    |              |
+|              |                |              |
++--------------+----------------+--------------+
+| LEFT  FOOTER | CONTENT FOOTER | RIGHT FOOTER |
++--------------+----------------+--------------+
+|                    FOOTER                    |
++----------------------------------------------+
+}
+
 @section Markup Macros
+
+@itemize
+@item @doxer_bold{ @@doxer_bold{@emph{TEXT}} }@*
+	Display @emph{TEXT} with a bold font. @doxer_bold{Example script in bold font.}
+@item @doxer_bold{ @@doxer_italic{@emph{TEXT}} }@*
+	Display @emph{TEXT} with an italic font. @doxer_italic{Example script in italic font.}
+@item @doxer_bold{ @@doxer_underline{@emph{TEXT}} }@*
+	Display @emph{TEXT} in an underlined style. @doxer_underline{Example script in underlined style.}
+@item @doxer_bold{ @@doxer_strikethrough{@emph{TEXT}} }@*
+	Display @emph{TEXT} in a strikethrough style. @doxer_strikethrough{Example script in strikethrough style.}
+@item @doxer_bold{ @@doxer_subscript{@emph{TEXT}} }@*
+	Display @emph{TEXT} with a subscript font. @doxer_subscript{Example script in subscript font.}
+@item @doxer_bold{ @@doxer_superscript{@emph{TEXT}} }@*
+	Display @emph{TEXT} with a superscript font. @doxer_superscript{Example script in superscript font.}
+@item @doxer_bold{ @@doxer_monospace{@emph{TEXT}} }@*
+	Display @emph{TEXT} in monospaced manner. @doxer_monospace{Example script in monospaced manner.}
+@done
+
+
+@section Structure Macros
+
+@itemize
+@item @doxer_bold{ @@enumerate }@*
+Starts an enumeration list, opens a scope.
+@item @doxer_bold{ @@itemize }@*
+Starts an itemized list, opens a scope.
+@item @doxer_bold{ @@item }@*
+Marks a bullet point of an list.
+@item @doxer_bold{ @@table }@*
+Starts a table, opens a scope.
+@item @doxer_bold{ @@row }@*
+Startd an table row, opens a scope.
+@item @doxer_bold{ @@cell }@*
+Marks a column cell inside a table row.
+@item @doxer_bold{ @@done }@*
+Ends the innermost scope
+@done
+
+@section Other Macros
 
 @itemize
 @item @doxer_bold{ @@doxer_newline{} }@*
 	Force a line break in the output.
 @item @doxer_bold{ @@doxer_line{} LINE-NUMBER '"' FILENAME '"' '\n' }@*
-	Source file/line adjustment directive. 
+	Source file/line adjustment directive.
 @item @doxer_bold{ @@doxer_alias{@emph{ALIAS-NAME}} SUBSTITUTION-TEXT '\n' }@*
 	Define ALIAS-NAME as a shorthand for SUBSTITUTION-TEXT, leading spaces are ignored.
 @item @doxer_bold{ @@include{} '"' FILENAME '"' '\n' }@*
@@ -37,14 +121,14 @@ markup macros and aliases, based on the set of standard macros supplied with dox
 @item @doxer_bold{ @@doxer_dnl{} DUMMYTEXT '\n' }@*
 	Commentary mechanism, the macros, DUMMYTEXT and newline are ignored.
 @item @doxer_bold{ @@doxer_args{@emph{ARG-REFERENCE}} }@*
-	A macro used in command definition used as a place holder for command arguments.
-	Arguments are referenced by their positinal numbers, argument 0 is the command name. Argument ranges, delimited by ':' are support.
+	A macro used in command definitions as a place holder for command arguments.
+	Arguments are referenced by their positional numbers, argument 0 is the command name. Argument ranges, delimited by ':' are supported.
 	'*' can be used as a place holder for all arguments except argument 0.
 	'line' can be used to refer to the text parsed after the macro braces up to the first newline.
 	'content' can be used to refer to the text body, enclosed by a macro and it's respective @@done directive.
 	'all' can be used to refer to the combination of '*', 'line' and 'content'.
 @item @doxer_bold{ @@doxer_set{VARIABLE [, FLAGS]} VALUE-TEXT '\n' }@*
-	Set the value of VARIABLE to VALUE-TEXT. 
+	Set the value of VARIABLE to VALUE-TEXT.
 	Possible FLAGS are:
 	@* 'parse_date' - to interpret VALUE-TEXT as an ISO-8601 compliant date string or some variants thereof;
 	@* 'unstripped' - to avoid stripping space off of VALUE-TEXT before assigning VARIABLE.
@@ -52,34 +136,8 @@ markup macros and aliases, based on the set of standard macros supplied with dox
 	A variant of @@doxer_set{}, that adds VALUE-TEXT to the list variable VARIABLE.
 @item @doxer_bold{ @@doxer_get{VARIABLE} }@*
 	Replaces the macro occourance with the value of VARIABLE.
-@item @doxer_bold{ @@doxer_bold{@emph{ARG}} }@*
-	Display @emph{ARG} with a bold font. @doxer_bold{Example script in bold font.}
-@item @doxer_bold{ @@doxer_italic{@emph{ARG}} }@*
-	Display @emph{ARG} with an italic font. @doxer_italic{Example script in italic font.}
-@item @doxer_bold{ @@doxer_underline{@emph{ARG}} }@*
-	Display @emph{ARG} in an underlined style. @doxer_underline{Example script in underlined style.}
-@item @doxer_bold{ @@doxer_strikethrough{@emph{ARG}} }@*
-	Display @emph{ARG} in a strikethrough style. @doxer_strikethrough{Example script in strikethrough style.}
-@item @doxer_bold{ @@doxer_subscript{@emph{ARG}} }@*
-	Display @emph{ARG} with a subscript font. @doxer_subscript{Example script in subscript font.}
-@item @doxer_bold{ @@doxer_superscript{@emph{ARG}} }@*
-	Display @emph{ARG} with a superscript font. @doxer_superscript{Example script in superscript font.}
-@item @doxer_bold{ @@doxer_monospace{@emph{ARG}} }@*
-	Display @emph{ARG} in monospaced manner. @doxer_monospace{Example script in monospaced manner.}
 @done
 
-
-@section Structure Macros
-
-@itemize
-@item @@enumerate - start an enumeration list, opens a scope.
-@item @@itemize - start an itemized list, opens a scope.
-@item @@item - marks a bullet point of an list.
-@item @@table - start an table, opens a scope.
-@item @@row - start an table row, opens a scope.
-@item @@cell - marks a column cell inside a table row.
-@item @@done - end the innermost scope
-@done
 
 @section Markup Tests
 
@@ -92,42 +150,9 @@ markup macros and aliases, based on the set of standard macros supplied with dox
 @* Identifiers: @ident{visible} @ident{auto-activate}
 @* @@uri{http://www.gtk.org}: @uri{http://www.gtk.org}
 @* @@uri{http://www.gtk.org, The Gtk+ Website}: @uri{http://www.gtk.org, The Gtk+ Website}
+@* @@longuri{http://www.gtk.org}: @longuri{http://www.gtk.org}
+@* @@longuri{http://www.gtk.org, The Gtk+ Website}: @longuri{http://www.gtk.org, The Gtk+ Website}
 @* @uri{http://validator.w3.org/check?uri=http://www.birnet.org/~timj/doxtest/quickstart.doxi.html,HTML-Validator}
 @* @uri{http://jigsaw.w3.org/css-validator/validator?uri=http://www.birnet.org/~timj/doxtest/quickstart.doxi.html,CSS-Validator}
 @* @uri{http://validator.w3.org/checklink?uri=http://www.birnet.org/~timj/doxtest/quickstart.doxi.html,Link-Validator}
 @* @uri{http://cgi.w3.org/cgi-bin/html2txt?url=http://www.birnet.org/~timj/doxtest/quickstart.doxi.html, This Page As PlainText}
-
-@subsection Section Groups:
-Groups can be assigned to sections to directly manipulate their layout within a
-predetermined layout mask:
-
-@* @@section0{group=header}  HEADER
-@* @@section0{group=lheader} LEFT HEADER
-@* @@section0{group=cheader} CONTENT HEADER
-@* @@section0{group=rheader} RIGHT HEADER
-@* @@section0{group=left}    LEFT
-@* @@section0{group=content} CONTENT
-@* @@section0{group=right}   RIGHT
-@* @@section0{group=lfooter} LEFT FOOTER
-@* @@section0{group=cfooter} CONTENT FOOTER
-@* @@section0{group=rfooter} RIGHT FOOTER
-@* @@section0{group=footer}  FOOTER
-
-@center @pre{
-+-------------------------------+
-|             HEADER            |
-+---------+-----------+---------+
-| LHEADER |  CHEADER  | RHEADER |
-+---------+-----------+---------+
-|         |           |         |
-|  LEFT   |  CONTENT  |  RIGHT  |
-|         | (default) |         |
-|         |           |         |
-+---------+-----------+---------+
-| LFOOTER |  CFOOTER  | RFOOTER |
-+---------+-----------+---------+
-|             FOOTER            |
-+-------------------------------+
-}
-
-
