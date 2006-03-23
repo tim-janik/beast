@@ -20,7 +20,7 @@ import os, Config
 def debug (*args): Config.debug_print (*args)
 
 # --- command flags ---
-SECTIONED, SCOPED, CLAIM_PARA, SPAN_LINE, SPAN_WORD, QUOTABLE = 1, 2, 4, 8, 16, 32
+SECTIONED, SCOPED, CLAIM_PARA, SPAN_LINE, SPAN_WORD, QUOTABLE, NESTING = 1, 2, 4, 8, 16, 32, 64
 custom_command_flags_dict = {
   # "sectioned":        SECTIONED,
   "scoped":             SCOPED | SPAN_LINE,
@@ -28,6 +28,7 @@ custom_command_flags_dict = {
   "claim_para":         CLAIM_PARA,
   "span_word":          SPAN_WORD,
   "quotable":           QUOTABLE,
+  "nesting":            NESTING,
 }
 SPAN_LINE_MASK = SPAN_LINE | SECTIONED
 

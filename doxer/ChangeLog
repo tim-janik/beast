@@ -1,3 +1,20 @@
+Thu Mar 23 01:56:30 2006  Tim Janik  <timj@gtk.org>
+
+	* DoxiParser.py: flag nestable macros appropriately.
+	plain_text_from_token_list(): simple function to convert tokens back to text.
+	parsable_text_from_token_list(): convert tokens back to Doxer source.
+	internal_text_from_token_list(): refactored version of the former 
+	text_from_token_list() function. fixed '@'-escaping within quotes of QUOTABLE
+	macro arguments. (rare but significant special case)
+	parse_stream(): argument fixups.
+	text_expand_args_reescape(): moved to a DoxiParser method.
+
+	* HtmlGenerator.py: support strikethrough, subscript, superscript.
+
+	* Data.py: added NESTING flag. 
+
+	* docu-main.doxi: extended the documentation somewhat.
+
 Fri Mar 10 18:05:20 2006  Tim Janik  <timj@gtk.org>
 
 	* HtmlGenerator.py (HtmlGenerator.write_meta): allow raw-html head lines

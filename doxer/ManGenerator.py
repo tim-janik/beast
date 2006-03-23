@@ -158,7 +158,7 @@ class ManGenerator:
     if node.name != 'doxer_args':
       self.transform_node (node, keyword_dict)
     else:
-      token_list = DoxiParser.expand_doxer_args (DoxiParser.text_from_token_list (node.arg), caller)
+      token_list = DoxiParser.expand_doxer_args (DoxiParser.plain_text_from_token_list (node.arg), caller)
       for tok in token_list:
         self.transform_any (tok, keyword_dict)
   def transform_text (self, string, keyword_dict):
@@ -348,7 +348,7 @@ class ManGenerator:
       self.mstream << ' (' + self.mstream.quote_string (uri) + ')'
     node.arg = saved_arg
   def doxer_raw (self, data, transformer, node, keyword_dict):
-    atext = DoxiParser.text_from_token_list (node.arg, False, True)
+    atext = DoxiParser.plain_text_from_token_list (node.arg)
     cpos = atext.find (',')
     if cpos >= 0:
       kind = atext[:cpos].strip()

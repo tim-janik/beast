@@ -30,7 +30,7 @@ command_dict = {
   'doxer_set':                  Data.SPAN_LINE,
   'doxer_add':                  Data.SPAN_LINE,
   'doxer_get':                  0,
-  'doxer_msg':                  0,
+  'doxer_msg':                  Data.NESTING,
   'doxer_done':                 Data.SPAN_LINE,
   'doxer_command':              Data.SCOPED | Data.SPAN_LINE,
   'doxer_visible':              Data.SCOPED,
@@ -43,8 +43,8 @@ command_dict = {
   'doxer_item':                 Data.SPAN_LINE,
   'doxer_div':       	        Data.SCOPED,
   'doxer_start_section':        Data.SECTIONED,
-  'doxer_sub':                  Data.QUOTABLE,
-  'doxer_cmatch':               0,
+  'doxer_sub':                  Data.NESTING,
+  'doxer_cmatch':               Data.NESTING,
   'doxer_anchor':               0,
   'doxer_template_hook':        0,
 # layout commands
@@ -53,22 +53,22 @@ command_dict = {
   'doxer_flush_parameters':     0,
   'doxer_hseparator':           Data.SPAN_LINE,
   'doxer_title_tail':           Data.SPAN_LINE,
-  'doxer_center':       	0,
-  'doxer_bold':         	0,
-  'doxer_italic':       	0,
-  'doxer_underline':       	0,
-  'doxer_monospace':    	0,
-  'doxer_strikethrough':	0,
-  'doxer_underline':    	0,
-  'doxer_subscript':    	0,
-  'doxer_superscript':  	0,
-  'doxer_fontsize':     	0,
-  'doxer_span':       	        0,
+  'doxer_center':       	Data.NESTING,
+  'doxer_bold':         	Data.NESTING,
+  'doxer_italic':       	Data.NESTING,
+  'doxer_underline':       	Data.NESTING,
+  'doxer_monospace':    	Data.NESTING,
+  'doxer_strikethrough':	Data.NESTING,
+  'doxer_underline':    	Data.NESTING,
+  'doxer_subscript':    	Data.NESTING,
+  'doxer_superscript':  	Data.NESTING,
+  'doxer_fontsize':     	Data.NESTING,
+  'doxer_span':       	        Data.NESTING,
   'doxer_uri':       	        0,
   'doxer_longuri':     	        0,
   'doxer_image':       	        0,
-  'doxer_raw':       	        Data.QUOTABLE,
-  'doxer_preformatted':	        Data.QUOTABLE,
+  'doxer_raw':       	        Data.NESTING | Data.QUOTABLE,
+  'doxer_preformatted':	        Data.NESTING | Data.QUOTABLE,
 }
 
 # --- identifier definition constants ---
@@ -122,24 +122,53 @@ def datetime_isoformat (datetime_obj):
   return datetime_obj.isoformat ()
 
 # --- convert tokens back to text ---
-def text_from_token_list (token_list, reconstruct_escapes_and_macros = True, want_args_anyway = False):
+def reescape_quotable_string (string):
+  escaped, squotes, dquotes = False, False, False
+  result = ""
+  for ch in list (string):
+    if escaped:
+      result += ch
+    elif ch == '"' and not squotes:
+      result += ch
+      dquotes = not dquotes
+    elif ch == "'" and not dquotes:
+      result += ch
+      squotes = not squotes
+    elif ch == '\\' and (squotes or dquotes):
+      result += ch
+      escaped = True
+    elif ch == '@' and not (squotes or dquotes):
+      result += '@@'
+      escaped = True
+    else:
+      result += ch
+  return result
+def internal_text_from_token_list (token_list, reconstruct_escapes_and_macros, command_dict, quotable):
   result = ''
   for tok in token_list:
     if isinstance (tok, str):
-      if reconstruct_escapes_and_macros:
+      if reconstruct_escapes_and_macros and not quotable:
         result += re.sub ('@', '@@', tok)
+      elif reconstruct_escapes_and_macros and quotable:
+        result += reescape_quotable_string (tok)
       else:
         result += tok
     else: # handle macros
+      macro_flags = 0
       if reconstruct_escapes_and_macros:
         result += '@' + tok.name
+        macro_flags = command_dict.get (tok.name, 0)
       if reconstruct_escapes_and_macros and tok.arg:
-        result += '{' + text_from_token_list (tok.arg, reconstruct_escapes_and_macros, want_args_anyway) + '}'
-      elif want_args_anyway and tok.arg:
-        result += text_from_token_list (tok.arg, reconstruct_escapes_and_macros, want_args_anyway)
-      result += text_from_token_list (tok.title, reconstruct_escapes_and_macros, want_args_anyway)
-      result += text_from_token_list (tok.contents, reconstruct_escapes_and_macros, want_args_anyway)
+        result += '{' + internal_text_from_token_list (tok.arg, reconstruct_escapes_and_macros, command_dict, macro_flags & Data.QUOTABLE) + '}'
+      elif tok.arg and not reconstruct_escapes_and_macros:
+        result += internal_text_from_token_list (tok.arg, reconstruct_escapes_and_macros, command_dict, False)
+      result += internal_text_from_token_list (tok.title, reconstruct_escapes_and_macros, command_dict, False)
+      result += internal_text_from_token_list (tok.contents, reconstruct_escapes_and_macros, command_dict, False)
   return result
+def plain_text_from_token_list (token_list):
+  return internal_text_from_token_list (token_list, False, {}, False)
+def parsable_text_from_token_list (token_list, command_dict):
+  return internal_text_from_token_list (token_list, True, command_dict, False)
 
 def split_arg_from_token_list (token_list):     # returns ( "arg", [ rest_tokens ] )
   def arg_split_string (string):
@@ -282,7 +311,7 @@ def list_expand_args (token_list, macro):
       result += [ tok ]
     elif tok.name == 'doxer_args':
       if tok.arg:
-        result += expand_doxer_args (text_from_token_list (tok.arg), macro)
+        result += expand_doxer_args (plain_text_from_token_list (tok.arg), macro)
     else:
       node = tok.clone_macro()
       node.arg = list_expand_args (node.arg, macro)
@@ -294,35 +323,13 @@ def list_expand_args (token_list, macro):
         result += [ node ]
   return result
 
-def text_expand_args_reescape (text, macro):
-  assert isinstance (text, str)
-  result = ''
-  # perform argument substitution
-  ltext = list (text)
-  while ltext:
-    if ltext[:12] != list ('@doxer_args{'):
-      ch = ltext.pop (0)
-      result += ch
-      continue
-    ltext = ltext[12:]
-    # got '@doxer_args{', now parse '123}'
-    anum = ''
-    ch = ltext.pop (0)
-    while ch != '}':
-      anum += ch
-      ch = ltext.pop (0)
-    # substitute args
-    tok_list = expand_doxer_args (anum, macro)
-    result += text_from_token_list (tok_list, True)
-  return result
-
 def doxer_setget (macro, env_variables = None):
   fname, fline = macro.fname, macro.fline
   if not env_variables:
     env_variables = macro.root.variables
   if not macro.arg:
     raise MiscError (fname, fline, '%s: missing variable name' % macro.name)
-  atext = text_from_token_list (macro.arg)
+  atext = plain_text_from_token_list (macro.arg)
   cpos = atext.find (',')
   if cpos >= 0:
     name = atext[:cpos].strip()
@@ -339,10 +346,10 @@ def doxer_setget (macro, env_variables = None):
          (macro.name == 'doxer_add' and
           not isinstance (env_variables[name], tuple)))):
       raise MacroError (macro, '%s: variable already assigned: %s' % (macro.name, name))
-    val_unstripped = text_from_token_list (macro.title)
+    val_unstripped = plain_text_from_token_list (macro.title)
     val = val_unstripped.strip()
     for word in re.split (',', atext):
-      flags = text_from_token_list (word).strip()
+      flags = plain_text_from_token_list (word).strip()
       if flags.find ('parse_date') >= 0:
         date = datetime_parse (val.strip(), macro.fname, macro.fline)
         val = datetime_format (date)
@@ -507,7 +514,7 @@ class DoxiParser:
       else:
         text += ch
     return text
-  def parse_stream (self, istream, term, enable_quotation_and_nesting = False):
+  def parse_stream (self, istream, term, quotation_and_nesting = 0):
     self.variables['mtime'] = datetime_isoformat (istream.mtime())
     def add_text (toklist, text):
       if not len (toklist) or not isinstance (toklist[-1], str):
@@ -518,7 +525,7 @@ class DoxiParser:
     token_list = []
     while not istream.eos():
       c = istream.peek_char()
-      if enable_quotation_and_nesting and c in '"\'':
+      if quotation_and_nesting & Data.QUOTABLE and c in '"\'':
         quot = istream.pop_char()
         add_text (token_list, quot)
         quotescaped = False
@@ -536,7 +543,7 @@ class DoxiParser:
           ignore_braces -= 1
         else:
           return token_list
-      if term == TERM_ARG_SEP and c == '{' and enable_quotation_and_nesting:
+      if term == TERM_ARG_SEP and c == '{' and quotation_and_nesting & Data.NESTING:
         ignore_braces += 1
       if c == '\n' and term == TERM_BEFORE_NEWLINE:     # leave \n in input queue
         return token_list
@@ -602,7 +609,7 @@ class DoxiParser:
       lastsep = istream.pop_char()
       assert lastsep == '{'
       while lastsep != '}':
-        argtree = self.parse_stream (istream, TERM_ARG_SEP, macro.flags & Data.QUOTABLE)
+        argtree = self.parse_stream (istream, TERM_ARG_SEP, macro.flags)
         macro.arg += argtree
         lastsep = istream.pop_char()
     # handle aliases
@@ -616,7 +623,7 @@ class DoxiParser:
     # handle command definitions
     if macro.name == 'doxer_command':
       if self.command_protection:
-        raise istream.Error ("Invalid recursive command definition: %s" % text_from_token_list ([ macro ]).strip())
+        raise istream.Error ("Invalid recursive command definition: %s" % plain_text_from_token_list ([ macro ]).strip())
       return self.parse_command (macro, istream)
     # call builtins
     handler = self.builtin_macros.get (macro.name)
@@ -675,7 +682,7 @@ class DoxiParser:
   def parse_include (self, tnode, istream):
     # parse @include directive up to line end
     tokens = self.parse_stream (istream, TERM_AT_NEWLINE)
-    itext = text_from_token_list (tokens)
+    itext = plain_text_from_token_list (tokens)
     # figure filename
     fname = itext.strip()
     #if not fname or len (fname) < 2:
@@ -722,7 +729,7 @@ class DoxiParser:
   parse_new_command_name = staticmethod (parse_new_command_name)
   def parse_command (self, macro, istream):
     cflags = 0
-    astring = text_from_token_list (macro.arg).strip()
+    astring = plain_text_from_token_list (macro.arg).strip()
     f = Data.custom_command_flags_dict.get (astring)
     if f:
       cflags |= f
@@ -764,13 +771,6 @@ class DoxiParser:
     assert ch == '\n'
     self.alias_dict[alias_name] = alias_text
     return []
-  def trigger_alias (self, macro, istream):
-    atext = self.alias_dict[macro.name]
-    # perform argument substitution
-    result = text_expand_args_reescape (atext, macro)
-    # reparse text
-    istream.put_back (result)
-    return []
   def dnl (self, macro, istream):
     # read up to newline
     title_text = self.read_literal (istream, '\n')
@@ -783,6 +783,37 @@ class DoxiParser:
     if self.command_protection:
       return [ macro ]          # defer execution
     return doxer_setget (macro, self.variables)
+  def text_expand_args_reescape (self, text, macro):
+    assert isinstance (text, str)
+    result = ''
+    # perform argument substitution
+    ltext = list (text)
+    while ltext:
+      if ltext[:12] != list ('@doxer_args{'):
+        ch = ltext.pop (0)
+        result += ch
+        if ch == '@' and ltext:
+          ch = ltext.pop (0)
+          result += ch
+        continue
+      ltext = ltext[12:]
+      # got '@doxer_args{', now parse '123}'
+      anum = ''
+      ch = ltext.pop (0)
+      while ch != '}':
+        anum += ch
+        ch = ltext.pop (0)
+      # substitute args
+      tok_list = expand_doxer_args (anum, macro)
+      result += parsable_text_from_token_list (tok_list, self.command_dict)
+    return result
+  def trigger_alias (self, macro, istream):
+    atext = self.alias_dict[macro.name]
+    # perform argument substitution
+    result = self.text_expand_args_reescape (atext, macro)
+    # reparse text
+    istream.put_back (result)
+    return []
   builtin_macros = {
     'doxer_add'         : doxer_setget,
     'doxer_set'         : doxer_setget,
@@ -1068,7 +1099,7 @@ class EnumerateSections:
     tokens = node.arg
     while tokens:
       arg, tokens = split_arg_from_token_list (tokens)
-      arg = text_from_token_list (arg).strip()
+      arg = plain_text_from_token_list (arg).strip()
       if arg == 'numbered':
         fetch_number = True
       elif arg == 'hidden':
@@ -1174,16 +1205,16 @@ class CreateAnchors:
     explicit_anchor, needs_anchor, needs_toc_anchor = False, False, False
     # determine anchor name origin
     if macro.name == 'doxer_anchor':
-      title = text_from_token_list (macro.arg, False)
+      title = plain_text_from_token_list (macro.arg)
       explicit_anchor = True
       needs_anchor = True
     else:
       needs_toc_anchor = True           # sections must have an anchor for TOC generation
-      title = "section-" + text_from_token_list (macro.title, False, True)
+      title = "section-" + plain_text_from_token_list (macro.title)
       for tok in macro.title:
         if not isinstance (tok, str) and tok.name == 'doxer_anchor':
           explicit_anchor = True        # have explicit anchor already
-          title = text_from_token_list (tok.arg, False)
+          title = plain_text_from_token_list (tok.arg)
           break
     # sanity checks
     title = title.strip()
@@ -1266,7 +1297,7 @@ class ApplyCustomizations:
     if node.name == 'doxer_cmatch':
       return self.doxer_cmatch (node)
     if node.name == 'doxer_msg':
-      print text_from_token_list (node.arg)
+      print plain_text_from_token_list (node.arg)
       return None
     else:
       return node
@@ -1288,7 +1319,7 @@ class ApplyCustomizations:
     return args
   def doxer_sub (self, node):
     subok = False
-    argstring = text_from_token_list (node.arg)
+    argstring = plain_text_from_token_list (node.arg)
     if isinstance (argstring, str):
       args = self.parse_quoted_args (node, argstring, 2)
       if len (args) == 3:
@@ -1300,7 +1331,7 @@ class ApplyCustomizations:
     raise MacroError (node, 'Invalid substitution: %s' % argstring)
     return None
   def doxer_cmatch (self, node):
-    atext = text_from_token_list (node.arg)
+    atext = plain_text_from_token_list (node.arg)
     alist = re.split (',', atext)
     if len (alist) < 1:
       return '0'

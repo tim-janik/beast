@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/01/31 01:43:27 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/03/23 01:03:17 $
 
 @titlesection
 @doctitle		Doxer - Software documentation system
@@ -25,8 +25,49 @@ markup macros and aliases, based on the set of standard macros supplied with dox
 @section Markup Macros
 
 @itemize
-@item @@doxer_italic{@emph{ARG}} - display @emph{ARG} with an italic font.
+@item @doxer_bold{ @@doxer_newline{} }@*
+	Force a line break in the output.
+@item @doxer_bold{ @@doxer_line{} LINE-NUMBER '"' FILENAME '"' '\n' }@*
+	Source file/line adjustment directive. 
+@item @doxer_bold{ @@doxer_alias{@emph{ALIAS-NAME}} SUBSTITUTION-TEXT '\n' }@*
+	Define ALIAS-NAME as a shorthand for SUBSTITUTION-TEXT, leading spaces are ignored.
+@item @doxer_bold{ @@include{} '"' FILENAME '"' '\n' }@*
+@item @doxer_bold{ @@include{} '<' FILENAME '>' '\n' }@*
+	Temporarily suspend the current parsing context and parse FILENAME.
+@item @doxer_bold{ @@doxer_dnl{} DUMMYTEXT '\n' }@*
+	Commentary mechanism, the macros, DUMMYTEXT and newline are ignored.
+@item @doxer_bold{ @@doxer_args{@emph{ARG-REFERENCE}} }@*
+	A macro used in command definition used as a place holder for command arguments.
+	Arguments are referenced by their positinal numbers, argument 0 is the command name. Argument ranges, delimited by ':' are support.
+	'*' can be used as a place holder for all arguments except argument 0.
+	'line' can be used to refer to the text parsed after the macro braces up to the first newline.
+	'content' can be used to refer to the text body, enclosed by a macro and it's respective @@done directive.
+	'all' can be used to refer to the combination of '*', 'line' and 'content'.
+@item @doxer_bold{ @@doxer_set{VARIABLE [, FLAGS]} VALUE-TEXT '\n' }@*
+	Set the value of VARIABLE to VALUE-TEXT. 
+	Possible FLAGS are:
+	@* 'parse_date' - to interpret VALUE-TEXT as an ISO-8601 compliant date string or some variants thereof;
+	@* 'unstripped' - to avoid stripping space off of VALUE-TEXT before assigning VARIABLE.
+@item @doxer_bold{ @@doxer_add{VARIABLE [, FLAGS]} VALUE-TEXT '\n' }@*
+	A variant of @@doxer_set{}, that adds VALUE-TEXT to the list variable VARIABLE.
+@item @doxer_bold{ @@doxer_get{VARIABLE} }@*
+	Replaces the macro occourance with the value of VARIABLE.
+@item @doxer_bold{ @@doxer_bold{@emph{ARG}} }@*
+	Display @emph{ARG} with a bold font. @doxer_bold{Example script in bold font.}
+@item @doxer_bold{ @@doxer_italic{@emph{ARG}} }@*
+	Display @emph{ARG} with an italic font. @doxer_italic{Example script in italic font.}
+@item @doxer_bold{ @@doxer_underline{@emph{ARG}} }@*
+	Display @emph{ARG} in an underlined style. @doxer_underline{Example script in underlined style.}
+@item @doxer_bold{ @@doxer_strikethrough{@emph{ARG}} }@*
+	Display @emph{ARG} in a strikethrough style. @doxer_strikethrough{Example script in strikethrough style.}
+@item @doxer_bold{ @@doxer_subscript{@emph{ARG}} }@*
+	Display @emph{ARG} with a subscript font. @doxer_subscript{Example script in subscript font.}
+@item @doxer_bold{ @@doxer_superscript{@emph{ARG}} }@*
+	Display @emph{ARG} with a superscript font. @doxer_superscript{Example script in superscript font.}
+@item @doxer_bold{ @@doxer_monospace{@emph{ARG}} }@*
+	Display @emph{ARG} in monospaced manner. @doxer_monospace{Example script in monospaced manner.}
 @done
+
 
 @section Structure Macros
 

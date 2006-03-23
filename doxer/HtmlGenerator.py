@@ -199,7 +199,7 @@ class HtmlGenerator:
     if node.name != 'doxer_args':
       self.transform_node (node, environment)
     else:
-      token_list = DoxiParser.expand_doxer_args (DoxiParser.text_from_token_list (node.arg), caller)
+      token_list = DoxiParser.expand_doxer_args (DoxiParser.plain_text_from_token_list (node.arg), caller)
       for tok in token_list:
         self.transform_any (tok, environment)
   def transform_text (self, string, environment):
@@ -689,7 +689,7 @@ class HtmlGenerator:
     tokens = node.arg
     while tokens:
       arg, tokens = DoxiParser.split_arg_from_token_list (tokens)
-      arg = DoxiParser.text_from_token_list (arg).strip()
+      arg = DoxiParser.plain_text_from_token_list (arg).strip()
       if   arg == 'noframe':    variant = ' border="0" rules="none"'
       elif arg == 'normal':     variant = ' border="1" rules="all"'
       elif arg == 'bigframe':   variant = ' border="3"' # some browsers render no rules bigger than rules=none
@@ -717,7 +717,7 @@ class HtmlGenerator:
     tokens = node.arg
     while tokens:
       arg, tokens = DoxiParser.split_arg_from_token_list (tokens)
-      arg = DoxiParser.text_from_token_list (arg).strip()
+      arg = DoxiParser.plain_text_from_token_list (arg).strip()
       if   arg == 'left':       halign = ' align="left"'
       elif arg == 'center':     halign = ' align="center"'
       elif arg == 'right':      halign = ' align="right"'
@@ -775,7 +775,7 @@ class HtmlGenerator:
     tokens = node.arg
     while tokens:
       arg, tokens = DoxiParser.split_arg_from_token_list (tokens)
-      arg = DoxiParser.text_from_token_list (arg).strip()
+      arg = DoxiParser.plain_text_from_token_list (arg).strip()
       ltag = 'ul'
       if   arg == 'BULLET':     ltag, ltype = 'ul', ''
       elif arg == 'bullet':     ltag, ltype = 'ul', ''
@@ -921,7 +921,7 @@ class HtmlGenerator:
       uri = atext.strip()
       atext = uri
     uri = self.uri_quote_string (uri)
-    alt = DoxiParser.text_from_token_list ((atext and [ atext ] or []) + node.arg[1:]).strip()
+    alt = DoxiParser.plain_text_from_token_list ((atext and [ atext ] or []) + node.arg[1:]).strip()
     if alt:
       self.hstream.single ('<img src="%s" alt="%s"/>' % (uri, HtmlOStream.quote_string (alt)))
     else:
@@ -954,7 +954,7 @@ class HtmlGenerator:
       self.hstream.push ('a', 'name="%s"' % HtmlOStream.quote_string (node.anchor))
       self.hstream.pop ('a')
   def doxer_raw (self, data, transformer, node, environment):
-    atext = DoxiParser.text_from_token_list (node.arg, False, True)
+    atext = DoxiParser.plain_text_from_token_list (node.arg)
     cpos = atext.find (',')
     if cpos >= 0:
       kind = atext[:cpos].strip()
@@ -980,6 +980,9 @@ class HtmlGenerator:
     'doxer_bold'        : (simple, 'b'),
     'doxer_italic'      : (simple, 'i'),
     'doxer_underline'   : (simple, 'u'),
+    'doxer_strikethrough' : (simple, 'strike'),
+    'doxer_subscript'   : (simple, 'sub'),
+    'doxer_superscript' : (simple, 'sup'),
     'doxer_monospace'   : monospace,
     'doxer_preformatted': preformatted,
     'doxer_fontsize'    : fontsize,
