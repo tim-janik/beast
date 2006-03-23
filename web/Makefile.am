@@ -145,6 +145,8 @@ html/logogallery/.md5sum: $(wildcard logogallery/*)
 	md5sum html/logogallery/* >xgen-html-logogallery-md5sum
 	mv xgen-html-logogallery-md5sum $@	# atomic
 
+# Note some implicit dependencies
+html/doxer-docu.html: ../doxer/docu-main.doxi
 
 # Generated .doxi files
 ../docs/gendoxi/bse-objects.doxi \
