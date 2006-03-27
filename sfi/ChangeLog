@@ -1,3 +1,8 @@
+Mon Mar 27 18:22:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* glib-extra.[hc]: g_intern_(static)_string only needs to be provided
+	for old glib versions (< glib-2.9.0).
+
 Thu Mar  9 00:55:39 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: get rid of sficonfig.h. generate partial library libsfi.o.
