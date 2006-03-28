@@ -308,7 +308,7 @@ class HtmlGenerator:
     elif token:
       self.transform_node (token, environment)
   # block tag handlers
-  def write_meta (self, node, environment):
+  def write_html_head (self, node, environment):
     self.hstream.single ('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n', False)
     self.hstream.single ('<meta name="generator" content="doxer.py %s">\n' % Config.VERSION, False)
     for tag in ('author', 'description', 'keywords'):
@@ -403,7 +403,7 @@ class HtmlGenerator:
     self.hstream.put ('\n')
     self.hstream.push ('head')
     self.hstream.put ('\n')
-    self.write_meta (node, environment)
+    self.write_html_head (node, environment)
     self.hstream.pop ('head')
     self.hstream.put ('\n')
     content = environment.get ('html-classes')
