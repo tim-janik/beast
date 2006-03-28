@@ -1,3 +1,10 @@
+Wed Mar 29 01:54:38 2006  Tim Janik  <timj@gtk.org>
+
+	* web/wiki.doxi: PHP fixups to tell robots: content="noindex" for
+	tmeporary EditThisPage wiki pages.
+
+	* web/style/beast-style.css: beautify wiki tables somewhat.
+
 Thu Mar 23 02:02:50 2006  Tim Janik  <timj@gtk.org>
 
 	* web/Makefile.am: dependency fixup.

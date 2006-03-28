@@ -179,4 +179,7 @@ h3.ChangeLog-title  { font-size:120%; color: #404040; }
 }
 
 /* wiki markup */
-.wiki .NotFound b { font-weight: normal; }
+.wiki .NotFound b	{ font-weight: normal; }
+.wiki table		{ margin: 0.5em 0; border-collapse: collapse; }
+.wiki td		{ padding: 0.2em 0.25em 0.2em; border: 1pt solid #ADB9CC; }
+.wiki td p		{ margin: 0; padding: 0; }
