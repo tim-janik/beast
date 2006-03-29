@@ -287,13 +287,10 @@ DOCS:
 - plugin-devel: mention possibility of deriving from BassFilterProperties() for expensive
   table etc. calculations
 - automate uploading of images from docs/ to gtk.org:/web/beast/html/cvs-images/
-Alper:
-- command line option arguments in manual pages are incorrectly spaced
-- what kind of texi macros should be used to markup manual page contents?
-  could WRITING.3 have a set of default macros showing this?
-- allow commas in @refBlurb{}, respectively Info BLURB = ","; texts
-- make navigation.xml on gtk.org: obsolete (transfer site-navigation.xml somehow)
-- write manual pages with doxygen, improvement over .texi?
+WEB:
+- webmenu indicators are wrong for inner submenu items, i.e.
+  http://beast.gtk.org/historic.html has "v Historic" indicator,
+  but http://beast.gtk.org/oldnews.html has "> Historic" indicator
 
 MONITORING DIALOG:
 * Frame "Thread Info"
