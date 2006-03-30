@@ -74,6 +74,7 @@ common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfid
 bin_PROGRAMS = sfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
 sfidl_LDADD = $(SFI_LIBS) -lm # libsfi.la
+sfidl_CFLAGS = $(AM_CFLAGS) # hack to cause glib-extra.c to be compiled twice (work around automake)
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh sfidl-typelist.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-corec.hh sfidl-corecxx.hh sfidl-cxxbase.hh sfidl-hostc.hh
 
@@ -89,6 +90,7 @@ testcxx_SOURCES = testcxx.cc
 testcxx_LDADD = $(progs_LDADD)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 testsfidl_SOURCES = testsfidl.cc $(common_idl_sources)
+testsfidl_CFLAGS = $(AM_CFLAGS) # hack to cause glib-extra.c to be compiled twice (work around automake)
 testsfidl_LDADD = $(progs_nosfi_LDADD)
 
 #

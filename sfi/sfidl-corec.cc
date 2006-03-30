@@ -80,7 +80,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
   }
   
   void
-  CodeGeneratorCoreC::help()
+  help()
   {
     CodeGenerator::help();
     fprintf (stderr, " --init <name>               set the name of the init function\n");

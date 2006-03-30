@@ -31,12 +31,6 @@
 using namespace Sfidl;
 using namespace std;
 
-static string fail (const string& error)
-{
-  g_error ("%s\n", error.c_str());
-  return "*fail(" + error + ")*";
-}
-
 string
 CodeGeneratorClientCxx::typeArg (const string& type)
 {
@@ -170,17 +164,6 @@ string CodeGeneratorClientCxx::createTypeCode (const std::string& type, const st
   return CodeGeneratorCBase::createTypeCode (type, name, model);
 }
 
-static string
-CxxNameToSymbol (const string &str)     // FIXME: need mammut renaming function
-{
-  static const char *cset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz";
-  string s;
-  for (guint i = 0; i < s.size(); i++)
-    if (!strchr (cset, s[i]))
-      s[i] = '_';
-  return s;
-}
-
 static vector<string>
 split_string (const string &ctype)      // FIXME: remove once we have general renamer
 {
@@ -243,12 +226,6 @@ UC_TYPE_NAME (const string &tname)
   string nspace = join_string (vs, ":");
   string result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
   return result;
-}
-
-static const char*
-cUC_TYPE_NAME (const string &cstr) // FIXME: need mammut renaming function
-{
-  return g_intern_string (UC_TYPE_NAME (cstr).c_str());
 }
 
 void

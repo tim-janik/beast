@@ -1,3 +1,13 @@
+Thu Mar 30 20:20:52 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: added atuomake/libtool double-compilation workaround.
+
+	* sfimemory.[hc]: fixed bogus "const" in return type.
+
+	* sfidl-clientcxx.cc: removed bogus code.
+
+	* sfidl-corec.cc: namespace prefixing fixup.
+
 Thu Mar 30 19:17:12 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.cc: Fixes for gcc-4.2 snapshot related to anonymous
