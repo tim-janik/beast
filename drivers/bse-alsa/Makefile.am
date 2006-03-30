@@ -7,7 +7,7 @@ include $(top_srcdir)/Makefile.decl
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
 
-INCLUDES = -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
+INCLUDES += -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 # we specify the logging domain here
 DEFS += $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
 

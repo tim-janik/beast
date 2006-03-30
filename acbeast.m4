@@ -226,6 +226,8 @@ AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 		    MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
 		    MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
 		)
+		dnl avoid lots of bogus warnings with string pointers
+		MC_EVAR_ADD(CFLAGS, -Wno-pointer-sign, -Wno-pointer-sign)
 		dnl problematic, triggers warnings in glibc headers
 		MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
 		dnl problematic, warns on prototype arguments:

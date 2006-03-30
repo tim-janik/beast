@@ -10,8 +10,8 @@ SUBDIRS = icons zintern . tests
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.h" in .gen-proc.c
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
-INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
-DEFS += $(strip \
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+DEFS     += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_c_sources) $(bse_cc_sources))) \
 )
@@ -90,7 +90,7 @@ $(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
 $(srcdir)/bsecxxplugin.hh: bsecore.genidl.hh
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 $(srcdir)/bsesummation.cc: bsesummation.genidl.hh
-idl_built_sources += $(bse_idl_sources:.idl=.genidl.hh)
+idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
 	bsebusmodule.cc		\
@@ -99,7 +99,7 @@ bse_cc_sources = $(strip 	\
 	bsesummation.cc		\
 )
 # idl files not used for build rules
-idl_dummy_files += $(strip	\
+idl_dummy_files = $(strip	\
 	bsecxxmodule.idl	\
 	bsecxxbase.idl		\
 )

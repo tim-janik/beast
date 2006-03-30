@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES	= -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
+INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
 DEFS		= -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
 
 TESTS 		= ring threads signal

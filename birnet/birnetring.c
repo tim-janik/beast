@@ -23,7 +23,7 @@
 #define HAVE_GSLICE     GLIB_CHECK_VERSION (2, 9, 7)
 
 /* --- memory handling --- */
-static inline const gulong
+static inline gulong
 alloc_upper_power2 (const gulong number)
 {
   return number ? 1 << g_bit_storage (number - 1) : 0;

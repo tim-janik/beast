@@ -5,7 +5,7 @@ include $(top_srcdir)/Makefile.decl
 
 FEATURE_TEST_SH=$(srcdir)/featuretest.sh
 
-noinst_build_sources += beastconf.sh
+noinst_build_sources = beastconf.sh
 beastconf.sh: Makefile
 	cd . \
 	&& echo "# Generated data from $< (by make $@)" > xgen-bp \

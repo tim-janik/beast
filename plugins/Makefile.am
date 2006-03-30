@@ -61,6 +61,8 @@ EXTRA_CFILES = $(strip		\
 
 CLEANFILES += $(plugins_built_sources)
 
+plugin_LTLIBRARIES = # added to in Makefile.plugins
+
 ## include generated plugin Makefile
 include Makefile.plugins
 ## Makefile.plugins contains generated plugin rules:

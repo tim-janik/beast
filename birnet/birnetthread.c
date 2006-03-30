@@ -1035,7 +1035,7 @@ birnet_guard_deregister_all (BirnetThread *thread)
       {
         memset ((guint8*) guard->values, 0, sizeof (guard->values[0]) * guard->n_values);
         guard->cache_next = NULL;
-        g_atomic_pointer_compare_and_exchange ((gpointer*) &guard->thread, thread, NULL); /* reset ->thread with memory barrier */
+        g_atomic_pointer_compare_and_exchange ((void*) &guard->thread, thread, NULL); /* reset ->thread with memory barrier */
       }
 }
 

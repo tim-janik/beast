@@ -6,7 +6,7 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS =
 
-INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(GXK_CFLAGS) # -I.. for <gxk/*.h> includes
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(GXK_CFLAGS) # -I.. for <gxk/*.h> includes
 
 DEFS += $(strip \
 	-DGTK_DISABLE_COMPAT_H 	\

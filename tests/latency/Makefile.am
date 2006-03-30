@@ -6,8 +6,6 @@ include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
 DEFS     += -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
-CFLAGS   += $(EXTRA_CFLAGS)
-CPPFLAGS += $(EXTRA_CXXFLAGS)
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)

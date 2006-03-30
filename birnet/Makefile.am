@@ -5,7 +5,7 @@
 include $(top_srcdir)/Makefile.decl
 
 SUBDIRS		= . tests
-INCLUDES  	= -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
+INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
 GLIB_MKENUMS    = glib-mkenums
 DEFS		= -D_BIRNET_SOURCE_EXTENSIONS -DPARANOID
 
@@ -48,7 +48,7 @@ noinst_LTLIBRARIES         = libbirnet.la
 libbirnetincludedir        = $(includedir)/birnet
 libbirnetinclude_HEADERS   = $(birnet_headers) $(birnet_generated_headers)
 libbirnet_la_SOURCES       = $(birnet_sources)
-libbirnet_la_DEPENDENCIES +=
+libbirnet_la_DEPENDENCIES  =
 libbirnet_la_LIBADD        = $(BIRNET_LIBS) -lm
 libbirnet_la_LDFLAGS       = -no-undefined # -Wl,-Bsymbolic
 # keep this .o rule in sync with the corresponding .la rule from Makefile.in

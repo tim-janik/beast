@@ -18,7 +18,7 @@ imagesdir = ${beastimagesdir}
 EXTRA_DIST += $(private_images) $(public_images)
 
 # generate image header files
-noinst_build_sources += beast-images.h
+noinst_build_sources = beast-images.h
 beast-images.h:	Makefile ${public_images}
 	cd . \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-bstih \

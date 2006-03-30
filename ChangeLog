@@ -1,3 +1,16 @@
+Thu Mar 30 20:16:08 2006  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: add -Wno-pointer-sign when comiling mit gcc-4.2 to omit
+	bogus warnings about signedness of string pointers in C.
+
+	* autogen.sh: permit compilatiopn with automake 1.9.
+
+	* birnet/birnetring.c: fixed bogus "const" in return type.
+
+	* birnet/birnetthread.c: fixed strict aliasing warning.
+
+	* **/Makefile.am: fixed automake "+=" warnings.
+
 Wed Mar 29 01:54:38 2006  Tim Janik  <timj@gtk.org>
 
 	* web/wiki.doxi: PHP fixups to tell robots: content="noindex" for
