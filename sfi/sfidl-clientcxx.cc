@@ -164,68 +164,10 @@ string CodeGeneratorClientCxx::createTypeCode (const std::string& type, const st
   return CodeGeneratorCBase::createTypeCode (type, name, model);
 }
 
-static vector<string>
-split_string (const string &ctype)      // FIXME: remove once we have general renamer
-{
-  vector<string> vs;
-  string type = ctype;
-  int i;
-  while ((i = type.find (':')) >= 0)
-    {
-      vs.push_back (type.substr (0, i));
-      if (type[i + 1] == ':')
-        type = type.substr (i + 2);
-      else
-        type = type.substr (i + 1);
-    }
-  vs.push_back (type);
-  return vs;
-}
-
-static string
-join_string (const vector<string> &vs,  // FIXME: remove once we have general renamer
-             const string         &delim)
-{
-  string r;
-  for (vector<string>::const_iterator vi = vs.begin(); vi != vs.end(); vi++)
-    {
-      if (vi != vs.begin())
-        r += delim;
-      r += *vi;
-    }
-  return r;
-}
-
-static string
-UC_NAME (const string &cstr)    // FIXME: need mammut renaming function
-{
-  vector<string> vs = split_string (cstr);
-  string str = join_string (vs, "_");
-  string r;
-  char l = 0;
-  for (string::const_iterator i = str.begin(); i != str.end(); i++)
-    {
-      if (islower (l) && isupper (*i))
-        r += "_";
-      r += toupper (l = *i);
-    }
-  return r;
-}
 static const char*
 cUC_NAME (const string &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (cstr.c_str());
-}
-
-static string // FIXME: need mammut renaming function
-UC_TYPE_NAME (const string &tname)
-{
-  vector<string> vs = split_string (tname);
-  string lname = vs.back();
-  vs.pop_back();
-  string nspace = join_string (vs, ":");
-  string result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
-  return result;
 }
 
 void

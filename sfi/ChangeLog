@@ -1,3 +1,7 @@
+Thu Mar 30 20:46:48 2006  Tim Janik  <timj@gtk.org>
+
+	* sfidl-clientcxx.cc: removed cruft.
+
 Thu Mar 30 20:20:52 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: added atuomake/libtool double-compilation workaround.
