@@ -39,8 +39,9 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
     dnl # define GLIB_CFLAGS and GLIB_LIBS:
     PKG_CHECK_MODULES(BIRNET_GLIB, $DEPENDANCIES,,
 	AC_MSG_ERROR([[Failed to detect or find $DEPENDANCIES (consider adjusting \$PKG_CONFIG_PATH)]]))
+    dnl # libtool doesn't automatically figure that -pthread implies -lpthread
+    BIRNET_LIBS=`echo " $BIRNET_GLIB_LIBS" | sed 's/\(-pthread\b\)/-lpthread \1/' `
     BIRNET_CFLAGS="$BIRNET_GLIB_CFLAGS"
-    BIRNET_LIBS="$BIRNET_GLIB_LIBS"
 
     dnl # --- BIRNET_CFLAGS & BIRNET_LIBS ---
     AC_SUBST(BIRNET_CFLAGS)

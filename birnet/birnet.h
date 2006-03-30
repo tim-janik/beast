@@ -29,6 +29,7 @@
 
 #ifdef	__cplusplus
 #include <birnet/birnetutilsxx.hh>
+#include <birnet/birnetsignal.hh>
 #include <birnet/birnetthreadxx.hh>
 #endif	/* __cplusplus */
 

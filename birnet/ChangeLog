@@ -1,3 +1,126 @@
+Thu Mar 30 19:34:07 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.h: changed switch macro for birnet extensins
+	to _BIRNET_SOURCE_EXTENSIONS.
+
+	* birnetcore.h: added more return_if_fail and assertion macros
+	plus shorthands. 
+
+	* birnet.h:
+	* mksignals.sh:
+	* birnetsignal.hh: 
+	* birnetsignalslot.hh: 
+	* birnetsignaltemplate.hh: added C++ signal system.
+	* ChangeLog: added old signal system change entries.
+
+	* tests/signal.cc: test the C++ signal system.
+
+	* configure.inc: added libtool workaround for missing -lpthread.
+
+    Wed Dec 28 01:07:43 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignaltemplate.hh: added disconnect() and
+	corrsponding -= operators.
+
+	* birnetsignal.hh: added operator== to signal handler
+	links, to allow disconnections. implemented disconnect_equal_link()
+	for signal links.
+
+	* mksignals.sh:
+	* birnetsignalslot.hh: renamed handler to trampoline.
+	added slot() constructor for signals + emit() method. with this,
+	slot(sig_some_signal) can be connected and disconnected.
+
+	* tests/signal.cc: signal handler data must implement operator== now.
+
+    Wed Jul  6 20:06:05 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh: added struct CollectorUntil0 signal
+	collector template. predefine SignalVoid for void(void) signals.
+
+    Mon Apr 18 23:10:21 2005  Tim Janik  <timj@gtk.org>
+
+	* mksignals.sh: /bin/sh is more protable than bash.
+
+    Sun Apr 17 19:06:31 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh: introduce ScopeReference to keep an
+	instance referenced within block scope. added SignalFinalize
+	which does not need the emitter to be ref/unref-ed around emit(),
+	but instead asserts its in finalization stage. cleanups.
+	* birnetsignaltemplate.hh: use ScopeReference.
+
+	* tests/signal.cc: removed cruft.
+
+
+    Wed Mar 30 00:52:05 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignalslot.hh: moved signal handler and slot
+	definitions here. there're no emitter handlers/slots anymore.
+	support extra data argument for function and method handlers.
+
+	* birnetsignaltemplate.hh: removed handlers/slots. moved
+	knowledge about emitter obejct into Emission. let class Emission
+	care about casting handlers correctly (with or without emitter arg),
+	cleaned up signal methods some.
+
+	* birnetsignal.hh: removed HandlerBase, ReferencableBase.
+	added with_emitter flag to signal handlers. made SlotBase a regular
+	class, rather than a template. 
+
+	* mksignals.sh: fixed line numbers. allow 17 arguments.
+	allow specification of maximum argument count. 
+
+	* tests/signal.cc: test data handlers and emitter-less ahndlers.
+
+	* Makefile.am: generate birnetsignalvariants.hh from
+	birnetsignalslot.hh (we need 0..17 argument handlers) and
+	birnetsignaltemplate.hh (for 0..16 argument signals).
+
+    Tue Mar 29 17:00:08 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh, birnetsignal.cc: namespace change
+	to namespace Signals. added EmissionBase, extended SignalBase to
+	maintain a signal handler list as ring data structure. removed
+	accumulators, added Collectors, added Signature template to extract the
+	return type of a function type for functions with up to 16 arguments.
+	include birnetsignalvariants.hh to define all signal variants. 
+
+	* birnetsignaltemplate.hh: implement signal with emission and
+	handlers etc, for exactly 3 signal arguments. 
+
+	* mksignals.sh: generate signal variants for 0..16 signal 
+	arguments from birnetsignaltemplate.hh.
+
+	* Makefile.am: generate birnetsignalvariants.hh.
+
+	* tests/signal.cc: test signal variants for 0..16 arguments with void
+	and other return types. 
+
+    Mon Mar 28 10:12:34 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh, birnetsignaldefs.hh:
+	moved signals into an extra Signal namespace, renamed Signal::Closure
+	to Signal::Handler. 
+
+    Mon Mar 28 10:01:06 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignaldefs.hh: disabled signal generation.
+	added test implementation of a 3 argument signal which supports passing
+	the emitter object as first argument to signal handlers.
+
+	* tests/signal.cc: disabled old signal tests.
+	added test for 3 argument signal variant, currently implemented in
+	birnetsignaldefs.hh.
+
+    Sun Mar 27 19:52:12 2005  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh, birnetsignalinc.hh:
+	* birnetsignaldefs.hh:
+	rudimentary signal (callback list) implementation for C++.
+
+	* tests/signal.cc: test signals.
+
 Thu Mar 30 19:12:29 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: 

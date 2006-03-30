@@ -26,11 +26,23 @@
 BIRNET_EXTERN_C_BEGIN();
 
 /* --- reliable assert --- */
+#define BIRNET_RETURN_IF_FAIL(e)	do { if G_LIKELY (e) {} else { g_return_if_fail_warning (G_LOG_DOMAIN, __PRETTY_FUNCTION__, #e); return; } } while (0)
+#define BIRNET_RETURN_VAL_IF_FAIL(e,v)	do { if G_LIKELY (e) {} else { g_return_if_fail_warning (G_LOG_DOMAIN, __PRETTY_FUNCTION__, #e); return v; } } while (0)
+#define BIRNET_ASSERT_NOT_REACHED()	do { g_assert_warning (G_LOG_DOMAIN, __FILE__, __LINE__, __PRETTY_FUNCTION__, NULL); } while (0)
 #define BIRNET_ASSERT(expr)   do { /* never disabled */ \
   if G_LIKELY (expr) {} else                            \
     g_assert_warning (G_LOG_DOMAIN, __FILE__, __LINE__, \
                       __PRETTY_FUNCTION__, #expr);      \
 } while (0)
+/* convenient aliases */
+#ifdef  _BIRNET_SOURCE_EXTENSIONS
+#define	RETURN_IF_FAIL		BIRNET_RETURN_IF_FAIL
+#define	RETURN_VAL_IF_FAIL	BIRNET_RETURN_VAL_IF_FAIL
+#define	ASSERT_NOT_REACHED	BIRNET_ASSERT_NOT_REACHED
+#define	ASSERT			BIRNET_ASSERT
+#define	LIKELY			G_LIKELY
+#define	UNLIKELY		G_UNLIKELY
+#endif /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- compile time assertions --- */
 #define BIRNET_CPP_PASTE2(a,b)                  a ## b
@@ -55,7 +67,7 @@ BIRNET_STATIC_ASSERT (sizeof (BirnetInt64) == 8);
 typedef BirnetUInt32            BirnetUniChar;
 
 /* --- convenient type shorthands --- */
-#ifdef  BIRNET_FEATURES
+#ifdef  _BIRNET_SOURCE_EXTENSIONS
 typedef BirnetUInt		uint;
 typedef BirnetUInt8		uint8;
 typedef BirnetUInt16		uint16;
@@ -66,7 +78,7 @@ typedef BirnetInt16		int16;
 typedef BirnetInt32		int32;
 typedef BirnetInt64		int64;
 typedef BirnetUniChar		unichar;
-#endif /* BIRNET_INTERNALS */
+#endif /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- birnet initialization --- */
 void	birnet_init (int	*argcp,

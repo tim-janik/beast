@@ -7,13 +7,14 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS		= . tests
 INCLUDES  	= -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
 GLIB_MKENUMS    = glib-mkenums
-DEFS		= -DBIRNET_FEATURES -DPARANOID
+DEFS		= -D_BIRNET_SOURCE_EXTENSIONS -DPARANOID
 
 birnet_headers = $(strip 		\
 	birnet.h			\
 	birnetcore.h			\
 	birnetmsg.h			\
 	birnetring.h			\
+	birnetsignal.hh                 \
 	birnetthread.h			\
 	birnetthreadxx.hh		\
 	birnetutils.h			\
@@ -29,10 +30,14 @@ birnet_sources = $(strip 		\
 	birnetutilsxx.cc		\
 )
 birnet_private_headers = $(strip 	\
+	birnetsignalslot.hh		\
+	birnetsignaltemplate.hh		\
 )
 birnet_generated_headers = $(strip 	\
 	birnetconfig.h			\
+	birnetsignalvariants.hh         \
 )
+EXTRA_DIST += mksignals.sh
 
 # Birnet library
 # we want a partial shared library here. libtool creates that if the library
@@ -53,6 +58,7 @@ all-am: libbirnet.o
 CLEANFILES += libbirnet.lo libbirnet.o
 EXTRA_DIST += $(birnet_private_headers)
 
+# === birnetconfig.h ===
 birnetconfig.h: $(top_builddir)/config.status # Makefile
 	cd . \
 	&& echo "/* Generated data from $< (by make $@) */" 					 > xgen-$(@F) \
@@ -76,3 +82,15 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& rm -f xgen-$(@F)
 CLEANFILES += birnetconfig.h
 $(libbirnet_la_OBJECTS): birnetconfig.h
+
+# === birnetsignalvariants.hh ===
+$(srcdir)/*.cc: birnetsignalvariants.hh
+birnetsignalvariants.hh: $(srcdir)/birnetsignalslot.hh $(srcdir)/birnetsignaltemplate.hh $(srcdir)/mksignals.sh
+	cd . \
+	&& echo "/* Signal Variants -- Generated from: $(^F) */"	>xgen-sigs \
+	&& echo 						       >>xgen-sigs \
+	&& $(srcdir)/mksignals.sh $(srcdir)/birnetsignalslot.hh     17 >>xgen-sigs \
+	&& $(srcdir)/mksignals.sh $(srcdir)/birnetsignaltemplate.hh 16 >>xgen-sigs \
+	&& cp xgen-sigs $@ \
+	&& rm -f xgen-sigs
+CLEANFILES += xgen-sigs birnetsignalvariants.hh xgen-signals.sed
