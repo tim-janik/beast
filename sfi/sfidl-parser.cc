@@ -185,6 +185,8 @@ bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
   if (negate) f = -f; \
 }G_STMT_END
 
+} // nanespace Anon
+
 /* --- methods --- */
 
 bool Parser::isChoice(const string& type) const
@@ -737,6 +739,8 @@ bool Pragma::getString (const string& key, string& value)
   return result;
 }
 
+namespace {
+
 /*
  * comparation class, used to sort classes in such an order that bases
  * classes appear before derived classes
@@ -783,6 +787,8 @@ public:
     return c1.name < c2.name;
   }
 };
+
+} // namespace Anon
 
 /* --- parsing functions --- */
 
@@ -1128,7 +1134,7 @@ Parser::parseChoice ()
   return G_TOKEN_NONE;
 }
 
-void
+static void
 skip_ascii_at (GScanner *scanner)
 {
   if (g_scanner_peek_next_token (scanner) == '@')
@@ -1383,7 +1389,8 @@ Parser::parseStream (Stream&      stream,
 }
 
 /* like g_scanner_get_token, but accepts ':' within identifiers */
-GTokenType scanner_get_next_token_with_colon_identifiers (GScanner *scanner)
+static GTokenType
+scanner_get_next_token_with_colon_identifiers (GScanner *scanner)
 {
   char *cset_identifier_first_orig = scanner->config->cset_identifier_first;
   char *cset_identifier_nth_orig   = scanner->config->cset_identifier_nth;
@@ -1403,7 +1410,8 @@ GTokenType scanner_get_next_token_with_colon_identifiers (GScanner *scanner)
 }
 
 /* returns true for C++ style identifiers (Foo::BAR) - only the colons are checked, not individual chars */
-bool isCxxTypeName (const string& str)
+static bool
+isCxxTypeName (const string& str)
 {
   enum { valid, colon1, colon2, invalid } state = valid;
 
@@ -2067,7 +2075,8 @@ string Parser::defineSymbol (const string& name)
   return sym->fullName();
 }
 
-list<string> symbolToList (const string& symbol)
+static list<string>
+symbolToList (const string& symbol)
 {
   list<string> result;
   string current;
@@ -2093,7 +2102,8 @@ list<string> symbolToList (const string& symbol)
   return result;
 }
 
-Symbol *matchSymbol (const list<string>& nlist, Namespace *ns)
+static Symbol*
+matchSymbol (const list<string>& nlist, Namespace *ns)
 {
   Symbol *symbol = ns;
   for (list<string>::const_iterator i = nlist.begin(); i != nlist.end(); i++)
@@ -2104,7 +2114,8 @@ Symbol *matchSymbol (const list<string>& nlist, Namespace *ns)
   return symbol;
 }
 
-void appendUnique (list<Symbol *>& symbols, Symbol *sym)
+static void
+appendUnique (list<Symbol *>& symbols, Symbol *sym)
 {
   for (list<Symbol *>::iterator si = symbols.begin(); si != symbols.end(); si++)
     if (*si == sym)
@@ -2112,8 +2123,9 @@ void appendUnique (list<Symbol *>& symbols, Symbol *sym)
   symbols.push_back (sym);
 }
 
-void qualifyHelper (const string& name, Namespace *ns,
-                    list<Symbol *>& alternatives, set<Namespace *>& done)
+static void
+qualifyHelper (const string& name, Namespace *ns,
+               list<Symbol *>& alternatives, set<Namespace *>& done)
 {
   /* prevent searching the same namespace twice */
   if (done.count (ns)) return;
@@ -2259,7 +2271,5 @@ Symbol::~Symbol()
   for (vector<Symbol *>::iterator ci = children.begin(); ci != children.end(); ci++)
     delete *ci;
 }
-
-}; // anon namespace
 
 /* vim:set ts=8 sts=2 sw=2: */

@@ -1,3 +1,8 @@
+Thu Mar 30 19:17:12 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Fixes for gcc-4.2 snapshot related to anonymous
+	namespaces.
+
 Mon Mar 27 18:22:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* glib-extra.[hc]: g_intern_(static)_string only needs to be provided
