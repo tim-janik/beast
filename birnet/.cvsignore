@@ -1,0 +1,8 @@
+*.lo
+.deps
+_libs
+.libs
+Makefile
+Makefile.in
+birnetconfig.h
+birnetsignalvariants.hh
