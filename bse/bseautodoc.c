@@ -561,7 +561,7 @@ main (gint   argc,
   guint i;
   
   g_thread_init (NULL);
-  birnet_init (argv[0]);
+  birnet_init (&argc, &argv, "BseAutoDoc");
   config = sfi_rec_new();
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   
@@ -606,7 +606,7 @@ main (gint   argc,
 	return help (argv[0], argv[i]);
     }
 
-  bse_init_intern (&argc, &argv, config);
+  bse_init_intern (&argc, &argv, "BseAutoDoc", config);
 
   tag_all_boxed_pspecs ();
 

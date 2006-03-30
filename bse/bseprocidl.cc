@@ -415,7 +415,8 @@ printForwardDecls ()
     }
 }
 
-int main (int argc, char **argv)
+int
+main (int argc, char **argv)
 {
   /* exclude all types given in a file, passed as first argument, from generation */
   if (argc == 2)
@@ -435,7 +436,7 @@ int main (int argc, char **argv)
 	}
     }
   g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, NULL);
+  bse_init_intern (&argc, &argv, "BseProcIDL", NULL);
   
   sfi_glue_context_push (bse_glue_context_intern ("BseProcIdl"));
   std::string s = sfi_glue_base_iface ();

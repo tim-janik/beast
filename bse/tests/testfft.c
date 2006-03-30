@@ -60,7 +60,7 @@ main (int   argc,
   guint i;
   
   /* initialize GSL */
-  g_thread_init (NULL);
+  birnet_init (&argc, &argv, NULL);
   gsl_init (NULL);
 
   /* initialize random numbers */

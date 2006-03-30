@@ -28,12 +28,17 @@ static bool birnet_init_initialization_entered = false;
 static void (*birnet_init_cplusplus_func) (void) = NULL;
 
 void
-birnet_init (const gchar *prg_name)     /* declared in birnetcore.h */
+birnet_init (int        *argcp,         /* declared in birnetcore.h */
+             char     ***argvp,
+             const char *app_name)
 {
+  const char *prg_name = argcp && *argcp ? (*argvp)[0] : NULL;
   if (birnet_init_initialization_entered)
     {
       if (prg_name && !g_get_prgname ())
         g_set_prgname (prg_name);
+      if (app_name && !g_get_application_name())
+        g_set_application_name (app_name);
       return;
     }
   birnet_init_initialization_entered = true;
@@ -43,6 +48,8 @@ birnet_init (const gchar *prg_name)     /* declared in birnetcore.h */
 
   if (prg_name)
     g_set_prgname (prg_name);
+  if (app_name)
+    g_set_application_name (app_name);
 
   _birnet_init_threads();
 

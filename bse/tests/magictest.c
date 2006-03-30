@@ -62,7 +62,7 @@ main (gint   argc,
   gboolean test_open = FALSE;
   
   g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, NULL);
+  bse_init_intern (&argc, &argv, "MagicTest", NULL);
   
   for (i = 0; i < n_magic_presets; i++)
     magic_list = sfi_ring_append (magic_list,

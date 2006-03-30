@@ -222,7 +222,7 @@ main (gint   argc,
 
   g_thread_init (NULL);
 
-  birnet_init (argv[0]);
+  birnet_init (&argc, &argv, "BseQuery");
   config = sfi_rec_new();
   
   for (i = 1; i < argc; i++)
@@ -322,7 +322,7 @@ main (gint   argc,
 	return help (argv[i]);
     }
 
-  bse_init_intern (&argc, &argv, config);
+  bse_init_intern (&argc, &argv, "BseQuery", config);
 
   if (root_name)
     root = g_type_from_name (root_name);

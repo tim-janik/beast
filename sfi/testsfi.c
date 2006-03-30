@@ -1021,7 +1021,7 @@ main (int   argc,
       char *argv[])
 {
   g_log_set_always_fatal (g_log_set_always_fatal (G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-  birnet_init (argv[0]);
+  birnet_init (&argc, &argv, NULL);
   
   test_types_init ();
 

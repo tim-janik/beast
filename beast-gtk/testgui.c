@@ -99,7 +99,7 @@ main (int   argc,
   g_type_init ();
 
   /* initialize Sfi */
-  birnet_init (argv[0]);
+  birnet_init (&argc, &argv, "TestGUI");
   birnet_msg_allow ("misc");
   /* ensure SFI can wake us up */
   birnet_thread_set_name ("TestGUI");
@@ -126,7 +126,7 @@ main (int   argc,
 
   /* start BSE core and connect */
   SfiRec *bseconfig = sfi_rec_new ();
-  bse_init_async (&argc, &argv, bseconfig);
+  bse_init_async (&argc, &argv, "TestGUI", bseconfig);
   sfi_rec_unref (bseconfig);
   sfi_glue_context_push (bse_init_glue_context ("TestGUI"));
   GSource *source = g_source_simple (G_PRIORITY_HIGH - 100,

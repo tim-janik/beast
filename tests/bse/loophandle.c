@@ -206,10 +206,8 @@ main (int argc, char **argv)
     values[i] = 1.0 - rand() / (0.5 * RAND_MAX);
 
   /* init bse */
-  g_thread_init (NULL);
-  birnet_init (argv[0]);
+  bse_init_async (&argc, &argv, "LoopHandleTest", NULL);
   birnet_msg_allow ("misc");
-  bse_init_async (&argc, &argv, NULL);
 
   /* test loophandle against the reference implementation */
   GslDataHandle *mem_handle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, n_values, values, NULL /* don't free */);

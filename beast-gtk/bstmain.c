@@ -108,7 +108,7 @@ main (int   argc,
   g_type_init ();
 
   /* initialize Birnet/Sfi */
-  birnet_init (argv[0]);
+  birnet_init (&argc, &argv, "BEAST");
   birnet_msg_allow ("misc");
   /* ensure SFI can wake us up */
   birnet_thread_set_name ("Beast GUI");
@@ -170,7 +170,7 @@ main (int   argc,
 
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  bse_init_async (&argc, &argv, bseconfig);
+  bse_init_async (&argc, &argv, "BEAST", bseconfig);
   sfi_rec_unref (bseconfig);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
@@ -648,7 +648,7 @@ bst_early_parse_args (int    *argc_p,
 
   if (initialize_bse_and_exit)
     {
-      bse_init_async (argc_p, argv_p, bseconfig);
+      bse_init_async (argc_p, argv_p, "BEAST", bseconfig);
       exit (0);
     }
 }
@@ -659,7 +659,7 @@ bst_exit_print_version (void)
   const gchar *c;
   gchar *freeme = NULL;
   /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
-  bse_init_async (NULL, NULL, NULL);
+  bse_init_async (NULL, NULL, "BEAST", NULL);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
   g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
   g_print ("Libraries: ");

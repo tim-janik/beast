@@ -1,3 +1,9 @@
+Thu Mar 30 19:12:29 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.h: 
+	* birnetutilsxx.cc: added argc/argv to birnet_init().
+	propagated change and changed callers.
+
 Sun Mar 19 22:26:02 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: compile with -DBIRNET_FEATURES.

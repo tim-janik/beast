@@ -202,7 +202,7 @@ main (gint   argc,
   };
   gint i, j, k;
 
-  g_thread_init (NULL);
+  birnet_init (&argc, &argv, NULL);
   gsl_init (gslconfig);
 
   if (1)

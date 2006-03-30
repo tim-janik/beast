@@ -401,8 +401,6 @@ gsl_init (const GslConfigValue values[])
     440,			/* kammer_freq */
   };
 
-  birnet_init (NULL); /* ease transition */
-
   g_return_if_fail (gsl_config == NULL);	/* assert single initialization */
 
   bse_engine_exvar_tick_stamp = 1;

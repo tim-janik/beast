@@ -67,7 +67,7 @@ main (int   argc,
 {
   const gchar *env_str;
 
-  birnet_init (PRG_NAME);
+  birnet_init (&argc, &argv, "BseSH");
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
 
@@ -95,7 +95,7 @@ main (int   argc,
   if (!bse_scm_context)
     {
       /* start our own core thread */
-      bse_init_async (&argc, &argv, NULL);
+      bse_init_async (&argc, &argv, "BseSH", NULL);
       bse_scm_context = bse_init_glue_context (PRG_NAME);
     }
 
@@ -315,7 +315,7 @@ shell_parse_args (gint    *argc_p,
 
   if (initialize_bse_and_exit)
     {
-      bse_init_async (argc_p, argv_p, NULL);
+      bse_init_async (argc_p, argv_p, "BseSH", NULL);
       exit (0);
     }
 }

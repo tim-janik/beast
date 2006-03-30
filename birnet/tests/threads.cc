@@ -244,7 +244,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  birnet_init (argv[0]);
+  birnet_init (&argc, &argv, NULL);
   g_log_set_always_fatal ((GLogLevelFlags) (g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
 
   test_threads();

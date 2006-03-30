@@ -1138,8 +1138,7 @@ int main (int argc, char **argv)
     { NULL, },
   };
   
-  g_thread_init (NULL);
-  g_type_init ();
+  birnet_init (&argc, &argv, NULL);
   gsl_init (gslconfig);
   /*bse_init_intern (&argc, &argv, NULL);*/
 

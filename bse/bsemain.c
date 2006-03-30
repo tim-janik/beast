@@ -80,9 +80,10 @@ bse_gettext (const gchar *text)
 }
 
 void
-bse_init_async (gint    *argc,
-		gchar ***argv,
-		SfiRec  *config)
+bse_init_async (gint       *argc,
+		gchar    ***argv,
+                const char *app_name,
+		SfiRec     *config)
 {
   BirnetThread *thread;
 
@@ -97,7 +98,7 @@ bse_init_async (gint    *argc,
   /* this function is running in the user program and needs to start the main BSE thread */
   
   /* initialize submodules */
-  birnet_init (argc && *argc ? (*argv)[0] : NULL);
+  birnet_init (argc, argv, app_name);
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
@@ -303,9 +304,10 @@ server_registration (SfiProxy            server,
 }
 
 void
-bse_init_intern (gint    *argc,
-		 gchar ***argv,
-		 SfiRec  *config)
+bse_init_intern (gint       *argc,
+		 gchar    ***argv,
+                 const char *app_name,
+		 SfiRec     *config)
 {
   SfiRec *unref_me = NULL;
 
@@ -318,7 +320,7 @@ bse_init_intern (gint    *argc,
     g_error ("%s() may only be called once", "bse_init_intern");
 
   /* initialize submodules */
-  birnet_init (argc && *argc ? (*argv)[0] : NULL);
+  birnet_init (argc, argv, app_name);
   if (!config)
     config = unref_me = sfi_rec_new();
   /* paranoid assertions */

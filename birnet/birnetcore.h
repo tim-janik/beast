@@ -69,7 +69,9 @@ typedef BirnetUniChar		unichar;
 #endif /* BIRNET_INTERNALS */
 
 /* --- birnet initialization --- */
-void	birnet_init (const gchar	*prg_name); /* in birnetutilsxx.cc */
+void	birnet_init (int	*argcp,
+		     char     ***argvp,
+		     const char *app_name); /* in birnetutilsxx.cc */
 
 
 BIRNET_EXTERN_C_END();

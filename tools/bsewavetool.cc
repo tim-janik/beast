@@ -89,7 +89,7 @@ main (int   argc,
 
   /* initialization */
   int orig_argc = argc;
-  bse_init_intern (&argc, &argv, NULL);
+  bse_init_intern (&argc, &argv, "BseWaveTool", NULL);
   birnet_msg_allow ("main"); // FIXME
   birnet_msg_set_thread_handler (wavetool_log_handler);
   birnet_msg_type_configure (BIRNET_MSG_INFO, BIRNET_MSG_TO_HANDLER, NULL);

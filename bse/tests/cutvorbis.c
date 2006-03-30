@@ -90,7 +90,7 @@ main (int   argc,
 
   /* initialization */
   g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, NULL);
+  bse_init_intern (&argc, &argv, "CutVorbis", NULL);
 
   /* arguments */
   parse_args (&argc, &argv);

@@ -28,6 +28,7 @@ void		bse_init_textdomain_only (void);
 #if 0	// prototyped in bse.h */
 void		bse_init_async		(gint		*argc,
 					 gchar	      ***argv,
+					 const char     *app_name,
 					 SfiRec		*config);
 SfiGlueContext* bse_init_glue_context	(const gchar    *client);
 gchar*          bse_check_version	(guint		 required_major,
@@ -37,6 +38,7 @@ gchar*          bse_check_version	(guint		 required_major,
 /* initialization for internal utilities */
 void		bse_init_intern		(gint		*argc,
 					 gchar	      ***argv,
+					 const char     *app_name,
 					 SfiRec		*config);
 
 /* BSE thread pid (or 0) */
