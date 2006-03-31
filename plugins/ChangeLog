@@ -1,3 +1,9 @@
+Fri Mar 31 23:47:52 2006  Tim Janik  <timj@gtk.org>
+
+	* freeverb/denormals.h: implement undenormalise() as BSE_FLOAT_FLATTEN().
+	this is faster and circumvents a gcc bug/optimization that rendered the
+	roomsize and damping parameters useless.
+
 Wed Feb 15 23:35:26 2006  Tim Janik  <timj@gtk.org>
 
 	* evaluator/: Building of this plugin has been completely disabled
