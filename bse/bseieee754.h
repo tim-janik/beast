@@ -106,6 +106,19 @@ G_BEGIN_DECLS
 #define BSE_DOUBLE_SIGN(d)              (BSE_DOUBLE_PARTS (d).mpn.sign)
 #endif
 
+/* --- denormal float handling --- */
+static inline float	bse_float_zap_denormal	(register float  fval);	/* slow */
+static inline double	bse_double_zap_denormal	(register double dval);	/* slow */
+/* coarse but fast variants to eliminate denormalized floats */
+#define	BSE_FLOAT_FLATTEN(mutable_float)	do { 	\
+  if (G_UNLIKELY (fabs (mutable_float) < 1e-32))	\
+    mutable_float = 0;					\
+} while (0)
+#define BSE_DOUBLE_FLATTEN(mutable_double)	do {	\
+  if (G_UNLIKELY (fabs (mutable_double) < 1e-290))	\
+    mutable_double = 0;					\
+} while (0)
+
 /* --- rounding --- */
 typedef	unsigned short int	BseFpuState;
 #if defined (__i386__) && defined (__GNUC__)
@@ -190,6 +203,24 @@ extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { regis
 #define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d)))
 #endif
 
+/* --- implementation details --- */
+static inline float
+bse_float_zap_denormal (register float  fval)
+{
+  if (G_UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (fval)))
+    return 0;
+  else
+    return fval;
+}
+
+static inline double
+bse_double_zap_denormal	(register double dval)
+{
+  if (G_UNLIKELY (BSE_DOUBLE_IS_SUBNORMAL (dval)))
+    return 0;
+  else
+    return dval;
+}
 
 #if defined (__i386__) && defined (__GNUC__)
 static inline void

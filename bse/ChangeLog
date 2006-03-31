@@ -1,3 +1,11 @@
+Fri Mar 31 23:44:41 2006  Tim Janik  <timj@gtk.org>
+
+	* bseieee754.h: added bse_float_zap_denormal() and 
+	bse_double_zap_denormal() to get rid of denormal floating point
+	numbers.
+	added coarse but faster BSE_FLOAT_FLATTEN() and BSE_DOUBLE_FLATTEN()
+	macros to modify denormal float variables.
+
 Fri Mar 31 21:57:36 2006  Tim Janik  <timj@gtk.org>
 
 	* bseieee754.h: fix BSE_FLOAT_PARTS() and BSE_DOUBLE_PARTS() for C++
