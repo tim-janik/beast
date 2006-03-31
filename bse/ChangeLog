@@ -1,3 +1,11 @@
+Fri Mar 31 21:57:36 2006  Tim Janik  <timj@gtk.org>
+
+	* bseieee754.h: fix BSE_FLOAT_PARTS() and BSE_DOUBLE_PARTS() for C++
+	which needs constructors for union casts.
+
+	* tests/subnormals-aux.cc:
+	* tests/subnormals.cc: test for subnormal float performance.
+
 Thu Mar  9 23:38:29 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/*: added missing or changed the license to LGPL.

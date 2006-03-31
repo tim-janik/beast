@@ -106,10 +106,6 @@ G_BEGIN_DECLS
 #define BSE_DOUBLE_SIGN(d)              (BSE_DOUBLE_PARTS (d).mpn.sign)
 #endif
 
-/* get structured parts of floating point numbers */
-#define	BSE_FLOAT_PARTS(f)		(((BseFloatIEEE754) (f)))
-#define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d))) /* (*((BseDoubleIEEE754*) &(d))) */
-
 /* --- rounding --- */
 typedef	unsigned short int	BseFpuState;
 #if defined (__i386__) && defined (__GNUC__)
@@ -184,6 +180,16 @@ static const union { unsigned char c[8]; double d; } _bse_dnan_union = { _BSE_DO
 static const union { unsigned char c[8]; double d; } _bse_dinf_union = { _BSE_DOUBLE_INF_BYTES };
 static const union { unsigned char c[4]; float f; }  _bse_fnan_union = { _BSE_FLOAT_NAN_BYTES };
 static const union { unsigned char c[4]; float f; }  _bse_finf_union = { _BSE_FLOAT_INF_BYTES };
+
+/* get structured parts of floating point numbers */
+#if __cplusplus
+extern inline BseFloatIEEE754  BSE_FLOAT_PARTS  (register float  fvalue) { register BseFloatIEEE754  fret = { fvalue }; return fret; }
+extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { register BseDoubleIEEE754 dret = { dvalue }; return dret; }
+#else
+#define	BSE_FLOAT_PARTS(f)		(((BseFloatIEEE754) (f)))
+#define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d)))
+#endif
+
 
 #if defined (__i386__) && defined (__GNUC__)
 static inline void
