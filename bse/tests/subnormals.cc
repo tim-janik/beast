@@ -19,16 +19,17 @@
 #include <bse/bse.h>
 #include <bse/bseieee754.h>
 
-#define function_type   extern
+// #define FLOAT_IS_SUBNORMAL(foo)      BSE_FLOAT_IS_SUBNORMAL (foo)
+#define FLOAT_IS_SUBNORMAL(foo)         (fabs (foo) < 1e-32)
 
-#if 1
+#if 0
+inline float    test1 (float v) { return v;     }
+inline float    test2 (float v) { return G_UNLIKELY (FLOAT_IS_SUBNORMAL (v)) ? (float) 0 : (float) v; }
+inline float    test3 (float v) { if G_UNLIKELY (FLOAT_IS_SUBNORMAL (v)) return 0; else return v; }
+#else
 extern float    test1 (float v);
 extern float    test2 (float v);
 extern float    test3 (float v);
-#else
-inline float    test1 (float v) { return v;     }
-inline float    test2 (float v) { return G_UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)) ? (float) 0 : (float) v; }
-inline float    test3 (float v) { if G_UNLIKELY (BSE_FLOAT_IS_SUBNORMAL (v)) return 0; else return v; }
 #endif
 
 int
@@ -36,6 +37,8 @@ main (int   argc,
       char *argv[])
 {
   birnet_init (&argc, &argv, NULL);
+
+  const float max_sub = BSE_FLOAT_MAX_SUBNORMAL;
 
   float n = 10 * 1000000;
   float sum;
@@ -46,7 +49,7 @@ main (int   argc,
   g_timer_start (timer);
   for (float i = 0; i <= n; i += 1)
     {
-      float v = BSE_FLOAT_MAX_SUBNORMAL * i / n;
+      float v = max_sub * i / n;
       sum += test1 (v);
       sum += test1 (-v);
     }
@@ -58,7 +61,7 @@ main (int   argc,
   g_timer_start (timer);
   for (float i = 0; i <= n; i += 1)
     {
-      float v = BSE_FLOAT_MAX_SUBNORMAL * i / n;
+      float v = max_sub * i / n;
       sum += test2 (v);
       sum += test2 (-v);
     }
@@ -70,7 +73,7 @@ main (int   argc,
   g_timer_start (timer);
   for (float i = 0; i <= n; i += 1)
     {
-      float v = BSE_FLOAT_MAX_SUBNORMAL * i / n;
+      float v = max_sub * i / n;
       sum += test3 (v);
       sum += test3 (-v);
     }
