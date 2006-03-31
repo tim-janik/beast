@@ -22,7 +22,7 @@
 // #define FLOAT_IS_SUBNORMAL(foo)      BSE_FLOAT_IS_SUBNORMAL (foo)
 #define FLOAT_IS_SUBNORMAL(foo)         (fabs (foo) < 1e-32)
 
-#if 0
+#if 1
 inline float    test1 (float v) { return v;     }
 inline float    test2 (float v) { return G_UNLIKELY (FLOAT_IS_SUBNORMAL (v)) ? (float) 0 : (float) v; }
 inline float    test3 (float v) { if G_UNLIKELY (FLOAT_IS_SUBNORMAL (v)) return 0; else return v; }
@@ -45,37 +45,47 @@ main (int   argc,
   GTimer *timer = g_timer_new();
   volatile double volatile_accu = 0;
 
-  sum = 0;
+  int j;
+  const int blen = 4096;
+  volatile float buffer[blen];
+
+  sum = j = 0;
+  memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
   for (float i = 0; i <= n; i += 1)
     {
       float v = max_sub * i / n;
-      sum += test1 (v);
-      sum += test1 (-v);
+      buffer[j++] = test1 (v);
+      buffer[j++] = test1 (-v);
+      j %= blen;
     }
   volatile_accu += sum;
   g_timer_stop (timer);
   float test1_time = g_timer_elapsed (timer, NULL);
 
-  sum = 0;
+  sum = j = 0;
+  memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
   for (float i = 0; i <= n; i += 1)
     {
       float v = max_sub * i / n;
-      sum += test2 (v);
-      sum += test2 (-v);
+      buffer[j++] = test2 (v);
+      buffer[j++] = test2 (-v);
+      j %= blen;
     }
   volatile_accu += sum;
   g_timer_stop (timer);
   float test2_time = g_timer_elapsed (timer, NULL);
 
-  sum = 0;
+  sum = j = 0;
+  memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
   for (float i = 0; i <= n; i += 1)
     {
       float v = max_sub * i / n;
-      sum += test3 (v);
-      sum += test3 (-v);
+      buffer[j++] = test3 (v);
+      buffer[j++] = test3 (-v);
+      j %= blen;
     }
   volatile_accu += sum;
   g_timer_stop (timer);
