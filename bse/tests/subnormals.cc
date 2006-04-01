@@ -19,7 +19,7 @@
 #include <bse/bse.h>
 #include <bse/bseieee754.h>
 
-#if 0
+#if 1
 inline float    test1 (float v) { return v;     }
 inline float    test2 (float v) { return bse_float_zap_denormal (v); }
 inline float    test3 (float v) { BSE_FLOAT_FLUSH_with_cond (v); return v; }
