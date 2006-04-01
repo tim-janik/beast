@@ -11,7 +11,7 @@
 #define _denormals_
 
 // #define undenormalise(sample) if(((*(unsigned int*)&sample)&0x7f800000)==0) sample=0.0f
-#define undenormalise(sample)	BSE_FLOAT_FLATTEN (sample)
+#define undenormalise(sample)	BSE_FLOAT_FLUSH (sample)
 
 #endif//_denormals_
 
