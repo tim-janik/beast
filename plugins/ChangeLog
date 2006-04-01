@@ -1,3 +1,7 @@
+Sat Apr  1 16:59:52 2006  Tim Janik  <timj@gtk.org>
+
+	* freeverb/denormals.h (undenormalise): fix macro name.
+
 Fri Mar 31 23:47:52 2006  Tim Janik  <timj@gtk.org>
 
 	* freeverb/denormals.h: implement undenormalise() as BSE_FLOAT_FLATTEN().
