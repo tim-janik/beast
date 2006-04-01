@@ -1,3 +1,19 @@
+Sat Apr  1 16:34:48 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/subnormals-aux.cc:
+	* tests/subnormals.cc: extended tests.
+
+	* bseieee754.h: renamed denormal-cancellation macros to
+	BSE_FLOAT_FLUSH() and BSE_DOUBLE_FLUSH().
+	added arithmetic and ?:-operator variants for denormal cancellation.
+	use the arithmetic variants by default, which seems to be the fastest
+	in most scenrios.
+
+Sat Apr  1 14:23:57 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/subnormals-aux.cc:
+	* tests/subnormals.cc: added pure-arithmetic cancellation test.
+
 Fri Mar 31 23:44:41 2006  Tim Janik  <timj@gtk.org>
 
 	* bseieee754.h: added bse_float_zap_denormal() and 

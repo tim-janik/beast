@@ -109,15 +109,19 @@ G_BEGIN_DECLS
 /* --- denormal float handling --- */
 static inline float	bse_float_zap_denormal	(register float  fval);	/* slow */
 static inline double	bse_double_zap_denormal	(register double dval);	/* slow */
-/* coarse but fast variants to eliminate denormalized floats */
-#define	BSE_FLOAT_FLATTEN(mutable_float)	do { 	\
-  if (G_UNLIKELY (fabs (mutable_float) < 1e-32))	\
-    mutable_float = 0;					\
-} while (0)
-#define BSE_DOUBLE_FLATTEN(mutable_double)	do {	\
-  if (G_UNLIKELY (fabs (mutable_double) < 1e-290))	\
-    mutable_double = 0;					\
-} while (0)
+
+/* --- coarse but fast variants to eliminate denormalized floats --- */
+/* pure arithmetic flushing, fastest with -ffast-math */
+#define	BSE_FLOAT_FLUSH(mutable_float)		BSE_FLOAT_FLUSH_with_threshold (mutable_float)
+#define	BSE_DOUBLE_FLUSH(mutable_double)	BSE_DOUBLE_FLUSH_with_threshold (mutable_double)
+#if 0	/* may be slow in non-inlined functions */
+#define	BSE_FLOAT_FLUSH(mutable_float)		BSE_FLOAT_FLUSH_with_cond (mutable_float)
+#define	BSE_DOUBLE_FLUSH(mutable_double)	BSE_DOUBLE_FLUSH_with_cond (mutable_double)
+#endif
+#if 0	/* branching may hurt performance in excessively inlined code */
+#define	BSE_FLOAT_FLUSH(mutable_float)		BSE_FLOAT_FLUSH_with_if (mutable_float)
+#define	BSE_DOUBLE_FLUSH(mutable_double)	BSE_DOUBLE_FLUSH_with_if (mutable_double)
+#endif
 
 /* --- rounding --- */
 typedef	unsigned short int	BseFpuState;
@@ -221,6 +225,32 @@ bse_double_zap_denormal	(register double dval)
   else
     return dval;
 }
+
+/* use float arithmetic cancellation to eliminate denormals */
+#define	BSE_FLOAT_FLUSH_with_threshold(mutable_float)	do { 	\
+  volatile float __forced_float = 1e-29 + mutable_float;	\
+  mutable_float = __forced_float - 1e-29;			\
+} while (0)
+#define	BSE_DOUBLE_FLUSH_with_threshold(mutable_double) do {	\
+  volatile double __forced_double = 1e-288 + mutable_double;	\
+  mutable_double = __forced_double - 1e-288;			\
+} while (0)
+/* substitute with 0 beyond a certain threashold greater than possible denormals */
+#define BSE_FLOAT_FLUSH_with_cond(mutable_float) do {     			 \
+  mutable_float = G_UNLIKELY (fabs (mutable_float) < 1e-32) ? 0 : mutable_float; \
+} while (0)
+#define BSE_DOUBLE_FLUSH_with_cond(mutable_double) do {      			     \
+  mutable_double = G_UNLIKELY (fabs (mutable_double) < 1e-290) ? 0 : mutable_double; \
+} while (0)
+/* set everything to 0 beyond a certain threashold greater than possible denormals */
+#define	BSE_FLOAT_FLUSH_with_if(mutable_float) do { 	\
+  if (G_UNLIKELY (fabs (mutable_float) < 1e-32))	\
+    mutable_float = 0;					\
+} while (0)
+#define BSE_DOUBLE_FLUSH_with_if(mutable_double) do {	\
+  if (G_UNLIKELY (fabs (mutable_double) < 1e-290))	\
+    mutable_double = 0;					\
+} while (0)
 
 #if defined (__i386__) && defined (__GNUC__)
 static inline void

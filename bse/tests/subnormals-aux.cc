@@ -19,10 +19,6 @@
 #include <bse/bse.h>
 #include <bse/bseieee754.h>
 
-// #define FLOAT_IS_SUBNORMAL(foo)      BSE_FLOAT_IS_SUBNORMAL (foo)
-#define FLOAT_IS_SUBNORMAL(foo)         (fabs (foo) < 1e-32)
-
-
 float
 test1 (float v)
 {
@@ -32,11 +28,26 @@ test1 (float v)
 float
 test2 (float v)
 {
-  return G_UNLIKELY (FLOAT_IS_SUBNORMAL (v)) ? (float) 0 : (float) v;
+  return bse_float_zap_denormal (v);
 }
 
 float
 test3 (float v)
 {
-  if G_UNLIKELY (FLOAT_IS_SUBNORMAL (v)) return 0; else return v;
+  BSE_FLOAT_FLUSH_with_cond (v);
+  return v;
+}
+
+float
+test4 (float v)
+{
+  BSE_FLOAT_FLUSH_with_if (v);
+  return v;
+}
+
+float
+test5 (float v)
+{
+  BSE_FLOAT_FLUSH_with_threshold (v);
+  return v;
 }

@@ -20,6 +20,7 @@ testcxx_SOURCES = testcxx.cc
 testcxx_LDADD = $(progs_ldadd)
 subnormals_SOURCES = subnormals.cc subnormals-aux.cc
 subnormals_LDADD = $(progs_ldadd)
+subnormals_CXXFLAGS = # -ffast-math
 
 noinst_PROGRAMS = cutvorbis magictest mathtests $(TESTS) #testwavechunk
 cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
