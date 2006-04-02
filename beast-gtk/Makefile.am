@@ -10,21 +10,12 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BEAST_CFLAGS) -D
 # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
 # we specify the logging domain here
-DEFS += $(strip 			\
-	-DG_LOG_DOMAIN="\"BST\"" 	\
-)
+DEFS += -DG_LOG_DOMAIN="\"BEAST\""
 
 # special profiling hooks
 PROFILE_SOURCE = # profile.c
 DEFS += # $(subst profile.c, -pg -a, $(findstring profile.c, $(<F)))
 LIBS += # -lefence # -pg 
-
-# link programs against BSE and other neccessary libraries
-progs_LDADD = $(strip 			\
-	./gxk/libgxk.a 			\
-	$(top_builddir)/bse/libbse.la 	\
-	$(LDFLAGS) $(BEAST_LIBS) 	\
-)
 
 #
 # setup source file variables
@@ -48,9 +39,10 @@ beast_headers = $(strip \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
 	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		bstsampleeditor.h   \
 	bstrackview.h		bsttreestores.h	bstbseutils.h		bstutils.h	    \
-	bstmarshal.h bstdefs.h \
+	bstdefs.h \
 )
-# BEAST c sources to build the program from
+EXTRA_DIST += $(beast_headers)
+# BEAST sources to build the program from
 beast_sources = $(strip \
 	bsttrackrollctrl.c	bstxframe.c	bstscrollgraph.c	\
 	bstdbmeter.c		bstbusmixer.c	bstbuseditor.c		bstitemseqdialog.c  \
@@ -72,53 +64,55 @@ beast_sources = $(strip \
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
-beast_extra_sources = $(strip 						\
+beast_extra_files = $(strip 						\
 	bstparam-automation.c						\
 	bstparam-choice.c		bstparam-note-sequence.c	\
 	bstparam-note-spinner.c		bstparam-proxy.c		\
 	bstparam-color-spinner.c	bstparam-scale.c		\
 	bstparam-searchpath.c		bstparam-time.c			\
 	bstparam-item-seq.c		bstrackeditor-covers.c		\
+	\
+	bstmarshal.list			bstrecords.idl			\
 )
-beast_extra_files = $(strip \
-	bstmarshal.list		\
-	bstrecords.idl		\
-)
-# BEAST built sources needed by all objects
-beast_built_depend_sources = $(strip \
-	bstmarshal.h	\
-	bstgentypes.h	\
-	bstgenbseapi.h	\
-)
-# BEAST built sources
-beast_built_sources = $(strip 		\
-	$(beast_built_depend_sources)	\
-	bstmarshal.c			\
-	bstgentypes.c 			\
-	bstgenbseapi.c 			\
-	bstenum_arrays.c		\
-	bstenum_list.c 			\
-)
-# BEAST stamp files for built-sources generation
-beast_built_stamp = $(strip		\
-	stamp-bstenum_arrays.c		\
-	stamp-bstgenbseapi.h		\
-)
-# built source have to be cleaned with stamps to force proper regeneration
-CLEANFILES += $(beast_built_sources) $(beast_built_stamp)
-# rules to build built-sources
-.PHONY: generated clean-generated
-clean-generated: clean
-	rm -f $(beast_built_sources) $(beast_built_stamp)
-generated: clean-generated $(beast_built_sources)
+EXTRA_DIST += $(beast_extra_files)
 
 GLIB_MKENUMS = glib-mkenums
-
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
-# gen-sources
-CLEANFILES += xgen-beac xgen-beac xgen-bgth xgen-bgtc xgen-belc xgen-bmh xgen-bmc xgen-bdkd
+#
+# rules to generate built sources
+#
+# bstgentypes.h
+GENERATED_CLEANFILES += bstgentypes.h
+CLEANFILES += stamp-bstgentypes.h
+$(beast_vOBJECTS): bstgentypes.h
+bstgentypes.h: stamp-bstgentypes.h ;
+stamp-bstgentypes.h: $(beast_headers) $(srcdir)/bstrecords.idl $(SFIDL)
+	cd .	\
+	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
+	  --fprod "\n/* --- @filename@ --- */" \
+	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
+	  --eprod "extern GType bst__type_id__@EnumName@;" \
+	    $(beast_headers) ) > xgen-$(@F) \
+	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl >> xgen-$(@F) \
+	&& (cmp -s xgen-$(@F) bstgentypes.h || cp xgen-$(@F) bstgentypes.h) \
+	&& rm -f xgen-$(@F) \
+	&& echo timestamp > $@
+# bstgentypes.c
+GENERATED_CLEANFILES += bstgentypes.c
+$(beast_vOBJECTS): bstgentypes.c
+bstgentypes.c: bstgentypes.h $(beast_headers) ${srcdir}/bstrecords.idl $(SFIDL)
+	cd . \
+	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
+	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
+	    $(beast_headers) ) > xgen-$(@F) \
+	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
+	&& rm -f xgen-$(@F)
+# bstenum_arrays.c
+GENERATED_CLEANFILES += bstenum_arrays.c
+$(beast_vOBJECTS): bstenum_arrays.c
 bstenum_arrays.c: $(beast_headers)
 	cd . \
 	&& ( cd ${srcdir} && $(GLIB_MKENUMS) \
@@ -127,72 +121,73 @@ bstenum_arrays.c: $(beast_headers)
 	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	    $(beast_headers) ) > xgen-beac \
-	&& (cmp -s xgen-beac $@ || touch stamp-bstenum_arrays.c) \
-	&& cp xgen-beac $@ \
-	&& rm -f xgen-beac
-stamp-bstenum_arrays.c: bstenum_arrays.c
-	@ [ -f $@ ] || touch $@
-bstgentypes.h: stamp-bstenum_arrays.c $(srcdir)/bstrecords.idl $(SFIDL)
-	cd .	\
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
-	  --eprod "extern GType bst__type_id__@EnumName@;" \
-	    $(beast_headers) ) > xgen-bgth \
-	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl >> xgen-bgth \
-	&& cp xgen-bgth $@ \
-	&& rm -f xgen-bgth
-$(srcdir)/bstutils.c:	bstgentypes.c
-bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
-	cd . \
-	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
-	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
-	    $(beast_headers) ) > xgen-bgtc \
-	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
-        && cp xgen-bgtc $@ \
-	&& rm -f xgen-bgtc
-$(srcdir)/bstutils.c:	bstenum_list.c
-bstenum_list.c: stamp-bstenum_arrays.c
+	    $(beast_headers) ) > xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
+	&& rm -f xgen-$(@F)
+# bstenum_list.c
+GENERATED_CLEANFILES += bstenum_list.c
+$(beast_vOBJECTS): bstenum_list.c
+bstenum_list.c: $(beast_headers)
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &bst__type_id__@EnumName@, @enum_name@_values }," \
-	    $(beast_headers) ) > xgen-belc \
-	&& cp xgen-belc $@ \
-	&& rm -f xgen-belc
+	    $(beast_headers) ) > xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
+	&& rm -f xgen-$(@F)
+# bstgenbseapi.h
+GENERATED_CLEANFILES += bstgenbseapi.h
+CLEANFILES += stamp-bstgenbseapi.h
+$(beast_vOBJECTS): bstgenbseapi.h
 bstgenbseapi.h: stamp-bstgenbseapi.h ;
 stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
-	cd .	\
-	&& echo -e "#include <sfi/sfi.h>\n" > xgen-bgbah \
-	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-bgbah \
-	&& (cmp -s xgen-bgbah bstgenbseapi.h || cp xgen-bgbah bstgenbseapi.h) \
-	&& rm -f xgen-bgbah \
+	cd . \
+	&& echo -e "#include <sfi/sfi.h>\n" > xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
+	&& (cmp -s xgen-$(@F) bstgenbseapi.h || cp xgen-$(@F) bstgenbseapi.h) \
+	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $@
-$(srcdir)/bstbseutils.c: bstgenbseapi.c
+# bstgenbseapi.c
+GENERATED_CLEANFILES += bstgenbseapi.c
+$(beast_vOBJECTS): bstgenbseapi.c
 bstgenbseapi.c: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd .	\
-	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-bgbac \
-	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-bgbac \
-	&& cp xgen-bgbac bstgenbseapi.c \
-	&& rm -f xgen-bgbac
+	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
+	&& cp xgen-$(@F) bstgenbseapi.c \
+	&& rm -f xgen-$(@F)
+# bstmarshal.h
+GENERATED_CLEANFILES += bstmarshal.h
+$(beast_vOBJECTS): bstmarshal.h
 bstmarshal.h: bstmarshal.list
-	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-bmh \
-	&& cp xgen-bmh $@ \
-	&& rm -f xgen-bmh
-$(srcdir)/bstutils.c:	bstmarshal.c
+	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
+	&& rm -f xgen-$(@F)
+# bstmarshal.c
+GENERATED_CLEANFILES += bstmarshal.c
+$(srcdir)/bstutils.c: bstmarshal.c
 bstmarshal.c: bstmarshal.list
-	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-bmc \
-	&& cp xgen-bmc $@ \
-	&& rm -f xgen-bmc
+	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
+	&& rm -f xgen-$(@F)
+
 
 #
-# setup BEAST sources and their dependancies
+# convenience targets for generated source files  
 #
-bin_PROGRAMS = beast-$(BIN_VERSION)		# this expands to beast-0.7.0 or similar
+.PHONY: generated clean-generated
+clean-generated: clean
+	rm -f $(GENERATED) stamp-*
+generated: clean-generated $(GENERATED)
+
+
+#
+# build rules for programs
+#
+bin_PROGRAMS = beast-$(BIN_VERSION)
 beast___BIN_VERSION__SOURCES = bstmain.c $(beast_sources)
 beast___BIN_VERSION__LDADD = $(progs_LDADD)
-beast_objects = $(beast___BIN_VERSION__OBJECTS)
+beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = tsmview testgui # bststest
 tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)
@@ -200,31 +195,10 @@ testgui_SOURCES = testgui.c $(beast_sources)
 testgui_LDADD = $(progs_LDADD)
 # bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
 # bststest_LDADD = $(progs_LDADD)
-
-
-#
-# rules to generate built sources
-#
-#$(beast_objects) $(bststest_OBJECTS) $(tsmview_OBJECTS): $(beast_built_depend_sources)
-$(OBJECTS): $(beast_built_depend_sources)
-
-# broken: $(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
-# broken: EXTRA_DIST += $(beast_built_sources)
-# using _SOURCES here, cause make to attempt to remake .c files, confusing
-# it about vpaths:
-#-      No commands for `bstmain.c' and no prerequisites actually changed.
-#-      No need to remake target `bstmain.c'; using VPATH name `../../beast-gtk/bstmain.c'.
-#-      Pruning file `../../beast-gtk/bstmain.c'.
-#+      Must remake target `bstmain.c'.
-#+      Ignoring VPATH name `../../beast-gtk/bstmain.c'.
-#+      Successfully remade target file `bstmain.c'.
-#+      Pruning file `bstmain.c'.
-
-
-EXTRA_DIST += $(beast_headers) $(beast_extra_sources) $(beast_extra_files)
-
-#
-# private (birnet) dependancy to make TAGS file after each build
-#
-all: # TAGS
-
+progs_LDADD = $(strip                                           \
+	$(BEAST_LIBS) 						\
+	./gxk/libgxk.a $(GXK_LIBS)                              \
+	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
+	$(top_builddir)/sfi/libsfi.o $(SFI_LIBS)                \
+	$(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS)       \
+)

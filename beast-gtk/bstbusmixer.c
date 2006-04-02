@@ -23,7 +23,8 @@
 static void     bus_mixer_action_exec           (gpointer                data,
                                                  gulong                  action);
 static gboolean bus_mixer_action_check          (gpointer                data,
-                                                 gulong                  action);
+                                                 gulong                  action,
+                                                 guint64                 action_stamp);
 
 
 /* --- bus actions --- */
@@ -212,7 +213,8 @@ bus_mixer_action_exec (gpointer data,
 
 static gboolean
 bus_mixer_action_check (gpointer data,
-                        gulong   action)
+                        gulong   action,
+                        guint64  action_stamp)
 {
   BstBusMixer *self = BST_BUS_MIXER (data);
   BstItemView *iview = BST_ITEM_VIEW (self);

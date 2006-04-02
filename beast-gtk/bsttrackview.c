@@ -28,7 +28,8 @@
 /* --- prototypes --- */
 static void	bst_track_view_finalize		(GObject		*object);
 static gboolean track_view_action_check         (gpointer                data,
-                                                 gulong                  action);
+                                                 gulong                  action,
+                                                 guint64                 action_stamp);
 static void     track_view_action_exec          (gpointer                data,
                                                  gulong                  action);
 static void     track_view_set_container        (BstItemView            *self,
@@ -759,7 +760,8 @@ track_view_action_exec (gpointer data,
 
 static gboolean
 track_view_action_check (gpointer data,
-                         gulong   action)
+                         gulong   action,
+                         guint64  action_stamp)
 {
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);

@@ -446,7 +446,7 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
   BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
   GdkGC *inactive_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT0];
   GdkGC *text_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT1];
-  gchar placeholder;
+  gchar placeholder = 0;
   BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, NULL, &placeholder);
   gchar buffer[64] = { 0, };
   guint n = pattern_column_event_to_string (column, buffer, pctrl, placeholder, NULL);
@@ -504,7 +504,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
   guint n_digits = MIN (9, 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
   gboolean is_signed = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
   SfiProxy proxy = pview->proxy;
-  gchar placeholder;
+  gchar placeholder = 0;
   BsePartControlSeq *cseq;
   BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, &cseq, &placeholder);
   gchar buffer[64] = { 0, };

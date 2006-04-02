@@ -25,7 +25,8 @@
 static void     bus_editor_action_exec           (gpointer                data,
                                                   gulong                  action);
 static gboolean bus_editor_action_check          (gpointer                data,
-                                                  gulong                  action);
+                                                  gulong                  action,
+                                                  guint64                 action_stamp);
 
 
 /* --- bus actions --- */
@@ -231,7 +232,8 @@ bus_editor_action_exec (gpointer data,
 
 static gboolean
 bus_editor_action_check (gpointer data,
-                        gulong   action)
+                         gulong   action,
+                         guint64  action_stamp)
 {
   // BstBusEditor *self = BST_BUS_EDITOR (data);
   switch (action)

@@ -30,7 +30,8 @@ static gboolean rack_view_button_press_event (BstRackView      *self,
 static void     rack_view_popup_action       (gpointer          user_data,
                                               gulong            action_id);
 static gboolean rack_view_popup_action_check (gpointer          data,
-                                              gulong            action);
+                                              gulong            action,
+                                              guint64           action_stamp);
 
 
 
@@ -253,7 +254,8 @@ rack_view_popup_action (gpointer                user_data,
 
 static gboolean
 rack_view_popup_action_check (gpointer data,
-                              gulong   action)
+                              gulong   action,
+                              guint64  action_stamp)
 {
   BstRackView *self = BST_RACK_VIEW (data);
   switch (action)

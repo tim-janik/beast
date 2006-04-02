@@ -1,3 +1,14 @@
+Sun Apr  2 18:16:56 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl: auto-add GENERATED to MAINTAINERCLEANFILES.
+	added GENERATED_CLEANFILES for generated files to be removed upon
+	make clean. 
+
+	* beast-gtk/Makefile.am: fixed dependencies. simplified build rules,
+	integrated with Makefile.decl. removed lots of cruft.
+
+	* beast-gtk/*.c: various minor fixes.
+
 Sun Apr  2 16:56:57 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: removed workaround variables.

@@ -249,7 +249,8 @@ key_bindings_exec_action (gpointer data,
 
 static gboolean
 key_bindings_check_action (gpointer data,
-                           gulong   action)
+                           gulong   action,
+                           guint64  action_stamp)
 {
   GtkWidget *self = GTK_WIDGET (data);
   gboolean editable = g_object_get_long (self, "editable");
