@@ -1,3 +1,9 @@
+Sun Apr  2 03:48:29 2006  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corec.cc: fixed "const" return value types.
+
+	* testsfi.c: renamed special test assertion macro to TASSERT().
+
 Thu Mar 30 20:46:48 2006  Tim Janik  <timj@gtk.org>
 
 	* sfidl-clientcxx.cc: removed cruft.

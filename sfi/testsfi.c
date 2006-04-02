@@ -47,13 +47,13 @@
 #define	XTICK()		do g_print ("X"); while (0)
 #define	DTICK()		do g_print (":"); while (0)
 #define	DONE()		do g_print ("]\n"); while (0)
-#define	ASSERT(code)	do { if (code) TICK (); else g_error ("(line:%u) failed to assert: %s", __LINE__, #code); } while (0)
+#define	TASSERT(code)	do { if (code) TICK (); else g_error ("(line:%u) failed to assert: %s", __LINE__, #code); } while (0)
 
 static void
 test_misc (void)
 {
   MSG ("Misc:");
-  ASSERT (0 == 0);
+  TASSERT (0 == 0);
   DONE ();
 }
 
@@ -70,8 +70,8 @@ test_time (void)
   };
   gint i;
   MSG ("Time:");
-  ASSERT (SFI_USEC_FACTOR == 1000000);
-  ASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
+  TASSERT (SFI_USEC_FACTOR == 1000000);
+  TASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
   t = sfi_time_system ();
   if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
     {
@@ -83,15 +83,15 @@ test_time (void)
   t /= SFI_USEC_FACTOR;
   t *= SFI_USEC_FACTOR;
   str = sfi_time_to_string (t);
-  ASSERT (sfi_time_from_string_err (str, &error) == t);
-  ASSERT (error == NULL);
+  TASSERT (sfi_time_from_string_err (str, &error) == t);
+  TASSERT (error == NULL);
   g_free (str);
   /* test hard boundaries */
-  ASSERT (sfi_time_from_string ("1990-01-01 00:00:00") == SFI_MIN_TIME);
-  ASSERT (sfi_time_from_string ("2038-01-19 03:14:07") == SFI_MAX_TIME);
+  TASSERT (sfi_time_from_string ("1990-01-01 00:00:00") == SFI_MIN_TIME);
+  TASSERT (sfi_time_from_string ("2038-01-19 03:14:07") == SFI_MAX_TIME);
   /* test error returns */
-  ASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
-  ASSERT (error != NULL);
+  TASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
+  TASSERT (error != NULL);
   // g_print ("{%s}", error);
   g_free (error);
   for (i = 0; i < G_N_ELEMENTS (time_strings); i++)
@@ -103,8 +103,8 @@ test_time (void)
 	g_print ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
       g_free (error);
       str = sfi_time_to_string (t);
-      ASSERT (sfi_time_from_string_err (str, &error) == t);
-      ASSERT (error == NULL);
+      TASSERT (sfi_time_from_string_err (str, &error) == t);
+      TASSERT (error == NULL);
       g_free (str);
     }
   DONE ();
@@ -118,11 +118,11 @@ test_com_ports (void)
   GValue *value, *rvalue;
   MSG ("Communication Ports:");
   pipe_error = pipe (afds);
-  ASSERT (pipe_error == 0);
+  TASSERT (pipe_error == 0);
   port1 = sfi_com_port_from_pipe ("portA", -1, afds[1]);
-  ASSERT (port1->connected == TRUE);
+  TASSERT (port1->connected == TRUE);
   port2 = sfi_com_port_from_pipe ("portB", afds[0], -1);
-  ASSERT (port2->connected == TRUE);
+  TASSERT (port2->connected == TRUE);
   /* transport a value */
   {	/* create complex value */
     GParamSpec *pspec = sfi_pspec_log_scale ("name", "Nick", "The Blurb", 440, 110, 1760, 0.03, 440, 2, 2, SFI_PARAM_GUI);
@@ -135,12 +135,12 @@ test_com_ports (void)
   }
   sfi_com_port_send (port1, value);
   rvalue = sfi_com_port_recv (port2);
-  ASSERT (rvalue != NULL);
+  TASSERT (rvalue != NULL);
   {	/* assert equality of values */
     GString *s1 = g_string_new (NULL), *s2 = g_string_new (NULL);
     sfi_value_store_typed (value, s1);
     sfi_value_store_typed (rvalue, s2);
-    ASSERT (strcmp (s1->str, s2->str) == 0);
+    TASSERT (strcmp (s1->str, s2->str) == 0);
     g_string_free (s1, TRUE);
     g_string_free (s2, TRUE);
   }
@@ -148,10 +148,10 @@ test_com_ports (void)
   sfi_value_free (rvalue);
   sfi_com_port_close_remote (port1, TRUE);
   pipe_error = close (afds[1]);
-  ASSERT (pipe_error == -1);
+  TASSERT (pipe_error == -1);
   sfi_com_port_close_remote (port2, TRUE);
   pipe_error = close (afds[0]);
-  ASSERT (pipe_error == -1);
+  TASSERT (pipe_error == -1);
   sfi_com_port_unref (port1);
   sfi_com_port_unref (port2);
   DONE ();
@@ -178,34 +178,34 @@ test_threads (void)
   MSG ("Threading:");
   birnet_mutex_init (&test_mutex);
   locked = birnet_mutex_trylock (&test_mutex);
-  ASSERT (locked);
+  TASSERT (locked);
   birnet_mutex_unlock (&test_mutex);
   birnet_mutex_destroy (&test_mutex);
   thread = birnet_thread_run ("sfi-test-thread", test_thread, &thread_data);
-  ASSERT (thread != NULL);
-  ASSERT (thread_data == 0);
+  TASSERT (thread != NULL);
+  TASSERT (thread_data == 0);
   birnet_thread_wakeup (thread);
   birnet_thread_abort (thread);
-  ASSERT (thread_data > 0);
+  TASSERT (thread_data > 0);
   birnet_thread_unref (thread);
   DONE ();
 }
 
 #define SCANNER_ASSERT64(scanner, printout, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
-  ASSERT (g_scanner_get_next_token (scanner) == token); \
+  TASSERT (g_scanner_get_next_token (scanner) == token); \
   if (printout) g_print ("{scanner.v_int64:%llu}", scanner->value.v_int64); \
-  ASSERT (scanner->value.v_int64 == svalue); \
-  ASSERT (g_scanner_get_next_token (scanner) == '#'); \
+  TASSERT (scanner->value.v_int64 == svalue); \
+  TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
 #define SCANNER_ASSERTf(scanner, printout, vtoken, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   if (g_scanner_get_next_token (scanner) != vtoken) \
     g_scanner_unexp_token (scanner, vtoken, NULL, NULL, NULL, NULL, TRUE); \
-  ASSERT (scanner->token == vtoken); \
+  TASSERT (scanner->token == vtoken); \
   if (printout) g_print ("{scanner.v_float:%17g}", scanner->value.v_float); \
-  ASSERT (scanner->value.v_float == svalue); \
-  ASSERT (g_scanner_get_next_token (scanner) == '#'); \
+  TASSERT (scanner->value.v_float == svalue); \
+  TASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
 
 static void
@@ -262,11 +262,11 @@ serial_pspec_check (GParamSpec *pspec,
       g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
 			     g_strdup_printf ("failed to serialize pspec \"%s\"", pspec->name), TRUE);
     }
-  ASSERT (token == G_TOKEN_NONE);
+  TASSERT (token == G_TOKEN_NONE);
   sfi_value_store_typed (&rvalue, s2);
   if (strcmp (s1->str, s2->str))
     g_print ("{while comparing pspecs \"%s\":\n\t%s\n\t%s\n", pspec->name, s1->str, s2->str);
-  ASSERT (strcmp (s1->str, s2->str) == 0);
+  TASSERT (strcmp (s1->str, s2->str) == 0);
   g_value_unset (&rvalue);
   sfi_value_free (value);
   g_string_free (s1, TRUE);
@@ -313,7 +313,7 @@ serialize_cmp (GValue     *value,
 	  g_scanner_unexp_token (scanner, token, NULL, NULL, NULL,
 				 g_strdup_printf ("failed to serialize \"%s\"", pspec->name), TRUE);
 	}
-      ASSERT (token == G_TOKEN_NONE);
+      TASSERT (token == G_TOKEN_NONE);
       cmp = g_param_values_cmp (pspec, value, &rvalue);
       if (cmp)
 	{
@@ -330,7 +330,7 @@ serialize_cmp (GValue     *value,
 	      token = sfi_value_parse_typed (&rvalue, scanner);
 	    }
 	}
-      ASSERT (cmp == 0);
+      TASSERT (cmp == 0);
       if (0) /* generate testoutput */
 	g_print ("OK=================(%s)=================:\n%s\n", pspec->name, gstring->str);
     }
@@ -534,16 +534,16 @@ test_notes (void)
   guint i;
   MSG ("Notes:");
   str = sfi_note_to_string (SFI_MIN_NOTE);
-  ASSERT (sfi_note_from_string_err (str, &error) == SFI_MIN_NOTE);
-  ASSERT (error == NULL);
+  TASSERT (sfi_note_from_string_err (str, &error) == SFI_MIN_NOTE);
+  TASSERT (error == NULL);
   g_free (str);
   str = sfi_note_to_string (SFI_KAMMER_NOTE);
-  ASSERT (sfi_note_from_string_err (str, &error) == SFI_KAMMER_NOTE);
-  ASSERT (error == NULL);
+  TASSERT (sfi_note_from_string_err (str, &error) == SFI_KAMMER_NOTE);
+  TASSERT (error == NULL);
   g_free (str);
   str = sfi_note_to_string (SFI_MAX_NOTE);
-  ASSERT (sfi_note_from_string_err (str, &error) == SFI_MAX_NOTE);
-  ASSERT (error == NULL);
+  TASSERT (sfi_note_from_string_err (str, &error) == SFI_MAX_NOTE);
+  TASSERT (error == NULL);
   g_free (str);
   for (i = SFI_MIN_NOTE; i <= SFI_MAX_NOTE; i++)
     {
@@ -553,12 +553,12 @@ test_notes (void)
       gchar letter;
       
       sfi_note_examine (i, &octave, &semitone, &black_semitone, &letter);
-      ASSERT (octave == SFI_NOTE_OCTAVE (i));
-      ASSERT (semitone == SFI_NOTE_SEMITONE (i));
-      ASSERT (SFI_NOTE_GENERIC (octave, semitone) == i);
+      TASSERT (octave == SFI_NOTE_OCTAVE (i));
+      TASSERT (semitone == SFI_NOTE_SEMITONE (i));
+      TASSERT (SFI_NOTE_GENERIC (octave, semitone) == i);
     }
   sfi_note_from_string_err ("NeverNote", &error);
-  ASSERT (error != NULL);
+  TASSERT (error != NULL);
   // g_print ("{%s}", error);
   g_free (error);
   DONE ();
@@ -570,22 +570,22 @@ test_renames (void)
   gchar *str;
   MSG ("Renames:");
   str = g_type_name_to_cname ("PrefixTypeName");
-  ASSERT (strcmp (str, "prefix_type_name") == 0);
+  TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
   str = g_type_name_to_sname ("PrefixTypeName");
-  ASSERT (strcmp (str, "prefix-type-name") == 0);
+  TASSERT (strcmp (str, "prefix-type-name") == 0);
   g_free (str);
   str = g_type_name_to_cupper ("PrefixTypeName");
-  ASSERT (strcmp (str, "PREFIX_TYPE_NAME") == 0);
+  TASSERT (strcmp (str, "PREFIX_TYPE_NAME") == 0);
   g_free (str);
   str = g_type_name_to_type_macro ("PrefixTypeName");
-  ASSERT (strcmp (str, "PREFIX_TYPE_TYPE_NAME") == 0);
+  TASSERT (strcmp (str, "PREFIX_TYPE_TYPE_NAME") == 0);
   g_free (str);
   str = g_type_name_to_sname ("prefix_type_name");
-  ASSERT (strcmp (str, "prefix-type-name") == 0);
+  TASSERT (strcmp (str, "prefix-type-name") == 0);
   g_free (str);
   str = g_type_name_to_cname ("prefix-type-name");
-  ASSERT (strcmp (str, "prefix_type_name") == 0);
+  TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
   DONE ();
 }
@@ -685,10 +685,10 @@ test_vmarshal_func4 (gpointer o,
 		     SfiNum   n,
 		     gpointer data)
 {
-  ASSERT (o == pointer1);
-  ASSERT (r == -426.9112e-267);
-  ASSERT (n == -2598768763298128732LL);
-  ASSERT (data == pointer3);
+  TASSERT (o == pointer1);
+  TASSERT (r == -426.9112e-267);
+  TASSERT (n == -2598768763298128732LL);
+  TASSERT (data == pointer3);
 }
 
 static void
@@ -700,13 +700,13 @@ test_vmarshal_func7 (gpointer o,
 		     SfiNum   self,
 		     gpointer data)
 {
-  ASSERT (o == pointer1);
-  ASSERT (r == -426.9112e-267);
-  ASSERT (n == -2598768763298128732LL);
-  ASSERT (p == (SfiProxy) pointer2);
-  ASSERT (i == -2134567);
-  ASSERT (self == (SfiNum) test_vmarshal_func7);
-  ASSERT (data == pointer3);
+  TASSERT (o == pointer1);
+  TASSERT (r == -426.9112e-267);
+  TASSERT (n == -2598768763298128732LL);
+  TASSERT (p == (SfiProxy) pointer2);
+  TASSERT (i == -2134567);
+  TASSERT (self == (long) test_vmarshal_func7);
+  TASSERT (data == pointer3);
 }
 
 static void
@@ -721,7 +721,7 @@ test_vmarshals (void)
 		  pointer3);
   sfi_seq_append_proxy (seq, (SfiProxy) pointer2);
   sfi_seq_append_int (seq, -2134567);
-  sfi_seq_append_num (seq, (SfiNum) test_vmarshal_func7);
+  sfi_seq_append_num (seq, (long) test_vmarshal_func7);
   sfi_vmarshal_void (test_vmarshal_func7, pointer1,
 		  seq->n_elements, seq->elements,
 		  pointer3);
@@ -740,41 +740,41 @@ test_sfidl_seq (void)
   MSG ("Sfidl generated code:");
 
   /* test that types are registered properly */
-  // ASSERT (TEST_TYPE_POSITION != 0);
-  // ASSERT (TEST_TYPE_POSITION_SEQ != 0);
-  // ASSERT (TEST_TYPE_YES_NO_UNDECIDED != 0);
+  // TASSERT (TEST_TYPE_POSITION != 0);
+  // TASSERT (TEST_TYPE_POSITION_SEQ != 0);
+  // TASSERT (TEST_TYPE_YES_NO_UNDECIDED != 0);
 
   /* test sequences and structs generated for Position record */
   pseq = test_position_seq_new ();
-  ASSERT (pseq != NULL);
-  ASSERT (pseq->n_positions == 0);
+  TASSERT (pseq != NULL);
+  TASSERT (pseq->n_positions == 0);
 
   pos = test_position_new ();
-  ASSERT (pos != NULL);
+  TASSERT (pos != NULL);
   pos->x = 1.0;
   pos->y = -1.0;
   pos->relevant = TEST_NO;
 
   test_position_seq_append (pseq, pos);
-  ASSERT (pseq->n_positions == 1);
+  TASSERT (pseq->n_positions == 1);
 
   test_position_seq_resize (pseq, 4);
-  ASSERT (pseq->n_positions == 4);
+  TASSERT (pseq->n_positions == 4);
 
   test_position_seq_resize (pseq, 1);
-  ASSERT (pseq->n_positions == 1);
+  TASSERT (pseq->n_positions == 1);
 
   rec = test_position_to_rec (pos);
   value = sfi_rec_get (rec, "relevant");
 
-  ASSERT (SFI_VALUE_HOLDS_CHOICE (value));
-  ASSERT (strcmp (sfi_value_get_choice (value), "test-no") == 0);
+  TASSERT (SFI_VALUE_HOLDS_CHOICE (value));
+  TASSERT (strcmp (sfi_value_get_choice (value), "test-no") == 0);
 
   pos2 = test_position_from_rec (rec);
 
-  ASSERT (pos->x == pos2->x);
-  ASSERT (pos->y == pos2->y);
-  ASSERT (pos->relevant == pos2->relevant);
+  TASSERT (pos->x == pos2->x);
+  TASSERT (pos->y == pos2->y);
+  TASSERT (pos->relevant == pos2->relevant);
 
   sfi_rec_unref (rec);
   test_position_seq_free (pseq);
@@ -799,17 +799,17 @@ test_sfidl_seq (void)
     GValue pos_value = { 0, };
     /* transform record to boxed type */
     g_value_init (&pos_value, TEST_TYPE_POSITION);
-    ASSERT (sfi_value_type_transformable (SFI_TYPE_REC, TEST_TYPE_POSITION));
+    TASSERT (sfi_value_type_transformable (SFI_TYPE_REC, TEST_TYPE_POSITION));
     sfi_value_transform (&rec_value, &pos_value);
 
     /* get boxed type */
-    ASSERT (G_VALUE_HOLDS (&pos_value, TEST_TYPE_POSITION));
+    TASSERT (G_VALUE_HOLDS (&pos_value, TEST_TYPE_POSITION));
     pos = g_value_get_boxed (&pos_value);
     
     /* check that values match defaults */
-    ASSERT (pos->x == 2.0);
-    ASSERT (pos->y == 3.0);
-    ASSERT (pos->relevant == TEST_YES);
+    TASSERT (pos->x == 2.0);
+    TASSERT (pos->y == 3.0);
+    TASSERT (pos->relevant == TEST_YES);
 
     /* cleanup */
     g_value_unset (&rec_value);
@@ -818,8 +818,8 @@ test_sfidl_seq (void)
   }
 
   /* test constants */
-  // ASSERT (TEST_ANSWER_B == 42);
-  // ASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
+  // TASSERT (TEST_ANSWER_B == 42);
+  // TASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
   DONE ();
 }
 
@@ -867,77 +867,77 @@ test_sfi_ring (void)
   r1= sfi_ring_append (r1, (void*) 8);
   r1= sfi_ring_append (r1, (void*) 13);
   r1= sfi_ring_append (r1, (void*) 18);
-  ASSERT (sfi_ring_length (r1) == 5);
-  ASSERT (sfi_ring_equals (r1, r1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_length (r1) == 5);
+  TASSERT (sfi_ring_equals (r1, r1, sfi_pointer_cmp, NULL));
 
   d = sfi_ring_append (d, (void*) 13);
   d = sfi_ring_append (d, (void*) 7);
   d = sfi_ring_append (d, (void*) 18);
   d = sfi_ring_append (d, (void*) 3);
   d = sfi_ring_append (d, (void*) 8);
-  ASSERT (sfi_ring_equals (d, d, sfi_pointer_cmp, NULL));
-  ASSERT (sfi_ring_min (d, sfi_pointer_cmp, NULL) == (void*) 3);
-  ASSERT (sfi_ring_max (d, sfi_pointer_cmp, NULL) == (void*) 18);
+  TASSERT (sfi_ring_equals (d, d, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_min (d, sfi_pointer_cmp, NULL) == (void*) 3);
+  TASSERT (sfi_ring_max (d, sfi_pointer_cmp, NULL) == (void*) 18);
 
-  ASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL) == FALSE);
+  TASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL) == FALSE);
   d = sfi_ring_sort (d, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL));
-  ASSERT (sfi_ring_includes (r1, d, sfi_pointer_cmp, NULL));
-  ASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_includes (r1, d, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (d);
 
   r2 = sfi_ring_append (r2, (void*) 4);
   r2 = sfi_ring_append (r2, (void*) 7);
   r2 = sfi_ring_append (r2, (void*) 13);
-  ASSERT (sfi_ring_length (r2) == 3);
+  TASSERT (sfi_ring_length (r2) == 3);
   d = sfi_ring_sort (sfi_ring_copy (r2), sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_equals (r2, d, sfi_pointer_cmp, NULL));
-  ASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
-  ASSERT (sfi_ring_includes (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
+  TASSERT (sfi_ring_equals (r2, d, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
+  TASSERT (sfi_ring_includes (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
   sfi_ring_free (d);
 
   d = sfi_ring_difference (r1, r2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 3);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 8);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 18);
-  ASSERT (d == NULL);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 3);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 8);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 18);
+  TASSERT (d == NULL);
 
   d = sfi_ring_symmetric_difference (r1, r2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 3);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 4);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 8);
-  ASSERT (sfi_ring_pop_head (&d) == (void*) 18);
-  ASSERT (d == NULL);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 3);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 4);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 8);
+  TASSERT (sfi_ring_pop_head (&d) == (void*) 18);
+  TASSERT (d == NULL);
 
   SfiRing *t1 = sfi_ring_symmetric_difference (r1, r2, sfi_pointer_cmp, NULL);
   SfiRing *t2 = sfi_ring_intersection (r1, r2, sfi_pointer_cmp, NULL);
   d = sfi_ring_intersection (t1, t2, sfi_pointer_cmp, NULL);
-  ASSERT (d == NULL);
+  TASSERT (d == NULL);
   d = sfi_ring_union (t1, t2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_includes (d, t1, sfi_pointer_cmp, NULL));
-  ASSERT (sfi_ring_includes (d, t2, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_includes (d, t1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_includes (d, t2, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   sfi_ring_free (t2);
-  ASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
-  ASSERT (sfi_ring_includes (d, r2, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_includes (d, r2, sfi_pointer_cmp, NULL));
 
   d = sfi_ring_union (r1, r2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_length (d) == 6);
+  TASSERT (sfi_ring_length (d) == 6);
   t1 = r1, t2 = d;
   sfi_ring_mismatch (&t1, &t2, sfi_pointer_cmp, NULL);
-  ASSERT (t1->data == (void*) 7);
-  ASSERT (t2->data == (void*) 4);
+  TASSERT (t1->data == (void*) 7);
+  TASSERT (t2->data == (void*) 4);
   t2 = sfi_ring_concat (sfi_ring_copy (r1), sfi_ring_copy (r2));
-  ASSERT (sfi_ring_length (t2) == 8);
+  TASSERT (sfi_ring_length (t2) == 8);
   t2 = sfi_ring_sort (t2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_length (t2) == 8);
+  TASSERT (sfi_ring_length (t2) == 8);
   t1 = sfi_ring_copy_uniq (t2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_length (t1) == 6);
-  ASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_length (t1) == 6);
+  TASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   t1 = sfi_ring_uniq (t2, sfi_pointer_cmp, NULL);
-  ASSERT (sfi_ring_length (t1) == 6);
-  ASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_length (t1) == 6);
+  TASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   sfi_ring_free (d);
 
@@ -954,7 +954,7 @@ test_sfi_ring (void)
   t1 = sfi_ring_reorder (sfi_ring_copy (r2), r1);
   if (0)
     print_rings_side_by_side (t1, r1);
-  ASSERT (sfi_ring_equals (t1, r1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_equals (t1, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   r2 = sfi_ring_remove (r2, (void*) 4);
   r2 = sfi_ring_append (r2, (void*) 9);
@@ -963,7 +963,7 @@ test_sfi_ring (void)
   r1 = sfi_ring_append (r1, (void*) 9);
   if (0)
     print_rings_side_by_side (t1, r1);
-  ASSERT (sfi_ring_equals (t1, r1, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_equals (t1, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (r1);
   sfi_ring_free (r2);
   sfi_ring_free (t1);
@@ -979,11 +979,11 @@ test_sfi_ring (void)
   r2 = sfi_ring_reorder (r2, r1);
   if (0)
     print_rings_side_by_side (r2, r1);
-  ASSERT (sfi_ring_pop_head (&r2) == (void*) 0x4c);
-  ASSERT (sfi_ring_pop_head (&r2) == (void*) 0x5e);
-  ASSERT (sfi_ring_pop_head (&r2) == (void*) 0x68);
-  ASSERT (sfi_ring_pop_head (&r2) == (void*) 0x68);
-  ASSERT (r2 == NULL);
+  TASSERT (sfi_ring_pop_head (&r2) == (void*) 0x4c);
+  TASSERT (sfi_ring_pop_head (&r2) == (void*) 0x5e);
+  TASSERT (sfi_ring_pop_head (&r2) == (void*) 0x68);
+  TASSERT (sfi_ring_pop_head (&r2) == (void*) 0x68);
+  TASSERT (r2 == NULL);
   sfi_ring_free (r1);
 
   r1 = NULL;
@@ -1007,7 +1007,7 @@ test_sfi_ring (void)
   r2 = sfi_ring_append (r2, (void*) 0x02);
   r2 = sfi_ring_append (r2, (void*) 0x03);
   r1 = sfi_ring_reorder (r1, r2);
-  ASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL));
+  TASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL));
   sfi_ring_free (r1);
   sfi_ring_free (r2);
 

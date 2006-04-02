@@ -130,7 +130,7 @@ void CodeGeneratorHostC::printChoiceMethodPrototypes (PrefixSymbolMode mode)
       if (mode == generatePrefixSymbols)
 	prefix_symbols.push_back (makeLowerName (ei->name) + "_get_values");
       else
-	printf("const SfiChoiceValues %s_get_values (void);\n", makeLowerName (ei->name).c_str());
+	printf("SfiChoiceValues %s_get_values (void);\n", makeLowerName (ei->name).c_str());
     }
 }
 
@@ -144,7 +144,7 @@ void CodeGeneratorHostC::printChoiceMethodImpl()
 
       string name = makeLowerName (ei->name);
 
-      printf ("const SfiChoiceValues\n");
+      printf ("SfiChoiceValues\n");
       printf ("%s_get_values (void)\n", makeLowerName (ei->name).c_str());
       printf ("{\n");
       printf ("  static SfiChoiceValue values[%u];\n", ei->contents.size());
