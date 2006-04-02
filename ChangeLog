@@ -1,3 +1,15 @@
+Sun Apr  2 03:44:31 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl: declare GENERATED to list generated files.
+	declare GENERATED_EXTRA_DIST for files that automatically end up
+	in GENERATED and EXTRA_DIST.
+	define _BIRNET_SOURCE_EXTENSIONS for the whole source tree by
+	adding it to AM_CXXFLAGS and AM_CFLAGS.
+
+	* configure.in: moved libmad check into BSE namespace. presence is
+	now indicated by the BSE_HAVE_LIBMAD macro provided by topconfig.h.
+	removed cruft.
+
 Thu Mar 30 20:49:43 2006  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: depend on automake-1.9.

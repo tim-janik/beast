@@ -251,31 +251,25 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     dnl # --- libmad MPEG decoder check ---
     dnl # libmad doesn't come with a mad.pc file (just its debian package)
     dnl # PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
-    dnl #     GSL_HAVE_LIBMAD=1
+    dnl #     BSE_HAVE_LIBMAD=1
     dnl #     ,
-    dnl #     GSL_HAVE_LIBMAD=0
+    dnl #     BSE_HAVE_LIBMAD=0
     dnl #     AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
     dnl # )
     MAD_LIBS=
-    LIBMAD_XXX_0=""
-    LIBMAD_XXX_1=""
     mad_tests=0
     AC_CHECK_LIB(mad, mad_stream_errorstr,
         [AC_CHECK_HEADER(mad.h, mad_tests=`expr $mad_tests + 1`)]
         ,
         mad_tests=0, -lm)
     if test $mad_tests = 1 ; then
-	GSL_HAVE_LIBMAD=1
+	BSE_HAVE_LIBMAD=1
         MAD_LIBS="-lmad -lm"
-	LIBMAD_XXX_0="XXX_"
     else
         AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
-	GSL_HAVE_LIBMAD=0
-	LIBMAD_XXX_1="XXX_"
+	BSE_HAVE_LIBMAD=0
     fi
-    AC_SUBST(GSL_HAVE_LIBMAD)
-    AC_SUBST(LIBMAD_XXX_0)
-    AC_SUBST(LIBMAD_XXX_1)
+    AC_DEFINE_UNQUOTED(BSE_HAVE_LIBMAD, $BSE_HAVE_LIBMAD, [Whether bse links against libmad])
 
     dnl # --- check codec requirements ---
     AC_MSG_CHECKING([the required GSL-Loader library set])
@@ -304,7 +298,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
     BSE_PC_REQUIRE=
-    if test $GSL_HAVE_LIBMAD = 1 ; then
+    if test $BSE_HAVE_LIBMAD = 1 ; then
 	BSE_PC_REQUIRE=mad
     fi
     BSE_PC_CFLAGS=
@@ -320,9 +314,6 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     GLIB_SIZEOF([#include <pthread.h>], pthread_cond_t, pth_cond_t)
     SFI_SIZEOF_PTH_COND_T="$glib_cv_sizeof_pth_cond_t"
     AC_SUBST(SFI_SIZEOF_PTH_COND_T)
-    GLIB_SIZEOF([#include <inttypes.h>], intmax_t, std_intmax_t)
-    GSL_SIZEOF_STD_INTMAX_T="$glib_cv_sizeof_std_intmax_t"
-    AC_SUBST(GSL_SIZEOF_STD_INTMAX_T)
 
     dnl # --- pthread_mutexattr_settype ---
     AC_MSG_CHECKING([for pthread_mutexattr_settype()])

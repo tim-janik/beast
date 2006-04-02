@@ -288,14 +288,16 @@ AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 
 	dnl Further setup CXXFLAGS for GXX.
 	MC_IF_VAR_EQ(GXX, yes,
-		dnl Warnings.
-		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
-	
-		dnl Warnings.
+		dnl # enable many useful warnings
 		MC_EVAR_ADD(CXXFLAGS, -Wall, -Wall)
-		dnl MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
 		MC_EVAR_ADD(CXXFLAGS, -Wno-cast-qual, -Wno-cast-qual)
-		dnl MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
+		dnl # MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		dnl # MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
+		
+		dnl # avoid bogus offsetof()-usage warnings
+		dnl MC_PROG_CC_SUPPORTS_OPTION(-Wno-invalid-offsetof,
+		dnl   MC_EVAR_ADD(CXXFLAGS, -Wno-invalid-offsetof, -Wno-invalid-offsetof))
 
 		dnl Optimizations
 		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
