@@ -1,3 +1,7 @@
+Sun Apr  2 18:19:42 2006  Tim Janik  <timj@gtk.org>
+
+	* bse/Makefile.am: some more dependency and minor build fixes.
+
 Sun Apr  2 03:31:24 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: merged with gslmakefile.inc. fixed dependencies. 

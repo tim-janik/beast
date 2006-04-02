@@ -173,10 +173,10 @@ GENERATED += gslfft.c
 $(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
 # bsegentypes.h
-GENERATED += bsegentypes.h
+GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
-stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(filter-out bsegentypes.h, $(bse_public_h_sources))
+stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(filter-out bsegentypes.c, $(bse_c_sources)) $(filter-out bsegentypes.h, $(bse_public_h_sources))
 stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
@@ -185,7 +185,7 @@ stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
-	  && $(PERL) mktypes.pl --externs $(bse_c_sources) \
+	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.c, $(bse_c_sources)) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
@@ -193,8 +193,8 @@ stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
 	&& echo timestamp > $(@F)
 # bsegentypes.c
 GENERATED_EXTRA_DIST += bsegentypes.c
-bsetype.c: bsegentypes.c
-bsegentypes.c: @DVLBUILD@ mktypes.pl bsecore.idl $(SFIDL)
+$(libbse_la_OBJECTS): bsegentypes.c
+bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -206,8 +206,8 @@ bsegentypes.c: @DVLBUILD@ mktypes.pl bsecore.idl $(SFIDL)
 	&& rm -f xgen-$(@F)
 # bseenum_arrays.c
 GENERATED_EXTRA_DIST += bseenum_arrays.c
-bseenums.c: bseenum_arrays.c
-bseenum_arrays.c: @DVLBUILD@ $(filter-out bsegentypes.h, $(bse_public_h_sources))
+$(libbse_la_OBJECTS): bseenum_arrays.c
+bseenum_arrays.c: @DVLBUILD@ bsegentypes.h
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -220,8 +220,8 @@ bseenum_arrays.c: @DVLBUILD@ $(filter-out bsegentypes.h, $(bse_public_h_sources)
 	&& rm -f xgen-$(@F)
 # bseenum_list.c
 GENERATED_EXTRA_DIST += bseenum_list.c
-$(srcdir)/bseenums.c: bseenum_list.c
-bseenum_list.c: @DVLBUILD@ bseenum_arrays.c
+$(libbse_la_OBJECTS): bseenum_list.c
+bseenum_list.c: @DVLBUILD@ bsegentypes.h
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -231,15 +231,15 @@ bseenum_list.c: @DVLBUILD@ bseenum_arrays.c
 	&& rm -f xgen-$(@F)
 # bsegentype_array.c
 GENERATED_EXTRA_DIST += bsegentype_array.c
-$(srcdir)/bsetype.c:  bsegentype_array.c
-bsegentype_array.c: @DVLBUILD@ bsegentypes.c
+$(libbse_la_OBJECTS): bsegentype_array.c
+bsegentype_array.c: @DVLBUILD@ bsegentypes.h
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsebuiltin_externs.c
 GENERATED_EXTRA_DIST += bsebuiltin_externs.c
-$(srcdir)/bseplugin.c: bsebuiltin_externs.c
+$(libbse_la_OBJECTS): bsebuiltin_externs.c
 bsebuiltin_externs.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
@@ -247,7 +247,7 @@ bsebuiltin_externs.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	&& rm -f xgen-$(@F)
 # bsebuiltin_array.c
 GENERATED_EXTRA_DIST += bsebuiltin_array.c
-$(srcdir)/bseplugin.c: bsebuiltin_array.c
+$(libbse_la_OBJECTS): bsebuiltin_array.c
 bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
@@ -275,7 +275,7 @@ bsehack.idl: bsecore.idl bseprocidl
 	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-2-$(@F)
 	echo "/* this file was generated from make $< */" > xgen-$(@F) \
 	&& ./bseprocidl xgen-2-$(@F) >> xgen-$(@F) \
-	&& (cmp -s xgen-$(@F) bsehack.idl || cp xgen-$(@F) bsehack.idl) \
+	&& cp xgen-$(@F) bsehack.idl \
 	&& rm -f xgen-$(@F) xgen-2-$(@F)
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
@@ -287,7 +287,6 @@ noinst_DATA = bsehack.idl
 clean-generated: clean
 	rm -f $(GENERATED) stamp-*
 generated: clean-generated $(GENERATED) $(idl_built_sources)
-MAINTAINERCLEANFILES += $(GENERATED)
 
 
 #
