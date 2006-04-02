@@ -1,3 +1,12 @@
+Sun Apr  2 18:58:34 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/Makefile.am: don't link against libsfi/libbirnet if
+	linking against libbse.
+
+	* beast-gtk/gxk/dummy.cc:
+	* beast-gtk/gxk/Makefile.am: added C++ dummy, for proper linkage
+	with older gccs.
+
 Sun Apr  2 18:16:56 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl: auto-add GENERATED to MAINTAINERCLEANFILES.

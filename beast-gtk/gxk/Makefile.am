@@ -101,9 +101,9 @@ progs_LDADD = $(strip						\
 )
 
 noinst_PROGRAMS = gxktest splinetest
-gxktest_SOURCES = gxktest.c
+gxktest_SOURCES = gxktest.c dummy.cc
 gxktest_LDADD = $(progs_LDADD)
-splinetest_SOURCES = splinetest.c
+splinetest_SOURCES = splinetest.c dummy.cc
 splinetest_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(gxk_headers) $(gxk_extra_sources) $(gxk_built_sources)

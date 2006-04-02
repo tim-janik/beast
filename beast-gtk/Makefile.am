@@ -199,6 +199,4 @@ progs_LDADD = $(strip                                           \
 	$(BEAST_LIBS) 						\
 	./gxk/libgxk.a $(GXK_LIBS)                              \
 	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
-	$(top_builddir)/sfi/libsfi.o $(SFI_LIBS)                \
-	$(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS)       \
 )
