@@ -7,7 +7,6 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS		= . tests
 INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
 GLIB_MKENUMS    = glib-mkenums
-DEFS		= -D_BIRNET_SOURCE_EXTENSIONS -DPARANOID
 
 birnet_headers = $(strip 		\
 	birnet.h			\

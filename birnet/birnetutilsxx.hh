@@ -28,6 +28,18 @@
 namespace Birnet {
 
 /* --- convenient type shorthands --- */
+#ifdef  _BIRNET_SOURCE_EXTENSIONS
+using ::uint;
+using ::uint8;
+using ::uint16;
+using ::uint32;
+using ::uint64;
+using ::int8;
+using ::int16;
+using ::int32;
+using ::int64;
+using ::unichar;
+#else   /* !_BIRNET_SOURCE_EXTENSIONS */
 typedef BirnetUInt		uint;
 typedef BirnetUInt8		uint8;
 typedef BirnetUInt16		uint16;
@@ -38,6 +50,7 @@ typedef BirnetInt16		int16;
 typedef BirnetInt32		int32;
 typedef BirnetInt64		int64;
 typedef BirnetUniChar		unichar;
+#endif
 
 /* --- convenient stdc++ types --- */
 typedef std::string String;

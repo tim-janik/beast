@@ -158,24 +158,24 @@ struct Emitter3 {
 struct Connection3 {
   static String mixed_func (int i, String s, float f)
   {
-    assert (i == 7 && s == "seven.seven" && f == (float) 7.7);
+    BIRNET_ASSERT (i == 7 && s == "seven.seven" && f == (float) 7.7);
     printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
     return __func__;
   }
   static String mixed_efunc      (Emitter3 &obj, int i, String s, float f)
   {
-    assert (i == 7 && s == "seven.seven" && f == (float) 7.7);
+    BIRNET_ASSERT (i == 7 && s == "seven.seven" && f == (float) 7.7);
     printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
     return __func__;
   }
   static void   void_mixed_func (int i, String s, float f)
   {
-    assert (i == 3 && s == "three.three" && f == (float) 3.3);
+    BIRNET_ASSERT (i == 3 && s == "three.three" && f == (float) 3.3);
     printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
   }
   static void   void_mixed_efunc (Emitter3 &obj, int i, String s, float f)
   {
-    assert (i == 3 && s == "three.three" && f == (float) 3.3);
+    BIRNET_ASSERT (i == 3 && s == "three.three" && f == (float) 3.3);
     printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
   }
   String string_callback (int i, String s, float f)

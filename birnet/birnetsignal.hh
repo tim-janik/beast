@@ -67,7 +67,7 @@ protected:
   connect_link (Link *link,
                 bool  with_emitter = false)
   {
-    assert (link->prev == NULL && link->next == NULL);
+    BIRNET_ASSERT (link->prev == NULL && link->next == NULL);
     link->ref_sink();
     link->prev = start.prev;
     link->next = &start;
@@ -104,8 +104,8 @@ public:
   {
     while (start.next != &start)
       destruct_link (start.next);
-    assert (start.next == &start);
-    assert (start.prev == &start);
+    BIRNET_ASSERT (start.next == &start);
+    BIRNET_ASSERT (start.prev == &start);
     start.prev = start.next = NULL;
     start.unref();
   }
@@ -280,8 +280,8 @@ template<class Instance>
 class ScopeReference<Instance, ScopeReferenceFinalizationMark> {
   Instance &m_instance;
 public:
-  ScopeReference  (Instance &instance) : m_instance (instance) { assert (m_instance.finalizing() == true); }
-  ~ScopeReference ()                                           { assert (m_instance.finalizing() == true); }
+  ScopeReference  (Instance &instance) : m_instance (instance) { BIRNET_ASSERT (m_instance.finalizing() == true); }
+  ~ScopeReference ()                                           { BIRNET_ASSERT (m_instance.finalizing() == true); }
 };
 
 /* --- SlotBase --- */

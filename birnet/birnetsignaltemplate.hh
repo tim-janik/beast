@@ -140,11 +140,11 @@ struct Signal3 : SignalEmittable3<Emitter, R0, A1, A2, A3, Collector>
   typedef SignalEmittable3<Emitter, R0, A1, A2, A3, Collector> SignalEmittable;
   explicit Signal3 (Emitter &emitter) :
     SignalEmittable (&emitter)
-  { assert (&emitter != NULL); }
+  { BIRNET_ASSERT (&emitter != NULL); }
   explicit Signal3 (Emitter &emitter, R0 (Emitter::*method) (A1, A2, A3)) :
     SignalEmittable (&emitter)
   {
-    assert (&emitter != NULL);
+    BIRNET_ASSERT (&emitter != NULL);
     connect (slot (emitter, method));
   }
   inline void connect    (const Slot  &s) { connect_link (s.get_trampoline()); }

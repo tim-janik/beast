@@ -1,3 +1,17 @@
+Sun Apr  2 03:28:04 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.h: provide ISLIKELY() as alias for LIKELY().
+
+	* birnetsignaltemplate.hh:
+	* birnetsignal.hh:
+	* tests/signal.cc: fixed assertions.
+
+	* birnetutilsxx.hh: fixed primitive type ambiguities.
+
+	* Makefile.am: -D_BIRNET_SOURCE_EXTENSIONS is provided by Makefile.decl.
+
+	* tests/Makefile.am: DEFS is defined by Makefile.decl.
+
 Thu Mar 30 19:34:07 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: changed switch macro for birnet extensins
