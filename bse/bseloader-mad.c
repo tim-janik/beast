@@ -16,9 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "topconfig.h"
 #include "bse/bseloader.h"
-
-#include <bse/gsldatahandle.h>
 #include "gsldatahandle-mad.h"
 
 #include <unistd.h>
@@ -214,6 +213,6 @@ _gsl_init_loader_mad (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
 
-  if (GSL_HAVE_LIBMAD)
+  if (BSE_HAVE_LIBMAD)
     bse_loader_register (&loader);
 }

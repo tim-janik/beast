@@ -200,8 +200,8 @@ static const union { unsigned char c[4]; float f; }  _bse_finf_union = { _BSE_FL
 
 /* get structured parts of floating point numbers */
 #if __cplusplus
-extern inline BseFloatIEEE754  BSE_FLOAT_PARTS  (register float  fvalue) { register BseFloatIEEE754  fret = { fvalue }; return fret; }
-extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { register BseDoubleIEEE754 dret = { dvalue }; return dret; }
+extern inline BseFloatIEEE754  BSE_FLOAT_PARTS  (register float  fvalue) { BseFloatIEEE754  fret = { fvalue }; return fret; }
+extern inline BseDoubleIEEE754 BSE_DOUBLE_PARTS (register double dvalue) { BseDoubleIEEE754 dret = { dvalue }; return dret; }
 #else
 #define	BSE_FLOAT_PARTS(f)		(((BseFloatIEEE754) (f)))
 #define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d)))

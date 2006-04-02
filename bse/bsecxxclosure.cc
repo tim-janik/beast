@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -18,8 +18,7 @@
 #if defined BSE_COMPILATION
 #include "bsecxxclosure.hh"
 
-namespace {
-using namespace Bse;
+namespace Bse {
 
 CxxClosure::CxxClosure()
   : glib_closure (NULL), sig_tokens ()
@@ -36,7 +35,7 @@ CxxClosure::gclosure()
   return glib_closure;
 }
 
-} // namespace
+} // Bse
 
 #else /* !BSE_COMPILATION */    // program to generate bsegenclosures.h
 

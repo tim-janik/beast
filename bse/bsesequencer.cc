@@ -185,13 +185,14 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  g_static_assert (sizeof (GPollFD) == sizeof (struct pollfd));
-  g_static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
-  g_static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  g_static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
-  g_static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  g_static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  g_static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  
+  BIRNET_STATIC_ASSERT (sizeof (GPollFD) == sizeof (struct pollfd));
+  BIRNET_STATIC_ASSERT (offsetof (GPollFD, fd) == offsetof (struct pollfd, fd));
+  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  BIRNET_STATIC_ASSERT (offsetof (GPollFD, events) == offsetof (struct pollfd, events));
+  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  BIRNET_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
+  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 };
 static PollPool sequencer_poll_pool;
 

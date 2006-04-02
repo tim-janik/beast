@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -243,6 +243,7 @@ public:
   }
   static void
   init_types ();
+  struct TypeEntry;
 };
 
 template<class C> const GType

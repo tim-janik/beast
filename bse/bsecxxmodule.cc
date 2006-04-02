@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -20,11 +20,10 @@
 #include "bsemidireceiver.h"
 #include "bsesnet.h"
 
-namespace {
-using namespace Bse;
+namespace Bse {
 
-const ClassInfo cinfo (NULL, "BseEffect implements an abstract C++ effect base.", __FILE__, __LINE__);
-BSE_CXX_TYPE_REGISTER_ABSTRACT (Effect, "BseCxxBase", &cinfo);
+static const ClassInfo class_info (NULL, "BseEffect implements an abstract C++ effect base.", __FILE__, __LINE__);
+BSE_CXX_TYPE_REGISTER_ABSTRACT (Effect, "BseCxxBase", &class_info);
 
 Effect::Effect() :
   last_module_update (0)
@@ -45,7 +44,7 @@ Effect::get_property (guint       prop_id,
 {
 }
 
-void
+static void
 access_trampoline (BseModule *module,
                    gpointer   data)
 {
@@ -54,7 +53,7 @@ access_trampoline (BseModule *module,
   (*clo) (m);
 }
 
-void
+static void
 access_data_free (gpointer data)
 {
   SynthesisModule::Closure *clo = static_cast<SynthesisModule::Closure*> (data);
@@ -90,10 +89,30 @@ SynthesisModule::set_module (BseModule *engine_module)
   g_return_if_fail (engine_module != NULL);
   
   intern_module = engine_module;
-  /* see check_mirror_structs() on why these casts are valid */
   istreams = reinterpret_cast<IStream*> (engine_module->istreams);
   jstreams = reinterpret_cast<JStream*> (engine_module->jstreams);
   ostreams = reinterpret_cast<OStream*> (engine_module->ostreams);
+
+  /* assert validity of the above casts */
+  BIRNET_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));
+  BIRNET_STATIC_ASSERT (offsetof (JStream, values)            == offsetof (BseJStream, values));
+  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->values)        == sizeof (((BseJStream*)0)->values));
+  BIRNET_STATIC_ASSERT (offsetof (JStream, n_connections)     == offsetof (BseJStream, n_connections));
+  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->n_connections) == sizeof (((BseJStream*)0)->n_connections));
+  BIRNET_STATIC_ASSERT (offsetof (JStream, jcount)            == offsetof (BseJStream, jcount));
+  BIRNET_STATIC_ASSERT (sizeof (((JStream*)0)->jcount)        == sizeof (((BseJStream*)0)->jcount));
+  
+  BIRNET_STATIC_ASSERT (sizeof   (IStream)                == sizeof   (BseIStream));
+  BIRNET_STATIC_ASSERT (offsetof (IStream, values)        == offsetof (BseIStream, values));
+  BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->values)    == sizeof (((BseIStream*)0)->values));
+  BIRNET_STATIC_ASSERT (offsetof (IStream, connected)     == offsetof (BseIStream, connected));
+  BIRNET_STATIC_ASSERT (sizeof (((IStream*)0)->connected) == sizeof (((BseIStream*)0)->connected));
+  
+  BIRNET_STATIC_ASSERT (sizeof   (OStream)                == sizeof   (BseOStream));
+  BIRNET_STATIC_ASSERT (offsetof (OStream, values)        == offsetof (BseOStream, values));
+  BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->values)    == sizeof (((BseOStream*)0)->values));
+  BIRNET_STATIC_ASSERT (offsetof (OStream, connected)     == offsetof (BseOStream, connected));
+  BIRNET_STATIC_ASSERT (sizeof (((OStream*)0)->connected) == sizeof (((BseOStream*)0)->connected));
 }
 
 void
@@ -120,7 +139,7 @@ SynthesisModule::cost()
   return NORMAL;
 }
 
-void
+static void
 process_module (BseModule *engine_module,
                 guint      n_values)
 {
@@ -128,14 +147,14 @@ process_module (BseModule *engine_module,
   m->process (n_values);
 }
 
-void
+static void
 reset_module (BseModule *engine_module)
 {
   SynthesisModule *m = static_cast<SynthesisModule*> (engine_module->user_data);
   m->reset();
 }
 
-void
+static void
 delete_module (gpointer        data,
                const BseModuleClass *klass)
 {
@@ -498,33 +517,4 @@ Effect::class_init (CxxBaseClass *klass)
   source_class->reset = Trampoline::effect_reset;
 }
 
-
-#define ASSERT(foo)           if (foo) ; else g_error ("failed to assert: %s", # foo )
-#define FIELD_OFFSET(S,F)     (-1024 + (size_t) &((S*) 1024)->F)      // stop gcc warning about acessing NULL object fields
-#define FIELD_SIZE(S,F)       (sizeof (&((S*) 1024)->F))              // stop gcc warning about referencing non-static members
-#define ASSERT_FIELD(CxxS, CS, F)       do { \
-  ASSERT (FIELD_OFFSET (CxxS, F) == G_STRUCT_OFFSET (CS, F)); \
-  ASSERT (FIELD_SIZE (CxxS, F) == FIELD_SIZE (CS, F)); \
-} while (0)
-
-static void
-check_mirror_structs ()
-{
-  ASSERT (sizeof (JStream) == sizeof (BseJStream));
-  ASSERT_FIELD (JStream, BseJStream, values);
-  ASSERT_FIELD (JStream, BseJStream, n_connections);
-  
-  ASSERT (sizeof (IStream) == sizeof (BseIStream));
-  ASSERT_FIELD (IStream, BseIStream, values);
-  
-  ASSERT (sizeof (OStream) == sizeof (BseOStream));
-  ASSERT_FIELD (OStream, BseOStream, values);
-}
-
-extern "C" void
-bse_cxx_checks (void)  // prototyped in bseutils.h
-{
-  check_mirror_structs ();
-}
-
-} // Anon
+} // Bse

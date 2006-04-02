@@ -1307,7 +1307,7 @@ typedef struct {
   gfloat            mix_freq;
 } WaveHandle;
 
-static inline const guint G_GNUC_CONST
+static inline guint G_GNUC_CONST
 wave_format_bit_depth (const GslWaveFormatType format)
 {
   switch (format)
@@ -1331,7 +1331,7 @@ wave_format_bit_depth (const GslWaveFormatType format)
     }
 }
 
-static inline const guint G_GNUC_CONST
+static inline guint G_GNUC_CONST
 wave_format_byte_width (const GslWaveFormatType format)
 {
   switch (format)

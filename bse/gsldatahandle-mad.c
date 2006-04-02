@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "topconfig.h"
 #include <bse/gsldatahandle-mad.h>
-
 #include "gslfilehash.h"
 #include <bse/gsldatautils.h>
 #include <assert.h>
@@ -31,7 +31,9 @@
 #include <string.h>
 #include <errno.h>
 
-#if	GSL_HAVE_LIBMAD
+BIRNET_STATIC_ASSERT (BSE_HAVE_LIBMAD + 42); // assert BSE_HAVE_LIBMAD2 is defined
+
+#if     BSE_HAVE_LIBMAD
 #include <mad.h>
 
 
@@ -772,7 +774,7 @@ gsl_data_handle_mad_version (void)
   return MAD_VERSION;
 }
 
-#else	/* !GSL_HAVE_LIBMAD */
+#else	/* !BSE_HAVE_LIBMAD */
 
 GslDataHandle*
 gsl_data_handle_new_mad_err (const gchar  *file_name,
@@ -798,7 +800,7 @@ gsl_data_handle_mad_version (void)
   return NULL;
 }
 
-#endif	/* !GSL_HAVE_LIBMAD */
+#endif	/* !BSE_HAVE_LIBMAD */
 
 GslDataHandle*
 gsl_data_handle_new_mad (const gchar  *file_name,

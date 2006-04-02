@@ -50,6 +50,8 @@ enum
 
 /* --- prototypes --- */
 static void         bse_song_update_tpsi_SL   (BseSong            *song);
+static void         bse_song_class_init       (BseSongClass       *class);
+static void         bse_song_init             (BseSong            *song);
 
 
 /* --- variables --- */
@@ -60,8 +62,6 @@ static guint       signal_pointer_changed = 0;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSong)
 {
-  static void         bse_song_class_init       (BseSongClass       *class);
-  static void         bse_song_init             (BseSong            *song);
   static const GTypeInfo song_info = {
     sizeof (BseSongClass),
     

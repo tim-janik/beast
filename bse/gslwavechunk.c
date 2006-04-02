@@ -445,7 +445,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
 {
   GslWaveChunkMem *phase;
   GslLong one;
-  Iter iter;
+  Iter iter = { 0, };
   gboolean reverse;
   
   g_return_if_fail (wchunk != NULL);

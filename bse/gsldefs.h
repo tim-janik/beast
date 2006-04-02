@@ -23,9 +23,6 @@
 #include <sfi/sfistore.h>
 
 
-/* configure checks */
-#include <bse/gslconfig.h>
-
 G_BEGIN_DECLS
 
 /* --- forward decls --- */
@@ -49,14 +46,6 @@ typedef int64			  GslLong;
 
 /* --- functions --- */
 typedef void     (*GslFreeFunc)         (gpointer        data);
-
-
-#if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK) \
-    || defined (GSL_WANT_GLIB_WRAPPER) || defined (GSL_EXTENSIONS)
-#  define LIKELY(cond)		G_LIKELY (cond)
-#  define ISLIKELY(cond)	G_LIKELY (cond)
-#  define UNLIKELY(cond)        G_UNLIKELY (cond)
-#endif
 
 
 /* --- implementation details --- */

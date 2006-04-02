@@ -26,7 +26,6 @@ G_BEGIN_DECLS
 
 /* --- C++ helper declaration --- */
 void    bse_cxx_init      (void);
-void    bse_cxx_checks    (void);
 
 
 /* --- record utils --- */

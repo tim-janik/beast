@@ -8,7 +8,7 @@ SUBDIRS = icons zintern . tests
 
 # need -I$(top_srcdir) for <bse/bsedefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
-# need -I$(srcdir) for "bseserver.h" in .gen-proc.c
+# need -I$(srcdir) for "bseserver.h" in .genprc.c
 # need -I. (builddir) for "bsecore.genidl.hh" in bsecore.cc
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 DEFS     += $(strip \
@@ -19,10 +19,20 @@ DEFS     += $(strip \
 #
 # setup source file variables
 #
-# BSE header files for public installation (non-generated)
+# BSE public header files
 bse_public_h_sources = $(strip \
+	gsldefs.h \
+	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
+	gslfilter.h		gslcommon.h \
+	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
+	gsldatahandle-mad.h	           	gslfilehash.h	gsldatautils.h	\
+	gslwaveosc.h		gslosctable.h	gslmagic.h	\
+	\
+	bsegentypes.h \
+	\
 	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
-	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h $(GSL_PUBLIC_headers) \
+	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h \
+	\
 	bseengine.h		bseenginemaster.h	bseengineschedule.h		bseengineutils.h \
 	bsebus.h		            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
@@ -46,12 +56,14 @@ bse_public_h_sources = $(strip \
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
 )
-# BSE header files that don't get installed
-bse_private_h_sources = $(strip \
-)
-# BSE C sources to build the library from
+# BSE C sources
 bse_c_sources = $(strip \
-	$(GSL_C_SRC) \
+	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
+	gslfilter.c		gslcommon.c \
+	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
+	gsldatahandle-mad.c	           	gslfilehash.c	gsldatautils.c	\
+	gslwaveosc.c		gslosctable.c	gslmagic.c	                 \
+	\
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.c		            		bsebiquadfilter.c		bsecategories.c \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
@@ -77,20 +89,7 @@ bse_c_sources = $(strip \
 	bseloader-aiff.c	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.c \
 	bseloader-mad.c		bseloader-wav.c		\
 )
-# Synthesis Modules
-bse_idl_sources = $(strip \
-	bseamplifier.idl	\
-	bsebusmodule.idl	\
-	bsecore.idl		\
-	bseprobe.idl		\
-	bsesummation.idl	\
-)
-$(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
-$(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
-$(srcdir)/bsecxxplugin.hh: bsecore.genidl.hh
-$(srcdir)/bseprobe.cc: bseprobe.genidl.hh
-$(srcdir)/bsesummation.cc: bsesummation.genidl.hh
-idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
+# BSE C++ sources
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
 	bsebusmodule.cc		\
@@ -98,96 +97,41 @@ bse_cc_sources = $(strip 	\
 	bseprobe.cc		\
 	bsesummation.cc		\
 )
+# BSE Synthesis Modules
+bse_idl_sources =
+bse_idl_sources += bseamplifier.idl
+$(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
+bse_idl_sources += bsebusmodule.idl
+$(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
+bse_idl_sources += bsecore.idl
+$(srcdir)/bsecxxplugin.hh: bsecore.genidl.hh
+bse_idl_sources += bseprobe.idl
+$(srcdir)/bseprobe.cc: bseprobe.genidl.hh
+bse_idl_sources += bsesummation.idl
+$(srcdir)/bsesummation.cc: bsesummation.genidl.hh
+idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
 # idl files not used for build rules
 idl_dummy_files = $(strip	\
 	bsecxxmodule.idl	\
 	bsecxxbase.idl		\
 )
-# procedure sources
+# BSE procedure sources
 bse_proc_sources = $(strip \
-	bsecategories.proc \
-	bsecontainer.proc \
-	bsedatapocket.proc \
-	bseeditablesample.proc \
-	bseenums.proc \
-	bsemidinotifier.proc \
-	bsejanitor.proc \
-	bsepart.proc \
-	bseparasite.proc \
-	bseprocedure.proc \
-	bseproject.proc \
-	bsescripthelper.proc \
-	bseserver.proc \
-	bsesong.proc \
-	bsebus.proc \
-	bsesource.proc \
-	bsecsynth.proc \
-	bsesnet.proc \
-	bsetrack.proc \
-	bseitem.proc \
-	bsewave.proc \
-	bsewaveosc.proc \
-	bsewaverepo.proc \
+	bsecategories.proc	bsecontainer.proc	bsedatapocket.proc	bseeditablesample.proc	bseenums.proc	bsemidinotifier.proc	\
+	bsejanitor.proc		bsepart.proc		bseparasite.proc	bseprocedure.proc	bseproject.proc	bsescripthelper.proc	\
+	bseserver.proc		bsesong.proc		bsebus.proc		bsesource.proc		bsecsynth.proc	bsesnet.proc		\
+	bsetrack.proc		bseitem.proc		bsewave.proc		bsewaveosc.proc		bsewaverepo.proc			\
 )
-bse_proc_gen_sources = $(strip \
-	bsecategories.gen-proc.c \
-	bsecontainer.gen-proc.c \
-	bsedatapocket.gen-proc.c \
-	bseenums.gen-proc.c \
-	bseeditablesample.gen-proc.c \
-	bsemidinotifier.gen-proc.c \
-	bsejanitor.gen-proc.c \
-	bsepart.gen-proc.c \
-	bseparasite.gen-proc.c \
-	bseprocedure.gen-proc.c \
-	bseproject.gen-proc.c \
-	bsescripthelper.gen-proc.c \
-	bseserver.gen-proc.c \
-	bsesong.gen-proc.c \
-	bsebus.gen-proc.c \
-	bsesource.gen-proc.c \
-	bsecsynth.gen-proc.c \
-	bsesnet.gen-proc.c \
-	bsetrack.gen-proc.c \
-	bseitem.gen-proc.c \
-	bsewave.gen-proc.c \
-	bsewaveosc.gen-proc.c \
-	bsewaverepo.gen-proc.c \
-)
+bse_proc_gen_sources = $(bse_proc_sources:.proc=.genprc.c)
 # non-compile and non-install sources required
-bse_extra_sources = $(strip \
-	mktypes.pl \
-	mkcalls.pl \
-	mkcproc.pl \
-	bseconfig.h.in \
-	bsepcmmodule.c \
-	bsecore.idl \
-	bse.idl \
+EXTRA_DIST += $(strip \
+	bsecore.idl	bse.idl					\
+	mktypes.pl	mkcalls.pl	mkcproc.pl		\
+	bseconfig.h.in	bsepcmmodule.c				\
+	gsl.gnuplot	gslarrows	bsewave.header		\
+	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
+	gslincluder.c	gslwaveosc-aux.c			\
 )
-# we use our own built_sources variable rules instead of BUILT_SOURCES,
-# since handles BUILT_SOURCES strange and wrong on some occasions (mostly
-# wrt dependancies)
-# we generate frequently rebuild files piggyback on a stamp file, so sources
-# depending on them only get rebuild when the built source actually changed
-# content
-#
-# h-sources to build and install
-bse_built_h_sources = $(strip \
-	bsegentypes.h \
-)
-# c-sources to build and compile
-bse_built_c_sources = $(strip \
-	bseenum_arrays.c \
-	bseenum_list.c \
-	bsebuiltin_externs.c \
-	bsebuiltin_array.c \
-	bsegentypes.c \
-	bsegentype_array.c \
-)
-# built-deps
-$(srcdir)/bseenums.c: bseenum_arrays.c bseenum_list.c
-$(srcdir)/bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
-$(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 
 # -pthread -> -lpthread hack (required for libtool library linkage)
 pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
@@ -197,7 +141,7 @@ pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 #
 lib_LTLIBRARIES       = libbse.la
 libbseincludedir      = $(includedir)/bse
-libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.genidl.hh
+libbseinclude_HEADERS = $(bse_public_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.genidl.hh
 libbse_la_SOURCES     = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 libbse_la_LIBADD      = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
 libbse_la_LDFLAGS     = $(strip					\
@@ -209,30 +153,30 @@ libbse_la_LDFLAGS     = $(strip					\
 )
 #	-Wl,-Bsymbolic
 # setup sources, their dependancies and commands
-bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
-MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
-EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources) engine-mplan.txt
-EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
+EXTRA_DIST += $(bse_proc_sources) engine-mplan.txt
 GLIB_MKENUMS = glib-mkenums
+# WATCH OUT: $(SFIDL) works only builddir relative
+SFIDL = $(top_builddir)/sfi/sfidl
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 
 #
 # rules to generate built sources
 #
-# setup autogeneration dependancies
-tmp_files = xgen-sbgth xgen-bgtc xgen-bgcc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
-	    xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi xgen-tlist
-CLEANFILES += $(tmp_files) @DVLBUILD@ $(bse_proc_gen_sources)
-$(OBJECTS): $(bse_built_h_sources)
-# WATCH OUT: $(SFIDL) works only builddir relative
-SFIDL = $(top_builddir)/sfi/sfidl
-SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
-# piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
-$(srcdir)/bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
-# normal autogeneration rules
-stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(bse_public_h_sources)
+%.genprc.c: %.proc mkcproc.pl
+	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
+CLEANFILES += @DVLBUILD@ $(bse_proc_gen_sources)
+# gslfft.c
+GENERATED += gslfft.c
+$(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
+	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
+# bsegentypes.h
+GENERATED += bsegentypes.h
+$(libbse_la_OBJECTS): bsegentypes.h
+bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
+stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(filter-out bsegentypes.h, $(bse_public_h_sources))
 stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
@@ -240,36 +184,30 @@ stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-	      $(bse_public_h_sources) \
+	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
 	  && $(PERL) mktypes.pl --externs $(bse_c_sources) \
-	) > xgen-sbgth \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-sbgth \
-	&& (cmp -s xgen-sbgth $(srcdir)/bsegentypes.h || cp xgen-sbgth $(srcdir)/bsegentypes.h) \
-	&& rm -f xgen-sbgth \
+	) > xgen-$(@F) \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
+	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
+	&& rm -f xgen-$(@F) \
 	&& echo timestamp > $(@F)
-$(srcdir)/bsegentypes.c: @DVLBUILD@ mktypes.pl bsecore.idl $(SFIDL) # $(bse_c_sources)
+# bsegentypes.c
+GENERATED_EXTRA_DIST += bsegentypes.c
+bsetype.c: bsegentypes.c
+bsegentypes.c: @DVLBUILD@ mktypes.pl bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	      $(bse_public_h_sources) \
 	  && $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) \
-	) > xgen-bgtc \
-	&& cp xgen-bgtc $(@F) \
-	&& rm -f xgen-bgtc
-bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.genidl.hh
-	cd . \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-bgcc \
-	&& cp xgen-bgcc $(@F) \
-	&& rm -f xgen-bgcc
-$(srcdir)/bsecore.cc: bsegencore.cc
-CLEANFILES += bsegencore.cc
-bsegentype_array.c: @DVLBUILD@ bsegentypes.c
-	cd $(srcdir) \
-	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
-	&& cp xgen-bgtac $(@F) \
-	&& rm -f xgen-bgtac
-bseenum_arrays.c: @DVLBUILD@ $(bse_public_h_sources)
+	) > xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
+# bseenum_arrays.c
+GENERATED_EXTRA_DIST += bseenum_arrays.c
+bseenums.c: bseenum_arrays.c
+bseenum_arrays.c: @DVLBUILD@ $(filter-out bsegentypes.h, $(bse_public_h_sources))
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -277,29 +215,53 @@ bseenum_arrays.c: @DVLBUILD@ $(bse_public_h_sources)
 	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	    $(bse_public_h_sources) > xgen-sbeac \
-	&& cp xgen-sbeac $(@F) \
-	&& rm -f xgen-sbeac
+	    $(filter-out bsegentypes.h, $(bse_public_h_sources)) > xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
+# bseenum_list.c
+GENERATED_EXTRA_DIST += bseenum_list.c
+$(srcdir)/bseenums.c: bseenum_list.c
 bseenum_list.c: @DVLBUILD@ bseenum_arrays.c
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-	    $(bse_public_h_sources) > xgen-belc \
-	&& cp xgen-belc $(@F) \
-	&& rm -f xgen-belc
+	    $(filter-out bsegentypes.h, $(bse_public_h_sources)) > xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
+# bsegentype_array.c
+GENERATED_EXTRA_DIST += bsegentype_array.c
+$(srcdir)/bsetype.c:  bsegentype_array.c
+bsegentype_array.c: @DVLBUILD@ bsegentypes.c
+	cd $(srcdir) \
+	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
+# bsebuiltin_externs.c
+GENERATED_EXTRA_DIST += bsebuiltin_externs.c
+$(srcdir)/bseplugin.c: bsebuiltin_externs.c
 bsebuiltin_externs.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
-	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-bbec \
-	&& cp xgen-bbec $(@F) \
-	&& rm -f xgen-bbec
+	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
+# bsebuiltin_array.c
+GENERATED_EXTRA_DIST += bsebuiltin_array.c
+$(srcdir)/bseplugin.c: bsebuiltin_array.c
 bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
-	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-bbac \
-	&& cp xgen-bbac $(@F) \
-	&& rm -f xgen-bbac
-%.gen-proc.c: %.proc mkcproc.pl
-	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
+	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
+# bsegencore.cc
+GENERATED += bsegencore.cc
+CLEANFILES += bsegencore.cc
+$(srcdir)/bsecore.cc: bsegencore.cc
+bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.genidl.hh
+	cd . \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-$(@F) \
+	&& cp xgen-$(@F) $(@F) \
+	&& rm -f xgen-$(@F)
 # setup generation of C++ objects from idl files
 %.genidl.hh: $(srcdir)/%.idl $(SFIDL)
 	$(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
@@ -310,11 +272,11 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 # end of the build process
 #
 bsehack.idl: bsecore.idl bseprocidl
-	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-tlist
-	echo "/* this file was generated from make $< */" > xgen-bgasi \
-	&& ./bseprocidl xgen-tlist >> xgen-bgasi \
-	&& (cmp -s xgen-bgasi bsehack.idl || cp xgen-bgasi bsehack.idl) \
-	&& rm -f xgen-bgasi xgen-tlist
+	grep -v bsehack.idl $(srcdir)/bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-2-$(@F)
+	echo "/* this file was generated from make $< */" > xgen-$(@F) \
+	&& ./bseprocidl xgen-2-$(@F) >> xgen-$(@F) \
+	&& (cmp -s xgen-$(@F) bsehack.idl || cp xgen-$(@F) bsehack.idl) \
+	&& rm -f xgen-$(@F) xgen-2-$(@F)
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
 
@@ -323,8 +285,9 @@ noinst_DATA = bsehack.idl
 #
 .PHONY: generated clean-generated
 clean-generated: clean
-	rm -f $(bse_built_c_sources) $(bse_built_h_sources) stamp-*
-generated: clean-generated $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
+	rm -f $(GENERATED) stamp-*
+generated: clean-generated $(GENERATED) $(idl_built_sources)
+MAINTAINERCLEANFILES += $(GENERATED)
 
 
 #
@@ -332,12 +295,6 @@ generated: clean-generated $(bse_built_h_sources) $(bse_built_c_sources) $(idl_b
 #
 all: # TAGS
 
-
-# --- GSL targets ---
-GSL_progs_ldadd = $(progs_LDADD)
-GSL_cc_dummy    =
-gslincludedir   = $(includedir)/bse
-include gslmakefile.inc
 
 
 #

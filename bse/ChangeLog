@@ -1,3 +1,35 @@
+Sun Apr  2 03:31:24 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: merged with gslmakefile.inc. fixed dependencies. 
+	simplified build rules. integrated with Makefile.decl.
+
+	* *.hh *.cc: removed useless "mode: c++;" statement.
+	fixed Bse::* functions being implemented in anonymous namespaces.
+
+	* bsecxxmodule.cc: fixed non-static functions and static assertions.
+
+	* bsecxxmodule.hh: assert the correct object type in the
+	BSE_EFFECT_INTEGRATE_MODULE() macro via const_cast<>(this) instead
+	of by using bogus namespacing.
+
+	* bseieee754.h: work around gcc-4.2 not allowing "register" unions.
+
+	* bseloader-guspatch.cc: fixed compiler warning.
+
+	* gsldatahandle-mad.c:
+	* bseloader-mad.c: include topconfig.h for libmad presence.
+
+	* bsesequencer.cc: use offsetof() instead of G_STRUCT_OFFSET() which
+	gcc-4.2 doesn't seem to like.
+
+	* bsesong.c: fixed prototype scope.
+
+	* gslmakefile.inc: removed, merged into Makefile.am.
+
+	* gsldefs.h: include gslconfig.h, don't define BIRNET macros.
+
+	* gslwavechunk.c: fixed variable initialization.
+
 Sat Apr  1 16:34:48 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/subnormals-aux.cc:

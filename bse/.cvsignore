@@ -24,7 +24,7 @@ bseautodoc
 bseprocidl
 bsehack.idl
 
-*.gen-proc.c
+*.genprc.c
 *.genidl.hh
 bseinfo
 bsemarshal.c

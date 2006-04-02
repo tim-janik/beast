@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -22,11 +22,10 @@
 #include <list>
 using namespace std;
 
-namespace {
-using namespace Bse;
+namespace Bse {
 
 /* --- functions --- */
-struct TypeEntry {
+struct TypeRegistry::TypeEntry {
   guint               instance_size;
   const gchar        *name;
   const gchar        *parent;
@@ -56,8 +55,8 @@ struct TypeEntry {
     this->flags = flags;
   }
 };
-
-static list<TypeEntry> *type_entries = NULL;
+  
+static list<TypeRegistry::TypeEntry> *type_entries = NULL;
 
 TypeRegistry::TypeRegistry (guint             instance_size,
                             const gchar      *name,
@@ -150,4 +149,4 @@ bse_cxx_init (void)  // prototyped in bseutils.h
   Bse::TypeRegistry::init_types();
 }
 
-} // namespace
+} // Bse

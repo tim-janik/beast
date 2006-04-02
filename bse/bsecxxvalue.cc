@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -18,8 +18,7 @@
 #include "bsecxxvalue.hh"
 #include "bsecxxbase.hh"
 
-namespace {
-using namespace Bse;
+namespace Bse {
 
 SfiNum
 Value::get_num () const
@@ -199,4 +198,4 @@ Value::set_pspec (GParamSpec *p)
     throw WrongTypeGValue (G_STRLOC);
 }
 
-} // namespace
+} // Bse

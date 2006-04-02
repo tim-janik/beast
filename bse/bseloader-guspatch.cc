@@ -360,6 +360,7 @@ struct FileInfo
       case PAT_FORMAT_16BIT:			    return GSL_WAVE_FORMAT_SIGNED_16;
       case PAT_FORMAT_UNSIGNED | PAT_FORMAT_16BIT:  return GSL_WAVE_FORMAT_UNSIGNED_16;
       }
+    BIRNET_ASSERT_NOT_REACHED();
   }
   
   int

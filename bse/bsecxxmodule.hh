@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ enum ProcessCost {
 struct JStream {
   const float **values;
   unsigned int  n_connections;
-private:
+  /* private: */
   unsigned int  jcount; /* reserved */
 };
 struct IStream {
@@ -166,18 +166,21 @@ protected:
 /* implement Bse::Effect and Bse::SynthesisModule methods */
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
 Bse::SynthesisModule*                                                           \
-ObjectType::create_module (unsigned int context_handle,                         \
-                           BseTrans    *trans)                                  \
-{ /* create a synthesis module */                                               \
+create_module (unsigned int context_handle,                                     \
+               BseTrans    *trans)                                              \
+{                                                                               \
+  /* check that 'this' is a ObjectType* */                                      \
+  (void) const_cast<ObjectType*> (this);                                        \
+  /* create a synthesis module */                                               \
   return new ModuleType();                                                      \
 }                                                                               \
 Bse::SynthesisModule::Closure*                                                  \
-ObjectType::make_module_config_closure()                                        \
+make_module_config_closure()                                                    \
 {                                                                               \
   return SynthesisModule::make_closure (&ModuleType::config, ParamType (this)); \
 }                                                                               \
 Bse::SynthesisModule::AutoUpdate                                                \
-ObjectType::get_module_auto_update()                                            \
+get_module_auto_update()                                                        \
 {                                                                               \
   return SynthesisModule::Trampoline<ModuleType,ParamType,                      \
                   ObjectType::AutoUpdateCategory>::auto_update_accessor;        \

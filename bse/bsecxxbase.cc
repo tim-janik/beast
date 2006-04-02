@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+/* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -17,8 +17,7 @@
  */
 #include "bsecxxbase.hh"
 
-namespace {
-using namespace Bse;
+namespace Bse {
 
 static void     bse_cxx_base_class_base_init (gpointer g_class);
 
@@ -329,4 +328,4 @@ CxxBaseClass::add_jchannel (const char *ident,
     g_assert (assert_id == channel_id);
 }
 
-} // namespace
+} // Bse
