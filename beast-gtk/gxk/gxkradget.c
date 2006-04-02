@@ -1222,7 +1222,7 @@ radget_create_from_node (Node         *node,
                          Env          *env,
                          GError      **error)
 {
-  GxkRadgetType tinfo;
+  GxkRadgetType tinfo = { 0, };
   guint i, n_pops = 0;
   /* prepare for $id/$name lookups */
   env->name = node->name;
@@ -1326,7 +1326,7 @@ radget_add_to_parent (GxkRadget    *parent,
 {
   Node *pnode = g_object_get_qdata (parent, quark_radget_node);
   Node *cnode = g_object_get_qdata (radget, quark_radget_node);
-  GxkRadgetType tinfo;
+  GxkRadgetType tinfo = { 0, };
   guint i, needs_packing, n_pops = 0;
   /* prepare for $name lookups */
   env->name = cnode->name;

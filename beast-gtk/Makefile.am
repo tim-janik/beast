@@ -189,11 +189,10 @@ bstmarshal.c: bstmarshal.list
 #
 # setup BEAST sources and their dependancies
 #
-bin_PROGRAMS = @BEAST_BINARY@			# this expands to beast-$BIN_VERSION
-EXTRA_PROGRAMS = beast-\$(BIN_VERSION)		# make automake-1.4 eat beast____BIN_VERSION_ variables
-beast____BIN_VERSION__SOURCES = bstmain.c $(beast_sources)
-beast____BIN_VERSION__LDADD = $(progs_LDADD)
-beast_objects = $(beast____BIN_VERSION__OBJECTS)
+bin_PROGRAMS = beast-$(BIN_VERSION)		# this expands to beast-0.7.0 or similar
+beast___BIN_VERSION__SOURCES = bstmain.c $(beast_sources)
+beast___BIN_VERSION__LDADD = $(progs_LDADD)
+beast_objects = $(beast___BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = tsmview testgui # bststest
 tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)

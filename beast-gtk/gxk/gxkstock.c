@@ -373,7 +373,7 @@ gxk_stock_icon_window (const gchar *stock_id)
   GdkPixbuf *pixbuf;
   GdkBitmap *mask;
   guint8 *bitmap_data;
-  gint width, height;
+  gint width = 0, height = 0;
 
   g_return_val_if_fail (stock_id != NULL, NULL);
 

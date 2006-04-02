@@ -359,9 +359,6 @@ AC_DEFUN([AC_BSE_SHELL_REQUIREMENTS],
     BSE_SHELL_CFLAGS="$BSE_CFLAGS"
     BSE_SHELL_LIBS="$BSE_LIBS"
 
-    BSESH_BINARY="bsesh-$BIN_VERSION"
-    AC_SUBST(BSESH_BINARY)
-
     dnl # --- libguile check ---
     guile_tests=0
     GUILE_VERSION=none
@@ -413,9 +410,6 @@ AC_DEFUN([AC_BEAST_REQUIREMENTS],
     BEAST_LIBS="$GXK_LIBS"
     AC_SUBST(BEAST_CFLAGS)
     AC_SUBST(BEAST_LIBS)
-
-    BEAST_BINARY="beast-$BIN_VERSION"
-    AC_SUBST(BEAST_BINARY)
 
     dnl # Feature XKB extension if present
     cflags=$CFLAGS

@@ -1,3 +1,16 @@
+Sun Apr  2 16:56:57 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: removed workaround variables.
+
+	* beast-gtk/Makefile.am: automake fix to build versioned beast.
+
+	* beast-gtk/gxk/Makefile.am: linkage flags fixups.
+
+	* beast-gtk/gxk/gxkstock.c:
+	* beast-gtk/gxk/gxkradget.c: fixed missing initializations.
+
+	* shell/Makefile.am: automake fix to build versioned shell.
+
 Sun Apr  2 03:44:31 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl: declare GENERATED to list generated files.

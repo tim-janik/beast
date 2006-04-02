@@ -94,10 +94,10 @@ $(srcdir)/gxkgentypes.c: $(gxk_headers)
 
 libgxk_a_SOURCES = $(gxk_c_sources)
 
-progs_LDADD = $(strip \
-        libgxk.a \
-        $(top_builddir)/sfi/libsfi.la \
-        $(LDFLAGS) $(BEAST_LIBS) \
+progs_LDADD = $(strip						\
+	libgxk.a $(GXK_LIBS) 					\
+	$(top_builddir)/sfi/libsfi.o $(SFI_LIBS) 		\
+	$(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS)	\
 )
 
 noinst_PROGRAMS = gxktest splinetest
