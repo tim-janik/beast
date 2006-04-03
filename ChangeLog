@@ -1,3 +1,15 @@
+Tue Apr  4 01:14:42 2006  Tim Janik  <timj@gtk.org>
+
+	* bse/tests/loophandle.c:
+	* slowtests/perftest.cc:
+	* slowtests/testwavechunk.c:
+	* tests/bse/cxxbinding.cc:
+	* tests/bse/empty.ogg:
+	* tests/bse/testplugin.cc:
+	* tests/bse/testplugin.idl:
+	* tools/scripts/noteplaytest.scm:
+	* tools/scripts/waveloadtest.scm: CVS copied.
+
 Tue Apr  4 01:04:27 2006  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: force upgrade of automake-originating files.
