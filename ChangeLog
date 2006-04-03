@@ -1,3 +1,11 @@
+Tue Apr  4 01:04:27 2006  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: force upgrade of automake-originating files.
+
+	* configure.in: only issue a warning if pcm/midi devices couldn't
+	be found instead of erroring out. default to /dev/dsp and /dev/midi
+	if no devices could be detected.
+
 Sun Apr  2 18:58:34 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/Makefile.am: don't link against libsfi/libbirnet if
