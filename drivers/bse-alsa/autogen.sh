@@ -5,9 +5,9 @@ PROJECT=BSE-ALSA
 TEST_TYPE=-f
 FILE=bsepcmdevice-alsa.c
 AUTOMAKE=automake
-AUTOMAKE_POSTFIX=1.4
-AUTOMAKE_VERSION=1.4
-AUTOMAKE_MAXVERSION=1.4
+AUTOMAKE_POSTFIX=1.9
+AUTOMAKE_VERSION=1.9
+AUTOMAKE_MAXVERSION=1.9
 ACLOCAL=aclocal
 AUTOCONF=autoconf
 AUTOCONF_POSTFIX=2.50
@@ -174,7 +174,7 @@ echo "Running: $AUTOMAKE"
 case $CC in
 *xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
 esac
-$AUTOMAKE --add-missing $am_opt || exit $?
+$AUTOMAKE --force-missing $am_opt || exit $?
 
 echo "Running: $AUTOCONF"
 $AUTOCONF || exit $?

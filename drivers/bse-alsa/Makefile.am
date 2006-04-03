@@ -2,14 +2,10 @@
 # Copyright (C) 2004 and Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
-include $(top_srcdir)/Makefile.decl
 
-# require automake 1.4
-AUTOMAKE_OPTIONS = 1.4
-
-INCLUDES += -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
+INCLUDES = -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 # we specify the logging domain here
-DEFS += $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
+DEFS = $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
 
 # extra dependancies
 configure: acbeast.m4
@@ -18,6 +14,7 @@ drivers_ldflags     = -avoid-version
 drivers_libs        = $(BSE_LIBS)
 driversdir          = $(bsedriverinstalldir)
 drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
+EXTRA_DIST=
 
 
 
@@ -27,7 +24,7 @@ drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.c
 bsepcmdevice_alsa_la_LDFLAGS = -module $(drivers_ldflags)
 bsepcmdevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
-EXTRA_HEADERS               += bsepcmdevice-alsa.h
+EXTRA_DIST                  += bsepcmdevice-alsa.h
 
 ##
 ## Plugin bsemididevice-alsa
@@ -35,10 +32,6 @@ EXTRA_HEADERS               += bsepcmdevice-alsa.h
 bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.c
 bsemididevice_alsa_la_LDFLAGS = -module $(drivers_ldflags)
 bsemididevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
-EXTRA_HEADERS                += bsemididevice-alsa.h
+EXTRA_DIST                   += bsemididevice-alsa.h
 
-
-EXTRA_DIST += $(strip		\
-	${EXTRA_HEADERS}	\
-	acbeast.m4		\
-)
+EXTRA_DIST += acbeast.m4

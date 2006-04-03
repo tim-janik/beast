@@ -64,6 +64,9 @@ else
 fi
 ])
 
+# architecture information
+AC_CANONICAL_TARGET
+AC_DEFINE_UNQUOTED(PACKAGE_ARCH_NAME, "$target", [Architecture Description])
 
 # initialize automake, don't define PACKAGE and VERSION
 AM_INIT_AUTOMAKE(bse-alsa, $PACKAGE_VERSION, no-define)
@@ -72,10 +75,6 @@ AM_INIT_AUTOMAKE(bse-alsa, $PACKAGE_VERSION, no-define)
 AC_PROG_MAKE_SET
 # Disable automatic maintainer mode.
 AM_MAINTAINER_MODE
-
-# architecture information
-AC_CANONICAL_TARGET
-AC_DEFINE_UNQUOTED(PACKAGE_ARCH_NAME, "$target", [Architecture Description])
 
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,       [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
@@ -109,7 +108,7 @@ MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
 dnl
 dnl Define package requirements.
 dnl
-AC_DEFUN(AC_LIBBSE_CHECK,
+AC_DEFUN([AC_LIBBSE_CHECK],
 [
     dnl We need BSE, GLib, etc.
     PKG_CHECK_MODULES(BSE, bse >= 0.7.0)
@@ -125,7 +124,7 @@ AC_DEFUN(AC_LIBBSE_CHECK,
     fi
     AC_SUBST(bsedriverinstalldir)
 ])
-AC_DEFUN(AC_ASOUND_CHECK,
+AC_DEFUN([AC_ASOUND_CHECK],
 [
     saved_cflags="$CFLAGS"
     saved_cxxflags="$CXXFLAGS"
