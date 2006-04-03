@@ -86,6 +86,16 @@ main (int   argc,
 {
   birnet_init (&argc, &argv, NULL);
 
+  test_correct_subnormal_elimination<test2f> ("zap");
+  test_correct_subnormal_elimination<test3f> ("inlined-cond");
+  test_correct_subnormal_elimination<test4f> ("if-cond");
+  test_correct_subnormal_elimination<test5f> ("arithmetic");
+
+  test_correct_subnormal_elimination<test2d> ("zap-double");
+  test_correct_subnormal_elimination<test3d> ("inlined-cond-double");
+  test_correct_subnormal_elimination<test4d> ("if-cond-double");
+  test_correct_subnormal_elimination<test5d> ("arithmetic-double");
+
   const float max_sub = BSE_FLOAT_MAX_SUBNORMAL;
 
   float n = 10 * 1000000;
@@ -169,16 +179,6 @@ main (int   argc,
 
   g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f\n",
            test1_time, test2_time, test3_time, test4_time, test5_time);
-
-  test_correct_subnormal_elimination<test2f> ("zap");
-  test_correct_subnormal_elimination<test3f> ("inlined-cond");
-  test_correct_subnormal_elimination<test4f> ("if-cond");
-  test_correct_subnormal_elimination<test5f> ("arithmetic");
-
-  test_correct_subnormal_elimination<test2d> ("zap-double");
-  test_correct_subnormal_elimination<test3d> ("inlined-cond-double");
-  test_correct_subnormal_elimination<test4d> ("if-cond-double");
-  test_correct_subnormal_elimination<test5d> ("arithmetic-double");
 
   return 0;
 }
