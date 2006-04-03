@@ -20,33 +20,33 @@
 #include <bse/bseieee754.h>
 
 float
-test1 (float v)
+test1f (float v)
 {
   return v;
 }
 
 float
-test2 (float v)
+test2f (float v)
 {
   return bse_float_zap_denormal (v);
 }
 
 float
-test3 (float v)
+test3f (float v)
 {
   BSE_FLOAT_FLUSH_with_cond (v);
   return v;
 }
 
 float
-test4 (float v)
+test4f (float v)
 {
   BSE_FLOAT_FLUSH_with_if (v);
   return v;
 }
 
 float
-test5 (float v)
+test5f (float v)
 {
   BSE_FLOAT_FLUSH_with_threshold (v);
   return v;

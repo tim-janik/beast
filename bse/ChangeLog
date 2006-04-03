@@ -1,3 +1,8 @@
+Mon Apr  3 15:50:14 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* tests/subnormals.cc tests/subnormals-aux.cc: Added code which
+	verifies that subnormal elimination functions are correct.
+
 Sun Apr  2 18:19:42 2006  Tim Janik  <timj@gtk.org>
 
 	* bse/Makefile.am: some more dependency and minor build fixes.
