@@ -1,4 +1,5 @@
 RELEASE(0.6.7):
+- rename bsesh to bsescm
 -  fix birnet_thread_run uses (unref thread)
 - get rid of sfimemory
 - fix beast popping up a help browser for release notes when new beast is installed
