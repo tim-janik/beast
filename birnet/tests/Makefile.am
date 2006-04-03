@@ -10,13 +10,9 @@ DEFS	       += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST
 TESTS 		= ring threads signal
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd 	= $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) -lm
-ring_SOURCES	= ring.cc testutils.h
+ring_SOURCES	= ring.cc
 ring_LDADD	= $(progs_ldadd)
-threads_SOURCES	= threads.cc testutils.h
+threads_SOURCES	= threads.cc
 threads_LDADD	= $(progs_ldadd)
 signal_SOURCES	= signal.cc
 signal_LDADD	= $(progs_ldadd)
-
-EXTRA_DIST += $(strip	\
-	testutils.h	\
-)

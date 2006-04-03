@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "testutils.h"
-#include <birnet/birnet.h>
+// #define TEST_VERBOSE
+#include <birnet/birnettests.h>
 
 static void
 print_ring_ints (BirnetRing *ring)
@@ -53,7 +53,7 @@ print_rings_side_by_side (BirnetRing *ring1,
 static void
 test_birnet_ring (void)
 {
-  TMSG ("RingBasics:");
+  TSTART ("RingBasics:");
   (void) print_ring_ints;
 
   BirnetRing *r1 = NULL, *r2 = NULL, *d = NULL;
@@ -93,7 +93,7 @@ test_birnet_ring (void)
   birnet_ring_free (d);
 
   TDONE ();
-  TMSG ("RingMath:");
+  TSTART ("RingMath:");
 
   d = birnet_ring_difference (r1, r2, birnet_pointer_cmp, NULL);
   TASSERT (birnet_ring_pop_head (&d) == (void*) 3);
@@ -144,7 +144,7 @@ test_birnet_ring (void)
   birnet_ring_free (r2);
 
   TDONE ();
-  TMSG ("RingReorder:");
+  TSTART ("RingReorder:");
 
   r1 = NULL;
   r1 = birnet_ring_append (r1, (void*) 5);
@@ -221,8 +221,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  birnet_init (&argc, &argv, NULL);
-  g_log_set_always_fatal ((GLogLevelFlags) (g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+  birnet_init_test (&argc, &argv);
 
   test_birnet_ring();
 

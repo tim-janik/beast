@@ -1,3 +1,15 @@
+Mon Apr  3 23:00:15 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h: add macros and convenience functions useful for 
+	test programs.
+
+	* tests/signal.cc:
+	* tests/threads.cc:
+	* tests/ring.cc: use test macros.
+
+	* tests/Makefile.am:
+	* tests/testutils.h: removed entirely in favour of birnettests.h.
+
 Sun Apr  2 03:28:04 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: provide ISLIKELY() as alias for LIKELY().

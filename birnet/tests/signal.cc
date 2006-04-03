@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "testutils.h"
-#include <birnet/birnet.h>
+// #define TEST_VERBOSE
+#include <birnet/birnettests.h>
 
 namespace {
 using namespace Birnet;
@@ -78,19 +78,20 @@ struct EmitterMany {
   static String test_string_14_emitter_data (EmitterMany &em,int a1, double a2, int a3, double a4, int a5, double a6, int a7, double a8, int a9,
                                              double a10, int a11, double a12, int a13, double a14, ExtraType x)
   {
-    printf ("  callback: %s (%s, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %s);\n",
+    TPRINT ("  callback: %s (%s, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %s);\n",
             __func__, em.emitter_check(), a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, x.message());
     return __func__;
   }
   static String test_string_14_data (int a1, double a2, int a3, double a4, int a5, double a6, int a7, double a8, int a9,
                                      double a10, int a11, double a12, int a13, double a14, ExtraType x)
   {
-    printf ("  callback: %s (%d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %s);\n",
+    TPRINT ("  callback: %s (%d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %d, %.1f, %s);\n",
             __func__, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, x.message());
     return __func__;
   }
   void testme ()
   {
+    TSTART ("Signals, multi-arg:");
     sig_void_0.emit ();
     sig_void_1.emit (1);
     sig_void_2.emit (1, 2);
@@ -129,7 +130,8 @@ struct EmitterMany {
     results += sig_string_14.emit (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
     results += sig_string_15.emit (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
     results += sig_string_16.emit (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-    printf ("32 signals emitted: %s\n", results.c_str());
+    TPRINT ("32 signals emitted: %s\n", results.c_str());
+    TDONE();
   }
   void ref()   {}
   void unref() {}
@@ -144,12 +146,12 @@ struct Emitter3 {
   void
   test_emissions()
   {
-    printf ("Emitter3.emit()\n");
+    TPRINT ("Emitter3.emit()\n");
     String s = sig_mixed.emit (7, "seven.seven", 7.7);
-    printf ("Emitter3: result=%s\n", s.c_str());
-    printf ("Emitter3.emit() (void)\n");
+    TPRINT ("Emitter3: result=%s\n", s.c_str());
+    TPRINT ("Emitter3.emit() (void)\n");
     sig_void_mixed.emit (3, "three.three", 3.3);
-    printf ("Emitter3: done.\n");
+    TPRINT ("Emitter3: done.\n");
   }
   void ref() {}
   void unref() {}
@@ -158,46 +160,47 @@ struct Emitter3 {
 struct Connection3 {
   static String mixed_func (int i, String s, float f)
   {
-    BIRNET_ASSERT (i == 7 && s == "seven.seven" && f == (float) 7.7);
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TASSERT (i == 7 && s == "seven.seven" && f == (float) 7.7);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
     return __func__;
   }
   static String mixed_efunc      (Emitter3 &obj, int i, String s, float f)
   {
-    BIRNET_ASSERT (i == 7 && s == "seven.seven" && f == (float) 7.7);
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TASSERT (i == 7 && s == "seven.seven" && f == (float) 7.7);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
     return __func__;
   }
   static void   void_mixed_func (int i, String s, float f)
   {
-    BIRNET_ASSERT (i == 3 && s == "three.three" && f == (float) 3.3);
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TASSERT (i == 3 && s == "three.three" && f == (float) 3.3);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
   }
   static void   void_mixed_efunc (Emitter3 &obj, int i, String s, float f)
   {
-    BIRNET_ASSERT (i == 3 && s == "three.three" && f == (float) 3.3);
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TASSERT (i == 3 && s == "three.three" && f == (float) 3.3);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
   }
   String string_callback (int i, String s, float f)
   {
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
     return __func__;
   }
   String string_emitter_callback (Emitter3 &emitter, int i, String s, float f)
   {
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
     return __func__;
   }
   void void_callback (int i, String s, float f)
   {
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
   }
   void void_emitter_callback (Emitter3 &emitter, int i, String s, float f)
   {
-    printf ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
+    TPRINT ("  callback: %s (%d, %s, %f);\n", __func__, i, s.c_str(), f);
   }
   void test_signal (Emitter3 &e3)
   {
+    TSTART ("Signals, mixed emissions:");
     e3.sig_mixed += mixed_efunc;
     e3.sig_mixed += mixed_func;
     e3.sig_mixed += slot (*this, &Connection3::string_emitter_callback);
@@ -207,6 +210,7 @@ struct Connection3 {
     e3.sig_void_mixed += slot (*this, &Connection3::void_emitter_callback);
     e3.sig_void_mixed += slot (*this, &Connection3::void_callback);
     e3.test_emissions();
+    TDONE();
   }
 };
 
@@ -214,7 +218,7 @@ extern "C" int
 main (int   argc,
       char *argv[])
 {
-  printf ("TEST: %s:\n", basename (argv[0]));
+  birnet_init_test (&argc, &argv);
 #if 0
   SignalTest signal_test;
   signal_test.basic_signal_tests();

@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "testutils.h"
-#include <birnet/birnet.h>
+// #define TEST_VERBOSE
+#include <birnet/birnettests.h>
 
 namespace {
 using namespace Birnet;
@@ -55,7 +55,7 @@ atomic_down_thread (gpointer data)
 static void
 test_atomic (void)
 {
-  TMSG ("AtomicThreading:");
+  TSTART ("AtomicThreading:");
   int count = 60;
   BirnetThread *threads[count];
   volatile int atomic_counter = 0;
@@ -97,7 +97,7 @@ test_threads (void)
 {
   static BirnetMutex test_mutex;
   gboolean locked;
-  TMSG ("Threading:");
+  TSTART ("Threading:");
   birnet_mutex_init (&test_mutex);
   locked = birnet_mutex_trylock (&test_mutex);
   TASSERT (locked);
@@ -156,7 +156,7 @@ struct ThreadA : public virtual Birnet::Thread {
 static void
 test_thread_cxx (void)
 {
-  TMSG ("C++Threading:");
+  TSTART ("C++Threading:");
   volatile int atomic_counter = 0;
   int result = 0;
   int count = 60;
@@ -185,7 +185,7 @@ test_thread_cxx (void)
 static void
 test_thread_atomic_cxx (void)
 {
-  TMSG ("C++AtomicThreading:");
+  TSTART ("C++AtomicThreading:");
   /* integer functions */
   volatile int ai, r;
   Atomic::int_set (&ai, 17);
@@ -244,8 +244,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  birnet_init (&argc, &argv, NULL);
-  g_log_set_always_fatal ((GLogLevelFlags) (g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+  birnet_init_test (&argc, &argv);
 
   test_threads();
   test_atomic();
