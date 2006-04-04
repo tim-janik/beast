@@ -91,7 +91,7 @@ struct EmitterMany {
   }
   void testme ()
   {
-    TSTART ("Signals, multi-arg:");
+    TSTART ("Signals, multi-arg");
     sig_void_0.emit ();
     sig_void_1.emit (1);
     sig_void_2.emit (1, 2);
@@ -200,7 +200,7 @@ struct Connection3 {
   }
   void test_signal (Emitter3 &e3)
   {
-    TSTART ("Signals, mixed emissions:");
+    TSTART ("Signals, mixed emissions");
     e3.sig_mixed += mixed_efunc;
     e3.sig_mixed += mixed_func;
     e3.sig_mixed += slot (*this, &Connection3::string_emitter_callback);

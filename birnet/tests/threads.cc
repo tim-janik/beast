@@ -55,7 +55,7 @@ atomic_down_thread (gpointer data)
 static void
 test_atomic (void)
 {
-  TSTART ("AtomicThreading:");
+  TSTART ("AtomicThreading");
   int count = 60;
   BirnetThread *threads[count];
   volatile int atomic_counter = 0;
@@ -97,7 +97,7 @@ test_threads (void)
 {
   static BirnetMutex test_mutex;
   gboolean locked;
-  TSTART ("Threading:");
+  TSTART ("Threading");
   birnet_mutex_init (&test_mutex);
   locked = birnet_mutex_trylock (&test_mutex);
   TASSERT (locked);
@@ -156,7 +156,7 @@ struct ThreadA : public virtual Birnet::Thread {
 static void
 test_thread_cxx (void)
 {
-  TSTART ("C++Threading:");
+  TSTART ("C++Threading");
   volatile int atomic_counter = 0;
   int result = 0;
   int count = 60;
@@ -185,7 +185,7 @@ test_thread_cxx (void)
 static void
 test_thread_atomic_cxx (void)
 {
-  TSTART ("C++AtomicThreading:");
+  TSTART ("C++AtomicThreading");
   /* integer functions */
   volatile int ai, r;
   Atomic::int_set (&ai, 17);
