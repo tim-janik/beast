@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test doxer docs web
+SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test slowtests doxer docs web
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4

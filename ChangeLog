@@ -1,3 +1,26 @@
+Tue Apr  4 02:08:16 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/Makefile.am: build and check perftest testwavechunk.
+
+	* tests/Makefile.am: removed outdated rules.
+
+	* tests/bse/Makefile.am: build and test cxxbinding and testplugin.la.
+
+	* tools/scripts/Makefile.am: added script tools waveloadtest.scm and
+	noteplaytest.scm.
+
+Tue Apr  4 01:21:32 2006  Tim Janik  <timj@gtk.org>
+
+	* bse/tests/testwavechunk.c:
+	* tests/cxxbinding.cc:
+	* tests/empty.ogg:
+	* tests/perftest.cc:
+	* tests/testplugin.cc:
+	* tests/testplugin.idl:
+	* tests/bse/loophandle.c:
+	* tests/scripts/noteplaytest.scm:
+	* tests/scripts/waveloadtest.scm: removed from CVS.
+
 Tue Apr  4 01:14:42 2006  Tim Janik  <timj@gtk.org>
 
 	* bse/tests/loophandle.c:

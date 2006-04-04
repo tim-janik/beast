@@ -630,6 +630,7 @@ library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
 tools/Makefile
+tools/scripts/Makefile
 po/Makefile.in
 po-helper.sh
 tests/Makefile
@@ -638,6 +639,7 @@ tests/latency/Makefile
 tests/scripts/Makefile
 tests/bse/Makefile
 test/Makefile
+slowtests/Makefile
 doxer/Makefile
 docs/Makefile
 docs/images/Makefile

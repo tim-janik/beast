@@ -1,39 +1,33 @@
-# beast/tests/bse
+# beast/slowtests
 # Copyright (C) 2003-2006 Tim Janik
-# Copyright (C) 2005 Stefan Westerfeld
 #
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
-DEFS     += -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
+DEFS += -DG_LOG_DOMAIN="\"BEAST-TEST\"" # -DG_DISABLE_CONST_RETURNS
 SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 #
 # rules to generate built sources
 #
-# rule for IDL files
-%.genidl.hh: %.idl $(SFIDL)
-	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 # bsecxxapi.hh
 GENERATED_CLEANFILES += bsecxxapi.hh
-$(srcdir)/cxxbinding.cc: bsecxxapi.hh
+$(srcdir)/perftest.cc: bsecxxapi.hh
 bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
 	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --header $(srcdir)/testplugin.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bsecxxapi.cc
 GENERATED_CLEANFILES += bsecxxapi.cc
-$(srcdir)/cxxbinding.cc: bsecxxapi.cc
+$(srcdir)/perftest.cc: bsecxxapi.cc
 bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
 	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
-	&& $(SFIDL) --client-cxx $(SFIDL_INC) --source $(srcdir)/testplugin.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 
@@ -49,23 +43,10 @@ generated: clean-generated $(GENERATED)
 #
 # test programs
 #
-TESTS = cxxbinding
+TESTS = perftest testwavechunk
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
-cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
-cxxbinding_LDADD = $(progs_ldadd)
-EXTRA_DIST += empty.ogg
-
-#
-# test plugin library
-#
-lib_LTLIBRARIES = testplugin.la
-testplugin_la_SOURCES = testplugin.cc
-testplugin_la_LDFLAGS = -module -avoid-version
-testplugin_la_LIBADD  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
-EXTRA_DIST += testplugin.idl
-GENERATED_CLEANFILES += testplugin.genidl.hh
-$(srcdir)/testplugin.cc: testplugin.genidl.hh
-$(srcdir)/testplugin.cc: testplugin.idl
-# prevent libs from being installed
-install-libLTLIBRARIES:
+testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
+testwavechunk_LDADD = $(progs_ldadd)
+perftest_SOURCES = perftest.cc bsecxxapi.cc
+perftest_LDADD = $(progs_ldadd)

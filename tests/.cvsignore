@@ -1,7 +1,2 @@
 Makefile.in
 Makefile
-bsecxxapi.h
-bsecxxapi.cc
-*.genidl.hh
-cxxbinding
-perftest
