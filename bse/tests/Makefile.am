@@ -10,10 +10,8 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 
 DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 
-TESTS = testfft testcxx testwavechunk subnormals
-progs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
-testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
-testwavechunk_LDADD = $(progs_ldadd)
+TESTS = testfft testcxx subnormals loophandle
+progs_ldadd = $(top_builddir)/bse/libbse.la
 testfft_SOURCES = testfft.c cxxdummy.cc
 testfft_LDADD = $(progs_ldadd)
 testcxx_SOURCES = testcxx.cc
@@ -21,8 +19,10 @@ testcxx_LDADD = $(progs_ldadd)
 subnormals_SOURCES = subnormals.cc subnormals-aux.cc
 subnormals_LDADD = $(progs_ldadd)
 subnormals_CXXFLAGS = # -ffast-math
+loophandle_SOURCES = loophandle.c
+loophandle_LDADD = $(progs_ldadd)
 
-noinst_PROGRAMS = cutvorbis magictest mathtests $(TESTS) #testwavechunk
+noinst_PROGRAMS = cutvorbis magictest mathtests $(TESTS)
 cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
 cutvorbis_LDADD = $(progs_ldadd)
 magictest_SOURCES = magictest.c cxxdummy.cc
