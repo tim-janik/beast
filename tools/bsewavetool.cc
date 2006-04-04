@@ -19,7 +19,6 @@
  */
 #include "bsewavetool.hh"
 #include "topconfig.h"
-#include "sfiutils.h"
 #include "bwtwave.hh"
 #include <bse/bsemain.h>	/* for bse_init_intern() */
 #include <bse/bseloader.h>

@@ -13,3 +13,10 @@ interested in reading up on the topics.
 And there is of course a
 @uri{@top_webdir/related-links.html, collection} of links to related
 or subsidiary projects.
+
+Links to sites with instrument/patch/soundfont collections:
+@itemize
+@item @uri{http://alsa.opensrc.org/FreePats, FreePats @ ALSA.OpenSRC} - Completely free and open set of instrument samples.
+@item @uri{http://freepats.opensrc.org/, FreePats.OpenSRC} - Project to create a free and open set of GUS compatible patches.
+@item @uri{http://www.hammersound.net/, HammerSound.net} - Free and non-free soundfonts.
+@done

@@ -1,3 +1,11 @@
+Tue Apr  4 22:30:07 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/Makefile.am: build new tools.
+
+	* tools/cutvorbis.c: usage fixup.
+
+	* web/resources.doxi: link updates.
+
 Tue Apr  4 20:42:49 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/mathtool.c: CVS moved.

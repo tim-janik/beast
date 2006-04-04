@@ -99,8 +99,8 @@ main (int   argc,
       g_printerr ("usage: cutvorbis infile.ogg [{-s|-k|-p} <cutpoint>] [-S <serialno>] outfile.ogg\n");
       g_printerr ("  -S <serialno>  only process data from the Ogg/Vorbis stream with <serialno>\n");
       g_printerr ("  -s <cutpoint>  cut the Ogg/Vorbis stream at sample <cutpoint>\n");
-      g_printerr ("  -k <cutpoint>  same as -s, but cut at packet boundary\n");
-      g_printerr ("  -p <cutpoint>  same as -s, but cut at page boundary\n");
+      g_printerr ("  -k <cutpoint>  same as -s, but cut at vorbis packet boundary\n");
+      g_printerr ("  -p <cutpoint>  same as -s, but cut at ogg page boundary\n");
       exit (1);
     }
   ifile = argv[1];
