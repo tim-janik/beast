@@ -1,3 +1,7 @@
+Tue Apr  4 20:42:49 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/mathtool.c: CVS moved.
+
 Tue Apr  4 20:10:39 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/cutvorbis.c:
