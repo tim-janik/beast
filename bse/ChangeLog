@@ -1,3 +1,13 @@
+Tue Apr  4 21:59:39 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/cutvorbis.c:
+	* tests/magictest.c:
+	* tests/mathtests.c:
+	* Makefile.am: removed tools.
+
+	* tests/testfft.c: 
+	* tests/subnormals.cc: changed to make use of test macros.
+
 Tue Apr  4 02:06:45 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/Makefile.am: build and check loophandle, got rid of testwavechunk.

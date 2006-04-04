@@ -19,6 +19,8 @@
 #include <bse/gslcommon.h>
 #include <bse/bsemath.h>
 #include <bse/gslfft.h>
+//#define TEST_VERBOSE
+#include <birnet/birnettests.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,8 +61,8 @@ main (int   argc,
   struct timeval tv;
   guint i;
   
-  /* initialize GSL */
-  birnet_init (&argc, &argv, NULL);
+  /* initialize */
+  birnet_init_test (&argc, &argv);
   gsl_init (NULL);
 
   /* initialize random numbers */
@@ -72,7 +74,7 @@ main (int   argc,
     {
       double d;
 
-      g_print ("Testing fft code for size %u\n", i);
+      TSTART ("Testing fft code for size %u", i);
 
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
@@ -91,13 +93,20 @@ main (int   argc,
       /* check differences */
       d = diff (MAX_FFT_SIZE, 0, ref_fft_in, work_fft_in, "Checking input record");
       if (d)
-	g_error ("Reference record was modified");
+	TERROR ("Reference record was modified");
+      else
+        TOK();
       d = diff (MAX_FFT_SIZE, 0, ref_fft_aout, work_fft_aout, "Reference analysis against GSL analysis");
       if (fabs (d) > EPSILON)
-	g_error ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
       d = diff (MAX_FFT_SIZE, 0, ref_fft_sout, work_fft_sout, "Reference synthesis against GSL synthesis");
       if (fabs (d) > EPSILON)
-	g_error ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      TDONE();
     }
 
   return 0;
@@ -121,26 +130,26 @@ diff (guint         m,
   double d = 0, max = 0, min = 1e+32;
   guint n;
 
-  g_print ("%s\n", str);
+  TPRINT ("%s\n", str);
   for (n = 0; n < m; n++)
     {
       double a =  ABS (a1[n] - a2[n]);
       if (n < p)
-	g_print ("%3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
-		 n, ((float) n) / (float) m,
-		 a1[n], a2[n],
-		 a1[n] - a2[n],
-		 a1[n] / a2[n]);
+	TPRINT ("%3u:%.3f) % 19.9f - % 19.9f = % 19.9f (% 19.9f)\n",
+                n, ((float) n) / (float) m,
+                a1[n], a2[n],
+                a1[n] - a2[n],
+                a1[n] / a2[n]);
       d += a;
       max = MAX (max, a);
       min = MIN (min, a);
     }
-  g_print ("Diff sum: %.9f, ", d);
-  g_print ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
-  g_print ("noise: %u %u %u\n",
-	   g_bit_storage (1. / min),
-	   g_bit_storage (m / d),
-	   g_bit_storage (1. / max));
+  TPRINT ("Diff sum: %.9f, ", d);
+  TPRINT ("min/av/max: %.9f %.9f %.9f, ", min, d / (double) m, max);
+  TPRINT ("noise: %u %u %u\n",
+          g_bit_storage (1. / min),
+          g_bit_storage (m / d),
+          g_bit_storage (1. / max));
   return d;
 }
 

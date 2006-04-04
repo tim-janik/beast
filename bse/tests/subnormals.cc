@@ -19,6 +19,8 @@
  */
 #include <bse/bse.h>
 #include <bse/bseieee754.h>
+//#define TEST_VERBOSE
+#include <birnet/birnettests.h>
 #include <stdio.h>
 
 #if 1
@@ -43,8 +45,7 @@ inline double test5d (double v) { BSE_DOUBLE_FLUSH_with_threshold (v); return v;
 template<float Func (float)> void
 test_correct_subnormal_elimination (const char* algo_name)
 {
-  g_print ("testing algorithm %s for correctness... ", algo_name);
-  fflush (stdout);
+  TSTART ("testing algorithm %s for correctness", algo_name);
   const int n = 1000000;
   for (int i = 1; i < n; i++)
     {
@@ -56,15 +57,18 @@ test_correct_subnormal_elimination (const char* algo_name)
 
       float normalized_negative_value = Func (-value);
       g_assert (!BSE_FLOAT_IS_SUBNORMAL (normalized_negative_value));
+
+      if (i % 100000 == 0)
+        TOK();
     }
-  g_print ("PASSED\n");
+  TOK();
+  TDONE();
 }
 
 template<double Func (double)> void
 test_correct_subnormal_elimination (const char* algo_name)
 {
-  g_print ("testing algorithm %s for correctness... ", algo_name);
-  fflush (stdout);
+  TSTART ("testing algorithm %s for correctness", algo_name);
   const int n = 1000000;
   for (int i = 1; i < n; i++)
     {
@@ -76,15 +80,19 @@ test_correct_subnormal_elimination (const char* algo_name)
 
       double normalized_negative_value = Func (-value);
       g_assert (!BSE_DOUBLE_IS_SUBNORMAL (normalized_negative_value));
+
+      if (i % 100000 == 0)
+        TOK();
     }
-  g_print ("PASSED\n");
+  TOK();
+  TDONE();
 }
 
 int
 main (int   argc,
       char *argv[])
 {
-  birnet_init (&argc, &argv, NULL);
+  birnet_init_test (&argc, &argv);
 
   test_correct_subnormal_elimination<test2f> ("zap");
   test_correct_subnormal_elimination<test3f> ("inlined-cond");
@@ -96,6 +104,7 @@ main (int   argc,
   test_correct_subnormal_elimination<test4d> ("if-cond-double");
   test_correct_subnormal_elimination<test5d> ("arithmetic-double");
 
+  g_print ("benchmarking...\n");
   const float max_sub = BSE_FLOAT_MAX_SUBNORMAL;
 
   float n = 10 * 1000000;
