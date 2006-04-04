@@ -1,3 +1,8 @@
+Tue Apr  4 21:58:49 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h: allow printf-style arguments to TSTART().
+	added TERROR() to forcefully abort.
+
 Mon Apr  3 23:00:15 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h: add macros and convenience functions useful for 
