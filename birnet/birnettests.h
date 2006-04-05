@@ -41,20 +41,18 @@ BIRNET_EXTERN_C_BEGIN();
 #define TOK()           do { g_printerr ("OK.\n"); } while (0)		/* subtest OK */
 #define TICK()          TOK()						/* subtest OK */
 #define TACK()          do { g_printerr ("ACK.\n"); } while (0)		/* alternate OK */
-#define TFAIL()         do { g_printerr ("FAIL.\n"); } while (0)	/* allowed failure */
 #define	TPRINT(...)	g_printerr (__VA_ARGS__)			/* misc messages */
-#define	TASSERT(code)	TASSERT_impl (code)				/* test assertion */
-#define	TERROR(...)	TERROR_impl (__VA_ARGS__)			/* test assertion */
+#define	TASSERT(code)	TASSERT_impl ("FAIL.\n", code)			/* test assertion */
+#define	TERROR(...)	TERROR_impl ("FAIL.\n", __VA_ARGS__)		/* test error, abort */
 #define TDONE()         do { g_printerr ("DONE.\n"); } while (0)	/* test outro */
 #else
 #define TSTART(...)	birnet_test_intro (": [", __VA_ARGS__)		/* test intro */
 #define TOK()           do { g_printerr ("-"); } while (0)		/* subtest OK */
 #define TICK()          TOK()						/* subtest OK */
 #define TACK()          do { g_printerr ("+"); } while (0)		/* alternate OK */
-#define TFAIL()         do { g_printerr ("X"); } while (0)		/* allowed failure */
 #define	TPRINT(...)	do { g_printerr ("*"); } while (0)		/* skip messages */
-#define	TASSERT(code)	TASSERT_impl (code)				/* test assertion */
-#define	TERROR(...)	TERROR_impl (__VA_ARGS__)			/* test assertion */
+#define	TASSERT(code)	TASSERT_impl ("X", code)			/* test assertion */
+#define	TERROR(...)	TERROR_impl ("X", __VA_ARGS__)			/* test error, abort */
 #define TDONE()         do { g_printerr ("]\n"); } while (0)		/* test outro */
 #endif
 
@@ -64,16 +62,16 @@ static inline void birnet_test_intro (const char *postfix,
 				      const char *format,
 				      ...) G_GNUC_PRINTF (2, 3);
 
-#define TASSERT_impl(code)	do {			\
+#define TASSERT_impl(mark, code)	do {		\
   if (code) TOK (); else {				\
-  TFAIL();						\
+  g_printerr ("%s", mark);				\
   g_error ("%s:%u:%s(): assertion failed: %s",		\
            __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
            #code); }					\
 } while (0)
 
-#define TERROR_impl(...)	do {			\
-  TFAIL();						\
+#define TERROR_impl(mark, ...)	do {			\
+  g_printerr ("%s", mark);				\
   char *_error_msg_ = g_strdup_printf (__VA_ARGS__);	\
   g_error ("%s:%u:%s(): %s",				\
            __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
