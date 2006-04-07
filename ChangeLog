@@ -1,3 +1,8 @@
+Fri Apr  7 18:52:36 2006  Tim Janik  <timj@gtk.org>
+
+	* README: 
+	* configure.in: upgraded Gtk+ dependency to 2.6.4.
+
 Tue Apr  4 22:30:07 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/Makefile.am: build new tools.

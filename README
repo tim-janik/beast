@@ -8,8 +8,8 @@ GNU GPL and GNU LGPL, that runs under unix.
 More information about the project can be found at the website and
 in the documents and manuals shipped with release tarballs.
 
-In order to build release tarballs, you need Gtk+-2.4, a recent version
-of the Gtk+-2.4 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
+In order to build release tarballs, you need Gtk+-2.6, a recent version
+of the Gtk+-2.6 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST.
@@ -18,8 +18,8 @@ the sources can be found at:
 
 GnomeCanvas (use >= 2.4):
   ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
-Gtk+-2.4:
-  ftp://ftp.gtk.org/pub/gtk/v2.4/
+Gtk+-2.6:
+  ftp://ftp.gtk.org/pub/gtk/v2.6/
 Guile-1.6:
   http://www.gnu.org/software/guile/guile.html
 Ogg/Vorbis (at least version 1.0):
@@ -51,4 +51,7 @@ listed in $LADSPA_PATH.
 Installation
 ============
 
-See the file `INSTALL'.
+Note that Beast has to be fully installed to function properly, and that
+the binaries built in the launchers/ directory have to be installed with
+permissions of the root user.
+For generic installation instructions, see the file `INSTALL'.
