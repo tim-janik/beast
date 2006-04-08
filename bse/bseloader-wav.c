@@ -296,7 +296,8 @@ wav_load_file_info (gpointer      data,
   fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;
   fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
-  fi->wfi.waves[0].name = g_strdup (file_name);
+  const gchar *dsep = strrchr (file_name, G_DIR_SEPARATOR);
+  fi->wfi.waves[0].name = g_strdup (dsep ? dsep + 1 : file_name);
   fi->fd = fd;
   
   return &fi->wfi;

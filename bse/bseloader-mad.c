@@ -21,6 +21,7 @@
 #include "gsldatahandle-mad.h"
 
 #include <unistd.h>
+#include <string.h>
 
 
 /* --- structures --- */
@@ -54,7 +55,8 @@ mad_load_file_info (gpointer      data,
   fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;	/* we support only a single MPEG stream */
   fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
-  fi->wfi.waves[0].name = g_strdup (file_name);
+  const gchar *dsep = strrchr (file_name, G_DIR_SEPARATOR);
+  fi->wfi.waves[0].name = g_strdup (dsep ? dsep + 1 : file_name);
   fi->n_channels = n_channels;
   fi->mix_freq = mix_freq;
   fi->osc_freq = 440.0;	/* FIXME */
