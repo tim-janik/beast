@@ -1,0 +1,56 @@
+; BseProject
+
+(bse-version "0.7.0")
+
+(container-child "BseCSynth::BQS SynDrum"
+  (modification-time "2006-04-08 10:49:43")
+  (creation-time "2006-04-07 20:44:57")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (author "Tim Janik")
+  (blurb "Example Instrument based on the DavSynDrum module.")
+  (container-child "BseInstrumentOutput::InstrumentOutput-1"
+    (pos-y -1)
+    (pos-x 3)
+    (source-input "left-audio" (link 1 "StandardSaturator-1") "audio-out1")
+    (source-input "right-audio" (link 1 "StandardSaturator-1") "audio-out1")
+    (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
+  (container-child "BseInstrumentInput::InstrumentInput-1"
+    (pos-x -4))
+  (container-child "BseAmplifier::Amplifier-1"
+    (master-volume 1)
+    (base-level 0)
+    (ostrength 100)
+    (ctrl-exp #f)
+    (ctrl-mul #t)
+    (clevel2 100)
+    (clevel1 100)
+    (alevel2 100)
+    (alevel1 100)
+    (source-input "audio-in1" (link 1 "DavSynDrum-1") "audio-out")
+    (source-input "ctrl-in2" (link 1 "SimpleADSR-1") "ctrl-out"))
+  (container-child "BseSimpleADSR::SimpleADSR-1"
+    (time-range bse-time-range-short)
+    (release-time 30)
+    (sustain-level 80)
+    (decay-time 100)
+    (attack-time 0)
+    (pos-y -1)
+    (pos-x -2)
+    (source-input "gate-in" (link 1 "InstrumentInput-1") "gate"))
+  (container-child "DavSynDrum::DavSynDrum-1"
+    (ratio 3)
+    (res 16.000000759959221)
+    (trigger-vel 379.99999523162842)
+    (base-freq 16.351598739624023)
+    (pos-y 1)
+    (pos-x -2)
+    (source-input "freq-in" (link 1 "InstrumentInput-1") "frequency")
+    (source-input "trigger-in" (link 1 "InstrumentInput-1") "gate"))
+  (container-child "BseStandardSaturator::StandardSaturator-1"
+    (output-volume 1.0111223458038416)
+    (auto-output #t)
+    (level 98.900000000000063)
+    (saturation bse-standard-saturate-tanh)
+    (pos-y 1)
+    (pos-x 1)
+    (source-input "audio-in1" (link 1 "Amplifier-1") "audio-out")))

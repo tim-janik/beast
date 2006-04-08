@@ -1,3 +1,19 @@
+Sat Apr  8 14:29:07 2006  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/bqs-fretless-base.bse: added fretless base
+	instrument from Stefan Westerfeld.
+
+	* library/instruments/bqs-organ.bse: added Organ instrument.
+
+	* library/instruments/bqs-queek-synth.bse: added simplistic synth
+	instrument.
+
+	* library/instruments/bqs-syndrum.bse: added DavSynDrum instrument.
+
+	* library/instruments/test-string.bse:
+	* library/instruments/synth-lead.bse: removed old test synths, 
+	superceeded by bqs-queek-synth.bse.
+
 Sat Apr  8 02:03:52 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.c: added tooltips. when displaying

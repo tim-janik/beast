@@ -1,0 +1,53 @@
+; BseProject
+
+(bse-version "0.7.0")
+
+(container-child "BseCSynth::BQS Organ"
+  (modification-time "2006-04-08 00:17:45")
+  (creation-time "2006-04-07 20:44:57")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (author "Tim Janik")
+  (blurb "Example Instrument based on the DavOrgan module.")
+  (container-child "BseInstrumentOutput::InstrumentOutput-1"
+    (pos-y -1)
+    (pos-x 2)
+    (source-input "left-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "right-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
+  (container-child "BseInstrumentInput::InstrumentInput-1"
+    (pos-x -4))
+  (container-child "DavOrgan::DavOrgan-1"
+    (reed #f)
+    (flute #f)
+    (brass #f)
+    (harm5 54.651165008544922)
+    (harm4 61.860466003417969)
+    (harm3 67.209303379058838)
+    (harm2 73.255813121795654)
+    (harm1 86.744183301925659)
+    (harm0 100)
+    (base-freq 440)
+    (pos-y 1)
+    (pos-x -2)
+    (source-input "freq-in" (link 1 "InstrumentInput-1") "frequency"))
+  (container-child "BseAmplifier::Amplifier-1"
+    (master-volume 1)
+    (base-level 0)
+    (ostrength 100)
+    (ctrl-exp #f)
+    (ctrl-mul #t)
+    (clevel2 100)
+    (clevel1 100)
+    (alevel2 100)
+    (alevel1 100)
+    (source-input "audio-in1" (link 1 "DavOrgan-1") "audio-out")
+    (source-input "ctrl-in2" (link 1 "SimpleADSR-1") "ctrl-out"))
+  (container-child "BseSimpleADSR::SimpleADSR-1"
+    (time-range bse-time-range-short)
+    (release-time 50.4717)
+    (sustain-level 83.49057)
+    (decay-time 29.24528)
+    (attack-time 20.75472)
+    (pos-y -1)
+    (pos-x -2)
+    (source-input "gate-in" (link 1 "InstrumentInput-1") "gate")))
