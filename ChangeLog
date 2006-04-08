@@ -1,3 +1,14 @@
+Sat Apr  8 02:03:52 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.c: added tooltips. when displaying
+	huge file libraries, display WAVE_NAME in the first column, i.e.
+	the file baename or any internal detected filename.
+
+	* beast-gtk/bsttreestores.c: fallback to the file basename for 
+	WAVE_NAME, until file info could be loaded.
+	check non-sample files for ".bse" postfix and try to extract the 
+	first "container-child" name from ".bse" files.
+
 Fri Apr  7 18:52:36 2006  Tim Janik  <timj@gtk.org>
 
 	* README: 

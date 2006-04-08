@@ -48,7 +48,6 @@ file_store_idle_handler (gpointer data)
       while (file)
         {
           GtkTreeIter iter;
-          gchar *dsep;
           if (!g_utf8_validate (file, -1, NULL))
             {
               gchar *tmp = gxk_filename_to_utf8 (file);
@@ -56,11 +55,12 @@ file_store_idle_handler (gpointer data)
               file = g_strconcat ("[Non-UTF8] ", tmp, NULL);
               g_free (tmp);
             }
-          dsep = strrchr (file, G_DIR_SEPARATOR);
+          const gchar *dsep = strrchr (file, G_DIR_SEPARATOR);
           gtk_tree_store_append (store, &iter, NULL);
           gtk_tree_store_set (store, &iter,
                               BST_FILE_STORE_COL_ID, ++n_rows,
                               BST_FILE_STORE_COL_BASE_NAME, dsep ? dsep + 1 : file,
+                              BST_FILE_STORE_COL_WAVE_NAME, dsep ? dsep + 1 : file,     /* fallback wave name */
                               BST_FILE_STORE_COL_FILE, file,
                               -1);
           g_free (file);
@@ -78,22 +78,45 @@ file_store_idle_handler (gpointer data)
       GtkTreeIter iter;
       BseSampleFileInfo *info;
       const gchar *loader, *name = NULL;
-      gchar *tstr;
+      gchar *nstr = NULL;
       gtk_tree_model_get_iter (model, &iter, path);
       gtk_tree_path_free (path);
       gtk_tree_model_get (model, &iter,
                           BST_FILE_STORE_COL_FILE, &filename,
                           -1);
       info = bse_sample_file_info (filename);
+      const gchar *dsep = strrchr (filename, G_DIR_SEPARATOR);
       if (info->error == BSE_ERROR_FILE_IS_DIR)
-        loader = "Directory";
+        {
+          loader = "Directory";
+          name = dsep ? dsep + 1 : filename;    /* fallback wave name */
+        }
       else
-        loader = info->error ? bse_error_blurb (info->error) : info->loader;
+        {
+          name = dsep ? dsep + 1 : filename;    /* fallback wave name */
+          loader = info->error ? bse_error_blurb (info->error) : info->loader;
+          guint l = strlen (filename);
+          if (info->error == BSE_ERROR_FORMAT_UNKNOWN &&
+              l >= 4 && g_strcasecmp (filename + l - 4, ".bse") == 0)
+            {
+              nstr = bst_file_scan_find_key (filename, "container-child", NULL);
+              if (nstr)
+                {
+                  const gchar *col = strrchr (nstr, ':');
+                  if (col > nstr && col[-1] == ':')
+                    {
+                      name = col + 1;
+                      loader = "BSE Project";
+                      info->error = 0;
+                    }
+                }
+            }
+        }
       if (info->waves->n_strings)
         name = info->waves->strings[0];
-      tstr = sfi_time_to_string (info->mtime);
+      gchar *tstr = sfi_time_to_string (info->mtime);
       gtk_tree_store_set (store, &iter,
-                          BST_FILE_STORE_COL_WAVE_NAME, name,
+                          BST_FILE_STORE_COL_WAVE_NAME, name,   /* real wave name */
                           BST_FILE_STORE_COL_SIZE, (guint) info->size,
                           BST_FILE_STORE_COL_TIME_USECS, info->mtime,
                           BST_FILE_STORE_COL_TIME_STR, tstr,
@@ -101,6 +124,7 @@ file_store_idle_handler (gpointer data)
                           BST_FILE_STORE_COL_LOADABLE, info->error == 0 && info->loader,
                           -1);
       g_free (tstr);
+      g_free (nstr);
       g_object_set_long (store, "n_completed", n_completed + 1);
     }
   else

@@ -20,6 +20,7 @@
 #include "bsttreestores.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 #include <errno.h>
 
 
@@ -133,24 +134,36 @@ bst_file_dialog_init (BstFileDialog *self)
   g_object_connect (self->tview, "swapped_object_signal::row_activated", gtk_button_clicked, self->fs->ok_button, NULL);
 
   /* sample selection tree columns */
-  gxk_tree_view_add_text_column (self->tview, BST_FILE_STORE_COL_BASE_NAME, "S",
-				 0.0, "Name", "Sample name",
+  gxk_tree_view_add_text_column (self->tview, BST_FILE_STORE_COL_WAVE_NAME, "S",
+				 0.0, _("Name"), _("Sample or instrument name"),
 				 NULL, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (self->tview, BST_FILE_STORE_COL_SIZE, "S",
-				 1.0, "Size", NULL,
+				 1.0, _("Size"), _("File size in bytes"),
 				 NULL, self, G_CONNECT_SWAPPED);
+  gchar *padstring = g_strdup (_("Format")), *tip = g_strdup (_("Detected file format"));
+  guint l = strlen (padstring), n = 14;
+  if (l < n)
+    {
+      GString *gstring = g_string_new (padstring);
+      g_free (padstring);
+      while (l++ < n)
+        g_string_append (gstring, " ");
+      padstring = g_string_free (gstring, FALSE);
+    }
   gxk_tree_view_add_text_column (self->tview, BST_FILE_STORE_COL_LOADER, "OF",
-				 0.0, "Format      ", NULL,
+				 0.0, padstring, tip,
 				 NULL, self, G_CONNECT_SWAPPED);
+  g_free (padstring);
+  g_free (tip);
   gxk_tree_view_add_text_column (self->tview, BST_FILE_STORE_COL_TIME_STR, "S",
-				 0.0, "Time", NULL,
+				 0.0, _("Time"), _("File modification time"),
 				 NULL, self, G_CONNECT_SWAPPED);
   if (BST_DVL_HINTS)
     gxk_tree_view_add_toggle_column (self->tview, BST_FILE_STORE_COL_LOADABLE, "",
 				     0.0, "L", "Indication of whether a file is expected to be loadable",
 				     NULL, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (self->tview, BST_FILE_STORE_COL_FILE, "S",
-				 0.0, "Filename", NULL,
+				 0.0, _("Filename"), NULL,
 				 NULL, self, G_CONNECT_SWAPPED);
   
   /* pack separator and buttons */
