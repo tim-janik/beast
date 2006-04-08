@@ -34,6 +34,8 @@ SfiTime	sfi_time_system		 (void);	/* utc */
 SfiTime	sfi_time_to_utc		 (SfiTime	 ustime);
 SfiTime	sfi_time_from_utc	 (SfiTime	 ustime);
 gchar*	sfi_time_to_string	 (SfiTime	 ustime);
+gchar*	sfi_time_to_nice_string	 (SfiTime	 ustime,
+				  const gchar   *elements);
 SfiTime	sfi_time_from_string	 (const gchar	*time_string);
 SfiTime	sfi_time_from_string_err (const gchar	*time_string,
 				  gchar	       **error_p);

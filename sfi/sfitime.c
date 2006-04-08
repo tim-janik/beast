@@ -20,6 +20,7 @@
 #include "sfitime.h"
 #include "sfiprimitives.h"
 #include <sys/time.h>
+#include <string.h>
 #include <time.h>
 #include <errno.h>
 #include <stdio.h>
@@ -156,6 +157,62 @@ sfi_time_to_string (SfiTime ustime)
 			  bt.tm_hour,
 			  bt.tm_min,
 			  bt.tm_sec);
+}
+
+/**
+   @param ustime	time in micro seconds
+   @param elements      string identifying time elements
+   @return		newly allocated string
+   
+   Retrieve the time @a ustime in human readable form.
+   Within the rnage of date and time formats parsable by
+   sfi_time_from_string(), the nicest display is selected
+   according to the current locale and other user settings.
+   By means of the @a elements argument, various elemtns of
+   a full date string can be selected:
+   @itemize
+   @item H - display hours
+   @item M - display minutes
+   @item S - display seconds
+   @item d - display day
+   @item m - display month
+   @item y - display year
+   @done
+   The returned time string describes UTC time and
+   thus contains no time zone or UTC offset information.
+*/
+gchar*
+sfi_time_to_nice_string (SfiTime      ustime,
+                         const gchar *elements)
+{
+  time_t t = CLAMP (ustime, SFI_MIN_TIME, SFI_MAX_TIME) / SFI_USEC_FACTOR;
+  struct tm bt;
+  if (!elements)
+    elements = "";
+
+  bt = *gmtime (&t);	/* FIXME: not thread safe */
+
+  const bool wtime = strchr (elements, 'H') || strchr (elements, 'M') || strchr (elements, 'S');
+  const bool wdate = strchr (elements, 'd') || strchr (elements, 'm') || strchr (elements, 'y');
+
+  if (wdate && !wtime)
+    return g_strdup_printf ("%04d-%02d-%02d",
+                            bt.tm_year + 1900,
+                            bt.tm_mon + 1,
+                            bt.tm_mday);
+  if (!wdate && wtime)
+    return g_strdup_printf ("%02d:%02d:%02d",
+                            bt.tm_hour,
+                            bt.tm_min,
+                            bt.tm_sec);
+  else
+    return g_strdup_printf ("%02d:%02d:%02d %04d-%02d-%02d",
+                            bt.tm_hour,
+                            bt.tm_min,
+                            bt.tm_sec,
+                            bt.tm_year + 1900,
+                            bt.tm_mon + 1,
+                            bt.tm_mday);
 }
 
 /**
