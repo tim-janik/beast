@@ -738,6 +738,7 @@ win32 port:
 - beast --bse-driver-list freezes the windows system completely
 
 oversampling:
+- coding style: put spaces around mathematical operators like +,/,-,*,%,&,| etc.
 - polish octave scripts
 - design coefficients for 8, 12, 16, 20, 24 bits
 - move Resampler2 API to header
