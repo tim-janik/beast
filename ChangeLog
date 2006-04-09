@@ -1,3 +1,9 @@
+Sun Apr  9 14:30:52 2006  Tim Janik  <timj@gtk.org>
+
+	* web/logogallerydir/: CVS moved from web/logogallery/.
+
+	* web/screenshotdir/: CVS moved from web/screenshots/.
+
 Sat Apr  8 14:29:07 2006  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/bqs-fretless-base.bse: added fretless base
