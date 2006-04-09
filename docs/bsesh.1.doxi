@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/04/09 15:59:00 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BSESH - BSE Scheme Shell
 @doxer_set{man-title}	BSESH
@@ -12,6 +12,8 @@ bsesh - A Guile based scheme shell for @beast and @bse.
 
 @heading SYNOPSIS
 	@manb{bsesh} [@mani{OPTIONS}] [@manb{--}] @manb{...}
+
+	@manb{bsesh} [@mani{OPTIONS}] @mani{infile.bse} @manb{...}
 
 @heading DESCRIPTION
 	@manb{bsesh} is a @uri{http://www.gnu.org/software/guile/docs/,Guile} based scheme shell for @bse,
@@ -115,5 +117,6 @@ bsesh - A Guile based scheme shell for @beast and @bse.
 
 @heading SEE ALSO
 @uri{beast.1.html,beast(1)},
-@uri{sfidl.1.html,sfidl(1)},
+@uri{bse.5.html,bse(5)},
+@longuri{http://beast.gtk.org, BEAST/BSE Website},
 @longuri{http://www.gnu.org/software/guile/docs/,Guile Documentation}

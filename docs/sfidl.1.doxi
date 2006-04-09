@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/04/09 15:59:00 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	SFIDL - SFI IDL Compiler
 @doxer_set{man-title}	SFIDL
@@ -81,5 +81,6 @@ SFIDL - SFI IDL Compiler
 
 @heading SEE ALSO
 @uri{bsesh.1.html,bsesh(1)},
-@uri{bse-procs.3.html,bse-procs(3)},
-@uri{bse-structs.3.html,bse-structs(3)}
+@longuri{http://beast.gtk.org/bse-objects,BSE Object Reference},
+@longuri{http://beast.gtk.org/bse-interface,BSE Interface Reference},
+@longuri{http://beast.gtk.org/sfidl-manual,   SFIDL Documentation}

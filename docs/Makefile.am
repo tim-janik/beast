@@ -6,6 +6,13 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = images
 
+MAN_TARGETS = $(strip				\
+	mans/beast.1				\
+	mans/bsesh.1				\
+	mans/sfidl.1				\
+	mans/bse.5				\
+)
+CLEANFILES += ${MAN_TARGETS}
 HTML_TARGETS = $(strip				\
 	html/architecture.html			\
 	html/beast-index.html			\
@@ -18,6 +25,11 @@ HTML_TARGETS = $(strip				\
 	html/quickstart.html			\
 	html/release-notes.html			\
 	html/sfidl-manual.html			\
+	\
+	html/beast.1.html			\
+	html/bsesh.1.html			\
+	html/sfidl.1.html			\
+	html/bse.5.html				\
 )
 CLEANFILES += ${HTML_TARGETS}
 STYLE_TARGETS = $(strip				\
@@ -28,10 +40,6 @@ STYLE_TARGETS = $(strip				\
 	html/style/beast-small.png		\
 	html/style/title-arrow-24x64.png	\
 	html/style/home-arrow-24x64.png		\
-	\
-	html/beast.1.html			\
-	html/bsesh.1.html			\
-	html/sfidl.1.html			\
 )
 CLEANFILES += ${STYLE_TARGETS}
 PSOURCE_TARGETS = $(strip			\
@@ -43,28 +51,33 @@ PSOURCE_TARGETS = $(strip			\
 	psource/bse-interface.psrc		\
 )
 
-htmldocsdir = ${beastdocsdir}
-htmldocs_DATA = ${HTML_TARGETS} ${STYLE_TARGETS}
-
-# noinst_DATA = ${PSOURCE_TARGETS}
-
 DOXER = $(top_srcdir)/doxer/doxer.py
-
 DOCFRAME_DEFS = -D DOXI_INCLUDE_FILE \"docframe.doxi\"
 DOXIDEFS = -D TOP_WEBDIR "." -D BST_VERSION ${BST_VERSION} -I $(srcdir) $(call DOCFRAME_DEFS)
 
-make-install-dirs:
-	$(mkinstalldirs) $(DESTDIR)$(htmldocsdir)/html/style
-	rm -f $(DESTDIR)$(htmldocsdir)/html/images
-	ln -s ../../images $(DESTDIR)$(htmldocsdir)/html/images
-uninstall-hook:
-	rm -f $(DESTDIR)$(htmldocsdir)/html/images
-uninstall: uninstall-hook
+# noinst_DATA = ${PSOURCE_TARGETS}
+
+# build and install MAN pages
+dist_man_MANS = $(MAN_TARGETS)	# sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
+
+# build and install HTML docs
+htmldocsdir = ${beastdocsdir}/html
+htmldocs_DATA = ${HTML_TARGETS}
+# build and install HTML style/ targets
+styledocsdir = ${htmldocsdir}/style
+styledocs_DATA = ${STYLE_TARGETS}
+# link html/images/ to ordinary docs/images/
+install-data-local:
+	$(mkinstalldirs)   $(DESTDIR)$(htmldocsdir)
+	rm -f              $(DESTDIR)$(htmldocsdir)/images
+	ln -s ../../images $(DESTDIR)$(htmldocsdir)/images
+uninstall-local:
+	rm -f		   $(DESTDIR)$(htmldocsdir)/images
 
 # some dependencies have to be written indirectly, to prevent automake from
 # changing it's rule generation (which it sometimes automagically adapts).
-install_htmldocsDATA_VARIABLE = install-htmldocsDATA
-${install_htmldocsDATA_VARIABLE}: make-install-dirs
+##install_htmldocsDATA_VARIABLE = install-htmldocsDATA
+##${install_htmldocsDATA_VARIABLE}: make-install-dirs
 
 # CSS style sheet rules
 html/style/%: $(top_srcdir)/web/style/%
@@ -72,6 +85,17 @@ html/style/%: $(top_srcdir)/web/style/%
 	cp $< $@
 html/style/doxer-style.css:
 	$(DOXER) writecss -d html/style/
+
+# MAN generation rules
+mans/%.1: %.1.doxi
+	@mkdir -p mans/
+	$(DOXER) doxi2man $< -d mans/ $(DOXIDEFS)
+mans/%.3: %.3.doxi
+	@mkdir -p mans/
+	$(DOXER) doxi2man $< -d mans/ $(DOXIDEFS)
+mans/%.5: %.5.doxi
+	@mkdir -p mans/
+	$(DOXER) doxi2man $< -d mans/ $(DOXIDEFS)
 
 # HTML generation rules
 html/%.1.html: %.1.doxi
@@ -177,14 +201,13 @@ psource/bse-interface.psrc: $(AUTODOC) $(top_builddir)/config.status
 # Force AUTODOC builds
 .PHONY: # $(AUTODOC)
 CLEANFILES += psource/bse-objects.scad psource/bse-interface.scad
+clean-local:
+	rm -rf gendoxi/ html/ psource/ mans/
 
 intermediate_files = $(strip    \
         news-file.tmpdoxi       \
 )
 .INTERMEDIATE: $(intermediate_files)
-
-clean:
-	rm -rf gendoxi/ html/ psource/
 
 doxi_files = $(strip		\
 	architecture.doxi	\

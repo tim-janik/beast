@@ -3,3 +3,8 @@ User-agent: *
 Disallow: /wiki.php
 Disallow: /wiki.phtml
 Disallow: /wiki:SandBox
+User-Agent: W3C-checklink
+Disallow: /rdocu-gxk/
+Disallow: /rdocu-bse/
+Disallow: /rdocu-sfi/
+Disallow: /rdocu-birnet/

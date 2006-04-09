@@ -1,3 +1,20 @@
+Sun Apr  9 17:55:51 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/bse.5.doxi: new manual page about the BSE file format.
+
+	* docs/Makefile.am: build and install manual pages. fixed up some rules.
+
+	* beast-gtk/bstapp.c: removed html page extensions from online resources.
+
+	* docs/beast-index.doxi: fixed online links and added .bse manual page.
+
+	* docs/sfidl.1.doxi:
+	* docs/beast.1.doxi: link fixups.
+
+	* docs/bsesh.1.doxi: link and synopsis fixups.
+
+	* web/robots.txt: disallow reference docs for W3C-checklink.
+
 Sun Apr  9 15:54:25 2006  Tim Janik  <timj@gtk.org>
 
 	* web/htaccess.in: allow content type negotiation via MultiViews.

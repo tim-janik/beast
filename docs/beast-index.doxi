@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/26 17:55:48 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/04/09 15:58:59 $
 @include "docframe.doxi"
 @doxer_set{title}       BEAST/BSE - Documentation Index
 
@@ -14,11 +14,12 @@
 @item @uri{@top_webdir/quickstart.html,		Quick Start Guide}
 @done
 
-@heading Commands
+@heading Manual Pages
 @itemize
 @item @uri{@top_webdir/beast.1.html,		BEAST - Bedevilled Audio System}
 @item @uri{@top_webdir/bsesh.1.html,		BSESH - BSE Scheme Shell}
 @item @uri{@top_webdir/sfidl.1.html,		SFIDL - SFI IDL Compiler}
+@item @uri{@top_webdir/bse.5.html,		BSE - Bedevilled Sound Engine File Format}
 @done
 
 @anchor{development}
@@ -42,10 +43,10 @@
 
 @heading Online Resources
 @itemize
-@item @uri{http://beast.gtk.org/,                       BEAST Website}
-@item @uri{http://beast.gtk.org/sound-browser.phtml,	Sound Archive}
-@item @uri{http://beast.gtk.org/wiki:HelpDesk,          Help Desk}
-@item @uri{http://beast.gtk.org/wiki:FeatureRequests,   Feature Requests}
-@item @uri{http://beast.gtk.org/wiki:BeastTodo,         Community TODO}
-@item @uri{http://beast.gtk.org/synthesis-links.html,   Synthesis Links}
+@item @uri{http://beast.gtk.org/,			BEAST Website}
+@item @uri{http://beast.gtk.org/sound-browser,		Sound Archive}
+@item @uri{http://beast.gtk.org/wiki:HelpDesk,		Help Desk}
+@item @uri{http://beast.gtk.org/wiki:FeatureRequests,	Feature Requests}
+@item @uri{http://beast.gtk.org/wiki:BeastTodo,		Community TODO}
+@item @uri{http://beast.gtk.org/synthesis-links,	Synthesis Links}
 @done

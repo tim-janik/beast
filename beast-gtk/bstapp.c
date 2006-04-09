@@ -1105,10 +1105,10 @@ app_action_exec (gpointer data,
       gxk_url_show ("http://beast.gtk.org/");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
-      gxk_url_show ("http://beast.gtk.org/sound-browser.phtml");
+      gxk_url_show ("http://beast.gtk.org/sound-browser");
       break;
     case ACTION_URL_ONLINE_DEMOS:
-      gxk_url_show ("http://beast.gtk.org/sound-browser.phtml");
+      gxk_url_show ("http://beast.gtk.org/sound-browser");
       break;
     case ACTION_DEMO_DIALOG_FATAL:
     case ACTION_DEMO_DIALOG_ERROR:
