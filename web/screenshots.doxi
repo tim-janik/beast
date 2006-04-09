@@ -7,7 +7,7 @@
 @*
 @rawhtml{
 <?php
-  define ('GALLERY_FILE', '../php/screenshots.phpini');
+  define ('GALLERY_FILE', '../php/screenshotdir.phpini');
   include '../php/gallery.php';
 ?>
 }

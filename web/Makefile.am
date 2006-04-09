@@ -8,8 +8,8 @@ PHP_TARGETS = $(strip			\
 	php/file-browser.php		\
 	php/file-upload.php		\
 	php/gallery.php			\
-	php/screenshots.phpini		\
-	php/logogallery.phpini		\
+	php/screenshotdir.phpini	\
+	php/logogallerydir.phpini	\
 )
 HTML_TARGETS = $(strip			\
 	html/.htaccess			\
@@ -66,17 +66,17 @@ RDOCU_TARGETS = $(strip			\
 TARGET_DIRS = $(strip								\
 	php/ html/ html/style/							\
 	html/web-images/ html/images/						\
-	html/screenshots/ html/logogallery/					\
+	html/screenshotdir/ html/logogallerydir/					\
 	tmpdoxi-birnet/ tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/			\
 	html/rdocu-birnet/ html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/	\
 )
 ${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi ../docs/beastdefs.doxi
 
 # tarball targets
-beastweb-galleries.tar.bz2: ${TARGET_DIRS} html/screenshots/.md5sum html/logogallery/.md5sum
-	tar jcf $@ html/screenshots/ html/logogallery/
+beastweb-galleries.tar.bz2: ${TARGET_DIRS} html/screenshotdir/.md5sum html/logogallerydir/.md5sum
+	tar jcf $@ html/screenshotdir/ html/logogallerydir/
 beastweb-pages.tar.bz2: ${TARGET_DIRS} html/style/.md5sum html/web-images/.md5sum html/images/.md5sum ${PHP_TARGETS} ${HTML_TARGETS} ${RDOCU_TARGETS}
-	tar jcf $@ php/ html/ --anchored --exclude='html/screenshots/*' --exclude='html/logogallery/*'
+	tar jcf $@ php/ html/ --anchored --exclude='html/screenshotdir/*' --exclude='html/logogallerydir/*'
 CLEANFILES += beastweb-galleries.tar.bz2 beastweb-pages.tar.bz2
 
 ${TARGET_DIRS}:	# rule to create directories
@@ -132,18 +132,18 @@ html/images/.md5sum: $(wildcard ../docs/images/*)
 	cp ../docs/images/*.png html/images/
 	md5sum html/images/* >xgen-html-images-md5sum
 	mv xgen-html-images-md5sum $@		# atomic
-html/screenshots/.md5sum: $(wildcard screenshots/*)
-	rm -fr html/screenshots/
-	mkdir -p html/screenshots/
-	cp screenshots/*.png screenshots/*.jpg html/screenshots/
-	md5sum html/screenshots/* >xgen-html-screenshots-md5sum
-	mv xgen-html-screenshots-md5sum $@	# atomic
-html/logogallery/.md5sum: $(wildcard logogallery/*)
-	rm -fr html/logogallery/
-	mkdir -p html/logogallery/
-	cp logogallery/*.png logogallery/*.jpg html/logogallery/
-	md5sum html/logogallery/* >xgen-html-logogallery-md5sum
-	mv xgen-html-logogallery-md5sum $@	# atomic
+html/screenshotdir/.md5sum: $(wildcard screenshotdir/*)
+	rm -fr html/screenshotdir/
+	mkdir -p html/screenshotdir/
+	cp screenshotdir/*.png screenshotdir/*.jpg html/screenshotdir/
+	md5sum html/screenshotdir/* >xgen-html-screenshotdir-md5sum
+	mv xgen-html-screenshotdir-md5sum $@	# atomic
+html/logogallerydir/.md5sum: $(wildcard logogallerydir/*)
+	rm -fr html/logogallerydir/
+	mkdir -p html/logogallerydir/
+	cp logogallerydir/*.png logogallerydir/*.jpg html/logogallerydir/
+	md5sum html/logogallerydir/* >xgen-html-logogallerydir-md5sum
+	mv xgen-html-logogallerydir-md5sum $@	# atomic
 
 # Note some implicit dependencies
 html/doxer-docu.html: ../doxer/docu-main.doxi
@@ -282,7 +282,7 @@ intermediate_files = $(strip	\
 
 clean:
 	rm -fr html/style/
-	rm -fr html/screenshots/ html/logogallery/ html/web-images/ html/images/
+	rm -fr html/screenshotdir/ html/logogallerydir/ html/web-images/ html/images/
 	rm -f html/rdocu-birnet/* html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
 	-rmdir -p html/rdocu-birnet/ html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
 	rm -f tmpdoxi-birnet/* tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
@@ -291,7 +291,7 @@ clean:
 	-rmdir -p html/
 	rm -f php/*
 	-rmdir -p php/
-	rm -f screenshots/*.THUMB.jpg logogallery/*.THUMB.jpg
+	rm -f screenshotdir/*.THUMB.jpg logogallerydir/*.THUMB.jpg
 	rm -f ${intermediate_files} ${CLEANFILES}
 .PHONY: clean
 

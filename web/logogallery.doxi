@@ -14,7 +14,7 @@ As announced on Friday 23 Aug 2002, the winner is @strong{jimmac}.
 @*
 @rawhtml{
 <?php
-  define ('GALLERY_FILE', '../php/logogallery.phpini');
+  define ('GALLERY_FILE', '../php/logogallerydir.phpini');
   include '../php/gallery.php';
 ?>
 }

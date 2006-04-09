@@ -10,7 +10,7 @@
 @newsentry{Wednesday 13 April 2005, A new release - we finaly made it!}
 
 BEAST/BSE version 0.6.5 is available from the
-@uri{@top_webdir/download.html,download section},
+@uri{@top_webdir/download,download section},
 here is the @uri{http://gnomedesktop.org/node/2225,FootNotes announcement}.
 
 BEAST tarball:
@@ -31,7 +31,7 @@ set of language updates. Translation updates in particular were made to british 
 canadian english, czech, dutch and spanish.
 Newly started translations are bulgarian and kinyarwanda.
 The
-@uri{@top_webdir/news-file.html,Release NEWS section} has the exact change list, so enjoy
+@uri{@top_webdir/news-file,Release NEWS section} has the exact change list, so enjoy
 the new code and please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
@@ -57,7 +57,7 @@ debian packages the new PHP versions that plug all known security holes.
 @newsentry{Saturday 18 Dec 2004, The "Clean up your mind" Release}
 
 BEAST/BSE version 0.6.4 is available from the
-@uri{@top_webdir/download.html,download section}.
+@uri{@top_webdir/download,download section}.
 
 BEAST tarball:
 @uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.4.tar.gz, beast-0.6.4.tar.gz}
@@ -86,7 +86,7 @@ in particular canadian english, british english, czech, dutch and spanish.
 Behind the scenes, we've also been doing some code cleanups, removed libbsw from the
 build process and applied GCC-3.4 compilation fixes.
 As always, the
-@uri{@top_webdir/news-file.html, NEWS section} has the exact changes, enjoy the new code and
+@uri{@top_webdir/news-file, NEWS section} has the exact changes, enjoy the new code and
 please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
@@ -94,7 +94,7 @@ please report bugs to our
 @newsentry{Thursday 18 Nov 2004, The "Legends may sleep, but they never die!" Release}
 
 BEAST/BSE version 0.6.3 and BSE-ALSA version 0.6.3 are available from the
-@uri{@top_webdir/download.html,download section}, here is the
+@uri{@top_webdir/download,download section}, here is the
 @uri{http://gnomedesktop.org/node/2049, FootNotes announcement}.
 
 BEAST tarball:
@@ -110,7 +110,7 @@ are definitely worth it! As usual, we've had lots of language updates, many GUI
 fixes, but also some critical stability fixes. Major new features are: a stereo mixer
 for songs, DB meters, MIDI automation and a new sample-and-hold module by Artem Popov.
 As always, the
-@uri{@top_webdir/news-file.html, NEWS section} has the exact changes, enjoy the new code and
+@uri{@top_webdir/news-file, NEWS section} has the exact changes, enjoy the new code and
 please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
@@ -118,7 +118,7 @@ please report bugs to our
 @newsentry{Wednesday 07 Jul 2004, The "small but steady steps" Release}
 
 BEAST/BSE version 0.6.2 is available from the
-@uri{@top_webdir/download.html,download section},
+@uri{@top_webdir/download,download section},
 here is the @uri{http://www.gnomedesktop.org/article.php?sid=1870, FootNotes announcement}.
 
 Tarball:
@@ -131,7 +131,7 @@ language translation updates, and supports more fine grained note quantization a
 Behind the scenes, there's also been some more infrastructure work, the results of which aren't
 going to surface before another releases or two though.
 As always, the
-@uri{@top_webdir/news-file.html, NEWS section} has the exact changes, enjoy the new code and
+@uri{@top_webdir/news-file, NEWS section} has the exact changes, enjoy the new code and
 please report bugs to our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
@@ -157,7 +157,7 @@ problems and success stories about the candidate to
 @newsentry{Sunday 07 Mar 2004, The low latency BEAST Release}
 
 BEAST/BSE version 0.6.1 is available from the
-@uri{@top_webdir/download.html,download section},
+@uri{@top_webdir/download,download section},
 here is the @uri{http://www.gnomedesktop.org/article.php?sid=1708, FootNotes announcement}.
 
 Tarball:
@@ -175,7 +175,7 @@ Also among the newly added features is a highly experimental prototype
 of a pattern editor. While this widget isn't fully functional yet, it already
 offers some interesting editing functions. Other features, updated
 languages and more bug fixes are listed in the
-@uri{@top_webdir/news-file.html, NEWS section}.
+@uri{@top_webdir/news-file, NEWS section}.
 
 
 @newsentry{Wednesday 18 Feb 2004, Website updates}
@@ -189,13 +189,13 @@ The
 @uri{http://beast.gtk.org/wiki:BeastFeatures, BeastFeatures} and
 @uri{http://beast.gtk.org/wiki:FeatureRequests, FeatureRequests} pages
 and the 
-@uri{@top_webdir/synthesis-links.html, synthesis links section} was updated.
+@uri{@top_webdir/synthesis-links, synthesis links section} was updated.
 
 
 @newsentry{Wednesday 11 Feb 2004, BEAST Release "Silver Vein"}
 
 BEAST/BSE version 0.6.0 is available from the
-@uri{@top_webdir/download.html,download section},
+@uri{@top_webdir/download,download section},
 here is the @uri{http://www.gnomedesktop.org/article.php?sid=1648, FootNotes announcement}.
 
 Tarball:
@@ -206,7 +206,7 @@ and patch:
 Besides loads of bug fixes in this release, newly added features involve
 per-track scopes, skins for the event and piano roll widgets, major speedups,
 an AIFF file loader and four new language translations.
-As always, the @uri{@top_webdir/news-file.html, NEWS section} has all the glory details.
+As always, the @uri{@top_webdir/news-file, NEWS section} has all the glory details.
 
 
 @newsentry{Thursday 22 Jan 2004, Wiki openings}
@@ -221,9 +221,9 @@ various topics or to sign the
 @newsentry{Saturday 10 Jan 2004, BSE Sound Archive}
 
 We just opened up the
-@uri{@top_webdir/sound-browser.phtml,BSE Sound Archive}.
+@uri{@top_webdir/sound-browser,BSE Sound Archive}.
 Here, users can
-@uri{@top_webdir/sound-upload.phtml, contribute and exchange}
+@uri{@top_webdir/sound-upload, contribute and exchange}
 BSE songs, samples or instrument and effect files.
 For demonstration purposes, we will also take
 @uri{http://www.xiph.org/ogg/vorbis/, Ogg/Vorbis}
@@ -234,7 +234,7 @@ of the BEAST demo song
 @uri{http://beast.gtk.org/beast-ftp/bse-files/partymonster.bse, Party Monster}.
 
 Have fun and
-@uri{@top_webdir/sound-upload.phtml, start contributing}! ;-)
+@uri{@top_webdir/sound-upload, start contributing}! ;-)
 
 
 @newsentry{Monday 29 Dec 2003, intltool add-on for beast-0.5.6}
@@ -267,7 +267,7 @@ in order to supply the perl module and get intltool to work.
 @newsentry{Sunday 28 Dec 2003, BEAST Realease "Popcorn"}
 
 BEAST/BSE version 0.5.6 is available from the
-@uri{@top_webdir/download.html,download section},
+@uri{@top_webdir/download,download section},
 here is the
 @uri{http://gnomedesktop.org/article.php?sid=1551,FootNotes announcement}.
 
@@ -279,7 +279,7 @@ and patch:
 Newly added features in this release involve a TB-303 style Bass Filter, major GUI
 improvements, MIDI file import abilities, a new C++ language binding, new language
 translations and finally an About box.
-As always, the @uri{@top_webdir/news-file.html, NEWS section} has all the glory details.
+As always, the @uri{@top_webdir/news-file, NEWS section} has all the glory details.
 
 In other news, we're looking for a graphics artist to improve plugin icons and
 help us develop fancier widgets like sliders, knobs, etc...
@@ -287,7 +287,7 @@ Please @uri{mailto://beast@@gnome.org, drop us a line} at our
 @uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list} if you're willing
 to contribute.
 
-And finally, the @uri{@top_webdir/screenshots.phtml,screen shot area} has had
+And finally, the @uri{@top_webdir/screenshots,screen shot area} has had
 some updates, to reflect newer @beast versions.
 
 
@@ -300,7 +300,7 @@ it's newest edition. We kindly thank the LinuxUser people for putting this artic
 online.
 
 BEAST/BSE version 0.5.5 is available from the
-@uri{@top_webdir/download.html,download section},
+@uri{@top_webdir/download,download section},
 here is the
 @uri{http://gnomedesktop.org/article.php?sid=1422, FootNotes announcement}.
 
@@ -314,7 +314,7 @@ and Compressor modules, a demo song, stock instruments and effects, extended
 integration with external MIDI events, a new C++ based plugin interface,
 MIME type support and @emph{lots} of language translations.
 The details are outlined in the
-@uri{@top_webdir/news-file.html, NEWS section}.
+@uri{@top_webdir/news-file, NEWS section}.
 
 
 @newsentry{August 27 Jul 2003, Site closed due to software patents}
@@ -330,7 +330,7 @@ page on August the 27th.
 @newsentry{Tuesday 22 Jul 2003, BEAST Realease [Velocity Edit]}
 
 BEAST/BSE version 0.5.4 is available in the
-@uri{@top_webdir/download.html,download section}.
+@uri{@top_webdir/download,download section}.
 
 Tarball:
 @uri{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.4.tar.gz, beast-0.5.4.tar.gz}
@@ -341,7 +341,7 @@ Newly added features in this release involve a drum module, velocity-,
 fine-tune- and control-event-editing in songs and support for post-processing
 effects in songs.
 The details are outlined in the
-@uri{@top_webdir/news-file.html, NEWS section}.
+@uri{@top_webdir/news-file, NEWS section}.
 
 
 @newsentry{Friday 18 Jul 2003, BEAST RPM Packages}
@@ -352,7 +352,7 @@ wrote a small
 @uri{http://linux.waluga.de/beast/BEAST-installation under-SuSE 82.txt, HOWTO (english and german)}
 about getting @beast to run under SuSE 8.2.
 Assorted RPMs build by him are available from the
-@uri{@top_webdir/download.html, Download section}.
+@uri{@top_webdir/download, Download section}.
 
 
 @newsentry{Thursday 10 Jul 2003, BEAST IRC Channel & LinuxTag 2003}
@@ -365,20 +365,20 @@ and KDE booths if people want to catch us to talk about @beast{},
 @uri{http://sfk.evilplan.org/csl/, CSL}.
 
 A
-@uri{@top_webdir/overview2003de.html, german paper accompanying the BEAST talk}
+@uri{@top_webdir/overview2003de, german paper accompanying the BEAST talk}
 held at LinuxTag has been added to our
-@uri{@top_webdir/documentation.html, Documentation section}.
+@uri{@top_webdir/documentation, Documentation section}.
 
 If we're not hanging out at LinuxTag, you may also join us for a chat on
 the @code{#beast} channel on the GimpNet IRC Network. The
-@uri{@top_webdir/contact.html, Contact section}
+@uri{@top_webdir/contact, Contact section}
 has more details if you're not familiar with IRC yet.
 
 
 @newsentry{Wednesday 25 Jun 2003, BEAST Bugfix Realease}
 
 BEAST/BSE version 0.5.3 is available in the
-@uri{@top_webdir/download.html,download section}, here is the
+@uri{@top_webdir/download,download section}, here is the
 @uri{http://gnomedesktop.org/article.php?sid=1182, FootNotes announcement}.
 
 Tarball:
@@ -389,13 +389,13 @@ and patch:
 Aparently version 0.5.2 crashed during script initialization on some systems
 due to bugs in the child communication code. So here is a quick update, fixing
 the crash and
-@uri{@top_webdir/news-file.html, other minor bugs}.
+@uri{@top_webdir/news-file, other minor bugs}.
 
 
 @newsentry{Saturday 21 Jun 2003, The i-didn't-mean-to Realease}
 
 BEAST/BSE version 0.5.2 is available in the
-@uri{@top_webdir/download.html,download section}, here is the
+@uri{@top_webdir/download,download section}, here is the
 @uri{http://www.gnomedesktop.org/article.php?sid=1176, FootNotes announcement}.
 
 Tarball:
@@ -408,7 +408,7 @@ user actions, by offering unlimited Undo/Redo facilities for all operations.
 Other highlights are greatly simplified sample and synthesizer
 selection for tracks and WAV recording abilities.
 As usual, more release details are outlined in the
-@uri{@top_webdir/news-file.html, NEWS section}.
+@uri{@top_webdir/news-file, NEWS section}.
 
 
 @newsentry{Sunday 20 Apr 2003, BEAST-0.5.1 patch fixed}
@@ -424,14 +424,14 @@ We apologise for the inconvenience this may have caused.
 
 On a related topic, many users encountered crashes upon creation of synthesis
 networks with the newer versions, there is now a
-@uri{@top_webdir/faq#gnome-canvas-idle-id-crash.html,FAQ entry}
+@uri{@top_webdir/faq#gnome-canvas-idle-id-crash,FAQ entry}
 adressing the specifics of the issue.
 
 
 @newsentry{Monday 14 Apr 2003, BEAST Featuring LADSPA}
 
 BEAST/BSE version 0.5.1 is available in the
-@uri{@top_webdir/download.html,download section}, here is the
+@uri{@top_webdir/download,download section}, here is the
 @uri{http://www.gnomedesktop.org/article.php?sid=1050, FootNotes announcement}.
 
 The most exciting new feature in this release is the support for
@@ -441,7 +441,7 @@ the net, for instance the
 @uri{http://plugin.org.uk/, plugin collection from Steve Harris}.
 
 As usual, more release details are outlined in the
-@uri{@top_webdir/news-file.html, NEWS section}.
+@uri{@top_webdir/news-file, NEWS section}.
 
 
 @newsentry{Wednesday 19 Mar 2003, List move and site updates}
@@ -449,16 +449,16 @@ As usual, more release details are outlined in the
 The @beast mailing list has moved. People may subscribe to the
 new list at @uri{http://mail.gnome.org/mailman/listinfo/beast/}
 now, or just read the archives at @uri{http://mail.gnome.org/archives/beast/}.
-Also, the @uri{@top_webdir/synthesis-links.html, link section}
+Also, the @uri{@top_webdir/synthesis-links, link section}
 has been updated, and we got new or updated screen shots
 (amongst them the new track editor) in the
-@uri{@top_webdir/screenshots.phtml,screen shot area}.
+@uri{@top_webdir/screenshots,screen shot area}.
 
 
 @newsentry{Thursday 13 Mar 2003, New Development Release}
 
 BEAST/BSE version 0.5.0 is available in the
-@uri{@top_webdir/download.html,download section}, here is the
+@uri{@top_webdir/download,download section}, here is the
 @uri{http://www.gnomedesktop.org/article.php?sid=993, FootNotes announcement}.
 
 This new development series of BEAST comes with a lot of
@@ -469,7 +469,7 @@ allows free arrangement of parts in songs and adds loop
 support to simplify song edits.
 
 More details can be found in the
-@uri{@top_webdir/news-file.html, NEWS section}.
+@uri{@top_webdir/news-file, NEWS section}.
 
 
 @newsentry{Thursday 27 February 2003, LinuxForum 2003}
@@ -492,11 +492,11 @@ list.
 @newsentry{Friday 21 February 2003, Recent Development}
 
 Lots of website content has been improved recently. The
-@uri{@top_webdir/historic.html, Historic} section got updated,
+@uri{@top_webdir/historic, Historic} section got updated,
 and thanks to Alper Ersoys continued work on the documentation
 system, the constantly evolving
-@uri{@top_webdir/documentation.html, Reference} and
-@uri{@top_webdir/development.html, Development} docs now support
+@uri{@top_webdir/documentation, Reference} and
+@uri{@top_webdir/development, Development} docs now support
 function, structure and external API links.
 
 In actual program development, Stefan Westerfeld has hacked up
@@ -507,7 +507,7 @@ Also, there's a new track editor widget developing in CVS,
 enabling more complex arrangements of songs. We'll post
 screenshots of the new widget as soon as its GUI has
 matured a bit. For the curious,
-@uri{@top_webdir/news-file.html, NEWS} has more details
+@uri{@top_webdir/news-file, NEWS} has more details
 about development highlights in the upcoming 0.4.2
 release.
 
@@ -537,7 +537,7 @@ look and much improved content.
 @newsentry{Monday 2 Sep 2002, New Development Release}
 
 BEAST/BSE version 0.4.1 is available in the
-@uri{@top_webdir/download.html,download section}, here is the
+@uri{@top_webdir/download,download section}, here is the
 @uri{http://www.gnomedesktop.org/article.php?sid=638, FootNotes announcement}.
 
 Much has changed in the new development version of BEAST.
@@ -556,7 +556,7 @@ yet, so incompatibilities whith future versions may occour.
 
 A good starting point are the test files shipped in the
 @path{tests/} subdirectory of the source package or the new
-@uri{@top_webdir/quickstart.html,Quick Start Guide} in the Help menu.
+@uri{@top_webdir/quickstart,Quick Start Guide} in the Help menu.
 
 
 @newsentry{Friday 23 Aug 2002, Logo Contest Winner}
@@ -570,7 +570,7 @@ actually featuring the winner image.
 
 We want to specially thank everyone who sent an entry. You may visit the
 contest entries at the
-@uri{@top_webdir/logogallery.phtml,logo submissions} page.
+@uri{@top_webdir/logogallery,logo submissions} page.
 
 
 @newsentry{Saturday 27 Jul 2002, Hold your breath}
@@ -664,7 +664,7 @@ in this area and love contributing, send off an
 @newsentry{Monday 30 October 2000, BEASTIE BITS}
 
 We've recently had a few more logo submissions, so
-@uri{@top_webdir/logogallery.phtml,logo submissions page}
+@uri{@top_webdir/logogallery,logo submissions page}
 is still worth checking out ;)
 
 BEAST/BSE development has been quite laging recently, mostly because it's type system got
@@ -725,7 +725,7 @@ If you'd like to help, please @uri{mailto://timj@@beast.gtk.org, email us}.
 
 @newstag{Friday 14 January 2000}
 
-Version 0.3.1 released. See the @uri{@top_webdir/news-file.html, NEWS page}
+Version 0.3.1 released. See the @uri{@top_webdir/news-file, NEWS page}
 for details.
 As usual, the ChangeLogs are always available for your perusal (see the links in the left column).
 

@@ -7,12 +7,12 @@
 
 @beast comes with a basic synthesis tutorial about how
 to get synthesis going for new users, the
-@uri{@top_webdir/quickstart.html, BEAST/BSE Quick Start Guide}.
+@uri{@top_webdir/quickstart, BEAST/BSE Quick Start Guide}.
 
 Tutorials and documentation about audio synthesis in general is
 currently not covered by @beast or this website, we've collected
 a number of interesting links to articles on this subject in the
-@uri{@top_webdir/synthesis-links.html, Synthesis Links}
+@uri{@top_webdir/synthesis-links, Synthesis Links}
 section however.
 
 
@@ -24,9 +24,9 @@ With the development release 0.4.1, @bse added support for the
 since can be scripted in Scheme.
 
 The
-@uri{@top_webdir/bse-interface.html, procedure and structure}
+@uri{@top_webdir/bse-interface, procedure and structure}
 documentation as well as the
-@uri{@top_webdir/bse-objects.html, BSE Objects} documentation
+@uri{@top_webdir/bse-objects, BSE Objects} documentation
 cover the supported interfaces to access @bse functionality from C or
 Scheme.
 

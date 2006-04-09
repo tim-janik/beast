@@ -1,3 +1,14 @@
+Sun Apr  9 15:54:25 2006  Tim Janik  <timj@gtk.org>
+
+	* web/htaccess.in: allow content type negotiation via MultiViews.
+	removed content type extensions from redirects. added redirects
+	for old screenshot and logogallery links.
+
+	* web/*.doxi: removed content type extensions from internal links.
+
+	* web/Makefile.am: adapted to screenshots and logogallery files
+	residing in web/screenshotdir/ and web/logogallerydir/.
+
 Sun Apr  9 14:30:52 2006  Tim Janik  <timj@gtk.org>
 
 	* web/logogallerydir/: CVS moved from web/logogallery/.

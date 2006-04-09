@@ -37,71 +37,71 @@
 @done
 
 @itemize{none}
-@item 		@fmenuuri{@top_webdir/news.html,		News}
-@item		@fmenuuri{@top_webdir/about.html,		About}
-@item		@fmenuuri{@top_webdir/screenshots.phtml,	Screenshots}
-@item		@dmenuuri{@top_webdir/sound-browser.phtml,	Sound Archive}
+@item 		@fmenuuri{@top_webdir/news,		News}
+@item		@fmenuuri{@top_webdir/about,		About}
+@item		@fmenuuri{@top_webdir/screenshots,	Screenshots}
+@item		@dmenuuri{@top_webdir/sound-browser,	Sound Archive}
     @menu_branch{sound-archive}
 	@itemize{none}
-	@item	@fmenuuri{@top_webdir/sound-upload.phtml,	Contribute}
+	@item	@fmenuuri{@top_webdir/sound-upload,	Contribute}
 	@done
     @done
-@item		@dmenuuri{@top_webdir/documentation.html,	Documentation}
+@item		@dmenuuri{@top_webdir/documentation,	Documentation}
     @menu_branch{documentation}
 	@itemize{none}
-	@item 	@fmenuuri{@top_webdir/faq.html,				FAQ}
+	@item 	@fmenuuri{@top_webdir/faq,			FAQ}
 	@item 	@doxer_span{menu-leaf,				Introduction}
-	@item 	@fmenuuri{@top_webdir/overview2003de.html,		Overview (German)}
-	@item 	@fmenuuri{@top_webdir/quickstart.html,			Quick Start}
+	@item 	@fmenuuri{@top_webdir/overview2003de,		Overview (German)}
+	@item 	@fmenuuri{@top_webdir/quickstart,		Quick Start}
 	@item 	@doxer_span{menu-leaf,				Manual Pages}
-	@item 	@fmenuuri{@top_webdir/beast.1.html,			beast(1)}
-	@item 	@fmenuuri{@top_webdir/bsesh.1.html,			bsesh(1)}
-	@item 	@fmenuuri{@top_webdir/sfidl.1.html,			sfidl(1)}
+	@item 	@fmenuuri{@top_webdir/beast.1,			beast(1)}
+	@item 	@fmenuuri{@top_webdir/bsesh.1,			bsesh(1)}
+	@item 	@fmenuuri{@top_webdir/sfidl.1,			sfidl(1)}
 	@item 	@doxer_span{menu-leaf,				API Reference}
-	@item 	@fmenuuri{@top_webdir/bse-objects.html,			BSE Objects}
-	@item 	@fmenuuri{@top_webdir/bse-interface.html,	  	BSE Interface}
-	@item 	@fmenuuri{@top_webdir/rdocu-sfi/,	  		SFI Functions}
-	@item 	@fmenuuri{@top_webdir/rdocu-birnet/,	  		BIRNET Functions}
+	@item 	@fmenuuri{@top_webdir/bse-objects,		BSE Objects}
+	@item 	@fmenuuri{@top_webdir/bse-interface,	  	BSE Interface}
+	@item 	@fmenuuri{@top_webdir/rdocu-sfi/,		SFI Functions}
+	@item 	@fmenuuri{@top_webdir/rdocu-birnet/,		BIRNET Functions}
 	@done
     @done
-@item 		@dmenuuri{@top_webdir/resources.html, 		Resources}
+@item 		@dmenuuri{@top_webdir/resources, 	Resources}
     @menu_branch{resources}
 	@itemize{none}
-	@item 	@fmenuuri{@top_webdir/synthesis-links.html,		Synthesis Links}
-	@item 	@fmenuuri{@top_webdir/related-links.html,		Related Links}
+	@item 	@fmenuuri{@top_webdir/synthesis-links,		Synthesis Links}
+	@item 	@fmenuuri{@top_webdir/related-links,		Related Links}
 	@done
     @done
-@item 		@dmenuuri{@top_webdir/development.html, 	Development}
+@item 		@dmenuuri{@top_webdir/development, 	Development}
     @menu_branch{development}
 	@itemize{none}
-	@item 	@fmenuuri{@top_webdir/news-file.html,			Release NEWS}
+	@item 	@fmenuuri{@top_webdir/news-file,		Release NEWS}
 	@item 	@doxer_span{menu-leaf,				ChangeLogs}
-	@item 	@fmenuuri{@top_webdir/log-beast.html,			BEAST Changes}
-	@item 	@fmenuuri{@top_webdir/log-plugins.html,			Plugin Changes}
-	@item 	@fmenuuri{@top_webdir/log-bse.html,			BSE Changes}
-	@item 	@fmenuuri{@top_webdir/log-sfi.html,			SFI Changes}
-	@item 	@fmenuuri{@top_webdir/log-birnet.html,			BIRNET Changes}
+	@item 	@fmenuuri{@top_webdir/log-beast,		BEAST Changes}
+	@item 	@fmenuuri{@top_webdir/log-plugins,		Plugin Changes}
+	@item 	@fmenuuri{@top_webdir/log-bse,			BSE Changes}
+	@item 	@fmenuuri{@top_webdir/log-sfi,			SFI Changes}
+	@item 	@fmenuuri{@top_webdir/log-birnet,		BIRNET Changes}
 	@item 	@doxer_span{menu-leaf,				BEAST/BSE Development}
-	@item 	@fmenuuri{@top_webdir/architecture.html,		Architecture}
-	@item 	@fmenuuri{@top_webdir/plugin-devel.html,		Writing Plugins}
-	@item 	@fmenuuri{@top_webdir/doxer-docu.html,			Doxer Manual}
-	@item 	@fmenuuri{@top_webdir/sfidl-manual.html,		IDL Compiler}
-	@item 	@fmenuuri{@top_webdir/rdocu-gxk/,			GXK Reference}
-	@item 	@fmenuuri{@top_webdir/rdocu-bse/,			BSE Reference}
-	@item 	@fmenuuri{@top_webdir/engine-mplan.html,		Synth Engine}
+	@item 	@fmenuuri{@top_webdir/architecture,		Architecture}
+	@item 	@fmenuuri{@top_webdir/plugin-devel,		Writing Plugins}
+	@item 	@fmenuuri{@top_webdir/doxer-docu,		Doxer Manual}
+	@item 	@fmenuuri{@top_webdir/sfidl-manual,		IDL Compiler}
+	@item 	@fmenuuri{@top_webdir/rdocu-gxk/,		GXK Reference}
+	@item 	@fmenuuri{@top_webdir/rdocu-bse/,		BSE Reference}
+	@item 	@fmenuuri{@top_webdir/engine-mplan,		Synth Engine}
 	@done
     @done
-@item 		@dmenuuri{@top_webdir/historic.html,		Historic}
+@item 		@dmenuuri{@top_webdir/historic,		Historic}
     @menu_branch{historic-menu}
 	@itemize{none}
-	@item 	@fmenuuri{@top_webdir/oldnews.html,			Old News}
-	@item 	@fmenuuri{@top_webdir/logogallery.phtml, 		Logo Contest}
+	@item 	@fmenuuri{@top_webdir/oldnews,			Old News}
+	@item 	@fmenuuri{@top_webdir/logogallery, 		Logo Contest}
 	@done
   @done
-@item 		@fmenuuri{@top_webdir/download.html,		Download}
-@item 		@fmenuuri{@top_webdir/contact.html,		Contact}
-@item 		@fmenuuri{@top_webdir/search.phtml,		Search}
-@item 		@fmenuuri{@top_webdir/wiki:BeastBse,		Wiki}
+@item 		@fmenuuri{@top_webdir/download,		Download}
+@item 		@fmenuuri{@top_webdir/contact,		Contact}
+@item 		@fmenuuri{@top_webdir/search,		Search}
+@item 		@fmenuuri{@top_webdir/wiki:BeastBse,	Wiki}
 @done
 
 @rawhtml{
