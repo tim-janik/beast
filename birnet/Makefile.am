@@ -14,6 +14,7 @@ birnet_headers = $(strip 		\
 	birnetmsg.h			\
 	birnetring.h			\
 	birnetsignal.hh                 \
+	birnettests.h			\
 	birnetthread.h			\
 	birnetthreadxx.hh		\
 	birnetutils.h			\
@@ -36,7 +37,7 @@ birnet_generated_headers = $(strip 	\
 	birnetconfig.h			\
 	birnetsignalvariants.hh         \
 )
-EXTRA_DIST += mksignals.sh
+EXTRA_DIST += mksignals.sh configure.inc
 
 # Birnet library
 # we want a partial shared library here. libtool creates that if the library

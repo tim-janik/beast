@@ -1,3 +1,7 @@
+Tue Apr 11 23:37:32 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: make dist fixes.
+
 Wed Apr  5 02:11:07 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h: removed unused TFAIL() macro. TERROR() is more
