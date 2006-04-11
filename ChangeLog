@@ -1,3 +1,15 @@
+Tue Apr 11 23:33:42 2006  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: add --with-doxer configure arg which holds TRUE for CVS builds.
+
+	* configure.in: added --with-doxer arg which enables doxer dependent build rules.
+	retrive ALL_LINGUAS from po/LINGUAS. slight fixups to maintainer-mode checks.
+	got rid of unused *DVLBUILD* cruft. check for perl 5.002 and define PERLRULE.
+
+	* docs/Makefile.am: conditionalize doxer rules.
+
+	* po/LINGUAS: define supported languages.
+
 Sun Apr  9 17:55:51 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/bse.5.doxi: new manual page about the BSE file format.

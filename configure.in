@@ -86,6 +86,8 @@ AM_MAINTAINER_MODE
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,       [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
 AC_ARG_ENABLE(toyprof,     [  --enable-toyprof=[no/yes]       turn on toy profiler, see sfi/toyprof.README],,)
+AC_ARG_WITH(doxer,         [  --with-doxer=[no/yes]           build documentation with doxer documentation tool], [DOXRULE=''], [DOXRULE='#'])
+AC_SUBST(DOXRULE)
 
 dnl # setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
@@ -174,12 +176,9 @@ dnl # Define package requirements.
 dnl #
 AC_DEFUN([AC_I18N_REQUIREMENTS],
 [
-    dnl # TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
-    dnl # the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
-    ALL_LINGUAS="az bg ca cs de el en_CA en_GB eo es eu fr hr it ja mn ne nl pa pt pt_BR ru rw sq sr sr@Latn sv"
-    dnl # TRANSLATORS: for each new translation added to ALL_LINGUAS, please also update
-    dnl # the corresponding links in docs/site-development.texi (search for ALL_LINGUAS).
+    ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
     AC_SUBST(ALL_LINGUAS)
+    AC_SUBST([CONFIG_STATUS_DEPENDENCIES], ['$(top_srcdir)/po/LINGUAS'])
 
     dnl # versioned BEAST gettext domain (po/)
     BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
@@ -533,38 +532,37 @@ AC_DEFUN([AC_DOC_REQUIREMENTS],
 # find installation utilities
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database)
 
+# check for maintainer mode tools
+AC_CHECK_PROGS(XMLLINT, xmllint)
 # check for maintainer/development build rules
 AC_MSG_CHECKING(whether maintainer and develoment build rules are to be used)
 if test x"$enable_maintainer_mode" = xyes ; then
     AC_MSG_RESULT(yes)
-    TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
-    TEST_BUILDDIR=$(cd . ; /bin/pwd)
+    TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
+    TEST_BUILDDIR=`cd . ; /bin/pwd`
     AC_MSG_CHECKING(whether source dir equals build dir)
     if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" ; then
 	AC_MSG_RESULT(yes)
     else
 	AC_MSG_RESULT(no)
-	AC_MSG_ERROR([source dir must be the same as build dir for maintainer mode])
-    fi
-    AC_CHECK_PROGS(PERL, perl5 perl)
-    if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
-	AC_MSG_ERROR([failed to detect perl (version >= 5.002) required for maintainer mode])
+	AC_MSG_ERROR([source dir MUST be the same as build dir for maintainer mode])
     fi
     AC_CHECK_PROGS(PYTHON, python2.4 python)
     if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
 	AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for maintainer mode])
     fi
-    AC_CHECK_PROGS(XMLLINT, xmllint)
-    if test -z "$XMLLINT" ; then
-	AC_MSG_ERROR([failed to detect xmllint required for maintainer mode])
-    fi
+    test -z "$XMLLINT" && { AC_MSG_ERROR([failed to detect xmllint required for maintainer mode]) }
 else
     AC_MSG_RESULT(no)
 fi
-AC_SUBST(DVLBUILD)
-AC_SUBST(NOTDVLBUILD)
-AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
-AM_CONDITIONAL(IF_NOTDVLBUILD, test -z "$NOTDVLBUILD")
+AC_CHECK_PROGS(PERL, perl5 perl)
+if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
+    AC_MSG_WARN([failed to detect perl (version >= 5.002), disabling dependent build rules])
+    PERLRULE='#'
+else
+    PERLRULE=''
+fi
+AC_SUBST(PERLRULE)
 
 # Check sub-package requirements
 AC_BIRNET_REQUIREMENTS

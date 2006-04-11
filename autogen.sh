@@ -186,4 +186,4 @@ $AUTOCONF || exit $?
 
 cd $ORIGDIR
 echo "Running: $srcdir/configure $CONFIGURE_OPTIONS $@"
-$srcdir/configure $CONFIGURE_OPTIONS "$@" || exit $?
+$srcdir/configure --with-doxer $CONFIGURE_OPTIONS "$@" || exit $?
