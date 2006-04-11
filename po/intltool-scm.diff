@@ -1,5 +1,14 @@
---- po/Makefile.in.in.orig	2005-01-25 23:56:20.000000000 +0100
-+++ po/Makefile.in.in	2005-05-20 23:32:52.692141362 +0200
+--- po/Makefile.in.in.orig	2006-04-11 19:49:55.000000000 +0200
++++ po/Makefile.in.in	2006-04-11 19:51:11.000000000 +0200
+@@ -60,7 +60,7 @@ COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $
+ SOURCES = 
+ POFILES = @POFILES@
+ GMOFILES = @GMOFILES@
+-DISTFILES = ChangeLog Makefile.in.in POTFILES.in \
++DISTFILES = ChangeLog Makefile.in.in LINGUAS POTFILES.in \
+ $(POFILES) $(GMOFILES) $(SOURCES)
+ 
+ POTFILES = \
 @@ -239,7 +239,7 @@ POTFILES: POTFILES.in
  	  fi; \
  	  rm -f $@-t $@ \

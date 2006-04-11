@@ -1,3 +1,9 @@
+Tue Apr 11 23:39:51 2006  Tim Janik  <timj@gtk.org>
+
+	* LINGUAS: define supported languages.
+
+	* intltool-scm.diff: ensure LINGUAS is contained in tarballs by make dist.
+
 Wed Mar 29 15:15:31 2006  Tim Janik  <timj@gtk.org>
 
 	* it.po: translation updates by Michele Petrecca <michelinux@alice.it>.
