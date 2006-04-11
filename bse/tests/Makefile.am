@@ -10,6 +10,8 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 
 DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 
+EXTRA_DIST += arrows.gp filter-defs.gp
+
 TESTS = testfft testcxx subnormals loophandle
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
@@ -22,3 +24,4 @@ subnormals_LDADD = $(progs_ldadd)
 subnormals_CXXFLAGS = # -ffast-math
 loophandle_SOURCES = loophandle.c
 loophandle_LDADD = $(progs_ldadd)
+

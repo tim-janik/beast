@@ -128,7 +128,7 @@ EXTRA_DIST += $(strip \
 	bsecore.idl	bse.idl					\
 	mktypes.pl	mkcalls.pl	mkcproc.pl		\
 	bseconfig.h.in	bsepcmmodule.c				\
-	gsl.gnuplot	gslarrows	bsewave.header		\
+	bsewave.header						\
 	gsl-fftgen.pl	gsl-fftconf.sh	gsloscillator-aux.c	\
 	gslincluder.c	gslwaveosc-aux.c			\
 )
@@ -151,6 +151,7 @@ libbse_la_LDFLAGS     = $(strip					\
 	-no-undefined 						\
 	$(call pthread_2_lpthread, $(BSE_LIBS) $(SFI_LIBS))	\
 )
+EXTRA_DIST += ldscript.map
 #	-Wl,-Bsymbolic
 # setup sources, their dependancies and commands
 CLEANFILES += $(idl_built_sources)
@@ -165,19 +166,19 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 # rules to generate built sources
 #
-%.genprc.c: %.proc mkcproc.pl
+%.genprc.c: @PERLRULE@ %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
-CLEANFILES += @DVLBUILD@ $(bse_proc_gen_sources)
+CLEANFILES += @PERLRULE@ $(bse_proc_gen_sources)
 # gslfft.c
 GENERATED += gslfft.c
-$(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
+$(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
-stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(filter-out bsegentypes.c, $(bse_c_sources)) $(filter-out bsegentypes.h, $(bse_public_h_sources))
-stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
+bsegentypes.h: @PERLRULE@ stamp-bsegentypes.h ;
+stamp-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_c_sources)) $(filter-out bsegentypes.h, $(bse_public_h_sources))
+stamp-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -194,7 +195,7 @@ stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
 # bsegentypes.c
 GENERATED_EXTRA_DIST += bsegentypes.c
 $(libbse_la_OBJECTS): bsegentypes.c
-bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
+bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -207,7 +208,7 @@ bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 # bseenum_arrays.c
 GENERATED_EXTRA_DIST += bseenum_arrays.c
 $(libbse_la_OBJECTS): bseenum_arrays.c
-bseenum_arrays.c: @DVLBUILD@ bsegentypes.h
+bseenum_arrays.c: bsegentypes.h
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -221,7 +222,7 @@ bseenum_arrays.c: @DVLBUILD@ bsegentypes.h
 # bseenum_list.c
 GENERATED_EXTRA_DIST += bseenum_list.c
 $(libbse_la_OBJECTS): bseenum_list.c
-bseenum_list.c: @DVLBUILD@ bsegentypes.h
+bseenum_list.c: bsegentypes.h
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -232,7 +233,7 @@ bseenum_list.c: @DVLBUILD@ bsegentypes.h
 # bsegentype_array.c
 GENERATED_EXTRA_DIST += bsegentype_array.c
 $(libbse_la_OBJECTS): bsegentype_array.c
-bsegentype_array.c: @DVLBUILD@ bsegentypes.h
+bsegentype_array.c: @PERLRULE@ bsegentypes.h
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
@@ -240,7 +241,7 @@ bsegentype_array.c: @DVLBUILD@ bsegentypes.h
 # bsebuiltin_externs.c
 GENERATED_EXTRA_DIST += bsebuiltin_externs.c
 $(libbse_la_OBJECTS): bsebuiltin_externs.c
-bsebuiltin_externs.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
+bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
@@ -248,7 +249,7 @@ bsebuiltin_externs.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 # bsebuiltin_array.c
 GENERATED_EXTRA_DIST += bsebuiltin_array.c
 $(libbse_la_OBJECTS): bsebuiltin_array.c
-bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
+bsebuiltin_array.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
@@ -257,7 +258,7 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 GENERATED += bsegencore.cc
 CLEANFILES += bsegencore.cc
 $(srcdir)/bsecore.cc: bsegencore.cc
-bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.genidl.hh
+bsegencore.cc: bsecore.idl $(SFIDL) bsecore.genidl.hh
 	cd . \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \

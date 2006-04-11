@@ -1,3 +1,8 @@
+Tue Apr 11 23:38:11 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/Makefile.am:
+	* Makefile.am: make dist fixes, conditionalize perl rules.
+
 Sat Apr  8 02:09:15 2006  Tim Janik  <timj@gtk.org>
 
 	* bseloader-mad.c:
