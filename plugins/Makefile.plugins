@@ -1,185 +1,278 @@
-## Generated data (by ./listplugins.sh)
 
-##
-## Plugin bseadder
-##
-bseadder_la_SOURCES = bseadder.c
-bseadder_la_LDFLAGS = -module $(plugin_ldflags)
-bseadder_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bseadder.h
-plugin_LTLIBRARIES += bseadder.la
 
-##
-## Plugin bseatandistort
-##
-bseatandistort_la_SOURCES = bseatandistort.c
-bseatandistort_la_LDFLAGS = -module $(plugin_ldflags)
-bseatandistort_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bseatandistort.h
-plugin_LTLIBRARIES += bseatandistort.la
-
-##
-## Plugin bseiirfilter
-##
-bseiirfilter_la_SOURCES = bseiirfilter.c
-bseiirfilter_la_LDFLAGS = -module $(plugin_ldflags)
-bseiirfilter_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bseiirfilter.h
-plugin_LTLIBRARIES += bseiirfilter.la
-
-##
-## Plugin bsemixer
-##
-bsemixer_la_SOURCES = bsemixer.c
-bsemixer_la_LDFLAGS = -module $(plugin_ldflags)
-bsemixer_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bsemixer.h
-plugin_LTLIBRARIES += bsemixer.la
-
-##
-## Plugin bsemult
-##
-bsemult_la_SOURCES = bsemult.c
-bsemult_la_LDFLAGS = -module $(plugin_ldflags)
-bsemult_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bsemult.h
-plugin_LTLIBRARIES += bsemult.la
-
-##
-## Plugin bsesimpleadsr
-##
-bsesimpleadsr_la_SOURCES = bsesimpleadsr.c
-bsesimpleadsr_la_LDFLAGS = -module $(plugin_ldflags)
-bsesimpleadsr_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bsesimpleadsr.h
-plugin_LTLIBRARIES += bsesimpleadsr.la
-
-##
-## Plugin bsesequencer
-##
-bsesequencer_la_SOURCES = bsesequencer.c
-bsesequencer_la_LDFLAGS = -module $(plugin_ldflags)
-bsesequencer_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += bsesequencer.h
-plugin_LTLIBRARIES += bsesequencer.la
-
-##
-## Plugin davorgan
-##
-davorgan_la_SOURCES = davorgan.c
-davorgan_la_LDFLAGS = -module $(plugin_ldflags)
-davorgan_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += davorgan.h
-plugin_LTLIBRARIES += davorgan.la
-
-##
-## Plugin davxtalstrings
-##
-davxtalstrings_la_SOURCES = davxtalstrings.c
-davxtalstrings_la_LDFLAGS = -module $(plugin_ldflags)
-davxtalstrings_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += davxtalstrings.h
-plugin_LTLIBRARIES += davxtalstrings.la
-
-##
-## Plugin davsyndrum
-##
-davsyndrum_la_SOURCES = davsyndrum.c
-davsyndrum_la_LDFLAGS = -module $(plugin_ldflags)
-davsyndrum_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += davsyndrum.h
-plugin_LTLIBRARIES += davsyndrum.la
-
-##
-## Plugin davcanyondelay
-##
-davcanyondelay_la_SOURCES = davcanyondelay.c
-davcanyondelay_la_LDFLAGS = -module $(plugin_ldflags)
-davcanyondelay_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS      += davcanyondelay.h
-plugin_LTLIBRARIES += davcanyondelay.la
-
-## Generated data ends here
-## Generated data (by ./listplugins.sh)
-
-##
-## Plugin davchorus
-##
-davchorus_la_SOURCES = davchorus.cc
-davchorus_la_LDFLAGS = -module $(plugin_ldflags)
-davchorus_la_LIBADD  = $(plugin_libs)
+## C++ Plugin davchorus
 $(srcdir)/davchorus.cc: davchorus.genidl.hh
-plugins_built_sources += davchorus.genidl.hh
-plugin_LTLIBRARIES    += davchorus.la
+plugins_built_sources   += davchorus.genidl.hh
+plugin_PLAIN_ltlibs    += davchorus+PLAIN.la
+davchorus_PLAIN_la_SOURCES = davchorus.cc
+davchorus_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+davchorus_PLAIN_la_LIBADD  = $(plugins_libs)
+davchorus_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += davchorus+SSE.la
+davchorus_SSE_la_SOURCES   = $(davchorus_PLAIN_la_SOURCES)
+davchorus_SSE_la_LDFLAGS   = $(davchorus_PLAIN_la_LDFLAGS)
+davchorus_SSE_la_LIBADD    = $(davchorus_PLAIN_la_LIBADD)
+davchorus_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin bsebalance
-##
-bsebalance_la_SOURCES = bsebalance.cc
-bsebalance_la_LDFLAGS = -module $(plugin_ldflags)
-bsebalance_la_LIBADD  = $(plugin_libs)
+## C++ Plugin bsebalance
 $(srcdir)/bsebalance.cc: bsebalance.genidl.hh
-plugins_built_sources += bsebalance.genidl.hh
-plugin_LTLIBRARIES    += bsebalance.la
+plugins_built_sources   += bsebalance.genidl.hh
+plugin_PLAIN_ltlibs    += bsebalance+PLAIN.la
+bsebalance_PLAIN_la_SOURCES = bsebalance.cc
+bsebalance_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsebalance_PLAIN_la_LIBADD  = $(plugins_libs)
+bsebalance_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += bsebalance+SSE.la
+bsebalance_SSE_la_SOURCES   = $(bsebalance_PLAIN_la_SOURCES)
+bsebalance_SSE_la_LDFLAGS   = $(bsebalance_PLAIN_la_LDFLAGS)
+bsebalance_SSE_la_LIBADD    = $(bsebalance_PLAIN_la_LIBADD)
+bsebalance_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin artscompressor
-##
-artscompressor_la_SOURCES = artscompressor.cc
-artscompressor_la_LDFLAGS = -module $(plugin_ldflags)
-artscompressor_la_LIBADD  = $(plugin_libs)
+## C++ Plugin artscompressor
 $(srcdir)/artscompressor.cc: artscompressor.genidl.hh
-plugins_built_sources += artscompressor.genidl.hh
-plugin_LTLIBRARIES    += artscompressor.la
+plugins_built_sources   += artscompressor.genidl.hh
+plugin_PLAIN_ltlibs    += artscompressor+PLAIN.la
+artscompressor_PLAIN_la_SOURCES = artscompressor.cc
+artscompressor_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+artscompressor_PLAIN_la_LIBADD  = $(plugins_libs)
+artscompressor_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += artscompressor+SSE.la
+artscompressor_SSE_la_SOURCES   = $(artscompressor_PLAIN_la_SOURCES)
+artscompressor_SSE_la_LDFLAGS   = $(artscompressor_PLAIN_la_LDFLAGS)
+artscompressor_SSE_la_LIBADD    = $(artscompressor_PLAIN_la_LIBADD)
+artscompressor_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin davbassfilter
-##
-davbassfilter_la_SOURCES = davbassfilter.cc
-davbassfilter_la_LDFLAGS = -module $(plugin_ldflags)
-davbassfilter_la_LIBADD  = $(plugin_libs)
+## C++ Plugin davbassfilter
 $(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh
-plugins_built_sources += davbassfilter.genidl.hh
-plugin_LTLIBRARIES    += davbassfilter.la
+plugins_built_sources   += davbassfilter.genidl.hh
+plugin_PLAIN_ltlibs    += davbassfilter+PLAIN.la
+davbassfilter_PLAIN_la_SOURCES = davbassfilter.cc
+davbassfilter_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+davbassfilter_PLAIN_la_LIBADD  = $(plugins_libs)
+davbassfilter_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += davbassfilter+SSE.la
+davbassfilter_SSE_la_SOURCES   = $(davbassfilter_PLAIN_la_SOURCES)
+davbassfilter_SSE_la_LDFLAGS   = $(davbassfilter_PLAIN_la_LDFLAGS)
+davbassfilter_SSE_la_LIBADD    = $(davbassfilter_PLAIN_la_LIBADD)
+davbassfilter_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin bsecontribsampleandhold
-##
-bsecontribsampleandhold_la_SOURCES = bsecontribsampleandhold.cc
-bsecontribsampleandhold_la_LDFLAGS = -module $(plugin_ldflags)
-bsecontribsampleandhold_la_LIBADD  = $(plugin_libs)
+## C++ Plugin bsecontribsampleandhold
 $(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh
-plugins_built_sources += bsecontribsampleandhold.genidl.hh
-plugin_LTLIBRARIES    += bsecontribsampleandhold.la
+plugins_built_sources   += bsecontribsampleandhold.genidl.hh
+plugin_PLAIN_ltlibs    += bsecontribsampleandhold+PLAIN.la
+bsecontribsampleandhold_PLAIN_la_SOURCES = bsecontribsampleandhold.cc
+bsecontribsampleandhold_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsecontribsampleandhold_PLAIN_la_LIBADD  = $(plugins_libs)
+bsecontribsampleandhold_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += bsecontribsampleandhold+SSE.la
+bsecontribsampleandhold_SSE_la_SOURCES   = $(bsecontribsampleandhold_PLAIN_la_SOURCES)
+bsecontribsampleandhold_SSE_la_LDFLAGS   = $(bsecontribsampleandhold_PLAIN_la_LDFLAGS)
+bsecontribsampleandhold_SSE_la_LIBADD    = $(bsecontribsampleandhold_PLAIN_la_LIBADD)
+bsecontribsampleandhold_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin bsenoise
-##
-bsenoise_la_SOURCES = bsenoise.cc
-bsenoise_la_LDFLAGS = -module $(plugin_ldflags)
-bsenoise_la_LIBADD  = $(plugin_libs)
+## C++ Plugin bsenoise
 $(srcdir)/bsenoise.cc: bsenoise.genidl.hh
-plugins_built_sources += bsenoise.genidl.hh
-plugin_LTLIBRARIES    += bsenoise.la
+plugins_built_sources   += bsenoise.genidl.hh
+plugin_PLAIN_ltlibs    += bsenoise+PLAIN.la
+bsenoise_PLAIN_la_SOURCES = bsenoise.cc
+bsenoise_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsenoise_PLAIN_la_LIBADD  = $(plugins_libs)
+bsenoise_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += bsenoise+SSE.la
+bsenoise_SSE_la_SOURCES   = $(bsenoise_PLAIN_la_SOURCES)
+bsenoise_SSE_la_LDFLAGS   = $(bsenoise_PLAIN_la_LDFLAGS)
+bsenoise_SSE_la_LIBADD    = $(bsenoise_PLAIN_la_LIBADD)
+bsenoise_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin standardsaturator
-##
-standardsaturator_la_SOURCES = standardsaturator.cc
-standardsaturator_la_LDFLAGS = -module $(plugin_ldflags)
-standardsaturator_la_LIBADD  = $(plugin_libs)
+## C++ Plugin standardsaturator
 $(srcdir)/standardsaturator.cc: standardsaturator.genidl.hh
-plugins_built_sources += standardsaturator.genidl.hh
-plugin_LTLIBRARIES    += standardsaturator.la
+plugins_built_sources   += standardsaturator.genidl.hh
+plugin_PLAIN_ltlibs    += standardsaturator+PLAIN.la
+standardsaturator_PLAIN_la_SOURCES = standardsaturator.cc
+standardsaturator_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+standardsaturator_PLAIN_la_LIBADD  = $(plugins_libs)
+standardsaturator_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += standardsaturator+SSE.la
+standardsaturator_SSE_la_SOURCES   = $(standardsaturator_PLAIN_la_SOURCES)
+standardsaturator_SSE_la_LDFLAGS   = $(standardsaturator_PLAIN_la_LDFLAGS)
+standardsaturator_SSE_la_LIBADD    = $(standardsaturator_PLAIN_la_LIBADD)
+standardsaturator_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-##
-## Plugin standardguspatchenvelope
-##
-standardguspatchenvelope_la_SOURCES = standardguspatchenvelope.cc
-standardguspatchenvelope_la_LDFLAGS = -module $(plugin_ldflags)
-standardguspatchenvelope_la_LIBADD  = $(plugin_libs)
+## C++ Plugin standardguspatchenvelope
 $(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.genidl.hh
-plugins_built_sources += standardguspatchenvelope.genidl.hh
-plugin_LTLIBRARIES    += standardguspatchenvelope.la
+plugins_built_sources   += standardguspatchenvelope.genidl.hh
+plugin_PLAIN_ltlibs    += standardguspatchenvelope+PLAIN.la
+standardguspatchenvelope_PLAIN_la_SOURCES = standardguspatchenvelope.cc
+standardguspatchenvelope_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+standardguspatchenvelope_PLAIN_la_LIBADD  = $(plugins_libs)
+standardguspatchenvelope_PLAIN_la_CXXFLAGS  = $(AM_CXXFLAGS)
+plugin_SSE_ltlibs      += standardguspatchenvelope+SSE.la
+standardguspatchenvelope_SSE_la_SOURCES   = $(standardguspatchenvelope_PLAIN_la_SOURCES)
+standardguspatchenvelope_SSE_la_LDFLAGS   = $(standardguspatchenvelope_PLAIN_la_LDFLAGS)
+standardguspatchenvelope_SSE_la_LIBADD    = $(standardguspatchenvelope_PLAIN_la_LIBADD)
+standardguspatchenvelope_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
 
-## Generated data ends here
+
+## C Plugin bseadder
+EXTRA_HEADERS      += bseadder.h
+$(srcdir)/bseadder.c: bseadder.h
+plugin_PLAIN_ltlibs += bseadder+PLAIN.la
+bseadder_PLAIN_la_SOURCES = bseadder.c
+bseadder_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bseadder_PLAIN_la_LIBADD  = $(plugins_libs)
+bseadder_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bseadder+SSE.la
+bseadder_SSE_la_SOURCES   = $(bseadder_PLAIN_la_SOURCES)
+bseadder_SSE_la_LDFLAGS   = $(bseadder_PLAIN_la_LDFLAGS)
+bseadder_SSE_la_LIBADD    = $(bseadder_PLAIN_la_LIBADD)
+bseadder_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin bseatandistort
+EXTRA_HEADERS      += bseatandistort.h
+$(srcdir)/bseatandistort.c: bseatandistort.h
+plugin_PLAIN_ltlibs += bseatandistort+PLAIN.la
+bseatandistort_PLAIN_la_SOURCES = bseatandistort.c
+bseatandistort_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bseatandistort_PLAIN_la_LIBADD  = $(plugins_libs)
+bseatandistort_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bseatandistort+SSE.la
+bseatandistort_SSE_la_SOURCES   = $(bseatandistort_PLAIN_la_SOURCES)
+bseatandistort_SSE_la_LDFLAGS   = $(bseatandistort_PLAIN_la_LDFLAGS)
+bseatandistort_SSE_la_LIBADD    = $(bseatandistort_PLAIN_la_LIBADD)
+bseatandistort_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin bseiirfilter
+EXTRA_HEADERS      += bseiirfilter.h
+$(srcdir)/bseiirfilter.c: bseiirfilter.h
+plugin_PLAIN_ltlibs += bseiirfilter+PLAIN.la
+bseiirfilter_PLAIN_la_SOURCES = bseiirfilter.c
+bseiirfilter_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bseiirfilter_PLAIN_la_LIBADD  = $(plugins_libs)
+bseiirfilter_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bseiirfilter+SSE.la
+bseiirfilter_SSE_la_SOURCES   = $(bseiirfilter_PLAIN_la_SOURCES)
+bseiirfilter_SSE_la_LDFLAGS   = $(bseiirfilter_PLAIN_la_LDFLAGS)
+bseiirfilter_SSE_la_LIBADD    = $(bseiirfilter_PLAIN_la_LIBADD)
+bseiirfilter_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin bsemixer
+EXTRA_HEADERS      += bsemixer.h
+$(srcdir)/bsemixer.c: bsemixer.h
+plugin_PLAIN_ltlibs += bsemixer+PLAIN.la
+bsemixer_PLAIN_la_SOURCES = bsemixer.c
+bsemixer_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsemixer_PLAIN_la_LIBADD  = $(plugins_libs)
+bsemixer_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bsemixer+SSE.la
+bsemixer_SSE_la_SOURCES   = $(bsemixer_PLAIN_la_SOURCES)
+bsemixer_SSE_la_LDFLAGS   = $(bsemixer_PLAIN_la_LDFLAGS)
+bsemixer_SSE_la_LIBADD    = $(bsemixer_PLAIN_la_LIBADD)
+bsemixer_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin bsemult
+EXTRA_HEADERS      += bsemult.h
+$(srcdir)/bsemult.c: bsemult.h
+plugin_PLAIN_ltlibs += bsemult+PLAIN.la
+bsemult_PLAIN_la_SOURCES = bsemult.c
+bsemult_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsemult_PLAIN_la_LIBADD  = $(plugins_libs)
+bsemult_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bsemult+SSE.la
+bsemult_SSE_la_SOURCES   = $(bsemult_PLAIN_la_SOURCES)
+bsemult_SSE_la_LDFLAGS   = $(bsemult_PLAIN_la_LDFLAGS)
+bsemult_SSE_la_LIBADD    = $(bsemult_PLAIN_la_LIBADD)
+bsemult_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin bsesimpleadsr
+EXTRA_HEADERS      += bsesimpleadsr.h
+$(srcdir)/bsesimpleadsr.c: bsesimpleadsr.h
+plugin_PLAIN_ltlibs += bsesimpleadsr+PLAIN.la
+bsesimpleadsr_PLAIN_la_SOURCES = bsesimpleadsr.c
+bsesimpleadsr_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsesimpleadsr_PLAIN_la_LIBADD  = $(plugins_libs)
+bsesimpleadsr_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bsesimpleadsr+SSE.la
+bsesimpleadsr_SSE_la_SOURCES   = $(bsesimpleadsr_PLAIN_la_SOURCES)
+bsesimpleadsr_SSE_la_LDFLAGS   = $(bsesimpleadsr_PLAIN_la_LDFLAGS)
+bsesimpleadsr_SSE_la_LIBADD    = $(bsesimpleadsr_PLAIN_la_LIBADD)
+bsesimpleadsr_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin bsesequencer
+EXTRA_HEADERS      += bsesequencer.h
+$(srcdir)/bsesequencer.c: bsesequencer.h
+plugin_PLAIN_ltlibs += bsesequencer+PLAIN.la
+bsesequencer_PLAIN_la_SOURCES = bsesequencer.c
+bsesequencer_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+bsesequencer_PLAIN_la_LIBADD  = $(plugins_libs)
+bsesequencer_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += bsesequencer+SSE.la
+bsesequencer_SSE_la_SOURCES   = $(bsesequencer_PLAIN_la_SOURCES)
+bsesequencer_SSE_la_LDFLAGS   = $(bsesequencer_PLAIN_la_LDFLAGS)
+bsesequencer_SSE_la_LIBADD    = $(bsesequencer_PLAIN_la_LIBADD)
+bsesequencer_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin davorgan
+EXTRA_HEADERS      += davorgan.h
+$(srcdir)/davorgan.c: davorgan.h
+plugin_PLAIN_ltlibs += davorgan+PLAIN.la
+davorgan_PLAIN_la_SOURCES = davorgan.c
+davorgan_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+davorgan_PLAIN_la_LIBADD  = $(plugins_libs)
+davorgan_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += davorgan+SSE.la
+davorgan_SSE_la_SOURCES   = $(davorgan_PLAIN_la_SOURCES)
+davorgan_SSE_la_LDFLAGS   = $(davorgan_PLAIN_la_LDFLAGS)
+davorgan_SSE_la_LIBADD    = $(davorgan_PLAIN_la_LIBADD)
+davorgan_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin davxtalstrings
+EXTRA_HEADERS      += davxtalstrings.h
+$(srcdir)/davxtalstrings.c: davxtalstrings.h
+plugin_PLAIN_ltlibs += davxtalstrings+PLAIN.la
+davxtalstrings_PLAIN_la_SOURCES = davxtalstrings.c
+davxtalstrings_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+davxtalstrings_PLAIN_la_LIBADD  = $(plugins_libs)
+davxtalstrings_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += davxtalstrings+SSE.la
+davxtalstrings_SSE_la_SOURCES   = $(davxtalstrings_PLAIN_la_SOURCES)
+davxtalstrings_SSE_la_LDFLAGS   = $(davxtalstrings_PLAIN_la_LDFLAGS)
+davxtalstrings_SSE_la_LIBADD    = $(davxtalstrings_PLAIN_la_LIBADD)
+davxtalstrings_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin davsyndrum
+EXTRA_HEADERS      += davsyndrum.h
+$(srcdir)/davsyndrum.c: davsyndrum.h
+plugin_PLAIN_ltlibs += davsyndrum+PLAIN.la
+davsyndrum_PLAIN_la_SOURCES = davsyndrum.c
+davsyndrum_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+davsyndrum_PLAIN_la_LIBADD  = $(plugins_libs)
+davsyndrum_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += davsyndrum+SSE.la
+davsyndrum_SSE_la_SOURCES   = $(davsyndrum_PLAIN_la_SOURCES)
+davsyndrum_SSE_la_LDFLAGS   = $(davsyndrum_PLAIN_la_LDFLAGS)
+davsyndrum_SSE_la_LIBADD    = $(davsyndrum_PLAIN_la_LIBADD)
+davsyndrum_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+
+
+## C Plugin davcanyondelay
+EXTRA_HEADERS      += davcanyondelay.h
+$(srcdir)/davcanyondelay.c: davcanyondelay.h
+plugin_PLAIN_ltlibs += davcanyondelay+PLAIN.la
+davcanyondelay_PLAIN_la_SOURCES = davcanyondelay.c
+davcanyondelay_PLAIN_la_LDFLAGS = -module $(plugins_ldflags)
+davcanyondelay_PLAIN_la_LIBADD  = $(plugins_libs)
+davcanyondelay_PLAIN_la_CFLAGS    = $(AM_CFLAGS)
+plugin_SSE_ltlibs   += davcanyondelay+SSE.la
+davcanyondelay_SSE_la_SOURCES   = $(davcanyondelay_PLAIN_la_SOURCES)
+davcanyondelay_SSE_la_LDFLAGS   = $(davcanyondelay_PLAIN_la_LDFLAGS)
+davcanyondelay_SSE_la_LIBADD    = $(davcanyondelay_PLAIN_la_LIBADD)
+davcanyondelay_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
