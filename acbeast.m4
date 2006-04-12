@@ -185,7 +185,7 @@ fi
 rm -fr conftest*
 ])dnl
 
-dnl Setup CC with default CFLAGS value.
+dnl # Setup CC with default CFLAGS value.
 AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 	MC_IF_VAR_EQ(CFLAGS, "", CFLAGS="-g")
 	CFLAGS_saved="$CFLAGS"
@@ -263,7 +263,16 @@ AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 	)
 ])
 
-dnl Setup CXX with default CXXFLAGS value.
+dnl # MC_PROG_CC_SPECIAL_FLAGS([VARNAME], [FLAG_LIST])
+AC_DEFUN([MC_PROG_CC_SPECIAL_FLAGS], [
+	for flag in [$2] ; do
+	    MC_PROG_CC_SUPPORTS_OPTION($flag, MC_EVAR_ADD([$1], $flag, $flag))
+	done
+	AC_MSG_CHECKING([for [$1]])
+	AC_MSG_RESULT($[$1])
+])
+
+dnl # Setup CXX with default CXXFLAGS value.
 AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 	MC_IF_VAR_EQ(CXXFLAGS, "", CXXFLAGS="-g")
 	CXXFLAGS_saved="$CXXFLAGS"

@@ -332,7 +332,12 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
-    dnl # --- setup BSE search/install paths ---
+    # --- setup BSE SIMD flags ---
+    MC_PROG_CC_SPECIAL_FLAGS(SSE_FLAGS, -mmmx -msse -mfpmath=sse -ftree-vectorize)
+    AC_SUBST(SSE_FLAGS)
+    AM_CONDITIONAL(WITH_SSE_FLAGS, [echo " $SSE_FLAGS" | grep 'mmx.*sse' -q])
+
+    # --- setup BSE search/install paths ---
     bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins
     AC_SUBST(bseplugindir)
     bsedriverdir=\${libdir}/bse/v$BIN_VERSION/drivers

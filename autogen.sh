@@ -166,7 +166,7 @@ echo "no" | $GLIB_GETTEXTIZE --force || exit $?
 
 echo "Running: $INTLTOOLIZE"
 $INTLTOOLIZE --force --automake || exit $?
-echo "Patching intltool for SCM"
+echo "Patching intltool for SCM and LINGUAS"
 patch -p0 <po/intltool-scm.diff || exit $?
 
 echo "Running: $ACLOCAL $ACLOCAL_FLAGS"
