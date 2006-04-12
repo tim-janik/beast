@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-12 12:00+0100\n"
+"POT-Creation-Date: 2006-04-11 19:45+0200\n"
 "PO-Revision-Date: 2004-03-20 14:42+CET\n"
 "Last-Translator: auto\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -387,7 +387,7 @@ msgid "Cancel"
 msgstr "_Odustani"
 
 #: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
-#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
+#: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr ""
@@ -419,32 +419,32 @@ msgstr ""
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr ""
 
-#: ../beast-gtk/bstbuseditor.c:38 ../beast-gtk/bstbusmixer.c:35
-#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstpartview.c:39
-#: ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstpartview.c:40
+#: ../beast-gtk/bsttrackview.c:64
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
-#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstkeybindings.c:59
-#: ../beast-gtk/bstpartview.c:40 ../beast-gtk/bstpianorollctrl.c:80
+#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstbusmixer.c:37
+#: ../beast-gtk/bstbusview.c:36 ../beast-gtk/bstkeybindings.c:59
+#: ../beast-gtk/bstpartview.c:41 ../beast-gtk/bstpianorollctrl.c:80
 #: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
 #: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
-#: ../beast-gtk/bsttrackview.c:66 ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bsttrackview.c:67 ../beast-gtk/bstwaveview.c:46
 msgid "Delete"
 msgstr "Obriši"
 
-#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstpartview.c:41
-#: ../beast-gtk/bstwaveview.c:47
+#: ../beast-gtk/bstbuseditor.c:41 ../beast-gtk/bstpartview.c:42
+#: ../beast-gtk/bstwaveview.c:48
 msgid "Editor"
 msgstr "Uređivač"
 
-#: ../beast-gtk/bstbusmixer.c:35
+#: ../beast-gtk/bstbusmixer.c:36
 #, fuzzy
 msgid "Add a new bus to the mixer"
 msgstr "Dodaj novi traku ovoj pjesmi"
 
-#: ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusmixer.c:37
 msgid "Delete the currently selected bus"
 msgstr ""
 
@@ -539,7 +539,7 @@ msgstr ""
 #: ../beast-gtk/bsteventrollctrl.c:657 ../beast-gtk/bstpianorollctrl.c:580
 #: ../beast-gtk/bstpianorollctrl.c:690 ../beast-gtk/bstpianorollctrl.c:753
 #: ../beast-gtk/bsttrackrollctrl.c:480 ../beast-gtk/bsttrackrollctrl.c:500
-#: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:170
+#: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:168
 msgid "No target"
 msgstr ""
 
@@ -578,48 +578,88 @@ msgstr "Odaberi područje"
 msgid "Abortion"
 msgstr "Prekidanje"
 
+#: ../beast-gtk/bstfiledialog.c:138 ../beast-gtk/bstitemview.c:208
+#: ../beast-gtk/bsttrackview.c:609
+msgid "Name"
+msgstr "Ime"
+
+#: ../beast-gtk/bstfiledialog.c:138
+#, fuzzy
+msgid "Sample or instrument name"
+msgstr "Snimi Instrument"
+
+#: ../beast-gtk/bstfiledialog.c:141
+#, fuzzy
+msgid "Size"
+msgstr "Veličina pisma"
+
+#: ../beast-gtk/bstfiledialog.c:141
+msgid "File size in bytes"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:143
+msgid "Format"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:143
+msgid "Detected file format"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:159
+msgid "Time"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:159
+msgid "File modification time"
+msgstr ""
+
 #: ../beast-gtk/bstfiledialog.c:166
+#, fuzzy
+msgid "Filename"
+msgstr "Preimenuj"
+
+#: ../beast-gtk/bstfiledialog.c:179
 msgid "Contents"
 msgstr "Sadržaj"
 
 #. setup remaining bits
-#: ../beast-gtk/bstfiledialog.c:198
+#: ../beast-gtk/bstfiledialog.c:211
 msgid "File Selection"
 msgstr "Odabir datoteka"
 
-#: ../beast-gtk/bstfiledialog.c:379
+#: ../beast-gtk/bstfiledialog.c:392
 msgid "Open Project"
 msgstr "Otvori projekt"
 
-#: ../beast-gtk/bstfiledialog.c:393
+#: ../beast-gtk/bstfiledialog.c:406
 msgid "Select File"
 msgstr "Odaberi Datoteku"
 
-#: ../beast-gtk/bstfiledialog.c:407
+#: ../beast-gtk/bstfiledialog.c:420
 msgid "Select Directory"
 msgstr "Izaberite direktorij"
 
-#: ../beast-gtk/bstfiledialog.c:445
+#: ../beast-gtk/bstfiledialog.c:458
 #, c-format
 msgid "Merge: %s"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:458
+#: ../beast-gtk/bstfiledialog.c:471
 #, c-format
 msgid "Merging project `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:474
+#: ../beast-gtk/bstfiledialog.c:487
 #, c-format
 msgid "Import MIDI: %s"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:485
+#: ../beast-gtk/bstfiledialog.c:498
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:506
+#: ../beast-gtk/bstfiledialog.c:519
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -630,7 +670,7 @@ msgid ""
 msgstr ""
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:531 ../beast-gtk/bstfiledialog.c:545
+#: ../beast-gtk/bstfiledialog.c:544 ../beast-gtk/bstfiledialog.c:558
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -639,7 +679,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:536
+#: ../beast-gtk/bstfiledialog.c:549
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -648,71 +688,71 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:572
+#: ../beast-gtk/bstfiledialog.c:585
 #, c-format
 msgid "Saving project `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:609
+#: ../beast-gtk/bstfiledialog.c:622
 #, c-format
 msgid "Save: %s"
 msgstr ""
 
 #. setup radio buttons
-#: ../beast-gtk/bstfiledialog.c:613
+#: ../beast-gtk/bstfiledialog.c:626
 msgid "Fully include wave files"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:614
+#: ../beast-gtk/bstfiledialog.c:627
 msgid "Store references to wave files"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:633
+#: ../beast-gtk/bstfiledialog.c:646
 msgid "Load Effect"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:646
+#: ../beast-gtk/bstfiledialog.c:659
 #, c-format
 msgid "Merging effect `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:663
+#: ../beast-gtk/bstfiledialog.c:676
 msgid "Save Effect"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:677
+#: ../beast-gtk/bstfiledialog.c:690
 #, c-format
 msgid "Saving effect `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:692
+#: ../beast-gtk/bstfiledialog.c:705
 msgid "Load Instrument"
 msgstr "Učitaj Instrument"
 
-#: ../beast-gtk/bstfiledialog.c:705
+#: ../beast-gtk/bstfiledialog.c:718
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:722
+#: ../beast-gtk/bstfiledialog.c:735
 msgid "Save Instrument"
 msgstr "Snimi Instrument"
 
-#: ../beast-gtk/bstfiledialog.c:736
+#: ../beast-gtk/bstfiledialog.c:749
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:752
+#: ../beast-gtk/bstfiledialog.c:765
 msgid "Load Wave"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:764 ../beast-gtk/bstfiledialog.c:766
+#: ../beast-gtk/bstfiledialog.c:777 ../beast-gtk/bstfiledialog.c:779
 #, c-format
 msgid "Loading wave `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:285
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
 #: ../beast-gtk/bstmain.c:302
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -746,11 +786,7 @@ msgstr "Odabir datoteka"
 msgid "ID"
 msgstr "Identifikacija"
 
-#: ../beast-gtk/bstitemview.c:208 ../beast-gtk/bsttrackview.c:608
-msgid "Name"
-msgstr "Ime"
-
-#: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:629
+#: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:630
 msgid "Comment"
 msgstr "Komentar"
 
@@ -808,35 +844,35 @@ msgstr ""
 msgid "Load Key Binding"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:432
+#: ../beast-gtk/bstkeybindings.c:433
 msgid "Key Binding"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:433
+#: ../beast-gtk/bstkeybindings.c:434
 msgid "Key combinations used to activate a function"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:435 ../beast-gtk/bstkeybindings.c:459
+#: ../beast-gtk/bstkeybindings.c:436 ../beast-gtk/bstkeybindings.c:460
 msgid "Function"
 msgstr "Funkcija"
 
-#: ../beast-gtk/bstkeybindings.c:436
+#: ../beast-gtk/bstkeybindings.c:437
 msgid "Functions to be activated for a key binding"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:438
+#: ../beast-gtk/bstkeybindings.c:439
 msgid "Parameter"
 msgstr "Parametar"
 
-#: ../beast-gtk/bstkeybindings.c:439
+#: ../beast-gtk/bstkeybindings.c:440
 msgid "Parameter to pass to functions upon activation"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:460
+#: ../beast-gtk/bstkeybindings.c:461
 msgid "Function used to create new key bindings"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:462 ../beast-gtk/bstprocedure.c:203
+#: ../beast-gtk/bstkeybindings.c:463 ../beast-gtk/bstprocedure.c:203
 msgid "Description"
 msgstr "Opis"
 
@@ -1737,7 +1773,7 @@ msgid ""
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
 
-#: ../beast-gtk/bstrackeditor.c:109 ../beast-gtk/bstrackview.c:43
+#: ../beast-gtk/bstrackeditor.c:109 ../beast-gtk/bstrackview.c:44
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Edit"
 msgstr "_Uredi"
@@ -1770,7 +1806,7 @@ msgstr ""
 msgid "Shrink Vertically"
 msgstr ""
 
-#: ../beast-gtk/bstrackview.c:46 ../beast-gtk/gxk/gxkparam-label.c:78
+#: ../beast-gtk/bstrackview.c:47 ../beast-gtk/gxk/gxkparam-label.c:78
 #: ../beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Oznaka"
@@ -2765,46 +2801,46 @@ msgstr ""
 msgid "Synthesizer Selection: %s"
 msgstr "Odabir datoteka"
 
-#: ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bsttrackview.c:64
 msgid "Add a new track to this song"
 msgstr "Dodaj novi traku ovoj pjesmi"
 
-#: ../beast-gtk/bsttrackview.c:66
+#: ../beast-gtk/bsttrackview.c:67
 msgid "Delete the currently selected track"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:284
+#: ../beast-gtk/bsttrackview.c:302 ../bse/bsetrack.c:284
 #: ../bse/bsewaveosc.c:128
 msgid "Available Waves"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:302
+#: ../beast-gtk/bsttrackview.c:303
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:611
+#: ../beast-gtk/bsttrackview.c:612
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:450
+#: ../beast-gtk/bsttrackview.c:615 ../bse/bsemidisynth.c:450
 #: ../bse/bsetrack.c:1014
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:617
+#: ../beast-gtk/bsttrackview.c:618
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:620
+#: ../beast-gtk/bsttrackview.c:621
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:623
+#: ../beast-gtk/bsttrackview.c:624
 msgid "Mixer busses connected to track output"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:459
+#: ../beast-gtk/bsttrackview.c:627 ../bse/bsemidisynth.c:459
 #: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
@@ -2916,27 +2952,27 @@ msgstr "Pomakni ulijevo"
 msgid "Scroll Right"
 msgstr "Pomakni udesno"
 
-#: ../beast-gtk/bstwaveview.c:41
+#: ../beast-gtk/bstwaveview.c:42
 msgid "Load..."
 msgstr "&Novo..."
 
-#: ../beast-gtk/bstwaveview.c:41
+#: ../beast-gtk/bstwaveview.c:42
 msgid "Load a new wave file from disk"
 msgstr ""
 
-#: ../beast-gtk/bstwaveview.c:43
+#: ../beast-gtk/bstwaveview.c:44
 msgid "Lib..."
 msgstr ""
 
-#: ../beast-gtk/bstwaveview.c:43
+#: ../beast-gtk/bstwaveview.c:44
 msgid "Load a new wave file from library paths"
 msgstr ""
 
-#: ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bstwaveview.c:46
 msgid "Delete the currently selected wave"
 msgstr ""
 
-#: ../beast-gtk/bstwaveview.c:47
+#: ../beast-gtk/bstwaveview.c:48
 msgid "Edit the currently selected wave"
 msgstr ""
 
@@ -4780,284 +4816,284 @@ msgid ""
 "automatic driver selection."
 msgstr ""
 
-#: ../bse/bseenums.c:99
+#: ../bse/bseenums.c:97
 msgid "Everything went well"
 msgstr ""
 
-#: ../bse/bseenums.c:100
+#: ../bse/bseenums.c:98
 msgid "Internal error (please report)"
 msgstr ""
 
-#: ../bse/bseenums.c:101
+#: ../bse/bseenums.c:99
 msgid "Unknown error"
 msgstr ""
 
-#: ../bse/bseenums.c:102
+#: ../bse/bseenums.c:100
 msgid "Input/output error"
 msgstr ""
 
-#: ../bse/bseenums.c:103
+#: ../bse/bseenums.c:101
 msgid "Insufficient permission"
 msgstr ""
 
 #. file errors
-#: ../bse/bseenums.c:105
+#: ../bse/bseenums.c:103
 msgid "Device or resource busy"
 msgstr ""
 
-#: ../bse/bseenums.c:106
+#: ../bse/bseenums.c:104
 msgid "File exists already"
 msgstr ""
 
-#: ../bse/bseenums.c:107
+#: ../bse/bseenums.c:105
 msgid "Premature EOF"
 msgstr ""
 
-#: ../bse/bseenums.c:108
+#: ../bse/bseenums.c:106
 msgid "File empty"
 msgstr ""
 
-#: ../bse/bseenums.c:109
+#: ../bse/bseenums.c:107
 msgid "No such file, device or directory"
 msgstr ""
 
-#: ../bse/bseenums.c:110
+#: ../bse/bseenums.c:108
 #, fuzzy
 msgid "Is a directory"
 msgstr "Izaberite direktorij"
 
-#: ../bse/bseenums.c:111
+#: ../bse/bseenums.c:109
 msgid "Open failed"
 msgstr ""
 
-#: ../bse/bseenums.c:112
+#: ../bse/bseenums.c:110
 #, fuzzy
 msgid "Seek failed"
 msgstr "Odaberi Datoteku"
 
-#: ../bse/bseenums.c:113
+#: ../bse/bseenums.c:111
 msgid "Read failed"
 msgstr ""
 
-#: ../bse/bseenums.c:114
+#: ../bse/bseenums.c:112
 msgid "Write failed"
 msgstr ""
 
 #. out of resource conditions
-#: ../bse/bseenums.c:116
+#: ../bse/bseenums.c:114
 msgid "Too many open files"
 msgstr ""
 
-#: ../bse/bseenums.c:117
+#: ../bse/bseenums.c:115
 msgid "Too many open files in system"
 msgstr ""
 
-#: ../bse/bseenums.c:118
+#: ../bse/bseenums.c:116
 msgid "No space left on device"
 msgstr ""
 
-#: ../bse/bseenums.c:119
+#: ../bse/bseenums.c:117
 msgid "Out of memory"
 msgstr ""
 
 #. content errors
-#: ../bse/bseenums.c:121
+#: ../bse/bseenums.c:119
 msgid "Failed to detect (start of) header"
 msgstr ""
 
-#: ../bse/bseenums.c:122
+#: ../bse/bseenums.c:120
 msgid "Failed to retrieve seek information"
 msgstr ""
 
-#: ../bse/bseenums.c:123
+#: ../bse/bseenums.c:121
 msgid "No data available"
 msgstr ""
 
-#: ../bse/bseenums.c:124
+#: ../bse/bseenums.c:122
 msgid "Data corrupt"
 msgstr ""
 
-#: ../bse/bseenums.c:125
+#: ../bse/bseenums.c:123
 msgid "Wrong number of channels"
 msgstr ""
 
-#: ../bse/bseenums.c:126
+#: ../bse/bseenums.c:124
 msgid "Invalid format"
 msgstr ""
 
-#: ../bse/bseenums.c:127
+#: ../bse/bseenums.c:125
 msgid "Unknown format"
 msgstr ""
 
-#: ../bse/bseenums.c:128
+#: ../bse/bseenums.c:126
 msgid "Requested data values unmatched"
 msgstr ""
 
 #. miscellaneous errors
-#: ../bse/bseenums.c:130
+#: ../bse/bseenums.c:128
 msgid "Temporary error"
 msgstr ""
 
-#: ../bse/bseenums.c:131
+#: ../bse/bseenums.c:129
 #, fuzzy
 msgid "No such wave"
 msgstr "Procedura"
 
-#: ../bse/bseenums.c:132
+#: ../bse/bseenums.c:130
 msgid "CODEC failure"
 msgstr ""
 
-#: ../bse/bseenums.c:133
+#: ../bse/bseenums.c:131
 msgid "Functionality not implemented"
 msgstr ""
 
-#: ../bse/bseenums.c:134
+#: ../bse/bseenums.c:132
 msgid "Invalid object property"
 msgstr ""
 
-#: ../bse/bseenums.c:135
+#: ../bse/bseenums.c:133
 msgid "Invalid MIDI control type"
 msgstr ""
 
-#: ../bse/bseenums.c:136
+#: ../bse/bseenums.c:134
 msgid "Parsing error"
 msgstr ""
 
-#: ../bse/bseenums.c:137
+#: ../bse/bseenums.c:135
 msgid "Failed to spawn child process"
 msgstr ""
 
 #. Device errors
-#: ../bse/bseenums.c:139
+#: ../bse/bseenums.c:137
 msgid "No device (driver) available"
 msgstr ""
 
-#: ../bse/bseenums.c:140
+#: ../bse/bseenums.c:138
 msgid "Device not async capable"
 msgstr ""
 
-#: ../bse/bseenums.c:141
+#: ../bse/bseenums.c:139
 msgid "Device busy"
 msgstr ""
 
-#: ../bse/bseenums.c:142
+#: ../bse/bseenums.c:140
 msgid "Failed to configure device format"
 msgstr ""
 
-#: ../bse/bseenums.c:143
+#: ../bse/bseenums.c:141
 msgid "Failed to configure device buffer"
 msgstr ""
 
-#: ../bse/bseenums.c:144
+#: ../bse/bseenums.c:142
 msgid "Failed to configure device latency"
 msgstr ""
 
-#: ../bse/bseenums.c:145
+#: ../bse/bseenums.c:143
 msgid "Failed to configure number of device channels"
 msgstr ""
 
-#: ../bse/bseenums.c:146
+#: ../bse/bseenums.c:144
 msgid "Failed to configure device frequency"
 msgstr ""
 
-#: ../bse/bseenums.c:147
+#: ../bse/bseenums.c:145
 msgid "Device configurations mismatch"
 msgstr ""
 
 #. BseSource errors
-#: ../bse/bseenums.c:149
+#: ../bse/bseenums.c:147
 msgid "No such synthesis module"
 msgstr ""
 
-#: ../bse/bseenums.c:150
+#: ../bse/bseenums.c:148
 msgid "No such input channel"
 msgstr ""
 
-#: ../bse/bseenums.c:151
+#: ../bse/bseenums.c:149
 msgid "No such output channel"
 msgstr ""
 
-#: ../bse/bseenums.c:152
+#: ../bse/bseenums.c:150
 msgid "Input/Output channels not connected"
 msgstr ""
 
-#: ../bse/bseenums.c:153
+#: ../bse/bseenums.c:151
 msgid "Input channel is private"
 msgstr ""
 
-#: ../bse/bseenums.c:154
+#: ../bse/bseenums.c:152
 msgid "Input channel already in use"
 msgstr ""
 
-#: ../bse/bseenums.c:155
+#: ../bse/bseenums.c:153
 msgid "Input/Output channels already connected"
 msgstr ""
 
-#: ../bse/bseenums.c:156
+#: ../bse/bseenums.c:154
 msgid "Invalid synthesis module connection"
 msgstr ""
 
-#: ../bse/bseenums.c:157
+#: ../bse/bseenums.c:155
 msgid "Parent mismatch"
 msgstr ""
 
-#: ../bse/bseenums.c:158
+#: ../bse/bseenums.c:156
 msgid "Bad loopback"
 msgstr ""
 
-#: ../bse/bseenums.c:159
+#: ../bse/bseenums.c:157
 msgid "Synthesis module currently busy"
 msgstr ""
 
-#: ../bse/bseenums.c:160
+#: ../bse/bseenums.c:158
 msgid "Invalid synthsis module type"
 msgstr ""
 
 #. BseProcedure errors
-#: ../bse/bseenums.c:162
+#: ../bse/bseenums.c:160
 #, fuzzy
 msgid "No such procedure"
 msgstr "Procedura"
 
-#: ../bse/bseenums.c:163
+#: ../bse/bseenums.c:161
 msgid "Procedure currently busy"
 msgstr ""
 
 #. recursion
-#: ../bse/bseenums.c:164
+#: ../bse/bseenums.c:162
 msgid "Procedure parameter invalid"
 msgstr ""
 
-#: ../bse/bseenums.c:165
+#: ../bse/bseenums.c:163
 msgid "Procedure execution failed"
 msgstr ""
 
-#: ../bse/bseenums.c:166
+#: ../bse/bseenums.c:164
 msgid "Procedure execution aborted"
 msgstr ""
 
 #. various procedure errors
-#: ../bse/bseenums.c:168
+#: ../bse/bseenums.c:166
 msgid "No such entry"
 msgstr ""
 
-#: ../bse/bseenums.c:169
+#: ../bse/bseenums.c:167
 msgid "No such event"
 msgstr ""
 
-#: ../bse/bseenums.c:171
+#: ../bse/bseenums.c:169
 msgid "Ownership mismatch"
 msgstr ""
 
-#: ../bse/bseenums.c:172
+#: ../bse/bseenums.c:170
 msgid "Invalid offset"
 msgstr ""
 
-#: ../bse/bseenums.c:173
+#: ../bse/bseenums.c:171
 msgid "Invalid duration"
 msgstr ""
 
-#: ../bse/bseenums.c:174
+#: ../bse/bseenums.c:172
 msgid "Invalid overlap"
 msgstr ""
 
@@ -6713,7 +6749,7 @@ msgstr "Lijevi izlaz"
 msgid "Right Output"
 msgstr "Desni izlaz"
 
-#: ../tools/bsewavetool.cc:934
+#: ../tools/bsewavetool.cc:933
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""

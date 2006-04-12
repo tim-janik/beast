@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-12 12:00+0100\n"
+"POT-Creation-Date: 2006-04-11 19:45+0200\n"
 "PO-Revision-Date: 2005-02-18 03:07+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -413,7 +413,7 @@ msgid "Cancel"
 msgstr "_Annuleren"
 
 #: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
-#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
+#: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Openen van project `%s'"
@@ -445,32 +445,32 @@ msgstr "Druk de sneltoets in die geïnstalleerd moet worden voor functie: %s"
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Druk de sneltoets in die geïnstalleerd moet worden..."
 
-#: ../beast-gtk/bstbuseditor.c:38 ../beast-gtk/bstbusmixer.c:35
-#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstpartview.c:39
-#: ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstpartview.c:40
+#: ../beast-gtk/bsttrackview.c:64
 msgid "Add"
 msgstr "Toevoegen"
 
-#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
-#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstkeybindings.c:59
-#: ../beast-gtk/bstpartview.c:40 ../beast-gtk/bstpianorollctrl.c:80
+#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstbusmixer.c:37
+#: ../beast-gtk/bstbusview.c:36 ../beast-gtk/bstkeybindings.c:59
+#: ../beast-gtk/bstpartview.c:41 ../beast-gtk/bstpianorollctrl.c:80
 #: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
 #: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
-#: ../beast-gtk/bsttrackview.c:66 ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bsttrackview.c:67 ../beast-gtk/bstwaveview.c:46
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstpartview.c:41
-#: ../beast-gtk/bstwaveview.c:47
+#: ../beast-gtk/bstbuseditor.c:41 ../beast-gtk/bstpartview.c:42
+#: ../beast-gtk/bstwaveview.c:48
 msgid "Editor"
 msgstr "Editor"
 
-#: ../beast-gtk/bstbusmixer.c:35
+#: ../beast-gtk/bstbusmixer.c:36
 msgid "Add a new bus to the mixer"
 msgstr "Een nieuwe bus aan de mixer toevoegen"
 
 # huidige/momenteel/nu
-#: ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusmixer.c:37
 msgid "Delete the currently selected bus"
 msgstr "De nu geselecteerde bus verwijderen"
 
@@ -564,7 +564,7 @@ msgstr "Controle-'event' verplaatsen"
 #: ../beast-gtk/bsteventrollctrl.c:657 ../beast-gtk/bstpianorollctrl.c:580
 #: ../beast-gtk/bstpianorollctrl.c:690 ../beast-gtk/bstpianorollctrl.c:753
 #: ../beast-gtk/bsttrackrollctrl.c:480 ../beast-gtk/bsttrackrollctrl.c:500
-#: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:170
+#: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:168
 msgid "No target"
 msgstr "Geen doel"
 
@@ -603,48 +603,90 @@ msgstr "Regio selecteren"
 msgid "Abortion"
 msgstr "Afbreken"
 
+#: ../beast-gtk/bstfiledialog.c:138 ../beast-gtk/bstitemview.c:208
+#: ../beast-gtk/bsttrackview.c:609
+msgid "Name"
+msgstr "Naam"
+
+#: ../beast-gtk/bstfiledialog.c:138
+#, fuzzy
+msgid "Sample or instrument name"
+msgstr "Instrument opslaan"
+
+#: ../beast-gtk/bstfiledialog.c:141
+#, fuzzy
+msgid "Size"
+msgstr "Stijd"
+
+#: ../beast-gtk/bstfiledialog.c:141
+msgid "File size in bytes"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:143
+msgid "Format"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:143
+msgid "Detected file format"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:159
+#, fuzzy
+msgid "Time"
+msgstr "Stijd"
+
+#: ../beast-gtk/bstfiledialog.c:159
+#, fuzzy
+msgid "File modification time"
+msgstr "Laatste modificatietijd"
+
 #: ../beast-gtk/bstfiledialog.c:166
+#, fuzzy
+msgid "Filename"
+msgstr "Hernoemen"
+
+#: ../beast-gtk/bstfiledialog.c:179
 msgid "Contents"
 msgstr "Inhoud"
 
 #. setup remaining bits
-#: ../beast-gtk/bstfiledialog.c:198
+#: ../beast-gtk/bstfiledialog.c:211
 msgid "File Selection"
 msgstr "Bestandsselectie"
 
-#: ../beast-gtk/bstfiledialog.c:379
+#: ../beast-gtk/bstfiledialog.c:392
 msgid "Open Project"
 msgstr "Project openen"
 
-#: ../beast-gtk/bstfiledialog.c:393
+#: ../beast-gtk/bstfiledialog.c:406
 msgid "Select File"
 msgstr "Bestand selecteren"
 
-#: ../beast-gtk/bstfiledialog.c:407
+#: ../beast-gtk/bstfiledialog.c:420
 msgid "Select Directory"
 msgstr "Map selecteren"
 
-#: ../beast-gtk/bstfiledialog.c:445
+#: ../beast-gtk/bstfiledialog.c:458
 #, c-format
 msgid "Merge: %s"
 msgstr "Samenvoegen: %s"
 
-#: ../beast-gtk/bstfiledialog.c:458
+#: ../beast-gtk/bstfiledialog.c:471
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Samenvoegen van project `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:474
+#: ../beast-gtk/bstfiledialog.c:487
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "MIDI importeren: %s"
 
-#: ../beast-gtk/bstfiledialog.c:485
+#: ../beast-gtk/bstfiledialog.c:498
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Invoegen MIDI-bestand `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:506
+#: ../beast-gtk/bstfiledialog.c:519
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -660,7 +702,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:531 ../beast-gtk/bstfiledialog.c:545
+#: ../beast-gtk/bstfiledialog.c:544 ../beast-gtk/bstfiledialog.c:558
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -673,7 +715,7 @@ msgstr ""
 "opslaan wegens:\n"
 "%s"
 
-#: ../beast-gtk/bstfiledialog.c:536
+#: ../beast-gtk/bstfiledialog.c:549
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -686,71 +728,71 @@ msgstr ""
 "niet vervangen wegens:\n"
 "%s"
 
-#: ../beast-gtk/bstfiledialog.c:572
+#: ../beast-gtk/bstfiledialog.c:585
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Opslaan van project `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:609
+#: ../beast-gtk/bstfiledialog.c:622
 #, c-format
 msgid "Save: %s"
 msgstr "Opslaan: %s"
 
 #. setup radio buttons
-#: ../beast-gtk/bstfiledialog.c:613
+#: ../beast-gtk/bstfiledialog.c:626
 msgid "Fully include wave files"
 msgstr "Wave-bestanden volledig bijvoegen"
 
-#: ../beast-gtk/bstfiledialog.c:614
+#: ../beast-gtk/bstfiledialog.c:627
 msgid "Store references to wave files"
 msgstr "Refenties naar wave-bestanden opslaan"
 
-#: ../beast-gtk/bstfiledialog.c:633
+#: ../beast-gtk/bstfiledialog.c:646
 msgid "Load Effect"
 msgstr "Effect laden"
 
-#: ../beast-gtk/bstfiledialog.c:646
+#: ../beast-gtk/bstfiledialog.c:659
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Samenvoegen van effect `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:663
+#: ../beast-gtk/bstfiledialog.c:676
 msgid "Save Effect"
 msgstr "Effect opslaan"
 
-#: ../beast-gtk/bstfiledialog.c:677
+#: ../beast-gtk/bstfiledialog.c:690
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Opslaan van effect: `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:692
+#: ../beast-gtk/bstfiledialog.c:705
 msgid "Load Instrument"
 msgstr "Instrument laden"
 
-#: ../beast-gtk/bstfiledialog.c:705
+#: ../beast-gtk/bstfiledialog.c:718
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Samenvoegen van intrument `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:722
+#: ../beast-gtk/bstfiledialog.c:735
 msgid "Save Instrument"
 msgstr "Instrument opslaan"
 
-#: ../beast-gtk/bstfiledialog.c:736
+#: ../beast-gtk/bstfiledialog.c:749
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Opslaan van intrument `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:752
+#: ../beast-gtk/bstfiledialog.c:765
 msgid "Load Wave"
 msgstr "Wave laden"
 
-#: ../beast-gtk/bstfiledialog.c:764 ../beast-gtk/bstfiledialog.c:766
+#: ../beast-gtk/bstfiledialog.c:777 ../beast-gtk/bstfiledialog.c:779
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Laden van wave `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:285
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
 #: ../beast-gtk/bstmain.c:302
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -784,11 +826,7 @@ msgstr "Objectselectie: %s"
 msgid "ID"
 msgstr "ID"
 
-#: ../beast-gtk/bstitemview.c:208 ../beast-gtk/bsttrackview.c:608
-msgid "Name"
-msgstr "Naam"
-
-#: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:629
+#: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:630
 msgid "Comment"
 msgstr "Opmerking"
 
@@ -855,36 +893,36 @@ msgstr "Een toetsbindingenverzameling laden"
 msgid "Load Key Binding"
 msgstr "Toetsbinding laden"
 
-#: ../beast-gtk/bstkeybindings.c:432
+#: ../beast-gtk/bstkeybindings.c:433
 msgid "Key Binding"
 msgstr "Toetsbinding"
 
 # aan te roepen/te gebruiken
-#: ../beast-gtk/bstkeybindings.c:433
+#: ../beast-gtk/bstkeybindings.c:434
 msgid "Key combinations used to activate a function"
 msgstr "Gebruikte toetscombinaties om een functie te activeren"
 
-#: ../beast-gtk/bstkeybindings.c:435 ../beast-gtk/bstkeybindings.c:459
+#: ../beast-gtk/bstkeybindings.c:436 ../beast-gtk/bstkeybindings.c:460
 msgid "Function"
 msgstr "Functie"
 
-#: ../beast-gtk/bstkeybindings.c:436
+#: ../beast-gtk/bstkeybindings.c:437
 msgid "Functions to be activated for a key binding"
 msgstr "Functies die bij een toetsbinding geactiveerd worden"
 
-#: ../beast-gtk/bstkeybindings.c:438
+#: ../beast-gtk/bstkeybindings.c:439
 msgid "Parameter"
 msgstr "Parameter"
 
-#: ../beast-gtk/bstkeybindings.c:439
+#: ../beast-gtk/bstkeybindings.c:440
 msgid "Parameter to pass to functions upon activation"
 msgstr "Parameter die aan functies wordt gegeven bij actieveren"
 
-#: ../beast-gtk/bstkeybindings.c:460
+#: ../beast-gtk/bstkeybindings.c:461
 msgid "Function used to create new key bindings"
 msgstr "Functie die gebruikt wordt bij nieuwe toetsbindingen"
 
-#: ../beast-gtk/bstkeybindings.c:462 ../beast-gtk/bstprocedure.c:203
+#: ../beast-gtk/bstkeybindings.c:463 ../beast-gtk/bstprocedure.c:203
 msgid "Description"
 msgstr "Beschrijving"
 
@@ -1818,7 +1856,7 @@ msgstr ""
 "niet zal veranderen van uiterlijk en zorg dat u rekening houdt met de "
 "instabiliteiten van de code (dus uw projecten regelmatig opslaan). "
 
-#: ../beast-gtk/bstrackeditor.c:109 ../beast-gtk/bstrackview.c:43
+#: ../beast-gtk/bstrackeditor.c:109 ../beast-gtk/bstrackview.c:44
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Edit"
 msgstr "Be_werken"
@@ -1852,7 +1890,7 @@ msgstr "Horizontaal krimpen"
 msgid "Shrink Vertically"
 msgstr "Verticaal krimpen"
 
-#: ../beast-gtk/bstrackview.c:46 ../beast-gtk/gxk/gxkparam-label.c:78
+#: ../beast-gtk/bstrackview.c:47 ../beast-gtk/gxk/gxkparam-label.c:78
 #: ../beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Label"
@@ -2898,25 +2936,25 @@ msgstr "Editor starten"
 msgid "Synthesizer Selection: %s"
 msgstr "Synthesizer selectie: %s"
 
-#: ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bsttrackview.c:64
 msgid "Add a new track to this song"
 msgstr "Een nieuwe track toevoegen aan dit nummer"
 
-#: ../beast-gtk/bsttrackview.c:66
+#: ../beast-gtk/bsttrackview.c:67
 msgid "Delete the currently selected track"
 msgstr "Geselecteerde track verwijderen"
 
 # beschikbare geluiden
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:284
+#: ../beast-gtk/bsttrackview.c:302 ../bse/bsetrack.c:284
 #: ../bse/bsewaveosc.c:128
 msgid "Available Waves"
 msgstr "Beschikbare waves"
 
-#: ../beast-gtk/bsttrackview.c:302
+#: ../beast-gtk/bsttrackview.c:303
 msgid "List of available waves to choose a track instrument from"
 msgstr "Lijst van beschikbare waves voor een spoor-instrument"
 
-#: ../beast-gtk/bsttrackview.c:611
+#: ../beast-gtk/bsttrackview.c:612
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -2924,29 +2962,29 @@ msgstr ""
 "genegeerd door de sequencer."
 
 # bij gelijktijdig afspelen
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:450
+#: ../beast-gtk/bsttrackview.c:615 ../bse/bsemidisynth.c:450
 #: ../bse/bsetrack.c:1014
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum aantal stemmen voor gelijktijdig afspelen"
 
-#: ../beast-gtk/bsttrackview.c:617
+#: ../beast-gtk/bsttrackview.c:618
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 "Het synthese-netwerk of wave dat als instrument gebruikt zal worden bij dit "
 "spoor"
 
-#: ../beast-gtk/bsttrackview.c:620
+#: ../beast-gtk/bsttrackview.c:621
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 "MIDI-kanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor "
 "kanaal"
 
-#: ../beast-gtk/bsttrackview.c:623
+#: ../beast-gtk/bsttrackview.c:624
 msgid "Mixer busses connected to track output"
 msgstr "Mixerbussen verbonden met de spooruitgang"
 
 # uitleg
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:459
+#: ../beast-gtk/bsttrackview.c:627 ../bse/bsemidisynth.c:459
 #: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesenetwerk dat als postprocessor gebruikt zal worden"
@@ -3062,30 +3100,30 @@ msgstr "Links schuiven"
 msgid "Scroll Right"
 msgstr "Rechts schuiven"
 
-#: ../beast-gtk/bstwaveview.c:41
+#: ../beast-gtk/bstwaveview.c:42
 msgid "Load..."
 msgstr "Laden..."
 
-#: ../beast-gtk/bstwaveview.c:41
+#: ../beast-gtk/bstwaveview.c:42
 msgid "Load a new wave file from disk"
 msgstr "Nieuw wave-bestand laden van de harde schijf"
 
 # huh?
-#: ../beast-gtk/bstwaveview.c:43
+#: ../beast-gtk/bstwaveview.c:44
 msgid "Lib..."
 msgstr "Lib..."
 
-#: ../beast-gtk/bstwaveview.c:43
+#: ../beast-gtk/bstwaveview.c:44
 msgid "Load a new wave file from library paths"
 msgstr "Een nieuw wave-bestand laden van bibliotheek-paden"
 
 # huidige geselecteerde golf? wave-bestand?
-#: ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bstwaveview.c:46
 msgid "Delete the currently selected wave"
 msgstr "De geselecteerde wave verwijderen"
 
 # golf?
-#: ../beast-gtk/bstwaveview.c:47
+#: ../beast-gtk/bstwaveview.c:48
 msgid "Edit the currently selected wave"
 msgstr "De geselecteerde wave bewerken"
 
@@ -4977,285 +5015,285 @@ msgstr ""
 "verzamelnaam voor automatische stuurprogrammaselectie"
 
 # goed verlopen
-#: ../bse/bseenums.c:99
+#: ../bse/bseenums.c:97
 msgid "Everything went well"
 msgstr "Alles is goed gegaan"
 
-#: ../bse/bseenums.c:100
+#: ../bse/bseenums.c:98
 msgid "Internal error (please report)"
 msgstr "Interne fout (rapporteren a.u.b)"
 
-#: ../bse/bseenums.c:101
+#: ../bse/bseenums.c:99
 msgid "Unknown error"
 msgstr "Onbekende fout"
 
-#: ../bse/bseenums.c:102
+#: ../bse/bseenums.c:100
 msgid "Input/output error"
 msgstr "Invoer/uitvoerfout"
 
-#: ../bse/bseenums.c:103
+#: ../bse/bseenums.c:101
 msgid "Insufficient permission"
 msgstr "Onvoldoende rechten"
 
 #. file errors
-#: ../bse/bseenums.c:105
+#: ../bse/bseenums.c:103
 msgid "Device or resource busy"
 msgstr "Apparaat of bron bezet"
 
-#: ../bse/bseenums.c:106
+#: ../bse/bseenums.c:104
 msgid "File exists already"
 msgstr "Bestand bestaat al"
 
-#: ../bse/bseenums.c:107
+#: ../bse/bseenums.c:105
 msgid "Premature EOF"
 msgstr "Voortijdig bestandseinde"
 
-#: ../bse/bseenums.c:108
+#: ../bse/bseenums.c:106
 msgid "File empty"
 msgstr "Bestand is leeg"
 
-#: ../bse/bseenums.c:109
+#: ../bse/bseenums.c:107
 msgid "No such file, device or directory"
 msgstr "Bestand, map of apparaat bestaat niet"
 
-#: ../bse/bseenums.c:110
+#: ../bse/bseenums.c:108
 msgid "Is a directory"
 msgstr "Is een map"
 
-#: ../bse/bseenums.c:111
+#: ../bse/bseenums.c:109
 msgid "Open failed"
 msgstr "Openen mislukt"
 
-#: ../bse/bseenums.c:112
+#: ../bse/bseenums.c:110
 msgid "Seek failed"
 msgstr "Zoeken mislukt"
 
-#: ../bse/bseenums.c:113
+#: ../bse/bseenums.c:111
 msgid "Read failed"
 msgstr "Lezen mislukt"
 
-#: ../bse/bseenums.c:114
+#: ../bse/bseenums.c:112
 msgid "Write failed"
 msgstr "Schrijven mislukt"
 
 #. out of resource conditions
-#: ../bse/bseenums.c:116
+#: ../bse/bseenums.c:114
 msgid "Too many open files"
 msgstr "Te veel geopende bestanden"
 
-#: ../bse/bseenums.c:117
+#: ../bse/bseenums.c:115
 msgid "Too many open files in system"
 msgstr "Te veel geopende bestanden in het systeem"
 
 # vrij vertaald
-#: ../bse/bseenums.c:118
+#: ../bse/bseenums.c:116
 msgid "No space left on device"
 msgstr "Geen vrije schijfruimte over"
 
-#: ../bse/bseenums.c:119
+#: ../bse/bseenums.c:117
 msgid "Out of memory"
 msgstr "Geen vrij geheugen meer"
 
 #. content errors
-#: ../bse/bseenums.c:121
+#: ../bse/bseenums.c:119
 msgid "Failed to detect (start of) header"
 msgstr "Detecteren van (begin van) header mislukt"
 
-#: ../bse/bseenums.c:122
+#: ../bse/bseenums.c:120
 msgid "Failed to retrieve seek information"
 msgstr "Zoek-informatie ophalen is mislukt"
 
 # data/gegevens
-#: ../bse/bseenums.c:123
+#: ../bse/bseenums.c:121
 msgid "No data available"
 msgstr "Geen data beschikbaar"
 
-#: ../bse/bseenums.c:124
+#: ../bse/bseenums.c:122
 msgid "Data corrupt"
 msgstr "Data beschadigd"
 
-#: ../bse/bseenums.c:125
+#: ../bse/bseenums.c:123
 msgid "Wrong number of channels"
 msgstr "Verkeerd aantal kanalen"
 
-#: ../bse/bseenums.c:126
+#: ../bse/bseenums.c:124
 msgid "Invalid format"
 msgstr "Ongeldig formaat"
 
-#: ../bse/bseenums.c:127
+#: ../bse/bseenums.c:125
 msgid "Unknown format"
 msgstr "Onbekend formaat"
 
 # niet gevonden/geen overeenkomsten
-#: ../bse/bseenums.c:128
+#: ../bse/bseenums.c:126
 msgid "Requested data values unmatched"
 msgstr "Gevraagde datawaarden geen overeenkomst"
 
 #. miscellaneous errors
-#: ../bse/bseenums.c:130
+#: ../bse/bseenums.c:128
 msgid "Temporary error"
 msgstr "Tijdelijke fout"
 
-#: ../bse/bseenums.c:131
+#: ../bse/bseenums.c:129
 msgid "No such wave"
 msgstr "Wave bestaat niet"
 
-#: ../bse/bseenums.c:132
+#: ../bse/bseenums.c:130
 msgid "CODEC failure"
 msgstr "CODEC-mislukking"
 
-#: ../bse/bseenums.c:133
+#: ../bse/bseenums.c:131
 msgid "Functionality not implemented"
 msgstr "Functionaliteit niet geïmplementeerd"
 
-#: ../bse/bseenums.c:134
+#: ../bse/bseenums.c:132
 msgid "Invalid object property"
 msgstr "Ongeldige objecteigenschap"
 
-#: ../bse/bseenums.c:135
+#: ../bse/bseenums.c:133
 msgid "Invalid MIDI control type"
 msgstr "Ongeldig MIDI-control type"
 
-#: ../bse/bseenums.c:136
+#: ../bse/bseenums.c:134
 msgid "Parsing error"
 msgstr "Verwerkingsfout"
 
-#: ../bse/bseenums.c:137
+#: ../bse/bseenums.c:135
 msgid "Failed to spawn child process"
 msgstr "Afsplitsen van een dochterproces is mislukt"
 
 #. Device errors
-#: ../bse/bseenums.c:139
+#: ../bse/bseenums.c:137
 msgid "No device (driver) available"
 msgstr "Geen apparaat (stuurprogramma) beschikbaar"
 
-#: ../bse/bseenums.c:140
+#: ../bse/bseenums.c:138
 msgid "Device not async capable"
 msgstr "Apparaat niet async capabel"
 
-#: ../bse/bseenums.c:141
+#: ../bse/bseenums.c:139
 msgid "Device busy"
 msgstr "Apparaat bezet"
 
-#: ../bse/bseenums.c:142
+#: ../bse/bseenums.c:140
 msgid "Failed to configure device format"
 msgstr "Apparaat-formaat configureren is mislukt"
 
-#: ../bse/bseenums.c:143
+#: ../bse/bseenums.c:141
 msgid "Failed to configure device buffer"
 msgstr "Apparaat-buffer configureren is mislukt"
 
 # traagheid
-#: ../bse/bseenums.c:144
+#: ../bse/bseenums.c:142
 msgid "Failed to configure device latency"
 msgstr "Apparaat-'latency' configureren is mislukt"
 
-#: ../bse/bseenums.c:145
+#: ../bse/bseenums.c:143
 msgid "Failed to configure number of device channels"
 msgstr "Het aantal apparaat-kanalen configureren is mislukt"
 
-#: ../bse/bseenums.c:146
+#: ../bse/bseenums.c:144
 msgid "Failed to configure device frequency"
 msgstr "Apparaat-frequentie configureren is mislukt"
 
-#: ../bse/bseenums.c:147
+#: ../bse/bseenums.c:145
 msgid "Device configurations mismatch"
 msgstr "Apparaatconfiguraties komen niet overeen"
 
 #. BseSource errors
-#: ../bse/bseenums.c:149
+#: ../bse/bseenums.c:147
 msgid "No such synthesis module"
 msgstr "Zo'n synthesemodule bestaat niet"
 
-#: ../bse/bseenums.c:150
+#: ../bse/bseenums.c:148
 msgid "No such input channel"
 msgstr "Zo'n invoerkanaal bestaat niet"
 
-#: ../bse/bseenums.c:151
+#: ../bse/bseenums.c:149
 msgid "No such output channel"
 msgstr "Zo'n uitvoerkanaal bestaat niet"
 
-#: ../bse/bseenums.c:152
+#: ../bse/bseenums.c:150
 msgid "Input/Output channels not connected"
 msgstr "Invoer/uitvoerkanalen niet verbonden"
 
 # persoonlijk bezit
-#: ../bse/bseenums.c:153
+#: ../bse/bseenums.c:151
 msgid "Input channel is private"
 msgstr "Invoerkanaal is privé"
 
-#: ../bse/bseenums.c:154
+#: ../bse/bseenums.c:152
 msgid "Input channel already in use"
 msgstr "Invoerkanaal is al in gebruik"
 
-#: ../bse/bseenums.c:155
+#: ../bse/bseenums.c:153
 msgid "Input/Output channels already connected"
 msgstr "Invoer/uitvoerkanalen zijn al verbonden"
 
-#: ../bse/bseenums.c:156
+#: ../bse/bseenums.c:154
 msgid "Invalid synthesis module connection"
 msgstr "Ongeldige verbinding synthesemodule"
 
-#: ../bse/bseenums.c:157
+#: ../bse/bseenums.c:155
 msgid "Parent mismatch"
 msgstr "Ouders komen niet overeen"
 
-#: ../bse/bseenums.c:158
+#: ../bse/bseenums.c:156
 msgid "Bad loopback"
 msgstr "Onjuidyr loopback"
 
-#: ../bse/bseenums.c:159
+#: ../bse/bseenums.c:157
 msgid "Synthesis module currently busy"
 msgstr "Synthesemodule is momenteel bezet"
 
-#: ../bse/bseenums.c:160
+#: ../bse/bseenums.c:158
 msgid "Invalid synthsis module type"
 msgstr "Ongeldig type synthesemodule"
 
 #. BseProcedure errors
-#: ../bse/bseenums.c:162
+#: ../bse/bseenums.c:160
 msgid "No such procedure"
 msgstr "Zo'n procedure bestaat niet"
 
-#: ../bse/bseenums.c:163
+#: ../bse/bseenums.c:161
 msgid "Procedure currently busy"
 msgstr "Procedure is momenteel bezet"
 
 #. recursion
-#: ../bse/bseenums.c:164
+#: ../bse/bseenums.c:162
 msgid "Procedure parameter invalid"
 msgstr "Procedure-parameter ongeldig"
 
-#: ../bse/bseenums.c:165
+#: ../bse/bseenums.c:163
 msgid "Procedure execution failed"
 msgstr "Uitvoering procedure mislukt"
 
-#: ../bse/bseenums.c:166
+#: ../bse/bseenums.c:164
 msgid "Procedure execution aborted"
 msgstr "Uitvoering procedure afgebroken"
 
 #. various procedure errors
-#: ../bse/bseenums.c:168
+#: ../bse/bseenums.c:166
 msgid "No such entry"
 msgstr "Deze bestaat niet"
 
-#: ../bse/bseenums.c:169
+#: ../bse/bseenums.c:167
 msgid "No such event"
 msgstr "Event bestaat niet"
 
-#: ../bse/bseenums.c:171
+#: ../bse/bseenums.c:169
 msgid "Ownership mismatch"
 msgstr "Eigenaars komen niet overeen"
 
-#: ../bse/bseenums.c:172
+#: ../bse/bseenums.c:170
 msgid "Invalid offset"
 msgstr "Ongeldige verschuiving"
 
-#: ../bse/bseenums.c:173
+#: ../bse/bseenums.c:171
 msgid "Invalid duration"
 msgstr "Ongeldige lengte"
 
-#: ../bse/bseenums.c:174
+#: ../bse/bseenums.c:172
 msgid "Invalid overlap"
 msgstr "Ongeldige overlap"
 
@@ -7079,7 +7117,7 @@ msgstr "Linker uitgang"
 msgid "Right Output"
 msgstr "Rechter uitgang"
 
-#: ../tools/bsewavetool.cc:934
+#: ../tools/bsewavetool.cc:933
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Laden van wave-bestand \"%s\" mislukt: %s"

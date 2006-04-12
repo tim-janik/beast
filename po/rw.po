@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-03-12 12:01+0100\n"
+"POT-Creation-Date: 2006-04-11 19:45+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -484,7 +484,7 @@ msgid "Cancel"
 msgstr "Kureka"
 
 #: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
-#: ../beast-gtk/bstfiledialog.c:421 ../beast-gtk/bstfiledialog.c:427
+#: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, fuzzy, c-format
 msgid "Opening project `%s'"
 msgstr "Umushinga"
@@ -528,9 +528,9 @@ msgstr "Kanda i Mwandikisho Iy'ibusamo Kuri"
 # sc/source\ui\src\scstring.src:STR_OPT_ROWHEIGHT.text
 # #-#-#-#-#  sc.pot (PACKAGE VERSION)  #-#-#-#-#
 # sc/source\ui\src\scstring.src:STR_OPT_COLWIDTH.text
-#: ../beast-gtk/bstbuseditor.c:38 ../beast-gtk/bstbusmixer.c:35
-#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstpartview.c:39
-#: ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstpartview.c:40
+#: ../beast-gtk/bsttrackview.c:64
 msgid "Add"
 msgstr "Kongera"
 
@@ -538,26 +538,26 @@ msgstr "Kongera"
 # basctl/source\basicide\basidesh.src:RID_POPUP_TABBAR.SID_BASICIDE_DELETECURRENT.text
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\brkdlg.src:RID_BASICIDE_BREAKPOINTDLG.RID_PB_DEL.text
-#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
-#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstkeybindings.c:59
-#: ../beast-gtk/bstpartview.c:40 ../beast-gtk/bstpianorollctrl.c:80
+#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstbusmixer.c:37
+#: ../beast-gtk/bstbusview.c:36 ../beast-gtk/bstkeybindings.c:59
+#: ../beast-gtk/bstpartview.c:41 ../beast-gtk/bstpianorollctrl.c:80
 #: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
 #: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
-#: ../beast-gtk/bsttrackview.c:66 ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bsttrackview.c:67 ../beast-gtk/bstwaveview.c:46
 msgid "Delete"
 msgstr "Gusiba"
 
-#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstpartview.c:41
-#: ../beast-gtk/bstwaveview.c:47
+#: ../beast-gtk/bstbuseditor.c:41 ../beast-gtk/bstpartview.c:42
+#: ../beast-gtk/bstwaveview.c:48
 msgid "Editor"
 msgstr "Muhinduzi"
 
-#: ../beast-gtk/bstbusmixer.c:35
+#: ../beast-gtk/bstbusmixer.c:36
 #, fuzzy
 msgid "Add a new bus to the mixer"
 msgstr "a Gishya Kuri i"
 
-#: ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusmixer.c:37
 #, fuzzy
 msgid "Delete the currently selected bus"
 msgstr "i Byahiswemo"
@@ -663,7 +663,7 @@ msgstr ""
 #: ../beast-gtk/bsteventrollctrl.c:657 ../beast-gtk/bstpianorollctrl.c:580
 #: ../beast-gtk/bstpianorollctrl.c:690 ../beast-gtk/bstpianorollctrl.c:753
 #: ../beast-gtk/bsttrackrollctrl.c:480 ../beast-gtk/bsttrackrollctrl.c:500
-#: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:170
+#: ../beast-gtk/bsttrackrollctrl.c:572 ../bse/bseenums.c:168
 #, fuzzy
 msgid "No target"
 msgstr "Intego"
@@ -703,6 +703,50 @@ msgstr ""
 msgid "Abortion"
 msgstr ""
 
+#: ../beast-gtk/bstfiledialog.c:138 ../beast-gtk/bstitemview.c:208
+#: ../beast-gtk/bsttrackview.c:609
+msgid "Name"
+msgstr "Izina"
+
+#: ../beast-gtk/bstfiledialog.c:138
+#, fuzzy
+msgid "Sample or instrument name"
+msgstr "Kubika"
+
+# starmath/sdi\smslots.src:SID_FONTSIZE.text
+#: ../beast-gtk/bstfiledialog.c:141
+#, fuzzy
+msgid "Size"
+msgstr "Ingano"
+
+#: ../beast-gtk/bstfiledialog.c:141
+msgid "File size in bytes"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:143
+msgid "Format"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:143
+msgid "Detected file format"
+msgstr ""
+
+#: ../beast-gtk/bstfiledialog.c:159
+#, fuzzy
+msgid "Time"
+msgstr "Kugena igihe"
+
+#: ../beast-gtk/bstfiledialog.c:159
+#, fuzzy
+msgid "File modification time"
+msgstr "Igihe"
+
+# basctl/source\basicide\basidesh.src:RID_POPUP_TABBAR.SID_BASICIDE_RENAMECURRENT.text
+#: ../beast-gtk/bstfiledialog.c:166
+#, fuzzy
+msgid "Filename"
+msgstr "Guhindura izina"
+
 # #-#-#-#-#  sc.pot (PACKAGE VERSION)  #-#-#-#-#
 # sc/source\ui\dbgui\validate.src:TP_VALIDATION_INPUTHELP.FL_CONTENT.text
 # #-#-#-#-#  sc.pot (PACKAGE VERSION)  #-#-#-#-#
@@ -711,53 +755,53 @@ msgstr ""
 # sc/source\ui\navipi\navipi.src:RID_SCDLG_NAVIGATOR.TBX_CMD.IID_ZOOMOUT.text
 # #-#-#-#-#  sc.pot (PACKAGE VERSION)  #-#-#-#-#
 # sc/source\ui\navipi\navipi.src:SCSTR_CONTENT_ROOT.text
-#: ../beast-gtk/bstfiledialog.c:166
+#: ../beast-gtk/bstfiledialog.c:179
 msgid "Contents"
 msgstr "Ibigize"
 
 # basctl/source\basicide\tbxctl.src:RID_TOOLBOX.SID_INSERT_FILECONTROL.text
 #. setup remaining bits
-#: ../beast-gtk/bstfiledialog.c:198
+#: ../beast-gtk/bstfiledialog.c:211
 msgid "File Selection"
 msgstr "Ihitamo rya dosiye"
 
-#: ../beast-gtk/bstfiledialog.c:379
+#: ../beast-gtk/bstfiledialog.c:392
 msgid "Open Project"
 msgstr ""
 
 # wizards/source\euro\euro.src:MESSAGES_+_2.text
-#: ../beast-gtk/bstfiledialog.c:393
+#: ../beast-gtk/bstfiledialog.c:406
 #, fuzzy
 msgid "Select File"
 msgstr "Guhitamo idosiye"
 
 # svtools/source\dialogs\filedlg2.src:STR_FILEDLG_SELECT.text
-#: ../beast-gtk/bstfiledialog.c:407
+#: ../beast-gtk/bstfiledialog.c:420
 msgid "Select Directory"
 msgstr "Gutoranya ububiko"
 
 # sc/source\ui\src\globstr.src:RID_GLOBSTR.STR_UNDO_MERGE.text
-#: ../beast-gtk/bstfiledialog.c:445
+#: ../beast-gtk/bstfiledialog.c:458
 #, fuzzy, c-format
 msgid "Merge: %s"
 msgstr "Gukomatanya"
 
-#: ../beast-gtk/bstfiledialog.c:458
+#: ../beast-gtk/bstfiledialog.c:471
 #, fuzzy, c-format
 msgid "Merging project `%s'"
 msgstr "Umushinga"
 
-#: ../beast-gtk/bstfiledialog.c:474
+#: ../beast-gtk/bstfiledialog.c:487
 #, c-format
 msgid "Import MIDI: %s"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:485
+#: ../beast-gtk/bstfiledialog.c:498
 #, fuzzy, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "IDOSIYE"
 
-#: ../beast-gtk/bstfiledialog.c:506
+#: ../beast-gtk/bstfiledialog.c:519
 #, fuzzy, c-format
 msgid ""
 "Failed to save\n"
@@ -768,7 +812,7 @@ msgid ""
 msgstr "Kuri"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:531 ../beast-gtk/bstfiledialog.c:545
+#: ../beast-gtk/bstfiledialog.c:544 ../beast-gtk/bstfiledialog.c:558
 #, fuzzy, c-format
 msgid ""
 "Failed to save to file\n"
@@ -777,7 +821,7 @@ msgid ""
 "%s"
 msgstr "Kuri Kubika Kuri Kuri"
 
-#: ../beast-gtk/bstfiledialog.c:536
+#: ../beast-gtk/bstfiledialog.c:549
 #, fuzzy, c-format
 msgid ""
 "Failed to replace file\n"
@@ -786,76 +830,76 @@ msgid ""
 "%s"
 msgstr "Kuri Gusimbura Kuri"
 
-#: ../beast-gtk/bstfiledialog.c:572
+#: ../beast-gtk/bstfiledialog.c:585
 #, fuzzy, c-format
 msgid "Saving project `%s'"
 msgstr "Umushinga"
 
 # basctl/source\basicide\basidesh.src:RID_STR_SAVE.text
-#: ../beast-gtk/bstfiledialog.c:609
+#: ../beast-gtk/bstfiledialog.c:622
 #, fuzzy, c-format
 msgid "Save: %s"
 msgstr "Kubika"
 
 #. setup radio buttons
-#: ../beast-gtk/bstfiledialog.c:613
+#: ../beast-gtk/bstfiledialog.c:626
 #, fuzzy
 msgid "Fully include wave files"
 msgstr "Gushyiramo UMUVUMBA Idosiye"
 
-#: ../beast-gtk/bstfiledialog.c:614
+#: ../beast-gtk/bstfiledialog.c:627
 #, fuzzy
 msgid "Store references to wave files"
 msgstr "Indango Kuri UMUVUMBA Idosiye"
 
-#: ../beast-gtk/bstfiledialog.c:633
+#: ../beast-gtk/bstfiledialog.c:646
 msgid "Load Effect"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:646
+#: ../beast-gtk/bstfiledialog.c:659
 #, fuzzy, c-format
 msgid "Merging effect `%s'"
 msgstr "INGARUKA"
 
-#: ../beast-gtk/bstfiledialog.c:663
+#: ../beast-gtk/bstfiledialog.c:676
 #, fuzzy
 msgid "Save Effect"
 msgstr "Kubika"
 
-#: ../beast-gtk/bstfiledialog.c:677
+#: ../beast-gtk/bstfiledialog.c:690
 #, fuzzy, c-format
 msgid "Saving effect `%s'"
 msgstr "INGARUKA"
 
-#: ../beast-gtk/bstfiledialog.c:692
+#: ../beast-gtk/bstfiledialog.c:705
 msgid "Load Instrument"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:705
+#: ../beast-gtk/bstfiledialog.c:718
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:722
+#: ../beast-gtk/bstfiledialog.c:735
 #, fuzzy
 msgid "Save Instrument"
 msgstr "Kubika"
 
-#: ../beast-gtk/bstfiledialog.c:736
+#: ../beast-gtk/bstfiledialog.c:749
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:752
+#: ../beast-gtk/bstfiledialog.c:765
 msgid "Load Wave"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:764 ../beast-gtk/bstfiledialog.c:766
+#: ../beast-gtk/bstfiledialog.c:777 ../beast-gtk/bstfiledialog.c:779
 #, fuzzy, c-format
 msgid "Loading wave `%s'"
 msgstr "UMUVUMBA"
 
-#: ../beast-gtk/bstfiledialog.c:768 ../beast-gtk/bstmain.c:285
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
 #: ../beast-gtk/bstmain.c:302
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -893,12 +937,8 @@ msgstr "Gutoranya ikintu"
 msgid "ID"
 msgstr "ID"
 
-#: ../beast-gtk/bstitemview.c:208 ../beast-gtk/bsttrackview.c:608
-msgid "Name"
-msgstr "Izina"
-
 # padmin/source\padialog.src:RID_TXT_TESTPAGE_COMMENT.text
-#: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:629
+#: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:630
 msgid "Comment"
 msgstr "Icyo wongeraho"
 
@@ -975,11 +1015,11 @@ msgstr "a Urufunguzo Bifatanya Gushyiraho"
 msgid "Load Key Binding"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:432
+#: ../beast-gtk/bstkeybindings.c:433
 msgid "Key Binding"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:433
+#: ../beast-gtk/bstkeybindings.c:434
 #, fuzzy
 msgid "Key combinations used to activate a function"
 msgstr "Kuri Kureka bigakora a Umumaro"
@@ -990,25 +1030,25 @@ msgstr "Kuri Kureka bigakora a Umumaro"
 # sc/source\ui\src\scfuncs.src:RID_SC_FUNCTION_DESCRIPTIONS1.SC_OPCODE_SUB_TOTAL.2.text
 # #-#-#-#-#  sc.pot (PACKAGE VERSION)  #-#-#-#-#
 # sc/source\ui\src\toolbox.src:SCSTR_QHELP_BTNEQUAL.text
-#: ../beast-gtk/bstkeybindings.c:435 ../beast-gtk/bstkeybindings.c:459
+#: ../beast-gtk/bstkeybindings.c:436 ../beast-gtk/bstkeybindings.c:460
 msgid "Function"
 msgstr "Umumaro"
 
-#: ../beast-gtk/bstkeybindings.c:436
+#: ../beast-gtk/bstkeybindings.c:437
 #, fuzzy
 msgid "Functions to be activated for a key binding"
 msgstr "Kuri kugirango a Urufunguzo Bifatanya"
 
-#: ../beast-gtk/bstkeybindings.c:438
+#: ../beast-gtk/bstkeybindings.c:439
 msgid "Parameter"
 msgstr ""
 
-#: ../beast-gtk/bstkeybindings.c:439
+#: ../beast-gtk/bstkeybindings.c:440
 #, fuzzy
 msgid "Parameter to pass to functions upon activation"
 msgstr "Kuri Kuri Imimaro"
 
-#: ../beast-gtk/bstkeybindings.c:460
+#: ../beast-gtk/bstkeybindings.c:461
 #, fuzzy
 msgid "Function used to create new key bindings"
 msgstr "Kuri Kurema Gishya Urufunguzo Ibyafataranyijwe"
@@ -1017,7 +1057,7 @@ msgstr "Kuri Kurema Gishya Urufunguzo Ibyafataranyijwe"
 # basctl/source\basicide\moptions.src:RID_MACROOPTIONS.RID_FT_DESCR.text
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\moptions.src:RID_MACROOPTIONS.text
-#: ../beast-gtk/bstkeybindings.c:462 ../beast-gtk/bstprocedure.c:203
+#: ../beast-gtk/bstkeybindings.c:463 ../beast-gtk/bstprocedure.c:203
 msgid "Description"
 msgstr "Isobanuramiterere"
 
@@ -2126,7 +2166,7 @@ msgstr "E."
 # basctl/source\basicide\moduldlg.src:RID_TP_MODULS.RID_PB_EDIT.text
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\moduldlg.src:RID_TP_LIBS.RID_PB_EDIT.text
-#: ../beast-gtk/bstrackeditor.c:109 ../beast-gtk/bstrackview.c:43
+#: ../beast-gtk/bstrackeditor.c:109 ../beast-gtk/bstrackview.c:44
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:40
 #, fuzzy
 msgid "_Edit"
@@ -2160,7 +2200,7 @@ msgstr ""
 msgid "Shrink Vertically"
 msgstr ""
 
-#: ../beast-gtk/bstrackview.c:46 ../beast-gtk/gxk/gxkparam-label.c:78
+#: ../beast-gtk/bstrackview.c:47 ../beast-gtk/gxk/gxkparam-label.c:78
 #: ../beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Akarango"
@@ -3330,54 +3370,54 @@ msgstr "Gutangira"
 msgid "Synthesizer Selection: %s"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:63
+#: ../beast-gtk/bsttrackview.c:64
 #, fuzzy
 msgid "Add a new track to this song"
 msgstr "a Gishya Kuri iyi"
 
-#: ../beast-gtk/bsttrackview.c:66
+#: ../beast-gtk/bsttrackview.c:67
 #, fuzzy
 msgid "Delete the currently selected track"
 msgstr "i Byahiswemo"
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:284
+#: ../beast-gtk/bsttrackview.c:302 ../bse/bsetrack.c:284
 #: ../bse/bsewaveosc.c:128
 msgid "Available Waves"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:302
+#: ../beast-gtk/bsttrackview.c:303
 #, fuzzy
 msgid "List of available waves to choose a track instrument from"
 msgstr "Bya Bihari Kuri Guhitamo a Bivuye"
 
-#: ../beast-gtk/bsttrackview.c:611
+#: ../beast-gtk/bsttrackview.c:612
 #, fuzzy
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "Bivuye Ikuweho ivivura ku i"
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:450
+#: ../beast-gtk/bsttrackview.c:615 ../bse/bsemidisynth.c:450
 #: ../bse/bsetrack.c:1014
 #, fuzzy
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Umubare Bya kugirango"
 
-#: ../beast-gtk/bsttrackview.c:617
+#: ../beast-gtk/bsttrackview.c:618
 #, fuzzy
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "urusobe Cyangwa UMUVUMBA Kuri Nka ku iyi"
 
-#: ../beast-gtk/bsttrackview.c:620
+#: ../beast-gtk/bsttrackview.c:621
 #, fuzzy
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Kuri iyi 0 By'umwihariko"
 
-#: ../beast-gtk/bsttrackview.c:623
+#: ../beast-gtk/bsttrackview.c:624
 #, fuzzy
 msgid "Mixer busses connected to track output"
 msgstr "Kuri Ibisohoka"
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:459
+#: ../beast-gtk/bsttrackview.c:627 ../bse/bsemidisynth.c:459
 #: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
 #, fuzzy
 msgid "Synthesis network to be used as postprocessor"
@@ -3494,31 +3534,31 @@ msgstr ""
 msgid "Scroll Right"
 msgstr ""
 
-#: ../beast-gtk/bstwaveview.c:41
+#: ../beast-gtk/bstwaveview.c:42
 #, fuzzy
 msgid "Load..."
 msgstr "Gutangiza..."
 
-#: ../beast-gtk/bstwaveview.c:41
+#: ../beast-gtk/bstwaveview.c:42
 #, fuzzy
 msgid "Load a new wave file from disk"
 msgstr "a Gishya UMUVUMBA IDOSIYE Bivuye"
 
-#: ../beast-gtk/bstwaveview.c:43
+#: ../beast-gtk/bstwaveview.c:44
 msgid "Lib..."
 msgstr ""
 
-#: ../beast-gtk/bstwaveview.c:43
+#: ../beast-gtk/bstwaveview.c:44
 #, fuzzy
 msgid "Load a new wave file from library paths"
 msgstr "a Gishya UMUVUMBA IDOSIYE Bivuye Isomero Inzira"
 
-#: ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bstwaveview.c:46
 #, fuzzy
 msgid "Delete the currently selected wave"
 msgstr "i Byahiswemo UMUVUMBA"
 
-#: ../beast-gtk/bstwaveview.c:47
+#: ../beast-gtk/bstwaveview.c:48
 #, fuzzy
 msgid "Edit the currently selected wave"
 msgstr "i Byahiswemo UMUVUMBA"
@@ -5607,337 +5647,337 @@ msgid ""
 "automatic driver selection."
 msgstr "ni a Bidasanzwe Musomyi: Nka a Akarindamwanya Musomyi: Ihitamo"
 
-#: ../bse/bseenums.c:99
+#: ../bse/bseenums.c:97
 msgid "Everything went well"
 msgstr ""
 
-#: ../bse/bseenums.c:100
+#: ../bse/bseenums.c:98
 #, fuzzy
 msgid "Internal error (please report)"
 msgstr "Ikosa Icyegeranyo"
 
 # # @name OTHER
 # # @loc none
-#: ../bse/bseenums.c:101
+#: ../bse/bseenums.c:99
 msgid "Unknown error"
 msgstr "Ikosa itazwi"
 
-#: ../bse/bseenums.c:102
+#: ../bse/bseenums.c:100
 #, fuzzy
 msgid "Input/output error"
 msgstr "Ibisohoka Ikosa"
 
-#: ../bse/bseenums.c:103
+#: ../bse/bseenums.c:101
 msgid "Insufficient permission"
 msgstr ""
 
 #. file errors
-#: ../bse/bseenums.c:105
+#: ../bse/bseenums.c:103
 #, fuzzy
 msgid "Device or resource busy"
 msgstr "Cyangwa Irahuze"
 
-#: ../bse/bseenums.c:106
+#: ../bse/bseenums.c:104
 #, fuzzy
 msgid "File exists already"
 msgstr "Idosiye"
 
-#: ../bse/bseenums.c:107
+#: ../bse/bseenums.c:105
 msgid "Premature EOF"
 msgstr ""
 
-#: ../bse/bseenums.c:108
+#: ../bse/bseenums.c:106
 #, fuzzy
 msgid "File empty"
 msgstr "Idosiye ubusa"
 
-#: ../bse/bseenums.c:109
+#: ../bse/bseenums.c:107
 #, fuzzy
 msgid "No such file, device or directory"
 msgstr "IDOSIYE APAREYE Cyangwa bushyinguro"
 
-#: ../bse/bseenums.c:110
+#: ../bse/bseenums.c:108
 #, fuzzy
 msgid "Is a directory"
 msgstr "a bushyinguro"
 
-#: ../bse/bseenums.c:111
+#: ../bse/bseenums.c:109
 #, fuzzy
 msgid "Open failed"
 msgstr "Byanze"
 
-#: ../bse/bseenums.c:112
+#: ../bse/bseenums.c:110
 #, fuzzy
 msgid "Seek failed"
 msgstr "Byanze"
 
-#: ../bse/bseenums.c:113
+#: ../bse/bseenums.c:111
 #, fuzzy
 msgid "Read failed"
 msgstr "Byanze"
 
-#: ../bse/bseenums.c:114
+#: ../bse/bseenums.c:112
 #, fuzzy
 msgid "Write failed"
 msgstr "Byanze"
 
 #. out of resource conditions
-#: ../bse/bseenums.c:116
+#: ../bse/bseenums.c:114
 #, fuzzy
 msgid "Too many open files"
 msgstr "Gufungura Idosiye"
 
-#: ../bse/bseenums.c:117
+#: ../bse/bseenums.c:115
 #, fuzzy
 msgid "Too many open files in system"
 msgstr "Gufungura Idosiye in Sisitemu"
 
-#: ../bse/bseenums.c:118
+#: ../bse/bseenums.c:116
 #, fuzzy
 msgid "No space left on device"
 msgstr "Umwanya Ibumoso: ku APAREYE"
 
 # # @name NO_MEMORY
 # # @loc none
-#: ../bse/bseenums.c:119
+#: ../bse/bseenums.c:117
 msgid "Out of memory"
 msgstr "Ububiko bwarenzwe"
 
 #. content errors
-#: ../bse/bseenums.c:121
+#: ../bse/bseenums.c:119
 #, fuzzy
 msgid "Failed to detect (start of) header"
 msgstr "Kuri Gutangira Bya Umutwempangano"
 
-#: ../bse/bseenums.c:122
+#: ../bse/bseenums.c:120
 #, fuzzy
 msgid "Failed to retrieve seek information"
 msgstr "Kuri Ibisobanuro"
 
-#: ../bse/bseenums.c:123
+#: ../bse/bseenums.c:121
 #, fuzzy
 msgid "No data available"
 msgstr "Ibyatanzwe Bihari"
 
-#: ../bse/bseenums.c:124
+#: ../bse/bseenums.c:122
 msgid "Data corrupt"
 msgstr ""
 
-#: ../bse/bseenums.c:125
+#: ../bse/bseenums.c:123
 #, fuzzy
 msgid "Wrong number of channels"
 msgstr "Umubare Bya"
 
-#: ../bse/bseenums.c:126
+#: ../bse/bseenums.c:124
 #, fuzzy
 msgid "Invalid format"
 msgstr "Imiterere"
 
-#: ../bse/bseenums.c:127
+#: ../bse/bseenums.c:125
 #, fuzzy
 msgid "Unknown format"
 msgstr "Imiterere"
 
-#: ../bse/bseenums.c:128
+#: ../bse/bseenums.c:126
 #, fuzzy
 msgid "Requested data values unmatched"
 msgstr "Ibyatanzwe Uduciro"
 
 #. miscellaneous errors
-#: ../bse/bseenums.c:130
+#: ../bse/bseenums.c:128
 #, fuzzy
 msgid "Temporary error"
 msgstr "Ikosa"
 
-#: ../bse/bseenums.c:131
+#: ../bse/bseenums.c:129
 #, fuzzy
 msgid "No such wave"
 msgstr "UMUVUMBA"
 
-#: ../bse/bseenums.c:132
+#: ../bse/bseenums.c:130
 msgid "CODEC failure"
 msgstr ""
 
-#: ../bse/bseenums.c:133
+#: ../bse/bseenums.c:131
 #, fuzzy
 msgid "Functionality not implemented"
 msgstr "OYA"
 
-#: ../bse/bseenums.c:134
+#: ../bse/bseenums.c:132
 #, fuzzy
 msgid "Invalid object property"
 msgstr "Igikoresho indangakintu"
 
-#: ../bse/bseenums.c:135
+#: ../bse/bseenums.c:133
 #, fuzzy
 msgid "Invalid MIDI control type"
 msgstr "Igenzura Ubwoko"
 
-#: ../bse/bseenums.c:136
+#: ../bse/bseenums.c:134
 #, fuzzy
 msgid "Parsing error"
 msgstr "Ikosa"
 
-#: ../bse/bseenums.c:137
+#: ../bse/bseenums.c:135
 #, fuzzy
 msgid "Failed to spawn child process"
 msgstr "Kuri"
 
 #. Device errors
-#: ../bse/bseenums.c:139
+#: ../bse/bseenums.c:137
 #, fuzzy
 msgid "No device (driver) available"
 msgstr "APAREYE Musomyi: Bihari"
 
-#: ../bse/bseenums.c:140
+#: ../bse/bseenums.c:138
 #, fuzzy
 msgid "Device not async capable"
 msgstr "OYA"
 
-#: ../bse/bseenums.c:141
+#: ../bse/bseenums.c:139
 #, fuzzy
 msgid "Device busy"
 msgstr "Irahuze"
 
-#: ../bse/bseenums.c:142
+#: ../bse/bseenums.c:140
 #, fuzzy
 msgid "Failed to configure device format"
 msgstr "Kuri Kugena Imiterere APAREYE Imiterere"
 
-#: ../bse/bseenums.c:143
+#: ../bse/bseenums.c:141
 #, fuzzy
 msgid "Failed to configure device buffer"
 msgstr "Kuri Kugena Imiterere APAREYE"
 
-#: ../bse/bseenums.c:144
+#: ../bse/bseenums.c:142
 #, fuzzy
 msgid "Failed to configure device latency"
 msgstr "Kuri Kugena Imiterere APAREYE"
 
-#: ../bse/bseenums.c:145
+#: ../bse/bseenums.c:143
 #, fuzzy
 msgid "Failed to configure number of device channels"
 msgstr "Kuri Kugena Imiterere Umubare Bya APAREYE"
 
-#: ../bse/bseenums.c:146
+#: ../bse/bseenums.c:144
 #, fuzzy
 msgid "Failed to configure device frequency"
 msgstr "Kuri Kugena Imiterere APAREYE Ubwisubire"
 
-#: ../bse/bseenums.c:147
+#: ../bse/bseenums.c:145
 #, fuzzy
 msgid "Device configurations mismatch"
 msgstr "Amaboneza"
 
 #. BseSource errors
-#: ../bse/bseenums.c:149
+#: ../bse/bseenums.c:147
 #, fuzzy
 msgid "No such synthesis module"
 msgstr "Modire"
 
-#: ../bse/bseenums.c:150
+#: ../bse/bseenums.c:148
 #, fuzzy
 msgid "No such input channel"
 msgstr "Iyinjiza"
 
-#: ../bse/bseenums.c:151
+#: ../bse/bseenums.c:149
 #, fuzzy
 msgid "No such output channel"
 msgstr "Ibisohoka"
 
-#: ../bse/bseenums.c:152
+#: ../bse/bseenums.c:150
 #, fuzzy
 msgid "Input/Output channels not connected"
 msgstr "OYA"
 
-#: ../bse/bseenums.c:153
+#: ../bse/bseenums.c:151
 #, fuzzy
 msgid "Input channel is private"
 msgstr "ni By'umwihariko"
 
-#: ../bse/bseenums.c:154
+#: ../bse/bseenums.c:152
 #, fuzzy
 msgid "Input channel already in use"
 msgstr "in Gukoresha"
 
-#: ../bse/bseenums.c:155
+#: ../bse/bseenums.c:153
 msgid "Input/Output channels already connected"
 msgstr ""
 
-#: ../bse/bseenums.c:156
+#: ../bse/bseenums.c:154
 #, fuzzy
 msgid "Invalid synthesis module connection"
 msgstr "Modire Ukwihuza"
 
-#: ../bse/bseenums.c:157
+#: ../bse/bseenums.c:155
 msgid "Parent mismatch"
 msgstr ""
 
-#: ../bse/bseenums.c:158
+#: ../bse/bseenums.c:156
 msgid "Bad loopback"
 msgstr ""
 
-#: ../bse/bseenums.c:159
+#: ../bse/bseenums.c:157
 #, fuzzy
 msgid "Synthesis module currently busy"
 msgstr "Modire Irahuze"
 
-#: ../bse/bseenums.c:160
+#: ../bse/bseenums.c:158
 #, fuzzy
 msgid "Invalid synthsis module type"
 msgstr "Modire Ubwoko"
 
 #. BseProcedure errors
-#: ../bse/bseenums.c:162
+#: ../bse/bseenums.c:160
 msgid "No such procedure"
 msgstr ""
 
-#: ../bse/bseenums.c:163
+#: ../bse/bseenums.c:161
 #, fuzzy
 msgid "Procedure currently busy"
 msgstr "Irahuze"
 
 #. recursion
-#: ../bse/bseenums.c:164
+#: ../bse/bseenums.c:162
 #, fuzzy
 msgid "Procedure parameter invalid"
 msgstr "Sibyo"
 
-#: ../bse/bseenums.c:165
+#: ../bse/bseenums.c:163
 #, fuzzy
 msgid "Procedure execution failed"
 msgstr "Byanze"
 
-#: ../bse/bseenums.c:166
+#: ../bse/bseenums.c:164
 msgid "Procedure execution aborted"
 msgstr ""
 
 #. various procedure errors
-#: ../bse/bseenums.c:168
+#: ../bse/bseenums.c:166
 #, fuzzy
 msgid "No such entry"
 msgstr "Icyinjijwe"
 
-#: ../bse/bseenums.c:169
+#: ../bse/bseenums.c:167
 #, fuzzy
 msgid "No such event"
 msgstr "Icyabaye"
 
-#: ../bse/bseenums.c:171
+#: ../bse/bseenums.c:169
 msgid "Ownership mismatch"
 msgstr ""
 
-#: ../bse/bseenums.c:172
+#: ../bse/bseenums.c:170
 #, fuzzy
 msgid "Invalid offset"
 msgstr "Nta- boneza"
 
-#: ../bse/bseenums.c:173
+#: ../bse/bseenums.c:171
 #, fuzzy
 msgid "Invalid duration"
 msgstr "Igihe- ngombwa"
 
-#: ../bse/bseenums.c:174
+#: ../bse/bseenums.c:172
 #, fuzzy
 msgid "Invalid overlap"
 msgstr "Korosa"
@@ -7768,7 +7808,7 @@ msgstr ""
 msgid "Right Output"
 msgstr ""
 
-#: ../tools/bsewavetool.cc:934
+#: ../tools/bsewavetool.cc:933
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
