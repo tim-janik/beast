@@ -18,6 +18,8 @@
  */
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
+// #define TEST_VERBOSE
+#include <birnet/birnettests.h>
 #include <sfi/sfi.h>
 #include <unistd.h>
 #include <string.h>
@@ -38,23 +40,14 @@
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
-#define _(x) (x "_tr")
-
 #include <sfi/testidl.h>
-
-#define	MSG(what)	do g_print ("%s [", what); while (0)
-#define	TICK()		do g_print ("-"); while (0)
-#define	XTICK()		do g_print ("X"); while (0)
-#define	DTICK()		do g_print (":"); while (0)
-#define	DONE()		do g_print ("]\n"); while (0)
-#define	TASSERT(code)	do { if (code) TICK (); else g_error ("(line:%u) failed to assert: %s", __LINE__, #code); } while (0)
 
 static void
 test_misc (void)
 {
-  MSG ("Misc:");
+  TSTART ("Misc");
   TASSERT (0 == 0);
-  DONE ();
+  TDONE ();
 }
 
 static void
@@ -69,13 +62,13 @@ test_time (void)
     "2037-12-31 23:59:59",
   };
   gint i;
-  MSG ("Time:");
+  TSTART ("Time");
   TASSERT (SFI_USEC_FACTOR == 1000000);
   TASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
   t = sfi_time_system ();
   if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
     {
-      XTICK ();
+      TACK ();
       t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
     }
   else
@@ -107,7 +100,7 @@ test_time (void)
       TASSERT (error == NULL);
       g_free (str);
     }
-  DONE ();
+  TDONE ();
 }
 
 static void
@@ -116,7 +109,7 @@ test_com_ports (void)
   gint afds[2], pipe_error;
   SfiComPort *port1, *port2;
   GValue *value, *rvalue;
-  MSG ("Communication Ports:");
+  TSTART ("Communication Ports");
   pipe_error = pipe (afds);
   TASSERT (pipe_error == 0);
   port1 = sfi_com_port_from_pipe ("portA", -1, afds[1]);
@@ -154,7 +147,7 @@ test_com_ports (void)
   TASSERT (pipe_error == -1);
   sfi_com_port_unref (port1);
   sfi_com_port_unref (port2);
-  DONE ();
+  TDONE ();
 }
 
 static void
@@ -165,7 +158,7 @@ test_thread (gpointer data)
   *tdata += 1;
   while (!birnet_thread_aborted ())
     birnet_thread_sleep (-1);
-  XTICK ();
+  TACK ();
 }
 
 static void
@@ -175,7 +168,7 @@ test_threads (void)
   guint thread_data = 0;
   BirnetThread *thread;
   gboolean locked;
-  MSG ("Threading:");
+  TSTART ("Threading");
   birnet_mutex_init (&test_mutex);
   locked = birnet_mutex_trylock (&test_mutex);
   TASSERT (locked);
@@ -188,7 +181,7 @@ test_threads (void)
   birnet_thread_abort (thread);
   TASSERT (thread_data > 0);
   birnet_thread_unref (thread);
-  DONE ();
+  TDONE ();
 }
 
 #define SCANNER_ASSERT64(scanner, printout, token, text, svalue) { \
@@ -212,7 +205,7 @@ static void
 test_scanner64 (void)
 {
   GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
-  MSG ("64Bit Scanner:");
+  TSTART ("64Bit Scanner");
   scanner->config->numbers_2_int = FALSE;
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
@@ -233,7 +226,7 @@ test_scanner64 (void)
   SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 2.2250738585072014e-308 #", 2.2250738585072014e-308);
   SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 1.7976931348623157e+308 #", 1.7976931348623157e+308);
   g_scanner_destroy (scanner);
-  DONE ();
+  TDONE ();
 }
 
 typedef enum /*< skip >*/
@@ -363,9 +356,9 @@ test_typed_serialization (SerialTest test_type)
   serial_test_type = test_type;
   switch (serial_test_type)
     {
-    case SERIAL_TEST_TYPED:	MSG ("Typed Serialization:");	break;
-    case SERIAL_TEST_PARAM:	MSG ("Param Serialization:");	break;
-    case SERIAL_TEST_PSPEC:	MSG ("Pspec Serialization:");	break;
+    case SERIAL_TEST_TYPED:	TSTART ("Typed Serialization"); break;
+    case SERIAL_TEST_PARAM:	TSTART ("Param Serialization"); break;
+    case SERIAL_TEST_PSPEC:	TSTART ("Pspec Serialization"); break;
     }
   serialize_cmp (sfi_value_bool (FALSE),
 		 sfi_pspec_bool ("bool-false", NULL, NULL, FALSE, SFI_PARAM_STANDARD));
@@ -524,7 +517,7 @@ test_typed_serialization (SerialTest test_type)
   sfi_seq_unref (seq);
   sfi_pspec_unref (pspec_homo_seq);
   sfi_rec_unref (rec);
-  DONE ();
+  TDONE ();
 }
 
 static void
@@ -532,7 +525,7 @@ test_notes (void)
 {
   gchar *str, *error = NULL;
   guint i;
-  MSG ("Notes:");
+  TSTART ("Notes");
   str = sfi_note_to_string (SFI_MIN_NOTE);
   TASSERT (sfi_note_from_string_err (str, &error) == SFI_MIN_NOTE);
   TASSERT (error == NULL);
@@ -561,14 +554,14 @@ test_notes (void)
   TASSERT (error != NULL);
   // g_print ("{%s}", error);
   g_free (error);
-  DONE ();
+  TDONE ();
 }
 
 static void
 test_renames (void)
 {
   gchar *str;
-  MSG ("Renames:");
+  TSTART ("Renames");
   str = g_type_name_to_cname ("PrefixTypeName");
   TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
@@ -587,7 +580,7 @@ test_renames (void)
   str = g_type_name_to_cname ("prefix-type-name");
   TASSERT (strcmp (str, "prefix_type_name") == 0);
   g_free (str);
-  DONE ();
+  TDONE ();
 }
 
 static gboolean vmarshal_switch = TRUE;
@@ -713,7 +706,7 @@ static void
 test_vmarshals (void)
 {
   SfiSeq *seq = sfi_seq_new ();
-  MSG ("Vmarshals:");
+  TSTART ("Vmarshals");
   sfi_seq_append_real (seq, -426.9112e-267);
   sfi_seq_append_num (seq, -2598768763298128732LL);
   sfi_vmarshal_void (test_vmarshal_func4, pointer1,
@@ -725,7 +718,7 @@ test_vmarshals (void)
   sfi_vmarshal_void (test_vmarshal_func7, pointer1,
 		  seq->n_elements, seq->elements,
 		  pointer3);
-  DONE ();
+  TDONE ();
   sfi_seq_unref (seq);
 }
 
@@ -737,7 +730,7 @@ test_sfidl_seq (void)
   TestPosition* pos2;
   SfiRec* rec;
   GValue* value;
-  MSG ("Sfidl generated code:");
+  TSTART ("Sfidl generated code");
 
   /* test that types are registered properly */
   // TASSERT (TEST_TYPE_POSITION != 0);
@@ -820,7 +813,7 @@ test_sfidl_seq (void)
   /* test constants */
   // TASSERT (TEST_ANSWER_B == 42);
   // TASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
-  DONE ();
+  TDONE ();
 }
 
 static void
@@ -857,7 +850,7 @@ print_rings_side_by_side (SfiRing *ring1,
 static void
 test_sfi_ring (void)
 {
-  MSG ("SfiRing:");
+  TSTART ("SfiRing");
   (void) print_ring_ints;
 
   SfiRing *r1 = NULL, *r2 = NULL, *d = NULL;
@@ -1011,7 +1004,7 @@ test_sfi_ring (void)
   sfi_ring_free (r1);
   sfi_ring_free (r2);
 
-  DONE ();
+  TDONE ();
 }
 
 #include <sfi/testidl.c>

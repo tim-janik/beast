@@ -1,3 +1,9 @@
+Thu Apr 13 23:59:08 2006  Tim Janik  <timj@gtk.org>
+
+	* testsfi.c:
+	* testsfidl.cc:
+	* testcxx.cc: fixed test macros.
+
 Sat Apr  8 02:10:07 2006  Tim Janik  <timj@gtk.org>
 
 	* sfitime.[hc]: added sfi_time_to_nice_string() to allow more flexible formatting.

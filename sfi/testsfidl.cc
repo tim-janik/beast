@@ -16,6 +16,10 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#undef G_LOG_DOMAIN
+#define  G_LOG_DOMAIN __FILE__
+// #define TEST_VERBOSE
+#include <birnet/birnettests.h>
 #include "sfidl-generator.hh"
 #include "sfidl-factory.hh"
 #include <stdio.h>
@@ -24,13 +28,10 @@ using namespace Sfidl;
 using namespace std;
 
 
-#define MSG(what)       do g_print ("%s [", what); while (0)
-#define TICK()          do g_print ("-"); while (0)
-#define XTICK()         do g_print ("X"); while (0)
-#define DONE()          do g_print ("]\n"); while (0)
-#define ASSERT(code)    do { if (code) TICK (); else g_error ("(line:%u) failed to assert: %s", __LINE__, #code); } while (0)
-#define ASSERT_EQ(got,expected) \
-  do { if (expected == got) TICK (); else g_error ("(line:%u) failed to assert: %s == %s\nexpected: %s, got: %s", __LINE__, #got, #expected, expected, got.c_str()); } while (0)
+#define ASSERT_EQ(got,expectedcstr) do {                                \
+  TPRINT ("{check equality: %s == %s}", expectedcstr, got.c_str());     \
+  TASSERT (expectedcstr == got);                                            \
+} while (0)
 
 class TestCG : public CodeGenerator
 {
@@ -57,13 +58,13 @@ public:
   }
   bool run()
   {
-    MSG ("Testing Option parser:");
+    TSTART ("Testing Option parser");
     ASSERT_EQ (one, "1");
     ASSERT_EQ (two, "2");
     ASSERT_EQ (done, "1");
-    DONE ();
+    TDONE ();
 
-    MSG ("Testing CodeGenerator::rename():");
+    TSTART ("Testing CodeGenerator::rename()");
 
     vector<string> procedures;
     vector<string> empty;
@@ -71,8 +72,8 @@ public:
     procedures.push_back("Procedures");
     type.push_back("Type");
 
-    ASSERT (procedures.size() == type.size() == 1);
-    ASSERT (empty.size() == 0);
+    TASSERT (procedures.size() == type.size() == 1);
+    TASSERT (empty.size() == 0);
 
     ASSERT_EQ (rename (ABSOLUTE, "A::B::processMessagesSlowly", Capitalized, "::",
 		       procedures, lower, "_"),
@@ -110,7 +111,7 @@ public:
                        empty, UPPER, "_"),
               "BSE_MIDI_SIGNAL_PROGRAM");
 
-    DONE();
+    TDONE();
     return true;
   }
 };
@@ -143,9 +144,9 @@ main (int   argc,
   fake_argv[5] = "--done";
   options.parse (&fake_argc, &fake_argv, parser);
 
-  MSG ("Testing factory:");
-  ASSERT (options.codeGenerator != 0);
-  DONE();
+  TSTART ("Testing factory");
+  TASSERT (options.codeGenerator != 0);
+  TDONE();
 
   if (options.codeGenerator->run())
     {
