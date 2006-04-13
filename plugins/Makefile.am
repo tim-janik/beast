@@ -57,14 +57,14 @@ plugins_ldflags 	  = -avoid-version
 plugins_libs    	  = $(top_builddir)/bse/libbse.la $(BSE_LIBS) -lm
 plugins_built_sources 	  = 	# listed in Makefile.plugins
 CLEANFILES 		 += $(plugins_built_sources)
-# +PLAIN plugins
-plugin_PLAIN_ltlibs	  =	# listed in Makefile.plugins
-plugin_PLAIN_LTLIBRARIES  = $(plugin_PLAIN_ltlibs)
-plugin_PLAINdir 	  = $(bseplugindir)+PLAIN
-# +SSE plugins
+# .FPU plugins
+plugin_FPU_ltlibs	  =	# listed in Makefile.plugins
+plugin_FPU_LTLIBRARIES	  = $(plugin_FPU_ltlibs)
+plugin_FPUdir 	  	  = $(bseplugindir)
+# .SSE plugins
 plugin_SSE_ltlibs	  =	# listed in Makefile.plugins
 plugin_SSE_LTLIBRARIES	  = $(plugin_SSE_cond_libs)
-plugin_SSEdir		  = $(bseplugindir)+SSE
+plugin_SSEdir		  = $(bseplugindir)
 if WITH_SSE_FLAGS
 plugin_SSE_cond_libs	  = $(plugin_SSE_ltlibs)
 else
@@ -77,12 +77,12 @@ include Makefile.plugins
 # === Makefile.plugins generation rules ===
 #### C++ Plugin bsefoo
 ##$(srcdir)/bsefoo.cc: bsefoo.genidl.hh
-##plugins_built_sources   += bsefoo.genidl.hh
-##plugin_PLAIN_ltlibs     += bsefoo+PLAIN.la
-##bsefoo_PLAIN_la_SOURCES  = bsefoo.cc
-##bsefoo_PLAIN_la_LDFLAGS  = -module $(plugins_ldflags)
-##bsefoo_PLAIN_la_LIBADD   = $(plugins_libs)
-##bsefoo_PLAIN_la_CXXFLAGS = $(AM_CXXFLAGS)
+##plugins_built_sources += bsefoo.genidl.hh
+##plugin_FPU_ltlibs     += bsefoo.FPU.la
+##bsefoo_FPU_la_SOURCES  = bsefoo.cc
+##bsefoo_FPU_la_LDFLAGS  = -module $(plugins_ldflags)
+##bsefoo_FPU_la_LIBADD   = $(plugins_libs)
+##bsefoo_FPU_la_CXXFLAGS = $(AM_CXXFLAGS)
 .PHONY: refresh-Makefile.plugins
 refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
 	echo									 >xgen-$(@F)
@@ -92,15 +92,15 @@ refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
 	  echo -e "\n## C++ Plugin $$name"					>>xgen-$(@F) 	;\
 	  echo '$$(srcdir)/'"$$name.cc: $$name.genidl.hh"			>>xgen-$(@F)	;\
 	  echo "plugins_built_sources   += $$name.genidl.hh"			>>xgen-$(@F)	;\
-	  echo "plugin_PLAIN_ltlibs    += $$name+PLAIN.la"			>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_SOURCES = '"$$name.cc"			>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_LDFLAGS = -module $$(plugins_ldflags)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_LIBADD  = $$(plugins_libs)'			>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_CXXFLAGS  = $$(AM_CXXFLAGS)'			>>xgen-$(@F)	;\
-	  echo "plugin_SSE_ltlibs      += $$name+SSE.la"			>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_SOURCES   = $$('"$$_name"'_PLAIN_la_SOURCES)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LDFLAGS   = $$('"$$_name"'_PLAIN_la_LDFLAGS)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LIBADD    = $$('"$$_name"'_PLAIN_la_LIBADD)'	>>xgen-$(@F)	;\
+	  echo "plugin_FPU_ltlibs    += $$name.FPU.la"				>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_SOURCES = '"$$name.cc"				>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_LDFLAGS = -module $$(plugins_ldflags)'		>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_LIBADD  = $$(plugins_libs)'			>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_CXXFLAGS  = $$(AM_CXXFLAGS)'			>>xgen-$(@F)	;\
+	  echo "plugin_SSE_ltlibs      += $$name.SSE.la"			>>xgen-$(@F)	;\
+	  echo "$$_name"'_SSE_la_SOURCES   = $$('"$$_name"'_FPU_la_SOURCES)'	>>xgen-$(@F)	;\
+	  echo "$$_name"'_SSE_la_LDFLAGS   = $$('"$$_name"'_FPU_la_LDFLAGS)'	>>xgen-$(@F)	;\
+	  echo "$$_name"'_SSE_la_LIBADD    = $$('"$$_name"'_FPU_la_LIBADD)'	>>xgen-$(@F)	;\
 	  echo "$$_name"'_SSE_la_CXXFLAGS  = $$(AM_CXXFLAGS) $$(SSE_FLAGS)'	>>xgen-$(@F)	;\
 	done
 	: # generate C plugin rules
@@ -123,15 +123,15 @@ refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
 	    echo "EXTRA_HEADERS      += $$hfile"				>>xgen-$(@F)	;\
 	    echo '$$(srcdir)/'"$$cfile: $$hfile"				>>xgen-$(@F)	;\
 	  }											;\
-	  echo "plugin_PLAIN_ltlibs += $$name+PLAIN.la"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_SOURCES = '"$$cfile"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_LDFLAGS = -module $$(plugins_ldflags)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_LIBADD  = $$(plugins_libs)'			>>xgen-$(@F)	;\
-	  echo "$$_name"'_PLAIN_la_CFLAGS    = $$(AM_CFLAGS)'			>>xgen-$(@F)	;\
-	  echo "plugin_SSE_ltlibs   += $$name+SSE.la"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_SOURCES   = $$('"$$_name"'_PLAIN_la_SOURCES)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LDFLAGS   = $$('"$$_name"'_PLAIN_la_LDFLAGS)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LIBADD    = $$('"$$_name"'_PLAIN_la_LIBADD)'	>>xgen-$(@F)	;\
+	  echo "plugin_FPU_ltlibs += $$name.FPU.la"				>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_SOURCES = '"$$cfile"				>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_LDFLAGS = -module $$(plugins_ldflags)'		>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_LIBADD  = $$(plugins_libs)'			>>xgen-$(@F)	;\
+	  echo "$$_name"'_FPU_la_CFLAGS    = $$(AM_CFLAGS)'			>>xgen-$(@F)	;\
+	  echo "plugin_SSE_ltlibs   += $$name.SSE.la"				>>xgen-$(@F)	;\
+	  echo "$$_name"'_SSE_la_SOURCES   = $$('"$$_name"'_FPU_la_SOURCES)'	>>xgen-$(@F)	;\
+	  echo "$$_name"'_SSE_la_LDFLAGS   = $$('"$$_name"'_FPU_la_LDFLAGS)'	>>xgen-$(@F)	;\
+	  echo "$$_name"'_SSE_la_LIBADD    = $$('"$$_name"'_FPU_la_LIBADD)'	>>xgen-$(@F)	;\
 	  echo "$$_name"'_SSE_la_CFLAGS    = $$(AM_CFLAGS) $$(SSE_FLAGS)'	>>xgen-$(@F)	;\
 	done
 	: # move Makefile.plugins in place

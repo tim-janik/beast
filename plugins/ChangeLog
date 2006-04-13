@@ -1,3 +1,10 @@
+Thu Apr 13 23:57:39 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: install all plugins into the same dir. generate .FPU.
+	and .SSE. plugins.
+
+	* Makefile.plugins: updates.
+
 Wed Apr 12 02:35:47 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: added a rule "refresh-Makefile.plugins:" to rebuild the
