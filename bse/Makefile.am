@@ -104,7 +104,7 @@ $(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
 bse_idl_sources += bsebusmodule.idl
 $(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
 bse_idl_sources += bsecore.idl
-$(srcdir)/bsecxxplugin.hh: bsecore.genidl.hh
+$(srcdir)/bsecxxplugin.cc: bsecore.genidl.hh
 bse_idl_sources += bseprobe.idl
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
 bse_idl_sources += bsesummation.idl
@@ -139,12 +139,13 @@ pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 #
 # BSE library
 #
-lib_LTLIBRARIES       = libbse.la
-libbseincludedir      = $(includedir)/bse
-libbseinclude_HEADERS = $(bse_public_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.genidl.hh
-libbse_la_SOURCES     = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
-libbse_la_LIBADD      = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
-libbse_la_LDFLAGS     = $(strip					\
+lib_LTLIBRARIES              = libbse.la
+libbseincludedir       	     = $(includedir)/bse
+libbseinclude_HEADERS        = $(bse_public_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
+nodist_libbseinclude_HEADERS = bsecore.genidl.hh
+libbse_la_SOURCES            = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
+libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
+libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
 	-release $(LT_RELEASE) 					\
@@ -206,29 +207,33 @@ bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bseenum_arrays.c
-GENERATED_EXTRA_DIST += bseenum_arrays.c
+GENERATED_CLEANFILES += bseenum_arrays.c
 $(libbse_la_OBJECTS): bseenum_arrays.c
 bseenum_arrays.c: bsegentypes.h
-	cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
-	  --vhead "/* @EnumName@\n */\n" \
-	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
-	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	    $(filter-out bsegentypes.h, $(bse_public_h_sources)) > xgen-$(@F) \
-	&& cp xgen-$(@F) $(@F) \
+	( \
+	  cd $(srcdir) \
+	  && $(GLIB_MKENUMS) \
+	    --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
+	    --vhead "/* @EnumName@\n */\n" \
+	    --vhead "static G@Type@Value @enum_name@_values[] = {" \
+	    --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+	    --vtail "  { 0, NULL, NULL }\n};\n" \
+	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
+	) > xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bseenum_list.c
-GENERATED_EXTRA_DIST += bseenum_list.c
+GENERATED_CLEANFILES += bseenum_list.c
 $(libbse_la_OBJECTS): bseenum_list.c
 bseenum_list.c: bsegentypes.h
-	cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-	    $(filter-out bsegentypes.h, $(bse_public_h_sources)) > xgen-$(@F) \
-	&& cp xgen-$(@F) $(@F) \
+	( \
+	  cd $(srcdir) \
+	  && $(GLIB_MKENUMS) \
+	    --fprod "\n/* --- @filename@ --- */" \
+	    --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
+	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
+	) > xgen-$(@F) \
+	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
 # bsegentype_array.c
 GENERATED_EXTRA_DIST += bsegentype_array.c
@@ -255,8 +260,7 @@ bsebuiltin_array.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsegencore.cc
-GENERATED += bsegencore.cc
-CLEANFILES += bsegencore.cc
+GENERATED_CLEANFILES += bsegencore.cc
 $(srcdir)/bsecore.cc: bsegencore.cc
 bsegencore.cc: bsecore.idl $(SFIDL) bsecore.genidl.hh
 	cd . \

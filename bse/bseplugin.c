@@ -627,6 +627,24 @@ bse_plugin_lookup (const gchar *name)
 
 #include "topconfig.h"
 
+static bool
+plugin_extension_filter (const char  *fname,
+                         guint        n,
+                         const char **exts)
+{
+  const char *bname = strrchr (fname, G_DIR_SEPARATOR);
+  if (!bname)
+    bname = fname;
+  const char *ext = strchr (bname, '.');
+  if (!ext)
+    ext = bname + strlen (bname);
+  guint i;
+  for (i = 0; i < n; i++)
+    if (strcmp (ext, exts[i]) == 0)
+      return true;
+  return false;
+}
+
 SfiRing*
 bse_plugin_path_list_files (gboolean include_drivers,
                             gboolean include_plugins)
@@ -662,6 +680,25 @@ bse_plugin_path_list_files (gboolean include_drivers,
       /* allow file names in plugin_path */
       files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
       ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+    }
+  if (true)
+    {
+      const char *exts[] = { ".FPU.so", ".FPU.la", ".so", ".la", };
+      // const char *exts[] = { ".SSE.so", ".SSE.la", ".so", ".la", };
+      SfiRing *fname;
+      files = ring;
+      ring = NULL;
+      for (fname = files; fname; fname = sfi_ring_next (fname, files))
+        {
+          char *name = fname->data;
+          bool match = plugin_extension_filter (name, G_N_ELEMENTS (exts), exts);
+          DEBUG ("PluginExtensionFilter: %s: %s", name, match ? "(match)" : "(ignored)");
+          if (match)
+            ring = sfi_ring_append (ring, name);
+          else
+            g_free (name);
+        }
+      sfi_ring_free (files);
     }
   return ring;
 }
