@@ -1,3 +1,13 @@
+Thu Apr 13 23:59:22 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprofiler.c: slight profiler view label fixup.
+
+	* configure.in: always check for srcdir == builddir. disable PERLRULE
+	srcdir != builddir.
+
+	* beast-gtk/gxk/Makefile.am: added includes missing for srcdir != builddir.
+	fixed code generation rules.
+
 Wed Apr 12 02:29:11 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: provide SSE_FLAGS and WITH_SSE_FLAGS automake conditional.

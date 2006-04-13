@@ -543,15 +543,6 @@ AC_CHECK_PROGS(XMLLINT, xmllint)
 AC_MSG_CHECKING(whether maintainer and develoment build rules are to be used)
 if test x"$enable_maintainer_mode" = xyes ; then
     AC_MSG_RESULT(yes)
-    TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
-    TEST_BUILDDIR=`cd . ; /bin/pwd`
-    AC_MSG_CHECKING(whether source dir equals build dir)
-    if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" ; then
-	AC_MSG_RESULT(yes)
-    else
-	AC_MSG_RESULT(no)
-	AC_MSG_ERROR([source dir MUST be the same as build dir for maintainer mode])
-    fi
     AC_CHECK_PROGS(PYTHON, python2.4 python)
     if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
 	AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for maintainer mode])
@@ -560,12 +551,24 @@ if test x"$enable_maintainer_mode" = xyes ; then
 else
     AC_MSG_RESULT(no)
 fi
+
+AC_MSG_CHECKING(whether source dir equals build dir)
+TEST_SRCDIR=`cd $srcdir ; /bin/pwd`
+TEST_BUILDDIR=`cd . ; /bin/pwd`
+if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" ; then
+    AC_MSG_RESULT(yes)
+    SRCEQBUILDRULE=''
+else
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN([disabling some build rules because srcdir != builddir])
+    SRCEQBUILDRULE='#'
+fi
 AC_CHECK_PROGS(PERL, perl5 perl)
 if test -z "$PERL" || $PERL -e 'exit ($] >= 5.002)' >/dev/null ; then
     AC_MSG_WARN([failed to detect perl (version >= 5.002), disabling dependent build rules])
     PERLRULE='#'
 else
-    PERLRULE=''
+    PERLRULE="$SRCEQBUILDRULE"
 fi
 AC_SUBST(PERLRULE)
 
