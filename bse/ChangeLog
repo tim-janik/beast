@@ -1,3 +1,9 @@
+Fri Apr 14 02:18:51 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.cc: moved everything extern "C" and everything static
+	out of the anon namespace. leave just C++ class definitions inside
+	namespace anon. this fixes C API linking errors with gcc-4.2.
+
 Thu Apr 13 23:56:01 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: fixed regeneration of files in srcdir.

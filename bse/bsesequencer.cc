@@ -37,7 +37,6 @@
  */
 extern "C" { BirnetThread *bse_sequencer_thread = NULL; }
 
-namespace { // Anon
 using namespace std;
 
 static BIRNET_MSG_TYPE_DEFINE (debug_sequencer, "sequencer", BIRNET_MSG_DEBUG, NULL);
@@ -92,6 +91,7 @@ sequencer_wake_up (gpointer wake_up_data)
   while (err < 0 && errno == EINTR);
 }
 
+namespace { // Anon
 class PollPool {
 public:
   struct IOWatch {
@@ -194,6 +194,8 @@ public:
   BIRNET_STATIC_ASSERT (offsetof (GPollFD, revents) == offsetof (struct pollfd, revents));
   BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 };
+} // Anon
+
 static PollPool sequencer_poll_pool;
 
 extern "C" void
@@ -618,5 +620,3 @@ bse_sequencer_process_part_SL (BsePart         *part,
       node++;
     }
 }
-
-} // Anon
