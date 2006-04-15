@@ -676,8 +676,8 @@ bst_exit_print_version (void)
 #endif
   g_print (", GXK %s", BST_VERSION);
   g_print ("\n");
-  g_print ("Compiled for: %s\n", BST_ARCH_NAME);
-  g_print ("Compiled %s SSE plugins.\n", BSE_WITH_SSE_FLAGS ? "with" : "without");
+  g_print ("Compiled for %s %s SSE plugins.\n", BST_ARCH_NAME, BSE_WITH_SSE_FLAGS ? "with" : "without");
+  g_print ("Intrinsic code selected according to runtime CPU detection:\n");
   const BirnetCPUInfo *cpu_info = birnet_cpu_info();
   gchar *cpu_blurb = birnet_cpu_info_string (cpu_info);
   g_print ("%s", cpu_blurb);
