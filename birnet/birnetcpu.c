@@ -249,8 +249,8 @@ birnet_cpu_info_string (const BirnetCPUInfo *cpu_info)
 {
   GString *gstring = g_string_new ("");
   g_string_append_printf (gstring,
-                          "Architecture: %s\n"
-                          "CPU Vendor:   %s\n",
+                          "CPU Architecture: %s\n"
+                          "CPU Vendor:       %s\n",
                           cpu_info->machine, cpu_info->cpu_vendor);
   /* processor flags */
   GString *pflags = g_string_new ("");
@@ -284,13 +284,13 @@ birnet_cpu_info_string (const BirnetCPUInfo *cpu_info)
     g_string_append_printf (nflags, " 3DNOWEXT");
   /* flag output */
   if (pflags->len)
-    g_string_append_printf (gstring, "Features:    %s\n", pflags->str);
+    g_string_append_printf (gstring, "CPU Features:    %s\n", pflags->str);
   if (mflags->len)
-    g_string_append_printf (gstring, "Integer SIMD:%s\n", mflags->str);
+    g_string_append_printf (gstring, "CPU Integer SIMD:%s\n", mflags->str);
   if (sflags->len)
-    g_string_append_printf (gstring, "Float SIMD:  %s\n", sflags->str);
+    g_string_append_printf (gstring, "CPU Float SIMD:  %s\n", sflags->str);
   if (nflags->len)
-    g_string_append_printf (gstring, "Media SIMD:  %s\n", nflags->str);
+    g_string_append_printf (gstring, "CPU Media SIMD:  %s\n", nflags->str);
   g_string_free (nflags, TRUE);
   g_string_free (sflags, TRUE);
   g_string_free (mflags, TRUE);

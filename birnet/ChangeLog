@@ -1,3 +1,7 @@
+Sat Apr 15 03:36:21 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcpu.c (birnet_cpu_info_string): added proper CPU prefixing.
+
 Sat Apr 15 03:18:53 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcpu.[hc]: do runtime detection of the CPU type and
