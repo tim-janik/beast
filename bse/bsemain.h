@@ -61,8 +61,9 @@ typedef struct {
   SfiInt       control_freq;
   SfiRing     *pcm_drivers;
   SfiRing     *midi_drivers;
-  gboolean     load_drivers_early;
-  gboolean     dump_driver_list;
+  bool         load_drivers_early;
+  bool         dump_driver_list;
+  bool         force_fpu;
   const gchar *override_plugin_globs;
   const gchar *override_script_path;
   const gchar *path_binaries;

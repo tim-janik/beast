@@ -1,3 +1,11 @@
+Sat Apr 15 03:11:18 2006  Tim Janik  <timj@gtk.org>
+
+	* bse/bseplugin.c: use BirnetCPUInfo to determine whether to load
+	plugins with .SSE extension.
+
+	* bse/bsemain.[hc]: added BseMainArgs.force_fpu, settable 
+	via --bse-force-fpu.
+
 Fri Apr 14 02:18:51 2006  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.cc: moved everything extern "C" and everything static

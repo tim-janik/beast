@@ -481,7 +481,6 @@ bse_async_parse_args (gint        *argc_p,
 	  GLogLevelFlags fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
 	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
 	  g_log_set_always_fatal (fatal_mask);
-	  
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-debug", argv[i]) == 0 ||
@@ -593,6 +592,11 @@ bse_async_parse_args (gint        *argc_p,
 	  argv[i] = NULL;
 	}
 #endif
+      else if (strcmp ("--bse-force-fpu", argv[i]) == 0)
+	{
+          margs->force_fpu = TRUE;
+	  argv[i] = NULL;
+	}
     }
 
   e = 1;
@@ -607,4 +611,5 @@ bse_async_parse_args (gint        *argc_p,
 
   if (sfi_rec_get_bool (config, "debug-extensions"))
     bse_main_debug_extensions = TRUE;
+  margs->force_fpu |= sfi_rec_get_bool (config, "force-fpu");
 }

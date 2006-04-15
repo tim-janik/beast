@@ -683,8 +683,14 @@ bse_plugin_path_list_files (gboolean include_drivers,
     }
   if (true)
     {
+      const BirnetCPUInfo *cpu_info = birnet_cpu_info();
       const char *exts[] = { ".FPU.so", ".FPU.la", ".so", ".la", };
-      // const char *exts[] = { ".SSE.so", ".SSE.la", ".so", ".la", };
+      if (BSE_WITH_SSE_FLAGS && !bse_main_args->force_fpu &&
+          cpu_info->x86_mmx && cpu_info->x86_sse && cpu_info->x86_ssesys)
+        {
+          exts[0] = ".SSE.so";  /* !".FPU.so" */
+          exts[1] = ".SSE.la";  /* !".FPU.la" */
+        }
       SfiRing *fname;
       files = ring;
       ring = NULL;
