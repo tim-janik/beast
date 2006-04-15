@@ -332,10 +332,23 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
-    # --- setup BSE SIMD flags ---
-    MC_PROG_CC_SPECIAL_FLAGS(SSE_FLAGS, -mmmx -msse -mfpmath=sse -ftree-vectorize)
+    # --- setup BSE PLUGIN flags ---
+    MC_PROG_CC_SPECIAL_FLAGS(PLUGIN_FLAGS, -ftree-loop-ivcanon -ftree-loop-linear -ftree-loop-im -fivopts -ffast-math)
+    AC_SUBST(PLUGIN_FLAGS)
+
+    # --- setup BSE FPU flags ---
+    # * -funroll-loops significantly boosts FPU performance
+    MC_PROG_CC_SPECIAL_FLAGS(FPU_FLAGS, -funroll-loops)
+    AC_SUBST(FPU_FLAGS)
+
+    # --- setup BSE SSE flags ---
+    # * -mfpmath=sse harms FPU-algorithm performance
+    # * -funroll-loops harms SSE loop performance
+    MC_PROG_CC_SPECIAL_FLAGS(SSE_FLAGS, -mmmx -msse -ftree-vectorize)
     AC_SUBST(SSE_FLAGS)
-    AM_CONDITIONAL(WITH_SSE_FLAGS, [echo " $SSE_FLAGS" | grep 'mmx.*sse' -q])
+    not_with_sse_value=`echo "$SSE_FLAGS" | grep 'mmx.*sse' -q ; echo $?` # sh truth value: 1 (without sse) or 0 (with sse)
+    AM_CONDITIONAL(WITH_SSE_FLAGS, test 0 == $not_with_sse_value)
+    AC_DEFINE_UNQUOTED(BSE_WITH_SSE_FLAGS, [(0 == $not_with_sse_value)], [wether SSE_FLAGS are defined])
 
     # --- setup BSE search/install paths ---
     bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins

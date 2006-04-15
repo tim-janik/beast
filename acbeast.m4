@@ -268,7 +268,7 @@ AC_DEFUN([MC_PROG_CC_SPECIAL_FLAGS], [
 	for flag in [$2] ; do
 	    MC_PROG_CC_SUPPORTS_OPTION($flag, MC_EVAR_ADD([$1], $flag, $flag))
 	done
-	AC_MSG_CHECKING([for [$1]])
+	AC_MSG_CHECKING([[$1]])
 	AC_MSG_RESULT($[$1])
 ])
 

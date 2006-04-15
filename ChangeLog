@@ -1,3 +1,15 @@
+Sat Apr 15 03:08:47 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: document --bse-force-fpu and print processor
+	detection information.
+
+	* configure.in: profide PLUGIN_FLAGS, FPU_FLAGS and SSE_FLAGS. define
+	BSE_WITH_SSE_FLAGS for bse runtime logic.
+
+	* acbeast.m4: cosmetic change.
+
+	* web/download.doxi: provide viewcvs link.
+
 Thu Apr 13 23:59:22 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprofiler.c: slight profiler view label fixup.

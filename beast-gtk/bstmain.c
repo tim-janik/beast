@@ -677,6 +677,11 @@ bst_exit_print_version (void)
   g_print (", GXK %s", BST_VERSION);
   g_print ("\n");
   g_print ("Compiled for: %s\n", BST_ARCH_NAME);
+  g_print ("Compiled %s SSE plugins.\n", BSE_WITH_SSE_FLAGS ? "with" : "without");
+  const BirnetCPUInfo *cpu_info = birnet_cpu_info();
+  gchar *cpu_blurb = birnet_cpu_info_string (cpu_info);
+  g_print ("%s", cpu_blurb);
+  g_free (cpu_blurb);
   g_print ("\n");
   g_print ("Prefix:          %s\n", BST_PATH_PREFIX);
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
@@ -720,6 +725,7 @@ bst_print_blurb (void)
   g_print ("  --bse-latency=USECONDS  specify synthesis latency in milliseconds\n");
   g_print ("  --bse-mixing-freq=FREQ  specify synthesis mixing frequency in Hz \n");
   g_print ("  --bse-control-freq=FREQ specify control frequency in Hz\n");
+  g_print ("  --bse-force-fpu         disable loading of SSE or similarly optimized plugins\n");
   g_print ("  --bse-pcm-driver DRIVERCONF\n");
   g_print ("  -p DRIVERCONF           try to use the PCM driver DRIVERCONF, multiple\n");
   g_print ("                          options may be supplied to try a variety of\n");
