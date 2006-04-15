@@ -1,3 +1,10 @@
+Sat Apr 15 03:29:35 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: propagate PLUGIN_FLAGS, FPU_FLAGS and SSE_FLAGS from
+	configure.in to the various plugin types.
+
+	* plugins/Makefile.plugins: updates.
+
 Thu Apr 13 23:57:39 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: install all plugins into the same dir. generate .FPU.

@@ -7,12 +7,12 @@ plugin_FPU_ltlibs    += davchorus.FPU.la
 davchorus_FPU_la_SOURCES = davchorus.cc
 davchorus_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 davchorus_FPU_la_LIBADD  = $(plugins_libs)
-davchorus_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+davchorus_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += davchorus.SSE.la
 davchorus_SSE_la_SOURCES   = $(davchorus_FPU_la_SOURCES)
 davchorus_SSE_la_LDFLAGS   = $(davchorus_FPU_la_LDFLAGS)
 davchorus_SSE_la_LIBADD    = $(davchorus_FPU_la_LIBADD)
-davchorus_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+davchorus_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin bsebalance
 $(srcdir)/bsebalance.cc: bsebalance.genidl.hh
@@ -21,12 +21,12 @@ plugin_FPU_ltlibs    += bsebalance.FPU.la
 bsebalance_FPU_la_SOURCES = bsebalance.cc
 bsebalance_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsebalance_FPU_la_LIBADD  = $(plugins_libs)
-bsebalance_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+bsebalance_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += bsebalance.SSE.la
 bsebalance_SSE_la_SOURCES   = $(bsebalance_FPU_la_SOURCES)
 bsebalance_SSE_la_LDFLAGS   = $(bsebalance_FPU_la_LDFLAGS)
 bsebalance_SSE_la_LIBADD    = $(bsebalance_FPU_la_LIBADD)
-bsebalance_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+bsebalance_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin artscompressor
 $(srcdir)/artscompressor.cc: artscompressor.genidl.hh
@@ -35,12 +35,12 @@ plugin_FPU_ltlibs    += artscompressor.FPU.la
 artscompressor_FPU_la_SOURCES = artscompressor.cc
 artscompressor_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 artscompressor_FPU_la_LIBADD  = $(plugins_libs)
-artscompressor_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+artscompressor_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += artscompressor.SSE.la
 artscompressor_SSE_la_SOURCES   = $(artscompressor_FPU_la_SOURCES)
 artscompressor_SSE_la_LDFLAGS   = $(artscompressor_FPU_la_LDFLAGS)
 artscompressor_SSE_la_LIBADD    = $(artscompressor_FPU_la_LIBADD)
-artscompressor_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+artscompressor_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin davbassfilter
 $(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh
@@ -49,12 +49,12 @@ plugin_FPU_ltlibs    += davbassfilter.FPU.la
 davbassfilter_FPU_la_SOURCES = davbassfilter.cc
 davbassfilter_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 davbassfilter_FPU_la_LIBADD  = $(plugins_libs)
-davbassfilter_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+davbassfilter_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += davbassfilter.SSE.la
 davbassfilter_SSE_la_SOURCES   = $(davbassfilter_FPU_la_SOURCES)
 davbassfilter_SSE_la_LDFLAGS   = $(davbassfilter_FPU_la_LDFLAGS)
 davbassfilter_SSE_la_LIBADD    = $(davbassfilter_FPU_la_LIBADD)
-davbassfilter_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+davbassfilter_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin bsecontribsampleandhold
 $(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh
@@ -63,12 +63,12 @@ plugin_FPU_ltlibs    += bsecontribsampleandhold.FPU.la
 bsecontribsampleandhold_FPU_la_SOURCES = bsecontribsampleandhold.cc
 bsecontribsampleandhold_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsecontribsampleandhold_FPU_la_LIBADD  = $(plugins_libs)
-bsecontribsampleandhold_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+bsecontribsampleandhold_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += bsecontribsampleandhold.SSE.la
 bsecontribsampleandhold_SSE_la_SOURCES   = $(bsecontribsampleandhold_FPU_la_SOURCES)
 bsecontribsampleandhold_SSE_la_LDFLAGS   = $(bsecontribsampleandhold_FPU_la_LDFLAGS)
 bsecontribsampleandhold_SSE_la_LIBADD    = $(bsecontribsampleandhold_FPU_la_LIBADD)
-bsecontribsampleandhold_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+bsecontribsampleandhold_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin bsenoise
 $(srcdir)/bsenoise.cc: bsenoise.genidl.hh
@@ -77,12 +77,12 @@ plugin_FPU_ltlibs    += bsenoise.FPU.la
 bsenoise_FPU_la_SOURCES = bsenoise.cc
 bsenoise_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsenoise_FPU_la_LIBADD  = $(plugins_libs)
-bsenoise_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+bsenoise_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += bsenoise.SSE.la
 bsenoise_SSE_la_SOURCES   = $(bsenoise_FPU_la_SOURCES)
 bsenoise_SSE_la_LDFLAGS   = $(bsenoise_FPU_la_LDFLAGS)
 bsenoise_SSE_la_LIBADD    = $(bsenoise_FPU_la_LIBADD)
-bsenoise_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+bsenoise_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin standardsaturator
 $(srcdir)/standardsaturator.cc: standardsaturator.genidl.hh
@@ -91,12 +91,12 @@ plugin_FPU_ltlibs    += standardsaturator.FPU.la
 standardsaturator_FPU_la_SOURCES = standardsaturator.cc
 standardsaturator_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 standardsaturator_FPU_la_LIBADD  = $(plugins_libs)
-standardsaturator_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+standardsaturator_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += standardsaturator.SSE.la
 standardsaturator_SSE_la_SOURCES   = $(standardsaturator_FPU_la_SOURCES)
 standardsaturator_SSE_la_LDFLAGS   = $(standardsaturator_FPU_la_LDFLAGS)
 standardsaturator_SSE_la_LIBADD    = $(standardsaturator_FPU_la_LIBADD)
-standardsaturator_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+standardsaturator_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin standardguspatchenvelope
 $(srcdir)/standardguspatchenvelope.cc: standardguspatchenvelope.genidl.hh
@@ -105,12 +105,12 @@ plugin_FPU_ltlibs    += standardguspatchenvelope.FPU.la
 standardguspatchenvelope_FPU_la_SOURCES = standardguspatchenvelope.cc
 standardguspatchenvelope_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 standardguspatchenvelope_FPU_la_LIBADD  = $(plugins_libs)
-standardguspatchenvelope_FPU_la_CXXFLAGS  = $(AM_CXXFLAGS)
+standardguspatchenvelope_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
 plugin_SSE_ltlibs      += standardguspatchenvelope.SSE.la
 standardguspatchenvelope_SSE_la_SOURCES   = $(standardguspatchenvelope_FPU_la_SOURCES)
 standardguspatchenvelope_SSE_la_LDFLAGS   = $(standardguspatchenvelope_FPU_la_LDFLAGS)
 standardguspatchenvelope_SSE_la_LIBADD    = $(standardguspatchenvelope_FPU_la_LIBADD)
-standardguspatchenvelope_SSE_la_CXXFLAGS  = $(AM_CXXFLAGS) $(SSE_FLAGS)
+standardguspatchenvelope_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 
 ## C Plugin bseadder
@@ -120,12 +120,12 @@ plugin_FPU_ltlibs += bseadder.FPU.la
 bseadder_FPU_la_SOURCES = bseadder.c
 bseadder_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bseadder_FPU_la_LIBADD  = $(plugins_libs)
-bseadder_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bseadder_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bseadder.SSE.la
 bseadder_SSE_la_SOURCES   = $(bseadder_FPU_la_SOURCES)
 bseadder_SSE_la_LDFLAGS   = $(bseadder_FPU_la_LDFLAGS)
 bseadder_SSE_la_LIBADD    = $(bseadder_FPU_la_LIBADD)
-bseadder_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bseadder_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin bseatandistort
@@ -135,12 +135,12 @@ plugin_FPU_ltlibs += bseatandistort.FPU.la
 bseatandistort_FPU_la_SOURCES = bseatandistort.c
 bseatandistort_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bseatandistort_FPU_la_LIBADD  = $(plugins_libs)
-bseatandistort_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bseatandistort_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bseatandistort.SSE.la
 bseatandistort_SSE_la_SOURCES   = $(bseatandistort_FPU_la_SOURCES)
 bseatandistort_SSE_la_LDFLAGS   = $(bseatandistort_FPU_la_LDFLAGS)
 bseatandistort_SSE_la_LIBADD    = $(bseatandistort_FPU_la_LIBADD)
-bseatandistort_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bseatandistort_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin bseiirfilter
@@ -150,12 +150,12 @@ plugin_FPU_ltlibs += bseiirfilter.FPU.la
 bseiirfilter_FPU_la_SOURCES = bseiirfilter.c
 bseiirfilter_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bseiirfilter_FPU_la_LIBADD  = $(plugins_libs)
-bseiirfilter_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bseiirfilter_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bseiirfilter.SSE.la
 bseiirfilter_SSE_la_SOURCES   = $(bseiirfilter_FPU_la_SOURCES)
 bseiirfilter_SSE_la_LDFLAGS   = $(bseiirfilter_FPU_la_LDFLAGS)
 bseiirfilter_SSE_la_LIBADD    = $(bseiirfilter_FPU_la_LIBADD)
-bseiirfilter_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bseiirfilter_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin bsemixer
@@ -165,12 +165,12 @@ plugin_FPU_ltlibs += bsemixer.FPU.la
 bsemixer_FPU_la_SOURCES = bsemixer.c
 bsemixer_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsemixer_FPU_la_LIBADD  = $(plugins_libs)
-bsemixer_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bsemixer_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bsemixer.SSE.la
 bsemixer_SSE_la_SOURCES   = $(bsemixer_FPU_la_SOURCES)
 bsemixer_SSE_la_LDFLAGS   = $(bsemixer_FPU_la_LDFLAGS)
 bsemixer_SSE_la_LIBADD    = $(bsemixer_FPU_la_LIBADD)
-bsemixer_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bsemixer_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin bsemult
@@ -180,12 +180,12 @@ plugin_FPU_ltlibs += bsemult.FPU.la
 bsemult_FPU_la_SOURCES = bsemult.c
 bsemult_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsemult_FPU_la_LIBADD  = $(plugins_libs)
-bsemult_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bsemult_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bsemult.SSE.la
 bsemult_SSE_la_SOURCES   = $(bsemult_FPU_la_SOURCES)
 bsemult_SSE_la_LDFLAGS   = $(bsemult_FPU_la_LDFLAGS)
 bsemult_SSE_la_LIBADD    = $(bsemult_FPU_la_LIBADD)
-bsemult_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bsemult_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin bsesimpleadsr
@@ -195,12 +195,12 @@ plugin_FPU_ltlibs += bsesimpleadsr.FPU.la
 bsesimpleadsr_FPU_la_SOURCES = bsesimpleadsr.c
 bsesimpleadsr_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsesimpleadsr_FPU_la_LIBADD  = $(plugins_libs)
-bsesimpleadsr_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bsesimpleadsr_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bsesimpleadsr.SSE.la
 bsesimpleadsr_SSE_la_SOURCES   = $(bsesimpleadsr_FPU_la_SOURCES)
 bsesimpleadsr_SSE_la_LDFLAGS   = $(bsesimpleadsr_FPU_la_LDFLAGS)
 bsesimpleadsr_SSE_la_LIBADD    = $(bsesimpleadsr_FPU_la_LIBADD)
-bsesimpleadsr_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bsesimpleadsr_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin bsesequencer
@@ -210,12 +210,12 @@ plugin_FPU_ltlibs += bsesequencer.FPU.la
 bsesequencer_FPU_la_SOURCES = bsesequencer.c
 bsesequencer_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 bsesequencer_FPU_la_LIBADD  = $(plugins_libs)
-bsesequencer_FPU_la_CFLAGS    = $(AM_CFLAGS)
+bsesequencer_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += bsesequencer.SSE.la
 bsesequencer_SSE_la_SOURCES   = $(bsesequencer_FPU_la_SOURCES)
 bsesequencer_SSE_la_LDFLAGS   = $(bsesequencer_FPU_la_LDFLAGS)
 bsesequencer_SSE_la_LIBADD    = $(bsesequencer_FPU_la_LIBADD)
-bsesequencer_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+bsesequencer_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin davorgan
@@ -225,12 +225,12 @@ plugin_FPU_ltlibs += davorgan.FPU.la
 davorgan_FPU_la_SOURCES = davorgan.c
 davorgan_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 davorgan_FPU_la_LIBADD  = $(plugins_libs)
-davorgan_FPU_la_CFLAGS    = $(AM_CFLAGS)
+davorgan_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += davorgan.SSE.la
 davorgan_SSE_la_SOURCES   = $(davorgan_FPU_la_SOURCES)
 davorgan_SSE_la_LDFLAGS   = $(davorgan_FPU_la_LDFLAGS)
 davorgan_SSE_la_LIBADD    = $(davorgan_FPU_la_LIBADD)
-davorgan_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+davorgan_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin davxtalstrings
@@ -240,12 +240,12 @@ plugin_FPU_ltlibs += davxtalstrings.FPU.la
 davxtalstrings_FPU_la_SOURCES = davxtalstrings.c
 davxtalstrings_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 davxtalstrings_FPU_la_LIBADD  = $(plugins_libs)
-davxtalstrings_FPU_la_CFLAGS    = $(AM_CFLAGS)
+davxtalstrings_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += davxtalstrings.SSE.la
 davxtalstrings_SSE_la_SOURCES   = $(davxtalstrings_FPU_la_SOURCES)
 davxtalstrings_SSE_la_LDFLAGS   = $(davxtalstrings_FPU_la_LDFLAGS)
 davxtalstrings_SSE_la_LIBADD    = $(davxtalstrings_FPU_la_LIBADD)
-davxtalstrings_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+davxtalstrings_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin davsyndrum
@@ -255,12 +255,12 @@ plugin_FPU_ltlibs += davsyndrum.FPU.la
 davsyndrum_FPU_la_SOURCES = davsyndrum.c
 davsyndrum_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 davsyndrum_FPU_la_LIBADD  = $(plugins_libs)
-davsyndrum_FPU_la_CFLAGS    = $(AM_CFLAGS)
+davsyndrum_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += davsyndrum.SSE.la
 davsyndrum_SSE_la_SOURCES   = $(davsyndrum_FPU_la_SOURCES)
 davsyndrum_SSE_la_LDFLAGS   = $(davsyndrum_FPU_la_LDFLAGS)
 davsyndrum_SSE_la_LIBADD    = $(davsyndrum_FPU_la_LIBADD)
-davsyndrum_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+davsyndrum_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
 
 
 ## C Plugin davcanyondelay
@@ -270,9 +270,9 @@ plugin_FPU_ltlibs += davcanyondelay.FPU.la
 davcanyondelay_FPU_la_SOURCES = davcanyondelay.c
 davcanyondelay_FPU_la_LDFLAGS = -module $(plugins_ldflags)
 davcanyondelay_FPU_la_LIBADD  = $(plugins_libs)
-davcanyondelay_FPU_la_CFLAGS    = $(AM_CFLAGS)
+davcanyondelay_FPU_la_CFLAGS    = $(FPU_PLUGIN_CFLAGS)
 plugin_SSE_ltlibs   += davcanyondelay.SSE.la
 davcanyondelay_SSE_la_SOURCES   = $(davcanyondelay_FPU_la_SOURCES)
 davcanyondelay_SSE_la_LDFLAGS   = $(davcanyondelay_FPU_la_LDFLAGS)
 davcanyondelay_SSE_la_LIBADD    = $(davcanyondelay_FPU_la_LIBADD)
-davcanyondelay_SSE_la_CFLAGS    = $(AM_CFLAGS) $(SSE_FLAGS)
+davcanyondelay_SSE_la_CFLAGS    = $(SSE_PLUGIN_CFLAGS)
