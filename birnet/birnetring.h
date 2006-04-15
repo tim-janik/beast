@@ -19,7 +19,7 @@
 #ifndef __BIRNET_RING_H__
 #define __BIRNET_RING_H__
 
-#include <glib.h>
+#include <birnet/birnetcore.h>
 
 G_BEGIN_DECLS
 

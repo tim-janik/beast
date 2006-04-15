@@ -67,6 +67,38 @@ BIRNET_STATIC_ASSERT (sizeof (BirnetInt32) == 4);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt64) == 8);
 typedef BirnetUInt32            BirnetUniChar;
 
+/* --- attributes --- */
+#if     __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
+#define BIRNET_PRETTY_FUNCTION                  (__PRETTY_FUNCTION__)
+#define BIRNET_PURE                             __attribute__ ((__pure__))
+#define BIRNET_MALLOC                           __attribute__ ((__malloc__))
+#define BIRNET_PRINTF(format_idx, arg_idx)      __attribute__ ((__format__ (__printf__, format_idx, arg_idx)))
+#define BIRNET_SCANF(format_idx, arg_idx)       __attribute__ ((__format__ (__scanf__, format_idx, arg_idx)))
+#define BIRNET_FORMAT(arg_idx)                  __attribute__ ((__format_arg__ (arg_idx)))
+#define BIRNET_NORETURN                         __attribute__ ((__noreturn__))
+#define BIRNET_CONST                            __attribute__ ((__const__))
+#define BIRNET_UNUSED                           __attribute__ ((__unused__))
+#define BIRNET_NO_INSTRUMENT                    __attribute__ ((__no_instrument_function__))
+#define BIRNET_DEPRECATED                       __attribute__ ((__deprecated__))
+#define BIRNET_ALWAYS_INLINE			__attribute__ ((always_inline))
+#define BIRNET_NEVER_INLINE			__attribute__ ((noinline))
+#else   /* !__GNUC__ */
+#define BIRNET_PRETTY_FUNCTION                  (__func__)
+#define BIRNET_PURE
+#define BIRNET_MALLOC
+#define BIRNET_PRINTF(format_idx, arg_idx)
+#define BIRNET_SCANF(format_idx, arg_idx)
+#define BIRNET_FORMAT(arg_idx)
+#define BIRNET_NORETURN
+#define BIRNET_CONST
+#define BIRNET_UNUSED
+#define BIRNET_NO_INSTRUMENT
+#define BIRNET_DEPRECATED
+#define BIRNET_ALWAYS_INLINE
+#define BIRNET_NEVER_INLINE
+#error  Failed to detect a recent GCC version (>= 3.1)
+#endif  /* !__GNUC__ */
+
 /* --- convenient type shorthands --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
 typedef BirnetUInt		uint;

@@ -16,23 +16,34 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BIRNET_H__
-#define __BIRNET_H__
+// #define TEST_VERBOSE
+#include <birnet/birnettests.h>
 
-#include <birnet/birnetconfig.h>
-#include <birnet/birnetcore.h>
-#include <birnet/birnetcpu.h>
+static void
+test_cpu_info (void)
+{
+  TSTART ("CpuInfo");
+  TOK();
+  const BirnetCPUInfo *cpi = birnet_cpu_info ();
+  TASSERT (cpi != NULL);
+  gchar *cps = birnet_cpu_info_string (cpi);
+  TASSERT (cps != NULL);
+  TPRINT ("%s", cps);
+  TOK();
+  g_free (cps);
+  TOK();
+  TDONE();
+}
 
-#include <birnet/birnetutils.h>
-#include <birnet/birnetmsg.h>
-#include <birnet/birnetring.h>
-#include <birnet/birnetthread.h>
+int
+main (int   argc,
+      char *argv[])
+{
+  birnet_init_test (&argc, &argv);
 
-#ifdef	__cplusplus
-#include <birnet/birnetutilsxx.hh>
-#include <birnet/birnetsignal.hh>
-#include <birnet/birnetthreadxx.hh>
-#endif	/* __cplusplus */
+  test_cpu_info();
 
-#endif /* __BIRNET_H__ */
+  return 0;
+}
+
 /* vim:set ts=8 sts=2 sw=2: */

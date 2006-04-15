@@ -19,6 +19,7 @@
 #include "birnetutilsxx.hh"
 #include "birnetthread.h"
 #include "birnetmsg.h"
+#include "birnetcpu.h"
 #include <vector>
 #include <algorithm>
 
@@ -48,8 +49,10 @@ birnet_init (int        *argcp,         /* declared in birnetcore.h */
 
   if (prg_name)
     g_set_prgname (prg_name);
-  if (app_name)
+  if (app_name && (!g_get_application_name() || g_get_application_name() == g_get_prgname()))
     g_set_application_name (app_name);
+
+  _birnet_init_cpuinfo();
 
   _birnet_init_threads();
 

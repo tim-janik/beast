@@ -11,6 +11,7 @@ GLIB_MKENUMS    = glib-mkenums
 birnet_headers = $(strip 		\
 	birnet.h			\
 	birnetcore.h			\
+	birnetcpu.h			\
 	birnetmsg.h			\
 	birnetring.h			\
 	birnetsignal.hh                 \
@@ -22,6 +23,7 @@ birnet_headers = $(strip 		\
 )
 birnet_sources = $(strip 		\
 	birnetcore.c			\
+	birnetcpu.c			\
 	birnetmsg.c			\
 	birnetring.c			\
 	birnetthread.c			\

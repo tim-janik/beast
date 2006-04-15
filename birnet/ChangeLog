@@ -1,3 +1,14 @@
+Sat Apr 15 03:18:53 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcpu.[hc]: do runtime detection of the CPU type and
+	the CPU features. in particular, detect the available (SIMD)
+	instruction sets at runtime. currently supports i368 and
+	amd64 via CPUID.
+
+	* birnetcore.h: provide wrapper macros for GCC attributes.
+
+	* tests/infotest.cc: test the CPU info API.
+
 Tue Apr 11 23:37:32 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: make dist fixes.
