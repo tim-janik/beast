@@ -1,3 +1,7 @@
+Sun Apr 16 20:33:57 2006  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/bqs-merp-pad.bse: added new pad string.
+
 Sun Apr 16 18:35:12 2006  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/bqs-moog-saw-bass.bse: added new bass instrument
