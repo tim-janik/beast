@@ -3,10 +3,11 @@
 (bse-version "0.7.0")
 
 (container-child "BseCSynth::BQS Fretless Bass"
-  (modification-time "2006-04-08 11:28:13")
+  (modification-time "2006-04-16 16:43:18")
   (creation-time "2003-10-04 20:36:52")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY")
   (author "Stefan Westerfeld")
+  (blurb "Best used from C-2 to C-0.")
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)

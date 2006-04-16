@@ -3,11 +3,11 @@
 (bse-version "0.7.0")
 
 (container-child "BseCSynth::BQS MoogSaw Bass"
-  (modification-time "2006-04-16 16:09:19")
+  (modification-time "2006-04-16 16:40:43")
   (creation-time "2004-09-20 12:32:34")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY")
   (author "Stefan Westerfeld, Tim Janik")
-  (blurb "")
+  (blurb "Best used in C-2 and C-1.")
   (container-child "BseInstrumentInput::SubKeyboard-1"
     (pos-x -4))
   (container-child "BseSimpleADSR::SimpleADSR-1"
