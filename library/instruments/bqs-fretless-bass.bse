@@ -2,7 +2,7 @@
 
 (bse-version "0.7.0")
 
-(container-child "BseCSynth::BQS Fretless Base"
+(container-child "BseCSynth::BQS Fretless Bass"
   (modification-time "2006-04-08 11:28:13")
   (creation-time "2003-10-04 20:36:52")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY")

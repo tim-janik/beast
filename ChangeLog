@@ -1,3 +1,8 @@
+Sun Apr 16 18:31:05 2006  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/Makefile.am: 
+	* library/instruments/bqs-fretless-bass.bse: CVS renamed "base" to "bass".
+
 Sun Apr 16 17:43:23 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: fixup distuninstallcheck:-rule which reports 

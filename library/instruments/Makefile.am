@@ -6,7 +6,7 @@ include $(top_srcdir)/Makefile.decl
 
 
 instruments_DATA = $(strip 								\
-	bqs-fretless-base.bse	bqs-organ.bse	bqs-queek-synth.bse	bqs-syndrum.bse	\
+	bqs-fretless-bass.bse	bqs-organ.bse	bqs-queek-synth.bse	bqs-syndrum.bse	\
 )
 instrumentsdir = $(bseinstrumentdir)
 
