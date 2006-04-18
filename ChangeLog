@@ -1,3 +1,10 @@
+Tue Apr 18 21:25:00 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/bstmain.c: Fix double initialization of the application
+	name (which causes glib to print a warning, which renders
+	--g-fatal-warnings useless for debugging).
+	Removed obsolete g_set_prgname (birnet_init is responsible for that).
+
 Sun Apr 16 20:33:57 2006  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/bqs-merp-pad.bse: added new pad string.

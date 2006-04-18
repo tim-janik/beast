@@ -108,7 +108,7 @@ main (int   argc,
   g_type_init ();
 
   /* initialize Birnet/Sfi */
-  birnet_init (&argc, &argv, "BEAST");
+  birnet_init (&argc, &argv, _("BEAST"));  /* application name is user visible */       
   birnet_msg_allow ("misc");
   /* ensure SFI can wake us up */
   birnet_thread_set_name ("Beast GUI");
@@ -121,8 +121,6 @@ main (int   argc,
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv, bseconfig);
   gtk_init (&argc, &argv);
-  g_set_prgname ("beast");	        /* overriding Gdk's program name */
-  g_set_application_name (_("BEAST"));  /* User visible name */       
   GDK_THREADS_ENTER ();
 
   /* initialize Gtk+ Extension Kit */
