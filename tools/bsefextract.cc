@@ -952,7 +952,7 @@ void Options::validatePercent (const string& option, gdouble value)
   if (value < 0.0 || value > 100.0)
     {
       fprintf (stderr, "%s: invalid argument `%f' for `%s'\n\n", programName.c_str(), value, option.c_str());
-      fprintf (stderr, "Valid arguments are percent values (between 0 and 100).\n", value, option.c_str());
+      fprintf (stderr, "Valid arguments are percent values (between 0 and 100).\n");
       fprintf (stderr, "Try `%s --help' for more information.\n", programName.c_str());
       exit (1);
     }
@@ -1108,8 +1108,8 @@ void Options::printUsage ()
   fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
   fprintf (stderr, " --cut-zeros-tail            cut zero samples at end of the signal\n");
   fprintf (stderr, " --silence-threshold         threshold for zero cutting (as 16bit sample value)\n");
-  fprintf (stderr, " --focus-center=X            center focus region around X% [50]\n");
-  fprintf (stderr, " --focus-width=Y             width of focus region in % [100]\n");
+  fprintf (stderr, " --focus-center=X            center focus region around X%% [50]\n");
+  fprintf (stderr, " --focus-width=Y             width of focus region in %% [100]\n");
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "Appending =<filename> to a feature writes this feature to a separate file\n");

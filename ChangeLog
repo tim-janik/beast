@@ -1,3 +1,7 @@
+Thu Apr 20 01:23:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Fix printf format warnings.
+
 Wed Apr 19 23:49:36 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: fixed inverted WITH_PERLRULE check.
