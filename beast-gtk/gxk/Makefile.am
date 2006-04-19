@@ -48,10 +48,18 @@ EXTRA_DIST += $(gxk_headers) $(gxk_extra_sources)
 
 GLIB_MKENUMS = glib-mkenums
 
+CLEANSTAMPFILES =
+if WITH_PERLRULE
+CLEANFILES += $(CLEANSTAMPFILES)
+else
+MAINTAINERCLEANFILES += $(CLEANSTAMPFILES)
+endif
+
 # gxkgentypes.h
 GENERATED_EXTRA_DIST += gxkgentypes.h
 $(libgxk_a_OBJECTS): gxkgentypes.h
 gxkgentypes.h: @PERLRULE@ stamp-gxkgentypes.h ;
+CLEANSTAMPFILES += stamp-gxkgentypes.h
 stamp-gxkgentypes.h: @PERLRULE@ $(gxk_headers)
 	( \
 	  cd $(srcdir) \
@@ -127,5 +135,5 @@ splinetest_LDADD = $(progs_LDADD)
 #
 .PHONY: generated clean-generated
 clean-generated: clean
-	rm -f $(GENERATED) stamp-*
+	rm -f $(GENERATED) $(CLEANSTAMPFILES)
 generated: clean-generated $(GENERATED)

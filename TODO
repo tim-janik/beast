@@ -1,5 +1,4 @@
 RELEASE(0.6.7):
-- add --merge *.bse
 - support beast nonexistant.bse (new creation)
 - rename bsesh to bsescm
 -  fix birnet_thread_run uses (unref thread)

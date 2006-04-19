@@ -1,3 +1,10 @@
+Wed Apr 19 23:49:36 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: fixed inverted WITH_PERLRULE check.
+
+	* beast-gtk/gxk/Makefile.am: fixed up clean rules so stamp files
+	are properly deleted and dependent files are properly built.
+
 Wed Apr 19 02:30:34 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: added specialized "distcheck" rule that disables a 
