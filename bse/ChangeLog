@@ -1,3 +1,20 @@
+Wed Apr 19 23:50:48 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.hh, bseblockutils.cc: new files which provide a couple
+	utility functions for operations on blocks of floats and ints.
+
+	* tests/blocktests.cc: test the new block utils.
+
+	* bseplugin.c: added hook nodes to allow specialized plugins.
+
+	* bseexports.h: added BseExportNodeHook. 
+
+	* bsecxxplugin.hh: added BSE_CXX_REGISTER_STATIC_HOOK() and
+	BSE_CXX_REGISTER_HOOK().
+        
+	* Makefile.am: fixed up clean rules so stamp files
+	are properly deleted and dependent files are properly built.
+
 Wed Apr 19 02:41:55 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am:

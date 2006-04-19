@@ -24,15 +24,19 @@
 
 G_BEGIN_DECLS
 
+/* --- export node types --- */
 typedef enum {
   BSE_EXPORT_NODE_NONE,
   BSE_EXPORT_NODE_LINK,
+  BSE_EXPORT_NODE_HOOK,
   BSE_EXPORT_NODE_ENUM,
   BSE_EXPORT_NODE_RECORD,
   BSE_EXPORT_NODE_SEQUENCE,
   BSE_EXPORT_NODE_CLASS,
   BSE_EXPORT_NODE_PROC
 } BseExportNodeType;
+
+/* --- common export node data --- */
 typedef struct {
   /* strings which need to be looked up from catalogs after
    * initialization (usually i18n strings).
@@ -46,6 +50,8 @@ typedef struct {
   guint             line;
 } BseExportStrings;
 typedef void (*BseExportStringsFunc) (BseExportStrings *strings);
+
+/* --- basic export node --- */
 struct _BseExportNode {
   BseExportNode       *next;
   BseExportNodeType    ntype;
@@ -56,14 +62,26 @@ struct _BseExportNode {
   BseExportStringsFunc fill_strings;
   GType                type;
 };
+
+/* --- hook export node --- */
+typedef void (*BseExportHook)	(void *data);
+typedef struct {
+  BseExportNode		node;
+  bool			make_static;
+  BseExportHook		hook;
+  void		       *data;
+} BseExportNodeHook;
+
+/* --- enum export node --- */
 typedef GEnumValue*     (*BseExportGetEnumValues)   (void);
 typedef SfiChoiceValues (*BseExportGetChoiceValues) (void);
-
 typedef struct {
   BseExportNode            node;
   BseExportGetEnumValues   get_enum_values;
   BseExportGetChoiceValues get_choice_values;
 } BseExportNodeEnum;
+
+/* --- boxed export node --- */
 typedef SfiRecFields (*BseExportGetRecordFields)    (void);
 typedef GParamSpec*  (*BseExportGetSequenceElement) (void);
 struct _BseExportNodeBoxed {
@@ -77,6 +95,8 @@ struct _BseExportNodeBoxed {
     BseExportGetSequenceElement get_element;
   } func;
 };
+
+/* --- class export node --- */
 typedef struct {
   BseExportNode      node;
   const char        *parent;
@@ -87,6 +107,8 @@ typedef struct {
   guint16            instance_size;
   GInstanceInitFunc  instance_init;
 } BseExportNodeClass;
+
+/* --- procedure export node --- */
 typedef struct {
   BseExportNode     node;
   guint             private_id;
@@ -94,6 +116,7 @@ typedef struct {
   BseProcedureExec  exec;
 } BseExportNodeProc;
 
+/* --- plugin identity export --- */
 /* plugin export identity (name, bse-version and actual types) */
 #define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
 #define BSE_EXPORT_IDENTITY_STRING     "bse_export__identity"

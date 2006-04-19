@@ -62,6 +62,41 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 #endif
 
 
+/* --- hook registration --- */
+/* hook registration is based on a static ExportTypeKeeper
+ * object, which provides the hook's get_type() implementation and
+ * auto-registers the hook's export node with the export_identity.
+ */
+#define BSE_CXX_REGISTER_HOOK(HookType)         BSE_CXX_REGISTER_HOOK_NODE (HookType, 0)
+#define BSE_CXX_REGISTER_STATIC_HOOK(HookType)  BSE_CXX_REGISTER_HOOK_NODE (HookType, 1)
+#define BSE_CXX_REGISTER_HOOK_NODE(HookType, __static)                  \
+  template<class E> static BseExportNode* bse_export_node ();           \
+  template<> static BseExportNode*                                      \
+  bse_export_node<HookType> ()                                          \
+  {                                                                     \
+    static BseExportNodeHook hnode = {                                  \
+      { NULL, BSE_EXPORT_NODE_HOOK, "", },                              \
+    };                                                                  \
+    static HookType hook_instance;                                      \
+    struct Sub {                                                        \
+      static void                                                       \
+      hook_trampoline (void *data)                                      \
+      {                                                                 \
+        hook_instance.run();                                            \
+      }                                                                 \
+    };                                                                  \
+    if (!hnode.hook)                                                    \
+      {                                                                 \
+        hnode.hook = Sub::hook_trampoline;                              \
+        hnode.make_static = __static != 0;                              \
+      }                                                                 \
+    return &hnode.node;                                                 \
+  }                                                                     \
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__7##HookType;          \
+  ::Bse::ExportTypeKeeper                                               \
+         bse_type_keeper__7##HookType (bse_export_node<HookType>,       \
+                                       &BSE_CXX_EXPORT_IDENTITY);
+
 /* --- enum registration --- */
 /* enum registration is based on a static ExportTypeKeeper
  * object, which provides the enum's get_type() implementation and
@@ -115,7 +150,6 @@ EnumValue (int         int_value,
   value.value_nick = const_cast<char*> (value_nick);
   return value;
 }
-
 
 /* --- record registration --- */
 /* record registration is based on a static ExportTypeKeeper

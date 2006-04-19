@@ -52,7 +52,7 @@ bse_public_h_sources = $(strip \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
 	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
-	bsenote.h		bsemidifile.h		\
+	bsenote.h		bsemidifile.h		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
 )
@@ -83,7 +83,7 @@ bse_c_sources = $(strip \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
 	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
 	bsecompat.c		bseundostack.c		bsemidiinput.c			bsemididecoder.c \
-	bsenote.c		bsemidifile.c		\
+	bsenote.c		bsemidifile.c		bseblockutils.cc		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.c \
 	bseloader-aiff.c	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.c \
@@ -169,10 +169,11 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 %.genprc.c: @PERLRULE@ %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
+CLEANSTAMPFILES = 
 if WITH_PERLRULE
-CLEANFILES += $(bse_proc_gen_sources)
+CLEANFILES += $(bse_proc_gen_sources) $(CLEANSTAMPFILES)
 else
-MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
+MAINTAINERCLEANFILES += $(bse_proc_gen_sources) $(CLEANSTAMPFILES)
 endif
 # gslfft.c
 GENERATED += gslfft.c
@@ -182,6 +183,7 @@ $(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ stamp-bsegentypes.h ;
+CLEANSTAMPFILES += stamp-bsegentypes.h
 stamp-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_c_sources)) $(filter-out bsegentypes.h, $(bse_public_h_sources))
 stamp-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	( \
@@ -294,7 +296,7 @@ noinst_DATA = bsehack.idl
 #
 .PHONY: generated clean-generated
 clean-generated: clean
-	rm -f $(GENERATED) stamp-*
+	rm -f $(GENERATED) $(CLEANSTAMPFILES)
 generated: clean-generated $(GENERATED) $(idl_built_sources)
 
 

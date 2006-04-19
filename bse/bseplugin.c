@@ -212,6 +212,7 @@ static void
 bse_plugin_unload (BsePlugin *plugin)
 {
   g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
+  g_return_if_fail (plugin->use_count == 0);
   
   bse_plugin_uninit_types (plugin);
   g_module_close (plugin->gmodule);
@@ -282,6 +283,17 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
             BseExportNodeEnum *enode;
             BseExportNodeClass *cnode;
             BseExportNodeProc *pnode;
+          case BSE_EXPORT_NODE_LINK:
+          case BSE_EXPORT_NODE_HOOK:
+            break;
+          case BSE_EXPORT_NODE_ENUM:
+            enode = (BseExportNodeEnum*) node;
+            g_enum_complete_type_info (type, type_info, enode->get_enum_values());
+            break;
+          case BSE_EXPORT_NODE_RECORD:
+          case BSE_EXPORT_NODE_SEQUENCE:
+            /* nothing to do, since boxed types are static to the type system */
+            break;
           case BSE_EXPORT_NODE_CLASS:
             cnode = (BseExportNodeClass*) node;
             type_info->class_size = cnode->class_size;
@@ -293,16 +305,6 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
           case BSE_EXPORT_NODE_PROC:
             pnode = (BseExportNodeProc*) node;
             bse_procedure_complete_info (pnode, type_info);
-            break;
-          case BSE_EXPORT_NODE_LINK:
-            break;
-          case BSE_EXPORT_NODE_ENUM:
-            enode = (BseExportNodeEnum*) node;
-            g_enum_complete_type_info (type, type_info, enode->get_enum_values());
-            break;
-          case BSE_EXPORT_NODE_RECORD:
-          case BSE_EXPORT_NODE_SEQUENCE:
-            /* nothing to do, since boxed types are static to the type system */
             break;
           default: ;
           }
@@ -363,6 +365,8 @@ bse_plugin_init_types (BsePlugin *plugin)
       {
         BseExportNodeClass *cnode;
         GType type;
+      case BSE_EXPORT_NODE_LINK:
+        break;
       case BSE_EXPORT_NODE_CLASS:
         cnode = (BseExportNodeClass*) node;
         type = g_type_from_name (cnode->parent);
@@ -378,12 +382,11 @@ bse_plugin_init_types (BsePlugin *plugin)
                        plugin->name, node->name, cnode->parent);
             return;
           }
-      case BSE_EXPORT_NODE_LINK:
-        break;
-      case BSE_EXPORT_NODE_PROC:
+      case BSE_EXPORT_NODE_HOOK:
       case BSE_EXPORT_NODE_ENUM:
       case BSE_EXPORT_NODE_RECORD:
       case BSE_EXPORT_NODE_SEQUENCE:
+      case BSE_EXPORT_NODE_PROC:
         type = g_type_from_name (node->name);
         if (type)
           {
@@ -391,6 +394,7 @@ bse_plugin_init_types (BsePlugin *plugin)
                        plugin->name, node->name);
             return;
           }
+        break;
       default: ;
       }
 
@@ -402,8 +406,15 @@ bse_plugin_init_types (BsePlugin *plugin)
         {
           BseExportNodeClass *cnode;
           BseExportNodeEnum *enode;
+          BseExportNodeHook *hnode;
           const gchar *error;
         case BSE_EXPORT_NODE_LINK:
+          break;
+        case BSE_EXPORT_NODE_HOOK:
+          hnode = (BseExportNodeHook*) node;
+          hnode->hook (hnode->data);
+          if (hnode->make_static)
+            plugin->use_count += 1;
           break;
         case BSE_EXPORT_NODE_ENUM:
           enode = (BseExportNodeEnum*) node;
@@ -594,7 +605,8 @@ bse_plugin_check_load (const gchar *const_file_name)
       bse_plugin_init_types (plugin);
 
       bse_plugins = g_slist_prepend (bse_plugins, plugin);
-      bse_plugin_unload (plugin);
+      if (plugin->use_count == 0)
+        bse_plugin_unload (plugin);
     }
   else
     {
