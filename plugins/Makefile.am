@@ -75,6 +75,13 @@ else
 plugin_SSE_cond_libs	  =
 endif
 
+# === CoreHook plugin ===
+plugin_SSE_ltlibs            += bseblockutils.SSE.la
+bseblockutils_SSE_la_SOURCES  = bseblockutils.cc
+bseblockutils_SSE_la_LDFLAGS  = -module $(plugins_ldflags)
+bseblockutils_SSE_la_LIBADD   = $(plugins_libs)
+bseblockutils_SSE_la_CXXFLAGS = $(SSE_PLUGIN_CXXFLAGS)
+
 # === Makefile.plugins adds plugin rules ===
 include Makefile.plugins
 # === Makefile.plugins generation rules ===

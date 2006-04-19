@@ -1,3 +1,10 @@
+Wed Apr 19 23:53:28 2006  Tim Janik  <timj@gtk.org>
+
+	* plugins/bseblockutils.cc: new SSE-only plugin which replaces the FPU
+	block utils provided by BSE with SSE variants.
+	SSE variants are so far supplied for add() and scale() based on SSE
+	code by Stefan Westerfeld.
+
 Sat Apr 15 03:29:35 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: propagate PLUGIN_FLAGS, FPU_FLAGS and SSE_FLAGS from
