@@ -169,7 +169,11 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 %.genprc.c: @PERLRULE@ %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
-CLEANFILES += @PERLRULE@ $(bse_proc_gen_sources)
+if WITH_PERLRULE
+CLEANFILES += $(bse_proc_gen_sources)
+else
+MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
+endif
 # gslfft.c
 GENERATED += gslfft.c
 $(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
