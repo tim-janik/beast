@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/04/09 15:58:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/04/19 00:50:37 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - Bedevilled Audio System
 @doxer_set{man-title}	BEAST
@@ -38,6 +38,8 @@ beast - Music composition and modular synthesis application.
 	Print the directory for a specific resource (e.g. 'plugins' or 'images').
 	Giving just @manb{--print-dir} without an extra argument causes @manb{beast}
 	to print the list of available resources.
+@item @manb{--merge} @*
+	Causes the following files to be merged into the previous or first project.
 @item @manb{--devel} @*
 	Enrich the GUI with hints usefull for (script) developers
 @item @manb{-h}, @manb{--help} @*

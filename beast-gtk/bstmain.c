@@ -83,7 +83,6 @@ main (int   argc,
       char *argv[])
 {
   GdkPixbufAnimation *anim;
-  BstApp *app = NULL;
   SfiRec *bseconfig;
   gchar *string;
   GSource *source;
@@ -263,12 +262,18 @@ main (int   argc,
   /* open files given on command line */
   if (argc > 1)
     bst_splash_update_entity (beast_splash, _("Loading..."));
+  BstApp *app = NULL;
+  gboolean merge_with_last = FALSE;
   for (i = 1; i < argc; i++)
     {
-      SfiProxy project, wrepo;
-      BseErrorType error;
-
       bst_splash_update ();
+
+      /* parse non-file args */
+      if (strcmp (argv[i], "--merge") == 0)
+        {
+          merge_with_last = TRUE;
+          continue;
+        }
 
       /* load waves into the last project */
       if (bse_server_can_load (BSE_SERVER, argv[i]))
@@ -277,16 +282,16 @@ main (int   argc,
 	    {
 	      SfiProxy wrepo = bse_project_get_wave_repo (app->project);
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
-	      error = bse_wave_repo_load_file (wrepo, argv[i]);
+	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
               bst_status_eprintf (error, _("Loading \"%s\""), argv[i]);
               if (error)
                 sfi_error (_("Failed to load wave file \"%s\": %s"), argv[i], bse_error_blurb (error));
 	    }
           else
 	    {
-	      project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
-	      wrepo = bse_project_get_wave_repo (project);
-	      error = bse_wave_repo_load_file (wrepo, argv[i]);
+	      SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
+	      SfiProxy wrepo = bse_project_get_wave_repo (project);
+	      BseErrorType error = bse_wave_repo_load_file (wrepo, argv[i]);
 	      if (!error)
 		{
 		  app = bst_app_new (project);
@@ -303,20 +308,27 @@ main (int   argc,
           continue;
 	}
 
-      /* load projects */
-      project = bse_server_use_new_project (BSE_SERVER, argv[i]);
-      error = bst_project_restore_from_file (project, argv[i], TRUE);
-      
-      if (!error)
-	{
-	  app = bst_app_new (project);
-	  gxk_idle_show_widget (GTK_WIDGET (app));
-	  gtk_widget_hide (beast_splash);
-	}
-      bse_item_unuse (project);
-      
-      if (error)
-        sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
+      /* load/merge projects */
+      if (!app || !merge_with_last)
+        {
+          SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
+          BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE);
+          if (!error)
+            {
+              app = bst_app_new (project);
+              gxk_idle_show_widget (GTK_WIDGET (app));
+              gtk_widget_hide (beast_splash);
+            }
+          bse_item_unuse (project);
+          if (error)
+            sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
+        }
+      else
+        {
+          BseErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE);
+          if (error)
+            sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
+        }
     }
 
   /* open default app window
@@ -708,11 +720,13 @@ static void
 bst_print_blurb (void)
 {
   g_print ("Usage: beast [options] [files...]\n");
+  /*        12345678901234567890123456789012345678901234567890123456789012345678901234567890 */
 #ifdef BST_WITH_XKB
   g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
   g_print ("  --skinrc[=FILENAME]     skin resource file name\n");
   g_print ("  --print-dir[=RESOURCE]  print the directory for a specific resource\n");
+  g_print ("  --merge                 merge the following files into the previous project\n");
   g_print ("  --devel                 enrich the GUI with hints useful for developers,\n");
   g_print ("                          enable unstable plugins and experimental code\n");
   g_print ("  -h, --help              show this help message\n");

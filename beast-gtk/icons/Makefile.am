@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SRC_IMAGES = @STRIP_BEGIN@	\
+SRC_IMAGES = $(strip		\
 	aguitar.xcf		\
 	browse-image.xcf	\
 	bus-add.xcf		\
@@ -47,9 +47,9 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	wave.xcf		\
 	wave-tool.xcf		\
 	small-audio.xcf		\
-@STRIP_END@
+)
 
-STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
+STOCK_IMAGE_DEFS = $(strip						\
 	STOCK_NOTE_ICON			$(srcdir)/binote.png		\
 	STOCK_BROWSE_IMAGE		$(srcdir)/browse-image.png	\
 	STOCK_BUS_ADD			$(srcdir)/bus-add.png		\
@@ -131,7 +131,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_WAVE			$(srcdir)/wave.png		\
 	STOCK_WAVE_TOOL			$(srcdir)/wave-tool.png		\
 	STOCK_ZOOM_ANY			$(srcdir)/zoom-any.png		\
-@STRIP_END@
+)
 
 gen_sources = xgen-bsgc xgen-bsgh
 CLEANFILES += $(gen_sources) bst-stock-gen.c bst-stock-gen.h

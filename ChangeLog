@@ -1,3 +1,17 @@
+Wed Apr 19 02:30:34 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: added specialized "distcheck" rule that disables a 
+	recursive make dist. the reason for which is explained here:
+	http://blogs.gnome.org/view/timj/2006/04/18/0
+
+	* docs/beast.1.doxi:
+	* beast-gtk/bstmain.c: implemented --merge.
+
+	* configure.in: provide AM conditional WITH_PERLRULE.
+
+	* beast-gtk/icons/Makefile.am:
+	* configure.in: removed STRIP_* cruft. 
+
 Tue Apr 18 21:25:00 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/bstmain.c: Fix double initialization of the application
