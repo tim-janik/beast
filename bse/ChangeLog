@@ -1,3 +1,8 @@
+Thu Apr 20 14:11:54 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* bseblockutils.*(substitute): Tiny name fix: substrate is not the
+	right word for the argument here; substitute_impl is better.
+
 Wed Apr 19 23:50:48 2006  Tim Janik  <timj@gtk.org>
 
 	* bseblockutils.hh, bseblockutils.cc: new files which provide a couple
@@ -11,7 +16,7 @@ Wed Apr 19 23:50:48 2006  Tim Janik  <timj@gtk.org>
 
 	* bsecxxplugin.hh: added BSE_CXX_REGISTER_STATIC_HOOK() and
 	BSE_CXX_REGISTER_HOOK().
-        
+
 	* Makefile.am: fixed up clean rules so stamp files
 	are properly deleted and dependent files are properly built.
 

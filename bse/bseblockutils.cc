@@ -85,11 +85,11 @@ Block::Impl::~Impl()
 {}
 
 void
-Block::Impl::substitute (Impl *substrate)
+Block::Impl::substitute (Impl *substitute_impl)
 {
-  if (!substrate)
-    substrate = &default_block_impl;
-  Block::singleton = substrate;
+  if (!substitute_impl)
+    substitute_impl = &default_block_impl;
+  Block::singleton = substitute_impl;
 }
 
 } // Bse

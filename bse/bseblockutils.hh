@@ -112,7 +112,7 @@ public:
                                          const float    *ivalues,
                                          guint           offset) = 0;   /* 0=left, 1=right */
     friend class Block;
-    static void substitute              (Impl           *substrate);
+    static void substitute              (Impl           *substitute_impl);
   };
   static Impl*  default_singleton       ();
   static Impl*  current_singleton       ();
