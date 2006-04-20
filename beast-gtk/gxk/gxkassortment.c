@@ -206,6 +206,11 @@ gxk_assortment_remove (GxkAssortment          *self,
   g_slist_free_1 (slist);
   g_signal_emit (self, signal_entry_remove, 0, entry);
   assortment_entry_free (entry);
+  if (self->selected == entry)
+    {
+      self->selected = NULL;
+      selection_changed = TRUE;
+    }
   if (selection_changed)
     g_signal_emit (self, signal_selection_changed, 0);
 }
@@ -218,7 +223,11 @@ assortment_dispose (GObject *object)
   gboolean was_selected = self->selected != NULL;
   self->selected = NULL;
   while (self->entries)
-    assortment_entry_free (g_slist_pop_head (&self->entries));
+    {
+      assortment_entry_free (g_slist_pop_head (&self->entries));
+      was_selected |= self->selected != NULL;
+      self->selected = NULL;
+    }
   if (was_selected)
     g_signal_emit (self, signal_selection_changed, 0);
   G_OBJECT_CLASS (gxk_assortment_parent_class)->dispose (object);
@@ -231,7 +240,10 @@ assortment_finalize (GObject *object)
   g_return_if_fail (GXK_IS_ASSORTMENT (self));
   self->selected = NULL;
   while (self->entries)
-    assortment_entry_free (g_slist_pop_head (&self->entries));
+    {
+      assortment_entry_free (g_slist_pop_head (&self->entries));
+      self->selected = NULL;
+    }
   g_free (self->publishing_name);
   self->publishing_name = NULL;
   G_OBJECT_CLASS (gxk_assortment_parent_class)->finalize (object);

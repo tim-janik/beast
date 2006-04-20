@@ -1,3 +1,9 @@
+Thu Apr 20 20:50:35 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkassortment.c: added extra guards to ensure that 
+	assortment free() functions do not cause self->selected to point to 
+	invalid/freed entries.
+
 Thu Apr 20 01:23:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Fix printf format warnings.
