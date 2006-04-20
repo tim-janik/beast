@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -899,8 +899,8 @@ msgstr ""
 msgid "Loading wave `%s'"
 msgstr "UMUVUMBA"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Kuri Ibirimo UMUVUMBA IDOSIYE"
@@ -1061,80 +1061,85 @@ msgstr "Kuri Kurema Gishya Urufunguzo Ibyafataranyijwe"
 msgid "Description"
 msgstr "Isobanuramiterere"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr ""
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Inyandikoporogaramu"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "Ibiganiro"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Itangira..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, fuzzy, c-format
 msgid "Loading \"%s\""
 msgstr "Itangira..."
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "Kuri Ibirimo Umushinga"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "ku"
@@ -2126,9 +2131,11 @@ msgstr ""
 msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "By'ibanze Bivuye 20 kirekire Kuri Byo hasi"
 
+# 1227
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
-msgstr ""
+#, fuzzy
+msgid "CPU#"
+msgstr "CPU"
 
 #: ../beast-gtk/bstprofiler.c:266
 #, fuzzy

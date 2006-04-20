@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -775,8 +775,8 @@ msgstr "WAVE を読み込み"
 msgid "Loading wave `%s'"
 msgstr "WAVE '%s' を読み込み中"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
@@ -899,80 +899,85 @@ msgstr "新しいショートカットをつくるのに使う機能"
 msgid "Description"
 msgstr "説明"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "BEAST 起動"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "起動"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr "初期化"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr "初期化ファイル"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "スプラッシュイメージ"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE コア"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "プラグイン"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "LADSPA プラグイン"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "スクリプト"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "ダイアログ"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "読み込み中..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" を読み込み中"
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr "BEAST の情報"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST バージョン %s"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr "貢献した人々:"
 
@@ -1764,8 +1769,9 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "スレッド優先度(-20:最高 〜 +19:最低)"
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
-msgstr "#CPU"
+#, fuzzy
+msgid "CPU#"
+msgstr "CPU%"
 
 #: ../beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
@@ -6813,6 +6819,9 @@ msgstr "右出力"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"
+
+#~ msgid "#CPU"
+#~ msgstr "#CPU"
 
 #~ msgid "BEAST-%s Release Notes"
 #~ msgstr "BEAST-%s リリースノート"

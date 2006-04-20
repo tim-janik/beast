@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -783,8 +783,8 @@ msgstr "Учитај талас"
 msgid "Loading wave `%s'"
 msgstr "Учитавам талас „%s“"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr ""
@@ -911,66 +911,66 @@ msgstr "Функција којом се додељују нове операц�
 msgid "Description"
 msgstr "Опис"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "ЗВЕР"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Покретање Звери"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Покретање"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr "Покретачи"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr "RC датотеке"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Уводна слика"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE језгро"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "Додаци"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "LADSPA додаци"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Скрипте"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "Прозорчићи"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Учитавам..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Учитавам „%s“"
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr ""
@@ -979,16 +979,25 @@ msgstr ""
 "због:\n"
 "%s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr ""
+"Нисам успео да уклоним датотеку\n"
+"„%s“\n"
+"због:\n"
+"%s"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 
@@ -1807,7 +1816,7 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr ""
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
+msgid "CPU#"
 msgstr ""
 
 #: ../beast-gtk/bstprofiler.c:266

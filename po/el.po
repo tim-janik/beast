@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2003-11-09 18:32+0200\n"
 "Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -800,8 +800,8 @@ msgstr "Φόρτωση Wave"
 msgid "Loading wave `%s'"
 msgstr "Φόρτωση Wave `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr ""
@@ -936,67 +936,67 @@ msgstr ""
 msgid "Description"
 msgstr "Περιγραφή"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Εκκίνηση BEAST"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Εκκίνηση "
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 #, fuzzy
 msgid "RC Files"
 msgstr "Αρχείο RC"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Εικόνα εκκίνησης"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE Core"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "Πρόσθετες Λειτουργίες"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "Πρόσθετες λειτουργίες LADSPA"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Δέσμες ενεργειών"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "Διάλογοι"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Γίνεται φόρτωση..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Φόρτωση \"%s\""
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr ""
@@ -1005,17 +1005,26 @@ msgstr ""
 "λόγω:\n"
 "%s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr ""
+"Αποτυχία διαγραφής αρχείου\n"
+"`%s'\n"
+"λόγω:\n"
+"%s"
+
+#: ../beast-gtk/bstmain.c:849
 #, fuzzy
 msgid "BEAST About"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr ""
 
@@ -1847,7 +1856,7 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr ""
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
+msgid "CPU#"
 msgstr ""
 
 #: ../beast-gtk/bstprofiler.c:266

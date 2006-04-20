@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2005-06-02 16:03+0545\n"
 "Last-Translator: Kapil Timilsina <lipak21@gmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -763,8 +763,8 @@ msgstr "वेभ लोड गर्नुस"
 msgid "Loading wave `%s'"
 msgstr "वेभ लोड हुँदै `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "वेभ फाइल लोड गर्न असफल \"%s\": %s"
@@ -887,80 +887,85 @@ msgstr "कार्य नयाँ कुञ्जी बाइन्डिङ
 msgid "Description"
 msgstr "बर्णन"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "बिस्ट"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "बिस्ट थालनी"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "थालनी गर्नु"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr "इनिसियलाइजर"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr "आर सि फाइलहरु"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "स्प्ल्यास छवि"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "बि एस इ स्मृति केन्द्र"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "जडानहरु"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "लाडस्पा जडानहरु"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "स्क्रिप्टहरू"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "सम्वाद"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "लोड हुँदैछ..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "लोड हुँदै छ \"%s\""
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr "बिस्ट बारेमा"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "बिस्ट संस्करण %s"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr "कन्ट्रिब्युसन निर्माता:"
 
@@ -1746,8 +1751,9 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "थ्रेड प्राथमिकता -२० (उच्च) बाट +१९ (तल्लो) सम्म"
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
-msgstr "#सिपियु"
+#, fuzzy
+msgid "CPU#"
+msgstr "सिपियु%"
 
 #: ../beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
@@ -6819,6 +6825,9 @@ msgstr "दाँया निर्गत"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "वेभ फाइल लोड गर्न असफल \"%s\": %s"
+
+#~ msgid "#CPU"
+#~ msgstr "#सिपियु"
 
 #~ msgid "BEAST-%s Release Notes"
 #~ msgstr "बिस्ट-%s टिप्पणीहरु छोड्नुस"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2005-02-18 03:07+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@vrijschrift.org>\n"
@@ -792,8 +792,8 @@ msgstr "Wave laden"
 msgid "Loading wave `%s'"
 msgstr "Laden van wave `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Laden van wave-bestand \"%s\" mislukt: %s"
@@ -926,81 +926,86 @@ msgstr "Functie die gebruikt wordt bij nieuwe toetsbindingen"
 msgid "Description"
 msgstr "Beschrijving"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "BEAST Opstartprocedure"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Opstarten"
 
 # betere vertaling?
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr "Initialisators"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr "RC bestanden"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Intro-afbeelding"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE kern"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "Plugins"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "LADSPA plugins"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "Dialoogvensters"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Bezig met laden van \"%s\""
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Laden van project \"%s\" mislukt: %s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "Laden van project \"%s\" mislukt: %s"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
@@ -1825,8 +1830,9 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Thread prioriteit van -20 (hoog) naar +19 (laag)"
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
-msgstr "#CPU"
+#, fuzzy
+msgid "CPU#"
+msgstr "CPU%"
 
 #: ../beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
@@ -7121,6 +7127,9 @@ msgstr "Rechter uitgang"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Laden van wave-bestand \"%s\" mislukt: %s"
+
+#~ msgid "#CPU"
+#~ msgstr "#CPU"
 
 #~ msgid "BEAST-%s Release Notes"
 #~ msgstr "BEAST-%s Release Notes"

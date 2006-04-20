@@ -1,6 +1,4 @@
-# translation of it.po to 
-# translation of it.po to
-# translation of it.po to ITALIANO
+# translation of it.po to Italiano
 # Italian translation for the BEAST package.
 # This file is distributed under the same license as the beast package.
 # Copyright (C) 2004 Petrecca Michele <petrecca@interfree.it OR michelinux@aliceposta.it>.
@@ -11,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
-"PO-Revision-Date: 2006-03-29 15:02+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
+"PO-Revision-Date: 2006-04-19 21:51+0200\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
-"Language-Team:  ITALIANO\n"
+"Language-Team: Italiano\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
+"X-Generator: KBabel 1.10.2\n"
 
 #: ../beast-gtk/bstapp.c:82
 msgid "_New"
@@ -38,11 +36,11 @@ msgstr "Apri un progetto esistente"
 
 #: ../beast-gtk/bstapp.c:86
 msgid "_Merge..."
-msgstr "Fondi..."
+msgstr "Inserisci..."
 
 #: ../beast-gtk/bstapp.c:86
 msgid "Merge an existing project into the current project"
-msgstr "Fondi un progetto esistente nel progetto corrente"
+msgstr "Inserisci un progetto esistente nel progetto corrente"
 
 #: ../beast-gtk/bstapp.c:88
 msgid "_Import MIDI..."
@@ -587,41 +585,36 @@ msgid "Name"
 msgstr "Nome"
 
 #: ../beast-gtk/bstfiledialog.c:138
-#, fuzzy
 msgid "Sample or instrument name"
-msgstr "Salva Strumento"
+msgstr "Nome del Campione e/o dello Strumento"
 
 #: ../beast-gtk/bstfiledialog.c:141
-#, fuzzy
 msgid "Size"
-msgstr "Tempo % utilizzazione sistema"
+msgstr "Dimensione"
 
 #: ../beast-gtk/bstfiledialog.c:141
 msgid "File size in bytes"
-msgstr ""
+msgstr "Dimensione in byte del file"
 
 #: ../beast-gtk/bstfiledialog.c:143
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: ../beast-gtk/bstfiledialog.c:143
 msgid "Detected file format"
-msgstr ""
+msgstr "Formato del file rilevato"
 
 #: ../beast-gtk/bstfiledialog.c:159
-#, fuzzy
 msgid "Time"
-msgstr "Tempo % utilizzazione sistema"
+msgstr "Tempo"
 
 #: ../beast-gtk/bstfiledialog.c:159
-#, fuzzy
 msgid "File modification time"
-msgstr "Ultima modifica"
+msgstr "Ultima modifica del file"
 
 #: ../beast-gtk/bstfiledialog.c:166
-#, fuzzy
 msgid "Filename"
-msgstr "Rinomina"
+msgstr "Nome del file"
 
 #: ../beast-gtk/bstfiledialog.c:179
 msgid "Contents"
@@ -770,8 +763,8 @@ msgstr "Carica Wave"
 msgid "Loading wave `%s'"
 msgstr "Caricamento wave `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Fallita il caricamento del file wave \"%s\": %s"
@@ -895,80 +888,85 @@ msgstr "Funzione da associare alla combinazione di tasti"
 msgid "Description"
 msgstr "Descrizione"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Avvio BEAST"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Avvio"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr "Inizializzatori"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr "File RC"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Immagine d'Avvio"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "Nucleo BSE"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "Plugin"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "Plugin LADSPA"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Script"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Caricamento..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Caricamento \"%s\""
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Fallito il caricamento del progetto \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "Fallito il caricamento del progetto \"%s\": %s"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr "Altro su BEAST"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versione di BEAST %s"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr "Sviluppatori e contributori al programma:"
 
@@ -1318,7 +1316,7 @@ msgstr "VZoom"
 
 #: ../beast-gtk/bstpatternctrl.c:120
 msgid "The tick/note length per line"
-msgstr ""
+msgstr "Risoluzione per durata di nota"
 
 #: ../beast-gtk/bstpatternctrl.c:123
 msgid "Steps"
@@ -1649,7 +1647,7 @@ msgstr "Sposta Nota"
 
 #: ../beast-gtk/bstpianorollctrl.c:668 ../beast-gtk/bstpianorollctrl.c:739
 msgid "Lost Note"
-msgstr ""
+msgstr "Nota Persa"
 
 #: ../beast-gtk/bstpianorollctrl.c:685 ../beast-gtk/bstpianorollctrl.c:690
 #: ../beast-gtk/bstpianorollctrl.c:739
@@ -1770,8 +1768,8 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Priorità thread da -20 (alta) a +19 (bassa)"
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
-msgstr "#CPU"
+msgid "CPU#"
+msgstr "CPU#"
 
 #: ../beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
@@ -2824,7 +2822,7 @@ msgstr "Inserisci Parte"
 
 #: ../beast-gtk/bsttrackrollctrl.c:449 ../beast-gtk/bsttrackrollctrl.c:555
 msgid "Lost Part"
-msgstr ""
+msgstr "Parte Persa"
 
 #: ../beast-gtk/bsttrackrollctrl.c:454 ../beast-gtk/bsttrackrollctrl.c:459
 msgid "Position taken"
@@ -3675,7 +3673,7 @@ msgstr "Tipo di filtro"
 
 #: ../bse/bsebiquadfilter.c:132 ../bse/bsebiquadfilter.c:140
 msgid "Center Frequency"
-msgstr ""
+msgstr "Frequenza Centrale"
 
 #: ../bse/bsebiquadfilter.c:134 ../plugins/bseiirfilter.c:143
 #: ../plugins/bseiirfilter.c:153
@@ -3758,7 +3756,7 @@ msgstr "Freq In"
 
 #: ../bse/bsebiquadfilter.c:188
 msgid "Center Frequency Input"
-msgstr ""
+msgstr "Ingresso Frequenza Centrale"
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
 msgid "Freq Mod In"
@@ -4677,7 +4675,7 @@ msgstr "Processore"
 
 #: ../bse/bsecore.idl:680
 msgid "The processor that this thread is currently being executed on"
-msgstr ""
+msgstr "Esecuzione di questo thread ad opera del processore"
 
 #: ../bse/bsecore.idl:682
 msgid "User Time"
@@ -4824,6 +4822,7 @@ msgstr ""
 #: ../bse/bsecore.idl:737
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
+"Frequenza di sintesi. I valori più comuni sono: 22050Hz, 44100Hz e 48000Hz"
 
 #: ../bse/bsecore.idl:739
 msgid "Synth Control Frequency"
@@ -4834,6 +4833,8 @@ msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 msgstr ""
+"La frequenza alla quale i valori sono campionati dovrebbe essere minore "
+"della frequenza di sintesi al fine di ridurre il carico sulla CPU"
 
 #: ../bse/bsecore.idl:744
 msgid "MIDI"
@@ -4947,7 +4948,7 @@ msgstr "Troppi file aperti nel sistema"
 
 #: ../bse/bseenums.c:116
 msgid "No space left on device"
-msgstr ""
+msgstr "Non c'è spazio disponibile sul dispositivo"
 
 #: ../bse/bseenums.c:117
 msgid "Out of memory"
@@ -4960,7 +4961,7 @@ msgstr ""
 
 #: ../bse/bseenums.c:120
 msgid "Failed to retrieve seek information"
-msgstr ""
+msgstr "Fallita la ricerca sul recupero delle informazioni"
 
 #: ../bse/bseenums.c:121
 msgid "No data available"
@@ -5054,7 +5055,7 @@ msgstr "Fallita la configurazione della frequenza del dispositivo"
 
 #: ../bse/bseenums.c:145
 msgid "Device configurations mismatch"
-msgstr ""
+msgstr "Disadattamento di configurazione del dispositivo"
 
 #. BseSource errors
 #: ../bse/bseenums.c:147
@@ -5130,7 +5131,7 @@ msgstr "Esecuzione procedura annullata"
 #. various procedure errors
 #: ../bse/bseenums.c:166
 msgid "No such entry"
-msgstr ""
+msgstr "Nessun elemento inserito"
 
 #: ../bse/bseenums.c:167
 msgid "No such event"
@@ -5162,11 +5163,11 @@ msgstr "Gate"
 
 #: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "High if the note is currently being pressed"
-msgstr ""
+msgstr "Valore alto se la nota è correntemente utilizzata"
 
 #: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity"
-msgstr ""
+msgstr "Velocity"
 
 #: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity of the note press"
@@ -5287,6 +5288,10 @@ msgid ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 msgstr ""
+"Scarta tutti gli eventi in uscita e non genera alcun evento dall'ingresso. "
+"Questo driver\n"
+" non fa parte della lista di selezione automatica dei dispositivi per gli "
+"elementi MIDI."
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsemididevice-oss.c:267
@@ -5433,6 +5438,8 @@ msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list."
 msgstr ""
+"Scarta tutte le uscite PCM e fornisce blocchi zero come ingressi. Questo\n"
+" non fa parte della lista di selezione automatica dei dispositivi PCM."
 
 #: ../bse/bsepcmdevice-oss.c:647
 #: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:396
@@ -5791,6 +5798,9 @@ msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
 msgstr ""
+"Proporzione della durata della componente positiva della forma onda "
+"dell'impulso (L'impulso deve essere selezionato come forma d'onda affinché "
+"abbia effetto)"
 
 #: ../bse/bsestandardosc.c:190
 msgid "Pulse Modulation [%]"
@@ -6231,7 +6241,7 @@ msgstr "Riproduci subito"
 
 #: ../library/scripts/record-midi.scm.h:49
 msgid "No valid part object supplied"
-msgstr ""
+msgstr "Non è stato fornito alcun oggetto valido per la parte"
 
 #: ../library/scripts/record-midi.scm.h:50
 msgid "You probably want to start this script from a part editor."
@@ -6450,7 +6460,7 @@ msgstr "Uscita Audio Distorta"
 
 #: ../plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
-msgstr ""
+msgstr "/Spaziale/Bilanciamento"
 
 #: ../plugins/bsebalance.idl:28
 msgid ""
@@ -6625,11 +6635,11 @@ msgstr "Frequenza Segnale"
 
 #: ../plugins/bsesequencer.c:108
 msgid "Note Sync"
-msgstr ""
+msgstr "Sync Note"
 
 #: ../plugins/bsesequencer.c:108
 msgid "Note Sync Signal"
-msgstr ""
+msgstr "Segnale Sync Note"
 
 #: ../plugins/bsesimpleadsr.c:118
 msgid "Gate In"
@@ -6767,7 +6777,7 @@ msgstr "Wet out [%]"
 
 #: ../plugins/davchorus.idl:33
 msgid "Set the amount of modified data to mix"
-msgstr ""
+msgstr "Imposta la quantità di dati modificati da miscelare"
 
 #: ../plugins/davorgan.c:133
 msgid "Organ Output"
@@ -6783,7 +6793,7 @@ msgstr "Rapporto d'Ingresso"
 
 #: ../plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
-msgstr ""
+msgstr "Rapporto spostamento di frequenza (si assume 1.0 se non connesso)"
 
 #: ../plugins/davsyndrum.c:120
 msgid "Hit the drum on raising edges"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2006-01-11 20:18+0100\n"
 "Last-Translator: Jorge González <jorge.gonzalez.gonzalez@hispalinux.es>\n"
 "Language-Team: Español <traductores@es.gnome.org>\n"
@@ -779,8 +779,8 @@ msgstr "Cargar onda"
 msgid "Loading wave `%s'"
 msgstr "Cargando onda «%s»"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Error al cargar el archivo de ondas «%s»: %s"
@@ -903,80 +903,85 @@ msgstr "Función usada para crear combinaciones de teclas nuevas"
 msgid "Description"
 msgstr "Descripción"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Inicio de BEAST"
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Inicio rápido"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr "Inicializadores"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 msgid "RC Files"
 msgstr "Archivos RC"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Imagen inicial"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "Núcleo BSE"
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "Complementos"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
 msgstr "Complementos LADSPA"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr "Diálogos"
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Cargando..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Cargando «%s»"
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Error al cargar el proyecto «%s»: %s"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "Error al cargar el proyecto «%s»: %s"
+
+#: ../beast-gtk/bstmain.c:849
 msgid "BEAST About"
 msgstr "Acerca de Beast"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versión %s de Beast"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 msgid "Contributions made by:"
 msgstr "Contribuciones hechas por:"
 
@@ -1780,8 +1785,9 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Prioridad de la hebra de -20 (alto) a +19 (bajo)"
 
 #: ../beast-gtk/bstprofiler.c:266
-msgid "#CPU"
-msgstr "#CPU"
+#, fuzzy
+msgid "CPU#"
+msgstr "CPU%"
 
 #: ../beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
@@ -6982,6 +6988,9 @@ msgstr "Salida derecha"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
+
+#~ msgid "#CPU"
+#~ msgstr "#CPU"
 
 #~ msgid "BEAST-%s Release Notes"
 #~ msgstr "Notas de publicación de BEAST-%s"

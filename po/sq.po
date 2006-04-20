@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-11 19:45+0200\n"
+"POT-Creation-Date: 2006-04-20 20:16+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -817,8 +817,8 @@ msgstr "Ngarko"
 msgid "Loading wave `%s'"
 msgstr ""
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:285
-#: ../beast-gtk/bstmain.c:302
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstmain.c:305
 #, fuzzy, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "hap"
@@ -957,84 +957,89 @@ msgstr "Funksioni i ri"
 msgid "Description"
 msgstr "Përshkrimi"
 
-#. overriding Gdk's program name
-#: ../beast-gtk/bstmain.c:125 ../data/beast.desktop.in.h:1
+#. initialize Birnet/Sfi
+#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:137
+#: ../beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:144
+#: ../beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:148
+#: ../beast-gtk/bstmain.c:145
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:156
+#: ../beast-gtk/bstmain.c:153
 #, fuzzy
 msgid "RC Files"
 msgstr "_File"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:160
+#: ../beast-gtk/bstmain.c:157
 #, fuzzy
 msgid "Splash Image"
 msgstr "Figura"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:172
+#: ../beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:194
+#: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
 msgstr "Plugins"
 
-#: ../beast-gtk/bstmain.c:213
+#: ../beast-gtk/bstmain.c:210
 #, fuzzy
 msgid "LADSPA Plugins"
 msgstr "Plugins"
 
-#: ../beast-gtk/bstmain.c:241
+#: ../beast-gtk/bstmain.c:238
 msgid "Scripts"
 msgstr "Scripte"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:258
+#: ../beast-gtk/bstmain.c:255
 msgid "Dialogs"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:267
+#: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
 msgstr "Duke ngarkuar..."
 
-#: ../beast-gtk/bstmain.c:281 ../beast-gtk/bstmain.c:283
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:321
+#: ../beast-gtk/bstmain.c:324
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "hap"
 
-#: ../beast-gtk/bstmain.c:831
+#: ../beast-gtk/bstmain.c:330
+#, fuzzy, c-format
+msgid "Failed to merge project \"%s\": %s"
+msgstr "hap"
+
+#: ../beast-gtk/bstmain.c:849
 #, fuzzy
 msgid "BEAST About"
 msgstr "Informacione"
 
-#: ../beast-gtk/bstmain.c:832
+#: ../beast-gtk/bstmain.c:850
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "Versioni"
 
-#: ../beast-gtk/bstmain.c:833
+#: ../beast-gtk/bstmain.c:851
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "nga:"
@@ -1931,7 +1936,7 @@ msgstr "e lartë e ulët"
 
 #: ../beast-gtk/bstprofiler.c:266
 #, fuzzy
-msgid "#CPU"
+msgid "CPU#"
 msgstr "CPU"
 
 #: ../beast-gtk/bstprofiler.c:266
@@ -7472,6 +7477,10 @@ msgstr "Djathtas Rezultati"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "hap"
+
+#, fuzzy
+#~ msgid "#CPU"
+#~ msgstr "CPU"
 
 #, fuzzy
 #~ msgid "BEAST-%s Release Notes"
