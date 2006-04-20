@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <bse/bseblockutils.hh>
-//#define TEST_VERBOSE
+// #define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <bse/bsemain.h>
 #include "topconfig.h"
@@ -29,7 +29,10 @@ block_check (guint    n,
 {
   while (n--)
     if (block[n] != value)
-      return false;
+      {
+        TPRINT ("%f != %f", block[n], value);
+        return false;
+      }
   return true;
 }
 
