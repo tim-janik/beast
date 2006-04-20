@@ -23,7 +23,8 @@
 #endif
 #include <xmmintrin.h>
 
-#define ALIGNED16(pointer)  (!(0xf & (ptrdiff_t) (pointer)))
+#define ALIGNMENT16(pointer) (0xf & (ptrdiff_t) (pointer))
+#define ALIGNED16(pointer)   (!ALIGNMENT16 (pointer))
 
 namespace {
 class BlockImpl : virtual public Bse::Block::Impl {
@@ -32,19 +33,22 @@ class BlockImpl : virtual public Bse::Block::Impl {
        float       *ovalues,
        const float *ivalues)
   {
-    guint upos;
-    /* loop until unaligned */
-    for (upos = 0;
-         upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
-                             !ALIGNED16 (&ivalues[upos]));
-         upos++)
-      ovalues[upos] += ivalues[upos];
-    /* loop while aligned */
-    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
-    __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
-    guint spos, n_vectors = (n_values - upos) / 4;
-    for (spos = 0; spos < n_vectors; spos++)
-      ovalues_m[spos] = _mm_add_ps (ovalues_m[spos], ivalues_m[spos]);
+    guint upos = 0, n_vectors = 0;
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+      {
+        /* loop until unaligned */
+        for (upos = 0;
+             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
+                                 !ALIGNED16 (&ivalues[upos]));
+             upos++)
+          ovalues[upos] += ivalues[upos];
+        /* loop while aligned */
+        const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+        __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
+        guint spos, n_vectors = (n_values - upos) / 4;
+        for (spos = 0; spos < n_vectors; spos++)
+          ovalues_m[spos] = _mm_add_ps (ovalues_m[spos], ivalues_m[spos]);
+      }
     /* loop while unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       ovalues[upos] += ivalues[upos];
@@ -55,18 +59,23 @@ class BlockImpl : virtual public Bse::Block::Impl {
          const float *ivalues,
          const float  level)
   {
-    guint upos;
-    /* loop until unaligned */
-    for (upos = 0; !ALIGNED16 (&ovalues[upos]) &&
-                !ALIGNED16 (&ivalues[upos]) && upos < n_values; upos++)
-      ovalues[upos] = ivalues[upos] * level;
-    /* loop while aligned */
-    const __m128 level_m = _mm_set1_ps (level);
-    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
-    __m128 *ovalues_m = (__m128 *) &ovalues[upos];
-    guint spos, n_vectors = (n_values - upos) / 4;
-    for (spos = 0; spos < n_vectors; spos++)
-      ovalues_m[spos] = _mm_mul_ps (ivalues_m[spos], level_m);
+    guint upos = 0, n_vectors = 0;
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+      {
+        /* loop until unaligned */
+        for (upos = 0;
+             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
+                                 !ALIGNED16 (&ivalues[upos]));
+             upos++)
+          ovalues[upos] = ivalues[upos] * level;
+        /* loop while aligned */
+        const __m128 level_m = _mm_set1_ps (level);
+        const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+        __m128 *ovalues_m = (__m128 *) &ovalues[upos];
+        guint spos, n_vectors = (n_values - upos) / 4;
+        for (spos = 0; spos < n_vectors; spos++)
+          ovalues_m[spos] = _mm_mul_ps (ivalues_m[spos], level_m);
+      }
     /* loop while unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       ovalues[upos] = ivalues[upos] * level;

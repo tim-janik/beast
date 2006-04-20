@@ -1,3 +1,8 @@
+Thu Apr 20 01:33:47 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.cc: fixed alignment check logic in ::scale(), this 
+	fixes segfaults on unaligned blocks.
+
 Wed Apr 19 23:53:28 2006  Tim Janik  <timj@gtk.org>
 
 	* plugins/bseblockutils.cc: new SSE-only plugin which replaces the FPU
