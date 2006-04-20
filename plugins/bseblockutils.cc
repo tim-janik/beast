@@ -45,8 +45,8 @@ class BlockImpl : virtual public Bse::Block::Impl {
         /* loop while aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
         __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
-        guint spos, n_vectors = (n_values - upos) / 4;
-        for (spos = 0; spos < n_vectors; spos++)
+        n_vectors = (n_values - upos) / 4;
+        for (guint spos = 0; spos < n_vectors; spos++)
           ovalues_m[spos] = _mm_add_ps (ovalues_m[spos], ivalues_m[spos]);
       }
     /* loop while unaligned */
@@ -72,8 +72,8 @@ class BlockImpl : virtual public Bse::Block::Impl {
         const __m128 level_m = _mm_set1_ps (level);
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
         __m128 *ovalues_m = (__m128 *) &ovalues[upos];
-        guint spos, n_vectors = (n_values - upos) / 4;
-        for (spos = 0; spos < n_vectors; spos++)
+        n_vectors = (n_values - upos) / 4;
+        for (guint spos = 0; spos < n_vectors; spos++)
           ovalues_m[spos] = _mm_mul_ps (ivalues_m[spos], level_m);
       }
     /* loop while unaligned */

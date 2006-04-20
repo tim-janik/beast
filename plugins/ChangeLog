@@ -1,3 +1,10 @@
+Thu Apr 20 20:08:52 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.cc: fixed inner variable declarations which erroneously
+	shadowed the real variables declared in an outer scope. this fixes mis-
+	calculations of the add() and scale() SSE routines. fix from Stefan
+	Westerfeld.
+
 Thu Apr 20 01:33:47 2006  Tim Janik  <timj@gtk.org>
 
 	* bseblockutils.cc: fixed alignment check logic in ::scale(), this 
