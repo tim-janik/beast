@@ -17,6 +17,7 @@ RELEASE(0.6.7):
 - look into adding BseJanitor::status-caption (which could become primary text for status message display)
 - xtest
 MISC:
+- align engine blck adresses and engine block sizes on 16byte boundaries upon allocation
 - remove biquad normalization
 - reduce constant to 4
 - resources: http://packages.qa.debian.org/b/bse-alsa.html
