@@ -45,7 +45,9 @@ static gboolean alsa_midi_io_handler            (gpointer                data,
                                                  GPollFD                *pfds);
 
 /* --- define object type and export to BSE --- */
-BSE_REGISTER_OBJECT (BseMidiDeviceALSA, BseMidiDevice, NULL, NULL, NULL, bse_midi_device_alsa_class_init, NULL, bse_midi_device_alsa_init);
+static const char type_blurb[] = ("MIDI driver implementation for the Advanced Linux Sound Architecture "
+                                  "(http://alsa-project.org/alsa-doc/alsa-lib/midi.html)");
+BSE_REGISTER_OBJECT (BseMidiDeviceALSA, BseMidiDevice, NULL, type_blurb, NULL, bse_midi_device_alsa_class_init, NULL, bse_midi_device_alsa_init);
 BSE_DEFINE_EXPORTS (__FILE__);
 
 /* --- variables --- */

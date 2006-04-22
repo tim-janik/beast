@@ -1,3 +1,8 @@
+Sat Apr 22 18:31:54 2006  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c: 
+	* bsemididevice-alsa.c: added type blurb.
+
 Mon Apr  3 21:29:18 2006  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh:
