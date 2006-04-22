@@ -1,8 +1,11 @@
+Makefile.in
+Makefile
 .deps
 .libs
-Makefile
-Makefile.in
 *.o
-bsewavetool
-bsefextract
 bsefcompare
+bsefextract
+bsewavetool
+cutvorbis
+magictest
+mathtool
