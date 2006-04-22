@@ -3,3 +3,7 @@ Makefile
 .deps
 .libs
 *.o
+infotest
+ring
+signal
+threads
