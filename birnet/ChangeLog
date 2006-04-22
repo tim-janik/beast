@@ -1,3 +1,14 @@
+Sat Apr 22 13:25:54 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* birnettests.h: Added TEST_CALIBRATION macro, which allows benchmark
+	tests to figure out how often to perform a test for a given CPU.
+	Besides the actual benchmark code, it allows the programmer to specify
+	how much time the bencharking should take, and a suitable number of
+	repetitions for the test code is computed.
+
+	* birnetutilsxx.cc: Use g_path_get_basename() to call g_set_progname()
+	with the application name only (without the full path).
+
 Sat Apr 15 03:36:21 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcpu.c (birnet_cpu_info_string): added proper CPU prefixing.

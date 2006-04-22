@@ -33,11 +33,12 @@ birnet_init (int        *argcp,         /* declared in birnetcore.h */
              char     ***argvp,
              const char *app_name)
 {
-  const char *prg_name = argcp && *argcp ? (*argvp)[0] : NULL;
+  char *prg_name = argcp && *argcp ? g_path_get_basename ((*argvp)[0]) : NULL;
   if (birnet_init_initialization_entered)
     {
       if (prg_name && !g_get_prgname ())
         g_set_prgname (prg_name);
+      g_free (prg_name);
       if (app_name && !g_get_application_name())
         g_set_application_name (app_name);
       return;
@@ -49,6 +50,7 @@ birnet_init (int        *argcp,         /* declared in birnetcore.h */
 
   if (prg_name)
     g_set_prgname (prg_name);
+  g_free (prg_name);
   if (app_name && (!g_get_application_name() || g_get_application_name() == g_get_prgname()))
     g_set_application_name (app_name);
 
