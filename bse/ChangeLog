@@ -1,3 +1,9 @@
+Sat Apr 22 18:06:39 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/blocktests.cc: function name fixups. print out timing
+	information about benchmark tests and calibration. assigned more
+	benchmarking time to increase accuracy.
+
 Sat Apr 22 13:36:24 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* tests/blocktests.cc: Introduce benchmark time calibration from

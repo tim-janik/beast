@@ -126,17 +126,20 @@ test_scale (void)
   TDONE();
 }
 
-#define RUNS    10
+#define RUNS    11
 
 static inline void
-scale_add (void)
+bench_add (void)
 {
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock1, 2.f);
   Bse::Block::fill (1024, fblock2, 3.f);
   GTimer *timer = g_timer_new();
-  const guint dups = TEST_CALIBRATION (10.0, Bse::Block::add (1024, fblock1, fblock2));
-
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::add (1024, fblock1, fblock2));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
@@ -148,17 +151,20 @@ scale_add (void)
       if (e < m)
         m = e;
     }
-  g_print ("AddBench:   %.6f msecs\n", 1000.0 * m / dups);
+  g_print ("AddBench:   %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
 }
 
 static inline void
-scale_bench (void)
+bench_scale (void)
 {
   float fblock1[1024], fblock2[1024];
   Bse::Block::fill (1024, fblock1, 0.f);
   Bse::Block::fill (1024, fblock2, 3.f);
   GTimer *timer = g_timer_new();
-  const guint dups = TEST_CALIBRATION (10.0, Bse::Block::scale (1024, fblock1, fblock2, 2.f));
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::scale (1024, fblock1, fblock2, 2.f));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
 
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
@@ -171,7 +177,7 @@ scale_bench (void)
       if (e < m)
         m = e;
     }
-  g_print ("ScaleBench: %.6f msecs\n", 1000.0 * m / dups);
+  g_print ("ScaleBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
 }
 
 int
@@ -189,8 +195,8 @@ main (int   argc,
   test_copy();
   test_add();
   test_scale();
-  scale_add();
-  scale_bench();
+  bench_add();
+  bench_scale();
   
   /* load plugins */
   SfiRec *config = sfi_rec_new();
@@ -210,8 +216,8 @@ main (int   argc,
   test_copy();
   test_add();
   test_scale();
-  scale_add();
-  scale_bench();
+  bench_add();
+  bench_scale();
 
   return 0;
 }
