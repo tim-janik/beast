@@ -280,20 +280,18 @@ intermediate_files = $(strip	\
 )
 .INTERMEDIATE: $(intermediate_files)
 
-clean:
-	rm -fr html/style/
-	rm -fr html/screenshotdir/ html/logogallerydir/ html/web-images/ html/images/
-	rm -f html/rdocu-birnet/* html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
-	-rmdir -p html/rdocu-birnet/ html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
-	rm -f tmpdoxi-birnet/* tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
-	-rmdir -p tmpdoxi-birnet/ tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
-	rm -f html/* html/.htaccess html/robots.txt html/favicon.ico
-	-rmdir -p html/
-	rm -f php/*
-	-rmdir -p php/
+clean-local:
 	rm -f screenshotdir/*.THUMB.jpg logogallerydir/*.THUMB.jpg
 	rm -f ${intermediate_files} ${CLEANFILES}
-.PHONY: clean
+	rm -f tmpdoxi-birnet/* tmpdoxi-sfi/* tmpdoxi-bse/* tmpdoxi-gxk/*
+	-rmdir -p tmpdoxi-birnet/ tmpdoxi-sfi/ tmpdoxi-bse/ tmpdoxi-gxk/
+	rm -fr html/screenshotdir/ html/logogallerydir/ html/web-images/ html/images/ html/style/
+	rm -f html/rdocu-birnet/* html/rdocu-sfi/* html/rdocu-bse/* html/rdocu-gxk/*
+	-rmdir -p html/rdocu-birnet/ html/rdocu-sfi/ html/rdocu-bse/ html/rdocu-gxk/
+	rm -f html/* html/.htaccess html/robots.txt html/favicon.ico
+	-rmdir html/
+	rm -f php/*
+	-rmdir php/
 
 # website targets
 site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
