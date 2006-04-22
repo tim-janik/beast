@@ -80,8 +80,8 @@ static inline void birnet_test_intro (const char *postfix,
   g_free (_error_msg_);					\
 } while (0)
 
-/* This macro will return the number of "inner loops" (dups)
- * that need to be performed for benchmarking a piece of code.
+/* Given an upper test duration bound, this macro will return the number
+ * of inner loop repetitions needed for benchmarking a piece of code.
  * Estimated run time: the calibration process should take somewhat
  * less than MIN (max_calibration_time, (target_ms * 2 * 7)) milliseconds.
  */
