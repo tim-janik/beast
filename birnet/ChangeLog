@@ -1,3 +1,9 @@
+Sat Apr 22 17:54:12 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h (TEST_CALIBRATION): comment and whitespace fixups. 
+	consolidated code bloat. tweaked timing bounds to speed up calibration
+	runs. use g_printerr() for printouts.
+
 Sat Apr 22 13:25:54 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* birnettests.h: Added TEST_CALIBRATION macro, which allows benchmark

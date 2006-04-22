@@ -80,70 +80,55 @@ static inline void birnet_test_intro (const char *postfix,
   g_free (_error_msg_);					\
 } while (0)
 
-/*
- * This macro will return the number of "inner loops" (dups)
+/* This macro will return the number of "inner loops" (dups)
  * that need to be performed for benchmarking a piece of code.
- *
  * Estimated run time: the calibration process should take somewhat
- * less than MIN (100, (target_ms * 20)) milliseconds.
+ * less than MIN (max_calibration_time, (target_ms * 2 * 7)) milliseconds.
  */
-#define TEST_CALIBRATION(target_ms, CODE)                                                         \
-  ({                                                                                              \
-    const guint     runs = 10;                                                                    \
-    const bool      measure_calibration_time = false;                                             \
-    const gdouble   max_calibration_time = 100.0;                                                 \
-    gdouble         factor = MAX (1.0, (runs * target_ms * 2) / max_calibration_time);            \
-    gdouble         ms, scaled_target_ms;                                                         \
-    GTimer         *calibration_timer = 0;                                                        \
-                                                                                                  \
-    scaled_target_ms = target_ms / factor;                                                        \
-                                                                                                  \
-    if (measure_calibration_time)                                                                 \
-      {                                                                                           \
-        calibration_timer = g_timer_new();                                                        \
-        g_timer_start (calibration_timer);                                                        \
-      }                                                                                           \
-                                                                                                  \
-    GTimer *timer = g_timer_new();                                                                \
-    guint   dups = 1;                                                                             \
-                                                                                                  \
-    do                                                                                            \
-      {                                                                                           \
-        guint i, j;                                                                               \
-        ms = 9e300;                                                                               \
-        for (i = 0; i < runs && ms >= scaled_target_ms; i++)                                      \
-          {                                                                                       \
-            g_timer_start (timer);                                                                \
-            for (j = 0; j < dups; j++)                                                            \
-              {                                                                                   \
-                CODE;                                                                             \
-              }                                                                                   \
-            g_timer_stop (timer);                                                                 \
-            gdouble current_run_ms = g_timer_elapsed (timer, NULL) * 1000;                        \
-            ms = MIN (current_run_ms, ms);                                                        \
-          }                                                                                       \
-                                                                                                  \
-        if (ms < scaled_target_ms)                                                                \
-          dups *= 2;                                                                              \
-      }                                                                                           \
-    while (ms < scaled_target_ms);                                                                \
-    factor *= (scaled_target_ms / ms);                                                            \
-                                                                                                  \
-    g_timer_destroy (timer);                                                                      \
-                                                                                                  \
-    if (measure_calibration_time)                                                                 \
-      {                                                                                           \
-        g_timer_stop (calibration_timer);                                                         \
-        double calibration_time_ms = g_timer_elapsed (calibration_timer, NULL) * 1000;            \
-        g_timer_destroy (calibration_timer);                                                      \
-                                                                                                  \
-        g_print ("TEST_CALIBRATION: your processor can do %d dups in %.6f msecs\n",               \
-            (guint) (dups * factor), ms * factor);                                                \
-        g_print ("TEST_CALIBRATION: calibration took %.6f msecs\n", calibration_time_ms);         \
-      }                                                                                           \
-    dups = (guint) (dups * factor);                                                               \
-    dups;                                                                                         \
-  })
+#define TEST_CALIBRATION(target_ms, CODE)		({			 	\
+  const guint   runs = 7;                                                               \
+  const gdouble max_calibration_time = 30.0;                                            \
+  gdouble       factor = MAX (1.0, (runs * target_ms * 2) / max_calibration_time);	\
+  gdouble       ms, scaled_target_ms = target_ms / factor;                              \
+  GTimer       *calibration_timer = false ? g_timer_new() : NULL;                       \
+  if (calibration_timer)                                                                \
+    g_timer_start (calibration_timer);                                                  \
+  GTimer *timer = g_timer_new();                                                        \
+  guint   dups = 1;                                                                     \
+  do                                                                                    \
+    {                                                                                   \
+      guint i, j;                                                                       \
+      ms = 9e300;                                                                       \
+      for (i = 0; i < runs && ms >= scaled_target_ms; i++)                              \
+        {                                                                               \
+          g_timer_start (timer);                                                        \
+          for (j = 0; j < dups; j++)                                                    \
+            {                                                                           \
+              CODE;                                                                     \
+            }                                                                           \
+          g_timer_stop (timer);                                                         \
+          gdouble current_run_ms = g_timer_elapsed (timer, NULL) * 1000;                \
+          ms = MIN (current_run_ms, ms);                                                \
+        }                                                                               \
+      if (ms < scaled_target_ms)                                                        \
+        dups *= 2;                                                                      \
+    }                                                                                   \
+  while (ms < scaled_target_ms);                                                        \
+  factor *= (scaled_target_ms / ms);                                                    \
+  g_timer_destroy (timer);                                                              \
+  if (calibration_timer)                                                                \
+    {                                                                                   \
+      g_timer_stop (calibration_timer);                                                 \
+      double calibration_time_ms = g_timer_elapsed (calibration_timer, NULL) * 1000;    \
+      g_timer_destroy (calibration_timer);                                              \
+      g_printerr ("TEST_CALIBRATION: your processor can do %d dups in %.6f msecs\n",    \
+                  (guint) (dups * factor), ms * factor);                                \
+      g_printerr ("TEST_CALIBRATION: calibration took %.6f msecs\n",			\
+                  calibration_time_ms); 						\
+    }                                                                                   \
+  dups = (guint) (dups * factor);                                                       \
+  dups;                                                                                 \
+})
 
 /* --- implmentation details --- */
 static inline void
