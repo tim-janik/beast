@@ -1,5 +1,6 @@
 /* BSE - Bedevilled Sound Engine
  * Copyright (C) 2006 Tim Janik
+ * Copyright (C) 2006 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -125,8 +126,7 @@ test_scale (void)
   TDONE();
 }
 
-#define RUNS    1000
-#define DUPS    10
+#define RUNS    10
 
 static inline void
 scale_add (void)
@@ -135,19 +135,20 @@ scale_add (void)
   Bse::Block::fill (1024, fblock1, 2.f);
   Bse::Block::fill (1024, fblock2, 3.f);
   GTimer *timer = g_timer_new();
+  const guint dups = TEST_CALIBRATION (10.0, Bse::Block::add (1024, fblock1, fblock2));
 
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
       g_timer_start (timer);
-      for (guint j = 0; j < DUPS; j++)
+      for (guint j = 0; j < dups; j++)
         Bse::Block::add (1024, fblock1, fblock2);
       g_timer_stop (timer);
       double e = g_timer_elapsed (timer, NULL);
       if (e < m)
         m = e;
     }
-  g_print ("AddBench:   %.16gmsecs\n", 1000.0 * m / DUPS);
+  g_print ("AddBench:   %.6f msecs\n", 1000.0 * m / dups);
 }
 
 static inline void
@@ -157,19 +158,20 @@ scale_bench (void)
   Bse::Block::fill (1024, fblock1, 0.f);
   Bse::Block::fill (1024, fblock2, 3.f);
   GTimer *timer = g_timer_new();
+  const guint dups = TEST_CALIBRATION (10.0, Bse::Block::scale (1024, fblock1, fblock2, 2.f));
 
   double m = 9e300;
   for (guint i = 0; i < RUNS; i++)
     {
       g_timer_start (timer);
-      for (guint j = 0; j < DUPS; j++)
+      for (guint j = 0; j < dups; j++)
         Bse::Block::scale (1024, fblock1, fblock2, 2.f);
       g_timer_stop (timer);
       double e = g_timer_elapsed (timer, NULL);
       if (e < m)
         m = e;
     }
-  g_print ("ScaleBench: %.16gmsecs\n", 1000.0 * m / DUPS);
+  g_print ("ScaleBench: %.6f msecs\n", 1000.0 * m / dups);
 }
 
 int

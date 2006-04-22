@@ -1,3 +1,9 @@
+Sat Apr 22 13:36:24 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* tests/blocktests.cc: Introduce benchmark time calibration from
+	birnettests.h, so that the benchmarks take the same amount of time on
+	any processor.
+
 Thu Apr 20 14:11:54 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* bseblockutils.*(substitute): Tiny name fix: substrate is not the
