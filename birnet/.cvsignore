@@ -1,8 +1,8 @@
-*.lo
-.deps
-_libs
-.libs
-Makefile
 Makefile.in
+Makefile
+.deps
+.libs
+*.lo
+*.la
 birnetconfig.h
 birnetsignalvariants.hh
