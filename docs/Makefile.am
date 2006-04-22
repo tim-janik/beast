@@ -186,7 +186,10 @@ psource/gxk.psrc: $(gxk_rdocu_files)
 	@mkdir -p psource/
 	$(call make_psource, $@, $(filter %.h %.hh, $(gxk_rdocu_files)) -Y $(filter-out %.h %.hh, $(gxk_rdocu_files)) )
 # BSE object docu
-psource/bse-objects.psrc: @DOXRULE@ $(AUTODOC) $(top_builddir)/config.status
+psource/bse-objects.psrc: $(wildcard ../bse/*.[hc]) $(wildcard ../bse/*.[hc][hc])
+psource/bse-objects.psrc: $(wildcard ../plugins/*.[hc]) $(wildcard ../plugins/*.[hc][hc])
+psource/bse-objects.psrc: $(wildcard ../drivers/*/*.[hc]) $(wildcard ../drivers/*/*.[hc][hc])
+psource/bse-objects.psrc: @DOXRULE@ $(AUTODOC) $(top_builddir)/config.status $(bse_objects_deps)
 	@mkdir -p psource/
 	cd . \
 	&& $(AUTODOC) -p -s objects	>psource/bse-objects.scad	\
