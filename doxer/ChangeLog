@@ -1,3 +1,9 @@
+Sat Apr 22 17:09:50 2006  Tim Janik  <timj@gtk.org>
+
+	* qdoxygen.py: avoid configuring USE_HTAGS which only doxygen 1.4.4 has.
+
+	* Makefile.am: fixed "clean" rule, has to be "clean-local".
+
 Thu Mar 23 02:47:28 2006  Tim Janik  <timj@gtk.org>
 
 	* docu-main.doxi: more fixups.

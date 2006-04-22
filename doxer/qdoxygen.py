@@ -206,7 +206,7 @@ doxyfile_config = [     # Doxyfile from doxygen-1.4.4
   ( 'STRIP_CODE_COMMENTS',      'YES' ),
   ( 'REFERENCED_BY_RELATION',   'YES' ),
   ( 'REFERENCES_RELATION',      'YES' ),
-  ( 'USE_HTAGS',                'NO' ), # FIXME: Warning: ignoring unsupported tag `USE_HTAGS =' at line 78, file sources2xml.Doxyfile
+  # ( 'USE_HTAGS',                'NO' ),       # only supported since doxgen 1.4.4
   ( 'VERBATIM_HEADERS',         'NO' ),
   # configuration options related to the alphabetical class index
   ( 'ALPHABETICAL_INDEX',       'NO' ),
