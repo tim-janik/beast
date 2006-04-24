@@ -1,8 +1,5 @@
 Makefile.in
 Makefile
-*.o
-.deps
-.libs
 stamp-gxkgentypes.h
 gxkgentypes.c
 gxkgentypes.h
