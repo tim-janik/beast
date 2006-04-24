@@ -1,3 +1,9 @@
+Mon Apr 24 19:26:04 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.c (get_pth_thread_table): use fputs() to print messages 
+	when starting up the thread system. g_message() and friends are not 
+	yet usable.
+
 Sat Apr 22 17:54:12 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h (TEST_CALIBRATION): comment and whitespace fixups. 

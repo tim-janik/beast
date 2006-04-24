@@ -223,7 +223,7 @@ birnet_guard_protect (volatile BirnetGuard *guard,
   if (hparray[nth_hazard] != value)
     birnet_atomic_set (volatile gpointer, &hparray[nth_hazard], value);
 }
-void	_birnet_init_threads (void);
+void _birnet_init_threads (void);
 
 G_END_DECLS
 

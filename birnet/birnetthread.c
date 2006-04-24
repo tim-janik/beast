@@ -1479,7 +1479,9 @@ get_pth_thread_table (void)
 {
   if (pthread_key_create (&pth_thread_table_key, (void(*)(void*)) birnet_thread_handle_exit) != 0)
     {
-      g_message ("failed to create pthread key, falling back to GLib threads");
+      char buffer[1024];
+      snprintf (buffer, 1024, "BirnetThread[%u]: failed to create pthread key, falling back to GLib threads.\n", getpid());
+      fputs (buffer, stderr);
       return NULL;
     }
   return &pth_thread_table;
