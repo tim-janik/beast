@@ -1,3 +1,11 @@
+Mon Apr 24 20:11:45 2006  Tim Janik  <timj@gtk.org>
+
+	* web/oldnews.doxi:
+	* web/news.doxi: rotate, announce LAD conference 2006 visit.
+
+	* web/Makefile.am (ACCOUNT): fix for timj to update the website from 
+	multiple accounts.
+
 Thu Apr 20 20:50:35 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkassortment.c: added extra guards to ensure that 

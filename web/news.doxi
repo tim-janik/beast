@@ -26,6 +26,16 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Monday 24 April 2006, LAD Conference 2006}
+
+Stefan Westerfeld and Tim Janik are going to the
+@uri{http://lac.zkm.de/2006/, 4th International Linux Audio Conference} this
+Wednesday (26th April) to Sunday (30th April).
+There is a
+@uri{http://lac.zkm.de/2006/program.shtml#westerfeld_janik, Beast session}
+in the program, and there will probably also be some Beast demoing and chitchat
+about Beast in the booth area.
+
 @newsentry{Sunday 19 February 2006, Website move}
 
 The @beast website has been moved to a new documentation tool which will fix the
@@ -44,32 +54,6 @@ be much more portable across different browsers now.
 Please feel free to explore the new site and report any problems you encounter
 (broken links, missing redirects, layout problems, etc).
 
-
-@newsentry{Thursday 26 May 2005, Important bug fix release}
-
-BEAST/BSE version 0.6.6 is available from the
-@uri{@top_webdir/download,download section}, here is the @uri{http://gnomedesktop.org/node/2267,FootNotes announcement}.
-
-BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.6.tar.gz, beast-0.6.6.tar.gz}
-@* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.5-0.6.6.bz2, patch-beast-0.6.5-0.6.6.bz2}
-@* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.6.tar.gz, bse-alsa-0.6.6.tar.gz}
-@* @uri{http://www.portaudio.com/, PortAudio} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.6/bse-portaudio-0.6.6.tar.gz, bse-portaudio-0.6.6.tar.gz}
-
-
-This release contains important bug fixes. Major bugs in the @bse file saving mechanism
-got fixed, so updating to 0.6.6 is recommended to prevent data loss. Also, some
-important GUI fixes were made, such as fixing the logic around dealing with modified
-projects and all message dialogs got a major overhaul.
-Translation updates were made to canadian english, czech, italian and spanish, and
-a basque translations was newly started.
-The
-@uri{@top_webdir/news-file,Release NEWS section} has the exact change list, so enjoy
-the new code as always and please report bugs to our
-@uri{http://mail.gnome.org/mailman/listinfo/beast/, mailing list}.
 
 @dnl ----------------------------- END -----------------------------
 @newstag{NEWS Archive}

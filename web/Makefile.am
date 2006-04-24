@@ -297,7 +297,8 @@ clean-local:
 site: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
 .PHONY: site site-preview site-update site-update-all site-update-galleries site-update-pages
 # remote installation
-ACCOUNT=${USER}@beast.gtk.org
+ACCOUNT_USER = $(subst tjlocal, timj, ${USER})
+ACCOUNT=$(strip $(ACCOUNT_USER))@beast.gtk.org
 ACDEST=/web/beast/
 ACTMP=xgen-tmp
 site-update-pages: beastweb-pages.tar.bz2
