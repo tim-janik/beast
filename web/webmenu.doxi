@@ -6,6 +6,18 @@
 @doxer_add{html-stylesheets}	Plain	 	<@top_styledir/plain.css>
 @doxer_add{raw_html_head}	<link href="/favicon.ico" rel="shortcut icon">
 
+@dnl# === NEWS macros ===
+@doxer_command newstag		@dnl { NEWS-TITLE }
+@doxer_anchor{@doxer_args{1}}
+@doxer_span{newstitle,@doxer_bold{@doxer_args{1}}}@*@*
+@done
+@doxer_command newsentry	@dnl { NEWS-DATE , NEWS-DEPARTEMENT }
+@doxer_anchor{@doxer_args{1}}
+@doxer_span{newstitle,@doxer_bold{@doxer_args{1}}}@*
+@doxer_span{newsdptmt,@doxer_bold{@doxer_args{2:}}}@*@*
+@done
+
+@dnl# === Website Logo ===
 @heading{group=header,span=nomargin}
 @rawhtml{
 <table id="header-image" width="100%" border="0" cellspacing="0" cellpadding="0" rules="none"
@@ -18,6 +30,7 @@
 </table>
 }
 
+@dnl# === Website Menu ===
 @heading{group=left,body-span=webmenu}
 @doxer_fontsize{+1,@*}
 
@@ -119,6 +132,7 @@
 </form>
 }
 
+@dnl# === Website Footer ===
 @heading{group=footer}
 @*
 @center @doxer_fontsize{-1, The @beast website is maintained by @uri{mailto:timj@@beast.gtk.org, Tim Janik}.

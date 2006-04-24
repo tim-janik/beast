@@ -1,3 +1,11 @@
+Mon Apr 24 20:49:04 2006  Tim Janik  <timj@gtk.org>
+
+	* web/webmenu.doxi: moved news entry macros here, added anchors.
+
+	* docs/beastdefs.doxi: removed news entry macros.
+
+	* web/Makefile.am: fixed file paths in .md5sum files.
+
 Mon Apr 24 20:11:45 2006  Tim Janik  <timj@gtk.org>
 
 	* web/oldnews.doxi:

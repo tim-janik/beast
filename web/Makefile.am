@@ -118,31 +118,31 @@ html/style/.md5sum: $(wildcard style/*)
 	mkdir -p html/style/
 	cp style/*.png style/*.css html/style/
 	$(DOXER) writecss -d html/style/
-	md5sum html/style/* >xgen-html-style-md5sum
+	(cd html && md5sum style/*) >xgen-html-style-md5sum
 	mv xgen-html-style-md5sum $@		# atomic
 html/web-images/.md5sum: $(wildcard web-images/*)
 	rm -fr html/web-images/
 	mkdir -p html/web-images/
 	cp web-images/*.png html/web-images/
-	md5sum html/web-images/* >xgen-html-web-images-md5sum
+	(cd html/ && md5sum web-images/*) >xgen-html-web-images-md5sum
 	mv xgen-html-web-images-md5sum $@	# atomic
 html/images/.md5sum: $(wildcard ../docs/images/*)
 	rm -fr html/images/
 	mkdir -p html/images/
 	cp ../docs/images/*.png html/images/
-	md5sum html/images/* >xgen-html-images-md5sum
+	(cd html/ && md5sum images/*) >xgen-html-images-md5sum
 	mv xgen-html-images-md5sum $@		# atomic
 html/screenshotdir/.md5sum: $(wildcard screenshotdir/*)
 	rm -fr html/screenshotdir/
 	mkdir -p html/screenshotdir/
 	cp screenshotdir/*.png screenshotdir/*.jpg html/screenshotdir/
-	md5sum html/screenshotdir/* >xgen-html-screenshotdir-md5sum
+	(cd html/ && md5sum screenshotdir/*) >xgen-html-screenshotdir-md5sum
 	mv xgen-html-screenshotdir-md5sum $@	# atomic
 html/logogallerydir/.md5sum: $(wildcard logogallerydir/*)
 	rm -fr html/logogallerydir/
 	mkdir -p html/logogallerydir/
 	cp logogallerydir/*.png logogallerydir/*.jpg html/logogallerydir/
-	md5sum html/logogallerydir/* >xgen-html-logogallerydir-md5sum
+	(cd html/ && md5sum logogallerydir/*) >xgen-html-logogallerydir-md5sum
 	mv xgen-html-logogallerydir-md5sum $@	# atomic
 
 # Note some implicit dependencies

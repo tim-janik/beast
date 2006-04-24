@@ -94,15 +94,6 @@
 @doxer_fontsize{+1,@doxer_bold{@doxer_args{*}}}
 @done
 
-## special style tags
-@doxer_command newstag		@dnl { NEWS-TITLE }
-@doxer_span{newstitle,@doxer_bold{@doxer_args{1}}}@*@*
-@done
-@doxer_command newsentry	@dnl { NEWS-DATE , NEWS-DEPARTEMENT }
-@doxer_span{newstitle,@doxer_bold{@doxer_args{1}}}@*
-@doxer_span{newsdptmt,@doxer_bold{@doxer_args{2:}}}@*@*
-@done
-
 ## manual page markup
 @doxer_command     	mani	@dnl### manual page italic
 @doxer_italic{@doxer_args{*}}
