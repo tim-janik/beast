@@ -1,5 +1,6 @@
 Makefile.in
 Makefile
-bsecxxapi.hh
 bsecxxapi.cc
+bsecxxapi.hh
 perftest
+testwavechunk
