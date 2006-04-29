@@ -1,3 +1,9 @@
+Sat Apr 29 16:55:18 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: reset CFLAGS & LDFLAGS around AC_CHECK_LIB() to work 
+	around link errors due to -lbse and missing dummy.cc (for older gcc  
+	versions).
+
 Sat Apr 22 18:31:54 2006  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c: 
