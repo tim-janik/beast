@@ -126,7 +126,7 @@ static inline void birnet_test_intro (const char *postfix,
       g_printerr ("TEST_CALIBRATION: calibration took %.6f msecs\n",			\
                   calibration_time_ms); 						\
     }                                                                                   \
-  dups = (guint) (dups * factor);                                                       \
+  dups = MAX ((guint) (dups * factor), 1);                                              \
   dups;                                                                                 \
 })
 
