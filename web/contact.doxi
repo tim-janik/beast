@@ -6,9 +6,11 @@
 @heading Mailing List
 
 A mailing list for discussing usage and development of @beast is
-available at the @uri{http://mail.gnome.org/, Gnome Mail Server}:
+available at the @uri{http://mail.gnome.org/, Gnome Mail Server} 
+and throgh @uri{http://gmane.org/, GMANE}:
 @itemize
 @item @longuri{http://mail.gnome.org/mailman/listinfo/beast/, Beast Mailing List}
+@item @longuri{http://dir.gmane.org/gmane.comp.gnome.beast, Beast Mailing List Gateways}
 @done
 
 All old mailing list discussions can be browsed in the @beast mailing list archive:

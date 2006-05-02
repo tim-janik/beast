@@ -734,7 +734,7 @@ tests, bsefcompare:
         bsefcompare balance.feature balance.tmp --threshold 99.99
   * initial case:
     $ make balance-test
-    bsefcompare: no such file: banace.feature
+    bsefcompare: no such file: balance.feature
     $ mv balance.tmp balance.feature
 - move tests from test directory into automated feature test dir
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)

@@ -15,6 +15,11 @@
 @cell	@uri{http://mail.gnome.org/mailman/listinfo/beast/, Beast Mailing List} and @uri{http://mail.gnome.org/archives/beast/, List Archive}
 @done
 @row
+@cell Forum:
+@cell	Use the @uri{http://news.gmane.org/gmane.comp.gnome.beast, Mailing List Web Gateway} or our
+		@uri{http://beast.gtk.org/wiki:BeastBse, Wiki}
+@done
+@row
 @cell Feedback:
 @cell	Wiki 	@uri{http://beast.gtk.org/wiki:Discussion,Discussion} and
 		@uri{http://beast.gtk.org/wiki:HelpDesk,HelpDesk} pages

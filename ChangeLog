@@ -1,3 +1,10 @@
+Tue May  2 19:23:23 2006  Tim Janik  <timj@gtk.org>
+
+	* web/news.doxi:
+	* web/contact.doxi: provide bugzilla links.
+
+	* web/htaccess.in: support /bugs redirect.
+
 Mon Apr 24 20:49:04 2006  Tim Janik  <timj@gtk.org>
 
 	* web/webmenu.doxi: moved news entry macros here, added anchors.
