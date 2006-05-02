@@ -40,6 +40,7 @@ Redirect 302 /xmlns:xdef			http://beast.gtk.org/documentation
 Redirect 302 /screenshots.html			http://beast.gtk.org/screenshots
 Redirect 302 /mailinglist.html			http://beast.gtk.org/contact
 Redirect 302 /bugs.html				http://beast.gtk.org/contact
+Redirect 302 /bugs				http://beast.gtk.org/contact
 # in the above, the following list of entry points should be made sure to exist:
 # download.html, screenshots.html, mailinglist.html, bugs.html, faq.html, about.html
 

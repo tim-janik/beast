@@ -6,12 +6,28 @@
 @heading Mailing List
 
 A mailing list for discussing usage and development of @beast is
-available at
-@uri{http://mail.gnome.org/mailman/listinfo/beast/}.
+available at the @uri{http://mail.gnome.org/, Gnome Mail Server}:
+@itemize
+@item @longuri{http://mail.gnome.org/mailman/listinfo/beast/, Beast Mailing List}
+@done
 
-The archives of the mailing list can be read at
-@uri{http://mail.gnome.org/archives/beast/}.
+All old mailing list discussions can be browsed in the @beast mailing list archive:
+@itemize
+@item @longuri{http://mail.gnome.org/archives/beast/, Beast List Archive}
+@done
 
+@heading Bug Reports
+
+Existing bug reports for @beast can be browsed in the "beast" product in
+@uri{http://bugzilla.gnome.org, Gnome Bugzilla}:
+@itemize
+@item @longuri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Beast bug list}
+@done
+
+New bugs can be entered in the bug report form of the "beast" product:
+@itemize
+@item @longuri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, Report new Beast bugs}
+@done
 
 @heading IRC
 

@@ -12,12 +12,17 @@
 @done
 @row
 @cell Email:
-@cell	@uri{http://mail.gnome.org/mailman/listinfo/beast/, Mailing List} and @uri{http://mail.gnome.org/archives/beast/, Archive}
+@cell	@uri{http://mail.gnome.org/mailman/listinfo/beast/, Beast Mailing List} and @uri{http://mail.gnome.org/archives/beast/, List Archive}
 @done
 @row
 @cell Feedback:
 @cell	Wiki 	@uri{http://beast.gtk.org/wiki:Discussion,Discussion} and
 		@uri{http://beast.gtk.org/wiki:HelpDesk,HelpDesk} pages
+@done
+@row
+@cell Bug Reports:
+@cell	Beast 	@uri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Bug List} and
+		@uri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, New Bug Report} form
 @done
 @done
 
