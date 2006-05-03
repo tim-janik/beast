@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS Queek Synth"
   (modification-time "2006-04-08 00:56:10")
   (creation-time "1990-07-20 07:09:22")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "")
   (container-child "BseInstrumentInput::SubKeyboard-1"

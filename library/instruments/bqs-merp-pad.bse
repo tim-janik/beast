@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS Merp Pad"
   (modification-time "2006-04-16 18:09:52")
   (creation-time "2002-01-12 12:42:55")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "Usable for C-2 to C+2. Merp the Erp. Pad the Cat.")
   (container-child "BseInstrumentInput::SubKeyboard"

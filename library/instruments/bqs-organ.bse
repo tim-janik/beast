@@ -5,7 +5,7 @@
 (container-child "BseCSynth::BQS Organ"
   (modification-time "2006-04-08 00:17:45")
   (creation-time "2006-04-07 20:44:57")
-  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik")
   (blurb "Example Instrument based on the DavOrgan module.")
   (container-child "BseInstrumentOutput::InstrumentOutput-1"

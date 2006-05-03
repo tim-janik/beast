@@ -1,3 +1,18 @@
+Wed May  3 23:19:32 2006  Tim Janik  <timj@gtk.org>
+
+	* library/effects/atan-canyon.bse:
+	* library/instruments/bqs-organ.bse: 
+	* library/instruments/bqs-organ.bse:
+	* library/instruments/bqs-syndrum.bse:
+	* library/instruments/bqs-merp-pad.bse:
+	* library/instruments/bqs-queek-synth.bse:
+	* library/instruments/bqs-moog-saw-bass.bse:
+	* library/instruments/bqs-fretless-bass.bse:
+	added a link to http://beast.gtk.org/LICENSE-AS-IS to clarify
+	the licensing information.
+
+	* web/htaccess.in: redirect http://beast.gtk.org/LICENSE-AS-IS
+
 Tue May  2 19:23:23 2006  Tim Janik  <timj@gtk.org>
 
 	* web/news.doxi:

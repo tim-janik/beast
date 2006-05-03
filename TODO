@@ -1,4 +1,5 @@
 RELEASE(0.6.7):
+- add default-settings config preference (authors, license): Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)
 - support beast nonexistant.bse (new creation)
 - rename bsesh to bsescm
 -  fix birnet_thread_run uses (unref thread)
@@ -213,7 +214,6 @@ TODO:
 - allow inverted synth-done (i.e. suitable for gate connecitons)
 - add gate-out to ADSR
 - default-initialize authors field of objects with user name
-- add default-settings config preference (authors, license)
 - evaluate elimination of seqid
 - undo across midi file import is broken
 - add clone tool for csynths
