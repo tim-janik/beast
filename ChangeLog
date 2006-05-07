@@ -1,3 +1,15 @@
+Sun May  7 03:31:41 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrecords.idl: removed "enable_scopes" and "enable_meters"
+	config options and added "slow_scopes" instead.
+
+	* beast-gtk/bstscrollgraph.c: fixed probe result search so the correct
+	fft block can be found depending on the requested size.
+
+	* beast-gtk/bstsnifferscope.[hc]: renamed and changed signature of
+	bst_source_queue_probe_request(). the desired update frequency has to
+	be explicitely requested by the caller now. adapted callers.
+
 Wed May  3 23:19:32 2006  Tim Janik  <timj@gtk.org>
 
 	* library/effects/atan-canyon.bse:

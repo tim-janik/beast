@@ -253,11 +253,8 @@ scope_probes_notify (SfiProxy     proxy,
         }
       bse_probe_seq_free (pseq);
     }
-  if (BST_GCONFIG (enable_scopes))
-    {
-      bse_source_queue_probe_request (self->proxy, 0, 1, 0, 0, 0);
-      bse_source_queue_probe_request (self->proxy, 1, 1, 0, 0, 0);
-    }
+  bst_source_queue_probe_request (self->proxy, 0, BST_SOURCE_PROBE_RANGE, 20.0);
+  bst_source_queue_probe_request (self->proxy, 1, BST_SOURCE_PROBE_RANGE, 20.0);
 }
 
 static void
@@ -300,11 +297,8 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
       bse_proxy_connect (self->proxy,
                          "signal::probes", scope_probes_notify, self,
                          NULL);
-      if (BST_GCONFIG (enable_scopes))
-        {
-          bse_source_queue_probe_request (self->proxy, 0, 1, 0, 0, 0);
-          bse_source_queue_probe_request (self->proxy, 1, 1, 0, 0, 0);
-        }
+      bst_source_queue_probe_request (self->proxy, 0, BST_SOURCE_PROBE_RANGE, 20.0);
+      bst_source_queue_probe_request (self->proxy, 1, BST_SOURCE_PROBE_RANGE, 20.0);
     }
 }
 
@@ -325,26 +319,23 @@ source_probe_idle_request (gpointer data)
 }
 
 void
-bse_source_queue_probe_request (SfiProxy            source,
-                                guint               ochannel_id,
-                                gboolean            probe_range,
-                                gboolean            probe_energie,
-                                guint               probe_samples,
-                                guint               probe_fft)
+bst_source_queue_probe_request (SfiProxy              source,
+                                guint                 ochannel_id,
+                                BstSourceProbeFeature pfeature,
+                                gfloat                frequency)
 {
   BseProbeFeatures features = { 0, };
-  features.probe_range = probe_range;
-  features.probe_energie = probe_energie;
-  features.probe_samples = probe_samples > 0;
-  features.probe_fft = probe_fft > 0;
+  features.probe_range = 0 != (pfeature & BST_SOURCE_PROBE_RANGE);
+  features.probe_energie = 0 != (pfeature & BST_SOURCE_PROBE_ENERGIE);
+  features.probe_samples = 0 != (pfeature & BST_SOURCE_PROBE_SAMPLES);
+  features.probe_fft = 0 != (pfeature & BST_SOURCE_PROBE_FFT);
   BseProbeRequest request = { 0, };
   request.source = source;
   request.channel_id = ochannel_id;
   request.probe_features = &features;
-  if ((probe_samples | probe_fft) == 1)
-    request.block_size = 128;   /* default block_size if only TRUE was specified */
-  else if (probe_samples || probe_fft)
-    request.block_size = MAX (probe_samples, probe_fft);
+  request.frequency = frequency;
+  if (BST_GCONFIG (slow_scopes) && !(features.probe_samples || features.probe_fft))
+    request.frequency = MIN (request.frequency, 4);
   if (!probe_request_seq)
     {
       g_idle_add_full (GTK_PRIORITY_REDRAW + 5, source_probe_idle_request, NULL, NULL);

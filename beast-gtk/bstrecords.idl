@@ -122,14 +122,10 @@ record GConfig {
                                            _("Enable homogeneous sizes for most (numeric and text) input fields. "
                                              "For some fields, this will only take effect after a restart."),
                                            TRUE, STANDARD);
-    Bool        enable_scopes           = (_("Enable scopes"),
-                                           _("Enables or prevents BEAST from periodically updating the scopes. Disabling may be desirable especially "
-                                             "on slow machines."),
-                                           TRUE, STANDARD);
-    Bool        enable_meters           = (_("Enable meters"),
-                                           _("Enables or prevents BEAST from periodically updating the scopes. Disabling may be desirable especially "
-                                             "on slow machines."),
-                                           TRUE, STANDARD);
+    Bool        slow_scopes             = (_("Slow scopes"),
+                                           _("Aggresively slows down the periodic update frequency of scopes. "
+					     "Doing this may be desirable on particularly slow machines."),
+                                           FALSE, STANDARD);
   };
 };
 

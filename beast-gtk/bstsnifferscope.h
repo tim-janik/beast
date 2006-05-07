@@ -44,12 +44,18 @@ GType      bst_sniffer_scope_get_type       (void);
 GtkWidget* bst_sniffer_scope_new            (void);
 void       bst_sniffer_scope_set_sniffer    (BstSnifferScope    *scope,
                                              SfiProxy            proxy);
-void       bse_source_queue_probe_request   (SfiProxy            source,
-                                             guint               ochannel_id,
-                                             gboolean            probe_range,
-                                             gboolean            probe_energie,
-                                             guint               probe_samples,
-                                             guint               probe_fft);
+
+typedef enum {
+  BST_SOURCE_PROBE_RANGE   = 0x01,
+  BST_SOURCE_PROBE_ENERGIE = 0x02,
+  BST_SOURCE_PROBE_SAMPLES = 0x04,
+  BST_SOURCE_PROBE_FFT     = 0x08,
+} BstSourceProbeFeature;
+
+void bst_source_queue_probe_request (SfiProxy              source,
+				     guint                 ochannel_id,
+				     BstSourceProbeFeature pfeature,
+				     gfloat                frequency);
 
 G_END_DECLS
 
