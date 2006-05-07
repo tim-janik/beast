@@ -1,3 +1,12 @@
+Sun May  7 23:39:43 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/subnormals.cc: added bench test for the float-cancellation macros
+	used by BSE.
+
+	* tests/Makefile.am: compile subnormals.cc with -ffast-match because this
+	affects the subnormal cancellation benchmarks and because this option is
+	used when compiling plugins.
+
 Sun May  7 03:37:18 2006  Tim Janik  <timj@gtk.org>
 
 	* bseprobe.hh, bseprobe.cc: allmost complete rewrite to fix lots of

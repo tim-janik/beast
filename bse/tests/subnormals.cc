@@ -186,8 +186,25 @@ main (int   argc,
   g_timer_stop (timer);
   float test5_time = g_timer_elapsed (timer, NULL);
 
-  g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f\n",
-           test1_time, test2_time, test3_time, test4_time, test5_time);
+  sum = j = 0;
+  memset ((void*) buffer, 0, sizeof (buffer));
+  g_timer_start (timer);
+  for (float i = 0; i <= n; i += 1)
+    {
+      float v = max_sub * i / n;
+      float f1 = v, f2 = -v;
+      BSE_FLOAT_FLUSH (f1);
+      buffer[j++] = f1;
+      BSE_FLOAT_FLUSH (f2);
+      buffer[j++] = f2;
+      j %= blen;
+    }
+  volatile_accu += sum;
+  g_timer_stop (timer);
+  float test_bse_time = g_timer_elapsed (timer, NULL);
+
+  g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
+           test1_time, test2_time, test3_time, test4_time, test5_time, test_bse_time);
 
   return 0;
 }
