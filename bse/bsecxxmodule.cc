@@ -89,9 +89,6 @@ SynthesisModule::set_module (BseModule *engine_module)
   g_return_if_fail (engine_module != NULL);
   
   intern_module = engine_module;
-  istreams = reinterpret_cast<IStream*> (engine_module->istreams);
-  jstreams = reinterpret_cast<JStream*> (engine_module->jstreams);
-  ostreams = reinterpret_cast<OStream*> (engine_module->ostreams);
 
   /* assert validity of the above casts */
   BIRNET_STATIC_ASSERT (sizeof   (JStream)                    == sizeof   (BseJStream));

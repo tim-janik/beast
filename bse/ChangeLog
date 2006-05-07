@@ -1,3 +1,38 @@
+Sun May  7 03:37:18 2006  Tim Janik  <timj@gtk.org>
+
+	* bseprobe.hh, bseprobe.cc: allmost complete rewrite to fix lots of
+	bugs and experimental code portions. several probe queues exist per
+	BseSource now, one for each output channel / block-size combination. 
+	underruns in probe calculation are now detected and are zeroed out
+	where neccessary (e.g. in ffts). optimized quite some block copies,
+	fills and loops. for min/max and energie calculation loops, SIMD
+	variants are still needed. optimized probing logic for coalescing of
+	signal emissions. added "idle"-probing, i.e. continuous probe result
+	notification is now supported for unprepared sources without modules.
+	syncronized simulataneous probe requests on multiple sources.
+
+	* bseenginemaster.[hc]:
+	* bseenginenode.[hc]:
+	* bseengine.[hc]: reworked probing so probe jobs now simply replace
+	the BseOStream array of a node when probing. creation of probe jobs
+	and the probe callback was adapted accordingly. the user may take
+	over memory management for the resulting BseOStream array, release
+	then happens via the newly added bse_engine_free_ostreams(). fixed
+	lots of buglets on the way, made use of bseblockutils.hh.
+
+	* bseengine.[hc]: export bse_engine_const_zeros() to access a block
+	of 0 floats at least as big as any engine block. 
+
+	* bsecxxmodule.hh:
+	* bsecxxmodule.cc: got rid of istreams, jstreams and ostreams 
+	fields which just duplicated BseModule pointers for no good. since
+	bseengine.h is deliberately not included by bsecxxmodule.hh, use
+	the BSE_MODULE_GET_?STREAMSP() macros supplied by bsedefs.h.
+
+	* bsedefs.h: provide BSE_MODULE_GET_?STREAMSP() similar to
+	BSE_MODULE_GET_USER_DATA(), so some BseModule fields can be accessed
+	without inclusion of bseengine.h.
+
 Sat Apr 22 18:06:39 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/blocktests.cc: function name fixups. print out timing

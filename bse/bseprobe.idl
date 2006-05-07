@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
- * Copyright (C) 2003-2004 Tim Janik
+ * Copyright (C) 2003-2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ record ProbeFeatures {
 record Probe {
   Int           channel_id;
   Num           block_stamp;
-  ProbeFeatures probe_features;
   Real          mix_freq;
-  Real          min;
+  ProbeFeatures probe_features;
+  Real          min;			// FIXME: rename to range_min
   Real          max;
   Real          energie;
   FBlock        sample_data;
@@ -43,7 +43,7 @@ sequence ProbeSeq {
 record ProbeRequest {
   Source        source;
   Int           channel_id;
-  Int           block_size;
+  Real		frequency;
   ProbeFeatures probe_features;
 };
 sequence ProbeRequestSeq {

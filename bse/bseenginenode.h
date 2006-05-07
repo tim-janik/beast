@@ -143,11 +143,8 @@ union _EngineTimedJob
     guint64             tick_stamp;     /* common */
     gpointer            data;
     BseEngineProbeFunc  probe_func;
-    guint               delay_counter;
-    guint               oblock_length;
-    guint               n_values;
-    guint               n_oblocks;
-    gfloat             *oblocks[1];     /* [ENGINE_NODE_N_OSTREAMS()] */
+    BseOStream         *ostreams;
+    guint               n_ostreams;
   }                     probe;
   struct {
     EngineJobType       type;           /* common */

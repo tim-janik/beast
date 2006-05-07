@@ -106,10 +106,16 @@ typedef struct  _BseWaveRepo               BseWaveRepo;
 typedef struct  _BseWaveRepoClass          BseWaveRepoClass;
 
 /* --- BseModule special handling --- */
-typedef struct  _BseModule                 BseModule;
-typedef struct  _BseModuleClass            BseModuleClass;
-/* dereference BseModule.user_data without including bseengine.h */
+typedef struct _BseModule                  BseModule;
+typedef struct _BseModuleClass             BseModuleClass;
+typedef struct _BseIStream                 BseIStream;
+typedef struct _BseJStream                 BseJStream;
+typedef struct _BseOStream                 BseOStream;
+/* dereference some BseModule members without including bseengine.h */
 #define	BSE_MODULE_GET_USER_DATA(bsemodule)	(((gpointer*) bsemodule)[1])
+#define	BSE_MODULE_GET_ISTREAMSP(bsemodule)	(((gpointer*) bsemodule)[2])
+#define	BSE_MODULE_GET_JSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[3])
+#define	BSE_MODULE_GET_OSTREAMSP(bsemodule)	(((gpointer*) bsemodule)[4])
 
 /* --- Bse Loader --- */
 typedef struct _BseLoader               BseLoader;

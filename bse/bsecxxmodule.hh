@@ -49,9 +49,6 @@ class Effect;
 class SynthesisModule {
   template<class T, typename P> class ClosureP1; /* 1-argument member function closure */
   BseModule     *intern_module;
-  const IStream *istreams;
-  const JStream *jstreams;
-  const OStream *ostreams;
 public:
   explicit                  SynthesisModule ();
   virtual                  ~SynthesisModule () = 0;
@@ -236,17 +233,20 @@ SynthesisModule::tick_stamp ()
 inline const IStream&
 SynthesisModule::istream (unsigned int istream_index) const
 {
-  return istreams[istream_index];
+  void *istreams = BSE_MODULE_GET_ISTREAMSP (intern_module);
+  return reinterpret_cast<IStream*> (istreams)[istream_index];
 }
 inline const JStream&
 SynthesisModule::jstream (unsigned int jstream_index) const
 {
-  return jstreams[jstream_index];
+  void *jstreams = BSE_MODULE_GET_JSTREAMSP (intern_module);
+  return reinterpret_cast<JStream*> (jstreams)[jstream_index];
 }
 inline const OStream&
 SynthesisModule::ostream (unsigned int ostream_index) const
 {
-  return ostreams[ostream_index];
+  void *ostreams = BSE_MODULE_GET_OSTREAMSP (intern_module);
+  return reinterpret_cast<OStream*> (ostreams)[ostream_index];
 }
 template<class T, typename P>
 class SynthesisModule::ClosureP1 : public SynthesisModule::Closure {

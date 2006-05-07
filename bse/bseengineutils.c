@@ -59,14 +59,14 @@ bse_engine_free_timed_job (EngineTimedJob *tjob)
 {
   switch (tjob->type)
     {
-      guint i;
+      BseOStream *ostreams;
     case ENGINE_JOB_PROBE_JOB:
+      ostreams = tjob->probe.ostreams;
       if (tjob->probe.probe_func)
-        tjob->probe.probe_func (tjob->probe.data, tjob->tick_stamp, tjob->probe.n_values,
-                                tjob->probe.oblocks, tjob->probe.oblock_length);
-      for (i = 0; i < tjob->probe.n_oblocks; i++)
-        if (tjob->probe.oblocks[i])
-          g_free (tjob->probe.oblocks[i]);
+        tjob->probe.probe_func (tjob->probe.data, bse_engine_block_size(), tjob->tick_stamp,
+                                tjob->probe.n_ostreams, &ostreams);
+      if (ostreams)
+        bse_engine_free_ostreams (tjob->probe.n_ostreams, ostreams);
       g_free (tjob);
       break;
     case ENGINE_JOB_FLOW_JOB:
@@ -79,6 +79,15 @@ bse_engine_free_timed_job (EngineTimedJob *tjob)
       g_warning ("Engine: invalid user job type: %d", tjob->type);
       break;
     }
+}
+
+void
+bse_engine_free_ostreams (guint         n_ostreams,
+                          BseOStream   *ostreams)
+{
+  g_assert (n_ostreams > 0);
+  /* bse_engine_block_size() may have changed since allocation */
+  g_free (ostreams);
 }
 
 static void
@@ -101,7 +110,8 @@ bse_engine_free_node (EngineNode *node)
   birnet_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
-      g_free (node->module.ostreams);   /* bse_engine_block_size() may have changed since allocation */
+      /* bse_engine_block_size() may have changed since allocation */
+      bse_engine_free_ostreams (ENGINE_NODE_N_OSTREAMS (node), node->module.ostreams);
       sfi_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
     }
   if (node->module.istreams)
@@ -404,11 +414,11 @@ bse_engine_has_garbage (void)
 
 
 /* --- node processing queue --- */
-static BirnetMutex          pqueue_mutex = { 0, };
+static BirnetMutex       pqueue_mutex = { 0, };
 static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
-static BirnetCond		 pqueue_done_cond = { 0, };
+static BirnetCond	 pqueue_done_cond = { 0, };
 static EngineTimedJob   *pqueue_trash_tjobs_head = NULL;
 static EngineTimedJob   *pqueue_trash_tjobs_tail = NULL;
 
@@ -422,6 +432,12 @@ engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
       *trash_tjobs_head = pqueue_trash_tjobs_head;
       *trash_tjobs_tail = pqueue_trash_tjobs_tail;
       pqueue_trash_tjobs_head = pqueue_trash_tjobs_tail = NULL;
+      /* this function may not be called while nodes are still being processed,
+       * because some (probe) jobs may reference ro-data that is still in use
+       * during processing. to ensure this, we assert that no flow processing
+       * schedule is currently set.
+       */
+      g_assert (pqueue_schedule == NULL);
       GSL_SPIN_UNLOCK (&pqueue_mutex);
     }
   else
@@ -464,6 +480,7 @@ _engine_unset_schedule (EngineSchedule *sched)
     g_warning (G_STRLOC ": schedule(%p) still busy", sched);
   sched->in_pqueue = FALSE;
   pqueue_schedule = NULL;
+  /* see engine_fetch_process_queue_trash_jobs_U() on the limitations regarding pqueue trash jobs */
   trash_tjobs_head = pqueue_trash_tjobs_head;
   trash_tjobs_tail = pqueue_trash_tjobs_tail;
   pqueue_trash_tjobs_head = pqueue_trash_tjobs_tail = NULL;
@@ -663,6 +680,15 @@ _engine_mnl_node_changed (EngineNode *node)
 
 
 /* --- const value blocks --- */
+extern const gfloat bse_engine_master_zero_block[];
+gfloat*
+bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
+{
+  /* this function is callable from any thread */
+  g_assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
+  return bse_engine_master_zero_block;
+}
+
 typedef struct
 {
   guint    n_nodes;
@@ -762,7 +788,6 @@ static ConstValuesArray cvalue_array = { 0, NULL, NULL };
 gfloat*
 bse_engine_const_values (gfloat value)
 {
-  extern const gfloat bse_engine_master_zero_block[];
   gfloat **block;
   
   if (fabs (value) < BSE_SIGNAL_EPSILON)

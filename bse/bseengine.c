@@ -54,7 +54,7 @@ static void wakeup_master (void);
  */
 BseModule*
 bse_module_new (const BseModuleClass *klass,
-		gpointer        user_data)
+		gpointer              user_data)
 {
   EngineNode *node;
   guint i;
@@ -495,35 +495,32 @@ bse_engine_add_user_callback (gpointer      data,
 
 /**
  * BseEngineProbeFunc
- * @param data	user data passed in to bse_job_probe_request()
- * @param tick_stamp	engine time in microseconds of the probe
+ * @param data  	user data passed in to bse_job_probe_request()
  * @param n_values	number of values probed
- * @param oblocks	array of probe value block per output channel
+ * @param tick_stamp	engine time in microseconds of the probe
+ * @param n_ostreams	number of ostreams of the module
+ * @param ostreams_p	location of a pointer to the probed ostream array
  *
  * A BseEngineProbeFunc() is provided by users as a means to be notified about
  * a completed probe. This function is executed in the user thread.
- * Per each output channel that a probe has been requested through
- * bse_job_request_probe(), a block of probe values is supplied as
- * @a oblocks[channel-index]. These blocks are allocate via g_new() and
- * may be "stolen" by assigning NULL to the respective pointer (the
- * caller then is responsible to g_free() the block).
- * Note that n_values may be 0 in case the module to be probed was
- * inactive. The blocks still contain bse_engine_block_size() values
- * regardless.
+ * The complete set of output streams and associated output values is provided
+ * by @a n_ostreams and @a ostreams_p.
+ * For intermediate user thread processing, the set can be "stolen" in the
+ * probe callback by assigning NULL to *ostreams_p. In this case, the set has
+ * to later be freed with bse_engine_free_ostreams().
+ * Note that output streams with FALSE connected flags will not contain valid
+ * data in their value blocks.
  */
 
 /**
  * @param module	The module to access
- * @param n_delay_samples	Number of samples to wait before taking probes
- * @param n_probe_values	Number of probe values to take
- * @param ochannel_bytemask	One byte per ochannel, bytes != 0 indicate a probe request
  * @param probe_func	Function invoked with @a data in the user thread
- * @param data	Data passed in to the accessor
+ * @param data	        Data passed in to the accessor
  * @param Returns	New job suitable for bse_trans_add()
  *
  * Create a new transaction job which inserts @a probe_func with @a data
  * into the job queue of @a module.
- * Probe jobs are jobs which collect data from a given set of output
+ * Probe jobs are jobs which collect data from the output
  * channels of a module as probe data. The job then returns to the
  * user thread before the next block boundary, and @a probe_func()
  * will be invoked as early as possible.
@@ -531,38 +528,25 @@ bse_engine_add_user_callback (gpointer      data,
  * function would always be called immediately after @a probe_func().
  * So instead, any @a data specific release handling should be integrated
  * into @a probe_func().
- * The @a ochannel_bytemask must point to an array of bytes with a size
- * equal to the number of output channels of @a module.
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
 bse_job_probe_request (BseModule         *module,
-                       guint              n_delay_samples,
-                       guint              n_probe_values,
-                       guint8            *ochannel_bytemask,
                        BseEngineProbeFunc probe_func,
                        gpointer           data)
 {
   g_return_val_if_fail (module != NULL, NULL);
+  EngineNode *node = ENGINE_NODE (module);
   g_return_val_if_fail (probe_func != NULL, NULL);
-  g_return_val_if_fail (ochannel_bytemask != NULL, NULL);
-  g_return_val_if_fail (n_probe_values > 0, NULL);
   
-  guint i, n_oblocks = module->klass->n_ostreams;
-  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->probe) +  sizeof (tjob->probe.oblocks[0]) * n_oblocks);
-  
+  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->probe));
   tjob->type = ENGINE_JOB_PROBE_JOB;
   tjob->tick_stamp = 0;
   tjob->probe.data = data;
   tjob->probe.probe_func = probe_func;
-  tjob->probe.delay_counter = n_delay_samples;
-  tjob->probe.oblock_length = n_probe_values;
-  tjob->probe.n_values = 0;
-  tjob->probe.n_oblocks = n_oblocks;
-  for (i = 0; i < n_oblocks; i++)
-    if (ochannel_bytemask[i])
-      tjob->probe.oblocks[i] = g_new0 (gfloat, tjob->probe.oblock_length);
-  
+  tjob->probe.n_ostreams = ENGINE_NODE_N_OSTREAMS (node);
+  tjob->probe.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
+
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
   job->timed_job.node = ENGINE_NODE (module);
@@ -1440,8 +1424,11 @@ bse_engine_init (gboolean run_threaded)
   
   bse_engine_initialized = TRUE;
   
-  /* some code assertions */
+  /* assert correct implmentation of accessor macros defined in bsedefs.h */
   g_assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
+  g_assert (&BSE_MODULE_GET_ISTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->istreams);
+  g_assert (&BSE_MODULE_GET_JSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->jstreams);
+  g_assert (&BSE_MODULE_GET_OSTREAMSP ((BseModule*) 42) == (void*) &((BseModule*) 42)->ostreams);
   
   /* initialize components */
   bse_engine_reinit_utils();

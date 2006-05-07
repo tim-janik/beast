@@ -37,9 +37,6 @@ G_BEGIN_DECLS
 
 
 /* --- typedefs --- */
-typedef struct _BseIStream               BseIStream;
-typedef struct _BseJStream               BseJStream;
-typedef struct _BseOStream               BseOStream;
 typedef struct _BseJob                   BseJob;
 /* bsedefs.h:
  * typedef void (*BseEngineAccessFunc)  (BseModule      *module,
@@ -55,10 +52,10 @@ typedef gboolean (*BseEnginePollFunc)   (gpointer       data,
 typedef gboolean (*BseEngineTimerFunc)  (gpointer       data,
                                          guint64        tick_stamp);
 typedef void     (*BseEngineProbeFunc)  (gpointer       data,
-                                         guint64        tick_stamp,
-                                         guint          n_values,
-                                         gfloat       **oblocks,        /* [ENGINE_NODE_N_OSTREAMS()] */
-                                         guint          oblock_length); /* n_requested_values */
+					 guint          n_values,	/* bse_engine_block_size() */
+					 guint64        tick_stamp,
+					 guint          n_ostreams,	/* ENGINE_NODE_N_OSTREAMS() */
+					 BseOStream   **ostreams_p);
 typedef void     (*BseProcessFunc)      (BseModule     *module,
                                          guint          n_values);
 typedef guint    (*BseProcessDeferFunc) (BseModule     *module,
@@ -82,18 +79,18 @@ struct _BseModuleClass
   guint               n_ostreams;
   BseProcessFunc      process;          /* EngineThread */
   BseProcessDeferFunc process_defer;    /* EngineThread */
-  BseModuleResetFunc          reset;            /* EngineThread */
+  BseModuleResetFunc  reset;            /* EngineThread */
   BseModuleFreeFunc   free;             /* UserThread */
-  BseCostType      mflags;
+  BseCostType         mflags;
 };
 /* module, constructed by engine */
 struct _BseModule
 {
   const BseModuleClass *klass;
-  gpointer        user_data;
-  BseIStream     *istreams;     /* input streams */
-  BseJStream     *jstreams;     /* joint (multiconnect) input streams */
-  BseOStream     *ostreams;     /* output streams */
+  gpointer              user_data;
+  BseIStream           *istreams;	/* input streams */
+  BseJStream           *jstreams;     	/* joint (multiconnect) input streams */
+  BseOStream           *ostreams;     	/* output streams */
 };
 /* streams, constructed by engine */
 struct _BseJStream
@@ -166,9 +163,6 @@ BseJob*    bse_job_access               (BseModule            *module,
                                          gpointer              data,
                                          BseFreeFunc           free_func);      /* UserThread */
 BseJob*    bse_job_probe_request        (BseModule            *module,
-                                         guint                 n_delay_samples,
-                                         guint                 n_probe_values,
-                                         guint8               *ochannel_bytemask,
                                          BseEngineProbeFunc    probe,           /* UserThread */
                                          gpointer              data);
 BseJob*    bse_job_flow_access          (BseModule            *module,
@@ -209,8 +203,11 @@ gboolean   bse_engine_configure         (guint                 latency_ms,
                                          guint                 control_freq);
 
 /* --- miscellaneous --- */
+gfloat*    bse_engine_const_zeros	      (guint	     smaller_than_BSE_STREAM_MAX_VALUES);
 gboolean   bse_engine_has_garbage             (void);
 void       bse_engine_garbage_collect         (void);
+void       bse_engine_free_ostreams	      (guint         n_ostreams,
+					       BseOStream   *ostreams);
 void       bse_engine_add_user_callback       (gpointer      data,
                                                BseFreeFunc   free_func);        /* UserThread */
 void       bse_engine_wait_on_trans           (void);

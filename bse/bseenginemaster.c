@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseenginemaster.h"
-
+#include "bseblockutils.hh"
 #include "gslcommon.h"
 #include "bsemain.h" /* bse_log_handler */
 #include "bseenginenode.h"
@@ -82,7 +82,7 @@ static void	master_schedule_discard	(void);
 static gboolean	       master_need_reflow = FALSE;
 static gboolean	       master_need_process = FALSE;
 static EngineNode     *master_consumer_list = NULL;
-const gfloat           bse_engine_master_zero_block[BSE_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
+const gfloat           bse_engine_master_zero_block[BSE_STREAM_MAX_VALUES + 16 /* SIMD alignment */] = { 0, }; /* FIXME: move elsewhere? join? */
 static Timer	      *master_timer_list = NULL;
 static Poll	      *master_poll_list = NULL;
 static guint           master_n_pollfds = 0;
@@ -399,7 +399,6 @@ master_process_job (BseJob *job)
             {
               tjob = node->probe_jobs;
               node->probe_jobs = tjob->next;
-              tjob->probe.n_values = tjob->probe.oblock_length;
               insert_trash_job (node,  tjob);
             }
           probe_node_list = sfi_ring_remove (probe_node_list, node);
@@ -739,55 +738,43 @@ master_take_probes (EngineNode   *node,
     return;
   /* peek probe job */
   EngineTimedJob *tjob = node->probe_jobs;
-  guint offset = MIN (tjob->probe.delay_counter, n_values);
-  tjob->probe.delay_counter -= offset;
-  if (G_LIKELY (tjob->probe.delay_counter > 0 || offset >= n_values))
-    return;
-  /* fill probe parameters */
-  if (!tjob->probe.n_values)
-    tjob->probe.tick_stamp = current_stamp + offset;
-  gboolean need_collect = FALSE;
-  switch (ptype)
+  /* probe the output stream data */
+  tjob->probe.tick_stamp = current_stamp;
+  if (ptype == PROBE_SCHEDULED)
     {
-      guint i, n;
-    case PROBE_SCHEDULED:
-      n = MIN (tjob->probe.oblock_length - tjob->probe.n_values, n_values - offset);
-      /* fill probe data */
+      uint i;
+      g_assert (tjob->probe.n_ostreams == ENGINE_NODE_N_OSTREAMS (node));
+      /* swap output buffers with probe buffers */
+      BseOStream *ostreams = node->module.ostreams;
+      node->module.ostreams = tjob->probe.ostreams;
+      tjob->probe.ostreams = ostreams;
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-        if (tjob->probe.oblocks[i])
-          memcpy (tjob->probe.oblocks[i] + tjob->probe.n_values, node->module.ostreams[i].values + offset, n * sizeof (gfloat));
-      tjob->probe.n_values += n;
-      /* jobs are collected upon push_processd */
-      break;
-    case PROBE_VIRTUAL:
-      n = MIN (tjob->probe.oblock_length - tjob->probe.n_values, n_values - offset);
-      /* fill probe data */
+        {
+          node->outputs[i].buffer = node->module.ostreams[i].values;
+          node->module.ostreams[i].connected = ostreams[i].connected;
+        }
+    }
+  else if (ptype == PROBE_VIRTUAL)
+    {
+      uint i;
+      /* copy output buffers to probe buffers */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-        if (tjob->probe.oblocks[i])
-          {
-            EngineInput *input = node->inputs + i;
-	    if (input->real_node)
-	      memcpy (tjob->probe.oblocks[i] + tjob->probe.n_values,
-		      input->real_node->module.ostreams[input->real_stream].values + offset, n * sizeof (gfloat));
-	  }
-      tjob->probe.n_values += n;
-      need_collect = TRUE;
-      break;
-    case PROBE_UNSCHEDULED:
-      tjob->probe.n_values = tjob->probe.oblock_length;
-      need_collect = TRUE;
-      break;
+        {
+          EngineInput *input = node->inputs + i;
+          if (input->real_node && input->real_node->module.ostreams[input->real_stream].connected)
+            {
+              tjob->probe.ostreams[i].connected = true;
+              bse_block_copy_float (n_values, tjob->probe.ostreams[i].values, input->real_node->module.ostreams[input->real_stream].values);
+            }
+        }
     }
   /* pop probe job */
-  if (tjob->probe.oblock_length - tjob->probe.n_values == 0)
-    {
-      node->probe_jobs = tjob->next;
-      if (!node->probe_jobs)
-        probe_node_list = sfi_ring_remove (probe_node_list, node);
-      insert_trash_job (node, tjob);
-      if (need_collect)
-        _engine_node_collect_jobs (node);
-    }
+  node->probe_jobs = tjob->next;
+  if (!node->probe_jobs)
+    probe_node_list = sfi_ring_remove (probe_node_list, node); //FIXME: protect by lock
+  insert_trash_job (node, tjob);
+  if (ptype != PROBE_SCHEDULED)
+    _engine_node_collect_jobs (node);       // FIXME: does not need lock
 }
 
 static inline guint64
@@ -888,10 +875,8 @@ master_process_locked_node (EngineNode *node,
 	  /* FIXME: this takes the worst possible performance hit to support obuffer pointer virtualization */
 	  if (node->module.ostreams[i].connected &&
               node->module.ostreams[i].values != node->outputs[i].buffer + diff)
-	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
-		    (new_counter - node->counter) * sizeof (gfloat));
+            bse_block_copy_float (new_counter - node->counter, node->outputs[i].buffer + diff, node->module.ostreams[i].values);
 	}
-      master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);
       /* update node counter */
       node->counter = new_counter;
     }
@@ -964,12 +949,12 @@ master_process_flow (void)
         {
           node = ring->data; /* current ring may be removed during master_take_probes() */
           ring = sfi_ring_walk (ring, probe_node_list);
-          if (BSE_ENGINE_MNL_UNSCHEDULED_TJOB_NODE (node))
+          if (!ENGINE_NODE_IS_SCHEDULED (node))
             master_take_probes (node, current_stamp, n_values, PROBE_UNSCHEDULED);
           else if (ENGINE_NODE_IS_VIRTUAL (node)) /* scheduled && virtual */
             master_take_probes (node, current_stamp, n_values, PROBE_VIRTUAL);
           else
-            /* already_handled */; // master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);
+            master_take_probes (node, current_stamp, n_values, PROBE_SCHEDULED);
         }
       
       if (UNLIKELY (profile_modules))
