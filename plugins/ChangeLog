@@ -1,3 +1,8 @@
+Sun May  7 23:53:16 2006  Tim Janik  <timj@gtk.org>
+
+	* icons/ampctrl.png:
+	* icons/ampctrl.xcf: CVS copied here from bse/icons/.
+
 Sun May  7 23:48:35 2006  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.idl: 
