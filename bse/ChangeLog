@@ -1,3 +1,15 @@
+Mon May  8 00:19:00 2006  Tim Janik  <timj@gtk.org>
+
+	* icons/Makefile.am:
+	* icons/ampctrl.png, icons/ampctrl.xcf:
+	* Makefile.am:
+	* bse.idl:
+	* bseamplifier.idl, bseamplifier.cc: removed BseAmplifier which now
+	resides in plugins/.
+
+	* tests/testcxx.cc: create a BseBusModule as test object since
+	BseAmplifier is not part of the BSE core anymore.
+
 Sun May  7 23:39:43 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/subnormals.cc: added bench test for the float-cancellation macros

@@ -91,7 +91,6 @@ bse_c_sources = $(strip \
 )
 # BSE C++ sources
 bse_cc_sources = $(strip 	\
-	bseamplifier.cc		\
 	bsebusmodule.cc		\
 	bsecore.cc		\
 	bseprobe.cc		\
@@ -99,8 +98,6 @@ bse_cc_sources = $(strip 	\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
-bse_idl_sources += bseamplifier.idl
-$(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
 bse_idl_sources += bsebusmodule.idl
 $(srcdir)/bsebusmodule.cc: bsebusmodule.genidl.hh
 bse_idl_sources += bsecore.idl

@@ -6,7 +6,6 @@ include $(top_srcdir)/Makefile.decl
 
 # extra images to ship with tarballs
 EXTRA_IMAGES = $(strip		\
-	ampctrl.xcf		\
 	const.xcf		\
 	instrument.xcf		\
 	mic.xcf			\
@@ -27,7 +26,6 @@ EXTRA_IMAGES = $(strip		\
 
 # images that need to be shipped, but no C source nees to be build from
 SHIP_IMAGES = $(strip		\
-	ampctrl.png		\
 	summation.png		\
 )
 

@@ -18,7 +18,7 @@
  */
 #include <bse/bsecxxbase.hh>
 #include <bse/bsemain.h>
-#include <bse/bseamplifier.genidl.hh>
+#include <bse/bsebusmodule.genidl.hh>
 
 namespace {
 using namespace Bse;
@@ -63,7 +63,7 @@ main (int   argc,
   a5.token();
   // tokenize_gtype (0);
 
-  GObject *o = (GObject*) g_object_new (BSE_TYPE_AMPLIFIER, NULL);
+  GObject *o = (GObject*) g_object_new (BSE_TYPE_BUS_MODULE, NULL);
   CxxBase *b = cast (o);
   Foo f;
   b->connect ("notify", Closure (&f, &Foo::bar));
