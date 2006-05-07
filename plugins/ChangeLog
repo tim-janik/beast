@@ -1,3 +1,11 @@
+Mon May  8 01:23:45 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesummation.cc:
+	* bsesummation.idl: CVS copied here from bse/.
+
+	* icons/summation.png:
+	* icons/summation.xcf: CVS copied here from bse/icons/.
+
 Mon May  8 00:25:25 2006  Tim Janik  <timj@gtk.org>
 
 	* plugins/bseamplifier.cc:
