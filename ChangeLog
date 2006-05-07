@@ -1,3 +1,11 @@
+Sun May  7 19:25:26 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpreferences.c: dialog button fixups.
+
+	* beast-gtk/bstutils.[hc]: added DISMISS as stock button/icon.
+
+	* beast-gtk/gxk/gxkutils.c: docu fixup.
+
 Sun May  7 19:13:14 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): allow creation of new projects from 

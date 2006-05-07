@@ -205,6 +205,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_CLOSE                 GTK_STOCK_CLOSE
 #define BST_STOCK_DEFAULT_REVERT        ("bst-stock-default-revert")
 #define BST_STOCK_DELETE                GTK_STOCK_DELETE
+#define BST_STOCK_DISMISS               ("bst-stock-dismiss")
 #define BST_STOCK_EXECUTE               GTK_STOCK_EXECUTE
 #define BST_STOCK_OK                    GTK_STOCK_OK
 #define BST_STOCK_OVERWRITE             ("bst-stock-overwrite")

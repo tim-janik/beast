@@ -99,6 +99,7 @@ _bst_init_utils (void)
   {
     static const GxkStockItem stock_items[] = {
       { BST_STOCK_CLONE,                "_Clone",       GTK_STOCK_COPY,                 },
+      { BST_STOCK_DISMISS,              "_Dismiss",     GTK_STOCK_CLOSE,                },
       { BST_STOCK_DEFAULT_REVERT,       "_Defaults",    GTK_STOCK_UNDO,                 },
       { BST_STOCK_LOAD,                 "_Load",        NULL,                           },
       { BST_STOCK_OVERWRITE,            "_Overwrite",   GTK_STOCK_SAVE,                 },

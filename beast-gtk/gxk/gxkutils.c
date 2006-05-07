@@ -1626,7 +1626,7 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
  * (between 0 and 1) and the column title respectively.
  *
  * The @a column_flags argument is a combination of letters that
- * are able to switch certain characteristics on or of,
+ * are able to switch certain characteristics on or off,
  * currently supported are:
  * @itemize
  * @item F - column is fixed in sizing;

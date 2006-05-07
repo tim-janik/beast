@@ -388,7 +388,7 @@ bst_preferences_create_buttons (BstPreferences *self,
   /* Revert
    */
   widget = gxk_dialog_action_swapped (dialog, BST_STOCK_REVERT, bst_preferences_revert, self);
-  gxk_widget_set_tooltip (widget, "Revert to the currently active values.");
+  gxk_widget_set_tooltip (widget, "Revert dialog changes to the currently active values.");
   
   /* Default Revert
    */
@@ -397,6 +397,6 @@ bst_preferences_create_buttons (BstPreferences *self,
   
   /* Close
    */
-  widget = gxk_dialog_action (dialog, BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);
+  widget = gxk_dialog_action (dialog, BST_STOCK_DISMISS, gxk_toplevel_delete, NULL);
   gxk_widget_set_tooltip (widget, "Discard changes and close dialog.");
 }
