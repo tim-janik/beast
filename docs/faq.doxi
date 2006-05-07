@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/05/07 17:47:54 $
 @doxer_set{webmenu}	documentation
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}       BEAST/BSE FAQ - Frequently Asked Questions
@@ -160,3 +160,17 @@ right). The Quick Start Guide has a section detailing the setup of postprocessin
 networks.
 For future versions, a mixer is already in development, which will allow to
 handle this situation in much more flexible and adequate ways.
+
+@subsection What platforms are supported?
+
+Beast is mainly developed under linux and has been ported to some BSD versions.
+The @uri{http://beast.gtk.org/download, Download page} of the Beast website links
+to the available packages and source code repositories for the various supported
+Linux and BSD variants.
+
+Some effort also went into a Windows port, more details about the state of which
+can be found on the @uri{http://beast.gtk.org/wiki:WindowsPort, Windows port wiki page}.
+
+Other operating systems are currently not supported, but the project is always taking
+patches and looks for new volounteers. So to start a new port, simply write your patch
+and contact the @uri{http://beast.gtk.org/contact, mailing list and developers}.
