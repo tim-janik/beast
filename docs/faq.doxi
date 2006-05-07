@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/05/07 17:47:54 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/05/07 17:52:10 $
 @doxer_set{webmenu}	documentation
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}       BEAST/BSE FAQ - Frequently Asked Questions
@@ -163,7 +163,7 @@ handle this situation in much more flexible and adequate ways.
 
 @subsection What platforms are supported?
 
-Beast is mainly developed under linux and has been ported to some BSD versions.
+Beast is mainly developed under Linux and has been ported to some BSD versions.
 The @uri{http://beast.gtk.org/download, Download page} of the Beast website links
 to the available packages and source code repositories for the various supported
 Linux and BSD variants.
