@@ -1,3 +1,8 @@
+Sun May  7 23:48:35 2006  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.idl: 
+	* bseamplifier.cc: CVS copied here from bse/.
+
 Thu Apr 20 20:08:52 2006  Tim Janik  <timj@gtk.org>
 
 	* bseblockutils.cc: fixed inner variable declarations which erroneously
