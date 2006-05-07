@@ -1,3 +1,8 @@
+Fri May  5 19:58:06 2006  Tim Janik  <timj@gtk.org>
+
+	* sficxx.hh: fixed reference counting and related assertions for 
+	records, fblocks, bblocks and objects.
+
 Thu Apr 13 23:59:08 2006  Tim Janik  <timj@gtk.org>
 
 	* testsfi.c:

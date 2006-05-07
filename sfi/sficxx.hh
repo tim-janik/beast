@@ -622,15 +622,14 @@ public:
   void
   ref ()
   {
-    if (block)
-      sfi_fblock_ref (block);
-    else
+    if (!block)
       block = sfi_fblock_new();
+    sfi_fblock_ref (block);
   }
   void
   unref ()
   {
-    g_return_if_fail (block != NULL && block->ref_count > 0);
+    g_return_if_fail (block != NULL && block->ref_count > 1);
     sfi_fblock_unref (block);
   }
   void
@@ -726,7 +725,8 @@ public:
     else
       block = sfi_bblock_new();
   }
-  BBlock& operator= (SfiBBlock &bb)
+  BBlock&
+  operator= (SfiBBlock &bb)
   {
     if (block != &bb)
       {
@@ -738,7 +738,8 @@ public:
       }
     return *this;
   }
-  BBlock& operator= (const BBlock &s)
+  BBlock&
+  operator= (const BBlock &s)
   {
     if (block != s.block)
       {
@@ -759,16 +760,17 @@ public:
     if (block)
       sfi_bblock_unref (block);
   }
-  void ref ()
+  void
+  ref ()
   {
-    if (block)
-      sfi_bblock_ref (block);
-    else
+    if (!block)
       block = sfi_bblock_new();
+    sfi_bblock_ref (block);
   }
-  void unref ()
+  void
+  unref ()
   {
-    g_return_if_fail (block != NULL && block->ref_count > 0);
+    g_return_if_fail (block != NULL && block->ref_count > 1);
     sfi_bblock_unref (block);
   }
   void resize (unsigned int length)
@@ -778,7 +780,8 @@ public:
     else
       block = sfi_bblock_new_sized (length);
   }
-  void take (SfiBBlock *bb)
+  void
+  take (SfiBBlock *bb)
   {
     if (block)
       sfi_bblock_unref (block);
@@ -853,7 +856,8 @@ public:
     if (crec)
       sfi_rec_clear (crec);
   }
-  Rec& operator= (SfiRec &sr)
+  Rec&
+  operator= (SfiRec &sr)
   {
     if (crec != &sr)
       {
@@ -865,7 +869,8 @@ public:
       }
     return *this;
   }
-  Rec& operator= (const Rec &rr)
+  Rec&
+  operator= (const Rec &rr)
   {
     if (crec != rr.crec)
       {
@@ -886,19 +891,21 @@ public:
     if (crec)
       sfi_rec_unref (crec);
   }
-  void ref ()
+  void
+  ref ()
   {
-    if (crec)
-      sfi_rec_ref (crec);
-    else
+    if (!crec)
       crec = sfi_rec_new();
+    sfi_rec_ref (crec);
   }
-  void unref ()
+  void
+  unref ()
   {
-    g_return_if_fail (crec != NULL && crec->ref_count > 0);
+    g_return_if_fail (crec != NULL && crec->ref_count > 1);
     sfi_rec_unref (crec);
   }
-  void take (SfiRec *sr)
+  void
+  take (SfiRec *sr)
   {
     if (crec)
       sfi_rec_unref (crec);
@@ -997,17 +1004,20 @@ public:
   {
     return cobj;
   }
-  void ref ()
+  void
+  ref ()
   {
     g_return_if_fail (cobj != NULL && cobj->ref_count > 0);
     g_object_ref (cobj);
   }
-  void unref ()
+  void
+  unref ()
   {
-    g_return_if_fail (cobj != NULL && cobj->ref_count > 0);
+    g_return_if_fail (cobj != NULL && cobj->ref_count > 1);
     g_object_unref (cobj);
   }
-  void take (GObject *object)
+  void
+  take (GObject *object)
   {
     if (cobj)
       g_object_unref (cobj);
