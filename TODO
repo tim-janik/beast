@@ -8,7 +8,6 @@ RELEASE(0.7.0):
 - BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
 - store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
 - fix "../../tools/bsefextract --", this needs bse_init_intern()
-- FAQ: answer status of windows and MacOS port
 - WEB: add LAD-2005 paper to website
 - fix/re-enable midi note recording into piano roll
 - update status message of recording script according to is/isnot recording
