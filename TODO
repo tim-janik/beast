@@ -2,7 +2,6 @@ RELEASE(0.6.7):
 - subst memcpy() by blockutils
 - s/bse_engine_garbage_collect/bse_engine_user_thread_collect/
 - add default-settings config preference (authors, license): Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)
-- support beast nonexistant.bse (new creation)
 - rename bsesh to bsescm
 -  fix birnet_thread_run uses (unref thread)
 - get rid of sfimemory

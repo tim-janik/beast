@@ -313,8 +313,9 @@ main (int   argc,
         {
           SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
           BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE);
-          if (!error)
+          if (!error || error == BSE_ERROR_FILE_NOT_FOUND)
             {
+              error = 0;
               app = bst_app_new (project);
               gxk_idle_show_widget (GTK_WIDGET (app));
               gtk_widget_hide (beast_splash);

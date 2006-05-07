@@ -1,3 +1,8 @@
+Sun May  7 19:13:14 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): allow creation of new projects from 
+	new filenames specified on the command line.
+
 Sun May  7 03:31:41 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstrecords.idl: removed "enable_scopes" and "enable_meters"
