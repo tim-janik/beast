@@ -165,8 +165,8 @@ TODO:
 - seqid changed notification *only* works for non-source children of BseSong
 - (beast:18498): BSE-WARNING **: while executing undo method "BseSong+remove-bus" of item "BseSong::Unnamed": Synthesis module currently busy
 - rename bsesnifferscope.* to bsescope.*
-- split bstutils into bstgutils
 - rename snifferscope to trackscope
+- split bstutils into bstgutils
 - skip no-voice found for snet==NULL tracks
 - the "Synth Selection" dialog popped up from the track view should preselect a track's existing Synth object
 - check sfi_debug_check ("sched") in --debug-list
