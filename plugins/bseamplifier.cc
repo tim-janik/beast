@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bseamplifier.genidl.hh"
-#include "bsemathsignal.h"
+#include <bse/bsemathsignal.h>
 
 namespace Bse {
 
@@ -158,7 +158,7 @@ class Amplifier : public AmplifierBase {
 #define BSE_INCLUDER_MATCH(n)   (n >= 0 && n <= 31 && (n & ACASE_MASK) != ACASE_A1n_A2n)
 #define BSE_INCLUDER_FUNC(n)    process_loop <n, false>
 #define BSE_INCLUDER_ARGS(n)    (n_values)
-#include "bseincluder.h"
+#include <bse/bseincluder.h>
           }
     }
   };

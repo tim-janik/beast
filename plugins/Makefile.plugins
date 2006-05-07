@@ -14,6 +14,20 @@ davchorus_SSE_la_LDFLAGS   = $(davchorus_FPU_la_LDFLAGS)
 davchorus_SSE_la_LIBADD    = $(davchorus_FPU_la_LIBADD)
 davchorus_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
+## C++ Plugin bseamplifier
+$(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
+plugins_built_sources   += bseamplifier.genidl.hh
+plugin_FPU_ltlibs    += bseamplifier.FPU.la
+bseamplifier_FPU_la_SOURCES = bseamplifier.cc
+bseamplifier_FPU_la_LDFLAGS = -module $(plugins_ldflags)
+bseamplifier_FPU_la_LIBADD  = $(plugins_libs)
+bseamplifier_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
+plugin_SSE_ltlibs      += bseamplifier.SSE.la
+bseamplifier_SSE_la_SOURCES   = $(bseamplifier_FPU_la_SOURCES)
+bseamplifier_SSE_la_LDFLAGS   = $(bseamplifier_FPU_la_LDFLAGS)
+bseamplifier_SSE_la_LIBADD    = $(bseamplifier_FPU_la_LIBADD)
+bseamplifier_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
+
 ## C++ Plugin bsebalance
 $(srcdir)/bsebalance.cc: bsebalance.genidl.hh
 plugins_built_sources   += bsebalance.genidl.hh

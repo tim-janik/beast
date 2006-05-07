@@ -14,6 +14,7 @@ INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 #
 plugin_idl_files = $(strip		\
 	davchorus.idl			\
+	bseamplifier.idl		\
 	bsebalance.idl			\
 	artscompressor.idl		\
 	davbassfilter.idl		\
