@@ -72,7 +72,7 @@ static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 
 /* --- Export to BSE --- */
 #include "./icons/strings.c"
-BSE_REGISTER_OBJECT (DavXtalStrings, BseSource, "/Modules/Audio Sources/XtalStrings",
+BSE_REGISTER_OBJECT (DavXtalStrings, BseSource, "/Modules/Audio Sources/XtalStrings", "",
                      "DavXtalStrings is a plucked string synthesizer, using the "
                      "Karplus-Strong Algorithm. Commercial use of this module "
                      "until 2004 requires a license from Stanford University.",

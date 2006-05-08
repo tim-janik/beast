@@ -52,7 +52,7 @@ static void	bse_sequencer_update_modules	(BseSequencer		*seq);
 
 /* --- Export to BSE --- */
 #include "./icons/sequencer.c"
-BSE_REGISTER_OBJECT (BseSequencer, BseSource, "/Modules/Other Sources/Sequencer",
+BSE_REGISTER_OBJECT (BseSequencer, BseSource, "/Modules/Other Sources/Sequencer", "",
                      "The Sequencer produces a frequency signal according to a sequence of notes",
                      sequencer_icon,
                      bse_sequencer_class_init, NULL, bse_sequencer_init);

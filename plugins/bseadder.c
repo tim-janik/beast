@@ -53,7 +53,7 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 
 /* --- Export to BSE --- */
 #include "./icons/sum.c"
-BSE_REGISTER_OBJECT (BseAdder, BseSource, "/Modules/Routing/Adder",
+BSE_REGISTER_OBJECT (BseAdder, BseSource, "/Modules/Routing/Adder", "deprecated",
                      "The Adder is a very simplisitic prototype mixer that just sums up "
                      "incomiong signals (it does allow for switching to subtract mode though)",
                      sum_icon,
@@ -74,7 +74,7 @@ bse_adder_class_init (BseAdderClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint channel;
-  
+
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
   gobject_class->set_property = bse_adder_set_property;

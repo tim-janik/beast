@@ -1,3 +1,9 @@
+Mon May  8 03:27:48 2006  Tim Janik  <timj@gtk.org>
+
+	* bseadder.c: deprecated this plugin (use BseSummation instead).
+
+	* *.c: adapted to new BSE_REGISTER_OBJECT*() macro args.
+
 Mon May  8 02:26:40 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am:

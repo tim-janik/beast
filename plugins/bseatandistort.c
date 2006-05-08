@@ -49,7 +49,7 @@ static void	 bse_atan_distort_update_modules      (BseAtanDistort		*comp);
 
 /* --- Export to BSE --- */
 #include "./icons/atan.c"
-BSE_REGISTER_OBJECT (BseAtanDistort, BseSource, "/Modules/Distortion/Atan Distort",
+BSE_REGISTER_OBJECT (BseAtanDistort, BseSource, "/Modules/Distortion/Atan Distort", "",
                      "BseAtanDistort compresses or expands the input signal with distortion "
                      "(in a manner similar to the atan(3) mathematical function, thus it's name). "
                      "The strength with which the input signal is treated is adjustable from "

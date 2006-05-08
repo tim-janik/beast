@@ -32,7 +32,7 @@ static void	 bse_mult_context_create	(BseSource	*source,
 
 /* --- Export to BSE --- */
 #include "./icons/multiply.c"
-BSE_REGISTER_OBJECT (BseMult, BseSource, "/Modules/Routing/Multiply",
+BSE_REGISTER_OBJECT (BseMult, BseSource, "/Modules/Routing/Multiply", "",
                      "Mult is a channel multiplier for ring-modulating incoming signals",
                      multiply_icon,
                      bse_mult_class_init, NULL, bse_mult_init);
