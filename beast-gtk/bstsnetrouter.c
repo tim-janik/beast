@@ -66,6 +66,8 @@ filter_popup_modules (gpointer         predicate_data,
                       BseCategory     *cat)
 {
   const gchar *options = bse_type_options (cat->type);
+  if (g_option_check (options, "deprecated") && !BST_DVL_HINTS)
+    return FALSE;
   if (g_option_check (options, "unstable") && !BST_DVL_HINTS)
     return FALSE;
   return TRUE;

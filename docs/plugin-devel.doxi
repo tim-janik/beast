@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/05/08 01:37:45 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST/BSE - Plugin Development
 
@@ -363,7 +363,8 @@ classes also is very limited at the moment.
 
 Predefined class options:
 @itemize
-@item @option{unstable}     - code is considered unstable and enabled only by @code{--devel}
+@item @option{unstable}     - code is (still) unstable and enabled only by @code{--devel}
+@item @option{deprecated}   - code is deprecated and scheduled for removal, enabled only by @code{--devel}
 @item @option{mix1}         - this class implements a mono channel mixer effect (also see @uri{plugin-devel.html#channels, channels})
 @item @option{mix2}         - this class implements a stereo channel mixer effect
 @item @option{mix5.1}       - this class implements a 5.1 channel mixer effect

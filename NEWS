@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.7.0:
+
+* Incompatible changes:
+  - BseConstant now only supports 4 output channels
 * Updated German translation [Hendrik Richter]
 
 Overview of Changes in BEAST/BSE 0.6.6:

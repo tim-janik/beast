@@ -1,3 +1,9 @@
+Mon May  8 03:28:55 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: disabled listing of deprecated plugins.
+
+	* docs/plugin-devel.doxi: documented "deprecated" plugin option.
+
 Sun May  7 19:47:19 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/faq.doxi: answer platform ports FAQ.
