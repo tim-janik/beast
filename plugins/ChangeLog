@@ -1,3 +1,9 @@
+Mon May  8 02:26:40 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am:
+	* Makefile.plugins:
+	* icons/Makefile.icons: build and install BseSummation.
+
 Mon May  8 01:23:45 2006  Tim Janik  <timj@gtk.org>
 
 	* bsesummation.cc:
@@ -8,9 +14,9 @@ Mon May  8 01:23:45 2006  Tim Janik  <timj@gtk.org>
 
 Mon May  8 00:25:25 2006  Tim Janik  <timj@gtk.org>
 
-	* plugins/bseamplifier.cc:
-	* plugins/Makefile.plugins:
-	* plugins/Makefile.am: added BseAmplifier to plugins/.
+	* bseamplifier.cc:
+	* Makefile.plugins:
+	* Makefile.am: added BseAmplifier to plugins/.
 
 Sun May  7 23:53:16 2006  Tim Janik  <timj@gtk.org>
 

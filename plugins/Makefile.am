@@ -13,13 +13,14 @@ INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 # C++ Plugins
 #
 plugin_idl_files = $(strip		\
-	davchorus.idl			\
+	artscompressor.idl		\
 	bseamplifier.idl		\
 	bsebalance.idl			\
-	artscompressor.idl		\
-	davbassfilter.idl		\
 	bsecontribsampleandhold.idl	\
 	bsenoise.idl			\
+	bsesummation.idl		\
+	davbassfilter.idl		\
+	davchorus.idl			\
 	standardsaturator.idl		\
 	standardguspatchenvelope.idl	\
 )

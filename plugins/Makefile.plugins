@@ -1,18 +1,18 @@
 
 
-## C++ Plugin davchorus
-$(srcdir)/davchorus.cc: davchorus.genidl.hh
-plugins_built_sources   += davchorus.genidl.hh
-plugin_FPU_ltlibs    += davchorus.FPU.la
-davchorus_FPU_la_SOURCES = davchorus.cc
-davchorus_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-davchorus_FPU_la_LIBADD  = $(plugins_libs)
-davchorus_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
-plugin_SSE_ltlibs      += davchorus.SSE.la
-davchorus_SSE_la_SOURCES   = $(davchorus_FPU_la_SOURCES)
-davchorus_SSE_la_LDFLAGS   = $(davchorus_FPU_la_LDFLAGS)
-davchorus_SSE_la_LIBADD    = $(davchorus_FPU_la_LIBADD)
-davchorus_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
+## C++ Plugin artscompressor
+$(srcdir)/artscompressor.cc: artscompressor.genidl.hh
+plugins_built_sources   += artscompressor.genidl.hh
+plugin_FPU_ltlibs    += artscompressor.FPU.la
+artscompressor_FPU_la_SOURCES = artscompressor.cc
+artscompressor_FPU_la_LDFLAGS = -module $(plugins_ldflags)
+artscompressor_FPU_la_LIBADD  = $(plugins_libs)
+artscompressor_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
+plugin_SSE_ltlibs      += artscompressor.SSE.la
+artscompressor_SSE_la_SOURCES   = $(artscompressor_FPU_la_SOURCES)
+artscompressor_SSE_la_LDFLAGS   = $(artscompressor_FPU_la_LDFLAGS)
+artscompressor_SSE_la_LIBADD    = $(artscompressor_FPU_la_LIBADD)
+artscompressor_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin bseamplifier
 $(srcdir)/bseamplifier.cc: bseamplifier.genidl.hh
@@ -42,34 +42,6 @@ bsebalance_SSE_la_LDFLAGS   = $(bsebalance_FPU_la_LDFLAGS)
 bsebalance_SSE_la_LIBADD    = $(bsebalance_FPU_la_LIBADD)
 bsebalance_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
-## C++ Plugin artscompressor
-$(srcdir)/artscompressor.cc: artscompressor.genidl.hh
-plugins_built_sources   += artscompressor.genidl.hh
-plugin_FPU_ltlibs    += artscompressor.FPU.la
-artscompressor_FPU_la_SOURCES = artscompressor.cc
-artscompressor_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-artscompressor_FPU_la_LIBADD  = $(plugins_libs)
-artscompressor_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
-plugin_SSE_ltlibs      += artscompressor.SSE.la
-artscompressor_SSE_la_SOURCES   = $(artscompressor_FPU_la_SOURCES)
-artscompressor_SSE_la_LDFLAGS   = $(artscompressor_FPU_la_LDFLAGS)
-artscompressor_SSE_la_LIBADD    = $(artscompressor_FPU_la_LIBADD)
-artscompressor_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
-
-## C++ Plugin davbassfilter
-$(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh
-plugins_built_sources   += davbassfilter.genidl.hh
-plugin_FPU_ltlibs    += davbassfilter.FPU.la
-davbassfilter_FPU_la_SOURCES = davbassfilter.cc
-davbassfilter_FPU_la_LDFLAGS = -module $(plugins_ldflags)
-davbassfilter_FPU_la_LIBADD  = $(plugins_libs)
-davbassfilter_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
-plugin_SSE_ltlibs      += davbassfilter.SSE.la
-davbassfilter_SSE_la_SOURCES   = $(davbassfilter_FPU_la_SOURCES)
-davbassfilter_SSE_la_LDFLAGS   = $(davbassfilter_FPU_la_LDFLAGS)
-davbassfilter_SSE_la_LIBADD    = $(davbassfilter_FPU_la_LIBADD)
-davbassfilter_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
-
 ## C++ Plugin bsecontribsampleandhold
 $(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.genidl.hh
 plugins_built_sources   += bsecontribsampleandhold.genidl.hh
@@ -97,6 +69,48 @@ bsenoise_SSE_la_SOURCES   = $(bsenoise_FPU_la_SOURCES)
 bsenoise_SSE_la_LDFLAGS   = $(bsenoise_FPU_la_LDFLAGS)
 bsenoise_SSE_la_LIBADD    = $(bsenoise_FPU_la_LIBADD)
 bsenoise_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
+
+## C++ Plugin bsesummation
+$(srcdir)/bsesummation.cc: bsesummation.genidl.hh
+plugins_built_sources   += bsesummation.genidl.hh
+plugin_FPU_ltlibs    += bsesummation.FPU.la
+bsesummation_FPU_la_SOURCES = bsesummation.cc
+bsesummation_FPU_la_LDFLAGS = -module $(plugins_ldflags)
+bsesummation_FPU_la_LIBADD  = $(plugins_libs)
+bsesummation_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
+plugin_SSE_ltlibs      += bsesummation.SSE.la
+bsesummation_SSE_la_SOURCES   = $(bsesummation_FPU_la_SOURCES)
+bsesummation_SSE_la_LDFLAGS   = $(bsesummation_FPU_la_LDFLAGS)
+bsesummation_SSE_la_LIBADD    = $(bsesummation_FPU_la_LIBADD)
+bsesummation_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
+
+## C++ Plugin davbassfilter
+$(srcdir)/davbassfilter.cc: davbassfilter.genidl.hh
+plugins_built_sources   += davbassfilter.genidl.hh
+plugin_FPU_ltlibs    += davbassfilter.FPU.la
+davbassfilter_FPU_la_SOURCES = davbassfilter.cc
+davbassfilter_FPU_la_LDFLAGS = -module $(plugins_ldflags)
+davbassfilter_FPU_la_LIBADD  = $(plugins_libs)
+davbassfilter_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
+plugin_SSE_ltlibs      += davbassfilter.SSE.la
+davbassfilter_SSE_la_SOURCES   = $(davbassfilter_FPU_la_SOURCES)
+davbassfilter_SSE_la_LDFLAGS   = $(davbassfilter_FPU_la_LDFLAGS)
+davbassfilter_SSE_la_LIBADD    = $(davbassfilter_FPU_la_LIBADD)
+davbassfilter_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
+
+## C++ Plugin davchorus
+$(srcdir)/davchorus.cc: davchorus.genidl.hh
+plugins_built_sources   += davchorus.genidl.hh
+plugin_FPU_ltlibs    += davchorus.FPU.la
+davchorus_FPU_la_SOURCES = davchorus.cc
+davchorus_FPU_la_LDFLAGS = -module $(plugins_ldflags)
+davchorus_FPU_la_LIBADD  = $(plugins_libs)
+davchorus_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
+plugin_SSE_ltlibs      += davchorus.SSE.la
+davchorus_SSE_la_SOURCES   = $(davchorus_FPU_la_SOURCES)
+davchorus_SSE_la_LDFLAGS   = $(davchorus_FPU_la_LDFLAGS)
+davchorus_SSE_la_LIBADD    = $(davchorus_FPU_la_LIBADD)
+davchorus_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
 ## C++ Plugin standardsaturator
 $(srcdir)/standardsaturator.cc: standardsaturator.genidl.hh

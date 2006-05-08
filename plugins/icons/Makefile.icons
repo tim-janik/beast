@@ -42,6 +42,7 @@ icon_list += saturate.png
 icon_list += sequencer.png
 icon_list += strings.png
 icon_list += sub.png
+icon_list += summation.png
 icon_list += sum.png
 icon_list += adsr.xcf
 icon_list += ampctrl.xcf
@@ -68,5 +69,6 @@ icon_list += sine.xcf
 icon_list += speaker.xcf
 icon_list += strings.xcf
 icon_list += sub.xcf
+icon_list += summation.xcf
 icon_list += sum.xcf
 ## Generated data ends here
