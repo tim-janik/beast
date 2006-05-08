@@ -92,10 +92,10 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
     es->authors = AUTHORS;                                                                      \
     es->license = LICENSE;                                                                      \
 }
-#define BSE_REGISTER_OBJECT_P(PREV,ObjectType,ParentType,category,blurb,pix,cinit,cfina,iinit)  \
+#define BSE_REGISTER_OBJECT_P(PREV,ObjectType,ParentType,ctgry,opt,blurb,pix,cinit,cfina,iinit) \
   BSE_DEFINE_EXPORT_STRINGS_FUNC (__enode_##ObjectType##__fill_strings, blurb, 0, 0)            \
   static BseExportNodeClass __enode_ ## ObjectType = {                                          \
-    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, NULL, category,                                 \
+    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, opt, ctgry,                                     \
       pix, __enode_##ObjectType##__fill_strings },                                              \
     #ParentType, sizeof (ObjectType ## Class), (GClassInitFunc) cinit,                          \
     (GClassFinalizeFunc) cfina, sizeof (ObjectType), (GInstanceInitFunc) iinit,                 \
@@ -103,8 +103,8 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
   static BseExportNode __enode_chain_head = {                                                   \
     (BseExportNode*) &__enode_ ## ObjectType, BSE_EXPORT_NODE_LINK,                             \
   }
-#define BSE_REGISTER_OBJECT(ObjectType,ParentType,category,blurb,pix,cinit,cfina,iinit) \
-  BSE_REGISTER_OBJECT_P (NULL, ObjectType, ParentType, category, blurb, pix, cinit, cfina, iinit)
+#define BSE_REGISTER_OBJECT(ObjectType,ParentType,ctgry,opt,blurb,pix,cinit,cfina,iinit) \
+  BSE_REGISTER_OBJECT_P (NULL, ObjectType, ParentType, ctgry, opt, blurb, pix, cinit, cfina, iinit)
 #define BSE_EXPORT_TYPE_ID(EType)       (__enode_ ## EType . node.type)
 
 

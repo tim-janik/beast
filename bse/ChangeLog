@@ -1,3 +1,9 @@
+Mon May  8 03:25:51 2006  Tim Janik  <timj@gtk.org>
+
+	* bseconstant.h: reduce the number of supported output channels to 4.
+
+	* bseplugin.h: allow type option specification for BSE_REGISTER_OBJECT*.
+
 Mon May  8 02:21:59 2006  Tim Janik  <timj@gtk.org>
 
 	* icons/Makefile.am:

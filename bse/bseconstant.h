@@ -36,7 +36,7 @@ extern "C" {
 #define BSE_IS_CONSTANT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_CONSTANT))
 #define BSE_CONSTANT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CONSTANT, BseConstantClass))
 
-#define	BSE_CONSTANT_N_OUTPUTS	(8)
+#define	BSE_CONSTANT_N_OUTPUTS	(4)
 
 /* --- BseConstant source --- */
 typedef struct _BseConstant      BseConstant;
