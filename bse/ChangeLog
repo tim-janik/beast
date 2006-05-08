@@ -1,3 +1,13 @@
+Mon May  8 02:21:59 2006  Tim Janik  <timj@gtk.org>
+
+	* icons/Makefile.am:
+	* icons/summation.png, icons/summation.xcf:
+	* Makefile.am: 
+	* bsesummation.idl, bsesummation.cc: removed BseSummation which now
+	resides in plugins/.
+
+	* bsesong.c: abort with g_error() if BseSummation can't be loaded.
+
 Mon May  8 00:19:00 2006  Tim Janik  <timj@gtk.org>
 
 	* icons/Makefile.am:

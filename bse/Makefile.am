@@ -94,7 +94,6 @@ bse_cc_sources = $(strip 	\
 	bsebusmodule.cc		\
 	bsecore.cc		\
 	bseprobe.cc		\
-	bsesummation.cc		\
 )
 # BSE Synthesis Modules
 bse_idl_sources =
@@ -104,8 +103,6 @@ bse_idl_sources += bsecore.idl
 $(srcdir)/bsecxxplugin.cc: bsecore.genidl.hh
 bse_idl_sources += bseprobe.idl
 $(srcdir)/bseprobe.cc: bseprobe.genidl.hh
-bse_idl_sources += bsesummation.idl
-$(srcdir)/bsesummation.cc: bsesummation.genidl.hh
 idl_built_sources = $(bse_idl_sources:.idl=.genidl.hh)
 # idl files not used for build rules
 idl_dummy_files = $(strip	\

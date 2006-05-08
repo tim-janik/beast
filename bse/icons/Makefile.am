@@ -12,7 +12,6 @@ EXTRA_IMAGES = $(strip		\
 	osc.xcf			\
 	snet.xcf		\
 	song.xcf		\
-	summation.xcf		\
 	virtual.xcf		\
 	ball.xcf		\
 	disconnect.xcf		\
@@ -26,7 +25,6 @@ EXTRA_IMAGES = $(strip		\
 
 # images that need to be shipped, but no C source nees to be build from
 SHIP_IMAGES = $(strip		\
-	summation.png		\
 )
 
 # source images to build C source from

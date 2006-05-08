@@ -546,8 +546,11 @@ bse_song_reset (BseSource *source)
 BseSource*
 bse_song_create_summation (BseSong *self)
 {
-  BseSource *summation = bse_container_new_child (BSE_CONTAINER (self), g_type_from_name ("BseSummation"),
-                                                  "uname", "Summation", NULL);
+  GType type = g_type_from_name ("BseSummation");
+  if (!g_type_is_a (type, BSE_TYPE_SOURCE))
+    g_error ("%s: failed to resolve %s object type, probably missing or broken plugin installation", G_STRFUNC, "BseSummation");
+  BseSource *summation = bse_container_new_child (BSE_CONTAINER (self), type, "uname", "Summation", NULL);
+  g_assert (summation != NULL);
   bse_snet_intern_child (BSE_SNET (self), summation);
   return summation;
 }
