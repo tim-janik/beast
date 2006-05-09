@@ -20,6 +20,7 @@
 #include "birnetthread.h"
 #include "birnetmsg.h"
 #include "birnetcpu.h"
+#include <sys/time.h>
 #include <vector>
 #include <algorithm>
 
@@ -45,6 +46,13 @@ birnet_init (int        *argcp,         /* declared in birnetcore.h */
     }
   birnet_init_initialization_entered = true;
 
+  /* initialize random numbers */
+  {
+    struct timeval tv;
+    gettimeofday (&tv, NULL);
+    srand (tv.tv_usec + (tv.tv_sec << 16));
+  }
+  
   if (!g_threads_got_initialized)
     g_thread_init (NULL);
 

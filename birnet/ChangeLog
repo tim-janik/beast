@@ -1,3 +1,8 @@
+Tue May  9 22:50:23 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* birnetutilsxx.cc (birnet_init): Initialize rand()'s random generator
+	seed via gettimeofday.
+
 Mon Apr 24 21:38:55 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* birnettests.h (TEST_CALIBRATION): Ensure that TEST_CALIBRATION
