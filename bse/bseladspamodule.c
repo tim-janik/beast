@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseladspamodule.h"
-
+#include "bseblockutils.hh"
 #include "bsecategories.h"
 #include "bseengine.h"
 #include "bsemathsignal.h"
@@ -334,8 +334,8 @@ typedef struct
   gfloat	*ibuffers;
   gfloat         cvalues[1];	/* flexible array */
 } LadspaData;
-#define	LADSPA_DATA_SIZE(bli)	 (sizeof (LadspaData) + (MAX (bli->n_cports, 1) - 1) * sizeof (gfloat))
-#define	LADSPA_CVALUES_SIZE(bli) (bli->n_cports * sizeof (gfloat))
+#define	LADSPA_DATA_SIZE(bli)	  (sizeof (LadspaData) + (MAX (bli->n_cports, 1) - 1) * sizeof (gfloat))
+#define	LADSPA_CVALUES_COUNT(bli) (bli->n_cports /* * sizeof (gfloat) */)
 
 static void
 ladspa_module_access (BseModule *module,        /* EngineThread */
@@ -344,7 +344,7 @@ ladspa_module_access (BseModule *module,        /* EngineThread */
   LadspaData *ldata = module->user_data;
   LadspaData *cdata = data;
   /* this runs in the Gsl Engine threads */
-  memcpy (ldata->cvalues, cdata->cvalues, LADSPA_CVALUES_SIZE (ldata->bli));
+  bse_block_copy_float (LADSPA_CVALUES_COUNT (ldata->bli), ldata->cvalues, cdata->cvalues);
 }
 
 static void
@@ -367,7 +367,7 @@ ladspa_derived_set_property (GObject      *object,
   if (BSE_SOURCE_PREPARED (self))
     {
       LadspaData *cdata = g_malloc0 (LADSPA_DATA_SIZE (class->bli));
-      memcpy (cdata->cvalues, self->cvalues, LADSPA_CVALUES_SIZE (class->bli));
+      bse_block_copy_float (LADSPA_CVALUES_COUNT (class->bli), cdata->cvalues, self->cvalues);
       bse_source_access_modules (BSE_SOURCE (self),
 				 ladspa_module_access,
 				 cdata, g_free,
@@ -485,7 +485,7 @@ ladspa_derived_context_create (BseSource *source,
   for (i = 0; i < bli->n_cports; i++)
     bli->connect_port (ldata->handle, bli->cports[i].port_index, ldata->cvalues + i);
   /* initialize control ports */
-  memcpy (ldata->cvalues, self->cvalues, LADSPA_CVALUES_SIZE (bli));
+  bse_block_copy_float (LADSPA_CVALUES_COUNT (bli), ldata->cvalues, self->cvalues);
   /* allocate input audio buffers */
   ldata->ibuffers = g_new (gfloat, class->gsl_class->n_istreams * bse_engine_block_size ());
   /* connect input audio ports */

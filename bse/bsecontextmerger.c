@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bsecontextmerger.h"
-
+#include "bseblockutils.hh"
 #include "bsesnet.h"
 #include "bseserver.h"
 #include "bseengine.h"
@@ -134,16 +134,13 @@ context_merger_process (BseModule *module,
 	  module->ostreams[i].values = (gfloat*) BSE_MODULE_JBUFFER (module, i, 0);
 	else
 	  {
-	    gfloat *sout = BSE_MODULE_OBUFFER (module, i), *bound = sout + n_values;
+	    gfloat *sout = BSE_MODULE_OBUFFER (module, i);
 	    const gfloat *sin = BSE_MODULE_JBUFFER (module, i, 0);
-	    memcpy (sout, sin, n_values * sizeof (sin[0]));
+            bse_block_copy_float (n_values, sout, sin);
 	    for (j = 1; j < n_cons; j++)
 	      {
-		gfloat *d = sout;
 		sin = BSE_MODULE_JBUFFER (module, i, j);
-		do
-		  *d++ += *sin++;
-		while (d < bound);
+                bse_block_add_floats (n_values, sout, sin);
 	      }
 	  }
       }

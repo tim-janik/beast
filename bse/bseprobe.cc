@@ -114,25 +114,21 @@ class ProbeQueue {
       {
         /* calc min/max and/or energie */
         if (requests.range && requests.energie)
-          for (uint i = 0; i < n; i++)
-            {
-              energie_accu += oblock[i] * oblock[i];
-              if (UNLIKELY (oblock[i] < range_min))
-                range_min = oblock[i];
-              if (UNLIKELY (oblock[i] > range_max))
-                range_max = oblock[i];
-            }
+          {
+            float rmin = range_min, rmax = range_max;
+            energie_accu += bse_block_calc_float_range_and_square_sum (n, oblock, &rmin, &rmax);
+            range_min = MIN (rmin, range_min);
+            range_max = MAX (rmax, range_max);
+          }
         else if (requests.energie)
-          for (uint i = 0; i < n; i++)
-            energie_accu += oblock[i] * oblock[i];
+          energie_accu += bse_block_calc_float_square_sum (n, oblock);
         else if (requests.range)
-          for (uint i = 0; i < n; i++)
-            {
-              if (UNLIKELY (oblock[i] < range_min))
-                range_min = oblock[i];
-              if (UNLIKELY (oblock[i] > range_max))
-                range_max = oblock[i];
-            }
+          {
+            float rmin = range_min, rmax = range_max;
+            bse_block_calc_float_range (n, oblock, &rmin, &rmax);
+            range_min = MIN (rmin, range_min);
+            range_max = MAX (rmax, range_max);
+          }
       }
     else /* !connected */
       {

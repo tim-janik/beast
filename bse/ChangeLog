@@ -1,3 +1,10 @@
+Wed May 10 00:19:16 2006  Tim Janik  <timj@gtk.org>
+
+	* bseprobe.cc:
+	* bseengineutils.c:
+	* bseladspamodule.c:
+	* bsecontextmerger.c: use bseblockutils.hh functions to increase performance.
+
 Tue May  9 22:53:51 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* bsemain.c (bse_init_core): Removed random generator seed

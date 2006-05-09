@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseengineutils.h"
-
+#include "bseblockutils.hh"
 #include "gslcommon.h"
 #include "bseenginenode.h"
 #include "bseengineschedule.h"
@@ -686,7 +686,7 @@ bse_engine_const_zeros (guint smaller_than_BSE_STREAM_MAX_VALUES)
 {
   /* this function is callable from any thread */
   g_assert (smaller_than_BSE_STREAM_MAX_VALUES <= BSE_STREAM_MAX_VALUES);
-  return bse_engine_master_zero_block;
+  return (gfloat*) bse_engine_master_zero_block;
 }
 
 typedef struct
@@ -805,11 +805,7 @@ bse_engine_const_values (gfloat value)
     {
       /* create new value block */
       gfloat *values = g_new (gfloat, bse_engine_block_size ());
-      guint i;
-      
-      for (i = 0; i < bse_engine_block_size (); i++)
-	values[i] = value;
-      
+      bse_block_fill_float (bse_engine_block_size(), values, value);
       if (block)
 	const_values_insert (&cvalue_array, block - cvalue_array.nodes, values);
       else
