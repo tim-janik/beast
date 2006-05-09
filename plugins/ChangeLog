@@ -1,3 +1,9 @@
+Tue May  9 22:57:07 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.cc: define _mm_extract_ss() for convenience.
+	square_sum(): use SSE functions to calculate the vector sum
+	after the main loop.
+
 Tue May  9 16:54:22 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseblockutils.cc: Implement new sub, mul, range, square_sum,

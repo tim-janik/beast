@@ -26,6 +26,9 @@
 
 #define ALIGNMENT16(pointer) (0xf & (ptrdiff_t) (pointer))
 #define ALIGNED16(pointer)   (!ALIGNMENT16 (pointer))
+#ifndef _mm_extract_ss
+#define _mm_extract_ss(_M128)   ({ float result; _mm_store_ss (&result, _M128); result; })
+#endif
 
 namespace {
 
@@ -238,10 +241,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	__m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
 	for (guint spos = 1; spos < n_vectors; spos++)
 	  square_sum_m = _mm_add_ps (square_sum_m, _mm_mul_ps (ivalues_m[spos], ivalues_m[spos]));
-
-	F4Vector f4v;
-	f4v.m = square_sum_m;
-	square_sum += f4v.f[0] + f4v.f[1] + f4v.f[2] + f4v.f[3];
+        /* sum up all 4 vector fields */
+        __m128 vsum = _mm_shuffle_ps (square_sum_m, square_sum_m, _MM_SHUFFLE (0, 1, 2, 3));
+        vsum = _mm_add_ps (vsum, square_sum_m); /* { 0+3, 1+2, 2+1, 3+0, } */
+        square_sum_m = _mm_movehl_ps (square_sum_m, vsum);
+        vsum = _mm_add_ps (vsum, square_sum_m); /* { 0+3+2+1, 1+2+3+0, 2+1+2+1. 3+0+3+0 } */
+        square_sum += _mm_extract_ss (vsum);
       }
     /* loop while unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
