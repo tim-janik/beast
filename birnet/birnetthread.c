@@ -345,6 +345,12 @@ birnet_thread_run (const gchar     *name,
     }
 }
 
+void
+birnet_thread_yield (void)
+{
+  sched_yield();
+}
+
 /**
  * @return		thread handle
  *

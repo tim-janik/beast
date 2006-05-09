@@ -95,6 +95,7 @@ static inline void birnet_test_intro (const char *postfix,
     g_timer_start (calibration_timer);                                                  \
   GTimer *timer = g_timer_new();                                                        \
   guint   dups = 1;                                                                     \
+  birnet_thread_yield(); /* on some OSes, this can stabelize the loop benches */	\
   do                                                                                    \
     {                                                                                   \
       guint i, j;                                                                       \

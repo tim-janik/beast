@@ -1,3 +1,10 @@
+Tue May  9 22:55:08 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h (TEST_CALIBRATION): give up the current time slice 
+	before calibrating, this can stabelize the loop on some OSes.
+
+	* birnetthread.[hc]: implemented birnet_thread_yield().
+
 Tue May  9 22:50:23 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* birnetutilsxx.cc (birnet_init): Initialize rand()'s random generator

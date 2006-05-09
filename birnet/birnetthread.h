@@ -46,6 +46,7 @@ bool		birnet_thread_start		(BirnetThread   *thread,
 BirnetThread*	birnet_thread_run		(const gchar    *name, /* new + start */
 						 BirnetThreadFunc func,
 						 gpointer	 user_data);
+void          	birnet_thread_yield		(void);
 BirnetThread*   birnet_thread_self		(void);
 gint          	birnet_thread_self_pid		(void);
 gint	      	birnet_thread_get_pid		(BirnetThread      *thread);
