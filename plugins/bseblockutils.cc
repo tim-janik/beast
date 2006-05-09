@@ -1,5 +1,6 @@
 /* BSE - Bedevilled Sound Engine
  * Copyright (C) 2006 Tim Janik
+ * Copyright (C) 2006 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -27,7 +28,17 @@
 #define ALIGNED16(pointer)   (!ALIGNMENT16 (pointer))
 
 namespace {
+
+using std::max;
+using std::min;
+
 class BlockImpl : virtual public Bse::Block::Impl {
+  union F4Vector
+  {
+    __m128 m;
+    float  f[4];
+  };
+
   virtual void
   add (guint        n_values,
        float       *ovalues,
@@ -36,7 +47,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
     guint upos = 0, n_vectors = 0;
     if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
       {
-        /* loop until unaligned */
+        /* loop until aligned */
         for (upos = 0;
              upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
                                  !ALIGNED16 (&ivalues[upos]));
@@ -54,6 +65,56 @@ class BlockImpl : virtual public Bse::Block::Impl {
       ovalues[upos] += ivalues[upos];
   }
   virtual void
+  sub (guint        n_values,
+       float       *ovalues,
+       const float *ivalues)
+  {
+    guint upos = 0, n_vectors = 0;
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+      {
+        /* loop until aligned */
+        for (upos = 0;
+             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
+                                 !ALIGNED16 (&ivalues[upos]));
+             upos++)
+          ovalues[upos] -= ivalues[upos];
+        /* loop while aligned */
+        const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+        __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
+        n_vectors = (n_values - upos) / 4;
+        for (guint spos = 0; spos < n_vectors; spos++)
+          ovalues_m[spos] = _mm_sub_ps (ovalues_m[spos], ivalues_m[spos]);
+      }
+    /* loop while unaligned */
+    for (upos += n_vectors * 4; upos < n_values; upos++)
+      ovalues[upos] -= ivalues[upos];
+  }
+  virtual void
+  mul (guint        n_values,
+       float       *ovalues,
+       const float *ivalues)
+  {
+    guint upos = 0, n_vectors = 0;
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+      {
+        /* loop until aligned */
+        for (upos = 0;
+             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
+                                 !ALIGNED16 (&ivalues[upos]));
+             upos++)
+          ovalues[upos] *= ivalues[upos];
+        /* loop while aligned */
+        const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+        __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
+        n_vectors = (n_values - upos) / 4;
+        for (guint spos = 0; spos < n_vectors; spos++)
+          ovalues_m[spos] = _mm_mul_ps (ovalues_m[spos], ivalues_m[spos]);
+      }
+    /* loop while unaligned */
+    for (upos += n_vectors * 4; upos < n_values; upos++)
+      ovalues[upos] *= ivalues[upos];
+  }
+  virtual void
   scale (guint        n_values,
          float       *ovalues,
          const float *ivalues,
@@ -62,7 +123,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
     guint upos = 0, n_vectors = 0;
     if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
       {
-        /* loop until unaligned */
+        /* loop until aligned */
         for (upos = 0;
              upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
                                  !ALIGNED16 (&ivalues[upos]));
@@ -101,6 +162,155 @@ class BlockImpl : virtual public Bse::Block::Impl {
     ovalues += offset;
     for (int pos = 0; pos < n; pos++)
       ovalues[pos * 2] += ivalues[pos];
+  }
+  virtual void
+  range (guint        n_values,
+         const float *ivalues,
+	 float&       min_value,
+	 float&       max_value)
+  {
+    float minv, maxv;
+    if (LIKELY (n_values))
+      {
+	minv = maxv = ivalues[0];
+
+	guint upos = 0, n_vectors = 0;
+	if (n_values > 8)
+	  {
+	    /* loop until aligned */
+	    for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
+	      {
+		if (UNLIKELY (ivalues[upos] < minv))
+		  minv = ivalues[upos];
+		if (UNLIKELY (ivalues[upos] > maxv))
+		  maxv = ivalues[upos];
+	      }
+	    /* n_vectors must be >= 1 if n_values was > 8 */
+	    n_vectors = (n_values - upos) / 4;
+	    g_assert (n_vectors > 0);
+	    /* loop while aligned */
+	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+	    __m128 min_m = ivalues_m[0];
+	    __m128 max_m = ivalues_m[0];
+	    for (guint spos = 1; spos < n_vectors; spos++)
+	      {
+		min_m = _mm_min_ps (min_m, ivalues_m[spos]);
+		max_m = _mm_max_ps (max_m, ivalues_m[spos]);
+	      }
+	    F4Vector f4v;
+	    f4v.m = min_m;
+	    minv = min (minv, min (min (f4v.f[0], f4v.f[1]), min (f4v.f[2], f4v.f[3])));
+	    f4v.m = max_m;
+	    maxv = max (maxv, max (max (f4v.f[0], f4v.f[1]), max (f4v.f[2], f4v.f[3])));
+	  }
+	/* loop while unaligned */
+	for (upos += n_vectors * 4; upos < n_values; upos++)
+	  {
+	    if (UNLIKELY (ivalues[upos] < minv))
+	      minv = ivalues[upos];
+	    if (UNLIKELY (ivalues[upos] > maxv))
+	      maxv = ivalues[upos];
+	  }
+      }
+    else
+      {
+	minv = maxv = 0;
+      }
+    min_value = minv;
+    max_value = maxv;
+  }
+  virtual float
+  square_sum (guint        n_values,
+              const float *ivalues)
+  {
+    float square_sum = 0.0;
+    guint upos = 0, n_vectors = 0;
+    if (n_values > 8)
+      {
+        /* loop until aligned */
+        for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
+          square_sum += ivalues[upos] * ivalues[upos];
+	/* n_vectors must be >= 1 if n_values was > 8 */
+        n_vectors = (n_values - upos) / 4;
+	g_assert (n_vectors > 0);
+        /* loop while aligned */
+        const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+	__m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
+	for (guint spos = 1; spos < n_vectors; spos++)
+	  square_sum_m = _mm_add_ps (square_sum_m, _mm_mul_ps (ivalues_m[spos], ivalues_m[spos]));
+
+	F4Vector f4v;
+	f4v.m = square_sum_m;
+	square_sum += f4v.f[0] + f4v.f[1] + f4v.f[2] + f4v.f[3];
+      }
+    /* loop while unaligned */
+    for (upos += n_vectors * 4; upos < n_values; upos++)
+      square_sum += ivalues[upos] * ivalues[upos];
+    return square_sum;
+  }
+  virtual float
+  range_and_square_sum (guint        n_values,
+                        const float *ivalues,
+	                float&       min_value,
+	                float&       max_value)
+  {
+    float minv, maxv, square_sum = 0;
+    if (LIKELY (n_values))
+      {
+	minv = maxv = ivalues[0];
+
+	guint upos = 0, n_vectors = 0;
+	if (n_values > 8)
+	  {
+	    /* loop until aligned */
+	    for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
+	      {
+		square_sum += ivalues[upos] * ivalues[upos];
+		if (UNLIKELY (ivalues[upos] < minv))
+		  minv = ivalues[upos];
+		if (UNLIKELY (ivalues[upos] > maxv))
+		  maxv = ivalues[upos];
+	      }
+	    /* n_vectors must be >= 1 if n_values was > 8 */
+	    n_vectors = (n_values - upos) / 4;
+	    g_assert (n_vectors > 0);
+	    /* loop while aligned */
+	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
+	    n_vectors = (n_values - upos) / 4;
+	    __m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
+	    __m128 min_m = ivalues_m[0];
+	    __m128 max_m = ivalues_m[0];
+	    for (guint spos = 1; spos < n_vectors; spos++)
+	      {
+		square_sum_m = _mm_add_ps (square_sum_m, _mm_mul_ps (ivalues_m[spos], ivalues_m[spos]));
+		min_m = _mm_min_ps (min_m, ivalues_m[spos]);
+		max_m = _mm_max_ps (max_m, ivalues_m[spos]);
+	      }
+	    F4Vector f4v;
+	    f4v.m = square_sum_m;
+	    square_sum += f4v.f[0] + f4v.f[1] + f4v.f[2] + f4v.f[3];
+	    f4v.m = min_m;
+	    minv = min (minv, min (min (f4v.f[0], f4v.f[1]), min (f4v.f[2], f4v.f[3])));
+	    f4v.m = max_m;
+	    maxv = max (maxv, max (max (f4v.f[0], f4v.f[1]), max (f4v.f[2], f4v.f[3])));
+	  }
+	/* loop while unaligned */
+	for (upos += n_vectors * 4; upos < n_values; upos++)
+	  {
+	    square_sum += ivalues[upos] * ivalues[upos];
+	    if (UNLIKELY (ivalues[upos] < minv))
+	      minv = ivalues[upos];
+	    if (UNLIKELY (ivalues[upos] > maxv))
+	      maxv = ivalues[upos];
+	  }
+      }
+    else
+      {
+	minv = maxv = 0;
+      }
+    min_value = minv;
+    max_value = maxv;
+    return square_sum;
   }
 public:
   void

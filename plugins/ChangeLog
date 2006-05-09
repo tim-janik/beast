@@ -1,3 +1,8 @@
+Tue May  9 16:54:22 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseblockutils.cc: Implement new sub, mul, range, square_sum,
+	range_and_square_sum functions using SSE.
+
 Mon May  8 03:27:48 2006  Tim Janik  <timj@gtk.org>
 
 	* bseadder.c: deprecated this plugin (use BseSummation instead).
