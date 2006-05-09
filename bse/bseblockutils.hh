@@ -64,14 +64,14 @@ void    bse_block_interleave2_add_floats          (guint	  n_ivalues,
                                                    guint          offset);        /* 0=left, 1=right */
 void    bse_block_calc_float_range                (guint          n_values,
                                                    const float   *ivalues,
-	                                           float*         min_value,
-	                                           float*         max_value);
+	                                           float         *min_value,
+	                                           float         *max_value);
 float   bse_block_calc_float_square_sum           (guint          n_values,
                                                    const float   *ivalues);
 float   bse_block_calc_float_range_and_square_sum (guint          n_values,
                                                    const float   *ivalues,
-	                                           float*         min_value,
-	                                           float*         max_value);
+	                                           float         *min_value,
+	                                           float         *max_value);
 
 G_END_DECLS
 
