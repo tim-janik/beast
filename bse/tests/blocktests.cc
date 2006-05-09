@@ -37,6 +37,42 @@ block_check (guint    n,
   return true;
 }
 
+/**
+ * Shuffles a block, using the O(n) algorithm called the Knuth shuffle
+ * or Fisher-Yates shuffle, for instance explained on
+ *
+ *   http://en.wikipedia.org/wiki/Shuffle#Shuffling_algorithms
+ *
+ * This creates a random permutation of the elements, where each permutation
+ * is equally likely (given that the random generator is good).
+ *
+ * Since number of possible permutations is n_elements!, which grows rather
+ * fast, it can easily happen that some permutations can never be generated
+ * due to limited periodicity of the random number generator or weak seeding.
+ */
+template<typename T> static void
+block_shuffle (guint n_elements,
+               T    *elements)
+{
+  for (guint i = 0; i < n_elements; i++)
+    {
+      guint exchange = g_random_int_range (i, n_elements);
+      T tmp = elements[exchange];
+      elements[exchange] = elements[i];
+      elements[i] = tmp;
+    }
+}
+
+static void
+build_ascending_random_block (guint  n_values,
+                              float *fblock)
+{
+  /* build block with ascending random values approximately in the range -1..1 */
+  fblock[0] = g_random_double_range (-1.05, -0.95);
+  for (guint i = 1; i < n_values; i++)
+    fblock[i] = fblock[i-1] + g_random_double_range (1e-10, 4.0 / n_values);
+}
+
 static void
 test_fill (void)
 {
@@ -107,6 +143,121 @@ test_add (void)
 }
 
 static void
+test_sub (void)
+{
+  TSTART ("BlockSub");
+  float fblock1[1024], fblock2[1024];
+
+  Bse::Block::fill (1024, fblock1, 2.f);
+  Bse::Block::fill (1024, fblock2, 3.f);
+  bse_block_sub_floats (1024, fblock1, fblock2);
+  TASSERT (block_check (1024, fblock1, -1.f) == true);
+  TASSERT (block_check (1024, fblock2, 3.f) == true);
+
+  Bse::Block::fill (1024, fblock1, 2.f);
+  Bse::Block::sub (1024, fblock1, fblock2);
+  TASSERT (block_check (1024, fblock1, -1.f) == true);
+  TASSERT (block_check (1024, fblock2, 3.f) == true);
+  
+  TDONE();
+}
+
+static void
+test_mul (void)
+{
+  TSTART ("BlockMul");
+  float fblock1[1024], fblock2[1024];
+
+  Bse::Block::fill (1024, fblock1, 2.f);
+  Bse::Block::fill (1024, fblock2, 3.f);
+  bse_block_mul_floats (1024, fblock1, fblock2);
+  TASSERT (block_check (1024, fblock1, 6.f) == true);
+  TASSERT (block_check (1024, fblock2, 3.f) == true);
+
+  Bse::Block::fill (1024, fblock1, 2.f);
+  Bse::Block::mul (1024, fblock1, fblock2);
+  TASSERT (block_check (1024, fblock1, 6.f) == true);
+  TASSERT (block_check (1024, fblock2, 3.f) == true);
+  
+  TDONE();
+}
+
+static void
+test_square_sum (void)
+{
+  TSTART ("BlockSquareSum");
+  float fblock[1024];
+  float min_value, max_value;
+
+  for (int i = 0; i < 10; i++)
+    {
+      float energy, energy_db;
+
+      for (int i = 0; i < 1024; i++)
+	fblock[i] = sin (i * 2 * M_PI / 1024);
+
+      energy = bse_block_calc_float_square_sum (1024, fblock) / 1024.;
+      energy_db = 10 * log10 (energy);
+
+      TPRINT ("sine wave: energy = %f, energy_db = %f\n", energy, energy_db);
+      TASSERT (fabs (energy - 0.5) < 0.0000001);
+
+      energy = bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value) / 1024.;
+      TASSERT (fabs (energy - 0.5) < 0.0000001);
+
+      for (int i = 0; i < 1024; i++)
+	fblock[i] = i < 512 ? -1 : 1;
+
+      energy = bse_block_calc_float_square_sum (1024, fblock) / 1024.;
+      energy_db = 10 * log10 (energy);
+
+      TPRINT ("square wave: energy = %f, energy_db = %f\n", energy, energy_db);
+      TASSERT (fabs (energy - 1.0) < 0.0000001);
+
+      energy = bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value) / 1024.;
+      TASSERT (fabs (energy - 1.0) < 0.0000001);
+
+      /* square sum (and energy) should not depend on ordering of the elements */
+      block_shuffle (1024, fblock);
+    }
+
+  TDONE();
+}
+
+static void
+test_range (void)
+{
+  TSTART ("BlockRange");
+
+  float fblock[1024];
+
+  build_ascending_random_block (1024, fblock);
+
+  float correct_min_value = fblock[0];
+  float correct_max_value = fblock[1023];
+
+  for (int i = 0; i < 10; i++)
+    {
+      /* shuffle block into quasi random order */
+      block_shuffle (1024, fblock);
+
+      /* check that correct minimum and maximum is still found */
+      float min_value = 0, max_value = 0;
+      bse_block_calc_float_range (1024, fblock, &min_value, &max_value);
+
+      TASSERT (min_value == correct_min_value);
+      TASSERT (max_value == correct_max_value);
+
+      bse_block_calc_float_range_and_square_sum (1024, fblock, &min_value, &max_value);
+
+      TASSERT (min_value == correct_min_value);
+      TASSERT (max_value == correct_max_value);
+    }
+  TDONE();
+}
+
+
+static void
 test_scale (void)
 {
   TSTART ("BlockScale");
@@ -151,7 +302,60 @@ bench_add (void)
       if (e < m)
         m = e;
     }
-  g_print ("AddBench:   %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+  g_print ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+}
+
+static inline void
+bench_sub (void)
+{
+  float fblock1[1024], fblock2[1024];
+  Bse::Block::fill (1024, fblock1, 2.f);
+  Bse::Block::fill (1024, fblock2, 3.f);
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::sub (1024, fblock1, fblock2));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::sub (1024, fblock1, fblock2);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_print ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+}
+
+static inline void
+bench_mul (void)
+{
+  float fblock1[1024], fblock2[1024];
+  Bse::Block::fill (1024, fblock1, 2.f);
+  Bse::Block::fill (1024, fblock2, 1.0000001); /* use a small factor to avoid inf after many block multiplications */
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::mul (1024, fblock1, fblock2));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::mul (1024, fblock1, fblock2);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_assert (fblock1[0] < 1e30); /* not close to infinity */
+  g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
 }
 
 static inline void
@@ -177,7 +381,124 @@ bench_scale (void)
       if (e < m)
         m = e;
     }
-  g_print ("ScaleBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+  g_print ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+}
+
+static inline void
+bench_range (void)
+{
+  float fblock[1024];
+  build_ascending_random_block (1024, fblock);
+
+  float correct_min_value = fblock[0];
+  float correct_max_value = fblock[1023];
+  float min_value, max_value;
+
+  /* shuffle block into quasi random order */
+  block_shuffle (1024, fblock);
+
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::range (1024, fblock, min_value, max_value));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::range (1024, fblock, min_value, max_value);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_assert (min_value == correct_min_value);
+  g_assert (max_value == correct_max_value);
+  g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+}
+
+static inline void
+bench_square_sum (void)
+{
+  float fblock[1024];
+  Bse::Block::fill (1024, fblock, 2.f);
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::square_sum (1024, fblock));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::square_sum (1024, fblock);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_print ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+}
+
+static inline void
+bench_range_and_square_sum (void)
+{
+  float fblock[1024];
+  build_ascending_random_block (1024, fblock);
+
+  float correct_min_value = fblock[0];
+  float correct_max_value = fblock[1023];
+  float min_value, max_value;
+
+  /* shuffle block into quasi random order */
+  block_shuffle (1024, fblock);
+
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::range_and_square_sum (1024, fblock, min_value, max_value));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::range_and_square_sum (1024, fblock, min_value, max_value);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_assert (min_value == correct_min_value);
+  g_assert (max_value == correct_max_value);
+  g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n", 1000.0 * m / dups, m * RUNS, c);
+}
+
+static void
+run_tests()
+{
+  test_fill();
+  test_copy();
+  test_add();
+  test_sub();
+  test_mul();
+  test_scale();
+  /* the next two functions test the range_and_square_sum function, too */
+  test_range();
+  test_square_sum();
+
+  bench_add();
+  bench_sub();
+  bench_mul();
+  bench_scale();
+  bench_range();
+  bench_square_sum();
+  bench_range_and_square_sum();
 }
 
 int
@@ -190,14 +511,8 @@ main (int   argc,
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());
   TDONE();
 
-  /* standard FPU tests */
-  test_fill();
-  test_copy();
-  test_add();
-  test_scale();
-  bench_add();
-  bench_scale();
-  
+  run_tests(); /* run tests on FPU */
+ 
   /* load plugins */
   SfiRec *config = sfi_rec_new();
   sfi_rec_set_bool (config, "load-core-plugins", TRUE);
@@ -211,13 +526,7 @@ main (int   argc,
   TASSERT (Bse::Block::default_singleton() != Bse::Block::current_singleton());
   TDONE();
 
-  /* intrinsic tests */
-  test_fill();
-  test_copy();
-  test_add();
-  test_scale();
-  bench_add();
-  bench_scale();
+  run_tests(); /* run tests with intrinsics */
 
   return 0;
 }

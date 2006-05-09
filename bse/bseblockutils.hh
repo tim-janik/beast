@@ -26,36 +26,52 @@ G_BEGIN_DECLS
 
 /* --- C API --- */
 static inline
-void    bse_block_fill_uint32                   (guint          n_values,       /* 4-byte variant of memset for ints */
-                                                 guint32       *values,
-                                                 guint32        vuint32);
+void    bse_block_fill_uint32                     (guint          n_values,       /* 4-byte variant of memset for ints */
+                                                   guint32       *values,
+                                                   guint32        vuint32);
 static inline
-void    bse_block_fill_float                    (guint	        n_values,       /* 4-byte variant of memset for floats */
-                                                 float         *values,
-                                                 const float    value);
+void    bse_block_fill_float                      (guint	  n_values,       /* 4-byte variant of memset for floats */
+                                                   float         *values,
+                                                   const float    value);
 static inline
-void    bse_block_copy_uint32                   (guint	        n_values,       /* 4-byte variant of memcpy for ints */
-                                                 guint32       *values,
-                                                 const guint32 *ivalues);
+void    bse_block_copy_uint32                     (guint	  n_values,       /* 4-byte variant of memcpy for ints */
+                                                   guint32       *values,
+                                                   const guint32 *ivalues);
 static inline
-void    bse_block_copy_float                    (guint	        n_values,       /* 4-byte variant of memcpy for floats */
-                                                 gfloat        *values,
-                                                 const gfloat  *ivalues);
-void    bse_block_add_floats                   (guint	        n_values,
-                                                 float         *ovalues,
-                                                 const float   *ivalues);
-void    bse_block_scale_floats                 (guint           n_values,
-                                                 float         *ovalues,
-                                                 const float   *ivalues,
-                                                 const float    level);
-void    bse_block_interleave2_floats           (guint	        n_ivalues,
-                                                 float         *ovalues,        /* length_ovalues = n_ivalues * 2 */
-                                                 const float   *ivalues,
-                                                 guint          offset);        /* 0=left, 1=right */
-void    bse_block_interleave2_add_floats        (guint	        n_ivalues,
-                                                 float         *ovalues,        /* length_ovalues = n_ivalues * 2 */
-                                                 const float   *ivalues,
-                                                 guint          offset);        /* 0=left, 1=right */
+void    bse_block_copy_float                      (guint	  n_values,       /* 4-byte variant of memcpy for floats */
+                                                   gfloat        *values,
+                                                   const gfloat  *ivalues);
+void    bse_block_add_floats                      (guint	  n_values,
+                                                   float         *ovalues,
+                                                   const float   *ivalues);
+void    bse_block_sub_floats                      (guint	  n_values,
+                                                   float         *ovalues,
+                                                   const float   *ivalues);
+void    bse_block_mul_floats                      (guint	  n_values,
+                                                   float         *ovalues,
+                                                   const float   *ivalues);
+void    bse_block_scale_floats                    (guint          n_values,
+                                                   float         *ovalues,
+                                                   const float   *ivalues,
+                                                   const float    level);
+void    bse_block_interleave2_floats              (guint	  n_ivalues,
+                                                   float         *ovalues,        /* length_ovalues = n_ivalues * 2 */
+                                                   const float   *ivalues,
+                                                   guint          offset);        /* 0=left, 1=right */
+void    bse_block_interleave2_add_floats          (guint	  n_ivalues,
+                                                   float         *ovalues,        /* length_ovalues = n_ivalues * 2 */
+                                                   const float   *ivalues,
+                                                   guint          offset);        /* 0=left, 1=right */
+void    bse_block_calc_float_range                (guint          n_values,
+                                                   const float   *ivalues,
+	                                           float*         min_value,
+	                                           float*         max_value);
+float   bse_block_calc_float_square_sum           (guint          n_values,
+                                                   const float   *ivalues);
+float   bse_block_calc_float_range_and_square_sum (guint          n_values,
+                                                   const float   *ivalues,
+	                                           float*         min_value,
+	                                           float*         max_value);
 
 G_END_DECLS
 
@@ -65,54 +81,86 @@ namespace Bse {
 /* --- C++ API --- */
 class Block {
 public:
-  static inline   void fill             (guint           n_values,
-                                         float          *values,
-                                         float           value);
-  static inline   void fill             (guint           n_values,
-                                         guint32        *values,
-                                         guint32         value);
-  static inline   void copy             (guint           n_values,
-                                         float          *values,
-                                         const float    *ivalues);
-  static inline   void copy             (guint           n_values,
-                                         guint32        *values,
-                                         const guint32  *ivalues);
-  static inline   void add              (guint	         n_values,
-                                         float          *ovalues,
-                                         const float    *ivalues)       { singleton->add (n_values, ovalues, ivalues); }
-  static inline   void scale            (guint	         n_values,
-                                         float          *ovalues,
-                                         const float    *ivalues,
-                                         const float     level)         { singleton->scale (n_values, ovalues, ivalues, level); }
-  static inline   void interleave2      (guint	         n_ivalues,
-                                         float          *ovalues,
-                                         const float    *ivalues,
-                                         guint           offset)        { singleton->interleave2 (n_ivalues, ovalues, ivalues, offset); }
-  static inline   void interleave2_add  (guint	         n_ivalues,
-                                         float          *ovalues,
-                                         const float    *ivalues,
-                                         guint           offset)        { singleton->interleave2_add (n_ivalues, ovalues, ivalues, offset); }
-  
+  static inline   void	fill                 (guint           n_values,
+					      float          *values,
+					      float           value);
+  static inline   void	fill                 (guint           n_values,
+					      guint32        *values,
+					      guint32         value);
+  static inline   void	copy                 (guint           n_values,
+					      float          *values,
+					      const float    *ivalues);
+  static inline   void	copy                 (guint           n_values,
+					      guint32        *values,
+					      const guint32  *ivalues);
+  static inline   void	add                  (guint	      n_values,
+					      float          *ovalues,
+					      const float    *ivalues)       { singleton->add (n_values, ovalues, ivalues); }
+  static inline   void	sub                  (guint	      n_values,
+					      float          *ovalues,
+					      const float    *ivalues)       { singleton->sub (n_values, ovalues, ivalues); }
+  static inline   void	mul                  (guint	      n_values,
+					      float          *ovalues,
+					      const float    *ivalues)       { singleton->mul (n_values, ovalues, ivalues); }
+  static inline   void	scale                (guint	      n_values,
+					      float          *ovalues,
+					      const float    *ivalues,
+					      const float     level)         { singleton->scale (n_values, ovalues, ivalues, level); }
+  static inline   void	interleave2          (guint	      n_ivalues,
+					      float          *ovalues,
+					      const float    *ivalues,
+					      guint           offset)        { singleton->interleave2 (n_ivalues, ovalues, ivalues, offset); }
+  static inline   void	interleave2_add      (guint	      n_ivalues,
+					      float          *ovalues,
+					      const float    *ivalues,
+					      guint           offset)        { singleton->interleave2_add (n_ivalues, ovalues, ivalues, offset); }
+  static inline   void	range    	     (guint	      n_values,
+					      const float    *ivalues,
+					      float&          min_value,
+					      float&          max_value)     { singleton->range (n_values, ivalues, min_value, max_value); }
+  static inline   float	square_sum           (guint	      n_values,
+					      const float    *ivalues)       { return singleton->square_sum (n_values, ivalues); }
+  static inline   float	range_and_square_sum (guint	      n_values,
+                                              const float    *ivalues,
+					      float&          min_value,
+					      float&          max_value)     { return singleton->range_and_square_sum (n_values, ivalues, min_value, max_value); }
+    
   class Impl {
   protected:
-    virtual     ~Impl                   ();
-    virtual void add                    (guint	         n_values,
+    virtual      ~Impl                  ();
+    virtual void  add                   (guint	         n_values,
                                          float          *ovalues,
                                          const float    *ivalues) = 0;
-    virtual void scale                  (guint           n_values,
+    virtual void  sub                   (guint	         n_values,
+                                         float          *ovalues,
+                                         const float    *ivalues) = 0;
+    virtual void  mul                   (guint	         n_values,
+                                         float          *ovalues,
+                                         const float    *ivalues) = 0;
+    virtual void  scale                 (guint           n_values,
                                          float          *ovalues,
                                          const float    *ivalues,
                                          const float     level) = 0;
-    virtual void interleave2            (guint	         n_ivalues,
+    virtual void  interleave2           (guint	         n_ivalues,
                                          float          *ovalues,	/* length_ovalues = n_ivalues * 2 */
                                          const float    *ivalues,
                                          guint           offset) = 0;   /* 0=left, 1=right */
-    virtual void interleave2_add        (guint	         n_ivalues,
+    virtual void  interleave2_add       (guint	         n_ivalues,
                                          float          *ovalues,	/* length_ovalues = n_ivalues * 2 */
                                          const float    *ivalues,
                                          guint           offset) = 0;   /* 0=left, 1=right */
+    virtual void  range                 (guint	         n_values,
+                                         const float    *ivalues,
+					 float&          min_value,
+					 float&          max_value) = 0;
+    virtual float square_sum            (guint	         n_values,
+                                         const float    *ivalues) = 0;
+    virtual float range_and_square_sum	(guint	         n_values,
+                                         const float    *ivalues,
+					 float&          min_value,
+					 float&          max_value) = 0;
     friend class Block;
-    static void substitute              (Impl           *substitute_impl);
+    static  void  substitute            (Impl           *substitute_impl);
   };
   static Impl*  default_singleton       ();
   static Impl*  current_singleton       ();

@@ -1,3 +1,11 @@
+Tue May  9 16:54:43 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* bseblockutils.*: Added new block functions for subtracting and
+	multiplying blocks, as well as calculating square sum (useful for
+	determining the block energy) and minimum/maximum values.
+
+	* tests/blocktests.cc: Test newly added functions.
+
 Mon May  8 03:25:51 2006  Tim Janik  <timj@gtk.org>
 
 	* bseconstant.h: reduce the number of supported output channels to 4.
