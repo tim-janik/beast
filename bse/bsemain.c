@@ -30,7 +30,6 @@
 #include "bseengine.h"
 #include <string.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -213,13 +212,6 @@ bse_init_core (void)
 			 bse_main_context, NULL);
   birnet_msg_set_thread_handler (bse_msg_handler);
 
-  /* initialize random numbers */
-  {
-    struct timeval tv;
-    gettimeofday (&tv, NULL);
-    srand (tv.tv_usec + (tv.tv_sec << 16));
-  }
-  
   /* initialize basic components */
   bse_globals_init ();
   _bse_init_signal();

@@ -1,3 +1,8 @@
+Tue May  9 22:53:51 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* bsemain.c (bse_init_core): Removed random generator seed
+	initialization for rand(), since it is now done by birnet_init.
+
 Tue May  9 16:54:43 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* bseblockutils.*: Added new block functions for subtracting and
