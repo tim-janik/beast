@@ -36,12 +36,6 @@ using std::max;
 using std::min;
 
 class BlockImpl : virtual public Bse::Block::Impl {
-  union F4Vector
-  {
-    __m128 m;
-    float  f[4];
-  };
-
   virtual void
   add (guint        n_values,
        float       *ovalues,
@@ -200,11 +194,18 @@ class BlockImpl : virtual public Bse::Block::Impl {
 		min_m = _mm_min_ps (min_m, ivalues_m[spos]);
 		max_m = _mm_max_ps (max_m, ivalues_m[spos]);
 	      }
-	    F4Vector f4v;
-	    f4v.m = min_m;
-	    minv = min (minv, min (min (f4v.f[0], f4v.f[1]), min (f4v.f[2], f4v.f[3])));
-	    f4v.m = max_m;
-	    maxv = max (maxv, max (max (f4v.f[0], f4v.f[1]), max (f4v.f[2], f4v.f[3])));
+	    /* compute minimum of all 4 vector fields */
+	    __m128 vmin = _mm_shuffle_ps (min_m, min_m, _MM_SHUFFLE (0, 1, 2, 3)); /* vmin = reverse min_m */
+	    vmin = _mm_min_ps (vmin, min_m);	    /* vmin  = [ min(0,3) min(1,2) min(2,1) min(3,0) ] */
+	    min_m = _mm_movehl_ps (min_m, vmin);    /* min_m = [ min(2,1) min(3,0) min(2,1) min(3,0) ] */
+	    vmin = _mm_min_ps (vmin, min_m);	    /* vmin  = [ min(0,3,2,1) min(1,2,3,0) min(2,1). min(3,0) ] */
+	    minv = min (minv, _mm_extract_ss (vmin));
+	    /* compute maximum of all 4 vector fields */
+	    __m128 vmax = _mm_shuffle_ps (max_m, max_m, _MM_SHUFFLE (0, 1, 2, 3)); /* vmax = reverse max_m */
+	    vmax = _mm_max_ps (vmax, max_m);	    /* vmax  = [ max(0,3) max(1,2) max(2,1) max(3,0) ] */
+	    max_m = _mm_movehl_ps (max_m, vmax);    /* max_m = [ max(2,1) max(3,0) max(2,1) max(3,0) ] */
+	    vmax = _mm_max_ps (vmax, max_m);	    /* vmax  = [ max(0,3,2,1) max(1,2,3,0) max(2,1). max(3,0) ] */
+	    maxv = max (maxv, _mm_extract_ss (vmax));
 	  }
 	/* loop while unaligned */
 	for (upos += n_vectors * 4; upos < n_values; upos++)
@@ -291,13 +292,24 @@ class BlockImpl : virtual public Bse::Block::Impl {
 		min_m = _mm_min_ps (min_m, ivalues_m[spos]);
 		max_m = _mm_max_ps (max_m, ivalues_m[spos]);
 	      }
-	    F4Vector f4v;
-	    f4v.m = square_sum_m;
-	    square_sum += f4v.f[0] + f4v.f[1] + f4v.f[2] + f4v.f[3];
-	    f4v.m = min_m;
-	    minv = min (minv, min (min (f4v.f[0], f4v.f[1]), min (f4v.f[2], f4v.f[3])));
-	    f4v.m = max_m;
-	    maxv = max (maxv, max (max (f4v.f[0], f4v.f[1]), max (f4v.f[2], f4v.f[3])));
+	    /* sum up all 4 vector fields */
+	    __m128 vsum = _mm_shuffle_ps (square_sum_m, square_sum_m, _MM_SHUFFLE (0, 1, 2, 3));
+	    vsum = _mm_add_ps (vsum, square_sum_m); /* { 0+3, 1+2, 2+1, 3+0, } */
+	    square_sum_m = _mm_movehl_ps (square_sum_m, vsum);
+	    vsum = _mm_add_ps (vsum, square_sum_m); /* { 0+3+2+1, 1+2+3+0, 2+1+2+1. 3+0+3+0 } */
+	    square_sum += _mm_extract_ss (vsum);
+	    /* compute minimum of all 4 vector fields */
+	    __m128 vmin = _mm_shuffle_ps (min_m, min_m, _MM_SHUFFLE (0, 1, 2, 3)); /* vmin = reverse min_m */
+	    vmin = _mm_min_ps (vmin, min_m);	    /* vmin  = [ min(0,3) min(1,2) min(2,1) min(3,0) ] */
+	    min_m = _mm_movehl_ps (min_m, vmin);    /* min_m = [ min(2,1) min(3,0) min(2,1) min(3,0) ] */
+	    vmin = _mm_min_ps (vmin, min_m);	    /* vmin  = [ min(0,3,2,1) min(1,2,3,0) min(2,1). min(3,0) ] */
+	    minv = min (minv, _mm_extract_ss (vmin));
+	    /* compute maximum of all 4 vector fields */
+	    __m128 vmax = _mm_shuffle_ps (max_m, max_m, _MM_SHUFFLE (0, 1, 2, 3)); /* vmax = reverse max_m */
+	    vmax = _mm_max_ps (vmax, max_m);	    /* vmax  = [ max(0,3) max(1,2) max(2,1) max(3,0) ] */
+	    max_m = _mm_movehl_ps (max_m, vmax);    /* max_m = [ max(2,1) max(3,0) max(2,1) max(3,0) ] */
+	    vmax = _mm_max_ps (vmax, max_m);	    /* vmax  = [ max(0,3,2,1) max(1,2,3,0) max(2,1). max(3,0) ] */
+	    maxv = max (maxv, _mm_extract_ss (vmax));
 	  }
 	/* loop while unaligned */
 	for (upos += n_vectors * 4; upos < n_values; upos++)

@@ -1,3 +1,9 @@
+Wed May 10 01:47:22 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseblockutils.cc (range, range_and_square_sum): Use SSE functions to
+	calculate the minimum/maximum and the vector sum after the main loop.
+	I benchmarked it on AMD64 and Pentium-M, and its faster on both.
+
 Tue May  9 22:57:07 2006  Tim Janik  <timj@gtk.org>
 
 	* bseblockutils.cc: define _mm_extract_ss() for convenience.
