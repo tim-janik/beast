@@ -1,3 +1,8 @@
+Tue May  9 16:54:43 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* tests/blocktests.cc: Make testing different block sizes easier by
+	adding a const int for the block size.
+
 Wed May 10 00:44:58 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* bseblockutils.hh: Minor formatting fix.
