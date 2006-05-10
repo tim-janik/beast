@@ -1,3 +1,9 @@
+Wed May 10 19:54:52 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnifferscope.c (bst_source_queue_probe_request): changed
+	fft scope mass request priority to a very low idle priority since we essentially
+	don't want it to cause any other thing to come to a halt.
+
 Mon May  8 03:28:55 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: disabled listing of deprecated plugins.
