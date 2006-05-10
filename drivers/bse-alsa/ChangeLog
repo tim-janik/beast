@@ -1,3 +1,8 @@
+Wed May 10 19:11:33 2006  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c: 
+	* bsemididevice-alsa.c: fixed up BSE_REGISTER_OBJECT() args.
+
 Sat Apr 29 16:55:18 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: reset CFLAGS & LDFLAGS around AC_CHECK_LIB() to work 
