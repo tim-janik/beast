@@ -26,7 +26,7 @@
 #include "birnetring.h"
 #include <sys/time.h>
 #include <sched.h>
-#include <unistd.h>
+#include <unistd.h>     /* sched_yield() */
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
@@ -345,10 +345,20 @@ birnet_thread_run (const gchar     *name,
     }
 }
 
+/**
+ * Volountarily give up the curren scheduler time slice and let
+ * another process or thread run, if any is in the queue.
+ * The effect of this funciton is highly system dependent and
+ * may simply result in the current thread being continued.
+ */
 void
 birnet_thread_yield (void)
 {
+#ifdef  _POSIX_PRIORITY_SCHEDULING
   sched_yield();
+#else
+  g_thread_yield();
+#endif
 }
 
 /**
@@ -1224,7 +1234,7 @@ fallback_mutex_lock (BirnetMutex *mutex)
       /* on uni processor systems, there's no point in busy spinning */
       do
 	{
-	  g_thread_yield ();
+	  birnet_thread_yield ();
 	  if (g_mutex_trylock (mutex->mutex_pointer))
 	    return;
 	}

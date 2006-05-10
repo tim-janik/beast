@@ -99,7 +99,7 @@ Thread::start ()
     {
       success = birnet_thread_start (bthread, trampoline, this);
       if (!success)
-        g_thread_yield();
+        birnet_thread_yield();
     }
 }
 
