@@ -1,4 +1,8 @@
-Tue May  9 16:54:43 2006  Stefan Westerfeld <stefan@space.twc.de>
+Wed May 10 15:34:12 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* tests/blocktests.cc: Add benchmarks for fill and copy.
+
+Wed May 10 15:29:24 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* tests/blocktests.cc: Make testing different block sizes easier by
 	adding a const int for the block size.

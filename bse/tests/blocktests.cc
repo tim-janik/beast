@@ -287,6 +287,59 @@ const int BLOCK_SIZE = 1024;
 const double BENCH_SCALE = 1024. / BLOCK_SIZE;
 
 static inline void
+bench_fill (void)
+{
+  float fblock[BLOCK_SIZE];
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::fill (BLOCK_SIZE, fblock, 2.f));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::fill (BLOCK_SIZE, fblock, 2.f);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_print ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+}
+
+static inline void
+bench_copy (void)
+{
+  float src_fblock[BLOCK_SIZE], dest_fblock[BLOCK_SIZE];
+  Bse::Block::fill (BLOCK_SIZE, src_fblock, 2.f);
+  Bse::Block::fill (BLOCK_SIZE, dest_fblock, 0.f);
+  GTimer *timer = g_timer_new();
+  g_timer_start (timer);
+  const guint dups = TEST_CALIBRATION (50.0, Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock));
+  g_timer_stop (timer);
+  double c = g_timer_elapsed (timer, NULL);
+  
+  double m = 9e300;
+  for (guint i = 0; i < RUNS; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        Bse::Block::copy (BLOCK_SIZE, dest_fblock, src_fblock);
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < m)
+        m = e;
+    }
+  g_assert (dest_fblock[0] == 2.f);
+  g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+}
+
+static inline void
 bench_add (void)
 {
   float fblock1[BLOCK_SIZE], fblock2[BLOCK_SIZE];
@@ -506,6 +559,8 @@ run_tests()
   test_range();
   test_square_sum();
 
+  bench_fill();
+  bench_copy();
   bench_add();
   bench_sub();
   bench_mul();
