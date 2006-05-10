@@ -42,22 +42,19 @@ class BlockImpl : virtual public Bse::Block::Impl {
        const float *ivalues)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
       {
-        /* loop until aligned */
-        for (upos = 0;
-             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
-                                 !ALIGNED16 (&ivalues[upos]));
-             upos++)
+        /* loop until ivalues and ovalues aligned */
+	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
           ovalues[upos] += ivalues[upos];
-        /* loop while aligned */
+        /* loop while ivalues and ovalues aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
         __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
         n_vectors = (n_values - upos) / 4;
         for (guint spos = 0; spos < n_vectors; spos++)
           ovalues_m[spos] = _mm_add_ps (ovalues_m[spos], ivalues_m[spos]);
       }
-    /* loop while unaligned */
+    /* loop while ivalues and ovalues unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       ovalues[upos] += ivalues[upos];
   }
@@ -67,22 +64,19 @@ class BlockImpl : virtual public Bse::Block::Impl {
        const float *ivalues)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
       {
-        /* loop until aligned */
-        for (upos = 0;
-             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
-                                 !ALIGNED16 (&ivalues[upos]));
-             upos++)
+        /* loop until ivalues and ovalues aligned */
+	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
           ovalues[upos] -= ivalues[upos];
-        /* loop while aligned */
+        /* loop while ivalues and ovalues aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
         __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
         n_vectors = (n_values - upos) / 4;
         for (guint spos = 0; spos < n_vectors; spos++)
           ovalues_m[spos] = _mm_sub_ps (ovalues_m[spos], ivalues_m[spos]);
       }
-    /* loop while unaligned */
+    /* loop while ivalues and ovalues unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       ovalues[upos] -= ivalues[upos];
   }
@@ -92,22 +86,19 @@ class BlockImpl : virtual public Bse::Block::Impl {
        const float *ivalues)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
       {
-        /* loop until aligned */
-        for (upos = 0;
-             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
-                                 !ALIGNED16 (&ivalues[upos]));
-             upos++)
+        /* loop until ivalues and ovalues aligned */
+	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
           ovalues[upos] *= ivalues[upos];
-        /* loop while aligned */
+        /* loop while ivalues and ovalues aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
         __m128 *ovalues_m = (__m128*) (&ovalues[upos]);
         n_vectors = (n_values - upos) / 4;
         for (guint spos = 0; spos < n_vectors; spos++)
           ovalues_m[spos] = _mm_mul_ps (ovalues_m[spos], ivalues_m[spos]);
       }
-    /* loop while unaligned */
+    /* loop while ivalues and ovalues unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       ovalues[upos] *= ivalues[upos];
   }
@@ -118,15 +109,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
          const float  level)
   {
     guint upos = 0, n_vectors = 0;
-    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && n_values > 8)
+    if (ALIGNMENT16 (ovalues) == ALIGNMENT16 (ivalues) && LIKELY (n_values > 8))
       {
-        /* loop until aligned */
-        for (upos = 0;
-             upos < n_values && (!ALIGNED16 (&ovalues[upos]) ||
-                                 !ALIGNED16 (&ivalues[upos]));
-             upos++)
+        /* loop until ivalues and ovalues aligned */
+	for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++) // ensures ovalues alignment, too
           ovalues[upos] = ivalues[upos] * level;
-        /* loop while aligned */
+        /* loop while ivalues and ovalues aligned */
         const __m128 level_m = _mm_set1_ps (level);
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
         __m128 *ovalues_m = (__m128 *) &ovalues[upos];
@@ -134,7 +122,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
         for (guint spos = 0; spos < n_vectors; spos++)
           ovalues_m[spos] = _mm_mul_ps (ivalues_m[spos], level_m);
       }
-    /* loop while unaligned */
+    /* loop while ivalues and ovalues unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       ovalues[upos] = ivalues[upos] * level;
   }
@@ -172,9 +160,9 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	minv = maxv = ivalues[0];
 
 	guint upos = 0, n_vectors = 0;
-	if (n_values > 8)
+	if (LIKELY (n_values > 8))
 	  {
-	    /* loop until aligned */
+	    /* loop until ivalues aligned */
 	    for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
 	      {
 		if (UNLIKELY (ivalues[upos] < minv))
@@ -185,7 +173,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	    /* n_vectors must be >= 1 if n_values was > 8 */
 	    n_vectors = (n_values - upos) / 4;
 	    g_assert (n_vectors > 0);
-	    /* loop while aligned */
+	    /* loop while ivalues aligned */
 	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	    __m128 min_m = ivalues_m[0];
 	    __m128 max_m = ivalues_m[0];
@@ -207,7 +195,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	    vmax = _mm_max_ps (vmax, max_m);	    /* vmax  = [ max(0,3,2,1) max(1,2,3,0) max(2,1). max(3,0) ] */
 	    maxv = max (maxv, _mm_extract_ss (vmax));
 	  }
-	/* loop while unaligned */
+	/* loop while ivalues unaligned */
 	for (upos += n_vectors * 4; upos < n_values; upos++)
 	  {
 	    if (UNLIKELY (ivalues[upos] < minv))
@@ -216,7 +204,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	      maxv = ivalues[upos];
 	  }
       }
-    else
+    else /* minimum and maximum for empty blocks */
       {
 	minv = maxv = 0;
       }
@@ -229,15 +217,15 @@ class BlockImpl : virtual public Bse::Block::Impl {
   {
     float square_sum = 0.0;
     guint upos = 0, n_vectors = 0;
-    if (n_values > 8)
+    if (LIKELY (n_values > 8))
       {
-        /* loop until aligned */
+        /* loop until ivalues aligned */
         for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
           square_sum += ivalues[upos] * ivalues[upos];
 	/* n_vectors must be >= 1 if n_values was > 8 */
         n_vectors = (n_values - upos) / 4;
 	g_assert (n_vectors > 0);
-        /* loop while aligned */
+        /* loop while ivalues aligned */
         const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	__m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
 	for (guint spos = 1; spos < n_vectors; spos++)
@@ -249,7 +237,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
         vsum = _mm_add_ps (vsum, square_sum_m); /* { 0+3+2+1, 1+2+3+0, 2+1+2+1. 3+0+3+0 } */
         square_sum += _mm_extract_ss (vsum);
       }
-    /* loop while unaligned */
+    /* loop while ivalues unaligned */
     for (upos += n_vectors * 4; upos < n_values; upos++)
       square_sum += ivalues[upos] * ivalues[upos];
     return square_sum;
@@ -266,9 +254,9 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	minv = maxv = ivalues[0];
 
 	guint upos = 0, n_vectors = 0;
-	if (n_values > 8)
+	if (LIKELY (n_values > 8))
 	  {
-	    /* loop until aligned */
+	    /* loop until ivalues aligned */
 	    for (upos = 0; upos < n_values && !ALIGNED16 (&ivalues[upos]); upos++)
 	      {
 		square_sum += ivalues[upos] * ivalues[upos];
@@ -280,7 +268,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	    /* n_vectors must be >= 1 if n_values was > 8 */
 	    n_vectors = (n_values - upos) / 4;
 	    g_assert (n_vectors > 0);
-	    /* loop while aligned */
+	    /* loop while ivalues aligned */
 	    const __m128 *ivalues_m = (const __m128*) &ivalues[upos];
 	    n_vectors = (n_values - upos) / 4;
 	    __m128 square_sum_m = _mm_mul_ps (ivalues_m[0], ivalues_m[0]);
@@ -311,7 +299,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	    vmax = _mm_max_ps (vmax, max_m);	    /* vmax  = [ max(0,3,2,1) max(1,2,3,0) max(2,1). max(3,0) ] */
 	    maxv = max (maxv, _mm_extract_ss (vmax));
 	  }
-	/* loop while unaligned */
+	/* loop while ivalues unaligned */
 	for (upos += n_vectors * 4; upos < n_values; upos++)
 	  {
 	    square_sum += ivalues[upos] * ivalues[upos];
@@ -321,7 +309,7 @@ class BlockImpl : virtual public Bse::Block::Impl {
 	      maxv = ivalues[upos];
 	  }
       }
-    else
+    else /* minimum and maximum for empty blocks */
       {
 	minv = maxv = 0;
       }
