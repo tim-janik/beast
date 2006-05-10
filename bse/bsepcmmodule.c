@@ -193,6 +193,7 @@ bse_pcm_imodule_reset (BseModule *module)       /* EngineThread */
   if (!mdata->pcm_input_checked)
     {
       mdata->pcm_input_checked = TRUE;
+      /* queue a job into the BSE core for immediate execution */
       bse_idle_now (pcm_imodule_check_input, NULL);
     }
 }

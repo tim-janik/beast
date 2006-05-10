@@ -1,3 +1,31 @@
+Wed May 10 19:13:28 2006  Tim Janik  <timj@gtk.org>
+
+	* bseengine.c: document that probe jobs may be freely reordered.
+
+	* bseenginemaster.c: simply prepend probe jobs to a node's probe
+	job list, compared to appending, this has O(1) instead of O(n^2)
+	complexity which makes a huge different for some scenarios that
+	trigger long probe job queues.
+	also, collect probe jobs unconditionally after probes have been
+	taken, since probing is not parallelized anymore.
+
+	* bseglobals.[hc]: introduced new (idle handler) priority
+	BSE_PRIORITY_NEXT. this essentially takes over the prio of the
+	previous "now" stage which now got bumped up to the topmost
+	priority. change bse_idle_next() and bse_idle_now() functions
+	and their callers accordingly.
+
+	* bseprobe.cc: shortened queue length to 3, so usually 3 client side
+	probe requests will be handled including notification in a row.
+	after 3 requests, the client should have managed to request new
+	probes if it can process them this fast.
+	fixed up low level job queueing to occour asyncronously with highest
+	priority, so it essentially happens immediately but still allowes
+	for aggregation of multiple probe requests. also fixed up queue length
+	handling which was previously buggy in requesting only partial queue
+	lengths which resulted in very short probe job queues on the engine
+	modules and lots of unerruns during probe evaluation. added assertions.
+
 Wed May 10 15:34:12 2006  Stefan Westerfeld <stefan@space.twc.de>
 
 	* tests/blocktests.cc: Add benchmarks for fill and copy.

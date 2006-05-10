@@ -553,19 +553,10 @@ master_process_job (BseJob *job)
       g_return_if_fail (node->integrated == TRUE);
       g_return_if_fail (tjob->next == NULL);
       job->timed_job.tjob = NULL;       /* ownership taken over */
-      tjob->next = NULL;
-      if (node->probe_jobs)             /* append after tail */
-        {
-          EngineTimedJob *last = node->probe_jobs;
-          while (last->next)
-            last = last->next;
-          last->next = tjob;
-        }
-      else                              /* insert first */
-        {
-          node->probe_jobs = tjob;
-          probe_node_list = sfi_ring_append (probe_node_list, node);
-        }
+      if (!node->probe_jobs)
+        probe_node_list = sfi_ring_append (probe_node_list, node);
+      tjob->next = node->probe_jobs;
+      node->probe_jobs = tjob;
       break;
     case ENGINE_JOB_FLOW_JOB:
       node = job->timed_job.node;
@@ -773,8 +764,7 @@ master_take_probes (EngineNode   *node,
   if (!node->probe_jobs)
     probe_node_list = sfi_ring_remove (probe_node_list, node); //FIXME: protect by lock
   insert_trash_job (node, tjob);
-  if (ptype != PROBE_SCHEDULED)
-    _engine_node_collect_jobs (node);       // FIXME: does not need lock
+  _engine_node_collect_jobs (node);
 }
 
 static inline guint64

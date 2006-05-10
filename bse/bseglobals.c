@@ -62,8 +62,9 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
 
 /* --- idle handlers --- */
 /* important ordering constrains:
+ * BSE_PRIORITY_NOW             = -G_MAXINT / 2
  * BSE_PRIORITY_HIGH		= G_PRIORITY_HIGH - 10
- * BSE_PRIORITY_NOW		= G_PRIORITY_HIGH - 5
+ * BSE_PRIORITY_NEXT		= G_PRIORITY_HIGH - 5
  * G_PRIORITY_HIGH		(-100)
  * BSE_PRIORITY_NOTIFY		= G_PRIORITY_DEFAULT - 1
  * G_PRIORITY_DEFAULT		(0)
@@ -80,12 +81,13 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
 
 /**
  * @param function	user function
- * @param data	user data
+ * @param data	        user data
  * @return		idle handler id, suitable for bse_idle_remove()
  * Execute @a function (@a data) inside the main BSE thread as soon as possible.
- * This funciton is intended to be used by code which for some reason has
- * to be executed asyncronously.
- * This funciton is MT-safe and may be called from any thread.
+ * Usually this function should not be used but bse_idle_next() should be used instead.
+ * Only callbacks that have hard dependencies on immediate asyncronous execution,
+ * preceeding even realtime synthesis job handling should be executed this way.
+ * This function is MT-safe and may be called from any thread.
  */
 guint
 bse_idle_now (GSourceFunc function,
@@ -102,13 +104,35 @@ bse_idle_now (GSourceFunc function,
 
 /**
  * @param function	user function
+ * @param data	        user data
+ * @return		idle handler id, suitable for bse_idle_remove()
+ * Execute @a function (@a data) inside the main BSE thread as soon as resonably possible.
+ * This function is intended to be used by code which needs to execute some portions
+ * asyncronously as soon as the BSE core isn't occupied by realtime job handling.
+ * This function is MT-safe and may be called from any thread.
+ */
+guint
+bse_idle_next (GSourceFunc function,
+	      gpointer    data)
+{
+  GSource *source = g_idle_source_new ();
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_NEXT);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+
+/**
+ * @param function	user function
  * @param data	user data
  * @return		idle handler id, suitable for bse_idle_remove()
  * Queue @a function (@a data) for execution inside the main BSE thread,
  * similar to bse_idle_now(), albeit with a lower priority.
- * This funciton is intended to be used by code which emits
+ * This function is intended to be used by code which emits
  * asyncronous notifications.
- * This funciton is MT-safe and may be called from any thread.
+ * This function is MT-safe and may be called from any thread.
  */
 guint
 bse_idle_notify (GSourceFunc function,
@@ -169,7 +193,7 @@ bse_idle_background (GSourceFunc function,
  * @return		idle handler id, suitable for bse_idle_remove()
  * Execute @a function (@a data) with the main BSE thread, similar to
  * bse_idle_now(), after a delay period of @a usec_delay has passed.
- * This funciton is MT-safe and may be called from any thread.
+ * This function is MT-safe and may be called from any thread.
  */
 guint
 bse_idle_timed (guint64     usec_delay,
@@ -178,7 +202,7 @@ bse_idle_timed (guint64     usec_delay,
 {
   GSource *source = g_timeout_source_new (CLAMP (usec_delay / 1000, 0, G_MAXUINT));
   guint id;
-  g_source_set_priority (source, BSE_PRIORITY_NOW);
+  g_source_set_priority (source, BSE_PRIORITY_NEXT);
   g_source_set_callback (source, function, data, NULL);
   id = g_source_attach (source, bse_main_context);
   g_source_unref (source);
@@ -189,7 +213,7 @@ bse_idle_timed (guint64     usec_delay,
  * @param id	idle handler id
  * Remove or unqueue an idle handler queued by bse_idle_now()
  * or one of its variants.
- * This funciton is MT-safe and may be called from any thread.
+ * This function is MT-safe and may be called from any thread.
  */
 gboolean
 bse_idle_remove (guint id)

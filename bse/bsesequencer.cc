@@ -385,6 +385,7 @@ bse_sequencer_queue_remove_song_SL (BseSong *song)
 {
   g_return_if_fail (song->sequencer_owns_refcount_SL == TRUE);
   song->sequencer_owns_refcount_SL = FALSE;     /* g_object_unref() in bse_sequencer_remove_song_async() */
+  /* queue a job into the BSE core for immediate execution */
   bse_idle_now (bse_sequencer_remove_song_async, song);
 }
 

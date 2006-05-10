@@ -39,10 +39,12 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 
 
 /* --- async handlers --- */
+/* most important, used for immediate async execution */
+#define	BSE_PRIORITY_NOW		(-G_MAXINT / 2)
 /* very important, used for io/engine handlers */
 #define	BSE_PRIORITY_HIGH		(G_PRIORITY_HIGH - 10)
 /* still very important, used for need-to-be-async operations */
-#define	BSE_PRIORITY_NOW		(G_PRIORITY_HIGH - 5)
+#define	BSE_PRIORITY_NEXT		(G_PRIORITY_HIGH - 5)
 /* important, delivers async signals */
 #define	BSE_PRIORITY_NOTIFY		(G_PRIORITY_DEFAULT - 1)
 /* normal importantance, interfaces to glue layer */
@@ -53,6 +55,8 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 /* unimportant, used when everything else done */
 #define BSE_PRIORITY_BACKGROUND		(G_PRIORITY_LOW + 500)
 guint	  bse_idle_now		(GSourceFunc    function,
+				 gpointer       data);
+guint	  bse_idle_next		(GSourceFunc    function,
 				 gpointer       data);
 guint	  bse_idle_notify	(GSourceFunc    function,
 				 gpointer       data);

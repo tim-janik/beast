@@ -29,8 +29,8 @@ namespace { // Anon
 using namespace Bse;
 
 /* --- variables --- */
-static const guint MAX_QUEUE_LENGTH = 5;
-static guint       bse_source_signal_probes = 0;
+static guint    MAX_QUEUE_LENGTH = 3; // or, for 20ms: (int) (bse_engine_sample_freq() * 0.020 / bse_engine_block_size() + 0.5)
+static guint    bse_source_signal_probes = 0;
 
 /* --- functions --- */
 static inline double
@@ -228,7 +228,7 @@ class ProbeQueue {
       }
     reset_probe_state();
   }
-  void queue_probes_update (uint n_probes);
+  void queue_probes_update (uint probe_queue_length);
 public:
   void
   handle_probe_values (ProbeSeq     &probe_seq,
@@ -291,12 +291,11 @@ public:
       max_age = requests.samples = MAX_QUEUE_LENGTH;
     if (channel_features.probe_fft)
       max_age = requests.fft = MAX_QUEUE_LENGTH;
-    uint n_requests = ABS (max_age - old_age);
     /* request new probes */
-    if (n_requests && bse_engine_block_size())
+    if (max_age != old_age && bse_engine_block_size())
       {
         uint n_probes_per_block = MAX (1, (block_size + bse_engine_block_size() - 1) / bse_engine_block_size());
-        n_requests += 1; /* head room for alignment adjustments */
+        uint n_requests = max_age + 1;  /* add head room for alignment adjustments */
         queue_probes_update (n_probes_per_block * n_requests);
       }
   }
@@ -413,9 +412,10 @@ private:
     BseSource  *source;
     BseOStream *ostreams;
     guint       n_pending;
+    guint64     debug_stamp;
     ProbeData (BseSource *_source,
                guint      n_streams) :
-      source (_source), ostreams (NULL), n_pending (0)
+      source (_source), ostreams (NULL), n_pending (0), debug_stamp (0)
     {}
     ~ProbeData()
     {
@@ -436,12 +436,15 @@ private:
       {
         /* upon first block, "steal" ostreams */
         g_assert (pdata.ostreams == NULL);
+        g_assert (pdata.debug_stamp == 0);
         pdata.ostreams = *ostreams_p;
         *ostreams_p = NULL;
+        pdata.debug_stamp = tick_stamp;
       }
     else                                        /* successive modules */
       {
         /* add up all successive blocks */
+        g_assert (pdata.debug_stamp == tick_stamp);
         BseOStream *ostreams = *ostreams_p;
         for (uint j = 0; j < n_ostreams; j++)
           if (ostreams[j].connected && channel_sets[j].size() > 0)
@@ -539,9 +542,9 @@ private:
   }
 public:
   void
-  queue_probes_update (uint n_probes)
+  queue_probes_update (uint probe_queue_length)
   {
-    uint n_jobs = MAX (required_jobs, n_probes);
+    uint n_jobs = MAX (required_jobs, probe_queue_length);
     if (n_jobs != required_jobs)
       {
         required_jobs = n_jobs;
@@ -572,9 +575,9 @@ SfiRing *SourceProbes::bse_probe_sources = NULL;
 guint    SourceProbes::bse_idle_handler_id = 0;
 
 void
-ProbeQueue::queue_probes_update (uint n_probes)
+ProbeQueue::queue_probes_update (uint probe_queue_length)
 {
-  probes.queue_probes_update (n_probes);
+  probes.queue_probes_update (probe_queue_length);
 }
 
 /* --- unprepared probing --- */

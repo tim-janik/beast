@@ -441,7 +441,7 @@ bse_msg_handler (const BirnetMessage *lmsg)
   umsg->process = g_strdup (birnet_thread_get_name (NULL));
   umsg->pid = birnet_thread_get_pid (NULL);
   /* queue an idle handler in the BSE Core thread */
-  bse_idle_now (core_thread_send_message_async, umsg);
+  bse_idle_next (core_thread_send_message_async, umsg);
 }
 
 static void

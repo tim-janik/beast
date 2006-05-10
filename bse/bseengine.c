@@ -528,6 +528,8 @@ bse_engine_add_user_callback (gpointer      data,
  * function would always be called immediately after @a probe_func().
  * So instead, any @a data specific release handling should be integrated
  * into @a probe_func().
+ * For multiple probe jobs enqueued on a module simultaneously, no
+ * ordering is preserved.
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
