@@ -16,10 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
+#include <bse/bsemain.h>
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
-
 #include <bse/gsldatautils.h>
 #include <bse/bseloader.h>
 #include <bse/gslfft.h>
@@ -58,7 +57,7 @@ struct Options {
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
-  void printUsage ();
+  static void printUsage ();
   void validatePercent (const string& option, gdouble value);
 
   FILE *openOutputFile (const char *filename);
@@ -958,18 +957,55 @@ void Options::validatePercent (const string& option, gdouble value)
     }
 }
 
-void Options::parse (int *argc_p, char **argv_p[])
+static bool
+check_arg (uint         argc,
+           char        *argv[],
+           uint        *nth,
+           const char  *str,
+           const char **opt = NULL)
 {
-  unsigned int argc;
-  char **argv;
+  g_assert (*nth < argc);
+  const char *arg = argv[*nth];
+  uint l = arg ? strlen (arg) : 0;
+  if (l && strcmp (arg, str) == 0)
+    {
+      if (opt && *nth + 1 < argc)
+        {
+          argv[(*nth)++] = NULL;
+          *opt = argv[*nth];
+          argv[(*nth)++] = NULL;
+          return true;
+        }
+      else if (!opt)
+        {
+          argv[(*nth)++] = NULL;
+          return true;
+        }
+    }
+  else if (l && strncmp (arg, str, l) && arg[l] == '=')
+    {
+      if (opt)
+        {
+          *opt = arg + l + 1;
+          argv[(*nth)++] = NULL;
+          return true;
+        }
+    }
+  else
+    return false;
+  Options::printUsage();
+  exit (1);
+}
+
+void
+Options::parse (int   *argc_p,
+                char **argv_p[])
+{
+  guint argc = *argc_p;
+  gchar **argv = *argv_p;
   unsigned int i, e;
 
-  g_return_if_fail (argc_p != NULL);
-  g_return_if_fail (argv_p != NULL);
-  g_return_if_fail (*argc_p >= 0);
-
-  argc = *argc_p;
-  argv = *argv_p;
+  g_return_if_fail (argc >= 0);
 
   /*  I am tired of seeing .libs/lt-bsefextract all the time,
    *  but basically this should be done (to allow renaming the binary):
@@ -980,120 +1016,68 @@ void Options::parse (int *argc_p, char **argv_p[])
 
   for (i = 1; i < argc; i++)
     {
-      char *argv_copy = g_strdup (argv[i]);
-      const char *opt = strtok (argv_copy, "=");
-      const char *arg = opt ? strtok (NULL, "\n") : NULL;
-
-      if (strcmp ("--help", opt) == 0)
+      const char *opt;
+      if (strcmp (argv[i], "--help") == 0 ||
+          strcmp (argv[i], "-h") == 0)
 	{
 	  printUsage();
 	  exit (0);
 	}
-      else if (strcmp ("--version", opt) == 0)
+      else if (strcmp (argv[i], "--version") == 0 ||
+               strcmp (argv[i], "-v") == 0)
 	{
 	  printf ("%s %s\n", programName.c_str(), BST_VERSION);
 	  exit (0);
 	}
-      else if (strcmp ("--cut-zeros", opt) == 0)
+      else if (strcmp (argv[i], "--cut-zeros") == 0)
 	{
 	  cut_zeros_head = cut_zeros_tail = true;
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--cut-zeros-head", opt) == 0)
+      else if (strcmp (argv[i], "--cut-zeros-head") == 0)
 	{
 	  cut_zeros_head = true;
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--cut-zeros-tail", opt) == 0)
+      else if (strcmp (argv[i], "--cut-zeros-tail") == 0)
 	{
 	  cut_zeros_tail = true;
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--silence-threshold", opt) == 0)
-	{
-	  if (!arg)
-	    {
-	      printUsage();
-	      exit (1);
-	    }
-	  silence_threshold = atof (arg) / 32767.0;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--focus-width", opt) == 0)
-	{
-	  if (!arg)
-	    {
-	      printUsage();
-	      exit (1);
-	    }
-	  validatePercent ("--focus-width", focus_width = atof (arg));
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--focus-center", opt) == 0)
-	{
-	  if (!arg)
-	    {
-	      printUsage();
-	      exit (1);
-	    }
-	  validatePercent ("--focus-center", focus_center = atof (arg));
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--base-freq-hint", opt) == 0)
-	{
-	  if (!arg)
-	    {
-	      printUsage();
-	      exit (1);
-	    }
-	  base_freq_hint = atof (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--channel", opt) == 0)
-	{
-	  if (!arg)
-	    {
-	      printUsage();
-	      exit (1);
-	    }
-	  channel = atoi (arg);
-	  argv[i] = NULL;
-	}
+      else if (check_arg (argc, argv, &i, "--silence-threshold", &opt))
+        silence_threshold = atof (opt) / 32767.0;
+      else if (check_arg (argc, argv, &i, "--focus-width", &opt))
+        validatePercent ("--focus-width", focus_width = atof (opt));
+      else if (check_arg (argc, argv, &i, "--focus-center", &opt))
+        validatePercent ("--focus-center", focus_center = atof (opt));
+      else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt))
+        base_freq_hint = atof (opt);
+      else if (check_arg (argc, argv, &i, "--channel", &opt))
+        channel = atoi (opt);
       else
-	{
-	  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
-	    {
-	      if (strcmp ((*fi)->option, opt) == 0)
-		{
-		  (*fi)->outputFile = openOutputFile (arg);
-		  argv[i] = NULL;
-		}
-	    }
-	}
-      g_free (argv_copy);
+        for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+          if (check_arg (argc, argv, &i, (*fi)->option))
+            {
+              (*fi)->outputFile = openOutputFile (NULL);
+              break;
+            }
     }
 
   /* resort argc/argv */
-  e = 0;
+  e = 1;
   for (i = 1; i < argc; i++)
-    {
-      if (e)
-	{
-	  if (argv[i])
-	    {
-	      argv[e++] = argv[i];
-	      argv[i] = NULL;
-	    }
-	}
-      else if (!argv[i])
-	e = i;
-    }
-  if (e)
-    *argc_p = e;
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
 }
 
 void Options::printUsage ()
 {
+  std::string programName = "bsefextract";
   fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", programName.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "features that can be extracted:\n");
@@ -1112,7 +1096,7 @@ void Options::printUsage ()
   fprintf (stderr, " --focus-width=Y             width of focus region in %% [100]\n");
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
   fprintf (stderr, "\n");
-  fprintf (stderr, "Appending =<filename> to a feature writes this feature to a separate file\n");
+  // FIXME: depends on bogus option parsing: fprintf (stderr, "Appending =<filename> to a feature writes this feature to a separate file\n");
   fprintf (stderr, "(example: %s --start-time=t.start t.wav).\n", programName.c_str());
 }
 
@@ -1131,16 +1115,18 @@ void printHeader (FILE *file, const char *src)
 int main (int argc, char **argv)
 {
   /* init */
-  GslConfigValue gslconfig[] = {
-    { "wave_chunk_padding",     1, },
-    { "dcache_block_size",      8192, },
-    { "dcache_cache_memory",	5 * 1024 * 1024, },
-    { NULL, },
-  };
-  
   birnet_init (&argc, &argv, NULL);
-  gsl_init (gslconfig);
-  /*bse_init_intern (&argc, &argv, NULL);*/
+  if (0)
+    {
+      GslConfigValue gslconfig[] = {
+        { "wave_chunk_padding",     1, },
+        { "dcache_block_size",      8192, },
+        { "dcache_cache_memory",	5 * 1024 * 1024, },
+        { NULL, },
+      };
+      gsl_init (gslconfig);
+    }
+  bse_init_intern (&argc, &argv, NULL, NULL);
 
   /* supported features */
   SpectrumFeature *spectrumFeature = new SpectrumFeature;

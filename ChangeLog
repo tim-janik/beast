@@ -1,3 +1,11 @@
+Thu May 11 02:59:08 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefextract.cc: fixed option parser so using '=' for args with
+	options isn't mandatory. fixed initialisation so bse components are
+	actually initialised when used.
+	something is still borked with the option parser though, in that the
+	order in which the input file and feature arg are passed does matter.
+
 Wed May 10 19:54:52 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnifferscope.c (bst_source_queue_probe_request): changed
