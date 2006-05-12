@@ -42,7 +42,7 @@ struct Options {
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
-  void printUsage ();
+  static void printUsage ();
 } options;
 
 Options::Options ()
@@ -52,18 +52,63 @@ Options::Options ()
   compact = false;
 }
 
-void Options::parse (int *argc_p, char **argv_p[])
+static bool
+check_arg (uint         argc,
+           char        *argv[],
+           uint        *nth,
+           const char  *opt,              /* for example: --foo */
+           const char **opt_arg = NULL)   /* if foo needs an argument, pass a pointer to get the argument */
 {
-  unsigned int argc;
-  char **argv;
-  unsigned int i, e;
+  g_return_val_if_fail (opt != NULL, false);
+  g_return_val_if_fail (*nth < argc, false);
 
-  g_return_if_fail (argc_p != NULL);
-  g_return_if_fail (argv_p != NULL);
-  g_return_if_fail (*argc_p >= 0);
+  const char *arg = argv[*nth];
+  if (!arg)
+    return false;
 
-  argc = *argc_p;
-  argv = *argv_p;
+  uint opt_len = strlen (opt);
+  if (strcmp (arg, opt) == 0)
+    {
+      if (opt_arg && *nth + 1 < argc)     /* match foo option with argument: --foo bar */
+        {
+          argv[(*nth)++] = NULL;
+          *opt_arg = argv[*nth];
+          argv[*nth] = NULL;
+          return true;
+        }
+      else if (!opt_arg)                  /* match foo option without argument: --foo */
+        {
+          argv[*nth] = NULL;
+          return true;
+        }
+      /* fall through to error message */
+    }
+  else if (strncmp (arg, opt, opt_len) == 0 && arg[opt_len] == '=')
+    {
+      if (opt_arg)                        /* match foo option with argument: --foo=bar */
+        {
+          *opt_arg = arg + opt_len + 1;
+          argv[*nth] = NULL;
+          return true;
+        }
+      /* fall through to error message */
+    }
+  else
+    return false;
+
+  Options::printUsage();
+  exit (1);
+}
+
+void
+Options::parse (int   *argc_p,
+                char **argv_p[])
+{
+  guint argc = *argc_p;
+  gchar **argv = *argv_p;
+  unsigned int i;
+
+  g_return_if_fail (argc >= 0);
 
   /*  I am tired of seeing .libs/lt-bsefcompare all the time,
    *  but basically this should be done (to allow renaming the binary):
@@ -74,58 +119,41 @@ void Options::parse (int *argc_p, char **argv_p[])
 
   for (i = 1; i < argc; i++)
     {
-      const char *opt = strtok (argv[i], "=");
-      const char *arg = opt ? strtok (NULL, "\n") : NULL;
-
-      if (strcmp ("--help", argv[i]) == 0)
-	{
-	  printUsage();
-	  exit (0);
-	}
-      else if (strcmp ("--version", argv[i]) == 0)
-	{
-	  printf ("%s %s\n", programName.c_str(), BST_VERSION);
-	  exit (0);
-	}
-      else if (strcmp ("--threshold", argv[i]) == 0)
-	{
-	  if (!arg)
-	    {
-	      fprintf (stderr, "%s: threshold required for --threshold option.\n",
-		  programName.c_str());
-	      exit (1);
-	    }
-	  threshold = atof (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--compact", argv[i]) == 0)
-	{
-	  compact = true;
-	  argv[i] = 0;
-	}
+      const char *opt_arg;
+      if (strcmp (argv[i], "--help") == 0 ||
+          strcmp (argv[i], "-h") == 0)
+        {
+          printUsage();
+          exit (0);
+        }
+      else if (strcmp (argv[i], "--version") == 0 ||
+               strcmp (argv[i], "-v") == 0)
+        {
+          printf ("%s %s\n", programName.c_str(), BST_VERSION);
+          exit (0);
+        }
+      else if (check_arg (argc, argv, &i, "--compact"))
+        compact = true;
+      else if (check_arg (argc, argv, &i, "--threshold", &opt_arg))
+        threshold = atof (opt_arg);
     }
 
   /* resort argc/argv */
-  e = 0;
+  guint e = 1;
   for (i = 1; i < argc; i++)
-    {
-      if (e)
-	{
-	  if (argv[i])
-	    {
-	      argv[e++] = argv[i];
-	      argv[i] = NULL;
-	    }
-	}
-      else if (!argv[i])
-	e = i;
-    }
-  if (e)
-    *argc_p = e;
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
 }
 
-void Options::printUsage ()
+void
+Options::printUsage ()
 {
+  std::string programName = "bsefcompare";
   fprintf (stderr, "usage: %s [ <options> ] <featurefile1> <featurefile2>\n", programName.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "options:\n");
