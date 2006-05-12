@@ -1,3 +1,8 @@
+Fri May 12 14:44:41 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Option parsing should work reliably now (fixed
+	a few bugs in check_arg).
+
 Thu May 11 02:59:08 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefextract.cc: fixed option parser so using '=' for args with

@@ -961,38 +961,46 @@ static bool
 check_arg (uint         argc,
            char        *argv[],
            uint        *nth,
-           const char  *str,
-           const char **opt = NULL)
+           const char  *opt,		  /* for example: --foo */
+           const char **opt_arg = NULL)	  /* if foo needs an argument, pass a pointer to get the argument */
 {
-  g_assert (*nth < argc);
+  g_return_val_if_fail (opt != NULL, false);
+  g_return_val_if_fail (*nth < argc, false);
+
   const char *arg = argv[*nth];
-  uint l = arg ? strlen (arg) : 0;
-  if (l && strcmp (arg, str) == 0)
+  if (!arg)
+    return false;
+
+  uint opt_len = strlen (opt);
+  if (strcmp (arg, opt) == 0)
     {
-      if (opt && *nth + 1 < argc)
+      if (opt_arg && *nth + 1 < argc)	  /* match foo option with argument: --foo bar */
         {
           argv[(*nth)++] = NULL;
-          *opt = argv[*nth];
-          argv[(*nth)++] = NULL;
+          *opt_arg = argv[*nth];
+          argv[*nth] = NULL;
           return true;
         }
-      else if (!opt)
+      else if (!opt_arg)		  /* match foo option without argument: --foo */
         {
-          argv[(*nth)++] = NULL;
+          argv[*nth] = NULL;
           return true;
         }
+      /* fall through to error message */
     }
-  else if (l && strncmp (arg, str, l) && arg[l] == '=')
+  else if (strncmp (arg, opt, opt_len) == 0 && arg[opt_len] == '=')
     {
-      if (opt)
+      if (opt_arg)			  /* match foo option with argument: --foo=bar */
         {
-          *opt = arg + l + 1;
-          argv[(*nth)++] = NULL;
+          *opt_arg = arg + opt_len + 1;
+          argv[*nth] = NULL;
           return true;
         }
+      /* fall through to error message */
     }
   else
     return false;
+
   Options::printUsage();
   exit (1);
 }
@@ -1016,7 +1024,7 @@ Options::parse (int   *argc_p,
 
   for (i = 1; i < argc; i++)
     {
-      const char *opt;
+      const char *opt_arg;
       if (strcmp (argv[i], "--help") == 0 ||
           strcmp (argv[i], "-h") == 0)
 	{
@@ -1044,16 +1052,16 @@ Options::parse (int   *argc_p,
 	  cut_zeros_tail = true;
 	  argv[i] = NULL;
 	}
-      else if (check_arg (argc, argv, &i, "--silence-threshold", &opt))
-        silence_threshold = atof (opt) / 32767.0;
-      else if (check_arg (argc, argv, &i, "--focus-width", &opt))
-        validatePercent ("--focus-width", focus_width = atof (opt));
-      else if (check_arg (argc, argv, &i, "--focus-center", &opt))
-        validatePercent ("--focus-center", focus_center = atof (opt));
-      else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt))
-        base_freq_hint = atof (opt);
-      else if (check_arg (argc, argv, &i, "--channel", &opt))
-        channel = atoi (opt);
+      else if (check_arg (argc, argv, &i, "--silence-threshold", &opt_arg))
+        silence_threshold = atof (opt_arg) / 32767.0;
+      else if (check_arg (argc, argv, &i, "--focus-width", &opt_arg))
+        validatePercent ("--focus-width", focus_width = atof (opt_arg));
+      else if (check_arg (argc, argv, &i, "--focus-center", &opt_arg))
+        validatePercent ("--focus-center", focus_center = atof (opt_arg));
+      else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt_arg))
+        base_freq_hint = atof (opt_arg);
+      else if (check_arg (argc, argv, &i, "--channel", &opt_arg))
+        channel = atoi (opt_arg);
       else
         for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
           if (check_arg (argc, argv, &i, (*fi)->option))
