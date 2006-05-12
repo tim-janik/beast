@@ -667,31 +667,33 @@ bse_plugin_path_list_files (gboolean include_drivers,
       /* expect filename globs */
       files = sfi_file_crawler_list_files (bse_main_args->override_plugin_globs, NULL, G_FILE_TEST_IS_REGULAR);
       ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-      return ring;      /* override */
     }
-  if (include_drivers)
+  else
     {
-      files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.so", G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-      files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.o", G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-    }
-  if (include_plugins)
-    {
-      files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-      files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.o", G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-    }
-  if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
-    {
-      files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-      files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.o", G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
-      /* allow file names in plugin_path */
-      files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
-      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+      if (include_drivers)
+        {
+          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.so", G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.o", G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+        }
+      if (include_plugins)
+        {
+          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.o", G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+        }
+      if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
+        {
+          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.o", G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+          /* allow file names in plugin_path */
+          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
+          ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+        }
     }
   if (true)
     {

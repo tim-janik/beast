@@ -194,9 +194,6 @@ rc_file_try_statement (gpointer   context_data,
 static void
 bse_server_init (BseServer *self)
 {
-  gchar *file_name;
-  gint fd;
-
   g_assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
   BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_SINGLETON);
 
@@ -217,17 +214,17 @@ bse_server_init (BseServer *self)
   main_thread_source_setup (self);
   
   /* read rc file */
-  file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
-  fd = open (file_name, O_RDONLY, 0);
+  int fd = -1;
+  if (bse_main_args->bse_rcfile && bse_main_args->bse_rcfile[0])
+    fd = open (bse_main_args->bse_rcfile, O_RDONLY, 0);
   if (fd >= 0)
     {
       SfiRStore *rstore = sfi_rstore_new ();
-      sfi_rstore_input_fd (rstore, fd, file_name);
+      sfi_rstore_input_fd (rstore, fd, bse_main_args->bse_rcfile);
       sfi_rstore_parse_all (rstore, self, rc_file_try_statement, NULL);
       sfi_rstore_destroy (rstore);
       close (fd);
     }
-  g_free (file_name);
 
   /* integrate argv overides */
   bse_gconfig_merge_args (bse_main_args);

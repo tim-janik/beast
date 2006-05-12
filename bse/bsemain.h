@@ -56,17 +56,18 @@ void            bse_msg_handler         (const BirnetMessage *message);
 
 /* --- argc/argv overide settings --- */
 typedef struct {
-  SfiInt       latency;
-  SfiInt       mixing_freq;
-  SfiInt       control_freq;
-  SfiRing     *pcm_drivers;
-  SfiRing     *midi_drivers;
-  bool         load_drivers_early;
-  bool         dump_driver_list;
-  bool         force_fpu;
-  const gchar *override_plugin_globs;
-  const gchar *override_script_path;
-  const gchar *path_binaries;
+  SfiInt        latency;
+  SfiInt        mixing_freq;
+  SfiInt        control_freq;
+  SfiRing      *pcm_drivers;
+  SfiRing      *midi_drivers;
+  bool          load_drivers_early;
+  bool          dump_driver_list;
+  bool          force_fpu;
+  const gchar  *bse_rcfile;
+  const gchar  *override_plugin_globs;
+  const gchar  *override_script_path;
+  const gchar  *path_binaries;
 } BseMainArgs;
 
 

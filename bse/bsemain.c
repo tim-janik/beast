@@ -576,6 +576,13 @@ bse_async_parse_args (gint        *argc_p,
           margs->override_script_path = argv[i];
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
+	{
+          argv[i++] = NULL;
+          g_free ((char*) margs->bse_rcfile);
+          margs->bse_rcfile = g_strdup (argv[i]);
+	  argv[i] = NULL;
+	}
 #if 0
       else if (strcmp ("--bse-override-binaries-path", argv[i]) == 0 && i + 1 < argc)
 	{
@@ -590,6 +597,9 @@ bse_async_parse_args (gint        *argc_p,
 	  argv[i] = NULL;
 	}
     }
+
+  if (!margs->bse_rcfile)
+    margs->bse_rcfile = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
 
   e = 1;
   for (i = 1; i < argc; i++)
