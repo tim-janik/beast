@@ -48,6 +48,22 @@ test-balance-right: beastconf.sh
 	               --channel=1 --avg-spectrum --avg-energy --spectrum \
 	            -- --threshold=99.99
 
+BSE2WAV = $(strip							\
+	$(top_builddir)/shell/bsesh-$(BIN_VERSION)			\
+	  --bse-mixing-freq=48000 -p null -m null			\
+	  --bse-rcfile "/dev/null" --bse-no-load			\
+	  --bse-override-plugin-globs '../../plugins/.libs/*.so'	\
+	  -s bsetowav.scm 						\
+)
+BSEFEXTRACT = $(top_builddir)/tools/bsefextract
+BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
+
+balance-test:
+	$(BSE2WAV) balance.bse balance.wav
+	$(BSEFEXTRACT) balance.wav --channel 0 --avg-energy  > balance.tmp
+	$(BSEFEXTRACT) balance.wav --channel 1 --avg-energy >> balance.tmp
+	$(BSEFCOMPARE) balance.feature balance.tmp --threshold 99.99
+
 EXTRA_DIST += $(strip		\
 	balance-left.reference	\
 	balance-right.reference	\

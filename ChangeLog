@@ -1,3 +1,10 @@
+Fri May 12 16:52:32 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/audio/Makefile.am: started rewrite of test rules.
+
+	* tests/audio/bsetowav.scm: don't load scripts or LADSPA plugins. 
+	fixed progress indication.
+
 Fri May 12 16:47:08 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefcompare.cc (parse): fixed option parser similar to bsefextract.

@@ -120,6 +120,7 @@ echo "TEST $test_name:"
 (
   # convert to wave file
   echo -n "$test_indentation"
+  set -x
   $top_builddir/shell/bsesh-$BIN_VERSION --bse-mixing-freq=48000 --bse-control-freq=1000 -p null -m null -s $srcdir/bsetowav.scm $srcdir/$bsefile $bsefile.wav || exit 1
 
   # extract features
