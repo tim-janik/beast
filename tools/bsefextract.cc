@@ -44,7 +44,7 @@ using std::min;
 using std::max;
 
 struct Options {
-  string	      programName;
+  string	      program_name; /* FIXME: what to do with that */
   guint               channel;
   bool                cut_zeros_head;
   bool                cut_zeros_tail;
@@ -53,14 +53,14 @@ struct Options {
   gdouble             focus_center;
   gdouble             focus_width;
 
-  map<string, FILE*>  outputFiles;
+  map<string, FILE*>  output_files;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
-  static void printUsage ();
-  void validatePercent (const string& option, gdouble value);
+  static void print_usage ();
+  void validate_percent (const string& option, gdouble value);
 
-  FILE *openOutputFile (const char *filename);
+  FILE *open_output_file (const char *filename);
 } options;
 
 class Signal
@@ -170,33 +170,33 @@ public:
 
 struct Feature;
 
-list<Feature *> featureList;
+list<Feature *> feature_list;
 
 struct Feature
 {
   const char *option;
   const char *description;
-  FILE *outputFile;
+  FILE *output_file;
 
-  void printValue (double data) const
+  void print_value (double data) const
   {
-    fprintf (outputFile, "%f\n", data);
+    fprintf (output_file, "%f\n", data);
   }
 
-  void printVector (const vector<double>& data) const
+  void print_vector (const vector<double>& data) const
   {
     for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
-      fprintf (outputFile, (di == data.begin() ? "%f" : " %f"), *di);
-    fprintf (outputFile, "\n");
+      fprintf (output_file, (di == data.begin() ? "%f" : " %f"), *di);
+    fprintf (output_file, "\n");
   }
 
   Feature (const char *option, const char *description)
-    : option (option), description (description), outputFile (NULL)
+    : option (option), description (description), output_file (NULL)
   {
   }
 
   virtual void compute (const Signal& signal) = 0;
-  virtual void printResults() const = 0;
+  virtual void print_results() const = 0;
   virtual ~Feature()
   {
   }
@@ -204,10 +204,10 @@ struct Feature
 
 struct StartTimeFeature : public Feature
 {
-  double startTime;
+  double start_time;
   StartTimeFeature() : Feature ("--start-time", "signal start time in ms (first non-zero sample)")
   {
-    startTime = -1;
+    start_time = -1;
   }
   void compute (const Signal& signal)
   {
@@ -215,35 +215,35 @@ struct StartTimeFeature : public Feature
       {
 	if (signal[l] != 0)
 	  {
-	    startTime = signal.time_ms (l);
+	    start_time = signal.time_ms (l);
 	    return;
 	  }
       }
   }
-  void printResults() const
+  void print_results() const
   {
-    printValue (startTime);
+    print_value (start_time);
   }
 };
 
 struct EndTimeFeature : public Feature
 {
-  double endTime;
+  double end_time;
   EndTimeFeature() : Feature ("--end-time", "signal end time in ms (last non-zero sample)")
   {
-    endTime = -1;
+    end_time = -1;
   }
   void compute (const Signal& signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
 	if (signal[l] != 0)
-	  endTime = signal.time_ms (l);
+	  end_time = signal.time_ms (l);
       }
   }
-  void printResults() const
+  void print_results() const
   {
-    printValue (endTime);
+    print_value (end_time);
   }
 };
 
@@ -313,7 +313,8 @@ struct SpectrumFeature : public Feature
     return result;
   }
 
-  void compute (const Signal& signal)
+  void
+  compute (const Signal& signal)
   {
     if (spectrum.size()) /* don't compute the same feature twice */
       return;
@@ -346,20 +347,21 @@ struct SpectrumFeature : public Feature
       }
   }
 
-  void printResults() const
+  void print_results() const
   {
     for (vector< vector<double> >::const_iterator si = spectrum.begin(); si != spectrum.end(); si++)
-      printVector (*si);
+      print_vector (*si);
   }
 };
 
 struct AvgSpectrumFeature : public Feature
 {
-  SpectrumFeature *spectrumFeature;
+  SpectrumFeature *spectrum_feature;
   vector<double> avg_spectrum;
 
-  AvgSpectrumFeature (SpectrumFeature *spectrumFeature) : Feature ("--avg-spectrum", "average frequency spectrum"),
-							  spectrumFeature (spectrumFeature)
+  AvgSpectrumFeature (SpectrumFeature *spectrum_feature)
+    : Feature ("--avg-spectrum", "average frequency spectrum"),
+      spectrum_feature (spectrum_feature)
   {
   }
 
@@ -368,18 +370,18 @@ struct AvgSpectrumFeature : public Feature
     /*
      * dependancy: we need the spectrum to compute the average spectrum
      */
-    spectrumFeature->compute (signal);
+    spectrum_feature->compute (signal);
 
-    for (vector< vector<double> >::const_iterator si = spectrumFeature->spectrum.begin(); si != spectrumFeature->spectrum.end(); si++)
+    for (vector< vector<double> >::const_iterator si = spectrum_feature->spectrum.begin(); si != spectrum_feature->spectrum.end(); si++)
     {
       avg_spectrum.resize (si->size());
       for (size_t j = 0; j < si->size(); j++)
-	avg_spectrum[j] += (*si)[j] / spectrumFeature->spectrum.size();
+	avg_spectrum[j] += (*si)[j] / spectrum_feature->spectrum.size();
     }
   }
-  void printResults() const
+  void print_results() const
   {
-    printVector (avg_spectrum);
+    print_vector (avg_spectrum);
   }
 };
 
@@ -409,9 +411,9 @@ struct AvgEnergyFeature : public Feature
     avg_energy = 10 * log (avg_energy) / log (10);
   }
 
-  void printResults() const
+  void print_results() const
   {
-    fprintf (outputFile, "%f\n", avg_energy);
+    fprintf (output_file, "%f\n", avg_energy);
   }
 };
 
@@ -435,10 +437,10 @@ struct MinMaxPeakFeature : public Feature
       }
   }
 
-  void printResults() const
+  void print_results() const
   {
-    fprintf (outputFile, "%f\n", min_peak);
-    fprintf (outputFile, "%f\n", max_peak);
+    fprintf (output_file, "%f\n", min_peak);
+    fprintf (output_file, "%f\n", max_peak);
   }
 };
 
@@ -456,10 +458,10 @@ struct RawSignalFeature : public Feature
       raw_signal.push_back (signal[l]);
   }
 
-  void printResults() const
+  void print_results() const
   {
     for (guint i = 0; i < raw_signal.size(); i++)
-      fprintf (outputFile, "%f\n", raw_signal[i]);
+      fprintf (output_file, "%f\n", raw_signal[i]);
   }
 };
 
@@ -489,7 +491,7 @@ struct ComplexSignalFeature : public Feature
   }
 
   /* returns a blackman window: x is supposed to be in the interval [0..1] */
-  static float blackmanWindow (float x)
+  static float blackman_window (float x)
   {
     if(x < 0) return 0;
     if(x > 1) return 0;
@@ -499,7 +501,7 @@ struct ComplexSignalFeature : public Feature
   /* blackman window with x in [-1 .. 1] */
   static float bwindow (float x)
   {
-    return blackmanWindow((x+1.0)/2.0);
+    return blackman_window ((x + 1.0) / 2.0);
   }
 
   ComplexSignalFeature() : Feature ("--complex-signal", "extract complex signal (hilbert filtered)")
@@ -509,7 +511,7 @@ struct ComplexSignalFeature : public Feature
       {
 	double x;
 	if (i & 1)
-	  x = 1./double(i) * bwindow(double(i) / double(HSIZE));
+	  x = 1./double(i) * bwindow (double(i) / double(HSIZE));
 	else
 	  x = 0.0;
 	hilbert[HSIZE+i] = x;
@@ -555,31 +557,34 @@ struct ComplexSignalFeature : public Feature
       }
   }
 
-  void printResults() const
+  void
+  print_results() const
   {
     for (guint i = 0; i < complex_signal.size(); i++)
-      fprintf (outputFile, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
+      fprintf (output_file, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
   }
 };
 
 struct BaseFreqFeature : public Feature
 {
-  ComplexSignalFeature *complexSignalFeature;
+  ComplexSignalFeature *complex_signal_feature;
   vector<double> freq;
 
   double base_freq;
   double base_freq_smear;
   double base_freq_wobble;
 
-  BaseFreqFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--base-freq", "try to detect pitch of a signal"),
-								 complexSignalFeature (complexSignalFeature)
+  BaseFreqFeature (ComplexSignalFeature *complex_signal_feature)
+    : Feature ("--base-freq", "try to detect pitch of a signal"),
+      complex_signal_feature (complex_signal_feature)
   {
     base_freq = 0;
     base_freq_smear = 0;
     base_freq_wobble = 0;
   }
 
-  void compute (const Signal& signal)
+  void
+  compute (const Signal& signal)
   {
     if (freq.size()) /* already finished? */
       return;
@@ -587,7 +592,7 @@ struct BaseFreqFeature : public Feature
     /*
      * dependancy: we need the complex signal to compute the base frequency
      */
-    complexSignalFeature->compute (signal);
+    complex_signal_feature->compute (signal);
 
     /*
      * if the user specified a base frequency hint, we search especially in
@@ -632,8 +637,8 @@ struct BaseFreqFeature : public Feature
     exit (1);
 #endif
 
-    for (vector< std::complex<double> >::const_iterator si = complexSignalFeature->complex_signal.begin();
-	                                                si != complexSignalFeature->complex_signal.end(); si++)
+    for (vector< std::complex<double> >::const_iterator si = complex_signal_feature->complex_signal.begin();
+	                                                si != complex_signal_feature->complex_signal.end(); si++)
     {
       if (options.base_freq_hint > 0)
 	{
@@ -678,7 +683,8 @@ struct BaseFreqFeature : public Feature
     compute_smear_and_wobble (signal);
   }
 
-  void compute_smear_and_wobble (const Signal& signal)
+  void
+  compute_smear_and_wobble (const Signal& signal)
   {
     const int window_size = int (signal.mix_freq() / base_freq + 0.5);
     const int window_step = max (window_size / 3, 30);
@@ -725,18 +731,19 @@ struct BaseFreqFeature : public Feature
       }
   }
 
-  void printResults() const
+  void print_results() const
   {
-    printValue (base_freq);
+    print_value (base_freq);
   }
 };
 
 struct BaseFreqSmear : public Feature
 {
-  BaseFreqFeature *baseFreqFeature;
+  BaseFreqFeature *base_freq_feature;
 
-  BaseFreqSmear (BaseFreqFeature *baseFreqFeature) : Feature ("--base-freq-smear", "inaccuracy of pitch detection"),
-							      baseFreqFeature (baseFreqFeature)
+  BaseFreqSmear (BaseFreqFeature *base_freq_feature)
+    : Feature ("--base-freq-smear", "inaccuracy of pitch detection"),
+      base_freq_feature (base_freq_feature)
   {
   }
 
@@ -745,21 +752,22 @@ struct BaseFreqSmear : public Feature
     /*
      * dependancy: we need the base frequency feature to compute the base frequency smear
      */
-    baseFreqFeature->compute (signal);
+    base_freq_feature->compute (signal);
   }
 
-  void printResults() const
+  void print_results() const
   {
-    printValue (baseFreqFeature->base_freq_smear);
+    print_value (base_freq_feature->base_freq_smear);
   }
 };
 
 struct BaseFreqWobble : public Feature
 {
-  BaseFreqFeature *baseFreqFeature;
+  BaseFreqFeature *base_freq_feature;
 
-  BaseFreqWobble (BaseFreqFeature *baseFreqFeature) : Feature ("--base-freq-wobble", "rate of changes in the pitch over time"),
-							      baseFreqFeature (baseFreqFeature)
+  BaseFreqWobble (BaseFreqFeature *base_freq_feature)
+    : Feature ("--base-freq-wobble", "rate of changes in the pitch over time"),
+      base_freq_feature (base_freq_feature)
   {
   }
 
@@ -768,26 +776,27 @@ struct BaseFreqWobble : public Feature
     /*
      * dependancy: we need the base frequency feature to compute the base frequency smear
      */
-    baseFreqFeature->compute (signal);
+    base_freq_feature->compute (signal);
   }
 
-  void printResults() const
+  void print_results() const
   {
-    printValue (baseFreqFeature->base_freq_wobble);
+    print_value (base_freq_feature->base_freq_wobble);
   }
 };
 
 struct VolumeFeature : public Feature
 {
-  ComplexSignalFeature *complexSignalFeature;
+  ComplexSignalFeature *complex_signal_feature;
   vector<double> vol;
 
   double volume;
   double volume_smear;
   double volume_wobble;
 
-  VolumeFeature (ComplexSignalFeature *complexSignalFeature) : Feature ("--volume", "determine average signal volume"),
-							       complexSignalFeature (complexSignalFeature)
+  VolumeFeature (ComplexSignalFeature *complex_signal_feature)
+    : Feature ("--volume", "determine average signal volume"),
+      complex_signal_feature (complex_signal_feature)
   {
     volume = 0;
     volume_smear = 0;
@@ -802,12 +811,12 @@ struct VolumeFeature : public Feature
     /*
      * dependancy: we need the complex signal to compute the base frequency
      */
-    complexSignalFeature->compute (signal);
+    complex_signal_feature->compute (signal);
 
     volume = 0.0;
 
-    for (vector< std::complex<double> >::const_iterator si = complexSignalFeature->complex_signal.begin();
-	                                                si != complexSignalFeature->complex_signal.end(); si++)
+    for (vector< std::complex<double> >::const_iterator si = complex_signal_feature->complex_signal.begin();
+	                                                si != complex_signal_feature->complex_signal.end(); si++)
       {
 	double v = std::abs (*si); //sqrt (si->real() * si->real() + si->imag() * si->imag()); //std::abs (*si);
 
@@ -864,61 +873,61 @@ struct VolumeFeature : public Feature
       }
   }
 
-  void printResults() const
+  void print_results() const
   {
-    printValue (volume);
+    print_value (volume);
   }
 };
 
 struct VolumeSmear : public Feature
 {
-  VolumeFeature *volumeFeature;
+  VolumeFeature *volume_feature;
 
-        
-
-  VolumeSmear (VolumeFeature *volumeFeature) : Feature ("--volume-smear", "variation of signal volume"),
-					       volumeFeature (volumeFeature)
+  VolumeSmear (VolumeFeature *volume_feature)
+    : Feature ("--volume-smear", "variation of signal volume"),
+      volume_feature (volume_feature)
   {
   }
 
   void compute (const Signal& signal)
   {
     // dependancy: we need the volume feature to compute the volume smear
-    volumeFeature->compute (signal);
+    volume_feature->compute (signal);
   }
 
-  void printResults() const
+  void print_results() const
   {
-    printValue (volumeFeature->volume_smear);
+    print_value (volume_feature->volume_smear);
   }
 };
 
 struct VolumeWobble : public Feature
 {
-  VolumeFeature *volumeFeature;
+  VolumeFeature *volume_feature;
 
 
-  VolumeWobble (VolumeFeature *volumeFeature) : Feature ("--volume-wobble", "rate of changes in signal volume over time"),
-						volumeFeature (volumeFeature)
+  VolumeWobble (VolumeFeature *volume_feature)
+    : Feature ("--volume-wobble", "rate of changes in signal volume over time"),
+      volume_feature (volume_feature)
   {
   }
 
   void compute (const Signal& signal)
   {
     // dependancy: we need the volume feature to compute the volume wobble
-    volumeFeature->compute (signal);
+    volume_feature->compute (signal);
   }
 
-  void printResults() const
+  void print_results() const
   {
-    printValue (volumeFeature->volume_wobble);
+    print_value (volume_feature->volume_wobble);
   }
 };
 
 
 Options::Options ()
 {
-  programName = "bsefextract";
+  program_name = "bsefextract";
   channel = 0;
   cut_zeros_head = false;
   cut_zeros_tail = false;
@@ -928,31 +937,33 @@ Options::Options ()
   focus_width = 100.0;
 }
 
-FILE *Options::openOutputFile (const char *filename)
+FILE*
+Options::open_output_file (const char *filename)
 {
   if (!filename || (strcmp (filename, "-") == 0))
     return stdout;
   
-  FILE*& outfile = outputFiles[filename];
+  FILE*& outfile = output_files[filename];
   if (!outfile)
     {
       outfile = fopen (filename, "w");
       if (!outfile)
 	{
-	  fprintf (stderr, "%s: can't open %s for writing: %s\n", programName.c_str(), filename, strerror (errno));
+	  fprintf (stderr, "%s: can't open %s for writing: %s\n", program_name.c_str(), filename, strerror (errno));
 	  exit (1);
 	}
     }
   return outfile;
 }
 
-void Options::validatePercent (const string& option, gdouble value)
+void
+Options::validate_percent (const string& option, gdouble value)
 {
   if (value < 0.0 || value > 100.0)
     {
-      fprintf (stderr, "%s: invalid argument `%f' for `%s'\n\n", programName.c_str(), value, option.c_str());
+      fprintf (stderr, "%s: invalid argument `%f' for `%s'\n\n", program_name.c_str(), value, option.c_str());
       fprintf (stderr, "Valid arguments are percent values (between 0 and 100).\n");
-      fprintf (stderr, "Try `%s --help' for more information.\n", programName.c_str());
+      fprintf (stderr, "Try `%s --help' for more information.\n", program_name.c_str());
       exit (1);
     }
 }
@@ -1001,7 +1012,7 @@ check_arg (uint         argc,
   else
     return false;
 
-  Options::printUsage();
+  Options::print_usage();
   exit (1);
 }
 
@@ -1019,7 +1030,7 @@ Options::parse (int   *argc_p,
    *  but basically this should be done (to allow renaming the binary):
    *
   if (argc && argv[0])
-    programName = argv[0];
+    program_name = argv[0];
   */
 
   for (i = 1; i < argc; i++)
@@ -1028,13 +1039,13 @@ Options::parse (int   *argc_p,
       if (strcmp (argv[i], "--help") == 0 ||
           strcmp (argv[i], "-h") == 0)
 	{
-	  printUsage();
+	  print_usage();
 	  exit (0);
 	}
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
 	{
-	  printf ("%s %s\n", programName.c_str(), BST_VERSION);
+	  printf ("%s %s\n", program_name.c_str(), BST_VERSION);
 	  exit (0);
 	}
       else if (strcmp (argv[i], "--cut-zeros") == 0)
@@ -1055,18 +1066,18 @@ Options::parse (int   *argc_p,
       else if (check_arg (argc, argv, &i, "--silence-threshold", &opt_arg))
         silence_threshold = atof (opt_arg) / 32767.0;
       else if (check_arg (argc, argv, &i, "--focus-width", &opt_arg))
-        validatePercent ("--focus-width", focus_width = atof (opt_arg));
+        validate_percent ("--focus-width", focus_width = atof (opt_arg));
       else if (check_arg (argc, argv, &i, "--focus-center", &opt_arg))
-        validatePercent ("--focus-center", focus_center = atof (opt_arg));
+        validate_percent ("--focus-center", focus_center = atof (opt_arg));
       else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt_arg))
         base_freq_hint = atof (opt_arg);
       else if (check_arg (argc, argv, &i, "--channel", &opt_arg))
         channel = atoi (opt_arg);
       else
-        for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+        for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
           if (check_arg (argc, argv, &i, (*fi)->option))
             {
-              (*fi)->outputFile = openOutputFile (NULL);
+              (*fi)->output_file = open_output_file (NULL);
               break;
             }
     }
@@ -1083,18 +1094,19 @@ Options::parse (int   *argc_p,
   *argc_p = e;
 }
 
-void Options::printUsage ()
+void
+Options::print_usage ()
 {
-  std::string programName = "bsefextract";
-  fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", programName.c_str());
+  std::string program_name = "bsefextract";
+  fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", program_name.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "features that can be extracted:\n");
-  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+  for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
     printf (" %-28s%s\n", (*fi)->option, (*fi)->description);
   fprintf (stderr, "\n");
   fprintf (stderr, "other options:\n");
   fprintf (stderr, " --channel=<channel>         select channel (0: left, 1: right)\n");
-  fprintf (stderr, " --help                      help for %s\n", programName.c_str());
+  fprintf (stderr, " --help                      help for %s\n", program_name.c_str());
   fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, " --cut-zeros                 cut zero samples at start/end of the signal\n");
   fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
@@ -1105,22 +1117,24 @@ void Options::printUsage ()
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
   fprintf (stderr, "\n");
   // FIXME: depends on bogus option parsing: fprintf (stderr, "Appending =<filename> to a feature writes this feature to a separate file\n");
-  fprintf (stderr, "(example: %s --start-time=t.start t.wav).\n", programName.c_str());
+  fprintf (stderr, "(example: %s --start-time=t.start t.wav).\n", program_name.c_str());
 }
 
-void printHeader (FILE *file, const char *src)
+void
+print_header (FILE *file, const char *src)
 {
   static map<FILE *, bool> done;
 
   if (!done[file])
     {
-      fprintf (file, "# this output was generated by %s %s from channel %d in file %s\n", options.programName.c_str(), BST_VERSION, options.channel, src);
+      fprintf (file, "# this output was generated by %s %s from channel %d in file %s\n", options.program_name.c_str(), BST_VERSION, options.channel, src);
       fprintf (file, "#\n");
       done[file] = true;
     }
 }
 
-int main (int argc, char **argv)
+int
+main (int argc, char **argv)
 {
   /* init */
   birnet_init (&argc, &argv, NULL);
@@ -1137,62 +1151,62 @@ int main (int argc, char **argv)
   bse_init_intern (&argc, &argv, NULL, NULL);
 
   /* supported features */
-  SpectrumFeature *spectrumFeature = new SpectrumFeature;
-  ComplexSignalFeature *complexSignalFeature = new ComplexSignalFeature;
-  BaseFreqFeature *baseFreqFeature = new BaseFreqFeature (complexSignalFeature);
-  VolumeFeature *volumeFeature = new VolumeFeature (complexSignalFeature);
+  SpectrumFeature *spectrum_feature = new SpectrumFeature;
+  ComplexSignalFeature *complex_signal_feature = new ComplexSignalFeature;
+  BaseFreqFeature *base_freq_feature = new BaseFreqFeature (complex_signal_feature);
+  VolumeFeature *volume_feature = new VolumeFeature (complex_signal_feature);
 
-  featureList.push_back (new StartTimeFeature());
-  featureList.push_back (new EndTimeFeature());
-  featureList.push_back (spectrumFeature);
-  featureList.push_back (new AvgSpectrumFeature (spectrumFeature));
-  featureList.push_back (new AvgEnergyFeature());
-  featureList.push_back (new MinMaxPeakFeature());
-  featureList.push_back (new RawSignalFeature());
-  featureList.push_back (complexSignalFeature);
-  featureList.push_back (baseFreqFeature);
-  featureList.push_back (new BaseFreqSmear (baseFreqFeature));
-  featureList.push_back (new BaseFreqWobble (baseFreqFeature));
-  featureList.push_back (volumeFeature);
-  featureList.push_back (new VolumeSmear (volumeFeature));
-  featureList.push_back (new VolumeWobble (volumeFeature));
+  feature_list.push_back (new StartTimeFeature());
+  feature_list.push_back (new EndTimeFeature());
+  feature_list.push_back (spectrum_feature);
+  feature_list.push_back (new AvgSpectrumFeature (spectrum_feature));
+  feature_list.push_back (new AvgEnergyFeature());
+  feature_list.push_back (new MinMaxPeakFeature());
+  feature_list.push_back (new RawSignalFeature());
+  feature_list.push_back (complex_signal_feature);
+  feature_list.push_back (base_freq_feature);
+  feature_list.push_back (new BaseFreqSmear (base_freq_feature));
+  feature_list.push_back (new BaseFreqWobble (base_freq_feature));
+  feature_list.push_back (volume_feature);
+  feature_list.push_back (new VolumeSmear (volume_feature));
+  feature_list.push_back (new VolumeWobble (volume_feature));
 
   /* parse options */
   options.parse (&argc, &argv);
   if (argc != 2)
     {
-      options.printUsage ();
+      options.print_usage ();
       return 1;
     }
 
   /* open input */
   BseErrorType error;
 
-  BseWaveFileInfo *waveFileInfo = bse_wave_file_info_load (argv[1], &error);
-  if (!waveFileInfo)
+  BseWaveFileInfo *wave_file_info = bse_wave_file_info_load (argv[1], &error);
+  if (!wave_file_info)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
-  BseWaveDsc *waveDsc = bse_wave_dsc_load (waveFileInfo, 0, FALSE, &error);
+  BseWaveDsc *waveDsc = bse_wave_dsc_load (wave_file_info, 0, FALSE, &error);
   if (!waveDsc)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
   GslDataHandle *dhandle = bse_wave_handle_create (waveDsc, 0, &error);
   if (!dhandle)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (dhandle);
   if (error)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
@@ -1202,23 +1216,23 @@ int main (int argc, char **argv)
   if (options.channel >= signal.n_channels())
     {
       fprintf (stderr, "%s: bad channel %d, input file %s has %d channels\n",
-	       options.programName.c_str(), options.channel, argv[1], signal.n_channels());
+	       options.program_name.c_str(), options.channel, argv[1], signal.n_channels());
       exit (1);
     }
 
-  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
-    if ((*fi)->outputFile)
+  for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
+    if ((*fi)->output_file)
       (*fi)->compute (signal);
 
   /* print results */
-  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+  for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
     {
       const Feature& feature = *(*fi);
-      if (feature.outputFile)
+      if (feature.output_file)
 	{
-	  printHeader (feature.outputFile, argv[1]);
-	  fprintf (feature.outputFile, "# %s: %s\n", feature.option, feature.description);
-	  feature.printResults();
+	  print_header (feature.output_file, argv[1]);
+	  fprintf (feature.output_file, "# %s: %s\n", feature.option, feature.description);
+	  feature.print_results();
 	}
     }
 }

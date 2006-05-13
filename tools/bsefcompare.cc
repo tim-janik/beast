@@ -36,18 +36,18 @@
 using namespace std;
 
 struct Options {
-  string	      programName;
+  string	      program_name;
   double              threshold;
   bool                compact;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
-  static void printUsage ();
+  static void print_usage ();
 } options;
 
 Options::Options ()
 {
-  programName = "bsefcompare";
+  program_name = "bsefcompare";
   threshold = 100;
   compact = false;
 }
@@ -96,7 +96,7 @@ check_arg (uint         argc,
   else
     return false;
 
-  Options::printUsage();
+  Options::print_usage();
   exit (1);
 }
 
@@ -114,7 +114,7 @@ Options::parse (int   *argc_p,
    *  but basically this should be done (to allow renaming the binary):
    *
   if (argc && argv[0])
-    programName = argv[0];
+    program_name = argv[0];
   */
 
   for (i = 1; i < argc; i++)
@@ -123,13 +123,13 @@ Options::parse (int   *argc_p,
       if (strcmp (argv[i], "--help") == 0 ||
           strcmp (argv[i], "-h") == 0)
         {
-          printUsage();
+          print_usage();
           exit (0);
         }
       else if (strcmp (argv[i], "--version") == 0 ||
                strcmp (argv[i], "-v") == 0)
         {
-          printf ("%s %s\n", programName.c_str(), BST_VERSION);
+          printf ("%s %s\n", program_name.c_str(), BST_VERSION);
           exit (0);
         }
       else if (check_arg (argc, argv, &i, "--compact"))
@@ -151,15 +151,15 @@ Options::parse (int   *argc_p,
 }
 
 void
-Options::printUsage ()
+Options::print_usage ()
 {
-  std::string programName = "bsefcompare";
-  fprintf (stderr, "usage: %s [ <options> ] <featurefile1> <featurefile2>\n", programName.c_str());
+  std::string program_name = "bsefcompare";
+  fprintf (stderr, "usage: %s [ <options> ] <featurefile1> <featurefile2>\n", program_name.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "options:\n");
   fprintf (stderr, " --threshold=<percent>       set threshold for returning that two files match\n");
   fprintf (stderr, " --compact                   suppress printing individual similarities\n");
-  fprintf (stderr, " --help                      help for %s\n", programName.c_str());
+  fprintf (stderr, " --help                      help for %s\n", program_name.c_str());
   fprintf (stderr, " --version                   print version\n");
 }
 
@@ -216,7 +216,7 @@ vector_similarity (const vector<double>& f1, const vector<double>& f2)
 }
 
 vector<double>
-readFeature (FILE *f)
+read_feature (FILE *f)
 {
   vector<double> result;
   for(;;)
@@ -244,28 +244,29 @@ readFeature (FILE *f)
     }
 }
 
-int main (int argc, char **argv)
+int
+main (int argc, char **argv)
 {
   /* parse options */
   options.parse (&argc, &argv);
 
   if (argc != 3)
     {
-      options.printUsage ();
+      options.print_usage ();
       return 1;
     }
 
   FILE *file1 = fopen (argv[1], "r");
   if (!file1)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], strerror (errno));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], strerror (errno));
       exit (1);
     }
 
   FILE *file2 = fopen (argv[2], "r");
   if (!file2)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], strerror (errno));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], strerror (errno));
       exit (1);
     }
 
@@ -273,8 +274,8 @@ int main (int argc, char **argv)
 
   for (;;)
     {
-      f1 = readFeature (file1);
-      f2 = readFeature (file2);
+      f1 = read_feature (file1);
+      f2 = read_feature (file2);
 
       if (f1.size() != f2.size())
 	{

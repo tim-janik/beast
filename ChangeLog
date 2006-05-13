@@ -1,3 +1,8 @@
+Sat May 13 21:09:21 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc tools/bsefcompare.cc: Adapt coding style a bit
+	to the rest of BEAST (mainly removed semiCapitalizedIdentifiers).
+
 Fri May 12 16:52:32 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/audio/Makefile.am: started rewrite of test rules.
