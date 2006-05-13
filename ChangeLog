@@ -1,3 +1,9 @@
+Sat May 13 21:56:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Got rid of per feature output redirection
+	code, and replaced it with a simple "-o" option, which allows all of
+	bsefextract's output to be redirected into a file.
+
 Sat May 13 21:09:21 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc tools/bsefcompare.cc: Adapt coding style a bit

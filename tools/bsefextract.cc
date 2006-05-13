@@ -53,14 +53,12 @@ struct Options {
   gdouble             focus_center;
   gdouble             focus_width;
 
-  map<string, FILE*>  output_files;
+  FILE               *output_file;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
   static void print_usage ();
   void validate_percent (const string& option, gdouble value);
-
-  FILE *open_output_file (const char *filename);
 } options;
 
 class Signal
@@ -176,22 +174,22 @@ struct Feature
 {
   const char *option;
   const char *description;
-  FILE *output_file;
+  bool        extract_feature;      /* did the user enable this feature with --feature? */
 
   void print_value (double data) const
   {
-    fprintf (output_file, "%f\n", data);
+    fprintf (options.output_file, "%f\n", data);
   }
 
   void print_vector (const vector<double>& data) const
   {
     for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
-      fprintf (output_file, (di == data.begin() ? "%f" : " %f"), *di);
-    fprintf (output_file, "\n");
+      fprintf (options.output_file, (di == data.begin() ? "%f" : " %f"), *di);
+    fprintf (options.output_file, "\n");
   }
 
   Feature (const char *option, const char *description)
-    : option (option), description (description), output_file (NULL)
+    : option (option), description (description), extract_feature (false)
   {
   }
 
@@ -413,7 +411,7 @@ struct AvgEnergyFeature : public Feature
 
   void print_results() const
   {
-    fprintf (output_file, "%f\n", avg_energy);
+    fprintf (options.output_file, "%f\n", avg_energy);
   }
 };
 
@@ -439,8 +437,8 @@ struct MinMaxPeakFeature : public Feature
 
   void print_results() const
   {
-    fprintf (output_file, "%f\n", min_peak);
-    fprintf (output_file, "%f\n", max_peak);
+    fprintf (options.output_file, "%f\n", min_peak);
+    fprintf (options.output_file, "%f\n", max_peak);
   }
 };
 
@@ -461,7 +459,7 @@ struct RawSignalFeature : public Feature
   void print_results() const
   {
     for (guint i = 0; i < raw_signal.size(); i++)
-      fprintf (output_file, "%f\n", raw_signal[i]);
+      fprintf (options.output_file, "%f\n", raw_signal[i]);
   }
 };
 
@@ -561,7 +559,7 @@ struct ComplexSignalFeature : public Feature
   print_results() const
   {
     for (guint i = 0; i < complex_signal.size(); i++)
-      fprintf (output_file, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
+      fprintf (options.output_file, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
   }
 };
 
@@ -935,25 +933,7 @@ Options::Options ()
   base_freq_hint = 0.0;
   focus_center = 50.0;
   focus_width = 100.0;
-}
-
-FILE*
-Options::open_output_file (const char *filename)
-{
-  if (!filename || (strcmp (filename, "-") == 0))
-    return stdout;
-  
-  FILE*& outfile = output_files[filename];
-  if (!outfile)
-    {
-      outfile = fopen (filename, "w");
-      if (!outfile)
-	{
-	  fprintf (stderr, "%s: can't open %s for writing: %s\n", program_name.c_str(), filename, strerror (errno));
-	  exit (1);
-	}
-    }
-  return outfile;
+  output_file = stdout;
 }
 
 void
@@ -1063,6 +1043,24 @@ Options::parse (int   *argc_p,
 	  cut_zeros_tail = true;
 	  argv[i] = NULL;
 	}
+      else if (check_arg (argc, argv, &i, "-o", &opt_arg))
+	{
+	  if (output_file != stdout)
+	    {
+	      fprintf (stderr, "%s: can't set %s as output file (more than one -o option)\n",
+		       program_name.c_str(), opt_arg);
+	      exit (1);
+	    }
+	  if (strcmp (opt_arg, "-") != 0)  /* "-" will keep it as it is: stdout */
+	    {
+	      output_file = fopen (opt_arg, "w");
+	      if (!output_file)
+		{
+		  fprintf (stderr, "%s: can't open %s for writing: %s\n", program_name.c_str(), opt_arg, strerror (errno));
+		  exit (1);
+		}
+	    }
+	}
       else if (check_arg (argc, argv, &i, "--silence-threshold", &opt_arg))
         silence_threshold = atof (opt_arg) / 32767.0;
       else if (check_arg (argc, argv, &i, "--focus-width", &opt_arg))
@@ -1077,7 +1075,7 @@ Options::parse (int   *argc_p,
         for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
           if (check_arg (argc, argv, &i, (*fi)->option))
             {
-              (*fi)->output_file = open_output_file (NULL);
+              (*fi)->extract_feature = true;
               break;
             }
     }
@@ -1097,16 +1095,15 @@ Options::parse (int   *argc_p,
 void
 Options::print_usage ()
 {
-  std::string program_name = "bsefextract";
-  fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", program_name.c_str());
+  fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", options.program_name.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "features that can be extracted:\n");
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
     printf (" %-28s%s\n", (*fi)->option, (*fi)->description);
   fprintf (stderr, "\n");
   fprintf (stderr, "other options:\n");
-  fprintf (stderr, " --channel=<channel>         select channel (0: left, 1: right)\n");
-  fprintf (stderr, " --help                      help for %s\n", program_name.c_str());
+  fprintf (stderr, " --channel <channel>         select channel (0: left, 1: right)\n");
+  fprintf (stderr, " --help                      help for %s\n", options.program_name.c_str());
   fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, " --cut-zeros                 cut zero samples at start/end of the signal\n");
   fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
@@ -1115,22 +1112,17 @@ Options::print_usage ()
   fprintf (stderr, " --focus-center=X            center focus region around X%% [50]\n");
   fprintf (stderr, " --focus-width=Y             width of focus region in %% [100]\n");
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
+  fprintf (stderr, " -o <output_file>            set the name of a file to write the features to\n");
   fprintf (stderr, "\n");
-  // FIXME: depends on bogus option parsing: fprintf (stderr, "Appending =<filename> to a feature writes this feature to a separate file\n");
-  fprintf (stderr, "(example: %s --start-time=t.start t.wav).\n", program_name.c_str());
+  fprintf (stderr, "(example: %s --start-time --end-time t.wav).\n", options.program_name.c_str());
 }
 
-void
-print_header (FILE *file, const char *src)
+static void
+print_header (const char *src)
 {
-  static map<FILE *, bool> done;
-
-  if (!done[file])
-    {
-      fprintf (file, "# this output was generated by %s %s from channel %d in file %s\n", options.program_name.c_str(), BST_VERSION, options.channel, src);
-      fprintf (file, "#\n");
-      done[file] = true;
-    }
+  fprintf (options.output_file, "# this output was generated by %s %s from channel %d in file %s\n",
+           options.program_name.c_str(), BST_VERSION, options.channel, src);
+  fprintf (options.output_file, "#\n");
 }
 
 int
@@ -1221,17 +1213,17 @@ main (int argc, char **argv)
     }
 
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
-    if ((*fi)->output_file)
+    if ((*fi)->extract_feature)
       (*fi)->compute (signal);
 
   /* print results */
+  print_header (argv[1]);
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
     {
       const Feature& feature = *(*fi);
-      if (feature.output_file)
+      if (feature.extract_feature)
 	{
-	  print_header (feature.output_file, argv[1]);
-	  fprintf (feature.output_file, "# %s: %s\n", feature.option, feature.description);
+	  fprintf (options.output_file, "# %s: %s\n", feature.option, feature.description);
 	  feature.print_results();
 	}
     }
