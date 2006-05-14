@@ -1,5 +1,5 @@
 /* BSE Feature Comparision Tool
- * Copyright (C) 2004 Stefan Westerfeld
+ * Copyright (C) 2004-2006 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,10 @@
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "topconfig.h"
 
 #include <map>
@@ -39,6 +43,7 @@ struct Options {
   string	      program_name;
   double              threshold;
   bool                compact;
+  bool                strict;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
@@ -50,6 +55,7 @@ Options::Options ()
   program_name = "bsefcompare";
   threshold = 100;
   compact = false;
+  strict = false;
 }
 
 static bool
@@ -134,6 +140,10 @@ Options::parse (int   *argc_p,
         }
       else if (check_arg (argc, argv, &i, "--compact"))
         compact = true;
+      else if (check_arg (argc, argv, &i, "--strict"))
+        strict = true;
+      else if (check_arg (argc, argv, &i, "--permissive"))
+        strict = false;
       else if (check_arg (argc, argv, &i, "--threshold", &opt_arg))
         threshold = atof (opt_arg);
     }
@@ -157,10 +167,12 @@ Options::print_usage ()
   fprintf (stderr, "usage: %s [ <options> ] <featurefile1> <featurefile2>\n", program_name.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "options:\n");
-  fprintf (stderr, " --threshold=<percent>       set threshold for returning that two files match\n");
-  fprintf (stderr, " --compact                   suppress printing individual similarities\n");
-  fprintf (stderr, " --help                      help for %s\n", program_name.c_str());
-  fprintf (stderr, " --version                   print version\n");
+  fprintf (stderr, " --threshold=<percent>  set threshold for returning that two files match\n");
+  fprintf (stderr, " --strict               only compare features with exactly the same dimension\n");
+  fprintf (stderr, " --permissive           enable algorithm to compare features with different dimension [default]\n");
+  fprintf (stderr, " --compact              suppress printing individual similarities\n");
+  fprintf (stderr, " --help                 help for %s\n", program_name.c_str());
+  fprintf (stderr, " --version              print version\n");
 }
 
 static double
@@ -193,6 +205,18 @@ number_similarity (double a, double b)
 static double
 vector_similarity (const vector<double>& f1, const vector<double>& f2)
 {
+  /* different size vectors: only compare if "permissive" comparisions enabled */
+  if (f1.size() != f2.size())
+    {
+      if (options.strict)
+	return -1;
+
+      uint min_size = min (f1.size(), f2.size());
+      vector<double> common_f1 (f1.begin(), f1.begin() + min_size);
+      vector<double> common_f2 (f2.begin(), f2.begin() + min_size);
+      return vector_similarity (common_f1, common_f2);
+    }
+
   double f1len = vector_len (f1);
   double f2len = vector_len (f2);
 
@@ -215,32 +239,382 @@ vector_similarity (const vector<double>& f1, const vector<double>& f2)
   return diff / f1len / f2len;
 }
 
-vector<double>
-read_feature (FILE *f)
+static string string_printf (const char *format, ...) G_GNUC_PRINTF (1, 2);
+
+static string
+string_printf (const char *format, ...)
 {
-  vector<double> result;
-  for(;;)
+  va_list ap;
+  va_start(ap, format);
+  char *c_str = g_strdup_vprintf (format, ap);
+  va_end(ap);
+  string str = c_str;
+  g_free (c_str);
+  return str;
+}
+
+
+static  GScannerConfig  scanner_config_template = {
+  const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
+  (
+   " \t\r\n"
+   )                    /* cset_skip_characters */,
+  const_cast<gchar *>
+  (
+   G_CSET_a_2_z
+   "_"
+   G_CSET_A_2_Z
+   )                    /* cset_identifier_first */,
+  const_cast<gchar *>
+  (
+   G_CSET_a_2_z
+   "_0123456789"
+   G_CSET_A_2_Z
+   )                    /* cset_identifier_nth */,
+  const_cast<gchar *>
+  ( "#\n" )             /* cpair_comment_single */,
+  
+  TRUE                  /* case_sensitive */,
+  
+  TRUE                  /* skip_comment_multi */,
+  TRUE                  /* skip_comment_single */,
+  TRUE                  /* scan_comment_multi */,
+  TRUE                  /* scan_identifier */,
+  TRUE                  /* scan_identifier_1char */,
+  FALSE                 /* scan_identifier_NULL */,
+  TRUE                  /* scan_symbols */,
+  FALSE                 /* scan_binary */,
+  TRUE                  /* scan_octal */,
+  TRUE                  /* scan_float */,
+  TRUE                  /* scan_hex */,
+  FALSE                 /* scan_hex_dollar */,
+  FALSE                 /* scan_string_sq */,
+  TRUE                  /* scan_string_dq */,
+  TRUE                  /* numbers_2_int */,
+  FALSE                 /* int_2_float */,
+  FALSE                 /* identifier_2_string */,
+  TRUE                  /* char_2_token */,
+  TRUE                  /* symbol_2_token */,
+  FALSE                 /* scope_0_fallback */,
+  TRUE                  /* store_int64 */,
+};
+
+#define parse_or_return(token)  G_STMT_START{ \
+  GTokenType _t = GTokenType(token); \
+  if (g_scanner_get_next_token (scanner) != _t) \
+    return _t; \
+}G_STMT_END
+#define parse_float_or_return(f) G_STMT_START{ \
+  bool negate = false; \
+  GTokenType t = g_scanner_get_next_token (scanner); \
+  if (t == GTokenType('-')) \
+  { \
+    negate = true; \
+    t = g_scanner_get_next_token (scanner); \
+  } \
+  if (t == G_TOKEN_INT) \
+    f = scanner->value.v_int64; \
+  else if (t == G_TOKEN_FLOAT) \
+    f = scanner->value.v_float; \
+  else \
+    return G_TOKEN_FLOAT; \
+  if (negate) f = -f; \
+}G_STMT_END
+#define parse_int_or_return(i) G_STMT_START{ \
+  bool negate = (g_scanner_peek_next_token (scanner) == GTokenType('-')); \
+  if (negate) \
+    g_scanner_get_next_token(scanner); \
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_INT) \
+    return G_TOKEN_INT; \
+  i = scanner->value.v_int64; \
+  if (negate) i = -i; \
+}G_STMT_END
+
+struct FeatureValue {
+  string name;
+  enum Type {
+    TYPE_NUMBER,
+    TYPE_VECTOR,
+    TYPE_MATRIX
+  } type;
+
+  FeatureValue (string name, Type type) : name (name), type (type)
+  {
+  }
+  virtual GTokenType parse (GScanner *scanner) = 0;
+  virtual string     printable_type() const = 0;
+  /**
+   * returns a value between 0 and 1 if the features could be
+   * compared, where
+   *   0 means they are not similar at all
+   *   1 means they are maximally similar
+   * 
+   * or, on error
+   *  -1 which means that the features could not be compared due to type mismatch
+   */
+  virtual double     similarity (const FeatureValue *value) const = 0; 
+};
+
+struct FeatureValueNumber : FeatureValue {
+  double number;
+
+  FeatureValueNumber (const string& name) : FeatureValue (name, TYPE_NUMBER)
+  {
+    number = 0.0; /* hopefully never used, but initialized by parse */
+  }
+
+  GTokenType parse (GScanner *scanner);
+  string     printable_type() const;
+  double     similarity (const FeatureValue *value) const;
+};
+
+struct FeatureValueVector : FeatureValue {
+  int n;
+  vector<double> data; /* well, can't call it vector */
+
+  FeatureValueVector (const string& name, int n) : FeatureValue (name, TYPE_VECTOR), n (n)
+  {
+  }
+
+  GTokenType parse (GScanner *scanner);
+  string     printable_type() const;
+  double     similarity (const FeatureValue *value) const;
+};
+
+struct FeatureValueMatrix : FeatureValue {
+  int m, n;
+  vector< vector<double> > matrix;
+
+  FeatureValueMatrix (const string& name, int m, int n) : FeatureValue (name, TYPE_MATRIX), m (m), n (n)
+  {
+  }
+
+  GTokenType parse (GScanner *scanner);
+  string     printable_type() const;
+  double     similarity (const FeatureValue *value) const;
+};
+
+struct FeatureValueFile {
+  string filename;
+  vector<FeatureValue*> feature_values;
+
+  GTokenType parseFeatureValue (GScanner *scanner);
+  void parse (const string& filename);
+};
+
+//------- FeatureValueNumber implementation --------
+
+GTokenType
+FeatureValueNumber::parse (GScanner *scanner)
+{
+  parse_float_or_return (number);
+
+  return G_TOKEN_NONE;
+}
+
+string
+FeatureValueNumber::printable_type() const
+{
+  return "number";
+}
+
+double
+FeatureValueNumber::similarity (const FeatureValue *value) const
+{
+  if (value->type != TYPE_NUMBER || value->name != name)
+    return -1;
+
+  const FeatureValueNumber *v = static_cast<const FeatureValueNumber *> (value);
+  return number_similarity (number, v->number);
+}
+
+//------- FeatureValueVector implementation --------
+
+GTokenType
+FeatureValueVector::parse (GScanner *scanner)
+{
+  parse_or_return ('{');
+  for (int j = 0; j < n; j++)
     {
-      char buffer[4096];
-      if (fgets (buffer, 4096, f))
+      double d;
+      parse_float_or_return (d);
+      data.push_back (d);
+    }
+  parse_or_return ('}');
+
+  return G_TOKEN_NONE;
+}
+
+string
+FeatureValueVector::printable_type() const
+{
+  return string_printf ("%d element vector", n);
+}
+
+double
+FeatureValueVector::similarity (const FeatureValue *value) const
+{
+  if (value->type != TYPE_VECTOR || value->name != name)
+    return -1;
+
+  const FeatureValueVector *v = static_cast<const FeatureValueVector *> (value);
+  return vector_similarity (data, v->data); // can return -1 on size mismatch when --strict is set
+}
+
+//------- FeatureValueMatrix implementation --------
+
+GTokenType
+FeatureValueMatrix::parse (GScanner *scanner)
+{
+  /* for a m x n matrix, we write
+   * 
+   * data[m,n] = {
+   *   { x_11 x_12 ... x_1n }
+   *   { x_21 x_22 ... x_2n }
+   *   {  .    .   ...  .   }
+   *   {  .    .   ...  .   }
+   *   { x_m1 x_m2 ... x_mn }
+   * };
+   */
+  parse_or_return ('{');
+  for (int i = 0; i < m; i++)
+    {
+      parse_or_return ('{');
+
+      vector<double> line;
+      for (int j = 0; j < n; j++)
 	{
-	  if (buffer[0] == '#')
-	    continue;
+	  double d;
+	  parse_float_or_return (d);
+	  line.push_back (d);
+	}
+      matrix.push_back (line);
+      parse_or_return ('}');
+    }
+  parse_or_return ('}');
 
-	  char *p = strtok (buffer, " ");
-	  if (p)
-	    result.push_back (atof (p));
+  return G_TOKEN_NONE;
+}
 
-	  while ((p = strtok (NULL, " \n")))
-	    result.push_back (atof (p));
+string
+FeatureValueMatrix::printable_type() const
+{
+  return string_printf ("%d x %d matrix", m, n);
+}
 
-	  if (result.size())
-	    return result;
+double
+FeatureValueMatrix::similarity (const FeatureValue *value) const
+{
+  if (value->type != TYPE_MATRIX || value->name != name)
+    return -1;
+
+  const FeatureValueMatrix *v = static_cast<const FeatureValueMatrix *> (value);
+
+  /* matrix dimensions must match for strict comparision */
+  if (options.strict && (m != v->m || n != v->n))
+    return -1;
+
+  double s = 0;
+  uint min_m = min (m, v->m);
+  if (min_m)
+    {
+      for (uint i = 0; i < min_m; i++)
+	s += vector_similarity (matrix[i], v->matrix[i]);
+      return s / min_m;
+    }
+  else
+    {
+      return 0; /* FIXME: or return 1, or return 1 IFF permissive? */
+    }
+}
+
+//------- FeatureValueFile implementation --------
+
+GTokenType
+FeatureValueFile::parseFeatureValue (GScanner *scanner)
+{
+  FeatureValue *value = NULL;
+
+  string name = scanner->value.v_identifier;
+
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_LEFT_BRACE)
+    {
+      int a;
+
+      parse_or_return (G_TOKEN_LEFT_BRACE);
+      parse_int_or_return (a);
+
+      if (g_scanner_peek_next_token (scanner) == ',')
+	{
+	  int b;
+
+	  parse_or_return (',');
+	  parse_int_or_return (b);
+	  parse_or_return (G_TOKEN_RIGHT_BRACE);
+	  parse_or_return ('=');
+
+	  /* a x b matrix */
+	  value = new FeatureValueMatrix (name, a, b);
 	}
       else
 	{
-	  return result; /* likely: eof */
+	  parse_or_return (G_TOKEN_RIGHT_BRACE);
+	  parse_or_return ('=');
+
+	  /* a elements vector */
+	  value = new FeatureValueVector (name, a);
 	}
+    }
+  else
+    {
+      parse_or_return ('=');
+      value = new FeatureValueNumber (name);
+    }
+
+  /* parse the actual value */
+  GTokenType expected_token = value->parse (scanner);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token;
+
+  parse_or_return (';');
+  feature_values.push_back (value);
+  return G_TOKEN_NONE;
+}
+
+void
+FeatureValueFile::parse (const string& filename)
+{
+  g_return_if_fail (this->filename == "");
+  this->filename = filename;
+
+  GScanner *scanner = g_scanner_new64 (&scanner_config_template);
+  int fd = open (filename.c_str(), O_RDONLY);
+  if (fd < 0)
+    {
+      fprintf (stderr, "%s: can't open the input file \"%s\": %s\n",
+	       options.program_name.c_str(), filename.c_str(), strerror (errno));
+      exit (1);
+    }
+  g_scanner_input_file (scanner, fd);
+  scanner->input_name = this->filename.c_str();
+
+  GTokenType expected_token = G_TOKEN_NONE;
+  while (!g_scanner_eof (scanner) && expected_token == G_TOKEN_NONE)
+    {
+      g_scanner_get_next_token (scanner);
+      
+      if (scanner->token == G_TOKEN_EOF)
+        break;
+      else if (scanner->token == G_TOKEN_IDENTIFIER)
+        expected_token = parseFeatureValue (scanner);
+      else
+        expected_token = G_TOKEN_EOF; /* '('; */
+    }
+
+  if (expected_token != G_TOKEN_NONE)
+    {
+      g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
+      exit (1);
     }
 }
 
@@ -256,78 +630,70 @@ main (int argc, char **argv)
       return 1;
     }
 
-  FILE *file1 = fopen (argv[1], "r");
-  if (!file1)
+  FeatureValueFile file1, file2;
+  file1.parse (argv[1]);
+  file2.parse (argv[2]);
+
+  if (file1.feature_values.size() != file2.feature_values.size())
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], strerror (errno));
+      g_printerr ("%s: can't compare files\n", options.program_name.c_str());
+      g_printerr ("  * file \"%s\" contains %ld feature values\n", file1.filename.c_str(), file1.feature_values.size());
+      g_printerr ("  * file \"%s\" contains %ld feature values\n", file2.filename.c_str(), file2.feature_values.size());
       exit (1);
     }
 
-  FILE *file2 = fopen (argv[2], "r");
-  if (!file2)
+  vector<double> similarity;
+  for (uint i = 0; i < file1.feature_values.size(); i++)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.program_name.c_str(), argv[1], strerror (errno));
-      exit (1);
-    }
-
-  vector<double> f1, f2, similarity;
-
-  for (;;)
-    {
-      f1 = read_feature (file1);
-      f2 = read_feature (file2);
-
-      if (f1.size() != f2.size())
+      const FeatureValue *f1 = file1.feature_values[i];
+      const FeatureValue *f2 = file2.feature_values[i];
+      double s = f1->similarity (f2);
+      if (s < 0)
 	{
-	  fprintf (stderr, "feature dimensionalities don't match\n");
+	  g_printerr ("%s: can't compare features:\n", options.program_name.c_str());
+	  g_printerr ("  * %s which is a %s from file \"%s\"\n",
+	              f1->name.c_str(), f1->printable_type().c_str(), file1.filename.c_str());
+	  g_printerr ("  * %s which is a %s from file \"%s\"\n",
+	              f2->name.c_str(), f2->printable_type().c_str(), file2.filename.c_str());
 	  return 1;
 	}
-      else if (f1.size() == 0 && f2.size() == 0)
-	{
-	  double s = 0.0;
-	  double min_s = similarity.empty() ? 0.0 : similarity[0];
-	  double max_s = min_s;
+      similarity.push_back (s);
+    }
 
-	  printf ("similarities: ");
-	  for (size_t i = 0; i < similarity.size(); i++)
-	    {
-	      if (!options.compact)
-		printf (i == 0 ? "%f" : ", %f", similarity[i] * 100.0); /* percent */
-	      s += similarity[i];
-	      min_s = min (similarity[i], min_s);
-	      min_s = min (similarity[i], max_s);
-	    }
-	  if (options.compact)
-	    printf ("minimum=%f%% maximum=%f%%", min_s * 100.0, max_s * 100.0);
-	  printf ("\n");
+  double s = 0.0;
+  double min_s = similarity.empty() ? 0.0 : similarity[0];
+  double max_s = min_s;
 
-	  double average_similarity = s / similarity.size() * 100.0; /* percent */
+  printf ("similarities: ");
+  for (size_t i = 0; i < similarity.size(); i++)
+    {
+      if (!options.compact)
+	printf (i == 0 ? "%s=%f" : ", %s=%f", file1.feature_values[i]->name.c_str(), similarity[i] * 100.0); /* percent */
+      s += similarity[i];
+      min_s = min (similarity[i], min_s);
+      min_s = min (similarity[i], max_s);
+    }
+  if (options.compact)
+    printf ("minimum=%f%% maximum=%f%%", min_s * 100.0, max_s * 100.0);
+  printf ("\n");
 
-	  printf ("average similarity rating: %f%% => ", average_similarity);
-	  if (average_similarity == 100.0)
-	    {
-	      printf ("perfect match.\n");
-	      return 0;
-	    }
-	  else if (average_similarity >= options.threshold)
-	    {
-	      printf ("good match.\n");
-	      return 0;
-	    }
-	  else
-	    {
-	      printf ("similarity below threshold.\n");
-	      return 1;
-	    }
-	}
-      else if (f1.size() == 1)
-	{
-	  similarity.push_back (number_similarity (f1[0], f2[0]));
-	}
-      else
-	{
-	  similarity.push_back (vector_similarity (f1, f2));
-	}
+  double average_similarity = s / similarity.size() * 100.0; /* percent */
+
+  printf ("average similarity rating: %f%% => ", average_similarity);
+  if (average_similarity == 100.0)
+    {
+      printf ("perfect match.\n");
+      return 0;
+    }
+  else if (average_similarity >= options.threshold)
+    {
+      printf ("good match.\n");
+      return 0;
+    }
+  else
+    {
+      printf ("similarity below threshold.\n");
+      return 1;
     }
 }
 

@@ -1,5 +1,5 @@
 /* BSE Feature Extraction Tool
- * Copyright (C) 2004-2005 Stefan Westerfeld
+ * Copyright (C) 2004-2006 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -176,16 +176,44 @@ struct Feature
   const char *description;
   bool        extract_feature;      /* did the user enable this feature with --feature? */
 
-  void print_value (double data) const
+  void print_value (const string& value_name, double data) const
   {
-    fprintf (options.output_file, "%f\n", data);
+    fprintf (options.output_file, "%s = %f;\n", value_name.c_str(), data);
   }
 
-  void print_vector (const vector<double>& data) const
+  void print_vector (const string& vector_name, const vector<double>& data) const
   {
+    fprintf (options.output_file, "%s[%ld] = {", vector_name.c_str(), data.size());
     for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
-      fprintf (options.output_file, (di == data.begin() ? "%f" : " %f"), *di);
-    fprintf (options.output_file, "\n");
+      fprintf (options.output_file, " %f", *di);
+    fprintf (options.output_file, " };\n");
+  }
+
+  void print_matrix (const string& matrix_name, const vector< vector<double> >& matrix) const
+  {
+    /* for a m x n matrix, we write
+     * 
+     * data[m,n] = {
+     *   { x_11 x_12 ... x_1n }
+     *   { x_21 x_22 ... x_2n }
+     *   {  .    .   ...  .   }
+     *   {  .    .   ...  .   }
+     *   { x_m1 x_m2 ... x_mn }
+     * };
+     */
+    fprintf (options.output_file, "%s[%ld,%ld] = {\n",
+	     matrix_name.c_str(), matrix.size(), matrix.size() ? matrix[0].size() : 0);
+
+    for (vector< vector<double> >::const_iterator mi = matrix.begin(); mi != matrix.end(); mi++)
+      {
+	fprintf (options.output_file, "  {");
+	const vector<double>& line = *mi;
+
+	for (vector<double>::const_iterator li = line.begin(); li != line.end(); li++)
+	  fprintf (options.output_file, " %f", *li);
+	fprintf (options.output_file, " }\n");
+      }
+    fprintf (options.output_file, "};\n");
   }
 
   Feature (const char *option, const char *description)
@@ -220,7 +248,7 @@ struct StartTimeFeature : public Feature
   }
   void print_results() const
   {
-    print_value (start_time);
+    print_value ("start_time", start_time);
   }
 };
 
@@ -241,7 +269,7 @@ struct EndTimeFeature : public Feature
   }
   void print_results() const
   {
-    print_value (end_time);
+    print_value ("end_time", end_time);
   }
 };
 
@@ -347,8 +375,7 @@ struct SpectrumFeature : public Feature
 
   void print_results() const
   {
-    for (vector< vector<double> >::const_iterator si = spectrum.begin(); si != spectrum.end(); si++)
-      print_vector (*si);
+    print_matrix ("spectrum", spectrum);
   }
 };
 
@@ -379,7 +406,7 @@ struct AvgSpectrumFeature : public Feature
   }
   void print_results() const
   {
-    print_vector (avg_spectrum);
+    print_vector ("avg_spectrum", avg_spectrum);
   }
 };
 
@@ -411,7 +438,7 @@ struct AvgEnergyFeature : public Feature
 
   void print_results() const
   {
-    fprintf (options.output_file, "%f\n", avg_energy);
+    print_value ("avg_energy", avg_energy);
   }
 };
 
@@ -437,8 +464,8 @@ struct MinMaxPeakFeature : public Feature
 
   void print_results() const
   {
-    fprintf (options.output_file, "%f\n", min_peak);
-    fprintf (options.output_file, "%f\n", max_peak);
+    print_value ("min_peak", min_peak);
+    print_value ("max_peak", max_peak);
   }
 };
 
@@ -458,6 +485,10 @@ struct RawSignalFeature : public Feature
 
   void print_results() const
   {
+    /* This is more or less a debugging feature (for gnuplot or so),
+     * so we don't print it using the usual print_vector or print_value
+     * functions (because then gnuplot couldn't parse it any more).
+     */
     for (guint i = 0; i < raw_signal.size(); i++)
       fprintf (options.output_file, "%f\n", raw_signal[i]);
   }
@@ -558,6 +589,10 @@ struct ComplexSignalFeature : public Feature
   void
   print_results() const
   {
+    /* This is more or less a debugging feature (for gnuplot or so),
+     * so we don't print it using the usual print_vector or print_value
+     * functions (because then gnuplot couldn't parse it any more).
+     */
     for (guint i = 0; i < complex_signal.size(); i++)
       fprintf (options.output_file, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
   }
@@ -731,7 +766,7 @@ struct BaseFreqFeature : public Feature
 
   void print_results() const
   {
-    print_value (base_freq);
+    print_value ("base_freq", base_freq);
   }
 };
 
@@ -755,7 +790,7 @@ struct BaseFreqSmear : public Feature
 
   void print_results() const
   {
-    print_value (base_freq_feature->base_freq_smear);
+    print_value ("base_freq_smear", base_freq_feature->base_freq_smear);
   }
 };
 
@@ -779,7 +814,7 @@ struct BaseFreqWobble : public Feature
 
   void print_results() const
   {
-    print_value (base_freq_feature->base_freq_wobble);
+    print_value ("base_freq_wobble", base_freq_feature->base_freq_wobble);
   }
 };
 
@@ -873,7 +908,7 @@ struct VolumeFeature : public Feature
 
   void print_results() const
   {
-    print_value (volume);
+    print_value ("volume", volume);
   }
 };
 
@@ -895,7 +930,7 @@ struct VolumeSmear : public Feature
 
   void print_results() const
   {
-    print_value (volume_feature->volume_smear);
+    print_value ("volume_smear", volume_feature->volume_smear);
   }
 };
 
@@ -918,7 +953,7 @@ struct VolumeWobble : public Feature
 
   void print_results() const
   {
-    print_value (volume_feature->volume_wobble);
+    print_value ("volume_wobble", volume_feature->volume_wobble);
   }
 };
 

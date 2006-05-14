@@ -1,3 +1,13 @@
+Sun May 14 15:20:10 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc tools/bsefcompare.cc: Changed format of the
+	feature file according to #340386. This allows --permissive matching
+	in bsefcompare (which is now default), that can cope with comparing
+	matrices or vectors with different sizes. For the --spectrum feature
+	this means that you can finally compare the spectrums of two files
+	which have the different lengths (only the start of the files will be
+	compared).
+
 Sat May 13 21:56:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Got rid of per feature output redirection
