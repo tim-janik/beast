@@ -1,3 +1,14 @@
+Tue May 16 01:37:20 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/Makefile.am (bse-check): use checkproject.scm to test-load
+	.bse files. even bail on warnings issued on stderr.
+	issue bse-check: upon make check.
+
+	* slowtests/checkproject.scm: new file to test-load .bse files which 
+	only need stock tarball plugins.
+
+	* tests/Makefile.am: removed bse-check:-rule which is in slowtests/ now.
+
 Mon May 15 21:30:47 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefcompare.cc (parse): minor error message fixup.

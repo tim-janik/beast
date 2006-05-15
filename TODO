@@ -1,4 +1,6 @@
 RELEASE(0.7.0):
+- move clean-generated: and generated: into Makefile.decl
+- s/bse-test-error/bse-error-test/
 - s/bse_engine_garbage_collect/bse_engine_user_thread_collect/
 - add default-settings config preference (authors, license): Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)
 - rename bsesh to bsescm
