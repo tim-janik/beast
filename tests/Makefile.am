@@ -30,13 +30,13 @@ distfiles.list: Makefile
 bse-check: distfiles.list
 	cd $(top_srcdir) &&				\
 	for file in `grep '.bse$$' $(subdir)/distfiles.list` ; do	\
-	  $(TOP_BSESHELL) "$$file" | tee warnings.tmp ;	\
+	  $(TOPDIR_BSESHELL) "$$file" | tee warnings.tmp ;	\
 	  test -z "`cat warnings.tmp`" || exit 1 ;	\
 	done
-TOP_BSESHELL = $(strip							\
+TOPDIR_BSESHELL = $(strip						\
 	./shell/bsesh-$(BIN_VERSION)					\
 	  -p null -m null						\
 	  --bse-rcfile "/dev/null" --bse-no-load			\
-	  --bse-override-plugin-globs '../../plugins/.libs/*.so'	\
-)
+	  --bse-override-plugin-globs './plugins/.libs/*.so'		\
+)	# FIXME: this still uses the normal loading mechanism that also loads LADSPA
 
