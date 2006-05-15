@@ -60,9 +60,9 @@ BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
 
 balance-test:
 	$(BSE2WAV) balance.bse balance.wav
-	$(BSEFEXTRACT) balance.wav --channel 0 --avg-energy  > balance.tmp
-	$(BSEFEXTRACT) balance.wav --channel 1 --avg-energy >> balance.tmp
-	$(BSEFCOMPARE) balance.feature balance.tmp --threshold 99.99
+	$(BSEFEXTRACT) balance.wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > balance.tmp
+	$(BSEFEXTRACT) balance.wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> balance.tmp
+	$(BSEFCOMPARE) balance.ref balance.tmp --threshold 99.99
 
 EXTRA_DIST += $(strip		\
 	balance-left.reference	\

@@ -1,21 +1,20 @@
 ; BseProject
 
-(bse-version "0.6.3")
+(bse-version "0.7.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2004-10-15 01:26:16")
+  (modification-time "2006-05-15 18:16:35")
   (creation-time "2002-01-12 12:42:41"))
 (container-child "BseSong::Unnamed"
-  (loop-right 10752)
-  (loop-left 0)
-  (loop-enabled #f)
+  (loop-right 13824)
+  (loop-left 3072)
   (bpm 120)
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2004-10-15 01:26:26")
+  (modification-time "2006-05-15 18:16:35")
   (creation-time "2004-10-15 01:26:26")
-  (container-child "BsePart::Part-1"
+  (container-child "BsePart::BalanceTest"
     (n-channels 2)
     (insert-notes 0
       (0x00000 0x180 48)
@@ -68,15 +67,27 @@
       (0x027c0 continuous-8 -1)
       (0x02880 continuous-8 1)
       (0x02940 continuous-8 -1)))
+  (container-child "BsePart::Center"
+    (n-channels 1)
+    (insert-notes 0
+      (0x00600 0x180 48)
+      (0x00780 0x180 52)
+      (0x00900 0x180 55)
+      (0x00a80 0x180 52))
+    (insert-controls
+      (0x00000 continuous-8 0)))
   (container-child "BseTrack::Track-01"
     (n-voices 16)
     (snet (link 2 "Synthie"))
-    (insert-part 0 (link 1 "Part-1")))
+    (insert-part 0 (link 1 "Center"))
+    (insert-part 3072 (link 1 "BalanceTest")))
   (container-child "BseBus::Master-1"
     (master-output #t)
+    (right-volume 1)
+    (left-volume 1)
     (bus-input (link 1 "Track-01"))))
 (container-child "BseCSynth::Synthie"
-  (modification-time "2004-10-15 01:26:47")
+  (modification-time "2006-05-15 18:16:35")
   (creation-time "2002-01-12 12:42:55")
   (container-child "BseInstrumentInput::SubKeyboard"
     (pos-y 4)
@@ -139,7 +150,6 @@
   (container-child "BseStandardOsc::Main_Voice_3"
     (pulse-mod-perc 0)
     (pulse-width 50)
-    (self-perc 15)
     (fm-n-octaves 0.16667)
     (exponential-fm #t)
     (fm-perc 0)
@@ -157,10 +167,10 @@
     (pos-x -1)
     (source-input "audio-in" (link 1 "BseMult-1") "audio-out"))
   (container-child "BseMidiController::BseMidiIController-1"
-    (control-4 BSE_MIDI_SIGNAL_CONTINUOUS_8)
-    (control-3 BSE_MIDI_SIGNAL_CONTINUOUS_7)
-    (control-2 BSE_MIDI_SIGNAL_CONTINUOUS_1)
-    (control-1 BSE_MIDI_SIGNAL_PITCH_BEND)
+    (control-4 bse-midi-signal-continuous-8)
+    (control-3 bse-midi-signal-continuous-7)
+    (control-2 bse-midi-signal-continuous-1)
+    (control-1 bse-midi-signal-pitch-bend)
     (pos-y 2)
     (pos-x -5))
   (container-child "BseBalance::Balance-1"

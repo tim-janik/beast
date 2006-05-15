@@ -1,3 +1,17 @@
+Mon May 15 20:23:42 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am: For feature extraction the --cut-zeros
+	argument is needed, to eliminate the extra zeros before and after the
+	signal. Otherwise, feature comparision will be unreliable.
+	For the balance test, I also added the --spectrum and --avg-spectrum
+	features again, and renamed the reference file to balance.ref.
+	
+	* tests/audio/balance.bse: In addition to testing the left and right
+	position, the test file now starts with the center position.
+
+	* tests/audio/balance.ref: New reference file (in the new format) for
+	the balance test.
+
 Sun May 14 15:20:10 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc tools/bsefcompare.cc: Changed format of the
