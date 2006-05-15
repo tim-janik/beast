@@ -16,3 +16,22 @@ EXTRA_DIST=$(GENERATED_EXTRA_DIST)
 # assign project wide defaults
 AM_CFLAGS = -D_BIRNET_SOURCE_EXTENSIONS
 AM_CXXFLAGS = -D_BIRNET_SOURCE_EXTENSIONS
+
+# === distfile-list ===
+# recursive rule supported by all Makefiles to generate a list of all
+# files listed as DISTFILES.
+.PHONY: distfile-list
+distfile-list:
+	@if test ! -f "$(DISTFILE_LIST)" ; then				\
+		echo 'distfile-list: $$(DISTFILE_LIST) is unwritable' ;	\
+		exit 1 ;						\
+	fi
+	@for subdir in $(SUBDIRS) ; do				\
+	  test "$$subdir" = '.' ||				\
+	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) $@ ||		\
+	    exit 1 ;						\
+	done
+	for file in $(DISTFILES) ; do				\
+	  test -e "$$file" &&					\
+	    echo "$(subdir)/$$file" >> $(DISTFILE_LIST) ;	\
+	done
