@@ -1,6 +1,6 @@
 --- po/Makefile.in.in.orig	2006-04-11 19:49:55.000000000 +0200
-+++ po/Makefile.in.in	2006-04-11 19:51:11.000000000 +0200
-@@ -60,7 +60,7 @@ COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $
++++ po/Makefile.in.in	2006-05-15 19:53:32.000000000 +0200
+@@ -60,7 +60,7 @@
  SOURCES = 
  POFILES = @POFILES@
  GMOFILES = @GMOFILES@
@@ -9,7 +9,15 @@
  $(POFILES) $(GMOFILES) $(SOURCES)
  
  POTFILES = \
-@@ -239,7 +239,7 @@ POTFILES: POTFILES.in
+@@ -227,6 +227,7 @@
+ 	    rm -f $$tmpdir/$$lang.new.po; \
+ 	  fi; \
+ 	done
++distfile-list:
+ 
+ # POTFILES is created from POTFILES.in by stripping comments, empty lines
+ # and Intltool tags (enclosed in square brackets), and appending a full
+@@ -239,7 +240,7 @@
  	  fi; \
  	  rm -f $@-t $@ \
  	    && (sed -e '/^#/d' 						\

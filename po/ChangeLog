@@ -1,3 +1,8 @@
+Mon May 15 21:34:38 2006  Tim Janik  <timj@gtk.org>
+
+	* intltool-scm.diff: update the Makefile.in.in patch so it includes 
+	a dummy distfile-list:-rule.
+
 Thu Apr 20 20:22:19 2006  Tim Janik  <timj@gtk.org>
 
 	* it.po: updated translation from Michele Petrecca <michelinux@alice.it>.
