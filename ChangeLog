@@ -1,3 +1,7 @@
+Mon May 15 21:30:47 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefcompare.cc (parse): minor error message fixup.
+
 Mon May 15 21:21:28 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl: added distfile-list:-rule to recursively generate a 

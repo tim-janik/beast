@@ -591,7 +591,7 @@ FeatureValueFile::parse (const string& filename)
   int fd = open (filename.c_str(), O_RDONLY);
   if (fd < 0)
     {
-      fprintf (stderr, "%s: can't open the input file \"%s\": %s\n",
+      fprintf (stderr, "%s: failed to open input file \"%s\": %s\n",
 	       options.program_name.c_str(), filename.c_str(), strerror (errno));
       exit (1);
     }
