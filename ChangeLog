@@ -1,3 +1,13 @@
+Tue May 16 16:06:47 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/audio/.cvsignore: 
+	* slowtests/audio/Makefile.am:
+	* slowtests/audio/README:
+	* slowtests/audio/balance.bse:
+	* slowtests/audio/balance.ref:
+	* slowtests/audio/bseadder.bse:
+	* slowtests/audio/bsetowav.scm: CVS copied here from tests/audio/.
+
 Tue May 16 01:37:20 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/Makefile.am (bse-check): use checkproject.scm to test-load
