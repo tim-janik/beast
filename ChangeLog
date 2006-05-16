@@ -1,3 +1,11 @@
+Tue May 16 16:14:31 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/audio/syndrum.bse: CVS copied from test/drum-test.bse.
+
+	* slowtests/audio/velocity.bse: CVS copied from test/velocity-test.bse.
+
+	* slowtests/audio/minisong.bse: CVS copied from test/test-song.bse.
+
 Tue May 16 16:06:47 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/audio/.cvsignore: 
