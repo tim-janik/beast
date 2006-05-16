@@ -1,3 +1,11 @@
+Mon May 15 22:09:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davsyndrum.c (dav_syn_drum_update_modules): It is important to
+	update sample rate dependant parameters in the "params" struct within
+	the object, because the "params" struct within the object will be used
+	by dav_syn_drum_context_create to initialize the state for the
+	modules. This fixes #337703.
+
 Wed May 10 15:12:26 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseblockutils.cc: Minor optimizations, introduced a few LIKELY()
