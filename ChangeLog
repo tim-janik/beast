@@ -1,3 +1,44 @@
+Tue May 16 17:31:34 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am:
+	* slowtests/Makefile.am:
+	* configure.in: Makefile changes caused by moving the tests from
+	tests/audio to slowtests/audio.
+
+	* tests/audio/*: Removed remaining files. The tests can be found in
+	slowtests/audio now.
+
+	* test/Makefile.am: Makefile changes caused by moving some files from
+	the test/ directory to slowtests/audio.
+
+	* slowtests/audio/Makefile.am: Removed old featuretest.sh related
+	rules now. The tests that are executed upon "make test" are now
+	balance-test, minisong-test, syndrum-test, velocity-test and
+	bseadder-test.
+
+	* slowtests/audio/bseadder.bse: Replaced constant exponential FM with
+	transpose.
+
+	* test/test-song.bse:
+	* slowtests/audio/minisong.bse: Moved test/test-song.bse to
+	slowtests/audio/minisong.bse, clean up stuff so that its a usable
+	little test song now.
+
+	* test/drum-test.bse:
+	* slowtests/audio/syndrum.bse: Moved test/drum-test.bse to
+	slowtests/audio/syndrum.bse but with lower volume to prevent clipping.
+
+	* test/velocity-test.bse:
+	* slowtests/audio/velocity.bse: Moved file from
+	test/velocity-test.bse to slowtests/audio/velocity.bse and added a
+	second track.
+	This is a *trick* to get bsefextract to really measure velocities.
+	Normally, the --spectrum feature will not take into account low loud
+	something is (it normalizes the spectrum during the comparision).
+	However, by adding a second track, we achieve a *relative* difference
+	in the spectrum (i.e.  how much drum-like does it sound and how much
+	melody-like), which can be measured.
+
 Tue May 16 16:14:31 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/audio/syndrum.bse: CVS copied from test/drum-test.bse.

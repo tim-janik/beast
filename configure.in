@@ -633,12 +633,12 @@ tools/scripts/Makefile
 po/Makefile.in
 po-helper.sh
 tests/Makefile
-tests/audio/Makefile
 tests/latency/Makefile
 tests/scripts/Makefile
 tests/bse/Makefile
 test/Makefile
 slowtests/Makefile
+slowtests/audio/Makefile
 doxer/Makefile
 docs/Makefile
 docs/images/Makefile
