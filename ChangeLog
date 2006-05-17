@@ -1,3 +1,10 @@
+Wed May 17 13:27:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* web/news.doxi: Provide a very rough summary what has been happening
+	in CVS since the last release. Once I write such a summary more often,
+	it can get more fine grained, but for now, I'll leave out too much
+	details.
+
 Tue May 16 17:31:34 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am:
