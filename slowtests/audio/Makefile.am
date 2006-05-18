@@ -10,11 +10,13 @@ CLEANFILES += *.tmp *.wav
 FEATURE_TESTS = balance-test minisong-test syndrum-test velocity-test bseadder-test
 test: $(FEATURE_TESTS)
 
+builddirplugins = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
+
 BSE2WAV = $(strip							\
 	$(top_builddir)/shell/bsesh-$(BIN_VERSION)			\
 	  --bse-mixing-freq=48000 -p null -m null			\
 	  --bse-rcfile "/dev/null" --bse-no-load			\
-	  --bse-override-plugin-globs '../../plugins/.libs/*.so'	\
+	  --bse-override-plugin-globs $(builddirplugins)		\
 	  -s bsetowav.scm 						\
 )
 BSEFEXTRACT = $(top_builddir)/tools/bsefextract
@@ -56,4 +58,5 @@ EXTRA_DIST += $(strip		\
 	minisong.bse		minisong.ref	\
 	syndrum.bse		syndrum.ref	\
 	velocity.bse		velocity.ref	\
+	frowzy-drums.bsewave	\
 )

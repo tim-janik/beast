@@ -1,3 +1,5 @@
+Overview
+========
 This directory provides automatic testing of the audio output BSE synthesis
 networks produce. Since changing algorithms might result in subtle differences
 in the resulting audio files, 1:1 comparision of audio files (such as storing
@@ -13,6 +15,9 @@ type:
 
    make test
 
+Adding a new test
+=================
+
 To add a new audio test, lets call it foo, you need to perform the following
 steps:
 
@@ -22,30 +27,58 @@ steps:
 
    save foo.bse in this directory (add it to the CVS)
 
-2) add a new target to Makefile.am, which runs featuretest.sh with
-
-   - the .bse filename
-   - the name of the .reference file for the test reference data
-   - the features you want to compare (see ../../tools/bsefextract --help)
-   - the desired threshold
-
-   an example for the target test-foo would be:
-
-   test-foo: beastconf.sh
-      @$(FEATURETEST_SH) foo.bse foo.reference \
-                      --avg-spectrum --avg-energy \
-                   -- --threshold=99.99
+2) add a new target to Makefile.am (look at the other tests to see how its done)
 
 3) add the target to the FEATURE_TESTS line in Makefile.am
 
-4) run make test-foo once, the test will fail, but you will be given instructions
-   how to make the results of this test run the test reference data
+4) run make foo-test once, the test will fail, but you will generate a foo.tmp
+   file, which you can move to the reference file using
 
-5) do this (and add newly created foo.reference to CVS)
+     mv foo.tmp foo.ref
+
+   you need to add add the created foo.reference to CVS
 
 6) run make test, the newly added test should be executed and succeed now
 
 Note, that if you need multiple tests for the same .bse file (for instance
-because you want to set a different threshold for different features), you
-can do so by adding multiple targets test-foo1, test-foo2,... using difference
-reference file names for the tests, like foo1.reference, foo2.reference,...
+because you want to set a different threshold for different features), you can
+do so by adding multiple targets foo1-test, foo2-test,... using difference
+reference file names for the tests, like foo1.ref, foo2.ref,...
+
+
+Good features to use:
+=====================
+Generally, you can use bsefextract --help to find out about which features
+to use and what they do.
+
+As a recommendation, there are three features that are generally useful, and
+should cover almost any case:
+
+ * --avg-energy:    since this evaluates the energy, it will ensure that the
+		    test file will stay "as loud as it used to be"
+
+		    this is generally a good thing to assume
+
+ * --spectrum:      this is a matrix feature which represents how the spectrum
+		    changes over time - it represents approximately what you
+		    view in the fft scope and approximately what you hear (over
+		    time) when you listen to the file
+
+		    using makes sense when your sound changes over time, and
+		    you want to ensure that this stays the same
+
+ * --avg-spectrum:  is an average of the spectrum; if you have a sound which
+                    doesn't change over time, you only need to compare this
+		    to ensure it sounds the same
+                    if you have a sound which does change over time, it is
+		    ok to add it as well
+
+		    so you can safely always use this feature
+
+If you use these features, you will get a good representation of "sounds the
+same", so it is the feature set that you can use for almost any test.
+
+There are special features that can be useful for special cases, like for
+instance the --base-freq feature which determines the frequency of a signal
+(could be useful for testing an oscillator frequency), so its a good idea to at
+least read through the bsefextract help once, so you know whats there.

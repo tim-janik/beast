@@ -1,3 +1,15 @@
+Thu May 18 13:39:08 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/audio/Makefile.am: Added frowzy-drums.bsewave. Fixed up
+	plugin dirs to include location of the freeverb plugin.
+
+	* slowtests/audio/README: Update documentation: removed
+	featuretests.sh related stuff, and included overview over common
+	bsefextract features.
+
+	* slowtests/audio/minisong.bse: Replace absolute path with relative
+	path.
+
 Thu May 18 13:29:10 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/audio/frowzy-drums.bsewave:

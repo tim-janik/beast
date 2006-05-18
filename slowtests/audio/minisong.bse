@@ -6,7 +6,7 @@
   (modification-time "2006-05-18 11:27:10")
   (creation-time "2002-07-29 10:00:03")
   (container-child "BseWave::Frowzy Drums"
-    (load-wave "/home/stefan/src/beast/slowtests/audio/frowzy-drums.bsewave" "Frowzy Drums")))
+    (load-wave "frowzy-drums.bsewave" "Frowzy Drums")))
 (container-child "BseSong::Test Song"
   (bpm 180)
   (denominator 4)
