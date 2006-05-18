@@ -1,3 +1,11 @@
+Thu May 18 13:29:10 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/audio/frowzy-drums.bsewave:
+	* slowtests/audio/minisong.ref:
+	* slowtests/audio/minisong.bse: Remove binary data from minisong, by
+	replacing the drums it with a tiny low quality drum kit, that is
+	now linked from the .bse file, not included.
+
 Thu May 18 12:03:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Document what thinout currently does in
