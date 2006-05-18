@@ -1,3 +1,8 @@
+Thu May 18 12:03:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Document what thinout currently does in
+	--help.
+
 Wed May 17 13:27:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* web/news.doxi: Provide a very rough summary what has been happening

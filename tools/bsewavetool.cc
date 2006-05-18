@@ -1354,7 +1354,41 @@ public:
     g_print ("{-s=max_total_size|-e=max_chunk_error|-g=gal_iterations} [options]\n");
     if (bshort)
       return;
-    g_print ("    Thin out bsewave file by omitting some chunks.\n");
+    g_print (
+"    Thin out bsewave file by omitting some chunks. It currently only is useful\n"
+"    if the input wave contains one chunk per midi note, and these notes were looped,\n"
+"    so that xinfos[\"loop-score\"] of each chunk contains a loop error that can\n"
+"    be assumed to be an indicator of how good the looped file sounds (bigger errors\n"
+"    mean that the file is more likely to click).\n"
+"    For minimizing the storage such files will later take, and minimizing the risk\n"
+"    that some of the notes will contain clicks, the thinout command will select a\n"
+"    subset of the chunks (that is, it will throw some of the chunks away).\n"
+"    Typically, there are a lot of possible subsets which could be selected, so the\n"
+"    algorithm to search for an optimum implemented here is a genetic algorithm which\n"
+"    can cope with the size of the search space.\n"
+"    An optimum will be determined from a number of rules that determine what is to be\n"
+"    considered \"optimal\":\n"
+"     (a) omitting a chunk will mean that the next most chunk will be played, and\n"
+"         that the chunk error of this chunk is heard: if you have sampled chunks for\n"
+"         C with an error of 3.1 and C# with an error of 1.1, then omitting the C\n"
+"         chunk from the output set will improve the sound quality, because the total\n"
+"         error drops from 1.1+3.1 to 1.1+1.1\n"
+"     (b) it is _bad_ to omit so many chunks that a chunk will have to be replaced\n"
+"         by a chunk that is more than for midi notes away: while it is safe to omit\n"
+"         so many chunks that instead of playing C, a resampled version of E will be\n"
+"         played, it is not safe to omit so many chunks a resampled version of F\n"
+"         will be played\n"
+"     (c) if the -s option is present: it is _bad_ if the number of chunks exceeds\n"
+"         the maximum size the user requested\n"
+"     (d) if the -e option is present: is is _bad_ to keep a chunk that has a chunk\n"
+"         error larger than the maximum error the user requested\n"
+"    Here, it is _bad_ means that the optimizer will avoid that it happens by\n"
+"    placing a big penalty on the score of such an output set. However, as it is\n"
+"    possible that the constraints (a)-(d) contradict each other, or that a\n"
+"    suitable solution can not be found in the available number of iterations\n"
+"    (which can be increased using the -g option), there is no guarantee that\n"
+"    the resulting chunk set fulfills all conditions; the optimizer will only try\n"
+"    to produce the best possible result.\n");
     g_print ("    Options:\n");
     g_print ("    -s <max-total-size>     restrict the resulting bsewave file to a max size\n");
     g_print ("    -e <max-chunk-error>    ensure that no chunk exceeds this error margin\n");
