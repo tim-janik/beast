@@ -734,6 +734,7 @@ tests, bsefcompare:
     bsefcompare: no such file: balance.feature
     $ mv balance.tmp balance.feature
 - move tests from test directory into automated feature test dir
+- remove test directory
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
   
 win32 port:
@@ -756,10 +757,7 @@ Misc Buglets/Feature Requests:
  - silencing out an instrument (in drum maps) should be easier
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
  - make check for test thingy
- - remove test directory
  - create a roadmap document for BEAST
- - documentation itemize bullets are ugly (need space after bullet)
- - documentation itemize need indent
  - implement fractional resampler (oversampling)
 
 vim:set ts=8 sts=2 sw=2:
