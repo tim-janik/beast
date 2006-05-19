@@ -1,3 +1,8 @@
+Fri May 19 17:51:33 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/audio/Makefile.am: fixed audio test rules, run audio
+	tests upon make check.
+
 Fri May 19 17:48:27 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* web/Makefile.am: Reorder tar options so that make site-preview works

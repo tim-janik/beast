@@ -54,5 +54,5 @@
 (bse-server-register-blocking bse-server-register-core-plugins #f)
 ;;(bse-server-register-blocking bse-server-register-scripts #f)
 ;;(bse-server-register-blocking bse-server-register-ladspa-plugins #f)
-(display "commandline:")(display (command-line))(newline)
+;;(display "commandline:")(display (command-line))(newline)
 (apply convert-bse-to-wav (cdr (command-line)))
