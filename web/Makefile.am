@@ -76,7 +76,7 @@ ${HTML_TARGETS} ${RDOCU_TARGETS}: webmenu.doxi webframe.doxi ../docs/beastdefs.d
 beastweb-galleries.tar.bz2: ${TARGET_DIRS} html/screenshotdir/.md5sum html/logogallerydir/.md5sum
 	tar jcf $@ html/screenshotdir/ html/logogallerydir/
 beastweb-pages.tar.bz2: ${TARGET_DIRS} html/style/.md5sum html/web-images/.md5sum html/images/.md5sum ${PHP_TARGETS} ${HTML_TARGETS} ${RDOCU_TARGETS}
-	tar jcf $@ php/ html/ --anchored --exclude='html/screenshotdir/*' --exclude='html/logogallerydir/*'
+	tar jcf $@ --anchored --exclude='html/screenshotdir/*' --exclude='html/logogallerydir/*' php/ html/
 CLEANFILES += beastweb-galleries.tar.bz2 beastweb-pages.tar.bz2
 
 ${TARGET_DIRS}:	# rule to create directories

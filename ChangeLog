@@ -1,3 +1,8 @@
+Fri May 19 17:48:27 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* web/Makefile.am: Reorder tar options so that make site-preview works
+	with GNU tar-1.15.1, too.
+
 Thu May 18 13:39:08 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/audio/Makefile.am: Added frowzy-drums.bsewave. Fixed up
