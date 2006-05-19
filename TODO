@@ -723,16 +723,6 @@ documentation:
  - bsewavetool needs to be documented with documentation tool in the source code (at least gsl_data_find_loop*)
 
 tests, bsefcompare:
-- rewrite Makefile.am to not need feature-test.sh [tim]:
-  balance-test:
-        bse2wav balance.bse -o balance.wav
-        bsefextract balance.wav --channel 0 --avg-energy >balance.tmp
-        bsefextract balance.wav --channel 1 --avg-energy >>balance.tmp
-        bsefcompare balance.feature balance.tmp --threshold 99.99
-  * initial case:
-    $ make balance-test
-    bsefcompare: no such file: balance.feature
-    $ mv balance.tmp balance.feature
 - move tests from test directory into automated feature test dir
 - remove test directory
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
@@ -749,14 +739,11 @@ oversampling:
 - add resampler documentation in synthesis-details.doxi
 
 Misc Buglets/Feature Requests:
- - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
- - Makefile.plugins doesn't get regenerated properly
  - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
    libtool
  - the midi importer doesn't create a master bus
  - silencing out an instrument (in drum maps) should be easier
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
- - make check for test thingy
  - create a roadmap document for BEAST
  - implement fractional resampler (oversampling)
 
