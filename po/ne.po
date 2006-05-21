@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-20 20:16+0200\n"
+"POT-Creation-Date: 2006-05-21 11:49+0200\n"
 "PO-Revision-Date: 2005-06-02 16:03+0545\n"
 "Last-Translator: Kapil Timilsina <lipak21@gmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -428,8 +428,8 @@ msgstr "जोड"
 #: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstbusmixer.c:37
 #: ../beast-gtk/bstbusview.c:36 ../beast-gtk/bstkeybindings.c:59
 #: ../beast-gtk/bstpartview.c:41 ../beast-gtk/bstpianorollctrl.c:80
-#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
-#: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
+#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:714
+#: ../beast-gtk/bstsnetrouter.c:762 ../beast-gtk/bsttrackrollctrl.c:51
 #: ../beast-gtk/bsttrackview.c:67 ../beast-gtk/bstwaveview.c:46
 msgid "Delete"
 msgstr "मेट्नु"
@@ -451,7 +451,7 @@ msgstr "हालमा छानिएको बस मेटाउनुस"
 msgid "Module Link: "
 msgstr "मोड्युल लिङ्क: "
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:756
+#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
 msgid "Module link"
 msgstr "मोड्युल लिङ्क"
 
@@ -459,12 +459,12 @@ msgstr "मोड्युल लिङ्क"
 msgid "Module Info"
 msgstr "मोड्युल इन्फो"
 
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1089
+#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "निवेश॒"
 
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1093
-#: ../bse/bseamplifier.idl:65
+#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "प्रतिफल"
 
@@ -575,7 +575,7 @@ msgid "Abortion"
 msgstr "एबोर्सन"
 
 #: ../beast-gtk/bstfiledialog.c:138 ../beast-gtk/bstitemview.c:208
-#: ../beast-gtk/bsttrackview.c:609
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bseobject.c:841
 msgid "Name"
 msgstr "नाम"
 
@@ -798,6 +798,7 @@ msgid "ID"
 msgstr "आइडि"
 
 #: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:630
+#: ../bse/bseobject.c:851
 msgid "Comment"
 msgstr "टिप्पणि"
 
@@ -888,35 +889,35 @@ msgid "Description"
 msgstr "बर्णन"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "बिस्ट"
 
-#: ../beast-gtk/bstmain.c:134
+#: ../beast-gtk/bstmain.c:135
 msgid "BEAST Startup"
 msgstr "बिस्ट थालनी"
 
-#: ../beast-gtk/bstmain.c:141
+#: ../beast-gtk/bstmain.c:142
 msgid "Startup"
 msgstr "थालनी गर्नु"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:145
+#: ../beast-gtk/bstmain.c:146
 msgid "Initializers"
 msgstr "इनिसियलाइजर"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:153
+#: ../beast-gtk/bstmain.c:154
 msgid "RC Files"
 msgstr "आर सि फाइलहरु"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:157
+#: ../beast-gtk/bstmain.c:158
 msgid "Splash Image"
 msgstr "स्प्ल्यास छवि"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:169
+#: ../beast-gtk/bstmain.c:170
 msgid "BSE Core"
 msgstr "बि एस इ स्मृति केन्द्र"
 
@@ -946,26 +947,26 @@ msgstr "लोड हुँदैछ..."
 msgid "Loading \"%s\""
 msgstr "लोड हुँदै छ \"%s\""
 
-#: ../beast-gtk/bstmain.c:324
+#: ../beast-gtk/bstmain.c:325
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:330
+#: ../beast-gtk/bstmain.c:331
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:849
+#: ../beast-gtk/bstmain.c:845
 msgid "BEAST About"
 msgstr "बिस्ट बारेमा"
 
-#: ../beast-gtk/bstmain.c:850
+#: ../beast-gtk/bstmain.c:846
 #, c-format
 msgid "BEAST Version %s"
 msgstr "बिस्ट संस्करण %s"
 
-#: ../beast-gtk/bstmain.c:851
+#: ../beast-gtk/bstmain.c:847
 msgid "Contributions made by:"
 msgstr "कन्ट्रिब्युसन निर्माता:"
 
@@ -1319,7 +1320,7 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "सेलहरुको नम्बर जुन प्रत्येक समयमा घटना वा टिप्पणी हुन्छ त्यो मेटाइयो"
 
-#: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:571
+#: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:575
 msgid "Direction"
 msgstr "दिशा"
 
@@ -2355,104 +2356,102 @@ msgstr ""
 "पुन: शुरु गरेपछि मात्र प्रभाव पार्छ."
 
 #: ../beast-gtk/bstrecords.idl:125
-msgid "Enable scopes"
+#, fuzzy
+msgid "Slow scopes"
 msgstr "सक्षम आशयहरु"
 
-#: ../beast-gtk/bstrecords.idl:126 ../beast-gtk/bstrecords.idl:130
+#: ../beast-gtk/bstrecords.idl:126
+#, fuzzy
 msgid ""
-"Enables or prevents BEAST from periodically updating the scopes. Disabling "
-"may be desirable especially on slow machines."
+"Aggresively slows down the periodic update frequency of scopes. Doing this "
+"may be desirable on particularly slow machines."
 msgstr "बिस्ट सक्षम वा निर्माण स्कोप्स अपडेटिङ्ग नियमित. बिस्तार मेसिनमा अक्षम हुन सक्छ"
 
-#: ../beast-gtk/bstrecords.idl:129
-msgid "Enable meters"
-msgstr "सक्षम मिटरहरु"
-
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:134
 msgid "Skin Name"
 msgstr "छाला नाम"
 
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:134
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "हालको छाला कन्फिगरेसनको लागि नाम (छाला छनौटको लागि)"
 
-#: ../beast-gtk/bstrecords.idl:140 ../beast-gtk/bstrecords.idl:150
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:156
 msgid "Background Image"
 msgstr "पृष्ठभूमि चित्र॒"
 
-#: ../beast-gtk/bstrecords.idl:140
+#: ../beast-gtk/bstrecords.idl:136
 msgid "Background image used by the pattern editor."
 msgstr "प्याटर्न सम्पादनकर्ता द्वारा प्रयोग गरिएको पृष्ठभूमि छवि"
 
-#: ../beast-gtk/bstrecords.idl:141 ../beast-gtk/bstrecords.idl:151
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Image shade"
 msgstr "छवि सेड"
 
-#: ../beast-gtk/bstrecords.idl:141 ../beast-gtk/bstrecords.idl:151
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "पृष्ठभूमि छवि पिक्सेल पृष्ठभूमि रङ्गमा ब्लेन्ड गरेको प्रतिशत."
 
-#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:152
-#: ../beast-gtk/bstrecords.idl:162
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Background Color"
 msgstr "पृष्ठभुमि रंग"
 
-#: ../beast-gtk/bstrecords.idl:143
+#: ../beast-gtk/bstrecords.idl:139
 msgid "Background Shade 1"
 msgstr "पृष्ठभूमि सेड १"
 
-#: ../beast-gtk/bstrecords.idl:144
+#: ../beast-gtk/bstrecords.idl:140
 msgid "Background Shade 2"
 msgstr "पृष्ठभूमि सेड २"
 
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:141
 msgid "Empty Field Color"
 msgstr "खाली फिल्ड रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:142
 msgid "Text Color"
 msgstr "पाठको रंग"
 
-#: ../beast-gtk/bstrecords.idl:147 ../beast-gtk/bstrecords.idl:154
+#: ../beast-gtk/bstrecords.idl:143 ../beast-gtk/bstrecords.idl:150
 msgid "Vertical Bar Color"
 msgstr "ठाडो पट्टी रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:150
+#: ../beast-gtk/bstrecords.idl:146
 msgid "Background image used by the piano-roll editor."
 msgstr "पियानो-रोल सम्पादनकर्ता द्वारा प्रयोग पृष्ठभूमिको छवि"
 
-#: ../beast-gtk/bstrecords.idl:153 ../beast-gtk/bstrecords.idl:163
+#: ../beast-gtk/bstrecords.idl:149 ../beast-gtk/bstrecords.idl:159
 msgid "Horizontal Bar Color"
 msgstr "तेर्सो पट्टी रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:151
 msgid "Horizontal Grid Color"
 msgstr "तेर्सो ग्रिड रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:152
 msgid "Vertical Grid Color"
 msgstr "ठाडो ग्रिड रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:157 ../beast-gtk/bstrecords.idl:164
+#: ../beast-gtk/bstrecords.idl:153 ../beast-gtk/bstrecords.idl:160
 msgid "Middle Bar Color"
 msgstr "मध्य पट्टी रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:156
 msgid "Background image used by the control events editor."
 msgstr "पृष्ठभूमि छवि कन्ट्रोल घटना सम्पादक द्वारा प्रयोग"
 
-#: ../beast-gtk/bstrecords.idl:165
+#: ../beast-gtk/bstrecords.idl:161
 msgid "Positive Value Color"
 msgstr "सकरात्मक मान रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:166
+#: ../beast-gtk/bstrecords.idl:162
 msgid "Zero Value Color"
 msgstr "शून्य मान रङ्ग"
 
-#: ../beast-gtk/bstrecords.idl:167
+#: ../beast-gtk/bstrecords.idl:163
 msgid "Negative Value Color"
 msgstr "नकरात्मक मान रङ्ग"
 
@@ -2511,40 +2510,40 @@ msgstr "चित्र रुपरेखा उच्चतम"
 msgid "Preview"
 msgstr "पुर्वद्रिश्य"
 
-#: ../beast-gtk/bstscrollgraph.c:567 ../beast-gtk/bstscrollgraph.c:570
-#: ../beast-gtk/bstscrollgraph.c:573 ../beast-gtk/bstscrollgraph.c:576
+#: ../beast-gtk/bstscrollgraph.c:571 ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:577 ../beast-gtk/bstscrollgraph.c:580
 msgid "Spectrograph"
 msgstr "स्पेकटोग्राफ"
 
-#: ../beast-gtk/bstscrollgraph.c:568
+#: ../beast-gtk/bstscrollgraph.c:572
 msgid "Flip Spectrum"
 msgstr "फ्लिप स्पेकट्रम"
 
-#: ../beast-gtk/bstscrollgraph.c:568
+#: ../beast-gtk/bstscrollgraph.c:572
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr "फ्लिप स्पेक्ट्रम प्रदर्शन,  तल्लो र माथिल्लो आवृत्तिको आपसी परिवर्तन"
 
-#: ../beast-gtk/bstscrollgraph.c:571
+#: ../beast-gtk/bstscrollgraph.c:575
 msgid "Choose display scrolling direction"
 msgstr "प्रदर्शन स्क्रोलिङ्ग दिशा छान्नुहोस्"
 
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:578
 msgid "Boost"
 msgstr "बुस्ट"
 
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:578
 msgid "Adjust frequency level threshold"
 msgstr "आवृत्ति तह थ्रेसहोल्ड मिलाउनुहोस्"
 
-#: ../beast-gtk/bstscrollgraph.c:577
+#: ../beast-gtk/bstscrollgraph.c:581
 msgid "Window Size"
 msgstr "सन्झ्याल आकार"
 
-#: ../beast-gtk/bstscrollgraph.c:577
+#: ../beast-gtk/bstscrollgraph.c:581
 msgid "Adjust FFT window size"
 msgstr "एफएफटि सन्झ्याल आकार मिलाउनुहोस्"
 
-#: ../beast-gtk/bstscrollgraph.c:667
+#: ../beast-gtk/bstscrollgraph.c:671
 msgid "Unconnected Output Channel"
 msgstr "आगत च्यानल जडान भएको छैन"
 
@@ -2566,7 +2565,7 @@ msgstr "सम्पादन"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "सम्पादन/चलाउन/मेनु (माउस बटन १-३)"
 
-#: ../beast-gtk/bstsnetrouter.c:52 ../beast-gtk/bstsnetrouter.c:932
+#: ../beast-gtk/bstsnetrouter.c:52 ../beast-gtk/bstsnetrouter.c:934
 msgid "Palette"
 msgstr "रंग मिसाउने सानो पाटि"
 
@@ -2574,97 +2573,97 @@ msgstr "रंग मिसाउने सानो पाटि"
 msgid "Toggle visibility of the tool palette"
 msgstr "उपकरण प्यालेटको दृश्य टूगल"
 
-#: ../beast-gtk/bstsnetrouter.c:611
+#: ../beast-gtk/bstsnetrouter.c:613
 msgid "Input channel in use"
 msgstr "च्यानल आगत प्रयोगमा"
 
-#: ../beast-gtk/bstsnetrouter.c:638 ../beast-gtk/bstsnetrouter.c:640
-#: ../beast-gtk/bstsnetrouter.c:676
+#: ../beast-gtk/bstsnetrouter.c:640 ../beast-gtk/bstsnetrouter.c:642
+#: ../beast-gtk/bstsnetrouter.c:678
 msgid "Create Link"
 msgstr "लिङ्क निर्माण गर्नुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:638
+#: ../beast-gtk/bstsnetrouter.c:640
 msgid "Select output module"
 msgstr "निर्गत मोड्युल छान्नुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:640
+#: ../beast-gtk/bstsnetrouter.c:642
 msgid "Select input module"
 msgstr "आगत मोड्युल छान्नुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:704 ../beast-gtk/bstsupershell.c:189
+#: ../beast-gtk/bstsnetrouter.c:706 ../beast-gtk/bstsupershell.c:189
 #: ../beast-gtk/bstsupershell.c:222 ../beast-gtk/bstsupershell.c:236
 msgid "Properties"
 msgstr "गुणहरु"
 
-#: ../beast-gtk/bstsnetrouter.c:705
+#: ../beast-gtk/bstsnetrouter.c:707
 msgid "Reset Properties"
 msgstr "गुणहरु फेरि शुरु गर्नुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:706
+#: ../beast-gtk/bstsnetrouter.c:708
 msgid "Delete Inputs"
 msgstr "आगत मेटाउनुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:707
+#: ../beast-gtk/bstsnetrouter.c:709
 msgid "Delete Outputs"
 msgstr "निर्गत मेटाउनुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:709 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
 msgid "Show Info"
 msgstr "सूचना देखाउनुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:710
+#: ../beast-gtk/bstsnetrouter.c:712
 msgid "Output Signal Monitor"
 msgstr "आगत सङ्केत मोनिटर"
 
-#: ../beast-gtk/bstsnetrouter.c:737
+#: ../beast-gtk/bstsnetrouter.c:739
 msgid "Remove Module"
 msgstr "मोड्युल हटाउनुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:769
+#: ../beast-gtk/bstsnetrouter.c:771
 msgid "Delete Link"
 msgstr "लिङ्क मेटाउनुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:823
+#: ../beast-gtk/bstsnetrouter.c:825
 msgid "Insert Module"
 msgstr "मोड्युल राख्नुहोस्"
 
-#: ../beast-gtk/bstsnetrouter.c:1089
+#: ../beast-gtk/bstsnetrouter.c:1091
 msgid "PCM Input module"
 msgstr "पिसिएम निर्गत मोड्युल"
 
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstsnetrouter.c:1092
 msgid "Oscillator"
 msgstr "ओसिलेटर"
 
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstsnetrouter.c:1092
 msgid "Standard oscillator module"
 msgstr "स्ट्यान्डर्ड ओसिलेटर मोड्युल"
 
-#: ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstsnetrouter.c:1093
 msgid "ADSR"
 msgstr "एडिएसआर"
 
-#: ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstsnetrouter.c:1093
 msgid "ADSR Envelope Generator"
 msgstr "एडिएसआर खाम जेनेरेटर"
 
-#: ../beast-gtk/bstsnetrouter.c:1092
+#: ../beast-gtk/bstsnetrouter.c:1094
 msgid "DCA"
 msgstr "डिसिए"
 
-#: ../beast-gtk/bstsnetrouter.c:1092
+#: ../beast-gtk/bstsnetrouter.c:1094
 msgid "Standard amplifier module"
 msgstr "स्ट्यान्डर्ड एम्प्लिफायर मोड्युल"
 
-#: ../beast-gtk/bstsnetrouter.c:1093
+#: ../beast-gtk/bstsnetrouter.c:1095
 msgid "PCM Output module"
 msgstr "पिसिएम आगत मोड्युल"
 
-#: ../beast-gtk/bstsnetrouter.c:1153
+#: ../beast-gtk/bstsnetrouter.c:1155
 msgid "Channel Hints"
 msgstr "च्यानल सङ्केत"
 
-#: ../beast-gtk/bstsnetrouter.c:1153
+#: ../beast-gtk/bstsnetrouter.c:1155
 msgid "Toggle channel name hints"
 msgstr "टूगल च्यानल नाम सङ्केतहरु"
 
@@ -2844,7 +2843,7 @@ msgid "Mixer busses connected to track output"
 msgstr "मिश्रण बसहरु ट्र्याक आगतको लागि जडान"
 
 #: ../beast-gtk/bsttrackview.c:627 ../bse/bsemidisynth.c:459
-#: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
+#: ../bse/bsesong.c:752 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr "सिन्थेसिस सन्झ्याल पोस्टप्रशोधकमा प्रयोग"
 
@@ -2935,8 +2934,8 @@ msgstr "कार्यविधि कार्यान्वयन हटा�
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "आगत फाइल खोल्न असफल \"%s\": %s"
 
-#: ../beast-gtk/bstutils.c:297 ../beast-gtk/bstutils.c:319
-#: ../beast-gtk/bstutils.c:322
+#: ../beast-gtk/bstutils.c:298 ../beast-gtk/bstutils.c:320
+#: ../beast-gtk/bstutils.c:323
 msgid "Updating View"
 msgstr "अपडेटिङ्ग दृष्य"
 
@@ -3408,181 +3407,6 @@ msgstr "खारेजी ढाँचा"
 msgid "Diagnostic"
 msgstr ""
 
-#: ../bse/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
-#: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
-#: ../plugins/davchorus.idl:27
-msgid "GNU Lesser General Public License"
-msgstr "जीएनयु लेस्सर जेनरल पब्लिक लाइसेन्स"
-
-#: ../bse/bseamplifier.idl:31
-msgid "/Routing/Amplifier"
-msgstr "/रुटिङ्ग/एम्प्लिफायर"
-
-# ###########################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################३३३३३३३३३३३३३######################################################################################################################################################################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!######################################!!!!!!!!!!!!!!!!!!!#######################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
-#: ../bse/bseamplifier.idl:32
-msgid ""
-"BseAmplifier provides input signal controlled amplification or attenuation. "
-"It supports two control inputs and two audio inputs which are mixed together "
-"after balance and level adjustments. The gain setting controls "
-"preamplification of the mixed audio signal. The mixed control signal, "
-"weighted by a strength setting, determines additional amplification, "
-"allowing for external sources to modulate the overall volume (tremolo). The "
-"mixed control signal can influence the amplification linearly (to amplify "
-"other control signals) or exponentially (to amplify audio signals). Finally, "
-"the master volume controls amplification of the resulting output signal."
-msgstr ""
-"बिसेएम्पलिफायरले निर्गत संकेत एम्प्लिफिकेसन वा एटेनुयेसन कन्ट्रोल गर्दछ. यसले दुई कन्ट्रोल "
-"निर्गत र दुई अडियो निर्गत जुन मिश्रण बराबर र तह समायोजन पछि सहारा दिन्छ. नाफा "
-"सेटिङ्ग कन्ट्रोल पूर्व एम्प्लिफिकेसन मिश्रण अडियो संकेतको सहारा दिन्छ. मिश्रण कन्ट्रोल संकेत, "
-"स्ट्रेन्थ सटिङ्गको तौल, जोड एम्प्लिफिकेसनको निर्देशन दिन्छ, पूर्ण भएको ध्वनि (ट्रेमोलो) को "
-"आगत श्रोतलाई मोडुलेट गर्न मद्दत गर्दछ. मिश्रण कन्ट्रोल संकेतले एम्प्लिफिकेसन पङ्त्ति (अरु "
-"कन्ट्रोल संकेतहरुको एम्प्लिफाइ गर्न) वा एक्सपोनेन्सियली (अडियो संकेतलाई एम्प्लिफाइ गर्न) "
-"हौसला प्रदान गर्दछ. अन्तिममा, मास्टर ध्वनि कन्ट्रोल परिणाम आगत संकेतको एम्प्लिफिकेसन "
-"गर्दछ."
-
-#: ../bse/bseamplifier.idl:45 ../plugins/artscompressor.idl:50
-#: ../plugins/bseadder.c:97 ../plugins/bsebalance.idl:36
-#: ../plugins/bsemult.c:60
-msgid "Audio In1"
-msgstr "अडियो इन१"
-
-#: ../bse/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
-msgid "First audio input"
-msgstr "पहिलो अडियो निर्गत"
-
-#: ../bse/bseamplifier.idl:46 ../plugins/artscompressor.idl:51
-#: ../plugins/bseadder.c:99 ../plugins/bsebalance.idl:37
-#: ../plugins/bsemult.c:62
-msgid "Audio In2"
-msgstr "अडियो इन२"
-
-#: ../bse/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
-msgid "Second audio input"
-msgstr "दोस्रो अडियो निर्गत"
-
-#: ../bse/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
-msgid "Ctrl In1"
-msgstr "कन्ट्रोल इन१"
-
-#: ../bse/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
-msgid "First control input"
-msgstr "पहिलो कन्ट्रोल निर्गत"
-
-#: ../bse/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
-msgid "Ctrl In2"
-msgstr "कन्ट्रोल इन२"
-
-#: ../bse/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
-msgid "Second control input"
-msgstr "दोस्रो कन्ट्रोल निर्गत"
-
-#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:194
-#: ../bse/bsestandardosc.c:204 ../bse/bsewaveosc.c:598
-#: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
-#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
-#: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
-#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
-#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
-#: ../plugins/evaluator/bseevaluator.idl:33
-msgid "Audio Out"
-msgstr "अडियो बाहिर"
-
-#: ../bse/bseamplifier.idl:49
-msgid "Amplified audio output"
-msgstr "एम्प्लिफाइड अडियो आगत"
-
-#: ../bse/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
-msgid "Audio Input"
-msgstr "अडियो निर्गत"
-
-#: ../bse/bseamplifier.idl:51 ../bse/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
-msgid "Input 1 [%]"
-msgstr "निर्गत १ [%]"
-
-#: ../bse/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
-msgid "Attenuate the level of audio input 1"
-msgstr "अडियो निर्गत १ तहको एटेनुयट गर्दछ"
-
-#: ../bse/bseamplifier.idl:52 ../bse/bseamplifier.idl:57
-#: ../plugins/bsebalance.idl:45 ../plugins/bsebalance.idl:50
-msgid "Input 2 [%]"
-msgstr "निर्गत २ [%]"
-
-#: ../bse/bseamplifier.idl:52 ../plugins/bsebalance.idl:45
-msgid "Attenuate the level of audio input 2"
-msgstr "अडियो निर्गत २ तहको एटेनुयट गर्दछ"
-
-#: ../bse/bseamplifier.idl:53 ../bse/bseamplifier.idl:58 ../bse/bsecore.idl:90
-#: ../bse/bsecore.idl:267 ../plugins/bsebalance.idl:46
-#: ../plugins/bsebalance.idl:51
-msgid "Balance"
-msgstr "सन्तुलन"
-
-#: ../bse/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
-msgid "Balance audio input levels"
-msgstr "अडियो निर्गत तहहरुको सन्तुलन"
-
-#: ../bse/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
-msgid "Control Input"
-msgstr "कन्ट्रोल निर्गत"
-
-#: ../bse/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
-msgid "Attenuate the level of control input 1"
-msgstr "कन्ट्रोल निर्गत १ तहको एटेनुयट गर्दछ"
-
-#: ../bse/bseamplifier.idl:57 ../plugins/bsebalance.idl:50
-msgid "Attenuate the level of control input 2"
-msgstr "कन्ट्रोल निर्गत २ तहको एटेनुयट गर्दछ"
-
-#: ../bse/bseamplifier.idl:58 ../plugins/bsebalance.idl:51
-msgid "Balance control input levels"
-msgstr "कन्ट्रोल निर्गत तहहरुको सन्तुलन गर्दछ"
-
-#: ../bse/bseamplifier.idl:59
-msgid "Multiply Controls"
-msgstr "गुणन कन्ट्रोल"
-
-#: ../bse/bseamplifier.idl:60
-msgid ""
-"Switch the two control inputs to work like a chain of gain controls, rather "
-"than mixing them together, weighted by balance."
-msgstr ""
-"नाफा कन्ट्रोलको चेन जस्तै कार्य गर्न दुई कन्ट्रोल निर्गतहरुलाई स्विच गर्नुहोस्, त्यसलाई मिश्रण "
-"गर्नुको सट्टा, सन्तुलनको तौल"
-
-#: ../bse/bseamplifier.idl:63
-msgid "Exponential Control"
-msgstr "एक्पोनेन्सियल कन्ट्रोल"
-
-#: ../bse/bseamplifier.idl:63
-msgid "Toggle exponential and linear control response"
-msgstr "एक्पोनेन्सियल र पङ्त्ति कन्ट्रोलको टूगल गर्दछ"
-
-#: ../bse/bseamplifier.idl:66 ../plugins/bsebalance.idl:54
-msgid "Control Strength"
-msgstr "कन्ट्रोल स्ट्रेन्थ"
-
-#: ../bse/bseamplifier.idl:66
-msgid "Adjust how much the control signals affect the output volume"
-msgstr "आगत ध्वनिलाई कन्ट्रोल संकेतले कत्तिको प्रभाव पार्दछ भन्ने ब्यवस्थित गर्दछ"
-
-#: ../bse/bseamplifier.idl:67
-msgid "Base Volume"
-msgstr "आधार ध्वनि"
-
-#: ../bse/bseamplifier.idl:67
-msgid "Base amplification (the control signal adds up to this)"
-msgstr "आधार एम्प्लिकेसन (कन्ट्रोल संकेतले यसमा जोड गर्दछ)"
-
-#: ../bse/bseamplifier.idl:68
-msgid "Master Volume"
-msgstr "गुरु ध्वनि"
-
-#: ../bse/bseamplifier.idl:68
-msgid "Output stage amplification in decibel"
-msgstr "आगत स्टेज एम्प्लिफिकेसन स्टेजमा"
-
 #: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
 msgstr "दायरा:"
@@ -3717,6 +3541,17 @@ msgstr "नाफा मोड भित्री"
 #: ../bse/bsebiquadfilter.c:192
 msgid "Gain Modulation Input"
 msgstr "नाफा मोडुलेसन निर्गत"
+
+#: ../bse/bsebiquadfilter.c:194 ../bse/bsestandardosc.c:204
+#: ../bse/bsewaveosc.c:598 ../plugins/bseadder.c:101
+#: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
+#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
+#: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
+#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
+#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
+#: ../plugins/evaluator/bseevaluator.idl:33
+msgid "Audio Out"
+msgstr "अडियो बाहिर"
 
 #: ../bse/bsebiquadfilter.c:194
 msgid "Filtered Audio Signal"
@@ -3942,6 +3777,12 @@ msgstr "डाटा इन्ट्री"
 #: ../bse/bsecore.idl:89 ../bse/bsecore.idl:266
 msgid "Volume"
 msgstr "आवाज"
+
+#: ../bse/bsecore.idl:90 ../bse/bsecore.idl:267 ../plugins/bseamplifier.idl:53
+#: ../plugins/bseamplifier.idl:58 ../plugins/bsebalance.idl:46
+#: ../plugins/bsebalance.idl:51
+msgid "Balance"
+msgstr "सन्तुलन"
 
 #: ../bse/bsecore.idl:91 ../bse/bsecore.idl:268
 msgid "Continuous 9"
@@ -4652,25 +4493,96 @@ msgid "The CPU time spent in the system for children of this thread"
 msgstr "सिपियुको समय जुन यो थ्रेड बच्चाको लागि ब्यतित हुन्छ"
 
 #: ../bse/bsecore.idl:703
+msgid "Synthesis Settings"
+msgstr "सिन्थेसिस सेटिङ्गहरु"
+
+#: ../bse/bsecore.idl:704
+msgid "Latency [ms]"
+msgstr "ल्याटेन्स  [ms]"
+
+#: ../bse/bsecore.idl:705
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr "एकल नमुनाको निर्गत र आगत प्रकृया समय, साना मानहरुले सिपियुको भार बढाउँछ"
+
+#: ../bse/bsecore.idl:707
+msgid "Synth Mixing Frequency"
+msgstr "सिन्थ मिश्रण फ्रिक्वेन्सि"
+
+#: ../bse/bsecore.idl:708
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr "सिन्थेसिस मिश्रण फ्रिक्वेन्सि, साझा मानहरु: २२०५०, ४४१००, ४८०००"
+
+#: ../bse/bsecore.idl:710
+msgid "Synth Control Frequency"
+msgstr "सिन्थ कन्ट्रोल फ्रिक्वेन्सि"
+
+#: ../bse/bsecore.idl:711
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"फ्रिक्वेन्सि जहाँ कन्ट्रोल मानहरुको मूल्याङ्कन हुन्छ, सिपियुको भार घटाउन सिन्थ मिश्रण "
+"फ्रिक्वेन्सि भन्दा सानो हुनुपर्दछ"
+
+#: ../bse/bsecore.idl:715
+msgid "MIDI"
+msgstr "एम आई डि आई"
+
+#: ../bse/bsecore.idl:716
+msgid "Invert Sustain Pedal"
+msgstr "सस्टेन पेडल राख्नुहोस्"
+
+#: ../bse/bsecore.idl:717
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgstr ""
+"सस्टेन (ड्याम्प्लर) पेडलको स्थिति उल्टो पार्नुहोस् किनकि खुला/बन्द परिभाषाहरु उल्टाउन सकिन्छ"
+
+#: ../bse/bsecore.idl:720
+#, fuzzy
+msgid "Default Values"
+msgstr "मानहरु देखाउनुस"
+
+#: ../bse/bsecore.idl:721
+#, fuzzy
+msgid "Default Author"
+msgstr "लेखक"
+
+#: ../bse/bsecore.idl:721
+msgid "Default value for 'Author' fields"
+msgstr ""
+
+#: ../bse/bsecore.idl:723
+#, fuzzy
+msgid "Default License"
+msgstr "लाइसेन्स"
+
+#: ../bse/bsecore.idl:723
+msgid "Default value for 'License' fields"
+msgstr ""
+
+#: ../bse/bsecore.idl:726
 msgid "Search Paths"
 msgstr "खोजी बाटोहरु"
 
-#: ../bse/bsecore.idl:704
+#: ../bse/bsecore.idl:727
 msgid "Sample Path"
 msgstr "नमुना बाटो"
 
-#: ../bse/bsecore.idl:705
+#: ../bse/bsecore.idl:728
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 "डाइरेक्टरीको बाटो पत्ता लगाउनुहोस्, \"%s\", बाट छुट्ट्याइएको, अडियो नमुना पत्ता लगाउन."
 
-#: ../bse/bsecore.idl:708
+#: ../bse/bsecore.idl:731
 msgid "Effect Path"
 msgstr "प्रभाव बाटो"
 
-#: ../bse/bsecore.idl:709
+#: ../bse/bsecore.idl:732
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -4679,11 +4591,11 @@ msgstr ""
 "डाइरेक्टरीको बाटो पत्ता लगाउनुहोस्, \"%s\", बाट छुट्ट्याइएको, बिएसइ प्रभाव फाइलहरु "
 "पत्ता लगाउन"
 
-#: ../bse/bsecore.idl:712
+#: ../bse/bsecore.idl:735
 msgid "Instrument Path"
 msgstr "इन्स्ट्रुमेन्ट बाटो"
 
-#: ../bse/bsecore.idl:713
+#: ../bse/bsecore.idl:736
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -4692,11 +4604,11 @@ msgstr ""
 "डाइरेक्टरीको बाटो पत्ता लगाउनुहोस्, \"%s\", बाट छुट्ट्याइएको, बिएसइ इन्सट्रुमेन्ट फाइलहरु "
 "पत्ता लगाउन"
 
-#: ../bse/bsecore.idl:716
+#: ../bse/bsecore.idl:739
 msgid "Script Path"
 msgstr "लिपि बाटो"
 
-#: ../bse/bsecore.idl:717
+#: ../bse/bsecore.idl:740
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
@@ -4705,11 +4617,11 @@ msgstr ""
 "डाइरेक्टरीको बाटो पत्ता लगाउनुहोस्, \"%s\", बाट छुट्ट्याइएको, बिएसइ स्किम लिपिहरु पत्ता "
 "लगाउन"
 
-#: ../bse/bsecore.idl:720
+#: ../bse/bsecore.idl:743
 msgid "Plugin Path"
 msgstr "जडित बाटो"
 
-#: ../bse/bsecore.idl:721
+#: ../bse/bsecore.idl:744
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -4719,11 +4631,11 @@ msgstr ""
 "डाइरेक्टरीको बाटो पत्ता लगाउनुहोस्, \"%s\", बाट छुट्ट्याइएको, बिएसइ जडानहरु पत्ता "
 "लगाउन. यो बाटो स्ट्यान्डर्ड बिएसइ जडान स्थान प्रणालीमा पत्ता लगाउनको लागि"
 
-#: ../bse/bsecore.idl:725
+#: ../bse/bsecore.idl:748
 msgid "LADSPA Path"
 msgstr "लाड्स्पा बाटो"
 
-#: ../bse/bsecore.idl:726
+#: ../bse/bsecore.idl:749
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -4736,74 +4648,6 @@ msgstr ""
 "बाटो प्रणालीमा रहेको स्ट्यान्डर्ड लाड्स्पा स्थान पत्ता लगाउन. लाड्स्पा लिनक्स अडियो "
 "निर्माणकर्ताको सामान्य जडान एपिआइ हो, लाड्स्पा जडानहरुको अरु सूचना पत्ता लगाउन सक्नुहुन्छ "
 "http://www.ladspa.org/."
-
-#: ../bse/bsecore.idl:732
-msgid "Synthesis Settings"
-msgstr "सिन्थेसिस सेटिङ्गहरु"
-
-#: ../bse/bsecore.idl:733
-msgid "Latency [ms]"
-msgstr "ल्याटेन्स  [ms]"
-
-#: ../bse/bsecore.idl:734
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
-msgstr "एकल नमुनाको निर्गत र आगत प्रकृया समय, साना मानहरुले सिपियुको भार बढाउँछ"
-
-#: ../bse/bsecore.idl:736
-msgid "Synth Mixing Frequency"
-msgstr "सिन्थ मिश्रण फ्रिक्वेन्सि"
-
-#: ../bse/bsecore.idl:737
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr "सिन्थेसिस मिश्रण फ्रिक्वेन्सि, साझा मानहरु: २२०५०, ४४१००, ४८०००"
-
-#: ../bse/bsecore.idl:739
-msgid "Synth Control Frequency"
-msgstr "सिन्थ कन्ट्रोल फ्रिक्वेन्सि"
-
-#: ../bse/bsecore.idl:740
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
-msgstr ""
-"फ्रिक्वेन्सि जहाँ कन्ट्रोल मानहरुको मूल्याङ्कन हुन्छ, सिपियुको भार घटाउन सिन्थ मिश्रण "
-"फ्रिक्वेन्सि भन्दा सानो हुनुपर्दछ"
-
-#: ../bse/bsecore.idl:744
-msgid "MIDI"
-msgstr "एम आई डि आई"
-
-#: ../bse/bsecore.idl:745
-msgid "Invert Sustain Pedal"
-msgstr "सस्टेन पेडल राख्नुहोस्"
-
-#: ../bse/bsecore.idl:746
-msgid ""
-"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
-msgstr ""
-"सस्टेन (ड्याम्प्लर) पेडलको स्थिति उल्टो पार्नुहोस् किनकि खुला/बन्द परिभाषाहरु उल्टाउन सकिन्छ"
-
-#: ../bse/bsecore.idl:749
-msgid "Stepping Rates"
-msgstr "दरहरुको चरण"
-
-#: ../bse/bsecore.idl:750
-msgid "Volume [dB] Steps"
-msgstr "आवाज [dB] चरणहरु"
-
-#: ../bse/bsecore.idl:750
-msgid "Step width for volume in decibel"
-msgstr "डेसिबलमा आवाजको लागि चौडाइको चरण"
-
-#: ../bse/bsecore.idl:752
-msgid "BPM Steps"
-msgstr "बिपिएम चरणहरु"
-
-#: ../bse/bsecore.idl:752
-msgid "Step width for beats per minute"
-msgstr "बिस्टको प्रति मिनेटको चरण चौडाइ"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsedevice.c:340
@@ -5168,7 +5012,7 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.c:277
+#: ../bse/bsemain.c:261
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5176,7 +5020,7 @@ msgstr ""
 "\n"
 "उपलब्ध पिसिएम चालकहरु:\n"
 
-#: ../bse/bsemain.c:279
+#: ../bse/bsemain.c:263
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5263,7 +5107,7 @@ msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "पोष्टप्रोसेसर्सबाट छान्नको लागि उपलब्ध सिन्थेसिस सन्झालहरुको सूची"
 
 #: ../bse/bsemidisynth.c:443 ../bse/bsemidisynth.c:448
-#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:747
+#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:750
 #: ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1023
 msgid "MIDI Instrument"
 msgstr "मिडि इन्स्ट्रुमेन्ट"
@@ -5284,7 +5128,7 @@ msgstr "सिन्थेसाइजर"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "सिन्थेसिस सन्झाल मिडि इन्स्ट्रुमेन्ट प्रयोग गर्नको लागि"
 
-#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
+#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:752 ../bse/bsetrack.c:1025
 msgid "Postprocessor"
 msgstr "पोष्टप्रोसेसर्"
 
@@ -5300,7 +5144,7 @@ msgstr "मास्टर [dB]"
 msgid "Master [%]"
 msgstr "मास्टर [%]"
 
-#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:751
+#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:754
 msgid "Playback Settings"
 msgstr "प्लेब्याक सटिङ्गहरु"
 
@@ -5345,6 +5189,14 @@ msgstr "दाँया बाहिर"
 #: ../bse/bsemidivoice.c:145
 msgid "Disconnect Out"
 msgstr "जडान नभएको बाहिर"
+
+#: ../bse/bseobject.c:841
+msgid "Unique name of this object"
+msgstr ""
+
+#: ../bse/bseobject.c:851
+msgid "Free form comment or description"
+msgstr ""
 
 #: ../bse/bseparasite.proc:28 ../bse/bseparasite.proc:52
 #: ../bse/bseparasite.proc:70 ../bse/bseparasite.proc:89
@@ -5415,16 +5267,16 @@ msgstr "वेभ फाइल"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "बिएसइ ध्वनि आगत रेकर्ड गर्न वेभ फाइलको नाम प्रयोगमा"
 
-#: ../bse/bseserver.c:454
+#: ../bse/bseserver.c:453
 #, fuzzy
 msgid "Recording Audio Input"
 msgstr "दाँया अडियो आगत"
 
-#: ../bse/bseserver.c:455
+#: ../bse/bseserver.c:454
 msgid "Failed to start recording from audio device."
 msgstr ""
 
-#: ../bse/bseserver.c:456
+#: ../bse/bseserver.c:455
 #, fuzzy
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
@@ -5436,84 +5288,84 @@ msgstr ""
 "अडियो संकेत रेकर्डेड संकेतको सट्टा निर्गतमा प्रयोग हुन्छ, त्यसैले प्लेब्याक परिचालनले परिणाम "
 "लेराउँछ (मौनतालाई शुद्व पार्न आगत घटाइन्छ)"
 
-#: ../bse/bseserver.c:461
+#: ../bse/bseserver.c:460
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
 
-#: ../bse/bseserver.c:465
+#: ../bse/bseserver.c:464
 #, fuzzy
 msgid "Show messages about audio input problems"
 msgstr "अडियो रेकर्डिङ्ग समस्याहरु बारे सूचनाहरु देखाउनुहोस्"
 
-#: ../bse/bseserver.c:507
+#: ../bse/bseserver.c:506
 #, fuzzy
 msgid "No Audio"
 msgstr "अडियो"
 
-#: ../bse/bseserver.c:508
+#: ../bse/bseserver.c:507
 msgid "No available audio device was found."
 msgstr ""
 
-#: ../bse/bseserver.c:509
+#: ../bse/bseserver.c:508
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
 
-#: ../bse/bseserver.c:511
+#: ../bse/bseserver.c:510
 #, fuzzy, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "पिसिएम यन्त्रहरु खोल्न असफल, दिइएको: %s"
 
-#: ../bse/bseserver.c:512
+#: ../bse/bseserver.c:511
 msgid "Show messages about PCM device selections problems"
 msgstr "पिसिएम  यन्त्र छनोट समस्याहरुको सूचना प्रदर्शन गर्नुहोस्"
 
-#: ../bse/bseserver.c:531
+#: ../bse/bseserver.c:530
 #, fuzzy
 msgid "No MIDI"
 msgstr "एम आई डि आई"
 
-#: ../bse/bseserver.c:532
+#: ../bse/bseserver.c:531
 msgid "MIDI input or oputput is not available."
 msgstr ""
 
-#: ../bse/bseserver.c:533
+#: ../bse/bseserver.c:532
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
 
-#: ../bse/bseserver.c:535
+#: ../bse/bseserver.c:534
 #, fuzzy, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "पिसिएम यन्त्रहरु खोल्न असफल, दिइएको: %s"
 
-#: ../bse/bseserver.c:536
+#: ../bse/bseserver.c:535
 msgid "Show messages about MIDI device selections problems"
 msgstr "मिडि  यन्त्र छनोट समस्याहरुको सूचना प्रदर्शन गर्नुहोस्"
 
-#: ../bse/bseserver.c:587
+#: ../bse/bseserver.c:586
 msgid "Start Disk Recording"
 msgstr ""
 
-#: ../bse/bseserver.c:588
+#: ../bse/bseserver.c:587
 msgid "Failed to start recording to disk."
 msgstr ""
 
-#: ../bse/bseserver.c:589
+#: ../bse/bseserver.c:588
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr ""
 
-#: ../bse/bseserver.c:591
+#: ../bse/bseserver.c:590
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for output: %s"
 msgstr "आगत फाइल खोल्न असफल \"%s\": %s"
 
-#: ../bse/bseserver.c:592
+#: ../bse/bseserver.c:591
 msgid "Show recording file errors"
 msgstr "रेकर्डिङ्ग फाइल गल्तीहरु देखाउनुहोस्"
 
@@ -5530,47 +5382,47 @@ msgid "Snoop Signal"
 msgstr "स्नुप संकेत"
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: ../bse/bsesong.c:631
+#: ../bse/bsesong.c:634
 msgid "Master"
 msgstr "मास्टर"
 
-#: ../bse/bsesong.c:728 ../bse/bsesong.c:732 ../bse/bsesong.c:736
-#: ../bse/bsesong.c:740
+#: ../bse/bsesong.c:731 ../bse/bsesong.c:735 ../bse/bsesong.c:739
+#: ../bse/bsesong.c:743
 msgid "Timing"
 msgstr "समय भित्र रहनु"
 
-#: ../bse/bsesong.c:730
+#: ../bse/bsesong.c:733
 msgid "Ticks"
 msgstr "टिकहरु"
 
-#: ../bse/bsesong.c:730
+#: ../bse/bsesong.c:733
 msgid "Number of ticks per quarter note"
 msgstr "टिकहरुको नम्बर प्रति चौथाइ द्रष्टव्यमा"
 
-#: ../bse/bsesong.c:734
+#: ../bse/bsesong.c:737
 msgid "Numerator"
 msgstr "न्यूमरेटर"
 
-#: ../bse/bsesong.c:734
+#: ../bse/bsesong.c:737
 msgid "Measure numerator"
 msgstr "न्यूमरेटर नाप्नुहोस्"
 
-#: ../bse/bsesong.c:738
+#: ../bse/bsesong.c:741
 msgid "Denominator"
 msgstr "डिनोमिनेटर"
 
-#: ../bse/bsesong.c:738
+#: ../bse/bsesong.c:741
 msgid "Measure denominator, must be a power of 2"
 msgstr "डिनोमिनेटर नाप्नुहोस्, यसको पावर २ हुनुपर्दछ"
 
-#: ../bse/bsesong.c:742
+#: ../bse/bsesong.c:745
 msgid "Beats per minute"
 msgstr "प्रति मिनेटमा बिट्स"
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:765
-#: ../bse/bsesong.c:770
+#: ../bse/bsesong.c:759 ../bse/bsesong.c:763 ../bse/bsesong.c:768
+#: ../bse/bsesong.c:773
 msgid "Looping"
 msgstr "लुपिङ्ग"
 
@@ -5845,27 +5697,27 @@ msgstr "आगत पङ्त्तिबद्वहरु"
 msgid "Input port name to interface to"
 msgstr "निर्गत पोर्ट नाम इन्टरफेसमा"
 
-#: ../bse/bsesuper.c:183
+#: ../bse/bsesuper.c:188
 msgid "Author"
 msgstr "लेखक"
 
-#: ../bse/bsesuper.c:183
+#: ../bse/bsesuper.c:188
 msgid "Person changing or creating this object"
 msgstr "यो वस्तु परिवर्तन वा निर्माण गर्ने ब्यक्त्ति"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:193
 msgid "License"
 msgstr "लाइसेन्स"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:193
 msgid "Copyright license applying to this object"
 msgstr "प्रतिलिपि अधिकार लाइसेन्स यो वस्तुमा लागू गरिएको"
 
-#: ../bse/bsesuper.c:196
+#: ../bse/bsesuper.c:201
 msgid "Creation Time"
 msgstr "समय निर्माण"
 
-#: ../bse/bsesuper.c:200
+#: ../bse/bsesuper.c:205
 msgid "Last modification time"
 msgstr "अन्तिम संशोधन समय"
 
@@ -5980,13 +5832,13 @@ msgstr "बिएसए सिन्थेसिस फाइल"
 msgid "Audio"
 msgstr "अडियो"
 
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:305
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "जडान:कार्ड,देभ,सुब्देभ"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:309
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -6015,7 +5867,7 @@ msgstr ""
 "  सुब्देभ - सबयन्त्र नम्बर जडानको लागि जस्तै एचडब्लु'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:553
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -6316,9 +6168,21 @@ msgstr ""
 "क्लिप्पिङ्ग बिना. यसको ओभरल प्रभाव संगीतको ठूलो ध्वनिमा छ. हाम्रो उदाहरणमा, निर्गत "
 "एम्प्लिफिकेसन ५dB पारित हुन्छ, यदि आगत संकेतले ० dB कहिले पनि स्विकार्दैन. "
 
+#: ../plugins/artscompressor.idl:50 ../plugins/bseadder.c:97
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
+#: ../plugins/bsemult.c:60
+msgid "Audio In1"
+msgstr "अडियो इन१"
+
 #: ../plugins/artscompressor.idl:50
 msgid "Audio input 1"
 msgstr "अडियो निर्गत १"
+
+#: ../plugins/artscompressor.idl:51 ../plugins/bseadder.c:99
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
+#: ../plugins/bsemult.c:62
+msgid "Audio In2"
+msgstr "अडियो इन२"
 
 #: ../plugins/artscompressor.idl:51
 msgid "Audio input 2"
@@ -6406,6 +6270,152 @@ msgstr "अडियो आगत २"
 #: ../plugins/bseadder.c:101 ../plugins/bsemult.c:68
 msgid "Audio Output"
 msgstr "अडियो निर्गत"
+
+#: ../plugins/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
+#: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
+#: ../plugins/davchorus.idl:27
+msgid "GNU Lesser General Public License"
+msgstr "जीएनयु लेस्सर जेनरल पब्लिक लाइसेन्स"
+
+#: ../plugins/bseamplifier.idl:31
+msgid "/Routing/Amplifier"
+msgstr "/रुटिङ्ग/एम्प्लिफायर"
+
+# ###########################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################३३३३३३३३३३३३३######################################################################################################################################################################!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!######################################!!!!!!!!!!!!!!!!!!!#######################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
+#: ../plugins/bseamplifier.idl:32
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+"बिसेएम्पलिफायरले निर्गत संकेत एम्प्लिफिकेसन वा एटेनुयेसन कन्ट्रोल गर्दछ. यसले दुई कन्ट्रोल "
+"निर्गत र दुई अडियो निर्गत जुन मिश्रण बराबर र तह समायोजन पछि सहारा दिन्छ. नाफा "
+"सेटिङ्ग कन्ट्रोल पूर्व एम्प्लिफिकेसन मिश्रण अडियो संकेतको सहारा दिन्छ. मिश्रण कन्ट्रोल संकेत, "
+"स्ट्रेन्थ सटिङ्गको तौल, जोड एम्प्लिफिकेसनको निर्देशन दिन्छ, पूर्ण भएको ध्वनि (ट्रेमोलो) को "
+"आगत श्रोतलाई मोडुलेट गर्न मद्दत गर्दछ. मिश्रण कन्ट्रोल संकेतले एम्प्लिफिकेसन पङ्त्ति (अरु "
+"कन्ट्रोल संकेतहरुको एम्प्लिफाइ गर्न) वा एक्सपोनेन्सियली (अडियो संकेतलाई एम्प्लिफाइ गर्न) "
+"हौसला प्रदान गर्दछ. अन्तिममा, मास्टर ध्वनि कन्ट्रोल परिणाम आगत संकेतको एम्प्लिफिकेसन "
+"गर्दछ."
+
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
+msgid "First audio input"
+msgstr "पहिलो अडियो निर्गत"
+
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
+msgid "Second audio input"
+msgstr "दोस्रो अडियो निर्गत"
+
+#: ../plugins/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
+msgid "Ctrl In1"
+msgstr "कन्ट्रोल इन१"
+
+#: ../plugins/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
+msgid "First control input"
+msgstr "पहिलो कन्ट्रोल निर्गत"
+
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
+msgid "Ctrl In2"
+msgstr "कन्ट्रोल इन२"
+
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
+msgid "Second control input"
+msgstr "दोस्रो कन्ट्रोल निर्गत"
+
+#: ../plugins/bseamplifier.idl:49
+msgid "Amplified audio output"
+msgstr "एम्प्लिफाइड अडियो आगत"
+
+#: ../plugins/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
+msgid "Audio Input"
+msgstr "अडियो निर्गत"
+
+#: ../plugins/bseamplifier.idl:51 ../plugins/bseamplifier.idl:56
+#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
+msgid "Input 1 [%]"
+msgstr "निर्गत १ [%]"
+
+#: ../plugins/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
+msgid "Attenuate the level of audio input 1"
+msgstr "अडियो निर्गत १ तहको एटेनुयट गर्दछ"
+
+#: ../plugins/bseamplifier.idl:52 ../plugins/bseamplifier.idl:57
+#: ../plugins/bsebalance.idl:45 ../plugins/bsebalance.idl:50
+msgid "Input 2 [%]"
+msgstr "निर्गत २ [%]"
+
+#: ../plugins/bseamplifier.idl:52 ../plugins/bsebalance.idl:45
+msgid "Attenuate the level of audio input 2"
+msgstr "अडियो निर्गत २ तहको एटेनुयट गर्दछ"
+
+#: ../plugins/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
+msgid "Balance audio input levels"
+msgstr "अडियो निर्गत तहहरुको सन्तुलन"
+
+#: ../plugins/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
+msgid "Control Input"
+msgstr "कन्ट्रोल निर्गत"
+
+#: ../plugins/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
+msgid "Attenuate the level of control input 1"
+msgstr "कन्ट्रोल निर्गत १ तहको एटेनुयट गर्दछ"
+
+#: ../plugins/bseamplifier.idl:57 ../plugins/bsebalance.idl:50
+msgid "Attenuate the level of control input 2"
+msgstr "कन्ट्रोल निर्गत २ तहको एटेनुयट गर्दछ"
+
+#: ../plugins/bseamplifier.idl:58 ../plugins/bsebalance.idl:51
+msgid "Balance control input levels"
+msgstr "कन्ट्रोल निर्गत तहहरुको सन्तुलन गर्दछ"
+
+#: ../plugins/bseamplifier.idl:59
+msgid "Multiply Controls"
+msgstr "गुणन कन्ट्रोल"
+
+#: ../plugins/bseamplifier.idl:60
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr ""
+"नाफा कन्ट्रोलको चेन जस्तै कार्य गर्न दुई कन्ट्रोल निर्गतहरुलाई स्विच गर्नुहोस्, त्यसलाई मिश्रण "
+"गर्नुको सट्टा, सन्तुलनको तौल"
+
+#: ../plugins/bseamplifier.idl:63
+msgid "Exponential Control"
+msgstr "एक्पोनेन्सियल कन्ट्रोल"
+
+#: ../plugins/bseamplifier.idl:63
+msgid "Toggle exponential and linear control response"
+msgstr "एक्पोनेन्सियल र पङ्त्ति कन्ट्रोलको टूगल गर्दछ"
+
+#: ../plugins/bseamplifier.idl:66 ../plugins/bsebalance.idl:54
+msgid "Control Strength"
+msgstr "कन्ट्रोल स्ट्रेन्थ"
+
+#: ../plugins/bseamplifier.idl:66
+msgid "Adjust how much the control signals affect the output volume"
+msgstr "आगत ध्वनिलाई कन्ट्रोल संकेतले कत्तिको प्रभाव पार्दछ भन्ने ब्यवस्थित गर्दछ"
+
+#: ../plugins/bseamplifier.idl:67
+msgid "Base Volume"
+msgstr "आधार ध्वनि"
+
+#: ../plugins/bseamplifier.idl:67
+msgid "Base amplification (the control signal adds up to this)"
+msgstr "आधार एम्प्लिकेसन (कन्ट्रोल संकेतले यसमा जोड गर्दछ)"
+
+#: ../plugins/bseamplifier.idl:68
+msgid "Master Volume"
+msgstr "गुरु ध्वनि"
+
+#: ../plugins/bseamplifier.idl:68
+msgid "Output stage amplification in decibel"
+msgstr "आगत स्टेज एम्प्लिफिकेसन स्टेजमा"
 
 #: ../plugins/bseatandistort.c:90
 msgid "Audio Input Signal"
@@ -6821,10 +6831,28 @@ msgstr "बाँया निर्गत"
 msgid "Right Output"
 msgstr "दाँया निर्गत"
 
-#: ../tools/bsewavetool.cc:933
+#: ../tools/bsewavetool.cc:935
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "वेभ फाइल लोड गर्न असफल \"%s\": %s"
+
+#~ msgid "Enable meters"
+#~ msgstr "सक्षम मिटरहरु"
+
+#~ msgid "Stepping Rates"
+#~ msgstr "दरहरुको चरण"
+
+#~ msgid "Volume [dB] Steps"
+#~ msgstr "आवाज [dB] चरणहरु"
+
+#~ msgid "Step width for volume in decibel"
+#~ msgstr "डेसिबलमा आवाजको लागि चौडाइको चरण"
+
+#~ msgid "BPM Steps"
+#~ msgstr "बिपिएम चरणहरु"
+
+#~ msgid "Step width for beats per minute"
+#~ msgstr "बिस्टको प्रति मिनेटको चरण चौडाइ"
 
 #~ msgid "#CPU"
 #~ msgstr "#सिपियु"

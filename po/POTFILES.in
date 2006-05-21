@@ -61,7 +61,6 @@ beast-gtk/gxk/gxkparam-spinner.c
 beast-gtk/gxk/gxkparam-toggle.c
 beast-gtk/gxk/gxksimplelabel.c
 birnet/birnetmsg.c
-bse/bseamplifier.idl
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
 bse/bsebus.c
@@ -79,6 +78,7 @@ bse/bsemididevice-oss.c
 bse/bsemidiinput.c
 bse/bsemidisynth.c
 bse/bsemidivoice.c
+bse/bseobject.c
 bse/bseparasite.proc
 bse/bsepcmdevice-null.c
 bse/bsepcmdevice-oss.c
@@ -110,6 +110,7 @@ drivers/bse-portaudio/bsepcmdevice-portaudio.cc
 [type: gettext/scm-funcs] library/scripts/song-parts-operations.scm
 plugins/artscompressor.idl
 plugins/bseadder.c
+plugins/bseamplifier.idl
 plugins/bseatandistort.c
 plugins/bsebalance.idl
 #plugins/bsefirfilter.c

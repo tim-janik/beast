@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-20 20:16+0200\n"
+"POT-Creation-Date: 2006-05-21 11:49+0200\n"
 "PO-Revision-Date: 2005-07-05 19:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -427,8 +427,8 @@ msgstr "Přidat"
 #: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstbusmixer.c:37
 #: ../beast-gtk/bstbusview.c:36 ../beast-gtk/bstkeybindings.c:59
 #: ../beast-gtk/bstpartview.c:41 ../beast-gtk/bstpianorollctrl.c:80
-#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
-#: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
+#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:714
+#: ../beast-gtk/bstsnetrouter.c:762 ../beast-gtk/bsttrackrollctrl.c:51
 #: ../beast-gtk/bsttrackview.c:67 ../beast-gtk/bstwaveview.c:46
 msgid "Delete"
 msgstr "Odstranit"
@@ -450,7 +450,7 @@ msgstr "Odstranit momentálně vybranou sběrnici"
 msgid "Module Link: "
 msgstr "Spojení modulů: "
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:756
+#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
 msgid "Module link"
 msgstr "Spojení modulů"
 
@@ -458,12 +458,12 @@ msgstr "Spojení modulů"
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1089
+#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "Vstup"
 
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1093
-#: ../bse/bseamplifier.idl:65
+#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "Výstup"
 
@@ -573,7 +573,7 @@ msgid "Abortion"
 msgstr "Přerušení"
 
 #: ../beast-gtk/bstfiledialog.c:138 ../beast-gtk/bstitemview.c:208
-#: ../beast-gtk/bsttrackview.c:609
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bseobject.c:841
 msgid "Name"
 msgstr "Název"
 
@@ -796,6 +796,7 @@ msgid "ID"
 msgstr "ID"
 
 #: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:630
+#: ../bse/bseobject.c:851
 msgid "Comment"
 msgstr "Poznámka"
 
@@ -886,35 +887,35 @@ msgid "Description"
 msgstr "Popis"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:134
+#: ../beast-gtk/bstmain.c:135
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: ../beast-gtk/bstmain.c:141
+#: ../beast-gtk/bstmain.c:142
 msgid "Startup"
 msgstr "Spuštění"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:145
+#: ../beast-gtk/bstmain.c:146
 msgid "Initializers"
 msgstr "Inicializéry"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:153
+#: ../beast-gtk/bstmain.c:154
 msgid "RC Files"
 msgstr "Soubory RC"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:157
+#: ../beast-gtk/bstmain.c:158
 msgid "Splash Image"
 msgstr "Obrázek při spuštění"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:169
+#: ../beast-gtk/bstmain.c:170
 msgid "BSE Core"
 msgstr "Jádro BSE"
 
@@ -944,26 +945,26 @@ msgstr "Načítám..."
 msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
-#: ../beast-gtk/bstmain.c:324
+#: ../beast-gtk/bstmain.c:325
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Nemohu načíst projekt \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:330
+#: ../beast-gtk/bstmain.c:331
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Nemohu načíst projekt \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:849
+#: ../beast-gtk/bstmain.c:845
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: ../beast-gtk/bstmain.c:850
+#: ../beast-gtk/bstmain.c:846
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: ../beast-gtk/bstmain.c:851
+#: ../beast-gtk/bstmain.c:847
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -1323,7 +1324,7 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "Počet buněk, o které se posunout po každé úpravě události nebo noty"
 
-#: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:571
+#: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:575
 msgid "Direction"
 msgstr "Směr"
 
@@ -2364,105 +2365,100 @@ msgstr ""
 "Na některé pole bude mít vliv až po restartu."
 
 #: ../beast-gtk/bstrecords.idl:125
-msgid "Enable scopes"
+msgid "Slow scopes"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:126 ../beast-gtk/bstrecords.idl:130
+#: ../beast-gtk/bstrecords.idl:126
 msgid ""
-"Enables or prevents BEAST from periodically updating the scopes. Disabling "
-"may be desirable especially on slow machines."
+"Aggresively slows down the periodic update frequency of scopes. Doing this "
+"may be desirable on particularly slow machines."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:129
-#, fuzzy
-msgid "Enable meters"
-msgstr "Parametry"
-
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:134
 msgid "Skin Name"
 msgstr "Název skinu"
 
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:134
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Název aktuálního nastavení skinu (používané pro výběry skinu)."
 
-#: ../beast-gtk/bstrecords.idl:140 ../beast-gtk/bstrecords.idl:150
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:156
 msgid "Background Image"
 msgstr "Obrázek na pozadí"
 
-#: ../beast-gtk/bstrecords.idl:140
+#: ../beast-gtk/bstrecords.idl:136
 msgid "Background image used by the pattern editor."
 msgstr "Obrázek na pozadí používaný editorem vzorků."
 
-#: ../beast-gtk/bstrecords.idl:141 ../beast-gtk/bstrecords.idl:151
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Image shade"
 msgstr "Stínování obrázku"
 
-#: ../beast-gtk/bstrecords.idl:141 ../beast-gtk/bstrecords.idl:151
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Procento pixelů obrázku na pozadí, které sloučit s barvou pozadí."
 
-#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:152
-#: ../beast-gtk/bstrecords.idl:162
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Background Color"
 msgstr "Barva pozadí"
 
-#: ../beast-gtk/bstrecords.idl:143
+#: ../beast-gtk/bstrecords.idl:139
 msgid "Background Shade 1"
 msgstr "Stín pozadí 1"
 
-#: ../beast-gtk/bstrecords.idl:144
+#: ../beast-gtk/bstrecords.idl:140
 msgid "Background Shade 2"
 msgstr "Stín pozadí 2"
 
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:141
 msgid "Empty Field Color"
 msgstr "Barva prázdného pole"
 
-#: ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:142
 msgid "Text Color"
 msgstr "Barva textu"
 
-#: ../beast-gtk/bstrecords.idl:147 ../beast-gtk/bstrecords.idl:154
+#: ../beast-gtk/bstrecords.idl:143 ../beast-gtk/bstrecords.idl:150
 msgid "Vertical Bar Color"
 msgstr "Barva svislého pruhu"
 
-#: ../beast-gtk/bstrecords.idl:150
+#: ../beast-gtk/bstrecords.idl:146
 msgid "Background image used by the piano-roll editor."
 msgstr "Obrázek na pozadí používaný editorem svitku klavíru."
 
-#: ../beast-gtk/bstrecords.idl:153 ../beast-gtk/bstrecords.idl:163
+#: ../beast-gtk/bstrecords.idl:149 ../beast-gtk/bstrecords.idl:159
 msgid "Horizontal Bar Color"
 msgstr "Barva vodorovného pruhu"
 
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:151
 msgid "Horizontal Grid Color"
 msgstr "Barva vodorovné mřížky"
 
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:152
 msgid "Vertical Grid Color"
 msgstr "Barva svislé mřížky"
 
-#: ../beast-gtk/bstrecords.idl:157 ../beast-gtk/bstrecords.idl:164
+#: ../beast-gtk/bstrecords.idl:153 ../beast-gtk/bstrecords.idl:160
 msgid "Middle Bar Color"
 msgstr "Barva prostředního pruhu"
 
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:156
 msgid "Background image used by the control events editor."
 msgstr "Obrázek na pozadí používaný editorem řídicích událostí."
 
-#: ../beast-gtk/bstrecords.idl:165
+#: ../beast-gtk/bstrecords.idl:161
 msgid "Positive Value Color"
 msgstr "Barva kladné hodnoty"
 
-#: ../beast-gtk/bstrecords.idl:166
+#: ../beast-gtk/bstrecords.idl:162
 msgid "Zero Value Color"
 msgstr "Barva nulové hodnoty"
 
-#: ../beast-gtk/bstrecords.idl:167
+#: ../beast-gtk/bstrecords.idl:163
 msgid "Negative Value Color"
 msgstr "Barva záporné hodnoty"
 
@@ -2521,40 +2517,40 @@ msgstr "Maximum návrhu"
 msgid "Preview"
 msgstr "Náslech"
 
-#: ../beast-gtk/bstscrollgraph.c:567 ../beast-gtk/bstscrollgraph.c:570
-#: ../beast-gtk/bstscrollgraph.c:573 ../beast-gtk/bstscrollgraph.c:576
+#: ../beast-gtk/bstscrollgraph.c:571 ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:577 ../beast-gtk/bstscrollgraph.c:580
 msgid "Spectrograph"
 msgstr "Spektrograf"
 
-#: ../beast-gtk/bstscrollgraph.c:568
+#: ../beast-gtk/bstscrollgraph.c:572
 msgid "Flip Spectrum"
 msgstr "Obrátit spektrum"
 
-#: ../beast-gtk/bstscrollgraph.c:568
+#: ../beast-gtk/bstscrollgraph.c:572
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr "Obrátit zobrazení spektra, prohodit nízké a vysoké frekvence"
 
-#: ../beast-gtk/bstscrollgraph.c:571
+#: ../beast-gtk/bstscrollgraph.c:575
 msgid "Choose display scrolling direction"
 msgstr "Zvolte směr posunu displeje"
 
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:578
 msgid "Boost"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:578
 msgid "Adjust frequency level threshold"
 msgstr "Upravit úroveň prahu frekvence"
 
-#: ../beast-gtk/bstscrollgraph.c:577
+#: ../beast-gtk/bstscrollgraph.c:581
 msgid "Window Size"
 msgstr "Velikost okna"
 
-#: ../beast-gtk/bstscrollgraph.c:577
+#: ../beast-gtk/bstscrollgraph.c:581
 msgid "Adjust FFT window size"
 msgstr "Upravit velikost okna FFT"
 
-#: ../beast-gtk/bstscrollgraph.c:667
+#: ../beast-gtk/bstscrollgraph.c:671
 msgid "Unconnected Output Channel"
 msgstr "Nepřipojený výstupn kanály"
 
@@ -2576,7 +2572,7 @@ msgstr "Upravit"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Upravit/přesunout/menu (tlačítka myši 1-3)"
 
-#: ../beast-gtk/bstsnetrouter.c:52 ../beast-gtk/bstsnetrouter.c:932
+#: ../beast-gtk/bstsnetrouter.c:52 ../beast-gtk/bstsnetrouter.c:934
 msgid "Palette"
 msgstr "Paleta"
 
@@ -2584,97 +2580,97 @@ msgstr "Paleta"
 msgid "Toggle visibility of the tool palette"
 msgstr "Přepnout viditelnost palety nástrojů"
 
-#: ../beast-gtk/bstsnetrouter.c:611
+#: ../beast-gtk/bstsnetrouter.c:613
 msgid "Input channel in use"
 msgstr "Vstupní kanál se používá"
 
-#: ../beast-gtk/bstsnetrouter.c:638 ../beast-gtk/bstsnetrouter.c:640
-#: ../beast-gtk/bstsnetrouter.c:676
+#: ../beast-gtk/bstsnetrouter.c:640 ../beast-gtk/bstsnetrouter.c:642
+#: ../beast-gtk/bstsnetrouter.c:678
 msgid "Create Link"
 msgstr "Vytvořit spojení"
 
-#: ../beast-gtk/bstsnetrouter.c:638
+#: ../beast-gtk/bstsnetrouter.c:640
 msgid "Select output module"
 msgstr "Vybrat výstupní modul"
 
-#: ../beast-gtk/bstsnetrouter.c:640
+#: ../beast-gtk/bstsnetrouter.c:642
 msgid "Select input module"
 msgstr "Vybrat vstupní modul"
 
-#: ../beast-gtk/bstsnetrouter.c:704 ../beast-gtk/bstsupershell.c:189
+#: ../beast-gtk/bstsnetrouter.c:706 ../beast-gtk/bstsupershell.c:189
 #: ../beast-gtk/bstsupershell.c:222 ../beast-gtk/bstsupershell.c:236
 msgid "Properties"
 msgstr "Vlastnosti"
 
-#: ../beast-gtk/bstsnetrouter.c:705
+#: ../beast-gtk/bstsnetrouter.c:707
 msgid "Reset Properties"
 msgstr "Přenastavit vlastnosti"
 
-#: ../beast-gtk/bstsnetrouter.c:706
+#: ../beast-gtk/bstsnetrouter.c:708
 msgid "Delete Inputs"
 msgstr "Odstranit vstupy"
 
-#: ../beast-gtk/bstsnetrouter.c:707
+#: ../beast-gtk/bstsnetrouter.c:709
 msgid "Delete Outputs"
 msgstr "Odstranit výstupy"
 
-#: ../beast-gtk/bstsnetrouter.c:709 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
 msgid "Show Info"
 msgstr "Zobrazit informace"
 
-#: ../beast-gtk/bstsnetrouter.c:710
+#: ../beast-gtk/bstsnetrouter.c:712
 msgid "Output Signal Monitor"
 msgstr "Sledování výstupního signálu"
 
-#: ../beast-gtk/bstsnetrouter.c:737
+#: ../beast-gtk/bstsnetrouter.c:739
 msgid "Remove Module"
 msgstr "Odstranit modul"
 
-#: ../beast-gtk/bstsnetrouter.c:769
+#: ../beast-gtk/bstsnetrouter.c:771
 msgid "Delete Link"
 msgstr "Odstranit spojení"
 
-#: ../beast-gtk/bstsnetrouter.c:823
+#: ../beast-gtk/bstsnetrouter.c:825
 msgid "Insert Module"
 msgstr "Vložit modul"
 
-#: ../beast-gtk/bstsnetrouter.c:1089
+#: ../beast-gtk/bstsnetrouter.c:1091
 msgid "PCM Input module"
 msgstr "Modul vstupu PCM"
 
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstsnetrouter.c:1092
 msgid "Oscillator"
 msgstr "Oscilátor"
 
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstsnetrouter.c:1092
 msgid "Standard oscillator module"
 msgstr "Standardní modul oscilátoru"
 
-#: ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstsnetrouter.c:1093
 msgid "ADSR"
 msgstr "ADSR"
 
-#: ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstsnetrouter.c:1093
 msgid "ADSR Envelope Generator"
 msgstr "Generátor obálky ADSR"
 
-#: ../beast-gtk/bstsnetrouter.c:1092
+#: ../beast-gtk/bstsnetrouter.c:1094
 msgid "DCA"
 msgstr "DCA"
 
-#: ../beast-gtk/bstsnetrouter.c:1092
+#: ../beast-gtk/bstsnetrouter.c:1094
 msgid "Standard amplifier module"
 msgstr "Standardní modul zesilovače"
 
-#: ../beast-gtk/bstsnetrouter.c:1093
+#: ../beast-gtk/bstsnetrouter.c:1095
 msgid "PCM Output module"
 msgstr "Modul výstupu PCM"
 
-#: ../beast-gtk/bstsnetrouter.c:1153
+#: ../beast-gtk/bstsnetrouter.c:1155
 msgid "Channel Hints"
 msgstr "Nápovědy kanálů"
 
-#: ../beast-gtk/bstsnetrouter.c:1153
+#: ../beast-gtk/bstsnetrouter.c:1155
 msgid "Toggle channel name hints"
 msgstr "Přepnout nápovědy názvů kanálů"
 
@@ -2855,7 +2851,7 @@ msgid "Mixer busses connected to track output"
 msgstr "Sběrnice mixéru připojené k výstupu stopy"
 
 #: ../beast-gtk/bsttrackview.c:627 ../bse/bsemidisynth.c:459
-#: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
+#: ../bse/bsesong.c:752 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Síť syntézy, kterou používat jako postprocesor"
 
@@ -2947,8 +2943,8 @@ msgstr "Chyba provádění skriptu."
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Nemohu spustit proceduru skriptu '%s': %s"
 
-#: ../beast-gtk/bstutils.c:297 ../beast-gtk/bstutils.c:319
-#: ../beast-gtk/bstutils.c:322
+#: ../beast-gtk/bstutils.c:298 ../beast-gtk/bstutils.c:320
+#: ../beast-gtk/bstutils.c:323
 msgid "Updating View"
 msgstr "Aktualizuji pohled"
 
@@ -3421,181 +3417,6 @@ msgstr "Informace"
 msgid "Diagnostic"
 msgstr "Diagnostika"
 
-#: ../bse/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
-#: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
-#: ../plugins/davchorus.idl:27
-msgid "GNU Lesser General Public License"
-msgstr "GNU Lesser General Public License"
-
-#: ../bse/bseamplifier.idl:31
-msgid "/Routing/Amplifier"
-msgstr "/Směrování/Zesilovač"
-
-#: ../bse/bseamplifier.idl:32
-msgid ""
-"BseAmplifier provides input signal controlled amplification or attenuation. "
-"It supports two control inputs and two audio inputs which are mixed together "
-"after balance and level adjustments. The gain setting controls "
-"preamplification of the mixed audio signal. The mixed control signal, "
-"weighted by a strength setting, determines additional amplification, "
-"allowing for external sources to modulate the overall volume (tremolo). The "
-"mixed control signal can influence the amplification linearly (to amplify "
-"other control signals) or exponentially (to amplify audio signals). Finally, "
-"the master volume controls amplification of the resulting output signal."
-msgstr ""
-"BseAmplifier poskytuje zesilování nebo zeslabování řízené vstupním signálem. "
-"Podporuje dva řídicí vstupy a dva vstupy zvuku, které jsou po úpravě "
-"vyrovnání a úrovně smixovány dohromady. Nastavení zisku ovládá předzesílení "
-"smixovaného signálu zvuku. Smixovaný řídicí signál, vážený nastavením síly, "
-"určuje další zesílení, což umožňuje externím zdrojům modulovat celkovou "
-"hlasitost (tremolo). Smixovaný řídicí signál může zesílení ovlivňovat "
-"lineárně (pro zesilování jiných řídicích signálů) nebo exponenciálně (pro "
-"zesilování zvukových signálů). Konečně hlavní hlasitost ovládá zesilování "
-"výsledného výstupního signálu."
-
-#: ../bse/bseamplifier.idl:45 ../plugins/artscompressor.idl:50
-#: ../plugins/bseadder.c:97 ../plugins/bsebalance.idl:36
-#: ../plugins/bsemult.c:60
-msgid "Audio In1"
-msgstr "Zvuk In1"
-
-#: ../bse/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
-msgid "First audio input"
-msgstr "První vstup zvuku"
-
-#: ../bse/bseamplifier.idl:46 ../plugins/artscompressor.idl:51
-#: ../plugins/bseadder.c:99 ../plugins/bsebalance.idl:37
-#: ../plugins/bsemult.c:62
-msgid "Audio In2"
-msgstr "Zvuk In2"
-
-#: ../bse/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
-msgid "Second audio input"
-msgstr "Druhý vstup zvuku"
-
-#: ../bse/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
-msgid "Ctrl In1"
-msgstr "Říd In1"
-
-#: ../bse/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
-msgid "First control input"
-msgstr "První řídicí vstup"
-
-#: ../bse/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
-msgid "Ctrl In2"
-msgstr "Říd In2"
-
-#: ../bse/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
-msgid "Second control input"
-msgstr "Druhý řídicí vstup"
-
-#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:194
-#: ../bse/bsestandardosc.c:204 ../bse/bsewaveosc.c:598
-#: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
-#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
-#: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
-#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
-#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
-#: ../plugins/evaluator/bseevaluator.idl:33
-msgid "Audio Out"
-msgstr "Výstup zvuku"
-
-#: ../bse/bseamplifier.idl:49
-msgid "Amplified audio output"
-msgstr "Zesílený výstup zvuku"
-
-#: ../bse/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
-msgid "Audio Input"
-msgstr "Vstup zvuku"
-
-#: ../bse/bseamplifier.idl:51 ../bse/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
-msgid "Input 1 [%]"
-msgstr "Vstup 1 [%]"
-
-#: ../bse/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
-msgid "Attenuate the level of audio input 1"
-msgstr "Zeslabit úroveň vstupu zvuku 1"
-
-#: ../bse/bseamplifier.idl:52 ../bse/bseamplifier.idl:57
-#: ../plugins/bsebalance.idl:45 ../plugins/bsebalance.idl:50
-msgid "Input 2 [%]"
-msgstr "Vstup 2 [%]"
-
-#: ../bse/bseamplifier.idl:52 ../plugins/bsebalance.idl:45
-msgid "Attenuate the level of audio input 2"
-msgstr "Zeslabit úroveň vstupu zvuku 2"
-
-#: ../bse/bseamplifier.idl:53 ../bse/bseamplifier.idl:58 ../bse/bsecore.idl:90
-#: ../bse/bsecore.idl:267 ../plugins/bsebalance.idl:46
-#: ../plugins/bsebalance.idl:51
-msgid "Balance"
-msgstr "Vyrovnání"
-
-#: ../bse/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
-msgid "Balance audio input levels"
-msgstr "Vyrovnání úrovní vstupu zvuku"
-
-#: ../bse/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
-msgid "Control Input"
-msgstr "Řídicí vstup"
-
-#: ../bse/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
-msgid "Attenuate the level of control input 1"
-msgstr "Zeslabit úroveň řídicího vstupu 1"
-
-#: ../bse/bseamplifier.idl:57 ../plugins/bsebalance.idl:50
-msgid "Attenuate the level of control input 2"
-msgstr "Zeslabit úroveň řídicího vstupu 2"
-
-#: ../bse/bseamplifier.idl:58 ../plugins/bsebalance.idl:51
-msgid "Balance control input levels"
-msgstr "Vyrovnat úrovně řídicích vstupů"
-
-#: ../bse/bseamplifier.idl:59
-msgid "Multiply Controls"
-msgstr "Násobit řízení"
-
-#: ../bse/bseamplifier.idl:60
-msgid ""
-"Switch the two control inputs to work like a chain of gain controls, rather "
-"than mixing them together, weighted by balance."
-msgstr ""
-"Přepnout řídicí vstupu, aby fungovaly jako řetěz ovládání zisku místo jejich "
-"smíchání váženého podle vyrovnání."
-
-#: ../bse/bseamplifier.idl:63
-msgid "Exponential Control"
-msgstr "Exponenciální řízení"
-
-#: ../bse/bseamplifier.idl:63
-msgid "Toggle exponential and linear control response"
-msgstr "Přepnout exponenciální a lineární odezvu na řízení"
-
-#: ../bse/bseamplifier.idl:66 ../plugins/bsebalance.idl:54
-msgid "Control Strength"
-msgstr "Síla řízení"
-
-#: ../bse/bseamplifier.idl:66
-msgid "Adjust how much the control signals affect the output volume"
-msgstr "Upravit, jak moc řídicí signály ovlivňují výstupní hlasitost"
-
-#: ../bse/bseamplifier.idl:67
-msgid "Base Volume"
-msgstr "Základní hlasitost"
-
-#: ../bse/bseamplifier.idl:67
-msgid "Base amplification (the control signal adds up to this)"
-msgstr "Základní zesílení (k tomuto přidává řídicí signál)"
-
-#: ../bse/bseamplifier.idl:68
-msgid "Master Volume"
-msgstr "Hlavní hlasitost"
-
-#: ../bse/bseamplifier.idl:68
-msgid "Output stage amplification in decibel"
-msgstr "Zesílení ve výstupní fázi v decibelech"
-
 #: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
 msgstr "Rozsah:"
@@ -3730,6 +3551,17 @@ msgstr "Zisk mod In"
 #: ../bse/bsebiquadfilter.c:192
 msgid "Gain Modulation Input"
 msgstr "Vstup modulace zisku"
+
+#: ../bse/bsebiquadfilter.c:194 ../bse/bsestandardosc.c:204
+#: ../bse/bsewaveosc.c:598 ../plugins/bseadder.c:101
+#: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
+#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
+#: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
+#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
+#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
+#: ../plugins/evaluator/bseevaluator.idl:33
+msgid "Audio Out"
+msgstr "Výstup zvuku"
 
 #: ../bse/bsebiquadfilter.c:194
 msgid "Filtered Audio Signal"
@@ -3957,6 +3789,12 @@ msgstr "Vstup dat"
 #: ../bse/bsecore.idl:89 ../bse/bsecore.idl:266
 msgid "Volume"
 msgstr "Hlasitost"
+
+#: ../bse/bsecore.idl:90 ../bse/bsecore.idl:267 ../plugins/bseamplifier.idl:53
+#: ../plugins/bseamplifier.idl:58 ../plugins/bsebalance.idl:46
+#: ../plugins/bsebalance.idl:51
+msgid "Balance"
+msgstr "Vyrovnání"
 
 #: ../bse/bsecore.idl:91 ../bse/bsecore.idl:268
 msgid "Continuous 9"
@@ -4668,14 +4506,86 @@ msgid "The CPU time spent in the system for children of this thread"
 msgstr "Čas CPU strávený v systému pro potomky tohoto vlákna"
 
 #: ../bse/bsecore.idl:703
+msgid "Synthesis Settings"
+msgstr "Nastavení syntézy"
+
+#: ../bse/bsecore.idl:704
+msgid "Latency [ms]"
+msgstr "Zpoždění [ms]"
+
+#: ../bse/bsecore.idl:705
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+"Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
+"zvyšují zátěž CPU"
+
+#: ../bse/bsecore.idl:707
+msgid "Synth Mixing Frequency"
+msgstr "Frekvence mixování syntézy"
+
+#: ../bse/bsecore.idl:708
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
+
+#: ../bse/bsecore.idl:710
+msgid "Synth Control Frequency"
+msgstr "Frekvence řízení syntézy"
+
+#: ../bse/bsecore.idl:711
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže "
+"CPU by měla mít mnohem menší než frekvence mixování syntézy"
+
+#: ../bse/bsecore.idl:715
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../bse/bsecore.idl:716
+msgid "Invert Sustain Pedal"
+msgstr "Invertovat pedál"
+
+#: ../bse/bsecore.idl:717
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgstr "Invertovat stav pedálu, aby byl prohozen význam zapnuto/vypnuto"
+
+#: ../bse/bsecore.idl:720
+#, fuzzy
+msgid "Default Values"
+msgstr "Kreslit hodnoty"
+
+#: ../bse/bsecore.idl:721
+#, fuzzy
+msgid "Default Author"
+msgstr "Autor"
+
+#: ../bse/bsecore.idl:721
+msgid "Default value for 'Author' fields"
+msgstr ""
+
+#: ../bse/bsecore.idl:723
+#, fuzzy
+msgid "Default License"
+msgstr "Licence"
+
+#: ../bse/bsecore.idl:723
+msgid "Default value for 'License' fields"
+msgstr ""
+
+#: ../bse/bsecore.idl:726
 msgid "Search Paths"
 msgstr "Cesty hledání"
 
-#: ../bse/bsecore.idl:704
+#: ../bse/bsecore.idl:727
 msgid "Sample Path"
 msgstr "Cesta vzorků"
 
-#: ../bse/bsecore.idl:705
+#: ../bse/bsecore.idl:728
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
@@ -4683,11 +4593,11 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání vzorků "
 "zvuku."
 
-#: ../bse/bsecore.idl:708
+#: ../bse/bsecore.idl:731
 msgid "Effect Path"
 msgstr "Cesta efektů"
 
-#: ../bse/bsecore.idl:709
+#: ../bse/bsecore.idl:732
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -4696,11 +4606,11 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání souborů s "
 "efekty BSE."
 
-#: ../bse/bsecore.idl:712
+#: ../bse/bsecore.idl:735
 msgid "Instrument Path"
 msgstr "Cesta nástrojů"
 
-#: ../bse/bsecore.idl:713
+#: ../bse/bsecore.idl:736
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -4709,11 +4619,11 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání souborů s "
 "nástroj BSE."
 
-#: ../bse/bsecore.idl:716
+#: ../bse/bsecore.idl:739
 msgid "Script Path"
 msgstr "Cesta skriptů"
 
-#: ../bse/bsecore.idl:717
+#: ../bse/bsecore.idl:740
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
@@ -4722,11 +4632,11 @@ msgstr ""
 "Cesta hledání z adresářů oddělených \"%s\" používaná pro hledání skriptů BSE "
 "v scheme."
 
-#: ../bse/bsecore.idl:720
+#: ../bse/bsecore.idl:743
 msgid "Plugin Path"
 msgstr "Cesta zásuvných modulů"
 
-#: ../bse/bsecore.idl:721
+#: ../bse/bsecore.idl:744
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -4737,11 +4647,11 @@ msgstr ""
 "modulů BSE. V této cestě se hledá navíc ke standardnímu umístění zásuvných "
 "modulů BSE v tomto systému."
 
-#: ../bse/bsecore.idl:725
+#: ../bse/bsecore.idl:748
 msgid "LADSPA Path"
 msgstr "Cesta LADSPA"
 
-#: ../bse/bsecore.idl:726
+#: ../bse/bsecore.idl:749
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -4755,75 +4665,6 @@ msgstr ""
 "zásuvných modulů LADSPA v tomto systému. LADSPA je Linux Audio Developer's "
 "Simple Plugin API, více informací o zásuvných modulech LADSPA můžete najít "
 "na http://www.ladspa.org/."
-
-#: ../bse/bsecore.idl:732
-msgid "Synthesis Settings"
-msgstr "Nastavení syntézy"
-
-#: ../bse/bsecore.idl:733
-msgid "Latency [ms]"
-msgstr "Zpoždění [ms]"
-
-#: ../bse/bsecore.idl:734
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
-msgstr ""
-"Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
-"zvyšují zátěž CPU"
-
-#: ../bse/bsecore.idl:736
-msgid "Synth Mixing Frequency"
-msgstr "Frekvence mixování syntézy"
-
-#: ../bse/bsecore.idl:737
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
-
-#: ../bse/bsecore.idl:739
-msgid "Synth Control Frequency"
-msgstr "Frekvence řízení syntézy"
-
-#: ../bse/bsecore.idl:740
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
-msgstr ""
-"Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže "
-"CPU by měla mít mnohem menší než frekvence mixování syntézy"
-
-#: ../bse/bsecore.idl:744
-msgid "MIDI"
-msgstr "MIDI"
-
-#: ../bse/bsecore.idl:745
-msgid "Invert Sustain Pedal"
-msgstr "Invertovat pedál"
-
-#: ../bse/bsecore.idl:746
-msgid ""
-"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
-msgstr "Invertovat stav pedálu, aby byl prohozen význam zapnuto/vypnuto"
-
-#: ../bse/bsecore.idl:749
-msgid "Stepping Rates"
-msgstr "Rychlosti kroků"
-
-#: ../bse/bsecore.idl:750
-msgid "Volume [dB] Steps"
-msgstr "Kroky hlasitosti [dB]"
-
-#: ../bse/bsecore.idl:750
-msgid "Step width for volume in decibel"
-msgstr "Šířka kroku pro hlasitost v decibelech"
-
-#: ../bse/bsecore.idl:752
-msgid "BPM Steps"
-msgstr "Kroky BPM"
-
-#: ../bse/bsecore.idl:752
-msgid "Step width for beats per minute"
-msgstr "Šířka kroku pro údery za minutu"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsedevice.c:340
@@ -5189,7 +5030,7 @@ msgstr "spojení přerušeno"
 msgid "%s (core dumped)"
 msgstr "%s (uložen core)"
 
-#: ../bse/bsemain.c:277
+#: ../bse/bsemain.c:261
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5197,7 +5038,7 @@ msgstr ""
 "\n"
 "Dostupné ovladače PCM:\n"
 
-#: ../bse/bsemain.c:279
+#: ../bse/bsemain.c:263
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5285,7 +5126,7 @@ msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Seznam dostupných sítí syntézy, ze které zvolit postprocesor"
 
 #: ../bse/bsemidisynth.c:443 ../bse/bsemidisynth.c:448
-#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:747
+#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:750
 #: ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1023
 msgid "MIDI Instrument"
 msgstr "Nástroj MIDI"
@@ -5306,7 +5147,7 @@ msgstr "Syntetizér"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj MIDI"
 
-#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
+#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:752 ../bse/bsetrack.c:1025
 msgid "Postprocessor"
 msgstr "Postprocesor"
 
@@ -5322,7 +5163,7 @@ msgstr "Hlavní [dB]"
 msgid "Master [%]"
 msgstr "Hlavní [%]"
 
-#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:751
+#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:754
 msgid "Playback Settings"
 msgstr "Nastavení přehrávání"
 
@@ -5367,6 +5208,14 @@ msgstr "Pravé Out"
 #: ../bse/bsemidivoice.c:145
 msgid "Disconnect Out"
 msgstr "Odpojení Out"
+
+#: ../bse/bseobject.c:841
+msgid "Unique name of this object"
+msgstr ""
+
+#: ../bse/bseobject.c:851
+msgid "Free form comment or description"
+msgstr ""
 
 #: ../bse/bseparasite.proc:28 ../bse/bseparasite.proc:52
 #: ../bse/bseparasite.proc:70 ../bse/bseparasite.proc:89
@@ -5438,15 +5287,15 @@ msgstr "Soubor WAVE"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Název souboru WAVE používaného pro záznam výstupu zvuku BSE"
 
-#: ../bse/bseserver.c:454
+#: ../bse/bseserver.c:453
 msgid "Recording Audio Input"
 msgstr "Zaznamenávám vstup zvuku"
 
-#: ../bse/bseserver.c:455
+#: ../bse/bseserver.c:454
 msgid "Failed to start recording from audio device."
 msgstr "Nemohu začít zaznamenávat ze zvukového zařízení."
 
-#: ../bse/bseserver.c:456
+#: ../bse/bseserver.c:455
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -5458,24 +5307,24 @@ msgstr ""
 "vstup použije tichý signál, takže přehrávání možná bude mít nezamýšlené "
 "výsledky (například tichý výstupní signál)."
 
-#: ../bse/bseserver.c:461
+#: ../bse/bseserver.c:460
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr "Zvukové zařízení \"%s\" není otevřeno pro vstup, ovladač zvuku: %s=%s"
 
-#: ../bse/bseserver.c:465
+#: ../bse/bseserver.c:464
 msgid "Show messages about audio input problems"
 msgstr "Zobrazovat zprávy o problémech se vstupem zvuku"
 
-#: ../bse/bseserver.c:507
+#: ../bse/bseserver.c:506
 msgid "No Audio"
 msgstr "Žádný zvuk"
 
-#: ../bse/bseserver.c:508
+#: ../bse/bseserver.c:507
 msgid "No available audio device was found."
 msgstr "Nebylo nalezeno žádné dostupné zvukové zařízení."
 
-#: ../bse/bseserver.c:509
+#: ../bse/bseserver.c:508
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
@@ -5483,24 +5332,24 @@ msgstr ""
 "Nebylo možné naját a otevřít žádné dostupné zvukové zařízení. Lituji, pro "
 "výběr zvukového zařízení není možná náhradní volba, vzdávám to."
 
-#: ../bse/bseserver.c:511
+#: ../bse/bseserver.c:510
 #, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "Nemohu otevřít zařízení PCM: %s"
 
-#: ../bse/bseserver.c:512
+#: ../bse/bseserver.c:511
 msgid "Show messages about PCM device selections problems"
 msgstr "Zobrazovat zprávy o problémech s výběrem zařízení PCM"
 
-#: ../bse/bseserver.c:531
+#: ../bse/bseserver.c:530
 msgid "No MIDI"
 msgstr "Žádné MIDI"
 
-#: ../bse/bseserver.c:532
+#: ../bse/bseserver.c:531
 msgid "MIDI input or oputput is not available."
 msgstr "Vstup nebo výstup MIDI není k dispozici."
 
-#: ../bse/bseserver.c:533
+#: ../bse/bseserver.c:532
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
@@ -5508,24 +5357,24 @@ msgstr ""
 "Nebylo možné najít a otevřít žádné dostupné zařízení MIDI. Vracím se k "
 "prázdnému zařízení, nebudou přijímány ani odesílány žádné události MIDI."
 
-#: ../bse/bseserver.c:535
+#: ../bse/bseserver.c:534
 #, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "Nemohu otevřít zařízení MIDI: %s"
 
-#: ../bse/bseserver.c:536
+#: ../bse/bseserver.c:535
 msgid "Show messages about MIDI device selections problems"
 msgstr "Zobrazovat zprávy o problémech s výběrem zařízení MIDI"
 
-#: ../bse/bseserver.c:587
+#: ../bse/bseserver.c:586
 msgid "Start Disk Recording"
 msgstr "Začít zaznamenávat na disk"
 
-#: ../bse/bseserver.c:588
+#: ../bse/bseserver.c:587
 msgid "Failed to start recording to disk."
 msgstr "Nemohu spustit zaznamenávání na disk."
 
-#: ../bse/bseserver.c:589
+#: ../bse/bseserver.c:588
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
@@ -5533,12 +5382,12 @@ msgstr ""
 "Při otevírání souboru záznamu došlo k chybě, výběr jiného souboru možná tuto "
 "situaci opraví."
 
-#: ../bse/bseserver.c:591
+#: ../bse/bseserver.c:590
 #, c-format
 msgid "Failed to open file \"%s\" for output: %s"
 msgstr "Nemohu otevřít soubor \"%s\" pro výstup: %s"
 
-#: ../bse/bseserver.c:592
+#: ../bse/bseserver.c:591
 msgid "Show recording file errors"
 msgstr "Zobrazit chyby zaznamenávaného souboru"
 
@@ -5555,47 +5404,47 @@ msgid "Snoop Signal"
 msgstr ""
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: ../bse/bsesong.c:631
+#: ../bse/bsesong.c:634
 msgid "Master"
 msgstr "Hlavní"
 
-#: ../bse/bsesong.c:728 ../bse/bsesong.c:732 ../bse/bsesong.c:736
-#: ../bse/bsesong.c:740
+#: ../bse/bsesong.c:731 ../bse/bsesong.c:735 ../bse/bsesong.c:739
+#: ../bse/bsesong.c:743
 msgid "Timing"
 msgstr "Časování"
 
-#: ../bse/bsesong.c:730
+#: ../bse/bsesong.c:733
 msgid "Ticks"
 msgstr "Doby"
 
-#: ../bse/bsesong.c:730
+#: ../bse/bsesong.c:733
 msgid "Number of ticks per quarter note"
 msgstr "Počet dob na čtvrťovou notu"
 
-#: ../bse/bsesong.c:734
+#: ../bse/bsesong.c:737
 msgid "Numerator"
 msgstr "Čitatel"
 
-#: ../bse/bsesong.c:734
+#: ../bse/bsesong.c:737
 msgid "Measure numerator"
 msgstr "Čitatel taktu"
 
-#: ../bse/bsesong.c:738
+#: ../bse/bsesong.c:741
 msgid "Denominator"
 msgstr "Jmenovatel"
 
-#: ../bse/bsesong.c:738
+#: ../bse/bsesong.c:741
 msgid "Measure denominator, must be a power of 2"
 msgstr "Jmenovatel taktu, musí být mocnina 2"
 
-#: ../bse/bsesong.c:742
+#: ../bse/bsesong.c:745
 msgid "Beats per minute"
 msgstr "Úderů za minutu"
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:765
-#: ../bse/bsesong.c:770
+#: ../bse/bsesong.c:759 ../bse/bsesong.c:763 ../bse/bsesong.c:768
+#: ../bse/bsesong.c:773
 msgid "Looping"
 msgstr "Opakování"
 
@@ -5873,27 +5722,27 @@ msgstr "Přiřazení výstupů"
 msgid "Input port name to interface to"
 msgstr "Název vstupního portu, se kterým se spojit"
 
-#: ../bse/bsesuper.c:183
+#: ../bse/bsesuper.c:188
 msgid "Author"
 msgstr "Autor"
 
-#: ../bse/bsesuper.c:183
+#: ../bse/bsesuper.c:188
 msgid "Person changing or creating this object"
 msgstr "Osoba měnící nebo vytvářející tento objekt"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:193
 msgid "License"
 msgstr "Licence"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:193
 msgid "Copyright license applying to this object"
 msgstr "Licence týkající se tohoto objektu"
 
-#: ../bse/bsesuper.c:196
+#: ../bse/bsesuper.c:201
 msgid "Creation Time"
 msgstr "Čas vytvoření"
 
-#: ../bse/bsesuper.c:200
+#: ../bse/bsesuper.c:205
 msgid "Last modification time"
 msgstr "Čas poslední změny"
 
@@ -6007,13 +5856,13 @@ msgstr "Soubor syntézy BSE"
 msgid "Audio"
 msgstr "Zvuk"
 
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:305
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "MODUL:KARTA,ZAŘ,PODZAŘ"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:309
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -6042,7 +5891,7 @@ msgstr ""
 "  PODZAŘ - číslo podzařízení pro moduly jako 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:553
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -6351,9 +6200,21 @@ msgstr ""
 "hlasitěji. V našem případě by bylo v pořádku zesílení výstupu o 5 dB, pokud "
 "vstupní signál nikdy nepřekročil 0 dB."
 
+#: ../plugins/artscompressor.idl:50 ../plugins/bseadder.c:97
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
+#: ../plugins/bsemult.c:60
+msgid "Audio In1"
+msgstr "Zvuk In1"
+
 #: ../plugins/artscompressor.idl:50
 msgid "Audio input 1"
 msgstr "Vstup zvuku 1"
+
+#: ../plugins/artscompressor.idl:51 ../plugins/bseadder.c:99
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
+#: ../plugins/bsemult.c:62
+msgid "Audio In2"
+msgstr "Zvuk In2"
 
 #: ../plugins/artscompressor.idl:51
 msgid "Audio input 2"
@@ -6441,6 +6302,152 @@ msgstr "Vstup zvuku 2"
 #: ../plugins/bseadder.c:101 ../plugins/bsemult.c:68
 msgid "Audio Output"
 msgstr "Výstup zvuku"
+
+#: ../plugins/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
+#: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
+#: ../plugins/davchorus.idl:27
+msgid "GNU Lesser General Public License"
+msgstr "GNU Lesser General Public License"
+
+#: ../plugins/bseamplifier.idl:31
+msgid "/Routing/Amplifier"
+msgstr "/Směrování/Zesilovač"
+
+#: ../plugins/bseamplifier.idl:32
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+"BseAmplifier poskytuje zesilování nebo zeslabování řízené vstupním signálem. "
+"Podporuje dva řídicí vstupy a dva vstupy zvuku, které jsou po úpravě "
+"vyrovnání a úrovně smixovány dohromady. Nastavení zisku ovládá předzesílení "
+"smixovaného signálu zvuku. Smixovaný řídicí signál, vážený nastavením síly, "
+"určuje další zesílení, což umožňuje externím zdrojům modulovat celkovou "
+"hlasitost (tremolo). Smixovaný řídicí signál může zesílení ovlivňovat "
+"lineárně (pro zesilování jiných řídicích signálů) nebo exponenciálně (pro "
+"zesilování zvukových signálů). Konečně hlavní hlasitost ovládá zesilování "
+"výsledného výstupního signálu."
+
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
+msgid "First audio input"
+msgstr "První vstup zvuku"
+
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
+msgid "Second audio input"
+msgstr "Druhý vstup zvuku"
+
+#: ../plugins/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
+msgid "Ctrl In1"
+msgstr "Říd In1"
+
+#: ../plugins/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
+msgid "First control input"
+msgstr "První řídicí vstup"
+
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
+msgid "Ctrl In2"
+msgstr "Říd In2"
+
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
+msgid "Second control input"
+msgstr "Druhý řídicí vstup"
+
+#: ../plugins/bseamplifier.idl:49
+msgid "Amplified audio output"
+msgstr "Zesílený výstup zvuku"
+
+#: ../plugins/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
+msgid "Audio Input"
+msgstr "Vstup zvuku"
+
+#: ../plugins/bseamplifier.idl:51 ../plugins/bseamplifier.idl:56
+#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
+msgid "Input 1 [%]"
+msgstr "Vstup 1 [%]"
+
+#: ../plugins/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
+msgid "Attenuate the level of audio input 1"
+msgstr "Zeslabit úroveň vstupu zvuku 1"
+
+#: ../plugins/bseamplifier.idl:52 ../plugins/bseamplifier.idl:57
+#: ../plugins/bsebalance.idl:45 ../plugins/bsebalance.idl:50
+msgid "Input 2 [%]"
+msgstr "Vstup 2 [%]"
+
+#: ../plugins/bseamplifier.idl:52 ../plugins/bsebalance.idl:45
+msgid "Attenuate the level of audio input 2"
+msgstr "Zeslabit úroveň vstupu zvuku 2"
+
+#: ../plugins/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
+msgid "Balance audio input levels"
+msgstr "Vyrovnání úrovní vstupu zvuku"
+
+#: ../plugins/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
+msgid "Control Input"
+msgstr "Řídicí vstup"
+
+#: ../plugins/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
+msgid "Attenuate the level of control input 1"
+msgstr "Zeslabit úroveň řídicího vstupu 1"
+
+#: ../plugins/bseamplifier.idl:57 ../plugins/bsebalance.idl:50
+msgid "Attenuate the level of control input 2"
+msgstr "Zeslabit úroveň řídicího vstupu 2"
+
+#: ../plugins/bseamplifier.idl:58 ../plugins/bsebalance.idl:51
+msgid "Balance control input levels"
+msgstr "Vyrovnat úrovně řídicích vstupů"
+
+#: ../plugins/bseamplifier.idl:59
+msgid "Multiply Controls"
+msgstr "Násobit řízení"
+
+#: ../plugins/bseamplifier.idl:60
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr ""
+"Přepnout řídicí vstupu, aby fungovaly jako řetěz ovládání zisku místo jejich "
+"smíchání váženého podle vyrovnání."
+
+#: ../plugins/bseamplifier.idl:63
+msgid "Exponential Control"
+msgstr "Exponenciální řízení"
+
+#: ../plugins/bseamplifier.idl:63
+msgid "Toggle exponential and linear control response"
+msgstr "Přepnout exponenciální a lineární odezvu na řízení"
+
+#: ../plugins/bseamplifier.idl:66 ../plugins/bsebalance.idl:54
+msgid "Control Strength"
+msgstr "Síla řízení"
+
+#: ../plugins/bseamplifier.idl:66
+msgid "Adjust how much the control signals affect the output volume"
+msgstr "Upravit, jak moc řídicí signály ovlivňují výstupní hlasitost"
+
+#: ../plugins/bseamplifier.idl:67
+msgid "Base Volume"
+msgstr "Základní hlasitost"
+
+#: ../plugins/bseamplifier.idl:67
+msgid "Base amplification (the control signal adds up to this)"
+msgstr "Základní zesílení (k tomuto přidává řídicí signál)"
+
+#: ../plugins/bseamplifier.idl:68
+msgid "Master Volume"
+msgstr "Hlavní hlasitost"
+
+#: ../plugins/bseamplifier.idl:68
+msgid "Output stage amplification in decibel"
+msgstr "Zesílení ve výstupní fázi v decibelech"
 
 #: ../plugins/bseatandistort.c:90
 msgid "Audio Input Signal"
@@ -6859,10 +6866,29 @@ msgstr "Levý výstup"
 msgid "Right Output"
 msgstr "Pravý výstup"
 
-#: ../tools/bsewavetool.cc:933
+#: ../tools/bsewavetool.cc:935
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "nemohu přidat část vlny ze souboru \"%s\": %s"
+
+#, fuzzy
+#~ msgid "Enable meters"
+#~ msgstr "Parametry"
+
+#~ msgid "Stepping Rates"
+#~ msgstr "Rychlosti kroků"
+
+#~ msgid "Volume [dB] Steps"
+#~ msgstr "Kroky hlasitosti [dB]"
+
+#~ msgid "Step width for volume in decibel"
+#~ msgstr "Šířka kroku pro hlasitost v decibelech"
+
+#~ msgid "BPM Steps"
+#~ msgstr "Kroky BPM"
+
+#~ msgid "Step width for beats per minute"
+#~ msgstr "Šířka kroku pro údery za minutu"
 
 #~ msgid "#CPU"
 #~ msgstr "#CPU"

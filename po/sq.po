@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-04-20 20:16+0200\n"
+"POT-Creation-Date: 2006-05-21 11:49+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -467,8 +467,8 @@ msgstr "Shto"
 #: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstbusmixer.c:37
 #: ../beast-gtk/bstbusview.c:36 ../beast-gtk/bstkeybindings.c:59
 #: ../beast-gtk/bstpartview.c:41 ../beast-gtk/bstpianorollctrl.c:80
-#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:712
-#: ../beast-gtk/bstsnetrouter.c:760 ../beast-gtk/bsttrackrollctrl.c:51
+#: ../beast-gtk/bstrackitem.c:216 ../beast-gtk/bstsnetrouter.c:714
+#: ../beast-gtk/bstsnetrouter.c:762 ../beast-gtk/bsttrackrollctrl.c:51
 #: ../beast-gtk/bsttrackview.c:67 ../beast-gtk/bstwaveview.c:46
 msgid "Delete"
 msgstr "Elemino"
@@ -493,7 +493,7 @@ msgstr "Elemino"
 msgid "Module Link: "
 msgstr "Modulë Lidhje "
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:756
+#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
 #, fuzzy
 msgid "Module link"
 msgstr "Modulë lidhje"
@@ -503,12 +503,12 @@ msgstr "Modulë lidhje"
 msgid "Module Info"
 msgstr "Modulë Informacione"
 
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1089
+#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "Input"
 
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1093
-#: ../bse/bseamplifier.idl:65
+#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "Rezultati"
 
@@ -636,7 +636,7 @@ msgid "Abortion"
 msgstr ""
 
 #: ../beast-gtk/bstfiledialog.c:138 ../beast-gtk/bstitemview.c:208
-#: ../beast-gtk/bsttrackview.c:609
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bseobject.c:841
 msgid "Name"
 msgstr "Emri"
 
@@ -854,6 +854,7 @@ msgid "ID"
 msgstr "ID"
 
 #: ../beast-gtk/bstitemview.c:211 ../beast-gtk/bsttrackview.c:630
+#: ../bse/bseobject.c:851
 msgid "Comment"
 msgstr "Komenti"
 
@@ -958,37 +959,37 @@ msgid "Description"
 msgstr "Përshkrimi"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:110 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:134
+#: ../beast-gtk/bstmain.c:135
 msgid "BEAST Startup"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:141
+#: ../beast-gtk/bstmain.c:142
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:145
+#: ../beast-gtk/bstmain.c:146
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:153
+#: ../beast-gtk/bstmain.c:154
 #, fuzzy
 msgid "RC Files"
 msgstr "_File"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:157
+#: ../beast-gtk/bstmain.c:158
 #, fuzzy
 msgid "Splash Image"
 msgstr "Figura"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:169
+#: ../beast-gtk/bstmain.c:170
 msgid "BSE Core"
 msgstr ""
 
@@ -1019,27 +1020,27 @@ msgstr "Duke ngarkuar..."
 msgid "Loading \"%s\""
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:324
+#: ../beast-gtk/bstmain.c:325
 #, fuzzy, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "hap"
 
-#: ../beast-gtk/bstmain.c:330
+#: ../beast-gtk/bstmain.c:331
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "hap"
 
-#: ../beast-gtk/bstmain.c:849
+#: ../beast-gtk/bstmain.c:845
 #, fuzzy
 msgid "BEAST About"
 msgstr "Informacione"
 
-#: ../beast-gtk/bstmain.c:850
+#: ../beast-gtk/bstmain.c:846
 #, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "Versioni"
 
-#: ../beast-gtk/bstmain.c:851
+#: ../beast-gtk/bstmain.c:847
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "nga:"
@@ -1429,7 +1430,7 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "nga ora"
 
-#: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:571
+#: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:575
 msgid "Direction"
 msgstr "Drejtimi"
 
@@ -2590,123 +2591,118 @@ msgid ""
 msgstr "Aktivo për dhe tekst mbas a."
 
 #: ../beast-gtk/bstrecords.idl:125
-msgid "Enable scopes"
+msgid "Slow scopes"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:126 ../beast-gtk/bstrecords.idl:130
+#: ../beast-gtk/bstrecords.idl:126
 msgid ""
-"Enables or prevents BEAST from periodically updating the scopes. Disabling "
-"may be desirable especially on slow machines."
+"Aggresively slows down the periodic update frequency of scopes. Doing this "
+"may be desirable on particularly slow machines."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:129
-#, fuzzy
-msgid "Enable meters"
-msgstr "Parametrat"
-
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:134
 #, fuzzy
 msgid "Skin Name"
 msgstr "Emri"
 
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:134
 #, fuzzy
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Emri për veshje për veshje."
 
-#: ../beast-gtk/bstrecords.idl:140 ../beast-gtk/bstrecords.idl:150
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:156
 #, fuzzy
 msgid "Background Image"
 msgstr "Figura e sfondit"
 
-#: ../beast-gtk/bstrecords.idl:140
+#: ../beast-gtk/bstrecords.idl:136
 #, fuzzy
 msgid "Background image used by the pattern editor."
 msgstr "Sfondi figurë nga."
 
-#: ../beast-gtk/bstrecords.idl:141 ../beast-gtk/bstrecords.idl:151
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 #, fuzzy
 msgid "Image shade"
 msgstr "Figura"
 
-#: ../beast-gtk/bstrecords.idl:141 ../beast-gtk/bstrecords.idl:151
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 #, fuzzy
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Përqindja nga figurë."
 
-#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:152
-#: ../beast-gtk/bstrecords.idl:162
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Background Color"
 msgstr "Ngjyra e Sfondit"
 
-#: ../beast-gtk/bstrecords.idl:143
+#: ../beast-gtk/bstrecords.idl:139
 #, fuzzy
 msgid "Background Shade 1"
 msgstr "Ngjyra e Sfondit"
 
-#: ../beast-gtk/bstrecords.idl:144
+#: ../beast-gtk/bstrecords.idl:140
 #, fuzzy
 msgid "Background Shade 2"
 msgstr "Ngjyra e Sfondit"
 
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:141
 #, fuzzy
 msgid "Empty Field Color"
 msgstr "Bosh Fusha Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:142
 msgid "Text Color"
 msgstr "Ngjyra e tekstit"
 
-#: ../beast-gtk/bstrecords.idl:147 ../beast-gtk/bstrecords.idl:154
+#: ../beast-gtk/bstrecords.idl:143 ../beast-gtk/bstrecords.idl:150
 #, fuzzy
 msgid "Vertical Bar Color"
 msgstr "Vertikal Bar Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:150
+#: ../beast-gtk/bstrecords.idl:146
 #, fuzzy
 msgid "Background image used by the piano-roll editor."
 msgstr "Sfondi figurë nga."
 
-#: ../beast-gtk/bstrecords.idl:153 ../beast-gtk/bstrecords.idl:163
+#: ../beast-gtk/bstrecords.idl:149 ../beast-gtk/bstrecords.idl:159
 #, fuzzy
 msgid "Horizontal Bar Color"
 msgstr "Horizontal Bar Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:151
 #, fuzzy
 msgid "Horizontal Grid Color"
 msgstr "Horizontal Rrjeta Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:152
 #, fuzzy
 msgid "Vertical Grid Color"
 msgstr "Vertikal Rrjeta Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:157 ../beast-gtk/bstrecords.idl:164
+#: ../beast-gtk/bstrecords.idl:153 ../beast-gtk/bstrecords.idl:160
 #, fuzzy
 msgid "Middle Bar Color"
 msgstr "Qendror Bar Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:156
 #, fuzzy
 msgid "Background image used by the control events editor."
 msgstr "Sfondi figurë nga kontrolli."
 
-#: ../beast-gtk/bstrecords.idl:165
+#: ../beast-gtk/bstrecords.idl:161
 #, fuzzy
 msgid "Positive Value Color"
 msgstr "Vlera Ngjyra"
 
-#: ../beast-gtk/bstrecords.idl:166
+#: ../beast-gtk/bstrecords.idl:162
 #, fuzzy
 msgid "Zero Value Color"
 msgstr "Zgjidh"
 
-#: ../beast-gtk/bstrecords.idl:167
+#: ../beast-gtk/bstrecords.idl:163
 #, fuzzy
 msgid "Negative Value Color"
 msgstr "Negativi Vlera Ngjyra"
@@ -2774,41 +2770,41 @@ msgstr "Sketch"
 msgid "Preview"
 msgstr "Shikoje"
 
-#: ../beast-gtk/bstscrollgraph.c:567 ../beast-gtk/bstscrollgraph.c:570
-#: ../beast-gtk/bstscrollgraph.c:573 ../beast-gtk/bstscrollgraph.c:576
+#: ../beast-gtk/bstscrollgraph.c:571 ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:577 ../beast-gtk/bstscrollgraph.c:580
 msgid "Spectrograph"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:568
+#: ../beast-gtk/bstscrollgraph.c:572
 msgid "Flip Spectrum"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:568
+#: ../beast-gtk/bstscrollgraph.c:572
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:571
+#: ../beast-gtk/bstscrollgraph.c:575
 msgid "Choose display scrolling direction"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:578
 msgid "Boost"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstscrollgraph.c:578
 msgid "Adjust frequency level threshold"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:577
+#: ../beast-gtk/bstscrollgraph.c:581
 #, fuzzy
 msgid "Window Size"
 msgstr "Madhësia e gërmave"
 
-#: ../beast-gtk/bstscrollgraph.c:577
+#: ../beast-gtk/bstscrollgraph.c:581
 msgid "Adjust FFT window size"
 msgstr ""
 
-#: ../beast-gtk/bstscrollgraph.c:667
+#: ../beast-gtk/bstscrollgraph.c:671
 #, fuzzy
 msgid "Unconnected Output Channel"
 msgstr "Rezultati Kanalet:"
@@ -2830,7 +2826,7 @@ msgstr "Ndrysho"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Ndrysho Lëvize Menu"
 
-#: ../beast-gtk/bstsnetrouter.c:52 ../beast-gtk/bstsnetrouter.c:932
+#: ../beast-gtk/bstsnetrouter.c:52 ../beast-gtk/bstsnetrouter.c:934
 msgid "Palette"
 msgstr ""
 
@@ -2839,114 +2835,114 @@ msgstr ""
 msgid "Toggle visibility of the tool palette"
 msgstr "Kavo nga"
 
-#: ../beast-gtk/bstsnetrouter.c:611
+#: ../beast-gtk/bstsnetrouter.c:613
 #, fuzzy
 msgid "Input channel in use"
 msgstr "Input në"
 
-#: ../beast-gtk/bstsnetrouter.c:638 ../beast-gtk/bstsnetrouter.c:640
-#: ../beast-gtk/bstsnetrouter.c:676
+#: ../beast-gtk/bstsnetrouter.c:640 ../beast-gtk/bstsnetrouter.c:642
+#: ../beast-gtk/bstsnetrouter.c:678
 #, fuzzy
 msgid "Create Link"
 msgstr "Krijo Lidhje"
 
-#: ../beast-gtk/bstsnetrouter.c:638
+#: ../beast-gtk/bstsnetrouter.c:640
 #, fuzzy
 msgid "Select output module"
 msgstr "Zgjidh"
 
-#: ../beast-gtk/bstsnetrouter.c:640
+#: ../beast-gtk/bstsnetrouter.c:642
 #, fuzzy
 msgid "Select input module"
 msgstr "Zgjidh"
 
-#: ../beast-gtk/bstsnetrouter.c:704 ../beast-gtk/bstsupershell.c:189
+#: ../beast-gtk/bstsnetrouter.c:706 ../beast-gtk/bstsupershell.c:189
 #: ../beast-gtk/bstsupershell.c:222 ../beast-gtk/bstsupershell.c:236
 msgid "Properties"
 msgstr "Pronësitë"
 
-#: ../beast-gtk/bstsnetrouter.c:705
+#: ../beast-gtk/bstsnetrouter.c:707
 #, fuzzy
 msgid "Reset Properties"
 msgstr "Nga fillimi Pronësitë"
 
-#: ../beast-gtk/bstsnetrouter.c:706
+#: ../beast-gtk/bstsnetrouter.c:708
 #, fuzzy
 msgid "Delete Inputs"
 msgstr "Elemino"
 
-#: ../beast-gtk/bstsnetrouter.c:707
+#: ../beast-gtk/bstsnetrouter.c:709
 #, fuzzy
 msgid "Delete Outputs"
 msgstr "Elemino"
 
-#: ../beast-gtk/bstsnetrouter.c:709 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
 #, fuzzy
 msgid "Show Info"
 msgstr "Shfaq Informacione"
 
-#: ../beast-gtk/bstsnetrouter.c:710
+#: ../beast-gtk/bstsnetrouter.c:712
 #, fuzzy
 msgid "Output Signal Monitor"
 msgstr "Audio"
 
-#: ../beast-gtk/bstsnetrouter.c:737
+#: ../beast-gtk/bstsnetrouter.c:739
 #, fuzzy
 msgid "Remove Module"
 msgstr "Hiq Modulë"
 
-#: ../beast-gtk/bstsnetrouter.c:769
+#: ../beast-gtk/bstsnetrouter.c:771
 #, fuzzy
 msgid "Delete Link"
 msgstr "Elemino Lidhje"
 
-#: ../beast-gtk/bstsnetrouter.c:823
+#: ../beast-gtk/bstsnetrouter.c:825
 #, fuzzy
 msgid "Insert Module"
 msgstr "Fut Modulë"
 
-#: ../beast-gtk/bstsnetrouter.c:1089
+#: ../beast-gtk/bstsnetrouter.c:1091
 #, fuzzy
 msgid "PCM Input module"
 msgstr "PCM Input"
 
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstsnetrouter.c:1092
 msgid "Oscillator"
 msgstr ""
 
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstsnetrouter.c:1092
 #, fuzzy
 msgid "Standard oscillator module"
 msgstr "Standart"
 
-#: ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstsnetrouter.c:1093
 msgid "ADSR"
 msgstr ""
 
-#: ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstsnetrouter.c:1093
 msgid "ADSR Envelope Generator"
 msgstr ""
 
-#: ../beast-gtk/bstsnetrouter.c:1092
+#: ../beast-gtk/bstsnetrouter.c:1094
 msgid "DCA"
 msgstr ""
 
-#: ../beast-gtk/bstsnetrouter.c:1092
+#: ../beast-gtk/bstsnetrouter.c:1094
 #, fuzzy
 msgid "Standard amplifier module"
 msgstr "Standart"
 
-#: ../beast-gtk/bstsnetrouter.c:1093
+#: ../beast-gtk/bstsnetrouter.c:1095
 #, fuzzy
 msgid "PCM Output module"
 msgstr "PCM Rezultati"
 
-#: ../beast-gtk/bstsnetrouter.c:1153
+#: ../beast-gtk/bstsnetrouter.c:1155
 #, fuzzy
 msgid "Channel Hints"
 msgstr "Kanali"
 
-#: ../beast-gtk/bstsnetrouter.c:1153
+#: ../beast-gtk/bstsnetrouter.c:1155
 #, fuzzy
 msgid "Toggle channel name hints"
 msgstr "Kavo emri"
@@ -3154,7 +3150,7 @@ msgid "Mixer busses connected to track output"
 msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:627 ../bse/bsemidisynth.c:459
-#: ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
+#: ../bse/bsesong.c:752 ../bse/bsetrack.c:1025
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -3244,8 +3240,8 @@ msgstr ""
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "hap"
 
-#: ../beast-gtk/bstutils.c:297 ../beast-gtk/bstutils.c:319
-#: ../beast-gtk/bstutils.c:322
+#: ../beast-gtk/bstutils.c:298 ../beast-gtk/bstutils.c:320
+#: ../beast-gtk/bstutils.c:323
 msgid "Updating View"
 msgstr ""
 
@@ -3786,203 +3782,6 @@ msgstr "E pavlefshme"
 msgid "Diagnostic"
 msgstr ""
 
-#: ../bse/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
-#: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
-#: ../plugins/davchorus.idl:27
-#, fuzzy
-msgid "GNU Lesser General Public License"
-msgstr "GNU Të përgjithshme Publik Liçenca"
-
-#: ../bse/bseamplifier.idl:31
-msgid "/Routing/Amplifier"
-msgstr ""
-
-#: ../bse/bseamplifier.idl:32
-#, fuzzy
-msgid ""
-"BseAmplifier provides input signal controlled amplification or attenuation. "
-"It supports two control inputs and two audio inputs which are mixed together "
-"after balance and level adjustments. The gain setting controls "
-"preamplification of the mixed audio signal. The mixed control signal, "
-"weighted by a strength setting, determines additional amplification, "
-"allowing for external sources to modulate the overall volume (tremolo). The "
-"mixed control signal can influence the amplification linearly (to amplify "
-"other control signals) or exponentially (to amplify audio signals). Finally, "
-"the master volume controls amplification of the resulting output signal."
-msgstr ""
-"dy kontrolli dhe dy mbas dhe niveli nga kontrolli nga a për i jashtëm "
-"burimet volumi kontrolli tjetër kontrolli volumi nga."
-
-#: ../bse/bseamplifier.idl:45 ../plugins/artscompressor.idl:50
-#: ../plugins/bseadder.c:97 ../plugins/bsebalance.idl:36
-#: ../plugins/bsemult.c:60
-#, fuzzy
-msgid "Audio In1"
-msgstr "Zëri"
-
-#: ../bse/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
-#, fuzzy
-msgid "First audio input"
-msgstr "E Para"
-
-#: ../bse/bseamplifier.idl:46 ../plugins/artscompressor.idl:51
-#: ../plugins/bseadder.c:99 ../plugins/bsebalance.idl:37
-#: ../plugins/bsemult.c:62
-#, fuzzy
-msgid "Audio In2"
-msgstr "Zëri"
-
-#: ../bse/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
-#, fuzzy
-msgid "Second audio input"
-msgstr "Sekonda"
-
-#: ../bse/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
-#, fuzzy
-msgid "Ctrl In1"
-msgstr "Ctrl"
-
-#: ../bse/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
-#, fuzzy
-msgid "First control input"
-msgstr "E Para kontrolli"
-
-#: ../bse/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
-#, fuzzy
-msgid "Ctrl In2"
-msgstr "Ctrl"
-
-#: ../bse/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
-#, fuzzy
-msgid "Second control input"
-msgstr "Sekonda kontrolli"
-
-#: ../bse/bseamplifier.idl:49 ../bse/bsebiquadfilter.c:194
-#: ../bse/bsestandardosc.c:204 ../bse/bsewaveosc.c:598
-#: ../plugins/bseadder.c:101 ../plugins/bseatandistort.c:92
-#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
-#: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
-#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
-#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
-#: ../plugins/evaluator/bseevaluator.idl:33
-#, fuzzy
-msgid "Audio Out"
-msgstr "Zëri Zvogëlo"
-
-#: ../bse/bseamplifier.idl:49
-msgid "Amplified audio output"
-msgstr ""
-
-#: ../bse/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
-#, fuzzy
-msgid "Audio Input"
-msgstr "Zëri Input"
-
-#: ../bse/bseamplifier.idl:51 ../bse/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
-#, fuzzy
-msgid "Input 1 [%]"
-msgstr "Input"
-
-#: ../bse/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
-#, fuzzy
-msgid "Attenuate the level of audio input 1"
-msgstr "niveli nga 1"
-
-#: ../bse/bseamplifier.idl:52 ../bse/bseamplifier.idl:57
-#: ../plugins/bsebalance.idl:45 ../plugins/bsebalance.idl:50
-#, fuzzy
-msgid "Input 2 [%]"
-msgstr "Input"
-
-#: ../bse/bseamplifier.idl:52 ../plugins/bsebalance.idl:45
-#, fuzzy
-msgid "Attenuate the level of audio input 2"
-msgstr "niveli nga 2"
-
-#: ../bse/bseamplifier.idl:53 ../bse/bseamplifier.idl:58 ../bse/bsecore.idl:90
-#: ../bse/bsecore.idl:267 ../plugins/bsebalance.idl:46
-#: ../plugins/bsebalance.idl:51
-msgid "Balance"
-msgstr "Bilancim"
-
-#: ../bse/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
-#, fuzzy
-msgid "Balance audio input levels"
-msgstr "Bilancim"
-
-#: ../bse/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
-#, fuzzy
-msgid "Control Input"
-msgstr "Kontrollo Input"
-
-#: ../bse/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
-#, fuzzy
-msgid "Attenuate the level of control input 1"
-msgstr "niveli nga kontrolli 1"
-
-#: ../bse/bseamplifier.idl:57 ../plugins/bsebalance.idl:50
-#, fuzzy
-msgid "Attenuate the level of control input 2"
-msgstr "niveli nga kontrolli 2"
-
-#: ../bse/bseamplifier.idl:58 ../plugins/bsebalance.idl:51
-#, fuzzy
-msgid "Balance control input levels"
-msgstr "Bilancim kontrolli"
-
-#: ../bse/bseamplifier.idl:59
-#, fuzzy
-msgid "Multiply Controls"
-msgstr "Shumëzim Kontrollet"
-
-#: ../bse/bseamplifier.idl:60
-#, fuzzy
-msgid ""
-"Switch the two control inputs to work like a chain of gain controls, rather "
-"than mixing them together, weighted by balance."
-msgstr "Kalo dy kontrolli punë a nga nga."
-
-#: ../bse/bseamplifier.idl:63
-#, fuzzy
-msgid "Exponential Control"
-msgstr "Eksponencial Kontrollo"
-
-#: ../bse/bseamplifier.idl:63
-#, fuzzy
-msgid "Toggle exponential and linear control response"
-msgstr "Kavo dhe kontrolli"
-
-#: ../bse/bseamplifier.idl:66 ../plugins/bsebalance.idl:54
-#, fuzzy
-msgid "Control Strength"
-msgstr "Kontrollo"
-
-#: ../bse/bseamplifier.idl:66
-#, fuzzy
-msgid "Adjust how much the control signals affect the output volume"
-msgstr "Përshtat kontrolli volumi"
-
-#: ../bse/bseamplifier.idl:67
-#, fuzzy
-msgid "Base Volume"
-msgstr "Bazë Volumi"
-
-#: ../bse/bseamplifier.idl:67
-#, fuzzy
-msgid "Base amplification (the control signal adds up to this)"
-msgstr "Bazë kontrolli sipër"
-
-#: ../bse/bseamplifier.idl:68
-#, fuzzy
-msgid "Master Volume"
-msgstr "Master Volumi"
-
-#: ../bse/bseamplifier.idl:68
-#, fuzzy
-msgid "Output stage amplification in decibel"
-msgstr "Rezultati"
-
 #: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
 msgstr ""
@@ -4136,6 +3935,18 @@ msgstr "Zmadho"
 #, fuzzy
 msgid "Gain Modulation Input"
 msgstr "Input"
+
+#: ../bse/bsebiquadfilter.c:194 ../bse/bsestandardosc.c:204
+#: ../bse/bsewaveosc.c:598 ../plugins/bseadder.c:101
+#: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
+#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
+#: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
+#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
+#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
+#: ../plugins/evaluator/bseevaluator.idl:33
+#, fuzzy
+msgid "Audio Out"
+msgstr "Zëri Zvogëlo"
 
 #: ../bse/bsebiquadfilter.c:194
 #, fuzzy
@@ -4401,6 +4212,12 @@ msgstr "Teksti"
 #, fuzzy
 msgid "Volume"
 msgstr "Bazë Volumi"
+
+#: ../bse/bsecore.idl:90 ../bse/bsecore.idl:267 ../plugins/bseamplifier.idl:53
+#: ../plugins/bseamplifier.idl:58 ../plugins/bsebalance.idl:46
+#: ../plugins/bsebalance.idl:51
+msgid "Balance"
+msgstr "Bilancim"
 
 #: ../bse/bsecore.idl:91 ../bse/bsecore.idl:268
 #, fuzzy
@@ -5136,62 +4953,137 @@ msgstr "CPU ora në sistemi për nga"
 
 #: ../bse/bsecore.idl:703
 #, fuzzy
+msgid "Synthesis Settings"
+msgstr "Modulët"
+
+#: ../bse/bsecore.idl:704
+#, fuzzy
+msgid "Latency [ms]"
+msgstr "ms"
+
+#: ../bse/bsecore.idl:705
+#, fuzzy
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr "kohëzgjatja dhe nga a CPU ngarkoje"
+
+#: ../bse/bsecore.idl:707
+#, fuzzy
+msgid "Synth Mixing Frequency"
+msgstr "Frekuenca"
+
+#: ../bse/bsecore.idl:708
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: ../bse/bsecore.idl:710
+#, fuzzy
+msgid "Synth Control Frequency"
+msgstr "Frekuenca"
+
+#: ../bse/bsecore.idl:711
+#, fuzzy
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr "Frekuenca kontrolli Sintetizuesi Frekuenca CPU ngarkoje"
+
+#: ../bse/bsecore.idl:715
+#, fuzzy
+msgid "MIDI"
+msgstr "ID"
+
+#: ../bse/bsecore.idl:716
+msgid "Invert Sustain Pedal"
+msgstr ""
+
+#: ../bse/bsecore.idl:717
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgstr ""
+
+#: ../bse/bsecore.idl:720
+#, fuzzy
+msgid "Default Values"
+msgstr "Vizato Vlerat"
+
+#: ../bse/bsecore.idl:721
+#, fuzzy
+msgid "Default Author"
+msgstr "Autori"
+
+#: ../bse/bsecore.idl:721
+msgid "Default value for 'Author' fields"
+msgstr ""
+
+#: ../bse/bsecore.idl:723
+#, fuzzy
+msgid "Default License"
+msgstr "Liçenca"
+
+#: ../bse/bsecore.idl:723
+msgid "Default value for 'License' fields"
+msgstr ""
+
+#: ../bse/bsecore.idl:726
+#, fuzzy
 msgid "Search Paths"
 msgstr "Shtigjet"
 
-#: ../bse/bsecore.idl:704
+#: ../bse/bsecore.idl:727
 #, fuzzy
 msgid "Sample Path"
 msgstr "Hiq Shtigjet"
 
-#: ../bse/bsecore.idl:705
+#: ../bse/bsecore.idl:728
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 
-#: ../bse/bsecore.idl:708
+#: ../bse/bsecore.idl:731
 #, fuzzy
 msgid "Effect Path"
 msgstr "Ndrysho Pjesa"
 
-#: ../bse/bsecore.idl:709
+#: ../bse/bsecore.idl:732
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
 "files."
 msgstr ""
 
-#: ../bse/bsecore.idl:712
+#: ../bse/bsecore.idl:735
 #, fuzzy
 msgid "Instrument Path"
 msgstr "Fut Pjesa"
 
-#: ../bse/bsecore.idl:713
+#: ../bse/bsecore.idl:736
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
 "files."
 msgstr ""
 
-#: ../bse/bsecore.idl:716
+#: ../bse/bsecore.idl:739
 #, fuzzy
 msgid "Script Path"
 msgstr "Scripte"
 
-#: ../bse/bsecore.idl:717
+#: ../bse/bsecore.idl:740
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
 "scripts."
 msgstr ""
 
-#: ../bse/bsecore.idl:720
+#: ../bse/bsecore.idl:743
 #, fuzzy
 msgid "Plugin Path"
 msgstr "Plugins"
 
-#: ../bse/bsecore.idl:721
+#: ../bse/bsecore.idl:744
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -5199,12 +5091,12 @@ msgid ""
 "this system."
 msgstr ""
 
-#: ../bse/bsecore.idl:725
+#: ../bse/bsecore.idl:748
 #, fuzzy
 msgid "LADSPA Path"
 msgstr "Plugins"
 
-#: ../bse/bsecore.idl:726
+#: ../bse/bsecore.idl:749
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -5213,81 +5105,6 @@ msgid ""
 "API, more informations about LADSPA plugins can be found at http://www."
 "ladspa.org/."
 msgstr ""
-
-#: ../bse/bsecore.idl:732
-#, fuzzy
-msgid "Synthesis Settings"
-msgstr "Modulët"
-
-#: ../bse/bsecore.idl:733
-#, fuzzy
-msgid "Latency [ms]"
-msgstr "ms"
-
-#: ../bse/bsecore.idl:734
-#, fuzzy
-msgid ""
-"Processing duration between input and output of a single sample, smaller "
-"values increase CPU load"
-msgstr "kohëzgjatja dhe nga a CPU ngarkoje"
-
-#: ../bse/bsecore.idl:736
-#, fuzzy
-msgid "Synth Mixing Frequency"
-msgstr "Frekuenca"
-
-#: ../bse/bsecore.idl:737
-msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr ""
-
-#: ../bse/bsecore.idl:739
-#, fuzzy
-msgid "Synth Control Frequency"
-msgstr "Frekuenca"
-
-#: ../bse/bsecore.idl:740
-#, fuzzy
-msgid ""
-"Frequency at which control values are evaluated, should be much smaller than "
-"Synth Mixing Frequency to reduce CPU load"
-msgstr "Frekuenca kontrolli Sintetizuesi Frekuenca CPU ngarkoje"
-
-#: ../bse/bsecore.idl:744
-#, fuzzy
-msgid "MIDI"
-msgstr "ID"
-
-#: ../bse/bsecore.idl:745
-msgid "Invert Sustain Pedal"
-msgstr ""
-
-#: ../bse/bsecore.idl:746
-msgid ""
-"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
-msgstr ""
-
-#: ../bse/bsecore.idl:749
-msgid "Stepping Rates"
-msgstr ""
-
-#: ../bse/bsecore.idl:750
-#, fuzzy
-msgid "Volume [dB] Steps"
-msgstr "Majtas Volumi"
-
-#: ../bse/bsecore.idl:750
-msgid "Step width for volume in decibel"
-msgstr ""
-
-#: ../bse/bsecore.idl:752
-#, fuzzy
-msgid "BPM Steps"
-msgstr "_Ndalo"
-
-#: ../bse/bsecore.idl:752
-#, fuzzy
-msgid "Step width for beats per minute"
-msgstr "minutë"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsedevice.c:340
@@ -5704,14 +5521,14 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.c:277
+#: ../bse/bsemain.c:261
 #, fuzzy
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr "Në dispozicion"
 
-#: ../bse/bsemain.c:279
+#: ../bse/bsemain.c:263
 #, fuzzy
 msgid ""
 "\n"
@@ -5805,7 +5622,7 @@ msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Lista nga a"
 
 #: ../bse/bsemidisynth.c:443 ../bse/bsemidisynth.c:448
-#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:747
+#: ../bse/bsemidisynth.c:453 ../bse/bsemidisynth.c:457 ../bse/bsesong.c:750
 #: ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1023
 #, fuzzy
 msgid "MIDI Instrument"
@@ -5830,7 +5647,7 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "MIDI"
 
-#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:749 ../bse/bsetrack.c:1025
+#: ../bse/bsemidisynth.c:459 ../bse/bsesong.c:752 ../bse/bsetrack.c:1025
 #, fuzzy
 msgid "Postprocessor"
 msgstr "Proçesori"
@@ -5850,7 +5667,7 @@ msgstr "Master"
 msgid "Master [%]"
 msgstr "Master"
 
-#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:751
+#: ../bse/bsemidisynth.c:481 ../bse/bsesong.c:754
 #, fuzzy
 msgid "Playback Settings"
 msgstr "Rregullimet"
@@ -5906,6 +5723,14 @@ msgstr "Djathtas Zvogëlo"
 #, fuzzy
 msgid "Disconnect Out"
 msgstr "Shkëputu Zvogëlo"
+
+#: ../bse/bseobject.c:841
+msgid "Unique name of this object"
+msgstr ""
+
+#: ../bse/bseobject.c:851
+msgid "Free form comment or description"
+msgstr ""
 
 #: ../bse/bseparasite.proc:28 ../bse/bseparasite.proc:52
 #: ../bse/bseparasite.proc:70 ../bse/bseparasite.proc:89
@@ -5976,16 +5801,16 @@ msgstr "WAVE File"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Emri nga WAVE për"
 
-#: ../bse/bseserver.c:454
+#: ../bse/bseserver.c:453
 #, fuzzy
 msgid "Recording Audio Input"
 msgstr "Djathtas Zëri Input"
 
-#: ../bse/bseserver.c:455
+#: ../bse/bseserver.c:454
 msgid "Failed to start recording from audio device."
 msgstr ""
 
-#: ../bse/bseserver.c:456
+#: ../bse/bseserver.c:455
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -5993,86 +5818,86 @@ msgid ""
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
 
-#: ../bse/bseserver.c:461
+#: ../bse/bseserver.c:460
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
 
-#: ../bse/bseserver.c:465
+#: ../bse/bseserver.c:464
 #, fuzzy
 msgid "Show messages about audio input problems"
 msgstr "Alarm informacione MIDI periferik"
 
-#: ../bse/bseserver.c:507
+#: ../bse/bseserver.c:506
 #, fuzzy
 msgid "No Audio"
 msgstr "Zëri"
 
-#: ../bse/bseserver.c:508
+#: ../bse/bseserver.c:507
 msgid "No available audio device was found."
 msgstr ""
 
-#: ../bse/bseserver.c:509
+#: ../bse/bseserver.c:508
 msgid ""
 "No available audio device could be found and opened successfully. Sorry, no "
 "fallback selection can be made for audio devices, giving up."
 msgstr ""
 
-#: ../bse/bseserver.c:511
+#: ../bse/bseserver.c:510
 #, fuzzy, c-format
 msgid "Failed to open PCM devices: %s"
 msgstr "hap midi periferik periferik"
 
-#: ../bse/bseserver.c:512
+#: ../bse/bseserver.c:511
 #, fuzzy
 msgid "Show messages about PCM device selections problems"
 msgstr "Alarm informacione MIDI periferik"
 
-#: ../bse/bseserver.c:531
+#: ../bse/bseserver.c:530
 #, fuzzy
 msgid "No MIDI"
 msgstr "ID"
 
-#: ../bse/bseserver.c:532
+#: ../bse/bseserver.c:531
 msgid "MIDI input or oputput is not available."
 msgstr ""
 
-#: ../bse/bseserver.c:533
+#: ../bse/bseserver.c:532
 msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
 
-#: ../bse/bseserver.c:535
+#: ../bse/bseserver.c:534
 #, fuzzy, c-format
 msgid "Failed to open MIDI devices: %s"
 msgstr "hap midi periferik periferik"
 
-#: ../bse/bseserver.c:536
+#: ../bse/bseserver.c:535
 #, fuzzy
 msgid "Show messages about MIDI device selections problems"
 msgstr "Alarm informacione MIDI periferik"
 
-#: ../bse/bseserver.c:587
+#: ../bse/bseserver.c:586
 msgid "Start Disk Recording"
 msgstr ""
 
-#: ../bse/bseserver.c:588
+#: ../bse/bseserver.c:587
 msgid "Failed to start recording to disk."
 msgstr ""
 
-#: ../bse/bseserver.c:589
+#: ../bse/bseserver.c:588
 msgid ""
 "An error occoured while opening the recording file, selecting a different "
 "file might fix this situation."
 msgstr ""
 
-#: ../bse/bseserver.c:591
+#: ../bse/bseserver.c:590
 #, fuzzy, c-format
 msgid "Failed to open file \"%s\" for output: %s"
 msgstr "hap"
 
-#: ../bse/bseserver.c:592
+#: ../bse/bseserver.c:591
 msgid "Show recording file errors"
 msgstr ""
 
@@ -6092,52 +5917,52 @@ msgid "Snoop Signal"
 msgstr "Sinjali"
 
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
-#: ../bse/bsesong.c:631
+#: ../bse/bsesong.c:634
 #, fuzzy
 msgid "Master"
 msgstr "Master"
 
-#: ../bse/bsesong.c:728 ../bse/bsesong.c:732 ../bse/bsesong.c:736
-#: ../bse/bsesong.c:740
+#: ../bse/bsesong.c:731 ../bse/bsesong.c:735 ../bse/bsesong.c:739
+#: ../bse/bsesong.c:743
 msgid "Timing"
 msgstr ""
 
-#: ../bse/bsesong.c:730
+#: ../bse/bsesong.c:733
 #, fuzzy
 msgid "Ticks"
 msgstr "Pistat"
 
-#: ../bse/bsesong.c:730
+#: ../bse/bsesong.c:733
 #, fuzzy
 msgid "Number of ticks per quarter note"
 msgstr "Numri nga"
 
-#: ../bse/bsesong.c:734
+#: ../bse/bsesong.c:737
 msgid "Numerator"
 msgstr ""
 
-#: ../bse/bsesong.c:734
+#: ../bse/bsesong.c:737
 msgid "Measure numerator"
 msgstr ""
 
-#: ../bse/bsesong.c:738
+#: ../bse/bsesong.c:741
 msgid "Denominator"
 msgstr ""
 
-#: ../bse/bsesong.c:738
+#: ../bse/bsesong.c:741
 #, fuzzy
 msgid "Measure denominator, must be a power of 2"
 msgstr "a nga 2"
 
-#: ../bse/bsesong.c:742
+#: ../bse/bsesong.c:745
 #, fuzzy
 msgid "Beats per minute"
 msgstr "minutë"
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:765
-#: ../bse/bsesong.c:770
+#: ../bse/bsesong.c:759 ../bse/bsesong.c:763 ../bse/bsesong.c:768
+#: ../bse/bsesong.c:773
 msgid "Looping"
 msgstr ""
 
@@ -6444,28 +6269,28 @@ msgstr "Rezultati"
 msgid "Input port name to interface to"
 msgstr "Input emri interfaqja"
 
-#: ../bse/bsesuper.c:183
+#: ../bse/bsesuper.c:188
 msgid "Author"
 msgstr "Autori"
 
-#: ../bse/bsesuper.c:183
+#: ../bse/bsesuper.c:188
 msgid "Person changing or creating this object"
 msgstr ""
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:193
 msgid "License"
 msgstr "Liçenca"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:193
 #, fuzzy
 msgid "Copyright license applying to this object"
 msgstr "Copyright liçenca"
 
-#: ../bse/bsesuper.c:196
+#: ../bse/bsesuper.c:201
 msgid "Creation Time"
 msgstr "Koha e Krijimit"
 
-#: ../bse/bsesuper.c:200
+#: ../bse/bsesuper.c:205
 #, fuzzy
 msgid "Last modification time"
 msgstr "E fundit ora"
@@ -6597,13 +6422,13 @@ msgstr "File"
 msgid "Audio"
 msgstr "Zëri"
 
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:305
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:549
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsemididevice-alsa.c:307
+#: ../drivers/bse-alsa/bsemididevice-alsa.c:309
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -6621,7 +6446,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
+#: ../drivers/bse-alsa/bsepcmdevice-alsa.c:553
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -6884,10 +6709,24 @@ msgid ""
 "never exceeded 0 dB."
 msgstr ""
 
+#: ../plugins/artscompressor.idl:50 ../plugins/bseadder.c:97
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
+#: ../plugins/bsemult.c:60
+#, fuzzy
+msgid "Audio In1"
+msgstr "Zëri"
+
 #: ../plugins/artscompressor.idl:50
 #, fuzzy
 msgid "Audio input 1"
 msgstr "Zëri Input 1"
+
+#: ../plugins/artscompressor.idl:51 ../plugins/bseadder.c:99
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
+#: ../plugins/bsemult.c:62
+#, fuzzy
+msgid "Audio In2"
+msgstr "Zëri"
 
 #: ../plugins/artscompressor.idl:51
 #, fuzzy
@@ -6990,6 +6829,171 @@ msgstr "Zëri Input 2"
 #, fuzzy
 msgid "Audio Output"
 msgstr "Zëri Rezultati"
+
+#: ../plugins/bseamplifier.idl:30 ../plugins/bsebalance.idl:26
+#: ../plugins/bsenoise.idl:27 ../plugins/davbassfilter.idl:27
+#: ../plugins/davchorus.idl:27
+#, fuzzy
+msgid "GNU Lesser General Public License"
+msgstr "GNU Të përgjithshme Publik Liçenca"
+
+#: ../plugins/bseamplifier.idl:31
+msgid "/Routing/Amplifier"
+msgstr ""
+
+#: ../plugins/bseamplifier.idl:32
+#, fuzzy
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+"dy kontrolli dhe dy mbas dhe niveli nga kontrolli nga a për i jashtëm "
+"burimet volumi kontrolli tjetër kontrolli volumi nga."
+
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
+#, fuzzy
+msgid "First audio input"
+msgstr "E Para"
+
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
+#, fuzzy
+msgid "Second audio input"
+msgstr "Sekonda"
+
+#: ../plugins/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
+#, fuzzy
+msgid "Ctrl In1"
+msgstr "Ctrl"
+
+#: ../plugins/bseamplifier.idl:47 ../plugins/bsebalance.idl:38
+#, fuzzy
+msgid "First control input"
+msgstr "E Para kontrolli"
+
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
+#, fuzzy
+msgid "Ctrl In2"
+msgstr "Ctrl"
+
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:39
+#, fuzzy
+msgid "Second control input"
+msgstr "Sekonda kontrolli"
+
+#: ../plugins/bseamplifier.idl:49
+msgid "Amplified audio output"
+msgstr ""
+
+#: ../plugins/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
+#, fuzzy
+msgid "Audio Input"
+msgstr "Zëri Input"
+
+#: ../plugins/bseamplifier.idl:51 ../plugins/bseamplifier.idl:56
+#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
+#, fuzzy
+msgid "Input 1 [%]"
+msgstr "Input"
+
+#: ../plugins/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
+#, fuzzy
+msgid "Attenuate the level of audio input 1"
+msgstr "niveli nga 1"
+
+#: ../plugins/bseamplifier.idl:52 ../plugins/bseamplifier.idl:57
+#: ../plugins/bsebalance.idl:45 ../plugins/bsebalance.idl:50
+#, fuzzy
+msgid "Input 2 [%]"
+msgstr "Input"
+
+#: ../plugins/bseamplifier.idl:52 ../plugins/bsebalance.idl:45
+#, fuzzy
+msgid "Attenuate the level of audio input 2"
+msgstr "niveli nga 2"
+
+#: ../plugins/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
+#, fuzzy
+msgid "Balance audio input levels"
+msgstr "Bilancim"
+
+#: ../plugins/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
+#, fuzzy
+msgid "Control Input"
+msgstr "Kontrollo Input"
+
+#: ../plugins/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
+#, fuzzy
+msgid "Attenuate the level of control input 1"
+msgstr "niveli nga kontrolli 1"
+
+#: ../plugins/bseamplifier.idl:57 ../plugins/bsebalance.idl:50
+#, fuzzy
+msgid "Attenuate the level of control input 2"
+msgstr "niveli nga kontrolli 2"
+
+#: ../plugins/bseamplifier.idl:58 ../plugins/bsebalance.idl:51
+#, fuzzy
+msgid "Balance control input levels"
+msgstr "Bilancim kontrolli"
+
+#: ../plugins/bseamplifier.idl:59
+#, fuzzy
+msgid "Multiply Controls"
+msgstr "Shumëzim Kontrollet"
+
+#: ../plugins/bseamplifier.idl:60
+#, fuzzy
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr "Kalo dy kontrolli punë a nga nga."
+
+#: ../plugins/bseamplifier.idl:63
+#, fuzzy
+msgid "Exponential Control"
+msgstr "Eksponencial Kontrollo"
+
+#: ../plugins/bseamplifier.idl:63
+#, fuzzy
+msgid "Toggle exponential and linear control response"
+msgstr "Kavo dhe kontrolli"
+
+#: ../plugins/bseamplifier.idl:66 ../plugins/bsebalance.idl:54
+#, fuzzy
+msgid "Control Strength"
+msgstr "Kontrollo"
+
+#: ../plugins/bseamplifier.idl:66
+#, fuzzy
+msgid "Adjust how much the control signals affect the output volume"
+msgstr "Përshtat kontrolli volumi"
+
+#: ../plugins/bseamplifier.idl:67
+#, fuzzy
+msgid "Base Volume"
+msgstr "Bazë Volumi"
+
+#: ../plugins/bseamplifier.idl:67
+#, fuzzy
+msgid "Base amplification (the control signal adds up to this)"
+msgstr "Bazë kontrolli sipër"
+
+#: ../plugins/bseamplifier.idl:68
+#, fuzzy
+msgid "Master Volume"
+msgstr "Master Volumi"
+
+#: ../plugins/bseamplifier.idl:68
+#, fuzzy
+msgid "Output stage amplification in decibel"
+msgstr "Rezultati"
 
 #: ../plugins/bseatandistort.c:90
 #, fuzzy
@@ -7473,10 +7477,26 @@ msgstr "Majtas Rezultati"
 msgid "Right Output"
 msgstr "Djathtas Rezultati"
 
-#: ../tools/bsewavetool.cc:933
+#: ../tools/bsewavetool.cc:935
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "hap"
+
+#, fuzzy
+#~ msgid "Enable meters"
+#~ msgstr "Parametrat"
+
+#, fuzzy
+#~ msgid "Volume [dB] Steps"
+#~ msgstr "Majtas Volumi"
+
+#, fuzzy
+#~ msgid "BPM Steps"
+#~ msgstr "_Ndalo"
+
+#, fuzzy
+#~ msgid "Step width for beats per minute"
+#~ msgstr "minutë"
 
 #, fuzzy
 #~ msgid "#CPU"
