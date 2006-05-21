@@ -1,3 +1,19 @@
+Sun May 21 17:06:40 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/audio/bse2wav.scm: scheme script to record BSE files to WAV
+	files, based on bse-scm-glue.boot. properly check command line args,
+	display progress and errors.
+
+	* slowtests/audio/Makefile.am: use bse2wav.scm, fixup $(srcdir) 
+	relative file names. disable minisong-test: which requires bsewave
+	file loading from a dir other than CWD.
+
+	* bsetowav.scm: removed, superceeded by bse2wav.scm.
+
+	* slowtests/filecheck/Makefile.am: naming fixup.
+
+	* Makefile.am: more distcheck rule fixes.
+
 Sat May 20 15:34:05 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c: fixed up --help messgae.

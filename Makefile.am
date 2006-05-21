@@ -45,6 +45,7 @@ filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|mag
 distuninstallcheck_listfiles  = find . -type f -print 		# standard automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
 # fixup automake-1.9.6 distcheck:-rule, which attempts to rebuild a dist tarball from within the test-build
+# also, bsesh currently needs install: before check:
 distcheck: dist
 	case '$(DIST_ARCHIVES)' in \
 	*.tar.gz*) \
@@ -69,8 +70,8 @@ distcheck: dist
 	    $(DISTCHECK_CONFIGURE_FLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
-	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
 	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
 	  && $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck_dir="$$dc_install_base" \

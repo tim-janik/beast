@@ -32,7 +32,7 @@ bse-check: distfiles.list
 	              egrep -v $(SKIP_PATTERN)` ; do			\
 	  file="$(top_srcdir)/$$tfile" ;				\
 	  echo "Test load project: $$file" ;				\
-	  $(TOPDIR_BSESHELL) "$$file" 2>&1 | tee warnings.tmp ;		\
+	  $(BSESHELL) "$$file" 2>&1 | tee warnings.tmp ;		\
 	  test ! -s "warnings.tmp" || exit 1 ;				\
 	done
 	@echo "================================="
@@ -41,7 +41,7 @@ bse-check: distfiles.list
 check-am: bse-check # run bse-check *before* ordinary tests
 # check-local: bse-check # run bse-check *after* ordinary tests
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
-TOPDIR_BSESHELL = $(strip							\
+BSESHELL = $(strip								\
 	$(top_builddir)/shell/bsesh-$(BIN_VERSION)				\
 	  -p null -m null							\
 	  --bse-rcfile "/dev/null" --bse-no-load				\
