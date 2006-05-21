@@ -26,16 +26,32 @@
 
 extern "C" {
 
-static bool birnet_init_initialization_entered = false;
 static void (*birnet_init_cplusplus_func) (void) = NULL;
+static BirnetInitSettings default_init_settings = {
+  false,        /* stand_alone */
+};
+BirnetInitSettings *birnet_init_settings = NULL;
+
+static void
+birnet_init_settings_values (BirnetInitValue bivalues[])
+{
+  BirnetInitValue *value = bivalues;
+  while (value->value_name)
+    {
+      if (strcmp (value->value_name, "stand-alone") == 0)
+        birnet_init_settings->stand_alone = birnet_init_value_bool (value);
+      value++;
+    }
+}
 
 void
-birnet_init (int        *argcp,         /* declared in birnetcore.h */
-             char     ***argvp,
-             const char *app_name)
+birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
+                      char         ***argvp,
+                      const char     *app_name,
+                      BirnetInitValue bivalues[])
 {
   char *prg_name = argcp && *argcp ? g_path_get_basename ((*argvp)[0]) : NULL;
-  if (birnet_init_initialization_entered)
+  if (birnet_init_settings != NULL)
     {
       if (prg_name && !g_get_prgname ())
         g_set_prgname (prg_name);
@@ -44,13 +60,16 @@ birnet_init (int        *argcp,         /* declared in birnetcore.h */
         g_set_application_name (app_name);
       return;
     }
-  birnet_init_initialization_entered = true;
+  birnet_init_settings = &default_init_settings;
+  if (bivalues)
+    birnet_init_settings_values (bivalues);
 
   /* initialize random numbers */
   {
     struct timeval tv;
     gettimeofday (&tv, NULL);
-    srand (tv.tv_usec + (tv.tv_sec << 16));
+    srand48 (tv.tv_usec + (tv.tv_sec << 16));
+    srand (lrand48());
   }
   
   if (!g_threads_got_initialized)
@@ -82,7 +101,7 @@ InitHook::InitHook (InitHookFunc _func,
                     int          _priority) :
   next (NULL), priority (_priority), hook (_func)
 {
-  BIRNET_ASSERT (birnet_init_initialization_entered == false);
+  BIRNET_ASSERT (birnet_init_settings == NULL);
   /* the above assertion guarantees single-threadedness */
   next = init_hooks;
   init_hooks = this;

@@ -31,6 +31,12 @@ BIRNET_EXTERN_C_BEGIN();
 #  define U_(x)		(x)
 #endif
 
+/* --- initialization --- */
+static inline void birnet_init_test (int*, char***);
+static inline void birnet_test_intro (const char *postfix,
+				      const char *format,
+				      ...) G_GNUC_PRINTF (2, 3);
+
 /* --- macros --- */
 /* macros used for testing.
  * note that g_print() does fflush(stdout) automatically.
@@ -57,12 +63,7 @@ BIRNET_EXTERN_C_BEGIN();
 #define TDONE()         do { g_printerr ("]\n"); } while (0)		/* test outro */
 #endif
 
-/* --- prototypes --- */
-static inline void birnet_init_test (int*, char***);
-static inline void birnet_test_intro (const char *postfix,
-				      const char *format,
-				      ...) G_GNUC_PRINTF (2, 3);
-
+/* --- macro details --- */
 #define TASSERT_impl(mark, code)	do {		\
   if (code) TOK (); else {				\
   g_printerr ("%s", mark);				\
@@ -145,15 +146,26 @@ birnet_test_intro (const char *postfix,
   g_free (msg);
 }
 
-/* convenience initialization functions for tests */
+static inline void
+birnet_test_setup()
+{
+  birnet_init_settings->stand_alone |= true;
+  unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
+  g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+  g_printerr ("TESTING: %s\n", g_get_prgname());
+}
+
+/* initialization functions for tests */
 static inline void
 birnet_init_test (int    *argc,
 		  char ***argv)
 {
-  birnet_init (argc, argv, NULL);
-  unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
-  g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  g_printerr ("TESTING: %s\n", g_get_prgname());
+  BirnetInitValue ivalues[] = {
+    { "stand-alone", "true" },
+    { NULL }
+  };
+  birnet_init_extended (argc, argv, NULL, ivalues);
+  birnet_test_setup();
 }
 
 BIRNET_EXTERN_C_END();

@@ -114,10 +114,26 @@ typedef BirnetUniChar		unichar;
 #endif /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- birnet initialization --- */
-void	birnet_init (int	*argcp,
-		     char     ***argvp,
-		     const char *app_name); /* in birnetutilsxx.cc */
-
+typedef struct
+{
+  const char *value_name;	/* value list ends with value_name == NULL */
+  const char *value_string;
+  long double value_num;	/* valid if value_string == NULL */
+} BirnetInitValue;
+void	birnet_init_extended (int             *argcp,
+			      char          ***argvp,
+			      const char      *app_name,
+			      BirnetInitValue  bivalues[]); /* in birnetutilsxx.cc */
+void	birnet_init 	     (int            *argcp,
+			      char         ***argvp,
+			      const char     *app_name);
+bool	birnet_init_value_bool	 (BirnetInitValue *value);
+double	birnet_init_value_double (BirnetInitValue *value);
+gint64	birnet_init_value_int    (BirnetInitValue *value);
+typedef struct {
+  bool	stand_alone;	/* "stand-alone": no rcfiles, boot scripts, etc. */
+} BirnetInitSettings;
+extern BirnetInitSettings *birnet_init_settings;
 
 BIRNET_EXTERN_C_END();
 

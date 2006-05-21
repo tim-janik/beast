@@ -17,3 +17,45 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "birnetcore.h"
+#include <stdlib.h>
+
+void
+birnet_init (int        *argcp,
+             char     ***argvp,
+             const char *app_name)
+{
+  birnet_init_extended (argcp, argvp, app_name, NULL);
+}
+
+bool
+birnet_init_value_bool (BirnetInitValue *value)
+{
+  if (value->value_string)
+    switch (value->value_string[0])
+      {
+      case 0:
+      case '0': case 'f': case 'F':
+      case 'n': case 'N':               /* false assigments */
+        return FALSE;
+      default:
+        return TRUE;
+      }
+  else
+    return ABS (value->value_num) >= 0.5;
+}
+
+double
+birnet_init_value_double (BirnetInitValue *value)
+{
+  if (value->value_string)
+    return g_strtod (value->value_string, NULL);
+  return value->value_num;
+}
+
+gint64
+birnet_init_value_int (BirnetInitValue *value)
+{
+  if (value->value_string)
+    return strtoll (value->value_string, NULL, 0);
+  return value->value_num + 0.5;
+}
