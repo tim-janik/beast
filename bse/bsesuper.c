@@ -162,7 +162,6 @@ super_compat_setup (BseItem               *item,
                     guint                  vminor,
                     guint                  vmicro)
 {
-  g_printerr ("setupfor: %d.%d.%d : %d\n", vmajor, vminor, vmicro, BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 7, 0));
   if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 7, 0) < 0)
     bse_item_set (item,
                   "author", "",
