@@ -1,3 +1,8 @@
+Sun May 21 12:19:52 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesuper.c (super_compat_setup): added compat code for "license" and 
+	"author" fields, loaded from BSE files < 0.7.0.
+
 Sat May 20 15:49:07 2006  Tim Janik  <timj@gtk.org>
 
 	* bse.h:

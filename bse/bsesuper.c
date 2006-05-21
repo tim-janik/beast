@@ -157,6 +157,20 @@ super_modified (BseSuper *super,
 }
 
 static void
+super_compat_setup (BseItem               *item,
+                    guint                  vmajor,
+                    guint                  vminor,
+                    guint                  vmicro)
+{
+  g_printerr ("setupfor: %d.%d.%d : %d\n", vmajor, vminor, vmicro, BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 7, 0));
+  if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 7, 0) < 0)
+    bse_item_set (item,
+                  "author", "",
+                  "license", "",
+                  NULL);
+}
+
+static void
 super_compat_finish (BseSuper       *super,
                      guint           vmajor,
                      guint           vminor,
@@ -169,6 +183,7 @@ bse_super_class_init (BseSuperClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   // BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
@@ -179,6 +194,8 @@ bse_super_class_init (BseSuperClass *class)
   gobject_class->set_property = bse_super_set_property;
   gobject_class->get_property = bse_super_get_property;
   gobject_class->finalize = bse_super_finalize;
+
+  item_class->compat_setup = super_compat_setup;
 
   class->modified = super_modified;
   class->compat_finish = super_compat_finish;
