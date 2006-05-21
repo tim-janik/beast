@@ -18,6 +18,7 @@
  */
 #include <bse/gslcommon.h>
 #include <bse/bsemath.h>
+#include <bse/bsemain.h>
 #include <bse/gslfft.h>
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
@@ -62,8 +63,7 @@ main (int   argc,
   guint i;
   
   /* initialize */
-  birnet_init_test (&argc, &argv);
-  gsl_init (NULL);
+  bse_init_test (&argc, &argv, NULL);
 
   /* initialize random numbers */
   gettimeofday (&tv, NULL);

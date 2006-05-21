@@ -19,6 +19,7 @@
  */
 #include <bse/bse.h>
 #include <bse/bseieee754.h>
+#include <bse/bsemain.h>
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <stdio.h>
@@ -92,7 +93,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  birnet_init_test (&argc, &argv);
+  bse_init_test (&argc, &argv, NULL);
 
   test_correct_subnormal_elimination<test2f> ("zap");
   test_correct_subnormal_elimination<test3f> ("inlined-cond");

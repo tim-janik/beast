@@ -24,7 +24,7 @@
 #include "bsecategories.h"
 #include "bsemidireceiver.h"
 #include "bsemathsignal.h"
-#include "gslcommon.h"
+#include "gsldatacache.h"
 #include "bsepcmdevice.h"
 #include "bsemididevice.h"
 #include "bseengine.h"
@@ -32,14 +32,14 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <birnet/birnettests.h> /* birnet_test_setup() */
 
 /* --- prototypes --- */
-static void	bse_main_loop		(gpointer	data);
-static void	bse_async_parse_args	(gint	       *argc_p,
-					 gchar	     ***argv_p,
-                                         BseMainArgs   *margs,
-                                         SfiRec        *config);
+static void	bse_main_loop		(gpointer	 data);
+static void	bse_async_parse_args	(gint	        *argc_p,
+					 gchar	      ***argv_p,
+                                         BseMainArgs    *margs,
+                                         BirnetInitValue values[]);
 
 
 /* --- variables --- */
@@ -52,14 +52,20 @@ const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
 GMainContext            *bse_main_context = NULL;
 BirnetMutex	         bse_main_sequencer_mutex = { 0, };
-gboolean	         bse_main_debug_extensions = FALSE;
-BirnetThread               *bse_main_thread = NULL;
+BirnetThread            *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
-  .path_binaries = BSE_PATH_BINARIES,
+  .path_binaries        = BSE_PATH_BINARIES,
+  .n_processors         = 1,
+  .wave_chunk_padding   = 64,
+  .wave_chunk_big_pad   = 256,
+  .dcache_block_size    = 4000,
+  .dcache_cache_memory  = 10 * 1024 * 1024,
+  .midi_kammer_note     = BSE_KAMMER_NOTE,      /* 69 */
+  .kammer_freq          = BSE_KAMMER_FREQUENCY, /* 440Hz, historically 435Hz */
 };
-BseMainArgs             *bse_main_args = &default_main_args;
+BseMainArgs             *bse_main_args = NULL;
 
 
 /* --- functions --- */
@@ -79,10 +85,10 @@ bse_gettext (const gchar *text)
 }
 
 void
-bse_init_async (gint       *argc,
-		gchar    ***argv,
-                const char *app_name,
-		SfiRec     *config)
+bse_init_async (gint           *argc,
+		gchar        ***argv,
+                const char     *app_name,
+                BirnetInitValue values[])
 {
   BirnetThread *thread;
 
@@ -96,20 +102,20 @@ bse_init_async (gint       *argc,
 
   /* this function is running in the user program and needs to start the main BSE thread */
   
-  /* initialize submodules */
-  birnet_init (argc, argv, app_name);
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
+  /* initialize submodules */
+  birnet_init_extended (argc, argv, app_name, values);
+  bse_main_args = &default_main_args;
+  bse_main_args->birnet = *birnet_init_settings;
+
   /* handle argument early*/
-  SfiRec *unref_me = NULL;
-  if (!config)
-    config = unref_me = sfi_rec_new();
   if (argc && argv)
     {
       if (*argc && !g_get_prgname ())
 	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv, bse_main_args, config);
+      bse_async_parse_args (argc, argv, bse_main_args, values);
     }
   
   /* start main BSE thread */
@@ -120,9 +126,6 @@ bse_init_async (gint       *argc,
   /* wait for initialization completion of the core thread */
   while (bse_initialization_stage < 2)
     birnet_thread_sleep (-1);
-  /* cleanup */
-  if (unref_me)
-    sfi_rec_unref (unref_me);
 }
 
 gchar*
@@ -227,18 +230,7 @@ bse_init_core (void)
   }
   
   /* initialize GSL components */
-  {
-    static const GslConfigValue gslconfig[] = {
-      { "wave_chunk_padding",		64, },
-      { "wave_chunk_big_pad",		256, },
-      { "dcache_block_size",		4000, },
-      { "dcache_cache_memory",		10 * 1024 * 1024, },
-      { "midi_kammer_note",		BSE_KAMMER_NOTE, },
-      { "kammer_freq",			BSE_KAMMER_FREQUENCY, },
-      { NULL, },
-    };
-    gsl_init (gslconfig);
-  }
+  gsl_init ();
   
   /* remaining BSE components */
   _bse_midi_init ();
@@ -294,14 +286,13 @@ server_registration (SfiProxy            server,
     }
 }
 
-void
-bse_init_intern (gint       *argc,
-		 gchar    ***argv,
-                 const char *app_name,
-		 SfiRec     *config)
+static void
+bse_init_intern (gint           *argc,
+		 gchar        ***argv,
+                 const char     *app_name,
+		 BirnetInitValue values[],
+                 bool            as_test)
 {
-  SfiRec *unref_me = NULL;
-
   bse_init_textdomain_only();
 
   if (bse_initialization_stage != 0)
@@ -310,29 +301,31 @@ bse_init_intern (gint       *argc,
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_intern");
 
-  /* initialize submodules */
-  birnet_init (argc, argv, app_name);
-  if (!config)
-    config = unref_me = sfi_rec_new();
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
+
+  /* initialize submodules */
+  birnet_init_extended (argc, argv, app_name, values);
+  bse_main_args = &default_main_args;
+  bse_main_args->birnet = *birnet_init_settings;
+
   /* early argument handling */
   if (argc && argv)
     {
       if (*argc && !g_get_prgname ())
 	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv, bse_main_args, config);
+      bse_async_parse_args (argc, argv, bse_main_args, values);
     }
+  /* readily setup for test programs */
+  if (as_test)
+    birnet_test_setup();
   
   bse_init_core ();
 
-  gboolean load_plugins = sfi_rec_get_bool (config, "load-core-plugins");
-  gboolean load_scripts = sfi_rec_get_bool (config, "load-core-scripts");
-
   /* initialize core plugins & scripts */
-  if (load_plugins || load_scripts)
+  if (bse_main_args->load_core_plugins || bse_main_args->load_core_scripts)
       g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
-  if (load_plugins)
+  if (bse_main_args->load_core_plugins)
     {
       g_object_connect (bse_server_get(), "signal::registration", server_registration, NULL, NULL);
       SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
@@ -345,7 +338,7 @@ bse_init_intern (gint       *argc,
           g_free (name);
         }
     }
-  if (load_scripts)
+  if (bse_main_args->load_core_scripts)
     {
       BseErrorType error = bse_item_exec (bse_server_get(), "register-scripts", NULL);
       if (error)
@@ -356,9 +349,24 @@ bse_init_intern (gint       *argc,
           // sfi_glue_gc_run ();
         }
     }
-  if (unref_me)
-    sfi_rec_unref (unref_me);
   // sfi_glue_gc_run ();
+}
+
+void
+bse_init_inprocess (gint           *argc,
+                    gchar        ***argv,
+                    const char     *app_name,
+                    BirnetInitValue values[])
+{
+  bse_init_intern (argc, argv, app_name, values, false);
+}
+
+void
+bse_init_test (gint           *argc,
+               gchar        ***argv,
+               BirnetInitValue values[])
+{
+  bse_init_intern (argc, argv, NULL, values, true);
 }
 
 static void
@@ -444,28 +452,41 @@ bse_msg_handler (const BirnetMessage *lmsg)
   bse_idle_next (core_thread_send_message_async, umsg);
 }
 
+static guint
+get_n_processors (void)
+{
+#ifdef _SC_NPROCESSORS_ONLN
+  {
+    gint n = sysconf (_SC_NPROCESSORS_ONLN);
+
+    if (n > 0)
+      return n;
+  }
+#endif
+  return 1;
+}
+
 static void
-bse_async_parse_args (gint        *argc_p,
-		      gchar     ***argv_p,
-                      BseMainArgs *margs,
-		      SfiRec      *config)
+bse_async_parse_args (gint           *argc_p,
+		      gchar        ***argv_p,
+                      BseMainArgs    *margs,
+                      BirnetInitValue values[])
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
-  gchar *envar;
-  guint i, e;
   
   /* this function is called before the main BSE thread is started,
    * so we can't use any BSE functions yet.
    */
 
-  envar = getenv ("BSE_DEBUG");
+  gchar *envar = getenv ("BSE_DEBUG");
   if (envar)
     birnet_msg_allow (envar);
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
     birnet_msg_deny (envar);
 
+  guint i;
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--g-fatal-warnings") == 0)
@@ -601,7 +622,7 @@ bse_async_parse_args (gint        *argc_p,
   if (!margs->bse_rcfile)
     margs->bse_rcfile = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
 
-  e = 1;
+  guint e = 1;
   for (i = 1; i < argc; i++)
     if (argv[i])
       {
@@ -611,7 +632,42 @@ bse_async_parse_args (gint        *argc_p,
       }
   *argc_p = e;
 
-  if (sfi_rec_get_bool (config, "debug-extensions"))
-    bse_main_debug_extensions = TRUE;
-  margs->force_fpu |= sfi_rec_get_bool (config, "force-fpu");
+  if (values)
+    {
+      BirnetInitValue *value = values;
+      while (value->value_name)
+        {
+          if (strcmp (value->value_name, "debug-extensions") == 0)
+            margs->debug_extensions |= birnet_init_value_bool (value);
+          else if (strcmp (value->value_name, "force-fpu") == 0)
+            margs->force_fpu |= birnet_init_value_bool (value);
+          else if (strcmp (value->value_name, "load-core-plugins") == 0)
+            margs->load_core_plugins |= birnet_init_value_bool (value);
+          else if (strcmp (value->value_name, "load-core-scripts") == 0)
+            margs->load_core_scripts |= birnet_init_value_bool (value);
+          else if (strcmp ("wave-chunk-padding", value->value_name) == 0)
+            margs->wave_chunk_padding = birnet_init_value_int (value);
+          else if (strcmp ("wave-chunk-big-pad", value->value_name) == 0)
+            margs->wave_chunk_big_pad = birnet_init_value_int (value);
+          else if (strcmp ("dcache-cache-memory", value->value_name) == 0)
+            margs->dcache_cache_memory = birnet_init_value_int (value);
+          else if (strcmp ("dcache-block-size", value->value_name) == 0)
+            margs->dcache_block_size = birnet_init_value_int (value);
+          else if (strcmp ("midi-kammer-note", value->value_name) == 0)
+            margs->midi_kammer_note = birnet_init_value_int (value);
+          else if (strcmp ("kammer-freq", value->value_name) == 0)
+            margs->kammer_freq = birnet_init_value_double (value);
+          value++;
+        }
+    }
+
+  /* constrain (user) config */
+  margs->wave_chunk_padding = MAX (1, margs->wave_chunk_padding);
+  margs->wave_chunk_big_pad = MAX (2 * margs->wave_chunk_padding, margs->wave_chunk_big_pad);
+  margs->dcache_block_size = MAX (2 * margs->wave_chunk_big_pad + sizeof (((GslDataCacheNode*) NULL)->data[0]), margs->dcache_block_size);
+  margs->dcache_block_size = sfi_alloc_upper_power2 (margs->dcache_block_size - 1);
+  /* margs->dcache_cache_memory = sfi_alloc_upper_power2 (margs->dcache_cache_memory); */
+
+  /* non-configurable config updates */
+  margs->n_processors = get_n_processors ();
 }

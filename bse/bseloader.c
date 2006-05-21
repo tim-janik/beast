@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bseloader.h"
-
+#include "bsemain.h"
 #include "gslcommon.h"
 #include "gsldatahandle.h"
 #include "gslmagic.h"
@@ -373,7 +373,7 @@ bse_wave_chunk_create (BseWaveDsc   *wave_dsc,
 
   /* FIXME: we essentially create a dcache for each wchunk here ;( */
 
-  dcache = gsl_data_cache_from_dhandle (dhandle, gsl_get_config ()->wave_chunk_padding * wave_dsc->n_channels);
+  dcache = gsl_data_cache_from_dhandle (dhandle, BSE_CONFIG (wave_chunk_padding) * wave_dsc->n_channels);
   gsl_data_handle_unref (dhandle);
   if (!dcache)
     return NULL;

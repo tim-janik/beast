@@ -745,7 +745,7 @@ bse_song_class_init (BseSongClass *class)
 			      sfi_pspec_real ("bpm", _("Beats per minute"), NULL,
 					      timing.bpm,
 					      BSE_MIN_BPM, BSE_MAX_BPM,
-					      BSE_GCONFIG (step_bpm),
+                                              10,
 					      SFI_PARAM_STANDARD ":scale"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_PNET,

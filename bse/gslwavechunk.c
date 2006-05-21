@@ -17,17 +17,16 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gslwavechunk.h"
-
+#include "bsemain.h"
 #include "gslcommon.h"
 #include "gsldatahandle.h"
-
 #include <string.h>
 
 
 /* --- macros --- */
 #define	PRINT_DEBUG_INFO		(0)
 #define	STATIC_ZERO_SIZE		(4096)
-#define	PBLOCK_SIZE(pad, n_channels)	(MAX (2 * (pad), (n_channels) * gsl_get_config ()->wave_chunk_big_pad))
+#define	PBLOCK_SIZE(pad, n_channels)	(MAX (2 * (pad), (n_channels) * BSE_CONFIG (wave_chunk_big_pad)))
 
 #define	PHASE_NORM(wchunk)		((GslWaveChunkMem*) (0))
 #define	PHASE_NORM_BACKWARD(wchunk)	((GslWaveChunkMem*) (+1))
@@ -697,7 +696,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
       wchunk->n_channels = gsl_data_handle_n_channels (wchunk->dcache->dhandle);
       wchunk->length = gsl_data_handle_n_values (wchunk->dcache->dhandle) / wchunk->n_channels;
       wchunk->length *= wchunk->n_channels;
-      wchunk->n_pad_values = gsl_get_config ()->wave_chunk_padding * wchunk->n_channels;
+      wchunk->n_pad_values = BSE_CONFIG (wave_chunk_padding) * wchunk->n_channels;
       gsl_data_cache_open (wchunk->dcache);
       gsl_data_handle_close (wchunk->dcache->dhandle);
       g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, BSE_ERROR_INTERNAL);

@@ -214,17 +214,22 @@ main (gint   argc,
   gboolean list_synths = 0;
   gchar *show_synth = NULL;
   gchar *root_name = NULL;
-  guint i;
   gchar *iindent = "";
-  SfiRec *config;
+  char pluginbool[2] = "0";
+  char scriptbool[2] = "0";
+  BirnetInitValue config[] = {
+    { "load-core-plugins", pluginbool },
+    { "load-core-scripts", scriptbool },
+    { NULL },
+  };
 
   f_out = stdout;
 
   g_thread_init (NULL);
 
   birnet_init (&argc, &argv, "BseQuery");
-  config = sfi_rec_new();
   
+  guint i;
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-s", argv[i]) == 0)
@@ -303,9 +308,7 @@ main (gint   argc,
 	  gen_procdoc = 1;
 	}
       else if (strcmp ("-p", argv[i]) == 0)
-	{
-          sfi_rec_set_bool (config, "load-core-plugins", TRUE);
-	}
+        pluginbool[1] = '1';
       else if (strcmp ("-:f", argv[i]) == 0)
 	{
 	  g_log_set_always_fatal (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | g_log_set_always_fatal (G_LOG_FATAL_MASK));
@@ -322,7 +325,7 @@ main (gint   argc,
 	return help (argv[i]);
     }
 
-  bse_init_intern (&argc, &argv, "BseQuery", config);
+  bse_init_inprocess (&argc, &argv, "BseQuery", config);
 
   if (root_name)
     root = g_type_from_name (root_name);

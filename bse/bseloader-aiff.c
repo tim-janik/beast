@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bseloader.h"
-
+#include "bsemain.h"
 #include "gsldatahandle.h"
 #include "bsemath.h"
 #include <sys/types.h>
@@ -460,8 +460,8 @@ aiff_load_wave_dsc (gpointer         data,
   dsc->wdsc.n_chunks = 1;
   dsc->wdsc.chunks = g_malloc0 (sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
   dsc->wdsc.chunks[0].mix_freq = afile->mix_freq;
-  dsc->wdsc.chunks[0].osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq,
-                                                afile->instrument.base_note - gsl_get_config ()->midi_kammer_note);
+  dsc->wdsc.chunks[0].osc_freq = bse_temp_freq (BSE_CONFIG (kammer_freq),
+                                                afile->instrument.base_note - BSE_CONFIG (midi_kammer_note));
   if (afile->instrument.sustain_loop_mode > 0 && afile->instrument.sustain_loop_mode <= 2 &&
       afile->instrument.sustain_begin_id && afile->instrument.sustain_end_id)
     {

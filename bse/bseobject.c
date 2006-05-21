@@ -248,11 +248,12 @@ bse_object_do_set_property (GObject      *gobject,
 	}
       break;
     case PROP_BLURB:
-      if (!quark_blurb)
-	quark_blurb = g_quark_from_static_string ("bse-blurb");
-      string = g_strdup (g_value_get_string (value));
-      if (g_value_get_string (value) && !string) /* preserve NULL vs. "" distinction */
-	string = g_strdup ("");
+      string = g_value_dup_string (value);
+      if (string && !string[0])
+        {
+          g_free (string);
+          string = NULL;
+        }
       g_object_set_qdata_full (object, quark_blurb, string, string ? g_free : NULL);
       break;
     default:
@@ -270,11 +271,13 @@ bse_object_do_get_property (GObject     *gobject,
   BseObject *object = BSE_OBJECT (gobject);
   switch (property_id)
     {
+      char *string;
     case PROP_UNAME:
       g_value_set_string (value, BSE_OBJECT_UNAME (object));
       break;
     case PROP_BLURB:
-      g_value_set_string (value, g_object_get_qdata (object, quark_blurb));
+      string = g_object_get_qdata (object, quark_blurb);
+      g_value_set_string (value, string ? string : "");
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -835,7 +838,7 @@ bse_object_class_init (BseObjectClass *class)
   
   bse_object_class_add_param (class, NULL,
 			      PROP_UNAME,
-			      sfi_pspec_string ("uname", "Name", "Unique name of this object",
+			      sfi_pspec_string ("uname", _("Name"), _("Unique name of this object"),
 						NULL,
 						SFI_PARAM_GUI ":lax-validation"
 						/* watch out, unames are specially
@@ -845,8 +848,8 @@ bse_object_class_init (BseObjectClass *class)
 						 */));
   bse_object_class_add_param (class, NULL,
 			      PROP_BLURB,
-			      sfi_pspec_string ("blurb", "Comment", NULL,
-						NULL,
+			      sfi_pspec_string ("blurb", _("Comment"), _("Free form comment or description"),
+						"",
 						SFI_PARAM_STANDARD ":skip-default"));
   
   object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",

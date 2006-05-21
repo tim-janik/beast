@@ -44,9 +44,13 @@ main (int   argc,
       char *argv[])
 {
   g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, "TestCxx", NULL);
+  bse_init_test (&argc, &argv, NULL);
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   // g_log_set_always_fatal ((GLogLevelFlags) (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | (int) g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK)));
+
+  /* work around known C++ binding bugs (critical warnings from GClosure) */
+  unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
+  g_log_set_always_fatal ((GLogLevelFlags) (flags & ~(G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING)));
    
   // test closure Arg types
   Arg<FooTest*> a1;

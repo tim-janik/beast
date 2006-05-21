@@ -59,7 +59,7 @@ main (gint   argc,
   gint j, k;
   
   g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, "BseInfo", NULL);
+  bse_init_inprocess (&argc, &argv, "BseInfo", NULL);
   
   g_print ("Rate relevant limits:\n");
   print_int       ("BSE_MIN_OCTAVE   ", BSE_MIN_OCTAVE);

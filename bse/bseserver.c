@@ -215,7 +215,9 @@ bse_server_init (BseServer *self)
   
   /* read rc file */
   int fd = -1;
-  if (bse_main_args->bse_rcfile && bse_main_args->bse_rcfile[0])
+  if (!bse_main_args->birnet.stand_alone &&
+      bse_main_args->bse_rcfile &&
+      bse_main_args->bse_rcfile[0])
     fd = open (bse_main_args->bse_rcfile, O_RDONLY, 0);
   if (fd >= 0)
     {

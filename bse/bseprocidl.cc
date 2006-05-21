@@ -436,7 +436,7 @@ main (int argc, char **argv)
 	}
     }
   g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, "BseProcIDL", NULL);
+  bse_init_inprocess (&argc, &argv, "BseProcIDL", NULL);
   
   sfi_glue_context_push (bse_glue_context_intern ("BseProcIdl"));
   std::string s = sfi_glue_base_iface ();

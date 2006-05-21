@@ -574,6 +574,7 @@ int
 main (int   argc,
       char *argv[])
 {
+  /* usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded */
   birnet_init_test (&argc, &argv);
 
   TSTART ("Running Default Block Ops");
@@ -583,9 +584,11 @@ main (int   argc,
   run_tests(); /* run tests on FPU */
  
   /* load plugins */
-  SfiRec *config = sfi_rec_new();
-  sfi_rec_set_bool (config, "load-core-plugins", TRUE);
-  bse_init_intern (&argc, &argv, __FILE__, config);
+  BirnetInitValue config[] = {
+    { "load-core-plugins", "1" },
+    { NULL },
+  };
+  bse_init_test (&argc, &argv, config);
 
   /* check for possible specialization */
   if (Bse::Block::default_singleton() == Bse::Block::current_singleton())

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsewave.h"
-
+#include "bsemain.h"
 #include "bsestorage.h"
 #include "bseprocedure.h"
 #include "gslwavechunk.h"
@@ -632,7 +632,7 @@ bse_wave_restore_private (BseObject  *object,
               gsl_data_handle_unref (tmp_handle);
             }
 	  GslDataCache *dcache = gsl_data_cache_from_dhandle (parsed_wchunk.data_handle,
-                                                              gsl_get_config ()->wave_chunk_padding * parsed_wchunk.wh_n_channels);
+                                                              BSE_CONFIG (wave_chunk_padding) * parsed_wchunk.wh_n_channels);
           const gchar *ltype = bse_xinfos_get_value (parsed_wchunk.xinfos, "loop-type");
           GslWaveLoopType loop_type = ltype ? gsl_wave_loop_type_from_string (ltype) : GSL_WAVE_LOOP_NONE;
           SfiNum loop_start = bse_xinfos_get_num (parsed_wchunk.xinfos, "loop-start");

@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bseloader.h"
-
+#include "bsemain.h"
 #include "gsldatahandle.h"
 #include "gsldatahandle-vorbis.h"
 #include "bsemath.h"
@@ -285,8 +285,8 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
       case BSEWAVE_TOKEN_MIDI_NOTE:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq,
-					 ((gint) scanner->value.v_int64) - gsl_get_config ()->midi_kammer_note);
+	chunk->osc_freq = bse_temp_freq (BSE_CONFIG (kammer_freq),
+					 ((gint) scanner->value.v_int64) - BSE_CONFIG (midi_kammer_note));
         chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "midi-note", scanner->value.v_int64);
 	break;
       case BSEWAVE_TOKEN_OSC_FREQ:

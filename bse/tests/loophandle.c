@@ -20,6 +20,7 @@
 #include <bse/gsldatahandle.h>
 #include <bse/gsldatautils.h>
 #include <bse/bse.h>
+#include <bse/bsemain.h>
 #include <stdlib.h>
 
 /* --- loop handle: reference code --- */
@@ -206,7 +207,7 @@ main (int argc, char **argv)
     values[i] = 1.0 - rand() / (0.5 * RAND_MAX);
 
   /* init bse */
-  bse_init_async (&argc, &argv, "LoopHandleTest", NULL);
+  bse_init_test (&argc, &argv, NULL);
   birnet_msg_allow ("misc");
 
   /* test loophandle against the reference implementation */

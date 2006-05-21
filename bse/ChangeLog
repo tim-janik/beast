@@ -1,3 +1,29 @@
+Sat May 20 15:49:07 2006  Tim Janik  <timj@gtk.org>
+
+	* bse.h:
+	* bsemain.[hc]: merged config data from gsl into BSE config data. make 
+	use of BirnetInitValue to allow non-argc/argv configuraiton upon initilaization.
+	removed bse_init_intern(). added bse_init_inprocess() and bse_init_test().
+	adapted dependent code.
+
+	* gslcommon.[hc]: removed config and initialization logica that moved to BSE.
+
+	* bseserver.c: prevent rcfile loading if 
+	birnet_init_settings->stand_alone is true.
+
+	* bseobject.c: fixup "blurb" parameter handling, default to the
+	empty string and skip default when saving.
+
+	* bsesuper.c: fix up "license" and "author" defaults to empty strings.
+
+	* bsesuper.c: pre-initialize authors and license field when 
+	creating objects.
+
+	* bsecore.idl: added configurable defaults for author and license fields.
+	removed "Stepping Rates" config section. adapted dependent code.
+
+	* bseutils.[hc]: provide initial default author and license values.
+
 Fri May 12 16:49:38 2006  Tim Janik  <timj@gtk.org>
 
 	* bseserver.c:

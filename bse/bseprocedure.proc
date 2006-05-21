@@ -15,12 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <bse/bseplugin.h>
-#include <bse/bseprocedure.h>
-#include <bse/bsescripthelper.h>
-#include <bse/bseserver.h>
-#include <bse/gslcommon.h>      /* gsl_get_config */
-#include <bse/bsemath.h>        /* bse_temp_freq */
+#include "bseplugin.h"
+#include "bseprocedure.h"
+#include "bsescripthelper.h"
+#include "bseserver.h"
+#include "bsemath.h"    /* bse_temp_freq */
+#include "bsemain.h"
 #include <string.h>     /* strchr */
 #include <stdlib.h>     /* strtol */
 
@@ -255,8 +255,8 @@ PROCEDURE (bse-string-extract-number, "String Extract Number") {
           if (ep && *ep)
             {
               if (*ep == 'm')       /* interpret d as midi note and return freq */
-                number = bse_temp_freq (gsl_get_config ()->kammer_freq,
-                                        number - gsl_get_config ()->midi_kammer_note);
+                number = bse_temp_freq (BSE_CONFIG (kammer_freq),
+                                        number - BSE_CONFIG (midi_kammer_note));
               else /* ("Invalid chunk format given: postmodifier `%c'", *ep) */
                 number = 0;
             }

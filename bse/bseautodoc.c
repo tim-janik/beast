@@ -554,27 +554,28 @@ main (gint   argc,
       gchar *argv[])
 {
   GSList *seealso = NULL;
-  SfiRec *config;
   gboolean gen_procs = FALSE;
   gboolean gen_structs = FALSE;
   gboolean gen_objects = FALSE;
-  guint i;
-  
+  char pluginbool[2] = "0";
+  char scriptbool[2] = "0";
+  BirnetInitValue config[] = {
+    { "load-core-plugins", pluginbool },
+    { "load-core-scripts", scriptbool },
+    { NULL },
+  };
+
   g_thread_init (NULL);
   birnet_init (&argc, &argv, "BseAutoDoc");
-  config = sfi_rec_new();
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   
+  guint i;
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
-	{
-          sfi_rec_set_bool (config, "load-core-plugins", TRUE);
-	}
+        pluginbool[1] = '1';
       else if (strcmp ("-s", argv[i]) == 0)
-	{
-          sfi_rec_set_bool (config, "load-core-scripts", TRUE);
-	}
+        scriptbool[1] = '1';
       else if (strcmp ("procs", argv[i]) == 0)
 	{
 	  gen_procs = TRUE;
@@ -606,7 +607,7 @@ main (gint   argc,
 	return help (argv[0], argv[i]);
     }
 
-  bse_init_intern (&argc, &argv, "BseAutoDoc", config);
+  bse_init_inprocess (&argc, &argv, "BseAutoDoc", config);
 
   tag_all_boxed_pspecs ();
 

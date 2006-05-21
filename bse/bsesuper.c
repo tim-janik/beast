@@ -55,9 +55,14 @@ bse_super_init (BseSuper *super,
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
   
   /* we want Unnamed-xxx default unames */
-  bse_item_set (super,
-		"uname", "Unnamed",
-		NULL);
+  bse_item_set (super, "uname", "Unnamed", NULL);
+  /* default-fill fields */
+  const char *value = BSE_GCONFIG (author_default);
+  if (value && value[0])
+    bse_item_set (super, "author", value, NULL);
+  value = BSE_GCONFIG (license_default);
+  if (value && value[0])
+    bse_item_set (super, "license", value, NULL);
 }
 
 static void
@@ -181,13 +186,13 @@ bse_super_class_init (BseSuperClass *class)
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
 			      sfi_pspec_string ("author", _("Author"), _("Person changing or creating this object"),
-						NULL,
-						SFI_PARAM_STANDARD ":skip-default"));
+						"",
+						SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_LICENSE,
 			      sfi_pspec_string ("license", _("License"), _("Copyright license applying to this object"),
-						NULL,
-						SFI_PARAM_STANDARD ":skip-default"));
+						"",
+						SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_COPYRIGHT,
 			      sfi_pspec_string ("copyright", NULL, NULL, NULL, "w")); // COMPAT-FIXME: remove around 0.7.0

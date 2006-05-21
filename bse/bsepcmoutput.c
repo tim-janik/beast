@@ -117,7 +117,7 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
 			      sfi_pspec_real ("master_volume_dB", "Master [dB]", NULL,
 					      0,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      BSE_GCONFIG (step_volume_dB),
+                                              0.1,
 					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_PERC,

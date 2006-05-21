@@ -362,84 +362,11 @@ gsl_progress_printerr (gpointer          message,
 }
 
 /* --- global initialization --- */
-static guint
-get_n_processors (void)
-{
-#ifdef _SC_NPROCESSORS_ONLN
-  {
-    gint n = sysconf (_SC_NPROCESSORS_ONLN);
-
-    if (n > 0)
-      return n;
-  }
-#endif
-  return 1;
-}
-
-static const GslConfig *gsl_config = NULL;
-
-const GslConfig*
-gsl_get_config (void)
-{
-  return gsl_config;
-}
-
-#define	ROUND(dblval)	((GslLong) ((dblval) + .5))
-
 void
-gsl_init (const GslConfigValue values[])
+gsl_init (void)
 {
-  struct timeval tv;
-  const GslConfigValue *config = values;
-  static GslConfig pconfig = {	/* DEFAULTS */
-    1,				/* n_processors */
-    2,				/* wave_chunk_padding */
-    4,				/* wave_chunk_big_pad */
-    512,			/* dcache_block_size */
-    1024 * 1024,		/* dcache_cache_memory */
-    69,				/* midi_kammer_note */
-    440,			/* kammer_freq */
-  };
-
-  g_return_if_fail (gsl_config == NULL);	/* assert single initialization */
-
+  g_return_if_fail (bse_engine_exvar_tick_stamp == 0);  /* assert single initialization */
   bse_engine_exvar_tick_stamp = 1;
-
-  /* configure permanent config record */
-  if (config)
-    while (config->value_name)
-      {
-	if (strcmp ("wave_chunk_padding", config->value_name) == 0)
-	  pconfig.wave_chunk_padding = ROUND (config->value);
-	else if (strcmp ("wave_chunk_big_pad", config->value_name) == 0)
-	  pconfig.wave_chunk_big_pad = ROUND (config->value);
-	else if (strcmp ("dcache_cache_memory", config->value_name) == 0)
-	  pconfig.dcache_cache_memory = ROUND (config->value);
-	else if (strcmp ("dcache_block_size", config->value_name) == 0)
-	  pconfig.dcache_block_size = ROUND (config->value);
-	else if (strcmp ("midi_kammer_note", config->value_name) == 0)
-	  pconfig.midi_kammer_note = ROUND (config->value);
-	else if (strcmp ("kammer_freq", config->value_name) == 0)
-	  pconfig.kammer_freq = config->value;
-	config++;
-      }
-  
-  /* constrain (user) config */
-  pconfig.wave_chunk_padding = MAX (1, pconfig.wave_chunk_padding);
-  pconfig.wave_chunk_big_pad = MAX (2 * pconfig.wave_chunk_padding, pconfig.wave_chunk_big_pad);
-  pconfig.dcache_block_size = MAX (2 * pconfig.wave_chunk_big_pad + sizeof (GslDataType), pconfig.dcache_block_size);
-  pconfig.dcache_block_size = sfi_alloc_upper_power2 (pconfig.dcache_block_size - 1);
-  /* pconfig.dcache_cache_memory = sfi_alloc_upper_power2 (pconfig.dcache_cache_memory); */
-
-  /* non-configurable config updates */
-  pconfig.n_processors = get_n_processors ();
-
-  /* export GSL configuration */
-  gsl_config = &pconfig;
-
-  /* initialize random numbers */
-  gettimeofday (&tv, NULL);
-  srand (tv.tv_sec ^ tv.tv_usec);
 
   /* initialize subsystems */
   birnet_mutex_init (&global_tick_stamp_mutex);

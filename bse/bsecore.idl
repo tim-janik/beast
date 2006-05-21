@@ -700,6 +700,29 @@ ThreadTotals    collect_thread_totals ();
 
 /* BSE Global Config */
 record GConfig {
+  group _("Synthesis Settings") {
+    Int synth_latency           = (_("Latency [ms]"),
+                                   _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
+                                   50, 1, 2000, 5, STANDARD);
+    Int synth_mixing_freq       = (_("Synth Mixing Frequency"),
+                                   _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
+                                   44100, 8000, 192000, 0, STANDARD);
+    Int synth_control_freq      = (_("Synth Control Frequency"),
+                                   _("Frequency at which control values are evaluated, "
+                                     "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
+                                   1000, 1, 192000, 0, STANDARD);
+  };
+  group _("MIDI") {
+    Bool invert_sustain = (_("Invert Sustain Pedal"),
+                           _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
+                           FALSE, STANDARD);
+  };
+  group _("Default Values") {
+    String author_default  = (_("Default Author"), _("Default value for 'Author' fields"),
+			      bse_intern_default_author(), STANDARD);
+    String license_default = (_("Default License"), _("Default value for 'License' fields"),
+			      bse_intern_default_license(), STANDARD);
+  };
   group _("Search Paths") {
     String sample_path     = (_("Sample Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find audio samples."),
@@ -728,29 +751,6 @@ record GConfig {
                                                  "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
                                                  "LADSPA plugins can be found at http://www.ladspa.org/."), G_SEARCHPATH_SEPARATOR_S),
                               NULL, STANDARD ":searchpath");
-  };
-  group _("Synthesis Settings") {
-    Int synth_latency           = (_("Latency [ms]"),
-                                   _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
-                                   50, 1, 2000, 5, STANDARD);
-    Int synth_mixing_freq       = (_("Synth Mixing Frequency"),
-                                   _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
-                                   44100, 8000, 192000, 0, STANDARD);
-    Int synth_control_freq      = (_("Synth Control Frequency"),
-                                   _("Frequency at which control values are evaluated, "
-                                     "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
-                                   1000, 1, 192000, 0, STANDARD);
-  };
-  group _("MIDI") {
-    Bool invert_sustain = (_("Invert Sustain Pedal"),
-                           _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
-                           FALSE, STANDARD);
-  };
-  group _("Stepping Rates") {
-    Real step_volume_dB = (_("Volume [dB] Steps"), _("Step width for volume in decibel"),
-                           0.1, 0.001, 5, 0.01, STANDARD);
-    Int  step_bpm       = (_("BPM Steps"), _("Step width for beats per minute"),
-                           10, 1, 50, 1, STANDARD);
   };
 };
 

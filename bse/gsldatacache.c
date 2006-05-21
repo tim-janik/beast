@@ -17,10 +17,9 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gsldatacache.h"
-
+#include "bsemain.h"
 #include "gslcommon.h"
 #include "gsldatahandle.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -32,7 +31,7 @@
 /* --- macros --- */
 #define	NODEP_INDEX(dcache, node_p)	((node_p) - (dcache)->nodes)
 #define	UPPER_POWER2(n)			(sfi_alloc_upper_power2 (MAX (n, 4)))
-#define	CONFIG_NODE_SIZE()		(gsl_get_config ()->dcache_block_size)
+#define	CONFIG_NODE_SIZE()		(BSE_CONFIG (dcache_block_size))
 #define	AGE_EPSILON			(3)	/* must be < resident set */
 #define	LOW_PERSISTENCY_RESIDENT_SET    (5)
 
@@ -546,7 +545,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
   if (check_cache)
     {
       guint node_size = CONFIG_NODE_SIZE ();
-      guint cache_mem = gsl_get_config ()->dcache_cache_memory;
+      guint cache_mem = BSE_CONFIG (dcache_cache_memory);
       guint current_mem;
 
       GSL_SPIN_LOCK (&global_dcache_mutex);

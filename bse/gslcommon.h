@@ -25,30 +25,8 @@
 G_BEGIN_DECLS
 
 
-/* --- global initialization --- */
-typedef struct
-{
-  const char *value_name;
-  double      value;
-} GslConfigValue;
-typedef struct
-{
-  guint  n_processors;
-  /* # values to pad around wave chunk blocks per channel */
-  guint  wave_chunk_padding;
-  guint  wave_chunk_big_pad;
-  /* data (file) cache block size (aligned to power of 2) */
-  guint	 dcache_block_size;
-  /* amount of bytes to spare for memory cache */
-  guint  dcache_cache_memory;
-  guint  midi_kammer_note;
-  /* kammer frequency, normally 440Hz, historically 435Hz */
-  gfloat kammer_freq;
-} GslConfig;
-void			gsl_init	(const GslConfigValue	values[]);
-const GslConfig*	gsl_get_config	(void) G_GNUC_CONST;
-#define	GSL_CONFIG(value)	((gsl_get_config () [0]) . value)
-
+/* --- initialization --- */
+void			gsl_init	(void);
 
 /* --- tick stamps --- */
 typedef struct {
