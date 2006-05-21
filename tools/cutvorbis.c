@@ -89,8 +89,14 @@ main (int   argc,
   gint ifd, ofd;
 
   /* initialization */
-  g_thread_init (NULL);
-  bse_init_intern (&argc, &argv, "CutVorbis", NULL);
+  BirnetInitValue values[] = {
+    { "stand-alone",            "true" }, /* no rcfiles etc. */
+    { "wave-chunk-padding",     NULL, 1, },
+    { "dcache-block-size",      NULL, 8192, },
+    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
+    { NULL }
+  };
+  bse_init_inprocess (&argc, &argv, "BseCutVorbis", values);
 
   /* arguments */
   parse_args (&argc, &argv);

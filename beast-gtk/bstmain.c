@@ -38,8 +38,7 @@
 
 /* --- prototypes --- */
 static void			bst_early_parse_args	(gint        *argc_p,
-							 gchar     ***argv_p,
-							 SfiRec	     *bseconfig);
+							 gchar     ***argv_p);
 static void			bst_print_blurb		(void);
 static void			bst_exit_print_version	(void);
 
@@ -83,9 +82,13 @@ main (int   argc,
       char *argv[])
 {
   GdkPixbufAnimation *anim;
-  SfiRec *bseconfig;
   gchar *string;
   GSource *source;
+  char debugbool[2] = "0";
+  BirnetInitValue config[] = {
+    { "debug-extensions", debugbool },
+    { NULL },
+  };
   guint i;
 
   /* initialize i18n */
@@ -99,7 +102,6 @@ main (int   argc,
   gettimeofday (&tv, NULL);
   srand48 (tv.tv_usec + (tv.tv_sec << 16));
   srand (tv.tv_usec + (tv.tv_sec << 16));
-  
 
   /* initialize GLib guts */
   // toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
@@ -114,11 +116,10 @@ main (int   argc,
   birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 g_main_context_default (), NULL);
 
-  /* pre-parse BEAST args */
-  bseconfig = sfi_rec_new ();
-
   /* initialize Gtk+ and go into threading mode */
-  bst_early_parse_args (&argc, &argv, bseconfig);
+  bst_early_parse_args (&argc, &argv);
+  if (bst_debug_extensions)
+    debugbool[0] = '1';
   gtk_init (&argc, &argv);
   GDK_THREADS_ENTER ();
 
@@ -167,8 +168,7 @@ main (int   argc,
 
   /* start BSE core and connect */
   bst_splash_update_item (beast_splash, _("BSE Core"));
-  bse_init_async (&argc, &argv, "BEAST", bseconfig);
-  sfi_rec_unref (bseconfig);
+  bse_init_async (&argc, &argv, "BEAST", config);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
   source = g_source_simple (GDK_PRIORITY_EVENTS, // G_PRIORITY_HIGH - 100,
 			    (GSourcePending) sfi_glue_context_pending,
@@ -413,8 +413,7 @@ main (int   argc,
 
 static void
 bst_early_parse_args (int    *argc_p,
-		      char ***argv_p,
-		      SfiRec *bseconfig)
+		      char ***argv_p)
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
@@ -476,7 +475,6 @@ bst_early_parse_args (int    *argc_p,
 	      bst_debug_extensions = TRUE;
 	      g_message ("enabling possibly harmful debugging extensions due to '-:d'");
 	    }
-	  sfi_rec_set_bool (bseconfig, "debug-extensions", bst_debug_extensions);
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--devel", argv[i]) == 0)
@@ -659,7 +657,7 @@ bst_early_parse_args (int    *argc_p,
 
   if (initialize_bse_and_exit)
     {
-      bse_init_async (argc_p, argv_p, "BEAST", bseconfig);
+      bse_init_async (argc_p, argv_p, "BEAST", NULL);
       exit (0);
     }
 }
@@ -725,38 +723,38 @@ bst_print_blurb (void)
 #ifdef BST_WITH_XKB
   g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
-  g_print ("  --skinrc[=FILENAME]     skin resource file name\n");
-  g_print ("  --print-dir[=RESOURCE]  print the directory for a specific resource\n");
-  g_print ("  --merge                 merge the following files into the previous project\n");
-  g_print ("  --devel                 enrich the GUI with hints useful for developers,\n");
+  g_print ("  --skinrc[=FILENAME]     Skin resource file name\n");
+  g_print ("  --print-dir[=RESOURCE]  Print the directory for a specific resource\n");
+  g_print ("  --merge                 Merge the following files into the previous project\n");
+  g_print ("  --devel                 Enrich the GUI with hints useful for developers,\n");
   g_print ("                          enable unstable plugins and experimental code\n");
-  g_print ("  -h, --help              show this help message\n");
-  g_print ("  -v, --version           print version and file paths\n");
-  g_print ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper beast)\n");
-  g_print ("  -N                      disable renicing\n");
+  g_print ("  -h, --help              Show this help message\n");
+  g_print ("  -v, --version           Print version and file paths\n");
+  g_print ("  -n NICELEVEL            Run with priority NICELEVEL (for suid wrapper beast)\n");
+  g_print ("  -N                      Disable renicing\n");
   g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
-  g_print ("  --bse-latency=USECONDS  specify synthesis latency in milliseconds\n");
-  g_print ("  --bse-mixing-freq=FREQ  specify synthesis mixing frequency in Hz \n");
-  g_print ("  --bse-control-freq=FREQ specify control frequency in Hz\n");
-  g_print ("  --bse-force-fpu         disable loading of SSE or similarly optimized plugins\n");
+  g_print ("  --bse-latency=USECONDS  Specify synthesis latency in milliseconds\n");
+  g_print ("  --bse-mixing-freq=FREQ  Specify synthesis mixing frequency in Hz \n");
+  g_print ("  --bse-control-freq=FREQ Specify control frequency in Hz\n");
+  g_print ("  --bse-force-fpu         Disable loading of SSE or similarly optimized plugins\n");
   g_print ("  --bse-pcm-driver DRIVERCONF\n");
-  g_print ("  -p DRIVERCONF           try to use the PCM driver DRIVERCONF, multiple\n");
+  g_print ("  -p DRIVERCONF           Try to use the PCM driver DRIVERCONF, multiple\n");
   g_print ("                          options may be supplied to try a variety of\n");
-  g_print ("                          drivers, unless -p auto is given, only the\n");
+  g_print ("                          drivers. Uunless -p auto is given, only the\n");
   g_print ("                          drivers listed by -p options are used; each\n");
-  g_print ("                          DRIVERCONF consists of a driver name and an\n");
-  g_print ("                          optional comma seperated list of arguments,\n");
-  g_print ("                          e.g.: -p oss=/dev/dsp2,rw\n");
+  g_print ("                          DRIVERCONF consists of a driver name and may be\n");
+  g_print ("                          assigned an optional comma seperated list of\n");
+  g_print ("                          arguments, e.g.: -p oss=/dev/dsp2,rw\n");
   g_print ("  --bse-midi-driver DRIVERCONF\n");
-  g_print ("  -m DRIVERCONF           try to use the MIDI driver DRIVERCONF, multiple\n");
+  g_print ("  -m DRIVERCONF           Try to use the MIDI driver DRIVERCONF, multiple\n");
   g_print ("                          options may be specified similarly to the\n");
   g_print ("                          option handling for --bse-pcm-driver\n");
-  g_print ("  --bse-driver-list       list available PCM and MIDI drivers\n");
+  g_print ("  --bse-driver-list       List available PCM and MIDI drivers\n");
   g_print ("Development Options:\n");
-  g_print ("  --debug=KEYS            enable specific debugging messages\n");
-  g_print ("  --no-debug=KEYS         disable specific debugging messages\n");
-  g_print ("  --debug-list            list possible debug keys\n");
-  g_print ("  -:[flags]               [flags] can be any of:\n");
+  g_print ("  --debug=KEYS            Enable specific debugging messages\n");
+  g_print ("  --no-debug=KEYS         Disable specific debugging messages\n");
+  g_print ("  --debug-list            List possible debug keys\n");
+  g_print ("  -:[Flags]               [Flags] can be any combination of:\n");
   g_print ("                          f - fatal warnings\n");
   g_print ("                          N - disable script and plugin registration\n");
   g_print ("                          p - enable core plugin registration\n");
@@ -766,17 +764,14 @@ bst_print_blurb (void)
   g_print ("                          s - enable script registration\n");
   g_print ("                          S - disable script registration\n");
   g_print ("                          d - enable debugging extensions (harmfull)\n");
-  if (!BST_VERSION_STABLE)
-    {
-      g_print ("Gtk+ Options:\n");
-      g_print ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
-      g_print ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
-      g_print ("  --gtk-module=MODULE     load additional Gtk+ modules\n");
-      g_print ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
-      g_print ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
-      g_print ("  --g-fatal-warnings      make warnings fatal (abort)\n");
-      g_print ("  --sync                  do all X calls synchronously\n");
-    }
+  g_print ("Gtk+ Options:\n");
+  g_print ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
+  g_print ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
+  g_print ("  --gtk-module=MODULE     Load additional Gtk+ modules\n");
+  g_print ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
+  g_print ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
+  g_print ("  --g-fatal-warnings      Make warnings fatal (abort)\n");
+  g_print ("  --sync                  Do all X calls synchronously\n");
 }
 
 void

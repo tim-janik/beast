@@ -80,15 +80,17 @@ main (int   argc,
       char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-  
-  /* initialize random numbers */
-  struct timeval tv;
-  gettimeofday (&tv, NULL);
-  srand (tv.tv_usec + (tv.tv_sec << 16));
 
   /* initialization */
   int orig_argc = argc;
-  bse_init_intern (&argc, &argv, "BseWaveTool", NULL);
+  BirnetInitValue values[] = {
+    { "stand-alone",            "true" }, /* no rcfiles etc. */
+    { "wave-chunk-padding",     NULL, 1, },
+    { "dcache-block-size",      NULL, 8192, },
+    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
+    { NULL }
+  };
+  bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
   birnet_msg_allow ("main"); // FIXME
   birnet_msg_set_thread_handler (wavetool_log_handler);
   birnet_msg_type_configure (BIRNET_MSG_INFO, BIRNET_MSG_TO_HANDLER, NULL);
@@ -797,7 +799,7 @@ public:
   str2num (const gchar *str,
            guint        nth)
   {
-    gchar *num_any = ".0123456789", *num_first = num_any + 1;
+    const gchar *num_any = ".0123456789", *num_first = num_any + 1;
     while (nth--)
       {
         /* skip number */

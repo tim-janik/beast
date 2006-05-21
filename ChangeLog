@@ -1,3 +1,32 @@
+Sat May 20 15:34:05 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: fixed up --help messgae.
+
+	* beast-gtk/bststest.c:
+	* tools/bsefextract.cc:
+	* tools/bsewavetool.cc:
+	* tools/magictest.c:
+	* tools/mathtool.c:
+	* beast-gtk/bstmain.c: adapted to refactored BSE initialization.
+
+	* tools/bsewavetool.cc:
+	* tools/magictest.c:
+	* tools/mathtool.c:
+	* tools/bsefextract.cc: prevent rcfile loading.
+
+	* configure.in: generate slowtests/filecheck/Makefile.
+
+	* slowtests/Makefile.am: removed BSE filecheck.
+
+	* slowtests/filecheck/Makefile.am: added BSE filecheck from slowtests/.
+
+	* Makefile.am: echo a banner when all tests passed.
+
+	* library/demo/partymonster.bse:
+	* library/demo/x2-midi-test.bse:
+	* test/midi-test.bse: 
+	* test/osc-test.bse: converted to 0.7.0.
+
 Fri May 19 17:51:33 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/audio/Makefile.am: fixed audio test rules, run audio

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #define GSL_EXTENSIONS
+#include <bse/bsemain.h>
 #include <bse/gslcommon.h>
 #include <bse/gslfilter.h>
 #include <bse/bseloader.h>
@@ -72,12 +73,17 @@ main (int   argc,
   
   shift_argc = argc;
   shift_argv = (const gchar**) argv;
-  
-  /* initialize GSL */
-  g_thread_init (NULL);
-  birnet_init (&argc, &argv, NULL);
-  gsl_init (NULL);
-  
+
+  /* init */
+  BirnetInitValue values[] = {
+    { "stand-alone",            "true" }, /* no rcfiles etc. */
+    { "wave-chunk-padding",     NULL, 1, },
+    { "dcache-block-size",      NULL, 8192, },
+    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
+    { NULL }
+  };
+  bse_init_inprocess (&argc, &argv, NULL, values);
+
   arg = shift ();
   if (!arg)
     usage ();
@@ -349,8 +355,7 @@ main (int   argc,
       note = CLAMP (note, 0, 128);
       g_print ("midi2freq(%u) = %f\n",
 	       note,
-	       bse_temp_freq (gsl_get_config ()->kammer_freq,
-			      note - gsl_get_config ()->midi_kammer_note));
+	       bse_temp_freq (BSE_CONFIG (kammer_freq), note - BSE_CONFIG (midi_kammer_note)));
     }
   else if (strcmp (arg, "blp") == 0)
     {

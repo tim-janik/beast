@@ -1,17 +1,19 @@
 ; BseProject
 
-(bse-version "0.6.3")
+(bse-version "0.7.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2004-11-16 13:54:15")
-  (creation-time "2003-10-04 18:06:50"))
+  (modification-time "2006-05-21 00:47:12")
+  (creation-time "2003-10-04 18:06:50")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
+  (author "Tim Janik"))
 (container-child "BseSong::Party Monster"
   (pnet (link 1 "Compression"))
   (bpm 140)
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:12")
   (creation-time "2003-10-04 18:10:14")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
@@ -1162,7 +1164,7 @@
     (left-volume 1)
     (bus-input (link 1 "Accords"))))
 (container-child "BseCSynth::BaseDrum"
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:12")
   (creation-time "2003-10-04 18:06:54")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
@@ -1209,10 +1211,10 @@
     (source-input "right-audio" (link 1 "Balance-1") "right-out")
     (source-input "synth-done" (link 1 "BseSimpleADSR-1") "done-out"))
   (container-child "BseMidiController::MidiController-1"
-    (control-4 BSE_MIDI_SIGNAL_PRESSURE)
-    (control-3 BSE_MIDI_SIGNAL_CONTINUOUS_7)
-    (control-2 BSE_MIDI_SIGNAL_CONTINUOUS_1)
-    (control-1 BSE_MIDI_SIGNAL_CONTINUOUS_8)
+    (control-4 bse-midi-signal-pressure)
+    (control-3 bse-midi-signal-continuous-7)
+    (control-2 bse-midi-signal-continuous-1)
+    (control-1 bse-midi-signal-continuous-8)
     (pos-y -1.126667)
     (pos-x -3.11))
   (container-child "BseBalance::Balance-1"
@@ -1228,7 +1230,7 @@
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")
     (source-input "ctrl-in1" (link 1 "MidiController-1") "ctrl-out1")))
 (container-child "BseCSynth::SynBass"
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:12")
   (creation-time "2003-10-04 18:16:53")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
@@ -1307,7 +1309,7 @@
     (pos-x -2.005)
     (source-input "freq-in" (link 1 "BseSubKeyboard-1") "frequency")))
 (container-child "BseCSynth::Hihat"
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:13")
   (creation-time "2003-10-04 19:38:05")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
@@ -1352,16 +1354,16 @@
     (cut-off-freq 9000)
     (epsilon 0.10000000000000001)
     (order 6)
-    (filter-type BSE_IIR_FILTER_BAND_PASS)
-    (filter-algorithm BSE_IIR_FILTER_BUTTERWORTH)
+    (filter-type bse-iir-filter-band-pass)
+    (filter-algorithm bse-iir-filter-butterworth)
     (pos-y 1.72)
     (pos-x -1.22)
     (source-input "audio-in" (link 1 "BseNoise-1") "noise-out"))
   (container-child "BseMidiController::MidiController-1"
-    (control-4 BSE_MIDI_SIGNAL_PRESSURE)
-    (control-3 BSE_MIDI_SIGNAL_CONTINUOUS_7)
-    (control-2 BSE_MIDI_SIGNAL_CONTINUOUS_1)
-    (control-1 BSE_MIDI_SIGNAL_CONTINUOUS_8)
+    (control-4 bse-midi-signal-pressure)
+    (control-3 bse-midi-signal-continuous-7)
+    (control-2 bse-midi-signal-continuous-1)
+    (control-1 bse-midi-signal-continuous-8)
     (pos-y 2.185)
     (pos-x 0.94))
   (container-child "BseBalance::Balance-1"
@@ -1377,7 +1379,7 @@
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")
     (source-input "ctrl-in1" (link 1 "MidiController-1") "ctrl-out1")))
 (container-child "BseCSynth::XtalString"
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:13")
   (creation-time "2003-10-04 20:36:52")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
@@ -1425,10 +1427,10 @@
     (pos-x -0.94)
     (source-input "gate-in" (link 1 "BseSubKeyboard-1") "gate"))
   (container-child "BseMidiController::MidiController-1"
-    (control-4 BSE_MIDI_SIGNAL_PRESSURE)
-    (control-3 BSE_MIDI_SIGNAL_CONTINUOUS_7)
-    (control-2 BSE_MIDI_SIGNAL_CONTINUOUS_1)
-    (control-1 BSE_MIDI_SIGNAL_CONTINUOUS_8)
+    (control-4 bse-midi-signal-pressure)
+    (control-3 bse-midi-signal-continuous-7)
+    (control-2 bse-midi-signal-continuous-1)
+    (control-1 bse-midi-signal-continuous-8)
     (pos-y -1.565)
     (pos-x -1.99))
   (container-child "BseBalance::Balance-1"
@@ -1444,7 +1446,7 @@
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")
     (source-input "ctrl-in1" (link 1 "MidiController-1") "ctrl-out1")))
 (container-child "BseCSynth::SynString"
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:13")
   (creation-time "2003-10-04 21:06:50")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
@@ -1506,10 +1508,6 @@
     (pos-y 1.9)
     (pos-x -4.24))
   (container-child "BseConstant::BseConstant-1"
-    (value-8 1)
-    (value-7 1)
-    (value-6 1)
-    (value-5 1)
     (value-4 1)
     (value-3 1)
     (value-2 1)
@@ -1540,7 +1538,7 @@
     (pos-y 2.26)
     (pos-x 0.27)))
 (container-child "BseCSynth::Compression"
-  (modification-time "2004-11-16 13:54:15")
+  (modification-time "2006-05-21 00:47:13")
   (creation-time "2003-10-18 01:55:54")
   (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")

@@ -1,13 +1,16 @@
 ; BseProject
 
-(bse-version "0.6.4")
+(bse-version "0.7.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2004-12-16 01:37:47")
-  (creation-time "2004-12-16 01:28:10"))
+  (modification-time "2006-05-21 00:47:18")
+  (creation-time "2004-12-16 01:28:10")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Tim Janik"))
 (container-child "BseCSynth::Simple String"
-  (modification-time "2004-12-16 01:37:47")
+  (modification-time "2006-05-21 00:47:18")
   (creation-time "2002-01-12 12:42:55")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
   (author "Tim Janik")
   (container-child "BseInstrumentInput::SubKeyboard"
     (pos-y 5)
@@ -68,7 +71,6 @@
   (container-child "BseStandardOsc::Main_Voice_3"
     (pulse-mod-perc 0)
     (pulse-width 50)
-    (self-perc 15)
     (fm-n-octaves 0.16667)
     (exponential-fm #t)
     (fm-perc 0)
@@ -81,10 +83,10 @@
     (source-input "freq-mod-in" (link 1 "BseMidiIController-1") "ctrl-out1")
     (source-input "sync-in" (link 1 "SubKeyboard") "gate"))
   (container-child "BseMidiController::BseMidiIController-1"
-    (control-4 BSE_MIDI_SIGNAL_PRESSURE)
-    (control-3 BSE_MIDI_SIGNAL_CONTINUOUS_7)
-    (control-2 BSE_MIDI_SIGNAL_CONTINUOUS_1)
-    (control-1 BSE_MIDI_SIGNAL_PITCH_BEND)
+    (control-4 bse-midi-signal-pressure)
+    (control-3 bse-midi-signal-continuous-7)
+    (control-2 bse-midi-signal-continuous-1)
+    (control-1 bse-midi-signal-pitch-bend)
     (pos-y 1)
     (pos-x -6))
   (container-child "BseArtsCompressor::ArtsCompressor-1"
@@ -99,5 +101,7 @@
   (volume-f 1)
   (snet (link 1 "Simple String"))
   (n-voices 16)
-  (modification-time "2004-12-16 01:37:47")
-  (creation-time "2004-12-16 01:28:22"))
+  (modification-time "2006-05-21 00:47:18")
+  (creation-time "2004-12-16 01:28:22")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Tim Janik"))

@@ -18,6 +18,7 @@
  */
 #include <bse/gslwavechunk.h>
 #include <bse/gsldatahandle.h>
+#include <bse/bsemain.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -194,16 +195,16 @@ int
 main (gint   argc,
       gchar *argv[])
 {
-  GslConfigValue gslconfig[] = {
-    { "wave_chunk_padding",     1, },
-    { "wave_chunk_big_pad",     2, },
-    { "dcache_block_size",      16, },
-    { NULL, },
+  /* init */
+  BirnetInitValue values[] = {
+    { "stand-alone",            "true" }, /* no rcfiles etc. */
+    { "wave-chunk-padding",     NULL, 1, },
+    { "wave_chunk_big_pad",     NULL, 2, },
+    { "dcache_block_size",      NULL, 16, },
+    { NULL }
   };
+  bse_init_inprocess (&argc, &argv, NULL, values);
   gint i, j, k;
-
-  birnet_init (&argc, &argv, NULL);
-  gsl_init (gslconfig);
 
   if (1)
     {

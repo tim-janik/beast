@@ -12,11 +12,6 @@ AUTOMAKE_OPTIONS = 1.4
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
-test:
-	@$(MAKE) -C tests/ $(AM_MAKEFLAGS) $@
-
-.PHONY: test
-
 # extra dependancies
 configure: acbeast.m4 birnet/configure.inc
 
@@ -37,6 +32,13 @@ EXTRA_DIST += $(strip		\
 	intltool-merge.in       \
 	intltool-update.in	\
 )
+
+# check: message
+ALL_CHECKED_MSG = "All package tests passed"
+check: check-recursive
+	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
+	@echo $(ALL_CHECKED_MSG)
+	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
 # fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database(1)
 filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'

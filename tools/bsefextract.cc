@@ -1164,18 +1164,14 @@ int
 main (int argc, char **argv)
 {
   /* init */
-  birnet_init (&argc, &argv, NULL);
-  if (0)
-    {
-      GslConfigValue gslconfig[] = {
-        { "wave_chunk_padding",     1, },
-        { "dcache_block_size",      8192, },
-        { "dcache_cache_memory",	5 * 1024 * 1024, },
-        { NULL, },
-      };
-      gsl_init (gslconfig);
-    }
-  bse_init_intern (&argc, &argv, NULL, NULL);
+  BirnetInitValue values[] = {
+    { "stand-alone",            "true" }, /* no rcfiles etc. */
+    { "wave-chunk-padding",     NULL, 1, },
+    { "dcache-block-size",      NULL, 8192, },
+    { "dcache-cache-memory",    NULL, 5 * 1024 * 1024, },
+    { NULL }
+  };
+  bse_init_inprocess (&argc, &argv, NULL, values);
 
   /* supported features */
   SpectrumFeature *spectrum_feature = new SpectrumFeature;
