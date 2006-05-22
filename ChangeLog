@@ -1,3 +1,9 @@
+Tue May 23 00:10:47 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl: fixed up bogus non-true exit values in distfile-list: rule.
+
+	* slowtests/filecheck/Makefile.am: srcdir != builddir fixups.
+
 Mon May 22 22:18:44 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/filecheck/checkproject.scm: CVS moved here from slowtests/.

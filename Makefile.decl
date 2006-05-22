@@ -34,4 +34,4 @@ distfile-list:
 	for file in $(DISTFILES) ; do				\
 	  test -e "$$file" &&					\
 	    echo "$(subdir)/$$file" >> $(DISTFILE_LIST) ;	\
-	done
+	done ; true

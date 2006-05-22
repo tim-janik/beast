@@ -24,7 +24,7 @@ distfiles.list: Makefile
 	echo > $(DISTFILE_LIST_NAME)
 	test -e distfiles.list
 	test -e $(DISTFILE_LIST_NAME)
-	cd $(top_srcdir) && make distfile-list DISTFILE_LIST=$(DISTFILE_LIST_NAME)
+	cd $(top_builddir) && make distfile-list DISTFILE_LIST=$(DISTFILE_LIST_NAME)
 .PHONY: bse-check
 SKIP_PATTERN = "tests/latency/midi-latency.bse|slowtests/audio/minisong.bse"
 bse-check: distfiles.list
@@ -38,13 +38,15 @@ bse-check: distfiles.list
 	@echo "================================="
 	@echo "All BSE files passed loading test"
 	@echo "================================="
+CLEANFILES += distfiles.list warnings.tmp
 check-am: bse-check # run bse-check *before* ordinary tests
 # check-local: bse-check # run bse-check *after* ordinary tests
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
+EXTRA_DIST += checkproject.scm
 BSESHELL = $(strip								\
 	$(top_builddir)/shell/bsesh-$(BIN_VERSION)				\
 	  -p null -m null							\
 	  --bse-rcfile "/dev/null" --bse-no-load				\
 	  --bse-override-plugin-globs '$(plugin_globs)'				\
-	  -s "$(top_srcdir)/slowtests/checkproject.scm"				\
+	  -s "$(top_srcdir)/slowtests/filecheck/checkproject.scm"		\
 )
