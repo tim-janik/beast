@@ -1,3 +1,7 @@
+Mon May 22 22:18:44 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/filecheck/checkproject.scm: CVS moved here from slowtests/.
+
 Sun May 21 17:06:40 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/audio/bse2wav.scm: scheme script to record BSE files to WAV
