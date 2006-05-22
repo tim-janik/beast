@@ -265,17 +265,13 @@ void    g_usignal_notify         (gint8          usignal);
 
 
 /* --- GType boilerplate --- */
-#ifndef G_DEFINE_DATA_TYPE      // GTKFIX: add this to glib
+#ifndef G_DEFINE_DATA_TYPE      	// GTKFIX: add this to glib?
 #define G_DEFINE_DATA_TYPE(TN, t_n, T_P)                         G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
 #define G_DEFINE_DATA_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)
 #define G_DEFINE_ABSTRACT_DATA_TYPE(TN, t_n, T_P)                G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, {})
 #define G_DEFINE_ABSTRACT_DATA_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, _C_)
-#define G_IMPLEMENT_INTERFACE(TYPE_IFACE, iface_init)       { \
-  static const GInterfaceInfo g_implement_interface_info = { \
-    (GInterfaceInitFunc) iface_init \
-  }; \
-  g_type_add_interface_static (g_define_type_id, TYPE_IFACE, &g_implement_interface_info); \
-}
+#endif /* !G_DEFINE_DATA_TYPE */
+#ifndef G_DEFINE_DATA_TYPE_EXTENDED	// GTKFIX: add this to glib?
 #define G_DEFINE_DATA_TYPE_EXTENDED(TypeName, type_name, TYPE_PARENT, flags, CODE) \
 \
 static void     type_name##_init              (TypeName        *self, \
