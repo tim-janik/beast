@@ -680,14 +680,18 @@ main (int argc, char **argv)
   double average_similarity = s / similarity.size() * 100.0; /* percent */
 
   printf ("average similarity rating: %f%% => ", average_similarity);
-  if (average_similarity == 100.0)
+
+  /*
+   * We check this first, because we explicitely allow setting the threshold
+   * to a value > 100%, which will make bsefcompare always fail.
+   */
+  if (average_similarity >= options.threshold)
     {
-      printf ("perfect match.\n");
-      return 0;
-    }
-  else if (average_similarity >= options.threshold)
-    {
-      printf ("good match.\n");
+      if (average_similarity == 100.0)
+	printf ("perfect match.\n");
+      else
+	printf ("good match.\n");
+
       return 0;
     }
   else
