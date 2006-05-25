@@ -4,7 +4,10 @@ Thu May 25 15:24:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 	writing the doubles now; increased output precision to %15.9g (which
 	is in some cases a huge improvement over %f).
 
-	* slowtests/audio/Makefile.am: Test partymonster.bse, too.
+	* slowtests/audio/Makefile.am:
+	* slowtests/audio/partymonster.ref: Test partymonster.bse, too. To do
+	it right, bse would need an option to produce deterministic random
+	values, but for now, with a more relaxed threshold, the test passes.
 
 	* slowtests/audio/*.ref: New reference files in the new format.
 
