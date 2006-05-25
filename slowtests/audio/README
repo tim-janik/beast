@@ -82,3 +82,49 @@ There are special features that can be useful for special cases, like for
 instance the --base-freq feature which determines the frequency of a signal
 (could be useful for testing an oscillator frequency), so its a good idea to at
 least read through the bsefextract help once, so you know whats there.
+
+Tricks:
+=======
+
+ * volume trick:    right now, the only time dependant feature is the spectrum;
+		    however, spectrum comparisions normalize the data during
+		    compare, and this means that they will not capture
+		    differences in volume
+
+		    so if you for instance have a test that consists of a sine
+		    wave that becomes louder and louder, a spectrum comparision
+		    with a signal from a sine wave that has constant volume
+		    will succeed (!)
+
+		    how to workaround this, if you want to do this test? simply
+		    add another signal (for instance sine wave, with big
+		    frequency distance to the signal you already have) with a
+		    constant volume to your test signal
+
+		    how does this help? now the spectrum will have a relative
+		    difference, that is the strength of one frequency component
+		    relative to the others will grow; this in turn is not
+		    normalized away, and you have constructed the test you want
+
+ * length trick:    since bse can not guarantee that the signals produced will have
+                    exactly the same length, the "spectrum" feature is not length
+		    sensitive - if you compare the spectrum of two different
+		    signals then only the start of the spectrum (that are
+		    present in both signals) is compared; so the shorter signal
+		    determines how much is actually compared
+
+		    now usually your test will terminate at the same time, so
+		    usually there is no problem; but what if beast decided to
+		    play only the first second of your song and then exited?
+		    how could you make the test detect it?
+
+		    use the --end-time feature; since it indicates the position
+		    of the last non-zero sample, together with --cut-zeros
+		    (which will cut tail and head silence), it becomes the
+		    length of the audible signal; so even if the --spectrum
+		    feature will still successfully compare if one test run
+		    just contains a fraction of the time of the other, the
+		    --end-time feature will ensure that the complete
+		    comparision will fail
+
+

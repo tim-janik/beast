@@ -1,3 +1,9 @@
+Thu May 25 10:24:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/audio/README: Added "Tricks" section with some of the
+	things that are non-obvious but are good to keep in mind when
+	designing tests.
+
 Wed May 24 17:50:55 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefcompare.cc: Explicitely allow setting the threshold to a
