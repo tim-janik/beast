@@ -35,22 +35,6 @@ For general installation instructions, see the file `INSTALL'.
 Known Issues with this Version
 ==============================
 
-* The BSE-PortAudio driver doesn't yet work with the PortAudio JACK driver
-
-  Although one of the motivations for implementing the PortAudioV19 support
-  was JACK support, it turned out that we needed to use the PortAudios
-  blocking API for integrating with BEAST properly. This discussion can be
-  read at PortAudios list archive:
-
-  http://techweb.rfa.org/pipermail/portaudio/2004-November/003979.html
-
-  Since the PortAudio JACK driver doesn't support blocking PCM access yet,
-  we started to work on a patch against PortAudio that will fix this.
-  We already got it working with a modified version of PortAudio, but
-  there's still some cleanup work to do before folding changes back to
-  the PortAudio Team. Once this happened, the PortAudio driver is supposed
-  to support JACK, OSS and ALSA.
-
 * The BSE-PortAudio driver depends on a CVS version of PortAudioV19
 
   Since PortAudioV19 has not publically been released yet, this driver

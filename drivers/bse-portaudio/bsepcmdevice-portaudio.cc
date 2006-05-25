@@ -31,7 +31,7 @@ using std::string;
 using std::vector;
 using std::max;
 
-static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
+static BIRNET_MSG_TYPE_DEFINE (debug_pcm, "pcm", BIRNET_MSG_DEBUG, NULL);
 #define DEBUG(...) sfi_debug (debug_pcm, __VA_ARGS__)
 
 
@@ -54,7 +54,8 @@ static gboolean         port_audio_device_check_io            (BsePcmHandle     
 static guint            port_audio_device_latency             (BsePcmHandle           *handle);
 
 /* --- define object type and export to BSE --- */
-BSE_REGISTER_OBJECT (BsePcmDevicePortAudio, BsePcmDevice, NULL, NULL, NULL, bse_pcm_device_port_audio_class_init, NULL, bse_pcm_device_port_audio_init);
+static const char type_blurb[] = ("PCM driver implementation using PortAudio (http://www.portaudio.com)");
+BSE_REGISTER_OBJECT (BsePcmDevicePortAudio, BsePcmDevice, NULL, "", type_blurb, NULL, bse_pcm_device_port_audio_class_init, NULL, bse_pcm_device_port_audio_init);
 BSE_DEFINE_EXPORTS (__FILE__);
 
 /* --- variables --- */

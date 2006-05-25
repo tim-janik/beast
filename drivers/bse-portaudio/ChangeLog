@@ -1,3 +1,15 @@
+Thu May 25 13:07:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* autogen.sh:
+	* Makefile.am: upgrade to automake-1.9
+
+	* bsepcmdevice-portaudio.cc: compatibility with 0.7.0.
+
+	* configure.in: bump version to 0.7.0.
+
+	* README:
+	* NEWS: Updated.
+
 Wed May 25 23:30:43 2005  Tim Janik  <timj@gtk.org>
 
 	* released bse-portaudio 0.6.6.
