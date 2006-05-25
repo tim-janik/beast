@@ -379,7 +379,13 @@ port_audio_device_write (BsePcmHandle *handle,
 			 const gfloat *values)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
-  Pa_WriteStream (portaudio->stream, values, handle->block_length);
+
+  /* FIXME: should PortAudio clip? */
+  float clipped_values[handle->block_length * handle->n_channels];
+  for (guint i = 0; i < handle->block_length * handle->n_channels; i++)
+    clipped_values[i] = CLAMP (values[i], -1.0, 1.0);
+
+  Pa_WriteStream (portaudio->stream, clipped_values, handle->block_length);
 }
 
 static void

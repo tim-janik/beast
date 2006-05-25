@@ -1,3 +1,8 @@
+Thu May 25 14:38:32 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsepcmdevice-portaudio.cc: Clip audio data - it seems that PortAudio
+	doesn't clip, but JACK requires clipped audio data.
+
 Thu May 25 13:07:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* autogen.sh:
