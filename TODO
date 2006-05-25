@@ -724,8 +724,8 @@ documentation:
  - bsewavetool needs to be documented with documentation tool in the source code (at least gsl_data_find_loop*)
 
 tests, bsefcompare:
-- move tests from test directory into automated feature test dir
-- remove test directory
+- move tests from test directory into automated feature test dir                     [ 0.7.0, pending ]
+- remove test directory                                                              [ 0.7.0, pending ]
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
   
 win32 port:
@@ -737,7 +737,11 @@ oversampling:
 - move Resampler2Factory API to header
 - check why performance on one of my laptops (voyager) was so bad for SSE code
 - write downsampling datahandle
-- add resampler documentation in synthesis-details.doxi
+- add resampler documentation in synthesis-details.doxi (F.Fact2 rsmpling bstgnmorg) [ 0.7.0 ]
+
+bseblockutils:
+- write tests for bseadder / bsemult / bsesummation / bsebus to blockutils functions [ 0.7.0, pending ]
+- port bseadder / bsemult / bsesummation / bsebus to blockutils functions            [ 0.7.0, pending ]
 
 Misc Buglets/Feature Requests:
  - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
@@ -747,5 +751,7 @@ Misc Buglets/Feature Requests:
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
  - create a roadmap document for BEAST
  - implement fractional resampler (oversampling)
+ - canvas bug #340437                                                                [ 0.7.0, pending ]
+ - crashes    #340437                                                                [ 0.7.0, pending ]
 
 vim:set ts=8 sts=2 sw=2:
