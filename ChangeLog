@@ -1,3 +1,13 @@
+Thu May 25 15:24:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Use locale independant g_ascii_formatd for
+	writing the doubles now; increased output precision to %15.9g (which
+	is in some cases a huge improvement over %f).
+
+	* slowtests/audio/Makefile.am: Test partymonster.bse, too.
+
+	* slowtests/audio/*.ref: New reference files in the new format.
+
 Thu May 25 10:24:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/audio/README: Added "Tricks" section with some of the

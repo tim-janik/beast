@@ -80,3 +80,13 @@ velocity-test:
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $(@F).tmp
 	$(BSEFCOMPARE) $(srcdir)/velocity.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
+
+# the BEAST demo song
+FEATURE_TESTS += partymonster-test
+EXTRA_DIST += partymonster.ref
+partymonster-test:
+	$(BSE2WAV) $(top_srcdir)/library/demo/partymonster.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.9 # <- needs deterministic random
+	rm -f $(@F).tmp $(@F).wav 

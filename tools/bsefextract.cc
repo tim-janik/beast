@@ -176,16 +176,24 @@ struct Feature
   const char *description;
   bool        extract_feature;      /* did the user enable this feature with --feature? */
 
+  string
+  double_to_string (double value, bool align = false) const
+  {
+    gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+    g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, align ? "%-15.9g" : "%.9g", value);
+    return numbuf;
+  }
+
   void print_value (const string& value_name, double data) const
   {
-    fprintf (options.output_file, "%s = %f;\n", value_name.c_str(), data);
+    fprintf (options.output_file, "%s = %s;\n", value_name.c_str(), double_to_string (data).c_str());
   }
 
   void print_vector (const string& vector_name, const vector<double>& data) const
   {
     fprintf (options.output_file, "%s[%ld] = {", vector_name.c_str(), data.size());
     for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
-      fprintf (options.output_file, " %f", *di);
+      fprintf (options.output_file, " %s", double_to_string (*di, true).c_str());
     fprintf (options.output_file, " };\n");
   }
 
@@ -210,7 +218,7 @@ struct Feature
 	const vector<double>& line = *mi;
 
 	for (vector<double>::const_iterator li = line.begin(); li != line.end(); li++)
-	  fprintf (options.output_file, " %f", *li);
+	  fprintf (options.output_file, " %s", double_to_string (*li, true).c_str());
 	fprintf (options.output_file, " }\n");
       }
     fprintf (options.output_file, "};\n");
