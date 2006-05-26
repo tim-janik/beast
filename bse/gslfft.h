@@ -101,6 +101,9 @@ void	gsl_power2_fftar (const unsigned int n_values,
  * gsl_power2_fftar(), using the same frequency storage format.
  * A real valued data set transformed into the frequency domain
  * with gsl_power2_fftar() can be reconstructed using this function.
+ * This function also scales the time domain coefficients by a
+ * factor of 1.0/n_values which is required for perfect reconstruction
+ * of time domain data formerly transoformed via gsl_power2_fftar().
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */

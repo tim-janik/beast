@@ -1,3 +1,8 @@
+Sat May 27 00:22:44 2006  Tim Janik  <timj@gtk.org>
+
+	* gslfft.h: document that gsl_power2_fftsr() scales the output data
+	by 1.0/n_values.
+
 Sun May 21 12:19:52 2006  Tim Janik  <timj@gtk.org>
 
 	* bsesuper.c (super_compat_setup): added compat code for "license" and 
