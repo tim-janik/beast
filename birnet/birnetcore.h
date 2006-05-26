@@ -130,6 +130,18 @@ typedef BirnetInt64		int64;
 typedef BirnetUniChar		unichar;
 #endif /* _BIRNET_SOURCE_EXTENSIONS */
 
+/* --- path handling --- */
+#define BIRNET_DIR_SEPARATOR		  G_DIR_SEPARATOR		/* '/' */
+#define BIRNET_DIR_SEPARATOR_S		  G_DIR_SEPARATOR_S		/* "/" */
+#define	BIRNET_IS_DIR_SEPARATOR(c)    	  G_IS_DIR_SEPARATOR(c)		/* (c) == G_DIR_SEPARATOR */
+#define BIRNET_SEARCHPATH_SEPARATOR	  G_SEARCHPATH_SEPARATOR	/* ':' */
+#define BIRNET_SEARCHPATH_SEPARATOR_S	  G_SEARCHPATH_SEPARATOR_S	/* ":" */
+#ifdef G_OS_WIN32
+#define BIRNET_IS_SEARCHPATH_SEPARATOR(c) ((c) == G_SEARCHPATH_SEPARATOR /* ';' */)
+#else /* !G_OS_WIN32 */
+#define BIRNET_IS_SEARCHPATH_SEPARATOR(c) ((c) == G_SEARCHPATH_SEPARATOR || (c) == ';')
+#endif
+
 /* --- birnet initialization --- */
 typedef struct
 {

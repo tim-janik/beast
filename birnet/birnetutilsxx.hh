@@ -59,6 +59,9 @@ using std::map;
 
 /* --- private copy constructor and assignment operator --- */
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
+#ifdef  _BIRNET_SOURCE_EXTENSIONS
+#define PRIVATE_CLASS_COPY                      BIRNET_PRIVATE_CLASS_COPY
+#endif  /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- birnet_init() hook --- */
 class InitHook {
@@ -72,6 +75,10 @@ public:
   explicit InitHook (InitHookFunc       _func,
                      int                _priority = 0);
 };
+
+/* --- file/path functionality --- */
+const String    dirname  (const String &path);
+const String    basename (const String &path);
 
 /* --- Deletable --- */
 class Deletable {

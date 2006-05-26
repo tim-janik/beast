@@ -127,4 +127,27 @@ InitHook::invoke_hooks (void)
     (*it)->hook();
 }
 
+const String
+dirname (const String &path)
+{
+  const char *filename = path.c_str();
+  const char *base = strrchr (filename, BIRNET_DIR_SEPARATOR);
+  if (!base)
+    return ".";
+  while (*base == BIRNET_DIR_SEPARATOR && base > filename)
+    base--;
+  return String (filename, base - filename + 1);
+}
+
+const String
+basename (const String &path)
+{
+  const char *filename = path.c_str();
+  const char *base = strrchr (filename, BIRNET_DIR_SEPARATOR);
+  if (!base)
+    return filename;
+  return String (base + 1);
+}
+
+
 } // Birnet
