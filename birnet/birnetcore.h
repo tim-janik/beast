@@ -43,6 +43,9 @@ BIRNET_EXTERN_C_BEGIN();
 #endif  /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- reliable assert --- */
+#define	BIRNET_LIKELY			G_LIKELY
+#define	BIRNET_ISLIKELY			G_LIKELY
+#define	BIRNET_UNLIKELY			G_UNLIKELY
 #define BIRNET_RETURN_IF_FAIL(e)	do { if G_LIKELY (e) {} else { g_return_if_fail_warning (G_LOG_DOMAIN, __PRETTY_FUNCTION__, #e); return; } } while (0)
 #define BIRNET_RETURN_VAL_IF_FAIL(e,v)	do { if G_LIKELY (e) {} else { g_return_if_fail_warning (G_LOG_DOMAIN, __PRETTY_FUNCTION__, #e); return v; } } while (0)
 #define BIRNET_ASSERT_NOT_REACHED()	do { g_assert_warning (G_LOG_DOMAIN, __FILE__, __LINE__, __PRETTY_FUNCTION__, NULL); } while (0)
@@ -57,9 +60,9 @@ BIRNET_EXTERN_C_BEGIN();
 #define	RETURN_VAL_IF_FAIL	BIRNET_RETURN_VAL_IF_FAIL
 #define	ASSERT_NOT_REACHED	BIRNET_ASSERT_NOT_REACHED
 #define	ASSERT			BIRNET_ASSERT
-#define	LIKELY			G_LIKELY
-#define	ISLIKELY		G_LIKELY
-#define	UNLIKELY		G_UNLIKELY
+#define	LIKELY			BIRNET_LIKELY
+#define	ISLIKELY		BIRNET_ISLIKELY
+#define	UNLIKELY		BIRNET_UNLIKELY
 #endif /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- compile time assertions --- */
