@@ -20,10 +20,27 @@
 #define __BIRNET_CORE_H__
 
 #include <stdbool.h>
+#include <stddef.h>	/* NULL */
 #include <glib.h>
 #include <birnet/birnetconfig.h>
 
 BIRNET_EXTERN_C_BEGIN();
+
+/* --- standard macros --- */
+#define BIRNET_ABS(a)                       	((a) > -(a) ? (a) : -(a))
+#define BIRNET_MIN(a,b)                         ((a) <= (b) ? (a) : (b))
+#define BIRNET_MAX(a,b)                         ((a) >= (b) ? (a) : (b))
+#define BIRNET_CLAMP(v,mi,ma)                   ((v) < (mi) ? (mi) : ((v) > (ma) ? (ma) : (v)))
+#ifdef  _BIRNET_SOURCE_EXTENSIONS
+#undef ABS
+#define ABS                                     BIRNET_ABS
+#undef MIN
+#define MIN                                     BIRNET_MIN
+#undef MAX
+#define MAX                                     BIRNET_MAX
+#undef CLAMP
+#define CLAMP                                   BIRNET_CLAMP
+#endif  /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- reliable assert --- */
 #define BIRNET_RETURN_IF_FAIL(e)	do { if G_LIKELY (e) {} else { g_return_if_fail_warning (G_LOG_DOMAIN, __PRETTY_FUNCTION__, #e); return; } } while (0)
