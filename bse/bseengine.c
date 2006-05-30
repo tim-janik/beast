@@ -952,10 +952,11 @@ bse_trans_add (BseTrans *trans,
 /**
  * @param trans1	open transaction
  * @param trans2	open transaction
- * @param Returns	open transaction
+ * @param Returns	open transaction @a trans1
  *
  * Merge two open transactions by appending the jobs of @a trans2
  * to the jobs of @a trans1, returning the resulting transaction.
+ * The empty transaction @a trans2 will be dismissed after the merge.
  * This function is MT-safe and may be called from any thread.
  */
 BseTrans*

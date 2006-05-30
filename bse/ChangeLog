@@ -1,3 +1,7 @@
+Wed May 31 00:39:24 2006  Tim Janik  <timj@gtk.org>
+
+	* bseengine.c (bse_trans_merge): docu fixups.
+
 Sat May 27 00:22:44 2006  Tim Janik  <timj@gtk.org>
 
 	* gslfft.h: document that gsl_power2_fftsr() scales the output data
