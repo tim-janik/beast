@@ -1,3 +1,13 @@
+Tue May 30 11:57:03 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/bstcanvaslink.c:
+	* beast-gtk/bstcanvassource.c: Older libgnomecanvas versions had a
+	bug (they don't clear their item->canvas pointers properly), for which
+	a workaround was present. However, newer libgnomecanvas versions no
+	longer have this bug, which caused problems with the old workaround.
+	So this is an upgraded workaround which should work with both: older
+	and newer libgnomecanvas versions. For details see also #340437.
+
 Thu May 25 15:24:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Use locale independant g_ascii_formatd for

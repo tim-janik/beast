@@ -77,7 +77,9 @@ bst_canvas_link_new (GnomeCanvasGroup *group)
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_LINK,
 				NULL);
-  g_object_ref (item->canvas);  /* GnomeCanvasItem doesn't properly clear its pointers */
+
+  /* work around stale canvas pointers, see #340437 */
+  g_object_set_data_full (item, "bst-workaround-canvas-ref", g_object_ref (item->canvas), g_object_unref);
   bst_background_handler1_add (bst_canvas_link_build_async, g_object_ref (item), NULL);
   return item;
 }
@@ -327,9 +329,10 @@ bst_canvas_link_build_async (gpointer data)
                                         NULL);
       bst_canvas_link_update (clink);
     }
-  GnomeCanvas *canvas = item->canvas;
+  GnomeCanvas *canvas = g_object_steal_data (item, "bst-workaround-canvas-ref");
   g_object_unref (item);
-  g_object_unref (canvas);      /* canvases don't properly protect their items */
+  if (canvas)
+    g_object_unref (canvas);      /* canvases don't properly protect their items */
   return FALSE;
 }
 

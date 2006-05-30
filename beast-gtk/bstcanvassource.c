@@ -872,9 +872,10 @@ bst_canvas_source_build_async (gpointer data)
           return TRUE;
         }
     }
-  GnomeCanvas *canvas = item->canvas;
+  GnomeCanvas *canvas = g_object_steal_data (item, "bst-workaround-canvas-ref");
   g_object_unref (item);
-  g_object_unref (canvas);      /* canvases don't properly protect their items */
+  if (canvas)
+    g_object_unref (canvas);      /* canvases don't properly protect their items */
   return FALSE;
 }
 
@@ -908,8 +909,10 @@ bst_canvas_source_build (BstCanvasSource *csource)
   csource->built_ochannels = FALSE;
   csource->built_ihints = FALSE;
   csource->built_ohints = FALSE;
-  /* asyncronously rebuild contents */
-  g_object_ref (GNOME_CANVAS_ITEM (csource)->canvas);   /* GnomeCanvasItem doesn't properly clear its pointers */
+  /* asynchronously rebuild contents */
+  GnomeCanvasItem *csource_item = GNOME_CANVAS_ITEM (csource);
+  /* work around stale canvas pointers, see #340437 */
+  g_object_set_data_full (csource_item, "bst-workaround-canvas-ref", g_object_ref (csource_item->canvas), g_object_unref);
   bst_background_handler2_add (bst_canvas_source_build_async, g_object_ref (csource), NULL);
 }
 
