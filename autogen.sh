@@ -167,7 +167,13 @@ echo "no" | $GLIB_GETTEXTIZE --force || exit $?
 echo "Running: $INTLTOOLIZE"
 $INTLTOOLIZE --force --automake || exit $?
 echo "Patching intltool for SCM, LINGUAS and distfile-list:-rule"
-patch -p0 <po/intltool-scm.diff || exit $?
+if egrep '\WVERSION\W[[:space:]]*=[^0-9a-zA-Z]*\W0\.33\W' -q intltool-extract.in ; then
+	# detected intltool-extract.in VERSION=0.33
+	patch -p0 <po/intltool-scm.diff || exit $?
+else
+	# assuming intltool-extract.in >= 0.35.0
+	patch -p0 <po/intltool-scm-35.diff || exit $?
+fi
 
 echo "Running: $ACLOCAL $ACLOCAL_FLAGS"
 $ACLOCAL $ACLOCAL_FLAGS	|| exit $?
