@@ -72,17 +72,16 @@ class AutoLocker {
     RecMutex *rec_mutex;
   } mtx;
   const bool recursive;
-
   BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
 public:
-  explicit	AutoLocker    (Mutex& m)
-    : recursive (false)
+  explicit	AutoLocker    (Mutex& m) :
+    recursive (false)
   {
     mtx.mutex = &m;
     relock();
   }
-  explicit	AutoLocker    (RecMutex& m)
-    : recursive (true)
+  explicit	AutoLocker    (RecMutex& m) :
+    recursive (true)
   {
     mtx.rec_mutex = &m;
     relock();

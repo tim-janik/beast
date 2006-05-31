@@ -1,3 +1,8 @@
+Wed May 31 18:19:30 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/threads.cc (test_recursive_auto_lock): minor extensions to the
+	AutoLocker test case. fixed formatting.
+
 Wed May 31 15:48:35 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/threads.cc: Add some AutoLocker test code.

@@ -182,8 +182,8 @@ test_thread_cxx (void)
   TDONE ();
 }
 
-static bool
-lockable (Mutex& mutex)
+template<class M> static bool
+lockable (M &mutex)
 {
   bool lockable = mutex.trylock();
   if (lockable)
@@ -192,7 +192,8 @@ lockable (Mutex& mutex)
 }
 
 static void
-test_simple_auto_lock (Mutex& mutex1, Mutex& mutex2)
+test_simple_auto_lock (Mutex &mutex1,
+                       Mutex &mutex2)
 {
   TASSERT (lockable (mutex1) == true);
   TASSERT (lockable (mutex2) == true);
@@ -209,11 +210,26 @@ test_simple_auto_lock (Mutex& mutex1, Mutex& mutex2)
 }
 
 static void
-test_recursive_auto_lock (RecMutex& rec_mutex, guint depth)
+test_recursive_auto_lock (RecMutex &rec_mutex,
+                          guint     depth)
 {
   AutoLocker locker (rec_mutex);
-  if (depth > 0)
+  if (depth > 1)
     test_recursive_auto_lock (rec_mutex, depth - 1);
+  else
+    {
+      locker.relock();
+      locker.relock();
+      locker.relock();
+      bool lockable1 = rec_mutex.trylock();
+      bool lockable2 = rec_mutex.trylock();
+      TASSERT (lockable1 && lockable2);
+      rec_mutex.unlock();
+      rec_mutex.unlock();
+      locker.unlock();
+      locker.unlock();
+      locker.unlock();
+    }
 }
 
 static void
@@ -230,7 +246,7 @@ test_auto_locker_cxx()
   TASSERT (lockable (mutex1) == true);
   TASSERT (lockable (mutex2) == true);
 
-  test_recursive_auto_lock (rec_mutex, 3);
+  test_recursive_auto_lock (rec_mutex, 30);
 
   TDONE();
 }
