@@ -182,6 +182,59 @@ test_thread_cxx (void)
   TDONE ();
 }
 
+static bool
+lockable (Mutex& mutex)
+{
+  bool lockable = mutex.trylock();
+  if (lockable)
+    mutex.unlock();
+  return lockable;
+}
+
+static void
+test_simple_auto_lock (Mutex& mutex1, Mutex& mutex2)
+{
+  TASSERT (lockable (mutex1) == true);
+  TASSERT (lockable (mutex2) == true);
+
+  AutoLocker locker1 (mutex1);
+
+  TASSERT (lockable (mutex1) == false);
+  TASSERT (lockable (mutex2) == true);
+
+  AutoLocker locker2 (mutex2);
+
+  TASSERT (lockable (mutex1) == false);
+  TASSERT (lockable (mutex2) == false);
+}
+
+static void
+test_recursive_auto_lock (RecMutex& rec_mutex, guint depth)
+{
+  AutoLocker locker (rec_mutex);
+  if (depth > 0)
+    test_recursive_auto_lock (rec_mutex, depth - 1);
+}
+
+static void
+test_auto_locker_cxx()
+{
+  TSTART ("C++AutoLocker");
+  Mutex mutex1, mutex2;
+  RecMutex rec_mutex;
+
+  TASSERT (lockable (mutex1) == true);
+  TASSERT (lockable (mutex2) == true);
+  test_simple_auto_lock (mutex1, mutex2);
+  test_simple_auto_lock (mutex1, mutex2);
+  TASSERT (lockable (mutex1) == true);
+  TASSERT (lockable (mutex2) == true);
+
+  test_recursive_auto_lock (rec_mutex, 3);
+
+  TDONE();
+}
+
 static void
 test_thread_atomic_cxx (void)
 {
@@ -250,6 +303,7 @@ main (int   argc,
   test_atomic();
   test_thread_cxx();
   test_thread_atomic_cxx();
+  test_auto_locker_cxx();
   
   return 0;
 }

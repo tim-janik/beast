@@ -1,3 +1,13 @@
+Wed May 31 15:48:35 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/threads.cc: Add some AutoLocker test code.
+
+	* birnetthreadxx.hh: Provide Birnet::AutoLocker class which locks a
+	mutex on construction, and automatically unlocks it on destruction, so
+	that putting an AutoLocker object on the stack conveniently ensures
+	that the mutex will be properly unlocked for instance when the
+	function returns or an exception gets thrown.
+
 Fri May 26 17:38:00 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: define BIRNET_*LIKELY() macros.

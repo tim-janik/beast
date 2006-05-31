@@ -60,6 +60,38 @@ public:
   /*Des*/       ~Cond         ()                { birnet_thread_table.cond_destroy (&cond); }
 };
 
+/**
+ * The AutoLocker class locks a mutex on construction, and automatically
+ * unlocks it on destruction, so that putting an AutoLocker object on
+ * the stack conveniently ensures that the mutex will be properly unlocked
+ * for instance when the function returns or an exception gets thrown.
+ */
+class AutoLocker {
+  union {
+    Mutex    *mutex;
+    RecMutex *rec_mutex;
+  } mtx;
+  const bool recursive;
+
+  BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
+public:
+  explicit	AutoLocker    (Mutex& m)
+    : recursive (false)
+  {
+    mtx.mutex = &m;
+    relock();
+  }
+  explicit	AutoLocker    (RecMutex& m)
+    : recursive (true)
+  {
+    mtx.rec_mutex = &m;
+    relock();
+  }
+  void		relock	      () const		    { if (recursive) mtx.rec_mutex->lock(); else mtx.mutex->lock(); }
+  void		unlock	      () const		    { if (recursive) mtx.rec_mutex->unlock(); else mtx.mutex->unlock(); }
+  /*Des */	~AutoLocker   ()		    { unlock(); }
+};
+
 namespace Atomic {
 /* atomic integers */
 inline void     int_set      (volatile int *iptr, int value)    { birnet_atomic_int_set (iptr, value); }
