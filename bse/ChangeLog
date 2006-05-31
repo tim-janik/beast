@@ -1,3 +1,12 @@
+Wed May 31 03:04:03 2006  Tim Janik  <timj@gtk.org>
+
+	* bseproject.c bse_project_restore(): force dirty project flag 
+	after restoring/merging.
+
+	* gslfft.h: fixed documentation.
+
+	* tests/testfft.c: added resynthesis tests.
+
 Wed May 31 00:39:24 2006  Tim Janik  <timj@gtk.org>
 
 	* bseengine.c (bse_trans_merge): docu fixups.

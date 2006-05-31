@@ -597,6 +597,8 @@ bse_project_restore (BseProject *self,
       super_class->compat_finish (super, storage->major_version, storage->minor_version, storage->micro_version);
     }
 
+  bse_undo_stack_force_dirty (self->undo_stack);
+
   g_object_unref (self);
 
   return (scanner->parse_errors >= scanner->max_parse_errors ?

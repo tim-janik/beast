@@ -20,14 +20,14 @@
 #include <bse/bsemath.h>
 #include <bse/bsemain.h>
 #include <bse/gslfft.h>
-//#define TEST_VERBOSE
+// #define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
 
 
-#define	MAX_FFT_SIZE	(65536 * 2)
+#define	MAX_FFT_SIZE	(65536 * 2) //  * 8 * 8
 #define	EPSILON		(4.8e-6)
 
 
@@ -45,15 +45,6 @@ static double	diff			(guint   	    m,
 					 const gchar  	   *str);
 
 
-/* --- variables --- */
-static double ref_fft_in[MAX_FFT_SIZE] = { 0, };
-static double ref_fft_aout[MAX_FFT_SIZE] = { 0, };
-static double ref_fft_sout[MAX_FFT_SIZE] = { 0, };
-static double work_fft_in[MAX_FFT_SIZE] = { 0, };
-static double work_fft_aout[MAX_FFT_SIZE] = { 0, };
-static double work_fft_sout[MAX_FFT_SIZE] = { 0, };
-
-
 /* --- functions --- */
 int
 main (int   argc,
@@ -68,40 +59,68 @@ main (int   argc,
   /* initialize random numbers */
   gettimeofday (&tv, NULL);
   srand (tv.tv_sec ^ tv.tv_usec);
+  
+  double ref_fft_in[MAX_FFT_SIZE] = { 0, };
+  double ref_fft_aout[MAX_FFT_SIZE] = { 0, };
+  double ref_fft_sout[MAX_FFT_SIZE] = { 0, };
+  double ref_fft_back[MAX_FFT_SIZE] = { 0, };
+  double work_fft_in[MAX_FFT_SIZE] = { 0, };
+  double work_fft_aout[MAX_FFT_SIZE] = { 0, };
+  double work_fft_sout[MAX_FFT_SIZE] = { 0, };
+  double work_fft_back[MAX_FFT_SIZE] = { 0, };
 
   /* run tests */
   for (i = 2; i <= MAX_FFT_SIZE >> 1; i <<= 1)
     {
       double d;
-
+      
       TSTART ("Testing fft code for size %u", i);
 
       /* setup reference and work fft records */
       fill_rand (i << 1, ref_fft_in);
-      memset (ref_fft_aout, 0, MAX_FFT_SIZE * sizeof (ref_fft_aout[0]));
-      memset (ref_fft_sout, 0, MAX_FFT_SIZE * sizeof (ref_fft_sout[0]));
+      // memset (ref_fft_aout, 0, MAX_FFT_SIZE * sizeof (ref_fft_aout[0]));
+      // memset (ref_fft_sout, 0, MAX_FFT_SIZE * sizeof (ref_fft_sout[0]));
+      // memset (ref_fft_back, 0, MAX_FFT_SIZE * sizeof (ref_fft_sout[0]));
       memcpy (work_fft_in, ref_fft_in, MAX_FFT_SIZE * sizeof (work_fft_in[0]));
-      memset (work_fft_aout, 0, MAX_FFT_SIZE * sizeof (work_fft_aout[0]));
-      memset (work_fft_sout, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
+      // memset (work_fft_aout, 0, MAX_FFT_SIZE * sizeof (work_fft_aout[0]));
+      // memset (work_fft_sout, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
+      // memset (work_fft_back, 0, MAX_FFT_SIZE * sizeof (work_fft_sout[0]));
       reference_power2_fftc (i, ref_fft_in, ref_fft_aout, +1);
       reference_power2_fftc (i, ref_fft_in, ref_fft_sout, -1);
+      reference_power2_fftc (i, ref_fft_aout, ref_fft_back, -1);
 
       /* perform fft test */
       gsl_power2_fftac (i, work_fft_in, work_fft_aout);
       gsl_power2_fftsc (i, work_fft_in, work_fft_sout);
+      gsl_power2_fftsc (i, work_fft_aout, work_fft_back);
 
       /* check differences */
-      d = diff (MAX_FFT_SIZE, 0, ref_fft_in, work_fft_in, "Checking input record");
+      d = diff (i << 1, 0, ref_fft_in, work_fft_in, "Checking input record");
       if (d)
 	TERROR ("Reference record was modified");
       else
         TOK();
-      d = diff (MAX_FFT_SIZE, 0, ref_fft_aout, work_fft_aout, "Reference analysis against GSL analysis");
+      d = diff (i << 1, 0, ref_fft_aout, work_fft_aout, "Reference analysis against GSL analysis");
       if (fabs (d) > EPSILON)
 	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else
         TOK();
-      d = diff (MAX_FFT_SIZE, 0, ref_fft_sout, work_fft_sout, "Reference synthesis against GSL synthesis");
+      d = diff (i << 1, 0, ref_fft_sout, work_fft_sout, "Reference synthesis against GSL synthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      d = diff (i << 1, 0, ref_fft_in, ref_fft_back, "Reference analysis and re-synthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      d = diff (i << 1, 0, work_fft_in, work_fft_back, "GSL analysis and re-synthesis");
+      if (fabs (d) > EPSILON)
+	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
+      else
+        TOK();
+      d = diff (i << 1, 0, ref_fft_back, work_fft_back, "Reference re-synthesis vs. GSL");
       if (fabs (d) > EPSILON)
 	TERROR ("Error sum in analysis FFT exceeds epsilon: %g > %g", d, EPSILON);
       else

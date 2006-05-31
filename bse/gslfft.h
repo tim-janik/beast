@@ -60,6 +60,9 @@ void	gsl_power2_fftac (const unsigned int n_values,
  * array which is transformed into the frequency domain with
  * gsl_power2_fftac() can be reconstructed by issuing gsl_power2_fftsc()
  * on the transform.
+ * This function also scales the time domain coefficients by a
+ * factor of 1.0/n_values which is required for perfect reconstruction
+ * of time domain data formerly transoformed via gsl_power2_fftac().
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
@@ -69,7 +72,7 @@ void	gsl_power2_fftsc (const unsigned int n_values,
 
 /**
  * gsl_power2_fftar
- * @n_values:      Number of complex values
+ * @n_values:      Number of real sample values
  * @r_values_in:   Real sample values [0..n_values-1]
  * @ri_values_out: Complex frequency values [0..n_values-1]
  * Real valued variant of gsl_power2_fftac(), the input array contains
@@ -79,12 +82,12 @@ void	gsl_power2_fftsc (const unsigned int n_values,
  * of a purely real valued set of data, satisfies H(-f) = Conj(H(f)),
  * where Conj() denotes the complex conjugate, so that just the positive
  * frequency half suffices to describe the entire frequency spectrum.
- * Even so, the resulting n_values/2 complex frequencies are one value
+ * However, the resulting n_values/2+1 complex frequencies are one value
  * off in storage size, but the resulting frequencies H(0) and
  * H(n_values/2) are both real valued, so the real portion of
  * H(n_values/2) is stored in ri_values_out[1] (the imaginery part of
- * H(0)), so that both r_values_in and ri_values_out can be of size
- * n_values.
+ * H(0)), so that both arrays r_values_in and ri_values_out can be of
+ * size n_values.
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
@@ -94,7 +97,7 @@ void	gsl_power2_fftar (const unsigned int n_values,
 
 /**
  * gsl_power2_fftsr
- * @n_values:     Number of complex values
+ * @n_values:     Number of real sample values
  * @ri_values_in: Complex frequency values [0..n_values-1]
  * @r_values_out: Real sample values [0..n_values-1]
  * Real valued variant of gsl_power2_fftsc(), counterpart to
@@ -103,7 +106,7 @@ void	gsl_power2_fftar (const unsigned int n_values,
  * with gsl_power2_fftar() can be reconstructed using this function.
  * This function also scales the time domain coefficients by a
  * factor of 1.0/n_values which is required for perfect reconstruction
- * of time domain data formerly transoformed via gsl_power2_fftar().
+ * of time domain data formerly transformed via gsl_power2_fftar().
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
