@@ -1,3 +1,8 @@
+Wed May 31 03:02:36 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbseutils.[hc]: added preserve_non_dirty flag to
+	bst_project_restore_from_file(), adapted callers.
+
 Wed May 31 00:39:52 2006  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: support patching of intltool-extract.in versions >= 0.35.

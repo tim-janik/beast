@@ -312,7 +312,7 @@ main (int   argc,
       if (!app || !merge_with_last)
         {
           SfiProxy project = bse_server_use_new_project (BSE_SERVER, argv[i]);
-          BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE);
+          BseErrorType error = bst_project_restore_from_file (project, argv[i], TRUE, TRUE);
           if (!error || error == BSE_ERROR_FILE_NOT_FOUND)
             {
               error = 0;
@@ -326,7 +326,7 @@ main (int   argc,
         }
       else
         {
-          BseErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE);
+          BseErrorType error = bst_project_restore_from_file (app->project, argv[i], TRUE, FALSE);
           if (error)
             sfi_error (_("Failed to merge project \"%s\": %s"), argv[i], bse_error_blurb (error));
         }

@@ -22,8 +22,10 @@
 BseErrorType
 bst_project_restore_from_file (SfiProxy        project,
                                const gchar    *file_name,
-                               gboolean        apply_project_file_name)
+                               bool            apply_project_file_name,
+                               bool            preserve_non_dirty)
 {
+  bool was_dirty = bse_project_is_dirty (project);
   BseErrorType error = bse_project_restore_from_file (project, file_name);
   /* regardless of how good the restoration worked, try to
    * keep the resulting project in a GUI usable state.
@@ -45,6 +47,8 @@ bst_project_restore_from_file (SfiProxy        project,
       bse_project_change_name (project, bname);
       g_free (bname);
     }
+  if (preserve_non_dirty && !was_dirty)
+    bse_project_clean_dirty (project);
   return error;
 }
 

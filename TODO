@@ -1,4 +1,8 @@
 RELEASE(0.7.0):
+- fix release-notes.html linking to release-news.html which should be news-file.html
+- shell/Makefile.am:check: test that bsesh-$VERSION is installed
+- toggle sensitivity of oscillator:Pusle properties when non-pulse wave form is selected
+- add normalize to bsewavetool
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
 - invoke ../bse/bseautodoc the same way the BSE shell is invoked (no rcfile etc)
 - move sfi_alloc_upper_power2 to birnet
