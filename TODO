@@ -23,6 +23,8 @@ INCOMPAT:
 - delete BseAtanDistort
 - nuke compat code
 MISC:
+- fix bsepcmdevice-alsa.c:alsa_device_retrigger():g_malloc0(): to instead use bse_engine_const_zeros()
+- make BSE_REGISTER_OBJECT() define parent_class, similar to G_DEFINE_TYPE
 - align engine blck adresses and engine block sizes on 16byte boundaries upon allocation
 - BseSimpleADSR + ([_] fixed sustain time, sustain time [%] [XXXXXXXXX])
 - store piano roll settings (hzoom,vzoom,quantization,note-length) in .bse files
