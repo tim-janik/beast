@@ -49,7 +49,8 @@ static inline void birnet_test_intro (const char *postfix,
 #define TICK()          TOK()						/* subtest OK */
 #define TACK()          do { g_printerr ("ACK.\n"); } while (0)		/* alternate OK */
 #define	TPRINT(...)	g_printerr (__VA_ARGS__)			/* misc messages */
-#define	TASSERT(code)	TASSERT_impl ("FAIL.\n", code)			/* test assertion */
+#define	TASSERT(code)	TASSERT_impl ("FAIL.\n", code, 1)		/* test assertion */
+#define	TCHECK(code)	TASSERT_impl ("FAIL.\n", code, 0)		/* test assertion (silent) */
 #define	TERROR(...)	TERROR_impl ("FAIL.\n", __VA_ARGS__)		/* test error, abort */
 #define TDONE()         do { g_printerr ("DONE.\n"); } while (0)	/* test outro */
 #else
@@ -58,14 +59,15 @@ static inline void birnet_test_intro (const char *postfix,
 #define TICK()          TOK()						/* subtest OK */
 #define TACK()          do { g_printerr ("+"); } while (0)		/* alternate OK */
 #define	TPRINT(...)	do { g_printerr ("*"); } while (0)		/* skip messages */
-#define	TASSERT(code)	TASSERT_impl ("X", code)			/* test assertion */
+#define	TASSERT(code)	TASSERT_impl ("X", code, 1)			/* test assertion */
+#define	TCHECK(code)	TASSERT_impl ("X", code, 0)			/* test assertion (silent) */
 #define	TERROR(...)	TERROR_impl ("X", __VA_ARGS__)			/* test error, abort */
 #define TDONE()         do { g_printerr ("]\n"); } while (0)		/* test outro */
 #endif
 
 /* --- macro details --- */
-#define TASSERT_impl(mark, code)	do {		\
-  if (code) TOK (); else {				\
+#define TASSERT_impl(mark, code, show)	do {		\
+  if (code) { if (show) TOK (); } else {		\
   g_printerr ("%s", mark);				\
   g_error ("%s:%u:%s(): assertion failed: %s",		\
            __FILE__, __LINE__, __PRETTY_FUNCTION__,	\

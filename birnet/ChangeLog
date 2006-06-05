@@ -1,3 +1,13 @@
+Mon Jun  5 13:55:59 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h: added TCHECK() which can be used like TASSERT() but
+	doesn't print a mark. (silent assertion, usefull for *many* tests).
+
+	* birnetutilsxx.hh: moved templates binary_lookup_insertion_pos(),
+	binary_lookup_sibling() and binary_lookup() from bsecxxutils.hh here.
+
+	* tests/sorting.cc: new test which tests various binary lookups.
+
 Wed May 31 18:19:30 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/threads.cc (test_recursive_auto_lock): minor extensions to the

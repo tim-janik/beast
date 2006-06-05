@@ -204,6 +204,76 @@ template<class Obj> static void unref    (Obj *obj) { obj->unref(); }
 template<class Obj> static void sink     (Obj &obj) { obj.ref_sink(); obj.unref(); }
 template<class Obj> static void sink     (Obj *obj) { obj->ref_sink(); obj->unref(); }
 
+/* --- Binary Lookups --- */
+template<typename RandIter, class Cmp, typename Arg, int case_lookup_or_sibling_or_insertion>
+static inline std::pair<RandIter,bool>
+binary_lookup_fuzzy (RandIter  begin,
+                     RandIter  end,
+                     Cmp       cmp_elements,
+                     const Arg &arg)
+{
+  RandIter current = end;
+  ssize_t cmp = 0, n_elements = end - begin, offs = 0;
+  const bool want_lookup = case_lookup_or_sibling_or_insertion == 0;
+  //const bool want_sibling = case_lookup_or_sibling_or_insertion == 1;
+  const bool want_insertion_pos = case_lookup_or_sibling_or_insertion > 1;
+  while (offs < n_elements)
+    {
+      size_t i = (offs + n_elements) >> 1;
+      current = begin + i;
+      cmp = cmp_elements (arg, *current);
+      if (cmp == 0)
+        return want_insertion_pos ? std::make_pair (current, true) : std::make_pair (current, /*ignored*/false);
+      else if (cmp < 0)
+        n_elements = i;
+      else /* (cmp > 0) */
+        offs = i + 1;
+    }
+  /* check is last mismatch, cmp > 0 indicates greater key */
+  return (want_lookup
+          ? make_pair (end, /*ignored*/false)
+          : (want_insertion_pos && cmp > 0)
+          ? make_pair (current + 1, false)
+          : make_pair (current, false));
+}
+template<typename RandIter, class Cmp, typename Arg>
+static inline std::pair<RandIter,bool>
+binary_lookup_insertion_pos (RandIter  begin,
+                             RandIter  end,
+                             Cmp       cmp_elements,
+                             const Arg &arg)
+{
+  /* return (end,false) for end-begin==0, or return (position,true) for exact match,
+   * otherwise return (position,false) where position indicates the location for
+   * the key to be inserted (and may equal end).
+   */
+  return binary_lookup_fuzzy<RandIter,Cmp,Arg,2> (begin, end, cmp_elements, arg);
+}
+template<typename RandIter, class Cmp, typename Arg>
+static inline RandIter
+binary_lookup_sibling (RandIter  begin,
+                       RandIter  end,
+                       Cmp       cmp_elements,
+                       const Arg &arg)
+{
+  /* return end for end-begin==0, otherwise return the exact match element, or,
+   * if there's no such element, return the element last visited, which is pretty
+   * close to an exact match (will be one off into either direction).
+   */
+  return binary_lookup_fuzzy<RandIter,Cmp,Arg,1> (begin, end, cmp_elements, arg).first;
+}
+template<typename RandIter, class Cmp, typename Arg>
+static inline RandIter
+binary_lookup (RandIter  begin,
+               RandIter  end,
+               Cmp       cmp_elements,
+               const Arg &arg)
+{
+  /* return end or exact match */
+  return binary_lookup_fuzzy<RandIter,Cmp,Arg,0> (begin, end, cmp_elements, arg).first;
+}
+
+
 } // Birnet
 #endif /* __BIRNET_UTILS_XX_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */
