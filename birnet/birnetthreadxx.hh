@@ -116,7 +116,9 @@ inline int      int_swap_add (volatile int *iptr, int diff)     { return birnet_
 template<class V>
 inline void     ptr_set      (volatile V **ptr_addr, V *n)      { birnet_atomic_set (void*, (void**) ptr_addr, (void*) n); }
 template<class V>
-inline V*       ptr_get      (volatile V **ptr_addr)            { return birnet_atomic_get (void*, (void**) ptr_addr); }
+inline V*       ptr_get      (volatile V **ptr_addr)            { return (V*) birnet_atomic_get (void*, (void**) ptr_addr); }
+template<class V>
+inline V*       ptr_get      (volatile V *const *ptr_addr)      { return (V*) birnet_atomic_get (void*, (void**) ptr_addr); }
 template<class V>
 inline bool     ptr_cas      (volatile V **ptr_adr, V *o, V *n) { return birnet_atomic_compare_and_swap (void*, (void**) ptr_adr, (void*) o, (void*) n); }
 };

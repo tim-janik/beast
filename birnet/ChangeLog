@@ -1,3 +1,8 @@
+Mon Jun  5 18:04:19 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh: added support for atomic const pointer access.
+	fixed missing return value cast in Atomic::ptr_get().
+
 Mon Jun  5 17:51:42 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh: fixed up AutoLocker member names. 
