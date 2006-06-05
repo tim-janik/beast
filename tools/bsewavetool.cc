@@ -261,7 +261,7 @@ static bool
 parse_str_option (char        **argv,
                   guint        &i,
                   const gchar  *arg,
-                  const gchar *&str,
+                  const gchar **strp,
                   guint         argc)
 {
   guint length = strlen (arg);
@@ -269,16 +269,16 @@ parse_str_option (char        **argv,
     {
       const gchar *equal = argv[i] + length;
       if (*equal == '=')              /* -x=Arg */
-        str = equal + 1;
+        *strp = equal + 1;
       else if (*equal)                /* -xArg */
-        str = equal;
+        *strp = equal;
       else if (i + 1 < argc)          /* -x Arg */
         {
           argv[i++] = NULL;
-          str = argv[i];
+          *strp = argv[i];
         }
       argv[i] = NULL;
-      if (str)
+      if (*strp)
         return true;
     }
   return false;
@@ -316,7 +316,7 @@ wavetool_parse_args (int    *argc_p,
   
   for (i = 1; i < argc; i++)
     {
-      const gchar *str;
+      const gchar *str = NULL;
       if (strcmp (argv[i], "--") == 0)
         {
           argv[i] = NULL;
@@ -328,9 +328,9 @@ wavetool_parse_args (int    *argc_p,
           g_print ("\n");
           exit (0);
         }
-      else if (parse_str_option (argv, i, "--debug", str, argc))
+      else if (parse_str_option (argv, i, "--debug", &str, argc))
         birnet_msg_allow (str);
-      else if (parse_str_option (argv, i, "--no-debug", str, argc))
+      else if (parse_str_option (argv, i, "--no-debug", &str, argc))
         birnet_msg_deny (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
@@ -348,7 +348,7 @@ wavetool_parse_args (int    *argc_p,
         continue_on_error = true;
       else if (parse_bool_option (argv, i, "-q"))
         quiet_infos = true;
-      else if (parse_str_option (argv, i, "-o", str, argc))
+      else if (parse_str_option (argv, i, "-o", &str, argc))
         output_file = str;
       else /* command & file names */
         {
@@ -433,8 +433,8 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
-        if (parse_str_option (argv, i, "-N", str, argc))
+        const gchar *str = NULL;
+        if (parse_str_option (argv, i, "-N", &str, argc))
           wave_name = str;
         else if (parse_bool_option (argv, i, "-f"))
           force_creation = true;
@@ -506,8 +506,8 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
-        if (parse_str_option (argv, i, "-Q", str, argc))
+        const gchar *str = NULL;
+        if (parse_str_option (argv, i, "-Q", &str, argc))
           quality = g_ascii_strtod (str, NULL);
       }
     return 0; // no missing args
@@ -732,42 +732,42 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
-        if (parse_str_option (argv, i, "--auto-extract-midi-note", str, argc))
+        const gchar *str = NULL;
+        if (parse_str_option (argv, i, "--auto-extract-midi-note", &str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.auto_extract_type = 1;
             ochunk.auto_extract_str = str;
           }
-        else if (parse_str_option (argv, i, "--auto-extract-osc-freq", str, argc))
+        else if (parse_str_option (argv, i, "--auto-extract-osc-freq", &str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.auto_extract_type = 2;
             ochunk.auto_extract_str = str;
           }
-        else if (parse_str_option (argv, i, "-m", str, argc))
+        else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.osc_freq = 0;
             ochunk.midi_note = str;
           }
-        else if (parse_str_option (argv, i, "-f", str, argc))
+        else if (parse_str_option (argv, i, "-f", &str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.osc_freq = g_ascii_strtod (str, NULL);
             ochunk.midi_note = NULL;
           }
-        else if (load_raw && parse_str_option (argv, i, "-R", str, argc))
+        else if (load_raw && parse_str_option (argv, i, "-R", &str, argc))
           {
             OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.load_mix_freq = g_ascii_strtoull (str, NULL, 10);
           }
-        else if (load_raw && parse_str_option (argv, i, "-F", str, argc))
+        else if (load_raw && parse_str_option (argv, i, "-F", &str, argc))
           {
             OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.load_format = gsl_wave_format_from_string (str);
           }
-        else if (load_raw && parse_str_option (argv, i, "-B", str, argc))
+        else if (load_raw && parse_str_option (argv, i, "-B", &str, argc))
           {
             OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.load_byte_order = gsl_byte_order_from_string (str);
@@ -1139,35 +1139,35 @@ public:
     bool seen_selection = false;
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
+        const gchar *str = NULL;
         if (parse_bool_option (argv, i, "--all-chunks"))
           {
             all_chunks = true;
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-f", str, argc))
+        else if (parse_str_option (argv, i, "-f", &str, argc))
           {
             freq_list.push_back (g_ascii_strtod (str, NULL));
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-m", str, argc))
+        else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
             gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
             freq_list.push_back (osc_freq);
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-s", str, argc))
+        else if (parse_str_option (argv, i, "-s", &str, argc))
           threshold = g_ascii_strtod (str, NULL);
-        else if (parse_str_option (argv, i, "-h", str, argc))
+        else if (parse_str_option (argv, i, "-h", &str, argc))
           head_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_str_option (argv, i, "-t", str, argc))
+        else if (parse_str_option (argv, i, "-t", &str, argc))
           tail_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_str_option (argv, i, "-f", str, argc))
+        else if (parse_str_option (argv, i, "-f", &str, argc))
           fade_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_str_option (argv, i, "-p", str, argc))
+        else if (parse_str_option (argv, i, "-p", &str, argc))
           pad_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_str_option (argv, i, "-r", str, argc))
+        else if (parse_str_option (argv, i, "-r", &str, argc))
           tail_silence = g_ascii_strtoull (str, NULL, 10);
       }
     return !seen_selection ? 1 : 0; /* # args missing */
@@ -1269,18 +1269,18 @@ public:
     bool seen_selection = false;
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
+        const gchar *str = NULL;
         if (parse_bool_option (argv, i, "--all-chunks"))
           {
             all_chunks = true;
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-f", str, argc))
+        else if (parse_str_option (argv, i, "-f", &str, argc))
           {
             freq_list.push_back (g_ascii_strtod (str, NULL));
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-m", str, argc))
+        else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
             gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
@@ -1403,16 +1403,16 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
-        if (parse_str_option (argv, i, "-s", str, argc))
+        const gchar *str = NULL;
+        if (parse_str_option (argv, i, "-s", &str, argc))
           {
             max_total_size = g_ascii_strtoull (str, NULL, 10);
           }
-	else if (parse_str_option (argv, i, "-g", str, argc))
+	else if (parse_str_option (argv, i, "-g", &str, argc))
           {
 	    gal_iterations = g_ascii_strtoull (str, NULL, 10);
           }
-        else if (parse_str_option (argv, i, "-e", str, argc))
+        else if (parse_str_option (argv, i, "-e", &str, argc))
           {
             max_chunk_error = g_ascii_strtod (str, NULL);
           }
@@ -1740,16 +1740,16 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-	const gchar *str;
-	if (parse_str_option (argv, i, "--freq1-level", str, argc))
+	const gchar *str = NULL;
+	if (parse_str_option (argv, i, "--freq1-level", &str, argc))
 	  {
 	    freq1_level = g_ascii_strtod (str, NULL);
 	  }
-	else if (parse_str_option (argv, i, "--freq1", str, argc))
+	else if (parse_str_option (argv, i, "--freq1", &str, argc))
 	  {
 	    freq1 = g_ascii_strtod (str, NULL);
 	  }
-	else if (parse_str_option (argv, i, "--freq2", str, argc))
+	else if (parse_str_option (argv, i, "--freq2", &str, argc))
 	  {
 	    freq2 = g_ascii_strtod (str, NULL);
 	  }
@@ -1818,25 +1818,25 @@ public:
 
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str;
+        const gchar *str = NULL;
         if (parse_bool_option (argv, i, "--all-chunks"))
           {
             all_chunks = true;
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-f", str, argc))
+        else if (parse_str_option (argv, i, "-f", &str, argc))
           {
             freq_list.push_back (g_ascii_strtod (str, NULL));
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-m", str, argc))
+        else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
             gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
             freq_list.push_back (osc_freq);
             seen_selection = true;
           }
-        else if (parse_str_option (argv, i, "-x", str, argc))
+        else if (parse_str_option (argv, i, "-x", &str, argc))
 	  {
 	    export_filename = str;
 	    seen_export_filename = true;
