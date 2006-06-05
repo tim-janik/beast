@@ -203,7 +203,7 @@ test_simple_auto_lock (Mutex &mutex1,
   TASSERT (lockable (mutex1) == false);
   TASSERT (lockable (mutex2) == true);
 
-  AutoLocker locker2 (mutex2);
+  AutoLocker locker2 (&mutex2);
 
   TASSERT (lockable (mutex1) == false);
   TASSERT (lockable (mutex2) == false);
@@ -247,6 +247,8 @@ test_auto_locker_cxx()
   TASSERT (lockable (mutex2) == true);
 
   test_recursive_auto_lock (rec_mutex, 30);
+  AutoLocker locker (&rec_mutex);
+  test_recursive_auto_lock (rec_mutex, 17);
 
   TDONE();
 }

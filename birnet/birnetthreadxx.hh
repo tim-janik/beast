@@ -68,27 +68,41 @@ public:
  */
 class AutoLocker {
   union {
-    Mutex    *mutex;
-    RecMutex *rec_mutex;
-  } mtx;
-  const bool recursive;
+    Mutex    *m_mutex;
+    RecMutex *m_rec_mutex;
+  };
+  const bool m_recursive;
   BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
 public:
-  explicit	AutoLocker    (Mutex& m) :
-    recursive (false)
+  AutoLocker (Mutex &mutex) :
+    m_recursive (false)
   {
-    mtx.mutex = &m;
+    m_mutex = &mutex;
     relock();
   }
-  explicit	AutoLocker    (RecMutex& m) :
-    recursive (true)
+  AutoLocker (Mutex *mutex) :
+    m_recursive (false)
   {
-    mtx.rec_mutex = &m;
+    BIRNET_ASSERT (mutex != NULL);
+    m_mutex = mutex;
     relock();
   }
-  void		relock	      () const		    { if (recursive) mtx.rec_mutex->lock(); else mtx.mutex->lock(); }
-  void		unlock	      () const		    { if (recursive) mtx.rec_mutex->unlock(); else mtx.mutex->unlock(); }
-  /*Des */	~AutoLocker   ()		    { unlock(); }
+  AutoLocker (RecMutex &mutex) :
+    m_recursive (true)
+  {
+    m_rec_mutex = &mutex;
+    relock();
+  }
+  AutoLocker (RecMutex *rec_mutex) :
+    m_recursive (true)
+  {
+    BIRNET_ASSERT (rec_mutex != NULL);
+    m_rec_mutex = rec_mutex;
+    relock();
+  }
+  void		relock	      () const		    { if (m_recursive) m_rec_mutex->lock(); else m_mutex->lock(); }
+  void		unlock	      () const		    { if (m_recursive) m_rec_mutex->unlock(); else m_mutex->unlock(); }
+  /*Des*/	~AutoLocker   ()		    { unlock(); }
 };
 
 namespace Atomic {

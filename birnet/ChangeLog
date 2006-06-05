@@ -1,3 +1,11 @@
+Mon Jun  5 17:51:42 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh: fixed up AutoLocker member names. 
+	added support for initialization from mutex pointers.
+
+	* tests/threads.cc: extended AutoLocker test to check constructors
+	from mutex pointers.
+
 Mon Jun  5 14:09:45 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutilsxx.hh (binary_lookup_fuzzy): use unsigned types for offs
