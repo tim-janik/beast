@@ -30,6 +30,7 @@
 
 namespace {
 using namespace Bse;
+using namespace Birnet;
 using namespace std;
 
 static BIRNET_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", BIRNET_MSG_DEBUG, NULL);

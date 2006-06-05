@@ -1,3 +1,8 @@
+Mon Jun  5 13:59:52 2006  Tim Janik  <timj@gtk.org>
+
+	* bsecxxutils.hh: removed binary lookup templates which are 
+	in Birnet now.
+
 Wed May 31 03:04:03 2006  Tim Janik  <timj@gtk.org>
 
 	* bseproject.c bse_project_restore(): force dirty project flag 
