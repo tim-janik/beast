@@ -1,3 +1,8 @@
+Mon Jun  5 14:09:45 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutilsxx.hh (binary_lookup_fuzzy): use unsigned types for offs
+	and n_elements to extend the range of binary lookups from 2^31 to 2^32.
+
 Mon Jun  5 13:55:59 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h: added TCHECK() which can be used like TASSERT() but

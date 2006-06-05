@@ -213,17 +213,18 @@ binary_lookup_fuzzy (RandIter  begin,
                      const Arg &arg)
 {
   RandIter current = end;
-  ssize_t cmp = 0, n_elements = end - begin, offs = 0;
+  size_t n_elements = end - begin, offs = 0;
   const bool want_lookup = case_lookup_or_sibling_or_insertion == 0;
-  //const bool want_sibling = case_lookup_or_sibling_or_insertion == 1;
+  // const bool want_sibling = case_lookup_or_sibling_or_insertion == 1;
   const bool want_insertion_pos = case_lookup_or_sibling_or_insertion > 1;
+  ssize_t cmp = 0;
   while (offs < n_elements)
     {
       size_t i = (offs + n_elements) >> 1;
       current = begin + i;
       cmp = cmp_elements (arg, *current);
       if (cmp == 0)
-        return want_insertion_pos ? std::make_pair (current, true) : std::make_pair (current, /*ignored*/false);
+        return want_insertion_pos ? std::make_pair (current, true) : std::make_pair (current, /*ignored*/ false);
       else if (cmp < 0)
         n_elements = i;
       else /* (cmp > 0) */
@@ -231,7 +232,7 @@ binary_lookup_fuzzy (RandIter  begin,
     }
   /* check is last mismatch, cmp > 0 indicates greater key */
   return (want_lookup
-          ? make_pair (end, /*ignored*/false)
+          ? make_pair (end, /*ignored*/ false)
           : (want_insertion_pos && cmp > 0)
           ? make_pair (current + 1, false)
           : make_pair (current, false));
