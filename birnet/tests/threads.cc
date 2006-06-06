@@ -232,6 +232,83 @@ test_recursive_auto_lock (RecMutex &rec_mutex,
     }
 }
 
+// helper class for testing auto locking, which counts the lock() and unlock() calls
+class LockCounter {
+  guint m_lock_count;
+public:
+  LockCounter() :
+    m_lock_count (0)
+  {
+  }
+  void
+  lock()
+  {
+    m_lock_count++;
+  }
+  void
+  unlock()
+  {
+    TASSERT (m_lock_count > 0);
+    m_lock_count--;
+  }
+  guint
+  lock_count() const
+  {
+    return m_lock_count;
+  }
+};
+
+class LockCountAssert {
+  const LockCounter &m_lock_counter;
+  const guint        m_required_lock_count;
+public:
+  LockCountAssert (const LockCounter& lock_counter,
+		   guint              required_lock_count) :
+    m_lock_counter (lock_counter),
+    m_required_lock_count (required_lock_count)
+  {
+    TASSERT (m_lock_counter.lock_count() == m_required_lock_count);
+  }
+  ~LockCountAssert()
+  {
+    TASSERT (m_lock_counter.lock_count() == m_required_lock_count);
+  }
+};
+
+/* Check that C++ constructors and destructors and the AutoLocker constructor
+ * and destructor will be executed in the order we need, that is: an AutoLocker
+ * that is created before an object should protect its constructor and
+ * destructor, an AutoLocker created after an object should not affect its
+ * constructor and destructor.
+ */
+static void
+test_auto_locker_order()
+{
+  LockCounter lock_counter1;
+  LockCounter lock_counter2;
+
+  for (guint i = 0; i < 3; i++)
+    {
+      LockCountAssert lc_assert1 (lock_counter1, 0);
+      LockCountAssert lc_assert2 (lock_counter2, 0);
+
+      AutoLocker      auto_locker1 (lock_counter1);
+
+      LockCountAssert lc_assert3 (lock_counter1, 1);
+      LockCountAssert lc_assert4 (lock_counter2, 0);
+
+      AutoLocker      auto_locker2 (lock_counter2);
+
+      LockCountAssert lc_assert5 (lock_counter1, 1);
+      LockCountAssert lc_assert6 (lock_counter2, 1);
+
+      AutoLocker      auto_locker3 (lock_counter1);
+
+      LockCountAssert lc_assert7 (lock_counter1, 2);
+      LockCountAssert lc_assert8 (lock_counter2, 1);
+    }
+}
+
 static void
 test_auto_locker_cxx()
 {
@@ -267,6 +344,7 @@ test_auto_locker_cxx()
   AutoLocker locker (&rec_mutex);
   test_recursive_auto_lock (rec_mutex, 17);
 
+  test_auto_locker_order();
   TDONE();
 }
 

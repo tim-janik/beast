@@ -1,3 +1,11 @@
+Tue Jun  6 16:53:40 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/threads.cc: Check that C++ constructors and destructors and
+	the AutoLocker constructor and destructor will be executed in the
+	order we need, that is: an AutoLocker that is created before an object
+	should protect its constructor and destructor, an AutoLocker created
+	after an object should not affect its constructor and destructor.
+
 Tue Jun  6 16:47:23 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh: got rid of the extra locker pointer by using a
