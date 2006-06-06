@@ -61,48 +61,35 @@ public:
 };
 
 /**
- * The AutoLocker class locks a mutex on construction, and automatically
- * unlocks it on destruction, so that putting an AutoLocker object on
- * the stack conveniently ensures that the mutex will be properly unlocked
- * for instance when the function returns or an exception gets thrown.
+ * The AutoLocker class locks mutex like objects on construction, and automatically
+ * unlocks on destruction. So putting an AutoLocker object on the stack conveniently
+ * ensures that a mutex will be automatcially locked and properly unlocked when
+ * the function returns or thros an exception.
+ * Objects intended to be used by an AutoLocker need to provide the public methods
+ * lock() and unlock().
  */
 class AutoLocker {
-  union {
-    Mutex    *m_mutex;
-    RecMutex *m_rec_mutex;
+  struct Locker {
+    virtual void lock   () = 0;
+    virtual void unlock () = 0;
   };
-  const bool m_recursive;
+  template<class Lockable>
+  struct LockerImpl : public Locker {
+    Lockable    *lockable;
+    virtual void lock       ()            { lockable->lock(); }
+    virtual void unlock     ()            { lockable->unlock(); }
+    explicit     LockerImpl (Lockable *l) : lockable (l) {}
+  };
+  void  *space[2];
+  Locker *locker;
   BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
 public:
-  AutoLocker (Mutex &mutex) :
-    m_recursive (false)
-  {
-    m_mutex = &mutex;
-    relock();
-  }
-  AutoLocker (Mutex *mutex) :
-    m_recursive (false)
-  {
-    BIRNET_ASSERT (mutex != NULL);
-    m_mutex = mutex;
-    relock();
-  }
-  AutoLocker (RecMutex &mutex) :
-    m_recursive (true)
-  {
-    m_rec_mutex = &mutex;
-    relock();
-  }
-  AutoLocker (RecMutex *rec_mutex) :
-    m_recursive (true)
-  {
-    BIRNET_ASSERT (rec_mutex != NULL);
-    m_rec_mutex = rec_mutex;
-    relock();
-  }
-  void		relock	      () const		    { if (m_recursive) m_rec_mutex->lock(); else m_mutex->lock(); }
-  void		unlock	      () const		    { if (m_recursive) m_rec_mutex->unlock(); else m_mutex->unlock(); }
-  /*Des*/	~AutoLocker   ()		    { unlock(); }
+  template<class Lockable>      AutoLocker  (Lockable *lockable) { locker = new (space) LockerImpl<Lockable> (lockable); relock(); }
+  template<class Lockable>      AutoLocker  (Lockable &lockable) { locker = new (space) LockerImpl<Lockable> (&lockable); relock(); }
+  template<class Lockable> void assert_impl (Lockable &lockable) { BIRNET_ASSERT (sizeof (LockerImpl<Lockable>) <= sizeof (space)); }
+  void                          relock      ()                   { locker->lock(); }
+  void                          unlock      ()                   { locker->unlock(); }
+  /*Des*/                       ~AutoLocker ()                   { unlock(); }
 };
 
 namespace Atomic {

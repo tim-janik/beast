@@ -236,6 +236,13 @@ static void
 test_auto_locker_cxx()
 {
   TSTART ("C++AutoLocker");
+  if (true)
+    {
+      Mutex dummy;
+      AutoLocker locker (dummy);
+      locker.assert_impl (dummy);
+      TICK();
+    }
   Mutex mutex1, mutex2;
   RecMutex rec_mutex;
 
@@ -251,6 +258,161 @@ test_auto_locker_cxx()
   test_recursive_auto_lock (rec_mutex, 17);
 
   TDONE();
+}
+
+#define RUNS (100000)
+
+class HeapLocker {
+  struct Lockable {
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
+  };
+  template<class L>
+  struct Wrapper : public virtual Lockable {
+    L &l;
+    explicit     Wrapper  (L &o) : l (o) {}
+    virtual void lock     () { l.lock(); }
+    virtual void unlock   () { l.unlock(); }
+  };
+  Lockable &l;
+public:
+  template<class C>
+  HeapLocker (C &c) :
+    l (*new Wrapper<C> (c))
+  {
+    lock();
+  }
+  ~HeapLocker()
+  {
+    unlock();
+    delete &l;
+  }
+  void lock     () { l.lock(); }
+  void unlock   () { l.unlock(); }
+};
+
+static void
+bench_heap_auto_locker()
+{
+  Mutex mutex;
+  RecMutex rmutex;
+  for (uint i = 0; i < RUNS; i++)
+    {
+      HeapLocker locker1 (mutex);
+      HeapLocker locker2 (rmutex);
+    }
+}
+
+static void
+bench_direct_auto_locker()
+{
+  class AutoLocker2 {
+    union {
+      Mutex    *m_mutex;
+      RecMutex *m_rec_mutex;
+    };
+    const bool m_recursive;
+    BIRNET_PRIVATE_CLASS_COPY (AutoLocker2);
+  public:
+    AutoLocker2 (Mutex &mutex) :
+      m_recursive (false)
+    {
+      m_mutex = &mutex;
+      relock();
+    }
+    AutoLocker2 (RecMutex &mutex) :
+      m_recursive (true)
+    {
+      m_rec_mutex = &mutex;
+      relock();
+    }
+    AutoLocker2 (RecMutex *rec_mutex) :
+      m_recursive (true) {
+      BIRNET_ASSERT (rec_mutex != NULL);
+      m_rec_mutex = rec_mutex;
+      relock();
+    }
+    void          relock        () const { if (m_recursive) m_rec_mutex->lock(); else m_mutex->lock(); }
+    void          unlock        () const { if (m_recursive) m_rec_mutex->unlock(); else m_mutex->unlock(); }
+    /*Des*/       ~AutoLocker2   () { unlock(); }
+  };
+  Mutex mutex;
+  RecMutex rmutex;
+  for (uint i = 0; i < RUNS; i++)
+    {
+      AutoLocker2 locker1 (mutex);
+      AutoLocker2 locker2 (rmutex);
+    }
+}
+
+static void
+bench_birnet_auto_locker()
+{
+  Mutex mutex;
+  RecMutex rmutex;
+  for (uint i = 0; i < RUNS; i++)
+    {
+      AutoLocker locker1 (mutex);
+      AutoLocker locker2 (rmutex);
+    }
+}
+
+static void
+bench_auto_locker_cxx()
+{
+  TSTART ("Benchmark-C++AutoLocker");
+  GTimer *timer = g_timer_new();
+  TICK();
+  /* bench birnet auto locker */
+  guint dups = TEST_CALIBRATION (60.0, bench_birnet_auto_locker());
+  double bmin = 9e300;
+  for (guint i = 0; i < 13; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        bench_birnet_auto_locker();
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < bmin)
+        bmin = e;
+      TICK();
+    }
+  TACK();
+  /* bench direct auto locker */
+  dups = TEST_CALIBRATION (60.0, bench_direct_auto_locker());
+  double smin = 9e300;
+  for (guint i = 0; i < 13; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        bench_direct_auto_locker();
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < smin)
+        smin = e;
+      TICK();
+    }
+  TACK();
+  /* bench heap auto locker */
+  dups = TEST_CALIBRATION (60.0, bench_heap_auto_locker());
+  double tmin = 9e300;
+  for (guint i = 0; i < 13; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        bench_heap_auto_locker();
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < tmin)
+        tmin = e;
+      TICK();
+    }
+  TACK();
+  /* done, report */
+  TDONE();
+  g_print ("Birnet-AutoLocker: %f msecs\n", bmin / RUNS * 1000.);
+  g_print ("Direct-AutoLocker: %f msecs\n", smin / RUNS * 1000.);
+  g_print ("Heap-AutoLocker:   %f msecs\n", tmin / RUNS * 1000.);
 }
 
 static void
@@ -322,6 +484,7 @@ main (int   argc,
   test_thread_cxx();
   test_thread_atomic_cxx();
   test_auto_locker_cxx();
+  bench_auto_locker_cxx();
   
   return 0;
 }

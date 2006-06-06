@@ -1,3 +1,14 @@
+Tue Jun  6 02:03:07 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh: reimplemented the AutoLocker class with the help of
+	an inlined template wrapper object. all types of lockable objects are
+	now supported, and the new implementation is actually faster.
+
+	* threads.cc: call assert_impl() on the new auto locker which assert
+	crucial implementation assumptions. added auto locker benchamrks for
+	the former birnet implementation, an early heap based prototype and
+	the current implementation.
+
 Mon Jun  5 18:04:19 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh: added support for atomic const pointer access.
