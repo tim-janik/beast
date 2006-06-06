@@ -1,3 +1,16 @@
+Tue Jun  6 16:47:23 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh: got rid of the extra locker pointer by using a
+	(void*) and static_cast(). added new assertions. const-optimized code.
+
+	* birnettests.h (TEST_CALIBRATION): give a tiny bit more time for 
+	calibration to increase accuracy somewhat.
+
+	* threads.cc: adapted auto locker test counts to be more precise.
+	added a new benchmark for the former birnet AutoLocker implementation
+	which doesn't cast memory but stores an additional pointer.
+	adapted AutoLocker assertion code which now uses a protected method.
+
 Tue Jun  6 14:34:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/threads.cc: Fixed bug in auto locker benchmark. It is

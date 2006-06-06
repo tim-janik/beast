@@ -90,7 +90,7 @@ static inline void birnet_test_intro (const char *postfix,
  */
 #define TEST_CALIBRATION(target_ms, CODE)		({			 	\
   const guint   runs = 7;                                                               \
-  const gdouble max_calibration_time = 30.0;                                            \
+  const gdouble max_calibration_time = 35.0;                                            \
   gdouble       factor = MAX (1.0, (runs * target_ms * 2) / max_calibration_time);	\
   gdouble       ms, scaled_target_ms = target_ms / factor;                              \
   GTimer       *calibration_timer = false ? g_timer_new() : NULL;                       \

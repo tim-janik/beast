@@ -70,25 +70,33 @@ public:
  */
 class AutoLocker {
   struct Locker {
-    virtual void lock   () = 0;
-    virtual void unlock () = 0;
+    virtual void lock   () const = 0;
+    virtual void unlock () const = 0;
   };
   template<class Lockable>
   struct LockerImpl : public Locker {
     Lockable    *lockable;
-    virtual void lock       ()            { lockable->lock(); }
-    virtual void unlock     ()            { lockable->unlock(); }
+    virtual void lock       () const      { lockable->lock(); }
+    virtual void unlock     () const      { lockable->unlock(); }
     explicit     LockerImpl (Lockable *l) : lockable (l) {}
   };
   void  *space[2];
-  Locker *locker;
   BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
+  inline const Locker*          locker      () const             { return static_cast<Locker*> ((void*) &space); }
+protected:
+  /* assert implicit assumption of the AutoLocker implementation */
+  template<class Lockable> void
+  assert_impl (Lockable &lockable)
+  {
+    BIRNET_ASSERT (sizeof (LockerImpl<Lockable>) <= sizeof (space));
+    Locker *laddr = new (space) LockerImpl<Lockable> (&lockable);
+    BIRNET_ASSERT (laddr == locker());
+  }
 public:
-  template<class Lockable>      AutoLocker  (Lockable *lockable) { locker = new (space) LockerImpl<Lockable> (lockable); relock(); }
-  template<class Lockable>      AutoLocker  (Lockable &lockable) { locker = new (space) LockerImpl<Lockable> (&lockable); relock(); }
-  template<class Lockable> void assert_impl (Lockable &lockable) { BIRNET_ASSERT (sizeof (LockerImpl<Lockable>) <= sizeof (space)); }
-  void                          relock      ()                   { locker->lock(); }
-  void                          unlock      ()                   { locker->unlock(); }
+  template<class Lockable>      AutoLocker  (Lockable *lockable) { new (space) LockerImpl<Lockable> (lockable); relock(); }
+  template<class Lockable>      AutoLocker  (Lockable &lockable) { new (space) LockerImpl<Lockable> (&lockable); relock(); }
+  void                          relock      () const             { locker()->lock(); }
+  void                          unlock      () const             { locker()->unlock(); }
   /*Des*/                       ~AutoLocker ()                   { unlock(); }
 };
 
