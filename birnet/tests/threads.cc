@@ -498,7 +498,7 @@ bench_manual_locker()
 static void
 bench_auto_locker_cxx()
 {
-  TSTART ("Benchmark-C++AutoLocker");
+  TSTART ("C++AutoLocker-Benchmark");
   GTimer *timer = g_timer_new();
   const guint n_repeatitions = 7;
   TICK();
