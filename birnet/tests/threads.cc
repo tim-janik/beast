@@ -376,15 +376,14 @@ bench_auto_locker_cxx()
 {
   TSTART ("Benchmark-C++AutoLocker");
   GTimer *timer = g_timer_new();
-  guint dups;
   TICK();
   /* bench manual locker */
-  dups = TEST_CALIBRATION (60.0, bench_manual_locker());
+  guint xdups = TEST_CALIBRATION (60.0, bench_manual_locker());
   double xmin = 9e300;
   for (guint i = 0; i < 13; i++)
     {
       g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
+      for (guint j = 0; j < xdups; j++)
         bench_manual_locker();
       g_timer_stop (timer);
       double e = g_timer_elapsed (timer, NULL);
@@ -394,12 +393,12 @@ bench_auto_locker_cxx()
     }
   TACK();
   /* bench birnet auto locker */
-  dups = TEST_CALIBRATION (60.0, bench_birnet_auto_locker());
+  guint bdups = TEST_CALIBRATION (60.0, bench_birnet_auto_locker());
   double bmin = 9e300;
   for (guint i = 0; i < 13; i++)
     {
       g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
+      for (guint j = 0; j < bdups; j++)
         bench_birnet_auto_locker();
       g_timer_stop (timer);
       double e = g_timer_elapsed (timer, NULL);
@@ -409,12 +408,12 @@ bench_auto_locker_cxx()
     }
   TACK();
   /* bench direct auto locker */
-  dups = TEST_CALIBRATION (60.0, bench_direct_auto_locker());
+  guint sdups = TEST_CALIBRATION (60.0, bench_direct_auto_locker());
   double smin = 9e300;
   for (guint i = 0; i < 13; i++)
     {
       g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
+      for (guint j = 0; j < sdups; j++)
         bench_direct_auto_locker();
       g_timer_stop (timer);
       double e = g_timer_elapsed (timer, NULL);
@@ -424,12 +423,12 @@ bench_auto_locker_cxx()
     }
   TACK();
   /* bench heap auto locker */
-  dups = TEST_CALIBRATION (60.0, bench_heap_auto_locker());
+  guint tdups = TEST_CALIBRATION (60.0, bench_heap_auto_locker());
   double tmin = 9e300;
   for (guint i = 0; i < 13; i++)
     {
       g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
+      for (guint j = 0; j < tdups; j++)
         bench_heap_auto_locker();
       g_timer_stop (timer);
       double e = g_timer_elapsed (timer, NULL);
@@ -440,10 +439,10 @@ bench_auto_locker_cxx()
   TACK();
   /* done, report */
   TDONE();
-  g_print ("Manual-Locker:     %f msecs\n", xmin / RUNS * 1000.);
-  g_print ("Birnet-AutoLocker: %f msecs\n", bmin / RUNS * 1000.);
-  g_print ("Direct-AutoLocker: %f msecs\n", smin / RUNS * 1000.);
-  g_print ("Heap-AutoLocker:   %f msecs\n", tmin / RUNS * 1000.);
+  g_print ("Manual-Locker:     %7.3f nsecs\n", xmin / xdups / RUNS * 1000. * 1000. * 1000.);
+  g_print ("Birnet-AutoLocker: %7.3f nsecs\n", bmin / bdups / RUNS * 1000. * 1000. * 1000.);
+  g_print ("Direct-AutoLocker: %7.3f nsecs\n", smin / sdups / RUNS * 1000. * 1000. * 1000.);
+  g_print ("Heap-AutoLocker:   %7.3f nsecs\n", tmin / tdups / RUNS * 1000. * 1000. * 1000.);
 }
 
 static void
