@@ -82,7 +82,7 @@ class AutoLocker {
   };
   void  *space[2];
   BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
-  inline const Locker*          locker      () const             { return static_cast<Locker*> ((void*) &space); }
+  inline const Locker*          locker      () const             { return static_cast<const Locker*> ((const void*) &space); }
 protected:
   /* assert implicit assumption of the AutoLocker implementation */
   template<class Lockable> void
