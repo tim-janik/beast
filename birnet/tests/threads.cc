@@ -358,13 +358,43 @@ bench_birnet_auto_locker()
 }
 
 static void
+bench_manual_locker()
+{
+  Mutex mutex;
+  RecMutex rmutex;
+  for (uint i = 0; i < RUNS; i++)
+    {
+      mutex.lock();
+      rmutex.lock();
+      mutex.unlock();
+      rmutex.unlock();
+    }
+}
+
+static void
 bench_auto_locker_cxx()
 {
   TSTART ("Benchmark-C++AutoLocker");
   GTimer *timer = g_timer_new();
+  guint dups;
   TICK();
+  /* bench manual locker */
+  dups = TEST_CALIBRATION (60.0, bench_manual_locker());
+  double xmin = 9e300;
+  for (guint i = 0; i < 13; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < dups; j++)
+        bench_manual_locker();
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < xmin)
+        xmin = e;
+      TICK();
+    }
+  TACK();
   /* bench birnet auto locker */
-  guint dups = TEST_CALIBRATION (60.0, bench_birnet_auto_locker());
+  dups = TEST_CALIBRATION (60.0, bench_birnet_auto_locker());
   double bmin = 9e300;
   for (guint i = 0; i < 13; i++)
     {
@@ -410,6 +440,7 @@ bench_auto_locker_cxx()
   TACK();
   /* done, report */
   TDONE();
+  g_print ("Manual-Locker:     %f msecs\n", xmin / RUNS * 1000.);
   g_print ("Birnet-AutoLocker: %f msecs\n", bmin / RUNS * 1000.);
   g_print ("Direct-AutoLocker: %f msecs\n", smin / RUNS * 1000.);
   g_print ("Heap-AutoLocker:   %f msecs\n", tmin / RUNS * 1000.);
