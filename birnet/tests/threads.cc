@@ -100,6 +100,7 @@ test_threads (void)
   static BirnetMutex test_mutex;
   gboolean locked;
   TSTART ("Threading");
+  /* test C mutex */
   birnet_mutex_init (&test_mutex);
   locked = birnet_mutex_trylock (&test_mutex);
   TASSERT (locked);
@@ -107,6 +108,13 @@ test_threads (void)
   TASSERT (!locked);
   birnet_mutex_unlock (&test_mutex);
   birnet_mutex_destroy (&test_mutex);
+  /* test C++ mutex */
+  static Mutex mutex;
+  static RecMutex rmutex;
+  mutex.lock();
+  rmutex.lock();
+  mutex.unlock();
+  rmutex.unlock();
   guint thread_data1 = 0;
   BirnetThread *thread1 = birnet_thread_run ("plus1", plus1_thread, &thread_data1);
   guint thread_data2 = 0;
@@ -195,6 +203,10 @@ test_thread_cxx (void)
   TDONE ();
 
   TSTART ("C++OwnedMutex");
+  static OwnedMutex static_omutex;
+  static_omutex.lock();
+  TASSERT (static_omutex.mine() == true);
+  static_omutex.unlock();
   TASSERT (NULL != &Thread::self());
   OwnedMutex omutex;
   TASSERT (omutex.owner() == NULL);
@@ -673,12 +685,26 @@ test_thread_atomic_cxx (void)
   TDONE ();
 }
 
+static void
+test_before_thread_init()
+{
+  /* check C++ mutex init + destruct before g_thread_init() */
+  Mutex *mutex = new Mutex;
+  RecMutex *rmutex = new RecMutex;
+  Cond *cond = new Cond;
+  delete mutex;
+  delete rmutex;
+  delete cond;
+}
+
 } // Anon
 
 int
 main (int   argc,
       char *argv[])
 {
+  test_before_thread_init();
+
   birnet_init_test (&argc, &argv);
 
   test_threads();

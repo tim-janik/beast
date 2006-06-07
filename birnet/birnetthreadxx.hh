@@ -29,35 +29,35 @@ class Mutex {
   friend class Cond;
   BIRNET_PRIVATE_CLASS_COPY (Mutex);
 public:
-  explicit      Mutex   ()                      { birnet_thread_table.mutex_init (&mutex); }
+  explicit      Mutex   ();
   void          lock    ()                      { birnet_thread_table.mutex_lock (&mutex); }
   void          unlock  ()                      { birnet_thread_table.mutex_unlock (&mutex); }
   bool          trylock ()                      { return 0 == birnet_thread_table.mutex_trylock (&mutex); /* TRUE indicates success */ }
-  /*Des*/       ~Mutex  ()                      { birnet_thread_table.mutex_destroy (&mutex); }
+  /*Des*/       ~Mutex  ();
 };
 
 class RecMutex {
   BirnetRecMutex rmutex;
   BIRNET_PRIVATE_CLASS_COPY (RecMutex);
 public:
-  explicit      RecMutex  ()                    { birnet_thread_table.rec_mutex_init (&rmutex); }
+  explicit      RecMutex  ();
   void          lock      ()                    { birnet_thread_table.rec_mutex_lock (&rmutex); }
   void          unlock    ()                    { birnet_thread_table.rec_mutex_unlock (&rmutex); }
   bool          trylock   ()                    { return 0 == birnet_thread_table.rec_mutex_trylock (&rmutex); /* TRUE indicates success */ }
-  /*Des*/       ~RecMutex ()                    { birnet_thread_table.rec_mutex_destroy (&rmutex); }
+  /*Des*/       ~RecMutex ();
 };
 
 class Cond {
   BirnetCond cond;
   BIRNET_PRIVATE_CLASS_COPY (Cond);
 public:
-  explicit      Cond          ()                { birnet_thread_table.cond_init (&cond); }
+  explicit      Cond          ();
   void          signal        ()                { birnet_thread_table.cond_signal (&cond); }
   void          broadcast     ()                { birnet_thread_table.cond_broadcast (&cond); }
   void          wait          (Mutex &m)        { birnet_thread_table.cond_wait (&cond, &m.mutex); }
   void          wait_timed    (Mutex &m,
                                int64 max_usecs) { birnet_cond_wait_timed (&cond, &m.mutex, max_usecs); }
-  /*Des*/       ~Cond         ()                { birnet_thread_table.cond_destroy (&cond); }
+  /*Des*/       ~Cond         ();
 };
 
 /**
@@ -179,7 +179,7 @@ class OwnedMutex {
   volatile Thread *m_owner;
   BIRNET_PRIVATE_CLASS_COPY (OwnedMutex);
 public:
-  explicit      OwnedMutex  () : m_owner (NULL) { birnet_thread_table.rec_mutex_init (&m_rec_mutex); }
+  explicit      OwnedMutex  ();
   void          lock        ()                  { birnet_thread_table.rec_mutex_lock (&m_rec_mutex); Atomic::ptr_set (&m_owner, &Thread::self()); }
   void          unlock      ()                  { Atomic::ptr_set (&m_owner, (Thread*) 0); birnet_thread_table.rec_mutex_unlock (&m_rec_mutex); }
   bool          trylock     ();

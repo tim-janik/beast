@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "birnetthreadxx.hh"
+#include <list>
 
 namespace Birnet {
 
@@ -210,6 +211,69 @@ Thread::Self::set_wakeup (BirnetThreadWakeup      wakeup_func,
   birnet_thread_set_wakeup (wakeup_func, wakeup_data, destroy);
 }
 
+static std::list<BirnetMutex*> cxx_init_mutex_list;
+
+Mutex::Mutex ()
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.mutex_init (&mutex);
+  else
+    cxx_init_mutex_list.push_back (&mutex);
+}
+
+Mutex::~Mutex ()
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.mutex_destroy (&mutex);
+  else
+    cxx_init_mutex_list.remove (&mutex);
+}
+
+static std::list<BirnetRecMutex*> cxx_init_rec_mutex_list;
+
+RecMutex::RecMutex ()
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.rec_mutex_init (&rmutex);
+  else
+    cxx_init_rec_mutex_list.push_back (&rmutex);
+}
+
+RecMutex::~RecMutex ()
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.rec_mutex_destroy (&rmutex);
+  else
+    cxx_init_rec_mutex_list.remove (&rmutex);
+}
+
+static std::list<BirnetCond*> cxx_init_cond_list;
+
+Cond::Cond ()
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.cond_init (&cond);
+  else
+    cxx_init_cond_list.push_back (&cond);
+}
+
+Cond::~Cond ()
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.cond_destroy (&cond);
+  else
+    cxx_init_cond_list.remove (&cond);
+}
+
+OwnedMutex::OwnedMutex () :
+  m_owner (NULL)
+{
+  if (birnet_threads_initialized())
+    birnet_thread_table.rec_mutex_init (&m_rec_mutex);
+  else
+    cxx_init_rec_mutex_list.push_back (&m_rec_mutex);
+}
+
 bool
 OwnedMutex::trylock ()
 {
@@ -225,10 +289,37 @@ OwnedMutex::trylock ()
 OwnedMutex::~OwnedMutex()
 {
   BIRNET_ASSERT (m_owner == NULL);
-  birnet_thread_table.rec_mutex_destroy (&m_rec_mutex);
+  if (birnet_threads_initialized())
+    birnet_thread_table.rec_mutex_destroy (&m_rec_mutex);
+  else
+    cxx_init_rec_mutex_list.remove (&m_rec_mutex);
 }
 
 } // Birnet
+
+extern "C" void
+_birnet_init_threads_cxx (void)
+{
+  using namespace Birnet;
+  while (cxx_init_mutex_list.size())
+    {
+      BirnetMutex *mutex = cxx_init_mutex_list.front();
+      cxx_init_mutex_list.pop_front();
+      birnet_thread_table.mutex_init (mutex);
+    }
+  while (cxx_init_rec_mutex_list.size())
+    {
+      BirnetRecMutex *rmutex = cxx_init_rec_mutex_list.front();
+      cxx_init_rec_mutex_list.pop_front();
+      birnet_thread_table.rec_mutex_init (rmutex);
+    }
+  while (cxx_init_cond_list.size())
+    {
+      BirnetCond *cond = cxx_init_cond_list.front();
+      cxx_init_cond_list.pop_front();
+      birnet_thread_table.cond_init (cond);
+    }
+}
 
 extern "C" void
 _birnet_thread_cxx_wrap (BirnetThread *cthread)

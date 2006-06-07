@@ -1,3 +1,16 @@
+Thu Jun  8 00:00:10 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh, birnetthreadxx.cc: added initialization queues for
+	mutexes and conditions to allow static mutexes and conditions. however,
+	locking/unlocking of course still only works *after* threading 
+	initialization.
+
+	* birnetthread.h:
+	* birnetthread.c: added birnet_threads_initialized() and a C++ threading
+	initialization hook.
+
+	* test/threads.cc: test static mutexes.
+
 Wed Jun  7 20:14:14 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh: turned OwnedMutex into a recursive mutex.

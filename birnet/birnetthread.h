@@ -116,6 +116,7 @@ bool                  birnet_guard_snap_values   (guint                *n_values
 bool                  birnet_guard_is_protected  (gpointer             	value);
 
 /* --- BirnetMutex & BirnetCond --- */
+#define birnet_threads_initialized()		(G_LIKELY (birnet_thread_table.cond_wait_timed != NULL))
 #define birnet_mutex_init(mutex)		(birnet_thread_table.mutex_init (mutex))
 #define birnet_mutex_lock(mutex)		(birnet_thread_table.mutex_lock (mutex))
 #define birnet_mutex_unlock(mutex)		(birnet_thread_table.mutex_unlock (mutex))
@@ -180,6 +181,7 @@ birnet_atomic_set_impl (volatile gpointer *atomic, gpointer value)
 
 /* --- implementation --- */
 void  _birnet_init_threads      (void);
+void  _birnet_init_threads_cxx  (void);
 void* _birnet_thread_self_cxx   (void);
 void* _birnet_thread_get_cxx	(BirnetThread *thread);
 bool  _birnet_thread_set_cxx	(BirnetThread *thread,

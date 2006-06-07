@@ -1534,4 +1534,6 @@ _birnet_init_threads (void)
   birnet_cond_init (&global_thread_cond);
   
   birnet_thread_self ();
+
+  _birnet_init_threads_cxx();
 }
