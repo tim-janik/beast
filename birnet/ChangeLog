@@ -1,3 +1,17 @@
+Wed Jun  7 20:00:03 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetmsg.c: fixed up atomic accessors.
+
+	* birnetthread.h: fixed up atomic accessors, introduced atomic_uint
+	functions.
+
+	* birnetthreadxx.cc:
+	* birnetthread.c: fixed up C++ thread pointer implementation.
+
+	* birnetthreadxx.cc, birnetthreadxx.hh: added OwnedMutex.
+
+	* tests/threads.cc: test OwnedMutex.
+
 Tue Jun  6 16:53:40 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/threads.cc: Check that C++ constructors and destructors and

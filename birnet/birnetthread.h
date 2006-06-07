@@ -136,24 +136,36 @@ void    birnet_cond_wait_timed			(BirnetCond    *cond,
 						 BirnetInt64   	max_useconds);
 
 /* --- atomic operations --- */
+extern inline void  birnet_atomic_int_set                  (volatile int      *atomic,
+							    int                newval);
+extern inline int   birnet_atomic_int_get                  (volatile int      *atomic);
+extern inline bool  birnet_atomic_int_compare_and_swap     (volatile int      *atomic,
+							    int                oldval,
+							    int                newval);
+extern inline void  birnet_atomic_int_add                  (volatile int      *atomic,
+							    int                val);
+extern inline int   birnet_atomic_int_swap_and_add         (volatile int      *atomic,
+							    int                val);
+extern inline void  birnet_atomic_uint_set                 (volatile guint     *atomic,
+							    guint               newval);
+extern inline guint birnet_atomic_uint_get                 (volatile guint     *atomic);
+extern inline bool  birnet_atomic_uint_compare_and_swap    (volatile guint     *atomic,
+							    guint               oldval,
+							    guint               newval);
+extern inline void  birnet_atomic_uint_add                 (volatile guint     *atomic,
+							    guint               val);
+extern inline guint birnet_atomic_uint_swap_and_add        (volatile guint     *atomic,
+							    guint               val);
+extern inline void* birnet_atomic_pointer_get              (volatile gpointer *atomic);
+extern inline void  birnet_atomic_pointer_set              (volatile gpointer *atomic,
+							    gpointer           newval);
+extern inline bool  birnet_atomic_pointer_compare_and_swap (volatile gpointer *atomic,
+							    gpointer           oldval,
+							    gpointer           newval);
+#if 1 // FIXME: deprecate
 #define birnet_atomic_set(PtrType, atomic_ptr_adr, new_ptr)        	  ((void(*)(PtrType*,PtrType)) (void*) birnet_atomic_set_impl) (atomic_ptr_adr, new_ptr)
 #define birnet_atomic_get(PtrType, atomic_ptr_adr)                 	  ((PtrType(*)(PtrType*)) (void*) birnet_atomic_get_impl) (atomic_ptr_adr)
 #define birnet_atomic_compare_and_swap(PtrType, apadr, optr, nptr) 	  ((bool(*)(PtrType*, PtrType, PtrType)) (void*) g_atomic_pointer_compare_and_exchange) (apadr, optr, nptr)
-#define birnet_atomic_int_set(atomic_int_ptr, value)                      ((void(*)(volatile gint*,gint)) (void*) birnet_atomic_int_set_impl) (atomic_int_ptr, value)
-#define birnet_atomic_int_get(atomic_int_ptr)                             ((gint(*)(volatile gint*))      (void*) birnet_atomic_int_get_impl) (atomic_int_ptr)
-#define birnet_atomic_int_add(atomic_int_ptr, signed_delta)               ((void(*)(volatile gint*,gint)) (void*) g_atomic_int_add) (atomic_int_ptr, signed_delta)
-#define birnet_atomic_int_swap_and_add(atomic_int_ptr, value)             ((gint(*)(volatile gint*,gint)) (void*) g_atomic_int_exchange_and_add) (atomic_int_ptr, value)
-#define birnet_atomic_int_compare_and_swap(atomic_int_ptr, oldval, nwval) ((gboolean(*)(volatile gint*,gint,gint)) (void*) g_atomic_int_compare_and_exchange) (atomic_int_ptr, oldval, nwval)
-static inline gint G_GNUC_UNUSED
-birnet_atomic_int_get_impl (volatile gint *atomic)
-{
-  return g_atomic_int_get (atomic);
-}
-static inline void G_GNUC_UNUSED
-birnet_atomic_int_set_impl (volatile gint *atomic, gint value)
-{
-  while (!g_atomic_int_compare_and_exchange ((gint*) atomic, *atomic, value));
-}
 static inline gpointer G_GNUC_UNUSED
 birnet_atomic_get_impl (volatile gpointer *atomic)
 {
@@ -164,12 +176,17 @@ birnet_atomic_set_impl (volatile gpointer *atomic, gpointer value)
 {
   while (!g_atomic_pointer_compare_and_exchange ((void**) atomic, *atomic, value));
 }
+#endif
 
 /* --- implementation --- */
-void* _birnet_thread_self_cxx  (void);
+void  _birnet_init_threads      (void);
+void* _birnet_thread_self_cxx   (void);
 void* _birnet_thread_get_cxx	(BirnetThread *thread);
 bool  _birnet_thread_set_cxx	(BirnetThread *thread,
 				 void         *xxdata);
+void  _birnet_thread_cxx_wrap	(BirnetThread *thread); /* in birnetthreadxx.cc */
+void  _birnet_thread_cxx_delete	(void         *thread); /* in birnetthreadxx.cc */
+
 union _BirnetCond
 {
   gpointer cond_pointer;
@@ -212,6 +229,8 @@ struct _BirnetThreadTable
   void		(*cond_destroy)		(BirnetCond	*cond);
 };
 extern BirnetThreadTable birnet_thread_table;
+
+/* atomicity guards */
 static inline void /* inlined for speed */
 birnet_guard_protect (volatile BirnetGuard *guard,
 		      guint                 nth_hazard,
@@ -224,7 +243,108 @@ birnet_guard_protect (volatile BirnetGuard *guard,
   if (hparray[nth_hazard] != value)
     birnet_atomic_set (volatile gpointer, &hparray[nth_hazard], value);
 }
-void _birnet_init_threads (void);
+
+/* atomic ints */
+#if !GLIB_CHECK_VERSION (2, 10, 0)
+static inline void G_GNUC_UNUSED
+g_atomic_int_set (volatile int *atomic,
+		  int           value)
+{
+  *atomic = 0;
+  while (!g_atomic_int_compare_and_exchange ((int*) atomic, *atomic, value));
+}
+#endif
+extern inline void
+birnet_atomic_int_set (volatile int *atomic,
+		       int           newval)
+{
+  g_atomic_int_set (atomic, newval);
+}
+extern inline int
+birnet_atomic_int_get (volatile int *atomic)
+{
+  return g_atomic_int_get ((int*) atomic);
+}
+extern inline bool
+birnet_atomic_int_compare_and_swap (volatile int *atomic,
+				    int           oldval,
+				    int           newval)
+{
+  return g_atomic_int_compare_and_exchange ((int*) atomic, oldval, newval);
+}
+extern inline void
+birnet_atomic_int_add (volatile int *atomic,
+		       int           val)
+{
+  return g_atomic_int_add ((int*) atomic, val);
+}
+extern inline int
+birnet_atomic_int_swap_and_add (volatile int *atomic,
+				int           val)
+{
+  return g_atomic_int_exchange_and_add ((int*) atomic, val);
+}
+
+/* atomic uints */
+extern inline void
+birnet_atomic_uint_set (volatile guint *atomic,
+			guint           newval)
+{
+  g_atomic_int_set ((int*) atomic, newval);
+}
+extern inline guint
+birnet_atomic_uint_get (volatile guint *atomic)
+{
+  return g_atomic_int_get ((int*) atomic);
+}
+extern inline bool
+birnet_atomic_uint_compare_and_swap (volatile guint *atomic,
+				     guint           oldval,
+				     guint           newval)
+{
+  return g_atomic_int_compare_and_exchange ((int*) atomic, oldval, newval);
+}
+extern inline void
+birnet_atomic_uint_add (volatile guint *atomic,
+			guint           val)
+{
+  return g_atomic_int_add ((int*) atomic, val);
+}
+extern inline guint
+birnet_atomic_uint_swap_and_add (volatile guint *atomic,
+				 guint           val)
+{
+  return g_atomic_int_exchange_and_add ((int*) atomic, val);
+}
+
+/* atomic pointers */
+#if !GLIB_CHECK_VERSION (2, 10, 0)
+static inline void G_GNUC_UNUSED
+g_atomic_pointer_set (volatile gpointer *atomic,
+		      gpointer           value)
+{
+  *atomic = NULL;
+  while (!g_atomic_pointer_compare_and_exchange ((gpointer*) atomic, *atomic, value));
+}
+#endif
+extern inline gpointer
+birnet_atomic_pointer_get (volatile gpointer *atomic)
+{
+  return g_atomic_pointer_get ((gpointer*) atomic);
+}
+extern inline void
+birnet_atomic_pointer_set (volatile gpointer *atomic,
+			   gpointer           newval)
+{
+  g_atomic_pointer_set (atomic, newval);
+}
+extern inline bool
+birnet_atomic_pointer_compare_and_swap (volatile gpointer *atomic,
+					gpointer           oldval,
+					gpointer           newval)
+{
+  return g_atomic_pointer_compare_and_exchange ((gpointer*) atomic, oldval, newval);
+}
 
 G_END_DECLS
 

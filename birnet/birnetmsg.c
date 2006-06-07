@@ -60,7 +60,7 @@ static void
 birnet_msg_type_init_internals (void)
 {
   static volatile guint initialized = FALSE;
-  if (initialized || !birnet_atomic_int_compare_and_swap (&initialized, FALSE, TRUE))
+  if (initialized || !birnet_atomic_uint_compare_and_swap (&initialized, FALSE, TRUE))
     return;
   guint mtype;
   /* BIRNET_MSG_NONE (always disabled) */
@@ -202,7 +202,7 @@ birnet_msg_type_register (const gchar   *ident,
       guint8 *old_msg_flags = birnet_msg_flags;
       /* we are holding a lock in the multi-threaded case so no need for compare_and_swap */
       typedef guint8* X;
-      birnet_atomic_set (guint8*volatile , &birnet_msg_flags, msg_flags);
+      birnet_atomic_pointer_set ((void*) &birnet_msg_flags, msg_flags);
       // FIXME: birnet_msg_flags should be registered as hazard pointer so we don't g_free() while other threads read old_msg_flags[*]
       g_free (old_msg_flags);
     }
@@ -210,7 +210,7 @@ birnet_msg_type_register (const gchar   *ident,
   msg_types[mtype].label = g_strdup (label);
   birnet_msg_type_set (mtype, msg_types[default_ouput].log_flags, !msg_types[default_ouput].disabled);
   msg_types[mtype].default_type = default_ouput;
-  birnet_atomic_int_set (&birnet_msg_flags_max, mtype); /* only ever grows */
+  birnet_atomic_uint_set (&birnet_msg_flags_max, mtype); /* only ever grows */
   /* out of here */
   if (need_unlock)
     birnet_mutex_unlock (&logging_mutex);

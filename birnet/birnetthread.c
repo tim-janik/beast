@@ -44,7 +44,7 @@
 /* --- structures --- */
 struct _BirnetThread
 {
-  void                  *threadxx;
+  volatile gpointer      threadxx;
   volatile uint32        ref_field;
   gchar		        *name;
   gint8		         aborted;
@@ -103,7 +103,7 @@ birnet_thread_new (const gchar *name)
   thread = g_new0 (BirnetThread, 1);
 #endif
 
-  thread->threadxx = NULL;
+  g_atomic_pointer_set (&thread->threadxx, NULL);
   thread->ref_field = FLOATING_FLAG + 1;
   thread->name = g_strdup (name);
   thread->aborted = FALSE;
@@ -162,6 +162,13 @@ birnet_thread_unref (BirnetThread *thread)
   if (0 == (new_ref & ~FLOATING_FLAG))
     {
       g_datalist_clear (&thread->qdata);
+      void *threadcxx = g_atomic_pointer_get (&thread->threadxx);
+      while (threadcxx)
+        {
+          _birnet_thread_cxx_delete (threadcxx);
+          g_datalist_clear (&thread->qdata);
+          threadcxx = g_atomic_pointer_get (&thread->threadxx);
+        }
       birnet_cond_destroy (&thread->wakeup_cond);
       g_free (thread->name);
       thread->name = NULL;
@@ -391,18 +398,24 @@ birnet_thread_self (void)
 }
 
 void*
+_birnet_thread_get_cxx (BirnetThread *thread)
+{
+  void *ptr = g_atomic_pointer_get (&thread->threadxx);
+  if (G_UNLIKELY (!ptr))
+    {
+      _birnet_thread_cxx_wrap (thread);
+      ptr = g_atomic_pointer_get (&thread->threadxx);
+    }
+  return ptr;
+}
+
+void*
 _birnet_thread_self_cxx (void)
 {
   BirnetThread *thread = birnet_thread_table.thread_get_handle ();
   if (G_UNLIKELY (!thread))
     thread = birnet_thread_self();
-  return g_atomic_pointer_get (&thread->threadxx);
-}
-
-void*
-_birnet_thread_get_cxx (BirnetThread *thread)
-{
-  return g_atomic_pointer_get (&thread->threadxx);
+  return _birnet_thread_get_cxx (thread);
 }
 
 bool
@@ -411,11 +424,13 @@ _birnet_thread_set_cxx (BirnetThread *thread,
 {
   birnet_mutex_lock (&global_thread_mutex);
   bool success = false;
-  if (!thread->threadxx || !xxdata)
+  if (!g_atomic_pointer_get (&thread->threadxx) || !xxdata)
     {
-      thread->threadxx = xxdata;
+      g_atomic_pointer_set (&thread->threadxx, xxdata);
       success = true;
     }
+  else
+    g_error ("attempt to exchange C++ thread handle");
   birnet_mutex_unlock (&global_thread_mutex);
   return success;
 }

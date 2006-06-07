@@ -53,25 +53,21 @@ Thread::Thread (BirnetThread* thread) :
 Thread*
 Thread::thread_from_c (BirnetThread *bthread)
 {
-  void *threadxx = _birnet_thread_get_cxx (bthread);
-  if (G_UNLIKELY (!threadxx))
+  struct CThread : public virtual Thread {
+    explicit CThread (BirnetThread *bthread) :
+      Thread (bthread)
+    {}
+    virtual void run() {}
+  };
+  CThread *cthread = new CThread (bthread);
+  if (!cthread->bthread)
     {
-      struct CThread : public virtual Thread {
-        explicit CThread (BirnetThread *bthread) :
-          Thread (bthread)
-        {}
-        virtual void run() {}
-      };
-      CThread *cthread = new CThread (bthread);
-      if (!cthread->bthread)
-        {
-          /* someone else was faster */
-          cthread->ref_sink();
-          cthread->unref();
-        }
-      threadxx = _birnet_thread_get_cxx (bthread);
-      BIRNET_ASSERT (threadxx != NULL);
+      /* someone else was faster */
+      cthread->ref_sink();
+      cthread->unref();
     }
+  void *threadxx = _birnet_thread_get_cxx (bthread);
+  BIRNET_ASSERT (threadxx != NULL);
   return reinterpret_cast<Thread*> (threadxx);
 }
 
@@ -214,4 +210,44 @@ Thread::Self::set_wakeup (BirnetThreadWakeup      wakeup_func,
   birnet_thread_set_wakeup (wakeup_func, wakeup_data, destroy);
 }
 
+bool
+OwnedMutex::trylock ()
+{
+  if (birnet_thread_table.mutex_trylock (&m_mutex) == 0)
+    {
+      Atomic::ptr_set (&m_owner, &Thread::self());
+      return true; /* TRUE indicates success */
+    }
+  else
+    return false;
+}
+
+OwnedMutex::~OwnedMutex()
+{
+  BIRNET_ASSERT (m_owner == NULL);
+  birnet_thread_table.mutex_destroy (&m_mutex);
+}
+
 } // Birnet
+
+extern "C" void
+_birnet_thread_cxx_wrap (BirnetThread *cthread)
+{
+  using namespace Birnet;
+  struct ThreadWrapper : Thread {
+    static Thread*
+    wrapped_thread_from_c (BirnetThread *bthread)
+    {
+      return thread_from_c (bthread);
+    }
+  };
+  ThreadWrapper::wrapped_thread_from_c (cthread);
+}
+
+extern "C" void
+_birnet_thread_cxx_delete (void *cxxthread)
+{
+  using namespace Birnet;
+  Thread *thread = reinterpret_cast<Thread*> (cxxthread);
+  delete thread;
+}

@@ -22,6 +22,7 @@
 namespace {
 using namespace Birnet;
 
+/* --- atomicity tests --- */
 static volatile guint atomic_count = 0;
 static BirnetMutex    atomic_mutex;
 static BirnetCond     atomic_cond;
@@ -82,6 +83,7 @@ test_atomic (void)
   TDONE ();
 }
 
+/* --- basic threading tests --- */
 static void
 plus1_thread (gpointer data)
 {
@@ -135,6 +137,7 @@ test_threads (void)
   TDONE ();
 }
 
+/* --- C++ threading tests --- */
 struct ThreadA : public virtual Birnet::Thread {
   int value;
   volatile int *counter;
@@ -153,10 +156,20 @@ struct ThreadA : public virtual Birnet::Thread {
   }
 };
 
+template<class M> static bool
+lockable (M &mutex)
+{
+  bool lockable = mutex.trylock();
+  if (lockable)
+    mutex.unlock();
+  return lockable;
+}
+
 static void
 test_thread_cxx (void)
 {
   TSTART ("C++Threading");
+  TASSERT (NULL != &Thread::self());
   volatile int atomic_counter = 0;
   int result = 0;
   int count = 60;
@@ -180,17 +193,32 @@ test_thread_cxx (void)
     }
   TASSERT (atomic_counter == result);
   TDONE ();
+
+  TSTART ("C++OwnedMutex");
+  TASSERT (NULL != &Thread::self());
+  OwnedMutex omutex;
+  TASSERT (omutex.owner() == NULL);
+  TASSERT (omutex.mine() == false);
+  omutex.lock();
+  TASSERT (omutex.owner() == &Thread::self());
+  TASSERT (omutex.mine() == true);
+  TASSERT (lockable (omutex) == false);
+  bool locked = omutex.trylock();
+  TASSERT (locked == false);
+  omutex.unlock();
+  TASSERT (omutex.owner() == NULL);
+  TASSERT (lockable (omutex) == true);
+  TASSERT (omutex.owner() == NULL);
+  locked = omutex.trylock();
+  TASSERT (locked == true);
+  TASSERT (omutex.owner() == &Thread::self());
+  TASSERT (lockable (omutex) == false);
+  omutex.unlock();
+  TASSERT (omutex.owner() == NULL);
+  TDONE();
 }
 
-template<class M> static bool
-lockable (M &mutex)
-{
-  bool lockable = mutex.trylock();
-  if (lockable)
-    mutex.unlock();
-  return lockable;
-}
-
+/* --- auto locker tests --- */
 static void
 test_simple_auto_lock (Mutex &mutex1,
                        Mutex &mutex2)
@@ -348,6 +376,7 @@ test_auto_locker_cxx()
   TDONE();
 }
 
+/* --- auto locker benchmarks --- */
 #define RUNS (500000)
 
 class HeapLocker {
@@ -586,6 +615,7 @@ bench_auto_locker_cxx()
   g_print ("Heap-AutoLocker:    %7.3f nsecs\n", tmin / tdups / RUNS * 1000. * 1000. * 1000.);
 }
 
+/* --- C++ atomicity tests --- */
 static void
 test_thread_atomic_cxx (void)
 {
