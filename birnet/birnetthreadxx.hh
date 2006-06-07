@@ -175,13 +175,13 @@ public: /* generic data API */
 };
 
 class OwnedMutex {
-  BirnetMutex      m_mutex;
+  BirnetRecMutex   m_rec_mutex;
   volatile Thread *m_owner;
   BIRNET_PRIVATE_CLASS_COPY (OwnedMutex);
 public:
-  explicit      OwnedMutex  () : m_owner (NULL) { birnet_thread_table.mutex_init (&m_mutex); }
-  void          lock        ()                  { birnet_thread_table.mutex_lock (&m_mutex); Atomic::ptr_set (&m_owner, &Thread::self()); }
-  void          unlock      ()                  { Atomic::ptr_set (&m_owner, (Thread*) 0); birnet_thread_table.mutex_unlock (&m_mutex); }
+  explicit      OwnedMutex  () : m_owner (NULL) { birnet_thread_table.rec_mutex_init (&m_rec_mutex); }
+  void          lock        ()                  { birnet_thread_table.rec_mutex_lock (&m_rec_mutex); Atomic::ptr_set (&m_owner, &Thread::self()); }
+  void          unlock      ()                  { Atomic::ptr_set (&m_owner, (Thread*) 0); birnet_thread_table.rec_mutex_unlock (&m_rec_mutex); }
   bool          trylock     ();
   Thread*       owner       ()                  { return Atomic::ptr_get (&m_owner); }
   bool          mine        ()                  { return Atomic::ptr_get (&m_owner) == &Thread::self(); }

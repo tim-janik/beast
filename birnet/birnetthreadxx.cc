@@ -213,7 +213,7 @@ Thread::Self::set_wakeup (BirnetThreadWakeup      wakeup_func,
 bool
 OwnedMutex::trylock ()
 {
-  if (birnet_thread_table.mutex_trylock (&m_mutex) == 0)
+  if (birnet_thread_table.rec_mutex_trylock (&m_rec_mutex) == 0)
     {
       Atomic::ptr_set (&m_owner, &Thread::self());
       return true; /* TRUE indicates success */
@@ -225,7 +225,7 @@ OwnedMutex::trylock ()
 OwnedMutex::~OwnedMutex()
 {
   BIRNET_ASSERT (m_owner == NULL);
-  birnet_thread_table.mutex_destroy (&m_mutex);
+  birnet_thread_table.rec_mutex_destroy (&m_rec_mutex);
 }
 
 } // Birnet

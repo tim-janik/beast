@@ -1,3 +1,9 @@
+Wed Jun  7 20:14:14 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh: turned OwnedMutex into a recursive mutex.
+	* birnetthreadxx.cc: turned OwnedMutex into a recursive mutex.
+	* tests/threads.cc (test_thread_cxx): adapted tests.
+
 Wed Jun  7 20:00:03 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetmsg.c: fixed up atomic accessors.

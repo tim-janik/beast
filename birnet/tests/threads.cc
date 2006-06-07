@@ -202,9 +202,10 @@ test_thread_cxx (void)
   omutex.lock();
   TASSERT (omutex.owner() == &Thread::self());
   TASSERT (omutex.mine() == true);
-  TASSERT (lockable (omutex) == false);
+  TASSERT (lockable (omutex) == true);
   bool locked = omutex.trylock();
-  TASSERT (locked == false);
+  TASSERT (locked == true);
+  omutex.unlock();
   omutex.unlock();
   TASSERT (omutex.owner() == NULL);
   TASSERT (lockable (omutex) == true);
@@ -212,7 +213,7 @@ test_thread_cxx (void)
   locked = omutex.trylock();
   TASSERT (locked == true);
   TASSERT (omutex.owner() == &Thread::self());
-  TASSERT (lockable (omutex) == false);
+  TASSERT (lockable (omutex) == true);
   omutex.unlock();
   TASSERT (omutex.owner() == NULL);
   TDONE();
