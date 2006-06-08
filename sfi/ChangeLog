@@ -1,3 +1,8 @@
+Thu Jun  8 16:57:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* testsfidl.cc: Fixed a strange assertion which looked like this:
+	TASSERT (a == b == 1). Correct is TASSERT (a == 1); TASSERT (b == 1).
+
 Tue May 23 00:11:30 2006  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.h: removed definition of G_IMPLEMENT_INTERFACE() which is 

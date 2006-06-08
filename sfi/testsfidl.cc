@@ -72,7 +72,8 @@ public:
     procedures.push_back("Procedures");
     type.push_back("Type");
 
-    TASSERT (procedures.size() == type.size() == 1);
+    TASSERT (procedures.size() == 1);
+    TASSERT (type.size() == 1);
     TASSERT (empty.size() == 0);
 
     ASSERT_EQ (rename (ABSOLUTE, "A::B::processMessagesSlowly", Capitalized, "::",
