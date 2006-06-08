@@ -301,7 +301,6 @@ AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 		MC_EVAR_ADD(CXXFLAGS, -Wall, -Wall)
 		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
 		MC_EVAR_ADD(CXXFLAGS, -Wno-cast-qual, -Wno-cast-qual)
-		MC_EVAR_ADD(CXXFLAGS, -Wstrict-null-sentinel, -Wstrict-null-sentinel)
 		dnl # MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
 		dnl # MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
 		

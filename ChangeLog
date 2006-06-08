@@ -1,3 +1,8 @@
+Thu Jun  8 18:46:32 2006  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: back out -Wstrict-null-sentinel again, since it doesn't
+	detect 0 vs. __null.
+
 Thu Jun  8 18:26:33 2006  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4: add -Wstrict-null-sentinel to CXXFLAGS.
