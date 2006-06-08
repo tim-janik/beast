@@ -1,3 +1,7 @@
+Thu Jun  8 18:26:33 2006  Tim Janik  <timj@gtk.org>
+
+        * drivers/bse-alsa/acbeast.m4: update.
+
 Wed May 10 19:11:33 2006  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c: 

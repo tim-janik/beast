@@ -1,4 +1,5 @@
-dnl Setup useful string and variable macros.
+dnl # Birnet
+dnl # GNU Lesser General Public License version 2 or any later version.
 
 ## Portability defines that help interoperate with classic and modern autoconfs
 ifdef([AC_TR_SH],[
@@ -27,7 +28,7 @@ AC_DIVERT_POP()])])])
 
 
 dnl GLIB_SIZEOF (INCLUDES, TYPE, ALIAS [, CROSS-SIZE])
-AC_DEFUN(GLIB_SIZEOF,
+AC_DEFUN([GLIB_SIZEOF],
 [pushdef([glib_Sizeof], GLIB_TR_SH([glib_cv_sizeof_$3]))dnl
 AC_CACHE_CHECK([size of $2], glib_Sizeof,
 [AC_TRY_RUN([#include <stdio.h>
@@ -53,7 +54,7 @@ popdef([glib_Sizeof])dnl
 
 
 dnl MC_IF_VAR_EQ(environment-variable, value [, equals-action] [, else-action])
-AC_DEFUN(MC_IF_VAR_EQ,[
+AC_DEFUN([MC_IF_VAR_EQ], [
 	case "$[$1]" in
 	"[$2]"[)]
 		[$3]
@@ -66,7 +67,7 @@ AC_DEFUN(MC_IF_VAR_EQ,[
 
 
 dnl MC_STR_CONTAINS(src-string, sub-string [, contains-action] [, else-action])
-AC_DEFUN(MC_STR_CONTAINS,[
+AC_DEFUN([MC_STR_CONTAINS], [
 	case "[$1]" in
 	*"[$2]"*[)]
 		[$3]
@@ -78,11 +79,11 @@ AC_DEFUN(MC_STR_CONTAINS,[
 ])
 
 dnl MC_EVAR_ADD(environment-variable, check-string, add-string)
-AC_DEFUN(MC_EVAR_ADD,[
+AC_DEFUN([MC_EVAR_ADD], [
 	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1]", [$1]="$[$1] [$3]")
 ])
 dnl MC_EVAR_SUPPLEMENT(environment-variable, check-string, add-string)
-AC_DEFUN(MC_EVAR_SUPPLEMENT,[
+AC_DEFUN([MC_EVAR_SUPPLEMENT], [
 	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1] [$3]", [$1]="$[$1]")
 ])
 
@@ -93,7 +94,7 @@ dnl compares each of those 6 numbers in order 1..6 to each other, requirering
 dnl all of the 6 given-version numbers to be greater than, or at least equal
 dnl to the corresponding number of required-version.
 dnl MC_CHECK_VERSION(given-version, required-version [, match-action] [, else-action])
-AC_DEFUN(MC_CHECK_VERSION,[
+AC_DEFUN([MC_CHECK_VERSION], [
 [eval `echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g' \
  -e 's/\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\(.*\)/ac_v1=\1 ac_v2=\2 ac_v3=\3 ac_v4=\4 ac_v5=\5 ac_v6=\6/' \
 `]
@@ -122,7 +123,7 @@ esac
 ])
 
 dnl MC_ASSERT_NONEMPTY(variable, program, srcpackage)
-AC_DEFUN(MC_ASSERT_NONEMPTY,[
+AC_DEFUN([MC_ASSERT_NONEMPTY], [
     case "x$[$1]"y in
     xy)
 	AC_MSG_ERROR([failed to find $2 which is required for a functional build. $3])
@@ -132,7 +133,7 @@ AC_DEFUN(MC_ASSERT_NONEMPTY,[
 
 dnl Find program
 dnl MC_ASSERT_PROG(variable, program, srcpackage)
-AC_DEFUN(MC_ASSERT_PROG,[
+AC_DEFUN([MC_ASSERT_PROG], [
     AC_PATH_PROG([$1], [$2], no)
     case "x$[$1]" in
     xno)
@@ -141,7 +142,7 @@ AC_DEFUN(MC_ASSERT_PROG,[
     esac
 ])
 dnl MC_ASSERT_PROGS(variable, programs, srcpackage)
-AC_DEFUN(MC_ASSERT_PROGS,[
+AC_DEFUN([MC_ASSERT_PROGS], [
     AC_PATH_PROGS([$1], [$2], no)
     case "x$[$1]" in
     xno)
@@ -152,7 +153,7 @@ AC_DEFUN(MC_ASSERT_PROGS,[
 
 dnl MC_PKG_CONFIG_REQUIRE(package, version, clfgas-var, libs-var)
 dnl Find package through $PKG_CONFIG
-AC_DEFUN(MC_PKG_CONFIG_REQUIRE,[
+AC_DEFUN([MC_PKG_CONFIG_REQUIRE], [
     mc_PACKAGE="[$1]"
     mc_VERSION="[$2]"
     AC_MSG_CHECKING([for $mc_PACKAGE - version >= $mc_VERSION])
@@ -171,7 +172,7 @@ AC_DEFUN(MC_PKG_CONFIG_REQUIRE,[
 
 dnl Check whether cc accepts a certain option
 dnl MC_PROG_CC_SUPPORTS_OPTION(OPTIONS, ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND])
-AC_DEFUN(MC_PROG_CC_SUPPORTS_OPTION,[
+AC_DEFUN([MC_PROG_CC_SUPPORTS_OPTION], [
 AC_MSG_CHECKING([whether ${CC-cc} supports $1])
 echo >conftest.c;
 if ${CC-cc} [$1] -c $CFLAGS conftest.c >/dev/null 2>&1 ; then
@@ -184,8 +185,8 @@ fi
 rm -fr conftest*
 ])dnl
 
-dnl Setup CC with default CFLAGS value.
-AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
+dnl # Setup CC with default CFLAGS value.
+AC_DEFUN([MC_PROG_CC_WITH_CFLAGS], [
 	MC_IF_VAR_EQ(CFLAGS, "", CFLAGS="-g")
 	CFLAGS_saved="$CFLAGS"
 	unset CFLAGS
@@ -225,6 +226,9 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		    MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
 		    MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
 		)
+		dnl avoid lots of bogus warnings with string pointers
+		MC_PROG_CC_SUPPORTS_OPTION(-Wno-pointer-sign,
+		  MC_EVAR_ADD(CFLAGS, -Wno-pointer-sign, -Wno-pointer-sign))
 		dnl problematic, triggers warnings in glibc headers
 		MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
 		dnl problematic, warns on prototype arguments:
@@ -259,8 +263,17 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 	)
 ])
 
-dnl Setup CXX with default CXXFLAGS value.
-AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
+dnl # MC_PROG_CC_SPECIAL_FLAGS([VARNAME], [FLAG_LIST])
+AC_DEFUN([MC_PROG_CC_SPECIAL_FLAGS], [
+	for flag in [$2] ; do
+	    MC_PROG_CC_SUPPORTS_OPTION($flag, MC_EVAR_ADD([$1], $flag, $flag))
+	done
+	AC_MSG_CHECKING([[$1]])
+	AC_MSG_RESULT($[$1])
+])
+
+dnl # Setup CXX with default CXXFLAGS value.
+AC_DEFUN([MC_PROG_CXX_WITH_CXXFLAGS], [
 	MC_IF_VAR_EQ(CXXFLAGS, "", CXXFLAGS="-g")
 	CXXFLAGS_saved="$CXXFLAGS"
 	unset CXXFLAGS
@@ -284,14 +297,17 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 
 	dnl Further setup CXXFLAGS for GXX.
 	MC_IF_VAR_EQ(GXX, yes,
-		dnl Warnings.
-		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
-	
-		dnl Warnings.
+		dnl # enable many useful warnings
 		MC_EVAR_ADD(CXXFLAGS, -Wall, -Wall)
-		dnl MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
 		MC_EVAR_ADD(CXXFLAGS, -Wno-cast-qual, -Wno-cast-qual)
-		dnl MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
+		MC_EVAR_ADD(CXXFLAGS, -Wstrict-null-sentinel, -Wstrict-null-sentinel)
+		dnl # MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		dnl # MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
+		
+		dnl # avoid bogus offsetof()-usage warnings
+		dnl MC_PROG_CC_SUPPORTS_OPTION(-Wno-invalid-offsetof,
+		dnl   MC_EVAR_ADD(CXXFLAGS, -Wno-invalid-offsetof, -Wno-invalid-offsetof))
 
 		dnl Optimizations
 		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
@@ -306,26 +322,12 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 
 		dnl figure current screen width from ncurses to make g++
 		dnl format errors for screensizes!=80 correctly
-		SAVED_LIBS="$LIBS"
-		LIBS="$LIBS -lncurses"
-		AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
-                                    #include <curses.h>
-				    int main()
-				    {
-					FILE *f=fopen("conftestval", "w");
-					int c;
-					if (!f) exit(1);
-					initscr();
-					c = COLS;
-					endwin();
-					fprintf(f, "%d\n",c);
-					exit(0);
-				    }
-				    ]])],
-		    [gxx_columns=`cat conftestval`],
-		    [gxx_columns='80'])
-		LIBS="$SAVED_LIBS"
-		if test -n "$gxx_columns" ; then
+		gxx_columns=0
+		AC_CHECK_PROG(TPUT, tput, yes)
+		if test "$TPUT" = "yes"; then
+		    gxx_columns=`tput cols`
+		fi
+		if test "$gxx_columns" -gt 1 ; then
 		    MC_PROG_CC_SUPPORTS_OPTION(-fmessage-length=$gxx_columns,
 			MC_EVAR_ADD(CXXFLAGS, -fmessage-length=, -fmessage-length=$gxx_columns))
 		fi
