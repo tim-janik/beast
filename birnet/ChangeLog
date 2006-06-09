@@ -1,3 +1,16 @@
+Fri Jun  9 19:50:24 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh: allow multiple invocations of relock() without
+	unlock() on an auto locker and have the auto locker clear up these
+	locks in its destructor. i.e. added a lock counter to auto locker.
+
+	* birnetthreadxx.cc (_birnet_init_threads_cxx): 
+	avoid std::list::size() which is O(N).
+
+	* test/threads.cc: moved former AutoLocker here as GenericAutoLocker,
+	added it to auto locker benchmarks. added a test to check auto locker
+	lock counting.
+
 Thu Jun  8 00:00:10 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh, birnetthreadxx.cc: added initialization queues for

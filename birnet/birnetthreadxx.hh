@@ -80,7 +80,8 @@ class AutoLocker {
     virtual void unlock     () const      { lockable->unlock(); }
     explicit     LockerImpl (Lockable *l) : lockable (l) {}
   };
-  void  *space[2];
+  void         *space[2];
+  volatile uint lcount;
   BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
   inline const Locker*          locker      () const             { return static_cast<const Locker*> ((const void*) &space); }
 protected:
@@ -93,11 +94,11 @@ protected:
     BIRNET_ASSERT (laddr == locker());
   }
 public:
-  template<class Lockable>      AutoLocker  (Lockable *lockable) { new (space) LockerImpl<Lockable> (lockable); relock(); }
-  template<class Lockable>      AutoLocker  (Lockable &lockable) { new (space) LockerImpl<Lockable> (&lockable); relock(); }
-  void                          relock      () const             { locker()->lock(); }
-  void                          unlock      () const             { locker()->unlock(); }
-  /*Des*/                       ~AutoLocker ()                   { unlock(); }
+  template<class Lockable>      AutoLocker  (Lockable *lockable) : lcount (0) { new (space) LockerImpl<Lockable> (lockable); relock(); }
+  template<class Lockable>      AutoLocker  (Lockable &lockable) : lcount (0) { new (space) LockerImpl<Lockable> (&lockable); relock(); }
+  void                          relock      ()                                { locker()->lock(); lcount++; }
+  void                          unlock      ()                                { BIRNET_ASSERT (lcount > 0); lcount--; locker()->unlock(); }
+  /*Des*/                       ~AutoLocker ()                                { while (lcount) unlock(); }
 };
 
 namespace Atomic {

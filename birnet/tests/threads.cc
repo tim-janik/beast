@@ -351,6 +351,29 @@ test_auto_locker_order()
 }
 
 static void
+test_auto_locker_counting()
+{
+  /* check Birnet::AutoLocker lock counting */
+  LockCounter lock_counter;
+  TASSERT (lock_counter.lock_count() == 0);
+  {
+    AutoLocker auto_locker (lock_counter);
+    TASSERT (lock_counter.lock_count() == 1);
+    auto_locker.relock();
+    TASSERT (lock_counter.lock_count() == 2);
+    auto_locker.relock();
+    TASSERT (lock_counter.lock_count() == 3);
+    auto_locker.unlock();
+    TASSERT (lock_counter.lock_count() == 2);
+    auto_locker.relock();
+    TASSERT (lock_counter.lock_count() == 3);
+    auto_locker.relock();
+    TASSERT (lock_counter.lock_count() == 4);
+  }
+  TASSERT (lock_counter.lock_count() == 0);
+}
+
+static void
 test_auto_locker_cxx()
 {
   TSTART ("C++AutoLocker");
@@ -386,6 +409,9 @@ test_auto_locker_cxx()
   test_recursive_auto_lock (rec_mutex, 17);
 
   test_auto_locker_order();
+  
+  test_auto_locker_counting();
+
   TDONE();
 }
 
@@ -393,6 +419,7 @@ test_auto_locker_cxx()
 #define RUNS (500000)
 
 class HeapLocker {
+  // like PtrAutoLocker but allocates on the heap
   struct Lockable {
     virtual void lock() = 0;
     virtual void unlock() = 0;
@@ -436,6 +463,7 @@ bench_heap_auto_locker()
 static void
 bench_direct_auto_locker()
 {
+  // supports auto locking only for RecMutex and Mutex
   class AutoLocker2 {
     union {
       Mutex    *m_mutex;
@@ -475,7 +503,53 @@ bench_direct_auto_locker()
     }
 }
 
+class GenericAutoLocker {
+  // supports automated scope-bound lock/unlock for all kinds of objects
+  struct Locker {
+    virtual void lock   () const = 0;
+    virtual void unlock () const = 0;
+  };
+  template<class Lockable>
+  struct LockerImpl : public Locker {
+    Lockable    *lockable;
+    virtual void lock       () const      { lockable->lock(); }
+    virtual void unlock     () const      { lockable->unlock(); }
+    explicit     LockerImpl (Lockable *l) : lockable (l) {}
+  };
+  void  *space[2];
+  BIRNET_PRIVATE_CLASS_COPY (GenericAutoLocker);
+  inline const Locker*          locker      () const             { return static_cast<const Locker*> ((const void*) &space); }
+protected:
+  /* assert implicit assumption of the GenericAutoLocker implementation */
+  template<class Lockable> void
+  assert_impl (Lockable &lockable)
+  {
+    BIRNET_ASSERT (sizeof (LockerImpl<Lockable>) <= sizeof (space));
+    Locker *laddr = new (space) LockerImpl<Lockable> (&lockable);
+    BIRNET_ASSERT (laddr == locker());
+  }
+public:
+  template<class Lockable>      GenericAutoLocker  (Lockable *lockable) { new (space) LockerImpl<Lockable> (lockable); relock(); }
+  template<class Lockable>      GenericAutoLocker  (Lockable &lockable) { new (space) LockerImpl<Lockable> (&lockable); relock(); }
+  void                          relock             () const             { locker()->lock(); }
+  void                          unlock             () const             { locker()->unlock(); }
+  /*Des*/                       ~GenericAutoLocker ()                   { unlock(); }
+};
+
+static void
+bench_generic_auto_locker()
+{
+  Mutex mutex;
+  RecMutex rmutex;
+  for (uint i = 0; i < RUNS; i++)
+    {
+      GenericAutoLocker locker1 (mutex);
+      GenericAutoLocker locker2 (rmutex);
+    }
+}
+
 class PtrAutoLocker {
+  // like GenericAutoLocker but uses an extra pointer
   struct Locker {
     virtual void lock   () = 0;
     virtual void unlock () = 0;
@@ -497,7 +571,6 @@ public:
   void                          unlock         () { locker->unlock(); }
   /*Des*/                       ~PtrAutoLocker () { unlock(); }
 };
-
 
 static void
 bench_ptr_auto_locker()
@@ -589,6 +662,21 @@ bench_auto_locker_cxx()
       TICK();
     }
   TACK();
+  /* bench generic auto locker */
+  guint gdups = TEST_CALIBRATION (60.0, bench_generic_auto_locker());
+  double gmin = 9e300;
+  for (guint i = 0; i < n_repeatitions; i++)
+    {
+      g_timer_start (timer);
+      for (guint j = 0; j < gdups; j++)
+        bench_generic_auto_locker();
+      g_timer_stop (timer);
+      double e = g_timer_elapsed (timer, NULL);
+      if (e < gmin)
+        gmin = e;
+      TICK();
+    }
+  TACK();
   /* bench ptr auto locker */
   guint pdups = TEST_CALIBRATION (60.0, bench_ptr_auto_locker());
   double pmin = 9e300;
@@ -623,6 +711,7 @@ bench_auto_locker_cxx()
   TDONE();
   g_print ("Manual-Locker:      %7.3f nsecs\n", xmin / xdups / RUNS * 1000. * 1000. * 1000.);
   g_print ("Direct-AutoLocker:  %7.3f nsecs\n", smin / sdups / RUNS * 1000. * 1000. * 1000.);
+  g_print ("Generic-AutoLocker: %7.3f nsecs\n", gmin / gdups / RUNS * 1000. * 1000. * 1000.);
   g_print ("Birnet-AutoLocker:  %7.3f nsecs\n", bmin / bdups / RUNS * 1000. * 1000. * 1000.);
   g_print ("Pointer-AutoLocker: %7.3f nsecs\n", pmin / pdups / RUNS * 1000. * 1000. * 1000.);
   g_print ("Heap-AutoLocker:    %7.3f nsecs\n", tmin / tdups / RUNS * 1000. * 1000. * 1000.);

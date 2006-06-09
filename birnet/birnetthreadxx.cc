@@ -301,19 +301,19 @@ extern "C" void
 _birnet_init_threads_cxx (void)
 {
   using namespace Birnet;
-  while (cxx_init_mutex_list.size())
+  while (!cxx_init_mutex_list.empty())
     {
       BirnetMutex *mutex = cxx_init_mutex_list.front();
       cxx_init_mutex_list.pop_front();
       birnet_thread_table.mutex_init (mutex);
     }
-  while (cxx_init_rec_mutex_list.size())
+  while (!cxx_init_rec_mutex_list.empty())
     {
       BirnetRecMutex *rmutex = cxx_init_rec_mutex_list.front();
       cxx_init_rec_mutex_list.pop_front();
       birnet_thread_table.rec_mutex_init (rmutex);
     }
-  while (cxx_init_cond_list.size())
+  while (!cxx_init_cond_list.empty())
     {
       BirnetCond *cond = cxx_init_cond_list.front();
       cxx_init_cond_list.pop_front();
