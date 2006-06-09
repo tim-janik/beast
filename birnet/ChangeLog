@@ -1,3 +1,8 @@
+Fri Jun  9 19:54:52 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h (birnet_init_test): check that NULL is defined to __null
+	in C++ on 64bit.
+
 Fri Jun  9 19:50:24 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh: allow multiple invocations of relock() without

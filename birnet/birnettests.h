@@ -168,6 +168,8 @@ birnet_init_test (int    *argc,
   };
   birnet_init_extended (argc, argv, NULL, ivalues);
   birnet_test_setup();
+  /* some runtime checks are best to have here */
+  BIRNET_ASSERT (sizeof (NULL) == sizeof (void*)); // check that NULL is defined to __null in C++ on 64bit
 }
 
 BIRNET_EXTERN_C_END();

@@ -22,6 +22,7 @@
 namespace {
 using namespace Birnet;
 
+
 /* --- atomicity tests --- */
 static volatile guint atomic_count = 0;
 static BirnetMutex    atomic_mutex;
