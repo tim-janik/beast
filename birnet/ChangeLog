@@ -1,3 +1,7 @@
+Sun Jun 11 19:02:05 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.h: provide STRFUNC if _BIRNET_SOURCE_EXTENSIONS is defined.
+
 Fri Jun  9 19:54:52 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h (birnet_init_test): check that NULL is defined to __null

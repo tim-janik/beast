@@ -40,6 +40,8 @@ BIRNET_EXTERN_C_BEGIN();
 #define MAX                                     BIRNET_MAX
 #undef CLAMP
 #define CLAMP                                   BIRNET_CLAMP
+#undef STRFUNC
+#define	STRFUNC					G_STRFUNC
 #endif  /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- reliable assert --- */
