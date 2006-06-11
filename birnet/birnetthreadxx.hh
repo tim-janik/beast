@@ -24,6 +24,8 @@
 
 namespace Birnet {
 
+class Thread;
+
 class Mutex {
   BirnetMutex mutex;
   friend class Cond;
@@ -58,6 +60,93 @@ public:
   void          wait_timed    (Mutex &m,
                                int64 max_usecs) { birnet_cond_wait_timed (&cond, &m.mutex, max_usecs); }
   /*Des*/       ~Cond         ();
+};
+
+namespace Atomic {
+/* atomic integers */
+inline void     int_set      (volatile int *iptr, int value)    { birnet_atomic_int_set (iptr, value); }
+inline int      int_get      (volatile int *iptr)               { return birnet_atomic_int_get (iptr); }
+inline bool     int_cas      (volatile int *iptr, int o, int n) { return birnet_atomic_int_compare_and_swap (iptr, o, n); }
+inline void     int_add      (volatile int *iptr, int diff)     { birnet_atomic_int_add (iptr, diff); }
+inline int      int_swap_add (volatile int *iptr, int diff)     { return birnet_atomic_int_swap_and_add (iptr, diff); }
+/* atomic pointers */
+template<class V>
+inline void     ptr_set      (volatile V **ptr_addr, V *n)      { birnet_atomic_set (void*, (void**) ptr_addr, (void*) n); }
+template<class V>
+inline V*       ptr_get      (volatile V **ptr_addr)            { return (V*) birnet_atomic_get (void*, (void**) ptr_addr); }
+template<class V>
+inline V*       ptr_get      (volatile V *const *ptr_addr)      { return (V*) birnet_atomic_get (void*, (void**) ptr_addr); }
+template<class V>
+inline bool     ptr_cas      (volatile V **ptr_adr, V *o, V *n) { return birnet_atomic_compare_and_swap (void*, (void**) ptr_adr, (void*) o, (void*) n); }
+};
+
+class OwnedMutex {
+  BirnetRecMutex   m_rec_mutex;
+  volatile Thread *m_owner;
+  BIRNET_PRIVATE_CLASS_COPY (OwnedMutex);
+public:
+  explicit       OwnedMutex ();
+  inline void    lock       ();
+  inline bool    trylock    ();
+  inline void    unlock     ();
+  inline Thread* owner      ();
+  inline bool    mine       ();
+  /*Des*/       ~OwnedMutex ();
+};
+
+class Thread : public virtual ReferenceCountImpl {
+protected:
+  explicit              Thread          (const String      &name);
+  virtual void          run             () = 0;
+  virtual               ~Thread         ();
+public:
+  void                  start           ();
+  int                   pid             () const;
+  String                name            () const;
+  void                  queue_abort     ();
+  void                  abort           ();
+  bool                  aborted         ();
+  void                  wakeup          ();
+  bool                  running         ();
+  void                  wait_for_exit   ();
+  /* event loop */
+  void                  exec_loop       ();
+  void                  quit_loop       ();
+  /* global methods */
+  static void           emit_wakeups    (uint64             stamp);
+  static Thread&        self            ();
+  /* Self thread */
+  struct Self {
+    static String       name            ();
+    static void         name            (const String      &name);
+    static bool         sleep           (long               max_useconds);
+    static bool         aborted         ();
+    static int          pid             ();
+    static void         awake_after     (uint64             stamp);
+    static void         set_wakeup      (BirnetThreadWakeup wakeup_func,
+                                         void              *wakeup_data,
+                                         GDestroyNotify     destroy);
+    static OwnedMutex&  owned_mutex     ();
+  };
+  /* DataListContainer API */
+  template<typename Type> inline void set_data    (DataKey<Type> *key,
+                                                   Type           data) { thread_lock(); data_list.set (key, data); thread_unlock(); }
+  template<typename Type> inline Type get_data    (DataKey<Type> *key)  { thread_lock(); Type d = data_list.get (key); thread_unlock(); return d; }
+  template<typename Type> inline Type swap_data   (DataKey<Type> *key)  { thread_lock(); Type d = data_list.swap (key); thread_unlock(); return d; }
+  template<typename Type> inline Type swap_data   (DataKey<Type> *key,
+                                                   Type           data) { thread_lock(); Type d = data_list.swap (key, data); thread_unlock(); return d; }
+  template<typename Type> inline void delete_data (DataKey<Type> *key)  { thread_lock(); data_list.del (key); thread_unlock(); }
+  /* implementaiton details */
+private:
+  DataList              data_list;
+  BirnetThread         *bthread;
+  OwnedMutex            m_omutex;
+  explicit              Thread          (BirnetThread      *thread);
+  void                  thread_lock     ()                              { m_omutex.lock(); }
+  bool                  thread_trylock  ()                              { return m_omutex.trylock(); }
+  void                  thread_unlock   ()                              { m_omutex.unlock(); }
+  BIRNET_PRIVATE_CLASS_COPY (Thread);
+protected: class ThreadWrapperInternal;
 };
 
 /**
@@ -101,93 +190,44 @@ public:
   /*Des*/                       ~AutoLocker ()                                { while (lcount) unlock(); }
 };
 
-namespace Atomic {
-/* atomic integers */
-inline void     int_set      (volatile int *iptr, int value)    { birnet_atomic_int_set (iptr, value); }
-inline int      int_get      (volatile int *iptr)               { return birnet_atomic_int_get (iptr); }
-inline bool     int_cas      (volatile int *iptr, int o, int n) { return birnet_atomic_int_compare_and_swap (iptr, o, n); }
-inline void     int_add      (volatile int *iptr, int diff)     { birnet_atomic_int_add (iptr, diff); }
-inline int      int_swap_add (volatile int *iptr, int diff)     { return birnet_atomic_int_swap_and_add (iptr, diff); }
-/* atomic pointers */
-template<class V>
-inline void     ptr_set      (volatile V **ptr_addr, V *n)      { birnet_atomic_set (void*, (void**) ptr_addr, (void*) n); }
-template<class V>
-inline V*       ptr_get      (volatile V **ptr_addr)            { return (V*) birnet_atomic_get (void*, (void**) ptr_addr); }
-template<class V>
-inline V*       ptr_get      (volatile V *const *ptr_addr)      { return (V*) birnet_atomic_get (void*, (void**) ptr_addr); }
-template<class V>
-inline bool     ptr_cas      (volatile V **ptr_adr, V *o, V *n) { return birnet_atomic_compare_and_swap (void*, (void**) ptr_adr, (void*) o, (void*) n); }
-};
+/* --- implementation --- */
+inline void
+OwnedMutex::lock ()
+{
+  birnet_thread_table.rec_mutex_lock (&m_rec_mutex);
+  Atomic::ptr_set (&m_owner, &Thread::self());
+}
 
-class Thread : public virtual ReferenceCountImpl {
-  static void           trampoline      (void                   *thread_data);
-  BIRNET_PRIVATE_CLASS_COPY (Thread);
-  explicit              Thread          (BirnetThread           *thread);
-protected:
-  BirnetThread         *bthread;
-  static Thread*        thread_from_c   (BirnetThread           *bthread);
-  virtual void          run             () = 0;
-public:
-  explicit              Thread          (const String           &name);
-  void                  start           ();
-  int                   pid             () const;
-  String                name            () const;
-  void                  queue_abort     ();
-  void                  abort           ();
-  bool                  aborted         ();
-  void                  wakeup          ();
-  bool                  running         ();
-  void                  wait_for_exit   ();
-  virtual               ~Thread         ();
-  /* global method */
-  static void           emit_wakeups    (uint64                  stamp);
-  static Thread&        self            ();
-  /* self thread */
-  struct Self {
-    static String       name            ();
-    static void         name            (const String           &name);
-    static bool         sleep           (long                    max_useconds);
-    static bool         aborted         ();
-    static int          pid             ();
-    static void         awake_after     (uint64                  stamp);
-    static void         set_wakeup      (BirnetThreadWakeup      wakeup_func,
-                                         void                   *wakeup_data,
-                                         GDestroyNotify          destroy);
-  };
-  /* event loop */
-  void                  exec_loop       ();
-  void                  quit_loop       ();
-#if 0 // FIXME
-  /* mimick DataListContainer */
-private:
-  DataList data_list;
-  void     thread_lock     ();
-  bool     thread_trylock  ();
-  void     thread_unlock   ();
-public: /* generic data API */
-  template<typename Type> inline void set_data    (DataKey<Type> *key,
-                                                   Type           data) { thread_lock(); data_list.set (key, data); thread_unlock(); }
-  template<typename Type> inline Type get_data    (DataKey<Type> *key)  { thread_lock(); Type d = data_list.get (key); thread_unlock(); return d; }
-  template<typename Type> inline Type swap_data   (DataKey<Type> *key)  { thread_lock(); Type d = data_list.swap (key); thread_unlock(); return d; }
-  template<typename Type> inline Type swap_data   (DataKey<Type> *key,
-                                                   Type           data) { thread_lock(); Type d = data_list.swap (key, data); thread_unlock(); return d; }
-  template<typename Type> inline void delete_data (DataKey<Type> *key)  { thread_lock(); data_list.del (key); thread_unlock(); }
-#endif
-};
+inline bool
+OwnedMutex::trylock ()
+{
+  if (birnet_thread_table.rec_mutex_trylock (&m_rec_mutex) == 0)
+    {
+      Atomic::ptr_set (&m_owner, &Thread::self());
+      return true; /* TRUE indicates success */
+    }
+  else
+    return false;
+}
 
-class OwnedMutex {
-  BirnetRecMutex   m_rec_mutex;
-  volatile Thread *m_owner;
-  BIRNET_PRIVATE_CLASS_COPY (OwnedMutex);
-public:
-  explicit      OwnedMutex  ();
-  void          lock        ()                  { birnet_thread_table.rec_mutex_lock (&m_rec_mutex); Atomic::ptr_set (&m_owner, &Thread::self()); }
-  void          unlock      ()                  { Atomic::ptr_set (&m_owner, (Thread*) 0); birnet_thread_table.rec_mutex_unlock (&m_rec_mutex); }
-  bool          trylock     ();
-  Thread*       owner       ()                  { return Atomic::ptr_get (&m_owner); }
-  bool          mine        ()                  { return Atomic::ptr_get (&m_owner) == &Thread::self(); }
-  /*Des*/       ~OwnedMutex ();
-};
+inline void
+OwnedMutex::unlock ()
+{
+  Atomic::ptr_set (&m_owner, (Thread*) 0);
+  birnet_thread_table.rec_mutex_unlock (&m_rec_mutex);
+}
+
+inline Thread*
+OwnedMutex::owner ()
+{
+  return Atomic::ptr_get (&m_owner);
+}
+
+inline bool
+OwnedMutex::mine ()
+{
+  return Atomic::ptr_get (&m_owner) == &Thread::self();
+}
 
 } // Birnet
 

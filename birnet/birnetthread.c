@@ -161,14 +161,10 @@ birnet_thread_unref (BirnetThread *thread)
   } while (!THREAD_CAS (thread, old_ref, new_ref));
   if (0 == (new_ref & ~FLOATING_FLAG))
     {
-      g_datalist_clear (&thread->qdata);
-      void *threadcxx = g_atomic_pointer_get (&thread->threadxx);
-      while (threadcxx)
-        {
-          _birnet_thread_cxx_delete (threadcxx);
-          g_datalist_clear (&thread->qdata);
-          threadcxx = g_atomic_pointer_get (&thread->threadxx);
-        }
+      g_assert (thread->qdata == NULL);
+      g_assert (g_atomic_pointer_get (&thread->threadxx) == NULL);
+      /* final cleanup code, all custom hooks have been processed now */
+      birnet_guard_deregister_all (thread);
       birnet_cond_destroy (&thread->wakeup_cond);
       g_free (thread->name);
       thread->name = NULL;
@@ -185,7 +181,6 @@ birnet_thread_handle_exit (BirnetThread *thread)
 {
   /* run custom data cleanup handlers */
   g_datalist_clear (&thread->qdata);
-  /* cleanup wakeup hook */
   thread->wakeup_func = NULL;
   while (thread->wakeup_destroy)
     {
@@ -193,17 +188,22 @@ birnet_thread_handle_exit (BirnetThread *thread)
       thread->wakeup_destroy = NULL;
       wakeup_destroy (thread->wakeup_data);
     }
-  /* cleanup custom data from destruction phase */
   g_datalist_clear (&thread->qdata);
-
-  /* regular cleanup code, all custom hooks have been processed now */
-  birnet_guard_deregister_all (thread);
+  void *threadcxx = g_atomic_pointer_get (&thread->threadxx);
+  while (threadcxx)
+    {
+      _birnet_thread_cxx_delete (threadcxx);
+      g_datalist_clear (&thread->qdata);
+      threadcxx = g_atomic_pointer_get (&thread->threadxx);
+    }
   birnet_mutex_lock (&global_thread_mutex);
   global_thread_list = birnet_ring_remove (global_thread_list, thread);
   if (thread->awake_stamp)
     thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
+  thread->awake_stamp = 1;
   birnet_cond_broadcast (&global_thread_cond);
   birnet_mutex_unlock (&global_thread_mutex);
+  
   /* free thread structure */
   birnet_thread_unref (thread);
 }

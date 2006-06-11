@@ -21,11 +21,57 @@
 
 namespace Birnet {
 
+/* --- Thread::ThreadWrapperInternal --- */
+struct Thread::ThreadWrapperInternal : public Thread {
+  ThreadWrapperInternal (BirnetThread *bthread) :
+    Thread (bthread)
+  {}
+  virtual void
+  run ()
+  {}
+  static Thread*
+  thread_from_c (BirnetThread *bthread)
+  {
+    Thread::ThreadWrapperInternal *ithread = new ThreadWrapperInternal (bthread);
+    if (!ithread->bthread)
+      {
+        /* someone else was faster */
+        ithread->ref_sink();
+        ithread->unref();
+      }
+    void *threadxx = _birnet_thread_get_cxx (bthread);
+    BIRNET_ASSERT (threadxx != NULL);
+    return reinterpret_cast<Thread*> (threadxx);
+  }
+  static void
+  thread_reset_c (Thread *thread)
+  {
+    BirnetThread *bthread = thread->bthread;
+    BIRNET_ASSERT (thread->bthread != NULL);
+    thread->data_list.clear_like_destructor();
+    thread->bthread = NULL;
+    _birnet_thread_set_cxx (bthread, NULL);
+  }
+  static void
+  trampoline (void *thread_data)
+  {
+    Thread &self = *reinterpret_cast<Thread*> (thread_data);
+    self.run();
+  }
+};
+
+/* --- ThreadWrapperInternal (public version of Thread::ThreadWrapperInternal --- */
+struct ThreadDescendant : public Thread {
+  typedef ThreadWrapperInternal PublicThreadWrapperInternal;
+};
+typedef ThreadDescendant::PublicThreadWrapperInternal ThreadWrapperInternal;
+
+/* --- Thread methods --- */
 static BirnetThread*
-create_thread (const gchar *name,
-               void        *threadxx)
+bthread_create_for_thread (const String &name,
+                           void         *threadxx)
 {
-  BirnetThread *bthread = birnet_thread_new (name);
+  BirnetThread *bthread = birnet_thread_new (name.c_str());
   bool success = _birnet_thread_set_cxx (bthread, threadxx);
   BIRNET_ASSERT (success);
   birnet_thread_ref_sink (bthread);
@@ -33,7 +79,7 @@ create_thread (const gchar *name,
 }
 
 Thread::Thread (const String &_name) :
-  bthread (create_thread (_name.c_str(), this))
+  bthread (bthread_create_for_thread (_name, this))
 {}
 
 Thread::Thread (BirnetThread* thread) :
@@ -51,27 +97,6 @@ Thread::Thread (BirnetThread* thread) :
   birnet_thread_unref (thread);
 }
 
-Thread*
-Thread::thread_from_c (BirnetThread *bthread)
-{
-  struct CThread : public virtual Thread {
-    explicit CThread (BirnetThread *bthread) :
-      Thread (bthread)
-    {}
-    virtual void run() {}
-  };
-  CThread *cthread = new CThread (bthread);
-  if (!cthread->bthread)
-    {
-      /* someone else was faster */
-      cthread->ref_sink();
-      cthread->unref();
-    }
-  void *threadxx = _birnet_thread_get_cxx (bthread);
-  BIRNET_ASSERT (threadxx != NULL);
-  return reinterpret_cast<Thread*> (threadxx);
-}
-
 Thread::~Thread ()
 {
   if (bthread)  /* can be NULL in thread_from_c() */
@@ -82,19 +107,12 @@ Thread::~Thread ()
 }
 
 void
-Thread::trampoline (void *thread_data)
-{
-  Thread &self = *reinterpret_cast<Thread*> (thread_data);
-  self.run();
-}
-
-void
 Thread::start ()
 {
   bool success = false;
   while (!success)
     {
-      success = birnet_thread_start (bthread, trampoline, this);
+      success = birnet_thread_start (bthread, Thread::ThreadWrapperInternal::trampoline, this);
       if (!success)
         birnet_thread_yield();
     }
@@ -211,6 +229,12 @@ Thread::Self::set_wakeup (BirnetThreadWakeup      wakeup_func,
   birnet_thread_set_wakeup (wakeup_func, wakeup_data, destroy);
 }
 
+OwnedMutex&
+Thread::Self::owned_mutex ()
+{
+  return self().m_omutex;
+}
+
 static std::list<BirnetMutex*> cxx_init_mutex_list;
 
 Mutex::Mutex ()
@@ -274,18 +298,6 @@ OwnedMutex::OwnedMutex () :
     cxx_init_rec_mutex_list.push_back (&m_rec_mutex);
 }
 
-bool
-OwnedMutex::trylock ()
-{
-  if (birnet_thread_table.rec_mutex_trylock (&m_rec_mutex) == 0)
-    {
-      Atomic::ptr_set (&m_owner, &Thread::self());
-      return true; /* TRUE indicates success */
-    }
-  else
-    return false;
-}
-
 OwnedMutex::~OwnedMutex()
 {
   BIRNET_ASSERT (m_owner == NULL);
@@ -325,14 +337,7 @@ extern "C" void
 _birnet_thread_cxx_wrap (BirnetThread *cthread)
 {
   using namespace Birnet;
-  struct ThreadWrapper : Thread {
-    static Thread*
-    wrapped_thread_from_c (BirnetThread *bthread)
-    {
-      return thread_from_c (bthread);
-    }
-  };
-  ThreadWrapper::wrapped_thread_from_c (cthread);
+  ThreadWrapperInternal::thread_from_c (cthread);
 }
 
 extern "C" void
@@ -340,5 +345,5 @@ _birnet_thread_cxx_delete (void *cxxthread)
 {
   using namespace Birnet;
   Thread *thread = reinterpret_cast<Thread*> (cxxthread);
-  delete thread;
+  ThreadWrapperInternal::thread_reset_c (thread);
 }

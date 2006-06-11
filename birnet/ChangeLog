@@ -1,3 +1,21 @@
+Sun Jun 11 23:48:59 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.c: destruction phase fixups.
+	birnet_thread_unref(): ensure all callback related destruction has 
+	already taken place when ref_count drops to 0.
+	birnet_thread_handle_exit(): call C++ destruciton logic.
+
+	* birnetthreadxx.cc: moved magic trhread implementation bits into 
+	Thread::ThreadWrapperInternal. 
+
+	* birnetthreadxx.hh: added OwnedMutex to Thread. cleaned up magic
+	implementation bits. provide Thread::Self::owned_mutex(). 
+	provide DataListContainer API by reimplementation for thread safety.
+
+	* tests/datalist.cc: test Thread DataListContainer API.
+
+	* tests/threads.cc: minor adjustments.
+
 Sun Jun 11 19:47:27 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutilsxx.hh, birnetutilsxx.cc: moved DataList implementation here

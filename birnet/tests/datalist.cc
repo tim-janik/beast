@@ -41,7 +41,7 @@ class StringKey : public DataKey<String> {
   }
 };
 
-static void
+template<class DataListContainer> static void
 data_list_test_strings (DataListContainer &r)
 {
   StringKey strkey;
@@ -54,7 +54,7 @@ data_list_test_strings (DataListContainer &r)
   TASSERT (String ("") == r.get_data (&strkey).c_str()); // fallback()
 }
 
-static void
+template<class DataListContainer> static void
 data_list_test_ints (DataListContainer &r)
 {
   MyKey intkey;
@@ -104,6 +104,15 @@ data_list_test ()
     data_list_test_strings (r);
     data_list_test_ints (r);
     data_list_test_strings (r);
+  }
+  TDONE();
+
+  TSTART ("DataList-thread");
+  {
+    Thread &thread = Thread::self();
+    data_list_test_strings (thread);
+    data_list_test_ints (thread);
+    data_list_test_strings (thread);
   }
   TDONE();
 }

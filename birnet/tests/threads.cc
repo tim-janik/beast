@@ -58,7 +58,7 @@ static void
 test_atomic (void)
 {
   TSTART ("AtomicThreading");
-  int count = 60;
+  int count = 44;
   BirnetThread *threads[count];
   volatile int atomic_counter = 0;
   birnet_mutex_init (&atomic_mutex);
@@ -181,7 +181,7 @@ test_thread_cxx (void)
   TASSERT (NULL != &Thread::self());
   volatile int atomic_counter = 0;
   int result = 0;
-  int count = 60;
+  int count = 35;
   Birnet::Thread *threads[count];
   for (int i = 0; i < count; i++)
     {
