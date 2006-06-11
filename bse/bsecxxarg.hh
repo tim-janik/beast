@@ -44,7 +44,7 @@ private:
   ptokenize (void const *)
   {     // other pointer types are not supported
     return "?";
-    TEMPLATE_ERROR::invalid_argument_type<U*>();
+    Birnet::TEMPLATE_ERROR::invalid_type<U*>();
   }
   template<typename U> const String
   tokenize (void (*) (U*))
@@ -56,7 +56,7 @@ private:
   tokenize (void (*) (U))
   {     // non-pointer type, not supported
     return "?";
-    TEMPLATE_ERROR::invalid_argument_type<U>();
+    Birnet::TEMPLATE_ERROR::invalid_type<U>();
   }
 };
 const String tokenize_gtype (GType t);

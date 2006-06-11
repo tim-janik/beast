@@ -1,3 +1,10 @@
+Mon Jun 12 01:09:51 2006  Tim Janik  <timj@gtk.org>
+
+	* bsecxxutils.hh: got rid of TEMPLATE_ERROR::* which is provided
+	by Birnet now.
+	
+	* bsecxxarg.hh: use Birnet::TEMPLATE_ERROR::invalid_type().
+
 Mon Jun  5 13:59:52 2006  Tim Janik  <timj@gtk.org>
 
 	* bsecxxutils.hh: removed binary lookup templates which are 

@@ -46,12 +46,6 @@ typedef SfiProxy    Proxy;
 typedef std::string String;
 
 
-/* --- template errors --- */
-namespace TEMPLATE_ERROR {
-template<typename What, typename Reason> void invalid_type () { bool force_compiler_error = void (0); }
-template<typename TYPE> void invalid_argument_type () { bool force_compiler_error = void (0); }
-}
-
 /* --- generally useful templates --- */
 template<class Data> static void
 delete_this (Data *d)

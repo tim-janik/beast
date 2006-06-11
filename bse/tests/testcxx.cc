@@ -55,10 +55,6 @@ main (int   argc,
   // test closure Arg types
   Arg<FooTest*> a1;
   a1.token();
-#if 0  // produce template error
-  Arg<int**> a2;
-  a2.token();
-#endif
   Arg<int> a3;
   a3.token();
   Arg<char*> a4;
@@ -66,6 +62,11 @@ main (int   argc,
   Arg<BseSource*> a5;
   a5.token();
   // tokenize_gtype (0);
+
+#if 0  // produce template error
+  Arg<int**> errorarg;
+  errorarg.token();
+#endif
 
   GObject *o = (GObject*) g_object_new (BSE_TYPE_BUS_MODULE, NULL);
   CxxBase *b = cast (o);
