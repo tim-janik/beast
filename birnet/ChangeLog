@@ -1,3 +1,12 @@
+Sun Jun 11 19:47:27 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutilsxx.hh, birnetutilsxx.cc: moved DataList implementation here
+	from Rapicorn. this provides the API types DataKey and DataListContainer.
+
+	* tests/datalist.cc: DataList test, adapted from Rapicorn.
+
+	* birnettests.h: made TASSERT() more verbose if TEST_VERBOSE is defined.
+
 Sun Jun 11 19:02:05 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: provide STRFUNC if _BIRNET_SOURCE_EXTENSIONS is defined.

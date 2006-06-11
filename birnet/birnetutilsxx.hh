@@ -1,5 +1,5 @@
 /* Birnet
- * Copyright (C) 2006 Tim Janik
+ * Copyright (C) 2005-2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -274,7 +274,132 @@ binary_lookup (RandIter  begin,
   return binary_lookup_fuzzy<RandIter,Cmp,Arg,0> (begin, end, cmp_elements, arg).first;
 }
 
+/* --- generic named data --- */
+template<typename Type>
+class DataKey {
+private:
+  /*Copy*/        DataKey    (const DataKey&);
+  DataKey&        operator=  (const DataKey&);
+public:
+  /* explicit */  DataKey    ()                 { }
+  virtual Type    fallback   ()                 { Type d = Type(); return d; }
+  virtual void    destroy    (Type data)        { /* destruction hook */ }
+};
+
+class DataList {
+  class NodeBase {
+  protected:
+    NodeBase      *next;
+    DataKey<void> *key;
+    explicit       NodeBase (DataKey<void> *k) :
+      next (NULL),
+      key (k)
+    {}
+    virtual        ~NodeBase () {}
+    friend         class DataList;
+  };
+  template<typename T>
+  class Node : public NodeBase {
+    T data;
+  public:
+    T   get_data ()     { return data; }
+    T   swap     (T d)  { T result = data; data = d; return result; }
+    ~Node()
+    {
+      if (key)
+        {
+          DataKey<T> *dkey = reinterpret_cast<DataKey<T>*> (key);
+          dkey->destroy (data);
+        }
+    }
+    Node (DataKey<T> *k,
+          T           d) :
+      NodeBase (reinterpret_cast<DataKey<void>*> (k)),
+      data (d)
+    {}
+  };
+  NodeBase *nodes;
+public:
+  DataList() :
+    nodes (NULL)
+  {}
+  template<typename T> void
+  set (DataKey<T> *key,
+       T           data)
+  {
+    Node<T> *node = new Node<T> (key, data);
+    set_data (node);
+  }
+  template<typename T> T
+  get (DataKey<T> *key) const
+  {
+    NodeBase *nb = get_data (reinterpret_cast<DataKey<void>*> (key));
+    if (nb)
+      {
+        Node<T> *node = reinterpret_cast<Node<T>*> (nb);
+        return node->get_data();
+      }
+    else
+      return key->fallback();
+  }
+  template<typename T> T
+  swap (DataKey<T> *key,
+        T           data)
+  {
+    NodeBase *nb = get_data (reinterpret_cast<DataKey<void>*> (key));
+    if (nb)
+      {
+        Node<T> *node = reinterpret_cast<Node<T>*> (nb);
+        return node->swap (data);
+      }
+    else
+      {
+        set (key, data);
+        return key->fallback();
+      }
+  }
+  template<typename T> T
+  swap (DataKey<T> *key)
+  {
+    NodeBase *nb = rip_data (reinterpret_cast<DataKey<void>*> (key));
+    if (nb)
+      {
+        Node<T> *node = reinterpret_cast<Node<T>*> (nb);
+        T d = node->get_data();
+        nb->key = NULL; // rip key to prevent data destruction
+        delete nb;
+        return d;
+      }
+    else
+      return key->fallback();
+  }
+  template<typename T> void
+  del (DataKey<T> *key)
+  {
+    NodeBase *nb = rip_data (reinterpret_cast<DataKey<void>*> (key));
+    if (nb)
+      delete nb;
+  }
+  void clear_like_destructor();
+  ~DataList();
+private:
+  void      set_data (NodeBase      *node);
+  NodeBase* get_data (DataKey<void> *key) const;
+  NodeBase* rip_data (DataKey<void> *key);
+};
+
+/* --- DataListContainer --- */
+class DataListContainer {
+  DataList data_list;
+public: /* generic data API */
+  template<typename Type> inline void set_data    (DataKey<Type> *key, Type data) { data_list.set (key, data); }
+  template<typename Type> inline Type get_data    (DataKey<Type> *key) const      { return data_list.get (key); }
+  template<typename Type> inline Type swap_data   (DataKey<Type> *key, Type data) { return data_list.swap (key, data); }
+  template<typename Type> inline Type swap_data   (DataKey<Type> *key)            { return data_list.swap (key); }
+  template<typename Type> inline void delete_data (DataKey<Type> *key)            { data_list.del (key); }
+};
 
 } // Birnet
+
 #endif /* __BIRNET_UTILS_XX_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */

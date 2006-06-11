@@ -1,5 +1,5 @@
 /* Birnet
- * Copyright (C) 2006 Tim Janik
+ * Copyright (C) 2005-2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 
 extern "C" {
 
+/* --- initialization for C --- */
 static void (*birnet_init_cplusplus_func) (void) = NULL;
 static BirnetInitSettings default_init_settings = {
   false,        /* stand_alone */
@@ -95,6 +96,7 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
 
 namespace Birnet {
 
+/* --- InitHooks --- */
 static InitHook *init_hooks = NULL;
 
 InitHook::InitHook (InitHookFunc _func,
@@ -127,6 +129,7 @@ InitHook::invoke_hooks (void)
     (*it)->hook();
 }
 
+/* --- file utils --- */
 const String
 dirname (const String &path)
 {
@@ -149,5 +152,62 @@ basename (const String &path)
   return String (base + 1);
 }
 
+/* --- DataList --- */
+void
+DataList::set_data (NodeBase *node)
+{
+  /* delete old node */
+  NodeBase *it = rip_data (node->key);
+  if (it)
+    delete it;
+  /* prepend node */
+  node->next = nodes;
+  nodes = node;
+}
+
+DataList::NodeBase*
+DataList::get_data (DataKey<void> *key) const
+{
+  NodeBase *it;
+  for (it = nodes; it; it = it->next)
+    if (it->key == key)
+      return it;
+  return NULL;
+}
+
+DataList::NodeBase*
+DataList::rip_data (DataKey<void> *key)
+{
+  NodeBase *last = NULL, *it;
+  for (it = nodes; it; it = it->next)
+    if (it->key == key)
+      {
+        /* unlink existing node */
+        if (last)
+          last->next = it->next;
+        else
+          nodes = it->next;
+        it->next = NULL;
+        return it;
+      }
+  return NULL;
+}
+
+void
+DataList::clear_like_destructor()
+{
+  while (nodes)
+    {
+      NodeBase *it = nodes;
+      nodes = it->next;
+      it->next = NULL;
+      delete it;
+    }
+}
+
+DataList::~DataList()
+{
+  clear_like_destructor();
+}
 
 } // Birnet
