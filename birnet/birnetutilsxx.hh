@@ -80,6 +80,14 @@ public:
 const String    dirname  (const String &path);
 const String    basename (const String &path);
 
+/* --- template errors --- */
+namespace TEMPLATE_ERROR {
+// to error out, call invalid_type<YourInvalidType>();
+template<typename Type> void invalid_type () { bool force_compiler_error = void (0); }
+// to error out, derive from InvalidType<YourInvalidType>
+template<typename Type> class InvalidType;
+}
+
 /* --- Deletable --- */
 class Deletable {
 protected:
