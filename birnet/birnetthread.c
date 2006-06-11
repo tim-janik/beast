@@ -181,6 +181,34 @@ birnet_thread_unref (BirnetThread *thread)
 }
 
 static void
+birnet_thread_handle_exit (BirnetThread *thread)
+{
+  /* run custom data cleanup handlers */
+  g_datalist_clear (&thread->qdata);
+  /* cleanup wakeup hook */
+  thread->wakeup_func = NULL;
+  while (thread->wakeup_destroy)
+    {
+      GDestroyNotify wakeup_destroy = thread->wakeup_destroy;
+      thread->wakeup_destroy = NULL;
+      wakeup_destroy (thread->wakeup_data);
+    }
+  /* cleanup custom data from destruction phase */
+  g_datalist_clear (&thread->qdata);
+
+  /* regular cleanup code, all custom hooks have been processed now */
+  birnet_guard_deregister_all (thread);
+  birnet_mutex_lock (&global_thread_mutex);
+  global_thread_list = birnet_ring_remove (global_thread_list, thread);
+  if (thread->awake_stamp)
+    thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
+  birnet_cond_broadcast (&global_thread_cond);
+  birnet_mutex_unlock (&global_thread_mutex);
+  /* free thread structure */
+  birnet_thread_unref (thread);
+}
+
+static void
 filter_priority_warning (const gchar    *log_domain,
                          GLogLevelFlags  log_level,
                          const gchar    *message,
@@ -228,34 +256,6 @@ birnet_thread_exec (gpointer data)
    * birnet_thread_handle_exit() does unref and final destruction
    */
   return NULL;
-}
-
-static void
-birnet_thread_handle_exit (BirnetThread *thread)
-{
-  /* run custom data cleanup handlers */
-  g_datalist_clear (&thread->qdata);
-  /* cleanup wakeup hook */
-  thread->wakeup_func = NULL;
-  while (thread->wakeup_destroy)
-    {
-      GDestroyNotify wakeup_destroy = thread->wakeup_destroy;
-      thread->wakeup_destroy = NULL;
-      wakeup_destroy (thread->wakeup_data);
-    }
-  /* cleanup custom data from destruction phase */
-  g_datalist_clear (&thread->qdata);
-
-  /* regular cleanup code, all custom hooks have been processed now */
-  birnet_guard_deregister_all (thread);
-  birnet_mutex_lock (&global_thread_mutex);
-  global_thread_list = birnet_ring_remove (global_thread_list, thread);
-  if (thread->awake_stamp)
-    thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
-  birnet_cond_broadcast (&global_thread_cond);
-  birnet_mutex_unlock (&global_thread_mutex);
-  /* free thread structure */
-  birnet_thread_unref (thread);
 }
 
 /**
