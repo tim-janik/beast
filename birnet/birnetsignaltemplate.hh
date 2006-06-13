@@ -30,12 +30,12 @@ struct Emission3 : public EmissionBase {
   typedef Trampoline4<R0, Emitter&, A1, A2, A3> TrampolineE;
   Emitter *m_emitter;
   R0 m_result; A1 m_a1; A2 m_a2; A3 m_a3;
-  SignalBase::Link *m_last_link;
+  TrampolineLink *m_last_link;
   Emission3 (Emitter *emitter, A1 a1, A2 a2, A3 a3) :
     m_emitter (emitter), m_result(), m_a1 (a1), m_a2 (a2), m_a3 (a3), m_last_link (NULL)
   {}
   /* call Trampoline and store result, so trampoline templates need no <void> specialization */
-  R0 call (SignalBase::Link *link)
+  R0 call (TrampolineLink *link)
   {
     if (m_last_link != link)
       {
@@ -66,7 +66,7 @@ struct Emission3 <Emitter, void, A1, A2, A3> : public EmissionBase {
     m_emitter (emitter), m_a1 (a1), m_a2 (a2), m_a3 (a3)
   {}
   /* call the trampoline and ignore result, so trampoline templates need no <void> specialization */
-  void call (SignalBase::Link *link)
+  void call (TrampolineLink *link)
   {
     if (link->with_emitter)
       {
@@ -89,7 +89,7 @@ struct SignalEmittable3 : SignalBase {
   typedef Emission3 <Emitter, R0, A1, A2, A3> Emission;
   typedef typename Collector::result_type     Result;
   struct Iterator : public SignalBase::Iterator<Emission> {
-    Iterator (Emission &emission, Link *link) : SignalBase::Iterator<Emission> (emission, link) {}
+    Iterator (Emission &emission, TrampolineLink *link) : SignalBase::Iterator<Emission> (emission, link) {}
     R0 operator* () { return this->emission.call (this->current); }
   };
   explicit SignalEmittable3 (Emitter *emitter) : m_emitter (emitter) {}
@@ -111,7 +111,7 @@ template<class Emitter, typename A1, typename A2, typename A3, class Collector>
 struct SignalEmittable3 <Emitter, void, A1, A2, A3, Collector> : SignalBase {
   typedef Emission3 <Emitter, void, A1, A2, A3> Emission;
   struct Iterator : public SignalBase::Iterator<Emission> {
-    Iterator (Emission &emission, Link *link) : SignalBase::Iterator<Emission> (emission, link) {}
+    Iterator (Emission &emission, TrampolineLink *link) : SignalBase::Iterator<Emission> (emission, link) {}
     void operator* () { return this->emission.call (this->current); }
   };
   explicit SignalEmittable3 (Emitter *emitter) : m_emitter (emitter) {}
@@ -136,7 +136,6 @@ struct Signal3 : SignalEmittable3<Emitter, R0, A1, A2, A3, Collector>
   typedef Emission3 <Emitter, R0, A1, A2, A3> Emission;
   typedef Slot3<R0, A1, A2, A3>               Slot;
   typedef Slot4<R0, Emitter&, A1, A2, A3>     SlotE;
-  typedef typename SignalBase::Link           Link;
   typedef SignalEmittable3<Emitter, R0, A1, A2, A3, Collector> SignalEmittable;
   explicit Signal3 (Emitter &emitter) :
     SignalEmittable (&emitter)
@@ -147,10 +146,10 @@ struct Signal3 : SignalEmittable3<Emitter, R0, A1, A2, A3, Collector>
     BIRNET_ASSERT (&emitter != NULL);
     connect (slot (emitter, method));
   }
-  inline void connect    (const Slot  &s) { connect_link (s.get_trampoline()); }
-  inline void connect    (const SlotE &s) { connect_link (s.get_trampoline(), true); }
-  inline uint disconnect (const Slot  &s) { return disconnect_equal_link (*s.get_trampoline()); }
-  inline uint disconnect (const SlotE &s) { return disconnect_equal_link (*s.get_trampoline(), true); }
+  inline void connect    (const Slot  &s) { connect_link (s.get_trampoline_link()); }
+  inline void connect    (const SlotE &s) { connect_link (s.get_trampoline_link(), true); }
+  inline uint disconnect (const Slot  &s) { return disconnect_equal_link (*s.get_trampoline_link()); }
+  inline uint disconnect (const SlotE &s) { return disconnect_equal_link (*s.get_trampoline_link(), true); }
   Signal3&    operator+= (const Slot  &s) { connect (s); return *this; }
   Signal3&    operator+= (const SlotE &s) { connect (s); return *this; }
   Signal3&    operator+= (R0 (*callback) (A1, A2, A3))            { connect (slot (callback)); return *this; }

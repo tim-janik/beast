@@ -1,3 +1,15 @@
+Tue Jun 13 01:51:18 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh: renamed SignalBase::Link to TrampolineLink.
+	fixed SlotBase::~SlotBase() to not leak trampoline reference
+	counts. renamed link accessor to SlotBase::get_trampoline_link() and
+	fixed callers. 
+
+	* birnetsignalslot.hh: added Slot*::get_trampoline() method to all
+	Slot* classes to access the trampoline in a type safe manner.
+
+	* tests/signal.cc: added a test for trampoline accesses on slots.
+
 Mon Jun 12 01:06:47 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutilsxx.hh: moved template declarations from bsecxxutils.hh

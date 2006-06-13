@@ -34,38 +34,41 @@ struct EmissionBase {
   {}
 };
 
+/* --- TrampolineLink --- */
+struct TrampolineLink : public ReferenceCountImpl {
+  TrampolineLink *next, *prev;
+  uint            callable : 1;
+  uint            with_emitter : 1;
+  explicit        TrampolineLink() :
+    next (NULL), prev (NULL), callable (true), with_emitter (false)
+  {}
+  virtual bool operator== (const TrampolineLink &other) const = 0;
+  virtual         ~TrampolineLink()
+  {
+    if (next || prev)
+      {
+        next->prev = prev;
+        prev->next = next;
+        prev = next = NULL;
+      }
+  }
+  BIRNET_PRIVATE_CLASS_COPY (TrampolineLink);
+};
+
 /* --- SignalBase --- */
 struct SignalBase {
-  struct Link : public ReferenceCountImpl {
-    Link *next, *prev;
-    uint  callable : 1;
-    uint  with_emitter : 1;
-    explicit
-    Link() :
-      next (NULL), prev (NULL), callable (true), with_emitter (false)
-    {}
-    virtual bool operator== (const SignalBase::Link &other) const = 0;
-    virtual
-    ~Link()
-    {
-      if (next || prev)
-        {
-          next->prev = prev;
-          prev->next = next;
-          prev = next = NULL;
-        }
-    }
-  };
 private:
-  class EmbeddedLink : public Link {
-    virtual bool operator== (const SignalBase::Link &other) const { return false; }
-    virtual void delete_this () { /* embedded */ }
+  class EmbeddedLink : public TrampolineLink {
+    virtual bool operator== (const TrampolineLink &other) const { return false; }
+    virtual void delete_this ()         { /* embedded */ }
+  public:
+    void         check_last_ref() const { BIRNET_ASSERT (ref_count() == 1); }
   };
 protected:
   EmbeddedLink      start;
   void
-  connect_link (Link *link,
-                bool  with_emitter = false)
+  connect_link (TrampolineLink *link,
+                bool            with_emitter = false)
   {
     BIRNET_ASSERT (link->prev == NULL && link->next == NULL);
     link->ref_sink();
@@ -76,10 +79,10 @@ protected:
     link->with_emitter = with_emitter;
   }
   uint
-  disconnect_equal_link (const Link &link,
-                         bool        with_emitter = false)
+  disconnect_equal_link (const TrampolineLink &link,
+                         bool                  with_emitter = false)
   {
-    for (Link *walk = start.next; walk != &start; walk = walk->next)
+    for (TrampolineLink *walk = start.next; walk != &start; walk = walk->next)
       if (walk->with_emitter == with_emitter and *walk == link)
         {
           walk->callable = false;
@@ -107,11 +110,12 @@ public:
     BIRNET_ASSERT (start.next == &start);
     BIRNET_ASSERT (start.prev == &start);
     start.prev = start.next = NULL;
+    start.check_last_ref();
     start.unref();
   }
 private:
   void
-  destruct_link (Link *link)
+  destruct_link (TrampolineLink *link)
   {
     link->callable = false;
     link->next->prev = link->prev;
@@ -128,8 +132,9 @@ class SignalBase::Iterator {
   Iterator& operator= (const Iterator&);
 public:
   Emission &emission;
-  Link     *current, *start;
-  Iterator (Emission &_emission, Link *last) :
+  TrampolineLink *current, *start;
+  Iterator (Emission       &_emission,
+            TrampolineLink *last) :
     emission (_emission),
     current (ref (last)),
     start (ref (last))
@@ -158,7 +163,7 @@ public:
     else
       do
         {
-          Link *next = current->next;
+          TrampolineLink *next = current->next;
           next->ref();
           current->unref();
           current = next;
@@ -287,10 +292,9 @@ public:
 /* --- SlotBase --- */
 class SlotBase {
 protected:
-  typedef SignalBase::Link Link;
-  Link *m_link;
+  TrampolineLink *m_link;
   void
-  set_trampoline (Link *cl)
+  set_trampoline (TrampolineLink *cl)
   {
     if (cl)
       cl->ref_sink();
@@ -298,8 +302,10 @@ protected:
       m_link->unref();
     m_link = cl;
   }
+  ~SlotBase()
+  { set_trampoline (NULL); }
 public:
-  SlotBase (Link *link) :
+  SlotBase (TrampolineLink *link) :
     m_link (NULL)
   { set_trampoline (link); }
   SlotBase (const SlotBase &src) :
@@ -311,8 +317,8 @@ public:
     set_trampoline (src.m_link);
     return *this;
   }
-  Link*
-  get_trampoline() const
+  TrampolineLink*
+  get_trampoline_link() const
   { return m_link; }
 };
 
@@ -421,7 +427,7 @@ template<class Emitter, typename SignalSignature, class Collector = CollectorDef
 
 /* --- Casting --- */
 template<class TrampolineP> TrampolineP
-trampoline_cast (SignalBase::Link *link)
+trampoline_cast (TrampolineLink *link)
 {
 #ifdef  PARANOID
   return dynamic_cast<TrampolineP> (link);

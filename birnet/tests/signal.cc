@@ -214,11 +214,46 @@ struct Connection3 {
   }
 };
 
-extern "C" int
+static int tst_counter = 0;
+static int
+increment_tst_counter (void)
+{
+  tst_counter++;
+  return 47;
+}
+
+static void
+test_slot_trampoline ()
+{
+  int r;
+  TSTART ("Slot-Trampolines");
+  TASSERT (tst_counter == 0);
+  const Signals::Slot3<void, int, double, char> &s3 = slot ((void (*) (int, double, char)) increment_tst_counter);
+  Signals::Trampoline3<void, int, double, char> *t3 = s3.get_trampoline();
+  (*t3) (2, 3, 4);
+  TASSERT (tst_counter == 1);
+  const Signals::Slot0<int> &s0 = slot ((int (*) ()) increment_tst_counter);
+  Signals::Trampoline0<int> *t0 = s0.get_trampoline();
+  r = (*t0) ();
+  TASSERT (tst_counter == 2);
+  TASSERT (r == 47);
+  const Signals::Slot9<int,char,char,char,double,double,double,int,int,void*> &s9 =
+    slot ((int (*) (char,char,char,double,double,double,int,int,void*)) increment_tst_counter);
+  Signals::Trampoline9<int,char,char,char,double,double,double,int,int,void*> *t9 = s9.get_trampoline();
+  r = (*t9) (1, 1, 1, .1, .1, .1, 999, 999, NULL);
+  TASSERT (tst_counter == 3);
+  TASSERT (r == 47);
+  TDONE();
+}
+
+} // anon
+
+int
 main (int   argc,
       char *argv[])
 {
   birnet_init_test (&argc, &argv);
+  test_slot_trampoline ();
 #if 0
   SignalTest signal_test;
   signal_test.basic_signal_tests();
@@ -231,5 +266,3 @@ main (int   argc,
   many.testme();
   return 0;
 }
-
-} // anon

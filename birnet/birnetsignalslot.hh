@@ -25,7 +25,7 @@
 
 /* --- Trampoline (basis signature) --- */
 template<typename R0, typename A1, typename A2, typename A3>
-struct Trampoline3 : public SignalBase::Link {
+struct Trampoline3 : public TrampolineLink {
   /* signature type for all signal trampolines, used for trampoline invocations by Emission */
   virtual R0 operator() (A1 a1, A2 a2, A3 a3) = 0;
 };
@@ -39,7 +39,7 @@ class FunctionTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return callback (a1, a2, a3); }
   ~FunctionTrampoline3() {}
-  virtual bool operator== (const SignalBase::Link &bother) const {
+  virtual bool operator== (const TrampolineLink &bother) const {
     const FunctionTrampoline3 *other = dynamic_cast<const FunctionTrampoline3*> (&bother);
     return other and other->callback == callback; }
 public:
@@ -56,7 +56,7 @@ class MethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return (instance->*method) (a1, a2, a3); }
   ~MethodTrampoline3() {}
-  virtual bool operator== (const SignalBase::Link &bother) const {
+  virtual bool operator== (const TrampolineLink &bother) const {
     const MethodTrampoline3 *other = dynamic_cast<const MethodTrampoline3*> (&bother);
     return other and other->instance == instance and other->method == method; }
 public:
@@ -74,7 +74,7 @@ class DataFunctionTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return callback (a1, a2, a3, data); }
   ~DataFunctionTrampoline3() {}
-  virtual bool operator== (const SignalBase::Link &bother) const {
+  virtual bool operator== (const TrampolineLink &bother) const {
     const DataFunctionTrampoline3 *other = dynamic_cast<const DataFunctionTrampoline3*> (&bother);
     return other and other->callback == callback and other->data == data; }
 public:
@@ -90,7 +90,7 @@ class DataMethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return (instance->*method) (a1, a2, a3, data); }
   ~DataMethodTrampoline3() {}
-  virtual bool operator== (const SignalBase::Link &bother) const {
+  virtual bool operator== (const TrampolineLink &bother) const {
     const DataMethodTrampoline3 *other = dynamic_cast<const DataMethodTrampoline3*> (&bother);
     return other and other->instance == instance and other->method == method and other->data == data; }
 public:
@@ -103,6 +103,8 @@ public:
 template<typename R0, typename A1, typename A2, typename A3, class Emitter = void>
 struct Slot3 : SlotBase {
   Slot3 (Trampoline3<R0, A1, A2, A3> *trampoline) : SlotBase (trampoline) {}
+  Trampoline3<R0, A1, A2, A3>* get_trampoline() const
+  { return trampoline_cast< Trampoline3<R0, A1, A2, A3>* > (get_trampoline_link()); }
 };
 /* slot constructors */
 template<typename R0, typename A1, typename A2, typename A3> Slot3<R0, A1, A2, A3>
