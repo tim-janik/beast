@@ -285,8 +285,8 @@ protected:
   // scanner related functions
 
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
-  void printError (const gchar *format, ...);
-  void printWarning (const gchar *format, ...);
+  void printError (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
+  void printWarning (const gchar *format, ...) G_GNUC_PRINTF (2, 3);
 
   // preprocessor
 

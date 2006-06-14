@@ -1,3 +1,8 @@
+Wed Jun 14 15:45:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.hh: Added G_GNUC_PRINTF printf format attribute to the
+	functions Parser::printWarning and Parser::printError.
+
 Thu Jun  8 16:57:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* testsfidl.cc: Fixed a strange assertion which looked like this:
