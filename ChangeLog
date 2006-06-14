@@ -1,3 +1,8 @@
+Wed Jun 14 15:42:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/gxk/gxkled.h: Remove prototype for gxk_led_set_colors
+	for which no implementation exists in gxkled.c.
+
 Thu Jun  8 18:46:32 2006  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4: back out -Wstrict-null-sentinel again, since it doesn't

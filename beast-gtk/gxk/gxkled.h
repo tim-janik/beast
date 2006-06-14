@@ -59,9 +59,6 @@ GType		gxk_led_get_type		  (void);
 gpointer	gxk_led_new			(guint	 color);
 void		gxk_led_set_color		(GxkLed	*self,
 						 guint	 rgb_colors);
-void		gxk_led_set_colors		(GxkLed	*self,
-						 guint	 n_colors,
-						 ...);
 void		gxk_led_set_border_width	(GxkLed	*self,
 						 guint	 border_width);
 
