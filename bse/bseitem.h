@@ -150,7 +150,7 @@ void          bse_item_set_property_undoable (BseItem         *self,
 /* undo admin functions */
 BseUndoStack* bse_item_undo_open             (gpointer         item,
                                               const gchar     *format,
-                                              ...);
+                                              ...) G_GNUC_PRINTF (2, 3);
 void          bse_item_undo_close            (BseUndoStack    *ustack);
 /* undo helper functions */
 void          bse_item_push_undo_proc        (gpointer         item,

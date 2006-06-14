@@ -1,3 +1,8 @@
+Wed Jun 14 15:44:27 2006  Stefan Westerfeld <stefan@space.twc.de>
+
+	* bseitem.h(bse_item_undo_open): Added G_GNUC_PRINTF printf format
+	attribute.
+
 Mon Jun 12 01:09:51 2006  Tim Janik  <timj@gtk.org>
 
 	* bsecxxutils.hh: got rid of TEMPLATE_ERROR::* which is provided
