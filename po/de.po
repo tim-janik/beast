@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-05-21 11:49+0200\n"
-"PO-Revision-Date: 2006-06-15 15:58+0200\n"
+"PO-Revision-Date: 2006-06-15 17:45+0200\n"
 "Last-Translator: Hendrik Richter <hendrikr@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -308,7 +308,7 @@ msgstr "Ein Leitfaden zum Entwickeln von Plugins"
 
 #: ../beast-gtk/bstapp.c:176
 msgid "DSP Engine..."
-msgstr "DSP Engine …"
+msgstr "DSP-Engine …"
 
 #: ../beast-gtk/bstapp.c:176
 msgid "Technical description of the multi-threaded synthesis engine innards"
@@ -332,7 +332,7 @@ msgstr "Einen Browser öffnen und das Online Sound-Archiv anzeigen"
 
 #: ../beast-gtk/bstapp.c:187
 msgid "Online Demos..."
-msgstr "Online Demos …"
+msgstr "Online-Demos …"
 
 #: ../beast-gtk/bstapp.c:187
 msgid "Start a web browser pointing to online demo songs"
@@ -1182,7 +1182,7 @@ msgstr "SPALTENTYPEN"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:690
 msgid "note-1, note-2, ..."
-msgstr "note-1, note-2, …"
+msgstr "note-1, note-2, ..."
 
 #: ../beast-gtk/bstpatterncolumns.c:691
 msgid "  display notes of the first, second, ... channel"
@@ -1191,7 +1191,7 @@ msgstr "  Zeige Noten im ersten, zweiten, ... Kanal"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:693
 msgid "offset-1, length-2, velocity-3, ..."
-msgstr "offset-1, length-2, velocity-3, …"
+msgstr "offset-1, length-2, velocity-3, ..."
 
 #: ../beast-gtk/bstpatterncolumns.c:694
 msgid ""
@@ -1244,7 +1244,7 @@ msgstr "EREIGNISSE:"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:709
 msgid "  balance, volume, cc-8, ..."
-msgstr "  balance, volume, cc-8, …"
+msgstr "  balance, volume, cc-8, ..."
 
 #: ../beast-gtk/bstpatterncolumns.c:710
 msgid "MODIFIERS:"
