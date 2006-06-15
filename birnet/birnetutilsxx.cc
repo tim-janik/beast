@@ -51,6 +51,11 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
                       const char     *app_name,
                       BirnetInitValue bivalues[])
 {
+  /* mandatory initial initialization */
+  if (!g_threads_got_initialized)
+    g_thread_init (NULL);
+
+  /* update program/application name upon repeated initilization */
   char *prg_name = argcp && *argcp ? g_path_get_basename ((*argvp)[0]) : NULL;
   if (birnet_init_settings != NULL)
     {
@@ -59,11 +64,18 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
       g_free (prg_name);
       if (app_name && !g_get_application_name())
         g_set_application_name (app_name);
-      return;
+      return;   /* ignore repeated initializations */
     }
+
+  /* normal initialization */
   birnet_init_settings = &default_init_settings;
   if (bivalues)
     birnet_init_settings_values (bivalues);
+  if (prg_name)
+    g_set_prgname (prg_name);
+  g_free (prg_name);
+  if (app_name && (!g_get_application_name() || g_get_application_name() == g_get_prgname()))
+    g_set_application_name (app_name);
 
   /* initialize random numbers */
   {
@@ -72,22 +84,11 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
     srand48 (tv.tv_usec + (tv.tv_sec << 16));
     srand (lrand48());
   }
-  
-  if (!g_threads_got_initialized)
-    g_thread_init (NULL);
 
-  if (prg_name)
-    g_set_prgname (prg_name);
-  g_free (prg_name);
-  if (app_name && (!g_get_application_name() || g_get_application_name() == g_get_prgname()))
-    g_set_application_name (app_name);
-
+  /* initialize sub systems */
   _birnet_init_cpuinfo();
-
   _birnet_init_threads();
-
   _birnet_init_logging ();
-  
   if (birnet_init_cplusplus_func)
     birnet_init_cplusplus_func();
 }

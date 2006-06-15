@@ -1,3 +1,8 @@
+Fri Jun 16 01:28:35 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutilsxx.cc: initialize GThread as early as possible.
+	minor cleanups.
+
 Tue Jun 13 01:51:18 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetsignal.hh: renamed SignalBase::Link to TrampolineLink.
