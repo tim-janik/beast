@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the beast package.
 # Christian Neumair <chris@gnome-de.org>, 2003, 2004.
 # Moritz Mekelburger <moritz@unix-ag.org>, 2004.
-# Hendrik Richter <hendi@gnome-de.org>, 2005.
+# Hendrik Richter <hendrikr@gnome.org>, 2005.
 # Jens Seidel <jseidel@cvs.gnome.org>, 2006.
 #
 # Strittige Übersetzungen, bitte gegenprüfen!
@@ -17,8 +17,8 @@ msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-05-21 11:49+0200\n"
-"PO-Revision-Date: 2006-03-11 23:00+0100\n"
-"Last-Translator: Jens Seidel <jseidel@cvs.gnome.org>\n"
+"PO-Revision-Date: 2006-06-15 15:58+0200\n"
+"Last-Translator: Hendrik Richter <hendrikr@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,7 +34,7 @@ msgstr "Ein neues Projekt anlegen"
 
 #: ../beast-gtk/bstapp.c:84
 msgid "_Open..."
-msgstr "Ö_ffnen..."
+msgstr "Ö_ffnen …"
 
 #: ../beast-gtk/bstapp.c:84
 msgid "Open existing project"
@@ -43,7 +43,7 @@ msgstr "Ein vorhandenes Projekt öffnen"
 # CHECK
 #: ../beast-gtk/bstapp.c:86
 msgid "_Merge..."
-msgstr "_Einbinden..."
+msgstr "_Einbinden …"
 
 #: ../beast-gtk/bstapp.c:86
 msgid "Merge an existing project into the current project"
@@ -75,7 +75,7 @@ msgstr "Projekt speichern"
 
 #: ../beast-gtk/bstapp.c:96
 msgid "Save _As..."
-msgstr "Speichern _unter..."
+msgstr "Speichern _unter …"
 
 #: ../beast-gtk/bstapp.c:96
 msgid "Write project to a specific file"
@@ -91,7 +91,7 @@ msgstr "Alle Fenster schließen und beenden"
 
 #: ../beast-gtk/bstapp.c:104
 msgid "_Preferences..."
-msgstr "_Einstellungen..."
+msgstr "_Einstellungen …"
 
 #: ../beast-gtk/bstapp.c:104
 msgid "Adjust overall program behaviour"
@@ -103,7 +103,7 @@ msgstr "Auffrischen"
 
 #: ../beast-gtk/bstapp.c:111
 msgid "_About..."
-msgstr "_Info..."
+msgstr "_Info …"
 
 #: ../beast-gtk/bstapp.c:111
 msgid "Display developer and contributor credits"
@@ -219,7 +219,7 @@ msgstr "Lösche den momentan ausgewählten Synthesizer oder Titel"
 
 #: ../beast-gtk/bstapp.c:151
 msgid "Load _Instrument..."
-msgstr "_Instrument laden ..."
+msgstr "_Instrument laden …"
 
 #: ../beast-gtk/bstapp.c:151
 msgid "Load synthesizer mesh from instruments folder"
@@ -227,7 +227,7 @@ msgstr "Synthesizernetz aus dem Instrumentverzeichnis laden"
 
 #: ../beast-gtk/bstapp.c:153
 msgid "Load _Effect..."
-msgstr "_Effekt laden ..."
+msgstr "_Effekt laden …"
 
 #: ../beast-gtk/bstapp.c:153
 msgid "Load synthesizer mesh from effects folder"
@@ -235,7 +235,7 @@ msgstr "Synthesizernetz aus dem Effektverzeichnis laden"
 
 #: ../beast-gtk/bstapp.c:155
 msgid "Save As Instrument..."
-msgstr "Als Instrument speichern ..."
+msgstr "Als Instrument speichern …"
 
 #: ../beast-gtk/bstapp.c:155
 msgid "Save synthesizer mesh to instruments folder"
@@ -243,7 +243,7 @@ msgstr "Synthesizernetz im Instrumentverzeichnis abspeichern"
 
 #: ../beast-gtk/bstapp.c:157
 msgid "Save As Effect..."
-msgstr "Als Effekt speichern ..."
+msgstr "Als Effekt speichern …"
 
 #: ../beast-gtk/bstapp.c:157
 msgid "Save synthesizer mesh to effects folder"
@@ -259,7 +259,7 @@ msgstr "Eine Übersicht der Inhalte der BEAST-Dokumentation"
 
 #: ../beast-gtk/bstapp.c:163
 msgid "_Quick Start..."
-msgstr "_Schnelleinstieg..."
+msgstr "_Schnelleinstieg …"
 
 #: ../beast-gtk/bstapp.c:163
 msgid "Provides an introduction about how to accomplish the most common tasks"
@@ -267,7 +267,7 @@ msgstr "Eine Einführung in die meist verwendeten Aufgaben"
 
 #: ../beast-gtk/bstapp.c:165
 msgid "_FAQ..."
-msgstr "_FAQ..."
+msgstr "_FAQ …"
 
 #: ../beast-gtk/bstapp.c:165
 msgid "Answers to frequently asked questions"
@@ -284,7 +284,7 @@ msgstr "Einen Browser starten und die Online-Hilfe der BEAST-Webseite anzeigen"
 
 #: ../beast-gtk/bstapp.c:169
 msgid "_BEAST Website..."
-msgstr "_BEAST Webseite..."
+msgstr "_BEAST Webseite …"
 
 #: ../beast-gtk/bstapp.c:169
 msgid "Start a web browser pointing to the BEAST website"
@@ -292,7 +292,7 @@ msgstr "Einen Browser starten und die BEAST-Webseite anzeigen"
 
 #: ../beast-gtk/bstapp.c:172
 msgid "_Release Notes..."
-msgstr "_Release-Hinweise..."
+msgstr "_Release-Hinweise …"
 
 #: ../beast-gtk/bstapp.c:172
 msgid "Notes and informations about this release cycle"
@@ -300,7 +300,7 @@ msgstr "Hinweise und Bemerkungen zu diesem Releasezyklus"
 
 #: ../beast-gtk/bstapp.c:174
 msgid "Developing Plugins..."
-msgstr "Plugins entwickeln..."
+msgstr "Plugins entwickeln …"
 
 #: ../beast-gtk/bstapp.c:174
 msgid "A guide to synthesis plugin development"
@@ -308,7 +308,7 @@ msgstr "Ein Leitfaden zum Entwickeln von Plugins"
 
 #: ../beast-gtk/bstapp.c:176
 msgid "DSP Engine..."
-msgstr "DSP Engine..."
+msgstr "DSP Engine …"
 
 #: ../beast-gtk/bstapp.c:176
 msgid "Technical description of the multi-threaded synthesis engine innards"
@@ -316,7 +316,7 @@ msgstr ""
 
 #: ../beast-gtk/bstapp.c:178
 msgid "Development..."
-msgstr "Entwicklung..."
+msgstr "Entwicklung …"
 
 #: ../beast-gtk/bstapp.c:178
 msgid "Provide an overview of development related topics and documents"
@@ -324,7 +324,7 @@ msgstr ""
 
 #: ../beast-gtk/bstapp.c:183
 msgid "Online Sound Archive..."
-msgstr "Online Sound-Archiv..."
+msgstr "Online Sound-Archiv …"
 
 #: ../beast-gtk/bstapp.c:183
 msgid "Start a web browser pointing to the online sound archive"
@@ -332,7 +332,7 @@ msgstr "Einen Browser öffnen und das Online Sound-Archiv anzeigen"
 
 #: ../beast-gtk/bstapp.c:187
 msgid "Online Demos..."
-msgstr "Online Demos..."
+msgstr "Online Demos …"
 
 #: ../beast-gtk/bstapp.c:187
 msgid "Start a web browser pointing to online demo songs"
@@ -432,7 +432,7 @@ msgstr ""
 #: ../beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr ""
-"Bitte drücken Sie die Tastenkombination, die installiert werden soll..."
+"Bitte drücken Sie die Tastenkombination, die installiert werden soll …"
 
 #: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
 #: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstpartview.c:40
@@ -819,7 +819,7 @@ msgstr "Typ"
 
 #: ../beast-gtk/bstkeybindings.c:51
 msgid "Add..."
-msgstr "Hinzufügen..."
+msgstr "Hinzufügen …"
 
 #: ../beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
@@ -827,7 +827,7 @@ msgstr "Neue Tastenkombination einer Programmfunktion zuweisen"
 
 #: ../beast-gtk/bstkeybindings.c:53
 msgid "Change..."
-msgstr "Ändern..."
+msgstr "Ändern …"
 
 #: ../beast-gtk/bstkeybindings.c:53
 msgid "Change the currently selected key binding"
@@ -951,7 +951,7 @@ msgstr "Dialoge"
 
 #: ../beast-gtk/bstmain.c:264
 msgid "Loading..."
-msgstr "Ladevorgang..."
+msgstr "Ladevorgang …"
 
 #: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
@@ -1056,7 +1056,7 @@ msgstr "Farbeintrag"
 #.
 #: ../beast-gtk/bstparam-item-seq.c:71 ../beast-gtk/gxk/gxksimplelabel.c:598
 msgid "..."
-msgstr "..."
+msgstr " …"
 
 #: ../beast-gtk/bstparam-item-seq.c:146
 msgid "Item List"
@@ -1182,7 +1182,7 @@ msgstr "SPALTENTYPEN"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:690
 msgid "note-1, note-2, ..."
-msgstr "note-1, note-2, ..."
+msgstr "note-1, note-2, …"
 
 #: ../beast-gtk/bstpatterncolumns.c:691
 msgid "  display notes of the first, second, ... channel"
@@ -1191,7 +1191,7 @@ msgstr "  Zeige Noten im ersten, zweiten, ... Kanal"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:693
 msgid "offset-1, length-2, velocity-3, ..."
-msgstr "offset-1, length-2, velocity-3, ..."
+msgstr "offset-1, length-2, velocity-3, …"
 
 #: ../beast-gtk/bstpatterncolumns.c:694
 msgid ""
@@ -1244,7 +1244,7 @@ msgstr "EREIGNISSE:"
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:709
 msgid "  balance, volume, cc-8, ..."
-msgstr "  balance, volume, cc-8, ..."
+msgstr "  balance, volume, cc-8, …"
 
 #: ../beast-gtk/bstpatterncolumns.c:710
 msgid "MODIFIERS:"
@@ -3020,7 +3020,7 @@ msgstr "Rechts rollen"
 
 #: ../beast-gtk/bstwaveview.c:42
 msgid "Load..."
-msgstr "Laden..."
+msgstr "Laden …"
 
 #: ../beast-gtk/bstwaveview.c:42
 msgid "Load a new wave file from disk"
@@ -3028,7 +3028,7 @@ msgstr "Eine Wave-Datei von Platte laden"
 
 #: ../beast-gtk/bstwaveview.c:44
 msgid "Lib..."
-msgstr "Bibliothek..."
+msgstr "Bibliothek …"
 
 #: ../beast-gtk/bstwaveview.c:44
 msgid "Load a new wave file from library paths"
@@ -7116,3 +7116,6 @@ msgstr "Öffnen der Ausgangsdatei \"%s\" fehlgeschlagen:%s"
 
 #~ msgid "Name:"
 #~ msgstr "Name:"
+
+
+
