@@ -107,7 +107,7 @@ data_list_test ()
   }
   TDONE();
 
-  TSTART ("DataList-thread");
+  TSTART ("DataList-threaded");
   {
     Thread &thread = Thread::self();
     data_list_test_strings (thread);

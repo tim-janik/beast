@@ -28,6 +28,7 @@
 #include <sched.h>
 #include <unistd.h>     /* sched_yield() */
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <errno.h>
 #include <string.h>
@@ -1393,6 +1394,13 @@ fallback_cond_destroy (BirnetCond *cond)
   g_cond_free (cond->cond_pointer);
 }
 
+static void G_GNUC_NORETURN
+fallback_thread_exit (gpointer retval)
+{
+  g_thread_exit (retval);
+  exit (-128); /* silence compiler */
+}
+
 static void
 fallback_cond_wait_timed (BirnetCond  *cond,
                           BirnetMutex *mutex,
@@ -1424,6 +1432,7 @@ static BirnetThreadTable fallback_thread_table = {
   fallback_cond_wait,
   fallback_cond_wait_timed,
   fallback_cond_destroy,
+  fallback_thread_exit,
 };
 
 static BirnetThreadTable*
@@ -1504,6 +1513,7 @@ static BirnetThreadTable pth_thread_table = {
   (void (*) (BirnetCond*, BirnetMutex*)) pthread_cond_wait,
   pth_cond_wait_timed,
   (void (*) (BirnetCond*))               pthread_cond_destroy,
+  pthread_exit,
 };
 static BirnetThreadTable*
 get_pth_thread_table (void)

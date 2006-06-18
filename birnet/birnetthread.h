@@ -135,6 +135,7 @@ bool                  birnet_guard_is_protected  (gpointer             	value);
 void    birnet_cond_wait_timed			(BirnetCond    *cond,
 						 BirnetMutex   *mutex,
 						 BirnetInt64   	max_useconds);
+#define birnet_thread_exit(retval)		(birnet_thread_table.thread_exit (retval))
 
 /* --- atomic operations --- */
 extern inline void  birnet_atomic_int_set                  (volatile int      *atomic,
@@ -229,6 +230,7 @@ struct _BirnetThreadTable
 					 BirnetUInt64	 abs_secs,
 					 BirnetUInt64	 abs_usecs);
   void		(*cond_destroy)		(BirnetCond	*cond);
+  void		(*thread_exit)		(gpointer        retval) G_GNUC_NORETURN;
 };
 extern BirnetThreadTable birnet_thread_table;
 

@@ -1,3 +1,9 @@
+Sun Jun 18 03:11:35 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.hh, birnetthreadxx.cc: provide Thread::Self::exit().
+
+	* birnetthread.h, birnetthread.c: provide birnet_thread_exit().
+
 Fri Jun 16 01:28:35 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutilsxx.cc: initialize GThread as early as possible.

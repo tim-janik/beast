@@ -127,6 +127,7 @@ public:
                                          void              *wakeup_data,
                                          GDestroyNotify     destroy);
     static OwnedMutex&  owned_mutex     ();
+    static void         exit            (void              *retval = NULL) G_GNUC_NORETURN;
   };
   /* DataListContainer API */
   template<typename Type> inline void set_data    (DataKey<Type> *key,

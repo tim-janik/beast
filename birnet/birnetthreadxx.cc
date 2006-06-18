@@ -235,6 +235,12 @@ Thread::Self::owned_mutex ()
   return self().m_omutex;
 }
 
+void
+Thread::Self::exit (void *retval)
+{
+  birnet_thread_exit (retval);
+}
+
 static std::list<BirnetMutex*> cxx_init_mutex_list;
 
 Mutex::Mutex ()
