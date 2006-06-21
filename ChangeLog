@@ -1,3 +1,7 @@
+Wed Jun 21 23:42:35 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdbmeter.c: removed unnecessary _ISOC99_SOURCE.
+
 Wed Jun 14 15:42:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/gxk/gxkled.h: Remove prototype for gxk_led_set_colors
