@@ -1140,8 +1140,9 @@ bse_source_store_automation (BseSource  *source,
                              GParamSpec *pspec)
 {
   guint midi_channel = 0;
-  BseMidiControlType control_type = 0;
-  bse_source_get_automation_property (source, pspec->name, &midi_channel, &control_type);
+  BseMidiSignalType signal_type = 0;
+  bse_source_get_automation_property (source, pspec->name, &midi_channel, &signal_type);
+  BseMidiControlType control_type = signal_type;
   if (control_type)
     {
       bse_storage_break (storage);
