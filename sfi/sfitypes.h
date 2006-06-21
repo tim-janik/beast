@@ -19,8 +19,8 @@
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
 
-#include <sfi/glib-extra.h>
 #include <birnet/birnet.h>
+#include <sfi/glib-extra.h>
 
 G_BEGIN_DECLS
 

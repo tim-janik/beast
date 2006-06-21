@@ -1,3 +1,8 @@
+Wed Jun 21 23:40:33 2006  Tim Janik  <timj@gtk.org>
+
+	* sfitypes.h: include birnet.h before glib-extra.h for _GNU_SOURCE to 
+	take effect.
+
 Wed Jun 14 15:45:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.hh: Added G_GNUC_PRINTF printf format attribute to the
