@@ -19,6 +19,10 @@
 // #define TEST_VERBOSE
 #include <birnet/birnettests.h>
 
+#if BIRNET_CHECK_VERSION (2147483647, 2147483647, 2147483647) || !BIRNET_CHECK_VERSION (0, 0, 1)      
+#error BIRNET_CHECK_VERSION() apparently broken
+#endif
+
 static void
 test_cpu_info (void)
 {

@@ -21,6 +21,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>	/* NULL */
+#include <sys/types.h>	/* uint, ssize */
 #include <glib.h>
 #include <birnet/birnetconfig.h>
 
@@ -74,20 +75,25 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_STATIC_ASSERT(expr)              BIRNET_STATIC_ASSERT_NAMED (expr, compile_time_assertion_failed)
 
 /* --- common type definitions --- */
-typedef unsigned int            BirnetUInt;
-typedef unsigned char           BirnetUInt8;
-typedef unsigned short          BirnetUInt16;
-typedef unsigned int            BirnetUInt32;
-typedef unsigned long long      BirnetUInt64;
-typedef signed char             BirnetInt8;
-typedef signed short            BirnetInt16;
-typedef signed int              BirnetInt32;
-typedef signed long long        BirnetInt64;
+typedef unsigned int	      BirnetUInt8	__attribute__ ((__mode__ (__QI__)));
+typedef unsigned int	      BirnetUInt16	__attribute__ ((__mode__ (__HI__)));
+typedef unsigned int	      BirnetUInt32	__attribute__ ((__mode__ (__SI__)));
+typedef unsigned int	      BirnetUInt64	__attribute__ ((__mode__ (__DI__)));
+typedef BirnetUInt32          BirnetUInt;
+BIRNET_STATIC_ASSERT (sizeof (BirnetUInt8) == 1);
+BIRNET_STATIC_ASSERT (sizeof (BirnetUInt16) == 2);
+BIRNET_STATIC_ASSERT (sizeof (BirnetUInt32) == 4);
+BIRNET_STATIC_ASSERT (sizeof (BirnetUInt64) == 8);
+typedef signed int  	      BirnetInt8	__attribute__ ((__mode__ (__QI__)));
+typedef signed int  	      BirnetInt16	__attribute__ ((__mode__ (__HI__)));
+typedef signed int  	      BirnetInt32	__attribute__ ((__mode__ (__SI__)));
+typedef signed int  	      BirnetInt64	__attribute__ ((__mode__ (__DI__)));
+typedef BirnetInt32           BirnetInt;
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt8) == 1);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt16) == 2);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt32) == 4);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt64) == 8);
-typedef BirnetUInt32            BirnetUniChar;
+typedef BirnetUInt32          BirnetUniChar;
 
 /* --- attributes --- */
 #if     __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
@@ -123,7 +129,12 @@ typedef BirnetUInt32            BirnetUniChar;
 
 /* --- convenient type shorthands --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
+#if 	BIRNET_SIZEOF_SYS_TYPESH_UINT == 0
 typedef BirnetUInt		uint;
+#else
+BIRNET_STATIC_ASSERT (BIRNET_SIZEOF_SYS_TYPESH_UINT == 4);
+#endif
+BIRNET_STATIC_ASSERT (sizeof (uint) == 4);
 typedef BirnetUInt8		uint8;
 typedef BirnetUInt16		uint16;
 typedef BirnetUInt32		uint32;
@@ -154,13 +165,13 @@ typedef struct
   const char *value_string;
   long double value_num;	/* valid if value_string == NULL */
 } BirnetInitValue;
-void	birnet_init_extended (int             *argcp,
-			      char          ***argvp,
-			      const char      *app_name,
-			      BirnetInitValue  bivalues[]); /* in birnetutilsxx.cc */
-void	birnet_init 	     (int            *argcp,
-			      char         ***argvp,
-			      const char     *app_name);
+void	birnet_init_extended     (int             *argcp,
+				  char          ***argvp,
+				  const char      *app_name,
+				  BirnetInitValue  bivalues[]); /* in birnetutilsxx.cc */
+void	birnet_init 	         (int             *argcp,
+				  char          ***argvp,
+				  const char      *app_name);
 bool	birnet_init_value_bool	 (BirnetInitValue *value);
 double	birnet_init_value_double (BirnetInitValue *value);
 gint64	birnet_init_value_int    (BirnetInitValue *value);

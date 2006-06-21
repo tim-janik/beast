@@ -1,3 +1,22 @@
+Wed Jun 21 02:13:38 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: provide versioning information and BIRNET_SIZEOF_SYS_TYPESH_UINT.
+
+	* birnetcore.h: include <sys/types.h> for uint, ssize and other types.
+	used gcc modes to define type width now. resolve clashes when defining
+	uint by checking BIRNET_SIZEOF_SYS_TYPESH_UINT.
+
+	* birnetthreadxx.cc: fixed missing ThreadDescendant() constructor which
+	the gcc-4.2.0 snapshot 20060530 failed to catch.
+
+	* tests/datalist.cc: make all data keys static, otherwise we get crashes
+	due to mixed up destruction order. (data keys should always be static).
+
+	* tests/infotest.cc: added a simple test for BIRNET_CHECK_VERSION().
+
+	* configure.inc: provide birnet versioning information. check for uint
+	in <sys/types.h>.
+
 Sun Jun 18 03:11:35 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.hh, birnetthreadxx.cc: provide Thread::Self::exit().

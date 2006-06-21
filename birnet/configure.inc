@@ -5,8 +5,29 @@ dnl # GNU Lesser General Public License version 2 or any later version.
 
 AC_DEFUN([AC_BIRNET_REQUIREMENTS],
 [
+    dnl # BIRNET versioning
+    AC_DIVERT_BEFORE_HELP([
+    BIRNET_MAJOR_VERSION=0
+    BIRNET_MINOR_VERSION=0
+    BIRNET_MICRO_VERSION=1
+    BIRNET_INTERFACE_AGE=0
+    BIRNET_BINARY_AGE=0
+    BIRNET_VERSION="$BIRNET_MAJOR_VERSION.$BIRNET_MINOR_VERSION.$BIRNET_MICRO_VERSION"
+    ])
+    AC_SUBST(BIRNET_MAJOR_VERSION)
+    AC_SUBST(BIRNET_MINOR_VERSION)
+    AC_SUBST(BIRNET_MICRO_VERSION)
+    AC_SUBST(BIRNET_INTERFACE_AGE)
+    AC_SUBST(BIRNET_BINARY_AGE)
+    AC_SUBST(BIRNET_VERSION)
+
     BIRNET_CFLAGS=""
     BIRNET_LIBS=""
+
+    dnl # --- sizeof and presence of uint ---
+    GLIB_SIZEOF([#include <sys/types.h>], uint, sys_typesh_uint)
+    BIRNET_SIZEOF_SYS_TYPESH_UINT="$glib_cv_sizeof_sys_typesh_uint"
+    AC_SUBST(BIRNET_SIZEOF_SYS_TYPESH_UINT) dnl # for birnetconfig.h
 
     dnl # --- sizeof threading structs ---
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
@@ -35,8 +56,8 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
     AC_SUBST(BIRNET_HAVE_MUTEXATTR_SETTYPE)
 
     dnl # --- check for GLib --- 
-    DEPENDANCIES="glib-2.0 >= 2.4.11 gthread-2.0"
-    dnl # define GLIB_CFLAGS and GLIB_LIBS:
+    DEPENDANCIES="glib-2.0 >= 2.6.4 gthread-2.0"
+    dnl # define BIRNET_GLIB_CFLAGS and BIRNET_GLIB_LIBS:
     PKG_CHECK_MODULES(BIRNET_GLIB, $DEPENDANCIES,,
 	AC_MSG_ERROR([[Failed to detect or find $DEPENDANCIES (consider adjusting \$PKG_CONFIG_PATH)]]))
     dnl # libtool doesn't automatically figure that -pthread implies -lpthread

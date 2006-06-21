@@ -63,6 +63,7 @@ struct Thread::ThreadWrapperInternal : public Thread {
 /* --- ThreadWrapperInternal (public version of Thread::ThreadWrapperInternal --- */
 struct ThreadDescendant : public Thread {
   typedef ThreadWrapperInternal PublicThreadWrapperInternal;
+  ThreadDescendant (const String &name) : Thread (name) {}
 };
 typedef ThreadDescendant::PublicThreadWrapperInternal ThreadWrapperInternal;
 

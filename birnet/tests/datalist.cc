@@ -21,7 +21,6 @@
 
 namespace {
 using namespace Birnet;
-using Birnet::uint;
 
 class MyKey : public DataKey<int> {
   void destroy (int i)
@@ -44,7 +43,7 @@ class StringKey : public DataKey<String> {
 template<class DataListContainer> static void
 data_list_test_strings (DataListContainer &r)
 {
-  StringKey strkey;
+  static StringKey strkey;
   r.set_data (&strkey, String ("otto"));
   TASSERT (String ("otto") == r.get_data (&strkey).c_str());
   String dat = r.swap_data (&strkey, String ("BIRNET"));
@@ -57,7 +56,7 @@ data_list_test_strings (DataListContainer &r)
 template<class DataListContainer> static void
 data_list_test_ints (DataListContainer &r)
 {
-  MyKey intkey;
+  static MyKey intkey;
   TASSERT (-1 == r.get_data (&intkey)); // fallback() == -1
   int dat = r.swap_data (&intkey, 4);
   TASSERT (dat == -1); // former value

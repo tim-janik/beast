@@ -39,7 +39,7 @@ birnet_generated_headers = $(strip 	\
 	birnetconfig.h			\
 	birnetsignalvariants.hh         \
 )
-EXTRA_DIST += mksignals.sh configure.inc
+EXTRA_DIST += configure.inc mksignals.sh
 
 # Birnet library
 # we want a partial shared library here. libtool creates that if the library
@@ -73,6 +73,19 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "#define BIRNET_EXTERN_C_END()"							>> xgen-$(@F) \
 	&& echo "#endif"									>> xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
+	&& echo "#define BIRNET_MAJOR_VERSION		(@BIRNET_MAJOR_VERSION@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_MINOR_VERSION		(@BIRNET_MINOR_VERSION@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_MICRO_VERSION		(@BIRNET_MICRO_VERSION@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_BINARY_AGE		(@BIRNET_BINARY_AGE@)"			>> xgen-$(@F) \
+	&& echo "#define BIRNET_INTERFACE_AGE		(@BIRNET_INTERFACE_AGE@)"		>> xgen-$(@F) \
+	&& echo ""										>> xgen-$(@F) \
+	&& echo "#define BIRNET_CHECK_VERSION(major,minor,micro)	\\"			>> xgen-$(@F) \
+	&& echo "  (BIRNET_MAJOR_VERSION > (major) || \\"					>> xgen-$(@F) \
+	&& echo "   (BIRNET_MAJOR_VERSION == (major) && BIRNET_MINOR_VERSION > (minor)) || \\"	>> xgen-$(@F) \
+	&& echo "   (BIRNET_MAJOR_VERSION == (major) && BIRNET_MINOR_VERSION == (minor) && \\"	>> xgen-$(@F) \
+	&& echo "    BIRNET_MICRO_VERSION >= (micro)))"						>> xgen-$(@F) \
+	&& echo ""										>> xgen-$(@F) \
+	&& echo "#define BIRNET_SIZEOF_SYS_TYPESH_UINT	(@BIRNET_SIZEOF_SYS_TYPESH_UINT@)"	>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_MUTEX_T	(@BIRNET_SIZEOF_PTH_MUTEX_T@)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_COND_T	(@BIRNET_SIZEOF_PTH_COND_T@)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_HAVE_MUTEXATTR_SETTYPE	(@BIRNET_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-$(@F) \
