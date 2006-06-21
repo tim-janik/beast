@@ -1,3 +1,8 @@
+Wed Jun 21 23:38:35 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: define _GNU_SOURCE for the birnet programming environment,
+	to automatically get GNU extensions like dprintf(), large file, uint, ...
+
 Wed Jun 21 02:13:38 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: provide versioning information and BIRNET_SIZEOF_SYS_TYPESH_UINT.
