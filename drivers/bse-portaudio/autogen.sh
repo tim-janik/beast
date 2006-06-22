@@ -181,4 +181,4 @@ $AUTOCONF || exit $?
 
 cd $ORIGDIR
 echo "Running: $srcdir/configure $CONFIGURE_OPTIONS $@"
-$srcdir/configure $CONFIGURE_OPTIONS "$@" || exit $?
+$srcdir/configure --enable-maintainer-mode $CONFIGURE_OPTIONS "$@" || exit $?
