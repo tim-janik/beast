@@ -9,10 +9,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-05 00:42+0200\n"
-"PO-Revision-Date: 2006-04-19 21:51+0200\n"
+"POT-Creation-Date: 2006-07-05 00:43+0200\n"
+"PO-Revision-Date: 2006-06-25 17:53+0200\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
-"Language-Team: Italiano\n"
+"Language-Team:  <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -771,11 +771,11 @@ msgstr "Fallita il caricamento del file wave \"%s\": %s"
 
 #: ../beast-gtk/bstgrowbar.c:93
 msgid "Shrink the scrollable area"
-msgstr "Riduce l'area ridimensionabile"
+msgstr "Riduce l'area da scorrere"
 
 #: ../beast-gtk/bstgrowbar.c:95
 msgid "Grow the scrollable area"
-msgstr "Aumenta l'area ridimensionabile"
+msgstr "Aumenta l'area da scorrere"
 
 #: ../beast-gtk/bstitemseqdialog.c:159
 #, c-format
@@ -954,9 +954,9 @@ msgid "Failed to load project \"%s\": %s"
 msgstr "Fallito il caricamento del progetto \"%s\": %s"
 
 #: ../beast-gtk/bstmain.c:331
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to merge project \"%s\": %s"
-msgstr "Fallito il caricamento del progetto \"%s\": %s"
+msgstr "Inserimento (fusione) del progetto non riuscita \"%s\": %s"
 
 #: ../beast-gtk/bstmain.c:845
 msgid "BEAST About"
@@ -1327,6 +1327,7 @@ msgstr "Passi (Steps)"
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
+"Numero di passi da muovere ogni volta sopra un evento o una nota già editata"
 
 #: ../beast-gtk/bstpatternctrl.c:128 ../beast-gtk/bstscrollgraph.c:575
 msgid "Direction"
@@ -1334,7 +1335,7 @@ msgstr "Direzione"
 
 #: ../beast-gtk/bstpatternctrl.c:129
 msgid "The direction of cell movement each time an event or note was edited"
-msgstr ""
+msgstr "Direzione dello spostamento sopra un evento o una nota già editata"
 
 #: ../beast-gtk/bstpatternctrl.c:133
 msgid "HWrap"
@@ -1563,7 +1564,7 @@ msgstr "Inserisci note da un centoventottesimo"
 
 #: ../beast-gtk/bstpianorollctrl.c:126 ../beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
-msgstr ""
+msgstr "Q: Risoluzione"
 
 #: ../beast-gtk/bstpianorollctrl.c:126 ../beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
@@ -2405,19 +2406,16 @@ msgstr ""
 "verrà riavviato."
 
 #: ../beast-gtk/bstrecords.idl:125
-#, fuzzy
 msgid "Slow scopes"
-msgstr "Abilita valori"
+msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:126
-#, fuzzy
 msgid ""
 "Aggresively slows down the periodic update frequency of scopes. Doing this "
 "may be desirable on particularly slow machines."
 msgstr ""
-"Abilita o disabilita BEAST da un periodico aggiornamento dei diversi valori. "
-"La disabilitazione si rende necessaria per macchine datate e/o con hardware "
-"poco performante."
+"Riduce la frequenza di aggiornamento dei valori. Attivare questa opzione "
+"potrebbe essere desiderabile sulle macchine particolarmente lente."
 
 #: ../beast-gtk/bstrecords.idl:134
 msgid "Skin Name"
@@ -3576,7 +3574,7 @@ msgstr "Intensità della Modulazione di Guadagno"
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
-msgstr "Audio In"
+msgstr "Ingr.Audio"
 
 #: ../bse/bsebiquadfilter.c:186
 msgid "Unfiltered Audio Signal"
@@ -3586,7 +3584,7 @@ msgstr "Segnale Audio Non Filtrato"
 #: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
-msgstr "Freq In"
+msgstr "Ingr.Freq"
 
 #: ../bse/bsebiquadfilter.c:188
 msgid "Center Frequency Input"
@@ -3763,8 +3761,8 @@ msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
 msgstr ""
-"Implementazione bus per le canzoni, usato per instradare le tracce audio del "
-"segnale all'uscita master."
+"Implementazione bus per le canzoni; viene usato per instradare le tracce "
+"audio del segnale all'uscita master."
 
 #: ../bse/bseconstant.c:85
 msgid "/Other Sources/Constant"
@@ -4612,27 +4610,24 @@ msgid ""
 msgstr ""
 
 #: ../bse/bsecore.idl:720
-#, fuzzy
 msgid "Default Values"
-msgstr "Disegna Valori"
+msgstr "Valori predefiniti"
 
 #: ../bse/bsecore.idl:721
-#, fuzzy
 msgid "Default Author"
-msgstr "Autore"
+msgstr "Autore principale"
 
 #: ../bse/bsecore.idl:721
 msgid "Default value for 'Author' fields"
-msgstr ""
+msgstr "Valori predefiniti per il campo \"Autore\""
 
 #: ../bse/bsecore.idl:723
-#, fuzzy
 msgid "Default License"
-msgstr "Licenza"
+msgstr "Licenza d'origine"
 
 #: ../bse/bsecore.idl:723
 msgid "Default value for 'License' fields"
-msgstr ""
+msgstr "Valore predefinito per il campo \"Licenza\""
 
 #: ../bse/bsecore.idl:726
 msgid "Search Paths"
@@ -4647,8 +4642,8 @@ msgstr "Percorso Campioni"
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
-"Ricerca percorso di directory, separato da \"%s\", usato per trovare "
-"campioni audio."
+"Ricerca percorso delle cartelle; separato da \"%s\". Questa \"tecnica\" "
+"viene usata usata per trovare campioni audio."
 
 #: ../bse/bsecore.idl:731
 msgid "Effect Path"
@@ -5065,7 +5060,7 @@ msgstr ""
 
 #: ../bse/bseinstrumentoutput.c:126
 msgid "High indicates the instrument is done synthesizing"
-msgstr ""
+msgstr "Un valore alto indica che lo strumento è in fase di sintetizzazione."
 
 #: ../bse/bseinstrumentoutput.c:152
 msgid "/Input & Output/Instrument Output"
@@ -5268,11 +5263,11 @@ msgstr "Disconnetti Uscita"
 
 #: ../bse/bseobject.c:841
 msgid "Unique name of this object"
-msgstr ""
+msgstr "Nome unico di questo oggetto"
 
 #: ../bse/bseobject.c:851
 msgid "Free form comment or description"
-msgstr ""
+msgstr "Commento e/o descrizione libera"
 
 #: ../bse/bseparasite.proc:28 ../bse/bseparasite.proc:52
 #: ../bse/bseparasite.proc:70 ../bse/bseparasite.proc:89
@@ -5349,7 +5344,7 @@ msgstr "Registrazione Audio Ingresso"
 
 #: ../bse/bseserver.c:454
 msgid "Failed to start recording from audio device."
-msgstr "Fallito l'avvio di registrazione da un dispositivo audio."
+msgstr "Avvio della registrazione da un dispositivo audio non riuscita."
 
 #: ../bse/bseserver.c:455
 msgid ""
@@ -5555,6 +5550,8 @@ msgstr "Trova una traccia adatta a suonare le note di una data parte."
 msgid ""
 "Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
+"Trova la prima traccia che contiene una sezione adatta al controllo per le "
+"parti \"orfane\"."
 
 #: ../bse/bsesong.proc:459
 msgid "Synthesize a note on a song of an active project."
@@ -5563,6 +5560,8 @@ msgstr "Sintetizza una nota su una canzone di un progetto attivo."
 #: ../bse/bsesong.proc:509
 msgid "Retrieve song timing information at a specific tick."
 msgstr ""
+"Richiama le informazioni di sincronizzazione di una canzone ad un bpm "
+"specifico."
 
 #: ../bse/bsestandardosc.c:107
 msgid ""
@@ -5780,7 +5779,7 @@ msgstr "Autore"
 
 #: ../bse/bsesuper.c:204
 msgid "Person changing or creating this object"
-msgstr ""
+msgstr "Persona che ha cambiato e/o creato questo oggetto"
 
 #: ../bse/bsesuper.c:209
 msgid "License"
@@ -5846,6 +5845,7 @@ msgstr "Bus del mixer usati come uscite per questa traccia"
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
+"Wave \"%s\": fallito il caricamento del pezzo wave alla frequenza %f: %s"
 
 #: ../bse/bsewaveosc.c:96
 msgid "/Audio Sources/Wave Oscillator"
@@ -5866,7 +5866,9 @@ msgstr "Canale"
 
 #: ../bse/bsewaveosc.c:566
 msgid "The audio channel to play, usually 1 is left, 2 is right"
-msgstr "I canali audio d'ascolto sono 1 per il sinistro e 2 per il destro"
+msgstr ""
+"I canali audio d'ascolto sono il numero 1 per il sinistro e il numero 2 per "
+"il destro"
 
 #: ../bse/bsewaveosc.c:571
 msgid "Modulation Strength for linear frequency modulation"
@@ -6120,13 +6122,15 @@ msgstr ""
 
 #: ../library/scripts/song-parts-operations.scm.h:25
 msgid "/Song/Crop parts (loop range)"
-msgstr ""
+msgstr "/Canzone/Taglia le parti (selezione in loop)"
 
 #: ../library/scripts/song-parts-operations.scm.h:26
 msgid ""
 "Crops all parts within the loop range and moves parts after the loop range "
 "backwards accordingly."
 msgstr ""
+"Taglia tutte le parti all'interno della selezione di loop spostando, di "
+"conseguenza, le parti successive alla selezione tagliata indietro."
 
 #: ../library/scripts/song-parts-operations.scm.h:34
 msgid "/Song/Duplicate parts (loop range)"
@@ -6137,12 +6141,17 @@ msgid ""
 "Duplicate all parts within the loop range and moves parts after the loop "
 "range forward accordingly."
 msgstr ""
+"Duplica tutte le parti all'interno della selezione di loop posizionandole, "
+"di conseguenza, davanti la selezione medesima."
 
 #: ../library/scripts/song-parts-operations.scm.h:62
 msgid ""
 "The loop range of the specified song contains no parts or is unset, so no "
 "parts can be identified to operate on."
 msgstr ""
+"La selezione di loop della canzone specificata non contiene parti oppure non "
+"è impostata; in tali condizioni nessuna parte può essere identificata per "
+"poter funzionare."
 
 #: ../library/scripts/song-parts-operations.scm.h:64
 msgid "Show messages about empty part range"
@@ -6150,11 +6159,11 @@ msgstr "Mostra messaggi nello spettro delle parti vuote"
 
 #: ../library/scripts/song-parts-operations.scm.h:68
 msgid "Failed to crop part range."
-msgstr ""
+msgstr "Taglio della parte selezionata fallito."
 
 #: ../library/scripts/song-parts-operations.scm.h:80
 msgid "Failed to duplicate part range."
-msgstr ""
+msgstr "Fallita la duplicazione della parte selezionata."
 
 #: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
@@ -6223,21 +6232,21 @@ msgstr ""
 #: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
 #: ../plugins/bsemult.c:60
 msgid "Audio In1"
-msgstr "Audio In1"
+msgstr "Ingr.Audio1"
 
 #: ../plugins/artscompressor.idl:50
 msgid "Audio input 1"
-msgstr "Ingresso audio 1"
+msgstr "Ingresso Audio 1"
 
 #: ../plugins/artscompressor.idl:51 ../plugins/bseadder.c:99
 #: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
 #: ../plugins/bsemult.c:62
 msgid "Audio In2"
-msgstr "Audio In2"
+msgstr "Ingr.Audio2"
 
 #: ../plugins/artscompressor.idl:51
 msgid "Audio input 2"
-msgstr "Ingresso audio 2"
+msgstr "Ingresso Audio 2"
 
 #: ../plugins/artscompressor.idl:52
 msgid "Audio Out1"
@@ -6245,7 +6254,7 @@ msgstr "Uscita Audio1"
 
 #: ../plugins/artscompressor.idl:52
 msgid "Compressed audio output 1"
-msgstr "Uscita audio compressa 1"
+msgstr "Uscita Audio compressa 1"
 
 #: ../plugins/artscompressor.idl:53
 msgid "Audio Out2"
@@ -6253,7 +6262,7 @@ msgstr "Uscita Audio2"
 
 #: ../plugins/artscompressor.idl:53
 msgid "Compressed audio output 2"
-msgstr "Uscita audio compressa 2"
+msgstr "Uscita Audio compressa 2"
 
 #: ../plugins/artscompressor.idl:55 ../plugins/davbassfilter.idl:36
 #: ../plugins/davchorus.idl:32 ../plugins/evaluator/bseevaluator.idl:34
@@ -6859,7 +6868,7 @@ msgstr "Stato"
 
 #: ../plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
-msgstr ""
+msgstr "Condizione usata per i messaggi di errore in uscita."
 
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Input"
@@ -6881,18 +6890,3 @@ msgstr "Uscita Destra"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "aggiunta non riuscita di un pezzo wave dal file \"%s\": %s"
-
-#~ msgid "Enable meters"
-#~ msgstr "Abilita indicatori"
-
-#~ msgid "Volume [dB] Steps"
-#~ msgstr "Passi [dB] del Volume"
-
-#~ msgid "Step width for volume in decibel"
-#~ msgstr "Imposta la regolazione del volume in dB"
-
-#~ msgid "BPM Steps"
-#~ msgstr "Passi BPM"
-
-#~ msgid "Step width for beats per minute"
-#~ msgstr "Regola i battiti al minuto (metronomo)"
