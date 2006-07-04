@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 11:49+0200\n"
+"POT-Creation-Date: 2006-07-05 00:42+0200\n"
 "PO-Revision-Date: 2006-04-19 21:51+0200\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
 "Language-Team: Italiano\n"
@@ -451,11 +451,11 @@ msgstr "Aggiungi un nuovo bus al mixer"
 msgid "Delete the currently selected bus"
 msgstr "Cancella il bus correntemente selezionato"
 
-#: ../beast-gtk/bstcanvaslink.c:128
+#: ../beast-gtk/bstcanvaslink.c:130
 msgid "Module Link: "
 msgstr "Collegamento Modulo: "
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstcanvaslink.c:186 ../beast-gtk/bstsnetrouter.c:758
 msgid "Module link"
 msgstr "Collegamento modulo"
 
@@ -463,42 +463,42 @@ msgstr "Collegamento modulo"
 msgid "Module Info"
 msgstr "Informazioni Modulo"
 
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstcanvassource.c:981 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "Ingresso"
 
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../beast-gtk/bstcanvassource.c:990 ../beast-gtk/bstsnetrouter.c:1095
 #: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "Uscita"
 
-#: ../beast-gtk/bstcanvassource.c:991
+#: ../beast-gtk/bstcanvassource.c:994
 msgid "(Hint)"
 msgstr "(Suggerimento)"
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Draw Values"
 msgstr "Disegna Valori"
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Imposta se visualizzare il valore in dB invece che lineare"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Orientation"
 msgstr "Direzione"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Choose horizontal or vertical orientation"
 msgstr "Scegli una direzione orizzontale o verticale"
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Justify"
 msgstr "Giustificato"
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr ""
 "Regola l'allineamento relativo dei valori e/o delle misure al fine di essere "
@@ -5304,7 +5304,7 @@ msgstr ""
 " non fa parte della lista di selezione automatica dei dispositivi PCM."
 
 #: ../bse/bsepcmdevice-oss.c:647
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:396
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
 msgid "DEVICE,MODE"
 msgstr "DISPOSITIVO,MODO"
 
@@ -5774,27 +5774,27 @@ msgstr "Assegnazione Uscite"
 msgid "Input port name to interface to"
 msgstr "Nome della porta d'ingresso da interfacciare a"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Author"
 msgstr "Autore"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Person changing or creating this object"
 msgstr ""
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "License"
 msgstr "Licenza"
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "Copyright license applying to this object"
 msgstr "Licenza del Copyright applicato a questo oggetto"
 
-#: ../bse/bsesuper.c:201
+#: ../bse/bsesuper.c:217
 msgid "Creation Time"
 msgstr "Creato il"
 
-#: ../bse/bsesuper.c:205
+#: ../bse/bsesuper.c:221
 msgid "Last modification time"
 msgstr "Ultima modifica"
 
@@ -5954,7 +5954,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:398
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:405
 #, c-format
 msgid ""
 "PortAudio PCM driver, using %s.\n"
