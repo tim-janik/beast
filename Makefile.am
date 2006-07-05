@@ -7,7 +7,7 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test slowtests doxer docs web
 
 # require automake 1.4
-AUTOMAKE_OPTIONS = 1.4
+AUTOMAKE_OPTIONS = 1.4 dist-bzip2 no-dist-gzip
 
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
