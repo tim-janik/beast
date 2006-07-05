@@ -1091,7 +1091,7 @@ app_action_exec (gpointer data,
       if (docs_url)
         {
           gchar *local_url = g_strconcat ("file://", BST_PATH_DOCS, "/", docs_url, NULL);
-          gxk_url_show_with_cookie (local_url, docs_title, self->cookie);
+          birnet_url_show_with_cookie (local_url, docs_title, self->cookie);
           g_free (local_url);
         }
       break;
@@ -1099,16 +1099,16 @@ app_action_exec (gpointer data,
       beast_show_about_box ();
       break;
     case ACTION_URL_HELP_DESK:
-      gxk_url_show ("http://beast.gtk.org/wiki:HelpDesk");
+      birnet_url_show ("http://beast.gtk.org/wiki:HelpDesk");
       break;
     case ACTION_URL_BEAST_SITE:
-      gxk_url_show ("http://beast.gtk.org/");
+      birnet_url_show ("http://beast.gtk.org/");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
-      gxk_url_show ("http://beast.gtk.org/sound-browser");
+      birnet_url_show ("http://beast.gtk.org/sound-browser");
       break;
     case ACTION_URL_ONLINE_DEMOS:
-      gxk_url_show ("http://beast.gtk.org/sound-browser");
+      birnet_url_show ("http://beast.gtk.org/sound-browser");
       break;
     case ACTION_DEMO_DIALOG_FATAL:
     case ACTION_DEMO_DIALOG_ERROR:

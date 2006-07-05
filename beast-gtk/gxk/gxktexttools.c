@@ -19,6 +19,7 @@
 #include "gxktexttools.h"
 #include "gxkstock.h"
 #include "gxkradget.h"
+#include "birnet/birnet.h" /* for birnet_url_show() */
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -2295,7 +2296,7 @@ navigate_link (GtkWidget   *sctext,
       strncmp (uri, "http:", 5) == 0 ||
       strncmp (uri, "https:", 6) == 0 ||
       strncmp (uri, "mailto:", 7) == 0)
-    gxk_url_show (uri);
+    birnet_url_show (uri);
   else
     gxk_scroll_text_advance (sctext, uri);
 }

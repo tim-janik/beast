@@ -404,7 +404,7 @@ main (int   argc,
       sfi_glue_gc_run ();
       GDK_THREADS_LEAVE ();
     }
-  gxk_cleanup_force_handlers();
+  birnet_cleanup_force_handlers();
 
   bse_object_debug_leaks ();
   

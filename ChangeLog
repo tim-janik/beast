@@ -1,3 +1,12 @@
+Wed Jul  5 02:55:27 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: use birnet url launcher.
+
+	* beast-gtk/bstmain.c: invoke birnet cleanup handlers.
+
+	* beast-gtk/gxk/gxkutils.[hc]: moved url launchers and cleanup
+	handlers to birnet.
+
 Wed Jun 21 23:42:35 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdbmeter.c: removed unnecessary _ISOC99_SOURCE.

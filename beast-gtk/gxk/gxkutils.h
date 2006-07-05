@@ -345,18 +345,6 @@ gboolean gxk_tree_view_is_row_selected	 (GtkTreeView		*tree,
 					  gint			 row);
 gint     gxk_tree_view_get_selected_row	 (GtkTreeView		*tree);
 
-/* --- url handling --- */
-gboolean gxk_url_show                    (const gchar           *url);
-gboolean gxk_url_show_with_cookie        (const gchar           *url,
-					  const gchar           *url_title,
-					  const gchar           *cookie);
-
-/* --- cleanup registration --- */
-guint	gxk_cleanup_add			(guint			 timeout_ms,
-					 GDestroyNotify		 handler,
-					 gpointer		 data);
-void	gxk_cleanup_force_handlers	(void);
-
 /* --- signal convenience --- */
 gboolean	gxk_signal_handler_exists	(gpointer	 instance,
 						 const gchar	*detailed_signal,
