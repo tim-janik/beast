@@ -1531,6 +1531,16 @@ get_pth_thread_table (void)
 #define	get_pth_thread_table()	NULL
 #endif	/* !BIRNET_HAVE_MUTEXATTR_SETTYPE */
 
+static BirnetMutex *mutex_init_chain = NULL;
+
+void
+birnet_mutex__chain4init (BirnetMutex *mutex)
+{
+  g_assert (mutex->mutex_pointer == NULL);
+  mutex->mutex_pointer = mutex_init_chain;
+  mutex_init_chain = mutex;
+}
+
 void
 _birnet_init_threads (void)
 {
@@ -1544,6 +1554,13 @@ _birnet_init_threads (void)
   birnet_cond_init (&global_thread_cond);
   
   birnet_thread_self ();
+
+  while (mutex_init_chain)
+    {
+      BirnetMutex *mutex = mutex_init_chain;
+      mutex_init_chain = mutex->mutex_pointer;
+      birnet_thread_table.mutex_init (mutex);
+    }
 
   _birnet_init_threads_cxx();
 }

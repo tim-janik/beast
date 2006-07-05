@@ -69,9 +69,13 @@ BIRNET_EXTERN_C_BEGIN();
 #endif /* _BIRNET_SOURCE_EXTENSIONS */
 
 /* --- compile time assertions --- */
-#define BIRNET_CPP_PASTE2(a,b)                  a ## b
-#define BIRNET_CPP_PASTE(a,b)                   BIRNET_CPP_PASTE2 (a, b)
-#define BIRNET_STATIC_ASSERT_NAMED(expr,asname) typedef struct { char asname[(expr) ? 1 : -1]; } BIRNET_CPP_PASTE (Birnet_StaticAssertion_LINE, __LINE__)
+#define BIRNET_CPP_PASTE4i(a,b,c,d)             a ## b ## c ## d  /* twofold indirection is required to expand macros like __LINE__ */
+#define BIRNET_CPP_PASTE4(a,b,c,d)              BIRNET_CPP_PASTE4i (a,b,c,d)
+#define BIRNET_CPP_PASTE3i(a,b,c)               a ## b ## c	  /* twofold indirection is required to expand macros like __LINE__ */
+#define BIRNET_CPP_PASTE3(a,b,c)                BIRNET_CPP_PASTE3i (a,b,c)
+#define BIRNET_CPP_PASTE2i(a,b)                 a ## b      	  /* twofold indirection is required to expand macros like __LINE__ */
+#define BIRNET_CPP_PASTE2(a,b)                  BIRNET_CPP_PASTE2i (a,b)
+#define BIRNET_STATIC_ASSERT_NAMED(expr,asname) typedef struct { char asname[(expr) ? 1 : -1]; } BIRNET_CPP_PASTE2 (Birnet_StaticAssertion_LINE, __LINE__)
 #define BIRNET_STATIC_ASSERT(expr)              BIRNET_STATIC_ASSERT_NAMED (expr, compile_time_assertion_failed)
 
 /* --- common type definitions --- */

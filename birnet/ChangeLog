@@ -1,3 +1,29 @@
+Wed Jul  5 01:54:59 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.c (birnet_url_test_show): added logic to restart browser 
+	executable checks if none was found to be working. added support for the
+	"xdg-open" browser launching script.
+	
+	* birnetutils.[hc]: moved url opener code and cleanup handler code from
+	GXK here. provide:
+	birnet_url_show(): show an url, show an error if no browser is present.
+	birnet_url_show_with_cookie(): same as birnet_url_show() albeit setting
+	a cookie before hand and then redirecting automatically to the actual url.
+	birnet_url_test_show(): show an url, return false if no browser is present.
+	birnet_url_test_show_with_cookie(): same as birnet_url_show_with_cookie()
+	with false return code instead of a warning.
+	birnet_cleanup_add(): register a cleanup handler with the default main loop.
+	birnet_cleanup_force_handlers(): force cleanup handler execution prematurely.
+
+	* tests/threads.cc: test static C mutex.
+
+	* birnetthread.[hc]: added support for static mutexes in C via:
+	static BIRNET_MUTEX_DECLARE_INITIALIZED (mutexname);
+
+	* birnetcore.h: provide BIRNET_CPP_PASTE[234]().
+
+	* birnetmsg.h: use BIRNET_CPP_PASTE4().
+
 Wed Jun 21 23:38:35 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: define _GNU_SOURCE for the birnet programming environment,

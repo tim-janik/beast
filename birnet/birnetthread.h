@@ -116,26 +116,27 @@ bool                  birnet_guard_snap_values   (guint                *n_values
 bool                  birnet_guard_is_protected  (gpointer             	value);
 
 /* --- BirnetMutex & BirnetCond --- */
-#define birnet_threads_initialized()		(G_LIKELY (birnet_thread_table.cond_wait_timed != NULL))
-#define birnet_mutex_init(mutex)		(birnet_thread_table.mutex_init (mutex))
-#define birnet_mutex_lock(mutex)		(birnet_thread_table.mutex_lock (mutex))
-#define birnet_mutex_unlock(mutex)		(birnet_thread_table.mutex_unlock (mutex))
-#define birnet_mutex_trylock(mutex)		(birnet_thread_table.mutex_trylock (mutex) == 0) /* TRUE indicates success */
-#define birnet_mutex_destroy(mutex)		(birnet_thread_table.mutex_destroy (mutex))
-#define birnet_rec_mutex_init(rmutex)		(birnet_thread_table.rec_mutex_init (rmutex))
-#define birnet_rec_mutex_lock(rmutex)		(birnet_thread_table.rec_mutex_lock (rmutex))
-#define birnet_rec_mutex_unlock(rmutex)		(birnet_thread_table.rec_mutex_unlock (rmutex))
-#define birnet_rec_mutex_trylock(rmutex)	(birnet_thread_table.rec_mutex_trylock (rmutex) == 0) /* TRUE indicates success */
-#define birnet_rec_mutex_destroy(rmutex)	(birnet_thread_table.rec_mutex_destroy (rmutex))
-#define birnet_cond_init(cond)			(birnet_thread_table.cond_init (cond))
-#define birnet_cond_signal(cond)		(birnet_thread_table.cond_signal (cond))
-#define birnet_cond_broadcast(cond)		(birnet_thread_table.cond_broadcast (cond))
-#define birnet_cond_wait(cond, mutex)      	(birnet_thread_table.cond_wait ((cond), (mutex)))
-#define birnet_cond_destroy(cond)		(birnet_thread_table.cond_destroy (cond))
-void    birnet_cond_wait_timed			(BirnetCond    *cond,
-						 BirnetMutex   *mutex,
-						 BirnetInt64   	max_useconds);
-#define birnet_thread_exit(retval)		(birnet_thread_table.thread_exit (retval))
+#define birnet_threads_initialized()		    (G_LIKELY (birnet_thread_table.cond_wait_timed != NULL))
+#define birnet_mutex_init(mutex)		    (birnet_thread_table.mutex_init (mutex))
+#define birnet_mutex_lock(mutex)		    (birnet_thread_table.mutex_lock (mutex))
+#define birnet_mutex_unlock(mutex)		    (birnet_thread_table.mutex_unlock (mutex))
+#define birnet_mutex_trylock(mutex)		    (birnet_thread_table.mutex_trylock (mutex) == 0) /* TRUE indicates success */
+#define birnet_mutex_destroy(mutex)		    (birnet_thread_table.mutex_destroy (mutex))
+#define birnet_rec_mutex_init(rmutex)		    (birnet_thread_table.rec_mutex_init (rmutex))
+#define birnet_rec_mutex_lock(rmutex)		    (birnet_thread_table.rec_mutex_lock (rmutex))
+#define birnet_rec_mutex_unlock(rmutex)		    (birnet_thread_table.rec_mutex_unlock (rmutex))
+#define birnet_rec_mutex_trylock(rmutex)	    (birnet_thread_table.rec_mutex_trylock (rmutex) == 0) /* TRUE indicates success */
+#define birnet_rec_mutex_destroy(rmutex)	    (birnet_thread_table.rec_mutex_destroy (rmutex))
+#define birnet_cond_init(cond)			    (birnet_thread_table.cond_init (cond))
+#define birnet_cond_signal(cond)		    (birnet_thread_table.cond_signal (cond))
+#define birnet_cond_broadcast(cond)		    (birnet_thread_table.cond_broadcast (cond))
+#define birnet_cond_wait(cond, mutex)      	    (birnet_thread_table.cond_wait ((cond), (mutex)))
+#define birnet_cond_destroy(cond)		    (birnet_thread_table.cond_destroy (cond))
+void    birnet_cond_wait_timed			    (BirnetCond    *cond,
+						     BirnetMutex   *mutex,
+						     BirnetInt64    max_useconds);
+#define birnet_thread_exit(retval)		    (birnet_thread_table.thread_exit (retval))
+#define BIRNET_MUTEX_DECLARE_INITIALIZED(mutexname) BIRNET_MUTEX__DECLARE_INITIALIZED (mutexname)
 
 /* --- atomic operations --- */
 extern inline void  birnet_atomic_int_set                  (volatile int      *atomic,
@@ -189,6 +190,12 @@ bool  _birnet_thread_set_cxx	(BirnetThread *thread,
 				 void         *xxdata);
 void  _birnet_thread_cxx_wrap	(BirnetThread *thread); /* in birnetthreadxx.cc */
 void  _birnet_thread_cxx_delete	(void         *thread); /* in birnetthreadxx.cc */
+void  birnet_mutex__chain4init  (BirnetMutex *mutex);
+#define BIRNET_MUTEX__DECLARE_INITIALIZED(mutexname)                            \
+  BirnetMutex mutexname = { 0 };                                                \
+  static void __attribute__ ((constructor))                                     \
+  BIRNET_CPP_PASTE4 (__birnet_mutex__autoinit, __LINE__, __, mutexname) (void)	\
+  { birnet_mutex__chain4init (&mutexname); }
 
 union _BirnetCond
 {

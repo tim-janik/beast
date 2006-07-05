@@ -23,6 +23,21 @@
 
 BIRNET_EXTERN_C_BEGIN();
 
+/* --- url handling --- */
+void birnet_url_show                  (const char           *url);
+void birnet_url_show_with_cookie      (const char           *url,
+				       const char           *url_title,
+				       const char           *cookie);
+bool birnet_url_test_show             (const char           *url);
+bool birnet_url_test_show_with_cookie (const char	    *url,
+				       const char           *url_title,
+				       const char           *cookie);
+/* --- cleanup registration --- */
+uint birnet_cleanup_add               (uint                  timeout_ms,
+				       GDestroyNotify        handler,
+				       void                 *data);
+void birnet_cleanup_force_handlers    (void);
+
 BIRNET_EXTERN_C_END();
 
 #endif /* __BIRNET_UTILS_H__ */

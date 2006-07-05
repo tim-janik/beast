@@ -141,12 +141,10 @@ birnet_msg_check (BirnetMsgType mtype)
 #endif
 #define birnet_msg_checked( dom, lvl, ...)  \
   do { BirnetMsgType __mt = lvl; if (birnet_msg_check (__mt)) birnet_msg_log_printf (dom, __mt, __VA_ARGS__); } while (0)
-#define BIRNET_MSG_TYPE__CONCAT2(a,b,c,d)  a ## b ## c ## d /* twofold indirection is required to expand __LINE__ */
-#define BIRNET_MSG_TYPE__CONCAT(a,b,c,d)   BIRNET_MSG_TYPE__CONCAT2 (a, b, c, d)
 #define BIRNET_MSG_TYPE__DEF(variable, identifier, default_ouput, label) \
   BirnetMsgType variable = (BirnetMsgType) 0; \
   static void __attribute__ ((constructor)) \
-  BIRNET_MSG_TYPE__CONCAT (__birnet_msg_type__init, __LINE__, __, variable) (void) \
+  BIRNET_CPP_PASTE4 (__birnet_msg_type__init, __LINE__, __, variable) (void) \
   { variable = birnet_msg_type_register (identifier, default_ouput, label); }
 
 G_END_DECLS
