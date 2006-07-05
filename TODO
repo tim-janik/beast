@@ -756,7 +756,6 @@ Misc Buglets/Feature Requests:
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
  - create a roadmap document for BEAST
  - implement fractional resampler (oversampling)
- - canvas bug #340437                                                                [ 0.7.0, pending ]
  - crashes    #340437                                                                [ 0.7.0, pending ]
 
 vim:set ts=8 sts=2 sw=2:
