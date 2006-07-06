@@ -55,6 +55,17 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
     ])
     AC_SUBST(BIRNET_HAVE_MUTEXATTR_SETTYPE)
 
+    dnl # --- require libz ---
+    if test -z "$LIBZ"; then
+        AC_CHECK_LIB(z, gzsetparams,
+            [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
+            LIBZ='')
+    fi
+    if test -z "$LIBZ"; then
+        AC_MSG_ERROR([Compression library libz is missing, but required])
+    fi
+    AC_SUBST(LIBZ)
+
     dnl # --- check for GLib --- 
     DEPENDANCIES="glib-2.0 >= 2.6.4 gthread-2.0"
     dnl # define BIRNET_GLIB_CFLAGS and BIRNET_GLIB_LIBS:
@@ -62,6 +73,7 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
 	AC_MSG_ERROR([[Failed to detect or find $DEPENDANCIES (consider adjusting \$PKG_CONFIG_PATH)]]))
     dnl # libtool doesn't automatically figure that -pthread implies -lpthread
     BIRNET_LIBS=`echo " $BIRNET_GLIB_LIBS" | sed 's/\(-pthread\b\)/-lpthread \1/' `
+    BIRNET_LIBS="$BIRNET_LIBS $LIBZ"
     BIRNET_CFLAGS="$BIRNET_GLIB_CFLAGS"
 
     dnl # --- BIRNET_CFLAGS & BIRNET_LIBS ---

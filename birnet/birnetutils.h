@@ -38,6 +38,12 @@ uint birnet_cleanup_add               (uint                  timeout_ms,
 				       void                 *data);
 void birnet_cleanup_force_handlers    (void);
 
+/* --- file testing --- */
+bool birnet_file_check                (const gchar *file,	/* returns errno */
+				       const gchar *mode);
+bool birnet_file_equals		      (const gchar *file1,
+				       const gchar *file2);
+
 /* --- zintern support --- */
 guint8* birnet_zintern_decompress     (unsigned int          decompressed_size,
 				       const unsigned char  *cdata,

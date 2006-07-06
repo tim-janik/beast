@@ -85,6 +85,25 @@ test_zintern()
   TDONE();
 }
 
+static void
+test_files (const char *argv0)
+{
+  TSTART ("FileChecks");
+  TASSERT (birnet_file_equals ("/bin", "/../bin") == TRUE);
+  TASSERT (birnet_file_equals ("/bin", "/sbin") == FALSE);
+  TASSERT (birnet_file_check (argv0, "e") == TRUE);
+  TASSERT (birnet_file_check (argv0, "r") == TRUE);
+  TASSERT (birnet_file_check (argv0, "w") == TRUE);
+  TASSERT (birnet_file_check (argv0, "x") == TRUE);
+  TASSERT (birnet_file_check (argv0, "d") == FALSE);
+  TASSERT (birnet_file_check (argv0, "l") == FALSE);
+  TASSERT (birnet_file_check (argv0, "c") == FALSE);
+  TASSERT (birnet_file_check (argv0, "b") == FALSE);
+  TASSERT (birnet_file_check (argv0, "p") == FALSE);
+  TASSERT (birnet_file_check (argv0, "s") == FALSE);
+  TDONE();
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -94,6 +113,7 @@ main (int   argc,
   test_cpu_info();
   test_paths();
   test_zintern();
+  test_files (argv[0]);
 
   return 0;
 }

@@ -1,3 +1,16 @@
+Fri Jul  7 01:51:35 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.[hc]: moved birnet_file_check() and birnet_file_equals() 
+	from beast/sfi/ here. fixed socket file type test.
+
+	* tests/infotest.cc: added test for file type checks.
+
+	* tests/Makefile.am:
+	* Makefile.am: removed bogus $LIBZ which should be part of $BIRNET_LIBS.
+
+	* configure.inc: check for zlib.h and -lz and provide $LIBZ as part
+	of $BIRNET_LIBS
+
 Thu Jul  6 23:43:06 2006  Tim Janik  <timj@gtk.org>
 
 	* birnet-zintern.c: gen_zfile(): add "+ 1" to the dumed data array size
