@@ -16,8 +16,8 @@ CLEANFILES += $(gen_sources) bse-zfile.c bse-zfile.h
 noinst_DATA = bse-zfile.c # bse-zfile.h
 EXTRA_DIST += $(filter %.bse, $(ZFILE_DEFS))
 
-bse-zfile.c:	zintern $(srcdir)/*.bse # bse-zfile.h
-	./zintern -b -z $(ZFILE_DEFS) > xgen-bzc					\
+bse-zfile.c:	$(top_builddir)/birnet/birnet-zintern $(srcdir)/*.bse # bse-zfile.h
+	$(top_builddir)/birnet/birnet-zintern -b -z $(ZFILE_DEFS) > xgen-bzc		\
 	&& echo "static const BseZFile bse_zfiles[] = {" >> xgen-bzc			\
 	&& for i in $(filter-out %.bse, $(ZFILE_DEFS)) ; do				\
 		uname=$$(echo $$i | tr a-z- A-Z_);					\
@@ -36,8 +36,3 @@ bse-zfile.c:	zintern $(srcdir)/*.bse # bse-zfile.h
 
 # need -I$(top_srcdir) for <gsl/gsldefs.h>
 # need -I. for "../topconfig.h"
-
-noinst_PROGRAMS = zintern
-progs_LDADD = $(top_builddir)/sfi/libsfi.la $(LIBZ)
-zintern_SOURCES = zintern.c
-zintern_LDADD = $(progs_LDADD)

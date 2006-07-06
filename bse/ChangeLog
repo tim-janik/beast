@@ -1,3 +1,9 @@
+Thu Jul  6 22:45:17 2006  Tim Janik  <timj@gtk.org>
+
+	* zintern/Makefile.am: use birnet-zintern.
+
+	* zintern/zintern.c: rmeoved.
+
 Wed Jun 21 23:37:41 2006  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c: type fixup.
