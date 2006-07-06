@@ -73,6 +73,18 @@ test_paths()
   TDONE();
 }
 
+static void
+test_zintern()
+{
+  static const unsigned char TEST_DATA[] = "x\332K\312,\312K-\321\255\312\314+I-\312S(I-.QHI,I\4\0v\317\11V";
+  TSTART ("ZIntern");
+  guint8 *data = birnet_zintern_decompress (24, TEST_DATA, sizeof (TEST_DATA) / sizeof (TEST_DATA[0]));
+  TASSERT (String ((char*) data) == "birnet-zintern test data");
+  g_free (data);
+  TOK();
+  TDONE();
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -81,6 +93,7 @@ main (int   argc,
 
   test_cpu_info();
   test_paths();
+  test_zintern();
 
   return 0;
 }

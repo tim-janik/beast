@@ -268,3 +268,67 @@ birnet_cleanup_add (guint          timeout_ms,
   birnet_mutex_unlock (&cleanup_mutex);
   return cleanup->id;
 }
+
+/* --- zintern support --- */
+#include <zlib.h>
+
+/**
+ * @param decompressed_size exact size of the decompressed data to be returned
+ * @param cdata             compressed data block
+ * @param cdata_size        exact size of the compressed data block
+ * @returns                 decompressed data block or NULL in low memory situations
+ *
+ * Decompress the data from @a cdata of length @a cdata_size into a newly
+ * allocated block of size @a decompressed_size which is returned.
+ * The returned block needs to be freed with g_free().
+ * This function is intended to decompress data which has been compressed
+ * with the birnet-zintern utility, so no errors should occour during
+ * decompression.
+ * Consequently, if any error occours during decompression or if the resulting
+ * data block is of a size other than @a decompressed_size, the program will
+ * abort with an appropriate error message.
+ * If not enough memory could be allocated for decompression, NULL is returned.
+ */
+guint8*
+birnet_zintern_decompress (unsigned int          decompressed_size,
+                           const unsigned char  *cdata,
+                           unsigned int          cdata_size)
+{
+  uLongf dlen = decompressed_size;
+  uint64 len = dlen + 1;
+  uint8 *text = g_try_malloc (len);
+  if (!text)
+    return NULL;        /* handle ENOMEM gracefully */
+
+  int64 result = uncompress (text, &dlen, cdata, cdata_size);
+  const char *err;
+  switch (result)
+    {
+    case Z_OK:
+      if (dlen == decompressed_size)
+        {
+          err = NULL;
+          break;
+        }
+      /* fall through */
+    case Z_DATA_ERROR:
+      err = "internal data corruption";
+      break;
+    case Z_MEM_ERROR:
+      err = "out of memory";
+      g_free (text);
+      return NULL;      /* handle ENOMEM gracefully */
+      break;
+    case Z_BUF_ERROR:
+      err = "insufficient buffer size";
+      break;
+    default:
+      err = "unknown error";
+      break;
+    }
+  if (err)
+    g_error ("failed to decompress (%p, %u): %s", cdata, cdata_size, err);
+
+  text[dlen] = 0;
+  return text;          /* success */
+}

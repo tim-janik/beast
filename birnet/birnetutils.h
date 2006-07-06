@@ -38,6 +38,11 @@ uint birnet_cleanup_add               (uint                  timeout_ms,
 				       void                 *data);
 void birnet_cleanup_force_handlers    (void);
 
+/* --- zintern support --- */
+guint8* birnet_zintern_decompress     (unsigned int          decompressed_size,
+				       const unsigned char  *cdata,
+				       unsigned int          cdata_size);
+
 BIRNET_EXTERN_C_END();
 
 #endif /* __BIRNET_UTILS_H__ */

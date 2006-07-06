@@ -1,3 +1,12 @@
+Thu Jul  6 23:18:46 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.[hc]: added birnet_zintern_decompress(), based on 
+	gxk_zfile_uncompress(). 
+
+	* tests/Makefile.am: link against $LIBZ.
+
+	* tests/infotest.cc: added zintern test.
+
 Thu Jul  6 22:40:58 2006  Tim Janik  <timj@gtk.org>
 
 	* birnet-zintern.c: some fixups and renames.
