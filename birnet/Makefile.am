@@ -118,3 +118,10 @@ birnetsignalvariants.hh: $(srcdir)/birnetsignalslot.hh $(srcdir)/birnetsignaltem
 	&& cp xgen-sigs $@ \
 	&& rm -f xgen-sigs
 CLEANFILES += xgen-sigs birnetsignalvariants.hh xgen-signals.sed
+
+noinst_PROGRAMS = birnet-zintern
+progs_ldadd     = $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) $(LIBZ) -lm
+progs_deps      = $(top_builddir)/birnet/libbirnet.o
+birnet_zintern_SOURCES = birnet-zintern.c dummy.cc
+birnet_zintern_LDADD   = $(progs_ldadd)
+birnet_zintern_DEPS    = $(progs_deps)

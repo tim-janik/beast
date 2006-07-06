@@ -1,5 +1,5 @@
-/* ZINTERN - small C source compression utility
- * Copyright (C) 2003 Tim Janik
+/* birnet-zintern - small C source compression utility
+ * Copyright (C) 2003-2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <sfi/sfi.h>
+#include <birnet/birnet.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -70,6 +70,23 @@ print_uchar (Config *config,
     }
   config->pad = FALSE;
   return;
+}
+
+#define to_upper(c)     ((c) >='a' && (c) <='z' ? (c) - 'a' + 'A' : (c))
+#define is_alnum(c)     (((c) >='A' && (c) <='Z') || ((c) >='a' && (c) <='z') || ((c) >='0' && (c) <='9'))
+static gchar*
+to_cupper (const gchar *istring)
+{
+  gchar *string = g_strdup (istring), *s = string;
+  while (*s)
+    {
+      if (is_alnum (*s))
+        *s = to_upper (*s);
+      else
+        *s = '_';
+      s++;
+    }
+  return string;
 }
 
 static void
@@ -130,18 +147,18 @@ gen_zfile (const gchar *name,
       cdata = data;
     }
 
-  g_print ("/* zintern file dump (%s) */\n", file);
+  g_print ("/* birnet-zintern file dump of %s */\n", file);
 
   config = config_init;
-  printf ("#define %s_NAME \"", g_type_name_to_cupper (name));
+  printf ("#define %s_NAME \"", to_cupper (name));
   for (i = 0; fname[i]; i++)
     print_uchar (&config, fname[i]);
   printf ("\"\n");
 
-  printf ("#define %s_SIZE (%u)\n", g_type_name_to_cupper (name), dlen);
+  printf ("#define %s_SIZE (%u)\n", to_cupper (name), dlen);
 
   config = config_init;
-  printf ("static const unsigned char %s_DATA[%lu] =\n", g_type_name_to_cupper (name), clen);
+  printf ("static const unsigned char %s_DATA[%lu] =\n", to_cupper (name), clen);
   printf ("( \"");
   for (i = 0; i < clen; i++)
     print_uchar (&config, cdata[i]);
@@ -157,7 +174,7 @@ gen_zfile (const gchar *name,
 static gint
 help (gchar *arg)
 {
-  g_printerr ("usage: zintern [-h] [-b] [-z] [[name file]...]\n");
+  g_printerr ("usage: birnet-zintern [-h] [-b] [-z] [[name file]...]\n");
   g_printerr ("  -h  Print usage information\n");
   g_printerr ("  -b  Strip directories from file names\n");
   g_printerr ("  -z  Compress data blocks with libz\n");
@@ -173,7 +190,11 @@ main (gint   argc,
   GSList *plist = NULL;
   guint i;
 
-  g_thread_init (NULL);
+  BirnetInitValue ivalues[] = {
+    { "stand-alone", "true" },
+    { NULL }
+  };
+  birnet_init_extended (&argc, &argv, NULL, ivalues);
 
   for (i = 1; i < argc; i++)
     {
