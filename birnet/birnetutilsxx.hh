@@ -77,8 +77,20 @@ public:
 };
 
 /* --- file/path functionality --- */
-const String    dirname  (const String &path);
-const String    basename (const String &path);
+namespace Path {
+const String    dirname   (const String &path);
+const String    basename  (const String &path);
+bool            isabs     (const String &path);
+const String    skip_root (const String &path);
+const String    join      (const String &frag0, const String &frag1,
+                           const String &frag2 = "", const String &frag3 = "",
+                           const String &frag4 = "", const String &frag5 = "",
+                           const String &frag6 = "", const String &frag7 = "",
+                           const String &frag8 = "", const String &frag9 = "",
+                           const String &frag10 = "", const String &frag11 = "",
+                           const String &frag12 = "", const String &frag13 = "",
+                           const String &frag14 = "", const String &frag15 = "");
+} // Path
 
 /* --- template errors --- */
 namespace TEMPLATE_ERROR {

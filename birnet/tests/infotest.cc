@@ -16,8 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-// #define TEST_VERBOSE
+//#define TEST_VERBOSE
 #include <birnet/birnettests.h>
+using namespace Birnet;
 
 #if BIRNET_CHECK_VERSION (2147483647, 2147483647, 2147483647) || !BIRNET_CHECK_VERSION (0, 0, 1)      
 #error BIRNET_CHECK_VERSION() apparently broken
@@ -39,6 +40,39 @@ test_cpu_info (void)
   TDONE();
 }
 
+static void
+test_paths()
+{
+  TSTART ("Path handling");
+  String p, s;
+  s = Path::join ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f");
+#if BIRNET_DIR_SEPARATOR == '/'
+  p = "0/1/2/3/4/5/6/7/8/9/a/b/c/d/e/f";
+#else
+  p = "0\\1\\2\\3\\4\\5\\6\\7\\8\\9\\a\\b\\c\\d\\e\\f";
+#endif
+  // g_printerr ("%s == %s\n", s.c_str(), p.c_str());
+  TASSERT (s == p);
+  bool b = Path::isabs (p);
+  TASSERT (b == false);
+#if BIRNET_DIR_SEPARATOR == '/'
+  s = Path::join (BIRNET_DIR_SEPARATOR_S, s);
+#else
+  s = Path::join ("C:\\", s);
+#endif
+  b = Path::isabs (s);
+  TASSERT (b == true);
+  s = Path::skip_root (s);
+  TASSERT (s == p);
+  TASSERT (Path::basename ("simple") == "simple");
+  TASSERT (Path::basename ("skipthis" BIRNET_DIR_SEPARATOR_S "file") == "file");
+  TASSERT (Path::basename (BIRNET_DIR_SEPARATOR_S "skipthis" BIRNET_DIR_SEPARATOR_S "file") == "file");
+  TASSERT (Path::dirname ("file") == ".");
+  TASSERT (Path::dirname ("dir" BIRNET_DIR_SEPARATOR_S) == "dir");
+  TASSERT (Path::dirname ("dir" BIRNET_DIR_SEPARATOR_S "file") == "dir");
+  TDONE();
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -46,6 +80,7 @@ main (int   argc,
   birnet_init_test (&argc, &argv);
 
   test_cpu_info();
+  test_paths();
 
   return 0;
 }

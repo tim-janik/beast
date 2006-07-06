@@ -131,6 +131,8 @@ InitHook::invoke_hooks (void)
 }
 
 /* --- file utils --- */
+namespace Path {
+
 const String
 dirname (const String &path)
 {
@@ -152,6 +154,41 @@ basename (const String &path)
     return filename;
   return String (base + 1);
 }
+
+bool
+isabs (const String &path)
+{
+  return g_path_is_absolute (path.c_str());
+}
+
+const String
+skip_root (const String &path)
+{
+  const char *frag = g_path_skip_root (path.c_str());
+  return frag;
+}
+
+const String
+join (const String &frag0, const String &frag1,
+      const String &frag2, const String &frag3,
+      const String &frag4, const String &frag5,
+      const String &frag6, const String &frag7,
+      const String &frag8, const String &frag9,
+      const String &frag10, const String &frag11,
+      const String &frag12, const String &frag13,
+      const String &frag14, const String &frag15)
+{
+  char *cpath = g_build_path (BIRNET_DIR_SEPARATOR_S, frag0.c_str(),
+                              frag1.c_str(), frag2.c_str(), frag3.c_str(), frag4.c_str(), 
+                              frag5.c_str(), frag6.c_str(), frag7.c_str(), frag8.c_str(),
+                              frag9.c_str(), frag10.c_str(), frag11.c_str(), frag12.c_str(),
+                              frag13.c_str(), frag14.c_str(), frag15.c_str(), NULL);
+  String path (cpath);
+  g_free (cpath);
+  return path;
+}
+
+} // Path
 
 /* --- DataList --- */
 void
