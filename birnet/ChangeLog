@@ -1,3 +1,9 @@
+Thu Jul  6 23:43:06 2006  Tim Janik  <timj@gtk.org>
+
+	* birnet-zintern.c: gen_zfile(): add "+ 1" to the dumed data array size
+	because g++ refuses to initialize non 0-terminated strings and murns
+	about the array size.
+
 Thu Jul  6 23:18:46 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.[hc]: added birnet_zintern_decompress(), based on 

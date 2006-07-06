@@ -158,7 +158,7 @@ gen_zfile (const gchar *name,
   printf ("#define %s_SIZE (%u)\n", to_cupper (name), dlen);
 
   config = config_init;
-  printf ("static const unsigned char %s_DATA[%lu] =\n", to_cupper (name), clen);
+  printf ("static const unsigned char %s_DATA[%lu + 1] =\n", to_cupper (name), clen);
   printf ("( \"");
   for (i = 0; i < clen; i++)
     print_uchar (&config, cdata[i]);
