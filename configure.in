@@ -192,7 +192,7 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
 AC_DEFUN([AC_SFI_REQUIREMENTS],
 [
     dnl # check for GLib libs, libbirnet already provides gthread-2.0 and glib-2.0
-    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.6.10 gobject-2.0 gmodule-no-export-2.0)
+    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.6.4 gobject-2.0 gmodule-no-export-2.0)
     AC_SUBST(GLIB_GOMT_CFLAGS)
     AC_SUBST(GLIB_GOMT_LIBS)
     SFI_CFLAGS="$BIRNET_CFLAGS $GLIB_GOMT_CFLAGS"
