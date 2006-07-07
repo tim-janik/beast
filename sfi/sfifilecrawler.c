@@ -564,147 +564,13 @@ sfi_path_get_filename (const gchar  *filename,
   return fname;
 }
 
-#include <errno.h>
-
-static gint
-errno_check_file (const gchar *file_name,
-                  const gchar *mode)
-{
-  guint access_mask = 0, nac = 0;
-
-  if (strchr (mode, 'e'))       /* exists */
-    nac++, access_mask |= F_OK;
-  if (strchr (mode, 'r'))       /* readable */
-    nac++, access_mask |= R_OK;
-  if (strchr (mode, 'w'))       /* writable */
-    nac++, access_mask |= W_OK;
-  gboolean check_exec = strchr (mode, 'x') != NULL;
-  if (check_exec)               /* executable */
-    nac++, access_mask |= X_OK;
-
-  /* on some POSIX systems, X_OK may succeed for root without any
-   * executable bits set, so we also check via stat() below.
-   */
-  if (nac && access (file_name, access_mask) < 0)
-    return -errno;
-
-  gboolean check_file = strchr (mode, 'f') != NULL;     /* open as file */
-  gboolean check_dir  = strchr (mode, 'd') != NULL;     /* open as directory */
-  gboolean check_link = strchr (mode, 'l') != NULL;     /* open as link */
-  gboolean check_char = strchr (mode, 'c') != NULL;     /* open as character device */
-  gboolean check_block = strchr (mode, 'b') != NULL;    /* open as block device */
-  gboolean check_pipe = strchr (mode, 'p') != NULL;     /* open as pipe */
-  gboolean check_socket = strchr (mode, 's') != NULL;   /* open as socket */
-
-  if (check_exec || check_file || check_dir || check_link || check_char || check_block || check_pipe)
-    {
-      struct stat st;
-
-      if (check_link)
-        {
-          if (lstat (file_name, &st) < 0)
-            return -errno;
-        }
-      else if (stat (file_name, &st) < 0)
-        return -errno;
-
-      if (0)
-        g_printerr ("sfi_file_check(\"%s\",\"%s\"): %s%s%s%s%s%s%s\n",
-                    file_name, mode,
-                    S_ISREG (st.st_mode) ? "f" : "",
-                    S_ISDIR (st.st_mode) ? "d" : "",
-                    S_ISLNK (st.st_mode) ? "l" : "",
-                    S_ISCHR (st.st_mode) ? "c" : "",
-                    S_ISBLK (st.st_mode) ? "b" : "",
-                    S_ISFIFO (st.st_mode) ? "p" : "",
-                    S_ISSOCK (st.st_mode) ? "s" : "");
-
-      if (S_ISDIR (st.st_mode) && (check_file || check_link || check_char || check_block || check_pipe))
-        return -EISDIR;
-      if (check_file && !S_ISREG (st.st_mode))
-        return -EINVAL;
-      if (check_dir && !S_ISDIR (st.st_mode))
-        return -ENOTDIR;
-      if (check_link && !S_ISLNK (st.st_mode))
-        return -EINVAL;
-      if (check_char && !S_ISCHR (st.st_mode))
-        return -ENODEV;
-      if (check_block && !S_ISBLK (st.st_mode))
-        return -ENOTBLK;
-      if (check_pipe && !S_ISFIFO (st.st_mode))
-        return -ENXIO;
-      if (check_socket && !S_ISSOCK (st.st_mode))
-        return -ENOTSOCK;
-      if (check_exec && !(st.st_mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
-        return -EACCES; /* for root executable, any +x bit is good enough */
-    }
-
-  return 0;
-}
-
-/**
- * @param file	possibly relative filename
- * @param mode	feature string
- * @return		TRUE if @a file adhears to @a mode
- *
- * Perform various checks on @a file and return whether all
- * checks passed. On failure, errno is set appropriately, and
- * FALSE is returned. Available features to be checked for are:
- * @itemize
- * @item e - @a file must exist
- * @item r - @a file must be readable
- * @item w - @a file must be writable
- * @item x - @a file must be executable
- * @item f - @a file must be a regular file
- * @item d - @a file must be a directory
- * @item l - @a file must be a symbolic link
- * @item c - @a file must be a character device
- * @item b - @a file must be a block device
- * @item p - @a file must be a named pipe
- * @item s - @a file must be a socket.
- * @done
- */
-gboolean
-sfi_file_check (const gchar *file,
-                const gchar *mode)
-{
-  gint err = file && mode ? errno_check_file (file, mode) : -EFAULT;
-  errno = err < 0 ? -err : 0;
-  return errno == 0;
-}
-
-gboolean
-sfi_file_equals (const gchar    *file1,
-                 const gchar    *file2)
-{
-  if (!file1 || !file2)
-    return file1 == file2;
-  struct stat st1 = { 0, }, st2 = { 0, };
-  gint err1 = 0, err2 = 0;
-  errno = 0;
-  if (stat (file1, &st1) < 0 && stat (file1, &st1) < 0)
-    err1 = errno;
-  errno = 0;
-  if (stat (file2, &st2) < 0 && stat (file2, &st2) < 0)
-    err2 = errno;
-  if (err1 || err2)
-    return err1 == err2;
-  return (st1.st_dev  == st2.st_dev &&
-          st1.st_ino  == st2.st_ino &&
-          st1.st_rdev == st2.st_rdev);
-}
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 /**
  * @param file	a file to test
  * @param test	bitfield of GFileTest flags
  *
  * This is the AND version of g_file_test(). That is, all file tests
  * specified in the @a test bits have to succed for this function to
- * return TRUE. This function is implemented via sfi_file_check(),
+ * return TRUE. This function is implemented via birnet_file_check(),
  * which allowes for more detailed mode tests and is recommended
  * over use of this function.
  * Here is the list of possible GFileTest flags:
@@ -733,7 +599,7 @@ g_file_test_all (const gchar  *file,
     strcat (buffer, "d");
   if (test & G_FILE_TEST_IS_EXECUTABLE)
     strcat (buffer, "x");
-  return sfi_file_check (file, buffer);
+  return birnet_file_check (file, buffer);
 }
 
 #include <pwd.h>

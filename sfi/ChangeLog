@@ -1,3 +1,8 @@
+Fri Jul  7 02:10:42 2006  Tim Janik  <timj@gtk.org>
+
+	* sfifilecrawler.[hc]: removed sfi_file_check() and sfi_file_equals() 
+	which are now provided and tested by libbirnet.
+
 Wed Jun 21 23:40:33 2006  Tim Janik  <timj@gtk.org>
 
 	* sfitypes.h: include birnet.h before glib-extra.h for _GNU_SOURCE to 
