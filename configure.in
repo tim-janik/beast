@@ -191,12 +191,12 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
 ])
 AC_DEFUN([AC_SFI_REQUIREMENTS],
 [
-    dnl # We need GLib with friends
-    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.4.11 gobject-2.0 gmodule-no-export-2.0 gthread-2.0)
+    dnl # check for GLib libs, libbirnet already provides gthread-2.0 and glib-2.0
+    PKG_CHECK_MODULES(GLIB_GOMT, glib-2.0 >= 2.6.10 gobject-2.0 gmodule-no-export-2.0)
     AC_SUBST(GLIB_GOMT_CFLAGS)
     AC_SUBST(GLIB_GOMT_LIBS)
-    SFI_CFLAGS="$GLIB_GOMT_CFLAGS"
-    SFI_LIBS="$GLIB_GOMT_LIBS"
+    SFI_CFLAGS="$BIRNET_CFLAGS $GLIB_GOMT_CFLAGS"
+    SFI_LIBS="$BIRNET_LIBS $GLIB_GOMT_LIBS"
     AC_SUBST(SFI_CFLAGS)
     AC_SUBST(SFI_LIBS)
 
@@ -262,20 +262,9 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
 
-    dnl # --- require libz ---
-    if test -z "$LIBZ"; then
-	AC_CHECK_LIB(z, gzsetparams,
-	    [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
-	    LIBZ='')
-    fi
-    if test -z "$LIBZ"; then
-	AC_MSG_ERROR([Compression library libz is missing, but required])
-    fi
-    AC_SUBST(LIBZ)
-
     dnl # --- complete CFLAGS/LIBS setup ---
     BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS"
-    BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS $LIBZ"
+    BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
@@ -284,7 +273,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
 	BSE_PC_REQUIRE=mad
     fi
     BSE_PC_CFLAGS=
-    BSE_PC_LIBS="$OV_LIBS $LIBZ"
+    BSE_PC_LIBS="$OV_LIBS"
     AC_SUBST(BSE_PC_REQUIRE)
     AC_SUBST(BSE_PC_CFLAGS)
     AC_SUBST(BSE_PC_LIBS)
@@ -395,7 +384,7 @@ AC_DEFUN([AC_GXK_REQUIREMENTS],
     PKG_CHECK_MODULES(LIBART, libart-2.0 >= 2.3.8)
     PKG_CHECK_MODULES(LIBGNOMECANVAS, libgnomecanvas-2.0 >= 2.4.0)
     GXK_CFLAGS="$LIBPANGO_CFLAGS $LIBGTK_CFLAGS $LIBART_CFLAGS $LIBGNOMECANVAS_CFLAGS"
-    GXK_LIBS="$LIBPANGO_LIBS $LIBGTK_LIBS $LIBART_LIBS $LIBGNOMECANVAS_LIBS $LIBZ"
+    GXK_LIBS="$LIBPANGO_LIBS $LIBGTK_LIBS $LIBART_LIBS $LIBGNOMECANVAS_LIBS"
     AC_SUBST(GXK_CFLAGS)
     AC_SUBST(GXK_LIBS)
 ])
