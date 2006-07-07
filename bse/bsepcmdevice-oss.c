@@ -123,7 +123,7 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
   for (i = 0; i < G_N_ELEMENTS (postfixes); i++)
     {
       gchar *dname = g_strconcat (BSE_PCM_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
-      if (!sfi_file_equals (last, dname))
+      if (!birnet_file_equals (last, dname))
         {
           if (check_device_usage (dname, "crw") == BSE_ERROR_NONE)
             ring = sfi_ring_append (ring,

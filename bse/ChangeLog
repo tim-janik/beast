@@ -1,3 +1,10 @@
+Fri Jul  7 02:17:02 2006  Tim Janik  <timj@gtk.org>
+
+	* gslcommon.c:
+	* bsepcmdevice-oss.c:
+	* bsemididevice-oss.c: use birnet_file_equals() and
+	birnet_file_check().
+
 Thu Jul  6 22:45:17 2006  Tim Janik  <timj@gtk.org>
 
 	* zintern/Makefile.am: use birnet-zintern.

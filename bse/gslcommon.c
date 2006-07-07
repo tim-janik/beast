@@ -169,7 +169,7 @@ BseErrorType
 gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
-  if (sfi_file_check (file_name, mode))
+  if (birnet_file_check (file_name, mode))
     return BSE_ERROR_NONE;
   return gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 }
