@@ -351,11 +351,44 @@ main (int   argc,
   gboolean update_rc_files = FALSE;
   if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
     {
+      const char *release_notes_title =
+        "BEAST/BSE Release Notes";
+      const char *release_notes_contents =
+        "<tag-span-markup>"
+        "<tagdef name=\"title\" weight=\"bold\" scale=\"1.5\"/>"
+        "<tagdef name=\"hyperlink\" underline=\"single\" foreground=\"#0000ff\"/>"
+        "<tagdef name=\"mono\" family=\"monospace\"/>"
+        "<span tag=\"title\">BEAST/BSE Release Notes</span>"
+        "<newline/><newline/>"
+        "The 0.7 development series of Beast focusses on improving usability and ease of use. "
+        "<newline/><newline/>"
+        "Feedback is very much apprechiated, please take the opportunity and provide your comments "
+        "and questions in online forums like the Beast "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/wiki:HelpDesk\">Help Desk</xlink></span>, Beast "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://bugzilla.gnome.org/buglist.cgi?query=product:beast\">Bugzilla</xlink></span> "
+        "or the "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/contact\">mailing list</xlink></span>, "
+        "all of which can be reached through the links provided by the Help/ menu."
+        "<newline/><newline/>"
+        "The Beast website also provides much more information like detailed "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/news-file\">release NEWS</xlink></span>, "
+        "synthesis hints, documentation and a "
+        "<span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org/sound-browser\">sound archive</xlink></span>. "
+        "<newline/>"
+        "So either activate 'Help/Beast Website...' or go to:"
+        "<newline/>"
+        "<span tag=\"mono\">        </span><span tag=\"hyperlink\"><xlink ref=\"http://beast.gtk.org\">http://beast.gtk.org</xlink></span>"
+        "</tag-span-markup>";
+      GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WRAP | GXK_SCROLL_TEXT_SANS | GXK_SCROLL_TEXT_CENTER, NULL);
+      gxk_scroll_text_set_tsm (sctext, release_notes_contents);
+      GtkWidget *rndialog = gxk_dialog_new (NULL, NULL, GXK_DIALOG_DELETE_BUTTON, release_notes_title, sctext);
+      gxk_dialog_set_sizes (GXK_DIALOG (rndialog), 320, 200, 540, 420);
+      gxk_scroll_text_rewind (sctext);
+      gxk_idle_show_widget (rndialog);
       update_rc_files = TRUE;
-      bst_app_show_release_notes (app);
       bst_gconfig_set_rc_version (BST_VERSION);
     }
-
+  
   /* release splash grab */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);

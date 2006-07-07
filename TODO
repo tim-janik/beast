@@ -1,6 +1,12 @@
 RELEASE(0.7.0):
-- fix beast popping up a help browser for release notes when new beast is installed
-- fix release-notes.html linking to release-news.html which should be news-file.html
+- add _compat method for license & author to bsesuper.c?
+- add rule to filecheck/Makefile.am that lists all not uptodate .bse files in the package (grep for bse-version)
+- /usr/src/beast/library/demo/stereo-through.bse needs to be detected as non-0.7.0
+- add check for .scm extracted strings to beast build process
+- make reverb .bse for tarball
+- make reverb+saturation .bse for tarball
+- make compressor .bse as post-processing network for tarball
+- apply patch from stefan westerfeld, subject: Re: gslwaveosc gfloat Hilfsvariablen
 - shell/Makefile.am:check: test that bsesh-$VERSION is installed
 - invoke ../bse/bseautodoc the same way the BSE shell is invoked (no rcfile etc)
 - s/bse-test-error/bse-error-test/
@@ -385,7 +391,6 @@ TASKS:
 - support sequencer input from and to ALSA and JACK
 - Icons: delete-track and delete-part shouldn't have the same item in track-roll
 - Main: make beast recognize and view .markup files from the command line
-- DocBrowser: pressing browsing hotkeys in release-notes dialog does stuff
 - DocBrowser: Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
 - DocBrowser: implement Playback facility in doc browser for .bse file links
 - DocBrowser: try implementing some kind of table layout

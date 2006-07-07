@@ -186,6 +186,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_DOC_DEVEL             GTK_STOCK_NEW // FIXME
 #define BST_STOCK_ABOUT                 GTK_STOCK_YES // FIXME
 #define BST_STOCK_ONLINE_HELP_DESK      GTK_STOCK_HELP // FIXME
+#define BST_STOCK_ONLINE_BUGS           GTK_STOCK_HELP // FIXME
 #define BST_STOCK_ONLINE_BEAST_SITE     GTK_STOCK_HOME // FIXME
 #define BST_STOCK_ONLINE_SOUND_ARCHIVE  BST_STOCK_LOAD_LIB // FIXME
 #define BST_STOCK_ADD                   GTK_STOCK_ADD

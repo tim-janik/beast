@@ -66,8 +66,9 @@ enum {
   ACTION_HELP_DEVELOPMENT,
   ACTION_HELP_ABOUT,
 #define ACTION_HELP_LAST    ACTION_HELP_ABOUT
-  ACTION_URL_HELP_DESK,
   ACTION_URL_BEAST_SITE,
+  ACTION_URL_HELP_DESK,
+  ACTION_URL_REPORT_BUG,
   ACTION_URL_ONLINE_SYNTHESIZERS,
   ACTION_URL_ONLINE_DEMOS,
   ACTION_DEMO_DIALOG_FATAL,
@@ -164,10 +165,12 @@ static const GxkStockAction simple_help_actions[] = {
     ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
   { N_("_FAQ..."),              NULL,           N_("Answers to frequently asked questions"),
     ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
+  { N_("_Beast Website..."),    NULL,           N_("Start a web browser pointing to the BEAST website"),
+    ACTION_URL_BEAST_SITE,      BST_STOCK_ONLINE_BEAST_SITE },
   { N_("Online _Help Desk..."), NULL,           N_("Start a web browser pointing to the online help desk at the BEAST website"),
     ACTION_URL_HELP_DESK,       BST_STOCK_ONLINE_HELP_DESK },
-  { N_("_BEAST Website..."),    NULL,           N_("Start a web browser pointing to the BEAST website"),
-    ACTION_URL_BEAST_SITE,      BST_STOCK_ONLINE_BEAST_SITE },
+  { N_("Report a Beast Bug..."),NULL,           N_("Start a web browser with the bug report form for the BEAST bugzilla product"),
+    ACTION_URL_REPORT_BUG,      BST_STOCK_ONLINE_BUGS },
 #if 0
   { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
     ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
@@ -1104,6 +1107,9 @@ app_action_exec (gpointer data,
     case ACTION_URL_BEAST_SITE:
       birnet_url_show ("http://beast.gtk.org/");
       break;
+    case ACTION_URL_REPORT_BUG:
+      birnet_url_show ("http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast");
+      break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
       birnet_url_show ("http://beast.gtk.org/sound-browser");
       break;
@@ -1220,6 +1226,7 @@ app_action_check (gpointer data,
     case ACTION_HELP_ABOUT:
     case ACTION_URL_HELP_DESK:
     case ACTION_URL_BEAST_SITE:
+    case ACTION_URL_REPORT_BUG:
     case ACTION_URL_ONLINE_SYNTHESIZERS:
     case ACTION_URL_ONLINE_DEMOS:
     case ACTION_DEMO_DIALOG_FATAL:

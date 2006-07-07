@@ -23,7 +23,6 @@ HTML_TARGETS = $(strip				\
 	html/faq.html				\
 	html/plugin-devel.html			\
 	html/quickstart.html			\
-	html/release-notes.html			\
 	html/sfidl-manual.html			\
 	\
 	html/beast.1.html			\
@@ -223,7 +222,6 @@ doxi_files = $(strip		\
 	beast-index.doxi	\
 	bsesh.1.doxi		\
 	plugin-devel.doxi	\
-	release-notes.doxi	\
 	sfidl.1.doxi		\
 )
 

@@ -64,6 +64,8 @@ static void             navigate_find           (GtkWidget      *sctext);
 static void             navigate_goto           (GtkWidget      *sctext);
 static void             navigate_link           (GtkWidget      *sctext,
                                                  const gchar    *uri);
+static bool             navigate_urls           (GtkWidget      *sctext,
+                                                 const gchar    *uri);
 static void             text_buffer_add_error   (GtkTextBuffer  *tbuffer,
                                                  const gchar    *format,
                                                  ...) G_GNUC_PRINTF (2, 3);
@@ -1381,6 +1383,8 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
                         "swapped_signal::key_press_event", scroll_text_key_event, sctext,
                         NULL);
     }
+  else
+    g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (navigate_urls), sctext);
   
   if (flags & GXK_SCROLL_TEXT_EDITABLE)
     g_object_set (widget,
@@ -2288,15 +2292,26 @@ navigate_goto (GtkWidget *sctext)
     gxk_scroll_text_enter (sctext, text);
 }
 
-static void
-navigate_link (GtkWidget   *sctext,
+static bool
+navigate_urls (GtkWidget   *sctext,
                const gchar *uri)
 {
   if (strncmp (uri, "ftp:", 4) == 0 ||
       strncmp (uri, "http:", 5) == 0 ||
       strncmp (uri, "https:", 6) == 0 ||
       strncmp (uri, "mailto:", 7) == 0)
-    birnet_url_show (uri);
+    {
+      birnet_url_show (uri);
+      return TRUE;
+    }
   else
+    return FALSE;
+}
+
+static void
+navigate_link (GtkWidget   *sctext,
+               const gchar *uri)
+{
+  if (!navigate_urls (sctext, uri))
     gxk_scroll_text_advance (sctext, uri);
 }
