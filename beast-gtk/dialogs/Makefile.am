@@ -11,7 +11,7 @@ ZFILE_DEFS = $(strip \
 XML_FILES  = $(filter-out bst-%, $(ZFILE_DEFS))
 EXTRA_DIST += $(XML_FILES)
 
-ZINTERN=$(top_builddir)/bse/zintern/zintern
+ZINTERN=$(top_builddir)/birnet/birnet-zintern
 
 XMLLINTCALL=$(if $(XMLLINT),$(XMLLINT),true) # handle undefined XMLLINT
 

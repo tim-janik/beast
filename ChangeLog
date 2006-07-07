@@ -1,3 +1,11 @@
+Fri Jul  7 02:17:02 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/Makefile.am: use birnet-zintern.
+
+	* tests/latency/bselatencytest.cc:
+	* tools/bsewavetool.cc: use birnet_file_equals() and
+	birnet_file_check().
+
 Fri Jul  7 02:09:16 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: include $BIRNET_LIBS in $SFI_LIBS, leave libz checking 

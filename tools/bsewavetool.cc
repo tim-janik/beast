@@ -473,7 +473,7 @@ public:
   void
   exec (Wave *wave)
   {
-    if (!force_creation && sfi_file_check (output_file.c_str(), "e"))
+    if (!force_creation && birnet_file_check (output_file.c_str(), "e"))
       {
         sfi_error ("not creating \"%s\": %s\n", output_file.c_str(), g_strerror (EEXIST));
         exit (1);
