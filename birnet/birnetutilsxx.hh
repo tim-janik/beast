@@ -90,6 +90,10 @@ const String    join      (const String &frag0, const String &frag1,
                            const String &frag10 = "", const String &frag11 = "",
                            const String &frag12 = "", const String &frag13 = "",
                            const String &frag14 = "", const String &frag15 = "");
+bool            check     (const String &file,
+                           const String &mode);
+bool            equals    (const String &file1,
+                           const String &file2);
 } // Path
 
 /* --- template errors --- */

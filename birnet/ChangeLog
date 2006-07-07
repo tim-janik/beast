@@ -1,3 +1,12 @@
+Fri Jul  7 02:15:50 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/infotest.cc: implement file tests in terms of the C++ API
+	which also checks the C implementation.
+
+	* birnetutilsxx.[hc][hc]: added Path::chek() and Path::equals().
+
+	* birnetutils.c: document birnet_file_equals().
+
 Fri Jul  7 01:51:35 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.[hc]: moved birnet_file_check() and birnet_file_equals() 

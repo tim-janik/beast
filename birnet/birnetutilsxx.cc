@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "birnetutilsxx.hh"
+#include "birnetutils.h"
 #include "birnetthread.h"
 #include "birnetmsg.h"
 #include "birnetcpu.h"
@@ -186,6 +187,35 @@ join (const String &frag0, const String &frag1,
   String path (cpath);
   g_free (cpath);
   return path;
+}
+
+/**
+ * @param file  possibly relative filename
+ * @param mode  feature string
+ * @return      TRUE if @a file adhears to @a mode
+ *
+ * Perform various checks on @a file by calling birnet_file_check().
+ */
+bool
+check (const String &file,
+       const String &mode)
+{
+  return birnet_file_check (file.c_str(), mode.c_str());
+}
+
+/**
+ * @param file1  possibly relative filename
+ * @param file2  possibly relative filename
+ * @return       TRUE if @a file1 and @a file2 are equal
+ *
+ * Check whether @a file1 and @a file2 are pointing to the same inode
+ * in the same file system on the same device by calling birnet_file_equals().
+ */
+bool
+equals (const String &file1,
+        const String &file2)
+{
+  return birnet_file_equals (file1.c_str(), file2.c_str());
 }
 
 } // Path

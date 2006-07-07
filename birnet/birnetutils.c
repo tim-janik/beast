@@ -377,6 +377,14 @@ birnet_file_check (const gchar *file,
   return errno == 0;
 }
 
+/**
+ * @param file1  possibly relative filename
+ * @param file2  possibly relative filename
+ * @return       TRUE if @a file1 and @a file2 are equal
+ *
+ * Check whether @a file1 and @a file2 are pointing to the same inode
+ * in the same file system on the same device.
+ */
 bool
 birnet_file_equals (const gchar *file1,
                     const gchar *file2)
@@ -384,7 +392,7 @@ birnet_file_equals (const gchar *file1,
   if (!file1 || !file2)
     return file1 == file2;
   struct stat st1 = { 0, }, st2 = { 0, };
-  gint err1 = 0, err2 = 0;
+  int err1 = 0, err2 = 0;
   errno = 0;
   if (stat (file1, &st1) < 0 && stat (file1, &st1) < 0)
     err1 = errno;

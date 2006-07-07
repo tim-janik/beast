@@ -89,18 +89,18 @@ static void
 test_files (const char *argv0)
 {
   TSTART ("FileChecks");
-  TASSERT (birnet_file_equals ("/bin", "/../bin") == TRUE);
-  TASSERT (birnet_file_equals ("/bin", "/sbin") == FALSE);
-  TASSERT (birnet_file_check (argv0, "e") == TRUE);
-  TASSERT (birnet_file_check (argv0, "r") == TRUE);
-  TASSERT (birnet_file_check (argv0, "w") == TRUE);
-  TASSERT (birnet_file_check (argv0, "x") == TRUE);
-  TASSERT (birnet_file_check (argv0, "d") == FALSE);
-  TASSERT (birnet_file_check (argv0, "l") == FALSE);
-  TASSERT (birnet_file_check (argv0, "c") == FALSE);
-  TASSERT (birnet_file_check (argv0, "b") == FALSE);
-  TASSERT (birnet_file_check (argv0, "p") == FALSE);
-  TASSERT (birnet_file_check (argv0, "s") == FALSE);
+  TASSERT (Path::equals ("/bin", "/../bin") == TRUE);
+  TASSERT (Path::equals ("/bin", "/sbin") == FALSE);
+  TASSERT (Path::check (argv0, "e") == TRUE);
+  TASSERT (Path::check (argv0, "r") == TRUE);
+  TASSERT (Path::check (argv0, "w") == TRUE);
+  TASSERT (Path::check (argv0, "x") == TRUE);
+  TASSERT (Path::check (argv0, "d") == FALSE);
+  TASSERT (Path::check (argv0, "l") == FALSE);
+  TASSERT (Path::check (argv0, "c") == FALSE);
+  TASSERT (Path::check (argv0, "b") == FALSE);
+  TASSERT (Path::check (argv0, "p") == FALSE);
+  TASSERT (Path::check (argv0, "s") == FALSE);
   TDONE();
 }
 
