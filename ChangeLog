@@ -1,3 +1,7 @@
+Sat Jul  8 13:56:07 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): release notes fixups.
+
 Fri Jul  7 21:57:41 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c: fire up a text window with some 0.7 specific
