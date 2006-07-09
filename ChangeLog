@@ -1,3 +1,17 @@
+Sun Jul  9 02:23:25 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/filecheck/Makefile.am: added bse-version-check: rule which
+	enforces that all .bse files in the tarball match the major and minor
+	version of libbse.
+	fixed bse-loading-check: rule to be honest about skipped .bse files.
+
+	* library/demo/stereo-through.bse: 
+	* library/effects/atan-canyon.bse:
+	* tests/latency/midi-latency.bse:
+	* test/simple-loop.bse: updated to beast 0.7.0, clarified license.
+
+	* tests/latency/Makefile.am: fixed list of libraries to link against.
+
 Sat Jul  8 13:56:07 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): release notes fixups.

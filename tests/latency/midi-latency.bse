@@ -1,14 +1,17 @@
 ; BseProject
 
-(bse-version "0.6.3")
+(bse-version "0.7.0")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2004-09-28 19:41:23")
-  (creation-time "2004-09-20 10:16:21"))
+  (modification-time "2006-07-08 23:45:04")
+  (creation-time "2004-09-20 10:16:21")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld"))
 (container-child "BseCSynth::MonoLead"
-  (auto-activate #f)
-  (modification-time "2004-09-28 19:41:23")
+  (modification-time "2006-07-08 23:45:04")
   (creation-time "2004-09-20 10:16:30")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld")
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-y -1)
     (pos-x -4))
@@ -28,7 +31,7 @@
     (pos-x -2)
     (source-input "gate-in" (link 1 "InstrumentInput-1") "gate"))
   (container-child "BseAmplifier::Amplifier-1"
-    (olevel 100)
+    (master-volume 1)
     (base-level 100)
     (ostrength 100)
     (ctrl-exp #f)
@@ -59,10 +62,14 @@
   (denominator 4)
   (numerator 4)
   (tpqn 384)
-  (modification-time "2004-09-28 19:41:23")
+  (modification-time "2006-07-08 23:45:04")
   (creation-time "2004-09-20 10:32:34")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld")
   (container-child "BseBus::Master"
     (master-output #t)
+    (right-volume 1)
+    (left-volume 1)
     (bus-input (link 1 "LeadTrack")))
   (container-child "BseTrack::LeadTrack"
     (n-voices 16)
@@ -70,8 +77,10 @@
     (snet (link 2 "MonoLead"))))
 (container-child "BseCSynth::LatencyTester"
   (auto-activate #t)
-  (modification-time "2004-09-28 19:41:23")
+  (modification-time "2006-07-08 23:45:04")
   (creation-time "2004-09-28 11:07:38")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld")
   (container-child "BseLatencyTest::LatencyTest-1"
     (midi-output "$FIFO")
     (midi-channel 1)

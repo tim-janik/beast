@@ -25,22 +25,37 @@ distfiles.list: Makefile
 	test -e distfiles.list
 	test -e $(DISTFILE_LIST_NAME)
 	cd $(top_builddir) && make distfile-list DISTFILE_LIST=$(DISTFILE_LIST_NAME)
-.PHONY: bse-check
-SKIP_PATTERN = "tests/latency/midi-latency.bse|slowtests/audio/minisong.bse"
-bse-check: distfiles.list
-	for tfile in `grep '\.bse$$' distfiles.list |			\
-	              egrep -v $(SKIP_PATTERN)` ; do			\
+.PHONY: bse-loading-check bse-version-check
+bse-version-check: distfiles.list
+	TESTVERSION="$(BSE_MAJOR_VERSION).$(BSE_MINOR_VERSION)." ;	\
+	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
 	  file="$(top_srcdir)/$$tfile" ;				\
-	  echo "Test load project: $$file" ;				\
-	  $(BSESHELL) "$$file" 2>&1 | tee warnings.tmp ;		\
-	  test ! -s "warnings.tmp" || exit 1 ;				\
+	  echo "Check project version: $$file" ;			\
+	  head -n5 "$$file" |						\
+	    grep -Fq "(bse-version \"$$TESTVERSION" ||			\
+	      { grep -F bse-version "$$file" ; exit 1 ; }		\
+	done
+	@echo "=================================="
+	@echo "All BSE files passed version check"
+	@echo "=================================="
+SKIP_PATTERN = "tests/latency/midi-latency.bse|slowtests/audio/minisong.bse"
+bse-loading-check: distfiles.list
+	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
+	  file="$(top_srcdir)/$$tfile" ;				\
+	  if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then		\
+	    echo "-Skipping project: $$file" ;				\
+	  else								\
+	    echo "Test load project: $$file" ;				\
+	    $(BSESHELL) "$$file" 2>&1 |					\
+	      tee warnings.tmp ;					\
+	    test ! -s "warnings.tmp" || exit 1 ;			\
+	  fi ;								\
 	done
 	@echo "================================="
 	@echo "All BSE files passed loading test"
 	@echo "================================="
 CLEANFILES += distfiles.list warnings.tmp
-check-am: bse-check # run bse-check *before* ordinary tests
-# check-local: bse-check # run bse-check *after* ordinary tests
+check-local: bse-version-check bse-loading-check # run after ordinary tests
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 EXTRA_DIST += checkproject.scm
 BSESHELL = $(strip								\

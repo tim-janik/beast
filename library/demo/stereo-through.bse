@@ -1,14 +1,13 @@
 ; BseProject
 
-(bse-version "0.6.4")
+(bse-version "0.7.0")
 
-(container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2004-12-16 01:22:39")
-  (creation-time "2004-12-16 01:22:39"))
 (container-child "BseCSynth::Stereo-Through"
   (auto-activate #t)
-  (modification-time "2004-12-16 01:22:49")
+  (modification-time "2006-07-08 23:38:13")
   (creation-time "2004-12-16 01:22:49")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Tim Janik")
   (container-child "BsePcmInput::PcmInput-1"
     (pos-y 1)
     (pos-x -2))
