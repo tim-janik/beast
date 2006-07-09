@@ -1,3 +1,8 @@
+Sun Jul  9 02:24:00 2006  Tim Janik  <timj@gtk.org>
+
+	* zintern/gus-patch.bse: 
+	* bse/zintern/wave-mono.bse: updated to beast 0.7.0, clarified license.
+
 Fri Jul  7 02:17:02 2006  Tim Janik  <timj@gtk.org>
 
 	* gslcommon.c:
