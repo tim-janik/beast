@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/04/09 15:59:00 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:00:05 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BSESH - BSE Scheme Shell
 @doxer_set{man-title}	BSESH

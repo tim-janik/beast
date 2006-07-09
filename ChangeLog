@@ -1,3 +1,9 @@
+Sun Jul  9 13:58:31 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/bsescm.1.doxi: CVS copied here from bsesh.1.doxi.
+
+	* shell/bsescm.c: CVS copied here from bsesh.c.
+
 Sun Jul  9 03:50:09 2006  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): wording fixup.
