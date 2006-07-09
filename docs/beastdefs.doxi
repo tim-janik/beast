@@ -34,7 +34,7 @@
 @defalias{gtk}	 	@emph{GTK+}
 @defalias{bse}	 	@emph{BSE}
 @defalias{sfi}	 	@emph{SFI}
-@defalias{bsesh} 	@emph{BSESH}
+@defalias{bsescm} 	@emph{BSESCM}
 @defalias{arts} 	@emph{aRts}
 
 ##	semantic tags

@@ -39,7 +39,7 @@ HTML_TARGETS = $(strip			\
 	html/wiki.phtml			\
 	\
 	html/beast.1.html		\
-	html/bsesh.1.html		\
+	html/bsescm.1.html		\
 	html/sfidl.1.html		\
 	\
 	html/architecture.html		\

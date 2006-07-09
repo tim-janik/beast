@@ -17,7 +17,7 @@
 ;; if advised of the possibility of such damage.
 
 ;;
-;; usage: bsesh -s noteplaytest.scm <instrument> <note> <time_ms>
+;; usage: bsescm -s noteplaytest.scm <instrument> <note> <time_ms>
 ;;
 ;; plays instrument at the specified frequency for the specified amount of time in ms
 ;;

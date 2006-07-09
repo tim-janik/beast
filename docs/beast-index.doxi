@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/07/07 20:01:15 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
 @include "docframe.doxi"
 @doxer_set{title}       BEAST/BSE - Documentation Index
 
@@ -16,7 +16,7 @@
 @heading Manual Pages
 @itemize
 @item @uri{@top_webdir/beast.1.html,		BEAST - Bedevilled Audio System}
-@item @uri{@top_webdir/bsesh.1.html,		BSESH - BSE Scheme Shell}
+@item @uri{@top_webdir/bsescm.1.html,		BSESCM - BSE Scheme Shell}
 @item @uri{@top_webdir/sfidl.1.html,		SFIDL - SFI IDL Compiler}
 @item @uri{@top_webdir/bse.5.html,		BSE - Bedevilled Sound Engine File Format}
 @done

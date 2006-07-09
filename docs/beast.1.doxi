@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/04/19 00:50:37 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - Bedevilled Audio System
 @doxer_set{man-title}	BEAST
@@ -26,7 +26,7 @@ beast - Music composition and modular synthesis application.
 
 	@manb{beast}'s underlying sound engine @bse also comes with a scheme scripting
 	extension which allows for advanced non-interactive processing via
-	@uri{bsesh.1.html,bsesh(1)} and creation of additional GUI functionality for @manb{beast}.
+	@uri{bsescm.1.html,bsescm(1)} and creation of additional GUI functionality for @manb{beast}.
 
 @heading OPTIONS
 	@manb{beast} follows the usual GNU command line syntax, with long options starting with two dashes ('-').
@@ -115,7 +115,7 @@ beast - Music composition and modular synthesis application.
 @done
 
 @heading SEE ALSO
-@uri{bsesh.1.html,bsesh(1)},
+@uri{bsescm.1.html,bsescm(1)},
 @uri{bse.5.html,bse(5)},
 @uri{sfidl.1.html,sfidl(1)},
 @longuri{http://beast.gtk.org, BEAST/BSE Website}

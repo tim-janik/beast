@@ -4,10 +4,10 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-INCLUDES += -I$(top_srcdir) -I. -I$(top_builddir) $(BSE_SHELL_CFLAGS) -DG_DISABLE_CONST_RETURNS
+INCLUDES += -I$(top_srcdir) -I. -I$(top_builddir) $(BSESCM_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 DEFS += $(strip                       	\
-	-DG_LOG_DOMAIN=\"BSESH\"       	\
+	-DG_LOG_DOMAIN=\"BSESCM\"      	\
 	$(SUIDMAIN_DEFS)                \
 )
 
@@ -24,9 +24,9 @@ CLEANFILES += $(gen_sources)
 #
 # programs to build
 #
-bin_PROGRAMS = bsesh-$(BIN_VERSION)		# this expands to bsesh-0.7.0 or similar
-bsesh___BIN_VERSION__SOURCES = bsesh.c bsescminterp.c cxxdummy.cc
-bsesh___BIN_VERSION__LDADD = $(programs_ldadd) $(BSE_SHELL_LIBS)
+bin_PROGRAMS = bsescm-$(BIN_VERSION)		# this expands to bsescm-0.7.0 or similar
+bsescm___BIN_VERSION__SOURCES = bsescm.c bsescminterp.c cxxdummy.cc
+bsescm___BIN_VERSION__LDADD = $(programs_ldadd) $(BSESCM_LIBS)
 
 # libraries to link programs against
 programs_ldadd = $(top_builddir)/bse/libbse.la

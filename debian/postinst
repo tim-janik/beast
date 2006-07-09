@@ -16,7 +16,7 @@ setuid() {
 
 if [ "$action" = "configure" ]; then
   setuid /usr/bin/beast
-  setuid /usr/bin/bsesh
+  setuid /usr/bin/bsescm
 fi
 
 exit 0

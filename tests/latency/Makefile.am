@@ -9,7 +9,7 @@ DEFS     += -DG_LOG_DOMAIN="\"BSE-TEST\"" # -DG_DISABLE_CONST_RETURNS
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
-BSESH     = $(top_builddir)/shell/bsesh-$(BIN_VERSION)
+BSESCM    = $(top_builddir)/shell/bsescm-$(BIN_VERSION)
 
 # IDL generation rule for plugins
 %.genidl.hh: %.idl $(BSEPGEN) $(SFIDL)
@@ -41,7 +41,7 @@ test: 	all
 	cd . \
 	&& rm -f ./tmp-midi-fifo					\
 	&& mkfifo ./tmp-midi-fifo					\
-	&& FIFO=tmp-midi-fifo $(BSESH)					\
+	&& FIFO=tmp-midi-fifo $(BSESCM)					\
 	    -m oss=tmp-midi-fifo -p null				\
 	   --bse-override-plugin-globs $(builddirplugins)		\
 	   --bse-override-script-path $(top_builddir)/shell/		\

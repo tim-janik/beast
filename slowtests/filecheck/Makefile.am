@@ -46,7 +46,7 @@ bse-loading-check: distfiles.list
 	    echo "-Skipping project: $$file" ;				\
 	  else								\
 	    echo "Test load project: $$file" ;				\
-	    $(BSESHELL) "$$file" 2>&1 |					\
+	    $(BSESCM) "$$file" 2>&1 |					\
 	      tee warnings.tmp ;					\
 	    test ! -s "warnings.tmp" || exit 1 ;			\
 	  fi ;								\
@@ -58,8 +58,8 @@ CLEANFILES += distfiles.list warnings.tmp
 check-local: bse-version-check bse-loading-check # run after ordinary tests
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 EXTRA_DIST += checkproject.scm
-BSESHELL = $(strip								\
-	$(top_builddir)/shell/bsesh-$(BIN_VERSION)				\
+BSESCM = $(strip								\
+	$(top_builddir)/shell/bsescm-$(BIN_VERSION)				\
 	  -p null -m null							\
 	  --bse-rcfile "/dev/null" --bse-no-load				\
 	  --bse-override-plugin-globs '$(plugin_globs)'				\

@@ -17,7 +17,7 @@
 ;; if advised of the possibility of such damage.
 
 ;;
-;; usage: bsesh -s waveloadtest.scm <wav-files>
+;; usage: bsescm -s waveloadtest.scm <wav-files>
 ;; checks whether wave files load properly with BSE
 ;;
 
@@ -35,7 +35,7 @@
 	      (string-append "FAILED: " wave-file ": " (bse-error-blurb error))
 		  (string-append "OK:     " wave-file)))
 	  (newline)
-	  (flush-all-ports) ;; allows 'bsesh -s waveloadtest.scm * |tee ...' constructions work properly
+	  (flush-all-ports) ;; allows 'bsescm -s waveloadtest.scm * |tee ...' constructions work properly
 	  (clear-wave-repo wave-repo)))
 
 (define test-load-waves

@@ -45,7 +45,7 @@ filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|mag
 distuninstallcheck_listfiles  = find . -type f -print 		# standard automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
 # fixup automake-1.9.6 distcheck:-rule, which attempts to rebuild a dist tarball from within the test-build
-# also, bsesh currently needs install: before check:
+# also, bsescm currently needs install: before check:
 distcheck: dist
 	case '$(DIST_ARCHIVES)' in \
 	*.tar.gz*) \

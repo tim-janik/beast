@@ -104,7 +104,7 @@
       (bse-signal-disconnect bse-server sigid))))
 
 ;; play argc/argv contents as bse files
-(define (bse-shell-auto-play)
+(define (bse-scm-auto-play)
   (bse-server-register-blocking bse-server-register-core-plugins #f)
   (bse-server-register-blocking bse-server-register-scripts #f)
   (bse-server-register-blocking bse-server-register-ladspa-plugins #f)

@@ -1,42 +1,42 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:00:05 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
-@doxer_set{title}	BSESH - BSE Scheme Shell
-@doxer_set{man-title}	BSESH
+@doxer_set{title}	BSESCM - BSE Scheme Shell
+@doxer_set{man-title}	BSESCM
 @doxer_set{man-date}	@doxer_get{rvstamp}
 @doxer_set{man-source}	beast-@doxer_get{BST_VERSION}
 @doxer_set{man-manual}	BEAST Manual Pages
 
 @heading NAME
-bsesh - A Guile based scheme shell for @beast and @bse.
+bsescm - A Guile based scheme shell for @beast and @bse.
 
 @heading SYNOPSIS
-	@manb{bsesh} [@mani{OPTIONS}] [@manb{--}] @manb{...}
+	@manb{bsescm} [@mani{OPTIONS}] [@manb{--}] @manb{...}
 
-	@manb{bsesh} [@mani{OPTIONS}] @mani{infile.bse} @manb{...}
+	@manb{bsescm} [@mani{OPTIONS}] @mani{infile.bse} @manb{...}
 
 @heading DESCRIPTION
-	@manb{bsesh} is a @uri{http://www.gnu.org/software/guile/docs/,Guile} based scheme shell for @bse,
+	@manb{bsescm} is a @uri{http://www.gnu.org/software/guile/docs/,Guile} based scheme shell for @bse,
 	the Bedevilled Sound Engine.
 
-	@manb{bsesh} provides a shell interface to all procedures exported by the
+	@manb{bsescm} provides a shell interface to all procedures exported by the
 	@bse library, so scripts are able to access the full range of functionality
 	provided by it, from simple playback of a @mani{.bse} file to
 	full fledged automated creation or editing of synthesis networks.
 
-	Alternatively to the linked in @bse library, the @manb{bsesh} language interface
+	Alternatively to the linked in @bse library, the @manb{bsescm} language interface
 	can also talk to a remotely running @bse library host, for instance
 	@uri{beast.1.html,beast(1)}.
-	By operating on a remotely running @bse core, @manb{bsesh} can be used to script
+	By operating on a remotely running @bse core, @manb{bsescm} can be used to script
 	arbitrary @bse programs. The shell is also used directly by the @bse library to
 	execute procedures on its behalf, this allows @bse procedures to be written in scheme.
 
-	When started, @manb{bsesh} tests whether the first non-option argument is a @mani{.bse}
+	When started, @manb{bsescm} tests whether the first non-option argument is a @mani{.bse}
 	file and if the test succeeds, attempts to play the command line arguments as
 	@mani{.bse} files.
 
 @heading OPTIONS
-	@manb{bsesh} follows the usual GNU command line syntax, with long options starting with two dashes ('--').
+	@manb{bsescm} follows the usual GNU command line syntax, with long options starting with two dashes ('--').
 
 @itemize{none}
 @item @manb{--bse-pipe} @mani{INFD} @mani{OUTFD} @*

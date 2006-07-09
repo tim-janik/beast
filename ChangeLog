@@ -1,3 +1,12 @@
+Sun Jul  9 14:53:26 2006  Tim Janik  <timj@gtk.org>
+
+	* renamed the guile based bsesh to bsescm. adapted related build rules,
+	variable names, function names and documentation.
+
+	* shell/bsesh.c: removed.
+
+	* docs/bsesh.1.doxi: removed.
+
 Sun Jul  9 14:49:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* web/news.doxi: A summary of the things that happened since the last

@@ -8,7 +8,7 @@ SUBDIRS = images
 
 MAN_TARGETS = $(strip				\
 	mans/beast.1				\
-	mans/bsesh.1				\
+	mans/bsescm.1				\
 	mans/sfidl.1				\
 	mans/bse.5				\
 )
@@ -26,7 +26,7 @@ HTML_TARGETS = $(strip				\
 	html/sfidl-manual.html			\
 	\
 	html/beast.1.html			\
-	html/bsesh.1.html			\
+	html/bsescm.1.html			\
 	html/sfidl.1.html			\
 	html/bse.5.html				\
 )
@@ -220,7 +220,7 @@ doxi_files = $(strip		\
 	quickstart.doxi		\
 	sfidl-manual.doxi	\
 	beast-index.doxi	\
-	bsesh.1.doxi		\
+	bsescm.1.doxi		\
 	plugin-devel.doxi	\
 	sfidl.1.doxi		\
 )

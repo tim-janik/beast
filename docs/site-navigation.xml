@@ -29,7 +29,7 @@
     </navigation-node>
     <navigation-node title="Manual Pages">
       <navigation-node title="beast(1)"            target="beast.1.html"   />
-      <navigation-node title="bsesh(1)"            target="bsesh.1.html"   />
+      <navigation-node title="bsescm(1)"           target="bsescm.1.html"   />
     </navigation-node>
     <navigation-node title="API Reference">
       <navigation-node title="BSE Objects"         target="objdoc.html" />

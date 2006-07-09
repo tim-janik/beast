@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/04/09 15:59:00 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BSE - Bedevilled Sound Engine File Format
 @doxer_set{man-title}	BSE
@@ -16,7 +16,7 @@
 @heading DESCRIPTION
 	The @manb{bse} file format is used by the @bse library and dependent programs to save
 	@bse projects, songs, instruments and sample collections.
-	The @bse shell @uri{bsesh.1.html,bsesh(1)} is able to play back @manb{bse} files directly.
+	The @bse scheme shell @uri{bsescm.1.html,bsescm(1)} is able to play back @manb{bse} files directly.
 
 @heading FORMAT
 	@bse files start out with a special magic string "; BseProject\n" and then contain nested 
@@ -36,5 +36,5 @@
 
 @heading SEE ALSO
 @uri{beast.1.html,beast(1)},
-@uri{bsesh.1.html,bsesh(1)},
+@uri{bsescm.1.html,bsescm(1)},
 @longuri{http://beast.gtk.org/bse-objects,BSE Object Reference}

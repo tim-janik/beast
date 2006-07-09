@@ -68,7 +68,7 @@
 	@item 	@fmenuuri{@top_webdir/quickstart,		Quick Start}
 	@item 	@doxer_span{menu-leaf,				Manual Pages}
 	@item 	@fmenuuri{@top_webdir/beast.1,			beast(1)}
-	@item 	@fmenuuri{@top_webdir/bsesh.1,			bsesh(1)}
+	@item 	@fmenuuri{@top_webdir/bsescm.1,			bsescm(1)}
 	@item 	@fmenuuri{@top_webdir/sfidl.1,			sfidl(1)}
 	@item 	@doxer_span{menu-leaf,				API Reference}
 	@item 	@fmenuuri{@top_webdir/bse-objects,		BSE Objects}

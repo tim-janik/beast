@@ -28,7 +28,7 @@
 #include "bsescminterp.h"
 #include "topconfig.h"
 
-#define	PRG_NAME	"bsesh"
+#define	PRG_NAME	"bsescm"
 
 #define BSE_EXIT_STATUS 102
 
@@ -67,11 +67,11 @@ main (int   argc,
 {
   const gchar *env_str;
 
-  birnet_init (&argc, &argv, "BseSH");
+  birnet_init (&argc, &argv, "BSESCM");
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
 
-  env_str = g_getenv ("BSE_SHELL_SLEEP4GDB");
+  env_str = g_getenv ("BSESCM_SLEEP4GDB");
   if (env_str && atoi (env_str) > 0)
     {
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
@@ -95,7 +95,7 @@ main (int   argc,
   if (!bse_scm_context)
     {
       /* start our own core thread */
-      bse_init_async (&argc, &argv, "BseSH", NULL);
+      bse_init_async (&argc, &argv, "BSESCM", NULL);
       bse_scm_context = bse_init_glue_context (PRG_NAME);
     }
 
@@ -151,7 +151,7 @@ gh_main (int   argc,
         }
       /* auto-play or interactive */
       if (call_auto_play)
-        gh_eval_str ("(bse-shell-auto-play)");
+        gh_eval_str ("(bse-scm-auto-play)");
       else 
         {
           if (bse_scm_auto_load)
@@ -286,7 +286,7 @@ shell_parse_args (gint    *argc_p,
       else if (strcmp ("-v", argv[i]) == 0 ||
                strcmp ("--version", argv[i]) == 0)
         {
-          g_print ("BSESH version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+          g_print ("BSESCM version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
           g_print ("Libraries: ");
           g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
           g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
@@ -294,8 +294,8 @@ shell_parse_args (gint    *argc_p,
           g_print (", Guile %u.%u.%u", SCM_MAJOR_VERSION, SCM_MINOR_VERSION, SCM_MICRO_VERSION);
           g_print ("\n");
           g_print ("Compiled for: %s\n", BST_ARCH_NAME);
-          g_print ("BSESH comes with ABSOLUTELY NO WARRANTY.\n");
-          g_print ("You may redistribute copies of BSESH under the terms of\n");
+          g_print ("BSESCM comes with ABSOLUTELY NO WARRANTY.\n");
+          g_print ("You may redistribute copies of BSESCM under the terms of\n");
           g_print ("the GNU General Public License which can be found in the\n");
           g_print ("BEAST source package. Sources, examples and contact\n");
           g_print ("information are available at http://beast.gtk.org/.\n");
@@ -315,7 +315,7 @@ shell_parse_args (gint    *argc_p,
 
   if (initialize_bse_and_exit)
     {
-      bse_init_async (argc_p, argv_p, "BseSH", NULL);
+      bse_init_async (argc_p, argv_p, "BSESCM", NULL);
       exit (0);
     }
 }
@@ -323,11 +323,11 @@ shell_parse_args (gint    *argc_p,
 static void
 shell_print_usage (void)
 {
-  g_print ("Usage: bsesh [options] [files...]\n");
+  g_print ("Usage: bsescm [options] [files...]\n");
   g_print ("Play BSE files and evaluate Scheme code, interactively or from a script.\n");
   g_print ("  -h, --help              show this help message\n");
   g_print ("  -v, --version           print version and exit\n");
-  g_print ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper bsesh)\n");
+  g_print ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper bsescm)\n");
   g_print ("  -N                      disable renicing\n");
   g_print ("  --bse-pipe INFD OUTFD   remote operation filedescriptors\n");
   g_print ("  --bse-eval STRING       execute (eval-string STRING) and exit\n");

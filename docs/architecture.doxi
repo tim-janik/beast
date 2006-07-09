@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
+@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - Project Architecture
 
@@ -27,7 +27,7 @@ audio synthesis package and related components.
 @item BseWaveTool - A small program to generate multi-sample .BSEWAVE files
 @item BEAST - a Gtk+ based GUI front-end (@uri{beast.1.html,beast(1)}) for @bse
 @item GXK - a library containing extensions to Gtk+, such as XML-parser for widget templates or an action administration system
-@item BSESH - a Guile based scheme shell (@uri{bsesh.1.html,bsesh(1)}) for @bse
+@item BSESCM - a Guile based scheme shell (@uri{bsescm.1.html,bsescm(1)}) for @bse
 @item @bse - synthesis and sequencing library
 @item @sfi - Interface library, consisting of:
 @itemize
@@ -49,7 +49,7 @@ audio synthesis package and related components.
 @*
 
 @enumerate
-@item BSE-Shell - a Guile based scheme shell (@uri{bsesh.1.html,bsesh(1)}) for @bse used for scripting @beast and to run standalone scripts
+@item BSESCM - a Guile based scheme shell (@uri{bsescm.1.html,bsescm(1)}) for @bse used for scripting @beast and to run standalone scripts
 @item @beast - a Gtk+ based GUI front-end (@uri{beast.1.html,beast(1)}) for @bse
 @item @bse - the sequencing and synthesis core, consisting of:
 @itemize

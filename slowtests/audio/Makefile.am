@@ -6,7 +6,7 @@ include $(top_srcdir)/Makefile.decl
 
 # === feature test tools ===
 BSE2WAV = $(strip							\
-	$(top_builddir)/shell/bsesh-$(BIN_VERSION)			\
+	$(top_builddir)/shell/bsescm-$(BIN_VERSION)			\
 	  --bse-mixing-freq=48000 -p null -m null			\
 	  --bse-rcfile "/dev/null" --bse-no-load			\
 	  --bse-override-plugin-globs $(builddirplugins)		\

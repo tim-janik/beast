@@ -64,7 +64,7 @@
   (if (not (= 2 (length args)))
       (begin
 	(display
-	 "Usage: bsesh -s bse2wav.scm <bse-file> <wav-file>\n"
+	 "Usage: bsescm -s bse2wav.scm <bse-file> <wav-file>\n"
 	 (current-error-port))
 	(exit 1))
       (apply bse-2-wav args)))

@@ -1,4 +1,4 @@
-/* bseshstart - start a bsesh executable
+/* bseshstart - start a bsescm executable
  *
  * This software is provided "as is"; redistribution and modification
  * is permitted, provided that the following disclaimer is retained.
@@ -26,7 +26,7 @@ custom_find_executable (int    *argc_p,
                         char ***argv_p)
 {
   const char *bindir = BINDIR;
-  const char *name = "bsesh";
+  const char *name = "bsescm";
   const char *version = BIN_VERSION;
   int l = strlen (bindir) + 1 + strlen (name) + 1 + strlen (version);
   char *string = malloc (l);
