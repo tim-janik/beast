@@ -205,7 +205,7 @@ gboolean   bse_engine_configure         (guint                 latency_ms,
 /* --- miscellaneous --- */
 gfloat*    bse_engine_const_zeros	      (guint	     smaller_than_BSE_STREAM_MAX_VALUES);
 gboolean   bse_engine_has_garbage             (void);
-void       bse_engine_garbage_collect         (void);
+void       bse_engine_user_thread_collect     (void);
 void       bse_engine_free_ostreams	      (guint         n_ostreams,
 					       BseOStream   *ostreams);
 void       bse_engine_add_user_callback       (gpointer      data,

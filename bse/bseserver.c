@@ -1166,7 +1166,7 @@ engine_shutdown (BseServer *server)
   
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
-  bse_engine_garbage_collect ();
+  bse_engine_user_thread_collect ();
   // FIXME: need to be able to completely unintialize engine here
   bse_gconfig_unlock ();
 }

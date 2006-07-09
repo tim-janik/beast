@@ -27,7 +27,7 @@ void            bse_engine_reinit_utils         (void);
 void		_engine_free_trans		(BseTrans      *trans);
 BseOStream*	_engine_alloc_ostreams		(guint		n);
 #if 0	/* bseengine.h: */
-void            bse_engine_garbage_collect	(void);
+void            bse_engine_user_thread_collect	(void);
 gfloat*		bse_engine_const_values		(gfloat		value);
 #endif
 

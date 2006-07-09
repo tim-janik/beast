@@ -374,7 +374,7 @@ _engine_pop_job (gboolean update_commit_stamp)
  * in the user thread.
  */
 void
-bse_engine_garbage_collect (void)
+bse_engine_user_thread_collect (void)
 {
   BseTrans *trans;
   EngineTimedJob *tjobs;

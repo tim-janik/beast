@@ -470,7 +470,7 @@ bse_job_access (BseModule    *module,
  * @param data	Data passed in to the free_func
  * @param free_func	Function to free @a data (executed in user thread)
  *
- * Queues data to be collected by bse_engine_garbage_collect(),
+ * Queues data to be collected by bse_engine_user_thread_collect(),
  * so @a free_func() will be called with @a data as argument
  * during the next garbage collection cycle in the user thread.
  * This function is MT-safe and may be called from any thread.
@@ -1384,7 +1384,7 @@ bse_engine_configure (guint            latency_ms,
   if (!_engine_mnl_head())
     {
       /* cleanup */
-      bse_engine_garbage_collect();
+      bse_engine_user_thread_collect();
       _engine_recycle_const_values (TRUE);
       /* adjust parameters */
       bse_engine_exvar_block_size = block_size;
@@ -1403,7 +1403,7 @@ bse_engine_configure (guint            latency_ms,
   GSL_SPIN_UNLOCK (&sync_mutex);
   /* ensure SYNC job got collected */
   bse_engine_wait_on_trans();
-  bse_engine_garbage_collect();
+  bse_engine_user_thread_collect();
   
   if (success)
     DEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
@@ -1519,7 +1519,7 @@ bse_engine_check (const BseEngineLoop *loop)
  * in the user thread.
  * This function may only be called from the user thread,
  * since it will invoke BseFreeFunc() functions (see
- * bse_engine_garbage_collect()) and do
+ * bse_engine_user_thread_collect()) and do
  * other things which are guranteed to be executed
  * in the user thread.
  */
@@ -1532,7 +1532,7 @@ bse_engine_dispatch (void)
     _engine_master_dispatch ();
   
   if (bse_engine_has_garbage ())	/* prevent extra mutex locking */
-    bse_engine_garbage_collect ();
+    bse_engine_user_thread_collect ();
 }
 
 BirnetThread**
@@ -1605,7 +1605,7 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
  * Wait until all pending transactions have been processed
  * by the BSE Engine. This function, when done waiting, will
  * run a garbage collection cycle before returning.
- * See bse_engine_garbage_collect(), the same restrictions
+ * See bse_engine_user_thread_collect(), the same restrictions
  * apply to invokations of this function.
  */
 void
@@ -1621,7 +1621,7 @@ bse_engine_wait_on_trans (void)
   _engine_wait_on_trans ();
   
   /* call all free() functions */
-  bse_engine_garbage_collect ();
+  bse_engine_user_thread_collect ();
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

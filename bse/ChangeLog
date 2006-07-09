@@ -1,3 +1,7 @@
+Sun Jul  9 02:44:41 2006  Tim Janik  <timj@gtk.org>
+
+	* renamed bse_engine_garbage_collect() to bse_engine_user_thread_collect().
+
 Sun Jul  9 02:24:00 2006  Tim Janik  <timj@gtk.org>
 
 	* zintern/gus-patch.bse: 
