@@ -1,3 +1,8 @@
+Sun Jul  9 16:15:52 2006  Tim Janik  <timj@gtk.org>
+
+	* web/news.doxi: 
+	* web/oldnews.doxi: rotated news.
+
 Sun Jul  9 14:53:26 2006  Tim Janik  <timj@gtk.org>
 
 	* renamed the guile based bsesh to bsescm. adapted related build rules,

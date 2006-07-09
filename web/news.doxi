@@ -111,34 +111,6 @@ And of course, we have been @doxer_bold{fixing bugs}, but there are always some
 left to keep us busy:
     @uri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Bug List}.
 
-@newsentry{Monday 24 April 2006, LAD Conference 2006}
-
-Stefan Westerfeld and Tim Janik are going to the
-@uri{http://lac.zkm.de/2006/, 4th International Linux Audio Conference} this
-Wednesday (26th April) to Sunday (30th April).
-There is a
-@uri{http://lac.zkm.de/2006/program.shtml#westerfeld_janik, Beast session}
-in the program, and there will probably also be some Beast demoing and chitchat
-about Beast in the booth area.
-
-@newsentry{Sunday 19 February 2006, Website move}
-
-The @beast website has been moved to a new documentation tool which will fix the
-current build problems with @beast documentation and can be better tailored to
-the project needs. Many small things have been fixed all over the site, and
-we are finally able to produce reference documentation from the central @beast
-components:
-@uri{@top_webdir/rdocu-sfi/, SFI},
-@uri{@top_webdir/rdocu-bse/, BSE},
-@uri{@top_webdir/rdocu-gxk/, GXK} and for script development:
-@uri{@top_webdir/bse-interface, BSE structures and procedures} and
-@uri{@top_webdir/bse-objects, BSE Objects}.
-
-The site layout and HTML have also been improved during the move, the website should
-be much more portable across different browsers now.
-Please feel free to explore the new site and report any problems you encounter
-(broken links, missing redirects, layout problems, etc).
-
 
 @dnl ----------------------------- END -----------------------------
 @newstag{NEWS Archive}
