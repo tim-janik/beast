@@ -21,7 +21,7 @@ check-local: check-scm-strings
 .PHONY: check-scm-strings
 check-scm-strings:
 	@for lang in $(ALL_LINGUAS) ; do			\
-	  file=$(top_builddir)/po/$$lang.po ;			\
+	  file=$(top_srcdir)/po/$$lang.po ;			\
 	  echo "CHECK: find scm strings in $$lang.po" ;		\
 	  for pattern in $(PATTERNS) ; do			\
 	    grep -Fq $$pattern $$file ||			\
