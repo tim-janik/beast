@@ -3,7 +3,6 @@ RELEASE(0.7.0):
 - make reverb+saturation .bse for tarball
 - make compressor .bse as post-processing network for tarball
 - apply patch from stefan westerfeld, subject: Re: gslwaveosc gfloat Hilfsvariablen
-- add check for .scm extracted strings to beast build process
 - invoke ../bse/bseautodoc the same way the BSE shell is invoked (no rcfile etc)
 - remove biquad normalization
 - fix birnet_thread_run uses (unref thread)
