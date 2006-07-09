@@ -42,3 +42,21 @@ shellscriptdir = $(bsescriptdir)
 shellscript_DATA = bse-scm-glue.boot
 
 EXTRA_DIST += $(shellscript_DATA)
+
+
+#
+# check
+#
+# many tests require a working bsescm. but the shell will only
+# operate correctly after proper installation. so this rule
+# ensures proper initialization upon make check.
+check-am: check-installation
+.PHONY: check-installation
+check-installation:
+	@for p in $(bin_PROGRAMS) ; do					\
+	  pp="$(DESTDIR)$(bindir)/$$p" ;				\
+	  echo "TEST: test -x \"$$pp\"" ;				\
+	  test -x "$$pp" ||						\
+	    { echo "Failed to verify installation of executable: $$pp";	\
+	      exit 1 ; }						\
+	done
