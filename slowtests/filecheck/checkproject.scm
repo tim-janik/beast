@@ -33,7 +33,7 @@
 	    ;; load file contents into project
 	    (error (bse-project-restore-from-file project file)))
 	 ;; check errors
-	 (if (bse-test-error error)
+	 (if (bse-error-test error)
 	     (display (string-append file ": "
 				     "failed to load project: "
 				     (bse-error-blurb error)

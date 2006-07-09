@@ -30,7 +30,7 @@
 	 ;; load file contents into project
 	 (error (bse-project-restore-from-file project bse-file)))
     ;; check errors
-    (if (bse-test-error error)
+    (if (bse-error-test error)
 	(begin
 	  (display (string-append bse-file ": "
 				  "failed to load project: "

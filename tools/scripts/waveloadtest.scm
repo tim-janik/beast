@@ -31,7 +31,7 @@
     ((error (bse-wave-repo-load-file wave-repo wave-file)))
       (display
 	    (if
-	      (bse-test-error error)
+	      (bse-error-test error)
 	      (string-append "FAILED: " wave-file ": " (bse-error-blurb error))
 		  (string-append "OK:     " wave-file)))
 	  (newline)

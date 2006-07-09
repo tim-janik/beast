@@ -6,11 +6,8 @@ RELEASE(0.7.0):
 - apply patch from stefan westerfeld, subject: Re: gslwaveosc gfloat Hilfsvariablen
 - shell/Makefile.am:check: test that bsesh-$VERSION is installed
 - invoke ../bse/bseautodoc the same way the BSE shell is invoked (no rcfile etc)
-- s/bse-test-error/bse-error-test/
-- s/bse_engine_garbage_collect/bse_engine_user_thread_collect/
 - rename bsesh to bsescm
 - remove biquad normalization
-- s/delete inputs/disconnect inputs/
 - fix birnet_thread_run uses (unref thread)
 MAYBE-RELEASE:
 - WEB: resources: http://packages.qa.debian.org/b/bse-alsa.html

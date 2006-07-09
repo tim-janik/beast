@@ -63,13 +63,13 @@
 
 (define bse-module-set bse-item-set)
 	
-(define (bse-test-error err) (not (bse-choice-match? err 'bse-error-none)))
+(define (bse-error-test err) (not (bse-choice-match? err 'bse-error-none)))
 
 (define (bse-item-tname item) (bse-item-get-name-or-type item))
 
 (define (bse-module-connect-ochannel omod ochan imod ichan)
   (let ((err (bse-source-set-input imod ichan omod ochan)))
-    (if (bse-test-error err)
+    (if (bse-error-test err)
 	(error (string-append "failed to connect input \""
 			      ichan
 			      "\" of "

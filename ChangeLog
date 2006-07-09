@@ -1,3 +1,13 @@
+Sun Jul  9 03:50:09 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): wording fixup.
+
+	* tools/scripts/waveloadtest.scm:
+	* tools/scripts/noteplaytest.scm:
+	* slowtests/audio/bse2wav.scm:
+	* slowtests/filecheck/checkproject.scm:
+	* shell/bse-scm-glue.boot: renamed (bse-test-error) to (bse-error-test).
+
 Sun Jul  9 02:23:25 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/filecheck/Makefile.am: added bse-version-check: rule which
