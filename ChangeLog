@@ -1,3 +1,8 @@
+Sun Jul  9 14:49:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* web/news.doxi: A summary of the things that happened since the last
+	development news.
+
 Sun Jul  9 13:58:31 2006  Tim Janik  <timj@gtk.org>
 
 	* docs/bsescm.1.doxi: CVS copied here from bsesh.1.doxi.
