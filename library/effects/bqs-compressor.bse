@@ -1,0 +1,27 @@
+; BseProject
+
+(bse-version "0.7.0")
+
+(container-child "BseCSynth::BQS Compressor"
+  (modification-time "2006-07-12 12:45:01")
+  (creation-time "2003-10-18 01:55:54")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld")
+  (container-child "BseArtsCompressor::ArtsStereoCompressor-1"
+    (output-db 7.300460638166486)
+    (ratio-to-one 7.656737588652482)
+    (threshold-db -20.992907801418436)
+    (release 17.468936170212768)
+    (attack 4.7080851063829785)
+    (pos-y 1)
+    (pos-x -1)
+    (source-input "audio-in1" (link 1 "SubIPort-1") "output-1")
+    (source-input "audio-in2" (link 1 "SubIPort-1") "output-2"))
+  (container-child "BseSubIPort::SubIPort-1"
+    (pos-y 1)
+    (pos-x -4))
+  (container-child "BseSubOPort::SubOPort-1"
+    (pos-y 1)
+    (pos-x 2)
+    (source-input "input-1" (link 1 "ArtsStereoCompressor-1") "audio-out1")
+    (source-input "input-2" (link 1 "ArtsStereoCompressor-1") "audio-out2")))

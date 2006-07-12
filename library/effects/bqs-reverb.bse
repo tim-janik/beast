@@ -1,0 +1,27 @@
+; BseProject
+
+(bse-version "0.7.0")
+
+(container-child "BseCSynth::BQS Reverb"
+  (modification-time "2006-07-10 14:26:33")
+  (creation-time "2005-08-07 14:23:05")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld")
+  (container-child "BseSubIPort::SubIPort-1"
+    (pos-y 1.04)
+    (pos-x -4.21))
+  (container-child "BseSubOPort::SubOPort-1"
+    (pos-y 1.07)
+    (pos-x 2.13)
+    (source-input "input-1" (link 1 "FreeVerb-1") "left-audio-out")
+    (source-input "input-2" (link 1 "FreeVerb-1") "right-audio-out"))
+  (container-child "BseFreeVerb::FreeVerb-1"
+    (width 100)
+    (dry-level 1)
+    (wet-level 0.85714292526245117)
+    (damping 40)
+    (room-size 0.8399999737739563)
+    (pos-y 1.07)
+    (pos-x -1.09)
+    (source-input "left-audio-in" (link 1 "SubIPort-1") "output-1")
+    (source-input "right-audio-in" (link 1 "SubIPort-1") "output-2")))

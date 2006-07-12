@@ -1,0 +1,36 @@
+; BseProject
+
+(bse-version "0.7.0")
+
+(container-child "BseCSynth::BQS Saturation And Reverb"
+  (modification-time "2006-07-12 12:46:45")
+  (creation-time "2005-08-07 14:23:05")
+  (license "Provided \\\"as is\\\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
+  (author "Stefan Westerfeld")
+  (container-child "BseSubIPort::SubIPort-1"
+    (pos-y 2)
+    (pos-x -5))
+  (container-child "BseSubOPort::SubOPort-1"
+    (pos-y 1)
+    (pos-x 1)
+    (source-input "input-1" (link 1 "FreeVerb-1") "left-audio-out")
+    (source-input "input-2" (link 1 "FreeVerb-1") "right-audio-out"))
+  (container-child "BseFreeVerb::FreeVerb-1"
+    (width 100)
+    (dry-level 1)
+    (wet-level 0.68571430444717407)
+    (damping 20)
+    (room-size 0.76399999856948853)
+    (pos-y 2)
+    (pos-x -1)
+    (source-input "left-audio-in" (link 1 "StandardSaturator-1") "audio-out1")
+    (source-input "right-audio-in" (link 1 "StandardSaturator-1") "audio-out2"))
+  (container-child "BseStandardSaturator::StandardSaturator-1"
+    (output-volume 1.1764705882352942)
+    (auto-output #t)
+    (level 85)
+    (saturation bse-standard-saturate-tanh)
+    (pos-y 1)
+    (pos-x -3)
+    (source-input "audio-in1" (link 1 "SubIPort-1") "output-1")
+    (source-input "audio-in2" (link 1 "SubIPort-1") "output-2")))

@@ -1,3 +1,18 @@
+Wed Jul 12 14:49:21 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/effects/bqs-compressor.bse: Added a compressor effect, which
+	can be used as post processing networks. Settings are from the party
+	monster demo song.
+
+	* library/effects/bqs-reverb.bse: Added a quick start reverb effect.
+
+	* library/effects/bqs-saturation-and-reverb.bse: Added a quick start
+	saturation and reverb effect, where saturation is performed prior to
+	reverb.
+
+	* library/effects/Makefile.am: Added the three effects to the build
+	system.
+
 Sun Jul  9 18:03:39 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/Makefile.am: check po/ files for .scm string extraction.
