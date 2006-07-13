@@ -1,6 +1,5 @@
 RELEASE(0.7.0):
 - apply patch from stefan westerfeld, subject: Re: gslwaveosc gfloat Hilfsvariablen
-- invoke ../bse/bseautodoc the same way the BSE shell is invoked (no rcfile etc)
 - remove biquad normalization
 - fix birnet_thread_run uses (unref thread)
 MAYBE-RELEASE:

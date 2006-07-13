@@ -153,6 +153,7 @@ gendoxi/bse-interface.doxi: @DOXRULE@ psource/bse-interface.psrc docu-template.d
 
 # Reference Documentation
 AUTODOC = $(top_builddir)/bse/bseautodoc
+AUTODOC_NORC = $(AUTODOC) --bse-rcfile "/dev/null"
 has_docu_filter = $(shell egrep '^/\*\*' -l $(wildcard $(1)))
 make_psource = $(strip $(DOXER) src2pickle -o $(1) $(DOXIDEFS) $(2))
 # BIRNET reference docu
@@ -191,19 +192,17 @@ psource/bse-objects.psrc: $(wildcard ../drivers/*/*.[hc]) $(wildcard ../drivers/
 psource/bse-objects.psrc: @DOXRULE@ $(AUTODOC) $(top_builddir)/config.status $(bse_objects_deps)
 	@mkdir -p psource/
 	cd . \
-	&& $(AUTODOC) -p -s objects	>psource/bse-objects.scad	\
+	&& $(AUTODOC_NORC) -p -s objects >psource/bse-objects.scad	\
 	&& $(DOXER) scad2pickle -o $@ psource/bse-objects.scad		\
 	&& rm -f psource/bse-objects.scad
 # BSE interface docu
 psource/bse-interface.psrc: @DOXRULE@ $(AUTODOC) $(top_builddir)/config.status
 	@mkdir -p psource/
 	cd . \
-	&& $(AUTODOC) -p -s procs	 >psource/bse-interface.scad	\
-	&& $(AUTODOC) -p -s structs     >>psource/bse-interface.scad	\
+	&& $(AUTODOC_NORC) -p -s procs	  >psource/bse-interface.scad	\
+	&& $(AUTODOC_NORC) -p -s structs >>psource/bse-interface.scad	\
 	&& $(DOXER) scad2pickle -o $@ psource/bse-interface.scad	\
 	&& rm -f psource/bse-interface.scad
-# Force AUTODOC builds
-.PHONY: # $(AUTODOC)
 CLEANFILES += psource/bse-objects.scad psource/bse-interface.scad
 clean-local:
 	rm -rf gendoxi/ html/ psource/ mans/

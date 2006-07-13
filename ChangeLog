@@ -1,3 +1,7 @@
+Thu Jul 13 21:37:26 2006  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: start bseautodoc without parsing bse rc files.
+
 Wed Jul 12 14:49:21 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/effects/bqs-compressor.bse: Added a compressor effect, which
