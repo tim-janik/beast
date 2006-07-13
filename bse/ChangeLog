@@ -1,3 +1,7 @@
+Thu Jul 13 21:36:28 2006  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: pass through --bse-rcfile to bse.
+
 Sun Jul  9 14:53:26 2006  Tim Janik  <timj@gtk.org>
 
 	* renamed the guile based bsesh to bsescm. adapted related build rules,

@@ -576,6 +576,11 @@ main (gint   argc,
         pluginbool[1] = '1';
       else if (strcmp ("-s", argv[i]) == 0)
         scriptbool[1] = '1';
+      else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
+        {
+          /* ignore, BSE handles this */
+          i++;
+        }
       else if (strcmp ("procs", argv[i]) == 0)
 	{
 	  gen_procs = TRUE;
