@@ -1,10 +1,13 @@
 RELEASE(0.7.0):
 - apply patch from stefan westerfeld, subject: Re: gslwaveosc gfloat Hilfsvariablen
-- remove biquad normalization
 - fix birnet_thread_run uses (unref thread)
 MAYBE-RELEASE:
 - WEB: resources: http://packages.qa.debian.org/b/bse-alsa.html
 - WEB: add LAD-2005 paper to website
+- bse/bseenginemaster.c:+master_take_probes():
+  for the copying of VIRTUAL nodes to really work (copy correct data),
+  all VIRTUALs must have been processed before any SCHEDULED nodes
+  (since the latter modify the buffer pointers)
 - move clean-generated: and generated: into Makefile.decl
 - move sfi_alloc_upper_power2 to birnet
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
