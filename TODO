@@ -1,5 +1,4 @@
 RELEASE(0.7.0):
-- apply patch from stefan westerfeld, subject: Re: gslwaveosc gfloat Hilfsvariablen
 - fix birnet_thread_run uses (unref thread)
 MAYBE-RELEASE:
 - WEB: resources: http://packages.qa.debian.org/b/bse-alsa.html
