@@ -55,7 +55,6 @@
     (fm-n-octaves 2.5316455364227295)
     (exponential-fm #t)
     (fm-perc 36.708861589431763)
-    (norm-type bse-biquad-filter-norm-passband)
     (gain 3.7647058963775635)
     (freq 880)
     (filter-type bse-biquad-filter-resonant-lowpass)

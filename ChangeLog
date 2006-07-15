@@ -1,3 +1,13 @@
+Sat Jul 15 05:15:42 2006  Tim Janik  <timj@gtk.org>
+
+	* library/demo/partymonster.bse:
+	* library/instruments/bqs-merp-pad.bse:
+	* library/instruments/bqs-fretless-bass.bse:
+	* library/instruments/bqs-queek-synth.bse:
+	* library/instruments/bqs-moog-saw-bass.bse:
+	* slowtests/audio/velocity.bse:
+	* test/simple-loop.bse: removed norm-type field.
+
 Sat Jul 15 04:49:55 2006  Tim Janik  <timj@gtk.org>
 
 	* web/news.doxi: announced CVS -> SVN move.
