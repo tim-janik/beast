@@ -36,6 +36,18 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Saturday 15 July 2006, Source Repository change}
+
+The @uri{http://www.gnome.org,Gnome} project is currently migrating its source code
+repository, so the @beast sources are kept in a
+@uri{http://svn.gnome.org/viewsvn/beast/, Beast SVN Repo} now.
+
+So far, the migration went smooth, the
+@uri{@top_webdir/download,download section} has already been updated accordingly,
+and we're working on adjusting all remaining references 
+to point to the new source code repository.
+
+
 @newsentry{Sunday 9 July 2006, Development News}
 
 We're still sorting out issues to make the 0.7.0 release finally happen. Here

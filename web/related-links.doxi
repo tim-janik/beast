@@ -42,7 +42,8 @@
 @item @uri{http://www.advogato.org/proj/BEAST%20-%20BSE/, BEAST at Advogato}
 @dnl @item @uri{http://www.gnome.org/softwaremap/projects/beast/, BEAST at the GNOME application repository}
 @dnl login for GNOME Admin Repo: http://www.gnome.org/account/login.php
-@item @uri{http://cvs.gnome.org/viewcvs/beast/, BEAST in the GNOME CVS repository}
+@item @uri{http://svn.gnome.org/viewsvn/beast/, BEAST sources in the GNOME SVN repository}
+@item @uri{http://cvs.gnome.org/viewcvs/beast/, Old BEAST sources in the archived GNOME CVS repository}
 @item @uri{http://cia.navi.cx/stats/project/gnome/beast, BEAST at the CIA Open Source Notification System}
 @item @uri{http://freemusicsoftware.info/audio/applications/free/gpl/linux/beast, BEAST at freemusicsoftware.info}
 @item @uri{http://linuxaudioblog.jawebada.de/software/synthesis/, Linux Audio Blog - SYNTHESIS}
