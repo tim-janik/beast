@@ -149,6 +149,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 			      sfi_pspec_real ("gain", _("Gain [dB]"), NULL,
 					      3, -48., +48., 3,
 					      SFI_PARAM_STANDARD ":dial"));
+#if 0
   bse_object_class_add_param (object_class, _("Emphasis"),
 			      PROP_NORM_TYPE,
 			      bse_param_spec_genum ("norm_type", _("Norm Type"),
@@ -157,6 +158,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 						    BSE_TYPE_BIQUAD_FILTER_NORM,
 						    BSE_BIQUAD_FILTER_NORM_PASSBAND,
 						    SFI_PARAM_STANDARD));
+#endif
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_PERC,
 			      sfi_pspec_real ("fm_perc", "Input Modulation [%]",

@@ -1,3 +1,9 @@
+Sat Jul 15 04:11:06 2006  Tim Janik  <timj@gtk.org>
+
+	* bsebiquadfilter.c (bse_biquad_filter_class_init): 
+	disabled ::norm_type property because chenging it to something
+	non-default drives the filter unstable too easily.
+
 Thu Jul 13 21:36:28 2006  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: pass through --bse-rcfile to bse.
