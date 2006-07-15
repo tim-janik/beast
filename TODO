@@ -17,6 +17,9 @@ INCOMPAT:
 - merge 2 * BseSimpleADSR into 1
 - delete BseAtanDistort
 - nuke compat code
+USAGE:
+- in song view, there should be a way to directly load wave files
+- when popping up the synth selection, if no synth is presnet but waves are available, the notebook should show the Waves page
 MISC:
 - fix bsepcmdevice-alsa.c:alsa_device_retrigger():g_malloc0(): to instead use bse_engine_const_zeros()
 - make BSE_REGISTER_OBJECT() define parent_class, similar to G_DEFINE_TYPE

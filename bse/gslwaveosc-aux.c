@@ -46,8 +46,6 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
   wave_boundary = wave_out + n_values;
   do
     {
-      gfloat ffrac;
-
       if (CHECK_SYNC)
 	{
 	  gfloat sync_level = *sync_in++;
@@ -113,8 +111,8 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
       /* process filter while necesary */
       while (wosc->cur_pos >= (FRAC_MASK + 1) << 1)
 	{
-	  gfloat c, c0, c1, c2, c3, c4, c5, c6, c7, c8;
-	  gfloat d, d0, d1, d2, d3, d4, d5, d6, d7;
+	  double c, c0, c1, c2, c3, c4, c5, c6, c7, c8;
+	  double d, d0, d1, d2, d3, d4, d5, d6, d7;
 	  gfloat *x;
 
 	  if (UNLIKELY ((block->dirstride > 0 && wosc->x >= boundary) ||
@@ -172,16 +170,14 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
       if (wosc->cur_pos >> FRAC_SHIFT)
 	{
 	  guint k = wosc_j - 2;
-
-	  ffrac = wosc->cur_pos & FRAC_MASK;    /* int -> float */
+	  double ffrac = wosc->cur_pos & FRAC_MASK;    /* int -> float */
 	  ffrac *= 1. / (FRAC_MASK + 1.);
 	  *wave_out++ = y[k & 0x7] * (1.0 - ffrac) + y[(k + 1) & 0x7] * ffrac;
 	}
       else
 	{
 	  guint k = wosc_j - 3;
-
-	  ffrac = wosc->cur_pos;                /* int -> float */
+	  double ffrac = wosc->cur_pos;                /* int -> float */
 	  ffrac *= 1. / (FRAC_MASK + 1.);
 	  *wave_out++ = y[k & 0x7] * (1.0 - ffrac) + y[(k + 1) & 0x7] * ffrac;
 	}
