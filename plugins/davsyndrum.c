@@ -259,7 +259,7 @@ dmod_process (BseModule *module,
           /* trigger drum */
           dmod_trigger (dmod,
                         freq_in ? BSE_FREQ_FROM_VALUE (freq_in[i]) : dmod->params.freq,
-                        ratio_in ? ratio_in[1] : 1.0);
+                        ratio_in ? ratio_in[i] : 1.0);
           spring_vel = dmod->spring_vel;
           env = dmod->env;
           freq_rad = dmod->freq_rad;

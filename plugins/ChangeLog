@@ -1,3 +1,7 @@
+Sun Jul 16 13:58:12 2006  Tim Janik  <timj@gtk.org>
+
+	* davsyndrum.c (dmod_process): fixed ratio read-out. spotted by Stefan.
+
 Mon May 15 22:09:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* davsyndrum.c (dav_syn_drum_update_modules): It is important to
