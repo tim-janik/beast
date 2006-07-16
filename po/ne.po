@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 11:49+0200\n"
+"POT-Creation-Date: 2006-07-16 03:42+0200\n"
 "PO-Revision-Date: 2005-06-02 16:03+0545\n"
 "Last-Translator: Kapil Timilsina <lipak21@gmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -18,395 +18,406 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplural=2;plural=(n!=1)\n"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:83
 msgid "_New"
 msgstr "_नयाँ"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:83
 msgid "Create new project"
 msgstr "नयाँ परियोजना निर्माण गर्नुस"
 
-#: ../beast-gtk/bstapp.c:84
+#: ../beast-gtk/bstapp.c:85
 msgid "_Open..."
 msgstr "_खोल्नु....."
 
-#: ../beast-gtk/bstapp.c:84
+#: ../beast-gtk/bstapp.c:85
 msgid "Open existing project"
 msgstr "निश्चित परियोजना खोल्नुस"
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:87
 msgid "_Merge..."
 msgstr "_मर्ज..."
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:87
 msgid "Merge an existing project into the current project"
 msgstr "हालको परियोजनामा निश्चित परियोजना मर्ज गर्नुस"
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:89
 msgid "_Import MIDI..."
 msgstr "एम आइ डि आइ आयात गर्नुस..."
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:89
 msgid "Import a standard MIDI file into the current project"
 msgstr "मानक एम आइ डि आइ फाइल हालको परियोजनामा आयात गर्नुस"
 
-#: ../beast-gtk/bstapp.c:90
+#: ../beast-gtk/bstapp.c:91
 msgid "_Close"
 msgstr "_बन्द गर्नु"
 
-#: ../beast-gtk/bstapp.c:90
+#: ../beast-gtk/bstapp.c:91
 msgid "Close the project"
 msgstr "परियोजना बन्द गर्नुस"
 
-#: ../beast-gtk/bstapp.c:94
+#: ../beast-gtk/bstapp.c:95
 msgid "_Save"
 msgstr "बचत"
 
-#: ../beast-gtk/bstapp.c:94
+#: ../beast-gtk/bstapp.c:95
 msgid "Write project to disk"
 msgstr "परियोजना डिस्कमा लेख्नुस"
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:97
 msgid "Save _As..."
 msgstr "यस रुपमा सेभ गर्नुहोस....."
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:97
 msgid "Write project to a specific file"
 msgstr "स्पेसिक फाइलमा परियोजना लेख्नुस"
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:101
 msgid "_Quit"
 msgstr "बाहिर जाउ"
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:101
 msgid "Close all windows and quit"
 msgstr "सबै विन्डो बन्द गर्नुस र बाहिर जानुस"
 
-#: ../beast-gtk/bstapp.c:104
+#: ../beast-gtk/bstapp.c:105
 msgid "_Preferences..."
 msgstr "_प्राथमिकताहरु..."
 
-#: ../beast-gtk/bstapp.c:104
+#: ../beast-gtk/bstapp.c:105
 msgid "Adjust overall program behaviour"
 msgstr "ओभरल कार्यक्रम बिहेभियर समायोजन गर्नुस"
 
-#: ../beast-gtk/bstapp.c:108
+#: ../beast-gtk/bstapp.c:109
 msgid "Rebuild"
 msgstr "रिब्युल्ड"
 
-#: ../beast-gtk/bstapp.c:111
+#: ../beast-gtk/bstapp.c:112
 msgid "_About..."
 msgstr "_बारेमा॒..."
 
-#: ../beast-gtk/bstapp.c:111
+#: ../beast-gtk/bstapp.c:112
 msgid "Display developer and contributor credits"
 msgstr "बिकासकर्ता र कन्ट्रिब्युटर श्रेय प्रदर्शन गर्नुस"
 
-#: ../beast-gtk/bstapp.c:115
+#: ../beast-gtk/bstapp.c:116
 msgid "_Undo"
 msgstr "अघिकै कायम गर॒"
 
-#: ../beast-gtk/bstapp.c:115
+#: ../beast-gtk/bstapp.c:116
 msgid "Undo the effect of the last action"
 msgstr "पछिल्लो कार्यको प्रभाव अघिकै कायम गर्नुस"
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:118
 msgid "_Redo"
 msgstr "फेरी गर्नुहोला"
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:118
 msgid "Redo the last undone action"
 msgstr "अन्तिम रिडु नगरेको कार्य"
 
-#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstpartdialog.c:72
+#: ../beast-gtk/bstapp.c:122 ../beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "अघिकै कार्य सफा गर्नुस"
 
-#: ../beast-gtk/bstapp.c:121
+#: ../beast-gtk/bstapp.c:122
 msgid "Delete the complete undo history"
 msgstr "अघिको कार्य इतिहास पूरा रुपमा मेटाउनुहोस"
 
-#: ../beast-gtk/bstapp.c:125
+#: ../beast-gtk/bstapp.c:126
 msgid "Procedure _Browser"
 msgstr "कार्यविधि_ब्राउजर"
 
-#: ../beast-gtk/bstapp.c:125
+#: ../beast-gtk/bstapp.c:126
 msgid "Display an overview of all procedures"
 msgstr "सबै कार्यविधि ओभरभ्यू गरि प्रदर्शन गर्नुस"
 
-#: ../beast-gtk/bstapp.c:127
+#: ../beast-gtk/bstapp.c:128
 msgid "Rack Editor"
 msgstr "र्याक सम्पादक"
 
-#: ../beast-gtk/bstapp.c:129 ../beast-gtk/bstprofiler.c:225
+#: ../beast-gtk/bstapp.c:130 ../beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "प्रोफाइलर"
 
-#: ../beast-gtk/bstapp.c:129
+#: ../beast-gtk/bstapp.c:130
 msgid "Display statistics and timing information"
 msgstr "तथ्याङ्क र समय सूचना प्रदर्शन गर्नुस"
 
-#: ../beast-gtk/bstapp.c:131
+#: ../beast-gtk/bstapp.c:132
 msgid "New View"
 msgstr "नयाँ भ्यू"
 
-#: ../beast-gtk/bstapp.c:131
+#: ../beast-gtk/bstapp.c:132
 msgid "Create an extra view of the project"
 msgstr "परियोजनाको छुट्टै भ्यू निर्माण गर्नुस"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:136
 msgid "_Play"
 msgstr "बजाउ"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:136
 msgid "Play or restart playback of the project"
 msgstr "परियोजनाको प्लेब्याक बजाउनुस वा पुन: शुरु गर्नुस"
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:138
 msgid "_Stop"
 msgstr "_रोक्नुस्"
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:138
 msgid "Stop playback of the project"
 msgstr "परियोजनाको प्लेब्याक रोक्नुस"
 
-#: ../beast-gtk/bstapp.c:141
+#: ../beast-gtk/bstapp.c:142
 msgid "New Song"
 msgstr "नयाँ गीत"
 
-#: ../beast-gtk/bstapp.c:141
+#: ../beast-gtk/bstapp.c:142
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "नयाँ गीत निर्माण गर्नुस, मिक्सर ट्र्याक्स, पार्टस् र टिप्पणी निर्माण गर्नुस"
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:144
 msgid "Add Custom Synthesizer"
 msgstr "अनुकूलन सिन्थेसाइजर जोड्नुस"
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:144
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr "नयाँ सिन्थेसाइजर मेस प्रभाव वा गीतमा इन्सट्रुमेन्ट गर्न जोड्नुहोस"
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:146
 msgid "Add MIDI Synthesizer"
 msgstr "एम आइ डि आइ सिन्थेसाइजर जोड्नुस"
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:146
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 "इन्सट्रुमेन्ट बाहिरि एम आइ डि आइ कार्यक्रम कन्ट्रोल गर्न नयाँ एम आइ डि आइ सिन्थेसाइजर "
 "जोड्नुस्"
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:148
 msgid "Remove Song or Synthesizer"
 msgstr "गीत वा सिन्थेसाइजर हटाउनुस"
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:148
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "हालको छानिएको सिन्थेसाइजर(गीत) हटाउनुस"
 
-#: ../beast-gtk/bstapp.c:151
+#: ../beast-gtk/bstapp.c:152
 msgid "Load _Instrument..."
 msgstr "इन्स्ट्रुमेन्ट _लोड गर्नुस..."
 
-#: ../beast-gtk/bstapp.c:151
+#: ../beast-gtk/bstapp.c:152
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "सिन्थेसाइजर मेस इन्स्ट्रुमेन्ट फोल्डरबाट लोड गर्नुस"
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:154
 msgid "Load _Effect..."
 msgstr "लोड _प्रभाव..."
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:154
 msgid "Load synthesizer mesh from effects folder"
 msgstr "सिन्थेसाइजर मेस प्रभाव फोल्डरबाट लोड गर्नुस"
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:156
 msgid "Save As Instrument..."
 msgstr "इन्सट्रुमेन्टको रुपमा बचत गर्नुस..."
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:156
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "सिन्थेसाइजर मेस इन्सट्रुमेन्ट फोल्डरमा बचत गर्नुस"
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:158
 msgid "Save As Effect..."
 msgstr "प्रभावको रुपमा बचत गर्नुस..."
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:158
 msgid "Save synthesizer mesh to effects folder"
 msgstr "सिन्थेसाइजर मेस प्रभाव फोल्डरमा बचत गर्नुस"
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:162
 msgid "Document _Index..."
 msgstr "कागजात _अनुक्रमणिक..."
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:162
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "बिस्टको कागजातहरुको ओभरभ्यू पठाउनुस"
 
-#: ../beast-gtk/bstapp.c:163
+#: ../beast-gtk/bstapp.c:164
 msgid "_Quick Start..."
 msgstr "चाँडो सूरु..."
 
-#: ../beast-gtk/bstapp.c:163
+#: ../beast-gtk/bstapp.c:164
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "साधारण कार्य कसरी एकम्प्लिस गर्ने भन्ने बारे सूचना पठाउनुस"
 
-#: ../beast-gtk/bstapp.c:165
+#: ../beast-gtk/bstapp.c:166
 msgid "_FAQ..."
 msgstr "_एफ ए क्यू..."
 
-#: ../beast-gtk/bstapp.c:165
+#: ../beast-gtk/bstapp.c:166
 msgid "Answers to frequently asked questions"
 msgstr "सोधिएको प्रश्नहरुको छिटो उत्तर"
 
-#: ../beast-gtk/bstapp.c:167
+#: ../beast-gtk/bstapp.c:168
+#, fuzzy
+msgid "_Beast Website..."
+msgstr "_बिस्ट वेबसाइट..."
+
+#: ../beast-gtk/bstapp.c:168
+msgid "Start a web browser pointing to the BEAST website"
+msgstr "वेब ब्राउजर बिस्ट वेबसाइटमा सूचक गरको शूरु गर्नुस"
+
+#: ../beast-gtk/bstapp.c:170
 msgid "Online _Help Desk..."
 msgstr "अनलाईन _सहायता डेस्क..."
 
-#: ../beast-gtk/bstapp.c:167
+#: ../beast-gtk/bstapp.c:170
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "वेब ब्राउजर अनलाइन सहायता डेस्क बिस्ट वेबसाइटमा शुरु गर्नुस"
 
-#: ../beast-gtk/bstapp.c:169
-msgid "_BEAST Website..."
-msgstr "_बिस्ट वेबसाइट..."
-
-#: ../beast-gtk/bstapp.c:169
-msgid "Start a web browser pointing to the BEAST website"
-msgstr "वेब ब्राउजर बिस्ट वेबसाइटमा सूचक गरको शूरु गर्नुस"
+#: ../beast-gtk/bstapp.c:172
+msgid "Report a Beast Bug..."
+msgstr ""
 
 #: ../beast-gtk/bstapp.c:172
+#, fuzzy
+msgid ""
+"Start a web browser with the bug report form for the BEAST bugzilla product"
+msgstr "वेब ब्राउजर बिस्ट वेबसाइटमा सूचक गरको शूरु गर्नुस"
+
+#: ../beast-gtk/bstapp.c:175
 msgid "_Release Notes..."
 msgstr "_टिप्पणी छोड्नुस..."
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:175
 msgid "Notes and informations about this release cycle"
 msgstr "टिप्पणी र सूचनाहरु छाडिएको साइकल बारे"
 
-#: ../beast-gtk/bstapp.c:174
+#: ../beast-gtk/bstapp.c:177
 msgid "Developing Plugins..."
 msgstr "जडानहरु निर्मित..."
 
-#: ../beast-gtk/bstapp.c:174
+#: ../beast-gtk/bstapp.c:177
 msgid "A guide to synthesis plugin development"
 msgstr "निर्देशिका सिन्थेसिस जडान निर्माणमा"
 
-#: ../beast-gtk/bstapp.c:176
+#: ../beast-gtk/bstapp.c:179
 msgid "DSP Engine..."
 msgstr "डि एस पि इन्जिन..."
 
-#: ../beast-gtk/bstapp.c:176
+#: ../beast-gtk/bstapp.c:179
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "टेक्निकल बिस्त्रित बहु-थ्रेडेडको सिन्थेसिस इन्जिन इन्नर्ड्सको"
 
-#: ../beast-gtk/bstapp.c:178
+#: ../beast-gtk/bstapp.c:181
 msgid "Development..."
 msgstr "निर्माण..."
 
-#: ../beast-gtk/bstapp.c:178
+#: ../beast-gtk/bstapp.c:181
 msgid "Provide an overview of development related topics and documents"
 msgstr "निर्मित सम्बन्धित शिर्षक र कागजातहरुमा ओभरभ्यू पठाउनुस"
 
-#: ../beast-gtk/bstapp.c:183
+#: ../beast-gtk/bstapp.c:186
 msgid "Online Sound Archive..."
 msgstr "अनलाइन ध्वनि सङ्ग्रह..."
 
-#: ../beast-gtk/bstapp.c:183
+#: ../beast-gtk/bstapp.c:186
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "वेब ब्राउजर सूचित अनलाइन ध्वनि सङ्ग्रह शुरु गर्नुस"
 
-#: ../beast-gtk/bstapp.c:187
+#: ../beast-gtk/bstapp.c:190
 msgid "Online Demos..."
 msgstr "अनलाइन झाँकीहरु..."
 
-#: ../beast-gtk/bstapp.c:187
+#: ../beast-gtk/bstapp.c:190
 msgid "Start a web browser pointing to online demo songs"
 msgstr "वेब ब्राउजर सूचित अनलाइन झाँकी गीतहरु शुरु गर्नुस"
 
-#: ../beast-gtk/bstapp.c:328
+#: ../beast-gtk/bstapp.c:331
 msgid "Export Audio"
 msgstr "अडियो आयात गर्नुस"
 
-#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:524 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "वेभ्स"
 
-#: ../beast-gtk/bstapp.c:523
+#: ../beast-gtk/bstapp.c:526
 msgid "Wave Repository"
 msgstr "वेभ्स रेपोसिटरी"
 
-#: ../beast-gtk/bstapp.c:528
+#: ../beast-gtk/bstapp.c:531
 #, c-format
 msgid "Song: %s"
 msgstr "गीतहरु: %s"
 
-#: ../beast-gtk/bstapp.c:533
+#: ../beast-gtk/bstapp.c:536
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "एम आइ डि आइ: %s"
 
-#: ../beast-gtk/bstapp.c:538
+#: ../beast-gtk/bstapp.c:541
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "सिन्थेसाइजर: %s"
 
-#: ../beast-gtk/bstapp.c:648
+#: ../beast-gtk/bstapp.c:651
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "_बन्द गर्नु"
 
-#: ../beast-gtk/bstapp.c:649
+#: ../beast-gtk/bstapp.c:652
 msgid "The project has been modified."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:650
+#: ../beast-gtk/bstapp.c:653
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:655
 msgid "Save the project before closing its window?"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:653
+#: ../beast-gtk/bstapp.c:656
 #, fuzzy
 msgid "Save Changes"
 msgstr "आकार रेन्ज"
 
-#: ../beast-gtk/bstapp.c:654
+#: ../beast-gtk/bstapp.c:657
 msgid "Discard Changes"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:655
+#: ../beast-gtk/bstapp.c:658
 #, fuzzy
 msgid "Cancel"
 msgstr "खारेजी"
 
-#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
+#: ../beast-gtk/bstapp.c:743 ../beast-gtk/bstapp.c:750
 #: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "परियोजना खोल्नु `%s'"
 
-#: ../beast-gtk/bstapp.c:807
+#: ../beast-gtk/bstapp.c:810
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "स्किन लोड हुँदै `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:978
+#: ../beast-gtk/bstapp.c:981
 msgid "Rack editor"
 msgstr "र्याक सम्पादक"
 
-#: ../beast-gtk/bstapp.c:992
+#: ../beast-gtk/bstapp.c:995
 msgid "Preferences"
 msgstr "प्राथमिकताहरु"
 
-#: ../beast-gtk/bstapp.c:1019
+#: ../beast-gtk/bstapp.c:1022
 msgid "Procedure Browser"
 msgstr "कार्यविधि ब्राउजर"
 
@@ -447,11 +458,11 @@ msgstr "नयाँ बस मिक्सरमा जोड्नुस"
 msgid "Delete the currently selected bus"
 msgstr "हालमा छानिएको बस मेटाउनुस"
 
-#: ../beast-gtk/bstcanvaslink.c:128
+#: ../beast-gtk/bstcanvaslink.c:130
 msgid "Module Link: "
 msgstr "मोड्युल लिङ्क: "
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstcanvaslink.c:186 ../beast-gtk/bstsnetrouter.c:758
 msgid "Module link"
 msgstr "मोड्युल लिङ्क"
 
@@ -459,42 +470,42 @@ msgstr "मोड्युल लिङ्क"
 msgid "Module Info"
 msgstr "मोड्युल इन्फो"
 
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstcanvassource.c:981 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "निवेश॒"
 
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../beast-gtk/bstcanvassource.c:990 ../beast-gtk/bstsnetrouter.c:1095
 #: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "प्रतिफल"
 
-#: ../beast-gtk/bstcanvassource.c:991
+#: ../beast-gtk/bstcanvassource.c:994
 msgid "(Hint)"
 msgstr "(सूचक)"
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Draw Values"
 msgstr "मानहरु देखाउनुस"
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "पङ्त्तिहरुको सट्टा डिबि मान समायोजन गर्नुस"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Orientation"
 msgstr "अभिमुखीकरण"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Choose horizontal or vertical orientation"
 msgstr "तेर्सो वा ठाडो अभिमुखीकरण छान्नुस"
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Justify"
 msgstr "समरेखन गर्नुस"
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "मानहरु वा बारहरु प्रदर्शन सम्बन्धित पङ्तिबद्व समायोजन गर्नुस"
 
@@ -957,16 +968,16 @@ msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 msgid "Failed to merge project \"%s\": %s"
 msgstr "परियोजना लोड गर्न असफल \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:845
+#: ../beast-gtk/bstmain.c:882
 msgid "BEAST About"
 msgstr "बिस्ट बारेमा"
 
-#: ../beast-gtk/bstmain.c:846
+#: ../beast-gtk/bstmain.c:883
 #, c-format
 msgid "BEAST Version %s"
 msgstr "बिस्ट संस्करण %s"
 
-#: ../beast-gtk/bstmain.c:847
+#: ../beast-gtk/bstmain.c:884
 msgid "Contributions made by:"
 msgstr "कन्ट्रिब्युसन निर्माता:"
 
@@ -2600,12 +2611,14 @@ msgid "Reset Properties"
 msgstr "गुणहरु फेरि शुरु गर्नुहोस्"
 
 #: ../beast-gtk/bstsnetrouter.c:708
-msgid "Delete Inputs"
-msgstr "आगत मेटाउनुहोस्"
+#, fuzzy
+msgid "Disconnect Inputs"
+msgstr "भित्री जडान नभएको"
 
 #: ../beast-gtk/bstsnetrouter.c:709
-msgid "Delete Outputs"
-msgstr "निर्गत मेटाउनुहोस्"
+#, fuzzy
+msgid "Disconnect Outputs"
+msgstr "जडान नभएको बाहिर"
 
 #: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
 msgid "Show Info"
@@ -3458,7 +3471,7 @@ msgstr "काट्नु [Hz]"
 msgid "Note"
 msgstr "टिपोट"
 
-#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:152
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
 msgid "Emphasis"
 msgstr "इम्फासिस"
 
@@ -3466,83 +3479,83 @@ msgstr "इम्फासिस"
 msgid "Gain [dB]"
 msgstr "नाफा [डिबि]"
 
-#: ../bse/bsebiquadfilter.c:154
+#: ../bse/bsebiquadfilter.c:155
 msgid "Norm Type"
 msgstr "नर्म प्रकार"
 
-#: ../bse/bsebiquadfilter.c:155
+#: ../bse/bsebiquadfilter.c:156
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "छनौट नाफा नर्मलाइजेसन प्रकार (माथिल्लो पास र तल्लो पासले मात्र सहारा दिन्छ)"
 
-#: ../bse/bsebiquadfilter.c:160 ../bse/bsebiquadfilter.c:166
-#: ../bse/bsebiquadfilter.c:172 ../bse/bsebiquadfilter.c:178
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsebiquadfilter.c:168
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:161 ../bse/bsestandardosc.c:166
 #: ../bse/bsestandardosc.c:171 ../bse/bsestandardosc.c:176
 #: ../bse/bsewaveosc.c:568 ../bse/bsewaveosc.c:574 ../bse/bsewaveosc.c:580
 msgid "Modulation"
 msgstr "मोडुलेसन"
 
-#: ../bse/bsebiquadfilter.c:163 ../bse/bsestandardosc.c:163
+#: ../bse/bsebiquadfilter.c:165 ../bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "पङ्त्ति फ्रिक्वेन्सि मोडुलेसनको स्ट्रेन्थ"
 
-#: ../bse/bsebiquadfilter.c:169 ../bse/bsestandardosc.c:168
+#: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:168
 #: ../bse/bsewaveosc.c:577
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "पङ्त्तिको सट्टा एक्सपोनेन्सियल फ्रिक्वेन्सिको मोडुलेसन गर्दछ"
 
-#: ../bse/bsebiquadfilter.c:175 ../bse/bsestandardosc.c:173
+#: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:173
 #: ../bse/bsewaveosc.c:583
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "अक्टेभ्सको नम्बर एक्सपोनेन्सियल फ्रिक्वेन्सि मोडुलेसनबाट प्रभाव"
 
-#: ../bse/bsebiquadfilter.c:181
+#: ../bse/bsebiquadfilter.c:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr "नाफा मोडुलेसन [%]"
 
-#: ../bse/bsebiquadfilter.c:182
+#: ../bse/bsebiquadfilter.c:184
 msgid "Strength of gain modulation"
 msgstr "नाफा मोडुलेसनको स्ट्रेन्थ"
 
-#: ../bse/bsebiquadfilter.c:186 ../plugins/bseatandistort.c:90
+#: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "अडियो भित्र"
 
-#: ../bse/bsebiquadfilter.c:186
+#: ../bse/bsebiquadfilter.c:188
 msgid "Unfiltered Audio Signal"
 msgstr "छनौट नभएको अडियो संकेत"
 
-#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:196
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:196
 #: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
 msgstr "फ्रिक्वेन्सि भित्र"
 
-#: ../bse/bsebiquadfilter.c:188
+#: ../bse/bsebiquadfilter.c:190
 msgid "Center Frequency Input"
 msgstr "केन्द्र फ्रिक्वेन्सि निर्गत"
 
-#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:198
 msgid "Freq Mod In"
 msgstr "फ्रिक्वेन्सि मोड भित्री"
 
-#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:198
 msgid "Frequency Modulation Input"
 msgstr "फ्रिक्वेन्सि मोडुलेसन निर्गत"
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:194
 msgid "Gain Mod In"
 msgstr "नाफा मोड भित्री"
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:194
 msgid "Gain Modulation Input"
 msgstr "नाफा मोडुलेसन निर्गत"
 
-#: ../bse/bsebiquadfilter.c:194 ../bse/bsestandardosc.c:204
+#: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:204
 #: ../bse/bsewaveosc.c:598 ../plugins/bseadder.c:101
 #: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
@@ -3553,7 +3566,7 @@ msgstr "नाफा मोडुलेसन निर्गत"
 msgid "Audio Out"
 msgstr "अडियो बाहिर"
 
-#: ../bse/bsebiquadfilter.c:194
+#: ../bse/bsebiquadfilter.c:196
 msgid "Filtered Audio Signal"
 msgstr "छनौट भएको अडियो संकेत"
 
@@ -5228,7 +5241,7 @@ msgstr ""
 "चालक पिसिएम यन्त्र छनोट सूचीको अंश होइन."
 
 #: ../bse/bsepcmdevice-oss.c:647
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:396
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
 msgid "DEVICE,MODE"
 msgstr "यन्त्र,मोड"
 
@@ -5697,27 +5710,27 @@ msgstr "आगत पङ्त्तिबद्वहरु"
 msgid "Input port name to interface to"
 msgstr "निर्गत पोर्ट नाम इन्टरफेसमा"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Author"
 msgstr "लेखक"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Person changing or creating this object"
 msgstr "यो वस्तु परिवर्तन वा निर्माण गर्ने ब्यक्त्ति"
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "License"
 msgstr "लाइसेन्स"
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "Copyright license applying to this object"
 msgstr "प्रतिलिपि अधिकार लाइसेन्स यो वस्तुमा लागू गरिएको"
 
-#: ../bse/bsesuper.c:201
+#: ../bse/bsesuper.c:217
 msgid "Creation Time"
 msgstr "समय निर्माण"
 
-#: ../bse/bsesuper.c:205
+#: ../bse/bsesuper.c:221
 msgid "Last modification time"
 msgstr "अन्तिम संशोधन समय"
 
@@ -5896,7 +5909,7 @@ msgstr ""
 "  सुब्देभ - सबयन्त्र नम्बर जडानको लागि जस्तै एचडब्लु'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:398
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:405
 #, fuzzy, c-format
 msgid ""
 "PortAudio PCM driver, using %s.\n"
@@ -6835,6 +6848,12 @@ msgstr "दाँया निर्गत"
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "वेभ फाइल लोड गर्न असफल \"%s\": %s"
+
+#~ msgid "Delete Inputs"
+#~ msgstr "आगत मेटाउनुहोस्"
+
+#~ msgid "Delete Outputs"
+#~ msgstr "निर्गत मेटाउनुहोस्"
 
 #~ msgid "Enable meters"
 #~ msgstr "सक्षम मिटरहरु"

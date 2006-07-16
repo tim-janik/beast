@@ -3,13 +3,13 @@
 # Christian Rose <menthos@menthos.com>, 2003.
 # Daniel Nylander <po@danielnylander.se>, 2006.
 #
-# $Id: sv.po,v 1.37 2006/05/21 09:56:55 timj Exp $
+# $Id: sv.po 3844 2006-07-16 02:02:45Z timj $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 11:49+0200\n"
+"POT-Creation-Date: 2006-07-16 03:42+0200\n"
 "PO-Revision-Date: 2006-04-19 21:24+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -17,392 +17,403 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:83
 msgid "_New"
 msgstr "_Ny"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:83
 msgid "Create new project"
 msgstr "Skapa nytt projekt"
 
-#: ../beast-gtk/bstapp.c:84
+#: ../beast-gtk/bstapp.c:85
 msgid "_Open..."
 msgstr "_Öppna..."
 
-#: ../beast-gtk/bstapp.c:84
+#: ../beast-gtk/bstapp.c:85
 msgid "Open existing project"
 msgstr "Öppna existerande projekt"
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:87
 msgid "_Merge..."
 msgstr "Samman_foga..."
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:87
 msgid "Merge an existing project into the current project"
 msgstr "Sammanfoga ett existerande projekt in i aktuellt projekt"
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:89
 msgid "_Import MIDI..."
 msgstr "_Importera MIDI..."
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:89
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importera en standard-MIDI-fil till aktuellt projekt"
 
-#: ../beast-gtk/bstapp.c:90
+#: ../beast-gtk/bstapp.c:91
 msgid "_Close"
 msgstr "_Stäng"
 
-#: ../beast-gtk/bstapp.c:90
+#: ../beast-gtk/bstapp.c:91
 msgid "Close the project"
 msgstr "Stäng projektet"
 
-#: ../beast-gtk/bstapp.c:94
+#: ../beast-gtk/bstapp.c:95
 msgid "_Save"
 msgstr "_Spara"
 
-#: ../beast-gtk/bstapp.c:94
+#: ../beast-gtk/bstapp.c:95
 msgid "Write project to disk"
 msgstr "Skriv projekt till disk"
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:97
 msgid "Save _As..."
 msgstr "Spara so_m..."
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:97
 msgid "Write project to a specific file"
 msgstr "Skriv projekt till en angiven fil"
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:101
 msgid "_Quit"
 msgstr "A_vsluta"
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:101
 msgid "Close all windows and quit"
 msgstr "Stäng alla fönster och avsluta"
 
-#: ../beast-gtk/bstapp.c:104
+#: ../beast-gtk/bstapp.c:105
 msgid "_Preferences..."
 msgstr "_Inställningar..."
 
-#: ../beast-gtk/bstapp.c:104
+#: ../beast-gtk/bstapp.c:105
 msgid "Adjust overall program behaviour"
 msgstr "Justera programmets beteende"
 
-#: ../beast-gtk/bstapp.c:108
+#: ../beast-gtk/bstapp.c:109
 msgid "Rebuild"
 msgstr "Bygg om"
 
-#: ../beast-gtk/bstapp.c:111
+#: ../beast-gtk/bstapp.c:112
 msgid "_About..."
 msgstr "_Om..."
 
-#: ../beast-gtk/bstapp.c:111
+#: ../beast-gtk/bstapp.c:112
 msgid "Display developer and contributor credits"
 msgstr "Visa tack till utvecklare och bidragsgivare"
 
-#: ../beast-gtk/bstapp.c:115
+#: ../beast-gtk/bstapp.c:116
 msgid "_Undo"
 msgstr "_Ångra"
 
-#: ../beast-gtk/bstapp.c:115
+#: ../beast-gtk/bstapp.c:116
 msgid "Undo the effect of the last action"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:118
 msgid "_Redo"
 msgstr "_Gör om"
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:118
 msgid "Redo the last undone action"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstpartdialog.c:72
+#: ../beast-gtk/bstapp.c:122 ../beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "_Töm ångra"
 
-#: ../beast-gtk/bstapp.c:121
+#: ../beast-gtk/bstapp.c:122
 msgid "Delete the complete undo history"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:125
+#: ../beast-gtk/bstapp.c:126
 msgid "Procedure _Browser"
 msgstr "Procedur_bläddrare"
 
-#: ../beast-gtk/bstapp.c:125
+#: ../beast-gtk/bstapp.c:126
 msgid "Display an overview of all procedures"
 msgstr "Visa en översikt över alla procedurer"
 
-#: ../beast-gtk/bstapp.c:127
+#: ../beast-gtk/bstapp.c:128
 msgid "Rack Editor"
 msgstr "Rackredigerare"
 
-#: ../beast-gtk/bstapp.c:129 ../beast-gtk/bstprofiler.c:225
+#: ../beast-gtk/bstapp.c:130 ../beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profilerare"
 
-#: ../beast-gtk/bstapp.c:129
+#: ../beast-gtk/bstapp.c:130
 msgid "Display statistics and timing information"
 msgstr "Visa statistik och tidsinformation"
 
-#: ../beast-gtk/bstapp.c:131
+#: ../beast-gtk/bstapp.c:132
 msgid "New View"
 msgstr "Ny vy"
 
-#: ../beast-gtk/bstapp.c:131
+#: ../beast-gtk/bstapp.c:132
 msgid "Create an extra view of the project"
 msgstr "Skapa en extravy av projektet"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:136
 msgid "_Play"
 msgstr "_Spela upp"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:136
 msgid "Play or restart playback of the project"
 msgstr "Spela upp eller starta om uppspelning av projektet"
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:138
 msgid "_Stop"
 msgstr "_Stoppa"
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:138
 msgid "Stop playback of the project"
 msgstr "Stoppa uppspelning av projektet"
 
-#: ../beast-gtk/bstapp.c:141
+#: ../beast-gtk/bstapp.c:142
 msgid "New Song"
 msgstr "Ny låt"
 
-#: ../beast-gtk/bstapp.c:141
+#: ../beast-gtk/bstapp.c:142
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:144
 msgid "Add Custom Synthesizer"
 msgstr "Lägg till anpassad synthesizer"
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:144
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:146
 msgid "Add MIDI Synthesizer"
 msgstr "Lägg till MIDI-synthesizer"
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:146
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:148
 msgid "Remove Song or Synthesizer"
 msgstr "Ta bort låt eller synthesizer"
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:148
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Ta bort den aktuellt markerade synthesizern (låt)"
 
-#: ../beast-gtk/bstapp.c:151
+#: ../beast-gtk/bstapp.c:152
 msgid "Load _Instrument..."
 msgstr "Läs in _instrument..."
 
-#: ../beast-gtk/bstapp.c:151
+#: ../beast-gtk/bstapp.c:152
 msgid "Load synthesizer mesh from instruments folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:154
 msgid "Load _Effect..."
 msgstr "Läs in _effekt..."
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:154
 msgid "Load synthesizer mesh from effects folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:156
 msgid "Save As Instrument..."
 msgstr "Spara som instrument..."
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:156
 msgid "Save synthesizer mesh to instruments folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:158
 msgid "Save As Effect..."
 msgstr "Spara som effekt..."
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:158
 msgid "Save synthesizer mesh to effects folder"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:162
 msgid "Document _Index..."
 msgstr "Dokument_index..."
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:162
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:163
+#: ../beast-gtk/bstapp.c:164
 msgid "_Quick Start..."
 msgstr "S_nabbstart..."
 
-#: ../beast-gtk/bstapp.c:163
+#: ../beast-gtk/bstapp.c:164
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:165
+#: ../beast-gtk/bstapp.c:166
 msgid "_FAQ..."
 msgstr "_Frågor och svar..."
 
-#: ../beast-gtk/bstapp.c:165
+#: ../beast-gtk/bstapp.c:166
 msgid "Answers to frequently asked questions"
 msgstr "Svarar på ofta ställda frågor"
 
-#: ../beast-gtk/bstapp.c:167
+#: ../beast-gtk/bstapp.c:168
+#, fuzzy
+msgid "_Beast Website..."
+msgstr "_BEAST:s webbsida..."
+
+#: ../beast-gtk/bstapp.c:168
+msgid "Start a web browser pointing to the BEAST website"
+msgstr "Starta en webbläsare som pekas till BEAST:s webbsida"
+
+#: ../beast-gtk/bstapp.c:170
 msgid "Online _Help Desk..."
 msgstr "Online_hjälp..."
 
-#: ../beast-gtk/bstapp.c:167
+#: ../beast-gtk/bstapp.c:170
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:169
-msgid "_BEAST Website..."
-msgstr "_BEAST:s webbsida..."
-
-#: ../beast-gtk/bstapp.c:169
-msgid "Start a web browser pointing to the BEAST website"
-msgstr "Starta en webbläsare som pekas till BEAST:s webbsida"
+#: ../beast-gtk/bstapp.c:172
+msgid "Report a Beast Bug..."
+msgstr ""
 
 #: ../beast-gtk/bstapp.c:172
+#, fuzzy
+msgid ""
+"Start a web browser with the bug report form for the BEAST bugzilla product"
+msgstr "Starta en webbläsare som pekas till BEAST:s webbsida"
+
+#: ../beast-gtk/bstapp.c:175
 msgid "_Release Notes..."
 msgstr "_Versionsfakta..."
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:175
 msgid "Notes and informations about this release cycle"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:174
+#: ../beast-gtk/bstapp.c:177
 msgid "Developing Plugins..."
 msgstr "Utveckla insticksmoduler..."
 
-#: ../beast-gtk/bstapp.c:174
+#: ../beast-gtk/bstapp.c:177
 msgid "A guide to synthesis plugin development"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:176
+#: ../beast-gtk/bstapp.c:179
 msgid "DSP Engine..."
 msgstr "DSP-motor..."
 
-#: ../beast-gtk/bstapp.c:176
+#: ../beast-gtk/bstapp.c:179
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:178
+#: ../beast-gtk/bstapp.c:181
 msgid "Development..."
 msgstr "Utveckling..."
 
-#: ../beast-gtk/bstapp.c:178
+#: ../beast-gtk/bstapp.c:181
 msgid "Provide an overview of development related topics and documents"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:183
+#: ../beast-gtk/bstapp.c:186
 msgid "Online Sound Archive..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:183
+#: ../beast-gtk/bstapp.c:186
 msgid "Start a web browser pointing to the online sound archive"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:187
+#: ../beast-gtk/bstapp.c:190
 msgid "Online Demos..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:187
+#: ../beast-gtk/bstapp.c:190
 msgid "Start a web browser pointing to online demo songs"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:328
+#: ../beast-gtk/bstapp.c:331
 msgid "Export Audio"
 msgstr "Exportera ljud"
 
-#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:524 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "Vågor"
 
-#: ../beast-gtk/bstapp.c:523
+#: ../beast-gtk/bstapp.c:526
 msgid "Wave Repository"
 msgstr "Wave-förråd"
 
-#: ../beast-gtk/bstapp.c:528
+#: ../beast-gtk/bstapp.c:531
 #, c-format
 msgid "Song: %s"
 msgstr "Låt: %s"
 
-#: ../beast-gtk/bstapp.c:533
+#: ../beast-gtk/bstapp.c:536
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI-synthesizer: %s"
 
 # "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
-#: ../beast-gtk/bstapp.c:538
+#: ../beast-gtk/bstapp.c:541
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
 
-#: ../beast-gtk/bstapp.c:648
+#: ../beast-gtk/bstapp.c:651
 #, c-format
 msgid "Close %s"
 msgstr "Stäng %s"
 
-#: ../beast-gtk/bstapp.c:649
+#: ../beast-gtk/bstapp.c:652
 msgid "The project has been modified."
 msgstr "Projektet har ändrats."
 
-#: ../beast-gtk/bstapp.c:650
+#: ../beast-gtk/bstapp.c:653
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:655
 msgid "Save the project before closing its window?"
 msgstr "Spara projektet före dess fönster stängs?"
 
-#: ../beast-gtk/bstapp.c:653
+#: ../beast-gtk/bstapp.c:656
 msgid "Save Changes"
 msgstr "Spara ändringar"
 
-#: ../beast-gtk/bstapp.c:654
+#: ../beast-gtk/bstapp.c:657
 msgid "Discard Changes"
 msgstr "Kasta ändringar"
 
-#: ../beast-gtk/bstapp.c:655
+#: ../beast-gtk/bstapp.c:658
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
+#: ../beast-gtk/bstapp.c:743 ../beast-gtk/bstapp.c:750
 #: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Öppnar projektet \"%s\""
 
-#: ../beast-gtk/bstapp.c:807
+#: ../beast-gtk/bstapp.c:810
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Läser in skal \"%s\""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:978
+#: ../beast-gtk/bstapp.c:981
 msgid "Rack editor"
 msgstr "Rackredigerare"
 
-#: ../beast-gtk/bstapp.c:992
+#: ../beast-gtk/bstapp.c:995
 msgid "Preferences"
 msgstr "Inställningar"
 
-#: ../beast-gtk/bstapp.c:1019
+#: ../beast-gtk/bstapp.c:1022
 msgid "Procedure Browser"
 msgstr "Procedurbläddrare"
 
@@ -445,11 +456,11 @@ msgstr "Lägg till ett nytt spår till denna låt"
 msgid "Delete the currently selected bus"
 msgstr "Ta bort det för tillfället markerade spåret"
 
-#: ../beast-gtk/bstcanvaslink.c:128
+#: ../beast-gtk/bstcanvaslink.c:130
 msgid "Module Link: "
 msgstr "Modullänk: "
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstcanvaslink.c:186 ../beast-gtk/bstsnetrouter.c:758
 msgid "Module link"
 msgstr "Modullänk"
 
@@ -457,42 +468,42 @@ msgstr "Modullänk"
 msgid "Module Info"
 msgstr "Modulinformation"
 
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstcanvassource.c:981 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "Inmatning"
 
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../beast-gtk/bstcanvassource.c:990 ../beast-gtk/bstsnetrouter.c:1095
 #: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "Utmatning"
 
-#: ../beast-gtk/bstcanvassource.c:991
+#: ../beast-gtk/bstcanvassource.c:994
 msgid "(Hint)"
 msgstr "(Tips)"
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Draw Values"
 msgstr "Rita ut värden"
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Justera huruvida db-värden ska ritas ut istället för linjer"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Orientation"
 msgstr "Orientering"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Choose horizontal or vertical orientation"
 msgstr ""
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Justify"
 msgstr "Justera"
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr ""
 
@@ -953,16 +964,16 @@ msgstr "Misslyckades med att läsa in projektet \"%s\": %s"
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Misslyckades med att läsa in projektet \"%s\": %s"
 
-#: ../beast-gtk/bstmain.c:845
+#: ../beast-gtk/bstmain.c:882
 msgid "BEAST About"
 msgstr "BEAST Om"
 
-#: ../beast-gtk/bstmain.c:846
+#: ../beast-gtk/bstmain.c:883
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
 
-#: ../beast-gtk/bstmain.c:847
+#: ../beast-gtk/bstmain.c:884
 msgid "Contributions made by:"
 msgstr "Bidrag lämnade av:"
 
@@ -2655,11 +2666,13 @@ msgid "Reset Properties"
 msgstr "Återställ egenskaper"
 
 #: ../beast-gtk/bstsnetrouter.c:708
-msgid "Delete Inputs"
+#, fuzzy
+msgid "Disconnect Inputs"
 msgstr "Ta bort inmatningar"
 
 #: ../beast-gtk/bstsnetrouter.c:709
-msgid "Delete Outputs"
+#, fuzzy
+msgid "Disconnect Outputs"
 msgstr "Ta bort utmatningar"
 
 #: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
@@ -3536,7 +3549,7 @@ msgstr "Avskärning [Hz]"
 msgid "Note"
 msgstr "Not"
 
-#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:152
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
 msgid "Emphasis"
 msgstr "Betoning"
 
@@ -3544,87 +3557,87 @@ msgstr "Betoning"
 msgid "Gain [dB]"
 msgstr "Förstärkning [dB]"
 
-#: ../bse/bsebiquadfilter.c:154
+#: ../bse/bsebiquadfilter.c:155
 msgid "Norm Type"
 msgstr "Normtyp"
 
-#: ../bse/bsebiquadfilter.c:155
+#: ../bse/bsebiquadfilter.c:156
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 "Typen av normalisering för filterförstärkning (stöds endast av högpass och "
 "lågpass)"
 
-#: ../bse/bsebiquadfilter.c:160 ../bse/bsebiquadfilter.c:166
-#: ../bse/bsebiquadfilter.c:172 ../bse/bsebiquadfilter.c:178
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsebiquadfilter.c:168
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:161 ../bse/bsestandardosc.c:166
 #: ../bse/bsestandardosc.c:171 ../bse/bsestandardosc.c:176
 #: ../bse/bsewaveosc.c:568 ../bse/bsewaveosc.c:574 ../bse/bsewaveosc.c:580
 msgid "Modulation"
 msgstr "Modulation"
 
-#: ../bse/bsebiquadfilter.c:163 ../bse/bsestandardosc.c:163
+#: ../bse/bsebiquadfilter.c:165 ../bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "Styrka på linjär frekvensmodulation"
 
-#: ../bse/bsebiquadfilter.c:169 ../bse/bsestandardosc.c:168
+#: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:168
 #: ../bse/bsewaveosc.c:577
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Utför exponentiell frekvensmodulation istället för linjär"
 
-#: ../bse/bsebiquadfilter.c:175 ../bse/bsestandardosc.c:173
+#: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:173
 #: ../bse/bsewaveosc.c:583
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Antal oktaver att påverkas av exponentiell frekvensmodulation"
 
-#: ../bse/bsebiquadfilter.c:181
+#: ../bse/bsebiquadfilter.c:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr "Förstärkningsmodulation [%]"
 
-#: ../bse/bsebiquadfilter.c:182
+#: ../bse/bsebiquadfilter.c:184
 msgid "Strength of gain modulation"
 msgstr "Styrka på förstärkningsmodulation"
 
-#: ../bse/bsebiquadfilter.c:186 ../plugins/bseatandistort.c:90
+#: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Ljud in"
 
-#: ../bse/bsebiquadfilter.c:186
+#: ../bse/bsebiquadfilter.c:188
 msgid "Unfiltered Audio Signal"
 msgstr "Ofiltrerad ljudsignal"
 
-#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:196
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:196
 #: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 #, fuzzy
 msgid "Freq In"
 msgstr "Centerfrekvens"
 
-#: ../bse/bsebiquadfilter.c:188
+#: ../bse/bsebiquadfilter.c:190
 msgid "Center Frequency Input"
 msgstr "Centrera frekvensinmatning"
 
-#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:198
 msgid "Freq Mod In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:198
 msgid "Frequency Modulation Input"
 msgstr "Frekvensmodulationsinmatning"
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:194
 #, fuzzy
 msgid "Gain Mod In"
 msgstr "Förstärkningsmodulationsinmatning"
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:194
 msgid "Gain Modulation Input"
 msgstr "Förstärkningsmodulationsinmatning"
 
-#: ../bse/bsebiquadfilter.c:194 ../bse/bsestandardosc.c:204
+#: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:204
 #: ../bse/bsewaveosc.c:598 ../plugins/bseadder.c:101
 #: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
@@ -3635,7 +3648,7 @@ msgstr "Förstärkningsmodulationsinmatning"
 msgid "Audio Out"
 msgstr "Ljud ut"
 
-#: ../bse/bsebiquadfilter.c:194
+#: ../bse/bsebiquadfilter.c:196
 msgid "Filtered Audio Signal"
 msgstr "Filtrerad ljudsignal"
 
@@ -5393,7 +5406,7 @@ msgid ""
 msgstr ""
 
 #: ../bse/bsepcmdevice-oss.c:647
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:396
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
 msgid "DEVICE,MODE"
 msgstr "ENHET,LÄGE"
 
@@ -5870,27 +5883,27 @@ msgstr "Utgångstilldelningar"
 msgid "Input port name to interface to"
 msgstr ""
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Author"
 msgstr "Författare"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Person changing or creating this object"
 msgstr "Person som ändrar eller skapar detta objekt"
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "License"
 msgstr "Licens"
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "Copyright license applying to this object"
 msgstr "Upphovsrättslicens som är tillämplig på detta objekt"
 
-#: ../bse/bsesuper.c:201
+#: ../bse/bsesuper.c:217
 msgid "Creation Time"
 msgstr "Tid för skapande"
 
-#: ../bse/bsesuper.c:205
+#: ../bse/bsesuper.c:221
 msgid "Last modification time"
 msgstr "Tid för senaste ändring"
 
@@ -6053,7 +6066,7 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:398
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:405
 #, c-format
 msgid ""
 "PortAudio PCM driver, using %s.\n"

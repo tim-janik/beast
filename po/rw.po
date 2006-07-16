@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 11:49+0200\n"
+"POT-Creation-Date: 2006-07-16 03:42+0200\n"
 "PO-Revision-Date: 2005-03-31 20:55-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -25,43 +25,43 @@ msgstr ""
 "ULL NAME <EMAIL@ADDRESS>\n"
 
 # basctl/source\basicide\brkdlg.src:RID_BASICIDE_BREAKPOINTDLG.RID_PB_NEW.text
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:83
 #, fuzzy
 msgid "_New"
 msgstr "Gishya"
 
-#: ../beast-gtk/bstapp.c:82
+#: ../beast-gtk/bstapp.c:83
 #, fuzzy
 msgid "Create new project"
 msgstr "Gishya Umushinga"
 
 # sfx2/source\appl\minbox.src:RID_MAIL_INBOX.BTN_MAILINBOX_OPEN.text
-#: ../beast-gtk/bstapp.c:84
+#: ../beast-gtk/bstapp.c:85
 #, fuzzy
 msgid "_Open..."
 msgstr "Gufungura..."
 
-#: ../beast-gtk/bstapp.c:84
+#: ../beast-gtk/bstapp.c:85
 #, fuzzy
 msgid "Open existing project"
 msgstr "Umushinga"
 
 # svx/source\svdraw\svdstr.src:STR_EditMergeMergePoly.text
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:87
 #, fuzzy
 msgid "_Merge..."
 msgstr "Gukomatanya"
 
-#: ../beast-gtk/bstapp.c:86
+#: ../beast-gtk/bstapp.c:87
 #, fuzzy
 msgid "Merge an existing project into the current project"
 msgstr "Umushinga i KIGEZWEHO Umushinga"
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:89
 msgid "_Import MIDI..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:88
+#: ../beast-gtk/bstapp.c:89
 #, fuzzy
 msgid "Import a standard MIDI file into the current project"
 msgstr "a Bisanzwe IDOSIYE i KIGEZWEHO Umushinga"
@@ -74,69 +74,69 @@ msgstr "a Bisanzwe IDOSIYE i KIGEZWEHO Umushinga"
 # basctl/source\basicide\moduldlg.src:RID_TP_MODULS.RID_PB_CLOSE.text
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\moduldlg.src:RID_TP_LIBS.RID_PB_CLOSE.text
-#: ../beast-gtk/bstapp.c:90
+#: ../beast-gtk/bstapp.c:91
 #, fuzzy
 msgid "_Close"
 msgstr "Gufunga"
 
-#: ../beast-gtk/bstapp.c:90
+#: ../beast-gtk/bstapp.c:91
 #, fuzzy
 msgid "Close the project"
 msgstr "Funga i Umushinga"
 
 # basctl/source\basicide\basidesh.src:RID_STR_SAVE.text
-#: ../beast-gtk/bstapp.c:94
+#: ../beast-gtk/bstapp.c:95
 #, fuzzy
 msgid "_Save"
 msgstr "Kubika"
 
-#: ../beast-gtk/bstapp.c:94
+#: ../beast-gtk/bstapp.c:95
 #, fuzzy
 msgid "Write project to disk"
 msgstr "Umushinga Kuri"
 
 # sfx2/source\doc\doc.src:STR_SAVEASDOC.text
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:97
 #, fuzzy
 msgid "Save _As..."
 msgstr "Gushyingura muri..."
 
-#: ../beast-gtk/bstapp.c:96
+#: ../beast-gtk/bstapp.c:97
 #, fuzzy
 msgid "Write project to a specific file"
 msgstr "Umushinga Kuri a IDOSIYE"
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:101
 #, fuzzy
 msgid "_Quit"
 msgstr "Kuvamo"
 
-#: ../beast-gtk/bstapp.c:100
+#: ../beast-gtk/bstapp.c:101
 #, fuzzy
 msgid "Close all windows and quit"
 msgstr "Funga Byose Na Kuvamo"
 
-#: ../beast-gtk/bstapp.c:104
+#: ../beast-gtk/bstapp.c:105
 #, fuzzy
 msgid "_Preferences..."
 msgstr "Ibyahiswemo..."
 
-#: ../beast-gtk/bstapp.c:104
+#: ../beast-gtk/bstapp.c:105
 #, fuzzy
 msgid "Adjust overall program behaviour"
 msgstr "Porogaramu"
 
-#: ../beast-gtk/bstapp.c:108
+#: ../beast-gtk/bstapp.c:109
 msgid "Rebuild"
 msgstr "Kubaka bushya"
 
 # offmgr/source\offapp\intro\intro.hrc:TEXT_DEFAULTABOUT.text
-#: ../beast-gtk/bstapp.c:111
+#: ../beast-gtk/bstapp.c:112
 #, fuzzy
 msgid "_About..."
 msgstr "Ibyerekeye"
 
-#: ../beast-gtk/bstapp.c:111
+#: ../beast-gtk/bstapp.c:112
 #, fuzzy
 msgid "Display developer and contributor credits"
 msgstr "Na"
@@ -146,12 +146,12 @@ msgstr "Na"
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
-#: ../beast-gtk/bstapp.c:115
+#: ../beast-gtk/bstapp.c:116
 #, fuzzy
 msgid "_Undo"
 msgstr "Isubiranyuma"
 
-#: ../beast-gtk/bstapp.c:115
+#: ../beast-gtk/bstapp.c:116
 #, fuzzy
 msgid "Undo the effect of the last action"
 msgstr "i INGARUKA Bya i Iheruka Igikorwa"
@@ -161,187 +161,196 @@ msgstr "i INGARUKA Bya i Iheruka Igikorwa"
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
 # #-#-#-#-#  dbaccess.pot (PACKAGE VERSION)  #-#-#-#-#
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:118
 #, fuzzy
 msgid "_Redo"
 msgstr "Isubiramo"
 
-#: ../beast-gtk/bstapp.c:117
+#: ../beast-gtk/bstapp.c:118
 #, fuzzy
 msgid "Redo the last undone action"
 msgstr "i Iheruka Igikorwa"
 
-#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstpartdialog.c:72
+#: ../beast-gtk/bstapp.c:122 ../beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:121
+#: ../beast-gtk/bstapp.c:122
 #, fuzzy
 msgid "Delete the complete undo history"
 msgstr "i Byuzuye Isubiranyuma Urutonde"
 
-#: ../beast-gtk/bstapp.c:125
+#: ../beast-gtk/bstapp.c:126
 msgid "Procedure _Browser"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:125
+#: ../beast-gtk/bstapp.c:126
 #, fuzzy
 msgid "Display an overview of all procedures"
 msgstr "Incamake Bya Byose"
 
-#: ../beast-gtk/bstapp.c:127
+#: ../beast-gtk/bstapp.c:128
 msgid "Rack Editor"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:129 ../beast-gtk/bstprofiler.c:225
+#: ../beast-gtk/bstapp.c:130 ../beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:129
+#: ../beast-gtk/bstapp.c:130
 #, fuzzy
 msgid "Display statistics and timing information"
 msgstr "Sitatisitiki Na Kugena igihe Ibisobanuro"
 
-#: ../beast-gtk/bstapp.c:131
+#: ../beast-gtk/bstapp.c:132
 msgid "New View"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:131
+#: ../beast-gtk/bstapp.c:132
 #, fuzzy
 msgid "Create an extra view of the project"
 msgstr "Birenga Kureba Bya i Umushinga"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:136
 #, fuzzy
 msgid "_Play"
 msgstr "Gukina"
 
-#: ../beast-gtk/bstapp.c:135
+#: ../beast-gtk/bstapp.c:136
 #, fuzzy
 msgid "Play or restart playback of the project"
 msgstr "Cyangwa Ongera utangire Bya i Umushinga"
 
 # basctl/source\basicide\basidesh.src:RID_BASICIDE_OBJECTBAR.SID_BASICSTOP.text
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:138
 #, fuzzy
 msgid "_Stop"
 msgstr "Guhagarara"
 
-#: ../beast-gtk/bstapp.c:137
+#: ../beast-gtk/bstapp.c:138
 #, fuzzy
 msgid "Stop playback of the project"
 msgstr "Bya i Umushinga"
 
-#: ../beast-gtk/bstapp.c:141
+#: ../beast-gtk/bstapp.c:142
 msgid "New Song"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:141
+#: ../beast-gtk/bstapp.c:142
 #, fuzzy
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "a Gishya Bya a Na Ibisobanuro"
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:144
 #, fuzzy
 msgid "Add Custom Synthesizer"
 msgstr "Kugena"
 
-#: ../beast-gtk/bstapp.c:143
+#: ../beast-gtk/bstapp.c:144
 #, fuzzy
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr "a Gishya Kuri Nka INGARUKA Cyangwa in"
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:146
 msgid "Add MIDI Synthesizer"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:145
+#: ../beast-gtk/bstapp.c:146
 #, fuzzy
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr "a Gishya Kuri Igenzura Bivuye external Ibyabaye"
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:148
 #, fuzzy
 msgid "Remove Song or Synthesizer"
 msgstr "Cyangwa"
 
-#: ../beast-gtk/bstapp.c:147
+#: ../beast-gtk/bstapp.c:148
 #, fuzzy
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "i Byahiswemo"
 
-#: ../beast-gtk/bstapp.c:151
+#: ../beast-gtk/bstapp.c:152
 msgid "Load _Instrument..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:151
+#: ../beast-gtk/bstapp.c:152
 #, fuzzy
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Bivuye Ububiko"
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:154
 msgid "Load _Effect..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:153
+#: ../beast-gtk/bstapp.c:154
 #, fuzzy
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Bivuye Ingaruka Ububiko"
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:156
 #, fuzzy
 msgid "Save As Instrument..."
 msgstr "Kubika"
 
-#: ../beast-gtk/bstapp.c:155
+#: ../beast-gtk/bstapp.c:156
 #, fuzzy
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Kubika Kuri Ububiko"
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:158
 #, fuzzy
 msgid "Save As Effect..."
 msgstr "Kubika"
 
-#: ../beast-gtk/bstapp.c:157
+#: ../beast-gtk/bstapp.c:158
 #, fuzzy
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Kubika Kuri Ingaruka Ububiko"
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:162
 msgid "Document _Index..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:161
+#: ../beast-gtk/bstapp.c:162
 #, fuzzy
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Incamake Bya Byose Ibigize"
 
-#: ../beast-gtk/bstapp.c:163
+#: ../beast-gtk/bstapp.c:164
 #, fuzzy
 msgid "_Quick Start..."
 msgstr "Gutangira"
 
-#: ../beast-gtk/bstapp.c:163
+#: ../beast-gtk/bstapp.c:164
 #, fuzzy
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Intangiriro Ibyerekeye Kuri i Ibikorwa"
 
-#: ../beast-gtk/bstapp.c:165
+#: ../beast-gtk/bstapp.c:166
 msgid "_FAQ..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:165
+#: ../beast-gtk/bstapp.c:166
 #, fuzzy
 msgid "Answers to frequently asked questions"
 msgstr "Kuri"
 
-#: ../beast-gtk/bstapp.c:167
+#: ../beast-gtk/bstapp.c:168
+msgid "_Beast Website..."
+msgstr ""
+
+#: ../beast-gtk/bstapp.c:168
+#, fuzzy
+msgid "Start a web browser pointing to the BEAST website"
+msgstr "Gutangira a Urubuga Mucukumbuzi Kuri i Webu"
+
+#: ../beast-gtk/bstapp.c:170
 msgid "Online _Help Desk..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:167
+#: ../beast-gtk/bstapp.c:170
 #, fuzzy
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
@@ -349,93 +358,94 @@ msgstr ""
 "Gutangira a Urubuga Mucukumbuzi Kuri i kiri kuri interineti Ifashayobora ku "
 "i Webu"
 
-#: ../beast-gtk/bstapp.c:169
-msgid "_BEAST Website..."
+#: ../beast-gtk/bstapp.c:172
+msgid "Report a Beast Bug..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:169
+#: ../beast-gtk/bstapp.c:172
 #, fuzzy
-msgid "Start a web browser pointing to the BEAST website"
+msgid ""
+"Start a web browser with the bug report form for the BEAST bugzilla product"
 msgstr "Gutangira a Urubuga Mucukumbuzi Kuri i Webu"
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:175
 #, fuzzy
 msgid "_Release Notes..."
 msgstr "Ibisobanuro by'ikiciro"
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:175
 #, fuzzy
 msgid "Notes and informations about this release cycle"
 msgstr "Na Ibyerekeye iyi Uruziga"
 
-#: ../beast-gtk/bstapp.c:174
+#: ../beast-gtk/bstapp.c:177
 msgid "Developing Plugins..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:174
+#: ../beast-gtk/bstapp.c:177
 #, fuzzy
 msgid "A guide to synthesis plugin development"
 msgstr "A Kuri"
 
-#: ../beast-gtk/bstapp.c:176
+#: ../beast-gtk/bstapp.c:179
 msgid "DSP Engine..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:176
+#: ../beast-gtk/bstapp.c:179
 #, fuzzy
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Isobanuramiterere Bya i"
 
-#: ../beast-gtk/bstapp.c:178
+#: ../beast-gtk/bstapp.c:181
 msgid "Development..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:178
+#: ../beast-gtk/bstapp.c:181
 #, fuzzy
 msgid "Provide an overview of development related topics and documents"
 msgstr "Incamake Bya Na Inyandiko"
 
-#: ../beast-gtk/bstapp.c:183
+#: ../beast-gtk/bstapp.c:186
 msgid "Online Sound Archive..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:183
+#: ../beast-gtk/bstapp.c:186
 #, fuzzy
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Gutangira a Urubuga Mucukumbuzi Kuri i kiri kuri interineti Ijwi"
 
-#: ../beast-gtk/bstapp.c:187
+#: ../beast-gtk/bstapp.c:190
 msgid "Online Demos..."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:187
+#: ../beast-gtk/bstapp.c:190
 #, fuzzy
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Gutangira a Urubuga Mucukumbuzi Kuri kiri kuri interineti"
 
-#: ../beast-gtk/bstapp.c:328
+#: ../beast-gtk/bstapp.c:331
 msgid "Export Audio"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:524 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:523
+#: ../beast-gtk/bstapp.c:526
 msgid "Wave Repository"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:528
+#: ../beast-gtk/bstapp.c:531
 #, c-format
 msgid "Song: %s"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:533
+#: ../beast-gtk/bstapp.c:536
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:538
+#: ../beast-gtk/bstapp.c:541
 #, c-format
 msgid "Synthesizer: %s"
 msgstr ""
@@ -448,65 +458,65 @@ msgstr ""
 # basctl/source\basicide\moduldlg.src:RID_TP_MODULS.RID_PB_CLOSE.text
 # #-#-#-#-#  basctl.pot (PACKAGE VERSION)  #-#-#-#-#
 # basctl/source\basicide\moduldlg.src:RID_TP_LIBS.RID_PB_CLOSE.text
-#: ../beast-gtk/bstapp.c:648
+#: ../beast-gtk/bstapp.c:651
 #, fuzzy, c-format
 msgid "Close %s"
 msgstr "Gufunga"
 
-#: ../beast-gtk/bstapp.c:649
+#: ../beast-gtk/bstapp.c:652
 msgid "The project has been modified."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:650
+#: ../beast-gtk/bstapp.c:653
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:655
 msgid "Save the project before closing its window?"
 msgstr ""
 
 # basctl/source\basicide\basidesh.src:RID_STR_SAVE.text
-#: ../beast-gtk/bstapp.c:653
+#: ../beast-gtk/bstapp.c:656
 #, fuzzy
 msgid "Save Changes"
 msgstr "Kubika"
 
-#: ../beast-gtk/bstapp.c:654
+#: ../beast-gtk/bstapp.c:657
 msgid "Discard Changes"
 msgstr ""
 
 # crashrep/source\all\crashrep.lng:%CANCEL_BUTTON%.text
-#: ../beast-gtk/bstapp.c:655
+#: ../beast-gtk/bstapp.c:658
 #, fuzzy
 msgid "Cancel"
 msgstr "Kureka"
 
-#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
+#: ../beast-gtk/bstapp.c:743 ../beast-gtk/bstapp.c:750
 #: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, fuzzy, c-format
 msgid "Opening project `%s'"
 msgstr "Umushinga"
 
-#: ../beast-gtk/bstapp.c:807
+#: ../beast-gtk/bstapp.c:810
 #, c-format
 msgid "Loading skin `%s'"
 msgstr ""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:978
+#: ../beast-gtk/bstapp.c:981
 #, fuzzy
 msgid "Rack editor"
 msgstr "Muhinduzi"
 
 # extracted from content/PrefsWindow.xul
 # LOCALIZATION NOTE : FILE UI for the outer parts of the Prefs dialog
-#: ../beast-gtk/bstapp.c:992
+#: ../beast-gtk/bstapp.c:995
 msgid "Preferences"
 msgstr "Ibyahisemo"
 
-#: ../beast-gtk/bstapp.c:1019
+#: ../beast-gtk/bstapp.c:1022
 msgid "Procedure Browser"
 msgstr ""
 
@@ -562,11 +572,11 @@ msgstr "a Gishya Kuri i"
 msgid "Delete the currently selected bus"
 msgstr "i Byahiswemo"
 
-#: ../beast-gtk/bstcanvaslink.c:128
+#: ../beast-gtk/bstcanvaslink.c:130
 msgid "Module Link: "
 msgstr ""
 
-#: ../beast-gtk/bstcanvaslink.c:184 ../beast-gtk/bstsnetrouter.c:758
+#: ../beast-gtk/bstcanvaslink.c:186 ../beast-gtk/bstsnetrouter.c:758
 #, fuzzy
 msgid "Module link"
 msgstr "Ihuza"
@@ -576,46 +586,46 @@ msgid "Module Info"
 msgstr ""
 
 # sc/source\ui\src\globstr.src:RID_GLOBSTR.STR_UNDO_ENTERDATA.text
-#: ../beast-gtk/bstcanvassource.c:978 ../beast-gtk/bstsnetrouter.c:1091
+#: ../beast-gtk/bstcanvassource.c:981 ../beast-gtk/bstsnetrouter.c:1091
 msgid "Input"
 msgstr "Iyinjiza"
 
 # sw/source\ui\envelp\mailmrge.src:DLG_MAILMERGE.FL_DEST.text
-#: ../beast-gtk/bstcanvassource.c:987 ../beast-gtk/bstsnetrouter.c:1095
+#: ../beast-gtk/bstcanvassource.c:990 ../beast-gtk/bstsnetrouter.c:1095
 #: ../plugins/bseamplifier.idl:65
 msgid "Output"
 msgstr "Ibisohoka"
 
-#: ../beast-gtk/bstcanvassource.c:991
+#: ../beast-gtk/bstcanvassource.c:994
 msgid "(Hint)"
 msgstr ""
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 msgid "Draw Values"
 msgstr ""
 
-#: ../beast-gtk/bstdbmeter.c:765
+#: ../beast-gtk/bstdbmeter.c:764
 #, fuzzy
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Kuri Gushushanya Uduciro Bya Imirongo"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 msgid "Orientation"
 msgstr "Icyerekezo"
 
-#: ../beast-gtk/bstdbmeter.c:768 ../beast-gtk/bstdbmeter.c:1063
-#: ../beast-gtk/bstdbmeter.c:1563
+#: ../beast-gtk/bstdbmeter.c:767 ../beast-gtk/bstdbmeter.c:1062
+#: ../beast-gtk/bstdbmeter.c:1562
 #, fuzzy
 msgid "Choose horizontal or vertical orientation"
 msgstr "Gitambitse Cyangwa Bihagaritse Icyerekezo"
 
 # sc/source\ui\src\scstring.src:SCSTR_HOR_JUSTIFY_BLOCK.text
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 msgid "Justify"
 msgstr "Gukwiza umurongo wose"
 
-#: ../beast-gtk/bstdbmeter.c:771
+#: ../beast-gtk/bstdbmeter.c:770
 #, fuzzy
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr ""
@@ -1131,16 +1141,16 @@ msgstr "Kuri Ibirimo Umushinga"
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Kuri Ibirimo Umushinga"
 
-#: ../beast-gtk/bstmain.c:845
+#: ../beast-gtk/bstmain.c:882
 msgid "BEAST About"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:846
+#: ../beast-gtk/bstmain.c:883
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: ../beast-gtk/bstmain.c:847
+#: ../beast-gtk/bstmain.c:884
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "ku"
@@ -3133,11 +3143,12 @@ msgid "Reset Properties"
 msgstr ""
 
 #: ../beast-gtk/bstsnetrouter.c:708
-msgid "Delete Inputs"
-msgstr ""
+#, fuzzy
+msgid "Disconnect Inputs"
+msgstr "Igenzura Iyinjiza"
 
 #: ../beast-gtk/bstsnetrouter.c:709
-msgid "Delete Outputs"
+msgid "Disconnect Outputs"
 msgstr ""
 
 #: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
@@ -4132,7 +4143,7 @@ msgid "Note"
 msgstr "Igisobanuro"
 
 # sw/source\ui\utlui\poolfmt.src:STR_POOLCHR_HTML_EMPHASIS.text
-#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:152
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
 msgid "Emphasis"
 msgstr "Gushimangira"
 
@@ -4140,88 +4151,88 @@ msgstr "Gushimangira"
 msgid "Gain [dB]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:154
+#: ../bse/bsebiquadfilter.c:155
 msgid "Norm Type"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:155
+#: ../bse/bsebiquadfilter.c:156
 #, fuzzy
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "Muyunguruzi... Ubwoko ku Na"
 
-#: ../bse/bsebiquadfilter.c:160 ../bse/bsebiquadfilter.c:166
-#: ../bse/bsebiquadfilter.c:172 ../bse/bsebiquadfilter.c:178
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsebiquadfilter.c:168
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:161 ../bse/bsestandardosc.c:166
 #: ../bse/bsestandardosc.c:171 ../bse/bsestandardosc.c:176
 #: ../bse/bsewaveosc.c:568 ../bse/bsewaveosc.c:574 ../bse/bsewaveosc.c:580
 msgid "Modulation"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:163 ../bse/bsestandardosc.c:163
+#: ../bse/bsebiquadfilter.c:165 ../bse/bsestandardosc.c:163
 #, fuzzy
 msgid "Strength of linear frequency modulation"
 msgstr "Bya By'umurongo Ubwisubire"
 
-#: ../bse/bsebiquadfilter.c:169 ../bse/bsestandardosc.c:168
+#: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:168
 #: ../bse/bsewaveosc.c:577
 #, fuzzy
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Ubwisubire Bya By'umurongo"
 
-#: ../bse/bsebiquadfilter.c:175 ../bse/bsestandardosc.c:173
+#: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:173
 #: ../bse/bsewaveosc.c:583
 #, fuzzy
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Bya Kuri ku Ubwisubire"
 
-#: ../bse/bsebiquadfilter.c:181
+#: ../bse/bsebiquadfilter.c:183
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:182
+#: ../bse/bsebiquadfilter.c:184
 #, fuzzy
 msgid "Strength of gain modulation"
 msgstr "Bya"
 
-#: ../bse/bsebiquadfilter.c:186 ../plugins/bseatandistort.c:90
+#: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
 #: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:186
+#: ../bse/bsebiquadfilter.c:188
 msgid "Unfiltered Audio Signal"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:188 ../bse/bsestandardosc.c:196
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:196
 #: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
 #: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
 msgid "Freq In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:188
+#: ../bse/bsebiquadfilter.c:190
 msgid "Center Frequency Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:198
 msgid "Freq Mod In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:198
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:198
 msgid "Frequency Modulation Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:194
 msgid "Gain Mod In"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:192
+#: ../bse/bsebiquadfilter.c:194
 msgid "Gain Modulation Input"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:194 ../bse/bsestandardosc.c:204
+#: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:204
 #: ../bse/bsewaveosc.c:598 ../plugins/bseadder.c:101
 #: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
@@ -4232,7 +4243,7 @@ msgstr ""
 msgid "Audio Out"
 msgstr ""
 
-#: ../bse/bsebiquadfilter.c:194
+#: ../bse/bsebiquadfilter.c:196
 msgid "Filtered Audio Signal"
 msgstr ""
 
@@ -6121,7 +6132,7 @@ msgstr ""
 "Urutonde"
 
 #: ../bse/bsepcmdevice-oss.c:647
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:396
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
 msgid "DEVICE,MODE"
 msgstr ""
 
@@ -6633,29 +6644,29 @@ msgid "Input port name to interface to"
 msgstr "Umuyoboro Izina: Kuri Kuri"
 
 # sc/source\ui\miscdlgs\acredlin.src:RID_POPUP_CHANGES.SC_SUB_SORT.SC_SORT_AUTHOR.text
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 msgid "Author"
 msgstr "Umwanditsi"
 
-#: ../bse/bsesuper.c:188
+#: ../bse/bsesuper.c:204
 #, fuzzy
 msgid "Person changing or creating this object"
 msgstr "Cyangwa iyi Igikoresho"
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 msgid "License"
 msgstr ""
 
-#: ../bse/bsesuper.c:193
+#: ../bse/bsesuper.c:209
 #, fuzzy
 msgid "Copyright license applying to this object"
 msgstr "Kuri iyi Igikoresho"
 
-#: ../bse/bsesuper.c:201
+#: ../bse/bsesuper.c:217
 msgid "Creation Time"
 msgstr ""
 
-#: ../bse/bsesuper.c:205
+#: ../bse/bsesuper.c:221
 #, fuzzy
 msgid "Last modification time"
 msgstr "Igihe"
@@ -6831,7 +6842,7 @@ msgstr ""
 "kugirango nka i Umubare kugirango nka"
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:398
+#: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:405
 #, fuzzy, c-format
 msgid ""
 "PortAudio PCM driver, using %s.\n"
