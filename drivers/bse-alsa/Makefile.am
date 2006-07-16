@@ -3,12 +3,12 @@
 #
 ## GNU Lesser General Public License version 2 or any later version.
 
+# configure automake
+AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip
+
 INCLUDES = -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 # we specify the logging domain here
 DEFS = $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
-
-# extra dependancies
-configure: acbeast.m4
 
 drivers_ldflags     = -avoid-version
 drivers_libs        = $(BSE_LIBS)

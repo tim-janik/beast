@@ -213,7 +213,6 @@ AC_SUBST(CXXFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-
 # create output files
 AC_CONFIG_FILES([
 Makefile

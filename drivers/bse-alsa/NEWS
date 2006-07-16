@@ -1,3 +1,8 @@
+Overview of Changes in BSE-ALSA 0.7.0:
+
+* Build fixes for BEAST-0.7.0
+* Moved source base to automake-1.9 and added support for gcc-4.2
+
 Overview of Changes in BSE-ALSA 0.6.6:
 
 * Build fixes for BEAST-0.6.6
