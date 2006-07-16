@@ -36,6 +36,37 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Sunday 16 July 2006, Release of the new development branch}
+
+BEAST/BSE version 0.7.0 is available from the
+@uri{@top_webdir/download,download section}.
+@dnl , here is the @uri{http://gnomedesktop.org/node/2267,FootNotes announcement}.
+
+BEAST tarball:
+@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0.tar.bz2, beast-0.7.0.tar.bz2}
+@* BEAST patch:
+@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.6.6-0.7.0.diff.bz2, beast-0.6.6-0.7.0.diff.bz2}
+@* @uri{http://alsa-project.org, ALSA} driver:
+@uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.0.tar.bz2, bse-alsa-0.7.0.tar.bz2}
+
+
+The 0.7 development series of Beast focusses on improving usability and
+ease of music production. Feedback is very much appreciated, please take
+the opportunity and provide your comments and questions in online forums
+like the Beast
+@uri{@top_webdir/wiki:HelpDesk, Help Desk}, Beast
+@uri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Bugzilla} or the
+@uri{@top_webdir/contact, mailing list}.
+
+Many new features went into this release and a load of bugfixes.
+Translation updates were made to canadian english, german, spanish, czech, italian,
+catalan, dutch and swedish. A nepali translation was newly started.
+The
+@uri{@top_webdir/news-file,Release NEWS section} has the exact change list, so enjoy
+the new code and please 
+@uri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, report all bugs} encountered.
+
+
 @newsentry{Saturday 15 July 2006, Source Repository change}
 
 The @uri{http://www.gnome.org,Gnome} project is currently migrating its source code
@@ -86,42 +117,6 @@ on the mailing list}. However, there are still issues with the driver that
 need to be sorted out, so it will not be part of the 0.7.0 release.
 
 @done
-
-@newsentry{Wednesday 17 May 2006, Development News}
-
-We are right now preparing for the 0.7.0 release. To keep you updated what has
-been going on in CVS, here are some of the user visible changes.
-
-@itemize
-
-@item
-The first thing that is different is that we have a @doxer_bold{new
-documentation system}, so the online-help is now shipped as HTML. This means
-that you can view it in the web browser of your choice, and our custom help
-viewer is gone.
-
-@item
-We also have been working on a few new @doxer_bold{example instruments} that
-come with BEAST.
-
-@item
-Then, we've been optimizing the @doxer_bold{performance of the scopes}, so
-they need considerably less CPU time than they used to.
-
-@item
-The introduction of @doxer_bold{SSE instructions} into BEAST means that also
-other parts will be faster, such as the mixer.
-
-@item
-People compiling from source or creating packages will be happy to hear that
-the next BEAST release will compile with @doxer_bold{gcc 4.x} out of the box.
-We also have upgraded our build system @doxer_bold{automake-1.9}.
-
-@done
-
-And of course, we have been @doxer_bold{fixing bugs}, but there are always some
-left to keep us busy:
-    @uri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Bug List}.
 
 
 @dnl ----------------------------- END -----------------------------
