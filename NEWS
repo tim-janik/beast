@@ -1,8 +1,43 @@
 Overview of Changes in BEAST/BSE 0.7.0:
 
-* Incompatible changes:
-  - BseConstant now only supports 4 output channels
-* Updated German translation [Hendrik Richter]
+* Renamed scheme shell to bsescm
+* Optimized core functions for MMX/SSE with runtime CPU detection
+* Fixed CPU profiler to work with newer Linux kernels
+* New probing code for optimized volume meters and FFT scopes
+* Plugins/Module changes:
+  StandardOscillator    - Added semitone transposition function
+  FreeVerb              - Fixed distortions due to subnormal handling
+  GusPatchEnvelope      - Better approximation of GUS Patch envelopes [Stefan]
+  Adder                 - Deprecated in favour of BseSummation
+  Constant		- Number of output channels reduced to 4
+  DavSynDrum            - Fixed retrigger logic [Stefan]
+* Added support for MMX/SSE-optimized plugins
+* Converted runtime documentation system to use a local web browser
+* Relicensed all example scripts and BSE files under an "AS IS" license
+* New loadable Instruments/Effects:
+  BQS Organ
+  BQS SynDrum
+  BQS Fretless Bass		[Stefan Westerfeld]
+  BQS Queek Synth
+  BQS MoogSaw Bass		[Stefan Westerfeld]
+  BQS Merp Pad
+  BQS Compressor		[Stefan Westerfeld]
+  BQS Reverb			[Stefan Westerfeld]
+  BQS Saturation And Reverb	[Stefan Westerfeld]
+* Major code reorganizations, only one library is installed now: libbse
+* Vastly extended test coverage of many core mechanisms
+* Moved source base to automake-1.9 and added support for gcc-4.2
+* Lots of major and minor fixes and improvements
+* Bugzilla issues resolved: #337703, #342186, #343301, #340386, #340307
+* Updated Canadian English translation [Adam Weinberger] 
+* Updated German translation [Hendrik Richter, Jens Seidel]
+* Updated Spanish translation [Francisco Javier F. Serrador]
+* Updated Czech translation [Miloslav Trmac]
+* Updated Italian translation [Petrecca Michele]
+* Updated Catalan translation [Gil Forcada]
+* Updated Dutch translation [Vincent van Adrighem]
+* Updated Swedish translation [Daniel Nylander]
+* Added Nepali translation [Pawan Chitrakar]
 
 Overview of Changes in BEAST/BSE 0.6.6:
 
