@@ -39,8 +39,8 @@
 @newsentry{Sunday 16 July 2006, Release of the new development branch}
 
 BEAST/BSE version 0.7.0 is available from the
-@uri{@top_webdir/download,download section}.
-@dnl , here is the @uri{http://gnomedesktop.org/node/2267,FootNotes announcement}.
+@uri{@top_webdir/download,download section}, here is the 
+@uri{http://gnomedesktop.org/node/2722,FootNotes announcement}.
 
 BEAST tarball:
 @uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0.tar.bz2, beast-0.7.0.tar.bz2}
