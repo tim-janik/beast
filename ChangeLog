@@ -1,3 +1,11 @@
+Tue Jul 18 01:43:25 2006  Tim Janik  <timj@gtk.org>
+
+	* upgraded version to 0.7.1, interface age 0, binary age 0.
+
+	* beast-gtk/bstmain.c: adapt release notes for 0.7.x.
+
+	* beast-gtk/bstsplash.c: cosmetic fixes.
+
 Sun Jul 16 14:05:45 2006  Tim Janik  <timj@gtk.org>
 
 	* released beast-0.7.0.

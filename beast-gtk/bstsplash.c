@@ -408,6 +408,7 @@ bst_splash_set_animation (GtkWidget          *widget,
                                                                              "visible", TRUE,
                                                                              "xscale", 0.0,
                                                                              "yscale", 0.0,
+                                                                             "border-width", 10,
                                                                              NULL),
                                                      NULL),
 				       NULL);

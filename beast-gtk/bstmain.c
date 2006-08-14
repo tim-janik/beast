@@ -358,7 +358,7 @@ main (int   argc,
         "<tagdef name=\"title\" weight=\"bold\" scale=\"1.5\"/>"
         "<tagdef name=\"hyperlink\" underline=\"single\" foreground=\"#0000ff\"/>"
         "<tagdef name=\"mono\" family=\"monospace\"/>"
-        "<span tag=\"title\">BEAST/BSE Release Notes</span>"
+        "<span tag=\"title\">BEAST/BSE " BST_VERSION " Release Notes</span>"
         "<newline/><newline/>"
         "The 0.7 development series of Beast focusses on improving usability and ease of music production. "
         "<newline/><newline/>"
