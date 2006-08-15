@@ -96,6 +96,8 @@ plus1_thread (gpointer data)
 }
 
 static BIRNET_MUTEX_DECLARE_INITIALIZED (static_mutex);
+static BIRNET_REC_MUTEX_DECLARE_INITIALIZED (static_rec_mutex);
+static BIRNET_COND_DECLARE_INITIALIZED (static_cond);
 
 static void
 test_threads (void)
@@ -120,6 +122,19 @@ test_threads (void)
   locked = birnet_mutex_trylock (&static_mutex);
   TASSERT (locked);
   birnet_mutex_unlock (&static_mutex);
+  /* not initializing static_rec_mutex */
+  locked = birnet_rec_mutex_trylock (&static_rec_mutex);
+  TASSERT (locked);
+  locked = birnet_rec_mutex_trylock (&static_rec_mutex);
+  TASSERT (locked);
+  birnet_rec_mutex_unlock (&static_rec_mutex);
+  birnet_rec_mutex_unlock (&static_rec_mutex);
+  locked = birnet_rec_mutex_trylock (&static_rec_mutex);
+  TASSERT (locked);
+  birnet_rec_mutex_unlock (&static_rec_mutex);
+  /* not initializing static_cond */
+  birnet_cond_signal (&static_cond);
+  birnet_cond_broadcast (&static_cond);
   /* test C++ mutex */
   static Mutex mutex;
   static RecMutex rmutex;

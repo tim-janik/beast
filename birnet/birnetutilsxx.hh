@@ -105,9 +105,25 @@ template<typename Type> class InvalidType;
 }
 
 /* --- Deletable --- */
-class Deletable {
+struct Deletable {
+  class DestructionHook {
+    DestructionHook    *prev;
+    DestructionHook    *next;
+    friend class Deletable;
+  public:
+    explicit            DestructionHook       () : prev (NULL), next (NULL) {}
+    virtual void        deletable_dispose     (Deletable &deletable) = 0;
+    bool                deletable_add_hook    (void      *any)              { return false; }
+    bool                deletable_add_hook    (Deletable *deletable);
+    bool                deletable_remove_hook (void      *any)              { return false; }
+    bool                deletable_remove_hook (Deletable *deletable);
+  };
+private:
+  void    add_destruction_hook     (DestructionHook *hook);
+  void    remove_destruction_hook  (DestructionHook *hook);
 protected:
-  virtual ~Deletable() {}
+  void    invoke_destruction_hooks ();
+  virtual ~Deletable() { invoke_destruction_hooks(); }
 };
 
 /* --- ReferenceCountImpl --- */
@@ -328,7 +344,7 @@ class DataList {
   public:
     T   get_data ()     { return data; }
     T   swap     (T d)  { T result = data; data = d; return result; }
-    ~Node()
+    virtual ~Node()
     {
       if (key)
         {

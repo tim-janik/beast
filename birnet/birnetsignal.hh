@@ -42,7 +42,7 @@ struct TrampolineLink : public ReferenceCountImpl {
   explicit        TrampolineLink() :
     next (NULL), prev (NULL), callable (true), with_emitter (false)
   {}
-  virtual bool operator== (const TrampolineLink &other) const = 0;
+  virtual bool    operator== (const TrampolineLink &other) const = 0;
   virtual         ~TrampolineLink()
   {
     if (next || prev)
@@ -439,6 +439,10 @@ trampoline_cast (TrampolineLink *link)
 /* --- Trampoline + Slot + Signal generation --- */
 #include <birnet/birnetsignalvariants.hh> // contains multiple versions of "birnetsignaltemplate.hh"
 
+/* --- predefined slots --- */
+typedef Slot0<void, void> VoidSlot;
+typedef Slot0<bool, void> BoolSlot;
+
 /* --- predefined signals --- */
 template<class Emitter>
 struct SignalFinalize : Signal0 <Emitter, void, ScopeReferenceFinalizationMark> {
@@ -464,6 +468,8 @@ using Signals::CollectorWhile0;
 using Signals::CollectorUntil0;
 using Signals::CollectorLast;
 using Signals::CollectorSum;
+using Signals::VoidSlot;
+using Signals::BoolSlot;
 using Signals::SignalFinalize;
 using Signals::SignalVoid;
 using Signals::Signal;

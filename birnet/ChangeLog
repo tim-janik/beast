@@ -1,3 +1,33 @@
+Tue Jul 18 01:14:22 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetthreadxx.cc: use birnet_*__chain4init() and 
+	birnet_*__unchain() functions to construct initializer lists for
+	mutexes and conditions. that way we don't require std::list to be
+	constructed at static mutex construction time (which can be a
+	problem).
+
+	* birnetthread.h, birnetthread.c: provide chain4init and
+	unchain variants for recursive mutexes and conditions. this required
+	reordering of the BirnetRecMutex fields. provide static declaration
+	macros for recursive mutexes and conditions in C.
+
+	* birnetsignalslot.hh: hook trampolines into the destruction phase
+	of a Deletable, if the instance of a method trampoline is a Deletable.
+	as a side effect of this, slot-= only works for Deletable instance
+	methods, *before* the instance is deleted.
+
+	* birnetsignal.hh: provide VoidSlot and BoolSlot for convenience.
+
+	* birnetutilsxx.hh, birnetutilsxx.cc: implemented class
+	Deletable::DestructionHook which allowes hooking up (thread safe) of
+	callbacks into the destruction phase of a Deletable.
+
+	* tests/signal.cc: added tests for signal connections on temporary
+	objects that trigger Deletable destruction hooks.
+
+	* tests/threads.cc: test statically declared recursive mutextes and
+	conditions in C.
+
 Fri Jul  7 02:15:50 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/infotest.cc: implement file tests in terms of the C++ API

@@ -214,6 +214,83 @@ struct Connection3 {
   }
 };
 
+static uint assertion_counter = 0;
+struct TemporaryObject : public virtual Deletable {
+  String msg, msg2;
+  TemporaryObject() :
+    msg ("TemporaryObject"), msg2 ("Blub")
+  {}
+  String string_callback (int i, String s, float f)
+  {
+    assertion_counter++;
+    TPRINT ("  callback: %s (%d, %s, %f); [%s]\n", __func__, i, s.c_str(), f, msg.c_str());
+    return __func__;
+  }
+  String string_emitter_callback (Emitter3 &emitter, int i, String s, float f)
+  {
+    assertion_counter++;
+    TPRINT ("  callback: %s (%d, %s, %f); [%s]\n", __func__, i, s.c_str(), f, msg.c_str());
+    return __func__;
+  }
+  void void_callback (int i, String s, float f)
+  {
+    assertion_counter++;
+    TPRINT ("  callback: %s (%d, %s, %f); [%s]\n", __func__, i, s.c_str(), f, msg2.c_str());
+  }
+  void void_emitter_callback (Emitter3 &emitter, int i, String s, float f)
+  {
+    assertion_counter++;
+    TPRINT ("  callback: %s (%d, %s, %f); [%s]\n", __func__, i, s.c_str(), f, msg2.c_str());
+  }
+  void never_ever_call_me (int i, String s, float f)
+  {
+    TASSERT (1 == 0);
+  }
+  static void
+  test_temporary_object (Emitter3 &e3)
+  {
+    TSTART ("Signals, temporary object");
+    uint ac = assertion_counter;
+    {
+      TemporaryObject tobj;
+      e3.sig_mixed += slot (tobj, &TemporaryObject::string_emitter_callback);
+      e3.sig_void_mixed += slot (tobj, &TemporaryObject::never_ever_call_me);
+      e3.sig_mixed += slot (tobj, &TemporaryObject::string_callback);
+      {
+        TemporaryObject tmp2;
+        e3.sig_void_mixed += slot (tmp2, &TemporaryObject::never_ever_call_me);
+        /* auto-disconnected at end of scope */
+      }
+      {
+        Emitter3 tmp_emitter;
+        tmp_emitter.sig_mixed += slot (tobj, &TemporaryObject::string_emitter_callback);
+        tmp_emitter.sig_mixed += slot (tobj, &TemporaryObject::string_callback);
+        tmp_emitter.sig_void_mixed += slot (tobj, &TemporaryObject::never_ever_call_me);
+        TemporaryObject tobj2;
+        tmp_emitter.sig_void_mixed += slot (tobj2, &TemporaryObject::never_ever_call_me);
+        tmp_emitter.sig_void_mixed += slot (tobj2, &TemporaryObject::never_ever_call_me);
+        tmp_emitter.sig_void_mixed -= slot (tobj2, &TemporaryObject::never_ever_call_me);
+        /* remove all slots from tmp_emitter */
+      }
+      e3.sig_void_mixed -= slot (tobj, &TemporaryObject::never_ever_call_me);
+      TASSERT (ac == assertion_counter);
+      e3.test_emissions();
+      TASSERT (ac < assertion_counter);
+      e3.sig_void_mixed += slot (tobj, &TemporaryObject::void_emitter_callback);
+      e3.sig_void_mixed += slot (tobj, &TemporaryObject::void_callback);
+      ac = assertion_counter;
+      e3.test_emissions();
+      TASSERT (ac < assertion_counter);
+      e3.sig_void_mixed += slot (tobj, &TemporaryObject::never_ever_call_me);
+      /* here, Deletable::invoke_destruction_hooks() is called */
+    }
+    ac = assertion_counter;
+    e3.test_emissions(); // all handlers got disconnected
+    TASSERT (ac == assertion_counter);
+    TDONE();
+  }
+};
+
 static int tst_counter = 0;
 static int
 increment_tst_counter (void)
@@ -259,10 +336,14 @@ main (int   argc,
   signal_test.basic_signal_tests();
   signal_test.member_pointer_tests();
 #endif
-  Connection3 c3;
   Emitter3 e3;
+  TemporaryObject::test_temporary_object (e3);
+  Connection3 c3;
+  Connection3 c3b;
   c3.test_signal (e3);
-  EmitterMany many;
-  many.testme();
+  c3b.test_signal (e3);
+  EmitterMany many1, many2;
+  many1.testme();
+  many2.testme();
   return 0;
 }

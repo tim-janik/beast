@@ -137,6 +137,8 @@ void    birnet_cond_wait_timed			    (BirnetCond    *cond,
 						     BirnetInt64    max_useconds);
 #define birnet_thread_exit(retval)		    (birnet_thread_table.thread_exit (retval))
 #define BIRNET_MUTEX_DECLARE_INITIALIZED(mutexname) BIRNET_MUTEX__DECLARE_INITIALIZED (mutexname)
+#define BIRNET_REC_MUTEX_DECLARE_INITIALIZED(rmnam) BIRNET_REC_MUTEX__DECLARE_INITIALIZED (rmnam)
+#define BIRNET_COND_DECLARE_INITIALIZED(condname)   BIRNET_COND__DECLARE_INITIALIZED (condname)
 
 /* --- atomic operations --- */
 extern inline void  birnet_atomic_int_set                  (volatile int      *atomic,
@@ -182,20 +184,35 @@ birnet_atomic_set_impl (volatile gpointer *atomic, gpointer value)
 #endif
 
 /* --- implementation --- */
-void  _birnet_init_threads      (void);
-void  _birnet_init_threads_cxx  (void);
-void* _birnet_thread_self_cxx   (void);
-void* _birnet_thread_get_cxx	(BirnetThread *thread);
-bool  _birnet_thread_set_cxx	(BirnetThread *thread,
-				 void         *xxdata);
-void  _birnet_thread_cxx_wrap	(BirnetThread *thread); /* in birnetthreadxx.cc */
-void  _birnet_thread_cxx_delete	(void         *thread); /* in birnetthreadxx.cc */
-void  birnet_mutex__chain4init  (BirnetMutex *mutex);
+void  _birnet_init_threads         (void);
+void  _birnet_init_threads_cxx     (void);
+void* _birnet_thread_self_cxx      (void);
+void* _birnet_thread_get_cxx	   (BirnetThread *thread);
+bool  _birnet_thread_set_cxx	   (BirnetThread *thread,
+				    void         *xxdata);
+void  _birnet_thread_cxx_wrap	   (BirnetThread *thread); /* in birnetthreadxx.cc */
+void  _birnet_thread_cxx_delete	   (void         *thread); /* in birnetthreadxx.cc */
+void  birnet_mutex__chain4init     (BirnetMutex *mutex);
+void  birnet_mutex__unchain        (BirnetMutex *mutex);
+void  birnet_rec_mutex__chain4init (BirnetRecMutex *rec_mutex);
+void  birnet_rec_mutex__unchain    (BirnetRecMutex *rec_mutex);
+void  birnet_cond__chain4init      (BirnetCond *cond);
+void  birnet_cond__unchain         (BirnetCond *cond);
 #define BIRNET_MUTEX__DECLARE_INITIALIZED(mutexname)                            \
   BirnetMutex mutexname = { 0 };                                                \
   static void __attribute__ ((constructor))                                     \
   BIRNET_CPP_PASTE4 (__birnet_mutex__autoinit, __LINE__, __, mutexname) (void)	\
   { birnet_mutex__chain4init (&mutexname); }
+#define BIRNET_REC_MUTEX__DECLARE_INITIALIZED(recmtx)                           \
+  BirnetRecMutex recmtx = { { 0 } };                                            \
+  static void __attribute__ ((constructor))                                     \
+  BIRNET_CPP_PASTE4 (__birnet_rec_mutex__autoinit, __LINE__, __, recmtx) (void)	\
+  { birnet_rec_mutex__chain4init (&recmtx); }
+#define BIRNET_COND__DECLARE_INITIALIZED(condname)                              \
+  BirnetCond condname = { 0 };                                                  \
+  static void __attribute__ ((constructor))                                     \
+  BIRNET_CPP_PASTE4 (__birnet_cond__autoinit, __LINE__, __, condname) (void)	\
+  { birnet_cond__chain4init (&condname); }
 
 union _BirnetCond
 {
@@ -209,9 +226,9 @@ union _BirnetMutex
 };
 struct _BirnetRecMutex
 {
-  BirnetThread *owner;
   BirnetMutex   mutex;
-  guint      depth;
+  BirnetThread *owner;
+  guint         depth;
 };
 struct _BirnetThreadTable
 {

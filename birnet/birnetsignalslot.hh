@@ -38,7 +38,7 @@ class FunctionTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
   Callback callback;
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return callback (a1, a2, a3); }
-  ~FunctionTrampoline3() {}
+  virtual      ~FunctionTrampoline3() {}
   virtual bool operator== (const TrampolineLink &bother) const {
     const FunctionTrampoline3 *other = dynamic_cast<const FunctionTrampoline3*> (&bother);
     return other and other->callback == callback; }
@@ -48,21 +48,21 @@ public:
   {}
 };
 template<class Class, typename R0, typename A1, typename A2, typename A3>
-class MethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
+class MethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual Deletable::DestructionHook {
   friend void FIXME_dummy_friend_for_gcc33();
   typedef R0 (Class::*Method) (A1, A2, A3);
   Class *instance;
   Method method;
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return (instance->*method) (a1, a2, a3); }
-  ~MethodTrampoline3() {}
   virtual bool operator== (const TrampolineLink &bother) const {
     const MethodTrampoline3 *other = dynamic_cast<const MethodTrampoline3*> (&bother);
     return other and other->instance == instance and other->method == method; }
+  virtual      ~MethodTrampoline3()                     { deletable_remove_hook (instance); }
+  virtual void deletable_dispose (Deletable &deletable) { instance = NULL; this->callable = false; }
 public:
   MethodTrampoline3 (Class &obj, Method m) :
-    instance (&obj), method (m)
-  {}
+    instance (&obj), method (m)                         { deletable_add_hook (instance); }
 };
 
 /* --- Trampoline with Data --- */
@@ -73,7 +73,7 @@ class DataFunctionTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
   Callback callback; Data data;
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return callback (a1, a2, a3, data); }
-  ~DataFunctionTrampoline3() {}
+  virtual      ~DataFunctionTrampoline3() {}
   virtual bool operator== (const TrampolineLink &bother) const {
     const DataFunctionTrampoline3 *other = dynamic_cast<const DataFunctionTrampoline3*> (&bother);
     return other and other->callback == callback and other->data == data; }
@@ -83,20 +83,20 @@ public:
   {}
 };
 template<class Class, typename R0, typename A1, typename A2, typename A3, typename Data>
-class DataMethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3> {
+class DataMethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual Deletable::DestructionHook {
   friend void FIXME_dummy_friend_for_gcc33();
   typedef R0 (Class::*Method) (A1, A2, A3, Data);
   Class *instance; Method method; Data data;
   virtual R0 operator() (A1 a1, A2 a2, A3 a3)
   { return (instance->*method) (a1, a2, a3, data); }
-  ~DataMethodTrampoline3() {}
   virtual bool operator== (const TrampolineLink &bother) const {
     const DataMethodTrampoline3 *other = dynamic_cast<const DataMethodTrampoline3*> (&bother);
     return other and other->instance == instance and other->method == method and other->data == data; }
+  virtual      ~DataMethodTrampoline3()                 { deletable_remove_hook (instance); }
+  virtual void deletable_dispose (Deletable &deletable) { instance = NULL; this->callable = false; }
 public:
   DataMethodTrampoline3 (Class &obj, Method m, const Data &d) :
-    instance (&obj), method (m), data (d)
-  {}
+    instance (&obj), method (m), data (d)               { deletable_add_hook (instance); }
 };
 
 /* --- Slots (Trampoline wrappers) --- */

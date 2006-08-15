@@ -1284,8 +1284,8 @@ static void
 fallback_rec_mutex_init (BirnetRecMutex *rec_mutex)
 {
   rec_mutex->owner = NULL;
-  birnet_mutex_init (&rec_mutex->mutex);
   rec_mutex->depth = 0;
+  birnet_mutex_init (&rec_mutex->mutex);
 }
 
 static int
@@ -1471,6 +1471,7 @@ pth_mutex_init (BirnetMutex *mutex)
 static void
 pth_rec_mutex_init (BirnetRecMutex *mutex)
 {
+  BIRNET_STATIC_ASSERT (offsetof (BirnetRecMutex, mutex) == 0);
   pthread_mutexattr_t attr;
   pthread_mutexattr_init (&attr);
   pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE);
@@ -1542,6 +1543,73 @@ birnet_mutex__chain4init (BirnetMutex *mutex)
 }
 
 void
+birnet_mutex__unchain (BirnetMutex *mutex)
+{
+  BirnetMutex *last = NULL, *m = mutex_init_chain;
+  while (m != mutex)
+    {
+      last = m;
+      m = last->mutex_pointer;
+    }
+  if (last)
+    last->mutex_pointer = mutex->mutex_pointer;
+  else
+    mutex_init_chain = mutex->mutex_pointer;
+}
+
+static BirnetMutex *rec_mutex_init_chain = NULL;
+
+void
+birnet_rec_mutex__chain4init (BirnetRecMutex *rec_mutex)
+{
+  BIRNET_STATIC_ASSERT (offsetof (BirnetRecMutex, mutex) == 0);
+  g_assert (rec_mutex->mutex.mutex_pointer == NULL);
+  rec_mutex->mutex.mutex_pointer = rec_mutex_init_chain;
+  rec_mutex_init_chain = &rec_mutex->mutex;
+}
+
+void
+birnet_rec_mutex__unchain (BirnetRecMutex *rec_mutex)
+{
+  BirnetMutex *mutex = (BirnetMutex*) rec_mutex;
+  BirnetMutex *last = NULL, *m = rec_mutex_init_chain;
+  while (m != mutex)
+    {
+      last = m;
+      m = last->mutex_pointer;
+    }
+  if (last)
+    last->mutex_pointer = mutex->mutex_pointer;
+  else
+    rec_mutex_init_chain = mutex->mutex_pointer;
+}
+
+static BirnetCond  *cond_init_chain = NULL;
+
+void
+birnet_cond__chain4init (BirnetCond *cond)
+{
+  g_assert (cond->cond_pointer == NULL);
+  cond->cond_pointer = cond_init_chain;
+  cond_init_chain = cond;
+}
+
+void
+birnet_cond__unchain (BirnetCond *cond)
+{
+  BirnetCond *last = NULL, *c = cond_init_chain;
+  while (c != cond)
+    {
+      last = c;
+      c = last->cond_pointer;
+    }
+  if (last)
+    last->cond_pointer = cond->cond_pointer;
+  else
+    cond_init_chain = cond->cond_pointer;
+}
+
+void
 _birnet_init_threads (void)
 {
   BirnetThreadTable *table = get_pth_thread_table ();
@@ -1560,6 +1628,19 @@ _birnet_init_threads (void)
       BirnetMutex *mutex = mutex_init_chain;
       mutex_init_chain = mutex->mutex_pointer;
       birnet_thread_table.mutex_init (mutex);
+    }
+  while (rec_mutex_init_chain)
+    {
+      BirnetMutex *mutex = rec_mutex_init_chain;
+      rec_mutex_init_chain = mutex->mutex_pointer;
+      BIRNET_STATIC_ASSERT (offsetof (BirnetRecMutex, mutex) == 0);
+      birnet_thread_table.rec_mutex_init ((BirnetRecMutex*) mutex);
+    }
+  while (cond_init_chain)
+    {
+      BirnetCond *cond = cond_init_chain;
+      cond_init_chain = cond->cond_pointer;
+      birnet_thread_table.cond_init (cond);
     }
 
   _birnet_init_threads_cxx();

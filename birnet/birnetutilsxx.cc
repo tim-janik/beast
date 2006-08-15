@@ -18,7 +18,7 @@
  */
 #include "birnetutilsxx.hh"
 #include "birnetutils.h"
-#include "birnetthread.h"
+#include "birnetthreadxx.hh"
 #include "birnetmsg.h"
 #include "birnetcpu.h"
 #include <sys/time.h>
@@ -219,6 +219,151 @@ equals (const String &file1,
 }
 
 } // Path
+
+/* --- Deletable --- */
+
+/**
+ * @param deletable     possible Deletable* handle
+ * @return              TRUE if the hook was added
+ *
+ * Adds the destruction hook to @a deletable if it is non NULL.
+ * The destruction hook is asserted to be so far uninstalled.
+ * This function is MT-safe and may be called from any thread.
+ */
+bool
+Deletable::DestructionHook::deletable_add_hook (Deletable *deletable)
+{
+  if (deletable)
+    {
+      deletable->add_destruction_hook (this);
+      return true;
+    }
+  return false;
+}
+
+/**
+ * @param deletable     possible Deletable* handle
+ * @return              TRUE if the hook was removed
+ *
+ * Removes the destruction hook from @a deletable if it is non NULL.
+ * The destruction hook is asserted to be installed on @a deletable.
+ * This function is MT-safe and may be called from any thread.
+ */
+bool
+Deletable::DestructionHook::deletable_remove_hook (Deletable *deletable)
+{
+  if (deletable)
+    {
+      deletable->remove_destruction_hook (this);
+      return true;
+    }
+  return false;
+}
+
+static struct {
+  Mutex                                            mutex;
+  std::map<Deletable*,Deletable::DestructionHook*> dmap;
+} deletable_maps[19]; /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
+
+/**
+ * @param hook  valid destruction hook
+ *
+ * Add an uninstalled destruction hook to the deletable.
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+Deletable::add_destruction_hook (DestructionHook *hook)
+{
+  uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
+  deletable_maps[hashv].mutex.lock();
+  BIRNET_ASSERT (hook);
+  BIRNET_ASSERT (!hook->next);
+  BIRNET_ASSERT (!hook->prev);
+  std::map<Deletable*,DestructionHook*>::iterator it;
+  it = deletable_maps[hashv].dmap.find (this);
+  if (it != deletable_maps[hashv].dmap.end())
+    {
+      hook->next = it->second;
+      it->second = hook;
+      if (hook->next)
+        hook->next->prev = hook;
+    }
+  else
+    deletable_maps[hashv].dmap[this] = hook;
+  deletable_maps[hashv].mutex.unlock();
+  //g_printerr ("DELETABLE-ADD(%p,%p)\n", this, hook);
+}
+
+/**
+ * @param hook  valid destruction hook
+ *
+ * Remove a previously added destruction hook.
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+Deletable::remove_destruction_hook (DestructionHook *hook)
+{
+  uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
+  deletable_maps[hashv].mutex.lock();
+  BIRNET_ASSERT (hook);
+  if (hook->next)
+    hook->next->prev = hook->prev;
+  if (hook->prev)
+    hook->prev->next = hook->next;
+  else
+    {
+      std::map<Deletable*,DestructionHook*>::iterator it;
+      it = deletable_maps[hashv].dmap.find (this);
+      BIRNET_ASSERT (it != deletable_maps[hashv].dmap.end());
+      BIRNET_ASSERT (it->second == hook);
+      it->second = hook->next;
+    }
+  hook->prev = NULL;
+  hook->next = NULL;
+  deletable_maps[hashv].mutex.unlock();
+  //g_printerr ("DELETABLE-REM(%p,%p)\n", this, hook);
+}
+
+/**
+ * Invoke all destruction hooks installed on this deletable.
+ */
+void
+Deletable::invoke_destruction_hooks()
+{
+  uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
+  while (TRUE)
+    {
+      /* lookup hook list */
+      deletable_maps[hashv].mutex.lock();
+      std::map<Deletable*,DestructionHook*>::iterator it;
+      DestructionHook *hooks;
+      it = deletable_maps[hashv].dmap.find (this);
+      if (it != deletable_maps[hashv].dmap.end())
+        {
+          hooks = it->second;
+          deletable_maps[hashv].dmap.erase (it);
+        }
+      else
+        hooks = NULL;
+      deletable_maps[hashv].mutex.unlock();
+      /* we're done if all hooks have been procesed */
+      if (!hooks)
+        break;
+      /* process hooks */
+      while (hooks)
+        {
+          DestructionHook *hook = hooks;
+          hooks = hook->next;
+          if (hooks)
+            hooks->prev = NULL;
+          hook->prev = NULL;
+          hook->next = NULL;
+          //g_printerr ("DELETABLE-DIS(%p,%p)\n", this, hook);
+          hook->deletable_dispose (*this);
+        }
+    }
+}
+
 
 /* --- DataList --- */
 void
