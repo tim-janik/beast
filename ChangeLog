@@ -1,5 +1,11 @@
 Tue Jul 18 01:43:25 2006  Tim Janik  <timj@gtk.org>
 
+	* web/scanimages.sh: skip ./.* files when scanning for images, this
+	avoids bogus images (e.g. from ./.svn) to appear on the web site.
+	(change accidentally already committed with r3852).
+
+Tue Jul 18 01:43:25 2006  Tim Janik  <timj@gtk.org>
+
 	* upgraded version to 0.7.1, interface age 0, binary age 0.
 
 	* beast-gtk/bstmain.c: adapt release notes for 0.7.x.
