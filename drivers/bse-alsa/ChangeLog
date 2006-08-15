@@ -1,3 +1,7 @@
+Tue Aug 15 01:26:20 2006  Tim Janik  <timj@gtk.org>
+
+	* upgraded version to 0.7.1, interface age 0, binary age 0.
+
 Sun Jul 16 15:53:19 2006  Tim Janik  <timj@gtk.org>
 
 	* release bse-alsa 0.7.0.
