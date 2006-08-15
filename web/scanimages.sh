@@ -19,7 +19,7 @@ rm -f $IMAGEDIR/*.THUMB.jpg # $DEST
 
 NTH=1
 {
-  for i in `find $IMAGEDIR/ -type f | sed 's,^\./\+,,' | sort` ; do
+  for i in `find $IMAGEDIR/ -type f -not -path '*/.*' | sed 's,^\./\+,,' | sort` ; do
 	if `file $i | grep -Fq image` ; then
 		echo "[$NTH]"
 		identify -format 'width = %w\nheight = %h' "$i"
