@@ -45,6 +45,10 @@ Redirect 302 /LICENSE-AS-IS			http://beast.gtk.org/mirror/LICENSE-AS-IS
 # in the above, the following list of entry points should be made sure to exist:
 # download.html, screenshots.html, mailinglist.html, bugs.html, faq.html, about.html
 
+# Compat redirects for links for 2006 Aug...Dec
+Redirect 301 /bsesh.1.html		http://beast.gtk.org/bsescm.1.html
+Redirect 301 /bsesh.1			http://beast.gtk.org/bsescm.1
+
 # Compat redirects for links from Feb..Apr 2006
 RewriteCond %{QUERY_STRING} 		^image=screenshots/(.*)$
 RewriteRule ^screenshots.phtml$		http://beast.gtk.org/screenshots?image=screenshotdir/%1 [R=301,L]
