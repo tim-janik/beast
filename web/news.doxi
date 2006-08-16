@@ -36,6 +36,14 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Wednesday 16 August 2006, Documentation updates}
+
+The @uri{@top_webdir/documentation, documentation section} and the
+@uri{@top_webdir/historic, historic section} got updated, and we've
+put up a new @beast overview paper on the website, this time in english:
+@* @beast - @uri{http://beast.gtk.org/mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)}
+
+
 @newsentry{Sunday 16 July 2006, Release of the new development branch}
 
 BEAST/BSE version 0.7.0 is available from the
@@ -67,59 +75,7 @@ the new code and please
 @uri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, report all bugs} encountered.
 
 
-@newsentry{Saturday 15 July 2006, Source Repository change}
-
-The @uri{http://www.gnome.org,Gnome} project is currently migrating its source code
-repository, so the @beast sources are kept in a
-@uri{http://svn.gnome.org/viewsvn/beast/, Beast SVN Repo} now.
-
-So far, the migration went smooth, the
-@uri{@top_webdir/download,download section} has already been updated accordingly,
-and we're working on adjusting all remaining references 
-to point to the new source code repository.
-
-
-@newsentry{Sunday 9 July 2006, Development News}
-
-We're still sorting out issues to make the 0.7.0 release finally happen. Here
-is what happened since the last development news.
-
-@itemize
-
-@item
-New @doxer_bold{release notes dialog}, which will be shown the first time a new
-release is started (since the release notes are now provided online at our
-website, the dialog mainly contains links to the relevant sections of the
-website).
-
-@item
-@doxer_bold{Bugfixes, refactoring and cleanups} improving both, the actual
-C/C++/Scheme sources and the build system.
-
-@item
-Support @uri{http://portland.freedesktop.org/wiki/, project portland} desktop
-independant browser activation.
-
-@item
-Since all songs, instruments and effects have a license and author field,
-filling out all of them used to be tedious. So now there is now a
-@doxer_bold{default license} and a @doxer_bold{default author} which which can
-be configured in Preferences / BSE.
-
-@item
-German and italian @doxer_bold{translations} were updated.
-
-@item
-Development of a @doxer_bold{native JACK driver} has been started and some
-issues concerning the code have been 
-@uri{http://mail.gnome.org/archives/beast/2006-June/msg00002.html, discussed
-on the mailing list}. However, there are still issues with the driver that
-need to be sorted out, so it will not be part of the 0.7.0 release.
-
-@done
-
-
 @dnl ----------------------------- END -----------------------------
 @newstag{NEWS Archive}
-Old news entries are archived in the @uri{@top_webdir/oldnews,Ancient News} section.
+Older news entries are archived in the @uri{@top_webdir/oldnews,Ancient News} section.
 @dnl LocalWords:  website Alper Ersoy efford sid

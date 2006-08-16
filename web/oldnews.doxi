@@ -7,6 +7,58 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Saturday 15 July 2006, Source Repository change}
+
+The @uri{http://www.gnome.org,Gnome} project is currently migrating its source code
+repository, so the @beast sources are kept in a
+@uri{http://svn.gnome.org/viewsvn/beast/, Beast SVN Repo} now.
+
+So far, the migration went smooth, the
+@uri{@top_webdir/download,download section} has already been updated accordingly,
+and we're working on adjusting all remaining references 
+to point to the new source code repository.
+
+
+@newsentry{Sunday 9 July 2006, Development News}
+
+We're still sorting out issues to make the 0.7.0 release finally happen. Here
+is what happened since the last development news.
+
+@itemize
+
+@item
+New @doxer_bold{release notes dialog}, which will be shown the first time a new
+release is started (since the release notes are now provided online at our
+website, the dialog mainly contains links to the relevant sections of the
+website).
+
+@item
+@doxer_bold{Bugfixes, refactoring and cleanups} improving both, the actual
+C/C++/Scheme sources and the build system.
+
+@item
+Support @uri{http://portland.freedesktop.org/wiki/, project portland} desktop
+independant browser activation.
+
+@item
+Since all songs, instruments and effects have a license and author field,
+filling out all of them used to be tedious. So now there is now a
+@doxer_bold{default license} and a @doxer_bold{default author} which which can
+be configured in Preferences / BSE.
+
+@item
+German and italian @doxer_bold{translations} were updated.
+
+@item
+Development of a @doxer_bold{native JACK driver} has been started and some
+issues concerning the code have been 
+@uri{http://mail.gnome.org/archives/beast/2006-June/msg00002.html, discussed
+on the mailing list}. However, there are still issues with the driver that
+need to be sorted out, so it will not be part of the 0.7.0 release.
+
+@done
+
+
 @newsentry{Wednesday 17 May 2006, Development News}
 
 We are right now preparing for the 0.7.0 release. To keep you updated what has
@@ -780,7 +832,7 @@ If you have questions/comments/feedback, @uri{mailto://timj@@beast.gtk.org, cont
 
 @newsentry{Sunday 12 March 2000, Version @strong{0.3.2} released}
 
-See the Gnotice @uri{http://beast.gtk.org/mirror/gnome-news/953148210.html, here (mirrored from http://news.gnome.org:80/gnome-news/953148210/)}.
+See the @uri{http://beast.gtk.org/mirror/gnome-news/953148210.html, Gnotice here} (mirrored from http://news.gnome.org:80/gnome-news/953148210/).
 
 Plenty of work has been put into this new version, so BEAST is coming closer to ALPHA stage ;)
 the highlights of this release include new synthesizer modules submitted by David A. Bartold 
@@ -824,8 +876,8 @@ As usual, the ChangeLogs are always available for your perusal (see the links in
 
 @newstag{Friday 31 December 1999}
 
-Version 0.3.0 (pre-alpha) released.  For details, see the 
-@uri{http://beast.gtk.org/mirror/gnome-news/946616649.html, announcement (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)}
+Version 0.3.0 (pre-alpha) released.  For details, see
+@uri{http://beast.gtk.org/mirror/gnome-news/946616649.html, the announcement} (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)
 on @uri{http://news.gnome.org/gnome-news, Gnotices}.
 
 @dnl ----------------------------- END -----------------------------

@@ -16,13 +16,12 @@ a number of interesting links to articles on this subject in the
 section however.
 
 
-@heading Development with @beastbse
+@heading Documentation for @beastbse
 
 With the development release 0.4.1, @bse added support for the
 @uri{http://www.gnu.org, GNU} extension language
 @uri{http://www.gnu.org/software/guile/guile.html, Guile} and
 since can be scripted in Scheme.
-
 The
 @uri{@top_webdir/bse-interface, procedure and structure}
 documentation as well as the
@@ -37,3 +36,12 @@ For C and C++,
 threads, notes, parameters (properties), records, sequences, time stamps
 and generic values. Users of BIRNET or SFI will probably also appreciate the
 @uri{http://developer.gnome.org/doc/API/, GLib and GObject API Reference}.
+
+Introductionary material is also provided:
+@itemize
+@item @uri{@top_webdir/quickstart, @beastbse Quick Start Guide} - The Quick Start Guide shipped with @beast
+@item @uri{http://beast.gtk.org/mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)} -
+      A @beast Overview from @uri{http://lad.linuxaudio.org/eventszkm2005.php, LAC 2005}
+@item @uri{@top_webdir/overview2003de, @beast Overview from 2003 (German)} -
+      Paper from the @uri{http://www.linuxtag.org/2003/en/conferences/talk.xsp_id_47.html, @beast presentation at LinuxTag 2003}
+@done

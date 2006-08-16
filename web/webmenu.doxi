@@ -63,9 +63,6 @@
     @menu_branch{documentation}
 	@itemize{none}
 	@item 	@fmenuuri{@top_webdir/faq,			FAQ}
-	@item 	@doxer_span{menu-leaf,				Introduction}
-	@item 	@fmenuuri{@top_webdir/overview2003de,		Overview (German)}
-	@item 	@fmenuuri{@top_webdir/quickstart,		Quick Start}
 	@item 	@doxer_span{menu-leaf,				Manual Pages}
 	@item 	@fmenuuri{@top_webdir/beast.1,			beast(1)}
 	@item 	@fmenuuri{@top_webdir/bsescm.1,			bsescm(1)}
