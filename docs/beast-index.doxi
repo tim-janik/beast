@@ -28,6 +28,7 @@
 @item @uri{@top_webdir/architecture.html,	BEAST Architecture}
 @item @uri{@top_webdir/plugin-devel.html,	Plugin Development}
 @item @uri{@top_webdir/sfidl-manual.html,	SFIDL - Manual}
+@item @uri{@top_webdir/coding-style.html,	BEAST Coding Style}
 @item @uri{@top_webdir/engine-mplan.html,	DSP Synthesis Engine} (plain text notes)
 @done
 

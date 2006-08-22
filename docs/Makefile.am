@@ -29,6 +29,7 @@ HTML_TARGETS = $(strip				\
 	html/bsescm.1.html			\
 	html/sfidl.1.html			\
 	html/bse.5.html				\
+	html/coding-style.html			\
 )
 CLEANFILES += ${HTML_TARGETS}
 STYLE_TARGETS = $(strip				\
@@ -222,6 +223,7 @@ doxi_files = $(strip		\
 	bsescm.1.doxi		\
 	plugin-devel.doxi	\
 	sfidl.1.doxi		\
+	coding-style.doxi	\
 )
 
 EXTRA_DIST += $(strip		\

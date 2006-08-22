@@ -1,3 +1,10 @@
+Tue Aug 22 17:02:50 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/Makefile.am:
+	* docs/beast-index.doxi:
+	* docs/coding-style.doxi: Added a description of the beast coding
+	style to the developer documentation.
+
 Tue Jul 18 01:43:25 2006  Tim Janik  <timj@gtk.org>
 
 	* web/scanimages.sh: skip ./.* files when scanning for images, this
