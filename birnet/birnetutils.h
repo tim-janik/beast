@@ -38,6 +38,10 @@ uint birnet_cleanup_add               (uint                  timeout_ms,
 				       void                 *data);
 void birnet_cleanup_force_handlers    (void);
 
+/* --- string utils --- */
+void birnet_memset4		      (guint32              *mem,
+				       guint32               filler,
+				       guint                 length);
 /* --- file testing --- */
 bool birnet_file_check                (const gchar *file,	/* returns errno */
 				       const gchar *mode);

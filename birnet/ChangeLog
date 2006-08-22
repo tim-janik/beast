@@ -1,3 +1,8 @@
+Mon Aug 21 01:03:24 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.h, birnetutils.c: added birnet_memset4(), a function to
+	fill large memory regions with data of 32bit integer width.
+
 Tue Jul 18 01:14:22 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadxx.cc: use birnet_*__chain4init() and 

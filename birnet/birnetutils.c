@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <wchar.h>
 
 #ifndef _
 #define _(string)       (string)        // FIXME
@@ -267,6 +268,18 @@ birnet_cleanup_add (guint          timeout_ms,
   cleanup_list = g_slist_prepend (cleanup_list, cleanup);
   birnet_mutex_unlock (&cleanup_mutex);
   return cleanup->id;
+}
+
+/* --- string utils --- */
+void
+birnet_memset4 (guint32        *mem,
+                guint32         filler,
+                guint           length)
+{
+  BIRNET_STATIC_ASSERT (sizeof (*mem) == 4);
+  BIRNET_STATIC_ASSERT (sizeof (filler) == 4);
+  BIRNET_STATIC_ASSERT (sizeof (wchar_t) == 4);
+  wmemset ((wchar_t*) mem, filler, length);
 }
 
 /* --- file testing --- */
