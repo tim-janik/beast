@@ -720,7 +720,7 @@ design instruments:
     - design some
 
 documentation:
- - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
+ - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String) #333361
   - sfidl-manual.texi: complete the documentation
  - bsewavetool needs to be documented with documentation tool in the source code (at least gsl_data_find_loop*)
 
