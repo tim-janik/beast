@@ -134,7 +134,7 @@ typedef BirnetUInt32          BirnetUniChar;
 /* --- convenient type shorthands --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
 #if 	BIRNET_SIZEOF_SYS_TYPESH_UINT == 0
-typedef BirnetUInt		uint;
+typedef unsigned int uint;	/* for systems that don't define uint in types.h */
 #else
 BIRNET_STATIC_ASSERT (BIRNET_SIZEOF_SYS_TYPESH_UINT == 4);
 #endif

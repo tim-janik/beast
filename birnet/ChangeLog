@@ -1,3 +1,9 @@
+Thu Aug 23 21:21:00 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.h, birnetutilsxx.hh: always use global uint definition
+	(either from types.h or from a fallback definition) to avoid
+	ambiguities.
+
 Mon Aug 21 01:03:24 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.h, birnetutils.c: added birnet_memset4(), a function to

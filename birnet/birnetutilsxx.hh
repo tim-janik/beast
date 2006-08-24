@@ -29,7 +29,7 @@ namespace Birnet {
 
 /* --- convenient type shorthands --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
-using ::uint;
+// using ::uint; // provided globally
 using ::uint8;
 using ::uint16;
 using ::uint32;
@@ -40,7 +40,7 @@ using ::int32;
 using ::int64;
 using ::unichar;
 #else   /* !_BIRNET_SOURCE_EXTENSIONS */
-typedef BirnetUInt		uint;
+// typedef BirnetUInt uint; // provided globally
 typedef BirnetUInt8		uint8;
 typedef BirnetUInt16		uint16;
 typedef BirnetUInt32		uint32;

@@ -21,7 +21,6 @@
 
 namespace {
 using namespace Birnet;
-using Birnet::uint;
 
 struct ExtraType {
   virtual const char* message() { return "ExtraType::message()"; }
