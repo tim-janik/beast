@@ -1,3 +1,9 @@
+Tue Aug 29 20:48:48 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davorgan.[hc]: Add transpose and fine_tune settings, just like they
+	can be found in the oscillator code. Fixed a few minor i18n bugs in
+	property translation markup.
+
 Tue Aug 29 17:34:30 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* davxtalstrings.[hc]: Add transpose and fine_tune settings, just like

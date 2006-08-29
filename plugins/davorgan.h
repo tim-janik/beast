@@ -40,6 +40,8 @@ typedef struct _DavOrgan      DavOrgan;
 typedef struct _DavOrganClass DavOrganClass;
 typedef struct {
   gfloat      freq;
+  gint        transpose;
+  gint        fine_tune;
   /* harmonic weights */
   gfloat      harm0;
   gfloat      harm1;

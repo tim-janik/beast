@@ -19,6 +19,7 @@
 #include "davorgan.h"
 
 #include <bse/bseengine.h>
+#include <bse/bsemathsignal.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +30,8 @@ enum
   PARAM_0,
   PARAM_BASE_FREQ,
   PARAM_BASE_NOTE,
+  PARAM_TRANSPOSE,
+  PARAM_FINE_TUNE,
   PARAM_HARM0,
   PARAM_HARM1,
   PARAM_HARM2,
@@ -100,13 +103,23 @@ dav_organ_class_init (DavOrganClass *class)
   source_class->context_create = dav_organ_context_create;
   source_class->reset = dav_organ_reset;
   
-  bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
+  bse_object_class_add_param (object_class, _("Base Frequency"), PARAM_BASE_FREQ,
+			      bse_param_spec_freq ("base_freq", _("Frequency"), NULL,
 						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
-  bse_object_class_add_param (object_class, "Base Frequency",
+  bse_object_class_add_param (object_class, _("Base Frequency"),
                               PARAM_BASE_NOTE,
-                              bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
+                              bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, _("Base Frequency"),
+			      PARAM_TRANSPOSE,
+			      sfi_pspec_int ("transpose", _("Transpose"), _("Transposition of the frequency in semitones"),
+					     0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12,
+					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
+  bse_object_class_add_param (object_class, _("Base Frequency"),
+			      PARAM_FINE_TUNE,
+			      sfi_pspec_int ("fine_tune", _("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
+					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
+					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_BRASS,
 			      sfi_pspec_bool ("brass", "Brass Sounds", "Changes the organ to sound more brassy",
                                               FALSE, SFI_PARAM_STANDARD));
@@ -169,6 +182,14 @@ dav_organ_set_property (GObject      *object,
       g_object_notify (G_OBJECT (self), "base_freq");
       dav_organ_update_modules (self);
       break;
+    case PARAM_TRANSPOSE:
+      self->config.transpose = sfi_value_get_int (value);
+      dav_organ_update_modules (self);
+      break;
+    case PARAM_FINE_TUNE:
+      self->config.fine_tune = sfi_value_get_int (value);
+      dav_organ_update_modules (self);
+      break;
     case PARAM_BRASS:
       self->config.brass = sfi_value_get_bool (value);
       dav_organ_update_modules (self);
@@ -226,6 +247,12 @@ dav_organ_get_property (GObject    *object,
       break;
     case PARAM_BASE_NOTE:
       sfi_value_set_note (value, bse_note_from_freq (self->config.freq));
+      break;
+    case PARAM_TRANSPOSE:
+      sfi_value_set_int (value, self->config.transpose);
+      break;
+    case PARAM_FINE_TUNE:
+      sfi_value_set_int (value, self->config.fine_tune);
       break;
     case PARAM_BRASS:
       sfi_value_set_bool (value, self->config.brass);
@@ -376,14 +403,16 @@ dav_organ_process (BseModule *module,
   const gfloat *reed_table = organ->config.reed ? class->pulse_table : sine_table;
   const gfloat *ifreq = BSE_MODULE_IBUFFER (module, DAV_ORGAN_ICHANNEL_FREQ);
   gfloat *ovalues = BSE_MODULE_OBUFFER (module, DAV_ORGAN_OCHANNEL_MONO);
+  const gdouble transpose = bse_transpose_factor (organ->config.transpose);
+  const gdouble fine_tune = bse_cent_factor (organ->config.fine_tune);
   guint freq_256, mix_freq_256;
   guint freq_256_harm0, freq_256_harm1;
   guint i;
   
   if (BSE_MODULE_ISTREAM (module, DAV_ORGAN_ICHANNEL_FREQ).connected)
-    freq_256 = BSE_FREQ_FROM_VALUE (ifreq[0]) * 256 + 0.5;
+    freq_256 = BSE_FREQ_FROM_VALUE (ifreq[0]) * transpose * fine_tune * 256 + 0.5;
   else
-    freq_256 = organ->config.freq * 256 + 0.5;
+    freq_256 = organ->config.freq * transpose * fine_tune * 256 + 0.5;
   mix_freq_256 = bse_engine_sample_freq() * 256;
   freq_256_harm0 = freq_256 / 2;
   freq_256_harm1 = freq_256;
