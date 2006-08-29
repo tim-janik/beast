@@ -45,6 +45,8 @@ typedef struct {
   gfloat      tension_decay;
   gfloat      metallic_factor;
   gfloat      snap_factor;
+  gint        transpose;
+  gint        fine_tune;
   guint	      trigger_now : 1;
 } DavXtalStringsParams;
 struct _DavXtalStrings

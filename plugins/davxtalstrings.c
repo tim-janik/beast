@@ -43,6 +43,8 @@ enum
   PARAM_0,
   PARAM_BASE_FREQ,
   PARAM_BASE_NOTE,
+  PARAM_TRANSPOSE,
+  PARAM_FINE_TUNE,
   PARAM_TRIGGER_VEL,
   PARAM_TRIGGER_HIT,
   PARAM_NOTE_DECAY,
@@ -101,14 +103,24 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   
   source_class->context_create = dav_xtal_strings_context_create;
   
-  bse_object_class_add_param (object_class, "Frequency",
+  bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_FREQ,
-			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
+			      bse_param_spec_freq ("base_freq", _("Frequency"), NULL,
 						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
-  bse_object_class_add_param (object_class, "Frequency",
+  bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_NOTE,
-			      bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
+			      bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, _("Frequency"),
+			      PARAM_TRANSPOSE,
+			      sfi_pspec_int ("transpose", _("Transpose"), _("Transposition of the frequency in semitones"),
+					     0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 12,
+					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
+  bse_object_class_add_param (object_class, _("Frequency"),
+			      PARAM_FINE_TUNE,
+			      sfi_pspec_int ("fine_tune", _("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
+					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
+					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_VEL,
 			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
                                               "Velocity of the string pluck",
@@ -185,6 +197,14 @@ dav_xtal_strings_set_property (GObject      *object,
       dav_xtal_strings_update_modules (self, FALSE);
       g_object_notify (G_OBJECT (self), "base_freq");
       break;
+    case PARAM_TRANSPOSE:
+      self->params.transpose = sfi_value_get_int (value);
+      dav_xtal_strings_update_modules (self, FALSE);
+      break;
+    case PARAM_FINE_TUNE:
+      self->params.fine_tune = sfi_value_get_int (value);
+      dav_xtal_strings_update_modules (self, FALSE);
+      break;
     case PARAM_TRIGGER_HIT:	/* GUI hack */
       dav_xtal_strings_update_modules (self, TRUE);
       break;
@@ -229,6 +249,12 @@ dav_xtal_strings_get_property (GObject    *object,
     case PARAM_BASE_NOTE:
       sfi_value_set_note (value, bse_note_from_freq (self->params.freq));
       break;
+    case PARAM_TRANSPOSE:
+      sfi_value_set_int (value, self->params.transpose);
+      break;
+    case PARAM_FINE_TUNE:
+      sfi_value_set_int (value, self->params.fine_tune);
+      break;
     case PARAM_TRIGGER_HIT:
       sfi_value_set_bool (value, FALSE);
       break;
@@ -270,7 +296,7 @@ typedef struct {
   guint	               count;
   gfloat              *string;
   gfloat	       last_trigger_level;
-  gfloat	       last_trigger_freq;
+  gdouble	       last_transposed_trigger_freq;
   DavXtalStringsParams tparams;
 } XtalStringsModule;
 
@@ -278,13 +304,19 @@ typedef struct {
  */
 static inline void
 xmod_trigger (XtalStringsModule *xmod,
-	      gfloat             trigger_freq)
+	      gdouble            untransposed_trigger_freq)
 {
   guint i;
   guint pivot;
-  
+
+  /* calculate transposed trigger frequency; the "real frequency" that will
+   * be played, including detuning and transpose operations
+   */
+  gdouble trigger_freq = untransposed_trigger_freq;
+  trigger_freq *= bse_transpose_factor (xmod->tparams.transpose);
+  trigger_freq *= bse_cent_factor (xmod->tparams.fine_tune);
   trigger_freq = CLAMP (trigger_freq, 27.5, 4000.0);
-  xmod->last_trigger_freq = trigger_freq;
+  xmod->last_transposed_trigger_freq = trigger_freq;
   
   xmod->pos = 0;
   xmod->count = 0;
@@ -325,7 +357,7 @@ xmod_process (BseModule *module,
   guint real_freq_256, actual_freq_256;
   guint i;
   
-  real_freq_256 = (int) (xmod->last_trigger_freq * 256);
+  real_freq_256 = (int) (xmod->last_transposed_trigger_freq * 256);
   actual_freq_256 = (int) (bse_engine_sample_freq() * 256. / xmod->size);
   
   if (BSE_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ).connected)
@@ -339,7 +371,7 @@ xmod_process (BseModule *module,
       if (G_UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i])))
       	{
 	  xmod_trigger (xmod, freq_in ? BSE_SIGNAL_TO_FREQ (freq_in[i]) : xmod->tparams.freq);
-	  real_freq_256 = (int) (xmod->last_trigger_freq * 256);
+	  real_freq_256 = (int) (xmod->last_transposed_trigger_freq * 256);
 	  actual_freq_256 = (int) (bse_engine_sample_freq() * 256. / xmod->size);
 	}
       last_trigger_level = trigger_in[i];
@@ -389,7 +421,7 @@ xmod_reset (BseModule *module)
   xmod->count = 0;
   xmod->a = 0.0;
   xmod->damping_factor = 0.0;
-  xmod->last_trigger_freq = 440.0;	/* just _some_ valid freq for the stepping */
+  xmod->last_transposed_trigger_freq = 440.0;	/* just _some_ valid freq for the stepping */
   xmod->last_trigger_level = 0;
 }
 

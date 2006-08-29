@@ -1,3 +1,11 @@
+Tue Aug 29 17:34:30 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davxtalstrings.[hc]: Add transpose and fine_tune settings, just like
+	they can be found in the oscillator code. Fixed a few minor i18n bugs
+	in property translation markup.
+	Use gdouble precision to store transposed frequency within the engine
+	module data structure.
+
 Sun Jul 16 13:58:12 2006  Tim Janik  <timj@gtk.org>
 
 	* davsyndrum.c (dmod_process): fixed ratio read-out. spotted by Stefan.
