@@ -73,15 +73,6 @@ gint /* errno */     gsl_data_handle_dump	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 GslWaveFormatType	 format,
 						 guint			 byte_order);
-gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
-						 gint			 fd,
-						 guint			 n_bits,
-						 guint			 n_channels,
-						 guint			 sample_freq);
-void		     gsl_data_handle_dump_wstore(GslDataHandle		*dhandle,
-						 SfiWStore		*wstore,
-						 GslWaveFormatType	 format,
-						 guint			 byte_order);
 gint /* errno */     bse_wave_file_dump_header	(gint			 fd,
 						 guint			 n_data_bytes,
 						 guint			 n_bits,
@@ -89,22 +80,20 @@ gint /* errno */     bse_wave_file_dump_header	(gint			 fd,
 						 guint		         sample_freq);
 gint /* errno */     bse_wave_file_patch_length (gint			 fd,
 						 guint			 n_data_bytes);
+gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
+						 gint			 fd,
+						 guint			 n_bits,
+						 guint			 n_channels,
+						 guint			 sample_freq);
 gint /* errno */     bse_wave_file_dump_data	(gint			 fd,
 						 guint			 n_bits,
 						 guint			 n_values,
 						 const gfloat		*values);
-gint /* errno */     bse_wave_file_from_fbuffer	(const char		*file_name,
-						 guint                   n_bits,
-						 guint                   n_channels,
-						 guint                   sample_freq,
-						 guint                   n_values,
-						 const gfloat           *values);
-gint /* errno */     bse_wave_file_from_dbuffer	(const char		*file_name,
-						 guint                   n_bits,
-						 guint                   n_channels,
-						 guint                   sample_freq,
-						 guint                   n_values,
-						 const gdouble          *values);
+void		     gsl_data_handle_dump_wstore(GslDataHandle		*dhandle,
+						 SfiWStore		*wstore,
+						 GslWaveFormatType	 format,
+						 guint			 byte_order);
+
 
 /* --- conversion utils --- */
 static inline guint   gsl_conv_from_float	(GslWaveFormatType format,
