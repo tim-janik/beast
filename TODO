@@ -1,4 +1,5 @@
 NEXT-RELEASE:
+- undef _DOMAIN
 - fix birnet_thread_run uses (unref thread)
 - add plugin objects to http://beast.gtk.org/bse-objects
 - WEB: add LAD-2005 paper to website

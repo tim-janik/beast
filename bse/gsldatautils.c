@@ -21,6 +21,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 #define	BSIZE		GSL_DATA_HANDLE_PEEK_BUFFER	/* FIXME: global buffer size setting */
@@ -232,6 +235,68 @@ bse_wave_file_dump_data (gint           fd,
     return errno ? errno : EIO;
   else
     return 0;
+}
+
+static gint /* errno */
+bse_wave_file_from_bbuffer (const char          *file_name,
+                            guint                n_bits,
+                            guint                n_channels,
+                            guint                sample_freq,
+                            guint                n_values,
+                            guint                n_bytes,
+                            const uint8         *bytes)
+{
+  g_return_val_if_fail (file_name != NULL, EINVAL);
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
+  int fd = open (file_name, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+  if (fd < 0)
+    return errno;
+  bse_wave_file_dump_header (fd, n_values * n_bits / 8, n_bits, n_channels, sample_freq);
+  GslLong j;
+  do
+    j = write (fd, bytes, n_bytes);
+  while (j < 0 && errno == EINTR);
+  int err = errno;
+  int cs = close (fd);
+  if (j < 0)
+    return err ? err : EIO;
+  if (cs < 0)
+    return errno ? errno : EIO;
+  return 0;
+}
+
+gint /* errno */
+bse_wave_file_from_fbuffer (const char          *file_name,
+                            guint                n_bits,
+                            guint                n_channels,
+                            guint                sample_freq,
+                            guint                n_values,
+                            const gfloat        *values)
+{
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
+  void *buffer = g_new (guint32, n_values);
+  GslLong n = gsl_conv_from_float_clip (n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
+                                        G_LITTLE_ENDIAN, values, buffer, n_values);
+  int retval = bse_wave_file_from_bbuffer (file_name, n_bits, n_channels, sample_freq, n_values, n, buffer);
+  g_free (buffer);
+  return retval;
+}
+
+gint /* errno */
+bse_wave_file_from_dbuffer (const char          *file_name,
+                            guint                n_bits,
+                            guint                n_channels,
+                            guint                sample_freq,
+                            guint                n_values,
+                            const gdouble       *values)
+{
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
+  void *buffer = g_new (guint32, n_values);
+  GslLong n = gsl_conv_from_double_clip (n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
+                                         G_LITTLE_ENDIAN, values, buffer, n_values);
+  int retval = bse_wave_file_from_bbuffer (file_name, n_bits, n_channels, sample_freq, n_values, n, buffer);
+  g_free (buffer);
+  return retval;
 }
 
 gint /* errno */
