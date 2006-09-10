@@ -1,3 +1,8 @@
+Sun Sep 10 22:46:55 2006  Tim Janik  <timj@gtk.org>
+
+	* gsldatautils.h, gsldatautils.c: added bse_wave_file_from_fbuffer() and
+	bse_wave_file_from_dbuffer() to easily save WAV files from memory.
+
 Sat Jul 15 20:06:24 2006  Tim Janik  <timj@gtk.org>
 
 	* gslwaveosc-aux.c: use doubles instead of floats to store temporary
