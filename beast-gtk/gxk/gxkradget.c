@@ -2205,7 +2205,7 @@ mf_blogic (GSList *args,
   while (argiter)
     {
       gchar *vbool = argiter_exp (&argiter, env);
-      gboolean b = boolean_from_string (vbool), result;
+      gboolean b = boolean_from_string (vbool);
       g_free (vbool);
       if (strcmp (name, "xor") == 0)
         result ^= b;
