@@ -1,3 +1,9 @@
+Wed Aug 30 21:57:32 2006  Tim Janik  <timj@gtk.org>
+
+	* launchers/suidmain.c (main): abort the program if we failed to drop
+	priviledges and continue to run suid (could happen due to user process
+	limits being reached).
+
 Tue Aug 22 17:02:50 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/Makefile.am:
