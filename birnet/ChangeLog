@@ -1,3 +1,8 @@
+Tue Sep 12 01:41:18 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutilsxx.cc (rip_data): fix missing updates of 'last' pointer
+	wich caused data loss.
+
 Thu Aug 23 21:21:00 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h, birnetutilsxx.hh: always use global uint definition

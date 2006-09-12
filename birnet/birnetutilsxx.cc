@@ -392,7 +392,7 @@ DataList::NodeBase*
 DataList::rip_data (DataKey<void> *key)
 {
   NodeBase *last = NULL, *it;
-  for (it = nodes; it; it = it->next)
+  for (it = nodes; it; last = it, it = last->next)
     if (it->key == key)
       {
         /* unlink existing node */
