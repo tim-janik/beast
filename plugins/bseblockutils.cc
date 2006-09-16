@@ -323,7 +323,15 @@ class BlockImpl : virtual public Bse::Block::Impl {
   create_resampler2 (BseResampler2Mode      mode,
                      BseResampler2Precision precision)
   {
-    return Bse::Resampler::Resampler2::create_impl<true> (mode, precision);
+    struct SSEResampler2 : public Bse::Resampler::Resampler2 {
+      static inline Resampler2*
+      create_resampler (BseResampler2Mode      mode,
+                        BseResampler2Precision precision)
+      {
+        return create_impl<true> (mode, precision);
+      }
+    };
+    return SSEResampler2::create_resampler (mode, precision);
   }
 public:
   void

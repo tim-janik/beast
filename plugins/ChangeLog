@@ -1,3 +1,7 @@
+Sat Sep 16 14:53:00 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.cc: access Resampler2::create_impl() via derivation.
+
 Sat Sep 16 09:35:26 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseblockutils.cc: Provide resampler factory method, so that an SSE
