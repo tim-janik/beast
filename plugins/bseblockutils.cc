@@ -19,6 +19,8 @@
  */
 #include <bse/bsecxxplugin.hh>
 #include <bse/bseblockutils.hh>
+#include <bse/bseresampler.hh>
+#include <bse/bseresampler.tcc>
 #ifndef __SSE__
 #error  SSE support is required for this plugin.
 #endif
@@ -316,6 +318,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
     min_value = minv;
     max_value = maxv;
     return square_sum;
+  }
+  virtual Bse::Resampler::Resampler2*
+  create_resampler2 (BseResampler2Mode      mode,
+                     BseResampler2Precision precision)
+  {
+    return Bse::Resampler::Resampler2::create_impl<true> (mode, precision);
   }
 public:
   void
