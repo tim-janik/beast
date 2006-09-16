@@ -12,8 +12,8 @@ DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 
 EXTRA_DIST += arrows.gp filter-defs.gp
 
-TESTS = testfft loophandle testcxx subnormals blocktests testresampler resamplehandle resamplercapi
-noinst_PROGRAMS = $(TESTS)
+TESTS = testfft loophandle testcxx subnormals blocktests resamplehandle resamplercapi
+noinst_PROGRAMS = $(TESTS) testresampler
 progs_ldadd = $(top_builddir)/bse/libbse.la
 testfft_SOURCES = testfft.c cxxdummy.cc
 testfft_LDADD = $(progs_ldadd)
