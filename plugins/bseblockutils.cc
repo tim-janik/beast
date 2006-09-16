@@ -20,7 +20,7 @@
 #include <bse/bsecxxplugin.hh>
 #include <bse/bseblockutils.hh>
 #include <bse/bseresampler.hh>
-#include <bse/bseresampler.tcc>
+#include <bse/bseresamplerimpl.hh>
 #ifndef __SSE__
 #error  SSE support is required for this plugin.
 #endif

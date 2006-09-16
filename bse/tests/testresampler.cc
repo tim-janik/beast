@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <bse/bseresampler.hh>
-#include <bse/bseresampler.tcc>
+#include <bse/bseresamplerimpl.hh>
 
 #include <stdio.h>
 #include <math.h>

@@ -19,7 +19,7 @@
  */
 #include "bseblockutils.hh"
 #include "bseresampler.hh"
-#include "bseresampler.tcc"
+#include "bseresamplerimpl.hh"
 
 namespace {
 class BlockImpl : virtual public Bse::Block::Impl {
