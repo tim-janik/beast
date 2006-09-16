@@ -1,3 +1,9 @@
+Sat Sep 16 15:14:32 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.c (birnet_malloc_aligned): fixed alginment adjustment so
+	this function *really* returnes aligned memory. added check on whether
+	malloc already aligned the memory the way we wanted it.
+
 Sat Sep 16 09:20:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* birnetutils.[hc]: Added birnet_malloc_aligned(), which allocates

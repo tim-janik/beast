@@ -288,12 +288,15 @@ birnet_malloc_aligned (gsize	  total_size,
 		       gsize	  alignment,
 		       guint8	**free_pointer)
 {
-  *free_pointer = g_malloc (total_size + alignment - 1);
-  
-  uint8 *aligned_mem = *free_pointer;
+  uint8 *aligned_mem = g_malloc (total_size);
+  *free_pointer = aligned_mem;
+  if (!alignment || !(ptrdiff_t) aligned_mem % alignment)
+    return aligned_mem;
+  g_free (aligned_mem);
+  aligned_mem = g_malloc (total_size + alignment - 1);
+  *free_pointer = aligned_mem;
   if ((ptrdiff_t) aligned_mem % alignment)
-    aligned_mem += alignment - (ptrdiff_t) free_pointer % alignment;
-
+    aligned_mem += alignment - (ptrdiff_t) aligned_mem % alignment;
   return aligned_mem;
 }
 
