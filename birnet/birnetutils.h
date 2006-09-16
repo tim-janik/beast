@@ -42,6 +42,10 @@ void birnet_cleanup_force_handlers    (void);
 void birnet_memset4		      (guint32              *mem,
 				       guint32               filler,
 				       guint                 length);
+/* --- memory utils --- */
+void* birnet_malloc_aligned           (gsize                 total_size,
+                                       gsize                 alignment,
+				       guint8             **free_pointer);
 /* --- file testing --- */
 bool birnet_file_check                (const gchar *file,	/* returns errno */
 				       const gchar *mode);

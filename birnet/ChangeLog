@@ -1,3 +1,9 @@
+Sat Sep 16 09:20:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* birnetutils.[hc]: Added birnet_malloc_aligned(), which allocates
+	memory with an arbitary alignment. The caller is responsible for
+	for keeping track of and freeing the unaligned memory.
+
 Tue Sep 12 01:41:18 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutilsxx.cc (rip_data): fix missing updates of 'last' pointer

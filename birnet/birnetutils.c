@@ -282,6 +282,21 @@ birnet_memset4 (guint32        *mem,
   wmemset ((wchar_t*) mem, filler, length);
 }
 
+/* --- memory utils --- */
+void*
+birnet_malloc_aligned (gsize	  total_size,
+		       gsize	  alignment,
+		       guint8	**free_pointer)
+{
+  *free_pointer = g_malloc (total_size + alignment - 1);
+  
+  uint8 *aligned_mem = *free_pointer;
+  if ((ptrdiff_t) aligned_mem % alignment)
+    aligned_mem += alignment - (ptrdiff_t) free_pointer % alignment;
+
+  return aligned_mem;
+}
+
 /* --- file testing --- */
 static int
 errno_check_file (const char *file_name,
