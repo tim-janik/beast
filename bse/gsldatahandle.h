@@ -1,5 +1,6 @@
 /* GSL - Generic Sound Layer
  * Copyright (C) 2001-2003 Tim Janik
+ * Copyright (C) 2006 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -110,6 +111,11 @@ GslDataHandle*	  gsl_data_handle_new_dcached	(GslDataCache	  *dcache);
 GslDataHandle*	  gsl_data_handle_new_looped	(GslDataHandle	  *src_handle,
 						 int64		   loop_first,
 						 int64		   loop_last);
+
+/* --- resampling datahandles with the factor 2 --- */
+GslDataHandle*	  bse_data_handle_new_upsample2	  (GslDataHandle    *src_handle,  // implemented in bsedatahandle-resample.cc
+						   int precision_bits);
+GslDataHandle*	  bse_data_handle_new_downsample2 (GslDataHandle    *src_handle); // implemented in bsedatahandle-resample.cc
 
 /* --- xinfo handling --- */
 GslDataHandle* gsl_data_handle_new_add_xinfos     (GslDataHandle *src_handle,

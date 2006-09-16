@@ -55,6 +55,7 @@ bse_public_h_sources = $(strip \
 	bsenote.h		bsemidifile.h		bseblockutils.hh		\
 	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
+	bseresampler.hh		bseresampler.tcc	\
 )
 # BSE C sources
 bse_c_sources = $(strip \
@@ -86,6 +87,7 @@ bse_c_sources = $(strip \
 	bsenote.c		bsemidifile.c		bseblockutils.cc		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			bseloader.c \
+	bseresampler.cc 	bsedatahandle-resample.cc				\
 	bseloader-aiff.c	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.c \
 	bseloader-mad.c		bseloader-wav.c		\
 )

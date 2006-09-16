@@ -18,6 +18,8 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bseblockutils.hh"
+#include "bseresampler.hh"
+#include "bseresampler.tcc"
 
 namespace {
 class BlockImpl : virtual public Bse::Block::Impl {
@@ -143,6 +145,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
     min_value = minv;
     max_value = maxv;
     return square_sum;
+  }
+  virtual Bse::Resampler::Resampler2*
+  create_resampler2 (BseResampler2Mode      mode,
+                     BseResampler2Precision precision)
+  {
+    return Bse::Resampler::Resampler2::create_impl<false> (mode, precision);
   }
 };
 static BlockImpl default_block_impl;

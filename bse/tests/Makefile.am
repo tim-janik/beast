@@ -12,7 +12,7 @@ DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 
 EXTRA_DIST += arrows.gp filter-defs.gp
 
-TESTS = testfft loophandle testcxx subnormals blocktests
+TESTS = testfft loophandle testcxx subnormals blocktests testresampler resamplehandle resamplercapi
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
 testfft_SOURCES = testfft.c cxxdummy.cc
@@ -21,9 +21,15 @@ testcxx_SOURCES = testcxx.cc
 testcxx_LDADD = $(progs_ldadd)
 subnormals_SOURCES = subnormals.cc subnormals-aux.cc
 subnormals_LDADD = $(progs_ldadd)
-subnormals_CXXFLAGS = -ffast-math
+subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
 loophandle_SOURCES = loophandle.c
 loophandle_LDADD = $(progs_ldadd)
 blocktests_SOURCES = blocktests.cc
 blocktests_LDADD = $(progs_ldadd)
-
+testresampler_SOURCES = testresampler.cc
+testresampler_LDADD = $(progs_ldadd)
+resamplehandle_SOURCES = resamplehandle.cc
+resamplehandle_LDADD = $(progs_ldadd)
+resamplercapi_SOURCES = resamplercapi.c
+resamplercapi_LDADD = $(progs_ldadd)
+ 

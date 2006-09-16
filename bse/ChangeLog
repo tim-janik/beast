@@ -1,3 +1,27 @@
+Sat Sep 16 09:25:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseresampler.tcc bseresampler.cc bseresampler.hh: Added factor 2
+	resampling code (up- and downsampling), which can use SSE instructions
+	when available. The implementation was tuned for speed.
+
+	* gsldatahandle.h bsedatahandle-resample.cc: Provide a datahandle,
+	which does factor 2 upsampling.
+
+	* bseblockutils.cc bseblockutils.hh: Provide factory method for the
+	resampler, so that bse can automatically use the SSE version when SSE
+	instructions are available.
+
+	* tests/testresamplercoeffs.h tests/testresampler.cc: Standalone
+	interactive test code for the resampler.
+
+	* tests/resamplercapi.c tests/resamplehandle.cc: Tests for the
+	resampler C API and the resampler data handle.
+
+	* Makefile.am: Adapted Makefile rules for the new resampler sources.
+
+	* tests/Makefile.am: Adapted Makefile rules for the new resampler
+	tests. Fixed subnormals_CXXFLAGS, which now includes AM_CXXFLAGS.
+
 Sun Sep 10 22:46:55 2006  Tim Janik  <timj@gtk.org>
 
 	* gsldatautils.h, gsldatautils.c: added bse_wave_file_from_fbuffer() and
