@@ -17,42 +17,34 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #include "bseresampler.hh"
 #include "gsldatahandle.h"
 #include <sfi/sficxx.hh>
 #include <vector>
 
-namespace Bse
-{
-
-namespace Resampler
-{
-
-}
-
-using std::vector;
+namespace Bse {
 using Resampler::Resampler2;
+using std::vector;
 
 class DataHandleUpsample2 : public GslDataHandle,
 			    public Sfi::GNewable /* 0 initialization */
 {
   GslDataHandle	       *src_handle;
   int                   precision_bits;
-
-public:
-  gboolean		init_ok;
   vector<Resampler2 *>  upsamplers;
   int64			pcm_frame;
   vector<float>		pcm_data;
   int64			frame_size;
   int64                 filter_delay;
   int64                 filter_order;
+public:
+  bool   		init_ok;
 
-  DataHandleUpsample2 (GslDataHandle *src_handle, int precision_bits)
-    : src_handle (src_handle),
-      precision_bits (precision_bits),
-      init_ok (false)
+  DataHandleUpsample2 (GslDataHandle *src_handle,
+                       int            precision_bits) :
+    src_handle (src_handle),
+    precision_bits (precision_bits),
+    init_ok (false)
   {
     g_return_if_fail (src_handle != NULL);
   
@@ -63,13 +55,11 @@ public:
 	src_handle = gsl_data_handle_ref (src_handle);
       }
   }
-
   ~DataHandleUpsample2()
   {
     gsl_data_handle_unref (src_handle);
     gsl_data_handle_common_free (this);
   }
-
   BseErrorType
   open (GslDataHandleSetup *setup)
   {
@@ -99,7 +89,6 @@ public:
       }
     return BSE_ERROR_NONE;
   }
-
   void
   close()
   {
@@ -112,7 +101,6 @@ public:
     setup.xinfos = NULL;	/* cleanup pointer reference */
     gsl_data_handle_close (src_handle);
   }
-
   int64
   src_read (int64   voffset,
 	    int64   n_values,
@@ -148,9 +136,10 @@ public:
 
     return n_values;
   }
-
   void
-  deinterleave (float* src, float *dest, int64 n_values)
+  deinterleave (float *src,
+                float *dest,
+                int64  n_values)
   {
     const int64 n_channels = setup.n_channels;
 
@@ -158,9 +147,10 @@ public:
       for (int64 v = ch; v < n_values; v += n_channels)
 	*dest++ = src[v];
   }
-
   void
-  interleave (float* src, float *dest, int64 n_values)
+  interleave (float *src,
+              float *dest,
+              int64  n_values)
   {
     const int64 n_channels = setup.n_channels;
 
@@ -168,7 +158,6 @@ public:
       for (int64 v = ch; v < n_values; v += n_channels)
 	dest[v] = *src++;
   }
-
   int64
   prepare_filter_history (int64 frame)
   {
@@ -194,7 +183,6 @@ public:
       }
     return 1;
   }
-
   int64
   read_frame (int64 frame)
   {
@@ -230,11 +218,10 @@ public:
     pcm_frame = frame;
     return 1;
   }
-
   int64
-  read (int64          voffset,
-	int64          n_values,
-	gfloat        *values)
+  read (int64  voffset,
+	int64  n_values,
+	float *values)
   {
     int64 frame = voffset / pcm_data.size();
     if (frame != pcm_frame)
@@ -256,7 +243,7 @@ public:
   }
 };
 
-} // namespace Bse
+} // Bse
 
 using namespace Bse;
 

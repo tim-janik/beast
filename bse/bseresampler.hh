@@ -25,15 +25,13 @@ G_BEGIN_DECLS
 
 typedef struct BseResampler2 BseResampler2;
 
-/* keep synchronized with corresponding factory enum */
-typedef enum	/*< skip >*/
+typedef enum /*< skip >*/
 {
   BSE_RESAMPLER2_MODE_UPSAMPLE,
   BSE_RESAMPLER2_MODE_DOWNSAMPLE
 } BseResampler2Mode;
 
-/* keep synchronized with corresponding factory enum */
-typedef enum	/*< skip >*/
+typedef enum /*< skip >*/
 {
   BSE_RESAMPLER2_PREC_48DB = 8,
   BSE_RESAMPLER2_PREC_72DB = 12,
@@ -54,14 +52,10 @@ guint	       bse_resampler2_order         (BseResampler2         *resampler);
 G_END_DECLS
 
 #ifdef __cplusplus
-
 #include <vector>
 
-namespace Bse
-{
-
-namespace Resampler
-{
+namespace Bse {
+namespace Resampler {
 
 /**
  * Interface for factor 2 resampling classes
@@ -77,24 +71,21 @@ public:
    * virtual destructor for abstract class
    */
   virtual	      ~Resampler2();
-
   /**
    * resample a data block
    */
   virtual void	      process_block (const float *input, unsigned int n_input_samples, float *output) = 0;
-
   /**
    * return FIR filter order
    */
   virtual guint	      order() const = 0;
-
 protected:
   static const double halfband_fir_48db_coeffs[16];
   static const double halfband_fir_72db_coeffs[24];
   static const double halfband_fir_96db_coeffs[32];
   static const double halfband_fir_120db_coeffs[42];
   static const double halfband_fir_144db_coeffs[52];
-
+  
   /* Creates implementation from filter coefficients and Filter implementation class
    *
    * Since up- and downsamplers use different (scaled) coefficients, its possible
@@ -108,17 +99,15 @@ protected:
     float taps[order];
     for (guint i = 0; i < order; i++)
       taps[i] = d[i] * scaling;
-
+    
     Resampler2 *filter = new Filter (taps);
     g_assert (order == filter->order());
     return filter;
   }
-
-public: // FIXME: friend class Bse::Block::Impl;
   /* creates the actual implementation; specifying USE_SSE=true will use
    * SSE instructions, USE_SSE=false will use FPU instructions
    *
-   * Don't use this directly - it's only public in order to be used by
+   * Don't use this directly - it's only to be used by
    * bseblockutils.cc's anonymous Impl classes.
    */
   template<bool USE_SSE> static inline Resampler2*

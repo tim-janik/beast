@@ -1,3 +1,18 @@
+Sat Sep 16 14:45:49 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.cc: access Resampler2::create_impl() via derivation.
+
+	* bseresampler.tcc: whitespace fixups. fixed includes. fixed
+	unconditional use of __m128. renamed AlignedMem to AlignedArray because
+	this class implements aligned array accesses instead of a memory
+	allocator. adapted callers.
+
+	* bsedatahandle-resample.cc:
+	* bseresampler.cc, gsldatahandle.h: whitespace and comment fixups.
+
+	* bse/bseresampler.hh: whitespace fixups. made create_impl() non-public,
+	it can be accessed by blockutil implementations via derivation.
+
 Sat Sep 16 09:25:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseresampler.tcc bseresampler.cc bseresampler.hh: Added factor 2

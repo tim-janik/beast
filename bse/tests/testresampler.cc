@@ -109,7 +109,7 @@ test_filter_impl()
       for (guint i = 0; i < order; i++)
 	taps[i] = i + 1;
 
-      AlignedMem<float,16> sse_taps (fir_compute_sse_taps (taps));
+      AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
       for (unsigned int i = 0; i < sse_taps.size(); i++)
 	{
 	  printf ("%3d", (int) (sse_taps[i] + 0.5));
@@ -120,7 +120,7 @@ test_filter_impl()
 	}
       printf ("\n\n");
 
-      AlignedMem<float,16> random_mem (order + 4);
+      AlignedArray<float,16> random_mem (order + 4);
       for (guint i = 0; i < order + 4; i++)
 	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
 
