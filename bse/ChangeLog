@@ -1,3 +1,10 @@
+Sat Sep 16 15:50:34 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/resamplehandle.cc: merged with resamplercapi.c. made internal
+	functions "static". fixed TSTART() usages. cleaned up main().
+
+	* tests/Makefile.am, tests/resamplercapi.c: removed resamplercapi.c.
+
 Sat Sep 16 15:19:33 2006  Tim Janik  <timj@gtk.org>
 
 	* bseresamplerimpl.hh: renamed bseresampler.tcc to bseresamplerimpl.hh
