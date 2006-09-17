@@ -1,3 +1,11 @@
+Sun Sep 17 13:39:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc tools/bsefcompare.cc: Replace atof with
+	g_ascii_strtod in option parsing, since otherwise the automatic tests
+	in slowtests/audio (and other bsefextract/bsefcompare based scripts)
+	will break when the system locale has a different "decimal point"
+	setting.
+
 Wed Aug 30 21:57:32 2006  Tim Janik  <timj@gtk.org>
 
 	* launchers/suidmain.c (main): abort the program if we failed to drop

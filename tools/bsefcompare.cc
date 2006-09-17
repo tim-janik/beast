@@ -145,7 +145,7 @@ Options::parse (int   *argc_p,
       else if (check_arg (argc, argv, &i, "--permissive"))
         strict = false;
       else if (check_arg (argc, argv, &i, "--threshold", &opt_arg))
-        threshold = atof (opt_arg);
+        threshold = g_ascii_strtod (opt_arg, NULL);
     }
 
   /* resort argc/argv */

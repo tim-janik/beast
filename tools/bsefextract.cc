@@ -1105,13 +1105,13 @@ Options::parse (int   *argc_p,
 	    }
 	}
       else if (check_arg (argc, argv, &i, "--silence-threshold", &opt_arg))
-        silence_threshold = atof (opt_arg) / 32767.0;
+        silence_threshold = g_ascii_strtod (opt_arg, NULL) / 32767.0;
       else if (check_arg (argc, argv, &i, "--focus-width", &opt_arg))
-        validate_percent ("--focus-width", focus_width = atof (opt_arg));
+        validate_percent ("--focus-width", focus_width = g_ascii_strtod (opt_arg, NULL));
       else if (check_arg (argc, argv, &i, "--focus-center", &opt_arg))
-        validate_percent ("--focus-center", focus_center = atof (opt_arg));
+        validate_percent ("--focus-center", focus_center = g_ascii_strtod (opt_arg, NULL));
       else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt_arg))
-        base_freq_hint = atof (opt_arg);
+        base_freq_hint = g_ascii_strtod (opt_arg, NULL);
       else if (check_arg (argc, argv, &i, "--channel", &opt_arg))
         channel = atoi (opt_arg);
       else
