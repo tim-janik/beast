@@ -1,3 +1,19 @@
+Sun Sep 17 16:27:59 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Added option parsing, to be able to specify
+	a lot more details on what test should be performed and how.
+	Use bse to instantiate the upsampler and downsampler; this allows us
+	to use bse's automatic SSE detection features, and bse's coefficient
+	sets. Added --precision option to select coefficient set.
+	Added --freq-scan option, to test accuracy of an entire frequency
+	range with one single call of the program.
+	Added --precision-assert-db option, which allows the test program to
+	be used in automated tests. If the accuracy is less than the specified
+	minimum precision, an assertion is triggered.
+
+	* tests/testresamplercoeffs.h: Remove this file, because the new
+	testresampler code uses the coefficients defined in bseresampler.cc.
+
 Sat Sep 16 15:50:34 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/resamplehandle.cc: merged with resamplercapi.c. made internal
