@@ -736,8 +736,10 @@ win32 port:
 
 oversampling:
 - polish octave scripts
-- design coefficients for 8, 12, 16, 20, 24 bits
-- move Resampler2Factory API to header
+- have a look at 4*, 8*... oversampling
+- plot de-facto filter coefficients
+- does impulse response thingy work for 24bits?
+- --bse-force-fpu interferes with testresampler's option handling
 - check why performance on one of my laptops (voyager) was so bad for SSE code
 - write downsampling datahandle
 - add resampler documentation in synthesis-details.doxi (F.Fact2 rsmpling bstgnmorg) [ 0.7.0 ]
