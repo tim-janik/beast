@@ -1,3 +1,7 @@
+Sun Sep 17 16:42:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Minor fix in usage() function.
+
 Sun Sep 17 16:27:59 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/testresampler.cc: Added option parsing, to be able to specify

@@ -132,7 +132,7 @@ usage ()
   g_printerr ("  testresampler --frequency=500 --block-size=128 au\n");
   g_printerr ("  # check accuracy of upsampling with a frequency-range and a minimum\n");
   g_printerr ("  # precision, using coefficients designed for 20 bits precision:\n");
-  g_printerr ("  testresampler --freq-scan=50,18000,50 --precision-assert-db=100 au\n");
+  g_printerr ("  testresampler --precision=20 --freq-scan=50,18000,50 --precision-assert-db=100 au\n");
 }
 
 
