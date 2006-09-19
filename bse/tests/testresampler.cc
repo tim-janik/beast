@@ -117,9 +117,9 @@ usage ()
   g_printerr ("\n");
   g_printerr ("For the accuracy test, the following options enable testing multiple frequencies:\n");
   g_printerr ("\n");
-  g_printerr (" --freq-scan=<fmin>,<fmax>,<ffact>\n");
+  g_printerr (" --freq-scan=<fmin>,<fmax>,<finc>\n");
   g_printerr ("                            scan frequency frequency range [<fmin>,<fmax>]\n");
-  g_printerr ("                            incrementing frequencies by <ffact> after each scan point\n");
+  g_printerr ("                            incrementing frequencies by <finc> after each scan point\n");
   g_printerr (" --freq-scan-verbose        verbose output for range scanning [%s]\n", options.precision_assert_db ? "true" : "false");
   g_printerr (" --precision-assert-db=<db> assert that the effective precision is <db> dB [%f]\n", options.precision_assert_db);
   g_printerr ("\n");
@@ -251,13 +251,13 @@ Options::parse (int   *argc_p,
 	  gchar *oa = g_strdup (opt_arg);
 	  gchar *fmin = strtok (oa, ",");
 	  gchar *fmax = fmin ? strtok (NULL, ",") : NULL;
-	  gchar *ffact = fmax ? strtok (NULL, ",") : NULL;
+	  gchar *finc = fmax ? strtok (NULL, ",") : NULL;
 
-	  if (ffact)
+	  if (finc)
 	    {
 	      freq_min = g_ascii_strtod (fmin, NULL);
 	      freq_max = g_ascii_strtod (fmax, NULL);
-	      freq_inc = g_ascii_strtod (ffact, NULL);
+	      freq_inc = g_ascii_strtod (finc, NULL);
 	    }
 	  if (freq_inc < 1)
 	    {
