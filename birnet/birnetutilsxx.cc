@@ -24,8 +24,21 @@
 #include <sys/time.h>
 #include <vector>
 #include <algorithm>
+#include <cxxabi.h>
 
 extern "C" {
+
+/* --- demangling --- */
+gchar*
+birnet_cxx_demangle (const char *mangled_identifier) /* from birnetutils.h */
+{
+  int status = 0;
+  char *malloced_result = abi::__cxa_demangle (mangled_identifier, NULL, NULL, &status);
+  gchar *result = g_strdup (malloced_result && !status ? malloced_result : mangled_identifier);
+  if (malloced_result)
+    free (malloced_result);
+  return result;
+}
 
 /* --- initialization for C --- */
 static void (*birnet_init_cplusplus_func) (void) = NULL;
@@ -98,6 +111,17 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
 
 namespace Birnet {
 
+/* --- demangling --- */
+String
+cxx_demangle (const char *mangled_identifier)
+{
+  int status = 0;
+  char *malloced_result = abi::__cxa_demangle (mangled_identifier, NULL, NULL, &status);
+  String result = malloced_result && !status ? malloced_result : mangled_identifier;
+  if (malloced_result)
+    free (malloced_result);
+  return result;
+}
 /* --- InitHooks --- */
 static InitHook *init_hooks = NULL;
 

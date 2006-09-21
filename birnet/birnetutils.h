@@ -52,6 +52,9 @@ bool birnet_file_check                (const gchar *file,	/* returns errno */
 bool birnet_file_equals		      (const gchar *file1,
 				       const gchar *file2);
 
+/* --- C++ demangling --- */
+gchar*  birnet_cxx_demangle	      (const char  *mangled_identifier); /* in birnetutilsxx.cc */
+
 /* --- zintern support --- */
 guint8* birnet_zintern_decompress     (unsigned int          decompressed_size,
 				       const unsigned char  *cdata,

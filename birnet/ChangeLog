@@ -1,3 +1,8 @@
+Thu Sep 21 00:16:05 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.h, birnetutilsxx.cc: added birnet_cxx_demangle() and 
+	cxx_demangle() to easily demangle C++ names.
+
 Sat Sep 16 15:14:32 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.c (birnet_malloc_aligned): fixed alginment adjustment so

@@ -56,6 +56,7 @@ typedef BirnetUniChar		unichar;
 typedef std::string String;
 using std::vector;
 using std::map;       
+String  cxx_demangle    (const char  *mangled_identifier);
 
 /* --- private copy constructor and assignment operator --- */
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
