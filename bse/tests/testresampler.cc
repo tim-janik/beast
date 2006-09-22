@@ -43,25 +43,18 @@ enum TestType
   TEST_NONE,
   TEST_PERFORMANCE,
   TEST_ACCURACY,
-  TEST_GNUPLOT,
+  TEST_ERROR_TABLE,
   TEST_IMPULSE,
   TEST_FILTER_IMPL
 } test_type = TEST_NONE;
 
 enum ResampleType
 {
-  RES_NONE,
   RES_DOWNSAMPLE,
   RES_UPSAMPLE,
   RES_SUBSAMPLE,
   RES_OVERSAMPLE
-} resample_type = RES_NONE;
-
-enum ImplType
-{
-  IMPL_NORMAL,
-  IMPL_SSE
-} impl_type = IMPL_NORMAL;
+} resample_type = RES_UPSAMPLE;
 
 struct Options {
   guint			  block_size;
@@ -70,7 +63,7 @@ struct Options {
   double		  freq_max;
   double		  freq_inc;
   bool                    freq_scan_verbose;
-  double                  precision_assert_db;
+  double                  max_threshold_db;
   BseResampler2Precision  precision;
   string		  program_name;
 
@@ -81,7 +74,7 @@ struct Options {
     freq_max (-1),
     freq_inc (0),
     freq_scan_verbose (false),
-    precision_assert_db (0),
+    max_threshold_db (0),
     precision (BSE_RESAMPLER2_PREC_96DB),
     program_name ("testresampler")
   {
@@ -92,47 +85,52 @@ struct Options {
 static void
 usage ()
 {
-  g_printerr ("usage: testresampler [ <options>... ] <mode>\n");
-  g_printerr ("\n");
-  g_printerr ("The following characters are required for specifying the mode:\n"); 
-  g_printerr ("\n");
-  g_printerr ("  p - performance\n");
-  g_printerr ("  a - accuracy\n");
-  g_printerr ("  g - generate output for gnuplot\n");
-  g_printerr ("  i - impulse response\n");
-  g_printerr ("  F - filter implementation\n");
-  g_printerr ("\n");
-  g_printerr ("  d - downsample\n");
-  g_printerr ("  u - upsample\n");
-  g_printerr ("  s - subsample (= downsample and upsample after that)\n");
-  g_printerr ("  o - oversample (= upsample and downsample after that)\n");
-  g_printerr ("\n");
-  g_printerr ("  f - fast implementation (sse) (optional)\n");
-  g_printerr ("\n");
-  g_printerr ("The following options can be used to change the default parameters for tests:\n");
-  g_printerr ("\n");
-  g_printerr (" --frequency=<freq>         use <freq> as test frequency [%f]\n", options.frequency);
-  g_printerr (" --block-size=<bs>          use <bs> as block size [%d]\n", options.block_size);
-  g_printerr (" --precision=<bits>         use a filter for <bits> precision signals [%d]\n", static_cast<int> (options.precision));
-  g_printerr ("\n");
-  g_printerr ("For the accuracy test, the following options enable testing multiple frequencies:\n");
-  g_printerr ("\n");
-  g_printerr (" --freq-scan=<fmin>,<fmax>,<finc>\n");
-  g_printerr ("                            scan frequency frequency range [<fmin>,<fmax>]\n");
-  g_printerr ("                            incrementing frequencies by <finc> after each scan point\n");
-  g_printerr (" --freq-scan-verbose        verbose output for range scanning [%s]\n", options.precision_assert_db ? "true" : "false");
-  g_printerr (" --precision-assert-db=<db> assert that the effective precision is <db> dB [%f]\n", options.precision_assert_db);
-  g_printerr ("\n");
-  g_printerr ("Examples:\n");
-  g_printerr ("  # check performance of fast upsampling with 256 value blocks:\n");
-  g_printerr ("  testresampler --block-size=256 puf\n");
-  g_printerr ("  # check accuracy of standard upsampling:\n");
-  g_printerr ("  testresampler au\n");
-  g_printerr ("  # check accuracy of standard upsampling using a 500 Hz frequency:\n");
-  g_printerr ("  testresampler --frequency=500 --block-size=128 au\n");
-  g_printerr ("  # check accuracy of upsampling with a frequency-range and a minimum\n");
-  g_printerr ("  # precision, using coefficients designed for 20 bits precision:\n");
-  g_printerr ("  testresampler --precision=20 --freq-scan=50,18000,50 --precision-assert-db=100 au\n");
+  printf ("usage: testresampler <command> [ <options>... ]\n");
+  printf ("\n");
+  printf ("Commands:\n");
+  printf ("  perf                  report sine resampling performance\n");
+  printf ("  accuracy              compare resampled sine signal against\n");
+  printf ("                        ideal output, report error\n");
+  printf ("  error-table           print sine signals (index, resampled-value, ideal-value,\n");
+  printf ("                                            diff-value)\n");
+  printf ("  dirac                 print impulse response (response-value)\n");
+  printf ("  F                     undocumented development feature\n"); /* FIXME: fix and document */
+  printf ("\n");
+  printf ("Resample options:\n");
+  printf ("  --up                  use upsampling by a factor of 2 as resampler [default]\n");
+  printf ("  --down                use downsampling by a factor of 2 as resampler\n");
+  printf ("  --subsample           perform --down and --up\n");
+  printf ("  --oversample          perform --up and --down\n");
+  printf ("  --precision=<bits>    choose resampling filter for <bits> precision\n");
+  printf ("                        supported precisions: 8, 12, 16, 20, 24 [%d]\n", static_cast<int> (options.precision));
+  printf ("  --bse-force-fpu       disable loading of SSE or similarly optimized code\n");
+  printf ("\n");
+  printf ("Options:\n");
+  printf (" --frequency=<freq>     use <freq> as sine test frequency [%f]\n", options.frequency);
+  printf (" --block-size=<bs>      use <bs> as resampler block size [%d]\n", options.block_size);
+  printf ("\n");
+  printf ("Accuracy test options:\n");
+  printf (" --freq-scan=<fmin>,<fmax>,<finc>\n");
+  printf ("                        scan frequency frequency range [<fmin>..<fmax>]\n");
+  printf ("                        incrementing frequencies by <finc> after each scan point\n");
+  printf (" --freq-scan-verbose    print frequency scanning error table (freq, dB-diff)\n");
+  printf (" --max-threshold=<val>  assert that the effective precision is at least <val> dB [%f]\n", options.max_threshold_db);
+  /*           ::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: */
+  printf ("\n");
+  printf ("Examples:\n");
+  printf ("  # check performance of upsampling with 256 value blocks:\n");
+  printf ("  testresampler perf --block-size=256\n");
+  printf ("  # check accuracy of upsampling a 440 Hz sine signal:\n");
+  printf ("  testresampler accuracy\n");
+  printf ("  # check accuracy of downsampling using a 500 Hz frequency:\n");
+  printf ("  testresampler accuracy --frequency=500 --block-size=128\n");
+  printf ("  # check accuracy of upsampling with a frequency-range and a minimum\n");
+  printf ("  # precision, using coefficients designed for 20 bits precision:\n");
+  printf ("  testresampler accuracy --precision=20 --freq-scan=50,18000,50 --max-threshold=110 --up\n");
+  printf ("  # plot the errors occuring in this frequency scan with gnuplot, including the max threshold\n");
+  printf ("  testresampler accuracy --precision=20 --freq-scan=50,18000,50 --freq-scan-verbose --max-threshold=110 --up > x\n");
+  printf ("  gnuplot <(echo 'plot [0:][:0] \"x\" with lines, -110; pause -1')\n");
+
 }
 
 
@@ -270,13 +268,21 @@ Options::parse (int   *argc_p,
 	freq_scan_verbose = true;
       else if (check_arg (argc, argv, &i, "--frequency", &opt_arg))
         frequency = g_ascii_strtod (opt_arg, NULL);
-      else if (check_arg (argc, argv, &i, "--precision-assert-db", &opt_arg))
+      else if (check_arg (argc, argv, &i, "--max-threshold", &opt_arg))
 	{
-	  precision_assert_db = g_ascii_strtod (opt_arg, NULL);
+	  max_threshold_db = g_ascii_strtod (opt_arg, NULL);
 	  /* we allow both: specifying -96 or 96 to assert 96 dB precision */
-	  if (precision_assert_db > 0)
-	    precision_assert_db = -precision_assert_db;
+	  if (max_threshold_db > 0)
+	    max_threshold_db = -max_threshold_db;
 	}
+      else if (check_arg (argc, argv, &i, "--up"))
+        resample_type = RES_UPSAMPLE;
+      else if (check_arg (argc, argv, &i, "--down"))
+        resample_type = RES_DOWNSAMPLE;
+      else if (check_arg (argc, argv, &i, "--subsample"))
+        resample_type = RES_SUBSAMPLE;
+      else if (check_arg (argc, argv, &i, "--oversample"))
+        resample_type = RES_OVERSAMPLE;
     }
 
   /* resort argc/argv */
@@ -355,7 +361,7 @@ test_filter_impl()
   return errors ? 1 : 0;
 }
 
-template <int TEST, int RESAMPLE, int IMPL> int
+template <int TEST, int RESAMPLE> int
 perform_test()
 {
   const guint	block_size = (TEST == TEST_IMPULSE) ? 150 /* enough space for all possible tests */
@@ -420,7 +426,7 @@ perform_test()
       printf ("  or one 44100 Hz stream takes %f %% CPU usage\n", 
 	        100.0 / (k / (end_time - start_time) / 44100.0));
     }
-  else if (TEST == TEST_ACCURACY || TEST == TEST_GNUPLOT)
+  else if (TEST == TEST_ACCURACY || TEST == TEST_ERROR_TABLE)
     {
       const bool freq_scanning = (options.freq_inc > 1);
       const double freq_min = freq_scanning ? options.freq_min : options.frequency;
@@ -511,8 +517,8 @@ perform_test()
 		if (k > (ups->order() * 4))
 		  {
 		    double correct_output = sin ((k - sin_shift) * 2 * freq_factor * test_frequency / 44100.0 * M_PI);
-		    if (TEST == TEST_GNUPLOT)
-		      printf ("%lld %.17f %.17f\n", k, check[i], correct_output);
+		    if (TEST == TEST_ERROR_TABLE)
+		      printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
 		    else
 		      {
 			test_frequency_max_diff = max (test_frequency_max_diff, check[i] - correct_output);
@@ -528,7 +534,7 @@ perform_test()
       if (TEST == TEST_ACCURACY)
 	{
 	  printf ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
-	  g_assert (max_diff_db < options.precision_assert_db);
+	  g_assert (max_diff_db < options.max_threshold_db);
 	}
     }
   else if (TEST == TEST_IMPULSE)
@@ -566,28 +572,23 @@ perform_test()
   return 0;
 }
 
-template <int TEST, int RESAMPLE> int
-perform_test()
-{
-  switch (impl_type)
-    {
-    case IMPL_SSE:    printf ("using SSE instructions\n"); return perform_test<TEST, RESAMPLE, IMPL_SSE> ();
-    case IMPL_NORMAL: printf ("using FPU instructions\n"); return perform_test<TEST, RESAMPLE, IMPL_NORMAL> ();
-    }
-  g_assert_not_reached();
-  return 1;
-}
-
 template <int TEST> int
 perform_test ()
 {
+  const char *instruction_set = (Bse::Block::default_singleton() == Bse::Block::current_singleton()) ? "FPU" : "SSE";
+
   switch (resample_type)
     {
-    case RES_DOWNSAMPLE:  printf ("for factor 2 downsampling "); return perform_test<TEST, RES_DOWNSAMPLE> ();
-    case RES_UPSAMPLE:	  printf ("for factor 2 upsampling "); return perform_test<TEST, RES_UPSAMPLE> ();
-    case RES_SUBSAMPLE:	  printf ("for factor 2 subsampling "); return perform_test<TEST, RES_SUBSAMPLE> ();
-    case RES_OVERSAMPLE:  printf ("for factor 2 oversampling "); return perform_test<TEST, RES_OVERSAMPLE> ();
-    default:		  usage(); return 1;
+    case RES_DOWNSAMPLE:  printf ("for factor 2 downsampling using %s instructions\n", instruction_set);
+			  return perform_test<TEST, RES_DOWNSAMPLE> ();
+    case RES_UPSAMPLE:	  printf ("for factor 2 upsampling using %s instructions\n", instruction_set);
+			  return perform_test<TEST, RES_UPSAMPLE> ();
+    case RES_SUBSAMPLE:	  printf ("for factor 2 subsampling using %s instructions\n", instruction_set);
+			  return perform_test<TEST, RES_SUBSAMPLE> ();
+    case RES_OVERSAMPLE:  printf ("for factor 2 oversampling using %s instructions\n", instruction_set);
+			  return perform_test<TEST, RES_OVERSAMPLE> ();
+    default:		  usage();
+			  return 1;
     }
 }
 
@@ -598,7 +599,7 @@ perform_test()
     {
     case TEST_PERFORMANCE:  printf ("performance test "); return perform_test<TEST_PERFORMANCE> ();
     case TEST_ACCURACY:	    printf ("# accuracy test "); return perform_test<TEST_ACCURACY> ();
-    case TEST_GNUPLOT:	    printf ("# gnuplot test "); return perform_test<TEST_GNUPLOT> ();
+    case TEST_ERROR_TABLE:	    printf ("# gnuplot test "); return perform_test<TEST_ERROR_TABLE> ();
     case TEST_IMPULSE:	    printf ("# impulse response test "); return perform_test<TEST_IMPULSE> ();
     case TEST_FILTER_IMPL:  return test_filter_impl();
     default:		    usage(); return 1;
@@ -608,30 +609,31 @@ perform_test()
 int
 main (int argc, char **argv)
 {
-  birnet_init_test (&argc, &argv);
+  /* load plugins */
+  BirnetInitValue config[] = {
+	{ "load-core-plugins", "1" },
+	{ NULL },
+  };
+  bse_init_test (&argc, &argv, config);
   options.parse (&argc, &argv);
 
   if (argc == 2)
     {
-      for (unsigned int i = 0; i < strlen (argv[1]); i++)
+      string command = argv[1];
+      if (command == "perf" || command == "performance")
+	test_type = TEST_PERFORMANCE;
+      else if (command == "accuracy")
+	test_type = TEST_ACCURACY;
+      else if (command == "error-table")
+	test_type = TEST_ERROR_TABLE;
+      else if (command == "dirac")
+	test_type = TEST_IMPULSE;
+      else if (command == "F")
+	test_type = TEST_FILTER_IMPL;
+      else
 	{
-	  switch (argv[1][i])
-	    {
-	    case 'F': test_type = TEST_FILTER_IMPL; break;
-	    case 'p': test_type = TEST_PERFORMANCE; break;
-	    case 'a': test_type = TEST_ACCURACY; break;
-	    case 'g': test_type = TEST_GNUPLOT; break;
-	    case 'i': test_type = TEST_IMPULSE; break;
-
-	    case 'd': resample_type = RES_DOWNSAMPLE; break;
-	    case 'u': resample_type = RES_UPSAMPLE; break;
-	    case 's': resample_type = RES_SUBSAMPLE; break;
-	    case 'o': resample_type = RES_OVERSAMPLE; break;
-
-	    case 'f': impl_type = IMPL_SSE; break;
-	    default:  g_printerr ("testresampler: unknown mode character '%c'\n", argv[1][i]);
-		      exit (1);
-	    }
+	  g_printerr ("testresampler: unknown mode command: '%s'\n", command.c_str());
+	  exit (1);
 	}
     }
   else if (argc == 1)
@@ -643,22 +645,6 @@ main (int argc, char **argv)
     {
       g_printerr ("testresampler: too many arguments\n");
       exit (1);
-    }
-
-  if (impl_type == IMPL_SSE || test_type == TEST_FILTER_IMPL)
-    {
-      /* load plugins */
-      BirnetInitValue config[] = {
-	{ "load-core-plugins", "1" },
-	{ NULL },
-      };
-      bse_init_test (&argc, &argv, config);
-      /* check for possible specialization */
-      if (Bse::Block::default_singleton() == Bse::Block::current_singleton())
-	{
-	  fprintf (stderr, "testresampler: bse didn't detect SSE support, so SSE support can not be tested\n");
-	  return 0;   /* don't break automated tests on non-SSE machines: return 0 */
-	}
     }
   return perform_test();
 }

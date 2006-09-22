@@ -1,3 +1,12 @@
+Fri Sep 22 15:25:19 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Make resampler more user friendly, by using
+	more long options, explicit command names and improving the usage. For
+	instance testresampler ad becomes testresampler accuracy --down.
+	We also leave it up to bse to determine whether to use the SSE or FPU
+	variant; bse's decision can be influenced by --bse-force-fpu.
+	Print usage() to stdout, to make it less'able.
+
 Sun Sep 17 16:42:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/testresampler.cc: Minor fix in usage() function.
