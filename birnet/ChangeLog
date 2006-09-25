@@ -1,3 +1,11 @@
+Mon Sep 25 02:10:43 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetsignalslot.hh: fixed reference handling for Data slots, so
+        reference types are supported as Data argument (they need to implement
+        operator==() though).
+
+	* tests/signal.cc: added data reference slot creation.
+
 Thu Sep 21 00:16:05 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.h, birnetutilsxx.cc: added birnet_cxx_demangle() and 
