@@ -131,6 +131,8 @@ public:
   static inline
   Resampler2*           create_resampler2    (BseResampler2Mode      mode,
                                               BseResampler2Precision precision)	  { return singleton->create_resampler2 (mode, precision); }
+  static inline
+  bool                  test_resampler2	     ()					  { return singleton->test_resampler2(); }
 
 
     
@@ -171,6 +173,7 @@ public:
     virtual
     Resampler2*   create_resampler2     (BseResampler2Mode      mode,
                                          BseResampler2Precision precision) = 0;
+    virtual bool  test_resampler2	() = 0;
   friend class Block;
     static  void  substitute            (Impl           *substitute_impl);
   };

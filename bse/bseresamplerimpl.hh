@@ -22,6 +22,7 @@
 #include <vector>
 #include <bse/bseresampler.hh>
 #include <birnet/birnet.h>
+#include <math.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
@@ -206,6 +207,69 @@ public:
     return n_elements;
   }
 };
+
+/**
+ * This function tests the SSEified FIR filter code (that is, the reordering
+ * done by fir_compute_sse_taps and the actual computation implemented in
+ * fir_process_4samples_sse).
+ *
+ * It prints diagnostic information, and returns true if the filter
+ * implementation works correctly, and false otherwise. The maximum filter
+ * order to be tested can be optionally specified as argument.
+ */
+static inline bool
+fir_test_filter_sse (const guint max_order = 64)
+{
+  int errors = 0;
+  printf ("testing SSE filter implementation:\n\n");
+
+  for (guint order = 0; order < max_order; order++)
+    {
+      vector<float> taps (order);
+      for (guint i = 0; i < order; i++)
+	taps[i] = i + 1;
+
+      AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
+      for (unsigned int i = 0; i < sse_taps.size(); i++)
+	{
+	  printf ("%3d", (int) (sse_taps[i] + 0.5));
+	  if (i % 4 == 3)
+	    printf ("  |");
+	  if (i % 16 == 15)
+	    printf ("   ||| upper bound = %d\n", (order + 6) / 4);
+	}
+      printf ("\n\n");
+
+      AlignedArray<float,16> random_mem (order + 4);
+      for (guint i = 0; i < order + 4; i++)
+	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
+
+      /* FIXME: the problem with this test is that we explicitely test SSE code
+       * here, but the test case is not compiled with -msse within the BEAST tree
+       */
+      float out[4];
+      fir_process_4samples_sse (&random_mem[0], &sse_taps[0], order,
+	                        &out[0], &out[1], &out[2], &out[3]);
+
+      double adiff = 0.0;
+      for (int i = 0; i < 4; i++)
+	{
+	  double diff = fir_process_one_sample<double> (&random_mem[i], &taps[0], order) - out[i];
+	  adiff += fabs (diff);
+	}
+      if (adiff > 0.0001)
+	{
+	  printf ("*** order = %d, adiff = %f\n", order, adiff);
+	  errors++;
+	}
+    }
+  if (errors)
+    printf ("*** %d errors detected\n", errors);
+  else
+    printf ("filter implementation ok.\n");
+
+  return (errors == 0);
+}
 
 /**
  * Factor 2 upsampling of a data stream

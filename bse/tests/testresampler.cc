@@ -94,7 +94,8 @@ usage ()
   printf ("  error-table           print sine signals (index, resampled-value, ideal-value,\n");
   printf ("                                            diff-value)\n");
   printf ("  dirac                 print impulse response (response-value)\n");
-  printf ("  F                     undocumented development feature\n"); /* FIXME: fix and document */
+  printf ("  filter-impl           tests SSE filter implementation for correctness\n");
+  printf ("                        doesn't test anything when running without SSE support\n");
   printf ("\n");
   printf ("Resample options:\n");
   printf ("  --up                  use upsampling by a factor of 2 as resampler [default]\n");
@@ -297,6 +298,11 @@ Options::parse (int   *argc_p,
   *argc_p = e;
 }
 
+int
+test_filter_impl()
+{
+  return Bse::Block::test_resampler2() ? 0 : 1;
+}
 
 double
 gettime ()
@@ -305,60 +311,6 @@ gettime ()
   gettimeofday (&tv, 0);
 
   return tv.tv_sec + tv.tv_usec / 1000000.0;
-}
-
-int
-test_filter_impl()
-{
-  int errors = 0;
-  printf ("testing filter implementation:\n\n");
-
-  for (guint order = 0; order < 64; order++)
-    {
-      vector<float> taps (order);
-      for (guint i = 0; i < order; i++)
-	taps[i] = i + 1;
-
-      AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
-      for (unsigned int i = 0; i < sse_taps.size(); i++)
-	{
-	  printf ("%3d", (int) (sse_taps[i] + 0.5));
-	  if (i % 4 == 3)
-	    printf ("  |");
-	  if (i % 16 == 15)
-	    printf ("   ||| upper bound = %d\n", (order + 6) / 4);
-	}
-      printf ("\n\n");
-
-      AlignedArray<float,16> random_mem (order + 4);
-      for (guint i = 0; i < order + 4; i++)
-	random_mem[i] = 1.0 - rand() / (0.5 * RAND_MAX);
-
-      /* FIXME: the problem with this test is that we explicitely test SSE code
-       * here, but the test case is not compiled with -msse within the BEAST tree
-       */
-      float out[4];
-      fir_process_4samples_sse (&random_mem[0], &sse_taps[0], order,
-	                        &out[0], &out[1], &out[2], &out[3]);
-
-      double adiff = 0.0;
-      for (int i = 0; i < 4; i++)
-	{
-	  double diff = fir_process_one_sample<double> (&random_mem[i], &taps[0], order) - out[i];
-	  adiff += fabs (diff);
-	}
-      if (adiff > 0.0001)
-	{
-	  printf ("*** order = %d, adiff = %f\n", order, adiff);
-	  errors++;
-	}
-    }
-  if (errors)
-    printf ("*** %d errors detected\n", errors);
-  else
-    printf ("filter implementation ok.\n");
-
-  return errors ? 1 : 0;
 }
 
 template <int TEST, int RESAMPLE> int
@@ -628,7 +580,7 @@ main (int argc, char **argv)
 	test_type = TEST_ERROR_TABLE;
       else if (command == "dirac")
 	test_type = TEST_IMPULSE;
-      else if (command == "F")
+      else if (command == "filter-impl")
 	test_type = TEST_FILTER_IMPL;
       else
 	{
