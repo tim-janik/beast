@@ -125,46 +125,47 @@ fir_hp (const gfloat *src,
     }
 }
 
-GslDataHandle *gsl_loop_highpass_handle (GslDataHandle *src_handle,
-				         gdouble       freq1,
-				         gdouble       freq1_level_db,
-				         gdouble       freq2)
+GslDataHandle*
+gsl_loop_highpass_handle (GslDataHandle *src_handle,
+			  gdouble        freq1,
+			  gdouble        freq1_level_db,
+			  gdouble        freq2)
 {
   g_return_val_if_fail (src_handle != NULL, NULL);
-
+  
   /* check out data handle */
   if (gsl_data_handle_open (src_handle) != BSE_ERROR_NONE)
     return NULL;
-
+  
   GslLong src_handle_n_values   = gsl_data_handle_n_values (src_handle);
   GslLong src_handle_n_channels = gsl_data_handle_n_channels (src_handle);
   GslLong src_handle_mix_freq   = gsl_data_handle_mix_freq (src_handle);
   GslLong src_handle_osc_freq   = gsl_data_handle_osc_freq (src_handle);
-  gchar **src_handle_xinfos     = src_handle->setup.xinfos;
-
+  
   /* read input */
-  gfloat *src_values  = g_new (gfloat, src_handle_n_values);
+  gfloat *src_values = g_new (gfloat, src_handle_n_values);
   GslLong i;
   GslDataPeekBuffer pbuf = { +1, };
-  for (i = 0; i < src_handle_n_values; i++)
+  for (i = 0; i < src_handle_n_values; i++) /* FIXME: use gsl_data_handle_read() */
     src_values[i] = gsl_data_handle_peek_value (src_handle, i, &pbuf);
-
+  
   /* apply fir filter to new memory buffer */
   gfloat *dest_values = g_new (gfloat, src_handle_n_values);
   fir_hp (src_values, src_handle_n_values, dest_values, freq1, freq1_level_db, freq2);
   g_free (src_values);
-
+  
   /* create a mem handle with filtered data */
-  GslDataHandle *dest_handle = gsl_data_handle_new_mem (src_handle_n_channels,
-							32, // bit_depth: possibly increased by filtering
-						        src_handle_mix_freq,
-							src_handle_osc_freq,
-							src_handle_n_values,
-							dest_values,
-							g_free);
-
+  GslDataHandle *mhandle = gsl_data_handle_new_mem (src_handle_n_channels,
+                                                    32, // bit_depth: possibly increased by filtering
+                                                    src_handle_mix_freq,
+                                                    src_handle_osc_freq,
+                                                    src_handle_n_values,
+                                                    dest_values,
+                                                    g_free);
+  GslDataHandle *dhandle = gsl_data_handle_new_add_xinfos (mhandle, src_handle->setup.xinfos);
   gsl_data_handle_close (src_handle);
-  return gsl_data_handle_new_add_xinfos (dest_handle, src_handle_xinfos);
+  gsl_data_handle_unref (mhandle);
+  return dhandle;
 }
 
 static gdouble

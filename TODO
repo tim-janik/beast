@@ -1,4 +1,6 @@
 NEXT-RELEASE:
+- wave-tool:
+  * bit-width conversion float<->16 (optional saturation)
 - undef _DOMAIN
 - rename: bse/Makefile.am: bse_c_sources & bse_cc_sources
 - fix birnet_thread_run uses (unref thread)

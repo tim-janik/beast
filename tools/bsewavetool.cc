@@ -1797,7 +1797,7 @@ public:
     g_print ("{-m=midi-note|-f=osc-freq|--all-chunks|-x=filename} [options]\n");
     if (bshort)
       return;
-    g_print ("    Export chunks from bsewave file.\n");
+    g_print ("    Export chunks from bsewave as WAV file.\n");
     g_print ("    Options:\n");
     g_print ("    -x <filename>       set export filename (supports %%N %%F and %%C, see below)\n");
     g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");

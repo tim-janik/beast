@@ -1,3 +1,11 @@
+Tue Sep 26 18:47:39 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: mention in --help that chunks are exported
+	as WAV files.
+
+	* tools/bseloopfuncs.c: minor fixups.
+	don't leak data handles in gsl_loop_highpass_handle().
+
 Sun Sep 17 13:39:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc tools/bsefcompare.cc: Replace atof with
