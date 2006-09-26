@@ -1,3 +1,8 @@
+Tue Sep 26 10:38:12 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseblockutils.cc: Use fir_test_filter_sse() within test_resampler2()
+	hook, to test that the SSEified FIR filter routines work as expected.
+
 Sat Sep 16 14:53:00 2006  Tim Janik  <timj@gtk.org>
 
 	* bseblockutils.cc: access Resampler2::create_impl() via derivation.
