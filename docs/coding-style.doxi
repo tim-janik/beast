@@ -148,6 +148,35 @@ It is important that the colon (":") is placed after the constructor declaration
 whereas the member initializers (or chained parent constructors) are placed on
 the next lines.
 
+@subsection Data members in classes are declared before functions
+
+@emph{Reasons:}
+@itemize
+@item By using this rule, it becomes easier to read the data members a class
+      has, because they are always declared at the beginning of the class.
+@done
+
+@emph{Code Example:}
+@example
+class AudioDistortion
+{
+  double m_amount;
+public:
+  void
+  set_amount (double amount)
+  {
+    m_amount = amount;
+  }
+  void
+  distort_block (vector<float>& block)
+  {
+    [...]
+  }
+  [...]
+};
+@done
+
+
 @section Names
 
 @subsection Functions, Methods, Members, Arguments and Local Variables are written as @code{lower_case_underscore_names}

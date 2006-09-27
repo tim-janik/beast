@@ -1,3 +1,8 @@
+Wed Sep 27 13:38:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/coding-style.doxi: Added rule that data members in classes are
+	declared before functions.
+
 Wed Sep 27 11:30:27 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/Makefile.am:
