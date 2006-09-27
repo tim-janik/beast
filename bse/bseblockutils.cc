@@ -161,11 +161,12 @@ class BlockImpl : virtual public Bse::Block::Impl {
     return FPUResampler2::create_resampler (mode, precision);
   }
   virtual bool
-  test_resampler2()
+  test_resampler2 (bool verbose)
   {
     /* there is currently only a test for the SSE filter code, so in the
      * non-SSE-case we simply always return true
      */
+    g_print ("SSE filter implementation not tested: no SSE support available\n");
     return true;
   }
 };

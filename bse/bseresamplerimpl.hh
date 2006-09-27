@@ -218,10 +218,12 @@ public:
  * order to be tested can be optionally specified as argument.
  */
 static inline bool
-fir_test_filter_sse (const guint max_order = 64)
+fir_test_filter_sse (bool        verbose,
+                     const guint max_order = 64)
 {
   int errors = 0;
-  printf ("testing SSE filter implementation:\n\n");
+  if (verbose)
+    printf ("testing SSE filter implementation:\n\n");
 
   for (guint order = 0; order < max_order; order++)
     {
@@ -230,15 +232,18 @@ fir_test_filter_sse (const guint max_order = 64)
 	taps[i] = i + 1;
 
       AlignedArray<float,16> sse_taps (fir_compute_sse_taps (taps));
-      for (unsigned int i = 0; i < sse_taps.size(); i++)
+      if (verbose)
 	{
-	  printf ("%3d", (int) (sse_taps[i] + 0.5));
-	  if (i % 4 == 3)
-	    printf ("  |");
-	  if (i % 16 == 15)
-	    printf ("   ||| upper bound = %d\n", (order + 6) / 4);
+	  for (unsigned int i = 0; i < sse_taps.size(); i++)
+	    {
+	      printf ("%3d", (int) (sse_taps[i] + 0.5));
+	      if (i % 4 == 3)
+		printf ("  |");
+	      if (i % 16 == 15)
+		printf ("   ||| upper bound = %d\n", (order + 6) / 4);
+	    }
+	  printf ("\n\n");
 	}
-      printf ("\n\n");
 
       AlignedArray<float,16> random_mem (order + 4);
       for (guint i = 0; i < order + 4; i++)
@@ -259,7 +264,8 @@ fir_test_filter_sse (const guint max_order = 64)
 	}
       if (adiff > 0.0001)
 	{
-	  printf ("*** order = %d, adiff = %f\n", order, adiff);
+	  if (verbose)
+	    printf ("*** order = %d, adiff = %f\n", order, adiff);
 	  errors++;
 	}
     }

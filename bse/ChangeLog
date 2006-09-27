@@ -1,3 +1,10 @@
+Wed Sep 27 21:35:12 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseblockutils.cc:
+	* bseblockutils.hh:
+	* bseresamplerimpl.hh: Only optionally produce output during the
+	filter implementation test.
+
 Wed Sep 27 13:04:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsedatahandle-resample.cc: Fixes and cleanups. Upsampling Datahandle
