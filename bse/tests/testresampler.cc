@@ -104,7 +104,7 @@ usage ()
   printf ("  --oversample          perform --up and --down\n");
   printf ("  --precision=<bits>    choose resampling filter for <bits> precision\n");
   printf ("                        supported precisions: 8, 12, 16, 20, 24 [%d]\n", static_cast<int> (options.precision));
-  printf ("  --bse-force-fpu       disable loading of SSE or similarly optimized code\n");
+  printf ("  --fpu                 disables loading of SSE or similarly optimized code\n");
   printf ("\n");
   printf ("Options:\n");
   printf (" --frequency=<freq>     use <freq> as sine test frequency [%f]\n", options.frequency);
@@ -486,6 +486,8 @@ perform_test()
       if (TEST == TEST_ACCURACY)
 	{
 	  printf ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
+	  if (max_diff_db < 0)
+	    printf ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
 	  g_assert (max_diff_db < options.max_threshold_db);
 	}
     }
@@ -561,6 +563,13 @@ perform_test()
 int
 main (int argc, char **argv)
 {
+  /* preprocess args: allow using --fpu instead of --bse-force-fpu,
+   * because its a really common use case for the resampler test
+   */
+  for (int i = 0; i < argc; i++)
+    if (strcmp (argv[i], "--fpu") == 0)
+      argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
+
   /* load plugins */
   BirnetInitValue config[] = {
 	{ "load-core-plugins", "1" },

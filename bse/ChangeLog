@@ -1,3 +1,11 @@
+Wed Sep 27 11:27:35 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Allow using --fpu instead of
+	--bse-force-fpu, because that means less typing.
+	In the accuracy test, print out the threshold given by the user, if
+	any (that way, it becomes easier to validate the "safety margin"
+	between the specified and the actual threshold)
+
 Tue Sep 26 10:34:03 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseblockutils.cc bseblockutils.hh: Provide hook for testing the
