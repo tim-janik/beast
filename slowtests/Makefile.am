@@ -43,7 +43,7 @@ generated: clean-generated $(GENERATED)
 
 # === test programs ===
 TESTS = perftest testwavechunk
-noinst_PROGRAMS = $(TESTS)
+noinst_PROGRAMS = $(TESTS) testresampler
 progs_ldadd = $(top_builddir)/bse/libbse.la
 # testwavechunk
 testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
@@ -51,3 +51,6 @@ testwavechunk_LDADD = $(progs_ldadd)
 # perftest
 perftest_SOURCES = perftest.cc bsecxxapi.cc
 perftest_LDADD = $(progs_ldadd)
+# testresampler
+testresampler_SOURCES = testresampler.cc
+testresampler_LDADD = $(progs_ldadd)

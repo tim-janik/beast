@@ -1,3 +1,11 @@
+Wed Sep 27 11:30:27 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/Makefile.am:
+	* slowtests/testresampler.cc: Moved testresampler.cc from bse/tests to
+	slowtests, to prepare it for automatic accuracy testing. Excessive
+	automatic testing will be quite slow, thus it needs to be in this
+	directory.
+
 Tue Sep 26 18:47:39 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: mention in --help that chunks are exported
