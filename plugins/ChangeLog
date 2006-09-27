@@ -1,3 +1,8 @@
+Wed Sep 27 21:59:47 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseblockutils.cc: Only optionally produce output during the filter
+	implementation test.
+
 Tue Sep 26 10:38:12 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseblockutils.cc: Use fir_test_filter_sse() within test_resampler2()

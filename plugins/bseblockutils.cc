@@ -334,9 +334,9 @@ class BlockImpl : virtual public Bse::Block::Impl {
     return SSEResampler2::create_resampler (mode, precision);
   }
   virtual bool
-  test_resampler2()
+  test_resampler2 (bool verbose)
   {
-    return Bse::Resampler::fir_test_filter_sse();
+    return Bse::Resampler::fir_test_filter_sse (verbose);
   }
 public:
   void
