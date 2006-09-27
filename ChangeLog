@@ -1,3 +1,8 @@
+Wed Sep 27 21:33:48 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/testresampler.cc: Trimmed default output of "filter-impl"
+	test. Verbose output can be enabled using --filter-impl-verbose.
+
 Wed Sep 27 20:02:00 2006  Tim Janik  <timj@gtk.org>
 
 	* slowtests/Makefile.am: build and check ./ before subdirs.

@@ -65,6 +65,7 @@ struct Options {
   bool                    freq_scan_verbose;
   double                  max_threshold_db;
   BseResampler2Precision  precision;
+  bool                    filter_impl_verbose;
   string		  program_name;
 
   Options() :
@@ -76,6 +77,7 @@ struct Options {
     freq_scan_verbose (false),
     max_threshold_db (0),
     precision (BSE_RESAMPLER2_PREC_96DB),
+    filter_impl_verbose (false),
     program_name ("testresampler")
   {
   }
@@ -109,6 +111,7 @@ usage ()
   printf ("Options:\n");
   printf (" --frequency=<freq>     use <freq> as sine test frequency [%f]\n", options.frequency);
   printf (" --block-size=<bs>      use <bs> as resampler block size [%d]\n", options.block_size);
+  printf (" --filter-impl-verbose  print reordered coefficients (debugging only)\n");
   printf ("\n");
   printf ("Accuracy test options:\n");
   printf (" --freq-scan=<fmin>,<fmax>,<finc>\n");
@@ -276,6 +279,8 @@ Options::parse (int   *argc_p,
 	  if (max_threshold_db > 0)
 	    max_threshold_db = -max_threshold_db;
 	}
+      else if (check_arg (argc, argv, &i, "--filter-impl-verbose"))
+	filter_impl_verbose = true;
       else if (check_arg (argc, argv, &i, "--up"))
         resample_type = RES_UPSAMPLE;
       else if (check_arg (argc, argv, &i, "--down"))
@@ -301,7 +306,7 @@ Options::parse (int   *argc_p,
 int
 test_filter_impl()
 {
-  return Bse::Block::test_resampler2() ? 0 : 1;
+  return Bse::Block::test_resampler2 (options.filter_impl_verbose) ? 0 : 1;
 }
 
 double
