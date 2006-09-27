@@ -1,3 +1,9 @@
+Wed Sep 27 20:02:00 2006  Tim Janik  <timj@gtk.org>
+
+	* slowtests/Makefile.am: build and check ./ before subdirs.
+	added various testresampler checks to check: rule which were suggested
+	by Stefan Westerfeld.
+
 Wed Sep 27 13:38:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/coding-style.doxi: Added rule that data members in classes are

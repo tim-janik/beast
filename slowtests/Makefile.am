@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = audio filecheck
+SUBDIRS = . audio filecheck
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
 DEFS += -DG_LOG_DOMAIN="\"BEAST-TEST\"" # -DG_DISABLE_CONST_RETURNS
@@ -43,7 +43,7 @@ generated: clean-generated $(GENERATED)
 
 # === test programs ===
 TESTS = perftest testwavechunk
-noinst_PROGRAMS = $(TESTS) testresampler
+noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
 # testwavechunk
 testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
@@ -51,6 +51,44 @@ testwavechunk_LDADD = $(progs_ldadd)
 # perftest
 perftest_SOURCES = perftest.cc bsecxxapi.cc
 perftest_LDADD = $(progs_ldadd)
-# testresampler
+
+# === Resampler tests ===
+noinst_PROGRAMS += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD = $(progs_ldadd)
+check-am: resampler-checks # runs resampler tests before ordinare checks
+#check-local: resampler-checks # runs resampler tests after ordinare checks
+resampler-checks:
+	: ## test SSE filter implementation
+	./testresampler filter-impl
+	: ## (possibly SSEified) upsampler tests
+	./testresampler accuracy --up --precision=8 --freq-scan=50,18000,50  --max-threshold=45     # ideally: 48dB
+	./testresampler accuracy --up --precision=12 --freq-scan=50,18000,50 --max-threshold=66.5   # ideally: 72dB
+	./testresampler accuracy --up --precision=16 --freq-scan=50,18000,50 --max-threshold=89     # ideally: 96dB
+	./testresampler accuracy --up --precision=20 --freq-scan=50,18000,50 --max-threshold=113.5  # ideally: 120dB
+	./testresampler accuracy --up --precision=24 --freq-scan=50,18000,50 --max-threshold=126.5  # ideally: 144dB
+	: ## (possibly SSEified) downsampler tests
+	./testresampler accuracy --down --precision=8  --freq-scan=25,9000,25 --max-threshold=51    # ideally: 48dB
+	./testresampler accuracy --down --precision=12 --freq-scan=25,9000,25 --max-threshold=72    # ideally: 72dB
+	./testresampler accuracy --down --precision=16 --freq-scan=25,9000,25 --max-threshold=95    # ideally: 96dB
+	./testresampler accuracy --down --precision=20 --freq-scan=25,9000,25 --max-threshold=119.5 # ideally: 120dB
+	./testresampler accuracy --down --precision=24 --freq-scan=25,9000,25 --max-threshold=131   # ideally: 144dB
+	: ## FPU upsampler tests
+	./testresampler accuracy --fpu --up --precision=8  --freq-scan=50,18000,50 --max-threshold=45     # ideally: 48dB
+	./testresampler accuracy --fpu --up --precision=12 --freq-scan=50,18000,50 --max-threshold=66.5   # ideally: 72dB
+	./testresampler accuracy --fpu --up --precision=16 --freq-scan=50,18000,50 --max-threshold=89     # ideally: 96dB
+	./testresampler accuracy --fpu --up --precision=20 --freq-scan=50,18000,50 --max-threshold=113.5  # ideally: 120dB
+	./testresampler accuracy --fpu --up --precision=24 --freq-scan=50,18000,50 --max-threshold=126    # ideally: 144dB
+	: ## FPU downsampler tests
+	./testresampler accuracy --fpu --down --precision=8  --freq-scan=25,9000,25 --max-threshold=51    # ideally: 48dB
+	./testresampler accuracy --fpu --down --precision=12 --freq-scan=25,9000,25 --max-threshold=72    # ideally: 72dB
+	./testresampler accuracy --fpu --down --precision=16 --freq-scan=25,9000,25 --max-threshold=95    # ideally: 96dB
+	./testresampler accuracy --fpu --down --precision=20 --freq-scan=25,9000,25 --max-threshold=119.5 # ideally: 120dB
+	./testresampler accuracy --fpu --down --precision=24 --freq-scan=25,9000,25 --max-threshold=131   # ideally: 144dB
+	: ## sparse testing of sub- and oversampling (we don't test every combination of
+	: ## flags here, but this is also an uncommon usage scenario)
+	./testresampler accuracy       --oversample --precision=8  --freq-scan=50,18000,50 --max-threshold=45   # ideally: 48dB
+	./testresampler accuracy       --oversample --precision=16 --freq-scan=50,18000,50 --max-threshold=89   # ideally: 96dB
+	./testresampler accuracy --fpu --oversample --precision=16 --freq-scan=50,18000,50 --max-threshold=89   # ideally: 96dB
+	./testresampler accuracy       --subsample  --precision=16 --freq-scan=25,9000,25  --max-threshold=85.5 # ideally: 96dB
+	./testresampler accuracy --fpu --subsample  --precision=16 --freq-scan=25,9000,25  --max-threshold=85.5 # ideally: 96dB
