@@ -1,3 +1,12 @@
+Wed Sep 27 13:04:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-resample.cc: Fixes and cleanups. Upsampling Datahandle
+	class Members are now prefixed with m_, all code that could possibly
+	be moved into the class - such as the C vtable - is now present as
+	static functions within the class, the destructor was made private
+	- because reference counting is supposed to be used.
+	Finally the class uses C style inheritance, by embedding m_dhandle.
+
 Wed Sep 27 11:30:27 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am:
