@@ -200,17 +200,17 @@ void  birnet_cond__chain4init      (BirnetCond *cond);
 void  birnet_cond__unchain         (BirnetCond *cond);
 #define BIRNET_MUTEX__DECLARE_INITIALIZED(mutexname)                            \
   BirnetMutex mutexname = { 0 };                                                \
-  static void __attribute__ ((constructor))                                     \
+  static void BIRNET_CONSTRUCTOR                                     		\
   BIRNET_CPP_PASTE4 (__birnet_mutex__autoinit, __LINE__, __, mutexname) (void)	\
   { birnet_mutex__chain4init (&mutexname); }
 #define BIRNET_REC_MUTEX__DECLARE_INITIALIZED(recmtx)                           \
   BirnetRecMutex recmtx = { { 0 } };                                            \
-  static void __attribute__ ((constructor))                                     \
+  static void BIRNET_CONSTRUCTOR                                     		\
   BIRNET_CPP_PASTE4 (__birnet_rec_mutex__autoinit, __LINE__, __, recmtx) (void)	\
   { birnet_rec_mutex__chain4init (&recmtx); }
 #define BIRNET_COND__DECLARE_INITIALIZED(condname)                              \
   BirnetCond condname = { 0 };                                                  \
-  static void __attribute__ ((constructor))                                     \
+  static void BIRNET_CONSTRUCTOR                                     		\
   BIRNET_CPP_PASTE4 (__birnet_cond__autoinit, __LINE__, __, condname) (void)	\
   { birnet_cond__chain4init (&condname); }
 

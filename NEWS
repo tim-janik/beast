@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.7.1:
+
+* Fixes for gcc-3.3
+
 Overview of Changes in BEAST/BSE 0.7.0:
 
 * Renamed scheme shell to bsescm

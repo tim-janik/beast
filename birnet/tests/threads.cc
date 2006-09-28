@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-// #define TEST_VERBOSE
+//#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 
 namespace {
@@ -815,10 +815,21 @@ test_before_thread_init()
 
 } // Anon
 
+static guint constructur_attribute_test = 0;
+
+static void BIRNET_CONSTRUCTOR
+constructur_attribute_test_initializer (void)
+{
+  constructur_attribute_test = 0x1237ABBA;
+}
+
 int
 main (int   argc,
       char *argv[])
 {
+  if (constructur_attribute_test != 305638330)
+    g_error ("%s: static constructors have not been called before main", G_STRFUNC);
+
   test_before_thread_init();
 
   birnet_init_test (&argc, &argv);

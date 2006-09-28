@@ -114,6 +114,7 @@ typedef BirnetUInt32          BirnetUniChar;
 #define BIRNET_DEPRECATED                       __attribute__ ((__deprecated__))
 #define BIRNET_ALWAYS_INLINE			__attribute__ ((always_inline))
 #define BIRNET_NEVER_INLINE			__attribute__ ((noinline))
+#define BIRNET_CONSTRUCTOR			__attribute__ ((constructor,used)) /* gcc-3.3 also needs "used" */
 #else   /* !__GNUC__ */
 #define BIRNET_PRETTY_FUNCTION                  (__func__)
 #define BIRNET_PURE
@@ -128,7 +129,8 @@ typedef BirnetUInt32          BirnetUniChar;
 #define BIRNET_DEPRECATED
 #define BIRNET_ALWAYS_INLINE
 #define BIRNET_NEVER_INLINE
-#error  Failed to detect a recent GCC version (>= 3.1)
+#define BIRNET_CONSTRUCTOR
+#error  Failed to detect a recent GCC version (>= 3.3)
 #endif  /* !__GNUC__ */
 
 /* --- convenient type shorthands --- */

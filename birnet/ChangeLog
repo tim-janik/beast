@@ -1,3 +1,16 @@
+Thu Sep 28 01:01:55 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcore.h: introduce BIRNET_CONSTRUCTOR which wraps gcc's 
+	"constructor" argument. as a work around for gcc-3.3, which tends
+	to forget to emit code for static constructor functions if 
+	-finline-functions is activated, also add attribute "used".
+
+	* birnetthread.h:
+	* birnetmsg.h: use BIRNET_CONSTRUCTOR to declare constructor functions.
+
+	* tests/threads.cc: added a check for proper constructor function
+	invokation before main().
+
 Mon Sep 25 02:10:43 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetsignalslot.hh: fixed reference handling for Data slots, so
