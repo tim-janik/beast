@@ -159,7 +159,7 @@ echo "no" | $GLIB_GETTEXTIZE --force || exit $?
 echo "Providing our own patched intltool..."
 # echo "Running: intltoolize"
 # intltoolize --force --copy || exit $?
-# echo "Patching intltool for SCM, LINGUAS and custom rules"
+# echo "Patching intltool for SCM and custom Makefile rules"
 # patch -p0 -b <po/intltool-scm-35.diff || exit $?
 echo "Overriding gettext po/Makefile.in.in with intltool version"
 rm -f po/Makefile.in.in && cp -v po/Makefile.intltool po/Makefile.in.in || exit $?

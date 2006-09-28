@@ -55,7 +55,7 @@ bse-loading-check: distfiles.list
 	@echo "All BSE files passed loading test"
 	@echo "================================="
 CLEANFILES += distfiles.list warnings.tmp
-check-local: bse-version-check bse-loading-check # run after ordinary tests
+check-after: bse-version-check bse-loading-check
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 EXTRA_DIST += checkproject.scm
 BSESCM = $(strip								\

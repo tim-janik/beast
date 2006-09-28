@@ -205,6 +205,9 @@ update-po: Makefile
 	  fi; \
 	done
 
+distfile-list:
+slowcheck:
+
 Makefile POTFILES: stamp-it
 	@if test ! -f $@; then \
 	  rm -f stamp-it; \

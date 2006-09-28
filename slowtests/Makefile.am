@@ -56,8 +56,7 @@ perftest_LDADD = $(progs_ldadd)
 noinst_PROGRAMS += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD = $(progs_ldadd)
-check-am: resampler-checks # runs resampler tests before ordinare checks
-#check-local: resampler-checks # runs resampler tests after ordinare checks
+check-before: resampler-checks
 resampler-checks:
 	: ## test SSE filter implementation
 	./testresampler filter-impl

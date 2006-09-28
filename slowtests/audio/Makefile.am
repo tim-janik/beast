@@ -19,8 +19,7 @@ EXTRA_DIST += bse2wav.scm
 
 # === run tests upon make check ===
 FEATURE_TESTS = 
-check-am: check-feature-tests # run test rules *before* ordinary tests
-# check-local: check-feature-tests # run test rules *after* ordinary tests
+check-before: check-feature-tests
 .PHONY: check-feature-tests $(FEATURE_TESTS)
 FEATURE_TESTS_MSG = "All $(words $(FEATURE_TESTS)) audio tests passed"
 check-feature-tests: # $(FEATURE_TESTS)

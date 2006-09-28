@@ -50,7 +50,7 @@ EXTRA_DIST += $(shellscript_DATA)
 # many tests require a working bsescm. but the shell will only
 # operate correctly after proper installation. so this rule
 # ensures proper initialization upon make check.
-check-am: check-installation
+check-before: check-installation
 .PHONY: check-installation
 check-installation:
 	@for p in $(bin_PROGRAMS) ; do					\

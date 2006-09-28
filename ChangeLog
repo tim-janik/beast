@@ -1,3 +1,16 @@
+Thu Sep 28 19:52:02 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl: added recursive slowcheck: rule, intended for checks
+	that take too long for an ordinary make check. added check-before: and
+	check-after: aliases for check-am and check-local. fixed all Makefiles
+	to use check-before: and check-after: where appropriate.
+
+	* intltool-extract.in: patched to support multiline scheme strings.
+
+	* po/Makefile.intltool: added dummy slowcheck: rule.
+
+	* po/intltool-scm-35.diff: updates.
+
 Thu Sep 28 19:35:04 2006  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: skip checking and running intltool.

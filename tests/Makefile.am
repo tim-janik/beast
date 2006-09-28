@@ -17,7 +17,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # 
 # check for the presence of i18n strings extracted from .scm files.
 # this test should be in po/Makefile.am if we had that.
-check-local: check-scm-strings
+check-after: check-scm-strings
 .PHONY: check-scm-strings
 check-scm-strings:
 	@for lang in $(ALL_LINGUAS) ; do			\
