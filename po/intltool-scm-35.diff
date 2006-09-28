@@ -1,26 +1,17 @@
-diff -up po/Makefile.in.in.orig po/Makefile.in.in
---- po/Makefile.in.in.orig	2006-05-29 11:16:26.000000000 +0200
-+++ po/Makefile.in.in	2006-05-30 10:28:28.000000000 +0200
-@@ -58,7 +58,7 @@ PO_LINGUAS=$(shell if test -r $(srcdir)/
- 
- POFILES=$(shell if test -n "$(PO_LINGUAS)"; then LINGUAS="$(PO_LINGUAS)"; else LINGUAS="$(ALL_LINGUAS)"; fi; for lang in $$LINGUAS; do printf "$$lang.po "; done)
- 
--DISTFILES = ChangeLog Makefile.in.in POTFILES.in $(POFILES)
-+DISTFILES = ChangeLog Makefile.in.in LINGUAS POTFILES.in $(POFILES)
- EXTRA_DISTFILES = POTFILES.skip Makevars LINGUAS
- 
- POTFILES = \
-@@ -204,6 +204,7 @@ update-po: Makefile
- 	    rm -f $$tmpdir/$$lang.new.po; \
+--- po/Makefile.in.in.orig	2006-09-28 13:10:28.000000000 +0200
++++ po/Makefile.in.in	2006-09-28 13:12:51.000000000 +0200
+@@ -205,6 +205,9 @@ update-po: Makefile
  	  fi; \
  	done
-+distfile-list:
  
++distfile-list:
++
++
  Makefile POTFILES: stamp-it
  	@if test ! -f $@; then \
-diff -up intltool-extract.in.orig intltool-extract.in
---- intltool-extract.in.orig	2006-05-29 11:16:26.000000000 +0200
-+++ intltool-extract.in	2006-05-30 10:27:33.000000000 +0200
+ 	  rm -f stamp-it; \
+--- intltool-extract.in.orig	2006-09-28 13:10:28.000000000 +0200
++++ intltool-extract.in	2006-09-28 13:11:48.000000000 +0200
 @@ -185,11 +185,13 @@ sub message {
  sub extract {
      &determine_type;
@@ -50,15 +41,15 @@ diff -up intltool-extract.in.orig intltool-extract.in
      &type_ini if $gettext_type eq "ini";
      &type_keys if $gettext_type eq "keys";
      &type_xml if $gettext_type eq "xml";
-@@ -213,6 +220,7 @@ sub convert {
+@@ -212,6 +219,7 @@ sub convert {
+     &type_scheme if $gettext_type eq "scheme";
      &type_schemas  if $gettext_type eq "schemas";
      &type_rfc822deb  if $gettext_type eq "rfc822deb";
-     &type_quoted if $gettext_type eq "quoted";
 +    return 1; # need msg_write()
  }
  
  sub entity_decode_minimal
-@@ -798,6 +806,56 @@ sub type_scheme {
+@@ -786,6 +794,56 @@ sub type_scheme {
      }
  }
  

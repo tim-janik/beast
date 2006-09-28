@@ -14,8 +14,6 @@ AUTOCONF_POSTFIX=2.50
 AUTOCONF_VERSION=2.57
 AUTOHEADER=autoheader
 GLIB_GETTEXTIZE=glib-gettextize
-INTLTOOLIZE=intltoolize
-INTLTOOLIZE_VERSION=0.28
 LIBTOOLIZE=libtoolize
 LIBTOOLIZE_VERSION=1.5.0
 CONFIGURE_OPTIONS=
@@ -110,13 +108,6 @@ $GLIB_GETTEXTIZE --version >/dev/null 2>&1 || {
 	DIE=1
 }
 
-# check for intltoolize
-check_version "`$INTLTOOLIZE --version 2>/dev/null | sed 1q`" $INTLTOOLIZE_VERSION || {
-	echo "You need to have $INTLTOOLIZE (version >= $INTLTOOLIZE_VERSION) installed to compile $PROJECT."
-	echo "Get the source tarball at http://ftp.gnu.org/gnu/"
-	DIE=1
-}
-
 # check for libtool
 check_version "`$LIBTOOLIZE --version 2>/dev/null | sed 1q`" $LIBTOOLIZE_VERSION || {
 	echo "You need to have $LIBTOOLIZE (version >= $LIBTOOLIZE_VERSION) installed to compile $PROJECT."
@@ -164,16 +155,14 @@ $LIBTOOLIZE --force || exit $?
 echo "Running: $GLIB_GETTEXTIZE"
 echo "no" | $GLIB_GETTEXTIZE --force || exit $?
 
-echo "Running: $INTLTOOLIZE"
-$INTLTOOLIZE --force --automake || exit $?
-echo "Patching intltool for SCM, LINGUAS and distfile-list:-rule"
-if egrep '\WVERSION\W[[:space:]]*=[^0-9a-zA-Z]*\W0\.33\W' -q intltool-extract.in ; then
-	# detected intltool-extract.in VERSION=0.33
-	patch -p0 <po/intltool-scm.diff || exit $?
-else
-	# assuming intltool-extract.in >= 0.35.0
-	patch -p0 <po/intltool-scm-35.diff || exit $?
-fi
+
+echo "Providing our own patched intltool..."
+# echo "Running: intltoolize"
+# intltoolize --force --copy || exit $?
+# echo "Patching intltool for SCM, LINGUAS and custom rules"
+# patch -p0 -b <po/intltool-scm-35.diff || exit $?
+echo "Overriding gettext po/Makefile.in.in with intltool version"
+rm -f po/Makefile.in.in && cp -v po/Makefile.intltool po/Makefile.in.in || exit $?
 
 echo "Running: $ACLOCAL $ACLOCAL_FLAGS"
 $ACLOCAL $ACLOCAL_FLAGS	|| exit $?

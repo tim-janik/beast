@@ -157,6 +157,8 @@ AC_DEFUN([DUMMY_DEFS],
 dnl #
 dnl # Define package requirements.
 dnl #
+dnl ## include acintltool.m4 to provide IT_PROG_INTLTOOL
+builtin(include, acintltool.m4)dnl
 AC_DEFUN([AC_I18N_REQUIREMENTS],
 [
     ALL_LINGUAS=`cat "$srcdir/po/LINGUAS" | grep -v '^#' | xargs echo -n `
@@ -185,9 +187,9 @@ AC_DEFUN([AC_I18N_REQUIREMENTS],
     prefix="$saved_prefix"
     AC_SUBST(beastlocaledir)
 
-    dnl # do gettext checks and provide INTLLIBS
+    dnl # do gettext checks and prepare for intltool
     AM_GLIB_GNU_GETTEXT
-    AC_PROG_INTLTOOL
+    IT_PROG_INTLTOOL
 ])
 AC_DEFUN([AC_SFI_REQUIREMENTS],
 [

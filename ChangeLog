@@ -1,3 +1,22 @@
+Thu Sep 28 19:35:04 2006  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: skip checking and running intltool.
+	generate po/Makefile.in.in from po/Makefile.intltool.
+
+	* configure.in: read acintltool.m4, call IT_PROG_INTLTOOL.
+
+	* po/intltool-scm-35.diff: fixes for stock intltool-0.35.0.
+
+	* po/Makefile.intltool: added the Makefile.in.in from stock intltool-0.35.0.
+
+	* acintltool.m4: added the intltool.m4 from stock intltool-0.35.0.
+
+	* intltool-merge.in:
+	* intltool-update.in:
+	* intltool-extract.in: added from stock intltool-0.35.0.
+
+	* po/intltool-scm.diff: unused, removed.
+
 Wed Sep 27 21:33:48 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/testresampler.cc: Trimmed default output of "filter-impl"
