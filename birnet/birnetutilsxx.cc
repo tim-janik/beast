@@ -111,9 +111,24 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
 
 namespace Birnet {
 
-/* --- demangling --- */
+/* --- VirtualTypeid --- */
+VirtualTypeid::~VirtualTypeid ()
+{ /* virtual destructor ensures vtable */ }
+
 String
-cxx_demangle (const char *mangled_identifier)
+VirtualTypeid::typeid_name ()
+{
+  return typeid (*this).name();
+}
+
+String
+VirtualTypeid::typeid_pretty_name ()
+{
+  return cxx_demangle (typeid (*this).name());
+}
+
+String
+VirtualTypeid::cxx_demangle (const char *mangled_identifier)
 {
   int status = 0;
   char *malloced_result = abi::__cxa_demangle (mangled_identifier, NULL, NULL, &status);
@@ -122,6 +137,7 @@ cxx_demangle (const char *mangled_identifier)
     free (malloced_result);
   return result;
 }
+
 /* --- InitHooks --- */
 static InitHook *init_hooks = NULL;
 
@@ -245,21 +261,25 @@ equals (const String &file1,
 } // Path
 
 /* --- Deletable --- */
+Deletable::~Deletable ()
+{
+  invoke_deletion_hooks();
+}
 
 /**
  * @param deletable     possible Deletable* handle
  * @return              TRUE if the hook was added
  *
- * Adds the destruction hook to @a deletable if it is non NULL.
- * The destruction hook is asserted to be so far uninstalled.
+ * Adds the deletion hook to @a deletable if it is non NULL.
+ * The deletion hook is asserted to be so far uninstalled.
  * This function is MT-safe and may be called from any thread.
  */
 bool
-Deletable::DestructionHook::deletable_add_hook (Deletable *deletable)
+Deletable::DeletionHook::deletable_add_hook (Deletable *deletable)
 {
   if (deletable)
     {
-      deletable->add_destruction_hook (this);
+      deletable->add_deletion_hook (this);
       return true;
     }
   return false;
@@ -269,16 +289,16 @@ Deletable::DestructionHook::deletable_add_hook (Deletable *deletable)
  * @param deletable     possible Deletable* handle
  * @return              TRUE if the hook was removed
  *
- * Removes the destruction hook from @a deletable if it is non NULL.
- * The destruction hook is asserted to be installed on @a deletable.
+ * Removes the deletion hook from @a deletable if it is non NULL.
+ * The deletion hook is asserted to be installed on @a deletable.
  * This function is MT-safe and may be called from any thread.
  */
 bool
-Deletable::DestructionHook::deletable_remove_hook (Deletable *deletable)
+Deletable::DeletionHook::deletable_remove_hook (Deletable *deletable)
 {
   if (deletable)
     {
-      deletable->remove_destruction_hook (this);
+      deletable->remove_deletion_hook (this);
       return true;
     }
   return false;
@@ -286,24 +306,24 @@ Deletable::DestructionHook::deletable_remove_hook (Deletable *deletable)
 
 static struct {
   Mutex                                            mutex;
-  std::map<Deletable*,Deletable::DestructionHook*> dmap;
+  std::map<Deletable*,Deletable::DeletionHook*> dmap;
 } deletable_maps[19]; /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
 
 /**
- * @param hook  valid destruction hook
+ * @param hook  valid deletion hook
  *
- * Add an uninstalled destruction hook to the deletable.
+ * Add an uninstalled deletion hook to the deletable.
  * This function is MT-safe and may be called from any thread.
  */
 void
-Deletable::add_destruction_hook (DestructionHook *hook)
+Deletable::add_deletion_hook (DeletionHook *hook)
 {
   uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
   deletable_maps[hashv].mutex.lock();
   BIRNET_ASSERT (hook);
   BIRNET_ASSERT (!hook->next);
   BIRNET_ASSERT (!hook->prev);
-  std::map<Deletable*,DestructionHook*>::iterator it;
+  std::map<Deletable*,DeletionHook*>::iterator it;
   it = deletable_maps[hashv].dmap.find (this);
   if (it != deletable_maps[hashv].dmap.end())
     {
@@ -319,13 +339,13 @@ Deletable::add_destruction_hook (DestructionHook *hook)
 }
 
 /**
- * @param hook  valid destruction hook
+ * @param hook  valid deletion hook
  *
- * Remove a previously added destruction hook.
+ * Remove a previously added deletion hook.
  * This function is MT-safe and may be called from any thread.
  */
 void
-Deletable::remove_destruction_hook (DestructionHook *hook)
+Deletable::remove_deletion_hook (DeletionHook *hook)
 {
   uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
   deletable_maps[hashv].mutex.lock();
@@ -336,7 +356,7 @@ Deletable::remove_destruction_hook (DestructionHook *hook)
     hook->prev->next = hook->next;
   else
     {
-      std::map<Deletable*,DestructionHook*>::iterator it;
+      std::map<Deletable*,DeletionHook*>::iterator it;
       it = deletable_maps[hashv].dmap.find (this);
       BIRNET_ASSERT (it != deletable_maps[hashv].dmap.end());
       BIRNET_ASSERT (it->second == hook);
@@ -349,18 +369,18 @@ Deletable::remove_destruction_hook (DestructionHook *hook)
 }
 
 /**
- * Invoke all destruction hooks installed on this deletable.
+ * Invoke all deletion hooks installed on this deletable.
  */
 void
-Deletable::invoke_destruction_hooks()
+Deletable::invoke_deletion_hooks()
 {
   uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
   while (TRUE)
     {
       /* lookup hook list */
       deletable_maps[hashv].mutex.lock();
-      std::map<Deletable*,DestructionHook*>::iterator it;
-      DestructionHook *hooks;
+      std::map<Deletable*,DeletionHook*>::iterator it;
+      DeletionHook *hooks;
       it = deletable_maps[hashv].dmap.find (this);
       if (it != deletable_maps[hashv].dmap.end())
         {
@@ -376,7 +396,7 @@ Deletable::invoke_destruction_hooks()
       /* process hooks */
       while (hooks)
         {
-          DestructionHook *hook = hooks;
+          DeletionHook *hook = hooks;
           hooks = hook->next;
           if (hooks)
             hooks->prev = NULL;
@@ -388,8 +408,26 @@ Deletable::invoke_destruction_hooks()
     }
 }
 
+/* --- ReferenceCountImpl --- */
+void
+ReferenceCountImpl::finalize ()
+{}
+
+void
+ReferenceCountImpl::delete_this ()
+{
+  delete this;
+}
+
+ReferenceCountImpl::~ReferenceCountImpl ()
+{
+  BIRNET_ASSERT (ref_count() == 0);
+}
 
 /* --- DataList --- */
+DataList::NodeBase::~NodeBase ()
+{}
+
 void
 DataList::set_data (NodeBase *node)
 {

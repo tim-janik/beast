@@ -1,3 +1,18 @@
+Sat Sep 30 18:00:13 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetsignal.hh, birnetsignal.cc: moved virtual methods from .hh to
+	.cc to emit fewer typeinfos.
+
+	* birnetutilsxx.hh, birnetutilsxx.cc: moved DataList::NodeBase, 
+	Deletable and ReferenceCountImpl destructors into .cc file to emit
+	fewer typeinfos. 
+	added class VirtualTypeid and moved cxx_demangle() into this class.
+	let Deletable derive from VirtualTypeid to have typeid methods available
+	for allmost all virtual classes. renamed Deletable::DestructionHook to
+	Deletable::DeletionHook for consistency.
+
+	* tests/infotest.cc (test_virtual_typeid): test VirtualTypeid methods.
+
 Thu Sep 28 01:01:55 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcore.h: introduce BIRNET_CONSTRUCTOR which wraps gcc's 

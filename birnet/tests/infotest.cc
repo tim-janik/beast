@@ -104,6 +104,21 @@ test_files (const char *argv0)
   TDONE();
 }
 
+static void
+test_virtual_typeid()
+{
+  struct TypeA : public virtual VirtualTypeid {};
+  struct TypeB : public virtual VirtualTypeid {};
+  TSTART ("VirtualTypeid");
+  TypeA a;
+  TypeB b;
+  TOK();
+  TASSERT (a.typeid_name() != b.typeid_name());
+  TASSERT (strstr (a.typeid_pretty_name().c_str(), "TypeA") != NULL);
+  TASSERT (strstr (b.typeid_pretty_name().c_str(), "TypeB") != NULL);
+  TDONE();
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -114,7 +129,8 @@ main (int   argc,
   test_paths();
   test_zintern();
   test_files (argv[0]);
-
+  test_virtual_typeid();
+  
   return 0;
 }
 

@@ -48,7 +48,7 @@ public:
   {}
 };
 template<class Class, typename R0, typename A1, typename A2, typename A3>
-class MethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual Deletable::DestructionHook {
+class MethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual Deletable::DeletionHook {
   friend void FIXME_dummy_friend_for_gcc33();
   typedef R0 (Class::*Method) (A1, A2, A3);
   Class *instance;
@@ -83,7 +83,7 @@ public:
   {}
 };
 template<class Class, typename R0, typename A1, typename A2, typename A3, typename Data>
-class DataMethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual Deletable::DestructionHook {
+class DataMethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual Deletable::DeletionHook {
   friend void FIXME_dummy_friend_for_gcc33();
   typedef R0 (Class::*Method) (A1, A2, A3, Data);
   Class *instance; Method method; Data data;

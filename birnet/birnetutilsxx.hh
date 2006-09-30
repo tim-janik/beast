@@ -56,7 +56,14 @@ typedef BirnetUniChar		unichar;
 typedef std::string String;
 using std::vector;
 using std::map;       
-String  cxx_demangle    (const char  *mangled_identifier);
+class VirtualTypeid {
+protected:
+  virtual      ~VirtualTypeid      ();
+public:
+  String        typeid_name        ();
+  String        typeid_pretty_name ();
+  static String cxx_demangle       (const char *mangled_identifier);
+};
 
 /* --- private copy constructor and assignment operator --- */
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
@@ -106,25 +113,25 @@ template<typename Type> class InvalidType;
 }
 
 /* --- Deletable --- */
-struct Deletable {
-  class DestructionHook {
-    DestructionHook    *prev;
-    DestructionHook    *next;
+struct Deletable : public virtual VirtualTypeid {
+  class DeletionHook {
+    DeletionHook    *prev;
+    DeletionHook    *next;
     friend class Deletable;
   public:
-    explicit            DestructionHook       () : prev (NULL), next (NULL) {}
-    virtual void        deletable_dispose     (Deletable &deletable) = 0;
-    bool                deletable_add_hook    (void      *any)              { return false; }
-    bool                deletable_add_hook    (Deletable *deletable);
-    bool                deletable_remove_hook (void      *any)              { return false; }
-    bool                deletable_remove_hook (Deletable *deletable);
+    explicit     DeletionHook          () : prev (NULL), next (NULL) {}
+    virtual void deletable_dispose     (Deletable &deletable) = 0;
+    bool         deletable_add_hook    (void      *any)              { return false; }
+    bool         deletable_add_hook    (Deletable *deletable);
+    bool         deletable_remove_hook (void      *any)              { return false; }
+    bool         deletable_remove_hook (Deletable *deletable);
   };
 private:
-  void    add_destruction_hook     (DestructionHook *hook);
-  void    remove_destruction_hook  (DestructionHook *hook);
+  void           add_deletion_hook     (DeletionHook *hook);
+  void           remove_deletion_hook  (DeletionHook *hook);
 protected:
-  void    invoke_destruction_hooks ();
-  virtual ~Deletable() { invoke_destruction_hooks(); }
+  void           invoke_deletion_hooks ();
+  virtual       ~Deletable             ();
 };
 
 /* --- ReferenceCountImpl --- */
@@ -222,19 +229,9 @@ public:
   template<class Obj> static void sink     (Obj &obj) { obj.ref_sink(); obj.unref(); }
   template<class Obj> static void sink     (Obj *obj) { obj->ref_sink(); obj->unref(); }
 protected:
-  virtual void
-  finalize()
-  {}
-  virtual void
-  delete_this()
-  {
-    delete this;
-  }
-  virtual
-  ~ReferenceCountImpl()
-  {
-    BIRNET_ASSERT (ref_count() == 0);
-  }
+  virtual void finalize           ();
+  virtual void delete_this        ();
+  virtual     ~ReferenceCountImpl ();
 };
 template<class Obj> static Obj& ref      (Obj &obj) { obj.ref();       return obj; }
 template<class Obj> static Obj* ref      (Obj *obj) { obj->ref();      return obj; }
@@ -332,19 +329,16 @@ class DataList {
   protected:
     NodeBase      *next;
     DataKey<void> *key;
-    explicit       NodeBase (DataKey<void> *k) :
-      next (NULL),
-      key (k)
-    {}
-    virtual        ~NodeBase () {}
+    explicit       NodeBase (DataKey<void> *k) : next (NULL), key (k) {}
+    virtual       ~NodeBase ();
     friend         class DataList;
   };
   template<typename T>
   class Node : public NodeBase {
     T data;
   public:
-    T   get_data ()     { return data; }
-    T   swap     (T d)  { T result = data; data = d; return result; }
+    T        get_data ()     { return data; }
+    T        swap     (T d)  { T result = data; data = d; return result; }
     virtual ~Node()
     {
       if (key)
@@ -353,8 +347,8 @@ class DataList {
           dkey->destroy (data);
         }
     }
-    Node (DataKey<T> *k,
-          T           d) :
+    explicit Node (DataKey<T> *k,
+                   T           d) :
       NodeBase (reinterpret_cast<DataKey<void>*> (k)),
       data (d)
     {}

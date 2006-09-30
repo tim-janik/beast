@@ -26,6 +26,7 @@ birnet_sources = $(strip 		\
 	birnetcpu.c			\
 	birnetmsg.c			\
 	birnetring.c			\
+	birnetsignal.cc                 \
 	birnetthread.c			\
 	birnetthreadxx.cc		\
 	birnetutils.c			\

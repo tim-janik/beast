@@ -1,5 +1,5 @@
 /* BirnetSignal
- * Copyright (C) 2005 Tim Janik
+ * Copyright (C) 2005-2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,33 +39,22 @@ struct TrampolineLink : public ReferenceCountImpl {
   TrampolineLink *next, *prev;
   uint            callable : 1;
   uint            with_emitter : 1;
-  explicit        TrampolineLink() :
-    next (NULL), prev (NULL), callable (true), with_emitter (false)
-  {}
+  explicit        TrampolineLink() : next (NULL), prev (NULL), callable (true), with_emitter (false) {}
   virtual bool    operator== (const TrampolineLink &other) const = 0;
-  virtual         ~TrampolineLink()
-  {
-    if (next || prev)
-      {
-        next->prev = prev;
-        prev->next = next;
-        prev = next = NULL;
-      }
-  }
+  virtual        ~TrampolineLink();
   BIRNET_PRIVATE_CLASS_COPY (TrampolineLink);
 };
 
 /* --- SignalBase --- */
-struct SignalBase {
-private:
+class SignalBase {
   class EmbeddedLink : public TrampolineLink {
-    virtual bool operator== (const TrampolineLink &other) const { return false; }
-    virtual void delete_this ()         { /* embedded */ }
+    virtual bool operator== (const TrampolineLink &other) const;
+    virtual void delete_this ();
   public:
     void         check_last_ref() const { BIRNET_ASSERT (ref_count() == 1); }
   };
 protected:
-  EmbeddedLink      start;
+  EmbeddedLink   start;
   void
   connect_link (TrampolineLink *link,
                 bool            with_emitter = false)
@@ -97,7 +86,7 @@ protected:
   }
   template<class Emission> struct Iterator;
 public:
-  explicit SignalBase ()
+  SignalBase ()
   {
     start.next = &start;
     start.prev = &start;
