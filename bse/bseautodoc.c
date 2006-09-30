@@ -573,9 +573,9 @@ main (gint   argc,
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
-        pluginbool[1] = '1';
+        pluginbool[0] = '1';
       else if (strcmp ("-s", argv[i]) == 0)
-        scriptbool[1] = '1';
+        scriptbool[0] = '1';
       else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
         {
           /* ignore, BSE handles this */

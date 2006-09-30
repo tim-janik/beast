@@ -1,3 +1,7 @@
+Sat Sep 30 21:36:39 2006  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: fixed -p and -s not taking effect.
+
 Wed Sep 27 21:35:12 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseblockutils.cc:
