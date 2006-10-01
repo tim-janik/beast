@@ -648,8 +648,9 @@ class HtmlGenerator:
       self.hstream.pop ('dl')
   def doxer_flush_parameters (self, data, transformer, node, environment):
     if not node.flags & Data.SECTIONED:
-      if self.call_stack[-2].flags & Data.SECTIONED:
-        node = self.call_stack[-2]
+      for n in self.call_stack:
+        if n.flags & Data.SECTIONED:
+          node = n # find the last sectioned node
     if not node.flags & Data.SECTIONED or not node.__dict__.has_key ('parameters'):
       return
     self.hstream.push_many (('table', 'tr', 'td'))      # this outer table is needed to avoid horizontal table expansion
@@ -657,7 +658,9 @@ class HtmlGenerator:
     self.hstream.push ('div', 'class="doxer-style-parameters"')
     self.hstream.push ('table')
     self.hstream.put ('\n')
-    for param in node.parameters:
+    parameter_list = node.parameters
+    del node.parameters
+    for param in parameter_list:
       self.hstream.push ('tr')
       self.hstream.push ('td', 'valign="top"')
       transformer (param, environment, NODE_TITLE)
@@ -674,10 +677,16 @@ class HtmlGenerator:
     self.hstream.pop ('table')
     self.hstream.pop ('div')
     self.hstream.pop_many (('td', 'tr', 'table'))
-    del node.parameters
   def doxer_parameter (self, data, transformer, node, environment):
-    if self.call_stack[-2].flags & Data.SECTIONED:
-      parent = self.call_stack[-2]
+    if len (self.call_stack) < 2:
+      self.doxer_definition (data, transformer, node, environment)
+      return
+    parent = self.call_stack[-2]
+    if not parent.flags & Data.SECTIONED:
+      for n in self.call_stack:
+        if n.flags & Data.SECTIONED:
+          parent = n # find the last sectioned node
+    if parent.flags & Data.SECTIONED:
       if not parent.__dict__.has_key ('parameters'):
         parent.parameters = []
       parent.parameters += [ node ]

@@ -108,7 +108,8 @@ def sources2doxygenxml (srclist):
   del os.environ['DOXER_QCOMMENT_DUMP']
   del os.environ['DOXER_QCOMMENT_CONFIG']
   try:
-    os.remove (tdoxyfile)
+    if not Config.debug:
+      os.remove (tdoxyfile)
   except: pass
   debug ('Asserting result location:', xmlresult)
   assert os.stat (xmlresult)

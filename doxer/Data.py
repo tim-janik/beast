@@ -103,13 +103,17 @@ class Documentable:
 class Parameter (Documentable):
   init = None
   argstring = ''
+  default = ''
   label = ''
   group = ''
+  isconst = False
   def __init__ (self, name, type = None):
     self.name = name
     self.type = type
   def set_type (self, type):
     self.type = type
+  def set_const (self, arg):
+    self.isconst = bool (arg)
   def set_label (self, label):
     self.label = label
   def set_init (self, initializer):
@@ -118,6 +122,8 @@ class Parameter (Documentable):
     self.argstring = astring
   def set_group (self, group):
     self.group = group
+  def set_default (self, default):
+    self.default = default
 
 class SrcFile (Documentable):
   preserve_extension = True
@@ -174,8 +180,16 @@ class Function (Documentable):
   args = ()
   doc_args = ()
   has_ellipsis = False
+  isstatic = False
+  isvirtual = False
+  isinline = False
+  isexplicit = False
+  isconst = False
   def __init__ (self, name):
     self.name = name
+  def set_flags (self, isstatic, isvirtual, isinline, isexplicit, isconst):
+    self.isstatic, self.isvirtual, self.isinline, self.isexplicit, self.isconst = (
+      bool (isstatic), bool (isvirtual), bool (isinline), bool (isexplicit), bool (isconst))
   def add_arg (self, param):
     self.args = list (self.args) + [ param ]
   def add_arg_docu (self, name, text):
@@ -190,10 +204,18 @@ class Function (Documentable):
 
 class Struct (Documentable):
   members = ()
+  methods = ()
+  derived = ()
   def __init__ (self, name):
     self.name = name
   def add_member (self, param):
     self.members = list (self.members) + [ param ]
+  def add_method (self, func):
+    self.methods = list (self.methods) + [ func ]
+  def add_derived (self, cls):
+    self.derived = list (self.derived) + [ cls ]
+  def isclass (self):
+    return self.methods != ()
 
 class Channel (Documentable):
   id = 0

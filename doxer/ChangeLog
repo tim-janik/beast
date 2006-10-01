@@ -1,3 +1,25 @@
+Sun Oct  1 13:09:24 2006  Tim Janik  <timj@gtk.org>
+
+	* Data.py: extended Parameter for default values and const-ness.
+	extended Function for various qualifier bits. extended Struct to
+	contain methods and a list of derived types.
+
+	* Code2Doxi.py: write methods out with structures.
+	
+	* HtmlGenerator.py: fixed parameter/flush_parameters to work at any
+	nested level within a section. fixed endless recursion bug in case
+	elements nested in parameter descriptions call flush_parameters.
+
+	* qxmlparser.py: for compounds, search for descriptions in the children
+	of a node, not the whole subtree of a node, so we don't attribute the
+	description of a child element to a prent element. test variables for
+	const-ness. parse methods as part of structures. parse class methods.
+	parse default values for function arguments.
+	parse doxygen namespaces, this seems to lack namespace application to
+	symbols defined within the namespace though.
+
+	* qdoxygen.py: do not delete doxyfile in debugging mode.
+
 Sat Apr 22 17:09:50 2006  Tim Janik  <timj@gtk.org>
 
 	* qdoxygen.py: avoid configuring USE_HTAGS which only doxygen 1.4.4 has.

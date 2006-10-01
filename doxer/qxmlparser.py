@@ -88,7 +88,7 @@ class node_subtree:
     if self.node:
       value = self.node
       self.iter = node_descendants_subtree (self.node)
-      self.node = None
+      self.node = None  # this works for siblings of node, because self.iter is libxml2 depth-first iterator
       return value
     if not self.iter:
       raise StopIteration()
@@ -194,16 +194,24 @@ class DoxygenXMLParser:
     fin.close()
     self.comment_dict.update (dict)
   # --- parse descriptions ---
-  def description_parse_and_set (self, xdef, obj, desc_tags = [ "briefdescription", "description", "detaileddescription", "inbodydescription" ], skip_tags = []):
+  def description_parse_and_set (self, xdef, obj, search_subtree = False, desc_tags = [ 'detaileddescription', 'description', 'briefdescription', 'inbodydescription' ], skip_tags = []):
     node_map = dict ( [(dtag, None) for dtag in desc_tags] )
     desc_set = set (desc_tags)
-    # collect all desc_tags in xdef ancestry
-    for dnode in node_subtree (xdef):
-      if dnode.name in desc_set:
-        node_map[dnode.name] = dnode
-        desc_set.remove (dnode.name)
-        if not desc_set:
-          break
+    # collect all desc_tags in xdef subtree
+    if search_subtree:
+      for dnode in node_subtree (xdef):
+        if dnode.name in desc_set:
+          node_map[dnode.name] = dnode
+          desc_set.remove (dnode.name)
+          if not desc_set:
+            break
+    else:
+      for dnode in node_children (xdef):
+        if dnode.name in desc_set:
+          node_map[dnode.name] = dnode
+          desc_set.remove (dnode.name)
+          if not desc_set:
+            break
     # select first non-empty description in order
     for dtag in desc_tags:
       dd_node = node_map[dtag]
@@ -332,44 +340,46 @@ class DoxygenXMLParser:
     self.description_parse_and_set (mdef, dv)
     # parse type
     dv.set_type (canonify_type (mdef.xpathEval ("type")[0].content))
+    dv.set_const (re.search (r'\bconst\b[^*&]*$', dv.type))
     # parse remaining argstring
     argstring = node_find_text (mdef, "argsstring")
     argstring = canonify_type (argstring)
     dv.set_argstring (argstring)
-  # --- struct parser ---
-  def parse_struct (self, cdef, rcontainer):
-    # parse struct name
-    name = node_get_leaf_text (cdef, "compoundname")
-    # create struct
-    ds = Data.Struct (name)
-    self.location_parse_and_set (cdef, ds)
-    rcontainer.add_file_member (ds)
-    # parse description
-    self.description_parse_and_set (cdef, ds)
-    # parse members
-    for mdef in node_descendants_by_name (cdef, "memberdef"):
-      kind = mdef.prop ('kind');
-      if kind == 'variable':
-        self.parse_variable (mdef, ds)
-      else:
-        print "qxmlparser.py: Unhandled: %s:" % kind, node_get_leaf_text (mdef, "name")
-  # --- parse function ---
-  def parse_function (self, cdef, rcontainer):
+  # --- parse functions ---
+  def parse_global_function (self, cdef, rcontainer):
     # parse function name
     name = cdef.xpathEval ("name")[0].content
     # create function
     df = Data.Function (name)
     self.location_parse_and_set (cdef, df)
     rcontainer.add_file_member (df)
+    # standard function stuff
+    self.parse_function_def (df, cdef)
+  def parse_class_method (self, cdef, compound):
+    # parse method name
+    name = cdef.xpathEval ("name")[0].content
+    # create function
+    df = Data.Function (name)
+    self.location_parse_and_set (cdef, df)
+    compound.add_method (df)
+    # standard function stuff
+    self.parse_function_def (df, cdef)
+  def parse_function_def (self, df, cdef):
+    # determine kind
+    df.set_flags (cdef.prop ('static') == 'yes',
+                  cdef.prop ('virt') == 'virtual',
+                  cdef.prop ('inline') == 'yes',
+                  cdef.prop ('explicit') == 'yes',
+                  cdef.prop ('const') == 'yes')
     # parse description
-    self.description_parse_and_set (cdef, df, skip_tags = [ "parameterlist", "simplesect" ])
+    self.description_parse_and_set (cdef, df, search_subtree = True, skip_tags = [ "parameterlist", "simplesect" ])
     # parse return type
     dr = Data.Parameter ('', canonify_type (cdef.xpathEval ("type")[0].content))
     df.set_ret_arg (dr)
     # parse return type description
     for child in node_descendants_by_name (cdef, "simplesect"):
       if child.prop ('kind') == 'return':
-        self.description_parse_and_set (child, dr, [ 'simplesect' ])
+        self.description_parse_and_set (child, dr, search_subtree = True, desc_tags = [ 'simplesect' ])
         break
     # parse arguments
     for a in cdef.xpathEval ("param"):
@@ -385,6 +395,10 @@ class DoxygenXMLParser:
       if aname:
         # create argument
         da = Data.Parameter (aname, atype)
+        try:    dval = node_get_leaf_text (a, 'defval')
+        except: dval = ''
+        if dval:
+          da.set_default (dval)
         df.add_arg (da)
     # parse documentation arguments
     plist = node_find (cdef, "parameterlist")
@@ -399,11 +413,36 @@ class DoxygenXMLParser:
           da = Data.Parameter (aname)
           print "qxmlparser.py: Debug2: "
           df.add_doc_arg (da)
-          self.description_parse_and_set (pitem, da, [ "parameterdescription" ])
+          self.description_parse_and_set (pitem, da, search_subtree = True, desc_tags = [ "parameterdescription" ])
+  # --- struct parser ---
+  def parse_struct (self, cdef, rcontainer):
+    # parse struct name
+    name = node_get_leaf_text (cdef, "compoundname")
+    # create struct
+    ds = Data.Struct (name)
+    self.location_parse_and_set (cdef, ds)
+    rcontainer.add_file_member (ds)
+    # parse description
+    self.description_parse_and_set (cdef, ds)
+    # parse derived classes list
+    for ddef in node_descendants_by_name (cdef, "derivedcompoundref"):
+      dname = node_find_text (ddef, 'derivedcompoundref')
+      protection = ddef.prop ('prot')
+      isvirtual  = ddef.prop ('virtual')
+      ds.add_derived (dname)
+    # parse methods and variable members
+    for mdef in node_descendants_by_name (cdef, "memberdef"):
+      kind = mdef.prop ('kind');
+      if kind == 'variable':
+        self.parse_variable (mdef, ds)
+      elif kind == 'function':
+        self.parse_class_method (mdef, ds)
+      else:
+        print "qxmlparser.py: Unhandled: %s:" % kind, name + "::" + node_get_leaf_text (mdef, "name")
   # --- parse dirs and files ---
   def parse_dir (self, cdef, dummy):           # parse XML dir (compounddef)
     name = node_get_leaf_text (cdef, "compoundname");
-  def parse_file (self, cdef, dummy):          # parse XML file (compounddef)
+  def parse_file_or_namespace (self, cdef, dummy): # parse XML file/namespace (compounddef)
     name = node_get_leaf_text (cdef, "compoundname");
     file_desc = self.parse_xml_description (cdef)
     if file_desc:
@@ -414,7 +453,7 @@ class DoxygenXMLParser:
       { "define"	: self.parse_define,
         "enum"  	: self.parse_enum,
         "typedef"	: self.parse_typedef,
-        "function"      : self.parse_function,
+        "function"      : self.parse_global_function,
         "variable"      : self.parse_export_variable,
       } [kind] (node, self)
   def parse_export_variable (self, mdef, dummy): # parse XML variable (memberdef)
@@ -425,9 +464,11 @@ class DoxygenXMLParser:
       kind = cdef.prop ("kind");
       try:
         parser = {
-          "file"        : self.parse_file,
+          "file"        : self.parse_file_or_namespace,
+          "namespace"   : self.parse_file_or_namespace,
           "dir"         : self.parse_dir,
           "struct"      : self.parse_struct,
+          "class"       : self.parse_struct,
         } [kind]
       except:
         def print_compound (node, dummy):

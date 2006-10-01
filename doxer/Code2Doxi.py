@@ -206,10 +206,14 @@ class SrcFileWriter (CodeMarkupCore):
         print >>fout, d.doc[0] + '\n'
     if not need_title:
       print >>fout, '@doxer_flush_parameters{}'
+    return not need_title # whether parameters were generated
   def write_structure_synopsis (self, struct, fout):
     struct_anchor = self.construct_object_anchor (struct)
     print >>fout, '@doxer_row'
-    print >>fout, '@doxer_cell{top} ' + self.markup_type ('struct') + self.mspace (1)           # return type column
+    struct_prefix = 'struct'
+    if struct.isclass():
+      struct_prefix = 'class'
+    print >>fout, '@doxer_cell{top} ' + self.markup_type (struct_prefix) + self.mspace (1)      # return type column
     marked_structure = self.markup_structure (struct.name, struct_anchor)                       
     print >>fout, '@doxer_cell{top} ' + marked_structure + ';'                                  # structure name
     print >>fout, '@doxer_done'
@@ -221,17 +225,27 @@ class SrcFileWriter (CodeMarkupCore):
     print >>fout, '@doxer_row'
     print >>fout, '@doxer_cell '
     # print preformatted prototype
-    print >>fout, '@doxer_preformatted{' + self.markup_type ('struct') + " " + self.markup_structure (struct.name, struct_anchor)
-    print >>fout, "{"
+    struct_prefix = 'struct'
+    if struct.isclass():
+      struct_prefix = 'class'
+    print >>fout, '@doxer_preformatted{' + self.markup_type (struct_prefix) + " " + self.markup_structure (struct.name, struct_anchor)
+    print >>fout, "@{"
     name_type_argstring_anchor_list = [(field.name, field.type, field.argstring, self.construct_object_anchor (struct, field)) for field in struct.members]
     variable_blurb = self.write_variable_list ('  ', name_type_argstring_anchor_list, True)
     if variable_blurb:
       fout.write (variable_blurb)
-    print >>fout, '};}' # closes @doxer_preformatted{}
+    if struct.methods:
+      print >>fout, '}'                         # close @doxer_preformatted{}
+      print >>fout, "@doxer_table{noframe}"
+      for func in struct.methods:
+        self.write_function_synopsis (func, fout, struct)
+      print >>fout, "@doxer_done"
+      print >>fout, '@doxer_preformatted{'      # reopen @doxer_preformatted{}
+    print >>fout, '@};}' # closes @doxer_preformatted{}
     # close prototype scopes
-    print >>fout, '@doxer_done'
-    print >>fout, '@doxer_done'
-    print >>fout, '@doxer_done'
+    print >>fout, '@doxer_done' # close row
+    print >>fout, '@doxer_done' # close table
+    print >>fout, '@doxer_done' # close div
     print >>fout, '@dnl'
     # print docu
     if len (struct.doc) >= 3:
@@ -239,11 +253,23 @@ class SrcFileWriter (CodeMarkupCore):
       print >>fout, struct.doc[0]
     # print arg docu
     self.print_documentables ('', struct.members, fout)
-    # finish structure description
-    # print >>fout, '\n\n'
+    # finish parameter description
     print >>fout, '@doxer_flush_parameters{}'
+    # write method descriptions
+    if struct.methods:
+      print >>fout, '@*'
+      print >>fout, '@doxer_table{noframe}'
+      print >>fout, '@doxer_row'
+      print >>fout, '@doxer_cell @doxer_monospace{    }'
+      print >>fout, '@doxer_cell '
+      for func in struct.methods:
+        print >>fout, '@*'
+        self.write_function_description (func, fout, struct, indent = '')
+      print >>fout, "@doxer_done"
+      print >>fout, "@doxer_done"
+    # finish structure description
     print >>fout, '@doxer_hseparator{}'
-  def write_function_proto (self, func, with_anchor, fout, anchor_parent = None, prefix = ''):
+  def write_function_proto (self, func, with_anchor, fout, anchor_parent = None, prefix = '', indent = '@doxer_monospace{  }'):
     ## self.write_function_proto (func, True, fout, obj, '::')
     if anchor_parent:
       func_anchor = self.construct_object_anchor (anchor_parent, func)
@@ -252,7 +278,7 @@ class SrcFileWriter (CodeMarkupCore):
     # open row
     print >>fout, '@doxer_row'
     # return type
-    rindent = anchor_parent and self.mspace (2) or ''
+    rindent = anchor_parent and indent or ''
     print >>fout, '@doxer_cell{top} ' + rindent + self.markup_type (func.ret_arg.type) + self.mspace (1)
     # function name
     with_anchor = with_anchor and '@doxer_anchor{' + func_anchor + '}' or ''
@@ -275,7 +301,7 @@ class SrcFileWriter (CodeMarkupCore):
     else:
       func_anchor = self.construct_object_anchor (func)
     print >>fout, '@doxer_row'
-    rindent = anchor_parent and '@doxer_monospace{  }' or ''
+    rindent = anchor_parent and self.mspace (2) or ''
     msp = self.mspace (1)
     print >>fout, '@doxer_cell{top} ' + rindent + self.markup_type (func.ret_arg.type) + msp    # return type
     with_anchor = with_anchor and '@doxer_anchor{' + func_anchor + '}' or ''
@@ -299,9 +325,13 @@ class SrcFileWriter (CodeMarkupCore):
     print >>fout, '@doxer_done'
   def write_function_synopsis (self, func, fout, anchor_parent = None, prefix = ''):
     return self.write_function_proto_short (func, False, fout, anchor_parent, prefix)
-  def write_function_description (self, func, fout):
-    func_anchor = self.construct_object_anchor (func)
-    self.start_description_section (func.name, func.hint, func_anchor, func.location(), func.doc, fout)
+  def write_function_description (self, func, fout, anchor_parent = None, indent = '@doxer_monospace{  }'):
+    if anchor_parent:
+      func_anchor = self.construct_object_anchor (anchor_parent, func)
+    else:
+      func_anchor = self.construct_object_anchor (func)
+    if not anchor_parent:
+      self.start_description_section (func.name, func.hint, func_anchor, func.location(), func.doc, fout)
     print >>fout, '@doxer_div{doxer-style-prototype}'
     print >>fout, '@doxer_table{noframe}'
     # function prototype
@@ -324,21 +354,21 @@ class SrcFileWriter (CodeMarkupCore):
       print >>fout, '@doxer_done'
     else:
       # self.write_function_proto_short (func, True, fout, obj, '::')
-      self.write_function_proto (func, True, fout)
+      self.write_function_proto (func, True, fout, anchor_parent, '', indent)
     # close prototype scopes
-    print >>fout, '@doxer_done'
-    print >>fout, '@doxer_done'
+    print >>fout, '@doxer_done' # close table
+    print >>fout, '@doxer_done' # close div
     print >>fout, '@dnl'
     # print docu
     if len (func.doc) >= 3:
       print >>fout, '@doxer_line %u "%s"' % (int (func.doc[2]), func.doc[1])
       print >>fout, func.doc[0]
     # print arg docu
-    self.print_documentables ('', func.args, fout)
+    has_args = self.print_documentables ('', func.args, fout)
     # finish function description
-    # print >>fout, '\n\n'
     print >>fout, '@doxer_flush_parameters{}'
-    print >>fout, '@doxer_hseparator{}'
+    if not anchor_parent or has_args or (func.doc and func.doc[0]):
+      print >>fout, '@doxer_hseparator{}'
   def write_channel_proto (self, channel, with_anchor, fout, anchor_parent = None, prefix = ''):
     if anchor_parent:
       channel_anchor = self.construct_object_anchor (anchor_parent, channel)
@@ -388,7 +418,7 @@ class SrcFileWriter (CodeMarkupCore):
     quick_return = not (channels or properties or signals)
     # object header
     print >>fout, '@doxer_row'
-    print >>fout, '@doxer_cell{top} ' + self.markup_type ('class') + self.mspace (1)            # return type column
+    print >>fout, '@doxer_cell{top} ' + self.markup_type ('object') + self.mspace (1)           # return type column
     marked_object = self.markup_structure (obj.name, obj_anchor)
     if quick_return:
       print >>fout, '@doxer_cell{top} ' + marked_object + ';'                                   # object name
@@ -425,7 +455,7 @@ class SrcFileWriter (CodeMarkupCore):
     # object header
     print >>fout, '@doxer_row'
     with_anchor = with_anchor and '@doxer_anchor{' + obj_anchor + '}' or ''
-    class_proto = self.markup_type ('class') + space1 + with_anchor
+    class_proto = self.markup_type ('object') + space1 + with_anchor
     class_proto += self.markup_structure (obj.name, obj_anchor)
     print >>fout, '@doxer_cell{colspan=3} ' + class_proto                                       # object name
     print >>fout, '@doxer_done'
