@@ -113,7 +113,20 @@ template<typename Type> class InvalidType;
 }
 
 /* --- Deletable --- */
+/**
+ * Deletable is a virtual base class that can be derived from (usually with
+ * public virtual) to ensure an object has a vtable and a virtual destructor.
+ * Also, it allows deletion hooks to be called during the objects destructor,
+ * by deriving from Birnet::Deletable::DeletionHook. No extra per-object space is
+ * consumed to allow deletion hooks, which makes Deletable a suitable base
+ * type for classes that may or may not need this feature (e.g. objects that
+ * can but often aren't used for signal handler connections).
+ */
 struct Deletable : public virtual VirtualTypeid {
+  /**
+   * DeletionHook is the base implementation class for hooks which are hooked
+   * up into the deletion phase of a Birnet::Deletable.
+   */
   class DeletionHook {
     DeletionHook    *prev;
     DeletionHook    *next;

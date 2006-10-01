@@ -1,3 +1,7 @@
+Sun Oct  1 13:31:47 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutilsxx.hh: added Deletable docs.
+
 Sat Sep 30 18:00:13 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetsignal.hh, birnetsignal.cc: moved virtual methods from .hh to
