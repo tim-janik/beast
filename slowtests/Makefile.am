@@ -56,7 +56,17 @@ perftest_LDADD = $(progs_ldadd)
 noinst_PROGRAMS += testresampler
 testresampler_SOURCES = testresampler.cc
 testresampler_LDADD = $(progs_ldadd)
-check-before: resampler-checks
+check-before: resampler-quick-checks
+slowcheck: resampler-checks
+resampler-quick-checks:
+	: ## some quick checks (resampler-checks contains actual tests - use make slowcheck)
+	./testresampler filter-impl
+	./testresampler accuracy --up --precision=8 --freq-scan=180,18000,180 --max-threshold=45
+	./testresampler accuracy --down --precision=12 --freq-scan=90,9000,90 --max-threshold=72
+	./testresampler accuracy --fpu --up --precision=16 --freq-scan=180,18000,180 --max-threshold=89.5
+	./testresampler accuracy --fpu --oversample --precision=20 --freq-scan=180,18000,180 --max-threshold=113.5
+	./testresampler accuracy --subsample --precision=24 --freq-scan=90,9000,90 --max-threshold=126
+
 resampler-checks:
 	: ## test SSE filter implementation
 	./testresampler filter-impl

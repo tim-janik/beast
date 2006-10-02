@@ -491,7 +491,7 @@ perform_test()
       if (TEST == TEST_ACCURACY)
 	{
 	  printf ("#   max difference between correct and computed output: %f = %f dB\n", max_diff, max_diff_db);
-	  if (max_diff_db < 0)
+	  if (options.max_threshold_db < 0)
 	    printf ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
 	  g_assert (max_diff_db < options.max_threshold_db);
 	}

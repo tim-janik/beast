@@ -1,3 +1,12 @@
+Mon Oct  2 18:10:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/testresampler.cc: Fix small bug: only show accuracy
+	threshold when the option was actually specified by the user.
+
+	* slowtests/Makefile.am: Moved the resampler test to make slowcheck,
+	and only do a bit of testing during make check. Speedup of the
+	resampler tests in make check (on AMD64): approximately factor 15.
+
 Thu Sep 28 19:52:02 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl: added recursive slowcheck: rule, intended for checks
