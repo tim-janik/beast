@@ -775,7 +775,7 @@ The MCD timeline says:
 - start von bse-data-gpl.tgz
 - fertigstellen von jack treiber
 * 0.7.2?
-- scripting/cooperation with mma
+- scripting/cooperation with mma: http://users.xplornet.com/~bvdp/mma/
 - send 64bit diffs to timj
 
 vim:set ts=8 sts=2 sw=2:
