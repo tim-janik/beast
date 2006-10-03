@@ -1,3 +1,7 @@
+Tue Oct  3 17:42:51 2006  Tim Janik  <timj@gtk.org>
+
+	* testsfi.c: removed ring tests which are in tests/ring.c now.
+
 Tue Oct  3 17:21:08 2006  Tim Janik  <timj@gtk.org>
 
 	* sfiring.h, sfiring.c: moved BirnetRing here, renamed to Sfi.
