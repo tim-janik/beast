@@ -1,3 +1,7 @@
+Tue Oct  3 13:19:06 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: execute slowcheck: as part of distcheck:
+
 Mon Oct  2 18:10:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/testresampler.cc: Fix small bug: only show accuracy
