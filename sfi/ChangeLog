@@ -1,3 +1,7 @@
+Tue Oct  3 17:57:59 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/testcxx.cc: moved here from sfi/.
+
 Tue Oct  3 17:42:51 2006  Tim Janik  <timj@gtk.org>
 
 	* testsfi.c: removed ring tests which are in tests/ring.c now.

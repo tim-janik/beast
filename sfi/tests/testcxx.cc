@@ -20,7 +20,7 @@
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
 #include <birnet/birnettests.h>
-#include "sficxx.hh"
+#include "../sficxx.hh"
 #include <stdio.h>
 
 using namespace Sfi;

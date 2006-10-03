@@ -79,16 +79,13 @@ sfidl_CFLAGS = $(AM_CFLAGS) # hack to cause glib-extra.c to be compiled twice (w
 EXTRA_DIST += sfidl-generator.hh sfidl-namespace.hh sfidl-options.hh sfidl-parser.hh sfidl-factory.hh sfidl-typelist.hh
 EXTRA_DIST += sfidl-cbase.hh sfidl-clientc.hh sfidl-clientcxx.hh sfidl-corec.hh sfidl-corecxx.hh sfidl-cxxbase.hh sfidl-hostc.hh
 
-noinst_PROGRAMS = testsfi testcxx testsfidl
+noinst_PROGRAMS = testsfi testsfidl
 progs_nosfi_LDADD = $(top_builddir)/birnet/libbirnet.o $(SFI_LIBS) -lm
 progs_LDADD = $(top_builddir)/birnet/libbirnet.o libsfi.o $(SFI_LIBS) -lm
 $(srcdir)/testsfi.c: testidl.h testidl.c
 testsfi_SOURCES = testsfi.c dummy.cc
 testsfi_LDADD = $(progs_LDADD)
 testsfi_LDFLAGS =
-$(srcdir)/testcxx.cc: testidl.h testidl.c
-testcxx_SOURCES = testcxx.cc
-testcxx_LDADD = $(progs_LDADD)
 $(srcdir)/testsfidl.cc: testidl.h testidl.c
 testsfidl_SOURCES = testsfidl.cc $(common_idl_sources)
 testsfidl_CFLAGS = $(AM_CFLAGS) # hack to cause glib-extra.c to be compiled twice (work around automake)
@@ -97,7 +94,7 @@ testsfidl_LDADD = $(progs_nosfi_LDADD)
 #
 # TESTS
 #
-TESTS = testsfi testcxx testsfidl
+TESTS = testsfi testsfidl
 
 #
 # TOYPROF: poor man's profiling toy

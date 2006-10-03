@@ -15,3 +15,9 @@ progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o 
 TESTS       += ring
 ring_SOURCES = ring.c dummy.cc
 ring_LDADD   = $(progs_ldadd)
+
+# testcxx
+TESTS	       += testcxx
+testcxx_SOURCES = testcxx.cc
+testcxx_LDADD   = $(progs_ldadd)
+$(srcdir)/testcxx.cc: ../testidl.h ../testidl.c
