@@ -1,3 +1,10 @@
+Tue Oct  3 17:26:50 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/ring.cc:
+	* birnetring.[hc]: removed, moved to sfi/ as SfiRing.
+
+	* birnetthread.c: ported from BirnetRing to GSList.
+
 Sun Oct  1 13:31:47 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutilsxx.hh: added Deletable docs.

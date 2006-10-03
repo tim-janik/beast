@@ -25,7 +25,6 @@
 
 #include <birnet/birnetutils.h>
 #include <birnet/birnetmsg.h>
-#include <birnet/birnetring.h>
 #include <birnet/birnetthread.h>
 
 #ifdef	__cplusplus

@@ -7,11 +7,9 @@ include $(top_srcdir)/Makefile.decl
 INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
 DEFS	       += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
 
-TESTS 		 = ring infotest signal sorting datalist threads
+TESTS 		 = infotest signal sorting datalist threads
 noinst_PROGRAMS  = $(TESTS)
 progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) -lm
-ring_SOURCES	 = ring.cc
-ring_LDADD	 = $(progs_ldadd)
 infotest_SOURCES = infotest.cc
 infotest_LDADD	 = $(progs_ldadd)
 threads_SOURCES	 = threads.cc

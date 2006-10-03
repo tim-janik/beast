@@ -23,7 +23,6 @@
 #define	_XOPEN_SOURCE   600	/* for full pthread facilities */
 #endif	/* defining _XOPEN_SOURCE on random systems can have bad effects */
 #include "birnetthread.h"
-#include "birnetring.h"
 #include <sys/time.h>
 #include <sched.h>
 #include <unistd.h>     /* sched_yield() */
@@ -87,8 +86,8 @@ static inline guint     cached_getpid                   (void);
 static BirnetMutex global_thread_mutex = { 0, };
 static BirnetMutex global_startup_mutex = { 0, };
 static BirnetCond  global_thread_cond = { 0, };
-static BirnetRing *global_thread_list = NULL;
-static BirnetRing *thread_awaken_list = NULL;
+static GSList     *global_thread_list = NULL;
+static GSList     *thread_awaken_list = NULL;
 BirnetThreadTable  birnet_thread_table = { NULL, };
 
 
@@ -198,9 +197,9 @@ birnet_thread_handle_exit (BirnetThread *thread)
       threadcxx = g_atomic_pointer_get (&thread->threadxx);
     }
   birnet_mutex_lock (&global_thread_mutex);
-  global_thread_list = birnet_ring_remove (global_thread_list, thread);
+  global_thread_list = g_slist_remove (global_thread_list, thread);
   if (thread->awake_stamp)
-    thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
+    thread_awaken_list = g_slist_remove (thread_awaken_list, thread);
   thread->awake_stamp = 1;
   birnet_cond_broadcast (&global_thread_cond);
   birnet_mutex_unlock (&global_thread_mutex);
@@ -239,7 +238,7 @@ birnet_thread_exec (gpointer data)
   birnet_thread_ref (thread);
   
   birnet_mutex_lock (&global_thread_mutex);
-  global_thread_list = birnet_ring_append (global_thread_list, self);
+  global_thread_list = g_slist_append (global_thread_list, self);
   self->accounting = 1;
   birnet_thread_accounting_L (self, TRUE);
   birnet_cond_broadcast (&global_thread_cond);
@@ -304,7 +303,7 @@ birnet_thread_start (BirnetThread    *thread,
   if (gthread)
     {
       birnet_mutex_lock (&global_thread_mutex);
-      while (!birnet_ring_find (global_thread_list, thread))
+      while (!g_slist_find (global_thread_list, thread))
 	birnet_cond_wait (&global_thread_cond, &global_thread_mutex);
       birnet_mutex_unlock (&global_thread_mutex);
     }
@@ -392,7 +391,7 @@ birnet_thread_self (void)
       thread_get_tid (thread);
       birnet_thread_table.thread_set_handle (thread);
       birnet_mutex_lock (&global_thread_mutex);
-      global_thread_list = birnet_ring_append (global_thread_list, thread);
+      global_thread_list = g_slist_append (global_thread_list, thread);
       birnet_mutex_unlock (&global_thread_mutex);
     }
   return thread;
@@ -584,7 +583,7 @@ birnet_thread_wakeup (BirnetThread *thread)
   g_return_if_fail (thread != NULL);
   
   birnet_mutex_lock (&global_thread_mutex);
-  g_assert (birnet_ring_find (global_thread_list, thread));
+  g_assert (g_slist_find (global_thread_list, thread));
   birnet_thread_wakeup_L (thread);
   birnet_mutex_unlock (&global_thread_mutex);
 }
@@ -606,7 +605,7 @@ birnet_thread_awake_after (guint64 stamp)
   birnet_mutex_lock (&global_thread_mutex);
   if (!self->awake_stamp)
     {
-      thread_awaken_list = birnet_ring_prepend (thread_awaken_list, self);
+      thread_awaken_list = g_slist_prepend (thread_awaken_list, self);
       self->awake_stamp = stamp;
     }
   else
@@ -624,19 +623,18 @@ birnet_thread_awake_after (guint64 stamp)
 void
 birnet_thread_emit_wakeups (guint64 wakeup_stamp)
 {
-  BirnetRing *ring, *next;
-  
   g_return_if_fail (wakeup_stamp > 0);
   
   birnet_mutex_lock (&global_thread_mutex);
-  for (ring = thread_awaken_list; ring; ring = next)
+  GSList *next, *node;
+  for (node = thread_awaken_list; node; node = next)
     {
-      BirnetThread *thread = ring->data;
-      next = birnet_ring_walk (ring, thread_awaken_list);
+      BirnetThread *thread = node->data;
+      next = node->next;
       if (thread->awake_stamp <= wakeup_stamp)
 	{
 	  thread->awake_stamp = 0;
-	  thread_awaken_list = birnet_ring_remove (thread_awaken_list, thread);
+	  thread_awaken_list = g_slist_remove (thread_awaken_list, thread);
 	  birnet_thread_wakeup_L (thread);
 	}
     }
@@ -658,10 +656,10 @@ birnet_thread_abort (BirnetThread *thread)
   g_return_if_fail (thread != birnet_thread_self ());
   
   birnet_mutex_lock (&global_thread_mutex);
-  g_assert (birnet_ring_find (global_thread_list, thread));
+  g_assert (g_slist_find (global_thread_list, thread));
   thread->aborted = TRUE;
   birnet_thread_wakeup_L (thread);
-  while (birnet_ring_find (global_thread_list, thread))
+  while (g_slist_find (global_thread_list, thread))
     birnet_cond_wait (&global_thread_cond, &global_thread_mutex);
   birnet_mutex_unlock (&global_thread_mutex);
 }
@@ -680,7 +678,7 @@ birnet_thread_queue_abort (BirnetThread *thread)
   g_return_if_fail (thread != NULL);
   
   birnet_mutex_lock (&global_thread_mutex);
-  g_assert (birnet_ring_find (global_thread_list, thread));
+  g_assert (g_slist_find (global_thread_list, thread));
   thread->aborted = TRUE;
   birnet_thread_wakeup_L (thread);
   birnet_mutex_unlock (&global_thread_mutex);
@@ -729,7 +727,7 @@ bool
 birnet_thread_get_running (BirnetThread *thread)
 {
   birnet_mutex_lock (&global_thread_mutex);
-  bool running = birnet_ring_find (global_thread_list, thread);
+  bool running = g_slist_find (global_thread_list, thread);
   birnet_mutex_unlock (&global_thread_mutex);
   return running;
 }
@@ -738,7 +736,7 @@ void
 birnet_thread_wait_for_exit (BirnetThread *thread)
 {
   birnet_mutex_lock (&global_thread_mutex);
-  while (birnet_ring_find (global_thread_list, thread))
+  while (g_slist_find (global_thread_list, thread))
     birnet_cond_wait (&global_thread_cond, &global_thread_mutex);
   birnet_mutex_unlock (&global_thread_mutex);
 }
