@@ -597,6 +597,7 @@ data/beast.applications
 birnet/Makefile
 birnet/tests/Makefile
 sfi/Makefile
+sfi/tests/Makefile
 bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile

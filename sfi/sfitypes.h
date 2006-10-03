@@ -55,7 +55,6 @@ typedef struct _SfiFBlock	SfiFBlock;
 typedef struct _SfiSeq		SfiSeq;
 typedef struct _SfiRec		SfiRec;
 typedef GType /* pointer */	SfiProxy;
-typedef struct _SfiRing		SfiRing;
 typedef struct {
   guint        n_fields;
   GParamSpec **fields;

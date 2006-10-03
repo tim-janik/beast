@@ -20,6 +20,7 @@
 #define __SFI_STORE_H__
 
 #include <sfi/sfivalues.h>
+#include <sfi/sfiring.h>
 
 G_BEGIN_DECLS
 

@@ -18,6 +18,7 @@
  */
 #include "topconfig.h"
 #include "sfitime.h"
+#include "sfiring.h"
 #include "sfiprimitives.h"
 #include <sys/time.h>
 #include <string.h>

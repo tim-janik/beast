@@ -20,6 +20,7 @@
 #define __SFI_FILE_CRAWLER_H__
 
 #include <sfi/sfitypes.h>
+#include <sfi/sfiring.h>
 
 G_BEGIN_DECLS
 

@@ -1,3 +1,15 @@
+Tue Oct  3 17:21:08 2006  Tim Janik  <timj@gtk.org>
+
+	* sfiring.h, sfiring.c: moved BirnetRing here, renamed to Sfi.
+
+	* sfiprimitives.h, sfiprimitives.c: removed obsolete Ring code.
+
+	* tests/ring.c: test SfiRing thoroughly.
+	moved here from birnet/tests/ring.cc, renamed to use SfiRing.
+
+	* tests/Makefile.am:
+	* Makefile.am: build and integrate sfi/tests/.
+
 Fri Jul  7 02:10:42 2006  Tim Janik  <timj@gtk.org>
 
 	* sfifilecrawler.[hc]: removed sfi_file_check() and sfi_file_equals() 

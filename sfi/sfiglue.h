@@ -20,6 +20,7 @@
 #define __SFI_GLUE_H__
 
 #include <sfi/sfiprimitives.h>
+#include <sfi/sfiring.h>
 #include <sfi/sfiparams.h>
 
 G_BEGIN_DECLS

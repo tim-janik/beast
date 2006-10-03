@@ -20,6 +20,7 @@
 #define __SFI_COM_WIRE_H__
 
 #include <sfi/sfitypes.h>
+#include <sfi/sfiring.h>
 
 #ifdef __cplusplus
 extern "C" {

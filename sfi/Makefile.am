@@ -4,6 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
+SUBDIRS   = . tests
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 
@@ -13,7 +14,7 @@ sfi_public_headers = $(strip \
 	sfivmarshal.h	sfiglue.h	sfigluecodec.h	sfiglueproxy.h	\
 	sfinote.h	sfiparams.h	sfiprimitives.h	sfiserial.h	\
 	sfitime.h	sfitypes.h	sfivalues.h	sfiustore.h	\
-	sficxx.hh			sfimemory.h	sficomport.h	\
+	sficxx.hh	sfiring.h	sfimemory.h	sficomport.h	\
 	sfi.h								\
 )
 sfi_all_sources = $(strip \
@@ -22,7 +23,7 @@ sfi_all_sources = $(strip \
 	sfivmarshal.c	sfiglue.c	sfigluecodec.c	sfiglueproxy.c	\
 	sfinote.c	sfiparams.c	sfiprimitives.c	sfiserial.c	\
 	sfitime.c	sfitypes.c	sfivalues.c	sfiustore.c	\
-	sficxx.cc			sfimemory.c	sficomport.c	\
+	sficxx.cc	sfiring.c	sfimemory.c	sficomport.c	\
 	$(conditional_toyprof_sources)	\
 )
 sfi_extra_sources = $(strip \
