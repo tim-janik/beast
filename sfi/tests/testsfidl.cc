@@ -20,8 +20,8 @@
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
 #include <birnet/birnettests.h>
-#include "sfidl-generator.hh"
-#include "sfidl-factory.hh"
+#include "../sfidl-generator.hh"
+#include "../sfidl-factory.hh"
 #include <stdio.h>
 
 using namespace Sfidl;

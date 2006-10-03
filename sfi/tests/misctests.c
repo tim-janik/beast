@@ -40,7 +40,7 @@
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
-#include <sfi/testidl.h>
+#include "testidl.h"
 
 static void
 test_misc (void)
@@ -816,7 +816,7 @@ test_sfidl_seq (void)
   TDONE ();
 }
 
-#include <sfi/testidl.c>
+#include "testidl.c"
 
 int
 main (int   argc,
