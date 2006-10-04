@@ -1,3 +1,11 @@
+Wed Oct  4 14:09:08 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/testresampler.cc: Implemented new mode for inspecting the
+	resampler accuracy: testresampler error-spectrum. This allows not only
+	examining how much the total error is when resampling a certain
+	frequency, but also inspecting how that error is distributed across
+	the spectrum.
+
 Tue Oct  3 13:19:06 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: execute slowcheck: as part of distcheck:

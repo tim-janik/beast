@@ -21,6 +21,9 @@
 #include <bse/bseblockutils.hh>
 #include <birnet/birnettests.h>
 #include <bse/bsemain.h>
+#include <bse/bsemath.h>
+#include <bse/bsemathsignal.h>
+#include <bse/gslfft.h>
 #include "topconfig.h"
 
 #include <stdio.h>
@@ -44,6 +47,7 @@ enum TestType
   TEST_PERFORMANCE,
   TEST_ACCURACY,
   TEST_ERROR_TABLE,
+  TEST_ERROR_SPECTRUM,
   TEST_IMPULSE,
   TEST_FILTER_IMPL
 } test_type = TEST_NONE;
@@ -95,6 +99,7 @@ usage ()
   printf ("                        ideal output, report error\n");
   printf ("  error-table           print sine signals (index, resampled-value, ideal-value,\n");
   printf ("                                            diff-value)\n");
+  printf ("  error-spectrum        print spectrum of the resampler error (frequency, error-db)\n");
   printf ("  dirac                 print impulse response (response-value)\n");
   printf ("  filter-impl           tests SSE filter implementation for correctness\n");
   printf ("                        doesn't test anything when running without SSE support\n");
@@ -383,12 +388,13 @@ perform_test()
       printf ("  or one 44100 Hz stream takes %f %% CPU usage\n", 
 	        100.0 / (k / (end_time - start_time) / 44100.0));
     }
-  else if (TEST == TEST_ACCURACY || TEST == TEST_ERROR_TABLE)
+  else if (TEST == TEST_ACCURACY || TEST == TEST_ERROR_TABLE || TEST == TEST_ERROR_SPECTRUM)
     {
       const bool freq_scanning = (options.freq_inc > 1);
       const double freq_min = freq_scanning ? options.freq_min : options.frequency;
       const double freq_max = freq_scanning ? options.freq_max : 1.5 * options.frequency;
       const double freq_inc = freq_scanning ? options.freq_inc : options.frequency;
+      vector<double> error_spectrum_correct, error_spectrum_error;
 
       if (TEST == TEST_ACCURACY)
 	{
@@ -475,7 +481,14 @@ perform_test()
 		  {
 		    double correct_output = sin ((k - sin_shift) * 2 * freq_factor * test_frequency / 44100.0 * M_PI);
 		    if (TEST == TEST_ERROR_TABLE)
-		      printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
+		      {
+			printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
+		      }
+		    else if (TEST == TEST_ERROR_SPECTRUM)
+		      {
+			error_spectrum_correct.push_back (correct_output);
+			error_spectrum_error.push_back (correct_output - check[i]);
+		      }
 		    else
 		      {
 			test_frequency_max_diff = max (test_frequency_max_diff, check[i] - correct_output);
@@ -494,6 +507,43 @@ perform_test()
 	  if (options.max_threshold_db < 0)
 	    printf ("#                             (threshold given by user: %f dB)\n", options.max_threshold_db);
 	  g_assert (max_diff_db < options.max_threshold_db);
+	}
+      else if (TEST == TEST_ERROR_SPECTRUM)
+	{
+	  const guint FFT_SIZE = 16384;
+	  if (error_spectrum_correct.size() < FFT_SIZE)
+	    {
+	      g_printerr ("too few values for computing error spectrum, increase block size\n");
+	    }
+	  else
+	    {
+	      double fft_correct[FFT_SIZE], fft_error[FFT_SIZE];
+
+	      for (guint i = 0; i < FFT_SIZE; i++)
+		{
+		  error_spectrum_correct[i] *= bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
+		  error_spectrum_error[i] *= bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
+		}
+	      gsl_power2_fftar (FFT_SIZE, &error_spectrum_correct[0], fft_correct);
+	      gsl_power2_fftar (FFT_SIZE, &error_spectrum_error[0], fft_error);
+	      double norm = 0;
+	      for (guint i = 0; i < FFT_SIZE/2; i++)
+		norm = max (norm, bse_complex_abs (bse_complex (fft_correct[i * 2], fft_correct[i * 2 + 1])));
+
+	      double freq_scale = 1; /* subsample + oversample */
+	      if (RESAMPLE == RES_UPSAMPLE)
+		freq_scale = 2;
+	      else if (RESAMPLE == RES_DOWNSAMPLE)
+		freq_scale = 0.5;
+
+	      for (guint i = 0; i < FFT_SIZE/2; i++)
+		{
+		  double normalized_error = bse_complex_abs (bse_complex (fft_error[i * 2], fft_error[i * 2 + 1])) / norm;
+		  double normalized_error_db = 20 * log (normalized_error) / log (10);
+
+		  printf ("%f %f\n", i / double (FFT_SIZE) * 44100 * freq_scale, normalized_error_db);
+		}
+	    }
 	}
     }
   else if (TEST == TEST_IMPULSE)
@@ -556,12 +606,13 @@ perform_test()
 {
   switch (test_type)
     {
-    case TEST_PERFORMANCE:  printf ("performance test "); return perform_test<TEST_PERFORMANCE> ();
-    case TEST_ACCURACY:	    printf ("# accuracy test "); return perform_test<TEST_ACCURACY> ();
-    case TEST_ERROR_TABLE:	    printf ("# gnuplot test "); return perform_test<TEST_ERROR_TABLE> ();
-    case TEST_IMPULSE:	    printf ("# impulse response test "); return perform_test<TEST_IMPULSE> ();
-    case TEST_FILTER_IMPL:  return test_filter_impl();
-    default:		    usage(); return 1;
+    case TEST_PERFORMANCE:    printf ("performance test "); return perform_test<TEST_PERFORMANCE> ();
+    case TEST_ACCURACY:	      printf ("# accuracy test "); return perform_test<TEST_ACCURACY> ();
+    case TEST_ERROR_TABLE:    printf ("# error table test "); return perform_test<TEST_ERROR_TABLE> ();
+    case TEST_ERROR_SPECTRUM: printf ("# error spectrum test "); return perform_test<TEST_ERROR_SPECTRUM> ();
+    case TEST_IMPULSE:	      printf ("# impulse response test "); return perform_test<TEST_IMPULSE> ();
+    case TEST_FILTER_IMPL:    return test_filter_impl();
+    default:		      usage(); return 1;
     }
 }
 
@@ -592,6 +643,8 @@ main (int argc, char **argv)
 	test_type = TEST_ACCURACY;
       else if (command == "error-table")
 	test_type = TEST_ERROR_TABLE;
+      else if (command == "error-spectrum")
+	test_type = TEST_ERROR_SPECTRUM;
       else if (command == "dirac")
 	test_type = TEST_IMPULSE;
       else if (command == "filter-impl")
