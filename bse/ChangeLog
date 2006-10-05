@@ -1,3 +1,11 @@
+Thu Oct  5 17:39:50 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsldatahandle.h:
+	* bsedatahandle-resample.cc: Implemented factor 2 downsampling
+	datahandle.  Moved common code into a base class for both datahandles.
+
+	* tests/resamplehandle.cc: Test downsampling datahandle.
+
 Sat Sep 30 21:36:39 2006  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: fixed -p and -s not taking effect.

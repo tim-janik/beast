@@ -113,9 +113,10 @@ GslDataHandle*	  gsl_data_handle_new_looped	(GslDataHandle	  *src_handle,
 						 int64		   loop_last);
 
 /* --- factor 2 resampling datahandles --- */
-GslDataHandle*	  bse_data_handle_new_upsample2	  (GslDataHandle  *src_handle,  // implemented in bsedatahandle-resample.cc
+GslDataHandle*	  bse_data_handle_new_upsample2	  (GslDataHandle  *src_handle,	    // implemented in bsedatahandle-resample.cc
 						   int             precision_bits);
-GslDataHandle*	  bse_data_handle_new_downsample2 (GslDataHandle  *src_handle); // implemented in bsedatahandle-resample.cc
+GslDataHandle*	  bse_data_handle_new_downsample2 (GslDataHandle  *src_handle,
+						   int             precision_bits); // implemented in bsedatahandle-resample.cc
 
 /* --- xinfo handling --- */
 GslDataHandle* gsl_data_handle_new_add_xinfos     (GslDataHandle *src_handle,

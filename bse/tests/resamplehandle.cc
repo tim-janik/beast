@@ -47,13 +47,27 @@ read_through (GslDataHandle *handle)
 }
 
 static double
-check (const vector<float>& input, const vector<double>& expected, int n_channels, int precision_bits, double max_db)
+check (const vector<float>  &input,
+       const vector<double> &expected,
+       int                   n_channels,
+       BseResampler2Mode     resampler_mode,
+       int                   precision_bits,
+       double                max_db)
 {
-  g_return_val_if_fail (input.size() * 2 == expected.size(), 0);
   g_return_val_if_fail (input.size() % n_channels == 0, 0);
   
   GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, input.size(), &input[0], NULL);
-  GslDataHandle *rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits); 
+  GslDataHandle *rhandle;
+  if (resampler_mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+    {
+      g_return_val_if_fail (input.size() * 2 == expected.size(), 0);
+      rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
+    }
+  else
+    {
+      g_return_val_if_fail (input.size() == expected.size() * 2, 0);
+      rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits); 
+    }
   gsl_data_handle_unref (ihandle);
 
   BseErrorType error = gsl_data_handle_open (rhandle);
@@ -122,64 +136,101 @@ check (const vector<float>& input, const vector<double>& expected, int n_channel
   return samples_per_second / 44100.0;
 }
 
+template<typename Sample> static void
+generate_test_signal (vector<Sample> &signal,
+		      const size_t    signal_length,
+		      const double    sample_rate,
+                      const double    frequency1,
+		      const double    frequency2 = -1)
+{
+  signal.clear();
+  for (size_t i = 0; i < signal_length; i++)
+    {
+      double wpos = (i * 2 - double (signal_length)) / signal_length;
+
+      double phase1 = i * 2 * M_PI * frequency1 / sample_rate;
+      signal.push_back (sin (phase1) * bse_window_blackman (wpos));
+
+      if (frequency2 > 0)   /* stereo */
+	{
+	  double phase2 = i * 2 * M_PI * frequency2 / sample_rate;
+	  signal.push_back (sin (phase2) * bse_window_blackman (wpos));
+	}
+    }
+}
+
 static void
 run_tests (const char *run_type)
 {
   struct TestParameters {
     int bits;
-    double mono_db;
-    double stereo_db;
+    double mono_upsample_db;
+    double stereo_upsample_db;
+    double mono_downsample_db;
+    double stereo_downsample_db;
   } params[] =
   {
-    { 8, -48, -48 },
-    { 12, -72, -72 },
-    { 16, -98, -95 },
-    { 20, -120, -117 },
-    { 24, -125, -125 }, /* this is not _really_ 24 bit, because the filter is computed using floats */
+    {  8,  -48,  -48, -48,   -48 },
+    { 12,  -72,  -72, -72,   -72 },
+    { 16,  -98,  -95, -96,   -96 },
+    { 20, -120, -117, -120, -120 },
+    { 24, -125, -125, -137, -135 },
     { 0, 0, 0 }
   };
 
   for (int p = 0; params[p].bits; p++)
     {
-      const int LEN = 44100*10;
+      const int LEN = 44100 * 4;
       vector<float> input;
       vector<double> expected;
-      for (int i = 0; i < LEN; i++)
-	{
-	  input.push_back (sin (i * 2 * M_PI * 440.0 / 44100.0) * bse_window_blackman (double (i * 2 - LEN) / LEN));
 
-	  double j = i + 0.5; /* compute perfectly interpolated result */
-	  expected.push_back (sin (i * 2 * M_PI * 440.0 / 44100.0) * bse_window_blackman (double (i * 2 - LEN) / LEN));
-	  expected.push_back (sin (j * 2 * M_PI * 440.0 / 44100.0) * bse_window_blackman (double (j * 2 - LEN) / LEN));
-	}
-
-      // mono test
+      // mono upsampling test
       {
-	TSTART ("ResampleHandle %dbits mono (%s)", params[p].bits, run_type);
-	double streams = check (input, expected, 1, params[p].bits, params[p].mono_db);
+	generate_test_signal (input, LEN, 44100, 440);
+	generate_test_signal (expected, LEN * 2, 88200, 440);
+
+	TSTART ("ResampleHandle %dbits mono upsampling (%s)", params[p].bits, run_type);
+	double streams = check (input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
+	                        params[p].bits, params[p].mono_upsample_db);
 	TDONE();
 
 	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
       }
 
-      input.clear();
-      expected.clear();
-      for (int i = 0; i < LEN; i++)
-	{
-	  input.push_back (sin (i * 2 * M_PI * 440.0 / 44100.0) * bse_window_blackman (double (i * 2 - LEN) / LEN));
-	  input.push_back (sin (i * 2 * M_PI * 1000.0 / 44100.0) * bse_window_blackman (double (i * 2 - LEN) / LEN));
-
-	  double j = i + 0.5; /* compute perfectly interpolated result */
-	  expected.push_back (sin (i * 2 * M_PI * 440.0 / 44100.0) * bse_window_blackman (double (i * 2 - LEN) / LEN));
-	  expected.push_back (sin (i * 2 * M_PI * 1000.0 / 44100.0) * bse_window_blackman (double (i * 2 - LEN) / LEN));
-	  expected.push_back (sin (j * 2 * M_PI * 440.0 / 44100.0) * bse_window_blackman (double (j * 2 - LEN) / LEN));
-	  expected.push_back (sin (j * 2 * M_PI * 1000.0 / 44100.0) * bse_window_blackman (double (j * 2 - LEN) / LEN));
-	}
-
-      // stereo test
+      // stereo upsampling test
       {
-        TSTART ("ResampleHandle %dbits stereo (%s)", params[p].bits, run_type);
-	double streams = check (input, expected, 2, params[p].bits, params[p].stereo_db);
+	generate_test_signal (input, LEN, 44100, 440, 1000);
+	generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
+
+        TSTART ("ResampleHandle %dbits stereo upsampling (%s)", params[p].bits, run_type);
+	double streams = check (input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
+	                        params[p].bits, params[p].stereo_upsample_db);
+	TDONE();
+
+	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+      }
+
+      // mono downsampling test
+      {
+	generate_test_signal (input, LEN, 44100, 440);
+	generate_test_signal (expected, LEN / 2, 22050, 440);
+
+	TSTART ("ResampleHandle %dbits mono downsampling (%s)", params[p].bits, run_type);
+	double streams = check (input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+	                        params[p].bits, params[p].mono_downsample_db);
+	TDONE();
+
+	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+      }
+
+      // stereo downsampling test
+      {
+	generate_test_signal (input, LEN, 44100, 440, 1000);
+	generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
+
+        TSTART ("ResampleHandle %dbits stereo downsampling (%s)", params[p].bits, run_type);
+	double streams = check (input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+	                        params[p].bits, params[p].stereo_downsample_db);
 	TDONE();
 
 	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
