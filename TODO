@@ -765,6 +765,7 @@ The MCD timeline says:
 - upsample datahandle review
 - downsample datahandle implementation
   + resampler state size
+- resampler delay / latency
 - wavetool commandos fuer upsample und downsample datahandles
 - autolooper fuer wavetool
 - low pass fuer wavetool
