@@ -1,3 +1,8 @@
+Fri Oct  6 23:13:05 2006  Tim Janik  <timj@gtk.org>
+
+	* sfiwrapper.h, sfiwrapper.cc: C API wrapper around useful
+	Birnet utilities.
+
 Fri Oct  6 18:53:35 2006  Tim Janik  <timj@gtk.org>
 
 	* sfimsg.h, sfimsg.c: renamed and moved here from birnet/. 

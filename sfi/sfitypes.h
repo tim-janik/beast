@@ -19,10 +19,33 @@
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
 
-#include <birnet/birnetthread.h>
 #include <sfi/glib-extra.h>
+#include <birnet/birnetthread.h> /* include glib before birnet for G_LOG_DOMAIN */
 
 G_BEGIN_DECLS
+
+/* --- common type definitions --- */
+typedef unsigned int          uint8       __attribute__ ((__mode__ (__QI__)));
+typedef unsigned int          uint16      __attribute__ ((__mode__ (__HI__)));
+typedef unsigned int          uint32      __attribute__ ((__mode__ (__SI__)));
+typedef unsigned int          uint64      __attribute__ ((__mode__ (__DI__)));
+// provided by Birnet:        uint;
+BIRNET_STATIC_ASSERT (sizeof (uint8)  == 1);
+BIRNET_STATIC_ASSERT (sizeof (uint16) == 2);
+BIRNET_STATIC_ASSERT (sizeof (uint32) == 4);
+BIRNET_STATIC_ASSERT (sizeof (uint64) == 8);
+typedef signed int            int8        __attribute__ ((__mode__ (__QI__)));
+typedef signed int            int16       __attribute__ ((__mode__ (__HI__)));
+typedef signed int            int32       __attribute__ ((__mode__ (__SI__)));
+typedef signed int            int64       __attribute__ ((__mode__ (__DI__)));
+// provided by compiler	      int;
+BIRNET_STATIC_ASSERT (sizeof (int8)  == 1);
+BIRNET_STATIC_ASSERT (sizeof (int16) == 2);
+BIRNET_STATIC_ASSERT (sizeof (int32) == 4);
+BIRNET_STATIC_ASSERT (sizeof (int64) == 8);
+typedef uint32                unichar;
+BIRNET_STATIC_ASSERT (sizeof (unichar) == 4);
+
 
 
 /* --- Sfi typedefs --- */
