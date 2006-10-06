@@ -19,37 +19,24 @@
 #ifndef __BIRNET_UTILS_XX_HH__
 #define __BIRNET_UTILS_XX_HH__
 
-#include <birnet/birnetcore.h>
+#include <glib.h> // FIXME
+#include <birnet/birnetcdefs.h>
 #include <string>
 #include <vector>
 #include <map>
 
 namespace Birnet {
 
-/* --- convenient type shorthands --- */
-#ifdef  _BIRNET_SOURCE_EXTENSIONS
-// using ::uint; // provided globally
-using ::uint8;
-using ::uint16;
-using ::uint32;
-using ::uint64;
-using ::int8;
-using ::int16;
-using ::int32;
-using ::int64;
-using ::unichar;
-#else   /* !_BIRNET_SOURCE_EXTENSIONS */
-// typedef BirnetUInt uint; // provided globally
-typedef BirnetUInt8		uint8;
-typedef BirnetUInt16		uint16;
-typedef BirnetUInt32		uint32;
-typedef BirnetUInt64		uint64;
-typedef BirnetInt8		int8;
-typedef BirnetInt16		int16;
-typedef BirnetInt32		int32;
-typedef BirnetInt64		int64;
-typedef BirnetUniChar		unichar;
-#endif
+/* --- short integer types --- */
+typedef BirnetUInt8   uint8;
+typedef BirnetUInt16  uint16;
+typedef BirnetUInt32  uint32;
+typedef BirnetUInt64  uint64;
+typedef BirnetInt8    int8;
+typedef BirnetInt16   int16;
+typedef BirnetInt32   int32;
+typedef BirnetInt64   int64;
+typedef BirnetUnichar unichar;
 
 /* --- convenient stdc++ types --- */
 typedef std::string String;
@@ -64,24 +51,57 @@ public:
   static String cxx_demangle       (const char *mangled_identifier);
 };
 
+/* --- implement assertion macros --- */
+#define BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,...) \
+        ::Birnet::birnet_runtime_problem (ErrorWarningReturnAssertNotreach, domain, file, line, funcname, __VA_ARGS__)
+void birnet_runtime_problem (char        ewran_tag,
+                             const char *domain,
+                             const char *file,
+                             int         line,
+                             const char *funcname,
+                             const char *msgformat,
+                             ...) BIRNET_PRINTF (6, 7);
+
 /* --- private copy constructor and assignment operator --- */
 #define BIRNET_PRIVATE_CLASS_COPY(Class)        private: Class (const Class&); Class& operator= (const Class&);
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
 #define PRIVATE_CLASS_COPY                      BIRNET_PRIVATE_CLASS_COPY
 #endif  /* _BIRNET_SOURCE_EXTENSIONS */
 
-/* --- birnet_init() hook --- */
+/* --- initialization --- */
+typedef BirnetInitValue    InitValue;
+typedef BirnetInitSettings InitSettings;
+extern const InitSettings *birnet_init_settings;
+void   birnet_init       (int        *argcp,
+                          char     ***argvp,
+                          const char *app_name,
+                          InitValue   ivalues[] = NULL);
+bool   init_value_bool   (InitValue  *value);
+double init_value_double (InitValue  *value);
+int64  init_value_int    (InitValue  *value);
+
+/* --- initialization hooks --- */
 class InitHook {
-  typedef void (*InitHookFunc)  (void);
+  typedef void (*InitHookFunc) (void);
   InitHook    *next;
   int          priority;
   InitHookFunc hook;
   BIRNET_PRIVATE_CLASS_COPY (InitHook);
   static void  invoke_hooks (void);
 public:
-  explicit InitHook (InitHookFunc       _func,
-                     int                _priority = 0);
+  explicit InitHook (InitHookFunc _func,
+                     int          _priority = 0);
 };
+
+/* --- assertions/warnings/errors --- */
+void    raise_sigtrap           ();
+#if (defined __i386__ || defined __x86_64__) && defined __GNUC__ && __GNUC__ >= 2
+extern inline void BREAKPOINT() { __asm__ __volatile__ ("int $03"); }
+#elif defined __alpha__ && !defined __osf__ && defined __GNUC__ && __GNUC__ >= 2
+extern inline void BREAKPOINT() { __asm__ __volatile__ ("bpt"); }
+#else   /* !__i386__ && !__alpha__ */
+extern inline void BREAKPOINT() { raise_sigtrap(); }
+#endif  /* __i386__ */
 
 /* --- file/path functionality --- */
 namespace Path {
@@ -102,6 +122,39 @@ bool            check     (const String &file,
 bool            equals    (const String &file1,
                            const String &file2);
 } // Path
+
+/* --- url handling --- */
+void url_show                   (const char           *url);
+void url_show_with_cookie       (const char           *url,
+                                 const char           *url_title,
+                                 const char           *cookie);
+bool url_test_show              (const char           *url);
+bool url_test_show_with_cookie  (const char	      *url,
+                                 const char           *url_title,
+                                 const char           *cookie);
+
+/* --- cleanup registration --- */
+uint cleanup_add                (uint                  timeout_ms,
+                                 GDestroyNotify        handler,
+                                 void                 *data);
+void cleanup_force_handlers     (void);
+
+/* --- string utils --- */
+void memset4		        (uint32              *mem,
+                                 uint32               filler,
+                                 uint                 length);
+/* --- memory utils --- */
+void* malloc_aligned            (gsize                 total_size,
+                                 gsize                 alignment,
+                                 uint8               **free_pointer);
+
+/* --- C++ demangling --- */
+char*   cxx_demangle	        (const char  *mangled_identifier); /* in birnetutilsxx.cc */
+
+/* --- zintern support --- */
+uint8*  zintern_decompress      (unsigned int          decompressed_size,
+                                 const unsigned char  *cdata,
+                                 unsigned int          cdata_size);
 
 /* --- template errors --- */
 namespace TEMPLATE_ERROR {

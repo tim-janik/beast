@@ -22,7 +22,7 @@
 
 #include <stdbool.h>
 #include <glib.h>
-#include <birnet/birnetcore.h>
+#include <birnet/birnetcdefs.h>
 
 G_BEGIN_DECLS
 

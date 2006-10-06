@@ -29,9 +29,9 @@ test_cpu_info (void)
 {
   TSTART ("CpuInfo");
   TOK();
-  const BirnetCPUInfo *cpi = birnet_cpu_info ();
+  const BirnetCPUInfo *cpi = cpu_info ();
   TASSERT (cpi != NULL);
-  gchar *cps = birnet_cpu_info_string (cpi);
+  gchar *cps = cpu_info_string (cpi);
   TASSERT (cps != NULL);
   TPRINT ("%s", cps);
   TOK();

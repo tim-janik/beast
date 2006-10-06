@@ -41,6 +41,19 @@
 #define THREAD_REF_COUNT(thread)                (thread->ref_field & ~FLOATING_FLAG)
 #define THREAD_CAS(thread, oldval, newval)      g_atomic_int_compare_and_exchange ((int*) &thread->ref_field, oldval, newval)
 
+/* --- short integer types --- */ // FIXME: those shouldn't be defined here
+typedef BirnetUInt8   uint8;
+typedef BirnetUInt16  uint16;
+typedef BirnetUInt32  uint32;
+typedef BirnetUInt64  uint64;
+typedef BirnetInt8    int8;
+typedef BirnetInt16   int16;
+typedef BirnetInt32   int32;
+typedef BirnetInt64   int64;
+typedef BirnetUnichar unichar;
+#define BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,...) \
+        g_error (__VA_ARGS__) // FIXME
+
 /* --- structures --- */
 struct _BirnetThread
 {

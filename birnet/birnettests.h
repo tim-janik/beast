@@ -148,6 +148,7 @@ BIRNET_EXTERN_C_BEGIN();
 
 /* --- C++ test initialization --- */
 #ifdef  __cplusplus
+namespace Birnet {
 static inline void
 birnet_init_test (int    *argc,
 		  char ***argv)
@@ -159,11 +160,12 @@ birnet_init_test (int    *argc,
     { "stand-alone", "true" },
     { NULL }
   };
-  birnet_init_extended (argc, argv, NULL, ivalues);
+  birnet_init (argc, argv, NULL, ivalues);
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
   g_printerr ("TEST: %s\n", g_get_prgname());
 }
+} // Birnet
 #endif
 
 BIRNET_EXTERN_C_END();

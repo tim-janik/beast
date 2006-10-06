@@ -16,10 +16,13 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "birnetcpu.h"
+#include <glib.h>
+#include "birnetcpu.hh"
 #include <setjmp.h>
 #include <signal.h>
 #include <string.h>
+
+namespace Birnet {
 
 /* figure architecture name from compiler */
 static const char*
@@ -131,8 +134,8 @@ cpu_info_sigill_handler (int dummy)
 }
 
 static bool
-get_x86_cpu_features (BirnetCPUInfo *ci,
-                      char           vendor[13])
+get_x86_cpu_features (CPUInfo *ci,
+                      char     vendor[13])
 {
   memset (ci, 0, sizeof (*ci));
   /* check if the CPUID instruction is supported */
@@ -216,10 +219,10 @@ get_x86_cpu_features (BirnetCPUInfo *ci,
   return true;
 }
 
-static BirnetCPUInfo global_cpu_info; /* = 0; */
+static CPUInfo global_cpu_info; /* = 0; */
 
-const BirnetCPUInfo*
-birnet_cpu_info (void)
+const CPUInfo*
+cpu_info (void)
 {
   return &global_cpu_info;
 }
@@ -228,7 +231,7 @@ void
 _birnet_init_cpuinfo (void)
 {
   static char vendor_buffer[13];
-  BirnetCPUInfo lci;
+  CPUInfo lci;
   memset (&lci, 0, sizeof (lci));
   if (get_x86_cpu_features (&lci, vendor_buffer))
     {
@@ -244,8 +247,8 @@ _birnet_init_cpuinfo (void)
   global_cpu_info = lci;
 }
 
-gchar*
-birnet_cpu_info_string (const BirnetCPUInfo *cpu_info)
+char*
+cpu_info_string (const CPUInfo *cpu_info)
 {
   GString *gstring = g_string_new ("");
   g_string_append_printf (gstring,
@@ -298,3 +301,5 @@ birnet_cpu_info_string (const BirnetCPUInfo *cpu_info)
   /* done */
   return g_string_free (gstring, FALSE);
 }
+
+} // Birnet

@@ -20,10 +20,8 @@
 #define __BIRNET_H__
 
 #include <birnet/birnetconfig.h>
-#include <birnet/birnetcore.h>
-#include <birnet/birnetcpu.h>
+#include <birnet/birnetcpu.hh>
 
-#include <birnet/birnetutils.hh>
 #include <birnet/birnetmsg.hh>
 #include <birnet/birnetthread.h>
 

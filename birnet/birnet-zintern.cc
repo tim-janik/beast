@@ -21,6 +21,8 @@
 #include <errno.h>
 #include <zlib.h>
 
+namespace Birnet {
+
 static gboolean use_compression = FALSE;
 static gboolean use_base_name = FALSE;
 
@@ -183,17 +185,17 @@ help (gchar *arg)
   return arg != NULL;
 }
 
-int
+extern "C" int
 main (gint   argc,
       gchar *argv[])
 {
   GSList *plist = NULL;
 
-  BirnetInitValue ivalues[] = {
+  InitValue ivalues[] = {
     { "stand-alone", "true" },
     { NULL }
   };
-  birnet_init_extended (&argc, &argv, NULL, ivalues);
+  birnet_init (&argc, &argv, NULL, ivalues);
 
   for (int i = 1; i < argc; i++)
     {
@@ -231,3 +233,5 @@ main (gint   argc,
 
   return 0;
 }
+
+} // Birnet

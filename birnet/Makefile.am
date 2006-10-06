@@ -10,24 +10,20 @@ GLIB_MKENUMS    = glib-mkenums
 
 birnet_headers = $(strip 		\
 	birnet.hh			\
-	birnetcore.h			\
-	birnetcpu.h			\
+	birnetcpu.hh			\
 	birnetmsg.hh			\
 	birnetsignal.hh                 \
 	birnettests.h			\
 	birnetthread.h			\
 	birnetthreadxx.hh		\
-	birnetutils.hh			\
 	birnetutilsxx.hh		\
 )
 birnet_sources = $(strip 		\
-	birnetcore.c			\
-	birnetcpu.c			\
+	birnetcpu.cc			\
 	birnetmsg.cc			\
 	birnetsignal.cc                 \
 	birnetthread.c			\
 	birnetthreadxx.cc		\
-	birnetutils.cc			\
 	birnetutilsxx.cc		\
 )
 birnet_private_headers = $(strip 	\
@@ -102,6 +98,7 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "    BIRNET_MICRO_VERSION >= (micro)))"						>> xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
 	&& echo "/* configure results */"							>> xgen-$(@F) \
+	&& echo "#define BIRNET_OS_@BIRNET_OS@          (1)"					>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_SYS_TYPESH_UINT	(@BIRNET_SIZEOF_SYS_TYPESH_UINT@)"	>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_MUTEX_T	(@BIRNET_SIZEOF_PTH_MUTEX_T@)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_COND_T	(@BIRNET_SIZEOF_PTH_COND_T@)" 		>> xgen-$(@F) \

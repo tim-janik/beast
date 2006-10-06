@@ -1,3 +1,24 @@
+Fri Oct  6 23:26:10 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h: new header file to contain (or include) all definitions
+	and declarations that are useful for C only programs. while Birnet is not
+	to support *any* C symbol at all, using common structure definitions 
+	helps in wrapping certain features for C programs.
+
+	* birnetcpu.hh, birnetcpu.cc: renamed and moved from .h and .c.
+
+	* birnetutilsxx.hh, birnetutilsxx.cc: use birnetcdefs.h definitions.
+	provided init functionality. added raise_sigtrap() and BREAKPOINT()
+	implementations. 
+
+	* birnetutilsxx.hh, birnetutilsxx.cc: merged everything from 
+	birnetutils.hh and birnetutils.cc into these files.
+
+	* birnet-zintern.cc:
+	* birnettests.h: namespace fixups.
+
+	* configure.inc: detect windows operating system.
+
 Fri Oct  6 18:53:30 2006  Tim Janik  <timj@gtk.org>
 
 	* birnet.hh: renamed from birnet.h.

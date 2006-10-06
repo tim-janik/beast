@@ -16,33 +16,23 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BIRNET_CPU_H__
-#define __BIRNET_CPU_H__
+#ifndef __BIRNET_CPU_HH__
+#define __BIRNET_CPU_HH__
 
-#include <birnet/birnetcore.h>
+#include <birnet/birnetutilsxx.hh>
 
-G_BEGIN_DECLS
+namespace Birnet {
 
-typedef struct {
-  /* architecture name */
-  const char *machine;
-  /* CPU Vendor ID */
-  const char *cpu_vendor;
-  /* CPU features on X86 */
-  BirnetUInt x86_fpu : 1, x86_tsc    : 1, x86_htt   : 1;
-  BirnetUInt x86_mmx : 1, x86_mmxext : 1, x86_3dnow : 1, x86_3dnowext : 1;
-  BirnetUInt x86_sse : 1, x86_sse2   : 1, x86_sse3  : 1, x86_ssesys   : 1;
-} BirnetCPUInfo;
+typedef BirnetCPUInfo CPUInfo;
 
 /* --- functions --- */
-const BirnetCPUInfo*	birnet_cpu_info		(void);
-gchar*			birnet_cpu_info_string	(const BirnetCPUInfo *cpu_info);
+const CPUInfo*	cpu_info	(void);
+char*		cpu_info_string	(const CPUInfo *cpu_info);
 
 /* --- implementation --- */
 void	_birnet_init_cpuinfo	(void);
 
-G_END_DECLS
+} // Birnet
 
-#endif /* __BIRNET_CPU_H__ */
-
+#endif /* __BIRNET_CPU_HH__ */
 /* vim:set ts=8 sts=2 sw=2: */
