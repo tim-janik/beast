@@ -16,8 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "birnetutils.h"
-#include "birnetmsg.h"
+#include "birnetutils.hh"
+#include "birnetmsg.hh"
+#include "birnetthreadxx.hh"
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,9 +32,11 @@
 #define _(string)       (string)        // FIXME
 #endif
 
+namespace Birnet {
+
 /* --- url handling --- */
 bool
-birnet_url_test_show (const char *url)
+url_test_show (const char *url)
 {
   static struct {
     const char   *prg, *arg1, *prefix, *postfix;
@@ -101,17 +104,17 @@ birnet_url_test_show (const char *url)
 static void
 browser_launch_warning (const char *url)
 {
-  birnet_msg_log (BIRNET_MSG_WARNING,
-                  BIRNET_MSG_TITLE (_("Launch Web Browser")),
-                  BIRNET_MSG_TEXT1 (_("Failed to launch a web browser executable")),
-                  BIRNET_MSG_TEXT2 (_("No suitable web browser executable could be found to be executed and to display the URL: %s"), url),
-                  BIRNET_MSG_CHECK (_("Show messages about web browser launch problems")));
+  Msg::display (Msg::WARNING,
+                Msg::Title (_("Launch Web Browser")),
+                Msg::Text1 (_("Failed to launch a web browser executable")),
+                Msg::Text2 (_("No suitable web browser executable could be found to be executed and to display the URL: %s"), url),
+                Msg::Check (_("Show messages about web browser launch problems")));
 }
 
 void
-birnet_url_show (const char *url)
+url_show (const char *url)
 {
-  bool success = birnet_url_test_show (url);
+  bool success = url_test_show (url);
   if (!success)
     browser_launch_warning (url);
 }
@@ -119,15 +122,15 @@ birnet_url_show (const char *url)
 static void
 unlink_file_name (gpointer data)
 {
-  char *file_name = data;
+  char *file_name = (char*) data;
   while (unlink (file_name) < 0 && errno == EINTR);
   g_free (file_name);
 }
 
 static const gchar*
-birnet_url_create_redirect (const char    *url,
-                            const char    *url_title,
-                            const char    *cookie)
+url_create_redirect (const char    *url,
+                     const char    *url_title,
+                     const char    *cookie)
 {
   const char *ver = "0.5";
   gchar *tname = NULL;
@@ -173,28 +176,28 @@ birnet_url_create_redirect (const char    *url,
       g_free (tname);
       return NULL;
     }
-  birnet_cleanup_add (60 * 1000, unlink_file_name, tname); /* free tname */
+  cleanup_add (60 * 1000, unlink_file_name, tname); /* free tname */
   return tname;
 }
 
 bool
-birnet_url_test_show_with_cookie (const char *url,
-                                  const char *url_title,
-                                  const char *cookie)
+url_test_show_with_cookie (const char *url,
+                           const char *url_title,
+                           const char *cookie)
 {
-  const char *redirect = birnet_url_create_redirect (url, url_title, cookie);
+  const char *redirect = url_create_redirect (url, url_title, cookie);
   if (redirect)
-    return birnet_url_test_show (redirect);
+    return url_test_show (redirect);
   else
-    return birnet_url_test_show (url);
+    return url_test_show (url);
 }
 
 void
-birnet_url_show_with_cookie (const char *url,
-                             const char *url_title,
-                             const char *cookie)
+url_show_with_cookie (const char *url,
+                      const char *url_title,
+                      const char *cookie)
 {
-  bool success = birnet_url_test_show_with_cookie (url, url_title, cookie);
+  bool success = url_test_show_with_cookie (url, url_title, cookie);
   if (!success)
     browser_launch_warning (url);
 }
@@ -206,20 +209,20 @@ typedef struct {
   void          *data;
 } Cleanup;
 
-static BIRNET_MUTEX_DECLARE_INITIALIZED (cleanup_mutex);
+static Mutex cleanup_mutex;
 static GSList *cleanup_list = NULL;
 
 static void
-birnet_cleanup_exec_Lm (Cleanup *cleanup)
+cleanup_exec_Lm (Cleanup *cleanup)
 {
   cleanup_list = g_slist_remove (cleanup_list, cleanup);
   g_source_remove (cleanup->id);
   GDestroyNotify handler = cleanup->handler;
   void *data = cleanup->data;
   g_free (cleanup);
-  birnet_mutex_unlock (&cleanup_mutex);
+  cleanup_mutex.unlock();
   handler (data);
-  birnet_mutex_lock (&cleanup_mutex);
+  cleanup_mutex.lock();
 }
 
 /**
@@ -228,20 +231,20 @@ birnet_cleanup_exec_Lm (Cleanup *cleanup)
  * cleanup handlers which have timeouts that have not yet expired.
  */
 void
-birnet_cleanup_force_handlers (void)
+cleanup_force_handlers (void)
 {
-  birnet_mutex_lock (&cleanup_mutex);
+  cleanup_mutex.lock();
   while (cleanup_list)
-    birnet_cleanup_exec_Lm (cleanup_list->data);
-  birnet_mutex_unlock (&cleanup_mutex);
+    cleanup_exec_Lm ((Cleanup*) cleanup_list->data);
+  cleanup_mutex.unlock();
 }
 
 static gboolean
-birnet_cleanup_exec (gpointer data)
+cleanup_exec (gpointer data)
 {
-  birnet_mutex_lock (&cleanup_mutex);
-  birnet_cleanup_exec_Lm (data);
-  birnet_mutex_unlock (&cleanup_mutex);
+  cleanup_mutex.lock();
+  cleanup_exec_Lm ((Cleanup*) data);
+  cleanup_mutex.unlock();
   return FALSE;
 }
 
@@ -251,30 +254,30 @@ birnet_cleanup_exec (gpointer data)
  * @param data          cleanup handler data
  *
  * Register a cleanup handler, the @a handler is guaranteed to be run
- * asyncronously (i.e. not from within birnet_cleanup_add()). The cleanup
+ * asyncronously (i.e. not from within cleanup_add()). The cleanup
  * handler will be called as soon as @a timeout_ms has elapsed or
- * birnet_cleanup_force_handlers() is called.
+ * cleanup_force_handlers() is called.
  */
 uint
-birnet_cleanup_add (guint          timeout_ms,
-                    GDestroyNotify handler,
-                    void          *data)
+cleanup_add (guint          timeout_ms,
+             GDestroyNotify handler,
+             void          *data)
 {
   Cleanup *cleanup = g_new0 (Cleanup, 1);
   cleanup->handler = handler;
   cleanup->data = data;
-  cleanup->id = g_timeout_add (timeout_ms, birnet_cleanup_exec, cleanup);
-  birnet_mutex_lock (&cleanup_mutex);
+  cleanup->id = g_timeout_add (timeout_ms, cleanup_exec, cleanup);
+  cleanup_mutex.lock();
   cleanup_list = g_slist_prepend (cleanup_list, cleanup);
-  birnet_mutex_unlock (&cleanup_mutex);
+  cleanup_mutex.unlock();
   return cleanup->id;
 }
 
 /* --- string utils --- */
 void
-birnet_memset4 (guint32        *mem,
-                guint32         filler,
-                guint           length)
+memset4 (guint32        *mem,
+         guint32         filler,
+         guint           length)
 {
   BIRNET_STATIC_ASSERT (sizeof (*mem) == 4);
   BIRNET_STATIC_ASSERT (sizeof (filler) == 4);
@@ -284,16 +287,16 @@ birnet_memset4 (guint32        *mem,
 
 /* --- memory utils --- */
 void*
-birnet_malloc_aligned (gsize	  total_size,
-		       gsize	  alignment,
-		       guint8	**free_pointer)
+malloc_aligned (gsize	  total_size,
+                gsize	  alignment,
+                guint8	**free_pointer)
 {
-  uint8 *aligned_mem = g_malloc (total_size);
+  uint8 *aligned_mem = (uint8*) g_malloc (total_size);
   *free_pointer = aligned_mem;
   if (!alignment || !(ptrdiff_t) aligned_mem % alignment)
     return aligned_mem;
   g_free (aligned_mem);
-  aligned_mem = g_malloc (total_size + alignment - 1);
+  aligned_mem = (uint8*) g_malloc (total_size + alignment - 1);
   *free_pointer = aligned_mem;
   if ((ptrdiff_t) aligned_mem % alignment)
     aligned_mem += alignment - (ptrdiff_t) aligned_mem % alignment;
@@ -400,8 +403,8 @@ errno_check_file (const char *file_name,
  * @done
  */
 bool
-birnet_file_check (const gchar *file,
-                   const gchar *mode)
+file_check (const gchar *file,
+            const gchar *mode)
 {
   int err = file && mode ? errno_check_file (file, mode) : -EFAULT;
   errno = err < 0 ? -err : 0;
@@ -417,8 +420,8 @@ birnet_file_check (const gchar *file,
  * in the same file system on the same device.
  */
 bool
-birnet_file_equals (const gchar *file1,
-                    const gchar *file2)
+file_equals (const gchar *file1,
+             const gchar *file2)
 {
   if (!file1 || !file2)
     return file1 == file2;
@@ -457,17 +460,17 @@ birnet_file_equals (const gchar *file1,
  * abort with an appropriate error message.
  * If not enough memory could be allocated for decompression, NULL is returned.
  */
-guint8*
-birnet_zintern_decompress (unsigned int          decompressed_size,
-                           const unsigned char  *cdata,
-                           unsigned int          cdata_size)
+uint8*
+zintern_decompress (unsigned int          decompressed_size,
+                    const unsigned char  *cdata,
+                    unsigned int          cdata_size)
 {
   uLongf dlen = decompressed_size;
   uint64 len = dlen + 1;
-  uint8 *text = g_try_malloc (len);
+  uint8 *text = (uint8*) g_try_malloc (len);
   if (!text)
     return NULL;        /* handle ENOMEM gracefully */
-
+  
   int64 result = uncompress (text, &dlen, cdata, cdata_size);
   const char *err;
   switch (result)
@@ -496,7 +499,9 @@ birnet_zintern_decompress (unsigned int          decompressed_size,
     }
   if (err)
     g_error ("failed to decompress (%p, %u): %s", cdata, cdata_size, err);
-
+  
   text[dlen] = 0;
   return text;          /* success */
 }
+
+} // Birnet

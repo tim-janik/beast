@@ -20,7 +20,6 @@
 #define __BIRNET_UTILS_XX_HH__
 
 #include <birnet/birnetcore.h>
-#include <birnet/birnetmsg.h> // FIXME
 #include <string>
 #include <vector>
 #include <map>
@@ -228,11 +227,7 @@ public:
         self->delete_this(); // effectively: delete this;
       }
   }
-  void
-  ref_diag (const char *msg = NULL) const
-  {
-    birnet_diag ("%s: this=%p ref_count=%d floating=%d", msg ? msg : "ReferenceCountImpl", this, ref_count(), floating()); // FIXME: use diag()
-  }
+  void                            ref_diag (const char *msg = NULL) const;
   template<class Obj> static Obj& ref      (Obj &obj) { obj.ref();       return obj; }
   template<class Obj> static Obj* ref      (Obj *obj) { obj->ref();      return obj; }
   template<class Obj> static Obj& ref_sink (Obj &obj) { obj.ref_sink();  return obj; }

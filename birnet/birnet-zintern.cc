@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include <birnet/birnet.h>
+#include <birnet/birnet.hh>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -107,7 +107,7 @@ gen_zfile (const gchar *name,
       if (mlen <= dlen + 1024)
 	{
 	  mlen += 8192;
-	  data = g_realloc (data, mlen);
+	  data = g_renew (uint8, data, mlen);
 	}
       dlen += fread (data + dlen, 1, mlen - dlen, f);
     }
@@ -119,9 +119,9 @@ gen_zfile (const gchar *name,
   if (use_compression)
     {
       int result;
-      gchar *err;
+      const char *err;
       clen = dlen + dlen / 100 + 64;
-      cdata = g_malloc (clen);
+      cdata = g_new (uint8, clen);
       result = compress2 (cdata, &clen, data, dlen, Z_BEST_COMPRESSION);
       switch (result)
 	{
@@ -188,7 +188,6 @@ main (gint   argc,
       gchar *argv[])
 {
   GSList *plist = NULL;
-  guint i;
 
   BirnetInitValue ivalues[] = {
     { "stand-alone", "true" },
@@ -196,7 +195,7 @@ main (gint   argc,
   };
   birnet_init_extended (&argc, &argv, NULL, ivalues);
 
-  for (i = 1; i < argc; i++)
+  for (int i = 1; i < argc; i++)
     {
       if (strcmp ("-z", argv[i]) == 0)
 	{
@@ -219,11 +218,11 @@ main (gint   argc,
 
   while (plist && plist->next)
     {
-      const gchar *file, *name = plist->data;
+      const char *name = (char*) plist->data;
       GSList *tmp = plist;
       plist = tmp->next;
       g_slist_free_1 (tmp);
-      file = plist->data;
+      const char *file = (char*) plist->data;
       tmp = plist;
       plist = tmp->next;
       g_slist_free_1 (tmp);

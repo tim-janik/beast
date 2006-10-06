@@ -9,25 +9,25 @@ INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFL
 GLIB_MKENUMS    = glib-mkenums
 
 birnet_headers = $(strip 		\
-	birnet.h			\
+	birnet.hh			\
 	birnetcore.h			\
 	birnetcpu.h			\
-	birnetmsg.h			\
+	birnetmsg.hh			\
 	birnetsignal.hh                 \
 	birnettests.h			\
 	birnetthread.h			\
 	birnetthreadxx.hh		\
-	birnetutils.h			\
+	birnetutils.hh			\
 	birnetutilsxx.hh		\
 )
 birnet_sources = $(strip 		\
 	birnetcore.c			\
 	birnetcpu.c			\
-	birnetmsg.c			\
+	birnetmsg.cc			\
 	birnetsignal.cc                 \
 	birnetthread.c			\
 	birnetthreadxx.cc		\
-	birnetutils.c			\
+	birnetutils.cc			\
 	birnetutilsxx.cc		\
 )
 birnet_private_headers = $(strip 	\
@@ -85,6 +85,15 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "#define BIRNET_BINARY_AGE		(@BIRNET_BINARY_AGE@)"			>> xgen-$(@F) \
 	&& echo "#define BIRNET_INTERFACE_AGE		(@BIRNET_INTERFACE_AGE@)"		>> xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
+	&& echo "/* log domain */"								>> xgen-$(@F) \
+	&& echo "#ifndef BIRNET_LOG_DOMAIN"							>> xgen-$(@F) \
+	&& echo "#ifdef  G_LOG_DOMAIN"								>> xgen-$(@F) \
+	&& echo "#define BIRNET_LOG_DOMAIN  G_LOG_DOMAIN"					>> xgen-$(@F) \
+	&& echo "#else"										>> xgen-$(@F) \
+	&& echo "#define BIRNET_LOG_DOMAIN  ((const char*) 0)"					>> xgen-$(@F) \
+	&& echo "#endif"									>> xgen-$(@F) \
+	&& echo "#endif"									>> xgen-$(@F) \
+	&& echo ""										>> xgen-$(@F) \
 	&& echo "/* version checks */"								>> xgen-$(@F) \
 	&& echo "#define BIRNET_CHECK_VERSION(major,minor,micro)	\\"			>> xgen-$(@F) \
 	&& echo "  (BIRNET_MAJOR_VERSION > (major) || \\"					>> xgen-$(@F) \
@@ -120,6 +129,6 @@ CLEANFILES += xgen-sigs birnetsignalvariants.hh xgen-signals.sed
 
 noinst_PROGRAMS = birnet-zintern
 progs_ldadd     = libbirnet.o $(BIRNET_LIBS) -lm
-birnet_zintern_SOURCES = birnet-zintern.c dummy.cc
+birnet_zintern_SOURCES = birnet-zintern.cc
 birnet_zintern_LDADD   = $(progs_ldadd)
 birnet_zintern_DEPS    = $(progs_deps)

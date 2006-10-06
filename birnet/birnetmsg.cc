@@ -1,7 +1,7 @@
 /* Birnet
  * Copyright (C) 2006 Tim Janik
- *
- * This library is free software; you can redistribute it and/or
+ * 
+ * This library is free software; you can redistribute it and/or 
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
@@ -16,22 +16,39 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BIRNET_H__
-#define __BIRNET_H__
+#include "birnetmsg.hh"
 
-#include <birnet/birnetconfig.h>
-#include <birnet/birnetcore.h>
-#include <birnet/birnetcpu.h>
+namespace Birnet {
 
-#include <birnet/birnetutils.h>
-#include <birnet/birnetmsg.h>
-#include <birnet/birnetthread.h>
+Msg::Part::Part() :
+  ptype (0)
+{}
 
-#ifdef	__cplusplus
-#include <birnet/birnetutilsxx.hh>
-#include <birnet/birnetsignal.hh>
-#include <birnet/birnetthreadxx.hh>
-#endif	/* __cplusplus */
+void
+Msg::Part::setup (uint8       _ptype,
+                  String      smsg)
+{
+  ptype = _ptype;
+  string = smsg;
+}
 
-#endif /* __BIRNET_H__ */
-/* vim:set ts=8 sts=2 sw=2: */
+void
+Msg::Part::setup (uint8       _ptype,
+                  const char *format,
+                  va_list     varargs)
+{
+  char *s = g_strdup_vprintf (format, varargs);
+  setup (_ptype, String (s));
+  g_free (s);
+}
+
+const Msg::Part &Msg::empty_part = Part();
+
+void
+Msg::display (const char         *domain,
+              const vector<Part> &parts)
+{
+  // FIXME: implement Msg::display()
+}
+
+} // Birnet

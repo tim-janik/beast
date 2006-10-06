@@ -17,9 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "birnetutilsxx.hh"
-#include "birnetutils.h"
+#include "birnetutils.hh"
 #include "birnetthreadxx.hh"
-#include "birnetmsg.h"
 #include "birnetcpu.h"
 #include <sys/time.h>
 #include <vector>
@@ -102,7 +101,6 @@ birnet_init_extended (int            *argcp,    /* declared in birnetcore.h */
   /* initialize sub systems */
   _birnet_init_cpuinfo();
   _birnet_init_threads();
-  _birnet_init_logging ();
   if (birnet_init_cplusplus_func)
     birnet_init_cplusplus_func();
 }
@@ -240,7 +238,7 @@ bool
 check (const String &file,
        const String &mode)
 {
-  return birnet_file_check (file.c_str(), mode.c_str());
+  return file_check (file.c_str(), mode.c_str());
 }
 
 /**
@@ -255,7 +253,7 @@ bool
 equals (const String &file1,
         const String &file2)
 {
-  return birnet_file_equals (file1.c_str(), file2.c_str());
+  return file_equals (file1.c_str(), file2.c_str());
 }
 
 } // Path
@@ -409,6 +407,12 @@ Deletable::invoke_deletion_hooks()
 }
 
 /* --- ReferenceCountImpl --- */
+void
+ReferenceCountImpl::ref_diag (const char *msg) const
+{
+  fprintf (stderr, "%s: this=%p ref_count=%d floating=%d", msg ? msg : "ReferenceCountImpl", this, ref_count(), floating());
+}
+
 void
 ReferenceCountImpl::finalize ()
 {}

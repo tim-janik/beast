@@ -1,9 +1,24 @@
-Tue Oct  3 17:26:50 2006  Tim Janik  <timj@gtk.org>
+Fri Oct  6 18:53:30 2006  Tim Janik  <timj@gtk.org>
+
+	* birnet.hh: renamed from birnet.h.
 
 	* tests/ring.cc:
 	* birnetring.[hc]: removed, moved to sfi/ as SfiRing.
 
+	* birnetutilsxx.hh, birnetutilsxx.cc: hide implementation of ref_diag().
+
+	* birnetutils.hh, birnetutils.cc: renamed and ported to C++ from
+	birnetutils.h and birnetutils.c. changed callers.
+
 	* birnetthread.c: ported from BirnetRing to GSList.
+
+	* birnet-zintern.cc: C++ fixes. changed callers.
+
+	* birnettests.h: removed C function definitions.
+
+	* birnetmsg.hh, birnetmsg.cc: implement messaging API akeleton for C++.
+
+	* birnetmsg.[hc]: removed. (implementation moved to Sfi)
 
 Sun Oct  1 13:31:47 2006  Tim Janik  <timj@gtk.org>
 

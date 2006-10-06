@@ -1,4 +1,4 @@
-/* Birnet
+/* BirnetTests - Utilities for writing test programs
  * Copyright (C) 2006 Tim Janik
  * Copyright (C) 2006 Stefan Westerfeld
  *
@@ -17,7 +17,15 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <birnet/birnet.h>
+#ifdef  __cplusplus
+#include <birnet/birnet.hh>
+#else
+#include <birnet/birnetconfig.h>
+#endif
+
+/* this file may be included by C programs */
+
+#include <glib.h>
 
 BIRNET_EXTERN_C_BEGIN();
 
@@ -31,12 +39,6 @@ BIRNET_EXTERN_C_BEGIN();
 #  define U_(x)		(x)
 #endif
 
-/* --- initialization --- */
-static inline void birnet_init_test (int*, char***);
-static inline void birnet_test_intro (const char *postfix,
-				      const char *format,
-				      ...) G_GNUC_PRINTF (2, 3);
-
 /* --- macros --- */
 /* macros used for testing.
  * note that g_print() does fflush(stdout) automatically.
@@ -44,7 +46,7 @@ static inline void birnet_test_intro (const char *postfix,
  * of programs which generate output on stdout.
  */
 #ifdef	TEST_VERBOSE
-#define TSTART(...)	birnet_test_intro (":\n", __VA_ARGS__)		/* test intro */
+#define TSTART(...)	TSTART_impl (":\n", __VA_ARGS__)		/* test intro */
 #define TOK()           do { g_printerr ("OK.\n"); } while (0)		/* subtest OK */
 #define TICK()          TOK()						/* subtest OK */
 #define TACK()          do { g_printerr ("ACK.\n"); } while (0)		/* alternate OK */
@@ -54,7 +56,7 @@ static inline void birnet_test_intro (const char *postfix,
 #define	TERROR(...)	TERROR_impl ("FAIL.\n", __VA_ARGS__)		/* test error, abort */
 #define TDONE()         do { g_printerr ("DONE.\n"); } while (0)	/* test outro */
 #else
-#define TSTART(...)	birnet_test_intro (": [", __VA_ARGS__)		/* test intro */
+#define TSTART(...)	TSTART_impl (": [", __VA_ARGS__)		/* test intro */
 #define TOK()           do { g_printerr ("-"); } while (0)		/* subtest OK */
 #define TICK()          TOK()						/* subtest OK */
 #define TACK()          do { g_printerr ("+"); } while (0)		/* alternate OK */
@@ -66,6 +68,12 @@ static inline void birnet_test_intro (const char *postfix,
 #endif
 
 /* --- macro details --- */
+#define TSTART_impl(postfix, ...)	do {		\
+  char *_test_name_ = g_strdup_printf (__VA_ARGS__);	\
+  g_printerr ("%s%s", _test_name_, postfix);		\
+  g_free (_test_name_);					\
+} while (0)
+
 #define TASSERT_impl(mark, code, show)	do {		\
   if (code) {						\
     if (show >= 2)					\
@@ -138,42 +146,24 @@ static inline void birnet_test_intro (const char *postfix,
   dups;                                                                                 \
 })
 
-/* --- implmentation details --- */
-static inline void
-birnet_test_intro (const char *postfix,
-		   const char *format,
-		   ...)
-{
-  va_list args;
-  va_start (args, format);
-  char *msg = g_strdup_vprintf (format, args);
-  va_end (args);
-  g_printerr ("%s%s", msg, postfix);
-  g_free (msg);
-}
-
-static inline void
-birnet_test_setup()
-{
-  birnet_init_settings->stand_alone |= true;
-  unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
-  g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  g_printerr ("TEST: %s\n", g_get_prgname());
-}
-
-/* initialization functions for tests */
+/* --- C++ test initialization --- */
+#ifdef  __cplusplus
 static inline void
 birnet_init_test (int    *argc,
 		  char ***argv)
 {
+  /* check that NULL is defined to __null in C++ on 64bit */
+  BIRNET_ASSERT (sizeof (NULL) == sizeof (void*));
+  /* normal initialization */
   BirnetInitValue ivalues[] = {
     { "stand-alone", "true" },
     { NULL }
   };
   birnet_init_extended (argc, argv, NULL, ivalues);
-  birnet_test_setup();
-  /* some runtime checks are best to have here */
-  BIRNET_ASSERT (sizeof (NULL) == sizeof (void*)); // check that NULL is defined to __null in C++ on 64bit
+  unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
+  g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+  g_printerr ("TEST: %s\n", g_get_prgname());
 }
+#endif
 
 BIRNET_EXTERN_C_END();
