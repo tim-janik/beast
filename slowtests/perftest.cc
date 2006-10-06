@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   bse_init_async (&argc, &argv, "Perftest", NULL);
-  birnet_msg_allow ("misc");
+  sfi_msg_allow ("misc");
   bse_context = bse_init_glue_context (argv[0]);
 
   sfi_glue_context_push (bse_context);

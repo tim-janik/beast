@@ -23,7 +23,7 @@
 
 #include "ladspa.h"
 
-static BIRNET_MSG_TYPE_DEFINE (debug_ladspa, "ladspa", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_ladspa, "ladspa", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_ladspa, __VA_ARGS__)
 
 #define	LADSPA_TYPE_NAME	"BseLadspaModule_"

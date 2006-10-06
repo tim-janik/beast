@@ -62,7 +62,7 @@ main (gint   argc,
   gboolean test_open = FALSE;
 
   /* initialization */
-  BirnetInitValue values[] = {
+  SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
     { NULL }
   };

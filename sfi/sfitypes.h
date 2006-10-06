@@ -19,7 +19,7 @@
 #ifndef __SFI_TYPES_H__
 #define __SFI_TYPES_H__
 
-#include <birnet/birnet.h>
+#include <birnet/birnetthread.h>
 #include <sfi/glib-extra.h>
 
 G_BEGIN_DECLS
@@ -62,16 +62,6 @@ typedef struct {
 typedef struct _SfiUStore	SfiUStore;
 typedef struct _SfiUPool	SfiUPool;
 typedef struct _SfiPPool	SfiPPool;
-
-
-/* --- logging shorthands --- */
-#define sfi_fatal(...)		birnet_fatal (__VA_ARGS__)
-#define sfi_error(...)		birnet_error (__VA_ARGS__)
-#define sfi_warning(...)	birnet_warning (__VA_ARGS__)
-#define sfi_info(...)		birnet_info (__VA_ARGS__)
-#define sfi_diag(...)		birnet_diag (__VA_ARGS__)
-#define sfi_debug(lvl, ...)	birnet_debug (lvl, __VA_ARGS__)
-#define sfi_nodebug(lvl, ...)	birnet_nodebug (lvl, __VA_ARGS__)
 
 /* --- FIXME: hacks! --- */
 void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set already

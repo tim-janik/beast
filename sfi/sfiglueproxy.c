@@ -19,6 +19,7 @@
 #include <string.h>
 #include "sfiglueproxy.h"
 #include "sfiglue.h"
+#include "sfimsg.h"
 #include "sfiustore.h"
 #include "sfivmarshal.h"
 #include <gobject/gvaluecollector.h>
@@ -26,9 +27,9 @@
 
 
 /* --- macros --- */
-static BIRNET_MSG_TYPE_DEFINE (debug_signals, "signals", BIRNET_MSG_DEBUG, NULL);
-#define SIGNAL_DEBUG(...)                       birnet_debug (debug_signals, __VA_ARGS__)
-#define	sfi_proxy_warn_inval(where,proxy)       birnet_diag ("%s: invalid proxy id (%lu)", (where), (proxy))
+static SFI_MSG_TYPE_DEFINE (debug_signals, "signals", SFI_MSG_DEBUG, NULL);
+#define SIGNAL_DEBUG(...)                       sfi_debug (debug_signals, __VA_ARGS__)
+#define	sfi_proxy_warn_inval(where,proxy)       sfi_diag ("%s: invalid proxy id (%lu)", (where), (proxy))
 
 
 /* --- structures --- */

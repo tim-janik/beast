@@ -24,7 +24,7 @@
 #include <unistd.h>
 
 
-static BIRNET_MSG_TYPE_DEFINE (debug_engine, "engine", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_engine, "engine", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_engine, __VA_ARGS__)
 
 /* some systems don't have ERESTART (which is what linux returns for system

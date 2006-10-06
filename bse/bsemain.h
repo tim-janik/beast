@@ -29,7 +29,7 @@ void		bse_init_textdomain_only (void);
 void		bse_init_async		(gint		*argc,
 					 gchar	      ***argv,
 					 const char     *app_name,
-					 BirnetInitValue values[]);
+					 SfiInitValue    values[]);
 SfiGlueContext* bse_init_glue_context	(const gchar    *client);
 gchar*          bse_check_version	(guint		 required_major,
                                          guint		 required_minor,
@@ -39,16 +39,16 @@ gchar*          bse_check_version	(guint		 required_major,
 void		bse_init_inprocess	(gint		*argc,
 					 gchar	      ***argv,
 					 const char     *app_name,
-					 BirnetInitValue values[]);
+					 SfiInitValue    values[]);
 void		bse_init_test		(gint		*argc,
 					 gchar	      ***argv,
-					 BirnetInitValue values[]);
+					 SfiInitValue    values[]);
 
 /* BSE thread pid (or 0) */
 guint           bse_main_getpid         (void);
 
 /* MT-safe log handler */
-void            bse_msg_handler         (const BirnetMessage *message);
+void            bse_msg_handler         (const SfiMessage *message);
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()

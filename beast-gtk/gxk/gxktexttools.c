@@ -19,7 +19,7 @@
 #include "gxktexttools.h"
 #include "gxkstock.h"
 #include "gxkradget.h"
-#include "birnet/birnet.h" /* for birnet_url_show() */
+#include "sfi/sfiwrapper.h" /* for sfi_url_show() */
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -2301,7 +2301,7 @@ navigate_urls (GtkWidget   *sctext,
       strncmp (uri, "https:", 6) == 0 ||
       strncmp (uri, "mailto:", 7) == 0)
     {
-      birnet_url_show (uri);
+      sfi_url_show (uri);
       return TRUE;
     }
   else

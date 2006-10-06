@@ -24,7 +24,7 @@
 #include <string>
 
 #undef  WITH_GUSPATCH_XINFOS
-static BIRNET_MSG_TYPE_DEFINE (debug_guspatch, "guspatch", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_guspatch, "guspatch", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_guspatch, __VA_ARGS__)
 
 using std::vector;

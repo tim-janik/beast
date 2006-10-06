@@ -1094,7 +1094,7 @@ app_action_exec (gpointer data,
       if (docs_url)
         {
           gchar *local_url = g_strconcat ("file://", BST_PATH_DOCS, "/", docs_url, NULL);
-          birnet_url_show_with_cookie (local_url, docs_title, self->cookie);
+          sfi_url_show_with_cookie (local_url, docs_title, self->cookie);
           g_free (local_url);
         }
       break;
@@ -1102,19 +1102,19 @@ app_action_exec (gpointer data,
       beast_show_about_box ();
       break;
     case ACTION_URL_HELP_DESK:
-      birnet_url_show ("http://beast.gtk.org/wiki:HelpDesk");
+      sfi_url_show ("http://beast.gtk.org/wiki:HelpDesk");
       break;
     case ACTION_URL_BEAST_SITE:
-      birnet_url_show ("http://beast.gtk.org/");
+      sfi_url_show ("http://beast.gtk.org/");
       break;
     case ACTION_URL_REPORT_BUG:
-      birnet_url_show ("http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast");
+      sfi_url_show ("http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast");
       break;
     case ACTION_URL_ONLINE_SYNTHESIZERS:
-      birnet_url_show ("http://beast.gtk.org/sound-browser");
+      sfi_url_show ("http://beast.gtk.org/sound-browser");
       break;
     case ACTION_URL_ONLINE_DEMOS:
-      birnet_url_show ("http://beast.gtk.org/sound-browser");
+      sfi_url_show ("http://beast.gtk.org/sound-browser");
       break;
     case ACTION_DEMO_DIALOG_FATAL:
     case ACTION_DEMO_DIALOG_ERROR:
@@ -1135,13 +1135,13 @@ app_action_exec (gpointer data,
         case ACTION_DEMO_DIALOG_DEBUG:   demo_type = BST_MSG_DEBUG;   break;
         }
       bst_msg_dialog (demo_type,
-                      BIRNET_MSG_TEXT0 ("Demonstration Dialog"),
-                      BIRNET_MSG_TEXT1 ("This is a demonstrative dialog"),
-                      BIRNET_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
+                      SFI_MSG_TEXT0 ("Demonstration Dialog"),
+                      SFI_MSG_TEXT1 ("This is a demonstrative dialog"),
+                      SFI_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
                                      "fired up for pure demonstration purposes. This is such a dialog, so if you "
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
-                      BIRNET_MSG_TEXT3 ("Demo-Dialog-Type: %s", birnet_msg_type_label (demo_type)));
+                      SFI_MSG_TEXT3 ("Demo-Dialog-Type: %s", sfi_msg_type_label (demo_type)));
       break;
     default:
       g_assert_not_reached ();

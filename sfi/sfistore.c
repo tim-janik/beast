@@ -20,6 +20,7 @@
 #include "sfiprimitives.h"
 #include "sfiserial.h"
 #include "sfiparams.h"
+#include "sfimsg.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

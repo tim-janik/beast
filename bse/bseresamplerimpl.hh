@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <bse/bseresampler.hh>
-#include <birnet/birnet.h>
+#include <birnet/birnet.hh>
 #include <math.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
@@ -162,7 +162,7 @@ class AlignedArray {
   allocate_aligned_data()
   {
     g_assert ((ALIGN % sizeof (T)) == 0);
-    data = reinterpret_cast<T *> (birnet_malloc_aligned (n_elements * sizeof (T), ALIGN, &unaligned_mem));
+    data = reinterpret_cast<T *> (Birnet::malloc_aligned (n_elements * sizeof (T), ALIGN, &unaligned_mem));
   }
   /* no copy constructor and no assignment operator */
   BIRNET_PRIVATE_CLASS_COPY (AlignedArray);

@@ -57,9 +57,9 @@ list<string>   unlink_file_list;
 
 /* --- main program --- */
 static void
-wavetool_log_handler (const BirnetMessage  *msg)
+wavetool_log_handler (const SfiMessage  *msg)
 {
-  if (msg->type == BIRNET_MSG_INFO)
+  if (msg->type == SFI_MSG_INFO)
     {
       if (!quiet_infos)
         {
@@ -72,7 +72,7 @@ wavetool_log_handler (const BirnetMessage  *msg)
         }
     }
   else
-    birnet_msg_default_handler (msg);
+    sfi_msg_default_handler (msg);
 }
 
 extern "C" int
@@ -83,7 +83,7 @@ main (int   argc,
 
   /* initialization */
   int orig_argc = argc;
-  BirnetInitValue values[] = {
+  SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
     { "wave-chunk-padding",     NULL, 1, },
     { "dcache-block-size",      NULL, 8192, },
@@ -91,9 +91,9 @@ main (int   argc,
     { NULL }
   };
   bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
-  birnet_msg_allow ("main"); // FIXME
-  birnet_msg_set_thread_handler (wavetool_log_handler);
-  birnet_msg_type_configure (BIRNET_MSG_INFO, BIRNET_MSG_TO_HANDLER, NULL);
+  sfi_msg_allow ("main"); // FIXME
+  sfi_msg_set_thread_handler (wavetool_log_handler);
+  sfi_msg_type_configure (SFI_MSG_INFO, SFI_MSG_TO_HANDLER, NULL);
   
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
@@ -309,10 +309,10 @@ wavetool_parse_args (int    *argc_p,
 
   envar = getenv ("BSEWAVETOOL_DEBUG");
   if (envar)
-    birnet_msg_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BSEWAVETOOL_NO_DEBUG");
   if (envar)
-    birnet_msg_deny (envar);
+    sfi_msg_deny (envar);
   
   for (i = 1; i < argc; i++)
     {
@@ -329,9 +329,9 @@ wavetool_parse_args (int    *argc_p,
           exit (0);
         }
       else if (parse_str_option (argv, i, "--debug", &str, argc))
-        birnet_msg_allow (str);
+        sfi_msg_allow (str);
       else if (parse_str_option (argv, i, "--no-debug", &str, argc))
-        birnet_msg_deny (str);
+        sfi_msg_deny (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
         {
@@ -931,8 +931,8 @@ public:
             }
           if (error)
             {
-              birnet_msg_log (continue_on_error ? BIRNET_MSG_WARNING : BIRNET_MSG_ERROR,
-                           BIRNET_MSG_PRIMARY (_("failed to add wave chunk from file \"%s\": %s"),
+              sfi_msg_log (continue_on_error ? SFI_MSG_WARNING : SFI_MSG_ERROR,
+                           SFI_MSG_PRIMARY (_("failed to add wave chunk from file \"%s\": %s"),
                                             ochunk.sample_file, bse_error_blurb (error)));
               if (!continue_on_error)
                 exit (1);

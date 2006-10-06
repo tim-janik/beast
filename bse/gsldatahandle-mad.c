@@ -38,7 +38,7 @@ BIRNET_STATIC_ASSERT (BSE_HAVE_LIBMAD + 42); // assert BSE_HAVE_LIBMAD2 is defin
 
 
 /* --- debugging and errors --- */
-static BIRNET_MSG_TYPE_DEFINE (debug_mad, "mad", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_mad, "mad", SFI_MSG_DEBUG, NULL);
 #define MAD_DEBUG(...)  sfi_debug (debug_mad, __VA_ARGS__)
 
 

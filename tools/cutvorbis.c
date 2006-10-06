@@ -89,7 +89,7 @@ main (int   argc,
   gint ifd, ofd;
 
   /* initialization */
-  BirnetInitValue values[] = {
+  SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
     { "wave-chunk-padding",     NULL, 1, },
     { "dcache-block-size",      NULL, 8192, },

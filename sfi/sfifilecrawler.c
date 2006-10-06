@@ -18,6 +18,7 @@
  */
 #include "sfifilecrawler.h"
 #include "sfiprimitives.h"
+#include "sfiwrapper.h"
 #include "topconfig.h"
 #include <string.h>
 #include <sys/types.h>

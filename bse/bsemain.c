@@ -32,14 +32,14 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <birnet/birnettests.h> /* birnet_test_setup() */
+#include <sfi/sfitests.h> /* sfti_test_init() */
 
 /* --- prototypes --- */
 static void	bse_main_loop		(gpointer	 data);
 static void	bse_async_parse_args	(gint	        *argc_p,
 					 gchar	      ***argv_p,
                                          BseMainArgs    *margs,
-                                         BirnetInitValue values[]);
+                                         SfiInitValue    values[]);
 
 
 /* --- variables --- */
@@ -88,7 +88,7 @@ void
 bse_init_async (gint           *argc,
 		gchar        ***argv,
                 const char     *app_name,
-                BirnetInitValue values[])
+                SfiInitValue    values[])
 {
   BirnetThread *thread;
 
@@ -106,7 +106,7 @@ bse_init_async (gint           *argc,
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   /* initialize submodules */
-  birnet_init_extended (argc, argv, app_name, values);
+  sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
   bse_main_args->birnet = *birnet_init_settings;
 
@@ -213,7 +213,7 @@ bse_init_core (void)
   bse_main_context = g_main_context_new ();
   birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
-  birnet_msg_set_thread_handler (bse_msg_handler);
+  sfi_msg_set_thread_handler (bse_msg_handler);
 
   /* initialize basic components */
   bse_globals_init ();
@@ -290,7 +290,7 @@ static void
 bse_init_intern (gint           *argc,
 		 gchar        ***argv,
                  const char     *app_name,
-		 BirnetInitValue values[],
+		 SfiInitValue    values[],
                  bool            as_test)
 {
   bse_init_textdomain_only();
@@ -305,7 +305,10 @@ bse_init_intern (gint           *argc,
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
 
   /* initialize submodules */
-  birnet_init_extended (argc, argv, app_name, values);
+  if (as_test)
+    sfi_init_test (argc, argv, values);
+  else
+    sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
   bse_main_args->birnet = *birnet_init_settings;
 
@@ -316,9 +319,6 @@ bse_init_intern (gint           *argc,
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, bse_main_args, values);
     }
-  /* readily setup for test programs */
-  if (as_test)
-    birnet_test_setup();
   
   bse_init_core ();
 
@@ -356,7 +356,7 @@ void
 bse_init_inprocess (gint           *argc,
                     gchar        ***argv,
                     const char     *app_name,
-                    BirnetInitValue values[])
+                    SfiInitValue    values[])
 {
   bse_init_intern (argc, argv, app_name, values, false);
 }
@@ -364,7 +364,7 @@ bse_init_inprocess (gint           *argc,
 void
 bse_init_test (gint           *argc,
                gchar        ***argv,
-               BirnetInitValue values[])
+               SfiInitValue    values[])
 {
   bse_init_intern (argc, argv, NULL, values, true);
 }
@@ -413,11 +413,11 @@ core_thread_send_message_async (gpointer data)
 }
 
 /**
- * BSE log handler, suitable for birnet_msg_set_thread_handler().
+ * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_msg_handler (const BirnetMessage *lmsg)
+bse_msg_handler (const SfiMessage *lmsg)
 {
   /* this functions is called from multiple threads */
   if (!lmsg->primary && !lmsg->secondary)
@@ -425,14 +425,14 @@ bse_msg_handler (const BirnetMessage *lmsg)
   BseMessage *umsg = bse_message_new();
   g_free (umsg->log_domain);
   umsg->log_domain = g_strdup (lmsg->log_domain);
-  g_static_assert (BSE_MSG_NONE    == BIRNET_MSG_NONE);
-  g_static_assert (BSE_MSG_FATAL   == BIRNET_MSG_FATAL);
-  g_static_assert (BSE_MSG_ERROR   == BIRNET_MSG_ERROR);
-  g_static_assert (BSE_MSG_WARNING == BIRNET_MSG_WARNING);
-  g_static_assert (BSE_MSG_SCRIPT  == BIRNET_MSG_SCRIPT);
-  g_static_assert (BSE_MSG_INFO    == BIRNET_MSG_INFO);
-  g_static_assert (BSE_MSG_DIAG    == BIRNET_MSG_DIAG);
-  g_static_assert (BSE_MSG_DEBUG   == BIRNET_MSG_DEBUG);
+  g_static_assert (BSE_MSG_NONE    == SFI_MSG_NONE);
+  g_static_assert (BSE_MSG_FATAL   == SFI_MSG_FATAL);
+  g_static_assert (BSE_MSG_ERROR   == SFI_MSG_ERROR);
+  g_static_assert (BSE_MSG_WARNING == SFI_MSG_WARNING);
+  g_static_assert (BSE_MSG_SCRIPT  == SFI_MSG_SCRIPT);
+  g_static_assert (BSE_MSG_INFO    == SFI_MSG_INFO);
+  g_static_assert (BSE_MSG_DIAG    == SFI_MSG_DIAG);
+  g_static_assert (BSE_MSG_DEBUG   == SFI_MSG_DEBUG);
   umsg->type = lmsg->type;
   g_free (umsg->config_check);
   umsg->config_check = g_strdup (lmsg->config_check);
@@ -470,7 +470,7 @@ static void
 bse_async_parse_args (gint           *argc_p,
 		      gchar        ***argv_p,
                       BseMainArgs    *margs,
-                      BirnetInitValue values[])
+                      SfiInitValue    values[])
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
@@ -481,10 +481,10 @@ bse_async_parse_args (gint           *argc_p,
 
   gchar *envar = getenv ("BSE_DEBUG");
   if (envar)
-    birnet_msg_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
-    birnet_msg_deny (envar);
+    sfi_msg_deny (envar);
 
   guint i;
   for (i = 1; i < argc; i++)
@@ -501,11 +501,11 @@ bse_async_parse_args (gint           *argc_p,
 	{
 	  gchar *equal = argv[i] + 11;
 	  if (*equal == '=')
-            birnet_msg_allow (equal + 1);
+            sfi_msg_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      birnet_msg_allow (argv[i]);
+	      sfi_msg_allow (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -514,11 +514,11 @@ bse_async_parse_args (gint           *argc_p,
 	{
 	  gchar *equal = argv[i] + 14;
 	  if (*equal == '=')
-            birnet_msg_deny (equal + 1);
+            sfi_msg_deny (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      birnet_msg_deny (argv[i]);
+	      sfi_msg_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -634,29 +634,29 @@ bse_async_parse_args (gint           *argc_p,
 
   if (values)
     {
-      BirnetInitValue *value = values;
+      SfiInitValue *value = values;
       while (value->value_name)
         {
           if (strcmp (value->value_name, "debug-extensions") == 0)
-            margs->debug_extensions |= birnet_init_value_bool (value);
+            margs->debug_extensions |= sfi_init_value_bool (value);
           else if (strcmp (value->value_name, "force-fpu") == 0)
-            margs->force_fpu |= birnet_init_value_bool (value);
+            margs->force_fpu |= sfi_init_value_bool (value);
           else if (strcmp (value->value_name, "load-core-plugins") == 0)
-            margs->load_core_plugins |= birnet_init_value_bool (value);
+            margs->load_core_plugins |= sfi_init_value_bool (value);
           else if (strcmp (value->value_name, "load-core-scripts") == 0)
-            margs->load_core_scripts |= birnet_init_value_bool (value);
+            margs->load_core_scripts |= sfi_init_value_bool (value);
           else if (strcmp ("wave-chunk-padding", value->value_name) == 0)
-            margs->wave_chunk_padding = birnet_init_value_int (value);
+            margs->wave_chunk_padding = sfi_init_value_int (value);
           else if (strcmp ("wave-chunk-big-pad", value->value_name) == 0)
-            margs->wave_chunk_big_pad = birnet_init_value_int (value);
+            margs->wave_chunk_big_pad = sfi_init_value_int (value);
           else if (strcmp ("dcache-cache-memory", value->value_name) == 0)
-            margs->dcache_cache_memory = birnet_init_value_int (value);
+            margs->dcache_cache_memory = sfi_init_value_int (value);
           else if (strcmp ("dcache-block-size", value->value_name) == 0)
-            margs->dcache_block_size = birnet_init_value_int (value);
+            margs->dcache_block_size = sfi_init_value_int (value);
           else if (strcmp ("midi-kammer-note", value->value_name) == 0)
-            margs->midi_kammer_note = birnet_init_value_int (value);
+            margs->midi_kammer_note = sfi_init_value_int (value);
           else if (strcmp ("kammer-freq", value->value_name) == 0)
-            margs->kammer_freq = birnet_init_value_double (value);
+            margs->kammer_freq = sfi_init_value_double (value);
           value++;
         }
     }

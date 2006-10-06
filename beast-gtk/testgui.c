@@ -100,7 +100,7 @@ main (int   argc,
 
   /* initialize Sfi */
   birnet_init (&argc, &argv, "TestGUI");
-  birnet_msg_allow ("misc");
+  sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
   birnet_thread_set_name ("TestGUI");
   birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup, g_main_context_default (), NULL);

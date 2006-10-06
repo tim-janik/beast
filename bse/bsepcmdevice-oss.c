@@ -47,7 +47,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-static BIRNET_MSG_TYPE_DEFINE (debug_pcm, "pcm", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_pcm, "pcm", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_pcm, __VA_ARGS__)
 
 

@@ -196,7 +196,7 @@ main (gint   argc,
       gchar *argv[])
 {
   /* init */
-  BirnetInitValue values[] = {
+  SfiInitValue values[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
     { "wave-chunk-padding",     NULL, 1, },
     { "wave_chunk_big_pad",     NULL, 2, },

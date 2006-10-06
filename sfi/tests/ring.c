@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 // #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <sfi/sfitests.h>
 #include <sfi/sfi.h>
 
 static void
@@ -222,7 +222,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  birnet_init_test (&argc, &argv);
+  sfi_init_test (&argc, &argv, NULL);
 
   test_sfi_ring();
 

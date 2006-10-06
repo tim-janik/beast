@@ -33,9 +33,9 @@ using namespace Bse;
 using namespace Birnet;
 using namespace std;
 
-static BIRNET_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_midi_receiver, "midi-receiver", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)              sfi_debug (debug_midi_receiver, __VA_ARGS__)
-static BIRNET_MSG_TYPE_DEFINE (debug_midi_events, "midi-events", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_midi_events, "midi-events", SFI_MSG_DEBUG, NULL);
 #define DEBUG_EVENTS(...)       sfi_debug (debug_midi_events, __VA_ARGS__)
 
 /* --- variables --- */

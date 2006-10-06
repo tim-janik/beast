@@ -21,7 +21,7 @@
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
 
-static BIRNET_MSG_TYPE_DEFINE (debug_biquadfilter, "biquadfilter", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_biquadfilter, "biquadfilter", SFI_MSG_DEBUG, NULL);
 #define	DEBUG(...)      sfi_debug (debug_biquadfilter, __VA_ARGS__)
 #define FREQ_DELTA      0.1
 

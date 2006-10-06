@@ -26,6 +26,7 @@
 #include <sfi/sfigluecodec.h>
 #include <sfi/sfiglueproxy.h>
 #include <sfi/sfimemory.h>
+#include <sfi/sfimsg.h>
 #include <sfi/sfinote.h>
 #include <sfi/sfiparams.h>
 #include <sfi/sfiprimitives.h>
@@ -38,6 +39,7 @@
 #include <sfi/sfiustore.h>
 #include <sfi/sfivalues.h>
 #include <sfi/sfivmarshal.h>
+#include <sfi/sfiwrapper.h>
 
 #endif /* __SFI_H__ */
 

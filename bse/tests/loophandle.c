@@ -208,7 +208,7 @@ main (int argc, char **argv)
 
   /* init bse */
   bse_init_test (&argc, &argv, NULL);
-  birnet_msg_allow ("misc");
+  sfi_msg_allow ("misc");
 
   /* test loophandle against the reference implementation */
   GslDataHandle *mem_handle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, n_values, values, NULL /* don't free */);

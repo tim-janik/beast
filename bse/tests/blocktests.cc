@@ -584,7 +584,7 @@ main (int   argc,
   run_tests(); /* run tests on FPU */
  
   /* load plugins */
-  BirnetInitValue config[] = {
+  SfiInitValue config[] = {
     { "load-core-plugins", "1" },
     { NULL },
   };

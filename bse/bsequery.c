@@ -217,7 +217,7 @@ main (gint   argc,
   gchar *iindent = "";
   char pluginbool[2] = "0";
   char scriptbool[2] = "0";
-  BirnetInitValue config[] = {
+  SfiInitValue config[] = {
     { "load-core-plugins", pluginbool },
     { "load-core-scripts", scriptbool },
     { NULL },
@@ -227,7 +227,7 @@ main (gint   argc,
 
   g_thread_init (NULL);
 
-  birnet_init (&argc, &argv, "BseQuery");
+  sfi_init (&argc, &argv, "BseQuery", NULL);
   
   guint i;
   for (i = 1; i < argc; i++)

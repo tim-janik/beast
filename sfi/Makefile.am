@@ -10,7 +10,7 @@ DEFS     += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS
 
 sfi_public_headers = $(strip \
 	sfistore.h	sficomwire.h	sfifilecrawler.h \
-	glib-extra.h	\
+	glib-extra.h	sfimsg.h	sfiwrapper.h	 \
 	sfivmarshal.h	sfiglue.h	sfigluecodec.h	sfiglueproxy.h	\
 	sfinote.h	sfiparams.h	sfiprimitives.h	sfiserial.h	\
 	sfitime.h	sfitypes.h	sfivalues.h	sfiustore.h	\
@@ -19,7 +19,7 @@ sfi_public_headers = $(strip \
 )
 sfi_all_sources = $(strip \
 	sfistore.c	sficomwire.c	sfifilecrawler.c \
-	glib-extra.c	\
+	glib-extra.c	sfimsg.c	sfiwrapper.cc	 \
 	sfivmarshal.c	sfiglue.c	sfigluecodec.c	sfiglueproxy.c	\
 	sfinote.c	sfiparams.c	sfiprimitives.c	sfiserial.c	\
 	sfitime.c	sfitypes.c	sfivalues.c	sfiustore.c	\

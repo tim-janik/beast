@@ -1,3 +1,12 @@
+Fri Oct  6 18:53:35 2006  Tim Janik  <timj@gtk.org>
+
+	* sfimsg.h, sfimsg.c: renamed and moved here from birnet/. 
+	changed callers.
+
+	* sficxx.cc: don't shadow "sfi_init" symbol.
+
+	* sfitypes.h: removed portions covered by sfimsg.h.
+
 Tue Oct  3 18:44:43 2006  Tim Janik  <timj@gtk.org>
 
 	* moved remaining sfi/ tests to sfi/tests.

@@ -24,7 +24,7 @@
 #include "bseexports.h"
 #include <string.h>
 
-static BIRNET_MSG_TYPE_DEFINE (debug_procs, "procs", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_procs, "procs", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_procs, __VA_ARGS__)
 
 /* --- macros --- */
@@ -266,7 +266,7 @@ bse_procedure_call (BseProcedureClass  *proc,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     {
-      if (birnet_msg_check (debug_procs))
+      if (sfi_msg_check (debug_procs))
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
             DEBUG ("executing procedure \"%s\" on object %s",

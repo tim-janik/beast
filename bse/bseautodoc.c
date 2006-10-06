@@ -559,14 +559,14 @@ main (gint   argc,
   gboolean gen_objects = FALSE;
   char pluginbool[2] = "0";
   char scriptbool[2] = "0";
-  BirnetInitValue config[] = {
+  SfiInitValue config[] = {
     { "load-core-plugins", pluginbool },
     { "load-core-scripts", scriptbool },
     { NULL },
   };
 
   g_thread_init (NULL);
-  birnet_init (&argc, &argv, "BseAutoDoc");
+  sfi_init (&argc, &argv, "BseAutoDoc", NULL);
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   
   guint i;

@@ -20,7 +20,7 @@
 #define	G_LOG_DOMAIN	"SFI-GLUE"
 #include "sfigluecodec.h"
 #include "sfiglueproxy.h"
-#include <string.h>
+#include "sfimsg.h"
 
 
 /* --- prototypes --- */

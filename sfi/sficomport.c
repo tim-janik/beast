@@ -20,6 +20,7 @@
 #include "sfiprimitives.h"
 #include "sfiserial.h"
 #include "sfistore.h"
+#include "sfimsg.h"
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
@@ -30,8 +31,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-static BIRNET_MSG_TYPE_DEFINE (debug_comport, "comport", BIRNET_MSG_DEBUG, NULL);
-#define DEBUG(...)              birnet_debug (debug_comport, __VA_ARGS__)
+static SFI_MSG_TYPE_DEFINE (debug_comport, "comport", SFI_MSG_DEBUG, NULL);
+#define DEBUG(...)              sfi_debug (debug_comport, __VA_ARGS__)
 #define MASS_DEBUG(...) // DEBUG (__VA_ARGS__)          // log every communicated value
 
 /* define the io bottle neck (for writes) to a small value

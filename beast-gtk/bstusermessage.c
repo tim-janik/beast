@@ -320,7 +320,7 @@ bst_msg_bit_free (gpointer data)
   g_free (mbit);
 }
 
-BirnetMsgBit*
+SfiMsgBit*
 bst_message_bit_appoint (guint                   id,
                          const gchar            *name,
                          const gchar            *stock_icon,
@@ -331,7 +331,7 @@ bst_message_bit_appoint (guint                   id,
   mbit->name = g_strdup (name);
   mbit->stock_icon = g_strdup (stock_icon);
   mbit->options = g_strdup (options);
-  return birnet_msg_bit_appoint (bst_message_bit_appoint, mbit, bst_msg_bit_free);
+  return sfi_msg_bit_appoint (bst_message_bit_appoint, mbit, bst_msg_bit_free);
 }
 
 static void
@@ -514,8 +514,8 @@ message_fill_from_script (BstMessage    *msg,
 {
   msg->log_domain = NULL;
   msg->type = mtype;
-  msg->ident = (char*) birnet_msg_type_ident (msg->type);
-  msg->label = (char*) birnet_msg_type_label (msg->type);
+  msg->ident = (char*) sfi_msg_type_ident (msg->type);
+  msg->label = (char*) sfi_msg_type_label (msg->type);
   const gchar *proc_title = NULL;
   if (hastext (proc_name))
     {
@@ -643,13 +643,13 @@ create_janitor_dialog (SfiProxy janitor)
 }
 
 void
-bst_message_log_handler (const BirnetMessage *lmsg)
+bst_message_log_handler (const SfiMessage *lmsg)
 {
   BstMessage msg = { 0, };
   msg.log_domain = lmsg->log_domain;
   msg.type = lmsg->type;
-  msg.ident = (char*) birnet_msg_type_ident (msg.type);
-  msg.label = (char*) birnet_msg_type_label (msg.type);
+  msg.ident = (char*) sfi_msg_type_ident (msg.type);
+  msg.label = (char*) sfi_msg_type_label (msg.type);
   msg.config_check = lmsg->config_check;
   msg.title = lmsg->title;
   msg.primary = lmsg->primary;
@@ -669,8 +669,8 @@ bst_message_synth_msg_handler (const BseMessage *umsg)
   BstMessage msg = { 0, };
   msg.log_domain = umsg->log_domain;
   msg.type = bst_msg_type_from_user_msg_type (umsg->type);
-  msg.ident = (char*) birnet_msg_type_ident (msg.type);
-  msg.label = (char*) birnet_msg_type_label (msg.type);
+  msg.ident = (char*) sfi_msg_type_ident (msg.type);
+  msg.label = (char*) sfi_msg_type_label (msg.type);
   msg.config_check = umsg->config_check;
   msg.title = umsg->title;
   msg.primary = umsg->primary;
@@ -712,26 +712,26 @@ bst_message_synth_msg_handler (const BseMessage *umsg)
 guint
 bst_message_dialog_elist (const char     *log_domain,
                           BstMsgType      type, /* BST_MSG_DEBUG is not really useful here */
-                          BirnetMsgBit      *lbit1,
-                          BirnetMsgBit      *lbit2,
+                          SfiMsgBit      *lbit1,
+                          SfiMsgBit      *lbit2,
                           ...)
 {
   gint saved_errno = errno;
   guint n = 0;
-  BirnetMsgBit **bits = NULL;
+  SfiMsgBit **bits = NULL;
   /* collect msg bits */
   if (lbit1)
     {
-      bits = g_renew (BirnetMsgBit*, bits, n + 1);
+      bits = g_renew (SfiMsgBit*, bits, n + 1);
       bits[n++] = lbit1;
-      BirnetMsgBit *lbit = lbit2;
+      SfiMsgBit *lbit = lbit2;
       va_list args;
       va_start (args, lbit2);
       while (lbit)
         {
-          bits = g_renew (BirnetMsgBit*, bits, n + 1);
+          bits = g_renew (SfiMsgBit*, bits, n + 1);
           bits[n++] = lbit;
-          lbit = va_arg (args, BirnetMsgBit*);
+          lbit = va_arg (args, SfiMsgBit*);
         }
       va_end (args);
     }
@@ -741,13 +741,13 @@ bst_message_dialog_elist (const char     *log_domain,
   for (i = 0; i < n; i++)
     if (bits[i]->owner == bst_message_bit_appoint)
       {
-        bits = g_renew (BirnetMsgBit*, bits, n + 1);
-        bits[n++] = birnet_msg_bit_appoint (bst_message_dialog_elist, &dialog_result, NULL);
+        bits = g_renew (SfiMsgBit*, bits, n + 1);
+        bits[n++] = sfi_msg_bit_appoint (bst_message_dialog_elist, &dialog_result, NULL);
         break;
       }
-  bits = g_renew (BirnetMsgBit*, bits, n + 1);
+  bits = g_renew (SfiMsgBit*, bits, n + 1);
   bits[n] = NULL;
-  birnet_msg_log_trampoline (log_domain, type, bits, bst_message_log_handler);
+  sfi_msg_log_trampoline (log_domain, type, bits, bst_message_log_handler);
   g_free (bits);
   errno = saved_errno;
   return dialog_result;
@@ -819,15 +819,15 @@ bst_message_list_types (guint *n_types)
     {
       BstMsgID *msg_ids = NULL;
       guint i = 0;
-      const gchar *ident = birnet_msg_type_ident (i);
+      const gchar *ident = sfi_msg_type_ident (i);
       while (ident)
         {
           msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
           msg_ids[i].type = i;
           msg_ids[i].ident = ident;
-          msg_ids[i].label = birnet_msg_type_label (msg_ids[i].type);
+          msg_ids[i].label = sfi_msg_type_label (msg_ids[i].type);
           i++;
-          ident = birnet_msg_type_ident (i);
+          ident = sfi_msg_type_ident (i);
         }
       msg_ids = g_renew (BstMsgID, msg_ids, i + 1);
       msg_ids[i].type = 0;

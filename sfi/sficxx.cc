@@ -22,7 +22,7 @@
 namespace Sfi {
 
 static void
-sfi_init (void)
+sfi_init_cxx (void)
 {
   g_type_init ();       /* just in case this hasn't been called already */
 
@@ -33,7 +33,7 @@ sfi_init (void)
   _sfi_init_file_crawler ();
 }
 
-static Birnet::InitHook sfi_init_hook (sfi_init);
+static Birnet::InitHook sfi_init_hook (sfi_init_cxx);
 
 } // Sfi
 

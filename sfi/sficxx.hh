@@ -19,7 +19,7 @@
 #ifndef __SFI_CXX_H__
 #define __SFI_CXX_H__
 
-#include <birnet/birnet.h>
+#include <birnet/birnet.hh>
 #include <sfi/sfi.h>
 #include <string>
 #include <new>

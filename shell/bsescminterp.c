@@ -719,12 +719,12 @@ bse_scm_choice_match (SCM s_ch1,
 }
 
 static void
-scm_script_send_message_handler (const BirnetMessage *msg)
+scm_script_send_message_handler (const SfiMessage *msg)
 {
   SfiSeq *args = sfi_seq_new ();
   /* keep arguments in sync with bsejanitor.proc */
   sfi_seq_append_string (args, msg->log_domain);
-  sfi_seq_append_string (args, birnet_msg_type_ident (msg->type));
+  sfi_seq_append_string (args, sfi_msg_type_ident (msg->type));
   sfi_seq_append_string (args, msg->title);
   sfi_seq_append_string (args, msg->primary);
   sfi_seq_append_string (args, msg->secondary);
@@ -765,7 +765,7 @@ bse_scm_script_message (SCM s_type,
   /* figure message level */
   BSE_SCM_DEFER_INTS();
   gchar *strtype = g_strndup (SCM_ROCHARS (s_type), SCM_LENGTH (s_type));
-  guint mtype = birnet_msg_type_lookup (strtype);
+  guint mtype = sfi_msg_type_lookup (strtype);
   g_free (strtype);
   BSE_SCM_ALLOW_INTS();
   if (!mtype)
@@ -781,7 +781,7 @@ bse_scm_script_message (SCM s_type,
 
   /* build message bit list */
   BSE_SCM_DEFER_INTS();
-  BirnetMsgBit **mbits = g_new0 (BirnetMsgBit*, i / 2 + 1);
+  SfiMsgBit **mbits = g_new0 (SfiMsgBit*, i / 2 + 1);
   sfi_glue_gc_add (mbits, g_free); /* free mbits automatically */
   BSE_SCM_ALLOW_INTS();
   guint n = 0;
@@ -814,12 +814,12 @@ bse_scm_script_message (SCM s_type,
         scm_wrong_type_arg ("bse-script-message", i, arg2);
       /* add message bit from string */
       BSE_SCM_DEFER_INTS();
-      mbits[n++] = birnet_msg_bit_appoint ((void*) tag, g_strndup (SCM_ROCHARS (arg2), SCM_LENGTH (arg2)), g_free);
+      mbits[n++] = sfi_msg_bit_appoint ((void*) tag, g_strndup (SCM_ROCHARS (arg2), SCM_LENGTH (arg2)), g_free);
       BSE_SCM_ALLOW_INTS();
     }
 
   BSE_SCM_DEFER_INTS ();
-  birnet_msg_log_trampoline (BIRNET_LOG_DOMAIN, mtype, mbits, scm_script_send_message_handler);
+  sfi_msg_log_trampoline (BIRNET_LOG_DOMAIN, mtype, mbits, scm_script_send_message_handler);
   BSE_SCM_ALLOW_INTS ();
 
   bse_scm_destroy_gc_plateau (gcplateau);

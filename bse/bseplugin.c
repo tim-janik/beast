@@ -22,6 +22,7 @@
 #include "bseobject.h"
 #include "bseenums.h"
 #include "bsemain.h"
+#include <birnet/birnetcpu.h>
 #include <gmodule.h>
 #include <string.h>
 #include <fcntl.h>
@@ -29,7 +30,7 @@
 #include <unistd.h>
 
 
-static BIRNET_MSG_TYPE_DEFINE (debug_plugins, "plugins", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_plugins, "plugins", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_plugins, __VA_ARGS__)
 
 

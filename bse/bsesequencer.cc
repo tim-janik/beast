@@ -39,7 +39,7 @@ extern "C" { BirnetThread *bse_sequencer_thread = NULL; }
 
 using namespace std;
 
-static BIRNET_MSG_TYPE_DEFINE (debug_sequencer, "sequencer", BIRNET_MSG_DEBUG, NULL);
+static SFI_MSG_TYPE_DEFINE (debug_sequencer, "sequencer", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_sequencer, __VA_ARGS__)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
@@ -406,7 +406,7 @@ bse_sequencer_thread_main (gpointer data)
 {
   DEBUG ("SST: start\n");
   birnet_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
-  birnet_msg_set_thread_handler (bse_msg_handler);
+  sfi_msg_set_thread_handler (bse_msg_handler);
   BSE_SEQUENCER_LOCK ();
   do
     {

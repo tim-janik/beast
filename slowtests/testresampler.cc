@@ -627,7 +627,7 @@ main (int argc, char **argv)
       argv[i] = g_strdup ("--bse-force-fpu"); /* leak, but we don't care */
 
   /* load plugins */
-  BirnetInitValue config[] = {
+  SfiInitValue config[] = {
 	{ "load-core-plugins", "1" },
 	{ NULL },
   };

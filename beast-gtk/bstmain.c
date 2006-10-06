@@ -28,6 +28,7 @@
 #include "bstparam.h"
 #include "bstpreferences.h"
 #include "topconfig.h"
+#include "birnet/birnetcpu.h"
 #include "data/beast-images.h"
 #include <unistd.h>
 #include <string.h>
@@ -85,7 +86,7 @@ main (int   argc,
   gchar *string;
   GSource *source;
   char debugbool[2] = "0";
-  BirnetInitValue config[] = {
+  SfiInitValue config[] = {
     { "debug-extensions", debugbool },
     { NULL },
   };
@@ -109,8 +110,8 @@ main (int   argc,
   g_type_init ();
 
   /* initialize Birnet/Sfi */
-  birnet_init (&argc, &argv, _("BEAST"));  /* application name is user visible */       
-  birnet_msg_allow ("misc");
+  sfi_init (&argc, &argv, _("BEAST"), NULL);  /* application name is user visible */       
+  sfi_msg_allow ("misc");
   /* ensure SFI can wake us up */
   birnet_thread_set_name ("Beast GUI");
   birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
@@ -257,7 +258,7 @@ main (int   argc,
   _bst_init_radgets ();
 
   /* install message dialog handler */
-  birnet_msg_set_thread_handler (bst_message_log_handler);
+  sfi_msg_set_thread_handler (bst_message_log_handler);
 
   /* open files given on command line */
   if (argc > 1)
@@ -402,7 +403,7 @@ main (int   argc,
     }
   
   /* take down GUI */
-  birnet_msg_set_thread_handler (NULL);
+  sfi_msg_set_thread_handler (NULL);
   bst_message_dialogs_popdown ();
   
   /* perform necessary cleanup cycles */
@@ -455,16 +456,16 @@ bst_early_parse_args (int    *argc_p,
   
   envar = getenv ("BST_DEBUG");
   if (envar)
-    birnet_msg_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BST_NO_DEBUG");
   if (envar)
-    birnet_msg_deny (envar);
+    sfi_msg_deny (envar);
   envar = getenv ("BEAST_DEBUG");
   if (envar)
-    birnet_msg_allow (envar);
+    sfi_msg_allow (envar);
   envar = getenv ("BEAST_NO_DEBUG");
   if (envar)
-    birnet_msg_deny (envar);
+    sfi_msg_deny (envar);
 
   gboolean initialize_bse_and_exit = FALSE;
   for (i = 1; i < argc; i++)
@@ -521,9 +522,9 @@ bst_early_parse_args (int    *argc_p,
 	  guint j;
 	  g_print ("BEAST debug keys: all");
 	  for (j = 0; mids[j].ident; j++)
-            if (mids[j].type >= BIRNET_MSG_DEBUG && mids[j].label)
+            if (mids[j].type >= SFI_MSG_DEBUG && mids[j].label)
               g_print (", %s (%s)", mids[j].ident, mids[j].label);
-            else if (mids[j].type >= BIRNET_MSG_DEBUG)
+            else if (mids[j].type >= SFI_MSG_DEBUG)
               g_print (", %s", mids[j].ident);
 	  g_print ("\n");
 	  exit (0);
@@ -535,11 +536,11 @@ bst_early_parse_args (int    *argc_p,
 	  gchar *equal = argv[i] + 7;
 	  
 	  if (*equal == '=')
-            birnet_msg_allow (equal + 1);
+            sfi_msg_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      birnet_msg_allow (argv[i]);
+	      sfi_msg_allow (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -549,11 +550,11 @@ bst_early_parse_args (int    *argc_p,
 	  gchar *equal = argv[i] + 7;
 	  
 	  if (*equal == '=')
-            birnet_msg_deny (equal + 1);
+            sfi_msg_deny (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      birnet_msg_deny (argv[i]);
+	      sfi_msg_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
