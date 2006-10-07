@@ -1,3 +1,7 @@
+Sat Oct  7 23:01:54 2006  Tim Janik  <timj@gtk.org>
+
+	* sfitests.h: header file to be included by test programs.
+
 Sat Oct  7 20:33:04 2006  Tim Janik  <timj@gtk.org>
 
 	* sfiwrapper.cc, sfiwrapper.h: provide integer types.
