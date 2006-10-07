@@ -81,8 +81,8 @@ _gsl_init_data_caches (void)
   initialized++;
 
   g_static_assert (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
-  birnet_cond_init (&global_dcache_cond_node_filled);
-  birnet_mutex_init (&global_dcache_mutex);
+  sfi_cond_init (&global_dcache_cond_node_filled);
+  sfi_mutex_init (&global_dcache_mutex);
 }
 
 GslDataCache*
@@ -102,7 +102,7 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   dcache = sfi_new_struct (GslDataCache, 1);
   dcache->dhandle = gsl_data_handle_ref (dhandle);
   dcache->open_count = 0;
-  birnet_mutex_init (&dcache->mutex);
+  sfi_mutex_init (&dcache->mutex);
   dcache->ref_count = 1;
   dcache->node_size = node_size;
   dcache->padding = padding;
@@ -193,7 +193,7 @@ dcache_free (GslDataCache *dcache)
   g_return_if_fail (dcache->open_count == 0);
 
   gsl_data_handle_unref (dcache->dhandle);
-  birnet_mutex_destroy (&dcache->mutex);
+  sfi_mutex_destroy (&dcache->mutex);
   for (i = 0; i < dcache->n_nodes; i++)
     {
       GslDataCacheNode *node = dcache->nodes[i];
@@ -379,7 +379,7 @@ data_cache_new_node_L (GslDataCache *dcache,
 
   GSL_SPIN_LOCK (&dcache->mutex);
   dnode->data = node_data;
-  birnet_cond_broadcast (&global_dcache_cond_node_filled);
+  sfi_cond_broadcast (&global_dcache_cond_node_filled);
   
   return dnode;
 }
@@ -425,7 +425,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 	  node->ref_count++;
 	  if (load_request == GSL_DATA_CACHE_DEMAND_LOAD)
 	    while (!node->data)
-	      birnet_cond_wait (&global_dcache_cond_node_filled, &dcache->mutex);
+	      sfi_cond_wait (&global_dcache_cond_node_filled, &dcache->mutex);
 	  GSL_SPIN_UNLOCK (&dcache->mutex);
 	  /* g_printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 

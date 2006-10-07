@@ -39,10 +39,10 @@ GslTickStampUpdate gsl_tick_stamp_last	(void);
 #define		   GSL_TICK_STAMP	(_GSL_TICK_STAMP_VAL ())
 #define		   GSL_MAX_TICK_STAMP	(18446744073709551615LLU /* 2^64-1*/)
 void		gsl_thread_awake_before	(guint64	 tick_stamp);
-#define	GSL_SPIN_LOCK	birnet_mutex_lock
-#define	GSL_SPIN_UNLOCK	birnet_mutex_unlock
-#define	GSL_SYNC_LOCK	birnet_mutex_lock
-#define	GSL_SYNC_UNLOCK	birnet_mutex_unlock
+#define	GSL_SPIN_LOCK	sfi_mutex_lock
+#define	GSL_SPIN_UNLOCK	sfi_mutex_unlock
+#define	GSL_SYNC_LOCK	sfi_mutex_lock
+#define	GSL_SYNC_UNLOCK	sfi_mutex_unlock
 
 
 /* --- misc --- */

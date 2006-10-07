@@ -48,8 +48,8 @@ static BirnetMutex     global_tick_stamp_mutex = { 0, };
  * by specific amounts (refer to bse_engine_init() for further
  * details). The tick stamp is a non-wrapping, unsigned 64bit
  * integer greater than 0. Threads can schedule sleep interruptions
- * at certain tick stamps with birnet_thread_awake_after() and
- * birnet_thread_awake_before(). Tick stamp updating occours at
+ * at certain tick stamps with sfi_thread_awake_after() and
+ * sfi_thread_awake_before(). Tick stamp updating occours at
  * GSL engine block processing boundaries, so code that can
  * guarantee to not run across those boundaries (for instance
  * BseProcessFunc() functions) may use the macro %GSL_TICK_STAMP
@@ -113,7 +113,7 @@ _gsl_tick_stamp_inc (void)
   tick_stamp_system_time = systime;
   GSL_SPIN_UNLOCK (&global_tick_stamp_mutex);
 
-  birnet_thread_emit_wakeups (newstamp);
+  sfi_thread_emit_wakeups (newstamp);
 }
 
 /**
@@ -131,9 +131,9 @@ gsl_thread_awake_before (guint64 tick_stamp)
   g_return_if_fail (tick_stamp > 0);
 
   if (tick_stamp > global_tick_stamp_leaps)
-    birnet_thread_awake_after (tick_stamp - global_tick_stamp_leaps);
+    sfi_thread_awake_after (tick_stamp - global_tick_stamp_leaps);
   else
-    birnet_thread_awake_after (tick_stamp);
+    sfi_thread_awake_after (tick_stamp);
 }
 
 
@@ -369,7 +369,7 @@ gsl_init (void)
   bse_engine_exvar_tick_stamp = 1;
 
   /* initialize subsystems */
-  birnet_mutex_init (&global_tick_stamp_mutex);
+  sfi_mutex_init (&global_tick_stamp_mutex);
   _gsl_init_fd_pool ();
   _gsl_init_data_caches ();
   _gsl_init_loader_gslwave ();

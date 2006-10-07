@@ -26,6 +26,7 @@ sfi_init_cxx (void)
 {
   g_type_init ();       /* just in case this hasn't been called already */
 
+  _sfi_init_logging ();
   _sfi_init_values ();
   _sfi_init_params ();
   _sfi_init_time ();

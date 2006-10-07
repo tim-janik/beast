@@ -53,8 +53,8 @@ void            bse_msg_handler         (const SfiMessage *message);
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
-#define	BSE_SEQUENCER_LOCK()			birnet_mutex_lock (&bse_main_sequencer_mutex)
-#define	BSE_SEQUENCER_UNLOCK()			birnet_mutex_unlock (&bse_main_sequencer_mutex)
+#define	BSE_SEQUENCER_LOCK()			sfi_mutex_lock (&bse_main_sequencer_mutex)
+#define	BSE_SEQUENCER_UNLOCK()			sfi_mutex_unlock (&bse_main_sequencer_mutex)
 #define	BSE_DBG_EXT     			(bse_main_args->debug_extensions != FALSE)
 #define	BSE_CONFIG(field)			(bse_main_args->field)
 

@@ -67,7 +67,7 @@ main (int   argc,
 {
   const gchar *env_str;
 
-  birnet_init (&argc, &argv, "BSESCM");
+  sfi_init (&argc, &argv, "BSESCM", NULL);
   bse_init_textdomain_only();
   setlocale (LC_ALL, "");
 

@@ -61,7 +61,7 @@ bse_sequencer_init_thread (void)
 {
   g_assert (bse_sequencer_thread == NULL);
 
-  birnet_cond_init (&current_watch_cond);
+  sfi_cond_init (&current_watch_cond);
 
   if (pipe (sequencer_wake_up_pipe) < 0)
     g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
@@ -76,7 +76,7 @@ bse_sequencer_init_thread (void)
   g_assert (sseq.stamp > 0);
   global_sequencer = &sseq;
 
-  bse_sequencer_thread = birnet_thread_run ("Sequencer", bse_sequencer_thread_main, NULL);
+  bse_sequencer_thread = sfi_thread_run ("Sequencer", bse_sequencer_thread_main, NULL);
   if (!bse_sequencer_thread)
     g_error ("failed to create sequencer thread");
 }
@@ -235,7 +235,7 @@ bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
   BSE_SEQUENCER_LOCK ();
   if (current_watch_func == watch_func && current_watch_data == watch_data)
     {  /* watch_func() to be removed is currently in call */
-      if (bse_sequencer_thread == birnet_thread_self())
+      if (bse_sequencer_thread == sfi_thread_self())
         {
           /* allow removal calls from within a watch_func() */
           removal_success = !current_watch_needs_remove1;       /* catch multiple calls */
@@ -248,14 +248,14 @@ bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
           current_watch_needs_remove2 = true;
           /* wait until watch_func() call has finished */
           while (current_watch_func == watch_func && current_watch_data == watch_data)
-            birnet_cond_wait (&current_watch_cond, &bse_main_sequencer_mutex);
+            sfi_cond_wait (&current_watch_cond, &bse_main_sequencer_mutex);
         }
     }
   else /* can remove (watch_func(watch_data) not in call) */
     {
       removal_success = sequencer_poll_pool.remove_watch (watch_func, watch_data);
       /* wake up sequencer thread, so it stops polling on fds it doesn't own anymore */
-      birnet_thread_wakeup (bse_sequencer_thread);
+      sfi_thread_wakeup (bse_sequencer_thread);
     }
   BSE_SEQUENCER_UNLOCK ();
   if (!removal_success)
@@ -301,10 +301,10 @@ bse_sequencer_poll_Lm (gint timeout_ms)
           current_watch_needs_remove2 = false;
           current_watch_func = NULL;
           current_watch_data = NULL;
-          birnet_cond_broadcast (&current_watch_cond);     /* wake up threads in bse_sequencer_remove_io_watch() */
+          sfi_cond_broadcast (&current_watch_cond);     /* wake up threads in bse_sequencer_remove_io_watch() */
         }
     }
-  return !birnet_thread_aborted();
+  return !sfi_thread_aborted();
 }
 
 extern "C" void
@@ -334,7 +334,7 @@ bse_sequencer_start_song (BseSong        *song,
     }
   global_sequencer->songs = sfi_ring_append (global_sequencer->songs, song);
   BSE_SEQUENCER_UNLOCK ();
-  birnet_thread_wakeup (bse_sequencer_thread);
+  sfi_thread_wakeup (bse_sequencer_thread);
 }
 
 extern "C" void
@@ -405,7 +405,7 @@ static void
 bse_sequencer_thread_main (gpointer data)
 {
   DEBUG ("SST: start\n");
-  birnet_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
+  sfi_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
   sfi_msg_set_thread_handler (bse_msg_handler);
   BSE_SEQUENCER_LOCK ();
   do
@@ -444,7 +444,7 @@ bse_sequencer_thread_main (gpointer data)
 	}
       global_sequencer->stamp = next_stamp;
       
-      birnet_thread_awake_after (cur_stamp + bse_engine_block_size ());
+      sfi_thread_awake_after (cur_stamp + bse_engine_block_size ());
     }
   while (bse_sequencer_poll_Lm (-1));
   BSE_SEQUENCER_UNLOCK ();

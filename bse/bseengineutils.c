@@ -107,7 +107,7 @@ bse_engine_free_node (EngineNode *node)
   g_return_if_fail (node->tjob_head == NULL);
   g_return_if_fail (node->probe_jobs == NULL);
 
-  birnet_rec_mutex_destroy (&node->rec_mutex);
+  sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
       /* bse_engine_block_size() may have changed since allocation */
@@ -231,7 +231,7 @@ _engine_enqueue_trans (BseTrans *trans)
   cqueue_trans_pending_tail = trans;
   guint64 base_stamp = cqueue_commit_base_stamp;
   GSL_SPIN_UNLOCK (&cqueue_trans);
-  birnet_cond_broadcast (&cqueue_trans_cond);
+  sfi_cond_broadcast (&cqueue_trans_cond);
   return base_stamp + bse_engine_block_size();  /* returns tick_stamp of when this transaction takes effect */
 }
 
@@ -240,7 +240,7 @@ _engine_wait_on_trans (void)
 {
   GSL_SPIN_LOCK (&cqueue_trans);
   while (cqueue_trans_pending_head || cqueue_trans_active_head)
-    birnet_cond_wait (&cqueue_trans_cond, &cqueue_trans);
+    sfi_cond_wait (&cqueue_trans_cond, &cqueue_trans);
   GSL_SPIN_UNLOCK (&cqueue_trans);
 }
 
@@ -323,7 +323,7 @@ _engine_pop_job (gboolean update_commit_stamp)
           if (!cqueue_trans_job && update_commit_stamp)
             cqueue_commit_base_stamp = gsl_tick_stamp();        /* last job has been handed out */
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
-	  birnet_cond_broadcast (&cqueue_trans_cond);
+	  sfi_cond_broadcast (&cqueue_trans_cond);
 	}
       else	/* not currently processing a transaction */
 	{
@@ -555,7 +555,7 @@ _engine_push_processed_node (EngineNode *node)
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    birnet_cond_signal (&pqueue_done_cond);
+    sfi_cond_signal (&pqueue_done_cond);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -578,7 +578,7 @@ _engine_wait_on_unprocessed (void)
 {
   GSL_SPIN_LOCK (&pqueue_mutex);
   while (pqueue_n_nodes || pqueue_n_cycles || !BSE_ENGINE_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    birnet_cond_wait (&pqueue_done_cond, &pqueue_mutex);
+    sfi_cond_wait (&pqueue_done_cond, &pqueue_mutex);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -852,10 +852,10 @@ bse_engine_reinit_utils (void)
   if (!initialized)
     {
       initialized = TRUE;
-      birnet_mutex_init (&cqueue_trans);
-      birnet_cond_init (&cqueue_trans_cond);
-      birnet_mutex_init (&pqueue_mutex);
-      birnet_cond_init (&pqueue_done_cond);
+      sfi_mutex_init (&cqueue_trans);
+      sfi_cond_init (&cqueue_trans_cond);
+      sfi_mutex_init (&pqueue_mutex);
+      sfi_cond_init (&pqueue_done_cond);
     }
 }
 

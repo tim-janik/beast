@@ -77,14 +77,14 @@ pcm_device_post_open (BseDevice *device)
   BsePcmDevice *self = BSE_PCM_DEVICE (device);
   g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle);
   g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle->block_length == 0);
-  birnet_mutex_init (&self->handle->mutex);
+  sfi_mutex_init (&self->handle->mutex);
 }
 
 static void
 pcm_device_pre_close (BseDevice *device)
 {
   BsePcmDevice *self = BSE_PCM_DEVICE (device);
-  birnet_mutex_destroy (&self->handle->mutex);
+  sfi_mutex_destroy (&self->handle->mutex);
 }
 
 guint

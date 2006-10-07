@@ -3,3 +3,5 @@
 beast-gtk/bststest.c
 plugins/bsefirfilter.c
 plugins/davguitar.c
+plugins/evaluator/bseevaluator.idl
+sfi/tests/testidl.c

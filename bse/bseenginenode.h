@@ -36,8 +36,8 @@ G_BEGIN_DECLS
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
 #define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & BSE_COST_CHEAP) != 0)
 #define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & BSE_COST_EXPENSIVE) != 0)
-#define	ENGINE_NODE_LOCK(node)		birnet_rec_mutex_lock (&(node)->rec_mutex)
-#define	ENGINE_NODE_UNLOCK(node)	birnet_rec_mutex_unlock (&(node)->rec_mutex)
+#define	ENGINE_NODE_LOCK(node)		sfi_rec_mutex_lock (&(node)->rec_mutex)
+#define	ENGINE_NODE_UNLOCK(node)	sfi_rec_mutex_unlock (&(node)->rec_mutex)
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
 

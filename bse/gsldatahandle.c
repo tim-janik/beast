@@ -46,7 +46,7 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
   
   dhandle->name = g_strdup (file_name);
-  birnet_mutex_init (&dhandle->mutex);
+  sfi_mutex_init (&dhandle->mutex);
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
   memset (&dhandle->setup, 0, sizeof (dhandle->setup));
@@ -76,7 +76,7 @@ gsl_data_handle_common_free (GslDataHandle *dhandle)
   
   g_free (dhandle->name);
   dhandle->name = NULL;
-  birnet_mutex_destroy (&dhandle->mutex);
+  sfi_mutex_destroy (&dhandle->mutex);
 }
 
 void

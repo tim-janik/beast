@@ -320,9 +320,9 @@ master_process_job (BseJob *job)
       master_schedule_discard();
       GSL_SPIN_LOCK (job->sync.lock_mutex);
       *job->sync.lock_p = TRUE;
-      birnet_cond_signal (job->sync.lock_cond);
+      sfi_cond_signal (job->sync.lock_cond);
       while (*job->sync.lock_p)
-        birnet_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
+        sfi_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
       GSL_SPIN_UNLOCK (job->sync.lock_mutex);
       break;
     case ENGINE_JOB_INTEGRATE:
@@ -1153,7 +1153,7 @@ bse_engine_master_thread (EngineMasterData *mdata)
   
   toyprof_stampinit ();
   
-  while (!birnet_thread_aborted ())        /* also updates accounting information */
+  while (!sfi_thread_aborted ())        /* also updates accounting information */
     {
       BseEngineLoop loop;
       gboolean need_dispatch;
@@ -1186,7 +1186,7 @@ bse_engine_master_thread (EngineMasterData *mdata)
       
       /* wakeup user thread if necessary */
       if (bse_engine_has_garbage ())
-	birnet_thread_wakeup (mdata->user_thread);
+	sfi_thread_wakeup (mdata->user_thread);
     }
 }
 

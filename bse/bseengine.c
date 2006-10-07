@@ -82,7 +82,7 @@ bse_module_new (const BseModuleClass *klass,
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  birnet_rec_mutex_init (&node->rec_mutex);
+  sfi_rec_mutex_init (&node->rec_mutex);
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
@@ -1039,10 +1039,10 @@ dtrans_timer (gpointer timer_data,
 	}
       else
 	bse_trans_commit (data->trans);
-      birnet_mutex_lock (&data->mutex);
+      sfi_mutex_lock (&data->mutex);
       data->trans = NULL;
-      birnet_mutex_unlock (&data->mutex);
-      birnet_cond_signal (&data->cond);
+      sfi_mutex_unlock (&data->mutex);
+      sfi_cond_signal (&data->cond);
       return FALSE;
     }
   return TRUE;
@@ -1073,16 +1073,16 @@ bse_trans_commit_delayed (BseTrans *trans,
       DTrans data = { 0, };
       data.trans = trans;
       data.tick_stamp = tick_stamp;
-      birnet_cond_init (&data.cond);
-      birnet_mutex_init (&data.mutex);
+      sfi_cond_init (&data.cond);
+      sfi_mutex_init (&data.mutex);
       bse_trans_add (wtrans, bse_job_add_timer (dtrans_timer, &data, NULL));
-      birnet_mutex_lock (&data.mutex);
+      sfi_mutex_lock (&data.mutex);
       bse_trans_commit (wtrans);
       while (data.trans)
-	birnet_cond_wait (&data.cond, &data.mutex);
-      birnet_mutex_unlock (&data.mutex);
-      birnet_cond_destroy (&data.cond);
-      birnet_mutex_destroy (&data.mutex);
+	sfi_cond_wait (&data.cond, &data.mutex);
+      sfi_mutex_unlock (&data.mutex);
+      sfi_cond_destroy (&data.cond);
+      sfi_mutex_destroy (&data.mutex);
     }
 }
 
@@ -1378,7 +1378,7 @@ bse_engine_configure (guint            latency_ms,
       sync_lock = TRUE;
     }
   while (!sync_lock)
-    birnet_cond_wait (&sync_cond, &sync_mutex);
+    sfi_cond_wait (&sync_cond, &sync_mutex);
   GSL_SPIN_UNLOCK (&sync_mutex);
   
   if (!_engine_mnl_head())
@@ -1399,7 +1399,7 @@ bse_engine_configure (guint            latency_ms,
   /* unblock master */
   GSL_SPIN_LOCK (&sync_mutex);
   sync_lock = FALSE;
-  birnet_cond_signal (&sync_cond);
+  sfi_cond_signal (&sync_cond);
   GSL_SPIN_UNLOCK (&sync_mutex);
   /* ensure SYNC job got collected */
   bse_engine_wait_on_trans();
@@ -1444,7 +1444,7 @@ bse_engine_init (gboolean run_threaded)
   if (bse_engine_threaded)
     {
       gint err = pipe (master_data.wakeup_pipe);
-      master_data.user_thread = birnet_thread_self ();
+      master_data.user_thread = sfi_thread_self ();
       if (!err)
 	{
 	  glong d_long = fcntl (master_data.wakeup_pipe[0], F_GETFL, 0);
@@ -1461,11 +1461,11 @@ bse_engine_init (gboolean run_threaded)
 	}
       if (err)
 	g_error ("failed to create wakeup pipe: %s", g_strerror (errno));
-      master_thread = birnet_thread_run ("DSP #1", (BirnetThreadFunc) bse_engine_master_thread, &master_data);
+      master_thread = sfi_thread_run ("DSP #1", (BirnetThreadFunc) bse_engine_master_thread, &master_data);
       if (!master_thread)
 	g_error ("failed to create master thread");
       if (0)
-	birnet_thread_run ("DSP #2", slave, NULL);
+	sfi_thread_run ("DSP #2", slave, NULL);
     }
 }
 

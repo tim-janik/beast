@@ -656,8 +656,8 @@ bst_message_log_handler (const SfiMessage *lmsg)
   msg.secondary = lmsg->secondary;
   msg.details = lmsg->details;
   msg.janitor = bse_script_janitor();
-  msg.process = (char*) birnet_thread_get_name (NULL);
-  msg.pid = birnet_thread_get_pid (NULL);
+  msg.process = (char*) sfi_thread_get_name (NULL);
+  msg.pid = sfi_thread_get_pid (NULL);
   msg.n_msg_bits = lmsg->n_msg_bits;
   msg.msg_bits = lmsg->msg_bits;
   bst_message_handler (&msg);

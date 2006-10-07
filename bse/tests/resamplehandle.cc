@@ -20,7 +20,7 @@
 #include <bse/bsemathsignal.h>
 #include <bse/bsemain.h>
 // #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <sfi/sfitests.h>
 #include <bse/gsldatautils.h>
 #include <bse/bseblockutils.hh>
 #include <vector>
@@ -275,7 +275,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  birnet_init_test (&argc, &argv);
+  sfi_init_test (&argc, &argv, NULL);
   
   test_c_api ("FPU");
   run_tests ("FPU");

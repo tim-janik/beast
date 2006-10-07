@@ -72,7 +72,7 @@ bse_pcm_writer_class_init (BsePcmWriterClass *class)
 static void
 bse_pcm_writer_init (BsePcmWriter *self)
 {
-  birnet_mutex_init (&self->mutex);
+  sfi_mutex_init (&self->mutex);
 }
 
 static void
@@ -88,7 +88,7 @@ bse_pcm_writer_finalize (GObject *object)
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
-  birnet_mutex_destroy (&self->mutex);
+  sfi_mutex_destroy (&self->mutex);
 }
 
 BseErrorType
@@ -106,7 +106,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
   g_return_val_if_fail (n_channels > 0, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (sample_freq >= 1000, BSE_ERROR_INTERNAL);
 
-  birnet_mutex_lock (&self->mutex);
+  sfi_mutex_lock (&self->mutex);
 
   error = 0;
 
@@ -114,7 +114,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
   fd = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
   if (fd < 0)
     {
-      birnet_mutex_unlock (&self->mutex);
+      sfi_mutex_unlock (&self->mutex);
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
 
@@ -122,14 +122,14 @@ bse_pcm_writer_open (BsePcmWriter *self,
   if (errno)
     {
       close (fd);
-      birnet_mutex_unlock (&self->mutex);
+      sfi_mutex_unlock (&self->mutex);
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
   self->fd = fd;
   self->open = TRUE;
   self->broken = FALSE;
 
-  birnet_mutex_unlock (&self->mutex);
+  sfi_mutex_unlock (&self->mutex);
   return BSE_ERROR_NONE;
 }
 
@@ -139,12 +139,12 @@ bse_pcm_writer_close (BsePcmWriter *self)
   g_return_if_fail (BSE_IS_PCM_WRITER (self));
   g_return_if_fail (self->open);
 
-  birnet_mutex_lock (&self->mutex);
+  sfi_mutex_lock (&self->mutex);
   bse_wave_file_patch_length (self->fd, self->n_bytes);
   close (self->fd);
   self->fd = -1;
   self->open = FALSE;
-  birnet_mutex_unlock (&self->mutex);
+  sfi_mutex_unlock (&self->mutex);
   errno = 0;
 }
 
@@ -160,7 +160,7 @@ bse_pcm_writer_write (BsePcmWriter *self,
   else
     return;
 
-  birnet_mutex_lock (&self->mutex);
+  sfi_mutex_lock (&self->mutex);
   if (!self->broken)
     {
       guint j;
@@ -182,5 +182,5 @@ bse_pcm_writer_write (BsePcmWriter *self,
 	  self->broken = TRUE;
 	}
     }
-  birnet_mutex_unlock (&self->mutex);
+  sfi_mutex_unlock (&self->mutex);
 }

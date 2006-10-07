@@ -72,6 +72,7 @@ fi
 
 # architecture information
 AC_CANONICAL_TARGET
+dnl # AC_CANONICAL_HOST is provided by AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
 # initialize automake, don't define PACKAGE and VERSION

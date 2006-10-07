@@ -1,3 +1,14 @@
+Sat Oct  7 20:33:04 2006  Tim Janik  <timj@gtk.org>
+
+	* sfiwrapper.cc, sfiwrapper.h: provide integer types.
+	wrap cpu info and threading APIs. changed callers to use
+	the wrapped SFI variants.
+
+	* sfitypes.h: removed obsoleted cruft.
+
+	* tests/misctests.c: added compilation test for all threading
+	macros.
+
 Fri Oct  6 23:13:05 2006  Tim Janik  <timj@gtk.org>
 
 	* sfiwrapper.h, sfiwrapper.cc: C API wrapper around useful

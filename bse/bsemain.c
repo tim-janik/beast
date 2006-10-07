@@ -108,7 +108,7 @@ bse_init_async (gint           *argc,
   /* initialize submodules */
   sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
-  bse_main_args->birnet = *birnet_init_settings;
+  bse_main_args->birnet = sfi_init_settings();
 
   /* handle argument early*/
   if (argc && argv)
@@ -119,13 +119,13 @@ bse_init_async (gint           *argc,
     }
   
   /* start main BSE thread */
-  thread = birnet_thread_run ("BSE Core", bse_main_loop, birnet_thread_self ());
+  thread = sfi_thread_run ("BSE Core", bse_main_loop, sfi_thread_self ());
   if (!thread)
     g_error ("failed to start seperate thread for BSE core");
 
   /* wait for initialization completion of the core thread */
   while (bse_initialization_stage < 2)
-    birnet_thread_sleep (-1);
+    sfi_thread_sleep (-1);
 }
 
 gchar*
@@ -161,12 +161,12 @@ async_create_context (gpointer data)
   SfiComPort *port1, *port2;
 
   sfi_com_port_create_linked ("Client", adata->thread, &port1,
-			      "Server", birnet_thread_self (), &port2);
+			      "Server", sfi_thread_self (), &port2);
   adata->context = sfi_glue_encoder_context (port1);
   bse_janitor_new (port2);
 
   /* wakeup client */
-  birnet_thread_wakeup (adata->thread);
+  sfi_thread_wakeup (adata->thread);
 
   return FALSE; /* single-shot */
 }
@@ -190,7 +190,7 @@ bse_init_glue_context (const gchar *client)
   source = g_idle_source_new ();
   g_source_set_priority (source, G_PRIORITY_HIGH);
   adata.client = client;
-  adata.thread = birnet_thread_self ();
+  adata.thread = sfi_thread_self ();
   g_source_set_callback (source, async_create_context, &adata, NULL);
   g_source_attach (source, bse_main_context);
   g_source_unref (source);
@@ -199,7 +199,7 @@ bse_init_glue_context (const gchar *client)
 
   /* wait til context creation */
   do
-    birnet_thread_sleep (-1);
+    sfi_thread_sleep (-1);
   while (!adata.context);
 
   return adata.context;
@@ -209,9 +209,9 @@ static void
 bse_init_core (void)
 {
   /* global threading things */
-  birnet_mutex_init (&bse_main_sequencer_mutex);
+  sfi_mutex_init (&bse_main_sequencer_mutex);
   bse_main_context = g_main_context_new ();
-  birnet_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
+  sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
   sfi_msg_set_thread_handler (bse_msg_handler);
 
@@ -310,7 +310,7 @@ bse_init_intern (gint           *argc,
   else
     sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
-  bse_main_args->birnet = *birnet_init_settings;
+  bse_main_args->birnet = sfi_init_settings();
 
   /* early argument handling */
   if (argc && argv)
@@ -374,7 +374,7 @@ bse_main_loop (gpointer data)
 {
   BirnetThread *client = data;
 
-  bse_main_thread = birnet_thread_self ();
+  bse_main_thread = sfi_thread_self ();
 
   bse_init_core ();
 
@@ -383,7 +383,7 @@ bse_main_loop (gpointer data)
 
   /* notify client about completion */
   bse_initialization_stage++;   /* =2 */
-  birnet_thread_wakeup (client);
+  sfi_thread_wakeup (client);
 
   /* and away into the main loop */
   do
@@ -391,14 +391,14 @@ bse_main_loop (gpointer data)
       g_main_context_pending (bse_main_context);
       g_main_context_iteration (bse_main_context, TRUE);
     }
-  while (!birnet_thread_aborted ());
+  while (!sfi_thread_aborted ());
 }
 
 guint
 bse_main_getpid (void)
 {
   if (bse_initialization_stage >= 2)
-    return birnet_thread_self_pid ();
+    return sfi_thread_self_pid ();
   else
     return 0;
 }
@@ -446,8 +446,8 @@ bse_msg_handler (const SfiMessage *lmsg)
   umsg->details = g_strdup (lmsg->details);
   umsg->janitor = NULL;
   g_free (umsg->process);
-  umsg->process = g_strdup (birnet_thread_get_name (NULL));
-  umsg->pid = birnet_thread_get_pid (NULL);
+  umsg->process = g_strdup (sfi_thread_get_name (NULL));
+  umsg->pid = sfi_thread_get_pid (NULL);
   /* queue an idle handler in the BSE Core thread */
   bse_idle_next (core_thread_send_message_async, umsg);
 }

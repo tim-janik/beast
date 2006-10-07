@@ -61,8 +61,8 @@ sfi_glue_context_push (SfiGlueContext *context)
   g_return_if_fail (context != NULL);
   g_return_if_fail (context->table.destroy != NULL);
   
-  birnet_thread_set_qdata_full (quark_context_stack,
-			     sfi_ring_prepend (birnet_thread_steal_qdata (quark_context_stack),
+  sfi_thread_set_qdata_full (quark_context_stack,
+			     sfi_ring_prepend (sfi_thread_steal_qdata (quark_context_stack),
 					       context),
 			     (GDestroyNotify) sfi_ring_free);
 }
@@ -70,18 +70,18 @@ sfi_glue_context_push (SfiGlueContext *context)
 SfiGlueContext*
 sfi_glue_context_current (void)
 {
-  SfiRing *context_stack = birnet_thread_get_qdata (quark_context_stack);
+  SfiRing *context_stack = sfi_thread_get_qdata (quark_context_stack);
   return context_stack ? context_stack->data : NULL;
 }
 
 void
 sfi_glue_context_pop (void)
 {
-  SfiRing *context_stack = birnet_thread_steal_qdata (quark_context_stack);
+  SfiRing *context_stack = sfi_thread_steal_qdata (quark_context_stack);
   
   g_return_if_fail (context_stack != NULL);
   
-  birnet_thread_set_qdata_full (quark_context_stack,
+  sfi_thread_set_qdata_full (quark_context_stack,
 			     sfi_ring_remove_node (context_stack, context_stack),
 			     (GDestroyNotify) sfi_ring_free);
 }

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfimsg.h"
+#include "sfiwrapper.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
@@ -59,7 +60,7 @@ static void
 sfi_msg_type_init_internals (void)
 {
   static volatile guint initialized = FALSE;
-  if (initialized || !birnet_atomic_uint_compare_and_swap (&initialized, FALSE, TRUE))
+  if (initialized || !sfi_atomic_uint_cas (&initialized, FALSE, TRUE))
     return;
   guint mtype;
   /* SFI_MSG_NONE (always disabled) */
@@ -102,7 +103,7 @@ _sfi_init_logging (void)
   g_assert (quark_log_handler == 0);
   quark_log_handler = g_quark_from_static_string ("SfiMsgHandler");
   quark_msg_bits = g_quark_from_static_string ("SfiMsgBit-threadlist");
-  birnet_mutex_init (&logging_mutex);
+  sfi_mutex_init (&logging_mutex);
   sfi_msg_type_init_internals();
 }
 
@@ -174,7 +175,7 @@ sfi_msg_type_register (const gchar   *ident,
   bool     need_unlock = FALSE;
   if (quark_log_handler)
     {
-      birnet_mutex_lock (&logging_mutex);
+      sfi_mutex_lock (&logging_mutex);
       need_unlock = TRUE;
     }
   /* allow duplicate registration */
@@ -184,7 +185,7 @@ sfi_msg_type_register (const gchar   *ident,
       {
         /* found duplicate */
         if (need_unlock)
-          birnet_mutex_unlock (&logging_mutex);
+          sfi_mutex_unlock (&logging_mutex);
         return i;
       }
   /* add new message type */
@@ -201,7 +202,7 @@ sfi_msg_type_register (const gchar   *ident,
       guint8 *old_msg_flags = sfi_msg_flags;
       /* we are holding a lock in the multi-threaded case so no need for compare_and_swap */
       typedef guint8* X;
-      birnet_atomic_pointer_set ((void*) &sfi_msg_flags, msg_flags);
+      sfi_atomic_pointer_set ((void*) &sfi_msg_flags, msg_flags);
       // FIXME: sfi_msg_flags should be registered as hazard pointer so we don't g_free() while other threads read old_msg_flags[*]
       g_free (old_msg_flags);
     }
@@ -209,10 +210,10 @@ sfi_msg_type_register (const gchar   *ident,
   msg_types[mtype].label = g_strdup (label);
   sfi_msg_type_set (mtype, msg_types[default_ouput].log_flags, !msg_types[default_ouput].disabled);
   msg_types[mtype].default_type = default_ouput;
-  birnet_atomic_uint_set (&sfi_msg_flags_max, mtype); /* only ever grows */
+  sfi_atomic_uint_set (&sfi_msg_flags_max, mtype); /* only ever grows */
   /* out of here */
   if (need_unlock)
-    birnet_mutex_unlock (&logging_mutex);
+    sfi_mutex_unlock (&logging_mutex);
   return mtype;
 }
 
@@ -262,10 +263,10 @@ key_list_change (const char *string,
 void
 sfi_msg_allow (const char *key)
 {
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (key)
     key_list_change (key, TRUE);
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
   
 #if 0
   guint i;
@@ -280,28 +281,28 @@ sfi_msg_allow (const char *key)
 void
 sfi_msg_deny (const char *key)
 {
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (key)
     key_list_change (key, FALSE);
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
 }
 
 void
 sfi_msg_enable (SfiMsgType mtype)
 {
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     sfi_msg_type_set (mtype, msg_types[mtype].log_flags, TRUE);
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
 }
 
 void
 sfi_msg_disable (SfiMsgType mtype)
 {
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     sfi_msg_type_set (mtype, msg_types[mtype].log_flags, FALSE);
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
 }
 
 void
@@ -309,10 +310,10 @@ sfi_msg_type_configure (SfiMsgType        mtype,
                            SfiMsgLogFlags    channel_mask,
                            const gchar         *dummy_filename)
 {
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (mtype > 1 && mtype < n_msg_types)
     sfi_msg_type_set (mtype, channel_mask, !msg_types[mtype].disabled);
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
 }
 
 void
@@ -320,7 +321,7 @@ sfi_msg_configure_stdlog (bool              stdlog_to_stderr_bool,
                              const char       *stdlog_filename,
                              guint             syslog_priority) /* if != 0, stdlog to syslog */
 {
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   stdlog_to_stderr = stdlog_to_stderr_bool != 0;
   stdlog_syslog_priority = syslog_priority;
   if (stdlog_file && stdlog_file != stdout)
@@ -330,7 +331,7 @@ sfi_msg_configure_stdlog (bool              stdlog_to_stderr_bool,
     stdlog_file = stdout;
   else if (stdlog_filename)
     stdlog_file = fopen (stdlog_filename, "a");
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
 }
 
 /**
@@ -345,10 +346,10 @@ const gchar*
 sfi_msg_type_ident (SfiMsgType mtype)
 {
   const gchar *string = NULL;
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     string = msg_types[mtype].ident;
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
   return string;
 }
 
@@ -365,10 +366,10 @@ const gchar*
 sfi_msg_type_label (SfiMsgType mtype)
 {
   const gchar *string = NULL;
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (mtype >= 0 && mtype < n_msg_types)
     string = msg_types[mtype].label;
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
   return string;
 }
 
@@ -386,13 +387,13 @@ sfi_msg_type_lookup (const gchar *ident)
 {
   g_return_val_if_fail (ident != NULL, 0);
   guint i;
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   for (i = 0; i < n_msg_types; i++)
     if (strcmp (ident, msg_types[i].ident) == 0)
       break;
   if (i >= n_msg_types)
     i = 0;
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
   return i;
 }
 
@@ -402,13 +403,13 @@ sfi_msg_type_lookup (const gchar *ident)
  * Set the handler function for messages logged in the current
  * thread. If NULL is specified as handler, the standard handler
  * will be used. For handler implementations that require an extra
- * data argument, see birnet_thread_set_qdata().
+ * data argument, see sfi_thread_set_qdata().
  * This function is MT-safe and may be called from any thread.
  */
 void
 sfi_msg_set_thread_handler (SfiMsgHandler handler)
 {
-  birnet_thread_set_qdata (quark_log_handler, handler);
+  sfi_thread_set_qdata (quark_log_handler, handler);
 }
 
 /**
@@ -505,7 +506,7 @@ sfi_msg_log_printf (const char       *log_domain,
   va_end (args);
   msg.config_check = NULL;
   /* handle message */
-  LogBit *lbit_list = birnet_thread_steal_qdata (quark_msg_bits);
+  LogBit *lbit_list = sfi_thread_steal_qdata (quark_msg_bits);
   sfi_log_msg_process (&msg);
   g_free (msg.primary);
   free_lbits (lbit_list); /* purge thread local msg bit list */
@@ -643,7 +644,7 @@ sfi_msg_log_trampoline (const char        *log_domain,
         msg_apply_bit (&msg, lbits[j]);
     }
   /* reset thread local msg bit list */
-  LogBit *lbit_list = birnet_thread_steal_qdata (quark_msg_bits);
+  LogBit *lbit_list = sfi_thread_steal_qdata (quark_msg_bits);
   /* handle message */
   if (!handler)
     handler = sfi_log_msg_process;
@@ -670,8 +671,8 @@ sfi_msg_bit_appoint (gconstpointer   owner,
   lbit->bit.owner = owner;
   lbit->bit.data = data;
   lbit->data_free = data_free;
-  lbit->next = birnet_thread_steal_qdata (quark_msg_bits);
-  birnet_thread_set_qdata_full (quark_msg_bits, lbit, (GDestroyNotify) free_lbits);
+  lbit->next = sfi_thread_steal_qdata (quark_msg_bits);
+  sfi_thread_set_qdata_full (quark_msg_bits, lbit, (GDestroyNotify) free_lbits);
   errno = saved_errno;
   return &lbit->bit;
 }
@@ -740,11 +741,11 @@ static guint
 sfi_msg_type_actions (SfiMsgType mtype)
 {
   guint actions = 0;
-  birnet_mutex_lock (&logging_mutex);
+  sfi_mutex_lock (&logging_mutex);
   if (mtype >= 0 && mtype < n_msg_types &&
       !msg_types[mtype].disabled)
     actions = msg_types[mtype].log_flags;
-  birnet_mutex_unlock (&logging_mutex);
+  sfi_mutex_unlock (&logging_mutex);
   return actions;
 }
 
@@ -777,7 +778,7 @@ sfi_log_msg_process (const SfiMessage *msgp)
     {
       bool   is_debug = msg.type == SFI_MSG_DEBUG, is_diag = msg.type == SFI_MSG_DIAG;
       gchar *prefix = log_prefix (prgname (is_debug),                                   /* strip prgname path for debugging */
-                                  birnet_thread_self_pid(),                                /* always print pid */
+                                  sfi_thread_self_pid(),                                /* always print pid */
                                   is_debug ? NULL : msg.log_domain,                     /* print domain except when debugging */
                                   is_debug || is_diag ? NULL : label,                   /* print translated message type execpt for debug/diagnosis */
                                   is_debug ? ident : NULL);                             /* print identifier if debugging */
@@ -795,7 +796,7 @@ sfi_log_msg_process (const SfiMessage *msgp)
   if (stdlog_file && (actions & SFI_MSG_TO_STDLOG))
     {
       char *prefix = log_prefix (prgname (FALSE),                                       /* printf fully qualified program name */
-                                 birnet_thread_self_pid(),                                 /* always print pid */
+                                 sfi_thread_self_pid(),                                 /* always print pid */
                                  msg.log_domain,                                        /* always print log domain */
                                  NULL,                                                  /* skip translated message type */
                                  ident);                                                /* print machine readable message type */
@@ -812,7 +813,7 @@ sfi_log_msg_process (const SfiMessage *msgp)
   /* log to log handler */
   if (actions & SFI_MSG_TO_HANDLER)
     {
-      SfiMsgHandler log_handler = birnet_thread_get_qdata (quark_log_handler);
+      SfiMsgHandler log_handler = sfi_thread_get_qdata (quark_log_handler);
       if (!log_handler)
         log_handler = sfi_msg_default_handler;
       log_handler (&msg);

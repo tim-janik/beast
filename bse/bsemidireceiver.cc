@@ -1208,7 +1208,7 @@ _bse_midi_init (void)
   
   g_assert (initialized++ == FALSE);
   
-  birnet_mutex_init (&global_midi_mutex);
+  sfi_mutex_init (&global_midi_mutex);
 }
 
 static gint

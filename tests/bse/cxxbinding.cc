@@ -35,7 +35,9 @@ void do_sleep (int seconds)
     seconds = sleep (seconds);
 }
 
-int main(int argc, char **argv)
+int
+main (int   argc,
+      char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   bse_init_async (&argc, &argv, "CxxBindingTest", NULL);

@@ -35,14 +35,14 @@ collect_thread_totals::exec ()
       switch (ts)
         {
         default:
-        case BIRNET_THREAD_UNKNOWN:        return THREAD_STATE_UNKNOWN;
-        case BIRNET_THREAD_RUNNING:        return THREAD_STATE_RUNNING;
-        case BIRNET_THREAD_SLEEPING:       return THREAD_STATE_SLEEPING;
-        case BIRNET_THREAD_DISKWAIT:       return THREAD_STATE_DISKWAIT;
-        case BIRNET_THREAD_TRACED:         return THREAD_STATE_TRACED;
-        case BIRNET_THREAD_PAGING:         return THREAD_STATE_PAGING;
-        case BIRNET_THREAD_ZOMBIE:         return THREAD_STATE_ZOMBIE;
-        case BIRNET_THREAD_DEAD:           return THREAD_STATE_DEAD;
+        case BIRNET_THREAD_UNKNOWN:     return THREAD_STATE_UNKNOWN;
+        case BIRNET_THREAD_RUNNING:     return THREAD_STATE_RUNNING;
+        case BIRNET_THREAD_SLEEPING:    return THREAD_STATE_SLEEPING;
+        case BIRNET_THREAD_DISKWAIT:    return THREAD_STATE_DISKWAIT;
+        case BIRNET_THREAD_TRACED:      return THREAD_STATE_TRACED;
+        case BIRNET_THREAD_PAGING:      return THREAD_STATE_PAGING;
+        case BIRNET_THREAD_ZOMBIE:      return THREAD_STATE_ZOMBIE;
+        case BIRNET_THREAD_DEAD:        return THREAD_STATE_DEAD;
         }
     }
     static void assign (ThreadInfoHandle &th,
@@ -61,27 +61,27 @@ collect_thread_totals::exec ()
   };
   ThreadTotalsHandle tth (Sfi::INIT_DEFAULT);
   BirnetThreadInfo *ti;
-  ti = birnet_thread_info_collect (bse_main_thread);
+  ti = sfi_thread_info_collect (bse_main_thread);
   tth->main = ThreadInfoHandle (Sfi::INIT_DEFAULT);
   Sub::assign (tth->main, ti);
-  birnet_thread_info_free (ti);
+  sfi_thread_info_free (ti);
   if (bse_sequencer_thread)
     {
-      ti = birnet_thread_info_collect (bse_sequencer_thread);
+      ti = sfi_thread_info_collect (bse_sequencer_thread);
       tth->sequencer = ThreadInfoHandle (Sfi::INIT_DEFAULT);
       Sub::assign (tth->sequencer, ti);
-      birnet_thread_info_free (ti);
+      sfi_thread_info_free (ti);
     }
   guint n;
   BirnetThread **t;
   t = bse_engine_get_threads (&n);
   for (guint i = 0; i < n; i++)
     {
-      ti = birnet_thread_info_collect (t[i]);
+      ti = sfi_thread_info_collect (t[i]);
       tth->synthesis.resize (i + 1);
       tth->synthesis[i] = ThreadInfoHandle (Sfi::INIT_DEFAULT);
       Sub::assign (tth->synthesis[i], ti);
-      birnet_thread_info_free (ti);
+      sfi_thread_info_free (ti);
     }
   g_free (t);
   return tth;

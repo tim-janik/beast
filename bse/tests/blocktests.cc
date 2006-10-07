@@ -19,7 +19,7 @@
  */
 #include <bse/bseblockutils.hh>
 // #define TEST_VERBOSE
-#include <birnet/birnettests.h>
+#include <sfi/sfitests.h>
 #include <bse/bsemain.h>
 #include "topconfig.h"
 
@@ -575,7 +575,7 @@ main (int   argc,
       char *argv[])
 {
   /* usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded */
-  birnet_init_test (&argc, &argv);
+  sfi_init_test (&argc, &argv, NULL);
 
   TSTART ("Running Default Block Ops");
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());
