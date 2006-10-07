@@ -1,3 +1,8 @@
+Sat Oct  7 21:32:38 2006  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c: 
+	* bsemididevice-alsa.c: adapted to recent Birnet/Sfi changes.
+
 Tue Aug 15 01:26:20 2006  Tim Janik  <timj@gtk.org>
 
 	* upgraded version to 0.7.1, interface age 0, binary age 0.
