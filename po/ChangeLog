@@ -1,3 +1,12 @@
+Sat Oct  7 20:56:04 2006  Tim Janik  <timj@gtk.org>
+
+	* POTFILES.in: 
+	* POTFILES.skip: adapt to new file names.
+
+Fri Sep 29 01:10:01 2006  Tim Janik  <timj@gtk.org>
+
+	* POTFILES.skip, POTFILES.in: skip bseevaluator.idl which is not shipped.
+
 Wed Jul  5 00:45:21 2006  Tim Janik  <timj@gtk.org>
 
 	* it.po: applied updates by Michele Petrecca <michelinux@alice.it>.
