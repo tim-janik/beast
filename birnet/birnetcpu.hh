@@ -19,15 +19,15 @@
 #ifndef __BIRNET_CPU_HH__
 #define __BIRNET_CPU_HH__
 
-#include <birnet/birnetutilsxx.hh>
+#include <birnet/birnetutils.hh>
 
 namespace Birnet {
 
 typedef BirnetCPUInfo CPUInfo;
 
 /* --- functions --- */
-const CPUInfo*	cpu_info	(void);
-char*		cpu_info_string	(const CPUInfo *cpu_info);
+CPUInfo cpu_info	(void);
+String  cpu_info_string	(const CPUInfo &cpu_info);
 
 /* --- implementation --- */
 void	_birnet_init_cpuinfo	(void);

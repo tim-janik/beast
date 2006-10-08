@@ -19,7 +19,7 @@
 #ifndef __BIRNET_MSG_HH__
 #define __BIRNET_MSG_HH__
 
-#include <birnet/birnetutilsxx.hh>
+#include <birnet/birnetutils.hh>
 #include <stdarg.h>
 
 namespace Birnet {
@@ -45,24 +45,24 @@ struct Msg {
                                va_list     varargs);
   };
   struct Text0 : public Part {  /* message title */
-    Text0 (const char *format, ...) BIRNET_PRINTF (2, 3)    { va_list a; va_start (a, format); setup ('0', format, a); va_end (a); }
-    Text0 (const String &s)                                 { setup ('0', s); }
+    explicit BIRNET_PRINTF (2, 3) Text0 (const char *format, ...) { va_list a; va_start (a, format); setup ('0', format, a); va_end (a); }
+    explicit                      Text0 (const String &s)         { setup ('0', s); }
   };
   struct Text1 : public Part {  /* primary message */
-    Text1 (const char *format, ...) BIRNET_PRINTF (2, 3)    { va_list a; va_start (a, format); setup ('1', format, a); va_end (a); }
-    Text1 (const String &s)                                 { setup ('1', s); }
+    explicit BIRNET_PRINTF (2, 3) Text1 (const char *format, ...) { va_list a; va_start (a, format); setup ('1', format, a); va_end (a); }
+    explicit                      Text1 (const String &s)         { setup ('1', s); }
   };
   struct Text2 : public Part {  /* secondary message (lengthy) */
-    Text2 (const char *format, ...) BIRNET_PRINTF (2, 3)    { va_list a; va_start (a, format); setup ('2', format, a); va_end (a); }
-    Text2 (const String &s)                                 { setup ('2', s); }
+    explicit BIRNET_PRINTF (2, 3) Text2 (const char *format, ...) { va_list a; va_start (a, format); setup ('2', format, a); va_end (a); }
+    explicit                      Text2 (const String &s)         { setup ('2', s); }
   };
   struct Text3 : public Part {  /* message details */
-    Text3 (const char *format, ...) BIRNET_PRINTF (2, 3)    { va_list a; va_start (a, format); setup ('3', format, a); va_end (a); }
-    Text3 (const String &s)                                 { setup ('3', s); }
+    explicit BIRNET_PRINTF (2, 3) Text3 (const char *format, ...) { va_list a; va_start (a, format); setup ('3', format, a); va_end (a); }
+    explicit                      Text3 (const String &s)         { setup ('3', s); }
   };
   struct Check : public Part {  /* user switch */
-    Check (const char *format, ...) BIRNET_PRINTF (2, 3)    { va_list a; va_start (a, format); setup ('c', format, a); va_end (a); }
-    Check (const String &s)                                 { setup ('c', s); }
+    explicit BIRNET_PRINTF (2, 3) Check (const char *format, ...) { va_list a; va_start (a, format); setup ('c', format, a); va_end (a); }
+    explicit                      Check (const String &s)         { setup ('c', s); }
   };
   typedef Text0 Title;          /* message title */
   typedef Text1 Primary;        /* primary message */

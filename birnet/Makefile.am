@@ -9,22 +9,23 @@ INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFL
 GLIB_MKENUMS    = glib-mkenums
 
 birnet_headers = $(strip 		\
+	birnetcdefs.h			\
 	birnet.hh			\
+	birnetcdefs.h			\
 	birnetcpu.hh			\
 	birnetmsg.hh			\
 	birnetsignal.hh                 \
 	birnettests.h			\
-	birnetthread.h			\
-	birnetthreadxx.hh		\
-	birnetutilsxx.hh		\
+	birnetthread.hh			\
+	birnetutils.hh			\
 )
 birnet_sources = $(strip 		\
+	birnetthreadimpl.cc		\
 	birnetcpu.cc			\
 	birnetmsg.cc			\
 	birnetsignal.cc                 \
-	birnetthread.c			\
-	birnetthreadxx.cc		\
-	birnetutilsxx.cc		\
+	birnetthread.cc			\
+	birnetutils.cc			\
 )
 birnet_private_headers = $(strip 	\
 	birnetsignalslot.hh		\

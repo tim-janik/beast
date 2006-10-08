@@ -1,3 +1,40 @@
+Sun Oct  8 16:20:18 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: ship birnetcdefs.h.
+
+	* birnetthreadimpl.cc: added internal default constructors for gcc-3.3.
+
+	* birnetmsg.hh: reordered function attributes on constructors for gcc-3.3.
+
+Sat Oct  7 23:58:58 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h (BIRNET_ABORT_NORETURN): added noreturn call to macros 
+	which can't return, to silence compiler in some cases.
+
+Sat Oct  7 18:32:00 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h: moved non-symbol C API bits from birnetcore.h and
+	birnethread.h bits here. extended threading table to also cover the
+	normal threading API.
+
+	* birnetcpu.hh, birnetcpu.cc: minor API changes.
+
+	* birnetthread.hh, birnetthread.cc: use global threading table to
+	access thread layer.
+
+	* birnetthreadimpl.cc: main threading implementation moved here and 
+	ported to C++. work around g_atomic_int_set and g_atomic_pointer_set
+	missing from glib <= 2.10. reworked threading functions to use the
+	global threading table.
+
+	* birnetthread.h, birnetthread.c: removed. mostly merged into birnetthreadimpl.cc.
+
+	* birnetutils.hh, birnetutils.cc: added birnet_runtime_problemv().
+
+	* merged birnetutils.hh with birnetutilsxx.hh, and the same for the .cc files.
+
+	* tests/threads.cc: added simple wrappers to keep the threading tests going.
+
 Fri Oct  6 23:26:10 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcdefs.h: new header file to contain (or include) all definitions

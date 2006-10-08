@@ -23,11 +23,10 @@
 #include <birnet/birnetcpu.hh>
 
 #include <birnet/birnetmsg.hh>
-#include <birnet/birnetthread.h>
 
-#include <birnet/birnetutilsxx.hh>
+#include <birnet/birnetutils.hh>
 #include <birnet/birnetsignal.hh>
-#include <birnet/birnetthreadxx.hh>
+#include <birnet/birnetthread.hh>
 
 #endif /* __BIRNET_H__ */
 /* vim:set ts=8 sts=2 sw=2: */

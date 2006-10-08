@@ -22,6 +22,53 @@
 namespace {
 using namespace Birnet;
 
+/* --- utilities --- */
+BirnetThread*
+birnet_thread_run (const gchar     *name,
+                   BirnetThreadFunc func,
+                   gpointer         user_data)
+{
+  g_return_val_if_fail (name && name[0], NULL);
+
+  BirnetThread *thread = ThreadTable.thread_new (name);
+  ThreadTable.thread_ref_sink (thread);
+  if (ThreadTable.thread_start (thread, func, user_data))
+    return thread;
+  else
+    {
+      ThreadTable.thread_unref (thread);
+      return NULL;
+    }
+}
+
+#define birnet_mutex_init(mtx)        (ThreadTable.mutex_init (mtx))
+#define birnet_mutex_lock(mtx)        (ThreadTable.mutex_lock (mtx))
+#define birnet_mutex_trylock(mtx)     (0 == ThreadTable.mutex_trylock (mtx))
+#define birnet_mutex_unlock(mtx)      (ThreadTable.mutex_unlock (mtx))
+#define birnet_mutex_destroy(mtx)     (ThreadTable.mutex_destroy (mtx))
+#define birnet_rec_mutex_init(mtx)    (ThreadTable.rec_mutex_init (mtx))
+#define birnet_rec_mutex_lock(mtx)    (ThreadTable.rec_mutex_lock (mtx))
+#define birnet_rec_mutex_trylock(mtx) (0 == ThreadTable.rec_mutex_trylock (mtx))
+#define birnet_rec_mutex_unlock(mtx)  (ThreadTable.rec_mutex_unlock (mtx))
+#define birnet_rec_mutex_destroy(mtx) (ThreadTable.rec_mutex_destroy (mtx))
+
+#define BIRNET_MUTEX_DECLARE_INITIALIZED(mutexname)                             \
+  BirnetMutex mutexname = { 0 };                                                \
+  static void BIRNET_CONSTRUCTOR                                                \
+  BIRNET_CPP_PASTE4 (__birnet_mutex__autoinit, __LINE__, __, mutexname) (void)  \
+  { ThreadTable.mutex_chain4init (&mutexname); }
+
+#define BIRNET_REC_MUTEX_DECLARE_INITIALIZED(recmtx)                            \
+  BirnetRecMutex recmtx = { { 0 } };                                            \
+  static void BIRNET_CONSTRUCTOR                                                \
+  BIRNET_CPP_PASTE4 (__birnet_rec_mutex__autoinit, __LINE__, __, recmtx) (void) \
+  { ThreadTable.rec_mutex_chain4init (&recmtx); }
+
+#define BIRNET_COND_DECLARE_INITIALIZED(condname)                               \
+  BirnetCond condname = { 0 };                                                  \
+  static void BIRNET_CONSTRUCTOR                                                \
+  BIRNET_CPP_PASTE4 (__birnet_cond__autoinit, __LINE__, __, condname) (void)    \
+  { ThreadTable.cond_chain4init (&condname); }
 
 /* --- atomicity tests --- */
 static volatile guint atomic_count = 0;
@@ -33,12 +80,12 @@ atomic_up_thread (gpointer data)
 {
   volatile int *ip = (int*) data;
   for (guint i = 0; i < 25; i++)
-    birnet_atomic_int_add (ip, +3);
+    ThreadTable.atomic_int_add (ip, +3);
   birnet_mutex_lock (&atomic_mutex);
   atomic_count -= 1;
-  birnet_cond_signal (&atomic_cond);
+  ThreadTable.cond_signal (&atomic_cond);
   birnet_mutex_unlock (&atomic_mutex);
-  TASSERT (strcmp (birnet_thread_get_name (birnet_thread_self()), "AtomicTest") == 0);
+  TASSERT (strcmp (ThreadTable.thread_name (ThreadTable.thread_self()), "AtomicTest") == 0);
 }
 
 static void
@@ -46,12 +93,12 @@ atomic_down_thread (gpointer data)
 {
   volatile int *ip = (int*) data;
   for (guint i = 0; i < 25; i++)
-    birnet_atomic_int_add (ip, -4);
+    ThreadTable.atomic_int_add (ip, -4);
   birnet_mutex_lock (&atomic_mutex);
   atomic_count -= 1;
-  birnet_cond_signal (&atomic_cond);
+  ThreadTable.cond_signal (&atomic_cond);
   birnet_mutex_unlock (&atomic_mutex);
-  TASSERT (strcmp (birnet_thread_get_name (birnet_thread_self()), "AtomicTest") == 0);
+  TASSERT (strcmp (ThreadTable.thread_name (ThreadTable.thread_self()), "AtomicTest") == 0);
 }
 
 static void
@@ -62,7 +109,7 @@ test_atomic (void)
   BirnetThread *threads[count];
   volatile int atomic_counter = 0;
   birnet_mutex_init (&atomic_mutex);
-  birnet_cond_init (&atomic_cond);
+  ThreadTable.cond_init (&atomic_cond);
   atomic_count = count;
   for (int i = 0; i < count; i++)
     {
@@ -73,13 +120,13 @@ test_atomic (void)
   while (atomic_count > 0)
     {
       TACK();
-      birnet_cond_wait (&atomic_cond, &atomic_mutex);
+      ThreadTable.cond_wait (&atomic_cond, &atomic_mutex);
     }
   birnet_mutex_unlock (&atomic_mutex);
   int result = count / 2 * 25 * +3 + count / 2 * 25 * -4;
   // g_printerr ("{ %d ?= %d }", atomic_counter, result);
   for (int i = 0; i < count; i++)
-    birnet_thread_unref (threads[i]);
+    ThreadTable.thread_unref (threads[i]);
   TASSERT (atomic_counter == result);
   TDONE ();
 }
@@ -89,10 +136,10 @@ static void
 plus1_thread (gpointer data)
 {
   guint *tdata = (guint*) data;
-  birnet_thread_sleep (-1);
+  ThreadTable.thread_sleep (-1);
   *tdata += 1;
-  while (!birnet_thread_aborted ())
-    birnet_thread_sleep (-1);
+  while (!ThreadTable.thread_aborted ())
+    ThreadTable.thread_sleep (-1);
 }
 
 static BIRNET_MUTEX_DECLARE_INITIALIZED (static_mutex);
@@ -125,16 +172,18 @@ test_threads (void)
   /* not initializing static_rec_mutex */
   locked = birnet_rec_mutex_trylock (&static_rec_mutex);
   TASSERT (locked);
+  birnet_rec_mutex_lock (&static_rec_mutex);
   locked = birnet_rec_mutex_trylock (&static_rec_mutex);
   TASSERT (locked);
+  birnet_rec_mutex_unlock (&static_rec_mutex);
   birnet_rec_mutex_unlock (&static_rec_mutex);
   birnet_rec_mutex_unlock (&static_rec_mutex);
   locked = birnet_rec_mutex_trylock (&static_rec_mutex);
   TASSERT (locked);
   birnet_rec_mutex_unlock (&static_rec_mutex);
   /* not initializing static_cond */
-  birnet_cond_signal (&static_cond);
-  birnet_cond_broadcast (&static_cond);
+  ThreadTable.cond_signal (&static_cond);
+  ThreadTable.cond_broadcast (&static_cond);
   /* test C++ mutex */
   static Mutex mutex;
   static RecMutex rmutex;
@@ -154,21 +203,21 @@ test_threads (void)
   TASSERT (thread_data1 == 0);
   TASSERT (thread_data2 == 0);
   TASSERT (thread_data3 == 0);
-  TASSERT (birnet_thread_get_running (thread1) == TRUE);
-  TASSERT (birnet_thread_get_running (thread2) == TRUE);
-  TASSERT (birnet_thread_get_running (thread3) == TRUE);
-  birnet_thread_wakeup (thread1);
-  birnet_thread_wakeup (thread2);
-  birnet_thread_wakeup (thread3);
-  birnet_thread_abort (thread1);
-  birnet_thread_abort (thread2);
-  birnet_thread_abort (thread3);
+  TASSERT (ThreadTable.thread_get_running (thread1) == TRUE);
+  TASSERT (ThreadTable.thread_get_running (thread2) == TRUE);
+  TASSERT (ThreadTable.thread_get_running (thread3) == TRUE);
+  ThreadTable.thread_wakeup (thread1);
+  ThreadTable.thread_wakeup (thread2);
+  ThreadTable.thread_wakeup (thread3);
+  ThreadTable.thread_abort (thread1);
+  ThreadTable.thread_abort (thread2);
+  ThreadTable.thread_abort (thread3);
   TASSERT (thread_data1 > 0);
   TASSERT (thread_data2 > 0);
   TASSERT (thread_data3 > 0);
-  birnet_thread_unref (thread1);
-  birnet_thread_unref (thread2);
-  birnet_thread_unref (thread3);
+  ThreadTable.thread_unref (thread1);
+  ThreadTable.thread_unref (thread2);
+  ThreadTable.thread_unref (thread3);
   TDONE ();
 }
 
@@ -187,7 +236,7 @@ struct ThreadA : public virtual Birnet::Thread {
     TASSERT (this->name() == "ThreadA");
     TASSERT (this->name() == Thread::Self::name());
     for (int j = 0; j < 17905; j++)
-      birnet_atomic_int_add (counter, value);
+      ThreadTable.atomic_int_add (counter, value);
   }
 };
 

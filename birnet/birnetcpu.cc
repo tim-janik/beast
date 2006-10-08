@@ -219,12 +219,12 @@ get_x86_cpu_features (CPUInfo *ci,
   return true;
 }
 
-static CPUInfo global_cpu_info; /* = 0; */
+static CPUInfo cached_cpu_info; /* = 0; */
 
-const CPUInfo*
+CPUInfo
 cpu_info (void)
 {
-  return &global_cpu_info;
+  return cached_cpu_info;
 }
 
 void
@@ -244,46 +244,46 @@ _birnet_init_cpuinfo (void)
       lci.machine = get_arch_name();
       lci.cpu_vendor = "unknown";
     }
-  global_cpu_info = lci;
+  cached_cpu_info = lci;
 }
 
-char*
-cpu_info_string (const CPUInfo *cpu_info)
+String
+cpu_info_string (const CPUInfo &cpu_info)
 {
   GString *gstring = g_string_new ("");
   g_string_append_printf (gstring,
                           "CPU Architecture: %s\n"
                           "CPU Vendor:       %s\n",
-                          cpu_info->machine, cpu_info->cpu_vendor);
+                          cpu_info.machine, cpu_info.cpu_vendor);
   /* processor flags */
   GString *pflags = g_string_new ("");
-  if (cpu_info->x86_fpu)
+  if (cpu_info.x86_fpu)
     g_string_append_printf (pflags, " FPU");
-  if (cpu_info->x86_tsc)
+  if (cpu_info.x86_tsc)
     g_string_append_printf (pflags, " TSC");
-  if (cpu_info->x86_htt)
+  if (cpu_info.x86_htt)
     g_string_append_printf (pflags, " HTT");
   /* MMX flags */
   GString *mflags = g_string_new ("");
-  if (cpu_info->x86_mmx)
+  if (cpu_info.x86_mmx)
     g_string_append_printf (mflags, " MMX");
-  if (cpu_info->x86_mmxext)
+  if (cpu_info.x86_mmxext)
     g_string_append_printf (mflags, " MMXEXT");
   /* SSE flags */
   GString *sflags = g_string_new ("");
-  if (cpu_info->x86_sse)
+  if (cpu_info.x86_sse)
     g_string_append_printf (sflags, " SSE");
-  if (cpu_info->x86_sse2)
+  if (cpu_info.x86_sse2)
     g_string_append_printf (sflags, " SSE2");
-  if (cpu_info->x86_sse3)
+  if (cpu_info.x86_sse3)
     g_string_append_printf (sflags, " SSE3");
-  if (cpu_info->x86_ssesys)
+  if (cpu_info.x86_ssesys)
     g_string_append_printf (sflags, " SSESYS");
   /* 3DNOW flags */
   GString *nflags = g_string_new ("");
-  if (cpu_info->x86_3dnow)
+  if (cpu_info.x86_3dnow)
     g_string_append_printf (nflags, " 3DNOW");
-  if (cpu_info->x86_3dnowext)
+  if (cpu_info.x86_3dnowext)
     g_string_append_printf (nflags, " 3DNOWEXT");
   /* flag output */
   if (pflags->len)
@@ -299,7 +299,9 @@ cpu_info_string (const CPUInfo *cpu_info)
   g_string_free (mflags, TRUE);
   g_string_free (pflags, TRUE);
   /* done */
-  return g_string_free (gstring, FALSE);
+  String retval = gstring->str;
+  g_string_free (gstring, TRUE);
+  return retval;
 }
 
 } // Birnet

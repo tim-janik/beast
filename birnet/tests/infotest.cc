@@ -29,13 +29,11 @@ test_cpu_info (void)
 {
   TSTART ("CpuInfo");
   TOK();
-  const BirnetCPUInfo *cpi = cpu_info ();
-  TASSERT (cpi != NULL);
-  gchar *cps = cpu_info_string (cpi);
-  TASSERT (cps != NULL);
-  TPRINT ("%s", cps);
-  TOK();
-  g_free (cps);
+  const BirnetCPUInfo cpi = cpu_info ();
+  TASSERT (cpi.machine != NULL);
+  String cps = cpu_info_string (cpi);
+  TASSERT (cps.size() != 0);
+  TPRINT ("%s", cps.c_str());
   TOK();
   TDONE();
 }
