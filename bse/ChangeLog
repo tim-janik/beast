@@ -1,3 +1,10 @@
+Sun Oct  8 21:20:14 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/resamplehandle.cc: Lessen the thresholds for downsampling
+	datahandle 24bit test, because AMD64, due to its -mfpmath=sse default,
+	doesn't get as good results as i386 machines do. With the new
+	thresholds, make check passes on AMD64, too.
+
 Thu Oct  5 17:39:50 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsldatahandle.h:
