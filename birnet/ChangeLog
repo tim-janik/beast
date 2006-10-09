@@ -1,3 +1,11 @@
+Mon Oct  9 23:00:39 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutf8.hh, birnetutf8.cc: wrap GLib isalnum() and friends to 
+	classify unichar characters. provide inline functions to increment
+	and decrement positions in UTF-8 strings.
+
+	* tests/strings.cc: new test program to test birnetutf8.hh functions.
+
 Sun Oct  8 16:20:18 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: ship birnetcdefs.h.

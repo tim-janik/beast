@@ -17,6 +17,7 @@ birnet_headers = $(strip 		\
 	birnetsignal.hh                 \
 	birnettests.h			\
 	birnetthread.hh			\
+	birnetutf8.hh			\
 	birnetutils.hh			\
 )
 birnet_sources = $(strip 		\
@@ -25,6 +26,7 @@ birnet_sources = $(strip 		\
 	birnetmsg.cc			\
 	birnetsignal.cc                 \
 	birnetthread.cc			\
+	birnetutf8.cc			\
 	birnetutils.cc			\
 )
 birnet_private_headers = $(strip 	\

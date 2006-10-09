@@ -24,6 +24,7 @@
 
 #include <birnet/birnetmsg.hh>
 
+#include <birnet/birnetutf8.hh>
 #include <birnet/birnetutils.hh>
 #include <birnet/birnetsignal.hh>
 #include <birnet/birnetthread.hh>
