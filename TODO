@@ -1,5 +1,5 @@
 NEXT-RELEASE:
-- GslLong -> int64
+- GslLong -> int64 
 - wave-tool:
   * bit-width conversion float<->16 (optional saturation)
 - undef _DOMAIN
