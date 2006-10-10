@@ -93,7 +93,6 @@ static void
 gen_zfile (const char *name,
 	   const char *file)
 {
-  g_printerr ("note: %s", name);
   FILE *f = fopen (file, "r");
   uint8 *data = NULL;
   uint i, dlen = 0, mlen = 0;

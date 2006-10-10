@@ -343,7 +343,7 @@ string_vprintf (const char *format,
                 va_list     vargs)
 {
   char *str = NULL;
-  if (vasprintf (&str, format, vargs) == 0 && str)
+  if (vasprintf (&str, format, vargs) >= 0 && str)
     {
       String s = str;
       free (str);
