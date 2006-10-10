@@ -24,26 +24,27 @@
 namespace Birnet {
 
 namespace Unichar {
-bool    isalnum      (unichar uc) BIRNET_CONST;
-bool    isalpha      (unichar uc) BIRNET_CONST;
-bool    iscntrl      (unichar uc) BIRNET_CONST;
-bool    isdigit      (unichar uc) BIRNET_CONST;
-int     digit_value  (unichar uc) BIRNET_CONST;
-bool    isgraph      (unichar uc) BIRNET_CONST;
-bool    islower      (unichar uc) BIRNET_CONST;
-unichar tolower      (unichar uc) BIRNET_CONST;
-bool    isprint      (unichar uc) BIRNET_CONST;
-bool    ispunct      (unichar uc) BIRNET_CONST;
-bool    isspace      (unichar uc) BIRNET_CONST;
-bool    isupper      (unichar uc) BIRNET_CONST;
-unichar toupper      (unichar uc) BIRNET_CONST;
-bool    isxdigit     (unichar uc) BIRNET_CONST;
-int     xdigit_value (unichar uc) BIRNET_CONST;
-bool    istitle      (unichar uc) BIRNET_CONST;
-unichar totitle      (unichar uc) BIRNET_CONST;
-bool    isdefined    (unichar uc) BIRNET_CONST;
-bool    iswide       (unichar uc) BIRNET_CONST;
-bool    iswide_cjk   (unichar uc) BIRNET_CONST;
+inline bool isvalid      (unichar uc) BIRNET_CONST;
+bool        isalnum      (unichar uc) BIRNET_CONST;
+bool        isalpha      (unichar uc) BIRNET_CONST;
+bool        iscntrl      (unichar uc) BIRNET_CONST;
+bool        isdigit      (unichar uc) BIRNET_CONST;
+int         digit_value  (unichar uc) BIRNET_CONST;
+bool        isgraph      (unichar uc) BIRNET_CONST;
+bool        islower      (unichar uc) BIRNET_CONST;
+unichar     tolower      (unichar uc) BIRNET_CONST;
+bool        isprint      (unichar uc) BIRNET_CONST;
+bool        ispunct      (unichar uc) BIRNET_CONST;
+bool        isspace      (unichar uc) BIRNET_CONST;
+bool        isupper      (unichar uc) BIRNET_CONST;
+unichar     toupper      (unichar uc) BIRNET_CONST;
+bool        isxdigit     (unichar uc) BIRNET_CONST;
+int         xdigit_value (unichar uc) BIRNET_CONST;
+bool        istitle      (unichar uc) BIRNET_CONST;
+unichar     totitle      (unichar uc) BIRNET_CONST;
+bool        isdefined    (unichar uc) BIRNET_CONST;
+bool        iswide       (unichar uc) BIRNET_CONST;
+bool        iswide_cjk   (unichar uc) BIRNET_CONST;
 typedef enum {
   CONTROL,              FORMAT,                 UNASSIGNED,
   PRIVATE_USE,          SURROGATE,              LOWERCASE_LETTER,
@@ -82,17 +83,35 @@ inline const char*    utf8_prev         (const char     *c);
 inline char*          utf8_prev         (char           *c);
 inline const char*    utf8_find_next    (const char     *c,
                                          const char     *bound = NULL);
-inline char*          utf8_find_next    (char           *c,
+inline char*          utf8_find_next    (char           *current,
                                          const char     *bound = NULL);
-inline const char*    utf8_find_prev    (const char     *c,
-                                         const char     *start = NULL);
-inline char*          utf8_find_prev    (char           *c,
-                                         const char     *start = NULL);
+inline const char*    utf8_find_prev    (const char     *start,
+                                         const char     *current);
+inline char*          utf8_find_prev    (const char     *start,
+                                         char           *currrent);
 unichar               utf8_to_unichar   (const char     *str);
 int                   utf8_from_unichar (unichar         uc,
                                          char            str[8]);
+bool                  utf8_validate     (const String   &string,
+                                         int            *bound = NULL);
 
 /* --- implementation bits --- */
+namespace Unichar {
+inline bool
+isvalid (unichar uc)
+{
+  if (BIRNET_UNLIKELY (uc > 0xfdcf && uc < 0xfdf0))
+    return false;
+  if (BIRNET_UNLIKELY ((uc & 0xfffe) == 0xfffe))
+    return false;
+  if (BIRNET_UNLIKELY (uc > 0x10ffff))
+    return false;
+  if (BIRNET_UNLIKELY ((uc & 0xfffff800) == 0xd800))
+    return false;
+  return true;
+}
+} // Unichar
+
 extern const int8 utf8_skip_table[256];
 
 inline const char*
@@ -144,20 +163,20 @@ utf8_find_next (char       *c,
 }
 
 inline const char*
-utf8_find_prev (const char *c,
-                const char *start)
+utf8_find_prev (const char     *start,
+                const char     *current)
 {
   do
-    c--;
-  while (c >= start && (*c & 0xc0) == 0x80);
-  return !start || c >= start ? c : NULL;
+    current--;
+  while (current >= start && (*current & 0xc0) == 0x80);
+  return current >= start ? current : NULL;
 }
 
 inline char*
-utf8_find_prev (char       *c,
-                const char *start)
+utf8_find_prev (const char     *start,
+                char           *current)
 {
-  return const_cast<char*> (utf8_find_prev (const_cast<const char*> (c), start));
+  return const_cast<char*> (utf8_find_prev (start, const_cast<const char*> (current)));
 }
 
 

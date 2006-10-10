@@ -61,7 +61,7 @@ random_tf8_and_unichar_test (void)
       TCHECK (pn == cur + 1);
       gn = g_utf8_find_next_char (cur, NULL);
       TCHECK (pn == gn);
-      pp = utf8_find_prev (pn, cbuffer);
+      pp = utf8_find_prev (cbuffer, pn);
       TCHECK (pp == cur);
       /* random unichar */
       cur = pn;
@@ -69,7 +69,7 @@ random_tf8_and_unichar_test (void)
       TCHECK (pn == cur + l);
       gn = g_utf8_find_next_char (cur, NULL);
       TCHECK (pn == gn);
-      pp = utf8_find_prev (pn, cbuffer);
+      pp = utf8_find_prev (cbuffer, pn);
       TCHECK (pp == cur);
       /* y */
       cur = pn;
@@ -77,7 +77,7 @@ random_tf8_and_unichar_test (void)
       TCHECK (pn == cur + 1);
       gn = g_utf8_find_next_char (cur, NULL);
       TCHECK (pn == gn);
-      pp = utf8_find_prev (pn, cbuffer);
+      pp = utf8_find_prev (cbuffer, pn);
       TCHECK (pp == cur);
       /* 7 (last) */
       cur = pn;
@@ -85,7 +85,7 @@ random_tf8_and_unichar_test (void)
       TCHECK (pn == cur + 1);
       gn = g_utf8_find_next_char (cur, NULL);
       TCHECK (pn == gn);
-      pp = utf8_find_prev (pn, cbuffer);
+      pp = utf8_find_prev (cbuffer, pn);
       TCHECK (pp == cur);
       /* last with bounds */
       pn = utf8_find_next (cur, cur + strlen (cur));
@@ -95,6 +95,20 @@ random_tf8_and_unichar_test (void)
       /* first with bounds */
       pp = utf8_find_prev (cbuffer, cbuffer);
       TCHECK (pp == NULL);
+
+      /* validate valid UTF-8 */
+      bool bb = utf8_validate (cbuffer);
+      bool gb = g_utf8_validate (cbuffer, -1, NULL);
+      TCHECK (bb == gb);
+      /* validate invalid UTF-8 */
+      cbuffer[rand() % (l + 3)] = rand();
+      const char *gp;
+      int indx;
+      bb = utf8_validate (cbuffer, &indx);
+      gb = g_utf8_validate (cbuffer, -1, &gp);
+      TCHECK (bb == gb);
+      if (!bb)
+        TCHECK (cbuffer + indx == gp);
     }
   TDONE();
 }
@@ -114,6 +128,9 @@ random_unichar_test (void)
       if (i % 20000 == 0)
         TOK();
 
+      bb = Unichar::isvalid (uc);
+      gb = g_unichar_validate (uc);
+      TCHECK (bb == gb);
       bb = Unichar::isalnum (uc);
       gb = g_unichar_isalnum (uc);
       TCHECK (bb == gb);

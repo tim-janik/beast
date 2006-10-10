@@ -311,4 +311,17 @@ utf8_from_unichar (unichar uc,
   return l;
 }
 
+bool
+utf8_validate (const String   &strng,
+               int            *bound)
+{
+  const char *c = &strng[0];
+  size_t l = strng.size();
+  const gchar *end = NULL;
+  gboolean gb = g_utf8_validate (c, l, &end);
+  if (bound)
+    *bound = !gb ? end - c : -1;
+  return gb != false;
+}
+
 } // Birnet

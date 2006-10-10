@@ -1,3 +1,13 @@
+Tue Oct 10 23:23:11 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutf8.hh, birnetutf8.cc: added Unichar::isvalid().
+	changed arguemnt order of utf8_find_prev() to match that of 
+	g_utf8_find_prev_char(), adapted test case. added utf8_validate(),
+	wrapping g_utf8_validate().
+
+	* tests/strings.cc: adapt to utf8_find_prev(). added Unichar::isvalid()
+	test and utf8_validate() test.
+
 Tue Oct 10 01:34:05 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcdefs.h: provide extra prototype for extern inline functions
