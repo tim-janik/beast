@@ -5,7 +5,7 @@
 include $(top_srcdir)/Makefile.decl
 
 INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
-DEFS	       += -DG_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
+DEFS	       += -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
 
 TESTS 		 = 
 noinst_PROGRAMS  = $(TESTS)

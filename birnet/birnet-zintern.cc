@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include <birnet/birnet.hh>
+#include <glib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -23,18 +24,18 @@
 
 namespace Birnet {
 
-static gboolean use_compression = FALSE;
-static gboolean use_base_name = FALSE;
+static bool use_compression = FALSE;
+static bool use_base_name = FALSE;
 
 typedef struct {
-  guint    pos;
-  gboolean pad;
+  uint pos;
+  bool pad;
 } Config;
 static Config config_init = { 0, 0 };
 
 static inline void
 print_uchar (Config *config,
-	     guint8 d)
+	     uint8 d)
 {
   if (config->pos > 70)
     {
@@ -76,34 +77,32 @@ print_uchar (Config *config,
 
 #define to_upper(c)     ((c) >='a' && (c) <='z' ? (c) - 'a' + 'A' : (c))
 #define is_alnum(c)     (((c) >='A' && (c) <='Z') || ((c) >='a' && (c) <='z') || ((c) >='0' && (c) <='9'))
-static gchar*
-to_cupper (const gchar *istring)
+static String
+to_cupper (const String &str)
 {
-  gchar *string = g_strdup (istring), *s = string;
-  while (*s)
-    {
-      if (is_alnum (*s))
-        *s = to_upper (*s);
-      else
-        *s = '_';
-      s++;
-    }
-  return string;
+  String s (str);
+  for (uint i = 0; i < s.size(); i++)
+    if (Unichar::isalnum (s[i]))
+      s[i] = Unichar::toupper (s[i]);
+    else
+      s[i] = '_';
+  return s;
 }
 
 static void
-gen_zfile (const gchar *name,
-	   const gchar *file)
+gen_zfile (const char *name,
+	   const char *file)
 {
+  g_printerr ("note: %s", name);
   FILE *f = fopen (file, "r");
-  guint8 *data = NULL;
-  guint i, dlen = 0, mlen = 0;
+  uint8 *data = NULL;
+  uint i, dlen = 0, mlen = 0;
   Bytef *cdata;
   uLongf clen;
-  gchar *fname = use_base_name ? g_path_get_basename (file) : g_strdup (file);
+  String fname = use_base_name ? Path::basename (file) : file;
   Config config;
   if (!f)
-    g_error ("failed to open \"%s\": %s", file, g_strerror (errno));
+    BIRNET_ERROR ("failed to open \"%s\": %s", file, string_from_errno (errno).c_str());
   do
     {
       if (mlen <= dlen + 1024)
@@ -116,7 +115,7 @@ gen_zfile (const gchar *name,
   while (!feof (f));
 
   if (ferror (f))
-    g_error ("failed to read from \"%s\": %s", file, g_strerror (errno));
+    BIRNET_ERROR ("failed to read from \"%s\": %s", file, string_from_errno (errno).c_str());
 
   if (use_compression)
     {
@@ -141,7 +140,7 @@ gen_zfile (const gchar *name,
 	  break;
 	}
       if (err)
-	g_error ("while compressing \"%s\": %s", file, err);
+	BIRNET_ERROR ("while compressing \"%s\": %s", file, err);
     }
   else
     {
@@ -152,29 +151,28 @@ gen_zfile (const gchar *name,
   g_print ("/* birnet-zintern file dump of %s */\n", file);
 
   config = config_init;
-  printf ("#define %s_NAME \"", to_cupper (name));
-  for (i = 0; fname[i]; i++)
+  printf ("#define %s_NAME \"", to_cupper (name).c_str());
+  for (i = 0; i < fname.size(); i++)
     print_uchar (&config, fname[i]);
   printf ("\"\n");
 
-  printf ("#define %s_SIZE (%u)\n", to_cupper (name), dlen);
+  printf ("#define %s_SIZE (%u)\n", to_cupper (name).c_str(), dlen);
 
   config = config_init;
-  printf ("static const unsigned char %s_DATA[%lu + 1] =\n", to_cupper (name), clen);
+  printf ("static const unsigned char %s_DATA[%lu + 1] =\n", to_cupper (name).c_str(), clen);
   printf ("( \"");
   for (i = 0; i < clen; i++)
     print_uchar (&config, cdata[i]);
   printf ("\");\n");
 
   fclose (f);
-  g_free (fname);
   g_free (data);
   if (cdata != data)
     g_free (cdata);
 }
 
-static gint
-help (gchar *arg)
+static int
+help (char *arg)
 {
   g_printerr ("usage: birnet-zintern [-h] [-b] [-z] [[name file]...]\n");
   g_printerr ("  -h  Print usage information\n");
@@ -186,8 +184,8 @@ help (gchar *arg)
 }
 
 extern "C" int
-main (gint   argc,
-      gchar *argv[])
+main (int   argc,
+      char *argv[])
 {
   GSList *plist = NULL;
 

@@ -238,11 +238,11 @@ Thread::Self::awake_after (uint64 stamp)
 }
 
 void
-Thread::Self::set_wakeup (BirnetThreadWakeup      wakeup_func,
-                          void                   *wakeup_data,
-                          GDestroyNotify          destroy)
+Thread::Self::set_wakeup (BirnetThreadWakeup   wakeup_func,
+                          void                *wakeup_data,
+                          void               (*destroy_data) (void*))
 {
-  ThreadTable.thread_set_wakeup (wakeup_func, wakeup_data, destroy);
+  ThreadTable.thread_set_wakeup (wakeup_func, wakeup_data, destroy_data);
 }
 
 OwnedMutex&

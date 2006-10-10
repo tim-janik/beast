@@ -24,7 +24,6 @@
 namespace Birnet {
 
 class Thread;
-extern BirnetThreadTable ThreadTable; /*< private >*/
 
 class Mutex {
   BirnetMutex mutex;
@@ -131,9 +130,9 @@ public:
     static void         awake_after     (uint64             stamp);
     static void         set_wakeup      (BirnetThreadWakeup wakeup_func,
                                          void              *wakeup_data,
-                                         GDestroyNotify     destroy);
+                                         void             (*destroy_data) (void*));
     static OwnedMutex&  owned_mutex     ();
-    static void         exit            (void              *retval = NULL) G_GNUC_NORETURN;
+    static void         exit            (void              *retval = NULL) BIRNET_NORETURN;
   };
   /* DataListContainer API */
   template<typename Type> inline void set_data    (DataKey<Type> *key,

@@ -1,3 +1,22 @@
+Mon Oct  9 23:47:30 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h: ensure we have FALSE, TRUE, ABS, MIN, MAX, CLAMP,
+	ARRAY_SIZE and STRFUNC.
+
+	* birnetutils.hh: don't publically include glib.h, adapted affected
+	callers. pre-declare ThreadTable to use atomic functions in class
+	ReferenceCountImpl.
+
+	* birnetutils.hh, birnetutils.cc: added string utilities to convert
+	strings to and from bool, int, uint, float, double and double vector.
+	added utilities to convert strings tolower, toupper, totitle, to strip
+	strings and to print into strings in printf style.
+	added uuid string test and comparison and errno to string conversion.
+
+	* birnet-zintern.cc: conveted somewhat more to C++.
+
+	* tests/strings.cc: added uuid string functions tests.
+
 Mon Oct  9 23:00:39 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutf8.hh, birnetutf8.cc: wrap GLib isalnum() and friends to 

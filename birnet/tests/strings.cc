@@ -194,6 +194,48 @@ random_unichar_test (void)
   TDONE();
 }
 
+static void
+uuid_tests (void)
+{
+  TSTART ("uuid string test");
+  TASSERT (string_is_uuid ("00000000-0000-0000-0000-000000000000") == true);
+  TASSERT (string_is_uuid ("6ba7b812-9dad-11d1-80b4-00c04fd430c8") == true);
+  TASSERT (string_is_uuid ("6BA7B812-9DAD-11D1-80B4-00C04FD430C8") == true);
+  TASSERT (string_is_uuid ("a425fd92-4f06-11db-aea9-000102e7e309") == true);
+  TASSERT (string_is_uuid ("A425FD92-4F06-11DB-AEA9-000102E7E309") == true);
+  TASSERT (string_is_uuid ("dc380602-a739-4be1-a5cb-53c437ffe39f") == true);
+  TASSERT (string_is_uuid ("DC380602-A739-4BE1-A5CB-53C437FFE39F") == true);
+  // TASSERT (string_is_uuid (NULL) == false);
+  TASSERT (string_is_uuid ("") == false);
+  TASSERT (string_is_uuid ("gba7b812-9dad-11d1-80b4-00c04fd430c8") == false);
+  TASSERT (string_is_uuid ("Gba7b812-9dad-11d1-80b4-00c04fd430c8") == false);
+  TASSERT (string_is_uuid ("6ba7b812.9dad-11d1-80b4-00c04fd430c8") == false);
+  TASSERT (string_is_uuid ("6ba7b812-9dad.11d1-80b4-00c04fd430c8") == false);
+  TASSERT (string_is_uuid ("6ba7b812-9dad-11d1.80b4-00c04fd430c8") == false);
+  TASSERT (string_is_uuid ("6ba7b812-9dad-11d1-80b4.00c04fd430c8") == false);
+  TASSERT (string_is_uuid ("6ba7b812-9dad-11d1-80b4-00c04fd430c8-") == false);
+  TASSERT (string_is_uuid ("6ba7b812-9dad-11d1-80b4-00c04fd430c80") == false);
+  TASSERT (string_is_uuid ("6ba7b812-9dad-11d1-80b4-00c04fd430c") == false);
+  TDONE();
+  TSTART ("uuid string cmp");
+  TASSERT (string_cmp_uuid ("00000000-0000-0000-0000-000000000000", "A425FD92-4F06-11DB-AEA9-000102E7E309") < 0);
+  TASSERT (string_cmp_uuid ("A425FD92-4F06-11DB-AEA9-000102E7E309", "00000000-0000-0000-0000-000000000000") > 0);
+  TASSERT (string_cmp_uuid ("00000000-0000-0000-0000-000000000000", "6ba7b812-9dad-11d1-80b4-00c04fd430c8") < 0);
+  TASSERT (string_cmp_uuid ("6BA7B812-9DAD-11D1-80B4-00C04FD430C8", "00000000-0000-0000-0000-000000000000") > 0);
+  TASSERT (string_cmp_uuid ("00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000") == 0);
+  TASSERT (string_cmp_uuid ("6BA7B812-9DAD-11D1-80B4-00C04FD430C8", "A425FD92-4F06-11DB-AEA9-000102E7E309") < 0);
+  TASSERT (string_cmp_uuid ("6ba7b812-9dad-11d1-80b4-00c04fd430c8", "A425FD92-4F06-11DB-AEA9-000102E7E309") < 0);
+  TASSERT (string_cmp_uuid ("6BA7B812-9DAD-11D1-80B4-00C04FD430C8", "a425fd92-4f06-11db-aea9-000102e7e309") < 0);
+  TASSERT (string_cmp_uuid ("6ba7b812-9dad-11d1-80b4-00c04fd430c8", "a425fd92-4f06-11db-aea9-000102e7e309") < 0);
+  TASSERT (string_cmp_uuid ("A425FD92-4F06-11DB-AEA9-000102E7E309", "a425fd92-4f06-11db-aea9-000102e7e309") == 0);
+  TASSERT (string_cmp_uuid ("6ba7b812-9DAD-11d1-80B4-00c04fd430c8", "6BA7B812-9dad-11D1-80b4-00C04FD430C8") == 0);
+  TASSERT (string_cmp_uuid ("A425FD92-4F06-11DB-AEA9-000102E7E309", "6BA7B812-9DAD-11D1-80B4-00C04FD430C8") > 0);
+  TASSERT (string_cmp_uuid ("A425FD92-4F06-11DB-AEA9-000102E7E309", "6ba7b812-9dad-11d1-80b4-00c04fd430c8") > 0);
+  TASSERT (string_cmp_uuid ("a425fd92-4f06-11db-aea9-000102e7e309", "6BA7B812-9DAD-11D1-80B4-00C04FD430C8") > 0);
+  TASSERT (string_cmp_uuid ("a425fd92-4f06-11db-aea9-000102e7e309", "6ba7b812-9dad-11d1-80b4-00c04fd430c8") > 0);
+  TDONE();
+}
+
 } // Anon
 
 int
@@ -202,6 +244,7 @@ main (int   argc,
 {
   birnet_init_test (&argc, &argv);
 
+  uuid_tests();
   random_unichar_test();
   random_tf8_and_unichar_test();
   

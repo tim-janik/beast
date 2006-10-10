@@ -27,11 +27,17 @@
 BIRNET_EXTERN_C_BEGIN();
 
 /* --- standard macros --- */
+#ifndef FALSE
+#  define FALSE					false
+#endif
+#ifndef TRUE
+#  define TRUE					true
+#endif
 #define BIRNET_ABS(a)                       	((a) > -(a) ? (a) : -(a))
 #define BIRNET_MIN(a,b)                         ((a) <= (b) ? (a) : (b))
 #define BIRNET_MAX(a,b)                         ((a) >= (b) ? (a) : (b))
 #define BIRNET_CLAMP(v,mi,ma)                   ((v) < (mi) ? (mi) : ((v) > (ma) ? (ma) : (v)))
-#ifdef  _BIRNET_SOURCE_EXTENSIONS
+#define BIRNET_ARRAY_SIZE(array)		(sizeof (array) / sizeof ((array)[0]))
 #undef ABS
 #define ABS                                     BIRNET_ABS
 #undef MIN
@@ -40,9 +46,16 @@ BIRNET_EXTERN_C_BEGIN();
 #define MAX                                     BIRNET_MAX
 #undef CLAMP
 #define CLAMP                                   BIRNET_CLAMP
+#undef ARRAY_SIZE
+#define ARRAY_SIZE				BIRNET_ARRAY_SIZE
 #undef STRFUNC
-#define	STRFUNC					G_STRFUNC
-#endif  /* _BIRNET_SOURCE_EXTENSIONS */
+#if defined (__GNUC__)
+#  define STRFUNC				((const char*) (__PRETTY_FUNCTION__))
+#elif defined (G_HAVE_ISO_VARARGS)
+#  define STRFUNC				G_STRFUNC /* GLib present */
+#else
+#  define STRFUNC				("<unknown>()")
+#endif
 
 /* --- likelyness hinting --- */
 #define	BIRNET__BOOL(expr)		__extension__ ({ bool _birnet__bool; if (expr) _birnet__bool = 1; else _birnet__bool = 0; _birnet__bool; })
@@ -285,8 +298,8 @@ typedef struct {
   void		    (*thread_awake_after)   (BirnetUInt64       stamp);
   void		    (*thread_emit_wakeups)  (BirnetUInt64       wakeup_stamp);
   void		    (*thread_set_wakeup)    (BirnetThreadWakeup wakeup_func,
-					     gpointer           wakeup_data,
-					     GDestroyNotify     destroy);
+					     void              *wakeup_data,
+					     void             (*destroy_data) (void*));
   void              (*thread_abort) 	    (BirnetThread      *thread);
   void              (*thread_queue_abort)   (BirnetThread      *thread);
   bool              (*thread_aborted)	    (void);
@@ -302,7 +315,7 @@ typedef struct {
   void*		    (*qdata_get)	    (uint               glib_quark);
   void		    (*qdata_set)	    (uint               glib_quark,
 					     void              *data,
-					     GDestroyNotify     destroy);
+                                             void             (*destroy_data) (void*));
   void*		    (*qdata_steal)	    (uint		glib_quark);
   void              (*mutex_init)           (BirnetMutex       *mutex);
   void              (*mutex_lock)           (BirnetMutex       *mutex);
