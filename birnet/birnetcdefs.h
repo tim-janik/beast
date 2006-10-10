@@ -71,9 +71,6 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_WARNING(...)		do { BIRNET__RUNTIME_PROBLEM ('W', BIRNET_LOG_DOMAIN, __FILE__, __LINE__, BIRNET_SIMPLE_FUNCTION, __VA_ARGS__); } while (0)
 #define BIRNET_ERROR(...)		do { BIRNET__RUNTIME_PROBLEM ('E', BIRNET_LOG_DOMAIN, __FILE__, __LINE__, BIRNET_SIMPLE_FUNCTION, __VA_ARGS__); BIRNET_ABORT_NORETURN(); } while (0)
 #define BIRNET_ABORT_NORETURN()		birnet_abort_noreturn()
-/* the above macros rely on a problem handler macro: */
-// BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,exprformat,...); // noreturn cases: 'E', 'A', 'N'
-extern inline void __attribute__ ((noreturn)) birnet_abort_noreturn (void) { while (1) *(void*volatile*)0; }
 
 /* --- convenient aliases --- */
 #ifdef  _BIRNET_SOURCE_EXTENSIONS
@@ -337,6 +334,12 @@ typedef struct {
 					     BirnetInt64 	max_useconds);
   void              (*cond_destroy)         (BirnetCond        *cond);
 } BirnetThreadTable;
+
+/* --- implementation bits --- */
+/* the above macros rely on a problem handler macro: */
+// BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,exprformat,...); // noreturn cases: 'E', 'A', 'N'
+extern inline void birnet_abort_noreturn (void) BIRNET_NORETURN;
+extern inline void birnet_abort_noreturn (void) { while (1) *(void*volatile*)0; }
 
 BIRNET_EXTERN_C_END();
 
