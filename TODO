@@ -742,9 +742,7 @@ oversampling:
 - have a look at 4*, 8*... oversampling
 - plot de-facto filter coefficients
 - does impulse response thingy work for 24bits?
-- --bse-force-fpu interferes with testresampler's option handling
 - check why performance on one of my laptops (voyager) was so bad for SSE code
-- write downsampling datahandle
 - add resampler documentation in synthesis-details.doxi (F.Fact2 rsmpling bstgnmorg) [ 0.7.0 ]
 
 bseblockutils:
@@ -762,9 +760,7 @@ Misc Buglets/Feature Requests:
  - crashes    #340437                                                                [ 0.7.0, pending ]
 
 The MCD timeline says:
-- upsample datahandle review
-- downsample datahandle implementation
-  + resampler state size
++ resampling datahandles: resampler state size
 - resampler delay / latency
 - wavetool commandos fuer upsample und downsample datahandles
 - autolooper fuer wavetool
