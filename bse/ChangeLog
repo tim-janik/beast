@@ -1,3 +1,9 @@
+Thu Oct 12 02:23:15 2006  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.c: enlarged ARRSIZ so order 16 filters can be calculated.
+	renamed and reworked print_filter_table() to print the filter table with
+	much finer granularity.
+
 Thu Oct 12 02:14:44 2006  Tim Janik  <timj@gtk.org>
 
 	* bseiirfilter.c: more unused section removal. auto-fixed indentation.

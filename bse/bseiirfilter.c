@@ -400,7 +400,6 @@ extern double polevl ( double x, double coef[], int N );
 extern int quadf ( double x, double y, int pzflg );
 extern double response ( double f, double amp );
 extern int spln ( void );
-extern int xfun ( void );
 extern int zplna ( void );
 extern int zplnb ( void );
 extern int zplnc ( void );
@@ -1526,7 +1525,7 @@ double p1evl( x, coef, N )
 #include <stdlib.h>
 
 /* size of arrays: */
-#define ARRSIZ 50
+#define ARRSIZ 150
 
 
 /* System configurations */
@@ -1640,7 +1639,7 @@ int getnum ( char *line, double *val );
 double cay ( double q );
 int lampln ( void );
 int spln ( void );
-int xfun ( void );
+void print_filter_table (void);
 int zplna ( void );
 int zplnb ( void );
 int zplnc ( void );
@@ -1908,7 +1907,7 @@ int main()
   zplna();	/* convert s plane to z plane */
   zplnb();
   zplnc();
-  xfun(); /* tabulate transfer function */
+  print_filter_table(); /* tabulate transfer function */
   goto top;
   
  toosml:
@@ -2558,24 +2557,21 @@ int quadf( x, y, pzflg )
 
 /* Print table of filter frequency response
  */
-int xfun()
+void
+print_filter_table (void)
 {
-  double f, r;
-  int i;
+  double f, limit = 0.05 * fnyq * 21;
   
-  f = 0.0;
-  
-  for( i=0; i<=20; i++ )
+  for (f=0; f < limit; f += limit / 2100.)
     {
-      r = response( f, gain );
+      double r = response( f, gain );
       if( r <= 0.0 )
         r = -999.99;
       else
         r = 2.0 * dbfac * log( r );
       printf( "%10.1f  %10.2f\n", f, r );
-      f = f + 0.05 * fnyq;
+      // f = f + 0.05 * fnyq;
     }
-  return 0;
 }
 
 
