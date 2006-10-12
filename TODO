@@ -760,8 +760,9 @@ Misc Buglets/Feature Requests:
  - crashes    #340437                                                                [ 0.7.0, pending ]
 
 The MCD timeline says:
-+ resampling datahandles: resampler state size
 - resampler delay / latency
+- iir test
++ resampling datahandles: resampler state size
 - wavetool commandos fuer upsample und downsample datahandles
 - autolooper fuer wavetool
 - low pass fuer wavetool
