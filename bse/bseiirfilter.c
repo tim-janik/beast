@@ -1545,7 +1545,7 @@ static double rn = 8.0;
 static double c = 0.0;
 static double cgam = 0.0;
 static double scale = 0.0;
-double fs = 1.0e4;
+double fs = 1.0e4;	      /* sampling frequency  -- stw */
 static double dbr = 0.5;
 static double dbd = -40.0;
 static double f1 = 1.5e3;
@@ -1579,7 +1579,7 @@ static double cang = 0.0;
 static double sang = 0.0;
 static double bw = 0.0;
 static double ang = 0.0;
-double fnyq = 0.0;
+double fnyq = 0.0;	      /* nyquist frequency  -- stw */
 static double ai = 0.0;
 static double pn = 0.0;
 static double an = 0.0;
@@ -2065,7 +2065,7 @@ int spln()
             }
         }
     }
-  if( kind == 3 )
+  if( kind == 3 )   /* elliptic filter -- stw */
     {
       nz = n/2;
       ellpj( u, 1.0-m, &sn1, &cn1, &dn1, &phi1 );
@@ -2472,6 +2472,10 @@ int zplnc()
     {
       printf( "%2d %17.9E %17.9E\n", j, aa[j], pp[j] );
     }
+
+  /* I /think/ at this point the polynomial is factorized in 2nd order filters,
+   * so that it can be implemented without stability problems -- stw
+   */
   printf( "poles and zeros with corresponding quadratic factors\n" );
   for( j=0; j<zord; j++ )
     {

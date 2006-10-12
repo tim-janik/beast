@@ -1,3 +1,7 @@
+Thu Oct 12 13:25:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseiirfilter.c: Added some comments.
+
 Thu Oct 12 02:23:15 2006  Tim Janik  <timj@gtk.org>
 
 	* bseiirfilter.c: enlarged ARRSIZ so order 16 filters can be calculated.
