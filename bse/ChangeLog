@@ -1,3 +1,11 @@
+Thu Oct 12 01:38:39 2006  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.c: added concatenated source code of the ellf filter
+	design program by Stephen L. Moshier. program homepage is:
+	  http://www.moshier.net/ellfdoc.html
+
+	* bseiirfilter.h: new empty header file.
+	
 Sun Oct  8 21:20:14 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/resamplehandle.cc: Lessen the thresholds for downsampling
