@@ -1,5 +1,6 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright 1984, 1987, 1988, 1989, 1995, 2000 by Stephen L. Moshier
+ * Copyright (C) 2006 Tim Janik
+ * Copyright (C) 1984, 1987, 1988, 1989, 1995, 2000 Stephen L. Moshier
  *
  * This software is provided "as is"; redistribution and modification
  * is permitted, provided that the following disclaimer is retained.
@@ -216,11 +217,6 @@ Last rev: November, 1992
  * may fail on many systems.  Verify that they are supposed
  * to work on your computer.
  */
-/*
-Cephes Math Library Release 2.3:  June, 1995
-Copyright 1984, 1987, 1989, 1995 by Stephen L. Moshier
-*/
-
 
 /* Define if the `long double' type works.  */
 #define HAVE_LONG_DOUBLE 1
@@ -415,13 +411,6 @@ extern int merror;
 
 /*							const.c */
 
-/*
-Cephes Math Library Release 2.3:  March, 1995
-Copyright 1984, 1995 by Stephen L. Moshier
-*/
-
-#include "mconf.h"
-
 #ifdef UNK
 #if 1
 double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
@@ -611,6 +600,7 @@ extern unsigned short INFINITY[];
 extern unsigned short NAN[];
 extern unsigned short NEGZERO[];
 #endif
+
 /* === const.c - end === */
 /* === protos.h - start === */
 /*
@@ -626,7 +616,7 @@ extern double cabs ( cmplx *z );
 extern void cadd ( cmplx *a, cmplx *b, cmplx *c );
 extern double cay ( double q );
 extern void cdiv ( cmplx *a, cmplx *b, cmplx *c );
-extern void cmov ( short *a, short *b );
+extern void cmov ( void *a, void *b );
 extern void cmul ( cmplx *a, cmplx *b, cmplx *c );
 extern void cneg ( cmplx *a );
 extern void csqrt ( cmplx *z, cmplx *w );
@@ -639,7 +629,7 @@ extern double ellpk ( double x );
 extern int getnum ( char *line, double *val );
 extern int lampln ( void );
 extern int main ( void );
-extern void mtherr ( char *name, int code );
+extern int mtherr ( char *name, int code );
 extern double p1evl ( double x, double coef[], int N );
 extern double polevl ( double x, double coef[], int N );
 extern int quadf ( double x, double y, int pzflg );
@@ -749,14 +739,6 @@ extern int zplnc (/* void */);
  */
 
 
-/*
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1995, 2000 by Stephen L. Moshier
-*/
-
-
-#include "mconf.h"
-
 #ifdef ANSIPROT
 extern double fabs ( double );
 extern double cabs ( cmplx * );
@@ -778,6 +760,7 @@ void cdiv(), cadd();
 #endif
 
 extern double MAXNUM, MACHEP, PI, PIO2, INFINITY, NAN;
+
 /*
 typedef struct
 	{
@@ -920,14 +903,6 @@ a->i = -a->i;
  *    DEC       -30,+30     30000       3.2e-17     9.2e-18
  *    IEEE      -10,+10    100000       2.7e-16     6.9e-17
  */
-
-
-/*
-Cephes Math Library Release 2.1:  January, 1989
-Copyright 1984, 1987, 1989 by Stephen L. Moshier
-Direct inquiries to 30 Frost Street, Cambridge, MA 02140
-*/
-
 
 /*
 typedef struct
@@ -1193,16 +1168,9 @@ return( cabs(&z) );
  *
  *
  */
-
-
-/*
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*/
 
 /*	Incomplete elliptic integral of first kind	*/
 
-#include "mconf.h"
 #ifdef ANSIPROT
 extern double sqrt ( double );
 extern double fabs ( double );
@@ -1353,15 +1321,8 @@ return( temp );
 
 /* Elliptic integral of second kind */
 
-/*
-Cephes Math Library, Release 2.8: June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*/
-
-#include "mconf.h"
-
 #ifdef UNK
-static double P[] = {
+static double P_ellpe[] = {
   1.53552577301013293365E-4,
   2.50888492163602060990E-3,
   8.68786816565889628429E-3,
@@ -1374,7 +1335,7 @@ static double P[] = {
   4.43147180560990850618E-1,
   1.00000000000000000299E0
 };
-static double Q[] = {
+static double Q_ellpe[] = {
   3.27954898576485872656E-5,
   1.00962792679356715133E-3,
   6.50609489976927491433E-3,
@@ -1473,7 +1434,7 @@ static unsigned short Q[] = {
 #endif
 
 #ifdef ANSIPROT
-extern double polevl ( double, void *, int );
+extern double polevl ( double, double[], int );
 extern double log ( double );
 #else
 double polevl(), log();
@@ -1490,7 +1451,7 @@ if( (x <= 0.0) || (x > 1.0) )
 	mtherr( "ellpe", DOMAIN );
 	return( 0.0 );
 	}
-return( polevl(x,P,10) - log(x) * (x * polevl(x,Q,9)) );
+return( polevl(x,P_ellpe,10) - log(x) * (x * polevl(x,Q_ellpe,9)) );
 }
 /* === ellpe.c - end === */
 /* === ellpj.c - start === */
@@ -1552,13 +1513,6 @@ return( polevl(x,P,10) - log(x) * (x * polevl(x,Q,9)) );
 /*							ellpj.c		*/
 
 
-/*
-Cephes Math Library Release 2.0:  April, 1987
-Copyright 1984, 1987 by Stephen L. Moshier
-Direct inquiries to 30 Frost Street, Cambridge, MA 02140
-*/
-
-#include "mconf.h"
 extern double PIO2, MACHEP;
 
 int ellpj( u, m, sn, cn, dn, ph )
@@ -1711,14 +1665,6 @@ return(0);
 
 /*							ellpk.c */
 
-
-/*
-Cephes Math Library, Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*/
-
-#include "mconf.h"
-
 #ifdef DEC
 static unsigned short P[] =
 {
@@ -1821,7 +1767,7 @@ static unsigned short ac1[] = {
 #endif
 
 #ifdef UNK
-static double P[] =
+static double P_ellpk[] =
 {
  1.37982864606273237150E-4,
  2.28025724005875567385E-3,
@@ -1836,7 +1782,7 @@ static double P[] =
  1.38629436111989062502E0
 };
 
-static double Q[] =
+static double Q_ellpk[] =
 {
  2.94078955048598507511E-5,
  9.14184723865917226571E-4,
@@ -1854,8 +1800,8 @@ static double C1 = 1.3862943611198906188E0; /* log(4) */
 #endif
 
 #ifdef ANSIPROT
-extern double polevl ( double, void *, int );
-extern double p1evl ( double, void *, int );
+extern double polevl ( double, double[], int );
+extern double p1evl ( double, double[], int );
 extern double log ( double );
 #else
 double polevl(), p1evl(), log();
@@ -1874,7 +1820,7 @@ if( (x < 0.0) || (x > 1.0) )
 
 if( x > MACHEP )
 	{
-	return( polevl(x,P,10) - log(x) * polevl(x,Q,10) );
+	return( polevl(x,P_ellpk,10) - log(x) * polevl(x,Q_ellpk,10) );
 	}
 else
 	{
@@ -1941,14 +1887,8 @@ else
  *
  */
 
-/*
-Cephes Math Library Release 2.0:  April, 1987
-Copyright 1984, 1987 by Stephen L. Moshier
-Direct inquiries to 30 Frost Street, Cambridge, MA 02140
-*/
 
 #include <stdio.h>
-#include "mconf.h"
 
 int merror = 0;
 
@@ -2040,13 +1980,6 @@ return( 0 );
  */
 
 
-/*
-Cephes Math Library Release 2.1:  December, 1988
-Copyright 1984, 1987, 1988 by Stephen L. Moshier
-Direct inquiries to 30 Frost Street, Cambridge, MA 02140
-*/
-
-
 double polevl( x, coef, N )
 double x;
 double coef[];
@@ -2101,13 +2034,13 @@ return( ans );
 
 
 #include <stdio.h>
+#include <stdlib.h>
 
 /* size of arrays: */
 #define ARRSIZ 50
 
 
 /* System configurations */
-#include "mconf.h"
 
 
 extern double PI, PIO2, MACHEP, MAXNUM;
@@ -3222,3 +3155,5 @@ return 0;
 }
 
 /* === ellf.c - end === */
+
+/* compile with: gcc -Wall -O2 -g bseiirfilter.c -lm -o ellf */
