@@ -48,6 +48,7 @@ void	       bse_resampler2_process_block (BseResampler2         *resampler,
                                              unsigned int           n_input_samples,
 					     float                 *output);
 guint	       bse_resampler2_order         (BseResampler2         *resampler);
+double	       bse_resampler2_delay         (BseResampler2         *resampler);
 
 G_END_DECLS
 
@@ -79,6 +80,18 @@ public:
    * return FIR filter order
    */
   virtual guint	      order() const = 0;
+  /**
+   * Return the delay introduced by the resampler. This delay is guaranteed to
+   * be >= 0.0, and for factor 2 resampling always a multiple of 0.5.
+   *
+   * The return value can also be thought of the index in the output signal,
+   * where the first input sample can be found.
+   *
+   * Beware of fractional delays, for instance for downsampling, a delay() of
+   * 10.5 means that the first input sample would be found by interpolating
+   * output[10] and output[11], and the second input sample equates output[11].
+   */
+  virtual double      delay() const = 0;
 protected:
   static const double halfband_fir_48db_coeffs[16];
   static const double halfband_fir_72db_coeffs[24];

@@ -397,6 +397,11 @@ public:
   {
     return ORDER;
   }
+  double
+  delay() const
+  {
+    return order() + 2;
+  }
 };
 
 /**
@@ -568,6 +573,11 @@ public:
   order() const
   {
     return ORDER;
+  }
+  double
+  delay() const
+  {
+    return order() / 2 + 0.5;
   }
 };
 

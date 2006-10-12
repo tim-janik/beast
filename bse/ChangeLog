@@ -1,3 +1,14 @@
+Thu Oct 12 21:48:54 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseresampler.hh:
+	* bseresampler.cc:
+	* bseresamplerimpl.hh: Added a virtual function Resampler2::delay(),
+	which can be used for compensation of the resampler introduced delay.
+	Provide C API wrapper for the function: bse_resampler2_delay().
+
+	* tests/resamplehandle.cc: Test the delay compensation function.
+	Fix a buglet in another test (comparing signals needs fabs()).
+
 Thu Oct 12 16:54:42 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslfft.h: Improved documentation on FFT normalization.

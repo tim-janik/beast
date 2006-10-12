@@ -259,7 +259,7 @@ test_c_api (const char *run_type)
     {
       double expected = sin ((i - delay) * 220 * 2 * M_PI / 44100)
 	              * bse_window_blackman ((double) ((i - delay) * 2 - OUTPUT_SIZE) / OUTPUT_SIZE);
-      error = MAX (error, out[i] - expected);
+      error = MAX (error, fabs (out[i] - expected));
     }
 
   double error_db = bse_db_from_factor (error, -200);
@@ -271,6 +271,83 @@ test_c_api (const char *run_type)
   TDONE();
 }
 
+static void
+test_delay_compensation (const char *run_type)
+{
+  struct TestParameters {
+    double error_db;
+    BseResampler2Mode mode;
+    BseResampler2Precision precision;
+  } params[] =
+  {
+    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_48DB },
+    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_72DB },
+    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_96DB },
+    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_120DB },
+    { 200, BSE_RESAMPLER2_MODE_UPSAMPLE, BSE_RESAMPLER2_PREC_144DB },
+    { 48,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_48DB },
+    { 67,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_72DB },
+    { 96,  BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_96DB },
+    { 120, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_120DB },
+    { 134, BSE_RESAMPLER2_MODE_DOWNSAMPLE, BSE_RESAMPLER2_PREC_144DB },
+    { -1, }
+  };
+
+  using Bse::Resampler::Resampler2;
+  TSTART ("Resampler Delay Compensation (%s)", run_type);
+
+  for (guint p = 0; params[p].error_db > 0; p++)
+    {
+      /* setup test signal and empty output signal space */
+      const int INPUT_SIZE = 44100 * 4, OUTPUT_SIZE = INPUT_SIZE * 2;
+
+      vector<float> in (INPUT_SIZE);
+      vector<float> out (OUTPUT_SIZE);
+
+      generate_test_signal (in, INPUT_SIZE, 44100, 440);
+
+      /* up/downsample test signal */
+      Resampler2 *resampler = Resampler2::create (params[p].mode,
+                                                  params[p].precision);
+      resampler->process_block (&in[0], INPUT_SIZE, &out[0]);
+
+      /* setup increments for comparision loop */
+      size_t iinc = 1, jinc = 1;
+      if (params[p].mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
+	jinc = 2;
+      else
+	iinc = 2;
+
+      /* compensate resampler delay by incrementing comparision start offset */
+      double delay = resampler->delay();
+      size_t i = 0, j = (int) round (delay * 2);
+      if (j % 2)
+	{
+	  /* implement half a sample delay (for downsampling only) */
+	  g_assert (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
+	  i++;
+	  j += 2;
+	}
+      j /= 2;
+
+      /* actually compare source and resampled signal (one with a stepping of 2) */
+      double error = 0;
+      while (i < in.size() && j < out.size())
+	{
+	  error = MAX (error, fabs (out[j] - in[i]));
+	  i += iinc; j += jinc;
+	}
+
+      delete resampler;
+
+      /* check error against bound */
+      double error_db = bse_db_from_factor (error, -250);
+      TPRINT ("Resampler Delay Compensation delta: %f\n", error_db);
+      TASSERT (error_db < -params[p].error_db);
+    }
+  TDONE();
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -278,6 +355,7 @@ main (int   argc,
   sfi_init_test (&argc, &argv, NULL);
   
   test_c_api ("FPU");
+  test_delay_compensation ("FPU");
   run_tests ("FPU");
 
   /* load plugins */
@@ -291,6 +369,7 @@ main (int   argc,
     return 0;   /* nothing changed */
 
   test_c_api ("SSE");
+  test_delay_compensation ("SSE");
   run_tests ("SSE");
 
   return 0;

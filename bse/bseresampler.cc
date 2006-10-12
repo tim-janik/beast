@@ -295,3 +295,9 @@ bse_resampler2_order (BseResampler2 *resampler)
 {
   return reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->order();
 }
+
+double
+bse_resampler2_delay (BseResampler2 *resampler)
+{
+  return reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->delay();
+}
