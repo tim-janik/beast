@@ -1,3 +1,8 @@
+Thu Oct 12 22:30:46 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-resample.cc: Use the newly introduced
+	Resampler2::delay().
+
 Thu Oct 12 21:48:54 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseresampler.hh:

@@ -176,9 +176,12 @@ public:
 	m_filter_order = resampler->order();
 	
 	g_assert (m_filter_order % 2 == 0);
+	/* Resampler2::delay() is defined in output samples, but we
+	 * compensate by shifting the input samples, thus the factor 2
+	 */
 	m_filter_delay = mode() == BSE_RESAMPLER2_MODE_UPSAMPLE ?
-	                 m_filter_order / 2 + 1 :
-			 m_filter_order + 1;
+	                 (int) round (resampler->delay() / 2) :
+			 (int) round (resampler->delay() * 2);
       }
     return BSE_ERROR_NONE;
   }
