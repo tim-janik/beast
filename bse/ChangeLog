@@ -1,3 +1,10 @@
+Thu Oct 12 01:44:17 2006  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.c: since the ellf program is shipped standalone and as
+	part of the cephes math library, with no copying restrictions, this
+	code is now put under an "AS IS" NO-WARRANTY license, properly 
+	attributing Stephen L. Moshier.
+
 Thu Oct 12 01:38:39 2006  Tim Janik  <timj@gtk.org>
 
 	* bseiirfilter.c: added concatenated source code of the ellf filter
