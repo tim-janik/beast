@@ -1,3 +1,10 @@
+Thu Oct 12 22:11:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests/testresampler.cc: Documentation improvements. Fixed
+	subsampling and downsampling accuracy test for frequencies > 11025 Hz,
+	where the correct result is that the frequency gets filtered out.
+	Reimplemented the error-spectrum FFT normalization.
+
 Wed Oct  4 14:09:08 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/testresampler.cc: Implemented new mode for inspecting the

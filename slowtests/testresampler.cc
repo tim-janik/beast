@@ -96,10 +96,11 @@ usage ()
   printf ("Commands:\n");
   printf ("  perf                  report sine resampling performance\n");
   printf ("  accuracy              compare resampled sine signal against\n");
-  printf ("                        ideal output, report error\n");
+  printf ("                        ideal output, report time-domain errors\n");
   printf ("  error-table           print sine signals (index, resampled-value, ideal-value,\n");
   printf ("                                            diff-value)\n");
-  printf ("  error-spectrum        print spectrum of the resampler error (frequency, error-db)\n");
+  printf ("  error-spectrum        compare resampled sine signal against ideal output,\n");
+  printf ("                        print error spectrum (frequency, error-db)\n");
   printf ("  dirac                 print impulse response (response-value)\n");
   printf ("  filter-impl           tests SSE filter implementation for correctness\n");
   printf ("                        doesn't test anything when running without SSE support\n");
@@ -394,7 +395,7 @@ perform_test()
       const double freq_min = freq_scanning ? options.freq_min : options.frequency;
       const double freq_max = freq_scanning ? options.freq_max : 1.5 * options.frequency;
       const double freq_inc = freq_scanning ? options.freq_inc : options.frequency;
-      vector<double> error_spectrum_correct, error_spectrum_error;
+      vector<double> error_spectrum_error;
 
       if (TEST == TEST_ACCURACY)
 	{
@@ -445,6 +446,7 @@ perform_test()
 	      /* validate output */
 	      double sin_shift;
 	      double freq_factor;
+	      double correct_volume;
 	      unsigned int out_bs;
 	      float *check = output;
 
@@ -453,12 +455,14 @@ perform_test()
 		  sin_shift = ups->order() + 2;		// 16 bits: 34
 		  freq_factor = 0.5;
 		  out_bs = bs * 2;
+		  correct_volume = 1;
 		}
 	      else if (RESAMPLE == RES_DOWNSAMPLE)
 		{
 		  sin_shift = (downs->order() + 1) * 0.5;	// 16 bits: 16.5
 		  freq_factor = 2;
 		  out_bs = bs / 2;
+		  correct_volume = (test_frequency < (44100/4)) ? 1 : 0;
 		}
 	      else if (RESAMPLE == RES_OVERSAMPLE)
 		{
@@ -466,6 +470,7 @@ perform_test()
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
+		  correct_volume = 1;
 		}
 	      else if (RESAMPLE == RES_SUBSAMPLE)		// 16 bits: 67
 		{
@@ -474,19 +479,28 @@ perform_test()
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
+		  correct_volume = (test_frequency < (44100/4)) ? 1 : 0;
 		}
 
 	      for (unsigned int i = 0; i < out_bs; i++, k++)
 		if (k > (ups->order() * 4))
 		  {
+		    /* The expected resampler output signal is a sine signal with
+		     * different frequency and is phase shifted a bit.
+		     */
 		    double correct_output = sin ((k - sin_shift) * 2 * freq_factor * test_frequency / 44100.0 * M_PI);
+
+		    /* For some frequencies the expected output signal amplitude is
+		     * zero, because it needed to be filtered out; this fact is
+		     * taken into account here.
+		     */
+		    correct_output *= correct_volume;
 		    if (TEST == TEST_ERROR_TABLE)
 		      {
 			printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
 		      }
 		    else if (TEST == TEST_ERROR_SPECTRUM)
 		      {
-			error_spectrum_correct.push_back (correct_output);
 			error_spectrum_error.push_back (correct_output - check[i]);
 		      }
 		    else
@@ -511,24 +525,32 @@ perform_test()
       else if (TEST == TEST_ERROR_SPECTRUM)
 	{
 	  const guint FFT_SIZE = 16384;
-	  if (error_spectrum_correct.size() < FFT_SIZE)
+	  if (error_spectrum_error.size() < FFT_SIZE)
 	    {
 	      g_printerr ("too few values for computing error spectrum, increase block size\n");
 	    }
 	  else
 	    {
-	      double fft_correct[FFT_SIZE], fft_error[FFT_SIZE];
+	      double fft_error[FFT_SIZE];
+	      double normalize = 0;
 
 	      for (guint i = 0; i < FFT_SIZE; i++)
 		{
-		  error_spectrum_correct[i] *= bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
-		  error_spectrum_error[i] *= bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
+		  double w = bse_window_blackman (double (2 * i - FFT_SIZE) / FFT_SIZE);
+
+		  normalize += w;
+		  error_spectrum_error[i] *= w;
 		}
-	      gsl_power2_fftar (FFT_SIZE, &error_spectrum_correct[0], fft_correct);
+	      /* Normalization 1: until here, we know how the multiplication
+	       * with the window lessened the volume (energy) of the error signal.
+	       */
+	      normalize /= FFT_SIZE;
 	      gsl_power2_fftar (FFT_SIZE, &error_spectrum_error[0], fft_error);
-	      double norm = 0;
-	      for (guint i = 0; i < FFT_SIZE/2; i++)
-		norm = max (norm, bse_complex_abs (bse_complex (fft_correct[i * 2], fft_correct[i * 2 + 1])));
+	      fft_error[1] = 0; // we don't process the extra value at FS/2
+
+	      /* Normalization 2: the FFT produces FFT_SIZE/2 complex output values.
+	       */
+	      normalize *= (FFT_SIZE / 2);
 
 	      double freq_scale = 1; /* subsample + oversample */
 	      if (RESAMPLE == RES_UPSAMPLE)
@@ -538,7 +560,7 @@ perform_test()
 
 	      for (guint i = 0; i < FFT_SIZE/2; i++)
 		{
-		  double normalized_error = bse_complex_abs (bse_complex (fft_error[i * 2], fft_error[i * 2 + 1])) / norm;
+		  double normalized_error = bse_complex_abs (bse_complex (fft_error[i * 2], fft_error[i * 2 + 1])) / normalize;
 		  double normalized_error_db = 20 * log (normalized_error) / log (10);
 
 		  printf ("%f %f\n", i / double (FFT_SIZE) * 44100 * freq_scale, normalized_error_db);
