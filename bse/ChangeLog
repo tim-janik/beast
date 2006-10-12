@@ -1,3 +1,8 @@
+Thu Oct 12 02:01:47 2006  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.c: streamlined first comment section. got rid of useless
+	definitions and preprocessor special cases.
+
 Thu Oct 12 01:50:57 2006  Tim Janik  <timj@gtk.org>
 
 	* bseiirfilter.c: streamlined some comments, fixed includes and 

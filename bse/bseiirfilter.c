@@ -17,147 +17,148 @@
  * otherwise) arising in any way out of the use of this software, even
  * if advised of the possibility of such damage.
  */
-/* === ellf.doc - start === *-
-                       ellf.c
-This program calculates design coefficients for
-digital filters of the Butterworth, Chebyshev, or
-elliptic varieties.
-
-
-
-Usage:
-
-Inputs are entered by keyboard, or are redirected to come from
-a command file, as follows:
-
-Kind of filter (1: Butterworth, 2: Chebyshev, 3: Elliptic,
-                0: exit to monitor)
-
-Shape of filter (1: low pass, 2: band pass, 3: high pass,
-                4: band reject, 0: exit to monitor)
-
-Order of filter (an integer)
-
-Passband ripple (peak to peak decibels)
-
-Sampling frequency (Hz)
-
-Passband edge frequency (Hz)
-
-Second passband edge frequency (for band pass or reject filters)
-
-Stop band edge frequency (Hz)
-     or stop band attenuation (entered as -decibels)
-
-The "exit to monitor" type 0 may be used to terminate the
-program when input is redirected to come from a command file.
-
-If your specification is illegal, e.g. the stop band edge
-is in the middle of the passband, the program will make you
-start over.  However, it remembers and displays the last
-value of each parameter entered.  To use the same value, just
-hit carriage return instead of typing it in again.
-
-The program displays relevant pass band and stop band edge
-frequencies and stop band attenuation. The z-plane coefficients
-are printed in these forms:
-  Numerator and denominator z polynomial coefficients
-  Pole and zero locations
-  Polynomial coefficients of quadratic factors
-
-After giving all the coefficients, the program prints a
-table of the frequency response of the filter.  You can
-get a picture by reading the table into gnuplot.
-
-
-
-Filter design:
-
-The output coefficients of primary interest are shown as follows:
-
-(z-plane pole location:)
-pole     3.0050282041410E-001    9.3475816516366E-001
-(quadratic factors:)
-q. f.
-z**2    9.6407477241696E-001
-z**1   -6.0100564082819E-001
-(center frequency, gain at f0, and gain at 0 Hz:)
-f0  2.00496167E+003  gain  2.9238E+001  DC gain  7.3364E-001
-
-zero     1.7886295237392E-001    9.8387399816648E-001
-q. f.
-z**2    1.0000000000000E+000
-z**1   -3.5772590474783E-001
-f0  2.21379064E+003  gain  0.0000E+000  DC gain  1.6423E+000
-
-To make a biquad filter from this, the equation for the
-output y(i) at the i-th sample as a function of the input
-x(i) at the i-th sample is
-
-y(i) + -6.0100564082819E-001 y(i-1) +  9.6407477241696E-001 y(i-2)
-= x(i) + -3.5772590474783E-001 x(i-1) +  1.0000000000000E+000 x(i-2).
-
-Thus the two coefficients for the pole would normally be
-negated in a typical implementation of the filter.
-
-
-
-Compilation:
-
-This program has been compiled successfully on many different
-computers.  See the accompanying output listing file ellf.ans,
-for a set of correct answers.  Use the batch file test.bat to
-check your executable program. If the low pass and high pass
-options work but the others don't, then examine your atan2()
-function carefully for reversed arguments or perhaps an offest of
-pi.  On most systems, define ANSIC to be 1.  This sets the
-expected atan2() arguments but does not otherwise imply anything
-about the ANSI-ness of the program.
-
-
-
-Files:
-
-mconf.h        system configuration include file
-               Be sure to define type of computer here!
-cmplx.c        complex arithmetic subroutine package
-ellf.ans       right answer file for some elliptic filters
-ellf.que       elliptic filter questions
-ellf.c         main program
-ellf.doc       this file
-ellf.mak       Microsoft MSDOS makefile
-ellfu.mak      Unix makefile
-ellik.c        incomplete elliptic integral of the first kind
-ellpe.c        complete elliptic integral of the second kind
-ellpj.c        Jacobian Elliptic Functions
-ellpk.c        complete elliptic integral of the first kind
-makefile       Unix makefile
-mtherr.c       common math function error handler
-polevl.c       evaluates polynomials
-test.bat       batch file to run a test
-descrip.mms    VAX makefile
-ellf.opt       VAX makefile
-testvax.bat    VAX test
-
-
-References:
-
-A. H. Gray, Jr., and J. D. Markel, "A Computer Program for
-Designing Digital Elliptic Filters", IEEE Transactions on
-Acoustics, Speech, and Signal Processing 6, 529-538
-(December, 1976)
-
-B. Gold and C. M. Rader, Digital Processing of Signals,
-McGraw-Hill, Inc. 1969, pp 61-90
-
-M. Abramowitz and I. A. Stegun, eds., Handbook of Mathematical
-Functions, National Bureau of Standards AMS 55, 1964,
-Chapters 16 and 17
-
-
-- Steve Moshier, December 1986
-Last rev: November, 1992
--* === ellf.doc - end === */
+/* === ellf.doc - start === */
+/*                        ellf.c
+ * This program calculates design coefficients for
+ * digital filters of the Butterworth, Chebyshev, or
+ * elliptic varieties.
+ * 
+ * 
+ * 
+ * Usage:
+ * 
+ * Inputs are entered by keyboard, or are redirected to come from
+ * a command file, as follows:
+ * 
+ * Kind of filter (1: Butterworth, 2: Chebyshev, 3: Elliptic,
+ *                 0: exit to monitor)
+ * 
+ * Shape of filter (1: low pass, 2: band pass, 3: high pass,
+ *                 4: band reject, 0: exit to monitor)
+ * 
+ * Order of filter (an integer)
+ * 
+ * Passband ripple (peak to peak decibels)
+ * 
+ * Sampling frequency (Hz)
+ * 
+ * Passband edge frequency (Hz)
+ * 
+ * Second passband edge frequency (for band pass or reject filters)
+ * 
+ * Stop band edge frequency (Hz)
+ *      or stop band attenuation (entered as -decibels)
+ * 
+ * The "exit to monitor" type 0 may be used to terminate the
+ * program when input is redirected to come from a command file.
+ * 
+ * If your specification is illegal, e.g. the stop band edge
+ * is in the middle of the passband, the program will make you
+ * start over.  However, it remembers and displays the last
+ * value of each parameter entered.  To use the same value, just
+ * hit carriage return instead of typing it in again.
+ * 
+ * The program displays relevant pass band and stop band edge
+ * frequencies and stop band attenuation. The z-plane coefficients
+ * are printed in these forms:
+ *   Numerator and denominator z polynomial coefficients
+ *   Pole and zero locations
+ *   Polynomial coefficients of quadratic factors
+ * 
+ * After giving all the coefficients, the program prints a
+ * table of the frequency response of the filter.  You can
+ * get a picture by reading the table into gnuplot.
+ * 
+ * 
+ * 
+ * Filter design:
+ * 
+ * The output coefficients of primary interest are shown as follows:
+ * 
+ * (z-plane pole location:)
+ * pole     3.0050282041410E-001    9.3475816516366E-001
+ * (quadratic factors:)
+ * q. f.
+ * z**2    9.6407477241696E-001
+ * z**1   -6.0100564082819E-001
+ * (center frequency, gain at f0, and gain at 0 Hz:)
+ * f0  2.00496167E+003  gain  2.9238E+001  DC gain  7.3364E-001
+ * 
+ * zero     1.7886295237392E-001    9.8387399816648E-001
+ * q. f.
+ * z**2    1.0000000000000E+000
+ * z**1   -3.5772590474783E-001
+ * f0  2.21379064E+003  gain  0.0000E+000  DC gain  1.6423E+000
+ * 
+ * To make a biquad filter from this, the equation for the
+ * output y(i) at the i-th sample as a function of the input
+ * x(i) at the i-th sample is
+ * 
+ * y(i) + -6.0100564082819E-001 y(i-1) +  9.6407477241696E-001 y(i-2)
+ * = x(i) + -3.5772590474783E-001 x(i-1) +  1.0000000000000E+000 x(i-2).
+ * 
+ * Thus the two coefficients for the pole would normally be
+ * negated in a typical implementation of the filter.
+ * 
+ * 
+ * 
+ * Compilation:
+ * 
+ * This program has been compiled successfully on many different
+ * computers.  See the accompanying output listing file ellf.ans,
+ * for a set of correct answers.  Use the batch file test.bat to
+ * check your executable program. If the low pass and high pass
+ * options work but the others don't, then examine your atan2()
+ * function carefully for reversed arguments or perhaps an offest of
+ * pi.  On most systems, define ANSIC to be 1.  This sets the
+ * expected atan2() arguments but does not otherwise imply anything
+ * about the ANSI-ness of the program.
+ * 
+ * 
+ * 
+ * Files:
+ * 
+ * mconf.h        system configuration include file
+ *                Be sure to define type of computer here!
+ * cmplx.c        complex arithmetic subroutine package
+ * ellf.ans       right answer file for some elliptic filters
+ * ellf.que       elliptic filter questions
+ * ellf.c         main program
+ * ellf.doc       this file
+ * ellf.mak       Microsoft MSDOS makefile
+ * ellfu.mak      Unix makefile
+ * ellik.c        incomplete elliptic integral of the first kind
+ * ellpe.c        complete elliptic integral of the second kind
+ * ellpj.c        Jacobian Elliptic Functions
+ * ellpk.c        complete elliptic integral of the first kind
+ * makefile       Unix makefile
+ * mtherr.c       common math function error handler
+ * polevl.c       evaluates polynomials
+ * test.bat       batch file to run a test
+ * descrip.mms    VAX makefile
+ * ellf.opt       VAX makefile
+ * testvax.bat    VAX test
+ * 
+ * 
+ * References:
+ * 
+ * A. H. Gray, Jr., and J. D. Markel, "A Computer Program for
+ * Designing Digital Elliptic Filters", IEEE Transactions on
+ * Acoustics, Speech, and Signal Processing 6, 529-538
+ * (December, 1976)
+ * 
+ * B. Gold and C. M. Rader, Digital Processing of Signals,
+ * McGraw-Hill, Inc. 1969, pp 61-90
+ * 
+ * M. Abramowitz and I. A. Stegun, eds., Handbook of Mathematical
+ * Functions, National Bureau of Standards AMS 55, 1964,
+ * Chapters 16 and 17
+ * 
+ * 
+ * - Steve Moshier, December 1986
+ * Last rev: November, 1992
+ */
+/* === ellf.doc - end === */
 /* === mconf.h - start === */
 /*							mconf.h
  *
@@ -218,34 +219,6 @@ Last rev: November, 1992
  * to work on your computer.
  */
 
-/* Define if the `long double' type works.  */
-#define HAVE_LONG_DOUBLE 1
-
-/* Define as the return type of signal handlers (int or void).  */
-#define RETSIGTYPE void
-
-/* Define if you have the ANSI C header files.  */
-#define STDC_HEADERS 1
-
-/* Define if your processor stores words with the most significant
-   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
-/* #undef WORDS_BIGENDIAN */
-
-/* Define if floating point words are bigendian.  */
-/* #undef FLOAT_WORDS_BIGENDIAN */
-
-/* The number of bytes in a int.  */
-#define SIZEOF_INT 4
-
-/* Define if you have the <string.h> header file.  */
-#define HAVE_STRING_H 1
-
-/* Name of package */
-#define PACKAGE "cephes"
-
-/* Version number of package */
-#define VERSION "2.7"
-
 /* Constant definitions for math error conditions
  */
 
@@ -265,30 +238,7 @@ typedef struct
 	double i;
 	} cmplx;
 
-#ifdef HAVE_LONG_DOUBLE
-/* Long double complex numeral.  */
-typedef struct
-	{
-	long double r;
-	long double i;
-	} cmplxl;
-#endif
-
-
 /* Type of computer arithmetic */
-
-/* PDP-11, Pro350, VAX:
- */
-/* #define DEC 1 */
-
-/* Intel IEEE, low order words come first:
- */
-/* #define IBMPC 1 */
-
-/* Motorola IEEE, high order words come first
- * (Sun 680x0 workstation):
- */
-/* #define MIEEE 1 */
 
 /* UNKnown arithmetic, invokes coefficients given in
  * normal decimal format.  Beware of range boundary
@@ -297,33 +247,6 @@ typedef struct
  * (Sun SPARCstation)
  */
 #define UNK 1
-
-/* If you define UNK, then be sure to set BIGENDIAN properly. */
-#ifdef FLOAT_WORDS_BIGENDIAN
-#define BIGENDIAN 1
-#else
-#define BIGENDIAN 0
-#endif
-/* Define this `volatile' if your compiler thinks
- * that floating point arithmetic obeys the associative
- * and distributive laws.  It will defeat some optimizations
- * (but probably not enough of them).
- *
- * #define VOLATILE volatile
- */
-#define VOLATILE
-
-/* For 12-byte long doubles on an i386, pad a 16-bit short 0
- * to the end of real constants initialized by integer arrays.
- *
- * #define XPD 0,
- *
- * Otherwise, the type is 10 bytes long and XPD should be
- * defined blank (e.g., Microsoft C).
- *
- * #define XPD
- */
-#define XPD 0,
 
 /* Define to support tiny denormal numbers, else undefine. */
 #define DENORMAL 1
@@ -342,14 +265,7 @@ typedef struct
    See atan.c and clog.c. */
 #define ANSIC 1
 
-/* Get ANSI function prototypes, if you want them. */
-#if 1
-/* #ifdef __STDC__ */
-#define ANSIPROT 1
 int mtherr ( char *, int );
-#else
-int mtherr();
-#endif
 
 /* Variable for error reporting.  See mtherr.c.  */
 extern int merror;
@@ -609,8 +525,6 @@ extern unsigned short NEGZERO[];
  *
  *   Created: Sun Jan  9 15:07:08 2000
  */
-#ifndef __CEXTRACT__
-#if __STDC__
 
 extern double cabs ( cmplx *z );
 extern void cadd ( cmplx *a, cmplx *b, cmplx *c );
@@ -640,38 +554,6 @@ extern int zplna ( void );
 extern int zplnb ( void );
 extern int zplnc ( void );
 
-#else /* __STDC__ */
-
-extern double cabs (/* cmplx *z */);
-extern void cadd (/* cmplx *a, cmplx *b, cmplx *c */);
-extern double cay (/* double q */);
-extern void cdiv (/* cmplx *a, cmplx *b, cmplx *c */);
-extern void cmov (/* short *a, short *b */);
-extern void cmul (/* cmplx *a, cmplx *b, cmplx *c */);
-extern void cneg (/* cmplx *a */);
-extern void csqrt (/* cmplx *z, cmplx *w */);
-extern void csub (/* cmplx *a, cmplx *b, cmplx *c */);
-extern double ellie (/* double phi, double m */);
-extern double ellik (/* double phi, double m */);
-extern double ellpe (/* double x */);
-extern int ellpj (/* double u, double m, double *sn, double *cn, double *dn, double *ph */);
-extern double ellpk (/* double x */);
-extern int getnum (/* char *line, double *val */);
-extern int lampln (/* void */);
-extern int main (/* void */);
-extern void mtherr (/* char *name, int code */);
-extern double p1evl (/* double x, double coef[], int N */);
-extern double polevl (/* double x, double coef[], int N */);
-extern int quadf (/* double x, double y, int pzflg */);
-extern double response (/* double f, double amp */);
-extern int spln (/* void */);
-extern int xfun (/* void */);
-extern int zplna (/* void */);
-extern int zplnb (/* void */);
-extern int zplnc (/* void */);
-
-#endif /* __STDC__ */
-#endif /* __CEXTRACT__ */
 /* === protos.h - end === */
 /* === cmplx.c - start === */
 /*							cmplx.c
@@ -739,7 +621,6 @@ extern int zplnc (/* void */);
  */
 
 
-#ifdef ANSIPROT
 extern double fabs ( double );
 extern double cabs ( cmplx * );
 extern double sqrt ( double );
@@ -752,12 +633,6 @@ extern double ldexp ( double, int );
 int isnan ( double );
 void cdiv ( cmplx *, cmplx *, cmplx * );
 void cadd ( cmplx *, cmplx *, cmplx * );
-#else
-double fabs(), cabs(), sqrt(), atan2(), cos(), sin();
-double sqrt(), frexp(), ldexp();
-int isnan();
-void cdiv(), cadd();
-#endif
 
 extern double MAXNUM, MACHEP, PI, PIO2, INFINITY, NAN;
 
@@ -1171,7 +1046,6 @@ return( cabs(&z) );
 
 /*	Incomplete elliptic integral of first kind	*/
 
-#ifdef ANSIPROT
 extern double sqrt ( double );
 extern double fabs ( double );
 extern double log ( double );
@@ -1180,10 +1054,6 @@ extern double atan ( double );
 extern double floor ( double );
 extern double ellpk ( double );
 double ellik ( double, double );
-#else
-double sqrt(), fabs(), log(), tan(), atan(), floor(), ellpk();
-double ellik();
-#endif
 extern double PI, PIO2, MACHEP, MAXNUM;
 
 double ellik( phi, m )
@@ -1433,12 +1303,8 @@ static unsigned short Q[] = {
 };
 #endif
 
-#ifdef ANSIPROT
 extern double polevl ( double, double[], int );
 extern double log ( double );
-#else
-double polevl(), log();
-#endif
 
 double ellpe(x)
 double x;
@@ -1799,13 +1665,9 @@ static double Q_ellpk[] =
 static double C1 = 1.3862943611198906188E0; /* log(4) */
 #endif
 
-#ifdef ANSIPROT
 extern double polevl ( double, double[], int );
 extern double p1evl ( double, double[], int );
 extern double log ( double );
-#else
-double polevl(), p1evl(), log();
-#endif
 extern double MACHEP, MAXNUM;
 
 double ellpk(x)
@@ -2124,7 +1986,6 @@ static char wkind[] =
 static char salut[] =
 {"Filter shape:\n1 low pass\n2 band pass\n3 high pass\n4 band stop\n"};
 
-#ifdef ANSIPROT
 extern double exp ( double );
 extern double log ( double );
 extern double cos ( double );
@@ -2158,14 +2019,6 @@ int zplnb ( void );
 int zplnc ( void );
 int quadf ( double, double, int );
 double response ( double, double );
-#else
-double exp(), log(), cos(), sin(), sqrt();
-double ellpk(), ellik(), asin(), atan(), atan2(), pow();
-double cay(), cabs();
-double response();
-int lampln(), spln(), xfun(), zplna(), zplnb(), zplnc(), quadf();
-#define fabs(x) ( (x) < 0 ? -(x) : (x) )
-#endif
 
 int main()
 {
