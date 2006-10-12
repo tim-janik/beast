@@ -1,3 +1,7 @@
+Thu Oct 12 16:54:42 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslfft.h: Improved documentation on FFT normalization.
+
 Thu Oct 12 13:25:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseiirfilter.c: Added some comments.

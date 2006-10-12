@@ -42,6 +42,18 @@ extern "C" {
  * frequency K/n_values. (If you want to interpret negative frequencies,
  * note that the frequencies -K/n_values and (n_values-K)/n_values are
  * equivalent).
+ *
+ * In general for the gsl_power2_fft*() family of functions, normalization is
+ * only performed during backward transform. However, a popular mathematical
+ * strategy of defining the FFT and IFFT in a way that the formulas are
+ * symmetric is normalizing both, the forward and backward transform with
+ * 1/sqrt(N) - where N is the number of complex values (n_values).
+ *
+ * Compared to the above definition, in this implementation, the analyzed
+ * values produced by gsl_power2_fftac()/gsl_power2_fftar() will be too large
+ * by a factor of sqrt(N), which however are cancelled out on the backward
+ * transform.
+ *
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
@@ -60,9 +72,13 @@ void	gsl_power2_fftac (const unsigned int n_values,
  * array which is transformed into the frequency domain with
  * gsl_power2_fftac() can be reconstructed by issuing gsl_power2_fftsc()
  * on the transform.
+ *
  * This function also scales the time domain coefficients by a
  * factor of 1.0/n_values which is required for perfect reconstruction
- * of time domain data formerly transoformed via gsl_power2_fftac().
+ * of time domain data formerly transformed via gsl_power2_fftac().
+ * More details on normalization can be found in the documentation of
+ * gsl_power2_fftac().
+ *
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
@@ -88,6 +104,11 @@ void	gsl_power2_fftsc (const unsigned int n_values,
  * H(n_values/2) is stored in ri_values_out[1] (the imaginery part of
  * H(0)), so that both arrays r_values_in and ri_values_out can be of
  * size n_values.
+ *
+ * The normalization of the results of the analysis is explained in
+ * gsl_power2_fftac(). Note that in the real valued case, the number of
+ * complex values N for normalization is n_values/2.
+ *
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
@@ -104,9 +125,14 @@ void	gsl_power2_fftar (const unsigned int n_values,
  * gsl_power2_fftar(), using the same frequency storage format.
  * A real valued data set transformed into the frequency domain
  * with gsl_power2_fftar() can be reconstructed using this function.
+ *
  * This function also scales the time domain coefficients by a
- * factor of 1.0/n_values which is required for perfect reconstruction
- * of time domain data formerly transformed via gsl_power2_fftar().
+ * factor of 1.0/(n_values/2) which is required for perfect
+ * reconstruction of time domain data formerly transformed via
+ * gsl_power2_fftar().
+ * More details on normalization can be found in the documentation of
+ * gsl_power2_fftac().
+ *
  * Note that the transformation is performed out of place, the input
  * array is not modified, and may not overlap with the output array.
  */
