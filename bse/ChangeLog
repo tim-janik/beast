@@ -1,3 +1,7 @@
+Thu Oct 12 02:14:44 2006  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.c: more unused section removal. auto-fixed indentation.
+
 Thu Oct 12 02:01:47 2006  Tim Janik  <timj@gtk.org>
 
 	* bseiirfilter.c: streamlined first comment section. got rid of useless
