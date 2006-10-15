@@ -46,15 +46,17 @@ G_BEGIN_DECLS
 
 /* floating point type related constants */
 #define BSE_FLOAT_BIAS		 (127)
-#define	BSE_FLOAT_MAX_NORMAL	 (3.40282347e+38)	   /* 7f7fffff */
+#define	BSE_FLOAT_MAX_NORMAL	 (3.40282347e+38)	   /* 7f7fffff, 2^128 * (1 - BSE_FLOAT_EPSILON) */
 #define	BSE_FLOAT_MIN_NORMAL	 (1.17549435e-38)	   /* 00800000 */
 #define	BSE_FLOAT_MAX_SUBNORMAL	 (1.17549421e-38)	   /* 007fffff */
 #define	BSE_FLOAT_MIN_SUBNORMAL	 (1.40129846e-45)	   /* 00000001 */
+#define	BSE_FLOAT_EPSILON	 (5.9604644775390625e-08)  /* 2^-24, round-off error at 1.0 */
 #define BSE_DOUBLE_BIAS		 (1023)
-#define	BSE_DOUBLE_MAX_NORMAL	 (1.7976931348623157e+308) /* 7fefffff ffffffff */
+#define	BSE_DOUBLE_MAX_NORMAL	 (1.7976931348623157e+308) /* 7fefffff ffffffff, 2^1024 * (1 - BSE_DOUBLE_EPSILON) */
 #define	BSE_DOUBLE_MIN_NORMAL	 (2.2250738585072014e-308) /* 00100000 00000000 */
 #define	BSE_DOUBLE_MAX_SUBNORMAL (2.2250738585072009e-308) /* 000fffff ffffffff */
 #define	BSE_DOUBLE_MIN_SUBNORMAL (4.9406564584124654e-324) /* 00000000 00000001 */
+#define	BSE_DOUBLE_EPSILON	 (1.1102230246251565404236316680908203125e-16) /* 2^-53, round-off error at 1.0 */
 #define	BSE_DOUBLE_INF		 (_bse_dinf_union.d)
 #define	BSE_DOUBLE_NAN		 (_bse_dnan_union.d)
 #define	BSE_FLOAT_INF		 (_bse_finf_union.f)

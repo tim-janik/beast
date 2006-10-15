@@ -1,3 +1,8 @@
+Sun Oct 15 22:49:51 2006  Tim Janik  <timj@gtk.org>
+
+	* bseieee754.h: added BSE_DOUBLE_EPSILON and BSE_FLOAT_EPSILON, 
+	constants for the round-off error at 1.0.
+
 Sun Oct 15 20:58:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslfilter.c: Made implementation of gsl_filter_sine_scan() more
