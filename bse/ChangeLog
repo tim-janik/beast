@@ -1,3 +1,7 @@
+Sun Oct 15 22:52:53 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.h, bseellipticfilter.c: renamed from bseiirfilter.*.
+
 Sun Oct 15 22:49:51 2006  Tim Janik  <timj@gtk.org>
 
 	* bseieee754.h: added BSE_DOUBLE_EPSILON and BSE_FLOAT_EPSILON, 
