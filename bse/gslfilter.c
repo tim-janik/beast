@@ -1339,22 +1339,33 @@ gsl_filter_sine_scan (guint order,
 		      gdouble freq,
 		      guint n_values)
 {
-  gfloat x[SINE_SCAN_SIZE], y[SINE_SCAN_SIZE];
+  gfloat x_r[SINE_SCAN_SIZE], x_i[SINE_SCAN_SIZE];
+  gfloat y_r[SINE_SCAN_SIZE], y_i[SINE_SCAN_SIZE];
   gdouble pos = 0.0;
   gdouble result = 0.0;
-  GslIIRFilter filter;
-  gdouble *filter_state;
+  GslIIRFilter filter_r;
+  GslIIRFilter filter_i;
+  gdouble *filter_state_r;
+  gdouble *filter_state_i;
   guint scan_start = n_values / 2;
   
   g_return_val_if_fail (order > 0, 0.0);
   g_return_val_if_fail (a != NULL, 0.0);
   g_return_val_if_fail (b != NULL, 0.0);
-  g_return_val_if_fail (freq > 0 && freq < PI, 0.0);
+  g_return_val_if_fail (freq >= 0 && freq < PI, 0.0);
   g_return_val_if_fail (n_values > 0, 0.0);
   
-  filter_state = g_newa (double, (order + 1) * 4);
-  gsl_iir_filter_setup (&filter, order, a, b, filter_state);
-  
+  filter_state_r = g_newa (double, (order + 1) * 4);
+  filter_state_i = g_newa (double, (order + 1) * 4);
+  gsl_iir_filter_setup (&filter_r, order, a, b, filter_state_r);
+  gsl_iir_filter_setup (&filter_i, order, a, b, filter_state_i);
+
+  /* The implementation filters two phase shifted signals; by doing so, it
+   * actually computes the frequency response of the filter for a complex
+   * signal. The advantage is that for each sample the absolute value can be
+   * determined exactly as complex absolute value (whereas for a single sine
+   * signal, the absolute value oscillates).
+   */
   while (n_values)
     {
       guint todo = MIN (n_values, SINE_SCAN_SIZE);
@@ -1362,15 +1373,17 @@ gsl_filter_sine_scan (guint order,
       
       for (i = 0; i < todo; i++)
 	{
-	  x[i] = sin (pos);
+	  x_r[i] = cos (pos);
+	  x_i[i] = sin (pos);
 	  pos += freq;
 	}
       
-      gsl_iir_filter_eval (&filter, SINE_SCAN_SIZE, x, y);
+      gsl_iir_filter_eval (&filter_r, SINE_SCAN_SIZE, x_r, y_r);
+      gsl_iir_filter_eval (&filter_i, SINE_SCAN_SIZE, x_i, y_i);
       
       for (i = 0; i < todo; i++)
         if (n_values - i < scan_start)
-	  result = MAX (y[i], result);
+	  result = MAX (bse_complex_abs (bse_complex (y_r[i], y_i[i])), result);
       
       n_values -= todo;
     }

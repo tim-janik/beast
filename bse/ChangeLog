@@ -1,3 +1,9 @@
+Sun Oct 15 20:58:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslfilter.c: Made implementation of gsl_filter_sine_scan() more
+	reliable by using two phase shifted signals (see comment in the
+	implementation).
+
 Thu Oct 12 22:30:46 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsedatahandle-resample.cc: Use the newly introduced
