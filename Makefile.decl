@@ -46,7 +46,20 @@ slowcheck-recursive:
 	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) slowcheck ||	\
 	    exit 1 ;						\
 	done
+
+# === check-before / check-after ===
 .PHONY: check-before check-after
 check-am: check-before
 check-local: check-after
-check-local:
+check-local: ; @:
+
+# === perf ===
+# recursive rule supported by all Makefiles to run performance tests
+.PHONY: perf perf-recursive
+perf: perf-recursive
+perf-recursive:
+	@for subdir in $(SUBDIRS) ; do				\
+	  test "$$subdir" = '.' ||				\
+	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) perf ||	\
+	    exit 1 ;						\
+	done

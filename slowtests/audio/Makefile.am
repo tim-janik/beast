@@ -3,8 +3,10 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-
 # === feature test tools ===
+builddirplugins = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
+BSEFEXTRACT = $(top_builddir)/tools/bsefextract
+BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
 BSE2WAV = $(strip							\
 	$(top_builddir)/shell/bsescm-$(BIN_VERSION)			\
 	  --bse-mixing-freq=48000 -p null -m null			\
@@ -12,27 +14,23 @@ BSE2WAV = $(strip							\
 	  --bse-override-plugin-globs $(builddirplugins)		\
 	  -s $(srcdir)/bse2wav.scm					\
 )
-builddirplugins = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
-BSEFEXTRACT = $(top_builddir)/tools/bsefextract
-BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
 EXTRA_DIST += bse2wav.scm
 
-# === run tests upon make check ===
+# === audio feature test rule ===
 FEATURE_TESTS = 
-check-before: check-feature-tests
 .PHONY: check-feature-tests $(FEATURE_TESTS)
-FEATURE_TESTS_MSG = "All $(words $(FEATURE_TESTS)) audio tests passed"
 check-feature-tests: # $(FEATURE_TESTS)
 	@for tst in $(FEATURE_TESTS) ; do 			\
 	  echo "TEST: $$tst" ;					\
 	  $(MAKE) -C ./ $(AM_MAKEFLAGS) $$tst || exit $? ;	\
 	  echo "PASS: $$tst" ;					\
 	done
-	@echo $(FEATURE_TESTS_MSG) | sed 's/./=/g'
-	@echo $(FEATURE_TESTS_MSG)
-	@echo $(FEATURE_TESTS_MSG) | sed 's/./=/g'
-
-# === feature test temporaries ===
+	@MESSAGETEXT="All $(words $(FEATURE_TESTS)) audio tests passed"	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g'				\
+	&& echo $$MESSAGETEXT						\
+	&& echo $$MESSAGETEXT | sed 's/./=/g'
+slowcheck: check-feature-tests
+# feature test temporaries
 CLEANFILES += *.tmp *.wav
 
 # === feature tests ===
@@ -87,5 +85,5 @@ partymonster-test:
 	$(BSE2WAV) $(top_srcdir)/library/demo/partymonster.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.9 # <- needs deterministic random
+	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.9 # <- needs deterministic randomization
 	rm -f $(@F).tmp $(@F).wav 

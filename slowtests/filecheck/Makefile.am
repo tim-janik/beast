@@ -1,4 +1,4 @@
-# beast/slowtests
+# beast/tests/filecheck
 # Copyright (C) 2003-2006 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
@@ -35,10 +35,11 @@ bse-version-check: distfiles.list
 	    grep -Fq "(bse-version \"$$TESTVERSION" ||			\
 	      { grep -F bse-version "$$file" ; exit 1 ; }		\
 	done
-	@echo "=================================="
-	@echo "All BSE files passed version check"
-	@echo "=================================="
-SKIP_PATTERN = "tests/latency/midi-latency.bse|slowtests/audio/minisong.bse"
+	@MESSAGETEXT="All tested BSE files passed version check"	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
+	&& echo $$MESSAGETEXT		 				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g'
+SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"
 bse-loading-check: distfiles.list
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
 	  file="$(top_srcdir)/$$tfile" ;				\
@@ -51,9 +52,10 @@ bse-loading-check: distfiles.list
 	    test ! -s "warnings.tmp" || exit 1 ;			\
 	  fi ;								\
 	done
-	@echo "================================="
-	@echo "All BSE files passed loading test"
-	@echo "================================="
+	@MESSAGETEXT="All tested BSE files passed loading test"		\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
+	&& echo $$MESSAGETEXT		 				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g'
 CLEANFILES += distfiles.list warnings.tmp
 check-after: bse-version-check bse-loading-check
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
@@ -63,5 +65,5 @@ BSESCM = $(strip								\
 	  -p null -m null							\
 	  --bse-rcfile "/dev/null" --bse-no-load				\
 	  --bse-override-plugin-globs '$(plugin_globs)'				\
-	  -s "$(top_srcdir)/slowtests/filecheck/checkproject.scm"		\
+	  -s "$(top_srcdir)/tests/filecheck/checkproject.scm"			\
 )

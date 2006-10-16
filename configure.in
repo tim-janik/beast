@@ -629,10 +629,9 @@ tests/Makefile
 tests/latency/Makefile
 tests/scripts/Makefile
 tests/bse/Makefile
+tests/audio/Makefile
+tests/filecheck/Makefile
 test/Makefile
-slowtests/Makefile
-slowtests/audio/Makefile
-slowtests/filecheck/Makefile
 doxer/Makefile
 docs/Makefile
 docs/images/Makefile

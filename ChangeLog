@@ -1,3 +1,26 @@
+Mon Oct 16 22:53:35 2006  Tim Janik  <timj@gtk.org>
+
+	* this change accomplishes the move to distinguish test programs
+	only by the makefile rules they are executed at. check:-programs
+	are supposed to be quick sanity tests, to be executed e.g. before
+	commits. slowcheck:-programs are in place to check implementations,
+	features and auxillary files, and may consume significant amounts
+	of time. perf:-programs are programs run as performance tests and
+	should provide performance measurement information as output.
+	all three targets are supposed to pass without errors for make
+	distcheck.
+
+	* tests/audio/: moved here from slowtests/audio/.
+	* tests/filecheck/: moved here from slowtests/filecheck/.
+
+	* tests/audio/Makefile.am: slight fixups.
+
+	* tests/.:
+	* tests/Makefile.am: moved slowtests/ contents here.
+	added perftest and testresampler to perf: rule.
+
+	* Makefile.decl: added recursive perf: rule. silenced check-local:.
+
 Mon Oct 16 13:40:47 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/bse/Makefile.am:

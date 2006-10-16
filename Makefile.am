@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test slowtests doxer docs web
+SUBDIRS = . data birnet sfi bse plugins shell beast-gtk launchers library tools po tests test doxer docs web
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4 dist-bzip2 no-dist-gzip
@@ -73,6 +73,7 @@ distcheck: dist
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
 	  && $(MAKE) $(AM_MAKEFLAGS) check \
 	  && $(MAKE) $(AM_MAKEFLAGS) slowcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) perf \
 	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
 	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
 	  && $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck_dir="$$dc_install_base" \
