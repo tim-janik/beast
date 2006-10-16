@@ -25,7 +25,7 @@ class Summation : Effect {
   Info    authors     = "Tim Janik";
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Routing/Summation");
-  Info    blurb       = _("Summation is a simple mix effect which adds up its incomiong signals");
+  Info    blurb       = _("Summation is a simple mix effect which adds up its incoming signals");
   JStream audio_in1   = (_("Audio In1"), _("Audio input 1"));
   JStream audio_in2   = (_("Audio In2"), _("Audio input 2"));
   OStream audio_out1  = (_("Audio Out1"), _("Combined audio output 1"));
