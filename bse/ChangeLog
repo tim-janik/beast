@@ -1,3 +1,12 @@
+Sun Oct 15 23:17:39 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.c: include math.h instead of declaring standard 
+	math.h functions. print debugging/informative output through an
+	extra function. beefed up ARRSIZ once more for high order filters.
+	added custom function to print the transfer function coefficients
+	for debugging. fixed reading from stdin to use fgets().
+	reverted granularity changes in filter table printing.
+
 Sun Oct 15 22:52:53 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.h, bseellipticfilter.c: renamed from bseiirfilter.*.

@@ -17,6 +17,57 @@
  * otherwise) arising in any way out of the use of this software, even
  * if advised of the possibility of such damage.
  */
+#include <stdarg.h>
+#include <stdio.h>
+#if 0
+extern double sqrt ( double );
+extern double fabs ( double );
+extern double log ( double );
+extern double tan ( double );
+extern double atan ( double );
+extern double floor ( double );
+extern double fabs ( double );
+extern double cabs ( cmplx * );
+extern double sqrt ( double );
+extern double atan2 ( double, double );
+extern double cos ( double );
+extern double sin ( double );
+extern double sqrt ( double );
+extern double frexp ( double, int * );
+extern double ldexp ( double, int );
+extern double exp ( double );
+extern double log ( double );
+extern double cos ( double );
+extern double sin ( double );
+extern double sqrt ( double );
+extern double fabs ( double );
+extern double asin ( double );
+extern double atan ( double );
+extern double atan2 ( double, double );
+extern double pow ( double, double );
+double sqrt(), fabs(), sin(), cos(), asin(), tanh();
+double sinh(), cosh(), atan(), exp();
+#else
+#include <math.h>
+#endif
+
+static void __attribute__ ((__format__ (__printf__, 1, 2)))
+VERBOSE (const char *format,
+         ...)
+{
+  char buffer[4096];
+  va_list args;
+  va_start (args, format);
+  vsnprintf (buffer, sizeof (buffer), format, args);
+  va_end (args);
+  // printf ("  #V-BSEmgc: %s", buffer);
+  printf ("# %s", buffer);
+  fflush (stdout);
+}
+
+#define EVERBOSE VERBOSE
+//#define EVERBOSE(...) do{}while(0)
+
 /* === ellf.doc - start === */
 /*                        ellf.c
  * This program calculates design coefficients for
@@ -471,16 +522,6 @@ extern int zplnc ( void );
  */
 
 
-extern double fabs ( double );
-extern double cabs ( cmplx * );
-extern double sqrt ( double );
-extern double atan2 ( double, double );
-extern double cos ( double );
-extern double sin ( double );
-extern double sqrt ( double );
-extern double frexp ( double, int * );
-extern double ldexp ( double, int );
-int isnan ( double );
 void cdiv ( cmplx *, cmplx *, cmplx * );
 void cadd ( cmplx *, cmplx *, cmplx * );
 
@@ -858,12 +899,6 @@ double hypot( x, y )
 
 /*	Incomplete elliptic integral of first kind	*/
 
-extern double sqrt ( double );
-extern double fabs ( double );
-extern double log ( double );
-extern double tan ( double );
-extern double atan ( double );
-extern double floor ( double );
 extern double ellpk ( double );
 double ellik ( double, double );
 extern double PI, PIO2, MACHEP, MAXNUM;
@@ -1113,8 +1148,6 @@ int ellpj( u, m, sn, cn, dn, ph )
      double *sn, *cn, *dn, *ph;
 {
   double ai, b, phi, t, twon;
-  double sqrt(), fabs(), sin(), cos(), asin(), tanh();
-  double sinh(), cosh(), atan(), exp();
   double a[9], c[9];
   int i;
   
@@ -1525,7 +1558,7 @@ double p1evl( x, coef, N )
 #include <stdlib.h>
 
 /* size of arrays: */
-#define ARRSIZ 150
+#define ARRSIZ 300
 
 
 /* System configurations */
@@ -1612,16 +1645,6 @@ static char wkind[] =
 static char salut[] =
 {"Filter shape:\n1 low pass\n2 band pass\n3 high pass\n4 band stop\n"};
 
-extern double exp ( double );
-extern double log ( double );
-extern double cos ( double );
-extern double sin ( double );
-extern double sqrt ( double );
-extern double fabs ( double );
-extern double asin ( double );
-extern double atan ( double );
-extern double atan2 ( double, double );
-extern double pow ( double, double );
 extern double cabs ( cmplx *z );
 extern void cadd ( cmplx *a, cmplx *b, cmplx *c );
 extern void cdiv ( cmplx *a, cmplx *b, cmplx *c );
@@ -1646,6 +1669,21 @@ int zplnc ( void );
 int quadf ( double, double, int );
 double response ( double, double );
 
+static void
+print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
+{
+  double zgain;
+  if (kind != 3 && pn == 0)
+    zgain = 1.0;
+  else
+    zgain = an / (pn * scale);
+  VERBOSE ("# constant mygain factor %23.13E\n", zgain); // BSE info
+  VERBOSE ("# z plane Denominator      Numerator\n" ); // BSE info
+  int j;
+  for (j = 0; j <= zord; j++)
+    VERBOSE ("%2d %17.9E %17.9E #BSEmgc\n", j, aa[j], pp[j] * zgain); // BSE info
+}
+
 int main()
 {
   char str[80];
@@ -1655,14 +1693,16 @@ int main()
  top:
   
   printf( "%s ? ", wkind );	/* ask for filter kind */
-  gets( str );
+  if (!fgets (str, sizeof (str), stdin))
+    exit (0);
   sscanf( str, "%d", &kind );
   printf( "%d\n", kind );
   if( (kind <= 0) || (kind > 3) )
     exit(0);
   
   printf( "%s ? ", salut );	/* ask for filter type */
-  gets( str );
+  if (!fgets (str, sizeof (str), stdin))
+    exit (0);
   sscanf( str, "%d", &type );
   printf( "%d\n", type );
   if( (type <= 0) || (type > 4) )
@@ -1898,6 +1938,11 @@ int main()
       cbp = (cgam - cos(a))/sin(a);
       scale = 1.0;
     }
+
+  EVERBOSE ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info 
+            "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
+            scale, eps, fnyq,
+            c, f3, wc, wr, cgam);
   
   spln();		/* find s plane poles and zeros */
   
@@ -1906,6 +1951,8 @@ int main()
   
   zplna();	/* convert s plane to z plane */
   zplnb();
+  EVERBOSE ("an=%.20g pn=%.20g scale=%.20g\n", an, pn, scale); // BSE info
+  print_z_fraction_before_zplnc ();
   zplnc();
   print_filter_table(); /* tabulate transfer function */
   goto top;
@@ -1924,6 +1971,7 @@ int lampln()
   m = k * k;
   Kk = ellpk( 1.0 - m );
   Kpk = ellpk( m );
+  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, Kk, Kpk); // BSE info
   q = exp( -PI * rn * Kpk / Kk );	/* the nome of k1 */
   m1 = cay(q); /* see below */
   /* Note m1 = eps / sqrt( A*A - 1.0 ) */
@@ -1941,17 +1989,18 @@ int lampln()
   Kpk1 = ellpk( m1 );
   r = Kpk1 * Kk / (Kk1 * Kpk);
   printf( "consistency check: n= %.14E\n", r );
+  EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
   /*   -1
    * sn   j/eps\m  =  j ellik( atan(1/eps), m )
    */
   b = 1.0/eps;
   phi = atan( b );
   u = ellik( phi, m1p );
-  printf( "phi %.7e m %.7e u %.7e\n", phi, m1p, u );
+  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, u);
   /* consistency check on inverse sn */
   ellpj( u, m1p, &sn, &cn, &dn, &phi );
   a = sn/cn;
-  printf( "consistency check: sn/cn = %.9E = %.9E = 1/eps\n", a, b );
+  EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
   u = u * Kk / (rn * Kk1);	/* or, u = u * Kpk / Kpk1 */
   return 0;
 }
@@ -2021,7 +2070,9 @@ int spln()
       /* sqrt( 1 + 1/eps^2 ) + 1/eps  = {sqrt(1 + eps^2)  +  1} / eps
        */
       phi = (phi + 1.0) / eps;
+      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", phi, eps); // BSE info
       phi = pow( phi, 1.0/rn );  /* raise to the 1/n power */
+      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", phi, rn); // BSE info
       b = 0.5 * (phi + 1.0/phi); /* y coordinates are on this circle */
       a = 0.5 * (phi - 1.0/phi); /* x coordinates are on this circle */
       if( n & 1 )
@@ -2566,7 +2617,7 @@ print_filter_table (void)
 {
   double f, limit = 0.05 * fnyq * 21;
   
-  for (f=0; f < limit; f += limit / 2100.)
+  for (f=0; f < limit; f += limit / 21.)
     {
       double r = response( f, gain );
       if( r <= 0.0 )
@@ -2625,7 +2676,8 @@ int getnum( line, val )
   char s[40];
   
   printf( "%s = %.9E ? ", line, *val );
-  gets( s );
+  if (!fgets (s, sizeof (s), stdin))
+    exit (0);
   if( s[0] != '\0' )
     {
       sscanf( s, "%lf", val );
