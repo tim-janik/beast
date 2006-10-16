@@ -1,11 +1,25 @@
 Sun Oct 15 23:17:39 2006  Tim Janik  <timj@gtk.org>
 
+	* bseellipticfilter.h:
 	* bseellipticfilter.c: include math.h instead of declaring standard 
 	math.h functions. print debugging/informative output through an
 	extra function. beefed up ARRSIZ once more for high order filters.
 	added custom function to print the transfer function coefficients
 	for debugging. fixed reading from stdin to use fgets().
-	reverted granularity changes in filter table printing.
+	reverted granularity changes in filter table printing. renamed all 
+	complex functions to not clash with complex.h.
+	added some workarounds with fixme marks to stay value (error)
+	compatible with former versions of the ellf program, these can be 
+	removed once we have filter tests in place. removed unecessary
+	comments, streamlined others. removed obsolete configuration
+	logic and other unecessary preprocessor cruft. removed unused
+	declarations, moved many variable and constant declarations into
+	an inner scope. renamed heavily abbreviated functions. renamed
+	and recoded main() into iir_filter_design() which does read all
+	design parameters from a structure. added a new main with simply
+	stdin-read logic to call iir_filter_design().
+	for the moment, moved structure declarations for filter design
+	parameters and filter calculation state into bseellipticfilter.h.
 
 Sun Oct 15 22:52:53 2006  Tim Janik  <timj@gtk.org>
 
