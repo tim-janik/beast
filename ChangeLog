@@ -1,3 +1,11 @@
+Mon Oct 16 13:40:47 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/bse/Makefile.am:
+	* tests/bse/filtertest.cc: Added test program for testing IIR filters
+	against specifications. It supports both: scanning the actual filter
+	transfer function by filtering sine waves, and computing the filter
+	transfer function by evaluating H(z).
+
 Thu Oct 12 22:11:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* slowtests/testresampler.cc: Documentation improvements. Fixed
