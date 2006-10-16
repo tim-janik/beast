@@ -1,0 +1,101 @@
+; BseProject
+
+(bse-version "0.7.0")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2006-05-16 15:19:11")
+  (creation-time "2004-09-20 18:24:45"))
+(container-child "BseCSynth::SineWave"
+  (modification-time "2006-05-16 15:19:11")
+  (creation-time "1990-07-20 07:09:22")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (author "Stefan Westerfeld")
+  (blurb "")
+  (container-child "BseInstrumentInput::BseSubKeyboard-1"
+    (pos-x -4))
+  (container-child "BseSimpleADSR::BseSimpleADSR-1"
+    (time-range bse-time-range-short)
+    (release-time 69.23077)
+    (sustain-level 60.60004)
+    (decay-time 61.53846)
+    (attack-time 12.58461)
+    (pos-x -1)
+    (source-input "gate-in" (link 1 "BseSubKeyboard-1") "gate"))
+  (container-child "BseStandardOsc::BseStandardOsc-2"
+    (pulse-mod-perc 0)
+    (pulse-width 50)
+    (fm-n-octaves 1)
+    (exponential-fm #f)
+    (fm-perc 0)
+    (base-freq 440)
+    (wave-form bse-standard-osc-sine)
+    (pos-y 3.12)
+    (pos-x -5.85)
+    (source-input "freq-in" (link 1 "BseSubKeyboard-1") "frequency"))
+  (container-child "BseInstrumentOutput::BseSubInstrument-1"
+    (pos-x 2)
+    (source-input "left-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "right-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "synth-done" (link 1 "BseSimpleADSR-1") "done-out"))
+  (container-child "BseAmplifier::Amplifier-1"
+    (master-volume 0.23076923076923078)
+    (base-level 0)
+    (ostrength 100)
+    (ctrl-exp #f)
+    (ctrl-mul #t)
+    (clevel2 100)
+    (clevel1 100)
+    (alevel2 100)
+    (alevel1 100)
+    (pos-y 2.17)
+    (pos-x -0.53)
+    (source-input "audio-in1" (link 1 "Adder-2") "audio-out")
+    (source-input "ctrl-in1" (link 1 "BseSubKeyboard-1") "velocity")
+    (source-input "ctrl-in2" (link 1 "BseSimpleADSR-1") "ctrl-out"))
+  (container-child "BseAdder::Adder-1"
+    (pos-y 4.015)
+    (pos-x -4.07)
+    (source-input "audio-in1" (link 1 "BseStandardOsc-2") "audio-out")
+    (source-input "audio-in2" (link 1 "Noise-1") "noise-out")
+    (source-input "audio-in2" (link 1 "StandardOsc-1") "audio-out"))
+  (container-child "BseAdder::Adder-2"
+    (subtract #t)
+    (pos-y 3.035)
+    (pos-x -2.21)
+    (source-input "audio-in1" (link 1 "Adder-1") "audio-out")
+    (source-input "audio-in2" (link 1 "Noise-1") "noise-out"))
+  (container-child "BseNoise::Noise-1"
+    (pos-y 1.655)
+    (pos-x -4.51))
+  (container-child "BseStandardOsc::StandardOsc-1"
+    (pulse-mod-perc 0)
+    (pulse-width 50)
+    (fm-n-octaves 3)
+    (exponential-fm #t)
+    (fm-perc 0)
+    (transpose 36)
+    (base-freq 440)
+    (wave-form bse-standard-osc-sine)
+    (pos-y -1.105)
+    (pos-x -5.3)
+    (source-input "freq-in" (link 1 "BseSubKeyboard-1") "frequency")))
+(container-child "BseSong::Unnamed"
+  (bpm 120)
+  (denominator 4)
+  (numerator 4)
+  (tpqn 384)
+  (modification-time "2006-05-16 15:19:11")
+  (creation-time "2004-09-20 18:26:07")
+  (container-child "BsePart::Part-1"
+    (n-channels 1)
+    (insert-notes 0
+      (0x00000 0xbff 84)))
+  (container-child "BseTrack::Track-01"
+    (n-voices 16)
+    (snet (link 2 "SineWave"))
+    (insert-part 0 (link 1 "Part-1")))
+  (container-child "BseBus::Master-1"
+    (master-output #t)
+    (right-volume 1)
+    (left-volume 1)
+    (bus-input (link 1 "Track-01"))))
