@@ -67,7 +67,7 @@ static double DECIBELL_FACTOR = -1;
 static void
 init_constants (void)
 {
-  DECIBELL_FACTOR = 10.0/log(10.0);
+  DECIBELL_FACTOR = 10.0 / log(10.0);
 }
 static const double MAXNUM =  1.79769313486231570815E308;    /* 2**1024*(1-MACHEP) */
 static const double PI     =  3.14159265358979323846;       /* pi */
@@ -889,7 +889,6 @@ static double gain = 0.0;
 static int jt = 0;
 static int ii = 0;
 static int ir = 0;
-static int zord = 0;
 static int icnt = 0;
 #endif
 
@@ -926,7 +925,7 @@ print_z_fraction_before_zplnc (const BseIIRFilterRequirements *ifr,
   VERBOSE ("# constant mygain factor %23.13E\n", zgain); // BSE info
   VERBOSE ("# z plane Denominator      Numerator\n" ); // BSE info
   int j;
-  for (j = 0; j <= zord; j++)
+  for (j = 0; j <= ds->n_solved_poles; j++)
     VERBOSE ("%2d %17.9E %17.9E\n", j, aa[j], pp[j] * zgain); // BSE info
 }
 
@@ -952,7 +951,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       if (ifr->kind == 2)
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+ds->ripple_epsilon^2) */
-          phi = exp( 0.5*ifr->passband_ripple_db / DECIBELL_FACTOR );
+          phi = exp( 0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR );
 
           if( (ifr->order & 1) == 0 )
             ds->gain_scale = phi;
@@ -1026,7 +1025,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   
   if( ifr->kind == 3 )
     { /* elliptic */
-      double tmp_cgam = cos( (high_edge+passband_edge0) * PI / ifr->sampling_frequency ) / cang;
+      double tmp_cgam = cos( (high_edge + passband_edge0) * PI / ifr->sampling_frequency ) / cang;
       ds->cgam = tmp_cgam;
       if (ifr->stopband_edge > 0.0)
         ds->stopband_edge = ifr->stopband_edge;
@@ -1035,7 +1034,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       else /* stopband_db < 0.0 */
         { /* calculate band edge from db down */
           double a = exp (-ifr->stopband_db / DECIBELL_FACTOR);
-          double m1 = ds->ripple_epsilon/sqrt( a - 1.0 );
+          double m1 = ds->ripple_epsilon / sqrt( a - 1.0 );
           m1 *= m1;
           double m1p = 1.0 - m1;
           double Kk1 = ellpk( m1p );
@@ -1057,7 +1056,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
               fixme2local_a *= fixme2local_a;
               double b = fixme2local_a * (1.0 - ds->cgam * ds->cgam) + fixme2local_a * fixme2local_a;
               b = (ds->cgam + sqrt(b))/(1.0 + fixme2local_a);
-              ds->stopband_edge = (PI/2.0 - asin(b)) * ifr->sampling_frequency / (2.0*PI);
+              ds->stopband_edge = (PI / 2.0 - asin(b)) * ifr->sampling_frequency / (2.0 * PI);
             }
         }
       switch( ifr->type )
@@ -1087,7 +1086,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 
       if( ifr->type & 1 )
 	{
-          ds->wr = sang/(cang*ds->tan_angle_frequency);
+          ds->wr = sang/(cang * ds->tan_angle_frequency);
 	}
       else
 	{
@@ -1098,7 +1097,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 	}
 
       if( ifr->type >= 3 )
-	ds->wr = 1.0/ds->wr;
+	ds->wr = 1.0 / ds->wr;
       if( ds->wr < 0.0 )
 	ds->wr = -ds->wr;
       y[0] = 1.0;
@@ -1106,14 +1105,14 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       /* ds->chebyshev_band_cbp = ds->wr; */
       
       if( ifr->type >= 3 )
-	y[1] = 1.0/y[1];
+	y[1] = 1.0 / y[1];
       
       if( ifr->type & 1 )
 	{
           int i;
           for (i = 1; i <= 2; i++)
             {
-              aa[i] = atan( ds->tan_angle_frequency * y[i-1] ) * ifr->sampling_frequency / PI ;
+              aa[i] = atan( ds->tan_angle_frequency * y[i - 1] ) * ifr->sampling_frequency / PI ;
             }
           printf( "pass band %.9E\n", aa[1] );
           printf( "stop band %.9E\n", aa[2] );
@@ -1123,7 +1122,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           int i;
           for (i = 1; i <= 2; i++)
             {
-              double a = ds->tan_angle_frequency * y[i-1];
+              double a = ds->tan_angle_frequency * y[i - 1];
               double b = atan(a);
               double q = sqrt( 1.0 + a * a  -  ds->cgam * ds->cgam );
               q = atan2( q, ds->cgam );
@@ -1135,7 +1134,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 	}
       ds->wc = 1.0;
       find_elliptic_locations_in_lambda_plane (ifr, ds);	/* find locations in lambda plane */
-      if( (2*ifr->order+2) > ARRSIZ )
+      if( (2 * ifr->order + 2) > ARRSIZ )
 	goto toosml;
     } /* elliptic */
   
@@ -1176,7 +1175,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 
   find_s_plane_poles_and_zeros (ifr, ds);		/* find s plane poles and zeros */
   
-  if( ((ifr->type & 1) == 0) && ((4*ifr->order+2) > ARRSIZ) )
+  if( ((ifr->type & 1) == 0) && ((4 * ifr->order + 2) > ARRSIZ) )
     goto toosml;
   
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
@@ -1205,12 +1204,12 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   double q = exp( -PI * ifr->order * Kpk / Kk );	/* the nome of k1 */
   double m1 = jacobi_theta_by_nome (q); /* see below */
   /* Note m1 = ds->ripple_epsilon / sqrt( A*A - 1.0 ) */
-  double a = ds->ripple_epsilon/m1;
+  double a = ds->ripple_epsilon / m1;
   a =  a * a + 1;
   a = 10.0 * log(a) / log(10.0);
   printf( "dbdown %.9E\n", a );
   a = 180.0 * asin (fixme2local_k) / PI;
-  double b = 1.0/(1.0 + ds->ripple_epsilon*ds->ripple_epsilon);
+  double b = 1.0/(1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
   b = sqrt( 1.0 - b );
   printf( "theta %.9E, rho %.9E\n", a, b );
   m1 *= m1;
@@ -1223,13 +1222,13 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   /*   -1
    * sn   j/ds->ripple_epsilon\m  =  j ellik( atan(1/ds->ripple_epsilon), m )
    */
-  b = 1.0/ds->ripple_epsilon;
+  b = 1.0 / ds->ripple_epsilon;
   phi = atan( b );
   fixme2local_2 = ellik (phi, m1p);
   EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, fixme2local_2);
   /* consistency check on inverse sn */
   ellpj (fixme2local_2, m1p, &sn, &cn, &dn, &phi);
-  a = sn/cn;
+  a = sn / cn;
   EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
   ds->elliptic_k = fixme2local_k;
   ds->elliptic_u = fixme2local_2 * Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
@@ -1259,7 +1258,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         {	/* poles */
           int lr = i + i;
           zs[lr] = -cos(m);
-          zs[lr+1] = sin(m);
+          zs[lr + 1] = sin(m);
           m += PI / ifr->order;
         }	
       /* high pass or band reject
@@ -1282,7 +1281,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
             {
               ds->n_zeros += ifr->order / 2;
             }
-          for (j=0; j<ds->n_zeros; j++)
+          for (j=0; j < ds->n_zeros; j++)
             {
               ir = ii + 1;
               ii = ir + 1;
@@ -1296,16 +1295,16 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       /* For Chebyshev, find radii of two Butterworth circles
        * See Gold & Rader, page 60
        */
-      rho = (phi - 1.0)*(phi+1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
+      rho = (phi - 1.0)*(phi + 1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
       ds->ripple_epsilon = sqrt(rho);
       /* sqrt( 1 + 1/ds->ripple_epsilon^2 ) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
        */
       phi = (phi + 1.0) / ds->ripple_epsilon;
       EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", phi, ds->ripple_epsilon); // BSE info
       phi = pow (phi, 1.0 / ifr->order);  /* raise to the 1/n power */
-      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", phi, ifr->order*1.0); // BSE info
-      double b = 0.5 * (phi + 1.0/phi); /* y coordinates are on this circle */
-      double a = 0.5 * (phi - 1.0/phi); /* x coordinates are on this circle */
+      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", phi, ifr->order * 1.0); // BSE info
+      double b = 0.5 * (phi + 1.0 / phi); /* y coordinates are on this circle */
+      double a = 0.5 * (phi - 1.0 / phi); /* x coordinates are on this circle */
       double m;
       if (ifr->order & 1)
         m = 0.0;
@@ -1315,7 +1314,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         {	/* poles */
           int lr = i + i;
           zs[lr] = -a * cos(m);
-          zs[lr+1] = b * sin(m);
+          zs[lr + 1] = b * sin(m);
           m += PI / ifr->order;
         }	
       /* high pass or band reject
@@ -1336,9 +1335,9 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           ds->n_zeros = ds->n_poles;
           if( ifr->type == 4 )
             {
-              ds->n_zeros += ifr->order/2;
+              ds->n_zeros += ifr->order / 2;
             }
-          for (j=0; j<ds->n_zeros; j++)
+          for (j=0; j < ds->n_zeros; j++)
             {
               ir = ii + 1;
               ii = ir + 1;
@@ -1350,9 +1349,9 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
   if( ifr->kind == 3 )   /* elliptic filter -- stw */
     {
       double m = ds->elliptic_m;
-      ds->n_zeros = ifr->order/2;
+      ds->n_zeros = ifr->order / 2;
       ellpj (ds->elliptic_u, 1.0 - m, &sn1, &cn1, &dn1, &phi1);
-      for (i=0; i<ARRSIZ; i++)
+      for (i=0; i < ARRSIZ; i++)
         zs[i] = 0.0;
       for (i = 0; i < ds->n_zeros; i++)
         {	/* zeros */
@@ -1370,12 +1369,12 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           double b = a * Kk / ifr->order;
           ellpj( b, m, &sn, &cn, &dn, &phi );
           double r = ds->elliptic_k * sn * sn1;
-          b = cn1*cn1 + r*r;
-          a = -ds->wc*cn*dn*sn1*cn1/b;
+          b = cn1 * cn1 + r * r;
+          a = -ds->wc * cn * dn * sn1 * cn1 / b;
           int lr = i + i;
           zs[lr] = a;
-          b = ds->wc*sn*dn1/b;
-          zs[lr+1] = b;
+          b = ds->wc * sn * dn1 / b;
+          zs[lr + 1] = b;
         }	
       if( ifr->type >= 3 )
         {
@@ -1481,7 +1480,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
   jt = -1;
   ii = -1;
   
-  for (icnt=0; icnt<2; icnt++)
+  for (icnt=0; icnt < 2; icnt++)
     {
       /* The maps from s plane to z plane */
       do
@@ -1513,8 +1512,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
                 {
                   /* fill in complex conjugate root */
                   jt += 1;
-                  z[jt].r = z[jt-1 ].r;
-                  z[jt].i = -z[jt-1 ].i;
+                  z[jt].r = z[jt - 1 ].r;
+                  z[jt].i = -z[jt - 1 ].i;
                 }
               break;
               
@@ -1581,7 +1580,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
       
       if( icnt == 0 )
 	{
-          zord = jt+1;
+          ds->n_solved_poles = jt + 1;
           if( ds->n_zeros <= 0 )
             {
               if( ifr->kind != 3 )
@@ -1607,7 +1606,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   if( ifr->kind != 3 )
     { /* Butterworth or Chebyshev */
       /* generate the remaining zeros */
-      while( 2*zord - 1 > jt )
+      while( 2 * ds->n_solved_poles - 1 > jt )
         {
           if( ifr->type != 3 )
             {
@@ -1627,7 +1626,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
     }
   else
     { /* elliptic */
-      while( 2*zord - 1 > jt )
+      while( 2 * ds->n_solved_poles - 1 > jt )
         {
           jt += 1;
           z[jt].r = -1.0; /* zero at Nyquist frequency */
@@ -1640,39 +1639,39 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
             }
         }
     }
-  printf( "order = %d\n", zord );
+  printf( "order = %d\n", ds->n_solved_poles );
 
   int j;
   
   /* Expand the poles and zeros into numerator and
    * denominator polynomials
    */
-  for (icnt=0; icnt<2; icnt++)
+  for (icnt=0; icnt < 2; icnt++)
     {
-      for (j=0; j<ARRSIZ; j++)
+      for (j=0; j < ARRSIZ; j++)
         {
           pp[j] = 0.0;
           y[j] = 0.0;
         }
       pp[0] = 1.0;
-      for (j=0; j<zord; j++)
+      for (j=0; j < ds->n_solved_poles; j++)
         {
           int jj = j;
           if( icnt )
-            jj += zord;
+            jj += ds->n_solved_poles;
           double a = z[jj].r;
           double b = z[jj].i;
           int i;
           for (i = 0; i <= j; i++)
             {
               int jh = j - i;
-              pp[jh+1] = pp[jh+1] - a * pp[jh] + b * y[jh];
-              y[jh+1] =  y[jh+1]  - b * pp[jh] - a * y[jh];
+              pp[jh + 1] = pp[jh + 1] - a * pp[jh] + b * y[jh];
+              y[jh + 1] =  y[jh + 1]  - b * pp[jh] - a * y[jh];
             }
         }
       if( icnt == 0 )
         {
-          for (j=0; j<=zord; j++)
+          for (j=0; j <= ds->n_solved_poles; j++)
             aa[j] = pp[j];
         }
     }
@@ -1688,7 +1687,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
       
       pn = 1.0;
       an = 1.0;
-      for (j=1; j<=zord; j++)
+      for (j=1; j <= ds->n_solved_poles; j++)
         {
           pn = a * pn + pp[j];
           an = a * an + aa[j];
@@ -1696,18 +1695,18 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
       break;
       
     case 2:
-      gam = PI/2.0 - asin( ds->cgam );  /* = acos( cgam ) */
-      int mh = zord/2;
+      gam = PI / 2.0 - asin( ds->cgam );  /* = acos( cgam ) */
+      int mh = ds->n_solved_poles / 2;
       pn = pp[mh];
       an = aa[mh];
       double ai = 0.0;
-      if( mh > ((zord/4)*2) )
+      if( mh > ((ds->n_solved_poles / 4)*2) )
         {
           ai = 1.0;
           pn = 0.0;
           an = 0.0;
         }
-      for (j=1; j<=mh; j++)
+      for (j=1; j <= mh; j++)
         {
           a = gam * j - ai * PI / 2.0;
           double cng = cos (a);
@@ -1725,15 +1724,15 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
                                              DesignState                    *ds)
 {
   int j;
-  gain = an/(pn*ds->gain_scale);
+  gain = an/(pn * ds->gain_scale);
   if( (ifr->kind != 3) && (pn == 0) )
     gain = 1.0;
   printf( "constant gain factor %23.13E\n", gain );
-  for (j = 0; j <= zord; j++)
+  for (j = 0; j <= ds->n_solved_poles; j++)
     pp[j] = gain * pp[j];
   
   printf( "z plane Denominator      Numerator\n" );
-  for (j=0; j<=zord; j++)
+  for (j=0; j <= ds->n_solved_poles; j++)
     {
       printf( "%2d %17.9E %17.9E\n", j, aa[j], pp[j] );
     }
@@ -1742,7 +1741,7 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
    * so that it can be implemented without stability problems -- stw
    */
   printf( "poles and zeros with corresponding quadratic factors\n" );
-  for (j=0; j<zord; j++)
+  for (j=0; j < ds->n_solved_poles; j++)
     {
       double a = z[j].r;
       double b = z[j].i;
@@ -1751,7 +1750,7 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
           printf( "pole  %23.13E %23.13E\n", a, b );
           print_quadratic_factors (ifr, ds, a, b, 1);
         }
-      int jj = j + zord;
+      int jj = j + ds->n_solved_poles;
       a = z[jj].r;
       b = z[jj].i;
       if( b >= 0.0 )
@@ -1775,7 +1774,7 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
   if( y > 1.0e-16 )
     {
       a = -2.0 * x;
-      b = x*x + y*y;
+      b = x * x + y * y;
     }
   else
     {
@@ -1787,11 +1786,11 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
     {
       /* resonant frequency */
       r = sqrt(b);
-      f = PI/2.0 - asin( -a/(2.0*r) );
+      f = PI / 2.0 - asin( -a/(2.0 * r) );
       f = f * ifr->sampling_frequency / (2.0 * PI );
       /* gain at resonance */
       g = 1.0 + r;
-      g = g*g - (a*a/r);
+      g = g * g - (a * a / r);
       g = (1.0 - r) * sqrt(g);
       g0 = 1.0 + a + b;	/* gain at d.c. */
     }
@@ -1808,11 +1807,11 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
   if( pzflg )
     {
       if( g != 0.0 )
-        g = 1.0/g;
+        g = 1.0 / g;
       else
         g = MAXNUM;
       if( g0 != 0.0 )
-        g0 = 1.0/g0;
+        g0 = 1.0 / g0;
       else
         g = MAXNUM;
     }
@@ -1858,11 +1857,11 @@ response (const BseIIRFilterRequirements *ifr,
   num.i = 0.0;
   den.r = 1.0;
   den.i = 0.0;
-  for (j=0; j<zord; j++)
+  for (j=0; j < ds->n_solved_poles; j++)
     {
       Csub( &z[j], &x, &w );
       Cmul( &w, &den, &den );
-      Csub( &z[j+zord], &x, &w );
+      Csub( &z[j + ds->n_solved_poles], &x, &w );
       Cmul( &w, &num, &num );
     }
   Cdiv( &den, &num, &w );

@@ -51,6 +51,7 @@ typedef struct {
 typedef struct {
   int    n_poles;
   int    n_zeros;
+  int    n_solved_poles;
   double gain_scale;
   double ripple_epsilon;
   double nyquist_frequency;
@@ -66,8 +67,9 @@ typedef struct {
 } DesignState;
 
 static const DesignState default_design_state = {
-  .n_poles = 0.0,
-  .n_zeros = 0.0,
+  .n_poles = 0,
+  .n_zeros = 0,
+  .n_solved_poles = 0,
   .gain_scale = 0.0,
   .ripple_epsilon = 0.0,
   .nyquist_frequency = 0.0,

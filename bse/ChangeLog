@@ -1,3 +1,8 @@
+Tue Oct 17 00:05:55 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.h, bseellipticfilter.c: white space fixups,
+	changed static zord to ds->n_solved_poles.
+
 Sun Oct 15 23:17:39 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.h:
