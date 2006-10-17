@@ -895,36 +895,13 @@ polevl (double x, const double coef[], int N)
   return ans;
 }
 
-/* --- prototypes --- */
-#if 0
-static int    find_elliptic_locations_in_lambda_plane      (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds);
-static int    find_s_plane_poles_and_zeros                 (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds);
-static int    convert_s_plane_to_z_plane                   (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds);
-static double jacobi_theta_by_nome                                (double q);
-static int    z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds);
-static int    gainscale_and_print_deno_nume_zeros2_poles2  (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds);
-static int    print_quadratic_factors                      (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds,
-                                                            double x, double y, int pzflg);
-static void   print_filter_table                           (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds);
-static double response                                     (const BseIIRFilterRequirements *ifr,
-                                                            DesignState                    *ds,
-                                                            double f, double amp);
-#endif
-
-/* --- functions --- */
+/* --- filter design functions --- */
 static void
 print_z_fraction_before_zplnc (const BseIIRFilterRequirements *ifr,
                                DesignState                    *ds) /* must be called *before* zplnc() */
 {
   double zgain;
-  if (ifr->kind != 3 && ds->numerator_accu == 0)
+  if ((ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV) && ds->numerator_accu == 0)
     zgain = 1.0;
   else
     zgain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
@@ -992,7 +969,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
     zs[i] = 0.0;
   ds->n_poles = (ifr->order + 1) / 2;
   ds->n_zeros = 0;
-  if (ifr->kind == 1)
+  if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH)
     {
       double m;
       /* Butterworth poles equally spaced around the unit circle */
@@ -1009,7 +986,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         }	
       /* high pass or band reject
        */
-      if (ifr->type >= 3)
+      if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
         {
           int ii = 0;
           /* map s => 1/s */
@@ -1024,7 +1001,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           /* The zeros at infinity map to the origin.
            */
           ds->n_zeros = ds->n_poles;
-          if (ifr->type == 4)
+          if (ifr->type == BSE_IIR_FILTER_BAND_STOP)
             {
               ds->n_zeros += ifr->order / 2;
             }
@@ -1037,7 +1014,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
             }
         }
     }
-  if (ifr->kind == 2)
+  if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
     {
       /* For Chebyshev, find radii of two Butterworth circles
        * See Gold & Rader, page 60
@@ -1066,7 +1043,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         }	
       /* high pass or band reject
        */
-      if (ifr->type >= 3)
+      if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
         {
           int ii = 0;
           /* map s => 1/s */
@@ -1081,7 +1058,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           /* The zeros at infinity map to the origin.
            */
           ds->n_zeros = ds->n_poles;
-          if (ifr->type == 4)
+          if (ifr->type == BSE_IIR_FILTER_BAND_STOP)
             {
               ds->n_zeros += ifr->order / 2;
             }
@@ -1094,7 +1071,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
             }
         }
     }
-  if (ifr->kind == 3)   /* elliptic filter -- stw */
+  if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     {
       double phi1 = 0.0, m = ds->elliptic_m;
       ds->n_zeros = ifr->order / 2;
@@ -1125,7 +1102,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           b = ds->wc * sn * dn1 / b;
           zs[lr + 1] = b;
         }	
-      if (ifr->type >= 3)
+      if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
         {
           int ii = 0, nt = ds->n_poles + ds->n_zeros;
           for (j = 0; j < nt; j++)
@@ -1169,7 +1146,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
   Complex r, cnum, cden, cwc, ca, cb, b4ac;
   double C;
   
-  if (ifr->kind == 3)
+  if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     C = ds->tan_angle_frequency;
   else
     C = ds->wc;
@@ -1196,8 +1173,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
           
           switch (ifr->type)
             {
-            case 1:
-            case 3:
+            case BSE_IIR_FILTER_LOW_PASS:
+            case BSE_IIR_FILTER_HIGH_PASS:
               /* Substitute  s - r  =  s/wc - r = (1/wc)(z-1)/(z+1) - r
                *
                *     1  1 - r wc (       1 + r wc)
@@ -1220,9 +1197,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
                   ds->zz[ds->z_counter].i = -ds->zz[ds->z_counter - 1].i;
                 }
               break;
-              
-            case 2:
-            case 4:
+            case BSE_IIR_FILTER_BAND_PASS:
+            case BSE_IIR_FILTER_BAND_STOP:
               /* Substitute  s - r  =>  s/wc - r
                *
                *     z^2 - 2 z cgam + 1
@@ -1235,7 +1211,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
                *
                * and solve for the roots in the z plane.
                */
-              if (ifr->kind == 2)
+              if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
                 cwc.r = ds->chebyshev_band_cbp;
               else
                 cwc.r = ds->tan_angle_frequency;
@@ -1278,6 +1254,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
                       ds->zz[ds->z_counter].i = -cnum.i;
                     }
                 }
+              break;
             } /* end switch */
 	}
       while (--nc > 0);
@@ -1287,7 +1264,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
           ds->n_solved_poles = ds->z_counter + 1;
           if (ds->n_zeros <= 0)
             {
-              if (ifr->kind != 3)
+              if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
                 return 0;
               else
                 break;
@@ -1307,19 +1284,19 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   lin[1].r = 1.0;
   lin[1].i = 0.0;
   
-  if (ifr->kind != 3)
+  if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
     { /* Butterworth or Chebyshev */
       /* generate the remaining zeros */
       while (2 * ds->n_solved_poles - 1 > ds->z_counter)
         {
-          if (ifr->type != 3)
+          if (ifr->type != BSE_IIR_FILTER_HIGH_PASS)
             {
               printf ("adding zero at Nyquist frequency\n");
               ds->z_counter += 1;
               ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
               ds->zz[ds->z_counter].i = 0.0;
             }
-          if ((ifr->type == 2) || (ifr->type == 3))
+          if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
             {
               printf ("adding zero at 0 Hz\n");
               ds->z_counter += 1;
@@ -1335,7 +1312,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
           ds->z_counter += 1;
           ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
           ds->zz[ds->z_counter].i = 0.0;
-          if ((ifr->type == 2) || (ifr->type == 4))
+          if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
             {
               ds->z_counter += 1;
               ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
@@ -1381,13 +1358,11 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   switch (ifr->type)
     {
       double gam;
-
-    case 3:
+    case BSE_IIR_FILTER_HIGH_PASS:
       a = -1.0;
-      
-    case 1:
-    case 4:
-      
+      /* fall through */
+    case BSE_IIR_FILTER_LOW_PASS:
+    case BSE_IIR_FILTER_BAND_STOP:
       ds->numerator_accu = 1.0;
       ds->denominator_accu = 1.0;
       for (j = 1; j <= ds->n_solved_poles; j++)
@@ -1396,8 +1371,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
           ds->denominator_accu = a * ds->denominator_accu + ds->cofd[j];
         }
       break;
-      
-    case 2:
+    case BSE_IIR_FILTER_BAND_PASS:
       gam = PI / 2.0 - asin (ds->cgam);  /* = acos(cgam) */
       int mh = ds->n_solved_poles / 2;
       ds->numerator_accu = ds->cofn[mh];
@@ -1425,9 +1399,9 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
 /* display quadratic factors */
 static int
 print_quadratic_factors (const BseIIRFilterRequirements *ifr,
-                         DesignState                    *ds,
+                         const DesignState              *ds,
                          double x, double y,
-                         int pzflg) /* 1 if poles, 0 if zeros */
+                         bool                            is_pole) /* 1 if poles, 0 if zeros */
 {
   double a, b, r, f, g, g0;
   
@@ -1464,7 +1438,7 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
       g0 = 1.0 + a;
     }
   
-  if (pzflg)
+  if (is_pole)
     {
       if (g != 0.0)
         g = 1.0 / g;
@@ -1485,7 +1459,7 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
 {
   int j;
   ds->gain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
-  if ((ifr->kind != 3) && (ds->numerator_accu == 0))
+  if ((ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV) && ds->numerator_accu == 0)
     ds->gain = 1.0;
   printf ("constant gain factor %23.13E\n", ds->gain);
   for (j = 0; j <= ds->n_solved_poles; j++)
@@ -1508,7 +1482,7 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
       if (b >= 0.0)
         {
           printf ("pole  %23.13E %23.13E\n", a, b);
-          print_quadratic_factors (ifr, ds, a, b, 1);
+          print_quadratic_factors (ifr, ds, a, b, true);
         }
       int jj = j + ds->n_solved_poles;
       a = ds->zz[jj].r;
@@ -1516,7 +1490,7 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
       if (b >= 0.0)
         {
           printf ("zero  %23.13E %23.13E\n", a, b);
-          print_quadratic_factors (ifr, ds, a, b, 0);
+          print_quadratic_factors (ifr, ds, a, b, false);
         }
     }
   return 0;
@@ -1582,18 +1556,18 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   double passband_edge1 = ifr->passband_edge;
   double passband_edge0 = ifr->passband_edge2;
   
-  if (ifr->kind <= 0 || ifr->kind > 3)
+  if (ifr->kind < BSE_IIR_FILTER_BUTTERWORTH || ifr->kind > BSE_IIR_FILTER_ELLIPTIC)
     return "unknown kind";
-  if (ifr->type <= 0 || ifr->type > 4)
+  if (ifr->type < BSE_IIR_FILTER_LOW_PASS || ifr->type > BSE_IIR_FILTER_BAND_STOP)
     return "unknown type";
   if (ifr->order <= 0)
     return "order too small";
 
-  if (ifr->kind > 1) /* not Butterworth */
+  if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV || ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     {
       if (ifr->passband_ripple_db <= 0.0)
         return "passband_ripple_db too small";
-      if (ifr->kind == 2)
+      if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+ds->ripple_epsilon^2) */
           ds->chebyshev_phi = exp (0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR);
@@ -1623,7 +1597,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   if (passband_edge1 >= ds->nyquist_frequency)
     return "passband_edge1 too high";
   
-  if ((ifr->type & 1) == 0)
+  if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
     {
       if (passband_edge0 <= 0.0)
         return "passband_edge too small";
@@ -1641,7 +1615,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       passband_edge0 = tmp;
     }
   double high_edge, band_width;
-  if (ifr->type == 3)	/* high pass */
+  if (ifr->type == BSE_IIR_FILTER_HIGH_PASS)
     {
       band_width = passband_edge1;
       high_edge = ds->nyquist_frequency;
@@ -1661,14 +1635,13 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   double sang;
   double cang = cos (ang);
   ds->tan_angle_frequency = sin (ang) / cang; /* Wanalog */
-  if (ifr->kind != 3)
+  if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
     {
       ds->wc = ds->tan_angle_frequency;
       /*printf("cos(1/2 (Whigh-Wlow) T) = %.5e, wc = %.5e\n", cang, ds->wc);*/
     }
   
-  
-  if (ifr->kind == 3)
+  if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     { /* elliptic */
       double tmp_cgam = cos ((high_edge + passband_edge0) * PI / ifr->sampling_frequency) / cang;
       ds->cgam = tmp_cgam;
@@ -1686,11 +1659,11 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           double Kpk1 = ellpk (m1);
           double q = exp (-PI * Kpk1 / (ifr->order * Kk1));
           double k = jacobi_theta_by_nome (q);
-          if (ifr->type >= 3)
+          if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
             ds->wr = k;
           else
             ds->wr = 1.0 / k;
-          if (ifr->type & 1)
+          if (ifr->type == BSE_IIR_FILTER_LOW_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
             {
               ds->stopband_edge = atan (ds->tan_angle_frequency * ds->wr) * ifr->sampling_frequency / PI;
             }
@@ -1706,19 +1679,19 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
         }
       switch (ifr->type)
 	{
-	case 1:
+	case BSE_IIR_FILTER_LOW_PASS:
           if (ds->stopband_edge <= passband_edge1)
             return "need stopband_edge > passband_edge";
           break;
-	case 2:
+	case BSE_IIR_FILTER_BAND_PASS:
           if (ds->stopband_edge >= passband_edge0 && ds->stopband_edge <= passband_edge1)
             return "need stopband_edge < passband_edge or stopband_edge > passband_edge2";
           break;
-	case 3:
+	case BSE_IIR_FILTER_HIGH_PASS:
           if (ds->stopband_edge >= passband_edge1)
             return "need stopband_edge < passband_edge";
           break;
-	case 4:
+	case BSE_IIR_FILTER_BAND_STOP:
           if (ds->stopband_edge <= passband_edge0)
             return "need stopband_edge > passband_edge2";
           if (ds->stopband_edge >= passband_edge1)
@@ -1729,7 +1702,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       cang = cos (ang);
       sang = sin (ang);
 
-      if (ifr->type & 1)
+      if (ifr->type == BSE_IIR_FILTER_LOW_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
 	{
           ds->wr = sang / (cang * ds->tan_angle_frequency);
 	}
@@ -1741,7 +1714,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           ds->wr = (ds->cgam - cang) / (sang * ds->tan_angle_frequency);
 	}
 
-      if (ifr->type >= 3)
+      if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
 	ds->wr = 1.0 / ds->wr;
       if (ds->wr < 0.0)
 	ds->wr = -ds->wr;
@@ -1749,9 +1722,9 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       const double tmp_y0 = 1.0;
       double tmp_y1 = ds->wr;
       /* ds->chebyshev_band_cbp = ds->wr; */
-      if (ifr->type >= 3)
+      if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
 	tmp_y1 = 1.0 / tmp_y1;
-      if (ifr->type & 1)
+      if (ifr->type == BSE_IIR_FILTER_LOW_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
 	{
           int i;
           for (i = 1; i <= 2; i++)
@@ -1798,14 +1771,14 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
    *                        sin(Wdigital T)
    */
   
-  if (ifr->kind == 2)
+  if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV)
     { /* Chebyshev */
       double a = PI * (high_edge + passband_edge0) / ifr->sampling_frequency ;
       ds->cgam = cos (a) / cang;
       a = 2.0 * PI * passband_edge1 / ifr->sampling_frequency;
       ds->chebyshev_band_cbp = (ds->cgam - cos (a)) / sin (a);
     }
-  if (ifr->kind == 1)
+  if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH)
     { /* Butterworth */
       double a = PI * (high_edge + passband_edge0) / ifr->sampling_frequency ;
       ds->cgam = cos (a) / cang;
@@ -1821,7 +1794,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 
   find_s_plane_poles_and_zeros (ifr, ds);		/* find s plane poles and zeros */
   
-  if (((ifr->type & 1) == 0) && ((4 * ifr->order + 2) > MAX_COEFFICIENT_ARRAY_SIZE))
+  if ((ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP) && 4 * ifr->order + 2 > MAX_COEFFICIENT_ARRAY_SIZE)
     goto toosml;
   
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
