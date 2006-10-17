@@ -25,6 +25,13 @@ typedef unsigned int uint; // FIXME
 
 // FIXME: BIRNET_EXTERN_C_BEGIN();
 
+/* --- Complex numeral --- */
+typedef struct {
+  double r;     // real part
+  double i;     // imaginary part
+} Complex;
+
+
 typedef enum {
   BSE_IIR_FILTER_BUTTERWORTH = 1,
   BSE_IIR_FILTER_CHEBYSHEV   = 2,
@@ -36,6 +43,7 @@ typedef enum {
   BSE_IIR_FILTER_HIGH_PASS   = 3,
   BSE_IIR_FILTER_BAND_STOP   = 4,
 } BseIIRFilterType;
+
 typedef struct {
   BseIIRFilterKind	kind;
   BseIIRFilterType	type;
@@ -65,6 +73,8 @@ typedef struct {
   double cgam; /* angle frequency temporary */
   double stopband_edge; /* derived from ifr->stopband_edge or ifr->stopband_db */
   double wr;
+  double numerator_accu;
+  double denominator_accu;
   /* chebyshev state */
   double chebyshev_phi;
   double chebyshev_band_cbp;
@@ -78,6 +88,9 @@ typedef struct {
   /* common output */
   double gain;
   double zs[MAX_COEFFICIENT_ARRAY_SIZE];	/* s-plane poles and zeros */
+  double cofn[MAX_COEFFICIENT_ARRAY_SIZE];	/* numerator coefficients */
+  double cofd[MAX_COEFFICIENT_ARRAY_SIZE];	/* denominator coefficients */
+  Complex zz[MAX_COEFFICIENT_ARRAY_SIZE];	/* z-plane poles and zeros */
 } DesignState;
 
 static const DesignState default_design_state = {
@@ -93,6 +106,8 @@ static const DesignState default_design_state = {
   .cgam = 0.0,
   .stopband_edge = 2400,
   .wr = 0.0,
+  .numerator_accu = 0.0,
+  .denominator_accu = 0.0,
   .chebyshev_phi = 0.0,
   .chebyshev_band_cbp = 0.0,
   .elliptic_phi = 0.0,
@@ -103,6 +118,9 @@ static const DesignState default_design_state = {
   .elliptic_Kpk = 0.0,
   .gain = 0.0,
   .zs = { 0, },
+  .cofn = { 0, },
+  .cofd = { 0, },
+  .zz = { { 0, }, },
 };
 
 // FIXME: BIRNET_EXTERN_C_END();

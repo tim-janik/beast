@@ -131,12 +131,6 @@ static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
  * Chapters 16 and 17
  */
 
-/* --- Complex numeral --- */
-typedef struct {
-  double r;     // real part
-  double i;     // imaginary part
-} Complex;
-
 /* --- prototypes --- */
 static const Complex COMPLEX_ONE = {1.0, 0.0};
 static double Cabs   (const Complex *z);
@@ -458,7 +452,6 @@ Csqrt (const Complex *z, Complex *w)
           return;
         }
     }
-  
   
   if (x == 0.0)
     {
@@ -858,20 +851,6 @@ polevl (double x, const double coef[], int N)
   return ans;
 }
 
-#if 1
-static double aa[MAX_COEFFICIENT_ARRAY_SIZE];
-static double pp[MAX_COEFFICIENT_ARRAY_SIZE];
-static Complex z[MAX_COEFFICIENT_ARRAY_SIZE];
-static double sn = 0.0;
-static double cn = 0.0;
-static double dn = 0.0;
-static double sn1 = 0.0;
-static double cn1 = 0.0;
-static double dn1 = 0.0;
-static double pn = 0.0;
-static double an = 0.0;
-#endif
-
 /* --- prototypes --- */
 static int    find_elliptic_locations_in_lambda_plane      (const BseIIRFilterRequirements *ifr,
                                                             DesignState                    *ds);
@@ -893,20 +872,21 @@ static double response                                     (const BseIIRFilterRe
                                                             DesignState                    *ds,
                                                             double f, double amp);
 
+/* --- functions --- */
 static void
 print_z_fraction_before_zplnc (const BseIIRFilterRequirements *ifr,
                                DesignState                    *ds) /* must be called *before* zplnc() */
 {
   double zgain;
-  if (ifr->kind != 3 && pn == 0)
+  if (ifr->kind != 3 && ds->numerator_accu == 0)
     zgain = 1.0;
   else
-    zgain = an / (pn * ds->gain_scale);
+    zgain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
   VERBOSE ("# constant mygain factor %23.13E\n", zgain); // BSE info
   VERBOSE ("# z plane Denominator      Numerator\n"); // BSE info
   int j;
   for (j = 0; j <= ds->n_solved_poles; j++)
-    VERBOSE ("%2d %17.9E %17.9E\n", j, aa[j], pp[j] * zgain); // BSE info
+    VERBOSE ("%2d %17.9E %17.9E\n", j, ds->cofd[j], ds->cofn[j] * zgain); // BSE info
 }
 
 /* --- main IIR filter design function --- */
@@ -1035,7 +1015,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
               double a = ds->tan_angle_frequency * ds->wr;
               a *= a;
               double b = a * (1.0 - ds->cgam * ds->cgam) + a * a;
-              b = (ds->cgam + sqrt (b))/(1.0 + a);
+              b = (ds->cgam + sqrt (b)) / (1.0 + a);
               ds->stopband_edge = (PI / 2.0 - asin (b)) * ifr->sampling_frequency / (2.0 * PI);
             }
         }
@@ -1066,14 +1046,14 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 
       if (ifr->type & 1)
 	{
-          ds->wr = sang/(cang * ds->tan_angle_frequency);
+          ds->wr = sang / (cang * ds->tan_angle_frequency);
 	}
       else
 	{
           double q = cang * cang  -  sang * sang;
           sang = 2.0 * cang * sang;
           cang = q;
-          ds->wr = (ds->cgam - cang)/(sang * ds->tan_angle_frequency);
+          ds->wr = (ds->cgam - cang) / (sang * ds->tan_angle_frequency);
 	}
 
       if (ifr->type >= 3)
@@ -1092,10 +1072,10 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           for (i = 1; i <= 2; i++)
             {
               double tmp_y = i == 1 ? tmp_y0 : tmp_y1;
-              aa[i] = atan (ds->tan_angle_frequency * tmp_y) * ifr->sampling_frequency / PI ;
+              ds->cofd[i] = atan (ds->tan_angle_frequency * tmp_y) * ifr->sampling_frequency / PI ;
             }
-          printf ("pass band %.9E\n", aa[1]);
-          printf ("stop band %.9E\n", aa[2]);
+          printf ("pass band %.9E\n", ds->cofd[1]);
+          printf ("stop band %.9E\n", ds->cofd[2]);
 	}
       else
 	{
@@ -1107,11 +1087,11 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
               double b = atan (a);
               double q = sqrt (1.0 + a * a  -  ds->cgam * ds->cgam);
               q = atan2 (q, ds->cgam);
-              aa[i] = (q + b) * ds->nyquist_frequency / PI;
-              pp[i] = (q - b) * ds->nyquist_frequency / PI;
+              ds->cofd[i] = (q + b) * ds->nyquist_frequency / PI;
+              ds->cofn[i] = (q - b) * ds->nyquist_frequency / PI;
             }
-          printf ("pass band %.9E %.9E\n", pp[1], aa[1]);
-          printf ("stop band %.9E %.9E\n", pp[2], aa[2]);
+          printf ("pass band %.9E %.9E\n", ds->cofn[1], ds->cofd[1]);
+          printf ("stop band %.9E %.9E\n", ds->cofn[2], ds->cofd[2]);
 	}
       ds->wc = 1.0;
       find_elliptic_locations_in_lambda_plane (ifr, ds);	/* find locations in lambda plane */
@@ -1162,7 +1142,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
   // volatile_sink ("x");
   z_plane_zeros_poles_to_numerator_denomerator (ifr, ds);
-  EVERBOSE ("an=%.20g pn=%.20g scale=%.20g\n", an, pn, ds->gain_scale); // BSE info
+  EVERBOSE ("an=%.20g pn=%.20g scale=%.20g\n", ds->denominator_accu, ds->numerator_accu, ds->gain_scale); // BSE info
   print_z_fraction_before_zplnc (ifr, ds);
   gainscale_and_print_deno_nume_zeros2_poles2 (ifr, ds);
   print_filter_table (ifr, ds); /* tabulate transfer function */
@@ -1171,7 +1151,6 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
  toosml:
   return "storage arrays too small";
 }
-
 
 static int
 find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
@@ -1190,7 +1169,7 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   a = 10.0 * log (a) / log (10.0);
   printf ("dbdown %.9E\n", a);
   a = 180.0 * asin (k) / PI;
-  double b = 1.0/(1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
+  double b = 1.0 / (1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
   b = sqrt (1.0 - b);
   printf ("theta=%.9E, rho=%.9E\n", a, b);
   m1 *= m1;
@@ -1208,6 +1187,7 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   double u = ellik (ds->elliptic_phi, m1p);
   EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", ds->elliptic_phi, m1p, u);
   /* consistency check on inverse sn */
+  double sn, cn, dn;
   ellpj (u, m1p, &sn, &cn, &dn, &ds->elliptic_phi);
   a = sn / cn;
   EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
@@ -1334,11 +1314,13 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
     {
       double phi1 = 0.0, m = ds->elliptic_m;
       ds->n_zeros = ifr->order / 2;
+      double sn1, cn1, dn1;
       ellpj (ds->elliptic_u, 1.0 - m, &sn1, &cn1, &dn1, &phi1);
       for (i = 0; i < ds->n_zeros; i++)
         {	/* zeros */
           double a = ifr->order - 1 - i - i;
           double b = (ds->elliptic_Kk * a) / ifr->order;
+          double sn, cn, dn;
           ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
           int lr = 2 * ds->n_poles + 2 * i;
           zs[lr] = 0.0;
@@ -1349,6 +1331,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         {	/* poles */
           double a = ifr->order - 1 - i - i;
           double b = a * ds->elliptic_Kk / ifr->order;
+          double sn, cn, dn;
           ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
           double r = ds->elliptic_k * sn * sn1;
           b = cn1 * cn1 + r * r;
@@ -1454,8 +1437,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
   int i;
   for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
     {
-      z[i].r = 0.0;
-      z[i].i = 0.0;
+      ds->zz[i].r = 0.0;
+      ds->zz[i].i = 0.0;
     }
 
   int nc = ds->n_poles;
@@ -1488,13 +1471,13 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
               cden.r = 1 - C * r.r;
               cden.i = -C * r.i;
               ds->z_counter += 1;
-              Cdiv (&cden, &cnum, &z[ds->z_counter]);
+              Cdiv (&cden, &cnum, &ds->zz[ds->z_counter]);
               if (r.i != 0.0)
                 {
                   /* fill in complex conjugate root */
                   ds->z_counter += 1;
-                  z[ds->z_counter].r = z[ds->z_counter - 1].r;
-                  z[ds->z_counter].i = -z[ds->z_counter - 1].i;
+                  ds->zz[ds->z_counter].r = ds->zz[ds->z_counter - 1].r;
+                  ds->zz[ds->z_counter].i = -ds->zz[ds->z_counter - 1].i;
                 }
               break;
               
@@ -1535,24 +1518,24 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
               Cadd (&b4ac, &cb, &cnum);   /* -b + sqrt(b^2 - 4ac) */
               Cdiv (&ca, &cnum, &cnum);   /* ... /2a */
               ds->z_counter += 1;
-              Cmov (&cnum, &z[ds->z_counter]);
+              Cmov (&cnum, &ds->zz[ds->z_counter]);
               if (cnum.i != 0.0)
                 {
                   ds->z_counter += 1;
-                  z[ds->z_counter].r = cnum.r;
-                  z[ds->z_counter].i = -cnum.i;
+                  ds->zz[ds->z_counter].r = cnum.r;
+                  ds->zz[ds->z_counter].i = -cnum.i;
                 }
               if ((r.i != 0.0) || (cnum.i == 0))
                 {
                   Csub (&b4ac, &cb, &cnum);  /* -b - sqrt(b^2 - 4ac) */
                   Cdiv (&ca, &cnum, &cnum);  /* ... /2a */
                   ds->z_counter += 1;
-                  Cmov (&cnum, &z[ds->z_counter]);
+                  Cmov (&cnum, &ds->zz[ds->z_counter]);
                   if (cnum.i != 0.0)
                     {
                       ds->z_counter += 1;
-                      z[ds->z_counter].r = cnum.r;
-                      z[ds->z_counter].i = -cnum.i;
+                      ds->zz[ds->z_counter].r = cnum.r;
+                      ds->zz[ds->z_counter].i = -cnum.i;
                     }
                 }
             } /* end switch */
@@ -1593,15 +1576,15 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
             {
               printf ("adding zero at Nyquist frequency\n");
               ds->z_counter += 1;
-              z[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
-              z[ds->z_counter].i = 0.0;
+              ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
+              ds->zz[ds->z_counter].i = 0.0;
             }
           if ((ifr->type == 2) || (ifr->type == 3))
             {
               printf ("adding zero at 0 Hz\n");
               ds->z_counter += 1;
-              z[ds->z_counter].r = 1.0; /* zero at 0 Hz */
-              z[ds->z_counter].i = 0.0;
+              ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
+              ds->zz[ds->z_counter].i = 0.0;
             }
         }
     }
@@ -1610,13 +1593,13 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
       while (2 * ds->n_solved_poles - 1 > ds->z_counter)
         {
           ds->z_counter += 1;
-          z[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
-          z[ds->z_counter].i = 0.0;
+          ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
+          ds->zz[ds->z_counter].i = 0.0;
           if ((ifr->type == 2) || (ifr->type == 4))
             {
               ds->z_counter += 1;
-              z[ds->z_counter].r = 1.0; /* zero at 0 Hz */
-              z[ds->z_counter].i = 0.0;
+              ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
+              ds->zz[ds->z_counter].i = 0.0;
             }
         }
     }
@@ -1630,27 +1613,27 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
     {
       double yy[MAX_COEFFICIENT_ARRAY_SIZE] = { 0, };
       for (j = 0; j < MAX_COEFFICIENT_ARRAY_SIZE; j++)
-        pp[j] = 0.0;
-      pp[0] = 1.0;
+        ds->cofn[j] = 0.0;
+      ds->cofn[0] = 1.0;
       for (j = 0; j < ds->n_solved_poles; j++)
         {
           int jj = j;
           if (icnt)
             jj += ds->n_solved_poles;
-          double a = z[jj].r;
-          double b = z[jj].i;
+          double a = ds->zz[jj].r;
+          double b = ds->zz[jj].i;
           int i;
           for (i = 0; i <= j; i++)
             {
               int jh = j - i;
-              pp[jh + 1] = pp[jh + 1] - a * pp[jh] + b * yy[jh];
-              yy[jh + 1] =  yy[jh + 1]  - b * pp[jh] - a * yy[jh];
+              ds->cofn[jh + 1] = ds->cofn[jh + 1] - a * ds->cofn[jh] + b * yy[jh];
+              yy[jh + 1] =  yy[jh + 1]  - b * ds->cofn[jh] - a * yy[jh];
             }
         }
       if (icnt == 0)
         {
           for (j = 0; j <= ds->n_solved_poles; j++)
-            aa[j] = pp[j];
+            ds->cofd[j] = ds->cofn[j];
         }
     }
   /* Scale factors of the pole and zero polynomials */
@@ -1665,35 +1648,35 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
     case 1:
     case 4:
       
-      pn = 1.0;
-      an = 1.0;
-      for (j=1; j <= ds->n_solved_poles; j++)
+      ds->numerator_accu = 1.0;
+      ds->denominator_accu = 1.0;
+      for (j = 1; j <= ds->n_solved_poles; j++)
         {
-          pn = a * pn + pp[j];
-          an = a * an + aa[j];
+          ds->numerator_accu = a * ds->numerator_accu + ds->cofn[j];
+          ds->denominator_accu = a * ds->denominator_accu + ds->cofd[j];
         }
       break;
       
     case 2:
       gam = PI / 2.0 - asin (ds->cgam);  /* = acos(cgam) */
       int mh = ds->n_solved_poles / 2;
-      pn = pp[mh];
-      an = aa[mh];
+      ds->numerator_accu = ds->cofn[mh];
+      ds->denominator_accu = ds->cofd[mh];
       double ai = 0.0;
-      if (mh > ((ds->n_solved_poles / 4)*2))
+      if (mh > ((ds->n_solved_poles / 4) * 2))
         {
           ai = 1.0;
-          pn = 0.0;
-          an = 0.0;
+          ds->numerator_accu = 0.0;
+          ds->denominator_accu = 0.0;
         }
-      for (j=1; j <= mh; j++)
+      for (j = 1; j <= mh; j++)
         {
           a = gam * j - ai * PI / 2.0;
           double cng = cos (a);
           int jh = mh + j;
           int jl = mh - j;
-          pn = pn + cng * (pp[jh] + (1.0 - 2.0 * ai) * pp[jl]);
-          an = an + cng * (aa[jh] + (1.0 - 2.0 * ai) * aa[jl]);
+          ds->numerator_accu = ds->numerator_accu + cng * (ds->cofn[jh] + (1.0 - 2.0 * ai) * ds->cofn[jl]);
+          ds->denominator_accu = ds->denominator_accu + cng * (ds->cofd[jh] + (1.0 - 2.0 * ai) * ds->cofd[jl]);
         }
     }
   return 0;
@@ -1704,17 +1687,17 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
                                              DesignState                    *ds)
 {
   int j;
-  ds->gain = an / (pn * ds->gain_scale);
-  if ((ifr->kind != 3) && (pn == 0))
+  ds->gain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
+  if ((ifr->kind != 3) && (ds->numerator_accu == 0))
     ds->gain = 1.0;
   printf ("constant gain factor %23.13E\n", ds->gain);
   for (j = 0; j <= ds->n_solved_poles; j++)
-    pp[j] = ds->gain * pp[j];
+    ds->cofn[j] = ds->gain * ds->cofn[j];
   
   printf ("z plane Denominator      Numerator\n");
   for (j = 0; j <= ds->n_solved_poles; j++)
     {
-      printf ("%2d %17.9E %17.9E\n", j, aa[j], pp[j]);
+      printf ("%2d %17.9E %17.9E\n", j, ds->cofd[j], ds->cofn[j]);
     }
 
   /* I /think/ at this point the polynomial is factorized in 2nd order filters,
@@ -1723,16 +1706,16 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
   printf ("poles and zeros with corresponding quadratic factors\n");
   for (j = 0; j < ds->n_solved_poles; j++)
     {
-      double a = z[j].r;
-      double b = z[j].i;
+      double a = ds->zz[j].r;
+      double b = ds->zz[j].i;
       if (b >= 0.0)
         {
           printf ("pole  %23.13E %23.13E\n", a, b);
           print_quadratic_factors (ifr, ds, a, b, 1);
         }
       int jj = j + ds->n_solved_poles;
-      a = z[jj].r;
-      b = z[jj].i;
+      a = ds->zz[jj].r;
+      b = ds->zz[jj].i;
       if (b >= 0.0)
         {
           printf ("zero  %23.13E %23.13E\n", a, b);
@@ -1839,9 +1822,9 @@ response (const BseIIRFilterRequirements *ifr,
   den.i = 0.0;
   for (j = 0; j < ds->n_solved_poles; j++)
     {
-      Csub (&z[j], &x, &w);
+      Csub (&ds->zz[j], &x, &w);
       Cmul (&w, &den, &den);
-      Csub (&z[j + ds->n_solved_poles], &x, &w);
+      Csub (&ds->zz[j + ds->n_solved_poles], &x, &w);
       Cmul (&w, &num, &num);
     }
   Cdiv (&den, &num, &w);
@@ -1850,6 +1833,7 @@ response (const BseIIRFilterRequirements *ifr,
   u = Cabs (&w);
   return u;
 }
+
 
 static double
 my_getnum (const char *text)

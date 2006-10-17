@@ -1,3 +1,9 @@
+Tue Oct 17 22:03:52 2006  Tim Janik  <timj@imendio.com>
+
+	* bseellipticfilter.h: 
+	* bseellipticfilter.c: turned remaining global variables into local
+	variables or structure members.
+
 Tue Oct 17 02:12:24 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.h, bseellipticfilter.c: moved elliptic integral
