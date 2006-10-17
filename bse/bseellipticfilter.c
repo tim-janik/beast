@@ -809,6 +809,50 @@ ellpk (double x)
     }
 }
 
+/* jacobi_theta_by_nome():
+ * Find parameter corresponding to given nome by expansion
+ * in theta functions:
+ * AMS55 #16.38.5, 16.38.7
+ *
+ *       1/2
+ * (2K)                   4     9
+ * (--)     =  1 + 2q + 2q  + 2q  + ...  =  Theta (0,q)
+ * (pi)                                          3
+ *
+ *
+ *       1/2
+ * (2K)     1/4       1/4        2    6    12    20
+ * (--)    m     =  2q    (1 + q  + q  + q   + q   + ...) = Theta (0,q)
+ * (pi)                                                           2
+ *
+ * The nome q(m) = exp(- pi K(1-m)/K(m)).
+ *
+ *                                1/2
+ * Given q, this program returns m   .
+ */
+static double
+jacobi_theta_by_nome (double q)
+{
+  double t1, a = 1.0, b = 1.0, r = 1.0, p = q;
+  do
+    {
+      r *= p;
+      a += 2.0 * r;
+      t1 = fabs (r / a);
+      
+      r *= p;
+      b += r;
+      p *= q;
+      double t2 = fabs (r / b);
+      if (t2 > t1)
+	t1 = t2;
+    }
+  while (t1 > MACHEP);
+  a = b / a;
+  a = 4.0 * sqrt (q) * a * a;	/* see above formulas, solved for m */
+  return a;
+}
+
 /* --- misc utilities --- */
 /* polevl - Evaluate polynomial
  *
@@ -852,6 +896,7 @@ polevl (double x, const double coef[], int N)
 }
 
 /* --- prototypes --- */
+#if 0
 static int    find_elliptic_locations_in_lambda_plane      (const BseIIRFilterRequirements *ifr,
                                                             DesignState                    *ds);
 static int    find_s_plane_poles_and_zeros                 (const BseIIRFilterRequirements *ifr,
@@ -871,6 +916,7 @@ static void   print_filter_table                           (const BseIIRFilterRe
 static double response                                     (const BseIIRFilterRequirements *ifr,
                                                             DesignState                    *ds,
                                                             double f, double amp);
+#endif
 
 /* --- functions --- */
 static void
@@ -887,6 +933,645 @@ print_z_fraction_before_zplnc (const BseIIRFilterRequirements *ifr,
   int j;
   for (j = 0; j <= ds->n_solved_poles; j++)
     VERBOSE ("%2d %17.9E %17.9E\n", j, ds->cofd[j], ds->cofn[j] * zgain); // BSE info
+}
+
+
+static int
+find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
+                                         DesignState                    *ds)
+{
+  double k = ds->wc / ds->wr;
+  double m = k * k;
+  ds->elliptic_Kk = ellpk (1.0 - m);
+  ds->elliptic_Kpk = ellpk (m);
+  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, ds->elliptic_Kk, ds->elliptic_Kpk); // BSE info
+  double q = exp (-PI * ifr->order * ds->elliptic_Kpk / ds->elliptic_Kk);	/* the nome of k1 */
+  double m1 = jacobi_theta_by_nome (q); /* see below */
+  /* Note m1 = ds->ripple_epsilon / sqrt(A*A - 1.0) */
+  double a = ds->ripple_epsilon / m1;
+  a =  a * a + 1;
+  a = 10.0 * log (a) / log (10.0);
+  printf ("dbdown %.9E\n", a);
+  a = 180.0 * asin (k) / PI;
+  double b = 1.0 / (1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
+  b = sqrt (1.0 - b);
+  printf ("theta=%.9E, rho=%.9E\n", a, b);
+  m1 *= m1;
+  double m1p = 1.0 - m1;
+  double Kk1 = ellpk (m1p);
+  double Kpk1 = ellpk (m1);
+  double r = Kpk1 * ds->elliptic_Kk / (Kk1 * ds->elliptic_Kpk);
+  printf ("consistency check: n= %.14E\n", r);
+  EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
+  /*   -1
+   * sn   j/ds->ripple_epsilon\m  =  j ellik(atan(1/ds->ripple_epsilon), m)
+   */
+  b = 1.0 / ds->ripple_epsilon;
+  ds->elliptic_phi = atan (b);
+  double u = ellik (ds->elliptic_phi, m1p);
+  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", ds->elliptic_phi, m1p, u);
+  /* consistency check on inverse sn */
+  double sn, cn, dn;
+  ellpj (u, m1p, &sn, &cn, &dn, &ds->elliptic_phi);
+  a = sn / cn;
+  EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
+  ds->elliptic_k = k;
+  ds->elliptic_u = u * ds->elliptic_Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
+  ds->elliptic_m = m;
+  return 0;
+}
+
+/* calculate s plane poles and zeros, normalized to wc = 1 */
+static int
+find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
+                              DesignState                    *ds)
+{
+  double *zs = ds->zs;
+  int i, j;
+  for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
+    zs[i] = 0.0;
+  ds->n_poles = (ifr->order + 1) / 2;
+  ds->n_zeros = 0;
+  if (ifr->kind == 1)
+    {
+      double m;
+      /* Butterworth poles equally spaced around the unit circle */
+      if (ifr->order & 1)
+        m = 0.0;
+      else
+        m = PI / (2.0 * ifr->order);
+      for (i = 0; i < ds->n_poles; i++)
+        {	/* poles */
+          int lr = i + i;
+          zs[lr] = -cos (m);
+          zs[lr + 1] = sin (m);
+          m += PI / ifr->order;
+        }	
+      /* high pass or band reject
+       */
+      if (ifr->type >= 3)
+        {
+          int ii = 0;
+          /* map s => 1/s */
+          for (j = 0; j < ds->n_poles; j++)
+            {
+              int ir = j + j;
+              ii = ir + 1;
+              double b = zs[ir]*zs[ir] + zs[ii]*zs[ii];
+              zs[ir] = zs[ir] / b;
+              zs[ii] = zs[ii] / b;
+            }
+          /* The zeros at infinity map to the origin.
+           */
+          ds->n_zeros = ds->n_poles;
+          if (ifr->type == 4)
+            {
+              ds->n_zeros += ifr->order / 2;
+            }
+          for (j = 0; j < ds->n_zeros; j++)
+            {
+              int ir = ii + 1;
+              ii = ir + 1;
+              zs[ir] = 0.0;
+              zs[ii] = 0.0;
+            }
+        }
+    }
+  if (ifr->kind == 2)
+    {
+      /* For Chebyshev, find radii of two Butterworth circles
+       * See Gold & Rader, page 60
+       */
+      double rho = (ds->chebyshev_phi - 1.0) * (ds->chebyshev_phi + 1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
+      ds->ripple_epsilon = sqrt (rho);
+      /* sqrt(1 + 1/ds->ripple_epsilon^2) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
+       */
+      ds->chebyshev_phi = (ds->chebyshev_phi + 1.0) / ds->ripple_epsilon;
+      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", ds->chebyshev_phi, ds->ripple_epsilon); // BSE info
+      ds->chebyshev_phi = pow (ds->chebyshev_phi, 1.0 / ifr->order);  /* raise to the 1/n power */
+      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", ds->chebyshev_phi, ifr->order * 1.0); // BSE info
+      double b = 0.5 * (ds->chebyshev_phi + 1.0 / ds->chebyshev_phi); /* y coordinates are on this circle */
+      double a = 0.5 * (ds->chebyshev_phi - 1.0 / ds->chebyshev_phi); /* x coordinates are on this circle */
+      double m;
+      if (ifr->order & 1)
+        m = 0.0;
+      else
+        m = PI / (2.0 * ifr->order);
+      for (i = 0; i < ds->n_poles; i++)
+        {	/* poles */
+          int lr = i + i;
+          zs[lr] = -a * cos (m);
+          zs[lr + 1] = b * sin (m);
+          m += PI / ifr->order;
+        }	
+      /* high pass or band reject
+       */
+      if (ifr->type >= 3)
+        {
+          int ii = 0;
+          /* map s => 1/s */
+          for (j = 0; j < ds->n_poles; j++)
+            {
+              int ir = j + j;
+              ii = ir + 1;
+              b = zs[ir]*zs[ir] + zs[ii]*zs[ii];
+              zs[ir] = zs[ir] / b;
+              zs[ii] = zs[ii] / b;
+            }
+          /* The zeros at infinity map to the origin.
+           */
+          ds->n_zeros = ds->n_poles;
+          if (ifr->type == 4)
+            {
+              ds->n_zeros += ifr->order / 2;
+            }
+          for (j = 0; j < ds->n_zeros; j++)
+            {
+              int ir = ii + 1;
+              ii = ir + 1;
+              zs[ir] = 0.0;
+              zs[ii] = 0.0;
+            }
+        }
+    }
+  if (ifr->kind == 3)   /* elliptic filter -- stw */
+    {
+      double phi1 = 0.0, m = ds->elliptic_m;
+      ds->n_zeros = ifr->order / 2;
+      double sn1, cn1, dn1;
+      ellpj (ds->elliptic_u, 1.0 - m, &sn1, &cn1, &dn1, &phi1);
+      for (i = 0; i < ds->n_zeros; i++)
+        {	/* zeros */
+          double a = ifr->order - 1 - i - i;
+          double b = (ds->elliptic_Kk * a) / ifr->order;
+          double sn, cn, dn;
+          ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
+          int lr = 2 * ds->n_poles + 2 * i;
+          zs[lr] = 0.0;
+          a = ds->wc / (ds->elliptic_k * sn);	/* elliptic_k = sqrt(m) */
+          zs[lr + 1] = a;
+        }
+      for (i = 0; i < ds->n_poles; i++)
+        {	/* poles */
+          double a = ifr->order - 1 - i - i;
+          double b = a * ds->elliptic_Kk / ifr->order;
+          double sn, cn, dn;
+          ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
+          double r = ds->elliptic_k * sn * sn1;
+          b = cn1 * cn1 + r * r;
+          a = -ds->wc * cn * dn * sn1 * cn1 / b;
+          int lr = i + i;
+          zs[lr] = a;
+          b = ds->wc * sn * dn1 / b;
+          zs[lr + 1] = b;
+        }	
+      if (ifr->type >= 3)
+        {
+          int ii = 0, nt = ds->n_poles + ds->n_zeros;
+          for (j = 0; j < nt; j++)
+            {
+              int ir = j + j;
+              ii = ir + 1;
+              double b = zs[ir]*zs[ir] + zs[ii]*zs[ii];
+              zs[ir] = zs[ir] / b;
+              zs[ii] = zs[ii] / b;
+            }
+          while (ds->n_poles > ds->n_zeros)
+            {
+              int ir = ii + 1;
+              ii = ir + 1;
+              ds->n_zeros += 1;
+              zs[ir] = 0.0;
+              zs[ii] = 0.0;
+            }
+        }
+    }
+  printf ("s plane poles:\n");
+  j = 0;
+  for (i = 0; i < ds->n_poles + ds->n_zeros; i++)
+    {
+      double a = zs[j];
+      ++j;
+      double b = zs[j];
+      ++j;
+      printf ("%.9E %.9E\n", a, b);
+      if (i == ds->n_poles - 1)
+        printf ("s plane zeros:\n");
+    }
+  return 0;
+}
+
+/* convert s plane poles and zeros to the z plane. */
+static int
+convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
+                            DesignState                    *ds)
+{
+  Complex r, cnum, cden, cwc, ca, cb, b4ac;
+  double C;
+  
+  if (ifr->kind == 3)
+    C = ds->tan_angle_frequency;
+  else
+    C = ds->wc;
+  
+  int i;
+  for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
+    {
+      ds->zz[i].r = 0.0;
+      ds->zz[i].i = 0.0;
+    }
+
+  int nc = ds->n_poles;
+  ds->z_counter = -1;
+  int icnt, ii = -1;
+  for (icnt = 0; icnt < 2; icnt++)
+    {
+      /* The maps from s plane to z plane */
+      do
+	{
+          int ir = ii + 1;
+          ii = ir + 1;
+          r.r = ds->zs[ir];
+          r.i = ds->zs[ii];
+          
+          switch (ifr->type)
+            {
+            case 1:
+            case 3:
+              /* Substitute  s - r  =  s/wc - r = (1/wc)(z-1)/(z+1) - r
+               *
+               *     1  1 - r wc (       1 + r wc)
+               * =  --- -------- (z  -  --------)
+               *    z+1    wc    (       1 - r wc)
+               *
+               * giving the root in the z plane.
+               */
+              cnum.r = 1 + C * r.r;
+              cnum.i = C * r.i;
+              cden.r = 1 - C * r.r;
+              cden.i = -C * r.i;
+              ds->z_counter += 1;
+              Cdiv (&cden, &cnum, &ds->zz[ds->z_counter]);
+              if (r.i != 0.0)
+                {
+                  /* fill in complex conjugate root */
+                  ds->z_counter += 1;
+                  ds->zz[ds->z_counter].r = ds->zz[ds->z_counter - 1].r;
+                  ds->zz[ds->z_counter].i = -ds->zz[ds->z_counter - 1].i;
+                }
+              break;
+              
+            case 2:
+            case 4:
+              /* Substitute  s - r  =>  s/wc - r
+               *
+               *     z^2 - 2 z cgam + 1
+               * =>  ------------------  -  r
+               *         (z^2 + 1) wc  
+               *
+               *         1
+               * =  ------------  [ (1 - r wc) z^2  - 2 cgam z  +  1 + r wc ]
+               *    (z^2 + 1) wc  
+               *
+               * and solve for the roots in the z plane.
+               */
+              if (ifr->kind == 2)
+                cwc.r = ds->chebyshev_band_cbp;
+              else
+                cwc.r = ds->tan_angle_frequency;
+              cwc.i = 0.0;
+              Cmul (&r, &cwc, &cnum);     /* r wc */
+              Csub (&cnum, &COMPLEX_ONE, &ca);   /* a = 1 - r wc */
+              Cmul (&cnum, &cnum, &b4ac); /* 1 - (r wc)^2 */
+              Csub (&b4ac, &COMPLEX_ONE, &b4ac);
+              b4ac.r *= 4.0;               /* 4ac */
+              b4ac.i *= 4.0;
+              cb.r = -2.0 * ds->cgam;          /* b */
+              cb.i = 0.0;
+              Cmul (&cb, &cb, &cnum);     /* b^2 */
+              Csub (&b4ac, &cnum, &b4ac); /* b^2 - 4 ac */
+              Csqrt (&b4ac, &b4ac);
+              cb.r = -cb.r;  /* -b */
+              cb.i = -cb.i;
+              ca.r *= 2.0; /* 2a */
+              ca.i *= 2.0;
+              Cadd (&b4ac, &cb, &cnum);   /* -b + sqrt(b^2 - 4ac) */
+              Cdiv (&ca, &cnum, &cnum);   /* ... /2a */
+              ds->z_counter += 1;
+              Cmov (&cnum, &ds->zz[ds->z_counter]);
+              if (cnum.i != 0.0)
+                {
+                  ds->z_counter += 1;
+                  ds->zz[ds->z_counter].r = cnum.r;
+                  ds->zz[ds->z_counter].i = -cnum.i;
+                }
+              if ((r.i != 0.0) || (cnum.i == 0))
+                {
+                  Csub (&b4ac, &cb, &cnum);  /* -b - sqrt(b^2 - 4ac) */
+                  Cdiv (&ca, &cnum, &cnum);  /* ... /2a */
+                  ds->z_counter += 1;
+                  Cmov (&cnum, &ds->zz[ds->z_counter]);
+                  if (cnum.i != 0.0)
+                    {
+                      ds->z_counter += 1;
+                      ds->zz[ds->z_counter].r = cnum.r;
+                      ds->zz[ds->z_counter].i = -cnum.i;
+                    }
+                }
+            } /* end switch */
+	}
+      while (--nc > 0);
+      
+      if (icnt == 0)
+	{
+          ds->n_solved_poles = ds->z_counter + 1;
+          if (ds->n_zeros <= 0)
+            {
+              if (ifr->kind != 3)
+                return 0;
+              else
+                break;
+            }
+	}
+      nc = ds->n_zeros;
+    } /* end for() loop */
+  return 0;
+}
+
+static int
+z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *ifr,
+                                              DesignState                    *ds)
+{
+  Complex lin[2];
+  
+  lin[1].r = 1.0;
+  lin[1].i = 0.0;
+  
+  if (ifr->kind != 3)
+    { /* Butterworth or Chebyshev */
+      /* generate the remaining zeros */
+      while (2 * ds->n_solved_poles - 1 > ds->z_counter)
+        {
+          if (ifr->type != 3)
+            {
+              printf ("adding zero at Nyquist frequency\n");
+              ds->z_counter += 1;
+              ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
+              ds->zz[ds->z_counter].i = 0.0;
+            }
+          if ((ifr->type == 2) || (ifr->type == 3))
+            {
+              printf ("adding zero at 0 Hz\n");
+              ds->z_counter += 1;
+              ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
+              ds->zz[ds->z_counter].i = 0.0;
+            }
+        }
+    }
+  else
+    { /* elliptic */
+      while (2 * ds->n_solved_poles - 1 > ds->z_counter)
+        {
+          ds->z_counter += 1;
+          ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
+          ds->zz[ds->z_counter].i = 0.0;
+          if ((ifr->type == 2) || (ifr->type == 4))
+            {
+              ds->z_counter += 1;
+              ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
+              ds->zz[ds->z_counter].i = 0.0;
+            }
+        }
+    }
+  printf ("order = %d\n", ds->n_solved_poles);
+
+  /* Expand the poles and zeros into numerator and
+   * denominator polynomials
+   */
+  int j, icnt;
+  for (icnt = 0; icnt < 2; icnt++)
+    {
+      double yy[MAX_COEFFICIENT_ARRAY_SIZE] = { 0, };
+      for (j = 0; j < MAX_COEFFICIENT_ARRAY_SIZE; j++)
+        ds->cofn[j] = 0.0;
+      ds->cofn[0] = 1.0;
+      for (j = 0; j < ds->n_solved_poles; j++)
+        {
+          int jj = j;
+          if (icnt)
+            jj += ds->n_solved_poles;
+          double a = ds->zz[jj].r;
+          double b = ds->zz[jj].i;
+          int i;
+          for (i = 0; i <= j; i++)
+            {
+              int jh = j - i;
+              ds->cofn[jh + 1] = ds->cofn[jh + 1] - a * ds->cofn[jh] + b * yy[jh];
+              yy[jh + 1] =  yy[jh + 1]  - b * ds->cofn[jh] - a * yy[jh];
+            }
+        }
+      if (icnt == 0)
+        {
+          for (j = 0; j <= ds->n_solved_poles; j++)
+            ds->cofd[j] = ds->cofn[j];
+        }
+    }
+  /* Scale factors of the pole and zero polynomials */
+  double a = 1.0;
+  switch (ifr->type)
+    {
+      double gam;
+
+    case 3:
+      a = -1.0;
+      
+    case 1:
+    case 4:
+      
+      ds->numerator_accu = 1.0;
+      ds->denominator_accu = 1.0;
+      for (j = 1; j <= ds->n_solved_poles; j++)
+        {
+          ds->numerator_accu = a * ds->numerator_accu + ds->cofn[j];
+          ds->denominator_accu = a * ds->denominator_accu + ds->cofd[j];
+        }
+      break;
+      
+    case 2:
+      gam = PI / 2.0 - asin (ds->cgam);  /* = acos(cgam) */
+      int mh = ds->n_solved_poles / 2;
+      ds->numerator_accu = ds->cofn[mh];
+      ds->denominator_accu = ds->cofd[mh];
+      double ai = 0.0;
+      if (mh > ((ds->n_solved_poles / 4) * 2))
+        {
+          ai = 1.0;
+          ds->numerator_accu = 0.0;
+          ds->denominator_accu = 0.0;
+        }
+      for (j = 1; j <= mh; j++)
+        {
+          a = gam * j - ai * PI / 2.0;
+          double cng = cos (a);
+          int jh = mh + j;
+          int jl = mh - j;
+          ds->numerator_accu = ds->numerator_accu + cng * (ds->cofn[jh] + (1.0 - 2.0 * ai) * ds->cofn[jl]);
+          ds->denominator_accu = ds->denominator_accu + cng * (ds->cofd[jh] + (1.0 - 2.0 * ai) * ds->cofd[jl]);
+        }
+    }
+  return 0;
+}
+
+/* display quadratic factors */
+static int
+print_quadratic_factors (const BseIIRFilterRequirements *ifr,
+                         DesignState                    *ds,
+                         double x, double y,
+                         int pzflg) /* 1 if poles, 0 if zeros */
+{
+  double a, b, r, f, g, g0;
+  
+  if (y > 1.0e-16)
+    {
+      a = -2.0 * x;
+      b = x * x + y * y;
+    }
+  else
+    {
+      a = -x;
+      b = 0.0;
+    }
+  printf ("q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a);
+  if (b != 0.0)
+    {
+      /* resonant frequency */
+      r = sqrt (b);
+      f = PI / 2.0 - asin (-a/(2.0 * r));
+      f = f * ifr->sampling_frequency / (2.0 * PI);
+      /* gain at resonance */
+      g = 1.0 + r;
+      g = g * g - (a * a / r);
+      g = (1.0 - r) * sqrt (g);
+      g0 = 1.0 + a + b;	/* gain at d.c. */
+    }
+  else
+    {
+      /* It is really a first-order network.
+       * Give the gain at ds->nyquist_frequency and D.C.
+       */
+      f = ds->nyquist_frequency;
+      g = 1.0 - a;
+      g0 = 1.0 + a;
+    }
+  
+  if (pzflg)
+    {
+      if (g != 0.0)
+        g = 1.0 / g;
+      else
+        g = MAXNUM;
+      if (g0 != 0.0)
+        g0 = 1.0 / g0;
+      else
+        g = MAXNUM;
+    }
+  printf ("f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0);
+  return 0;
+}
+
+static int
+gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr, /* zplnc */
+                                             DesignState                    *ds)
+{
+  int j;
+  ds->gain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
+  if ((ifr->kind != 3) && (ds->numerator_accu == 0))
+    ds->gain = 1.0;
+  printf ("constant gain factor %23.13E\n", ds->gain);
+  for (j = 0; j <= ds->n_solved_poles; j++)
+    ds->cofn[j] = ds->gain * ds->cofn[j];
+  
+  printf ("z plane Denominator      Numerator\n");
+  for (j = 0; j <= ds->n_solved_poles; j++)
+    {
+      printf ("%2d %17.9E %17.9E\n", j, ds->cofd[j], ds->cofn[j]);
+    }
+
+  /* I /think/ at this point the polynomial is factorized in 2nd order filters,
+   * so that it can be implemented without stability problems -- stw
+   */
+  printf ("poles and zeros with corresponding quadratic factors\n");
+  for (j = 0; j < ds->n_solved_poles; j++)
+    {
+      double a = ds->zz[j].r;
+      double b = ds->zz[j].i;
+      if (b >= 0.0)
+        {
+          printf ("pole  %23.13E %23.13E\n", a, b);
+          print_quadratic_factors (ifr, ds, a, b, 1);
+        }
+      int jj = j + ds->n_solved_poles;
+      a = ds->zz[jj].r;
+      b = ds->zz[jj].i;
+      if (b >= 0.0)
+        {
+          printf ("zero  %23.13E %23.13E\n", a, b);
+          print_quadratic_factors (ifr, ds, a, b, 0);
+        }
+    }
+  return 0;
+}
+
+/* Calculate frequency response at f Hz mulitplied by amp */
+static double
+response (const BseIIRFilterRequirements *ifr,
+          DesignState                    *ds,
+          double f, double amp)
+{
+  Complex x, num, den, w;
+  double u;
+  int j;
+  
+  /* exp(j omega T) */
+  u = 2.0 * PI * f /ifr->sampling_frequency;
+  x.r = cos (u);
+  x.i = sin (u);
+  
+  num.r = 1.0;
+  num.i = 0.0;
+  den.r = 1.0;
+  den.i = 0.0;
+  for (j = 0; j < ds->n_solved_poles; j++)
+    {
+      Csub (&ds->zz[j], &x, &w);
+      Cmul (&w, &den, &den);
+      Csub (&ds->zz[j + ds->n_solved_poles], &x, &w);
+      Cmul (&w, &num, &num);
+    }
+  Cdiv (&den, &num, &w);
+  w.r *= amp;
+  w.i *= amp;
+  u = Cabs (&w);
+  return u;
+}
+
+/* Print table of filter frequency response */
+static void
+print_filter_table (const BseIIRFilterRequirements *ifr,
+                    DesignState                    *ds)
+{
+  double f, limit = 0.05 * ds->nyquist_frequency * 21;
+  
+  for (f=0; f < limit; f += limit / 21.)
+    {
+      double r = response (ifr, ds, f, ds->gain);
+      if (r <= 0.0)
+        r = -999.99;
+      else
+        r = 2.0 * DECIBELL_FACTOR * log (r);
+      printf ("%10.1f  %10.2f\n", f, r);
+      // f = f + 0.05 * ds->nyquist_frequency;
+    }
 }
 
 /* --- main IIR filter design function --- */
@@ -1152,689 +1837,6 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   return "storage arrays too small";
 }
 
-static int
-find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
-                                         DesignState                    *ds)
-{
-  double k = ds->wc / ds->wr;
-  double m = k * k;
-  ds->elliptic_Kk = ellpk (1.0 - m);
-  ds->elliptic_Kpk = ellpk (m);
-  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, ds->elliptic_Kk, ds->elliptic_Kpk); // BSE info
-  double q = exp (-PI * ifr->order * ds->elliptic_Kpk / ds->elliptic_Kk);	/* the nome of k1 */
-  double m1 = jacobi_theta_by_nome (q); /* see below */
-  /* Note m1 = ds->ripple_epsilon / sqrt(A*A - 1.0) */
-  double a = ds->ripple_epsilon / m1;
-  a =  a * a + 1;
-  a = 10.0 * log (a) / log (10.0);
-  printf ("dbdown %.9E\n", a);
-  a = 180.0 * asin (k) / PI;
-  double b = 1.0 / (1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
-  b = sqrt (1.0 - b);
-  printf ("theta=%.9E, rho=%.9E\n", a, b);
-  m1 *= m1;
-  double m1p = 1.0 - m1;
-  double Kk1 = ellpk (m1p);
-  double Kpk1 = ellpk (m1);
-  double r = Kpk1 * ds->elliptic_Kk / (Kk1 * ds->elliptic_Kpk);
-  printf ("consistency check: n= %.14E\n", r);
-  EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
-  /*   -1
-   * sn   j/ds->ripple_epsilon\m  =  j ellik(atan(1/ds->ripple_epsilon), m)
-   */
-  b = 1.0 / ds->ripple_epsilon;
-  ds->elliptic_phi = atan (b);
-  double u = ellik (ds->elliptic_phi, m1p);
-  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", ds->elliptic_phi, m1p, u);
-  /* consistency check on inverse sn */
-  double sn, cn, dn;
-  ellpj (u, m1p, &sn, &cn, &dn, &ds->elliptic_phi);
-  a = sn / cn;
-  EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
-  ds->elliptic_k = k;
-  ds->elliptic_u = u * ds->elliptic_Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
-  ds->elliptic_m = m;
-  return 0;
-}
-
-/* calculate s plane poles and zeros, normalized to wc = 1 */
-static int
-find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
-                              DesignState                    *ds)
-{
-  double *zs = ds->zs;
-  int i, j;
-  for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
-    zs[i] = 0.0;
-  ds->n_poles = (ifr->order + 1) / 2;
-  ds->n_zeros = 0;
-  if (ifr->kind == 1)
-    {
-      double m;
-      /* Butterworth poles equally spaced around the unit circle */
-      if (ifr->order & 1)
-        m = 0.0;
-      else
-        m = PI / (2.0 * ifr->order);
-      for (i = 0; i < ds->n_poles; i++)
-        {	/* poles */
-          int lr = i + i;
-          zs[lr] = -cos (m);
-          zs[lr + 1] = sin (m);
-          m += PI / ifr->order;
-        }	
-      /* high pass or band reject
-       */
-      if (ifr->type >= 3)
-        {
-          int ii = 0;
-          /* map s => 1/s */
-          for (j = 0; j < ds->n_poles; j++)
-            {
-              int ir = j + j;
-              ii = ir + 1;
-              double b = zs[ir]*zs[ir] + zs[ii]*zs[ii];
-              zs[ir] = zs[ir] / b;
-              zs[ii] = zs[ii] / b;
-            }
-          /* The zeros at infinity map to the origin.
-           */
-          ds->n_zeros = ds->n_poles;
-          if (ifr->type == 4)
-            {
-              ds->n_zeros += ifr->order / 2;
-            }
-          for (j = 0; j < ds->n_zeros; j++)
-            {
-              int ir = ii + 1;
-              ii = ir + 1;
-              zs[ir] = 0.0;
-              zs[ii] = 0.0;
-            }
-        }
-    }
-  if (ifr->kind == 2)
-    {
-      /* For Chebyshev, find radii of two Butterworth circles
-       * See Gold & Rader, page 60
-       */
-      double rho = (ds->chebyshev_phi - 1.0) * (ds->chebyshev_phi + 1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
-      ds->ripple_epsilon = sqrt (rho);
-      /* sqrt(1 + 1/ds->ripple_epsilon^2) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
-       */
-      ds->chebyshev_phi = (ds->chebyshev_phi + 1.0) / ds->ripple_epsilon;
-      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", ds->chebyshev_phi, ds->ripple_epsilon); // BSE info
-      ds->chebyshev_phi = pow (ds->chebyshev_phi, 1.0 / ifr->order);  /* raise to the 1/n power */
-      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", ds->chebyshev_phi, ifr->order * 1.0); // BSE info
-      double b = 0.5 * (ds->chebyshev_phi + 1.0 / ds->chebyshev_phi); /* y coordinates are on this circle */
-      double a = 0.5 * (ds->chebyshev_phi - 1.0 / ds->chebyshev_phi); /* x coordinates are on this circle */
-      double m;
-      if (ifr->order & 1)
-        m = 0.0;
-      else
-        m = PI / (2.0 * ifr->order);
-      for (i = 0; i < ds->n_poles; i++)
-        {	/* poles */
-          int lr = i + i;
-          zs[lr] = -a * cos (m);
-          zs[lr + 1] = b * sin (m);
-          m += PI / ifr->order;
-        }	
-      /* high pass or band reject
-       */
-      if (ifr->type >= 3)
-        {
-          int ii = 0;
-          /* map s => 1/s */
-          for (j = 0; j < ds->n_poles; j++)
-            {
-              int ir = j + j;
-              ii = ir + 1;
-              b = zs[ir]*zs[ir] + zs[ii]*zs[ii];
-              zs[ir] = zs[ir] / b;
-              zs[ii] = zs[ii] / b;
-            }
-          /* The zeros at infinity map to the origin.
-           */
-          ds->n_zeros = ds->n_poles;
-          if (ifr->type == 4)
-            {
-              ds->n_zeros += ifr->order / 2;
-            }
-          for (j = 0; j < ds->n_zeros; j++)
-            {
-              int ir = ii + 1;
-              ii = ir + 1;
-              zs[ir] = 0.0;
-              zs[ii] = 0.0;
-            }
-        }
-    }
-  if (ifr->kind == 3)   /* elliptic filter -- stw */
-    {
-      double phi1 = 0.0, m = ds->elliptic_m;
-      ds->n_zeros = ifr->order / 2;
-      double sn1, cn1, dn1;
-      ellpj (ds->elliptic_u, 1.0 - m, &sn1, &cn1, &dn1, &phi1);
-      for (i = 0; i < ds->n_zeros; i++)
-        {	/* zeros */
-          double a = ifr->order - 1 - i - i;
-          double b = (ds->elliptic_Kk * a) / ifr->order;
-          double sn, cn, dn;
-          ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
-          int lr = 2 * ds->n_poles + 2 * i;
-          zs[lr] = 0.0;
-          a = ds->wc / (ds->elliptic_k * sn);	/* elliptic_k = sqrt(m) */
-          zs[lr + 1] = a;
-        }
-      for (i = 0; i < ds->n_poles; i++)
-        {	/* poles */
-          double a = ifr->order - 1 - i - i;
-          double b = a * ds->elliptic_Kk / ifr->order;
-          double sn, cn, dn;
-          ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
-          double r = ds->elliptic_k * sn * sn1;
-          b = cn1 * cn1 + r * r;
-          a = -ds->wc * cn * dn * sn1 * cn1 / b;
-          int lr = i + i;
-          zs[lr] = a;
-          b = ds->wc * sn * dn1 / b;
-          zs[lr + 1] = b;
-        }	
-      if (ifr->type >= 3)
-        {
-          int ii = 0, nt = ds->n_poles + ds->n_zeros;
-          for (j = 0; j < nt; j++)
-            {
-              int ir = j + j;
-              ii = ir + 1;
-              double b = zs[ir]*zs[ir] + zs[ii]*zs[ii];
-              zs[ir] = zs[ir] / b;
-              zs[ii] = zs[ii] / b;
-            }
-          while (ds->n_poles > ds->n_zeros)
-            {
-              int ir = ii + 1;
-              ii = ir + 1;
-              ds->n_zeros += 1;
-              zs[ir] = 0.0;
-              zs[ii] = 0.0;
-            }
-        }
-    }
-  printf ("s plane poles:\n");
-  j = 0;
-  for (i = 0; i < ds->n_poles + ds->n_zeros; i++)
-    {
-      double a = zs[j];
-      ++j;
-      double b = zs[j];
-      ++j;
-      printf ("%.9E %.9E\n", a, b);
-      if (i == ds->n_poles - 1)
-        printf ("s plane zeros:\n");
-    }
-  return 0;
-}
-
-/* jacobi_theta_by_nome():
- * Find parameter corresponding to given nome by expansion
- * in theta functions:
- * AMS55 #16.38.5, 16.38.7
- *
- *       1/2
- * (2K)                   4     9
- * (--)     =  1 + 2q + 2q  + 2q  + ...  =  Theta (0,q)
- * (pi)                                          3
- *
- *
- *       1/2
- * (2K)     1/4       1/4        2    6    12    20
- * (--)    m     =  2q    (1 + q  + q  + q   + q   + ...) = Theta (0,q)
- * (pi)                                                           2
- *
- * The nome q(m) = exp(- pi K(1-m)/K(m)).
- *
- *                                1/2
- * Given q, this program returns m   .
- */
-static double
-jacobi_theta_by_nome (double q)
-{
-  double t1, a = 1.0, b = 1.0, r = 1.0, p = q;
-  do
-    {
-      r *= p;
-      a += 2.0 * r;
-      t1 = fabs (r / a);
-      
-      r *= p;
-      b += r;
-      p *= q;
-      double t2 = fabs (r / b);
-      if (t2 > t1)
-	t1 = t2;
-    }
-  while (t1 > MACHEP);
-  a = b / a;
-  a = 4.0 * sqrt (q) * a * a;	/* see above formulas, solved for m */
-  return a;
-}
-
-/* convert s plane poles and zeros to the z plane. */
-static int
-convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
-                            DesignState                    *ds)
-{
-  Complex r, cnum, cden, cwc, ca, cb, b4ac;
-  double C;
-  
-  if (ifr->kind == 3)
-    C = ds->tan_angle_frequency;
-  else
-    C = ds->wc;
-  
-  int i;
-  for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
-    {
-      ds->zz[i].r = 0.0;
-      ds->zz[i].i = 0.0;
-    }
-
-  int nc = ds->n_poles;
-  ds->z_counter = -1;
-  int icnt, ii = -1;
-  for (icnt = 0; icnt < 2; icnt++)
-    {
-      /* The maps from s plane to z plane */
-      do
-	{
-          int ir = ii + 1;
-          ii = ir + 1;
-          r.r = ds->zs[ir];
-          r.i = ds->zs[ii];
-          
-          switch (ifr->type)
-            {
-            case 1:
-            case 3:
-              /* Substitute  s - r  =  s/wc - r = (1/wc)(z-1)/(z+1) - r
-               *
-               *     1  1 - r wc (       1 + r wc)
-               * =  --- -------- (z  -  --------)
-               *    z+1    wc    (       1 - r wc)
-               *
-               * giving the root in the z plane.
-               */
-              cnum.r = 1 + C * r.r;
-              cnum.i = C * r.i;
-              cden.r = 1 - C * r.r;
-              cden.i = -C * r.i;
-              ds->z_counter += 1;
-              Cdiv (&cden, &cnum, &ds->zz[ds->z_counter]);
-              if (r.i != 0.0)
-                {
-                  /* fill in complex conjugate root */
-                  ds->z_counter += 1;
-                  ds->zz[ds->z_counter].r = ds->zz[ds->z_counter - 1].r;
-                  ds->zz[ds->z_counter].i = -ds->zz[ds->z_counter - 1].i;
-                }
-              break;
-              
-            case 2:
-            case 4:
-              /* Substitute  s - r  =>  s/wc - r
-               *
-               *     z^2 - 2 z cgam + 1
-               * =>  ------------------  -  r
-               *         (z^2 + 1) wc  
-               *
-               *         1
-               * =  ------------  [ (1 - r wc) z^2  - 2 cgam z  +  1 + r wc ]
-               *    (z^2 + 1) wc  
-               *
-               * and solve for the roots in the z plane.
-               */
-              if (ifr->kind == 2)
-                cwc.r = ds->chebyshev_band_cbp;
-              else
-                cwc.r = ds->tan_angle_frequency;
-              cwc.i = 0.0;
-              Cmul (&r, &cwc, &cnum);     /* r wc */
-              Csub (&cnum, &COMPLEX_ONE, &ca);   /* a = 1 - r wc */
-              Cmul (&cnum, &cnum, &b4ac); /* 1 - (r wc)^2 */
-              Csub (&b4ac, &COMPLEX_ONE, &b4ac);
-              b4ac.r *= 4.0;               /* 4ac */
-              b4ac.i *= 4.0;
-              cb.r = -2.0 * ds->cgam;          /* b */
-              cb.i = 0.0;
-              Cmul (&cb, &cb, &cnum);     /* b^2 */
-              Csub (&b4ac, &cnum, &b4ac); /* b^2 - 4 ac */
-              Csqrt (&b4ac, &b4ac);
-              cb.r = -cb.r;  /* -b */
-              cb.i = -cb.i;
-              ca.r *= 2.0; /* 2a */
-              ca.i *= 2.0;
-              Cadd (&b4ac, &cb, &cnum);   /* -b + sqrt(b^2 - 4ac) */
-              Cdiv (&ca, &cnum, &cnum);   /* ... /2a */
-              ds->z_counter += 1;
-              Cmov (&cnum, &ds->zz[ds->z_counter]);
-              if (cnum.i != 0.0)
-                {
-                  ds->z_counter += 1;
-                  ds->zz[ds->z_counter].r = cnum.r;
-                  ds->zz[ds->z_counter].i = -cnum.i;
-                }
-              if ((r.i != 0.0) || (cnum.i == 0))
-                {
-                  Csub (&b4ac, &cb, &cnum);  /* -b - sqrt(b^2 - 4ac) */
-                  Cdiv (&ca, &cnum, &cnum);  /* ... /2a */
-                  ds->z_counter += 1;
-                  Cmov (&cnum, &ds->zz[ds->z_counter]);
-                  if (cnum.i != 0.0)
-                    {
-                      ds->z_counter += 1;
-                      ds->zz[ds->z_counter].r = cnum.r;
-                      ds->zz[ds->z_counter].i = -cnum.i;
-                    }
-                }
-            } /* end switch */
-	}
-      while (--nc > 0);
-      
-      if (icnt == 0)
-	{
-          ds->n_solved_poles = ds->z_counter + 1;
-          if (ds->n_zeros <= 0)
-            {
-              if (ifr->kind != 3)
-                return 0;
-              else
-                break;
-            }
-	}
-      nc = ds->n_zeros;
-    } /* end for() loop */
-  return 0;
-}
-
-static int
-z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *ifr,
-                                              DesignState                    *ds)
-{
-  Complex lin[2];
-  
-  lin[1].r = 1.0;
-  lin[1].i = 0.0;
-  
-  if (ifr->kind != 3)
-    { /* Butterworth or Chebyshev */
-      /* generate the remaining zeros */
-      while (2 * ds->n_solved_poles - 1 > ds->z_counter)
-        {
-          if (ifr->type != 3)
-            {
-              printf ("adding zero at Nyquist frequency\n");
-              ds->z_counter += 1;
-              ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
-              ds->zz[ds->z_counter].i = 0.0;
-            }
-          if ((ifr->type == 2) || (ifr->type == 3))
-            {
-              printf ("adding zero at 0 Hz\n");
-              ds->z_counter += 1;
-              ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
-              ds->zz[ds->z_counter].i = 0.0;
-            }
-        }
-    }
-  else
-    { /* elliptic */
-      while (2 * ds->n_solved_poles - 1 > ds->z_counter)
-        {
-          ds->z_counter += 1;
-          ds->zz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
-          ds->zz[ds->z_counter].i = 0.0;
-          if ((ifr->type == 2) || (ifr->type == 4))
-            {
-              ds->z_counter += 1;
-              ds->zz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
-              ds->zz[ds->z_counter].i = 0.0;
-            }
-        }
-    }
-  printf ("order = %d\n", ds->n_solved_poles);
-
-  /* Expand the poles and zeros into numerator and
-   * denominator polynomials
-   */
-  int j, icnt;
-  for (icnt = 0; icnt < 2; icnt++)
-    {
-      double yy[MAX_COEFFICIENT_ARRAY_SIZE] = { 0, };
-      for (j = 0; j < MAX_COEFFICIENT_ARRAY_SIZE; j++)
-        ds->cofn[j] = 0.0;
-      ds->cofn[0] = 1.0;
-      for (j = 0; j < ds->n_solved_poles; j++)
-        {
-          int jj = j;
-          if (icnt)
-            jj += ds->n_solved_poles;
-          double a = ds->zz[jj].r;
-          double b = ds->zz[jj].i;
-          int i;
-          for (i = 0; i <= j; i++)
-            {
-              int jh = j - i;
-              ds->cofn[jh + 1] = ds->cofn[jh + 1] - a * ds->cofn[jh] + b * yy[jh];
-              yy[jh + 1] =  yy[jh + 1]  - b * ds->cofn[jh] - a * yy[jh];
-            }
-        }
-      if (icnt == 0)
-        {
-          for (j = 0; j <= ds->n_solved_poles; j++)
-            ds->cofd[j] = ds->cofn[j];
-        }
-    }
-  /* Scale factors of the pole and zero polynomials */
-  double a = 1.0;
-  switch (ifr->type)
-    {
-      double gam;
-
-    case 3:
-      a = -1.0;
-      
-    case 1:
-    case 4:
-      
-      ds->numerator_accu = 1.0;
-      ds->denominator_accu = 1.0;
-      for (j = 1; j <= ds->n_solved_poles; j++)
-        {
-          ds->numerator_accu = a * ds->numerator_accu + ds->cofn[j];
-          ds->denominator_accu = a * ds->denominator_accu + ds->cofd[j];
-        }
-      break;
-      
-    case 2:
-      gam = PI / 2.0 - asin (ds->cgam);  /* = acos(cgam) */
-      int mh = ds->n_solved_poles / 2;
-      ds->numerator_accu = ds->cofn[mh];
-      ds->denominator_accu = ds->cofd[mh];
-      double ai = 0.0;
-      if (mh > ((ds->n_solved_poles / 4) * 2))
-        {
-          ai = 1.0;
-          ds->numerator_accu = 0.0;
-          ds->denominator_accu = 0.0;
-        }
-      for (j = 1; j <= mh; j++)
-        {
-          a = gam * j - ai * PI / 2.0;
-          double cng = cos (a);
-          int jh = mh + j;
-          int jl = mh - j;
-          ds->numerator_accu = ds->numerator_accu + cng * (ds->cofn[jh] + (1.0 - 2.0 * ai) * ds->cofn[jl]);
-          ds->denominator_accu = ds->denominator_accu + cng * (ds->cofd[jh] + (1.0 - 2.0 * ai) * ds->cofd[jl]);
-        }
-    }
-  return 0;
-}
-
-static int
-gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr, /* zplnc */
-                                             DesignState                    *ds)
-{
-  int j;
-  ds->gain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
-  if ((ifr->kind != 3) && (ds->numerator_accu == 0))
-    ds->gain = 1.0;
-  printf ("constant gain factor %23.13E\n", ds->gain);
-  for (j = 0; j <= ds->n_solved_poles; j++)
-    ds->cofn[j] = ds->gain * ds->cofn[j];
-  
-  printf ("z plane Denominator      Numerator\n");
-  for (j = 0; j <= ds->n_solved_poles; j++)
-    {
-      printf ("%2d %17.9E %17.9E\n", j, ds->cofd[j], ds->cofn[j]);
-    }
-
-  /* I /think/ at this point the polynomial is factorized in 2nd order filters,
-   * so that it can be implemented without stability problems -- stw
-   */
-  printf ("poles and zeros with corresponding quadratic factors\n");
-  for (j = 0; j < ds->n_solved_poles; j++)
-    {
-      double a = ds->zz[j].r;
-      double b = ds->zz[j].i;
-      if (b >= 0.0)
-        {
-          printf ("pole  %23.13E %23.13E\n", a, b);
-          print_quadratic_factors (ifr, ds, a, b, 1);
-        }
-      int jj = j + ds->n_solved_poles;
-      a = ds->zz[jj].r;
-      b = ds->zz[jj].i;
-      if (b >= 0.0)
-        {
-          printf ("zero  %23.13E %23.13E\n", a, b);
-          print_quadratic_factors (ifr, ds, a, b, 0);
-        }
-    }
-  return 0;
-}
-
-/* display quadratic factors */
-static int
-print_quadratic_factors (const BseIIRFilterRequirements *ifr,
-                         DesignState                    *ds,
-                         double x, double y,
-                         int pzflg) /* 1 if poles, 0 if zeros */
-{
-  double a, b, r, f, g, g0;
-  
-  if (y > 1.0e-16)
-    {
-      a = -2.0 * x;
-      b = x * x + y * y;
-    }
-  else
-    {
-      a = -x;
-      b = 0.0;
-    }
-  printf ("q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a);
-  if (b != 0.0)
-    {
-      /* resonant frequency */
-      r = sqrt (b);
-      f = PI / 2.0 - asin (-a/(2.0 * r));
-      f = f * ifr->sampling_frequency / (2.0 * PI);
-      /* gain at resonance */
-      g = 1.0 + r;
-      g = g * g - (a * a / r);
-      g = (1.0 - r) * sqrt (g);
-      g0 = 1.0 + a + b;	/* gain at d.c. */
-    }
-  else
-    {
-      /* It is really a first-order network.
-       * Give the gain at ds->nyquist_frequency and D.C.
-       */
-      f = ds->nyquist_frequency;
-      g = 1.0 - a;
-      g0 = 1.0 + a;
-    }
-  
-  if (pzflg)
-    {
-      if (g != 0.0)
-        g = 1.0 / g;
-      else
-        g = MAXNUM;
-      if (g0 != 0.0)
-        g0 = 1.0 / g0;
-      else
-        g = MAXNUM;
-    }
-  printf ("f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0);
-  return 0;
-}
-
-/* Print table of filter frequency response */
-static void
-print_filter_table (const BseIIRFilterRequirements *ifr,
-                    DesignState                    *ds)
-{
-  double f, limit = 0.05 * ds->nyquist_frequency * 21;
-  
-  for (f=0; f < limit; f += limit / 21.)
-    {
-      double r = response (ifr, ds, f, ds->gain);
-      if (r <= 0.0)
-        r = -999.99;
-      else
-        r = 2.0 * DECIBELL_FACTOR * log (r);
-      printf ("%10.1f  %10.2f\n", f, r);
-      // f = f + 0.05 * ds->nyquist_frequency;
-    }
-}
-
-/* Calculate frequency response at f Hz mulitplied by amp */
-static double
-response (const BseIIRFilterRequirements *ifr,
-          DesignState                    *ds,
-          double f, double amp)
-{
-  Complex x, num, den, w;
-  double u;
-  int j;
-  
-  /* exp(j omega T) */
-  u = 2.0 * PI * f /ifr->sampling_frequency;
-  x.r = cos (u);
-  x.i = sin (u);
-  
-  num.r = 1.0;
-  num.i = 0.0;
-  den.r = 1.0;
-  den.i = 0.0;
-  for (j = 0; j < ds->n_solved_poles; j++)
-    {
-      Csub (&ds->zz[j], &x, &w);
-      Cmul (&w, &den, &den);
-      Csub (&ds->zz[j + ds->n_solved_poles], &x, &w);
-      Cmul (&w, &num, &num);
-    }
-  Cdiv (&den, &num, &w);
-  w.r *= amp;
-  w.i *= amp;
-  u = Cabs (&w);
-  return u;
-}
-
-
 static double
 my_getnum (const char *text)
 {
@@ -1881,7 +1883,6 @@ main (int   argc,
   
   return 0;
 }
-
 
 /* compile with: gcc -Wall -O2 -g bseellipticfilter.c -lm -o bseellipticfilter
  * (use -ffloat-store for ellf.c compatibility)
