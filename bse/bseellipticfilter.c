@@ -24,9 +24,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-#define ARRSIZ          (300)   /* size of arrays used to store coefficients */
-
 static void __attribute__ ((__format__ (__printf__, 1, 2)))
 VERBOSE (const char *format,
          ...)
@@ -74,10 +71,6 @@ static const double PI     =  3.14159265358979323846;       /* pi */
 static const double PIO2   =  1.57079632679489661923;       /* pi/2 */
 static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
 #endif
-
-static double fixme2local_a, fixme2local_k, fixme2local_m;
-static double fixme2local_1; // k
-static double fixme2local_2; // u
 
 /* This code calculates design coefficients for
  * digital filters of the Butterworth, Chebyshev, or
@@ -866,10 +859,9 @@ polevl (double x, const double coef[], int N)
 }
 
 #if 1
-static double aa[ARRSIZ];
-static double pp[ARRSIZ];
-static double zs[ARRSIZ];
-static Complex z[ARRSIZ];
+static double aa[MAX_COEFFICIENT_ARRAY_SIZE];
+static double pp[MAX_COEFFICIENT_ARRAY_SIZE];
+static Complex z[MAX_COEFFICIENT_ARRAY_SIZE];
 static double Kk = 0.0;
 static double Kpk = 0.0;
 static double rho = 0.0;
@@ -1035,11 +1027,11 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           double Kk1 = ellpk (m1p);
           double Kpk1 = ellpk (m1);
           double q = exp (-PI * Kpk1 / (ifr->order * Kk1));
-          fixme2local_1 = jacobi_theta_by_nome (q);
+          double k = jacobi_theta_by_nome (q);
           if (ifr->type >= 3)
-            ds->wr = fixme2local_1;
+            ds->wr = k;
           else
-            ds->wr = 1.0 / fixme2local_1;
+            ds->wr = 1.0 / k;
           if (ifr->type & 1)
             {
               ds->stopband_edge = atan (ds->tan_angle_frequency * ds->wr) * ifr->sampling_frequency / PI;
@@ -1047,10 +1039,10 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           else
             {
               // FIXME: using tmp_cgam here increases precision
-              fixme2local_a = ds->tan_angle_frequency * ds->wr;
-              fixme2local_a *= fixme2local_a;
-              double b = fixme2local_a * (1.0 - ds->cgam * ds->cgam) + fixme2local_a * fixme2local_a;
-              b = (ds->cgam + sqrt (b))/(1.0 + fixme2local_a);
+              double a = ds->tan_angle_frequency * ds->wr;
+              a *= a;
+              double b = a * (1.0 - ds->cgam * ds->cgam) + a * a;
+              b = (ds->cgam + sqrt (b))/(1.0 + a);
               ds->stopband_edge = (PI / 2.0 - asin (b)) * ifr->sampling_frequency / (2.0 * PI);
             }
         }
@@ -1130,7 +1122,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 	}
       ds->wc = 1.0;
       find_elliptic_locations_in_lambda_plane (ifr, ds);	/* find locations in lambda plane */
-      if ((2 * ifr->order + 2) > ARRSIZ)
+      if ((2 * ifr->order + 2) > MAX_COEFFICIENT_ARRAY_SIZE)
 	goto toosml;
     } /* elliptic */
   
@@ -1171,7 +1163,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 
   find_s_plane_poles_and_zeros (ifr, ds);		/* find s plane poles and zeros */
   
-  if (((ifr->type & 1) == 0) && ((4 * ifr->order + 2) > ARRSIZ))
+  if (((ifr->type & 1) == 0) && ((4 * ifr->order + 2) > MAX_COEFFICIENT_ARRAY_SIZE))
     goto toosml;
   
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
@@ -1192,11 +1184,11 @@ static int
 find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
                                          DesignState                    *ds)
 {
-  fixme2local_k = ds->wc / ds->wr;
-  fixme2local_m = fixme2local_k * fixme2local_k;
-  Kk = ellpk (1.0 - fixme2local_m);
-  Kpk = ellpk (fixme2local_m);
-  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", fixme2local_k, fixme2local_m, Kk, Kpk); // BSE info
+  double k = ds->wc / ds->wr;
+  double m = k * k;
+  Kk = ellpk (1.0 - m);
+  Kpk = ellpk (m);
+  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, Kk, Kpk); // BSE info
   double q = exp (-PI * ifr->order * Kpk / Kk);	/* the nome of k1 */
   double m1 = jacobi_theta_by_nome (q); /* see below */
   /* Note m1 = ds->ripple_epsilon / sqrt(A*A - 1.0) */
@@ -1204,7 +1196,7 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   a =  a * a + 1;
   a = 10.0 * log (a) / log (10.0);
   printf ("dbdown %.9E\n", a);
-  a = 180.0 * asin (fixme2local_k) / PI;
+  a = 180.0 * asin (k) / PI;
   double b = 1.0/(1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
   b = sqrt (1.0 - b);
   printf ("theta %.9E, rho %.9E\n", a, b);
@@ -1220,15 +1212,15 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
    */
   b = 1.0 / ds->ripple_epsilon;
   phi = atan (b);
-  fixme2local_2 = ellik (phi, m1p);
-  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, fixme2local_2);
+  double u = ellik (phi, m1p);
+  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, u);
   /* consistency check on inverse sn */
-  ellpj (fixme2local_2, m1p, &sn, &cn, &dn, &phi);
+  ellpj (u, m1p, &sn, &cn, &dn, &phi);
   a = sn / cn;
   EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
-  ds->elliptic_k = fixme2local_k;
-  ds->elliptic_u = fixme2local_2 * Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
-  ds->elliptic_m = fixme2local_m;
+  ds->elliptic_k = k;
+  ds->elliptic_u = u * Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
+  ds->elliptic_m = m;
   return 0;
 }
 
@@ -1237,8 +1229,9 @@ static int
 find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
                               DesignState                    *ds)
 {
+  double *zs = ds->zs;
   int i, j;
-  for (i = 0; i < ARRSIZ; i++)
+  for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
     zs[i] = 0.0;
   ds->n_poles = (ifr->order + 1) / 2;
   ds->n_zeros = 0;
@@ -1349,8 +1342,6 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       double m = ds->elliptic_m;
       ds->n_zeros = ifr->order / 2;
       ellpj (ds->elliptic_u, 1.0 - m, &sn1, &cn1, &dn1, &phi1);
-      for (i=0; i < ARRSIZ; i++)
-        zs[i] = 0.0;
       for (i = 0; i < ds->n_zeros; i++)
         {	/* zeros */
           double a = ifr->order - 1 - i - i;
@@ -1468,15 +1459,14 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
     C = ds->wc;
   
   int i;
-  for (i = 0; i < ARRSIZ; i++)
+  for (i = 0; i < MAX_COEFFICIENT_ARRAY_SIZE; i++)
     {
       z[i].r = 0.0;
       z[i].i = 0.0;
     }
-  
+
   int nc = ds->n_poles;
   ds->z_counter = -1;
-
   int icnt, ii = -1;
   for (icnt = 0; icnt < 2; icnt++)
     {
@@ -1485,8 +1475,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
 	{
           int ir = ii + 1;
           ii = ir + 1;
-          r.r = zs[ir];
-          r.i = zs[ii];
+          r.r = ds->zs[ir];
+          r.i = ds->zs[ii];
           
           switch (ifr->type)
             {
@@ -1645,8 +1635,8 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   int j, icnt;
   for (icnt = 0; icnt < 2; icnt++)
     {
-      double yy[ARRSIZ] = { 0, };
-      for (j = 0; j < ARRSIZ; j++)
+      double yy[MAX_COEFFICIENT_ARRAY_SIZE] = { 0, };
+      for (j = 0; j < MAX_COEFFICIENT_ARRAY_SIZE; j++)
         pp[j] = 0.0;
       pp[0] = 1.0;
       for (j = 0; j < ds->n_solved_poles; j++)
@@ -1914,4 +1904,6 @@ main (int   argc,
 }
 
 
-/* compile with: gcc -Wall -O2 -g bseellipticfilter.c -lm -o bseellipticfilter */
+/* compile with: gcc -Wall -O2 -g bseellipticfilter.c -lm -o bseellipticfilter
+ * (use -ffloat-store for ellf.c compatibility)
+ */

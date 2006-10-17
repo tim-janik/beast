@@ -48,6 +48,9 @@ typedef struct {
   double                stopband_edge;		/* Hz, > 0.0 && < nyquist_frequency, elliptic only */
 } BseIIRFilterRequirements;
 
+#define	MAX_ORDER			(256)
+#define	MAX_COEFFICIENT_ARRAY_SIZE	(4 * MAX_ORDER + 2) /* size of arrays used to store coefficients */
+
 typedef struct {
   int    n_poles;
   int    n_zeros;
@@ -65,6 +68,7 @@ typedef struct {
   double elliptic_u;
   double elliptic_m;
   double chebyshev_band_cbp;
+  double zs[MAX_COEFFICIENT_ARRAY_SIZE];	/* s-plane poles and zeros */
 } DesignState;
 
 static const DesignState default_design_state = {
@@ -84,6 +88,7 @@ static const DesignState default_design_state = {
   .elliptic_u = 0.0,
   .elliptic_m = 0.0,
   .chebyshev_band_cbp = 0.0,
+  .zs = { 0, },
 };
 
 // FIXME: BIRNET_EXTERN_C_END();

@@ -1,3 +1,13 @@
+Tue Oct 17 01:43:26 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.h: define MAX_ORDER and MAX_COEFFICIENT_ARRAY_SIZE.
+	added array for s-plane poles and zeros to DesignState.
+
+	* bseellipticfilter.c: added -ffloat-store to the compilation option to
+	keep compatibility with math.h-enabled ellf.c. resolved non-local double
+	variable fixmes. store s-plane zeros and poles as ds->zs. changed to use
+	MAX_COEFFICIENT_ARRAY_SIZE as array bound.
+
 Tue Oct 17 00:50:08 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.c: changed static y[] array into local scope
