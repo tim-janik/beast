@@ -56,6 +56,7 @@ typedef struct {
   int    n_zeros;
   int    z_counter;	/* incremented as z^N coefficients are found, indexes poles and zeros */
   int    n_solved_poles;
+  /* common state */
   double gain_scale;
   double ripple_epsilon;
   double nyquist_frequency;
@@ -64,10 +65,18 @@ typedef struct {
   double cgam; /* angle frequency temporary */
   double stopband_edge; /* derived from ifr->stopband_edge or ifr->stopband_db */
   double wr;
+  /* chebyshev state */
+  double chebyshev_phi;
+  double chebyshev_band_cbp;
+  /* elliptic state */
+  double elliptic_phi;
   double elliptic_k;
   double elliptic_u;
   double elliptic_m;
-  double chebyshev_band_cbp;
+  double elliptic_Kk;  /* complete elliptic integral of the first kind of 1-elliptic_m */
+  double elliptic_Kpk; /* complete elliptic integral of the first kind of elliptic_m */
+  /* common output */
+  double gain;
   double zs[MAX_COEFFICIENT_ARRAY_SIZE];	/* s-plane poles and zeros */
 } DesignState;
 
@@ -84,10 +93,15 @@ static const DesignState default_design_state = {
   .cgam = 0.0,
   .stopband_edge = 2400,
   .wr = 0.0,
+  .chebyshev_phi = 0.0,
+  .chebyshev_band_cbp = 0.0,
+  .elliptic_phi = 0.0,
   .elliptic_k = 0.0,
   .elliptic_u = 0.0,
   .elliptic_m = 0.0,
-  .chebyshev_band_cbp = 0.0,
+  .elliptic_Kk = 0.0,
+  .elliptic_Kpk = 0.0,
+  .gain = 0.0,
   .zs = { 0, },
 };
 

@@ -1,3 +1,9 @@
+Tue Oct 17 02:12:24 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.h, bseellipticfilter.c: moved elliptic integral
+	values, chebyshev/elliptic phi and gain into the filter state structure.
+	eliminated other global variables by declaring them in local scopes.
+
 Tue Oct 17 01:43:26 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.h: define MAX_ORDER and MAX_COEFFICIENT_ARRAY_SIZE.

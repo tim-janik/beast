@@ -862,21 +862,14 @@ polevl (double x, const double coef[], int N)
 static double aa[MAX_COEFFICIENT_ARRAY_SIZE];
 static double pp[MAX_COEFFICIENT_ARRAY_SIZE];
 static Complex z[MAX_COEFFICIENT_ARRAY_SIZE];
-static double Kk = 0.0;
-static double Kpk = 0.0;
-static double rho = 0.0;
-static double phi = 0.0;
 static double sn = 0.0;
 static double cn = 0.0;
 static double dn = 0.0;
 static double sn1 = 0.0;
 static double cn1 = 0.0;
 static double dn1 = 0.0;
-static double phi1 = 0.0;
 static double pn = 0.0;
 static double an = 0.0;
-static double gam = 0.0;
-static double gain = 0.0;
 #endif
 
 /* --- prototypes --- */
@@ -938,10 +931,10 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       if (ifr->kind == 2)
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+ds->ripple_epsilon^2) */
-          phi = exp (0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR);
+          ds->chebyshev_phi = exp (0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR);
 
           if ((ifr->order & 1) == 0)
-            ds->gain_scale = phi;
+            ds->gain_scale = ds->chebyshev_phi;
           else
             ds->gain_scale = 1.0;
         }
@@ -1186,10 +1179,10 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
 {
   double k = ds->wc / ds->wr;
   double m = k * k;
-  Kk = ellpk (1.0 - m);
-  Kpk = ellpk (m);
-  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, Kk, Kpk); // BSE info
-  double q = exp (-PI * ifr->order * Kpk / Kk);	/* the nome of k1 */
+  ds->elliptic_Kk = ellpk (1.0 - m);
+  ds->elliptic_Kpk = ellpk (m);
+  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, ds->elliptic_Kk, ds->elliptic_Kpk); // BSE info
+  double q = exp (-PI * ifr->order * ds->elliptic_Kpk / ds->elliptic_Kk);	/* the nome of k1 */
   double m1 = jacobi_theta_by_nome (q); /* see below */
   /* Note m1 = ds->ripple_epsilon / sqrt(A*A - 1.0) */
   double a = ds->ripple_epsilon / m1;
@@ -1199,27 +1192,27 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   a = 180.0 * asin (k) / PI;
   double b = 1.0/(1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
   b = sqrt (1.0 - b);
-  printf ("theta %.9E, rho %.9E\n", a, b);
+  printf ("theta=%.9E, rho=%.9E\n", a, b);
   m1 *= m1;
   double m1p = 1.0 - m1;
   double Kk1 = ellpk (m1p);
   double Kpk1 = ellpk (m1);
-  double r = Kpk1 * Kk / (Kk1 * Kpk);
+  double r = Kpk1 * ds->elliptic_Kk / (Kk1 * ds->elliptic_Kpk);
   printf ("consistency check: n= %.14E\n", r);
   EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
   /*   -1
    * sn   j/ds->ripple_epsilon\m  =  j ellik(atan(1/ds->ripple_epsilon), m)
    */
   b = 1.0 / ds->ripple_epsilon;
-  phi = atan (b);
-  double u = ellik (phi, m1p);
-  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, u);
+  ds->elliptic_phi = atan (b);
+  double u = ellik (ds->elliptic_phi, m1p);
+  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", ds->elliptic_phi, m1p, u);
   /* consistency check on inverse sn */
-  ellpj (u, m1p, &sn, &cn, &dn, &phi);
+  ellpj (u, m1p, &sn, &cn, &dn, &ds->elliptic_phi);
   a = sn / cn;
   EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
   ds->elliptic_k = k;
-  ds->elliptic_u = u * Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
+  ds->elliptic_u = u * ds->elliptic_Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
   ds->elliptic_m = m;
   return 0;
 }
@@ -1285,16 +1278,16 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       /* For Chebyshev, find radii of two Butterworth circles
        * See Gold & Rader, page 60
        */
-      rho = (phi - 1.0)*(phi + 1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
+      double rho = (ds->chebyshev_phi - 1.0) * (ds->chebyshev_phi + 1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
       ds->ripple_epsilon = sqrt (rho);
       /* sqrt(1 + 1/ds->ripple_epsilon^2) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
        */
-      phi = (phi + 1.0) / ds->ripple_epsilon;
-      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", phi, ds->ripple_epsilon); // BSE info
-      phi = pow (phi, 1.0 / ifr->order);  /* raise to the 1/n power */
-      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", phi, ifr->order * 1.0); // BSE info
-      double b = 0.5 * (phi + 1.0 / phi); /* y coordinates are on this circle */
-      double a = 0.5 * (phi - 1.0 / phi); /* x coordinates are on this circle */
+      ds->chebyshev_phi = (ds->chebyshev_phi + 1.0) / ds->ripple_epsilon;
+      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", ds->chebyshev_phi, ds->ripple_epsilon); // BSE info
+      ds->chebyshev_phi = pow (ds->chebyshev_phi, 1.0 / ifr->order);  /* raise to the 1/n power */
+      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", ds->chebyshev_phi, ifr->order * 1.0); // BSE info
+      double b = 0.5 * (ds->chebyshev_phi + 1.0 / ds->chebyshev_phi); /* y coordinates are on this circle */
+      double a = 0.5 * (ds->chebyshev_phi - 1.0 / ds->chebyshev_phi); /* x coordinates are on this circle */
       double m;
       if (ifr->order & 1)
         m = 0.0;
@@ -1339,14 +1332,14 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
     }
   if (ifr->kind == 3)   /* elliptic filter -- stw */
     {
-      double m = ds->elliptic_m;
+      double phi1 = 0.0, m = ds->elliptic_m;
       ds->n_zeros = ifr->order / 2;
       ellpj (ds->elliptic_u, 1.0 - m, &sn1, &cn1, &dn1, &phi1);
       for (i = 0; i < ds->n_zeros; i++)
         {	/* zeros */
           double a = ifr->order - 1 - i - i;
-          double b = (Kk * a) / ifr->order;
-          ellpj (b, m, &sn, &cn, &dn, &phi);
+          double b = (ds->elliptic_Kk * a) / ifr->order;
+          ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
           int lr = 2 * ds->n_poles + 2 * i;
           zs[lr] = 0.0;
           a = ds->wc / (ds->elliptic_k * sn);	/* elliptic_k = sqrt(m) */
@@ -1355,8 +1348,8 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       for (i = 0; i < ds->n_poles; i++)
         {	/* poles */
           double a = ifr->order - 1 - i - i;
-          double b = a * Kk / ifr->order;
-          ellpj (b, m, &sn, &cn, &dn, &phi);
+          double b = a * ds->elliptic_Kk / ifr->order;
+          ellpj (b, m, &sn, &cn, &dn, &ds->elliptic_phi);
           double r = ds->elliptic_k * sn * sn1;
           b = cn1 * cn1 + r * r;
           a = -ds->wc * cn * dn * sn1 * cn1 / b;
@@ -1664,6 +1657,8 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   double a = 1.0;
   switch (ifr->type)
     {
+      double gam;
+
     case 3:
       a = -1.0;
       
@@ -1709,12 +1704,12 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
                                              DesignState                    *ds)
 {
   int j;
-  gain = an/(pn * ds->gain_scale);
+  ds->gain = an / (pn * ds->gain_scale);
   if ((ifr->kind != 3) && (pn == 0))
-    gain = 1.0;
-  printf ("constant gain factor %23.13E\n", gain);
+    ds->gain = 1.0;
+  printf ("constant gain factor %23.13E\n", ds->gain);
   for (j = 0; j <= ds->n_solved_poles; j++)
-    pp[j] = gain * pp[j];
+    pp[j] = ds->gain * pp[j];
   
   printf ("z plane Denominator      Numerator\n");
   for (j = 0; j <= ds->n_solved_poles; j++)
@@ -1813,7 +1808,7 @@ print_filter_table (const BseIIRFilterRequirements *ifr,
   
   for (f=0; f < limit; f += limit / 21.)
     {
-      double r = response (ifr, ds, f, gain);
+      double r = response (ifr, ds, f, ds->gain);
       if (r <= 0.0)
         r = -999.99;
       else
