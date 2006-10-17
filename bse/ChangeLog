@@ -1,3 +1,11 @@
+Tue Oct 17 00:31:20 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.c: removed remaining static integers by using
+	either local variables or by using ds->z_counter. minor whitespace
+	fixups.
+
+	* bseellipticfilter.h: added and documented z_counter.
+
 Tue Oct 17 00:17:23 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.c: whitespace and paranthese fixes.

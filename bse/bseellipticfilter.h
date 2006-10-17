@@ -51,6 +51,7 @@ typedef struct {
 typedef struct {
   int    n_poles;
   int    n_zeros;
+  int    z_counter;	/* incremented as z^N coefficients are found, indexes poles and zeros */
   int    n_solved_poles;
   double gain_scale;
   double ripple_epsilon;
@@ -69,6 +70,7 @@ typedef struct {
 static const DesignState default_design_state = {
   .n_poles = 0,
   .n_zeros = 0,
+  .z_counter = 0,
   .n_solved_poles = 0,
   .gain_scale = 0.0,
   .ripple_epsilon = 0.0,
