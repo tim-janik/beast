@@ -1,3 +1,7 @@
+Tue Oct 17 00:17:23 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.c: whitespace and paranthese fixes.
+
 Tue Oct 17 00:05:55 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.h, bseellipticfilter.c: white space fixups,

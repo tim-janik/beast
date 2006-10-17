@@ -41,7 +41,7 @@ VERBOSE (const char *format,
 }
 
 #define EVERBOSE VERBOSE
-//#define EVERBOSE(...) do{}while(0)
+//#define EVERBOSE(...) do{}while (0)
 
 #if 0 // FIXME: increase precision by using:
 
@@ -67,7 +67,7 @@ static double DECIBELL_FACTOR = -1;
 static void
 init_constants (void)
 {
-  DECIBELL_FACTOR = 10.0 / log(10.0);
+  DECIBELL_FACTOR = 10.0 / log (10.0);
 }
 static const double MAXNUM =  1.79769313486231570815E308;    /* 2**1024*(1-MACHEP) */
 static const double PI     =  3.14159265358979323846;       /* pi */
@@ -175,7 +175,7 @@ static int math_global_error = 0;
  * int code;
  * int math_set_error();
  *
- * math_set_error( fctnam, code );
+ * math_set_error(fctnam, code);
  *
  * DESCRIPTION:
  * This routine may be called to report one of the following
@@ -229,14 +229,14 @@ math_set_error (char *name, int code)
   /* Display error message defined
    * by the code argument.
    */
-  if( (code <= 0) || (code >= 7) )
+  if ((code <= 0) || (code >= 7))
     code = 0;
-  printf( "%s error\n", ermsg[code] );
+  printf ("%s error\n", ermsg[code]);
   
   /* Return to calling
    * program
    */
-  return( 0 );
+  return 0;
 }
 
 /* --- complex number arithmetic --- */
@@ -284,14 +284,14 @@ Cdiv (const Complex *a, const Complex *b, Complex *c)
   double p = b->r * a->r  +  b->i * a->i;
   double q = b->i * a->r  -  b->r * a->i;
   
-  if( y < 1.0 )
+  if (y < 1.0)
     {
       double w = MAXNUM * y;
-      if( (fabs(p) > w) || (fabs(q) > w) || (y == 0.0) )
+      if ((fabs (p) > w) || (fabs (q) > w) || (y == 0.0))
         {
           c->r = MAXNUM;
           c->i = MAXNUM;
-          math_set_error( "Cdiv", MATH_ERROR_OVERFLOW );
+          math_set_error ("Cdiv", MATH_ERROR_OVERFLOW);
           return;
         }
     }
@@ -329,12 +329,12 @@ Cmov (const Complex *a, Complex *b)
  * Complex z;
  * double a;
  *
- * a = Cabs( &z );
+ * a = Cabs (&z);
  *
  * DESCRIPTION:
  * If z = x + iy
  * then
- *       a = sqrt( x**2 + y**2 ).
+ *       a = sqrt (x**2 + y**2).
  * Overflow and underflow are avoided by testing the magnitudes
  * of x and y before squaring.  If either is outside half of
  * the floating point full scale range, both are rescaled.
@@ -356,61 +356,61 @@ Cabs (const Complex *z)
   double x, y, b, re, im;
   int ex, ey, e;
   
-  /* Note, Cabs(INFINITY,NAN) = INFINITY. */
-  if( z->r == INFINITY || z->i == INFINITY
-      || z->r == -INFINITY || z->i == -INFINITY )
-    return( INFINITY );
+  /* Note, Cabs (INFINITY,NAN) = INFINITY. */
+  if (z->r == INFINITY || z->i == INFINITY
+      || z->r == -INFINITY || z->i == -INFINITY)
+    return INFINITY;
   
-  if( isnan(z->r) )
-    return(z->r);
-  if( isnan(z->i) )
-    return(z->i);
+  if (isnan (z->r))
+    return z->r;
+  if (isnan (z->i))
+    return z->i;
   
-  re = fabs( z->r );
-  im = fabs( z->i );
+  re = fabs (z->r);
+  im = fabs (z->i);
   
-  if( re == 0.0 )
-    return( im );
-  if( im == 0.0 )
-    return( re );
+  if (re == 0.0)
+    return im;
+  if (im == 0.0)
+    return re;
   
   /* Get the exponents of the numbers */
-  x = frexp( re, &ex );
-  y = frexp( im, &ey );
+  x = frexp (re, &ex);
+  y = frexp (im, &ey);
   
   /* Check if one number is tiny compared to the other */
   e = ex - ey;
-  if( e > PREC )
-    return( re );
-  if( e < -PREC )
-    return( im );
+  if (e > PREC)
+    return re;
+  if (e < -PREC)
+    return im;
   
   /* Find approximate exponent e of the geometric mean. */
   e = (ex + ey) >> 1;
   
   /* Rescale so mean is about 1 */
-  x = ldexp( re, -e );
-  y = ldexp( im, -e );
+  x = ldexp (re, -e);
+  y = ldexp (im, -e);
   
   /* Hypotenuse of the right triangle */
-  b = sqrt( x * x  +  y * y );
+  b = sqrt (x * x  +  y * y);
   
   /* Compute the exponent of the answer. */
-  y = frexp( b, &ey );
+  y = frexp (b, &ey);
   ey = e + ey;
   
   /* Check it for overflow and underflow. */
-  if( ey > MAXEXP )
+  if (ey > MAXEXP)
     {
-      math_set_error( "Cabs", MATH_ERROR_OVERFLOW );
-      return( INFINITY );
+      math_set_error ("Cabs", MATH_ERROR_OVERFLOW);
+      return INFINITY;
     }
-  if( ey < MINEXP )
-    return(0.0);
+  if (ey < MINEXP)
+    return 0.0;
   
   /* Undo the scaling */
-  b = ldexp( b, e );
-  return( b );
+  b = ldexp (b, e);
+  return b;
 }
 
 /* Csqrt() - Complex square root
@@ -418,7 +418,7 @@ Cabs (const Complex *z)
  * SYNOPSIS:
  * void Csqrt();
  * Complex z, w;
- * Csqrt( &z, &w );
+ * Csqrt (&z, &w);
  *
  * DESCRIPTION:
  * If z = x + iy,  r = |z|, then
@@ -438,7 +438,7 @@ Cabs (const Complex *z)
  *    DEC       -10,+10     25000       3.2e-17     9.6e-18
  *    IEEE      -10,+10    100000       3.2e-16     7.7e-17
  *                        2
- * Also tested by Csqrt( z ) = z, and tested by arguments
+ * Also tested by Csqrt (z) = z, and tested by arguments
  * close to the real axis.
  */
 static void
@@ -450,28 +450,28 @@ Csqrt (const Complex *z, Complex *w)
   x = z->r;
   y = z->i;
   
-  if( y == 0.0 )
+  if (y == 0.0)
     {
-      if( x < 0.0 )
+      if (x < 0.0)
         {
           w->r = 0.0;
-          w->i = sqrt(-x);
+          w->i = sqrt (-x);
           return;
         }
       else
         {
-          w->r = sqrt(x);
+          w->r = sqrt (x);
           w->i = 0.0;
           return;
         }
     }
   
   
-  if( x == 0.0 )
+  if (x == 0.0)
     {
-      r = fabs(y);
-      r = sqrt(0.5*r);
-      if( y > 0 )
+      r = fabs (y);
+      r = sqrt (0.5*r);
+      if (y > 0)
         w->r = r;
       else
         w->r = -r;
@@ -479,26 +479,26 @@ Csqrt (const Complex *z, Complex *w)
       return;
     }
   
-  /* Approximate  sqrt(x^2+y^2) - x  =  y^2/2x - y^4/24x^3 + ... .
+  /* Approximate  sqrt (x^2+y^2) - x  =  y^2/2x - y^4/24x^3 + ... .
    * The relative error in the first term is approximately y^2/12x^2 .
    */
-  if( (fabs(y) < 2.e-4 * fabs(x))
-      && (x > 0) )
+  if ((fabs (y) < 2.e-4 * fabs (x))
+      && (x > 0))
     {
       t = 0.25*y*(y/x);
     }
   else
     {
-      r = Cabs(z);
+      r = Cabs (z);
       t = 0.5*(r - x);
     }
   
-  r = sqrt(t);
+  r = sqrt (t);
   q.i = r;
   q.r = y/(2.0*r);
   /* Heron iteration in complex arithmetic */
-  Cdiv( &q, z, &s );
-  Cadd( &q, &s, w );
+  Cdiv (&q, z, &s);
+  Cadd (&q, &s, w);
   w->r *= 0.5;
   w->i *= 0.5;
 }
@@ -508,7 +508,7 @@ Csqrt (const Complex *z, Complex *w)
  *
  * SYNOPSIS:
  * double phi, m, y, ellik();
- * y = ellik( phi, m );
+ * y = ellik (phi, m);
  *
  * DESCRIPTION:
  * Approximates the integral
@@ -518,7 +518,7 @@ Csqrt (const Complex *z, Complex *w)
  *                |           dt
  * F(phi_\m)  =    |    ------------------
  *                |                   2
- *              | |    sqrt( 1 - m sin t )
+ *              | |    sqrt(1 - m sin t)
  *               -
  *                0
  * of amplitude phi and modulus m, using the arithmetic -
@@ -536,76 +536,76 @@ ellik (double phi, double m)
   double a, b, c, e, temp, t, K;
   int d, mod, sign, npio2;
   
-  if( m == 0.0 )
-    return( phi );
+  if (m == 0.0)
+    return phi;
   a = 1.0 - m;
-  if( a == 0.0 )
+  if (a == 0.0)
     {
-      if( fabs(phi) >= PIO2 )
+      if (fabs (phi) >= PIO2)
         {
-          math_set_error( "ellik", MATH_ERROR_SING );
-          return( MAXNUM );
+          math_set_error ("ellik", MATH_ERROR_SING);
+          return MAXNUM;
         }
-      return(  log(  tan( (PIO2 + phi)/2.0 )  )   );
+      return log ( tan ((PIO2 + phi) / 2.0) );
     }
-  npio2 = floor( phi/PIO2 );
-  if( npio2 & 1 )
+  npio2 = floor (phi/PIO2);
+  if (npio2 & 1)
     npio2 += 1;
-  if( npio2 )
+  if (npio2)
     {
-      K = ellpk( a );
+      K = ellpk (a);
       phi = phi - npio2 * PIO2;
     }
   else
     K = 0.0;
-  if( phi < 0.0 )
+  if (phi < 0.0)
     {
       phi = -phi;
       sign = -1;
     }
   else
     sign = 0;
-  b = sqrt(a);
-  t = tan( phi );
-  if( fabs(t) > 10.0 )
+  b = sqrt (a);
+  t = tan (phi);
+  if (fabs (t) > 10.0)
     {
       /* Transform the amplitude */
       e = 1.0/(b*t);
       /* ... but avoid multiple recursions.  */
-      if( fabs(e) < 10.0 )
+      if (fabs (e) < 10.0)
         {
-          e = atan(e);
-          if( npio2 == 0 )
-            K = ellpk( a );
-          temp = K - ellik( e, m );
+          e = atan (e);
+          if (npio2 == 0)
+            K = ellpk (a);
+          temp = K - ellik (e, m);
           goto done;
         }
     }
   a = 1.0;
-  c = sqrt(m);
+  c = sqrt (m);
   d = 1;
   mod = 0;
   
-  while( fabs(c/a) > MACHEP )
+  while (fabs (c/a) > MACHEP)
     {
       temp = b/a;
-      phi = phi + atan(t*temp) + mod * PI;
+      phi = phi + atan (t*temp) + mod * PI;
       mod = (phi + PIO2)/PI;
-      t = t * ( 1.0 + temp )/( 1.0 - temp * t * t );
-      c = ( a - b )/2.0;
-      temp = sqrt( a * b );
-      a = ( a + b )/2.0;
+      t = t * (1.0 + temp)/(1.0 - temp * t * t);
+      c = (a - b)/2.0;
+      temp = sqrt (a * b);
+      a = (a + b)/2.0;
       b = temp;
       d += d;
     }
   
-  temp = (atan(t) + mod * PI)/(d * a);
+  temp = (atan (t) + mod * PI)/(d * a);
   
  done:
-  if( sign < 0 )
+  if (sign < 0)
     temp = -temp;
   temp += npio2 * K;
-  return( temp );
+  return temp;
 }
 
 /* ellpj - Jacobian Elliptic Functions
@@ -613,7 +613,7 @@ ellik (double phi, double m)
  * SYNOPSIS:
  * double u, m, sn, cn, dn, phi;
  * int ellpj();
- * ellpj( u, m, _&sn, _&cn, _&dn, _&phi );
+ * ellpj (u, m, _&sn, _&cn, _&dn, _&phi);
  *
  * DESCRIPTION:
  * Evaluates the Jacobian elliptic functions sn(u|m), cn(u|m),
@@ -657,60 +657,60 @@ ellpj (double u, double m,
   double a[9], c[9];
   int i;
   /* Check for special cases */
-  if( m < 0.0 || m > 1.0 )
+  if (m < 0.0 || m > 1.0)
     {
-      math_set_error( "ellpj", MATH_ERROR_DOMAIN );
+      math_set_error ("ellpj", MATH_ERROR_DOMAIN);
       *sn = 0.0;
       *cn = 0.0;
       *ph = 0.0;
       *dn = 0.0;
-      return(-1);
+      return -1;
     }
-  if( m < 1.0e-9 )
+  if (m < 1.0e-9)
     {
-      t = sin(u);
-      b = cos(u);
+      t = sin (u);
+      b = cos (u);
       ai = 0.25 * m * (u - t*b);
       *sn = t - ai*b;
       *cn = b + ai*t;
       *ph = u - ai;
       *dn = 1.0 - 0.5*m*t*t;
-      return(0);
+      return 0;
     }
   
-  if( m >= 0.9999999999 )
+  if (m >= 0.9999999999)
     {
       ai = 0.25 * (1.0-m);
-      b = cosh(u);
-      t = tanh(u);
+      b = cosh (u);
+      t = tanh (u);
       phi = 1.0/b;
-      twon = b * sinh(u);
+      twon = b * sinh (u);
       *sn = t + ai * (twon - u)/(b*b);
-      *ph = 2.0*atan(exp(u)) - PIO2 + ai*(twon - u)/b;
+      *ph = 2.0*atan (exp (u)) - PIO2 + ai*(twon - u)/b;
       ai *= t * phi;
       *cn = phi - ai * (twon - u);
       *dn = phi + ai * (twon + u);
-      return(0);
+      return 0;
     }
   /*	A. G. M. scale		*/
   a[0] = 1.0;
-  b = sqrt(1.0 - m);
-  c[0] = sqrt(m);
+  b = sqrt (1.0 - m);
+  c[0] = sqrt (m);
   twon = 1.0;
   i = 0;
   
-  while( fabs(c[i]/a[i]) > MACHEP )
+  while (fabs (c[i]/a[i]) > MACHEP)
     {
-      if( i > 7 )
+      if (i > 7)
         {
-          math_set_error( "ellpj", MATH_ERROR_OVERFLOW );
+          math_set_error ("ellpj", MATH_ERROR_OVERFLOW);
           goto done;
         }
       ai = a[i];
       ++i;
-      c[i] = ( ai - b )/2.0;
-      t = sqrt( ai * b );
-      a[i] = ( ai + b )/2.0;
+      c[i] = (ai - b)/2.0;
+      t = sqrt (ai * b);
+      a[i] = (ai + b)/2.0;
       b = t;
       twon *= 2.0;
     }
@@ -720,25 +720,25 @@ ellpj (double u, double m,
   phi = twon * a[i] * u;
   do
     {
-      t = c[i] * sin(phi) / a[i];
+      t = c[i] * sin (phi) / a[i];
       b = phi;
-      phi = (asin(t) + phi)/2.0;
+      phi = (asin (t) + phi)/2.0;
     }
-  while( --i );
+  while (--i);
   
-  *sn = sin(phi);
-  t = cos(phi);
+  *sn = sin (phi);
+  t = cos (phi);
   *cn = t;
-  *dn = t/cos(phi-b);
+  *dn = t/cos (phi-b);
   *ph = phi;
-  return(0);
+  return 0;
 }
 
 /* ellpk - Complete elliptic integral of the first kind
  *
  * SYNOPSIS:
  * double m1, y, ellpk();
- * y = ellpk( m1 );
+ * y = ellpk (m1);
  *
  * DESCRIPTION:
  * Approximates the integral
@@ -748,7 +748,7 @@ ellpj (double u, double m,
  *            |           dt
  * K(m)  =    |    ------------------
  *            |                   2
- *          | |    sqrt( 1 - m sin t )
+ *          | |    sqrt(1 - m sin t)
  *           -
  *            0
  * where m = 1 - m1, using the approximation
@@ -799,26 +799,26 @@ ellpk (double x)
   };
   static const double C1_ellpk = 1.3862943611198906188E0; /* log(4) */
 
-  if( (x < 0.0) || (x > 1.0) )
+  if ((x < 0.0) || (x > 1.0))
     {
-      math_set_error( "ellpk", MATH_ERROR_DOMAIN );
-      return( 0.0 );
+      math_set_error ("ellpk", MATH_ERROR_DOMAIN);
+      return 0.0;
     }
   
-  if( x > MACHEP )
+  if (x > MACHEP)
     {
-      return( polevl(x,P_ellpk,10) - log(x) * polevl(x,Q_ellpk,10) );
+      return polevl (x,P_ellpk,10) - log (x) * polevl (x,Q_ellpk,10);
     }
   else
     {
-      if( x == 0.0 )
+      if (x == 0.0)
         {
-          math_set_error( "ellpk", MATH_ERROR_SING );
-          return( MAXNUM );
+          math_set_error ("ellpk", MATH_ERROR_SING);
+          return MAXNUM;
         }
       else
         {
-          return( C1_ellpk - 0.5 * log(x) );
+          return C1_ellpk - 0.5 * log (x);
         }
     }
 }
@@ -829,7 +829,7 @@ ellpk (double x)
  * SYNOPSIS:
  * int N;
  * double x, y, coef[N+1], polevl[];
- * y = polevl( x, coef, N );
+ * y = polevl(x, coef, N);
  *
  * DESCRIPTION:
  * Evaluates polynomial of degree N:
@@ -860,9 +860,9 @@ polevl (double x, const double coef[], int N)
   
   do
     ans = ans * x  +  *p++;
-  while( --i );
+  while (--i);
   
-  return( ans );
+  return ans;
 }
 
 #if 1
@@ -923,7 +923,7 @@ print_z_fraction_before_zplnc (const BseIIRFilterRequirements *ifr,
   else
     zgain = an / (pn * ds->gain_scale);
   VERBOSE ("# constant mygain factor %23.13E\n", zgain); // BSE info
-  VERBOSE ("# z plane Denominator      Numerator\n" ); // BSE info
+  VERBOSE ("# z plane Denominator      Numerator\n"); // BSE info
   int j;
   for (j = 0; j <= ds->n_solved_poles; j++)
     VERBOSE ("%2d %17.9E %17.9E\n", j, aa[j], pp[j] * zgain); // BSE info
@@ -951,20 +951,20 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       if (ifr->kind == 2)
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+ds->ripple_epsilon^2) */
-          phi = exp( 0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR );
+          phi = exp (0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR);
 
-          if( (ifr->order & 1) == 0 )
+          if ((ifr->order & 1) == 0)
             ds->gain_scale = phi;
           else
             ds->gain_scale = 1.0;
         }
       else
         { /* elliptic */
-          ds->ripple_epsilon = exp( ifr->passband_ripple_db / DECIBELL_FACTOR );
+          ds->ripple_epsilon = exp (ifr->passband_ripple_db / DECIBELL_FACTOR);
           ds->gain_scale = 1.0;
-          if( (ifr->order & 1) == 0 )
-            ds->gain_scale = sqrt( ds->ripple_epsilon );
-          ds->ripple_epsilon = sqrt( ds->ripple_epsilon - 1.0 );
+          if ((ifr->order & 1) == 0)
+            ds->gain_scale = sqrt (ds->ripple_epsilon);
+          ds->ripple_epsilon = sqrt (ds->ripple_epsilon - 1.0);
         }
     }
   
@@ -978,7 +978,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   if (passband_edge1 >= ds->nyquist_frequency)
     return "passband_edge1 too high";
   
-  if( (ifr->type & 1) == 0 )
+  if ((ifr->type & 1) == 0)
     {
       if (passband_edge0 <= 0.0)
         return "passband_edge too small";
@@ -1008,7 +1008,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
     }
   /* Frequency correspondence for bilinear transformation
    *
-   *  Wanalog = tan( 2 pi Fdigital T / 2 )
+   *  Wanalog = tan(2 pi Fdigital T / 2)
    *
    * where T = 1/ifr->sampling_frequency
    */
@@ -1016,16 +1016,16 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
   double sang;
   double cang = cos (ang);
   ds->tan_angle_frequency = sin (ang) / cang; /* Wanalog */
-  if( ifr->kind != 3 )
+  if (ifr->kind != 3)
     {
       ds->wc = ds->tan_angle_frequency;
-      /*printf( "cos( 1/2 (Whigh-Wlow) T ) = %.5e, wc = %.5e\n", cang, ds->wc );*/
+      /*printf("cos(1/2 (Whigh-Wlow) T) = %.5e, wc = %.5e\n", cang, ds->wc);*/
     }
   
   
-  if( ifr->kind == 3 )
+  if (ifr->kind == 3)
     { /* elliptic */
-      double tmp_cgam = cos( (high_edge + passband_edge0) * PI / ifr->sampling_frequency ) / cang;
+      double tmp_cgam = cos ((high_edge + passband_edge0) * PI / ifr->sampling_frequency) / cang;
       ds->cgam = tmp_cgam;
       if (ifr->stopband_edge > 0.0)
         ds->stopband_edge = ifr->stopband_edge;
@@ -1034,20 +1034,20 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
       else /* stopband_db < 0.0 */
         { /* calculate band edge from db down */
           double a = exp (-ifr->stopband_db / DECIBELL_FACTOR);
-          double m1 = ds->ripple_epsilon / sqrt( a - 1.0 );
+          double m1 = ds->ripple_epsilon / sqrt (a - 1.0);
           m1 *= m1;
           double m1p = 1.0 - m1;
-          double Kk1 = ellpk( m1p );
-          double Kpk1 = ellpk( m1 );
-          double q = exp( -PI * Kpk1 / (ifr->order * Kk1) );
+          double Kk1 = ellpk (m1p);
+          double Kpk1 = ellpk (m1);
+          double q = exp (-PI * Kpk1 / (ifr->order * Kk1));
           fixme2local_1 = jacobi_theta_by_nome (q);
-          if( ifr->type >= 3 )
+          if (ifr->type >= 3)
             ds->wr = fixme2local_1;
           else
             ds->wr = 1.0 / fixme2local_1;
-          if( ifr->type & 1 )
+          if (ifr->type & 1)
             {
-              ds->stopband_edge = atan( ds->tan_angle_frequency * ds->wr ) * ifr->sampling_frequency / PI;
+              ds->stopband_edge = atan (ds->tan_angle_frequency * ds->wr) * ifr->sampling_frequency / PI;
             }
           else
             {
@@ -1055,11 +1055,11 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
               fixme2local_a = ds->tan_angle_frequency * ds->wr;
               fixme2local_a *= fixme2local_a;
               double b = fixme2local_a * (1.0 - ds->cgam * ds->cgam) + fixme2local_a * fixme2local_a;
-              b = (ds->cgam + sqrt(b))/(1.0 + fixme2local_a);
-              ds->stopband_edge = (PI / 2.0 - asin(b)) * ifr->sampling_frequency / (2.0 * PI);
+              b = (ds->cgam + sqrt (b))/(1.0 + fixme2local_a);
+              ds->stopband_edge = (PI / 2.0 - asin (b)) * ifr->sampling_frequency / (2.0 * PI);
             }
         }
-      switch( ifr->type )
+      switch (ifr->type)
 	{
 	case 1:
           if (ds->stopband_edge <= passband_edge1)
@@ -1081,10 +1081,10 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           break;
 	}
       ang = ds->stopband_edge * PI / ifr->sampling_frequency;
-      cang = cos(ang);
-      sang = sin(ang);
+      cang = cos (ang);
+      sang = sin (ang);
 
-      if( ifr->type & 1 )
+      if (ifr->type & 1)
 	{
           ds->wr = sang/(cang * ds->tan_angle_frequency);
 	}
@@ -1096,26 +1096,26 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           ds->wr = (ds->cgam - cang)/(sang * ds->tan_angle_frequency);
 	}
 
-      if( ifr->type >= 3 )
+      if (ifr->type >= 3)
 	ds->wr = 1.0 / ds->wr;
-      if( ds->wr < 0.0 )
+      if (ds->wr < 0.0)
 	ds->wr = -ds->wr;
       y[0] = 1.0;
       y[1] = ds->wr;
       /* ds->chebyshev_band_cbp = ds->wr; */
       
-      if( ifr->type >= 3 )
+      if (ifr->type >= 3)
 	y[1] = 1.0 / y[1];
       
-      if( ifr->type & 1 )
+      if (ifr->type & 1)
 	{
           int i;
           for (i = 1; i <= 2; i++)
             {
-              aa[i] = atan( ds->tan_angle_frequency * y[i - 1] ) * ifr->sampling_frequency / PI ;
+              aa[i] = atan (ds->tan_angle_frequency * y[i - 1]) * ifr->sampling_frequency / PI ;
             }
-          printf( "pass band %.9E\n", aa[1] );
-          printf( "stop band %.9E\n", aa[2] );
+          printf ("pass band %.9E\n", aa[1]);
+          printf ("stop band %.9E\n", aa[2]);
 	}
       else
 	{
@@ -1123,46 +1123,46 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           for (i = 1; i <= 2; i++)
             {
               double a = ds->tan_angle_frequency * y[i - 1];
-              double b = atan(a);
-              double q = sqrt( 1.0 + a * a  -  ds->cgam * ds->cgam );
-              q = atan2( q, ds->cgam );
+              double b = atan (a);
+              double q = sqrt (1.0 + a * a  -  ds->cgam * ds->cgam);
+              q = atan2 (q, ds->cgam);
               aa[i] = (q + b) * ds->nyquist_frequency / PI;
               pp[i] = (q - b) * ds->nyquist_frequency / PI;
             }
-          printf( "pass band %.9E %.9E\n", pp[1], aa[1] );
-          printf( "stop band %.9E %.9E\n", pp[2], aa[2] );
+          printf ("pass band %.9E %.9E\n", pp[1], aa[1]);
+          printf ("stop band %.9E %.9E\n", pp[2], aa[2]);
 	}
       ds->wc = 1.0;
       find_elliptic_locations_in_lambda_plane (ifr, ds);	/* find locations in lambda plane */
-      if( (2 * ifr->order + 2) > ARRSIZ )
+      if ((2 * ifr->order + 2) > ARRSIZ)
 	goto toosml;
     } /* elliptic */
   
   /* Transformation from low-pass to band-pass critical frequencies
    *
    * Center frequency
-   *                     cos( 1/2 (Whigh+Wlow) T )
-   *  cos( Wcenter T ) = ----------------------
-   *                     cos( 1/2 (Whigh-Wlow) T )
+   *                     cos(1/2 (Whigh+Wlow) T)
+   *  cos(Wcenter T) = ----------------------
+   *                     cos(1/2 (Whigh-Wlow) T)
    *
    *
    * Band edges
-   *            cos( Wcenter T) - cos( Wdigital T )
+   *            cos(Wcenter T) - cos(Wdigital T)
    *  Wanalog = -----------------------------------
-   *                        sin( Wdigital T )
+   *                        sin(Wdigital T)
    */
   
-  if( ifr->kind == 2 )
+  if (ifr->kind == 2)
     { /* Chebyshev */
       double a = PI * (high_edge + passband_edge0) / ifr->sampling_frequency ;
-      ds->cgam = cos(a) / cang;
+      ds->cgam = cos (a) / cang;
       a = 2.0 * PI * passband_edge1 / ifr->sampling_frequency;
       ds->chebyshev_band_cbp = (ds->cgam - cos (a)) / sin (a);
     }
-  if( ifr->kind == 1 )
+  if (ifr->kind == 1)
     { /* Butterworth */
       double a = PI * (high_edge + passband_edge0) / ifr->sampling_frequency ;
-      ds->cgam = cos(a) / cang;
+      ds->cgam = cos (a) / cang;
       a = 2.0 * PI * passband_edge1 / ifr->sampling_frequency;
       /* ds->chebyshev_band_cbp = (ds->cgam - cos (a)) / sin (a); */
       ds->gain_scale = 1.0;
@@ -1175,7 +1175,7 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 
   find_s_plane_poles_and_zeros (ifr, ds);		/* find s plane poles and zeros */
   
-  if( ((ifr->type & 1) == 0) && ((4 * ifr->order + 2) > ARRSIZ) )
+  if (((ifr->type & 1) == 0) && ((4 * ifr->order + 2) > ARRSIZ))
     goto toosml;
   
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
@@ -1201,29 +1201,29 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequirements *ifr,
   Kk = ellpk (1.0 - fixme2local_m);
   Kpk = ellpk (fixme2local_m);
   EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", fixme2local_k, fixme2local_m, Kk, Kpk); // BSE info
-  double q = exp( -PI * ifr->order * Kpk / Kk );	/* the nome of k1 */
+  double q = exp (-PI * ifr->order * Kpk / Kk);	/* the nome of k1 */
   double m1 = jacobi_theta_by_nome (q); /* see below */
-  /* Note m1 = ds->ripple_epsilon / sqrt( A*A - 1.0 ) */
+  /* Note m1 = ds->ripple_epsilon / sqrt(A*A - 1.0) */
   double a = ds->ripple_epsilon / m1;
   a =  a * a + 1;
-  a = 10.0 * log(a) / log(10.0);
-  printf( "dbdown %.9E\n", a );
+  a = 10.0 * log (a) / log (10.0);
+  printf ("dbdown %.9E\n", a);
   a = 180.0 * asin (fixme2local_k) / PI;
   double b = 1.0/(1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
-  b = sqrt( 1.0 - b );
-  printf( "theta %.9E, rho %.9E\n", a, b );
+  b = sqrt (1.0 - b);
+  printf ("theta %.9E, rho %.9E\n", a, b);
   m1 *= m1;
   double m1p = 1.0 - m1;
-  double Kk1 = ellpk( m1p );
-  double Kpk1 = ellpk( m1 );
+  double Kk1 = ellpk (m1p);
+  double Kpk1 = ellpk (m1);
   double r = Kpk1 * Kk / (Kk1 * Kpk);
-  printf( "consistency check: n= %.14E\n", r );
+  printf ("consistency check: n= %.14E\n", r);
   EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
   /*   -1
-   * sn   j/ds->ripple_epsilon\m  =  j ellik( atan(1/ds->ripple_epsilon), m )
+   * sn   j/ds->ripple_epsilon\m  =  j ellik(atan(1/ds->ripple_epsilon), m)
    */
   b = 1.0 / ds->ripple_epsilon;
-  phi = atan( b );
+  phi = atan (b);
   fixme2local_2 = ellik (phi, m1p);
   EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, fixme2local_2);
   /* consistency check on inverse sn */
@@ -1257,8 +1257,8 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       for (i = 0; i < ds->n_poles; i++)
         {	/* poles */
           int lr = i + i;
-          zs[lr] = -cos(m);
-          zs[lr + 1] = sin(m);
+          zs[lr] = -cos (m);
+          zs[lr + 1] = sin (m);
           m += PI / ifr->order;
         }	
       /* high pass or band reject
@@ -1277,7 +1277,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           /* The zeros at infinity map to the origin.
            */
           ds->n_zeros = ds->n_poles;
-          if( ifr->type == 4 )
+          if (ifr->type == 4)
             {
               ds->n_zeros += ifr->order / 2;
             }
@@ -1290,14 +1290,14 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
             }
         }
     }
-  if( ifr->kind == 2 )
+  if (ifr->kind == 2)
     {
       /* For Chebyshev, find radii of two Butterworth circles
        * See Gold & Rader, page 60
        */
       rho = (phi - 1.0)*(phi + 1);  /* rho = ds->ripple_epsilon^2 = {sqrt(1+ds->ripple_epsilon^2)}^2 - 1 */
-      ds->ripple_epsilon = sqrt(rho);
-      /* sqrt( 1 + 1/ds->ripple_epsilon^2 ) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
+      ds->ripple_epsilon = sqrt (rho);
+      /* sqrt(1 + 1/ds->ripple_epsilon^2) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
        */
       phi = (phi + 1.0) / ds->ripple_epsilon;
       EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", phi, ds->ripple_epsilon); // BSE info
@@ -1313,13 +1313,13 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       for (i = 0; i < ds->n_poles; i++)
         {	/* poles */
           int lr = i + i;
-          zs[lr] = -a * cos(m);
-          zs[lr + 1] = b * sin(m);
+          zs[lr] = -a * cos (m);
+          zs[lr + 1] = b * sin (m);
           m += PI / ifr->order;
         }	
       /* high pass or band reject
        */
-      if( ifr->type >= 3 )
+      if (ifr->type >= 3)
         {
           /* map s => 1/s */
           for (j = 0; j < ds->n_poles; j++)
@@ -1333,7 +1333,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           /* The zeros at infinity map to the origin.
            */
           ds->n_zeros = ds->n_poles;
-          if( ifr->type == 4 )
+          if (ifr->type == 4)
             {
               ds->n_zeros += ifr->order / 2;
             }
@@ -1346,7 +1346,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
             }
         }
     }
-  if( ifr->kind == 3 )   /* elliptic filter -- stw */
+  if (ifr->kind == 3)   /* elliptic filter -- stw */
     {
       double m = ds->elliptic_m;
       ds->n_zeros = ifr->order / 2;
@@ -1357,7 +1357,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         {	/* zeros */
           double a = ifr->order - 1 - i - i;
           double b = (Kk * a) / ifr->order;
-          ellpj( b, m, &sn, &cn, &dn, &phi );
+          ellpj (b, m, &sn, &cn, &dn, &phi);
           int lr = 2 * ds->n_poles + 2 * i;
           zs[ lr ] = 0.0;
           a = ds->wc / (ds->elliptic_k * sn);	/* elliptic_k = sqrt(m) */
@@ -1367,7 +1367,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
         {	/* poles */
           double a = ifr->order - 1 - i - i;
           double b = a * Kk / ifr->order;
-          ellpj( b, m, &sn, &cn, &dn, &phi );
+          ellpj (b, m, &sn, &cn, &dn, &phi);
           double r = ds->elliptic_k * sn * sn1;
           b = cn1 * cn1 + r * r;
           a = -ds->wc * cn * dn * sn1 * cn1 / b;
@@ -1376,7 +1376,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
           b = ds->wc * sn * dn1 / b;
           zs[lr + 1] = b;
         }	
-      if( ifr->type >= 3 )
+      if (ifr->type >= 3)
         {
           int nt = ds->n_poles + ds->n_zeros;
           for (j = 0; j < nt; j++)
@@ -1397,7 +1397,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
             }
         }
     }
-  printf( "s plane poles:\n" );
+  printf ("s plane poles:\n");
   j = 0;
   for (i = 0; i < ds->n_poles + ds->n_zeros; i++)
     {
@@ -1405,9 +1405,9 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
       ++j;
       double b = zs[j];
       ++j;
-      printf( "%.9E %.9E\n", a, b );
+      printf ("%.9E %.9E\n", a, b);
       if (i == ds->n_poles - 1)
-        printf( "s plane zeros:\n" );
+        printf ("s plane zeros:\n");
     }
   return 0;
 }
@@ -1418,17 +1418,17 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequirements *ifr,
  * AMS55 #16.38.5, 16.38.7
  *
  *       1/2
- * ( 2K )                   4     9
- * ( -- )     =  1 + 2q + 2q  + 2q  + ...  =  Theta (0,q)
- * ( pi )                                          3
+ * (2K)                   4     9
+ * (--)     =  1 + 2q + 2q  + 2q  + ...  =  Theta (0,q)
+ * (pi)                                          3
  *
  *
  *       1/2
- * ( 2K )     1/4       1/4        2    6    12    20
- * ( -- )    m     =  2q    ( 1 + q  + q  + q   + q   + ...) = Theta (0,q)
- * ( pi )                                                           2
+ * (2K)     1/4       1/4        2    6    12    20
+ * (--)    m     =  2q    (1 + q  + q  + q   + q   + ...) = Theta (0,q)
+ * (pi)                                                           2
  *
- * The nome q(m) = exp( - pi K(1-m)/K(m) ).
+ * The nome q(m) = exp(- pi K(1-m)/K(m)).
  *
  *                                1/2
  * Given q, this program returns m   .
@@ -1490,15 +1490,15 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
           r.r = zs[ir];
           r.i = zs[ii];
           
-          switch( ifr->type )
+          switch (ifr->type)
             {
             case 1:
             case 3:
               /* Substitute  s - r  =  s/wc - r = (1/wc)(z-1)/(z+1) - r
                *
-               *     1  1 - r wc (       1 + r wc )
-               * =  --- -------- ( z  -  -------- )
-               *    z+1    wc    (       1 - r wc )
+               *     1  1 - r wc (       1 + r wc)
+               * =  --- -------- (z  -  --------)
+               *    z+1    wc    (       1 - r wc)
                *
                * giving the root in the z plane.
                */
@@ -1507,8 +1507,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
               cden.r = 1 - C * r.r;
               cden.i = -C * r.i;
               jt += 1;
-              Cdiv( &cden, &cnum, &z[jt] );
-              if( r.i != 0.0 )
+              Cdiv (&cden, &cnum, &z[jt]);
+              if (r.i != 0.0)
                 {
                   /* fill in complex conjugate root */
                   jt += 1;
@@ -1531,43 +1531,43 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
                *
                * and solve for the roots in the z plane.
                */
-              if( ifr->kind == 2 )
+              if (ifr->kind == 2)
                 cwc.r = ds->chebyshev_band_cbp;
               else
                 cwc.r = ds->tan_angle_frequency;
               cwc.i = 0.0;
-              Cmul( &r, &cwc, &cnum );     /* r wc */
-              Csub( &cnum, &COMPLEX_ONE, &ca );   /* a = 1 - r wc */
-              Cmul( &cnum, &cnum, &b4ac ); /* 1 - (r wc)^2 */
-              Csub( &b4ac, &COMPLEX_ONE, &b4ac );
+              Cmul (&r, &cwc, &cnum);     /* r wc */
+              Csub (&cnum, &COMPLEX_ONE, &ca);   /* a = 1 - r wc */
+              Cmul (&cnum, &cnum, &b4ac); /* 1 - (r wc)^2 */
+              Csub (&b4ac, &COMPLEX_ONE, &b4ac);
               b4ac.r *= 4.0;               /* 4ac */
               b4ac.i *= 4.0;
               cb.r = -2.0 * ds->cgam;          /* b */
               cb.i = 0.0;
-              Cmul( &cb, &cb, &cnum );     /* b^2 */
-              Csub( &b4ac, &cnum, &b4ac ); /* b^2 - 4 ac */
-              Csqrt( &b4ac, &b4ac );
+              Cmul (&cb, &cb, &cnum);     /* b^2 */
+              Csub (&b4ac, &cnum, &b4ac); /* b^2 - 4 ac */
+              Csqrt (&b4ac, &b4ac);
               cb.r = -cb.r;  /* -b */
               cb.i = -cb.i;
               ca.r *= 2.0; /* 2a */
               ca.i *= 2.0;
-              Cadd( &b4ac, &cb, &cnum );   /* -b + sqrt( b^2 - 4ac) */
-              Cdiv( &ca, &cnum, &cnum );   /* ... /2a */
+              Cadd (&b4ac, &cb, &cnum);   /* -b + sqrt(b^2 - 4ac) */
+              Cdiv (&ca, &cnum, &cnum);   /* ... /2a */
               jt += 1;
-              Cmov( &cnum, &z[jt] );
-              if( cnum.i != 0.0 )
+              Cmov (&cnum, &z[jt]);
+              if (cnum.i != 0.0)
                 {
                   jt += 1;
                   z[jt].r = cnum.r;
                   z[jt].i = -cnum.i;
                 }
-              if( (r.i != 0.0) || (cnum.i == 0) )
+              if ((r.i != 0.0) || (cnum.i == 0))
                 {
-                  Csub( &b4ac, &cb, &cnum );  /* -b - sqrt( b^2 - 4ac) */
-                  Cdiv( &ca, &cnum, &cnum );  /* ... /2a */
+                  Csub (&b4ac, &cb, &cnum);  /* -b - sqrt(b^2 - 4ac) */
+                  Cdiv (&ca, &cnum, &cnum);  /* ... /2a */
                   jt += 1;
-                  Cmov( &cnum, &z[jt] );
-                  if( cnum.i != 0.0 )
+                  Cmov (&cnum, &z[jt]);
+                  if (cnum.i != 0.0)
                     {
                       jt += 1;
                       z[jt].r = cnum.r;
@@ -1576,15 +1576,15 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequirements *ifr,
                 }
             } /* end switch */
 	}
-      while( --nc > 0 );
+      while (--nc > 0);
       
-      if( icnt == 0 )
+      if (icnt == 0)
 	{
           ds->n_solved_poles = jt + 1;
-          if( ds->n_zeros <= 0 )
+          if (ds->n_zeros <= 0)
             {
-              if( ifr->kind != 3 )
-                return(0);
+              if (ifr->kind != 3)
+                return 0;
               else
                 break;
             }
@@ -1603,21 +1603,21 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   lin[1].r = 1.0;
   lin[1].i = 0.0;
   
-  if( ifr->kind != 3 )
+  if (ifr->kind != 3)
     { /* Butterworth or Chebyshev */
       /* generate the remaining zeros */
-      while( 2 * ds->n_solved_poles - 1 > jt )
+      while (2 * ds->n_solved_poles - 1 > jt)
         {
-          if( ifr->type != 3 )
+          if (ifr->type != 3)
             {
-              printf( "adding zero at Nyquist frequency\n" );
+              printf ("adding zero at Nyquist frequency\n");
               jt += 1;
               z[jt].r = -1.0; /* zero at Nyquist frequency */
               z[jt].i = 0.0;
             }
-          if( (ifr->type == 2) || (ifr->type == 3) )
+          if ((ifr->type == 2) || (ifr->type == 3))
             {
-              printf( "adding zero at 0 Hz\n" );
+              printf ("adding zero at 0 Hz\n");
               jt += 1;
               z[jt].r = 1.0; /* zero at 0 Hz */
               z[jt].i = 0.0;
@@ -1626,12 +1626,12 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
     }
   else
     { /* elliptic */
-      while( 2 * ds->n_solved_poles - 1 > jt )
+      while (2 * ds->n_solved_poles - 1 > jt)
         {
           jt += 1;
           z[jt].r = -1.0; /* zero at Nyquist frequency */
           z[jt].i = 0.0;
-          if( (ifr->type == 2) || (ifr->type == 4) )
+          if ((ifr->type == 2) || (ifr->type == 4))
             {
               jt += 1;
               z[jt].r = 1.0; /* zero at 0 Hz */
@@ -1639,7 +1639,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
             }
         }
     }
-  printf( "order = %d\n", ds->n_solved_poles );
+  printf ("order = %d\n", ds->n_solved_poles);
 
   int j;
   
@@ -1657,7 +1657,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
       for (j=0; j < ds->n_solved_poles; j++)
         {
           int jj = j;
-          if( icnt )
+          if (icnt)
             jj += ds->n_solved_poles;
           double a = z[jj].r;
           double b = z[jj].i;
@@ -1669,7 +1669,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
               y[jh + 1] =  y[jh + 1]  - b * pp[jh] - a * y[jh];
             }
         }
-      if( icnt == 0 )
+      if (icnt == 0)
         {
           for (j=0; j <= ds->n_solved_poles; j++)
             aa[j] = pp[j];
@@ -1677,7 +1677,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
     }
   /* Scale factors of the pole and zero polynomials */
   double a = 1.0;
-  switch( ifr->type )
+  switch (ifr->type)
     {
     case 3:
       a = -1.0;
@@ -1695,12 +1695,12 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
       break;
       
     case 2:
-      gam = PI / 2.0 - asin( ds->cgam );  /* = acos( cgam ) */
+      gam = PI / 2.0 - asin (ds->cgam);  /* = acos(cgam) */
       int mh = ds->n_solved_poles / 2;
       pn = pp[mh];
       an = aa[mh];
       double ai = 0.0;
-      if( mh > ((ds->n_solved_poles / 4)*2) )
+      if (mh > ((ds->n_solved_poles / 4)*2))
         {
           ai = 1.0;
           pn = 0.0;
@@ -1725,37 +1725,37 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequirements *ifr
 {
   int j;
   gain = an/(pn * ds->gain_scale);
-  if( (ifr->kind != 3) && (pn == 0) )
+  if ((ifr->kind != 3) && (pn == 0))
     gain = 1.0;
-  printf( "constant gain factor %23.13E\n", gain );
+  printf ("constant gain factor %23.13E\n", gain);
   for (j = 0; j <= ds->n_solved_poles; j++)
     pp[j] = gain * pp[j];
   
-  printf( "z plane Denominator      Numerator\n" );
+  printf ("z plane Denominator      Numerator\n");
   for (j=0; j <= ds->n_solved_poles; j++)
     {
-      printf( "%2d %17.9E %17.9E\n", j, aa[j], pp[j] );
+      printf ("%2d %17.9E %17.9E\n", j, aa[j], pp[j]);
     }
 
   /* I /think/ at this point the polynomial is factorized in 2nd order filters,
    * so that it can be implemented without stability problems -- stw
    */
-  printf( "poles and zeros with corresponding quadratic factors\n" );
+  printf ("poles and zeros with corresponding quadratic factors\n");
   for (j=0; j < ds->n_solved_poles; j++)
     {
       double a = z[j].r;
       double b = z[j].i;
-      if( b >= 0.0 )
+      if (b >= 0.0)
         {
-          printf( "pole  %23.13E %23.13E\n", a, b );
+          printf ("pole  %23.13E %23.13E\n", a, b);
           print_quadratic_factors (ifr, ds, a, b, 1);
         }
       int jj = j + ds->n_solved_poles;
       a = z[jj].r;
       b = z[jj].i;
-      if( b >= 0.0 )
+      if (b >= 0.0)
         {
-          printf( "zero  %23.13E %23.13E\n", a, b );
+          printf ("zero  %23.13E %23.13E\n", a, b);
           print_quadratic_factors (ifr, ds, a, b, 0);
         }
     }
@@ -1771,7 +1771,7 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
 {
   double a, b, r, f, g, g0;
   
-  if( y > 1.0e-16 )
+  if (y > 1.0e-16)
     {
       a = -2.0 * x;
       b = x * x + y * y;
@@ -1781,17 +1781,17 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
       a = -x;
       b = 0.0;
     }
-  printf( "q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a );
-  if( b != 0.0 )
+  printf ("q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a);
+  if (b != 0.0)
     {
       /* resonant frequency */
-      r = sqrt(b);
-      f = PI / 2.0 - asin( -a/(2.0 * r) );
-      f = f * ifr->sampling_frequency / (2.0 * PI );
+      r = sqrt (b);
+      f = PI / 2.0 - asin (-a/(2.0 * r));
+      f = f * ifr->sampling_frequency / (2.0 * PI);
       /* gain at resonance */
       g = 1.0 + r;
       g = g * g - (a * a / r);
-      g = (1.0 - r) * sqrt(g);
+      g = (1.0 - r) * sqrt (g);
       g0 = 1.0 + a + b;	/* gain at d.c. */
     }
   else
@@ -1804,18 +1804,18 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
       g0 = 1.0 + a;
     }
   
-  if( pzflg )
+  if (pzflg)
     {
-      if( g != 0.0 )
+      if (g != 0.0)
         g = 1.0 / g;
       else
         g = MAXNUM;
-      if( g0 != 0.0 )
+      if (g0 != 0.0)
         g0 = 1.0 / g0;
       else
         g = MAXNUM;
     }
-  printf( "f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0 );
+  printf ("f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0);
   return 0;
 }
 
@@ -1829,11 +1829,11 @@ print_filter_table (const BseIIRFilterRequirements *ifr,
   for (f=0; f < limit; f += limit / 21.)
     {
       double r = response (ifr, ds, f, gain);
-      if( r <= 0.0 )
+      if (r <= 0.0)
         r = -999.99;
       else
-        r = 2.0 * DECIBELL_FACTOR * log( r );
-      printf( "%10.1f  %10.2f\n", f, r );
+        r = 2.0 * DECIBELL_FACTOR * log (r);
+      printf ("%10.1f  %10.2f\n", f, r);
       // f = f + 0.05 * ds->nyquist_frequency;
     }
 }
@@ -1848,10 +1848,10 @@ response (const BseIIRFilterRequirements *ifr,
   double u;
   int j;
   
-  /* exp( j omega T ) */
+  /* exp(j omega T) */
   u = 2.0 * PI * f /ifr->sampling_frequency;
-  x.r = cos(u);
-  x.i = sin(u);
+  x.r = cos (u);
+  x.i = sin (u);
   
   num.r = 1.0;
   num.i = 0.0;
@@ -1859,16 +1859,16 @@ response (const BseIIRFilterRequirements *ifr,
   den.i = 0.0;
   for (j=0; j < ds->n_solved_poles; j++)
     {
-      Csub( &z[j], &x, &w );
-      Cmul( &w, &den, &den );
-      Csub( &z[j + ds->n_solved_poles], &x, &w );
-      Cmul( &w, &num, &num );
+      Csub (&z[j], &x, &w);
+      Cmul (&w, &den, &den);
+      Csub (&z[j + ds->n_solved_poles], &x, &w);
+      Cmul (&w, &num, &num);
     }
-  Cdiv( &den, &num, &w );
+  Cdiv (&den, &num, &w);
   w.r *= amp;
   w.i *= amp;
-  u = Cabs( &w );
-  return(u);
+  u = Cabs (&w);
+  return u;
 }
 
 static double
