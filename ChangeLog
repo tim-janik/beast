@@ -1,3 +1,11 @@
+Tue Oct 17 19:04:03 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/bse/Makefile.am: Run filtertest during make check.
+
+	* tests/bse/filtertest.cc: Added option parsing and usage(). Included
+	a few more example filters. Increased coefficient precision for
+	compiled-in coefficients.
+
 Mon Oct 16 22:53:35 2006  Tim Janik  <timj@gtk.org>
 
 	* this change accomplishes the move to distinguish test programs

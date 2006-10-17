@@ -49,8 +49,8 @@ generated: clean-generated $(GENERATED)
 #
 # test programs
 #
-TESTS = cxxbinding
-noinst_PROGRAMS = $(TESTS) filtertest
+TESTS = cxxbinding filtertest
+noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
 cxxbinding_LDADD = $(progs_ldadd)
