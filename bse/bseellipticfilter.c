@@ -868,7 +868,6 @@ polevl (double x, const double coef[], int N)
 #if 1
 static double aa[ARRSIZ];
 static double pp[ARRSIZ];
-static double y[ARRSIZ];
 static double zs[ARRSIZ];
 static Complex z[ARRSIZ];
 static double Kk = 0.0;
@@ -1096,19 +1095,19 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
 	ds->wr = 1.0 / ds->wr;
       if (ds->wr < 0.0)
 	ds->wr = -ds->wr;
-      y[0] = 1.0;
-      y[1] = ds->wr;
+
+      const double tmp_y0 = 1.0;
+      double tmp_y1 = ds->wr;
       /* ds->chebyshev_band_cbp = ds->wr; */
-      
       if (ifr->type >= 3)
-	y[1] = 1.0 / y[1];
-      
+	tmp_y1 = 1.0 / tmp_y1;
       if (ifr->type & 1)
 	{
           int i;
           for (i = 1; i <= 2; i++)
             {
-              aa[i] = atan (ds->tan_angle_frequency * y[i - 1]) * ifr->sampling_frequency / PI ;
+              double tmp_y = i == 1 ? tmp_y0 : tmp_y1;
+              aa[i] = atan (ds->tan_angle_frequency * tmp_y) * ifr->sampling_frequency / PI ;
             }
           printf ("pass band %.9E\n", aa[1]);
           printf ("stop band %.9E\n", aa[2]);
@@ -1118,7 +1117,8 @@ iir_filter_design (const BseIIRFilterRequirements *ifr,
           int i;
           for (i = 1; i <= 2; i++)
             {
-              double a = ds->tan_angle_frequency * y[i - 1];
+              double tmp_y = i == 1 ? tmp_y0 : tmp_y1;
+              double a = ds->tan_angle_frequency * tmp_y;
               double b = atan (a);
               double q = sqrt (1.0 + a * a  -  ds->cgam * ds->cgam);
               q = atan2 (q, ds->cgam);
@@ -1645,11 +1645,9 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
   int j, icnt;
   for (icnt = 0; icnt < 2; icnt++)
     {
+      double yy[ARRSIZ] = { 0, };
       for (j = 0; j < ARRSIZ; j++)
-        {
-          pp[j] = 0.0;
-          y[j] = 0.0;
-        }
+        pp[j] = 0.0;
       pp[0] = 1.0;
       for (j = 0; j < ds->n_solved_poles; j++)
         {
@@ -1662,8 +1660,8 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequirements *if
           for (i = 0; i <= j; i++)
             {
               int jh = j - i;
-              pp[jh + 1] = pp[jh + 1] - a * pp[jh] + b * y[jh];
-              y[jh + 1] =  y[jh + 1]  - b * pp[jh] - a * y[jh];
+              pp[jh + 1] = pp[jh + 1] - a * pp[jh] + b * yy[jh];
+              yy[jh + 1] =  yy[jh + 1]  - b * pp[jh] - a * yy[jh];
             }
         }
       if (icnt == 0)

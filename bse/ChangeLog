@@ -1,3 +1,8 @@
+Tue Oct 17 00:50:08 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.c: changed static y[] array into local scope
+	variables/arrays.
+
 Tue Oct 17 00:31:20 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.c: removed remaining static integers by using
