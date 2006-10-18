@@ -1,3 +1,7 @@
+Wed Oct 18 22:05:37 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-resample.cc: Fixed my last commit. Sorry.
+
 Wed Oct 18 21:47:15 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/resamplehandle.cc:

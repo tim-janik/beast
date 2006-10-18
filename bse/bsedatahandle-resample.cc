@@ -176,15 +176,15 @@ public:
 	m_resamplers.push_back (resampler);
       }
     g_assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
-    m_filter_order = m_resampler[0]->order();
+    m_filter_order = m_resamplers[0]->order();
 
     /* Resampler2::delay() is defined in output samples, but we need to
      * compensate by shifting the input samples to enable seeking, thus the
      * factor 2
      */
     m_filter_delay = (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE ?
-		      (int) round (resampler->delay() / 2) :
-		      (int) round (resampler->delay() * 2));
+		      (int) round (m_resamplers[0]->delay() / 2) :
+		      (int) round (m_resamplers[0]->delay() * 2));
     return BSE_ERROR_NONE;
   }
   void
