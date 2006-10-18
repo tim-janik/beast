@@ -323,7 +323,7 @@ test_delay_compensation (const char *run_type)
       size_t i = 0, j = (int) round (delay * 2);
       if (j % 2)
 	{
-	  /* implement half a sample delay (for downsampling only) */
+	  /* implement half a output sample delay (for downsampling only) */
 	  g_assert (params[p].mode == BSE_RESAMPLER2_MODE_DOWNSAMPLE);
 	  i++;
 	  j += 2;

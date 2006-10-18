@@ -166,23 +166,25 @@ public:
     m_pcm_frame = -2;
     m_pcm_data.resize (m_frame_size);
 
+    /* FIXME: Resampler2::find_precision_for_bits (...) */
+    BseResampler2Precision precision = static_cast<BseResampler2Precision> (m_precision_bits);
     for (guint i = 0; i < setup->n_channels; i++)
       {
-	BseResampler2Precision precision = static_cast<BseResampler2Precision> (m_precision_bits);
 	Resampler2 *resampler = Resampler2::create (mode(), precision);
-	g_assert (resampler); /* FIXME: better error handling */
+	g_assert (resampler);
 
 	m_resamplers.push_back (resampler);
-	m_filter_order = resampler->order();
-	
-	g_assert (m_filter_order % 2 == 0);
-	/* Resampler2::delay() is defined in output samples, but we
-	 * compensate by shifting the input samples, thus the factor 2
-	 */
-	m_filter_delay = mode() == BSE_RESAMPLER2_MODE_UPSAMPLE ?
-	                 (int) round (resampler->delay() / 2) :
-			 (int) round (resampler->delay() * 2);
       }
+    g_assert (!m_resamplers.empty());	  /* n_channels is always > 0 */
+    m_filter_order = m_resampler[0]->order();
+
+    /* Resampler2::delay() is defined in output samples, but we need to
+     * compensate by shifting the input samples to enable seeking, thus the
+     * factor 2
+     */
+    m_filter_delay = (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE ?
+		      (int) round (resampler->delay() / 2) :
+		      (int) round (resampler->delay() * 2));
     return BSE_ERROR_NONE;
   }
   void

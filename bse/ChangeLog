@@ -1,3 +1,11 @@
+Wed Oct 18 21:47:15 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/resamplehandle.cc:
+	* bseresampler.hh: Improved comments on delay compensation.
+
+	* bsedatahandle-resample.cc: Reorganized delay compensation code in
+	open() a bit, improved comments.
+
 Tue Oct 17 23:10:43 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.c: cosmetics, fixed constants.
