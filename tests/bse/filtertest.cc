@@ -27,11 +27,13 @@
 //#define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include "topconfig.h"
+#include <errno.h>
 
 using std::string;
 using std::vector;
 using std::set;
 using std::min;
+using std::max;
 
 struct Options {
   bool                    dump_gnuplot_data;
@@ -165,6 +167,7 @@ public:
     TEST_NOTHING = 0,
     TEST_COMPUTED_RESPONSE = 1,
     TEST_SCANNED_RESPONSE = 2,
+    TEST_DUMP_GNUPLOT_DATA = 4,
     TEST_COMPUTED_AND_SCANNED_RESPONSE = TEST_COMPUTED_RESPONSE | TEST_SCANNED_RESPONSE
   };
 
@@ -177,7 +180,7 @@ private:
   set<double>    m_gp_lines;
 
   static const double FS = 10000.0;
-  static const double delta_f = 10000.0 / 2000.0; //997; /* use a prime number to decrease chance of aliasing with mixfreq */
+  const double delta_f;
   static const double MIN_DB = -1000;
   static const double DB_EPSILON = 0.01;  /* for comparisions */
 
@@ -203,17 +206,19 @@ private:
   {
     const double MAX_SCAN_FREQ = FS / 2 - 0.01;
     f = min (f, MAX_SCAN_FREQ);
-    return gsl_filter_sine_scan (m_order, &m_a[0], &m_b[0], f / FS * 2 * PI, 10000);
+    return gsl_filter_sine_scan (m_order, &m_a[0], &m_b[0], f, FS);
   }
 
 public:
   FilterTest (const char   *name,
 	      guint         order,
               const double *coefficients,
-	      TestMode      test_mode = TEST_COMPUTED_AND_SCANNED_RESPONSE) :
+	      TestMode      test_mode,
+	      double        scan_points) :
     m_name (name),
     m_order (order),
-    m_test_mode (test_mode)
+    m_test_mode (test_mode),
+    delta_f ((FS / 2) / scan_points)
   {
     TSTART("%s, Order %d", name, order);
 
@@ -240,8 +245,8 @@ public:
 	    g_printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
 	    g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
 	  }
-	TASSERT (resp > min_resp_db - DB_EPSILON);
-	TASSERT (resp < max_resp_db + DB_EPSILON);
+	TCHECK (resp > min_resp_db - DB_EPSILON);
+	TCHECK (resp < max_resp_db + DB_EPSILON);
       }
 
     if (m_test_mode & TEST_SCANNED_RESPONSE)
@@ -252,8 +257,8 @@ public:
 	    g_printerr ("\n*** check_response_db: scanned response at frequency %f is %f\n", freq, scan_resp);
 	    g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
 	  }
-	TASSERT (scan_resp > min_resp_db - DB_EPSILON);
-	TASSERT (scan_resp < max_resp_db + DB_EPSILON);
+	TCHECK (scan_resp > min_resp_db - DB_EPSILON);
+	TCHECK (scan_resp < max_resp_db + DB_EPSILON);
       }
   }
   void
@@ -272,8 +277,14 @@ public:
     TPRINT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
 	    freq_start, freq_end, min_resp_db, max_resp_db);
 
+    int tok = 0;
+    int tok_dots = int ((FS / delta_f) / 50) + 1;
     for (double f = freq_start; f < freq_end; f += delta_f)
-      check_response_db (f, min_resp_db, max_resp_db);
+      {
+	if (tok++ % tok_dots == 0)
+	  TOK();
+	check_response_db (f, min_resp_db, max_resp_db);
+      }
 
     if (freq_start != freq_end)
       check_response_db (freq_end, min_resp_db, max_resp_db);
@@ -308,15 +319,24 @@ public:
   bool
   dump_gp (const string& filename_prefix)
   {
-    if (!options.dump_gnuplot_data)
+    if ((m_test_mode & TEST_DUMP_GNUPLOT_DATA) == 0)
       return false;
 
-    FILE *data_file = fopen ((filename_prefix + ".data").c_str(), "w");
+    string data_filename = filename_prefix + ".data";
+    string gp_filename = filename_prefix + ".gp";
+
+    FILE *data_file = fopen (data_filename.c_str(), "w");
     if (!data_file)
-      return false;
+      {
+	g_printerr ("\ncan't open gnuplot datafile '%s': %s\n",
+	            data_filename.c_str(), strerror (errno));
+	return false;
+      }
     FILE *gp_file = fopen ((filename_prefix + ".gp").c_str(), "w");
     if (!gp_file)
       {
+	g_printerr ("\ncan't open gnuplot scriptfile '%s': %s\n",
+	            gp_filename.c_str(), strerror (errno));
 	fclose (data_file);
 	return false;
       }
@@ -352,13 +372,10 @@ public:
   }
 };
 
-int
-main (int     argc,
-      char  **argv)
+void
+check_filters (FilterTest::TestMode test_mode,
+               double               scan_points)
 {
-  bse_init_test (&argc, &argv, NULL);
-  options.parse (&argc, &argv);
-
   {
     //! ORDER=8 MIX_FREQ=10000 PASS1=2000 yet.sh blp
     const double coeffs[] = {	  // BSEcxxmgc
@@ -373,7 +390,7 @@ main (int     argc,
         +8.61368381197359644919E-04,    +2.27184001245132058747E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest bw8 ("Butterworth Lowpass 2000 Hz", 8, coeffs);
+    FilterTest bw8 ("Butterworth Lowpass 2000 Hz", 8, coeffs, test_mode, scan_points);
     bw8.check_passband (0, 2000, bse_db_from_factor (1/sqrt(2), -30));
     bw8.check_stopband (3500, 5000, -68);
     bw8.dump_gp ("filtertest_bw8");
@@ -396,11 +413,11 @@ main (int     argc,
         +2.41243520047625281677E-01,    +1.05368736204784763100E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest ell12 ("Elliptic Lowpass 2000 Hz", 12, coeffs);
+    FilterTest ell12 ("Elliptic Lowpass 2000 Hz", 12, coeffs, test_mode, scan_points);
     ell12.check_passband (0, 2000, -0.5);
 
     /* FIXME: we should get better results (= -96 dB) if we implement this filter with cascading lowpasses */
-    ell12.check_stopband (2160, 5000, -95.5);
+    ell12.check_stopband (2160, 5000, -96);
     ell12.dump_gp ("filtertest_ell12");
   }
   {
@@ -416,7 +433,7 @@ main (int     argc,
         -1.17830171950224868449E-01,    -3.56249822046611874793E-01,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest chp7 ("Chebychev Highpass 600 Hz", 7, coeffs);
+    FilterTest chp7 ("Chebychev Highpass 600 Hz", 7, coeffs, test_mode, scan_points);
     chp7.check_passband (600, 5000, -0.1);
     chp7.check_stopband (0, 250, -70);
     chp7.dump_gp ("filtertest_chp7");
@@ -445,7 +462,7 @@ main (int     argc,
         +3.55580604257624494427E-04,    -1.06539452359780476010E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest bbp18 ("Butterworth Bandpass 1500-3500 Hz", 18, coeffs);
+    FilterTest bbp18 ("Butterworth Bandpass 1500-3500 Hz", 18, coeffs, test_mode, scan_points);
     bbp18.check_passband (1500, 3500, bse_db_from_factor (1/sqrt(2), -30));
     bbp18.check_stopband (0, 1000, -49.5);
     bbp18.check_stopband (4000, 5000, -49.5);
@@ -460,10 +477,46 @@ main (int     argc,
         -2.73689660911365040263E+00,    -2.26195685035092974857E+00,	// BSEcxxmgc
         +7.02817346525631658771E-01,    +6.05473613799674903468E-01,	// BSEcxxmgc
     };  // BSEcxxmgc
-    FilterTest ebsh4 ("Elliptic Bandstop 300-1000 Hz", 4, coeffs);
+    FilterTest ebsh4 ("Elliptic Bandstop 300-1000 Hz", 4, coeffs, test_mode, scan_points);
     ebsh4.check_passband (0, 300, -2.5);
     ebsh4.check_stopband (400, 755, -21.5);
     ebsh4.check_passband (1000, 5000, -2.5);
     ebsh4.dump_gp ("filtertest_ebsh4");
   }
+}
+
+void
+check_computed_response()
+{
+  check_filters (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
+}
+
+void
+check_scanned_response()
+{
+  check_filters (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
+}
+
+void
+dump_gnuplot_data()
+{
+  check_filters (FilterTest::TEST_DUMP_GNUPLOT_DATA, 1000);
+}
+
+int
+main (int     argc,
+      char  **argv)
+{
+  bse_init_test (&argc, &argv, NULL);
+  options.parse (&argc, &argv);
+
+  if (options.dump_gnuplot_data)
+    {
+      dump_gnuplot_data();
+    }
+  else
+    {
+      check_computed_response();
+      check_scanned_response();
+    }
 }

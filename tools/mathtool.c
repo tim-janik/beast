@@ -614,7 +614,7 @@ main (int   argc,
 	  freq = 0.001;
 	  while (freq < 3.14)
 	    {
-	      g_print ("%f %.20f\n", freq, gsl_filter_sine_scan (order, a, b, freq, MAX((int)(1000.0/freq),10000)));
+	      g_print ("%f %.20f\n", freq, gsl_filter_sine_scan (order, a, b, freq, 2 * M_PI));
 	      freq = MIN (freq * 1.1, freq + 0.01);
 	    }
 	}

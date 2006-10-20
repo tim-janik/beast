@@ -1,3 +1,12 @@
+Fri Oct 20 14:01:19 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/bse/filtertest.cc: Refactoring. Adapted to the changes of the
+	sine scanning function.
+
+	* configure.in: Added configure check for sincos() function.
+
+	* tools/mathtool.c: Adapted to changes of the sine scanning function.
+
 Tue Oct 17 19:04:03 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/bse/Makefile.am: Run filtertest during make check.

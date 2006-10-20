@@ -306,6 +306,10 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
       AC_MSG_RESULT(no)
     ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
+    
+    dnl # --- math.h glibc extensions
+    AC_CHECK_LIB(m, sincos,
+      AC_DEFINE(HAVE_SINCOS, 1, [Define if you have the sincos function in <math.h>]))
 
     # --- setup BSE PLUGIN flags ---
     MC_PROG_CC_SPECIAL_FLAGS(PLUGIN_FLAGS, -ftree-loop-ivcanon -ftree-loop-linear -ftree-loop-im -fivopts -ffast-math)
