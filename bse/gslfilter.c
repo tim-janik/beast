@@ -1306,8 +1306,6 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
 
 
 /* --- filter scanning -- */
-#define SINE_SCAN_SIZE 1024
-
 /**
  * gsl_filter_sine_scan
  *
@@ -1315,7 +1313,7 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
  * @a:        root polynomial coefficients of the filter a[0..order]
  * @b:        pole polynomial coefficients of the filter b[0..order]
  * @freq:     frequency to test
- * @n_values: number of samples
+ * @mix_freq: the mixing frequency
  *
  * This function sends a sine signal of the desired frequency through an IIR
  * filter, to test the value of the transfer function at a given point. It uses
@@ -1325,35 +1323,36 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
  * this function makes it possible to see the effects of finite arithmetic
  * during filter evaluation.
  * 
- * The first half of the output signal is not considered, since a lot of IIR
- * filters have a transient phase where also overshoot is possible.
- * 
- * For n_values, you should specify a reasonable large value. It should be
- * a lot larger than the filter order, and large enough to let the input
- * signal become (close to) 1.0 multiple times.
+ * The output volume is averaged over 0.1 seconds, and the filter is evaluated
+ * 5 seconds, or until the volume of two adjacent blocks doesn't change
+ * anymore, whatever occurs sooner.
  */
 gdouble
-gsl_filter_sine_scan (guint order,
+gsl_filter_sine_scan (guint	     order,
                       const gdouble *a,
 		      const gdouble *b,
-		      gdouble freq,
-		      guint n_values)
+		      gdouble	     freq,
+		      gdouble	     mix_freq)
 {
-  gfloat x_r[SINE_SCAN_SIZE], x_i[SINE_SCAN_SIZE];
-  gfloat y_r[SINE_SCAN_SIZE], y_i[SINE_SCAN_SIZE];
-  gdouble pos = 0.0;
-  gdouble result = 0.0;
+  const guint     block_size = MAX (256, (guint) (mix_freq / 10));
+  const gdouble	  phase_inc = freq / mix_freq * 2 * PI;
+  const gdouble	  volume_epsilon = 1e-8;
+
+  gfloat x_r[block_size], x_i[block_size];
+  gfloat y_r[block_size], y_i[block_size];
+  gdouble phase = 0.0;
+  gdouble volume = -1, last_volume = -1;
+  guint blocks = 0;
+
   GslIIRFilter filter_r;
   GslIIRFilter filter_i;
   gdouble *filter_state_r;
   gdouble *filter_state_i;
-  guint scan_start = n_values / 2;
   
   g_return_val_if_fail (order > 0, 0.0);
   g_return_val_if_fail (a != NULL, 0.0);
   g_return_val_if_fail (b != NULL, 0.0);
-  g_return_val_if_fail (freq >= 0 && freq < PI, 0.0);
-  g_return_val_if_fail (n_values > 0, 0.0);
+  g_return_val_if_fail (freq >= 0 && freq < (mix_freq / 2), 0.0);
   
   filter_state_r = g_newa (double, (order + 1) * 4);
   filter_state_i = g_newa (double, (order + 1) * 4);
@@ -1366,28 +1365,48 @@ gsl_filter_sine_scan (guint order,
    * determined exactly as complex absolute value (whereas for a single sine
    * signal, the absolute value oscillates).
    */
-  while (n_values)
+  do
     {
-      guint todo = MIN (n_values, SINE_SCAN_SIZE);
       guint i;
       
-      for (i = 0; i < todo; i++)
+      for (i = 0; i < block_size; i++)
 	{
-	  x_r[i] = cos (pos);
-	  x_i[i] = sin (pos);
-	  pos += freq;
+#if HAVE_SINCOS
+	  double sphase, cphase;
+	  sincos (phase, &sphase, &cphase);
+	  x_r[i] = cphase;
+	  x_i[i] = sphase;
+#else
+	  x_r[i] = cos (phase);
+	  x_i[i] = sin (phase);
+#endif
+	  phase += phase_inc;
+	  if (phase > 2 * M_PI)
+	    {
+	      /* Wrapping phases will not waste mantisse bits for storing the
+	       * useless (k * 2 * pi) part of the phase.
+	       */
+	      phase -= 2 * M_PI;
+	    }
 	}
       
-      gsl_iir_filter_eval (&filter_r, SINE_SCAN_SIZE, x_r, y_r);
-      gsl_iir_filter_eval (&filter_i, SINE_SCAN_SIZE, x_i, y_i);
-      
-      for (i = 0; i < todo; i++)
-        if (n_values - i < scan_start)
-	  result = MAX (bse_complex_abs (bse_complex (y_r[i], y_i[i])), result);
-      
-      n_values -= todo;
+      gsl_iir_filter_eval (&filter_r, block_size, x_r, y_r);
+      gsl_iir_filter_eval (&filter_i, block_size, x_i, y_i);
+
+      last_volume = volume;
+
+      for (i = 0; i < block_size; i++)
+	volume += bse_complex_abs (bse_complex (y_r[i], y_i[i]));
+      volume /= block_size;
+      blocks++;
     }
-  return result;
+  while (fabs (volume - last_volume) > volume_epsilon && blocks < 50);
+  /* 50 blocks are 5 seconds; if the filter output volume isn't within our
+   * error bounds after 5 seconds, just abort, because it might never stop
+   * oscillating, or the filter may be too noisy for computing a constant
+   * volume due to stability issues.
+   */
+  return volume;
 }
 
 

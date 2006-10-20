@@ -1,3 +1,10 @@
+Fri Oct 20 13:58:38 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslfilter.[hc] (gsl_filter_sine_scan): Changed the API and
+	implementation of the sine scanning function to figure out how long to
+	scan by computing the volume for 0.1 second blocks, and waiting until
+	the volume doesn't change anymore.
+
 Wed Oct 18 22:05:37 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsedatahandle-resample.cc: Fixed my last commit. Sorry.

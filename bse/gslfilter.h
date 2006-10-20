@@ -236,7 +236,7 @@ gdouble	gsl_filter_sine_scan	(guint		 order,
 				 const gdouble	*a,
 				 const gdouble	*b,
 				 gdouble	 freq,
-				 guint		 n_values);
+				 gdouble	 mix_freq);
 
 
 /* --- implementations --- */
