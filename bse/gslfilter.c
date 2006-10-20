@@ -1395,6 +1395,7 @@ gsl_filter_sine_scan (guint	     order,
 
       last_volume = volume;
 
+      volume = 0;
       for (i = 0; i < block_size; i++)
 	volume += bse_complex_abs (bse_complex (y_r[i], y_i[i]));
       volume /= block_size;
