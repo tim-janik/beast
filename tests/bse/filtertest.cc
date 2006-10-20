@@ -164,28 +164,43 @@ class FilterTest
 public:
   enum TestMode
   {
-    TEST_NOTHING = 0,
     TEST_COMPUTED_RESPONSE = 1,
-    TEST_SCANNED_RESPONSE = 2,
-    TEST_DUMP_GNUPLOT_DATA = 4,
-    TEST_COMPUTED_AND_SCANNED_RESPONSE = TEST_COMPUTED_RESPONSE | TEST_SCANNED_RESPONSE
+    TEST_SCANNED_RESPONSE = 2
   };
 
 private:
+  struct Band {
+    double freq_start;
+    double freq_end;
+    double min_resp_db;
+    double max_resp_db;
+
+    Band (double freq_start,
+	  double freq_end,
+	  double min_resp_db,
+	  double max_resp_db) :
+      freq_start (freq_start),
+      freq_end (freq_end),
+      min_resp_db (min_resp_db),
+      max_resp_db (max_resp_db)
+    {
+    }
+  };
+
   string         m_name;
   guint          m_order;
-  TestMode       m_test_mode;
+  string         m_gp_short_name;
   vector<double> m_a, m_b;
   set<double>    m_gp_arrows;
   set<double>    m_gp_lines;
+  vector<Band>	 m_spec_bands;
 
   static const double FS = 10000.0;
-  const double delta_f;
   static const double MIN_DB = -1000;
   static const double DB_EPSILON = 0.01;  /* for comparisions */
 
   double
-  response (double f)
+  response (double f) const
   {
     double u = 2.0 * PI * f / FS;
     std::complex<double> z (cos (u), sin (u)); /* exp( j omega T ) */
@@ -202,25 +217,70 @@ private:
   }
 
   double
-  scan_response (double f)
+  scan_response (double f) const
   {
     const double MAX_SCAN_FREQ = FS / 2 - 0.01;
     f = min (f, MAX_SCAN_FREQ);
     return gsl_filter_sine_scan (m_order, &m_a[0], &m_b[0], f, FS);
   }
 
+  void
+  check_response_db (double   freq,
+                     double   min_resp_db,
+		     double   max_resp_db,
+		     TestMode test_mode) const
+  {
+    double resp;
+    switch (test_mode)
+      {
+      case TEST_COMPUTED_RESPONSE:  resp = bse_db_from_factor (response (freq), MIN_DB);
+				    break;
+      case TEST_SCANNED_RESPONSE:   resp = bse_db_from_factor (scan_response (freq), MIN_DB);
+				    break;
+      default:			    return;	/* huh? */
+      }
+    if (!(resp > min_resp_db - DB_EPSILON) || !(resp < max_resp_db + DB_EPSILON))
+      {
+	g_printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
+	g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
+      }
+    TCHECK (resp > min_resp_db - DB_EPSILON);
+    TCHECK (resp < max_resp_db + DB_EPSILON);
+  }
+  void
+  check_band (const Band& band,
+	      TestMode	  test_mode,
+	      guint	  scan_points) const
+  {
+    const double delta_f = (FS / 2) / scan_points;
+
+    g_return_if_fail (band.freq_start <= band.freq_end);
+    g_return_if_fail (band.freq_end <= FS/2);
+
+    TPRINT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
+	    band.freq_start, band.freq_end, band.min_resp_db, band.max_resp_db);
+
+    int tok = 0;
+    int tok_dots = int ((FS / delta_f) / 50) + 1;
+    for (double f = band.freq_start; f < band.freq_end; f += delta_f)
+      {
+	if (tok++ % tok_dots == 0)
+	  TOK();
+	check_response_db (f, band.min_resp_db, band.max_resp_db, test_mode);
+      }
+
+    if (band.freq_start != band.freq_end)
+      check_response_db (band.freq_end, band.min_resp_db, band.max_resp_db, test_mode);
+  }
 public:
   FilterTest (const char   *name,
 	      guint         order,
               const double *coefficients,
-	      TestMode      test_mode,
-	      double        scan_points) :
+	      const char   *gp_short_name) :
     m_name (name),
     m_order (order),
-    m_test_mode (test_mode),
-    delta_f ((FS / 2) / scan_points)
+    m_gp_short_name (gp_short_name)
   {
-    TSTART("%s, Order %d", name, order);
 
     for (guint i = 0; i < m_order * 2 + 2; i += 2)
       {
@@ -228,102 +288,54 @@ public:
 	m_a.push_back (coefficients[i+1]);
       }
   }
-  ~FilterTest()
+  
+  /* construction phase: used to add a passband to the specification */
+  void
+  add_passband (double freq_start,
+		  double freq_end,
+		  double ripple_db)
   {
+    m_gp_arrows.insert (freq_start);
+    m_gp_arrows.insert (freq_end);
+    m_gp_lines.insert (ripple_db);
+    m_spec_bands.push_back (Band (freq_start, freq_end, ripple_db, 0));
+  }
+
+  /* construction phase: used to add a stopband to the specification */
+  void
+  add_stopband (double freq_start,
+		double freq_end,
+		double ripple_db)
+  {
+    m_gp_arrows.insert (freq_start);
+    m_gp_arrows.insert (freq_end);
+    m_gp_lines.insert (ripple_db);
+    m_spec_bands.push_back (Band (freq_start, freq_end, MIN_DB, ripple_db));
+  }
+
+  /* actually check filter against specification */
+  void
+  perform_checks (TestMode test_mode,
+                  guint    scan_points) const
+  {
+    TSTART("%s, Order %d", m_name.c_str(), m_order);
+    for (vector<Band>::const_iterator sbi = m_spec_bands.begin(); sbi != m_spec_bands.end(); sbi++)
+      check_band (*sbi, test_mode, scan_points);
     TDONE();
   }
-  void
-  check_response_db (double freq,
-                     double min_resp_db,
-		     double max_resp_db)
-  {
-    if (m_test_mode & TEST_COMPUTED_RESPONSE)
-      {
-	double resp = bse_db_from_factor (response (freq), MIN_DB);
-	if (!(resp > min_resp_db - DB_EPSILON) || !(resp < max_resp_db + DB_EPSILON))
-	  {
-	    g_printerr ("\n*** check_response_db: computed response at frequency %f is %f\n", freq, resp);
-	    g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
-	  }
-	TCHECK (resp > min_resp_db - DB_EPSILON);
-	TCHECK (resp < max_resp_db + DB_EPSILON);
-      }
-
-    if (m_test_mode & TEST_SCANNED_RESPONSE)
-      {
-	double scan_resp = bse_db_from_factor (scan_response (freq), MIN_DB);
-	if (!(scan_resp > min_resp_db - DB_EPSILON) || !(scan_resp < max_resp_db + DB_EPSILON))
-	  {
-	    g_printerr ("\n*** check_response_db: scanned response at frequency %f is %f\n", freq, scan_resp);
-	    g_printerr ("*** check_response_db: but should be in interval [%f..%f]\n", min_resp_db, max_resp_db);
-	  }
-	TCHECK (scan_resp > min_resp_db - DB_EPSILON);
-	TCHECK (scan_resp < max_resp_db + DB_EPSILON);
-      }
-  }
-  void
-  check_band (double	freq_start,
-	      double	freq_end,
-	      double    min_resp_db,
-	      double	max_resp_db)
-  {
-    g_return_if_fail (freq_start <= freq_end);
-    g_return_if_fail (freq_end <= FS/2);
-
-    /* we don't need to actually perform the checks just to dump the gnuplot data */
-    if (options.dump_gnuplot_data)
-      return;
-
-    TPRINT ("checking band: response in interval [%f..%f] should be in interval [%f..%f] dB\n",
-	    freq_start, freq_end, min_resp_db, max_resp_db);
-
-    int tok = 0;
-    int tok_dots = int ((FS / delta_f) / 50) + 1;
-    for (double f = freq_start; f < freq_end; f += delta_f)
-      {
-	if (tok++ % tok_dots == 0)
-	  TOK();
-	check_response_db (f, min_resp_db, max_resp_db);
-      }
-
-    if (freq_start != freq_end)
-      check_response_db (freq_end, min_resp_db, max_resp_db);
-  }
-  void
-  check_passband (double freq_start,
-		  double freq_end,
-		  double ripple_db)
-  {
-    m_gp_arrows.insert (freq_start);
-    m_gp_arrows.insert (freq_end);
-    m_gp_lines.insert (ripple_db);
-
-    check_band (freq_start, freq_end, ripple_db, 0);
-  }
-  void
-  check_stopband (double freq_start,
-		  double freq_end,
-		  double ripple_db)
-  {
-    m_gp_arrows.insert (freq_start);
-    m_gp_arrows.insert (freq_end);
-    m_gp_lines.insert (ripple_db);
-
-    check_band (freq_start, freq_end, MIN_DB, ripple_db);
-  }
   /**
-   * creates two files, a datafile named filename_prefix ".data" and a gnuplot
-   * script called filename_prefix ".gp", which can be used to plot the filter,
-   * including the specification checks
+   * creates two files, a datafile named filename_prefix m_gp_short_name
+   * ".data" and a gnuplot script called filename_prefix m_gp_short_name ".gp",
+   * which can be used to plot the filter, including the specification checks
    */
   bool
-  dump_gp (const string& filename_prefix)
+  dump_gnuplot_data (const string& filename_prefix,
+                     guint         scan_points = 1000)
   {
-    if ((m_test_mode & TEST_DUMP_GNUPLOT_DATA) == 0)
-      return false;
+    const double delta_f = (FS / 2) / scan_points;
 
-    string data_filename = filename_prefix + ".data";
-    string gp_filename = filename_prefix + ".gp";
+    string data_filename = filename_prefix + m_gp_short_name + ".data";
+    string gp_filename = filename_prefix + m_gp_short_name + ".gp";
 
     FILE *data_file = fopen (data_filename.c_str(), "w");
     if (!data_file)
@@ -332,7 +344,7 @@ public:
 	            data_filename.c_str(), strerror (errno));
 	return false;
       }
-    FILE *gp_file = fopen ((filename_prefix + ".gp").c_str(), "w");
+    FILE *gp_file = fopen (gp_filename.c_str(), "w");
     if (!gp_file)
       {
 	g_printerr ("\ncan't open gnuplot scriptfile '%s': %s\n",
@@ -340,7 +352,7 @@ public:
 	fclose (data_file);
 	return false;
       }
-    g_printerr ("creating gnuplot files '%s.gp', '%s.data'", filename_prefix.c_str(), filename_prefix.c_str());
+    g_printerr ("creating gnuplot files '%s', '%s'... ", gp_filename.c_str(), data_filename.c_str());
 
     for (double f = 0; f < FS/2; f += delta_f)
       {
@@ -359,8 +371,8 @@ public:
     for (set<double>::iterator ai = m_gp_arrows.begin(); ai != m_gp_arrows.end(); ai++)
       fprintf (gp_file, " %f", *ai);
     fprintf (gp_file, "\n");
-    fprintf (gp_file, "plot 0, '%s.data' using ($1):($3), '%s.data' using ($1):($2) with lines",
-		      filename_prefix.c_str(), filename_prefix.c_str());
+    fprintf (gp_file, "plot 0, '%s' using ($1):($3), '%s' using ($1):($2) with lines",
+		      data_filename.c_str(), data_filename.c_str());
     for (set<double>::iterator li = m_gp_lines.begin(); li != m_gp_lines.end(); li++)
       fprintf (gp_file, ", %f", *li);
     fprintf (gp_file, "\n");
@@ -368,13 +380,14 @@ public:
 
     fclose (gp_file);
     fclose (data_file);
+
+    g_printerr ("ok.\n");
     return 0;
   }
 };
 
 void
-check_filters (FilterTest::TestMode test_mode,
-               double               scan_points)
+setup_all_filter_tests (vector<FilterTest>& filter_tests)
 {
   {
     //! ORDER=8 MIX_FREQ=10000 PASS1=2000 yet.sh blp
@@ -390,10 +403,10 @@ check_filters (FilterTest::TestMode test_mode,
         +8.61368381197359644919E-04,    +2.27184001245132058747E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest bw8 ("Butterworth Lowpass 2000 Hz", 8, coeffs, test_mode, scan_points);
-    bw8.check_passband (0, 2000, bse_db_from_factor (1/sqrt(2), -30));
-    bw8.check_stopband (3500, 5000, -68);
-    bw8.dump_gp ("filtertest_bw8");
+    FilterTest bw8 ("Butterworth Lowpass 2000 Hz", 8, coeffs, "bw8");
+    bw8.add_passband (0, 2000, bse_db_from_factor (1/sqrt(2), -30));
+    bw8.add_stopband (3500, 5000, -68);
+    filter_tests.push_back (bw8);
   }
   {
     //! ORDER=12 MIX_FREQ=10000 PASS1=2000 PASS_RIPPLE=0.5 STOP_DB=-96 yet.sh elpd
@@ -413,12 +426,12 @@ check_filters (FilterTest::TestMode test_mode,
         +2.41243520047625281677E-01,    +1.05368736204784763100E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest ell12 ("Elliptic Lowpass 2000 Hz", 12, coeffs, test_mode, scan_points);
-    ell12.check_passband (0, 2000, -0.5);
+    FilterTest ell12 ("Elliptic Lowpass 2000 Hz", 12, coeffs, "ell12");
+    ell12.add_passband (0, 2000, -0.5);
 
     /* FIXME: we should get better results (= -96 dB) if we implement this filter with cascading lowpasses */
-    ell12.check_stopband (2160, 5000, -96);
-    ell12.dump_gp ("filtertest_ell12");
+    ell12.add_stopband (2160, 5000, -96);
+    filter_tests.push_back (ell12);
   }
   {
     //! ORDER=7 MIX_FREQ=10000 PASS1=600 PASS_RIPPLE=0.1 yet.sh chp
@@ -433,10 +446,10 @@ check_filters (FilterTest::TestMode test_mode,
         -1.17830171950224868449E-01,    -3.56249822046611874793E-01,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest chp7 ("Chebychev Highpass 600 Hz", 7, coeffs, test_mode, scan_points);
-    chp7.check_passband (600, 5000, -0.1);
-    chp7.check_stopband (0, 250, -70);
-    chp7.dump_gp ("filtertest_chp7");
+    FilterTest chp7 ("Chebychev Highpass 600 Hz", 7, coeffs, "chp7");
+    chp7.add_passband (600, 5000, -0.1);
+    chp7.add_stopband (0, 250, -70);
+    filter_tests.push_back (chp7);
   }
   {
     //! ORDER=9 MIX_FREQ=10000 PASS1=1500 PASS2=3500 yet.sh bbp
@@ -462,11 +475,11 @@ check_filters (FilterTest::TestMode test_mode,
         +3.55580604257624494427E-04,    -1.06539452359780476010E-03,	// BSEcxxmgc
     };  // BSEcxxmgc
 
-    FilterTest bbp18 ("Butterworth Bandpass 1500-3500 Hz", 18, coeffs, test_mode, scan_points);
-    bbp18.check_passband (1500, 3500, bse_db_from_factor (1/sqrt(2), -30));
-    bbp18.check_stopband (0, 1000, -49.5);
-    bbp18.check_stopband (4000, 5000, -49.5);
-    bbp18.dump_gp ("filtertest_bbp18");
+    FilterTest bbp18 ("Butterworth Bandpass 1500-3500 Hz", 18, coeffs, "bbp18");
+    bbp18.add_passband (1500, 3500, bse_db_from_factor (1/sqrt(2), -30));
+    bbp18.add_stopband (0, 1000, -49.5);
+    bbp18.add_stopband (4000, 5000, -49.5);
+    filter_tests.push_back (bbp18);
   }
   {
     //! ORDER=2 MIX_FREQ=10000 PASS1=300 PASS2=1000 PASS_RIPPLE=2.5 STOP1_EDGE=400 yet.sh ebsh
@@ -477,30 +490,35 @@ check_filters (FilterTest::TestMode test_mode,
         -2.73689660911365040263E+00,    -2.26195685035092974857E+00,	// BSEcxxmgc
         +7.02817346525631658771E-01,    +6.05473613799674903468E-01,	// BSEcxxmgc
     };  // BSEcxxmgc
-    FilterTest ebsh4 ("Elliptic Bandstop 300-1000 Hz", 4, coeffs, test_mode, scan_points);
-    ebsh4.check_passband (0, 300, -2.5);
-    ebsh4.check_stopband (400, 755, -21.5);
-    ebsh4.check_passband (1000, 5000, -2.5);
-    ebsh4.dump_gp ("filtertest_ebsh4");
+    FilterTest ebsh4 ("Elliptic Bandstop 300-1000 Hz", 4, coeffs, "ebsh4");
+    ebsh4.add_passband (0, 300, -2.5);
+    ebsh4.add_stopband (400, 755, -21.5);
+    ebsh4.add_passband (1000, 5000, -2.5);
+    filter_tests.push_back (ebsh4);
   }
 }
 
 void
-check_computed_response()
+check_computed_response (const vector<FilterTest>& filter_tests)
 {
-  check_filters (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
+  g_printerr ("---> checking computed filter responses:\n");
+  for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
+    fi->perform_checks (FilterTest::TEST_COMPUTED_RESPONSE, 10000);
 }
 
 void
-check_scanned_response()
+check_scanned_response (const vector<FilterTest>& filter_tests)
 {
-  check_filters (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
+  g_printerr ("---> checking scanned filter responses:\n");
+  for (vector<FilterTest>::const_iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
+    fi->perform_checks (FilterTest::TEST_SCANNED_RESPONSE, 67);  /* prime number scan points */
 }
 
 void
-dump_gnuplot_data()
+dump_gnuplot_data (vector<FilterTest>& filter_tests)
 {
-  check_filters (FilterTest::TEST_DUMP_GNUPLOT_DATA, 1000);
+  for (vector<FilterTest>::iterator fi = filter_tests.begin(); fi != filter_tests.end(); fi++)
+    fi->dump_gnuplot_data ("filtertest_");
 }
 
 int
@@ -510,13 +528,25 @@ main (int     argc,
   bse_init_test (&argc, &argv, NULL);
   options.parse (&argc, &argv);
 
+  if (argc > 1)
+    {
+      int a;
+      for (a = 1; a < argc; a++)
+	g_printerr ("%s: unknown extra arg: %s\n", options.program_name.c_str(), argv[a]);
+      g_printerr ("%s: use the --help option for help.\n", options.program_name.c_str());
+      return 1;
+    }
+
+  vector<FilterTest> filter_tests;
+  setup_all_filter_tests (filter_tests);
+
   if (options.dump_gnuplot_data)
     {
-      dump_gnuplot_data();
+      dump_gnuplot_data (filter_tests);
     }
   else
     {
-      check_computed_response();
-      check_scanned_response();
+      check_computed_response (filter_tests);
+      check_scanned_response (filter_tests);
     }
 }
