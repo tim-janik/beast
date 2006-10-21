@@ -785,12 +785,12 @@ bench_auto_locker_cxx()
   TACK();
   /* done, report */
   TDONE();
-  g_print ("Manual-Locker:      %7.3f nsecs\n", xmin / xdups / RUNS * 1000. * 1000. * 1000.);
-  g_print ("Direct-AutoLocker:  %7.3f nsecs\n", smin / sdups / RUNS * 1000. * 1000. * 1000.);
-  g_print ("Generic-AutoLocker: %7.3f nsecs\n", gmin / gdups / RUNS * 1000. * 1000. * 1000.);
-  g_print ("Birnet-AutoLocker:  %7.3f nsecs\n", bmin / bdups / RUNS * 1000. * 1000. * 1000.);
-  g_print ("Pointer-AutoLocker: %7.3f nsecs\n", pmin / pdups / RUNS * 1000. * 1000. * 1000.);
-  g_print ("Heap-AutoLocker:    %7.3f nsecs\n", tmin / tdups / RUNS * 1000. * 1000. * 1000.);
+  treport_minimized ("Manual-Locker",      xmin / xdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
+  treport_minimized ("Direct-AutoLocker",  smin / sdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
+  treport_minimized ("Generic-AutoLocker", gmin / gdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
+  treport_minimized ("Birnet-AutoLocker",  bmin / bdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
+  treport_minimized ("Pointer-AutoLocker", pmin / pdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
+  treport_minimized ("Heap-AutoLocker",    tmin / tdups / RUNS * 1000. * 1000. * 1000., TUNIT_NSEC);
 }
 
 /* --- C++ atomicity tests --- */
@@ -883,12 +883,16 @@ main (int   argc,
 
   birnet_init_test (&argc, &argv);
 
-  test_threads();
-  test_atomic();
-  test_thread_cxx();
-  test_thread_atomic_cxx();
-  test_auto_locker_cxx();
-  bench_auto_locker_cxx();
+  if (birnet_init_settings->test_quick)
+    {
+      test_threads();
+      test_atomic();
+      test_thread_cxx();
+      test_thread_atomic_cxx();
+      test_auto_locker_cxx();
+    }
+  if (birnet_init_settings->test_perf)
+    bench_auto_locker_cxx();
   
   return 0;
 }

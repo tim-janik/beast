@@ -67,6 +67,89 @@ BIRNET_EXTERN_C_BEGIN();
 #define TDONE()         do { g_printerr ("]\n"); } while (0)		/* test outro */
 #endif
 
+/* --- performance --- */
+typedef enum {
+  TUNIT_NONE		= 0,
+  TUNIT_PSEC 		= 0xc001,	/* pico second */
+  TUNIT_NSEC 		= 0xd001,	/* nano second */
+  TUNIT_USEC 		= 0xe001,	/* micro second */
+  TUNIT_MSEC 		= 0xf001,	/* milli second */
+  TUNIT_SECOND 		= 0x0001,	/* SECOND */
+  TUNIT_MINUTE 		= 0x1001,
+  TUNIT_HOUR 		= 0x2001,
+  TUNIT_DAY 		= 0x3001,
+  TUNIT_WEEK 		= 0x4001,
+  TUNIT_MONTH 		= 0x5001,
+  TUNIT_YEAR 		= 0x6001,
+  TUNIT_BIT 		= 0x0002,	/* BIT */
+  TUNIT_BYTE 		= 0x0003,	/* BYTE */
+  TUNIT_KILO_BYTE 	= 0x1003,
+  TUNIT_MEGA_BYTE 	= 0x2003,
+  TUNIT_GIGA_BYTE 	= 0x3003,
+  TUNIT_TERA_BYTE 	= 0x4003,
+  TUNIT_STRUCT		= 0x0004,	/* STRUCT */
+  TUNIT_OBJECT		= 0x0005,	/* OBJECT */
+} TUnitType;
+#define	TUNIT(unit1,per_unit2)		((TUnitType) (0x00010000 * (uint) per_unit2 | (uint) unit1))
+
+static const char*
+treport_unit (uint tunit)
+{
+  switch (tunit)
+    {
+    case 0x0000: default: return "";
+    case 0x0001: return "Seconds"; case 0x1001: return "Minutes"; case 0x2001: return "Hours";
+    case 0xc001: return "pSeconds"; case 0xd001: return "nSeconds"; case 0xe001: return "uSeconds"; case 0xf001: return "mSeconds";
+    case 0x3001: return "Days"; case 0x4001: return "Weeks"; case 0x5001: return "Months"; case 0x6001: return "Years";
+    case 0x0002: return "Bits";
+    case 0x0003: return "Bytes"; case 0x1003: return "KBytes"; case 0x2003: return "MBytes"; case 0x3003: return "GBytes"; case 0x4003: return "TBytes";
+    case 0x0004: return "Structs";
+    case 0x0005: return "Objects";
+    };
+}
+static void treport_generic (const char *perf_name, double amount, TUnitType amount_unit, int bias);
+
+static void BIRNET_UNUSED
+treport_title (const char *perf_name)
+{
+  treport_generic (perf_name, 0, TUNIT_NONE, 0);
+}
+static void BIRNET_UNUSED	/* larger amount is better */
+treport_maximized (const char *perf_name,
+		   double      amount,
+		   TUnitType   amount_unit)
+{
+  treport_generic (perf_name, amount, amount_unit, +1);
+}
+static void BIRNET_UNUSED	/* smaller amount is better */
+treport_minimized (const char *perf_name,
+		   double      amount,
+		   TUnitType   amount_unit)
+{
+  treport_generic (perf_name, amount, amount_unit, -1);
+}
+static void	/* smaller amount is better */
+treport_generic (const char *perf_name,
+		 double      amount,
+		 TUnitType   amount_unit,
+		 int         bias)
+{
+  char buffer[64];
+  snprintf (buffer, sizeof (buffer), "%+.14g", amount);
+  int l = strlen (buffer);
+  char *c = strchr (buffer, '.');
+  int n = c ? c - buffer : l;
+  const char spaces[] = "                                             ";
+  uint indent = 8 - MIN (8, n);
+  g_print ("#TBENCH%s: %25s:%s%s%s %s%c%s\n",
+	   bias > 0 ? "=maxi" : bias < 0 ? "=mini" : "=====",
+	   perf_name,
+	   &spaces[sizeof (spaces) - 1 - indent], buffer, &spaces[sizeof (spaces) - 1 - (23 - MIN (23, indent + l))],
+	   treport_unit (amount_unit & 0xffff),
+	   amount_unit > 0xffff ? '/' : ' ',
+	   treport_unit (amount_unit >> 16));
+}
+
 /* --- macro details --- */
 #define TSTART_impl(postfix, ...)	do {		\
   char *_test_name_ = g_strdup_printf (__VA_ARGS__);	\
@@ -158,12 +241,16 @@ birnet_init_test (int    *argc,
   /* normal initialization */
   BirnetInitValue ivalues[] = {
     { "stand-alone", "true" },
+    { "birnet-test-parse-args", "true" },
     { NULL }
   };
   birnet_init (argc, argv, NULL, ivalues);
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  g_printerr ("TEST: %s\n", g_get_prgname());
+  if (birnet_init_settings->test_perf)
+    g_printerr ("PERF: %s\n", g_get_prgname());
+  else
+    g_printerr ("TEST: %s\n", g_get_prgname());
 }
 } // Birnet
 #endif

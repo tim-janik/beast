@@ -76,17 +76,72 @@ InitHook::invoke_hooks (void)
 const InitSettings *birnet_init_settings = NULL;
 static InitSettings global_init_settings = {
   false,        /* stand_alone */
+  false,        /* perf_test */
 };
 
 static void
-apply_settings_values (InitValue *value)
+birnet_parse_settings_and_args (InitValue *value,
+                                int       *argc_p,
+                                char    ***argv_p)
 {
-  while (value->value_name)
+  bool parse_test_args = false;
+  /* apply settings */
+  if (value)
+    while (value->value_name)
+      {
+        if (strcmp (value->value_name, "stand-alone") == 0)
+          global_init_settings.stand_alone = init_value_bool (value);
+        else if (strcmp (value->value_name, "test-quick") == 0)
+          global_init_settings.test_quick = init_value_bool (value);
+        else if (strcmp (value->value_name, "test-slow") == 0)
+          global_init_settings.test_slow = init_value_bool (value);
+        else if (strcmp (value->value_name, "test-perf") == 0)
+          global_init_settings.test_perf = init_value_bool (value);
+        else if (strcmp (value->value_name, "birnet-test-parse-args") == 0)
+          parse_test_args = init_value_bool (value);
+        value++;
+      }
+  /* parse args */
+  uint argc = *argc_p;
+  char **argv = *argv_p;
+  for (uint i = 1; i < argc; i++)
     {
-      if (strcmp (value->value_name, "stand-alone") == 0)
-        global_init_settings.stand_alone = init_value_bool (value);
-      value++;
+      if (strcmp (argv[i], "--g-fatal-warnings") == 0)
+        {
+          uint fatal_mask = g_log_set_always_fatal (GLogLevelFlags (G_LOG_FATAL_MASK));
+          fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+          g_log_set_always_fatal (GLogLevelFlags (fatal_mask));
+          argv[i] = NULL;
+        }
+      else if (parse_test_args && strcmp ("--test-quick", argv[i]) == 0)
+        {
+          global_init_settings.test_quick = true;
+          argv[i] = NULL;
+        }
+      else if (parse_test_args && strcmp ("--test-slow", argv[i]) == 0)
+        {
+          global_init_settings.test_slow = true;
+          argv[i] = NULL;
+        }
+      else if (parse_test_args && strcmp ("--test-perf", argv[i]) == 0)
+        {
+          global_init_settings.test_perf = true;
+          argv[i] = NULL;
+        }
     }
+  /* fallback handling for tests */
+  if (parse_test_args && !global_init_settings.test_quick && !global_init_settings.test_slow && !global_init_settings.test_perf)
+    global_init_settings.test_quick = true;
+  /* collapse args */
+  uint e = 1;
+  for (uint i = 1; i < argc; i++)
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
 }
 
 void
@@ -113,8 +168,7 @@ birnet_init (int        *argcp,
 
   /* normal initialization */
   birnet_init_settings = &global_init_settings;
-  if (ivalues)
-    apply_settings_values (ivalues);
+  birnet_parse_settings_and_args (ivalues, argcp, argvp);
   if (prg_name)
     g_set_prgname (prg_name);
   g_free (prg_name);

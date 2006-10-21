@@ -1,3 +1,21 @@
+Sat Oct 21 03:46:05 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h: added treport_maximized() and treport_minimized()
+	benchmark reporting funcitons. added TUnitType to allow specification
+	of units for benchmark results.
+
+	* birnetcdefs.h:
+	* birnetutils.cc: parse --g-fatal-warnings, --test-quick, --test-slow
+	and --test-perf. allow special casing of tests via 
+	birnet_init_settings->test_quick, birnet_init_settings->test_slow and
+	birnet_init_settings->test_perf.
+
+	* tests/sorting.cc:
+	* tests/strings.cc:
+	* tests/threads.cc:
+	* tests/Makefile.am: split up TESTS into SLOWTESTS and PERFTESTS and
+	report performance results properly.
+
 Tue Oct 10 23:23:11 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutf8.hh, birnetutf8.cc: added Unichar::isvalid().
