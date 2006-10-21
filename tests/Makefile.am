@@ -73,6 +73,7 @@ noinst_PROGRAMS = $(TESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse.la
 # testwavechunk
 TESTS                += testwavechunk
+SLOWTESTS            += testwavechunk
 testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
 testwavechunk_LDADD = $(progs_ldadd)
 # perftest
@@ -85,15 +86,15 @@ testresampler_SOURCES = testresampler.cc
 testresampler_LDADD   = $(progs_ldadd)
 
 # === Resampler tests ===
-check-before: resampler-quick-checks
+check-after: resampler-quick-checks
 resampler-quick-checks:
 	: ## some quick checks (resampler-checks contains actual tests - use make slowcheck)
 	./testresampler filter-impl
-	./testresampler accuracy --up --precision=8 --freq-scan=180,18000,180 --max-threshold=45
-	./testresampler accuracy --down --precision=12 --freq-scan=90,9000,90 --max-threshold=72
-	./testresampler accuracy --fpu --up --precision=16 --freq-scan=180,18000,180 --max-threshold=89.5
-	./testresampler accuracy --fpu --oversample --precision=20 --freq-scan=180,18000,180 --max-threshold=113.5
-	./testresampler accuracy --subsample --precision=24 --freq-scan=90,9000,90 --max-threshold=126
+	./testresampler accuracy --up --precision=8 --freq-scan=180,18000,1979 --max-threshold=45
+	./testresampler accuracy --down --precision=12 --freq-scan=90,9000,997 --max-threshold=72
+	./testresampler accuracy --fpu --up --precision=16 --freq-scan=180,18000,1453 --max-threshold=89.5
+	./testresampler accuracy --fpu --oversample --precision=20 --freq-scan=180,18000,1671 --max-threshold=113.5
+	./testresampler accuracy --subsample --precision=24 --freq-scan=90,9000,983 --max-threshold=126
 
 slowcheck: resampler-checks
 resampler-checks:

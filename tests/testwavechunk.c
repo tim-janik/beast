@@ -19,6 +19,7 @@
 #include <bse/gslwavechunk.h>
 #include <bse/gsldatahandle.h>
 #include <bse/bsemain.h>
+#include <sfi/sfitests.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,7 +36,7 @@ enum {
   VERBOSITY_PADDING,
   VERBOSITY_CHECKS,
 };
-static guint verbosity = VERBOSITY_SETUP;
+static guint verbosity = VERBOSITY_NONE;
 
 static gfloat my_data[] = {
   0.555555555,1,2,3,4,5,6,7,8,9,
@@ -52,11 +53,11 @@ static void	print_block (GslWaveChunk      *wchunk,
 #define	MINI_DEBUG_SIZE	(16)
 
 static void
-run_tests (GslWaveLoopType loop_type,
-	   gint            play_dir,
-	   gint		   loop_first,
-	   gint		   loop_last,
-	   gint		   loop_count)
+run_loop_test (GslWaveLoopType loop_type,
+               gint            play_dir,
+               gint	       loop_first,
+               gint	       loop_last,
+               gint	       loop_count)
 {
   gfloat *tmpstorage = g_new (gfloat, DEBUG_SIZE);
   gfloat *cmpblock = tmpstorage + DEBUG_SIZE / 2;
@@ -191,92 +192,112 @@ print_block (GslWaveChunk      *wchunk,
     g_print ("\n");
 }
 
+static void
+reversed_datahandle_test (void)
+{
+  GslDataHandle *myhandle;
+  GslDataHandle *rhandle1, *rhandle2;
+  GslLong o, l, i, e;
+  BseErrorType error;
+  
+  TSTART ("reversed datahandle");
+  
+  myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
+  rhandle1 = gsl_data_handle_new_reverse (myhandle);
+  gsl_data_handle_unref (myhandle);
+  rhandle2 = gsl_data_handle_new_reverse (rhandle1);
+  gsl_data_handle_unref (rhandle1);
+  error = gsl_data_handle_open (rhandle2);
+  if (error)
+    g_error ("failed to open rhandle2: %s", bse_error_blurb (error));
+  gsl_data_handle_unref (rhandle2);
+  
+  TASSERT (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));
+  
+  for (i = 1; i < 8; i++)
+    {
+      o = 0;
+      l = gsl_data_handle_length (rhandle2);
+      while (l)
+        {
+          gfloat d1[8], d2[8];
+          
+          e = gsl_data_handle_read (myhandle, o, MIN (i, l), d1);
+          TCHECK (e == MIN (i, l));
+          e = gsl_data_handle_read (rhandle2, o, MIN (i, l), d2);
+          TCHECK (e == MIN (i, l));
+          TCHECK (memcmp (d1, d2, sizeof (d1[0]) * e) == 0);
+          l -= e;
+          o += e;
+        }
+      TOK();
+    }
+  gsl_data_handle_close (rhandle2);
+
+  TDONE();
+}
+
+static void
+simple_loop_tests (void)
+{
+  TSTART ("simple loop");
+  run_loop_test (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
+  TOK();
+  run_loop_test (GSL_WAVE_LOOP_NONE, 1, 0, 0, 0);
+  TOK();
+  run_loop_test (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
+  TOK();
+  run_loop_test (GSL_WAVE_LOOP_JUMP, 1, 0, 0, 0);
+  TOK();
+  run_loop_test (GSL_WAVE_LOOP_PINGPONG, 1, 0, 0, 0);
+  TOK();
+  run_loop_test (GSL_WAVE_LOOP_JUMP, -1, 0, 0, 0);
+  TOK();
+  run_loop_test (GSL_WAVE_LOOP_PINGPONG, -1, 0, 0, 0);
+  TOK();
+  TDONE();
+}
+
+static void
+brute_force_loop_tests (void)
+{
+  gint i, j, k, count = 6;
+  for (i = 1; i <= count; i++)
+    {
+      TSTART ("brute force loop test %d/%d", i, 6);
+      for (j = 0; j < my_data_length - 1; j++)
+        {
+          for (k = j + 1; k < my_data_length; k++)
+            {
+              run_loop_test (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
+              run_loop_test (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
+              run_loop_test (GSL_WAVE_LOOP_JUMP, -1, j, k, i);
+              run_loop_test (GSL_WAVE_LOOP_PINGPONG, -1, j, k, i);
+            }
+          TOK();
+        }
+      TDONE();
+    }
+}
+
 int
 main (gint   argc,
       gchar *argv[])
 {
   /* init */
-  SfiInitValue values[] = {
+  SfiInitValue ivalues[] = {
     { "stand-alone",            "true" }, /* no rcfiles etc. */
     { "wave-chunk-padding",     NULL, 1, },
     { "wave_chunk_big_pad",     NULL, 2, },
     { "dcache_block_size",      NULL, 16, },
     { NULL }
   };
-  bse_init_inprocess (&argc, &argv, NULL, values);
-  gint i, j, k;
+  bse_init_test (&argc, &argv, ivalues);
 
-  if (1)
-    {
-      GslDataHandle *myhandle;
-      GslDataHandle *rhandle1, *rhandle2;
-      GslLong o, l, i, e;
-      BseErrorType error;
+  reversed_datahandle_test();
+  simple_loop_tests();
+  if (sfi_init_settings().test_slow)
+    brute_force_loop_tests();
 
-      g_print ("reversed datahandle test:...\n");
-      
-      myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
-      rhandle1 = gsl_data_handle_new_reverse (myhandle);
-      gsl_data_handle_unref (myhandle);
-      rhandle2 = gsl_data_handle_new_reverse (rhandle1);
-      gsl_data_handle_unref (rhandle1);
-      error = gsl_data_handle_open (rhandle2);
-      if (error)
-	g_error ("failed to open rhandle2: %s", bse_error_blurb (error));
-      gsl_data_handle_unref (rhandle2);
-      
-      g_assert (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));
-      
-      for (i = 1; i < 8; i++)
-	{
-	  o = 0;
-	  l = gsl_data_handle_length (rhandle2);
-	  while (l)
-	    {
-	      gfloat d1[8], d2[8];
-	      
-	      e = gsl_data_handle_read (myhandle, o, MIN (i, l), d1);
-	      g_assert (e == MIN (i, l));
-	      e = gsl_data_handle_read (rhandle2, o, MIN (i, l), d2);
-	      g_assert (e == MIN (i, l));
-	      g_assert (memcmp (d1, d2, sizeof (d1[0]) * e) == 0);
-	      l -= e;
-	      o += e;
-	    }
-	}
-      gsl_data_handle_close (rhandle2);
-      g_print ("passed.\n");
-    }
-
-  if (1)
-    {
-      g_print ("primitive loop tests:...\n");
-      
-      run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
-      
-      run_tests (GSL_WAVE_LOOP_NONE, 1, 0, 0, 0);
-      run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
-      run_tests (GSL_WAVE_LOOP_JUMP, 1, 0, 0, 0);
-      run_tests (GSL_WAVE_LOOP_PINGPONG, 1, 0, 0, 0);
-      run_tests (GSL_WAVE_LOOP_JUMP, -1, 0, 0, 0);
-      run_tests (GSL_WAVE_LOOP_PINGPONG, -1, 0, 0, 0);
-      g_print ("passed.\n");
-    }
-
-  if (1)
-    {
-      g_print ("brute loop tests:...\n");
-      for (i = 1; i < 7; i++)
-	for (j = 0; j < my_data_length - 1; j++)
-	  for (k = j + 1; k < my_data_length; k++)
-	    {
-	      run_tests (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
-	      run_tests (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
-	      run_tests (GSL_WAVE_LOOP_JUMP, -1, j, k, i);
-	      run_tests (GSL_WAVE_LOOP_PINGPONG, -1, j, k, i);
-	    }
-      g_print ("passed.\n");
-    }
-  
   return 0;
 }

@@ -18,7 +18,6 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 # bsecxxapi.hh
 GENERATED_CLEANFILES += bsecxxapi.hh
-$(srcdir)/cxxbinding.cc: bsecxxapi.hh
 bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <sfi/sficxx.hh>\n" > xgen-$(@F) \
@@ -28,7 +27,6 @@ bsecxxapi.hh: $(top_srcdir)/bse/bse.idl $(SFIDL)
 	&& rm -f xgen-$(@F)
 # bsecxxapi.cc
 GENERATED_CLEANFILES += bsecxxapi.cc
-$(srcdir)/cxxbinding.cc: bsecxxapi.cc
 bsecxxapi.cc: bsecxxapi.hh $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include \"bsecxxapi.hh\"\n" > xgen-$(@F) \
@@ -51,12 +49,16 @@ generated: clean-generated $(GENERATED)
 #
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
-TESTS             += cxxbinding
+
+SLOWTESTS         += cxxbinding
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
-cxxbinding_LDADD = $(progs_ldadd)
+cxxbinding_LDADD   = $(progs_ldadd)
+$(srcdir)/cxxbinding.cc: bsecxxapi.hh
+$(srcdir)/cxxbinding.cc: bsecxxapi.cc
+
 TESTS             += filtertest
 filtertest_SOURCES = filtertest.cc
-filtertest_LDADD = $(progs_ldadd)
+filtertest_LDADD   = $(progs_ldadd)
 EXTRA_DIST += empty.ogg
 
 #

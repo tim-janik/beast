@@ -41,7 +41,7 @@ check: check-recursive
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
 # fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database(1)
-filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'
+filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)|./report.out$$'
 distuninstallcheck_listfiles  = find . -type f -print 		# standard automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
 # fixup automake-1.9.6 distcheck:-rule, which attempts to rebuild a dist tarball from within the test-build
@@ -71,9 +71,7 @@ distcheck: dist
 	  && $(MAKE) $(AM_MAKEFLAGS) \
 	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
 	  && $(MAKE) $(AM_MAKEFLAGS) install \
-	  && $(MAKE) $(AM_MAKEFLAGS) check \
-	  && $(MAKE) $(AM_MAKEFLAGS) slowcheck \
-	  && $(MAKE) $(AM_MAKEFLAGS) perf \
+	  && $(MAKE) $(AM_MAKEFLAGS) report \
 	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
 	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
 	  && $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck_dir="$$dc_install_base" \

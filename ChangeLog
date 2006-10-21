@@ -1,3 +1,17 @@
+Sat Oct 21 17:44:03 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/testwavechunk.c: refactored to sanitize print outs 
+	and to run slow tests seperately.
+
+	* tests/bse/Makefile.am: moved cxxbinding test to slow tests.
+
+	* tests/Makefile.am: speed up resampler quick tests by using
+	larger steppings in the frequency scanning.
+
+	* tests/filecheck/Makefile.am: moved loading tests to slowcheck.
+
+	* Makefile.am: ignore report.out on distcleanchecks.
+
 Sat Oct 21 04:01:11 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl: preinitialize TESTS, auto-check SLOWTESTS and

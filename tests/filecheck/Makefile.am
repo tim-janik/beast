@@ -25,7 +25,8 @@ distfiles.list: Makefile
 	test -e distfiles.list
 	test -e $(DISTFILE_LIST_NAME)
 	cd $(top_builddir) && make distfile-list DISTFILE_LIST=$(DISTFILE_LIST_NAME)
-.PHONY: bse-loading-check bse-version-check
+
+.PHONY: bse-version-check
 bse-version-check: distfiles.list
 	TESTVERSION="$(BSE_MAJOR_VERSION).$(BSE_MINOR_VERSION)." ;	\
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
@@ -39,6 +40,9 @@ bse-version-check: distfiles.list
 	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
 	&& echo $$MESSAGETEXT		 				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
+check: bse-version-check
+
+.PHONY: bse-loading-check
 SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"
 bse-loading-check: distfiles.list
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
@@ -56,8 +60,9 @@ bse-loading-check: distfiles.list
 	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
 	&& echo $$MESSAGETEXT		 				\
 	&& echo $$MESSAGETEXT | sed 's/./=/g'
+slowcheck: bse-loading-check
+
 CLEANFILES += distfiles.list warnings.tmp
-check-after: bse-version-check bse-loading-check
 plugin_globs = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
 EXTRA_DIST += checkproject.scm
 BSESCM = $(strip								\
