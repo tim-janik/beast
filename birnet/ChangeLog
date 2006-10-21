@@ -1,3 +1,8 @@
+Sat Oct 21 19:02:47 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h (treport_generic): allow fixed portion of numbers
+	to occupy 9 characters. added more test units.
+
 Sat Oct 21 17:14:54 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.hh, birnetutils.cc: provide init_settings() function to 

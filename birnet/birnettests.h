@@ -90,8 +90,11 @@ typedef enum {
   TUNIT_TERA_BYTE 	= 0x4003,
   TUNIT_STRUCT		= 0x0004,	/* STRUCT */
   TUNIT_OBJECT		= 0x0005,	/* OBJECT */
+  TUNIT_SAMPLE		= 0x0006,	/* SAMPLE */
+  TUNIT_STREAM		= 0x0007,	/* STREAM */
+  TUNIT_FILE		= 0x0008,	/* FILE */
 } TUnitType;
-#define	TUNIT(unit1,per_unit2)		((TUnitType) (0x00010000 * (uint) per_unit2 | (uint) unit1))
+#define	TUNIT(unit1,per_unit2)		((TUnitType) (0x00010000 * (uint) TUNIT_ ## per_unit2 | (uint) TUNIT_ ## unit1))
 
 static const char*
 treport_unit (uint tunit)
@@ -106,6 +109,9 @@ treport_unit (uint tunit)
     case 0x0003: return "Bytes"; case 0x1003: return "KBytes"; case 0x2003: return "MBytes"; case 0x3003: return "GBytes"; case 0x4003: return "TBytes";
     case 0x0004: return "Structs";
     case 0x0005: return "Objects";
+    case 0x0006: return "Samples";
+    case 0x0007: return "Streams";
+    case 0x0008: return "Files";
     };
 }
 static void treport_generic (const char *perf_name, double amount, TUnitType amount_unit, int bias);
@@ -141,7 +147,7 @@ treport_generic (const char *perf_name,
   char *c = strchr (numbuf, '.');
   int n = c ? c - numbuf : l;
   const char spaces[] = "                                             ";
-  uint indent = 8 - MIN (8, n);
+  uint indent = 9 - MIN (9, n);
   g_print ("#TBENCH%s: %25s:%s%s%s %s%c%s\n",
 	   bias > 0 ? "=maxi" : bias < 0 ? "=mini" : "=====",
 	   perf_name,
