@@ -1405,12 +1405,12 @@ print_quadratic_factors (const BseIIRFilterRequirements *ifr,
 {
   double a, b, r, f, g, g0;
   
-  if (y > 1.0e-16)
+  if (y > 1.0e-16)      /* check for imaginary pole/zero */
     {
       a = -2.0 * x;
       b = x * x + y * y;
     }
-  else
+  else                  /* real valued pole/zero */
     {
       a = -x;
       b = 0.0;
