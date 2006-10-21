@@ -69,7 +69,6 @@ generated: clean-generated $(GENERATED)
 
 
 # === test programs ===
-TESTS           =
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse.la
 # testwavechunk

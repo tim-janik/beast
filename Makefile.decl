@@ -36,30 +36,61 @@ distfile-list:
 	    echo "$(subdir)/$$file" >> $(DISTFILE_LIST) ;	\
 	done ; true
 
+# === check: check-before / check-after ===
+.PHONY: check-before check-after
+check-am: check-before
+check-local: check-after
+check-local: ; @:
+TESTS=
+
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
-.PHONY: slowcheck slowcheck-recursive
-slowcheck: slowcheck-recursive
+.PHONY: slowcheck slowcheck-recursive slowcheck-SLOWTESTS
+slowcheck: slowcheck-recursive slowcheck-SLOWTESTS
 slowcheck-recursive:
 	@for subdir in $(SUBDIRS) ; do				\
 	  test "$$subdir" = '.' ||				\
 	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) slowcheck ||	\
 	    exit 1 ;						\
 	done
-
-# === check-before / check-after ===
-.PHONY: check-before check-after
-check-am: check-before
-check-local: check-after
-check-local: ; @:
+slowcheck-SLOWTESTS:
+	@for tst in $(SLOWTESTS) ; do \
+	  ./$$tst --test-slow && echo "PASS: $$tst" || exit 1 ;		\
+	done
+	@MESSAGETEXT="All $(words $(SLOWTESTS)) slow tests passed"	\
+	&& [ 0 -lt $(words $(SLOWTESTS)) ]				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' && echo $$MESSAGETEXT	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
+SLOWTESTS=
 
 # === perf ===
 # recursive rule supported by all Makefiles to run performance tests
-.PHONY: perf perf-recursive
-perf: perf-recursive
+.PHONY: perf perf-recursive perf-PERFTESTS
+perf: perf-recursive perf-PERFTESTS
 perf-recursive:
 	@for subdir in $(SUBDIRS) ; do				\
 	  test "$$subdir" = '.' ||				\
 	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) perf ||	\
 	    exit 1 ;						\
 	done
+perf-PERFTESTS:
+	@for tst in $(PERFTESTS) ; do \
+	  ./$$tst --test-perf && echo "PASS: $$tst" || exit 1 ;		\
+	done
+	@MESSAGETEXT="All $(words $(PERFTESTS)) perf tests passed"	\
+	&& [ 0 -lt $(words $(PERFTESTS)) ]				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' && echo $$MESSAGETEXT	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
+PERFTESTS=
+
+# === report ===
+.PHONY: report
+report: all
+	@export REPORTFILE="$(REPORTFILE)"			\
+	&& [ -z "$$REPORTFILE" ]				\
+	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
+	( true 							\
+	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
+	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
+	) 2>&1 | tee "$$REPORTFILE"

@@ -49,11 +49,12 @@ generated: clean-generated $(GENERATED)
 #
 # test programs
 #
-TESTS = cxxbinding filtertest
 noinst_PROGRAMS = $(TESTS)
 progs_ldadd = $(top_builddir)/bse/libbse.la
+TESTS             += cxxbinding
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
 cxxbinding_LDADD = $(progs_ldadd)
+TESTS             += filtertest
 filtertest_SOURCES = filtertest.cc
 filtertest_LDADD = $(progs_ldadd)
 EXTRA_DIST += empty.ogg

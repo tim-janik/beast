@@ -1,3 +1,9 @@
+Sat Oct 21 04:01:11 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl: preinitialize TESTS, auto-check SLOWTESTS and
+	PERFTESTS in slowcheck and perf rules. added report rule to
+	run all of check, slowcheck and perf and log into report.out.
+
 Fri Oct 20 23:03:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/bse/filtertest.cc: More refactoring.
