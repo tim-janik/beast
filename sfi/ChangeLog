@@ -1,3 +1,7 @@
+Sat Oct 21 17:29:05 2006  Tim Janik  <timj@gtk.org>
+
+	* sfitests.h, sfiwrapper.cc: adapt to init settings changes.
+
 Sat Oct  7 23:01:54 2006  Tim Janik  <timj@gtk.org>
 
 	* sfitests.h: header file to be included by test programs.

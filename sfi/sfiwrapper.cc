@@ -55,7 +55,7 @@ sfi_init_value_int (SfiInitValue *value)
 SfiInitSettings
 sfi_init_settings (void)
 {
-  return *::Birnet::birnet_init_settings;
+  return ::Birnet::init_settings();
 }
 
 /* --- CPU Info --- */

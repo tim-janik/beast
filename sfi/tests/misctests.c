@@ -19,7 +19,6 @@
 #undef G_LOG_DOMAIN
 #define  G_LOG_DOMAIN __FILE__
 // #define TEST_VERBOSE
-#include <birnet/birnettests.h>
 #include <sfi/sfitests.h>
 #include <unistd.h>
 #include <string.h>

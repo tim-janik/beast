@@ -23,7 +23,7 @@
 #include <birnet/birnettests.h>
 
 /* --- test initialization --- */
-static void
+static void BIRNET_UNUSED
 sfi_init_test (int          *argcp,
 	       char       ***argvp,
 	       SfiInitValue *nvalues)
@@ -33,6 +33,7 @@ sfi_init_test (int          *argcp,
     nvalues = &empty_init_value;
   SfiInitValue jvalues[] = {
     { "stand-alone", "true" },
+    { "birnet-test-parse-args", "true" },
     { NULL }
   };
   guint i, j = 0, n = 0;
