@@ -83,7 +83,19 @@ check (const char           *up_down,
 
   double worst_diff, worst_diff_db;
 
-  /* read through the datahandle linearily _twice_ */
+  /* Read through the datahandle linearily _twice_, and compare expected output
+   * with actual output, to determine whether the actual output is correct.
+   *
+   * This checks four things:
+   * - the datahandle introduces no delay (or shifts the signal in the other
+   *   direction; a negative delay)
+   * - the datahandle resamples the signal correctly
+   * - the initial state of the datahandle is correct (that is, when you first
+   *   read from it, it starts correctly reading at the beginning)
+   * - the seek-to-position zero after reading the datahandle works correctly,
+   *   that is, you get the same output when reading the datahandle a second
+   *   time
+   */
   for (int repeat = 1; repeat <= 2; repeat++)
     {
       GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
