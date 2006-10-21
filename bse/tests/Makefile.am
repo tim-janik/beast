@@ -24,6 +24,7 @@ testcxx_SOURCES = testcxx.cc
 testcxx_LDADD   = $(progs_ldadd)
 
 TESTS              += subnormals 
+PERFTESTS          += subnormals 
 subnormals_SOURCES  = subnormals.cc subnormals-aux.cc
 subnormals_LDADD    = $(progs_ldadd)
 subnormals_CXXFLAGS = $(AM_CXXFLAGS) -ffast-math
@@ -37,5 +38,7 @@ blocktests_SOURCES = blocktests.cc
 blocktests_LDADD   = $(progs_ldadd)
 
 TESTS                 += resamplehandle
+SLOWTESTS             += resamplehandle
+PERFTESTS             += resamplehandle
 resamplehandle_SOURCES = resamplehandle.cc
 resamplehandle_LDADD   = $(progs_ldadd)

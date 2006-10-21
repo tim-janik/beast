@@ -89,24 +89,12 @@ test_correct_subnormal_elimination (const char* algo_name)
   TDONE();
 }
 
-int
-main (int   argc,
-      char *argv[])
+static void
+benchmark_subnormal_eliminations ()
 {
-  bse_init_test (&argc, &argv, NULL);
-
-  test_correct_subnormal_elimination<test2f> ("zap");
-  test_correct_subnormal_elimination<test3f> ("inlined-cond");
-  test_correct_subnormal_elimination<test4f> ("if-cond");
-  test_correct_subnormal_elimination<test5f> ("arithmetic");
-
-  test_correct_subnormal_elimination<test2d> ("zap-double");
-  test_correct_subnormal_elimination<test3d> ("inlined-cond-double");
-  test_correct_subnormal_elimination<test4d> ("if-cond-double");
-  test_correct_subnormal_elimination<test5d> ("arithmetic-double");
-
-  g_print ("benchmarking...\n");
   const float max_sub = BSE_FLOAT_MAX_SUBNORMAL;
+
+  TSTART ("Subnormal Cancellation Benchmark");
 
   float n = 10 * 1000000;
   float sum;
@@ -116,6 +104,8 @@ main (int   argc,
   int j;
   const int blen = 4096;
   volatile float buffer[blen];
+
+  TOK();
 
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
@@ -130,7 +120,8 @@ main (int   argc,
   volatile_accu += sum;
   g_timer_stop (timer);
   float test1_time = g_timer_elapsed (timer, NULL);
-
+  TOK();
+  
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
   g_timer_start (timer);
@@ -144,6 +135,7 @@ main (int   argc,
   volatile_accu += sum;
   g_timer_stop (timer);
   float test2_time = g_timer_elapsed (timer, NULL);
+  TOK();
 
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
@@ -158,6 +150,7 @@ main (int   argc,
   volatile_accu += sum;
   g_timer_stop (timer);
   float test3_time = g_timer_elapsed (timer, NULL);
+  TOK();
 
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
@@ -172,6 +165,7 @@ main (int   argc,
   volatile_accu += sum;
   g_timer_stop (timer);
   float test4_time = g_timer_elapsed (timer, NULL);
+  TOK();
 
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
@@ -186,6 +180,7 @@ main (int   argc,
   volatile_accu += sum;
   g_timer_stop (timer);
   float test5_time = g_timer_elapsed (timer, NULL);
+  TOK();
 
   sum = j = 0;
   memset ((void*) buffer, 0, sizeof (buffer));
@@ -202,10 +197,39 @@ main (int   argc,
     }
   volatile_accu += sum;
   g_timer_stop (timer);
-  float test_bse_time = g_timer_elapsed (timer, NULL);
+  float test6_time = g_timer_elapsed (timer, NULL);
+  TOK();
+  TDONE();
 
-  g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
-           test1_time, test2_time, test3_time, test4_time, test5_time, test_bse_time);
+  if (0)
+    g_print ("subnormal cancellation times: keep=%fs zap=%fs inlined-cond=%fs if-cond=%fs arithmetic=%f bse=%f\n",
+             test1_time, test2_time, test3_time, test4_time, test5_time, test6_time);
+  treport_minimized ("Subnormals-keep",         test1_time, TUNIT_SECOND);
+  treport_minimized ("Subnormals-bse-zap",      test2_time, TUNIT_SECOND);
+  treport_minimized ("Subnormals-inlined-cond", test3_time, TUNIT_SECOND);
+  treport_minimized ("Subnormals-if-cond",      test4_time, TUNIT_SECOND);
+  treport_minimized ("Subnormals-arithmetic",   test5_time, TUNIT_SECOND);
+  treport_minimized ("Subnormals-bse-flush",    test6_time, TUNIT_SECOND);
+}
+
+int
+main (int   argc,
+      char *argv[])
+{
+  bse_init_test (&argc, &argv, NULL);
+
+  test_correct_subnormal_elimination<test2f> ("zap");
+  test_correct_subnormal_elimination<test3f> ("inlined-cond");
+  test_correct_subnormal_elimination<test4f> ("if-cond");
+  test_correct_subnormal_elimination<test5f> ("arithmetic");
+
+  test_correct_subnormal_elimination<test2d> ("zap-double");
+  test_correct_subnormal_elimination<test3d> ("inlined-cond-double");
+  test_correct_subnormal_elimination<test4d> ("if-cond-double");
+  test_correct_subnormal_elimination<test5d> ("arithmetic-double");
+
+  if (sfi_init_settings().test_perf)
+    benchmark_subnormal_eliminations();
 
   return 0;
 }

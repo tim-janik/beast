@@ -47,32 +47,39 @@ read_through (GslDataHandle *handle)
 }
 
 static double
-check (const vector<float>  &input,
+check (const char           *up_down,
+       const char           *channels,
+       uint                  bits,
+       const char           *cpu_type,
+       const vector<float>  &input,
        const vector<double> &expected,
        int                   n_channels,
        BseResampler2Mode     resampler_mode,
        int                   precision_bits,
        double                max_db)
 {
-  g_return_val_if_fail (input.size() % n_channels == 0, 0);
+  char *samplestr = g_strdup_printf ("%s-ResampleHandle-%s%02d%s", cpu_type, up_down, bits, channels);
+  char *streamstr = g_strdup_printf ("CPU Resampling %s-%s%02d%s", cpu_type, up_down, bits, channels);
+  TSTART ("%s", samplestr);
+
+  TASSERT (input.size() % n_channels == 0);
   
   GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, 44100, 440, input.size(), &input[0], NULL);
   GslDataHandle *rhandle;
   if (resampler_mode == BSE_RESAMPLER2_MODE_UPSAMPLE)
     {
-      g_return_val_if_fail (input.size() * 2 == expected.size(), 0);
+      TASSERT (input.size() * 2 == expected.size());
       rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
     }
   else
     {
-      g_return_val_if_fail (input.size() == expected.size() * 2, 0);
+      TASSERT (input.size() == expected.size() * 2);
       rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits); 
     }
   gsl_data_handle_unref (ihandle);
 
   BseErrorType error = gsl_data_handle_open (rhandle);
-  if (error)
-    exit (1);
+  TASSERT (error == 0);
 
   double worst_diff, worst_diff_db;
 
@@ -93,7 +100,8 @@ check (const vector<float>  &input,
 
   /* test seeking */
   worst_diff = 0.0;
-  for (int i = 0; i < 1000; i++)
+  const uint count = sfi_init_settings().test_slow ? 3000 : 100;
+  for (uint j = 0; j < count; j++)
     {
       int64 start = rand() % rhandle->setup.n_values;
       int64 len = rand() % 1024;
@@ -109,29 +117,40 @@ check (const vector<float>  &input,
   TPRINT ("seek worst_diff = %f (%f dB)\n", worst_diff, worst_diff_db);
   TASSERT (worst_diff_db < max_db);
 
+  TDONE();
+
   /* test speed */
-  const guint RUNS = 10;
-  GTimer *timer = g_timer_new();
-  const guint dups = TEST_CALIBRATION (50.0, read_through (rhandle));
- 
-  double m = 9e300;
-  for (guint i = 0; i < RUNS; i++)
+  double samples_per_second = 0;
+  if (sfi_init_settings().test_perf)
     {
-      g_timer_start (timer);
-      for (guint j = 0; j < dups; j++)
-	read_through (rhandle);
-      g_timer_stop (timer);
-      double e = g_timer_elapsed (timer, NULL);
-      if (e < m)
-        m = e;
+      const guint RUNS = 10;
+      GTimer *timer = g_timer_new();
+      const guint dups = TEST_CALIBRATION (50.0, read_through (rhandle));
+      
+      double m = 9e300;
+      for (guint i = 0; i < RUNS; i++)
+        {
+          g_timer_start (timer);
+          for (guint j = 0; j < dups; j++)
+            read_through (rhandle);
+          g_timer_stop (timer);
+          double e = g_timer_elapsed (timer, NULL);
+          if (e < m)
+            m = e;
+        }
+      samples_per_second = input.size() / (m / dups);
+      treport_maximized (samplestr, samples_per_second, TUNIT (SAMPLE, SECOND));
+      treport_maximized (streamstr, samples_per_second / 44100.0, TUNIT_STREAM);
+      //TPRINT ("  samples / second = %f\n", samples_per_second);
+      //TPRINT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
+      //TPRINT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
     }
-  double samples_per_second = input.size() / (m / dups);
-  TPRINT ("  samples / second = %f\n", samples_per_second);
-  TPRINT ("  which means the resampler can process %.2f 44100 Hz streams simultaneusly\n", samples_per_second / 44100.0);
-  TPRINT ("  or one 44100 Hz stream takes %f %% CPU usage\n", 100.0 / (samples_per_second / 44100.0));
 
   gsl_data_handle_close (rhandle);
   gsl_data_handle_unref (rhandle);
+
+  g_free (samplestr);
+  g_free (streamstr);
 
   return samples_per_second / 44100.0;
 }
@@ -185,56 +204,48 @@ run_tests (const char *run_type)
       vector<double> expected;
 
       // mono upsampling test
-      {
-	generate_test_signal (input, LEN, 44100, 440);
-	generate_test_signal (expected, LEN * 2, 88200, 440);
-
-	TSTART ("ResampleHandle %dbits mono upsampling (%s)", params[p].bits, run_type);
-	double streams = check (input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
-	                        params[p].bits, params[p].mono_upsample_db);
-	TDONE();
-
-	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-      }
-
+      if (!sfi_init_settings().test_quick)
+        {
+          generate_test_signal (input, LEN, 44100, 440);
+          generate_test_signal (expected, LEN * 2, 88200, 440);
+          check ("Up", "M", params[p].bits, run_type,
+                 input, expected, 1, BSE_RESAMPLER2_MODE_UPSAMPLE,
+                 params[p].bits, params[p].mono_upsample_db);
+          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+        }
+      
       // stereo upsampling test
-      {
-	generate_test_signal (input, LEN, 44100, 440, 1000);
-	generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
-
-        TSTART ("ResampleHandle %dbits stereo upsampling (%s)", params[p].bits, run_type);
-	double streams = check (input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
-	                        params[p].bits, params[p].stereo_upsample_db);
-	TDONE();
-
-	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-      }
-
+      if (1)
+        {
+          generate_test_signal (input, LEN, 44100, 440, 1000);
+          generate_test_signal (expected, LEN * 2, 88200, 440, 1000);
+          check ("Up", "S", params[p].bits, run_type,
+                 input, expected, 2, BSE_RESAMPLER2_MODE_UPSAMPLE,
+                 params[p].bits, params[p].stereo_upsample_db);
+          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+        }
+      
       // mono downsampling test
-      {
-	generate_test_signal (input, LEN, 44100, 440);
-	generate_test_signal (expected, LEN / 2, 22050, 440);
-
-	TSTART ("ResampleHandle %dbits mono downsampling (%s)", params[p].bits, run_type);
-	double streams = check (input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
-	                        params[p].bits, params[p].mono_downsample_db);
-	TDONE();
-
-	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-      }
-
+      if (!sfi_init_settings().test_quick)
+        {
+          generate_test_signal (input, LEN, 44100, 440);
+          generate_test_signal (expected, LEN / 2, 22050, 440);
+          check ("Dn", "M", params[p].bits, run_type,
+                 input, expected, 1, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+                 params[p].bits, params[p].mono_downsample_db);
+          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+        }
+      
       // stereo downsampling test
-      {
-	generate_test_signal (input, LEN, 44100, 440, 1000);
-	generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
-
-        TSTART ("ResampleHandle %dbits stereo downsampling (%s)", params[p].bits, run_type);
-	double streams = check (input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
-	                        params[p].bits, params[p].stereo_downsample_db);
-	TDONE();
-
-	g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
-      }
+      if (1)
+        {
+          generate_test_signal (input, LEN, 44100, 440, 1000);
+          generate_test_signal (expected, LEN / 2, 22050, 440, 1000);
+          check ("Dn", "S", params[p].bits, run_type,
+                 input, expected, 2, BSE_RESAMPLER2_MODE_DOWNSAMPLE,
+                 params[p].bits, params[p].stereo_downsample_db);
+          // g_printerr ("    ===> speed is equivalent to %.2f simultaneous 44100 Hz streams\n", streams);
+        }
     }
 }
 
