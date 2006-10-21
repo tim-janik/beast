@@ -883,7 +883,7 @@ main (int   argc,
 
   birnet_init_test (&argc, &argv);
 
-  if (birnet_init_settings->test_quick)
+  if (init_settings().test_quick)
     {
       test_threads();
       test_atomic();
@@ -891,7 +891,7 @@ main (int   argc,
       test_thread_atomic_cxx();
       test_auto_locker_cxx();
     }
-  if (birnet_init_settings->test_perf)
+  if (init_settings().test_perf)
     bench_auto_locker_cxx();
   
   return 0;

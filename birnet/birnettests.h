@@ -26,6 +26,7 @@
 /* this file may be included by C programs */
 
 #include <glib.h>
+#include <string.h>
 
 BIRNET_EXTERN_C_BEGIN();
 
@@ -134,17 +135,17 @@ treport_generic (const char *perf_name,
 		 TUnitType   amount_unit,
 		 int         bias)
 {
-  char buffer[64];
-  snprintf (buffer, sizeof (buffer), "%+.14g", amount);
-  int l = strlen (buffer);
-  char *c = strchr (buffer, '.');
-  int n = c ? c - buffer : l;
+  char numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%+.14g", amount);
+  int l = strlen (numbuf);
+  char *c = strchr (numbuf, '.');
+  int n = c ? c - numbuf : l;
   const char spaces[] = "                                             ";
   uint indent = 8 - MIN (8, n);
   g_print ("#TBENCH%s: %25s:%s%s%s %s%c%s\n",
 	   bias > 0 ? "=maxi" : bias < 0 ? "=mini" : "=====",
 	   perf_name,
-	   &spaces[sizeof (spaces) - 1 - indent], buffer, &spaces[sizeof (spaces) - 1 - (23 - MIN (23, indent + l))],
+	   &spaces[sizeof (spaces) - 1 - indent], numbuf, &spaces[sizeof (spaces) - 1 - (23 - MIN (23, indent + l))],
 	   treport_unit (amount_unit & 0xffff),
 	   amount_unit > 0xffff ? '/' : ' ',
 	   treport_unit (amount_unit >> 16));
@@ -247,7 +248,7 @@ birnet_init_test (int    *argc,
   birnet_init (argc, argv, NULL, ivalues);
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
-  if (birnet_init_settings->test_perf)
+  if (init_settings().test_perf)
     g_printerr ("PERF: %s\n", g_get_prgname());
   else
     g_printerr ("TEST: %s\n", g_get_prgname());

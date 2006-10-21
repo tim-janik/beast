@@ -44,7 +44,7 @@ test_binary_lookup()
   vector<float> fv;
   vector<float>::iterator fit;
   std::pair<vector<float>::iterator,bool> pit;
-  const uint count = birnet_init_settings->test_quick ? 90000 : 1000000;
+  const uint count = init_settings().test_quick ? 90000 : 1000000;
   TSTART ("Corner case lookups");
   fv.resize (count + (rand() % 10000));
   if (fv.size() % 2)

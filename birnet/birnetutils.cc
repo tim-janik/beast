@@ -38,6 +38,14 @@
 
 namespace Birnet {
 
+static const InitSettings *birnet_init_settings = NULL;
+
+InitSettings
+init_settings ()
+{
+  return *birnet_init_settings;
+}
+
 /* --- InitHooks --- */
 static void    (*run_init_hooks) () = NULL;
 static InitHook *init_hooks = NULL;
@@ -73,7 +81,6 @@ InitHook::invoke_hooks (void)
 }
 
 /* --- initialization --- */
-const InitSettings *birnet_init_settings = NULL;
 static InitSettings global_init_settings = {
   false,        /* stand_alone */
   false,        /* perf_test */

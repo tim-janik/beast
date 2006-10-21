@@ -1,3 +1,13 @@
+Sat Oct 21 17:14:54 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.hh, birnetutils.cc: provide init_settings() function to 
+	access initialization setting values. test should now use:
+	init_settings().test_perf
+	init_settings().test_slow or
+	init_settings().test_quick.
+
+	* birnettests.h: fixed float printing.
+
 Sat Oct 21 03:46:05 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h: added treport_maximized() and treport_minimized()

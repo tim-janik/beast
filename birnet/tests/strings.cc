@@ -27,7 +27,7 @@ static void
 random_tf8_and_unichar_test (void)
 {
   TSTART ("utf8<->unichar");
-  const uint count = birnet_init_settings->test_quick ? 30000 : 1000000;
+  const uint count = init_settings().test_quick ? 30000 : 1000000;
   for (uint i = 0; i < count; i++)
     {
       if (i % 20000 == 0)
@@ -117,7 +117,7 @@ static void
 random_unichar_test (void)
 {
   TSTART ("unichar classification");
-  const uint count = birnet_init_settings->test_quick ? 30000 : 1000000;
+  const uint count = init_settings().test_quick ? 30000 : 1000000;
   for (uint i = 0; i < count; i++)
     {
       unichar uc = rand() % (0x100 << (i % 24));

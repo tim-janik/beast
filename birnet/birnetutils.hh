@@ -79,14 +79,14 @@ void birnet_runtime_problemv (char        ewran_tag,
 /* --- initialization --- */
 typedef BirnetInitValue    InitValue;
 typedef BirnetInitSettings InitSettings;
-extern const InitSettings *birnet_init_settings;
-void   birnet_init       (int        *argcp,
-                          char     ***argvp,
-                          const char *app_name,
-                          InitValue   ivalues[] = NULL);
-bool   init_value_bool   (InitValue  *value);
-double init_value_double (InitValue  *value);
-int64  init_value_int    (InitValue  *value);
+InitSettings init_settings     ();
+void         birnet_init       (int        *argcp,
+                                char     ***argvp,
+                                const char *app_name,
+                                InitValue   ivalues[] = NULL);
+bool         init_value_bool   (InitValue  *value);
+double       init_value_double (InitValue  *value);
+int64        init_value_int    (InitValue  *value);
 
 /* --- initialization hooks --- */
 class InitHook {
