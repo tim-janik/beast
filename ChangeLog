@@ -1,3 +1,7 @@
+Sun Oct 22 22:37:16 2006  Tim Janik  <timj@gtk.org>
+
+	* launchers/suidmain.c: improved error message slightly.
+
 Sun Oct 22 22:21:44 2006  Tim Janik  <timj@gtk.org>
 
 	* launchers/suidmain.c: drop priviledges more reliably by re-querying

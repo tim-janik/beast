@@ -79,7 +79,7 @@ main (int    argc,
       /* verify priviledge drop */
       if (geteuid() != uid)
         {
-          fprintf (stderr, "%s: failed to drop priviledges: %s\n", argv[0], strerror (errno));
+          fprintf (stderr, "%s: failed to drop priviledges: %s\n", argv[0], errno ? strerror (errno) : "Unknown error");
           _exit (255);
         }
     }
