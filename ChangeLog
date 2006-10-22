@@ -1,3 +1,12 @@
+Sun Oct 22 01:54:54 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/bsttrackroll.c: Fix tact numbers in TrackRoll view,
+	fixes bug #346916. Instead of printing (more or less) useless
+	numbers, the tacts in the TrackRoll view are now numbered 1 2 3 4 and
+	so on, and only every fourth of these numbers is shown if there is not
+	enough screenspace. This change only works for 4/4 tacts, so this is a
+	temporary fix, until the tact handling of beast is rewritten.
+
 Sun Oct 22 01:30:05 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am: Pass --bse-disable-randomization to BSE2WAV

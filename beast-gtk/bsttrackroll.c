@@ -716,7 +716,7 @@ bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
 	  tact4 /= (self->tpt * 4);
 	  next_pixel = tick_to_coord (self, (tact4 + 1) * (self->tpt * 4));
 
-	  g_snprintf (buffer, 64, "%u", tact4 + 1);
+	  g_snprintf (buffer, 64, "%u", tact4 * 4 + 1);
           pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
           
@@ -732,11 +732,8 @@ bst_track_roll_draw_hpanel (GxkScrollCanvas *scc,
 
 	  tact /= self->tpt;
 	  next_pixel = tick_to_coord (self, (tact + 1) * self->tpt);
-          tact = tact % 4 + 1;
-          if (tact == 1444)
-            continue;   /* would draw on top of tact4 number */
 
-	  g_snprintf (buffer, 64, ":%u", tact % 4 + 1);
+	  g_snprintf (buffer, 64, "%u", tact + 1);
           pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
           pango_layout_get_pixel_extents (PLAYOUT_HPANEL (self), NULL, &rect);
           
