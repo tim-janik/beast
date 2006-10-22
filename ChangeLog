@@ -1,3 +1,13 @@
+Sun Oct 22 01:30:05 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am: Pass --bse-disable-randomization to BSE2WAV
+	to make tests deterministic (although still some plugins need to make
+	use of that setting).
+
+	* tests/audio/Makefile.am:
+	* tests/audio/organsong.ref:
+	* tests/audio/organsong.bse: Added test for the DavOrgan module.
+
 Sun Oct 22 00:30:08 2006  Tim Janik  <timj@gtk.org>
 
 	* **/Makefile.am: fixed up all noinst_PROGRAMS uses to contain

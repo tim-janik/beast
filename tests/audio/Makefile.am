@@ -12,6 +12,7 @@ BSE2WAV = $(strip							\
 	  --bse-mixing-freq=48000 -p null -m null			\
 	  --bse-rcfile "/dev/null" --bse-no-load			\
 	  --bse-override-plugin-globs $(builddirplugins)		\
+	  --bse-disable-randomization					\
 	  -s $(srcdir)/bse2wav.scm					\
 )
 EXTRA_DIST += bse2wav.scm
@@ -76,6 +77,15 @@ velocity-test:
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy >> $(@F).tmp
 	$(BSEFCOMPARE) $(srcdir)/velocity.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
+# DavOrgan module is a mono module, so we test only channel 0 (left)
+FEATURE_TESTS += organsong-test
+EXTRA_DIST += organsong.bse organsong.ref
+organsong-test:
+	$(BSE2WAV) $(srcdir)/organsong.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/organsong.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
 # the BEAST demo song
