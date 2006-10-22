@@ -69,8 +69,9 @@ generated: clean-generated $(GENERATED)
 
 
 # === test programs ===
-noinst_PROGRAMS = $(TESTS)
+noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse.la
+
 # testwavechunk
 TESTS                += testwavechunk
 SLOWTESTS            += testwavechunk

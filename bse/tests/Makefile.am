@@ -12,8 +12,8 @@ DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 
 EXTRA_DIST += arrows.gp filter-defs.gp
 
-noinst_PROGRAMS = $(TESTS)
-progs_ldadd = $(top_builddir)/bse/libbse.la
+noinst_PROGRAMS = $(ALLTESTS)
+progs_ldadd     = $(top_builddir)/bse/libbse.la
 
 TESTS          += testfft
 testfft_SOURCES = testfft.c cxxdummy.cc

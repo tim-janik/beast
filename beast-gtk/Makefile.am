@@ -188,15 +188,17 @@ bin_PROGRAMS = beast-$(BIN_VERSION)
 beast___BIN_VERSION__SOURCES = bstmain.c $(beast_sources)
 beast___BIN_VERSION__LDADD = $(progs_LDADD)
 beast_vOBJECTS  = $(beast___BIN_VERSION__OBJECTS)
-noinst_PROGRAMS = tsmview testgui # bststest
-tsmview_SOURCES = tsmview.c cxxdummy.cc
-tsmview_LDADD = $(progs_LDADD)
-testgui_SOURCES = testgui.c $(beast_sources)
-testgui_LDADD = $(progs_LDADD)
-# bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
-# bststest_LDADD = $(progs_LDADD)
-progs_LDADD = $(strip                                           \
+noinst_PROGRAMS = $(ALLTESTS)
+progs_LDADD     = $(strip                                       \
 	$(BEAST_LIBS) 						\
 	./gxk/libgxk.a $(GXK_LIBS)                              \
 	$(top_builddir)/bse/libbse.la $(BSE_LIBS)               \
 )
+
+noinst_PROGRAMS += tsmview
+tsmview_SOURCES  = tsmview.c cxxdummy.cc
+tsmview_LDADD    = $(progs_LDADD)
+
+noinst_PROGRAMS += testgui
+testgui_SOURCES  = testgui.c $(beast_sources)
+testgui_LDADD    = $(progs_LDADD)

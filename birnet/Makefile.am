@@ -7,7 +7,6 @@ include $(top_srcdir)/Makefile.decl
 SUBDIRS		= . tests
 INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BIRNET_CFLAGS)
 DEFS            = -DBIRNET_LOG_DOMAIN=\"BIRNET\"
-        
 GLIB_MKENUMS    = glib-mkenums
 
 birnet_headers = $(strip 		\
@@ -129,8 +128,10 @@ birnetsignalvariants.hh: $(srcdir)/birnetsignalslot.hh $(srcdir)/birnetsignaltem
 	&& rm -f xgen-sigs
 CLEANFILES += xgen-sigs birnetsignalvariants.hh xgen-signals.sed
 
-noinst_PROGRAMS = birnet-zintern
+noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = libbirnet.o $(BIRNET_LIBS) -lm
+
+noinst_PROGRAMS       += birnet-zintern
 birnet_zintern_SOURCES = birnet-zintern.cc
 birnet_zintern_LDADD   = $(progs_ldadd)
 birnet_zintern_DEPS    = $(progs_deps)

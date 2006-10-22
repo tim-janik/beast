@@ -9,25 +9,37 @@ SUBDIRS = . scripts
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS
 
-#
-# programs to build
-#
-noinst_PROGRAMS = bsewavetool bsefextract bsefcompare cutvorbis magictest mathtool
-progs_ldadd = $(top_builddir)/bse/libbse.la
-bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.c
-bsewavetool_LDADD = $(progs_ldadd)
-EXTRA_DIST += bsewavetool.hh bwtwave.hh bseloopfuncs.h sfiutils.h
-cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
-cutvorbis_LDADD = $(progs_ldadd)
-bsefextract_SOURCES = bsefextract.cc
-bsefextract_LDADD = $(progs_ldadd)
-bsefcompare_SOURCES = bsefcompare.cc
-bsefcompare_LDADD = $(progs_ldadd)
-magictest_SOURCES = magictest.c cxxdummy.cc
-magictest_LDADD = $(progs_ldadd)
-mathtool_SOURCES = mathtool.c cxxdummy.cc
-mathtool_LDADD = $(progs_ldadd)
+noinst_PROGRAMS = $(ALLTESTS)
+progs_ldadd     = $(top_builddir)/bse/libbse.la
 
+#
+# tools to build
+#
+
+noinst_PROGRAMS    += bsewavetool
+bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.c
+bsewavetool_LDADD   = $(progs_ldadd)
+EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.h sfiutils.h
+
+noinst_PROGRAMS  += cutvorbis
+cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
+cutvorbis_LDADD   = $(progs_ldadd)
+
+noinst_PROGRAMS    += bsefextract
+bsefextract_SOURCES = bsefextract.cc
+bsefextract_LDADD   = $(progs_ldadd)
+
+noinst_PROGRAMS    += bsefcompare
+bsefcompare_SOURCES = bsefcompare.cc
+bsefcompare_LDADD   = $(progs_ldadd)
+
+noinst_PROGRAMS  += magictest
+magictest_SOURCES = magictest.c cxxdummy.cc
+magictest_LDADD   = $(progs_ldadd)
+
+noinst_PROGRAMS += mathtool
+mathtool_SOURCES = mathtool.c cxxdummy.cc
+mathtool_LDADD   = $(progs_ldadd)
 
 
 #

@@ -306,15 +306,23 @@ all: # TAGS
 #
 # other programs, we want to compile
 #
-noinst_PROGRAMS = bsequery bseautodoc bseinfo bseprocidl
+noinst_PROGRAMS = $(ALLTESTS)
 progs_LDADD = libbse.la $(SFI_LIBS) -lm
 # source files
+
+noinst_PROGRAMS   += bseprocidl
 bseprocidl_SOURCES = bseprocidl.cc
-bseprocidl_LDADD = $(progs_LDADD)
+bseprocidl_LDADD   = $(progs_LDADD)
+
+noinst_PROGRAMS += bsequery
 bsequery_SOURCES = bsequery.c cxxdummy.cc
-bsequery_LDADD = $(progs_LDADD)
+bsequery_LDADD   = $(progs_LDADD)
+
+noinst_PROGRAMS   += bseautodoc
 bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
-bseautodoc_LDADD = $(progs_LDADD)
-bseinfo_SOURCES = bseinfo.c cxxdummy.cc
-bseinfo_LDADD = $(progs_LDADD)
+bseautodoc_LDADD   = $(progs_LDADD)
+
+noinst_PROGRAMS += bseinfo
+bseinfo_SOURCES  = bseinfo.c cxxdummy.cc
+bseinfo_LDADD    = $(progs_LDADD)
 

@@ -7,7 +7,7 @@ include $(top_srcdir)/Makefile.decl
 INCLUDES       += -I$(top_srcdir) -I$(top_builddir) -I. $(BIRNET_CFLAGS)
 DEFS	       += -DBIRNET_LOG_DOMAIN='"$(basename $(@F))"' -DPARANOID -DG_DISABLE_CONST_RETURNS
 
-noinst_PROGRAMS  = $(TESTS)
+noinst_PROGRAMS  = $(ALLTESTS)
 progs_ldadd 	 = $(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS) -lm
 
 TESTS		+= infotest

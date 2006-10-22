@@ -117,17 +117,21 @@ gxkmarshal.c: gxkmarshal.list
 
 libgxk_a_SOURCES = $(gxk_c_sources)
 
-progs_LDADD = $(strip						\
+noinst_PROGRAMS = $(ALLTESTS)
+progs_LDADD     = $(strip					\
 	libgxk.a $(GXK_LIBS) 					\
 	$(top_builddir)/sfi/libsfi.o $(SFI_LIBS) 		\
 	$(top_builddir)/birnet/libbirnet.o $(BIRNET_LIBS)	\
 )
 
-noinst_PROGRAMS = gxktest splinetest
-gxktest_SOURCES = gxktest.c dummy.cc
-gxktest_LDADD = $(progs_LDADD)
+
+noinst_PROGRAMS += gxktest
+gxktest_SOURCES  = gxktest.c dummy.cc
+gxktest_LDADD    = $(progs_LDADD)
+
+noinst_PROGRAMS   += splinetest
 splinetest_SOURCES = splinetest.c dummy.cc
-splinetest_LDADD = $(progs_LDADD)
+splinetest_LDADD   = $(progs_LDADD)
 
 
 #

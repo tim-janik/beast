@@ -83,6 +83,9 @@ perf-PERFTESTS:
 	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
 PERFTESTS=
 
+# === ALLTESTS ===
+ALLTESTS = $(TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
+
 # === report ===
 .PHONY: report
 report: all

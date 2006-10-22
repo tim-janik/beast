@@ -1,3 +1,12 @@
+Sun Oct 22 00:30:08 2006  Tim Janik  <timj@gtk.org>
+
+	* **/Makefile.am: fixed up all noinst_PROGRAMS uses to contain
+	$(ALLTESTS), so tests get automatically build by adding them
+	to one of the three *TESTS variables.
+
+	* Makefile.decl: define ALLTESTS to contain TESTS, SLOWTESTS and
+	PERFTESTS.
+
 Sat Oct 21 22:38:23 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/instruments/Makefile.am:
