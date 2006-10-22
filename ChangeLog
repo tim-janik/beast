@@ -1,3 +1,8 @@
+Sun Oct 22 14:31:48 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* web/news.doxi: A summary of the things that happened since the last
+	release.
+
 Sun Oct 22 01:54:54 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/bsttrackroll.c: Fix tact numbers in TrackRoll view,
