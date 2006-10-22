@@ -1,5 +1,6 @@
 /* DavOrgan - DAV Additive Organ Synthesizer
  * Copyright (c) 1999, 2000, 2002 David A. Bartold and Tim Janik
+ * Copyright (c) 2006 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -20,6 +21,7 @@
 
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
+#include <bse/bsemain.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -393,6 +395,25 @@ table_pos (const gfloat *table,
 }
 
 static void
+dav_organ_reset_module (BseModule *module)
+{
+  Organ *organ = module->user_data;
+
+  guint32 rfactor = bse_main_args->allow_randomization ? 1 : 0;
+  guint32 mix_freq_256 = bse_engine_sample_freq() * 256;
+
+  /* to make all notes sound a bit different, randomize the initial phase of
+   * each harmonic (except if the user requested deterministic behaviour)
+   */
+  organ->harm0_paccu = rfactor * g_random_int_range (0, mix_freq_256);
+  organ->harm1_paccu = rfactor * g_random_int_range (0, mix_freq_256);
+  organ->harm2_paccu = rfactor * g_random_int_range (0, mix_freq_256);
+  organ->harm3_paccu = rfactor * g_random_int_range (0, mix_freq_256);
+  organ->harm4_paccu = rfactor * g_random_int_range (0, mix_freq_256);
+  organ->harm5_paccu = rfactor * g_random_int_range (0, mix_freq_256);
+}
+
+static void
 dav_organ_process (BseModule *module,
 		   guint      n_values)
 {
@@ -470,7 +491,7 @@ dav_organ_context_create (BseSource *source,
     DAV_ORGAN_N_OCHANNELS,	/* n_ostreams */
     dav_organ_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reset */
+    dav_organ_reset_module,     /* reset */
     (BseModuleFreeFunc) g_free,	/* free */
     BSE_COST_NORMAL,		/* cost */
   };

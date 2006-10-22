@@ -1,3 +1,12 @@
+Sun Oct 22 01:35:37 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davorgan.c: Added a reset() function for the organ modules, which
+	explicitely initializes the phases. It initializes them to zero if
+	--bse-disable-randomization is active, and randomly otherwise. This
+	replaces the old behaviour to initialize the phases somewhat randomly,
+	by simply not implementing reset() at all.
+	See also bug #364041, which is fixed by this change.
+
 Mon Oct 16 23:26:40 2006  Tim Janik  <timj@gtk.org>
 
 	* bsesummation.idl:
