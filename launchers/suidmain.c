@@ -60,7 +60,6 @@ main (int    argc,
       char **argv)
 {
   const char *executable = NULL;
-
   int euid = geteuid ();
   int uid = getuid ();
 
@@ -70,18 +69,18 @@ main (int    argc,
   /* drop root privileges if running setuid root as soon as possible */
   if (euid != uid)
     {
-      int err;
 #if     HAVE_SETEUID
-      err = seteuid (uid);
+      seteuid (uid);
 #elif   HAVE_SETREUID
-      err = setreuid (-1, uid);
+      setreuid (-1, uid);
 #else
 #error platform misses facility to drop privileges
 #endif
-      if (err != 0)
+      /* verify priviledge drop */
+      if (geteuid() != uid)
         {
           fprintf (stderr, "%s: failed to drop priviledges: %s\n", argv[0], strerror (errno));
-          _exit (2);
+          _exit (255);
         }
     }
 
