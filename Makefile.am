@@ -41,9 +41,12 @@ check: check-recursive
 	@echo $(ALL_CHECKED_MSG) | sed 's/./=/g'
 
 # fixup automake-1.9.6 distuninstallcheck:-rule reporting files created by update-mime-database(1)
-filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)|.*/report.out$$'
-distuninstallcheck_listfiles  = find . -type f -print 		# standard automake-1.9 setting
+filter_stale_uninstalled      = | egrep -v '^.*/share/mime/(subclasses|globs|magic|XMLnamespaces|aliases)$$'
+filter_stale_buildfiles       = | egrep -v '^./report.out$$'
+distuninstallcheck_listfiles  = find . -type f -print 		# automake-1.9 setting
 distuninstallcheck_listfiles += $(filter_stale_uninstalled)	# amend by required filtering
+distcleancheck_listfiles      = find . -type f -print		# automake-1.9 setting
+distcleancheck_listfiles     += $(filter_stale_buildfiles)	# amend by required filtering
 # fixup automake-1.9.6 distcheck:-rule, which attempts to rebuild a dist tarball from within the test-build
 # also, bsescm currently needs install: before check:
 distcheck: dist
