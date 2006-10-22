@@ -1,3 +1,9 @@
+Sun Oct 22 00:04:49 2006  Tim Janik  <timj@gtk.org>
+
+	* bsemain.h: added allow_randomization to BseMainArgs to configure
+	deterministic vs. non-deterministic behavor. mostly interesting
+	for physical modelling plugins.
+
 Sat Oct 21 20:56:27 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/resamplehandle.cc: Improved comment.
