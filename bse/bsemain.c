@@ -64,6 +64,8 @@ static BseMainArgs       default_main_args = {
   .dcache_cache_memory  = 10 * 1024 * 1024,
   .midi_kammer_note     = BSE_KAMMER_NOTE,      /* 69 */
   .kammer_freq          = BSE_KAMMER_FREQUENCY, /* 440Hz, historically 435Hz */
+  .force_fpu            = false,
+  .allow_randomization  = true,
 };
 BseMainArgs             *bse_main_args = NULL;
 
@@ -617,6 +619,16 @@ bse_async_parse_args (gint           *argc_p,
           margs->force_fpu = TRUE;
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--bse-disable-randomization", argv[i]) == 0)
+	{
+          margs->allow_randomization = FALSE;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-enable-randomization", argv[i]) == 0)
+	{
+          margs->allow_randomization = TRUE;
+	  argv[i] = NULL;
+	}
     }
 
   if (!margs->bse_rcfile)
@@ -641,6 +653,8 @@ bse_async_parse_args (gint           *argc_p,
             margs->debug_extensions |= sfi_init_value_bool (value);
           else if (strcmp (value->value_name, "force-fpu") == 0)
             margs->force_fpu |= sfi_init_value_bool (value);
+          else if (strcmp (value->value_name, "allow-randomization") == 0)
+            margs->allow_randomization |= sfi_init_value_bool (value);
           else if (strcmp (value->value_name, "load-core-plugins") == 0)
             margs->load_core_plugins |= sfi_init_value_bool (value);
           else if (strcmp (value->value_name, "load-core-scripts") == 0)

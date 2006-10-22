@@ -1,3 +1,8 @@
+Sun Oct 22 00:22:27 2006  Tim Janik  <timj@gtk.org>
+
+	* bsemain.c: let allow_randomization default to TRUE, added
+	--bse-disable-randomization and --bse-enable-randomization args.
+
 Sun Oct 22 00:04:49 2006  Tim Janik  <timj@gtk.org>
 
 	* bsemain.h: added allow_randomization to BseMainArgs to configure
