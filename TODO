@@ -756,16 +756,17 @@ Misc Buglets/Feature Requests:
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
  - create a roadmap document for BEAST
  - implement fractional resampler (oversampling)
- - crashes    #340437                                                                [ 0.7.0, pending ]
+ - crashes    #340437    http://bugzilla.gnome.org/show_bug.cgi?id=340437            [ 0.7.0, pending ]
  - implement generic FIR eval (based on SIMD resampler code)
 
 The MCD timeline says:
+- send 64bit diffs to timj
 - resampler delay / latency
 + resampling datahandles: resampler state size
 - wavetool commandos for upsampling and downsampling datahandles
-- autolooper for wavetool
 - low pass for wavetool
 - iir test
+- autolooper for wavetool
 - man page for wavetool
 * 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
 - (accuracy) tests for highpass and lowpass
@@ -775,6 +776,5 @@ The MCD timeline says:
 - complete jack treiber
 * 0.7.2?
 - scripting/cooperation with mma: http://users.xplornet.com/~bvdp/mma/
-- send 64bit diffs to timj
 
 vim:set ts=8 sts=2 sw=2:
