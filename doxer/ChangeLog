@@ -1,3 +1,7 @@
+Mon Oct 23 01:07:55 2006  Tim Janik  <timj@gtk.org>
+
+	* Code2Doxi.py: escape commas in urls. 
+
 Sun Oct  1 13:09:24 2006  Tim Janik  <timj@gtk.org>
 
 	* Data.py: extended Parameter for default values and const-ness.

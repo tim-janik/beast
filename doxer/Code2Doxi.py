@@ -38,6 +38,14 @@ def debug (*args): Config.debug_print (*args)
 class CodeMarkupCore:
   def __init__ (self):
     self.index_lookup = None
+  def escape_comma (self, string):
+    s = ''
+    for c in list (string):
+      if c == ',':
+        s += '%2C'
+      else:
+        s += c
+    return s
   def set_index_handler (self, handler):
     self.index_lookup = handler
   def mspace (self, n_spaces = 1):
@@ -665,7 +673,7 @@ class DoxiIndexWriter (CodeMarkupCore):
         if n == 0:
           print >>fout, '@doxer_row'
         n += 1
-        print >>fout, '@doxer_cell @doxer_uri{' + url + ', ' + name + '}'
+        print >>fout, '@doxer_cell @doxer_uri{' + self.escape_comma (url) + ', ' + name + '}'
         if n == n_columns:
           print >>fout, '@doxer_done'   # close row
           n = 0
