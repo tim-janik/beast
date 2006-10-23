@@ -563,12 +563,11 @@ GSL:
 AutoLooper:
 - bsewavetool: fix thinout command to document the 4-halftone distance criteria and make it configurable
 - bsewavetool: implement export command (writes chunk to wav with --duration <seconds> option to feature looping)
-- bsewavetool: fix highpass command (needs normalization for target signal)
 - bsewavetool: highpass command: add iorder parameters 
 - bsewavetool: highpass command: specify "real" frequencies instead of PI-relative
 - bsewavetool: implement lowpass command
-- commit tranfer function evaluator for fillter FIR coefficients
-- implement tranfer function evaluator for fillter IIR coefficients
+- commit transfer function evaluator for filter FIR coefficients (done: near hp implementation -> needs to be moved to libbse)
+- implement transfer function evaluator for filter IIR coefficients (done: in filtertest.cc -> needs to be moved to libbse)
 - implement FIR sine-scanner for GSL
 - implement high performance version of gsl_data_find_loop3() (by loop reordeing)
 - implement oversampling version of high performance loop finder (with stepping to avoid fractional loops)
@@ -762,17 +761,17 @@ Misc Buglets/Feature Requests:
 The MCD timeline says:
 - resampler delay / latency
 + resampling datahandles: resampler state size
-- wavetool commandos fuer upsample und downsample datahandles
-- autolooper fuer wavetool
-- low pass fuer wavetool
+- wavetool commandos for upsampling and downsampling datahandles
+- autolooper for wavetool
+- low pass for wavetool
 - iir test
-- man page fuer wavetool
+- man page for wavetool
 * 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
-- (accuracy) tests fuer highpass und lowpass
-- fertigstellen von GUS support, meine alte TODO liste hierzu:
-+ quantize gus-patch playback error, decide what to do about gus patches (rip them?)
-- start von bse-data-gpl.tgz
-- fertigstellen von jack treiber
+- (accuracy) tests for highpass and lowpass
+- complete GUS support:
+  + quantize gus-patch playback error, decide what to do about gus patches (rip them?)
+- start bse-data-gpl.tgz for GPL-only stuff
+- complete jack treiber
 * 0.7.2?
 - scripting/cooperation with mma: http://users.xplornet.com/~bvdp/mma/
 - send 64bit diffs to timj
