@@ -89,6 +89,11 @@ inline const char*    utf8_find_prev    (const char     *start,
                                          const char     *current);
 inline char*          utf8_find_prev    (const char     *start,
                                          char           *currrent);
+inline const char*    utf8_align        (const char     *start,
+                                         const char     *current);
+inline char*          utf8_align        (const char     *start,
+                                         char           *current);
+inline bool           utf8_aligned      (const char     *c);
 unichar               utf8_to_unichar   (const char     *str);
 int                   utf8_from_unichar (unichar         uc,
                                          char            str[8]);
@@ -179,6 +184,27 @@ utf8_find_prev (const char     *start,
   return const_cast<char*> (utf8_find_prev (start, const_cast<const char*> (current)));
 }
 
+inline const char*
+utf8_align (const char     *start,
+            const char     *current)
+{
+  while (current > start && (*current & 0xc0) == 0x80)
+    current--;
+  return current;
+}
+
+inline char*
+utf8_align (const char *start,
+            char       *current)
+{
+  return const_cast<char*> (utf8_align (start, const_cast<const char*> (current)));
+}
+
+inline bool
+utf8_aligned (const char *c)
+{
+  return (*c & 0xc0) == 0x80;
+}
 
 } // Birnet
 
