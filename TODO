@@ -768,6 +768,11 @@ The MCD timeline says:
 - iir test
 - autolooper for wavetool
 - man page for wavetool
+- (1) drum kit
+- (2) drum loops
+- (3) bass instrument
+- (4) bass line
+- (5) lead instrument
 * 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
 - (accuracy) tests for highpass and lowpass
 - complete GUS support:
