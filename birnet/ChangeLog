@@ -1,3 +1,7 @@
+Mon Oct 23 17:56:19 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* birnetthreads.hh: Fixed typos in AutoLocker documentation.
+
 Wed Oct 11 02:11:29 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutf8.hh: added utf8_align() and utf8_aligned() to step back

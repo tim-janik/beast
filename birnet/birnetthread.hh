@@ -161,8 +161,8 @@ protected:
 /**
  * The AutoLocker class locks mutex like objects on construction, and automatically
  * unlocks on destruction. So putting an AutoLocker object on the stack conveniently
- * ensures that a mutex will be automatcially locked and properly unlocked when
- * the function returns or thros an exception.
+ * ensures that a mutex will be automatically locked and properly unlocked when
+ * the function returns or throws an exception.
  * Objects intended to be used by an AutoLocker need to provide the public methods
  * lock() and unlock().
  */
