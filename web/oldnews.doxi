@@ -7,6 +7,37 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Sunday 16 July 2006, Release of the new development branch}
+
+BEAST/BSE version 0.7.0 is available from the
+@uri{@top_webdir/download,download section}, here is the 
+@uri{http://gnomedesktop.org/node/2722,FootNotes announcement}.
+
+BEAST tarball:
+@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0.tar.bz2, beast-0.7.0.tar.bz2}
+@* BEAST patch:
+@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.6.6-0.7.0.diff.bz2, beast-0.6.6-0.7.0.diff.bz2}
+@* @uri{http://alsa-project.org, ALSA} driver:
+@uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.0.tar.bz2, bse-alsa-0.7.0.tar.bz2}
+
+
+The 0.7 development series of Beast focusses on improving usability and
+ease of music production. Feedback is very much appreciated, please take
+the opportunity and provide your comments and questions in online forums
+like the Beast
+@uri{@top_webdir/wiki:HelpDesk, Help Desk}, Beast
+@uri{http://bugzilla.gnome.org/buglist.cgi?query=product:beast, Bugzilla} or the
+@uri{@top_webdir/contact, mailing list}.
+
+Many new features went into this release and a load of bugfixes.
+Translation updates were made to canadian english, german, spanish, czech, italian,
+catalan, dutch and swedish. A nepali translation was newly started.
+The
+@uri{@top_webdir/news-file,Release NEWS section} has the exact change list, so enjoy
+the new code and please 
+@uri{http://bugzilla.gnome.org/simple-bug-guide.cgi?product=beast, report all bugs} encountered.
+
+
 @newsentry{Saturday 15 July 2006, Source Repository change}
 
 The @uri{http://www.gnome.org,Gnome} project is currently migrating its source code
