@@ -757,6 +757,7 @@ Misc Buglets/Feature Requests:
  - create a roadmap document for BEAST
  - implement fractional resampler (oversampling)
  - crashes    #340437                                                                [ 0.7.0, pending ]
+ - implement generic FIR eval (based on SIMD resampler code)
 
 The MCD timeline says:
 - resampler delay / latency
