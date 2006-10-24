@@ -1,3 +1,7 @@
+Tue Oct 24 23:55:45 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.cc: provide "SSE" as impl_name.
+
 Mon Oct 23 16:10:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* davorgan.idl:

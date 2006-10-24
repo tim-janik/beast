@@ -38,6 +38,11 @@ using std::max;
 using std::min;
 
 class BlockImpl : virtual public Bse::Block::Impl {
+  virtual const char*
+  impl_name ()
+  {
+    return "SSE";
+  }
   virtual void
   add (guint        n_values,
        float       *ovalues,
