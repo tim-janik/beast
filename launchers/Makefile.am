@@ -19,7 +19,7 @@ bsescm_SOURCES = suidmain.c bseshstart.c
 EXTRA_DIST    += suidmain.h
 
 #
-# make bsescm wrapper suid to allow renicing
+# make beast and bsescm wrapper suid to allow renicing
 #
 install-exec-hook:	# runs after install-binPROGRAMS
 	true \
