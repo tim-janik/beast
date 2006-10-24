@@ -1,3 +1,7 @@
+Tue Oct 24 23:51:12 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h: added cpu name to treport_*() output.
+
 Mon Oct 23 17:56:19 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* birnetthreads.hh: Fixed typos in AutoLocker documentation.

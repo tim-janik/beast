@@ -135,6 +135,14 @@ treport_minimized (const char *perf_name,
 {
   treport_generic (perf_name, amount, amount_unit, -1);
 }
+static const char*
+treport_cpu_name (const char *new_info)
+{
+  if (new_info)
+    g_dataset_set_data_full ((void*) g_dataset_destroy, "birnet-treport-custom-info", g_strdup (new_info), g_free);
+  /* the implementation of this function is a pretty bad hack around not exporting C symbols... */
+  return (const char*) g_dataset_get_data ((void*) g_dataset_destroy, "birnet-treport-custom-info");
+}
 static void	/* smaller amount is better */
 treport_generic (const char *perf_name,
 		 double      amount,
@@ -148,8 +156,10 @@ treport_generic (const char *perf_name,
   int n = c ? c - numbuf : l;
   const char spaces[] = "                                             ";
   uint indent = 9 - MIN (9, n);
-  g_print ("#TBENCH%s: %25s:%s%s%s %s%c%s\n",
+  const char *custom_info = treport_cpu_name (NULL);
+  g_print ("#TBENCH%s:%s: %28s:%s%s%s %s%c%s\n",
 	   bias > 0 ? "=maxi" : bias < 0 ? "=mini" : "=====",
+	   custom_info ? custom_info : "",
 	   perf_name,
 	   &spaces[sizeof (spaces) - 1 - indent], numbuf, &spaces[sizeof (spaces) - 1 - (23 - MIN (23, indent + l))],
 	   treport_unit (amount_unit & 0xffff),
@@ -254,6 +264,8 @@ birnet_init_test (int    *argc,
   birnet_init (argc, argv, NULL, ivalues);
   unsigned int flags = g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
   g_log_set_always_fatal ((GLogLevelFlags) (flags | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL));
+  CPUInfo ci = cpu_info();
+  treport_cpu_name (ci.machine);
   if (init_settings().test_perf)
     g_printerr ("PERF: %s\n", g_get_prgname());
   else
