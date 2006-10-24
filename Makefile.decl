@@ -46,7 +46,7 @@ TESTS=
 # === slowcheck ===
 # recursive rule supported by all Makefiles to run time consuming checks
 .PHONY: slowcheck slowcheck-recursive slowcheck-SLOWTESTS
-slowcheck: slowcheck-recursive slowcheck-SLOWTESTS
+slowcheck: all slowcheck-recursive slowcheck-SLOWTESTS
 slowcheck-recursive:
 	@for subdir in $(SUBDIRS) ; do				\
 	  test "$$subdir" = '.' ||				\
@@ -66,7 +66,7 @@ SLOWTESTS=
 # === perf ===
 # recursive rule supported by all Makefiles to run performance tests
 .PHONY: perf perf-recursive perf-PERFTESTS
-perf: perf-recursive perf-PERFTESTS
+perf: all perf-recursive perf-PERFTESTS
 perf-recursive:
 	@for subdir in $(SUBDIRS) ; do				\
 	  test "$$subdir" = '.' ||				\
