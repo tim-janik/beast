@@ -34,6 +34,7 @@ loophandle_SOURCES = loophandle.c
 loophandle_LDADD   = $(progs_ldadd)
 
 TESTS             += blocktests
+PERFTESTS         += blocktests
 blocktests_SOURCES = blocktests.cc
 blocktests_LDADD   = $(progs_ldadd)
 

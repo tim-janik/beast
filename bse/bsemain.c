@@ -28,6 +28,7 @@
 #include "bsepcmdevice.h"
 #include "bsemididevice.h"
 #include "bseengine.h"
+#include "bseblockutils.hh" /* bse_block_impl_name() */
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -305,7 +306,7 @@ bse_init_intern (gint           *argc,
 
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-
+  
   /* initialize submodules */
   if (as_test)
     sfi_init_test (argc, argv, values);
@@ -313,7 +314,7 @@ bse_init_intern (gint           *argc,
     sfi_init (argc, argv, app_name, values);
   bse_main_args = &default_main_args;
   bse_main_args->birnet = sfi_init_settings();
-
+  
   /* early argument handling */
   if (argc && argv)
     {
@@ -350,6 +351,13 @@ bse_init_intern (gint           *argc,
           g_main_context_iteration (bse_main_context, TRUE);
           // sfi_glue_gc_run ();
         }
+    }
+  if (as_test)
+    {
+      SfiCPUInfo ci = sfi_cpu_info();
+      char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
+      treport_cpu_name (cname);
+      g_free (cname);
     }
   // sfi_glue_gc_run ();
 }

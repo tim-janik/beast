@@ -26,6 +26,8 @@
 G_BEGIN_DECLS
 
 /* --- C API --- */
+const
+char*   bse_block_impl_name                       (void);
 static inline
 void    bse_block_fill_uint32                     (guint          n_values,       /* 4-byte variant of memset for ints */
                                                    guint32       *values,
@@ -83,6 +85,7 @@ namespace Bse {
 /* --- C++ API --- */
 class Block {
 public:
+  static const char*    impl_name            ()                              { return singleton->impl_name (); }
   static inline   void	fill                 (guint           n_values,
 					      float          *values,
 					      float           value);
@@ -139,6 +142,7 @@ public:
   class Impl {
   protected:
     virtual      ~Impl                  ();
+    virtual const char* impl_name       () = 0;
     virtual void  add                   (guint	         n_values,
                                          float          *ovalues,
                                          const float    *ivalues) = 0;

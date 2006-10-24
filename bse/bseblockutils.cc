@@ -23,6 +23,11 @@
 
 namespace {
 class BlockImpl : virtual public Bse::Block::Impl {
+  virtual const char*
+  impl_name ()
+  {
+    return "FPU";
+  }
   virtual void
   add (guint        n_values,
        float       *ovalues,
@@ -201,6 +206,12 @@ Block::Impl::substitute (Impl *substitute_impl)
 }
 
 } // Bse
+
+extern "C" const char*
+bse_block_impl_name (void)
+{
+  return Bse::Block::impl_name();
+}
 
 extern "C" void
 bse_block_add_floats (guint          n_values,

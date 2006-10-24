@@ -1,3 +1,16 @@
+Tue Oct 24 23:52:58 2006  Tim Janik  <timj@gtk.org>
+
+	* bseblockutils.hh, bseblockutils.cc: provide an block utils 
+	implementation name. usually "FPU" or "SSE".
+
+	* bsemain.c: add block utils implementaiton name as suffix to
+	the treport_*() CPU name.
+
+	* tests/Makefile.am:
+	* tests/blocktests.cc: conditionalized benchmarks, use treport_*().
+
+	* tests/blocktests.cc, tests/resamplehandle.cc: CPU name fixups.
+
 Sun Oct 22 00:22:27 2006  Tim Janik  <timj@gtk.org>
 
 	* bsemain.c: let allow_randomization default to TRUE, added

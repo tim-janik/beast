@@ -79,7 +79,7 @@ test_fill (void)
   TSTART ("BlockFill");
   float fblock1[1024];
 
-  bse_block_fill_uint32 (1024, (guint32*) fblock1, 0);
+  bse_block_fill_uint32 (1024, (uint32*) (void*) fblock1, 0);
   TASSERT (block_check (1024, fblock1, 0.f) == true);
 
   bse_block_fill_float (1024, fblock1, 17.786);
@@ -88,7 +88,7 @@ test_fill (void)
   Bse::Block::fill (1024, fblock1, 17.786f);
   TASSERT (block_check (1024, fblock1, 17.786f) == true);
 
-  Bse::Block::fill (1024, (guint32*) fblock1, 0);
+  Bse::Block::fill (1024, (uint32*) (void*) fblock1, 0);
   TASSERT (block_check (1024, fblock1, 0.f) == true);
 
   TDONE();
@@ -108,7 +108,7 @@ test_copy (void)
   TASSERT (block_check (1024, fblock1, -213e+3F) == true);
 
   Bse::Block::fill (1024, fblock1, -8763e-4f);
-  bse_block_copy_uint32 (1024, (guint32*) fblock1, (guint32*) fblock2);
+  bse_block_copy_uint32 (1024, (uint32*) (void*) fblock1, (uint32*) (void*) fblock2);
   TASSERT (block_check (1024, fblock1, -213e+3F) == true);
 
   Bse::Block::fill (1024, fblock1, -8763e-4f);
@@ -116,7 +116,7 @@ test_copy (void)
   TASSERT (block_check (1024, fblock1, -213e+3F) == true);
 
   Bse::Block::fill (1024, fblock1, -8763e-4f);
-  Bse::Block::copy (1024, (guint32*) fblock1, (guint32*) fblock2);
+  Bse::Block::copy (1024, (uint32*) (void*) fblock1, (uint32*) (void*) fblock2);
   TASSERT (block_check (1024, fblock1, -213e+3F) == true);
 
   TDONE();
@@ -307,8 +307,10 @@ bench_fill (void)
       if (e < m)
         m = e;
     }
-  g_print ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::fill", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("FillBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -335,8 +337,10 @@ bench_copy (void)
         m = e;
     }
   g_assert (dest_fblock[0] == 2.f);
-  g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::copy", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("CopyBench:            %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -362,8 +366,10 @@ bench_add (void)
       if (e < m)
         m = e;
     }
-  g_print ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::add", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("AddBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -389,8 +395,10 @@ bench_sub (void)
       if (e < m)
         m = e;
     }
-  g_print ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::sub", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("SubBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -417,8 +425,10 @@ bench_mul (void)
         m = e;
     }
   g_assert (fblock1[0] < 1e30); /* not close to infinity */
-  g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::mul", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("MulBench:             %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -444,8 +454,10 @@ bench_scale (void)
       if (e < m)
         m = e;
     }
-  g_print ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::scale", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("ScaleBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -480,8 +492,10 @@ bench_range (void)
     }
   g_assert (min_value == correct_min_value);
   g_assert (max_value == correct_max_value);
-  g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::range", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("RangeBench:           %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -506,8 +520,10 @@ bench_square_sum (void)
       if (e < m)
         m = e;
     }
-  g_print ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::square_sum", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("SquareSumBench:       %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static inline void
@@ -542,8 +558,10 @@ bench_range_and_square_sum (void)
     }
   g_assert (min_value == correct_min_value);
   g_assert (max_value == correct_max_value);
-  g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
-           1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
+  treport_minimized ("Block::range_and_square_sum", 1000000.0 * m / dups * BENCH_SCALE, TUNIT_USEC);
+  if (0)
+    g_print ("Range+SquareSumBench: %.6f msecs (test-duration: %.6f calibration: %.6f)\n",
+             1000.0 * m / dups * BENCH_SCALE, m * RUNS, c);
 }
 
 static void
@@ -559,15 +577,18 @@ run_tests()
   test_range();
   test_square_sum();
 
-  bench_fill();
-  bench_copy();
-  bench_add();
-  bench_sub();
-  bench_mul();
-  bench_scale();
-  bench_range();
-  bench_square_sum();
-  bench_range_and_square_sum();
+  if (sfi_init_settings().test_perf)
+    {
+      bench_fill();
+      bench_copy();
+      bench_add();
+      bench_sub();
+      bench_mul();
+      bench_scale();
+      bench_range();
+      bench_square_sum();
+      bench_range_and_square_sum();
+    }
 }
 
 int
@@ -576,7 +597,13 @@ main (int   argc,
 {
   /* usually we'd call bse_init_test() here, but we have tests to rnu before plugins are loaded */
   sfi_init_test (&argc, &argv, NULL);
-
+  { /* bse_init_test() usually does this for us */
+    SfiCPUInfo ci = sfi_cpu_info();
+    char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
+    treport_cpu_name (cname);
+    g_free (cname);
+  }
+  
   TSTART ("Running Default Block Ops");
   TASSERT (Bse::Block::default_singleton() == Bse::Block::current_singleton());
   TDONE();

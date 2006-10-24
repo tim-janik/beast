@@ -58,9 +58,9 @@ check (const char           *up_down,
        int                   precision_bits,
        double                max_db)
 {
-  char *samplestr = g_strdup_printf ("%s-ResampleHandle-%s%02d%s", cpu_type, up_down, bits, channels);
-  char *streamstr = g_strdup_printf ("CPU Resampling %s-%s%02d%s", cpu_type, up_down, bits, channels);
-  TSTART ("%s", samplestr);
+  char *samplestr = g_strdup_printf ("ResampleHandle-%s%02d%s", up_down, bits, channels);
+  char *streamstr = g_strdup_printf ("CPU Resampling %s%02d%s", up_down, bits, channels);
+  TSTART ("%s (%s)", samplestr, cpu_type);
 
   TASSERT (input.size() % n_channels == 0);
   
@@ -376,6 +376,12 @@ main (int   argc,
       char *argv[])
 {
   sfi_init_test (&argc, &argv, NULL);
+  { /* bse_init_test() usually does this for us */
+    SfiCPUInfo ci = sfi_cpu_info();
+    char *cname = g_strdup_printf ("%s+%s", ci.machine, bse_block_impl_name());
+    treport_cpu_name (cname);
+    g_free (cname);
+  }
   
   test_c_api ("FPU");
   test_delay_compensation ("FPU");
