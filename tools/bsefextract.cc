@@ -52,6 +52,7 @@ struct Options {
   gdouble             base_freq_hint;
   gdouble             focus_center;
   gdouble             focus_width;
+  guint               join_spectrum_slices;
 
   FILE               *output_file;
 
@@ -59,6 +60,7 @@ struct Options {
   void parse (int *argc_p, char **argv_p[]);
   static void print_usage ();
   void validate_percent (const string& option, gdouble value);
+  void validate_int (const string& option, int value, int vmin, int vmax);
 } options;
 
 class Signal
@@ -284,8 +286,9 @@ struct EndTimeFeature : public Feature
 struct SpectrumFeature : public Feature
 {
   vector< vector<double> > spectrum;
+  vector< vector<double> > joined_spectrum;
 
-  SpectrumFeature() : Feature ("--spectrum", "generate 30ms spaced frequency spectrums")
+  SpectrumFeature() : Feature ("--spectrum", "generate 30ms sliced frequency spectrums")
   {
   }
 
@@ -347,6 +350,28 @@ struct SpectrumFeature : public Feature
     return result;
   }
 
+  vector<double>
+  static join_slices (vector< vector<double> >::const_iterator start,
+		      vector< vector<double> >::const_iterator end,
+		      double                                   normalize)
+  {
+    g_return_val_if_fail ((end - start) > 0, vector<double>());
+
+    vector<double> result (start->size());
+
+    for (vector< vector<double> >::const_iterator spect_it = start; spect_it != end; spect_it++)
+      {
+	g_return_val_if_fail (spect_it->size() == result.size(), result);
+
+	for (size_t i = 0; i < result.size(); i++)
+	  result[i] += (*spect_it)[i];
+      }
+    for (size_t i = 0; i < result.size(); i++)
+      result[i] /= normalize;
+
+    return result;
+  }
+
   void
   compute (const Signal& signal)
   {
@@ -379,11 +404,35 @@ struct SpectrumFeature : public Feature
 	    spectrum.push_back (collapse_frequency_vector (fvector, signal.mix_freq(), 50, 1.6));
 	  }
       }
+
+    if (options.join_spectrum_slices > 1)
+      {
+	typedef vector< vector<double> >::const_iterator SpectrumConstIterator;
+	const guint jslices = options.join_spectrum_slices; 
+
+	/* for N-fold joining, we "truncate" the spectrum so that we only
+	 * have complete sets of N 30ms spectrum buckets to join
+	 */
+	for (size_t i = 0; i + jslices <= spectrum.size(); i += jslices)
+	  {
+	    SpectrumConstIterator jstart_it = spectrum.begin();
+	    SpectrumConstIterator jend_it = spectrum.begin() + jslices;
+	    joined_spectrum.push_back (join_slices (jstart_it, jend_it, jslices));
+	  }
+      }
   }
 
   void print_results() const
   {
-    print_matrix ("spectrum", spectrum);
+    if (options.join_spectrum_slices > 1)
+      {
+	fprintf (options.output_file,
+	         "# this spectrum was computed with --join-spectrum-slices=%d\n",
+	         options.join_spectrum_slices);
+	print_matrix ("spectrum", joined_spectrum);
+      }
+    else
+      print_matrix ("spectrum", spectrum);
   }
 };
 
@@ -966,7 +1015,8 @@ struct VolumeWobble : public Feature
 };
 
 
-Options::Options ()
+Options::Options () :
+  join_spectrum_slices (1)
 {
   program_name = "bsefextract";
   channel = 0;
@@ -986,6 +1036,18 @@ Options::validate_percent (const string& option, gdouble value)
     {
       fprintf (stderr, "%s: invalid argument `%f' for `%s'\n\n", program_name.c_str(), value, option.c_str());
       fprintf (stderr, "Valid arguments are percent values (between 0 and 100).\n");
+      fprintf (stderr, "Try `%s --help' for more information.\n", program_name.c_str());
+      exit (1);
+    }
+}
+
+void
+Options::validate_int (const string& option, int value, int vmin, int vmax)
+{
+  if (value < vmin || value > vmax)
+    {
+      fprintf (stderr, "%s: invalid argument `%d' for `%s'\n\n", program_name.c_str(), value, option.c_str());
+      fprintf (stderr, "Valid arguments are between %d and %d.\n", vmin, vmax);
       fprintf (stderr, "Try `%s --help' for more information.\n", program_name.c_str());
       exit (1);
     }
@@ -1109,11 +1171,16 @@ Options::parse (int   *argc_p,
       else if (check_arg (argc, argv, &i, "--focus-width", &opt_arg))
         validate_percent ("--focus-width", focus_width = g_ascii_strtod (opt_arg, NULL));
       else if (check_arg (argc, argv, &i, "--focus-center", &opt_arg))
-        validate_percent ("--focus-center", focus_center = g_ascii_strtod (opt_arg, NULL));
+	validate_percent ("--focus-center", focus_center = g_ascii_strtod (opt_arg, NULL));
       else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt_arg))
-        base_freq_hint = g_ascii_strtod (opt_arg, NULL);
+	base_freq_hint = g_ascii_strtod (opt_arg, NULL);
       else if (check_arg (argc, argv, &i, "--channel", &opt_arg))
-        channel = atoi (opt_arg);
+	channel = atoi (opt_arg);
+      else if (check_arg (argc, argv, &i, "--join-spectrum-slices", &opt_arg))
+	{
+	  join_spectrum_slices = atoi (opt_arg);
+	  validate_int ("--join-spectrum-slices", join_spectrum_slices, 1, 100000);
+	}
       else
         for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
           if (check_arg (argc, argv, &i, (*fi)->option))
@@ -1155,6 +1222,7 @@ Options::print_usage ()
   fprintf (stderr, " --focus-center=X            center focus region around X%% [50]\n");
   fprintf (stderr, " --focus-width=Y             width of focus region in %% [100]\n");
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
+  fprintf (stderr, " --join-spectrum-slices=N    when extracting a spectrum, join N 30ms slices\n");
   fprintf (stderr, " -o <output_file>            set the name of a file to write the features to\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "(example: %s --start-time --end-time t.wav).\n", options.program_name.c_str());
