@@ -1334,6 +1334,8 @@ gsl_filter_sine_scan (guint	     order,
 		      gdouble	     freq,
 		      gdouble	     mix_freq)
 {
+  /* we usually use mix_freq / 10, because 0.1 seconds is the resolution for
+   * volume perception by human listeners */
   const guint     block_size = MAX (256, (guint) (mix_freq / 10));
   const gdouble	  phase_inc = freq / mix_freq * 2 * PI;
   const gdouble	  volume_epsilon = 1e-8;
@@ -1364,6 +1366,9 @@ gsl_filter_sine_scan (guint	     order,
    * signal. The advantage is that for each sample the absolute value can be
    * determined exactly as complex absolute value (whereas for a single sine
    * signal, the absolute value oscillates).
+   *
+   * The (complex) input signal volume is always 1, as sqrt (cos(x)^2 +
+   * sin(x)^2) == 1.
    */
   do
     {
