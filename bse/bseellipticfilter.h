@@ -34,9 +34,12 @@ typedef struct {
 
 typedef enum {
   BSE_IIR_FILTER_BUTTERWORTH = 1,
-  BSE_IIR_FILTER_CHEBYSHEV   = 2,
-  BSE_IIR_FILTER_ELLIPTIC    = 3,
+  BSE_IIR_FILTER_BESSEL      = 2,
+  BSE_IIR_FILTER_CHEBYSHEV1  = 3,
+  BSE_IIR_FILTER_CHEBYSHEV2  = 4,
+  BSE_IIR_FILTER_ELLIPTIC    = 5,
 } BseIIRFilterKind;
+
 typedef enum {
   BSE_IIR_FILTER_LOW_PASS    = 1,
   BSE_IIR_FILTER_BAND_PASS   = 2,
@@ -45,19 +48,33 @@ typedef enum {
 } BseIIRFilterType;
 
 typedef struct {
-  BseIIRFilterKind	kind;
-  BseIIRFilterType	type;
-  uint                  order;			/* >= 1 */
-  double		passband_ripple_db; 	/* dB, not Butterworth */
-  double 		sampling_frequency;	/* Hz, > 0.0 */
-  double                passband_edge;		/* Hz, > 0.0 && < nyquist_frequency */
-  double                passband_edge2;		/* Hz, > 0.0 && < nyquist_frequency, for BAND filters */
-  double                stopband_db;		/* dB < 0, elliptic only */
-  double                stopband_edge;		/* Hz, > 0.0 && < nyquist_frequency, elliptic only */
-} BseIIRFilterRequirements;
+  BseIIRFilterKind      kind;
+  BseIIRFilterType      type;
+  uint                  order;                  /*     >= 1 */
+  double                sampling_frequency;     /* Hz, > 0.0 && == 2 * nyquist_frequency */
+  double                passband_edge;          /* Hz, > 0.0 && < nyquist_frequency */
+  double                passband_ripple_db;     /* dB, > 0.0, not Butterworth */
+  double                passband_edge2;         /* Hz, > 0.0 && < nyquist_frequency, for BAND filters */
+  double                stopband_edge;          /* Hz, > 0.0, replaces stopband_db, elliptic only */
+  double                stopband_db;            /* dB, < 0.0, elliptic only */
+} BseIIRFilterRequest;
 
-#define	MAX_ORDER			(256)
-#define	MAX_COEFFICIENT_ARRAY_SIZE	(4 * MAX_ORDER + 2) /* size of arrays used to store coefficients */
+#define BSE_IIR_MAX_ORDER               (64)
+#define BSE_IIR_CARRAY_SIZE             (4 * BSE_IIR_MAX_ORDER + 2) /* size of arrays used to store coefficients */
+
+typedef struct {
+  uint    order;
+  double  sampling_frequency;
+  /* s-plane output */
+  double  spz[BSE_IIR_CARRAY_SIZE];     /* s-plane poles and zeros */
+  /* z-plane poles and zeros */
+  double  gain;
+  Complex zp[BSE_IIR_CARRAY_SIZE / 2];  /* z-plane poles [order] */
+  Complex zz[BSE_IIR_CARRAY_SIZE / 2];  /* z-plane zeros [order] */
+  /* normalized z-plane transfer function */
+  double  zn[BSE_IIR_CARRAY_SIZE];      /* numerator coefficients [order+1] */
+  double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
+} BseIIRFilterDesign;
 
 typedef struct {
   int    n_poles;
@@ -86,11 +103,12 @@ typedef struct {
   double elliptic_Kk;  /* complete elliptic integral of the first kind of 1-elliptic_m */
   double elliptic_Kpk; /* complete elliptic integral of the first kind of elliptic_m */
   /* common output */
-  double gain;
-  double zs[MAX_COEFFICIENT_ARRAY_SIZE];	/* s-plane poles and zeros */
-  double cofn[MAX_COEFFICIENT_ARRAY_SIZE];	/* numerator coefficients */
-  double cofd[MAX_COEFFICIENT_ARRAY_SIZE];	/* denominator coefficients */
-  Complex zz[MAX_COEFFICIENT_ARRAY_SIZE];	/* z-plane poles and zeros */
+  double  gain;
+  double  spz[BSE_IIR_CARRAY_SIZE];	/* s-plane poles and zeros */
+  Complex zcpz[BSE_IIR_CARRAY_SIZE];	/* z-plane poles and zeros */
+  /* normalized z-plane transfer function */
+  double  zn[BSE_IIR_CARRAY_SIZE];      /* numerator coefficients [order+1] */
+  double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
 } DesignState;
 
 static const DesignState default_design_state = {
@@ -117,10 +135,10 @@ static const DesignState default_design_state = {
   .elliptic_Kk = 0.0,
   .elliptic_Kpk = 0.0,
   .gain = 0.0,
-  .zs = { 0, },
-  .cofn = { 0, },
-  .cofd = { 0, },
-  .zz = { { 0, }, },
+  .spz = { 0, },
+  .zn = { 0, },
+  .zd = { 0, },
+  .zcpz = { { 0, }, },
 };
 
 // FIXME: BIRNET_EXTERN_C_END();

@@ -1,3 +1,12 @@
+Sat Oct 28 18:34:48 2006  Tim Janik  <timj@gtk.org>
+
+	* bseellipticfilter.h: extended BseIIRFilterKind, renamed
+	* bseellipticfilter.c: extended BseIIRFilterKind, renamed
+	BseIIRFilterRequest, BSE_IIR_MAX_ORDER and BSE_IIR_CARRAY_SIZE.
+	added BseIIRFilterDesign structure which is the intended future 
+	output API. renamed some DesignState fields to match BseIIRFilterDesign
+	more closely.
+
 Thu Oct 26 00:15:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslfilter.c (gsl_filter_sine_scan): More comments.
