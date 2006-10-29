@@ -1,3 +1,7 @@
+Sun Oct 29 22:26:09 2006  Tim Janik  <timj@gtk.org>
+
+	* bsefilter-ellf.c: copied from bseellipticfilter.c.
+
 Sat Oct 28 18:34:48 2006  Tim Janik  <timj@gtk.org>
 
 	* bseellipticfilter.h: extended BseIIRFilterKind, renamed
