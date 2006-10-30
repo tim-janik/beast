@@ -1,3 +1,12 @@
+Mon Oct 30 01:25:56 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/filtertest.cc: new test for the new IIR filter design API.
+	currently covers Butterworth low pass, high pass, band stop and
+	band pass filter tests. tests are based on coefficient comparisons,
+	filter transfer function analysis, and zero + pole function
+	analysis. for debugging purposes, provided the possibility to
+	prematurely abort filter tests and provide a gnuplot dump.
+
 Mon Oct 30 00:55:01 2006  Tim Janik  <timj@gtk.org>
 
         * bsefilter.cc: implement bse_iir_filter_kind_string(),
