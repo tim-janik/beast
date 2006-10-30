@@ -1,3 +1,9 @@
+Mon Oct 30 23:02:18 2006  Tim Janik  <timj@gtk.org>
+
+	* r+d-files/bse-ellf.c: added early version (SVN r3971) of the
+	concatenated ellf.c program which was checked into BSE as
+	bseiirfilter.c and then copied to bseellipticfilter.c.
+
 Mon Oct 30 22:09:25 2006  Tim Janik  <timj@gtk.org>
 
 	* r+d-files/: new directory for various Research & Development files
