@@ -179,27 +179,31 @@ struct Feature
   bool        extract_feature;      /* did the user enable this feature with --feature? */
 
   string
-  double_to_string (double value, bool align = false) const
+  double_to_string (double value,
+                    bool   align = false) const
   {
     gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
     g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, align ? "%-15.9g" : "%.9g", value);
     return numbuf;
   }
 
-  void print_value (const string& value_name, double data) const
+  void
+  print_value (const string& value_name, double data) const
   {
     fprintf (options.output_file, "%s = %s;\n", value_name.c_str(), double_to_string (data).c_str());
   }
 
-  void print_vector (const string& vector_name, const vector<double>& data) const
+  void
+  print_vector (const string& vector_name, const vector<double>& data) const
   {
-    fprintf (options.output_file, "%s[%ld] = {", vector_name.c_str(), data.size());
+    fprintf (options.output_file, "%s[%zd] = {", vector_name.c_str(), data.size());
     for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
       fprintf (options.output_file, " %s", double_to_string (*di, true).c_str());
     fprintf (options.output_file, " };\n");
   }
 
-  void print_matrix (const string& matrix_name, const vector< vector<double> >& matrix) const
+  void
+  print_matrix (const string& matrix_name, const vector< vector<double> >& matrix) const
   {
     /* for a m x n matrix, we write
      * 
@@ -211,7 +215,7 @@ struct Feature
      *   { x_m1 x_m2 ... x_mn }
      * };
      */
-    fprintf (options.output_file, "%s[%ld,%ld] = {\n",
+    fprintf (options.output_file, "%s[%zd,%zd] = {\n",
 	     matrix_name.c_str(), matrix.size(), matrix.size() ? matrix[0].size() : 0);
 
     for (vector< vector<double> >::const_iterator mi = matrix.begin(); mi != matrix.end(); mi++)
@@ -241,11 +245,13 @@ struct Feature
 struct StartTimeFeature : public Feature
 {
   double start_time;
-  StartTimeFeature() : Feature ("--start-time", "signal start time in ms (first non-zero sample)")
+  StartTimeFeature() :
+    Feature ("--start-time", "signal start time in ms (first non-zero sample)")
   {
     start_time = -1;
   }
-  void compute (const Signal& signal)
+  void
+  compute (const Signal& signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -256,7 +262,8 @@ struct StartTimeFeature : public Feature
 	  }
       }
   }
-  void print_results() const
+  void
+  print_results() const
   {
     print_value ("start_time", start_time);
   }

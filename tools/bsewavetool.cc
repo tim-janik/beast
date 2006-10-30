@@ -869,7 +869,7 @@ public:
           if (ochunk.midi_note)
             {
               SfiNum num = g_ascii_strtoull (ochunk.midi_note, NULL, 10);
-              osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+              osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
               xinfos = bse_xinfos_add_num (xinfos, "midi-note", num);
             }
           else if (ochunk.osc_freq)
@@ -894,7 +894,7 @@ public:
                   if (auto_extract_type == 1)
                     {
                       SfiNum num = int (str2num (bname, nth));
-                      osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+                      osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
                       xinfos = bse_xinfos_add_num (xinfos, "midi-note", num);
                     }
                   else
@@ -1014,7 +1014,7 @@ public:
             if (note_str)
               {
                 SfiNum num = g_ascii_strtoull (note_str, NULL, 10);
-                osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+                osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
                 location = OSC_FREQ;
               }
           }
@@ -1153,7 +1153,7 @@ public:
         else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
             freq_list.push_back (osc_freq);
             seen_selection = true;
           }
@@ -1283,7 +1283,7 @@ public:
         else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
             freq_list.push_back (osc_freq);
             seen_selection = true;
           }
@@ -1832,7 +1832,7 @@ public:
         else if (parse_str_option (argv, i, "-m", &str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
             freq_list.push_back (osc_freq);
             seen_selection = true;
           }

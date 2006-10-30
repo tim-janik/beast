@@ -1,3 +1,10 @@
+Mon Oct 30 19:12:12 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefextract.cc: some cosmetic fixups. fixed printf format strings 
+	for size_t types. 
+
+	* tools/bsewavetool.cc: resolved C++ pow() call ambiguities.
+
 Wed Oct 25 17:47:44 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Implemented --join-spectrum-slices, which
