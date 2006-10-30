@@ -1,3 +1,20 @@
+Mon Oct 30 00:47:23 2006  Tim Janik  <timj@gtk.org>
+
+	* bsefilter.h: new header for offering a unified IIR filter API.
+
+	* bsefilter-ellf.c: define _GNU_SOURCE instead of _ISOC99_SOURCE before
+	including any headers. this gets us the C99 API *and* GNU features
+	(i.e. the uint typedef).
+	split up the implementation so that the current stand-alone behavior
+        is preserved if ELLF_BEHAVIOR is defined and so that the necessary
+        contents from bseellipticfilter.h are inlined otherwise.
+        moved EllfDesignState here (from bseellipticfilter.h). renamed
+        EllfComplex.
+        _bse_filter_design_ellf(): implemented library function prototyped
+        in bsefilter.h to design butterworth, chebychev1 and elliptic filters.
+        
+	* bseellipticfilter.h, bseellipticfilter.c: removed.
+
 Sun Oct 29 22:26:09 2006  Tim Janik  <timj@gtk.org>
 
 	* bsefilter-ellf.c: copied from bseellipticfilter.c.
