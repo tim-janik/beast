@@ -1,3 +1,11 @@
+Mon Oct 30 21:57:20 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/filtertest.cc: applied some correcitons suggested by Stefan.
+	fixed frequency range loops to test both frequency bounds.
+	extended exit_with_iir_filter_gnuplot() to print the filter design.
+	assert allmost 0-gain for all filters. simplified tests somewhat.
+	added low/high pass and band stop/pass chebyshev1 filters.
+
 Mon Oct 30 01:25:56 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/filtertest.cc: new test for the new IIR filter design API.
