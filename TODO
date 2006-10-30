@@ -761,7 +761,6 @@ Misc Buglets/Feature Requests:
  - implement generic FIR eval (based on SIMD resampler code)
 
 The MCD timeline says:
-- send 64bit diffs to timj
 - resampler delay / latency
 + resampling datahandles: resampler state size
 - wavetool commandos for upsampling and downsampling datahandles
