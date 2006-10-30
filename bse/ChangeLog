@@ -1,3 +1,14 @@
+Mon Oct 30 00:55:01 2006  Tim Janik  <timj@gtk.org>
+
+        * bsefilter.cc: implement bse_iir_filter_kind_string(),
+	bse_iir_filter_type_string(), bse_iir_filter_request_string(),
+	bse_iir_filter_design_string(). implemented bse_iir_filter_design()
+	as a thin wrapper around _bse_filter_design_ellf().
+
+	* bsemath.h: include complex.h or complex, depending on C / C++.
+	provide ComplexFloat, ComplexDouble, ComplexLongDouble and
+	Complex as alias for ComplexDouble.
+
 Mon Oct 30 00:47:23 2006  Tim Janik  <timj@gtk.org>
 
 	* bsefilter.h: new header for offering a unified IIR filter API.

@@ -21,7 +21,20 @@
 #define __BSE_MATH_H__
 
 #include <bse/bsedefs.h>
-#include <bse/bseieee754.h> /* provides math.h */
+#include <bse/bseieee754.h> 	/* provides math.h */
+#ifdef __cplusplus
+#include <complex>		/* C++ complex numbers */
+typedef std::complex<float>	  ComplexFloat;
+typedef std::complex<double>      ComplexDouble;
+typedef std::complex<long double> ComplexLongDouble;
+static const std::complex<float>  I (0, 1.0);
+#else
+#include <complex.h>		/* C99 complex numbers */
+typedef _Complex float		  ComplexFloat;
+typedef _Complex double           ComplexDouble;
+typedef _Complex long double      ComplexLongDouble;
+#endif
+typedef ComplexDouble Complex;
 
 G_BEGIN_DECLS
 

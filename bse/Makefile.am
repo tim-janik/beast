@@ -34,7 +34,8 @@ bse_public_h_sources = $(strip \
 	bseincluder.h	ladspa.h	bseenginenode.h bseieee754.h \
 	\
 	bseengine.h		bseenginemaster.h	bseengineschedule.h		bseengineutils.h \
-	bsebus.h		            		bsebiquadfilter.h		bsecategories.h \
+	bsebus.h		bsecategories.h 	\
+	bsefilter.h    		bsebiquadfilter.h	\
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
@@ -66,7 +67,8 @@ bse_c_sources = $(strip \
 	gslwaveosc.c		gslosctable.c	gslmagic.c	                 \
 	\
 	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
-	bsebus.c		            		bsebiquadfilter.c		bsecategories.c \
+	bsebus.c		bsecategories.c 	\
+	bsefilter.cc   		bsebiquadfilter.c	bsefilter-ellf.c	\
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
