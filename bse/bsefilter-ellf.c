@@ -17,12 +17,106 @@
  * otherwise) arising in any way out of the use of this software, even
  * if advised of the possibility of such damage.
  */
-#include "bseellipticfilter.h"
 #define _ISOC99_SOURCE  /* for INFINITY and NAN */
+#define _GNU_SOURCE     /* provides: _ISOC99_SOURCE */
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+
+#ifndef ELLF_BEHAVIOR
+#include "bsefilter.h"
+
+#else
+
+#include <stdbool.h> // FIXME
+#include <complex.h>
+// typedef unsigned int uint;
+typedef _Complex double Complex;
+
+typedef enum {
+  BSE_IIR_FILTER_BUTTERWORTH = 1,
+  BSE_IIR_FILTER_BESSEL      = 2,
+  BSE_IIR_FILTER_CHEBYSHEV1  = 3,
+  BSE_IIR_FILTER_CHEBYSHEV2  = 4,
+  BSE_IIR_FILTER_ELLIPTIC    = 5,
+} BseIIRFilterKind;
+
+typedef enum {
+  BSE_IIR_FILTER_LOW_PASS    = 1,
+  BSE_IIR_FILTER_BAND_PASS   = 2,
+  BSE_IIR_FILTER_HIGH_PASS   = 3,
+  BSE_IIR_FILTER_BAND_STOP   = 4,
+} BseIIRFilterType;
+
+typedef struct {
+  BseIIRFilterKind      kind;
+  BseIIRFilterType      type;
+  uint                  order;                  /*     >= 1 */
+  double                sampling_frequency;     /* Hz, > 0.0 && == 2 * nyquist_frequency */
+  double                passband_edge;          /* Hz, > 0.0 && < nyquist_frequency */
+  double                passband_ripple_db;     /* dB, > 0.0, not Butterworth */
+  double                passband_edge2;         /* Hz, > 0.0 && < nyquist_frequency, for BAND filters */
+  double                stopband_edge;          /* Hz, > 0.0, replaces stopband_db, elliptic only */
+  double                stopband_db;            /* dB, < 0.0, elliptic only */
+} BseIIRFilterRequest;
+
+#define BSE_IIR_MAX_ORDER               (64)
+#define BSE_IIR_CARRAY_SIZE             (4 * BSE_IIR_MAX_ORDER + 2) /* size of arrays used to store coefficients */
+
+typedef struct {
+  uint    order;
+  double  sampling_frequency;
+  /* z-plane poles and zeros */
+  double  gain;
+  Complex zp[BSE_IIR_CARRAY_SIZE / 2];  /* z-plane poles [order] */
+  Complex zz[BSE_IIR_CARRAY_SIZE / 2];  /* z-plane zeros [order] */
+  /* normalized z-plane transfer function */
+  double  zn[BSE_IIR_CARRAY_SIZE];      /* numerator coefficients [order+1] */
+  double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
+} BseIIRFilterDesign;
+#endif
+
+typedef struct {
+  double r;     // real part
+  double i;     // imaginary part
+} EllfComplex;
+
+typedef struct {
+  int    n_poles;
+  int    n_zeros;
+  int    z_counter;	/* incremented as z^N coefficients are found, indexes poles and zeros */
+  int    n_solved_poles;
+  /* common state */
+  double gain_scale;
+  double ripple_epsilon;
+  double nyquist_frequency;
+  double tan_angle_frequency;
+  double wc; /* tan_angle_frequency or normalized to 1.0 for elliptic */
+  double cgam; /* angle frequency temporary */
+  double stopband_edge; /* derived from ifr->stopband_edge or ifr->stopband_db */
+  double wr;
+  double numerator_accu;
+  double denominator_accu;
+  /* chebyshev state */
+  double chebyshev_phi;
+  double chebyshev_band_cbp;
+  /* elliptic state */
+  double elliptic_phi;
+  double elliptic_k;
+  double elliptic_u;
+  double elliptic_m;
+  double elliptic_Kk;  /* complete elliptic integral of the first kind of 1-elliptic_m */
+  double elliptic_Kpk; /* complete elliptic integral of the first kind of elliptic_m */
+  /* common output */
+  double  gain;
+  double  spz[BSE_IIR_CARRAY_SIZE];	/* s-plane poles and zeros */
+  EllfComplex zcpz[BSE_IIR_CARRAY_SIZE];	/* z-plane poles and zeros */
+  /* normalized z-plane transfer function */
+  double  zn[BSE_IIR_CARRAY_SIZE];      /* numerator coefficients [order+1] */
+  double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
+} EllfDesignState;
 
 static void __attribute__ ((__format__ (__printf__, 1, 2)))
 VERBOSE (const char *format,
@@ -40,7 +134,11 @@ VERBOSE (const char *format,
 #define EVERBOSE VERBOSE
 //#define EVERBOSE(...) do{}while (0)
 
-#if 0 // FIXME: increase precision by using:
+static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,
+                                       EllfDesignState           *ds);
+
+
+#ifndef ELLF_BEHAVIOR
 
 //#include "bseieee754.h"
 #define PI                            (3.141592653589793238462643383279502884197)    // pi
@@ -56,7 +154,40 @@ VERBOSE (const char *format,
 // #define PI                   /* PI is defined in bseieee754.h */
 #define PIO2                    (BSE_PI_DIV_2)                          /* pi/2 */
 #define MAXNUM                  (BSE_DOUBLE_MAX_NORMAL)                 /* 2**1024*(1-MACHEP) */
-static void init_constants (void) {}
+
+bool
+_bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
+                         BseIIRFilterDesign             *fid)
+{
+  EllfDesignState ds = { 0, };
+  const char *errmsg = ellf_filter_design (ifr, &ds);
+  fflush (stdout);
+  fflush (stderr);
+  // VERBOSE ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
+  if (errmsg)
+    return false;
+  fid->order = ds.n_solved_poles;
+  fid->sampling_frequency = ifr->sampling_frequency;
+  fid->gain = ds.gain;
+  fid->n_zeros = 0;
+  fid->n_poles = 0;
+  uint i;
+  for (i = 0; i < ds.n_solved_poles; i++)
+    {
+      double a = ds.zcpz[i].r, b = ds.zcpz[i].i;
+      if (b >= 0.0)
+        fid->zp[fid->n_poles++] = a + I * b;
+      a = ds.zcpz[ds.n_solved_poles + i].r, b = ds.zcpz[ds.n_solved_poles + i].i;
+      if (b >= 0.0)
+        fid->zz[fid->n_zeros++] = a + I * b;
+    }
+  for (i = 0; i <= fid->order; i++)
+    {
+      fid->zn[i] = ds.zn[i];
+      fid->zd[i] = ds.zd[i];
+    }
+  return true;
+}
 
 #else
 
@@ -70,6 +201,64 @@ static const double MAXNUM =  1.79769313486231570815E308;    /* 2**1024*(1-MACHE
 static const double PI     =  3.14159265358979323846;       /* pi */
 static const double PIO2   =  1.57079632679489661923;       /* pi/2 */
 static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
+
+
+static double
+my_getnum (const char *text)
+{
+  printf ("%s ? ", text);
+  char s[4096];
+  if (!fgets (s, sizeof (s), stdin))
+    exit (0);
+  double val = 0;
+  sscanf (s, "%lf", &val);
+  return val;
+}
+
+int
+main (int   argc,
+      char *argv[])
+{
+  init_constants();
+  BseIIRFilterRequest ifr = { 0 };
+  EllfDesignState ds = { .stopband_edge = 2400, };
+  switch ((int) my_getnum ("kind"))
+    {
+    case 1: ifr.kind = BSE_IIR_FILTER_BUTTERWORTH; break;
+    case 2: ifr.kind = BSE_IIR_FILTER_CHEBYSHEV1;  break;
+    case 3: ifr.kind = BSE_IIR_FILTER_ELLIPTIC;    break;
+    default: return 1;
+    }
+  ifr.type = my_getnum ("type");
+  ifr.order = my_getnum ("order");
+  if (ifr.kind != BSE_IIR_FILTER_BUTTERWORTH) /* not Butterworth */
+    ifr.passband_ripple_db = my_getnum ("passband_ripple_db");
+  ifr.sampling_frequency = my_getnum ("sampling_frequency");
+  ifr.passband_edge = my_getnum ("passband_edge");
+  if (ifr.type == BSE_IIR_FILTER_BAND_PASS ||
+      ifr.type == BSE_IIR_FILTER_BAND_STOP)
+    ifr.passband_edge2 = my_getnum ("passband_edge2");
+  if (ifr.kind == BSE_IIR_FILTER_ELLIPTIC)
+    ifr.stopband_db = ifr.stopband_edge = my_getnum ("stopband_edge or stopband_db");
+  printf ("\n");
+  const char *errmsg = ellf_filter_design (&ifr, &ds);
+  fflush (stdout);
+  fflush (stderr);
+  // VERBOSE ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
+  if (errmsg)
+    {
+      fprintf (stderr, "Invalid specification: %s\n", errmsg);
+      fflush (stderr);
+      return 1;
+    }
+  
+  return 0;
+}
+
+/* compile with: gcc -Wall -O2 -g -ffloat-store -DELLF_BEHAVIOR bsefilter-ellf.c -lm -o bsefilter-ellf
+ * (using -ffloat-store for ellf.c compatibility)
+ */
+
 #endif
 
 /* This code calculates design coefficients for
@@ -132,14 +321,14 @@ static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
  */
 
 /* --- prototypes --- */
-static const Complex COMPLEX_ONE = {1.0, 0.0};
-static double Cabs   (const Complex *z);
-static void   Cadd   (const Complex *a, const Complex *b, Complex *c);
-static void   Cdiv   (const Complex *a, const Complex *b, Complex *c);
-static void   Cmov   (const Complex *a,                   Complex *b);
-static void   Cmul   (const Complex *a, const Complex *b, Complex *c);
-static void   Csqrt  (const Complex *z,                   Complex *w);
-static void   Csub   (const Complex *a, const Complex *b, Complex *c);
+static const EllfComplex COMPLEX_ONE = {1.0, 0.0};
+static double Cabs   (const EllfComplex *z);
+static void   Cadd   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
+static void   Cdiv   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
+static void   Cmov   (const EllfComplex *a,                   EllfComplex *b);
+static void   Cmul   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
+static void   Csqrt  (const EllfComplex *z,                   EllfComplex *w);
+static void   Csub   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
 static double polevl (double x, const double coef[], int N);
 static double ellik  (double phi, double m); // incomplete elliptic integral of the first kind
 static double ellpk  (double x); // complete elliptic integral of the first kind
@@ -229,7 +418,7 @@ math_set_error (char *name, int code)
 /* --- complex number arithmetic --- */
 /* c = b + a	*/
 static void
-Cadd (const Complex *a, const Complex *b, Complex *c)
+Cadd (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
 {
   c->r = b->r + a->r;
   c->i = b->i + a->i;
@@ -237,7 +426,7 @@ Cadd (const Complex *a, const Complex *b, Complex *c)
 
 /* c = b - a	*/
 static void
-Csub (const Complex *a, const Complex *b, Complex *c)
+Csub (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
 {
   c->r = b->r - a->r;
   c->i = b->i - a->i;
@@ -245,7 +434,7 @@ Csub (const Complex *a, const Complex *b, Complex *c)
 
 /* c = b * a */
 static void
-Cmul (const Complex *a, const Complex *b, Complex *c)
+Cmul (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
 {
   /* Multiplication:
    *    c.r  =  b.r * a.r  -  b.i * a.i
@@ -260,7 +449,7 @@ Cmul (const Complex *a, const Complex *b, Complex *c)
 
 /* c = b / a */
 static void
-Cdiv (const Complex *a, const Complex *b, Complex *c)
+Cdiv (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
 {
   /* Division:
    *    d    =  a.r * a.r  +  a.i * a.i
@@ -304,7 +493,7 @@ Cdiv (const Complex *a, const Complex *b, Complex *c)
 
 /* b = a */
 static void
-Cmov (const Complex *a, Complex *b)
+Cmov (const EllfComplex *a, EllfComplex *b)
 {
   *b = *a;
 }
@@ -313,7 +502,7 @@ Cmov (const Complex *a, Complex *b)
  *
  * SYNOPSIS:
  * double Cabs();
- * Complex z;
+ * EllfComplex z;
  * double a;
  *
  * a = Cabs (&z);
@@ -333,7 +522,7 @@ Cmov (const Complex *a, Complex *b)
  *    IEEE      -10,+10    100000       2.7e-16     6.9e-17
  */
 static double
-Cabs (const Complex *z)
+Cabs (const EllfComplex *z)
 {
   /* exponent thresholds for IEEE doubles */
   const double PREC = 27;
@@ -404,7 +593,7 @@ Cabs (const Complex *z)
  *
  * SYNOPSIS:
  * void Csqrt();
- * Complex z, w;
+ * EllfComplex z, w;
  * Csqrt (&z, &w);
  *
  * DESCRIPTION:
@@ -429,9 +618,9 @@ Cabs (const Complex *z)
  * close to the real axis.
  */
 static void
-Csqrt (const Complex *z, Complex *w)
+Csqrt (const EllfComplex *z, EllfComplex *w)
 {
-  Complex q, s;
+  EllfComplex q, s;
   double x, y, r, t;
   
   x = z->r;
@@ -898,7 +1087,7 @@ polevl (double x, const double coef[], int N)
 /* --- filter design functions --- */
 static void
 print_z_fraction_before_zplnc (const BseIIRFilterRequest *ifr,
-                               DesignState               *ds) /* must be called *before* zplnc() */
+                               EllfDesignState           *ds) /* must be called *before* zplnc() */
 {
   double zgain;
   if ((ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1) && ds->numerator_accu == 0)
@@ -915,7 +1104,7 @@ print_z_fraction_before_zplnc (const BseIIRFilterRequest *ifr,
 
 static int
 find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequest *ifr,
-                                         DesignState               *ds)
+                                         EllfDesignState           *ds)
 {
   double k = ds->wc / ds->wr;
   double m = k * k;
@@ -961,7 +1150,7 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequest *ifr,
 /* calculate s plane poles and zeros, normalized to wc = 1 */
 static int
 find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
-                              DesignState               *ds)
+                              EllfDesignState           *ds)
 {
   double *spz = ds->spz;
   int i, j;
@@ -1141,9 +1330,9 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
 /* convert s plane poles and zeros to the z plane. */
 static int
 convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
-                            DesignState               *ds)
+                            EllfDesignState           *ds)
 {
-  Complex r, cnum, cden, cwc, ca, cb, b4ac;
+  EllfComplex r, cnum, cden, cwc, ca, cb, b4ac;
   double C;
   
   if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
@@ -1163,7 +1352,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
   int icnt, ii = -1;
   for (icnt = 0; icnt < 2; icnt++)
     {
-      Complex *z_pz = ds->zcpz;
+      EllfComplex *z_pz = ds->zcpz;
       /* The maps from s plane to z plane */
       do
 	{
@@ -1278,9 +1467,9 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
 
 static int
 z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
-                                              DesignState               *ds)
+                                              EllfDesignState           *ds)
 {
-  Complex lin[2];
+  EllfComplex lin[2];
   
   lin[1].r = 1.0;
   lin[1].i = 0.0;
@@ -1400,7 +1589,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
 /* display quadratic factors */
 static int
 print_quadratic_factors (const BseIIRFilterRequest *ifr,
-                         const DesignState         *ds,
+                         const EllfDesignState     *ds,
                          double x, double y,
                          bool                       is_pole) /* 1 if poles, 0 if zeros */
 {
@@ -1456,7 +1645,7 @@ print_quadratic_factors (const BseIIRFilterRequest *ifr,
 
 static int
 gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* zplnc */
-                                             DesignState               *ds)
+                                             EllfDesignState           *ds)
 {
   int j;
   ds->gain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
@@ -1499,10 +1688,10 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* 
 /* Calculate frequency response at f Hz mulitplied by amp */
 static double
 response (const BseIIRFilterRequest *ifr,
-          DesignState               *ds,
+          EllfDesignState           *ds,
           double f, double amp)
 {
-  Complex x, num, den, w;
+  EllfComplex x, num, den, w;
   double u;
   int j;
   
@@ -1532,7 +1721,7 @@ response (const BseIIRFilterRequest *ifr,
 /* Print table of filter frequency response */
 static void
 print_filter_table (const BseIIRFilterRequest *ifr,
-                    DesignState               *ds)
+                    EllfDesignState           *ds)
 {
   double f, limit = 0.05 * ds->nyquist_frequency * 21;
   
@@ -1550,8 +1739,8 @@ print_filter_table (const BseIIRFilterRequest *ifr,
 
 /* --- main IIR filter design function --- */
 static const char*
-iir_filter_design (const BseIIRFilterRequest *ifr,
-                   DesignState               *ds)
+ellf_filter_design (const BseIIRFilterRequest *ifr,
+                    EllfDesignState           *ds)
 {
   double passband_edge1 = ifr->passband_edge;
   double passband_edge0 = ifr->passband_edge2;
@@ -1814,60 +2003,3 @@ iir_filter_design (const BseIIRFilterRequest *ifr,
  toosml:
   return "storage arrays too small";
 }
-
-static double
-my_getnum (const char *text)
-{
-  printf ("%s ? ", text);
-  char s[4096];
-  if (!fgets (s, sizeof (s), stdin))
-    exit (0);
-  double val = 0;
-  sscanf (s, "%lf", &val);
-  return val;
-}
-
-
-int
-main (int   argc,
-      char *argv[])
-{
-  init_constants();
-  BseIIRFilterRequest ifr = { 0 };
-  DesignState ds = default_design_state;
-  switch ((int) my_getnum ("kind"))
-    {
-    case 1: ifr.kind = BSE_IIR_FILTER_BUTTERWORTH; break;
-    case 2: ifr.kind = BSE_IIR_FILTER_CHEBYSHEV1;  break;
-    case 3: ifr.kind = BSE_IIR_FILTER_ELLIPTIC;    break;
-    default: return 1;
-    }
-  ifr.type = my_getnum ("type");
-  ifr.order = my_getnum ("order");
-  if (ifr.kind != BSE_IIR_FILTER_BUTTERWORTH) /* not Butterworth */
-    ifr.passband_ripple_db = my_getnum ("passband_ripple_db");
-  ifr.sampling_frequency = my_getnum ("sampling_frequency");
-  ifr.passband_edge = my_getnum ("passband_edge");
-  if (ifr.type == BSE_IIR_FILTER_BAND_PASS ||
-      ifr.type == BSE_IIR_FILTER_BAND_STOP)
-    ifr.passband_edge2 = my_getnum ("passband_edge2");
-  if (ifr.kind == BSE_IIR_FILTER_ELLIPTIC)
-    ifr.stopband_db = ifr.stopband_edge = my_getnum ("stopband_edge or stopband_db");
-  printf ("\n");
-  const char *errmsg = iir_filter_design (&ifr, &ds);
-  fflush (stdout);
-  fflush (stderr);
-  // VERBOSE ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
-  if (errmsg)
-    {
-      fprintf (stderr, "Invalid specification: %s\n", errmsg);
-      fflush (stderr);
-      return 1;
-    }
-  
-  return 0;
-}
-
-/* compile with: gcc -Wall -O2 -g bseellipticfilter.c -lm -o bseellipticfilter
- * (use -ffloat-store for ellf.c compatibility)
- */
