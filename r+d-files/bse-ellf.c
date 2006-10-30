@@ -51,8 +51,9 @@ double sinh(), cosh(), atan(), exp();
 #include <math.h>
 #endif
 
-#define ellf_printf     printf
-#define ellf_debugf     printf
+#define code_printf(...)     fprintf (stdout, __VA_ARGS__)
+#define ellf_printf(...)     fprintf (stderr, __VA_ARGS__)
+#define ellf_debugf(...)     fprintf (stderr, __VA_ARGS__)
 
 /* === ellf.doc - start === */
 /*                        ellf.c
@@ -1663,11 +1664,39 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
     zgain = 1.0;
   else
     zgain = an / (pn * scale);
-  printf ("# constant mygain factor %23.13E\n", zgain);
-  printf ("# z plane Denominator      Numerator\n" );
+  
+  code_printf ("  {\n");
+  code_printf ("    BseIIRFilterDesign fdes;\n");
+  code_printf ("    BseIIRFilterRequest req = { BseIIRFilterKind (0), };\n");
+  code_printf ("    req.kind = %s;\n",
+               kind == 1 ? "BSE_IIR_FILTER_BUTTERWORTH" : kind == 2 ? "BSE_IIR_FILTER_CHEBYSHEV1" : "BSE_IIR_FILTER_ELLIPTIC");
+  code_printf ("    req.type = %s;\n",
+               type == 1 ? "BSE_IIR_FILTER_LOW_PASS" : type == 2 ? "BSE_IIR_FILTER_BAND_PASS" :
+               type == 3 ? "BSE_IIR_FILTER_HIGH_PASS" : "BSE_IIR_FILTER_BAND_STOP");
+  code_printf ("    req.order = %u;\n", (int) rn);
+  code_printf ("    req.sampling_frequency = %.4f;\n", fs);
+  if( kind > 1 )
+    code_printf ("    req.passband_ripple_db = %.17g;\n", dbr);
+  code_printf ("    req.passband_edge = %.17g;\n", f2);
+  if( (type & 1) == 0 )
+    code_printf ("    req.passband_edge2 = %.17g;\n", f1);
+  if( kind == 3 )
+    {
+      if (dbd > 0.0)
+        code_printf ("    req.stopband_edge = %.17g;\n", dbd);
+      else
+        code_printf ("    req.stopband_db = %.17g;\n", dbd);
+    }
+  code_printf ("    bool success = bse_iir_filter_design (&req, &fdes);\n");
+  code_printf ("    TASSERT (success == true);\n");
+  code_printf ("    const double dncoeffs[] = {\n");
   int j;
   for (j = 0; j <= zord; j++)
-    printf ("# %2d %17.9E %17.9E\n", j, aa[j], pp[j] * zgain);
+    code_printf ("      %+.20E, %+.20E,\n", aa[j], pp[j] * zgain);
+  code_printf ("    };\n");
+  code_printf ("    double eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);\n");
+  code_printf ("    TASSERT (eps <= coefficients_epsilon);\n");
+  code_printf ("  }\n");
 }
 
 int main()

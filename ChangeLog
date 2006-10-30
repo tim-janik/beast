@@ -1,3 +1,8 @@
+Mon Oct 30 23:41:58 2006  Tim Janik  <timj@gtk.org>
+
+	* r+d-files/bse-ellf.c: extended output to server as a code generator 
+	for bse/tests/filtertest.cc.
+
 Mon Oct 30 23:18:50 2006  Tim Janik  <timj@gtk.org>
 
 	* r+d-files/bse-ellf.c: fixed compilation command, complex function
