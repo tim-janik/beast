@@ -27,7 +27,7 @@ extern double tan ( double );
 extern double atan ( double );
 extern double floor ( double );
 extern double fabs ( double );
-extern double cabs ( cmplx * );
+extern double Cabs ( cmplx * );
 extern double sqrt ( double );
 extern double atan2 ( double, double );
 extern double cos ( double );
@@ -51,22 +51,8 @@ double sinh(), cosh(), atan(), exp();
 #include <math.h>
 #endif
 
-static void __attribute__ ((__format__ (__printf__, 1, 2)))
-VERBOSE (const char *format,
-         ...)
-{
-  char buffer[4096];
-  va_list args;
-  va_start (args, format);
-  vsnprintf (buffer, sizeof (buffer), format, args);
-  va_end (args);
-  // printf ("  #V-BSEmgc: %s", buffer);
-  printf ("# %s", buffer);
-  fflush (stdout);
-}
-
-#define EVERBOSE VERBOSE
-//#define EVERBOSE(...) do{}while(0)
+#define ellf_printf     printf
+#define ellf_debugf     printf
 
 /* === ellf.doc - start === */
 /*                        ellf.c
@@ -428,15 +414,15 @@ double NEGZERO = 0.0;
  *   Created: Sun Jan  9 15:07:08 2000
  */
 
-extern double cabs ( cmplx *z );
-extern void cadd ( cmplx *a, cmplx *b, cmplx *c );
+extern double Cabs ( cmplx *z );
+extern void Cadd ( cmplx *a, cmplx *b, cmplx *c );
 extern double cay ( double q );
-extern void cdiv ( cmplx *a, cmplx *b, cmplx *c );
-extern void cmov ( void *a, void *b );
-extern void cmul ( cmplx *a, cmplx *b, cmplx *c );
-extern void cneg ( cmplx *a );
-extern void csqrt ( cmplx *z, cmplx *w );
-extern void csub ( cmplx *a, cmplx *b, cmplx *c );
+extern void Cdiv ( cmplx *a, cmplx *b, cmplx *c );
+extern void Cmov ( void *a, void *b );
+extern void Cmul ( cmplx *a, cmplx *b, cmplx *c );
+extern void Cneg ( cmplx *a );
+extern void Csqrt ( cmplx *z, cmplx *w );
+extern void Csub ( cmplx *a, cmplx *b, cmplx *c );
 extern double ellie ( double phi, double m );
 extern double ellik ( double phi, double m );
 extern double ellpe ( double x );
@@ -472,12 +458,12 @@ extern int zplnc ( void );
  *
  * cmplx *a, *b, *c;
  *
- * cadd( a, b, c );     c = b + a
- * csub( a, b, c );     c = b - a
- * cmul( a, b, c );     c = b * a
- * cdiv( a, b, c );     c = b / a
- * cneg( c );           c = -c
- * cmov( b, c );        c = b
+ * Cadd( a, b, c );     c = b + a
+ * Csub( a, b, c );     c = b - a
+ * Cmul( a, b, c );     c = b * a
+ * Cdiv( a, b, c );     c = b / a
+ * Cneg( c );           c = -c
+ * Cmov( b, c );        c = b
  *
  *
  *
@@ -508,22 +494,22 @@ extern int zplnc ( void );
  * Tests in the rectangle {-10,+10}:
  *                      Relative error:
  * arithmetic   function  # trials      peak         rms
- *    DEC        cadd       10000       1.4e-17     3.4e-18
- *    IEEE       cadd      100000       1.1e-16     2.7e-17
- *    DEC        csub       10000       1.4e-17     4.5e-18
- *    IEEE       csub      100000       1.1e-16     3.4e-17
- *    DEC        cmul        3000       2.3e-17     8.7e-18
- *    IEEE       cmul      100000       2.1e-16     6.9e-17
- *    DEC        cdiv       18000       4.9e-17     1.3e-17
- *    IEEE       cdiv      100000       3.7e-16     1.1e-16
+ *    DEC        Cadd       10000       1.4e-17     3.4e-18
+ *    IEEE       Cadd      100000       1.1e-16     2.7e-17
+ *    DEC        Csub       10000       1.4e-17     4.5e-18
+ *    IEEE       Csub      100000       1.1e-16     3.4e-17
+ *    DEC        Cmul        3000       2.3e-17     8.7e-18
+ *    IEEE       Cmul      100000       2.1e-16     6.9e-17
+ *    DEC        Cdiv       18000       4.9e-17     1.3e-17
+ *    IEEE       Cdiv      100000       3.7e-16     1.1e-16
  */
 /*				cmplx.c
  * complex number arithmetic
  */
 
 
-void cdiv ( cmplx *, cmplx *, cmplx * );
-void cadd ( cmplx *, cmplx *, cmplx * );
+void Cdiv ( cmplx *, cmplx *, cmplx * );
+void Cadd ( cmplx *, cmplx *, cmplx * );
 
 extern double MAXNUM, MACHEP, PI, PIO2, INFINITY, NAN;
 
@@ -533,7 +519,7 @@ cmplx cone = {1.0, 0.0};
 extern cmplx cone;
 
 /*	c = b + a	*/
-void cadd( a, b, c )
+void Cadd( a, b, c )
      register cmplx *a, *b;
      cmplx *c;
 {
@@ -543,7 +529,7 @@ void cadd( a, b, c )
 
 
 /*	c = b - a	*/
-void csub( a, b, c )
+void Csub( a, b, c )
      register cmplx *a, *b;
      cmplx *c;
 {
@@ -552,7 +538,7 @@ void csub( a, b, c )
 }
 
 /*	c = b * a */
-void cmul( a, b, c )
+void Cmul( a, b, c )
      register cmplx *a, *b;
      cmplx *c;
 {
@@ -565,7 +551,7 @@ void cmul( a, b, c )
 
 
 /*	c = b / a */
-void cdiv( a, b, c )
+void Cdiv( a, b, c )
      register cmplx *a, *b;
      cmplx *c;
 {
@@ -583,7 +569,7 @@ void cdiv( a, b, c )
         {
           c->r = MAXNUM;
           c->i = MAXNUM;
-          mtherr( "cdiv", OVERFLOW );
+          mtherr( "Cdiv", OVERFLOW );
           return;
         }
     }
@@ -595,7 +581,7 @@ void cdiv( a, b, c )
 /*	b = a
         Caution, a `short' is assumed to be 16 bits wide.  */
 
-void cmov( a, b )
+void Cmov( a, b )
      void *a, *b;
 {
   register short *pa, *pb;
@@ -610,7 +596,7 @@ void cmov( a, b )
 }
 
 
-void cneg( a )
+void Cneg( a )
      register cmplx *a;
 {
   
@@ -618,7 +604,7 @@ void cneg( a )
   a->i = -a->i;
 }
 
-/*							cabs()
+/*							Cabs()
  *
  *	Complex absolute value
  *
@@ -626,11 +612,11 @@ void cneg( a )
  *
  * SYNOPSIS:
  *
- * double cabs();
+ * double Cabs();
  * cmplx z;
  * double a;
  *
- * a = cabs( &z );
+ * a = Cabs( &z );
  *
  *
  *
@@ -661,14 +647,14 @@ void cneg( a )
 #define MINEXP -1077
 
 
-double cabs( z )
+double Cabs( z )
      register cmplx *z;
 {
   double x, y, b, re, im;
   int ex, ey, e;
   
 #ifdef INFINITIES
-  /* Note, cabs(INFINITY,NAN) = INFINITY. */
+  /* Note, Cabs(INFINITY,NAN) = INFINITY. */
   if( z->r == INFINITY || z->i == INFINITY
       || z->r == -INFINITY || z->i == -INFINITY )
     return( INFINITY );
@@ -717,7 +703,7 @@ double cabs( z )
   /* Check it for overflow and underflow. */
   if( ey > MAXEXP )
     {
-      mtherr( "cabs", OVERFLOW );
+      mtherr( "Cabs", OVERFLOW );
       return( INFINITY );
     }
   if( ey < MINEXP )
@@ -728,7 +714,7 @@ double cabs( z )
   return( b );
 }
 
-/*							csqrt()
+/*							Csqrt()
  *
  *	Complex square root
  *
@@ -736,10 +722,10 @@ double cabs( z )
  *
  * SYNOPSIS:
  *
- * void csqrt();
+ * void Csqrt();
  * cmplx z, w;
  *
- * csqrt( &z, &w );
+ * Csqrt( &z, &w );
  *
  *
  *
@@ -771,11 +757,11 @@ double cabs( z )
  *    IEEE      -10,+10    100000       3.2e-16     7.7e-17
  *
  *                        2
- * Also tested by csqrt( z ) = z, and tested by arguments
+ * Also tested by Csqrt( z ) = z, and tested by arguments
  * close to the real axis.
  */
 
-void csqrt( z, w )
+void Csqrt( z, w )
      cmplx *z, *w;
 {
   cmplx q, s;
@@ -823,7 +809,7 @@ void csqrt( z, w )
     }
   else
     {
-      r = cabs(z);
+      r = Cabs(z);
       t = 0.5*(r - x);
     }
   
@@ -831,8 +817,8 @@ void csqrt( z, w )
   q.i = r;
   q.r = y/(2.0*r);
   /* Heron iteration in complex arithmetic */
-  cdiv( &q, z, &s );
-  cadd( &q, &s, w );
+  Cdiv( &q, z, &s );
+  Cadd( &q, &s, w );
   w->r *= 0.5;
   w->i *= 0.5;
 }
@@ -845,7 +831,7 @@ double hypot( x, y )
   
   z.r = x;
   z.i = y;
-  return( cabs(&z) );
+  return( Cabs(&z) );
 }
 
 /* === cmplx.c - end === */
@@ -1437,7 +1423,7 @@ int mtherr( name, code )
    * which is supposed to be the name of the
    * function in which the error occurred:
    */
-  printf( "\n%s ", name );
+  ellf_debugf ( "\n%s ", name );
   
   /* Set global error message word */
   merror = code;
@@ -1447,7 +1433,7 @@ int mtherr( name, code )
    */
   if( (code <= 0) || (code >= 7) )
     code = 0;
-  printf( "%s error\n", ermsg[code] );
+  ellf_debugf ( "%s error\n", ermsg[code] );
   
   /* Return to calling
    * program
@@ -1645,14 +1631,14 @@ static char wkind[] =
 static char salut[] =
 {"Filter shape:\n1 low pass\n2 band pass\n3 high pass\n4 band stop\n"};
 
-extern double cabs ( cmplx *z );
-extern void cadd ( cmplx *a, cmplx *b, cmplx *c );
-extern void cdiv ( cmplx *a, cmplx *b, cmplx *c );
-extern void cmov ( void *a, void *b );
-extern void cmul ( cmplx *a, cmplx *b, cmplx *c );
-extern void cneg ( cmplx *a );
-extern void csqrt ( cmplx *z, cmplx *w );
-extern void csub ( cmplx *a, cmplx *b, cmplx *c );
+extern double Cabs ( cmplx *z );
+extern void Cadd ( cmplx *a, cmplx *b, cmplx *c );
+extern void Cdiv ( cmplx *a, cmplx *b, cmplx *c );
+extern void Cmov ( void *a, void *b );
+extern void Cmul ( cmplx *a, cmplx *b, cmplx *c );
+extern void Cneg ( cmplx *a );
+extern void Csqrt ( cmplx *z, cmplx *w );
+extern void Csub ( cmplx *a, cmplx *b, cmplx *c );
 extern double ellie ( double phi, double m );
 extern double ellik ( double phi, double m );
 extern double ellpe ( double x );
@@ -1677,11 +1663,11 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
     zgain = 1.0;
   else
     zgain = an / (pn * scale);
-  VERBOSE ("# constant mygain factor %23.13E\n", zgain); // BSE info
-  VERBOSE ("# z plane Denominator      Numerator\n" ); // BSE info
+  printf ("# constant mygain factor %23.13E\n", zgain);
+  printf ("# z plane Denominator      Numerator\n" );
   int j;
   for (j = 0; j <= zord; j++)
-    VERBOSE ("%2d %17.9E %17.9E #BSEmgc\n", j, aa[j], pp[j] * zgain); // BSE info
+    printf ("# %2d %17.9E %17.9E\n", j, aa[j], pp[j] * zgain);
 }
 
 int main()
@@ -1692,19 +1678,19 @@ int main()
   
  top:
   
-  printf( "%s ? ", wkind );	/* ask for filter kind */
+  ellf_debugf ( "%s ? ", wkind );	/* ask for filter kind */
   if (!fgets (str, sizeof (str), stdin))
     exit (0);
   sscanf( str, "%d", &kind );
-  printf( "%d\n", kind );
+  ellf_debugf ( "%d\n", kind );
   if( (kind <= 0) || (kind > 3) )
     exit(0);
   
-  printf( "%s ? ", salut );	/* ask for filter type */
+  ellf_debugf ( "%s ? ", salut );	/* ask for filter type */
   if (!fgets (str, sizeof (str), stdin))
     exit (0);
   sscanf( str, "%d", &type );
-  printf( "%d\n", type );
+  ellf_debugf ( "%d\n", type );
   if( (type <= 0) || (type > 4) )
     exit(0);
   
@@ -1713,7 +1699,7 @@ int main()
   if( n <= 0 )
     {
     specerr:
-      printf( "? Specification error\n" );
+      ellf_debugf ( "? Specification error\n" );
       goto top;
     }
   rn = n;	/* ensure it is an integer */
@@ -1791,7 +1777,7 @@ int main()
   if( kind != 3 )
     {
       wc = c;
-      /*printf( "cos( 1/2 (Whigh-Wlow) T ) = %.5e, wc = %.5e\n", cang, wc );*/
+      /*ellf_debugf( "cos( 1/2 (Whigh-Wlow) T ) = %.5e, wc = %.5e\n", cang, wc );*/
     }
   
   
@@ -1883,8 +1869,8 @@ int main()
             {
               aa[i] = atan( c * y[i-1] ) * fs / PI ;
             }
-          printf( "pass band %.9E\n", aa[1] );
-          printf( "stop band %.9E\n", aa[2] );
+          ellf_debugf ( "pass band %.9E\n", aa[1] );
+          ellf_debugf ( "stop band %.9E\n", aa[2] );
 	}
       else
 	{
@@ -1901,8 +1887,8 @@ int main()
               aa[i] = (q + b) * fnyq / PI;
               pp[i] = (q - b) * fnyq / PI;
             }
-          printf( "pass band %.9E %.9E\n", pp[1], aa[1] );
-          printf( "stop band %.9E %.9E\n", pp[2], aa[2] );
+          ellf_debugf ( "pass band %.9E %.9E\n", pp[1], aa[1] );
+          ellf_debugf ( "stop band %.9E %.9E\n", pp[2], aa[2] );
 	}
       lampln();	/* find locations in lambda plane */
       if( (2*n+2) > ARRSIZ )
@@ -1938,11 +1924,11 @@ int main()
       cbp = (cgam - cos(a))/sin(a);
       scale = 1.0;
     }
-
-  EVERBOSE ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info 
-            "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
-            scale, eps, fnyq,
-            c, f3, wc, wr, cgam);
+  
+  ellf_debugf ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info 
+               "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
+               scale, eps, fnyq,
+               c, f3, wc, wr, cgam);
   
   spln();		/* find s plane poles and zeros */
   
@@ -1951,14 +1937,14 @@ int main()
   
   zplna();	/* convert s plane to z plane */
   zplnb();
-  EVERBOSE ("an=%.20g pn=%.20g scale=%.20g\n", an, pn, scale); // BSE info
+  ellf_debugf ("an=%.20g pn=%.20g scale=%.20g\n", an, pn, scale); // BSE info
   print_z_fraction_before_zplnc ();
   zplnc();
   print_filter_table(); /* tabulate transfer function */
   goto top;
   
  toosml:
-  printf( "Cannot continue, storage arrays too small\n" );
+  ellf_debugf ( "Cannot continue, storage arrays too small\n" );
   goto top;
 }
 
@@ -1971,36 +1957,35 @@ int lampln()
   m = k * k;
   Kk = ellpk( 1.0 - m );
   Kpk = ellpk( m );
-  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, Kk, Kpk); // BSE info
+  ellf_debugf ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, Kk, Kpk); // BSE info
   q = exp( -PI * rn * Kpk / Kk );	/* the nome of k1 */
   m1 = cay(q); /* see below */
   /* Note m1 = eps / sqrt( A*A - 1.0 ) */
   a = eps/m1;
   a =  a * a + 1;
   a = 10.0 * log(a) / log(10.0);
-  printf( "dbdown %.9E\n", a );
+  ellf_debugf ( "dbdown %.9E\n", a );
   a = 180.0 * asin( k ) / PI;
   b = 1.0/(1.0 + eps*eps);
   b = sqrt( 1.0 - b );
-  printf( "theta %.9E, rho %.9E\n", a, b );
+  ellf_debugf ( "theta %.9E, rho %.9E\n", a, b );
   m1 *= m1;
   m1p = 1.0 - m1;
   Kk1 = ellpk( m1p );
   Kpk1 = ellpk( m1 );
   r = Kpk1 * Kk / (Kk1 * Kpk);
-  printf( "consistency check: n= %.14E\n", r );
-  EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
+  ellf_debugf ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
   /*   -1
    * sn   j/eps\m  =  j ellik( atan(1/eps), m )
    */
   b = 1.0/eps;
   phi = atan( b );
   u = ellik( phi, m1p );
-  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, u);
+  ellf_debugf ("phi=%.20g m=%.20g u=%.20g\n", phi, m1p, u);
   /* consistency check on inverse sn */
   ellpj( u, m1p, &sn, &cn, &dn, &phi );
   a = sn/cn;
-  EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
+  ellf_debugf ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
   u = u * Kk / (rn * Kk1);	/* or, u = u * Kpk / Kpk1 */
   return 0;
 }
@@ -2070,9 +2055,9 @@ int spln()
       /* sqrt( 1 + 1/eps^2 ) + 1/eps  = {sqrt(1 + eps^2)  +  1} / eps
        */
       phi = (phi + 1.0) / eps;
-      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", phi, eps); // BSE info
+      ellf_debugf ("Chebychev: phi-before=%.20g ripple=%.20g\n", phi, eps); // BSE info
       phi = pow( phi, 1.0/rn );  /* raise to the 1/n power */
-      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", phi, rn); // BSE info
+      ellf_debugf ("Chebychev: phi-raised=%.20g rn=%.20g\n", phi, rn); // BSE info
       b = 0.5 * (phi + 1.0/phi); /* y coordinates are on this circle */
       a = 0.5 * (phi - 1.0/phi); /* x coordinates are on this circle */
       if( n & 1 )
@@ -2166,7 +2151,7 @@ int spln()
             }
         }
     }
-  printf( "s plane poles:\n" );
+  ellf_printf ( "s plane poles:\n" );
   j = 0;
   for( i=0; i<np+nz; i++ )
     {
@@ -2174,9 +2159,9 @@ int spln()
       ++j;
       b = zs[j];
       ++j;
-      printf( "%.9E %.9E\n", a, b );
+      ellf_printf ( "%.9E %.9E\n", a, b );
       if( i == np-1 )
-        printf( "s plane zeros:\n" );
+        ellf_printf ( "s plane zeros:\n" );
     }
   return 0;
 }
@@ -2295,7 +2280,7 @@ int zplna()
               cden.r = 1 - C * r.r;
               cden.i = -C * r.i;
               jt += 1;
-              cdiv( &cden, &cnum, &z[jt] );
+              Cdiv( &cden, &cnum, &z[jt] );
               if( r.i != 0.0 )
                 {
                   /* fill in complex conjugate root */
@@ -2324,25 +2309,25 @@ int zplna()
               else
                 cwc.r = c;
               cwc.i = 0.0;
-              cmul( &r, &cwc, &cnum );     /* r wc */
-              csub( &cnum, &cone, &ca );   /* a = 1 - r wc */
-              cmul( &cnum, &cnum, &b4ac ); /* 1 - (r wc)^2 */
-              csub( &b4ac, &cone, &b4ac );
+              Cmul( &r, &cwc, &cnum );     /* r wc */
+              Csub( &cnum, &cone, &ca );   /* a = 1 - r wc */
+              Cmul( &cnum, &cnum, &b4ac ); /* 1 - (r wc)^2 */
+              Csub( &b4ac, &cone, &b4ac );
               b4ac.r *= 4.0;               /* 4ac */
               b4ac.i *= 4.0;
               cb.r = -2.0 * cgam;          /* b */
               cb.i = 0.0;
-              cmul( &cb, &cb, &cnum );     /* b^2 */
-              csub( &b4ac, &cnum, &b4ac ); /* b^2 - 4 ac */
-              csqrt( &b4ac, &b4ac );
+              Cmul( &cb, &cb, &cnum );     /* b^2 */
+              Csub( &b4ac, &cnum, &b4ac ); /* b^2 - 4 ac */
+              Csqrt( &b4ac, &b4ac );
               cb.r = -cb.r;  /* -b */
               cb.i = -cb.i;
               ca.r *= 2.0; /* 2a */
               ca.i *= 2.0;
-              cadd( &b4ac, &cb, &cnum );   /* -b + sqrt( b^2 - 4ac) */
-              cdiv( &ca, &cnum, &cnum );   /* ... /2a */
+              Cadd( &b4ac, &cb, &cnum );   /* -b + sqrt( b^2 - 4ac) */
+              Cdiv( &ca, &cnum, &cnum );   /* ... /2a */
               jt += 1;
-              cmov( &cnum, &z[jt] );
+              Cmov( &cnum, &z[jt] );
               if( cnum.i != 0.0 )
                 {
                   jt += 1;
@@ -2351,10 +2336,10 @@ int zplna()
                 }
               if( (r.i != 0.0) || (cnum.i == 0) )
                 {
-                  csub( &b4ac, &cb, &cnum );  /* -b - sqrt( b^2 - 4ac) */
-                  cdiv( &ca, &cnum, &cnum );  /* ... /2a */
+                  Csub( &b4ac, &cb, &cnum );  /* -b - sqrt( b^2 - 4ac) */
+                  Cdiv( &ca, &cnum, &cnum );  /* ... /2a */
                   jt += 1;
-                  cmov( &cnum, &z[jt] );
+                  Cmov( &cnum, &z[jt] );
                   if( cnum.i != 0.0 )
                     {
                       jt += 1;
@@ -2399,14 +2384,14 @@ int zplnb()
         {
           if( type != 3 )
             {
-              printf( "adding zero at Nyquist frequency\n" );
+              ellf_debugf ( "adding zero at Nyquist frequency\n" );
               jt += 1;
               z[jt].r = -1.0; /* zero at Nyquist frequency */
               z[jt].i = 0.0;
             }
           if( (type == 2) || (type == 3) )
             {
-              printf( "adding zero at 0 Hz\n" );
+              ellf_debugf ( "adding zero at 0 Hz\n" );
               jt += 1;
               z[jt].r = 1.0; /* zero at 0 Hz */
               z[jt].i = 0.0;
@@ -2428,7 +2413,7 @@ int zplnb()
             }
         }
     }
-  printf( "order = %d\n", zord );
+  ellf_debugf ( "order = %d\n", zord );
   
   /* Expand the poles and zeros into numerator and
    * denominator polynomials
@@ -2505,36 +2490,33 @@ int zplnb()
   return 0;
 }
 
-
-
-
 int zplnc()
 {
   
   gain = an/(pn*scale);
   if( (kind != 3) && (pn == 0) )
     gain = 1.0;
-  printf( "constant gain factor %23.13E\n", gain );
+  ellf_printf( "constant gain factor %23.13E\n", gain );
   for( j=0; j<=zord; j++ )
     pp[j] = gain * pp[j];
   
-  printf( "z plane Denominator      Numerator\n" );
+  ellf_printf( "z plane Denominator      Numerator\n" );
   for( j=0; j<=zord; j++ )
     {
-      printf( "%2d %17.9E %17.9E\n", j, aa[j], pp[j] );
+      ellf_printf( "%2d %17.9E %17.9E\n", j, aa[j], pp[j] );
     }
 
   /* I /think/ at this point the polynomial is factorized in 2nd order filters,
    * so that it can be implemented without stability problems -- stw
    */
-  printf( "poles and zeros with corresponding quadratic factors\n" );
+  ellf_printf( "poles and zeros with corresponding quadratic factors\n" );
   for( j=0; j<zord; j++ )
     {
       a = z[j].r;
       b = z[j].i;
       if( b >= 0.0 )
         {
-          printf( "pole  %23.13E %23.13E\n", a, b );
+          ellf_printf( "pole  %23.13E %23.13E\n", a, b );
           quadf( a, b, 1 );
         }
       jj = j + zord;
@@ -2542,7 +2524,7 @@ int zplnc()
       b = z[jj].i;
       if( b >= 0.0 )
         {
-          printf( "zero  %23.13E %23.13E\n", a, b );
+          ellf_printf( "zero  %23.13E %23.13E\n", a, b );
           quadf( a, b, 0 );
         }
     }
@@ -2570,7 +2552,7 @@ int quadf( x, y, pzflg )
       a = -x;
       b = 0.0;
     }
-  printf( "q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a );
+  ellf_printf( "q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a );
   if( b != 0.0 )
     {
       /* resonant frequency */
@@ -2604,7 +2586,7 @@ int quadf( x, y, pzflg )
       else
         g = MAXNUM;
     }
-  printf( "f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0 );
+  ellf_printf( "f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0 );
   return 0;
 }
 
@@ -2624,7 +2606,7 @@ print_filter_table (void)
         r = -999.99;
       else
         r = 2.0 * dbfac * log( r );
-      printf( "%10.1f  %10.2f\n", f, r );
+      ellf_debugf ( "%10.1f  %10.2f\n", f, r );
       // f = f + 0.05 * fnyq;
     }
 }
@@ -2651,15 +2633,15 @@ double response( f, amp )
   den.i = 0.0;
   for( j=0; j<zord; j++ )
     {
-      csub( &z[j], &x, &w );
-      cmul( &w, &den, &den );
-      csub( &z[j+zord], &x, &w );
-      cmul( &w, &num, &num );
+      Csub( &z[j], &x, &w );
+      Cmul( &w, &den, &den );
+      Csub( &z[j+zord], &x, &w );
+      Cmul( &w, &num, &num );
     }
-  cdiv( &den, &num, &w );
+  Cdiv( &den, &num, &w );
   w.r *= amp;
   w.i *= amp;
-  u = cabs( &w );
+  u = Cabs( &w );
   return(u);
 }
 
@@ -2675,17 +2657,17 @@ int getnum( line, val )
 {
   char s[40];
   
-  printf( "%s = %.9E ? ", line, *val );
+  ellf_debugf ( "%s = %.9E ? ", line, *val );
   if (!fgets (s, sizeof (s), stdin))
     exit (0);
   if( s[0] != '\0' )
     {
       sscanf( s, "%lf", val );
-      printf( "%.9E\n", *val );
+      ellf_debugf ( "%.9E\n", *val );
     }
   return 0;
 }
 
 /* === ellf.c - end === */
 
-/* compile with: gcc -Wall -O2 -g bseiirfilter.c -lm -o ellf */
+/* compile with: gcc -Wall -O2 -g -ffloat-store bse-ellf.c -lm -o bse-ellf */

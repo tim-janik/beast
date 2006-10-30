@@ -1,3 +1,8 @@
+Mon Oct 30 23:18:50 2006  Tim Janik  <timj@gtk.org>
+
+	* r+d-files/bse-ellf.c: fixed compilation command, complex function
+	names. wrapped printf functions by macros to enable/disable output.
+
 Mon Oct 30 23:02:18 2006  Tim Janik  <timj@gtk.org>
 
 	* r+d-files/bse-ellf.c: added early version (SVN r3971) of the
