@@ -140,7 +140,7 @@ bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
   bool want_zero = false;
   for (uint i = 0; i < n_consts; i++)
     want_zero |= consts[i] == 0.0;
-  fprintf (gf, "plot [][-150:3] %s '%s' using ($1):($3) with lines, '%s' using ($1):($2) with lines",
+  fprintf (gf, "plot [][:] %s '%s' using ($1):($3) with lines, '%s' using ($1):($2) with lines",
            want_zero ? "0, " : "",
            dname.c_str(), dname.c_str());
   for (uint i = 0; i < n_consts; i++)
@@ -180,7 +180,7 @@ exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   if (std::isfinite (stopband_edge2))
     arrows[n_arrows++] = stopband_edge2;
   consts[n_consts++] = 0.0;
-  bool success = bse_iir_filter_dump_gnuplot (fdes, fname, n_consts, consts, n_arrows, arrows, 10000);
+  bool success = bse_iir_filter_dump_gnuplot (fdes, fname, n_consts, consts, n_arrows, arrows, 55555);
   BIRNET_ASSERT (success == true);
   g_printerr ("Filter: %s\n", bse_iir_filter_request_string (fireq));
   g_printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
@@ -608,6 +608,44 @@ chebychev1_tests ()
   TDONE();
 }
 
+static void
+brute_coefficient_tests ()
+{
+  struct {
+    const BseIIRFilterRequest *filter_request;
+    const double              *filter_coefficients;
+    uint                       n_filter_coefficients;
+  } filters[1000000];
+  uint index = 0;
+  // #include "../../r+d-files/tmp.c"
+  uint i;
+  const double coefficients_epsilon = 1e-9;
+  TSTART ("Bruteforce filter checks");
+  for (i = 0; i < index; i++)
+    {
+      const BseIIRFilterRequest *req = filters[i].filter_request;
+      const uint n_coefficients = filters[i].n_filter_coefficients;
+      const double *coefficients = filters[i].filter_coefficients;
+      BseIIRFilterDesign fdes;
+      bool success = bse_iir_filter_design (req, &fdes);
+      TASSERT (success == true);
+      double eps = compare_coefficients (&fdes, n_coefficients, coefficients);
+      if (eps > coefficients_epsilon)
+        {
+          g_printerr ("EPSILON FAILED: %.16g %.16g\n", eps, coefficients_epsilon);
+          g_printerr ("EPSILON FAILED: %.16g %.16g\n", eps, coefficients_epsilon);
+          g_printerr ("EPSILON FAILED: %.16g %.16g\n", eps, coefficients_epsilon);
+          exit_with_iir_filter_gnuplot (req, &fdes, "tmpfilter",
+                                        req->passband_ripple_db, req->passband_edge, req->passband_edge2,
+                                        req->stopband_db != 0 ? req->stopband_db : NAN, req->stopband_edge, NAN);
+          TASSERT (eps <= coefficients_epsilon);
+        }
+      else
+        TOK();
+    }
+  TDONE();
+}
+
 int
 main (int    argc,
       char **argv)
@@ -615,5 +653,6 @@ main (int    argc,
   bse_init_test (&argc, &argv, NULL);
   butterwoth_tests ();
   chebychev1_tests ();
+  brute_coefficient_tests ();
   return 0;
 }

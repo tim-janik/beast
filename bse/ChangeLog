@@ -1,3 +1,9 @@
+Mon Oct 30 23:57:03 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/filtertest.cc: added brute_coefficient_tests() which can be 
+	used to test massive amounts of test filters against the library
+	design algorithm.
+
 Mon Oct 30 21:57:20 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/filtertest.cc: applied some correcitons suggested by Stefan.
