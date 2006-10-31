@@ -452,30 +452,29 @@ perform_test()
 
 	      if (RESAMPLE == RES_UPSAMPLE)
 		{
-		  sin_shift = ups->order() + 2;		// 16 bits: 34
+		  sin_shift = ups->delay();
 		  freq_factor = 0.5;
 		  out_bs = bs * 2;
 		  correct_volume = 1;
 		}
 	      else if (RESAMPLE == RES_DOWNSAMPLE)
 		{
-		  sin_shift = (downs->order() + 1) * 0.5;	// 16 bits: 16.5
+		  sin_shift = downs->delay();
 		  freq_factor = 2;
 		  out_bs = bs / 2;
 		  correct_volume = (test_frequency < (44100/4)) ? 1 : 0;
 		}
 	      else if (RESAMPLE == RES_OVERSAMPLE)
 		{
-		  sin_shift = ups->order() + 1.5;		// 16 bits: 33.5
+		  sin_shift = ups->delay() * 0.5 + downs->delay();
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;
 		  correct_volume = 1;
 		}
-	      else if (RESAMPLE == RES_SUBSAMPLE)		// 16 bits: 67
+	      else if (RESAMPLE == RES_SUBSAMPLE)
 		{
-		  sin_shift = ups->order() * 2 + 3;
-		  //printf ("Isshift = %f\n", sin_shift);
+		  sin_shift = downs->delay() * 2 + ups->delay();
 		  freq_factor = 1;
 		  check = output2;
 		  out_bs = bs;

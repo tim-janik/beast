@@ -15,7 +15,8 @@
   (modification-time "2006-10-21 19:32:55")
   (creation-time "2006-10-21 19:13:49")
   (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
-  (author "Stefan Westerfeld")
+  (blurb "Melody based on BWV 147 Herz und Mund und Tat und Leben / Jesus bleibet meine Freude")
+  (author "Johann-Sebastian Bach, Stefan Westerfeld")
   (container-child "BsePart::Part-1"
     (n-channels 1)
     (insert-notes 0
