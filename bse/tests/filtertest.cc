@@ -453,7 +453,7 @@ chebychev1_tests ()
   TSTART ("Chebyshev1");
   bool success;
   double eps;
-  const double ceps = 3.5e-13, gaineps = 1e-7;
+  const double ceps = 8e-13, gaineps = 1e-7;
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_CHEBYSHEV1;

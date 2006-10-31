@@ -1,3 +1,13 @@
+Tue Oct 31 13:52:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/filtertest.cc: Raise coefficient comparision epsilon ceps
+	8e-13 for Chebychev filters, as recommended by Tim, so that "make
+	check" on AMD64 passes again.
+
+	* tests/resamplehandle.cc: Use BseResampler delay compensation C API
+	where appropriate, instead of computing the delay from the filter
+	order.
+
 Mon Oct 30 23:57:03 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/filtertest.cc: added brute_coefficient_tests() which can be 

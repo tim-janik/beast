@@ -277,7 +277,7 @@ test_c_api (const char *run_type)
 
   bse_resampler2_process_block (resampler, in, INPUT_SIZE, out);
 
-  int delay = bse_resampler2_order (resampler) + 2;
+  int delay = bse_resampler2_delay (resampler);
   for (i = 0; i < 2048; i++)
     {
       double expected = sin ((i - delay) * 220 * 2 * M_PI / 44100)
