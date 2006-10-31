@@ -1,3 +1,11 @@
+Mon Oct 30 23:57:03 2006  Tim Janik  <timj@gtk.org>
+
+	* r+d-files/bse-ellf.c: changed code generation to generate tables,
+	which is much more gcc friendly than unlooped code.
+	added support for a --test-code command line option which 
+	auto-generates lots of test filters useful for design algorithm tests.
+	added automated butterworth and chbyshev filter code generation.
+
 Mon Oct 30 23:41:58 2006  Tim Janik  <timj@gtk.org>
 
 	* r+d-files/bse-ellf.c: extended output to server as a code generator 

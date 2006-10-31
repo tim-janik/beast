@@ -19,6 +19,7 @@
  */
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #if 0
 extern double sqrt ( double );
 extern double fabs ( double );
@@ -429,9 +430,7 @@ extern double ellik ( double phi, double m );
 extern double ellpe ( double x );
 extern int ellpj ( double u, double m, double *sn, double *cn, double *dn, double *ph );
 extern double ellpk ( double x );
-extern int getnum ( char *line, double *val );
 extern int lampln ( void );
-extern int main ( void );
 extern int mtherr ( char *name, int code );
 extern double p1evl ( double x, double coef[], int N );
 extern double polevl ( double x, double coef[], int N );
@@ -1632,6 +1631,18 @@ static char wkind[] =
 static char salut[] =
 {"Filter shape:\n1 low pass\n2 band pass\n3 high pass\n4 band stop\n"};
 
+enum {
+  BUTTERWORTH = 1,
+  CHEBYSHEV = 2,
+  ELLIPTIC = 3
+};
+enum {
+  LOW_PASS = 1,
+  BAND_PASS = 2,
+  HIGH_PASS = 3,
+  BAND_STOP = 4
+};
+
 extern double Cabs ( cmplx *z );
 extern void Cadd ( cmplx *a, cmplx *b, cmplx *c );
 extern void Cdiv ( cmplx *a, cmplx *b, cmplx *c );
@@ -1645,7 +1656,6 @@ extern double ellik ( double phi, double m );
 extern double ellpe ( double x );
 extern int ellpj ( double, double, double *, double *, double *, double * );
 extern double ellpk ( double x );
-int getnum ( char *line, double *val );
 double cay ( double q );
 int lampln ( void );
 int spln ( void );
@@ -1665,41 +1675,188 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
   else
     zgain = an / (pn * scale);
   
+  const char *kind_string = kind == 1 ? "BSE_IIR_FILTER_BUTTERWORTH" : kind == 2 ? "BSE_IIR_FILTER_CHEBYSHEV1" : "BSE_IIR_FILTER_ELLIPTIC";
+  const char *type_string = (type == 1 ? "BSE_IIR_FILTER_LOW_PASS" : type == 2 ? "BSE_IIR_FILTER_BAND_PASS" :
+                             type == 3 ? "BSE_IIR_FILTER_HIGH_PASS" : "BSE_IIR_FILTER_BAND_STOP");
   code_printf ("  {\n");
-  code_printf ("    BseIIRFilterDesign fdes;\n");
-  code_printf ("    BseIIRFilterRequest req = { BseIIRFilterKind (0), };\n");
-  code_printf ("    req.kind = %s;\n",
-               kind == 1 ? "BSE_IIR_FILTER_BUTTERWORTH" : kind == 2 ? "BSE_IIR_FILTER_CHEBYSHEV1" : "BSE_IIR_FILTER_ELLIPTIC");
-  code_printf ("    req.type = %s;\n",
-               type == 1 ? "BSE_IIR_FILTER_LOW_PASS" : type == 2 ? "BSE_IIR_FILTER_BAND_PASS" :
-               type == 3 ? "BSE_IIR_FILTER_HIGH_PASS" : "BSE_IIR_FILTER_BAND_STOP");
-  code_printf ("    req.order = %u;\n", (int) rn);
-  code_printf ("    req.sampling_frequency = %.4f;\n", fs);
-  if( kind > 1 )
-    code_printf ("    req.passband_ripple_db = %.17g;\n", dbr);
-  code_printf ("    req.passband_edge = %.17g;\n", f2);
-  if( (type & 1) == 0 )
-    code_printf ("    req.passband_edge2 = %.17g;\n", f1);
-  if( kind == 3 )
-    {
-      if (dbd > 0.0)
-        code_printf ("    req.stopband_edge = %.17g;\n", dbd);
-      else
-        code_printf ("    req.stopband_db = %.17g;\n", dbd);
-    }
-  code_printf ("    bool success = bse_iir_filter_design (&req, &fdes);\n");
-  code_printf ("    TASSERT (success == true);\n");
-  code_printf ("    const double dncoeffs[] = {\n");
+  code_printf ("    static const BseIIRFilterRequest filter_request = {\n");
+  code_printf ("      /* kind = */               %s,\n", kind_string);
+  code_printf ("      /* type = */               %s,\n", type_string);
+  code_printf ("      /* order = */              %u,\n", (int) rn);
+  code_printf ("      /* sampling_frequency = */ %.4f,\n", fs);
+  code_printf ("      /* passband_ripple_db = */ %.17g,\n", kind > 1 ? dbr : 0);
+  code_printf ("      /* passband_edge = */      %.17g,\n", f2);
+  code_printf ("      /* passband_edge2 = */     %.17g,\n", (type & 1) == 0 ? f1 : 0);
+  code_printf ("      /* stopband_edge = */      %.17g,\n", kind == 3 && dbd > 0.0 ? dbd : 0);
+  code_printf ("      /* stopband_db = */        %.17g,\n", kind == 3 && dbd < 0.0 ? dbd : 0);
+  code_printf ("    };\n");
+  code_printf ("    static const double filter_coefficients[] = {\n");
   int j;
   for (j = 0; j <= zord; j++)
-    code_printf ("      %+.20E, %+.20E,\n", aa[j], pp[j] * zgain);
+    code_printf ("      %+.17e, %+.17e,\n", aa[j], pp[j] * zgain);
   code_printf ("    };\n");
-  code_printf ("    double eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);\n");
-  code_printf ("    TASSERT (eps <= coefficients_epsilon);\n");
+  code_printf ("    filters[index].filter_request = &filter_request;\n");
+  code_printf ("    filters[index].filter_coefficients = filter_coefficients;\n");
+  code_printf ("    filters[index].n_filter_coefficients = BIRNET_ARRAY_SIZE (filter_coefficients);\n");
+  code_printf ("    index++;\n");
   code_printf ("  }\n");
 }
 
-int main()
+typedef struct {
+  int    kind, type;
+  double order;
+  double sampling_frequency;
+  double passband_ripple_db;
+  double passband_edge;
+  double passband_edge2;
+  double stopband_edge_or_db;
+} EllfInput;
+
+static void main_ellf (const EllfInput *einput);
+
+static void
+generate_filters_brute_force (void)
+{
+  EllfInput einput = { 0, };
+  const double sampling_frequencies[] = {
+    3333, 48000, 96000, 256000,
+  };
+  const int n_sampling_frequencies = sizeof (sampling_frequencies) / sizeof (sampling_frequencies[0]);
+  const int filter_orders[] = {
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 20,
+  };
+  const int n_orders = sizeof (filter_orders) / sizeof (filter_orders[0]);
+  double pbe1, pbe2, prd;
+  int oix, sfix, cse;
+
+  einput.kind = BUTTERWORTH;
+  for (cse = 0; cse < 2; cse++)
+    for (oix = 0; oix < n_orders; oix++)
+      for (sfix = 0; sfix < n_sampling_frequencies; sfix++)
+        for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
+          {
+            /* low/high */
+            einput.type = cse ? LOW_PASS : HIGH_PASS;
+            einput.order = filter_orders[oix];
+            einput.sampling_frequency = sampling_frequencies[sfix];
+            einput.passband_edge = pbe1 * einput.sampling_frequency;
+            main_ellf (&einput);
+            /* band filters */
+            if (einput.order > 12)
+              continue;
+            einput.type = cse ? BAND_PASS : BAND_STOP;
+            for (pbe2 = 0.1; pbe1 + pbe2 <= 0.48; pbe2 += 0.1)
+              {
+                einput.passband_edge2 = (pbe1 + pbe2) * einput.sampling_frequency;
+                main_ellf (&einput);
+              }
+          }
+
+  einput.kind = CHEBYSHEV;
+  for (cse = 0; cse < 2; cse++)
+    for (oix = 0; oix < n_orders; oix++)
+      for (sfix = 0; sfix < n_sampling_frequencies; sfix++)
+        for (prd = 0.01; prd < 3.0; prd *= 11.713)
+          for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
+            {
+              einput.order = filter_orders[oix];
+              /* low/high */
+              einput.type = cse ? LOW_PASS : HIGH_PASS;
+              einput.sampling_frequency = sampling_frequencies[sfix];
+              einput.passband_ripple_db = prd;
+              einput.passband_edge = pbe1 * einput.sampling_frequency;
+              main_ellf (&einput);
+              /* band filters */
+              if (einput.order > 12)
+                continue;
+              einput.type = cse ? BAND_PASS : BAND_STOP;
+              for (pbe2 = 0.1; pbe1 + pbe2 <= 0.48; pbe2 += 0.1)
+                {
+                  einput.passband_edge2 = (pbe1 + pbe2) * einput.sampling_frequency;
+                  main_ellf (&einput);
+                }
+            }
+  
+#if 0
+  einput.kind = ELLIPTIC;
+  for (cse = 0; cse < 2; cse++)
+    for (oix = 0; oix < n_orders; oix++)
+      for (sfix = 0; sfix < n_sampling_frequencies; sfix++)
+        for (prd = 0.01; prd < 3.0; prd *= 11.713)
+          for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
+            {
+              einput.order = filter_orders[oix];
+              /* low/high */
+              einput.type = cse ? LOW_PASS : HIGH_PASS;
+              einput.sampling_frequency = sampling_frequencies[sfix];
+              einput.passband_ripple_db = prd;
+              einput.passband_edge = pbe1 * einput.sampling_frequency;
+              einput.stopband_edge_or_db = -26;
+              main_ellf (&einput);
+              einput.stopband_edge_or_db = -84;
+              main_ellf (&einput);
+              einput.stopband_edge_or_db = -120;
+              main_ellf (&einput);
+              /* band filters */
+              if (einput.order > 12)
+                continue;
+              einput.type = cse ? BAND_PASS : BAND_STOP;
+              for (pbe2 = 0.1; pbe1 + pbe2 <= 0.48; pbe2 += 0.1)
+                {
+                  einput.passband_edge2 = (pbe1 + pbe2) * einput.sampling_frequency;
+                  einput.stopband_edge_or_db = -26;
+                  main_ellf (&einput);
+                  einput.stopband_edge_or_db = -84;
+                  main_ellf (&einput);
+                  einput.stopband_edge_or_db = -120;
+                  main_ellf (&einput);
+                }
+            }
+#endif
+}
+
+int
+main (int   argc,
+      char *argv[])
+{
+  if (argc >= 2 && strcmp (argv[1], "--test-code") == 0)
+    {
+      generate_filters_brute_force();
+    }
+  else
+    main_ellf (NULL);
+  return 0;
+}
+
+/* Get a number from keyboard.
+ * Display previous value and keep it if user just hits <CR>.
+ */
+int
+getnum (char *line, double *val, const double *einput)
+{
+  char s[40];
+  
+  ellf_debugf ( "%s = %.9E ? ", line, *val );
+
+  if (einput)
+    {
+      *val = *einput;
+      ellf_debugf ( "%.9E\n", *val );
+      return 0;
+    }
+
+  if (!fgets (s, sizeof (s), stdin))
+    exit (0);
+  if( s[0] != '\0' )
+    {
+      sscanf( s, "%lf", val );
+      ellf_debugf ( "%.9E\n", *val );
+    }
+  return 0;
+}
+
+static void
+main_ellf (const EllfInput *einput)
 {
   char str[80];
   
@@ -1708,35 +1865,51 @@ int main()
  top:
   
   ellf_debugf ( "%s ? ", wkind );	/* ask for filter kind */
-  if (!fgets (str, sizeof (str), stdin))
-    exit (0);
-  sscanf( str, "%d", &kind );
+  if (einput)
+    kind = einput->kind;
+  else
+    {
+      if (!fgets (str, sizeof (str), stdin))
+        exit (0);
+      sscanf( str, "%d", &kind );
+    }
   ellf_debugf ( "%d\n", kind );
   if( (kind <= 0) || (kind > 3) )
     exit(0);
   
   ellf_debugf ( "%s ? ", salut );	/* ask for filter type */
-  if (!fgets (str, sizeof (str), stdin))
-    exit (0);
-  sscanf( str, "%d", &type );
+  if (einput)
+    type = einput->type;
+  else
+    {
+      if (!fgets (str, sizeof (str), stdin))
+        exit (0);
+      sscanf( str, "%d", &type );
+    }
   ellf_debugf ( "%d\n", type );
   if( (type <= 0) || (type > 4) )
     exit(0);
   
-  getnum( "Order of filter", &rn ); /* see below for getnum() */
+  getnum( "Order of filter", &rn, einput ? &einput->order : NULL); /* see below for getnum() */
   n = rn;
   if( n <= 0 )
     {
     specerr:
       ellf_debugf ( "? Specification error\n" );
-      goto top;
+      if (einput)
+        exit (255);
+      else
+        goto top;
     }
   rn = n;	/* ensure it is an integer */
   if( kind > 1 ) /* not Butterworth */
     {
-      getnum( "Passband ripple, db", &dbr );
+      getnum( "Passband ripple, db", &dbr, einput ? &einput->passband_ripple_db : NULL);
       if( dbr <= 0.0 )
-        goto specerr;
+        {
+          ellf_debugf ("? Need passband-ripple > 0\n");
+          goto specerr;
+        }
       if( kind == 2 )
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+eps^2) */
@@ -1757,21 +1930,40 @@ int main()
         }
     }
   
-  getnum( "Sampling frequency", &fs );
+  getnum( "Sampling frequency", &fs, einput ? &einput->sampling_frequency : NULL);
   if( fs <= 0.0 )
-    goto specerr;
+    {
+      ellf_debugf ("? Need sampling-frequency > 0\n");
+      goto specerr;
+    }
   
   fnyq = 0.5 * fs;
   
-  getnum( "Passband edge", &f2 );
-  if( (f2 <= 0.0) || (f2 >= fnyq) )
-    goto specerr;
+  getnum( "Passband edge", &f2, einput ? &einput->passband_edge : NULL);
+  if( (f2 <= 0.0))
+    {
+      ellf_debugf ("? Need passband-edge > 0\n");
+      goto specerr;
+    }
+  if( (f2 >= fnyq) )
+    {
+      ellf_debugf ("? Need passband-edge < nyquist frequency (%f)\n", fnyq);
+      goto specerr;
+    }
   
   if( (type & 1) == 0 )
     {
-      getnum( "Other passband edge", &f1 );
-      if( (f1 <= 0.0) || (f1 >= fnyq) )
-        goto specerr;
+      getnum( "Other passband edge", &f1, einput ? &einput->passband_edge2 : NULL);
+      if( (f1 <= 0.0) )
+        {
+          ellf_debugf ("? Need passband-edge2 > 0\n");
+          goto specerr;
+        }
+      if( (f1 >= fnyq) )
+        {
+          ellf_debugf ("? Need passband-edge2 < nyquist frequency (%f)\n", fnyq);
+          goto specerr;
+        }
     }
   else
     {
@@ -1813,7 +2005,7 @@ int main()
   if( kind == 3 )
     { /* elliptic */
       cgam = cos( (a+f1) * PI / fs ) / cang;
-      getnum( "Stop band edge or -(db down)", &dbd );
+      getnum( "Stop band edge or -(db down)", &dbd, einput ? &einput->stopband_edge_or_db : NULL);
       if( dbd > 0.0 )
         f3 = dbd;
       else
@@ -1970,13 +2162,18 @@ int main()
   print_z_fraction_before_zplnc ();
   zplnc();
   print_filter_table(); /* tabulate transfer function */
-  goto top;
+  if (einput)
+    return;
+  else
+    goto top;
   
  toosml:
   ellf_debugf ( "Cannot continue, storage arrays too small\n" );
-  goto top;
+  if (einput)
+    exit (255);
+  else
+    goto top;
 }
-
 
 int lampln()
 {
@@ -2672,29 +2869,6 @@ double response( f, amp )
   w.i *= amp;
   u = Cabs( &w );
   return(u);
-}
-
-
-
-
-/* Get a number from keyboard.
- * Display previous value and keep it if user just hits <CR>.
- */
-int getnum( line, val )
-     char *line;
-     double *val;
-{
-  char s[40];
-  
-  ellf_debugf ( "%s = %.9E ? ", line, *val );
-  if (!fgets (s, sizeof (s), stdin))
-    exit (0);
-  if( s[0] != '\0' )
-    {
-      sscanf( s, "%lf", val );
-      ellf_debugf ( "%.9E\n", *val );
-    }
-  return 0;
 }
 
 /* === ellf.c - end === */
