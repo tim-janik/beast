@@ -136,30 +136,32 @@ BIRNET_EXTERN_C_BEGIN();
 
 /* --- provide canonical integer types --- */
 #if 	BIRNET_SIZEOF_SYS_TYPESH_UINT == 0
-typedef unsigned int          uint;	/* for systems that don't define uint in types.h */
+typedef unsigned int		uint;	/* for systems that don't define uint in types.h */
 #else
 BIRNET_STATIC_ASSERT (BIRNET_SIZEOF_SYS_TYPESH_UINT == 4);
 #endif
 BIRNET_STATIC_ASSERT (sizeof (uint) == 4);
-typedef unsigned int          BirnetUInt8  __attribute__ ((__mode__ (__QI__)));
-typedef unsigned int          BirnetUInt16 __attribute__ ((__mode__ (__HI__)));
-typedef unsigned int          BirnetUInt32 __attribute__ ((__mode__ (__SI__)));
-typedef unsigned int          BirnetUInt64 __attribute__ ((__mode__ (__DI__)));
+typedef unsigned int		BirnetUInt8  __attribute__ ((__mode__ (__QI__)));
+typedef unsigned int		BirnetUInt16 __attribute__ ((__mode__ (__HI__)));
+typedef unsigned int		BirnetUInt32 __attribute__ ((__mode__ (__SI__)));
+// typedef unsigned int         BirnetUInt64 __attribute__ ((__mode__ (__DI__)));
+typedef unsigned long long int  BirnetUInt64; // AMD64 needs this for %llu printf format strings
 // provided by birnetcdefs.h: uint;
 BIRNET_STATIC_ASSERT (sizeof (BirnetUInt8)  == 1);
 BIRNET_STATIC_ASSERT (sizeof (BirnetUInt16) == 2);
 BIRNET_STATIC_ASSERT (sizeof (BirnetUInt32) == 4);
 BIRNET_STATIC_ASSERT (sizeof (BirnetUInt64) == 8);
-typedef signed int            BirnetInt8  __attribute__ ((__mode__ (__QI__)));
-typedef signed int            BirnetInt16 __attribute__ ((__mode__ (__HI__)));
-typedef signed int            BirnetInt32 __attribute__ ((__mode__ (__SI__)));
-typedef signed int            BirnetInt64 __attribute__ ((__mode__ (__DI__)));
+typedef signed int		BirnetInt8  __attribute__ ((__mode__ (__QI__)));
+typedef signed int		BirnetInt16 __attribute__ ((__mode__ (__HI__)));
+typedef signed int		BirnetInt32 __attribute__ ((__mode__ (__SI__)));
+// typedef signed long long int BirnetInt64 __attribute__ ((__mode__ (__DI__)));
+typedef signed long long int	BirnetInt64;  // AMD64 needs this for %lld printf format strings
 // provided by compiler       int;
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt8)  == 1);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt16) == 2);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt32) == 4);
 BIRNET_STATIC_ASSERT (sizeof (BirnetInt64) == 8);
-typedef BirnetUInt32          BirnetUnichar;
+typedef BirnetUInt32		BirnetUnichar;
 BIRNET_STATIC_ASSERT (sizeof (BirnetUnichar) == 4);
 
 

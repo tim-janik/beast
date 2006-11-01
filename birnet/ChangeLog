@@ -1,3 +1,14 @@
+Wed Nov  1 11:46:10 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* birnetcdefs.h: Applied Patch from Tim to define BirnetInt64 and
+	BirnetUInt64 as (signed) long long int, as otherwise %lld printf
+	formats on AMD64 emit compiler warnings.
+	
+	* birnetthreadimpl.cc: Use BirnetUInt64 arguments for thread table
+	function implementations of thread_awake_after and
+	thread_emit_wakeups, to be consistent with the thread table function
+	pointers defined in birnetcdefs.h.
+
 Tue Oct 24 23:51:12 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h: added cpu name to treport_*() output.

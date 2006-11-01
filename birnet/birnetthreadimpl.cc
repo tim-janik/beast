@@ -589,7 +589,7 @@ common_thread_wakeup (BirnetThread *thread)
  * greater than @a stamp.
  */
 static void
-common_thread_awake_after (guint64 stamp)
+common_thread_awake_after (BirnetUInt64 stamp)
 {
   BirnetThread *self = ThreadTable.thread_self ();
   
@@ -614,7 +614,7 @@ common_thread_awake_after (guint64 stamp)
  * stamp smaller than @a wakeup_stamp.
  */
 static void
-common_thread_emit_wakeups (guint64 wakeup_stamp)
+common_thread_emit_wakeups (BirnetUInt64 wakeup_stamp)
 {
   g_return_if_fail (wakeup_stamp > 0);
   
