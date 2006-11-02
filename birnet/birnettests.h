@@ -222,7 +222,7 @@ tabort_handler (bool   set_values,
     else if (show) TOK ();				\
   } else {						\
   g_printerr ("%s", mark);				\
-  g_printerr ("\n***ERROR***\n"                         \
+  g_printerr ("\n*** TEST-ERROR ***\n"                  \
               "%s:%u:%s(): assertion failed: %s\n",	\
            __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
            #code);					\
@@ -240,7 +240,7 @@ tabort_handler (bool   set_values,
     else if (show) TOK ();				\
   } else {						\
   g_printerr ("%s", mark);				\
-  g_printerr ("\n***ERROR***\n"                         \
+  g_printerr ("\n*** TEST-ERROR ***\n"                  \
               "%s:%u:%s(): assertion failed: "		\
               "%s %s %s: %.17g %s %.17g\n",		\
               __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
@@ -252,7 +252,7 @@ tabort_handler (bool   set_values,
 #define TERROR_impl(mark, ...)	do {			\
   g_printerr ("%s", mark);				\
   char *_error_msg_ = g_strdup_printf (__VA_ARGS__);	\
-  g_printerr ("\n***ERROR***\n"                         \
+  g_printerr ("\n*** TEST-ERROR ***\n"                  \
               "%s:%u:%s(): %s\n",			\
               __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
               _error_msg_);				\
