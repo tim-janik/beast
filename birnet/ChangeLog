@@ -1,3 +1,11 @@
+Thu Nov  2 22:28:49 2006  Tim Janik  <timj@gtk.org>
+
+	* birnettests.h: added TABORT_HANDLER() to specify a custom callback
+	for informative printouts to be executed upon failing assertions.
+	such a handler setup is only active within a single TSTART/TDONE block.
+	added TCHECK_CMP() and TASSERT_CMP() to print out mismatching
+	values of failing comparisons.
+
 Wed Nov  1 11:46:10 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* birnetcdefs.h: Applied Patch from Tim to define BirnetInt64 and

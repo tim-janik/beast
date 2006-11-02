@@ -46,26 +46,35 @@ BIRNET_EXTERN_C_BEGIN();
  * however we're using g_printerr() for test messages to also allow testing
  * of programs which generate output on stdout.
  */
+typedef void (*BirnetTAbort) (void*);
 #ifdef	TEST_VERBOSE
-#define TSTART(...)	TSTART_impl (":\n", __VA_ARGS__)		/* test intro */
-#define TOK()           do { g_printerr ("OK.\n"); } while (0)		/* subtest OK */
-#define TICK()          TOK()						/* subtest OK */
-#define TACK()          do { g_printerr ("ACK.\n"); } while (0)		/* alternate OK */
-#define	TPRINT(...)	g_printerr (__VA_ARGS__)			/* misc messages */
-#define	TASSERT(code)	TASSERT_impl ("FAIL.\n", code, 2)		/* test assertion */
-#define	TCHECK(code)	TASSERT_impl ("FAIL.\n", code, 0)		/* test assertion (silent) */
-#define	TERROR(...)	TERROR_impl ("FAIL.\n", __VA_ARGS__)		/* test error, abort */
-#define TDONE()         do { g_printerr ("DONE.\n"); } while (0)	/* test outro */
+#define TSTART(...)		TSTART_impl (":\n", __VA_ARGS__)	/* test intro */
+#define TOK()           	do { g_printerr ("OK.\n"); } while (0)	/* subtest OK */
+#define TICK()          	TOK()					/* subtest OK */
+#define TACK()          	do { g_printerr ("ACK.\n"); } while (0)	/* alternate OK */
+#define	TPRINT(...)		g_printerr (__VA_ARGS__)		/* misc messages */
+#define	TASSERT(code)		TASSERT_impl ("FAIL.\n", code, 2)	/* test assertion */
+#define	TASSERT_CMP(a,cmp,b)	TASSERT_CMP_impl ("FAIL.\n",a,cmp,b, 2)	/* test assertion */
+#define	TCHECK(code)		TASSERT_impl ("FAIL.\n", code, 0)	/* test assertion (silent) */
+#define	TCHECK_CMP(a,cmp,b)	TASSERT_CMP_impl ("FAIL.\n",a,cmp,b, 0)	/* test assertion */
+#define	TERROR(...)		TERROR_impl ("FAIL.\n", __VA_ARGS__)	/* test error, abort */
+#define TABORT_HANDLER(fnc,dat)	TABORT_set (fnc, dat)                   /* set custom abort handler */
+#define TDONE()         	do { g_printerr ("DONE.\n");            /* test outro */ \
+                                     TABORT_set (NULL, NULL); } while(0)
 #else
-#define TSTART(...)	TSTART_impl (": [", __VA_ARGS__)		/* test intro */
-#define TOK()           do { g_printerr ("-"); } while (0)		/* subtest OK */
-#define TICK()          TOK()						/* subtest OK */
-#define TACK()          do { g_printerr ("+"); } while (0)		/* alternate OK */
-#define	TPRINT(...)	do { g_printerr ("*"); } while (0)		/* skip messages */
-#define	TASSERT(code)	TASSERT_impl ("X", code, 1)			/* test assertion */
-#define	TCHECK(code)	TASSERT_impl ("X", code, 0)			/* test assertion (silent) */
-#define	TERROR(...)	TERROR_impl ("X", __VA_ARGS__)			/* test error, abort */
-#define TDONE()         do { g_printerr ("]\n"); } while (0)		/* test outro */
+#define TSTART(...)		TSTART_impl (": [", __VA_ARGS__)	/* test intro */
+#define TOK()           	do { g_printerr ("-"); } while (0)	/* subtest OK */
+#define TICK()          	TOK()					/* subtest OK */
+#define TACK()          	do { g_printerr ("+"); } while (0)	/* alternate OK */
+#define	TPRINT(...)		do { g_printerr ("*"); } while (0)	/* skip messages */
+#define	TASSERT(code)		TASSERT_impl ("X", code, 1)		/* test assertion */
+#define	TASSERT_CMP(a,cmp,b)	TASSERT_CMP_impl ("X",a,cmp,b, 1)	/* test assertion */
+#define	TCHECK(code)		TASSERT_impl ("X", code, 0)		/* test assertion (silent) */
+#define	TCHECK_CMP(a,cmp,b)	TASSERT_CMP_impl ("X",a,cmp,b, 0)	/* test assertion */
+#define	TERROR(...)		TERROR_impl ("X", __VA_ARGS__)		/* test error, abort */
+#define TABORT_HANDLER(fnc,dat)	TABORT_set (fnc, dat)                   /* set custom abort handler */
+#define TDONE()         	do { g_printerr ("]\n");                /* test outro */ \
+                                     TABORT_set (NULL, NULL); } while(0)
 #endif
 
 /* --- performance --- */
@@ -168,6 +177,38 @@ treport_generic (const char *perf_name,
 }
 
 /* --- macro details --- */
+static void
+tabort_handler (bool   set_values,
+                void **func_loc,
+                void **data_loc)
+{
+  /* the implementation of this function is a pretty bad hack around not exporting C symbols... */
+  if (set_values)
+    {
+      g_dataset_set_data_full ((void*) g_dataset_destroy, "birnet-tabort-func", *func_loc, NULL);
+      g_dataset_set_data_full ((void*) g_dataset_destroy, "birnet-tabort-data", *data_loc, NULL);
+    }
+  else
+    {
+      *func_loc = g_dataset_get_data ((void*) g_dataset_destroy, "birnet-tabort-func");
+      *data_loc = g_dataset_get_data ((void*) g_dataset_destroy, "birnet-tabort-data");
+    }
+}
+
+#define TABORT_set(func,data)           do {            \
+  void *__tabort_func = (void*) func;                   \
+  void *__tabort_data = (void*) data;                   \
+  tabort_handler (1, &__tabort_func, &__tabort_data);   \
+} while (0)
+
+#define TABORT_call()                   do {            \
+  void *__tabort_func = NULL, *__tabort_data = NULL;    \
+  tabort_handler (0, &__tabort_func, &__tabort_data);   \
+  if (__tabort_func)                                    \
+    ((BirnetTAbort) __tabort_func) (__tabort_data);     \
+  G_BREAKPOINT();                                       \
+} while (0)
+
 #define TSTART_impl(postfix, ...)	do {		\
   char *_test_name_ = g_strdup_printf (__VA_ARGS__);	\
   g_printerr ("%s%s", _test_name_, postfix);		\
@@ -181,18 +222,42 @@ treport_generic (const char *perf_name,
     else if (show) TOK ();				\
   } else {						\
   g_printerr ("%s", mark);				\
-  g_error ("%s:%u:%s(): assertion failed: %s",		\
+  g_printerr ("\n***ERROR***\n"                         \
+              "%s:%u:%s(): assertion failed: %s\n",	\
            __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
-           #code); }					\
+           #code);					\
+  TABORT_call(); }                                      \
+} while (0)
+
+#define TASSERT_CMP_impl(mark, a, cmp, b, show)	do {	\
+  double __tassert_va = a; double __tassert_vb = b;	\
+  if (a cmp b) {					\
+    if (show >= 2)					\
+      g_printerr ("OK - asserted: "			\
+                  "%s %s %s: %.17g %s %.17g\n",		\
+                  #a, #cmp, #b,				\
+                  __tassert_va, #cmp, __tassert_vb);	\
+    else if (show) TOK ();				\
+  } else {						\
+  g_printerr ("%s", mark);				\
+  g_printerr ("\n***ERROR***\n"                         \
+              "%s:%u:%s(): assertion failed: "		\
+              "%s %s %s: %.17g %s %.17g\n",		\
+              __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
+              #a, #cmp, #b, 				\
+              __tassert_va, #cmp, __tassert_vb); 	\
+  TABORT_call(); }                                      \
 } while (0)
 
 #define TERROR_impl(mark, ...)	do {			\
   g_printerr ("%s", mark);				\
   char *_error_msg_ = g_strdup_printf (__VA_ARGS__);	\
-  g_error ("%s:%u:%s(): %s",				\
-           __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
-           _error_msg_);				\
+  g_printerr ("\n***ERROR***\n"                         \
+              "%s:%u:%s(): %s\n",			\
+              __FILE__, __LINE__, __PRETTY_FUNCTION__,	\
+              _error_msg_);				\
   g_free (_error_msg_);					\
+  TABORT_call();                                        \
 } while (0)
 
 /* Given an upper test duration bound, this macro will return the number
