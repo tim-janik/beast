@@ -1,7 +1,7 @@
 Tue Oct 31 14:23:33 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/organsong.bse: Updated copyright/comment: melody is
-	based on music composed by J.S.Bach.
+	based on music composed by Johann Sebastian Bach.
 
 	* tests/testresampler.cc: Use delay compensation API where
 	appropriate, instead of using the filter order to compute the
