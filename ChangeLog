@@ -1,3 +1,12 @@
+Thu Nov  2 22:30:27 2006  Tim Janik  <timj@gtk.org>
+
+	* r+d-files/bse-ellf.c: initialize random generators.
+	generate tables for zeros/poles and not transfer function
+	coefficients which are useless for high order filters.
+	randomized various generation parameters to reduce overall
+	number of filters while keeping variety. fixed a few more debug
+	messages.
+
 Tue Oct 31 14:23:33 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/organsong.bse: Updated copyright/comment: melody is

@@ -20,6 +20,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
+#include <time.h>
 #if 0
 extern double sqrt ( double );
 extern double fabs ( double );
@@ -1666,6 +1668,9 @@ int zplnc ( void );
 int quadf ( double, double, int );
 double response ( double, double );
 
+#define MIN(a,b) ((a) <= (b) ? (a) : (b))
+#define MAX(a,b) ((a) >= (b) ? (a) : (b))
+     
 static void
 print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
 {
@@ -1685,21 +1690,59 @@ print_z_fraction_before_zplnc (void) /* must be called *before* zplnc() */
   code_printf ("      /* order = */              %u,\n", (int) rn);
   code_printf ("      /* sampling_frequency = */ %.4f,\n", fs);
   code_printf ("      /* passband_ripple_db = */ %.17g,\n", kind > 1 ? dbr : 0);
-  code_printf ("      /* passband_edge = */      %.17g,\n", f2);
-  code_printf ("      /* passband_edge2 = */     %.17g,\n", (type & 1) == 0 ? f1 : 0);
+  if ((type & 1) == 0)
+    {
+      code_printf ("      /* passband_edge = */      %.17g,\n", MIN (f1, f2));
+      code_printf ("      /* passband_edge2 = */     %.17g,\n", MAX (f1, f2));
+    }
+  else
+    {
+      code_printf ("      /* passband_edge = */      %.17g,\n", f2);
+      code_printf ("      /* passband_edge2 = */     %.17g,\n", 0.);
+    }
   code_printf ("      /* stopband_edge = */      %.17g,\n", kind == 3 && dbd > 0.0 ? dbd : 0);
   code_printf ("      /* stopband_db = */        %.17g,\n", kind == 3 && dbd < 0.0 ? dbd : 0);
   code_printf ("    };\n");
-  code_printf ("    static const double filter_coefficients[] = {\n");
   int j;
-  for (j = 0; j <= zord; j++)
-    code_printf ("      %+.17e, %+.17e,\n", aa[j], pp[j] * zgain);
+  code_printf ("    static const double zeros[] = {\n");
+  for (j = 0; j < zord; j++)
+    if (z[j + zord].i >= 0.0)
+      code_printf ("      %+.17e, %+.17e,\n", z[j + zord].r, z[j + zord].i);
+  code_printf ("    };\n");
+  code_printf ("    static const double poles[] = {\n");
+  for (j = 0; j < zord; j++)
+    if (z[j].i >= 0.0)
+      code_printf ("      %+.17e, %+.17e, /* pole */\n", z[j].r, z[j].i);
   code_printf ("    };\n");
   code_printf ("    filters[index].filter_request = &filter_request;\n");
-  code_printf ("    filters[index].filter_coefficients = filter_coefficients;\n");
-  code_printf ("    filters[index].n_filter_coefficients = BIRNET_ARRAY_SIZE (filter_coefficients);\n");
+  code_printf ("    filters[index].gain = %+.17e;\n", zgain);
+  code_printf ("    filters[index].n_zeros = BIRNET_ARRAY_SIZE (zeros) / 2;\n");
+  code_printf ("    filters[index].zeros = zeros;\n");
+  code_printf ("    filters[index].n_poles = BIRNET_ARRAY_SIZE (poles) / 2;\n");
+  code_printf ("    filters[index].poles = poles;\n");
   code_printf ("    index++;\n");
   code_printf ("  }\n");
+}
+
+static inline unsigned int
+quick_rand32 (void)
+{
+  static unsigned int accu = 2147483563;
+  accu = 1664525 * accu + 1013904223;
+  return accu + lrand48();
+}
+
+static inline double
+quick_rand_range (double s, double e)
+{
+  double rand_double1;
+  do
+    {
+      rand_double1 = quick_rand32() * 2.32830643708079737531e-10; // [0..2^32-1] -> [0..1]
+      rand_double1 = (rand_double1 + quick_rand32()) * 2.32830643708079737531e-10;
+    }
+  while (rand_double1 > 1); // fix rounding errors
+  return s + rand_double1 * (e - s);
 }
 
 typedef struct {
@@ -1718,100 +1761,93 @@ static void
 generate_filters_brute_force (void)
 {
   EllfInput einput = { 0, };
-  const double sampling_frequencies[] = {
-    3333, 48000, 96000, 256000,
+  const double sampling_frequencies[/* prime! */] = {
+    100, 1000, 2000, 3333, 4000, 8000, 12000, 16000, 20050, 32000, 44100, 48000, 56000, 64000,
+    72000, 88000, 96000, 128000, 192000, 256000, 512000, 1024 * 1024, 1024 * 1024 * 1024,
   };
   const int n_sampling_frequencies = sizeof (sampling_frequencies) / sizeof (sampling_frequencies[0]);
   const int filter_orders[] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 19, 20,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // used for random orders */
   };
   const int n_orders = sizeof (filter_orders) / sizeof (filter_orders[0]);
-  double pbe1, pbe2, prd;
-  int oix, sfix, cse;
-
-  einput.kind = BUTTERWORTH;
-  for (cse = 0; cse < 2; cse++)
-    for (oix = 0; oix < n_orders; oix++)
-      for (sfix = 0; sfix < n_sampling_frequencies; sfix++)
-        for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
-          {
-            /* low/high */
-            einput.type = cse ? LOW_PASS : HIGH_PASS;
-            einput.order = filter_orders[oix];
-            einput.sampling_frequency = sampling_frequencies[sfix];
-            einput.passband_edge = pbe1 * einput.sampling_frequency;
-            main_ellf (&einput);
-            /* band filters */
-            if (einput.order > 12)
-              continue;
-            einput.type = cse ? BAND_PASS : BAND_STOP;
-            for (pbe2 = 0.1; pbe1 + pbe2 <= 0.48; pbe2 += 0.1)
-              {
-                einput.passband_edge2 = (pbe1 + pbe2) * einput.sampling_frequency;
-                main_ellf (&einput);
-              }
-          }
-
-  einput.kind = CHEBYSHEV;
-  for (cse = 0; cse < 2; cse++)
-    for (oix = 0; oix < n_orders; oix++)
-      for (sfix = 0; sfix < n_sampling_frequencies; sfix++)
-        for (prd = 0.01; prd < 3.0; prd *= 11.713)
-          for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
-            {
-              einput.order = filter_orders[oix];
-              /* low/high */
-              einput.type = cse ? LOW_PASS : HIGH_PASS;
-              einput.sampling_frequency = sampling_frequencies[sfix];
-              einput.passband_ripple_db = prd;
-              einput.passband_edge = pbe1 * einput.sampling_frequency;
-              main_ellf (&einput);
-              /* band filters */
-              if (einput.order > 12)
-                continue;
-              einput.type = cse ? BAND_PASS : BAND_STOP;
-              for (pbe2 = 0.1; pbe1 + pbe2 <= 0.48; pbe2 += 0.1)
-                {
-                  einput.passband_edge2 = (pbe1 + pbe2) * einput.sampling_frequency;
-                  main_ellf (&einput);
-                }
-            }
+  int oix, max_order_index = 0;
+  for (oix = 0; oix < n_orders; oix++)
+    max_order_index = filter_orders[oix] ? oix : max_order_index;
+  int rand_order_width = (48 - filter_orders[max_order_index]);
+  double pbe1;
   
-#if 0
+#if 1
+  einput.kind = BUTTERWORTH;
+  for (oix = 0; oix < n_orders; oix++)
+    for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
+      {
+        /* low/high */
+        einput.order = oix <= max_order_index ? filter_orders[oix] : filter_orders[max_order_index] + quick_rand32() % rand_order_width;
+        einput.sampling_frequency = sampling_frequencies[quick_rand32() % n_sampling_frequencies];
+        einput.passband_edge = pbe1 * einput.sampling_frequency;
+        einput.type = LOW_PASS;
+        main_ellf (&einput);
+        einput.type =HIGH_PASS;
+        main_ellf (&einput);
+        /* band filters */
+        if (pbe1 + 0.1 < 0.48)
+          {
+            einput.passband_edge2 = quick_rand_range (pbe1 + 0.1, 0.48) * einput.sampling_frequency;
+            einput.type = BAND_PASS; main_ellf (&einput); einput.type = BAND_STOP; main_ellf (&einput);
+          }
+      }
+#endif
+  
+#if 1
+  einput.kind = CHEBYSHEV;
+  for (oix = 0; oix < n_orders; oix++)
+    for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
+      {
+        einput.order = oix <= max_order_index ? filter_orders[oix] : filter_orders[max_order_index] + quick_rand32() % rand_order_width;
+        /* low/high */
+        einput.sampling_frequency = sampling_frequencies[quick_rand32() % n_sampling_frequencies];
+        einput.passband_ripple_db = quick_rand_range (0, 0.001) * pow (9, quick_rand32() % 5); /* 0.001 .. 6.6 */
+        einput.passband_edge = pbe1 * einput.sampling_frequency;
+        einput.type = LOW_PASS; main_ellf (&einput);
+        einput.passband_ripple_db = quick_rand_range (0, 0.001) * pow (9, quick_rand32() % 5); /* 0.001 .. 6.6 */
+        einput.type = HIGH_PASS; main_ellf (&einput);
+        /* band filters */
+        if (pbe1 + 0.1 < 0.48)
+          {
+            einput.passband_edge2 = quick_rand_range (pbe1 + 0.1, 0.48) * einput.sampling_frequency;
+            einput.type = BAND_PASS; main_ellf (&einput);
+            einput.passband_ripple_db = quick_rand_range (0, 0.001) * pow (9, quick_rand32() % 5); /* 0.001 .. 6.6 */
+            einput.type = BAND_STOP; main_ellf (&einput);
+          }
+      }
+#endif
+  
+#if 1
   einput.kind = ELLIPTIC;
-  for (cse = 0; cse < 2; cse++)
-    for (oix = 0; oix < n_orders; oix++)
-      for (sfix = 0; sfix < n_sampling_frequencies; sfix++)
-        for (prd = 0.01; prd < 3.0; prd *= 11.713)
-          for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
-            {
-              einput.order = filter_orders[oix];
-              /* low/high */
-              einput.type = cse ? LOW_PASS : HIGH_PASS;
-              einput.sampling_frequency = sampling_frequencies[sfix];
-              einput.passband_ripple_db = prd;
-              einput.passband_edge = pbe1 * einput.sampling_frequency;
-              einput.stopband_edge_or_db = -26;
-              main_ellf (&einput);
-              einput.stopband_edge_or_db = -84;
-              main_ellf (&einput);
-              einput.stopband_edge_or_db = -120;
-              main_ellf (&einput);
-              /* band filters */
-              if (einput.order > 12)
-                continue;
-              einput.type = cse ? BAND_PASS : BAND_STOP;
-              for (pbe2 = 0.1; pbe1 + pbe2 <= 0.48; pbe2 += 0.1)
-                {
-                  einput.passband_edge2 = (pbe1 + pbe2) * einput.sampling_frequency;
-                  einput.stopband_edge_or_db = -26;
-                  main_ellf (&einput);
-                  einput.stopband_edge_or_db = -84;
-                  main_ellf (&einput);
-                  einput.stopband_edge_or_db = -120;
-                  main_ellf (&einput);
-                }
-            }
+  for (oix = 0; oix < n_orders; oix++)
+    for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
+      {
+        einput.order = oix <= max_order_index ? filter_orders[oix] : filter_orders[max_order_index] + quick_rand32() % rand_order_width;
+        /* low/high */
+        einput.sampling_frequency = sampling_frequencies[quick_rand32() % n_sampling_frequencies];
+        einput.passband_ripple_db = quick_rand_range (0, 0.001) * pow (9, quick_rand32() % 5); /* 0.001 .. 6.6 */
+        einput.passband_edge = pbe1 * einput.sampling_frequency;
+        einput.stopband_edge_or_db = quick_rand_range (-9, -150) - 2 * einput.order;
+        einput.type = LOW_PASS; main_ellf (&einput);
+        einput.passband_ripple_db = quick_rand_range (0, 0.001) * pow (9, quick_rand32() % 5); /* 0.001 .. 6.6 */
+        einput.type = HIGH_PASS; main_ellf (&einput);
+        /* band filters */
+        if (pbe1 + 0.1 < 0.48)
+          {
+            einput.passband_edge2 = quick_rand_range (pbe1 + 0.1, 0.48) * einput.sampling_frequency;
+            fprintf (stderr, "PBE: %f %f\n", pbe1, einput.passband_edge2 / einput.sampling_frequency);
+            einput.stopband_edge_or_db = quick_rand_range (-16, -150) - 2 * einput.order;
+            einput.type = BAND_PASS; main_ellf (&einput);
+            einput.passband_ripple_db = quick_rand_range (0, 0.001) * pow (9, quick_rand32() % 5); /* 0.001 .. 6.6 */
+            einput.type = BAND_STOP; main_ellf (&einput);
+          }
+      }
 #endif
 }
 
@@ -1819,6 +1855,14 @@ int
 main (int   argc,
       char *argv[])
 {
+  /* initialize random numbers */
+  {
+    struct timeval tv;
+    gettimeofday (&tv, NULL);
+    srand48 (tv.tv_usec + (tv.tv_sec << 16));
+    srand (lrand48());
+  }
+  
   if (argc >= 2 && strcmp (argv[1], "--test-code") == 0)
     {
       generate_filters_brute_force();
@@ -1894,6 +1938,7 @@ main_ellf (const EllfInput *einput)
   n = rn;
   if( n <= 0 )
     {
+          ellf_debugf ("? Need order > 0\n");
     specerr:
       ellf_debugf ( "? Specification error\n" );
       if (einput)
@@ -2039,22 +2084,32 @@ main_ellf (const EllfInput *einput)
 	{
 	case 1:
           if( f3 <= f2 )
-            goto specerr;
+            {
+              ellf_debugf ("? Need stopband_edge > passband_edge\n");
+              goto specerr;
+            }
           break;
           
 	case 2:
           if( (f3 > f2) || (f3 < f1) )
             break;
+          ellf_debugf ("? Need stopband_edge < passband_edge or stopband_edge > passband_edge2\n");
           goto specerr;
           
 	case 3:
           if( f3 >= f2 )
-            goto specerr;
+            {
+              ellf_debugf ("? Need stopband_edge < passband_edge\n");
+              goto specerr;
+            }
           break;
           
 	case 4:
           if( (f3 <= f1) || (f3 >= f2) )
-            goto specerr;
+            {
+              ellf_debugf ("? Need stopband_edge > passband_edge2 and stopband_edge < passband_edge\n");
+              goto specerr;
+            }
           break;
 	}
       ang = f3 * PI / fs;
