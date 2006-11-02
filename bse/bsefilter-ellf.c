@@ -1546,6 +1546,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
             ds->zd[j] = ds->zn[j];
         }
     }
+#if 0   // original ellf gain calculation; this code produces wrong results for high order filters
   /* Scale factors of the pole and zero polynomials */
   double a = 1.0;
   switch (ifr->type)
@@ -1586,6 +1587,51 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
           ds->denominator_accu = ds->denominator_accu + cng * (ds->zd[jh] + (1.0 - 2.0 * ai) * ds->zd[jl]);
         }
     }
+  ellf_debugf ("FILTERGAIN-ellf: %.17g / %.17g * scale = %.17g\n", ds->numerator_accu, ds->denominator_accu,
+               ds->numerator_accu / ds->denominator_accu * ds->gain_scale);
+#endif
+  /* calculate gain by evaluating poles and zeros */
+  switch (ifr->type)
+    {
+      Complex z, num, den;
+      uint i;
+    case BSE_IIR_FILTER_LOW_PASS:
+    case BSE_IIR_FILTER_BAND_STOP:
+    case BSE_IIR_FILTER_HIGH_PASS:
+      if (ifr->type == BSE_IIR_FILTER_HIGH_PASS)
+        z = -1 + I * 0;
+      else
+        z = +1 + I * 0;
+      num = 1;
+      den = 1;
+      for (i = 0; i < ds->n_solved_poles; i++)
+        {
+          const Complex zero = ds->zcpz[ds->n_solved_poles + i].r + I * ds->zcpz[ds->n_solved_poles + i].i;
+          const Complex pole = ds->zcpz[i].r + I * ds->zcpz[i].i;
+          num = num * (z - zero);
+          den = den * (z - pole);
+        }
+      ds->numerator_accu = cabs (num);
+      ds->denominator_accu = cabs (den);
+      break;
+    case BSE_IIR_FILTER_BAND_PASS:
+      /* cgam = cos (band_pass_center_frequency) */
+      z = ds->cgam + I * sin (acos (ds->cgam));
+      num = 1;
+      den = 1;
+      for (i = 0; i < ds->n_solved_poles; i++)
+        {
+          const Complex zero = ds->zcpz[ds->n_solved_poles + i].r + I * ds->zcpz[ds->n_solved_poles + i].i;
+          const Complex pole = ds->zcpz[i].r + I * ds->zcpz[i].i;
+          num = num * (z - zero);
+          den = den * (z - pole);
+        }
+      ds->numerator_accu = cabs (num);
+      ds->denominator_accu = cabs (den);
+      break;
+    }
+  ellf_debugf ("FILTERGAIN-bse:  %.17g / %.17g * scale = %.17g\n", ds->numerator_accu, ds->denominator_accu,
+               ds->numerator_accu / ds->denominator_accu * ds->gain_scale);
   return 0;
 }
 

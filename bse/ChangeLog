@@ -1,3 +1,10 @@
+Thu Nov  2 22:56:55 2006  Tim Janik  <timj@gtk.org>
+
+	* bsefilter-ellf.c: z_plane_zeros_poles_to_numerator_denomerator():
+	reimplemented gain calculation by evaluating the pole and zero
+	polinomials. this eliminates the precision artefacts which caused
+	gain miscalculations for high order filters.
+
 Thu Nov  2 22:44:16 2006  Tim Janik  <timj@gtk.org>
 
 	* bsemath.c: temporary fix against ring buffer overflow.
