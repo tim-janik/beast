@@ -59,15 +59,15 @@ bse_iir_filter_request_string (const BseIIRFilterRequest *ifr)
   s += bse_iir_filter_type_string (ifr->type);
   s += " order=" + string_from_int (ifr->order);
   s += " sample-rate=" + string_from_float (ifr->sampling_frequency);
-  s += " passband-edge=" + string_from_float (ifr->passband_edge);
   if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1 || ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
     s += " passband-ripple-db=" + string_from_float (ifr->passband_ripple_db);
+  s += " passband-edge=" + string_from_float (ifr->passband_edge);
   if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
     s += " passband-edge2=" + string_from_float (ifr->passband_edge2);
-  if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC && ifr->stopband_edge > 0)
-    s += " stopband-edge=" + string_from_float (ifr->stopband_edge);
   if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC && ifr->stopband_db < 0)
     s += " stopband-db=" + string_from_float (ifr->stopband_db);
+  if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC && ifr->stopband_edge > 0)
+    s += " stopband-edge=" + string_from_float (ifr->stopband_edge);
   return g_strdup (s.c_str());
 }
 

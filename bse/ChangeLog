@@ -1,3 +1,23 @@
+Thu Nov  2 22:44:16 2006  Tim Janik  <timj@gtk.org>
+
+	* bsemath.c: temporary fix against ring buffer overflow.
+
+	* bsefilter-ellf.c: replaced overly verbose debugging function
+	implementation by simple printf like macros. moved ellf compat
+	constant definitions.
+
+	* bsefilter.cc: cosmetic changes to bse_iir_filter_request_string().
+
+	* tests/filtertest.cc: compare filter zero/pole coefficients
+	instead of filter transfer function coefficients which are useless
+	for high order filters. zero/pole pairs for comparsion are
+	determined through nearest-neighbour searches.
+	use TABORT_HANDLER() to hook up print_filter_on_abort(), to print
+	out mismatching filters when tests fail. use T*_CMP() test macros
+	for more informative printouts. extended generic filter test to
+	cover more filter properties.
+	added predesigned filters where ellf miscalculates gain.
+
 Tue Oct 31 13:52:17 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/filtertest.cc: Raise coefficient comparision epsilon ceps

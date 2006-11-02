@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#define RING_BUFFER_LENGTH	(16)
+#define RING_BUFFER_LENGTH	(256) // FIXME: simlpy dup strings in the API
 #define	PRINTF_DIGITS		"1270"
 #define	FLOAT_STRING_SIZE	(2048)
 

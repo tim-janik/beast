@@ -21,12 +21,64 @@
 #include <sfi/sfitests.h>
 #include <bse/bsefilter.h>
 #include <bse/bsemain.h>
+#include <bse/gslfilter.h> // FIXME
+#include <bse/bseglobals.h> // FIXME
 #include "topconfig.h"
 #include <math.h>
 
 using namespace Birnet;
 using std::max;
 using std::min;
+
+static inline double
+sqr (register double a)
+{
+  return a * a;
+}
+
+static inline uint
+complex_find_nearest (const Complex *zp,
+                      uint           n_zps,
+                      const Complex *zps)
+{
+  const Complex z = *zp;
+  uint j = 0;
+  double last = sqr (real (z) - real (zps[j])) + sqr (imag (z) - imag (zps[j]));
+  if (last == 0.0)
+    return j;
+  for (uint i = 1; i < n_zps; i++)
+    {
+      double dist2 = sqr (real (z) - real (zps[i])) + sqr (imag (z) - imag (zps[i]));
+      if (dist2 < last)
+        {
+          last = dist2;
+          j = i;
+          if (last == 0.0)
+            return j;
+        }
+    }
+  return j;
+}
+
+static double
+compare_zeros (uint           n_zeros,
+               const Complex *czeros,
+               const double  *rizeros)
+{
+  Complex *z2 = (Complex*) alloca (sizeof (Complex) * n_zeros);
+  for (uint i = 0; i < n_zeros; i++)
+    z2[i] = Complex (rizeros[i * 2], rizeros[i * 2 + 1]);
+  double max_eps = 0;
+  for (uint i = 0; i < n_zeros; i++)
+    {
+      uint j = complex_find_nearest (&czeros[i], n_zeros - i, z2);
+      double reps = fabs (real (z2[j]) - real (czeros[i]));
+      double ieps = fabs (imag (z2[j]) - imag (czeros[i]));
+      z2[j] = z2[n_zeros - i - 1]; // optimization of: swap (z2[last], z2[j]);
+      max_eps = max (max_eps, max (reps, ieps));
+    }
+  return max_eps;
+}
 
 static double
 compare_coefficients (const BseIIRFilterDesign *fdes,
@@ -154,15 +206,15 @@ bse_iir_filter_dump_gnuplot (const BseIIRFilterDesign *fdes,
 }
 
 static void
-exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
-                              const BseIIRFilterDesign  *fdes,
-                              const char                *fname,
-                              double                     passband_ripple_db = NAN,
-                              double                     passband_edge = NAN,
-                              double                     passband_edge2 = NAN,
-                              double                     stopband_db = NAN,
-                              double                     stopband_edge = NAN,
-                              double                     stopband_edge2 = NAN)
+noexit_dump_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
+                                const BseIIRFilterDesign  *fdes,
+                                const char                *fname,
+                                double                     passband_ripple_db = NAN,
+                                double                     passband_edge = NAN,
+                                double                     passband_edge2 = NAN,
+                                double                     stopband_db = NAN,
+                                double                     stopband_edge = NAN,
+                                double                     stopband_edge2 = NAN)
 {
   double consts[64];
   double arrows[64];
@@ -185,6 +237,20 @@ exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
   g_printerr ("Filter: %s\n", bse_iir_filter_request_string (fireq));
   g_printerr ("Design: %s\n", bse_iir_filter_design_string (fdes));
   g_printerr ("GnuplotDump: wrote %s.gp and %s.dat use: gnuplot %s.gp\n", fname, fname, fname);
+}
+
+static void
+exit_with_iir_filter_gnuplot (const BseIIRFilterRequest *fireq,
+                              const BseIIRFilterDesign  *fdes,
+                              const char                *fname,
+                              double                     passband_ripple_db = NAN,
+                              double                     passband_edge = NAN,
+                              double                     passband_edge2 = NAN,
+                              double                     stopband_db = NAN,
+                              double                     stopband_edge = NAN,
+                              double                     stopband_edge2 = NAN)
+{
+  noexit_dump_iir_filter_gnuplot (fireq, fdes, fname, passband_ripple_db, passband_edge, passband_edge2, stopband_db, stopband_edge, stopband_edge2);
   exit (0);
 }
 
@@ -270,9 +336,8 @@ max_band_damping (const BseIIRFilterDesign *fdes,
                   double                    start_freq,
                   double                    end_freq)
 {
-  double res1 = max_band_damping_ztrans (fdes, start_freq, end_freq);
-  double res2 = max_band_damping_zp (fdes, start_freq, end_freq);
-  return min (res1, res2);
+  // double res1 = max_band_damping_ztrans (fdes, start_freq, end_freq);
+  return max_band_damping_zp (fdes, MIN (start_freq, end_freq), MAX (start_freq, end_freq));
 }
 
 static double
@@ -280,9 +345,19 @@ min_band_damping (const BseIIRFilterDesign *fdes,
                   double                    start_freq,
                   double                    end_freq)
 {
-  double res1 = min_band_damping_ztrans (fdes, start_freq, end_freq);
-  double res2 = min_band_damping_zp (fdes, start_freq, end_freq);
-  return max (res1, res2);
+  // double res1 = min_band_damping_ztrans (fdes, start_freq, end_freq);
+  return min_band_damping_zp (fdes, MIN (start_freq, end_freq), MAX (start_freq, end_freq));
+}
+
+static void
+print_filter_on_abort (void *data)
+{
+  void **adata = (void**) data;
+  const BseIIRFilterRequest *req = (BseIIRFilterRequest*) adata[0];
+  const BseIIRFilterDesign *fdes = (BseIIRFilterDesign*) adata[1];
+  noexit_dump_iir_filter_gnuplot (req, fdes, "tmpfilter",
+                                  -fabs(req->passband_ripple_db), req->passband_edge, req->passband_edge2,
+                                  req->stopband_db != 0 ? req->stopband_db : NAN, req->stopband_edge, NAN);
 }
 
 static void
@@ -295,6 +370,10 @@ butterwoth_tests ()
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_BUTTERWORTH;
+  void *abort_data[2];
+  abort_data[0] = (void*) &req;
+  abort_data[1] = &fdes;
+  TABORT_HANDLER (print_filter_on_abort, abort_data);
   TOK();
 
   {
@@ -322,9 +401,9 @@ butterwoth_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 0, 2000) < gaineps);
-    TASSERT (max_band_damping (&fdes, 0, 2000) > -3.0103);
-    TASSERT (min_band_damping (&fdes, 3500, 5000) < -68);
+    TASSERT_CMP (min_band_damping (&fdes, 0, 2000), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 0, 2000), >, -3.0103);
+    TASSERT_CMP (min_band_damping (&fdes, 3500, 5000), <, -68);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 2000, NAN, -68, 3500);
   }
@@ -348,9 +427,9 @@ butterwoth_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 2000, 5000) < gaineps);
-    TASSERT (max_band_damping (&fdes, 2000, 5000) > -3.0103);
-    TASSERT (min_band_damping (&fdes, 0,     600) < -80);
+    TASSERT_CMP (min_band_damping (&fdes, 2000, 5000), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 2000, 5000), >, -3.0103);
+    TASSERT_CMP (min_band_damping (&fdes, 0,     600), <, -80);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 2000, NAN, -80, 600);
   }
@@ -386,10 +465,10 @@ butterwoth_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 1500, 3500) < gaineps);
-    TASSERT (max_band_damping (&fdes, 1500, 3500) > -3.0103);
-    TASSERT (min_band_damping (&fdes, 0,    1000) < -49.5);
-    TASSERT (min_band_damping (&fdes, 4000, 5000) < -49.5);
+    TASSERT_CMP (min_band_damping (&fdes, 1500, 3500), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 1500, 3500), >, -3.0103);
+    TASSERT_CMP (min_band_damping (&fdes, 0,    1000), <, -49.5);
+    TASSERT_CMP (min_band_damping (&fdes, 4000, 5000), <, -49.5);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1500, 3500, -49.5, 1000, 4000);
   }
@@ -435,10 +514,10 @@ butterwoth_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 0,    1000) < gaineps);
-    TASSERT (max_band_damping (&fdes, 0,    1000) > -3.0103);
-    TASSERT (min_band_damping (&fdes, 1500, 3500) < -77);
-    TASSERT (max_band_damping (&fdes, 4000, 5000) > -3.0103);
+    TASSERT_CMP (min_band_damping (&fdes, 0,    1000), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 0,    1000), >, -3.0103);
+    TASSERT_CMP (min_band_damping (&fdes, 1500, 3500), <, -77);
+    TASSERT_CMP (max_band_damping (&fdes, 4000, 5000), >, -3.0103);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -3.0103, 1000, 4000, -77, 1500, 3500);
   }
@@ -450,20 +529,24 @@ butterwoth_tests ()
 static void
 chebychev1_tests ()
 {
-  TSTART ("Chebyshev1");
   bool success;
   double eps;
-  const double ceps = 8e-13, gaineps = 1e-7;
+  TSTART ("Chebyshev1");
   BseIIRFilterDesign fdes;
   BseIIRFilterRequest req = { BseIIRFilterKind (0), };
   req.kind = BSE_IIR_FILTER_CHEBYSHEV1;
+  void *abort_data[2];
+  abort_data[0] = (void*) &req;
+  abort_data[1] = &fdes;
+  TABORT_HANDLER (print_filter_on_abort, abort_data);
+  const double ceps = 8e-13, gaineps = 1e-7;
   TOK();
 
   {
     req.type = BSE_IIR_FILTER_LOW_PASS;
     req.order = 8;
     req.sampling_frequency = 20000;
-    req.passband_ripple_db = 1.55;
+    req.passband_ripple_db = 1.5500;
     req.passband_edge = 3000;
     success = bse_iir_filter_design (&req, &fdes);
     TASSERT (success == true);
@@ -480,9 +563,9 @@ chebychev1_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 0, 3000) < gaineps);
-    TASSERT (max_band_damping (&fdes, 0, 3000) > -1.55);
-    TASSERT (min_band_damping (&fdes, 5000, 10000) < -80);
+    TASSERT_CMP (min_band_damping (&fdes, 0, 3000), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 0, 3000), >, -1.5501);
+    TASSERT_CMP (min_band_damping (&fdes, 5000, 10000), <, -80);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.55, 3000, NAN, -80, 5000);
   }
@@ -507,9 +590,9 @@ chebychev1_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 600, 5000) < gaineps);
-    TASSERT (max_band_damping (&fdes, 600, 5000) >= -0.101);
-    TASSERT (min_band_damping (&fdes, 0,    250) < -70);
+    TASSERT_CMP (min_band_damping (&fdes, 600, 5000), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 600, 5000), >, -0.101);
+    TASSERT_CMP (min_band_damping (&fdes, 0,    250), <, -70);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -0.1, 600, NAN, -70, 250);
   }
@@ -548,10 +631,10 @@ chebychev1_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes,  3500,  9500) < gaineps);
-    TASSERT (max_band_damping (&fdes,  3500,  9500) > -1.801);
-    TASSERT (min_band_damping (&fdes,  0,     3000) < -55);
-    TASSERT (min_band_damping (&fdes, 10200, 15000) < -55);
+    TASSERT_CMP (min_band_damping (&fdes,  3500,  9500), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes,  3500,  9500), >, -1.801);
+    TASSERT_CMP (min_band_damping (&fdes,  0,     3000), <, -55);
+    TASSERT_CMP (min_band_damping (&fdes, 10200, 15000), <, -55);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.801, 3500, 9500, -55, 3000, 10200);
   }
@@ -596,10 +679,10 @@ chebychev1_tests ()
     };
     eps = compare_coefficients (&fdes, BIRNET_ARRAY_SIZE (dncoeffs), dncoeffs);
     TASSERT (eps <= ceps);
-    TASSERT (min_band_damping (&fdes, 0,      8000) < gaineps);
-    TASSERT (max_band_damping (&fdes, 0,      8000) > -1.001);
-    TASSERT (min_band_damping (&fdes,  8500, 11500) < -78);
-    TASSERT (max_band_damping (&fdes, 12000, 20000) > -1.001);
+    TASSERT_CMP (min_band_damping (&fdes, 0,      8000), <, gaineps);
+    TASSERT_CMP (max_band_damping (&fdes, 0,      8000), >, -1.001);
+    TASSERT_CMP (min_band_damping (&fdes,  8500, 11500), <, -78);
+    TASSERT_CMP (max_band_damping (&fdes, 12000, 20000), >, -1.001);
     if (0)
       exit_with_iir_filter_gnuplot (&req, &fdes, "tmpfilter", -1.001, 8000, 12000, -78, 8500, 11500);
   }
@@ -615,32 +698,131 @@ brute_coefficient_tests ()
     const BseIIRFilterRequest *filter_request;
     const double              *filter_coefficients;
     uint                       n_filter_coefficients;
-  } filters[1000000];
+    double                     gain;
+    uint                       n_zeros;
+    const double              *zeros;
+    uint                       n_poles;
+    const double              *poles;
+  } filters[100000] = { { 0, } };
   uint index = 0;
-  // #include "../../r+d-files/tmp.c"
+
+  { // ellf gain is too high
+    static const BseIIRFilterRequest filter_request = {
+      /* kind = */               BSE_IIR_FILTER_ELLIPTIC,
+      /* type = */               BSE_IIR_FILTER_HIGH_PASS,
+      /* order = */              20,
+      /* sampling_frequency = */ 1073741824.0000,
+      /* passband_ripple_db = */ 1.3719436899999999,
+      /* passband_edge = */      483183820.79999995,
+      /* passband_edge2 = */     0,
+      /* stopband_edge = */      0,
+      /* stopband_db = */        -26,
+    };
+    filters[index].filter_request = &filter_request;
+    filters[index].gain = +6.50971316315766546e-02;
+    index++;
+  }
+  { // ellf gain is too high
+    static const BseIIRFilterRequest filter_request = {
+      /* kind = */               BSE_IIR_FILTER_ELLIPTIC,
+      /* type = */               BSE_IIR_FILTER_BAND_PASS,
+      /* order = */              19,
+      /* sampling_frequency = */ 3333.0000,
+      /* passband_ripple_db = */ 0.01,
+      /* passband_edge = */      1333.2,
+      /* passband_edge2 = */     999.89999999999998,
+      /* stopband_edge = */      0,
+      /* stopband_db = */        -120,
+    };
+    filters[index].filter_request = &filter_request;
+    filters[index].gain = +1.21552945102360275e-05;
+    index++;
+  }
+  { // ellf gain is too high
+    static const BseIIRFilterRequest filter_request = {
+      /* kind = */               BSE_IIR_FILTER_ELLIPTIC,
+      /* type = */               BSE_IIR_FILTER_BAND_PASS,
+      /* order = */              20,
+      /* sampling_frequency = */ 8000.0000,
+      /* passband_ripple_db = */ 0.01,
+      /* passband_edge = */      3200,
+      /* passband_edge2 = */     2400,
+      /* stopband_edge = */      0,
+      /* stopband_db = */        -26,
+    };
+    filters[index].filter_request = &filter_request;
+    filters[index].gain = +1.12649838606861938e-01;
+    index++;
+  }
+
+  if (0) { // FIXME: bse gain = 4.3037825362077964
+    static const BseIIRFilterRequest filter_request = {
+      /* kind = */               BSE_IIR_FILTER_ELLIPTIC,
+      /* type = */               BSE_IIR_FILTER_BAND_PASS,
+      /* order = */              36,
+      /* sampling_frequency = */ 3333.0000,
+      /* passband_ripple_db = */ 1.3719436899999999,
+      /* passband_edge = */      943.23900000000003,
+      /* passband_edge2 = */     499.94999999999999,
+      /* stopband_edge = */      0,
+      /* stopband_db = */        -26,
+    };
+    filters[index].filter_request = &filter_request;
+    filters[index].gain = -3.83263619423376167e-01;
+    index++;
+  }
+
+#include "../../r+d-files/tmp.c"
+
   uint i;
-  const double coefficients_epsilon = 1e-9;
+  const double coefficients_epsilon = 1e-7;
+  const double max_gain = 0.01; // maximum gain in passband
   TSTART ("Bruteforce filter checks");
+  void *abort_data[2];
+  TABORT_HANDLER (print_filter_on_abort, abort_data);
+  const uint n_filters_tok = 13;
   for (i = 0; i < index; i++)
     {
       const BseIIRFilterRequest *req = filters[i].filter_request;
-      const uint n_coefficients = filters[i].n_filter_coefficients;
-      const double *coefficients = filters[i].filter_coefficients;
       BseIIRFilterDesign fdes;
+      abort_data[0] = (void*) req;
+      abort_data[1] = &fdes;
       bool success = bse_iir_filter_design (req, &fdes);
-      TASSERT (success == true);
-      double eps = compare_coefficients (&fdes, n_coefficients, coefficients);
-      if (eps > coefficients_epsilon)
+      TCHECK (success == true);
+      if (filters[i].zeros)
+        TCHECK_CMP (filters[i].n_zeros, ==, fdes.n_zeros);
+      if (filters[i].poles)
+        TCHECK_CMP (filters[i].n_poles, ==, fdes.n_poles);
+      double zeps = filters[i].zeros ? compare_zeros (fdes.n_zeros, fdes.zz, filters[i].zeros) : 0;
+      double peps = filters[i].poles ? compare_zeros (fdes.n_poles, fdes.zp, filters[i].poles) : 0;
+      TCHECK_CMP (zeps, <, coefficients_epsilon);
+      TCHECK_CMP (peps, <, coefficients_epsilon);
+      /* broad gain check */
+      TCHECK_CMP (min_band_damping (&fdes, 0, 0.5 * req->sampling_frequency), <, max_gain);
+      /* finer gain checks */
+      double passband_ripple_db = req->kind == BSE_IIR_FILTER_BUTTERWORTH ? -3.010299956639811952 : -req->passband_ripple_db;
+      passband_ripple_db -= 0.01; // add a bit of fudge for evaluation artefacts
+      if (req->type == BSE_IIR_FILTER_LOW_PASS || req->type == BSE_IIR_FILTER_BAND_STOP)
         {
-          g_printerr ("EPSILON FAILED: %.16g %.16g\n", eps, coefficients_epsilon);
-          g_printerr ("EPSILON FAILED: %.16g %.16g\n", eps, coefficients_epsilon);
-          g_printerr ("EPSILON FAILED: %.16g %.16g\n", eps, coefficients_epsilon);
-          exit_with_iir_filter_gnuplot (req, &fdes, "tmpfilter",
-                                        req->passband_ripple_db, req->passband_edge, req->passband_edge2,
-                                        req->stopband_db != 0 ? req->stopband_db : NAN, req->stopband_edge, NAN);
-          TASSERT (eps <= coefficients_epsilon);
+          TCHECK_CMP (min_band_damping (&fdes, 0, req->passband_edge), <, max_gain);
+          TCHECK_CMP (max_band_damping (&fdes, 0, req->passband_edge), >, passband_ripple_db);
         }
-      else
+      if (req->type == BSE_IIR_FILTER_HIGH_PASS)
+        {
+          TCHECK_CMP (min_band_damping (&fdes, req->passband_edge, 0.5 * req->sampling_frequency), <, max_gain);
+          TCHECK_CMP (max_band_damping (&fdes, req->passband_edge, 0.5 * req->sampling_frequency), >, passband_ripple_db);
+        }
+      if (req->type == BSE_IIR_FILTER_BAND_PASS)
+        {
+          TCHECK_CMP (min_band_damping (&fdes, req->passband_edge, req->passband_edge2), <, max_gain);
+          TCHECK_CMP (max_band_damping (&fdes, req->passband_edge, req->passband_edge2), >, passband_ripple_db);
+        }
+      if (req->type == BSE_IIR_FILTER_BAND_STOP)
+        {
+          TCHECK_CMP (min_band_damping (&fdes, req->passband_edge2, 0.5 * req->sampling_frequency), <, max_gain);
+          TCHECK_CMP (max_band_damping (&fdes, req->passband_edge2, 0.5 * req->sampling_frequency), >, passband_ripple_db);
+        }
+      if (i % n_filters_tok == 0)
         TOK();
     }
   TDONE();

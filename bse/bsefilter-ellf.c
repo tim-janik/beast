@@ -118,28 +118,7 @@ typedef struct {
   double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
 } EllfDesignState;
 
-static void __attribute__ ((__format__ (__printf__, 1, 2)))
-VERBOSE (const char *format,
-         ...)
-{
-  char buffer[4096];
-  va_list args;
-  va_start (args, format);
-  vsnprintf (buffer, sizeof (buffer), format, args);
-  va_end (args);
-  printf ("# %s", buffer);
-  fflush (stdout);
-}
-
-#define EVERBOSE VERBOSE
-//#define EVERBOSE(...) do{}while (0)
-
-static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,
-                                       EllfDesignState           *ds);
-
-
-#ifndef ELLF_BEHAVIOR
-
+#if 0 // precision
 //#include "bseieee754.h"
 #define PI                            (3.141592653589793238462643383279502884197)    // pi
 #define BSE_PI_DIV_2                  (1.570796326794896619231321691639751442099)    // pi/2
@@ -155,15 +134,51 @@ static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,
 #define PIO2                    (BSE_PI_DIV_2)                          /* pi/2 */
 #define MAXNUM                  (BSE_DOUBLE_MAX_NORMAL)                 /* 2**1024*(1-MACHEP) */
 
+#else
+
+static double DECIBELL_FACTOR = -1;
+static void
+init_constants (void)
+{
+  DECIBELL_FACTOR = 10.0 / log (10.0);
+}
+static const double MAXNUM =  1.79769313486231570815E308;    /* 2**1024*(1-MACHEP) */
+#undef PI
+static const double PI     =  3.14159265358979323846;       /* pi */
+static const double PIO2   =  1.57079632679489661923;       /* pi/2 */
+static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
+#endif
+
+
+
+#if 0
+#define error_printf(...)       fprintf (stderr, __VA_ARGS__)
+#define ellf_debugf(...)        fprintf (stderr, __VA_ARGS__)
+#define ellf_outputf(...)       fprintf (stdout, __VA_ARGS__)
+#define ellf_inputf(...)        fprintf (stdout, __VA_ARGS__)
+#else
+#define error_printf(...)       while (0) { printf (__VA_ARGS__); }
+#define ellf_debugf(...)        while (0) { printf (__VA_ARGS__); }
+#define ellf_outputf(...)       while (0) { printf (__VA_ARGS__); }
+#define ellf_inputf(...)        while (0) { printf (__VA_ARGS__); }
+#endif
+
+static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,
+                                       EllfDesignState           *ds);
+
+
+#ifndef ELLF_BEHAVIOR
+
 bool
 _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
                          BseIIRFilterDesign             *fid)
 {
+  init_constants();
   EllfDesignState ds = { 0, };
   const char *errmsg = ellf_filter_design (ifr, &ds);
   fflush (stdout);
   fflush (stderr);
-  // VERBOSE ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
+  // ellf_debugf ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
   if (errmsg)
     return false;
   fid->order = ds.n_solved_poles;
@@ -191,22 +206,10 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
 
 #else
 
-static double DECIBELL_FACTOR = -1;
-static void
-init_constants (void)
-{
-  DECIBELL_FACTOR = 10.0 / log (10.0);
-}
-static const double MAXNUM =  1.79769313486231570815E308;    /* 2**1024*(1-MACHEP) */
-static const double PI     =  3.14159265358979323846;       /* pi */
-static const double PIO2   =  1.57079632679489661923;       /* pi/2 */
-static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
-
-
 static double
 my_getnum (const char *text)
 {
-  printf ("%s ? ", text);
+  ellf_inputf ("%s ? ", text);
   char s[4096];
   if (!fgets (s, sizeof (s), stdin))
     exit (0);
@@ -240,14 +243,14 @@ main (int   argc,
     ifr.passband_edge2 = my_getnum ("passband_edge2");
   if (ifr.kind == BSE_IIR_FILTER_ELLIPTIC)
     ifr.stopband_db = ifr.stopband_edge = my_getnum ("stopband_edge or stopband_db");
-  printf ("\n");
+  ellf_inputf ("\n");
   const char *errmsg = ellf_filter_design (&ifr, &ds);
   fflush (stdout);
   fflush (stderr);
-  // VERBOSE ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
+  // ellf_debugf ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
   if (errmsg)
     {
-      fprintf (stderr, "Invalid specification: %s\n", errmsg);
+      error_printf (stderr, "Invalid specification: %s\n", errmsg);
       fflush (stderr);
       return 1;
     }
@@ -397,7 +400,7 @@ math_set_error (char *name, int code)
    * which is supposed to be the name of the
    * function in which the error occurred:
    */
-  printf ("\n%s ", name); // FIXME
+  error_printf ("\n%s ", name); // FIXME
   
   /* Set global error message word */
   math_global_error = code;
@@ -407,7 +410,7 @@ math_set_error (char *name, int code)
    */
   if ((code <= 0) || (code >= 7))
     code = 0;
-  printf ("%s error\n", ermsg[code]);
+  error_printf ("%s error\n", ermsg[code]);
   
   /* Return to calling
    * program
@@ -1094,11 +1097,11 @@ print_z_fraction_before_zplnc (const BseIIRFilterRequest *ifr,
     zgain = 1.0;
   else
     zgain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
-  VERBOSE ("# constant mygain factor %23.13E\n", zgain); // BSE info
-  VERBOSE ("# z plane Denominator      Numerator\n"); // BSE info
+  ellf_outputf ("# constant mygain factor %23.13E\n", zgain); // BSE info
+  ellf_outputf ("# z plane Denominator      Numerator\n"); // BSE info
   int j;
   for (j = 0; j <= ds->n_solved_poles; j++)
-    VERBOSE ("%2d %17.9E %17.9E\n", j, ds->zd[j], ds->zn[j] * zgain); // BSE info
+    ellf_outputf ("# %2d %17.9E %17.9E\n", j, ds->zd[j], ds->zn[j] * zgain); // BSE info
 }
 
 
@@ -1110,37 +1113,37 @@ find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequest *ifr,
   double m = k * k;
   ds->elliptic_Kk = ellpk (1.0 - m);
   ds->elliptic_Kpk = ellpk (m);
-  EVERBOSE ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, ds->elliptic_Kk, ds->elliptic_Kpk); // BSE info
+  ellf_debugf ("check: k=%.20g m=%.20g Kk=%.20g Kpk=%.20g\n", k, m, ds->elliptic_Kk, ds->elliptic_Kpk); // BSE info
   double q = exp (-PI * ifr->order * ds->elliptic_Kpk / ds->elliptic_Kk);	/* the nome of k1 */
   double m1 = jacobi_theta_by_nome (q); /* see below */
   /* Note m1 = ds->ripple_epsilon / sqrt(A*A - 1.0) */
   double a = ds->ripple_epsilon / m1;
   a =  a * a + 1;
   a = 10.0 * log (a) / log (10.0);
-  printf ("dbdown %.9E\n", a);
+  ellf_debugf ("dbdown %.9E\n", a);
   a = 180.0 * asin (k) / PI;
   double b = 1.0 / (1.0 + ds->ripple_epsilon * ds->ripple_epsilon);
   b = sqrt (1.0 - b);
-  printf ("theta=%.9E, rho=%.9E\n", a, b);
+  ellf_debugf ("theta=%.9E, rho=%.9E\n", a, b);
   m1 *= m1;
   double m1p = 1.0 - m1;
   double Kk1 = ellpk (m1p);
   double Kpk1 = ellpk (m1);
   double r = Kpk1 * ds->elliptic_Kk / (Kk1 * ds->elliptic_Kpk);
-  printf ("consistency check: n= %.14E\n", r);
-  EVERBOSE ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
+  ellf_debugf ("consistency check: n= %.14E\n", r);
+  ellf_debugf ("consistency check: r=%.20g Kpk1=%.20g Kk1=%.20g m1=%.20g m1p=%.20g\n", r, Kpk1, Kk1, m1, m1p); // BSE info
   /*   -1
    * sn   j/ds->ripple_epsilon\m  =  j ellik(atan(1/ds->ripple_epsilon), m)
    */
   b = 1.0 / ds->ripple_epsilon;
   ds->elliptic_phi = atan (b);
   double u = ellik (ds->elliptic_phi, m1p);
-  EVERBOSE ("phi=%.20g m=%.20g u=%.20g\n", ds->elliptic_phi, m1p, u);
+  ellf_debugf ("phi=%.20g m=%.20g u=%.20g\n", ds->elliptic_phi, m1p, u);
   /* consistency check on inverse sn */
   double sn, cn, dn;
   ellpj (u, m1p, &sn, &cn, &dn, &ds->elliptic_phi);
   a = sn / cn;
-  EVERBOSE ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
+  ellf_debugf ("consistency check: sn/cn = %.20g = %.20g = 1/ripple\n", a, b);
   ds->elliptic_k = k;
   ds->elliptic_u = u * ds->elliptic_Kk / (ifr->order * Kk1);	/* or, u = u * Kpk / Kpk1 */
   ds->elliptic_m = m;
@@ -1213,9 +1216,9 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
       /* sqrt(1 + 1/ds->ripple_epsilon^2) + 1/ds->ripple_epsilon  = {sqrt(1 + ds->ripple_epsilon^2)  +  1} / ds->ripple_epsilon
        */
       ds->chebyshev_phi = (ds->chebyshev_phi + 1.0) / ds->ripple_epsilon;
-      EVERBOSE ("Chebychev: phi-before=%.20g ripple=%.20g\n", ds->chebyshev_phi, ds->ripple_epsilon); // BSE info
+      ellf_debugf ("Chebychev: phi-before=%.20g ripple=%.20g\n", ds->chebyshev_phi, ds->ripple_epsilon); // BSE info
       ds->chebyshev_phi = pow (ds->chebyshev_phi, 1.0 / ifr->order);  /* raise to the 1/n power */
-      EVERBOSE ("Chebychev: phi-raised=%.20g rn=%.20g\n", ds->chebyshev_phi, ifr->order * 1.0); // BSE info
+      ellf_debugf ("Chebychev: phi-raised=%.20g rn=%.20g\n", ds->chebyshev_phi, ifr->order * 1.0); // BSE info
       double b = 0.5 * (ds->chebyshev_phi + 1.0 / ds->chebyshev_phi); /* y coordinates are on this circle */
       double a = 0.5 * (ds->chebyshev_phi - 1.0 / ds->chebyshev_phi); /* x coordinates are on this circle */
       double m;
@@ -1312,7 +1315,7 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
             }
         }
     }
-  printf ("s plane poles:\n");
+  ellf_outputf ("s plane poles:\n");
   j = 0;
   for (i = 0; i < ds->n_poles + ds->n_zeros; i++)
     {
@@ -1320,9 +1323,9 @@ find_s_plane_poles_and_zeros (const BseIIRFilterRequest *ifr,
       ++j;
       double b = spz[j];
       ++j;
-      printf ("%.9E %.9E\n", a, b);
+      ellf_outputf ("%.9E %.9E\n", a, b);
       if (i == ds->n_poles - 1)
-        printf ("s plane zeros:\n");
+        ellf_outputf ("s plane zeros:\n");
     }
   return 0;
 }
@@ -1481,14 +1484,14 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
         {
           if (ifr->type != BSE_IIR_FILTER_HIGH_PASS)
             {
-              printf ("adding zero at Nyquist frequency\n");
+              ellf_debugf ("adding zero at Nyquist frequency\n");
               ds->z_counter += 1;
               ds->zcpz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
               ds->zcpz[ds->z_counter].i = 0.0;
             }
           if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
             {
-              printf ("adding zero at 0 Hz\n");
+              ellf_debugf ("adding zero at 0 Hz\n");
               ds->z_counter += 1;
               ds->zcpz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
               ds->zcpz[ds->z_counter].i = 0.0;
@@ -1510,7 +1513,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
             }
         }
     }
-  printf ("order = %d\n", ds->n_solved_poles);
+  ellf_outputf ("order = %d\n", ds->n_solved_poles);
 
   /* Expand the poles and zeros into numerator and
    * denominator polynomials
@@ -1605,7 +1608,7 @@ print_quadratic_factors (const BseIIRFilterRequest *ifr,
       a = -x;
       b = 0.0;
     }
-  printf ("q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a);
+  ellf_outputf ("q. f.\nz**2 %23.13E\nz**1 %23.13E\n", b, a);
   if (b != 0.0)
     {
       /* resonant frequency */
@@ -1639,7 +1642,7 @@ print_quadratic_factors (const BseIIRFilterRequest *ifr,
       else
         g = MAXNUM;
     }
-  printf ("f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0);
+  ellf_outputf ("f0 %16.8E  gain %12.4E  DC gain %12.4E\n\n", f, g, g0);
   return 0;
 }
 
@@ -1651,34 +1654,34 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* 
   ds->gain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
   if ((ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1) && ds->numerator_accu == 0)
     ds->gain = 1.0;
-  printf ("constant gain factor %23.13E\n", ds->gain);
+  ellf_outputf ("constant gain factor %23.13E\n", ds->gain);
   for (j = 0; j <= ds->n_solved_poles; j++)
     ds->zn[j] = ds->gain * ds->zn[j];
   
-  printf ("z plane Denominator      Numerator\n");
+  ellf_outputf ("z plane Denominator      Numerator\n");
   for (j = 0; j <= ds->n_solved_poles; j++)
     {
-      printf ("%2d %17.9E %17.9E\n", j, ds->zd[j], ds->zn[j]);
+      ellf_outputf ("%2d %17.9E %17.9E\n", j, ds->zd[j], ds->zn[j]);
     }
 
   /* I /think/ at this point the polynomial is factorized in 2nd order filters,
    * so that it can be implemented without stability problems -- stw
    */
-  printf ("poles and zeros with corresponding quadratic factors\n");
+  ellf_outputf ("poles and zeros with corresponding quadratic factors\n");
   for (j = 0; j < ds->n_solved_poles; j++)
     {
       double a = ds->zcpz[j].r;
       double b = ds->zcpz[j].i;
       if (b >= 0.0)
         {
-          printf ("pole  %23.13E %23.13E\n", a, b);
+          ellf_outputf ("pole  %23.13E %23.13E\n", a, b);
           print_quadratic_factors (ifr, ds, a, b, true);
         }
       a = ds->zcpz[ds->n_solved_poles + j].r;
       b = ds->zcpz[ds->n_solved_poles + j].i;
       if (b >= 0.0)
         {
-          printf ("zero  %23.13E %23.13E\n", a, b);
+          ellf_outputf ("zero  %23.13E %23.13E\n", a, b);
           print_quadratic_factors (ifr, ds, a, b, false);
         }
     }
@@ -1732,7 +1735,7 @@ print_filter_table (const BseIIRFilterRequest *ifr,
         r = -999.99;
       else
         r = 2.0 * DECIBELL_FACTOR * log (r);
-      printf ("%10.1f  %10.2f\n", f, r);
+      ellf_debugf ("%10.1f  %10.2f\n", f, r);
       // f = f + 0.05 * ds->nyquist_frequency;
     }
 }
@@ -1832,7 +1835,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
   if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
     {
       ds->wc = ds->tan_angle_frequency;
-      /*printf("cos(1/2 (Whigh-Wlow) T) = %.5e, wc = %.5e\n", cang, ds->wc);*/
+      /*ellf_debugf("cos(1/2 (Whigh-Wlow) T) = %.5e, wc = %.5e\n", cang, ds->wc);*/
     }
   
   if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
@@ -1926,8 +1929,8 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
               double tmp_y = i == 1 ? tmp_y0 : tmp_y1;
               ds->zd[i] = atan (ds->tan_angle_frequency * tmp_y) * ifr->sampling_frequency / PI ;
             }
-          printf ("pass band %.9E\n", ds->zd[1]);
-          printf ("stop band %.9E\n", ds->zd[2]);
+          ellf_debugf ("pass band %.9E\n", ds->zd[1]);
+          ellf_debugf ("stop band %.9E\n", ds->zd[2]);
 	}
       else
 	{
@@ -1942,8 +1945,8 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
               ds->zd[i] = (q + b) * ds->nyquist_frequency / PI;
               ds->zn[i] = (q - b) * ds->nyquist_frequency / PI;
             }
-          printf ("pass band %.9E %.9E\n", ds->zn[1], ds->zd[1]);
-          printf ("stop band %.9E %.9E\n", ds->zn[2], ds->zd[2]);
+          ellf_debugf ("pass band %.9E %.9E\n", ds->zn[1], ds->zd[1]);
+          ellf_debugf ("stop band %.9E %.9E\n", ds->zn[2], ds->zd[2]);
 	}
       ds->wc = 1.0;
       find_elliptic_locations_in_lambda_plane (ifr, ds);	/* find locations in lambda plane */
@@ -1980,12 +1983,12 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
       /* ds->chebyshev_band_cbp = (ds->cgam - cos (a)) / sin (a); */
       ds->gain_scale = 1.0;
     }
-
-  EVERBOSE ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info
-            "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
-            ds->gain_scale, ds->ripple_epsilon, ds->nyquist_frequency,
-            ds->tan_angle_frequency, ds->stopband_edge, ds->wc, ds->wr, ds->cgam);
-
+  
+  ellf_debugf ("State: gain_scale=%.20g ripple_epsilon=%.20g nyquist_frequency=%.20g " // BSE info
+               "tan_angle_frequency=%.20g stopband_edge=%.20g wc=%.20g wr=%.20g cgam=%.20g\n",
+               ds->gain_scale, ds->ripple_epsilon, ds->nyquist_frequency,
+               ds->tan_angle_frequency, ds->stopband_edge, ds->wc, ds->wr, ds->cgam);
+  
   find_s_plane_poles_and_zeros (ifr, ds);		/* find s plane poles and zeros */
   
   if ((ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP) && 4 * ifr->order + 2 > BSE_IIR_CARRAY_SIZE)
@@ -1994,7 +1997,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
   convert_s_plane_to_z_plane (ifr, ds);	/* convert s plane to z plane */
   // volatile_sink ("x");
   z_plane_zeros_poles_to_numerator_denomerator (ifr, ds);
-  EVERBOSE ("an=%.20g pn=%.20g scale=%.20g\n", ds->denominator_accu, ds->numerator_accu, ds->gain_scale); // BSE info
+  ellf_debugf ("an=%.20g pn=%.20g scale=%.20g\n", ds->denominator_accu, ds->numerator_accu, ds->gain_scale); // BSE info
   print_z_fraction_before_zplnc (ifr, ds);
   gainscale_and_print_deno_nume_zeros2_poles2 (ifr, ds);
   print_filter_table (ifr, ds); /* tabulate transfer function */
