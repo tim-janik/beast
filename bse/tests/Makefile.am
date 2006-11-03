@@ -16,6 +16,7 @@ noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse.la
 
 TESTS             += filtertest
+SLOWTESTS         += filtertest
 filtertest_SOURCES = filtertest.cc
 filtertest_LDADD   = $(progs_ldadd)
 

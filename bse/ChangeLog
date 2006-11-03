@@ -1,3 +1,21 @@
+Fri Nov  3 02:19:09 2006  Tim Janik  <timj@gtk.org>
+
+	* bsefilter.h, bsefilter.cc: removed transfer funciton nominator and
+	denominator from public API, because they are useless for higher 
+	order filters. added center-frequency to public API, which is the
+	middle frequency for band filters (used to evaluate gain ot stopband).
+
+	* bsefilter-ellf.c: provide BseIIRFilterDesign.center_frequency.
+	made some slight precision improvements for cgam evaluations.
+
+	* tests/filtertest.cc: special cased lengthy routines as slowtest.
+	removed any code (check, eval) related to filter transfer functions.
+	did some test split ups. added random filter tests for butterworth,
+	chebyshev1, elliptic. extended generic filter test to test passband
+	min/max from both sides. added some stopband tests.
+
+	* tests/filtercatalog.cc: random filter catalog generated with bse-ellf.
+
 Thu Nov  2 22:56:55 2006  Tim Janik  <timj@gtk.org>
 
 	* bsefilter-ellf.c: z_plane_zeros_poles_to_numerator_denomerator():

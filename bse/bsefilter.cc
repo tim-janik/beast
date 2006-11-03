@@ -32,7 +32,7 @@ bse_iir_filter_kind_string (BseIIRFilterKind fkind)
     case BSE_IIR_FILTER_BESSEL:         return "Bessel";
     case BSE_IIR_FILTER_CHEBYSHEV1:     return "Chebyshev1";
     case BSE_IIR_FILTER_CHEBYSHEV2:     return "Chebyshev2";
-    case BSE_IIR_FILTER_ELLIPTIC:       return "Cauer";
+    case BSE_IIR_FILTER_ELLIPTIC:       return "Elliptic";
     default:                            return "?unknown?";
     }
 }
@@ -76,7 +76,8 @@ bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
 {
   String s;
   s += "order=" + string_from_int (fid->order);
-  s += " sample-rate=" + string_from_float (fid->sampling_frequency);
+  s += " sampling-frequency=" + string_from_float (fid->sampling_frequency);
+  s += " center-frequency=" + string_from_float (fid->center_frequency);
   s += " gain=" + string_from_double (fid->gain);
   s += " n_zeros=" + string_from_int (fid->n_zeros);
   s += " n_poles=" + string_from_int (fid->n_poles);
@@ -95,6 +96,7 @@ bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
       s += "\n" + u;
     }
   String u;
+#if 0
   uint o = fid->order;
   u = string_from_double (fid->zn[o]);
   while (o--)
@@ -105,6 +107,7 @@ bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
   while (o--)
     u = "(" + u + ") * z + " + string_from_double (fid->zd[o]);
   s += "\nDenominator: " + u;
+#endif
   return g_strdup (s.c_str());
 }
 

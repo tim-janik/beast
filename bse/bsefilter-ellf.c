@@ -93,9 +93,9 @@ typedef struct {
   double ripple_epsilon;
   double nyquist_frequency;
   double tan_angle_frequency;
-  double wc; /* tan_angle_frequency or normalized to 1.0 for elliptic */
-  double cgam; /* angle frequency temporary */
-  double stopband_edge; /* derived from ifr->stopband_edge or ifr->stopband_db */
+  double wc;                    /* tan_angle_frequency or normalized to 1.0 for elliptic */
+  double cgam;                  /* cos (band_filter_center_frequency) */
+  double stopband_edge;         /* derived from ifr->stopband_edge or ifr->stopband_db */
   double wr;
   double numerator_accu;
   double denominator_accu;
@@ -111,11 +111,11 @@ typedef struct {
   double elliptic_Kpk; /* complete elliptic integral of the first kind of elliptic_m */
   /* common output */
   double  gain;
-  double  spz[BSE_IIR_CARRAY_SIZE];	/* s-plane poles and zeros */
+  double  spz[BSE_IIR_CARRAY_SIZE];	        /* s-plane poles and zeros */
   EllfComplex zcpz[BSE_IIR_CARRAY_SIZE];	/* z-plane poles and zeros */
   /* normalized z-plane transfer function */
-  double  zn[BSE_IIR_CARRAY_SIZE];      /* numerator coefficients [order+1] */
-  double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
+  double  zn[BSE_IIR_CARRAY_SIZE];              /* numerator coefficients [order+1] */
+  double  zd[BSE_IIR_CARRAY_SIZE];              /* denominator coefficients [order+1] */
 } EllfDesignState;
 
 #if 0 // precision
@@ -198,9 +198,17 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
     }
   for (i = 0; i <= fid->order; i++)
     {
+#if 0
       fid->zn[i] = ds.zn[i];
       fid->zd[i] = ds.zd[i];
+#endif
     }
+  if (ifr->type == BSE_IIR_FILTER_LOW_PASS)
+    fid->center_frequency = 0;
+  else if (ifr->type == BSE_IIR_FILTER_HIGH_PASS)
+    fid->center_frequency = 0.5 * fid->sampling_frequency;
+  else /* band filter */
+    fid->center_frequency = 0.5 * fid->sampling_frequency / PI * (PIO2 - asin (ds.cgam));
   return true;
 }
 
@@ -1616,7 +1624,7 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
       break;
     case BSE_IIR_FILTER_BAND_PASS:
       /* cgam = cos (band_pass_center_frequency) */
-      z = ds->cgam + I * sin (acos (ds->cgam));
+      z = ds->cgam + I * sin (PIO2 - asin (ds->cgam)); /* PI/2 - asin (cgam) = acos (cgam) = band-center-frequency */
       num = 1;
       den = 1;
       for (i = 0; i < ds->n_solved_poles; i++)
@@ -1875,7 +1883,6 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
    * where T = 1/ifr->sampling_frequency
    */
   double ang = band_width * PI / ifr->sampling_frequency; /* angle frequency */
-  double sang;
   double cang = cos (ang);
   ds->tan_angle_frequency = sin (ang) / cang; /* Wanalog */
   if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
@@ -1912,11 +1919,10 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
             }
           else
             {
-              // FIXME: using tmp_cgam here increases precision
               double a = ds->tan_angle_frequency * ds->wr;
               a *= a;
-              double b = a * (1.0 - ds->cgam * ds->cgam) + a * a;
-              b = (ds->cgam + sqrt (b)) / (1.0 + a);
+              double b = a * (1.0 - tmp_cgam * tmp_cgam) + a * a;
+              b = (tmp_cgam + sqrt (b)) / (1.0 + a);
               ds->stopband_edge = (PI / 2.0 - asin (b)) * ifr->sampling_frequency / (2.0 * PI);
             }
         }
@@ -1943,7 +1949,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
 	}
       ang = ds->stopband_edge * PI / ifr->sampling_frequency;
       cang = cos (ang);
-      sang = sin (ang);
+      double sang = sin (ang);
 
       if (ifr->type == BSE_IIR_FILTER_LOW_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
 	{
@@ -1954,7 +1960,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
           double q = cang * cang  -  sang * sang;
           sang = 2.0 * cang * sang;
           cang = q;
-          ds->wr = (ds->cgam - cang) / (sang * ds->tan_angle_frequency);
+          ds->wr = (tmp_cgam - cang) / (sang * ds->tan_angle_frequency);
 	}
 
       if (ifr->type == BSE_IIR_FILTER_HIGH_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
@@ -1986,8 +1992,8 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
               double tmp_y = i == 1 ? tmp_y0 : tmp_y1;
               double a = ds->tan_angle_frequency * tmp_y;
               double b = atan (a);
-              double q = sqrt (1.0 + a * a  -  ds->cgam * ds->cgam);
-              q = atan2 (q, ds->cgam);
+              double q = sqrt (1.0 + a * a - tmp_cgam * tmp_cgam);
+              q = atan2 (q, tmp_cgam);
               ds->zd[i] = (q + b) * ds->nyquist_frequency / PI;
               ds->zn[i] = (q - b) * ds->nyquist_frequency / PI;
             }

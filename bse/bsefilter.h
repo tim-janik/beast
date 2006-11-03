@@ -58,6 +58,7 @@ typedef struct {
 typedef struct {
   double  sampling_frequency;		/* same as BseIIRFilterRequest.sampling_frequency */
   uint 	  order;
+  double  center_frequency;
   /* z-plane poles and zeros */
   double  gain;
   uint    n_zeros;
@@ -65,8 +66,8 @@ typedef struct {
   uint    n_poles;
   Complex zp[BSE_IIR_CARRAY_SIZE / 2];	/* z-plane poles [order] */
   /* normalized z-plane transfer function */
-  double  zn[BSE_IIR_CARRAY_SIZE];	/* numerator coefficients [order+1] */
-  double  zd[BSE_IIR_CARRAY_SIZE];	/* denominator coefficients [order+1] */
+  // double zn[BSE_IIR_CARRAY_SIZE];	/* numerator coefficients [order+1] */
+  // double zd[BSE_IIR_CARRAY_SIZE];	/* denominator coefficients [order+1] */
 } BseIIRFilterDesign;
 
 typedef struct {
