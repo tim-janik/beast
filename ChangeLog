@@ -1,3 +1,8 @@
+Fri Nov  3 02:20:01 2006  Tim Janik  <timj@gtk.org>
+
+	* r+d-files/bse-ellf.c: ssignificantly reduced the number of 
+	generated filters.
+
 Thu Nov  2 22:30:27 2006  Tim Janik  <timj@gtk.org>
 
 	* r+d-files/bse-ellf.c: initialize random generators.

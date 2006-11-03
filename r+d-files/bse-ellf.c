@@ -1767,14 +1767,14 @@ generate_filters_brute_force (void)
   };
   const int n_sampling_frequencies = sizeof (sampling_frequencies) / sizeof (sampling_frequencies[0]);
   const int filter_orders[] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // used for random orders */
+    1, 2, 3, 4, 5,
+    0, 0, 0, 0, 0, /* used for random orders */
   };
   const int n_orders = sizeof (filter_orders) / sizeof (filter_orders[0]);
   int oix, max_order_index = 0;
   for (oix = 0; oix < n_orders; oix++)
     max_order_index = filter_orders[oix] ? oix : max_order_index;
-  int rand_order_width = (48 - filter_orders[max_order_index]);
+  int rand_order_width = (32 - filter_orders[max_order_index]);
   double pbe1;
   
 #if 1
@@ -1788,7 +1788,7 @@ generate_filters_brute_force (void)
         einput.passband_edge = pbe1 * einput.sampling_frequency;
         einput.type = LOW_PASS;
         main_ellf (&einput);
-        einput.type =HIGH_PASS;
+        einput.type = HIGH_PASS;
         main_ellf (&einput);
         /* band filters */
         if (pbe1 + 0.1 < 0.48)
