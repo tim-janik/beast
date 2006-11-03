@@ -19,6 +19,7 @@ TESTS             += filtertest
 SLOWTESTS         += filtertest
 filtertest_SOURCES = filtertest.cc
 filtertest_LDADD   = $(progs_ldadd)
+EXTRA_DIST        += filtercatalog.cc
 
 TESTS          += testfft
 testfft_SOURCES = testfft.c cxxdummy.cc
