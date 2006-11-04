@@ -1,4 +1,5 @@
 NEXT-RELEASE:
+- describe the need for Kernel 2.6 in README
 - fix bse.pc depending on mad.pc, libmad can be installed *without* a mad.pc file
 - GslLong -> int64 
 - wave-tool:
@@ -17,6 +18,7 @@ NEXT-RELEASE:
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
 - add normalize to bsewavetool
 - toggle sensitivity of oscillator:Pusle properties when non-pulse wave form is selected
+- song pointer display should be adjusted by the latency value specified in preferences
 INCOMPAT:
 - merge 2 * BseSimpleADSR into 1
 - delete BseAtanDistort
@@ -25,6 +27,11 @@ USAGE:
 - in song view, there should be a way to directly load wave files
 - when popping up the synth selection, if no synth is presnet but waves are available, the notebook should show the Waves page
 MISC:
+- add a dialog that provides details about beast's current run mode:
+  - selected audio driver, bit depth and mix-freq thereof
+  - provide rating for alternative audio drivers (ALSA)
+  - running on kernel 2.6 scheduler?
+  - reniced synthesis engine?
 - fix bsepcmdevice-alsa.c:alsa_device_retrigger():g_malloc0(): to instead use bse_engine_const_zeros()
 - make BSE_REGISTER_OBJECT() define parent_class, similar to G_DEFINE_TYPE
 - align engine blck adresses and engine block sizes on 16byte boundaries upon allocation
