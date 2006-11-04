@@ -260,10 +260,18 @@ tabort_handler (bool   set_values,
   TABORT_call();                                        \
 } while (0)
 
-/* Given an upper test duration bound, this macro will return the number
+/* TEST_CALIBRATION() - This macro is used to calculate the number of
+ * repetitions needed for execution of a test routine, so that the total
+ * duration is long enough to be measured by a timer with millisecond
+ * resolution like gettimeofday().
+ * Given an upper test duration bound, this macro will return the number
  * of inner loop repetitions needed for benchmarking a piece of code.
  * Estimated run time: the calibration process should take somewhat
  * less than MIN (max_calibration_time, (target_ms * 2 * 7)) milliseconds.
+ * @arg target_ms       expected total test runtime for RUNS * dups * testfunc_time
+ * @var max_calibration_time expected upper bound for test calibration runtime
+ * In this macro, "dups" is calculated appropriately for max_calibration_time,
+ * and scaled upon return to match target_ms accordingly.
  */
 #define TEST_CALIBRATION(target_ms, CODE)		({			 	\
   const guint   runs = 7;                                                               \
