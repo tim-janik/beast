@@ -25,7 +25,9 @@
 #include <bse/bseglobals.h> // FIXME
 #include "topconfig.h"
 #include <math.h>
+#include <complex>
 
+typedef std::complex<double> Complex;
 using namespace Birnet;
 using std::max;
 using std::min;
@@ -37,11 +39,11 @@ sqr (register double a)
 }
 
 static inline uint
-complex_find_nearest (const Complex *zp,
-                      uint           n_zps,
-                      const Complex *zps)
+complex_find_nearest (const BseComplex *zp,
+                      uint              n_zps,
+                      const Complex    *zps)
 {
-  const Complex z = *zp;
+  const Complex z = Complex (zp->re, zp->im);
   uint j = 0;
   double last = sqr (real (z) - real (zps[j])) + sqr (imag (z) - imag (zps[j]));
   if (last == 0.0)
@@ -61,9 +63,9 @@ complex_find_nearest (const Complex *zp,
 }
 
 static double
-compare_zeros (uint           n_zeros,
-               const Complex *czeros,
-               const double  *rizeros)
+compare_zeros (uint              n_zeros,
+               const BseComplex *czeros,
+               const double     *rizeros)
 {
   Complex *z2 = (Complex*) alloca (sizeof (Complex) * n_zeros);
   for (uint i = 0; i < n_zeros; i++)
@@ -72,8 +74,8 @@ compare_zeros (uint           n_zeros,
   for (uint i = 0; i < n_zeros; i++)
     {
       uint j = complex_find_nearest (&czeros[i], n_zeros - i, z2);
-      double reps = fabs (real (z2[j]) - real (czeros[i]));
-      double ieps = fabs (imag (z2[j]) - imag (czeros[i]));
+      double reps = fabs (real (z2[j]) - czeros[i].re);
+      double ieps = fabs (imag (z2[j]) - czeros[i].im);
       z2[j] = z2[n_zeros - i - 1]; // optimization of: swap (z2[last], z2[j]);
       max_eps = max (max_eps, max (reps, ieps));
     }
@@ -97,15 +99,15 @@ filter_zp_response (const BseIIRFilterDesign *fdes,
   Complex num (1, 0), den (1, 0);
   for (uint i = 0; i < fdes->n_zeros; i++)
     {
-      num = num * (z - fdes->zz[i]);
-      if (imag (fdes->zz[i]) != 0.0)
-        num = num * (z - conj (fdes->zz[i]));
+      num = num * (z - Complex (fdes->zz[i].re, fdes->zz[i].im));
+      if (fdes->zz[i].im != 0.0)
+        num = num * (z - std::conj (Complex (fdes->zz[i].re, fdes->zz[i].im)));
     }
   for (uint i = 0; i < fdes->n_poles; i++)
     {
-      den = den * (z - fdes->zp[i]);
-      if (imag (fdes->zp[i]) != 0.0)
-        den = den * (z - conj (fdes->zp[i]));
+      den = den * (z - Complex (fdes->zp[i].re, fdes->zp[i].im));
+      if (fdes->zp[i].im != 0.0)
+        den = den * (z - std::conj (Complex (fdes->zp[i].re, fdes->zp[i].im)));
     }
   Complex r = fdes->gain * num / den;
   double freq_magnitude = abs (r);
@@ -636,6 +638,7 @@ random_filter_tests ()
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_ELLIPTIC;
+  frequest.stopband_edge = 0;
   for (oix = 0; oix < n_orders; oix++)
     for (pbe1 = 0.15; pbe1 <= 0.46; pbe1 += 0.15)
       {
@@ -667,6 +670,7 @@ random_filter_tests ()
   /* generate filter requirements */
   filter_index = 0;
   frequest.kind = BSE_IIR_FILTER_ELLIPTIC;
+  frequest.stopband_db = 0;
   for (oix = 0; oix < n_orders; oix++)
     for (pbe1 = 0.1; pbe1 <= 0.46; pbe1 += 0.15)
       {
@@ -709,7 +713,7 @@ test_filter_catalog ()
   /* include predesigned filters */
 #include "filtercatalog.cc"
 
-  uint skip_count = 0, tick_count = 8;
+  uint skip_count = 0, tick_count = 3;
   if (sfi_init_settings().test_quick)
     {
       tick_count = 1;

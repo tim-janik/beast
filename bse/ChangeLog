@@ -1,3 +1,18 @@
+Sat Nov  4 17:38:28 2006  Tim Janik  <timj@gtk.org>
+
+	* bsemath.h: don't include neither of the C++ <complex> or the C99
+	<complex.h> header files. removed compat typedefs. we'll simply resort
+	to using BseComplex in headers and use <complex> in C++ files.
+
+	* bsefilter.h: use BseComplex for complex numbers in header files.
+
+	* bsefilter.cc: adaptions to BseComplex.
+
+	* bsefilter-ellf.c: use BseComplex instead of C99 complex.
+
+	* tests/filtertest.cc: adaptions to BseComplex. fixed elliptic filter
+	test to really use stopband_edges, not stopband_db.
+
 Fri Nov  3 02:19:09 2006  Tim Janik  <timj@gtk.org>
 
 	* bsefilter.h, bsefilter.cc: removed transfer funciton nominator and

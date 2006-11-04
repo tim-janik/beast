@@ -56,15 +56,15 @@ typedef struct {
 #define BSE_IIR_CARRAY_SIZE		(4 * BSE_IIR_MAX_ORDER + 2) /* size of arrays used to store coefficients */
 
 typedef struct {
-  double  sampling_frequency;		/* same as BseIIRFilterRequest.sampling_frequency */
-  uint 	  order;
-  double  center_frequency;
+  double     sampling_frequency;		/* same as BseIIRFilterRequest.sampling_frequency */
+  uint 	     order;
+  double     center_frequency;
   /* z-plane poles and zeros */
-  double  gain;
-  uint    n_zeros;
-  Complex zz[BSE_IIR_CARRAY_SIZE / 2];	/* z-plane zeros [order] */
-  uint    n_poles;
-  Complex zp[BSE_IIR_CARRAY_SIZE / 2];	/* z-plane poles [order] */
+  double     gain;
+  uint       n_zeros;
+  BseComplex zz[BSE_IIR_CARRAY_SIZE / 2];	/* z-plane zeros [order] */
+  uint       n_poles;
+  BseComplex zp[BSE_IIR_CARRAY_SIZE / 2];	/* z-plane poles [order] */
   /* normalized z-plane transfer function */
   // double zn[BSE_IIR_CARRAY_SIZE];	/* numerator coefficients [order+1] */
   // double zd[BSE_IIR_CARRAY_SIZE];	/* denominator coefficients [order+1] */

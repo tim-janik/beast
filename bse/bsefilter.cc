@@ -84,15 +84,15 @@ bse_iir_filter_design_string (const BseIIRFilterDesign *fid)
   for (uint i = 0; i < fid->n_zeros; i++)
     {
       String u ("Zero:");
-      u += " " + string_from_double (real (fid->zz[i]));
-      u += " + " + string_from_double (imag (fid->zz[i])) + "*i";
+      u += " " + string_from_double (fid->zz[i].re);
+      u += " + " + string_from_double (fid->zz[i].im) + "*i";
       s += "\n" + u;
     }
   for (uint i = 0; i < fid->n_poles; i++)
     {
       String u ("Pole:");
-      u += " " + string_from_double (real (fid->zp[i]));
-      u += " + " + string_from_double (imag (fid->zp[i])) + "*i";
+      u += " " + string_from_double (fid->zp[i].re);
+      u += " + " + string_from_double (fid->zp[i].im) + "*i";
       s += "\n" + u;
     }
   String u;

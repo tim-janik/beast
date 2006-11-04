@@ -191,10 +191,10 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
     {
       double a = ds.zcpz[i].r, b = ds.zcpz[i].i;
       if (b >= 0.0)
-        fid->zp[fid->n_poles++] = a + I * b;
+        fid->zp[fid->n_poles++] = bse_complex (a, b);
       a = ds.zcpz[ds.n_solved_poles + i].r, b = ds.zcpz[ds.n_solved_poles + i].i;
       if (b >= 0.0)
-        fid->zz[fid->n_zeros++] = a + I * b;
+        fid->zz[fid->n_zeros++] = bse_complex (a, b);
     }
   for (i = 0; i <= fid->order; i++)
     {
@@ -1599,45 +1599,34 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
                ds->numerator_accu / ds->denominator_accu * ds->gain_scale);
 #endif
   /* calculate gain by evaluating poles and zeros */
+  BseComplex z;
   switch (ifr->type)
     {
-      Complex z, num, den;
-      uint i;
     case BSE_IIR_FILTER_LOW_PASS:
     case BSE_IIR_FILTER_BAND_STOP:
     case BSE_IIR_FILTER_HIGH_PASS:
       if (ifr->type == BSE_IIR_FILTER_HIGH_PASS)
-        z = -1 + I * 0;
+        z = bse_complex (-1, 0);
       else
-        z = +1 + I * 0;
-      num = 1;
-      den = 1;
-      for (i = 0; i < ds->n_solved_poles; i++)
-        {
-          const Complex zero = ds->zcpz[ds->n_solved_poles + i].r + I * ds->zcpz[ds->n_solved_poles + i].i;
-          const Complex pole = ds->zcpz[i].r + I * ds->zcpz[i].i;
-          num = num * (z - zero);
-          den = den * (z - pole);
-        }
-      ds->numerator_accu = cabs (num);
-      ds->denominator_accu = cabs (den);
+        z = bse_complex (+1, 0);
       break;
     case BSE_IIR_FILTER_BAND_PASS:
       /* cgam = cos (band_pass_center_frequency) */
-      z = ds->cgam + I * sin (PIO2 - asin (ds->cgam)); /* PI/2 - asin (cgam) = acos (cgam) = band-center-frequency */
-      num = 1;
-      den = 1;
-      for (i = 0; i < ds->n_solved_poles; i++)
-        {
-          const Complex zero = ds->zcpz[ds->n_solved_poles + i].r + I * ds->zcpz[ds->n_solved_poles + i].i;
-          const Complex pole = ds->zcpz[i].r + I * ds->zcpz[i].i;
-          num = num * (z - zero);
-          den = den * (z - pole);
-        }
-      ds->numerator_accu = cabs (num);
-      ds->denominator_accu = cabs (den);
+      z = bse_complex (ds->cgam, sin (PIO2 - asin (ds->cgam))); /* PI/2 - asin (cgam) = acos (cgam) = band-center-frequency */
       break;
     }
+  BseComplex num = bse_complex (+1, 0);
+  BseComplex den = bse_complex (+1, 0);
+  uint i;
+  for (i = 0; i < ds->n_solved_poles; i++)
+    {
+      const BseComplex zero = bse_complex (ds->zcpz[ds->n_solved_poles + i].r, ds->zcpz[ds->n_solved_poles + i].i);
+      const BseComplex pole = bse_complex (ds->zcpz[i].r, ds->zcpz[i].i);
+      num = bse_complex_mul (num, bse_complex_sub (z, zero));
+      den = bse_complex_mul (den, bse_complex_sub (z, pole));
+    }
+  ds->numerator_accu = bse_complex_abs (num);
+  ds->denominator_accu = bse_complex_abs (den);
   ellf_debugf ("FILTERGAIN-bse:  %.17g / %.17g * scale = %.17g\n", ds->numerator_accu, ds->denominator_accu,
                ds->numerator_accu / ds->denominator_accu * ds->gain_scale);
   return 0;
