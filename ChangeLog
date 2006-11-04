@@ -1,6 +1,10 @@
+Sat Nov  4 17:36:59 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefextract.cc: removed redundant parenthesis from join_slices().
+
 Fri Nov  3 02:20:01 2006  Tim Janik  <timj@gtk.org>
 
-	* r+d-files/bse-ellf.c: ssignificantly reduced the number of 
+	* r+d-files/bse-ellf.c: significantly reduced the number of 
 	generated filters.
 
 Thu Nov  2 22:30:27 2006  Tim Janik  <timj@gtk.org>
