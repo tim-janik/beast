@@ -327,14 +327,6 @@ main (int   argc,
  */
 
 /* --- prototypes --- */
-static const BseComplex COMPLEX_ONE = {1.0, 0.0};
-static double Cabs   (const BseComplex *z);
-static void   Cadd   (const BseComplex *a, const BseComplex *b, BseComplex *c);
-static void   Cdiv   (const BseComplex *a, const BseComplex *b, BseComplex *c);
-static void   Cmov   (const BseComplex *a,                   BseComplex *b);
-static void   Cmul   (const BseComplex *a, const BseComplex *b, BseComplex *c);
-static void   Csqrt  (const BseComplex *z,                   BseComplex *w);
-static void   Csub   (const BseComplex *a, const BseComplex *b, BseComplex *c);
 static double polevl (double x, const double coef[], int N);
 static double ellik  (double phi, double m); // incomplete elliptic integral of the first kind
 static double ellpk  (double x); // complete elliptic integral of the first kind
@@ -419,269 +411,6 @@ math_set_error (char *name, int code)
    * program
    */
   return 0;
-}
-
-/* --- complex number arithmetic --- */
-/* c = b + a	*/
-static void
-Cadd (const BseComplex *a, const BseComplex *b, BseComplex *c)
-{
-  c->re = b->re + a->re;
-  c->im = b->im + a->im;
-}
-
-/* c = b - a	*/
-static void
-Csub (const BseComplex *a, const BseComplex *b, BseComplex *c)
-{
-  c->re = b->re - a->re;
-  c->im = b->im - a->im;
-}
-
-/* c = b * a */
-static void
-Cmul (const BseComplex *a, const BseComplex *b, BseComplex *c)
-{
-  /* Multiplication:
-   *    c.re  =  b.re * a.re  -  b.im * a.im
-   *    c.im  =  b.re * a.im  +  b.im * a.re
-   */
-  double y;
-  y    = b->re * a->re  -  b->im * a->im;
-  c->im = b->re * a->im  +  b->im * a->re;
-  c->re = y;
-  /* see Cdiv() for accuracy comments */
-}
-
-/* c = b / a */
-static void
-Cdiv (const BseComplex *a, const BseComplex *b, BseComplex *c)
-{
-  /* Division:
-   *    d    =  a.re * a.re  +  a.im * a.im
-   *    c.re  = (b.re * a.re  + b.im * a.im)/d
-   *    c.im  = (b.im * a.re  -  b.re * a.im)/d
-   */
-  double y = a->re * a->re  +  a->im * a->im;
-  double p = b->re * a->re  +  b->im * a->im;
-  double q = b->im * a->re  -  b->re * a->im;
-  
-  if (y < 1.0)
-    {
-      double w = MAXNUM * y;
-      if ((fabs (p) > w) || (fabs (q) > w) || (y == 0.0))
-        {
-          c->re = MAXNUM;
-          c->im = MAXNUM;
-          math_set_error ("Cdiv", MATH_ERROR_OVERFLOW);
-          return;
-        }
-    }
-  c->re = p/y;
-  c->im = q/y;
-  /* ACCURACY:
-   * In DEC arithmetic, the test (1/z) * z = 1 had peak relative
-   * error 3.1e-17, rms 1.2e-17.  The test (y/z) * (z/y) = 1 had
-   * peak relative error 8.3e-17, rms 2.1e-17.
-   * Tests in the rectangle {-10,+10}:
-   *                      Relative error:
-   * arithmetic   function  # trials      peak         rms
-   *    DEC        Cadd       10000       1.4e-17     3.4e-18
-   *    IEEE       Cadd      100000       1.1e-16     2.7e-17
-   *    DEC        Csub       10000       1.4e-17     4.5e-18
-   *    IEEE       Csub      100000       1.1e-16     3.4e-17
-   *    DEC        Cmul        3000       2.3e-17     8.7e-18
-   *    IEEE       Cmul      100000       2.1e-16     6.9e-17
-   *    DEC        Cdiv       18000       4.9e-17     1.3e-17
-   *    IEEE       Cdiv      100000       3.7e-16     1.1e-16
-   */
-}
-
-/* b = a */
-static void
-Cmov (const BseComplex *a, BseComplex *b)
-{
-  *b = *a;
-}
-
-/* Cabs() - Complex absolute value
- *
- * SYNOPSIS:
- * double Cabs();
- * BseComplex z;
- * double a;
- *
- * a = Cabs (&z);
- *
- * DESCRIPTION:
- * If z = x + iy
- * then
- *       a = sqrt (x**2 + y**2).
- * Overflow and underflow are avoided by testing the magnitudes
- * of x and y before squaring.  If either is outside half of
- * the floating point full scale range, both are rescaled.
- *
- * ACCURACY:
- *                      Relative error:
- * arithmetic   domain     # trials      peak         rms
- *    DEC       -30,+30     30000       3.2e-17     9.2e-18
- *    IEEE      -10,+10    100000       2.7e-16     6.9e-17
- */
-static double
-Cabs (const BseComplex *z)
-{
-  /* exponent thresholds for IEEE doubles */
-  const double PREC = 27;
-  const double MAXEXP = 1024;
-  const double MINEXP = -1077;
-
-  double x, y, b, re, im;
-  int ex, ey, e;
-  
-  /* Note, Cabs (INFINITY,NAN) = INFINITY. */
-  if (z->re == INFINITY || z->im == INFINITY
-      || z->re == -INFINITY || z->im == -INFINITY)
-    return INFINITY;
-  
-  if (isnan (z->re))
-    return z->re;
-  if (isnan (z->im))
-    return z->im;
-  
-  re = fabs (z->re);
-  im = fabs (z->im);
-  
-  if (re == 0.0)
-    return im;
-  if (im == 0.0)
-    return re;
-  
-  /* Get the exponents of the numbers */
-  x = frexp (re, &ex);
-  y = frexp (im, &ey);
-  
-  /* Check if one number is tiny compared to the other */
-  e = ex - ey;
-  if (e > PREC)
-    return re;
-  if (e < -PREC)
-    return im;
-  
-  /* Find approximate exponent e of the geometric mean. */
-  e = (ex + ey) >> 1;
-  
-  /* Rescale so mean is about 1 */
-  x = ldexp (re, -e);
-  y = ldexp (im, -e);
-  
-  /* Hypotenuse of the right triangle */
-  b = sqrt (x * x  +  y * y);
-  
-  /* Compute the exponent of the answer. */
-  y = frexp (b, &ey);
-  ey = e + ey;
-  
-  /* Check it for overflow and underflow. */
-  if (ey > MAXEXP)
-    {
-      math_set_error ("Cabs", MATH_ERROR_OVERFLOW);
-      return INFINITY;
-    }
-  if (ey < MINEXP)
-    return 0.0;
-  
-  /* Undo the scaling */
-  b = ldexp (b, e);
-  return b;
-}
-
-/* Csqrt() - Complex square root
- *
- * SYNOPSIS:
- * void Csqrt();
- * BseComplex z, w;
- * Csqrt (&z, &w);
- *
- * DESCRIPTION:
- * If z = x + iy,  r = |z|, then
- *                       1/2
- * Im w  =  [ (r - x)/2 ]   ,
- * Re w  =  y / 2 Im w.
- *
- * Note that -w is also a square root of z.  The root chosen
- * is always in the upper half plane.
- * Because of the potential for cancellation error in r - x,
- * the result is sharpened by doing a Heron iteration
- * (see sqrt.c) in complex arithmetic.
- *
- * ACCURACY:
- *                      Relative error:
- * arithmetic   domain     # trials      peak         rms
- *    DEC       -10,+10     25000       3.2e-17     9.6e-18
- *    IEEE      -10,+10    100000       3.2e-16     7.7e-17
- *                        2
- * Also tested by Csqrt (z) = z, and tested by arguments
- * close to the real axis.
- */
-static void
-Csqrt (const BseComplex *z, BseComplex *w)
-{
-  BseComplex q, s;
-  double x, y, r, t;
-  
-  x = z->re;
-  y = z->im;
-  
-  if (y == 0.0)
-    {
-      if (x < 0.0)
-        {
-          w->re = 0.0;
-          w->im = sqrt (-x);
-          return;
-        }
-      else
-        {
-          w->re = sqrt (x);
-          w->im = 0.0;
-          return;
-        }
-    }
-  
-  if (x == 0.0)
-    {
-      r = fabs (y);
-      r = sqrt (0.5*r);
-      if (y > 0)
-        w->re = r;
-      else
-        w->re = -r;
-      w->im = r;
-      return;
-    }
-  
-  /* Approximate  sqrt (x^2+y^2) - x  =  y^2/2x - y^4/24x^3 + ... .
-   * The relative error in the first term is approximately y^2/12x^2 .
-   */
-  if ((fabs (y) < 2.e-4 * fabs (x))
-      && (x > 0))
-    {
-      t = 0.25*y*(y/x);
-    }
-  else
-    {
-      r = Cabs (z);
-      t = 0.5*(r - x);
-    }
-  
-  r = sqrt (t);
-  q.im = r;
-  q.re = y/(2.0*r);
-  /* Heron iteration in complex arithmetic */
-  Cdiv (&q, z, &s);
-  Cadd (&q, &s, w);
-  w->re *= 0.5;
-  w->im *= 0.5;
 }
 
 /* --- elliptic functions --- */
@@ -1384,7 +1113,7 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
               cden.re = 1 - C * r.re;
               cden.im = -C * r.im;
               ds->z_counter += 1;
-              Cdiv (&cden, &cnum, &z_pz[ds->z_counter]);
+              z_pz[ds->z_counter] = bse_complex_div (cnum, cden);
               if (r.im != 0.0)
                 {
                   /* fill in complex conjugate root */
@@ -1412,25 +1141,25 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
               else
                 cwc.re = ds->tan_angle_frequency;
               cwc.im = 0.0;
-              Cmul (&r, &cwc, &cnum);     /* r wc */
-              Csub (&cnum, &COMPLEX_ONE, &ca);   /* a = 1 - r wc */
-              Cmul (&cnum, &cnum, &b4ac); /* 1 - (r wc)^2 */
-              Csub (&b4ac, &COMPLEX_ONE, &b4ac);
+              cnum = bse_complex_mul (r, cwc);
+              ca = bse_complex_sub (BSE_COMPLEX_ONE, cnum);   /* a = 1 - r wc */
+              b4ac = bse_complex_mul (cnum, cnum); /* 1 - (r wc)^2 */
+              b4ac = bse_complex_sub (BSE_COMPLEX_ONE, b4ac);
               b4ac.re *= 4.0;               /* 4ac */
               b4ac.im *= 4.0;
               cb.re = -2.0 * ds->cgam;          /* b */
               cb.im = 0.0;
-              Cmul (&cb, &cb, &cnum);     /* b^2 */
-              Csub (&b4ac, &cnum, &b4ac); /* b^2 - 4 ac */
-              Csqrt (&b4ac, &b4ac);
+              cnum = bse_complex_mul (cb, cb);     /* b^2 */
+              b4ac = bse_complex_sub (cnum, b4ac); /* b^2 - 4 ac */
+              b4ac = bse_complex_sqrt (b4ac);
               cb.re = -cb.re;  /* -b */
               cb.im = -cb.im;
               ca.re *= 2.0; /* 2a */
               ca.im *= 2.0;
-              Cadd (&b4ac, &cb, &cnum);   /* -b + sqrt(b^2 - 4ac) */
-              Cdiv (&ca, &cnum, &cnum);   /* ... /2a */
+              cnum = bse_complex_add (b4ac, cb);   /* -b + sqrt(b^2 - 4ac) */
+              cnum = bse_complex_div (cnum, ca);
               ds->z_counter += 1;
-              Cmov (&cnum, &z_pz[ds->z_counter]);
+              z_pz[ds->z_counter] = cnum;
               if (cnum.im != 0.0)
                 {
                   ds->z_counter += 1;
@@ -1439,10 +1168,10 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
                 }
               if ((r.im != 0.0) || (cnum.im == 0))
                 {
-                  Csub (&b4ac, &cb, &cnum);  /* -b - sqrt(b^2 - 4ac) */
-                  Cdiv (&ca, &cnum, &cnum);  /* ... /2a */
+                  cnum = bse_complex_sub (cb, b4ac);  /* -b - sqrt(b^2 - 4ac) */
+                  cnum = bse_complex_div (cnum, ca);  /* ... /2a */
                   ds->z_counter += 1;
-                  Cmov (&cnum, &z_pz[ds->z_counter]);
+                  z_pz[ds->z_counter] = cnum;
                   if (cnum.im != 0.0)
                     {
                       ds->z_counter += 1;
@@ -1747,15 +1476,15 @@ response (const BseIIRFilterRequest *ifr,
   den.im = 0.0;
   for (j = 0; j < ds->n_solved_poles; j++)
     {
-      Csub (&ds->zcpz[j], &x, &w);
-      Cmul (&w, &den, &den);
-      Csub (&ds->zcpz[ds->n_solved_poles + j], &x, &w);
-      Cmul (&w, &num, &num);
+      w = bse_complex_sub (x, ds->zcpz[j]);
+      den = bse_complex_mul (w, den);
+      w = bse_complex_sub (x, ds->zcpz[ds->n_solved_poles + j]);
+      num = bse_complex_mul (w, num);
     }
-  Cdiv (&den, &num, &w);
+  w = bse_complex_div (num, den);
   w.re *= amp;
   w.im *= amp;
-  u = Cabs (&w);
+  u = bse_complex_abs (w);
   return u;
 }
 

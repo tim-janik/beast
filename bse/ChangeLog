@@ -1,3 +1,10 @@
+Sat Nov  4 19:46:01 2006  Tim Janik  <timj@gtk.org>
+
+	* bsefilter-ellf.c: replaced all ellf specific complex number 
+	arithmetic by bse_complex*() calls.
+
+	* bsemath.h: provide BSE_COMPLEX_ONE for convenience.
+
 Sat Nov  4 18:14:08 2006  Tim Janik  <timj@gtk.org>
 
 	* gslmathtest.c: removed, this has been ported to bsemathtest and

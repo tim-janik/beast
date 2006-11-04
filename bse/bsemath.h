@@ -47,6 +47,7 @@ G_BEGIN_DECLS
 #define BSE_LN_2_POW_1_DIV_1200_d     (5.776226504666210911810267678818138067296e-4) // ln(2^(1/1200))
 #define BSE_2_POW_1_DIV_72            (1.009673533228510862192521401118605073603)    // 2^(1/72)
 #define BSE_LN_2_POW_1_DIV_72         (9.62704417444368485301711279803023011216e-3)  // ln(2^(1/72))
+#define BSE_COMPLEX_ONE               (bse_complex (1, 0))
 
 /* --- structures --- */
 typedef struct {
