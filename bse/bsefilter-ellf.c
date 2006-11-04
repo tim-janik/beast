@@ -23,60 +23,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-
-#ifndef ELLF_BEHAVIOR
 #include "bsefilter.h"
-
-#else
-
-#include <stdbool.h> // FIXME
-#include <complex.h>
-// typedef unsigned int uint;
-typedef _Complex double Complex;
-
-typedef enum {
-  BSE_IIR_FILTER_BUTTERWORTH = 1,
-  BSE_IIR_FILTER_BESSEL      = 2,
-  BSE_IIR_FILTER_CHEBYSHEV1  = 3,
-  BSE_IIR_FILTER_CHEBYSHEV2  = 4,
-  BSE_IIR_FILTER_ELLIPTIC    = 5,
-} BseIIRFilterKind;
-
-typedef enum {
-  BSE_IIR_FILTER_LOW_PASS    = 1,
-  BSE_IIR_FILTER_BAND_PASS   = 2,
-  BSE_IIR_FILTER_HIGH_PASS   = 3,
-  BSE_IIR_FILTER_BAND_STOP   = 4,
-} BseIIRFilterType;
-
-typedef struct {
-  BseIIRFilterKind      kind;
-  BseIIRFilterType      type;
-  uint                  order;                  /*     >= 1 */
-  double                sampling_frequency;     /* Hz, > 0.0 && == 2 * nyquist_frequency */
-  double                passband_edge;          /* Hz, > 0.0 && < nyquist_frequency */
-  double                passband_ripple_db;     /* dB, > 0.0, not Butterworth */
-  double                passband_edge2;         /* Hz, > 0.0 && < nyquist_frequency, for BAND filters */
-  double                stopband_edge;          /* Hz, > 0.0, replaces stopband_db, elliptic only */
-  double                stopband_db;            /* dB, < 0.0, elliptic only */
-} BseIIRFilterRequest;
-
-#define BSE_IIR_MAX_ORDER               (64)
-#define BSE_IIR_CARRAY_SIZE             (4 * BSE_IIR_MAX_ORDER + 2) /* size of arrays used to store coefficients */
-
-typedef struct {
-  uint    order;
-  double  sampling_frequency;
-  /* z-plane poles and zeros */
-  double  gain;
-  Complex zp[BSE_IIR_CARRAY_SIZE / 2];  /* z-plane poles [order] */
-  Complex zz[BSE_IIR_CARRAY_SIZE / 2];  /* z-plane zeros [order] */
-  /* normalized z-plane transfer function */
-  double  zn[BSE_IIR_CARRAY_SIZE];      /* numerator coefficients [order+1] */
-  double  zd[BSE_IIR_CARRAY_SIZE];      /* denominator coefficients [order+1] */
-} BseIIRFilterDesign;
-#endif
 
 typedef struct {
   int    n_poles;
@@ -113,38 +60,9 @@ typedef struct {
   double  zd[BSE_IIR_CARRAY_SIZE];              /* denominator coefficients [order+1] */
 } EllfDesignState;
 
-#if 0 // precision
-//#include "bseieee754.h"
-#define PI                            (3.141592653589793238462643383279502884197)    // pi
-#define BSE_PI_DIV_2                  (1.570796326794896619231321691639751442099)    // pi/2
-#define BSE_DOUBLE_EPSILON       (1.1102230246251565404236316680908203125e-16) /* 2^-53, round-off error at 1.0 */
-#define BSE_DOUBLE_MAX_NORMAL    (1.7976931348623157e+308) /* 7fefffff ffffffff, 2^1024 * (1 - BSE_DOUBLE_EPSILON) */
-
-
-
-
-#define DECIBELL_FACTOR         (4.3429448190325182765112891891661)     /* 10.0 / ln (10.0) */
 #define MACHEP                  (BSE_DOUBLE_EPSILON)                    /* the machine roundoff error */
-// #define PI                   /* PI is defined in bseieee754.h */
 #define PIO2                    (BSE_PI_DIV_2)                          /* pi/2 */
 #define MAXNUM                  (BSE_DOUBLE_MAX_NORMAL)                 /* 2**1024*(1-MACHEP) */
-
-#else
-
-static double DECIBELL_FACTOR = -1;
-static void
-init_constants (void)
-{
-  DECIBELL_FACTOR = 10.0 / log (10.0);
-}
-static const double MAXNUM =  1.79769313486231570815E308;    /* 2**1024*(1-MACHEP) */
-#undef PI
-static const double PI     =  3.14159265358979323846;       /* pi */
-static const double PIO2   =  1.57079632679489661923;       /* pi/2 */
-static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
-#endif
-
-
 
 #if 0
 #define error_printf(...)       fprintf (stderr, __VA_ARGS__)
@@ -161,14 +79,10 @@ static const double MACHEP =  1.11022302462515654042E-16;   /* 2**-53 */
 static const char* ellf_filter_design (const BseIIRFilterRequest *ifr,
                                        EllfDesignState           *ds);
 
-
-#ifndef ELLF_BEHAVIOR
-
 bool
 _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
                          BseIIRFilterDesign             *fid)
 {
-  init_constants();
   EllfDesignState ds = { 0, };
   const char *errmsg = ellf_filter_design (ifr, &ds);
   fflush (stdout);
@@ -206,66 +120,6 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
     fid->center_frequency = 0.5 * fid->sampling_frequency / PI * (PIO2 - asin (ds.cgam));
   return true;
 }
-
-#else
-
-static double
-my_getnum (const char *text)
-{
-  ellf_inputf ("%s ? ", text);
-  char s[4096];
-  if (!fgets (s, sizeof (s), stdin))
-    exit (0);
-  double val = 0;
-  sscanf (s, "%lf", &val);
-  return val;
-}
-
-int
-main (int   argc,
-      char *argv[])
-{
-  init_constants();
-  BseIIRFilterRequest ifr = { 0 };
-  EllfDesignState ds = { .stopband_edge = 2400, };
-  switch ((int) my_getnum ("kind"))
-    {
-    case 1: ifr.kind = BSE_IIR_FILTER_BUTTERWORTH; break;
-    case 2: ifr.kind = BSE_IIR_FILTER_CHEBYSHEV1;  break;
-    case 3: ifr.kind = BSE_IIR_FILTER_ELLIPTIC;    break;
-    default: return 1;
-    }
-  ifr.type = my_getnum ("type");
-  ifr.order = my_getnum ("order");
-  if (ifr.kind != BSE_IIR_FILTER_BUTTERWORTH) /* not Butterworth */
-    ifr.passband_ripple_db = my_getnum ("passband_ripple_db");
-  ifr.sampling_frequency = my_getnum ("sampling_frequency");
-  ifr.passband_edge = my_getnum ("passband_edge");
-  if (ifr.type == BSE_IIR_FILTER_BAND_PASS ||
-      ifr.type == BSE_IIR_FILTER_BAND_STOP)
-    ifr.passband_edge2 = my_getnum ("passband_edge2");
-  if (ifr.kind == BSE_IIR_FILTER_ELLIPTIC)
-    ifr.stopband_db = ifr.stopband_edge = my_getnum ("stopband_edge or stopband_db");
-  ellf_inputf ("\n");
-  const char *errmsg = ellf_filter_design (&ifr, &ds);
-  fflush (stdout);
-  fflush (stderr);
-  // ellf_debugf ("DEBUG: %.20g %.20g %.20g %.20g %.20g\n", a, cos(a), cang, ds->cgam, 0.);
-  if (errmsg)
-    {
-      error_printf (stderr, "Invalid specification: %s\n", errmsg);
-      fflush (stderr);
-      return 1;
-    }
-  
-  return 0;
-}
-
-/* compile with: gcc -Wall -O2 -g -ffloat-store -DELLF_BEHAVIOR bsefilter-ellf.c -lm -o bsefilter-ellf
- * (using -ffloat-store for ellf.c compatibility)
- */
-
-#endif
 
 /* This code calculates design coefficients for
  * digital filters of the Butterworth, Chebyshev, or
@@ -327,7 +181,6 @@ main (int   argc,
  */
 
 /* --- prototypes --- */
-static double polevl (double x, const double coef[], int N);
 static double ellik  (double phi, double m); // incomplete elliptic integral of the first kind
 static double ellpk  (double x); // complete elliptic integral of the first kind
 static int    ellpj  (double u, double m, double *sn, double *cn, double *dn, double *ph); // Jacobian Elliptic Functions
@@ -395,7 +248,7 @@ math_set_error (char *name, int code)
    * which is supposed to be the name of the
    * function in which the error occurred:
    */
-  error_printf ("\n%s ", name); // FIXME
+  error_printf ("\n%s ", name);
   
   /* Set global error message word */
   math_global_error = code;
@@ -644,6 +497,47 @@ ellpj (double u, double m,
   return 0;
 }
 
+/* polevl - Evaluate polynomial
+ *
+ * SYNOPSIS:
+ * int N;
+ * double x, y, coef[N+1], polevl[];
+ * y = polevl(x, coef, N);
+ *
+ * DESCRIPTION:
+ * Evaluates polynomial of degree N:
+ *                     2          N
+ * y  =  C  + C x + C x  +...+ C x
+ *        0    1     2          N
+ *
+ * Coefficients are stored in reverse order:
+ * coef[0] = C  , ..., coef[N] = C  .
+ *            N                   0
+ * SPEED:
+ * In the interest of speed, there are no checks for out
+ * of bounds arithmetic.  This routine is used by most of
+ * the functions in the library.  Depending on available
+ * equipment features, the user may wish to rewrite the
+ * program in microcode or assembly language.
+ */
+static inline double
+polevl (double x, const double coef[], int N)
+{
+  double ans;
+  int i;
+  const double *p;
+  
+  p = coef;
+  ans = *p++;
+  i = N;
+  
+  do
+    ans = ans * x  +  *p++;
+  while (--i);
+  
+  return ans;
+}
+
 /* ellpk - Complete elliptic integral of the first kind
  *
  * SYNOPSIS:
@@ -707,7 +601,6 @@ ellpk (double x)
     1.24999999999870820058E-1,
     4.99999999999999999821E-1
   };
-  static const double C1_ellpk = 1.3862943611198906188E0; /* log(4) */
 
   if ((x < 0.0) || (x > 1.0))
     {
@@ -728,7 +621,8 @@ ellpk (double x)
         }
       else
         {
-          return C1_ellpk - 0.5 * log (x);
+          /* C1 = ln(4) */
+          return BSE_LN4 - 0.5 * log (x); /* C1 - 0.5 * log (x) */
         }
     }
 }
@@ -777,66 +671,7 @@ jacobi_theta_by_nome (double q)
   return a;
 }
 
-/* --- misc utilities --- */
-/* polevl - Evaluate polynomial
- *
- * SYNOPSIS:
- * int N;
- * double x, y, coef[N+1], polevl[];
- * y = polevl(x, coef, N);
- *
- * DESCRIPTION:
- * Evaluates polynomial of degree N:
- *                     2          N
- * y  =  C  + C x + C x  +...+ C x
- *        0    1     2          N
- *
- * Coefficients are stored in reverse order:
- * coef[0] = C  , ..., coef[N] = C  .
- *            N                   0
- * SPEED:
- * In the interest of speed, there are no checks for out
- * of bounds arithmetic.  This routine is used by most of
- * the functions in the library.  Depending on available
- * equipment features, the user may wish to rewrite the
- * program in microcode or assembly language.
- */
-static double
-polevl (double x, const double coef[], int N)
-{
-  double ans;
-  int i;
-  const double *p;
-  
-  p = coef;
-  ans = *p++;
-  i = N;
-  
-  do
-    ans = ans * x  +  *p++;
-  while (--i);
-  
-  return ans;
-}
-
 /* --- filter design functions --- */
-static void
-print_z_fraction_before_zplnc (const BseIIRFilterRequest *ifr,
-                               EllfDesignState           *ds) /* must be called *before* zplnc() */
-{
-  double zgain;
-  if ((ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1) && ds->numerator_accu == 0)
-    zgain = 1.0;
-  else
-    zgain = ds->denominator_accu / (ds->numerator_accu * ds->gain_scale);
-  ellf_outputf ("# constant mygain factor %23.13E\n", zgain); // BSE info
-  ellf_outputf ("# z plane Denominator      Numerator\n"); // BSE info
-  int j;
-  for (j = 0; j <= ds->n_solved_poles; j++)
-    ellf_outputf ("# %2d %17.9E %17.9E\n", j, ds->zd[j], ds->zn[j] * zgain); // BSE info
-}
-
-
 static int
 find_elliptic_locations_in_lambda_plane (const BseIIRFilterRequest *ifr,
                                          EllfDesignState           *ds)
@@ -1501,7 +1336,7 @@ print_filter_table (const BseIIRFilterRequest *ifr,
       if (r <= 0.0)
         r = -999.99;
       else
-        r = 2.0 * DECIBELL_FACTOR * log (r);
+        r = BSE_DECIBEL20_FACTOR * log (r);
       ellf_debugf ("%10.1f  %10.2f\n", f, r);
       // f = f + 0.05 * ds->nyquist_frequency;
     }
@@ -1534,7 +1369,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
       if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
         {
           /* For Chebyshev filter, ripples go from 1.0 to 1/sqrt(1+ds->ripple_epsilon^2) */
-          ds->chebyshev_phi = exp (0.5 * ifr->passband_ripple_db / DECIBELL_FACTOR);
+          ds->chebyshev_phi = exp (ifr->passband_ripple_db / BSE_DECIBEL20_FACTOR);
 
           if ((ifr->order & 1) == 0)
             ds->gain_scale = ds->chebyshev_phi;
@@ -1543,7 +1378,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
         }
       else
         { /* elliptic */
-          ds->ripple_epsilon = exp (ifr->passband_ripple_db / DECIBELL_FACTOR);
+          ds->ripple_epsilon = exp (ifr->passband_ripple_db / BSE_DECIBEL10_FACTOR);
           ds->gain_scale = 1.0;
           if ((ifr->order & 1) == 0)
             ds->gain_scale = sqrt (ds->ripple_epsilon);
@@ -1614,7 +1449,7 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
         return "need stopband_db or stopband_edge";
       else /* stopband_db < 0.0 */
         { /* calculate band edge from db down */
-          double a = exp (-ifr->stopband_db / DECIBELL_FACTOR);
+          double a = exp (-ifr->stopband_db / BSE_DECIBEL10_FACTOR);
           double m1 = ds->ripple_epsilon / sqrt (a - 1.0);
           m1 *= m1;
           double m1p = 1.0 - m1;
@@ -1763,7 +1598,6 @@ ellf_filter_design (const BseIIRFilterRequest *ifr,
   // volatile_sink ("x");
   z_plane_zeros_poles_to_numerator_denomerator (ifr, ds);
   ellf_debugf ("an=%.20g pn=%.20g scale=%.20g\n", ds->denominator_accu, ds->numerator_accu, ds->gain_scale); // BSE info
-  print_z_fraction_before_zplnc (ifr, ds);
   gainscale_and_print_deno_nume_zeros2_poles2 (ifr, ds);
   print_filter_table (ifr, ds); /* tabulate transfer function */
   return NULL;

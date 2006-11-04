@@ -85,8 +85,7 @@ compare_zeros (uint              n_zeros,
 static double
 to_db (double response)
 {
-  const double decibel20 = 8.6858896380650365530225783783321; /* 20.0 / ln (10.0) */
-  return response <= 0.0 ? -999.99 : max (decibel20 * log (response), -999.99);
+  return response <= 0.0 ? -999.99 : max (BSE_DECIBEL20_FACTOR * log (response), -999.99);
 }
 
 static double

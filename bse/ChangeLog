@@ -1,3 +1,10 @@
+Sat Nov  4 20:09:33 2006  Tim Janik  <timj@gtk.org>
+
+	* bsefilter-ellf.c: removed ellf-behavior special casing. switched
+	to higher precision constants. substituted bsemath.h constants.
+
+	* bsemath.h: provide ln(4), decibel10 and decibel20 factors.
+
 Sat Nov  4 19:46:01 2006  Tim Janik  <timj@gtk.org>
 
 	* bsefilter-ellf.c: replaced all ellf specific complex number 
