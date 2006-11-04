@@ -79,11 +79,6 @@ typedef struct {
 #endif
 
 typedef struct {
-  double r;     // real part
-  double i;     // imaginary part
-} EllfComplex;
-
-typedef struct {
   int    n_poles;
   int    n_zeros;
   int    z_counter;	/* incremented as z^N coefficients are found, indexes poles and zeros */
@@ -112,7 +107,7 @@ typedef struct {
   /* common output */
   double  gain;
   double  spz[BSE_IIR_CARRAY_SIZE];	        /* s-plane poles and zeros */
-  EllfComplex zcpz[BSE_IIR_CARRAY_SIZE];	/* z-plane poles and zeros */
+  BseComplex zcpz[BSE_IIR_CARRAY_SIZE];	/* z-plane poles and zeros */
   /* normalized z-plane transfer function */
   double  zn[BSE_IIR_CARRAY_SIZE];              /* numerator coefficients [order+1] */
   double  zd[BSE_IIR_CARRAY_SIZE];              /* denominator coefficients [order+1] */
@@ -189,10 +184,10 @@ _bse_filter_design_ellf (const BseIIRFilterRequest      *ifr,
   uint i;
   for (i = 0; i < ds.n_solved_poles; i++)
     {
-      double a = ds.zcpz[i].r, b = ds.zcpz[i].i;
+      double a = ds.zcpz[i].re, b = ds.zcpz[i].im;
       if (b >= 0.0)
         fid->zp[fid->n_poles++] = bse_complex (a, b);
-      a = ds.zcpz[ds.n_solved_poles + i].r, b = ds.zcpz[ds.n_solved_poles + i].i;
+      a = ds.zcpz[ds.n_solved_poles + i].re, b = ds.zcpz[ds.n_solved_poles + i].im;
       if (b >= 0.0)
         fid->zz[fid->n_zeros++] = bse_complex (a, b);
     }
@@ -332,14 +327,14 @@ main (int   argc,
  */
 
 /* --- prototypes --- */
-static const EllfComplex COMPLEX_ONE = {1.0, 0.0};
-static double Cabs   (const EllfComplex *z);
-static void   Cadd   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
-static void   Cdiv   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
-static void   Cmov   (const EllfComplex *a,                   EllfComplex *b);
-static void   Cmul   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
-static void   Csqrt  (const EllfComplex *z,                   EllfComplex *w);
-static void   Csub   (const EllfComplex *a, const EllfComplex *b, EllfComplex *c);
+static const BseComplex COMPLEX_ONE = {1.0, 0.0};
+static double Cabs   (const BseComplex *z);
+static void   Cadd   (const BseComplex *a, const BseComplex *b, BseComplex *c);
+static void   Cdiv   (const BseComplex *a, const BseComplex *b, BseComplex *c);
+static void   Cmov   (const BseComplex *a,                   BseComplex *b);
+static void   Cmul   (const BseComplex *a, const BseComplex *b, BseComplex *c);
+static void   Csqrt  (const BseComplex *z,                   BseComplex *w);
+static void   Csub   (const BseComplex *a, const BseComplex *b, BseComplex *c);
 static double polevl (double x, const double coef[], int N);
 static double ellik  (double phi, double m); // incomplete elliptic integral of the first kind
 static double ellpk  (double x); // complete elliptic integral of the first kind
@@ -429,61 +424,61 @@ math_set_error (char *name, int code)
 /* --- complex number arithmetic --- */
 /* c = b + a	*/
 static void
-Cadd (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
+Cadd (const BseComplex *a, const BseComplex *b, BseComplex *c)
 {
-  c->r = b->r + a->r;
-  c->i = b->i + a->i;
+  c->re = b->re + a->re;
+  c->im = b->im + a->im;
 }
 
 /* c = b - a	*/
 static void
-Csub (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
+Csub (const BseComplex *a, const BseComplex *b, BseComplex *c)
 {
-  c->r = b->r - a->r;
-  c->i = b->i - a->i;
+  c->re = b->re - a->re;
+  c->im = b->im - a->im;
 }
 
 /* c = b * a */
 static void
-Cmul (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
+Cmul (const BseComplex *a, const BseComplex *b, BseComplex *c)
 {
   /* Multiplication:
-   *    c.r  =  b.r * a.r  -  b.i * a.i
-   *    c.i  =  b.r * a.i  +  b.i * a.r
+   *    c.re  =  b.re * a.re  -  b.im * a.im
+   *    c.im  =  b.re * a.im  +  b.im * a.re
    */
   double y;
-  y    = b->r * a->r  -  b->i * a->i;
-  c->i = b->r * a->i  +  b->i * a->r;
-  c->r = y;
+  y    = b->re * a->re  -  b->im * a->im;
+  c->im = b->re * a->im  +  b->im * a->re;
+  c->re = y;
   /* see Cdiv() for accuracy comments */
 }
 
 /* c = b / a */
 static void
-Cdiv (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
+Cdiv (const BseComplex *a, const BseComplex *b, BseComplex *c)
 {
   /* Division:
-   *    d    =  a.r * a.r  +  a.i * a.i
-   *    c.r  = (b.r * a.r  + b.i * a.i)/d
-   *    c.i  = (b.i * a.r  -  b.r * a.i)/d
+   *    d    =  a.re * a.re  +  a.im * a.im
+   *    c.re  = (b.re * a.re  + b.im * a.im)/d
+   *    c.im  = (b.im * a.re  -  b.re * a.im)/d
    */
-  double y = a->r * a->r  +  a->i * a->i;
-  double p = b->r * a->r  +  b->i * a->i;
-  double q = b->i * a->r  -  b->r * a->i;
+  double y = a->re * a->re  +  a->im * a->im;
+  double p = b->re * a->re  +  b->im * a->im;
+  double q = b->im * a->re  -  b->re * a->im;
   
   if (y < 1.0)
     {
       double w = MAXNUM * y;
       if ((fabs (p) > w) || (fabs (q) > w) || (y == 0.0))
         {
-          c->r = MAXNUM;
-          c->i = MAXNUM;
+          c->re = MAXNUM;
+          c->im = MAXNUM;
           math_set_error ("Cdiv", MATH_ERROR_OVERFLOW);
           return;
         }
     }
-  c->r = p/y;
-  c->i = q/y;
+  c->re = p/y;
+  c->im = q/y;
   /* ACCURACY:
    * In DEC arithmetic, the test (1/z) * z = 1 had peak relative
    * error 3.1e-17, rms 1.2e-17.  The test (y/z) * (z/y) = 1 had
@@ -504,7 +499,7 @@ Cdiv (const EllfComplex *a, const EllfComplex *b, EllfComplex *c)
 
 /* b = a */
 static void
-Cmov (const EllfComplex *a, EllfComplex *b)
+Cmov (const BseComplex *a, BseComplex *b)
 {
   *b = *a;
 }
@@ -513,7 +508,7 @@ Cmov (const EllfComplex *a, EllfComplex *b)
  *
  * SYNOPSIS:
  * double Cabs();
- * EllfComplex z;
+ * BseComplex z;
  * double a;
  *
  * a = Cabs (&z);
@@ -533,7 +528,7 @@ Cmov (const EllfComplex *a, EllfComplex *b)
  *    IEEE      -10,+10    100000       2.7e-16     6.9e-17
  */
 static double
-Cabs (const EllfComplex *z)
+Cabs (const BseComplex *z)
 {
   /* exponent thresholds for IEEE doubles */
   const double PREC = 27;
@@ -544,17 +539,17 @@ Cabs (const EllfComplex *z)
   int ex, ey, e;
   
   /* Note, Cabs (INFINITY,NAN) = INFINITY. */
-  if (z->r == INFINITY || z->i == INFINITY
-      || z->r == -INFINITY || z->i == -INFINITY)
+  if (z->re == INFINITY || z->im == INFINITY
+      || z->re == -INFINITY || z->im == -INFINITY)
     return INFINITY;
   
-  if (isnan (z->r))
-    return z->r;
-  if (isnan (z->i))
-    return z->i;
+  if (isnan (z->re))
+    return z->re;
+  if (isnan (z->im))
+    return z->im;
   
-  re = fabs (z->r);
-  im = fabs (z->i);
+  re = fabs (z->re);
+  im = fabs (z->im);
   
   if (re == 0.0)
     return im;
@@ -604,7 +599,7 @@ Cabs (const EllfComplex *z)
  *
  * SYNOPSIS:
  * void Csqrt();
- * EllfComplex z, w;
+ * BseComplex z, w;
  * Csqrt (&z, &w);
  *
  * DESCRIPTION:
@@ -629,26 +624,26 @@ Cabs (const EllfComplex *z)
  * close to the real axis.
  */
 static void
-Csqrt (const EllfComplex *z, EllfComplex *w)
+Csqrt (const BseComplex *z, BseComplex *w)
 {
-  EllfComplex q, s;
+  BseComplex q, s;
   double x, y, r, t;
   
-  x = z->r;
-  y = z->i;
+  x = z->re;
+  y = z->im;
   
   if (y == 0.0)
     {
       if (x < 0.0)
         {
-          w->r = 0.0;
-          w->i = sqrt (-x);
+          w->re = 0.0;
+          w->im = sqrt (-x);
           return;
         }
       else
         {
-          w->r = sqrt (x);
-          w->i = 0.0;
+          w->re = sqrt (x);
+          w->im = 0.0;
           return;
         }
     }
@@ -658,10 +653,10 @@ Csqrt (const EllfComplex *z, EllfComplex *w)
       r = fabs (y);
       r = sqrt (0.5*r);
       if (y > 0)
-        w->r = r;
+        w->re = r;
       else
-        w->r = -r;
-      w->i = r;
+        w->re = -r;
+      w->im = r;
       return;
     }
   
@@ -680,13 +675,13 @@ Csqrt (const EllfComplex *z, EllfComplex *w)
     }
   
   r = sqrt (t);
-  q.i = r;
-  q.r = y/(2.0*r);
+  q.im = r;
+  q.re = y/(2.0*r);
   /* Heron iteration in complex arithmetic */
   Cdiv (&q, z, &s);
   Cadd (&q, &s, w);
-  w->r *= 0.5;
-  w->i *= 0.5;
+  w->re *= 0.5;
+  w->im *= 0.5;
 }
 
 /* --- elliptic functions --- */
@@ -1343,7 +1338,7 @@ static int
 convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
                             EllfDesignState           *ds)
 {
-  EllfComplex r, cnum, cden, cwc, ca, cb, b4ac;
+  BseComplex r, cnum, cden, cwc, ca, cb, b4ac;
   double C;
   
   if (ifr->kind == BSE_IIR_FILTER_ELLIPTIC)
@@ -1354,8 +1349,8 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
   int i;
   for (i = 0; i < BSE_IIR_CARRAY_SIZE; i++)
     {
-      ds->zcpz[i].r = 0.0;
-      ds->zcpz[i].i = 0.0;
+      ds->zcpz[i].re = 0.0;
+      ds->zcpz[i].im = 0.0;
     }
 
   int nc = ds->n_poles;
@@ -1363,14 +1358,14 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
   int icnt, ii = -1;
   for (icnt = 0; icnt < 2; icnt++)
     {
-      EllfComplex *z_pz = ds->zcpz;
+      BseComplex *z_pz = ds->zcpz;
       /* The maps from s plane to z plane */
       do
 	{
           int ir = ii + 1;
           ii = ir + 1;
-          r.r = ds->spz[ir];
-          r.i = ds->spz[ii];
+          r.re = ds->spz[ir];
+          r.im = ds->spz[ii];
           
           switch (ifr->type)
             {
@@ -1384,18 +1379,18 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
                *
                * giving the root in the z plane.
                */
-              cnum.r = 1 + C * r.r;
-              cnum.i = C * r.i;
-              cden.r = 1 - C * r.r;
-              cden.i = -C * r.i;
+              cnum.re = 1 + C * r.re;
+              cnum.im = C * r.im;
+              cden.re = 1 - C * r.re;
+              cden.im = -C * r.im;
               ds->z_counter += 1;
               Cdiv (&cden, &cnum, &z_pz[ds->z_counter]);
-              if (r.i != 0.0)
+              if (r.im != 0.0)
                 {
                   /* fill in complex conjugate root */
                   ds->z_counter += 1;
-                  z_pz[ds->z_counter].r = z_pz[ds->z_counter - 1].r;
-                  z_pz[ds->z_counter].i = -z_pz[ds->z_counter - 1].i;
+                  z_pz[ds->z_counter].re = z_pz[ds->z_counter - 1].re;
+                  z_pz[ds->z_counter].im = -z_pz[ds->z_counter - 1].im;
                 }
               break;
             case BSE_IIR_FILTER_BAND_PASS:
@@ -1413,46 +1408,46 @@ convert_s_plane_to_z_plane (const BseIIRFilterRequest *ifr,
                * and solve for the roots in the z plane.
                */
               if (ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
-                cwc.r = ds->chebyshev_band_cbp;
+                cwc.re = ds->chebyshev_band_cbp;
               else
-                cwc.r = ds->tan_angle_frequency;
-              cwc.i = 0.0;
+                cwc.re = ds->tan_angle_frequency;
+              cwc.im = 0.0;
               Cmul (&r, &cwc, &cnum);     /* r wc */
               Csub (&cnum, &COMPLEX_ONE, &ca);   /* a = 1 - r wc */
               Cmul (&cnum, &cnum, &b4ac); /* 1 - (r wc)^2 */
               Csub (&b4ac, &COMPLEX_ONE, &b4ac);
-              b4ac.r *= 4.0;               /* 4ac */
-              b4ac.i *= 4.0;
-              cb.r = -2.0 * ds->cgam;          /* b */
-              cb.i = 0.0;
+              b4ac.re *= 4.0;               /* 4ac */
+              b4ac.im *= 4.0;
+              cb.re = -2.0 * ds->cgam;          /* b */
+              cb.im = 0.0;
               Cmul (&cb, &cb, &cnum);     /* b^2 */
               Csub (&b4ac, &cnum, &b4ac); /* b^2 - 4 ac */
               Csqrt (&b4ac, &b4ac);
-              cb.r = -cb.r;  /* -b */
-              cb.i = -cb.i;
-              ca.r *= 2.0; /* 2a */
-              ca.i *= 2.0;
+              cb.re = -cb.re;  /* -b */
+              cb.im = -cb.im;
+              ca.re *= 2.0; /* 2a */
+              ca.im *= 2.0;
               Cadd (&b4ac, &cb, &cnum);   /* -b + sqrt(b^2 - 4ac) */
               Cdiv (&ca, &cnum, &cnum);   /* ... /2a */
               ds->z_counter += 1;
               Cmov (&cnum, &z_pz[ds->z_counter]);
-              if (cnum.i != 0.0)
+              if (cnum.im != 0.0)
                 {
                   ds->z_counter += 1;
-                  z_pz[ds->z_counter].r = cnum.r;
-                  z_pz[ds->z_counter].i = -cnum.i;
+                  z_pz[ds->z_counter].re = cnum.re;
+                  z_pz[ds->z_counter].im = -cnum.im;
                 }
-              if ((r.i != 0.0) || (cnum.i == 0))
+              if ((r.im != 0.0) || (cnum.im == 0))
                 {
                   Csub (&b4ac, &cb, &cnum);  /* -b - sqrt(b^2 - 4ac) */
                   Cdiv (&ca, &cnum, &cnum);  /* ... /2a */
                   ds->z_counter += 1;
                   Cmov (&cnum, &z_pz[ds->z_counter]);
-                  if (cnum.i != 0.0)
+                  if (cnum.im != 0.0)
                     {
                       ds->z_counter += 1;
-                      z_pz[ds->z_counter].r = cnum.r;
-                      z_pz[ds->z_counter].i = -cnum.i;
+                      z_pz[ds->z_counter].re = cnum.re;
+                      z_pz[ds->z_counter].im = -cnum.im;
                     }
                 }
               break;
@@ -1480,10 +1475,10 @@ static int
 z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
                                               EllfDesignState           *ds)
 {
-  EllfComplex lin[2];
+  BseComplex lin[2];
   
-  lin[1].r = 1.0;
-  lin[1].i = 0.0;
+  lin[1].re = 1.0;
+  lin[1].im = 0.0;
   
   if (ifr->kind == BSE_IIR_FILTER_BUTTERWORTH || ifr->kind == BSE_IIR_FILTER_CHEBYSHEV1)
     { /* Butterworth or Chebyshev */
@@ -1494,15 +1489,15 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
             {
               ellf_debugf ("adding zero at Nyquist frequency\n");
               ds->z_counter += 1;
-              ds->zcpz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
-              ds->zcpz[ds->z_counter].i = 0.0;
+              ds->zcpz[ds->z_counter].re = -1.0; /* zero at Nyquist frequency */
+              ds->zcpz[ds->z_counter].im = 0.0;
             }
           if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_HIGH_PASS)
             {
               ellf_debugf ("adding zero at 0 Hz\n");
               ds->z_counter += 1;
-              ds->zcpz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
-              ds->zcpz[ds->z_counter].i = 0.0;
+              ds->zcpz[ds->z_counter].re = 1.0; /* zero at 0 Hz */
+              ds->zcpz[ds->z_counter].im = 0.0;
             }
         }
     }
@@ -1511,13 +1506,13 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
       while (2 * ds->n_solved_poles - 1 > ds->z_counter)
         {
           ds->z_counter += 1;
-          ds->zcpz[ds->z_counter].r = -1.0; /* zero at Nyquist frequency */
-          ds->zcpz[ds->z_counter].i = 0.0;
+          ds->zcpz[ds->z_counter].re = -1.0; /* zero at Nyquist frequency */
+          ds->zcpz[ds->z_counter].im = 0.0;
           if (ifr->type == BSE_IIR_FILTER_BAND_PASS || ifr->type == BSE_IIR_FILTER_BAND_STOP)
             {
               ds->z_counter += 1;
-              ds->zcpz[ds->z_counter].r = 1.0; /* zero at 0 Hz */
-              ds->zcpz[ds->z_counter].i = 0.0;
+              ds->zcpz[ds->z_counter].re = 1.0; /* zero at 0 Hz */
+              ds->zcpz[ds->z_counter].im = 0.0;
             }
         }
     }
@@ -1538,8 +1533,8 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
           int jj = j;
           if (icnt)
             jj += ds->n_solved_poles;
-          double a = ds->zcpz[jj].r;
-          double b = ds->zcpz[jj].i;
+          double a = ds->zcpz[jj].re;
+          double b = ds->zcpz[jj].im;
           int i;
           for (i = 0; i <= j; i++)
             {
@@ -1620,8 +1615,8 @@ z_plane_zeros_poles_to_numerator_denomerator (const BseIIRFilterRequest *ifr,
   uint i;
   for (i = 0; i < ds->n_solved_poles; i++)
     {
-      const BseComplex zero = bse_complex (ds->zcpz[ds->n_solved_poles + i].r, ds->zcpz[ds->n_solved_poles + i].i);
-      const BseComplex pole = bse_complex (ds->zcpz[i].r, ds->zcpz[i].i);
+      const BseComplex zero = bse_complex (ds->zcpz[ds->n_solved_poles + i].re, ds->zcpz[ds->n_solved_poles + i].im);
+      const BseComplex pole = bse_complex (ds->zcpz[i].re, ds->zcpz[i].im);
       num = bse_complex_mul (num, bse_complex_sub (z, zero));
       den = bse_complex_mul (den, bse_complex_sub (z, pole));
     }
@@ -1713,15 +1708,15 @@ gainscale_and_print_deno_nume_zeros2_poles2 (const BseIIRFilterRequest *ifr, /* 
   ellf_outputf ("poles and zeros with corresponding quadratic factors\n");
   for (j = 0; j < ds->n_solved_poles; j++)
     {
-      double a = ds->zcpz[j].r;
-      double b = ds->zcpz[j].i;
+      double a = ds->zcpz[j].re;
+      double b = ds->zcpz[j].im;
       if (b >= 0.0)
         {
           ellf_outputf ("pole  %23.13E %23.13E\n", a, b);
           print_quadratic_factors (ifr, ds, a, b, true);
         }
-      a = ds->zcpz[ds->n_solved_poles + j].r;
-      b = ds->zcpz[ds->n_solved_poles + j].i;
+      a = ds->zcpz[ds->n_solved_poles + j].re;
+      b = ds->zcpz[ds->n_solved_poles + j].im;
       if (b >= 0.0)
         {
           ellf_outputf ("zero  %23.13E %23.13E\n", a, b);
@@ -1737,19 +1732,19 @@ response (const BseIIRFilterRequest *ifr,
           EllfDesignState           *ds,
           double f, double amp)
 {
-  EllfComplex x, num, den, w;
+  BseComplex x, num, den, w;
   double u;
   int j;
   
   /* exp(j omega T) */
   u = 2.0 * PI * f /ifr->sampling_frequency;
-  x.r = cos (u);
-  x.i = sin (u);
+  x.re = cos (u);
+  x.im = sin (u);
   
-  num.r = 1.0;
-  num.i = 0.0;
-  den.r = 1.0;
-  den.i = 0.0;
+  num.re = 1.0;
+  num.im = 0.0;
+  den.re = 1.0;
+  den.im = 0.0;
   for (j = 0; j < ds->n_solved_poles; j++)
     {
       Csub (&ds->zcpz[j], &x, &w);
@@ -1758,8 +1753,8 @@ response (const BseIIRFilterRequest *ifr,
       Cmul (&w, &num, &num);
     }
   Cdiv (&den, &num, &w);
-  w.r *= amp;
-  w.i *= amp;
+  w.re *= amp;
+  w.im *= amp;
   u = Cabs (&w);
   return u;
 }
