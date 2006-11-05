@@ -558,20 +558,20 @@ random_filter_tests ()
   };
   const int n_sampling_frequencies = sizeof (sampling_frequencies) / sizeof (sampling_frequencies[0]);
   const int filter_orders[] = {
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* used for random orders */
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 19, 30, 31, 32,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, /* used for random orders */
   };
   int n_orders = sizeof (filter_orders) / sizeof (filter_orders[0]);
   int oix, max_order_index = 0;
   for (oix = 0; oix < n_orders; oix++)
     max_order_index = filter_orders[oix] ? oix : max_order_index;
-  int rand_order_width = (32 - filter_orders[max_order_index]);
+  int rand_order_width = 64 - filter_orders[max_order_index] + 1;
   double pbe1;
   FilterSetup filters[100000] = { { 0, }, };
-  uint filter_index;
+  uint filter_index, skip_count = 6;
 
   if (sfi_init_settings().test_quick)
-    n_orders = 5;
+    n_orders = 9;
 
 #define MAKE_FILTER(frequest, filter_type) do                                   \
   {                                                                             \
@@ -599,13 +599,14 @@ random_filter_tests ()
         /* band filters */
         if (pbe1 + 0.1 < 0.48)
           {
+            frequest.order = (frequest.order + 1) / 2;
             frequest.passband_edge2 = g_random_double_range (pbe1 + 0.1, 0.48) * frequest.sampling_frequency;
             MAKE_FILTER (frequest, BSE_IIR_FILTER_BAND_PASS);
             MAKE_FILTER (frequest, BSE_IIR_FILTER_BAND_STOP);
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Butterworth", filter_index, filters, 3);
+  generic_filter_tests ("Random Butterworth", filter_index, filters, skip_count);
 
   /* generate filter requirements */
   filter_index = 0;
@@ -624,6 +625,7 @@ random_filter_tests ()
         /* band filters */
         if (pbe1 + 0.1 < 0.48)
           {
+            frequest.order = (frequest.order + 1) / 2;
             frequest.passband_edge2 = g_random_double_range (pbe1 + 0.1, 0.48) * frequest.sampling_frequency;
             frequest.passband_ripple_db = g_random_double_range (0.0001, 0.001) * pow (9, g_random_int() % 5); /* 0.0001 .. 6.6 */
             MAKE_FILTER (frequest, BSE_IIR_FILTER_BAND_PASS);
@@ -632,7 +634,7 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Chebyshev1", filter_index, filters, 3);
+  generic_filter_tests ("Random Chebyshev1", filter_index, filters, skip_count);
 
   /* generate filter requirements */
   filter_index = 0;
@@ -654,6 +656,7 @@ random_filter_tests ()
         /* band filters */
         if (pbe1 + 0.1 < 0.48)
           {
+            frequest.order = (frequest.order + 1) / 2;
             frequest.passband_edge2 = g_random_double_range (pbe1 + 0.1, 0.48) * frequest.sampling_frequency;
             frequest.passband_ripple_db = g_random_double_range (0.0001, 0.001) * pow (9, g_random_int() % 5); /* 0.0001 .. 6.6 */
             frequest.stopband_db = g_random_double_range (-9, -150) - 2 * frequest.order;
@@ -664,7 +667,7 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Elliptic (dB)", filter_index, filters, 3);
+  generic_filter_tests ("Random Elliptic (dB)", filter_index, filters, skip_count);
   
   /* generate filter requirements */
   filter_index = 0;
@@ -686,6 +689,7 @@ random_filter_tests ()
         /* band filters */
         if (pbe1 + 0.1 < 0.48)
           {
+            frequest.order = (frequest.order + 1) / 2;
             frequest.passband_edge2 = g_random_double_range (pbe1 + 0.1, 0.48) * frequest.sampling_frequency;
             frequest.passband_ripple_db = g_random_double_range (0.0001, 0.001) * pow (9, g_random_int() % 5); /* 0.0001 .. 6.6 */
             frequest.stopband_edge = g_random_double_range (MAX (frequest.passband_edge, frequest.passband_edge2) + 0.01, 0.491 * frequest.sampling_frequency);
@@ -698,7 +702,7 @@ random_filter_tests ()
           }
       }
   /* design and test filters */
-  generic_filter_tests ("Random Elliptic (Hz)", filter_index, filters, 3);
+  generic_filter_tests ("Random Elliptic (Hz)", filter_index, filters, skip_count);
 
 #undef MAKE_FILTER
 }

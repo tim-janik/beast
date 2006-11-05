@@ -1,3 +1,9 @@
+Sun Nov  5 04:23:07 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/filtertest.cc (random_filter_tests): extended fixed orders to 32 
+	and random orders to 64. cut the requested order for band filters in 
+	half, because it's doubled upon design.
+
 Sat Nov  4 20:09:33 2006  Tim Janik  <timj@gtk.org>
 
 	* bsefilter-ellf.c: removed ellf-behavior special casing. switched
