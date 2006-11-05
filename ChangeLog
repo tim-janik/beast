@@ -1,3 +1,7 @@
+Sun Nov  5 03:21:41 2006  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefextract.cc: work around a g++-3.3 bug.
+
 Sat Nov  4 17:36:59 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefextract.cc: removed redundant parenthesis from join_slices().

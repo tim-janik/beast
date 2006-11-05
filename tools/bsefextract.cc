@@ -362,7 +362,8 @@ struct SpectrumFeature : public Feature
 		      vector< vector<double> >::const_iterator end,
 		      double                                   normalize)
   {
-    g_return_val_if_fail (end - start > 0, vector<double>());
+    const vector < double > empty_return; // this can't be inlined in g_return* due to a bug in g++-3.3
+    g_return_val_if_fail (end - start > 0, empty_return);
 
     vector<double> result (start->size());
 
