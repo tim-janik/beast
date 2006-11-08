@@ -589,6 +589,7 @@ Resampler2::create_impl (BseResampler2Mode      mode,
     {
       switch (precision)
 	{
+	case BSE_RESAMPLER2_PREC_LINEAR: return create_impl_with_coeffs <Upsampler2<2, USE_SSE> > (halfband_fir_linear_coeffs, 2, 2.0);
 	case BSE_RESAMPLER2_PREC_48DB:   return create_impl_with_coeffs <Upsampler2<16, USE_SSE> > (halfband_fir_48db_coeffs, 16, 2.0);
 	case BSE_RESAMPLER2_PREC_72DB:   return create_impl_with_coeffs <Upsampler2<24, USE_SSE> > (halfband_fir_72db_coeffs, 24, 2.0);
 	case BSE_RESAMPLER2_PREC_96DB:   return create_impl_with_coeffs <Upsampler2<32, USE_SSE> > (halfband_fir_96db_coeffs, 32, 2.0);
@@ -600,6 +601,7 @@ Resampler2::create_impl (BseResampler2Mode      mode,
     {
       switch (precision)
 	{
+	case BSE_RESAMPLER2_PREC_LINEAR: return create_impl_with_coeffs <Downsampler2<2, USE_SSE> > (halfband_fir_linear_coeffs, 2, 1.0);
 	case BSE_RESAMPLER2_PREC_48DB:   return create_impl_with_coeffs <Downsampler2<16, USE_SSE> > (halfband_fir_48db_coeffs, 16, 1.0);
 	case BSE_RESAMPLER2_PREC_72DB:   return create_impl_with_coeffs <Downsampler2<24, USE_SSE> > (halfband_fir_72db_coeffs, 24, 1.0);
 	case BSE_RESAMPLER2_PREC_96DB:   return create_impl_with_coeffs <Downsampler2<32, USE_SSE> > (halfband_fir_96db_coeffs, 32, 1.0);

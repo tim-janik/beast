@@ -1,3 +1,9 @@
+Wed Nov  8 23:28:05 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseresampler.[hc]* bseresamplerimpl.hh: Added coefficient set for
+	linear interpolation. It will probably sound bad, but its useful for
+	testing.
+
 Sun Nov  5 04:23:07 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/filtertest.cc (random_filter_tests): extended fixed orders to 32 

@@ -264,6 +264,16 @@ const double Resampler2::halfband_fir_144db_coeffs[52] = {
   -1.841826652067372e-07,
 };
 
+/* linear interpolation coefficients; barely useful for actual audio use,
+ * but useful for testing
+ */
+const double Resampler2::halfband_fir_linear_coeffs[2] = {
+  0.25,
+  /* here, a 0.5 coefficient will be used */
+  0.25,
+};
+
+
 } // Resampler
 } // Bse
 

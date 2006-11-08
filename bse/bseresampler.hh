@@ -33,6 +33,7 @@ typedef enum /*< skip >*/
 
 typedef enum /*< skip >*/
 {
+  BSE_RESAMPLER2_PREC_LINEAR = 1,     /* linear interpolation */
   BSE_RESAMPLER2_PREC_48DB = 8,
   BSE_RESAMPLER2_PREC_72DB = 12,
   BSE_RESAMPLER2_PREC_96DB = 16,
@@ -94,6 +95,7 @@ public:
    */
   virtual double      delay() const = 0;
 protected:
+  static const double halfband_fir_linear_coeffs[2];
   static const double halfband_fir_48db_coeffs[16];
   static const double halfband_fir_72db_coeffs[24];
   static const double halfband_fir_96db_coeffs[32];
