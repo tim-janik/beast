@@ -343,7 +343,7 @@ perform_test()
   Resampler2 *ups = Resampler2::create (BSE_RESAMPLER2_MODE_UPSAMPLE, options.precision);
   Resampler2 *downs = Resampler2::create (BSE_RESAMPLER2_MODE_DOWNSAMPLE, options.precision);
 
-  F4Vector in_v[block_size / 2 + 1], out_v[block_size / 2 + 1], out2_v[block_size / 2 + 1];
+  F4Vector in_v[block_size / 2 + 3], out_v[block_size / 2 + 3], out2_v[block_size / 2 + 3];
   float *input = &in_v[0].f[0], *output = &out_v[0].f[0], *output2 = &out2_v[0].f[0]; /* ensure aligned data */
 
   if (TEST == TEST_PERFORMANCE)
@@ -417,10 +417,15 @@ perform_test()
 	  double phase = 0, output_phase = 0;
 	  double test_frequency_max_diff = 0; /* for monitoring frequency scanning */
 
-	  for (int b = 0; b < 1000; b++)
+	  while (k < 10000)
 	    {
-	      int misalign = rand() % 4;
-	      int bs = rand() % (block_size - misalign);
+	      guint misalign = rand() % 4;
+              if (block_size <= misalign)
+                continue;
+
+	      int bs = rand() % (block_size + 1 - misalign);
+              if (bs < 2)
+                continue;
 
 	      if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 		bs -= bs & 1;
@@ -612,7 +617,7 @@ perform_test()
 template <int TEST> int
 perform_test ()
 {
-  const char *instruction_set = (Bse::Block::default_singleton() == Bse::Block::current_singleton()) ? "FPU" : "SSE";
+  const char *instruction_set = Bse::Block::impl_name();
 
   switch (resample_type)
     {

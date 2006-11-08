@@ -1,3 +1,10 @@
+Wed Nov  8 22:09:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Ensure that accuracy tests use the same
+	amount of samples regardless of the block size. Make testresampler
+	work with very small blocksizes (such as 2). Use impl_name() feature
+	of bses blockutils. Small speedup by using shorter test signals.
+
 Wed Nov  8 22:00:55 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/testresampler.cc: Introduce phase wrapping for sine
