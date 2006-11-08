@@ -414,7 +414,7 @@ perform_test()
       for (double test_frequency = freq_min; test_frequency < (freq_max + 1); test_frequency += freq_inc)
 	{
 	  long long k = 0;
-	  double phase = 0;
+	  double phase = 0, output_phase = 0;
 	  double test_frequency_max_diff = 0; /* for monitoring frequency scanning */
 
 	  for (int b = 0; b < 1000; b++)
@@ -429,6 +429,8 @@ perform_test()
 		{
 		  input[i+misalign] = sin (phase);
 		  phase += test_frequency/44100.0 * 2 * M_PI;
+                  while (phase > 2 * M_PI)
+                    phase -= 2 * M_PI;
 		}
 	      if (RESAMPLE == RES_DOWNSAMPLE || RESAMPLE == RES_SUBSAMPLE)
 		{
@@ -482,32 +484,37 @@ perform_test()
 		}
 
 	      for (unsigned int i = 0; i < out_bs; i++, k++)
-		if (k > (ups->order() * 4))
-		  {
-		    /* The expected resampler output signal is a sine signal with
-		     * different frequency and is phase shifted a bit.
-		     */
-		    double correct_output = sin ((k - sin_shift) * 2 * freq_factor * test_frequency / 44100.0 * M_PI);
+		{
+		  if (k > (ups->order() * 4))
+		    {
+		      /* The expected resampler output signal is a sine signal with
+		       * different frequency and is phase shifted a bit.
+		       */
+		      double correct_output = sin (output_phase - sin_shift * 2 * freq_factor * test_frequency / 44100.0 * M_PI);
 
-		    /* For some frequencies the expected output signal amplitude is
-		     * zero, because it needed to be filtered out; this fact is
-		     * taken into account here.
-		     */
-		    correct_output *= correct_volume;
-		    if (TEST == TEST_ERROR_TABLE)
-		      {
-			printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
-		      }
-		    else if (TEST == TEST_ERROR_SPECTRUM)
-		      {
-			error_spectrum_error.push_back (correct_output - check[i]);
-		      }
-		    else
-		      {
-			test_frequency_max_diff = max (test_frequency_max_diff, check[i] - correct_output);
-			max_diff = max (max_diff, check[i] - correct_output);
-		      }
-		  }
+		      /* For some frequencies the expected output signal amplitude is
+		       * zero, because it needed to be filtered out; this fact is
+		       * taken into account here.
+		       */
+		      correct_output *= correct_volume;
+		      if (TEST == TEST_ERROR_TABLE)
+			{
+			  printf ("%lld %.17f %.17f %.17f\n", k, check[i], correct_output, correct_output - check[i]);
+			}
+		      else if (TEST == TEST_ERROR_SPECTRUM)
+			{
+			  error_spectrum_error.push_back (correct_output - check[i]);
+			}
+		      else
+			{
+			  test_frequency_max_diff = max (test_frequency_max_diff, check[i] - correct_output);
+			  max_diff = max (max_diff, check[i] - correct_output);
+			}
+		    }
+		  output_phase += freq_factor * test_frequency / 44100.0 * 2 * M_PI;
+		  while (output_phase > 2 * M_PI)
+		    output_phase -= 2 * M_PI;
+		}
 	    }
 	  double test_frequency_max_diff_db = 20 * log (test_frequency_max_diff) / log (10);
 	  if (options.freq_scan_verbose)

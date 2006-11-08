@@ -1,3 +1,9 @@
+Wed Nov  8 22:00:55 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Introduce phase wrapping for sine
+	computation, so that the comparision results don't get worse with the
+	length of the input signal.
+
 Sun Nov  5 03:21:41 2006  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefextract.cc: work around a g++-3.3 bug.
