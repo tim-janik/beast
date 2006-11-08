@@ -112,6 +112,7 @@ usage ()
   printf ("  --oversample          perform --up and --down\n");
   printf ("  --precision=<bits>    choose resampling filter for <bits> precision\n");
   printf ("                        supported precisions: 8, 12, 16, 20, 24 [%d]\n", static_cast<int> (options.precision));
+  printf ("  --precision-linear    use linear interpolation (very bad quality)\n");
   printf ("  --fpu                 disables loading of SSE or similarly optimized code\n");
   printf ("\n");
   printf ("Options:\n");
@@ -253,6 +254,10 @@ Options::parse (int   *argc_p,
 	    default: g_printerr ("testresampler: unsupported precision: %d\n", p);
 		     exit (1);
 	    }
+	}
+      else if (check_arg (argc, argv, &i, "--precision-linear"))
+	{
+	  precision = BSE_RESAMPLER2_PREC_LINEAR;
 	}
       else if (check_arg (argc, argv, &i, "--freq-scan", &opt_arg))
 	{
@@ -417,7 +422,7 @@ perform_test()
 	  double phase = 0, output_phase = 0;
 	  double test_frequency_max_diff = 0; /* for monitoring frequency scanning */
 
-	  while (k < 10000)
+	  while (k < 20000)
 	    {
 	      guint misalign = rand() % 4;
               if (block_size <= misalign)

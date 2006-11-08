@@ -1,3 +1,7 @@
+Wed Nov  8 23:27:33 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testresampler.cc: Support for testing linear interpolation.
+
 Wed Nov  8 22:09:36 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/testresampler.cc: Ensure that accuracy tests use the same
