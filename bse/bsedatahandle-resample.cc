@@ -45,6 +45,7 @@ protected:
   vector<float>		m_pcm_data;
   int64			m_frame_size;
   int64                 m_filter_delay;
+  int64                 m_filter_delay_input;
   int64                 m_filter_order;
   bool			m_init_ok;
 
@@ -182,9 +183,20 @@ public:
      * compensate by shifting the input samples to enable seeking, thus the
      * factor 2
      */
-    m_filter_delay = (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE ?
-		      (int) round (m_resamplers[0]->delay() / 2) :
-		      (int) round (m_resamplers[0]->delay() * 2));
+    if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
+      {
+	m_filter_delay = (int) round (m_resamplers[0]->delay());
+
+	// dividing this value may erase half a sample delay (if m_filter_delay is odd)
+	// this half sample delay is compensated on the input
+	m_filter_delay_input = m_filter_delay % 2;
+	m_filter_delay /= 2;
+      }
+    else
+      {
+	m_filter_delay = (int) round (m_resamplers[0]->delay() * 2);
+	m_filter_delay_input = 0;
+      }
     return BSE_ERROR_NONE;
   }
   void
@@ -204,6 +216,11 @@ public:
 	int64  n_values,
 	float *values)
   {
+    /* for odd upsampler delays, shift the read request 1 sample (in addition
+     * to the delay compensation performed in src_read())
+     */
+    voffset += m_filter_delay_input * m_dhandle.setup.n_channels;
+
     int64 frame = voffset / m_pcm_data.size();
     if (frame != m_pcm_frame)
       {

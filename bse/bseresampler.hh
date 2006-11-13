@@ -83,7 +83,7 @@ public:
   virtual guint	      order() const = 0;
   /**
    * Return the delay introduced by the resampler. This delay is guaranteed to
-   * be >= 0.0, and for factor 2 resampling always a multiple of 0.5 (2.0 for
+   * be >= 0.0, and for factor 2 resampling always a multiple of 0.5 (1.0 for
    * upsampling).
    *
    * The return value can also be thought of as index into the output signal,

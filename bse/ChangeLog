@@ -1,3 +1,16 @@
+Mon Nov 13 20:05:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseresamplerimpl.hh: Removed unnecessary delay. The stream delay for
+	both, upsampling and downsampling should be truely minimal now.
+
+	* bseresampler.hh: The guarantee that the upsampler delay is even was
+	removed from the API. The reason is that we can have a shorter stream
+	delay when the upsampler delay is odd.
+
+	* bsedatahandle-resample.cc: Introduced additional delay compensation
+	code, because compensating an odd upsampler delay wasn't necessary
+	when this code was initially written.
+
 Wed Nov  8 23:28:05 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseresampler.[hc]* bseresamplerimpl.hh: Added coefficient set for

@@ -295,23 +295,23 @@ protected:
   process_4samples_aligned (const float *input /* aligned */,
                             float       *output)
   {
-    const guint H = (ORDER / 2) - 1; /* half the filter length */
+    const guint H = (ORDER / 2); /* half the filter length */
     
-    output[0] = input[H];
-    output[2] = input[H + 1];
-    output[4] = input[H + 2];
-    output[6] = input[H + 3];
+    output[1] = input[H];
+    output[3] = input[H + 1];
+    output[5] = input[H + 2];
+    output[7] = input[H + 3];
     
-    fir_process_4samples_sse (input, &sse_taps[0], ORDER, &output[1], &output[3], &output[5], &output[7]);
+    fir_process_4samples_sse (input, &sse_taps[0], ORDER, &output[0], &output[2], &output[4], &output[6]);
   }
   /* slow convolution */
   void
   process_sample_unaligned (const float *input,
                             float       *output)
   {
-    const guint H = (ORDER / 2) - 1; /* half the filter length */
-    output[0] = input[H];
-    output[1] = fir_process_one_sample<float> (&input[0], &taps[0], ORDER);
+    const guint H = (ORDER / 2); /* half the filter length */
+    output[0] = fir_process_one_sample<float> (&input[0], &taps[0], ORDER);
+    output[1] = input[H];
   }
   void
   process_block_aligned (const float *input,
@@ -371,22 +371,22 @@ public:
                  guint        n_input_samples,
 		 float       *output)
   {
-    unsigned int history_todo = min (n_input_samples, ORDER);
+    const unsigned int history_todo = min (n_input_samples, ORDER - 1);
     
-    copy (input, input + history_todo, &history[ORDER]);
+    copy (input, input + history_todo, &history[ORDER - 1]);
     process_block_aligned (&history[0], history_todo, output);
-    if (n_input_samples >= ORDER)
+    if (n_input_samples > history_todo)
       {
 	process_block_unaligned (input, n_input_samples - history_todo, &output [2 * history_todo]);
         
 	// build new history from new input
-	copy (input + n_input_samples - ORDER, input + n_input_samples, &history[0]);
+	copy (input + n_input_samples - history_todo, input + n_input_samples, &history[0]);
       }
     else
       {
 	// build new history from end of old history
 	// (very expensive if n_input_samples tends to be a lot smaller than ORDER often)
-	g_memmove (&history[0], &history[n_input_samples], sizeof (history[0]) * ORDER);
+	g_memmove (&history[0], &history[n_input_samples], sizeof (history[0]) * (ORDER - 1));
       }
   }
   /**
@@ -400,7 +400,7 @@ public:
   double
   delay() const
   {
-    return order() + 2;
+    return order() - 1;
   }
 };
 
@@ -539,26 +539,26 @@ public:
 	const float       *input_odd = input + 1; /* we process this one with a stepping of 2 */
         
 	const unsigned int n_output_todo = n_input_todo / 2;
-	const unsigned int history_todo = min (n_output_todo, ORDER);
+	const unsigned int history_todo = min (n_output_todo, ORDER - 1);
         
-	copy (input_even, input_even + history_todo, &history_even[ORDER]);
-	deinterleave2 (input_odd, history_todo * 2, &history_odd[ORDER]);
+	copy (input_even, input_even + history_todo, &history_even[ORDER - 1]);
+	deinterleave2 (input_odd, history_todo * 2, &history_odd[ORDER - 1]);
         
 	process_block_aligned <1> (&history_even[0], &history_odd[0], output, history_todo);
-	if (n_output_todo >= ORDER)
+	if (n_output_todo > history_todo)
 	  {
 	    process_block_unaligned<2> (input_even, input_odd, &output[history_todo], n_output_todo - history_todo);
             
-	    // build new history from new input
-	    copy (input_even + n_output_todo - ORDER, input_even + n_output_todo, &history_even[0]);
-	    deinterleave2 (input_odd + n_input_todo - ORDER * 2, ORDER * 2, &history_odd[0]); /* FIXME: can be optimized */
+	    // build new history from new input (here: history_todo == ORDER - 1)
+	    copy (input_even + n_output_todo - history_todo, input_even + n_output_todo, &history_even[0]);
+	    deinterleave2 (input_odd + n_input_todo - history_todo * 2, history_todo * 2, &history_odd[0]); /* FIXME: can be optimized */
 	  }
 	else
 	  {
 	    // build new history from end of old history
 	    // (very expensive if n_output_todo tends to be a lot smaller than ORDER often)
-	    g_memmove (&history_even[0], &history_even[n_output_todo], sizeof (history_even[0]) * ORDER);
-	    g_memmove (&history_odd[0], &history_odd[n_output_todo], sizeof (history_odd[0]) * ORDER);
+	    g_memmove (&history_even[0], &history_even[n_output_todo], sizeof (history_even[0]) * (ORDER - 1));
+	    g_memmove (&history_odd[0], &history_odd[n_output_todo], sizeof (history_odd[0]) * (ORDER - 1));
 	  }
         
 	n_input_samples -= n_input_todo;
@@ -577,7 +577,7 @@ public:
   double
   delay() const
   {
-    return order() / 2 + 0.5;
+    return order() / 2 - 0.5;
   }
 };
 
