@@ -769,8 +769,6 @@ Misc Buglets/Feature Requests:
 
 The MCD timeline says:
 + resampling datahandles: resampler state size
-+ resampler BUG!: impulse response should start at sample 0 (--down) or at most 1 (--up),
-  but it does start at sample 1 or 2; this means unneccessary delay
 - wavetool commandos for upsampling and downsampling datahandles
 - low pass for wavetool
 - iir test
