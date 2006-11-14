@@ -24,6 +24,7 @@
 #include <bse/bseloader.h>
 #include <bse/gslvorbis-enc.h>
 #include <bse/gsldatahandle-vorbis.h>
+#include <bse/bseresamplerimpl.hh>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -1779,6 +1780,129 @@ public:
       }
   }
 } cmd_highpass ("highpass");
+
+class Upsample2 : public Command {
+private:
+  int precision_bits;
+public:
+  Upsample2 (const char *command_name) :
+    Command (command_name),
+    precision_bits (24)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("[options]\n");
+    if (bshort)
+      return;
+    g_print ("    Upsample wave data to twice the sampling frequency.\n");
+    g_print ("    --precision <bits>      set resampler precision bits [%d]\n", precision_bits);
+    g_print ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
+    g_print ("                            1 is a special value for linear interpolation\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    for (guint i = 1; i < argc; i++)
+      {
+	const gchar *str = NULL;
+	if (parse_str_option (argv, i, "--precision", &str, argc))
+	  precision_bits = atoi (str);
+      }
+    return 0; // no missing args
+  }
+  void
+  exec (Wave *wave)
+  {
+    /* get the wave into storage order */
+    wave->sort();
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      {
+        WaveChunk *chunk = &*it;
+        GslDataHandle *dhandle = chunk->dhandle;
+	sfi_info ("UPSAMPLE2: chunk %f: mix_freq=%f -> mix_freq=%f",
+		  gsl_data_handle_osc_freq (chunk->dhandle),
+		  gsl_data_handle_mix_freq (chunk->dhandle),
+		  gsl_data_handle_mix_freq (chunk->dhandle) * 2);
+	sfi_info ("  using resampler precision: %s\n",
+	          bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (precision_bits)));
+
+        BseErrorType error = chunk->change_dhandle (bse_data_handle_new_upsample2 (dhandle, precision_bits), 0, 0);
+        if (error)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: %s",
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                       bse_error_blurb (error));
+            exit (1);
+          }
+      }
+  }
+} cmd_upsample2 ("upsample2");
+
+class Downsample2 : public Command {
+private:
+  int precision_bits;
+public:
+  Downsample2 (const char *command_name) :
+    Command (command_name),
+    precision_bits (24)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("[options]\n");
+    if (bshort)
+      return;
+    g_print ("    Downsample wave data to half the sampling frequency.\n");
+    g_print ("    --precision <bits>      set resampler precision bits [%d]\n", precision_bits);
+    g_print ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
+    g_print ("                            1 is a special value for linear interpolation\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    for (guint i = 1; i < argc; i++)
+      {
+	const gchar *str = NULL;
+	if (parse_str_option (argv, i, "--precision", &str, argc))
+	  precision_bits = atoi (str);
+      }
+    return 0; // no missing args
+  }
+  void
+  exec (Wave *wave)
+  {
+    /* get the wave into storage order */
+    wave->sort();
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      {
+        WaveChunk *chunk = &*it;
+        GslDataHandle *dhandle = chunk->dhandle;
+	sfi_info ("DOWNSAMPLE2: chunk %f: mix_freq=%f -> mix_freq=%f",
+		  gsl_data_handle_osc_freq (chunk->dhandle),
+		  gsl_data_handle_mix_freq (chunk->dhandle),
+		  gsl_data_handle_mix_freq (chunk->dhandle) / 2);
+	sfi_info ("  using resampler precision: %s\n",
+	          bse_resampler2_precision_name (bse_resampler2_find_precision_for_bits (precision_bits)));
+
+        BseErrorType error = chunk->change_dhandle (bse_data_handle_new_downsample2 (dhandle, 24), 0, 0);
+        if (error)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: %s",
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                       bse_error_blurb (error));
+            exit (1);
+          }
+      }
+  }
+} cmd_downsample2 ("downsample2");
+
 
 class Export : public Command {
 public:
