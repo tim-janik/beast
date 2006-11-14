@@ -33,6 +33,41 @@ Resampler2::create (BseResampler2Mode      mode,
 Resampler2::~Resampler2()
 {}
 
+BseResampler2Precision
+Resampler2::find_precision_for_bits (guint bits)
+{
+  if (bits <= 1)
+    return BSE_RESAMPLER2_PREC_LINEAR;
+  if (bits <= 8)
+    return BSE_RESAMPLER2_PREC_48DB;
+  if (bits <= 12)
+    return BSE_RESAMPLER2_PREC_72DB;
+  if (bits <= 16)
+    return BSE_RESAMPLER2_PREC_96DB;
+  if (bits <= 20)
+    return BSE_RESAMPLER2_PREC_120DB;
+
+  /* thats the best precision we can deliver (and by the way also close to
+   * the best precision possible with floats anyway)
+   */
+  return BSE_RESAMPLER2_PREC_144DB;
+}
+
+const char *
+Resampler2::precision_name (BseResampler2Precision precision)
+{
+  switch (precision)
+  {
+  case BSE_RESAMPLER2_PREC_LINEAR:  return "linear interpolation";
+  case BSE_RESAMPLER2_PREC_48DB:    return "8 bit (48dB)";
+  case BSE_RESAMPLER2_PREC_72DB:    return "12 bit (72dB)";
+  case BSE_RESAMPLER2_PREC_96DB:    return "16 bit (96dB)";
+  case BSE_RESAMPLER2_PREC_120DB:   return "20 bit (120dB)";
+  case BSE_RESAMPLER2_PREC_144DB:   return "24 bit (144dB)";
+  default:			    return "unknown precision enum value";
+  }
+}
+
 /* --- coefficient sets for Resampler2 --- */
 /* halfband FIR filter for factor 2 resampling, created with octave
  *
@@ -310,4 +345,16 @@ double
 bse_resampler2_delay (BseResampler2 *resampler)
 {
   return reinterpret_cast<Bse::Resampler::Resampler2 *> (resampler)->delay();
+}
+
+BseResampler2Precision
+bse_resampler2_find_precision_for_bits (guint bits)
+{
+  return Bse::Resampler::Resampler2::find_precision_for_bits (bits);
+}
+
+const char*
+bse_resampler2_precision_name (BseResampler2Precision precision)
+{
+  return Bse::Resampler::Resampler2::precision_name (precision);
 }

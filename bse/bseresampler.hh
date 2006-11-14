@@ -51,6 +51,10 @@ void	       bse_resampler2_process_block (BseResampler2         *resampler,
 guint	       bse_resampler2_order         (BseResampler2         *resampler);
 double	       bse_resampler2_delay         (BseResampler2         *resampler);
 
+/* precision <-> bits conversion */
+BseResampler2Precision	bse_resampler2_find_precision_for_bits (guint		       bits);
+const char*		bse_resampler2_precision_name	       (BseResampler2Precision precision);
+
 G_END_DECLS
 
 #ifdef __cplusplus
@@ -67,8 +71,16 @@ public:
   /**
    * creates a resampler instance fulfilling a given specification
    */
-  static  Resampler2* create (BseResampler2Mode      mode,
-			      BseResampler2Precision precision);
+  static Resampler2* create (BseResampler2Mode      mode,
+			     BseResampler2Precision precision);
+  /**
+   * finds a precision which is appropriate for at least the specified number of bits
+   */
+  static BseResampler2Precision find_precision_for_bits (guint bits);
+  /**
+   * returns a human-readable name for a given precision
+   */
+  static const char  *precision_name (BseResampler2Precision precision);
   /**
    * virtual destructor for abstract class
    */

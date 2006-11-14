@@ -167,8 +167,7 @@ public:
     m_pcm_frame = -2;
     m_pcm_data.resize (m_frame_size);
 
-    /* FIXME: Resampler2::find_precision_for_bits (...) */
-    BseResampler2Precision precision = static_cast<BseResampler2Precision> (m_precision_bits);
+    BseResampler2Precision precision = Resampler2::find_precision_for_bits (m_precision_bits);
     for (guint i = 0; i < setup->n_channels; i++)
       {
 	Resampler2 *resampler = Resampler2::create (mode(), precision);

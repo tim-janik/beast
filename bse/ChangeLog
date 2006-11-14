@@ -1,3 +1,10 @@
+Tue Nov 14 01:02:45 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseresampler.[hc]*: Added Resampler2::find_precision_for_bits to the
+	API, and an precision enum -> string conversion function.
+
+	* bsedatahandle-resample.cc: Use find_precision_for_bits.
+
 Mon Nov 13 20:05:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseresamplerimpl.hh: Removed unnecessary delay. The stream delay for
