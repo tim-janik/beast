@@ -769,7 +769,6 @@ Misc Buglets/Feature Requests:
 
 The MCD timeline says:
 + resampling datahandles: resampler state size
-- wavetool commandos for upsampling and downsampling datahandles
 - low pass for wavetool
 - iir test
 - autolooper for wavetool
