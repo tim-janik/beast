@@ -1544,7 +1544,7 @@ GTokenType Parser::parseParamHints (Param &def)
 				  token_as_string = g_strdup_printf ("\"%s\"", x);
 				  g_free (x);
 	  break;
-	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%llu", scanner->value.v_int64);
+	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%lluLL", scanner->value.v_int64);
 	  break;
 	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%.17g", scanner->value.v_float);
 	  break;

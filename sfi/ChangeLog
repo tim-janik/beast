@@ -1,3 +1,8 @@
+Wed Nov 15 00:23:44 2006  Tim Janik  <timj@gtk.org>
+
+	* sfidl-parser.cc (parseParamHints): serialize int parameters with LL
+	prefix, to allow values >= 2^31.
+
 Tue Oct 24 23:51:55 2006  Tim Janik  <timj@gtk.org>
 
 	* sfitests.h (sfi_init_test): setup CPU name similar to birnet_init_test().
