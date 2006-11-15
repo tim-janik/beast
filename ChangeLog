@@ -1,3 +1,8 @@
+Wed Nov 15 16:03:00 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: changed accesl to use Ctrl+S for saving
+	and Ctrl+D to stop playing songs.
+
 Wed Nov 15 00:25:16 2006  Tim Janik  <timj@gtk.org>
 
 	* data/bse.pc.in: added gobject to bse's link list.

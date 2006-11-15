@@ -1,5 +1,6 @@
 Overview of Changes in BEAST/BSE 0.7.1:
 
+* Fixed libbse symbol exports to allow compilation of custom plugins
 * Fixes for gcc-3.3
 
 Overview of Changes in BEAST/BSE 0.7.0:

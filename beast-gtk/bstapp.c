@@ -92,7 +92,7 @@ static const GxkStockAction file_open_actions[] = {
     BST_ACTION_CLOSE_PROJECT,   BST_STOCK_CLOSE, },
 };
 static const GxkStockAction file_save_actions[] = {
-  { N_("_Save"),                NULL,           N_("Write project to disk"),
+  { N_("_Save"),                "<ctrl>S",      N_("Write project to disk"),
     BST_ACTION_SAVE_PROJECT,    BST_STOCK_SAVE, },
   { N_("Save _As..."),          NULL,           N_("Write project to a specific file"),
     BST_ACTION_SAVE_PROJECT_AS, BST_STOCK_SAVE_AS, },
@@ -135,7 +135,7 @@ static const GxkStockAction dialog_actions[] = {
 static const GxkStockAction playback_actions[] = {
   { N_("_Play"),                "<ctrl>P",      N_("Play or restart playback of the project"),
     BST_ACTION_START_PLAYBACK,  BST_STOCK_PLAY },
-  { N_("_Stop"),                "<ctrl>S",      N_("Stop playback of the project"),
+  { N_("_Stop"),                "<ctrl>D",      N_("Stop playback of the project"),
     BST_ACTION_STOP_PLAYBACK,  BST_STOCK_STOP },
 };
 static const GxkStockAction project_actions[] = {
