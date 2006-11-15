@@ -16,19 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BIRNET_H__
-#define __BIRNET_H__
+#include "birnetmath.hh"
 
-#include <birnet/birnetconfig.h>
-#include <birnet/birnetcpu.hh>
+namespace Birnet {
 
-#include <birnet/birnetmsg.hh>
-
-#include <birnet/birnetmath.hh>
-#include <birnet/birnetutf8.hh>
-#include <birnet/birnetutils.hh>
-#include <birnet/birnetsignal.hh>
-#include <birnet/birnetthread.hh>
-
-#endif /* __BIRNET_H__ */
-/* vim:set ts=8 sts=2 sw=2: */
+} // Birnet

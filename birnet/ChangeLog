@@ -1,3 +1,11 @@
+Wed Nov 15 01:00:21 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetmath.hh, birnetmath.cc: added dtoi32, dtoi64, iround, iceil, 
+	ifloor definitions from Rapicorn. these are fast float->integer 
+	conversion routines on i386.
+
+	* tests/math.cc: test dtoi implementation and friends.
+
 Thu Nov  2 22:28:49 2006  Tim Janik  <timj@gtk.org>
 
 	* birnettests.h: added TABORT_HANDLER() to specify a custom callback

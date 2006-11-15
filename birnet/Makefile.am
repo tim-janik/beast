@@ -18,6 +18,7 @@ birnet_headers = $(strip 		\
 	birnetsignal.hh                 \
 	birnettests.h			\
 	birnetthread.hh			\
+	birnetmath.hh			\
 	birnetutf8.hh			\
 	birnetutils.hh			\
 )
@@ -27,6 +28,7 @@ birnet_sources = $(strip 		\
 	birnetmsg.cc			\
 	birnetsignal.cc                 \
 	birnetthread.cc			\
+	birnetmath.cc			\
 	birnetutf8.cc			\
 	birnetutils.cc			\
 )
