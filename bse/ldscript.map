@@ -1,10 +1,9 @@
 {
   global:
     extern "C++" {
-      Birnet::*;
-      Bse::*;
-      Sfi::*;
-      typeinfo*
+      Birnet::*; vtable*Birnet::*; typeinfo*Birnet::*;
+      Bse::*;    vtable*Bse::*;    typeinfo*Bse::*;
+      Sfi::*;    vtable*Sfi::*;    typeinfo*Sfi::*;
     };
     birnet_*;
     bse_*;

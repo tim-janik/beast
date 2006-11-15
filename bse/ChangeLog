@@ -1,3 +1,8 @@
+Wed Nov 15 00:59:15 2006  Tim Janik  <timj@gtk.org>
+
+	* ldscript.map: restrict typeinfo symbol exports to Sfi/Bse/Birnet
+	symbols. export vtable symbols to allow plugin building withou tlibtool.
+
 Tue Nov 14 01:02:45 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseresampler.[hc]*: Added Resampler2::find_precision_for_bits to the
