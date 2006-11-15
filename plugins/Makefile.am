@@ -18,6 +18,7 @@ plugin_idl_files = $(strip		\
 	bsebalance.idl			\
 	bsecontribsampleandhold.idl	\
 	bsenoise.idl			\
+	bsequantizer.idl		\
 	bsesummation.idl		\
 	davbassfilter.idl		\
 	davchorus.idl			\

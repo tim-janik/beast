@@ -70,6 +70,20 @@ bsenoise_SSE_la_LDFLAGS   = $(bsenoise_FPU_la_LDFLAGS)
 bsenoise_SSE_la_LIBADD    = $(bsenoise_FPU_la_LIBADD)
 bsenoise_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
 
+## C++ Plugin bsequantizer
+$(srcdir)/bsequantizer.cc: bsequantizer.genidl.hh
+plugins_built_sources   += bsequantizer.genidl.hh
+plugin_FPU_ltlibs    += bsequantizer.FPU.la
+bsequantizer_FPU_la_SOURCES = bsequantizer.cc
+bsequantizer_FPU_la_LDFLAGS = -module $(plugins_ldflags)
+bsequantizer_FPU_la_LIBADD  = $(plugins_libs)
+bsequantizer_FPU_la_CXXFLAGS  = $(FPU_PLUGIN_CXXFLAGS)
+plugin_SSE_ltlibs      += bsequantizer.SSE.la
+bsequantizer_SSE_la_SOURCES   = $(bsequantizer_FPU_la_SOURCES)
+bsequantizer_SSE_la_LDFLAGS   = $(bsequantizer_FPU_la_LDFLAGS)
+bsequantizer_SSE_la_LIBADD    = $(bsequantizer_FPU_la_LIBADD)
+bsequantizer_SSE_la_CXXFLAGS  = $(SSE_PLUGIN_CXXFLAGS)
+
 ## C++ Plugin bsesummation
 $(srcdir)/bsesummation.cc: bsesummation.genidl.hh
 plugins_built_sources   += bsesummation.genidl.hh
