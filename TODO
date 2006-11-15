@@ -32,6 +32,7 @@ MISC:
   - provide rating for alternative audio drivers (ALSA)
   - running on kernel 2.6 scheduler?
   - reniced synthesis engine?
+  - checks mixer channels Master and Pcm for < 20% and Muted
 - fix bsepcmdevice-alsa.c:alsa_device_retrigger():g_malloc0(): to instead use bse_engine_const_zeros()
 - make BSE_REGISTER_OBJECT() define parent_class, similar to G_DEFINE_TYPE
 - align engine blck adresses and engine block sizes on 16byte boundaries upon allocation
