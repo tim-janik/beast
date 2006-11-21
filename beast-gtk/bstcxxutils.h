@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2006 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,8 @@
 
 G_BEGIN_DECLS
 
+void    bst_message_handler_install     (void);
+void    bst_message_handler_uninstall   (void);
 
 G_END_DECLS
 

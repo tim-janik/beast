@@ -28,7 +28,7 @@ beast_headers = $(strip \
 	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
 	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstbusview.h        \
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	    \
-	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.hh	    \
+	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstcxxutils.h	    \
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	    \
 	bstsnifferscope.h	bstwaveview.h	bstfiledialog.h		bstgconfig.h	    \
 	bstlogadjustment.h	bstitemview.h	bstservermonitor.h	bstknob.h	    \
@@ -50,7 +50,7 @@ beast_sources = $(strip \
 	bstpatterncolumns.c	bstxkb.c	bstpatternview.c	bstpatternctrl.c    \
 	bstkeybindings.c	bstprofiler.c	bstgrowbar.c		bstbusview.c        \
 	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	    \
-	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	    \
+	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstcxxutils.cc	    \
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	    \
 	bstsnifferscope.c	bstwaveview.c	bstfiledialog.c		bstgconfig.c	    \
 	bstlogadjustment.c	bstitemview.c	bstservermonitor.c	bstknob.c	    \
@@ -142,7 +142,6 @@ $(beast_vOBJECTS): bstgenbseapi.h
 bstgenbseapi.h: stamp-bstgenbseapi.h ;
 stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd . \
-	&& echo -e "#include <sfi/sfi.h>\n" > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) bstgenbseapi.h || cp xgen-$(@F) bstgenbseapi.h) \
 	&& rm -f xgen-$(@F) \

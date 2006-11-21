@@ -1,4 +1,8 @@
+- fix array list
+- remove _birnet_init_messaging
 NEXT-RELEASE:
+- add "difference" channel to BseSummation (which deprecated BseAdder)
+- add freq->freq detuning/modulation plugin
 - describe the need for Kernel 2.6 in README
 - fix bse.pc depending on mad.pc, libmad can be installed *without* a mad.pc file
 - GslLong -> int64 

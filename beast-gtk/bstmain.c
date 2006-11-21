@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstutils.h"
+#include "bstcxxutils.h"
 #include "bse/bse.h"
 #include "bstapp.h"
 #include "bstsplash.h"
@@ -257,7 +258,7 @@ main (int   argc,
   _bst_init_radgets ();
 
   /* install message dialog handler */
-  sfi_msg_set_thread_handler (bst_message_log_handler);
+  bst_message_handler_install();
 
   /* open files given on command line */
   if (argc > 1)
@@ -402,7 +403,7 @@ main (int   argc,
     }
   
   /* take down GUI */
-  sfi_msg_set_thread_handler (NULL);
+  bst_message_handler_uninstall();
   bst_message_dialogs_popdown ();
   
   /* perform necessary cleanup cycles */
@@ -521,7 +522,7 @@ bst_early_parse_args (int    *argc_p,
 	  guint j;
 	  g_print ("BEAST debug keys: all");
 	  for (j = 0; mids[j].ident; j++)
-            if (mids[j].type >= SFI_MSG_DEBUG && mids[j].label)
+            if (mids[j].type >= SFI_MSG_DEBUG && mids[j].label && mids[j].label[0])
               g_print (", %s (%s)", mids[j].ident, mids[j].label);
             else if (mids[j].type >= SFI_MSG_DEBUG)
               g_print (", %s", mids[j].ident);

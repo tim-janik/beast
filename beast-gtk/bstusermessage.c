@@ -53,10 +53,6 @@ message_title (const BstMessage *msg,
 {
   switch (msg->type)
     {
-    case BST_MSG_FATAL:
-      *stock = BST_STOCK_ERROR;
-      *prefix = _("Fatal Error: ");
-      break;
     case BST_MSG_ERROR:
       *stock = BST_STOCK_ERROR;
       *prefix = _("Error: ");
@@ -67,6 +63,7 @@ message_title (const BstMessage *msg,
     case BST_MSG_SCRIPT:
       *stock = BST_STOCK_EXECUTE;
       break;
+    case BST_MSG_ALWAYS:
     case BST_MSG_INFO:
       *stock = BST_STOCK_INFO;
       break;
@@ -303,35 +300,52 @@ bst_msg_dialog_janitor_update (GxkDialog        *dialog,
   gxk_dialog_set_focus (dialog, bwidget);
 }
 
-typedef struct {
-  guint             id;
-  gchar            *name;
-  gchar            *stock_icon;
-  gchar            *options;
-} BstMsgBit;
 
-static void
-bst_msg_bit_free (gpointer data)
+void
+bst_msg_bit_free (BstMsgBit *mbit)
 {
-  BstMsgBit *mbit = data;
-  g_free (mbit->name);
+  g_free (mbit->text);
   g_free (mbit->stock_icon);
   g_free (mbit->options);
   g_free (mbit);
 }
 
-SfiMsgBit*
-bst_message_bit_appoint (guint                   id,
-                         const gchar            *name,
-                         const gchar            *stock_icon,
-                         const gchar            *options)
+BstMsgBit*
+bst_msg_bit_printf (guint8                  msg_part_id,
+                    const char             *format,
+                    ...)
 {
+  int saved_errno = errno;
+  /* construct message */
+  va_list args;
+  va_start (args, format);
+  char *text = g_strdup_vprintf (format, args);
+  va_end (args);
+  BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
+  mbit->id = msg_part_id;
+  mbit->text = g_strdup (text);
+  g_free (text);
+  mbit->stock_icon = NULL;
+  mbit->options = NULL;
+  errno = saved_errno;
+  return mbit;
+}
+
+BstMsgBit*
+bst_msg_bit_create_choice (guint                   id,
+                           const gchar            *name,
+                           const gchar            *stock_icon,
+                           const gchar            *options)
+{
+  int saved_errno = errno;
+  // g_return_val_if_fail (options && options[0], NULL);
   BstMsgBit *mbit = g_new0 (BstMsgBit, 1);
   mbit->id = id;
-  mbit->name = g_strdup (name);
+  mbit->text = g_strdup (name);
   mbit->stock_icon = g_strdup (stock_icon);
   mbit->options = g_strdup (options);
-  return sfi_msg_bit_appoint (bst_message_bit_appoint, mbit, bst_msg_bit_free);
+  errno = saved_errno;
+  return mbit;
 }
 
 static void
@@ -392,7 +406,7 @@ dialog_show_above_modals (GxkDialog *dialog,
   gtk_widget_show (GTK_WIDGET (dialog));
 }
 
-void
+guint
 bst_message_handler (const BstMessage *const_msg)
 {
   BstMessage msg = *const_msg;
@@ -413,28 +427,20 @@ bst_message_handler (const BstMessage *const_msg)
     msg.config_check = _("Display dialogs with dignostic messages");
   if (!msg.config_check && msg.type == BST_MSG_DEBUG)
     msg.config_check = _("Display dialogs with debugging messages");
-  /* find choice result message bit */
-  guint j, *choice_result = NULL;
-  for (j = 0; j < msg.n_msg_bits; j++)
-    if (msg.msg_bits[j]->owner == bst_message_dialog_elist)
-      {
-        choice_result = msg.msg_bits[j]->data;
-        break;
-      }
-  GxkDialog *dialog;
   /* check the simple non-choice dialog types */
-  if (!choice_result)
+  GxkDialog *dialog;
+  if (!msg.n_msg_bits)
     {
       dialog = (GxkDialog*) find_dialog (msg_windows, &msg);
       if (dialog)
         {
           repeat_dialog (dialog);
-          return;
+          return 0;
         }
       else if (msg.config_check && bst_msg_absorb_config_match (msg.config_check))
         {
           bst_msg_absorb_config_update (msg.config_check); /* message absorbed by configuration */
-          return;
+          return 0;
         }
     }
   /* create new dialog */
@@ -444,17 +450,18 @@ bst_message_handler (const BstMessage *const_msg)
   g_object_connect (dialog, "signal::destroy", dialog_destroyed, NULL, NULL);
   msg_windows = g_slist_prepend (msg_windows, dialog);
   /* add choices */
-  for (j = 0; choice_result && j < msg.n_msg_bits; j++)
-    if (msg.msg_bits[j]->owner == bst_message_bit_appoint)
-      {
-        BstMsgBit *mbit = msg.msg_bits[j]->data;
-        GtkWidget *widget = gxk_dialog_action_multi (dialog, mbit->name, message_dialog_choice_triggered, (gpointer) mbit->id, mbit->stock_icon,
-                                                     mbit->options && strchr (mbit->options, 'D') ? GXK_DIALOG_MULTI_DEFAULT : 0);
-        if (mbit->options && strchr (mbit->options, 'I'))
-          gtk_widget_set_sensitive (widget, FALSE);
-      }
+  guint j;
+  for (j = 0; j < msg.n_msg_bits; j++)
+    {
+      const BstMsgBit *mbit = msg.msg_bits[j];
+      GtkWidget *widget = gxk_dialog_action_multi (dialog, mbit->text, message_dialog_choice_triggered, (gpointer) mbit->id, mbit->stock_icon,
+                                                   mbit->options && strchr (mbit->options, 'D') ? GXK_DIALOG_MULTI_DEFAULT : 0);
+      if (mbit->options && strchr (mbit->options, 'I'))
+        gtk_widget_set_sensitive (widget, FALSE);
+    }
   /* fire up dialog */
-  if (!choice_result)
+  guint result = 0;
+  if (!msg.n_msg_bits)
     {
       gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
       dialog_show_above_modals (dialog, FALSE);
@@ -471,36 +478,24 @@ bst_message_handler (const BstMessage *const_msg)
           g_main_iteration (TRUE);
           GDK_THREADS_ENTER ();
         }
-      *choice_result = (guint) g_object_get_data (dialog, "bst-modal-choice-result");
+      result = (guint) g_object_get_data (dialog, "bst-modal-choice-result");
       g_object_unref (dialog);
     }
+  return result;
 }
 
 static BstMsgType
 bst_msg_type_from_user_msg_type (BseMsgType utype)
 {
-  g_static_assert (BST_MSG_NONE    == BSE_MSG_NONE);
-  g_static_assert (BST_MSG_FATAL   == BSE_MSG_FATAL);
-  g_static_assert (BST_MSG_ERROR   == BSE_MSG_ERROR);
-  g_static_assert (BST_MSG_WARNING == BSE_MSG_WARNING);
-  g_static_assert (BST_MSG_SCRIPT  == BSE_MSG_SCRIPT);
-  g_static_assert (BST_MSG_INFO    == BSE_MSG_INFO);
-  g_static_assert (BST_MSG_DIAG    == BSE_MSG_DIAG);
-  g_static_assert (BST_MSG_DEBUG   == BSE_MSG_DEBUG);
+  BIRNET_STATIC_ASSERT (BST_MSG_NONE    == BSE_MSG_NONE);
+  BIRNET_STATIC_ASSERT (BST_MSG_ALWAYS  == BSE_MSG_ALWAYS);
+  BIRNET_STATIC_ASSERT (BST_MSG_ERROR   == BSE_MSG_ERROR);
+  BIRNET_STATIC_ASSERT (BST_MSG_WARNING == BSE_MSG_WARNING);
+  BIRNET_STATIC_ASSERT (BST_MSG_SCRIPT  == BSE_MSG_SCRIPT);
+  BIRNET_STATIC_ASSERT (BST_MSG_INFO    == BSE_MSG_INFO);
+  BIRNET_STATIC_ASSERT (BST_MSG_DIAG    == BSE_MSG_DIAG);
+  BIRNET_STATIC_ASSERT (BST_MSG_DEBUG   == BSE_MSG_DEBUG);
   return utype;
-}
-
-static void
-message_free_fields (BstMessage *msg)
-{
-  g_free (msg->log_domain);
-  g_free (msg->title);
-  g_free (msg->primary);
-  g_free (msg->secondary);
-  g_free (msg->details);
-  g_free (msg->config_check);
-  g_free (msg->process);
-  g_free (msg->msg_bits);
 }
 
 static void
@@ -514,8 +509,8 @@ message_fill_from_script (BstMessage    *msg,
 {
   msg->log_domain = NULL;
   msg->type = mtype;
-  msg->ident = (char*) sfi_msg_type_ident (msg->type);
-  msg->label = (char*) sfi_msg_type_label (msg->type);
+  msg->ident = sfi_msg_type_ident (msg->type);
+  msg->label = sfi_msg_type_label (msg->type);
   const gchar *proc_title = NULL;
   if (hastext (proc_name))
     {
@@ -546,6 +541,16 @@ message_fill_from_script (BstMessage    *msg,
 }
 
 static void
+message_free_from_script (BstMessage *msg)
+{
+  g_free ((char*) msg->title);
+  g_free ((char*) msg->primary);
+  g_free ((char*) msg->secondary);
+  g_free ((char*) msg->details);
+  g_free ((char*) msg->config_check);
+}
+
+static void
 janitor_actions_changed (GxkDialog *dialog)
 {
   SfiProxy janitor = (SfiProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
@@ -557,7 +562,7 @@ janitor_actions_changed (GxkDialog *dialog)
   message_fill_from_script (&msg, BST_MSG_SCRIPT, 0, NULL, script_name, proc_name, user_msg);
   bst_msg_dialog_update (dialog, &msg, FALSE);
   bst_msg_dialog_janitor_update (dialog, janitor);
-  message_free_fields (&msg);
+  message_free_from_script (&msg);
 }
 
 static void
@@ -600,7 +605,7 @@ janitor_unconnected (GxkDialog *dialog)
           message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
           g_free (error_msg);
           bst_message_handler (&msg);
-          message_free_fields (&msg);
+          message_free_from_script (&msg);
         }
     }
 }
@@ -643,34 +648,13 @@ create_janitor_dialog (SfiProxy janitor)
 }
 
 void
-bst_message_log_handler (const SfiMessage *lmsg)
-{
-  BstMessage msg = { 0, };
-  msg.log_domain = lmsg->log_domain;
-  msg.type = lmsg->type;
-  msg.ident = (char*) sfi_msg_type_ident (msg.type);
-  msg.label = (char*) sfi_msg_type_label (msg.type);
-  msg.config_check = lmsg->config_check;
-  msg.title = lmsg->title;
-  msg.primary = lmsg->primary;
-  msg.secondary = lmsg->secondary;
-  msg.details = lmsg->details;
-  msg.janitor = bse_script_janitor();
-  msg.process = (char*) sfi_thread_get_name (NULL);
-  msg.pid = sfi_thread_get_pid (NULL);
-  msg.n_msg_bits = lmsg->n_msg_bits;
-  msg.msg_bits = lmsg->msg_bits;
-  bst_message_handler (&msg);
-}
-
-void
 bst_message_synth_msg_handler (const BseMessage *umsg)
 {
   BstMessage msg = { 0, };
   msg.log_domain = umsg->log_domain;
   msg.type = bst_msg_type_from_user_msg_type (umsg->type);
-  msg.ident = (char*) sfi_msg_type_ident (msg.type);
-  msg.label = (char*) sfi_msg_type_label (msg.type);
+  msg.ident = sfi_msg_type_ident (msg.type);
+  msg.label = sfi_msg_type_label (msg.type);
   msg.config_check = umsg->config_check;
   msg.title = umsg->title;
   msg.primary = umsg->primary;
@@ -682,13 +666,22 @@ bst_message_synth_msg_handler (const BseMessage *umsg)
   bst_message_handler (&msg);
 }
 
+static char*
+text_concat (char *prefix,
+             char *text)
+{
+  char *result = g_strconcat (prefix ? prefix : "", prefix && text ? "\n" : "", text, NULL);
+  g_free (prefix);
+  return result;
+}
+
+
 /**
- * bst_message_dialog_elist
+ * bst_message_dialog_display
  * @log_domain:   log domain
  * @level:        one of %BST_MSG_ERROR, %BST_MSG_WARNING, %BST_MSG_INFO, %BST_MSG_DIAG
- * @lbit1:        msg bit
- * @lbit2:        msg bit
- * @...:          list of more msg bits, NULL terminated
+ * @n_bits:       number of message bits
+ * @bits:         message bits from bst_msg_bit_printf
  *
  * Present a message dialog to the user. The current value of errno
  * is preserved around calls to this function. Usually this function isn't
@@ -710,47 +703,64 @@ bst_message_synth_msg_handler (const BseMessage *umsg)
  * This function is MT-safe and may be called from any thread.
  */
 guint
-bst_message_dialog_elist (const char     *log_domain,
-                          BstMsgType      type, /* BST_MSG_DEBUG is not really useful here */
-                          SfiMsgBit      *lbit1,
-                          SfiMsgBit      *lbit2,
-                          ...)
+bst_message_dialog_display (const char     *log_domain,
+                            BstMsgType      mtype, /* BST_MSG_DEBUG is not really useful here */
+                            guint           n_bits,
+                            BstMsgBit     **bits)
 {
   gint saved_errno = errno;
-  guint n = 0;
-  SfiMsgBit **bits = NULL;
+  BstMessage msg = { 0, };
+  msg.log_domain = log_domain;
+  msg.type = mtype;
+  msg.ident = sfi_msg_type_ident (mtype);
+  msg.label = sfi_msg_type_label (mtype);
+  msg.janitor = bse_script_janitor();
+  msg.process = sfi_thread_get_name (NULL);
+  msg.pid = sfi_thread_get_pid (NULL);
+  msg.n_msg_bits = 0;
+  msg.msg_bits = NULL;
   /* collect msg bits */
-  if (lbit1)
-    {
-      bits = g_renew (SfiMsgBit*, bits, n + 1);
-      bits[n++] = lbit1;
-      SfiMsgBit *lbit = lbit2;
-      va_list args;
-      va_start (args, lbit2);
-      while (lbit)
-        {
-          bits = g_renew (SfiMsgBit*, bits, n + 1);
-          bits[n++] = lbit;
-          lbit = va_arg (args, SfiMsgBit*);
-        }
-      va_end (args);
-    }
   guint i;
-  /* add message bit to catch choice result */
-  guint dialog_result = 0;
-  for (i = 0; i < n; i++)
-    if (bits[i]->owner == bst_message_bit_appoint)
-      {
-        bits = g_renew (SfiMsgBit*, bits, n + 1);
-        bits[n++] = sfi_msg_bit_appoint (bst_message_dialog_elist, &dialog_result, NULL);
-        break;
-      }
-  bits = g_renew (SfiMsgBit*, bits, n + 1);
-  bits[n] = NULL;
-  sfi_msg_log_trampoline (log_domain, type, bits, bst_message_log_handler);
-  g_free (bits);
+  for (i = 0; i < n_bits; i++)
+    {
+      BstMsgBit *mbit = bits[i];
+      if (mbit->options) /* choice bit */
+        {
+          msg.msg_bits = g_renew (BstMsgBit*, msg.msg_bits, msg.n_msg_bits + 1);
+          msg.msg_bits[msg.n_msg_bits++] = mbit;
+          continue;
+        }
+      switch (mbit->id)
+        {
+        case '0':
+          msg.title = text_concat ((char*) msg.title, mbit->text);
+          break;
+        case '1':
+          msg.primary = text_concat ((char*) msg.primary, mbit->text);
+          break;
+        case '2':
+          msg.secondary = text_concat ((char*) msg.secondary, mbit->text);
+          break;
+        case '3':
+          msg.details = text_concat ((char*) msg.details, mbit->text);
+          break;
+        case 'c':
+          msg.config_check = text_concat ((char*) msg.config_check, mbit->text);
+          break;
+        }
+      bst_msg_bit_free (mbit);
+    }
+  guint result = bst_message_handler (&msg);
+  g_free ((char*) msg.title);
+  g_free ((char*) msg.primary);
+  g_free ((char*) msg.secondary);
+  g_free ((char*) msg.details);
+  g_free ((char*) msg.config_check);
+  for (i = 0; i < msg.n_msg_bits; i++)
+    bst_msg_bit_free (msg.msg_bits[i]);
+  g_free (msg.msg_bits);
   errno = saved_errno;
-  return dialog_result;
+  return result;
 }
 
 void
@@ -788,7 +798,7 @@ server_script_error (SfiProxy     server,
   message_fill_from_script (&msg, BST_MSG_ERROR, 0, _("Script execution error."), script_name, proc_name, error_msg);
   g_free (error_msg);
   bst_message_handler (&msg);
-  message_free_fields (&msg);
+  message_free_from_script (&msg);
 }
 
 void

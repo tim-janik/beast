@@ -71,7 +71,6 @@ enum {
   ACTION_URL_REPORT_BUG,
   ACTION_URL_ONLINE_SYNTHESIZERS,
   ACTION_URL_ONLINE_DEMOS,
-  ACTION_DEMO_DIALOG_FATAL,
   ACTION_DEMO_DIALOG_ERROR,
   ACTION_DEMO_DIALOG_WARNING,
   ACTION_DEMO_DIALOG_SCRIPT,
@@ -191,8 +190,6 @@ static const GxkStockAction online_demos[] = {
     ACTION_URL_ONLINE_DEMOS,        BST_STOCK_ONLINE_SOUND_ARCHIVE },
 };
 static const GxkStockAction demo_dialogs[] = {
-  { "Demo Fatal Error Dialog",  NULL,           "Fire up a fatal error dialog for demonstration purposes",
-    ACTION_DEMO_DIALOG_FATAL,   BST_STOCK_ERROR },
   { "Demo Error Dialog",        NULL,           "Fire up an error dialog for demonstration purposes",
     ACTION_DEMO_DIALOG_ERROR,   BST_STOCK_ERROR },
   { "Demo Warning Dialog",      NULL,           "Fire up a warning dialog for demonstration purposes",
@@ -1116,7 +1113,6 @@ app_action_exec (gpointer data,
     case ACTION_URL_ONLINE_DEMOS:
       sfi_url_show ("http://beast.gtk.org/sound-browser");
       break;
-    case ACTION_DEMO_DIALOG_FATAL:
     case ACTION_DEMO_DIALOG_ERROR:
     case ACTION_DEMO_DIALOG_WARNING:
     case ACTION_DEMO_DIALOG_SCRIPT:
@@ -1126,7 +1122,6 @@ app_action_exec (gpointer data,
       switch (action)
         {
         default: /* silence compiler */
-        case ACTION_DEMO_DIALOG_FATAL:   demo_type = BST_MSG_FATAL;   break;
         case ACTION_DEMO_DIALOG_ERROR:   demo_type = BST_MSG_ERROR;   break;
         case ACTION_DEMO_DIALOG_WARNING: demo_type = BST_MSG_WARNING; break;
         case ACTION_DEMO_DIALOG_SCRIPT:  demo_type = BST_MSG_SCRIPT;  break;
@@ -1135,13 +1130,13 @@ app_action_exec (gpointer data,
         case ACTION_DEMO_DIALOG_DEBUG:   demo_type = BST_MSG_DEBUG;   break;
         }
       bst_msg_dialog (demo_type,
-                      SFI_MSG_TEXT0 ("Demonstration Dialog"),
-                      SFI_MSG_TEXT1 ("This is a demonstrative dialog"),
-                      SFI_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
+                      BST_MSG_TEXT0 ("Demonstration Dialog"),
+                      BST_MSG_TEXT1 ("This is a demonstration dialog"),
+                      BST_MSG_TEXT2 ("To help with dialog layout, and to test message display, dialogs may be "
                                      "fired up for pure demonstration purposes. This is such a dialog, so if you "
                                      "are currently looking at a prominent warning or error message, there's no "
                                      "real merit to it."),
-                      SFI_MSG_TEXT3 ("Demo-Dialog-Type: %s", sfi_msg_type_label (demo_type)));
+                      BST_MSG_TEXT3 ("Demo-Dialog-Type: %s", sfi_msg_type_label (demo_type)));
       break;
     default:
       g_assert_not_reached ();
@@ -1229,7 +1224,6 @@ app_action_check (gpointer data,
     case ACTION_URL_REPORT_BUG:
     case ACTION_URL_ONLINE_SYNTHESIZERS:
     case ACTION_URL_ONLINE_DEMOS:
-    case ACTION_DEMO_DIALOG_FATAL:
     case ACTION_DEMO_DIALOG_ERROR:
     case ACTION_DEMO_DIALOG_WARNING:
     case ACTION_DEMO_DIALOG_SCRIPT:

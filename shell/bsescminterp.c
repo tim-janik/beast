@@ -718,40 +718,35 @@ bse_scm_choice_match (SCM s_ch1,
   return SCM_BOOL (res);
 }
 
-static void
-scm_script_send_message_handler (const SfiMessage *msg)
+static char*
+text_concat (const char *prefix,
+             char       *text,
+             int         len)
 {
-  SfiSeq *args = sfi_seq_new ();
-  /* keep arguments in sync with bsejanitor.proc */
-  sfi_seq_append_string (args, msg->log_domain);
-  sfi_seq_append_string (args, sfi_msg_type_ident (msg->type));
-  sfi_seq_append_string (args, msg->title);
-  sfi_seq_append_string (args, msg->primary);
-  sfi_seq_append_string (args, msg->secondary);
-  sfi_seq_append_string (args, msg->details);
-  sfi_seq_append_string (args, msg->config_check);
-  sfi_glue_call_seq ("bse-script-send-message", args);
-  sfi_seq_unref (args);
+  char *p2 = g_strndup (text, len);
+  char *result = g_strconcat (prefix ? prefix : "", prefix && p2 ? "\n" : "", p2, NULL);
+  g_free (p2);
+  return result;
 }
 
-static guint8
+static int
 msg_bit_type_match (const gchar *string)
 {
   if (sfi_choice_match_detailed ("bse-msg-text0", string, TRUE) ||
       sfi_choice_match_detailed ("bse-msg-title", string, TRUE))
-    return '0';
+    return 0;
   if (sfi_choice_match_detailed ("bse-msg-text1", string, TRUE) ||
       sfi_choice_match_detailed ("bse-msg-primary", string, TRUE))
-    return '1';
+    return 1;
   if (sfi_choice_match_detailed ("bse-msg-text2", string, TRUE) ||
       sfi_choice_match_detailed ("bse-msg-secondary", string, TRUE))
-    return '2';
+    return 2;
   if (sfi_choice_match_detailed ("bse-msg-text3", string, TRUE) ||
       sfi_choice_match_detailed ("bse-msg-detail", string, TRUE))
-    return '3';
+    return 3;
   if (sfi_choice_match_detailed ("bse-msg-check", string, TRUE))
-    return 'c';
-  return 0;
+    return 4;
+  return -1;
 }
 
 SCM
@@ -765,7 +760,7 @@ bse_scm_script_message (SCM s_type,
   /* figure message level */
   BSE_SCM_DEFER_INTS();
   gchar *strtype = g_strndup (SCM_ROCHARS (s_type), SCM_LENGTH (s_type));
-  guint mtype = sfi_msg_type_lookup (strtype);
+  guint mtype = sfi_msg_lookup_type (strtype);
   g_free (strtype);
   BSE_SCM_ALLOW_INTS();
   if (!mtype)
@@ -780,11 +775,7 @@ bse_scm_script_message (SCM s_type,
     scm_misc_error ("bse-script-message", "Wrong number of arguments", SCM_BOOL_F);
 
   /* build message bit list */
-  BSE_SCM_DEFER_INTS();
-  SfiMsgBit **mbits = g_new0 (SfiMsgBit*, i / 2 + 1);
-  sfi_glue_gc_add (mbits, g_free); /* free mbits automatically */
-  BSE_SCM_ALLOW_INTS();
-  guint n = 0;
+  char *title = NULL, *primary = NULL, *secondary = NULL, *detail = NULL, *check = NULL;
   i = 2;
   node = s_bits;
   while (SCM_CONSP (node))
@@ -798,10 +789,10 @@ bse_scm_script_message (SCM s_type,
       /* check symbol contents */
       BSE_SCM_DEFER_INTS();
       gchar *mtag = g_strndup (SCM_ROCHARS (arg1), SCM_LENGTH (arg1));
-      gsize tag = msg_bit_type_match (mtag);
+      int tag = msg_bit_type_match (mtag);
       g_free (mtag);
       BSE_SCM_ALLOW_INTS();
-      if (!tag)
+      if (tag < 0)
         scm_wrong_type_arg ("bse-script-message", i, arg1);
       /* list must continue */
       if (!SCM_CONSP (node))
@@ -814,12 +805,44 @@ bse_scm_script_message (SCM s_type,
         scm_wrong_type_arg ("bse-script-message", i, arg2);
       /* add message bit from string */
       BSE_SCM_DEFER_INTS();
-      mbits[n++] = sfi_msg_bit_appoint ((void*) tag, g_strndup (SCM_ROCHARS (arg2), SCM_LENGTH (arg2)), g_free);
+      switch (tag)
+        {
+        case 0:
+          title = text_concat (title, SCM_ROCHARS (arg2), SCM_LENGTH (arg2));
+          sfi_glue_gc_add (title, g_free);
+          break;
+        case 1:
+          primary = text_concat (primary, SCM_ROCHARS (arg2), SCM_LENGTH (arg2));
+          sfi_glue_gc_add (primary, g_free);
+          break;
+        case 2:
+          secondary = text_concat (secondary, SCM_ROCHARS (arg2), SCM_LENGTH (arg2));
+          sfi_glue_gc_add (secondary, g_free);
+          break;
+        case 3:
+          detail = text_concat (detail, SCM_ROCHARS (arg2), SCM_LENGTH (arg2));
+          sfi_glue_gc_add (detail, g_free);
+          break;
+        case 4:
+          check = text_concat (check, SCM_ROCHARS (arg2), SCM_LENGTH (arg2));
+          sfi_glue_gc_add (check, g_free);
+          break;
+        }
       BSE_SCM_ALLOW_INTS();
     }
 
   BSE_SCM_DEFER_INTS ();
-  sfi_msg_log_trampoline (BIRNET_LOG_DOMAIN, mtype, mbits, scm_script_send_message_handler);
+  SfiSeq *args = sfi_seq_new ();
+  /* keep arguments in sync with bsejanitor.proc */
+  sfi_seq_append_string (args, BIRNET_LOG_DOMAIN);
+  sfi_seq_append_string (args, sfi_msg_type_ident (mtype));
+  sfi_seq_append_string (args, title);
+  sfi_seq_append_string (args, primary);
+  sfi_seq_append_string (args, secondary);
+  sfi_seq_append_string (args, detail);
+  sfi_seq_append_string (args, check);
+  sfi_glue_call_seq ("bse-script-send-message", args);
+  sfi_seq_unref (args);
   BSE_SCM_ALLOW_INTS ();
 
   bse_scm_destroy_gc_plateau (gcplateau);

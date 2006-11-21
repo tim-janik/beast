@@ -1,6 +1,29 @@
+Mon Nov 20 23:39:58 2006  Tim Janik  <timj@gtk.org>
+
+	* bstusermessage.h, bstusermessage.c: ported to new SFI Msg API.
+	made dialog messaging self-hosted to avoid unnecessary messaging 
+	API indirections.
+
+	* bstcxxutils.h, bstcxxutils.cc: new files, providing utilities 
+	implemented in C++. provide message handler installation API.
+
+	* bstmain.c: use bst_message_handler_install() and
+	bst_message_handler_uninstall().
+
+	* bstapp.c: adaptions to new Msg API.
+
+	* bstbseutils.h: fixed include order for C++.
+
+	* bstxxutils.hh, bstxxutils.cc: removed unused files.
+
+	* tools/bsewavetool.cc: port to C++ Msg API.
+
+	* shell/bsescminterp.c: ported to new sfi_msg* API. send messages
+	directly instead of introducing an unnecessary Msg layer indireciton.
+
 Wed Nov 15 16:03:00 2006  Tim Janik  <timj@gtk.org>
 
-	* beast-gtk/bstapp.c: changed accesl to use Ctrl+S for saving
+	* beast-gtk/bstapp.c: changed accel to use Ctrl+S for saving
 	and Ctrl+D to stop playing songs.
 
 Wed Nov 15 00:25:16 2006  Tim Janik  <timj@gtk.org>

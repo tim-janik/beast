@@ -19,9 +19,11 @@
 #ifndef __BST_BSE_UTILS_H__
 #define __BST_BSE_UTILS_H__
 
-#include "bstgenbseapi.h"
+#include <sfi/sfi.h> /* needed by bstgenbseapi.h */
 
 G_BEGIN_DECLS
+
+#include "bstgenbseapi.h" /* include this within extern "C" */
 
 /* --- BSE utilities --- */
 #define BSE_SERVER                              (1 /* HACK */ )

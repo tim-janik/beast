@@ -38,6 +38,7 @@
 
 namespace BseWaveTool {
 
+using namespace Birnet;
 
 #define PRG_NAME        ("bsewavetool")
 #define	IROUND(dbl)	((int) (floor (dbl + 0.5)))
@@ -58,22 +59,34 @@ list<string>   unlink_file_list;
 
 /* --- main program --- */
 static void
-wavetool_log_handler (const SfiMessage  *msg)
+wavetool_message_handler (const char              *domain,
+                          Msg::Type                mtype,
+                          const vector<Msg::Part> &parts)
 {
-  if (msg->type == SFI_MSG_INFO)
+  if (mtype == Msg::INFO)
     {
       if (!quiet_infos)
         {
-          if (msg->primary)
-            g_printerr ("%s\n", msg->primary);
-          if (msg->secondary)
-            g_printerr ("%s\n", msg->secondary);
-          if (msg->details)
-            g_printerr ("%s\n", msg->details);
+          String title, primary, secondary, details, checkmsg;
+          for (uint i = 0; i < parts.size(); i++)
+            switch (parts[i].ptype)
+              {
+              case '0': title     += (title.size()     ? "\n" : "") + parts[i].string; break;
+              case '1': primary   += (primary.size()   ? "\n" : "") + parts[i].string; break;
+              case '2': secondary += (secondary.size() ? "\n" : "") + parts[i].string; break;
+              case '3': details   += (details.size()   ? "\n" : "") + parts[i].string; break;
+              case 'c': checkmsg  += (checkmsg.size()  ? "\n" : "") + parts[i].string; break;
+              }
+          if (primary.size())
+            g_printerr ("%s\n", primary.c_str());
+          if (secondary.size())
+            g_printerr ("%s\n", secondary.c_str());
+          if (details.size())
+            g_printerr ("%s\n", details.c_str());
         }
     }
   else
-    sfi_msg_default_handler (msg);
+    Msg::default_handler (domain, mtype, parts);
 }
 
 extern "C" int
@@ -92,9 +105,9 @@ main (int   argc,
     { NULL }
   };
   bse_init_inprocess (&argc, &argv, "BseWaveTool", values);
-  sfi_msg_allow ("main"); // FIXME
-  sfi_msg_set_thread_handler (wavetool_log_handler);
-  sfi_msg_type_configure (SFI_MSG_INFO, SFI_MSG_TO_HANDLER, NULL);
+  Msg::allow_msgs ("main"); // FIXME
+  Msg::set_thread_handler (wavetool_message_handler);
+  Msg::configure (Msg::INFO, Msg::LOG_TO_HANDLER, "");
   
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
@@ -310,10 +323,10 @@ wavetool_parse_args (int    *argc_p,
 
   envar = getenv ("BSEWAVETOOL_DEBUG");
   if (envar)
-    sfi_msg_allow (envar);
+    Msg::allow_msgs (envar);
   envar = getenv ("BSEWAVETOOL_NO_DEBUG");
   if (envar)
-    sfi_msg_deny (envar);
+    Msg::deny_msgs (envar);
   
   for (i = 1; i < argc; i++)
     {
@@ -330,9 +343,9 @@ wavetool_parse_args (int    *argc_p,
           exit (0);
         }
       else if (parse_str_option (argv, i, "--debug", &str, argc))
-        sfi_msg_allow (str);
+        Msg::allow_msgs (str);
       else if (parse_str_option (argv, i, "--no-debug", &str, argc))
-        sfi_msg_deny (str);
+        Msg::deny_msgs (str);
       else if (parse_bool_option (argv, i, "-h") ||
                parse_bool_option (argv, i, "--help"))
         {
@@ -932,9 +945,9 @@ public:
             }
           if (error)
             {
-              sfi_msg_log (continue_on_error ? SFI_MSG_WARNING : SFI_MSG_ERROR,
-                           SFI_MSG_PRIMARY (_("failed to add wave chunk from file \"%s\": %s"),
-                                            ochunk.sample_file, bse_error_blurb (error)));
+              Msg::display (continue_on_error ? Msg::WARNING : Msg::ERROR,
+                            Msg::Primary (_("failed to add wave chunk from file \"%s\": %s"),
+                                          ochunk.sample_file, bse_error_blurb (error)));
               if (!continue_on_error)
                 exit (1);
             }
