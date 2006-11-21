@@ -33,6 +33,7 @@ struct Msg {
   struct Text2; typedef Text2 Secondary; /* secondary message (lengthy) */
   struct Text3; typedef Text3 Detail;    /* message details */
   struct Check;                          /* enable/disable message text */
+  struct CustomType;
   typedef enum {
     LOG_TO_STDERR     = 1,
     LOG_TO_STDLOG     = 2,
@@ -72,6 +73,9 @@ struct Msg {
                                       const Part &p4 = empty_part, const Part &p5 = empty_part,
                                       const Part &p6 = empty_part, const Part &p7 = empty_part,
                                       const Part &p8 = empty_part, const Part &p9 = empty_part);
+  static inline void display         (const CustomType   &message_type,
+                                      const char         *format,
+                                      ...) BIRNET_PRINTF (2, 3);
   /* message handling */
   struct Part {
     String string;
@@ -97,12 +101,17 @@ struct Msg {
                                       const vector<Part> &parts);
 protected:
   static const Part   &empty_part;
-  static void    display_aparts      (Type                message_type,
+  static void    display_aparts      (const char         *log_domain,
+                                      Type                message_type,
                                       const Part &p0, const Part &p1,
                                       const Part &p2, const Part &p3,
                                       const Part &p4, const Part &p5,
                                       const Part &p6, const Part &p7,
                                       const Part &p8, const Part &p9);
+  static void    display_vmsg        (const char         *log_domain,
+                                      Type                message_type,
+                                      const char         *format,
+                                      va_list             args);
   BIRNET_PRIVATE_CLASS_COPY (Msg);
 private:
   static volatile int    n_msg_types;
@@ -138,6 +147,15 @@ public:
     explicit BIRNET_PRINTF (3, 4) Custom (uint8 ctype, const char *format, ...) { va_list a; va_start (a, format); setup (ctype | 0x80, format, a); va_end (a); }
     explicit                      Custom (uint8 ctype, const String &s)         { setup (ctype | 0x80, s); }
   };
+  struct CustomType {
+    Type type;
+    explicit CustomType (const char         *ident,
+                         Type                default_ouput,
+                         const char         *label = NULL) :
+      type (register_type (ident, default_ouput, label))
+    {}
+    BIRNET_PRIVATE_CLASS_COPY (CustomType);
+  };
 };
 
 /* --- inline implementations --- */
@@ -160,7 +178,21 @@ Msg::display (Type        message_type,
 {
   /* this function is supposed to preserve errno */
   if (check (message_type))
-    display_aparts (message_type, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+    display_aparts (BIRNET_LOG_DOMAIN, message_type, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
+}
+
+inline void
+Msg::display (const CustomType   &message_type,
+              const char         *format,
+              ...)
+{
+  if (check (message_type.type))
+    {
+      va_list args;
+      va_start (args, format);
+      display_vmsg (BIRNET_LOG_DOMAIN, message_type.type, format, args);
+      va_end (args);
+    }
 }
 
 } // Birnet

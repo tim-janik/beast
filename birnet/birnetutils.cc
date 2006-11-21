@@ -38,6 +38,8 @@
 
 namespace Birnet {
 
+static Msg::CustomType debug_browser ("browser", Msg::DEBUG);
+
 static const InitSettings *birnet_init_settings = NULL;
 
 InitSettings
@@ -1051,33 +1053,33 @@ url_test_show (const char *url)
 {
   static struct {
     const char   *prg, *arg1, *prefix, *postfix;
+    bool          asyncronous; /* start asyncronously and check exit code to catch launch errors */
     volatile bool disabled;
   } www_browsers[] = {
     /* program */               /* arg1 */      /* prefix+URL+postfix */
-    /* system browser launchers */
-    { "sensible-browser",       NULL,           "", "" },
-    { "x-www-browser",          NULL,           "", "" },
-    { "htmlview",               NULL,           "", "" },
-    /* portable browser launchers */
-    { "xdg-open",               NULL,           "", "" },
-#if 1
-    /* desktop browser launchers */
-    { "gnome-open",             NULL,           "", "" },
-    { "kfmclient",              "openURL",      "", "" },
-    { "gnome-moz-remote",       "--newwin"      "", "" },
-    /* specific browser programs */
-    { "firefox",                NULL,           "", "" },
-    { "mozilla-firefox",        NULL,           "", "" },
-    { "mozilla",                NULL,           "", "" },
-    { "opera",                  "-newwindow",   "", "" },
-    { "konqueror",              NULL,           "", "" },
+    /* working browser launchers */
+    { "gnome-open",             NULL,           "", "", 0 }, /* opens in background, correct exit_code */
+    { "kfmclient",              "openURL",      "", "", 0 }, /* opens in background, correct exit_code */
+    { "exo-open",               NULL,           "", "", 0 }, /* opens in background, correct exit_code */
+    { "gnome-moz-remote",       "--newwin",     "", "", 0 }, /* opens in background, correct exit_code */
+#if 0
+    /* broken/unpredictable browser launchers */
+    { "browser-config",         NULL,            "", "", 0 }, /* opens in background (+ sleep 5), broken exit_code (always 0) */
+    { "xdg-open",               NULL,            "", "", 0 }, /* opens in foreground (first browser) or background, correct exit_code */
+    { "sensible-browser",       NULL,            "", "", 0 }, /* opens in foreground (first browser) or background, correct exit_code */
+    { "htmlview",               NULL,            "", "", 0 }, /* opens in foreground (first browser) or background, correct exit_code */
 #endif
-    /* above, we give system browser launchers precedence over xdg-open
-     * (especially the debian sensible-browser script), because xdg-open
-     * tends to exhibit bugs in desktop browser launchers still (e.g.
-     * gnome-open not honouring the users browser setting for file:///
-     * urls).
-     */
+    /* direct browser invocation */
+    { "x-www-browser",          NULL,           "", "", 1 }, /* opens in foreground, browser alias */
+    { "firefox",                NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "mozilla-firefox",        NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "mozilla",                NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "konqueror",              NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "opera",                  "-newwindow",   "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "galeon",                 NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "epiphany",               NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "amaya",                  NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
+    { "dillo",                  NULL,           "", "", 1 }, /* opens in foreground, correct exit_code */
   };
   uint i;
   for (i = 0; i < G_N_ELEMENTS (www_browsers); i++)
@@ -1091,22 +1093,42 @@ url_test_show (const char *url)
         char *string = g_strconcat (www_browsers[i].prefix, url, www_browsers[i].postfix, NULL);
         args[n] = string;
         GError *error = NULL;
-        bool success = g_spawn_async (NULL, /* cwd */
-                                      args,
-                                      NULL, /* envp */
-                                      G_SPAWN_SEARCH_PATH,
-                                      NULL, /* child_setup() */
-                                      NULL, /* user_data */
-                                      NULL, /* child_pid */
-                                      &error);
+        char fallback_error[64] = "Ok";
+        bool success;
+        if (!www_browsers[i].asyncronous) /* start syncronously and check exit code */
+          {
+            int exit_status = -1;
+            success = g_spawn_sync (NULL, /* cwd */
+                                    args,
+                                    NULL, /* envp */
+                                    G_SPAWN_SEARCH_PATH,
+                                    NULL, /* child_setup() */
+                                    NULL, /* user_data */
+                                    NULL, /* standard_output */
+                                    NULL, /* standard_error */
+                                    &exit_status,
+                                    &error);
+            success = success && !exit_status;
+            if (exit_status)
+              g_snprintf (fallback_error, sizeof (fallback_error), "exitcode: %u", exit_status);
+          }
+        else
+          success = g_spawn_async (NULL, /* cwd */
+                                   args,
+                                   NULL, /* envp */
+                                   G_SPAWN_SEARCH_PATH,
+                                   NULL, /* child_setup() */
+                                   NULL, /* user_data */
+                                   NULL, /* child_pid */
+                                   &error);
         g_free (string);
-        // g_printerr ("show \"%s\": %s: %s\n", url, args[0], error ? error->message : "Ok");
+        Msg::display (debug_browser, "show \"%s\": %s: %s", url, args[0], error ? error->message : fallback_error);
         g_clear_error (&error);
         if (success)
-          return TRUE;
+          return true;
         www_browsers[i].disabled = true;
       }
-  /* reset disabled states if no browser could be found */
+  /* reset all disabled states if no browser could be found */
   for (i = 0; i < G_N_ELEMENTS (www_browsers); i++)
     www_browsers[i].disabled = false;
   return false;

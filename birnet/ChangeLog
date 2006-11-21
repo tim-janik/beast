@@ -1,3 +1,19 @@
+Tue Nov 21 22:04:15 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.cc: reworked browser launching logic to work around
+	launcher scripts failing unnoticed by executing browser programs
+	asyncronously and executing browser launch scripts syncronously
+	to check the exit code.
+	added "browser" debug key and messages.
+	due to unreliable exit codes or foreground/background execution
+	behaviour, support had to be removed for the launcher scripts
+	xdg-open, htmlview, browser-config and sensible-browser,
+	added support for exo-open, galeon, epiphany, amaya and dillo.
+
+	* birnetmsg.hh, birnetmsg.cc: added Msg::CustomType class through
+	which users can easily create new logging types. added printf-style
+	Msg::display() variant for custom message types.
+
 Mon Nov 20 23:39:43 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetmsg.hh, birnetmsg.cc: implemented C++ messaging API,

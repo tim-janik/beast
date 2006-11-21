@@ -533,7 +533,8 @@ Msg::display_parts (const char         *domain,
 }
 
 void
-Msg::display_aparts (Type                message_type,
+Msg::display_aparts (const char         *log_domain,
+                     Type                message_type,
                      const Part &p0, const Part &p1,
                      const Part &p2, const Part &p3,
                      const Part &p4, const Part &p5,
@@ -552,7 +553,22 @@ Msg::display_aparts (Type                message_type,
   parts.push_back (p7);
   parts.push_back (p8);
   parts.push_back (p9);
-  display_parts (BIRNET_LOG_DOMAIN, message_type, parts);
+  display_parts (log_domain, message_type, parts);
+  errno = saved_errno;
+}
+
+void
+Msg::display_vmsg (const char         *log_domain,
+                   Type                message_type,
+                   const char         *format,
+                   va_list             args)
+{
+  int saved_errno = errno;
+  char *text = g_strdup_vprintf (format, args);
+  vector<Part> parts;
+  parts.push_back (Primary (String (text)));
+  g_free (text);
+  display_parts (log_domain, message_type, parts);
   errno = saved_errno;
 }
 
