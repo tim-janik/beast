@@ -406,7 +406,7 @@ bse_sequencer_thread_main (gpointer data)
 {
   DEBUG ("SST: start\n");
   sfi_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
-  sfi_msg_set_thread_handler (bse_msg_handler);
+  bse_message_setup_thread_handler();
   BSE_SEQUENCER_LOCK ();
   do
     {

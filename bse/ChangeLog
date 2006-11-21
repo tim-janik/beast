@@ -1,3 +1,18 @@
+Mon Nov 20 23:39:51 2006  Tim Janik  <timj@gtk.org>
+
+	* bsemain.cc: ported bsemain.c to C++, use C++ Msg API.
+
+	* bsemain.h: API adaptions due to bsemain.cc porting.
+
+	* bsecore.idl:
+	* bsejanitor.proc:
+	* bseserver.c: ported to new sfi_msg_* API. 
+
+	* bsesequencer.cc: use bse_message_setup_thread_handler().
+
+	* bseenginemaster.c: use bse_message_setup_thread_handler() and
+	BIRNET_STATIC_ASSERT().
+
 Wed Nov 15 00:59:15 2006  Tim Janik  <timj@gtk.org>
 
 	* ldscript.map: restrict typeinfo symbol exports to Sfi/Bse/Birnet

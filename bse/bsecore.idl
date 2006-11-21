@@ -635,7 +635,7 @@ class Janitor;
 /* user messages */
 choice MsgType {
   MSG_NONE = Neutral,
-  MSG_FATAL,
+  MSG_ALWAYS,
   MSG_ERROR,
   MSG_WARNING,
   MSG_SCRIPT,

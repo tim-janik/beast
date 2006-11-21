@@ -394,7 +394,7 @@ PROCEDURE (bse-script-send-message, "Script/Message") {
   const gchar *text2  = sfi_value_get_string (in_values++);
   const gchar *text3  = sfi_value_get_string (in_values++);
   const gchar *check  = sfi_value_get_string (in_values++);
-  SfiMsgType    type  = mtype ? sfi_msg_type_lookup (mtype) : 0;
+  SfiMsgType    type  = mtype ? sfi_msg_lookup_type (mtype) : 0;
 
   /* check parameters */
   if (!mtype || !(text1 || text2))

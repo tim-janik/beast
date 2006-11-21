@@ -1132,16 +1132,16 @@ _engine_master_dispatch (void)
 void
 bse_engine_master_thread (EngineMasterData *mdata)
 {
-  sfi_msg_set_thread_handler (bse_msg_handler);
+  bse_message_setup_thread_handler ();
 
   /* assert pollfd equality, since we're simply casting structures */
-  g_static_assert (sizeof (struct pollfd) == sizeof (GPollFD));
-  g_static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
-  g_static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  g_static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
-  g_static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  g_static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  g_static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  BIRNET_STATIC_ASSERT (sizeof (struct pollfd) == sizeof (GPollFD));
+  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
+  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
+  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  BIRNET_STATIC_ASSERT (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  BIRNET_STATIC_ASSERT (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 
   /* add the thread wakeup pipe to master pollfds,
    * so we get woken  up in time.

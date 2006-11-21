@@ -226,7 +226,7 @@ aiff_read_inst (gint      fd,
                 guint32   chunk_size)
 {
   gint r;
-  g_static_assert (sizeof (afile->instrument) == 20);
+  BIRNET_STATIC_ASSERT (sizeof (afile->instrument) == 20);
   if (chunk_size < 20)
     return BSE_ERROR_FORMAT_INVALID;
   do

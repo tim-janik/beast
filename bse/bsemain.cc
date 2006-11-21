@@ -35,6 +35,8 @@
 #include <unistd.h>
 #include <sfi/sfitests.h> /* sfti_test_init() */
 
+using namespace Birnet;
+
 /* --- prototypes --- */
 static void	bse_main_loop		(gpointer	 data);
 static void	bse_async_parse_args	(gint	        *argc_p,
@@ -57,16 +59,20 @@ BirnetThread            *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
 static BseMainArgs       default_main_args = {
-  .path_binaries        = BSE_PATH_BINARIES,
-  .n_processors         = 1,
-  .wave_chunk_padding   = 64,
-  .wave_chunk_big_pad   = 256,
-  .dcache_block_size    = 4000,
-  .dcache_cache_memory  = 10 * 1024 * 1024,
-  .midi_kammer_note     = BSE_KAMMER_NOTE,      /* 69 */
-  .kammer_freq          = BSE_KAMMER_FREQUENCY, /* 440Hz, historically 435Hz */
-  .force_fpu            = false,
-  .allow_randomization  = true,
+  { 0, },               // BirnetInitSettings
+  1,                    // n_processors
+  64,                   // wave_chunk_padding
+  256,                  // wave_chunk_big_pad
+  4000,                 // dcache_block_size
+  10 * 1024 * 1024,     // dcache_cache_memory
+  BSE_KAMMER_NOTE,      // midi_kammer_note (69)
+  BSE_KAMMER_FREQUENCY, // kammer_freq (440Hz, historically 435Hz)
+  BSE_PATH_BINARIES,    // path_binaries
+  NULL,                 // bse_rcfile
+  NULL,                 // override_plugin_globs
+  NULL,                 // override_script_path
+  true,                 // allow_randomization
+  false,                // force_fpu
 };
 BseMainArgs             *bse_main_args = NULL;
 
@@ -131,7 +137,7 @@ bse_init_async (gint           *argc,
     sfi_thread_sleep (-1);
 }
 
-gchar*
+const char*
 bse_check_version (guint required_major,
 		   guint required_minor,
 		   guint required_micro)
@@ -160,7 +166,7 @@ typedef struct {
 static gboolean
 async_create_context (gpointer data)
 {
-  AsyncData *adata = data;
+  AsyncData *adata = (AsyncData*) data;
   SfiComPort *port1, *port2;
 
   sfi_com_port_create_linked ("Client", adata->thread, &port1,
@@ -216,7 +222,7 @@ bse_init_core (void)
   bse_main_context = g_main_context_new ();
   sfi_thread_set_wakeup ((BirnetThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
-  sfi_msg_set_thread_handler (bse_msg_handler);
+  bse_message_setup_thread_handler();
 
   /* initialize basic components */
   bse_globals_init ();
@@ -250,7 +256,7 @@ bse_init_core (void)
       SfiRing *ring = bse_plugin_path_list_files (TRUE, FALSE);
       while (ring)
         {
-          gchar *name = sfi_ring_pop_head (&ring);
+          gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
             sfi_diag ("while loading \"%s\": %s", name, error);
@@ -334,7 +340,7 @@ bse_init_intern (gint           *argc,
       SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
       while (ring)
         {
-          gchar *name = sfi_ring_pop_head (&ring);
+          gchar *name = (char*) sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
             sfi_diag ("while loading \"%s\": %s", name, error);
@@ -382,7 +388,7 @@ bse_init_test (gint           *argc,
 static void
 bse_main_loop (gpointer data)
 {
-  BirnetThread *client = data;
+  BirnetThread *client = (BirnetThread*) data;
 
   bse_main_thread = sfi_thread_self ();
 
@@ -416,7 +422,7 @@ bse_main_getpid (void)
 static gboolean
 core_thread_send_message_async (gpointer data)
 {
-  BseMessage *umsg = data;
+  BseMessage *umsg = (BseMessage*) data;
   bse_server_send_message (bse_server_get(), umsg);
   bse_message_free (umsg);
   return FALSE;
@@ -426,34 +432,46 @@ core_thread_send_message_async (gpointer data)
  * BSE log handler, suitable for sfi_msg_set_thread_handler().
  * This function is MT-safe and may be called from any thread.
  */
-void
-bse_msg_handler (const SfiMessage *lmsg)
+static void
+bse_msg_handler (const char              *domain,
+                 Msg::Type                mtype,
+                 const vector<Msg::Part> &parts)
 {
-  /* this functions is called from multiple threads */
-  if (!lmsg->primary && !lmsg->secondary)
+  /* this function is called from multiple threads */
+  BIRNET_STATIC_ASSERT (BSE_MSG_NONE    == (int) Birnet::Msg::NONE);
+  BIRNET_STATIC_ASSERT (BSE_MSG_ALWAYS  == (int) Birnet::Msg::ALWAYS);
+  BIRNET_STATIC_ASSERT (BSE_MSG_ERROR   == (int) Birnet::Msg::ERROR);
+  BIRNET_STATIC_ASSERT (BSE_MSG_WARNING == (int) Birnet::Msg::WARNING);
+  BIRNET_STATIC_ASSERT (BSE_MSG_SCRIPT  == (int) Birnet::Msg::SCRIPT);
+  BIRNET_STATIC_ASSERT (BSE_MSG_INFO    == (int) Birnet::Msg::INFO);
+  BIRNET_STATIC_ASSERT (BSE_MSG_DIAG    == (int) Birnet::Msg::DIAG);
+  BIRNET_STATIC_ASSERT (BSE_MSG_DEBUG   == (int) Birnet::Msg::DEBUG);
+  String title, primary, secondary, details, checkmsg;
+  for (uint i = 0; i < parts.size(); i++)
+    switch (parts[i].ptype)
+      {
+      case '0': title     += (title.size()     ? "\n" : "") + parts[i].string; break;
+      case '1': primary   += (primary.size()   ? "\n" : "") + parts[i].string; break;
+      case '2': secondary += (secondary.size() ? "\n" : "") + parts[i].string; break;
+      case '3': details   += (details.size()   ? "\n" : "") + parts[i].string; break;
+      case 'c': checkmsg  += (checkmsg.size()  ? "\n" : "") + parts[i].string; break;
+      }
+  if (!primary.size() && !secondary.size())
     return;
   BseMessage *umsg = bse_message_new();
   g_free (umsg->log_domain);
-  umsg->log_domain = g_strdup (lmsg->log_domain);
-  g_static_assert (BSE_MSG_NONE    == SFI_MSG_NONE);
-  g_static_assert (BSE_MSG_FATAL   == SFI_MSG_FATAL);
-  g_static_assert (BSE_MSG_ERROR   == SFI_MSG_ERROR);
-  g_static_assert (BSE_MSG_WARNING == SFI_MSG_WARNING);
-  g_static_assert (BSE_MSG_SCRIPT  == SFI_MSG_SCRIPT);
-  g_static_assert (BSE_MSG_INFO    == SFI_MSG_INFO);
-  g_static_assert (BSE_MSG_DIAG    == SFI_MSG_DIAG);
-  g_static_assert (BSE_MSG_DEBUG   == SFI_MSG_DEBUG);
-  umsg->type = lmsg->type;
-  g_free (umsg->config_check);
-  umsg->config_check = g_strdup (lmsg->config_check);
+  umsg->log_domain = g_strdup (domain);
+  umsg->type = BseMsgType (mtype);
   g_free (umsg->title);
-  umsg->title = g_strdup (lmsg->title);
+  umsg->title = g_strdup (title.c_str());
   g_free (umsg->primary);
-  umsg->primary = g_strdup (lmsg->primary);
+  umsg->primary = g_strdup (primary.c_str());
   g_free (umsg->secondary);
-  umsg->secondary = g_strdup (lmsg->secondary);
+  umsg->secondary = g_strdup (secondary.c_str());
   g_free (umsg->details);
-  umsg->details = g_strdup (lmsg->details);
+  umsg->details = g_strdup (details.c_str());
+  g_free (umsg->config_check);
+  umsg->config_check = g_strdup (checkmsg.c_str());
   umsg->janitor = NULL;
   g_free (umsg->process);
   umsg->process = g_strdup (sfi_thread_get_name (NULL));
@@ -462,16 +480,36 @@ bse_msg_handler (const SfiMessage *lmsg)
   bse_idle_next (core_thread_send_message_async, umsg);
 }
 
+void
+bse_message_setup_thread_handler (void)
+{
+  Birnet::Msg::set_thread_handler (bse_msg_handler);
+}
+
+void
+bse_message_to_default_handler (const BseMessage *msg)
+{
+  vector<Msg::Part> parts;
+  if (msg->title)
+    parts.push_back (Msg::Title (String (msg->title)));
+  if (msg->primary)
+    parts.push_back (Msg::Primary (String (msg->primary)));
+  if (msg->secondary)
+    parts.push_back (Msg::Secondary (String (msg->secondary)));
+  if (msg->details)
+    parts.push_back (Msg::Detail (String (msg->details)));
+  if (msg->config_check)
+    parts.push_back (Msg::Check (String (msg->config_check)));
+  Msg::default_handler (msg->log_domain, Msg::Type (msg->type), parts);
+}
+
 static guint
 get_n_processors (void)
 {
 #ifdef _SC_NPROCESSORS_ONLN
-  {
     gint n = sysconf (_SC_NPROCESSORS_ONLN);
-
     if (n > 0)
       return n;
-  }
 #endif
   return 1;
 }
@@ -501,8 +539,8 @@ bse_async_parse_args (gint           *argc_p,
     {
       if (strcmp (argv[i], "--g-fatal-warnings") == 0)
 	{
-	  GLogLevelFlags fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
-	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+	  GLogLevelFlags fatal_mask = (GLogLevelFlags) g_log_set_always_fatal ((GLogLevelFlags) G_LOG_FATAL_MASK);
+	  fatal_mask = (GLogLevelFlags) (fatal_mask | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 	  g_log_set_always_fatal (fatal_mask);
 	  argv[i] = NULL;
 	}

@@ -38,7 +38,7 @@ extern const guint   bse_micro_version;
 extern const guint   bse_interface_age;
 extern const guint   bse_binary_age;
 extern const gchar  *bse_version;
-gchar*               bse_check_version	(guint           required_major,
+const char*          bse_check_version	(guint           required_major,
 					 guint           required_minor,
 					 guint           required_micro);
 

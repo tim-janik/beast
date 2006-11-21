@@ -80,7 +80,7 @@ _gsl_init_data_caches (void)
   g_assert (initialized == FALSE);
   initialized++;
 
-  g_static_assert (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
+  BIRNET_STATIC_ASSERT (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
   sfi_cond_init (&global_dcache_cond_node_filled);
   sfi_mutex_init (&global_dcache_mutex);
 }

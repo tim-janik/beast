@@ -19,6 +19,7 @@
 #define __BSE_MAIN_H__
 
 #include	<bse/bse.h>	/* initialization */
+#include        <bse/bsetype.h>
 
 G_BEGIN_DECLS
 
@@ -31,7 +32,7 @@ void		bse_init_async		(gint		*argc,
 					 const char     *app_name,
 					 SfiInitValue    values[]);
 SfiGlueContext* bse_init_glue_context	(const gchar    *client);
-gchar*          bse_check_version	(guint		 required_major,
+const char*     bse_check_version	(guint		 required_major,
                                          guint		 required_minor,
                                          guint		 required_micro);
 #endif
@@ -47,8 +48,9 @@ void		bse_init_test		(gint		*argc,
 /* BSE thread pid (or 0) */
 guint           bse_main_getpid         (void);
 
-/* MT-safe log handler */
-void            bse_msg_handler         (const SfiMessage *message);
+/* messaging */
+void            bse_message_setup_thread_handler (void);
+void            bse_message_to_default_handler   (const BseMessage *msg);
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
@@ -60,34 +62,34 @@ void            bse_msg_handler         (const SfiMessage *message);
 
 /* --- argc/argv overide settings --- */
 typedef struct {
-  BirnetInitSettings birnet;
-  int           latency;
-  int           mixing_freq;
-  int           control_freq;
-  SfiRing      *pcm_drivers;
-  SfiRing      *midi_drivers;
-  bool		debug_extensions;	/* init-value "debug-extensions" */
-  bool          load_drivers_early;
-  bool          dump_driver_list;
-  bool		load_core_plugins;	/* init-value "load-core-plugins" */
-  bool		load_core_scripts;	/* init-value "load-core-scripts" */
-  bool          force_fpu;		/* init-value "force-fpu" */
-  bool          allow_randomization;	/* init-value "allow-randomization" - enables non-deterministic behavior */
-  const gchar  *bse_rcfile;
-  const gchar  *override_plugin_globs;
-  const gchar  *override_script_path;
-  const gchar  *path_binaries;
-  guint  	n_processors;
+  BirnetInitSettings    birnet;
+  guint  	        n_processors;
   /* # values to pad around wave chunk blocks per channel */
-  guint  	wave_chunk_padding;
-  guint  	wave_chunk_big_pad;
+  guint  	        wave_chunk_padding;
+  guint  	        wave_chunk_big_pad;
   /* data (file) cache block size (aligned to power of 2) */
-  guint  	dcache_block_size;
+  guint  	        dcache_block_size;
   /* amount of bytes to spare for memory cache */
-  guint  	dcache_cache_memory;
-  guint  	midi_kammer_note;
+  guint  	        dcache_cache_memory;
+  guint  	        midi_kammer_note;
   /* kammer frequency, normally 440Hz, historically 435Hz */
-  gfloat 	kammer_freq;
+  gfloat 	        kammer_freq;
+  const gchar          *path_binaries;
+  const gchar          *bse_rcfile;
+  const gchar          *override_plugin_globs;
+  const gchar          *override_script_path;
+  bool                  allow_randomization;	/* init-value "allow-randomization" - enables non-deterministic behavior */
+  bool                  force_fpu;		/* init-value "force-fpu" */
+  bool		        load_core_plugins;	/* init-value "load-core-plugins" */
+  bool		        load_core_scripts;	/* init-value "load-core-scripts" */
+  bool		        debug_extensions;	/* init-value "debug-extensions" */
+  bool                  load_drivers_early;
+  bool                  dump_driver_list;
+  int                   latency;
+  int                   mixing_freq;
+  int                   control_freq;
+  SfiRing              *pcm_drivers;
+  SfiRing              *midi_drivers;
 } BseMainArgs;
 
 
