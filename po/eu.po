@@ -1,430 +1,628 @@
+# translation of eu.po to Basque
 # translation of beast.po to Basque
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
 # Hizkuntza Politikarako Sailburuordetza <hizkpol@ej-gv.es>, 2005.
+# Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>, 2006.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-16 03:42+0200\n"
-"PO-Revision-Date: 2005-05-13 11:47+0200\n"
-"Last-Translator: Hizkuntza Politikarako Sailburuordetza <hizkpol@ej-gv.es>\n"
-"Language-Team:  <itzulpena@euskalgnu.org>\n"
+"POT-Creation-Date: 2006-11-21 01:35+0100\n"
+"PO-Revision-Date: 2006-08-08 17:07+0000\n"
+"Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>\n"
+"Language-Team: Basque <itzulpena@euskalgnu.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
-"Plural-Forms: Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: KBabel 1.10.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "\n"
 
-#: ../beast-gtk/bstapp.c:83
+#: ../library/scripts/mixer-splitup-by-track.scm.h:25
+msgid "/Song/Assign Tracks to individual Mixer Busses"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:26
+msgid ""
+"This script creates a new Mixer Bus for each track in the song that is "
+"currently using the Master Bus as output."
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:39
+#, fuzzy
+msgid "Song"
+msgstr "Ka_nta"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:57
+#: ../library/scripts/song-parts-operations.scm.h:45
+msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:21
+msgid "/SNet/Grid Align"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:22
+msgid ""
+"Round module positions to their nearest grid position, so to align all "
+"modules within a synthesis network."
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:26
+#, fuzzy
+msgid "Synth Net"
+msgstr "Sintetizazioa eginda"
+
+#: ../library/scripts/modules2grid.scm.h:30
+#, fuzzy
+msgid "No valid synthesis network supplied"
+msgstr "Marraztu sintesi-sareak antialiasing-a erabiliz?"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:25
+msgid "/Part/Harmonic Transposer"
+msgstr ""
+
+#. ; FIXME: the description may be suboptimal; the problem is
+#. ; that I can't precisely describe details of musical theory
+#. ; in english. -- stw
+#: ../library/scripts/part-harmonic-transposer.scm.h:29
+msgid ""
+"The harmonic transposer takes the selection of a part and transposes it to "
+"different harmonies. If you for instance have selected a measure filled with "
+"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
+"be four measures, filled with C major, A minor, F major and G major "
+"chords. \n"
+"\n"
+"This also works for melodies, so you can transpose a whole melody written in "
+"G major to D minor. The standard scales used in church music (ionian, "
+"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
+"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
+"is equivalent to minor and the ionian scale is equivalent to major. \n"
+"\n"
+"Since musically, there is no preference on whether to transpose up or down "
+"it is possible to specify the first harmony that will be transposed down "
+"(all harmonies below this will be transposed up). It is possible to omit "
+"this value. Then all notes will be transposed up."
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:50
+#: ../library/scripts/record-midi.scm.h:25
+#, fuzzy
+msgid "Part"
+msgstr "Zatiak"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:51
+msgid "Harmony Sequence"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:52
+msgid "Transpose down starting at"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:209
+msgid "No valid part supplied"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:211
+#, fuzzy
+msgid "No notes selected"
+msgstr "Ez da kuantizatzerik hautatu"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:218
+#, fuzzy
+msgid "Failed to parse harmony list"
+msgstr "Ezin izan da \"%2$s\" script-aren %1$s() hasi: %3$s"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:221
+msgid "Harmony list is too short"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:32
+msgid "/Project/Toys/Progressor..."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:33
+msgid ""
+"Progressor takes two seed values and then starts progressing. It doesn't do "
+"anything particularly usefull, other than ticking the main program from time "
+"to time. It is a funny example though."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:38
+#, fuzzy
+msgid "N Iterations"
+msgstr "Kokalekua"
+
+#: ../library/scripts/progressor-example.scm.h:39
+msgid "N Wait Spins"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:40
+msgid "Update Percentage"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:20
+msgid "/Part/Record Midi..."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:21
+msgid ""
+"Record midi events, currently being played on the default external midi "
+"device, into a given song part. The MIDI recorder is still work in progress."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:26
+#, fuzzy
+msgid "Start Now"
+msgstr "Abiarazi editorea"
+
+#: ../library/scripts/record-midi.scm.h:49
+msgid "No valid part object supplied"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:50
+msgid "You probably want to start this script from a part editor."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:53
+msgid ""
+"Not currently recording...\n"
+"\n"
+"The MIDI recorder is still work in progress.\n"
+"Currently, you need a MIDI Synthesizer network running, in order for this "
+"script to catch the events currently being played back."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:25
+msgid "/Song/Crop parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:26
+msgid ""
+"Crops all parts within the loop range and moves parts after the loop range "
+"backwards accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:34
+msgid "/Song/Duplicate parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:35
+msgid ""
+"Duplicate all parts within the loop range and moves parts after the loop "
+"range forward accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:62
+msgid ""
+"The loop range of the specified song contains no parts or is unset, so no "
+"parts can be identified to operate on."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:64
+#, fuzzy
+msgid "Show messages about empty part range"
+msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
+
+#: ../library/scripts/song-parts-operations.scm.h:68
+#, fuzzy
+msgid "Failed to crop part range."
+msgstr "Ezin izan da \"%2$s\" script-aren %1$s() hasi: %3$s"
+
+#: ../library/scripts/song-parts-operations.scm.h:80
+msgid "Failed to duplicate part range."
+msgstr ""
+
+#: ../beast-gtk/bstapp.c:82
 msgid "_New"
 msgstr "_Berria"
 
-#: ../beast-gtk/bstapp.c:83
+#: ../beast-gtk/bstapp.c:82
 msgid "Create new project"
 msgstr "Sortu proiektu berria"
 
-#: ../beast-gtk/bstapp.c:85
+#: ../beast-gtk/bstapp.c:84
 msgid "_Open..."
 msgstr "_Ireki..."
 
-#: ../beast-gtk/bstapp.c:85
+#: ../beast-gtk/bstapp.c:84
 msgid "Open existing project"
 msgstr "Ireki lehendik dagoen proiektua"
 
-#: ../beast-gtk/bstapp.c:87
+#: ../beast-gtk/bstapp.c:86
 msgid "_Merge..."
 msgstr "Ba_tu..."
 
-#: ../beast-gtk/bstapp.c:87
+#: ../beast-gtk/bstapp.c:86
 msgid "Merge an existing project into the current project"
 msgstr "Batu lehendik dagoen proiektua uneko proiektuarekin"
 
-#: ../beast-gtk/bstapp.c:89
+#: ../beast-gtk/bstapp.c:88
 msgid "_Import MIDI..."
 msgstr "_Inportatu MIDI..."
 
-#: ../beast-gtk/bstapp.c:89
+#: ../beast-gtk/bstapp.c:88
 msgid "Import a standard MIDI file into the current project"
 msgstr "Inportatu MIDI fitxategi estandar bat uneko proiektura"
 
-#: ../beast-gtk/bstapp.c:91
+#: ../beast-gtk/bstapp.c:90
 msgid "_Close"
 msgstr "It_xi"
 
-#: ../beast-gtk/bstapp.c:91
+#: ../beast-gtk/bstapp.c:90
 msgid "Close the project"
 msgstr "Itxi proiektua"
 
-#: ../beast-gtk/bstapp.c:95
+#: ../beast-gtk/bstapp.c:94
 msgid "_Save"
 msgstr "_Gorde"
 
-#: ../beast-gtk/bstapp.c:95
+#: ../beast-gtk/bstapp.c:94
 msgid "Write project to disk"
 msgstr "Gorde proiektua diskoan"
 
-#: ../beast-gtk/bstapp.c:97
+#: ../beast-gtk/bstapp.c:96
 msgid "Save _As..."
 msgstr "Gorde hone_la..."
 
-#: ../beast-gtk/bstapp.c:97
+#: ../beast-gtk/bstapp.c:96
 msgid "Write project to a specific file"
 msgstr "Gorde proiektua fitxategi zehatz batean"
 
-#: ../beast-gtk/bstapp.c:101
+#: ../beast-gtk/bstapp.c:100
 msgid "_Quit"
 msgstr "Irte_n"
 
-#: ../beast-gtk/bstapp.c:101
+#: ../beast-gtk/bstapp.c:100
 msgid "Close all windows and quit"
 msgstr "Itxi leiho guztiak eta irten"
 
-#: ../beast-gtk/bstapp.c:105
+#: ../beast-gtk/bstapp.c:104
 msgid "_Preferences..."
 msgstr "_Hobespenak..."
 
-#: ../beast-gtk/bstapp.c:105
+#: ../beast-gtk/bstapp.c:104
 msgid "Adjust overall program behaviour"
 msgstr "Programa osoaren portaera konfiguratzeko"
 
-#: ../beast-gtk/bstapp.c:109
+#: ../beast-gtk/bstapp.c:108
 msgid "Rebuild"
 msgstr "Berreraiki"
 
-#: ../beast-gtk/bstapp.c:112
+#: ../beast-gtk/bstapp.c:111
 msgid "_About..."
 msgstr "Honi _buruz..."
 
-#: ../beast-gtk/bstapp.c:112
+#: ../beast-gtk/bstapp.c:111
 msgid "Display developer and contributor credits"
 msgstr "Garatzaileen eta laguntzaileen kredituak bistaratzen ditu"
 
-#: ../beast-gtk/bstapp.c:116
+#: ../beast-gtk/bstapp.c:115
 msgid "_Undo"
 msgstr "_Desegin"
 
-#: ../beast-gtk/bstapp.c:116
+#: ../beast-gtk/bstapp.c:115
 msgid "Undo the effect of the last action"
 msgstr "Azken ekintzaren efektua desegiten du"
 
-#: ../beast-gtk/bstapp.c:118
+#: ../beast-gtk/bstapp.c:117
 msgid "_Redo"
 msgstr "B_erregin"
 
-#: ../beast-gtk/bstapp.c:118
+#: ../beast-gtk/bstapp.c:117
 msgid "Redo the last undone action"
 msgstr "Desegindako azken urratsa berregiten du"
 
-#: ../beast-gtk/bstapp.c:122 ../beast-gtk/bstpartdialog.c:72
+#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "_Garbitu desegiteko ekintzak"
 
-#: ../beast-gtk/bstapp.c:122
+#: ../beast-gtk/bstapp.c:121
 msgid "Delete the complete undo history"
 msgstr "Desegiteko historia osoa ezabatzen du"
 
-#: ../beast-gtk/bstapp.c:126
+#: ../beast-gtk/bstapp.c:125
 msgid "Procedure _Browser"
 msgstr "Prozedura-ara_katzailea"
 
-#: ../beast-gtk/bstapp.c:126
+#: ../beast-gtk/bstapp.c:125
 msgid "Display an overview of all procedures"
 msgstr "Prozedura guztien gainbegiraketa bistaratzen du"
 
-#: ../beast-gtk/bstapp.c:128
+#: ../beast-gtk/bstapp.c:127
 msgid "Rack Editor"
 msgstr "Armairu-editorea"
 
-#: ../beast-gtk/bstapp.c:130 ../beast-gtk/bstprofiler.c:225
+#: ../beast-gtk/bstapp.c:129 ../beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Analizatzailea"
 
-#: ../beast-gtk/bstapp.c:130
+#: ../beast-gtk/bstapp.c:129
 msgid "Display statistics and timing information"
 msgstr "Estatistiken eta denboren informazioa bistaratzen du"
 
-#: ../beast-gtk/bstapp.c:132
+#: ../beast-gtk/bstapp.c:131
 msgid "New View"
 msgstr "Ikuspegi berria"
 
-#: ../beast-gtk/bstapp.c:132
+#: ../beast-gtk/bstapp.c:131
 msgid "Create an extra view of the project"
 msgstr "Sortu proiektuaren ikuspegi gehigarria"
 
-#: ../beast-gtk/bstapp.c:136
+#: ../beast-gtk/bstapp.c:135
 msgid "_Play"
 msgstr "_Erreproduzitu"
 
-#: ../beast-gtk/bstapp.c:136
+#: ../beast-gtk/bstapp.c:135
 msgid "Play or restart playback of the project"
 msgstr "Erreproduzitu edo jarraitu erreproduzitzen proiektua"
 
-#: ../beast-gtk/bstapp.c:138
+#: ../beast-gtk/bstapp.c:137
 msgid "_Stop"
 msgstr "_Gelditu"
 
-#: ../beast-gtk/bstapp.c:138
+#: ../beast-gtk/bstapp.c:137
 msgid "Stop playback of the project"
 msgstr "Gelditu proiektua erreproduzitzea"
 
-#: ../beast-gtk/bstapp.c:142
+#: ../beast-gtk/bstapp.c:141
 msgid "New Song"
 msgstr "Kanta berria"
 
-#: ../beast-gtk/bstapp.c:142
+#: ../beast-gtk/bstapp.c:141
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Sortu abesti berria, nahastailea, pistak, zatiak eta notaz osatua"
 
-#: ../beast-gtk/bstapp.c:144
+#: ../beast-gtk/bstapp.c:143
 msgid "Add Custom Synthesizer"
 msgstr "Gehitu sintetizadore pertsonalizatua"
 
-#: ../beast-gtk/bstapp.c:144
+#: ../beast-gtk/bstapp.c:143
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 "Gehitu sintetizadore maila berria efektu edo instrumentu gisa abestietan "
 "erabiltzeko"
 
-#: ../beast-gtk/bstapp.c:146
+#: ../beast-gtk/bstapp.c:145
 msgid "Add MIDI Synthesizer"
 msgstr "Gehitu MIDI sintetizadorea"
 
-#: ../beast-gtk/bstapp.c:146
+#: ../beast-gtk/bstapp.c:145
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 "Gehitu MIDI sintetizadore berria kanpoko instrumentu baten MIDI gertakariak "
 "kontrolatzeko"
 
-#: ../beast-gtk/bstapp.c:148
+#: ../beast-gtk/bstapp.c:147
 msgid "Remove Song or Synthesizer"
 msgstr "Kendu kanta edo sintetizadorea"
 
-#: ../beast-gtk/bstapp.c:148
+#: ../beast-gtk/bstapp.c:147
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Ezabatu unean hautatutako sintetizadorea (abestia)"
 
-#: ../beast-gtk/bstapp.c:152
+#: ../beast-gtk/bstapp.c:151
 msgid "Load _Instrument..."
 msgstr "Kargatu _instrumentua..."
 
-#: ../beast-gtk/bstapp.c:152
+#: ../beast-gtk/bstapp.c:151
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Kargatu sintetizadore maila instrumentuen karpetatik"
 
-#: ../beast-gtk/bstapp.c:154
+#: ../beast-gtk/bstapp.c:153
 msgid "Load _Effect..."
 msgstr "Kargatu _efektua..."
 
-#: ../beast-gtk/bstapp.c:154
+#: ../beast-gtk/bstapp.c:153
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Kargatu sintetizadore maila efektuen karpetatik"
 
-#: ../beast-gtk/bstapp.c:156
+#: ../beast-gtk/bstapp.c:155
 msgid "Save As Instrument..."
 msgstr "Gorde instrumentu gisa..."
 
-#: ../beast-gtk/bstapp.c:156
+#: ../beast-gtk/bstapp.c:155
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Gorde sintetizadore maila intrumentuen karpetan"
 
-#: ../beast-gtk/bstapp.c:158
+#: ../beast-gtk/bstapp.c:157
 msgid "Save As Effect..."
 msgstr "Gorde efektu gisa..."
 
-#: ../beast-gtk/bstapp.c:158
+#: ../beast-gtk/bstapp.c:157
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Gorde sintetizadore maila efektuen karpetan"
 
-#: ../beast-gtk/bstapp.c:162
+#: ../beast-gtk/bstapp.c:161
 msgid "Document _Index..."
 msgstr "Dokumentu-_indizea..."
 
-#: ../beast-gtk/bstapp.c:162
+#: ../beast-gtk/bstapp.c:161
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "BEASTen dokumentazioaren eduki guztiaren gainbegiraketa eskaintzen du"
 
-#: ../beast-gtk/bstapp.c:164
+#: ../beast-gtk/bstapp.c:163
 msgid "_Quick Start..."
 msgstr "_Abiarazte bizkorra..."
 
-#: ../beast-gtk/bstapp.c:164
+#: ../beast-gtk/bstapp.c:163
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Zeregin arruntak nola lantzen diren buruzko sarrera eskaintzen du"
 
-#: ../beast-gtk/bstapp.c:166
+#: ../beast-gtk/bstapp.c:165
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: ../beast-gtk/bstapp.c:166
+#: ../beast-gtk/bstapp.c:165
 msgid "Answers to frequently asked questions"
 msgstr "Maiz egindako galderen erantzuna eskaintzen du"
 
-#: ../beast-gtk/bstapp.c:168
-#, fuzzy
+#: ../beast-gtk/bstapp.c:167
 msgid "_Beast Website..."
-msgstr "_BEAST web gunea..."
+msgstr "_Beast web gunea..."
 
-#: ../beast-gtk/bstapp.c:168
+#: ../beast-gtk/bstapp.c:167
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Web arakatzaile bat abiarazten du, BEASTen web gunera zuzenduta"
 
-#: ../beast-gtk/bstapp.c:170
+#: ../beast-gtk/bstapp.c:169
 msgid "Online _Help Desk..."
 msgstr "Lineako _laguntza..."
 
-#: ../beast-gtk/bstapp.c:170
+#: ../beast-gtk/bstapp.c:169
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr ""
 "Web arakatzaile bat abiarazten du BEASTen web guneko lineako laguntza "
 "bistaratzeko"
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:171
 msgid "Report a Beast Bug..."
-msgstr ""
+msgstr "Eman Beast-en erroreen berri..."
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:171
 #, fuzzy
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
 msgstr "Web arakatzaile bat abiarazten du, BEASTen web gunera zuzenduta"
 
-#: ../beast-gtk/bstapp.c:175
+#: ../beast-gtk/bstapp.c:174
 msgid "_Release Notes..."
 msgstr "_Bertsioaren oharrak..."
 
-#: ../beast-gtk/bstapp.c:175
+#: ../beast-gtk/bstapp.c:174
 msgid "Notes and informations about this release cycle"
 msgstr "Argitaratze zikloei buruzko oharrak eta informazioa eskaintzen du"
 
-#: ../beast-gtk/bstapp.c:177
+#: ../beast-gtk/bstapp.c:176
 msgid "Developing Plugins..."
 msgstr "Garapeneko plugin-ak..."
 
-#: ../beast-gtk/bstapp.c:177
+#: ../beast-gtk/bstapp.c:176
 msgid "A guide to synthesis plugin development"
 msgstr "Garapeneko plugin-en laburpenaren gida"
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "DSP Engine..."
 msgstr "DSP motorra..."
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:181
+#: ../beast-gtk/bstapp.c:180
 msgid "Development..."
 msgstr "Garapena..."
 
-#: ../beast-gtk/bstapp.c:181
+#: ../beast-gtk/bstapp.c:180
 msgid "Provide an overview of development related topics and documents"
 msgstr ""
 "Garapenarekin zerikusia dutene gaiei buruzko dokumentuak eta gainbegiraketak "
 "eskaintzen ditu"
 
-#: ../beast-gtk/bstapp.c:186
+#: ../beast-gtk/bstapp.c:185
 msgid "Online Sound Archive..."
 msgstr "Lineako soinu artxiboa..."
 
-#: ../beast-gtk/bstapp.c:186
+#: ../beast-gtk/bstapp.c:185
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Web arakatzaile bat abiarazten du lineako soinuen artxibora zuzenduta"
 
-#: ../beast-gtk/bstapp.c:190
+#: ../beast-gtk/bstapp.c:189
 msgid "Online Demos..."
 msgstr "Lineako demostrazioak..."
 
-#: ../beast-gtk/bstapp.c:190
+#: ../beast-gtk/bstapp.c:189
 msgid "Start a web browser pointing to online demo songs"
 msgstr ""
 "Web arakatzaile bat abiarazten du lineako demostrazioko abestiei zuzenduta"
 
-#: ../beast-gtk/bstapp.c:331
+#: ../beast-gtk/bstapp.c:328
 msgid "Export Audio"
 msgstr "Esportatu audioa"
 
-#: ../beast-gtk/bstapp.c:524 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "Uhinak"
 
-#: ../beast-gtk/bstapp.c:526
+#: ../beast-gtk/bstapp.c:523
 msgid "Wave Repository"
 msgstr "Uhin biltegia"
 
-#: ../beast-gtk/bstapp.c:531
+#: ../beast-gtk/bstapp.c:528
 #, c-format
 msgid "Song: %s"
 msgstr "Abestia: %s"
 
-#: ../beast-gtk/bstapp.c:536
+#: ../beast-gtk/bstapp.c:533
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI sintetizadorea: %s"
 
-#: ../beast-gtk/bstapp.c:541
+#: ../beast-gtk/bstapp.c:538
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetizadorea: %s"
 
-#: ../beast-gtk/bstapp.c:651
+#: ../beast-gtk/bstapp.c:648
 #, c-format
 msgid "Close %s"
 msgstr "Itxi %s"
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:649
 msgid "The project has been modified."
 msgstr "Proiketua aldatua izan da."
 
-#: ../beast-gtk/bstapp.c:653
+#: ../beast-gtk/bstapp.c:650
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:655
+#: ../beast-gtk/bstapp.c:652
 msgid "Save the project before closing its window?"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:656
+#: ../beast-gtk/bstapp.c:653
 #, fuzzy
 msgid "Save Changes"
 msgstr "Forma-barrutia"
 
-#: ../beast-gtk/bstapp.c:657
+#: ../beast-gtk/bstapp.c:654
 msgid "Discard Changes"
 msgstr ""
 
-#: ../beast-gtk/bstapp.c:658
+#: ../beast-gtk/bstapp.c:655
 #, fuzzy
 msgid "Cancel"
 msgstr "_Utzi"
 
-#: ../beast-gtk/bstapp.c:743 ../beast-gtk/bstapp.c:750
+#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
 #: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "`%s' proiektua irekitzen"
 
-#: ../beast-gtk/bstapp.c:810
+#: ../beast-gtk/bstapp.c:807
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "`%s' azala kargatzen"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:981
+#: ../beast-gtk/bstapp.c:978
 msgid "Rack editor"
 msgstr "Armairu-editorea"
 
-#: ../beast-gtk/bstapp.c:995
+#: ../beast-gtk/bstapp.c:992
 msgid "Preferences"
 msgstr "Hobespenak"
 
-#: ../beast-gtk/bstapp.c:1022
+#: ../beast-gtk/bstapp.c:1019
 msgid "Procedure Browser"
 msgstr "Prozedura-arakatzailea"
 
@@ -780,8 +978,8 @@ msgstr "Kargatu uhina"
 msgid "Loading wave `%s'"
 msgstr "`%s' uhina kargatzen"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
-#: ../beast-gtk/bstmain.c:305
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:289
+#: ../beast-gtk/bstmain.c:306
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
 msgstr "Ezin izan da \"%s\" uhin-fitxategia kargatu: %s"
@@ -906,84 +1104,84 @@ msgid "Description"
 msgstr "Azalpena"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:113 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:135
+#: ../beast-gtk/bstmain.c:136
 msgid "BEAST Startup"
 msgstr "BEASTen abioa"
 
-#: ../beast-gtk/bstmain.c:142
+#: ../beast-gtk/bstmain.c:143
 msgid "Startup"
 msgstr "Abioa"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:146
+#: ../beast-gtk/bstmain.c:147
 msgid "Initializers"
 msgstr "Abiarazleak"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:154
+#: ../beast-gtk/bstmain.c:155
 msgid "RC Files"
 msgstr "RC fitxategiak"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:158
+#: ../beast-gtk/bstmain.c:159
 msgid "Splash Image"
 msgstr "Splash irudia"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:170
+#: ../beast-gtk/bstmain.c:171
 msgid "BSE Core"
 msgstr "BSE nukleoa"
 
-#: ../beast-gtk/bstmain.c:191
+#: ../beast-gtk/bstmain.c:192
 msgid "Plugins"
 msgstr "Plugin-ak"
 
-#: ../beast-gtk/bstmain.c:210
+#: ../beast-gtk/bstmain.c:211
 msgid "LADSPA Plugins"
 msgstr "LADSPA plugin-ak"
 
-#: ../beast-gtk/bstmain.c:238
+#: ../beast-gtk/bstmain.c:239
 msgid "Scripts"
 msgstr "Script-ak"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:255
+#: ../beast-gtk/bstmain.c:256
 msgid "Dialogs"
 msgstr "Elkarrizketa-koadroak"
 
-#: ../beast-gtk/bstmain.c:264
+#: ../beast-gtk/bstmain.c:265
 msgid "Loading..."
 msgstr "Kargatzen..."
 
-#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
+#: ../beast-gtk/bstmain.c:285 ../beast-gtk/bstmain.c:287
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\" kargatzen"
 
-#: ../beast-gtk/bstmain.c:325
+#: ../beast-gtk/bstmain.c:326
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Ezin izan da \"%s\" proiektua kargatu: %s"
 
-#: ../beast-gtk/bstmain.c:331
+#: ../beast-gtk/bstmain.c:332
 #, fuzzy, c-format
 msgid "Failed to merge project \"%s\": %s"
 msgstr "Ezin izan da \"%s\" proiektua kargatu: %s"
 
-#: ../beast-gtk/bstmain.c:882
+#: ../beast-gtk/bstmain.c:883
 msgid "BEAST About"
 msgstr "BEASTi buruz"
 
-#: ../beast-gtk/bstmain.c:883
+#: ../beast-gtk/bstmain.c:884
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEASTen %s bertsioa"
 
-#: ../beast-gtk/bstmain.c:884
+#: ../beast-gtk/bstmain.c:885
 msgid "Contributions made by:"
 msgstr "Kolaboratzaileak:"
 
@@ -2892,87 +3090,83 @@ msgid "Synthesis network to be used as postprocessor"
 msgstr "Sintesi-sarea ondorengo prozesatze gisa erabiltzeko"
 
 #: ../beast-gtk/bstusermessage.c:58
-msgid "Fatal Error: "
-msgstr ""
-
-#: ../beast-gtk/bstusermessage.c:62
 #, fuzzy
 msgid "Error: "
 msgstr "Errorea"
 
-#: ../beast-gtk/bstusermessage.c:215
+#: ../beast-gtk/bstusermessage.c:212
 msgid "Details:"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:228 ../beast-gtk/bstusermessage.c:537
+#: ../beast-gtk/bstusermessage.c:225 ../beast-gtk/bstusermessage.c:532
 #, c-format
 msgid ""
 "Procedure: %s\n"
 "Script: %s\n"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:230
+#: ../beast-gtk/bstusermessage.c:227
 #, c-format
 msgid "Process: %s\n"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:232
+#: ../beast-gtk/bstusermessage.c:229
 #, c-format
 msgid "Origin:  %s\n"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:234
+#: ../beast-gtk/bstusermessage.c:231
 #, c-format
 msgid "PID:     %u\n"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:266
+#: ../beast-gtk/bstusermessage.c:263
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:354
+#: ../beast-gtk/bstusermessage.c:368
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:354
+#: ../beast-gtk/bstusermessage.c:368
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:411
+#: ../beast-gtk/bstusermessage.c:425
 msgid "Display dialogs with information messages"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:413
+#: ../beast-gtk/bstusermessage.c:427
 msgid "Display dialogs with dignostic messages"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:415
+#: ../beast-gtk/bstusermessage.c:429
 msgid "Display dialogs with debugging messages"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:533
+#: ../beast-gtk/bstusermessage.c:528
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:574 ../beast-gtk/bstusermessage.c:576
+#: ../beast-gtk/bstusermessage.c:579 ../beast-gtk/bstusermessage.c:581
 msgid "processing"
 msgstr "prozesatzen"
 
-#: ../beast-gtk/bstusermessage.c:599
+#: ../beast-gtk/bstusermessage.c:604
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:600 ../beast-gtk/bstusermessage.c:788
+#: ../beast-gtk/bstusermessage.c:605 ../beast-gtk/bstusermessage.c:798
 msgid "Script execution error."
 msgstr ""
 
-#: ../beast-gtk/bstusermessage.c:787
+#: ../beast-gtk/bstusermessage.c:797
 #, fuzzy, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "ezin izan da \"%s\" irteera-fitxategia ireki: %s"
@@ -3422,38 +3616,58 @@ msgstr "Trepeta mnemoteknikoa"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Etiketaren tekla mnemoteknikoa sakatutakoan aktibatu beharreko trepeta"
 
-#. BIRNET_MSG_FATAL (always enabled)
-#: ../birnet/birnetmsg.c:71
-msgid "Fatal Error"
+#. ALWAYS (always enabled)
+#: ../birnet/birnetmsg.cc:115
+msgid "Always"
 msgstr ""
 
-#. BIRNET_MSG_ERROR (enabled)
-#: ../birnet/birnetmsg.c:75
+#. ERROR (enabled)
+#: ../birnet/birnetmsg.cc:119
 #, fuzzy
 msgid "Error"
 msgstr "Errorea"
 
-#. BIRNET_MSG_WARNING (enabled)
-#: ../birnet/birnetmsg.c:79
+#. WARNING (enabled)
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Abisua"
 
-#. BIRNET_MSG_SCRIPT (enabled)
-#: ../birnet/birnetmsg.c:83
+#. SCRIPT (enabled)
+#: ../birnet/birnetmsg.cc:127
 #, fuzzy
 msgid "Script"
 msgstr "Script-ak"
 
-#. BIRNET_MSG_INFO (enabled)
-#: ../birnet/birnetmsg.c:87
+#. INFO (enabled)
+#: ../birnet/birnetmsg.cc:131
 #, fuzzy
 msgid "Information"
 msgstr "Kokalekua"
 
-#. BIRNET_MSG_DIAG (enabled)
-#: ../birnet/birnetmsg.c:91
+#. DIAG (enabled)
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr ""
+
+#: ../birnet/birnetutils.cc:1119
+msgid "Launch Web Browser"
+msgstr ""
+
+#: ../birnet/birnetutils.cc:1120
+msgid "Failed to launch a web browser executable"
+msgstr ""
+
+#: ../birnet/birnetutils.cc:1121
+#, c-format
+msgid ""
+"No suitable web browser executable could be found to be executed and to "
+"display the URL: %s"
+msgstr ""
+
+#: ../birnet/birnetutils.cc:1122
+#, fuzzy
+msgid "Show messages about web browser launch problems"
+msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
 
 #: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
@@ -3502,7 +3716,8 @@ msgstr "Mozte-maiztasuna [Hz]"
 
 #: ../bse/bsebiquadfilter.c:142 ../bse/bseconstant.c:129
 #: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:148
-#: ../plugins/bseiirfilter.c:158
+#: ../plugins/bseiirfilter.c:158 ../plugins/davorgan.c:114
+#: ../plugins/davorgan.cc:114 ../plugins/davxtalstrings.c:113
 msgid "Note"
 msgstr "Nota"
 
@@ -3559,7 +3774,7 @@ msgstr "Irabazi-modulazioaren indarra"
 
 #: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
-#: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
+#: ../plugins/davchorus.idl:30
 msgid "Audio In"
 msgstr "Audio-sarrera"
 
@@ -3568,8 +3783,9 @@ msgid "Unfiltered Audio Signal"
 msgstr "Iragazi gabeko audio-seinalea"
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:196
-#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
-#: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:147
+#: ../plugins/davorgan.cc:147 ../plugins/davsyndrum.c:116
+#: ../plugins/davxtalstrings.c:153
 msgid "Freq In"
 msgstr "Maizt. sarrera"
 
@@ -3598,9 +3814,9 @@ msgstr "Irabazi-modulazioaren sarrera"
 #: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
 #: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
-#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
-#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
-#: ../plugins/evaluator/bseevaluator.idl:33
+#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:148
+#: ../plugins/davorgan.cc:148 ../plugins/davsyndrum.c:122
+#: ../plugins/davxtalstrings.c:157
 msgid "Audio Out"
 msgstr "Audio-irteera"
 
@@ -3763,6 +3979,10 @@ msgstr "Balioa [float]"
 
 #: ../bse/bseconstant.c:118 ../bse/bseinstrumentinput.c:120
 #: ../bse/bsemidiinput.c:110 ../bse/bsestandardosc.c:145
+#: ../plugins/davorgan.c:109 ../plugins/davorgan.cc:109
+#: ../plugins/davxtalstrings.c:106 ../plugins/davxtalstrings.c:108
+#: ../plugins/davxtalstrings.c:111 ../plugins/davxtalstrings.c:114
+#: ../plugins/davxtalstrings.c:119
 msgid "Frequency"
 msgstr "Maiztasuna"
 
@@ -5088,13 +5308,13 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.c:261
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr ""
 
-#: ../bse/bsemain.c:263
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5595,6 +5815,10 @@ msgstr ""
 
 #: ../bse/bsestandardosc.c:143 ../bse/bsestandardosc.c:147
 #: ../bse/bsestandardosc.c:151 ../bse/bsestandardosc.c:156
+#: ../plugins/davorgan.c:108 ../plugins/davorgan.c:112
+#: ../plugins/davorgan.c:115 ../plugins/davorgan.c:120
+#: ../plugins/davorgan.cc:108 ../plugins/davorgan.cc:112
+#: ../plugins/davorgan.cc:115 ../plugins/davorgan.cc:120
 msgid "Base Frequency"
 msgstr "Oinarri-maiztasuna"
 
@@ -5606,7 +5830,8 @@ msgstr ""
 msgid "Musical notation corresponding to the oscillator frequency"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:153
+#: ../bse/bsestandardosc.c:153 ../plugins/davorgan.c:117
+#: ../plugins/davorgan.cc:117 ../plugins/davxtalstrings.c:116
 msgid "Transpose"
 msgstr ""
 
@@ -5614,11 +5839,13 @@ msgstr ""
 msgid "Transposition of the oscillator frequency in semitones"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:158
+#: ../bse/bsestandardosc.c:158 ../plugins/davorgan.c:122
+#: ../plugins/davorgan.cc:122 ../plugins/davxtalstrings.c:121
 msgid "Fine Tune"
 msgstr "Afinazio doia"
 
-#: ../bse/bsestandardosc.c:158
+#: ../bse/bsestandardosc.c:158 ../plugins/davorgan.c:122
+#: ../plugins/davorgan.cc:122 ../plugins/davxtalstrings.c:121
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
 
@@ -5869,7 +6096,8 @@ msgstr ""
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Maiztasun linealaren modulaziorako modulazio-indarra"
 
-#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:147
+#: ../plugins/davorgan.cc:147
 msgid "Frequency Input"
 msgstr "Maiztasun-sarrera"
 
@@ -5959,201 +6187,7 @@ msgid ""
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
 
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "Ka_nta"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "Sintetizazioa eginda"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Marraztu sintesi-sareak antialiasing-a erabiliz?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Zatiak"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Ez da kuantizatzerik hautatu"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-msgid "Failed to parse harmony list"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-msgid "N Iterations"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Abiarazi editorea"
-
-#: ../library/scripts/record-midi.scm.h:49
-msgid "No valid part object supplied"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Ohartarazi MIDI gailuen hautapenari buruz"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-msgid "Failed to crop part range."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-msgid "Failed to duplicate part range."
-msgstr ""
-
-#: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
+#: ../plugins/artscompressor.idl:28
 msgid "GNU General Public License"
 msgstr "GNU Lizentzia Publiko Orokorra"
 
@@ -6237,7 +6271,7 @@ msgid "Compressed audio output 2"
 msgstr "Konprimitutako audio-irteera"
 
 #: ../plugins/artscompressor.idl:55 ../plugins/davbassfilter.idl:36
-#: ../plugins/davchorus.idl:32 ../plugins/evaluator/bseevaluator.idl:34
+#: ../plugins/davchorus.idl:32
 msgid "Parameters"
 msgstr "Parametroak"
 
@@ -6698,12 +6732,11 @@ msgstr ""
 "oinarritua dago."
 
 #: ../plugins/davbassfilter.idl:33 ../plugins/davchorus.idl:30
-#: ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Audio-sarrera"
 
 #: ../plugins/davbassfilter.idl:34 ../plugins/davsyndrum.c:120
-#: ../plugins/davxtalstrings.c:143
+#: ../plugins/davxtalstrings.c:155
 msgid "Trigger In"
 msgstr "Abiarazi sarrera"
 
@@ -6788,7 +6821,12 @@ msgstr "Prozesatua [%]"
 msgid "Set the amount of modified data to mix"
 msgstr "Ezarri nahasi behar diren aldatutako datuen kopurua"
 
-#: ../plugins/davorgan.c:133
+#: ../plugins/davorgan.c:117 ../plugins/davorgan.cc:117
+#: ../plugins/davxtalstrings.c:116
+msgid "Transposition of the frequency in semitones"
+msgstr ""
+
+#: ../plugins/davorgan.c:148 ../plugins/davorgan.cc:148
 msgid "Organ Output"
 msgstr "Organoaren irteera"
 
@@ -6814,53 +6852,17 @@ msgstr "Jo perkusioa ertzak igotzean"
 msgid "SynDrum Output"
 msgstr "Sintesi-perkusioaren irteera"
 
-#: ../plugins/davxtalstrings.c:141
+#: ../plugins/davxtalstrings.c:153
 msgid "Pluck frequency input"
 msgstr "Punteatu maiztasun-sarrera"
 
-#: ../plugins/davxtalstrings.c:143
+#: ../plugins/davxtalstrings.c:155
 msgid "Pluck strings on raising edge"
 msgstr "Punteatu kateak ertzak igotzean"
 
-#: ../plugins/davxtalstrings.c:145
+#: ../plugins/davxtalstrings.c:157
 msgid "XtalStrings Output"
 msgstr "XtalStrings irteera"
-
-#: ../plugins/evaluator/bseevaluator.idl:28
-msgid "/Misc/Evaluator"
-msgstr "/Askotarikoak/Ebaluatzailea"
-
-#: ../plugins/evaluator/bseevaluator.idl:29
-msgid ""
-"BseEvaluator is a module which can compute arithmetic operations in a small "
-"language. The audio input signal is called input, the audio output signal is "
-"called output. Simple examples for programs would be \"output = input * 5\" "
-"or \"output = 2 * input + 1\"."
-msgstr ""
-"BseEvaluator eragiketa aritmetikoak lengoaia txiki batean konta ditzakeen "
-"modulua da. Audio-sarreraren seinaleari sarrera deitzen zaio eta audio-"
-"irteeraren seinaleari irteera. Hona hemen programen adibide soil batzuk: "
-"\"output = input * 5\" , \"output = 2 * input + 1\"."
-
-#: ../plugins/evaluator/bseevaluator.idl:33
-msgid "Audio output"
-msgstr "Audio-irteera"
-
-#: ../plugins/evaluator/bseevaluator.idl:35
-msgid "Source code"
-msgstr "Iturburu-kodea"
-
-#: ../plugins/evaluator/bseevaluator.idl:35
-msgid "The source code"
-msgstr "Iturburu-kodea"
-
-#: ../plugins/evaluator/bseevaluator.idl:36
-msgid "Status"
-msgstr "Egoera"
-
-#: ../plugins/evaluator/bseevaluator.idl:36
-msgid "Status used to output error messages"
-msgstr "Irteerako errore-mezuetan erabilitako egoera"
 
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Input"
@@ -6878,46 +6880,87 @@ msgstr "Ezkerreko irteera"
 msgid "Right Output"
 msgstr "Eskuineko irteera"
 
-#: ../tools/bsewavetool.cc:935
+#: ../tools/bsewavetool.cc:949
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Ezin izan da \"%s\" uhin-fitxategia kargatu: %s"
 
+#~ msgid "/Misc/Evaluator"
+#~ msgstr "/Askotarikoak/Ebaluatzailea"
+
+#~ msgid ""
+#~ "BseEvaluator is a module which can compute arithmetic operations in a "
+#~ "small language. The audio input signal is called input, the audio output "
+#~ "signal is called output. Simple examples for programs would be \"output = "
+#~ "input * 5\" or \"output = 2 * input + 1\"."
+#~ msgstr ""
+#~ "BseEvaluator eragiketa aritmetikoak lengoaia txiki batean konta ditzakeen "
+#~ "modulua da. Audio-sarreraren seinaleari sarrera deitzen zaio eta audio-"
+#~ "irteeraren seinaleari irteera. Hona hemen programen adibide soil batzuk: "
+#~ "\"output = input * 5\" , \"output = 2 * input + 1\"."
+
+#~ msgid "Audio output"
+#~ msgstr "Audio-irteera"
+
+#~ msgid "Source code"
+#~ msgstr "Iturburu-kodea"
+
+#~ msgid "The source code"
+#~ msgstr "Iturburu-kodea"
+
+#~ msgid "Status"
+#~ msgstr "Egoera"
+
+#~ msgid "Status used to output error messages"
+#~ msgstr "Irteerako errore-mezuetan erabilitako egoera"
+
+#, fuzzy
 #~ msgid "Delete Inputs"
-#~ msgstr "Ezabatu sarrerak"
+#~ msgstr "Ezabatu zatiak"
 
+#, fuzzy
 #~ msgid "Delete Outputs"
-#~ msgstr "Ezabatu irteerak"
+#~ msgstr "Ezabatu zatiak"
 
+#, fuzzy
 #~ msgid "Enable meters"
-#~ msgstr "Gaitu neurtzaileak"
+#~ msgstr "Parametroak"
 
+#, fuzzy
 #~ msgid "BPM Steps"
-#~ msgstr "BPM urratsak"
+#~ msgstr "Urratsak"
 
+#, fuzzy
 #~ msgid "BEAST-%s Release Notes"
-#~ msgstr "BEAST-%s bertsioaren oharrak"
+#~ msgstr "_Bertsioaren oharrak..."
 
+#, fuzzy
 #~ msgid "Properties:"
-#~ msgstr "Propietateak:"
+#~ msgstr "Propietateak"
 
+#, fuzzy
 #~ msgid "Identifier:"
-#~ msgstr "Identifikatzailea:"
+#~ msgstr "Propietate-identifikatzailea"
 
+#, fuzzy
 #~ msgid "Description:"
-#~ msgstr "Azalpena:"
+#~ msgstr "Azalpena"
 
+#, fuzzy
 #~ msgid "Signals:"
-#~ msgstr "Seinaleak:"
+#~ msgstr "Seinalearen sarrera"
 
+#, fuzzy
 #~ msgid "Input Channels:"
-#~ msgstr "Sarrera-kanalak:"
+#~ msgstr "Sarrera-katea %u"
 
+#, fuzzy
 #~ msgid "(Joint Input)"
-#~ msgstr "(Sarrera bateratua)"
+#~ msgstr "Kontrol-sarrera"
 
+#, fuzzy
 #~ msgid "Output Channels:"
-#~ msgstr "Irteera-kanalak:"
+#~ msgstr "Sarrera-katea %u"
 
 #~ msgid "BSE-Objects"
 #~ msgstr "BSE objektuak"
@@ -6925,8 +6968,9 @@ msgstr "Ezin izan da \"%s\" uhin-fitxategia kargatu: %s"
 #~ msgid " Object Reference"
 #~ msgstr " Objektu-erreferentzia"
 
+#, fuzzy
 #~ msgid "Info"
-#~ msgstr "Informazioa"
+#~ msgstr "Erakutsi informazioa"
 
 #~ msgid "Miscellaneous Message"
 #~ msgstr "Askotariko mezua"

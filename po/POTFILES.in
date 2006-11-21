@@ -1,5 +1,11 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted alphabetically
+[type: gettext/scm-funcs] library/scripts/mixer-splitup-by-track.scm
+[type: gettext/scm-funcs] library/scripts/modules2grid.scm
+[type: gettext/scm-funcs] library/scripts/part-harmonic-transposer.scm
+[type: gettext/scm-funcs] library/scripts/progressor-example.scm
+[type: gettext/scm-funcs] library/scripts/record-midi.scm
+[type: gettext/scm-funcs] library/scripts/song-parts-operations.scm
 beast-gtk/bstapp.c
 beast-gtk/bstauxdialogs.c
 beast-gtk/bstbuseditor.c
@@ -60,6 +66,7 @@ beast-gtk/gxk/gxkparam-scale.c
 beast-gtk/gxk/gxkparam-spinner.c
 beast-gtk/gxk/gxkparam-toggle.c
 beast-gtk/gxk/gxksimplelabel.c
+birnet/birnetmsg.cc
 birnet/birnetutils.cc
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
@@ -99,21 +106,15 @@ bse/bsewaveosc.c
 data/beast.desktop.in
 data/beast.xml.in
 data/bse.keys.in
-drivers/bse-alsa/bsemididevice-alsa.c
-drivers/bse-alsa/bsepcmdevice-alsa.c
-drivers/bse-portaudio/bsepcmdevice-portaudio.cc
-[type: gettext/scm-funcs] library/scripts/mixer-splitup-by-track.scm
-[type: gettext/scm-funcs] library/scripts/modules2grid.scm
-[type: gettext/scm-funcs] library/scripts/part-harmonic-transposer.scm
-[type: gettext/scm-funcs] library/scripts/progressor-example.scm
-[type: gettext/scm-funcs] library/scripts/record-midi.scm
-[type: gettext/scm-funcs] library/scripts/song-parts-operations.scm
+#drivers/bse-alsa/bsemididevice-alsa.c
+#drivers/bse-alsa/bsepcmdevice-alsa.c
+#drivers/bse-portaudio/bsepcmdevice-portaudio.cc
 plugins/artscompressor.idl
 plugins/bseadder.c
 plugins/bseamplifier.idl
 plugins/bseatandistort.c
 plugins/bsebalance.idl
-#plugins/bsefirfilter.c
+# plugins/bsefirfilter.c
 plugins/bseiirfilter.c
 plugins/bsemixer.c
 plugins/bsemult.c
@@ -123,10 +124,10 @@ plugins/bsesimpleadsr.c
 plugins/davbassfilter.idl
 plugins/davcanyondelay.c
 plugins/davchorus.idl
-#plugins/davguitar.c
+# plugins/davguitar.c
 plugins/davorgan.c
+plugins/davorgan.cc
 plugins/davsyndrum.c
 plugins/davxtalstrings.c
-plugins/evaluator/bseevaluator.idl
 plugins/freeverb/bsefreeverb.c
 tools/bsewavetool.cc

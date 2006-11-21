@@ -1,3 +1,17 @@
+Tue Nov 21 02:03:44 2006  Tim Janik  <timj@gtk.org>
+
+	* updated all po files to new source file set.
+
+Tue Nov 21 01:57:31 2006  Tim Janik  <timj@gtk.org>
+
+	* merged po file updates from beast CVS.
+
+Tue Nov 21 01:26:51 2006  Tim Janik  <timj@gtk.org>
+
+	* updated all po files to new source file set.
+
+	* POTFILES.in: added missing files.
+
 Sat Oct  7 20:56:04 2006  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: 
@@ -5,7 +19,8 @@ Sat Oct  7 20:56:04 2006  Tim Janik  <timj@gtk.org>
 
 Fri Sep 29 01:10:01 2006  Tim Janik  <timj@gtk.org>
 
-	* POTFILES.skip, POTFILES.in: skip bseevaluator.idl which is not shipped.
+	* POTFILES.skip, POTFILES.in: skip bseevaluator.idl which is not shipped
+	in tarballs anymore.
 
 Wed Jul  5 00:45:21 2006  Tim Janik  <timj@gtk.org>
 

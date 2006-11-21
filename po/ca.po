@@ -9,427 +9,629 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-16 03:42+0200\n"
-"PO-Revision-Date: 2005-07-25 15:55+0200\n"
+"POT-Creation-Date: 2006-11-21 01:35+0100\n"
+"PO-Revision-Date: 2006-08-18 05:28+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../beast-gtk/bstapp.c:83
+#: ../library/scripts/mixer-splitup-by-track.scm.h:25
+msgid "/Song/Assign Tracks to individual Mixer Busses"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:26
+msgid ""
+"This script creates a new Mixer Bus for each track in the song that is "
+"currently using the Master Bus as output."
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:39
+#, fuzzy
+msgid "Song"
+msgstr "Ca_nçó"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:57
+#: ../library/scripts/song-parts-operations.scm.h:45
+#, fuzzy
+msgid "No valid song supplied"
+msgstr "Propietat d'objecte invàlida"
+
+#: ../library/scripts/modules2grid.scm.h:21
+msgid "/SNet/Grid Align"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:22
+msgid ""
+"Round module positions to their nearest grid position, so to align all "
+"modules within a synthesis network."
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:26
+#, fuzzy
+msgid "Synth Net"
+msgstr "La sintetització ha acabat"
+
+#: ../library/scripts/modules2grid.scm.h:30
+#, fuzzy
+msgid "No valid synthesis network supplied"
+msgstr "Voleu dibuixar les xarxes de síntesi suavitzades?"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:25
+msgid "/Part/Harmonic Transposer"
+msgstr ""
+
+#. ; FIXME: the description may be suboptimal; the problem is
+#. ; that I can't precisely describe details of musical theory
+#. ; in english. -- stw
+#: ../library/scripts/part-harmonic-transposer.scm.h:29
+msgid ""
+"The harmonic transposer takes the selection of a part and transposes it to "
+"different harmonies. If you for instance have selected a measure filled with "
+"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
+"be four measures, filled with C major, A minor, F major and G major "
+"chords. \n"
+"\n"
+"This also works for melodies, so you can transpose a whole melody written in "
+"G major to D minor. The standard scales used in church music (ionian, "
+"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
+"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
+"is equivalent to minor and the ionian scale is equivalent to major. \n"
+"\n"
+"Since musically, there is no preference on whether to transpose up or down "
+"it is possible to specify the first harmony that will be transposed down "
+"(all harmonies below this will be transposed up). It is possible to omit "
+"this value. Then all notes will be transposed up."
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:50
+#: ../library/scripts/record-midi.scm.h:25
+#, fuzzy
+msgid "Part"
+msgstr "Parts"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:51
+msgid "Harmony Sequence"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:52
+msgid "Transpose down starting at"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:209
+#, fuzzy
+msgid "No valid part supplied"
+msgstr "Propietat d'objecte invàlida"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:211
+#, fuzzy
+msgid "No notes selected"
+msgstr "No s'ha seleccionat cap quantificació"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:218
+#, fuzzy
+msgid "Failed to parse harmony list"
+msgstr "S'ha produït un error al iniciar la gravació a disc."
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:221
+msgid "Harmony list is too short"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:32
+msgid "/Project/Toys/Progressor..."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:33
+msgid ""
+"Progressor takes two seed values and then starts progressing. It doesn't do "
+"anything particularly usefull, other than ticking the main program from time "
+"to time. It is a funny example though."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:38
+#, fuzzy
+msgid "N Iterations"
+msgstr "Informació"
+
+#: ../library/scripts/progressor-example.scm.h:39
+msgid "N Wait Spins"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:40
+msgid "Update Percentage"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:20
+msgid "/Part/Record Midi..."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:21
+msgid ""
+"Record midi events, currently being played on the default external midi "
+"device, into a given song part. The MIDI recorder is still work in progress."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:26
+#, fuzzy
+msgid "Start Now"
+msgstr "Inicia l'editor"
+
+#: ../library/scripts/record-midi.scm.h:49
+#, fuzzy
+msgid "No valid part object supplied"
+msgstr "Propietat d'objecte invàlida"
+
+#: ../library/scripts/record-midi.scm.h:50
+msgid "You probably want to start this script from a part editor."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:53
+msgid ""
+"Not currently recording...\n"
+"\n"
+"The MIDI recorder is still work in progress.\n"
+"Currently, you need a MIDI Synthesizer network running, in order for this "
+"script to catch the events currently being played back."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:25
+msgid "/Song/Crop parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:26
+msgid ""
+"Crops all parts within the loop range and moves parts after the loop range "
+"backwards accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:34
+#, fuzzy
+msgid "/Song/Duplicate parts (loop range)"
+msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
+
+#: ../library/scripts/song-parts-operations.scm.h:35
+msgid ""
+"Duplicate all parts within the loop range and moves parts after the loop "
+"range forward accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:62
+msgid ""
+"The loop range of the specified song contains no parts or is unset, so no "
+"parts can be identified to operate on."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:64
+#, fuzzy
+msgid "Show messages about empty part range"
+msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
+
+#: ../library/scripts/song-parts-operations.scm.h:68
+#, fuzzy
+msgid "Failed to crop part range."
+msgstr "S'ha produït un error al iniciar la gravació a disc."
+
+#: ../library/scripts/song-parts-operations.scm.h:80
+#, fuzzy
+msgid "Failed to duplicate part range."
+msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
+
+#: ../beast-gtk/bstapp.c:82
 msgid "_New"
 msgstr "_Nou"
 
-#: ../beast-gtk/bstapp.c:83
+#: ../beast-gtk/bstapp.c:82
 msgid "Create new project"
 msgstr "Crea un projecte nou"
 
-#: ../beast-gtk/bstapp.c:85
+#: ../beast-gtk/bstapp.c:84
 msgid "_Open..."
 msgstr "_Obre..."
 
-#: ../beast-gtk/bstapp.c:85
+#: ../beast-gtk/bstapp.c:84
 msgid "Open existing project"
 msgstr "Obre un projecte existent"
 
-#: ../beast-gtk/bstapp.c:87
+#: ../beast-gtk/bstapp.c:86
 msgid "_Merge..."
 msgstr "Fusio_na..."
 
-#: ../beast-gtk/bstapp.c:87
+#: ../beast-gtk/bstapp.c:86
 msgid "Merge an existing project into the current project"
 msgstr "Fusiona un projecte existent amb el projecte actual"
 
-#: ../beast-gtk/bstapp.c:89
+#: ../beast-gtk/bstapp.c:88
 msgid "_Import MIDI..."
 msgstr "_Importa un MIDI..."
 
-#: ../beast-gtk/bstapp.c:89
+#: ../beast-gtk/bstapp.c:88
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importa un fitxer MIDI estàndard dins del projecte actual"
 
-#: ../beast-gtk/bstapp.c:91
+#: ../beast-gtk/bstapp.c:90
 msgid "_Close"
 msgstr "Tan_ca"
 
-#: ../beast-gtk/bstapp.c:91
+#: ../beast-gtk/bstapp.c:90
 msgid "Close the project"
 msgstr "Tanca el projecte"
 
-#: ../beast-gtk/bstapp.c:95
+#: ../beast-gtk/bstapp.c:94
 msgid "_Save"
 msgstr "De_sa"
 
-#: ../beast-gtk/bstapp.c:95
+#: ../beast-gtk/bstapp.c:94
 msgid "Write project to disk"
 msgstr "Escriu el projecte al disc"
 
-#: ../beast-gtk/bstapp.c:97
+#: ../beast-gtk/bstapp.c:96
 msgid "Save _As..."
 msgstr "_Anomena i desa..."
 
-#: ../beast-gtk/bstapp.c:97
+#: ../beast-gtk/bstapp.c:96
 msgid "Write project to a specific file"
 msgstr "Escriu el projecte a un fitxer específic"
 
-#: ../beast-gtk/bstapp.c:101
+#: ../beast-gtk/bstapp.c:100
 msgid "_Quit"
 msgstr "Su_rt"
 
-#: ../beast-gtk/bstapp.c:101
+#: ../beast-gtk/bstapp.c:100
 msgid "Close all windows and quit"
 msgstr "Tanca totes les finestres i surt"
 
-#: ../beast-gtk/bstapp.c:105
+#: ../beast-gtk/bstapp.c:104
 msgid "_Preferences..."
 msgstr "_Preferències..."
 
-#: ../beast-gtk/bstapp.c:105
+#: ../beast-gtk/bstapp.c:104
 msgid "Adjust overall program behaviour"
 msgstr "Ajusta el comportament de tot el programa"
 
-#: ../beast-gtk/bstapp.c:109
+#: ../beast-gtk/bstapp.c:108
 msgid "Rebuild"
 msgstr "Torna a muntar"
 
-#: ../beast-gtk/bstapp.c:112
+#: ../beast-gtk/bstapp.c:111
 msgid "_About..."
 msgstr "Qu_ant a..."
 
-#: ../beast-gtk/bstapp.c:112
+#: ../beast-gtk/bstapp.c:111
 msgid "Display developer and contributor credits"
 msgstr "Mostra els crèdits dels desenvolupadors i els contribuïdors"
 
-#: ../beast-gtk/bstapp.c:116
+#: ../beast-gtk/bstapp.c:115
 msgid "_Undo"
 msgstr "_Desfés"
 
-#: ../beast-gtk/bstapp.c:116
+#: ../beast-gtk/bstapp.c:115
 msgid "Undo the effect of the last action"
 msgstr "Desfés l'efecte de l'última acció"
 
-#: ../beast-gtk/bstapp.c:118
+#: ../beast-gtk/bstapp.c:117
 msgid "_Redo"
 msgstr "To_rna a fer"
 
-#: ../beast-gtk/bstapp.c:118
+#: ../beast-gtk/bstapp.c:117
 msgid "Redo the last undone action"
 msgstr "Torna a fer l'última acció desfeta"
 
-#: ../beast-gtk/bstapp.c:122 ../beast-gtk/bstpartdialog.c:72
+#: ../beast-gtk/bstapp.c:121 ../beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "_Neteja les accions desfetes"
 
-#: ../beast-gtk/bstapp.c:122
+#: ../beast-gtk/bstapp.c:121
 msgid "Delete the complete undo history"
 msgstr "Suprimeix tot l'historial de canvis desfets"
 
-#: ../beast-gtk/bstapp.c:126
+#: ../beast-gtk/bstapp.c:125
 msgid "Procedure _Browser"
 msgstr "Na_vegador de procediments"
 
-#: ../beast-gtk/bstapp.c:126
+#: ../beast-gtk/bstapp.c:125
 msgid "Display an overview of all procedures"
 msgstr "Mostra una primera vista de tots els procediments"
 
 # Rack: si no n'estàs segur, no ho tradueixis
-#: ../beast-gtk/bstapp.c:128
+#: ../beast-gtk/bstapp.c:127
 msgid "Rack Editor"
 msgstr "Editor del rack"
 
-#: ../beast-gtk/bstapp.c:130 ../beast-gtk/bstprofiler.c:225
+#: ../beast-gtk/bstapp.c:129 ../beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Gestor de perfils"
 
-#: ../beast-gtk/bstapp.c:130
+#: ../beast-gtk/bstapp.c:129
 msgid "Display statistics and timing information"
 msgstr "Mostra estadístiques i informació del temps"
 
-#: ../beast-gtk/bstapp.c:132
+#: ../beast-gtk/bstapp.c:131
 msgid "New View"
 msgstr "Vista nova"
 
-#: ../beast-gtk/bstapp.c:132
+#: ../beast-gtk/bstapp.c:131
 msgid "Create an extra view of the project"
 msgstr "Crea una altra vista del projecte"
 
-#: ../beast-gtk/bstapp.c:136
+#: ../beast-gtk/bstapp.c:135
 msgid "_Play"
 msgstr "Re_produeix"
 
-#: ../beast-gtk/bstapp.c:136
+#: ../beast-gtk/bstapp.c:135
 msgid "Play or restart playback of the project"
 msgstr "Reprodueix o reinicia la reproducció del projecte"
 
-#: ../beast-gtk/bstapp.c:138
+#: ../beast-gtk/bstapp.c:137
 msgid "_Stop"
 msgstr "A_tura"
 
-#: ../beast-gtk/bstapp.c:138
+#: ../beast-gtk/bstapp.c:137
 msgid "Stop playback of the project"
 msgstr "Atura la reproducció del projecte"
 
-#: ../beast-gtk/bstapp.c:142
+#: ../beast-gtk/bstapp.c:141
 msgid "New Song"
 msgstr "Cançó nova"
 
-#: ../beast-gtk/bstapp.c:142
+#: ../beast-gtk/bstapp.c:141
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Crea una cançó nova, consistent en un mesclador, pistes, parts i notes"
 
-#: ../beast-gtk/bstapp.c:144
+#: ../beast-gtk/bstapp.c:143
 msgid "Add Custom Synthesizer"
 msgstr "Afegeix un sintetitzador personalitzat"
 
-#: ../beast-gtk/bstapp.c:144
+#: ../beast-gtk/bstapp.c:143
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 "Afegeix una nova malla de sintetització per utilitzar com a efecte o "
 "instrument en cançons"
 
-#: ../beast-gtk/bstapp.c:146
+#: ../beast-gtk/bstapp.c:145
 msgid "Add MIDI Synthesizer"
 msgstr "Afegeix un sintetitzador MIDI"
 
-#: ../beast-gtk/bstapp.c:146
+#: ../beast-gtk/bstapp.c:145
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
 msgstr ""
 "Afegeix un altre sintetitzador MIDI per controlar un instrument "
 "d'esdeveniments MIDI externs"
 
-#: ../beast-gtk/bstapp.c:148
+#: ../beast-gtk/bstapp.c:147
 msgid "Remove Song or Synthesizer"
 msgstr "Suprimeix una cançó o sintetitzador"
 
-#: ../beast-gtk/bstapp.c:148
+#: ../beast-gtk/bstapp.c:147
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Suprimeix el sintetitzador seleccionat actual (cançó)"
 
-#: ../beast-gtk/bstapp.c:152
+#: ../beast-gtk/bstapp.c:151
 msgid "Load _Instrument..."
 msgstr "Carrega un _instrument..."
 
-#: ../beast-gtk/bstapp.c:152
+#: ../beast-gtk/bstapp.c:151
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Carrega una malla de sintetització del directori d'instruments"
 
-#: ../beast-gtk/bstapp.c:154
+#: ../beast-gtk/bstapp.c:153
 msgid "Load _Effect..."
 msgstr "Carrega un _efecte..."
 
-#: ../beast-gtk/bstapp.c:154
+#: ../beast-gtk/bstapp.c:153
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Carrega una malla de sintetització del directori d'efectes"
 
-#: ../beast-gtk/bstapp.c:156
+#: ../beast-gtk/bstapp.c:155
 msgid "Save As Instrument..."
 msgstr "Desa com a instrument..."
 
-#: ../beast-gtk/bstapp.c:156
+#: ../beast-gtk/bstapp.c:155
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Desa la malla de sintetització al directori d'instruments"
 
-#: ../beast-gtk/bstapp.c:158
+#: ../beast-gtk/bstapp.c:157
 msgid "Save As Effect..."
 msgstr "Desa com a efecte..."
 
-#: ../beast-gtk/bstapp.c:158
+#: ../beast-gtk/bstapp.c:157
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Desa la malla de sintetització al directori d'efectes"
 
-#: ../beast-gtk/bstapp.c:162
+#: ../beast-gtk/bstapp.c:161
 msgid "Document _Index..."
 msgstr "_Índex de documents..."
 
-#: ../beast-gtk/bstapp.c:162
+#: ../beast-gtk/bstapp.c:161
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr ""
 "Proporciona una primera vista de tots els continguts de la documentació del "
 "BEAST"
 
-#: ../beast-gtk/bstapp.c:164
+#: ../beast-gtk/bstapp.c:163
 msgid "_Quick Start..."
 msgstr "Inici rà_pid..."
 
-#: ../beast-gtk/bstapp.c:164
+#: ../beast-gtk/bstapp.c:163
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr ""
 "Proporciona una introducció sobre com fer la majoria de les tasques més "
 "comunes"
 
-#: ../beast-gtk/bstapp.c:166
+#: ../beast-gtk/bstapp.c:165
 msgid "_FAQ..."
 msgstr "_PMF..."
 
-#: ../beast-gtk/bstapp.c:166
+#: ../beast-gtk/bstapp.c:165
 msgid "Answers to frequently asked questions"
 msgstr "Respostes a les preguntes més freqüents"
 
-#: ../beast-gtk/bstapp.c:168
-#, fuzzy
+#: ../beast-gtk/bstapp.c:167
 msgid "_Beast Website..."
-msgstr "Lloc web del _BEAST..."
+msgstr "Lloc web del _Beast..."
 
 # Més simple que abans
-#: ../beast-gtk/bstapp.c:168
+#: ../beast-gtk/bstapp.c:167
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Navegueu pel lloc web del BEAST"
 
-#: ../beast-gtk/bstapp.c:170
+#: ../beast-gtk/bstapp.c:169
 msgid "Online _Help Desk..."
 msgstr "A_juda d'escriptori en línia..."
 
 # Més simple que abans.
-#: ../beast-gtk/bstapp.c:170
+#: ../beast-gtk/bstapp.c:169
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Navegueu per l'ajuda d'escriptori en línia del lloc web del BEAST"
 
-#: ../beast-gtk/bstapp.c:172
+#: ../beast-gtk/bstapp.c:171
 msgid "Report a Beast Bug..."
-msgstr ""
+msgstr "Informeu d'un error al Beast..."
 
 # Més simple que abans
-#: ../beast-gtk/bstapp.c:172
-#, fuzzy
+#: ../beast-gtk/bstapp.c:171
 msgid ""
 "Start a web browser with the bug report form for the BEAST bugzilla product"
-msgstr "Navegueu pel lloc web del BEAST"
+msgstr ""
+"Inicia un navegador web amb el formulari per informar d'un error al producte "
+"del Bugzilla BEAST"
 
-#: ../beast-gtk/bstapp.c:175
+#: ../beast-gtk/bstapp.c:174
 msgid "_Release Notes..."
 msgstr "Info_rmació de la versió..."
 
-#: ../beast-gtk/bstapp.c:175
+#: ../beast-gtk/bstapp.c:174
 msgid "Notes and informations about this release cycle"
 msgstr "Notes i informació sobre aquest cicle de llançament"
 
-#: ../beast-gtk/bstapp.c:177
+#: ../beast-gtk/bstapp.c:176
 msgid "Developing Plugins..."
 msgstr "Quant al desenvolupament de connectors..."
 
-#: ../beast-gtk/bstapp.c:177
+#: ../beast-gtk/bstapp.c:176
 msgid "A guide to synthesis plugin development"
 msgstr "Una guia per al desenvolupament de connectors de síntesi"
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "DSP Engine..."
 msgstr "Motor DSP..."
 
-#: ../beast-gtk/bstapp.c:179
+#: ../beast-gtk/bstapp.c:178
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Descripció tècnica dels motors de síntesi multifils"
 
-#: ../beast-gtk/bstapp.c:181
+#: ../beast-gtk/bstapp.c:180
 msgid "Development..."
 msgstr "Desenvolupament..."
 
-#: ../beast-gtk/bstapp.c:181
+#: ../beast-gtk/bstapp.c:180
 msgid "Provide an overview of development related topics and documents"
 msgstr ""
 "Proporciona una primera vista dels temes i documents relacionats amb el "
 "desenvolupament"
 
-#: ../beast-gtk/bstapp.c:186
+#: ../beast-gtk/bstapp.c:185
 msgid "Online Sound Archive..."
 msgstr "Arxiu de sons en línia..."
 
-#: ../beast-gtk/bstapp.c:186
+#: ../beast-gtk/bstapp.c:185
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Navegueu per la web de l'arxiu de sons en línia"
 
-#: ../beast-gtk/bstapp.c:190
+#: ../beast-gtk/bstapp.c:189
 msgid "Online Demos..."
 msgstr "Demostracions en línia..."
 
-#: ../beast-gtk/bstapp.c:190
+#: ../beast-gtk/bstapp.c:189
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Navegueu per la web de cançons de demostració en línia"
 
-#: ../beast-gtk/bstapp.c:331
+#: ../beast-gtk/bstapp.c:328
 msgid "Export Audio"
 msgstr "Exporta l'àudio"
 
-#: ../beast-gtk/bstapp.c:524 ../beast-gtk/bstsupershell.c:233
+#: ../beast-gtk/bstapp.c:521 ../beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "Ones"
 
-#: ../beast-gtk/bstapp.c:526
+#: ../beast-gtk/bstapp.c:523
 msgid "Wave Repository"
 msgstr "Magatzem d'ones"
 
-#: ../beast-gtk/bstapp.c:531
+#: ../beast-gtk/bstapp.c:528
 #, c-format
 msgid "Song: %s"
 msgstr "Cançó: %s"
 
-#: ../beast-gtk/bstapp.c:536
+#: ../beast-gtk/bstapp.c:533
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Sintetitzador MIDI: %s"
 
-#: ../beast-gtk/bstapp.c:541
+#: ../beast-gtk/bstapp.c:538
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Sintetitzador: %s"
 
-#: ../beast-gtk/bstapp.c:651
+#: ../beast-gtk/bstapp.c:648
 #, c-format
 msgid "Close %s"
 msgstr "Tanca %s"
 
-#: ../beast-gtk/bstapp.c:652
+#: ../beast-gtk/bstapp.c:649
 msgid "The project has been modified."
 msgstr "S'ha modificat el projecte."
 
-#: ../beast-gtk/bstapp.c:653
+#: ../beast-gtk/bstapp.c:650
 #, c-format
 msgid ""
 "Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr ""
-"S'han produït canvis al projecte \"%s\" des de la darrera vegada que es va "
+"S'han produït canvis al projecte «%s» des de la darrera vegada que es va "
 "desar."
 
-#: ../beast-gtk/bstapp.c:655
+#: ../beast-gtk/bstapp.c:652
 msgid "Save the project before closing its window?"
 msgstr "Voleu desar el projecte sense tancar-ne la finestra?"
 
-#: ../beast-gtk/bstapp.c:656
+#: ../beast-gtk/bstapp.c:653
 msgid "Save Changes"
 msgstr "Desa els canvis"
 
-#: ../beast-gtk/bstapp.c:657
+#: ../beast-gtk/bstapp.c:654
 msgid "Discard Changes"
 msgstr "Descarta els canvis"
 
-#: ../beast-gtk/bstapp.c:658
+#: ../beast-gtk/bstapp.c:655
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: ../beast-gtk/bstapp.c:743 ../beast-gtk/bstapp.c:750
+#: ../beast-gtk/bstapp.c:740 ../beast-gtk/bstapp.c:747
 #: ../beast-gtk/bstfiledialog.c:434 ../beast-gtk/bstfiledialog.c:440
 #, c-format
 msgid "Opening project `%s'"
 msgstr "S'està obrint el projecte '%s'"
 
-#: ../beast-gtk/bstapp.c:810
+#: ../beast-gtk/bstapp.c:807
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "S'està carregant l'aparença '%s'"
 
 # Si no n'estàs segur, millor no traduir-ho
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: ../beast-gtk/bstapp.c:981
+#: ../beast-gtk/bstapp.c:978
 msgid "Rack editor"
 msgstr "Editor de rack"
 
-#: ../beast-gtk/bstapp.c:995
+#: ../beast-gtk/bstapp.c:992
 msgid "Preferences"
 msgstr "Preferències"
 
-#: ../beast-gtk/bstapp.c:1022
+#: ../beast-gtk/bstapp.c:1019
 msgid "Procedure Browser"
 msgstr "Navegador de procediments"
 
@@ -602,41 +804,36 @@ msgid "Name"
 msgstr "Nom"
 
 #: ../beast-gtk/bstfiledialog.c:138
-#, fuzzy
 msgid "Sample or instrument name"
-msgstr "Desa un instrument"
+msgstr "Nom de l'instrument o la mostra"
 
 #: ../beast-gtk/bstfiledialog.c:141
-#, fuzzy
 msgid "Size"
-msgstr "Temps de sistema"
+msgstr "Mida"
 
 #: ../beast-gtk/bstfiledialog.c:141
 msgid "File size in bytes"
-msgstr ""
+msgstr "Mida del fitxer en bytes"
 
 #: ../beast-gtk/bstfiledialog.c:143
 msgid "Format"
-msgstr ""
+msgstr "Format"
 
 #: ../beast-gtk/bstfiledialog.c:143
 msgid "Detected file format"
-msgstr ""
+msgstr "Format de fitxer detectat"
 
 #: ../beast-gtk/bstfiledialog.c:159
-#, fuzzy
 msgid "Time"
-msgstr "Temps de sistema"
+msgstr "Temps"
 
 #: ../beast-gtk/bstfiledialog.c:159
-#, fuzzy
 msgid "File modification time"
-msgstr "Darrera hora de modificació"
+msgstr "Temps de modificació del fitxer"
 
 #: ../beast-gtk/bstfiledialog.c:166
-#, fuzzy
 msgid "Filename"
-msgstr "Canvia el nom"
+msgstr "Nom del fitxer"
 
 #: ../beast-gtk/bstfiledialog.c:179
 msgid "Contents"
@@ -785,11 +982,11 @@ msgstr "Carrega una ona"
 msgid "Loading wave `%s'"
 msgstr "S'està carregant l'ona '%s'"
 
-#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:288
-#: ../beast-gtk/bstmain.c:305
+#: ../beast-gtk/bstfiledialog.c:781 ../beast-gtk/bstmain.c:289
+#: ../beast-gtk/bstmain.c:306
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
-msgstr "No s'ha pogut obrir el fitxer d'ona \"%s\": %s"
+msgstr "No s'ha pogut obrir el fitxer d'ona «%s»: %s"
 
 #: ../beast-gtk/bstgrowbar.c:93
 msgid "Shrink the scrollable area"
@@ -802,12 +999,12 @@ msgstr "Augmenta l'àrea de desplaçament"
 #: ../beast-gtk/bstitemseqdialog.c:159
 #, c-format
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
-msgstr "Afegeix la selecció des de la llista \"%s\" a la llista \"%s\""
+msgstr "Afegeix la selecció des de la llista «%s» a la llista «%s»"
 
 #: ../beast-gtk/bstitemseqdialog.c:162
 #, c-format
 msgid "Removes the selection from the \"%s\" list"
-msgstr "Elimina la selecció de la llista \"%s\""
+msgstr "Elimina la selecció de la llista «%s»"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: ../beast-gtk/bstitemseqdialog.c:169
@@ -911,84 +1108,84 @@ msgid "Description"
 msgstr "Descripció"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:113 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: ../beast-gtk/bstmain.c:135
+#: ../beast-gtk/bstmain.c:136
 msgid "BEAST Startup"
 msgstr "Inici del BEAST"
 
-#: ../beast-gtk/bstmain.c:142
+#: ../beast-gtk/bstmain.c:143
 msgid "Startup"
 msgstr "Inici"
 
 #. BEAST initialization
-#: ../beast-gtk/bstmain.c:146
+#: ../beast-gtk/bstmain.c:147
 msgid "Initializers"
 msgstr "Inicialitzadors"
 
 #. parse rc file
-#: ../beast-gtk/bstmain.c:154
+#: ../beast-gtk/bstmain.c:155
 msgid "RC Files"
 msgstr "Fitxers RC"
 
 #. show splash images
-#: ../beast-gtk/bstmain.c:158
+#: ../beast-gtk/bstmain.c:159
 msgid "Splash Image"
 msgstr "Imatge flaix d'inici"
 
 #. start BSE core and connect
-#: ../beast-gtk/bstmain.c:170
+#: ../beast-gtk/bstmain.c:171
 msgid "BSE Core"
 msgstr "Nucli BSE"
 
-#: ../beast-gtk/bstmain.c:191
+#: ../beast-gtk/bstmain.c:192
 msgid "Plugins"
 msgstr "Connectors"
 
-#: ../beast-gtk/bstmain.c:210
+#: ../beast-gtk/bstmain.c:211
 msgid "LADSPA Plugins"
 msgstr "Connectors LADSPA"
 
-#: ../beast-gtk/bstmain.c:238
+#: ../beast-gtk/bstmain.c:239
 msgid "Scripts"
 msgstr "Fitxers de seqüència d'ordres"
 
 #. listen to BseServer notification
-#: ../beast-gtk/bstmain.c:255
+#: ../beast-gtk/bstmain.c:256
 msgid "Dialogs"
 msgstr "Diàlegs"
 
-#: ../beast-gtk/bstmain.c:264
+#: ../beast-gtk/bstmain.c:265
 msgid "Loading..."
 msgstr "S'està carregant..."
 
-#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
+#: ../beast-gtk/bstmain.c:285 ../beast-gtk/bstmain.c:287
 #, c-format
 msgid "Loading \"%s\""
-msgstr "S'està carregant \"%s\""
+msgstr "S'està carregant «%s»"
 
-#: ../beast-gtk/bstmain.c:325
+#: ../beast-gtk/bstmain.c:326
 #, c-format
 msgid "Failed to load project \"%s\": %s"
-msgstr "No s'ha pogut carregar el projecte \"%s\": %s"
+msgstr "No s'ha pogut carregar el projecte «%s»: %s"
 
-#: ../beast-gtk/bstmain.c:331
-#, fuzzy, c-format
+#: ../beast-gtk/bstmain.c:332
+#, c-format
 msgid "Failed to merge project \"%s\": %s"
-msgstr "No s'ha pogut carregar el projecte \"%s\": %s"
+msgstr "No s'ha pogut fusionar el projecte «%s»: %s"
 
-#: ../beast-gtk/bstmain.c:882
+#: ../beast-gtk/bstmain.c:883
 msgid "BEAST About"
 msgstr "Quant al BEAST"
 
-#: ../beast-gtk/bstmain.c:883
+#: ../beast-gtk/bstmain.c:884
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST versió %s"
 
-#: ../beast-gtk/bstmain.c:884
+#: ../beast-gtk/bstmain.c:885
 msgid "Contributions made by:"
 msgstr "Hi ha contribuït:"
 
@@ -1798,9 +1995,8 @@ msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Prioritat del fil des de -20(alt) a +19(baix)"
 
 #: ../beast-gtk/bstprofiler.c:266
-#, fuzzy
 msgid "CPU#"
-msgstr "CPU%"
+msgstr "CPU#"
 
 #: ../beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
@@ -2443,18 +2639,16 @@ msgstr ""
 "(numèrics i de text). A alguns camps, només els afectarà quan es reiniciï."
 
 #: ../beast-gtk/bstrecords.idl:125
-#, fuzzy
 msgid "Slow scopes"
-msgstr "Habilita abasts"
+msgstr "Redueix els abasts"
 
 #: ../beast-gtk/bstrecords.idl:126
-#, fuzzy
 msgid ""
 "Aggresively slows down the periodic update frequency of scopes. Doing this "
 "may be desirable on particularly slow machines."
 msgstr ""
-"Habilita o preveu al BEAST que actualitzi periòdicament els abasts. "
-"Inhabilitar-ho serà desitjable especialment en màquines lentes."
+"Abaixa molt el període de freqüència d'actualització dels abasts. Això pot "
+"ser desitjat en màquines velles."
 
 #: ../beast-gtk/bstrecords.idl:134
 msgid "Skin Name"
@@ -2695,14 +2889,12 @@ msgid "Reset Properties"
 msgstr "Reinicia les propietats"
 
 #: ../beast-gtk/bstsnetrouter.c:708
-#, fuzzy
 msgid "Disconnect Inputs"
-msgstr "Desconnecta l'entrada"
+msgstr "Desconnecta les entrades"
 
 #: ../beast-gtk/bstsnetrouter.c:709
-#, fuzzy
 msgid "Disconnect Outputs"
-msgstr "Desconnecta la sortida"
+msgstr "Desconnecta les sortides"
 
 #: ../beast-gtk/bstsnetrouter.c:711 ../beast-gtk/bstsnetrouter.c:760
 msgid "Show Info"
@@ -2951,18 +3143,14 @@ msgid "Synthesis network to be used as postprocessor"
 msgstr "Xarxa de síntesi a utilitzar de postprocessador"
 
 #: ../beast-gtk/bstusermessage.c:58
-msgid "Fatal Error: "
-msgstr "Error fatal: "
-
-#: ../beast-gtk/bstusermessage.c:62
 msgid "Error: "
 msgstr "Error: "
 
-#: ../beast-gtk/bstusermessage.c:215
+#: ../beast-gtk/bstusermessage.c:212
 msgid "Details:"
 msgstr "Detalls:"
 
-#: ../beast-gtk/bstusermessage.c:228 ../beast-gtk/bstusermessage.c:537
+#: ../beast-gtk/bstusermessage.c:225 ../beast-gtk/bstusermessage.c:532
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -2971,72 +3159,72 @@ msgstr ""
 "Procediment: %s\n"
 "Fitxer de seqüència: %s\n"
 
-#: ../beast-gtk/bstusermessage.c:230
+#: ../beast-gtk/bstusermessage.c:227
 #, c-format
 msgid "Process: %s\n"
 msgstr "Procés: %s\n"
 
-#: ../beast-gtk/bstusermessage.c:232
+#: ../beast-gtk/bstusermessage.c:229
 #, c-format
 msgid "Origin:  %s\n"
 msgstr "Origen:  %s\n"
 
-#: ../beast-gtk/bstusermessage.c:234
+#: ../beast-gtk/bstusermessage.c:231
 #, c-format
 msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
-#: ../beast-gtk/bstusermessage.c:266
+#: ../beast-gtk/bstusermessage.c:263
 msgid ""
 "This setting can be changed in the \"Messages\" section of the preferences "
 "dialog"
 msgstr ""
-"Aquesta configuració pot ser canviada en la secció \"Missatges\" del "
-"diàlegde preferències"
+"Aquesta configuració pot ser canviada en la secció «Missatges»del diàlegde "
+"preferències"
 
-#: ../beast-gtk/bstusermessage.c:354
+#: ../beast-gtk/bstusermessage.c:368
 #, c-format
 msgid "Message has been repeated %u time"
 msgstr "El missatge s'ha estat repetint %u vegada"
 
-#: ../beast-gtk/bstusermessage.c:354
+#: ../beast-gtk/bstusermessage.c:368
 #, c-format
 msgid "Message has been repeated %u times"
 msgstr "El missatge s'ha estat repetint durant %u vegades"
 
-#: ../beast-gtk/bstusermessage.c:411
+#: ../beast-gtk/bstusermessage.c:425
 msgid "Display dialogs with information messages"
 msgstr "Mostra diàlegs amb missatges d'informació"
 
-#: ../beast-gtk/bstusermessage.c:413
+#: ../beast-gtk/bstusermessage.c:427
 msgid "Display dialogs with dignostic messages"
 msgstr "Mostra diàlegs amb missatges de diagnòstic"
 
-#: ../beast-gtk/bstusermessage.c:415
+#: ../beast-gtk/bstusermessage.c:429
 msgid "Display dialogs with debugging messages"
 msgstr "Mostra diàlegs amb missatges de depuració"
 
-#: ../beast-gtk/bstusermessage.c:533
+#: ../beast-gtk/bstusermessage.c:528
 #, c-format
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Executant el procediment '%s' del fitxer de seqüència d'ordres '%s'."
 
-#: ../beast-gtk/bstusermessage.c:574 ../beast-gtk/bstusermessage.c:576
+#: ../beast-gtk/bstusermessage.c:579 ../beast-gtk/bstusermessage.c:581
 msgid "processing"
 msgstr "s'està processant"
 
-#: ../beast-gtk/bstusermessage.c:599
+#: ../beast-gtk/bstusermessage.c:604
 #, c-format
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr ""
 "S'ha produït un error durant l'execució del procediment '%s' del fitxer de "
 "seqüència d'ordres: %s"
 
-#: ../beast-gtk/bstusermessage.c:600 ../beast-gtk/bstusermessage.c:788
+#: ../beast-gtk/bstusermessage.c:605 ../beast-gtk/bstusermessage.c:798
 msgid "Script execution error."
 msgstr "S'ha produït un error en executar el fitxer de seqüència."
 
-#: ../beast-gtk/bstusermessage.c:787
+#: ../beast-gtk/bstusermessage.c:797
 #, c-format
 msgid "Failed to execute script procedure '%s': %s"
 msgstr ""
@@ -3446,8 +3634,8 @@ msgstr "Retalla automàticament"
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
-"Si està habilitat, es retalla el text massa llarg i es mostra el text \"..."
-"\" enlloc seu"
+"Si està habilitat, es retalla el text massa llarg i es mostra el text «...» "
+"enlloc seu"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -3491,35 +3679,55 @@ msgstr ""
 "L'element d'interfície que s'activarà quan es premi la tecla acceleradora de "
 "l'etiqueta"
 
-#. BIRNET_MSG_FATAL (always enabled)
-#: ../birnet/birnetmsg.c:71
-msgid "Fatal Error"
-msgstr "Error fatal"
+#. ALWAYS (always enabled)
+#: ../birnet/birnetmsg.cc:115
+msgid "Always"
+msgstr ""
 
-#. BIRNET_MSG_ERROR (enabled)
-#: ../birnet/birnetmsg.c:75
+#. ERROR (enabled)
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "Error"
 
-#. BIRNET_MSG_WARNING (enabled)
-#: ../birnet/birnetmsg.c:79
+#. WARNING (enabled)
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Avís"
 
-#. BIRNET_MSG_SCRIPT (enabled)
-#: ../birnet/birnetmsg.c:83
+#. SCRIPT (enabled)
+#: ../birnet/birnetmsg.cc:127
 msgid "Script"
 msgstr "Fitxer de seqüència d'ordres"
 
-#. BIRNET_MSG_INFO (enabled)
-#: ../birnet/birnetmsg.c:87
+#. INFO (enabled)
+#: ../birnet/birnetmsg.cc:131
 msgid "Information"
 msgstr "Informació"
 
-#. BIRNET_MSG_DIAG (enabled)
-#: ../birnet/birnetmsg.c:91
+#. DIAG (enabled)
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "Diagnòstic"
+
+#: ../birnet/birnetutils.cc:1119
+msgid "Launch Web Browser"
+msgstr ""
+
+#: ../birnet/birnetutils.cc:1120
+msgid "Failed to launch a web browser executable"
+msgstr ""
+
+#: ../birnet/birnetutils.cc:1121
+#, c-format
+msgid ""
+"No suitable web browser executable could be found to be executed and to "
+"display the URL: %s"
+msgstr ""
+
+#: ../birnet/birnetutils.cc:1122
+#, fuzzy
+msgid "Show messages about web browser launch problems"
+msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
 
 #: ../bse/bseautodoc.c:186 ../bse/bseautodoc.c:192
 msgid "Range:"
@@ -3527,11 +3735,11 @@ msgstr "Rang:"
 
 #: ../bse/bseautodoc.c:264
 msgid "This procedure has multiple return values."
-msgstr ""
+msgstr "Aquest procediment te múltiples valors de retorn."
 
 #: ../bse/bseautodoc.c:336
 msgid "Number of elements (C specific)"
-msgstr ""
+msgstr "Nombre d'elements (C específic)"
 
 #: ../bse/bseautodoc.c:355 ../bse/bseautodoc.c:429
 msgid "Authors:"
@@ -3568,7 +3776,8 @@ msgstr "Tall [Hz]"
 
 #: ../bse/bsebiquadfilter.c:142 ../bse/bseconstant.c:129
 #: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:148
-#: ../plugins/bseiirfilter.c:158
+#: ../plugins/bseiirfilter.c:158 ../plugins/davorgan.c:114
+#: ../plugins/davorgan.cc:114 ../plugins/davxtalstrings.c:113
 msgid "Note"
 msgstr "Nota"
 
@@ -3625,7 +3834,7 @@ msgstr "Potència de la modulació del guany"
 
 #: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:33
-#: ../plugins/davchorus.idl:30 ../plugins/evaluator/bseevaluator.idl:32
+#: ../plugins/davchorus.idl:30
 msgid "Audio In"
 msgstr "Entrada d'àudio"
 
@@ -3634,8 +3843,9 @@ msgid "Unfiltered Audio Signal"
 msgstr "Senyal d'àudio sense filtrar"
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:196
-#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
-#: ../plugins/davsyndrum.c:116 ../plugins/davxtalstrings.c:141
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:147
+#: ../plugins/davorgan.cc:147 ../plugins/davsyndrum.c:116
+#: ../plugins/davxtalstrings.c:153
 msgid "Freq In"
 msgstr "Entrada de freqüència"
 
@@ -3664,9 +3874,9 @@ msgstr "Entrada de modulació de guany"
 #: ../plugins/bseamplifier.idl:49 ../plugins/bseatandistort.c:92
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:109
 #: ../plugins/bsemult.c:68 ../plugins/davbassfilter.idl:35
-#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:133
-#: ../plugins/davsyndrum.c:122 ../plugins/davxtalstrings.c:145
-#: ../plugins/evaluator/bseevaluator.idl:33
+#: ../plugins/davchorus.idl:31 ../plugins/davorgan.c:148
+#: ../plugins/davorgan.cc:148 ../plugins/davsyndrum.c:122
+#: ../plugins/davxtalstrings.c:157
 msgid "Audio Out"
 msgstr "Sortida d'àudio"
 
@@ -3834,6 +4044,10 @@ msgstr "Valor [decimal]"
 
 #: ../bse/bseconstant.c:118 ../bse/bseinstrumentinput.c:120
 #: ../bse/bsemidiinput.c:110 ../bse/bsestandardosc.c:145
+#: ../plugins/davorgan.c:109 ../plugins/davorgan.cc:109
+#: ../plugins/davxtalstrings.c:106 ../plugins/davxtalstrings.c:108
+#: ../plugins/davxtalstrings.c:111 ../plugins/davxtalstrings.c:114
+#: ../plugins/davxtalstrings.c:119
 msgid "Frequency"
 msgstr "Freqüència"
 
@@ -4667,27 +4881,24 @@ msgstr ""
 "significat de encès/apagat s'inverteix"
 
 #: ../bse/bsecore.idl:720
-#, fuzzy
 msgid "Default Values"
-msgstr "Dibuixa els valors"
+msgstr "Valors per defecte"
 
 #: ../bse/bsecore.idl:721
-#, fuzzy
 msgid "Default Author"
-msgstr "Autor"
+msgstr "Autor per defecte"
 
 #: ../bse/bsecore.idl:721
 msgid "Default value for 'Author' fields"
-msgstr ""
+msgstr "Valor per defecte al camp «Autor»"
 
 #: ../bse/bsecore.idl:723
-#, fuzzy
 msgid "Default License"
-msgstr "Llicència"
+msgstr "Llicència per defecte"
 
 #: ../bse/bsecore.idl:723
 msgid "Default value for 'License' fields"
-msgstr ""
+msgstr "Valor per defecte en el camp «Llicència»"
 
 #: ../bse/bsecore.idl:726
 msgid "Search Paths"
@@ -4702,7 +4913,7 @@ msgstr "Camí de mostra"
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
-"Cerca camins de directoris, separats per \"%s\". Utilitzat per a cercar "
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
 "mostres d'àudio."
 
 #: ../bse/bsecore.idl:731
@@ -4715,7 +4926,7 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
 "files."
 msgstr ""
-"Cerca camins de directoris, separats per \"%s\". Utilitzat per a cercar "
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
 "fitxers d'efectes BSE."
 
 #: ../bse/bsecore.idl:735
@@ -4728,7 +4939,7 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
 "files."
 msgstr ""
-"Cerca camins de directoris, separats per \"%s\". Utilitzat per a cercar "
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
 "fitxers d'instruments BSE."
 
 #: ../bse/bsecore.idl:739
@@ -4741,8 +4952,8 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
 "scripts."
 msgstr ""
-"Cerca camins de directoris, separats per \"%s\", utilitzat per cercar "
-"esquemes de seqüències BSE."
+"Cerca camins de directoris, separats per «%s», utilitzat per cercar esquemes "
+"de seqüències BSE."
 
 #: ../bse/bsecore.idl:743
 msgid "Plugin Path"
@@ -4755,7 +4966,7 @@ msgid ""
 "This path is searched for in addition to the standard BSE plugin location on "
 "this system."
 msgstr ""
-"Cerca camins de directoris, separats per \"%s\". Utilitzat per a cercar "
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
 "connectors BSE. Se cerca a aquest camí, a més a més de la localització per "
 "defecte dels connectors BSE en aquest sistema."
 
@@ -4772,7 +4983,7 @@ msgid ""
 "API, more informations about LADSPA plugins can be found at http://www."
 "ladspa.org/."
 msgstr ""
-"Cerca camins de directoris, separats per \"%s\". Utilitzat per cercar "
+"Cerca camins de directoris, separats per «%s». Utilitzat per cercar "
 "connectors LADSPA. Se cerca aquest camí a més a més de la localització "
 "estàndard dels LADSPA en aquest sistema. LADSPA és l'API de Desenvolupament "
 "de Connectors Simples d'Àudio per a Linux, més informació sobre els "
@@ -5141,7 +5352,7 @@ msgstr "connexió acabada"
 msgid "%s (core dumped)"
 msgstr "%s (s'ha bolcat el nucli)"
 
-#: ../bse/bsemain.c:261
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5149,7 +5360,7 @@ msgstr ""
 "\n"
 "Controladors PCM disponibles:\n"
 
-#: ../bse/bsemain.c:263
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5214,7 +5425,7 @@ msgid ""
 msgstr ""
 "Controlador MIDI del sistema de so obert:\n"
 "  DISPOSITIU - nom del fitxer del dispositiu MIDI.\n"
-"  MODE   - un dels \"ro\", \"rw\" o \"wo\" per un accés de\n"
+"  MODE   - un dels «ro», «rw» o «wo» per un accés de\n"
 "           sols lectura (ro), lectura i escriptura (rw) o sols escriptura "
 "(wo)."
 
@@ -5327,11 +5538,11 @@ msgstr "Desconnecta la sortida"
 
 #: ../bse/bseobject.c:841
 msgid "Unique name of this object"
-msgstr ""
+msgstr "Nom únic per aquest objecte"
 
 #: ../bse/bseobject.c:851
 msgid "Free form comment or description"
-msgstr ""
+msgstr "Formulari lliure per a comentaris o descripció"
 
 #: ../bse/bseparasite.proc:28 ../bse/bseparasite.proc:52
 #: ../bse/bseparasite.proc:70 ../bse/bseparasite.proc:89
@@ -5379,10 +5590,10 @@ msgid ""
 msgstr ""
 "Controlador PCM del sistema de so obert:\n"
 "  DISPOSITIU - nom del fitxer del dispositiu PCM\n"
-"  MODE   - hauria de contenir \"rw\", \"ro\" o \"wo\" per\"           a "
-"accessos de sols lectura (ro), lectura i \n"
+"  MODE   - hauria de contenir «rw», «ro» o «wo» per\"           a accessos "
+"de sols lectura (ro), lectura i \n"
 "           escriptura (rw) o sols escriptura (ro);\n"
-"           afegint \"hs\" es força sincronització\n"
+"           afegint «hs» es força sincronització\n"
 "           forta en baixos.\n"
 
 #: ../bse/bsepcminput.c:86
@@ -5430,8 +5641,8 @@ msgstr ""
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
-"El dispositiu d'àudio \"%s\" no està obert per entrada, controlador d'àudio: "
-"%s=%s"
+"El dispositiu d'àudio «%s» no està obert per entrada, controlador d'àudio: %"
+"s=%s"
 
 #: ../bse/bseserver.c:464
 msgid "Show messages about audio input problems"
@@ -5506,7 +5717,7 @@ msgstr ""
 #: ../bse/bseserver.c:590
 #, c-format
 msgid "Failed to open file \"%s\" for output: %s"
-msgstr "No s'ha pogut obrir el fitxer \"%s\" de sortida: %s"
+msgstr "No s'ha pogut obrir el fitxer «%s» de sortida: %s"
 
 #: ../bse/bseserver.c:591
 msgid "Show recording file errors"
@@ -5671,6 +5882,10 @@ msgstr ""
 
 #: ../bse/bsestandardosc.c:143 ../bse/bsestandardosc.c:147
 #: ../bse/bsestandardosc.c:151 ../bse/bsestandardosc.c:156
+#: ../plugins/davorgan.c:108 ../plugins/davorgan.c:112
+#: ../plugins/davorgan.c:115 ../plugins/davorgan.c:120
+#: ../plugins/davorgan.cc:108 ../plugins/davorgan.cc:112
+#: ../plugins/davorgan.cc:115 ../plugins/davorgan.cc:120
 msgid "Base Frequency"
 msgstr "Freqüència base"
 
@@ -5682,23 +5897,24 @@ msgstr "Nombre de cicles d'oscil·lació per segon"
 msgid "Musical notation corresponding to the oscillator frequency"
 msgstr "Notació musical corresponent a la freqüència de l'oscil·lador"
 
-#: ../bse/bsestandardosc.c:153
+#: ../bse/bsestandardosc.c:153 ../plugins/davorgan.c:117
+#: ../plugins/davorgan.cc:117 ../plugins/davxtalstrings.c:116
 msgid "Transpose"
-msgstr ""
+msgstr "Transposa"
 
 #: ../bse/bsestandardosc.c:153
-#, fuzzy
 msgid "Transposition of the oscillator frequency in semitones"
-msgstr "Notació musical corresponent a la freqüència de l'oscil·lador"
+msgstr "Transposició de la freqüència de l'oscil·lador en semitons"
 
-#: ../bse/bsestandardosc.c:158
+#: ../bse/bsestandardosc.c:158 ../plugins/davorgan.c:122
+#: ../plugins/davorgan.cc:122 ../plugins/davxtalstrings.c:121
 msgid "Fine Tune"
 msgstr "Ajustament fi"
 
-#: ../bse/bsestandardosc.c:158
-#, fuzzy
+#: ../bse/bsestandardosc.c:158 ../plugins/davorgan.c:122
+#: ../plugins/davorgan.cc:122 ../plugins/davxtalstrings.c:121
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
-msgstr "Percentatge de desentonació (centésima part d'una nota)"
+msgstr "Percentatge de desentonació (centèsima part d'un semitò)"
 
 #: ../bse/bsestandardosc.c:163 ../bse/bsewaveosc.c:570
 msgid "Input Modulation [%]"
@@ -5920,7 +6136,7 @@ msgstr "Mesclador de busos utilitzat com a sortida per aquesta pista"
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
-"Ona \"%s\": no s'ha pogut carregar un tros de l'ona per la freqüència %f: %s"
+"Ona «%s»: no s'ha pogut carregar un tros de l'ona per la freqüència %f: %s"
 
 #: ../bse/bsewaveosc.c:96
 msgid "/Audio Sources/Wave Oscillator"
@@ -5946,7 +6162,8 @@ msgstr "Canal d'àudio a reproduir, normalment 1 és l'esquerre, 2 el dret"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Potència de la modulació per a la modulació freqüencial lineal"
 
-#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:132
+#: ../bse/bsewaveosc.c:592 ../plugins/davorgan.c:147
+#: ../plugins/davorgan.cc:147
 msgid "Frequency Input"
 msgstr "Freqüència d'entrada"
 
@@ -6065,206 +6282,7 @@ msgstr ""
 " MODE   - rw = lectura/escriptura, ro = sols lectura, \n"
 "                  wo = sols escriptura\n"
 
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "Ca_nçó"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "La sintetització ha acabat"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Voleu dibuixar les xarxes de síntesi suavitzades?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Parts"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "No s'ha seleccionat cap quantificació"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "S'ha produït un error al iniciar la gravació a disc."
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-#, fuzzy
-msgid "N Iterations"
-msgstr "Informació"
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Inicia l'editor"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Propietat d'objecte invàlida"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "S'ha produït un error al iniciar la gravació a disc."
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-#, fuzzy
-msgid "Failed to duplicate part range."
-msgstr "No s'ha pogut detectar (l'inici de) la capçalera"
-
-#: ../plugins/artscompressor.idl:28 ../plugins/evaluator/bseevaluator.idl:27
+#: ../plugins/artscompressor.idl:28
 msgid "GNU General Public License"
 msgstr "Llicència General Pública GNU"
 
@@ -6327,7 +6345,7 @@ msgstr ""
 "entrada = 20 dB => sortida = 5 dB\n"
 "\n"
 "La compressió sovint se sol pensar com una operació per fer que la música "
-"\"soni més alta\". Per aconseguir això, el primer pas és reduir el rang "
+"«soni més alta». Per aconseguir això, el primer pas és reduir el rang "
 "dinàmic com en l'exemple de dalt. Una vegada s'han reduït les parts "
 "sorolloses de la música en volum, ara ho podem amplificar tot, sense el "
 "perill de distorsió o trencament.Això té l'efecte global que la música sona "
@@ -6371,7 +6389,7 @@ msgid "Compressed audio output 2"
 msgstr "Sortida d'àudio comprimida 2"
 
 #: ../plugins/artscompressor.idl:55 ../plugins/davbassfilter.idl:36
-#: ../plugins/davchorus.idl:32 ../plugins/evaluator/bseevaluator.idl:34
+#: ../plugins/davchorus.idl:32
 msgid "Parameters"
 msgstr "Paràmetres"
 
@@ -6825,16 +6843,15 @@ msgid ""
 msgstr ""
 "El DavBassFilter és un filtre passa baixos ressonant estil TB-303 basat en "
 "parts del VCF303 del gsyn v0.2. L'algorisme del filtre està basat "
-"parcialment en el descrit en \"Aplicacions musicals dels microprocessadors"
-"\", d'en Hal Chamberlin."
+"parcialment en el descrit «Aplicacions musicals dels microprocessadors», "
+"d'en Hal Chamberlin."
 
 #: ../plugins/davbassfilter.idl:33 ../plugins/davchorus.idl:30
-#: ../plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Entrada d'àudio"
 
 #: ../plugins/davbassfilter.idl:34 ../plugins/davsyndrum.c:120
-#: ../plugins/davxtalstrings.c:143
+#: ../plugins/davxtalstrings.c:155
 msgid "Trigger In"
 msgstr "Entrada disparador"
 
@@ -6918,7 +6935,13 @@ msgstr "Sortida humida [%]"
 msgid "Set the amount of modified data to mix"
 msgstr "Defineix la quantitat de dades modificades que es mesclaran"
 
-#: ../plugins/davorgan.c:133
+#: ../plugins/davorgan.c:117 ../plugins/davorgan.cc:117
+#: ../plugins/davxtalstrings.c:116
+#, fuzzy
+msgid "Transposition of the frequency in semitones"
+msgstr "Transposició de la freqüència de l'oscil·lador en semitons"
+
+#: ../plugins/davorgan.c:148 ../plugins/davorgan.cc:148
 msgid "Organ Output"
 msgstr "Sortida d'orgue"
 
@@ -6942,53 +6965,17 @@ msgstr "Colpeja la percussió en els flancs ascendents"
 msgid "SynDrum Output"
 msgstr "Sortida SynDrum"
 
-#: ../plugins/davxtalstrings.c:141
+#: ../plugins/davxtalstrings.c:153
 msgid "Pluck frequency input"
 msgstr "Entrada de freqüència de punteig"
 
-#: ../plugins/davxtalstrings.c:143
+#: ../plugins/davxtalstrings.c:155
 msgid "Pluck strings on raising edge"
 msgstr "Punteja la corda en els flancs ascendents"
 
-#: ../plugins/davxtalstrings.c:145
+#: ../plugins/davxtalstrings.c:157
 msgid "XtalStrings Output"
 msgstr "Sortida d'XtalStrings"
-
-#: ../plugins/evaluator/bseevaluator.idl:28
-msgid "/Misc/Evaluator"
-msgstr "/Miscel·lània/Avaluador"
-
-#: ../plugins/evaluator/bseevaluator.idl:29
-msgid ""
-"BseEvaluator is a module which can compute arithmetic operations in a small "
-"language. The audio input signal is called input, the audio output signal is "
-"called output. Simple examples for programs would be \"output = input * 5\" "
-"or \"output = 2 * input + 1\"."
-msgstr ""
-"El BseEvaluator és un mòdul que pot calcular operacions aritmètiques amb un "
-"petit llenguatges. El senyal d'entrada de so s'anomena 'input', el senyal de "
-"sortida de so s'anomena 'output'. Uns exemples senzills de programes poden "
-"ser \"output = input * 5\" o \"output = 2 * input + 1\"."
-
-#: ../plugins/evaluator/bseevaluator.idl:33
-msgid "Audio output"
-msgstr "Sortida d'àudio"
-
-#: ../plugins/evaluator/bseevaluator.idl:35
-msgid "Source code"
-msgstr "Codi font"
-
-#: ../plugins/evaluator/bseevaluator.idl:35
-msgid "The source code"
-msgstr "El codi font"
-
-#: ../plugins/evaluator/bseevaluator.idl:36
-msgid "Status"
-msgstr "Estat"
-
-#: ../plugins/evaluator/bseevaluator.idl:36
-msgid "Status used to output error messages"
-msgstr "Estat usat per escriure els missatges d'error"
 
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Input"
@@ -7006,10 +6993,45 @@ msgstr "Sortida esquerre"
 msgid "Right Output"
 msgstr "Sortida dreta"
 
-#: ../tools/bsewavetool.cc:935
+#: ../tools/bsewavetool.cc:949
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
-msgstr "No s'ha pogut afegir un tros d'ona des del fitxer \"%s\": %s"
+msgstr "No s'ha pogut afegir un tros d'ona des del fitxer «%s»: %s"
+
+#~ msgid "Fatal Error: "
+#~ msgstr "Error fatal: "
+
+#~ msgid "Fatal Error"
+#~ msgstr "Error fatal"
+
+#~ msgid "/Misc/Evaluator"
+#~ msgstr "/Miscel·lània/Avaluador"
+
+#~ msgid ""
+#~ "BseEvaluator is a module which can compute arithmetic operations in a "
+#~ "small language. The audio input signal is called input, the audio output "
+#~ "signal is called output. Simple examples for programs would be \"output = "
+#~ "input * 5\" or \"output = 2 * input + 1\"."
+#~ msgstr ""
+#~ "El BseEvaluator és un mòdul que pot calcular operacions aritmètiques amb "
+#~ "un petit llenguatges. El senyal d'entrada de so s'anomena 'input', el "
+#~ "senyal de sortida de so s'anomena 'output'. Uns exemples senzills de "
+#~ "programes poden ser «output = input * 5» o «output = 2 * input + 1»."
+
+#~ msgid "Audio output"
+#~ msgstr "Sortida d'àudio"
+
+#~ msgid "Source code"
+#~ msgstr "Codi font"
+
+#~ msgid "The source code"
+#~ msgstr "El codi font"
+
+#~ msgid "Status"
+#~ msgstr "Estat"
+
+#~ msgid "Status used to output error messages"
+#~ msgstr "Estat usat per escriure els missatges d'error"
 
 #~ msgid "Delete Inputs"
 #~ msgstr "Suprimeix les entrades"
@@ -7121,7 +7143,7 @@ msgstr "No s'ha pogut afegir un tros d'ona des del fitxer \"%s\": %s"
 #~ msgstr "Sortida de guitarra"
 
 #~ msgid "Loading project \"%s\""
-#~ msgstr "S'està carregant el projecte '%s'"
+#~ msgstr "S'està carregant el projecte «%s»"
 
 #~ msgid "Snooper"
 #~ msgstr "Snooper"
