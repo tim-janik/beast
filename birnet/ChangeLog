@@ -1,7 +1,7 @@
 Mon Nov 20 23:39:43 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetmsg.hh, birnetmsg.cc: implemented C++ messaging API,
-	mostly based onthe former sfimsg.c.
+	mostly based on the former sfimsg.c.
 	extended API to match most of the old sfi_msg_* API, including
 	syslog logging, stdlog configuraiton and various new message types.
 
