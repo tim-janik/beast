@@ -257,7 +257,10 @@ Thread::Self::exit (void *retval)
   ThreadTable.thread_exit (retval);
 }
 
-Mutex::Mutex ()
+static const BirnetMutex zero_mutex = { 0, };
+
+Mutex::Mutex () :
+  mutex (zero_mutex)
 {
   if (birnet_threads_initialized())
     ThreadTable.mutex_init (&mutex);
@@ -273,7 +276,10 @@ Mutex::~Mutex ()
     ThreadTable.mutex_unchain (&mutex);
 }
 
-RecMutex::RecMutex ()
+static const BirnetRecMutex zero_rec_mutex = { { 0, }, };
+
+RecMutex::RecMutex () :
+  rmutex (zero_rec_mutex)
 {
   if (birnet_threads_initialized())
     ThreadTable.rec_mutex_init (&rmutex);
@@ -289,7 +295,10 @@ RecMutex::~RecMutex ()
     ThreadTable.rec_mutex_unchain (&rmutex);
 }
 
-Cond::Cond ()
+static const BirnetCond zero_cond = { 0, };
+
+Cond::Cond () :
+  cond (zero_cond)
 {
   if (birnet_threads_initialized())
     ThreadTable.cond_init (&cond);
@@ -306,6 +315,7 @@ Cond::~Cond ()
 }
 
 OwnedMutex::OwnedMutex () :
+  m_rec_mutex (zero_rec_mutex),
   m_owner (NULL)
 {
   if (birnet_threads_initialized())

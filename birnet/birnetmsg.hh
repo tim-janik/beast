@@ -26,12 +26,53 @@ namespace Birnet {
 
 /* --- messaging --- */
 struct Msg {
+  /* message parts */
+  struct Part;                           /* base for Text* and Check */
+  struct Text0; typedef Text0 Title;     /* message title */
+  struct Text1; typedef Text1 Primary;   /* primary message */
+  struct Text2; typedef Text2 Secondary; /* secondary message (lengthy) */
+  struct Text3; typedef Text3 Detail;    /* message details */
+  struct Check;                          /* enable/disable message text */
   typedef enum {
-    ERROR       = 'E',
-    WARNING     = 'W',
-    INFO        = 'I',
-    DEBUG       = 'D',
+    LOG_TO_STDERR     = 1,
+    LOG_TO_STDLOG     = 2,
+    LOG_TO_HANDLER    = 4,
+    _1FORCE32 = 0xf000000
+  } LogFlags;
+  /* message types */
+  typedef enum {
+    NONE        = 0,    /* always off */
+    ALWAYS      = 1,    /* always on */
+    ERROR,      WARNING,        SCRIPT,
+    INFO,       DIAG,           DEBUG,
+    _2FORCE32 = 0xf000000
   } Type;
+  static Type        register_type      (const char         *ident,
+                                         Type                default_ouput,
+                                         const char         *label);
+  static Type        lookup_type        (const String       &ident);
+  static const char* type_ident         (Type                mtype);
+  static const char* type_label         (Type                mtype);
+  static uint32      type_flags         (Type                mtype);
+  static inline bool check              (Type                mtype);
+  static void        enable             (Type                mtype);
+  static void        disable            (Type                mtype);
+  static void        configure          (Type                mtype,
+                                         LogFlags            log_mask,
+                                         const String       &logfile);
+  static void        allow_msgs         (const String       &key);
+  static void        deny_msgs          (const String       &key);
+  static void        configure_stdlog   (bool                redirect_stdlog_to_stderr,
+                                         const String       &stdlog_filename,
+                                         uint                syslog_priority);
+  /* messaging */
+  static inline void display         (Type                message_type,
+                                      const Part &p0 = empty_part, const Part &p1 = empty_part,
+                                      const Part &p2 = empty_part, const Part &p3 = empty_part,
+                                      const Part &p4 = empty_part, const Part &p5 = empty_part,
+                                      const Part &p6 = empty_part, const Part &p7 = empty_part,
+                                      const Part &p8 = empty_part, const Part &p9 = empty_part);
+  /* message handling */
   struct Part {
     String string;
     uint8  ptype;
@@ -44,6 +85,35 @@ struct Msg {
                                const char *format,
                                va_list     varargs);
   };
+  typedef void (*Handler)            (const char         *domain,
+                                      Type                mtype,
+                                      const vector<Part> &parts);
+  static void    set_thread_handler  (Handler             handler);
+  static void    default_handler     (const char         *domain,
+                                      Type                mtype,
+                                      const vector<Part> &parts);
+  static void    display_parts       (const char         *domain,
+                                      Type                message_type,
+                                      const vector<Part> &parts);
+protected:
+  static const Part   &empty_part;
+  static void    display_aparts      (Type                message_type,
+                                      const Part &p0, const Part &p1,
+                                      const Part &p2, const Part &p3,
+                                      const Part &p4, const Part &p5,
+                                      const Part &p6, const Part &p7,
+                                      const Part &p8, const Part &p9);
+  BIRNET_PRIVATE_CLASS_COPY (Msg);
+private:
+  static volatile int    n_msg_types;
+  static uint8 *volatile msg_type_bits;
+  static void            init_standard_types ();
+  static void            key_list_change_L   (const String &keylist,
+                                              bool          isenabled);
+  static void            set_msg_type_L      (uint          mtype,
+                                              uint32        flags,
+                                              bool          enabled);
+public:
   struct Text0 : public Part {  /* message title */
     explicit BIRNET_PRINTF (2, 3) Text0 (const char *format, ...) { va_list a; va_start (a, format); setup ('0', format, a); va_end (a); }
     explicit                      Text0 (const String &s)         { setup ('0', s); }
@@ -64,40 +134,33 @@ struct Msg {
     explicit BIRNET_PRINTF (2, 3) Check (const char *format, ...) { va_list a; va_start (a, format); setup ('c', format, a); va_end (a); }
     explicit                      Check (const String &s)         { setup ('c', s); }
   };
-  typedef Text0 Title;          /* message title */
-  typedef Text1 Primary;        /* primary message */
-  typedef Text2 Secondary;      /* secondary message (lengthy) */
-  typedef Text3 Detail;         /* message details */
-  static inline void display (Type        message_type,
-                              const Part &p0 = empty_part,
-                              const Part &p1 = empty_part,
-                              const Part &p2 = empty_part,
-                              const Part &p3 = empty_part,
-                              const Part &p4 = empty_part);
-protected:
-  static const Part   &empty_part;
-  static void display (const char         *domain,
-                       const vector<Part> &parts);
-  /* FIXME: allow installing of handler for vector<Part&> */
-  BIRNET_PRIVATE_CLASS_COPY (Msg);
+  struct Custom : public Part { /* custom part / user defined */
+    explicit BIRNET_PRINTF (3, 4) Custom (uint8 ctype, const char *format, ...) { va_list a; va_start (a, format); setup (ctype | 0x80, format, a); va_end (a); }
+    explicit                      Custom (uint8 ctype, const String &s)         { setup (ctype | 0x80, s); }
+  };
 };
 
-/* --- inline implementation --- */
+/* --- inline implementations --- */
+inline bool
+Msg::check (Type mtype)
+{
+  /* this function is supposed to preserve errno */
+  return (mtype >= 0 &&
+          mtype < n_msg_types &&
+          (msg_type_bits[mtype / 8] & (1 << mtype % 8)));
+}
+
 inline void
 Msg::display (Type        message_type,
-              const Part &p0,
-              const Part &p1,
-              const Part &p2,
-              const Part &p3,
-              const Part &p4)
+              const Part &p0, const Part &p1,
+              const Part &p2, const Part &p3,
+              const Part &p4, const Part &p5,
+              const Part &p6, const Part &p7,
+              const Part &p8, const Part &p9)
 {
-  vector<Part> parts;
-  parts.push_back (p0);
-  parts.push_back (p1);
-  parts.push_back (p2);
-  parts.push_back (p3);
-  parts.push_back (p4);
-  display (BIRNET_LOG_DOMAIN, parts);
+  /* this function is supposed to preserve errno */
+  if (check (message_type))
+    display_aparts (message_type, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 }
 
 } // Birnet

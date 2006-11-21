@@ -1,3 +1,14 @@
+Mon Nov 20 23:39:43 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetmsg.hh, birnetmsg.cc: implemented C++ messaging API,
+	mostly based onthe former sfimsg.c.
+	extended API to match most of the old sfi_msg_* API, including
+	syslog logging, stdlog configuraiton and various new message types.
+
+	* birnetthread.cc: fixed missing zero initialization of C structs.
+
+	* tests/infotest.cc: added some message tests.
+
 Wed Nov 15 01:00:21 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetmath.hh, birnetmath.cc: added dtoi32, dtoi64, iround, iceil, 
