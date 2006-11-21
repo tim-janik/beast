@@ -26,7 +26,6 @@
 #include <sfi/sfigluecodec.h>
 #include <sfi/sfiglueproxy.h>
 #include <sfi/sfimemory.h>
-#include <sfi/sfimsg.h>
 #include <sfi/sfinote.h>
 #include <sfi/sfiparams.h>
 #include <sfi/sfiprimitives.h>

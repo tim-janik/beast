@@ -1,3 +1,16 @@
+Mon Nov 20 23:39:31 2006  Tim Janik  <timj@gtk.org>
+
+	* sfiwrapper.h, sfiwrapper.cc: wrapped C++ Msg API.
+
+	* glib-extra.h: removed g_static_assert(), we now have BIRNET_STATIC_ASSERT().
+
+	* sfimsg.h, sfimsg.c: removed, obsoleted by C++ Msg API wrapper.
+
+	* tests/misctests.c: added some sfi_msg_*() tests, mostly to check
+	compilability of the provided macros.
+
+	* tests/testsfidl.cc: fixed compiler warnings.
+
 Wed Nov 15 00:23:44 2006  Tim Janik  <timj@gtk.org>
 
 	* sfidl-parser.cc (parseParamHints): serialize int parameters with LL

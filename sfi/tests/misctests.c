@@ -49,6 +49,25 @@ test_misc (void)
 }
 
 static void
+test_messages (void)
+{
+  TSTART ("Messaging");
+  TASSERT (sfi_msg_check (SFI_MSG_NONE) == false);
+  TASSERT (sfi_msg_check (SFI_MSG_ALWAYS) == true);
+  TDONE();
+  if (0)
+    {
+      /* check compilability */
+      sfi_info ("First info message test.");
+      sfi_info ("Second info message test: %d", 42);
+      sfi_msg_display (SFI_MSG_INFO,
+                       SFI_MSG_TITLE ("Third info message test"),
+                       SFI_MSG_PRIMARY ("Third info primary message."),
+                       SFI_MSG_SECONDARY ("Third info secondary message: %d", 42));
+    }
+}
+
+static void
 test_time (void)
 {
   SfiTime t;
@@ -929,6 +948,7 @@ main (int   argc,
   test_com_ports ();
   test_threads ();
   test_sfidl_seq ();
+  test_messages();
   test_misc ();
 
   return 0;

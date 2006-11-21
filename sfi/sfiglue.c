@@ -20,7 +20,6 @@
 #include "sfiparams.h"
 #include "sfiglueproxy.h"
 #include "sfiustore.h"
-#include "sfimsg.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 

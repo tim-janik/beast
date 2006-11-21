@@ -19,7 +19,6 @@
 #include <string.h>
 #include "sfiglueproxy.h"
 #include "sfiglue.h"
-#include "sfimsg.h"
 #include "sfiustore.h"
 #include "sfivmarshal.h"
 #include <gobject/gvaluecollector.h>

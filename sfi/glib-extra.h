@@ -24,11 +24,6 @@
 
 G_BEGIN_DECLS
 
-/* --- macros --- */
-#define G_CPP_PASTE2(a,b)       a ## b
-#define G_CPP_PASTE(a,b)        G_CPP_PASTE2 (a, b)
-#define g_static_assert(expr)   typedef struct { char assertion_failed[(expr) ? 1 : -1]; } G_CPP_PASTE (GLibStaticAssertion_LINE, __LINE__)
-
 #if (GLIB_SIZEOF_LONG > 4)
 #define G_HASH_LONG(l)	((l) + ((l) >> 32))
 #else
@@ -40,7 +35,7 @@ G_BEGIN_DECLS
 #define G_HASH_POINTER(p)       ((guint32) (gsize) (p))
 #endif
 /* Provide a string identifying the current function, non-concatenatable */
-#ifndef G_STRFUNC       // GTKFIX: add this to glib
+#ifndef G_STRFUNC
 #  if defined (__GNUC__)
 #    define G_STRFUNC     ((const char*) (__PRETTY_FUNCTION__))
 #  elif defined (G_HAVE_ISO_VARARGS)

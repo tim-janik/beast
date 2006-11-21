@@ -20,7 +20,6 @@
 #include "sfiprimitives.h"
 #include "sfiserial.h"
 #include "sfistore.h"
-#include "sfimsg.h"
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>

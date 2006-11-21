@@ -137,12 +137,12 @@ main (int   argc,
 
   int fake_argc = 6;
   char **fake_argv = g_new0 (gchar*, fake_argc);
-  fake_argv[0] = "testsfidl";
-  fake_argv[1] = "--test";
-  fake_argv[2] = "--one";
-  fake_argv[3] = "1";
-  fake_argv[4] = "--two=2";
-  fake_argv[5] = "--done";
+  fake_argv[0] = (char*) "testsfidl";
+  fake_argv[1] = (char*) "--test";
+  fake_argv[2] = (char*) "--one";
+  fake_argv[3] = (char*) "1";
+  fake_argv[4] = (char*) "--two=2";
+  fake_argv[5] = (char*) "--done";
   options.parse (&fake_argc, &fake_argv, parser);
 
   TSTART ("Testing factory");
