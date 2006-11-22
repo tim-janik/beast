@@ -1057,10 +1057,11 @@ url_test_show (const char *url)
     volatile bool disabled;
   } www_browsers[] = {
     /* program */               /* arg1 */      /* prefix+URL+postfix */
-    /* working browser launchers */
+    /* configurable, working browser launchers */
     { "gnome-open",             NULL,           "", "", 0 }, /* opens in background, correct exit_code */
-    { "kfmclient",              "openURL",      "", "", 0 }, /* opens in background, correct exit_code */
     { "exo-open",               NULL,           "", "", 0 }, /* opens in background, correct exit_code */
+    /* non-configurable working browser launchers */
+    { "kfmclient",              "openURL",      "", "", 0 }, /* opens in background, correct exit_code */
     { "gnome-moz-remote",       "--newwin",     "", "", 0 }, /* opens in background, correct exit_code */
 #if 0
     /* broken/unpredictable browser launchers */

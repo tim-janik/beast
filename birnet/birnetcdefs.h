@@ -48,6 +48,12 @@ BIRNET_EXTERN_C_BEGIN();
 #define CLAMP                                   BIRNET_CLAMP
 #undef ARRAY_SIZE
 #define ARRAY_SIZE				BIRNET_ARRAY_SIZE
+#undef EXTERN_C
+#ifdef	__cplusplus
+#define EXTERN_C                                extern "C"
+#else
+#define EXTERN_C                                extern
+#endif
 #undef STRFUNC
 #if defined (__GNUC__)
 #  define STRFUNC				((const char*) (__PRETTY_FUNCTION__))
@@ -111,6 +117,7 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_ALWAYS_INLINE			__attribute__ ((always_inline))
 #define BIRNET_NEVER_INLINE			__attribute__ ((noinline))
 #define BIRNET_CONSTRUCTOR			__attribute__ ((constructor,used)) /* gcc-3.3 also needs "used" to emit code */
+#define BIRNET_MAY_ALIAS                        __attribute__ ((may_alias))
 #else   /* !__GNUC__ */
 #define BIRNET_PRETTY_FUNCTION                  ("<unknown>")
 #define BIRNET_PURE
@@ -126,6 +133,7 @@ BIRNET_EXTERN_C_BEGIN();
 #define BIRNET_ALWAYS_INLINE
 #define BIRNET_NEVER_INLINE
 #define BIRNET_CONSTRUCTOR
+#define BIRNET_MAY_ALIAS
 #error  Failed to detect a recent GCC version (>= 3.3)
 #endif  /* !__GNUC__ */
 #ifdef	__cplusplus

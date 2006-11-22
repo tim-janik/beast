@@ -1,3 +1,10 @@
+Wed Nov 22 19:45:21 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.cc (url_test_show): prefer configurable browser launchers
+	over non-configurable browser launchers.
+
+	* birnetcdefs.h: provide EXTERN_C and BIRNET_MAY_ALIAS.
+
 Tue Nov 21 22:04:15 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.cc: reworked browser launching logic to work around
