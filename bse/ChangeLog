@@ -1,3 +1,14 @@
+Wed Nov 22 19:52:09 2006  Tim Janik  <timj@gtk.org>
+
+	* bseladspa.cc: ported bseladspa.c to C++. use BIRNET_MAY_ALIAS to
+	work around strict aliasing warnings. load LADSPA modules with local
+	symbol bindings. 
+
+	* bseladspa.h: fixed structure layout for C++.
+
+	* bsetype.h: use EXTERN_C in code generating macros, to account for
+	macro usage in C++.
+
 Mon Nov 20 23:39:51 2006  Tim Janik  <timj@gtk.org>
 
 	* bsemain.cc: ported bsemain.c to C++, use C++ Msg API.

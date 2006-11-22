@@ -94,18 +94,18 @@ ladspa_plugin_use (GTypePlugin *gplugin)
   g_object_ref (self);
   if (!self->use_count)
     {
-      LADSPA_Descriptor_Function ldf = NULL;
+      BIRNET_MAY_ALIAS LADSPA_Descriptor_Function ldf = NULL;
       const gchar *error = NULL;
       self->use_count++;
 
       DEBUG ("reloading-plugin \"%s\"", self->fname);
 
-      self->gmodule = g_module_open (self->fname, 0); /* reopen for use non-lazy */
+      self->gmodule = g_module_open (self->fname, G_MODULE_BIND_LOCAL); /* reopen non-lazy for actual use */
       if (!self->gmodule)
 	error = g_module_error ();
       if (!error)
 	{
-	  if (!g_module_symbol (self->gmodule, "ladspa_descriptor", (gpointer) &ldf) || !ldf)
+	  if (!g_module_symbol (self->gmodule, "ladspa_descriptor", (void**) &ldf) || !ldf)
 	    error = g_module_error ();
 	}
       if (!error)
@@ -247,7 +247,7 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
       if (!cld)
 	break;
       j = self->n_types++;
-      self->types = g_realloc (self->types, self->n_types * sizeof (self->types[0]));
+      self->types = (BseLadspaTypeInfo*) g_realloc (self->types, self->n_types * sizeof (self->types[0]));
       self->types[j].type = 0;
       self->types[j].info = bse_ladspa_info_assemble (self->fname, cld);
       if (!self->types[j].info->broken)
@@ -461,7 +461,7 @@ BseLadspaInfo*
 bse_ladspa_info_assemble (const gchar  *file_path,
 			  gconstpointer ladspa_descriptor)
 {
-  const LADSPA_Descriptor *cld = ladspa_descriptor;
+  const LADSPA_Descriptor *cld = static_cast<const LADSPA_Descriptor*> (ladspa_descriptor);
   BseLadspaInfo *bli = g_new0 (BseLadspaInfo, 1);
   gboolean seen_output = FALSE;
   PortCounter pcounter = { 0, 1, 1, 1, 1 };
@@ -554,7 +554,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
       goto bail_broken;
     }
   bli->descdata = cld;
-  bli->instantiate = (void*) cld->instantiate;
+  bli->instantiate = (void* (*) (void const*, gulong)) cld->instantiate;
   if (!cld->connect_port)
     {
       g_message ("LADSPA(%s): function connect_port() is NULL", bli->ident);
@@ -614,7 +614,7 @@ ladspa_plugin_find (const gchar *fname)
   GSList *slist;
   for (slist = ladspa_plugins; slist; slist = slist->next)
     {
-      BseLadspaPlugin *plugin = slist->data;
+      BseLadspaPlugin *plugin = (BseLadspaPlugin*) slist->data;
       if (strcmp (plugin->fname, fname) == 0)
 	return plugin;
     }
@@ -625,7 +625,6 @@ const gchar*
 bse_ladspa_plugin_check_load (const gchar *file_name)
 {
   BseLadspaPlugin *self;
-  LADSPA_Descriptor_Function ldf = NULL;
   const gchar *error;
   GModule *gmodule;
 
@@ -635,18 +634,19 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
     return "Plugin already registered";
 
   /* load module once */
-  gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
+  gmodule = g_module_open (file_name, GModuleFlags (G_MODULE_BIND_LOCAL | G_MODULE_BIND_LAZY));
   if (!gmodule)
     return g_module_error ();
   /* check whether this is a LADSPA module */
-  if (!g_module_symbol (gmodule, "ladspa_descriptor", (gpointer) &ldf) || !ldf)
+  BIRNET_MAY_ALIAS LADSPA_Descriptor_Function ldf = NULL;
+  if (!g_module_symbol (gmodule, "ladspa_descriptor", (void**) &ldf) || !ldf)
     {
       g_module_close (gmodule);
       return "Plugin without ladspa_descriptor";
     }
 
   /* create plugin and register types */
-  self = g_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
+  self = (BseLadspaPlugin*) g_object_new (BSE_TYPE_LADSPA_PLUGIN, NULL);
   self->fname = g_strdup (file_name);
   self->gmodule = gmodule;
   error = ladspa_plugin_init_type_ids (self, ldf);
@@ -672,17 +672,17 @@ bse_ladspa_plugin_path_list_files (void)
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
   const gchar *paths;
 
-  ring1 = sfi_file_crawler_list_files (BSE_PATH_LADSPA, "*.so", 0);
+  ring1 = sfi_file_crawler_list_files (BSE_PATH_LADSPA, "*.so", GFileTest (0));
   ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   paths = g_getenv ("LADSPA_PATH");
   if (paths && paths[0])
-    ring2 = sfi_file_crawler_list_files (paths, "*.so", 0);
+    ring2 = sfi_file_crawler_list_files (paths, "*.so", GFileTest (0));
   ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
 
   paths = BSE_GCONFIG (ladspa_path);
   if (paths && paths[0])
-    ring3 = sfi_file_crawler_list_files (paths, "*.so", 0);
+    ring3 = sfi_file_crawler_list_files (paths, "*.so", GFileTest (0));
   ring3 = sfi_ring_sort (ring3, (SfiCompareFunc) strcmp, NULL);
 
   ring2 = sfi_ring_concat (ring2, ring3);

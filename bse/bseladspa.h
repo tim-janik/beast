@@ -34,25 +34,22 @@ G_BEGIN_DECLS
 
 
 /* --- BseLadspaPlugin --- */
-typedef struct _BseLadspaPlugin      BseLadspaPlugin;
-typedef struct _BseLadspaPluginClass BseLadspaPluginClass;
 typedef struct _BseLadspaInfo        BseLadspaInfo;
-struct _BseLadspaPlugin
-{
-  GObject    parent_instance;
-  gchar     *fname;
-  GModule   *gmodule;
-  guint	     use_count;
-  guint      n_types;
-  struct {
-    GType          type;
-    BseLadspaInfo *info;
-  }	    *types;
-};
-struct _BseLadspaPluginClass
-{
+typedef struct {
+  GType          type;
+  BseLadspaInfo *info;
+} BseLadspaTypeInfo;
+typedef struct {
+  GObject            parent_instance;
+  gchar             *fname;
+  GModule           *gmodule;
+  guint	             use_count;
+  guint              n_types;
+  BseLadspaTypeInfo *types;
+} BseLadspaPlugin;
+typedef struct {
   GObjectClass parent_class;
-};
+} BseLadspaPluginClass;
 typedef struct {
   gchar        *ident;
   const gchar  *name;
