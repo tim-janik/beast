@@ -1,3 +1,9 @@
+Wed Nov 22 21:40:17 2006  Tim Janik  <timj@gtk.org>
+
+	* bseladspa.cc: made messages about ladspa compatibility debugging
+	messages. improved message clarity, supressed messages about plugin
+	registration. added missing 'extern "C"'.
+
 Wed Nov 22 19:52:09 2006  Tim Janik  <timj@gtk.org>
 
 	* bseladspa.cc: ported bseladspa.c to C++. use BIRNET_MAY_ALIAS to

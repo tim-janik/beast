@@ -19,12 +19,16 @@
 #include "bseladspa.h"
 #include "bseladspamodule.h"
 #include "bsecategories.h"
+#include <birnet/birnet.hh>
 #include <string.h>
 
 #include "ladspa.h"
 
-static SFI_MSG_TYPE_DEFINE (debug_ladspa, "ladspa", SFI_MSG_DEBUG, NULL);
-#define DEBUG(...)      sfi_debug (debug_ladspa, __VA_ARGS__)
+using namespace Birnet;
+
+static Msg::CustomType debug_ladspa ("ladspa", Msg::DEBUG);
+
+#define DEBUG_REGISTRATION      0
 
 #define	LADSPA_TYPE_NAME	"BseLadspaModule_"
 
@@ -98,7 +102,8 @@ ladspa_plugin_use (GTypePlugin *gplugin)
       const gchar *error = NULL;
       self->use_count++;
 
-      DEBUG ("reloading-plugin \"%s\"", self->fname);
+      if (DEBUG_REGISTRATION)
+        Msg::display (debug_ladspa, "%s: reloading plugin", self->fname);
 
       self->gmodule = g_module_open (self->fname, G_MODULE_BIND_LOCAL); /* reopen non-lazy for actual use */
       if (!self->gmodule)
@@ -140,7 +145,8 @@ ladspa_plugin_unload (BseLadspaPlugin *self)
         self->types[i].info = NULL;
       }
   
-  DEBUG ("unloaded-plugin \"%s\"", self->fname);
+  if (DEBUG_REGISTRATION)
+    Msg::display (debug_ladspa, "%s: plugin unloaded", self->fname);
 }
 
 static void
@@ -258,13 +264,13 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
 	  for (k = 0; name[k]; k++)
 	    if (!is_alnum (name[k]))
 	      name[k] = '_';
-	  DEBUG ("registering-plugin: \"%s\" (%s)", name, self->fname);
+          if (DEBUG_REGISTRATION)
+            Msg::display (debug_ladspa, "%s: registering plugin named: %s", self->fname, name);
 	  if (g_type_from_name (name) != 0)
 	    {
 	      bse_ladspa_info_free (self->types[j].info);
 	      self->types[j].info = NULL;
-	      g_message ("LADSPA(%s): plugin contains already registered type: %s",
-			 self->fname, name);
+              Msg::display (debug_ladspa, "%s: ignoring duplicate plugin type: %s",  self->fname, name);
 	      g_free (name);
 	      continue;
 	    }
@@ -318,7 +324,7 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
   guint i;
   if (!is_input && !is_output)
     {
-      g_message ("LADSPA(%s): port '%s' is neither input nor output", bli->ident, port_name);
+      Msg::display (debug_ladspa, "%s: ignoring port '%s' which is neither input nor output", bli->ident, port_name);
       return FALSE;
     }
   i = (*n_ports_p)++;
@@ -430,7 +436,7 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
   return TRUE;
 }
 
-gchar*
+extern "C" gchar*
 bse_ladspa_info_port_2str (BseLadspaPort *port)
 {
   gchar flags[64];
@@ -457,14 +463,14 @@ bse_ladspa_info_port_2str (BseLadspaPort *port)
 			  flags);
 }
 
-BseLadspaInfo*
+extern "C" BseLadspaInfo*
 bse_ladspa_info_assemble (const gchar  *file_path,
 			  gconstpointer ladspa_descriptor)
 {
   const LADSPA_Descriptor *cld = static_cast<const LADSPA_Descriptor*> (ladspa_descriptor);
   BseLadspaInfo *bli = g_new0 (BseLadspaInfo, 1);
-  gboolean seen_output = FALSE;
   PortCounter pcounter = { 0, 1, 1, 1, 1 };
+  bool seen_control_output = false, seen_audio_output = false;
 
   g_return_val_if_fail (cld != NULL, NULL);
 
@@ -474,17 +480,17 @@ bse_ladspa_info_assemble (const gchar  *file_path,
 
   bli->plugin_id = cld->UniqueID;
   if (bli->plugin_id < 1 || bli->plugin_id >= 0x1000000)
-    g_message ("LADSPA(\"%s\"): plugin with suspicious ID: %u", file_path, bli->plugin_id);
+    Msg::display (debug_ladspa, "%s: plugin with suspicious ID: %u", file_path, bli->plugin_id);
   if (!cld->Label)
     {
-      g_message ("LADSPA(\"%s\"): plugin with NULL label", file_path);
+      Msg::display (debug_ladspa, "%s: ignoring plugin with NULL label", file_path);
       goto bail_broken;
     }
   else
     bli->ident = g_strdup_printf ("%s#%s", file_path, cld->Label);
   bli->name = cld->Name ? cld->Name : bli->ident;
   if (!cld->Maker)
-    g_message ("LADSPA(%s): plugin with 'Maker' field of NULL", bli->ident);
+    Msg::display (debug_ladspa, "%s: plugin with 'Maker' field of NULL", bli->ident);
   bli->author = cld->Maker ? cld->Maker : "";
   if (!cld->Copyright || g_ascii_strcasecmp (cld->Copyright, "none") == 0)
     bli->copyright = "";
@@ -495,21 +501,21 @@ bse_ladspa_info_assemble (const gchar  *file_path,
 
   if (!cld->PortCount)
     {
-      g_message ("LADSPA(%s): number of plugin ports is 0", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without ports", bli->ident);
       goto bail_broken;
     }
   if (!cld->PortDescriptors)
     {
-      g_message ("LADSPA(%s): port descriptor array is NULL", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without port descriptors", bli->ident);
       goto bail_broken;
     }
   if (!cld->PortNames)
     {
-      g_message ("LADSPA(%s): port name array is NULL", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without port names", bli->ident);
       goto bail_broken;
     }
   if (!cld->PortRangeHints)
-    g_message ("LADSPA(%s): port range hint array is NULL", bli->ident);
+    Msg::display (debug_ladspa, "%s: port range hint array is NULL", bli->ident);
   for (pcounter.index = 0; pcounter.index < cld->PortCount; pcounter.index++)
     {
       const LADSPA_PortRangeHint *port_range = cld->PortRangeHints ? cld->PortRangeHints + pcounter.index : NULL;
@@ -517,7 +523,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
       guint port_flags = cld->PortDescriptors[pcounter.index];
       if (!port_name)
 	{
-	  g_message ("LADSPA(%s): port %u name is NULL", bli->ident, pcounter.index);
+	  Msg::display (debug_ladspa, "%s: ignoring plugin without port %u name", bli->ident, pcounter.index);
 	  goto bail_broken;
 	}
       switch (port_flags & (LADSPA_PORT_CONTROL | LADSPA_PORT_AUDIO))
@@ -526,52 +532,53 @@ bse_ladspa_info_assemble (const gchar  *file_path,
 	  if (!bse_ladspa_info_add_port (bli, port_name, port_flags, port_range,
 					 &bli->n_cports, &bli->cports, &pcounter))
 	    goto bail_broken;
+          seen_control_output |= bli->cports[bli->n_cports - 1].output;
 	  break;
 	case LADSPA_PORT_AUDIO:
 	  if (!bse_ladspa_info_add_port (bli, port_name, port_flags, port_range,
 					 &bli->n_aports, &bli->aports, &pcounter))
 	    goto bail_broken;
-	  seen_output |= bli->aports[bli->n_aports - 1].output;
+	  seen_audio_output |= bli->aports[bli->n_aports - 1].output;
 	  break;
 	case LADSPA_PORT_CONTROL | LADSPA_PORT_AUDIO:
-	  g_message ("LADSPA(%s): port %u type claims to be `control` and `audio`", bli->ident, pcounter.index);
+	  Msg::display (debug_ladspa, "%s: ignoriong plugin with port %u type which claims to be 'control' and 'audio'", bli->ident, pcounter.index);
 	  goto bail_broken;
 	default:
 	case 0:
-	  g_message ("LADSPA(%s): port %u type is neither `control` nor `audio`", bli->ident, pcounter.index);
+	  Msg::display (debug_ladspa, "%s: ignoring plugin with port %u type which is neither 'control' nor 'audio'", bli->ident, pcounter.index);
 	  goto bail_broken;
 	}
     }
-  if (!seen_output)
+  if (!seen_audio_output)
     {
-      g_message ("LADSPA(%s): plugin has no output channel", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without audio output channels", bli->ident);
       goto bail_broken;
     }
 
   if (!cld->instantiate)
     {
-      g_message ("LADSPA(%s): function instantiate() is NULL", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without instantiate() function", bli->ident);
       goto bail_broken;
     }
   bli->descdata = cld;
   bli->instantiate = (void* (*) (void const*, gulong)) cld->instantiate;
   if (!cld->connect_port)
     {
-      g_message ("LADSPA(%s): function connect_port() is NULL", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without connect_port() function", bli->ident);
       goto bail_broken;
     }
   bli->connect_port = cld->connect_port;
   if (!cld->run)
     {
-      g_message ("LADSPA(%s): function run() is NULL", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without run() function", bli->ident);
       goto bail_broken;
     }
   bli->run = cld->run;
   if (cld->run_adding && !cld->set_run_adding_gain)
-    g_message ("LADSPA(%s): function set_run_adding_gain() is NULL though run_adding() is provided", bli->ident);
+    Msg::display (debug_ladspa, "%s: plugin lacks set_run_adding_gain() function allthough run_adding() is provided", bli->ident);
   if (!cld->cleanup)
     {
-      g_message ("LADSPA(%s): function cleanup() is NULL", bli->ident);
+      Msg::display (debug_ladspa, "%s: ignoring plugin without cleanup() function", bli->ident);
       goto bail_broken;
     }
   bli->cleanup = cld->cleanup;
@@ -584,7 +591,7 @@ bse_ladspa_info_assemble (const gchar  *file_path,
   return bli;
 }
 
-void
+extern "C" void
 bse_ladspa_info_free (BseLadspaInfo *bli)
 {
   guint i;
@@ -621,7 +628,7 @@ ladspa_plugin_find (const gchar *fname)
   return NULL;
 }
 
-const gchar*
+extern "C" const gchar*
 bse_ladspa_plugin_check_load (const gchar *file_name)
 {
   BseLadspaPlugin *self;
@@ -666,7 +673,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
 
 #include "topconfig.h"
 
-SfiRing*
+extern "C" SfiRing*
 bse_ladspa_plugin_path_list_files (void)
 {
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
