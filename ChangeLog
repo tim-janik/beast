@@ -1,3 +1,7 @@
+Thu Nov 23 12:55:14 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Improved some help strings.
+
 Mon Nov 20 23:39:58 2006  Tim Janik  <timj@gtk.org>
 
 	* bstusermessage.h, bstusermessage.c: ported to new SFI Msg API.

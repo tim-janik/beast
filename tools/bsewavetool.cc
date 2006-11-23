@@ -1743,9 +1743,9 @@ public:
     if (bshort)
       return;
     g_print ("    Apply highpass filter to wave data\n");
-    g_print ("    --freq1 <f>          stopband end freqency [%f]\n", freq1);
+    g_print ("    --freq1 <f>          stopband end freqency in Hz [%f]\n", freq1);
     g_print ("    --freq1-level <db>   stopband attenuation in dB [%f]\n", freq1_level);
-    g_print ("    --freq2 <f>          passband start freqency [%f]\n", freq2);
+    g_print ("    --freq2 <f>          passband start freqency in Hz [%f]\n", freq2);
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1809,7 +1809,7 @@ public:
     g_print ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Upsample wave data to twice the sampling frequency.\n");
+    g_print ("    Resample wave data to twice the sampling frequency.\n");
     g_print ("    --precision <bits>      set resampler precision bits [%d]\n", precision_bits);
     g_print ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
     g_print ("                            1 is a special value for linear interpolation\n");
@@ -1870,7 +1870,7 @@ public:
     g_print ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Downsample wave data to half the sampling frequency.\n");
+    g_print ("    Resample wave data to half the sampling frequency.\n");
     g_print ("    --precision <bits>      set resampler precision bits [%d]\n", precision_bits);
     g_print ("                            supported precisions: 1, 8, 12, 16, 20, 24\n");
     g_print ("                            1 is a special value for linear interpolation\n");
