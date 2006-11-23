@@ -787,6 +787,9 @@ The MCD timeline says:
 - (3) bass instrument
 - (4) bass line
 - (5) lead instrument
+- DavOrgan bug: is blocksize dependant
+- DavOrgan bug: make testcase
+- review filtertest.cc
 * 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
 - (accuracy) tests for highpass and lowpass
 - complete GUS support:
