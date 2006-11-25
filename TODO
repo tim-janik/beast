@@ -1,7 +1,8 @@
 - fix array list
 - remove _birnet_init_messaging
 - adsr: + delay parameter
-  looping flag
+  looping flag with threshold
+  max sustain time
   gate out (phase selectable)
   time: 2 scales ; seconds milliseconds
 - freq->freq module feature: offer volt/per/octave output  
