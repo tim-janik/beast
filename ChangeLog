@@ -1,3 +1,11 @@
+Sat Nov 25 01:37:18 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/audio/Makefile.am: 
+	* tests/audio/adsrtest.bse: added a simple adsr test that checks ADSR
+	volume in comparison to a reference signal. used avg-spectrum, spectrum
+	and avg-energy to check the colume level, which seems to be catching
+	all relevant changes to ADSR property changes.
+
 Thu Nov 23 12:55:14 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Improved some help strings.

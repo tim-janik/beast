@@ -88,6 +88,15 @@ organsong-test:
 	$(BSEFCOMPARE) $(srcdir)/organsong.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
+# ADSR Test checks the mono channel envelope rendering
+FEATURE_TESTS += adsrtest
+EXTRA_DIST += adsrtest.bse adsrtest.ref
+adsrtest:
+	$(BSE2WAV) $(srcdir)/adsrtest.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/adsrtest.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
 EXTRA_DIST += partymonster.ref
