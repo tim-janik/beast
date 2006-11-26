@@ -1,7 +1,15 @@
+Sun Nov 26 16:32:00 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am: Added bsedatahandle-fir.cc.
+
+	* gsldatahandle.h:
+	* bsedatahandle-fir.cc: Moved highpass handle here from
+	../tools/bseloopfuncs.[hc].
+
 Sun Nov 26 15:51:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
-	* bsedatahandle-fir.cc: svn copy from ../bseloopfuncs.c: prepare for
-	moving highpass handle here.
+	* bsedatahandle-fir.cc: svn copy from ../tools/bseloopfuncs.c: prepare
+	for moving highpass handle here.
 
 Wed Nov 22 21:40:17 2006  Tim Janik  <timj@gtk.org>
 

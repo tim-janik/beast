@@ -118,6 +118,11 @@ GslDataHandle*	  bse_data_handle_new_upsample2	  (GslDataHandle  *src_handle,	  
 GslDataHandle*	  bse_data_handle_new_downsample2 (GslDataHandle  *src_handle,
 						   int             precision_bits); // implemented in bsedatahandle-resample.cc
 
+GslDataHandle* gsl_data_handle_new_fir_highpass   (GslDataHandle *src_handle, // implemented in bsedatahandle-fir.cc
+				                   gdouble        cutoff_freq,
+						   guint          order);
+
+
 /* --- xinfo handling --- */
 GslDataHandle* gsl_data_handle_new_add_xinfos     (GslDataHandle *src_handle,
                                                    gchar        **xinfos);
