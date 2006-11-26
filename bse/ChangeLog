@@ -1,3 +1,8 @@
+Sun Nov 26 15:51:39 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-fir.cc: svn copy from ../bseloopfuncs.c: prepare for
+	moving highpass handle here.
+
 Wed Nov 22 21:40:17 2006  Tim Janik  <timj@gtk.org>
 
 	* bseladspa.cc: made messages about ladspa compatibility debugging
