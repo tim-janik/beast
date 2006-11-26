@@ -49,3 +49,7 @@ SLOWTESTS             += resamplehandle
 PERFTESTS             += resamplehandle
 resamplehandle_SOURCES = resamplehandle.cc
 resamplehandle_LDADD   = $(progs_ldadd)
+
+TESTS                 += firhandle
+firhandle_SOURCES      = firhandle.cc
+firhandle_LDADD        = $(progs_ldadd)

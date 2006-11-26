@@ -64,7 +64,7 @@ fir_hp (const gfloat *src,
   transfer_func_freqs[3]  = PI;
   transfer_func_values[3] = 1.0; // 0 dB
 
-  gsl_filter_fir_approx (iorder, a, transfer_func_length, transfer_func_freqs, transfer_func_values, TRUE);
+  gsl_filter_fir_approx (iorder, a, transfer_func_length, transfer_func_freqs, transfer_func_values, false);
 
 #if 0 // debugging
   gfloat freq;
@@ -147,7 +147,7 @@ gsl_data_handle_new_fir_highpass (GslDataHandle *src_handle,
   
   /* apply fir filter to new memory buffer */
   gfloat *dest_values = g_new (gfloat, src_handle_n_values);
-  fir_hp (src_values, src_handle_n_values, dest_values, cutoff_freq / src_handle_mix_freq, order);
+  fir_hp (src_values, src_handle_n_values, dest_values, cutoff_freq * 2 * M_PI / src_handle_mix_freq, order);
   g_free (src_values);
   
   /* create a mem handle with filtered data */

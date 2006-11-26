@@ -1,3 +1,11 @@
+Sun Nov 26 19:08:01 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am:
+	* tests/firhandle.cc: Created test for the fir highpass handle.
+
+	* bsedatahandle-fir.cc: Fixed parameters passed to coefficient design
+	function. Filters have the right cutoff frequency now.
+
 Sun Nov 26 16:32:00 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* Makefile.am: Added bsedatahandle-fir.cc.
