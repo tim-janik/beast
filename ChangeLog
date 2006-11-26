@@ -1,4 +1,13 @@
-Sat Nov 25 01:37:18 2006  Tim Janik  <timj@gtk.org>
+Sun Nov 26 15:25:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bseloopfuncs.[hc]: Adapted the API of the highpass handle.
+	Fixed a bug in the convolution code.
+
+	* tools/bsewavetool.cc: Improved the user interface of the highpass,
+	so that the user just needs to specify one single frequency: the
+	cutoff frequency.
+
+Sat Nov 25 01:37:18 2006  Tim Janik  <timj@gtk.org> 
 
 	* tests/audio/Makefile.am: 
 	* tests/audio/adsrtest.bse: added a simple adsr test that checks ADSR

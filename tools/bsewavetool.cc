@@ -1728,13 +1728,14 @@ public:
 
 class Highpass : public Command {
 public:
-  gdouble freq1, freq1_level, freq2; 
+  gdouble cutoff_freq;
+  guint   order;
+
   Highpass (const char *command_name) :
     Command (command_name)
   {
-    freq1 = 50.0 / 22050.0 * PI;
-    freq1_level = -48;
-    freq2 = PI / 2.0;
+    cutoff_freq = -1;
+    order = 64;
   }
   void
   blurb (bool bshort)
@@ -1743,9 +1744,7 @@ public:
     if (bshort)
       return;
     g_print ("    Apply highpass filter to wave data\n");
-    g_print ("    --freq1 <f>          stopband end freqency in Hz [%f]\n", freq1);
-    g_print ("    --freq1-level <db>   stopband attenuation in dB [%f]\n", freq1_level);
-    g_print ("    --freq2 <f>          passband start freqency in Hz [%f]\n", freq2);
+    g_print ("    --cutoff-freq <f>    filter cutoff frequency in Hz\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1755,20 +1754,12 @@ public:
     for (guint i = 1; i < argc; i++)
       {
 	const gchar *str = NULL;
-	if (parse_str_option (argv, i, "--freq1-level", &str, argc))
+	if (parse_str_option (argv, i, "--cutoff-freq", &str, argc))
 	  {
-	    freq1_level = g_ascii_strtod (str, NULL);
-	  }
-	else if (parse_str_option (argv, i, "--freq1", &str, argc))
-	  {
-	    freq1 = g_ascii_strtod (str, NULL);
-	  }
-	else if (parse_str_option (argv, i, "--freq2", &str, argc))
-	  {
-	    freq2 = g_ascii_strtod (str, NULL);
+	    cutoff_freq = g_ascii_strtod (str, NULL);
 	  }
       }
-    return 0; // no missing args
+    return (cutoff_freq <= 0); // missing args
   }
   void
   exec (Wave *wave)
@@ -1779,17 +1770,24 @@ public:
       {
         WaveChunk *chunk = &*it;
         GslDataHandle *dhandle = chunk->dhandle;
-	sfi_info ("HIGHPASS: chunk %f: freq1=%f freq1_level=%f freq2=%f", gsl_data_handle_osc_freq (chunk->dhandle),
-									  freq1, freq1_level, freq2);
-
-        BseErrorType error = chunk->change_dhandle (gsl_loop_highpass_handle (dhandle, freq1, freq1_level, freq2), 0, 0);
-        if (error)
-          {
-            sfi_error ("chunk % 7.2f/%.0f: %s",
-                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
-                       bse_error_blurb (error));
-            exit (1);
-          }
+	sfi_info ("HIGHPASS: chunk %f: cutoff_freq=%f order=%d", gsl_data_handle_osc_freq (chunk->dhandle),
+								 cutoff_freq, order);
+	if (cutoff_freq >= gsl_data_handle_mix_freq (dhandle) / 2.0)
+	  {
+	    sfi_error ("chunk % 7.2f/%.0f: IGNORED - can't filter this chunk, cutoff frequency (%f) too high\n",
+	    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (dhandle), cutoff_freq);
+	  }
+	else
+	  {
+	    BseErrorType error = chunk->change_dhandle (gsl_data_handle_new_fir_highpass (dhandle, cutoff_freq, order), 0, 0);
+	    if (error)
+	      {
+		sfi_error ("chunk % 7.2f/%.0f: %s",
+			   gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+			   bse_error_blurb (error));
+		exit (1);
+	      }
+	  }
       }
   }
 } cmd_highpass ("highpass");

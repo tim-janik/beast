@@ -45,24 +45,21 @@ typedef struct {
 } GslDataLoopConfig;
 
 /*
- * 0db ----------           __________
- *                         /
- *                        /
- *                       /
- * f1_level (dB) - _____/
+ *           __________
+ *          /
+ *         /
+ *        /
+ *  _____/
+ *         |
+ *    cutoff_freq
  *
- *                      |   |
- *                      f1 f2
- *
- * @freq1: high pass start frequency [0:PI] (SR = 2*PI)
- * @freq2: high pass end frequency [0:PI] (SR = 2*PI)
- * @freq1_level_db: stopband attenuation
+ * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
+ * @order:       number of falter coefficients
  */
 
-GslDataHandle *gsl_loop_highpass_handle (GslDataHandle *src_handle,
-				         gdouble       freq1,
-				         gdouble       freq1_level_db,
-				         gdouble       freq2);
+GslDataHandle* gsl_data_handle_new_fir_highpass (GslDataHandle *src_handle,
+				                 gdouble        cutoff_freq,
+						 guint          order);
 
 /* mem-cached loop position and size finder. tests through all possible
  * loop sizes around center points determined by block/(analysis_points+1).

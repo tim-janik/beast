@@ -54,26 +54,23 @@ static void
 fir_hp (const gfloat *src,
 	const guint   n_samples,
 	gfloat       *dest,
-	gdouble       f1,
-	gdouble       f1_level,
-	gdouble       f2)
+	gdouble       cutoff_freq,
+	guint         iorder)
 {
-  const guint iorder = 64;
   double a[iorder + 1];
 
   //const guint transfer_func_length = 64;
   const guint transfer_func_length = 4;
   double transfer_func_freqs[transfer_func_length];
   double transfer_func_values[transfer_func_length];
-  float f1_level_factor = bse_db_to_factor (f1_level);
 
   transfer_func_freqs[0]  = 0;
-  transfer_func_values[0] = f1_level_factor;
+  transfer_func_values[0] = 0;
 
-  transfer_func_freqs[1]  = f1;
-  transfer_func_values[1] = f1_level_factor;
+  transfer_func_freqs[1]  = cutoff_freq;
+  transfer_func_values[1] = 0;
 
-  transfer_func_freqs[2]  = f2;
+  transfer_func_freqs[2]  = cutoff_freq;
   transfer_func_values[2] = 1.0; // 0 dB
 
   transfer_func_freqs[3]  = PI;
@@ -119,17 +116,16 @@ fir_hp (const gfloat *src,
 	  p -= iorder / 2;
 
 	  if (p >= 0 && p < n_samples)
-	    accu += src[p];
+	    accu += a[j] * src[p];
 	}
       dest[i] = accu;
     }
 }
 
 GslDataHandle*
-gsl_loop_highpass_handle (GslDataHandle *src_handle,
-			  gdouble        freq1,
-			  gdouble        freq1_level_db,
-			  gdouble        freq2)
+gsl_data_handle_new_fir_highpass (GslDataHandle *src_handle,
+				  gdouble        cutoff_freq,
+				  guint          order)
 {
   g_return_val_if_fail (src_handle != NULL, NULL);
   
@@ -151,7 +147,7 @@ gsl_loop_highpass_handle (GslDataHandle *src_handle,
   
   /* apply fir filter to new memory buffer */
   gfloat *dest_values = g_new (gfloat, src_handle_n_values);
-  fir_hp (src_values, src_handle_n_values, dest_values, freq1, freq1_level_db, freq2);
+  fir_hp (src_values, src_handle_n_values, dest_values, cutoff_freq / src_handle_mix_freq, order);
   g_free (src_values);
   
   /* create a mem handle with filtered data */
