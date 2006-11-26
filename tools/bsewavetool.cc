@@ -1352,6 +1352,7 @@ public:
   }
 } cmd_loop ("loop");
 
+#if 0
 class ThinOutCmd : public Command {
   GslLong max_total_size;
   gdouble max_chunk_error;
@@ -1725,6 +1726,7 @@ public:
       }
   }
 } cmd_thinout ("thinout");
+#endif
 
 class Highpass : public Command {
 public:

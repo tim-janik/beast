@@ -1,3 +1,10 @@
+Sun Nov 26 16:25:50 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bseloopfuncs.[hc]: Moved highpass handle to
+	bse/bsedatahandle-fir.cc.
+
+	* tools/bsewavetool.cc: Commented out experimental thinout command.
+
 Sun Nov 26 15:25:49 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bseloopfuncs.[hc]: Adapted the API of the highpass handle.

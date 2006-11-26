@@ -44,23 +44,6 @@ typedef struct {
   double        detail_scores[64];
 } GslDataLoopConfig;
 
-/*
- *           __________
- *          /
- *         /
- *        /
- *  _____/
- *         |
- *    cutoff_freq
- *
- * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
- * @order:       number of falter coefficients
- */
-
-GslDataHandle* gsl_data_handle_new_fir_highpass (GslDataHandle *src_handle,
-				                 gdouble        cutoff_freq,
-						 guint          order);
-
 /* mem-cached loop position and size finder. tests through all possible
  * loop sizes around center points determined by block/(analysis_points+1).
  * uses full-block comparisons (centering comparison area around the
