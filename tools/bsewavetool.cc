@@ -1781,7 +1781,7 @@ public:
 	  }
 	else
 	  {
-	    BseErrorType error = chunk->change_dhandle (gsl_data_handle_new_fir_highpass (dhandle, cutoff_freq, order), 0, 0);
+	    BseErrorType error = chunk->change_dhandle (bse_data_handle_new_fir_highpass (dhandle, cutoff_freq, order), 0, 0);
 	    if (error)
 	      {
 		sfi_error ("chunk % 7.2f/%.0f: %s",
