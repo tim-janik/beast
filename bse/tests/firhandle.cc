@@ -77,8 +77,8 @@ test_highpass_with_sine_sweep()
   GslDataHandle *ihandle_cos = gsl_data_handle_new_mem (1, 32, mix_freq, 440, sweep_cos.size(), &sweep_cos[0], NULL);
 
   const int order = 64;
-  GslDataHandle *fir_handle_sin = gsl_data_handle_new_fir_highpass (ihandle_sin, 9000.0, order);
-  GslDataHandle *fir_handle_cos = gsl_data_handle_new_fir_highpass (ihandle_cos, 9000.0, order);
+  GslDataHandle *fir_handle_sin = bse_data_handle_new_fir_highpass (ihandle_sin, 9000.0, order);
+  GslDataHandle *fir_handle_cos = bse_data_handle_new_fir_highpass (ihandle_cos, 9000.0, order);
 
   BseErrorType error;
   error = gsl_data_handle_open (fir_handle_sin);

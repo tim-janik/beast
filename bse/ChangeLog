@@ -1,3 +1,12 @@
+Mon Nov 27 22:32:24 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-fir.cc:
+	* gsldatahandle.h:
+	* tests/firhandle.cc: Move highpass handle from gsl to bse namespace.
+
+	* bsedatahandle-fir.cc: Implement a "real" data handle. It is not yet
+	performance optimized, though.
+
 Mon Nov 27 20:29:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsldatahandle.[hc]: Added new gsl_data_handle_get_state_length
