@@ -21,6 +21,7 @@
 #define _SFIDL_PARSER_H_
 
 #include <sfi/glib-extra.h>
+#include <birnet/birnet.hh>
 #include <vector>
 #include <map>
 #include <string>
@@ -107,7 +108,7 @@ struct Constant {
 
   std::string str;
   float f;
-  gint64 i;
+  Birnet::int64 i;
 };
 
 struct Param {

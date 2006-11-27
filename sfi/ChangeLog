@@ -1,3 +1,8 @@
+Mon Nov 27 20:46:02 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.hh: Use Birnet::int64 instead of gint64 avoids printf
+	compiler warnings on AMD64.
+
 Mon Nov 20 23:39:31 2006  Tim Janik  <timj@gtk.org>
 
 	* sfiwrapper.h, sfiwrapper.cc: wrapped C++ Msg API.
