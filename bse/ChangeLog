@@ -1,3 +1,8 @@
+Mon Nov 27 15:19:47 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/firhandle.cc: Check that the filter is zero phase in the
+	passband (== no delay).
+
 Sun Nov 26 19:08:01 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am:

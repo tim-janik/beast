@@ -31,6 +31,22 @@ using std::vector;
 using std::min;
 using std::max;
 
+double
+phase_diff (double p1,
+            double p2)
+{
+  double diff = p1 - p2;
+
+  // normalize to range [-pi..pi]
+  while (diff > M_PI)
+    diff -= 2 * M_PI;
+
+  while (diff < -M_PI)
+    diff += 2 * M_PI;
+
+  return diff;
+}
+
 void
 test_highpass_with_sine_sweep()
 {
@@ -77,6 +93,7 @@ test_highpass_with_sine_sweep()
   double trans_min_db = 1e19, trans_max_db = -1e19;
   double pass1_min_db = 1e19, pass1_max_db = -1e19;
   double pass2_min_db = 1e19, pass2_max_db = -1e19;
+  double phase_diff_max = 0;
   for (size_t i = ((order + 2) / 2); i < sweep_sin.size() - ((order + 2) / 2); i++)
     {
       double filtered_sin = gsl_data_handle_peek_value (fir_handle_sin, i, &peek_buffer_sin);
@@ -85,6 +102,8 @@ test_highpass_with_sine_sweep()
       double level = abs (filtered);
       double level_db = bse_db_from_factor (level, -200);
 
+      // check frequency response
+      // printf ("%f %.17g\n", sweep_freq[i], level_db);
       if (sweep_freq[i] < 7050)
 	{
 	  stop_min_db = min (stop_min_db, level_db);
@@ -105,18 +124,28 @@ test_highpass_with_sine_sweep()
 	  pass2_min_db = min (pass2_min_db, level_db);
 	  pass2_max_db = max (pass2_max_db, level_db);
 	}
-      // printf ("%f %f\n", sweep_freq[i], abs (filtered));
+      
+      // check phase response in passband
+      std::complex<double> orig (sweep_sin[i], sweep_cos[i]);
+      double abs_phase_diff = fabs (phase_diff (arg (orig), arg (filtered)));
+      if (sweep_freq[i] > 11000)
+	{
+	  phase_diff_max = max (phase_diff_max, abs_phase_diff);
+	  // printf ("%f %.17g\n", sweep_freq[i], abs_phase_diff);
+	}
     }
 #if 0
   printf ("stop = %f..%f dB\n", stop_min_db, stop_max_db);
   printf ("trans = %f..%f dB\n", trans_min_db, trans_max_db);
   printf ("pass1 = %f..%f dB\n", pass1_min_db, pass1_max_db);
   printf ("pass2 = %f..%f dB\n", pass2_min_db, pass2_max_db);
+  printf ("max phase diff = %f\n", phase_diff_max);
 #endif
   TASSERT (stop_max_db < -75);
   TASSERT (trans_min_db > -77 && trans_max_db < -2.8);
   TASSERT (pass1_min_db > -2.82 && pass1_max_db < -0.002);
   TASSERT (pass2_min_db > -0.004 && pass2_max_db < 0.002);
+  TASSERT (phase_diff_max < 0.0002);
   TDONE();
 }
 
