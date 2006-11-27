@@ -365,6 +365,7 @@ static GslDataHandleFuncs dh_vorbis_vtable = {
   dh_vorbis_read,
   dh_vorbis_close,
   NULL,
+  NULL,
   dh_vorbis_destroy,
 };
 

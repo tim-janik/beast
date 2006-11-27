@@ -82,9 +82,9 @@ loop_handle_reference_destroy (GslDataHandle *dhandle)
 
 static GslLong
 loop_handle_reference_read (GslDataHandle *dhandle,
-		  GslLong        voffset,
-		  GslLong        n_values,
-		  gfloat        *values)
+			    GslLong        voffset,
+			    GslLong        n_values,
+			    gfloat        *values)
 {
   LoopHandleReference *lhandle = (LoopHandleReference*) dhandle;
   
@@ -105,6 +105,14 @@ loop_handle_reference_read (GslDataHandle *dhandle,
     }
 }
 
+static int64
+loop_handle_reference_get_state_length (GslDataHandle *dhandle)
+{
+  LoopHandleReference *lhandle = (LoopHandleReference*) dhandle;
+  return gsl_data_handle_get_state_length (lhandle->src_handle);
+}
+
+
 static GslDataHandle*
 gsl_data_handle_new_looped_reference (GslDataHandle *src_handle,
 			              GslLong        loop_first,
@@ -115,6 +123,7 @@ gsl_data_handle_new_looped_reference (GslDataHandle *src_handle,
     loop_handle_reference_read,
     loop_handle_reference_close,
     NULL,
+    loop_handle_reference_get_state_length,
     loop_handle_reference_destroy,
   };
   LoopHandleReference *lhandle;

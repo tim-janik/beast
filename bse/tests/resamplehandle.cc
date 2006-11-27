@@ -371,6 +371,111 @@ test_delay_compensation (const char *run_type)
   TDONE();
 }
 
+static void
+test_state_length (const char *run_type)
+{
+  TSTART ("Resampler State Length Info (%s)", run_type);
+
+  //-----------------------------------------------------------------------------------
+  // usampling
+  //-----------------------------------------------------------------------------------
+  {
+    const guint period_size = 107;
+
+    /* fill input with 2 periods of a sine wave, so that while at the start and
+     * at the end clicks occur (because the unwindowed signal is assumed to 0 by
+     * the resamplehandle), in the middle 1 period can be found that is clickless
+     */
+    vector<float> input (period_size * 2);
+    for (size_t i = 0; i < input.size(); i++)
+      input[i] = sin (i * 2 * M_PI / period_size);
+
+    const guint precision_bits = 16;
+    GslDataHandle *ihandle = gsl_data_handle_new_mem (1, 32, 44100, 440, input.size(), &input[0], NULL);
+    GslDataHandle *rhandle = bse_data_handle_new_upsample2 (ihandle, precision_bits);
+    BseErrorType open_error = gsl_data_handle_open (rhandle);
+    TASSERT (open_error == 0);
+    TASSERT (gsl_data_handle_get_state_length (ihandle) == 0);
+
+    // determine how much of the end of the signal is "unusable" due to the resampler state:
+    const int64 state_length = gsl_data_handle_get_state_length (rhandle);
+
+    /* read resampled signal in the range unaffected by the resampler state (that
+     * is: not at the directly at the beginning, and not directly at the end)
+     */
+    vector<float> output (input.size() * 3);
+    for (size_t values_done = 0; values_done < output.size(); values_done++)
+      {
+	/* NOTE: this is an inlined implementation of a loop, which you normally would
+	 * implement with a loop handle, and it is inefficient because we read the
+	 * samples one-by-one -> usually: don't use such code, always read in blocks */
+	int64 read_pos = (values_done + state_length) % (period_size * 2) + (period_size * 2 - state_length);
+	TCHECK (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
+	int64 values_read = gsl_data_handle_read (rhandle, read_pos, 1, &output[values_done]);
+	TCHECK (values_read == 1);
+      }
+    double error = 0;
+    for (size_t i = 0; i < output.size(); i++)
+      {
+	double expected = sin (i * 2 * M_PI / (period_size * 2));
+	error = MAX (error, fabs (output[i] - expected));
+      }
+    double error_db = bse_db_from_factor (error, -200);
+    TASSERT (error_db < -97);
+  }
+
+  //-----------------------------------------------------------------------------------
+  // downsampling
+  //-----------------------------------------------------------------------------------
+
+  {
+    const guint period_size = 190;
+
+    /* fill input with 2 periods of a sine wave, so that while at the start and
+     * at the end clicks occur (because the unwindowed signal is assumed to 0 by
+     * the resamplehandle), in the middle 1 period can be found that is clickless
+     */
+    vector<float> input (period_size * 2);
+    for (size_t i = 0; i < input.size(); i++)
+      input[i] = sin (i * 2 * M_PI / period_size);
+
+    const guint precision_bits = 16;
+    GslDataHandle *ihandle = gsl_data_handle_new_mem (1, 32, 44100, 440, input.size(), &input[0], NULL);
+    GslDataHandle *rhandle = bse_data_handle_new_downsample2 (ihandle, precision_bits);
+    BseErrorType open_error = gsl_data_handle_open (rhandle);
+    TASSERT (open_error == 0);
+    TASSERT (gsl_data_handle_get_state_length (ihandle) == 0);
+
+    // determine how much of the end of the signal is "unusable" due to the resampler state:
+    const int64 state_length = gsl_data_handle_get_state_length (rhandle);
+
+    /* read resampled signal in the range unaffected by the resampler state (that
+     * is: not at the directly at the beginning, and not directly at the end)
+     */
+    vector<float> output (input.size() * 3 / 2);
+    for (size_t values_done = 0; values_done < output.size(); values_done++)
+      {
+	/* NOTE: this is an inlined implementation of a loop, which you normally would
+	 * implement with a loop handle, and it is inefficient because we read the
+	 * samples one-by-one -> usually: don't use such code, always read in blocks */
+	int64 read_pos = (values_done + state_length) % (period_size / 2) + (period_size / 2 - state_length);
+	TCHECK (read_pos >= state_length);   /* check that input signal was long enough to be for this test */
+	int64 values_read = gsl_data_handle_read (rhandle, read_pos, 1, &output[values_done]);
+	TCHECK (values_read == 1);
+      }
+    double error = 0;
+    for (size_t i = 0; i < output.size(); i++)
+      {
+	double expected = sin (i * 2 * M_PI / (period_size / 2));
+	error = MAX (error, fabs (output[i] - expected));
+      }
+    double error_db = bse_db_from_factor (error, -200);
+    TASSERT (error_db < -105);
+  }
+  TDONE();
+}
+
+
 int
 main (int   argc,
       char *argv[])
@@ -385,6 +490,7 @@ main (int   argc,
   
   test_c_api ("FPU");
   test_delay_compensation ("FPU");
+  test_state_length ("FPU");
   run_tests ("FPU");
 
   /* load plugins */
@@ -399,6 +505,7 @@ main (int   argc,
 
   test_c_api ("SSE");
   test_delay_compensation ("SSE");
+  test_state_length ("SSE");
   run_tests ("SSE");
 
   return 0;

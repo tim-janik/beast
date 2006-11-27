@@ -1,3 +1,19 @@
+Mon Nov 27 20:29:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsldatahandle.[hc]: Added new gsl_data_handle_get_state_length
+	function for datahandles, with a corresponding vtable entry. For
+	filtering datahandles (such as lowpass handles), which are usually
+	stateful, it returns the filter state length.
+
+	* gsldatahandle-vorbis.c:
+	* gsldatahandle-mad.c:
+	* bsedatahandle-resample.cc:
+	* tests/loophandle.c: Implement the get_state_length datahandle
+	method.
+
+	* tests/resamplehandle.cc: Test the resampler get_state_length
+	function.
+
 Mon Nov 27 15:19:47 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/firhandle.cc: Check that the filter is zero phase in the

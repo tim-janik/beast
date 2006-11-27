@@ -195,6 +195,41 @@ gsl_data_handle_get_source (GslDataHandle *dhandle)
   return src_handle;
 }
 
+/**
+ * @param data_handle	a DataHandle
+ * @return		the state length of the data handle
+ *
+ * Most data handles produce output samples from an input data handle.
+ * Some of them, like filtering and resampling datahandles, have an internal
+ * state which means that the value of one input sample affects not only one
+ * output sample, but some samples before and/or some samples after the
+ * "corresponding" output sample.
+ *
+ * Often the state is symmetric, so that the number of output samples affected
+ * before and after the "corresponding" output sample is the same. Then the
+ * function returns this number. If the state is asymmetric, this function
+ * shall return the maximum of the two numbers.
+ *
+ * If multiple data handles are nested (for instance when resampling a
+ * filtered signal), the function propagates the state length, so that the
+ * accumulated state length of all operations together is returned.
+ *
+ * Note: This function can only be used while the data handle is opened.
+ *
+ * This function is MT-safe and may be called from any thread.
+ */
+int64
+gsl_data_handle_get_state_length (GslDataHandle *dhandle)
+{
+  g_return_val_if_fail (dhandle != NULL, -1);
+  g_return_val_if_fail (dhandle->open_count > 0, -1);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  int64 state_length = dhandle->vtable->get_state_length ? dhandle->vtable->get_state_length (dhandle) : 0;
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  return state_length;
+}
+
 int64
 gsl_data_handle_length (GslDataHandle *dhandle)
 {
@@ -355,6 +390,7 @@ gsl_data_handle_new_mem (guint         n_channels,
     mem_handle_read,
     mem_handle_close,
     NULL,
+    NULL,
     mem_handle_destroy,
   };
   MemHandle *mhandle;
@@ -500,6 +536,14 @@ xinfo_get_source_handle (GslDataHandle *dhandle)
   return chandle->src_handle;
 }
 
+static int64
+xinfo_get_state_length (GslDataHandle *dhandle)
+{
+  XInfoHandle *chandle = (XInfoHandle*) dhandle;
+  return gsl_data_handle_get_state_length (chandle->src_handle);
+}
+
+
 static GslDataHandle*
 xinfo_data_handle_new (GslDataHandle *src_handle,
                        gboolean       clear_xinfos,
@@ -511,6 +555,7 @@ xinfo_data_handle_new (GslDataHandle *src_handle,
     xinfo_handle_read,
     xinfo_handle_close,
     xinfo_get_source_handle,
+    xinfo_get_state_length,
     xinfo_handle_destroy,
   };
   SfiRing *dest_added = NULL, *dest_remove = NULL;
@@ -686,6 +731,12 @@ chain_handle_close (GslDataHandle *dhandle)
   gsl_data_handle_close (chandle->src_handle);
 }
 
+static int64
+chain_handle_get_state_length (GslDataHandle *dhandle)
+{
+  ChainHandle *chandle = (ChainHandle*) dhandle;
+  return gsl_data_handle_get_state_length (chandle->src_handle);
+}
 
 /* --- reversed handle --- */
 static void
@@ -745,6 +796,7 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
     reverse_handle_read,
     chain_handle_close,
     NULL,
+    chain_handle_get_state_length,
     reverse_handle_destroy,
   };
   ReversedHandle *rhandle;
@@ -853,6 +905,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
     cut_handle_read,
     chain_handle_close,
     NULL,
+    chain_handle_get_state_length,
     cut_handle_destroy,
   };
   CutHandle *chandle;
@@ -1032,6 +1085,14 @@ insert_handle_read (GslDataHandle *dhandle,
   return orig_n_values - n_values;
 }
 
+static int64
+insert_handle_get_state_length (GslDataHandle *dhandle)
+{
+  InsertHandle *ihandle = (InsertHandle*) dhandle;
+  return gsl_data_handle_get_state_length (ihandle->src_handle);
+}
+
+
 GslDataHandle*
 gsl_data_handle_new_insert (GslDataHandle *src_handle,
 			    guint          paste_bit_depth,
@@ -1045,6 +1106,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
     insert_handle_read,
     insert_handle_close,
     NULL,
+    insert_handle_get_state_length,
     insert_handle_destroy,
   };
   InsertHandle *ihandle;
@@ -1161,6 +1223,7 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
     loop_handle_read,
     chain_handle_close,
     NULL,
+    chain_handle_get_state_length,
     loop_handle_destroy,
   };
   LoopHandle *lhandle;
@@ -1259,6 +1322,13 @@ dcache_handle_get_source_handle (GslDataHandle *dhandle)
   return chandle->dcache->dhandle;
 }
 
+static int64
+dcache_handle_get_state_length (GslDataHandle *dhandle)
+{
+  DCacheHandle *chandle = (DCacheHandle*) dhandle;
+  return gsl_data_handle_get_state_length (chandle->dcache->dhandle);
+}
+
 GslDataHandle*
 gsl_data_handle_new_dcached (GslDataCache *dcache)
 {
@@ -1267,6 +1337,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
     dcache_handle_read,
     dcache_handle_close,
     dcache_handle_get_source_handle,
+    dcache_handle_get_state_length,
     dcache_handle_destroy,
   };
   DCacheHandle *dhandle;
@@ -1494,6 +1565,7 @@ gsl_wave_handle_new (const gchar      *file_name,
     wave_handle_open,
     wave_handle_read,
     wave_handle_close,
+    NULL,
     NULL,
     wave_handle_destroy,
   };

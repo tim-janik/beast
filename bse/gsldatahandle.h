@@ -63,60 +63,62 @@ struct _GslDataHandleFuncs
 					 gfloat			*values);
   void		 (*close)		(GslDataHandle		*data_handle);
   GslDataHandle* (*get_source)          (GslDataHandle          *data_handle);
+  int64          (*get_state_length)	(GslDataHandle	        *data_handle);
   void           (*destroy)		(GslDataHandle		*data_handle);
 };
 
 
 
 /* --- standard functions --- */
-GslDataHandle*	  gsl_data_handle_ref		(GslDataHandle	  *dhandle);
-void		  gsl_data_handle_unref		(GslDataHandle	  *dhandle);
-BseErrorType	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
-void		  gsl_data_handle_close		(GslDataHandle	  *dhandle);
-int64		  gsl_data_handle_length	(GslDataHandle	  *data_handle);
-#define	          gsl_data_handle_n_values(      dh) \
-		                                 gsl_data_handle_length (dh)
-guint		  gsl_data_handle_n_channels	(GslDataHandle	  *data_handle);
-guint		  gsl_data_handle_bit_depth	(GslDataHandle	  *data_handle);
-gfloat		  gsl_data_handle_mix_freq	(GslDataHandle	  *data_handle);
-gfloat		  gsl_data_handle_osc_freq	(GslDataHandle	  *data_handle);
-const gchar*	  gsl_data_handle_name		(GslDataHandle	  *data_handle);
-int64		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
-						 int64		   value_offset,
-						 int64		   n_values,
-						 gfloat		  *values);
-GslDataHandle*    gsl_data_handle_get_source    (GslDataHandle    *dhandle);
-GslDataHandle*	  gsl_data_handle_new_cut	(GslDataHandle	  *src_handle,
-						 int64		   cut_offset,
-						 int64		   n_cut_values);
-GslDataHandle*	  gsl_data_handle_new_crop	(GslDataHandle	  *src_handle,
-						 int64  	   n_head_cut,
-						 int64		   n_tail_cut);
-GslDataHandle*	  gsl_data_handle_new_reverse	(GslDataHandle	  *src_handle);
-GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
-						 guint             pasted_bit_depth,
-						 int64		   insertion_offset,
-						 int64		   n_paste_values,
-						 const gfloat	  *paste_values,
-						 void            (*free) (gpointer values));
-GslDataHandle*	  gsl_data_handle_new_mem	(guint		   n_channels,
-						 guint             bit_depth,
-                                                 gfloat            mix_freq,
-                                                 gfloat            osc_freq,
-						 int64		   n_values,
-						 const gfloat	  *values,
-						 void            (*free) (gpointer values));
-GslDataHandle*	  gsl_data_handle_new_dcached	(GslDataCache	  *dcache);
+GslDataHandle*	  gsl_data_handle_ref		    (GslDataHandle	  *dhandle);
+void		  gsl_data_handle_unref		    (GslDataHandle	  *dhandle);
+BseErrorType	  gsl_data_handle_open		    (GslDataHandle	  *dhandle);
+void		  gsl_data_handle_close		    (GslDataHandle	  *dhandle);
+int64		  gsl_data_handle_length	    (GslDataHandle	  *data_handle);
+#define	          gsl_data_handle_n_values(	     dh) \
+						     gsl_data_handle_length (dh)
+guint		  gsl_data_handle_n_channels	    (GslDataHandle	  *data_handle);
+guint		  gsl_data_handle_bit_depth	    (GslDataHandle	  *data_handle);
+gfloat		  gsl_data_handle_mix_freq	    (GslDataHandle	  *data_handle);
+gfloat		  gsl_data_handle_osc_freq	    (GslDataHandle	  *data_handle);
+const gchar*	  gsl_data_handle_name		    (GslDataHandle	  *data_handle);
+int64		  gsl_data_handle_read		    (GslDataHandle	  *data_handle,
+						     int64		   value_offset,
+						     int64		   n_values,
+						     gfloat		  *values);
+int64		  gsl_data_handle_get_state_length  (GslDataHandle    *dhandle);
+GslDataHandle*    gsl_data_handle_get_source	    (GslDataHandle    *dhandle);
+GslDataHandle*	  gsl_data_handle_new_cut	    (GslDataHandle	  *src_handle,
+						     int64		   cut_offset,
+						     int64		   n_cut_values);
+GslDataHandle*	  gsl_data_handle_new_crop	    (GslDataHandle	  *src_handle,
+						     int64  	   n_head_cut,
+						     int64		   n_tail_cut);
+GslDataHandle*	  gsl_data_handle_new_reverse	    (GslDataHandle	  *src_handle);
+GslDataHandle*	  gsl_data_handle_new_insert	    (GslDataHandle	  *src_handle,
+						     guint             pasted_bit_depth,
+						     int64		   insertion_offset,
+						     int64		   n_paste_values,
+						     const gfloat	  *paste_values,
+						     void            (*free) (gpointer values));
+GslDataHandle*	  gsl_data_handle_new_mem	    (guint		   n_channels,
+						     guint             bit_depth,
+						     gfloat            mix_freq,
+						     gfloat            osc_freq,
+						     int64		   n_values,
+						     const gfloat	  *values,
+						     void            (*free) (gpointer values));
+GslDataHandle*	  gsl_data_handle_new_dcached	    (GslDataCache	  *dcache);
 /* cheap and inefficient, testpurpose only */
-GslDataHandle*	  gsl_data_handle_new_looped	(GslDataHandle	  *src_handle,
-						 int64		   loop_first,
-						 int64		   loop_last);
+GslDataHandle*	  gsl_data_handle_new_looped	    (GslDataHandle	  *src_handle,
+						     int64		   loop_first,
+						     int64		   loop_last);
 
 /* --- factor 2 resampling datahandles --- */
-GslDataHandle*	  bse_data_handle_new_upsample2	  (GslDataHandle  *src_handle,	    // implemented in bsedatahandle-resample.cc
-						   int             precision_bits);
-GslDataHandle*	  bse_data_handle_new_downsample2 (GslDataHandle  *src_handle,
-						   int             precision_bits); // implemented in bsedatahandle-resample.cc
+GslDataHandle*	  bse_data_handle_new_upsample2	    (GslDataHandle  *src_handle,	// implemented in bsedatahandle-resample.cc
+						     int             precision_bits);
+GslDataHandle*	  bse_data_handle_new_downsample2   (GslDataHandle  *src_handle,
+						     int             precision_bits);	// implemented in bsedatahandle-resample.cc
 
 GslDataHandle* gsl_data_handle_new_fir_highpass   (GslDataHandle *src_handle, // implemented in bsedatahandle-fir.cc
 				                   gdouble        cutoff_freq,
@@ -124,11 +126,11 @@ GslDataHandle* gsl_data_handle_new_fir_highpass   (GslDataHandle *src_handle, //
 
 
 /* --- xinfo handling --- */
-GslDataHandle* gsl_data_handle_new_add_xinfos     (GslDataHandle *src_handle,
-                                                   gchar        **xinfos);
-GslDataHandle* gsl_data_handle_new_remove_xinfos  (GslDataHandle *src_handle,
-                                                   gchar        **xinfos);
-GslDataHandle* gsl_data_handle_new_clear_xinfos   (GslDataHandle *src_handle);
+GslDataHandle* gsl_data_handle_new_add_xinfos	    (GslDataHandle *src_handle,
+						     gchar        **xinfos);
+GslDataHandle* gsl_data_handle_new_remove_xinfos    (GslDataHandle *src_handle,
+						     gchar        **xinfos);
+GslDataHandle* gsl_data_handle_new_clear_xinfos	    (GslDataHandle *src_handle);
 
 
 /* --- wave specific functions --- */

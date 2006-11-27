@@ -673,6 +673,7 @@ static GslDataHandleFuncs dh_mad_vtable = {
   dh_mad_read,
   dh_mad_close,
   NULL,
+  NULL,
   dh_mad_destroy,
 };
 

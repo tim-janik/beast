@@ -137,7 +137,7 @@ protected:
   }
 
   /* implemented by upsampling and downsampling datahandle */
-  virtual BseResampler2Mode mode	() = 0;
+  virtual BseResampler2Mode mode	() const = 0;
   virtual int64		    read_frame  (int64 frame) = 0;
 
 public:
@@ -238,7 +238,28 @@ public:
 
     return n_values;
   }
+  int64
+  get_state_length() const
+  {
+    int64 source_state_length = gsl_data_handle_get_state_length (m_src_handle);
+    // m_src_handle must be opened and have valid state size
+    g_return_val_if_fail (source_state_length >= 0, 0);  
 
+    if (mode() == BSE_RESAMPLER2_MODE_UPSAMPLE)
+      source_state_length *= 2;
+    else
+      source_state_length = (source_state_length + 1) / 2;
+
+    // we must be opened => n_channels > 0, 1 Resampler per Channel
+    g_return_val_if_fail (!m_resamplers.empty(), 0);
+
+    /* For fractional delays, a delay of 10.5 for instance means that input[0]
+     * affects samples 10 and 11, and thus the state length we assume for
+     * that case is 11.
+     */
+    int64 per_channel_state = ceil (m_resamplers[0]->delay());
+    return source_state_length + per_channel_state * m_dhandle.setup.n_channels;
+  }
   static GslDataHandle*
   dh_create (DataHandleResample2 *cxx_dh)
   {
@@ -248,8 +269,10 @@ public:
       dh_read,
       dh_close,
       NULL,
+      dh_get_state_length,
       dh_destroy,
     };
+
     if (cxx_dh->m_init_ok)
       {
 	cxx_dh->m_dhandle.vtable = &dh_vtable;
@@ -262,7 +285,6 @@ public:
 	return NULL;
       }
   }
-
 private:
 /* for the "C" API (vtable) */
   static DataHandleResample2*
@@ -294,6 +316,11 @@ private:
   {
     return dh_cast (dhandle)->read (voffset, n_values, values);
   }
+  static int64
+  dh_get_state_length (GslDataHandle *dhandle)
+  {
+    return dh_cast (dhandle)->get_state_length();
+  }
 };
 
 class DataHandleUpsample2 : public DataHandleResample2
@@ -307,7 +334,7 @@ public:
       m_dhandle.name = g_strconcat (m_src_handle->name, "// #upsample2 /", NULL);
   }
   BseResampler2Mode
-  mode()
+  mode() const
   {
     return BSE_RESAMPLER2_MODE_UPSAMPLE;
   }
@@ -382,7 +409,7 @@ public:
   {
   }
   BseResampler2Mode
-  mode()
+  mode() const
   {
     return BSE_RESAMPLER2_MODE_DOWNSAMPLE;
   }
