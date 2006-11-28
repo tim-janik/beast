@@ -28,6 +28,7 @@
 namespace Bse {
 
 using std::vector;
+using std::min;
 
 class DataHandleFir;
 
@@ -42,13 +43,17 @@ protected:
   CDataHandleFir	m_dhandle;
   GslDataHandle	       *m_src_handle;
   vector<double>        m_a;	      /* FIR coefficients: [0..order] */
+  vector<float>         m_input_data;
+  int64                 m_input_voffset;
+  int64                 m_block_size;
+  int64                 m_history;
   bool			m_init_ok;
 
 public:
   DataHandleFir (GslDataHandle *src_handle,
 		 guint          order) :
     m_src_handle (src_handle),
-    m_a (order),
+    m_a (order + 1),
     m_init_ok (false)
   {
     g_return_if_fail (src_handle != NULL);
@@ -83,6 +88,12 @@ public:
     *setup = m_src_handle->setup; /* copies setup.xinfos by pointer */
     setup->bit_depth = 32;	  /* possibly increased by filtering */
 
+    // since we need overlapping data for consecutive reads we buffer data locally
+    m_block_size = 1024 * m_src_handle->setup.n_channels;
+    m_history = (m_a.size() + 1) / 2;
+    m_input_data.resize (m_block_size + (2 * m_history) * m_src_handle->setup.n_channels);
+    m_input_voffset = -2 * m_block_size;
+
     design_filter_coefficients (gsl_data_handle_mix_freq (m_src_handle));
 
     return BSE_ERROR_NONE;
@@ -113,12 +124,50 @@ public:
 	  {
 	    GslLong p = i + j;
 	    p -= iorder / 2;
-
-	    if (p >= 0 && p < n_samples)
-	      accu += m_a[j] * src[p];
+	    accu += m_a[j] * src[p];
 	  }
 	dest[i] = accu;
       }
+  }
+
+  int64
+  seek (int64 voffset)
+  {
+    int64 i = 0;
+    g_return_val_if_fail (voffset % m_block_size == 0, -1);
+
+    if (m_input_voffset == voffset - m_block_size)
+      {
+	int64 overlap_values = 2 * m_history * m_dhandle.setup.n_channels;
+	copy (m_input_data.end() - overlap_values, m_input_data.end(), m_input_data.begin());
+	i += overlap_values;
+      }
+
+    while (i < static_cast<int64> (m_input_data.size()))
+      {
+	int64 offset = voffset + i - m_history;
+	if (offset >= 0 && offset < m_dhandle.setup.n_values)
+	  {
+	    int64 values_todo = min (static_cast<int64> (m_input_data.size()) - i, m_dhandle.setup.n_values - offset);
+	    int64 l = gsl_data_handle_read (m_src_handle, offset, values_todo, &m_input_data[i]);
+	    if (l < 0)
+	      {
+		// invalidate m_input_data
+		voffset = -2 * m_block_size;
+		return l;
+	      }
+	    else
+	      {
+		i += l;
+	      }
+	  }
+	else
+	  {
+	    m_input_data[i++] = 0;
+	  }
+      }
+    m_input_voffset = voffset;
+    return 0;
   }
 
   int64
@@ -126,23 +175,24 @@ public:
 	int64  n_values,
 	float *values)
   {
-    GslLong src_handle_n_values = gsl_data_handle_n_values (m_src_handle);
-    GslDataPeekBuffer pbuf = { +1, };
-    vector<float> src_data;
-    int64 history = m_a.size() / 2 + 1;
-    for (int64 i = -history; i < n_values + history; i++)
+    int64 ivoffset = voffset;
+    ivoffset = ivoffset - ivoffset % m_block_size;
+
+    if (ivoffset != m_input_voffset)
       {
-	int64 offset = voffset + i;
-	float v = 0.0;
-	if (offset >= 0 && offset < src_handle_n_values)
-	  v = gsl_data_handle_peek_value (m_src_handle, offset, &pbuf);
-	src_data.push_back (v);
-	/* FIXME: use gsl_data_handle_read() */
+	int64 l = seek (ivoffset);
+	if (l < 0)
+	  return l;
       }
-    // return gsl_data_handle_read (m_src_handle, voffset, n_values, values);
-    vector<float> dest_data (src_data.size());
-    fir_apply (&src_data[0], src_data.size(), &dest_data[0]);
-    std::copy (&dest_data[history], &dest_data[history + n_values], values);
+
+    g_assert (ivoffset == m_input_voffset);
+    vector<float> dest_data (m_input_data.size());
+    fir_apply (&m_input_data[m_history], m_block_size, &dest_data[m_history]);
+    
+    voffset -= ivoffset;
+    n_values = min (n_values, m_block_size - voffset);
+    voffset += m_history;
+    std::copy (&dest_data[voffset], &dest_data[voffset + n_values], values);
     return n_values;
   }
 
@@ -254,7 +304,7 @@ public:
     transfer_func_freqs[3]  = PI;
     transfer_func_values[3] = 1.0; // 0 dB
 
-    gsl_filter_fir_approx (m_a.size(), &m_a[0],
+    gsl_filter_fir_approx (m_a.size() - 1, &m_a[0],
                            transfer_func_length, transfer_func_freqs, transfer_func_values,
 			   false); // interpolate dB
   }
