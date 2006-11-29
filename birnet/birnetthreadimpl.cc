@@ -1499,12 +1499,12 @@ static void*
 
 
 static BirnetThreadTable fallback_thread_table = {
-  common_mutex_chain4init,
-  common_mutex_unchain,
-  common_rec_mutex_chain4init,
-  common_rec_mutex_unchain,
-  common_cond_chain4init,
-  common_cond_unchain,
+  NULL, /* mutex_chain4init */
+  NULL, /* mutex_unchain */
+  NULL, /* rec_mutex_chain4init */
+  NULL, /* rec_mutex_unchain */
+  NULL, /* cond_chain4init */
+  NULL, /* cond_unchain */
   (void (*) (volatile void*, volatile void*))                 g_atomic_pointer_set,
   (void*(*) (volatile void*))                                 g_atomic_pointer_get,
   (int  (*) (volatile void*, volatile void*, volatile void*)) g_atomic_pointer_compare_and_exchange,
@@ -1638,12 +1638,12 @@ pth_cond_wait_timed (BirnetCond  *cond,
 }
 
 static BirnetThreadTable pth_thread_table = {
-  common_mutex_chain4init,
-  common_mutex_unchain,
-  common_rec_mutex_chain4init,
-  common_rec_mutex_unchain,
-  common_cond_chain4init,
-  common_cond_unchain,
+  NULL, /* mutex_chain4init */
+  NULL, /* mutex_unchain */
+  NULL, /* rec_mutex_chain4init */
+  NULL, /* rec_mutex_unchain */
+  NULL, /* cond_chain4init */
+  NULL, /* cond_unchain */
   (void (*) (volatile void*, volatile void*))                 g_atomic_pointer_set,
   (void*(*) (volatile void*))                                 g_atomic_pointer_get,
   (int  (*) (volatile void*, volatile void*, volatile void*)) g_atomic_pointer_compare_and_exchange,
