@@ -50,7 +50,7 @@ phase_diff (double p1,
 void
 test_highpass_with_sine_sweep()
 {
-  TSTART ("Highpass Handle");
+  TSTART ("Highpass Handle (sweep)");
   vector<float> sweep_sin (50000);
   vector<float> sweep_cos (50000);
   vector<double> sweep_freq (50000);
@@ -72,7 +72,6 @@ test_highpass_with_sine_sweep()
 	phase -= 2.0 * M_PI;
     }
 
-  /* FIXME: handle n_channels != 1 */
   GslDataHandle *ihandle_sin = gsl_data_handle_new_mem (1, 32, mix_freq, 440, sweep_sin.size(), &sweep_sin[0], NULL);
   GslDataHandle *ihandle_cos = gsl_data_handle_new_mem (1, 32, mix_freq, 440, sweep_cos.size(), &sweep_cos[0], NULL);
 
@@ -149,11 +148,85 @@ test_highpass_with_sine_sweep()
   TDONE();
 }
 
+double
+raised_cosine_fade (int64 pos,
+		    int64 length,
+		    int64 fade_length)
+{
+  double fade_delta  = 1.0 / fade_length;
+  double fade_factor = fade_delta * min (pos, length - pos);
+  if (fade_factor >= 1.0)
+    return 1.0;
+  else
+    return (0.5 - cos (fade_factor * PI) * 0.5);
+}
+
+void
+test_highpass_multi_channel()
+{
+  TSTART ("Highpass Handle (multichannel)");
+  for (int n_channels = 1; n_channels <= 10; n_channels++)
+    {
+      const double    mix_freq = 48000;
+      const double    cutoff_freq = 7500;
+      const double    test_freqs[] = {
+	50, 100, 234.567, 557, 901, 1350, 1780, 2345, 3745, 4500,	     // below cutoff
+	11000, 12000, 13945, 14753, 15934, 16734, 17943, 18930, 19320, 20940 // above cutoff
+      };
+      vector<float>   input (2500 * n_channels);
+      vector<double>  expected (input.size());
+      vector<double>  freq (n_channels);
+      vector<double>  phase (n_channels);
+
+      for (int c = 0; c < n_channels; c++)
+	freq[c] = test_freqs [g_random_int_range (0, sizeof (test_freqs) / sizeof (test_freqs[0]))];
+
+      for (size_t i = 0; i < input.size(); i++)
+	{
+	  const int	c           = i % n_channels;
+	  const double  fade_factor = raised_cosine_fade (i / n_channels, input.size() / n_channels, 500);
+	  const double  invalue     = sin (phase[c]) * fade_factor;
+
+	  input[i] = invalue;
+	  expected[i] = (freq[c] > cutoff_freq) ? invalue : 0.0;
+
+	  phase[c] += freq[c] / mix_freq * 2.0 * M_PI;
+	  if (phase[c] > 2.0 * M_PI)
+	    phase[c] -= 2.0 * M_PI;
+	}
+
+      GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
+      const int order = 116;
+      GslDataHandle *fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
+
+      BseErrorType error;
+      error = gsl_data_handle_open (fir_handle);
+      TASSERT (error == 0);
+
+      for (int repeat = 1; repeat <= 2; repeat++)
+	{
+	  GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
+	  double worst_diff = 0.0;
+	  for (int64 i = 0; i < fir_handle->setup.n_values; i++)
+	    {
+	      double filtered = gsl_data_handle_peek_value (fir_handle, i, &peek_buffer);
+	      worst_diff = max (filtered - expected[i], worst_diff);
+	    }
+	  double worst_diff_db = bse_db_from_factor (worst_diff, -200);
+	  TPRINT ("n_channels = %d: linear(%dst read) read worst_diff = %f (%f dB)\n",
+	          n_channels, repeat, worst_diff, worst_diff_db);
+	  TASSERT (worst_diff_db < -90);
+	}
+    }
+  TDONE();
+}
+
 int
 main (int    argc,
       char **argv)
 {
   bse_init_test (&argc, &argv, NULL);
   test_highpass_with_sine_sweep();
+  test_highpass_multi_channel();
   return 0;
 }

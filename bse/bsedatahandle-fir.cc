@@ -49,6 +49,10 @@ protected:
   int64                 m_history;
   bool			m_init_ok;
 
+protected:
+  virtual void
+  design_filter_coefficients (double mix_freq) = 0;
+
 public:
   DataHandleFir (GslDataHandle *src_handle,
 		 guint          order) :
@@ -90,17 +94,14 @@ public:
 
     // since we need overlapping data for consecutive reads we buffer data locally
     m_block_size = 1024 * m_src_handle->setup.n_channels;
-    m_history = (m_a.size() + 1) / 2;
-    m_input_data.resize (m_block_size + (2 * m_history) * m_src_handle->setup.n_channels);
+    m_history = ((m_a.size() + 1) / 2) * m_src_handle->setup.n_channels;
+    m_input_data.resize (m_block_size + 2 * m_history);
     m_input_voffset = -2 * m_block_size;
 
     design_filter_coefficients (gsl_data_handle_mix_freq (m_src_handle));
 
     return BSE_ERROR_NONE;
   }
-
-  virtual void
-  design_filter_coefficients (double mix_freq) = 0;
 
   void
   close()
@@ -115,16 +116,17 @@ public:
 	     gfloat       *dest)
   {
     /* tiny FIR evaluation: not optimized for speed */
-    guint i, j;
+    const guint channels = m_dhandle.setup.n_channels;
     const guint iorder = m_a.size();
-    for (i = 0; i < n_samples; i++)
+    for (guint i = 0; i < n_samples; i++)
       {
 	gdouble accu = 0;
-	for (j = 0; j <= iorder; j++)
+	GslLong p = i;
+	p -= (iorder / 2) * channels; 
+	for (guint j = 0; j <= iorder; j++)
 	  {
-	    GslLong p = i + j;
-	    p -= iorder / 2;
 	    accu += m_a[j] * src[p];
+	    p += channels;
 	  }
 	dest[i] = accu;
       }
@@ -136,9 +138,11 @@ public:
     int64 i = 0;
     g_return_val_if_fail (voffset % m_block_size == 0, -1);
 
+    // if this is a consecutive read, the history can be built from the values
+    // we already read last time
     if (m_input_voffset == voffset - m_block_size)
       {
-	int64 overlap_values = 2 * m_history * m_dhandle.setup.n_channels;
+	int64 overlap_values = 2 * m_history;
 	copy (m_input_data.end() - overlap_values, m_input_data.end(), m_input_data.begin());
 	i += overlap_values;
       }
@@ -150,7 +154,7 @@ public:
 	  {
 	    int64 values_todo = min (static_cast<int64> (m_input_data.size()) - i, m_dhandle.setup.n_values - offset);
 	    int64 l = gsl_data_handle_read (m_src_handle, offset, values_todo, &m_input_data[i]);
-	    if (l < 0)
+	    if (l < 0)  // pass on errors
 	      {
 		// invalidate m_input_data
 		voffset = -2 * m_block_size;
@@ -176,12 +180,12 @@ public:
 	float *values)
   {
     int64 ivoffset = voffset;
-    ivoffset = ivoffset - ivoffset % m_block_size;
+    ivoffset -= ivoffset % m_block_size;
 
     if (ivoffset != m_input_voffset)
       {
 	int64 l = seek (ivoffset);
-	if (l < 0)
+	if (l < 0)   // pass on errors
 	  return l;
       }
 

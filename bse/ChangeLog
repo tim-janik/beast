@@ -1,3 +1,10 @@
+Sat Dec  2 22:03:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/firhandle.cc: Added a highpass test for multichannel signals.
+
+	* bsedatahandle-fir.cc: Fixed the code for n_channels != 1. Minor
+	code cleanups.
+
 Tue Nov 28 21:05:16 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsedatahandle-fir.cc: Some optimizations, more to come.
