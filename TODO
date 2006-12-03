@@ -779,7 +779,6 @@ Misc Buglets/Feature Requests:
  - implement generic FIR eval (based on SIMD resampler code)
 
 The MCD timeline says:
-+ resampling datahandles: resampler state size
 - low pass for wavetool
 - autolooper for wavetool
 - man page for wavetool
