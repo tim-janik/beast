@@ -649,8 +649,8 @@ main (int argc, char **argv)
   if (file1.feature_values.size() != file2.feature_values.size())
     {
       g_printerr ("%s: can't compare files\n", options.program_name.c_str());
-      g_printerr ("  * file \"%s\" contains %ld feature values\n", file1.filename.c_str(), file1.feature_values.size());
-      g_printerr ("  * file \"%s\" contains %ld feature values\n", file2.filename.c_str(), file2.feature_values.size());
+      g_printerr ("  * file \"%s\" contains %zd feature values\n", file1.filename.c_str(), file1.feature_values.size());
+      g_printerr ("  * file \"%s\" contains %zd feature values\n", file2.filename.c_str(), file2.feature_values.size());
       exit (1);
     }
 

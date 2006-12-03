@@ -1,4 +1,10 @@
-Sun  Dec 3 10:34:13 2006  Stefan Westerfeld  <stefan@space.twc.de>
+Sun Dec  3 13:52:52 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/bse/filtertest.cc:
+	* tools/bsefcompare.cc: Use "%zd" when formatting size_t values with
+	printf. This avoids compiler warnings.
+
+Sun Dec  3 10:34:13 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Added code to free feature data properly. This
 	change also fixes compiler warnings on gcc < 4.2, because a virtual
