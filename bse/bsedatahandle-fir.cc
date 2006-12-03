@@ -205,8 +205,7 @@ public:
     // m_src_handle must be opened and have valid state size
     g_return_val_if_fail (source_state_length >= 0, 0);  
 
-    int64 per_channel_state = 0;
-    return source_state_length + per_channel_state * m_dhandle.setup.n_channels;
+    return source_state_length + m_history;
   }
 
   static GslDataHandle*
@@ -312,6 +311,48 @@ public:
   }
 };
 
+class DataHandleFirLowpass : public DataHandleFir
+{
+protected:
+  gdouble m_cutoff_freq;
+
+public:
+  DataHandleFirLowpass (GslDataHandle *src_handle,
+			gdouble        cutoff_freq,
+			guint          order) :
+    DataHandleFir (src_handle, order),
+    m_cutoff_freq (cutoff_freq)
+  {
+    if (m_init_ok)
+      m_dhandle.name = g_strconcat (m_src_handle->name, "// #lowpass /", NULL);
+  }
+
+  virtual void
+  design_filter_coefficients (double mix_freq)
+  {
+    const guint transfer_func_length = 4;
+    double transfer_func_freqs[transfer_func_length];
+    double transfer_func_values[transfer_func_length];
+
+    transfer_func_freqs[0]  = 1; // 0 dB
+    transfer_func_values[0] = 1;
+
+    transfer_func_freqs[1]  = m_cutoff_freq / mix_freq * 2 * M_PI;
+    transfer_func_values[1] = 1; // 0 dB
+
+    transfer_func_freqs[2]  = m_cutoff_freq / mix_freq * 2 * M_PI;
+    transfer_func_values[2] = 0;
+
+    transfer_func_freqs[3]  = PI;
+    transfer_func_values[3] = 0;
+
+    gsl_filter_fir_approx (m_a.size() - 1, &m_a[0],
+                           transfer_func_length, transfer_func_freqs, transfer_func_values,
+			   false); // interpolate dB
+  }
+};
+
+
 }
 
 #if 0 // debugging
@@ -334,7 +375,7 @@ public:
 
 using namespace Bse;
 
-/*
+/**
  *           __________
  *          /
  *         /
@@ -352,5 +393,26 @@ bse_data_handle_new_fir_highpass (GslDataHandle *src_handle,
 				  guint          order)
 {
   DataHandleFir *cxx_dh = new DataHandleFirHighpass (src_handle, cutoff_freq, order);
+  return DataHandleFir::dh_create (cxx_dh);
+}
+
+/**
+ * ______                    
+ *       \    
+ *        \  
+ *         \
+ *          \__________
+ *        |
+ *   cutoff_freq
+ *
+ * @cutoff_freq: cutoff frequency in Hz in intervall [0..SR/2]
+ * @order:       number of filter coefficients
+ */
+extern "C" GslDataHandle*
+bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,
+				 gdouble        cutoff_freq,
+				 guint          order)
+{
+  DataHandleFir *cxx_dh = new DataHandleFirLowpass (src_handle, cutoff_freq, order);
   return DataHandleFir::dh_create (cxx_dh);
 }

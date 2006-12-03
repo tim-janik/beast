@@ -1,3 +1,11 @@
+Sun Dec  3 21:13:32 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-fir.cc: Made state size computation work correctly.
+	Added lowpass handle.
+
+	* tests/firhandle.cc: Extended tests to cover both, the highpass and
+	the lowpass handle.
+
 Sat Dec  2 23:55:44 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am:

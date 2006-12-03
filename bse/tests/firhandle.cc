@@ -30,6 +30,7 @@
 using std::vector;
 using std::min;
 using std::max;
+using Birnet::string_printf;
 
 static void
 read_through (GslDataHandle *handle)
@@ -65,10 +66,81 @@ phase_diff (double p1,
   return diff;
 }
 
-void
-test_highpass_with_sine_sweep()
+static double
+band_min (const vector<double>& scanned_freq,
+          const vector<double>& scanned_values,
+	  double                start_freq,
+	  double                end_freq)
 {
-  TSTART ("Highpass Handle (sweep)");
+  g_assert (scanned_freq.size() == scanned_values.size());
+  
+  bool	  init = false;
+  double  min_value = 1e19;
+  for (size_t i = 0; i < scanned_values.size(); i++)
+    {
+      if (scanned_freq[i] >= start_freq && scanned_freq[i] <= end_freq)
+	{
+	  if (init)
+	    min_value = min (scanned_values[i], min_value);
+	  else
+	    {
+	      min_value = scanned_values[i];
+	      init = true;
+	    }
+	}
+    }
+  g_assert (init);
+  return min_value;
+}
+
+static double
+band_max (const vector<double>& scanned_freq,
+          const vector<double>& scanned_values,
+	  double                start_freq,
+	  double                end_freq)
+{
+  g_assert (scanned_freq.size() == scanned_values.size());
+  
+  bool	  init = false;
+  double  max_value = -1e19;
+  for (size_t i = 0; i < scanned_values.size(); i++)
+    {
+      if (scanned_freq[i] >= start_freq && scanned_freq[i] <= end_freq)
+	{
+	  if (init)
+	    max_value = max (scanned_values[i], max_value);
+	  else
+	    {
+	      max_value = scanned_values[i];
+	      init = true;
+	    }
+	}
+    }
+  g_assert (init);
+  return max_value;
+}
+
+enum FirHandleType
+{
+  FIR_HIGHPASS,
+  FIR_LOWPASS
+};
+
+static const char*
+handle_name (FirHandleType type)
+{
+  switch (type)
+    {
+      case FIR_HIGHPASS:  return "Highpass";
+      case FIR_LOWPASS:	  return "Lowpass";
+      default:		  g_assert_not_reached();
+    }
+}
+
+static void
+test_with_sine_sweep (FirHandleType type)
+{
+  TSTART ("%s Handle (sweep)", handle_name (type));
   vector<float> sweep_sin (50000);
   vector<float> sweep_cos (50000);
   vector<double> sweep_freq (50000);
@@ -94,8 +166,19 @@ test_highpass_with_sine_sweep()
   GslDataHandle *ihandle_cos = gsl_data_handle_new_mem (1, 32, mix_freq, 440, sweep_cos.size(), &sweep_cos[0], NULL);
 
   const int order = 64;
-  GslDataHandle *fir_handle_sin = bse_data_handle_new_fir_highpass (ihandle_sin, 9000.0, order);
-  GslDataHandle *fir_handle_cos = bse_data_handle_new_fir_highpass (ihandle_cos, 9000.0, order);
+  GslDataHandle *fir_handle_sin = NULL;
+  GslDataHandle *fir_handle_cos = NULL;
+
+  if (type == FIR_HIGHPASS)
+    {
+      fir_handle_sin = bse_data_handle_new_fir_highpass (ihandle_sin, 9000.0, order);
+      fir_handle_cos = bse_data_handle_new_fir_highpass (ihandle_cos, 9000.0, order);
+    }
+  else if (type == FIR_LOWPASS)
+    {
+      fir_handle_sin = bse_data_handle_new_fir_lowpass (ihandle_sin, 6000.0, order);
+      fir_handle_cos = bse_data_handle_new_fir_lowpass (ihandle_cos, 6000.0, order);
+    }
 
   BseErrorType error;
   error = gsl_data_handle_open (fir_handle_sin);
@@ -106,63 +189,66 @@ test_highpass_with_sine_sweep()
   GslDataPeekBuffer peek_buffer_sin = { +1 /* incremental direction */, 0, };
   GslDataPeekBuffer peek_buffer_cos = { +1 /* incremental direction */, 0, };
 
-  double stop_min_db = 1e19, stop_max_db = -1e19;
-  double trans_min_db = 1e19, trans_max_db = -1e19;
-  double pass1_min_db = 1e19, pass1_max_db = -1e19;
-  double pass2_min_db = 1e19, pass2_max_db = -1e19;
-  double phase_diff_max = 0;
+  vector<double> scanned_freq, scanned_level_db, scanned_abs_phase_diff;
+
   for (size_t i = ((order + 2) / 2); i < sweep_sin.size() - ((order + 2) / 2); i++)
     {
       double filtered_sin = gsl_data_handle_peek_value (fir_handle_sin, i, &peek_buffer_sin);
       double filtered_cos = gsl_data_handle_peek_value (fir_handle_cos, i, &peek_buffer_cos);
       std::complex<double> filtered (filtered_sin, filtered_cos);
-      double level = abs (filtered);
-      double level_db = bse_db_from_factor (level, -200);
 
       // check frequency response
-      // printf ("%f %.17g\n", sweep_freq[i], level_db);
-      if (sweep_freq[i] < 7050)
-	{
-	  stop_min_db = min (stop_min_db, level_db);
-	  stop_max_db = max (stop_max_db, level_db);
-	}
-      if (sweep_freq[i] > 7050 && sweep_freq[i] < 9500)
-	{
-	  trans_min_db = min (trans_min_db, level_db);
-	  trans_max_db = max (trans_max_db, level_db);
-	}
-      if (sweep_freq[i] > 9500 && sweep_freq[i] < 11000)
-	{
-	  pass1_min_db = min (pass1_min_db, level_db);
-	  pass1_max_db = max (pass1_max_db, level_db);
-	}
-      if (sweep_freq[i] > 11000)
-	{
-	  pass2_min_db = min (pass2_min_db, level_db);
-	  pass2_max_db = max (pass2_max_db, level_db);
-	}
+      double level = abs (filtered);
+      scanned_freq.push_back (sweep_freq[i]);
+      scanned_level_db.push_back (bse_db_from_factor (level, -200));
+      // printf ("%f %.17g\n", sweep_freq[i], scanned_level_db.back());
       
       // check phase response in passband
       std::complex<double> orig (sweep_sin[i], sweep_cos[i]);
-      double abs_phase_diff = fabs (phase_diff (arg (orig), arg (filtered)));
-      if (sweep_freq[i] > 11000)
-	{
-	  phase_diff_max = max (phase_diff_max, abs_phase_diff);
-	  // printf ("%f %.17g\n", sweep_freq[i], abs_phase_diff);
-	}
+      scanned_abs_phase_diff.push_back (fabs (phase_diff (arg (orig), arg (filtered))));
+      // printf ("%f %.17g\n", sweep_freq[i], scanned_abs_phase_diff.back());
     }
-#if 0
-  printf ("stop = %f..%f dB\n", stop_min_db, stop_max_db);
-  printf ("trans = %f..%f dB\n", trans_min_db, trans_max_db);
-  printf ("pass1 = %f..%f dB\n", pass1_min_db, pass1_max_db);
-  printf ("pass2 = %f..%f dB\n", pass2_min_db, pass2_max_db);
-  printf ("max phase diff = %f\n", phase_diff_max);
-#endif
-  TASSERT (stop_max_db < -75);
-  TASSERT (trans_min_db > -77 && trans_max_db < -2.8);
-  TASSERT (pass1_min_db > -2.82 && pass1_max_db < -0.002);
-  TASSERT (pass2_min_db > -0.004 && pass2_max_db < 0.002);
-  TASSERT (phase_diff_max < 0.0002);
+
+  if (type == FIR_HIGHPASS)
+    {
+      // stop band
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,     0,  7050), <, -75);
+
+      // transition band
+      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  7050,  9500), >, -77);
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  7050,  9500), <, -2.8);
+
+      // passband (1)
+      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  9500, 11000), >, -2.82);
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  9500, 11000), <, -0.002);
+
+      // passband (2)
+      TASSERT_CMP (band_min (scanned_freq, scanned_level_db, 11000, 24000), >, -0.004);
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db, 11000, 24000), <, 0.002);
+
+      // zero phase in passband (2)
+      TASSERT_CMP (band_max (scanned_freq, scanned_abs_phase_diff, 11000, 24000), <, 0.0002);
+    }
+  else	// FIR_LOWPASS
+    {
+      // passband (2)
+      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,     0,  5500), >, -0.002);
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,     0,  5500), <, 0.002);
+
+      // passband (1)
+      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  5500,  7000), >, -1.9);
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  5500,  7000), <, -0.001);
+
+      // transition band
+      TASSERT_CMP (band_min (scanned_freq, scanned_level_db,  7000, 10000), >, -81);
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db,  7000, 10000), <, -1.8);
+
+      // stop band
+      TASSERT_CMP (band_max (scanned_freq, scanned_level_db, 10000, 24000), <, -75);
+
+      // zero phase in passband (2)
+      TASSERT_CMP (band_max (scanned_freq, scanned_abs_phase_diff, 0, 5500), <, 0.00002);
+    }
   TDONE();
 
   /* test speed */
@@ -185,12 +271,14 @@ test_highpass_with_sine_sweep()
             m = e;
         }
       samples_per_second = sweep_sin.size() / (m / dups);
-      treport_maximized ("Highpass O64 mono", samples_per_second, TUNIT (SAMPLE, SECOND));
-      treport_maximized ("CPU Highpass mono", samples_per_second / 44100.0, TUNIT_STREAM);
+      treport_maximized (string_printf ("%s O64 mono", handle_name (type)).c_str(),
+                         samples_per_second, TUNIT (SAMPLE, SECOND));
+      treport_maximized (string_printf ("CPU %s mono", handle_name (type)).c_str(),
+			 samples_per_second / 44100.0, TUNIT_STREAM);
     }
 }
 
-double
+static double
 raised_cosine_fade (int64 pos,
 		    int64 length,
 		    int64 fade_length)
@@ -203,10 +291,10 @@ raised_cosine_fade (int64 pos,
     return (0.5 - cos (fade_factor * PI) * 0.5);
 }
 
-void
-test_highpass_multi_channel()
+static void
+test_multi_channel (FirHandleType type)
 {
-  TSTART ("Highpass Handle (multichannel)");
+  TSTART ("%s Handle (multichannel)", handle_name (type));
   for (int n_channels = 1; n_channels <= 10; n_channels++)
     {
       const double    mix_freq = 48000;
@@ -230,7 +318,8 @@ test_highpass_multi_channel()
 	  const double  invalue     = sin (phase[c]) * fade_factor;
 
 	  input[i] = invalue;
-	  expected[i] = (freq[c] > cutoff_freq) ? invalue : 0.0;
+	  if ((freq[c] > cutoff_freq && type == FIR_HIGHPASS) || (freq[c] < cutoff_freq && type == FIR_LOWPASS))
+	    expected[i] = invalue;
 
 	  phase[c] += freq[c] / mix_freq * 2.0 * M_PI;
 	  if (phase[c] > 2.0 * M_PI)
@@ -239,7 +328,12 @@ test_highpass_multi_channel()
 
       GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
       const int order = 116;
-      GslDataHandle *fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
+      GslDataHandle *fir_handle = NULL;
+      
+      if (type == FIR_HIGHPASS)
+	fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
+      else
+	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
 
       BseErrorType error;
       error = gsl_data_handle_open (fir_handle);
@@ -268,7 +362,12 @@ main (int    argc,
       char **argv)
 {
   bse_init_test (&argc, &argv, NULL);
-  test_highpass_with_sine_sweep();
-  test_highpass_multi_channel();
+
+  test_with_sine_sweep (FIR_HIGHPASS);
+  test_multi_channel (FIR_HIGHPASS);
+
+  test_with_sine_sweep (FIR_LOWPASS);
+  test_multi_channel (FIR_LOWPASS);
+
   return 0;
 }
