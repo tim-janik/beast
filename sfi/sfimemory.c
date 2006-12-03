@@ -145,7 +145,7 @@ sfi_free_memblock (gsize    block_size,
   cmem -= DBG8_SIZE;
   debug_size = (gsize*) cmem;
   if (block_size != *debug_size)
-    g_printerr ("%s: in memory block at (%p): block_size=%d != *debug_size=%d\n", G_STRLOC, mem, block_size, *debug_size);
+    g_printerr ("%s: in memory block at (%p): block_size=%zd != *debug_size=%zd\n", G_STRLOC, mem, block_size, *debug_size);
   
   low_free (block_size + DBG8_SIZE, cmem);
 }

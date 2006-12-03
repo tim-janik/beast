@@ -199,7 +199,7 @@ CodeGeneratorClientCxx::printChoiceImpl (NamespaceHelper& nspace)
       printf ("static inline SfiChoiceValues\n");
       printf ("%s_choice_values()\n", name.c_str());
       printf ("{\n");
-      printf ("  static const SfiChoiceValue values[%u] = {\n", ci->contents.size());
+      printf ("  static const SfiChoiceValue values[%zu] = {\n", ci->contents.size());
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
         printf ("    { \"%s\", \"%s\" },\n", cUC_NAME (vi->name), vi->label.c_str());  // FIXME: i18n and blurb
       printf ("  };\n");

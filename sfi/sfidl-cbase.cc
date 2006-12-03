@@ -614,13 +614,13 @@ void CodeGeneratorCBase::printChoiceConverters()
 	ci->name = makeLowerName (ci->name, '-');
       sort (components.begin(), components.end(), ::choiceReverseSort);
 
-      printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
+      printf("static const SfiConstants %s_vals[%zd] = {\n",name.c_str(), ei->contents.size());
       for (ci = components.begin(); ci != components.end(); ci++)
 	{
 	  int value = ci->sequentialValue;
 	  minval = min (value, minval);
 	  maxval = max (value, maxval);
-	  printf("  { \"%s\", %d, %d },\n", ci->name.c_str(), ci->name.size(), value);
+	  printf("  { \"%s\", %zd, %d },\n", ci->name.c_str(), ci->name.size(), value);
 	}
       printf("};\n\n");
 

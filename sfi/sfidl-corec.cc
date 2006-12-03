@@ -321,7 +321,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         printf ("SfiChoiceValues\n");
         printf ("%s_get_values (void)\n", makeLowerName (ei->name).c_str());
         printf ("{\n");
-        printf ("  static SfiChoiceValue values[%u];\n", ei->contents.size());
+        printf ("  static SfiChoiceValue values[%zu];\n", ei->contents.size());
         printf ("  static const SfiChoiceValues choice_values = {\n");
         printf ("    G_N_ELEMENTS (values), values,\n");
         printf ("  };\n");
@@ -541,8 +541,8 @@ class CodeGeneratorCoreC : public CodeGenerator {
         
         string name = makeLowerName (ri->name);
         
-        printf ("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
-        printf ("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
+        printf ("static GParamSpec *%s_field[%zd];\n", name.c_str(), ri->contents.size());
+        printf ("SfiRecFields %s_fields = { %zd, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
         
         string mname = makeMixedName (ri->name);
         
@@ -564,7 +564,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         printInfoStrings (name + "_info_strings", ri->infos);
         printf ("static SfiBoxedRecordInfo %s_boxed_info = {\n", name.c_str());
         printf ("  \"%s\",\n", mname.c_str());
-        printf ("  { %d, %s_field },\n", ri->contents.size(), name.c_str());
+        printf ("  { %zd, %s_field },\n", ri->contents.size(), name.c_str());
         printf ("  %s_boxed2rec,\n", name.c_str());
         printf ("  %s_rec2boxed,\n", name.c_str());
         printf ("  %s_info_strings\n", name.c_str());

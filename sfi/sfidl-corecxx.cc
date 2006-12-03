@@ -506,7 +506,7 @@ public:
         printf ("static SfiChoiceValues\n");
         printf ("%s_choice_values()\n", name);
         printf ("{\n");
-        printf ("  static SfiChoiceValue values[%u];\n", ci->contents.size());
+        printf ("  static SfiChoiceValue values[%zu];\n", ci->contents.size());
         printf ("  static const SfiChoiceValues choice_values = {\n");
         printf ("    G_N_ELEMENTS (values), values,\n");
         printf ("  };\n");
@@ -566,7 +566,7 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         // const char *name = nspace.printable_form (ci->name);
-        printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\", %u,\n",
+        printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\", %zu,\n",
                 pure_TypeName (ci->name), make_PrefixedTypeName (ci->name), ci->contents.size());
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
           printf ("  *v++ = ::Bse::EnumValue (%s, \"%s\", %s );\n",
@@ -704,8 +704,8 @@ public:
         printf ("  static SfiRecFields rfields = { 0, NULL };\n");
         printf ("  if (!rfields.n_fields)\n");
         printf ("    {\n");
-        printf ("      static GParamSpec *fields[%u + 1];\n", ri->contents.size());
-        printf ("      rfields.n_fields = %u;\n", ri->contents.size());
+        printf ("      static GParamSpec *fields[%zu + 1];\n", ri->contents.size());
+        printf ("      rfields.n_fields = %zu;\n", ri->contents.size());
         guint j = 0;
         for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
           {
@@ -1105,7 +1105,7 @@ public:
               }
             printf (")\n");
             printf ("  {\n");
-            printf ("    GValue args[1 + %u];\n", si->params.size());
+            printf ("    GValue args[1 + %zu];\n", si->params.size());
             printf ("    args[0].g_type = 0, g_value_init (args + 0, %s);\n", make_TYPE_NAME (ci->name));
             printf ("    g_value_set_object (args + 0, gobject());\n");
             guint i = 1;
@@ -1166,7 +1166,7 @@ public:
           {
             const gchar *sig_name = canonify_name (si->name, '_');
             const gchar *sig_string = canonify_name (si->name);
-            printf ("  static_data.signal_%s =\n      klass->add_signal (\"%s\", (GSignalFlags) 0, %u",
+            printf ("  static_data.signal_%s =\n      klass->add_signal (\"%s\", (GSignalFlags) 0, %zu",
                     sig_name, sig_string, si->params.size());
             for (vector<Param>::const_iterator ai = si->params.begin(); ai != si->params.end(); ai++)
               printf (",\n                       %s", make_TYPE_NAME (ai->type));

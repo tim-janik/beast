@@ -1,3 +1,13 @@
+Sun Dec 3 13:47:31 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-clientcxx.cc:
+	* sfidl-corec.cc:
+	* sfidl-hostc.cc:
+	* sfidl-corecxx.cc:
+	* sfidl-cbase.cc:
+	* sfimemory.c: Use "%zd" instead of "%d" when printing size_t
+	variables. This avoids printf compiler warnings on AMD64.
+
 Mon Nov 27 20:46:02 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.hh: Use Birnet::int64 instead of gint64 avoids printf

@@ -57,8 +57,8 @@ void CodeGeneratorHostC::printInitFunction (const string& initFunction)
 
       string name = makeLowerName (ri->name);
 
-      printf("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
-      printf("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
+      printf("static GParamSpec *%s_field[%zd];\n", name.c_str(), ri->contents.size());
+      printf("SfiRecFields %s_fields = { %zd, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
       printf("\n");
     }
   for(vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
@@ -147,7 +147,7 @@ void CodeGeneratorHostC::printChoiceMethodImpl()
       printf ("SfiChoiceValues\n");
       printf ("%s_get_values (void)\n", makeLowerName (ei->name).c_str());
       printf ("{\n");
-      printf ("  static SfiChoiceValue values[%u];\n", ei->contents.size());
+      printf ("  static SfiChoiceValue values[%zu];\n", ei->contents.size());
       printf ("  static const SfiChoiceValues choice_values = {\n");
       printf ("    G_N_ELEMENTS (values), values,\n");
       printf ("  };\n");
