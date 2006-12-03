@@ -51,5 +51,6 @@ resamplehandle_SOURCES = resamplehandle.cc
 resamplehandle_LDADD   = $(progs_ldadd)
 
 TESTS                 += firhandle
+PERFTESTS             += firhandle
 firhandle_SOURCES      = firhandle.cc
 firhandle_LDADD        = $(progs_ldadd)

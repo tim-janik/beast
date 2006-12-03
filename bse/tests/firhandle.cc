@@ -31,7 +31,25 @@ using std::vector;
 using std::min;
 using std::max;
 
-double
+static void
+read_through (GslDataHandle *handle)
+{
+  int64 n_values = gsl_data_handle_n_values (handle);
+  int64 offset = 0;
+
+  while (offset < n_values)
+    {
+      // we don't use 1024 here, because we know that it is the FIR handle internal buffer size
+      gfloat values[700];
+      int64 values_read = gsl_data_handle_read (handle, offset, 700, values);
+      g_assert (values_read > 0);
+      offset += values_read;
+    }
+
+  g_assert (offset == n_values);
+}
+
+static double
 phase_diff (double p1,
             double p2)
 {
@@ -146,6 +164,30 @@ test_highpass_with_sine_sweep()
   TASSERT (pass2_min_db > -0.004 && pass2_max_db < 0.002);
   TASSERT (phase_diff_max < 0.0002);
   TDONE();
+
+  /* test speed */
+  double samples_per_second = 0;
+  if (sfi_init_settings().test_perf)
+    {
+      const guint RUNS = 10;
+      GTimer *timer = g_timer_new();
+      const guint dups = TEST_CALIBRATION (50.0, read_through (fir_handle_sin));
+      
+      double m = 9e300;
+      for (guint i = 0; i < RUNS; i++)
+        {
+          g_timer_start (timer);
+          for (guint j = 0; j < dups; j++)
+            read_through (fir_handle_sin);
+          g_timer_stop (timer);
+          double e = g_timer_elapsed (timer, NULL);
+          if (e < m)
+            m = e;
+        }
+      samples_per_second = sweep_sin.size() / (m / dups);
+      treport_maximized ("Highpass O64 mono", samples_per_second, TUNIT (SAMPLE, SECOND));
+      treport_maximized ("CPU Highpass mono", samples_per_second / 44100.0, TUNIT_STREAM);
+    }
 }
 
 double

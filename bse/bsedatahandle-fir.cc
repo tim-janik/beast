@@ -19,6 +19,7 @@
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
 #include "gslfilter.h"
+#include "bseblockutils.hh"
 #include <complex>
 #include <vector>
 #include <string.h>
@@ -111,24 +112,24 @@ public:
   }
 
   void
-  fir_apply (const gfloat *src,
-	     const guint   n_samples,
-	     gfloat       *dest)
+  fir_apply (guint        voffset,
+	     const guint  n_samples,
+	     gfloat      *dest) const
   {
-    /* tiny FIR evaluation: not optimized for speed */
     const guint channels = m_dhandle.setup.n_channels;
     const guint iorder = m_a.size();
+    voffset += m_history - (iorder / 2) * channels;
+
     for (guint i = 0; i < n_samples; i++)
       {
 	gdouble accu = 0;
-	GslLong p = i;
-	p -= (iorder / 2) * channels; 
-	for (guint j = 0; j <= iorder; j++)
+	vector<float>::const_iterator si = m_input_data.begin() + voffset + i;
+	for (vector<double>::const_iterator ai = m_a.begin(); ai != m_a.end(); ai++)
 	  {
-	    accu += m_a[j] * src[p];
-	    p += channels;
+	    accu += *ai * *si;
+	    si += channels;
 	  }
-	dest[i] = accu;
+	*dest++ = accu;
       }
   }
 
@@ -143,7 +144,7 @@ public:
     if (m_input_voffset == voffset - m_block_size)
       {
 	int64 overlap_values = 2 * m_history;
-	copy (m_input_data.end() - overlap_values, m_input_data.end(), m_input_data.begin());
+	Block::copy (overlap_values, &m_input_data[0], &m_input_data[m_input_data.size() - overlap_values]);
 	i += overlap_values;
       }
 
@@ -190,13 +191,10 @@ public:
       }
 
     g_assert (ivoffset == m_input_voffset);
-    vector<float> dest_data (m_input_data.size());
-    fir_apply (&m_input_data[m_history], m_block_size, &dest_data[m_history]);
     
     voffset -= ivoffset;
     n_values = min (n_values, m_block_size - voffset);
-    voffset += m_history;
-    std::copy (&dest_data[voffset], &dest_data[voffset + n_values], values);
+    fir_apply (voffset, n_values, values);
     return n_values;
   }
 

@@ -1,3 +1,11 @@
+Sat Dec  2 23:55:44 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am:
+	* tests/firhandle.cc: Added a test for the highpass performance.
+	
+	* bsedatahandle-fir.cc: Optimized performance of the highpass handle.
+	It is plain FPU code (not SSE), though.
+
 Sat Dec  2 22:03:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/firhandle.cc: Added a highpass test for multichannel signals.
