@@ -341,6 +341,10 @@ struct FeatureValue {
   FeatureValue (string name, Type type) : name (name), type (type)
   {
   }
+  virtual
+  ~FeatureValue()
+  {
+  }
   virtual GTokenType parse (GScanner *scanner) = 0;
   virtual string     printable_type() const = 0;
   /**
@@ -399,7 +403,9 @@ struct FeatureValueFile {
   vector<FeatureValue*> feature_values;
 
   GTokenType parseFeatureValue (GScanner *scanner);
-  void parse (const string& filename);
+  void       parse (const string& filename);
+
+  ~FeatureValueFile();
 };
 
 //------- FeatureValueNumber implementation --------
@@ -616,6 +622,12 @@ FeatureValueFile::parse (const string& filename)
       g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
       exit (1);
     }
+}
+
+FeatureValueFile::~FeatureValueFile()
+{
+  for (vector<FeatureValue *>::iterator fvi = feature_values.begin(); fvi != feature_values.end(); fvi++)
+    delete *fvi;
 }
 
 int

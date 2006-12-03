@@ -1,3 +1,9 @@
+Sun  Dec 3 10:34:13 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Added code to free feature data properly. This
+	change also fixes compiler warnings on gcc < 4.2, because a virtual
+	destructor was added thet was missing before.
+	
 Mon Nov 27 22:40:46 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Move highpass handle from gsl to bse
