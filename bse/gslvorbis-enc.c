@@ -471,3 +471,52 @@ gsl_vorbis_encoder_ogg_eos (GslVorbisEncoder *self)
   
   return self->eos && !self->dblocks;
 }
+
+gchar*
+gsl_vorbis_encoder_version (void)
+{
+  /* encode the first 3 header packets */
+  vorbis_info vinfo = { 0 };
+  vorbis_info_init (&vinfo);
+  int r = vorbis_encode_init_vbr (&vinfo, 1, 44100, 0.0);
+  if (r != 0)
+    {
+      vorbis_info_clear (&vinfo);
+      goto error_result;
+    }
+  vorbis_dsp_state vdsp = { 0 };
+  vorbis_analysis_init (&vdsp, &vinfo);
+  vorbis_comment vcomment = { 0, };
+  vorbis_comment_init (&vcomment);
+  vorbis_block vblock = { 0 };
+  vorbis_block_init (&vdsp, &vblock);
+  ogg_packet opacket1 = { 0 }, opacket2 = { 0 }, opacket3 = { 0 };
+  vorbis_analysis_headerout (&vdsp, &vcomment, &opacket1, &opacket2, &opacket3);
+  /* decode packets */
+  vorbis_info oinfo = { 0 };
+  vorbis_info_init (&oinfo);
+  vorbis_comment ocomment = { 0, };
+  vorbis_comment_init (&ocomment);
+  r = vorbis_synthesis_headerin (&oinfo, &ocomment, &opacket1); // vorbis setup packet
+  if (r == 0)
+    r = vorbis_synthesis_headerin (&oinfo, &ocomment, &opacket2); // vorbis comments
+  if (r == 0)
+    r = vorbis_synthesis_headerin (&oinfo, &ocomment, &opacket3); // vorbis codebooks
+  /* save vendor */
+  char *vendor = NULL;
+  if (r == 0)
+    vendor = g_strdup (ocomment.vendor);
+  /* cleanup decoder state */
+  vorbis_comment_clear (&ocomment);
+  vorbis_info_clear (&oinfo);
+  /* cleanup encoder state */
+  vorbis_block_clear (&vblock);
+  vorbis_comment_clear (&vcomment);
+  vorbis_dsp_clear (&vdsp);
+  vorbis_info_clear (&vinfo);
+  /* return result */
+  if (vendor)
+    return vendor; // e.g. "Xiphophorus libVorbis I 20000508" (first beta) or "Xiph.Org libVorbis I 20020717" (1.0)
+ error_result:
+  return g_strdup ("unknown");
+}

@@ -74,6 +74,9 @@ gboolean          gsl_vorbis_encoder_ogg_eos            (GslVorbisEncoder       
 /* cleanup */
 void              gsl_vorbis_encoder_destroy            (GslVorbisEncoder       *self);
 
+/* retrive vendor version string */
+gchar*            gsl_vorbis_encoder_version            (void);
+
 
 G_END_DECLS
 

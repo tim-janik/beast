@@ -1,3 +1,11 @@
+Mon Dec  4 02:42:56 2006  Tim Janik  <timj@gtk.org>
+
+	* gslvorbis-enc.h, gslvorbis-enc.c: added gsl_vorbis_encoder_version()
+	which has to go through some hoops to query the library version (encode
+	and decode a dummy file), but manages to return a version string.
+
+	* bseserver.proc: provide bse_server_get_vorbis_version().
+
 Sun Dec  3 19:13:17 2006  Tim Janik  <timj@gtk.org>
 
 	* bseexports.h: changed plugin mechanism to skip per-plugin names and
