@@ -18,15 +18,6 @@
 #ifndef __BSE_PLUGIN_H__
 #define __BSE_PLUGIN_H__
 
-/* default plugin name specification (if omitted in plugin) */
-#ifndef BSE_PLUGIN_NAME
-#  ifdef BSE_PLUGIN_FALLBACK
-#    define BSE_PLUGIN_NAME BSE_PLUGIN_FALLBACK
-#  else /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
-#    define BSE_PLUGIN_NAME __FILE__
-#  endif /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
-#endif /* !BSE_PLUGIN_NAME */
-
 #include	<bse/bse.h>	/* for bse_check_version() */
 #include	<bse/bseexports.h>
 
@@ -47,10 +38,12 @@ struct _BsePlugin
 {
   GObject	 parent_instance;
 
-  gchar		*name;
   gchar		*fname;
   gpointer	 gmodule;
+  guint64        missing_export_flags;
   guint		 use_count : 16;
+  guint          version_match : 1;
+  guint          force_clean : 1;
 
   BseExportNode *chain;
   guint		 n_types;
@@ -66,23 +59,22 @@ struct _BsePluginClass
 SfiRing*	bse_plugin_path_list_files	(gboolean        include_drivers,
                                                  gboolean        include_plugins);
 const gchar*	bse_plugin_check_load		(const gchar	*file_name);
-BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 
 
 /* --- registration macros --- */
 
 #ifdef __cplusplus
-#define BSE_DEFINE_EXPORTS(PluginName)                                                          \
+#define BSE_DEFINE_EXPORTS()                                                                    \
     static ::BseExportIdentity __bse_export_identity =                                          \
-                               BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __enode_chain_head);       \
+                               BSE_EXPORT_IDENTITY (__enode_chain_head);                        \
   extern "C" {                                                                                  \
     extern ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL;                               \
     ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity;             \
   }
 #else
-#define BSE_DEFINE_EXPORTS(PluginName)                                                          \
+#define BSE_DEFINE_EXPORTS()                                                                    \
   static BseExportIdentity __bse_export_identity =                                              \
-                             BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __enode_chain_head);         \
+                             BSE_EXPORT_IDENTITY (__enode_chain_head);                          \
   BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity
 #endif
 
@@ -109,7 +101,7 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 
 
 /* --- implementation details --- */
-void		         bse_plugin_init_builtins     (void);
+void		         bse_plugin_init_builtins       (void);
 extern BseExportIdentity bse_builtin_export_identity; /* sync with bsecxxplugin.hh */
 
 G_END_DECLS

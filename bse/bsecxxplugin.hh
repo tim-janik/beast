@@ -18,15 +18,6 @@
 #ifndef __BSE_CXX_PLUGIN_H__
 #define __BSE_CXX_PLUGIN_H__
 
-/* default plugin name specification (if omitted in plugin) */
-#ifndef BSE_PLUGIN_NAME
-#  ifdef BSE_PLUGIN_FALLBACK
-#    define BSE_PLUGIN_NAME BSE_PLUGIN_FALLBACK
-#  else /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
-#    define BSE_PLUGIN_NAME __FILE__
-#  endif /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
-#endif /* !BSE_PLUGIN_NAME */
-
 #include <bse/bsecxxmodule.hh>
 #include <bse/bseexports.h>
 #include <bse/bseparam.h>
@@ -44,18 +35,12 @@ const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
 /* -- export identity --- */
 /* provide plugin export identity, preceeding all type exports */
 #ifndef BSE_COMPILATION
-#define BSE_CXX_DEFINE_EXPORTS()                                                \
-  static ::BseExportNode __export_chain_head = { NULL, BSE_EXPORT_NODE_LINK, }; \
-  static ::BseExportIdentity __export_identity =                                \
-                    BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __export_chain_head); \
-  extern "C" {                                                                  \
-    extern ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL;               \
-    ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__export_identity; \
-  }
-#define BSE_CXX_EXPORT_IDENTITY    __export_identity
+#define BSE_CXX_DEFINE_EXPORTS()               \
+  static ::BseExportIdentity __staticbse_export_identity = BSE_EXPORT_IDENTITY (*(::BseExportNode*) 0);
+#define BSE_CXX_EXPORT_IDENTITY    &__staticbse_export_identity
 #else   /* BSE internal "Plugins" */
 #define BSE_CXX_DEFINE_EXPORTS()
-#define BSE_CXX_EXPORT_IDENTITY    bse_builtin_export_identity
+#define BSE_CXX_EXPORT_IDENTITY    &bse_builtin_export_identity
 extern "C" {
 extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h */
 };
@@ -95,7 +80,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
   extern ::Bse::ExportTypeKeeper bse_type_keeper__7##HookType;          \
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__7##HookType (bse_export_node<HookType>,       \
-                                       &BSE_CXX_EXPORT_IDENTITY);
+                                       BSE_CXX_EXPORT_IDENTITY);
 
 /* --- enum registration --- */
 /* enum registration is based on a static ExportTypeKeeper
@@ -137,7 +122,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 #define BSE_CXX_REGISTER_ENUM(EnumType)                                 \
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__3##EnumType (bse_export_node<EnumType>,       \
-                                       &BSE_CXX_EXPORT_IDENTITY);
+                                       BSE_CXX_EXPORT_IDENTITY);
 /* convenience creator to allow easy assignments of GEnumValue structs */
 inline const GEnumValue
 EnumValue (int         int_value,
@@ -187,7 +172,7 @@ EnumValue (int         int_value,
 #define BSE_CXX_REGISTER_RECORD(RecordType)                             \
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__1##RecordType (bse_export_node<RecordType>,   \
-                                         &BSE_CXX_EXPORT_IDENTITY);
+                                         BSE_CXX_EXPORT_IDENTITY);
 
 
 /* --- sequence registration --- */
@@ -223,7 +208,7 @@ EnumValue (int         int_value,
 #define BSE_CXX_REGISTER_SEQUENCE(SequenceType)                                 \
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__2##SequenceType (bse_export_node<SequenceType>,       \
-                                           &BSE_CXX_EXPORT_IDENTITY);
+                                           BSE_CXX_EXPORT_IDENTITY);
 
 
 /* --- procedure registration --- */
@@ -258,7 +243,7 @@ EnumValue (int         int_value,
   }                                                                             \
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__9##ProcType (bse_export_node<Procedure::ProcType>,    \
-                                   &BSE_CXX_EXPORT_IDENTITY);
+                                   BSE_CXX_EXPORT_IDENTITY);
 
 
 /* --- class registration --- */
@@ -303,7 +288,7 @@ EnumValue (int         int_value,
   }                                                                             \
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__0##Effect (bse_export_node<Effect>,                   \
-                                     &BSE_CXX_EXPORT_IDENTITY);
+                                     BSE_CXX_EXPORT_IDENTITY);
 /* implement static_data portions used by auto-generated classes */
 #define BSE_CXX_DEFINE_STATIC_DATA(ObjectType)                                  \
   ObjectType::StaticData ObjectType::static_data;
@@ -313,20 +298,25 @@ EnumValue (int         int_value,
 class ExportTypeKeeper
 {
   BseExportNode    *enode;
-  explicit          ExportTypeKeeper (const ExportTypeKeeper&);
-  ExportTypeKeeper& operator=        (const ExportTypeKeeper&);
+  BsePlugin        *plugin;
+  static BsePlugin* plugin_export_node (const ::BseExportIdentity *plugin_identity,
+                                        ::BseExportNode           *enode);
+  static void       plugin_cleanup     (BsePlugin                 *plugin,
+                                        ::BseExportNode           *enode);
+  BIRNET_PRIVATE_CLASS_COPY (ExportTypeKeeper);
 public:
-  explicit          ExportTypeKeeper (::BseExportNode*   (*export_node) (),
-                                      ::BseExportIdentity *export_identity)
+  ExportTypeKeeper (::BseExportNode* (*export_node) (),
+                    ::BseExportIdentity *export_identity)
   {
-    enode = export_node ();
-    enode->next = export_identity->export_chain;
-    export_identity->export_chain = enode;
+    enode = export_node();
+    plugin = plugin_export_node (export_identity, enode);
   }
-  const GType get_type()
+  ~ExportTypeKeeper()
   {
-    return enode->type;
+    if (plugin)
+      plugin_cleanup (plugin, enode);
   }
+  const GType get_type()        { return enode->type; }
 };
 
 } // Bse

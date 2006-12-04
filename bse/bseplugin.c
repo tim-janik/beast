@@ -50,7 +50,7 @@ static void	    type_plugin_iface_init	(GTypePluginClass *iface);
 /* --- variables --- */
 static GSList       *bse_plugins = NULL;
 static BseExportNode builtin_export_chain_head = { NULL, BSE_EXPORT_NODE_LINK, };
-BseExportIdentity    bse_builtin_export_identity = BSE_EXPORT_IDENTITY (NULL, builtin_export_chain_head);
+BseExportIdentity    bse_builtin_export_identity = BSE_EXPORT_IDENTITY (builtin_export_chain_head);
 
 
 /* --- functions --- */
@@ -93,13 +93,27 @@ static void
 bse_plugin_dispose (GObject *object)
 {
   BsePlugin *plugin = BSE_PLUGIN (object);
-  
-  g_warning ("%s: dispose should never happen for static plugins", G_STRFUNC);
-  
-  g_object_ref (object);
+
+  if (plugin->gmodule || plugin->use_count || plugin->n_types)
+    g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
   
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
+}
+
+static void
+bse_plugin_finalize (GObject *object)
+{
+  BsePlugin *plugin = BSE_PLUGIN (object);
+
+  if (plugin->gmodule || plugin->use_count || plugin->n_types)
+    g_warning ("%s: plugin partially initialized during destruciton", G_STRFUNC);
+  
+  /* chain parent class handler */
+  G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->finalize (object);
+
+  g_free (plugin->fname);
+  g_free (plugin->types);
 }
 
 static void
@@ -108,15 +122,18 @@ bse_plugin_class_init (BsePluginClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   
   gobject_class->dispose = bse_plugin_dispose;
+  gobject_class->finalize = bse_plugin_finalize;
 }
 
 static void
 bse_plugin_init (BsePlugin *plugin)
 {
-  plugin->name = NULL;
   plugin->fname = NULL;
   plugin->gmodule = NULL;
+  plugin->missing_export_flags = 0;
   plugin->use_count = 0;
+  plugin->version_match = 1;
+  plugin->force_clean = 0;
   plugin->n_types = 0;
   plugin->types = NULL;
 }
@@ -145,8 +162,7 @@ bse_plugin_init_builtins (void)
               BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
               g_object_ref (plugin);
               plugin->use_count = 1;
-              g_free (plugin->name);
-              plugin->name = g_strdup ("BSE-BUILTIN");
+              plugin->fname = g_strdup ("BSE-BUILTIN");
               plugin->chain = chain;
               bse_plugins = g_slist_prepend (bse_plugins, plugin);
               bse_plugin_init_types (plugin);
@@ -159,8 +175,7 @@ bse_plugin_init_builtins (void)
           BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
           g_object_ref (plugin);
           plugin->use_count = 1;
-          g_free (plugin->name);
-          plugin->name = g_strdup ("BSE-CXX-BUILTIN");
+          plugin->fname = g_strdup ("BSE-CXX-BUILTIN");
           plugin->chain = bse_builtin_export_identity.export_chain;
           bse_plugins = g_slist_prepend (bse_plugins, plugin);
           bse_plugin_init_types (plugin);
@@ -168,15 +183,79 @@ bse_plugin_init_builtins (void)
     }
 }
 
-static BseExportIdentity*
-lookup_export_identity (GModule *gmodule)
+static guint64
+runtime_export_config (void)
 {
-  BseExportIdentity **symbol_p = NULL;
-  if (g_module_symbol (gmodule, BSE_EXPORT_IDENTITY_STRING, (gpointer) &symbol_p))
+  SfiCPUInfo cinfo = sfi_cpu_info();
+  guint64 emask = 0;
+  if (cinfo.x86_mmx)
+    emask |= BSE_EXPORT_FLAG_MMX;
+  if (cinfo.x86_mmxext)
+    emask |= BSE_EXPORT_FLAG_MMXEXT;
+  if (cinfo.x86_3dnow)
+    emask |= BSE_EXPORT_FLAG_3DNOW;
+  if (cinfo.x86_3dnowext)
+    emask |= BSE_EXPORT_FLAG_3DNOWEXT;
+  if (cinfo.x86_sse && cinfo.x86_ssesys)
+    emask |= BSE_EXPORT_FLAG_SSE;
+  if (cinfo.x86_sse2 && cinfo.x86_ssesys)
+    emask |= BSE_EXPORT_FLAG_SSE2;
+  if (cinfo.x86_sse3 && cinfo.x86_ssesys)
+    emask |= BSE_EXPORT_FLAG_SSE3;
+  if (cinfo.x86_sse4 && cinfo.x86_ssesys)
+    emask |= BSE_EXPORT_FLAG_SSE4;
+  return emask;
+}
+
+static BsePlugin *startup_plugin = NULL;
+
+BsePlugin*
+bse_exports__add_node (const BseExportIdentity *identity,
+                       BseExportNode           *enode)
+{
+  if (!startup_plugin)
+    g_error ("%s: plugin startup called without plugin", G_STRFUNC);
+  if (!enode || enode->next)
+    return NULL;
+  if (identity->major != BSE_MAJOR_VERSION ||
+      identity->minor != BSE_MINOR_VERSION ||
+      identity->micro != BSE_MICRO_VERSION)
+    startup_plugin->version_match = false;
+  startup_plugin->missing_export_flags = identity->export_flags & ~runtime_export_config();
+  if (startup_plugin->version_match && !startup_plugin->missing_export_flags)
     {
-      if (symbol_p)
-        return *symbol_p;
+      enode->next = startup_plugin->chain;
+      startup_plugin->chain = enode;
     }
+  return startup_plugin;
+}
+
+static const char*
+plugin_check_identity (BsePlugin *plugin,
+                       GModule   *gmodule)
+{
+  if (!plugin->chain)
+    {
+      /* handle legacy C plugins */
+      BseExportIdentity **symbol_p = NULL;
+      if (g_module_symbol (gmodule, BSE_EXPORT_IDENTITY_STRING, (gpointer) &symbol_p) && *symbol_p)
+        {
+          BseExportIdentity *identity = *symbol_p;
+          if (identity->major != BSE_MAJOR_VERSION ||
+              identity->minor != BSE_MINOR_VERSION ||
+              identity->micro != BSE_MICRO_VERSION)
+            plugin->version_match = false;
+          plugin->missing_export_flags = identity->export_flags & ~runtime_export_config();
+          plugin->chain = identity->export_chain;
+          plugin->force_clean = true;
+        }
+    }
+
+  if (!plugin->version_match)
+    return "Invalid BSE Plugin Version";
+  if (plugin->missing_export_flags)
+    return "Incompatible CPU requirements";
+
   return NULL;
 }
 
@@ -190,22 +269,46 @@ bse_plugin_use (GTypePlugin *gplugin)
   g_object_ref (G_OBJECT (plugin));
   if (!plugin->use_count)
     {
-      BseExportIdentity *plugin_identity;
-
-      DEBUG ("reloading-plugin: %s (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
+      DEBUG ("reloading-plugin: %s", plugin->fname);
       
       plugin->use_count++;
+      startup_plugin = plugin;
       plugin->gmodule = g_module_open (plugin->fname, 0); /* reopen for use non-lazy */
-      plugin_identity = plugin->gmodule ? lookup_export_identity (plugin->gmodule) : NULL;
-      if (!plugin->gmodule || !plugin_identity)
-	g_error ("failed to reinitialize plugin: %s", g_module_error ());
-
-      plugin->chain = plugin_identity->export_chain;
+      startup_plugin = NULL;
+      if (!plugin->gmodule)
+	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, g_module_error ());
+      const char *cerror = plugin_check_identity (plugin, plugin->gmodule);
+      if (cerror)
+	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, cerror);
+      if (!plugin->chain)
+	g_error ("failed to reinitialize plugin \"%s\": %s", plugin->fname, "empty plugin");
 
       bse_plugin_reinit_types (plugin);
     }
   else
     plugin->use_count++;
+}
+
+void
+bse_exports__del_node (BsePlugin               *plugin,
+                       BseExportNode           *enode)
+{
+  if (!plugin || !enode)
+    {
+      g_warning ("%s: invalid plugin shutdown", G_STRFUNC);
+      return;
+    }
+  BseExportNode *last = NULL, *link;
+  for (link = plugin->chain; link; last = link, link = last->next)
+    if (enode == link)
+      {
+        if (last)
+          last->next = link->next;
+        else
+          plugin->chain = link->next;
+        return;
+      }
+  g_warning ("%s: plugin attempt to unregister invalid export node: %s", plugin->fname, enode->name);
 }
 
 static void
@@ -219,9 +322,10 @@ bse_plugin_unload (BsePlugin *plugin)
   plugin->gmodule = NULL;
   
   /* reset plugin local pointers */
-  plugin->chain = NULL;
+  if (plugin->force_clean)
+    plugin->chain = NULL;
   
-  DEBUG ("unloaded-plugin: %s", plugin->name);
+  DEBUG ("unloaded-plugin: %s", plugin->fname);
 }
 
 static void
@@ -311,7 +415,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
         break;
       }
   if (!node || node->type != type)
-    g_error ("%s: unable to complete type from plugin: %s", plugin->name, g_type_name (type));
+    g_error ("%s: unable to complete type from plugin: %s", plugin->fname, g_type_name (type));
 }
 
 static void
@@ -337,7 +441,7 @@ bse_plugin_reinit_types (BsePlugin *plugin)
               }
           if (!found_type)
             g_message ("%s: plugin attempts to reregister foreign type: %s",
-                       plugin->name, node->name);
+                       plugin->fname, node->name);
           else if (node->ntype == BSE_EXPORT_NODE_ENUM)
             {
               BseExportNodeEnum *enode = (BseExportNodeEnum*) node;
@@ -350,7 +454,7 @@ bse_plugin_reinit_types (BsePlugin *plugin)
         }
     }
   while (n--)
-    g_message ("%s: plugin failed to reregister type: %s", plugin->name, g_type_name (types[n]));
+    g_warning ("%s: plugin failed to reregister type: %s", plugin->fname, g_type_name (types[n]));
   g_free (types);
 }
 
@@ -373,13 +477,13 @@ bse_plugin_init_types (BsePlugin *plugin)
         if (!type)
           {
             g_message ("%s: plugin type %s derives from unknown parent type: %s",
-                       plugin->name, node->name, cnode->parent);
+                       plugin->fname, node->name, cnode->parent);
             return;
           }
         if (!BSE_TYPE_IS_OBJECT (type))
           {
             g_message ("%s: plugin object type %s derives from non-object type: %s",
-                       plugin->name, node->name, cnode->parent);
+                       plugin->fname, node->name, cnode->parent);
             return;
           }
       case BSE_EXPORT_NODE_HOOK:
@@ -391,7 +495,7 @@ bse_plugin_init_types (BsePlugin *plugin)
         if (type)
           {
             g_message ("%s: plugin contains type already registered: %s",
-                       plugin->name, node->name);
+                       plugin->fname, node->name);
             return;
           }
         break;
@@ -439,10 +543,10 @@ bse_plugin_init_types (BsePlugin *plugin)
           error = bse_procedure_type_register (node->name, plugin, &type);
           if (error)
             g_message ("%s: while registering procedure \"%s\": %s",
-                       plugin->name, node->name, error);
+                       plugin->fname, node->name, error);
           break;
         default:
-          g_message ("%s: plugin contains invalid type node (%u)", plugin->name, node->ntype);
+          g_message ("%s: plugin contains invalid type node (%u)", plugin->fname, node->ntype);
           node = NULL;
           break;
         }
@@ -494,7 +598,6 @@ bse_plugin_find (GModule *gmodule)
 const gchar*
 bse_plugin_check_load (const gchar *const_file_name)
 {
-  BseExportIdentity *plugin_identity;
   gchar *file_name;
   GModule *gmodule;
   gchar *error = NULL;
@@ -553,12 +656,17 @@ bse_plugin_check_load (const gchar *const_file_name)
   DEBUG ("register: %s", file_name);
 
   /* load module */
+  BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
+  plugin->fname = g_strdup (file_name);
+  startup_plugin = plugin;
   gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
+  startup_plugin = NULL;
   if (!gmodule)
     {
       cerror = g_module_error ();
       DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
+      g_object_unref (plugin);
       return cerror;
     }
   if (bse_plugin_find (gmodule))
@@ -567,39 +675,26 @@ bse_plugin_check_load (const gchar *const_file_name)
       cerror = "Plugin already loaded";
       DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
+      g_object_unref (plugin);
       return cerror;
     }
 
   /* verify plugin identity (BSE + version) */
-  plugin_identity = lookup_export_identity (gmodule);
-  if (!plugin_identity || !plugin_identity->name)
+  cerror = plugin_check_identity (plugin, gmodule);
+  if (cerror)
     {
       g_module_close (gmodule);
-      cerror = "Not a BSE Plugin";
       DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
-      return cerror;
-    }
-  if (plugin_identity->major != BSE_MAJOR_VERSION ||
-      plugin_identity->minor != BSE_MINOR_VERSION ||
-      plugin_identity->micro != BSE_MICRO_VERSION)
-    {
-      g_module_close (gmodule);
-      cerror = "Invalid BSE Plugin Version";
-      DEBUG ("error: %s: %s", file_name, cerror);
-      g_free (file_name);
+      g_object_unref (plugin);
       return cerror;
     }
 
   /* create plugin if this is a BSE plugin with valid type chain */
-  if (plugin_identity->export_chain)
+  if (plugin->chain)
     {
-      BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
-      g_free (plugin->name);
-      plugin->name = g_strdup (plugin_identity->name);
       plugin->fname = file_name;
       plugin->gmodule = gmodule;
-      plugin->chain = plugin_identity->export_chain;
       
       /* register BSE module types */
       bse_plugin_init_types (plugin);
@@ -614,27 +709,10 @@ bse_plugin_check_load (const gchar *const_file_name)
       error = NULL; /* empty plugin */
       DEBUG ("plugin empty: %s", file_name);
       g_free (file_name);
+      g_object_unref (plugin);
     }
 
   return error;
-}
-
-BsePlugin*
-bse_plugin_lookup (const gchar *name)
-{
-  GSList *slist;
-  
-  g_return_val_if_fail (name != NULL, NULL);
-  
-  for (slist = bse_plugins; slist; slist = slist->next)
-    {
-      BsePlugin *plugin = slist->data;
-      
-      if (bse_string_equals (name, plugin->name))
-	return plugin;
-    }
-  
-  return NULL;
 }
 
 #include "topconfig.h"

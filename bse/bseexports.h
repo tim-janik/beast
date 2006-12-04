@@ -121,18 +121,67 @@ typedef struct {
 #define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
 #define BSE_EXPORT_IDENTITY_STRING     "bse_export__identity"
 typedef struct {
-  const gchar   *name;
   guint          major, minor, micro;
   guint          binary_age, interface_age;
+  guint          dummy1, dummy2, dummy3;
+  guint64        export_flags;
   BseExportNode *export_chain;
 } BseExportIdentity;
-#define BSE_EXPORT_IDENTITY(Name, HEAD)                                 \
-  { Name, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,      \
-    BSE_BINARY_AGE, BSE_INTERFACE_AGE, &HEAD }
+#define BSE_EXPORT_IDENTITY(HEAD)                               \
+  { BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,    \
+    BSE_BINARY_AGE, BSE_INTERFACE_AGE, 0, 0, 0,                 \
+    BSE_EXPORT_CONFIG, &HEAD }
+
+#define BSE_EXPORT_FLAG_MMX      (0x1ull << 0)
+#define BSE_EXPORT_FLAG_MMXEXT   (0x1ull << 1)
+#define BSE_EXPORT_FLAG_3DNOW    (0x1ull << 2)
+#define BSE_EXPORT_FLAG_3DNOWEXT (0x1ull << 3)
+#define BSE_EXPORT_FLAG_SSE      (0x1ull << 4)
+#define BSE_EXPORT_FLAG_SSE2     (0x1ull << 5)
+#define BSE_EXPORT_FLAG_SSE3     (0x1ull << 6)
+#define BSE_EXPORT_FLAG_SSE4     (0x1ull << 7)
+
+#define BSE_EXPORT_CONFIG       (BSE_EXPORT_CONFIG__MMX | BSE_EXPORT_CONFIG__3DNOW | \
+                                 BSE_EXPORT_CONFIG__SSE | BSE_EXPORT_CONFIG__SSE2 |  \
+                                 BSE_EXPORT_CONFIG__SSE3)
+
+
+
+BsePlugin*      bse_exports__add_node   (const BseExportIdentity *identity,     // bseplugin.c
+                                         BseExportNode           *enode);
+void            bse_exports__del_node   (BsePlugin               *plugin,       // bseplugin.c
+                                         BseExportNode           *enode);
 
 /* implementation prototype */
 void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
 					 GTypeInfo               *info);
+
+/* --- export config --- */
+#ifdef   __MMX__
+#define BSE_EXPORT_CONFIG__MMX   BSE_EXPORT_FLAG_MMX
+#else
+#define BSE_EXPORT_CONFIG__MMX   0
+#endif
+#ifdef  __3dNOW__
+#define BSE_EXPORT_CONFIG__3DNOW BSE_EXPORT_FLAG_3DNOW
+#else
+#define BSE_EXPORT_CONFIG__3DNOW 0
+#endif
+#ifdef  __SSE__
+#define BSE_EXPORT_CONFIG__SSE   BSE_EXPORT_FLAG_SSE
+#else
+#define BSE_EXPORT_CONFIG__SSE   0
+#endif
+#ifdef  __SSE2__
+#define BSE_EXPORT_CONFIG__SSE2  BSE_EXPORT_FLAG_SSE2
+#else
+#define BSE_EXPORT_CONFIG__SSE2  0
+#endif
+#ifdef  __SSE3__
+#define BSE_EXPORT_CONFIG__SSE3  BSE_EXPORT_FLAG_SSE3
+#else
+#define BSE_EXPORT_CONFIG__SSE3  0
+#endif
 
 G_END_DECLS
 

@@ -1,3 +1,19 @@
+Sun Dec  3 19:13:17 2006  Tim Janik  <timj@gtk.org>
+
+	* bseexports.h: changed plugin mechanism to skip per-plugin names and
+	to provide feature flag masks to check plugin requirements (to check
+	for MMX/SSE support).
+
+	* bsecxxplugin.hh, bsecxxplugin.cc: changed symbol export mechanism to 
+	use Bse::ExportTypeKeeper constructor and destructor instead of single
+	symbols. use bse_exports__add_node() and bse_exports__del_node() to
+	register/unregister the type nodes. this allows compilation of multiple
+	C++ plugin types into the same .so binary.
+
+	* bseplugin.h, bseplugin.c: rewrote plugin symbol lookup and type node 
+	exports to support load time registration via bse_exports__add_node()
+	and bse_exports__del_node().
+
 Sun Dec  3 21:13:32 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsedatahandle-fir.cc: Made state size computation work correctly.
