@@ -178,7 +178,7 @@ bse_loopback_reset (BseSource *source)
 
 /* --- Export to BSE --- */
 #include "./icons/pipe.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
+BSE_EXPORTS_BEGIN ();
 BSE_EXPORT_OBJECTS = {
   { &type_id_loopback, "BseLoopback", "BseSource",
     "BseLoopback simply puts out it's input",

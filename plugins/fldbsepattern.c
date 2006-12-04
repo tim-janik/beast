@@ -258,7 +258,7 @@ fill_instrument_exec (BseProcedureClass *proc,
 
 
 /* --- Export to BSE --- */
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
+BSE_EXPORTS_BEGIN ();
 BSE_EXPORT_PROCEDURES = {
   { &type_id_delete_note, "BsePattern+delete-note",
     "Delete the current note", 0,

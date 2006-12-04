@@ -36,7 +36,7 @@ BSE_REGISTER_OBJECT (BseMult, BseSource, "/Modules/Routing/Multiply", "",
                      "Mult is a channel multiplier for ring-modulating incoming signals",
                      multiply_icon,
                      bse_mult_class_init, NULL, bse_mult_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */

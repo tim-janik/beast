@@ -59,7 +59,7 @@ BSE_REGISTER_OBJECT (BseSimpleADSR, BseSource, "/Modules/Other Sources/Simple AD
                      "Simple ADSR envelope generator",
                      adsr_icon,
                      bse_simple_adsr_class_init, NULL, bse_simple_adsr_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */

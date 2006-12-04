@@ -62,7 +62,7 @@ BSE_REGISTER_OBJECT (DavSynDrum, BseSource, "/Modules/Audio Sources/Synthetic Dr
                      "\"Ratio In\" input channel, and adjustable through a parameter.",
                      drum_icon,
                      dav_syn_drum_class_init, NULL, dav_syn_drum_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */

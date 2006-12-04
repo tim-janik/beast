@@ -21,8 +21,6 @@
 #ifndef __BSE_MIXER_H__
 #define __BSE_MIXER_H__
 
-#define  BSE_PLUGIN_NAME  "BseMixer"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

@@ -57,7 +57,7 @@ BSE_REGISTER_OBJECT (BseFreeVerb, BseSource, "/Modules/Filters/Free Verb", "",
                      "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
                      reverb_icon,
                      bse_free_verb_class_init, NULL, bse_free_verb_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */

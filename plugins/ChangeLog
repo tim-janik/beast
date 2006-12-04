@@ -1,3 +1,10 @@
+Sun Dec  3 19:42:12 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am, Makefile.plugins: rewrote rules to compile multiple
+	C++ plugins into a single .so binary.
+
+	* *.[hc]: removed plugin names.
+
 Wed Nov 15 01:15:30 2006  Tim Janik  <timj@gtk.org>
 
 	* bsequantizer.cc: use dtoi32 for quantisation effects, which gives

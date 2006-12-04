@@ -21,8 +21,6 @@
 #ifndef __BSE_MULT_H__
 #define __BSE_MULT_H__
 
-#define  BSE_PLUGIN_NAME  "BseMult"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

@@ -6,26 +6,29 @@ include $(top_srcdir)/Makefile.decl
 
 SUBDIRS = icons . freeverb # evaluator
 
-INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
-INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
+INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN="\"$(strip $(basename $(<F)))\""
 
 #
 # C++ Plugins
 #
-plugin_idl_files = $(strip		\
+idl_plugins = $(strip			\
+	+++artsplugins 			\
 	artscompressor.idl		\
+	+++contribplugins 		\
+	bsecontribsampleandhold.idl	\
+	+++bseplugins 			\
 	bseamplifier.idl		\
 	bsebalance.idl			\
-	bsecontribsampleandhold.idl	\
 	bsenoise.idl			\
 	bsequantizer.idl		\
 	bsesummation.idl		\
-	davbassfilter.idl		\
-	davchorus.idl			\
 	standardsaturator.idl		\
 	standardguspatchenvelope.idl	\
+	+++davplugins 			\
+	davbassfilter.idl		\
+	davchorus.idl			\
 )
-EXTRA_HEADERS += $(plugin_idl_files)
+EXTRA_HEADERS += $(filter-out +++%, $(idl_plugins))
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
@@ -37,13 +40,13 @@ UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
 	davguitar.[hc]		\
 )
-PLUGIN_CFILES = $(strip		\
+cglob_plugins = $(strip		\
+	bsesimpleadsr.[hc]	\
 	bseadder.[hc]		\
 	bseatandistort.[hc]	\
 	bseiirfilter.[hc]	\
 	bsemixer.[hc]		\
 	bsemult.[hc]		\
-	bsesimpleadsr.[hc]	\
 	bsesequencer.[hc]	\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
@@ -100,24 +103,31 @@ include Makefile.plugins
 refresh-Makefile.plugins: Makefile.am Makefile.in Makefile
 	echo									 >xgen-$(@F)
 	: # generate C++ plugin rules
-	for name in $(plugin_idl_files:.idl=) ; do						 \
+	libname=""										;\
+	for name in $(idl_plugins:.idl=) ; do						 	 \
+	  [ "$${name:0:3}" = "+++" ] && {							 \
+            libname=`echo $${name:3} | sed 's/[^A-Za-z0-9]/_/g' `				;\
+	    echo -e "\n\n## === C++ Plugin Library $$libname === "		  >>xgen-$(@F) 	;\
+	    echo "plugin_FPU_ltlibs          += $$libname.FPU.la"		  >>xgen-$(@F)	;\
+	    echo "$$libname"'_FPU_la_SOURCES  ='				  >>xgen-$(@F)	;\
+	    echo "$$libname"'_FPU_la_CXXFLAGS = $$(FPU_PLUGIN_CXXFLAGS)'	  >>xgen-$(@F)	;\
+	    echo "$$libname"'_FPU_la_LDFLAGS  = -module $$(plugins_ldflags)'	  >>xgen-$(@F)	;\
+	    echo "$$libname"'_FPU_la_LIBADD   = $$(plugins_libs)'		  >>xgen-$(@F)	;\
+	    echo "plugin_SSE_ltlibs          += $$libname.SSE.la"		  >>xgen-$(@F)	;\
+	    echo "$$libname"'_SSE_la_SOURCES  = $$('"$$libname"'_FPU_la_SOURCES)' >>xgen-$(@F)	;\
+	    echo "$$libname"'_SSE_la_CXXFLAGS = $$(SSE_PLUGIN_CXXFLAGS)'	  >>xgen-$(@F)	;\
+	    echo "$$libname"'_SSE_la_LDFLAGS  = $$('"$$libname"'_FPU_la_LDFLAGS)' >>xgen-$(@F)	;\
+	    echo "$$libname"'_SSE_la_LIBADD   = $$('"$$libname"'_FPU_la_LIBADD)'  >>xgen-$(@F)	;\
+	    continue										;\
+	  }											;\
 	  _name=`echo $$name | sed 's/[^A-Za-z0-9]/_/g' `					;\
 	  echo -e "\n## C++ Plugin $$name"					>>xgen-$(@F) 	;\
-	  echo '$$(srcdir)/'"$$name.cc: $$name.genidl.hh"			>>xgen-$(@F)	;\
-	  echo "plugins_built_sources   += $$name.genidl.hh"			>>xgen-$(@F)	;\
-	  echo "plugin_FPU_ltlibs    += $$name.FPU.la"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_SOURCES = '"$$name.cc"				>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_LDFLAGS = -module $$(plugins_ldflags)'		>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_LIBADD  = $$(plugins_libs)'			>>xgen-$(@F)	;\
-	  echo "$$_name"'_FPU_la_CXXFLAGS  = $$(FPU_PLUGIN_CXXFLAGS)'		>>xgen-$(@F)	;\
-	  echo "plugin_SSE_ltlibs      += $$name.SSE.la"			>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_SOURCES   = $$('"$$_name"'_FPU_la_SOURCES)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LDFLAGS   = $$('"$$_name"'_FPU_la_LDFLAGS)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_LIBADD    = $$('"$$_name"'_FPU_la_LIBADD)'	>>xgen-$(@F)	;\
-	  echo "$$_name"'_SSE_la_CXXFLAGS  = $$(SSE_PLUGIN_CXXFLAGS)'		>>xgen-$(@F)	;\
+	  echo '$$(srcdir)/'"$$name.cc: $$name.genidl.hh # $$libname"		>>xgen-$(@F)	;\
+	  echo "plugins_built_sources      += $$name.genidl.hh"			>>xgen-$(@F)	;\
+	  echo "$$libname"'_FPU_la_SOURCES += '"$$name.cc"			>>xgen-$(@F)	;\
 	done
 	: # generate C plugin rules
-	for wcfile in $(filter %.c, $(wildcard $(PLUGIN_CFILES))) ; do				 \
+	for wcfile in $(filter %.c, $(wildcard $(cglob_plugins))) ; do				 \
 	  name=`echo $$wcfile | sed 's/.c$$//' `						;\
 	  _name=`echo $$name | sed 's/[^A-Za-z0-9]/_/g' `					;\
 	  cfile="$$name.c"									;\

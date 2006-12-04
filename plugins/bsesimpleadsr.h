@@ -19,8 +19,6 @@
 #ifndef __BSE_SIMPLE_ADSR_H__
 #define __BSE_SIMPLE_ADSR_H__
 
-#define  BSE_PLUGIN_NAME  "BseSimpleADSR"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

@@ -21,8 +21,6 @@
 #ifndef __BSE_ADDER_H__
 #define __BSE_ADDER_H__
 
-#define  BSE_PLUGIN_NAME  "BseAdder"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

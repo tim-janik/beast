@@ -646,7 +646,7 @@ dav_guitar_reset (BseSource *source)
 }
 
 /* --- Export to DAV --- */
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
+BSE_EXPORTS_BEGIN ();
 BSE_EXPORT_OBJECTS = {
   { &type_id_guitar, "DavGuitar", "BseSource",
     "DavGuitar is a physical modelling acoustic guitar synthesizer - "

@@ -21,8 +21,6 @@
 #ifndef __BSE_FIR_FILTER_H__
 #define __BSE_FIR_FILTER_H__
 
-#define  BSE_PLUGIN_NAME  "BseFIRFilter"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

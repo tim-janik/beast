@@ -71,7 +71,7 @@ BSE_REGISTER_OBJECT (DavOrgan, BseSource, "/Modules/Audio Sources/Organ", "",
                      "DavOrgan is a modifiable additive organ synthesizer",
                      organ_icon,
                      dav_organ_class_init, NULL, dav_organ_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */

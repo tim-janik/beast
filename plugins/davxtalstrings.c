@@ -80,7 +80,7 @@ BSE_REGISTER_OBJECT (DavXtalStrings, BseSource, "/Modules/Audio Sources/XtalStri
                      "until 2004 requires a license from Stanford University.",
                      strings_icon,
                      dav_xtal_strings_class_init, NULL, dav_xtal_strings_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */

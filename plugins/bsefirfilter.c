@@ -448,7 +448,7 @@ bse_fir_filter_reset (BseSource *source)
 
 /* --- Export to BSE --- */
 #include "./icons/filter.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
+BSE_EXPORTS_BEGIN ();
 BSE_EXPORT_OBJECTS = {
   { &type_id_fir_filter, "BseFIRFilter", "BseSource",
     "BseFIRFilter is a finite impulse response filter",

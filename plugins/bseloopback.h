@@ -21,8 +21,6 @@
 #ifndef __BSE_LOOPBACK_H__
 #define __BSE_LOOPBACK_H__
 
-#define  BSE_PLUGIN_NAME  "BseLoopback"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

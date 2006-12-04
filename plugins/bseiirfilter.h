@@ -19,8 +19,6 @@
 #ifndef __BSE_IIR_FILTER_H__
 #define __BSE_IIR_FILTER_H__
 
-#define  BSE_PLUGIN_NAME  "BseIIRFilter"
-
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 

@@ -55,7 +55,7 @@ hello_space_exec (BseProcedureClass *proc,
 
 /* --- Export to BSE --- */
 #include "./icons/any.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
+BSE_EXPORTS_BEGIN ();
 BSE_EXPORT_PROCEDURES = {
   { &type_id_hello_space, "hello-space",
     "Hello Space - Simplistic Hello World type o' thing.", 0,

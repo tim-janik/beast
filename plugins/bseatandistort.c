@@ -56,7 +56,7 @@ BSE_REGISTER_OBJECT (BseAtanDistort, BseSource, "/Modules/Distortion/Atan Distor
                      "maximum attenuation to maximum boost.",
                      atan_icon,
                      bse_atan_distort_class_init, NULL, bse_atan_distort_init);
-BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+BSE_DEFINE_EXPORTS ();
 
 
 /* --- variables --- */
