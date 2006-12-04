@@ -1728,16 +1728,18 @@ public:
 } cmd_thinout ("thinout");
 #endif
 
-class Highpass : public Command {
-public:
-  gdouble cutoff_freq;
-  guint   order;
+class FirCommand : public Command {
+protected:
+  gdouble m_cutoff_freq;
+  guint   m_order;
 
-  Highpass (const char *command_name) :
+  virtual GslDataHandle* create_fir_handle (GslDataHandle* dhandle) = 0;
+public:
+  FirCommand (const char *command_name) :
     Command (command_name)
   {
-    cutoff_freq = -1;
-    order = 64;
+    m_cutoff_freq = -1;
+    m_order = 64;
   }
   void
   blurb (bool bshort)
@@ -1745,8 +1747,9 @@ public:
     g_print ("[options]\n");
     if (bshort)
       return;
-    g_print ("    Apply highpass filter to wave data\n");
-    g_print ("    --cutoff-freq <f>    filter cutoff frequency in Hz\n");
+    g_print ("    Apply %s filter to wave data\n", name.c_str());
+    g_print ("    --cutoff-freq <f>   filter cutoff frequency in Hz\n");
+    g_print ("    --order <o>         filter order [%u]\n", m_order);
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -1758,10 +1761,41 @@ public:
 	const gchar *str = NULL;
 	if (parse_str_option (argv, i, "--cutoff-freq", &str, argc))
 	  {
-	    cutoff_freq = g_ascii_strtod (str, NULL);
+	    m_cutoff_freq = g_ascii_strtod (str, NULL);
+	  }
+	else if (parse_str_option (argv, i, "--order", &str, argc))
+	  {
+	    m_order = g_ascii_strtoull (str, NULL, 10);
 	  }
       }
-    return (cutoff_freq <= 0); // missing args
+    return (m_cutoff_freq <= 0); // missing args
+  }
+  BseErrorType
+  print_effective_stopband_start (GslDataHandle *fir_handle)
+  {
+    BseErrorType error = gsl_data_handle_open (fir_handle);
+    if (error)
+      return error;
+
+    Birnet::int64 freq_inc = 5; // FIXME
+    while (freq_inc * 1000 < gsl_data_handle_mix_freq (fir_handle))
+      freq_inc *= 2;
+    double	  best_diff_db = 100;
+    Birnet::int64 best_freq = 0;
+    for (Birnet::int64 freq = 0; freq < gsl_data_handle_mix_freq (fir_handle) / 2.0; freq += freq_inc)
+      {
+	double diff_db = fabs (bse_data_handle_fir_response_db (fir_handle, freq) + 48);
+	if (diff_db < best_diff_db)
+	  {
+	    best_diff_db = diff_db;
+	    best_freq = freq;
+	  }
+      }
+    sfi_info ("%s: => %.2f dB at %lld Hz", string_toupper (name).c_str(),
+	bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
+    gsl_data_handle_close (fir_handle);
+    
+    return BSE_ERROR_NONE;
   }
   void
   exec (Wave *wave)
@@ -1772,16 +1806,22 @@ public:
       {
         WaveChunk *chunk = &*it;
         GslDataHandle *dhandle = chunk->dhandle;
-	sfi_info ("HIGHPASS: chunk %f: cutoff_freq=%f order=%d", gsl_data_handle_osc_freq (chunk->dhandle),
-								 cutoff_freq, order);
-	if (cutoff_freq >= gsl_data_handle_mix_freq (dhandle) / 2.0)
+	sfi_info ("%s: chunk %f: cutoff_freq=%f order=%d", string_toupper (name).c_str(),
+	          gsl_data_handle_osc_freq (chunk->dhandle), m_cutoff_freq, m_order);
+
+	if (m_cutoff_freq >= gsl_data_handle_mix_freq (dhandle) / 2.0)
 	  {
 	    sfi_error ("chunk % 7.2f/%.0f: IGNORED - can't filter this chunk, cutoff frequency (%f) too high\n",
-	    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (dhandle), cutoff_freq);
+	    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (dhandle), m_cutoff_freq);
 	  }
 	else
 	  {
-	    BseErrorType error = chunk->change_dhandle (bse_data_handle_new_fir_highpass (dhandle, cutoff_freq, order), 0, 0);
+	    GslDataHandle *fir_handle = create_fir_handle (dhandle);
+
+	    BseErrorType error = print_effective_stopband_start (fir_handle);
+	    if (!error)
+	      error = chunk->change_dhandle (fir_handle, 0, 0);
+	    
 	    if (error)
 	      {
 		sfi_error ("chunk % 7.2f/%.0f: %s",
@@ -1792,8 +1832,36 @@ public:
 	  }
       }
   }
+};
+
+class Highpass : public FirCommand {
+protected:
+  GslDataHandle*
+  create_fir_handle (GslDataHandle* dhandle)
+  {
+    return bse_data_handle_new_fir_highpass (dhandle, m_cutoff_freq, m_order);
+  }
+public:
+  Highpass (const char *command_name) :
+    FirCommand (command_name)
+  {
+  }
 } cmd_highpass ("highpass");
 
+class Lowpass : public FirCommand {
+protected:
+  GslDataHandle*
+  create_fir_handle (GslDataHandle* dhandle)
+  {
+    return bse_data_handle_new_fir_lowpass (dhandle, m_cutoff_freq, m_order);
+  }
+public:
+  Lowpass (const char *command_name) :
+    FirCommand (command_name)
+  {
+  }
+} cmd_lowpass ("lowpass");
+ 
 class Upsample2 : public Command {
 private:
   int precision_bits;
