@@ -70,7 +70,7 @@ static guint            alsa_device_latency             (BsePcmHandle           
 static const char type_blurb[] = ("PCM driver implementation for the Advanced Linux Sound Architecture "
                                   "(http://alsa-project.org/alsa-doc/alsa-lib/pcm.html)");
 BSE_REGISTER_OBJECT (BsePcmDeviceALSA, BsePcmDevice, NULL, "", type_blurb, NULL, bse_pcm_device_alsa_class_init, NULL, bse_pcm_device_alsa_init);
-BSE_DEFINE_EXPORTS (__FILE__);
+BSE_DEFINE_EXPORTS ();
 
 /* --- variables --- */
 static gpointer parent_class = NULL;

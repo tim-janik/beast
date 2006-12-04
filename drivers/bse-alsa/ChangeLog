@@ -1,3 +1,8 @@
+Mon Dec  4 01:05:20 2006  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c: 
+	* bsemididevice-alsa.c: removed plugin names.
+
 Sat Oct  7 21:32:38 2006  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c: 
