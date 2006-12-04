@@ -1,3 +1,7 @@
+Mon Dec  4 02:45:21 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: print out version information for Ogg/Vorbis.
+
 Sun Dec  3 13:52:52 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/bse/filtertest.cc:

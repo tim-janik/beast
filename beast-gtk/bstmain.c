@@ -709,7 +709,9 @@ bst_exit_print_version (void)
   g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
   g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
   g_print (", BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-  g_print (", Ogg/Vorbis");
+  c = bse_server_get_vorbis_version (BSE_SERVER);
+  if (c)
+    g_print (", %s", c);
   c = bse_server_get_mp3_version (BSE_SERVER);
   if (c)
     g_print (", %s", c);
