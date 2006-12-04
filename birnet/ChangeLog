@@ -1,3 +1,9 @@
+Sun Dec  3 20:09:58 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h: added x86_sse4 to BirnetCPUInfo.
+
+	* birnetcpu.cc (get_x86_cpu_features): detect x86_sse4 bit of CPUID.
+
 Tue Nov 28 01:20:57 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetthreadimpl.cc: do not provide chain/unchain functions after 

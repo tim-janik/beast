@@ -209,9 +209,9 @@ typedef struct {
   /* CPU Vendor ID */
   const char *cpu_vendor;
   /* CPU features on X86 */
-  uint x86_fpu : 1, x86_tsc    : 1, x86_htt   : 1;
+  uint x86_fpu : 1, x86_ssesys : 1, x86_tsc   : 1, x86_htt      : 1;
   uint x86_mmx : 1, x86_mmxext : 1, x86_3dnow : 1, x86_3dnowext : 1;
-  uint x86_sse : 1, x86_sse2   : 1, x86_sse3  : 1, x86_ssesys   : 1;
+  uint x86_sse : 1, x86_sse2   : 1, x86_sse3  : 1, x86_sse4     : 1;
 } BirnetCPUInfo;
 
 /* --- Thread info --- */

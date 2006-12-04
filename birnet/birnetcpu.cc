@@ -155,6 +155,8 @@ get_x86_cpu_features (CPUInfo *ci,
       x86_cpuid (1, eax, ebx, ecx, edx);
       if (ecx & (1 << 0))
         ci->x86_sse3 = true;
+      if (ecx & (1 << 9))
+        ci->x86_sse4 = true;
       if (edx & (1 << 0))
         ci->x86_fpu = true;
       if (edx & (1 << 4))
@@ -277,6 +279,8 @@ cpu_info_string (const CPUInfo &cpu_info)
     g_string_append_printf (sflags, " SSE2");
   if (cpu_info.x86_sse3)
     g_string_append_printf (sflags, " SSE3");
+  if (cpu_info.x86_sse4)
+    g_string_append_printf (sflags, " SSE4");
   if (cpu_info.x86_ssesys)
     g_string_append_printf (sflags, " SSESYS");
   /* 3DNOW flags */
