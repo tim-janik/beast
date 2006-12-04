@@ -197,13 +197,23 @@ test_with_sine_sweep (FirHandleType type)
       double filtered_cos = gsl_data_handle_peek_value (fir_handle_cos, i, &peek_buffer_cos);
       std::complex<double> filtered (filtered_sin, filtered_cos);
 
-      // check frequency response
+      // compute frequency response
       double level = abs (filtered);
+      double level_db = bse_db_from_factor (level, -200);
       scanned_freq.push_back (sweep_freq[i]);
-      scanned_level_db.push_back (bse_db_from_factor (level, -200));
+      scanned_level_db.push_back (level_db);
       // printf ("%f %.17g\n", sweep_freq[i], scanned_level_db.back());
       
-      // check phase response in passband
+      if ((i & 15) == 0)
+	{
+	  // check that theoretical and scanned response match
+	  double theoretical_level_db = bse_data_handle_fir_response_db (fir_handle_sin, sweep_freq[i]);
+	  double theoretical_level = bse_db_to_factor (theoretical_level_db);
+	  // printf ("%g %.17g\n", sweep_freq[i], fabs (level - theoretical_level));
+	  TCHECK_CMP (fabs (level - theoretical_level), <, 0.00035);
+	}
+
+      // compute phase response
       std::complex<double> orig (sweep_sin[i], sweep_cos[i]);
       scanned_abs_phase_diff.push_back (fabs (phase_diff (arg (orig), arg (filtered))));
       // printf ("%f %.17g\n", sweep_freq[i], scanned_abs_phase_diff.back());

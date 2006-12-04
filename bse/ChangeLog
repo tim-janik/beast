@@ -1,3 +1,12 @@
+Mon Dec  4 12:03:19 2006  Stefan Wasterfeld  <stefan@space.twc.de>
+
+	* gsldatahandle.h:
+	* bsedatahandle-fir.cc: Added a function which computes the filter
+	response in dB, given a FIR handle and a frequency.
+
+	* tests/firhandle.cc: Test that theoretical filter response (computed
+	by bse_data_handle_fir_response_db) and scanned response match.
+
 Mon Dec  4 02:42:56 2006  Tim Janik  <timj@gtk.org>
 
 	* gslvorbis-enc.h, gslvorbis-enc.c: added gsl_vorbis_encoder_version()

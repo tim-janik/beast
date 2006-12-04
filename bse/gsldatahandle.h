@@ -126,6 +126,9 @@ GslDataHandle*	  bse_data_handle_new_fir_highpass  (GslDataHandle *src_handle,		
 GslDataHandle*	  bse_data_handle_new_fir_lowpass   (GslDataHandle *src_handle,		// implemented in bsedatahandle-fir.cc
 						     gdouble        cutoff_freq,
 						     guint          order);
+gdouble           bse_data_handle_fir_response_db   (GslDataHandle *fir_handle,         // implemented in bsedatahandle-fir.cc
+                                                     gdouble        freq);
+
 
 
 /* --- xinfo handling --- */

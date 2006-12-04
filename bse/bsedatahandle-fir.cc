@@ -30,6 +30,7 @@ namespace Bse {
 
 using std::vector;
 using std::min;
+typedef std::complex<double> Complex;
 
 class DataHandleFir;
 
@@ -208,6 +209,20 @@ public:
     return source_state_length + m_history;
   }
 
+  gdouble
+  compute_fir_response_db (double freq) const
+  {
+    Complex z = std::exp (Complex (0, freq * 2 * PI / gsl_data_handle_mix_freq (m_src_handle)));
+    Complex r = 0;
+
+    for (guint i = 0; i < m_a.size(); i++)
+      {
+        r /= z;
+	r += m_a[i];
+      }
+    return bse_db_from_factor (abs (r), -200);
+  }
+
   static GslDataHandle*
   dh_create (DataHandleFir *cxx_dh)
   {
@@ -233,13 +248,13 @@ public:
 	return NULL;
       }
   }
-private:
-/* for the "C" API (vtable) */
   static DataHandleFir*
   dh_cast (GslDataHandle *dhandle)
   {
     return static_cast<CDataHandleFir *> (dhandle)->cxx_dh;
   }
+private:
+/* for the "C" API (vtable) */
   static BseErrorType
   dh_open (GslDataHandle *dhandle, GslDataHandleSetup *setup)
   {
@@ -352,26 +367,7 @@ public:
   }
 };
 
-
 }
-
-#if 0 // debugging
-  gfloat freq;
-  for (freq = 0; freq < PI; freq += 0.01)
-    {
-      complex z = cexp (I * freq);
-      complex r = 0;
-
-      guint i;
-      for (i = 0; i <= iorder; i++)
-	{
-	  r /= z;
-	  r += a[i];
-	}
-      printf ("%f %f\n", freq, cabs (r));
-    }
-#endif
-
 
 using namespace Bse;
 
@@ -415,4 +411,11 @@ bse_data_handle_new_fir_lowpass (GslDataHandle *src_handle,
 {
   DataHandleFir *cxx_dh = new DataHandleFirLowpass (src_handle, cutoff_freq, order);
   return DataHandleFir::dh_create (cxx_dh);
+}
+
+extern "C" gdouble
+bse_data_handle_fir_response_db (GslDataHandle *fir_handle,
+                                 gdouble        freq)
+{
+  return DataHandleFir::dh_cast (fir_handle)->compute_fir_response_db (freq);
 }
