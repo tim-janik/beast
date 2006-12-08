@@ -1,3 +1,7 @@
+Fri Dec  8 23:03:14 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.hh (binary_lookup_insertion_pos): fixed missing "std::".
+
 Sun Dec  3 20:09:58 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetcdefs.h: added x86_sse4 to BirnetCPUInfo.

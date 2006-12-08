@@ -385,10 +385,10 @@ binary_lookup_fuzzy (RandIter  begin,
     }
   /* check is last mismatch, cmp > 0 indicates greater key */
   return (want_lookup
-          ? make_pair (end, /*ignored*/ false)
+          ? std::make_pair (end, /*ignored*/ false)
           : (want_insertion_pos && cmp > 0)
-          ? make_pair (current + 1, false)
-          : make_pair (current, false));
+          ? std::make_pair (current + 1, false)
+          : std::make_pair (current, false));
 }
 template<typename RandIter, class Cmp, typename Arg>
 static inline std::pair<RandIter,bool>
