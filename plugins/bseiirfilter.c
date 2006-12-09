@@ -184,76 +184,76 @@ bse_iir_filter_set_property (GObject	  *object,
 			     const GValue *value,
 			     GParamSpec	  *pspec)
 {
-  BseIIRFilter *filt = BSE_IIR_FILTER (object);
+  BseIIRFilter *self = BSE_IIR_FILTER (object);
   
   switch (param_id)
     {
     case PARAM_FILTER_ALGO:
-      filt->filter_algo = g_value_get_enum (value);
-      filt->algo_type_change = TRUE;
-      bse_iir_filter_update_modules (filt);
+      self->filter_algo = g_value_get_enum (value);
+      self->algo_type_change = TRUE;
+      bse_iir_filter_update_modules (self);
       break;
     case PARAM_FILTER_TYPE:
-      filt->filter_type = g_value_get_enum (value);
-      filt->algo_type_change = TRUE;
-      bse_iir_filter_update_modules (filt);
+      self->filter_type = g_value_get_enum (value);
+      self->algo_type_change = TRUE;
+      bse_iir_filter_update_modules (self);
       break;
     case PARAM_ORDER:
-      filt->order = sfi_value_get_int (value);
-      bse_iir_filter_update_modules (filt);
+      self->order = sfi_value_get_int (value);
+      bse_iir_filter_update_modules (self);
       break;
     case PARAM_EPSILON:
-      filt->epsilon = sfi_value_get_real (value);
-      bse_iir_filter_update_modules (filt);
+      self->epsilon = sfi_value_get_real (value);
+      bse_iir_filter_update_modules (self);
       break;
     case PARAM_CUT_OFF_FREQ1:
-      filt->cut_off_freq1 = sfi_value_get_real (value);
-      if (filt->cut_off_freq1 + FREQ_DELTA > filt->cut_off_freq2)
+      self->cut_off_freq1 = sfi_value_get_real (value);
+      if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
-	  filt->cut_off_freq2 = filt->cut_off_freq1 + FREQ_DELTA;
-	  g_object_notify (filt, "cut_off_freq_2");
-	  g_object_notify (filt, "cut_off_note_2");
+	  self->cut_off_freq2 = self->cut_off_freq1 + FREQ_DELTA;
+	  g_object_notify (self, "cut_off_freq_2");
+	  g_object_notify (self, "cut_off_note_2");
 	}
-      bse_iir_filter_update_modules (filt);
-      g_object_notify (filt, "cut_off_note");
+      bse_iir_filter_update_modules (self);
+      g_object_notify (self, "cut_off_note");
       break;
     case PARAM_CUT_OFF_NOTE1:
-      filt->cut_off_freq1 = bse_note_to_freq (sfi_value_get_note (value));
-      filt->cut_off_freq1 = MAX (filt->cut_off_freq1, BSE_MIN_OSC_FREQUENCY);
-      if (filt->cut_off_freq1 + FREQ_DELTA > filt->cut_off_freq2)
+      self->cut_off_freq1 = bse_note_to_freq (sfi_value_get_note (value));
+      self->cut_off_freq1 = MAX (self->cut_off_freq1, BSE_MIN_OSC_FREQUENCY);
+      if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
-	  filt->cut_off_freq2 = filt->cut_off_freq1 + FREQ_DELTA;
-	  g_object_notify (filt, "cut_off_freq_2");
-	  g_object_notify (filt, "cut_off_note_2");
+	  self->cut_off_freq2 = self->cut_off_freq1 + FREQ_DELTA;
+	  g_object_notify (self, "cut_off_freq_2");
+	  g_object_notify (self, "cut_off_note_2");
 	}
-      bse_iir_filter_update_modules (filt);
-      g_object_notify (filt, "cut_off_freq");
+      bse_iir_filter_update_modules (self);
+      g_object_notify (self, "cut_off_freq");
       break;
     case PARAM_CUT_OFF_FREQ2:
-      filt->cut_off_freq2 = sfi_value_get_real (value);
-      if (filt->cut_off_freq1 + FREQ_DELTA > filt->cut_off_freq2)
+      self->cut_off_freq2 = sfi_value_get_real (value);
+      if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
-	  filt->cut_off_freq1 = filt->cut_off_freq2 - FREQ_DELTA;
-	  g_object_notify (filt, "cut_off_freq");
-	  g_object_notify (filt, "cut_off_note");
+	  self->cut_off_freq1 = self->cut_off_freq2 - FREQ_DELTA;
+	  g_object_notify (self, "cut_off_freq");
+	  g_object_notify (self, "cut_off_note");
 	}
-      bse_iir_filter_update_modules (filt);
-      g_object_notify (filt, "cut_off_note_2");
+      bse_iir_filter_update_modules (self);
+      g_object_notify (self, "cut_off_note_2");
       break;
     case PARAM_CUT_OFF_NOTE2:
-      filt->cut_off_freq2 = bse_note_to_freq (sfi_value_get_note (value));
-      filt->cut_off_freq2 = MAX (filt->cut_off_freq2, BSE_MIN_OSC_FREQUENCY);
-      if (filt->cut_off_freq1 + FREQ_DELTA > filt->cut_off_freq2)
+      self->cut_off_freq2 = bse_note_to_freq (sfi_value_get_note (value));
+      self->cut_off_freq2 = MAX (self->cut_off_freq2, BSE_MIN_OSC_FREQUENCY);
+      if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
-	  filt->cut_off_freq1 = filt->cut_off_freq2 - FREQ_DELTA;
-	  g_object_notify (filt, "cut_off_freq");
-	  g_object_notify (filt, "cut_off_note");
+	  self->cut_off_freq1 = self->cut_off_freq2 - FREQ_DELTA;
+	  g_object_notify (self, "cut_off_freq");
+	  g_object_notify (self, "cut_off_note");
 	}
-      bse_iir_filter_update_modules (filt);
-      g_object_notify (filt, "cut_off_freq_2");
+      bse_iir_filter_update_modules (self);
+      g_object_notify (self, "cut_off_freq_2");
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (filt, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -264,36 +264,36 @@ bse_iir_filter_get_property (GObject	*object,
 			     GValue	*value,
 			     GParamSpec	*pspec)
 {
-  BseIIRFilter *filt = BSE_IIR_FILTER (object);
+  BseIIRFilter *self = BSE_IIR_FILTER (object);
   
   switch (param_id)
     {
     case PARAM_FILTER_ALGO:
-      g_value_set_enum (value, filt->filter_algo);
+      g_value_set_enum (value, self->filter_algo);
       break;
     case PARAM_FILTER_TYPE:
-      g_value_set_enum (value, filt->filter_type);
+      g_value_set_enum (value, self->filter_type);
       break;
     case PARAM_ORDER:
-      sfi_value_set_int (value, filt->order);
+      sfi_value_set_int (value, self->order);
       break;
     case PARAM_EPSILON:
-      sfi_value_set_real (value, filt->epsilon);
+      sfi_value_set_real (value, self->epsilon);
       break;
     case PARAM_CUT_OFF_FREQ1:
-      sfi_value_set_real (value, filt->cut_off_freq1);
+      sfi_value_set_real (value, self->cut_off_freq1);
       break;
     case PARAM_CUT_OFF_NOTE1:
-      sfi_value_set_note (value, bse_note_from_freq (filt->cut_off_freq1));
+      sfi_value_set_note (value, bse_note_from_freq (self->cut_off_freq1));
       break;
     case PARAM_CUT_OFF_FREQ2:
-      sfi_value_set_real (value, filt->cut_off_freq2);
+      sfi_value_set_real (value, self->cut_off_freq2);
       break;
     case PARAM_CUT_OFF_NOTE2:
-      sfi_value_set_note (value, bse_note_from_freq (filt->cut_off_freq2));
+      sfi_value_set_note (value, bse_note_from_freq (self->cut_off_freq2));
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (filt, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
