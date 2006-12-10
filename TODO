@@ -780,7 +780,6 @@ Misc Buglets/Feature Requests:
 
 The MCD timeline says:
 - soon:
- - review filtertest.cc
  - davorgan c++
  - submit 8 thread crasher
  - use debugging interface of g_slice for #340437
