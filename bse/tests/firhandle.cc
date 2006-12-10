@@ -367,6 +367,67 @@ test_multi_channel (FirHandleType type)
   TDONE();
 }
 
+static void
+test_seek (FirHandleType type)
+{
+  TSTART ("%s Handle (seek)", handle_name (type));
+  for (int n_channels = 1; n_channels <= 3; n_channels++)
+    {
+      const double    mix_freq = 48000;
+      const double    cutoff_freq = 11000;
+      const int       order = 28;
+
+      vector<float>   input (1 * 2 * 3 * 3000); // can be divided by n_channels
+      vector<float>   output (input.size());
+
+      for (size_t i = 0; i < input.size(); i++)
+        input[i] = g_random_int_range (-1, 1);
+
+      GslDataHandle *ihandle = gsl_data_handle_new_mem (n_channels, 32, mix_freq, 440, input.size(), &input[0], NULL);
+      GslDataHandle *fir_handle = NULL;
+      
+      if (type == FIR_HIGHPASS)
+	fir_handle = bse_data_handle_new_fir_highpass (ihandle, cutoff_freq, order);
+      else
+	fir_handle = bse_data_handle_new_fir_lowpass (ihandle, cutoff_freq, order);
+
+      BseErrorType error;
+      error = gsl_data_handle_open (fir_handle);
+      TASSERT (error == 0);
+
+      GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
+      for (size_t i = 0; i < output.size(); i++)
+        output[i] = gsl_data_handle_peek_value (fir_handle, i, &peek_buffer);
+      
+      for (int t = 0; t < 400; t++)
+	{
+	  int64 start = rand() % fir_handle->setup.n_values;
+	  int64 len = rand() % 1024;
+	  len = min (fir_handle->setup.n_values - start, len);
+
+	  float values[1024];
+	  int64 offset = 0;
+	  int64 values_todo = len;
+	  while (values_todo > 0)
+	    {
+	      int64 l = gsl_data_handle_read (fir_handle, start + offset, values_todo, &values[offset]);
+	      TCHECK (l > 0);
+	      TCHECK (l <= values_todo);
+	      values_todo -= l;
+	      offset += l;
+	    }
+
+	  for (size_t i = 0; i < len; i++)
+	    TCHECK (values[i] == output[i + start]);
+	    
+	  if (t % 40 == 0)
+	    TOK();
+	}
+    }
+  TDONE();
+}
+
+
 int
 main (int    argc,
       char **argv)
@@ -375,9 +436,11 @@ main (int    argc,
 
   test_with_sine_sweep (FIR_HIGHPASS);
   test_multi_channel (FIR_HIGHPASS);
+  test_seek (FIR_HIGHPASS);
 
   test_with_sine_sweep (FIR_LOWPASS);
   test_multi_channel (FIR_LOWPASS);
+  test_seek (FIR_LOWPASS);
 
   return 0;
 }

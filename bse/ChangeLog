@@ -1,3 +1,7 @@
+Sun Dec 10 14:15:18 2006  Stefan Wasterfeld  <stefan@space.twc.de>
+
+	* tests/firhandle.cc: Added seek test.
+
 Mon Dec  4 12:03:19 2006  Stefan Wasterfeld  <stefan@space.twc.de>
 
 	* gsldatahandle.h:
