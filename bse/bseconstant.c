@@ -160,7 +160,7 @@ bse_constant_set_property (GObject      *object,
 			   const GValue *value,
 			   GParamSpec   *pspec)
 {
-  BseConstant *constant = BSE_CONSTANT (object);
+  BseConstant *self = BSE_CONSTANT (object);
   
   switch (param_id)
     {
@@ -173,8 +173,8 @@ bse_constant_set_property (GObject      *object,
 	  gchar *prop;
 	  SfiNote note;
 	case PARAM_VALUE - PARAM_VALUE:
-	  constant->constants[n] = sfi_value_get_real (value);
-	  bse_constant_update_modules (constant, NULL);
+	  self->constants[n] = sfi_value_get_real (value);
+	  bse_constant_update_modules (self, NULL);
 	  prop = g_strdup_printf ("frequency_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
@@ -183,8 +183,8 @@ bse_constant_set_property (GObject      *object,
 	  g_free (prop);
 	  break;
 	case PARAM_FREQ - PARAM_VALUE:
-	  constant->constants[n] = BSE_VALUE_FROM_FREQ (sfi_value_get_real (value));
-          bse_constant_update_modules (constant, NULL);
+	  self->constants[n] = BSE_VALUE_FROM_FREQ (sfi_value_get_real (value));
+          bse_constant_update_modules (self, NULL);
           prop = g_strdup_printf ("value_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
@@ -196,8 +196,8 @@ bse_constant_set_property (GObject      *object,
 	  note = sfi_value_get_note (value);
 	  if (note != SFI_NOTE_VOID)
 	    {
-	      constant->constants[n] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (note));
-	      bse_constant_update_modules (constant, NULL);
+	      self->constants[n] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (note));
+	      bse_constant_update_modules (self, NULL);
 	      prop = g_strdup_printf ("value_%u", n + 1);
 	      g_object_notify (object, prop);
 	      g_free (prop);
@@ -207,7 +207,7 @@ bse_constant_set_property (GObject      *object,
 	    }
 	  break;
 	default:
-	  G_OBJECT_WARN_INVALID_PROPERTY_ID (constant, param_id, pspec);
+	  G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
 	  break;
 	}
     }
@@ -219,7 +219,7 @@ bse_constant_get_property (GObject     *object,
 			   GValue      *value,
 			   GParamSpec  *pspec)
 {
-  BseConstant *constant = BSE_CONSTANT (object);
+  BseConstant *self = BSE_CONSTANT (object);
   
   switch (param_id)
     {
@@ -230,16 +230,16 @@ bse_constant_get_property (GObject     *object,
       switch (indx)
 	{
         case PARAM_VALUE - PARAM_VALUE:
-	  sfi_value_set_real (value, constant->constants[n]);
+	  sfi_value_set_real (value, self->constants[n]);
 	  break;
         case PARAM_FREQ - PARAM_VALUE:
-	  sfi_value_set_real (value, BSE_FREQ_FROM_VALUE (constant->constants[n]));
+	  sfi_value_set_real (value, BSE_FREQ_FROM_VALUE (self->constants[n]));
 	  break;
         case PARAM_NOTE - PARAM_VALUE:
-	  sfi_value_set_note (value, bse_note_from_freq (BSE_FREQ_FROM_VALUE (constant->constants[n])));
+	  sfi_value_set_note (value, bse_note_from_freq (BSE_FREQ_FROM_VALUE (self->constants[n])));
 	  break;
 	default:
-	  G_OBJECT_WARN_INVALID_PROPERTY_ID (constant, param_id, pspec);
+	  G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
 	  break;
 	}
     }
