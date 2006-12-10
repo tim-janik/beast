@@ -779,7 +779,12 @@ Misc Buglets/Feature Requests:
  - implement generic FIR eval (based on SIMD resampler code)
 
 The MCD timeline says:
-- low pass for wavetool
+- soon:
+ - review filtertest.cc
+ - davorgan c++
+ - submit 8 thread crasher
+ - use debugging interface of g_slice for #340437
+ - use sweep for resampler test
 - autolooper for wavetool
 - man page for wavetool
 - (1) drum kit
@@ -789,9 +794,7 @@ The MCD timeline says:
 - (5) lead instrument
 - DavOrgan bug: is blocksize dependant
 - DavOrgan bug: make testcase
-- review filtertest.cc
 * 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
-- (accuracy) tests for highpass and lowpass
 - complete GUS support:
   + quantize gus-patch playback error, decide what to do about gus patches (rip them?)
 - start bse-data-gpl.tgz for GPL-only stuff
