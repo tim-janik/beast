@@ -1,3 +1,8 @@
+Sun Dec 10 23:43:42 2006  Tim Janik  <timj@gtk.org>
+
+	* davcanyondelay.c (dav_canyon_delay_class_init): added i18n markup and
+	adapted some tooltips.
+
 Sun Dec  3 19:42:12 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am, Makefile.plugins: rewrote rules to compile multiple

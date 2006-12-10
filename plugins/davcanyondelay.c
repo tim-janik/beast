@@ -84,34 +84,34 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   source_class->prepare = dav_canyon_delay_prepare;
   source_class->context_create = dav_canyon_delay_context_create;
   
-  bse_object_class_add_param (object_class, "Left to Right", PROP_LEFT_TO_RIGHT_TIME,
-                              sfi_pspec_real ("left_to_right_time", "Delay (seconds)",
-                                              "Set the time for the left to right delay",
+  bse_object_class_add_param (object_class, _("Left to Right"), PROP_LEFT_TO_RIGHT_TIME,
+                              sfi_pspec_real ("left_to_right_time", _("Delay (seconds)"),
+                                              _("The time for the left to right delay"),
                                               0.09, 0.01, 0.99, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Left to Right", PROP_LEFT_TO_RIGHT_FEEDBACK,
-                              sfi_pspec_real ("left_to_right_feedback", "Feedback [%]",
-                                              "Set the feedback amount; a negative feedback inverts the signal",
+  bse_object_class_add_param (object_class, _("Left to Right"), PROP_LEFT_TO_RIGHT_FEEDBACK,
+                              sfi_pspec_real ("left_to_right_feedback", _("Feedback [%]"),
+                                              _("The feedback amount; a negative feedback inverts the signal"),
                                               60.0, -100.0, 100.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Right to Left", PROP_RIGHT_TO_LEFT_TIME,
-                              sfi_pspec_real ("right_to_left_time", "Delay (seconds)",
-                                              "Set the time for the right to left delay",
+  bse_object_class_add_param (object_class, _("Right to Left"), PROP_RIGHT_TO_LEFT_TIME,
+                              sfi_pspec_real ("right_to_left_time", _("Delay (seconds)"),
+                                              _("The time for the right to left delay"),
                                               0.26, 0.01, 0.99, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Right to Left", PROP_RIGHT_TO_LEFT_FEEDBACK,
-                              sfi_pspec_real ("right_to_left_feedback", "Feedback [%]",
-                                              "Set the feedback amount; a negative feedback inverts the signal",
+  bse_object_class_add_param (object_class, _("Right to Left"), PROP_RIGHT_TO_LEFT_FEEDBACK,
+                              sfi_pspec_real ("right_to_left_feedback", _("Feedback [%]"),
+                                              _("Set the feedback amount; a negative feedback inverts the signal"),
                                               -70.0, -100.0, 100.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
 
-  bse_object_class_add_param (object_class, "IIR Low-Pass Filter", PROP_FILTER_FREQ,
-                              bse_param_spec_freq ("filter_freq", "Frequency",
-                                                   "Set cutoff frequency for reflection filter",
+  bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_FREQ,
+                              bse_param_spec_freq ("filter_freq", _("Frequency"),
+                                                   _("Reflection cutoff frequency"),
                                                    bse_note_to_freq (SFI_NOTE_C (+3)), BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
-  bse_object_class_add_param (object_class, "IIR Low-Pass Filter", PROP_FILTER_NOTE,
-                              bse_pspec_note_simple ("filter_note", "Note", NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_NOTE,
+                              bse_pspec_note_simple ("filter_note", _("Note"), NULL, SFI_PARAM_GUI));
 
   channel = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), _("Left Audio Input"));
   g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
