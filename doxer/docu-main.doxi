@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/03/23 01:47:53 $
+@doxer_set{rvstamp,parse_date} $Date:$
 
 @titlesection
 @doctitle		Doxer - Software documentation system
