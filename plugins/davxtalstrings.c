@@ -105,7 +105,8 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_FREQ,
-			      bse_param_spec_freq ("base_freq", _("Frequency"), NULL,
+			      bse_param_spec_freq ("base_freq", _("Frequency"),
+                                                   _("String oscillation frequency in Herz"),
 						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Frequency"),
@@ -121,32 +122,32 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
 			      sfi_pspec_int ("fine_tune", _("Fine Tune"), _("Amount of detuning in cent (hundredth part of a semitone)"),
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
 					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
-  bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_VEL,
-			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
-                                              "Velocity of the string pluck",
+  bse_object_class_add_param (object_class, _("Trigger"), PARAM_TRIGGER_VEL,
+			      sfi_pspec_real ("trigger_vel", _("Trigger Velocity [%]"),
+                                              _("Velocity of the string pluck"),
                                               100.0,  0.0, 100.0, 1,
                                               SFI_PARAM_GUI ":scale"));
-  bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
-			      sfi_pspec_bool ("trigger_pulse", "Trigger Hit", "Pluck the string",
+  bse_object_class_add_param (object_class, _("Trigger"), PARAM_TRIGGER_HIT,
+			      sfi_pspec_bool ("trigger_pulse", _("Trigger Hit"), _("Pluck the string"),
                                               FALSE, SFI_PARAM_GUI ":trigger:skip-undo"));
-  bse_object_class_add_param (object_class, "Decay", PARAM_NOTE_DECAY,
-			      sfi_pspec_real ("note_decay", "Note Decay",
-                                              "Note decay is the 'half-life' of the note's decay in seconds",
+  bse_object_class_add_param (object_class, _("Decay"), PARAM_NOTE_DECAY,
+			      sfi_pspec_real ("note_decay", _("Note Decay"),
+                                              _("Note decay is the 'half-life' of the note's decay in seconds"),
                                               0.4, 0.001, 4.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Decay", PARAM_TENSION_DECAY,
-			      sfi_pspec_real ("tension_decay", "Tension Decay",
-                                              "Tension of the string",
+  bse_object_class_add_param (object_class, _("Decay"), PARAM_TENSION_DECAY,
+			      sfi_pspec_real ("tension_decay", _("Tension Decay"),
+                                              _("Tension of the string"),
                                               0.04, 0.001, 1.0, 0.01,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
-			      sfi_pspec_real ("metallic_factor", "Metallic Factor [%]",
-                                              "Metallicness of the string",
+  bse_object_class_add_param (object_class, _("Flavour"), PARAM_METALLIC_FACTOR,
+			      sfi_pspec_real ("metallic_factor", _("Metallic Factor [%]"),
+                                              _("Metallicness of the string"),
                                               16.0, 0.0, 100.0, 1,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
-			      sfi_pspec_real ("snap_factor", "Snap Factor [%]",
-                                              "Snappiness of the string",
+  bse_object_class_add_param (object_class, _("Flavour"), PARAM_SNAP_FACTOR,
+			      sfi_pspec_real ("snap_factor", _("Snap Factor [%]"),
+                                              _("Snappiness of the string"),
                                               34.0, 0.0, 100.0, 1,
                                               SFI_PARAM_STANDARD ":scale"));
   

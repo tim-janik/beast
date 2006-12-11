@@ -86,30 +86,30 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   source_class->prepare = dav_syn_drum_prepare;
   source_class->context_create = dav_syn_drum_context_create;
 
-  bse_object_class_add_param (object_class, "Frequency", PROP_BASE_FREQ,
-                              bse_param_spec_freq ("base_freq", "Frequency", NULL,
+  bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_FREQ,
+                              bse_param_spec_freq ("base_freq", _("Frequency"),
+                                                   _("Drum frequency in Herz"),
                                                    bse_note_to_freq (SFI_NOTE_Gis (-1)), BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
-  bse_object_class_add_param (object_class, "Frequency", PROP_BASE_NOTE,
-                              bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_NOTE,
+                              bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
 
   bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_VEL,
-			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
-                                              "Set the velocity of the drum hit",
+			      sfi_pspec_real ("trigger_vel", _("Trigger Velocity [%]"),
+                                              _("The velocity of the drum hit"),
                                               100.0, 0.0, 1000.0, 10.0,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_HIT,
-			      sfi_pspec_bool ("force_trigger", "Trigger Hit", "Hit the drum",
+  bse_object_class_add_param (object_class, _("Trigger"), PROP_TRIGGER_HIT,
+			      sfi_pspec_bool ("force_trigger", _("Trigger Hit"), _("Manual trigger for the drum"),
                                               FALSE, SFI_PARAM_GUI ":trigger:skip-undo"));
-  bse_object_class_add_param (object_class, "Parameters", PROP_RES,
-			      sfi_pspec_real ("res", "Resonance",
-                                              "Set resonance half life in number of milli seconds",
+  bse_object_class_add_param (object_class, _("Parameters"), PROP_RES,
+			      sfi_pspec_real ("res", _("Resonance"),
+                                              _("The resonance half life in number of milli seconds"),
                                               50, 1, 1000.0, 2.5,
                                               SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Parameters", PROP_RATIO,
-			      sfi_pspec_real ("ratio", "Frequency Ratio",
-                                              "Set ratio of frequency shift. (i.e. 1.0 means shift "
-                                              "equal to the drum's base frequency)",
+  bse_object_class_add_param (object_class, _("Parameters"), PROP_RATIO,
+			      sfi_pspec_real ("ratio", _("Frequency Ratio"),
+                                              _("The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)"),
                                               1.0, 0.0, 10.0, 0.1,
                                               SFI_PARAM_STANDARD ":scale"));
 
