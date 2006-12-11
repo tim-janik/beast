@@ -772,6 +772,11 @@ generic_filter_tests (const char        *test_name,
           TCHECK_CMP (max_pass_damping, >, passband_ripple_db - 0.01);
           TCHECK_CMP (max_pass_damping, <, passband_ripple_db * 0.9);
         }
+      if (req->type == BSE_IIR_FILTER_LOW_PASS)
+        {
+          double max_stop_damping = max_band_damping (&fdes, 0.5 * req->sampling_frequency, 0.5 * req->sampling_frequency);
+          TCHECK_CMP (max_stop_damping, <, stopband_db * 0.98);
+        }
       if (req->type == BSE_IIR_FILTER_HIGH_PASS)
         {
           double min_pass_damping = min_band_damping (&fdes, req->passband_edge, 0.5 * req->sampling_frequency);
