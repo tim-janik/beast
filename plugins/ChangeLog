@@ -1,3 +1,16 @@
+Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.c:
+	* bseiirfilter.c:
+	* davorgan.c:
+	* davsyndrum.c:
+	* davcanyondelay.c:
+	* davxtalstrings.c: adapt to new tuning relative note API, add a
+	warning to tooltips that informs about the musical tuning specific
+	interpretation of note properties. 
+	use bse_source_prepared_musical_tuning() once sources are prepared 
+	and if possible.
+
 Sun Dec 10 23:56:56 2006  Tim Janik  <timj@gtk.org>
 
 	* davxtalstrings.c (dav_xtal_strings_class_init):

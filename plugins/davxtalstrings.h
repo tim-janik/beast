@@ -39,13 +39,13 @@ extern "C" {
 typedef struct _DavXtalStrings	    DavXtalStrings;
 typedef struct _DavXtalStringsClass DavXtalStringsClass;
 typedef struct {
+  double      transpose_factor;
   gfloat      freq;
   gfloat      trigger_vel;
   gfloat      note_decay;
   gfloat      tension_decay;
   gfloat      metallic_factor;
   gfloat      snap_factor;
-  gint        transpose;
   gint        fine_tune;
   guint	      trigger_now : 1;
 } DavXtalStringsParams;
@@ -54,6 +54,7 @@ struct _DavXtalStrings
   BseSource parent_object;
 
   DavXtalStringsParams params;
+  int                  transpose;
 };
 
 struct _DavXtalStringsClass

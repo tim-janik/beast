@@ -89,10 +89,13 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_FREQ,
                               bse_param_spec_freq ("base_freq", _("Frequency"),
                                                    _("Drum frequency in Herz"),
-                                                   bse_note_to_freq (SFI_NOTE_Gis (-1)), BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
+                                                   bse_note_to_freq (BSE_MUSICAL_TUNING_12_TET, SFI_NOTE_Gis (-1)),
+                                                   BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Frequency"), PROP_BASE_NOTE,
-                              bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+                              bse_pspec_note_simple ("base_note", _("Note"),
+                                                     _("Drum frequency as note, converted to Herz according to the current musical tuning"),
+                                                     SFI_PARAM_GUI));
 
   bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_VEL,
 			      sfi_pspec_real ("trigger_vel", _("Trigger Velocity [%]"),
@@ -126,7 +129,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 static void
 dav_syn_drum_init (DavSynDrum *self)
 {
-  self->params.freq = bse_note_to_freq (SFI_NOTE_Gis (-1));
+  self->params.freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), SFI_NOTE_Gis (-1));
   self->params.trigger_vel = 100.0 * 0.01;
   self->params.ratio = 1.0;
   self->params.res = 0;
@@ -148,7 +151,7 @@ dav_syn_drum_set_property (GObject         *object,
       g_object_notify (self, "base-note");
       break;
     case PROP_BASE_NOTE:
-      self->params.freq = bse_note_to_freq (sfi_value_get_note (value));
+      self->params.freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       g_object_notify (self, "base-freq");
       break;
     case PROP_RATIO:
@@ -183,7 +186,7 @@ dav_syn_drum_get_property (GObject         *object,
       sfi_value_set_real (value, self->params.freq);
       break;
     case PROP_BASE_NOTE:
-      sfi_value_set_note (value, bse_note_from_freq (self->params.freq));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->params.freq));
       break;
     case PROP_TRIGGER_VEL:
       sfi_value_set_real (value, self->params.trigger_vel * 100.0);

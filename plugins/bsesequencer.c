@@ -1,5 +1,5 @@
 /* BseSequencer - BSE Sequencer
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999, 2000-2002, 2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -214,8 +214,9 @@ bse_sequencer_get_property (BseSequencer *seq,
 }
 
 static gfloat*
-freq_values_from_seq (BseNoteSequence *sdata,
-		      gint             transpose)
+freq_values_from_seq (BseMusicalTuningType musical_tuning,
+                      BseNoteSequence     *sdata,
+		      gint                 transpose)
 {
   gfloat *v = g_new (gfloat, bse_note_sequence_length (sdata));
   guint i;
@@ -227,7 +228,7 @@ freq_values_from_seq (BseNoteSequence *sdata,
       if (note == SFI_NOTE_VOID)
 	v[i] = 0;
       else
-	v[i] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (CLAMP (note + transpose, SFI_MIN_NOTE, SFI_MAX_NOTE)));
+	v[i] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (musical_tuning, CLAMP (note + transpose, SFI_MIN_NOTE, SFI_MAX_NOTE)));
     }
   
   return v;
@@ -282,7 +283,7 @@ bse_sequencer_update_modules (BseSequencer *seq)
       d->old_values = seq->freq_values;
       
       seq->n_freq_values = bse_note_sequence_length (seq->sdata);
-      seq->freq_values = freq_values_from_seq (seq->sdata, seq->transpose);
+      seq->freq_values = freq_values_from_seq (bse_source_prepared_musical_tuning (BSE_SOURCE (seq)), seq->sdata, seq->transpose);
       
       d->n_values = seq->n_freq_values;
       d->new_values = seq->freq_values;
@@ -330,7 +331,7 @@ bse_sequencer_prepare (BseSource *source)
   BseSequencer *seq = BSE_SEQUENCER (source);
   
   seq->n_freq_values = bse_note_sequence_length (seq->sdata);
-  seq->freq_values = freq_values_from_seq (seq->sdata, seq->transpose);
+  seq->freq_values = freq_values_from_seq (bse_source_prepared_musical_tuning (source), seq->sdata, seq->transpose);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);

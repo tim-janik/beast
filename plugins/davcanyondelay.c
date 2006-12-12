@@ -1,5 +1,6 @@
 /* DavCanyonDelay - DAV Canyon Delay
- * Copyright (c) 1999, 2000 David A. Bartold, 2003 Tim Janik
+ * Copyright (c) 1999, 2000 David A. Bartold
+ * Copyright (c) 2003, 2006 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -108,10 +109,13 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_FREQ,
                               bse_param_spec_freq ("filter_freq", _("Frequency"),
                                                    _("Reflection cutoff frequency"),
-                                                   bse_note_to_freq (SFI_NOTE_C (+3)), BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
+                                                   bse_note_to_freq (BSE_MUSICAL_TUNING_12_TET, SFI_NOTE_C (+3)),
+                                                   BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_NOTE,
-                              bse_pspec_note_simple ("filter_note", _("Note"), NULL, SFI_PARAM_GUI));
+                              bse_pspec_note_simple ("filter_note", _("Note"),
+                                                     _("Filter cutoff frequency as note, converted to Herz according to the current musical tuning"),
+                                                     SFI_PARAM_GUI));
 
   channel = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), _("Left Audio Input"));
   g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
@@ -130,7 +134,7 @@ dav_canyon_delay_init (DavCanyonDelay *self)
   self->l_to_r_feedback = 60.0;
   self->r_to_l_seconds = 0.26;
   self->r_to_l_feedback = -70.0;
-  self->filter_freq = bse_note_to_freq (SFI_NOTE_C (+3));
+  self->filter_freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), SFI_NOTE_C (+3));
 }
 
 static void
@@ -159,7 +163,7 @@ dav_canyon_delay_set_property (GObject             *object,
       g_object_notify (self, "filter-note");
       break;
     case PROP_FILTER_NOTE:
-      self->filter_freq = bse_note_to_freq (sfi_value_get_note (value));
+      self->filter_freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       g_object_notify (self, "filter-freq");
       break;
     default:
@@ -194,7 +198,7 @@ dav_canyon_delay_get_property (GObject             *object,
       sfi_value_set_real (value, self->filter_freq);
       break;
     case PROP_FILTER_NOTE:
-      sfi_value_set_note (value, bse_note_from_freq (self->filter_freq));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->filter_freq));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

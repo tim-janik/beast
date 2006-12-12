@@ -140,23 +140,25 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 					      SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_FREQ1,
-			      bse_param_spec_freq ("cut_off_freq", _("Cutoff [Hz]"), NULL,
+			      bse_param_spec_freq ("cut_off_freq", _("Cutoff [Hz]"), _("Filter cutoff frequency"),
 						   BSE_KAMMER_FREQUENCY / 2, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_NOTE1,
-			      bse_pspec_note ("cut_off_note", _("Note"), NULL,
-					      bse_note_from_freq (BSE_KAMMER_FREQUENCY / 2),
+			      bse_pspec_note ("cut_off_note", _("Note"),
+                                              _("Filter cutoff frequency as note, converted to Herz according to the current musical tuning"),
+					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2),
 					      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_FREQ2,
-			      bse_param_spec_freq ("cut_off_freq_2", _("Cutoff [Hz]"), NULL,
+			      bse_param_spec_freq ("cut_off_freq_2", _("Cutoff [Hz]"), _("Second filter cutoff frequency"),
 						   BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_NOTE2,
-			      bse_pspec_note ("cut_off_note_2", _("Note"), NULL,
-					      bse_note_from_freq (BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA),
+			      bse_pspec_note ("cut_off_note_2", _("Note"),
+                                              _("Filter cutoff frequency as note, converted to Herz according to the current musical tuning"),
+					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY / 2 + FREQ_DELTA),
 					      SFI_PARAM_GUI));
   
   ichannel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Input"));
@@ -218,7 +220,7 @@ bse_iir_filter_set_property (GObject	  *object,
       g_object_notify (self, "cut_off_note");
       break;
     case PARAM_CUT_OFF_NOTE1:
-      self->cut_off_freq1 = bse_note_to_freq (sfi_value_get_note (value));
+      self->cut_off_freq1 = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       self->cut_off_freq1 = MAX (self->cut_off_freq1, BSE_MIN_OSC_FREQUENCY);
       if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
@@ -241,7 +243,7 @@ bse_iir_filter_set_property (GObject	  *object,
       g_object_notify (self, "cut_off_note_2");
       break;
     case PARAM_CUT_OFF_NOTE2:
-      self->cut_off_freq2 = bse_note_to_freq (sfi_value_get_note (value));
+      self->cut_off_freq2 = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       self->cut_off_freq2 = MAX (self->cut_off_freq2, BSE_MIN_OSC_FREQUENCY);
       if (self->cut_off_freq1 + FREQ_DELTA > self->cut_off_freq2)
 	{
@@ -284,13 +286,13 @@ bse_iir_filter_get_property (GObject	*object,
       sfi_value_set_real (value, self->cut_off_freq1);
       break;
     case PARAM_CUT_OFF_NOTE1:
-      sfi_value_set_note (value, bse_note_from_freq (self->cut_off_freq1));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->cut_off_freq1));
       break;
     case PARAM_CUT_OFF_FREQ2:
       sfi_value_set_real (value, self->cut_off_freq2);
       break;
     case PARAM_CUT_OFF_NOTE2:
-      sfi_value_set_note (value, bse_note_from_freq (self->cut_off_freq2));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->cut_off_freq2));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

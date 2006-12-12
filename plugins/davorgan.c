@@ -106,12 +106,15 @@ dav_organ_class_init (DavOrganClass *class)
   source_class->reset = dav_organ_reset;
   
   bse_object_class_add_param (object_class, _("Base Frequency"), PARAM_BASE_FREQ,
-			      bse_param_spec_freq ("base_freq", _("Frequency"), NULL,
+			      bse_param_spec_freq ("base_freq", _("Frequency"),
+                                                   _("Organ frequency in Herz, i.e. the pitch of the base tone"),
 						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
                               PARAM_BASE_NOTE,
-                              bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+                              bse_pspec_note_simple ("base_note", _("Note"),
+                                                     _("Organ frequency as note, converted to Herz according to the current musical tuning"),
+                                                     SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PARAM_TRANSPOSE,
 			      sfi_pspec_int ("transpose", _("Transpose"), _("Transposition of the frequency in semitones"),
@@ -180,12 +183,13 @@ dav_organ_set_property (GObject      *object,
       dav_organ_update_modules (self);
       break;
     case PARAM_BASE_NOTE:
-      self->config.freq = bse_note_to_freq (sfi_value_get_note (value));
+      self->config.freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       g_object_notify (G_OBJECT (self), "base_freq");
       dav_organ_update_modules (self);
       break;
     case PARAM_TRANSPOSE:
-      self->config.transpose = sfi_value_get_int (value);
+      self->transpose = sfi_value_get_int (value);
+      self->config.transpose_factor = bse_transpose_factor (bse_item_current_musical_tuning (BSE_ITEM (self)), self->transpose);
       dav_organ_update_modules (self);
       break;
     case PARAM_FINE_TUNE:
@@ -248,10 +252,10 @@ dav_organ_get_property (GObject    *object,
       sfi_value_set_real (value, self->config.freq);
       break;
     case PARAM_BASE_NOTE:
-      sfi_value_set_note (value, bse_note_from_freq (self->config.freq));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->config.freq));
       break;
     case PARAM_TRANSPOSE:
-      sfi_value_set_int (value, self->config.transpose);
+      sfi_value_set_int (value, self->transpose);
       break;
     case PARAM_FINE_TUNE:
       sfi_value_set_int (value, self->config.fine_tune);
@@ -424,7 +428,7 @@ dav_organ_process (BseModule *module,
   const gfloat *reed_table = organ->config.reed ? class->pulse_table : sine_table;
   const gfloat *ifreq = BSE_MODULE_IBUFFER (module, DAV_ORGAN_ICHANNEL_FREQ);
   gfloat *ovalues = BSE_MODULE_OBUFFER (module, DAV_ORGAN_OCHANNEL_MONO);
-  const gdouble transpose = bse_transpose_factor (organ->config.transpose);
+  const gdouble transpose = organ->config.transpose_factor;
   const gdouble fine_tune = bse_cent_factor (organ->config.fine_tune);
   guint freq_256, mix_freq_256;
   guint freq_256_harm0, freq_256_harm1;

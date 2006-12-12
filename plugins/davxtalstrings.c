@@ -111,7 +111,9 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_NOTE,
-			      bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+			      bse_pspec_note_simple ("base_note", _("Note"),
+                                                     _("String oscillation frequency as note, converted to Herz according to the current musical tuning"),
+                                                     SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_TRANSPOSE,
 			      sfi_pspec_int ("transpose", _("Transpose"), _("Transposition of the frequency in semitones"),
@@ -194,12 +196,12 @@ dav_xtal_strings_set_property (GObject      *object,
       g_object_notify (G_OBJECT (self), "base_note");
       break;
     case PARAM_BASE_NOTE:
-      self->params.freq = bse_note_to_freq (sfi_value_get_note (value));
+      self->params.freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       dav_xtal_strings_update_modules (self, FALSE);
       g_object_notify (G_OBJECT (self), "base_freq");
       break;
     case PARAM_TRANSPOSE:
-      self->params.transpose = sfi_value_get_int (value);
+      self->transpose = sfi_value_get_int (value);
       dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_FINE_TUNE:
@@ -248,10 +250,10 @@ dav_xtal_strings_get_property (GObject    *object,
       sfi_value_set_real (value, self->params.freq);
       break;
     case PARAM_BASE_NOTE:
-      sfi_value_set_note (value, bse_note_from_freq (self->params.freq));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->params.freq));
       break;
     case PARAM_TRANSPOSE:
-      sfi_value_set_int (value, self->params.transpose);
+      sfi_value_set_int (value, self->transpose);
       break;
     case PARAM_FINE_TUNE:
       sfi_value_set_int (value, self->params.fine_tune);
@@ -314,7 +316,7 @@ xmod_trigger (XtalStringsModule *xmod,
    * be played, including detuning and transpose operations
    */
   gdouble trigger_freq = untransposed_trigger_freq;
-  trigger_freq *= bse_transpose_factor (xmod->tparams.transpose);
+  trigger_freq *= xmod->tparams.transpose_factor;
   trigger_freq *= bse_cent_factor (xmod->tparams.fine_tune);
   trigger_freq = CLAMP (trigger_freq, 27.5, 4000.0);
   xmod->last_transposed_trigger_freq = trigger_freq;
@@ -501,6 +503,7 @@ dav_xtal_strings_update_modules (DavXtalStrings *self,
        * test triggers from the GUI.
        */
       self->params.trigger_now = trigger_now;
+      self->params.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (BSE_SOURCE (self)), self->transpose);
       bse_source_access_modules (BSE_SOURCE (self),
 				 xmod_access,
 				 g_memdup (&self->params, sizeof (self->params)),

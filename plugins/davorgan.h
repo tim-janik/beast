@@ -39,8 +39,8 @@ extern "C" {
 typedef struct _DavOrgan      DavOrgan;
 typedef struct _DavOrganClass DavOrganClass;
 typedef struct {
+  double      transpose_factor;
   gfloat      freq;
-  gint        transpose;
   gint        fine_tune;
   /* harmonic weights */
   gfloat      harm0;
@@ -59,6 +59,7 @@ struct _DavOrgan
   BseSource parent_object;
 
   DavOrganConfig config;
+  int            transpose;
 };
 
 struct _DavOrganClass
