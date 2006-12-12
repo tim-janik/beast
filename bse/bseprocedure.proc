@@ -31,7 +31,7 @@ LICENSE = "GNU General Public License";
 PROCEDURE (bse-note-to-freq, "Note to Freq") {
   HELP  = "Retrieve the frequency of a certain note.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
-			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+			       BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = sfi_pspec_real ("frequency", "Frequency", NULL,
@@ -65,7 +65,7 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
 PROCEDURE (bse-note-from-freq, "Note from Freq") {
   HELP  = "Retrieve the note of a certain frequency.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
-			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+			       BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_real ("frequency", "Frequency", NULL,
 			  BSE_KAMMER_FREQUENCY, 0, BSE_MAX_FREQUENCY, 0.1,
 			  SFI_PARAM_STANDARD);
@@ -87,7 +87,7 @@ PROCEDURE (bse-note-from-freq, "Note from Freq") {
 PROCEDURE (bse-note-describe, "Describe Note") {
   HELP	= "Describe a note, providing information about its octave, semitone, frequency, etc.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
-			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+			       BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
@@ -111,7 +111,7 @@ BODY (BseProcedureClass *proc,
 PROCEDURE (bse-note-describe-from-freq, "Describe Note From Freq") {
   HELP	= "Describe a note, given its frequency.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
-			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+			       BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_real ("freq", "Frequency", NULL,
 			  BSE_KAMMER_FREQUENCY,
 			  0, BSE_MAX_FREQUENCY,
@@ -138,7 +138,7 @@ BODY (BseProcedureClass *proc,
 PROCEDURE (bse-note-from-string, "Note From String") {
   HELP	= "Describe a note, given its name and octave offset.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
-			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+			       BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", NULL,
 			    "", SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
@@ -163,7 +163,7 @@ BODY (BseProcedureClass *proc,
 PROCEDURE (bse-note-construct, "Note Construction") {
   HELP	= "Describe a note, given its semitone, octave and fine tune.";
   IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
-			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+			       BSE_MUSICAL_TUNING_12_TET, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("semitone", NULL, NULL,
 			 9, 0, 11, 1,
 			 SFI_PARAM_STANDARD);
