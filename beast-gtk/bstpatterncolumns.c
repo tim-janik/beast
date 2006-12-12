@@ -120,7 +120,8 @@ pattern_column_note_char (BstPatternColumnNote *self,
   else if (pseq->n_pnotes > 1)
     return '*';
   /* pseq->n_pnotes == 1 */
-  ndesc = bse_server_describe_note (BSE_SERVER, pseq->pnotes[0]->note, pseq->pnotes[0]->fine_tune);
+  ndesc = bse_note_describe (BSE_MUSICAL_TUNING_12_TET, /* tuning is irrelevant if we ignore ->freq */
+                             pseq->pnotes[0]->note, pseq->pnotes[0]->fine_tune);
   switch (pos)
     {
     case 0:     return ndesc->upshift ? '#' : ' ';

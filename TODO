@@ -1,5 +1,7 @@
-- fix array list
-- remove _birnet_init_messaging
+- acbeast.m4 -> acbirnet.m4
+- bsemathsignal.c -> bsemathsignal.cc
+- change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
+- reconsider musical tuning for midi devices and midi files
 - adsr: + delay parameter
   looping flag with threshold
   max sustain time

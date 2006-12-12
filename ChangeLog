@@ -1,3 +1,11 @@
+Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/perftest.cc:
+	* beast-gtk/bstpatterncolumns.c:
+	* tools/bsewavetool.cc: adapt to new tuning relative note API.
+
+	* tests/latency/bselatencytest.idl: minor fix.
+
 Mon Dec  4 12:38:13 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Added lowpass command. Both commands: made
