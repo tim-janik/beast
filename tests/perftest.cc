@@ -51,7 +51,7 @@ int main(int argc, char **argv)
   double start = gettime ();
 
   for(int i=0; i < max_calls; i++)
-    note_to_freq (MUSICAL_TUNING_EQUAL_TEMPERAMENT, 60, 0);
+    note_to_freq (MUSICAL_TUNING_12_TET, 60, 0);
 
   double t = gettime () - start;
   printf ("%f seconds for %d invocations => %f invocations/second, %f milli seconds per invocation\n",
