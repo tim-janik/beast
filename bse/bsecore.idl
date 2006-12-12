@@ -69,6 +69,82 @@ sequence StringSeq {
   String strings;
 };
 
+/* musical tunings: http://en.wikipedia.org/wiki/Musical_tuning */
+choice MusicalTuningType {
+  /* Equal Temperament: http://en.wikipedia.org/wiki/Equal_temperament */
+  MUSICAL_TUNING_12_TET                 = (1, _("12 Tone Equal Temperament"),   // http://en.wikipedia.org/wiki/Equal_temperament
+                                           _("The most common tuning system for modern Western music, "
+                                             "is the twelve-tone equal temperament, abbreviated as 12-TET, "
+                                             "which divides the octave into 12 equal parts.")),
+  MUSICAL_TUNING_7_TET                  = (_("7 Tone Equal Temperament"),      // http://en.wikipedia.org/wiki/Equal_temperament
+                                           _("A fairly common tuning system is the seven-tone equal temperament tuning system, "
+                                             "abbreviated as 7-TET. It divides the octave into 7 equal parts using 171 cent steps.")),
+  MUSICAL_TUNING_5_TET                  = (_("5 Tone Equal Temperament"),      // http://en.wikipedia.org/wiki/Equal_temperament
+                                           _("A fairly common tuning system is the five-tone equal temperament tuning system, "
+                                             "abbreviated as 5-TET. It divides the octave into 5 equal parts using 240 cent steps.")),
+  /* Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation */
+  MUSICAL_TUNING_DIATONIC_SCALE         = (_("Diatonic Scale"),                 // http://en.wikipedia.org/wiki/Diatonic_scale
+                                           _("In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
+                                             "musical scale comprising five whole-tone and two half-tone steps. "
+                                             "The half tones are maximally separated, so between two half-tone steps "
+                                             "there are either two or three whole tones, repeating per octave.")), // Werckmeister I
+  MUSICAL_TUNING_INDIAN_SCALE           = (_("Indian Scale"),                   // http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
+                                           _("Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2")),
+  MUSICAL_TUNING_PYTHAGOREAN_TUNING     = (_("Pythagorean Tuning"),             // http://en.wikipedia.org/wiki/Pythagorean_tuning
+                                           _("Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
+                                             "in which the frequency relationships of all intervals are based on the ratio 3:2. "
+                                             "Its discovery is generally credited to Pythagoras.")),
+  MUSICAL_TUNING_PENTATONIC_5_LIMIT     = (_("Pentatonic 5-limit"),             // http://en.wikipedia.org/wiki/Pentatonic_scale
+                                           _("Pentatonic scales are used in modern jazz and pop/rock contexts "
+                                             "because they work exceedingly well over several chords diatonic "
+                                             "to the same key, often better than the parent scale.")),
+  MUSICAL_TUNING_PENTATONIC_BLUES       = (_("Pentatonic Blues"),               // http://en.wikipedia.org/wiki/Pentatonic_scale
+                                           _("The blues scale is the minor pentatonic with an additional augmented fourth, "
+                                             "which is referred to as the \"blues note\".")),
+  MUSICAL_TUNING_PENTATONIC_GOGO        = (_("Pentatonic Gogo"),                // http://en.wikipedia.org/wiki/Pentatonic_scale
+                                           _("The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune the "
+                                             "instruments of the Gogo people of Tanzania.")),
+  /* Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament */
+  MUSICAL_TUNING_QUARTER_COMMA_MEANTONE = (_("Quarter-Comma Meantone"),         // http://en.wikipedia.org/wiki/Quarter-comma_meantone
+                                           _("Quarter-comma meantone was the most common meantone temperament in the "
+                                             "sixteenth and seventeenth centuries and sometimes used later.")), // Werckmeister II
+  MUSICAL_TUNING_SILBERMANN_SORGE       = (_("Silbermann-Sorge Temperament"),   // http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
+                                           _("The Silbermann-Sorge temperament is a meantone temperament used for "
+                                             "Baroque era organs by Gottfried Silbermann.")),
+  /* Well Temperament: http://en.wikipedia.org/wiki/Well_temperament */
+  MUSICAL_TUNING_WERCKMEISTER_3         = (_("Werckmeister III"),               // http://en.wikipedia.org/wiki/Werckmeister_temperament
+                                           _("This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but each "
+                                             "of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by 1/4 comma. "
+                                             "Werckmeister designated this tuning as particularly suited for playing chromatic music.")),
+  MUSICAL_TUNING_WERCKMEISTER_4         = (_("Werckmeister IV"),                // http://en.wikipedia.org/wiki/Werckmeister_temperament
+                                           _("In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow by 1/3 comma, "
+                                             "and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The other fifths are pure. "
+                                             "Most of its intervals are close to sixth-comma meantone. "
+                                             "Werckmeister designed this tuning for playing mainly diatonic music.")),
+  MUSICAL_TUNING_WERCKMEISTER_5         = (_("Werckmeister V"),                 // http://en.wikipedia.org/wiki/Werckmeister_temperament
+                                           _("In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by 1/4 comma, "
+                                             "and the fifth G#-D# is widened by 1/4 comma. The other fifths are pure. "
+                                             "This temperament is closer to equal temperament than Werckmeister III or IV.")),
+  MUSICAL_TUNING_WERCKMEISTER_6         = (_("Werckmeister VI"),                // http://en.wikipedia.org/wiki/Werckmeister_temperament
+                                           _("This tuning is also known as Septenarius tuning is based on a division of the monochord "
+                                             "length into 196 = 7 * 7 * 4 parts. "
+                                             "The resulting scale has rational frequency relationships, but in practice involves pure "
+                                             "and impure sounding fifths. "
+                                             "Werckmeister described the Septenarius as a \"temperament which has nothing at all to do "
+                                             "with the divisions of the comma, nevertheless in practice so correct that one can be really "
+                                             "satisfied with it\".")),
+  MUSICAL_TUNING_KIRNBERGER_3           = (_("Kirnberger III"),                 // http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
+                                           _("Kirnberger's method of compensating for and closing the circle of fifths is to split the \"wolf\" "
+                                             "interval known to those who have used meantone temperaments between four fifths instead, "
+                                             "allowing for four 1/4-comma wolves to take their place. "
+                                             "1/4-comma wolves are used extensively in meantone and are much easier to tune and to listen to. "
+                                             "Therefore, only one third remains pure (between C and E).")),
+  MUSICAL_TUNING_YOUNG                  = (_("Young Temperament"),              // http://en.wikipedia.org/wiki/Young_temperament
+                                           _("Thomas Young devised a form of musical tuning to make the harmony most perfect in those keys which "
+                                             "are the most frequently used (give better major thirds in those keys), but to not have any unplayable keys. "
+                                             "This is attempted by tuning upwards from C a sequence of six pure fourths, "
+                                             "as well as six equally imperfect fifths.")),
+};
 
 /* various MIDI specific definitions */
 choice MidiSignalType {
@@ -522,6 +598,7 @@ sequence PartControlSeq {
 
 record NoteDescription
 {
+  MusicalTuningType musical_tuning;
   Int    note            = Note ("Note", "", KAMMER_NOTE, ":readwrite");
   Int    octave          = Octave ("Octave", "", KAMMER_OCTAVE, ":readwrite");
   Real   freq            = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
@@ -533,10 +610,9 @@ record NoteDescription
   /* constants */
   Int    max_fine_tune   = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
   Int    kammer_note     = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
-  // FIXME: turn semicolons in blurb into commas once texitheque got fixed
   Info   blurb           = "A note description provides all necessary details about a specific note. "
                            "Various procedures exist to retrieve a note description; given different "
-                           "key values. The max_fine_tune and kammer_note fields are constants; which "
+                           "key values. The max_fine_tune and kammer_note fields are constants, which "
                            "are provided for compatibility reasons and will vanish in future APIs.";
 };
 

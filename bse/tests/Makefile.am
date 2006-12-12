@@ -15,6 +15,10 @@ EXTRA_DIST += arrows.gp filter-defs.gp
 noinst_PROGRAMS = $(ALLTESTS)
 progs_ldadd     = $(top_builddir)/bse/libbse.la
 
+TESTS            += misctests
+misctests_SOURCES = misctests.cc
+misctests_LDADD   = $(progs_ldadd)
+
 TESTS             += filtertest
 SLOWTESTS         += filtertest
 filtertest_SOURCES = filtertest.cc

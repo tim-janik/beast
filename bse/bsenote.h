@@ -19,6 +19,7 @@
 #define __BSE_NOTE_H__
 
 #include        <bse/bseglobals.h>
+#include        <bse/bsetype.h>
 
 G_BEGIN_DECLS
 
@@ -65,36 +66,20 @@ G_BEGIN_DECLS
 #define BSE_NOTE_OCTAVE_DOWN(n)         (BSE_NOTE_SHIFT ((n), -12))
 
 
-/* --- get frequencies from notes --- */
-#define BSE_FREQ_GENERIC(o,ht_i)        (bse_freq_from_note (BSE_NOTE_GENERIC (o, ht_i)))
-#define BSE_FREQ_C(o)                   (bse_freq_from_note (BSE_NOTE_C (o)))
-#define BSE_FREQ_Cis(o)                 (bse_freq_from_note (BSE_NOTE_Cis (o)))
-#define BSE_FREQ_Des(o)                 (bse_freq_from_note (BSE_NOTE_Des (o)))
-#define BSE_FREQ_D(o)                   (bse_freq_from_note (BSE_NOTE_D (o)))
-#define BSE_FREQ_Dis(o)                 (bse_freq_from_note (BSE_NOTE_Dis (o)))
-#define BSE_FREQ_Es(o)                  (bse_freq_from_note (BSE_NOTE_Es (o)))
-#define BSE_FREQ_E(o)                   (bse_freq_from_note (BSE_NOTE_E (o)))
-#define BSE_FREQ_F(o)                   (bse_freq_from_note (BSE_NOTE_F (o)))
-#define BSE_FREQ_Fis(o)                 (bse_freq_from_note (BSE_NOTE_Fis (o)))
-#define BSE_FREQ_Ges(o)                 (bse_freq_from_note (BSE_NOTE_Ges (o)))
-#define BSE_FREQ_G(o)                   (bse_freq_from_note (BSE_NOTE_G (o)))
-#define BSE_FREQ_Gis(o)                 (bse_freq_from_note (BSE_NOTE_Gis (o)))
-#define BSE_FREQ_As(o)                  (bse_freq_from_note (BSE_NOTE_As (o)))
-#define BSE_FREQ_A(o)                   (bse_freq_from_note (BSE_NOTE_A (o)))
-#define BSE_FREQ_Ais(o)                 (bse_freq_from_note (BSE_NOTE_Ais (o)))
-#define BSE_FREQ_Bes(o)                 (bse_freq_from_note (BSE_NOTE_Bes (o)))
-#define BSE_FREQ_B(o)                   (bse_freq_from_note (BSE_NOTE_B (o)))
-
-
 /* --- functions --- */
-gdouble         bse_freq_from_note                      (gint    note);
-gint            bse_note_from_freq                      (gdouble freq);
-gint            bse_note_from_freq_bounded              (gdouble freq);
-gint            bse_note_fine_tune_from_note_freq       (gint    note,
-                                                         gdouble freq);
-gdouble         bse_note_to_freq                        (gint    note);
-gdouble         bse_note_to_tuned_freq                  (gint    note,
-                                                         gint    fine_tune);
+int             bse_note_from_freq                      (BseMusicalTuningType   musical_tuning,
+                                                         double                 freq);
+int             bse_note_from_freq_bounded              (BseMusicalTuningType   musical_tuning,
+                                                         double                 freq);
+int             bse_note_fine_tune_from_note_freq       (BseMusicalTuningType   musical_tuning,
+                                                         int                    note,
+                                                         double                 freq);
+double          bse_note_to_freq                        (BseMusicalTuningType   musical_tuning,
+                                                         int                    note);
+double          bse_note_to_tuned_freq                  (BseMusicalTuningType   musical_tuning,
+                                                         int                    note,
+                                                         int                    fine_tune);
+
 
 /* --- freq array --- */
 typedef struct BseFreqArray BseFreqArray;

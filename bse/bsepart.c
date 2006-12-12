@@ -22,6 +22,7 @@
 #include "bsetrack.h"
 #include <sfi/gbsearcharray.h>
 #include "gslcommon.h"
+#include "bsemathsignal.h" // bse_semitone_table
 #include "bseieee754.h"
 #include <stdlib.h>
 #include <string.h>
@@ -142,6 +143,7 @@ bse_part_class_init (BsePartClass *class)
 static void
 bse_part_init (BsePart *self)
 {
+  self->semitone_table = bse_semitone_table_from_tuning (BSE_MUSICAL_TUNING_12_TET);
   self->n_ids = 0;
   self->ids = NULL;
   self->last_id = 0;
@@ -258,6 +260,15 @@ bse_part_finalize (GObject *object)
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+void
+bse_part_set_semitone_table (BsePart      *self,
+                             const double *semitone_table)
+{
+  g_return_if_fail (BSE_IS_PART (self));
+  g_return_if_fail (semitone_table != NULL);
+  self->semitone_table = semitone_table;
 }
 
 static guint

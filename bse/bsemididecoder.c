@@ -29,12 +29,14 @@ static void     bse_midi_decoder_construct_event   (BseMidiDecoder *self);
 
 /* --- function --- */
 BseMidiDecoder*
-bse_midi_decoder_new (gboolean auto_queue,
-                      gboolean smf_support)
+bse_midi_decoder_new (gboolean             auto_queue,
+                      gboolean             smf_support,
+                      BseMusicalTuningType musical_tuning)
 {
   BseMidiDecoder *self;
   
   self = g_new0 (BseMidiDecoder, 1);
+  self->musical_tuning = musical_tuning;
   self->auto_queue = auto_queue != FALSE;
   self->smf_support = smf_support != FALSE;
   self->state_changed = FALSE;
@@ -363,7 +365,7 @@ midi_decoder_extract_specific (BseMidiDecoder *self,
     case BSE_MIDI_KEY_PRESSURE: /* 7bit note, 7bit intensity */
       if (self->n_bytes < 2)
         return FALSE;
-      event->data.note.frequency = bse_note_to_freq (self->bytes[0] & 0x7f);
+      event->data.note.frequency = bse_note_to_freq (self->musical_tuning, self->bytes[0] & 0x7f);
       ival = self->bytes[1] & 0x7f;
       /* in running-mode, 0 velocity indicates note-off */
       if (event->status == BSE_MIDI_NOTE_ON && ival == 0)

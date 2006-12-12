@@ -23,6 +23,7 @@
 #include "bsemain.h"
 #include "bseparasite.h"
 #include "bseproject.h"
+#include "bsesong.h" // for song->musical_tuning
 #include "bseundostack.h"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
@@ -708,6 +709,33 @@ bse_item_has_ancestor (BseItem *item,
     }
   
   return FALSE;
+}
+
+/**
+ * @param self  a valid Item
+ * @return      the current BseMusicalTuningType, defaulting to BSE_MUSICAL_TUNING_12_TET
+ * Find out about the musical tuning that is currently used for this item.
+ * The musical tuning depends on project wide settings that may change after
+ * this funciton has been called, so the result should be used with caution.
+ */
+BseMusicalTuningType
+bse_item_current_musical_tuning (BseItem *self)
+{
+  g_return_val_if_fail (BSE_IS_ITEM (self), BSE_MUSICAL_TUNING_12_TET);
+  /* finding the musical tuning *should* be possible by just visiting
+   * an items parents. however, .bse objects are not currently (0.7.1)
+   * structured that way, so we get the tuning from the first song in
+   * a project, or simply provide a default.
+   */
+  BseProject *project = bse_item_get_project (self);
+  if (project)
+    {
+      GSList *slist;
+      for (slist = project->supers; slist; slist = slist->next)
+        if (BSE_IS_SONG (slist->data))
+          return BSE_SONG (slist->data)->musical_tuning;
+    }
+  return BSE_MUSICAL_TUNING_12_TET;
 }
 
 static inline GType

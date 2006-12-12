@@ -40,8 +40,9 @@ struct _BseMidiDecoder
   SfiRing         *events;      /* BseMidiEvent* */
 
   /* configuration */
-  guint            auto_queue : 1;
-  guint            smf_support : 1;
+  BseMusicalTuningType musical_tuning;
+  guint                auto_queue : 1;
+  guint                smf_support : 1;
 
   /*< private >*/
   guint                 state_changed : 1;
@@ -59,7 +60,8 @@ struct _BseMidiDecoder
 
 /* --- API --- */
 BseMidiDecoder* bse_midi_decoder_new                      (gboolean              auto_queue,
-                                                           gboolean              smf_support);
+                                                           gboolean              smf_support,
+                                                           BseMusicalTuningType  musical_tuning);
 void            bse_midi_decoder_destroy                  (BseMidiDecoder       *self);
 void            bse_midi_decoder_push_data                (BseMidiDecoder       *self,
                                                            guint                 n_bytes,

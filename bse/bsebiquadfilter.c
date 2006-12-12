@@ -131,7 +131,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_FREQ,
-			      sfi_pspec_log_scale ("freq", _("Cutoff [Hz]"), NULL,
+			      sfi_pspec_log_scale ("freq", _("Cutoff [Hz]"), _("Filter cutoff frequency in Herz"),
 						   BSE_KAMMER_FREQUENCY * 2,
 						   BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY - FREQ_DELTA,
 						   5.0,
@@ -139,8 +139,9 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_NOTE,
-			      sfi_pspec_note ("note", _("Note"), NULL,
-					      bse_note_from_freq (BSE_KAMMER_FREQUENCY * 2),
+			      sfi_pspec_note ("note", _("Note"), _("Filter cutoff frequency as note, "
+                                                                   "converted to Herz according to the current musical tuning"),
+					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY * 2),
 					      BSE_MIN_NOTE, BSE_MAX_NOTE,
 					      FALSE,
 					      SFI_PARAM_GUI));
@@ -232,7 +233,7 @@ bse_biquad_filter_set_property (GObject	     *object,
       g_object_notify (self, "note");
       break;
     case PROP_NOTE:
-      self->freq = bse_note_to_freq (sfi_value_get_note (value));
+      self->freq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       bse_biquad_filter_update_modules (self);
       g_object_notify (self, "freq");
       break;
@@ -284,7 +285,7 @@ bse_biquad_filter_get_property (GObject	   *object,
       sfi_value_set_real (value, self->freq);
       break;
     case PROP_NOTE:
-      sfi_value_set_note (value, bse_note_from_freq (self->freq));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->freq));
       break;
     case PROP_FM_PERC:
       sfi_value_set_real (value, self->fm_strength * 100.0);

@@ -29,8 +29,9 @@ void    bse_cxx_init      (void);
 
 
 /* --- record utils --- */
-BseNoteDescription* bse_note_description             (SfiInt                 note,
-                                                      gint                   fine_tune);
+BseNoteDescription* bse_note_description             (BseMusicalTuningType   musical_tuning,
+                                                      int                    note,
+                                                      int                    fine_tune);
 BsePartNote*        bse_part_note                    (guint                  id,
                                                       guint                  channel,
                                                       guint                  tick,

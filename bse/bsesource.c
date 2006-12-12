@@ -1928,6 +1928,14 @@ bse_source_class_base_init (BseSourceClass *class)
   class->automation_properties = NULL;
 }
 
+BseMusicalTuningType
+bse_source_prepared_musical_tuning (BseSource *source)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_MUSICAL_TUNING_12_TET);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (source), BSE_MUSICAL_TUNING_12_TET);
+  return bse_item_current_musical_tuning (BSE_ITEM (source)); // FIXME: cache this, once we have source->SynthesisContext
+}
+
 void
 bse_source_class_inherit_channels (BseSourceClass *source_class)
 {

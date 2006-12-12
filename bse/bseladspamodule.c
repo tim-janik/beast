@@ -189,12 +189,12 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  if (port->concert_a)
 	    {
 	      /* when defaulting to A', we probably have note-aligned port values */
-	      gint min_note = bse_note_from_freq_bounded (minimum);
-	      gint max_note = bse_note_from_freq_bounded (maximum);
+	      gint min_note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, minimum);
+	      gint max_note = bse_note_from_freq_bounded (BSE_MUSICAL_TUNING_12_TET, maximum);
 	      if (max_note - min_note > 2)
 		{
 		  gchar *ident2 = g_strconcat (port->ident, "-note", NULL);
-		  pspec2 = sfi_pspec_note (ident2, port->name, NULL,
+		  pspec2 = sfi_pspec_note (ident2, port->name, _("Note values are converted to Herz according to the current musical tuning"),
 					   BSE_KAMMER_NOTE, min_note, max_note, FALSE,
 					   SFI_PARAM_GUI);
 		  g_param_spec_set_qdata (pspec2, quark_notify_sibling, pspec);
@@ -242,8 +242,9 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 }
 
 static gfloat
-ladspa_value_get_float (const GValue  *value,
-			BseLadspaPort *port)
+ladspa_value_get_float (BseLadspaModule *self,
+                        const GValue    *value,
+			BseLadspaPort   *port)
 {
   switch (sfi_categorize_type (G_VALUE_TYPE (value)))
     {
@@ -251,7 +252,7 @@ ladspa_value_get_float (const GValue  *value,
       return sfi_value_get_bool (value);
     case SFI_SCAT_INT:
       if (port->frequency && port->concert_a)	/* is note */
-	return bse_note_to_freq (sfi_value_get_int (value));
+	return bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_int (value));
       else
 	return sfi_value_get_int (value);
     case SFI_SCAT_REAL:
@@ -263,7 +264,8 @@ ladspa_value_get_float (const GValue  *value,
 }
 
 static void
-ladspa_value_set_float (GValue        *value,
+ladspa_value_set_float (BseLadspaModule *self,
+                        GValue        *value,
 			BseLadspaPort *port,
 			gfloat         v_float)
 {
@@ -274,7 +276,7 @@ ladspa_value_set_float (GValue        *value,
       break;
     case SFI_SCAT_INT:
       if (port->frequency && port->concert_a)	/* is note */
-	sfi_value_set_int (value, bse_note_from_freq (v_float));
+	sfi_value_set_int (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), v_float));
       else
 	sfi_value_set_int (value, v_float >= 0 ? v_float + 0.5 : v_float - 0.5);
       break;
@@ -299,7 +301,7 @@ ladspa_derived_init (BseLadspaModule *self)
       GValue tmp = { 0, };
       g_value_init (&tmp, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_param_value_set_default (pspec, &tmp);
-      self->cvalues[i] = ladspa_value_get_float (&tmp, class->bli->cports + i);
+      self->cvalues[i] = ladspa_value_get_float (self, &tmp, class->bli->cports + i);
       g_value_unset (&tmp);
     }
 }
@@ -323,7 +325,7 @@ ladspa_derived_get_property (GObject    *object,
   guint i = param_id - 1;
   if (i >= class->bli->n_cports)
     i = (guint) g_param_spec_get_qdata (pspec, quark_value_index);
-  ladspa_value_set_float (value, class->bli->cports + i, self->cvalues[i]);
+  ladspa_value_set_float (self, value, class->bli->cports + i, self->cvalues[i]);
 }
 
 typedef struct
@@ -360,7 +362,7 @@ ladspa_derived_set_property (GObject      *object,
   guint i = param_id - 1;
   if (i >= class->bli->n_cports)
     i = (guint) g_param_spec_get_qdata (pspec, quark_value_index);
-  self->cvalues[i] = ladspa_value_get_float (value, class->bli->cports + i);
+  self->cvalues[i] = ladspa_value_get_float (self, value, class->bli->cports + i);
   if (pspec2)
     g_object_notify (object, pspec2->name);
   /* update modules in all contexts with the new control values */

@@ -31,23 +31,27 @@
 
 /* --- record utils --- */
 BseNoteDescription*
-bse_note_description (SfiInt note,
-                      gint   fine_tune)
+bse_note_description (BseMusicalTuningType   musical_tuning,
+                      int                    note,
+                      int                    fine_tune)
 {
   BseNoteDescription *info = bse_note_description_new ();
 
+  info->musical_tuning = musical_tuning;
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
     {
       gchar letter;
       info->note = note;
+      gboolean black_semitone = false;
       bse_note_examine (info->note,
                         &info->octave,
                         &info->semitone,
-                        &info->upshift,
+                        &black_semitone,
                         &letter);
+      info->upshift = black_semitone;
       info->letter = letter;
       info->fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
-      info->freq = bse_note_to_tuned_freq (info->note, info->fine_tune);
+      info->freq = bse_note_to_tuned_freq (musical_tuning, info->note, info->fine_tune);
       info->name = bse_note_to_string (info->note);
       info->max_fine_tune = BSE_MAX_FINE_TUNE;
       info->kammer_note = BSE_KAMMER_NOTE;

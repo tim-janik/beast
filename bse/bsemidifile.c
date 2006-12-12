@@ -182,6 +182,7 @@ bse_midi_file_load (const gchar  *file_name,
     }
 
   smf = g_malloc0 (sizeof (BseMidiFile) + header.n_tracks * sizeof (smf->tracks[0]));
+  smf->musical_tuning = BSE_MUSICAL_TUNING_12_TET;
 #if 0
   smf->tpqn = header.division;
   smf->tpqn_rate = 1;
@@ -195,7 +196,7 @@ bse_midi_file_load (const gchar  *file_name,
   smf->n_tracks = header.n_tracks;
   for (i = 0; i < header.n_tracks; i++)
     {
-      BseMidiDecoder *md = bse_midi_decoder_new (FALSE, TRUE);
+      BseMidiDecoder *md = bse_midi_decoder_new (FALSE, TRUE, smf->musical_tuning);
       SfiRing *events;
       *error_p = smf_read_track (smf, fd, md);
       events = bse_midi_decoder_pop_event_list (md);
@@ -270,8 +271,8 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
                   track->events[j]->data.note.frequency == frequency)
                 break;
             }
-          note = bse_note_from_freq (frequency);
-          fine_tune = bse_note_fine_tune_from_note_freq (note, frequency);
+          note = bse_note_from_freq (smf->musical_tuning, frequency);
+          fine_tune = bse_note_fine_tune_from_note_freq (smf->musical_tuning, note, frequency);
           bse_item_exec_void (part, "insert-note-auto",
                               (guint) (start * smf->tpqn_rate),
                               (guint) (dur * smf->tpqn_rate),

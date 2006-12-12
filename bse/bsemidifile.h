@@ -27,6 +27,7 @@ typedef struct {
   BseMidiEvent **events;
 } BseMidiFileTrack;
 typedef struct {
+  BseMusicalTuningType musical_tuning;
   guint  tpqn;          /* ticks-per-quarter-note */
   gfloat tpqn_rate;
   /* signature */

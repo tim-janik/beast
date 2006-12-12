@@ -46,6 +46,8 @@ struct _BseSong
   guint		    numerator;
   guint		    denominator;
   gfloat            bpm;
+
+  BseMusicalTuningType musical_tuning;
   
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */
@@ -54,7 +56,7 @@ struct _BseSong
   BseSource	   *postprocess;
   BseSource	   *output;
 
-  BseSNet         *pnet;
+  BseSNet          *pnet;
 
   /* song position pointer */
   SfiInt	    last_position;

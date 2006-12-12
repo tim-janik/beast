@@ -30,7 +30,7 @@ static gpointer parent_class = NULL;
 static void
 bse_midi_device_init (BseMidiDevice *self)
 {
-  self->midi_decoder = bse_midi_decoder_new (TRUE, FALSE);
+  self->midi_decoder = bse_midi_decoder_new (TRUE, FALSE, BSE_MUSICAL_TUNING_12_TET);
   self->handle = NULL;
 }
 

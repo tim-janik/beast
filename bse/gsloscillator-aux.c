@@ -44,7 +44,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
   gfloat last_sync_level = osc->last_sync_level;
   gfloat last_pwm_level = osc->last_pwm_level;
   gdouble last_freq_level = osc->last_freq_level;
-  const gdouble transpose = bse_transpose_factor (CLAMP (osc->config.transpose, -132, +132));
+  const gdouble transpose = osc->config.transpose_factor;
   const gdouble fine_tune = bse_cent_factor (CLAMP (osc->config.fine_tune, -100, +100));
   guint32 cur_pos = osc->cur_pos;
   guint32 last_pos = osc->last_pos;

@@ -22,6 +22,7 @@
 
 #include <bse/bsemath.h>
 #include <bse/bseglobals.h>
+#include <bse/bsetype.h> // for BseMusicalTuningType
 
 G_BEGIN_DECLS
 
@@ -395,8 +396,9 @@ static inline double    bse_saturate_branching (double value,
                                                 double limit)   G_GNUC_CONST;
 
 /* --- semitone factors (for +-11 octaves) --- */
-extern const double * const bse_semitone_table;
-#define bse_transpose_factor(index /* -132..+132*/)	(bse_semitone_table[index])
+const double* bse_semitone_table_from_tuning (BseMusicalTuningType musical_tuning); /* returns [-132..+132] */
+double        bse_transpose_factor           (BseMusicalTuningType musical_tuning,
+                                              int                  index /* [-132..+132] */);
 
 /* --- cents (1/100th of a semitone) --- */
 extern const double * const bse_cent_table;

@@ -42,6 +42,8 @@ struct _BsePart
 {
   BseItem             parent_instance;
 
+  const double       *semitone_table; // [-132..+132] only updated when not playing
+
   /* id -> tick lookups */
   guint               n_ids;
   guint              *ids;
@@ -83,6 +85,9 @@ typedef enum    /*< skip >*/
 
 
 /* --- functions --- */
+#define            bse_part_transpose_factor(          part, index /* -132..+132*/)     ((part)->semitone_table[index])
+void               bse_part_set_semitone_table        (BsePart           *self,
+                                                       const double      *semitone_table);
 void               bse_part_links_changed             (BsePart           *self);
 BsePartLinkSeq*    bse_part_list_links                (BsePart           *self);
 gboolean           bse_part_delete_control            (BsePart           *self,
@@ -263,8 +268,9 @@ struct _BsePartEventNote
 
 #define BSE_PART_NOTE_N_CROSSINGS(note)         ((note)->crossings ? (note)->crossings[0] : 0)
 #define BSE_PART_NOTE_CROSSING(note,j)          ((note)->crossings[1 + (j)])
-#define BSE_PART_NOTE_FREQ(note)                (BSE_KAMMER_FREQUENCY *                 \
-                                                 BSE_SEMITONE_FACTOR ((note)->note) *   \
+#define BSE_PART_SEMITONE_FACTOR(part,noteval)  (bse_part_transpose_factor ((part), CLAMP ((noteval), SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE))
+#define BSE_PART_NOTE_FREQ(part,note)           (BSE_KAMMER_FREQUENCY *                                 \
+                                                 BSE_PART_SEMITONE_FACTOR ((part), (note)->note) *      \
                                                  BSE_FINE_TUNE_FACTOR ((note)->fine_tune))
 
 void              bse_part_note_channel_init          (BsePartNoteChannel *self);

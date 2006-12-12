@@ -142,11 +142,13 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 					      SFI_PARAM_STANDARD ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_FREQ,
-			      bse_param_spec_freq_simple ("base_freq", _("Frequency"), _("Number of oscillator cycles per second"),
+			      bse_param_spec_freq_simple ("base_freq", _("Frequency"),
+                                                          _("Oscillator frequency in Herz, i.e. the number of oscillator cycles per second"),
 							  SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_NOTE,
-			      bse_pspec_note_simple ("base_note", _("Note"), _("Musical notation corresponding to the oscillator frequency"),
+			      bse_pspec_note_simple ("base_note", _("Note"),
+                                                     _("Oscillator frequency as note, converted to Herz according to the current musical tuning"),
                                                      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_TRANSPOSE,
@@ -222,6 +224,7 @@ bse_standard_osc_init (BseStandardOsc *self)
   self->config.self_fm_strength = 0;
   self->config.pulse_width = 0.5;
   self->config.pulse_mod_strength = 0;
+  self->transpose = 0;
   self->fm_strength = 0;
   self->n_octaves = 1;
 }
@@ -250,15 +253,15 @@ bse_standard_osc_set_property (GObject      *object,
       g_object_notify (self, "base_note");
       break;
     case PROP_BASE_NOTE:
-      self->config.cfreq = bse_note_to_freq (sfi_value_get_note (value));
+      self->config.cfreq = bse_note_to_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), sfi_value_get_note (value));
       self->config.cfreq = MAX (self->config.cfreq, BSE_MIN_OSC_FREQUENCY);
       bse_standard_osc_update_modules (self, FALSE, NULL);
       g_object_notify (self, "base_freq");
-      if (bse_note_from_freq (self->config.cfreq) != sfi_value_get_note (value))
+      if (bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->config.cfreq) != sfi_value_get_note (value))
 	g_object_notify (self, "base_note");
       break;
     case PROP_TRANSPOSE:
-      self->config.transpose = sfi_value_get_int (value);
+      self->transpose = sfi_value_get_int (value);
       bse_standard_osc_update_modules (self, FALSE, NULL);
       break;
     case PROP_FINE_TUNE:
@@ -315,10 +318,10 @@ bse_standard_osc_get_property (GObject    *object,
       sfi_value_set_real (value, self->config.cfreq);
       break;
     case PROP_BASE_NOTE:
-      sfi_value_set_note (value, bse_note_from_freq (self->config.cfreq));
+      sfi_value_set_note (value, bse_note_from_freq (bse_item_current_musical_tuning (BSE_ITEM (self)), self->config.cfreq));
       break;
     case PROP_TRANSPOSE:
-      sfi_value_set_int (value, self->config.transpose);
+      sfi_value_set_int (value, self->transpose);
       break;
     case PROP_FINE_TUNE:
       sfi_value_set_int (value, self->config.fine_tune);
@@ -357,6 +360,7 @@ bse_standard_osc_prepare (BseSource *source)
 					     bse_window_blackman,
 					     G_N_ELEMENTS (osc_table_freqs),
 					     osc_table_freqs);
+  self->config.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (BSE_SOURCE (self)), self->transpose);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);

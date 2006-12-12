@@ -56,6 +56,7 @@ struct _BseStandardOsc
 
   BseStandardOscWaveType wave;
   GslOscConfig		 config;
+  int                    transpose;
   gfloat                 fm_strength;
   gfloat                 n_octaves;
 };

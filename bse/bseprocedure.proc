@@ -30,6 +30,8 @@ LICENSE = "GNU General Public License";
 
 PROCEDURE (bse-note-to-freq, "Note to Freq") {
   HELP  = "Retrieve the frequency of a certain note.";
+  IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
+			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = sfi_pspec_real ("frequency", "Frequency", NULL,
@@ -40,13 +42,14 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gint       note       = sfi_value_get_int (in_values++);
-  gint       fine_tune  = sfi_value_get_int (in_values++);
+  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  int                  note           = sfi_value_get_int (in_values++);
+  int                  fine_tune      = sfi_value_get_int (in_values++);
   BseNoteDescription *info;
   gfloat freq;
   
   /* action */
-  info = bse_note_description (note, fine_tune);
+  info = bse_note_description (musical_tuning, note, fine_tune);
   if (!info->name)
     freq = 0;
   else
@@ -61,6 +64,8 @@ PROCEDURE (bse-note-to-freq, "Note to Freq") {
 
 PROCEDURE (bse-note-from-freq, "Note from Freq") {
   HELP  = "Retrieve the note of a certain frequency.";
+  IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
+			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_real ("frequency", "Frequency", NULL,
 			  BSE_KAMMER_FREQUENCY, 0, BSE_MAX_FREQUENCY, 0.1,
 			  SFI_PARAM_STANDARD);
@@ -70,10 +75,117 @@ PROCEDURE (bse-note-from-freq, "Note from Freq") {
         GValue            *out_values)
 {
   /* extract parameter values */
-  gfloat frequency = sfi_value_get_real (in_values++);
+  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  float                frequency      = sfi_value_get_real (in_values++);
   
   /* set out params */
-  sfi_value_set_int (out_values++, bse_note_from_freq (frequency));
+  sfi_value_set_int (out_values++, bse_note_from_freq (musical_tuning, frequency));
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-note-describe, "Describe Note") {
+  HELP	= "Describe a note, providing information about its octave, semitone, frequency, etc.";
+  IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
+			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+  IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
+  IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  int                  note	      = sfi_value_get_int (in_values++);
+  int                  fine_tune      = sfi_value_get_int (in_values++);
+  
+  /* describe note */
+  bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, fine_tune));
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-note-describe-from-freq, "Describe Note From Freq") {
+  HELP	= "Describe a note, given its frequency.";
+  IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
+			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_real ("freq", "Frequency", NULL,
+			  BSE_KAMMER_FREQUENCY,
+			  0, BSE_MAX_FREQUENCY,
+			  10.0, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  float                freq	      = sfi_value_get_real (in_values++);
+  gint note;
+  
+  /* describe note */
+  note = bse_note_from_freq (musical_tuning, freq);
+  bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, 0));
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-note-from-string, "Note From String") {
+  HELP	= "Describe a note, given its name and octave offset.";
+  IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
+			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_string ("name", "Name", NULL,
+			    "", SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  char                *name           = sfi_value_get_string (in_values++);
+  gint note;
+  
+  /* describe note */
+  note = bse_note_from_string (name);
+  bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, 0));
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-note-construct, "Note Construction") {
+  HELP	= "Describe a note, given its semitone, octave and fine tune.";
+  IN    = bse_param_spec_enum ("musical_tuning", "Musical Tuning", NULL,
+			       BSE_MUSICAL_TUNING_EQUAL_TEMPERAMENT, BSE_TYPE_MUSICAL_TUNING_TYPE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("semitone", NULL, NULL,
+			 9, 0, 11, 1,
+			 SFI_PARAM_STANDARD);
+  IN    = bse_param_spec_octave ("octave", NULL, NULL);
+  IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseMusicalTuningType musical_tuning = g_value_get_enum (in_values++);
+  guint                semitone	      = sfi_value_get_int (in_values++);
+  int                  octave	      = sfi_value_get_int (in_values++);
+  int                  fine_tune      = sfi_value_get_int (in_values++);
+  int note;
+  
+  /* describe note */
+  note = BSE_NOTE_GENERIC (octave, semitone);
+  bse_value_take_boxed (out_values++, bse_note_description (musical_tuning, note, fine_tune));
   
   return BSE_ERROR_NONE;
 }

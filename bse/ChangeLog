@@ -1,3 +1,70 @@
+Tue Dec 12 01:18:22 2006  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl, bsemathsignal.c: added musical tuning system tables 
+	submitted by Hanno Behrens <mailto:shaftoe@nurfuerspam.de>:
+	12-TET, 7-TET, 5-TET, DIATONIC_SCALE, INDIAN_SCALE, PYTHAGOREAN_TUNING,
+	PENTATONIC_5_LIMIT, PENTATONIC-BLUES, PENTATONIC-GOGO,
+	QUARTER_COMMA_MEANTONE, SILBERMANN_SORGE, WERCKMEISTER_3,
+	WERCKMEISTER_4, WERCKMEISTER_5, WERCKMEISTER_6, KIRNBERGER_3
+	and YOUNG.
+
+Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesong.[hc]: added musical_tuning property. 
+
+	* bseutils.h, bseutils.c:
+	* bsenote.h, bsenote.c, bsenote.cc: converted bsenote to C++. added musical
+	tuning argument to all note/freq API functions and adapted internal logic
+	to cope with different tunings. removed unused BSE_FREQ*() macros.
+
+	* bsecore.idl: introduce Bse::MusicalTuningType. added musical_tuning 
+	field to NoteDescription.
+
+	* bseserver.proc:
+	* bseprocedure.proc: added musical tuning arguments to various note 
+	related procedures, moved note procedures from bseserver.proc to
+	bseprocedure.proc and got rid of their BseServer argument.
+
+	* bsemathsignal.h, bsemathsignal.c: made semitone and transpose tables
+	musical tuning sensitive.
+
+	* bsepart.[hc]: allow per-part semitone tables, and changed macros so that
+	part notes are converted to frequencies according to the musical tuning
+	specific to a part.
+
+	* bseitem.[hc]: provide bse_item_current_musical_tuning() and document
+	its caveats.
+
+	* bsesource.[hc]: added bse_source_prepared_musical_tuning() which 
+	provides musical tuning setting for a source if and only if the
+	source is prepared. the tuning stays constant while the source is prepared.
+
+	* bsesequencer.cc: perform part specific note->freq conversion.
+
+	* bsemidifile.[hc]: added musical_tuning to use the new note API,
+	defaulting to equal temperament.
+
+	* bsemididecoder.c: hard code musical tuning to equal temperament,
+	since we have to provide notes to frequencies for MIDI events up front.
+
+	* bseconstant.c:
+	* bsestandardosc.c:
+	* bseladspamodule.c:
+	* bsebiquadfilter.c: adapt to new tuning relative note API, add a
+	warning to tooltips that informs about the musical tuning specific 
+	interpretation of note properties.
+
+	* gsloscillator*.[hc]: changed configuration to contain a transpose_factor
+	and not a transpose index which needs to be looked up in conjunction with
+	a specific musical tuning.
+
+	* bseglobals.h: removed unused macros.
+
+	* bseinfo.c: adapt to new note API by defaulting to to equal temperament.
+
+	* tests/misctests.cc: test various musical tuning system properties and
+	note<->freq conversions.
+
 Sun Dec 10 14:15:18 2006  Stefan Wasterfeld  <stefan@space.twc.de>
 
 	* tests/firhandle.cc: Added seek test.

@@ -588,7 +588,7 @@ bse_sequencer_process_part_SL (BsePart         *part,
       while (note < bound && note->tick < tick_bound)
         {
           BseMidiEvent *eon, *eoff;
-          gfloat freq = BSE_PART_NOTE_FREQ (note);
+          gfloat freq = BSE_PART_NOTE_FREQ (part, note);
           eon  = bse_midi_event_note_on (midi_channel,
                                          bse_dtoull (start_stamp + (note->tick - start_tick) * stamps_per_tick),
                                          freq, note->velocity);

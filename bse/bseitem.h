@@ -167,6 +167,7 @@ void          bse_item_push_undo_storage     (BseItem         *self,
 /* convenience */
 #define bse_item_set             bse_item_set_undoable
 #define bse_item_get             g_object_get
+BseMusicalTuningType bse_item_current_musical_tuning (BseItem     *self);
 
 G_END_DECLS
 
