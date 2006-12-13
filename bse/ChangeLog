@@ -7,7 +7,7 @@ Tue Dec 12 08:50:45 2006  Tim Janik  <timj@gtk.org>
 Tue Dec 12 01:18:22 2006  Tim Janik  <timj@gtk.org>
 
 	* bsecore.idl, bsemathsignal.c: added musical tuning system tables 
-	submitted by Hanno Behrens <mailto:shaftoe@nurfuerspam.de>:
+	submitted by Hanno Behrens <pebbles@schattenlauf.de>:
 	12-TET, 7-TET, 5-TET, DIATONIC_SCALE, INDIAN_SCALE, PYTHAGOREAN_TUNING,
 	PENTATONIC_5_LIMIT, PENTATONIC-BLUES, PENTATONIC-GOGO,
 	QUARTER_COMMA_MEANTONE, SILBERMANN_SORGE, WERCKMEISTER_3,
