@@ -411,16 +411,18 @@ private:
   struct ProbeData {
     BseSource  *source;
     BseOStream *ostreams;
-    guint       n_pending;
-    guint64     debug_stamp;
+    uint64      debug_stamp;
+    uint        debug_n_values;
+    uint        n_pending;
     ProbeData (BseSource *_source,
                guint      n_streams) :
-      source (_source), ostreams (NULL), n_pending (0), debug_stamp (0)
+      source (_source), ostreams (NULL), debug_stamp (0), debug_n_values (0), n_pending (0)
     {}
     ~ProbeData()
     {
       g_assert (ostreams == NULL);
     }
+    BIRNET_PRIVATE_CLASS_COPY (ProbeData);
   };
   void
   handle_probe (ProbeData   &pdata,
@@ -439,12 +441,14 @@ private:
         g_assert (pdata.debug_stamp == 0);
         pdata.ostreams = *ostreams_p;
         *ostreams_p = NULL;
+        pdata.debug_n_values = n_values;
         pdata.debug_stamp = tick_stamp;
       }
     else                                        /* successive modules */
       {
         /* add up all successive blocks */
         g_assert (pdata.debug_stamp == tick_stamp);
+        g_assert (pdata.debug_n_values == n_values);
         BseOStream *ostreams = *ostreams_p;
         for (uint j = 0; j < n_ostreams; j++)
           if (ostreams[j].connected && channel_sets[j].size() > 0)

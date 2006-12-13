@@ -548,7 +548,7 @@ bse_job_probe_request (BseModule         *module,
   tjob->probe.probe_func = probe_func;
   tjob->probe.n_ostreams = ENGINE_NODE_N_OSTREAMS (node);
   tjob->probe.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
-
+  
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
   job->timed_job.node = ENGINE_NODE (module);

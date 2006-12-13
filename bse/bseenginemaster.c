@@ -741,7 +741,11 @@ master_take_probes (EngineNode   *node,
       tjob->probe.ostreams = ostreams;
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         {
+          /* restore real ostream buffer pointers */
+          ostreams[i].values = node->outputs[i].buffer;
+          /* store real ostream buffer pointers */
           node->outputs[i].buffer = node->module.ostreams[i].values;
+          /* preserve connection flags */
           node->module.ostreams[i].connected = ostreams[i].connected;
         }
     }
@@ -755,7 +759,7 @@ master_take_probes (EngineNode   *node,
           if (input->real_node && input->real_node->module.ostreams[input->real_stream].connected)
             {
               tjob->probe.ostreams[i].connected = true;
-              bse_block_copy_float (n_values, tjob->probe.ostreams[i].values, input->real_node->module.ostreams[input->real_stream].values);
+              bse_block_copy_float (n_values, tjob->probe.ostreams[i].values, input->real_node->outputs[input->real_stream].buffer);
             }
         }
     }

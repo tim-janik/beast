@@ -32,7 +32,6 @@
 static inline void      engine_fetch_process_queue_trash_jobs_U (EngineTimedJob **trash_tjobs_head,
                                                                  EngineTimedJob **trash_tjobs_tail);
 
-
 /* --- UserThread --- */
 BseOStream*
 _engine_alloc_ostreams (guint n)

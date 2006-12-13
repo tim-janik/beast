@@ -1,3 +1,11 @@
+Wed Dec 13 21:30:39 2006  Tim Janik  <timj@gtk.org>
+
+	* bseenginemaster.c (master_take_probes): fixup ostreams[].value 
+	pointers before returning a probe, since those may have been altered
+	by process() routines.
+
+	* bseprobe.cc: added debugging field and a few assertions.
+
 Tue Dec 12 08:50:45 2006  Tim Janik  <timj@gtk.org>
 
 	* bseundostack.c: fix possible flat copies of pointers to deeply
