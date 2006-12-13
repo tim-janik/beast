@@ -1,3 +1,9 @@
+Wed Dec 13 23:55:15 2006  Tim Janik  <timj@gtk.org>
+
+	* bseenginemaster.c (master_process_locked_node): set buffer start 
+	fragments to zero for nodes that are partially suspended and have
+	pending probe jobs, so probes don't contain outdated junk data.
+
 Wed Dec 13 21:30:39 2006  Tim Janik  <timj@gtk.org>
 
 	* bseenginemaster.c (master_take_probes): fixup ostreams[].value 

@@ -807,7 +807,8 @@ master_process_locked_node (EngineNode *node,
   const guint64 current_stamp = GSL_TICK_STAMP;
   guint64 next_counter, new_counter, final_counter = current_stamp + n_values;
   guint i, j, diff;
-  
+  bool needs_probe_reset = node->probe_jobs != NULL;
+
   g_return_if_fail (node->integrated && node->sched_tag);
   
   while (node->counter < final_counter)
@@ -851,7 +852,11 @@ master_process_locked_node (EngineNode *node,
 	  }
       /* update obuffer pointer */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-	node->module.ostreams[i].values = node->outputs[i].buffer + diff;
+        node->module.ostreams[i].values = node->outputs[i].buffer + diff;
+      if (diff && needs_probe_reset)
+        for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+          memset (node->outputs[i].buffer, 0, diff * sizeof (node->outputs[0].buffer[0]));
+      needs_probe_reset = false;
       /* process() node */
       if (UNLIKELY (ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
 	{
