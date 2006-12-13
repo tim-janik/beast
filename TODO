@@ -785,6 +785,7 @@ The MCD timeline says:
  - davorgan c++
  - submit 8 thread crasher
  - use debugging interface of g_slice for #340437
+ - write script to repeatedly undo/redo random operations
  - use sweep for resampler test
 - autolooper for wavetool
 - man page for wavetool
@@ -793,8 +794,8 @@ The MCD timeline says:
 - (3) bass instrument
 - (4) bass line
 - (5) lead instrument
-- DavOrgan bug: is blocksize dependant
 - DavOrgan bug: make testcase
+- DavOrgan bug: is blocksize dependant
 * 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
 - complete GUS support:
   + quantize gus-patch playback error, decide what to do about gus patches (rip them?)
