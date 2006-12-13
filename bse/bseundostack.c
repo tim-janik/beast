@@ -23,33 +23,19 @@
 static SFI_MSG_TYPE_DEFINE (debug_undo, "undo", SFI_MSG_DEBUG, NULL);
 #define DEBUG(...)      sfi_debug (debug_undo, __VA_ARGS__)
 
-/* --- variables --- */
-static BseUndoStack *dummy_ustack = NULL;
-
-
 /* --- functions --- */
 BseUndoStack*
 bse_undo_stack_dummy (void)
 {
+  static BseUndoStack *dummy_ustack = NULL;
   if (!dummy_ustack)
     {
       dummy_ustack = g_new0 (BseUndoStack, 1);
-      dummy_ustack->project = NULL;
-      dummy_ustack->notify = NULL;
-      dummy_ustack->max_steps = 0;
       dummy_ustack->ignore_steps = 0x77777777; /* dummy specific value */
-      dummy_ustack->n_open_groups = 0;
-      dummy_ustack->group = NULL;
-      dummy_ustack->debug_names = NULL;
-      dummy_ustack->n_undo_groups = 0;
-      dummy_ustack->undo_groups = NULL;
-      dummy_ustack->dirt_counter = 0;
-      dummy_ustack->n_merge_requests = 0;
-      dummy_ustack->merge_name = NULL;
-      dummy_ustack->merge_next = FALSE;
     }
   return dummy_ustack;
 }
+#define IS_DUMMY_USTACK(ust)    ((ust) == bse_undo_stack_dummy())
 
 BseUndoStack*
 bse_undo_stack_new (BseProject   *project,
@@ -59,7 +45,7 @@ bse_undo_stack_new (BseProject   *project,
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
 
-  self = g_memdup (bse_undo_stack_dummy (), sizeof (*self));
+  self = g_new0 (BseUndoStack, 1);
   self->ignore_steps = 0; /* reset dummy specific value */
   self->project = project;
   self->notify = notify;
@@ -402,7 +388,7 @@ bse_undo_pointer_pack (gpointer      item,
     return NULL;
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
 
-  if (ustack == dummy_ustack)
+  if (IS_DUMMY_USTACK (ustack))
     return NULL;
 
   project = bse_item_get_project (item);
@@ -426,7 +412,7 @@ bse_undo_pointer_unpack (const gchar  *packed_pointer,
   if (!packed_pointer)
     return NULL;
 
-  if (ustack == dummy_ustack)
+  if (IS_DUMMY_USTACK (ustack))
     return NULL;
 
   if (packed_pointer[0] == 002 && strcmp (packed_pointer, "\002project\003") == 0)

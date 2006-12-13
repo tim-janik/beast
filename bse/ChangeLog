@@ -1,3 +1,9 @@
+Tue Dec 12 08:50:45 2006  Tim Janik  <timj@gtk.org>
+
+	* bseundostack.c: fix possible flat copies of pointers to deeply
+	nested object structures. in particular, this fixes potential GSList
+	node corruptions.
+
 Tue Dec 12 01:18:22 2006  Tim Janik  <timj@gtk.org>
 
 	* bsecore.idl, bsemathsignal.c: added musical tuning system tables 
