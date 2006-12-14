@@ -92,9 +92,9 @@ report: all
 	@export REPORTFILE="$(REPORTFILE)"			\
 	&& [ -z "$$REPORTFILE" ]				\
 	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
-	{ :							\
+	( :							\
 	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
 	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
 	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
-	} 2>&1 | tee "$$REPORTFILE"				\
+	) 2>&1 | tee "$$REPORTFILE"				\
 	&& test "${PIPESTATUS[*]}" = "0 0"
