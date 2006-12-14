@@ -89,11 +89,11 @@ ALLTESTS = $(TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
 # === report ===
 .PHONY: report
 report: all
-	@export REPORTFILE="$(REPORTFILE)"			\
-	&& [ -z "$$REPORTFILE" ]				\
-	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
-	( true 							\
-	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
-	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
-	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
-	) 2>&1 | tee "$$REPORTFILE"
+	@export REPORTFILE="$(REPORTFILE)"					\
+	&& [ -z "$$REPORTFILE" ]						\
+	&& export REPORTFILE="$(shell pwd)/report.out" 				\
+	&& echo -n "#TREPSTART: " 			> "$$REPORTFILE"	\
+	&& date --iso-8601=seconds			>>"$$REPORTFILE"	\
+	&& $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	>>"$$REPORTFILE" 2>&1	\
+	&& echo -n "#TREPDONE: "			>>"$$REPORTFILE"	\
+	&& date --iso-8601=seconds			>>"$$REPORTFILE"

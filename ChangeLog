@@ -1,3 +1,8 @@
+Thu Dec 14 02:37:04 2006  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl (report): fix report rule so that failure exit
+	status is not swallowed by tee(1).
+
 Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/perftest.cc:
