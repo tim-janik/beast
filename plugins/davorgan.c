@@ -159,6 +159,7 @@ dav_organ_init (DavOrgan *self)
   self->config.reed = FALSE;
   
   self->config.freq = BSE_KAMMER_FREQUENCY;
+  self->config.transpose_factor = 1.0;
   self->config.harm0 = 1.0;
   self->config.harm1 = 36. / 127.;
   self->config.harm2 = 100. / 127.;

@@ -165,6 +165,7 @@ static void
 dav_xtal_strings_init (DavXtalStrings *self)
 {
   self->params.freq = BSE_KAMMER_FREQUENCY;
+  self->params.transpose_factor = 1.0;
   self->params.trigger_vel = 1.0;
   self->params.note_decay = 0.4;
   self->params.tension_decay = 0.04;
