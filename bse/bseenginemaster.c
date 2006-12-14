@@ -855,7 +855,7 @@ master_process_locked_node (EngineNode *node,
         node->module.ostreams[i].values = node->outputs[i].buffer + diff;
       if (diff && needs_probe_reset)
         for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-          memset (node->outputs[i].buffer, 0, diff * sizeof (node->outputs[0].buffer[0]));
+          bse_block_fill_float (diff, node->outputs[i].buffer, 0.0);
       needs_probe_reset = false;
       /* process() node */
       if (UNLIKELY (ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
