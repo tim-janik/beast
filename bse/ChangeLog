@@ -1,3 +1,8 @@
+Mon Dec 11 01:13:00 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/filtertest.cc (generic_filter_tests): added missing stopband
+	damping check for LOWPASS filters, caught by Stefan.
+
 Wed Dec 13 23:55:15 2006  Tim Janik  <timj@gtk.org>
 
 	* bseenginemaster.c (master_process_locked_node): set buffer start 
@@ -85,6 +90,7 @@ Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
 	* tests/misctests.cc: test various musical tuning system properties and
 	note<->freq conversions.
 
+>>>>>>> .r4147
 Sun Dec 10 14:15:18 2006  Stefan Wasterfeld  <stefan@space.twc.de>
 
 	* tests/firhandle.cc: Added seek test.
