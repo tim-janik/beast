@@ -1,3 +1,11 @@
+Thu Dec 14 23:07:16 2006  Tim Janik  <timj@gtk.org>
+
+	* gslcommon.c (gsl_error_from_errno): special case ENODATA, which is not
+	available on GNU/kFreeBSD, reported by Petr Salinger <Petr.Salinger@seznam.cz>.
+
+	* gsldatahandle-vorbis.c (gsl_vorbis1_handle_read): use EIO in unclear
+	error cases, because GNU/kFreeBSD lacks ENODATA.
+
 Mon Dec 11 01:13:00 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/filtertest.cc (generic_filter_tests): added missing stopband

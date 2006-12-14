@@ -188,7 +188,10 @@ gsl_error_from_errno (gint         sys_errno,
     case EROFS:
     case EPERM:
     case EACCES:        return BSE_ERROR_PERMS;
-    case ENODATA:       return BSE_ERROR_FILE_EOF;
+#ifdef ENODATA  /* GNU/kFreeBSD lacks this */
+    case ENODATA:
+#endif
+    case ENOMSG:        return BSE_ERROR_FILE_EOF;
     case ENOMEM:	return BSE_ERROR_NO_MEMORY;
     case ENOSPC:	return BSE_ERROR_NO_SPACE;
     case ENFILE:	return BSE_ERROR_NO_FILES;

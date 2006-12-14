@@ -526,7 +526,7 @@ gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
         j = gsl_rfile_read (v1h->rfile, blength, buffer);
       while (j < 0 && errno == EINTR);
       if (j <= 0)               /* bail on errors */
-        return errno ? -errno : -ENODATA;
+        return errno ? -errno : -EIO;
       gsl_vorbis_cutter_write_ogg (v1h->vcutter, j, buffer);
     }
 }
