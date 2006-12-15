@@ -1,3 +1,7 @@
+Fri Dec 15 21:47:54 2006  Tim Janik  <timj@gtk.org>
+
+	* icons/quantizer.xcf: added icon by Hanno Behrens <pebbles@schattenlauf.de>.
+
 Thu Dec 14 22:10:26 2006  Tim Janik  <timj@gtk.org>
 
 	* davorgan.c (dav_organ_init): 
