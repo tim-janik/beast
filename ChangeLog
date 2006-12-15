@@ -1,3 +1,9 @@
+Fri Dec 15 18:21:46 2006  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.c (popup_menus_detach): fixed menu_list type
+	which is a GList, not a GSList, and has to be released as a GList.
+	this fixes creeping memory corruption in GSlice.
+
 Thu Dec 14 21:38:31 2006  Tim Janik  <timj@gtk.org>
 
 	* Makefile.decl (report): reintroduced tee(1) to preserve output

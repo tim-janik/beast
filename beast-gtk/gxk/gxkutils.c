@@ -3428,10 +3428,10 @@ gxk_option_menu_set_menu (GtkOptionMenu *option_menu,
 static void
 popup_menus_detach (gpointer data)
 {
-  GSList *menu_list = data;
+  GList *menu_list = data;
   while (menu_list)
     {
-      GtkMenu *menu = g_slist_pop_head (&menu_list);
+      GtkMenu *menu = g_list_pop_head (&menu_list);
       if (gtk_menu_get_attach_widget (menu))
         gtk_menu_detach (menu);
     }
@@ -3465,11 +3465,10 @@ gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
                                     GtkWidget        *widget,
                                     GtkMenuDetachFunc mdfunc)
 {
-  GList *menu_list;
   g_return_if_fail (GTK_IS_MENU (menu));
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
+  GList *menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
   menu_list = g_list_prepend (menu_list, menu);
   g_object_set_data_full (widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
   g_object_set_data (menu, "gxk-GtkMenuDetachFunc", mdfunc);
@@ -3656,7 +3655,6 @@ widget_find_level_ordered (GtkWidget   *widget,
       /* none found, search next level */
       for (list = children; list; list = list->next)
         {
-          GList *extra_children;
           widget = list->data;
           if (GTK_IS_CONTAINER (widget))
             newlist = g_list_concat (gtk_container_get_children (GTK_CONTAINER (widget)), newlist);
@@ -3666,7 +3664,7 @@ widget_find_level_ordered (GtkWidget   *widget,
               if (mitem->submenu)
                 newlist = g_list_prepend (newlist, mitem->submenu);
             }
-          extra_children = g_object_get_data (widget, "GxkWidget-popup-menus");
+          GList *extra_children = g_object_get_data (widget, "GxkWidget-popup-menus");
           if (extra_children)
             newlist = g_list_concat (g_list_copy (extra_children), newlist);
         }
