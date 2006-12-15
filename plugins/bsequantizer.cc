@@ -40,6 +40,7 @@ class Quantizer : public QuantizerBase {
     process (unsigned int n_values)
     {
       const double ifactor = 1.0 / qfactor;
+      /* use of nearbyint() relies on the FPU rounding mode round-to-nearest (guaranteed by BSE) */
       if (ostream (OCHANNEL_AUDIO_OUT1).connected)
         {
           if (istream (ICHANNEL_AUDIO_IN1).connected)
@@ -47,7 +48,7 @@ class Quantizer : public QuantizerBase {
               float *ovalues = ostream (OCHANNEL_AUDIO_OUT1).values;
               const float *ivalues = istream (ICHANNEL_AUDIO_IN1).values;
               for (uint i = 0; i < n_values; i++)
-                ovalues[i] = ifactor * dtoi32 (ivalues[i] * qfactor);
+                ovalues[i] = ifactor * nearbyint (ivalues[i] * qfactor);
             }
           else
             ostream_set (OCHANNEL_AUDIO_OUT1, const_values (0));
@@ -59,7 +60,7 @@ class Quantizer : public QuantizerBase {
               float *ovalues = ostream (OCHANNEL_AUDIO_OUT2).values;
               const float *ivalues = istream (ICHANNEL_AUDIO_IN2).values;
               for (uint i = 0; i < n_values; i++)
-                ovalues[i] = ifactor * dtoi32 (ivalues[i] * qfactor);
+                ovalues[i] = ifactor * nearbyint (ivalues[i] * qfactor);
             }
           else
             ostream_set (OCHANNEL_AUDIO_OUT2, const_values (0));

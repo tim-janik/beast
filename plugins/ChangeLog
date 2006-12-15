@@ -1,3 +1,10 @@
+Fri Dec 15 22:47:36 2006  Tim Janik  <timj@gtk.org>
+
+	* bsequantizer.idl:
+	* bsequantizer.cc: improved blurb, support fractional quantization 
+	steps. adjusted steppings. use nearbyint() for rounding to avoid
+	buglets around 32bits.
+
 Fri Dec 15 21:54:21 2006  Tim Janik  <timj@gtk.org>
 
 	* bsequantizer.idl: use quantizer.png as icon.
