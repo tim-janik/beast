@@ -22,7 +22,7 @@ namespace Bse { namespace Standard {
 
 class Quantizer : Bse::Effect {
   Info    category   = "/Distortion/Quantizer";
-  // Info    icon      = "icons/quantize.png";
+  Info    icon       = "icons/quantizer.png";
   Info    authors    = "Tim Janik";
   Info    blurb      = _("This plugin quantizes the input signals according to a configurable step setting.");
   group _("Quantization") {
