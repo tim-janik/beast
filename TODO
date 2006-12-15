@@ -41,6 +41,7 @@ USAGE:
 - in song view, there should be a way to directly load wave files
 - when popping up the synth selection, if no synth is presnet but waves are available, the notebook should show the Waves page
 MISC:
+- Hanno-Module-Requests: cross-fading, ring-mod, pink-noise, freq->freq, quantizer, band-pass with modulation input
 - add a dialog that provides details about beast's current run mode:
   - selected audio driver, bit depth and mix-freq thereof
   - provide rating for alternative audio drivers (ALSA)
