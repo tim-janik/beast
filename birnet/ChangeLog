@@ -1,3 +1,8 @@
+Sat Dec 16 12:51:20 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutf8.cc (iswide_cjk): glib condition fix, g_unichar_iswide_cjk()
+	was introduced in glib-2.12.
+
 Fri Dec  8 23:03:14 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.hh (binary_lookup_insertion_pos): fixed missing "std::".

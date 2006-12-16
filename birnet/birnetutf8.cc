@@ -140,7 +140,7 @@ iswide (unichar uc)
 bool
 iswide_cjk (unichar uc)
 {
-#if GLIB_CHECK_VERSION (2, 10, 0)
+#if GLIB_CHECK_VERSION (2, 12, 0)
   return g_unichar_iswide_cjk (uc);
 #else
   return false;
