@@ -157,7 +157,7 @@ Mon Oct  9 23:47:30 2006  Tim Janik  <timj@gtk.org>
 	strings and to print into strings in printf style.
 	added uuid string test and comparison and errno to string conversion.
 
-	* birnet-zintern.cc: conveted somewhat more to C++.
+	* birnet-zintern.cc: converted somewhat more to C++.
 
 	* tests/strings.cc: added uuid string functions tests.
 
