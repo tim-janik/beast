@@ -1,7 +1,36 @@
 Overview of Changes in BEAST/BSE 0.7.1:
 
-* Fixed libbse symbol exports to allow compilation of custom plugins
-* Fixes for gcc-3.3
+* Fixed SUID security vulnerability by validating success of seteuid/setreuid,
+  related security advisories, describing the vulnerability:
+    http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-2916 # artswrapper
+    http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2006-4447 # X.Org
+* Added factor 2 SSE-optimized up/down resampler [Stefan Westerfeld]
+* Added support for varying musical tuning systems:
+  - 12-TET, 7-TET, 5-TET,
+  - Diatonic-Scale, Indian-Scale, Pythagorean-Tuning,
+  - Pentatonic-5-Limit, Pentatonic-Blues, Pentatonic-Gogo,
+  - Quarter-Comma-Meantone, Silbermann-Sorge,
+  - Werckmeister-3, Werckmeister-4, Werckmeister-5, Werckmeister-6,
+    Kirnberger-3 and Young
+  [Hanno Behrens, Tim Janik]
+* Module changes and additions:
+  Quantizer         - Simulate 1-32 Bit quantization effects
+  DavXTalStrings    - Added semitone transposition function [Stefan Westerfeld]
+  DavOrgan	    - Added semitone transposition function [Stefan Westerfeld]
+* Fixed exported symbol set to simplify external plugin building
+* Improved startup time by linking multiple plugins into a single library
+* Fixed LADSPA plugin loading to bind symbols only locally
+* Reduced debugging spew for LADSPA plugins
+* Fixed WWW browser launching to cope with launcher script errors
+* Improved performance of floating point block operations
+* Extended test suite and overall test coverage
+* Applied miscellaneous accelerator and cosmetic fixes
+* Improved documentation and label strings
+* Fixed library dependencies in bse.pc
+* Fixed tact numbers in TrackRoll #346916 [Stefan Westerfeld]
+* Fixed all reported beast crashes: #340437 #347319
+* Fixes for gcc-3.3 and GNU/kFreeBSD
+* Updated Italian translation [Petrecca Michele]
 
 Overview of Changes in BEAST/BSE 0.7.0:
 
