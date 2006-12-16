@@ -1,3 +1,7 @@
+Overview of Changes in BSE-ALSA 0.7.1:
+
+* Fixes to adapt to BEAST-0.7.1
+
 Overview of Changes in BSE-ALSA 0.7.0:
 
 * Build fixes for BEAST-0.7.0

@@ -1,3 +1,7 @@
+Sat Dec 16 01:51:10 2006  Tim Janik  <timj@gtk.org>
+
+	* released bse-alsa 0.7.1-rc1.
+
 Mon Dec  4 01:05:20 2006  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c: 
