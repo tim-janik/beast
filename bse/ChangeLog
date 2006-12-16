@@ -36,7 +36,7 @@ Tue Dec 12 01:18:22 2006  Tim Janik  <timj@gtk.org>
 	* bsecore.idl, bsemathsignal.c: added musical tuning system tables 
 	submitted by Hanno Behrens <pebbles@schattenlauf.de>:
 	12-TET, 7-TET, 5-TET, DIATONIC_SCALE, INDIAN_SCALE, PYTHAGOREAN_TUNING,
-	PENTATONIC_5_LIMIT, PENTATONIC-BLUES, PENTATONIC-GOGO,
+	PENTATONIC_5_LIMIT, PENTATONIC_BLUES, PENTATONIC_GOGO,
 	QUARTER_COMMA_MEANTONE, SILBERMANN_SORGE, WERCKMEISTER_3,
 	WERCKMEISTER_4, WERCKMEISTER_5, WERCKMEISTER_6, KIRNBERGER_3
 	and YOUNG.
@@ -98,7 +98,6 @@ Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
 	* tests/misctests.cc: test various musical tuning system properties and
 	note<->freq conversions.
 
->>>>>>> .r4147
 Sun Dec 10 14:15:18 2006  Stefan Wasterfeld  <stefan@space.twc.de>
 
 	* tests/firhandle.cc: Added seek test.
@@ -319,7 +318,7 @@ Sat Nov  4 17:38:28 2006  Tim Janik  <timj@gtk.org>
 
 Fri Nov  3 02:19:09 2006  Tim Janik  <timj@gtk.org>
 
-	* bsefilter.h, bsefilter.cc: removed transfer funciton nominator and
+	* bsefilter.h, bsefilter.cc: removed transfer function nominator and
 	denominator from public API, because they are useless for higher 
 	order filters. added center-frequency to public API, which is the
 	middle frequency for band filters (used to evaluate gain ot stopband).
@@ -380,7 +379,7 @@ Mon Oct 30 23:57:03 2006  Tim Janik  <timj@gtk.org>
 
 Mon Oct 30 21:57:20 2006  Tim Janik  <timj@gtk.org>
 
-	* tests/filtertest.cc: applied some correcitons suggested by Stefan.
+	* tests/filtertest.cc: applied some corrections suggested by Stefan.
 	fixed frequency range loops to test both frequency bounds.
 	extended exit_with_iir_filter_gnuplot() to print the filter design.
 	assert allmost 0-gain for all filters. simplified tests somewhat.
@@ -442,7 +441,7 @@ Thu Oct 26 00:15:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 Tue Oct 24 23:52:58 2006  Tim Janik  <timj@gtk.org>
 
-	* bseblockutils.hh, bseblockutils.cc: provide an block utils 
+	* bseblockutils.hh, bseblockutils.cc: provide a blockutils 
 	implementation name. usually "FPU" or "SSE".
 
 	* bsemain.c: add block utils implementaiton name as suffix to
