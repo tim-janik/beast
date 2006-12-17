@@ -1,6 +1,5 @@
 - wavetool manual page
 - verify that all C plugins call update_modules after module creation
-- acbeast.m4 -> acbirnet.m4
 - bsemathsignal.c -> bsemathsignal.cc
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
