@@ -65,6 +65,7 @@ static void	   dav_xtal_strings_get_property     (GObject              *object,
 						      guint                 param_id,
 						      GValue               *value,
 						      GParamSpec           *pspec);
+static void        dav_xtal_prepare                  (BseSource            *source);
 static void	   dav_xtal_strings_context_create   (BseSource		   *source,
 						      guint		    context_handle,
 						      BseTrans		   *trans);
@@ -101,6 +102,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   gobject_class->set_property = dav_xtal_strings_set_property;
   gobject_class->get_property = dav_xtal_strings_get_property;
   
+  source_class->prepare = dav_xtal_prepare;
   source_class->context_create = dav_xtal_strings_context_create;
   
   bse_object_class_add_param (object_class, _("Frequency"),
@@ -165,7 +167,7 @@ static void
 dav_xtal_strings_init (DavXtalStrings *self)
 {
   self->params.freq = BSE_KAMMER_FREQUENCY;
-  self->params.transpose_factor = 1.0;
+  self->params.transpose_factor = 0.0; // updated when prepared
   self->params.trigger_vel = 1.0;
   self->params.note_decay = 0.4;
   self->params.tension_decay = 0.04;
@@ -281,6 +283,15 @@ dav_xtal_strings_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
+}
+
+static void
+dav_xtal_prepare (BseSource *source)
+{
+  DavXtalStrings *self = DAV_XTAL_STRINGS (source);
+  self->params.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (source), self->transpose);
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
 static gfloat inline

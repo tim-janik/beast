@@ -1,3 +1,9 @@
+Sun Dec 17 02:18:46 2006  Tim Janik  <timj@gtk.org>
+
+	* davxtalstrings.c:
+	dav_xtal_strings_init(): initialize transpose_factor to 0 to uncover late update bugs.
+	dav_xtal_prepare(): update config.transpose_factor, using BseSource's musical_tuning.
+
 Sun Dec 17 00:33:34 2006  Tim Janik  <timj@gtk.org>
 
 	* davorgan.c:
