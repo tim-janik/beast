@@ -200,7 +200,7 @@ random_unichar_test (void)
       bb = Unichar::iswide (uc);
       gb = g_unichar_iswide (uc);
       TCHECK (bb == gb);
-#if GLIB_CHECK_VERSION (2, 10, 0)
+#if GLIB_CHECK_VERSION (2, 12, 0)
       bb = Unichar::iswide_cjk (uc);
       gb = g_unichar_iswide_cjk (uc);
       TCHECK (bb == gb);
