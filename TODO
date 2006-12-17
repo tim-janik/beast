@@ -783,6 +783,8 @@ Misc Buglets/Feature Requests:
 The MCD timeline says:
 - soon:
  - davorgan c++
+ - davxtalstrings transpose buggy [rc1]
+ - other modules (like standard oscillator seem to be affected, too) [rc1]
  - submit 8 thread crasher
  - use debugging interface of g_slice for #340437
  - write script to repeatedly undo/redo random operations
