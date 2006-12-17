@@ -406,6 +406,7 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
     {
       OscConfigData cdata;
       
+      self->config.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (BSE_SOURCE (self)), self->transpose);
       cdata.config = self->config;
       if (recreate_table)
 	{
