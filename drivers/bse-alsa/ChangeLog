@@ -1,3 +1,7 @@
+Sun Dec 17 18:35:49 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: depend on bse >= 0.7.1.
+
 Sat Dec 16 01:51:10 2006  Tim Janik  <timj@gtk.org>
 
 	* released bse-alsa 0.7.1-rc1.
