@@ -159,7 +159,7 @@ dav_organ_init (DavOrgan *self)
   self->config.reed = FALSE;
   
   self->config.freq = BSE_KAMMER_FREQUENCY;
-  self->config.transpose_factor = 1.0;
+  self->config.transpose_factor = 0; // updated when prepared
   self->config.harm0 = 1.0;
   self->config.harm1 = 36. / 127.;
   self->config.harm2 = 100. / 127.;
@@ -190,7 +190,6 @@ dav_organ_set_property (GObject      *object,
       break;
     case PARAM_TRANSPOSE:
       self->transpose = sfi_value_get_int (value);
-      self->config.transpose_factor = bse_transpose_factor (bse_item_current_musical_tuning (BSE_ITEM (self)), self->transpose);
       dav_organ_update_modules (self);
       break;
     case PARAM_FINE_TUNE:
@@ -353,9 +352,11 @@ dav_organ_class_unref_tables (DavOrganClass *class)
 static void
 dav_organ_prepare (BseSource *source)
 {
-  DavOrganClass *class = DAV_ORGAN_GET_CLASS (source);
+  DavOrgan *self = DAV_ORGAN (source);
+  DavOrganClass *class = DAV_ORGAN_GET_CLASS (self);
   
   dav_organ_class_ref_tables (class);
+  self->config.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (source), self->transpose);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
@@ -379,11 +380,14 @@ dav_organ_update_modules (DavOrgan *self)
 {
   /* update organ data during runtime */
   if (BSE_SOURCE_PREPARED (self))
-    bse_source_update_modules (BSE_SOURCE (self),
-			       G_STRUCT_OFFSET (Organ, config),
-			       &self->config,
-			       sizeof (self->config),
-			       NULL);
+    {
+      self->config.transpose_factor = bse_transpose_factor (bse_source_prepared_musical_tuning (BSE_SOURCE (self)), self->transpose);
+      bse_source_update_modules (BSE_SOURCE (self),
+                                 G_STRUCT_OFFSET (Organ, config),
+                                 &self->config,
+                                 sizeof (self->config),
+                                 NULL);
+    }
 }
 
 static inline gfloat

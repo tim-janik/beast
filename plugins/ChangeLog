@@ -1,3 +1,10 @@
+Sun Dec 17 00:33:34 2006  Tim Janik  <timj@gtk.org>
+
+	* davorgan.c:
+	dav_organ_init(): initialize transpose_factor to 0 to uncover late update bugs.
+	dav_organ_update_modules(): 
+	dav_organ_prepare(): update config.transpose_factor, using BseSource's musical_tuning.
+
 Fri Dec 15 22:47:36 2006  Tim Janik  <timj@gtk.org>
 
 	* bsequantizer.idl:
