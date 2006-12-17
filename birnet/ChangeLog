@@ -1,3 +1,10 @@
+Sun Dec 17 00:11:24 2006  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.[hc]*: provide virtual destructor for class with virtual
+	methods, demanded by g++.
+
+	* acbirnet.m4: added autoconf utility file (moved here from beast).
+
 Sat Dec 16 12:51:20 2006  Tim Janik  <timj@gtk.org>
 
 	* birnetutf8.cc (iswide_cjk): glib condition fix, g_unichar_iswide_cjk()

@@ -241,6 +241,8 @@ struct Deletable : public virtual VirtualTypeid {
     DeletionHook    *prev;
     DeletionHook    *next;
     friend class Deletable;
+  protected:
+    virtual     ~DeletionHook          ();
   public:
     explicit     DeletionHook          () : prev (NULL), next (NULL) {}
     virtual void deletable_dispose     (Deletable &deletable) = 0;

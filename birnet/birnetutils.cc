@@ -822,6 +822,9 @@ Deletable::~Deletable ()
   invoke_deletion_hooks();
 }
 
+Deletable::DeletionHook::~DeletionHook()
+{}
+
 /**
  * @param deletable     possible Deletable* handle
  * @return              TRUE if the hook was added

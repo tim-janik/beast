@@ -40,7 +40,7 @@ birnet_generated_headers = $(strip 	\
 	birnetconfig.h			\
 	birnetsignalvariants.hh         \
 )
-EXTRA_DIST += configure.inc mksignals.sh
+EXTRA_DIST += configure.inc acbirnet.m4 mksignals.sh
 
 # Birnet library
 # we want a partial shared library here. libtool creates that if the library
