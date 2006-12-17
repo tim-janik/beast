@@ -13,14 +13,14 @@ SUBDIRS = icons zintern . tests
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 DEFS     += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
-	              $(filter $(<F), $(bse_c_sources) $(bse_cc_sources))) \
+	              $(filter $(<F), $(bse_sources) $(bse_sources))) \
 )
 
 #
 # setup source file variables
 #
 # BSE public header files
-bse_public_h_sources = $(strip \
+bse_public_headers = $(strip \
 	gsldefs.h \
 	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
 	gslfilter.h		gslcommon.h \
@@ -58,8 +58,8 @@ bse_public_h_sources = $(strip \
 	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			bseloader.h \
 	bseresampler.hh		bseresamplerimpl.hh	\
 )
-# BSE C sources
-bse_c_sources = $(strip \
+# BSE C & C++ sources
+bse_sources = $(strip \
 	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
 	gslfilter.c		gslcommon.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
@@ -92,9 +92,6 @@ bse_c_sources = $(strip \
 	bseresampler.cc 	bsedatahandle-resample.cc				bsedatahandle-fir.cc \
 	bseloader-aiff.c	bseloader-guspatch.cc	bseloader-oggvorbis.c		bseloader-bsewave.c \
 	bseloader-mad.c		bseloader-wav.c		\
-)
-# BSE C++ sources
-bse_cc_sources = $(strip 	\
 	bsebusmodule.cc		\
 	bsecore.cc		\
 	bseprobe.cc		\
@@ -139,9 +136,9 @@ pthread_2_lpthread = $(if $(findstring -pthread, $1), -lpthread)
 #
 lib_LTLIBRARIES              = libbse.la
 libbseincludedir       	     = $(includedir)/bse
-libbseinclude_HEADERS        = $(bse_public_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
+libbseinclude_HEADERS        = $(bse_public_headers) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 nodist_libbseinclude_HEADERS = bsecore.genidl.hh
-libbse_la_SOURCES            = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
+libbse_la_SOURCES            = $(bse_sources) $(bse_proc_gen_sources)
 libbse_la_LIBADD             = $(top_builddir)/birnet/libbirnet.o $(top_builddir)/sfi/libsfi.o $(BSE_LIBS) $(SFI_LIBS)
 libbse_la_LDFLAGS            = $(strip				\
 	-Wl,--version-script=$(srcdir)/ldscript.map		\
@@ -182,7 +179,7 @@ GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
 bsegentypes.h: @PERLRULE@ stamp-bsegentypes.h ;
 CLEANSTAMPFILES += stamp-bsegentypes.h
-stamp-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_c_sources)) $(filter-out bsegentypes.h, $(bse_public_h_sources))
+stamp-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
 stamp-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
@@ -190,8 +187,8 @@ stamp-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
-	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.c, $(bse_c_sources)) \
+	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
+	  && $(PERL) mktypes.pl --externs $(filter-out bsegentypes.c, $(bse_sources)) \
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
@@ -205,8 +202,8 @@ bsegentypes.c: @PERLRULE@ bsegentypes.h mktypes.pl bsecore.idl $(SFIDL)
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
 	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-	      $(bse_public_h_sources) \
-	  && $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) \
+	      $(bse_public_headers) \
+	  && $(PERL) mktypes.pl --interns --export-proto $(bse_sources) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
@@ -222,7 +219,7 @@ bseenum_arrays.c: bsegentypes.h
 	    --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	    --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	    --vtail "  { 0, NULL, NULL }\n};\n" \
-	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
+	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
@@ -235,7 +232,7 @@ bseenum_list.c: bsegentypes.h
 	  && $(GLIB_MKENUMS) \
 	    --fprod "\n/* --- @filename@ --- */" \
 	    --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
-	      $(filter-out bsegentypes.h, $(bse_public_h_sources)) \
+	      $(filter-out bsegentypes.h, $(bse_public_headers)) \
 	) > xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
@@ -244,7 +241,7 @@ GENERATED_EXTRA_DIST += bsegentype_array.c
 $(libbse_la_OBJECTS): bsegentype_array.c
 bsegentype_array.c: @PERLRULE@ bsegentypes.h
 	cd $(srcdir) \
-	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-$(@F) \
+	&& $(PERL) mktypes.pl --array $(bse_sources) > xgen-$(@F) \
 	&& cp xgen-$(@F) $(@F) \
 	&& rm -f xgen-$(@F)
 # bsebuiltin_externs.c
