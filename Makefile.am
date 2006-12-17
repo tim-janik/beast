@@ -13,7 +13,7 @@ site site-preview site-update site-update-all site-update-pages site-update-gall
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
 # extra dependancies
-configure: acbeast.m4 birnet/configure.inc
+configure: birnet/acbirnet.m4 birnet/configure.inc
 
 CLEANFILES += $(strip		\
 	intltool-extract	\
@@ -25,7 +25,6 @@ EXTRA_DIST += $(strip		\
 	TODO			\
 	COPYING.GPL		\
 	COPYING.LGPL		\
-	acbeast.m4		\
 	po-helper.sh.in		\
 	topconfig.h		\
 	intltool-extract.in     \

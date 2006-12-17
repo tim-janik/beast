@@ -9,10 +9,9 @@
   max sustain time
   gate out (phase selectable)
   time: 2 scales ; seconds milliseconds
-- freq->freq module feature: offer volt/per/octave output  
 NEXT-RELEASE:
 - add "difference" channel to BseSummation (which deprecated BseAdder)
-- add freq->freq detuning/modulation plugin
+- add freq->freq detuning/modulation plugin (offer volt/per/octave output?)
 - describe the need for Kernel 2.6 in README
 - fix bse.pc depending on mad.pc, libmad can be installed *without* a mad.pc file
 - GslLong -> int64 
