@@ -545,9 +545,9 @@ bst_early_parse_args (int    *argc_p,
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--no-debug", argv[i]) == 0 ||
-	       strncmp ("--no-debug=", argv[i], 8) == 0)
+	       strncmp ("--no-debug=", argv[i], 11) == 0)
 	{
-	  gchar *equal = argv[i] + 7;
+	  gchar *equal = argv[i] + 10;
 	  
 	  if (*equal == '=')
             sfi_msg_deny (equal + 1);

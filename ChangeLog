@@ -1,3 +1,8 @@
+Mon Dec 18 20:43:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/bstmain.c: Fix argument parsing for the --no-debug=...
+	option.
+
 Sat Dec 16 19:45:18 2006  Tim Janik  <timj@gtk.org>
 
 	* updated version to 0.7.1-rc2, interface age 0, binary age 0.
