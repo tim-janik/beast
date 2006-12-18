@@ -143,12 +143,12 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_FREQ,
 			      bse_param_spec_freq_simple ("base_freq", _("Frequency"),
-                                                          _("Oscillator frequency in Herz, i.e. the number of oscillator cycles per second"),
+                                                          _("Oscillator frequency in Hertz, i.e. the number of oscillator cycles per second"),
 							  SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_NOTE,
 			      bse_pspec_note_simple ("base_note", _("Note"),
-                                                     _("Oscillator frequency as note, converted to Herz according to the current musical tuning"),
+                                                     _("Oscillator frequency as note, converted to Hertz according to the current musical tuning"),
                                                      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_TRANSPOSE,

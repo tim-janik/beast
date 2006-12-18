@@ -1,3 +1,11 @@
+Mon Dec 18 20:14:34 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsebiquadfilter.c:
+	* bseconstant.c:
+	* bsestandardosc.c:
+	* bseladspamodule.c: Spelling fix: the unit for frequencies is spelled
+	"Hertz" (not "Herz").
+
 Sun Dec 17 20:58:40 2006  Tim Janik  <timj@gtk.org>
 
 	* bsestandardosc.c (bse_standard_osc_update_modules): added missing 
@@ -103,11 +111,11 @@ Mon Dec 11 00:51:36 2006  Tim Janik  <timj@gtk.org>
 	* tests/misctests.cc: test various musical tuning system properties and
 	note<->freq conversions.
 
-Sun Dec 10 14:15:18 2006  Stefan Wasterfeld  <stefan@space.twc.de>
+Sun Dec 10 14:15:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/firhandle.cc: Added seek test.
 
-Mon Dec  4 12:03:19 2006  Stefan Wasterfeld  <stefan@space.twc.de>
+Mon Dec  4 12:03:19 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsldatahandle.h:
 	* bsedatahandle-fir.cc: Added a function which computes the filter

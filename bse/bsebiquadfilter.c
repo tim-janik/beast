@@ -131,7 +131,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_FREQ,
-			      sfi_pspec_log_scale ("freq", _("Cutoff [Hz]"), _("Filter cutoff frequency in Herz"),
+			      sfi_pspec_log_scale ("freq", _("Cutoff [Hz]"), _("Filter cutoff frequency in Hertz"),
 						   BSE_KAMMER_FREQUENCY * 2,
 						   BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY - FREQ_DELTA,
 						   5.0,
@@ -140,7 +140,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_NOTE,
 			      sfi_pspec_note ("note", _("Note"), _("Filter cutoff frequency as note, "
-                                                                   "converted to Herz according to the current musical tuning"),
+                                                                   "converted to Hertz according to the current musical tuning"),
 					      bse_note_from_freq (BSE_MUSICAL_TUNING_12_TET, BSE_KAMMER_FREQUENCY * 2),
 					      BSE_MIN_NOTE, BSE_MAX_NOTE,
 					      FALSE,

@@ -117,7 +117,7 @@ bse_constant_class_init (BseConstantClass *class)
       ident = g_strdup_printf ("frequency_%u", i);
       label = g_strdup_printf (_("Frequency"));
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
-				  sfi_pspec_log_scale (ident, label, _("Constant signal value interpreted as frequency value in Herz"),
+				  sfi_pspec_log_scale (ident, label, _("Constant signal value interpreted as frequency value in Hertz"),
 						       BSE_MAX_FREQUENCY,
 						       0, BSE_MAX_FREQUENCY,
 						       10.0,
@@ -128,7 +128,7 @@ bse_constant_class_init (BseConstantClass *class)
       ident = g_strdup_printf ("note_%u", i);
       label = g_strdup_printf (_("Note"));
       bse_object_class_add_param (object_class, group, PARAM_NOTE + (i - 1) * 3,
-				  sfi_pspec_note (ident, label, _("Constant signal value as note, converted to Herz according to the current musical tuning"),
+				  sfi_pspec_note (ident, label, _("Constant signal value as note, converted to Hertz according to the current musical tuning"),
 						  SFI_KAMMER_NOTE, SFI_MIN_NOTE, SFI_MAX_NOTE,
 						  TRUE, SFI_PARAM_GUI));
       g_free (ident);

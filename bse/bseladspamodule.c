@@ -194,7 +194,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	      if (max_note - min_note > 2)
 		{
 		  gchar *ident2 = g_strconcat (port->ident, "-note", NULL);
-		  pspec2 = sfi_pspec_note (ident2, port->name, _("Note values are converted to Herz according to the current musical tuning"),
+		  pspec2 = sfi_pspec_note (ident2, port->name, _("Note values are converted to Hertz according to the current musical tuning"),
 					   BSE_KAMMER_NOTE, min_note, max_note, FALSE,
 					   SFI_PARAM_GUI);
 		  g_param_spec_set_qdata (pspec2, quark_notify_sibling, pspec);
