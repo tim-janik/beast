@@ -108,13 +108,13 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", _("Frequency"),
-                                                   _("String oscillation frequency in Herz"),
+                                                   _("String oscillation frequency in Hertz"),
 						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_BASE_NOTE,
 			      bse_pspec_note_simple ("base_note", _("Note"),
-                                                     _("String oscillation frequency as note, converted to Herz according to the current musical tuning"),
+                                                     _("String oscillation frequency as note, converted to Hertz according to the current musical tuning"),
                                                      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Frequency"),
 			      PARAM_TRANSPOSE,

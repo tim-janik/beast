@@ -1,3 +1,12 @@
+Mon Dec 18 19:39:46 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davxtalstrings.c:
+	* davsyndrum.c:
+	* davcanyondelay.c:
+	* bseiirfilter.c:
+	* davorgan.c: Spelling fix: the unit for frequencies is spelled
+	"Hertz" (not "Herz").
+
 Sun Dec 17 02:18:46 2006  Tim Janik  <timj@gtk.org>
 
 	* davxtalstrings.c:

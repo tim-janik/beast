@@ -114,7 +114,7 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("IIR Low-Pass Filter"), PROP_FILTER_NOTE,
                               bse_pspec_note_simple ("filter_note", _("Note"),
-                                                     _("Filter cutoff frequency as note, converted to Herz according to the current musical tuning"),
+                                                     _("Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"),
                                                      SFI_PARAM_GUI));
 
   channel = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), _("Left Audio Input"));

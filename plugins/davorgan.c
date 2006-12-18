@@ -107,13 +107,13 @@ dav_organ_class_init (DavOrganClass *class)
   
   bse_object_class_add_param (object_class, _("Base Frequency"), PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", _("Frequency"),
-                                                   _("Organ frequency in Herz, i.e. the pitch of the base tone"),
+                                                   _("Organ frequency in Hertz, i.e. the pitch of the base tone"),
 						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
                               PARAM_BASE_NOTE,
                               bse_pspec_note_simple ("base_note", _("Note"),
-                                                     _("Organ frequency as note, converted to Herz according to the current musical tuning"),
+                                                     _("Organ frequency as note, converted to Hertz according to the current musical tuning"),
                                                      SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PARAM_TRANSPOSE,
