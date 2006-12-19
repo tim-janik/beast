@@ -135,12 +135,13 @@ osc_process (GslOscData   *osc,
       
       if (change_mask & OSC_FLAG_FREQ)
 	{
-	  gdouble fcpos, flpos;
+	  gdouble fcpos, flpos, transposed_freq;
 
 	  fcpos = osc->cur_pos * osc->wave.ifrac_to_float;
 	  flpos = osc->last_pos * osc->wave.ifrac_to_float;
 	  osc->last_freq_level = osc->config.cfreq;
-	  gsl_osc_table_lookup (osc->config.table, osc->last_freq_level, &osc->wave);
+	  transposed_freq = osc->config.transpose_factor * osc->last_freq_level;
+	  gsl_osc_table_lookup (osc->config.table, transposed_freq, &osc->wave);
 	  osc->last_pos = flpos / osc->wave.ifrac_to_float;
 	  osc->cur_pos = fcpos / osc->wave.ifrac_to_float;
 	}

@@ -1,3 +1,8 @@
+Tue Dec 19 14:18:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsloscillator.c: Take transpose factor into account for table
+	lookups when the oscillator frequency is constant. Fixes #387364.
+
 Tue Dec 19 02:10:33 2006  Tim Janik  <timj@gtk.org>
 
 	* bsesong.[hc]: keep a flag around to detect the first sequencer underrun,
