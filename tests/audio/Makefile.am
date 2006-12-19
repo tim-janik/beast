@@ -97,6 +97,24 @@ adsrtest:
 	$(BSEFCOMPARE) $(srcdir)/adsrtest.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
+# checks that oscillator transposing works if the frequency is constant
+FEATURE_TESTS += osctranspose1
+EXTRA_DIST += osctranspose1.bse osctranspose1.ref
+osctranspose1-test:
+	$(BSE2WAV) $(srcdir)/osctranspose1.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/osctranspose1.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
+# checks that oscillator transposing works if the frequency is a signal
+FEATURE_TESTS += osctranspose2
+EXTRA_DIST += osctranspose2.bse osctranspose2.ref
+osctranspose2-test:
+	$(BSE2WAV) $(srcdir)/osctranspose2.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/osctranspose2.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
 EXTRA_DIST += partymonster.ref

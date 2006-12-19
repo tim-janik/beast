@@ -1,3 +1,12 @@
+Tue Dec 19 15:12:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am:
+	* tests/audio/osctranspose1.ref:
+	* tests/audio/osctranspose1.bse:
+	* tests/audio/osctranspose2.ref:
+	* tests/audio/osctranspose2.bse: Added tests for the transpose
+	property of BseStandardOsc. Should catch problems like #387364.
+
 Mon Dec 18 20:43:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/bstmain.c: Fix argument parsing for the --no-debug=...

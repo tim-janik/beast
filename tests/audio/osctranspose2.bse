@@ -1,0 +1,83 @@
+; BseProject
+
+(bse-version "0.7.1")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2006-12-19 14:06:11")
+  (creation-time "2006-12-19 01:07:04")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld"))
+(container-child "BseCSynth::Unnamed"
+  (modification-time "2006-12-19 14:06:11")
+  (creation-time "2006-12-19 01:07:07")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld")
+  (container-child "BseStandardOsc::StandardOsc-1"
+    (pulse-mod-perc 0)
+    (pulse-width 50)
+    (fm-n-octaves 1)
+    (exponential-fm #f)
+    (fm-perc 0)
+    (transpose 40)
+    (base-freq 440)
+    (wave-form bse-standard-osc-saw-fall)
+    (pos-y 1.1)
+    (pos-x -1.84)
+    (source-input "freq-in" (link 1 "InstrumentInput-1") "frequency"))
+  (container-child "BseInstrumentInput::InstrumentInput-1"
+    (pos-y -0.235)
+    (pos-x -4.325))
+  (container-child "BseInstrumentOutput::InstrumentOutput-1"
+    (pos-y 0.085)
+    (pos-x 2.355)
+    (source-input "left-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "right-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
+  (container-child "BseAmplifier::Amplifier-1"
+    (master-volume 1)
+    (base-level 0)
+    (ostrength 100)
+    (ctrl-exp #f)
+    (ctrl-mul #t)
+    (clevel2 100)
+    (clevel1 100)
+    (alevel2 100)
+    (alevel1 100)
+    (pos-y 0.075)
+    (pos-x 0.025)
+    (source-input "audio-in1" (link 1 "StandardOsc-1") "audio-out")
+    (source-input "ctrl-in1" (link 1 "SimpleADSR-1") "ctrl-out"))
+  (container-child "BseSimpleADSR::SimpleADSR-1"
+    (time-range bse-time-range-short)
+    (release-time 40)
+    (sustain-level 50)
+    (decay-time 30)
+    (attack-time 10)
+    (pos-y -0.915)
+    (pos-x -1.845)
+    (source-input "gate-in" (link 1 "InstrumentInput-1") "gate")))
+(container-child "BseSong::Unnamed-1"
+  (bpm 120)
+  (denominator 4)
+  (numerator 4)
+  (tpqn 384)
+  (modification-time "2006-12-19 14:06:11")
+  (creation-time "2006-12-19 13:54:58")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld")
+  (container-child "BsePart::Part-1"
+    (n-channels 1)
+    (insert-notes 0
+      (0x00000 0x180 69)
+      (0x00180 0x180 62)
+      (0x00300 0x180 50)
+      (0x00480 0x180 26)))
+  (container-child "BseBus::Master-1"
+    (master-output #t)
+    (right-volume 1)
+    (left-volume 1)
+    (bus-input (link 1 "Track-01")))
+  (container-child "BseTrack::Track-01"
+    (n-voices 16)
+    (snet (link 2 "Unnamed"))
+    (insert-part 0 (link 1 "Part-1"))))
