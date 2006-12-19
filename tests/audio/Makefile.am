@@ -98,7 +98,7 @@ adsrtest:
 	rm -f $(@F).tmp $(@F).wav
 
 # checks that oscillator transposing works if the frequency is constant
-FEATURE_TESTS += osctranspose1
+FEATURE_TESTS += osctranspose1-test
 EXTRA_DIST += osctranspose1.bse osctranspose1.ref
 osctranspose1-test:
 	$(BSE2WAV) $(srcdir)/osctranspose1.bse $(@F).wav
@@ -107,7 +107,7 @@ osctranspose1-test:
 	rm -f $(@F).tmp $(@F).wav
 
 # checks that oscillator transposing works if the frequency is a signal
-FEATURE_TESTS += osctranspose2
+FEATURE_TESTS += osctranspose2-test
 EXTRA_DIST += osctranspose2.bse osctranspose2.ref
 osctranspose2-test:
 	$(BSE2WAV) $(srcdir)/osctranspose2.bse $(@F).wav

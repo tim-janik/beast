@@ -1,3 +1,8 @@
+Tue Dec 19 15:47:32 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am: Tiny fix so that the new tests really are
+	performed.
+
 Tue Dec 19 15:12:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am:
