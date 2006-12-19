@@ -1,3 +1,11 @@
+Tue Dec 19 02:10:33 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesong.[hc]: keep a flag around to detect the first sequencer underrun,
+	reset the flag when prepared.
+
+	* bsesequencer.cc (bse_sequencer_thread_main): always warn about 
+	sequencer underruns, regardles of debugging state.
+
 Mon Dec 18 20:14:34 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsebiquadfilter.c:

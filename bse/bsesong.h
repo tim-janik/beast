@@ -74,6 +74,7 @@ struct _BseSong
   gdouble	    delta_stamp_SL;	/* start + delta_stamp => tick */
   guint		    tick_SL;		/* tick at stamp_SL */
   guint             sequencer_owns_refcount_SL : 1;
+  guint             sequencer_underrun_detected_SL : 1;
   guint		    loop_enabled_SL : 1;
   SfiInt	    loop_left_SL;	/* left loop tick */
   SfiInt	    loop_right_SL;	/* left loop tick */

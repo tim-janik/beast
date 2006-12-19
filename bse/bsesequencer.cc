@@ -435,9 +435,11 @@ bse_sequencer_thread_main (gpointer data)
               if (old_song_pos <= cur_stamp && !song_starting) /* detect underrun after song start */
                 {
                   gchar *dh = bse_object_strdup_debug_handle (song);    /* thread safe */
-                  DEBUG ("sequencer underrun by %lld blocks for song: %s",
-                         (cur_stamp - old_song_pos) / bse_engine_block_size() + 1,
-                         dh);
+                  /* if (!song->sequencer_underrun_detected_SL) */
+                  g_printerr ("BseSequencer: underrun by %lld blocks for song: %s",
+                              (cur_stamp - old_song_pos) / bse_engine_block_size() + 1,
+                              dh);
+                  song->sequencer_underrun_detected_SL = TRUE;
                   g_free (dh);
                 }
 	    }

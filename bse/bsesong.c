@@ -502,7 +502,8 @@ bse_song_prepare (BseSource *source)
   BseSong *self = BSE_SONG (source);
 
   bse_object_lock (BSE_OBJECT (self));
-  
+  self->sequencer_underrun_detected_SL = FALSE;
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
