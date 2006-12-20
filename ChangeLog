@@ -11,6 +11,9 @@ Tue Dec 19 15:12:18 2006  Stefan Westerfeld  <stefan@space.twc.de>
 	* tests/audio/osctranspose2.ref:
 	* tests/audio/osctranspose2.bse: Added tests for the transpose
 	property of BseStandardOsc. Should catch problems like #387364.
+	The tests: osctranspose1 checks that oscillator transposing works if
+	the frequency is constant, osctranspose2 checks that oscillator
+	transposing works if the frequency is a signal.
 
 Mon Dec 18 20:43:57 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
