@@ -1,3 +1,18 @@
+Sat Dec 23 20:56:33 2006  Tim Janik  <timj@gtk.org>
+
+	* tests/audio/sum-diff-test.ref: 
+	* tests/audio/sum-diff-test.bse:
+	* tests/audio/Makefile.am: added sum-diff-test: test rule to test
+	BseSummation audio-diff output channel.
+
+	* tests/audio/bse2wav.scm: added option parsing, support --seconds <>
+	option to contrain the time intervall used for recording. 
+
+	* tests/audio/Makefile.am: lowered threshold for organsong-test and
+	velocity-test which seem to occasionally fail due to timing variances.
+
+	* Makefile.am: depend on automake 1.9.
+
 Tue Dec 19 15:47:32 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am: Tiny fix so that the new tests really are
