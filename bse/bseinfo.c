@@ -118,6 +118,6 @@ main (gint   argc,
           g_print ("%s\n", name);
         }
     }
-  
+
   return 0;
 }

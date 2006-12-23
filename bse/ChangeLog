@@ -1,3 +1,13 @@
+Sat Dec 23 20:49:22 2006  Tim Janik  <timj@gtk.org>
+
+	* bseserver.[hcp]*: added bse_server_start_recording() and 
+	bse_server_stop_recording() functions to schedule WAV file
+	recording for a specific time intervall. 
+	added bse-server-start-recording procedure.
+
+	* bsepcmwriter.[hc]: implemented time intervall
+	recording.
+
 Tue Dec 19 14:18:53 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsloscillator.c: Take transpose factor into account for table

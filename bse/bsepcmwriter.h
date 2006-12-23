@@ -35,11 +35,12 @@ G_BEGIN_DECLS
 struct _BsePcmWriter
 {
   BseItem	parent_instance;
+  BirnetMutex	mutex;
   guint		open : 1;
   guint		broken : 1;
   gint		fd;
-  guint		n_bytes;
-  BirnetMutex	mutex;
+  uint64	n_bytes;
+  uint64        recorded_maximum;
 };
 struct _BsePcmWriterClass
 {
@@ -51,7 +52,8 @@ struct _BsePcmWriterClass
 BseErrorType	bse_pcm_writer_open		(BsePcmWriter		*pdev,
 						 const gchar		*file,
 						 guint			 n_channels,
-						 guint			 sample_freq);
+						 guint			 sample_freq,
+                                                 uint64                  recorded_maximum);
 void		bse_pcm_writer_close		(BsePcmWriter		*pdev);
 /* writing is lock protected */
 void		bse_pcm_writer_write		(BsePcmWriter		*pdev,

@@ -44,6 +44,7 @@ struct _BseServer
   GSList	  *children;
 
   gchar		  *wave_file;
+  double           wave_seconds;
   
   guint		   dev_use_count;
   guint            log_messages : 1;
@@ -68,6 +69,10 @@ BseProject*	bse_server_create_project		(BseServer	*server,
 							 const gchar	*name);
 BseProject*	bse_server_find_project			(BseServer	*server,
 							 const gchar	*name);
+void    	bse_server_stop_recording		(BseServer	*server);
+void            bse_server_start_recording              (BseServer      *server,
+                                                         const char     *wave_file,
+                                                         double          n_seconds);
 BseErrorType	bse_server_open_devices			(BseServer	*server);
 void		bse_server_close_devices		(BseServer	*server);
 BseModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,

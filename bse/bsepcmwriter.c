@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsepcmwriter.h"
+#include "bseserver.h"
 #include "gsldatautils.h"
 
 #include <errno.h>
@@ -95,7 +96,8 @@ BseErrorType
 bse_pcm_writer_open (BsePcmWriter *self,
 		     const gchar  *file,
 		     guint         n_channels,
-		     guint         sample_freq)
+		     guint         sample_freq,
+                     uint64        recorded_maximum)
 {
   BseErrorType error;
   gint fd;
@@ -111,6 +113,7 @@ bse_pcm_writer_open (BsePcmWriter *self,
   error = 0;
 
   self->n_bytes = 0;
+  self->recorded_maximum = recorded_maximum;
   fd = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
   if (fd < 0)
     {
@@ -148,6 +151,13 @@ bse_pcm_writer_close (BsePcmWriter *self)
   errno = 0;
 }
 
+static gboolean
+bsethread_halt_recording (gpointer data)
+{
+  bse_server_stop_recording (bse_server_get());
+  return false;
+}
+
 void
 bse_pcm_writer_write (BsePcmWriter *self,
 		      gsize         n_values,
@@ -161,20 +171,28 @@ bse_pcm_writer_write (BsePcmWriter *self,
     return;
 
   sfi_mutex_lock (&self->mutex);
-  if (!self->broken)
+  const uint bw = 2; /* 16bit */
+  if (!self->broken && (!self->recorded_maximum || self->n_bytes < bw * self->recorded_maximum))
     {
       guint j;
-      guint8 *dest = g_new (guint8, n_values * 2); /* 16bit */
-      guint n_bytes = gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16,
-						G_BYTE_ORDER,
-						values,
-						dest,
-						n_values);
+      guint8 *dest = g_new (guint8, n_values * bw);
+      uint n_bytes = gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16,
+                                               G_BYTE_ORDER,
+                                               values,
+                                               dest,
+                                               n_values);
+      double r = n_bytes / (double ) n_values;
+      if (self->recorded_maximum)
+        n_bytes = MIN (n_bytes, (bw * self->recorded_maximum) - self->n_bytes);
       do
 	j = write (self->fd, dest, n_bytes);
       while (j < 0 && errno == EINTR);
       if (j > 0)
-	self->n_bytes += j;
+        {
+          self->n_bytes += j;
+          if (self->recorded_maximum && self->n_bytes >= bw * self->recorded_maximum)
+            bse_idle_next (bsethread_halt_recording, NULL);
+        }
       g_free (dest);
       if (j < 0 && errno)
 	{

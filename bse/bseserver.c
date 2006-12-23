@@ -261,15 +261,7 @@ bse_server_set_property (GObject      *object,
 	bse_gconfig_apply (rec);
       break;
     case PROP_WAVE_FILE:
-      if (!bse_gconfig_locked ())
-	{
-	  self->wave_file = g_strdup_stripped (g_value_get_string (value));
-	  if (!self->wave_file[0])
-	    {
-	      g_free (self->wave_file);
-	      self->wave_file = NULL;
-	    }
-	}
+      bse_server_start_recording (self, g_value_get_string (value), 0);
       break;
     case PROP_LOG_MESSAGES:
       self->log_messages = sfi_value_get_bool (value);
@@ -443,6 +435,39 @@ bse_server_find_project (BseServer   *server,
 }
 
 void
+bse_server_stop_recording (BseServer *self)
+{
+  GList *node;
+  for (node = self->projects; node; node = node->next)
+    {
+      BseProject *project = node->data;
+      bse_project_stop_playback (project);
+    }
+  self->wave_seconds = 0;
+  g_free (self->wave_file);
+  self->wave_file = NULL;
+  g_object_notify (self, "wave-file");
+}
+
+void
+bse_server_start_recording (BseServer      *self,
+                            const char     *wave_file,
+                            double          n_seconds)
+{
+  if (!bse_gconfig_locked ())
+    {
+      self->wave_seconds = MAX (n_seconds, 0);
+      self->wave_file = g_strdup_stripped (wave_file ? wave_file : "");
+      if (!self->wave_file[0])
+        {
+          g_free (self->wave_file);
+          self->wave_file = NULL;
+        }
+      g_object_notify (self, "wave-file");
+    }
+}
+
+void
 bse_server_require_pcm_input (BseServer *server)
 {
   if (server->pcm_device && !server->pcm_input_checked)
@@ -579,7 +604,10 @@ bse_server_open_devices (BseServer *self)
 	{
 	  BseErrorType error;
 	  self->pcm_writer = g_object_new (BSE_TYPE_PCM_WRITER, NULL);
-	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, bse_engine_sample_freq ());
+          const uint n_channels = 2;
+	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file,
+                                       n_channels, bse_engine_sample_freq (),
+                                       n_channels * bse_engine_sample_freq() * self->wave_seconds);
 	  if (error)
 	    {
               sfi_msg_display (SFI_MSG_ERROR,

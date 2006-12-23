@@ -423,6 +423,31 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseServer, start-recording) {
+  HELP	= "Start recording to a WAV file.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_string ("wave-file", NULL, NULL, NULL, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_real ("n_seconds", NULL, "Maximum number of recorded seconds",
+			  0, 0, SFI_MAXNUM, 60, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server     = bse_value_get_object (in_values++);
+  const char *wave_file = g_value_get_string (in_values++);
+  double n_seconds      = g_value_get_double (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  bse_server_start_recording (server, wave_file, n_seconds);
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseServer, get-version) {
   HELP	= "Retrieve BSE version.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
