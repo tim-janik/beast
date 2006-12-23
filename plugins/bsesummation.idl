@@ -25,11 +25,16 @@ class Summation : Effect {
   Info    authors     = "Tim Janik";
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Routing/Summation");
-  Info    blurb       = _("Summation is a simple mix effect which adds up its incoming signals");
+  Info    blurb       = _("The Summation module adds up all inputs connected to its multi-connect input streams. "
+                          "The sum of all inputs connected to 'Audio In1' is available at 'Audio Sum1', and "
+                          "similarly, 'Audio Sum2' is the accumulatiuon signal of all streams connected to 'Audio In2'. "
+                          "A difference signal between 'Audio Sum1' and 'Audio Sum2' is also "
+                          "generated and is available at 'Audio Diff'.");
   JStream audio_in1   = (_("Audio In1"), _("Audio input 1"));
   JStream audio_in2   = (_("Audio In2"), _("Audio input 2"));
-  OStream audio_out1  = (_("Audio Out1"), _("Combined audio output 1"));
-  OStream audio_out2  = (_("Audio Out2"), _("Combined audio output 2"));
+  OStream audio_out1  = (_("Audio Sum1"), _("Accumulated audio output 1"));
+  OStream audio_diff  = (_("Audio Diff"), _("Difference between audio outputs 1 and 2"));
+  OStream audio_out2  = (_("Audio Sum2"), _("Accumulated audio output 2"));
 };
 
 } // Bse

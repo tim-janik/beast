@@ -1,3 +1,8 @@
+Sat Dec 23 20:53:15 2006  Tim Janik  <timj@gtk.org>
+
+	* bsesummation.idl, bsesummation.cc: added audio-diff output channel 
+	which provides a difference signal between it's two output signals.
+
 Mon Dec 18 19:39:46 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* davxtalstrings.c:
