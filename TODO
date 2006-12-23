@@ -1,35 +1,43 @@
+- fix block-independence of bsenoise
+- fix bsenoise distributions
+- WEB: add? usability page: http://www.developerfusion.co.uk/show/1718/5/
+- WEB: add: "We will only accept OGG or MP3 files for already uploaded BSE files"
+- in API and docs, s/roots/zeros/
+- double bse_temp_freq (double kammer_freq, int semitone_delta); s/kammer_freq/freq/
+- complete beast LGPL migration
+- undef _DOMAIN
+- if no usable PCM device could be found, but devices where found at all, the error mesage should contain "is device in use?"
+- subst ArtsCompressor non-constants
 - wavetool manual page
 - bsemathsignal.c -> bsemathsignal.cc
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
-- adsr: + delay parameter
-  looping flag with threshold
-  max sustain time
-  gate out (phase selectable)
-  time: 2 scales ; seconds milliseconds
-NEXT-RELEASE:
-- add "difference" channel to BseSummation (which deprecated BseAdder)
-- add freq->freq detuning/modulation plugin (offer volt/per/octave output?)
+
 - describe the need for Kernel 2.6 in README
 - fix bse.pc depending on mad.pc, libmad can be installed *without* a mad.pc file
+- implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
+- add normalize to bsewavetool
+- tracks should be default-connected after midi import
+NEXT-RELEASE:
 - GslLong -> int64 
 - wave-tool:
   * bit-width conversion float<->16 (optional saturation)
-- undef _DOMAIN
-- rename: bse/Makefile.am: bse_c_sources & bse_cc_sources
 - fix birnet_thread_run uses (unref thread)
-- add plugin objects to http://beast.gtk.org/bse-objects
-- WEB: add LAD-2005 paper to website
 - bse/bseenginemaster.c:master_take_probes():
   for the copying of VIRTUAL nodes to really work (copy correct data),
   all VIRTUALs must have been processed before any SCHEDULED nodes
   (since the latter modify the buffer pointers)
 - move clean-generated: and generated: into Makefile.decl
 - move sfi_alloc_upper_power2 to birnet
-- implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
-- add normalize to bsewavetool
 - toggle sensitivity of oscillator:Pusle properties when non-pulse wave form is selected
 - song pointer display should be adjusted by the latency value specified in preferences
+POST-RELEASE:
+- add freq->freq detuning/modulation plugin (offer volt/per/octave output?)
+- adsr: + delay parameter
+  looping flag with threshold
+  max sustain time
+  gate out (phase selectable)
+  time: 2 scales ; seconds milliseconds
 INCOMPAT:
 - merge 2 * BseSimpleADSR into 1
 - delete BseAtanDistort
