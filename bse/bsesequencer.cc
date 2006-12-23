@@ -436,7 +436,7 @@ bse_sequencer_thread_main (gpointer data)
                 {
                   gchar *dh = bse_object_strdup_debug_handle (song);    /* thread safe */
                   /* if (!song->sequencer_underrun_detected_SL) */
-                  g_printerr ("BseSequencer: underrun by %lld blocks for song: %s",
+                  g_printerr ("BseSequencer: underrun by %lld blocks for song: %s\n",
                               (cur_stamp - old_song_pos) / bse_engine_block_size() + 1,
                               dh);
                   song->sequencer_underrun_detected_SL = TRUE;
