@@ -247,6 +247,7 @@ bsegentype_array.c: @PERLRULE@ bsegentypes.h
 # bsebuiltin_externs.c
 GENERATED_EXTRA_DIST += bsebuiltin_externs.c
 #$(libbse_la_OBJECTS): bsebuiltin_externs.c # forces complete rebuild when *.proc changes
+bseplugin.c: bsebuiltin_externs.c
 bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-$(@F) \
@@ -255,6 +256,7 @@ bsebuiltin_externs.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 # bsebuiltin_array.c
 GENERATED_EXTRA_DIST += bsebuiltin_array.c
 #$(libbse_la_OBJECTS): bsebuiltin_array.c # forces complete rebuild when *.proc changes
+bseplugin.c: bsebuiltin_array.c
 bsebuiltin_array.c: @PERLRULE@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
 	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-$(@F) \
