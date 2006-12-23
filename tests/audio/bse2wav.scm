@@ -78,7 +78,7 @@
 
 ;; Parse command line and exec
 (let* ((options (getopt-long (command-line) command-synopsis))
-       (max-seconds (option-ref options 'seconds 0))
+       (max-seconds (option-ref options 'seconds "0"))
        (args (option-ref options '() '())))
   (if (option-ref options 'help #f)
       (exit-usage 0))
