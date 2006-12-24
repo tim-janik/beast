@@ -1,3 +1,10 @@
+Sun Dec 24 15:20:51 2006  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsebus.c: BseSummation was recently extended to have three output
+	channels (a new one computing the difference), which broke make
+	report. This change fixes it, by adapting the hardcoded channel number
+	in this file to match the new summation plugin.
+
 Sat Dec 23 20:49:22 2006  Tim Janik  <timj@gtk.org>
 
 	* bseserver.[hcp]*: added bse_server_start_recording() and 

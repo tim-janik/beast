@@ -620,7 +620,7 @@ bse_bus_ensure_summation (BseBus *self)
       if (self->summation)
         {
           bse_source_must_set_input (BSE_SOURCE (self), 0, self->summation, 0);
-          bse_source_must_set_input (BSE_SOURCE (self), 1, self->summation, 1);
+          bse_source_must_set_input (BSE_SOURCE (self), 1, self->summation, 2);
         }
     }
   return self->summation != NULL;
