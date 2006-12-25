@@ -619,8 +619,10 @@ bse_bus_ensure_summation (BseBus *self)
         self->summation = bse_song_create_summation (BSE_SONG (item->parent));
       if (self->summation)
         {
-          bse_source_must_set_input (BSE_SOURCE (self), 0, self->summation, 0);
-          bse_source_must_set_input (BSE_SOURCE (self), 1, self->summation, 2);
+          bse_source_must_set_input (BSE_SOURCE (self), BSE_BUS_OCHANNEL_LEFT,
+                                     self->summation, bse_source_find_ochannel (self->summation, "audio-out1"));
+          bse_source_must_set_input (BSE_SOURCE (self), BSE_BUS_OCHANNEL_RIGHT,
+                                     self->summation, bse_source_find_ochannel (self->summation, "audio-out2"));
         }
     }
   return self->summation != NULL;

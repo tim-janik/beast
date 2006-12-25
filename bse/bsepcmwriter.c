@@ -181,9 +181,8 @@ bse_pcm_writer_write (BsePcmWriter *self,
                                                values,
                                                dest,
                                                n_values);
-      double r = n_bytes / (double ) n_values;
       if (self->recorded_maximum)
-        n_bytes = MIN (n_bytes, (bw * self->recorded_maximum) - self->n_bytes);
+        n_bytes = bw * MIN (n_bytes / bw, self->recorded_maximum - self->n_bytes / bw);
       do
 	j = write (self->fd, dest, n_bytes);
       while (j < 0 && errno == EINTR);

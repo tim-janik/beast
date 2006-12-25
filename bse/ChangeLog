@@ -1,3 +1,10 @@
+Mon Dec 25 16:43:46 2006  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c (bse_bus_ensure_summation): use symbolic i/o channel identifiers
+	to avoid breakage in hardcoded channel numbers.
+
+	* bsepcmwriter.c (bse_pcm_writer_write): fixed calculation to avoid overflow.
+
 Sun Dec 24 15:20:51 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsebus.c: BseSummation was recently extended to have three output
