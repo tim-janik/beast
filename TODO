@@ -1,3 +1,4 @@
+- add svn info output to report.out
 - fix block-independence of bsenoise
 - fix bsenoise distributions
 - WEB: add? usability page: http://www.developerfusion.co.uk/show/1718/5/
@@ -13,7 +14,6 @@
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
 
-- describe the need for Kernel 2.6 in README
 - fix bse.pc depending on mad.pc, libmad can be installed *without* a mad.pc file
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
 - add normalize to bsewavetool
