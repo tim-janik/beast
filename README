@@ -5,8 +5,15 @@ This is a development version of BEAST/BSE, the BEdevilled Audio SysTem
 and the Bedevilled Sound Engine. BEAST is a powerful music composition
 and modular synthesis application released as free software under the
 GNU GPL and GNU LGPL, that runs under unix.
-More information about the project can be found at the website and
+Much more information about the project can be found at the website and
 in the documents and manuals shipped with release tarballs.
+
+Beast is a soft realtime application which needs elevated CPU
+scheduling priorities. It installs a small suid wrapper which
+acquires nice level -20 and then immediately drops privileges.
+For linux kernels of the 2.6.x series, this enables the low-latency
+scheduling behavior needed to avoid audio drop outs, this kernel
+series is therefore recommended for operating Beast.
 
 In order to build release tarballs, you need Gtk+-2.6, a recent version
 of the Gtk+-2.6 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
