@@ -17,6 +17,7 @@ Overview of Changes in BEAST/BSE 0.7.1:
   Quantizer         - Simulate 1-32 Bit quantization effects
   DavXTalStrings    - Added semitone transposition function [Stefan Westerfeld]
   DavOrgan	    - Added semitone transposition function [Stefan Westerfeld]
+  Summation	    - Added difference channel [Tim Janik, Stefan Westerfeld]
 * Fixed exported symbol set to simplify external plugin building
 * Improved startup time by linking multiple plugins into a single library
 * Fixed LADSPA plugin loading to bind symbols only locally

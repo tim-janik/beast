@@ -1,3 +1,9 @@
+Tue Dec 26 23:24:01 2006  Tim Janik  <timj@gtk.org>
+
+	* configure.in: 
+	* data/bse.pc.in: removed mad.pc from dependencies because libmad
+	doesn't come with a mad.pc in every distribution.
+
 Sat Dec 23 20:56:33 2006  Tim Janik  <timj@gtk.org>
 
 	* tests/audio/sum-diff-test.ref: 
@@ -6,10 +12,7 @@ Sat Dec 23 20:56:33 2006  Tim Janik  <timj@gtk.org>
 	BseSummation audio-diff output channel.
 
 	* tests/audio/bse2wav.scm: added option parsing, support --seconds <>
-	option to contrain the time intervall used for recording. 
-
-	* tests/audio/Makefile.am: lowered threshold for organsong-test and
-	velocity-test which seem to occasionally fail due to timing variances.
+	option to constrain the time intervall used for recording. 
 
 	* Makefile.am: depend on automake 1.9.
 

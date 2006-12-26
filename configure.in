@@ -272,9 +272,10 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_SUBST(BSE_LIBS)
     dnl # --- figure stuff for bse.pc ---
     BSE_PC_REQUIRE=
-    if test $BSE_HAVE_LIBMAD = 1 ; then
-	BSE_PC_REQUIRE=mad
-    fi
+    dnl # except for debian, libmad doesn't ship a mad.pc file
+    dnl #if test $BSE_HAVE_LIBMAD = 1 ; then
+    dnl #	BSE_PC_REQUIRE=mad
+    dnl #fi
     BSE_PC_CFLAGS=
     BSE_PC_LIBS="$OV_LIBS"
     AC_SUBST(BSE_PC_REQUIRE)

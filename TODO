@@ -13,12 +13,10 @@
 - bsemathsignal.c -> bsemathsignal.cc
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
-
-- fix bse.pc depending on mad.pc, libmad can be installed *without* a mad.pc file
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
-- add normalize to bsewavetool
 - tracks should be default-connected after midi import
 NEXT-RELEASE:
+- add normalize to bsewavetool
 - GslLong -> int64 
 - wave-tool:
   * bit-width conversion float<->16 (optional saturation)
