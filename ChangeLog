@@ -1,3 +1,13 @@
+Thu Dec 28 01:18:46 2006  Tim Janik  <timj@gtk.org>
+
+	* web/news.doxi: 0.7.0 release announcement.
+
+	* web/oldnews.doxi: news rotation.
+
+	* NEWS: added missing bug numbers.
+
+	* web/Makefile.am: preview dir update.
+
 Wed Dec 27 22:50:04 2006  Tim Janik  <timj@gtk.org>
 
 	* released beast 0.7.1.

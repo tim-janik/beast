@@ -30,6 +30,7 @@ Overview of Changes in BEAST/BSE 0.7.1:
 * Fixed library dependencies in bse.pc
 * Fixed tact numbers in TrackRoll #346916 [Stefan Westerfeld]
 * Fixed all reported beast crashes: #340437 #347319
+* Other bug fixes: #364041 #386862 #387364 #336366 #353135 #353442
 * Fixes for gcc-3.3 and GNU/kFreeBSD
 * Updated Italian translation [Petrecca Michele]
 

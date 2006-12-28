@@ -316,7 +316,7 @@ site-update-galleries: beastweb-galleries.tar.bz2
 site-update-all: beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2 site-update-pages site-update-galleries
 site-update: site-update-pages
 # preview installation
-BEAST_PREVIEW=~/public_html/beast-preview/
+BEAST_PREVIEW=~/public_html/beast/preview/
 site-preview: ${BEAST_PREVIEW}/. beastweb-pages.tar.bz2 beastweb-galleries.tar.bz2
 	rm -rf ${BEAST_PREVIEW}/html/ ${BEAST_PREVIEW}/php/
 	tar jxmpf beastweb-pages.tar.bz2 -C ${BEAST_PREVIEW}

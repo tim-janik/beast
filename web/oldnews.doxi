@@ -7,6 +7,95 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Sunday 22 October 2006, Development News}
+
+Some time has passed since the last release, so here is an update on the things
+we've been working on:
+
+@itemize
+
+@item
+The @doxer_bold{test suite} is being improved. We have now three different test
+targets, @code{make check}, @code{make slowcheck} and @code{make perf}, which
+contain normal tests, tests that take a lot of cpu time and performance tests.
+One important goal is to make normal tests as fast as possible, so that it is
+no longer painful to run @code{make check} after changing something. Better
+testing means less bugs in the long run.
+
+@item
+Normal and SSE optimized @doxer_bold{fast factor 2 resampling} has been
+improved and added, as proposed in enhancement
+@uri{http://bugzilla.gnome.org/show_bug.cgi?id=336366, bug #336366}. Right now,
+this change is not end-user visible, but it's intended to provide at least
+command-line access to it in beast-0.7.1.
+
+@item
+Work has started on reimplementing some of the @doxer_bold{IIR filter code}, by
+integrating code from @uri{http://www.moshier.net/,Stephen L. Moshier}.
+The BseIIRFilter plugin (which allows
+high-pass, low-pass, band-pass and band-stop filtering) is currently numerically
+instable, which these improvements should fix, once finished. The new code will
+allow designing @uri{http://en.wikipedia.org/wiki/Elliptic_filter, elliptic
+filters}, which provide sharper filter cutoff than anything we had before.
+
+@item
+Some support for generation of @doxer_bold{documentation for C++ code} with our
+documentation tool, doxer, has been added. An example for a C++ class with
+some documentation is the
+@uri{@top_webdir/rdocu-birnet/birnetutils.hh.html#Birnet::Deletable,
+Birnet::Deletable class}.
+
+@item
+The Birnet library, which provides some essential functionality for @beast and
+@uri{http://www.rapicorn.org, Rapicorn}, such as a C++ signal system and
+C++ threads has been @doxer_bold{ported to C++}. By this change, the remaining
+legacy C code was be removed.
+
+@item
+There is a workaround for the problems we had with different versions of
+intltool in the SVN now. The real fix needs to go in intltool, see
+@uri{http://bugzilla.gnome.org/show_bug.cgi?id=358495, #358495}.
+
+@done
+
+Some @doxer_bold{bugs were fixed}:
+@table{noframe}
+@row
+@cell @doxer_monospace{    }	@dnl add an indentaiton column
+@cell #346916
+@cell @uri{http://bugzilla.gnome.org/show_bug.cgi?id=346916, Tact numbers in TrackRoll view wrong}
+@done
+@row
+@cell
+@cell #353135
+@cell @uri{http://bugzilla.gnome.org/show_bug.cgi?id=353135, Detuning/Transposing Xtal Strings}
+@done
+@row
+@cell
+@cell #353442
+@cell @uri{http://bugzilla.gnome.org/show_bug.cgi?id=353442, DavOrgran transpose / fine_tune}
+@done
+@row
+@cell
+@cell #364041
+@cell @uri{http://bugzilla.gnome.org/show_bug.cgi?id=364041, Making the DavOrgan module testable}
+@done
+@row
+@cell
+@cell #336366
+@cell @uri{http://bugzilla.gnome.org/show_bug.cgi?id=336366, Fast factor 2 resampling}
+@done
+@done
+
+
+@newsentry{Wednesday 16 August 2006, Documentation updates}
+
+The @uri{@top_webdir/documentation, documentation section} and the
+@uri{@top_webdir/historic, historic section} got updated, and we've
+put up a new @beast overview paper on the website, this time in english:
+@* @beast - @uri{http://beast.gtk.org/mirror/beast-overview-2005.pdf, Music Synthesis Under Linux (PDF)}
+
+
 @newsentry{Sunday 16 July 2006, Release of the new development branch}
 
 BEAST/BSE version 0.7.0 is available from the
