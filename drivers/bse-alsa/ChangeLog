@@ -1,3 +1,7 @@
+Wed Dec 27 22:51:58 2006  Tim Janik  <timj@gtk.org>
+
+	* released 0.7.1.
+
 Sun Dec 17 18:35:49 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: depend on bse >= 0.7.1.

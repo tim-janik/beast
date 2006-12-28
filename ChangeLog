@@ -1,3 +1,10 @@
+Wed Dec 27 22:50:04 2006  Tim Janik  <timj@gtk.org>
+
+	* released beast 0.7.1.
+
+	* beast-gtk/bstmain.c (beast_show_about_box): added "Hanno Behrens" to 
+	contributors.
+
 Tue Dec 26 23:24:01 2006  Tim Janik  <timj@gtk.org>
 
 	* configure.in: 

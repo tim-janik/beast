@@ -827,6 +827,7 @@ beast_show_about_box (void)
     /* general code and fixes */
     "Alper Ersoy",
     "Ben Collver",
+    "Hanno Behrens",
     "Nedko Arnaudov",
     "Rasmus Kaj",
     "Sam Hocevar",
