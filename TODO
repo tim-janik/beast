@@ -1,4 +1,4 @@
-- add svn info output to report.out
+- add SCM version info to report.out
 - fix block-independence of bsenoise
 - fix bsenoise distributions
 - WEB: add? usability page: http://www.developerfusion.co.uk/show/1718/5/
