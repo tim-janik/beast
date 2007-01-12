@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 SOURCE="$1"
 [ -z "$SOURCE" ] && { echo "usage: $0 <inputfile> [maximum]"; exit 1; }
