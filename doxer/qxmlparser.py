@@ -329,9 +329,11 @@ class DoxygenXMLParser:
       if initializer:
         dv.set_init (initializer)
   # --- variable parser ---
-  def parse_variable (self, mdef, compound):
+  def parse_field (self, mdef, compound):
     # parse variable name
     name = node_get_leaf_text (mdef, "name")
+    if name[0] == '@':
+      return # ignore numbered field names, generated for e.g. anon structures
     # create variable
     dv = Data.Parameter (name)
     self.location_parse_and_set (mdef, dv)
@@ -434,7 +436,7 @@ class DoxygenXMLParser:
     for mdef in node_descendants_by_name (cdef, "memberdef"):
       kind = mdef.prop ('kind');
       if kind == 'variable':
-        self.parse_variable (mdef, ds)
+        self.parse_field (mdef, ds)
       elif kind == 'function':
         self.parse_class_method (mdef, ds)
       else:
