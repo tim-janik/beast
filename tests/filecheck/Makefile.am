@@ -45,6 +45,7 @@ check: bse-version-check
 .PHONY: bse-loading-check
 SKIP_PATTERN = "tests/latency/midi-latency.bse|tests/audio/minisong.bse"
 bse-loading-check: distfiles.list
+	@rm -f warnings.tmp
 	for tfile in `grep '\.bse$$' distfiles.list` ; do		\
 	  file="$(top_srcdir)/$$tfile" ;				\
 	  if echo "$$tfile" | egrep -q $(SKIP_PATTERN) ; then		\
@@ -56,6 +57,7 @@ bse-loading-check: distfiles.list
 	    test ! -s "warnings.tmp" || exit 1 ;			\
 	  fi ;								\
 	done
+	@rm -f warnings.tmp
 	@MESSAGETEXT="All tested BSE files passed loading test"		\
 	&& echo $$MESSAGETEXT | sed 's/./=/g' 				\
 	&& echo $$MESSAGETEXT		 				\
