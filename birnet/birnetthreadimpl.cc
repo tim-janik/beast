@@ -922,10 +922,10 @@ birnet_thread_accounting_L (BirnetThread *self,
         }
       thread_info_from_stat_L (self, dfact);
       self->info.priority = getpriority (PRIO_PROCESS, self->tid);
-      self->info.utime = MAX (self->ac.utime - old_utime, 0) * dfact;
-      self->info.stime = MAX (self->ac.stime - old_stime, 0) * dfact;
-      self->info.cutime = MAX (self->ac.cutime - old_cutime, 0) * dfact;
-      self->info.cstime = MAX (self->ac.cstime - old_cstime, 0) * dfact;
+      self->info.utime = int64 (MAX (self->ac.utime - old_utime, 0) * dfact);
+      self->info.stime = int64 (MAX (self->ac.stime - old_stime, 0) * dfact);
+      self->info.cutime = int64 (MAX (self->ac.cutime - old_cutime, 0) * dfact);
+      self->info.cstime = int64 (MAX (self->ac.cstime - old_cstime, 0) * dfact);
       self->accounting--;
     }
 }

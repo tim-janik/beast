@@ -439,6 +439,7 @@ public:
   /* explicit */  DataKey    ()                 { }
   virtual Type    fallback   ()                 { Type d = Type(); return d; }
   virtual void    destroy    (Type data)        { /* destruction hook */ }
+  virtual        ~DataKey    ()                 {}
 };
 
 class DataList {

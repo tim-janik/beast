@@ -1,4 +1,12 @@
-Thu Jan 04 20:29:24 2007  Tim Janik  <timj@gtk.org>
+Thu Jan  4 21:53:56 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.hh:
+	* birnetutils.hh: introduce virtual destructors demanded by g++-4.1.
+
+	* birnetthreadimpl.cc:
+	* birnetutils.cc: make double->int64 conversion explicit.
+
+Thu Jan  4 20:29:24 2007  Tim Janik  <timj@gtk.org>
 
 	* mksignals.sh: changed script inetrpreter to /bin/bash to account
 	for bash-isms.

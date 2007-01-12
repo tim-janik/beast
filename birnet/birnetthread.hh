@@ -168,14 +168,16 @@ protected:
  */
 class AutoLocker {
   struct Locker {
-    virtual void lock   () const = 0;
-    virtual void unlock () const = 0;
+    virtual void lock    () const = 0;
+    virtual void unlock  () const = 0;
+    virtual     ~Locker  () {}
   };
   template<class Lockable>
   struct LockerImpl : public Locker {
     Lockable    *lockable;
     virtual void lock       () const      { lockable->lock(); }
     virtual void unlock     () const      { lockable->unlock(); }
+    virtual     ~LockerImpl () {}
     explicit     LockerImpl (Lockable *l) : lockable (l) {}
   };
   void         *space[2];

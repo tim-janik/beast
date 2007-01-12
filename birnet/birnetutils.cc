@@ -229,7 +229,7 @@ init_value_int (InitValue *value)
 {
   if (value->value_string && value->value_string[0])
     return strtoll (value->value_string, NULL, 0);
-  return value->value_num + 0.5;
+  return int64 (value->value_num + 0.5);
 }
 
 /* --- assertions/warnings/errors --- */
