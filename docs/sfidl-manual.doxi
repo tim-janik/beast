@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date:$
+@doxer_set{rvstamp,parse_date} $Date: 2006/02/21 00:28:59 $
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - SFIDL Documentation
 

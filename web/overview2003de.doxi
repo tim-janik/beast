@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date:$
+@doxer_set{rvstamp,parse_date} $Date: 2006/01/31 01:51:22 $
 @include "webframe.doxi"
 @doxer_set{title}       BEAST - Musiksynthese unter Linux
 
