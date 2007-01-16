@@ -1,3 +1,7 @@
+Tue Jan 16 23:57:40 2007  Tim Janik  <timj@gtk.org>
+
+	* bseenginemaster.c: commented caveats.
+
 Mon Dec 25 16:43:46 2006  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c (bse_bus_ensure_summation): use symbolic i/o channel identifiers

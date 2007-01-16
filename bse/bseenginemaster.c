@@ -814,6 +814,7 @@ master_process_locked_node (EngineNode *node,
   while (node->counter < final_counter)
     {
       /* call reset() and exec flow jobs */
+      /* FIXME: decide whether flow jobs can rely on valid ostream[].values pointers or not */
       next_counter = master_update_node_state (node, node->counter);
       /* figure n_values to process */
       new_counter = MIN (next_counter, final_counter);
@@ -850,7 +851,7 @@ master_process_locked_node (EngineNode *node,
 	    node->module.jstreams[j].values[i] += diff;
 	    ENGINE_NODE_UNLOCK (inode);
 	  }
-      /* update obuffer pointer */
+      /* update obuffer pointer (FIXME: need this before flow job callbacks?) */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         node->module.ostreams[i].values = node->outputs[i].buffer + diff;
       if (diff && needs_probe_reset)
