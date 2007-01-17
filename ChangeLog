@@ -1,3 +1,10 @@
+Wed Jan 17 17:58:38 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefcompare.cc: Make comparision strategy pluggable, so that
+	different features can be compared using different strategies. As
+	example, implemented a simple comparision strategy for the
+	attack_times and release_times features.
+
 Wed Jan 17 12:11:40 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Implement a spectral flux based attack/release

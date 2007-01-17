@@ -408,6 +408,52 @@ struct FeatureValueFile {
   ~FeatureValueFile();
 };
 
+class ComparisionStrategy
+{
+  FeatureValue::Type                       m_type;
+  static map<string, ComparisionStrategy*> m_strategies;
+
+public:
+  ComparisionStrategy (FeatureValue::Type type) :
+    m_type (type)
+  {
+  }
+  virtual
+  ~ComparisionStrategy()
+  {
+  }
+  FeatureValue::Type
+  type()
+  {
+    return m_type;
+  }
+  void
+  register_strategy (const string& feature_name)
+  {
+    g_return_if_fail (!m_strategies[feature_name]);
+
+    m_strategies[feature_name] = this;
+  }
+  static ComparisionStrategy*
+  find_strategy (const string&      feature_name,
+                 FeatureValue::Type type)
+  {
+    ComparisionStrategy* s = m_strategies[feature_name];
+
+    // produce a warning for a strategy with the right feature name but a wrong type
+    if (s)
+      {
+	g_return_val_if_fail (type == s->type(), 0);
+      }
+    return s;
+  }
+  virtual double
+  similarity (const FeatureValue *value1,
+              const FeatureValue *value2) const = 0;
+};
+
+map<string, ComparisionStrategy*> ComparisionStrategy::m_strategies;
+
 //------- FeatureValueNumber implementation --------
 
 GTokenType
@@ -427,9 +473,15 @@ FeatureValueNumber::printable_type() const
 double
 FeatureValueNumber::similarity (const FeatureValue *value) const
 {
-  if (value->type != TYPE_NUMBER || value->name != name)
+  if (value->type != type || value->name != name)
     return -1;
 
+  // custom strategy?
+  const ComparisionStrategy *strategy = ComparisionStrategy::find_strategy (name, type);
+  if (strategy)
+    return strategy->similarity (this, value);
+
+  // no? -> default strategy
   const FeatureValueNumber *v = static_cast<const FeatureValueNumber *> (value);
   return number_similarity (number, v->number);
 }
@@ -460,9 +512,15 @@ FeatureValueVector::printable_type() const
 double
 FeatureValueVector::similarity (const FeatureValue *value) const
 {
-  if (value->type != TYPE_VECTOR || value->name != name)
+  if (value->type != type || value->name != name)
     return -1;
 
+  // custom strategy?
+  const ComparisionStrategy *strategy = ComparisionStrategy::find_strategy (name, type);
+  if (strategy)
+    return strategy->similarity (this, value);
+
+  // no? -> default strategy
   const FeatureValueVector *v = static_cast<const FeatureValueVector *> (value);
   return vector_similarity (data, v->data); // can return -1 on size mismatch when --strict is set
 }
@@ -511,9 +569,15 @@ FeatureValueMatrix::printable_type() const
 double
 FeatureValueMatrix::similarity (const FeatureValue *value) const
 {
-  if (value->type != TYPE_MATRIX || value->name != name)
+  if (value->type != type || value->name != name)
     return -1;
 
+  // custom strategy?
+  const ComparisionStrategy *strategy = ComparisionStrategy::find_strategy (name, type);
+  if (strategy)
+    return strategy->similarity (this, value);
+
+  // no? -> default strategy
   const FeatureValueMatrix *v = static_cast<const FeatureValueMatrix *> (value);
 
   /* matrix dimensions must match for strict comparision */
@@ -712,5 +776,39 @@ main (int argc, char **argv)
       return 1;
     }
 }
+
+// extra comparision strategies
+
+class TimingComparisionStrategy : public ComparisionStrategy
+{
+public:
+  TimingComparisionStrategy() :
+    ComparisionStrategy (FeatureValue::TYPE_VECTOR)
+  {
+    register_strategy ("attack_times");
+    register_strategy ("release_times");
+  }
+  double similarity (const FeatureValue *value1,
+                     const FeatureValue *value2) const
+  {
+    const FeatureValueVector *vec1 = static_cast<const FeatureValueVector *> (value1);
+    const FeatureValueVector *vec2 = static_cast<const FeatureValueVector *> (value2);
+
+    g_printerr ("using custom TimingComparisionStrategy\n");
+
+    // the sizes of the two vectors can be different
+    uint   size = min (vec1->data.size(), vec2->data.size());
+    double match = 0.0;
+
+    for (uint i = 0; i < size; i++)
+      {
+	// this is a really stupid epsilon diff
+	if (fabs (vec1->data[i] - vec2->data[i]) < 0.01)
+	  match++;
+      }
+    // return a value in the interval [0..1] here, where 0 is no match and 1 is a 100% match
+    return size ? match / size : 1;
+  }
+} timingComparisionStrategy;
 
 /* vim:set ts=8 sts=2 sw=2: */
