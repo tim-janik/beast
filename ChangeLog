@@ -1,3 +1,8 @@
+Wed Jan 17 08:12:53 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Made some cosmetic improvements to fix
+	violations of the beast coding style.
+
 Thu Jan 04 21:12:19 2007  Tim Janik  <timj@gtk.org>
 
 	* tests/filecheck/Makefile.am: get rid of tmeporary file warnings.

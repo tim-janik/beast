@@ -65,16 +65,16 @@ struct Options {
 
 class Signal
 {
-  mutable GslDataPeekBuffer peek_buffer;
-  GslDataHandle	 *data_handle;
-  guint		  signal_n_channels;
-  GslLong	  signal_length;
-  GslLong         signal_offset;
+  mutable GslDataPeekBuffer m_peek_buffer;
+  GslDataHandle	 *m_data_handle;
+  guint		  m_n_channels;
+  GslLong	  m_length;
+  GslLong         m_offset;
 
   /* check if the first sample is silent on all channels */
   bool head_is_silent()
   {
-    for (guint i = 0; i < signal_n_channels; i++)
+    for (guint i = 0; i < m_n_channels; i++)
       if (fabs ((*this)[i]) > options.silence_threshold)
 	return false;
 
@@ -84,39 +84,39 @@ class Signal
   /* check if the last sample is silent on all channels */
   bool tail_is_silent()
   {
-    for (guint i = 0; i < signal_n_channels; i++)
-      if (fabs ((*this)[signal_length - signal_n_channels + i]) > options.silence_threshold)
+    for (guint i = 0; i < m_n_channels; i++)
+      if (fabs ((*this)[m_length - m_n_channels + i]) > options.silence_threshold)
 	return false;
 
     return true;
   }
 
 public:
-  Signal (GslDataHandle *data_handle)
-    : data_handle (data_handle)
+  Signal (GslDataHandle *data_handle) :
+    m_data_handle (data_handle)
   {
-    signal_n_channels = gsl_data_handle_n_channels (data_handle);
-    signal_length = gsl_data_handle_length (data_handle);
-    signal_offset = 0;
+    m_n_channels = gsl_data_handle_n_channels (data_handle);
+    m_length = gsl_data_handle_length (data_handle);
+    m_offset = 0;
 
-    memset (&peek_buffer, 0, sizeof (peek_buffer));
-    peek_buffer.dir = 1; /* incremental direction */;
+    memset (&m_peek_buffer, 0, sizeof (m_peek_buffer));
+    m_peek_buffer.dir = 1; /* incremental direction */;
 
     if (options.cut_zeros_head)
       {
 	/* cut_zeros head */
-	while (head_is_silent() && signal_length > (GslLong) signal_n_channels)
+	while (head_is_silent() && m_length > (GslLong) m_n_channels)
 	  {
-	    signal_offset += signal_n_channels;
-	    signal_length -= signal_n_channels;
+	    m_offset += m_n_channels;
+	    m_length -= m_n_channels;
 	  }
       }
     if (options.cut_zeros_tail)
       {
 	/* cut_zeros tail */
-	while (tail_is_silent() && signal_length > (GslLong) signal_n_channels)
+	while (tail_is_silent() && m_length > (GslLong) m_n_channels)
 	  {
-	    signal_length -= signal_n_channels;
+	    m_length -= m_n_channels;
 	  }
       }
 
@@ -131,34 +131,34 @@ public:
     double start = options.focus_center - (options.focus_width / 2.0);
     double end = options.focus_center + (options.focus_width / 2.0);
 
-    GslLong istart = GslLong (start / 100.0 * signal_length + 0.5);
-    GslLong iend = GslLong (end / 100.0 * signal_length + 0.5);
+    GslLong istart = GslLong (start / 100.0 * m_length + 0.5);
+    GslLong iend = GslLong (end / 100.0 * m_length + 0.5);
 
-    istart -= istart % signal_n_channels;
-    iend -= iend % signal_n_channels;
+    istart -= istart % m_n_channels;
+    iend -= iend % m_n_channels;
 
-    signal_offset += istart;
-    signal_length = iend - istart;
+    m_offset += istart;
+    m_length = iend - istart;
   }
 
   GslLong length() const
   {
-    return signal_length;
+    return m_length;
   }
 
   guint n_channels() const
   {
-    return signal_n_channels;
+    return m_n_channels;
   }
 
   double operator[] (GslLong k) const
   {
-    return gsl_data_handle_peek_value (data_handle, k + signal_offset, &peek_buffer);
+    return gsl_data_handle_peek_value (m_data_handle, k + m_offset, &m_peek_buffer);
   }
   
   double mix_freq() const
   {
-    return gsl_data_handle_mix_freq (data_handle);
+    return gsl_data_handle_mix_freq (m_data_handle);
   }
 
   double time_ms (GslLong k) const
@@ -188,13 +188,15 @@ struct Feature
   }
 
   void
-  print_value (const string& value_name, double data) const
+  print_value (const string &value_name,
+               double        data) const
   {
     fprintf (options.output_file, "%s = %s;\n", value_name.c_str(), double_to_string (data).c_str());
   }
 
   void
-  print_vector (const string& vector_name, const vector<double>& data) const
+  print_vector (const string         &vector_name,
+                const vector<double> &data) const
   {
     fprintf (options.output_file, "%s[%zd] = {", vector_name.c_str(), data.size());
     for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
@@ -203,7 +205,8 @@ struct Feature
   }
 
   void
-  print_matrix (const string& matrix_name, const vector< vector<double> >& matrix) const
+  print_matrix (const string                   &matrix_name,
+                const vector< vector<double> > &matrix) const
   {
     /* for a m x n matrix, we write
      * 
@@ -230,12 +233,15 @@ struct Feature
     fprintf (options.output_file, "};\n");
   }
 
-  Feature (const char *option, const char *description)
-    : option (option), description (description), extract_feature (false)
+  Feature (const char *option,
+           const char *description) :
+    option (option),
+    description (description),
+    extract_feature (false)
   {
   }
 
-  virtual void compute (const Signal& signal) = 0;
+  virtual void compute (const Signal &signal) = 0;
   virtual void print_results() const = 0;
   virtual ~Feature()
   {
@@ -251,7 +257,7 @@ struct StartTimeFeature : public Feature
     start_time = -1;
   }
   void
-  compute (const Signal& signal)
+  compute (const Signal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -276,7 +282,7 @@ struct EndTimeFeature : public Feature
   {
     end_time = -1;
   }
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -295,7 +301,8 @@ struct SpectrumFeature : public Feature
   vector< vector<double> > spectrum;
   vector< vector<double> > joined_spectrum;
 
-  SpectrumFeature() : Feature ("--spectrum", "generate 30ms sliced frequency spectrums")
+  SpectrumFeature() :
+    Feature ("--spectrum", "generate 30ms sliced frequency spectrums")
   {
   }
 
@@ -326,10 +333,10 @@ struct SpectrumFeature : public Feature
   }
 
   vector<double>
-  collapse_frequency_vector (const vector<double>& fvector,
-			     double mix_freq,
-			     double first_freq,
-			     double factor)
+  collapse_frequency_vector (const vector<double> &fvector,
+			     double                mix_freq,
+			     double                first_freq,
+			     double                factor)
   {
     vector<double> result;
     double value = 0;
@@ -381,7 +388,7 @@ struct SpectrumFeature : public Feature
   }
 
   void
-  compute (const Signal& signal)
+  compute (const Signal &signal)
   {
     if (spectrum.size()) /* don't compute the same feature twice */
       return;
@@ -447,15 +454,15 @@ struct SpectrumFeature : public Feature
 struct AvgSpectrumFeature : public Feature
 {
   SpectrumFeature *spectrum_feature;
-  vector<double> avg_spectrum;
+  vector<double>   avg_spectrum;
 
-  AvgSpectrumFeature (SpectrumFeature *spectrum_feature)
-    : Feature ("--avg-spectrum", "average frequency spectrum"),
-      spectrum_feature (spectrum_feature)
+  AvgSpectrumFeature (SpectrumFeature *spectrum_feature) :
+    Feature ("--avg-spectrum", "average frequency spectrum"),
+    spectrum_feature (spectrum_feature)
   {
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     /*
      * dependancy: we need the spectrum to compute the average spectrum
@@ -484,7 +491,7 @@ struct AvgEnergyFeature : public Feature
     avg_energy = 0;
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     GslLong avg_energy_count = 0;
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
@@ -512,13 +519,14 @@ struct MinMaxPeakFeature : public Feature
   double min_peak;
   double max_peak;
 
-  MinMaxPeakFeature() : Feature ("--min-max-peak", "minimum and maximum signal peak")
+  MinMaxPeakFeature() :
+    Feature ("--min-max-peak", "minimum and maximum signal peak")
   {
     min_peak = 0;
     max_peak = 0;
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       {
@@ -542,7 +550,7 @@ struct RawSignalFeature : public Feature
   {
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
       raw_signal.push_back (signal[l]);
@@ -564,7 +572,7 @@ struct ComplexSignalFeature : public Feature
   static const int HSIZE = 256;
 
   vector< std::complex<double> > complex_signal;
-  double hilbert[2*HSIZE+1];
+  double                         hilbert[2*HSIZE+1];
 
   /*
    * Evaluates the FIR frequency response of the hilbert filter.
@@ -598,7 +606,8 @@ struct ComplexSignalFeature : public Feature
     return blackman_window ((x + 1.0) / 2.0);
   }
 
-  ComplexSignalFeature() : Feature ("--complex-signal", "extract complex signal (hilbert filtered)")
+  ComplexSignalFeature() :
+    Feature ("--complex-signal", "extract complex signal (hilbert filtered)")
   {
     /* compute hilbert fir coefficients */
     for (int i = 0; i <= HSIZE; i++)
@@ -621,7 +630,7 @@ struct ComplexSignalFeature : public Feature
       }
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     if (complex_signal.size()) /* already finished? */
       return;
@@ -672,9 +681,9 @@ struct BaseFreqFeature : public Feature
   double base_freq_smear;
   double base_freq_wobble;
 
-  BaseFreqFeature (ComplexSignalFeature *complex_signal_feature)
-    : Feature ("--base-freq", "try to detect pitch of a signal"),
-      complex_signal_feature (complex_signal_feature)
+  BaseFreqFeature (ComplexSignalFeature *complex_signal_feature) :
+    Feature ("--base-freq", "try to detect pitch of a signal"),
+    complex_signal_feature (complex_signal_feature)
   {
     base_freq = 0;
     base_freq_smear = 0;
@@ -682,7 +691,7 @@ struct BaseFreqFeature : public Feature
   }
 
   void
-  compute (const Signal& signal)
+  compute (const Signal &signal)
   {
     if (freq.size()) /* already finished? */
       return;
@@ -782,7 +791,7 @@ struct BaseFreqFeature : public Feature
   }
 
   void
-  compute_smear_and_wobble (const Signal& signal)
+  compute_smear_and_wobble (const Signal &signal)
   {
     const int window_size = int (signal.mix_freq() / base_freq + 0.5);
     const int window_step = max (window_size / 3, 30);
@@ -839,9 +848,9 @@ struct BaseFreqSmear : public Feature
 {
   BaseFreqFeature *base_freq_feature;
 
-  BaseFreqSmear (BaseFreqFeature *base_freq_feature)
-    : Feature ("--base-freq-smear", "inaccuracy of pitch detection"),
-      base_freq_feature (base_freq_feature)
+  BaseFreqSmear (BaseFreqFeature *base_freq_feature) :
+    Feature ("--base-freq-smear", "inaccuracy of pitch detection"),
+    base_freq_feature (base_freq_feature)
   {
   }
 
@@ -869,7 +878,7 @@ struct BaseFreqWobble : public Feature
   {
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     /*
      * dependancy: we need the base frequency feature to compute the base frequency smear
@@ -901,7 +910,7 @@ struct VolumeFeature : public Feature
     volume_wobble = 0;
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     if (vol.size()) /* already finished? */
       return;
@@ -928,7 +937,7 @@ struct VolumeFeature : public Feature
     compute_smear_and_wobble (signal);
   }
 
-  void compute_smear_and_wobble (const Signal& signal)
+  void compute_smear_and_wobble (const Signal &signal)
   {
     const double window_size_ms = 30; /* window size in milliseconds */
     const int window_size = int (signal.mix_freq() * window_size_ms / 1000.0 + 0.5);
@@ -981,13 +990,13 @@ struct VolumeSmear : public Feature
 {
   VolumeFeature *volume_feature;
 
-  VolumeSmear (VolumeFeature *volume_feature)
-    : Feature ("--volume-smear", "variation of signal volume"),
-      volume_feature (volume_feature)
+  VolumeSmear (VolumeFeature *volume_feature) :
+    Feature ("--volume-smear", "variation of signal volume"),
+    volume_feature (volume_feature)
   {
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     // dependancy: we need the volume feature to compute the volume smear
     volume_feature->compute (signal);
@@ -1004,13 +1013,13 @@ struct VolumeWobble : public Feature
   VolumeFeature *volume_feature;
 
 
-  VolumeWobble (VolumeFeature *volume_feature)
-    : Feature ("--volume-wobble", "rate of changes in signal volume over time"),
-      volume_feature (volume_feature)
+  VolumeWobble (VolumeFeature *volume_feature) :
+    Feature ("--volume-wobble", "rate of changes in signal volume over time"),
+    volume_feature (volume_feature)
   {
   }
 
-  void compute (const Signal& signal)
+  void compute (const Signal &signal)
   {
     // dependancy: we need the volume feature to compute the volume wobble
     volume_feature->compute (signal);
@@ -1022,6 +1031,15 @@ struct VolumeWobble : public Feature
   }
 };
 
+#if 0
+struct AttackTimes : public Feature
+{
+  TimingSlices *timing_slices;
+
+  AttackTimes (TimingSlices *timing_slices)
+
+}
+#endif
 
 Options::Options () :
   join_spectrum_slices (1)
@@ -1038,7 +1056,8 @@ Options::Options () :
 }
 
 void
-Options::validate_percent (const string& option, gdouble value)
+Options::validate_percent (const string &option,
+                           gdouble       value)
 {
   if (value < 0.0 || value > 100.0)
     {
@@ -1050,7 +1069,10 @@ Options::validate_percent (const string& option, gdouble value)
 }
 
 void
-Options::validate_int (const string& option, int value, int vmin, int vmax)
+Options::validate_int (const string &option,
+                       int           value,
+		       int           vmin,
+		       int           vmax)
 {
   if (value < vmin || value > vmax)
     {
@@ -1245,7 +1267,8 @@ print_header (const char *src)
 }
 
 int
-main (int argc, char **argv)
+main (int    argc,
+      char **argv)
 {
   /* init */
   SfiInitValue values[] = {
@@ -1335,7 +1358,7 @@ main (int argc, char **argv)
   print_header (argv[1]);
   for (list<Feature*>::const_iterator fi = feature_list.begin(); fi != feature_list.end(); fi++)
     {
-      const Feature& feature = *(*fi);
+      const Feature &feature = *(*fi);
       if (feature.extract_feature)
 	{
 	  fprintf (options.output_file, "# %s: %s\n", feature.option, feature.description);
