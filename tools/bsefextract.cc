@@ -48,11 +48,14 @@ struct Options {
   guint               channel;
   bool                cut_zeros_head;
   bool                cut_zeros_tail;
+  bool                verbose;
   gdouble             silence_threshold;
   gdouble             base_freq_hint;
   gdouble             focus_center;
   gdouble             focus_width;
   guint               join_spectrum_slices;
+  guint               timing_window_stepping_ms;
+  guint               timing_window_size_ms;
 
   FILE               *output_file;
 
@@ -1031,27 +1034,188 @@ struct VolumeWobble : public Feature
   }
 };
 
-#if 0
+struct TimingSlices
+{
+  enum SpectralFluxType
+  {
+    SPECTRAL_FLUX_POSITIVE,
+    SPECTRAL_FLUX_NEGATIVE
+  };
+  vector< vector<double> > slices;
+
+  vector<double>
+  build_frequency_vector (GslLong size,
+			  double *samples)
+  {
+    vector<double> fvector;
+    double in[size], c[size + 2], *im;
+    gint i;
+
+    for (i = 0; i < size; i++)
+      in[i] = bse_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* the bse blackman window is defined in range [-1, 1] */
+
+    gsl_power2_fftar (size, in, c);
+    c[size] = c[1];
+    c[size + 1] = 0;
+    c[1] = 0;
+    im = c + 1;
+
+    for (i = 0; i <= size >> 1; i++)
+      {
+	double abs = sqrt (c[i << 1] * c[i << 1] + im[i << 1] * im[i << 1]);
+	/* FIXME: is this the correct normalization? */
+	fvector.push_back (abs / size);
+      }
+    return fvector;
+  }
+
+  void
+  compute (const Signal& signal)
+  {
+    if (slices.size()) /* don't compute the same feature twice */
+      return;
+
+    double file_size_ms = signal.time_ms (signal.length());
+    uint fft_size_samples = 2;
+
+    while (fft_size_samples / signal.mix_freq() * 1000 < options.timing_window_size_ms)
+      fft_size_samples *= 2;
+
+    if (options.verbose)
+      {
+	g_printerr ("timing window (for attack and release detection):\n");
+	g_printerr ("  * size         %5.2f ms    %6u samples\n",
+	  fft_size_samples / signal.mix_freq() * 1000,
+	  fft_size_samples);
+	g_printerr ("  * stepping     %5.2f ms    %6u samples\n",
+	  float (options.timing_window_stepping_ms),
+	  uint (options.timing_window_stepping_ms * signal.mix_freq() / 1000));
+      }
+
+    for (double offset_ms = 0; offset_ms < file_size_ms; offset_ms += options.timing_window_stepping_ms)
+      {
+	GslLong extract_frame = GslLong (offset_ms / file_size_ms * signal.length() / signal.n_channels());
+
+	double samples[fft_size_samples];
+	bool skip = false;
+	GslLong k = extract_frame * signal.n_channels() + options.channel;
+
+	for (uint j = 0; j < fft_size_samples; j++)
+	  {
+	    if (k < signal.length())
+	      samples[j] = signal[k];
+	    else
+	      skip = true; /* alternative implementation: fill up with zeros;
+			      however this results in click features being extracted at eof */
+	    k += signal.n_channels();
+	  }
+
+	if (!skip)
+	  slices.push_back (build_frequency_vector (fft_size_samples, samples));
+      }
+  }
+
+  int
+  n_slices()
+  {
+    return slices.size();
+  }
+
+  double
+  spectral_flux (int             slice1,
+                 int             slice2,
+		 SpectralFluxType sf_type)
+  {
+    /* make s1 and s2 point at the desired slices, or, if they are out of range,
+     * at a sufficiently large null slice (where sufficiently large may be 0,
+     * if both slices were out of the range for which features have been extracted) */
+    vector<double> null_slice;
+    vector<double>& s1 = (slice1 >= 0 && slice1 < slices.size()) ? slices[slice1] : null_slice;
+    vector<double>& s2 = (slice2 >= 0 && slice2 < slices.size()) ? slices[slice2] : null_slice;
+    null_slice.resize (max (s1.size(), s2.size()));
+
+    double sf = 0;
+    for (size_t i = 0; i < s1.size(); i++)
+      {
+	if ((s1[i] < s2[i]) == (sf_type == SPECTRAL_FLUX_POSITIVE))
+	  sf += fabs (s1[i] - s2[i]);
+      }
+    return sf;
+  }
+};
+
 struct AttackTimes : public Feature
 {
-  TimingSlices *timing_slices;
+  TimingSlices   *timing_slices;
+  vector<double>  attack_times;
 
-  AttackTimes (TimingSlices *timing_slices)
+  AttackTimes (TimingSlices *timing_slices) :
+    Feature ("--attack-times", "compute timestamps for possible note attacks"),
+    timing_slices (timing_slices)
+  {
+  }
 
-}
-#endif
+  void
+  compute (const Signal &signal)
+  {
+    timing_slices->compute (signal);
+    
+    for (int i = 0; i < timing_slices->n_slices(); i++)
+      attack_times.push_back (timing_slices->spectral_flux (i - 1, i, TimingSlices::SPECTRAL_FLUX_POSITIVE));
+  }
+
+  void
+  print_results() const
+  {
+    print_vector ("attack_times", attack_times);
+    // for (uint i = 0; i < attack_times.size(); i++) // debugging (gnuplot output)
+    //   printf ("%g\n", attack_times[i]);
+  }
+};
+
+struct ReleaseTimes : public Feature
+{
+  TimingSlices   *timing_slices;
+  vector<double>  release_times;
+
+  ReleaseTimes (TimingSlices *timing_slices) :
+    Feature ("--release-times", "compute timestamps for possible note releases"),
+    timing_slices (timing_slices)
+  {
+  }
+
+  void
+  compute (const Signal &signal)
+  {
+    timing_slices->compute (signal);
+    
+    for (int i = 0; i < timing_slices->n_slices(); i++)
+      release_times.push_back (timing_slices->spectral_flux (i - 1, i, TimingSlices::SPECTRAL_FLUX_NEGATIVE));
+  }
+
+  void
+  print_results() const
+  {
+    print_vector ("release_times", release_times);
+    // for (uint i = 0; i < release_times.size(); i++) // debugging (gnuplot output)
+    //  printf ("%g\n", release_times[i]);
+  }
+};
 
 Options::Options () :
   join_spectrum_slices (1)
 {
   program_name = "bsefextract";
   channel = 0;
+  verbose = false;
   cut_zeros_head = false;
   cut_zeros_tail = false;
   silence_threshold = 0.0;
   base_freq_hint = 0.0;
   focus_center = 50.0;
   focus_width = 100.0;
+  timing_window_stepping_ms = 30;
+  timing_window_size_ms = 50;
   output_file = stdout;
 }
 
@@ -1163,6 +1327,11 @@ Options::parse (int   *argc_p,
 	  printf ("%s %s\n", program_name.c_str(), BST_VERSION);
 	  exit (0);
 	}
+      else if (strcmp (argv[i], "--verbose") == 0)
+	{
+	  verbose = true;
+	  argv[i] = NULL;
+	}
       else if (strcmp (argv[i], "--cut-zeros") == 0)
 	{
 	  cut_zeros_head = cut_zeros_tail = true;
@@ -1204,6 +1373,10 @@ Options::parse (int   *argc_p,
 	validate_percent ("--focus-center", focus_center = g_ascii_strtod (opt_arg, NULL));
       else if (check_arg (argc, argv, &i, "--base-freq-hint", &opt_arg))
 	base_freq_hint = g_ascii_strtod (opt_arg, NULL);
+      else if (check_arg (argc, argv, &i, "--timing-window-size", &opt_arg))
+	timing_window_size_ms = g_ascii_strtod (opt_arg, NULL);
+      else if (check_arg (argc, argv, &i, "--timing-window-stepping", &opt_arg))
+	timing_window_stepping_ms = g_ascii_strtod (opt_arg, NULL);
       else if (check_arg (argc, argv, &i, "--channel", &opt_arg))
 	channel = atoi (opt_arg);
       else if (check_arg (argc, argv, &i, "--join-spectrum-slices", &opt_arg))
@@ -1253,6 +1426,9 @@ Options::print_usage ()
   fprintf (stderr, " --focus-width=Y             width of focus region in %% [100]\n");
   fprintf (stderr, " --base-freq-hint            expected base frequency (for the pitch detection)\n");
   fprintf (stderr, " --join-spectrum-slices=N    when extracting a spectrum, join N 30ms slices\n");
+  fprintf (stderr, " --timing-window-size=N      attack/release detector window size in ms [50]\n");
+  fprintf (stderr, "                             (actual window size may be larger, use --verbose)\n");
+  fprintf (stderr, " --timing-window-stepping=N  attack/release detector stepping in ms [30]\n");
   fprintf (stderr, " -o <output_file>            set the name of a file to write the features to\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "(example: %s --start-time --end-time t.wav).\n", options.program_name.c_str());
@@ -1285,6 +1461,7 @@ main (int    argc,
   ComplexSignalFeature *complex_signal_feature = new ComplexSignalFeature;
   BaseFreqFeature *base_freq_feature = new BaseFreqFeature (complex_signal_feature);
   VolumeFeature *volume_feature = new VolumeFeature (complex_signal_feature);
+  TimingSlices *timing_slices = new TimingSlices;  // not user visible
 
   feature_list.push_back (new StartTimeFeature());
   feature_list.push_back (new EndTimeFeature());
@@ -1300,6 +1477,8 @@ main (int    argc,
   feature_list.push_back (volume_feature);
   feature_list.push_back (new VolumeSmear (volume_feature));
   feature_list.push_back (new VolumeWobble (volume_feature));
+  feature_list.push_back (new AttackTimes (timing_slices));
+  feature_list.push_back (new ReleaseTimes (timing_slices));
 
   /* parse options */
   options.parse (&argc, &argv);

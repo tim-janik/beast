@@ -1,3 +1,10 @@
+Wed Jan 17 12:11:40 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Implement a spectral flux based attack/release
+	detector (new options: --attack-times, --release-times), configurable
+	with the --timing-window-* options.
+	Added --verbose option for figuring out actual window settings. 
+
 Wed Jan 17 08:12:53 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Made some cosmetic improvements to fix
