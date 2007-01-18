@@ -1,4 +1,3 @@
-- re-insert old tags BEAST_0_7_0 BEAST_0_7_1_rc1 BEAST_0_7_1
 - add SCM version info to report.out
 - fix block-dependence of bsenoise, i.e. non-noisy distributions
 - WEB: add? usability page: http://www.developerfusion.co.uk/show/1718/5/
