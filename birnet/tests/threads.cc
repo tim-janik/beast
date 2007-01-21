@@ -850,6 +850,65 @@ test_thread_atomic_cxx (void)
   TDONE ();
 }
 
+/* --- late deletable destruction --- */
+static bool deletable_destructor = false;
+struct MyDeletable : public virtual Deletable {
+  virtual
+  ~MyDeletable()
+  {
+    deletable_destructor = true;
+  }
+  void
+  force_deletion_hooks()
+  {
+    invoke_deletion_hooks();
+  }
+};
+struct MyDeletableHook : public Deletable::DeletionHook {
+  virtual void
+  deletable_dispose (Deletable &deletable)
+  {
+  }
+};
+
+static MyDeletable early_deletable __attribute__ ((init_priority (101)));
+static MyDeletable late_deletable __attribute__ ((init_priority (65535)));
+
+static void
+test_deletable_destruction ()
+{
+  TSTART ("Deletable destruction");
+  {
+    MyDeletable test_deletable;
+    TICK();
+    MyDeletableHook dhook1;
+    g_printerr ("TestHook=%p\n", (Deletable::DeletionHook*) &dhook1);
+    dhook1.deletable_add_hook (&test_deletable);
+    TICK();
+    dhook1.deletable_remove_hook (&test_deletable);
+    TICK();
+    dhook1.deletable_dispose (test_deletable);
+    TICK();
+    dhook1.deletable_add_hook (&test_deletable);
+    test_deletable.force_deletion_hooks ();
+    TICK();
+    dhook1.deletable_add_hook (&test_deletable);
+    TICK();
+    /* automatic deletion hook invocation */
+    /* FIXME: deletable destructor is called first and doesn't auto-remove
+     * - if deletion hooks were ring-linked, we could at least catch this case in ~DeletionHook
+     */
+  }
+  MyDeletable *deletable2 = new MyDeletable;
+  TASSERT (deletable2 != NULL);
+  deletable_destructor = false;
+  delete deletable2;
+  TASSERT (deletable_destructor == true);
+  TDONE();
+  /* early_deletable and late_deletable are only tested at program end */
+}
+
+/* --- Mutextes before g_thread_init() --- */
 static void
 test_before_thread_init()
 {
@@ -890,6 +949,7 @@ main (int   argc,
       test_thread_cxx();
       test_thread_atomic_cxx();
       test_auto_locker_cxx();
+      test_deletable_destruction();
     }
   if (init_settings().test_perf)
     bench_auto_locker_cxx();

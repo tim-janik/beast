@@ -961,7 +961,7 @@ Deletable::invoke_deletion_hooks()
             hooks->prev = NULL;
           hook->prev = NULL;
           hook->next = NULL;
-          //g_printerr ("DELETABLE-DIS(%p,%p)\n", this, hook);
+          g_printerr ("DELETABLE-DIS(%p,%p)\n", this, hook);
           hook->deletable_dispose (*this);
         }
     }
