@@ -44,7 +44,7 @@ Thu Jan  4 21:53:56 2007  Tim Janik  <timj@gtk.org>
 
 Thu Jan  4 20:29:24 2007  Tim Janik  <timj@gtk.org>
 
-	* mksignals.sh: changed script inetrpreter to /bin/bash to account
+	* mksignals.sh: changed script interpreter to /bin/bash to account
 	for bash-isms.
 
 Sun Dec 17 02:16:50 2006  Tim Janik  <timj@gtk.org>
