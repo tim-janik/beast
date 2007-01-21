@@ -861,12 +861,35 @@ Deletable::DeletionHook::deletable_remove_hook (Deletable *deletable)
 }
 
 Deletable::DeletionHook::~DeletionHook ()
-{}
+{
+  if (this->next || this->prev)
+    g_error ("%s: hook is being destroyed but not unlinked: %p", G_STRFUNC, this);
+}
 
+#if 0
 static struct {
   Mutex                                         mutex;
   std::map<Deletable*,Deletable::DeletionHook*> dmap;
 } deletable_maps[19]; /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
+#endif
+
+#define DELETABLE_MAP_HASH      (19)    /* use prime size for hashing, sum up to roughly 1k (use 83 for 4k) */
+struct DeletableMap {
+  Mutex                                         mutex;
+  std::map<Deletable*,Deletable::DeletionHook*> dmap;
+};
+static DeletableMap * volatile deletable_maps = NULL;
+
+static inline void
+auto_init_deletable_maps (void)
+{
+  if (UNLIKELY (deletable_maps == NULL))
+    {
+      DeletableMap *dmaps = new DeletableMap[DELETABLE_MAP_HASH];
+      if (!Atomic::ptr_cas (&deletable_maps, (DeletableMap*) NULL, dmaps))
+        delete dmaps;
+    }
+}
 
 /**
  * @param hook  valid deletion hook
@@ -877,22 +900,26 @@ static struct {
 void
 Deletable::add_deletion_hook (DeletionHook *hook)
 {
-  uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
+  auto_init_deletable_maps();
+  uint32 hashv = ((gsize) (void*) this) % DELETABLE_MAP_HASH;
   deletable_maps[hashv].mutex.lock();
   BIRNET_ASSERT (hook);
   BIRNET_ASSERT (!hook->next);
   BIRNET_ASSERT (!hook->prev);
   std::map<Deletable*,DeletionHook*>::iterator it;
   it = deletable_maps[hashv].dmap.find (this);
-  if (it != deletable_maps[hashv].dmap.end())
+  if (it != deletable_maps[hashv].dmap.end() && it->second)
     {
+      hook->prev = it->second->prev;
       hook->next = it->second;
+      hook->prev->next = hook;
+      hook->next->prev = hook;
       it->second = hook;
-      if (hook->next)
-        hook->next->prev = hook;
     }
+  else if (it != deletable_maps[hashv].dmap.end())
+    it->second = hook->prev = hook->next = hook;
   else
-    deletable_maps[hashv].dmap[this] = hook;
+    deletable_maps[hashv].dmap[this] = hook->prev = hook->next = hook;
   deletable_maps[hashv].mutex.unlock();
   hook->monitoring_deletable (*this);
   //g_printerr ("DELETABLE-ADD(%p,%p)\n", this, hook);
@@ -907,21 +934,18 @@ Deletable::add_deletion_hook (DeletionHook *hook)
 void
 Deletable::remove_deletion_hook (DeletionHook *hook)
 {
-  uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
+  auto_init_deletable_maps();
+  uint32 hashv = ((gsize) (void*) this) % DELETABLE_MAP_HASH;
   deletable_maps[hashv].mutex.lock();
   BIRNET_ASSERT (hook);
-  if (hook->next)
-    hook->next->prev = hook->prev;
-  if (hook->prev)
-    hook->prev->next = hook->next;
-  else
-    {
-      std::map<Deletable*,DeletionHook*>::iterator it;
-      it = deletable_maps[hashv].dmap.find (this);
-      BIRNET_ASSERT (it != deletable_maps[hashv].dmap.end());
-      BIRNET_ASSERT (it->second == hook);
-      it->second = hook->next;
-    }
+  BIRNET_ASSERT (hook->next && hook->prev);
+  hook->next->prev = hook->prev;
+  hook->prev->next = hook->next;
+  std::map<Deletable*,DeletionHook*>::iterator it;
+  it = deletable_maps[hashv].dmap.find (this);
+  BIRNET_ASSERT (it != deletable_maps[hashv].dmap.end());
+  if (it->second == hook)
+    it->second = hook->next != hook ? hook->next : NULL;
   hook->prev = NULL;
   hook->next = NULL;
   deletable_maps[hashv].mutex.unlock();
@@ -934,7 +958,8 @@ Deletable::remove_deletion_hook (DeletionHook *hook)
 void
 Deletable::invoke_deletion_hooks()
 {
-  uint32 hashv = ((gsize) (void*) this) % (sizeof (deletable_maps) / sizeof (deletable_maps[0]));
+  auto_init_deletable_maps();
+  uint32 hashv = ((gsize) (void*) this) % DELETABLE_MAP_HASH;
   while (TRUE)
     {
       /* lookup hook list */
@@ -957,11 +982,10 @@ Deletable::invoke_deletion_hooks()
       while (hooks)
         {
           DeletionHook *hook = hooks;
-          hooks = hook->next;
-          if (hooks)
-            hooks->prev = NULL;
-          hook->prev = NULL;
-          hook->next = NULL;
+          hook->next->prev = hook->prev;
+          hook->prev->next = hook->next;
+          hooks = hook->next != hook ? hook->next : NULL;
+          hook->prev = hook->next = NULL;
           //g_printerr ("DELETABLE-DISMISS(%p,%p)\n", this, hook);
           hook->dismiss_deletable();
         }

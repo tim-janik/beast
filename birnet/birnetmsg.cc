@@ -196,7 +196,7 @@ Msg::register_type (const char *ident,
       mflags[new_flags_size - 1] = 0;
       old_mbits = msg_type_bits;
       /* we are holding a lock in the multi-threaded case so no need for compare_and_swap */
-      Atomic::ptr_set ((volatile uint8**) &msg_type_bits, mflags);
+      Atomic::ptr_set (&msg_type_bits, mflags);
     }
   msg_types = g_renew (MsgType, msg_types, n_mtypes);
   memset (&msg_types[mtype], 0, sizeof (msg_types[mtype]));

@@ -76,18 +76,18 @@ inline void    uint_add      (volatile uint *uptr, uint diff)      { ThreadTable
 inline uint    uint_swap_add (volatile uint *uptr, uint diff)      { return ThreadTable.atomic_uint_swap_add (uptr, diff); }
 /* atomic pointers */
 template<class V>
-inline void    ptr_set       (volatile V **ptr_addr, V *n)      { ThreadTable.atomic_pointer_set ((void**) ptr_addr, (void*) n); }
+inline void    ptr_set       (V* volatile *ptr_addr, V *n)      { ThreadTable.atomic_pointer_set ((void**) ptr_addr, (void*) n); }
 template<class V>
-inline V*      ptr_get       (volatile V **ptr_addr)            { return (V*) ThreadTable.atomic_pointer_get ((void**) ptr_addr); }
+inline V*      ptr_get       (V* volatile *ptr_addr)            { return (V*) ThreadTable.atomic_pointer_get ((void**) ptr_addr); }
 template<class V>
-inline V*      ptr_get       (volatile V *const *ptr_addr)      { return (V*) ThreadTable.atomic_pointer_get ((void**) ptr_addr); }
+inline V*      ptr_get       (V* volatile const *ptr_addr)      { return (V*) ThreadTable.atomic_pointer_get ((void**) ptr_addr); }
 template<class V>
-inline bool    ptr_cas       (volatile V **ptr_adr, V *o, V *n) { return ThreadTable.atomic_pointer_cas ((void**) ptr_adr, (void*) o, (void*) n); }
+inline bool    ptr_cas       (V* volatile *ptr_adr, V *o, V *n) { return ThreadTable.atomic_pointer_cas ((void**) ptr_adr, (void*) o, (void*) n); }
 };
 
 class OwnedMutex {
-  BirnetRecMutex   m_rec_mutex;
-  volatile Thread *m_owner;
+  BirnetRecMutex    m_rec_mutex;
+  Thread * volatile m_owner;
   BIRNET_PRIVATE_CLASS_COPY (OwnedMutex);
 public:
   explicit       OwnedMutex ();

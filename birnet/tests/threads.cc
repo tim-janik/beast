@@ -834,7 +834,7 @@ test_thread_atomic_cxx (void)
   r = Atomic::int_get (&ai);
   TASSERT (r == 0);
   /* pointer functions */
-  volatile void *ap, *p;
+  void * volatile ap, * volatile p;
   Atomic::ptr_set (&ap, (void*) 119);
   TASSERT (ap == (void*) 119);
   p = Atomic::ptr_get (&ap);

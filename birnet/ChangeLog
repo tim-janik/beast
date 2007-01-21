@@ -1,3 +1,14 @@
+Sat Jan 20 17:41:06 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.hh: fixed volatile pointer attribute to apply to the
+	pointer value. 
+
+	* birnetutils.cc: changed DeletionHook linking to form a ring. added
+	an assertion to ~DeletionHook() that *this was unlinked before being
+	destroyed. changed deletable_maps[] implementation to be created
+	atomically on demand and never be destroyed. this fixes problems with
+	unpredictable constructor/destructor ordering.
+
 Fri Jan 19 01:48:22 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetutils.hh, birnetutils.cc: call monitoring_deletable()
