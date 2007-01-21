@@ -1,3 +1,8 @@
+Sun Jan 21 01:39:15 2007  Tim Janik  <timj@gtk.org>
+
+	* birnet/: Merged with http://birnet.org/git/birnet.git
+	commit id 73964e6fc1bf0f40fd2c3c71f30c0fb045951e39.
+
 Wed Jan 17 17:58:38 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefcompare.cc: Make comparision strategy pluggable, so that
