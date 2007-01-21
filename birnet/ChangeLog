@@ -1,3 +1,14 @@
+Fri Jan 19 01:48:22 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetutils.hh, birnetutils.cc: call monitoring_deletable()
+	when deletion hooks are added to deletables, renamed
+	dismiss_deletable() method.
+
+
+	* birnetsignalslot.hh: adapted DeletionHook methods.
+
+	* tests/threads.cc: added deletion hook test cases.
+
 Wed Jan 17 02:30:35 2007  Tim Janik  <timj@gtk.org>
 
 	* examples/mkhost.sh: added a small script to set up an example project
