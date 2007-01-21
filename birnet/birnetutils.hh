@@ -242,10 +242,11 @@ struct Deletable : public virtual VirtualTypeid {
     DeletionHook    *next;
     friend class Deletable;
   protected:
-    virtual     ~DeletionHook          ();
+    virtual     ~DeletionHook          (); /* { if (deletable) deletable_remove_hook (deletable); deletable = NULL; } */
+    virtual void monitoring_deletable  (Deletable &deletable) = 0;
+    virtual void dismiss_deletable     () = 0;
   public:
     explicit     DeletionHook          () : prev (NULL), next (NULL) {}
-    virtual void deletable_dispose     (Deletable &deletable) = 0;
     bool         deletable_add_hook    (void      *any)              { return false; }
     bool         deletable_add_hook    (Deletable *deletable);
     bool         deletable_remove_hook (void      *any)              { return false; }

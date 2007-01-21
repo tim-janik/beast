@@ -822,9 +822,6 @@ Deletable::~Deletable ()
   invoke_deletion_hooks();
 }
 
-Deletable::DeletionHook::~DeletionHook()
-{}
-
 /**
  * @param deletable     possible Deletable* handle
  * @return              TRUE if the hook was added
@@ -863,6 +860,9 @@ Deletable::DeletionHook::deletable_remove_hook (Deletable *deletable)
   return false;
 }
 
+Deletable::DeletionHook::~DeletionHook ()
+{}
+
 static struct {
   Mutex                                         mutex;
   std::map<Deletable*,Deletable::DeletionHook*> dmap;
@@ -894,6 +894,7 @@ Deletable::add_deletion_hook (DeletionHook *hook)
   else
     deletable_maps[hashv].dmap[this] = hook;
   deletable_maps[hashv].mutex.unlock();
+  hook->monitoring_deletable (*this);
   //g_printerr ("DELETABLE-ADD(%p,%p)\n", this, hook);
 }
 
@@ -961,8 +962,8 @@ Deletable::invoke_deletion_hooks()
             hooks->prev = NULL;
           hook->prev = NULL;
           hook->next = NULL;
-          g_printerr ("DELETABLE-DIS(%p,%p)\n", this, hook);
-          hook->deletable_dispose (*this);
+          //g_printerr ("DELETABLE-DISMISS(%p,%p)\n", this, hook);
+          hook->dismiss_deletable();
         }
     }
 }

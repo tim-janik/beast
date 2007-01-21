@@ -865,9 +865,29 @@ struct MyDeletable : public virtual Deletable {
   }
 };
 struct MyDeletableHook : public Deletable::DeletionHook {
+  Deletable *deletable;
+  explicit     MyDeletableHook () :
+    deletable (NULL)
+  {}
   virtual void
-  deletable_dispose (Deletable &deletable)
+  monitoring_deletable (Deletable &deletable_obj)
   {
+    TASSERT (deletable == NULL);
+    deletable = &deletable_obj;
+  }
+  virtual void
+  dismiss_deletable ()
+  {
+    if (deletable)
+      deletable = NULL;
+  }
+  virtual
+  ~MyDeletableHook ()
+  {
+    // g_printerr ("~MyDeletableHook(): deletable=%p\n", deletable);
+    if (deletable)
+      deletable_remove_hook (deletable);
+    deletable = NULL;
   }
 };
 
@@ -886,13 +906,14 @@ test_deletable_destruction ()
     dhook1.deletable_add_hook (&test_deletable);
     TICK();
     dhook1.deletable_remove_hook (&test_deletable);
+    dhook1.dismiss_deletable();
     TICK();
-    dhook1.deletable_dispose (test_deletable);
-    TICK();
-    dhook1.deletable_add_hook (&test_deletable);
+    MyDeletableHook dhook2;
+    dhook2.deletable_add_hook (&test_deletable);
     test_deletable.force_deletion_hooks ();
     TICK();
-    dhook1.deletable_add_hook (&test_deletable);
+    MyDeletableHook dhook3;
+    dhook3.deletable_add_hook (&test_deletable);
     TICK();
     /* automatic deletion hook invocation */
     /* FIXME: deletable destructor is called first and doesn't auto-remove

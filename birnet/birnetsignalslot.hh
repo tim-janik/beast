@@ -58,8 +58,9 @@ class MethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtual De
   virtual bool operator== (const TrampolineLink &bother) const {
     const MethodTrampoline3 *other = dynamic_cast<const MethodTrampoline3*> (&bother);
     return other and other->instance == instance and other->method == method; }
-  virtual      ~MethodTrampoline3()                     { deletable_remove_hook (instance); }
-  virtual void deletable_dispose (Deletable &deletable) { instance = NULL; this->callable = false; }
+  virtual     ~MethodTrampoline3    ()                     { deletable_remove_hook (instance); }
+  virtual void monitoring_deletable (Deletable &deletable) { /* deletable == instance */ }
+  virtual void dismiss_deletable    ()                     { instance = NULL; this->callable = false; }
 public:
   MethodTrampoline3 (Class &obj, Method m) :
     instance (&obj), method (m)                         { deletable_add_hook (instance); }
@@ -92,8 +93,9 @@ class DataMethodTrampoline3 : public Trampoline3 <R0, A1, A2, A3>, public virtua
   virtual bool operator== (const TrampolineLink &bother) const {
     const DataMethodTrampoline3 *other = dynamic_cast<const DataMethodTrampoline3*> (&bother);
     return other and other->instance == instance and other->method == method and other->data == data; }
-  virtual      ~DataMethodTrampoline3()                 { deletable_remove_hook (instance); }
-  virtual void deletable_dispose (Deletable &deletable) { instance = NULL; this->callable = false; }
+  virtual     ~DataMethodTrampoline3 ()                     { deletable_remove_hook (instance); }
+  virtual void monitoring_deletable  (Deletable &deletable) { /* deletable == instance */ }
+  virtual void dismiss_deletable     ()                     { instance = NULL; this->callable = false; }
 public:
   DataMethodTrampoline3 (Class &obj, Method m, const Data d) :
     instance (&obj), method (m), data (d)               { deletable_add_hook (instance); }
