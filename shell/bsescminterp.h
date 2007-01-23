@@ -23,13 +23,6 @@
 
 G_BEGIN_DECLS
 
-/* guard around GC-protected code portions,
- * with incremental int-blocking. guile recovers
- * from unbalanced defer/allow pairs.
- */
-#define	BSE_SCM_DEFER_INTS()	SCM_REDEFER_INTS
-#define	BSE_SCM_ALLOW_INTS()	SCM_REALLOW_INTS
-
 typedef struct _BseSCMWire   BseSCMWire;
 
 

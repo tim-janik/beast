@@ -1,3 +1,16 @@
+Tue Jan 23 02:08:24 2007  Tim Janik  <timj@gtk.org>
+
+	* shell/bsescminterp.c: ported to guile-1.8. kept guile-1.6 compat
+	code, removed cruft that was deprecated in 1.6 and removed from 1.8.
+
+	* shell/bsescminterp.h: removed bsescminterp.c implementation details.
+
+	* shell/bsescm.c: changed debugging hooks:
+	BSESCM_SLEEP4GDB>=3: sleep before parsing args;
+	BSESCM_SLEEP4GDB>=2: sleep after parsing args;
+	BSESCM_SLEEP4GDB>=1: sleep after parsing args when not registering;
+	otherwise: don't sleep.
+
 Sun Jan 21 01:39:15 2007  Tim Janik  <timj@gtk.org>
 
 	* birnet/: Merged with http://birnet.org/git/birnet.git

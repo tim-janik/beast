@@ -72,13 +72,20 @@ main (int   argc,
   setlocale (LC_ALL, "");
 
   env_str = g_getenv ("BSESCM_SLEEP4GDB");
-  if (env_str && atoi (env_str) > 0)
+  if (env_str && atoi (env_str) >= 3)
     {
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
 
   shell_parse_args (&argc, &argv);
+
+  if (env_str && (atoi (env_str) >= 2 ||
+                  (atoi (env_str) >= 1 && !bse_scm_enable_register)))
+    {
+      g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
+      g_usleep (2147483647);
+    }
 
   if (bse_scm_pipe[0] >= 0 && bse_scm_pipe[1] >= 0)
     {
