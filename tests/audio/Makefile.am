@@ -124,12 +124,21 @@ osctranspose2-test:
 	$(BSEFCOMPARE) $(srcdir)/osctranspose2.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
+# simple loop (from toplevel test/ directory)
+FEATURE_TESTS += xtalstringssong-test
+EXTRA_DIST += xtalstringssong.ref
+xtalstringssong-test:
+	$(BSE2WAV) $(srcdir)/xtalstringssong.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/xtalstringssong.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
 EXTRA_DIST += partymonster.ref
 partymonster-test:
 	$(BSE2WAV) $(top_srcdir)/library/demo/partymonster.bse $(@F).wav
-	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy --end-time  > $(@F).tmp
-	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy --end-time >> $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.9 # <- needs deterministic randomization
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --join-spectrum-slices=10 --avg-energy --end-time  > $(@F).tmp
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --join-spectrum-slices=10 --avg-energy --end-time >> $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.97 # <- needs deterministic randomization
 	rm -f $(@F).tmp $(@F).wav 

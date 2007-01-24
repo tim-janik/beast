@@ -1,3 +1,15 @@
+Thu Jan 25 00:05:52 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am:
+	* tests/audio/xtalstringssong.*: Added a small song to test the
+	DavXtalStrings module.
+
+	* tests/audio/partymonster.ref: Regenerated reference features (since
+	DavXtalStrings has now deterministic random). Since I needed to
+	regenerate the features anyway, I choose to also use the new spectrum
+	slice joining mode, to make the reference file small. This will make
+	the comparisions less sensitive, though.
+
 Tue Jan 23 02:08:24 2007  Tim Janik  <timj@gtk.org>
 
 	* shell/bsescminterp.c: ported to guile-1.8. kept guile-1.6 compat
