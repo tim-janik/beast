@@ -1,3 +1,10 @@
+Wed Jan 24 23:50:09 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davxtalstrings.c: Added a small random number generator (from
+	rapicorn) to deterministically generate random values if the option
+	--bse-disable-randomization is used. This makes it possible to bring
+	this module under test properly.
+
 Sat Dec 23 20:53:15 2006  Tim Janik  <timj@gtk.org>
 
 	* bsesummation.idl, bsesummation.cc: added audio-diff output channel 

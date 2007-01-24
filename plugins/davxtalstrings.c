@@ -1,5 +1,6 @@
 /* DavXtalStrings - DAV Physical Modelling String Synthesizer
  * Copyright (c) 2000 David A. Bartold, 2001 Tim Janik
+ * Copyright (c) 2007 Stefan Westerfeld
  *
  * Generate a string pluck sound using a modified Karplus-Strong algorithm
  * and then use Brensenham's algorithm to correct the frequency.
@@ -34,6 +35,7 @@
 
 #include <bse/bseengine.h>
 #include <bse/bsemathsignal.h>
+#include <bse/bsemain.h>
 
 #include <string.h>
 
@@ -301,6 +303,44 @@ calc_factor (gfloat freq,
   return pow (0.5, 1.0 / (freq * t));
 }
 
+/* mini random number generator (adapted from rapicorn), to generate deterministic
+ * sequence of booleans when --bse-disable-randomization was used
+ */
+typedef struct 
+{
+  gboolean allow_randomization;
+  guint32  seed;
+  guint32  mask;
+} DavRand;
+
+static void 
+dav_rand_setup (DavRand *rand,
+                gboolean allow_randomization)
+{
+  rand->seed = 2147483563;
+  rand->mask = 0;
+  rand->allow_randomization = allow_randomization;
+}
+
+static gboolean
+dav_rand_bool (DavRand *rand)
+{
+  if (rand->allow_randomization)
+    {
+      return bse_rand_bool();
+    }
+  else
+    {
+      rand->mask <<= 1;
+      if (!rand->mask)
+        {
+          rand->mask = 1;
+          rand->seed = 1664525 * rand->seed + 1013904223;
+        }
+      return ((rand->seed & rand->mask) == 0);
+    }
+}
+
 /* the GSL engine module that generates the signal, there may be many
  * modules per DavXtalStrings object
  */
@@ -352,9 +392,11 @@ xmod_trigger (XtalStringsModule *xmod,
     xmod->string[i] = pow (xmod->string[i], xmod->tparams.snap_factor * 10.0 + 1.0);
   
   /* Add static to displacements. */
+  DavRand rand;
+  dav_rand_setup (&rand, bse_main_args->allow_randomization);
   for (i = 0; i < xmod->size; i++)
     xmod->string[i] = (xmod->string[i] * (1.0F - xmod->tparams.metallic_factor) +
-		       (bse_rand_bool () ? -1.0F : 1.0F) * xmod->tparams.metallic_factor);
+		       (dav_rand_bool (&rand) ? -1.0F : 1.0F) * xmod->tparams.metallic_factor);
   /* Set velocity. */
   for (i = 0; i < xmod->size; i++)
     xmod->string[i] *= xmod->tparams.trigger_vel;
