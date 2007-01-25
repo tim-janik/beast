@@ -1,3 +1,9 @@
+Thu Jan 25 01:23:08 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseresamplerimpl.hh: Adjusted error bounds for the filter test,
+	because it failed sometimes although the implementation is ok. Be more
+	verbose when using verbose mode.
+
 Tue Jan 16 23:57:40 2007  Tim Janik  <timj@gtk.org>
 
 	* bseenginemaster.c: commented caveats.

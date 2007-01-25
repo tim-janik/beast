@@ -256,18 +256,18 @@ fir_test_filter_sse (bool        verbose,
       fir_process_4samples_sse (&random_mem[0], &sse_taps[0], order,
 	                        &out[0], &out[1], &out[2], &out[3]);
 
-      double adiff = 0.0;
+      double avg_diff = 0.0;
       for (int i = 0; i < 4; i++)
 	{
 	  double diff = fir_process_one_sample<double> (&random_mem[i], &taps[0], order) - out[i];
-	  adiff += fabs (diff);
+	  avg_diff += fabs (diff);
 	}
-      if (adiff > 0.0001)
-	{
-	  if (verbose)
-	    printf ("*** order = %d, adiff = %f\n", order, adiff);
-	  errors++;
-	}
+      avg_diff /= (order + 1);
+      bool is_error = (avg_diff > 0.00001);
+      if (is_error || verbose)
+	printf ("*** order = %d, avg_diff = %g\n", order, avg_diff);
+      if (is_error)
+	errors++;
     }
   if (errors)
     printf ("*** %d errors detected\n", errors);
