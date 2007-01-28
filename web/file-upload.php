@@ -82,6 +82,8 @@
       $errmsg = "No valid email adress supplied";
     else if (!preg_match ("/\w/", $blurb))
       $errmsg = "No description supplied";
+    else if ($realname && !preg_match ('/\.(bse|ogg)$/i', $realname))
+      $errmsg = "Invalid file type";
     else if (!$file || $ferror || $fsize <= 0 || $fsize > 8388608 || !$realname)
       $errmsg = "No data could be received."; // default error message
     //
