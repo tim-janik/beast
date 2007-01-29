@@ -878,7 +878,7 @@ class IntSequence {
   uint32 accu;
 public:
   explicit      IntSequence() : accu (123456789) {}
-  inline uint32 gen_int    () { accu = 1664525 * accu + 1013904223; return accu; }
+  inline int32  gen_int    () { accu = 1664525 * accu + 1013904223; return accu; }
 };
 #define CONTENTION_PRINTF       if(1);else g_printerr
 struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
@@ -897,7 +897,7 @@ struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
       {
         uint k, n = g_random_int() % MIN (ring_buffer_test_length - l + 1, 65536 * 2);
         int buffer[n], *b = buffer;
-        for (int i = 0; i < n; i++)
+        for (uint i = 0; i < n; i++)
           b[i] = gen_int();
         uint j = n;
         while (j)
@@ -949,7 +949,7 @@ struct RingBufferReader : public virtual Birnet::Thread, IntSequence {
               handle_contention();
             CONTENTION_PRINTF (k ? "+" : "\\");
           }
-        for (int i = 0; i < k; i++)
+        for (uint i = 0; i < k; i++)
           TCHECK (b[i] == gen_int());
         if (l / 499999 != (l + k) / 499999)
           TACK();
