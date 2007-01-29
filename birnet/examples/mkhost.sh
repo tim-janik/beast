@@ -54,22 +54,86 @@ create_target README <<-__EOFmkhost
 	This is an example project, it was created by a Birnet script to compile 
 	the birnet/ subdirectory.
 __EOFmkhost
-	
+
+#########################################
+#########################################
+###                 #####################
+###  Makefile.decl  START >>> >>> >>> >>>
+###                 #####################
+#########################################
+#########################################
+create_target Makefile.decl <<\__EOFmkhost # need correct TAB interpretation for makefiles
 # Makefile.decl
-create_target Makefile.decl <<-\__EOFmkhost
-	# Makefile.decl
-	# provide declarations and initializations for all Makefiles
-	
-	INCLUDES=
-	EXTRA_DIST=
-	CLEANFILES=
-	
-	TESTS=
-	PERFTESTS=
-	SLOWTESTS=
-	# === ALLTESTS ===
-	ALLTESTS = $(TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
+# provide declarations and initializations for all Makefiles
+
+INCLUDES=
+EXTRA_DIST=
+CLEANFILES=
+
+# === slowcheck ===
+# recursive rule supported by all Makefiles to run time consuming checks
+.PHONY: slowcheck slowcheck-recursive slowcheck-SLOWTESTS
+slowcheck: all slowcheck-recursive slowcheck-SLOWTESTS
+slowcheck-recursive:
+	@for subdir in $(SUBDIRS) ; do				\
+	  test "$$subdir" = '.' ||				\
+	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) slowcheck ||	\
+	    exit 1 ;						\
+	done
+slowcheck-SLOWTESTS:
+	@for tst in $(SLOWTESTS) ; do				\
+	  ./$$tst --test-slow && echo "PASS: $$tst" || exit 1 ;	\
+	done
+	@MESSAGETEXT="All $(words $(SLOWTESTS)) slow tests passed"	\
+	&& [ 0 -lt $(words $(SLOWTESTS)) ]				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' && echo $$MESSAGETEXT	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
+SLOWTESTS=
+
+# === perf ===
+# recursive rule supported by all Makefiles to run performance tests
+.PHONY: perf perf-recursive perf-PERFTESTS
+perf: all perf-recursive perf-PERFTESTS
+perf-recursive:
+	@for subdir in $(SUBDIRS) ; do				\
+	  test "$$subdir" = '.' ||				\
+	    $(MAKE) -C "$$subdir" $(AM_MAKEFLAGS) perf ||	\
+	    exit 1 ;						\
+	done
+perf-PERFTESTS:
+	@for tst in $(PERFTESTS) ; do				\
+	  ./$$tst --test-perf && echo "PASS: $$tst" || exit 1 ;	\
+	done
+	@MESSAGETEXT="All $(words $(PERFTESTS)) perf tests passed"	\
+	&& [ 0 -lt $(words $(PERFTESTS)) ]				\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' && echo $$MESSAGETEXT	\
+	&& echo $$MESSAGETEXT | sed 's/./=/g' || true
+PERFTESTS=
+
+# === ALLTESTS ===
+TESTS=
+ALLTESTS = $(TESTS) $(SLOWTESTS) $(PERFTESTS) # used in noinst_PROGRAMS
+
+# === report ===
+.PHONY: report
+report: all
+	@export REPORTFILE="$(REPORTFILE)"			\
+	&& [ -z "$$REPORTFILE" ]				\
+	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
+	( :							\
+	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
+	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
+	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
+	) 2>&1 | tee "$$REPORTFILE"				\
+	&& test "$${PIPESTATUS[*]}" = "0 0"
 __EOFmkhost
+#########################################
+#########################################
+###                 #####################
+###  Makefile.decl  END   <<< <<< <<< <<<
+###                 #####################
+#########################################
+#########################################
 	
 # Makefile.am
 create_target Makefile.am <<-\__EOFmkhost

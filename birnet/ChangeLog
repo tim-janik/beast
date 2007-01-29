@@ -1,3 +1,9 @@
+Mon Jan 29 23:29:27 2007  Tim Janik  <timj@gtk.org>
+
+	* examples/mkhost.sh: generate Makefile.decl with slowcheck: and perf:
+	rules. also generate report: rule which runs all of check: slowcheck:
+	and perf: and generates a report.out file.
+
 Mon Jan 29 22:46:40 2007  Tim Janik  <timj@gtk.org>
 
 	* birnet/birnetthread.hh: made read_barrier() and write_barrier() a NOP 
