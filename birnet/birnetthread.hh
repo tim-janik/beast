@@ -83,7 +83,7 @@ template<class V>
 inline V*      ptr_get       (V* volatile const *ptr_addr)      { return (V*) ThreadTable.atomic_pointer_get ((void**) ptr_addr); }
 template<class V>
 inline bool    ptr_cas       (V* volatile *ptr_adr, V *o, V *n) { return ThreadTable.atomic_pointer_cas ((void**) ptr_adr, (void*) o, (void*) n); }
-};
+} // Atomic
 
 class OwnedMutex {
   BirnetRecMutex    m_rec_mutex;
@@ -132,6 +132,7 @@ public:
                                          void              *wakeup_data,
                                          void             (*destroy_data) (void*));
     static OwnedMutex&  owned_mutex     ();
+    static void         yield           ();
     static void         exit            (void              *retval = NULL) BIRNET_NORETURN;
   };
   /* DataListContainer API */
@@ -200,6 +201,107 @@ public:
   void                          unlock      ()                                { BIRNET_ASSERT (lcount > 0); lcount--; locker()->unlock(); }
   /*Des*/                       ~AutoLocker ()                                { while (lcount) unlock(); }
 };
+
+namespace Atomic {
+
+template<typename T>
+class RingBuffer {
+  const uint    m_size;
+  T            *m_buffer;
+  volatile uint m_wmark, m_rmark;
+public:
+  explicit
+  RingBuffer (uint bsize) :
+    m_size (bsize + 1), m_wmark (0), m_rmark (bsize)
+  {
+    m_buffer = new T[m_size];
+    Atomic::uint_set (&m_wmark, 0);
+    Atomic::uint_set (&m_rmark, 0);
+  }
+  ~RingBuffer()
+  {
+    Atomic::uint_set ((volatile uint*) &m_size, 0);
+    Atomic::uint_set (&m_rmark, 0);
+    Atomic::uint_set (&m_wmark, 0);
+    delete &m_buffer[m_size];
+  }
+  uint
+  n_writable()
+  {
+    const uint rm = Atomic::uint_get (&m_rmark);
+    const uint wm = Atomic::uint_get (&m_wmark);
+    uint space = (m_size - 1 + rm - wm) % m_size;
+    return space;
+  }
+  uint
+  write (uint     length,
+         const T *data,
+         bool     partial = true)
+  {
+    const uint orig_length = length;
+    const uint rm = Atomic::uint_get (&m_rmark);
+    uint wm = Atomic::uint_get (&m_wmark);
+    uint space = (m_size - 1 + rm - wm) % m_size;
+    if (!partial && length > space)
+      return 0;
+    while (length)
+      {
+        if (rm <= wm)
+          space = m_size - wm + (rm == 0 ? -1 : 0);
+        else
+          space = rm - wm -1;
+        if (!space)
+          break;
+        space = MIN (space, length);
+        for (int i = 0; i < space; i++)
+          m_buffer[wm + i] = data[i];
+        wm = (wm + space) % m_size;
+        data += space;
+        length -= space;
+      }
+    Atomic::uint_set (&m_wmark, wm);
+    return orig_length - length;
+  }
+  uint
+  n_readable()
+  {
+    const uint wm = Atomic::uint_get (&m_wmark);
+    const uint rm = Atomic::uint_get (&m_rmark);
+    uint space = (m_size + wm - rm) % m_size;
+    return space;
+  }
+  uint
+  read (uint length,
+        T   *data,
+        bool partial = true)
+  {
+    const uint orig_length = length;
+    const uint wm = Atomic::uint_get (&m_wmark);
+    uint rm = Atomic::uint_get (&m_rmark);
+    uint space = (m_size + wm - rm) % m_size;
+    if (!partial && length > space)
+      return 0;
+    while (length)
+      {
+        if (wm < rm)
+          space = m_size - rm;
+        else
+          space = wm - rm;
+        if (!space)
+          break;
+        space = MIN (space, length);
+        for (int i = 0; i < space; i++)
+          data[i] = m_buffer[rm + i];
+        rm = (rm + space) % m_size;
+        data += space;
+        length -= space;
+      }
+    Atomic::uint_set (&m_rmark, rm);
+    return orig_length - length;
+  }
+};
+
+} // Atomic
 
 /* --- implementation --- */
 inline void

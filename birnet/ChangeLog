@@ -1,3 +1,14 @@
+Thu Jan 25 02:03:37 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.[hc]*: sink & ref threads around run() to keep the Thread
+	structure alive. added Thread::Self::yield().
+	added Atomic::RingBuffer<>, a simple 1-reader/1-writer ring bufferthat
+	does atomic reads/writes without needing mutexes.
+
+	* tests/threads.cc: added atomic ring buffer tests.
+	test_deletable_destruction(): shutup old debug output.
+	main(): always run quick tests.
+
 Sat Jan 20 17:41:06 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetthread.hh: fixed volatile pointer attribute to apply to the

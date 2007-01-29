@@ -850,6 +850,153 @@ test_thread_atomic_cxx (void)
   TDONE ();
 }
 
+/* --- ring buffer --- */
+typedef Atomic::RingBuffer<int> IntRingBuffer;
+class IntSequence {
+  uint32 accu;
+public:
+  explicit      IntSequence() : accu (123456789) {}
+  inline uint32 gen_int    () { accu = 1664525 * accu + 1013904223; return accu; }
+};
+struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
+  IntRingBuffer *ring;
+  uint           ring_buffer_test_length;
+  RingBufferWriter (IntRingBuffer *rb,
+                    uint           rbtl) :
+    Thread ("RingBufferWriter"),
+    ring (rb), ring_buffer_test_length (rbtl)
+  {}
+  virtual void
+  run ()
+  {
+    TPRINT ("%s start.", Thread::Self::name().c_str());
+    for (uint l = 0; l < ring_buffer_test_length;)
+      {
+        if (lrand48() % 1999 == 1234)
+          g_usleep (lrand48() % 1777);
+        uint k, n = g_random_int() % MIN (ring_buffer_test_length - l + 1, 65536 * 2);
+        int buffer[n], *b = buffer;
+        for (int i = 0; i < n; i++)
+          b[i] = gen_int();
+        uint j = n;
+        while (j)
+          {
+            k = ring->write (j, b);
+            TCHECK (k <= j);
+            j -= k;
+            b += k;
+            if (false && j)
+              Thread::Self::yield();
+          }
+        if (l / 499999 != (l + n) / 499999)
+          TICK();
+        l += n;
+      }
+    TPRINT ("%s done.", Thread::Self::name().c_str());
+  }
+};
+struct RingBufferReader : public virtual Birnet::Thread, IntSequence {
+  IntRingBuffer *ring;
+  uint           ring_buffer_test_length;
+  RingBufferReader (IntRingBuffer *rb,
+                    uint           rbtl) :
+    Thread ("RingBufferReader"),
+    ring (rb), ring_buffer_test_length (rbtl)
+  {}
+  virtual void
+  run ()
+  {
+    TPRINT ("%s start.", Thread::Self::name().c_str());
+    for (uint l = 0; l < ring_buffer_test_length;)
+      {
+        if (lrand48() % 233 == 47)
+          g_usleep (lrand48() % 1559);
+        uint k, n = ring->n_readable();
+        n = lrand48() % MIN (n + 1, 65536 * 2);
+        int buffer[n], *b = buffer;
+        if (rand() & 1)
+          {
+            k = ring->read (n, b, false);
+            TCHECK (n == k);
+          }
+        else
+          {
+            k = ring->read (n, b, true);
+            TCHECK (k <= n);
+          }
+        for (int i = 0; i < k; i++)
+          TCHECK (b[i] == gen_int());
+        if (n != k)
+          Thread::Self::yield();
+        if (l / 499999 != (l + k) / 499999)
+          TACK();
+        l += k;
+      }
+    TPRINT ("%s done.", Thread::Self::name().c_str());
+  }
+};
+
+static void
+test_ring_buffer ()
+{
+  static const gchar *testtext = "Ring Buffer test Text (47\xff)";
+  uint n, ttl = strlen (testtext);
+  TSTART ("RingBuffer");
+  Atomic::RingBuffer<char> rb1 (ttl);
+  TASSERT (rb1.n_writable() == ttl);
+  n = rb1.write (ttl, testtext);
+  TASSERT (n == ttl);
+  TASSERT (rb1.n_writable() == 0);
+  TASSERT (rb1.n_readable() == ttl);
+  char buffer[8192];
+  n = rb1.read (8192, buffer);
+  TASSERT (n == ttl);
+  TASSERT (rb1.n_readable() == 0);
+  TASSERT (rb1.n_writable() == ttl);
+  TASSERT (strncmp (buffer, testtext, n) == 0);
+  TDONE();
+
+  for (uint step = 1; step < 8; step++)
+    {
+      TSTART ("AsyncRingBuffer-%d", step);
+      uint ring_buffer_test_length = 127 * step + (rand() % 1023);
+      IntRingBuffer irb (step);
+      RingBufferReader *rbr = new RingBufferReader (&irb, ring_buffer_test_length);
+      ref_sink (rbr);
+      RingBufferWriter *rbw = new RingBufferWriter (&irb, ring_buffer_test_length);
+      ref_sink (rbw);
+      TASSERT (rbr && rbw);
+      rbr->start();
+      rbw->start();
+      rbw->wait_for_exit();
+      rbr->wait_for_exit();
+      TASSERT (rbr && rbw);
+      unref (rbr);
+      unref (rbw);
+      TDONE();
+    }
+
+  if (1)
+    {
+      TSTART ("AsyncRingBuffer-big");
+      uint ring_buffer_test_length = 999999 * (init_settings().test_quick ? 1 : 20);
+      IntRingBuffer irb (79 + (lrand48() % 12973));
+      RingBufferReader *rbr = new RingBufferReader (&irb, ring_buffer_test_length);
+      ref_sink (rbr);
+      RingBufferWriter *rbw = new RingBufferWriter (&irb, ring_buffer_test_length);
+      ref_sink (rbw);
+      TASSERT (rbr && rbw);
+      rbr->start();
+      rbw->start();
+      rbw->wait_for_exit();
+      rbr->wait_for_exit();
+      TASSERT (rbr && rbw);
+      unref (rbr);
+      unref (rbw);
+      TDONE();
+    }
+}
+
 /* --- late deletable destruction --- */
 static bool deletable_destructor = false;
 struct MyDeletable : public virtual Deletable {
@@ -902,7 +1049,7 @@ test_deletable_destruction ()
     MyDeletable test_deletable;
     TICK();
     MyDeletableHook dhook1;
-    g_printerr ("TestHook=%p\n", (Deletable::DeletionHook*) &dhook1);
+    // g_printerr ("TestHook=%p\n", (Deletable::DeletionHook*) &dhook1);
     dhook1.deletable_add_hook (&test_deletable);
     TICK();
     dhook1.deletable_remove_hook (&test_deletable);
@@ -963,15 +1110,13 @@ main (int   argc,
 
   birnet_init_test (&argc, &argv);
 
-  if (init_settings().test_quick)
-    {
-      test_threads();
-      test_atomic();
-      test_thread_cxx();
-      test_thread_atomic_cxx();
-      test_auto_locker_cxx();
-      test_deletable_destruction();
-    }
+  test_threads();
+  test_atomic();
+  test_thread_cxx();
+  test_thread_atomic_cxx();
+  test_auto_locker_cxx();
+  test_deletable_destruction();
+  test_ring_buffer(); 
   if (init_settings().test_perf)
     bench_auto_locker_cxx();
   

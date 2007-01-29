@@ -58,7 +58,9 @@ struct Thread::ThreadWrapperInternal : public Thread {
   trampoline (void *thread_data)
   {
     Thread &self = *reinterpret_cast<Thread*> (thread_data);
+    ref_sink (self);
     self.run();
+    unref (self);
   }
 };
 
@@ -249,6 +251,12 @@ OwnedMutex&
 Thread::Self::owned_mutex ()
 {
   return self().m_omutex;
+}
+
+void
+Thread::Self::yield ()
+{
+  ThreadTable.thread_yield ();
 }
 
 void
