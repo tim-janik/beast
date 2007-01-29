@@ -1,3 +1,7 @@
+Sun Jan 28 19:31:12 2007  Tim Janik  <timj@gtk.org>
+
+	* fixed various compiler warnings.
+
 Sun Jan 28 19:05:51 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetthread.hh: provide read and write memory barriers:

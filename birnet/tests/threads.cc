@@ -497,8 +497,9 @@ test_auto_locker_cxx()
 class HeapLocker {
   // like PtrAutoLocker but allocates on the heap
   struct Lockable {
-    virtual void lock() = 0;
-    virtual void unlock() = 0;
+    virtual void lock     () = 0;
+    virtual void unlock   () = 0;
+    virtual     ~Lockable () {}
   };
   template<class L>
   struct Wrapper : public virtual Lockable {
@@ -584,6 +585,7 @@ class GenericAutoLocker {
   struct Locker {
     virtual void lock   () const = 0;
     virtual void unlock () const = 0;
+    virtual     ~Locker () {}
   };
   template<class Lockable>
   struct LockerImpl : public Locker {
@@ -629,6 +631,7 @@ class PtrAutoLocker {
   struct Locker {
     virtual void lock   () = 0;
     virtual void unlock () = 0;
+    virtual     ~Locker () {}
   };
   template<class Lockable>
   struct LockerImpl : public Locker {

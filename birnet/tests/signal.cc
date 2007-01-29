@@ -23,8 +23,9 @@ namespace {
 using namespace Birnet;
 
 struct ExtraType {
-  virtual const char* message() { return "ExtraType::message()"; }
-  bool operator== (const ExtraType &other) const { return false; }
+  virtual            ~ExtraType  () {}
+  virtual const char* message    () { return "ExtraType::message()"; }
+  bool                operator== (const ExtraType &other) const { return false; }
 };
 
 struct EmitterMany {
