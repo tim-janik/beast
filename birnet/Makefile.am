@@ -111,6 +111,7 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "#define BIRNET_HAVE_MUTEXATTR_SETTYPE	(@BIRNET_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-$(@F) \
 	&& echo "                                        BIRNET_SIZEOF_PTH_MUTEX_T && \\" 	>> xgen-$(@F) \
 	&& echo "                                        BIRNET_SIZEOF_PTH_COND_T)" 		>> xgen-$(@F) \
+	&& echo "#define BIRNET_MEMORY_BARRIER_NEEDED   (@BIRNET_MEMORY_BARRIER_NEEDED@)"	>> xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
 	&& echo "/* Generated data ends here */" 						>> xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \

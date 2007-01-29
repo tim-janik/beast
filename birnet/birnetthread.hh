@@ -62,8 +62,9 @@ public:
 };
 
 namespace Atomic {
-inline void    read_barrier  (void)                                { int dummy; ThreadTable.atomic_int_get (&dummy); }
-inline void    write_barrier (void)                                { int dummy; ThreadTable.atomic_int_set (&dummy, 0); }
+inline void    read_barrier  (void)                                { BIRNET_MEMORY_BARRIER_RO (ThreadTable); }
+inline void    write_barrier (void)                                { BIRNET_MEMORY_BARRIER_WO (ThreadTable); }
+inline void    full_barrier  (void)                                { BIRNET_MEMORY_BARRIER_RW (ThreadTable); }
 /* atomic integers */
 inline void    int_set       (volatile int  *iptr, int value)      { ThreadTable.atomic_int_set (iptr, value); }
 inline int     int_get       (volatile int  *iptr)                 { return ThreadTable.atomic_int_get (iptr); }

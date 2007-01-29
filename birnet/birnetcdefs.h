@@ -353,7 +353,15 @@ typedef struct {
 // BIRNET__RUNTIME_PROBLEM(ErrorWarningReturnAssertNotreach,domain,file,line,funcname,exprformat,...); // noreturn cases: 'E', 'A', 'N'
 extern inline void birnet_abort_noreturn (void) BIRNET_NORETURN;
 extern inline void birnet_abort_noreturn (void) { while (1) *(void*volatile*)0; }
-
+#if BIRNET_MEMORY_BARRIER_NEEDED
+#define BIRNET_MEMORY_BARRIER_RO(tht)   do { int _b_dummy; tht.atomic_int_get (&_b_dummy); } while (0)
+#define BIRNET_MEMORY_BARRIER_WO(tht)   do { int _b_dummy; tht.atomic_int_set (&_b_dummy, 0); } while (0)
+#define BIRNET_MEMORY_BARRIER_RW(tht)   do { BIRNET_MEMORY_BARRIER_WO (tht); BIRNET_MEMORY_BARRIER_RO (tht); } while (0)
+#else
+#define BIRNET_MEMORY_BARRIER_RO(tht)   do { } while (0)
+#define BIRNET_MEMORY_BARRIER_WO(tht)   do { } while (0)
+#define BIRNET_MEMORY_BARRIER_RW(tht)   do { } while (0)
+#endif         
 BIRNET_EXTERN_C_END();
 
 #endif /* __BIRNET_CDEFS_H__ */

@@ -1,3 +1,18 @@
+Mon Jan 29 22:46:40 2007  Tim Janik  <timj@gtk.org>
+
+	* birnet/birnetthread.hh: made read_barrier() and write_barrier() a NOP 
+	on systems that don't need barriers. provided full_barrier().
+
+	* birnetthread.cc: fixed a bad bug in atomic_int_set() and 
+	atomic_pointer_set() which caused atomic values to temporarily be 0.
+
+	* birnet/birnetcdefs.h: provide memory barrier implementations based on atomic ops.
+
+	* birnet/Makefile.am: define BIRNET_MEMORY_BARRIER_NEEDED in birnetconfig.h.
+
+	* configure.inc: provide BIRNET_MEMORY_BARRIER_NEEDED=[01] based on 
+	glib's G_ATOMIC_OP_MEMORY_BARRIER_NEEDED.
+
 Sun Jan 28 19:31:12 2007  Tim Janik  <timj@gtk.org>
 
 	* fixed various compiler warnings.

@@ -50,14 +50,12 @@ static void
 g_atomic_int_set (volatile int *atomic,
                   int           value)
 {
-  *atomic = 0;
   while (!g_atomic_int_compare_and_exchange ((int*) atomic, *atomic, value));
 }
 static void
 g_atomic_pointer_set (volatile gpointer *atomic,
                       gpointer           value)
 {
-  *atomic = NULL;
   while (!g_atomic_pointer_compare_and_exchange ((gpointer*) atomic, *atomic, value));
 }
 #endif

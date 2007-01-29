@@ -95,6 +95,30 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
     BIRNET_LIBS="$BIRNET_LIBS $LIBZ"
     BIRNET_CFLAGS="$BIRNET_GLIB_CFLAGS"
 
+    dnl # --- check for memory barriers (needs glib) ---
+    AC_MSG_CHECKING([for memory barriers])
+    saved_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS $BIRNET_CFLAGS"
+    saved_LIBS="$LIBS"
+    LIBS="$LIBS $BIRNET_LIBS"
+    AC_TRY_RUN([ #include <glib.h>
+	    int main () {
+	    #if defined (G_ATOMIC_OP_MEMORY_BARRIER_NEEDED) || (!GLIB_CHECK_VERSION (2, 8, 0) && !defined (__i386__))
+		return 1;
+	    #else
+		return 0;
+	    #endif
+	    }],
+	BIRNET_MEMORY_BARRIER_NEEDED=0
+	AC_MSG_RESULT(none needed)
+        ,
+	BIRNET_MEMORY_BARRIER_NEEDED=1
+	AC_MSG_RESULT(required)
+        ,)
+    CFLAGS="$saved_CFLAGS"
+    LIBS="$saved_LIBS"
+    AC_SUBST(BIRNET_MEMORY_BARRIER_NEEDED)
+
     dnl # --- BIRNET_CFLAGS & BIRNET_LIBS ---
     AC_SUBST(BIRNET_CFLAGS)
     AC_SUBST(BIRNET_LIBS)
