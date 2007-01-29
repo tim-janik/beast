@@ -885,7 +885,7 @@ struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
             TCHECK (k <= j);
             j -= k;
             b += k;
-            if (false && j)
+            if (k != j && ring->n_writable() == 0)
               Thread::Self::yield();
           }
         if (l / 499999 != (l + n) / 499999)
@@ -926,7 +926,7 @@ struct RingBufferReader : public virtual Birnet::Thread, IntSequence {
           }
         for (int i = 0; i < k; i++)
           TCHECK (b[i] == gen_int());
-        if (n != k)
+        if (!n && ring->n_readable() == 0)
           Thread::Self::yield();
         if (l / 499999 != (l + k) / 499999)
           TACK();

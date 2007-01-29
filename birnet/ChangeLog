@@ -1,3 +1,9 @@
+Thu Jan 25 02:43:28 2007  Tim Janik  <timj@gtk.org>
+
+	* tests/threads.cc: give up CPU if ring buffer reader/writer
+	are busy spinning. this speeds up tests on single-CPU systems
+	significantly.
+
 Thu Jan 25 02:03:37 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetthread.[hc]*: sink & ref threads around run() to keep the Thread
