@@ -1,3 +1,13 @@
+Sun Jan 28 19:05:51 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.hh: provide read and write memory barriers:
+	Atomic::read_barrier(), Atomic::write_barrier().
+	Atomic::RingBuffer: prevent class copies, fixed destructor, use
+	std::copy() for fast memory copies and added missing barriers;
+	fixes suggested by Stefan Westerfeld.
+
+	* tests/threads.cc: fixed contention handling in ring buffer tests.
+
 Thu Jan 25 02:43:28 2007  Tim Janik  <timj@gtk.org>
 
 	* tests/threads.cc: give up CPU if ring buffer reader/writer

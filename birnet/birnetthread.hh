@@ -62,6 +62,8 @@ public:
 };
 
 namespace Atomic {
+inline void    read_barrier  (void)                                { int dummy; ThreadTable.atomic_int_get (&dummy); }
+inline void    write_barrier (void)                                { int dummy; ThreadTable.atomic_int_set (&dummy, 0); }
 /* atomic integers */
 inline void    int_set       (volatile int  *iptr, int value)      { ThreadTable.atomic_int_set (iptr, value); }
 inline int     int_get       (volatile int  *iptr)                 { return ThreadTable.atomic_int_get (iptr); }
@@ -209,6 +211,7 @@ class RingBuffer {
   const uint    m_size;
   T            *m_buffer;
   volatile uint m_wmark, m_rmark;
+  BIRNET_PRIVATE_CLASS_COPY (RingBuffer);
 public:
   explicit
   RingBuffer (uint bsize) :
@@ -223,7 +226,7 @@ public:
     Atomic::uint_set ((volatile uint*) &m_size, 0);
     Atomic::uint_set (&m_rmark, 0);
     Atomic::uint_set (&m_wmark, 0);
-    delete &m_buffer[m_size];
+    delete[] m_buffer;
   }
   uint
   n_writable()
@@ -253,12 +256,13 @@ public:
         if (!space)
           break;
         space = MIN (space, length);
-        for (int i = 0; i < space; i++)
-          m_buffer[wm + i] = data[i];
+        std::copy (data, &data[space], &m_buffer[wm]);
         wm = (wm + space) % m_size;
         data += space;
         length -= space;
       }
+    Atomic::write_barrier();
+    /* the barrier ensures m_buffer writes are seen before the m_wmark update */
     Atomic::uint_set (&m_wmark, wm);
     return orig_length - length;
   }
@@ -276,7 +280,8 @@ public:
         bool partial = true)
   {
     const uint orig_length = length;
-    const uint wm = Atomic::uint_get (&m_wmark);
+    /* need Atomic::read_barrier() here to ensure m_buffer writes are seen before m_wmark updates */
+    const uint wm = Atomic::uint_get (&m_wmark); /* includes Atomic::read_barrier(); */
     uint rm = Atomic::uint_get (&m_rmark);
     uint space = (m_size + wm - rm) % m_size;
     if (!partial && length > space)
@@ -290,8 +295,7 @@ public:
         if (!space)
           break;
         space = MIN (space, length);
-        for (int i = 0; i < space; i++)
-          data[i] = m_buffer[rm + i];
+        std::copy (&m_buffer[rm], &m_buffer[rm + space], data);
         rm = (rm + space) % m_size;
         data += space;
         length -= space;

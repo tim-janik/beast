@@ -850,6 +850,28 @@ test_thread_atomic_cxx (void)
   TDONE ();
 }
 
+/* --- thread_yield --- */
+static inline void
+handle_contention ()
+{
+  /* we're waiting for our contention counterpart if we got here:
+   * - sched_yield(3posix) will immediately give up the CPU and let another
+   *   task run. but if the contention counterpart is running on another
+   *   CPU this will lead to scheduler trashing on our CPU. and if other
+   *   bacground tasks are running, they could get all our CPU time,
+   *   because sched_yield() effectively discards the current time slice.
+   * - busy spinning is useful if the contention counterpart runs on a
+   *   different CPU, as long as the loop doesn't involve syncronization
+   *   primitives which cause IO bus trashing ("lock" prefix in x86 asm).
+   * - usleep(3posix) is a way to give up the CPU without discarding our
+   *   time slices and avoids scheduler or bus trashing. allthough it is
+   *   not the perfect or optimum syncronization/timing primitive, it
+   *   avoids most ill effects and still allows for a sufficient number
+   *   of task switches.
+   */
+  usleep (500); // 1usec is the minimum value to cause an effect
+}
+
 /* --- ring buffer --- */
 typedef Atomic::RingBuffer<int> IntRingBuffer;
 class IntSequence {
@@ -858,6 +880,7 @@ public:
   explicit      IntSequence() : accu (123456789) {}
   inline uint32 gen_int    () { accu = 1664525 * accu + 1013904223; return accu; }
 };
+#define CONTENTION_PRINTF       if(1);else g_printerr
 struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
   IntRingBuffer *ring;
   uint           ring_buffer_test_length;
@@ -872,8 +895,6 @@ struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
     TPRINT ("%s start.", Thread::Self::name().c_str());
     for (uint l = 0; l < ring_buffer_test_length;)
       {
-        if (lrand48() % 1999 == 1234)
-          g_usleep (lrand48() % 1777);
         uint k, n = g_random_int() % MIN (ring_buffer_test_length - l + 1, 65536 * 2);
         int buffer[n], *b = buffer;
         for (int i = 0; i < n; i++)
@@ -885,8 +906,9 @@ struct RingBufferWriter : public virtual Birnet::Thread, IntSequence {
             TCHECK (k <= j);
             j -= k;
             b += k;
-            if (k != j && ring->n_writable() == 0)
-              Thread::Self::yield();
+            if (!k)     // waiting for reader thread
+              handle_contention();
+            CONTENTION_PRINTF (k ? "*" : "/");
           }
         if (l / 499999 != (l + n) / 499999)
           TICK();
@@ -909,8 +931,6 @@ struct RingBufferReader : public virtual Birnet::Thread, IntSequence {
     TPRINT ("%s start.", Thread::Self::name().c_str());
     for (uint l = 0; l < ring_buffer_test_length;)
       {
-        if (lrand48() % 233 == 47)
-          g_usleep (lrand48() % 1559);
         uint k, n = ring->n_readable();
         n = lrand48() % MIN (n + 1, 65536 * 2);
         int buffer[n], *b = buffer;
@@ -918,16 +938,19 @@ struct RingBufferReader : public virtual Birnet::Thread, IntSequence {
           {
             k = ring->read (n, b, false);
             TCHECK (n == k);
+            if (k)
+              CONTENTION_PRINTF ("+");
           }
         else
           {
             k = ring->read (n, b, true);
             TCHECK (k <= n);
+            if (!k)         // waiting for writer thread
+              handle_contention();
+            CONTENTION_PRINTF (k ? "+" : "\\");
           }
         for (int i = 0; i < k; i++)
           TCHECK (b[i] == gen_int());
-        if (!n && ring->n_readable() == 0)
-          Thread::Self::yield();
         if (l / 499999 != (l + k) / 499999)
           TACK();
         l += k;
@@ -956,10 +979,11 @@ test_ring_buffer ()
   TASSERT (strncmp (buffer, testtext, n) == 0);
   TDONE();
 
+  /* check lower end ring buffer sizes (high contention test) */
   for (uint step = 1; step < 8; step++)
     {
-      TSTART ("AsyncRingBuffer-%d", step);
-      uint ring_buffer_test_length = 127 * step + (rand() % 1023);
+      uint ring_buffer_test_length = 17 * step + (rand() % 19);
+      TSTART ("AsyncRingBuffer-%d-%d", step, ring_buffer_test_length);
       IntRingBuffer irb (step);
       RingBufferReader *rbr = new RingBufferReader (&irb, ring_buffer_test_length);
       ref_sink (rbr);
@@ -976,11 +1000,12 @@ test_ring_buffer ()
       TDONE();
     }
 
-  if (1)
+  /* check big ring buffer sizes */
+  if (true)
     {
       TSTART ("AsyncRingBuffer-big");
       uint ring_buffer_test_length = 999999 * (init_settings().test_quick ? 1 : 20);
-      IntRingBuffer irb (79 + (lrand48() % 12973));
+      IntRingBuffer irb (16384 + (lrand48() % 8192));
       RingBufferReader *rbr = new RingBufferReader (&irb, ring_buffer_test_length);
       ref_sink (rbr);
       RingBufferWriter *rbw = new RingBufferWriter (&irb, ring_buffer_test_length);
