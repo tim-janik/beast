@@ -1,3 +1,8 @@
+Tue Jan 30 00:56:10 2007  Tim Janik  <timj@gtk.org>
+
+	* birnet/: Merged with http://birnet.org/git/birnet.git
+	commit id b7275b0b32ccbb12d5fba5a1aa95d9a48352b239.
+
 Sun Jan 28 01:12:18 2007  Tim Janik  <timj@gtk.org>
 
 	* web/file-upload.php: only allow .bse or .ogg file uploads.
