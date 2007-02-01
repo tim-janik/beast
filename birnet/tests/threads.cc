@@ -1025,6 +1025,39 @@ test_ring_buffer ()
     }
 }
 
+/* --- --- */
+static void
+test_debug_channel ()
+{
+  TSTART ("DebugChannelFileAsync (countdown)");
+  DebugChannel *dbg = DebugChannel::new_from_file_async ("/dev/stderr");
+  ref_sink (dbg);
+  TASSERT (dbg);
+  dbg->printf ("9");
+  usleep (100 * 1000);
+  dbg->printf ("8");
+  usleep (110 * 1000);
+  dbg->printf ("7");
+  usleep (120 * 1000);
+  dbg->printf ("6");
+  usleep (130 * 1000);
+  dbg->printf ("5");
+  usleep (140 * 1000);
+  dbg->printf ("4");
+  usleep (150 * 1000);
+  dbg->printf ("3");
+  usleep (160 * 1000);
+  dbg->printf ("2");
+  usleep (170 * 1000);
+  dbg->printf ("1");
+  usleep (180 * 1000);
+  dbg->printf ("0");
+  usleep (190 * 1000);
+  unref (dbg);
+  TICK();
+  TDONE();
+}
+
 /* --- late deletable destruction --- */
 static bool deletable_destructor = false;
 struct MyDeletable : public virtual Deletable {
@@ -1145,6 +1178,7 @@ main (int   argc,
   test_auto_locker_cxx();
   test_deletable_destruction();
   test_ring_buffer(); 
+  test_debug_channel(); 
   if (init_settings().test_perf)
     bench_auto_locker_cxx();
   
