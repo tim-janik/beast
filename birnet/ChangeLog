@@ -1,3 +1,10 @@
+Thu Feb  1 23:24:16 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetdebugtools.hh: make printf_valist() public to allow wrapper
+	implementations.
+
+	* birnetdebugtools.cc: auto append newlines to printed lines.
+
 Thu Feb  1 20:27:09 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetdebugtools.hh, birnetdebugtools.cc: added DebugChannel, a 

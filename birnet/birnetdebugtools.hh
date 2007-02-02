@@ -29,9 +29,9 @@ class DebugChannel : public virtual ReferenceCountImpl {
 protected:
   explicit              DebugChannel        ();
   virtual               ~DebugChannel       ();
+public:
   virtual void          printf_valist       (const char *format,
                                              va_list     args) = 0;
-public:
   inline void           printf              (const char *format, ...) BIRNET_PRINTF (2, 3);
   static DebugChannel*  new_from_file_async (const String &filename);
 };
