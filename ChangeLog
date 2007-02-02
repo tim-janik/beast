@@ -1,3 +1,8 @@
+Fri Feb  2 01:44:53 2007  Tim Janik  <timj@gtk.org>
+
+	* birnet/: Merged with http://birnet.org/git/birnet.git
+	commit id 43e681d19203cad908c3118bbb21501f021fbeac.
+
 Thu Feb  1 20:51:57 2007  Tim Janik  <timj@gtk.org>
 
 	* birnet/: Merged with http://birnet.org/git/birnet.git
