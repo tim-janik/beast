@@ -54,15 +54,19 @@ struct DebugChannelFileAsync : public virtual DebugChannel, public virtual Threa
   printf_valist (const char *format,
                  va_list     args)
   {
-    const int bsz = 8192;
+    const int bsz = 4000;
     char buffer[bsz + 2];
     int l = vsnprintf (buffer, bsz, format, args);
     if (l > 0)
       {
         l = MIN (l, bsz);
         if (buffer[l - 1] != '\n')
-          buffer[l++] = '\n';
-        buffer[l++] = 0;
+          {
+            buffer[l++] = '\n';
+            buffer[l] = 0;
+          }
+        if (false) // skip trailing 0 in ring buffer
+          buffer[l++] = 0;
         uint n = aring.write (l, buffer, false);
         if (!n)
           Atomic::uint_swap_add (&skip_count, 1);

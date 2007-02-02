@@ -1,3 +1,9 @@
+Fri Feb  2 00:54:32 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetdebugtools.cc: don't write trailing 0s in debug stream, 
+	slightly reduced stack requirements, 4000 chars are hopefully 
+	enough for async debugging messages.
+
 Thu Feb  1 23:24:16 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetdebugtools.hh: make printf_valist() public to allow wrapper
