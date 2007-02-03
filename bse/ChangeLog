@@ -1,3 +1,7 @@
+Sat Feb  3 04:22:16 2007  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.cc: refined tracing information. provide more timing details.
+
 Fri Feb  2 00:16:39 2007  Tim Janik  <timj@gtk.org>
 
 	* bsemain.h, bsemain.cc: added support for debugging channels.

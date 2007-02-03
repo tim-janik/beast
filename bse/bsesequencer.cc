@@ -39,8 +39,8 @@ extern "C" { BirnetThread *bse_sequencer_thread = NULL; }
 
 using namespace std;
 
-#define SEQTRACE(...)   do { if (UNLIKELY (bse_trace_args.sequencer)) \
-                               sfi_debug_channel_printf (bse_trace_args.sequencer, NULL, __VA_ARGS__); } while (0)
+#define CHECKTRACE()    UNLIKELY (bse_trace_args.sequencer)
+#define SEQTRACE(...)   do { if (CHECKTRACE()) sfi_debug_channel_printf (bse_trace_args.sequencer, NULL, __VA_ARGS__); } while (0)
 
 #define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 
@@ -404,7 +404,7 @@ bse_sequencer_thread_lagging (guint n_blocks)
 static void
 bse_sequencer_thread_main (gpointer data)
 {
-  SEQTRACE ("SEQ: thread-start\n");
+  SEQTRACE ("SEQ:thrdstrt: now=%llu", gsl_tick_stamp());
   sfi_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
   bse_message_setup_thread_handler();
   BSE_SEQUENCER_LOCK ();
@@ -450,7 +450,7 @@ bse_sequencer_thread_main (gpointer data)
     }
   while (bse_sequencer_poll_Lm (-1));
   BSE_SEQUENCER_UNLOCK ();
-  SEQTRACE ("SEQ: thread-end\n");
+  SEQTRACE ("SEQ:thrdstop: now=%llu", gsl_tick_stamp());
 }
 
 static void
@@ -544,12 +544,13 @@ bse_sequencer_process_track_SL (BseTrack        *track,
   if (!part && next)
     {
       part = bse_track_get_part_SL (track, next, &start, &next);
-      SEQTRACE ("SEQ:trck: jump ahead to part: start_tick=%u part=%p", start_tick, part);
+      SEQTRACE ("SEQ:trackjmp: tick=%u fast forward to first part part=%p now=%llu", start_tick, part, gsl_tick_stamp());
     }
   if (!part || (next == 0 && start + part->last_tick_SL < start_tick))
     {
-      SEQTRACE ("SEQ:trck: checking done state: start_tick=%u next=%u done=(%p==NULL || %u < %u)", start_tick, next, part, start + (part ? part->last_tick_SL : 0), start_tick);
       track->track_done_SL = !bse_midi_receiver_voices_pending (midi_receiver, track->midi_channel_SL);
+      SEQTRACE ("SEQ:trackchk: tick=%u next=%u part=%p done=%u now=%llu", // part==NULL || start + (part ? part->last_tick_SL : 0) < start_tick
+                start_tick, next, part, track->track_done_SL, gsl_tick_stamp());
       part = NULL;
     }
   while (part && start < bound)
@@ -599,9 +600,13 @@ bse_sequencer_process_part_SL (BsePart         *part,
                                           freq);
           bse_midi_receiver_push_event (midi_receiver, eon);
           bse_midi_receiver_push_event (midi_receiver, eoff);
-          SEQTRACE ("SEQ:note: n=%-3d v=%02x on=%llu off=%llu freq=% 10f now=%llu",
-                    note->note, bse_ftoi (note->velocity * 128),
-                    eon->delta_time, eoff->delta_time, freq, gsl_tick_stamp());
+          if (CHECKTRACE())
+            {
+              SEQTRACE ("SEQ:note-on:  tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
+                        eon->delta_time,  note->note, bse_ftoi (note->velocity * 128), freq, gsl_tick_stamp());
+              SEQTRACE ("SEQ:note-off: tick=%llu midinote=%-3d velocity=%02x freq=% 10f now=%llu",
+                        eoff->delta_time, note->note, bse_ftoi (note->velocity * 128), freq, gsl_tick_stamp());
+            }
           note++;
         }
     }
@@ -617,7 +622,7 @@ bse_sequencer_process_part_SL (BsePart         *part,
                                                        bse_dtoull (start_stamp + (node->tick - start_tick) * stamps_per_tick),
                                                        BseMidiSignalType (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
-          SEQTRACE ("SEQ:ctrl: tick=%llu signal=%-3d value=%f now=%llu",
+          SEQTRACE ("SEQ:control:  tick=%llu midisignal=%-3d value=%f now=%llu",
                     event->delta_time, cev->ctype, cev->value, gsl_tick_stamp());
         }
       node++;
