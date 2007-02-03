@@ -1,3 +1,9 @@
+Sat Feb  3 04:26:38 2007  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.cc (bse_sequencer_thread_main): properly take sequencer 
+	forerun into account when starting a song so we won't delay song start
+	until it's definitely too late.
+
 Sat Feb  3 04:22:16 2007  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.cc: refined tracing information. provide more timing details.

@@ -417,16 +417,27 @@ bse_sequencer_thread_main (gpointer data)
       for (ring = global_sequencer->songs; ring; ring = sfi_ring_walk (ring, global_sequencer->songs))
 	{
           BseSong *song = BSE_SONG (ring->data);
-          if (!song->sequencer_start_SL && song->sequencer_start_request_SL <= cur_stamp)
-            song->sequencer_start_SL = cur_stamp;
+          bool forced_ticks = 0;
+          if (!song->sequencer_start_SL && song->sequencer_start_request_SL <= next_stamp + bse_engine_block_size())
+            {
+              song->sequencer_start_SL = next_stamp;
+              forced_ticks = bse_engine_block_size();
+            }
           if (song->sequencer_start_SL && !song->sequencer_done_SL)
             {
               gdouble stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
               guint64 old_song_pos = bse_dtoll (song->sequencer_start_SL + song->delta_stamp_SL);
               gboolean song_starting = song->delta_stamp_SL == 0;
+              if (UNLIKELY (forced_ticks))
+                stamp_diff = MAX (stamp_diff, 1);
 	      while (stamp_diff > 0)
 		{
 		  guint n_ticks = bse_dtoi (stamp_diff * song->tpsi_SL);
+                  if (UNLIKELY (forced_ticks))
+                    {
+                      n_ticks = MAX (n_ticks, forced_ticks);
+                      forced_ticks = 0;
+                    }
 		  if (n_ticks < 1)
 		    break;
 		  bse_sequencer_process_song_SL (song, n_ticks);
