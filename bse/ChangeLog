@@ -1,3 +1,10 @@
+Fri Feb  2 00:16:39 2007  Tim Janik  <timj@gtk.org>
+
+	* bsemain.h, bsemain.cc: added support for debugging channels.
+	added --bse-trace-sequencer. 
+
+	* bsesequencer.cc: added note on/off and control event tracing.
+
 Thu Jan 25 01:23:08 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseresamplerimpl.hh: Adjusted error bounds for the filter test,
