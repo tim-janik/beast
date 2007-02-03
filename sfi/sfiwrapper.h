@@ -142,6 +142,15 @@ void            sfi_msg_display_printf  (const char    *log_domain,
   BIRNET_CPP_PASTE4 (__sfi_msg_type__init, __LINE__, __, variable) (void) \
   { variable = sfi_msg_type_register (identifier, default_ouput, label); }
 
+/* --- debug channels --- */
+typedef struct SfiDebugChannel SfiDebugChannel;
+SfiDebugChannel* sfi_debug_channel_from_file_async (const char      *file_name);
+void             sfi_debug_channel_printf          (SfiDebugChannel *debug_channel,
+                                                    const char      *dummy,
+                                                    const char      *format,
+                                                    ...) G_GNUC_PRINTF (3, 4);
+void             sfi_debug_channel_destroy         (SfiDebugChannel *debug_channel);
+
 /* --- url handling --- */
 void sfi_url_show                   	(const char           *url);
 void sfi_url_show_with_cookie       	(const char           *url,

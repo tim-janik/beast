@@ -229,6 +229,35 @@ sfi_msg_display_printf (const char    *log_domain,
   errno = saved_errno;
 }
 
+/* --- debug channels --- */
+SfiDebugChannel*
+sfi_debug_channel_from_file_async (const char *file_name)
+{
+  Birnet::DebugChannel *self = Birnet::DebugChannel::new_from_file_async (file_name);
+  ref_sink (self);
+  return (SfiDebugChannel*) self;
+}
+
+void
+sfi_debug_channel_printf (SfiDebugChannel *debug_channel,
+                          const char      *dummy,
+                          const char      *format,
+                          ...)
+{
+  Birnet::DebugChannel *self = (Birnet::DebugChannel*) debug_channel;
+  va_list a;
+  va_start (a, format);
+  self->printf_valist (format, a);
+  va_end (a);
+}
+
+void
+sfi_debug_channel_destroy (SfiDebugChannel *debug_channel)
+{
+  Birnet::DebugChannel *self = (Birnet::DebugChannel*) debug_channel;
+  unref (self);
+}
+
 /* --- url handling --- */
 void
 sfi_url_show (const char *url)

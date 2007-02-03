@@ -1,3 +1,8 @@
+Fri Feb  2 00:20:58 2007  Tim Janik  <timj@gtk.org>
+
+	* sfiwrapper.h, sfiwrapper.cc: wrapped Birnet::DebugChannel with
+	SfiDebugChannel API.
+
 Sun Dec 3 13:47:31 2006  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-clientcxx.cc:
