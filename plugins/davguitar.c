@@ -1,31 +1,22 @@
 /* DavGuitar - DAV Physical Modelling Acoustic Guitar Synthesizer
  * Copyright (c) 2000 David A. Bartold
  *
- * This software uses technology under patent US 4,649,783, which is
- * set to expire in May of 2004.  In the meantime, a non-patented
- * alternative to this module is in the works.
- *
- ***********************************************************************
- *
- * Any commercial use of this module requires a license from
- * Stanford University.
- *
- ***********************************************************************
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Library General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * A copy of the GNU Lesser General Public License should ship along
+ * with this library; if not, see http://www.gnu.org/copyleft/.
+ */
+
+/* This software uses technology under patent US 4,649,783, which has
+ * expired in May of 2004.
  */
 
 #include <stdlib.h>

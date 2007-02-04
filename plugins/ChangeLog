@@ -1,3 +1,14 @@
+Sun Feb  4 04:18:33 2007  Tim Janik  <timj@gtk.org>
+
+	* updated licenses to GNU Lesser General Public License version 2.1
+	with permission from Stefan Westerfeld where required.
+	
+	* artscompressor.idl, artscompressor.cc:
+	relicensed under GNU Lesser General Public License version 2.1
+	with permission from Matthias Kretz and Stefan Westerfeld.
+	
+	* davguitar.c, davxtalstrings.c: updated patent license notice.
+
 Wed Jan 24 23:50:09 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* davxtalstrings.c: Added a small random number generator (from
