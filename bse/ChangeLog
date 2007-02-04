@@ -1,3 +1,8 @@
+Sun Feb  4 03:01:38 2007  Tim Janik  <timj@gtk.org>
+
+	* updated all licenses to GNU Lesser General Public License version 2.1
+	with permission from Stefan Westerfeld where required.
+
 Sat Feb  3 04:26:38 2007  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.cc (bse_sequencer_thread_main): properly take sequencer 
