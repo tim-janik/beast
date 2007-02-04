@@ -1,3 +1,8 @@
+Sun Feb  4 03:46:42 2007  Tim Janik  <timj@gtk.org>
+
+	* shell/: 
+	updated all licenses to GNU Lesser General Public License version 2.1.
+
 Sun Feb  4 03:42:30 2007  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/: 
