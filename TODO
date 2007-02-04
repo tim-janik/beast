@@ -2,7 +2,7 @@
 - fix block-dependence of bsenoise, i.e. non-noisy distributions
 - in API and docs, s/roots/zeros/
 - double bse_temp_freq (double kammer_freq, int semitone_delta); s/kammer_freq/freq/
-- complete beast LGPL migration
+- replace secontribsampleandhold.[ic]* with LGPL variant, adapt COPYING*
 - undef _DOMAIN
 - if no usable PCM device could be found, but devices where found at all, the error mesage should contain "is device in use?"
 - subst ArtsCompressor non-constants
