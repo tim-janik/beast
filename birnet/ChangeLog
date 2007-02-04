@@ -1,3 +1,7 @@
+Sun Feb  4 17:00:38 2007  Tim Janik  <timj@gtk.org>
+
+	* updated all licenses to GNU Lesser General Public License version 2.1.
+
 Fri Feb  2 00:54:32 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetdebugtools.cc: don't write trailing 0s in debug stream, 
