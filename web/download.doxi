@@ -103,15 +103,14 @@ $ svn co svn://svn.gnome.org/svn/beast/trunk beast
 We recommend that you read the @uri{http://developer.gnome.org/tools/svn.html, tutorial}
 on using, getting, and building GNOME projects from SVN.
 
-Building from SVN requires additional tools than building the
-release tarballs. The reason for this is due to building documentation
-and auto-generating code that are included in releases. In particular,
-building @beast from SVN now requires
-@uri{http://www.python.org/, python-2.4}.
+Building from SVN requires additional tools than building the release tarballs.
+This is due to documentation build rules and code generation rules for which the
+results are simply included in release tarballs.
+And unlike release tarballs, the SVN version of @beast has to be build in place
+with srcdir==builddir.
 
-Unlike release tarballs, the SVN version of @beast has to be build
-in place, because enabling srcdir!=builddir setups for the SVN version would
-unnecessarily complicate the already non-trivial documentation and code
-generation rules.
-Beware though, SVN versions may behave way less stable than release tarballs,
-and on occasions may produce invalid or incompatible @file{.bse} files.
+Beware that SVN versions may behave way less stable than release tarballs,
+and they may produce invalid or incompatible @file{.bse} files.
+So please do not distribute non-release packages of @beastbse, that would
+mean putting the enduser's data at risk and produces much unneccessary
+work for us.
