@@ -1,3 +1,7 @@
+Sun Feb  4 01:58:20 2007  Tim Janik  <timj@gtk.org>
+
+	* Makefile.decl: provide SVN revision number in reports.
+
 Fri Feb  2 01:44:53 2007  Tim Janik  <timj@gtk.org>
 
 	* birnet/: Merged with http://birnet.org/git/birnet.git

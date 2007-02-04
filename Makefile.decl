@@ -94,6 +94,12 @@ report: all
 	&& export REPORTFILE="$(shell pwd)/report.out" ;	\
 	( :							\
 	  && echo -n "#TREPSTART: " && date --iso-8601=seconds	\
+	  && (svn info 2>/dev/null |				\
+	      sed -n '/^Revision: /{s/.*: /#TREPREV: SVN: /;p}'; \
+	      true )						\
+	  && (git-svn log -n1 2>/dev/null |				\
+	      sed -n '/^r[0-9]\+ /{s/r\([0-9]\+\) .*/#TREPREV: GIT-SVN: \1/;p;q}' ; \
+	      true )						\
 	  && $(MAKE) $(AM_MAKEFLAGS) check slowcheck perf	\
 	  && echo -n "#TREPDONE: "  && date --iso-8601=seconds	\
 	) 2>&1 | tee "$$REPORTFILE"				\
