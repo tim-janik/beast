@@ -1,3 +1,9 @@
+Tue Feb  6 00:32:05 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am: Disabled freak-noise-test, simple-loop-test
+	and osc-test, as they are currently not really stable, since --seconds
+	does not guarantee exact timing.
+
 Mon Feb  5 04:20:07 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/freak-noise.bse: Saved with the current version of

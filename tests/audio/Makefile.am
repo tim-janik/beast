@@ -133,7 +133,7 @@ xtalstringssong-test:
 	rm -f $(@F).tmp $(@F).wav
 
 # a loop (from toplevel test/ directory)
-FEATURE_TESTS += freak-noise-test
+# FEATURE_TESTS += freak-noise-test
 EXTRA_DIST += freak-noise.bse freak-noise.ref
 freak-noise-test:
 	$(BSE2WAV) $(srcdir)/freak-noise.bse $(@F).wav --seconds 5
@@ -142,7 +142,7 @@ freak-noise-test:
 	rm -f $(@F).tmp $(@F).wav
 
 # another simple loop (from toplevel test/ directory)
-FEATURE_TESTS += simple-loop-test
+# FEATURE_TESTS += simple-loop-test
 EXTRA_DIST += simple-loop.bse simple-loop.ref
 simple-loop-test:
 	$(BSE2WAV) $(srcdir)/simple-loop.bse $(@F).wav --seconds 5
@@ -152,7 +152,7 @@ simple-loop-test:
 	rm -f $(@F).tmp $(@F).wav
 
 # a test for the oscillator (from toplevel test/ directory)
-FEATURE_TESTS += osc-test
+# FEATURE_TESTS += osc-test
 EXTRA_DIST += osc-test.bse osc-test.ref
 osc-test:
 	$(BSE2WAV) $(srcdir)/osc-test.bse $(@F).wav --seconds 5
