@@ -1,3 +1,10 @@
+Mon Feb  5 22:16:01 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsenoise.cc: Nullify noise_table pointer after deleting it, so that
+	it never points to deleted and invalid memory. This just makes
+	debugging easier in case something goes wrong later, and doesn't
+	change the current behaviour.
+
 Mon Feb  5 02:47:29 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsenoise.cc: Added deterministic random number generator (from

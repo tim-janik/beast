@@ -118,14 +118,17 @@ public:
 
     noise_data_ref_count--;
     if (noise_data_ref_count == 0)
-      delete noise_data;
+      {
+	delete noise_data;
+	noise_data = 0;
+      }
   }
 
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Noise, Module, Properties);
 };
 
-vector<float> *Noise::noise_data;
+vector<float> *Noise::noise_data = 0;
 uint           Noise::noise_data_ref_count = 0;
 
 
