@@ -1,3 +1,16 @@
+Mon Feb  5 02:54:14 2007  Tim Janik  <timj@gtk.org>
+
+        * bseloader-wav.c: support 32bit, 3byte 24bit and 4byte 24bit (with
+        unused upper byte) PCM-format WAV files.
+
+        * gsldatahandle.h: added GSL_WAVE_FORMAT_SIGNED_32, 
+        GSL_WAVE_FORMAT_SIGNED_24_PAD4 and GSL_WAVE_FORMAT_SIGNED_24.
+
+        * gsldatahandle.c: read 24, 24_pad4 and 32 bit files.
+
+        * gsldatautils.h: extended to/from float/double with/without clip 
+        conversion functions to also handle 24, 24_pad4 and 32bit data.
+
 Mon Feb  5 01:22:24 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxmodule.*: Added the necessary API to find out the maximum

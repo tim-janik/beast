@@ -1393,6 +1393,11 @@ wave_format_bit_depth (const GslWaveFormatType format)
     case GSL_WAVE_FORMAT_UNSIGNED_16:
     case GSL_WAVE_FORMAT_SIGNED_16:
       return 16;
+    case GSL_WAVE_FORMAT_SIGNED_24:
+    case GSL_WAVE_FORMAT_SIGNED_24_PAD4:
+      return 24;
+    case GSL_WAVE_FORMAT_SIGNED_32:
+      return 32;
     case GSL_WAVE_FORMAT_FLOAT:
       return 32;
     default:
@@ -1504,7 +1509,7 @@ wave_handle_read (GslDataHandle *dhandle,
   
   switch (whandle->format)
     {
-      guint8 *u8; gint8 *s8; guint16 *u16; guint32 *u32;
+      guint8 *u8; gint8 *s8; guint16 *u16; guint32 *u32; gint32 *s32;
     case GSL_WAVE_FORMAT_UNSIGNED_8:
       u8 = buffer; u8 += n_values * 3;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values, u8);
@@ -1531,6 +1536,30 @@ wave_handle_read (GslDataHandle *dhandle,
 	return l < 0 ? l : 0;
       l >>= 1;
       gsl_conv_to_float (whandle->format, whandle->byte_order, u16, values, l);
+      break;
+    case GSL_WAVE_FORMAT_SIGNED_24:
+      s8 = buffer; s8 += n_values * 1;
+      l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values * 3, s8);
+      if (l < 3)
+	return l < 0 ? l : 0;
+      l /= 3;
+      gsl_conv_to_float (whandle->format, whandle->byte_order, s8, values, l);
+      break;
+    case GSL_WAVE_FORMAT_SIGNED_24_PAD4:
+      s32 = buffer;
+      l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values * 4, s32);
+      if (l < 4)
+	return l < 0 ? l : 0;
+      l /= 4;
+      gsl_conv_to_float (whandle->format, whandle->byte_order, s32, values, l);
+      break;
+    case GSL_WAVE_FORMAT_SIGNED_32:
+      s32 = buffer;
+      l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values * 4, s32);
+      if (l < 4)
+        return l < 0 ? l : 0;
+      l /= 4;
+      gsl_conv_to_float (whandle->format, whandle->byte_order, s32, values, l);
       break;
     case GSL_WAVE_FORMAT_FLOAT:
       u32 = buffer;
@@ -1624,15 +1653,18 @@ gsl_wave_format_to_string (GslWaveFormatType format)
 {
   switch (format)
     {
-    case GSL_WAVE_FORMAT_UNSIGNED_8:    return "unsigned-8";
-    case GSL_WAVE_FORMAT_SIGNED_8:      return "signed-8";
-    case GSL_WAVE_FORMAT_ALAW:          return "alaw";
-    case GSL_WAVE_FORMAT_ULAW:          return "ulaw";
-    case GSL_WAVE_FORMAT_UNSIGNED_12:   return "unsigned-12";
-    case GSL_WAVE_FORMAT_SIGNED_12:     return "signed-12";
-    case GSL_WAVE_FORMAT_UNSIGNED_16:   return "unsigned-16";
-    case GSL_WAVE_FORMAT_SIGNED_16:     return "signed-16";
-    case GSL_WAVE_FORMAT_FLOAT:         return "float";
+    case GSL_WAVE_FORMAT_UNSIGNED_8:      return "unsigned-8";
+    case GSL_WAVE_FORMAT_SIGNED_8:        return "signed-8";
+    case GSL_WAVE_FORMAT_ALAW:            return "alaw";
+    case GSL_WAVE_FORMAT_ULAW:            return "ulaw";
+    case GSL_WAVE_FORMAT_UNSIGNED_12:     return "unsigned-12";
+    case GSL_WAVE_FORMAT_SIGNED_12:       return "signed-12";
+    case GSL_WAVE_FORMAT_UNSIGNED_16:     return "unsigned-16";
+    case GSL_WAVE_FORMAT_SIGNED_16:       return "signed-16";
+    case GSL_WAVE_FORMAT_SIGNED_24:       return "signed-24";
+    case GSL_WAVE_FORMAT_SIGNED_24_PAD4:  return "signed-24-pad";
+    case GSL_WAVE_FORMAT_SIGNED_32:       return "signed-32";
+    case GSL_WAVE_FORMAT_FLOAT:           return "float";
     default:
       g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
       return NULL;
@@ -1668,12 +1700,18 @@ gsl_wave_format_from_string (const gchar *string)
   string += 1;
   if (string[0] == '8')
     return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_8 : GSL_WAVE_FORMAT_SIGNED_8;
-  if (string[0] != '1')
-    return GSL_WAVE_FORMAT_NONE;
-  string += 1;
-  if (string[0] == '2')
+  if (string[0] == '1' && string[1] == '2')
     return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_12 : GSL_WAVE_FORMAT_SIGNED_12;
-  if (string[0] == '6')
+  if (string[0] == '1' && string[1] == '6')
     return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_16 : GSL_WAVE_FORMAT_SIGNED_16;
+  if (string[0] == '3' && string[1] == '2' && !is_unsigned)
+    return GSL_WAVE_FORMAT_SIGNED_32;
+  if (string[0] == '2' && string[1] == '4' && !is_unsigned)
+    {
+      if (string[2] == '-' && string[3] == 'p' && string[4] == 'a' && string[5] == 'd')
+        return GSL_WAVE_FORMAT_SIGNED_24_PAD4;
+      else
+        return GSL_WAVE_FORMAT_SIGNED_24;
+    }
   return GSL_WAVE_FORMAT_NONE;
 }

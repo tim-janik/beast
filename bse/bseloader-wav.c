@@ -105,8 +105,8 @@ typedef struct
   Word  n_channels;             /* 1 = Mono, 2 = Stereo */
   DWord sample_freq;
   DWord byte_per_second;
-  Word  byte_per_sample;        /* 1 = 8bit, 2 = 16bit */
-  Word  bit_per_sample;         /* 8, 12 or 16 */
+  Word  byte_per_sample;        /* 1 = 8bit, 2 = 16bit, 3 = 24bit, 4 = 24bit or 32 bit */
+  Word  bit_per_sample;         /* 8, 12, 16, 32 */
 } FmtHeader;
 static BseErrorType
 wav_read_fmt_header (gint       fd,
@@ -164,19 +164,24 @@ wav_read_fmt_header (gint       fd,
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
   if (header->byte_per_sample < 1 || header->byte_per_sample > 4 ||
-      (header->bit_per_sample != 8 && header->bit_per_sample != 12 && header->bit_per_sample != 16))
+      (header->bit_per_sample != 8 && header->bit_per_sample != 12 && header->bit_per_sample != 16 &&
+       header->bit_per_sample != 24 && header->bit_per_sample != 32))
     {
       WAV_DEBUG ("invalid byte_per_sample (%u) or bit_per_sample (%u)", header->byte_per_sample, header->bit_per_sample);
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
-  if (header->byte_per_second != header->sample_freq * header->byte_per_sample ||
-      header->byte_per_sample != (header->bit_per_sample + 7) / 8 * header->n_channels)
+  if (header->byte_per_second != header->sample_freq * header->byte_per_sample)
     {
-      WAV_DEBUG ("invalid byte_per_second (%u!=%u) or byte_per_sample (%u!=%u)",
-		 header->byte_per_second, header->sample_freq * header->byte_per_sample,
-		 header->byte_per_sample, (header->bit_per_sample + 7) / 8 * header->n_channels);
+      WAV_DEBUG ("invalid byte_per_second (%u!=%u)", header->byte_per_second, header->sample_freq * header->byte_per_sample);
       return BSE_ERROR_FORMAT_INVALID;
     }
+  if (!(header->byte_per_sample == (header->bit_per_sample + 7) / 8 * header->n_channels ||
+        (header->bit_per_sample == 24 && header->byte_per_sample == 4 * header->n_channels)))
+    {
+      WAV_DEBUG ("invalid byte_per_sample (%u!=%u)", header->byte_per_sample, (header->bit_per_sample + 7) / 8 * header->n_channels);
+      return BSE_ERROR_FORMAT_INVALID;
+    }
+  WAV_DEBUG ("WAVE: freq=%u channels=%u bits=%u bytes=%u", header->sample_freq, header->n_channels, header->bit_per_sample, header->byte_per_sample);
   if (header->length > 16)
     {
       guint n;
@@ -367,8 +372,21 @@ wav_load_wave_dsc (gpointer         data,
     case 8:	format = GSL_WAVE_FORMAT_UNSIGNED_8;	break;
     case 12:	format = GSL_WAVE_FORMAT_SIGNED_12;	break;
     case 16:	format = GSL_WAVE_FORMAT_SIGNED_16;	break;
+    case 32:	format = GSL_WAVE_FORMAT_SIGNED_32;	break;
+    case 24:
+      if (fmt_header.byte_per_sample == 4 * fmt_header.n_channels)
+        {
+          format = GSL_WAVE_FORMAT_SIGNED_24_PAD4;
+          break;
+        }
+      else if (fmt_header.byte_per_sample == 3 * fmt_header.n_channels)
+        {
+          format = GSL_WAVE_FORMAT_SIGNED_24;
+          break;
+        }
+      /* fall through */
     default:
-      WAV_DEBUG ("unrecognized sample width (%u)", fmt_header.bit_per_sample);
+      WAV_DEBUG ("unrecognized sample width (%ubits, %ubytes)", fmt_header.bit_per_sample, fmt_header.byte_per_sample);
       *error_p = BSE_ERROR_FORMAT_UNKNOWN;
       return NULL;
     }

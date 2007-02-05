@@ -194,9 +194,10 @@ gsl_conv_from_float (GslWaveFormatType format,
   guint8 *u8 = (guint8*) dest;
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
+  gint32 *i32 = (gint32*) dest;
   guint32 *u32dest = (guint32*) dest;
   const gfloat *bound = src + n_values;
-  guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
+  const guint32 *u32src = (guint32*) src, *u32bound = (const guint32*) bound;
   
   if (!n_values)
     return 0;
@@ -298,8 +299,83 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (src < bound);
       bse_fpu_restore (fpu);
       return n_values << 1;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER == G_BYTE_ORDER):
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      if (byte_order == G_LITTLE_ENDIAN)
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            *u8++ = vi32 >> 0;
+            *u8++ = vi32 >> 8;
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+          }
+        while (src < bound);
+      else /* G_BIG_ENDIAN */
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+            *u8++ = vi32 >> 8;
+            *u8++ = vi32 >> 0;
+          }
+        while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 3;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+	  v *= 8388608.;
+          *i32++ = bse_dtoi (v);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          gint32 vi32 = bse_dtoi (v);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+	  v *= 2147483648.;
+          *i32++ = bse_dtoi (v);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          gint32 vi32 = bse_dtoi (v);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
-      return n_values << 2;
+      return n_values * 4;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
@@ -307,7 +383,7 @@ gsl_conv_from_float (GslWaveFormatType format,
           *u32dest++ = GUINT32_SWAP_LE_BE (vu32);
         }
       while (u32src < u32bound);
-      return n_values << 2;
+      return n_values * 4;
     default:
       g_assert_not_reached ();
       return 0;
@@ -325,9 +401,10 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
   guint8 *u8 = (guint8*) dest;
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
+  gint32 *i32 = (gint32*) dest;
   guint32 *u32dest = (guint32*) dest;
   const gfloat *bound = src + n_values;
-  guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
+  const guint32 *u32src = (const guint32*) src, *u32bound = (const guint32*) bound;
   
   if (!n_values)
     return 0;
@@ -445,6 +522,89 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (src < bound);
       bse_fpu_restore (fpu);
       return n_values << 1;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER == G_BYTE_ORDER):
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      if (byte_order == G_LITTLE_ENDIAN)
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            vi32 = CLAMP (vi32, -8388608, 8388607);
+            *u8++ = vi32 >> 0;
+            *u8++ = vi32 >> 8;
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+          }
+        while (src < bound);
+      else /* G_BIG_ENDIAN */
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            vi32 = CLAMP (vi32, -8388608, 8388607);
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+            *u8++ = vi32 >> 8;
+            *u8++ = vi32 >> 0;
+          }
+        while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 3;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          vi32 = bse_dtoi (v);
+          vi32 = CLAMP (vi32, -8388608, 8388607);
+          *i32++ = vi32;
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          vi32 = bse_dtoi (v);
+          vi32 = CLAMP (vi32, -8388608, 8388607);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          vi32 = bse_dtoi (v);
+          // vi32 = CLAMP (vi32, -2147483648, 2147483647);
+          *i32++ = vi32;
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          vi32 = bse_dtoi (v);
+          // vi32 = CLAMP (vi32, -2147483648, 2147483647);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER != G_BYTE_ORDER):
@@ -518,11 +678,12 @@ gsl_conv_to_float (GslWaveFormatType format,
                    gfloat           *dest,
                    guint             n_values)
 {
-  guint8 *u8 = (guint8*) src;
-  gint8 *i8 = (gint8*) src;
-  guint16 *u16 = (guint16*) src;
-  gint16 *i16 = (gint16*) src;
-  guint32 *u32src = (guint32*) src;
+  const guint8 *u8 = (guint8*) src;
+  const gint8 *i8 = (gint8*) src;
+  const guint16 *u16 = (guint16*) src;
+  const gint16 *i16 = (gint16*) src;
+  const gint32 *i32 = (gint32*) src;
+  const guint32 *u32src = (guint32*) src;
   gfloat *bound = dest + n_values;
   guint32 *u32dest = (guint32*) dest, *u32bound = (guint32*) bound;
   
@@ -614,6 +775,55 @@ gsl_conv_to_float (GslWaveFormatType format,
         }
       while (dest < bound);
       break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER == G_BYTE_ORDER):
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER != G_BYTE_ORDER):
+      if (byte_order == G_LITTLE_ENDIAN)
+        do
+          {
+            gint32 v32 = *u8++;
+            v32 |= *u8++ << 8;
+            v32 |= *((gint8*) u8) << 16;
+            u8++;
+            *dest++ = v32 * (1. / 8388608.);
+          }
+        while (dest < bound);
+      else /* G_BIG_ENDIAN */
+        do
+          {
+            gint32 v32 = *((gint8*) u8) << 16;
+            u8++;
+            v32 |= *u8++ << 8;
+            v32 |= *u8++;
+            *dest++ = v32 * (1. / 8388608.);
+          }
+        while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER == G_BYTE_ORDER):
+      do
+        *dest++ = *i32++ * (1. / 8388608.);
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER != G_BYTE_ORDER):
+      do
+        {
+          gint32 vi32 = *i32++;
+          *dest++ = GUINT32_SWAP_LE_BE (vi32) * (1. / 8388608.);
+        }
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER == G_BYTE_ORDER):
+      do
+        *dest++ = *i32++ * (1. / 2147483648.);
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER != G_BYTE_ORDER):
+      do
+        {
+          gint32 vi32 = *i32++;
+          *dest++ = GUINT32_SWAP_LE_BE (vi32) * (1. / 2147483648.);
+        }
+      while (dest < bound);
+      break;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       break;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER != G_BYTE_ORDER):
@@ -642,8 +852,9 @@ gsl_conv_from_double (GslWaveFormatType format,
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
   guint32 *u32dest = (guint32*) dest;
+  gint32 *i32 = (gint32*) dest;
   const gdouble *bound = src + n_values;
-  guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
+  const guint32 *u32src = (const guint32*) src, *u32bound = (const guint32*) bound;
   
   if (!n_values)
     return 0;
@@ -745,6 +956,81 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (src < bound);
       bse_fpu_restore (fpu);
       return n_values << 1;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER == G_BYTE_ORDER):
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      if (byte_order == G_LITTLE_ENDIAN)
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            *u8++ = vi32 >> 0;
+            *u8++ = vi32 >> 8;
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+          }
+        while (src < bound);
+      else /* G_BIG_ENDIAN */
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+            *u8++ = vi32 >> 8;
+            *u8++ = vi32 >> 0;
+          }
+        while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 3;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          *i32++ = bse_dtoi (v);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          gint32 vi32 = bse_dtoi (v);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          *i32++ = bse_dtoi (v);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          gint32 vi32 = bse_dtoi (v);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER != G_BYTE_ORDER):
@@ -773,8 +1059,9 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
   guint32 *u32dest = (guint32*) dest;
+  gint32 *i32 = (gint32*) dest;
   const gdouble *bound = src + n_values;
-  guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
+  const guint32 *u32src = (const guint32*) src, *u32bound = (const guint32*) bound;
   
   if (!n_values)
     return 0;
@@ -892,6 +1179,89 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (src < bound);
       bse_fpu_restore (fpu);
       return n_values << 1;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER == G_BYTE_ORDER):
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      if (byte_order == G_LITTLE_ENDIAN)
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            vi32 = CLAMP (vi32, -8388608, 8388607);
+            *u8++ = vi32 >> 0;
+            *u8++ = vi32 >> 8;
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+          }
+        while (src < bound);
+      else /* G_BIG_ENDIAN */
+        do
+          {
+            v = *src++;
+            v *= 8388608.;
+            gint32 vi32 = bse_dtoi (v);
+            vi32 = CLAMP (vi32, -8388608, 8388607);
+            *((gint8*) u8) = vi32 >> 16;
+            u8++;
+            *u8++ = vi32 >> 8;
+            *u8++ = vi32 >> 0;
+          }
+        while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 3;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          vi32 = bse_dtoi (v);
+          vi32 = CLAMP (vi32, -8388608, 8388607);
+          *i32++ = vi32;
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 8388608.;
+          vi32 = bse_dtoi (v);
+          vi32 = CLAMP (vi32, -8388608, 8388607);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER == G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          vi32 = bse_dtoi (v);
+          // vi32 = CLAMP (vi32, -2147483648, 2147483647);
+          *i32++ = vi32;
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER != G_BYTE_ORDER):
+      bse_fpu_setround (&fpu);
+      do
+        {
+          v = *src++;
+          v *= 2147483648.;
+          vi32 = bse_dtoi (v);
+          // vi32 = CLAMP (vi32, -2147483648, 2147483647);
+          *i32++ = GUINT32_SWAP_LE_BE (vi32);
+        }
+      while (src < bound);
+      bse_fpu_restore (fpu);
+      return n_values * 4;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER != G_BYTE_ORDER):
@@ -915,11 +1285,12 @@ gsl_conv_to_double (GslWaveFormatType format,
 		    gdouble          *dest,
 		    guint             n_values)
 {
-  guint8 *u8 = (guint8*) src;
-  gint8 *i8 = (gint8*) src;
-  guint16 *u16 = (guint16*) src;
-  gint16 *i16 = (gint16*) src;
-  guint32 *u32src = (guint32*) src;
+  const guint8 *u8 = (guint8*) src;
+  const gint8 *i8 = (gint8*) src;
+  const guint16 *u16 = (guint16*) src;
+  const gint16 *i16 = (gint16*) src;
+  const guint32 *u32src = (guint32*) src;
+  const gint32 *i32 = (gint32*) src;
   gdouble *bound = dest + n_values;
   guint32 *u32dest = (guint32*) dest, *u32bound = (guint32*) bound;
   
@@ -1008,6 +1379,55 @@ gsl_conv_to_double (GslWaveFormatType format,
         {
           vi16 = *i16++;
           *dest++ = GUINT16_SWAP_LE_BE (vi16) * (1. / 32768.);
+        }
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER == G_BYTE_ORDER):
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24, G_BYTE_ORDER != G_BYTE_ORDER):
+      if (byte_order == G_LITTLE_ENDIAN)
+        do
+          {
+            gint32 v32 = *u8++;
+            v32 |= *u8++ << 8;
+            v32 |= *((gint8*) u8) << 16;
+            u8++;
+            *dest++ = v32 * (1. / 8388608.);
+          }
+        while (dest < bound);
+      else /* G_BIG_ENDIAN */
+        do
+          {
+            gint32 v32 = *((gint8*) u8) << 16;
+            u8++;
+            v32 |= *u8++ << 8;
+            v32 |= *u8++;
+            *dest++ = v32 * (1. / 8388608.);
+          }
+        while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER == G_BYTE_ORDER):
+      do
+        *dest++ = *i32++ * (1. / 8388608.);
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_24_PAD4, G_BYTE_ORDER != G_BYTE_ORDER):
+      do
+        {
+          gint32 vi32 = *i32++;
+          *dest++ = GUINT32_SWAP_LE_BE (vi32) * (1. / 8388608.);
+        }
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER == G_BYTE_ORDER):
+      do
+        *dest++ = *i32++ * (1. / 2147483648.);
+      while (dest < bound);
+      break;
+    case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_32, G_BYTE_ORDER != G_BYTE_ORDER):
+      do
+        {
+          gint32 vi32 = *i32++;
+          *dest++ = GUINT32_SWAP_LE_BE (vi32) * (1. / 2147483648.);
         }
       while (dest < bound);
       break;
