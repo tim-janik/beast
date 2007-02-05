@@ -1,3 +1,12 @@
+Mon Feb  5 02:53:04 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am:
+	* tests/audio/partymonster.ref: Since BseNoise finally supports
+	deterministic random generation, regenerated the Party Monster
+	reference file, and set the comparision threshold to 99.99. It still
+	sounds the same, though (only minor changes in the extracted
+	features).
+
 Mon Feb  5 01:02:53 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* r+d-files/plotsignals.sh: Added a script which plots audio signals

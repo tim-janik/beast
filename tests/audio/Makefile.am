@@ -140,5 +140,5 @@ partymonster-test:
 	$(BSE2WAV) $(top_srcdir)/library/demo/partymonster.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --join-spectrum-slices=10 --avg-energy --end-time  > $(@F).tmp
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --join-spectrum-slices=10 --avg-energy --end-time >> $(@F).tmp
-	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.97 # <- needs deterministic randomization
+	$(BSEFCOMPARE) $(srcdir)/partymonster.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav 
