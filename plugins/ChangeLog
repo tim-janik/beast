@@ -1,3 +1,11 @@
+Mon Feb  5 01:31:02 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsenoise.cc: Bugfix: Generate a noise table with the same size,
+	instead of generating smaller noise tables for smaller block sizes.
+	This means that the noise will no longer degenerate for small block
+	sizes.
+	Generate just one single noise table, instead of one-per-instance.
+
 Sun Feb  4 04:18:33 2007  Tim Janik  <timj@gtk.org>
 
 	* updated licenses to GNU Lesser General Public License version 2.1

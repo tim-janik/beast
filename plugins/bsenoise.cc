@@ -26,16 +26,16 @@ namespace Bse {
 class Noise : public NoiseBase {
   /* properties (used to pass "global" noise data into the modules) */
   struct Properties : public NoiseProperties {
-    const vector<gfloat> *noise_data;
+    const vector<float> *noise_data;
 
-    Properties (Noise *noise) : NoiseProperties (noise), noise_data (&noise->noise_data)
+    Properties (Noise *noise) : NoiseProperties (noise), noise_data (noise->noise_data)
     {
     }
   };
   /* actual computation */
   class Module : public SynthesisModule {
   public:
-    const vector<gfloat> *noise_data;
+    const vector<float> *noise_data;
 
     void
     config (Properties *properties)
@@ -56,26 +56,39 @@ class Noise : public NoiseBase {
   };
 public:
   /* preparation of a long block of random data */
-  vector<gfloat> noise_data;
+  static vector<float> *noise_data;
+  static uint		noise_data_ref_count;
  
   void
   prepare1()
   {
-    const int N_NOISE_BLOCKS = 20;
-    noise_data.resize (block_size() * N_NOISE_BLOCKS);
+    if (!noise_data_ref_count)
+      { 
+	const int N_NOISE_BLOCKS = 20;
+	noise_data = new vector<float> (max_block_size() * N_NOISE_BLOCKS);
 
-    for (vector<gfloat>::iterator ni = noise_data.begin(); ni != noise_data.end(); ni++)
-      *ni = 1.0 - rand() / (0.5 * RAND_MAX);  // FIXME: should have class noise
+	for (vector<float>::iterator ni = noise_data->begin(); ni != noise_data->end(); ni++)
+	  *ni = 1.0 - rand() / (0.5 * RAND_MAX);
+      }
+    noise_data_ref_count++;
   }
   void
   reset1()
   {
-    noise_data.clear();
+    g_return_if_fail (noise_data_ref_count > 0);
+
+    noise_data_ref_count--;
+    if (noise_data_ref_count == 0)
+      delete noise_data;
   }
 
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (Noise, Module, Properties);
 };
+
+vector<float> *Noise::noise_data;
+uint           Noise::noise_data_ref_count = 0;
+
 
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Noise);
