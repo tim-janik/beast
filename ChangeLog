@@ -1,3 +1,8 @@
+Mon Feb  5 04:20:07 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/freak-noise.bse: Saved with the current version of
+	beast, to make the file version compatibility check happy again.
+
 Mon Feb  5 03:20:51 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* test/Makefile.am:
