@@ -753,8 +753,7 @@ documentation:
  - bsewavetool needs to be documented with documentation tool in the source code (at least gsl_data_find_loop*)
 
 tests, bsefcompare:
-- move tests from test directory into automated feature test dir                     [ 0.7.0, pending ]
-- remove test directory                                                              [ 0.7.0, pending ]
+- remove test directory                                                              [ 0.7.2, pending ]
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
   
 win32 port:
