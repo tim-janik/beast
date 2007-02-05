@@ -1,3 +1,8 @@
+Mon Feb  5 01:22:24 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecxxmodule.*: Added the necessary API to find out the maximum
+	engine block size to Bse::Effect.
+
 Sun Feb  4 03:01:38 2007  Tim Janik  <timj@gtk.org>
 
 	* updated all licenses to GNU Lesser General Public License version 2.1

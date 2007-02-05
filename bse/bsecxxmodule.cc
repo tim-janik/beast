@@ -423,6 +423,12 @@ Effect::block_size() const
   return bse_engine_block_size();
 }
 
+unsigned int
+Effect::max_block_size() const
+{
+  return BSE_STREAM_MAX_VALUES;
+}
+
 void
 Effect::class_init (CxxBaseClass *klass)
 {

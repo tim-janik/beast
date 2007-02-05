@@ -158,6 +158,7 @@ protected:
                                                         guint            context_handle,
                                                         BseTrans        *trans);
   unsigned int              block_size                 () const;
+  unsigned int              max_block_size             () const;
 };
 /* implement Bse::Effect and Bse::SynthesisModule methods */
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
