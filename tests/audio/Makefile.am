@@ -124,13 +124,40 @@ osctranspose2-test:
 	$(BSEFCOMPARE) $(srcdir)/osctranspose2.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
-# simple loop (from toplevel test/ directory)
 FEATURE_TESTS += xtalstringssong-test
 EXTRA_DIST += xtalstringssong.ref
 xtalstringssong-test:
 	$(BSE2WAV) $(srcdir)/xtalstringssong.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
 	$(BSEFCOMPARE) $(srcdir)/xtalstringssong.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
+# a loop (from toplevel test/ directory)
+FEATURE_TESTS += freak-noise-test
+EXTRA_DIST += freak-noise.bse freak-noise.ref
+freak-noise-test:
+	$(BSE2WAV) $(srcdir)/freak-noise.bse $(@F).wav --seconds 5
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/freak-noise.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
+# another simple loop (from toplevel test/ directory)
+FEATURE_TESTS += simple-loop-test
+EXTRA_DIST += simple-loop.bse simple-loop.ref
+simple-loop-test:
+	$(BSE2WAV) $(srcdir)/simple-loop.bse $(@F).wav --seconds 5
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 1 --avg-spectrum --spectrum --avg-energy  >> $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/simple-loop.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
+# a test for the oscillator (from toplevel test/ directory)
+FEATURE_TESTS += osc-test
+EXTRA_DIST += osc-test.bse osc-test.ref
+osc-test:
+	$(BSE2WAV) $(srcdir)/osc-test.bse $(@F).wav --seconds 5
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/osc-test.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
 # the BEAST demo song

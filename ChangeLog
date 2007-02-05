@@ -1,3 +1,17 @@
+Mon Feb  5 03:20:51 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* test/Makefile.am:
+	* test/freak-noise.bse:
+	* test/simple-loop.bse:
+	* test/osc-test.bse: Move these test files to the tests/audio
+	directory.
+
+	* tests/audio/Makefile.am:
+	* tests/audio/freak-noise.*:
+	* tests/audio/simple-loop.*:
+	* tests/audio/osc-test.*: Add tests from test/ directory to the
+	automated testing environment.
+
 Mon Feb  5 02:53:04 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am:
