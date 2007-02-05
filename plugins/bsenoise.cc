@@ -1,6 +1,6 @@
 /* BseNoise - BSE Noise generator
  * Copyright (C) 1999,2000-2001 Tim Janik
- * Copyright (C) 2004 Stefan Westerfeld
+ * Copyright (C) 2004-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "bsenoise.genidl.hh"
+#include <bse/bsemain.h>
 #include <vector>
 
 using namespace std;
@@ -24,6 +25,31 @@ using namespace Sfi;
 namespace Bse {
 
 class Noise : public NoiseBase {
+  /* mini random number generator (adapted from rapicorn), to generate
+   * deterministic random numbers when --bse-disable-randomization was used
+   */
+  class DetRandomGenerator
+  {
+    uint32  seed;
+  public:
+    DetRandomGenerator()
+    {
+      reset();
+    }
+    void
+    reset()
+    {
+      seed = 2147483563;
+    }
+    /* range: [-1.0,1.0) */
+    double
+    rand_sample()
+    {
+      const double scale = 4.656612873077392578125e-10; /* 1 / 2^31 */
+      seed = 1664525 * seed + 1013904223;
+      return int32 (seed) * scale;    /* the cast adds the sign bit */
+    }
+  };
   /* properties (used to pass "global" noise data into the modules) */
   struct Properties : public NoiseProperties {
     const vector<float> *noise_data;
@@ -36,22 +62,35 @@ class Noise : public NoiseBase {
   class Module : public SynthesisModule {
   public:
     const vector<float> *noise_data;
+    DetRandomGenerator   det_random_generator;
+    bool                 allow_randomization;
 
     void
     config (Properties *properties)
     {
       noise_data = properties->noise_data;
+      allow_randomization = bse_main_args->allow_randomization;
     }
     void
     reset()
     {
+      det_random_generator.reset();
     }
     void
     process (unsigned int n_values)
     {
       g_return_if_fail (n_values <= block_size()); /* paranoid */
 
-      ostream_set (OCHANNEL_NOISE_OUT, &(*noise_data)[rand() % (noise_data->size() - n_values)]);
+      if (allow_randomization) /* fast */
+      {
+	ostream_set (OCHANNEL_NOISE_OUT, &(*noise_data)[rand() % (noise_data->size() - n_values)]);
+      }
+      else /* slow, but deterministic */
+      {
+	float *outvalue = ostream (OCHANNEL_NOISE_OUT).values;
+	for (unsigned int i = 0; i < n_values; i++)
+	  outvalue[i] = det_random_generator.rand_sample();
+      }
     }
   };
 public:
