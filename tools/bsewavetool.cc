@@ -1247,6 +1247,84 @@ public:
   }
 } cmd_clip ("clip");
 
+class NormalizeCmd : public Command {
+  bool all_chunks;
+  vector<gfloat> freq_list;
+public:
+  NormalizeCmd (const char *command_name) :
+    Command (command_name),
+    all_chunks (false)
+  {}
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
+    if (bshort)
+      return;
+    g_print ("    Normalize wave chunk. This is used to extend (or compress) the signal\n");
+    g_print ("    range to optimally fit the available unclipped dynamic range.\n");
+    g_print ("    Options:\n");
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --all-chunks        try to normalize all chunks\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    bool seen_selection = false;
+    for (guint i = 1; i < argc; i++)
+      {
+        const gchar *str = NULL;
+        if (parse_bool_option (argv, i, "--all-chunks"))
+          {
+            all_chunks = true;
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-f", &str, argc))
+          {
+            freq_list.push_back (g_ascii_strtod (str, NULL));
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-m", &str, argc))
+          {
+            SfiNum num = g_ascii_strtoull (str, NULL, 10);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
+            freq_list.push_back (osc_freq);
+            seen_selection = true;
+          }
+      }
+    return !seen_selection ? 1 : 0; /* # args missing */
+  }
+  void
+  exec (Wave *wave)
+  {
+    sort (freq_list.begin(), freq_list.end());
+    /* normalization */
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      if (all_chunks || wave->match (*it, freq_list))
+        {
+          WaveChunk *chunk = &*it;
+          sfi_info ("NORMALIZE: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+          double absmax = gsl_data_find_min_max (chunk->dhandle, NULL, NULL);
+          gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
+          BseErrorType error = BSE_ERROR_NONE;
+          if (absmax > 4.6566e-10) /* 32bit threshold */
+            {
+              GslDataHandle *shandle = gsl_data_handle_new_scale (chunk->dhandle, 1. / absmax);
+              error = chunk->change_dhandle (shandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
+              if (error)
+                sfi_error ("level normalizeping failed: %s", bse_error_blurb (error));
+              gsl_data_handle_unref (shandle);
+            }
+          g_strfreev (xinfos);
+          if (error && !continue_on_error)
+            exit (1);
+        }
+  }
+} cmd_normalize ("normalize");
+
 class LoopCmd : public Command {
   bool all_chunks;
   vector<gfloat> freq_list;
