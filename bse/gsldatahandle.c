@@ -736,6 +736,7 @@ chain_handle_get_state_length (GslDataHandle *dhandle)
   return gsl_data_handle_get_state_length (chandle->src_handle);
 }
 
+
 /* --- reversed handle --- */
 static void
 reverse_handle_destroy (GslDataHandle *dhandle)
@@ -818,6 +819,71 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
   return &rhandle->dhandle;
 }
 
+
+/* --- scale handle --- */
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle	   *src_handle;	/* mirror ChainHandle */
+  double            factor;
+} ScaledHandle;
+
+static void
+scale_handle_destroy (GslDataHandle *dhandle)
+{
+  ScaledHandle *shandle = (ScaledHandle*) dhandle;
+  
+  gsl_data_handle_unref (shandle->src_handle);
+  
+  gsl_data_handle_common_free (dhandle);
+  sfi_delete_struct (ScaledHandle, shandle);
+}
+
+static int64
+scale_handle_read (GslDataHandle *dhandle,
+                   int64          voffset,
+                   int64          n_values,
+                   gfloat        *values)
+{
+  ScaledHandle *shandle = (ScaledHandle*) dhandle;
+  int64 i, l = gsl_data_handle_read (shandle->src_handle, voffset, n_values, values);
+  for (i = 0; i < l; i++)
+    values[i] *= shandle->factor;
+  return l;
+}
+
+GslDataHandle*
+gsl_data_handle_new_scale (GslDataHandle *src_handle,
+                           double         factor)
+{
+  static GslDataHandleFuncs scale_handle_vtable = {
+    chain_handle_open,
+    scale_handle_read,
+    chain_handle_close,
+    NULL,
+    chain_handle_get_state_length,
+    scale_handle_destroy,
+  };
+  ScaledHandle *shandle;
+  gboolean success;
+  
+  g_return_val_if_fail (src_handle != NULL, NULL);
+  
+  shandle = sfi_new_struct0 (ScaledHandle, 1);
+  success = gsl_data_handle_common_init (&shandle->dhandle, NULL);
+  if (success)
+    {
+      shandle->dhandle.name = g_strconcat (src_handle->name, "// #scaled /", NULL);
+      shandle->dhandle.vtable = &scale_handle_vtable;
+      shandle->src_handle = gsl_data_handle_ref (src_handle);
+      shandle->factor = factor;
+    }
+  else
+    {
+      sfi_delete_struct (ScaledHandle, shandle);
+      return NULL;
+    }
+  return &shandle->dhandle;
+}
 
 /* --- cut handle --- */
 typedef struct {

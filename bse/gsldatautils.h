@@ -61,6 +61,9 @@ gfloat*         gsl_data_make_fade_ramp         (GslDataHandle          *handle,
                                                  GslLong                 min_pos, /* *= 0.0 + delta */
                                                  GslLong                 max_pos, /* *= 1.0 - delta */
                                                  GslLong                *length_p);
+double	        gsl_data_find_min_max		(GslDataHandle		*handle,
+                                                 double                 *dmin,
+                                                 double                 *dmax);
 
 
 /* --- data handle utils --- */

@@ -84,28 +84,30 @@ int64		  gsl_data_handle_read		    (GslDataHandle	  *data_handle,
 						     int64		   value_offset,
 						     int64		   n_values,
 						     gfloat		  *values);
-int64		  gsl_data_handle_get_state_length  (GslDataHandle    *dhandle);
-GslDataHandle*    gsl_data_handle_get_source	    (GslDataHandle    *dhandle);
+int64		  gsl_data_handle_get_state_length  (GslDataHandle        *dhandle);
+GslDataHandle*    gsl_data_handle_get_source	    (GslDataHandle        *dhandle);
+GslDataHandle*	  gsl_data_handle_new_scale         (GslDataHandle	  *src_handle,
+                                                     double                factor);
 GslDataHandle*	  gsl_data_handle_new_cut	    (GslDataHandle	  *src_handle,
 						     int64		   cut_offset,
 						     int64		   n_cut_values);
 GslDataHandle*	  gsl_data_handle_new_crop	    (GslDataHandle	  *src_handle,
-						     int64  	   n_head_cut,
+						     int64  	           n_head_cut,
 						     int64		   n_tail_cut);
 GslDataHandle*	  gsl_data_handle_new_reverse	    (GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	    (GslDataHandle	  *src_handle,
-						     guint             pasted_bit_depth,
+						     guint                 pasted_bit_depth,
 						     int64		   insertion_offset,
 						     int64		   n_paste_values,
 						     const gfloat	  *paste_values,
-						     void            (*free) (gpointer values));
+						     void                (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_mem	    (guint		   n_channels,
-						     guint             bit_depth,
-						     gfloat            mix_freq,
-						     gfloat            osc_freq,
+						     guint                 bit_depth,
+						     gfloat                mix_freq,
+						     gfloat                osc_freq,
 						     int64		   n_values,
 						     const gfloat	  *values,
-						     void            (*free) (gpointer values));
+						     void                (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_dcached	    (GslDataCache	  *dcache);
 /* cheap and inefficient, testpurpose only */
 GslDataHandle*	  gsl_data_handle_new_looped	    (GslDataHandle	  *src_handle,

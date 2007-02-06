@@ -455,6 +455,33 @@ gsl_data_detect_signal (GslDataHandle *handle,
   return maxsamp >= minsamp;
 }
 
+double
+gsl_data_find_min_max (GslDataHandle          *handle,
+                       double                 *dmin,
+                       double                 *dmax)
+{
+  g_return_val_if_fail (handle != NULL, 0);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), 0);
+
+  /* keep open */
+  gsl_data_handle_open (handle);
+
+  GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
+  double vmin = +1e999, vmax = -1e999;
+  uint i;
+  for (i = 0; i < handle->setup.n_values; i++)
+    {
+      double v = gsl_data_handle_peek_value (handle, i, &peek_buffer);
+      vmin = MIN (vmin, v);
+      vmax = MAX (vmax, v);
+    }
+  if (dmin)
+    *dmin = vmin;
+  if (dmax)
+    *dmax = vmax;
+  return MAX (fabs (vmin), fabs (vmax));
+}
+
 GslLong
 gsl_data_find_sample (GslDataHandle *dhandle,
 		      gfloat         min_value,

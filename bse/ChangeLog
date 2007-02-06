@@ -1,3 +1,11 @@
+Tue Feb  6 02:27:05 2007  Tim Janik  <timj@gtk.org>
+
+	* bse/gsldatahandle.[hc]: added scaling data handle, the scaling
+	factor is provided at construction time.
+
+	* bse/gsldatautils.[hc]: added gsl_data_find_min_max() to detect
+	min and max signal range of a data handle.
+
 Mon Feb  5 02:54:14 2007  Tim Janik  <timj@gtk.org>
 
         * bseloader-wav.c: support 32bit, 3byte 24bit and 4byte 24bit (with
