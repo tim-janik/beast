@@ -174,3 +174,27 @@ can be found on the @uri{http://beast.gtk.org/wiki:WindowsPort, Windows port wik
 Other operating systems are currently not supported, but the project is always taking
 patches and looks for new volounteers. So to start a new port, simply write your patch
 and contact the @uri{http://beast.gtk.org/contact, mailing list and developers}.
+
+@subsection Why does nothing happen on @emph{Play}?
+
+If correctly installed, @beast should play the demo song from the Demo-menu out of the
+box, unless it cannot acquire a suitable PCM device.
+To debug PCM problem causes, the following can be used:
+
+@code{$ beast --bse-debug=pcm}
+
+This can produce message like the following:
+
+@code{beast-0.7.1[999]:BSE-ALSA:1: ALSA: opening PCM "hw:0,0" readable=1 writable=1: Device or resource busy}
+
+This is an indication that you have other audio programs (players or sound servers)
+which currently access your PCM device and block it for @beast. Stopping or closing
+the other applications should free the audio device for use by @beast.
+
+@code{beast-0.7.1[26493]:BSE-ALSA:1: ALSA: opening PCM "hw:0,0" readable=0 writable=1: Failed to configure device frequency}
+
+This one is a bit more tricky. Some ALSA drivers only allow very specific playback rates
+to be used by audio applications. @beast uses the playback rate specified in the user
+preferences which comes with plausible defaults upon installation.
+If you see this message, try to adjust the "Synth Mixing Frequency" on the "BSE" page of
+the Edit/Preferences dialog.

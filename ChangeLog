@@ -1,3 +1,8 @@
+Wed Feb  7 02:35:13 2007  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.doxi: added "nothing happens on Play" item which describes
+	PCM debugging.
+
 Tue Feb  6 02:34:27 2007  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: added normalization command.
