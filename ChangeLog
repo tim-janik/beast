@@ -1,3 +1,8 @@
+Wed Feb  7 20:33:57 2007  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/illus-vtremolo.bse: turned this into an
+	illustration instrument for velocity controlled tremolo.
+
 Wed Feb  7 20:31:26 2007  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/illus-vtremolo.bse: moved test/simple-echo.bse
