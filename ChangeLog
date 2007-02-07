@@ -1,3 +1,7 @@
+Wed Feb  7 21:14:39 2007  Tim Janik  <timj@gtk.org>
+
+	* library/demo/x2-midi-test.bse: fixed license to AS-IS.
+
 Wed Feb  7 20:33:57 2007  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/illus-vtremolo.bse: turned this into an

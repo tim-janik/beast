@@ -1,16 +1,16 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.7.1")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2006-05-21 00:47:18")
+  (modification-time "2007-02-07 20:09:07")
   (creation-time "2004-12-16 01:28:10")
-  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik"))
 (container-child "BseCSynth::Simple String"
-  (modification-time "2006-05-21 00:47:18")
+  (modification-time "2007-02-07 20:09:07")
   (creation-time "2002-01-12 12:42:55")
-  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik")
   (container-child "BseInstrumentInput::SubKeyboard"
     (pos-y 5)
@@ -101,7 +101,7 @@
   (volume-f 1)
   (snet (link 1 "Simple String"))
   (n-voices 16)
-  (modification-time "2006-05-21 00:47:18")
+  (modification-time "2007-02-07 20:09:07")
   (creation-time "2004-12-16 01:28:22")
-  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik"))
