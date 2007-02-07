@@ -1,3 +1,8 @@
+Wed Feb  7 20:31:26 2007  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/illus-vtremolo.bse: moved test/simple-echo.bse
+	here.
+
 Wed Feb  7 02:35:13 2007  Tim Janik  <timj@gtk.org>
 
 	* docs/faq.doxi: added "nothing happens on Play" item which describes
