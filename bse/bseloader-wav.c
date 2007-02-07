@@ -163,7 +163,7 @@ wav_read_fmt_header (gint       fd,
       WAV_DEBUG ("invalid sample_freq (%u)", header->sample_freq);
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
-  if (header->byte_per_sample < 1 || header->byte_per_sample > 4 ||
+  if (header->byte_per_sample < 1 * header->n_channels || header->byte_per_sample > 4 * header->n_channels ||
       (header->bit_per_sample != 8 && header->bit_per_sample != 12 && header->bit_per_sample != 16 &&
        header->bit_per_sample != 24 && header->bit_per_sample != 32))
     {
