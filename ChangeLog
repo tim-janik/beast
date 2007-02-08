@@ -1,3 +1,11 @@
+Thu Feb  8 20:12:51 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* test/midi-test.bse: Removed this test which is no longer needed,
+	because a nicer version is in library/demo already.
+	
+	* test/Makefile.am:
+	* test: Finally removed the test directory, which is now empty.
+
 Wed Feb  7 21:17:42 2007  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am, configure.in: removed test/.
