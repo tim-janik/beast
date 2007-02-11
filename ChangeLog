@@ -1,3 +1,10 @@
+Sun Feb 11 17:42:58 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* r+d-files/transpose_freq.scm: Added this little utility script which is
+	useful for computing 12-TET transposed frequencies. I used it while
+	turning a .bse file with hardcoded oscillator frequencies into one with
+	relative frequencies to the instrument base frequency.
+
 Thu Feb  8 20:12:51 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* test/midi-test.bse: Removed this test which is no longer needed,
