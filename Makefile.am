@@ -12,7 +12,7 @@ AUTOMAKE_OPTIONS = 1.9 dist-bzip2 no-dist-gzip
 site site-preview site-update site-update-all site-update-pages site-update-galleries:
 	@$(MAKE) -C web/ $(AM_MAKEFLAGS) $@
 
-# extra dependancies
+# extra dependencies
 configure: birnet/acbirnet.m4 birnet/configure.inc
 
 CLEANFILES += $(strip		\
