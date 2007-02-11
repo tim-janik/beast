@@ -1,3 +1,8 @@
+Mon Feb 12 00:10:04 2007  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/bqs-slow-hum.bse: new instrument by Stefan 
+	Westerfeld and William DeVore.
+
 Sun Feb 11 17:42:58 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* r+d-files/transpose_freq.scm: Added this little utility script which is
