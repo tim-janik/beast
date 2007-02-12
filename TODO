@@ -682,6 +682,7 @@ gui:
     - beautify icons
     - rack editor is missing
     - scheme console via xterm
+    - suggest name upon instrument save
   song:
     - hotkey to jump to loop marker
     - beast should not suggest to put instruments in postproc
@@ -714,7 +715,7 @@ gui:
     - looks broken on some gtk themes (button shading)
     - looks incoherent
     - lines in ledmeter
-
+  
 interop:
   portaudio driver:
     - fix JACK blocking interface in PortAudio
