@@ -1,3 +1,8 @@
+Mon Feb 12 01:41:30 2007  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/bqs-bass-drum-e8012.bse: Bass drum modelled after
+	drum synthesizer from Elrad 12/1980.
+
 Mon Feb 12 00:10:04 2007  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/bqs-slow-hum.bse: new instrument by Stefan 

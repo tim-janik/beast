@@ -5,10 +5,11 @@
 include $(top_srcdir)/Makefile.decl
 
 
-instruments_DATA = $(strip 								\
-	bqs-fretless-bass.bse	bqs-organ.bse	bqs-queek-synth.bse	bqs-syndrum.bse	\
-	bqs-moog-saw-bass.bse			bqs-merp-pad.bse			\
-	illus-vtremolo.bse								\
+instruments_DATA = $(strip	\
+	bqs-bass-drum-e8012.bse bqs-merp-pad.bse	bqs-organ.bse		\
+	bqs-slow-hum.bse	bqs-fretless-bass.bse	bqs-moog-saw-bass.bse	\
+	bqs-queek-synth.bse	bqs-syndrum.bse	\
+	illus-vtremolo.bse	\
 	stw-iron-string.bse	\
 )
 instrumentsdir = $(bseinstrumentdir)
