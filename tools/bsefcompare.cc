@@ -773,7 +773,7 @@ main (int argc, char **argv)
       rating = "similarity below threshold";
       result = 1;
     }
-  printf ("average similarity rating (%s): %.2f%%\n", rating.c_str(), average_similarity);
+  printf ("average similarity rating (%s): %.3f%%\n", rating.c_str(), average_similarity);
   return result;
 }
 
