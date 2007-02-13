@@ -1,3 +1,13 @@
+Tue Feb 13 22:48:04 2007  Tim Janik  <timj@gtk.org>
+
+	* tools/bsefcompare.cc: fixed output logic. never conditionalize
+	printf format-strings, this prevents certain compile time checks
+	and isn't internationalizable. never omit value units (percent)
+	when printing out numbers. adapted formats to skip value digits
+	smaller than a tenth promille. if those were needed, percent 
+	wouldn't be an appropriate unit anyway. moved rating commentary
+	into (the good, the bad, the ugly... ;) into a less disturbing place.
+
 Mon Feb 12 01:41:30 2007  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/bqs-bass-drum-e8012.bse: Bass drum modelled after

@@ -742,37 +742,39 @@ main (int argc, char **argv)
   for (size_t i = 0; i < similarity.size(); i++)
     {
       if (!options.compact)
-	printf (i == 0 ? "%s=%f" : ", %s=%f", file1.feature_values[i]->name.c_str(), similarity[i] * 100.0); /* percent */
+        {
+          if (i != 0)
+            printf (", ");
+          printf ("%s=%.2f%%", file1.feature_values[i]->name.c_str(), similarity[i] * 100.0); /* percent */
+        }
       s += similarity[i];
       min_s = min (similarity[i], min_s);
       min_s = min (similarity[i], max_s);
     }
   if (options.compact)
-    printf ("minimum=%f%% maximum=%f%%", min_s * 100.0, max_s * 100.0);
+    printf ("minimum=%.2f%% maximum=%.2f%%", min_s * 100.0, max_s * 100.0);
   printf ("\n");
 
   double average_similarity = s / similarity.size() * 100.0; /* percent */
-
-  printf ("average similarity rating: %f%% => ", average_similarity);
-
-  /*
-   * We check this first, because we explicitely allow setting the threshold
+  /* We check this first, because we explicitely allow setting the threshold
    * to a value > 100%, which will make bsefcompare always fail.
    */
+  std::string rating;
+  int result = 0;
   if (average_similarity >= options.threshold)
     {
       if (average_similarity == 100.0)
-	printf ("perfect match.\n");
+	rating = "perfect match";
       else
-	printf ("good match.\n");
-
-      return 0;
+	rating = "good match";
     }
   else
     {
-      printf ("similarity below threshold.\n");
-      return 1;
+      rating = "similarity below threshold";
+      result = 1;
     }
+  printf ("average similarity rating (%s): %.2f%%\n", rating.c_str(), average_similarity);
+  return result;
 }
 
 // extra comparision strategies
