@@ -791,6 +791,7 @@ The MCD timeline says:
 - autolooper for wavetool
 - man page for wavetool
 - (1) drum kit
+ - beast replays samples at 50% volume if std amp/adsr is used - intended or bug?
 - (2) drum loops
 - (3) bass instrument
 - (4) bass line
