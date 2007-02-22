@@ -1,3 +1,11 @@
+Wed Feb 14 23:58:43 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h: unconditionally include C99 headers limits.h and float.h.
+	provide UINT64_MAX, INT64_MIN, INT64_MAX if the system doesn't.
+
+	* birnetutils.cc: assert working implementations of the various limits
+	and constants introduced by limits.h and float.h.
+
 Fri Feb  9 21:13:21 2007  Tim Janik  <timj@gtk.org>
 
 	* configure.inc, Makefile.am, birnetconfig.h: define BIRNET_SYSVAL_*

@@ -20,6 +20,8 @@
 #include <stdbool.h>
 #include <stddef.h>			/* NULL */
 #include <sys/types.h>			/* uint, ssize */
+#include <limits.h>                     /* {INT|CHAR|...}_{MIN|MAX} */
+#include <float.h>                      /* {FLT|DBL}_{MIN|MAX|EPSILON} */
 #include <birnet/birnetconfig.h>
 
 BIRNET_EXTERN_C_BEGIN();
@@ -59,6 +61,11 @@ BIRNET_EXTERN_C_BEGIN();
 #  define STRFUNC				G_STRFUNC /* GLib present */
 #else
 #  define STRFUNC				("<unknown>()")
+#endif
+#if     !defined (INT64_MAX) || !defined (INT64_MIN) || !defined (UINT64_MAX)
+#define UINT64_MAX      ULLONG_MAX      // +18446744073709551615LLU
+#define INT64_MIN       LLONG_MIN       // -9223372036854775808LL
+#define INT64_MAX       LLONG_MAX       // +9223372036854775807LL
 #endif
 
 /* --- likelyness hinting --- */
