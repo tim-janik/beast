@@ -170,37 +170,44 @@ protected:
  */
 class AutoLocker {
   struct Locker {
+    explicit     Locker  () {}
+    virtual     ~Locker  () {}
     virtual void lock    () const = 0;
     virtual void unlock  () const = 0;
-    virtual     ~Locker  () {}
+    BIRNET_PRIVATE_CLASS_COPY (Locker);
   };
   template<class Lockable>
   struct LockerImpl : public Locker {
     Lockable    *lockable;
+    explicit     LockerImpl (Lockable *l) : lockable (l) {}
+    virtual     ~LockerImpl () {}
     virtual void lock       () const      { lockable->lock(); }
     virtual void unlock     () const      { lockable->unlock(); }
-    virtual     ~LockerImpl () {}
-    explicit     LockerImpl (Lockable *l) : lockable (l) {}
+    BIRNET_PRIVATE_CLASS_COPY (LockerImpl);
   };
-  void         *space[2];
+  union {
+    void       *pointers[sizeof (LockerImpl<Mutex>) / sizeof (void*)];  // union needs pointer alignment
+    char        chars[sizeof (LockerImpl<Mutex>)];                      // char may_alias any type
+  }             space;                                                  // BIRNET_MAY_ALIAS; ICE: GCC#30894
   volatile uint lcount;
-  BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
   inline const Locker*          locker      () const             { return static_cast<const Locker*> ((const void*) &space); }
+  BIRNET_PRIVATE_CLASS_COPY (AutoLocker);
 protected:
+  template<class Lockable> void initlock () { BIRNET_STATIC_ASSERT (sizeof (LockerImpl<Lockable>) <= sizeof (space)); relock(); }
   /* assert implicit assumption of the AutoLocker implementation */
   template<class Lockable> void
   assert_impl (Lockable &lockable)
   {
     BIRNET_ASSERT (sizeof (LockerImpl<Lockable>) <= sizeof (space));
-    Locker *laddr = new (space) LockerImpl<Lockable> (&lockable);
+    Locker *laddr = new (&space) LockerImpl<Lockable> (&lockable);
     BIRNET_ASSERT (laddr == locker());
   }
 public:
-  template<class Lockable>      AutoLocker  (Lockable *lockable) : lcount (0) { new (space) LockerImpl<Lockable> (lockable); relock(); }
-  template<class Lockable>      AutoLocker  (Lockable &lockable) : lcount (0) { new (space) LockerImpl<Lockable> (&lockable); relock(); }
-  void                          relock      ()                                { locker()->lock(); lcount++; }
-  void                          unlock      ()                                { BIRNET_ASSERT (lcount > 0); lcount--; locker()->unlock(); }
-  /*Des*/                       ~AutoLocker ()                                { while (lcount) unlock(); }
+  /*Des*/                      ~AutoLocker  ()                                { while (lcount) unlock(); }
+  template<class Lockable>      AutoLocker  (Lockable *lockable) : lcount (0) { new (&space) LockerImpl<Lockable>  (lockable); initlock<Lockable>(); }
+  template<class Lockable>      AutoLocker  (Lockable &lockable) : lcount (0) { new (&space) LockerImpl<Lockable> (&lockable); initlock<Lockable>(); }
+  inline void                   relock      ()                                { locker()->lock(); lcount++; }
+  inline void                   unlock      ()                                { BIRNET_ASSERT (lcount > 0); lcount--; locker()->unlock(); }
 };
 
 namespace Atomic {

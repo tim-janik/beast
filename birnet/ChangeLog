@@ -1,3 +1,16 @@
+Wed Feb 21 03:27:02 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetthread.hh: fixed up destructor ordering. added missing
+	privatization of class copies. fixed memory region aliasing that
+	could cause segfaults with some gcc optimizations. worked around
+	ICE (GCC#30894). minor assertion optimization. added AutoLocker
+	compile time assertion about structure/area sizes.
+
+	* birnetutils.hh, birnetutils.cc: provide zintern_free() alongside
+	zintern_decompress(), so the API doesn't depend on GLib.
+
+	* tests/infotest.cc: use zintern_free().
+
 Sun Feb 18 03:00:54 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetcdefs.h: if LLONG_MAX isn't provided by gcc's limits.h despite

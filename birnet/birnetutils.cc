@@ -1452,4 +1452,10 @@ zintern_decompress (unsigned int          decompressed_size,
   return text;          /* success */
 }
 
+void
+zintern_free (uint8 *dc_data)
+{
+  g_free (dc_data);
+}
+
 } // Birnet

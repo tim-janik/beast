@@ -211,6 +211,7 @@ char*   cxx_demangle	        (const char  *mangled_identifier); /* in birnetutil
 uint8*  zintern_decompress      (unsigned int          decompressed_size,
                                  const unsigned char  *cdata,
                                  unsigned int          cdata_size);
+void    zintern_free            (uint8                *dc_data);
 
 /* --- template errors --- */
 namespace TEMPLATE_ERROR {
