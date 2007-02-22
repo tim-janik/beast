@@ -3,6 +3,13 @@ dnl # Copyright (C) 2006 Tim Janik
 dnl #
 dnl # GNU Lesser General Public License version 2 or any later version.
 
+dnl # BIRNET_COMPUTE_SYSVAL(IDENTIFIER, INCLUDES) defines & AC_SUBST()s BIRNET_SYSVAL_$1
+AC_DEFUN([BIRNET_SUBST_COMPUTED_SYSVAL], 
+    [_AC_COMPUTE_INT([$1], [BIRNET_SYSVAL_$1], [$2],
+	    [AC_MSG_ERROR("failed to detect [$1]")])
+    AC_SUBST([BIRNET_SYSVAL_$1])])
+
+dnl # AC_BIRNET_REQUIREMENTS() checks everything needed for birnetconfig.h
 AC_DEFUN([AC_BIRNET_REQUIREMENTS],
 [
     dnl # BIRNET versioning
@@ -34,6 +41,25 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
     GLIB_SIZEOF([], long, birnet_long)
     BIRNET_SIZEOF_LONG="$glib_cv_sizeof_birnet_long"
     AC_SUBST(BIRNET_SIZEOF_LONG) dnl # for birnetconfig.h
+
+    dnl # --- POLL* ---
+    poll_headers=["
+      #define _GNU_SOURCE
+      #include <sys/types.h>
+      #include <sys/poll.h>
+    "]
+    AC_MSG_CHECKING([for POLL constants])
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLIN],     $poll_headers)
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLPRI],    $poll_headers)
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLOUT],    $poll_headers)
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLRDNORM], $poll_headers) # needs _GNU_SOURCE on linux
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLRDBAND], $poll_headers) # needs _GNU_SOURCE on linux
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLWRNORM], $poll_headers) # needs _GNU_SOURCE on linux
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLWRBAND], $poll_headers) # needs _GNU_SOURCE on linux
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLERR],    $poll_headers)
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLHUP],    $poll_headers)
+    BIRNET_SUBST_COMPUTED_SYSVAL([POLLNVAL],   $poll_headers)
+    AC_MSG_RESULT([done])
 
     dnl # --- OS/Win32 detection ---
     dnl # needs AC_CANONICAL_HOST

@@ -1,3 +1,10 @@
+Fri Feb  9 21:13:21 2007  Tim Janik  <timj@gtk.org>
+
+	* configure.inc, Makefile.am, birnetconfig.h: define BIRNET_SYSVAL_*
+	for POLL constants. 
+
+	* tests/systest.cc: check POLL constants.
+
 Fri Feb  9 18:27:27 2007  Tim Janik  <timj@gtk.org>
 
 	* configure.inc, Makefile.am, birnetconfig.h: define BIRNET_SIZEOF_LONG

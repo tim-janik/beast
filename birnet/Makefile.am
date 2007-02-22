@@ -117,6 +117,17 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "                                        BIRNET_SIZEOF_PTH_COND_T)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_MEMORY_BARRIER_NEEDED   (@BIRNET_MEMORY_BARRIER_NEEDED@)"	>> xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLIN 		(@BIRNET_SYSVAL_POLLIN@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLPRI		(@BIRNET_SYSVAL_POLLPRI@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLOUT		(@BIRNET_SYSVAL_POLLOUT@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLRDNORM	(@BIRNET_SYSVAL_POLLRDNORM@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLRDBAND 	(@BIRNET_SYSVAL_POLLRDBAND@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLWRNORM   	(@BIRNET_SYSVAL_POLLWRNORM@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLWRBAND	(@BIRNET_SYSVAL_POLLWRBAND@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLERR		(@BIRNET_SYSVAL_POLLERR@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLHUP		(@BIRNET_SYSVAL_POLLHUP@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SYSVAL_POLLNVAL		(@BIRNET_SYSVAL_POLLNVAL@)"		>> xgen-$(@F) \
+	&& echo ""										>> xgen-$(@F) \
 	&& echo "/* Generated data ends here */" 						>> xgen-$(@F) \
 	&& cp xgen-$(@F) $@ \
 	&& rm -f xgen-$(@F)
