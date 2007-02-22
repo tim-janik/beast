@@ -25,9 +25,15 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
     BIRNET_LIBS=""
 
     dnl # --- sizeof and presence of uint ---
-    GLIB_SIZEOF([#include <sys/types.h>], uint, sys_typesh_uint)
-    BIRNET_SIZEOF_SYS_TYPESH_UINT="$glib_cv_sizeof_sys_typesh_uint"
+    GLIB_SIZEOF([#include <sys/types.h>], uint, birnet_sys_typesh_uint)
+    BIRNET_SIZEOF_SYS_TYPESH_UINT="$glib_cv_sizeof_birnet_sys_typesh_uint"
     AC_SUBST(BIRNET_SIZEOF_SYS_TYPESH_UINT) dnl # for birnetconfig.h
+    GLIB_SIZEOF([], void**, birnet_pointer)
+    BIRNET_SIZEOF_POINTER="$glib_cv_sizeof_birnet_pointer"
+    AC_SUBST(BIRNET_SIZEOF_POINTER) dnl # for birnetconfig.h
+    GLIB_SIZEOF([], long, birnet_long)
+    BIRNET_SIZEOF_LONG="$glib_cv_sizeof_birnet_long"
+    AC_SUBST(BIRNET_SIZEOF_LONG) dnl # for birnetconfig.h
 
     dnl # --- OS/Win32 detection ---
     dnl # needs AC_CANONICAL_HOST
@@ -36,16 +42,19 @@ AC_DEFUN([AC_BIRNET_REQUIREMENTS],
 	AC_MSG_ERROR([configure failed to execute $missing_macro])
     }
     AC_MSG_CHECKING([for Win32])
+    BIRNET_OS_CHOICES="WIN32 UNIX" # OS types we will check for
     case "$host" in
 	*-*-mingw*)
 	    BIRNET_OS=WIN32
-	    birnet_mingw=yes ;;
+	    AC_MSG_RESULT([yes])
+	    ;;
 	*)
 	    BIRNET_OS=UNIX
-	    birnet_mingw=no ;;
+	    AC_MSG_RESULT([no])
+	    ;;
     esac
-    AC_MSG_RESULT([$birnet_mingw])
     AC_SUBST(BIRNET_OS)
+    AC_SUBST(BIRNET_OS_CHOICES)
     AC_DEFINE_UNQUOTED(BIRNET_OS_$BIRNET_OS, "1", [Win32 detection])
 
     dnl # --- sizeof threading structs ---

@@ -1,3 +1,8 @@
+Fri Feb  9 18:27:27 2007  Tim Janik  <timj@gtk.org>
+
+	* configure.inc, Makefile.am, birnetconfig.h: define BIRNET_SIZEOF_LONG
+	and BIRNET_SIZEOF_POINTER.
+
 Sun Feb  4 17:08:31 2007  Tim Janik  <timj@gtk.org>
 
 	* updated .gitignore files.

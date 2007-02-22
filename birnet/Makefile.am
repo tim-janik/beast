@@ -106,7 +106,9 @@ birnetconfig.h: $(top_builddir)/config.status # Makefile
 	&& echo "    BIRNET_MICRO_VERSION >= (micro)))"						>> xgen-$(@F) \
 	&& echo ""										>> xgen-$(@F) \
 	&& echo "/* configure results */"							>> xgen-$(@F) \
-	&& echo "#define BIRNET_OS_@BIRNET_OS@          (1)"					>> xgen-$(@F) \
+	&& echo "#define BIRNET_OS_@BIRNET_OS@		(1) /* one of: @BIRNET_OS_CHOICES@ */"	>> xgen-$(@F) \
+	&& echo "#define BIRNET_SIZEOF_POINTER		(@BIRNET_SIZEOF_POINTER@)"		>> xgen-$(@F) \
+	&& echo "#define BIRNET_SIZEOF_LONG		(@BIRNET_SIZEOF_LONG@)"			>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_SYS_TYPESH_UINT	(@BIRNET_SIZEOF_SYS_TYPESH_UINT@)"	>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_MUTEX_T	(@BIRNET_SIZEOF_PTH_MUTEX_T@)" 		>> xgen-$(@F) \
 	&& echo "#define BIRNET_SIZEOF_PTH_COND_T	(@BIRNET_SIZEOF_PTH_COND_T@)" 		>> xgen-$(@F) \
