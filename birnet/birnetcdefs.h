@@ -63,9 +63,15 @@ BIRNET_EXTERN_C_BEGIN();
 #  define STRFUNC				("<unknown>()")
 #endif
 #if     !defined (INT64_MAX) || !defined (INT64_MIN) || !defined (UINT64_MAX)
-#define UINT64_MAX      ULLONG_MAX      // +18446744073709551615LLU
-#define INT64_MIN       LLONG_MIN       // -9223372036854775808LL
-#define INT64_MAX       LLONG_MAX       // +9223372036854775807LL
+#ifdef  LLONG_MAX       /* some gcc versions ship limits.h that fail to define LLONG_MAX for C99 */
+#  define INT64_MAX     LLONG_MAX       // +9223372036854775807LL
+#  define INT64_MIN     LLONG_MIN       // -9223372036854775808LL
+#  define UINT64_MAX    ULLONG_MAX      // +18446744073709551615LLU
+#else /* !LLONG_MAX but gcc always has __LONG_LONG_MAX__ */
+#  define INT64_MAX     __LONG_LONG_MAX__
+#  define INT64_MIN     (-INT64_MAX - 1LL)
+#  define UINT64_MAX    (INT64_MAX * 2ULL + 1ULL)
+#endif
 #endif
 
 /* --- likelyness hinting --- */

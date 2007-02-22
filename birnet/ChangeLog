@@ -1,3 +1,9 @@
+Sun Feb 18 03:00:54 2007  Tim Janik  <timj@gtk.org>
+
+	* birnetcdefs.h: if LLONG_MAX isn't provided by gcc's limits.h despite
+	C99/GNU_SOURCE, fallback to define *INT64* constants via LONG_LONG_MAX,
+	which is provided by all 3.0+ gcc versions.
+
 Wed Feb 14 23:58:43 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetcdefs.h: unconditionally include C99 headers limits.h and float.h.
