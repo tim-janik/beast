@@ -782,6 +782,7 @@ Misc Buglets/Feature Requests:
  - create a roadmap document for BEAST
  - implement fractional resampler (oversampling)
  - implement generic FIR eval (based on SIMD resampler code)
+ - freeverb should be 96k safe
 
 The MCD timeline says:
 - soon:
