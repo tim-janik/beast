@@ -9,13 +9,216 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-12 00:11+0000\n"
+"POT-Creation-Date: 2007-02-22 03:49+0100\n"
 "PO-Revision-Date: 2007-03-12 00:16-0000\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:25
+msgid "/Song/Assign Tracks to individual Mixer Busses"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:26
+msgid ""
+"This script creates a new Mixer Bus for each track in the song that is "
+"currently using the Master Bus as output."
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:39
+#, fuzzy
+msgid "Song"
+msgstr "_Song"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:57
+#: ../library/scripts/song-parts-operations.scm.h:45
+#, fuzzy
+msgid "No valid song supplied"
+msgstr "Invalid object property"
+
+#: ../library/scripts/modules2grid.scm.h:21
+msgid "/SNet/Grid Align"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:22
+msgid ""
+"Round module positions to their nearest grid position, so to align all "
+"modules within a synthesis network."
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:26
+#, fuzzy
+msgid "Synth Net"
+msgstr "Synth Done"
+
+#: ../library/scripts/modules2grid.scm.h:30
+#, fuzzy
+msgid "No valid synthesis network supplied"
+msgstr "Draw synthesis networks anti-aliased?"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:25
+msgid "/Part/Harmonic Transposer"
+msgstr ""
+
+#. ; FIXME: the description may be suboptimal; the problem is
+#. ; that I can't precisely describe details of musical theory
+#. ; in english. -- stw
+#: ../library/scripts/part-harmonic-transposer.scm.h:29
+msgid ""
+"The harmonic transposer takes the selection of a part and transposes it to "
+"different harmonies. If you for instance have selected a measure filled with "
+"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
+"be four measures, filled with C major, A minor, F major and G major "
+"chords. \n"
+"\n"
+"This also works for melodies, so you can transpose a whole melody written in "
+"G major to D minor. The standard scales used in church music (ionian, "
+"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
+"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
+"is equivalent to minor and the ionian scale is equivalent to major. \n"
+"\n"
+"Since musically, there is no preference on whether to transpose up or down "
+"it is possible to specify the first harmony that will be transposed down "
+"(all harmonies below this will be transposed up). It is possible to omit "
+"this value. Then all notes will be transposed up."
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:50
+#: ../library/scripts/record-midi.scm.h:25
+#, fuzzy
+msgid "Part"
+msgstr "Parts"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:51
+msgid "Harmony Sequence"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:52
+msgid "Transpose down starting at"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:209
+#, fuzzy
+msgid "No valid part supplied"
+msgstr "Invalid object property"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:211
+#, fuzzy
+msgid "No notes selected"
+msgstr "No quantisation selected"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:218
+#, fuzzy
+msgid "Failed to parse harmony list"
+msgstr "Failed to start recording to disc."
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:221
+msgid "Harmony list is too short"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:32
+msgid "/Project/Toys/Progressor..."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:33
+msgid ""
+"Progressor takes two seed values and then starts progressing. It doesn't do "
+"anything particularly usefull, other than ticking the main program from time "
+"to time. It is a funny example though."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:38
+#, fuzzy
+msgid "N Iterations"
+msgstr "Information"
+
+#: ../library/scripts/progressor-example.scm.h:39
+msgid "N Wait Spins"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:40
+msgid "Update Percentage"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:20
+msgid "/Part/Record Midi..."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:21
+msgid ""
+"Record midi events, currently being played on the default external midi "
+"device, into a given song part. The MIDI recorder is still work in progress."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:26
+#, fuzzy
+msgid "Start Now"
+msgstr "Start Editor"
+
+#: ../library/scripts/record-midi.scm.h:49
+#, fuzzy
+msgid "No valid part object supplied"
+msgstr "Invalid object property"
+
+#: ../library/scripts/record-midi.scm.h:50
+msgid "You probably want to start this script from a part editor."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:53
+msgid ""
+"Not currently recording...\n"
+"\n"
+"The MIDI recorder is still work in progress.\n"
+"Currently, you need a MIDI Synthesizer network running, in order for this "
+"script to catch the events currently being played back."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:25
+#, fuzzy
+msgid "/Song/Crop parts (loop range)"
+msgstr "Failed to detect (start of) header"
+
+#: ../library/scripts/song-parts-operations.scm.h:26
+msgid ""
+"Crops all parts within the loop range and moves parts after the loop range "
+"backwards accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:34
+#, fuzzy
+msgid "/Song/Duplicate parts (loop range)"
+msgstr "Failed to detect (start of) header"
+
+#: ../library/scripts/song-parts-operations.scm.h:35
+msgid ""
+"Duplicate all parts within the loop range and moves parts after the loop "
+"range forward accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:62
+msgid ""
+"The loop range of the specified song contains no parts or is unset, so no "
+"parts can be identified to operate on."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:64
+#, fuzzy
+msgid "Show messages about empty part range"
+msgstr "Show messages about audio recording problems"
+
+#: ../library/scripts/song-parts-operations.scm.h:68
+#, fuzzy
+msgid "Failed to crop part range."
+msgstr "Failed to detect (start of) header"
+
+#: ../library/scripts/song-parts-operations.scm.h:80
+#, fuzzy
+msgid "Failed to duplicate part range."
+msgstr "Failed to detect (start of) header"
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -117,8 +320,7 @@ msgstr "_Redo"
 msgid "Redo the last undone action"
 msgstr "Redo the last undone action"
 
-#: ../beast-gtk/bstapp.c:120
-#: ../beast-gtk/bstpartdialog.c:71
+#: ../beast-gtk/bstapp.c:120 ../beast-gtk/bstpartdialog.c:71
 msgid "_Clear Undo"
 msgstr "_Clear Undo"
 
@@ -138,8 +340,7 @@ msgstr "Display an overview of all procedures"
 msgid "Rack Editor"
 msgstr "Rack Editor"
 
-#: ../beast-gtk/bstapp.c:128
-#: ../beast-gtk/bstprofiler.c:224
+#: ../beast-gtk/bstapp.c:128 ../beast-gtk/bstprofiler.c:224
 msgid "Profiler"
 msgstr "Profiler"
 
@@ -192,8 +393,10 @@ msgid "Add MIDI Synthesizer"
 msgstr "Add MIDI Synthesiser"
 
 #: ../beast-gtk/bstapp.c:144
-msgid "Add a new MIDI synthesizer to control an instrument from external MIDI events"
-msgstr "Add a new MIDI synthesiser to control an instrument from external MIDI events"
+msgid ""
+"Add a new MIDI synthesizer to control an instrument from external MIDI events"
+msgstr ""
+"Add a new MIDI synthesiser to control an instrument from external MIDI events"
 
 #: ../beast-gtk/bstapp.c:146
 msgid "Remove Song or Synthesizer"
@@ -272,16 +475,20 @@ msgid "Online _Help Desk..."
 msgstr "Online _Help Desk..."
 
 #: ../beast-gtk/bstapp.c:168
-msgid "Start a web browser pointing to the online help desk at the BEAST website"
-msgstr "Start a web browser pointing to the online help desk at the BEAST website"
+msgid ""
+"Start a web browser pointing to the online help desk at the BEAST website"
+msgstr ""
+"Start a web browser pointing to the online help desk at the BEAST website"
 
 #: ../beast-gtk/bstapp.c:170
 msgid "Report a Beast Bug..."
 msgstr "Report a Beast Bug..."
 
 #: ../beast-gtk/bstapp.c:170
-msgid "Start a web browser with the bug report form for the BEAST bugzilla product"
-msgstr "Start a web browser with the bug report form for the BEAST bugzilla product"
+msgid ""
+"Start a web browser with the bug report form for the BEAST bugzilla product"
+msgstr ""
+"Start a web browser with the bug report form for the BEAST bugzilla product"
 
 #: ../beast-gtk/bstapp.c:173
 msgid "_Release Notes..."
@@ -335,8 +542,7 @@ msgstr "Start a web browser pointing to online demo songs"
 msgid "Export Audio"
 msgstr "Export Audio"
 
-#: ../beast-gtk/bstapp.c:520
-#: ../beast-gtk/bstsupershell.c:232
+#: ../beast-gtk/bstapp.c:520 ../beast-gtk/bstsupershell.c:232
 msgid "Waves"
 msgstr "Waves"
 
@@ -370,8 +576,10 @@ msgstr "The project has been modified."
 
 #: ../beast-gtk/bstapp.c:649
 #, c-format
-msgid "Changes were made to project \"%s\" since the last time it was saved to disk."
-msgstr "Changes were made to project \"%s\" since the last time it was saved to disk."
+msgid ""
+"Changes were made to project \"%s\" since the last time it was saved to disk."
+msgstr ""
+"Changes were made to project \"%s\" since the last time it was saved to disk."
 
 #: ../beast-gtk/bstapp.c:651
 msgid "Save the project before closing its window?"
@@ -389,10 +597,8 @@ msgstr "Discard Changes"
 msgid "Cancel"
 msgstr "Cancel"
 
-#: ../beast-gtk/bstapp.c:739
-#: ../beast-gtk/bstapp.c:746
-#: ../beast-gtk/bstfiledialog.c:433
-#: ../beast-gtk/bstfiledialog.c:439
+#: ../beast-gtk/bstapp.c:739 ../beast-gtk/bstapp.c:746
+#: ../beast-gtk/bstfiledialog.c:433 ../beast-gtk/bstfiledialog.c:439
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Opening project `%s'"
@@ -424,31 +630,22 @@ msgstr "Please press the keyboard shortcut to be installed for function: %s"
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Please press the keyboard shortcut to be installed..."
 
-#: ../beast-gtk/bstbuseditor.c:38
-#: ../beast-gtk/bstbusmixer.c:35
-#: ../beast-gtk/bstbusview.c:34
-#: ../beast-gtk/bstpartview.c:39
+#: ../beast-gtk/bstbuseditor.c:38 ../beast-gtk/bstbusmixer.c:35
+#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstpartview.c:39
 #: ../beast-gtk/bsttrackview.c:63
 msgid "Add"
 msgstr "Add"
 
-#: ../beast-gtk/bstbuseditor.c:39
-#: ../beast-gtk/bstbusmixer.c:36
-#: ../beast-gtk/bstbusview.c:35
-#: ../beast-gtk/bstkeybindings.c:57
-#: ../beast-gtk/bstpartview.c:40
-#: ../beast-gtk/bstpianorollctrl.c:79
-#: ../beast-gtk/bstrackitem.c:215
-#: ../beast-gtk/bstsnetrouter.c:713
-#: ../beast-gtk/bstsnetrouter.c:761
-#: ../beast-gtk/bsttrackrollctrl.c:50
-#: ../beast-gtk/bsttrackview.c:66
-#: ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstkeybindings.c:57
+#: ../beast-gtk/bstpartview.c:40 ../beast-gtk/bstpianorollctrl.c:79
+#: ../beast-gtk/bstrackitem.c:215 ../beast-gtk/bstsnetrouter.c:713
+#: ../beast-gtk/bstsnetrouter.c:761 ../beast-gtk/bsttrackrollctrl.c:50
+#: ../beast-gtk/bsttrackview.c:66 ../beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Delete"
 
-#: ../beast-gtk/bstbuseditor.c:40
-#: ../beast-gtk/bstpartview.c:41
+#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstpartview.c:41
 #: ../beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Editor"
@@ -465,8 +662,7 @@ msgstr "Delete the currently selected bus"
 msgid "Module Link: "
 msgstr "Module Link: "
 
-#: ../beast-gtk/bstcanvaslink.c:185
-#: ../beast-gtk/bstsnetrouter.c:757
+#: ../beast-gtk/bstcanvaslink.c:185 ../beast-gtk/bstsnetrouter.c:757
 msgid "Module link"
 msgstr "Module link"
 
@@ -474,13 +670,11 @@ msgstr "Module link"
 msgid "Module Info"
 msgstr "Module Info"
 
-#: ../beast-gtk/bstcanvassource.c:980
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstcanvassource.c:980 ../beast-gtk/bstsnetrouter.c:1090
 msgid "Input"
 msgstr "Input"
 
-#: ../beast-gtk/bstcanvassource.c:989
-#: ../beast-gtk/bstsnetrouter.c:1094
+#: ../beast-gtk/bstcanvassource.c:989 ../beast-gtk/bstsnetrouter.c:1094
 #: ../plugins/bseamplifier.idl:63
 msgid "Output"
 msgstr "Output"
@@ -497,14 +691,12 @@ msgstr "Draw Values"
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Adjust whether to draw dB values instead of lines"
 
-#: ../beast-gtk/bstdbmeter.c:766
-#: ../beast-gtk/bstdbmeter.c:1061
+#: ../beast-gtk/bstdbmeter.c:766 ../beast-gtk/bstdbmeter.c:1061
 #: ../beast-gtk/bstdbmeter.c:1561
 msgid "Orientation"
 msgstr "Orientation"
 
-#: ../beast-gtk/bstdbmeter.c:766
-#: ../beast-gtk/bstdbmeter.c:1061
+#: ../beast-gtk/bstdbmeter.c:766 ../beast-gtk/bstdbmeter.c:1061
 #: ../beast-gtk/bstdbmeter.c:1561
 msgid "Choose horizontal or vertical orientation"
 msgstr "Choose horizontal or vertical orientation"
@@ -517,8 +709,7 @@ msgstr "Justify"
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "Adjust relative alignment of the values or bars to be drawn"
 
-#: ../beast-gtk/bsteventrollctrl.c:57
-#: ../beast-gtk/bstpianorollctrl.c:57
+#: ../beast-gtk/bsteventrollctrl.c:57 ../beast-gtk/bstpianorollctrl.c:57
 msgid "All"
 msgstr "All"
 
@@ -527,10 +718,8 @@ msgid "Select all events"
 msgstr "Select all events"
 
 #. special cased signals
-#: ../beast-gtk/bsteventrollctrl.c:59
-#: ../beast-gtk/bstpianorollctrl.c:59
-#: ../beast-gtk/bstrecords.idl:60
-#: ../beast-gtk/bstrecords.idl:88
+#: ../beast-gtk/bsteventrollctrl.c:59 ../beast-gtk/bstpianorollctrl.c:59
+#: ../beast-gtk/bstrecords.idl:60 ../beast-gtk/bstrecords.idl:88
 #: ../bse/bsecore.idl:331
 msgid "None"
 msgstr "None"
@@ -539,49 +728,37 @@ msgstr "None"
 msgid "Unselect all events"
 msgstr "Unselect all events"
 
-#: ../beast-gtk/bsteventrollctrl.c:61
-#: ../beast-gtk/bstpianorollctrl.c:61
+#: ../beast-gtk/bsteventrollctrl.c:61 ../beast-gtk/bstpianorollctrl.c:61
 msgid "Invert"
 msgstr "Invert"
 
-#: ../beast-gtk/bsteventrollctrl.c:61
-#: ../beast-gtk/bstpianorollctrl.c:61
+#: ../beast-gtk/bsteventrollctrl.c:61 ../beast-gtk/bstpianorollctrl.c:61
 msgid "Invert the current selection"
 msgstr "Invert the current selection"
 
-#: ../beast-gtk/bsteventrollctrl.c:445
-#: ../beast-gtk/bsteventrollctrl.c:452
+#: ../beast-gtk/bsteventrollctrl.c:445 ../beast-gtk/bsteventrollctrl.c:452
 #: ../beast-gtk/bsteventrollctrl.c:521
 msgid "Move Control Event"
 msgstr "Move Control Event"
 
-#: ../beast-gtk/bsteventrollctrl.c:452
-#: ../beast-gtk/bsteventrollctrl.c:606
-#: ../beast-gtk/bsteventrollctrl.c:656
-#: ../beast-gtk/bstpianorollctrl.c:579
-#: ../beast-gtk/bstpianorollctrl.c:689
-#: ../beast-gtk/bstpianorollctrl.c:752
-#: ../beast-gtk/bsttrackrollctrl.c:479
-#: ../beast-gtk/bsttrackrollctrl.c:499
-#: ../beast-gtk/bsttrackrollctrl.c:571
-#: ../bse/bseenums.c:167
+#: ../beast-gtk/bsteventrollctrl.c:452 ../beast-gtk/bsteventrollctrl.c:606
+#: ../beast-gtk/bsteventrollctrl.c:656 ../beast-gtk/bstpianorollctrl.c:579
+#: ../beast-gtk/bstpianorollctrl.c:689 ../beast-gtk/bstpianorollctrl.c:752
+#: ../beast-gtk/bsttrackrollctrl.c:479 ../beast-gtk/bsttrackrollctrl.c:499
+#: ../beast-gtk/bsttrackrollctrl.c:571 ../bse/bseenums.c:167
 msgid "No target"
 msgstr "No target"
 
-#: ../beast-gtk/bsteventrollctrl.c:521
-#: ../beast-gtk/bsteventrollctrl.c:642
+#: ../beast-gtk/bsteventrollctrl.c:521 ../beast-gtk/bsteventrollctrl.c:642
 msgid "Lost Event"
 msgstr "Lost Event"
 
-#: ../beast-gtk/bsteventrollctrl.c:531
-#: ../beast-gtk/bsteventrollctrl.c:564
+#: ../beast-gtk/bsteventrollctrl.c:531 ../beast-gtk/bsteventrollctrl.c:564
 msgid "Align Control Events"
 msgstr "Align Control Events"
 
-#: ../beast-gtk/bsteventrollctrl.c:564
-#: ../beast-gtk/bsteventrollctrl.c:690
-#: ../beast-gtk/bstpianorollctrl.c:810
-#: ../beast-gtk/bstpianorollctrl.c:846
+#: ../beast-gtk/bsteventrollctrl.c:564 ../beast-gtk/bsteventrollctrl.c:690
+#: ../beast-gtk/bstpianorollctrl.c:810 ../beast-gtk/bstpianorollctrl.c:846
 msgid "Aborted"
 msgstr "Aborted"
 
@@ -589,33 +766,26 @@ msgstr "Aborted"
 msgid "Insert Control Event"
 msgstr "Insert Control Event"
 
-#: ../beast-gtk/bsteventrollctrl.c:601
-#: ../beast-gtk/bsteventrollctrl.c:606
+#: ../beast-gtk/bsteventrollctrl.c:601 ../beast-gtk/bsteventrollctrl.c:606
 #: ../beast-gtk/bsteventrollctrl.c:642
 msgid "Resize Control Event"
 msgstr "Resize Control Event"
 
-#: ../beast-gtk/bsteventrollctrl.c:653
-#: ../beast-gtk/bsteventrollctrl.c:656
+#: ../beast-gtk/bsteventrollctrl.c:653 ../beast-gtk/bsteventrollctrl.c:656
 msgid "Delete Control Event"
 msgstr "Delete Control Event"
 
-#: ../beast-gtk/bsteventrollctrl.c:666
-#: ../beast-gtk/bsteventrollctrl.c:690
-#: ../beast-gtk/bstpianorollctrl.c:784
-#: ../beast-gtk/bstpianorollctrl.c:810
+#: ../beast-gtk/bsteventrollctrl.c:666 ../beast-gtk/bsteventrollctrl.c:690
+#: ../beast-gtk/bstpianorollctrl.c:784 ../beast-gtk/bstpianorollctrl.c:810
 msgid "Select Region"
 msgstr "Select Region"
 
-#: ../beast-gtk/bsteventrollctrl.c:699
-#: ../beast-gtk/bstpianorollctrl.c:855
+#: ../beast-gtk/bsteventrollctrl.c:699 ../beast-gtk/bstpianorollctrl.c:855
 msgid "Abortion"
 msgstr "Abortion"
 
-#: ../beast-gtk/bstfiledialog.c:137
-#: ../beast-gtk/bstitemview.c:207
-#: ../beast-gtk/bsttrackview.c:608
-#: ../bse/bseobject.c:840
+#: ../beast-gtk/bstfiledialog.c:137 ../beast-gtk/bstitemview.c:207
+#: ../beast-gtk/bsttrackview.c:608 ../bse/bseobject.c:840
 msgid "Name"
 msgstr "Name"
 
@@ -708,8 +878,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:543
-#: ../beast-gtk/bstfiledialog.c:557
+#: ../beast-gtk/bstfiledialog.c:543 ../beast-gtk/bstfiledialog.c:557
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -794,14 +963,12 @@ msgstr "Saving instrument `%s'"
 msgid "Load Wave"
 msgstr "Load Wave"
 
-#: ../beast-gtk/bstfiledialog.c:776
-#: ../beast-gtk/bstfiledialog.c:778
+#: ../beast-gtk/bstfiledialog.c:776 ../beast-gtk/bstfiledialog.c:778
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Loading wave `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:780
-#: ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstfiledialog.c:780 ../beast-gtk/bstmain.c:288
 #: ../beast-gtk/bstmain.c:305
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -835,8 +1002,7 @@ msgstr "Object Selection: %s"
 msgid "ID"
 msgstr "ID"
 
-#: ../beast-gtk/bstitemview.c:210
-#: ../beast-gtk/bsttrackview.c:629
+#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:629
 #: ../bse/bseobject.c:850
 msgid "Comment"
 msgstr "Comment"
@@ -903,8 +1069,7 @@ msgstr "Key Binding"
 msgid "Key combinations used to activate a function"
 msgstr "Key combinations used to activate a function"
 
-#: ../beast-gtk/bstkeybindings.c:434
-#: ../beast-gtk/bstkeybindings.c:458
+#: ../beast-gtk/bstkeybindings.c:434 ../beast-gtk/bstkeybindings.c:458
 msgid "Function"
 msgstr "Function"
 
@@ -924,14 +1089,12 @@ msgstr "Parameter to pass to functions upon activation"
 msgid "Function used to create new key bindings"
 msgstr "Function used to create new key bindings"
 
-#: ../beast-gtk/bstkeybindings.c:461
-#: ../beast-gtk/bstprocedure.c:202
+#: ../beast-gtk/bstkeybindings.c:461 ../beast-gtk/bstprocedure.c:202
 msgid "Description"
 msgstr "Description"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:112
-#: ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
@@ -984,8 +1147,7 @@ msgstr "Dialogues"
 msgid "Loading..."
 msgstr "Loading..."
 
-#: ../beast-gtk/bstmain.c:284
-#: ../beast-gtk/bstmain.c:286
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Loading \"%s\""
@@ -1084,8 +1246,7 @@ msgstr "Colour Entry"
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
-#: ../beast-gtk/bstparam-item-seq.c:70
-#: ../beast-gtk/gxk/gxksimplelabel.c:598
+#: ../beast-gtk/bstparam-item-seq.c:70 ../beast-gtk/gxk/gxksimplelabel.c:598
 msgid "..."
 msgstr "..."
 
@@ -1198,8 +1359,12 @@ msgid "Redo the last undone editing step"
 msgstr "Redo the last undone editing step"
 
 #: ../beast-gtk/bstpatterncolumns.c:686
-msgid "The pattern editor column layout is specified by listing column types with possible modifiers in display order."
-msgstr "The pattern editor column layout is specified by listing column types with possible modifiers in display order."
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
 
 #: ../beast-gtk/bstpatterncolumns.c:688
 msgid "COLUMN TYPES:"
@@ -1220,8 +1385,12 @@ msgid "offset-1, length-2, velocity-3, ..."
 msgstr "offset-1, length-2, velocity-3, ..."
 
 #: ../beast-gtk/bstpatterncolumns.c:694
-msgid "  display offset, length or velocity of notes in the first, second, ... channel"
-msgstr "  display offset, length or velocity of notes in the first, second, ... channel"
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
+msgstr ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:696
@@ -1354,11 +1523,12 @@ msgid "Steps"
 msgstr "Steps"
 
 #: ../beast-gtk/bstpatternctrl.c:123
-msgid "The number of cells to move across each time an event or note was edited"
-msgstr "The number of cells to move across each time an event or note was edited"
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr ""
+"The number of cells to move across each time an event or note was edited"
 
-#: ../beast-gtk/bstpatternctrl.c:127
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstpatternctrl.c:127 ../beast-gtk/bstscrollgraph.c:574
 msgid "Direction"
 msgstr "Direction"
 
@@ -1371,8 +1541,10 @@ msgid "HWrap"
 msgstr "HWrap"
 
 #: ../beast-gtk/bstpatternctrl.c:133
-msgid "Toggle whether horizontal movement of the focus cell will wrap around edges"
-msgstr "Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
 
 #: ../beast-gtk/bstpatternctrl.c:136
 msgid "Base Octave"
@@ -1392,8 +1564,10 @@ msgstr "Adjust the number of rows between each shaded row"
 
 #. movement
 #: ../beast-gtk/bstpatternctrl.c:312
-msgid "Move focus to the next cell (up/left/right/down according to configuration)"
-msgstr "Move focus to the next cell (up/left/right/down according to configuration)"
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
+msgstr ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
 
 #: ../beast-gtk/bstpatternctrl.c:313
 msgid "Move focus cell upwards"
@@ -1463,18 +1637,15 @@ msgstr "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgid "Set the focus cell octave"
 msgstr "Set the focus cell octave"
 
-#: ../beast-gtk/bstpatternctrl.c:346
-#: ../beast-gtk/bstpatternctrl.c:360
+#: ../beast-gtk/bstpatternctrl.c:346 ../beast-gtk/bstpatternctrl.c:360
 msgid "Remove any events in the focus cell"
 msgstr "Remove any events in the focus cell"
 
-#: ../beast-gtk/bstpatternctrl.c:350
-#: ../beast-gtk/bstpatternctrl.c:364
+#: ../beast-gtk/bstpatternctrl.c:350 ../beast-gtk/bstpatternctrl.c:364
 msgid "Set the focus cell note"
 msgstr "Set the focus cell note"
 
-#: ../beast-gtk/bstpatternctrl.c:354
-#: ../beast-gtk/bstpatternctrl.c:368
+#: ../beast-gtk/bstpatternctrl.c:354 ../beast-gtk/bstpatternctrl.c:368
 msgid "Sets the value of the focus digit"
 msgstr "Sets the value of the focus digit"
 
@@ -1486,8 +1657,7 @@ msgstr "Select all notes"
 msgid "Unselect all notes"
 msgstr "Unselect all notes"
 
-#: ../beast-gtk/bstpianorollctrl.c:77
-#: ../beast-gtk/bsttrackrollctrl.c:44
+#: ../beast-gtk/bstpianorollctrl.c:77 ../beast-gtk/bsttrackrollctrl.c:44
 msgid "Insert"
 msgstr "Insert"
 
@@ -1515,8 +1685,7 @@ msgstr "Select"
 msgid "Rectangle select notes"
 msgstr "Rectangle select notes"
 
-#: ../beast-gtk/bstpianorollctrl.c:85
-#: ../beast-gtk/bstpianorollctrl.c:820
+#: ../beast-gtk/bstpianorollctrl.c:85 ../beast-gtk/bstpianorollctrl.c:820
 msgid "Vertical Select"
 msgstr "Vertical Select"
 
@@ -1588,125 +1757,101 @@ msgstr "1\\/128"
 msgid "Insert hundred twenty-eighth note"
 msgstr "Insert hundred twenty-eighth note"
 
-#: ../beast-gtk/bstpianorollctrl.c:125
-#: ../beast-gtk/bsttrackrollctrl.c:80
+#: ../beast-gtk/bstpianorollctrl.c:125 ../beast-gtk/bsttrackrollctrl.c:80
 msgid "Q: Tact"
 msgstr "Q: Tact"
 
-#: ../beast-gtk/bstpianorollctrl.c:125
-#: ../beast-gtk/bsttrackrollctrl.c:80
+#: ../beast-gtk/bstpianorollctrl.c:125 ../beast-gtk/bsttrackrollctrl.c:80
 msgid "Quantize to tact boundaries"
 msgstr "Quantise to tact boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:127
-#: ../beast-gtk/bsttrackrollctrl.c:82
+#: ../beast-gtk/bstpianorollctrl.c:127 ../beast-gtk/bsttrackrollctrl.c:82
 msgid "Q: None"
 msgstr "Q: None"
 
-#: ../beast-gtk/bstpianorollctrl.c:127
-#: ../beast-gtk/bsttrackrollctrl.c:82
+#: ../beast-gtk/bstpianorollctrl.c:127 ../beast-gtk/bsttrackrollctrl.c:82
 msgid "No quantization selected"
 msgstr "No quantisation selected"
 
-#: ../beast-gtk/bstpianorollctrl.c:129
-#: ../beast-gtk/bsttrackrollctrl.c:84
+#: ../beast-gtk/bstpianorollctrl.c:129 ../beast-gtk/bsttrackrollctrl.c:84
 msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
-#: ../beast-gtk/bstpianorollctrl.c:129
-#: ../beast-gtk/bsttrackrollctrl.c:84
+#: ../beast-gtk/bstpianorollctrl.c:129 ../beast-gtk/bsttrackrollctrl.c:84
 msgid "Quantize to whole note boundaries"
 msgstr "Quantise to whole note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:131
-#: ../beast-gtk/bsttrackrollctrl.c:86
+#: ../beast-gtk/bstpianorollctrl.c:131 ../beast-gtk/bsttrackrollctrl.c:86
 msgid "Q: 1\\/2"
 msgstr "Q: 1\\/2"
 
-#: ../beast-gtk/bstpianorollctrl.c:131
-#: ../beast-gtk/bsttrackrollctrl.c:86
+#: ../beast-gtk/bstpianorollctrl.c:131 ../beast-gtk/bsttrackrollctrl.c:86
 msgid "Quantize to half note boundaries"
 msgstr "Quantise to half note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:133
-#: ../beast-gtk/bsttrackrollctrl.c:88
+#: ../beast-gtk/bstpianorollctrl.c:133 ../beast-gtk/bsttrackrollctrl.c:88
 msgid "Q: 1\\/4"
 msgstr "Q: 1\\/4"
 
-#: ../beast-gtk/bstpianorollctrl.c:133
-#: ../beast-gtk/bsttrackrollctrl.c:88
+#: ../beast-gtk/bstpianorollctrl.c:133 ../beast-gtk/bsttrackrollctrl.c:88
 msgid "Quantize to quarter note boundaries"
 msgstr "Quantise to quarter note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:135
-#: ../beast-gtk/bsttrackrollctrl.c:90
+#: ../beast-gtk/bstpianorollctrl.c:135 ../beast-gtk/bsttrackrollctrl.c:90
 msgid "Q: 1\\/8"
 msgstr "Q: 1\\/8"
 
-#: ../beast-gtk/bstpianorollctrl.c:135
-#: ../beast-gtk/bsttrackrollctrl.c:90
+#: ../beast-gtk/bstpianorollctrl.c:135 ../beast-gtk/bsttrackrollctrl.c:90
 msgid "Quantize to eighths note boundaries"
 msgstr "Quantise to eighths note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:137
-#: ../beast-gtk/bsttrackrollctrl.c:92
+#: ../beast-gtk/bstpianorollctrl.c:137 ../beast-gtk/bsttrackrollctrl.c:92
 msgid "Q: 1\\/16"
 msgstr "Q: 1\\/16"
 
-#: ../beast-gtk/bstpianorollctrl.c:137
-#: ../beast-gtk/bsttrackrollctrl.c:92
+#: ../beast-gtk/bstpianorollctrl.c:137 ../beast-gtk/bsttrackrollctrl.c:92
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Quantise to sixteenth note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:139
-#: ../beast-gtk/bsttrackrollctrl.c:94
+#: ../beast-gtk/bstpianorollctrl.c:139 ../beast-gtk/bsttrackrollctrl.c:94
 msgid "Q: 1\\/32"
 msgstr "Q: 1\\/32"
 
-#: ../beast-gtk/bstpianorollctrl.c:139
-#: ../beast-gtk/bsttrackrollctrl.c:94
+#: ../beast-gtk/bstpianorollctrl.c:139 ../beast-gtk/bsttrackrollctrl.c:94
 msgid "Quantize to thirty-second note boundaries"
 msgstr "Quantise to thirty-second note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:141
-#: ../beast-gtk/bsttrackrollctrl.c:96
+#: ../beast-gtk/bstpianorollctrl.c:141 ../beast-gtk/bsttrackrollctrl.c:96
 msgid "Q: 1\\/64"
 msgstr "Q: 1\\/64"
 
-#: ../beast-gtk/bstpianorollctrl.c:141
-#: ../beast-gtk/bsttrackrollctrl.c:96
+#: ../beast-gtk/bstpianorollctrl.c:141 ../beast-gtk/bsttrackrollctrl.c:96
 msgid "Quantize to sixty-fourth note boundaries"
 msgstr "Quantise to sixty-fourth note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:143
-#: ../beast-gtk/bsttrackrollctrl.c:98
+#: ../beast-gtk/bstpianorollctrl.c:143 ../beast-gtk/bsttrackrollctrl.c:98
 msgid "Q: 1\\/128"
 msgstr "Q: 1\\/128"
 
-#: ../beast-gtk/bstpianorollctrl.c:143
-#: ../beast-gtk/bsttrackrollctrl.c:98
+#: ../beast-gtk/bstpianorollctrl.c:143 ../beast-gtk/bsttrackrollctrl.c:98
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr "Quantise to hundred twenty-eighth note boundaries"
 
-#: ../beast-gtk/bstpianorollctrl.c:572
-#: ../beast-gtk/bstpianorollctrl.c:579
+#: ../beast-gtk/bstpianorollctrl.c:572 ../beast-gtk/bstpianorollctrl.c:579
 #: ../beast-gtk/bstpianorollctrl.c:667
 msgid "Move Note"
 msgstr "Move Note"
 
-#: ../beast-gtk/bstpianorollctrl.c:667
-#: ../beast-gtk/bstpianorollctrl.c:738
+#: ../beast-gtk/bstpianorollctrl.c:667 ../beast-gtk/bstpianorollctrl.c:738
 msgid "Lost Note"
 msgstr "Lost Note"
 
-#: ../beast-gtk/bstpianorollctrl.c:684
-#: ../beast-gtk/bstpianorollctrl.c:689
+#: ../beast-gtk/bstpianorollctrl.c:684 ../beast-gtk/bstpianorollctrl.c:689
 #: ../beast-gtk/bstpianorollctrl.c:738
 msgid "Resize Note"
 msgstr "Resize Note"
 
-#: ../beast-gtk/bstpianorollctrl.c:749
-#: ../beast-gtk/bstpianorollctrl.c:752
+#: ../beast-gtk/bstpianorollctrl.c:749 ../beast-gtk/bstpianorollctrl.c:752
 msgid "Delete Note"
 msgstr "Delete Note"
 
@@ -1756,8 +1901,7 @@ msgstr "Start Procedure"
 msgid "Totals"
 msgstr "Totals"
 
-#: ../beast-gtk/bstprofiler.c:245
-#: ../bse/bsecore.idl:747
+#: ../beast-gtk/bstprofiler.c:245 ../bse/bsecore.idl:747
 msgid "Thread Name"
 msgstr "Thread Name"
 
@@ -1782,16 +1926,20 @@ msgid "UTime"
 msgstr "UTime"
 
 #: ../beast-gtk/bstprofiler.c:249
-msgid "Average number of milliseconds per second of user CPU time used by thread"
-msgstr "Average number of milliseconds per second of user CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
+msgstr ""
+"Average number of milliseconds per second of user CPU time used by thread"
 
 #: ../beast-gtk/bstprofiler.c:250
 msgid "STime"
 msgstr "STime"
 
 #: ../beast-gtk/bstprofiler.c:250
-msgid "Average number of milliseconds per second of system CPU time used by thread"
-msgstr "Average number of milliseconds per second of system CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
+msgstr ""
+"Average number of milliseconds per second of system CPU time used by thread"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
@@ -1835,11 +1983,18 @@ msgid "Stopping Playback"
 msgstr "Stopping Playback"
 
 #: ../beast-gtk/bstrackeditor.c:94
-msgid "The rack editor is still highly experimental code and guaranteed to be broken by future releases. So don't rely on rack editor contents to look similarly in future versions and be prepared to work around possible instabilities in the code (i.e. save your projects regularly)."
-msgstr "The rack editor is still highly experimental code and guaranteed to be broken by future releases. So don't rely on rack editor contents to look similarly in future versions and be prepared to work around possible instabilities in the code (i.e. save your projects regularly)."
+msgid ""
+"The rack editor is still highly experimental code and guaranteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+msgstr ""
+"The rack editor is still highly experimental code and guaranteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
 
-#: ../beast-gtk/bstrackeditor.c:108
-#: ../beast-gtk/bstrackview.c:42
+#: ../beast-gtk/bstrackeditor.c:108 ../beast-gtk/bstrackview.c:42
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Edit"
 msgstr "_Edit"
@@ -1872,8 +2027,7 @@ msgstr "Shrink Horizontally"
 msgid "Shrink Vertically"
 msgstr "Shrink Vertically"
 
-#: ../beast-gtk/bstrackview.c:45
-#: ../beast-gtk/gxk/gxkparam-label.c:76
+#: ../beast-gtk/bstrackview.c:45 ../beast-gtk/gxk/gxkparam-label.c:76
 #: ../beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Label"
@@ -1886,8 +2040,7 @@ msgstr "Up"
 msgid "Move upwards"
 msgstr "Move upwards"
 
-#: ../beast-gtk/bstrecords.idl:35
-#: ../beast-gtk/bsttrackrollctrl.c:63
+#: ../beast-gtk/bstrecords.idl:35 ../beast-gtk/bsttrackrollctrl.c:63
 msgid "Left"
 msgstr "Left"
 
@@ -1895,8 +2048,7 @@ msgstr "Left"
 msgid "Move to the left"
 msgstr "Move to the left"
 
-#: ../beast-gtk/bstrecords.idl:36
-#: ../beast-gtk/bsttrackrollctrl.c:67
+#: ../beast-gtk/bstrecords.idl:36 ../beast-gtk/bsttrackrollctrl.c:67
 msgid "Right"
 msgstr "Right"
 
@@ -1950,7 +2102,8 @@ msgstr "32 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:45
 msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
-msgstr "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
+msgstr ""
+"A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:46
 msgid "64 Value FFT Window"
@@ -1958,87 +2111,108 @@ msgstr "64 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:46
 msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
-msgstr "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
+msgstr ""
+"A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:47
 msgid "128 Value FFT Window"
 msgstr "128 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:47
-msgid "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
-msgstr "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
+msgid ""
+"A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
+msgstr ""
+"A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:48
 msgid "256 Value FFT Window"
 msgstr "256 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:48
-msgid "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
-msgstr "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
+msgid ""
+"A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
+msgstr ""
+"A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:49
 msgid "512 Value FFT Window"
 msgstr "512 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:49
-msgid "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
-msgstr "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
+msgid ""
+"A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
+msgstr ""
+"A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:50
 msgid "1024 Value FFT Window"
 msgstr "1024 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:50
-msgid "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
-msgstr "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
+msgid ""
+"A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
+msgstr ""
+"A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:51
 msgid "2048 Value FFT Window"
 msgstr "2048 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:51
-msgid "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
-msgstr "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
+msgid ""
+"A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
+msgstr ""
+"A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:52
 msgid "4096 Value FFT Window"
 msgstr "4096 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:52
-msgid "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
-msgstr "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
+msgid ""
+"A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
+msgstr ""
+"A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:53
 msgid "8192 Value FFT Window"
 msgstr "8192 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:53
-msgid "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
-msgstr "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
+msgid ""
+"A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
+msgstr ""
+"A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:54
 msgid "16384 Value FFT Window"
 msgstr "16384 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:54
-msgid "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
-msgstr "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
+msgid ""
+"A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
+msgstr ""
+"A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:55
 msgid "32768 Value FFT Window"
 msgstr "32768 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:55
-msgid "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
-msgstr "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
+msgid ""
+"A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
+msgstr ""
+"A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:56
 msgid "65536 Value FFT Window"
 msgstr "65536 Value FFT Window"
 
 #: ../beast-gtk/bstrecords.idl:56
-msgid "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
-msgstr "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
+msgid ""
+"A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
+msgstr ""
+"A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
 
 #: ../beast-gtk/bstrecords.idl:60
 msgid "Unspecified length"
@@ -2397,16 +2571,24 @@ msgid "Homogeneous Input Fields"
 msgstr "Homogeneous Input Fields"
 
 #: ../beast-gtk/bstrecords.idl:121
-msgid "Enable homogeneous sizes for most (numeric and text) input fields. For some fields, this will only take effect after a restart."
-msgstr "Enable homogeneous sizes for most (numeric and text) input fields. For some fields, this will only take effect after a restart."
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
 
 #: ../beast-gtk/bstrecords.idl:124
 msgid "Slow scopes"
 msgstr "Slow scopes"
 
 #: ../beast-gtk/bstrecords.idl:125
-msgid "Aggresively slows down the periodic update frequency of scopes. Doing this may be desirable on particularly slow machines."
-msgstr "Aggresively slows down the periodic update frequency of scopes. Doing this may be desirable on particularly slow machines."
+msgid ""
+"Aggresively slows down the periodic update frequency of scopes. Doing this "
+"may be desirable on particularly slow machines."
+msgstr ""
+"Aggresively slows down the periodic update frequency of scopes. Doing this "
+"may be desirable on particularly slow machines."
 
 #: ../beast-gtk/bstrecords.idl:133
 msgid "Skin Name"
@@ -2416,8 +2598,7 @@ msgstr "Skin Name"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Name for the current skin configuration (used for skin selections)."
 
-#: ../beast-gtk/bstrecords.idl:135
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:135 ../beast-gtk/bstrecords.idl:145
 #: ../beast-gtk/bstrecords.idl:155
 msgid "Background Image"
 msgstr "Background Image"
@@ -2426,20 +2607,17 @@ msgstr "Background Image"
 msgid "Background image used by the pattern editor."
 msgstr "Background image used by the pattern editor."
 
-#: ../beast-gtk/bstrecords.idl:136
-#: ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
 #: ../beast-gtk/bstrecords.idl:156
 msgid "Image shade"
 msgstr "Image shade"
 
-#: ../beast-gtk/bstrecords.idl:136
-#: ../beast-gtk/bstrecords.idl:146
+#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
 #: ../beast-gtk/bstrecords.idl:156
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Percentage of background image pixel to blend over background colour."
 
-#: ../beast-gtk/bstrecords.idl:137
-#: ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
 #: ../beast-gtk/bstrecords.idl:157
 msgid "Background Color"
 msgstr "Background Colour"
@@ -2460,8 +2638,7 @@ msgstr "Empty Field Color"
 msgid "Text Color"
 msgstr "Text Colour"
 
-#: ../beast-gtk/bstrecords.idl:142
-#: ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:149
 msgid "Vertical Bar Color"
 msgstr "Vertical Bar Colour"
 
@@ -2469,8 +2646,7 @@ msgstr "Vertical Bar Colour"
 msgid "Background image used by the piano-roll editor."
 msgstr "Background image used by the piano-roll editor."
 
-#: ../beast-gtk/bstrecords.idl:148
-#: ../beast-gtk/bstrecords.idl:158
+#: ../beast-gtk/bstrecords.idl:148 ../beast-gtk/bstrecords.idl:158
 msgid "Horizontal Bar Color"
 msgstr "Horizontal Bar Colour"
 
@@ -2482,8 +2658,7 @@ msgstr "Horizontal Grid Colour"
 msgid "Vertical Grid Color"
 msgstr "Vertical Grid Colour"
 
-#: ../beast-gtk/bstrecords.idl:152
-#: ../beast-gtk/bstrecords.idl:159
+#: ../beast-gtk/bstrecords.idl:152 ../beast-gtk/bstrecords.idl:159
 msgid "Middle Bar Color"
 msgstr "Middle Bar Colour"
 
@@ -2503,13 +2678,11 @@ msgstr "Zero Value Colour"
 msgid "Negative Value Color"
 msgstr "Negative Value Colour"
 
-#: ../beast-gtk/bstsampleeditor.c:476
-#: ../beast-gtk/bstwaveeditor.c:198
+#: ../beast-gtk/bstsampleeditor.c:476 ../beast-gtk/bstwaveeditor.c:198
 msgid "Zoom:"
 msgstr "Zoom:"
 
-#: ../beast-gtk/bstsampleeditor.c:487
-#: ../beast-gtk/bstwaveeditor.c:209
+#: ../beast-gtk/bstsampleeditor.c:487 ../beast-gtk/bstwaveeditor.c:209
 msgid "VScale:"
 msgstr "VScale:"
 
@@ -2521,43 +2694,35 @@ msgstr "Start:"
 msgid "End:"
 msgstr "End:"
 
-#: ../beast-gtk/bstsampleeditor.c:515
-#: ../beast-gtk/bstwaveeditor.c:215
+#: ../beast-gtk/bstsampleeditor.c:515 ../beast-gtk/bstwaveeditor.c:215
 msgid "Shape Range"
 msgstr "Shape Range"
 
-#: ../beast-gtk/bstsampleeditor.c:516
-#: ../beast-gtk/bstwaveeditor.c:216
+#: ../beast-gtk/bstsampleeditor.c:516 ../beast-gtk/bstwaveeditor.c:216
 msgid "Shape Average"
 msgstr "Shape Average"
 
-#: ../beast-gtk/bstsampleeditor.c:517
-#: ../beast-gtk/bstwaveeditor.c:217
+#: ../beast-gtk/bstsampleeditor.c:517 ../beast-gtk/bstwaveeditor.c:217
 msgid "Shape Minimum"
 msgstr "Shape Minimum"
 
-#: ../beast-gtk/bstsampleeditor.c:518
-#: ../beast-gtk/bstwaveeditor.c:218
+#: ../beast-gtk/bstsampleeditor.c:518 ../beast-gtk/bstwaveeditor.c:218
 msgid "Shape Maximum"
 msgstr "Shape Maximum"
 
-#: ../beast-gtk/bstsampleeditor.c:519
-#: ../beast-gtk/bstwaveeditor.c:219
+#: ../beast-gtk/bstsampleeditor.c:519 ../beast-gtk/bstwaveeditor.c:219
 msgid "Sketch Range"
 msgstr "Sketch Range"
 
-#: ../beast-gtk/bstsampleeditor.c:520
-#: ../beast-gtk/bstwaveeditor.c:220
+#: ../beast-gtk/bstsampleeditor.c:520 ../beast-gtk/bstwaveeditor.c:220
 msgid "Sketch Average"
 msgstr "Sketch Average"
 
-#: ../beast-gtk/bstsampleeditor.c:521
-#: ../beast-gtk/bstwaveeditor.c:221
+#: ../beast-gtk/bstsampleeditor.c:521 ../beast-gtk/bstwaveeditor.c:221
 msgid "Sketch Minimum"
 msgstr "Sketch Minimum"
 
-#: ../beast-gtk/bstsampleeditor.c:522
-#: ../beast-gtk/bstwaveeditor.c:222
+#: ../beast-gtk/bstsampleeditor.c:522 ../beast-gtk/bstwaveeditor.c:222
 msgid "Sketch Maximum"
 msgstr "Sketch Maximum"
 
@@ -2568,10 +2733,8 @@ msgstr "Sketch Maximum"
 msgid "Preview"
 msgstr "Preview"
 
-#: ../beast-gtk/bstscrollgraph.c:570
-#: ../beast-gtk/bstscrollgraph.c:573
-#: ../beast-gtk/bstscrollgraph.c:576
-#: ../beast-gtk/bstscrollgraph.c:579
+#: ../beast-gtk/bstscrollgraph.c:570 ../beast-gtk/bstscrollgraph.c:573
+#: ../beast-gtk/bstscrollgraph.c:576 ../beast-gtk/bstscrollgraph.c:579
 msgid "Spectrograph"
 msgstr "Spectrograph"
 
@@ -2610,10 +2773,12 @@ msgstr "Unconnected Output Channel"
 #: ../beast-gtk/bstsnetrouter.c:42
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
-"Use button1 to create links, button2 for movement and button3 to change properties"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
 msgstr ""
 "Edit tool (mouse buttons 1-3)\n"
-"Use button1 to create links, button2 for movement and button3 to change properties"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
 
 #: ../beast-gtk/bstsnetrouter.c:47
 msgid "Edit"
@@ -2623,8 +2788,7 @@ msgstr "Edit"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Edit/Move/Menu (mouse buttons 1-3)"
 
-#: ../beast-gtk/bstsnetrouter.c:51
-#: ../beast-gtk/bstsnetrouter.c:933
+#: ../beast-gtk/bstsnetrouter.c:51 ../beast-gtk/bstsnetrouter.c:933
 msgid "Palette"
 msgstr "Palette"
 
@@ -2636,8 +2800,7 @@ msgstr "Toggle visibility of the tool palette"
 msgid "Input channel in use"
 msgstr "Input channel in use"
 
-#: ../beast-gtk/bstsnetrouter.c:639
-#: ../beast-gtk/bstsnetrouter.c:641
+#: ../beast-gtk/bstsnetrouter.c:639 ../beast-gtk/bstsnetrouter.c:641
 #: ../beast-gtk/bstsnetrouter.c:677
 msgid "Create Link"
 msgstr "Create Link"
@@ -2650,10 +2813,8 @@ msgstr "Select output module"
 msgid "Select input module"
 msgstr "Select input module"
 
-#: ../beast-gtk/bstsnetrouter.c:705
-#: ../beast-gtk/bstsupershell.c:188
-#: ../beast-gtk/bstsupershell.c:221
-#: ../beast-gtk/bstsupershell.c:235
+#: ../beast-gtk/bstsnetrouter.c:705 ../beast-gtk/bstsupershell.c:188
+#: ../beast-gtk/bstsupershell.c:221 ../beast-gtk/bstsupershell.c:235
 msgid "Properties"
 msgstr "Properties"
 
@@ -2669,8 +2830,7 @@ msgstr "Disconnect Inputs"
 msgid "Disconnect Outputs"
 msgstr "Disconnect Outputs"
 
-#: ../beast-gtk/bstsnetrouter.c:710
-#: ../beast-gtk/bstsnetrouter.c:759
+#: ../beast-gtk/bstsnetrouter.c:710 ../beast-gtk/bstsnetrouter.c:759
 msgid "Show Info"
 msgstr "Show Info"
 
@@ -2758,8 +2918,7 @@ msgstr "Parts"
 msgid "Busses"
 msgstr "Busses"
 
-#: ../beast-gtk/bstsupershell.c:200
-#: ../beast-gtk/bstsupershell.c:217
+#: ../beast-gtk/bstsupershell.c:200 ../beast-gtk/bstsupershell.c:217
 msgid "Routing"
 msgstr "Routing"
 
@@ -2815,8 +2974,7 @@ msgstr "Use the horizontal ruler to adjust the play position pointer"
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr "Use the horizontal ruler to adjust the right loop pointer"
 
-#: ../beast-gtk/bsttrackrollctrl.c:415
-#: ../beast-gtk/bsttrackrollctrl.c:427
+#: ../beast-gtk/bsttrackrollctrl.c:415 ../beast-gtk/bsttrackrollctrl.c:427
 msgid "Edit Part"
 msgstr "Edit Part"
 
@@ -2824,20 +2982,16 @@ msgstr "Edit Part"
 msgid "No Part"
 msgstr "No Part"
 
-#: ../beast-gtk/bsttrackrollctrl.c:446
-#: ../beast-gtk/bsttrackrollctrl.c:448
-#: ../beast-gtk/bsttrackrollctrl.c:453
-#: ../beast-gtk/bsttrackrollctrl.c:458
+#: ../beast-gtk/bsttrackrollctrl.c:446 ../beast-gtk/bsttrackrollctrl.c:448
+#: ../beast-gtk/bsttrackrollctrl.c:453 ../beast-gtk/bsttrackrollctrl.c:458
 msgid "Insert Part"
 msgstr "Insert Part"
 
-#: ../beast-gtk/bsttrackrollctrl.c:448
-#: ../beast-gtk/bsttrackrollctrl.c:554
+#: ../beast-gtk/bsttrackrollctrl.c:448 ../beast-gtk/bsttrackrollctrl.c:554
 msgid "Lost Part"
 msgstr "Lost Part"
 
-#: ../beast-gtk/bsttrackrollctrl.c:453
-#: ../beast-gtk/bsttrackrollctrl.c:458
+#: ../beast-gtk/bsttrackrollctrl.c:453 ../beast-gtk/bsttrackrollctrl.c:458
 msgid "Position taken"
 msgstr "Position taken"
 
@@ -2849,24 +3003,20 @@ msgstr "Insert part"
 msgid "No Track"
 msgstr "No Track"
 
-#: ../beast-gtk/bsttrackrollctrl.c:476
-#: ../beast-gtk/bsttrackrollctrl.c:479
+#: ../beast-gtk/bsttrackrollctrl.c:476 ../beast-gtk/bsttrackrollctrl.c:479
 msgid "Delete Part"
 msgstr "Delete Part"
 
-#: ../beast-gtk/bsttrackrollctrl.c:488
-#: ../beast-gtk/bsttrackrollctrl.c:522
+#: ../beast-gtk/bsttrackrollctrl.c:488 ../beast-gtk/bsttrackrollctrl.c:522
 msgid "Link Part"
 msgstr "Link Part"
 
-#: ../beast-gtk/bsttrackrollctrl.c:488
-#: ../beast-gtk/bsttrackrollctrl.c:522
+#: ../beast-gtk/bsttrackrollctrl.c:488 ../beast-gtk/bsttrackrollctrl.c:522
 #: ../beast-gtk/bsttrackrollctrl.c:554
 msgid "Move Part"
 msgstr "Move Part"
 
-#: ../beast-gtk/bsttrackrollctrl.c:566
-#: ../beast-gtk/bsttrackrollctrl.c:571
+#: ../beast-gtk/bsttrackrollctrl.c:566 ../beast-gtk/bsttrackrollctrl.c:571
 msgid "Start Editor"
 msgstr "Start Editor"
 
@@ -2884,8 +3034,7 @@ msgstr "Add a new track to this song"
 msgid "Delete the currently selected track"
 msgstr "Delete the currently selected track"
 
-#: ../beast-gtk/bsttrackview.c:301
-#: ../bse/bsetrack.c:283
+#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
 #: ../bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr "Available Waves"
@@ -2895,11 +3044,12 @@ msgid "List of available waves to choose a track instrument from"
 msgstr "List of available waves to choose a track instrument from"
 
 #: ../beast-gtk/bsttrackview.c:611
-msgid "Notes from unchecked tracks are ignored by the sequencer during playback"
-msgstr "Notes from unchecked tracks are ignored by the sequencer during playback"
+msgid ""
+"Notes from unchecked tracks are ignored by the sequencer during playback"
+msgstr ""
+"Notes from unchecked tracks are ignored by the sequencer during playback"
 
-#: ../beast-gtk/bsttrackview.c:614
-#: ../bse/bsemidisynth.c:449
+#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
 #: ../bse/bsetrack.c:1013
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum number of voices for simultaneous playback"
@@ -2916,10 +3066,8 @@ msgstr "Midi channel assigned to this track, 0 uses private per-track channel"
 msgid "Mixer busses connected to track output"
 msgstr "Mixer busses connected to track output"
 
-#: ../beast-gtk/bsttrackview.c:626
-#: ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777
-#: ../bse/bsetrack.c:1024
+#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
+#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesis network to be used as postprocessor"
 
@@ -2931,8 +3079,7 @@ msgstr "Error: "
 msgid "Details:"
 msgstr "Details:"
 
-#: ../beast-gtk/bstusermessage.c:224
-#: ../beast-gtk/bstusermessage.c:531
+#: ../beast-gtk/bstusermessage.c:224 ../beast-gtk/bstusermessage.c:531
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -2957,8 +3104,12 @@ msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
 #: ../beast-gtk/bstusermessage.c:262
-msgid "This setting can be changed in the \"Messages\" section of the preferences dialog"
-msgstr "This setting can be changed in the \"Messages\" section of the preferences dialogue"
+msgid ""
+"This setting can be changed in the \"Messages\" section of the preferences "
+"dialog"
+msgstr ""
+"This setting can be changed in the \"Messages\" section of the preferences "
+"dialogue"
 
 #: ../beast-gtk/bstusermessage.c:367
 #, c-format
@@ -2987,8 +3138,7 @@ msgstr "Display dialogues with debugging messages"
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Executing procedure '%s' from script '%s'."
 
-#: ../beast-gtk/bstusermessage.c:578
-#: ../beast-gtk/bstusermessage.c:580
+#: ../beast-gtk/bstusermessage.c:578 ../beast-gtk/bstusermessage.c:580
 msgid "processing"
 msgstr "processing"
 
@@ -2997,8 +3147,7 @@ msgstr "processing"
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "An error occurred during execution of script procedure '%s': %s"
 
-#: ../beast-gtk/bstusermessage.c:604
-#: ../beast-gtk/bstusermessage.c:797
+#: ../beast-gtk/bstusermessage.c:604 ../beast-gtk/bstusermessage.c:797
 msgid "Script execution error."
 msgstr "Script execution error."
 
@@ -3007,8 +3156,7 @@ msgstr "Script execution error."
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Failed to execute script procedure '%s': %s"
 
-#: ../beast-gtk/bstutils.c:296
-#: ../beast-gtk/bstutils.c:318
+#: ../beast-gtk/bstutils.c:296 ../beast-gtk/bstutils.c:318
 #: ../beast-gtk/bstutils.c:321
 msgid "Updating View"
 msgstr "Updating View"
@@ -3395,32 +3543,46 @@ msgid "Use underline"
 msgstr "Use underline"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:138
-msgid "If set, an underline in the text indicates the next character should be used for the mnemonic accelerator key"
-msgstr "If set, an underline in the text indicates the next character should be used for the mnemonic accelerator key"
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
 msgstr "Auto cut"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:143
-msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
-msgstr "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
 msgstr "Justification"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:148
-msgid "The alignment of the lines in the text of the label relative to each other. This does NOT affect the alignment of the label within its allocation."
-msgstr "The alignment of the lines in the text of the label relative to each other. This does NOT affect the alignment of the label within its allocation."
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
 msgstr "Pattern"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:153
-msgid "A string with _ characters in positions correspond to characters in the text to underline"
-msgstr "A string with _ characters in positions correspond to characters in the text to underline"
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
@@ -3478,15 +3640,18 @@ msgstr "Failed to launch a web browser executable"
 
 #: ../birnet/birnetutils.cc:1195
 #, c-format
-msgid "No suitable web browser executable could be found to be executed and to display the URL: %s"
-msgstr "No suitable web browser executable could be found to be executed and to display the URL: %s"
+msgid ""
+"No suitable web browser executable could be found to be executed and to "
+"display the URL: %s"
+msgstr ""
+"No suitable web browser executable could be found to be executed and to "
+"display the URL: %s"
 
 #: ../birnet/birnetutils.cc:1196
 msgid "Show messages about web browser launch problems"
 msgstr "Show messages about web browser launch problems"
 
-#: ../bse/bseautodoc.c:185
-#: ../bse/bseautodoc.c:191
+#: ../bse/bseautodoc.c:185 ../bse/bseautodoc.c:191
 msgid "Range:"
 msgstr "Range:"
 
@@ -3498,13 +3663,11 @@ msgstr "This procedure has multiple return values."
 msgid "Number of elements (C specific)"
 msgstr "Number of elements (C specific)"
 
-#: ../bse/bseautodoc.c:354
-#: ../bse/bseautodoc.c:428
+#: ../bse/bseautodoc.c:354 ../bse/bseautodoc.c:428
 msgid "Authors:"
 msgstr "Authors:"
 
-#: ../bse/bseautodoc.c:363
-#: ../bse/bseautodoc.c:437
+#: ../bse/bseautodoc.c:363 ../bse/bseautodoc.c:437
 msgid "License:"
 msgstr "Licence:"
 
@@ -3516,23 +3679,19 @@ msgstr "/Filters/Biquad Types"
 msgid "Filter"
 msgstr "Filter"
 
-#: ../bse/bsebiquadfilter.c:127
-#: ../plugins/bseiirfilter.c:125
+#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr "Filter Type"
 
-#: ../bse/bsebiquadfilter.c:127
-#: ../plugins/bseiirfilter.c:119
+#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:119
 msgid "The filter design type"
 msgstr "The filter design type"
 
-#: ../bse/bsebiquadfilter.c:131
-#: ../bse/bsebiquadfilter.c:139
+#: ../bse/bsebiquadfilter.c:131 ../bse/bsebiquadfilter.c:139
 msgid "Center Frequency"
 msgstr "Centre Frequency"
 
-#: ../bse/bsebiquadfilter.c:133
-#: ../plugins/bseiirfilter.c:141
+#: ../bse/bsebiquadfilter.c:133 ../plugins/bseiirfilter.c:141
 #: ../plugins/bseiirfilter.c:152
 msgid "Cutoff [Hz]"
 msgstr "Cutoff [Hz]"
@@ -3541,27 +3700,24 @@ msgstr "Cutoff [Hz]"
 msgid "Filter cutoff frequency in Hertz"
 msgstr "Filter cutoff frequency in Hertz"
 
-#: ../bse/bsebiquadfilter.c:141
-#: ../bse/bseconstant.c:127
-#: ../bse/bsestandardosc.c:149
-#: ../plugins/bseiirfilter.c:146
-#: ../plugins/bseiirfilter.c:157
-#: ../plugins/davcanyondelay.c:114
-#: ../plugins/davorgan.c:113
-#: ../plugins/davsyndrum.c:94
+#: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:127
+#: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:146
+#: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
+#: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
 msgid "Note"
 msgstr "Note"
 
-#: ../bse/bsebiquadfilter.c:141
-#: ../plugins/bseiirfilter.c:147
-#: ../plugins/bseiirfilter.c:158
-#: ../plugins/davcanyondelay.c:115
-msgid "Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"
+#: ../bse/bsebiquadfilter.c:141 ../plugins/bseiirfilter.c:147
+#: ../plugins/bseiirfilter.c:158 ../plugins/davcanyondelay.c:115
+msgid ""
+"Filter cutoff frequency as note, converted to Hertz according to the current "
+"musical tuning"
+msgstr ""
+"Filter cutoff frequency as note, converted to Hertz according to the current "
+"musical tuning"
 
-#: ../bse/bsebiquadfilter.c:147
-#: ../bse/bsebiquadfilter.c:153
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
 msgid "Emphasis"
 msgstr "Emphasis"
 
@@ -3574,36 +3730,29 @@ msgid "Norm Type"
 msgstr "Norm Type"
 
 #: ../bse/bsebiquadfilter.c:156
-msgid "The filter gain normalization type (supported only by highpass and lowpass)"
-msgstr "The filter gain normalisation type (supported only by highpass and lowpass)"
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+"The filter gain normalisation type (supported only by highpass and lowpass)"
 
-#: ../bse/bsebiquadfilter.c:162
-#: ../bse/bsebiquadfilter.c:168
-#: ../bse/bsebiquadfilter.c:174
-#: ../bse/bsebiquadfilter.c:180
-#: ../bse/bsestandardosc.c:162
-#: ../bse/bsestandardosc.c:167
-#: ../bse/bsestandardosc.c:172
-#: ../bse/bsestandardosc.c:177
-#: ../bse/bsewaveosc.c:567
-#: ../bse/bsewaveosc.c:573
-#: ../bse/bsewaveosc.c:579
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsebiquadfilter.c:168
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
+#: ../bse/bsestandardosc.c:162 ../bse/bsestandardosc.c:167
+#: ../bse/bsestandardosc.c:172 ../bse/bsestandardosc.c:177
+#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
 msgid "Modulation"
 msgstr "Modulation"
 
-#: ../bse/bsebiquadfilter.c:165
-#: ../bse/bsestandardosc.c:164
+#: ../bse/bsebiquadfilter.c:165 ../bse/bsestandardosc.c:164
 msgid "Strength of linear frequency modulation"
 msgstr "Strength of linear frequency modulation"
 
-#: ../bse/bsebiquadfilter.c:171
-#: ../bse/bsestandardosc.c:169
+#: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:169
 #: ../bse/bsewaveosc.c:576
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Perform exponential frequency modulation instead of linear"
 
-#: ../bse/bsebiquadfilter.c:177
-#: ../bse/bsestandardosc.c:174
+#: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:174
 #: ../bse/bsewaveosc.c:582
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Number of octaves to be affected by exponential frequency modulation"
@@ -3617,10 +3766,8 @@ msgstr "Gain Modulation [%]"
 msgid "Strength of gain modulation"
 msgstr "Strength of gain modulation"
 
-#: ../bse/bsebiquadfilter.c:188
-#: ../plugins/bseatandistort.c:88
-#: ../plugins/bseiirfilter.c:162
-#: ../plugins/davbassfilter.idl:31
+#: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:88
+#: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:31
 #: ../plugins/davchorus.idl:28
 msgid "Audio In"
 msgstr "Audio In"
@@ -3629,12 +3776,9 @@ msgstr "Audio In"
 msgid "Unfiltered Audio Signal"
 msgstr "Unfiltered Audio Signal"
 
-#: ../bse/bsebiquadfilter.c:190
-#: ../bse/bsestandardosc.c:197
-#: ../bse/bsewaveosc.c:591
-#: ../plugins/davorgan.c:148
-#: ../plugins/davsyndrum.c:117
-#: ../plugins/davxtalstrings.c:151
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:197
+#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../plugins/davsyndrum.c:117 ../plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr "Freq In"
 
@@ -3642,13 +3786,11 @@ msgstr "Freq In"
 msgid "Center Frequency Input"
 msgstr "Centre Frequency Input"
 
-#: ../bse/bsebiquadfilter.c:192
-#: ../bse/bsestandardosc.c:199
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:199
 msgid "Freq Mod In"
 msgstr "Freq Mod In"
 
-#: ../bse/bsebiquadfilter.c:192
-#: ../bse/bsestandardosc.c:199
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:199
 msgid "Frequency Modulation Input"
 msgstr "Frequency Modulation Input"
 
@@ -3660,20 +3802,13 @@ msgstr "Gain Mod In"
 msgid "Gain Modulation Input"
 msgstr "Gain Modulation Input"
 
-#: ../bse/bsebiquadfilter.c:196
-#: ../bse/bsestandardosc.c:205
-#: ../bse/bsewaveosc.c:597
-#: ../plugins/bseadder.c:99
-#: ../plugins/bseamplifier.idl:47
-#: ../plugins/bseatandistort.c:90
-#: ../plugins/bseiirfilter.c:164
-#: ../plugins/bsemixer.c:107
-#: ../plugins/bsemult.c:66
-#: ../plugins/davbassfilter.idl:33
-#: ../plugins/davchorus.idl:29
-#: ../plugins/davorgan.c:149
-#: ../plugins/davsyndrum.c:123
-#: ../plugins/davxtalstrings.c:155
+#: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:205
+#: ../bse/bsewaveosc.c:597 ../plugins/bseadder.c:99
+#: ../plugins/bseamplifier.idl:47 ../plugins/bseatandistort.c:90
+#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:107
+#: ../plugins/bsemult.c:66 ../plugins/davbassfilter.idl:33
+#: ../plugins/davchorus.idl:29 ../plugins/davorgan.c:149
+#: ../plugins/davsyndrum.c:123 ../plugins/davxtalstrings.c:155
 msgid "Audio Out"
 msgstr "Audio Out"
 
@@ -3689,8 +3824,7 @@ msgstr "Available Inputs"
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "List of available synthesis signals to be used as bus input"
 
-#: ../bse/bsebus.c:145
-#: ../bse/bsetrack.c:300
+#: ../bse/bsebus.c:145 ../bse/bsetrack.c:300
 msgid "Available Outputs"
 msgstr "Available Outputs"
 
@@ -3698,15 +3832,9 @@ msgstr "Available Outputs"
 msgid "List of available mixer busses to be used as bus output"
 msgstr "List of available mixer busses to be used as bus output"
 
-#: ../bse/bsebus.c:870
-#: ../bse/bsebus.c:872
-#: ../bse/bsebus.c:874
-#: ../bse/bsebus.c:876
-#: ../bse/bsebus.c:880
-#: ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467
-#: ../bse/bsemidisynth.c:474
-#: ../bse/bsetrack.c:997
+#: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
+#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
 msgid "Adjustments"
 msgstr "Adjustments"
 
@@ -3766,13 +3894,11 @@ msgstr "Input Signals"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Synthesis signals (from tracks and busses) used as bus input"
 
-#: ../bse/bsebus.c:893
-#: ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
 msgid "Signal Outputs"
 msgstr "Signal Outputs"
 
-#: ../bse/bsebus.c:895
-#: ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
 msgid "Output Signals"
 msgstr "Output Signals"
 
@@ -3788,19 +3914,16 @@ msgstr "Internals"
 msgid "Master Output"
 msgstr "Master Output"
 
-#: ../bse/bsebus.c:904
-#: ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
-#: ../bse/bsebus.c:904
-#: ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: ../bse/bsebus.c:906
-#: ../bse/bsepcmoutput.c:129
+#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr "Right Audio In"
@@ -3809,38 +3932,37 @@ msgstr "Right Audio In"
 msgid "Right channel input"
 msgstr "Right channel input"
 
-#: ../bse/bsebus.c:908
-#: ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
-#: ../bse/bsebus.c:908
-#: ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: ../bse/bsebus.c:910
-#: ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
-#: ../bse/bsebus.c:910
-#: ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
 msgid "Right channel output"
 msgstr "Right channel output"
 
 #: ../bse/bsebus.c:929
-msgid "Bus implementation for songs, used to route track audio signals to the master output."
-msgstr "Bus implementation for songs, used to route track audio signals to the master output."
+msgid ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
+msgstr ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
 
 #: ../bse/bseconstant.c:83
 msgid "/Other Sources/Constant"
 msgstr "/Other Sources/Constant"
 
-#: ../bse/bseconstant.c:105
-#: ../bse/bseconstant.c:136
+#: ../bse/bseconstant.c:105 ../bse/bseconstant.c:136
 #, c-format
 msgid "Constant Output %u"
 msgstr "Constant Output %u"
@@ -3853,20 +3975,13 @@ msgstr "Value [float]"
 msgid "Constant signal value"
 msgstr "Constant signal value"
 
-#: ../bse/bseconstant.c:116
-#: ../bse/bseinstrumentinput.c:118
-#: ../bse/bsemidiinput.c:108
-#: ../bse/bsestandardosc.c:144
-#: ../plugins/davcanyondelay.c:108
-#: ../plugins/davorgan.c:107
-#: ../plugins/davsyndrum.c:87
-#: ../plugins/davsyndrum.c:88
-#: ../plugins/davsyndrum.c:93
-#: ../plugins/davxtalstrings.c:101
-#: ../plugins/davxtalstrings.c:103
-#: ../plugins/davxtalstrings.c:107
-#: ../plugins/davxtalstrings.c:112
-#: ../plugins/davxtalstrings.c:117
+#: ../bse/bseconstant.c:116 ../bse/bseinstrumentinput.c:118
+#: ../bse/bsemidiinput.c:108 ../bse/bsestandardosc.c:144
+#: ../plugins/davcanyondelay.c:108 ../plugins/davorgan.c:107
+#: ../plugins/davsyndrum.c:87 ../plugins/davsyndrum.c:88
+#: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
+#: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
+#: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
 msgid "Frequency"
 msgstr "Frequency"
 
@@ -3875,8 +3990,12 @@ msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr "Constant signal value interpreted as frequency value in Hertz"
 
 #: ../bse/bseconstant.c:129
-msgid "Constant signal value as note, converted to Hertz according to the current musical tuning"
-msgstr "Constant signal value as note, converted to Hertz according to the current musical tuning"
+msgid ""
+"Constant signal value as note, converted to Hertz according to the current "
+"musical tuning"
+msgstr ""
+"Constant signal value as note, converted to Hertz according to the current "
+"musical tuning"
 
 #: ../bse/bseconstant.c:135
 #, c-format
@@ -3890,8 +4009,14 @@ msgstr "12 Tone Equal Temperament"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: ../bse/bsecore.idl:74
-msgid "The most common tuning system for modern Western music, is the twelve-tone equal temperament, abbreviated as 12-TET, which divides the octave into 12 equal parts."
-msgstr "The most common tuning system for modern Western music, is the twelve-tone equal temperament, abbreviated as 12-TET, which divides the octave into 12 equal parts."
+msgid ""
+"The most common tuning system for modern Western music, is the twelve-tone "
+"equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
+"equal parts."
+msgstr ""
+"The most common tuning system for modern Western music, is the twelve-tone "
+"equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
+"equal parts."
 
 #: ../bse/bsecore.idl:77
 msgid "7 Tone Equal Temperament"
@@ -3899,8 +4024,14 @@ msgstr "7 Tone Equal Temperament"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: ../bse/bsecore.idl:78
-msgid "A fairly common tuning system is the seven-tone equal temperament tuning system, abbreviated as 7-TET. It divides the octave into 7 equal parts using 171 cent steps."
-msgstr "A fairly common tuning system is the seven-tone equal temperament tuning system, abbreviated as 7-TET. It divides the octave into 7 equal parts using 171 cent steps."
+msgid ""
+"A fairly common tuning system is the seven-tone equal temperament tuning "
+"system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
+"171 cent steps."
+msgstr ""
+"A fairly common tuning system is the seven-tone equal temperament tuning "
+"system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
+"171 cent steps."
 
 #: ../bse/bsecore.idl:80
 msgid "5 Tone Equal Temperament"
@@ -3908,8 +4039,14 @@ msgstr "5 Tone Equal Temperament"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: ../bse/bsecore.idl:81
-msgid "A fairly common tuning system is the five-tone equal temperament tuning system, abbreviated as 5-TET. It divides the octave into 5 equal parts using 240 cent steps."
-msgstr "A fairly common tuning system is the five-tone equal temperament tuning system, abbreviated as 5-TET. It divides the octave into 5 equal parts using 240 cent steps."
+msgid ""
+"A fairly common tuning system is the five-tone equal temperament tuning "
+"system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
+"240 cent steps."
+msgstr ""
+"A fairly common tuning system is the five-tone equal temperament tuning "
+"system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
+"240 cent steps."
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
 #: ../bse/bsecore.idl:84
@@ -3918,8 +4055,16 @@ msgstr "Diatonic Scale"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
 #: ../bse/bsecore.idl:85
-msgid "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note musical scale comprising five whole-tone and two half-tone steps. The half tones are maximally separated, so between two half-tone steps there are either two or three whole tones, repeating per octave."
-msgstr "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note musical scale comprising five whole-tone and two half-tone steps. The half tones are maximally separated, so between two half-tone steps there are either two or three whole tones, repeating per octave."
+msgid ""
+"In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
+"musical scale comprising five whole-tone and two half-tone steps. The half "
+"tones are maximally separated, so between two half-tone steps there are "
+"either two or three whole tones, repeating per octave."
+msgstr ""
+"In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
+"musical scale comprising five whole-tone and two half-tone steps. The half "
+"tones are maximally separated, so between two half-tone steps there are "
+"either two or three whole tones, repeating per octave."
 
 #. Werckmeister I
 #: ../bse/bsecore.idl:89
@@ -3928,8 +4073,10 @@ msgstr "Indian Scale"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
 #: ../bse/bsecore.idl:90
-msgid "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
-msgstr "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
+msgid ""
+"Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
+msgstr ""
+"Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 
 #: ../bse/bsecore.idl:91
 msgid "Pythagorean Tuning"
@@ -3937,8 +4084,14 @@ msgstr "Pythagorean Tuning"
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
 #: ../bse/bsecore.idl:92
-msgid "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, in which the frequency relationships of all intervals are based on the ratio 3:2. Its discovery is generally credited to Pythagoras."
-msgstr "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, in which the frequency relationships of all intervals are based on the ratio 3:2. Its discovery is generally credited to Pythagoras."
+msgid ""
+"Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
+"in which the frequency relationships of all intervals are based on the ratio "
+"3:2. Its discovery is generally credited to Pythagoras."
+msgstr ""
+"Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
+"in which the frequency relationships of all intervals are based on the ratio "
+"3:2. Its discovery is generally credited to Pythagoras."
 
 #: ../bse/bsecore.idl:95
 msgid "Pentatonic 5-limit"
@@ -3946,8 +4099,14 @@ msgstr "Pentatonic 5-limit"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:96
-msgid "Pentatonic scales are used in modern jazz and pop/rock contexts because they work exceedingly well over several chords diatonic to the same key, often better than the parent scale."
-msgstr "Pentatonic scales are used in modern jazz and pop/rock contexts because they work exceedingly well over several chords diatonic to the same key, often better than the parent scale."
+msgid ""
+"Pentatonic scales are used in modern jazz and pop/rock contexts because they "
+"work exceedingly well over several chords diatonic to the same key, often "
+"better than the parent scale."
+msgstr ""
+"Pentatonic scales are used in modern jazz and pop/rock contexts because they "
+"work exceedingly well over several chords diatonic to the same key, often "
+"better than the parent scale."
 
 #: ../bse/bsecore.idl:99
 msgid "Pentatonic Blues"
@@ -3955,8 +4114,12 @@ msgstr "Pentatonic Blues"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:100
-msgid "The blues scale is the minor pentatonic with an additional augmented fourth, which is referred to as the \"blues note\"."
-msgstr "The blues scale is the minor pentatonic with an additional augmented fourth, which is referred to as the \"blues note\"."
+msgid ""
+"The blues scale is the minor pentatonic with an additional augmented fourth, "
+"which is referred to as the \"blues note\"."
+msgstr ""
+"The blues scale is the minor pentatonic with an additional augmented fourth, "
+"which is referred to as the \"blues note\"."
 
 #: ../bse/bsecore.idl:102
 msgid "Pentatonic Gogo"
@@ -3964,8 +4127,12 @@ msgstr "Pentatonic Gogo"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:103
-msgid "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune the instruments of the Gogo people of Tanzania."
-msgstr "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune the instruments of the Gogo people of Tanzania."
+msgid ""
+"The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
+"the instruments of the Gogo people of Tanzania."
+msgstr ""
+"The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
+"the instruments of the Gogo people of Tanzania."
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
 #: ../bse/bsecore.idl:106
@@ -3974,8 +4141,12 @@ msgstr "Quarter-Comma Meantone"
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
 #: ../bse/bsecore.idl:107
-msgid "Quarter-comma meantone was the most common meantone temperament in the sixteenth and seventeenth centuries and sometimes used later."
-msgstr "Quarter-comma meantone was the most common meantone temperament in the sixteenth and seventeenth centuries and sometimes used later."
+msgid ""
+"Quarter-comma meantone was the most common meantone temperament in the "
+"sixteenth and seventeenth centuries and sometimes used later."
+msgstr ""
+"Quarter-comma meantone was the most common meantone temperament in the "
+"sixteenth and seventeenth centuries and sometimes used later."
 
 #. Werckmeister II
 #: ../bse/bsecore.idl:109
@@ -3984,8 +4155,12 @@ msgstr "Silbermann-Sorge Temperament"
 
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
 #: ../bse/bsecore.idl:110
-msgid "The Silbermann-Sorge temperament is a meantone temperament used for Baroque era organs by Gottfried Silbermann."
-msgstr "The Silbermann-Sorge temperament is a meantone temperament used for Baroque era organs by Gottfried Silbermann."
+msgid ""
+"The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
+"era organs by Gottfried Silbermann."
+msgstr ""
+"The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
+"era organs by Gottfried Silbermann."
 
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
 #: ../bse/bsecore.idl:113
@@ -3994,8 +4169,16 @@ msgstr "Werckmeister III"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:114
-msgid "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by 1/4 comma. Werckmeister designated this tuning as particularly suited for playing chromatic music."
-msgstr "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by 1/4 comma. Werckmeister designated this tuning as particularly suited for playing chromatic music."
+msgid ""
+"This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
+"each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
+"1/4 comma. Werckmeister designated this tuning as particularly suited for "
+"playing chromatic music."
+msgstr ""
+"This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
+"each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
+"1/4 comma. Werckmeister designated this tuning as particularly suited for "
+"playing chromatic music."
 
 #: ../bse/bsecore.idl:117
 msgid "Werckmeister IV"
@@ -4003,8 +4186,18 @@ msgstr "Werckmeister IV"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:118
-msgid "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The other fifths are pure. Most of its intervals are close to sixth-comma meantone. Werckmeister designed this tuning for playing mainly diatonic music."
-msgstr "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The other fifths are pure. Most of its intervals are close to sixth-comma meantone. Werckmeister designed this tuning for playing mainly diatonic music."
+msgid ""
+"In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
+"by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
+"other fifths are pure. Most of its intervals are close to sixth-comma "
+"meantone. Werckmeister designed this tuning for playing mainly diatonic "
+"music."
+msgstr ""
+"In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
+"by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
+"other fifths are pure. Most of its intervals are close to sixth-comma "
+"meantone. Werckmeister designed this tuning for playing mainly diatonic "
+"music."
 
 #: ../bse/bsecore.idl:122
 msgid "Werckmeister V"
@@ -4012,8 +4205,16 @@ msgstr "Werckmeister V"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:123
-msgid "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by 1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are pure. This temperament is closer to equal temperament than Werckmeister III or IV."
-msgstr "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by 1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are pure. This temperament is closer to equal temperament than Werckmeister III or IV."
+msgid ""
+"In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
+"1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
+"pure. This temperament is closer to equal temperament than Werckmeister III "
+"or IV."
+msgstr ""
+"In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
+"1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
+"pure. This temperament is closer to equal temperament than Werckmeister III "
+"or IV."
 
 #: ../bse/bsecore.idl:126
 msgid "Werckmeister VI"
@@ -4021,8 +4222,20 @@ msgstr "Werckmeister VI"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:127
-msgid "This tuning is also known as Septenarius tuning is based on a division of the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has rational frequency relationships, but in practice involves pure and impure sounding fifths. Werckmeister described the Septenarius as a \"temperament which has nothing at all to do with the divisions of the comma, nevertheless in practice so correct that one can be really satisfied with it\"."
-msgstr "This tuning is also known as Septenarius tuning is based on a division of the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has rational frequency relationships, but in practice involves pure and impure sounding fifths. Werckmeister described the Septenarius as a \"temperament which has nothing at all to do with the divisions of the comma, nevertheless in practice so correct that one can be really satisfied with it\"."
+msgid ""
+"This tuning is also known as Septenarius tuning is based on a division of "
+"the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
+"rational frequency relationships, but in practice involves pure and impure "
+"sounding fifths. Werckmeister described the Septenarius as a \"temperament "
+"which has nothing at all to do with the divisions of the comma, nevertheless "
+"in practice so correct that one can be really satisfied with it\"."
+msgstr ""
+"This tuning is also known as Septenarius tuning is based on a division of "
+"the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
+"rational frequency relationships, but in practice involves pure and impure "
+"sounding fifths. Werckmeister described the Septenarius as a \"temperament "
+"which has nothing at all to do with the divisions of the comma, nevertheless "
+"in practice so correct that one can be really satisfied with it\"."
 
 #: ../bse/bsecore.idl:134
 msgid "Kirnberger III"
@@ -4030,8 +4243,20 @@ msgstr "Kirnberger III"
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
 #: ../bse/bsecore.idl:135
-msgid "Kirnberger's method of compensating for and closing the circle of fifths is to split the \"wolf\" interval known to those who have used meantone temperaments between four fifths instead, allowing for four 1/4-comma wolves to take their place. 1/4-comma wolves are used extensively in meantone and are much easier to tune and to listen to. Therefore, only one third remains pure (between C and E)."
-msgstr "Kirnberger's method of compensating for and closing the circle of fifths is to split the \"wolf\" interval known to those who have used meantone temperaments between four fifths instead, allowing for four 1/4-comma wolves to take their place. 1/4-comma wolves are used extensively in meantone and are much easier to tune and to listen to. Therefore, only one third remains pure (between C and E)."
+msgid ""
+"Kirnberger's method of compensating for and closing the circle of fifths is "
+"to split the \"wolf\" interval known to those who have used meantone "
+"temperaments between four fifths instead, allowing for four 1/4-comma wolves "
+"to take their place. 1/4-comma wolves are used extensively in meantone and "
+"are much easier to tune and to listen to. Therefore, only one third remains "
+"pure (between C and E)."
+msgstr ""
+"Kirnberger's method of compensating for and closing the circle of fifths is "
+"to split the \"wolf\" interval known to those who have used meantone "
+"temperaments between four fifths instead, allowing for four 1/4-comma wolves "
+"to take their place. 1/4-comma wolves are used extensively in meantone and "
+"are much easier to tune and to listen to. Therefore, only one third remains "
+"pure (between C and E)."
 
 #: ../bse/bsecore.idl:140
 msgid "Young Temperament"
@@ -4039,8 +4264,18 @@ msgstr "Young Temperament"
 
 #. http://en.wikipedia.org/wiki/Young_temperament
 #: ../bse/bsecore.idl:141
-msgid "Thomas Young devised a form of musical tuning to make the harmony most perfect in those keys which are the most frequently used (give better major thirds in those keys), but to not have any unplayable keys. This is attempted by tuning upwards from C a sequence of six pure fourths, as well as six equally imperfect fifths."
-msgstr "Thomas Young devised a form of musical tuning to make the harmony most perfect in those keys which are the most frequently used (give better major thirds in those keys), but to not have any unplayable keys. This is attempted by tuning upwards from C a sequence of six pure fourths, as well as six equally imperfect fifths."
+msgid ""
+"Thomas Young devised a form of musical tuning to make the harmony most "
+"perfect in those keys which are the most frequently used (give better major "
+"thirds in those keys), but to not have any unplayable keys. This is "
+"attempted by tuning upwards from C a sequence of six pure fourths, as well "
+"as six equally imperfect fifths."
+msgstr ""
+"Thomas Young devised a form of musical tuning to make the harmony most "
+"perfect in those keys which are the most frequently used (give better major "
+"thirds in those keys), but to not have any unplayable keys. This is "
+"attempted by tuning upwards from C a sequence of six pure fourths, as well "
+"as six equally imperfect fifths."
 
 #. special cased signals
 #: ../bse/bsecore.idl:150
@@ -4067,167 +4302,133 @@ msgid "Note Fine Tune"
 msgstr "Note Fine Tune"
 
 #. 14bit, continuous controls
-#: ../bse/bsecore.idl:156
-#: ../bse/bsecore.idl:333
+#: ../bse/bsecore.idl:156 ../bse/bsecore.idl:333
 msgid "Bank Select"
 msgstr "Bank Select"
 
-#: ../bse/bsecore.idl:157
-#: ../bse/bsecore.idl:334
+#: ../bse/bsecore.idl:157 ../bse/bsecore.idl:334
 msgid "Modulation Depth"
 msgstr "Modulation Depth"
 
-#: ../bse/bsecore.idl:158
-#: ../bse/bsecore.idl:335
+#: ../bse/bsecore.idl:158 ../bse/bsecore.idl:335
 msgid "Breath Control"
 msgstr "Breath Control"
 
-#: ../bse/bsecore.idl:159
-#: ../bse/bsecore.idl:336
+#: ../bse/bsecore.idl:159 ../bse/bsecore.idl:336
 msgid "Continuous 3"
 msgstr "Continuous 3"
 
-#: ../bse/bsecore.idl:160
-#: ../bse/bsecore.idl:337
+#: ../bse/bsecore.idl:160 ../bse/bsecore.idl:337
 msgid "Foot Controller"
 msgstr "Foot Controller"
 
-#: ../bse/bsecore.idl:161
-#: ../bse/bsecore.idl:338
+#: ../bse/bsecore.idl:161 ../bse/bsecore.idl:338
 msgid "Portamento Time"
 msgstr "Portamento Time"
 
-#: ../bse/bsecore.idl:162
-#: ../bse/bsecore.idl:339
+#: ../bse/bsecore.idl:162 ../bse/bsecore.idl:339
 msgid "Data Entry"
 msgstr "Data Entry"
 
-#: ../bse/bsecore.idl:163
-#: ../bse/bsecore.idl:340
+#: ../bse/bsecore.idl:163 ../bse/bsecore.idl:340
 msgid "Volume"
 msgstr "Volume"
 
-#: ../bse/bsecore.idl:164
-#: ../bse/bsecore.idl:341
-#: ../plugins/bseamplifier.idl:51
-#: ../plugins/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:44
-#: ../plugins/bsebalance.idl:49
+#: ../bse/bsecore.idl:164 ../bse/bsecore.idl:341
+#: ../plugins/bseamplifier.idl:51 ../plugins/bseamplifier.idl:56
+#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
 msgid "Balance"
 msgstr "Balance"
 
-#: ../bse/bsecore.idl:165
-#: ../bse/bsecore.idl:342
+#: ../bse/bsecore.idl:165 ../bse/bsecore.idl:342
 msgid "Continuous 9"
 msgstr "Continuous 9"
 
-#: ../bse/bsecore.idl:166
-#: ../bse/bsecore.idl:343
+#: ../bse/bsecore.idl:166 ../bse/bsecore.idl:343
 msgid "Panorama"
 msgstr "Panorama"
 
-#: ../bse/bsecore.idl:167
-#: ../bse/bsecore.idl:344
+#: ../bse/bsecore.idl:167 ../bse/bsecore.idl:344
 msgid "Expression"
 msgstr "Expression"
 
-#: ../bse/bsecore.idl:168
-#: ../bse/bsecore.idl:345
+#: ../bse/bsecore.idl:168 ../bse/bsecore.idl:345
 msgid "Effect Control 1"
 msgstr "Effect Control 1"
 
-#: ../bse/bsecore.idl:169
-#: ../bse/bsecore.idl:346
+#: ../bse/bsecore.idl:169 ../bse/bsecore.idl:346
 msgid "Effect Control 2"
 msgstr "Effect Control 2"
 
-#: ../bse/bsecore.idl:170
-#: ../bse/bsecore.idl:347
+#: ../bse/bsecore.idl:170 ../bse/bsecore.idl:347
 msgid "Continuous 14"
 msgstr "Continuous 14"
 
-#: ../bse/bsecore.idl:171
-#: ../bse/bsecore.idl:348
+#: ../bse/bsecore.idl:171 ../bse/bsecore.idl:348
 msgid "Continuous 15"
 msgstr "Continuous 15"
 
-#: ../bse/bsecore.idl:172
-#: ../bse/bsecore.idl:349
+#: ../bse/bsecore.idl:172 ../bse/bsecore.idl:349
 msgid "General Purpose Controller 1"
 msgstr "General Purpose Controller 1"
 
-#: ../bse/bsecore.idl:173
-#: ../bse/bsecore.idl:350
+#: ../bse/bsecore.idl:173 ../bse/bsecore.idl:350
 msgid "General Purpose Controller 2"
 msgstr "General Purpose Controller 2"
 
-#: ../bse/bsecore.idl:174
-#: ../bse/bsecore.idl:351
+#: ../bse/bsecore.idl:174 ../bse/bsecore.idl:351
 msgid "General Purpose Controller 3"
 msgstr "General Purpose Controller 3"
 
-#: ../bse/bsecore.idl:175
-#: ../bse/bsecore.idl:352
+#: ../bse/bsecore.idl:175 ../bse/bsecore.idl:352
 msgid "General Purpose Controller 4"
 msgstr "General Purpose Controller 4"
 
-#: ../bse/bsecore.idl:176
-#: ../bse/bsecore.idl:353
+#: ../bse/bsecore.idl:176 ../bse/bsecore.idl:353
 msgid "Continuous 20"
 msgstr "Continuous 20"
 
-#: ../bse/bsecore.idl:177
-#: ../bse/bsecore.idl:354
+#: ../bse/bsecore.idl:177 ../bse/bsecore.idl:354
 msgid "Continuous 21"
 msgstr "Continuous 21"
 
-#: ../bse/bsecore.idl:178
-#: ../bse/bsecore.idl:355
+#: ../bse/bsecore.idl:178 ../bse/bsecore.idl:355
 msgid "Continuous 22"
 msgstr "Continuous 22"
 
-#: ../bse/bsecore.idl:179
-#: ../bse/bsecore.idl:356
+#: ../bse/bsecore.idl:179 ../bse/bsecore.idl:356
 msgid "Continuous 23"
 msgstr "Continuous 23"
 
-#: ../bse/bsecore.idl:180
-#: ../bse/bsecore.idl:357
+#: ../bse/bsecore.idl:180 ../bse/bsecore.idl:357
 msgid "Continuous 24"
 msgstr "Continuous 24"
 
-#: ../bse/bsecore.idl:181
-#: ../bse/bsecore.idl:358
+#: ../bse/bsecore.idl:181 ../bse/bsecore.idl:358
 msgid "Continuous 25"
 msgstr "Continuous 25"
 
-#: ../bse/bsecore.idl:182
-#: ../bse/bsecore.idl:359
+#: ../bse/bsecore.idl:182 ../bse/bsecore.idl:359
 msgid "Continuous 26"
 msgstr "Continuous 26"
 
-#: ../bse/bsecore.idl:183
-#: ../bse/bsecore.idl:360
+#: ../bse/bsecore.idl:183 ../bse/bsecore.idl:360
 msgid "Continuous 27"
 msgstr "Continuous 27"
 
-#: ../bse/bsecore.idl:184
-#: ../bse/bsecore.idl:361
+#: ../bse/bsecore.idl:184 ../bse/bsecore.idl:361
 msgid "Continuous 28"
 msgstr "Continuous 28"
 
-#: ../bse/bsecore.idl:185
-#: ../bse/bsecore.idl:362
+#: ../bse/bsecore.idl:185 ../bse/bsecore.idl:362
 msgid "Continuous 29"
 msgstr "Continuous 29"
 
-#: ../bse/bsecore.idl:186
-#: ../bse/bsecore.idl:363
+#: ../bse/bsecore.idl:186 ../bse/bsecore.idl:363
 msgid "Continuous 30"
 msgstr "Continuous 30"
 
-#: ../bse/bsecore.idl:187
-#: ../bse/bsecore.idl:364
+#: ../bse/bsecore.idl:187 ../bse/bsecore.idl:364
 msgid "Continuous 31"
 msgstr "Continuous 31"
 
@@ -4261,645 +4462,517 @@ msgid "Non-Registered Parameter"
 msgstr "Non-Registered Parameter"
 
 #. 7bit, literal channel controls, MSB values
-#: ../bse/bsecore.idl:197
-#: ../bse/bsecore.idl:366
+#: ../bse/bsecore.idl:197 ../bse/bsecore.idl:366
 msgid "Control 0 Bank Select MSB"
 msgstr "Control 0 Bank Select MSB"
 
-#: ../bse/bsecore.idl:198
-#: ../bse/bsecore.idl:367
+#: ../bse/bsecore.idl:198 ../bse/bsecore.idl:367
 msgid "Control 1 Modulation Depth MSB"
 msgstr "Control 1 Modulation Depth MSB"
 
-#: ../bse/bsecore.idl:199
-#: ../bse/bsecore.idl:368
+#: ../bse/bsecore.idl:199 ../bse/bsecore.idl:368
 msgid "Control 2 Breath Control MSB"
 msgstr "Control 2 Breath Control MSB"
 
-#: ../bse/bsecore.idl:200
-#: ../bse/bsecore.idl:369
+#: ../bse/bsecore.idl:200 ../bse/bsecore.idl:369
 msgid "control-3"
 msgstr "control-3"
 
-#: ../bse/bsecore.idl:201
-#: ../bse/bsecore.idl:370
+#: ../bse/bsecore.idl:201 ../bse/bsecore.idl:370
 msgid "Control 4 Foot Controller MSB"
 msgstr "Control 4 Foot Controller MSB"
 
-#: ../bse/bsecore.idl:202
-#: ../bse/bsecore.idl:371
+#: ../bse/bsecore.idl:202 ../bse/bsecore.idl:371
 msgid "Control 5 Portamento Time MSB"
 msgstr "Control 5 Portamento Time MSB"
 
-#: ../bse/bsecore.idl:203
-#: ../bse/bsecore.idl:372
+#: ../bse/bsecore.idl:203 ../bse/bsecore.idl:372
 msgid "Control 6 Data Entry MSB"
 msgstr "Control 6 Data Entry MSB"
 
-#: ../bse/bsecore.idl:204
-#: ../bse/bsecore.idl:373
+#: ../bse/bsecore.idl:204 ../bse/bsecore.idl:373
 msgid "Control 7 Volume MSB"
 msgstr "Control 7 Volume MSB"
 
-#: ../bse/bsecore.idl:205
-#: ../bse/bsecore.idl:374
+#: ../bse/bsecore.idl:205 ../bse/bsecore.idl:374
 msgid "Control 8 Balance MSB"
 msgstr "Control 8 Balance MSB"
 
-#: ../bse/bsecore.idl:206
-#: ../bse/bsecore.idl:375
+#: ../bse/bsecore.idl:206 ../bse/bsecore.idl:375
 msgid "control-9"
 msgstr "control-9"
 
-#: ../bse/bsecore.idl:207
-#: ../bse/bsecore.idl:376
+#: ../bse/bsecore.idl:207 ../bse/bsecore.idl:376
 msgid "Control 10 Panorama MSB"
 msgstr "Control 10 Panorama MSB"
 
-#: ../bse/bsecore.idl:208
-#: ../bse/bsecore.idl:377
+#: ../bse/bsecore.idl:208 ../bse/bsecore.idl:377
 msgid "Control 11 Expression MSB"
 msgstr "Control 11 Expression MSB"
 
-#: ../bse/bsecore.idl:209
-#: ../bse/bsecore.idl:378
+#: ../bse/bsecore.idl:209 ../bse/bsecore.idl:378
 msgid "Control 12 Effect Control 1 MSB"
 msgstr "Control 12 Effect Control 1 MSB"
 
-#: ../bse/bsecore.idl:210
-#: ../bse/bsecore.idl:379
+#: ../bse/bsecore.idl:210 ../bse/bsecore.idl:379
 msgid "Control 13 Effect Control 2 MSB"
 msgstr "Control 13 Effect Control 2 MSB"
 
-#: ../bse/bsecore.idl:211
-#: ../bse/bsecore.idl:380
+#: ../bse/bsecore.idl:211 ../bse/bsecore.idl:380
 msgid "control-14"
 msgstr "control-14"
 
-#: ../bse/bsecore.idl:212
-#: ../bse/bsecore.idl:381
+#: ../bse/bsecore.idl:212 ../bse/bsecore.idl:381
 msgid "control-15"
 msgstr "control-15"
 
-#: ../bse/bsecore.idl:213
-#: ../bse/bsecore.idl:382
+#: ../bse/bsecore.idl:213 ../bse/bsecore.idl:382
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr "Control 16 General Purpose Controller 1 MSB"
 
-#: ../bse/bsecore.idl:214
-#: ../bse/bsecore.idl:383
+#: ../bse/bsecore.idl:214 ../bse/bsecore.idl:383
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr "Control 17 General Purpose Controller 2 MSB"
 
-#: ../bse/bsecore.idl:215
-#: ../bse/bsecore.idl:384
+#: ../bse/bsecore.idl:215 ../bse/bsecore.idl:384
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr "Control 18 General Purpose Controller 3 MSB"
 
-#: ../bse/bsecore.idl:216
-#: ../bse/bsecore.idl:385
+#: ../bse/bsecore.idl:216 ../bse/bsecore.idl:385
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr "Control 19 General Purpose Controller 4 MSB"
 
-#: ../bse/bsecore.idl:217
-#: ../bse/bsecore.idl:386
+#: ../bse/bsecore.idl:217 ../bse/bsecore.idl:386
 msgid "control-20"
 msgstr "control-20"
 
-#: ../bse/bsecore.idl:218
-#: ../bse/bsecore.idl:387
+#: ../bse/bsecore.idl:218 ../bse/bsecore.idl:387
 msgid "control-21"
 msgstr "control-21"
 
-#: ../bse/bsecore.idl:219
-#: ../bse/bsecore.idl:388
+#: ../bse/bsecore.idl:219 ../bse/bsecore.idl:388
 msgid "control-22"
 msgstr "control-22"
 
-#: ../bse/bsecore.idl:220
-#: ../bse/bsecore.idl:389
+#: ../bse/bsecore.idl:220 ../bse/bsecore.idl:389
 msgid "control-23"
 msgstr "control-23"
 
-#: ../bse/bsecore.idl:221
-#: ../bse/bsecore.idl:390
+#: ../bse/bsecore.idl:221 ../bse/bsecore.idl:390
 msgid "control-24"
 msgstr "control-24"
 
-#: ../bse/bsecore.idl:222
-#: ../bse/bsecore.idl:391
+#: ../bse/bsecore.idl:222 ../bse/bsecore.idl:391
 msgid "control-25"
 msgstr "control-25"
 
-#: ../bse/bsecore.idl:223
-#: ../bse/bsecore.idl:392
+#: ../bse/bsecore.idl:223 ../bse/bsecore.idl:392
 msgid "control-26"
 msgstr "control-26"
 
-#: ../bse/bsecore.idl:224
-#: ../bse/bsecore.idl:393
+#: ../bse/bsecore.idl:224 ../bse/bsecore.idl:393
 msgid "control-27"
 msgstr "control-27"
 
-#: ../bse/bsecore.idl:225
-#: ../bse/bsecore.idl:394
+#: ../bse/bsecore.idl:225 ../bse/bsecore.idl:394
 msgid "control-28"
 msgstr "control-28"
 
-#: ../bse/bsecore.idl:226
-#: ../bse/bsecore.idl:395
+#: ../bse/bsecore.idl:226 ../bse/bsecore.idl:395
 msgid "control-29"
 msgstr "control-29"
 
-#: ../bse/bsecore.idl:227
-#: ../bse/bsecore.idl:396
+#: ../bse/bsecore.idl:227 ../bse/bsecore.idl:396
 msgid "control-30"
 msgstr "control-30"
 
-#: ../bse/bsecore.idl:228
-#: ../bse/bsecore.idl:397
+#: ../bse/bsecore.idl:228 ../bse/bsecore.idl:397
 msgid "control-31"
 msgstr "control-31"
 
 #. 7bit, literal channel controls, LSB values
-#: ../bse/bsecore.idl:230
-#: ../bse/bsecore.idl:399
+#: ../bse/bsecore.idl:230 ../bse/bsecore.idl:399
 msgid "Control 32 Bank Select LSB"
 msgstr "Control 32 Bank Select LSB"
 
-#: ../bse/bsecore.idl:231
-#: ../bse/bsecore.idl:400
+#: ../bse/bsecore.idl:231 ../bse/bsecore.idl:400
 msgid "Control 33 Modulation Depth LSB"
 msgstr "Control 33 Modulation Depth LSB"
 
-#: ../bse/bsecore.idl:232
-#: ../bse/bsecore.idl:401
+#: ../bse/bsecore.idl:232 ../bse/bsecore.idl:401
 msgid "Control 34 Breath Control LSB"
 msgstr "Control 34 Breath Control LSB"
 
-#: ../bse/bsecore.idl:233
-#: ../bse/bsecore.idl:402
+#: ../bse/bsecore.idl:233 ../bse/bsecore.idl:402
 msgid "control-35"
 msgstr "control-35"
 
-#: ../bse/bsecore.idl:234
-#: ../bse/bsecore.idl:403
+#: ../bse/bsecore.idl:234 ../bse/bsecore.idl:403
 msgid "Control 36 Foot Controller LSB"
 msgstr "Control 36 Foot Controller LSB"
 
-#: ../bse/bsecore.idl:235
-#: ../bse/bsecore.idl:404
+#: ../bse/bsecore.idl:235 ../bse/bsecore.idl:404
 msgid "Control 37 Portamento Time LSB"
 msgstr "Control 37 Portamento Time LSB"
 
-#: ../bse/bsecore.idl:236
-#: ../bse/bsecore.idl:405
+#: ../bse/bsecore.idl:236 ../bse/bsecore.idl:405
 msgid "Control 38 Data Entry LSB"
 msgstr "Control 38 Data Entry LSB"
 
-#: ../bse/bsecore.idl:237
-#: ../bse/bsecore.idl:406
+#: ../bse/bsecore.idl:237 ../bse/bsecore.idl:406
 msgid "Control 39 Volume LSB"
 msgstr "Control 39 Volume LSB"
 
-#: ../bse/bsecore.idl:238
-#: ../bse/bsecore.idl:407
+#: ../bse/bsecore.idl:238 ../bse/bsecore.idl:407
 msgid "Control 40 Balance LSB"
 msgstr "Control 40 Balance LSB"
 
-#: ../bse/bsecore.idl:239
-#: ../bse/bsecore.idl:408
+#: ../bse/bsecore.idl:239 ../bse/bsecore.idl:408
 msgid "control-41"
 msgstr "control-41"
 
-#: ../bse/bsecore.idl:240
-#: ../bse/bsecore.idl:409
+#: ../bse/bsecore.idl:240 ../bse/bsecore.idl:409
 msgid "Control 42 Panorama LSB"
 msgstr "Control 42 Panorama LSB"
 
-#: ../bse/bsecore.idl:241
-#: ../bse/bsecore.idl:410
+#: ../bse/bsecore.idl:241 ../bse/bsecore.idl:410
 msgid "Control 43 Expression LSB"
 msgstr "Control 43 Expression LSB"
 
-#: ../bse/bsecore.idl:242
-#: ../bse/bsecore.idl:411
+#: ../bse/bsecore.idl:242 ../bse/bsecore.idl:411
 msgid "Control 44 Effect Control 1 LSB"
 msgstr "Control 44 Effect Control 1 LSB"
 
-#: ../bse/bsecore.idl:243
-#: ../bse/bsecore.idl:412
+#: ../bse/bsecore.idl:243 ../bse/bsecore.idl:412
 msgid "Control 45 Effect Control 2 LSB"
 msgstr "Control 45 Effect Control 2 LSB"
 
-#: ../bse/bsecore.idl:244
-#: ../bse/bsecore.idl:413
+#: ../bse/bsecore.idl:244 ../bse/bsecore.idl:413
 msgid "control-46"
 msgstr "control-46"
 
-#: ../bse/bsecore.idl:245
-#: ../bse/bsecore.idl:414
+#: ../bse/bsecore.idl:245 ../bse/bsecore.idl:414
 msgid "control-47"
 msgstr "control-47"
 
-#: ../bse/bsecore.idl:246
-#: ../bse/bsecore.idl:415
+#: ../bse/bsecore.idl:246 ../bse/bsecore.idl:415
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr "Control 48 General Purpose Controller 1 LSB"
 
-#: ../bse/bsecore.idl:247
-#: ../bse/bsecore.idl:416
+#: ../bse/bsecore.idl:247 ../bse/bsecore.idl:416
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr "Control 49 General Purpose Controller 2 LSB"
 
-#: ../bse/bsecore.idl:248
-#: ../bse/bsecore.idl:417
+#: ../bse/bsecore.idl:248 ../bse/bsecore.idl:417
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr "Control 50 General Purpose Controller 3 LSB"
 
-#: ../bse/bsecore.idl:249
-#: ../bse/bsecore.idl:418
+#: ../bse/bsecore.idl:249 ../bse/bsecore.idl:418
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr "Control 51 General Purpose Controller 4 LSB"
 
-#: ../bse/bsecore.idl:250
-#: ../bse/bsecore.idl:419
+#: ../bse/bsecore.idl:250 ../bse/bsecore.idl:419
 msgid "control-52"
 msgstr "control-52"
 
-#: ../bse/bsecore.idl:251
-#: ../bse/bsecore.idl:420
+#: ../bse/bsecore.idl:251 ../bse/bsecore.idl:420
 msgid "control-53"
 msgstr "control-53"
 
-#: ../bse/bsecore.idl:252
-#: ../bse/bsecore.idl:421
+#: ../bse/bsecore.idl:252 ../bse/bsecore.idl:421
 msgid "control-54"
 msgstr "control-54"
 
-#: ../bse/bsecore.idl:253
-#: ../bse/bsecore.idl:422
+#: ../bse/bsecore.idl:253 ../bse/bsecore.idl:422
 msgid "control-55"
 msgstr "control-55"
 
-#: ../bse/bsecore.idl:254
-#: ../bse/bsecore.idl:423
+#: ../bse/bsecore.idl:254 ../bse/bsecore.idl:423
 msgid "control-56"
 msgstr "control-56"
 
-#: ../bse/bsecore.idl:255
-#: ../bse/bsecore.idl:424
+#: ../bse/bsecore.idl:255 ../bse/bsecore.idl:424
 msgid "control-57"
 msgstr "control-57"
 
-#: ../bse/bsecore.idl:256
-#: ../bse/bsecore.idl:425
+#: ../bse/bsecore.idl:256 ../bse/bsecore.idl:425
 msgid "control-58"
 msgstr "control-58"
 
-#: ../bse/bsecore.idl:257
-#: ../bse/bsecore.idl:426
+#: ../bse/bsecore.idl:257 ../bse/bsecore.idl:426
 msgid "control-59"
 msgstr "control-59"
 
-#: ../bse/bsecore.idl:258
-#: ../bse/bsecore.idl:427
+#: ../bse/bsecore.idl:258 ../bse/bsecore.idl:427
 msgid "control-60"
 msgstr "control-60"
 
-#: ../bse/bsecore.idl:259
-#: ../bse/bsecore.idl:428
+#: ../bse/bsecore.idl:259 ../bse/bsecore.idl:428
 msgid "control-61"
 msgstr "control-61"
 
-#: ../bse/bsecore.idl:260
-#: ../bse/bsecore.idl:429
+#: ../bse/bsecore.idl:260 ../bse/bsecore.idl:429
 msgid "control-62"
 msgstr "control-62"
 
-#: ../bse/bsecore.idl:261
-#: ../bse/bsecore.idl:430
+#: ../bse/bsecore.idl:261 ../bse/bsecore.idl:430
 msgid "control-63"
 msgstr "control-63"
 
 #. 7bit, literal channel controls
-#: ../bse/bsecore.idl:263
-#: ../bse/bsecore.idl:432
+#: ../bse/bsecore.idl:263 ../bse/bsecore.idl:432
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr "Control 64 Damper Pedal Switch (Sustain)"
 
-#: ../bse/bsecore.idl:264
-#: ../bse/bsecore.idl:433
+#: ../bse/bsecore.idl:264 ../bse/bsecore.idl:433
 msgid "Control 65 Portamento Switch"
 msgstr "Control 65 Portamento Switch"
 
-#: ../bse/bsecore.idl:265
-#: ../bse/bsecore.idl:434
+#: ../bse/bsecore.idl:265 ../bse/bsecore.idl:434
 msgid "Control 66 Sustenuto Switch"
 msgstr "Control 66 Sustenuto Switch"
 
-#: ../bse/bsecore.idl:266
-#: ../bse/bsecore.idl:435
+#: ../bse/bsecore.idl:266 ../bse/bsecore.idl:435
 msgid "Control 67 Soft Switch"
 msgstr "Control 67 Soft Switch"
 
-#: ../bse/bsecore.idl:267
-#: ../bse/bsecore.idl:436
+#: ../bse/bsecore.idl:267 ../bse/bsecore.idl:436
 msgid "Control 68 Legato Pedal Switch"
 msgstr "Control 68 Legato Pedal Switch"
 
-#: ../bse/bsecore.idl:268
-#: ../bse/bsecore.idl:437
+#: ../bse/bsecore.idl:268 ../bse/bsecore.idl:437
 msgid "Control 69 Hold Pedal Switch"
 msgstr "Control 69 Hold Pedal Switch"
 
-#: ../bse/bsecore.idl:269
-#: ../bse/bsecore.idl:438
+#: ../bse/bsecore.idl:269 ../bse/bsecore.idl:438
 msgid "Control 70 Sound Variation"
 msgstr "Control 70 Sound Variation"
 
-#: ../bse/bsecore.idl:270
-#: ../bse/bsecore.idl:439
+#: ../bse/bsecore.idl:270 ../bse/bsecore.idl:439
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr "Control 71 Filter Resonance (Timbre)"
 
-#: ../bse/bsecore.idl:271
-#: ../bse/bsecore.idl:440
+#: ../bse/bsecore.idl:271 ../bse/bsecore.idl:440
 msgid "Control 72 Sound Release Time"
 msgstr "Control 72 Sound Release Time"
 
-#: ../bse/bsecore.idl:272
-#: ../bse/bsecore.idl:441
+#: ../bse/bsecore.idl:272 ../bse/bsecore.idl:441
 msgid "Control 73 Sound Attack Time"
 msgstr "Control 73 Sound Attack Time"
 
-#: ../bse/bsecore.idl:273
-#: ../bse/bsecore.idl:442
+#: ../bse/bsecore.idl:273 ../bse/bsecore.idl:442
 msgid "Control 74 Sound Brightness"
 msgstr "Control 74 Sound Brightness"
 
-#: ../bse/bsecore.idl:274
-#: ../bse/bsecore.idl:443
+#: ../bse/bsecore.idl:274 ../bse/bsecore.idl:443
 msgid "Control 75 Sound Decay Time"
 msgstr "Control 75 Sound Decay Time"
 
-#: ../bse/bsecore.idl:275
-#: ../bse/bsecore.idl:444
+#: ../bse/bsecore.idl:275 ../bse/bsecore.idl:444
 msgid "Control 76 Vibrato Rate"
 msgstr "Control 76 Vibrato Rate"
 
-#: ../bse/bsecore.idl:276
-#: ../bse/bsecore.idl:445
+#: ../bse/bsecore.idl:276 ../bse/bsecore.idl:445
 msgid "Control 77 Vibrato Depth"
 msgstr "Control 77 Vibrato Depth"
 
-#: ../bse/bsecore.idl:277
-#: ../bse/bsecore.idl:446
+#: ../bse/bsecore.idl:277 ../bse/bsecore.idl:446
 msgid "Control 78 Vibrato Delay"
 msgstr "Control 78 Vibrato Delay"
 
-#: ../bse/bsecore.idl:278
-#: ../bse/bsecore.idl:447
+#: ../bse/bsecore.idl:278 ../bse/bsecore.idl:447
 msgid "Control 79 Sound Control 10"
 msgstr "Control 79 Sound Control 10"
 
-#: ../bse/bsecore.idl:279
-#: ../bse/bsecore.idl:448
+#: ../bse/bsecore.idl:279 ../bse/bsecore.idl:448
 msgid "Control 80 General Purpose Switch 5"
 msgstr "Control 80 General Purpose Switch 5"
 
-#: ../bse/bsecore.idl:280
-#: ../bse/bsecore.idl:449
+#: ../bse/bsecore.idl:280 ../bse/bsecore.idl:449
 msgid "Control 81 General Purpose Switch 6"
 msgstr "Control 81 General Purpose Switch 6"
 
-#: ../bse/bsecore.idl:281
-#: ../bse/bsecore.idl:450
+#: ../bse/bsecore.idl:281 ../bse/bsecore.idl:450
 msgid "Control 82 General Purpose Switch 7"
 msgstr "Control 82 General Purpose Switch 7"
 
-#: ../bse/bsecore.idl:282
-#: ../bse/bsecore.idl:451
+#: ../bse/bsecore.idl:282 ../bse/bsecore.idl:451
 msgid "Control 83 General Purpose Switch 8"
 msgstr "Control 83 General Purpose Switch 8"
 
-#: ../bse/bsecore.idl:283
-#: ../bse/bsecore.idl:452
+#: ../bse/bsecore.idl:283 ../bse/bsecore.idl:452
 msgid "Control 84 Portamento Control (Note)"
 msgstr "Control 84 Portamento Control (Note)"
 
-#: ../bse/bsecore.idl:284
-#: ../bse/bsecore.idl:453
+#: ../bse/bsecore.idl:284 ../bse/bsecore.idl:453
 msgid "control-85"
 msgstr "control-85"
 
-#: ../bse/bsecore.idl:285
-#: ../bse/bsecore.idl:454
+#: ../bse/bsecore.idl:285 ../bse/bsecore.idl:454
 msgid "control-86"
 msgstr "control-86"
 
-#: ../bse/bsecore.idl:286
-#: ../bse/bsecore.idl:455
+#: ../bse/bsecore.idl:286 ../bse/bsecore.idl:455
 msgid "control-87"
 msgstr "control-87"
 
-#: ../bse/bsecore.idl:287
-#: ../bse/bsecore.idl:456
+#: ../bse/bsecore.idl:287 ../bse/bsecore.idl:456
 msgid "control-88"
 msgstr "control-88"
 
-#: ../bse/bsecore.idl:288
-#: ../bse/bsecore.idl:457
+#: ../bse/bsecore.idl:288 ../bse/bsecore.idl:457
 msgid "control-89"
 msgstr "control-89"
 
-#: ../bse/bsecore.idl:289
-#: ../bse/bsecore.idl:458
+#: ../bse/bsecore.idl:289 ../bse/bsecore.idl:458
 msgid "control-90"
 msgstr "control-90"
 
-#: ../bse/bsecore.idl:290
-#: ../bse/bsecore.idl:459
+#: ../bse/bsecore.idl:290 ../bse/bsecore.idl:459
 msgid "Control 91 Reverb Depth"
 msgstr "Control 91 Reverb Depth"
 
-#: ../bse/bsecore.idl:291
-#: ../bse/bsecore.idl:460
+#: ../bse/bsecore.idl:291 ../bse/bsecore.idl:460
 msgid "Control 92 Tremolo Depth"
 msgstr "Control 92 Tremolo Depth"
 
-#: ../bse/bsecore.idl:292
-#: ../bse/bsecore.idl:461
+#: ../bse/bsecore.idl:292 ../bse/bsecore.idl:461
 msgid "Control 93 Chorus Depth"
 msgstr "Control 93 Chorus Depth"
 
-#: ../bse/bsecore.idl:293
-#: ../bse/bsecore.idl:462
+#: ../bse/bsecore.idl:293 ../bse/bsecore.idl:462
 msgid "Control 93 Detune Depth"
 msgstr "Control 93 Detune Depth"
 
-#: ../bse/bsecore.idl:294
-#: ../bse/bsecore.idl:463
+#: ../bse/bsecore.idl:294 ../bse/bsecore.idl:463
 msgid "Control 95 Phase Depth"
 msgstr "Control 95 Phase Depth"
 
-#: ../bse/bsecore.idl:295
-#: ../bse/bsecore.idl:464
+#: ../bse/bsecore.idl:295 ../bse/bsecore.idl:464
 msgid "Control 96 Data Increment Trigger"
 msgstr "Control 96 Data Increment Trigger"
 
-#: ../bse/bsecore.idl:296
-#: ../bse/bsecore.idl:465
+#: ../bse/bsecore.idl:296 ../bse/bsecore.idl:465
 msgid "Control 97 Data Decrement Trigger"
 msgstr "Control 97 Data Decrement Trigger"
 
-#: ../bse/bsecore.idl:297
-#: ../bse/bsecore.idl:466
+#: ../bse/bsecore.idl:297 ../bse/bsecore.idl:466
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr "Control 98 Non-Registered Parameter MSB"
 
-#: ../bse/bsecore.idl:298
-#: ../bse/bsecore.idl:467
+#: ../bse/bsecore.idl:298 ../bse/bsecore.idl:467
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr "Control 99 Non-Registered Parameter LSB"
 
-#: ../bse/bsecore.idl:299
-#: ../bse/bsecore.idl:468
+#: ../bse/bsecore.idl:299 ../bse/bsecore.idl:468
 msgid "Control 100 Registered Parameter MSB"
 msgstr "Control 100 Registered Parameter MSB"
 
-#: ../bse/bsecore.idl:300
-#: ../bse/bsecore.idl:469
+#: ../bse/bsecore.idl:300 ../bse/bsecore.idl:469
 msgid "Control 101 Registered Parameter LSB"
 msgstr "Control 101 Registered Parameter LSB"
 
-#: ../bse/bsecore.idl:301
-#: ../bse/bsecore.idl:470
+#: ../bse/bsecore.idl:301 ../bse/bsecore.idl:470
 msgid "control-102"
 msgstr "control-102"
 
-#: ../bse/bsecore.idl:302
-#: ../bse/bsecore.idl:471
+#: ../bse/bsecore.idl:302 ../bse/bsecore.idl:471
 msgid "control-103"
 msgstr "control-103"
 
-#: ../bse/bsecore.idl:303
-#: ../bse/bsecore.idl:472
+#: ../bse/bsecore.idl:303 ../bse/bsecore.idl:472
 msgid "control-104"
 msgstr "control-104"
 
-#: ../bse/bsecore.idl:304
-#: ../bse/bsecore.idl:473
+#: ../bse/bsecore.idl:304 ../bse/bsecore.idl:473
 msgid "control-105"
 msgstr "control-105"
 
-#: ../bse/bsecore.idl:305
-#: ../bse/bsecore.idl:474
+#: ../bse/bsecore.idl:305 ../bse/bsecore.idl:474
 msgid "control-106"
 msgstr "control-106"
 
-#: ../bse/bsecore.idl:306
-#: ../bse/bsecore.idl:475
+#: ../bse/bsecore.idl:306 ../bse/bsecore.idl:475
 msgid "control-107"
 msgstr "control-107"
 
-#: ../bse/bsecore.idl:307
-#: ../bse/bsecore.idl:476
+#: ../bse/bsecore.idl:307 ../bse/bsecore.idl:476
 msgid "control-108"
 msgstr "control-108"
 
-#: ../bse/bsecore.idl:308
-#: ../bse/bsecore.idl:477
+#: ../bse/bsecore.idl:308 ../bse/bsecore.idl:477
 msgid "control-109"
 msgstr "control-109"
 
-#: ../bse/bsecore.idl:309
-#: ../bse/bsecore.idl:478
+#: ../bse/bsecore.idl:309 ../bse/bsecore.idl:478
 msgid "control-110"
 msgstr "control-110"
 
-#: ../bse/bsecore.idl:310
-#: ../bse/bsecore.idl:479
+#: ../bse/bsecore.idl:310 ../bse/bsecore.idl:479
 msgid "control-111"
 msgstr "control-111"
 
-#: ../bse/bsecore.idl:311
-#: ../bse/bsecore.idl:480
+#: ../bse/bsecore.idl:311 ../bse/bsecore.idl:480
 msgid "control-112"
 msgstr "control-112"
 
-#: ../bse/bsecore.idl:312
-#: ../bse/bsecore.idl:481
+#: ../bse/bsecore.idl:312 ../bse/bsecore.idl:481
 msgid "control-113"
 msgstr "control-113"
 
-#: ../bse/bsecore.idl:313
-#: ../bse/bsecore.idl:482
+#: ../bse/bsecore.idl:313 ../bse/bsecore.idl:482
 msgid "control-114"
 msgstr "control-114"
 
-#: ../bse/bsecore.idl:314
-#: ../bse/bsecore.idl:483
+#: ../bse/bsecore.idl:314 ../bse/bsecore.idl:483
 msgid "control-115"
 msgstr "control-115"
 
-#: ../bse/bsecore.idl:315
-#: ../bse/bsecore.idl:484
+#: ../bse/bsecore.idl:315 ../bse/bsecore.idl:484
 msgid "control-116"
 msgstr "control-116"
 
-#: ../bse/bsecore.idl:316
-#: ../bse/bsecore.idl:485
+#: ../bse/bsecore.idl:316 ../bse/bsecore.idl:485
 msgid "control-117"
 msgstr "control-117"
 
-#: ../bse/bsecore.idl:317
-#: ../bse/bsecore.idl:486
+#: ../bse/bsecore.idl:317 ../bse/bsecore.idl:486
 msgid "control-118"
 msgstr "control-118"
 
-#: ../bse/bsecore.idl:318
-#: ../bse/bsecore.idl:487
+#: ../bse/bsecore.idl:318 ../bse/bsecore.idl:487
 msgid "control-119"
 msgstr "control-119"
 
-#: ../bse/bsecore.idl:319
-#: ../bse/bsecore.idl:488
+#: ../bse/bsecore.idl:319 ../bse/bsecore.idl:488
 msgid "Control 120 All Sound Off ITrigger"
 msgstr "Control 120 All Sound Off ITrigger"
 
-#: ../bse/bsecore.idl:320
-#: ../bse/bsecore.idl:489
+#: ../bse/bsecore.idl:320 ../bse/bsecore.idl:489
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr "Control 121 All Controllers Off ITrigger"
 
-#: ../bse/bsecore.idl:321
-#: ../bse/bsecore.idl:490
+#: ../bse/bsecore.idl:321 ../bse/bsecore.idl:490
 msgid "Control 122 Local Control Switch"
 msgstr "Control 122 Local Control Switch"
 
-#: ../bse/bsecore.idl:322
-#: ../bse/bsecore.idl:491
+#: ../bse/bsecore.idl:322 ../bse/bsecore.idl:491
 msgid "Control 123 All Notes Off ITrigger"
 msgstr "Control 123 All Notes Off ITrigger"
 
-#: ../bse/bsecore.idl:323
-#: ../bse/bsecore.idl:492
+#: ../bse/bsecore.idl:323 ../bse/bsecore.idl:492
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr "Control 124 Omni Mode Off ITrigger"
 
-#: ../bse/bsecore.idl:324
-#: ../bse/bsecore.idl:493
+#: ../bse/bsecore.idl:324 ../bse/bsecore.idl:493
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr "Control 125 Omni Mode On ITrigger"
 
-#: ../bse/bsecore.idl:325
-#: ../bse/bsecore.idl:494
+#: ../bse/bsecore.idl:325 ../bse/bsecore.idl:494
 msgid "Control 126 Monophonic Voices Mode"
 msgstr "Control 126 Monophonic Voices Mode"
 
-#: ../bse/bsecore.idl:326
-#: ../bse/bsecore.idl:495
+#: ../bse/bsecore.idl:326 ../bse/bsecore.idl:495
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr "Control 127 Polyphonic Mode On ITrigger"
 
@@ -4928,8 +5001,12 @@ msgid "Priority"
 msgstr "Priority"
 
 #: ../bse/bsecore.idl:751
-msgid "The nice value of a thread, -20 indicates a high priority thread and +19 a low priority one that is 'nice' to others"
-msgstr "The nice value of a thread, -20 indicates a high priority thread and +19 a low priority one that is 'nice' to others"
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
 
 #: ../bse/bsecore.idl:754
 msgid "Processor"
@@ -4980,8 +5057,12 @@ msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
 #: ../bse/bsecore.idl:779
-msgid "Processing duration between input and output of a single sample, smaller values increase CPU load"
-msgstr "Processing duration between input and output of a single sample, smaller values increase CPU load"
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
 
 #: ../bse/bsecore.idl:781
 msgid "Synth Mixing Frequency"
@@ -4996,8 +5077,12 @@ msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
 #: ../bse/bsecore.idl:785
-msgid "Frequency at which control values are evaluated, should be much smaller than Synth Mixing Frequency to reduce CPU load"
-msgstr "Frequency at which control values are evaluated, should be much smaller than Synth Mixing Frequency to reduce CPU load"
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
 
 #: ../bse/bsecore.idl:789
 msgid "MIDI"
@@ -5008,8 +5093,10 @@ msgid "Invert Sustain Pedal"
 msgstr "Invert Sustain Pedal"
 
 #: ../bse/bsecore.idl:791
-msgid "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
-msgstr "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgstr ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 
 #: ../bse/bsecore.idl:794
 msgid "Default Values"
@@ -5041,8 +5128,10 @@ msgstr "Sample Path"
 
 #: ../bse/bsecore.idl:802
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find audio samples."
-msgstr "Search path of directories, seperated by \"%s\", used to find audio samples."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
 
 #: ../bse/bsecore.idl:805
 msgid "Effect Path"
@@ -5050,8 +5139,12 @@ msgstr "Effect Path"
 
 #: ../bse/bsecore.idl:806
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE effect files."
-msgstr "Search path of directories, seperated by \"%s\", used to find BSE effect files."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"files."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"files."
 
 #: ../bse/bsecore.idl:809
 msgid "Instrument Path"
@@ -5059,8 +5152,12 @@ msgstr "Instrument Path"
 
 #: ../bse/bsecore.idl:810
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE instrument files."
-msgstr "Search path of directories, seperated by \"%s\", used to find BSE instrument files."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"files."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"files."
 
 #: ../bse/bsecore.idl:813
 msgid "Script Path"
@@ -5068,8 +5165,12 @@ msgstr "Script Path"
 
 #: ../bse/bsecore.idl:814
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."
-msgstr "Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"scripts."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"scripts."
 
 #: ../bse/bsecore.idl:817
 msgid "Plugin Path"
@@ -5077,8 +5178,14 @@ msgstr "Plugin Path"
 
 #: ../bse/bsecore.idl:818
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE plugins. This path is searched for in addition to the standard BSE plugin location on this system."
-msgstr "Search path of directories, seperated by \"%s\", used to find BSE plugins. This path is searched for in addition to the standard BSE plugin location on this system."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"This path is searched for in addition to the standard BSE plugin location on "
+"this system."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"This path is searched for in addition to the standard BSE plugin location on "
+"this system."
 
 #: ../bse/bsecore.idl:822
 msgid "LADSPA Path"
@@ -5086,8 +5193,18 @@ msgstr "LADSPA Path"
 
 #: ../bse/bsecore.idl:823
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This path is searched for in addition to the standard LADSPA location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about LADSPA plugins can be found at http://www.ladspa.org/."
-msgstr "Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This path is searched for in addition to the standard LADSPA location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about LADSPA plugins can be found at http://www.ladspa.org/."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find LADSPA "
+"plugins. This path is searched for in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API, more informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find LADSPA "
+"plugins. This path is searched for in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API, more informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsedevice.c:339
@@ -5375,38 +5492,31 @@ msgstr "Invalid duration"
 msgid "Invalid overlap"
 msgstr "Invalid overlap"
 
-#: ../bse/bseinstrumentinput.c:118
-#: ../bse/bsemidiinput.c:108
+#: ../bse/bseinstrumentinput.c:118 ../bse/bsemidiinput.c:108
 msgid "Note Frequency"
 msgstr "Note Frequency"
 
-#: ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:110
+#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:110
 msgid "Gate"
 msgstr "Gate"
 
-#: ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:110
+#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:110
 msgid "High if the note is currently being pressed"
 msgstr "High if the note is currently being pressed"
 
-#: ../bse/bseinstrumentinput.c:122
-#: ../bse/bsemidiinput.c:112
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Velocity"
 msgstr "Velocity"
 
-#: ../bse/bseinstrumentinput.c:122
-#: ../bse/bsemidiinput.c:112
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Velocity of the note press"
 msgstr "Velocity of the note press"
 
-#: ../bse/bseinstrumentinput.c:124
-#: ../bse/bsemidiinput.c:114
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Aftertouch"
 msgstr "Aftertouch"
 
-#: ../bse/bseinstrumentinput.c:124
-#: ../bse/bsemidiinput.c:114
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity while the note is pressed"
 msgstr "Velocity while the note is pressed"
 
@@ -5537,9 +5647,7 @@ msgstr ""
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Input & Output/MIDI Voice Input"
 
-#: ../bse/bsemidisynth.c:227
-#: ../bse/bsesubsynth.c:156
-#: ../bse/bsetrack.c:292
+#: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:156 ../bse/bsetrack.c:292
 msgid "Available Synthesizers"
 msgstr "Available Synthesizers"
 
@@ -5547,30 +5655,21 @@ msgstr "Available Synthesizers"
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "List of available synthesis networks to choose a MIDI instrument from"
 
-#: ../bse/bsemidisynth.c:231
-#: ../bse/bsesong.c:140
-#: ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:140 ../bse/bsetrack.c:296
 msgid "Available Postprocessors"
 msgstr "Available Postprocessors"
 
-#: ../bse/bsemidisynth.c:231
-#: ../bse/bsesong.c:140
-#: ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:140 ../bse/bsetrack.c:296
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "List of available synthesis networks to choose a postprocessor from"
 
-#: ../bse/bsemidisynth.c:442
-#: ../bse/bsemidisynth.c:447
-#: ../bse/bsemidisynth.c:452
-#: ../bse/bsemidisynth.c:456
-#: ../bse/bsesong.c:775
-#: ../bse/bsetrack.c:1016
-#: ../bse/bsetrack.c:1022
+#: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
+#: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
+#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
 msgid "MIDI Instrument"
 msgstr "MIDI Instrument"
 
-#: ../bse/bsemidisynth.c:444
-#: ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
 msgid "MIDI Channel"
 msgstr "MIDI Channel"
 
@@ -5578,9 +5677,7 @@ msgstr "MIDI Channel"
 msgid "Max Voices"
 msgstr "Max Voices"
 
-#: ../bse/bsemidisynth.c:454
-#: ../bse/bsesubsynth.c:512
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1003
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
@@ -5588,9 +5685,7 @@ msgstr "Synthesizer"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Synthesis network to be used as MIDI instrument"
 
-#: ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777
-#: ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
@@ -5606,18 +5701,15 @@ msgstr "Master [dB]"
 msgid "Master [%]"
 msgstr "Master [%]"
 
-#: ../bse/bsemidisynth.c:480
-#: ../bse/bsesong.c:779
+#: ../bse/bsemidisynth.c:480 ../bse/bsesong.c:779
 msgid "Playback Settings"
 msgstr "Playback Settings"
 
-#: ../bse/bsemidivoice.c:109
-#: ../plugins/bsesequencer.c:104
+#: ../bse/bsemidivoice.c:109 ../plugins/bsesequencer.c:104
 msgid "Freq Out"
 msgstr "Freq Out"
 
-#: ../bse/bsemidivoice.c:111
-#: ../bse/bsewaveosc.c:599
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
 msgid "Gate Out"
 msgstr "Gate Out"
 
@@ -5629,13 +5721,11 @@ msgstr "Velocity Out"
 msgid "Aftertouch Out"
 msgstr "Aftertouch Out"
 
-#: ../bse/bsemidivoice.c:133
-#: ../plugins/davcanyondelay.c:118
+#: ../bse/bsemidivoice.c:133 ../plugins/davcanyondelay.c:118
 msgid "Left In"
 msgstr "Left In"
 
-#: ../bse/bsemidivoice.c:135
-#: ../plugins/davcanyondelay.c:120
+#: ../bse/bsemidivoice.c:135 ../plugins/davcanyondelay.c:120
 msgid "Right In"
 msgstr "Right In"
 
@@ -5643,14 +5733,12 @@ msgstr "Right In"
 msgid "Disconnect In"
 msgstr "Disconnect In"
 
-#: ../bse/bsemidivoice.c:139
-#: ../plugins/bsebalance.idl:38
+#: ../bse/bsemidivoice.c:139 ../plugins/bsebalance.idl:38
 #: ../plugins/davcanyondelay.c:122
 msgid "Left Out"
 msgstr "Left Out"
 
-#: ../bse/bsemidivoice.c:141
-#: ../plugins/bsebalance.idl:40
+#: ../bse/bsemidivoice.c:141 ../plugins/bsebalance.idl:40
 #: ../plugins/davcanyondelay.c:124
 msgid "Right Out"
 msgstr "Right Out"
@@ -5667,17 +5755,13 @@ msgstr "Unique name of this object"
 msgid "Free form comment or description"
 msgstr "Free form comment or description"
 
-#: ../bse/bseparasite.proc:26
-#: ../bse/bseparasite.proc:50
-#: ../bse/bseparasite.proc:68
-#: ../bse/bseparasite.proc:87
+#: ../bse/bseparasite.proc:26 ../bse/bseparasite.proc:50
+#: ../bse/bseparasite.proc:68 ../bse/bseparasite.proc:87
 msgid "Item"
 msgstr "Item"
 
-#: ../bse/bseparasite.proc:27
-#: ../bse/bseparasite.proc:51
-#: ../bse/bseparasite.proc:69
-#: ../bse/bseparasite.proc:88
+#: ../bse/bseparasite.proc:27 ../bse/bseparasite.proc:51
+#: ../bse/bseparasite.proc:69 ../bse/bseparasite.proc:88
 msgid "Path"
 msgstr "Path"
 
@@ -5685,8 +5769,7 @@ msgstr "Path"
 msgid "Parasite Paths"
 msgstr "Parasite Paths"
 
-#: ../bse/bseparasite.proc:52
-#: ../bse/bseparasite.proc:70
+#: ../bse/bseparasite.proc:52 ../bse/bseparasite.proc:70
 #: ../bse/bseparasite.proc:89
 msgid "Parasite"
 msgstr "Parasite"
@@ -5750,8 +5833,16 @@ msgid "Failed to start recording from audio device."
 msgstr "Failed to start recording from audio device."
 
 #: ../bse/bseserver.c:479
-msgid "An audio project is in use which processes an audio input signal, but the audio device has not been opened in recording mode. An audio signal of silence will be used instead of a recorded signal, so playback operation may produce results not actually intended (such as a silent output signal)."
-msgstr "An audio project is in use which processes an audio input signal, but the audio device has not been opened in recording mode. An audio signal of silence will be used instead of a recorded signal, so playback operation may produce results not actually intended (such as a silent output signal)."
+msgid ""
+"An audio project is in use which processes an audio input signal, but the "
+"audio device has not been opened in recording mode. An audio signal of "
+"silence will be used instead of a recorded signal, so playback operation may "
+"produce results not actually intended (such as a silent output signal)."
+msgstr ""
+"An audio project is in use which processes an audio input signal, but the "
+"audio device has not been opened in recording mode. An audio signal of "
+"silence will be used instead of a recorded signal, so playback operation may "
+"produce results not actually intended (such as a silent output signal)."
 
 #: ../bse/bseserver.c:484
 #, c-format
@@ -5771,8 +5862,12 @@ msgid "No available audio device was found."
 msgstr "No available audio device was found."
 
 #: ../bse/bseserver.c:532
-msgid "No available audio device could be found and opened successfully. Sorry, no fallback selection can be made for audio devices, giving up."
-msgstr "No available audio device could be found and opened successfully. Sorry, no fallback selection can be made for audio devices, giving up."
+msgid ""
+"No available audio device could be found and opened successfully. Sorry, no "
+"fallback selection can be made for audio devices, giving up."
+msgstr ""
+"No available audio device could be found and opened successfully. Sorry, no "
+"fallback selection can be made for audio devices, giving up."
 
 #: ../bse/bseserver.c:534
 #, c-format
@@ -5792,8 +5887,12 @@ msgid "MIDI input or oputput is not available."
 msgstr "MIDI input or oputput is not available."
 
 #: ../bse/bseserver.c:556
-msgid "No available MIDI device could be found and opened successfully. Reverting to null device, no MIDI events will be received or sent."
-msgstr "No available MIDI device could be found and opened successfully. Reverting to null device, no MIDI events will be received or sent."
+msgid ""
+"No available MIDI device could be found and opened successfully. Reverting "
+"to null device, no MIDI events will be received or sent."
+msgstr ""
+"No available MIDI device could be found and opened successfully. Reverting "
+"to null device, no MIDI events will be received or sent."
 
 #: ../bse/bseserver.c:558
 #, c-format
@@ -5813,8 +5912,12 @@ msgid "Failed to start recording to disk."
 msgstr "Failed to start recording to disc."
 
 #: ../bse/bseserver.c:615
-msgid "An error occoured while opening the recording file, selecting a different file might fix this situation."
-msgstr "An error occoured while opening the recording file, selecting a different file might fix this situation."
+msgid ""
+"An error occoured while opening the recording file, selecting a different "
+"file might fix this situation."
+msgstr ""
+"An error occoured while opening the recording file, selecting a different "
+"file might fix this situation."
 
 #: ../bse/bseserver.c:617
 #, c-format
@@ -5851,12 +5954,18 @@ msgid "Musical Tuning"
 msgstr "Musical Tuning"
 
 #: ../bse/bsesong.c:749
-msgid "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound \"natural\" or \"pleasing\" when used in combination, the musical tuning system defines the number and spacing of frequency values applied."
-msgstr "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound \"natural\" or \"pleasing\" when used in combination, the musical tuning system defines the number and spacing of frequency values applied."
+msgid ""
+"The tuning system which specifies the tones or pitches to be used. Due to "
+"the psychoacoustic properties of tones, various pitch combinations can sound "
+"\"natural\" or \"pleasing\" when used in combination, the musical tuning "
+"system defines the number and spacing of frequency values applied."
+msgstr ""
+"The tuning system which specifies the tones or pitches to be used. Due to "
+"the psychoacoustic properties of tones, various pitch combinations can sound "
+"\"natural\" or \"pleasing\" when used in combination, the musical tuning "
+"system defines the number and spacing of frequency values applied."
 
-#: ../bse/bsesong.c:756
-#: ../bse/bsesong.c:760
-#: ../bse/bsesong.c:764
+#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:764
 #: ../bse/bsesong.c:768
 msgid "Timing"
 msgstr "Timing"
@@ -5891,9 +6000,7 @@ msgstr "Beats per minute"
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:784
-#: ../bse/bsesong.c:788
-#: ../bse/bsesong.c:793
+#: ../bse/bsesong.c:784 ../bse/bsesong.c:788 ../bse/bsesong.c:793
 #: ../bse/bsesong.c:798
 msgid "Looping"
 msgstr "Looping"
@@ -5907,8 +6014,10 @@ msgid "Delete a mixer bus from a Song."
 msgstr "Delete a mixer bus from a Song."
 
 #: ../bse/bsesong.proc:112
-msgid "Retrieve master output bus of a song, will create one if it doesn't exist."
-msgstr "Retrieve master output bus of a song, will create one if it doesn't exist."
+msgid ""
+"Retrieve master output bus of a song, will create one if it doesn't exist."
+msgstr ""
+"Retrieve master output bus of a song, will create one if it doesn't exist."
 
 #: ../bse/bsesong.proc:139
 msgid "Retrieve master output bus of a song if it exists."
@@ -5946,8 +6055,10 @@ msgid "Find a track suitable for playing notes of a given part."
 msgstr "Find a track suitable for playing notes of a given part."
 
 #: ../bse/bsesong.proc:430
-msgid "Find the first track that contains part, suitable to check for orphan parts."
-msgstr "Find the first track that contains part, suitable to check for orphan parts."
+msgid ""
+"Find the first track that contains part, suitable to check for orphan parts."
+msgstr ""
+"Find the first track that contains part, suitable to check for orphan parts."
 
 #: ../bse/bsesong.proc:457
 msgid "Synthesize a note on a song of an active project."
@@ -5958,23 +6069,23 @@ msgid "Retrieve song timing information at a specific tick."
 msgstr "Retrieve song timing information at a specific tick."
 
 #: ../bse/bsestandardosc.c:106
-msgid "StandardOsc is the BSE basis oscillator which supports various types of wave forms and modulation inputs."
-msgstr "StandardOsc is the BSE basis oscillator which supports various types of wave forms and modulation inputs."
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
 
 #: ../bse/bsestandardosc.c:110
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Audio Sources/Standard Oscillator"
 
-#: ../bse/bsestandardosc.c:131
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:131 ../bse/bsestandardosc.c:137
 msgid "Wave Form"
 msgstr "Wave Form"
 
-#: ../bse/bsestandardosc.c:133
-#: ../bse/bsetrack.c:1008
-#: ../bse/bsewaveosc.c:559
-#: ../bse/bsewaveosc.c:561
-#: ../bse/bsewaveosc.c:563
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
+#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
 msgid "Wave"
 msgstr "Wave"
 
@@ -5990,27 +6101,30 @@ msgstr "Phase"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Initial phase of the oscillator wave form (cycle offset in degree)"
 
-#: ../bse/bsestandardosc.c:142
-#: ../bse/bsestandardosc.c:147
-#: ../bse/bsestandardosc.c:152
-#: ../bse/bsestandardosc.c:157
-#: ../plugins/davorgan.c:106
-#: ../plugins/davorgan.c:111
-#: ../plugins/davorgan.c:116
-#: ../plugins/davorgan.c:121
+#: ../bse/bsestandardosc.c:142 ../bse/bsestandardosc.c:147
+#: ../bse/bsestandardosc.c:152 ../bse/bsestandardosc.c:157
+#: ../plugins/davorgan.c:106 ../plugins/davorgan.c:111
+#: ../plugins/davorgan.c:116 ../plugins/davorgan.c:121
 msgid "Base Frequency"
 msgstr "Base Frequency"
 
 #: ../bse/bsestandardosc.c:145
-msgid "Oscillator frequency in Hertz, i.e. the number of oscillator cycles per second"
-msgstr "Oscillator frequency in Hertz, i.e. the number of oscillator cycles per second"
+msgid ""
+"Oscillator frequency in Hertz, i.e. the number of oscillator cycles per "
+"second"
+msgstr ""
+"Oscillator frequency in Hertz, i.e. the number of oscillator cycles per "
+"second"
 
 #: ../bse/bsestandardosc.c:150
-msgid "Oscillator frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Oscillator frequency as note, converted to Hertz according to the current musical tuning"
+msgid ""
+"Oscillator frequency as note, converted to Hertz according to the current "
+"musical tuning"
+msgstr ""
+"Oscillator frequency as note, converted to Hertz according to the current "
+"musical tuning"
 
-#: ../bse/bsestandardosc.c:154
-#: ../plugins/davorgan.c:118
+#: ../bse/bsestandardosc.c:154 ../plugins/davorgan.c:118
 #: ../plugins/davxtalstrings.c:114
 msgid "Transpose"
 msgstr "Transpose"
@@ -6019,30 +6133,25 @@ msgstr "Transpose"
 msgid "Transposition of the oscillator frequency in semitones"
 msgstr "Transposition of the oscillator frequency in semitones"
 
-#: ../bse/bsestandardosc.c:159
-#: ../plugins/davorgan.c:123
+#: ../bse/bsestandardosc.c:159 ../plugins/davorgan.c:123
 #: ../plugins/davxtalstrings.c:119
 msgid "Fine Tune"
 msgstr "Fine Tune"
 
-#: ../bse/bsestandardosc.c:159
-#: ../plugins/davorgan.c:123
+#: ../bse/bsestandardosc.c:159 ../plugins/davorgan.c:123
 #: ../plugins/davxtalstrings.c:119
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "Amount of detuning in cent (hundredth part of a semitone)"
 
-#: ../bse/bsestandardosc.c:164
-#: ../bse/bsewaveosc.c:569
+#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:569
 msgid "Input Modulation [%]"
 msgstr "Input Modulation [%]"
 
-#: ../bse/bsestandardosc.c:169
-#: ../bse/bsewaveosc.c:575
+#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:575
 msgid "Exponential FM"
 msgstr "Exponential FM"
 
-#: ../bse/bsestandardosc.c:174
-#: ../bse/bsewaveosc.c:581
+#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:581
 msgid "Octaves"
 msgstr "Octaves"
 
@@ -6055,8 +6164,7 @@ msgid "Strength of self modulation"
 msgstr "Strength of self modulation"
 
 #. disabled
-#: ../bse/bsestandardosc.c:182
-#: ../bse/bsestandardosc.c:189
+#: ../bse/bsestandardosc.c:182 ../bse/bsestandardosc.c:189
 msgid "Pulse Modulation"
 msgstr "Pulse Modulation"
 
@@ -6065,16 +6173,24 @@ msgid "Pulse Width"
 msgstr "Pulse Width"
 
 #: ../bse/bsestandardosc.c:185
-msgid "Proportion of the positive component duration of the pulse wave form (Pulse has to be selected as wave form for this to take effect)"
-msgstr "Proportion of the positive component duration of the pulse wave form (Pulse has to be selected as wave form for this to take effect)"
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
 
 #: ../bse/bsestandardosc.c:191
 msgid "Pulse Modulation [%]"
 msgstr "Pulse Modulation [%]"
 
 #: ../bse/bsestandardosc.c:192
-msgid "Strength of pulse width modulation input (Pulse has to be selected as wave form for this to take effect)"
-msgstr "Strength of pulse width modulation input (Pulse has to be selected as wave form for this to take effect)"
+msgid ""
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr ""
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
 
 #: ../bse/bsestandardosc.c:197
 msgid "Oscillating Frequency Input"
@@ -6088,13 +6204,11 @@ msgstr "PWM In"
 msgid "Pulse Width Modulation Input"
 msgstr "Pulse Width Modulation Input"
 
-#: ../bse/bsestandardosc.c:203
-#: ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
 msgid "Sync In"
 msgstr "Sync In"
 
-#: ../bse/bsestandardosc.c:203
-#: ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
 msgid "Syncronization Input"
 msgstr "Syncronisation Input"
 
@@ -6110,41 +6224,36 @@ msgstr "Sync Out"
 msgid "Syncronization Output"
 msgstr "Syncronisation Output"
 
-#: ../bse/bsesubiport.c:292
-#: ../bse/bsesubsynth.c:540
+#: ../bse/bsesubiport.c:292 ../bse/bsesubsynth.c:540
 #, c-format
 msgid "Virtual input %u"
 msgstr "Virtual input %u"
 
-#: ../bse/bsesubiport.c:299
-#: ../bse/bsesubsynth.c:520
+#: ../bse/bsesubiport.c:299 ../bse/bsesubsynth.c:520
 #, c-format
 msgid "Input Port %u"
 msgstr "Input Port %u"
 
-#: ../bse/bsesubiport.c:301
-#: ../bse/bsesuboport.c:302
-#: ../bse/bsesubsynth.c:510
+#: ../bse/bsesubiport.c:301 ../bse/bsesuboport.c:302 ../bse/bsesubsynth.c:510
 msgid "Assignments"
 msgstr "Assignments"
 
-#: ../bse/bsesubiport.c:303
-#: ../bse/bsesuboport.c:304
-msgid "The port name is a unique name to establish input<->output port relationships"
-msgstr "The port name is a unique name to establish input<->output port relationships"
+#: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr ""
+"The port name is a unique name to establish input<->output port relationships"
 
 #: ../bse/bsesubiport.c:334
 msgid "/Virtualization/Virtual Input"
 msgstr "/Virtualisation/Virtual Input"
 
-#: ../bse/bsesuboport.c:293
-#: ../bse/bsesubsynth.c:547
+#: ../bse/bsesuboport.c:293 ../bse/bsesubsynth.c:547
 #, c-format
 msgid "Virtual output %u"
 msgstr "Virtual output %u"
 
-#: ../bse/bsesuboport.c:300
-#: ../bse/bsesubsynth.c:530
+#: ../bse/bsesuboport.c:300 ../bse/bsesubsynth.c:530
 #, c-format
 msgid "Output Port %u"
 msgstr "Output Port %u"
@@ -6221,9 +6330,7 @@ msgstr "List of available mixer busses to be used as track output"
 msgid "Muted"
 msgstr "Muted"
 
-#: ../bse/bsetrack.c:1001
-#: ../bse/bsetrack.c:1006
-#: ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
 msgid "Synth Input"
 msgstr "Synth Input"
 
@@ -6276,8 +6383,7 @@ msgstr "The audio channel to play, usually 1 is left, 2 is right"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Modulation Strength for linear frequency modulation"
 
-#: ../bse/bsewaveosc.c:591
-#: ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
 msgid "Frequency Input"
 msgstr "Frequency Input"
 
@@ -6305,13 +6411,11 @@ msgstr "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgid "Music Composer"
 msgstr "Music Composer"
 
-#: ../data/beast.xml.in.h:1
-#: ../data/bse.keys.in.h:2
+#: ../data/beast.xml.in.h:1 ../data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
 msgstr "BSE Multi-Part Wave File"
 
-#: ../data/beast.xml.in.h:2
-#: ../data/bse.keys.in.h:3
+#: ../data/beast.xml.in.h:2 ../data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "BSE Synthesis File"
 
@@ -6410,40 +6514,64 @@ msgid ""
 "\n"
 "Compression is a dynamic operation that consists of two parts:\n"
 "(1) the current input volume of the signal is detected\n"
-"(2) if it exceeds a given theshold, the volume of the output signal will be reduced\n"
+"(2) if it exceeds a given theshold, the volume of the output signal will be "
+"reduced\n"
 "\n"
-"The input volume detection has an attack and a release half-life time which can be specified - in milliseconds - with the corresponding properties. This envelope causes the compressor to adapt slowly to the actual input signal level.\n"
+"The input volume detection has an attack and a release half-life time which "
+"can be specified - in milliseconds - with the corresponding properties. This "
+"envelope causes the compressor to adapt slowly to the actual input signal "
+"level.\n"
 "\n"
-"The ratio specifies how the volume of a signal should be reduced, if it exceeds the threshold. A compression ratio of 2:1 means for instance that if the input volume is 2 dB over the threshold, the output volume will be 1 dB over the threshold. Example (threshold = -10, ratio 2:1):\n"
+"The ratio specifies how the volume of a signal should be reduced, if it "
+"exceeds the threshold. A compression ratio of 2:1 means for instance that if "
+"the input volume is 2 dB over the threshold, the output volume will be 1 dB "
+"over the threshold. Example (threshold = -10, ratio 2:1):\n"
 "input = -20 dB => output = -20 dB\n"
 "input = -10 dB => output = -10 dB\n"
 "input = 0 dB => output = -5 dB\n"
 "input = 10 dB => output = 0 dB\n"
 "input = 20 dB => output = 5 dB\n"
 "\n"
-"Compression is often thought off as an operation to make music \"sound louder\". To achieve this, the first step is to reduce the dynamic range like in the example above. As the loud parts of the music have been reduced in volume, we can now amplify everything, without risking distortion or clipping. This has the overall effect of the music sounding louder. In our example, an output amplification of 5 dB would be okay, if the input signal never exceeded 0 dB."
+"Compression is often thought off as an operation to make music \"sound louder"
+"\". To achieve this, the first step is to reduce the dynamic range like in "
+"the example above. As the loud parts of the music have been reduced in "
+"volume, we can now amplify everything, without risking distortion or "
+"clipping. This has the overall effect of the music sounding louder. In our "
+"example, an output amplification of 5 dB would be okay, if the input signal "
+"never exceeded 0 dB."
 msgstr ""
 "ArtsCompressor compresses the sound.\n"
 "\n"
 "Compression is a dynamic operation that consists of two parts:\n"
 "(1) the current input volume of the signal is detected\n"
-"(2) if it exceeds a given theshold, the volume of the output signal will be reduced\n"
+"(2) if it exceeds a given theshold, the volume of the output signal will be "
+"reduced\n"
 "\n"
-"The input volume detection has an attack and a release half-life time which can be specified - in milliseconds - with the corresponding properties. This envelope causes the compressor to adapt slowly to the actual input signal level.\n"
+"The input volume detection has an attack and a release half-life time which "
+"can be specified - in milliseconds - with the corresponding properties. This "
+"envelope causes the compressor to adapt slowly to the actual input signal "
+"level.\n"
 "\n"
-"The ratio specifies how the volume of a signal should be reduced, if it exceeds the threshold. A compression ratio of 2:1 means for instance that if the input volume is 2 dB over the threshold, the output volume will be 1 dB over the threshold. Example (threshold = -10, ratio 2:1):\n"
+"The ratio specifies how the volume of a signal should be reduced, if it "
+"exceeds the threshold. A compression ratio of 2:1 means for instance that if "
+"the input volume is 2 dB over the threshold, the output volume will be 1 dB "
+"over the threshold. Example (threshold = -10, ratio 2:1):\n"
 "input = -20 dB => output = -20 dB\n"
 "input = -10 dB => output = -10 dB\n"
 "input = 0 dB => output = -5 dB\n"
 "input = 10 dB => output = 0 dB\n"
 "input = 20 dB => output = 5 dB\n"
 "\n"
-"Compression is often thought off as an operation to make music \"sound louder\". To achieve this, the first step is to reduce the dynamic range like in the example above. As the loud parts of the music have been reduced in volume, we can now amplify everything, without risking distortion or clipping. This has the overall effect of the music sounding louder. In our example, an output amplification of 5 dB would be okay, if the input signal never exceeded 0 dB."
+"Compression is often thought off as an operation to make music \"sound louder"
+"\". To achieve this, the first step is to reduce the dynamic range like in "
+"the example above. As the loud parts of the music have been reduced in "
+"volume, we can now amplify everything, without risking distortion or "
+"clipping. This has the overall effect of the music sounding louder. In our "
+"example, an output amplification of 5 dB would be okay, if the input signal "
+"never exceeded 0 dB."
 
-#: ../plugins/artscompressor.idl:48
-#: ../plugins/bseadder.c:95
-#: ../plugins/bseamplifier.idl:43
-#: ../plugins/bsebalance.idl:34
+#: ../plugins/artscompressor.idl:48 ../plugins/bseadder.c:95
+#: ../plugins/bseamplifier.idl:43 ../plugins/bsebalance.idl:34
 #: ../plugins/bsemult.c:58
 msgid "Audio In1"
 msgstr "Audio In1"
@@ -6452,10 +6580,8 @@ msgstr "Audio In1"
 msgid "Audio input 1"
 msgstr "Audio input 1"
 
-#: ../plugins/artscompressor.idl:49
-#: ../plugins/bseadder.c:97
-#: ../plugins/bseamplifier.idl:44
-#: ../plugins/bsebalance.idl:35
+#: ../plugins/artscompressor.idl:49 ../plugins/bseadder.c:97
+#: ../plugins/bseamplifier.idl:44 ../plugins/bsebalance.idl:35
 #: ../plugins/bsemult.c:60
 msgid "Audio In2"
 msgstr "Audio In2"
@@ -6480,10 +6606,8 @@ msgstr "Audio Out2"
 msgid "Compressed audio output 2"
 msgstr "Compressed audio output 2"
 
-#: ../plugins/artscompressor.idl:53
-#: ../plugins/davbassfilter.idl:34
-#: ../plugins/davchorus.idl:30
-#: ../plugins/davsyndrum.c:106
+#: ../plugins/artscompressor.idl:53 ../plugins/davbassfilter.idl:34
+#: ../plugins/davchorus.idl:30 ../plugins/davsyndrum.c:106
 #: ../plugins/davsyndrum.c:111
 msgid "Parameters"
 msgstr "Parameters"
@@ -6533,28 +6657,27 @@ msgid "Auto Output"
 msgstr "Auto Output"
 
 #: ../plugins/artscompressor.idl:59
-msgid "Adjust the output amplification automatically according to threshold and ratio"
-msgstr "Adjust the output amplification automatically according to threshold and ratio"
+msgid ""
+"Adjust the output amplification automatically according to threshold and "
+"ratio"
+msgstr ""
+"Adjust the output amplification automatically according to threshold and "
+"ratio"
 
-#: ../plugins/bseadder.c:95
-#: ../plugins/bsemult.c:58
+#: ../plugins/bseadder.c:95 ../plugins/bsemult.c:58
 msgid "Audio Input 1"
 msgstr "Audio Input 1"
 
-#: ../plugins/bseadder.c:97
-#: ../plugins/bsemult.c:60
+#: ../plugins/bseadder.c:97 ../plugins/bsemult.c:60
 msgid "Audio Input 2"
 msgstr "Audio Input 2"
 
-#: ../plugins/bseadder.c:99
-#: ../plugins/bsemult.c:66
+#: ../plugins/bseadder.c:99 ../plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "Audio Output"
 
-#: ../plugins/bseamplifier.idl:28
-#: ../plugins/bsebalance.idl:24
-#: ../plugins/bsenoise.idl:25
-#: ../plugins/davbassfilter.idl:25
+#: ../plugins/bseamplifier.idl:28 ../plugins/bsebalance.idl:24
+#: ../plugins/bsenoise.idl:25 ../plugins/davbassfilter.idl:25
 #: ../plugins/davchorus.idl:25
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public Licence"
@@ -6564,36 +6687,48 @@ msgid "/Routing/Amplifier"
 msgstr "/Routing/Amplifier"
 
 #: ../plugins/bseamplifier.idl:30
-msgid "BseAmplifier provides input signal controlled amplification or attenuation. It supports two control inputs and two audio inputs which are mixed together after balance and level adjustments. The gain setting controls preamplification of the mixed audio signal. The mixed control signal, weighted by a strength setting, determines additional amplification, allowing for external sources to modulate the overall volume (tremolo). The mixed control signal can influence the amplification linearly (to amplify other control signals) or exponentially (to amplify audio signals). Finally, the master volume controls amplification of the resulting output signal."
-msgstr "BseAmplifier provides input signal controlled amplification or attenuation. It supports two control inputs and two audio inputs which are mixed together after balance and level adjustments. The gain setting controls preamplification of the mixed audio signal. The mixed control signal, weighted by a strength setting, determines additional amplification, allowing for external sources to modulate the overall volume (tremolo). The mixed control signal can influence the amplification linearly (to amplify other control signals) or exponentially (to amplify audio signals). Finally, the master volume controls amplification of the resulting output signal."
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
 
-#: ../plugins/bseamplifier.idl:43
-#: ../plugins/bsebalance.idl:34
+#: ../plugins/bseamplifier.idl:43 ../plugins/bsebalance.idl:34
 msgid "First audio input"
 msgstr "First audio input"
 
-#: ../plugins/bseamplifier.idl:44
-#: ../plugins/bsebalance.idl:35
+#: ../plugins/bseamplifier.idl:44 ../plugins/bsebalance.idl:35
 msgid "Second audio input"
 msgstr "Second audio input"
 
-#: ../plugins/bseamplifier.idl:45
-#: ../plugins/bsebalance.idl:36
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
 msgid "Ctrl In1"
 msgstr "Ctrl In1"
 
-#: ../plugins/bseamplifier.idl:45
-#: ../plugins/bsebalance.idl:36
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
 msgid "First control input"
 msgstr "First control input"
 
-#: ../plugins/bseamplifier.idl:46
-#: ../plugins/bsebalance.idl:37
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
 msgid "Ctrl In2"
 msgstr "Ctrl In2"
 
-#: ../plugins/bseamplifier.idl:46
-#: ../plugins/bsebalance.idl:37
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
 msgid "Second control input"
 msgstr "Second control input"
 
@@ -6601,57 +6736,45 @@ msgstr "Second control input"
 msgid "Amplified audio output"
 msgstr "Amplified audio output"
 
-#: ../plugins/bseamplifier.idl:48
-#: ../plugins/bsebalance.idl:41
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:41
 msgid "Audio Input"
 msgstr "Audio Input"
 
-#: ../plugins/bseamplifier.idl:49
-#: ../plugins/bseamplifier.idl:54
-#: ../plugins/bsebalance.idl:42
-#: ../plugins/bsebalance.idl:47
+#: ../plugins/bseamplifier.idl:49 ../plugins/bseamplifier.idl:54
+#: ../plugins/bsebalance.idl:42 ../plugins/bsebalance.idl:47
 msgid "Input 1 [%]"
 msgstr "Input 1 [%]"
 
-#: ../plugins/bseamplifier.idl:49
-#: ../plugins/bsebalance.idl:42
+#: ../plugins/bseamplifier.idl:49 ../plugins/bsebalance.idl:42
 msgid "Attenuate the level of audio input 1"
 msgstr "Attenuate the level of audio input 1"
 
-#: ../plugins/bseamplifier.idl:50
-#: ../plugins/bseamplifier.idl:55
-#: ../plugins/bsebalance.idl:43
-#: ../plugins/bsebalance.idl:48
+#: ../plugins/bseamplifier.idl:50 ../plugins/bseamplifier.idl:55
+#: ../plugins/bsebalance.idl:43 ../plugins/bsebalance.idl:48
 msgid "Input 2 [%]"
 msgstr "Input 2 [%]"
 
-#: ../plugins/bseamplifier.idl:50
-#: ../plugins/bsebalance.idl:43
+#: ../plugins/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
 msgid "Attenuate the level of audio input 2"
 msgstr "Attenuate the level of audio input 2"
 
-#: ../plugins/bseamplifier.idl:51
-#: ../plugins/bsebalance.idl:44
+#: ../plugins/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
 msgid "Balance audio input levels"
 msgstr "Balance audio input levels"
 
-#: ../plugins/bseamplifier.idl:53
-#: ../plugins/bsebalance.idl:46
+#: ../plugins/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
 msgid "Control Input"
 msgstr "Control Input"
 
-#: ../plugins/bseamplifier.idl:54
-#: ../plugins/bsebalance.idl:47
+#: ../plugins/bseamplifier.idl:54 ../plugins/bsebalance.idl:47
 msgid "Attenuate the level of control input 1"
 msgstr "Attenuate the level of control input 1"
 
-#: ../plugins/bseamplifier.idl:55
-#: ../plugins/bsebalance.idl:48
+#: ../plugins/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
 msgid "Attenuate the level of control input 2"
 msgstr "Attenuate the level of control input 2"
 
-#: ../plugins/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:49
+#: ../plugins/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
 msgid "Balance control input levels"
 msgstr "Balance control input levels"
 
@@ -6660,8 +6783,12 @@ msgid "Multiply Controls"
 msgstr "Multiply Controls"
 
 #: ../plugins/bseamplifier.idl:58
-msgid "Switch the two control inputs to work like a chain of gain controls, rather than mixing them together, weighted by balance."
-msgstr "Switch the two control inputs to work like a chain of gain controls, rather than mixing them together, weighted by balance."
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
 
 #: ../plugins/bseamplifier.idl:61
 msgid "Exponential Control"
@@ -6671,8 +6798,7 @@ msgstr "Exponential Control"
 msgid "Toggle exponential and linear control response"
 msgstr "Toggle exponential and linear control response"
 
-#: ../plugins/bseamplifier.idl:64
-#: ../plugins/bsebalance.idl:52
+#: ../plugins/bseamplifier.idl:64 ../plugins/bsebalance.idl:52
 msgid "Control Strength"
 msgstr "Control Strength"
 
@@ -6709,8 +6835,18 @@ msgid "/Spatial/Balance"
 msgstr "/Spatial/Balance"
 
 #: ../plugins/bsebalance.idl:26
-msgid "BseBalance is a stereo panning module with two audio and two control inputs, each of which can be seperately level adjusted. The resulting output balance is controlled by a balance adjustment and the sum of the control inputs. To avoid aliasing artefacts for rapid balance changes, the control signal is preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr "BseBalance is a stereo panning module with two audio and two control inputs, each of which can be seperately level adjusted. The resulting output balance is controlled by a balance adjustment and the sum of the control inputs. To avoid aliasing artefacts for rapid balance changes, the control signal is preprocessed by a simple lowpass filter with adjustable cutoff frequency."
+msgid ""
+"BseBalance is a stereo panning module with two audio and two control inputs, "
+"each of which can be seperately level adjusted. The resulting output balance "
+"is controlled by a balance adjustment and the sum of the control inputs. To "
+"avoid aliasing artefacts for rapid balance changes, the control signal is "
+"preprocessed by a simple lowpass filter with adjustable cutoff frequency."
+msgstr ""
+"BseBalance is a stereo panning module with two audio and two control inputs, "
+"each of which can be seperately level adjusted. The resulting output balance "
+"is controlled by a balance adjustment and the sum of the control inputs. To "
+"avoid aliasing artefacts for rapid balance changes, the control signal is "
+"preprocessed by a simple lowpass filter with adjustable cutoff frequency."
 
 #: ../plugins/bsebalance.idl:38
 msgid "Left audio output"
@@ -6752,8 +6888,7 @@ msgstr "Output Balance"
 msgid "Adjust output balance between left and right"
 msgstr "Adjust output balance between left and right"
 
-#: ../plugins/bseiirfilter.c:117
-#: ../plugins/bseiirfilter.c:123
+#: ../plugins/bseiirfilter.c:117 ../plugins/bseiirfilter.c:123
 msgid "Filter Choice"
 msgstr "Filter Choice"
 
@@ -6765,8 +6900,7 @@ msgstr "Filter Algorithm"
 msgid "The type of filter to use"
 msgstr "The type of filter to use"
 
-#: ../plugins/bseiirfilter.c:129
-#: ../plugins/bseiirfilter.c:134
+#: ../plugins/bseiirfilter.c:129 ../plugins/bseiirfilter.c:134
 msgid "Filter Specification"
 msgstr "Filter Specification"
 
@@ -6786,8 +6920,7 @@ msgstr "Epsilon"
 msgid "Passband falloff at cutoff frequency"
 msgstr "Passband falloff at cutoff frequency"
 
-#: ../plugins/bseiirfilter.c:139
-#: ../plugins/bseiirfilter.c:144
+#: ../plugins/bseiirfilter.c:139 ../plugins/bseiirfilter.c:144
 msgid "Cutoff Frequency (All Filters)"
 msgstr "Cutoff Frequency (All Filters)"
 
@@ -6795,8 +6928,7 @@ msgstr "Cutoff Frequency (All Filters)"
 msgid "Filter cutoff frequency"
 msgstr "Filter cutoff frequency"
 
-#: ../plugins/bseiirfilter.c:150
-#: ../plugins/bseiirfilter.c:155
+#: ../plugins/bseiirfilter.c:150 ../plugins/bseiirfilter.c:155
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr "Cutoff Frequency 2 (Band Pass/Stop)"
 
@@ -6927,16 +7059,20 @@ msgid "/Filters/Bass Filter"
 msgstr "/Filters/Bass Filter"
 
 #: ../plugins/davbassfilter.idl:27
-msgid "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 portions of gsyn v0.2. The filter algorithm is partly based on the one described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
-msgstr "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 portions of gsyn v0.2. The filter algorithm is partly based on the one described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgid ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgstr ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
 
-#: ../plugins/davbassfilter.idl:31
-#: ../plugins/davchorus.idl:28
+#: ../plugins/davbassfilter.idl:31 ../plugins/davchorus.idl:28
 msgid "Audio input"
 msgstr "Audio input"
 
-#: ../plugins/davbassfilter.idl:32
-#: ../plugins/davsyndrum.c:121
+#: ../plugins/davbassfilter.idl:32 ../plugins/davsyndrum.c:121
 #: ../plugins/davxtalstrings.c:153
 msgid "Trigger In"
 msgstr "Trigger In"
@@ -6985,13 +7121,11 @@ msgstr "Set the decay length in percent"
 msgid "Trigger filter"
 msgstr "Trigger filter"
 
-#: ../plugins/davcanyondelay.c:86
-#: ../plugins/davcanyondelay.c:91
+#: ../plugins/davcanyondelay.c:86 ../plugins/davcanyondelay.c:91
 msgid "Left to Right"
 msgstr "Left to Right"
 
-#: ../plugins/davcanyondelay.c:87
-#: ../plugins/davcanyondelay.c:97
+#: ../plugins/davcanyondelay.c:87 ../plugins/davcanyondelay.c:97
 msgid "Delay (seconds)"
 msgstr "Delay (seconds)"
 
@@ -6999,8 +7133,7 @@ msgstr "Delay (seconds)"
 msgid "The time for the left to right delay"
 msgstr "The time for the left to right delay"
 
-#: ../plugins/davcanyondelay.c:92
-#: ../plugins/davcanyondelay.c:102
+#: ../plugins/davcanyondelay.c:92 ../plugins/davcanyondelay.c:102
 msgid "Feedback [%]"
 msgstr "Feedback [%]"
 
@@ -7008,8 +7141,7 @@ msgstr "Feedback [%]"
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr "The feedback amount; a negative feedback inverts the signal"
 
-#: ../plugins/davcanyondelay.c:96
-#: ../plugins/davcanyondelay.c:101
+#: ../plugins/davcanyondelay.c:96 ../plugins/davcanyondelay.c:101
 msgid "Right to Left"
 msgstr "Right to Left"
 
@@ -7021,8 +7153,7 @@ msgstr "The time for the right to left delay"
 msgid "Set the feedback amount; a negative feedback inverts the signal"
 msgstr "Set the feedback amount; a negative feedback inverts the signal"
 
-#: ../plugins/davcanyondelay.c:107
-#: ../plugins/davcanyondelay.c:113
+#: ../plugins/davcanyondelay.c:107 ../plugins/davcanyondelay.c:113
 msgid "IIR Low-Pass Filter"
 msgstr "IIR Low-Pass Filter"
 
@@ -7071,11 +7202,14 @@ msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr "Organ frequency in Hertz, i.e. the pitch of the base tone"
 
 #: ../plugins/davorgan.c:114
-msgid "Organ frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Organ frequency as note, converted to Hertz according to the current musical tuning"
+msgid ""
+"Organ frequency as note, converted to Hertz according to the current musical "
+"tuning"
+msgstr ""
+"Organ frequency as note, converted to Hertz according to the current musical "
+"tuning"
 
-#: ../plugins/davorgan.c:118
-#: ../plugins/davxtalstrings.c:114
+#: ../plugins/davorgan.c:118 ../plugins/davxtalstrings.c:114
 msgid "Transposition of the frequency in semitones"
 msgstr "Transposition of the frequency in semitones"
 
@@ -7088,11 +7222,14 @@ msgid "Drum frequency in Hertz"
 msgstr "Drum frequency in Hertz"
 
 #: ../plugins/davsyndrum.c:95
-msgid "Drum frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Drum frequency as note, converted to Hertz according to the current musical tuning"
+msgid ""
+"Drum frequency as note, converted to Hertz according to the current musical "
+"tuning"
+msgstr ""
+"Drum frequency as note, converted to Hertz according to the current musical "
+"tuning"
 
-#: ../plugins/davsyndrum.c:99
-#: ../plugins/davxtalstrings.c:123
+#: ../plugins/davsyndrum.c:99 ../plugins/davxtalstrings.c:123
 msgid "Trigger Velocity [%]"
 msgstr "Trigger Velocity [%]"
 
@@ -7100,14 +7237,12 @@ msgstr "Trigger Velocity [%]"
 msgid "The velocity of the drum hit"
 msgstr "The velocity of the drum hit"
 
-#: ../plugins/davsyndrum.c:103
-#: ../plugins/davxtalstrings.c:122
+#: ../plugins/davsyndrum.c:103 ../plugins/davxtalstrings.c:122
 #: ../plugins/davxtalstrings.c:127
 msgid "Trigger"
 msgstr "Trigger"
 
-#: ../plugins/davsyndrum.c:104
-#: ../plugins/davxtalstrings.c:128
+#: ../plugins/davsyndrum.c:104 ../plugins/davxtalstrings.c:128
 msgid "Trigger Hit"
 msgstr "Trigger Hit"
 
@@ -7128,8 +7263,12 @@ msgid "Frequency Ratio"
 msgstr "Frequency Ratio"
 
 #: ../plugins/davsyndrum.c:113
-msgid "The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)"
-msgstr "The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)"
+msgid ""
+"The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base "
+"frequency)"
+msgstr ""
+"The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base "
+"frequency)"
 
 #: ../plugins/davsyndrum.c:117
 msgid "Drum Frequency Input"
@@ -7156,8 +7295,12 @@ msgid "String oscillation frequency in Hertz"
 msgstr "String oscillation frequency in Hertz"
 
 #: ../plugins/davxtalstrings.c:110
-msgid "String oscillation frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "String oscillation frequency as note, converted to Hertz according to the current musical tuning"
+msgid ""
+"String oscillation frequency as note, converted to Hertz according to the "
+"current musical tuning"
+msgstr ""
+"String oscillation frequency as note, converted to Hertz according to the "
+"current musical tuning"
 
 #: ../plugins/davxtalstrings.c:124
 msgid "Velocity of the string pluck"
@@ -7167,8 +7310,7 @@ msgstr "Velocity of the string pluck"
 msgid "Pluck the string"
 msgstr "Pluck the string"
 
-#: ../plugins/davxtalstrings.c:130
-#: ../plugins/davxtalstrings.c:135
+#: ../plugins/davxtalstrings.c:130 ../plugins/davxtalstrings.c:135
 msgid "Decay"
 msgstr "Decay"
 
@@ -7188,8 +7330,7 @@ msgstr "Tension Decay"
 msgid "Tension of the string"
 msgstr "Tension of the string"
 
-#: ../plugins/davxtalstrings.c:140
-#: ../plugins/davxtalstrings.c:145
+#: ../plugins/davxtalstrings.c:140 ../plugins/davxtalstrings.c:145
 msgid "Flavour"
 msgstr "Flavour"
 
@@ -7242,69 +7383,12 @@ msgstr "Right Output"
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "failed to add wave chunk from file \"%s\": %s"
 
-#, fuzzy
-#~ msgid "Song"
-#~ msgstr "_Song"
-
-#, fuzzy
-#~ msgid "No valid song supplied"
-#~ msgstr "Invalid object property"
-
-#, fuzzy
-#~ msgid "Synth Net"
-#~ msgstr "Synth Done"
-
-#, fuzzy
-#~ msgid "No valid synthesis network supplied"
-#~ msgstr "Draw synthesis networks anti-aliased?"
-
-#, fuzzy
-#~ msgid "Part"
-#~ msgstr "Parts"
-
-#, fuzzy
-#~ msgid "No valid part supplied"
-#~ msgstr "Invalid object property"
-
-#, fuzzy
-#~ msgid "No notes selected"
-#~ msgstr "No quantisation selected"
-
-#, fuzzy
-#~ msgid "Failed to parse harmony list"
-#~ msgstr "Failed to start recording to disc."
-
-#, fuzzy
-#~ msgid "N Iterations"
-#~ msgstr "Information"
-
-#, fuzzy
-#~ msgid "Start Now"
-#~ msgstr "Start Editor"
-
-#, fuzzy
-#~ msgid "No valid part object supplied"
-#~ msgstr "Invalid object property"
-
-#, fuzzy
-#~ msgid "/Song/Duplicate parts (loop range)"
-#~ msgstr "Failed to detect (start of) header"
-
-#, fuzzy
-#~ msgid "Show messages about empty part range"
-#~ msgstr "Show messages about audio recording problems"
-
-#, fuzzy
-#~ msgid "Failed to crop part range."
-#~ msgstr "Failed to detect (start of) header"
-
-#, fuzzy
-#~ msgid "Failed to duplicate part range."
-#~ msgstr "Failed to detect (start of) header"
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Musical notation corresponding to the oscillator frequency"
+
 #~ msgid "/Misc/Evaluator"
 #~ msgstr "/Misc/Evaluator"
+
 #~ msgid ""
 #~ "BseEvaluator is a module which can compute arithmetic operations in a "
 #~ "small language. The audio input signal is called input, the audio output "
@@ -7315,90 +7399,132 @@ msgstr "failed to add wave chunk from file \"%s\": %s"
 #~ "small language. The audio input signal is called input, the audio output "
 #~ "signal is called output. Simple examples for programs would be \"output = "
 #~ "input * 5\" or \"output = 2 * input + 1\"."
+
 #~ msgid "Audio output"
 #~ msgstr "Audio output"
+
 #~ msgid "Source code"
 #~ msgstr "Source code"
+
 #~ msgid "The source code"
 #~ msgstr "The source code"
+
 #~ msgid "Status"
 #~ msgstr "Status"
+
 #~ msgid "Status used to output error messages"
 #~ msgstr "Status used to output error messages"
+
 #~ msgid "Delete Inputs"
 #~ msgstr "Delete Inputs"
+
 #~ msgid "Delete Outputs"
 #~ msgstr "Delete Outputs"
+
 #~ msgid "Enable meters"
 #~ msgstr "Enable meters"
+
 #~ msgid "Stepping Rates"
 #~ msgstr "Stepping Rates"
+
 #~ msgid "Volume [dB] Steps"
 #~ msgstr "Volume [dB] Steps"
+
 #~ msgid "Step width for volume in decibel"
 #~ msgstr "Step width for volume in decibel"
+
 #~ msgid "BPM Steps"
 #~ msgstr "BPM Steps"
+
 #~ msgid "Step width for beats per minute"
 #~ msgstr "Step width for beats per minute"
+
 #~ msgid "#CPU"
 #~ msgstr "#CPU"
+
 #~ msgid "BEAST-%s Release Notes"
 #~ msgstr "BEAST-%s Release Notes"
+
 #~ msgid "Properties:"
 #~ msgstr "Properties:"
+
 #~ msgid "Identifier:"
 #~ msgstr "Identifier:"
+
 #~ msgid "Description:"
 #~ msgstr "Description:"
+
 #~ msgid "Signals:"
 #~ msgstr "Signals:"
+
 #~ msgid "Input Channels:"
 #~ msgstr "Input Channels:"
+
 #~ msgid "(Joint Input)"
 #~ msgstr "(Joint Input)"
+
 #~ msgid "Output Channels:"
 #~ msgstr "Output Channels:"
+
 #~ msgid "BSE-Objects"
 #~ msgstr "BSE-Objects"
+
 #~ msgid " Object Reference"
 #~ msgstr " Object Reference"
+
 #~ msgid "Selection to Loop"
 #~ msgstr "Selection to Loop"
+
 #~ msgid "Loop to Selection"
 #~ msgstr "Loop to Selection"
+
 #~ msgid "Zoom Selection"
 #~ msgstr "Zoom Selection"
+
 #~ msgid "Apply Loop"
 #~ msgstr "Apply Loop"
+
 #~ msgid "Reset Loop"
 #~ msgstr "Reset Loop"
+
 #~ msgid "Score"
 #~ msgstr "Score"
+
 #~ msgid "Find"
 #~ msgstr "Find"
+
 #~ msgid "Mark Signal (Head)"
 #~ msgstr "Mark Signal (Head)"
+
 #~ msgid "Mark Signal (Tail)"
 #~ msgstr "Mark Signal (Tail)"
+
 #~ msgid "Info"
 #~ msgstr "Info"
+
 #~ msgid "Miscellaneous Message"
 #~ msgstr "Miscellaneous Message"
+
 #~ msgid "Failed to open MIDI devices (reverting to null device): %s"
 #~ msgstr "Failed to open MIDI devices (reverting to null device): %s"
+
 #~ msgid "Mono Out"
 #~ msgstr "Mono Out"
+
 #~ msgid "Mono Filtered Output"
 #~ msgstr "Mono Filtered Output"
+
 #~ msgid "Mono In"
 #~ msgstr "Mono In"
+
 #~ msgid "Mono Signal Input"
 #~ msgstr "Mono Signal Input"
+
 #~ msgid "Guitar Output"
 #~ msgstr "Guitar Output"
+
 #~ msgid "Fatal Error: "
 #~ msgstr "Fatal Error: "
+
 #~ msgid "Fatal Error"
 #~ msgstr "Fatal Error"
-
