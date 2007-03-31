@@ -1,3 +1,7 @@
+Sat Mar 31 15:18:54 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/architecture.doxi: Document the new "volume" xinfo.
+
 Wed Feb 14 00:00:01 2007  Tim Janik  <timj@gtk.org>
 
 	* tools/bsefcompare.cc: slight precision increment for the last digit

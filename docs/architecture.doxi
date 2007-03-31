@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
+@doxer_set{rvstamp,parse_date} $Date$
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - Project Architecture
 
@@ -105,6 +105,13 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 	The offset in samples for the end of the loop.
 @item @strong{loop-count} -
 	A maximum limit for how often the loop should be repeated.
+@item @strong{volume} -
+	This can be used to adjust the volume of a wave chunk without changing
+	the raw/compressed audio data actually stored. When omitted, it
+	defaults to 1.0 (no volume adjustment). Other values are for instance
+	0.5 (play sample half as loud, corresponding to a -6dB adjustment) and
+	0.25 (corresponds to a -12dB adjustment). The range of valid volume
+	adjustments is: 0 < volume <= 1.0, any other value will be ignored.
 @item @strong{gus-patch-envelope} -
 	Contains the envelope points for a GUS Patch envelope.
 @done
