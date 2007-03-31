@@ -75,6 +75,7 @@ struct _GslWaveChunk
   /* cached data handle setup */
   gfloat         mix_freq;      /* recorded with mix_freq */
   gfloat         osc_freq;      /* while oscillating at osc_freq */
+  gdouble        volume_adjust;	/* cache of dhandle->xinfo["volume"], only valid when opened */
 };
 struct _GslWaveChunkBlock
 {

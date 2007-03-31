@@ -270,8 +270,11 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 
       wosc->istep = istep;
       gsl_filter_tscheb2_lp (GSL_WAVE_OSC_FILTER_ORDER, freq_c, freq_r / freq_c, 0.18, wosc->a, wosc->b);
+      /* Scale to compensate for zero-padding.
+       * Adjust volume of the chunk according to its volume adjustment.
+       */
       for (i = 0; i < GSL_WAVE_OSC_FILTER_ORDER + 1; i++)
-	wosc->a[i] *= zero_padding;	/* scale to compensate for zero-padding */
+	wosc->a[i] *= zero_padding * wosc->wchunk->volume_adjust;
       for (i = 0; i < (GSL_WAVE_OSC_FILTER_ORDER + 1) / 2; i++)     /* reverse bs */
 	{
 	  gfloat t = wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i];

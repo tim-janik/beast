@@ -1,3 +1,14 @@
+Sat Mar 31 15:18:54 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsldatahandle.[hc]: Implemented gsl_data_handle_volume, which
+	returns a volume adjustment factor ("volume" xinfo).
+
+	* gslwavechunk.[hc]: Cache the volume adjustment factor here, so that
+	GslWaveOsc can access it quickly.
+
+	* gslwaveosc.c (gsl_wave_osc_set_filter): Adjust volume of the chunk
+	according to its volume adjustment.
+
 Tue Feb  6 23:16:15 2007  Tim Janik  <timj@gtk.org>
 
 	* bseloader-wav.c (wav_read_fmt_header): fixed byte_per_sample check.

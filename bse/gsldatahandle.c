@@ -289,6 +289,22 @@ gsl_data_handle_osc_freq (GslDataHandle *dhandle)
   return f;
 }
 
+gfloat
+gsl_data_handle_volume (GslDataHandle *dhandle)
+{
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+  
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "volume");
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+  
+  /* no (or invalid) volume setting means that we replay without scaling */
+  if (f <= 0 || f > 1.0)
+    f = 1.0;
+  return f;
+}
+
 const gchar*
 gsl_data_handle_name (GslDataHandle *dhandle)
 {
