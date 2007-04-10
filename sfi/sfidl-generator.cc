@@ -31,14 +31,6 @@ using namespace std;
 
 /*--- common functions ---*/
 
-static std::string string_tolower (const string& word)
-{
-  std::string lower_word;
-  for (string::const_iterator i = word.begin(); i != word.end(); i++)
-    lower_word += tolower (*i);
-  return lower_word;
-}
-
 vector<string> CodeGenerator::splitName (const string& name)
 {
   bool lastunder = true, remove_caps = false;

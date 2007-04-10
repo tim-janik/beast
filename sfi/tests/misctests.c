@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <signal.h>	/* G_BREAKPOINT() */
+#include <math.h>
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
@@ -911,6 +912,11 @@ test_sfidl_seq (void)
     g_value_unset (&pos_value);
 #endif
   }
+
+  /* test that correct code is generated for double constants */
+  TASSERT (test_real_division_fields.n_fields == 1);
+  SfiReal pi = sfi_pspec_get_real_default (test_real_division_fields.fields[0]);
+  TASSERT (fabs (3.14 - pi) < 0.01);
 
   /* test constants */
   // TASSERT (TEST_ANSWER_B == 42);

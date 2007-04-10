@@ -34,6 +34,11 @@ record SickGenericThings {
   Sfi::Rec   rec   = ("Rec", "", ":readwrite");
 };
 
+record RealDivision {
+  // computation result should be 3.14
+  Sfi::Real pi = ("PI", "", 314.0 / 100.0, 3, 4, 0.1, ":readwrite");
+};
+
 // no more Sfi:: prefixing beyond this line
 using namespace Sfi;
 

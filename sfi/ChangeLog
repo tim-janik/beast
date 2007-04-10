@@ -1,3 +1,29 @@
+Tue Apr 10 17:22:11 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Don't use g_strdup_printf, but g_ascii_formatd for
+	formatting doubles (locale independency). Some simplification could be
+	achieved by switching from char* to std::string for some code.
+	Fix #424897 "Bad code generated for double constants by sfidl".
+
+	* sfidl-parser.hh:
+	* sfidl-parser.cc:
+	* sfidl-corecxx.cc: Use birnet functions to convert between strings
+	and integers, instead of reimplementing our own version.
+
+	* sfidl-generator.cc: Use birnet function string_tolower, instead of
+	reimplementing our own version.
+
+	* Makefile.am: Start linking sfidl against birnet, as we use birnet
+	string helper functions now.
+
+	* tests/testidl.idl:
+	* tests/misctests.c: Test that the code generator output for doubles
+	is correct (see #424897), by computing a record default with a
+	double division and checking its result.
+
+	* sfidl-corec.cc: Fix a compiler warning by using "%zd" as printf
+	format where appropriate.
+
 Sun Feb  4 03:24:30 2007  Tim Janik  <timj@gtk.org>
 
 	* updated all licenses to GNU Lesser General Public License version 2.1

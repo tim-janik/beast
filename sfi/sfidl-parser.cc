@@ -26,13 +26,21 @@
 #include <set>
 #include <stack>
 
-const std::string
-Sfidl::string_from_int (long long int lli)
+/* As opposed to the birnet function string_from_double, we use "%.17e"
+ * (instead of "%.17g"). This keeps doubles in param specs like (50.0/100.0)
+ * intact, because the C++ compiler will still recognize that we have doubles
+ * here. 
+ *
+ * "%g" omits decimal point and trailing digits for those doubles that can be
+ * represented without, so that the result of the division (when evaluated by
+ * the C++ compiler) would be 0, instead of the expected 0.5.
+ */
+static std::string
+string_with_exponent_from_double (double value)
 {
-  gchar *cstr = g_strdup_printf ("%lld", lli);
-  std::string str = cstr;
-  g_free (cstr);
-  return str;
+  char buffer[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+  g_ascii_formatd (buffer, G_ASCII_DTOSTR_BUF_SIZE, "%.17e", value);
+  return buffer;
 }
 
 
@@ -995,16 +1003,13 @@ GTokenType Parser::parseStringOrConst (string &s)
 	  if (ci->name == s &&
               ci->type != Constant::tIdent)     /* identifier constants can't be expanded to strings */
 	    {
-	      char *x = 0;
 	      switch (ci->type)
 		{
 		  case Constant::tInt:
-		    s = x = g_strdup_printf ("%lldLL", ci->i);
-		    g_free (x);
+		    s = string_from_int (ci->i) + "LL";
 		    break;
 		  case Constant::tFloat:
-		    s = x = g_strdup_printf ("%.17g", ci->f);
-		    g_free (x);
+		    s = string_with_exponent_from_double (ci->f);
 		    break;
 		  case Constant::tString:
 		    s = ci->str;
@@ -1520,13 +1525,12 @@ GTokenType Parser::parseParamHints (Param &def)
   while (!g_scanner_eof (scanner) && bracelevel > 0)
     {
       GTokenType t = scanner_get_next_token_with_colon_identifiers (scanner);
-      gchar *token_as_string = 0, *x = 0;
+      string token_as_string;
       bool current_arg_complete = false;
 
-      if(int(t) > 0 && int(t) <= 255)
+      if (int (t) > 0 && int (t) <= 255)
 	{
-	  token_as_string = g_new0 (char, 2); /* FIXME: leak */
-	  token_as_string[0] = char(t);
+	  token_as_string = char (t);
 	}
       switch (t)
 	{
@@ -1538,13 +1542,16 @@ GTokenType Parser::parseParamHints (Param &def)
 	  break;
 	case ',':		  current_arg_complete = true;
 	  break;
-	case G_TOKEN_STRING:	  x = g_strescape (scanner->value.v_string, 0);
-				  token_as_string = g_strdup_printf ("\"%s\"", x);
-				  g_free (x);
+	case G_TOKEN_STRING:
+	  {
+	    char *tmp = g_strescape (scanner->value.v_string, 0);
+	    token_as_string = string ("\"") + tmp + "\"";
+	    g_free (tmp);
+	  }
 	  break;
-	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%lluLL", scanner->value.v_int64);
+	case G_TOKEN_INT:	  token_as_string = string_from_uint (scanner->value.v_int64) + "LL";
 	  break;
-	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%.17g", scanner->value.v_float);
+	case G_TOKEN_FLOAT:	  token_as_string = string_with_exponent_from_double (scanner->value.v_float);
 	  break;
 	case G_TOKEN_IDENTIFIER:
           {
@@ -1560,22 +1567,24 @@ GTokenType Parser::parseParamHints (Param &def)
 	      }
 
             if (ci == constants.end())
-              token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
+              token_as_string = scanner->value.v_identifier;
             else switch (ci->type)
               {
               case Constant::tInt:
-                token_as_string = g_strdup_printf ("%lldLL", ci->i);
+                token_as_string = string_from_int (ci->i) + "LL";
                 break;
               case Constant::tFloat:
-                token_as_string = g_strdup_printf ("%.17g", ci->f);
+                token_as_string = string_with_exponent_from_double (ci->f);
                 break;
               case Constant::tIdent:
-                token_as_string = g_strdup (ci->str.c_str());
+                token_as_string = ci->str;
                 break;
               case Constant::tString:
-                x = g_strescape (ci->str.c_str(), 0);
-                token_as_string = g_strdup_printf ("\"%s\"", x);
-                g_free (x);
+		{
+		  char *tmp = g_strescape (ci->str.c_str(), 0);
+		  token_as_string = string ("\"") + tmp + "\"";
+		  g_free (tmp);
+		}
                 break;
               default:
                 g_assert_not_reached ();
@@ -1584,7 +1593,7 @@ GTokenType Parser::parseParamHints (Param &def)
           }
 	  break;
 	default:
-	  if (!token_as_string)
+	  if (token_as_string.empty())
 	    return GTokenType (')');
 	}
       if (current_arg_complete)
@@ -1599,16 +1608,15 @@ GTokenType Parser::parseParamHints (Param &def)
 	    }
 	  current_arg = "";
 	}
-      else if (token_as_string)
+      else 
 	{
 	  current_arg += token_as_string;
 	}
-      if (token_as_string && bracelevel)
+      if (!token_as_string.empty() && bracelevel)
 	{
 	  if (args != "")
 	    args += ' ';
 	  args += token_as_string;
-	  g_free (token_as_string);
 	}
     }
   def.args = args;

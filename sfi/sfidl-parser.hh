@@ -26,7 +26,7 @@
 
 namespace Sfidl {
 
-const std::string string_from_int (long long int lli);
+using namespace Birnet;
 
 /* we implement a get() function since operator[] is not const */
 template<typename Key, typename Value>

@@ -285,7 +285,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         if (parser.fromInclude (ei->name))
           continue;
         string name = makeLowerName (ei->name);
-        printf ("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1); // FIXME: i18n
+        printf ("static const GEnumValue %s_value[%zd] = {\n", name.c_str(), ei->contents.size() + 1); // FIXME: i18n
         for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
           {
             string ename = makeUpperName (ci->name);
