@@ -1,3 +1,9 @@
+Wed Apr 11 15:46:31 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsedatahandle-fir.cc: Fix a bug in seek() spotted by Tim: invalidate
+	m_input_data contents properly if a read error occurs during filling
+	it.
+
 Sat Mar 31 15:18:54 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gsldatahandle.[hc]: Implemented gsl_data_handle_volume, which

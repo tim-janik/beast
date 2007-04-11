@@ -157,7 +157,7 @@ public:
 	    if (l < 0)  // pass on errors
 	      {
 		// invalidate m_input_data
-		voffset = -2 * m_block_size;
+		m_input_voffset = -2 * m_block_size;
 		return l;
 	      }
 	    else
