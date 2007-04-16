@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2003 Stefan Westerfeld
+ * Copyright (C) 2003-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,15 +27,15 @@ namespace Sfidl {
     NamespaceHelper nspace;
 
     using CodeGeneratorCBase::createTypeCode;
-    std::string createTypeCode (const std::string& type, const std::string& name, 
-				TypeCodeModel model);
+    String createTypeCode (const String& type, const String& name, 
+			   TypeCodeModel model);
 
-    std::string typeArg (const std::string& type);
-    std::string typeField (const std::string& type);
-    std::string typeRet (const std::string& type);
-    std::string funcNew (const std::string& type);
-    std::string funcCopy (const std::string& type);
-    std::string funcFree (const std::string& type);
+    String typeArg (const String& type);
+    String typeField (const String& type);
+    String typeRet (const String& type);
+    String funcNew (const String& type);
+    String funcCopy (const String& type);
+    String funcFree (const String& type);
 
     void printChoicePrototype   (NamespaceHelper& nspace);
     void printChoiceImpl        (NamespaceHelper& nspace);
@@ -46,8 +46,8 @@ namespace Sfidl {
     enum Style { STYLE_LOWER, STYLE_MIXED };
     Style style;
 
-    std::string makeStyleName (const std::string& name);
-    std::string makeProcName (const std::string& className, const std::string& procName);
+    String makeStyleName (const String& name);
+    String makeProcName (const String& className, const String& procName);
 
     void printMethods (const Class& cdef);
     void printProperties (const Class& cdef);
@@ -59,7 +59,7 @@ namespace Sfidl {
     bool run ();
 
     OptionVector getOptions();
-    void setOption (const std::string& option, const std::string& value);
+    void setOption (const String& option, const String& value);
   };
 };
 

@@ -1,5 +1,5 @@
-/* SFI - Synthesis Fusion Kit Interface                 -*-mode: c++;-*-
- * Copyright (C) 2003 Tim Janik
+/* SFI - Synthesis Fusion Kit Interface
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -14,15 +14,20 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#ifndef _SFIDL_CORECXX_H__
-#define _SFIDL_CORECXX_H__
 
-#include "sfidl-generator.hh"
-#include "sfidl-cxxbase.hh"
-#include "sfidl-parser.hh"
-#include <stdio.h>
-#include <list>
+#ifndef _SFIDL_UTILS_HH_
+#define _SFIDL_UTILS_HH_
 
-#endif	/* _SFIDL_CORECXX_H__ */
+#include <sfi/glib-extra.h>
+#include <birnet/birnet.hh>
+
+namespace Sfidl {
+
+/* lots of helpers like string_from_int, but also typedefs like String */
+using namespace Birnet;
+
+}
+
+#endif /* _SFIDL_UTILS_HH_ */
 
 /* vim:set ts=8 sts=2 sw=2: */

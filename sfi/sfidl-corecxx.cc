@@ -21,7 +21,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <list>
-#include <string>
 #include <map>
 #include <sfi/glib-extra.h>
 
@@ -30,22 +29,22 @@ using namespace std;
 using namespace Sfidl;
 
 static const gchar*
-canonify_name (const string& s,
+canonify_name (const String& s,
                const char    replace = '-')
 {
   /* canonify type names which contain e.g. underscores (procedures) */
   gchar *tmp = g_strcanon (g_strdup (s.c_str()),
                            G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "+",
                            replace);
-  string d = tmp;
+  String d = tmp;
   g_free (tmp);
   return g_intern_string (d.c_str());
 }
 
 static const gchar*
-UPPER_CASE (const string &s)
+UPPER_CASE (const String &s)
 {
-  string d = s;
+  String d = s;
   for (guint i = 0; i < d.size(); i++)
     if (d[i] >= 'a' && d[i] <= 'z')
       d[i] += 'A' - 'a';
@@ -59,38 +58,38 @@ UPPER_CASE (const string &s)
 }
 
 static const char*
-intern_escape (const string &s)
+intern_escape (const String &s)
 {
   char *x = g_strescape (s.c_str(), 0);
-  string e = string ("\"") + x + "\"";
+  String e = String ("\"") + x + "\"";
   g_free (x);
   const char *result = g_intern_string (e.c_str());
   return result;
 }
 
-static string
-include_relative (string path,
-                  string source_file)
+static String
+include_relative (String path,
+                  String source_file)
 {
   if (g_path_is_absolute (path.c_str()))
     return path;
   gchar *dir = g_path_get_dirname (source_file.c_str());
-  string apath = string(dir) + G_DIR_SEPARATOR_S + path;
+  String apath = String(dir) + G_DIR_SEPARATOR_S + path;
   g_free (dir);
   return apath;
 }
 
-static string
+static String
 glue_untyped_pspec_constructor (const Parser &parser,
                                 const Param  &param)
 {
-  const string group = (param.group != "") ? param.group.escaped() : "NULL";
-  const string file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
+  const String group = (param.group != "") ? param.group.escaped() : "NULL";
+  const String file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
   switch (parser.typeOf (param.type))
     {
     case OBJECT:
       {
-        string pspec = "sfidl_pspec_Object";
+        String pspec = "sfidl_pspec_Object";
         if (param.args == "")
           pspec += "_default (" + group + file_line_args + ",\"" + param.name + "\")";
         else
@@ -99,7 +98,7 @@ glue_untyped_pspec_constructor (const Parser &parser,
       }
     default:
       {
-        string pspec = "sfidl_pspec_" + param.pspec;
+        String pspec = "sfidl_pspec_" + param.pspec;
         if (param.args == "")
           pspec += "_default (" + group + file_line_args + ",\"" + param.name + "\")";
         else
@@ -111,21 +110,21 @@ glue_untyped_pspec_constructor (const Parser &parser,
 
 class LanguageBindingCoreCxx : public CodeGenerator {
   struct Image {
-    std::string file;
-    std::string method;
-    Image (const std::string &f = "",
-           const std::string &m = "")
+    String file;
+    String method;
+    Image (const String &f = "",
+           const String &m = "")
       : file (f), method (m)
     {}
   };
   vector<Image> images;
   vector<const Method*> procs;
-  vector<string> alltypes;
+  vector<String> alltypes;
   void
-  push_type (const string &kind,
-             const string &type_name)
+  push_type (const String &kind,
+             const String &type_name)
   {
-    string s;
+    String s;
     s += kind + " (" + type_name + ")";
     alltypes.push_back (s);
   }
@@ -136,10 +135,10 @@ class LanguageBindingCoreCxx : public CodeGenerator {
     opts.push_back (make_pair ("--macro", true));
     return opts;
   }
-  string alltypes_macro;
+  String alltypes_macro;
   void
-  setOption (const string& option,
-             const string& value)
+  setOption (const String& option,
+             const String& value)
   {
     if (option == "--macro")
       {
@@ -156,20 +155,20 @@ public:
   {
   }
   const char*
-  intern (const string &str)
+  intern (const String &str)
   {
     return g_intern_string (str.c_str());
   }
-  string
+  String
   untyped_pspec_constructor (const Param &param)
   {
-    const string group = (param.group != "") ? param.group.escaped() : "NULL";
-    const string file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
+    const String group = (param.group != "") ? param.group.escaped() : "NULL";
+    const String file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
     switch (parser.typeOf (param.type))
       {
       case CHOICE:
         {
-          string pspec = "sfidl_pspec_Choice";
+          String pspec = "sfidl_pspec_Choice";
           if (param.args == "")
             pspec += "_default";
           pspec += " (" + group + file_line_args + ", \"" + param.name + "\", ";
@@ -181,7 +180,7 @@ public:
         }
       case SFIREC:
         {
-          string pspec = "sfidl_pspec_Rec";
+          String pspec = "sfidl_pspec_Rec";
           if (param.args == "")
             pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
@@ -191,7 +190,7 @@ public:
         }
       case RECORD:
         {
-          string pspec = "sfidl_pspec_Record";
+          String pspec = "sfidl_pspec_Record";
           if (param.args == "")
             pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
@@ -202,7 +201,7 @@ public:
         }
       case SEQUENCE:
         {
-          string pspec = "sfidl_pspec_Sequence";
+          String pspec = "sfidl_pspec_Sequence";
           if (param.args == "")
             pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
@@ -215,78 +214,78 @@ public:
       }
   }
   const char*
-  make_TYPE_NAME (const string &type_name)
+  make_TYPE_NAME (const String &type_name)
   {
-    vector<string> astrs;
+    vector<String> astrs;
     astrs.push_back ("TYPE");
     return intern (rename (ABSOLUTE, type_name, UPPER, "_", astrs, UPPER, "_").c_str());
   }
   const char*
-  make_IS_NAME (const string &type_name)
+  make_IS_NAME (const String &type_name)
   {
-    vector<string> astrs;
+    vector<String> astrs;
     astrs.push_back ("IS");
     return intern (rename (ABSOLUTE, type_name, UPPER, "_", astrs, UPPER, "_").c_str());
   }
   const char*
-  make_fqtn (const string &type_name,
-             const string &append = "")
+  make_fqtn (const String &type_name,
+             const String &append = "")
   {
-    vector<string> empty;
-    string s = rename (ABSOLUTE, type_name, Capitalized, "::", empty, Capitalized, "");
+    vector<String> empty;
+    String s = rename (ABSOLUTE, type_name, Capitalized, "::", empty, Capitalized, "");
     s += append;
     return intern (s);
   }
   const char*
-  make_PrefixedTypeName (const string &type_name,
-                         const string &append = "")
+  make_PrefixedTypeName (const String &type_name,
+                         const String &append = "")
   {
-    vector<string> empty;
-    string s = rename (ABSOLUTE, type_name, Capitalized, "", empty, Capitalized, "");
+    vector<String> empty;
+    String s = rename (ABSOLUTE, type_name, Capitalized, "", empty, Capitalized, "");
     s += append;
     return intern (s);
   }
   const char*
-  pure_TypeName (const string &type_name)
+  pure_TypeName (const String &type_name)
   {
-    vector<string> empty;
-    string s = rename (NONE, type_name, UPPER, "", empty, Capitalized, "");
+    vector<String> empty;
+    String s = rename (NONE, type_name, UPPER, "", empty, Capitalized, "");
     return intern (s);
   }
   const char*
-  make_FULL_UPPER (const string &type_name)
+  make_FULL_UPPER (const String &type_name)
   {
-    vector<string> empty;
-    string s = rename (ABSOLUTE, type_name, UPPER, "_", empty, UPPER, "_");
+    vector<String> empty;
+    String s = rename (ABSOLUTE, type_name, UPPER, "_", empty, UPPER, "_");
     return intern (s);
   }
   const char*
-  pure_UPPER (const string &type_name)
+  pure_UPPER (const String &type_name)
   {
-    vector<string> empty;
-    string s = rename (NONE, type_name, UPPER, "_", empty, UPPER, "_");
+    vector<String> empty;
+    String s = rename (NONE, type_name, UPPER, "_", empty, UPPER, "_");
     return intern (s);
   }
   const char*
-  make_scheme_name (const string &type_name)
+  make_scheme_name (const String &type_name)
   {
-    vector<string> empty;
+    vector<String> empty;
     return intern (rename (ABSOLUTE, type_name, lower, "-", empty, lower, "-").c_str());
   }
   const char*
-  make_full_lower (const string &type_name)
+  make_full_lower (const String &type_name)
   {
-    vector<string> empty;
+    vector<String> empty;
     return intern (rename (ABSOLUTE, type_name, lower, "_", empty, lower, "_").c_str());
   }
   const char*
-  pure_lower (const string &type_name)
+  pure_lower (const String &type_name)
   {
-    vector<string> empty;
+    vector<String> empty;
     return intern (rename (NONE, type_name, lower, "_", empty, lower, "_").c_str());
   }
   const Class*
-  find_class (const string &type_name)
+  find_class (const String &type_name)
   {
     for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
       if (ci->name == type_name)
@@ -294,29 +293,29 @@ public:
     return NULL;
   }
   bool
-  is_cxx_class (const string &type_name)
+  is_cxx_class (const String &type_name)
   {
-    const string cxxbase = "Bse::CxxBase";      // FIXME: hardcoding Bse C++ base type
+    const String cxxbase = "Bse::CxxBase";      // FIXME: hardcoding Bse C++ base type
     const Class *cc = find_class (type_name);
     while (cc)
       {
         if (cc->name == cxxbase)
           return true;
-        string xxx = cc->inherits;
+        String xxx = cc->inherits;
         cc = find_class (cc->inherits);
       }
     return false;
   }
-  string
+  String
   typed_pspec_constructor (const Param &param)
   {
-    const string group = (param.group != "") ? param.group.escaped() : "NULL";
-    const string file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
+    const String group = (param.group != "") ? param.group.escaped() : "NULL";
+    const String file_line_args = ",\"" + param.file + "\"," + string_from_int (param.line);
     switch (parser.typeOf (param.type))
       {
       case CHOICE:
         {
-          string pspec = "sfidl_pspec_GEnum";
+          String pspec = "sfidl_pspec_GEnum";
           if (param.args == "")
             pspec += "_default";
           pspec += " (" + group + file_line_args + ", \"" + param.name + "\", ";
@@ -328,7 +327,7 @@ public:
         }
       case RECORD:
         {
-          string pspec = "sfidl_pspec_BoxedRec";
+          String pspec = "sfidl_pspec_BoxedRec";
           if (param.args == "")
             pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
@@ -339,7 +338,7 @@ public:
         }
       case SEQUENCE:
         {
-          string pspec = "sfidl_pspec_BoxedSeq";
+          String pspec = "sfidl_pspec_BoxedSeq";
           if (param.args == "")
             pspec += "_default (" + group + file_line_args + ", \"" + param.name + "\", ";
           else
@@ -350,7 +349,7 @@ public:
         }
       case OBJECT:
         {
-          string pspec = "sfidl_pspec_TypedObject";
+          String pspec = "sfidl_pspec_TypedObject";
           if (param.args == "")
             pspec += "_default";
           pspec += " (" + group + file_line_args + ", \"" + param.name + "\", ";
@@ -364,7 +363,7 @@ public:
       }
   }
   const char*
-  TypeField (const string& type)
+  TypeField (const String& type)
   {
     switch (parser.typeOf (type))
       {
@@ -385,7 +384,7 @@ public:
       }
   }
   const char*
-  TypeArg (const std::string &type)
+  TypeArg (const String &type)
   {
     switch (parser.typeOf (type))
       {
@@ -400,13 +399,13 @@ public:
       case FBLOCK:
       case SFIREC:
       case RECORD:
-      case SEQUENCE:    return intern (string ("const ") + TypeField (type) + " &");
+      case SEQUENCE:    return intern (String ("const ") + TypeField (type) + " &");
       case OBJECT:      return TypeField (type);
       default:          g_assert_not_reached(); return NULL;
       }
   }
   const char*
-  TypeRet (const string& type)
+  TypeRet (const String& type)
   {
     switch (parser.typeOf (type))
       {
@@ -414,9 +413,9 @@ public:
       }
   }
   const char*
-  func_value_set_param (const string type)
+  func_value_set_param (const String type)
   {
-    string s;
+    String s;
     switch (parser.typeOf (type))
       {
       case BOOL:        return "sfi_value_set_bool";
@@ -430,19 +429,19 @@ public:
       case FBLOCK:      return "::Sfi::FBlock::value_set_fblock";
       case SFIREC:      return "::Sfi::Rec::value_set_rec";
       case RECORD:
-      case SEQUENCE:    return intern (make_fqtn (type) + string ("::value_set_boxed"));
+      case SEQUENCE:    return intern (make_fqtn (type) + String ("::value_set_boxed"));
       case OBJECT:
         if (is_cxx_class (type))
-          return intern (string() + "::Bse::CxxBase::value_set_casted< " + type + ", " + type + "Base>");
+          return intern (String() + "::Bse::CxxBase::value_set_casted< " + type + ", " + type + "Base>");
         else
-          return intern (string() + "::Bse::CxxBase::value_set_gobject");
+          return intern (String() + "::Bse::CxxBase::value_set_gobject");
       default:          g_assert_not_reached(); return NULL;
       }
   }
   const char*
-  func_value_get_param (const string type)
+  func_value_get_param (const String type)
   {
-    string s;
+    String s;
     switch (parser.typeOf (type))
       {
       case BOOL:        return "sfi_value_get_bool";
@@ -456,18 +455,18 @@ public:
       case FBLOCK:      return "::Sfi::FBlock::value_get_fblock";
       case SFIREC:      return "::Sfi::Rec::value_get_rec";
       case RECORD:
-      case SEQUENCE:    return intern (make_fqtn (type) + string ("::value_get_boxed"));
+      case SEQUENCE:    return intern (make_fqtn (type) + String ("::value_get_boxed"));
       case OBJECT:
         if (is_cxx_class (type))
-          return intern (string ("(") + make_fqtn (type) + "*) " +
+          return intern (String ("(") + make_fqtn (type) + "*) " +
                          "::Bse::CxxBase::value_get_object< " + make_fqtn (type) + "Base* >");
         else
-          return intern (string ("::Bse::CxxBase::value_get_gobject< ") + make_PrefixedTypeName (type) + ">");
+          return intern (String ("::Bse::CxxBase::value_get_gobject< ") + make_PrefixedTypeName (type) + ">");
       default:          g_assert_not_reached(); return NULL;
       }
   }
   const char*
-  make_SFI_TYPE_NAME (const string &type)
+  make_SFI_TYPE_NAME (const String &type)
   {
     switch (parser.typeOf (type))
       {
@@ -879,10 +878,10 @@ public:
         nspace.setFromSymbol(ci->name);
         // const char *name = nspace.printable_form (ci->name);
         const char *ctName = pure_TypeName (ci->name);
-        const char *ctNameBase = intern (ctName + string ("Base"));
-        const char *ctProperties = intern (ctName + string ("Properties"));
-        const char *ctPropertyID = intern (ctName + string ("PropertyID"));
-        vector<string> destroy_jobs;
+        const char *ctNameBase = intern (ctName + String ("Base"));
+        const char *ctProperties = intern (ctName + String ("Properties"));
+        const char *ctPropertyID = intern (ctName + String ("PropertyID"));
+        vector<String> destroy_jobs;
         
         /* skeleton class declaration + type macro */
         printf ("BSE_CXX_DECLARE_CLASS (%s);\n", pure_TypeName (ci->name));
@@ -892,13 +891,13 @@ public:
         /* pixstream(), this is a bit of a hack, we make it a template rather than
          * a normal inline method to avoid huge images in debugging code
          */
-        string icon = ci->infos.get("icon");
-        string pstream = "NULL";
+        String icon = ci->infos.get("icon");
+        String pstream = "NULL";
         if (icon != "")
           {
             printf ("  template<bool> static inline const unsigned char* inlined_pixstream();\n");
             images.push_back (Image (include_relative (icon, ci->file),
-                                     string ("template<bool> const unsigned char*\n") +
+                                     String ("template<bool> const unsigned char*\n") +
                                      make_fqtn (ci->name) + "Base" +
                                      "::inlined_pixstream()"));
             pstream = "inlined_pixstream<true>()";
@@ -1085,7 +1084,7 @@ public:
         printf ("  virtual ~%s ()\n", ctNameBase);
         printf ("  {\n");
         /* property deletion */
-        for (vector<string>::const_iterator vi = destroy_jobs.begin(); vi != destroy_jobs.end(); vi++)
+        for (vector<String>::const_iterator vi = destroy_jobs.begin(); vi != destroy_jobs.end(); vi++)
           printf ("    %s;\n", vi->c_str());
         printf ("  }\n");
         
@@ -1132,10 +1131,10 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         const char *ctName = pure_TypeName (ci->name);
-        const char *ctNameBase = intern (ctName + string ("Base"));
-        const char *ctPropertyID = intern (ctName + string ("PropertyID"));
+        const char *ctNameBase = intern (ctName + String ("Base"));
+        const char *ctPropertyID = intern (ctName + String ("PropertyID"));
         const char *nname = nspace.printable_form (ci->name);
-        vector<string> destroy_jobs;
+        vector<String> destroy_jobs;
         
         /* class_init */
         printf ("void\n");
@@ -1205,7 +1204,7 @@ public:
           continue;
         nspace.setFromSymbol(mi->name);
         const char *name = nspace.printable_form (mi->name);
-        const Map<std::string, IString> &infos = mi->infos;
+        const Map<String, IString> &infos = mi->infos;
         bool is_void = mi->result.type == "void";
         printf ("namespace Procedure {\n");
         printf ("BSE_CXX_DECLARE_PROC (%s);\n", pure_lower (mi->name));
@@ -1215,13 +1214,13 @@ public:
         /* pixstream(), this is a bit of a hack, we make it a template rather than
          * a normal inline method to avoid huge images in debugging code
          */
-        string icon = infos.get("icon");
-        string pstream = "NULL";
+        String icon = infos.get("icon");
+        String pstream = "NULL";
         if (icon != "")
           {
             printf ("  template<bool> static inline const unsigned char* inlined_pixstream();\n");
             images.push_back (Image (include_relative (icon, mi->file),
-                                     string ("template<bool> const unsigned char*\n") +
+                                     String ("template<bool> const unsigned char*\n") +
                                      make_full_lower (mi->name) +
                                      "::inlined_pixstream()"));
             pstream = "inlined_pixstream<true>()";
@@ -1346,7 +1345,7 @@ public:
     if (alltypes_macro != "" && alltypes.size())
       {
         printf ("#define BSE_CXX_REGISTER_ALL_TYPES_FROM_%s() \\\n", UPPER_CASE (alltypes_macro));
-        for (vector<string>::const_iterator si = alltypes.begin(); si != alltypes.end(); si++)
+        for (vector<String>::const_iterator si = alltypes.begin(); si != alltypes.end(); si++)
           printf ("  BSE_CXX_REGISTER_%s; \\\n", si->c_str());
         printf ("  /* %s type registrations done */\n", alltypes_macro.c_str());
       }
@@ -1364,7 +1363,7 @@ public:
         gint estatus = 0;
         GError *error = NULL;
         gchar *out, *err = NULL;
-        string cmd = string() + "gdk-pixbuf-csource " + "--name=local_pixstream " + ii->file;
+        String cmd = String() + "gdk-pixbuf-csource " + "--name=local_pixstream " + ii->file;
         g_spawn_command_line_sync (cmd.c_str(), &out, &err, &estatus, &error);
         if (err && *err)
           g_printerr ("gdk-pixbuf-csource: %s", err);
@@ -1393,8 +1392,8 @@ public:
 
 class LanguageBindingCoreCxxFactory : public Factory {
 public:
-  string option() const	      { return "--core-cxx"; }
-  string description() const  { return "generate core C++ binding"; }
+  String option() const	      { return "--core-cxx"; }
+  String description() const  { return "generate core C++ binding"; }
 
   CodeGenerator *create (const Parser& parser) const
   {
@@ -1404,8 +1403,8 @@ public:
 
 class LanguageBindingPluginFactory : public Factory {
 public:
-  string option() const	      { return "--plugin"; }
-  string description() const  { return "generate C++ plugin binding"; }
+  String option() const	      { return "--plugin"; }
+  String description() const  { return "generate C++ plugin binding"; }
 
   CodeGenerator *create (const Parser& parser) const
   {

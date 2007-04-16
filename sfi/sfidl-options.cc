@@ -132,9 +132,9 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 	  const char *value = 0;
 	  for (oi = codeGeneratorOptions.begin(); oi != codeGeneratorOptions.end() && !value; oi++)
 	    {
-	      const string& option = oi->first;
+	      const String& option = oi->first;
 	      const bool& needArg = oi->second;
-	      string optioneq = option + "=";
+	      String optioneq = option + "=";
 
 	      if (option == argv[i]) // --option
 		{
@@ -203,7 +203,7 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
   if (printIncludePath)
     {
       bool first = true;
-      for (std::vector<std::string>::const_iterator ii = includePath.begin(); ii != includePath.end(); ii++)
+      for (std::vector<String>::const_iterator ii = includePath.begin(); ii != includePath.end(); ii++)
 	{
 	  if (!first)
 	    printf (":");

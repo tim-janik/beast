@@ -17,9 +17,9 @@
 #ifndef _SFIDL_OPTIONS_H_
 #define _SFIDL_OPTIONS_H_
 
-#include <string>
 #include <vector>
 #include <utility>
+#include "sfidl-utils.hh"
 
 namespace Sfidl {
 
@@ -27,16 +27,16 @@ class Factory;
 class Parser;
 class CodeGenerator;
 
-typedef std::vector< std::pair <std::string, bool> > OptionVector;
+typedef std::vector< std::pair <String, bool> > OptionVector;
 
 struct Options {
   CodeGenerator *codeGenerator;
-  std::string    codeGeneratorName;
+  String         codeGeneratorName;
   bool           doHelp;
   bool	         doExit;
-  std::string    sfidlName;
+  String         sfidlName;
 
-  std::vector<std::string> includePath; // path to search for includes
+  std::vector<String> includePath; // path to search for includes
 
   Options ();
   bool parse (int *argc_p, char **argv_p[], const Parser& parser);

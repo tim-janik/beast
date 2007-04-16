@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,9 +30,9 @@ void CodeGeneratorClientC::printClassMacros()
     {
       if (parser.fromInclude (ci->name)) continue;
 
-      string macro = makeUpperName (NamespaceHelper::namespaceOf (ci->name)) + "_IS_" +
+      String macro = makeUpperName (NamespaceHelper::namespaceOf (ci->name)) + "_IS_" +
 	makeUpperName (NamespaceHelper::nameOf (ci->name));
-      string mname = makeMixedName (ci->name);
+      String mname = makeMixedName (ci->name);
 
       printf ("#define %s(proxy) bse_proxy_is_a ((proxy), \"%s\")\n",
 	  macro.c_str(), mname.c_str());
@@ -106,7 +106,7 @@ void CodeGeneratorClientC::printProcedureImpl ()
 }
 
 void
-CodeGeneratorClientC::addBindingSpecificFiles (const string& binding_specific_file)
+CodeGeneratorClientC::addBindingSpecificFiles (const String& binding_specific_file)
 {
   vector<Pragma> pragmas = parser.getPragmas ("ClientC");
 
@@ -114,11 +114,11 @@ CodeGeneratorClientC::addBindingSpecificFiles (const string& binding_specific_fi
   {
     if (pi->fromInclude) continue;
 
-    string filename;
+    String filename;
     if (pi->getString (binding_specific_file, filename))
       {
 	gchar *directory = g_path_get_dirname (pi->filename.c_str());
-	filename = directory + string (G_DIR_SEPARATOR_S) + filename;
+	filename = directory + String (G_DIR_SEPARATOR_S) + filename;
 	g_free (directory);
 
 	printf ("/* %s: including binding specific file \"%s\", as requested in %s:%d */\n",
@@ -158,7 +158,7 @@ bool CodeGeneratorClientC::run()
 
       if (prefix != "")
 	{
-	  for (vector<string>::const_iterator pi = prefix_symbols.begin(); pi != prefix_symbols.end(); pi++)
+	  for (vector<String>::const_iterator pi = prefix_symbols.begin(); pi != prefix_symbols.end(); pi++)
 	    printf("#define %s %s_%s\n", pi->c_str(), prefix.c_str(), pi->c_str());
 	  printf("\n");
 	}
@@ -207,7 +207,7 @@ CodeGeneratorClientC::getOptions()
 }
 
 void
-CodeGeneratorClientC::setOption (const string& option, const string& value)
+CodeGeneratorClientC::setOption (const String& option, const String& value)
 {
   if (option == "--prefix")
     {
@@ -230,8 +230,8 @@ namespace {
 
 class ClientCFactory : public Factory {
 public:
-  string option() const	      { return "--client-c"; }
-  string description() const  { return "generate client C language binding"; }
+  String option() const	      { return "--client-c"; }
+  String description() const  { return "generate client C language binding"; }
   
   CodeGenerator *create (const Parser& parser) const
   {

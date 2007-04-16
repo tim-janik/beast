@@ -19,7 +19,6 @@
 #define _SFIDL_TYPELIST_H__
 
 #include "sfidl-generator.hh"
-#include <string>
 #include <list>
 
 namespace Sfidl {
@@ -31,7 +30,7 @@ public:
   bool run ()
   {
     using namespace std;
-    vector<string>::const_iterator ti;
+    vector<String>::const_iterator ti;
 
     for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
       {

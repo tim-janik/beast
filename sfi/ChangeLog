@@ -1,3 +1,11 @@
+Fri Apr 13 14:22:34 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am:
+	* sfidl-utils.hh: Added include central file which provides String and
+	string_* helper functions by using them from birnet.
+
+	* sfidl-*[hc]: Use String instead of std::string.
+
 Tue Apr 10 17:22:11 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.cc: Don't use g_strdup_printf, but g_ascii_formatd for

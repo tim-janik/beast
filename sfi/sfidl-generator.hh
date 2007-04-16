@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld, 2003 Tim Janik
+ * Copyright (C) 2002-2007 Stefan Westerfeld, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-#include <string>
+#include "sfidl-utils.hh"
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
@@ -39,11 +39,11 @@ namespace Sfidl {
     bool generateSource;
     bool generateIdlLineNumbers;
     
-    std::vector<std::string> splitName (const std::string& name);
-    std::string makeLowerName (const std::string& name, char seperator = '_');
-    std::string makeUpperName (const std::string& name);
-    std::string makeMixedName (const std::string& name);
-    std::string makeLMixedName (const std::string& name);
+    std::vector<String> splitName (const String& name);
+    String makeLowerName (const String& name, char seperator = '_');
+    String makeUpperName (const String& name);
+    String makeMixedName (const String& name);
+    String makeLMixedName (const String& name);
 
     enum WordCase {
       lower,
@@ -56,8 +56,8 @@ namespace Sfidl {
      * translates a word into a given word case
      * i.e. toWordCase ("Hello", UPPER) == "HELLO"
      */
-    std::string toWordCase (const std::string& word, WordCase wc);
-    std::string joinName (const std::vector<std::string>& name, const std::string& seperator, WordCase wc);
+    String toWordCase (const String& word, WordCase wc);
+    String joinName (const std::vector<String>& name, const String& seperator, WordCase wc);
 
     enum NamespaceType {
       NONE,     /* no namespace */
@@ -78,10 +78,10 @@ namespace Sfidl {
      * typename_wc: the desired case for the typename
      * typename_join: how to join the typename
      */
-    std::string
-    rename (NamespaceType namespace_type, const std::string& name, WordCase namespace_wc,
-	    const std::string &namespace_join, const std::vector<std::string> &namespace_append,
-	    WordCase typename_wc, const std::string &typename_join);
+    String
+    rename (NamespaceType namespace_type, const String& name, WordCase namespace_wc,
+	    const String &namespace_join, const std::vector<String> &namespace_append,
+	    WordCase typename_wc, const String &typename_join);
 
     /*
      * rename is a function for renaming types according to rules
@@ -93,10 +93,10 @@ namespace Sfidl {
      * typename_wc: the desired case for the typename
      * typename_join: how to join the typename
      */
-    std::string
-    rename (NamespaceHelper& nsh, const std::string& name, WordCase namespace_wc,
-	    const std::string& namespace_join, const std::vector<std::string>& namespace_append,
-	    WordCase typename_wc, const std::string& typename_join);
+    String
+    rename (NamespaceHelper& nsh, const String& name, WordCase namespace_wc,
+	    const String& namespace_join, const std::vector<String>& namespace_append,
+	    WordCase typename_wc, const String& typename_join);
     
     CodeGenerator(const Parser& parser)
       : parser (parser), options (*Options::the()),
@@ -119,7 +119,7 @@ namespace Sfidl {
      * option is the option (i.e. "--prefix")
      * value is the value (i.e. "beast"), and "1" for options without user argument
      */
-    virtual void setOption (const std::string& option, const std::string& value);
+    virtual void setOption (const String& option, const String& value);
 
     /*
      * prints help for the options supported by this code generator

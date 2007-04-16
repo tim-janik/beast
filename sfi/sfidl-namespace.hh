@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2000,2002 Stefan Westerfeld
+ * Copyright (C) 2000,2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,10 @@
 #define _SFIDL_NAMESPACE_H__
 
 #include <stdio.h>
-#include <string>
 #include <list>
+#include "sfidl-utils.hh"
+
+namespace Sfidl {
 
 /*
  * This class is used during code generation. It generates the namespace
@@ -28,7 +30,7 @@
 class NamespaceHelper {
  protected:
   FILE *out;
-  std::list<std::string> currentNamespace;
+  std::list<String> currentNamespace;
   
  public:	
   NamespaceHelper(FILE *outputfile);
@@ -40,7 +42,7 @@ class NamespaceHelper {
    * namespace Arts. Since this generates code, it should only be called
    * outside of class definitions.
    */
-  void setFromSymbol(std::string symbol);
+  void setFromSymbol (String symbol);
   
   /*
    * This leaves all open namespaces which is useful if you want to include
@@ -54,22 +56,24 @@ class NamespaceHelper {
    * ::Arts::Object, if you are in a different namespace, and just Object,
    * if you are in the Arts namespace.
    */
-  std::string printableForm(std::string symbol);
-  const char* printable_form (std::string symbol);
+  String printableForm (String symbol);
+  const char* printable_form (String symbol);
   
   /*
    * Returns only the last component of the symbol (the name) cutting the
    * namespace components
    */
-  static std::string nameOf(std::string symbol);
+  static String nameOf (String symbol);
   
   /*
    * Returns everything but the last component of the symbol, which is
    * the namespace (e.g. namespaceOf("Arts::Object") returns Arts, and
    * nameOf("Arts::Object") returns Object).
    */
-  static std::string namespaceOf(std::string symbol);
+  static String namespaceOf (String symbol);
 };
+
+}
 
 #endif	/* _SFIDL_NAMESPACE_H__ */
 

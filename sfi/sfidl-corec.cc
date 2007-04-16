@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,47 +29,47 @@ using namespace std;
 
 class CodeGeneratorCoreC : public CodeGenerator {
   const char*
-  intern (const string &str)
+  intern (const String &str)
   {
     return g_intern_string (str.c_str());
   }
   const char*
-  make_type_id_symbol (const string &type_name,
-                       const string &append = "")
+  make_type_id_symbol (const String &type_name,
+                       const String &append = "")
   {
-    vector<string> insertions;
+    vector<String> insertions;
     insertions.push_back ("_type_id_");
-    string s = rename (ABSOLUTE, type_name, lower, "_", insertions, lower, "_");
+    String s = rename (ABSOLUTE, type_name, lower, "_", insertions, lower, "_");
     s += append;
     return intern (s);
   }
   const char*
-  make_TYPE_MACRO (const string &type_name,
-                   const string &append = "")
+  make_TYPE_MACRO (const String &type_name,
+                   const String &append = "")
   {
-    vector<string> insertions;
+    vector<String> insertions;
     insertions.push_back ("TYPE");
-    string s = rename (ABSOLUTE, type_name, UPPER, "_", insertions, UPPER, "_");
+    String s = rename (ABSOLUTE, type_name, UPPER, "_", insertions, UPPER, "_");
     s += append;
     return intern (s);
   }
   const char*
-  make_fqtn (const string &type_name,
-             const string &append = "")
+  make_fqtn (const String &type_name,
+             const String &append = "")
   {
-    vector<string> empty;
-    string s = rename (ABSOLUTE, type_name, Capitalized, "::", empty, Capitalized, "");
+    vector<String> empty;
+    String s = rename (ABSOLUTE, type_name, Capitalized, "::", empty, Capitalized, "");
     s += append;
     return intern (s);
   }
-  std::string generateInitFunction;
+  String generateInitFunction;
   void
-  printInfoStrings (const string&              name,
-                    const Map<string,IString> &infos)
+  printInfoStrings (const String&              name,
+                    const Map<String,IString> &infos)
   {
     printf ("static const gchar *%s[] = {\n", name.c_str());
     
-    Map<string,IString>::const_iterator ii;
+    Map<String,IString>::const_iterator ii;
     for (ii = infos.begin(); ii != infos.end(); ii++)
       printf ("  \"%s=%s\",\n", ii->first.c_str(), ii->second.c_str());
     
@@ -93,8 +93,8 @@ class CodeGeneratorCoreC : public CodeGenerator {
     return opts;
   }
   void
-  setOption (const string &option,
-             const string &value)
+  setOption (const String &option,
+             const String &value)
   {
     if (option == "--init")
       {
@@ -107,16 +107,16 @@ class CodeGeneratorCoreC : public CodeGenerator {
   }
 
   const char*
-  TypeName (const string &type_name,
-            const string &append = "")
+  TypeName (const String &type_name,
+            const String &append = "")
   {
-    vector<string> empty;
-    string s = rename (ABSOLUTE, type_name, Capitalized, "", empty, Capitalized, "");
+    vector<String> empty;
+    String s = rename (ABSOLUTE, type_name, Capitalized, "", empty, Capitalized, "");
     s += append;
     return intern (s);
   }
   const char*
-  TypeField (const string &type)
+  TypeField (const String &type)
   {
     switch (parser.typeOf (type))
       {
@@ -137,7 +137,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       }
   }
   const char*
-  TypeArg (const string &type)
+  TypeArg (const String &type)
   {
     switch (parser.typeOf (type))
       {
@@ -146,7 +146,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       }
   }
   const char*
-  TypeRet (const string& type)
+  TypeRet (const String& type)
   {
     switch (parser.typeOf (type))
       {
@@ -154,14 +154,14 @@ class CodeGeneratorCoreC : public CodeGenerator {
       }
   }
   const char*
-  cxx_handle (const string &type,
-              const string &var)
+  cxx_handle (const String &type,
+              const String &var)
   {
     switch (parser.typeOf (type))
       {
       case RECORD:
         {
-          string s, cxxtype = string() + make_fqtn (type) + "Handle";
+          String s, cxxtype = String() + make_fqtn (type) + "Handle";
           /* generate: (var ? FooHandle(*var) : FooHandle(INIT_NULL)) */
           s = "(" +
               var + " ? " +
@@ -174,12 +174,12 @@ class CodeGeneratorCoreC : public CodeGenerator {
       default:          return intern (var);
       }
   }
-  string
+  String
   construct_pspec (const Param &pdef)
   {
-    string pspec;
-    const string group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
-    string pname, parg;
+    String pspec;
+    const String group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
+    String pname, parg;
     switch (parser.typeOf (pdef.type))
       {
       case CHOICE:
@@ -203,7 +203,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       }
     pspec = "sfidl_pspec_" + pname;
     if (parg != "")
-      parg = string (", ") + parg;
+      parg = String (", ") + parg;
     if (pdef.args == "")
       pspec += "_default (" + group + ",\"" + pdef.name + parg + "\")";
     else
@@ -263,14 +263,14 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ei->name))
           continue;
-        string mname = makeMixedName (ei->name);
-        string lname = makeLowerName (ei->name);
+        String mname = makeMixedName (ei->name);
+        String lname = makeLowerName (ei->name);
         printf ("\ntypedef enum {\n");
         for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
           {
             /* don't export server side assigned choice values to the client */
             gint value = ci->value;
-            string ename = makeUpperName (ci->name);
+            String ename = makeUpperName (ci->name);
             printf ("  %s = %d,\n", ename.c_str(), value);
           }
         printf ("} %s;\n", mname.c_str());
@@ -284,11 +284,11 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ei->name))
           continue;
-        string name = makeLowerName (ei->name);
+        String name = makeLowerName (ei->name);
         printf ("static const GEnumValue %s_value[%zd] = {\n", name.c_str(), ei->contents.size() + 1); // FIXME: i18n
         for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
           {
-            string ename = makeUpperName (ci->name);
+            String ename = makeUpperName (ci->name);
             printf ("  { %d, \"%s\", \"%s\" },\n", ci->value, ename.c_str(), ci->label.c_str());
           }
         printf ("  { 0, NULL, NULL }\n");
@@ -315,7 +315,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ei->name))
           continue;
-        string name = makeLowerName (ei->name);
+        String name = makeLowerName (ei->name);
         printf ("SfiChoiceValues\n");
         printf ("%s_get_values (void)\n", makeLowerName (ei->name).c_str());
         printf ("{\n");
@@ -358,7 +358,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ri->name))
           continue;
-        string mname = makeMixedName (ri->name);
+        String mname = makeMixedName (ri->name);
         printf ("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
       }
   }
@@ -370,7 +370,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ri->name)) continue;
         
-        string mname = makeMixedName (ri->name.c_str());
+        String mname = makeMixedName (ri->name.c_str());
         
         printf ("struct _%s {\n", mname.c_str());
         for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
@@ -432,9 +432,9 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ri->name)) continue;
         
-        string ret = TypeRet (ri->name);
-        string arg = TypeArg (ri->name);
-        string lname = makeLowerName (ri->name.c_str());
+        String ret = TypeRet (ri->name);
+        String arg = TypeArg (ri->name);
+        String lname = makeLowerName (ri->name.c_str());
         
         printf ("SfiRecFields %s_get_fields (void);\n", lname.c_str());
         printf ("%s %s_new (void);\n", ret.c_str(), lname.c_str());
@@ -453,7 +453,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ri->name))
           continue;
-        string ret = TypeRet (ri->name);
+        String ret = TypeRet (ri->name);
         const gchar *type = make_fqtn (ri->name);
 
         printf ("static inline %s\n", ret.c_str());
@@ -476,10 +476,10 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ri->name))
           continue;
-        string ret = TypeRet (ri->name);
-        string arg = TypeArg (ri->name);
-        string lname = makeLowerName (ri->name.c_str());
-        string mname = makeMixedName (ri->name.c_str());
+        String ret = TypeRet (ri->name);
+        String arg = TypeArg (ri->name);
+        String lname = makeLowerName (ri->name.c_str());
+        String mname = makeMixedName (ri->name.c_str());
 
         const gchar *type = make_fqtn (ri->name);
 
@@ -537,12 +537,12 @@ class CodeGeneratorCoreC : public CodeGenerator {
         if (parser.fromInclude (ri->name))
           continue;
         
-        string name = makeLowerName (ri->name);
+        String name = makeLowerName (ri->name);
         
         printf ("static GParamSpec *%s_field[%zd];\n", name.c_str(), ri->contents.size());
         printf ("SfiRecFields %s_fields = { %zd, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
         
-        string mname = makeMixedName (ri->name);
+        String mname = makeMixedName (ri->name);
         
         printf ("static void\n");
         printf ("%s_boxed2rec (const GValue *src_value, GValue *dest_value)\n", name.c_str());
@@ -578,7 +578,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name))
           continue;
-        string mname = makeMixedName (si->name);
+        String mname = makeMixedName (si->name);
         printf ("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
       }
   }
@@ -590,9 +590,9 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name)) continue;
         
-        string mname = makeMixedName (si->name.c_str());
-        string array = string (TypeField (si->content.type)) + "*";
-        string elements = si->content.name;
+        String mname = makeMixedName (si->name.c_str());
+        String array = String (TypeField (si->content.type)) + "*";
+        String elements = si->content.name;
         
         printf ("struct _%s {\n", mname.c_str());
         printf ("  guint n_%s;\n", elements.c_str ());
@@ -652,10 +652,10 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name)) continue;
 
-        string ret = TypeRet (si->name);
-        string arg = TypeArg (si->name);
-        string element = TypeArg (si->content.type);
-        string lname = makeLowerName (si->name.c_str());
+        String ret = TypeRet (si->name);
+        String arg = TypeArg (si->name);
+        String element = TypeArg (si->content.type);
+        String lname = makeLowerName (si->name.c_str());
 
         printf ("GParamSpec* %s_get_element (void);\n", lname.c_str());
         printf ("%s %s_new (void);\n", ret.c_str(), lname.c_str());
@@ -676,7 +676,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name))
           continue;
-        string ret = TypeRet (si->name);
+        String ret = TypeRet (si->name);
         const gchar *type = make_fqtn (si->name);
 
         /* the cast functions take an extra unused sequence argument, to distinguish
@@ -702,11 +702,11 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name))
           continue;
-        string ret = TypeRet (si->name);
-        string arg = TypeArg (si->name);
-        string element = TypeArg (si->content.type);
-        string elements = si->content.name;
-        string lname = makeLowerName (si->name.c_str());
+        String ret = TypeRet (si->name);
+        String arg = TypeArg (si->name);
+        String element = TypeArg (si->content.type);
+        String elements = si->content.name;
+        String lname = makeLowerName (si->name.c_str());
         
         const gchar *type = make_fqtn (si->name);
 
@@ -785,11 +785,11 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name)) continue;
         
-        string name = makeLowerName (si->name);
+        String name = makeLowerName (si->name);
         
         printf ("static GParamSpec *%s_content;\n", name.c_str());
         
-        string mname = makeMixedName (si->name);
+        String mname = makeMixedName (si->name);
         
         printf ("static void\n");
         printf ("%s_boxed2seq (const GValue *src_value, GValue *dest_value)\n", name.c_str());
@@ -831,7 +831,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
      * inside a Sequence might come from a record - to avoid using yet-unitialized
      * Params, we follow the getTypes() 
      */
-    vector<string>::const_iterator ti;
+    vector<String>::const_iterator ti;
     
     for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
       {
@@ -847,7 +847,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
           {
             const Record& rdef = parser.findRecord (*ti);
             
-            string name = makeLowerName (rdef.name);
+            String name = makeLowerName (rdef.name);
             int f = 0;
             
             for (vector<Param>::const_iterator pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++, f++)
@@ -861,7 +861,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
           {
             const Sequence& sdef = parser.findSequence (*ti);
             
-            string name = makeLowerName (sdef.name);
+            String name = makeLowerName (sdef.name);
             
             if (generateIdlLineNumbers)
               printf ("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
@@ -872,9 +872,9 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ei->name)) continue;
         
-        string gname = make_TYPE_MACRO (ei->name);
-        string name = makeLowerName(ei->name);
-        string mname = makeMixedName(ei->name);
+        String gname = make_TYPE_MACRO (ei->name);
+        String name = makeLowerName(ei->name);
+        String mname = makeMixedName(ei->name);
         
         printf ("  %s = g_enum_register_static (\"%s\", %s_value);\n", gname.c_str(),
                 mname.c_str(), name.c_str());
@@ -887,8 +887,8 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (ri->name)) continue;
         
-        string gname = make_TYPE_MACRO (ri->name);
-        string name = makeLowerName(ri->name);
+        String gname = make_TYPE_MACRO (ri->name);
+        String name = makeLowerName(ri->name);
         
         printf ("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
         printf ("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
@@ -898,8 +898,8 @@ class CodeGeneratorCoreC : public CodeGenerator {
       {
         if (parser.fromInclude (si->name)) continue;
         
-        string gname = make_TYPE_MACRO (si->name);
-        string name = makeLowerName(si->name);
+        String gname = make_TYPE_MACRO (si->name);
+        String name = makeLowerName(si->name);
         
         printf ("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
         printf ("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
@@ -974,8 +974,8 @@ public:
 
 class CoreCFactory : public Factory {
 public:
-  string option() const	      { return "--core-c"; }
-  string description() const  { return "generate core C language binding"; }
+  String option() const	      { return "--core-c"; }
+  String description() const  { return "generate core C language binding"; }
   
   CodeGenerator *create (const Parser& parser) const
   {

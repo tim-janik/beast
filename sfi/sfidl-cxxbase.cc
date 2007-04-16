@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2003 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,22 +29,22 @@
 using namespace Sfidl;
 using namespace std;
 
-static string
-CxxNameToSymbol (const string &str)     // FIXME: need mammut renaming function
+static String
+CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function
 {
   static const char *cset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz";
-  string s;
+  String s;
   for (guint i = 0; i < s.size(); i++)
     if (!strchr (cset, s[i]))
       s[i] = '_';
   return s;
 }
 
-static vector<string>
-split_string (const string &ctype)      // FIXME: remove once we have general renamer
+static vector<String>
+split_string (const String &ctype)      // FIXME: remove once we have general renamer
 {
-  vector<string> vs;
-  string type = ctype;
+  vector<String> vs;
+  String type = ctype;
   int i;
   while ((i = type.find (':')) >= 0)
     {
@@ -58,12 +58,12 @@ split_string (const string &ctype)      // FIXME: remove once we have general re
   return vs;
 }
 
-static string
-join_string (const vector<string> &vs,  // FIXME: remove once we have general renamer
-             const string         &delim)
+static String
+join_string (const vector<String> &vs,  // FIXME: remove once we have general renamer
+             const String         &delim)
 {
-  string r;
-  for (vector<string>::const_iterator vi = vs.begin(); vi != vs.end(); vi++)
+  String r;
+  for (vector<String>::const_iterator vi = vs.begin(); vi != vs.end(); vi++)
     {
       if (vi != vs.begin())
         r += delim;
@@ -72,14 +72,14 @@ join_string (const vector<string> &vs,  // FIXME: remove once we have general re
   return r;
 }
 
-static string
-UC_NAME (const string &cstr)    // FIXME: need mammut renaming function
+static String
+UC_NAME (const String &cstr)    // FIXME: need mammut renaming function
 {
-  vector<string> vs = split_string (cstr);
-  string str = join_string (vs, "_");
-  string r;
+  vector<String> vs = split_string (cstr);
+  String str = join_string (vs, "_");
+  String r;
   char l = 0;
-  for (string::const_iterator i = str.begin(); i != str.end(); i++)
+  for (String::const_iterator i = str.begin(); i != str.end(); i++)
     {
       if (islower (l) && isupper (*i))
         r += "_";
@@ -88,38 +88,38 @@ UC_NAME (const string &cstr)    // FIXME: need mammut renaming function
   return r;
 }
 static const char*
-cUC_NAME (const string &cstr) // FIXME: need mammut renaming function
+cUC_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (cstr.c_str());
 }
 
-static string // FIXME: need mammut renaming function
-UC_TYPE_NAME (const string &tname)
+static String // FIXME: need mammut renaming function
+UC_TYPE_NAME (const String &tname)
 {
-  vector<string> vs = split_string (tname);
-  string lname = vs.back();
+  vector<String> vs = split_string (tname);
+  String lname = vs.back();
   vs.pop_back();
-  string nspace = join_string (vs, ":");
-  string result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
+  String nspace = join_string (vs, ":");
+  String result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
   return result;
 }
 
 static const char*
-cUC_TYPE_NAME (const string &cstr) // FIXME: need mammut renaming function
+cUC_TYPE_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (UC_TYPE_NAME (cstr).c_str());
 }
 
 /* produce type-system-independant pspec constructors */
-std::string
+String
 CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
 {
   switch (parser.typeOf (param.type))
     {
     case CHOICE:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Choice";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_Choice";
         if (param.args == "")
           pspec += "_default";
         pspec += " (" + group + ", \"" + param.name + "\", ";
@@ -131,8 +131,8 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
       }
     case RECORD:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Record";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_Record";
         if (param.args == "")
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
@@ -143,8 +143,8 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
       }
     case SEQUENCE:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Sequence";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_Sequence";
         if (param.args == "")
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
@@ -158,15 +158,15 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
 }
 
 /* produce type-system-dependant pspec constructors */
-std::string
+String
 CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
 {
   switch (parser.typeOf (param.type))
     {
     case CHOICE:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_GEnum";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_GEnum";
         if (param.args == "")
           pspec += "_default";
         pspec += " (" + group + ", \"" + param.name + "\", ";
@@ -178,8 +178,8 @@ CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
       }
     case RECORD:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_BoxedRec";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_BoxedRec";
         if (param.args == "")
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
@@ -190,8 +190,8 @@ CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
       }
     case SEQUENCE:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_BoxedSeq";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_BoxedSeq";
         if (param.args == "")
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
@@ -202,8 +202,8 @@ CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
       }
     case OBJECT:
       {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Object";
+        const String group = (param.group != "") ? param.group.escaped() : "NULL";
+        String pspec = "sfidl_pspec_Object";
         if (param.args == "")
           pspec += "_default";
         pspec += " (" + group + ", \"" + param.name + "\", ";

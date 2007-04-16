@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2000,2002 Stefan Westerfeld
+ * Copyright (C) 2000,2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,21 +17,21 @@
 #include <string.h>
 #include <stdio.h>
 #include <list>
-#include <string>
 #include <map>
 #include "sfidl-namespace.hh"
 #include <sfi/glib-extra.h>
 
 using namespace std;
+using namespace Sfidl;
 
 /* generic utilities */
 
-static list<string> symbolToList(string symbol)
+static list<String> symbolToList (String symbol)
 {
-  list<string> result;
-  string current;
+  list<String> result;
+  String current;
   
-  string::iterator si;
+  String::iterator si;
   for(si = symbol.begin(); si != symbol.end(); si++)
     {
       if(*si != ':')
@@ -51,10 +51,10 @@ static list<string> symbolToList(string symbol)
   return result;
 }
 
-static string listToSymbol(list<string>& symlist)
+static String listToSymbol(list<String>& symlist)
 {
-  string s;
-  list<string>::iterator si;
+  String s;
+  list<String>::iterator si;
   for(si = symlist.begin(); si != symlist.end(); si++)
     {
       if(s != "") s += "::";
@@ -74,13 +74,13 @@ NamespaceHelper::~NamespaceHelper()
 }
 
 void
-NamespaceHelper::setFromSymbol(string symbol)
+NamespaceHelper::setFromSymbol(String symbol)
 {
-  list<string> symlist = symbolToList (symbol);
+  list<String> symlist = symbolToList (symbol);
   symlist.pop_back();
   
   /* check that the current namespace doesn't contain wrong parts at end */
-  list<string>::iterator ni,si;
+  list<String>::iterator ni,si;
   ni = currentNamespace.begin();
   si = symlist.begin();
   while (ni != currentNamespace.end() && si != symlist.end() && *ni == *si)
@@ -108,10 +108,10 @@ void NamespaceHelper::leaveAll()
   setFromSymbol("unqualified");
 }
 
-string NamespaceHelper::printableForm(string symbol)
+String NamespaceHelper::printableForm(String symbol)
 {
-  list<string> symlist = symbolToList(symbol);
-  list<string> current = currentNamespace;
+  list<String> symlist = symbolToList(symbol);
+  list<String> current = currentNamespace;
   
   while(!current.empty())
     {
@@ -132,22 +132,22 @@ string NamespaceHelper::printableForm(string symbol)
   return listToSymbol(symlist);
 }
 const char*
-NamespaceHelper::printable_form (std::string symbol)
+NamespaceHelper::printable_form (String symbol)
 {
   return g_intern_string (printableForm (symbol).c_str());
 }
 
-string NamespaceHelper::nameOf(string symbol)
+String NamespaceHelper::nameOf(String symbol)
 {
   if(symbol == "") return "";
   
-  list<string> symlist = symbolToList(symbol);
+  list<String> symlist = symbolToList(symbol);
   return symlist.back();
 }
 
-string NamespaceHelper::namespaceOf(string symbol)
+String NamespaceHelper::namespaceOf(String symbol)
 {
-  list<string> symlist = symbolToList(symbol);
+  list<String> symlist = symbolToList(symbol);
   if(symlist.size() < 2) return "";
   
   symlist.pop_back();

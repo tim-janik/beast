@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld, 2003 Tim Janik
+ * Copyright (C) 2002-2007 Stefan Westerfeld, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-#include <string>
+#include "sfidl-utils.hh"
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
@@ -45,11 +45,11 @@ namespace Sfidl {
     };
 
     enum PrefixSymbolMode { generateOutput, generatePrefixSymbols };
-    std::vector<std::string> prefix_symbols; /* symbols which should get a namespace prefix */
+    std::vector<String> prefix_symbols; /* symbols which should get a namespace prefix */
 
-    const gchar *makeCStr (const std::string& str);
+    const gchar *makeCStr (const String& str);
 
-    std::string scatId (SfiSCategory c);
+    String scatId (SfiSCategory c);
 
     /* record/sequence binding used by --host-c and --client-c binding */
     void printClientRecordPrototypes();
@@ -67,14 +67,14 @@ namespace Sfidl {
     void printClientChoiceDefinitions();
     void printClientChoiceConverterPrototypes (PrefixSymbolMode mode);
 
-    void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
+    void printProcedure (const Method& mdef, bool proto = false, const String& className = "");
     void printChoiceConverters ();
 
-    virtual std::string makeProcName (const std::string& className, const std::string& procName);
+    virtual String makeProcName (const String& className, const String& procName);
 
-    std::string makeGTypeName (const std::string& name);
-    std::string makeParamSpec (const Param& pdef);
-    std::string createTypeCode (const std::string& type, TypeCodeModel model);
+    String makeGTypeName (const String& name);
+    String makeParamSpec (const Param& pdef);
+    String createTypeCode (const String& type, TypeCodeModel model);
 
     /*
      * data types: the following models deal with how to represent a certain
@@ -82,44 +82,44 @@ namespace Sfidl {
      */
 
     // how "type" looks like when passed as argument to a function
-    virtual std::string typeArg (const std::string& type);
-    const gchar *cTypeArg (const std::string& type) { return makeCStr (typeArg (type)); }
+    virtual String typeArg (const String& type);
+    const gchar *cTypeArg (const String& type) { return makeCStr (typeArg (type)); }
 
     // how "type" looks like when stored as member in a struct or class
-    virtual std::string typeField (const std::string& type);
-    const gchar *cTypeField (const std::string& type) { return makeCStr (typeField (type)); }
+    virtual String typeField (const String& type);
+    const gchar *cTypeField (const String& type) { return makeCStr (typeField (type)); }
 
     // how the return type of a function returning "type" looks like
-    virtual std::string typeRet (const std::string& type);
-    const gchar *cTypeRet (const std::string& type) { return makeCStr (typeRet (type)); }
+    virtual String typeRet (const String& type);
+    const gchar *cTypeRet (const String& type) { return makeCStr (typeRet (type)); }
 
     // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
-    virtual std::string typeArray (const std::string& type);
-    const gchar *cTypeArray (const std::string& type) { return makeCStr (typeArray (type)); }
+    virtual String typeArray (const String& type);
+    const gchar *cTypeArray (const String& type) { return makeCStr (typeArray (type)); }
 
     /*
      * function required to create a new "type" (blank return value allowed)
      * example: funcNew ("FBlock") => "sfi_fblock_new" (in C)
      */
-    virtual std::string funcNew (const std::string& type);
-    const gchar *cFuncNew (const std::string& type) { return makeCStr (funcNew (type)); }
+    virtual String funcNew (const String& type);
+    const gchar *cFuncNew (const String& type) { return makeCStr (funcNew (type)); }
 
     /*
      * function required to copy a "type" (blank return value allowed)
      * example: funcCopy ("FBlock") => "sfi_fblock_ref" (in C)
      */ 
-    virtual std::string funcCopy (const std::string& type);
-    const gchar *cFuncCopy (const std::string& type) { return makeCStr (funcNew (type)); }
+    virtual String funcCopy (const String& type);
+    const gchar *cFuncCopy (const String& type) { return makeCStr (funcNew (type)); }
     
     /*
      * function required to free a "type" (blank return value allowed)
      * example: funcFree ("FBlock") => "sfi_fblock_unref" (in C)
      */ 
-    virtual std::string funcFree (const std::string& type);
-    const gchar *cFuncFree (const std::string& type) { return makeCStr (funcNew (type)); }
+    virtual String funcFree (const String& type);
+    const gchar *cFuncFree (const String& type) { return makeCStr (funcNew (type)); }
 
-    virtual std::string createTypeCode (const std::string& type, const std::string& name, 
-				        TypeCodeModel model);
+    virtual String createTypeCode (const String& type, const String& name, 
+				   TypeCodeModel model);
 
     CodeGeneratorCBase (const Parser& parser) : CodeGenerator (parser) {
       generateBoxedTypes = false;

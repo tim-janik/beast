@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2003 Stefan Westerfeld
+ * Copyright (C) 2003-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,14 @@
 
 #include "sfidl-cbase.hh"
 #include "sfidl-namespace.hh"
+#include "sfidl-utils.hh"
 
 namespace Sfidl {
 
   class CodeGeneratorCxxBase : public CodeGeneratorCBase {
   protected:
-    std::string untyped_pspec_constructor (const Param &param);
-    std::string typed_pspec_constructor   (const Param &param);
+    String untyped_pspec_constructor (const Param &param);
+    String typed_pspec_constructor   (const Param &param);
 
   public:
     CodeGeneratorCxxBase (const Parser& parser) : CodeGeneratorCBase (parser) {

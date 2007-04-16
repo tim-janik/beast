@@ -22,7 +22,7 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-#include <string>
+#include "sfidl-utils.hh"
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"

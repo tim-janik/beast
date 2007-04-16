@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,7 +44,7 @@ void CodeGeneratorHostC::printRecordFieldDeclarations()
   printf("\n");
 }
 
-void CodeGeneratorHostC::printInitFunction (const string& initFunction)
+void CodeGeneratorHostC::printInitFunction (const String& initFunction)
 {
   /*
    * data for init function
@@ -53,7 +53,7 @@ void CodeGeneratorHostC::printInitFunction (const string& initFunction)
     {
       if (parser.fromInclude (ri->name)) continue;
 
-      string name = makeLowerName (ri->name);
+      String name = makeLowerName (ri->name);
 
       printf("static GParamSpec *%s_field[%zd];\n", name.c_str(), ri->contents.size());
       printf("SfiRecFields %s_fields = { %zd, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
@@ -63,7 +63,7 @@ void CodeGeneratorHostC::printInitFunction (const string& initFunction)
     {
       if (parser.fromInclude (si->name)) continue;
 
-      string name = makeLowerName (si->name);
+      String name = makeLowerName (si->name);
 
       printf("static GParamSpec *%s_content;\n", name.c_str());
       printf("\n");
@@ -82,7 +82,7 @@ void CodeGeneratorHostC::printInitFunction (const string& initFunction)
    * inside a Sequence might come from a record - to avoid using yet-unitialized
    * Params, we follow the getTypes() 
    */
-  vector<string>::const_iterator ti;
+  vector<String>::const_iterator ti;
 
   for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
     {
@@ -97,7 +97,7 @@ void CodeGeneratorHostC::printInitFunction (const string& initFunction)
 	{
 	  const Record& rdef = parser.findRecord (*ti);
 
-	  string name = makeLowerName (rdef.name);
+	  String name = makeLowerName (rdef.name);
 	  int f = 0;
 
 	  for (vector<Param>::const_iterator pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++, f++)
@@ -110,7 +110,7 @@ void CodeGeneratorHostC::printInitFunction (const string& initFunction)
 	{
 	  const Sequence& sdef = parser.findSequence (*ti);
 
-	  string name = makeLowerName (sdef.name);
+	  String name = makeLowerName (sdef.name);
 
 	  printf("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
 	  printf("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
@@ -140,7 +140,7 @@ void CodeGeneratorHostC::printChoiceMethodImpl()
       if (parser.fromInclude (ei->name))
 	continue;
 
-      string name = makeLowerName (ei->name);
+      String name = makeLowerName (ei->name);
 
       printf ("SfiChoiceValues\n");
       printf ("%s_get_values (void)\n", makeLowerName (ei->name).c_str());
@@ -184,7 +184,7 @@ bool CodeGeneratorHostC::run ()
 
       if (prefix != "")
 	{
-	  for (vector<string>::const_iterator pi = prefix_symbols.begin(); pi != prefix_symbols.end(); pi++)
+	  for (vector<String>::const_iterator pi = prefix_symbols.begin(); pi != prefix_symbols.end(); pi++)
 	    printf("#define %s %s_%s\n", pi->c_str(), prefix.c_str(), pi->c_str());
 	  printf("\n");
 	}
@@ -235,7 +235,7 @@ CodeGeneratorHostC::getOptions()
 }
 
 void
-CodeGeneratorHostC::setOption (const string& option, const string& value)
+CodeGeneratorHostC::setOption (const String& option, const String& value)
 {
   if (option == "--prefix")
     {
@@ -263,8 +263,8 @@ namespace {
 
 class HostCFactory : public Factory {
 public:
-  string option() const	      { return "--host-c"; }
-  string description() const  { return "generate host C language binding"; }
+  String option() const	      { return "--host-c"; }
+  String description() const  { return "generate host C language binding"; }
   
   CodeGenerator *create (const Parser& parser) const
   {

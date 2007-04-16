@@ -25,8 +25,8 @@ namespace {
 
 class TypeListFactory : public Factory {
 public:
-  string option() const	      { return "--list-types"; }
-  string description() const  { return "print all types defined in the idlfile"; }
+  String option() const	      { return "--list-types"; }
+  String description() const  { return "print all types defined in the idlfile"; }
   
   CodeGenerator *create (const Parser& parser) const
   {

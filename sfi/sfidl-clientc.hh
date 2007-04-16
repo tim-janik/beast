@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld, 2003 Tim Janik
+ * Copyright (C) 2002-2007 Stefan Westerfeld, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 #include <map>
 #include <iostream>
 #include <algorithm>
-#include <string>
+#include "sfidl-utils.hh"
 #include "sfidl-namespace.hh"
 #include "sfidl-options.hh"
 #include "sfidl-parser.hh"
@@ -33,13 +33,13 @@ namespace Sfidl {
   
   class CodeGeneratorClientC : public CodeGeneratorCBase {
   protected:
-    std::string prefix;
+    String prefix;
 
     Method methodWithObject (const Class& cd, const Method& md);
     void printProcedurePrototypes (PrefixSymbolMode mode);
     void printClassMacros();
     void printProcedureImpl ();
-    void addBindingSpecificFiles (const std::string& binding_specific_files);
+    void addBindingSpecificFiles (const String& binding_specific_files);
     
   public:
     CodeGeneratorClientC(const Parser& parser) : CodeGeneratorCBase (parser) {
@@ -48,7 +48,7 @@ namespace Sfidl {
     bool run ();
 
     OptionVector getOptions();
-    void setOption (const std::string& option, const std::string& value);
+    void setOption (const String& option, const String& value);
   };
 
 };

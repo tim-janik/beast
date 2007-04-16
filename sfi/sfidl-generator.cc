@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,11 +31,11 @@ using namespace std;
 
 /*--- common functions ---*/
 
-vector<string> CodeGenerator::splitName (const string& name)
+vector<String> CodeGenerator::splitName (const String& name)
 {
   bool lastunder = true, remove_caps = false;
-  string::const_iterator i;
-  vector<string> words;
+  String::const_iterator i;
+  vector<String> words;
 
   /*
    * we try to guess here whether we need to remove caps
@@ -63,7 +63,7 @@ vector<string> CodeGenerator::splitName (const string& name)
    *    treated this way:                   "FFTSize" => "FFT", "Size"
    */
   int caps = 0;
-  string::const_iterator word_start = name.begin(), word_end = name.begin();
+  String::const_iterator word_start = name.begin(), word_end = name.begin();
   for(i = name.begin(); i != name.end(); i++)
     {
       if (isupper (*i))
@@ -75,7 +75,7 @@ vector<string> CodeGenerator::splitName (const string& name)
 	{
 	  if (!lastunder)
 	    {
-	      words.push_back (string (word_start, word_end));
+	      words.push_back (String (word_start, word_end));
 	      lastunder = true;
 	    }
           word_start = word_end = i + 1;
@@ -86,7 +86,7 @@ vector<string> CodeGenerator::splitName (const string& name)
 
           if ((caps == 1 && word_start != word_end) || (caps > 2 && next_lower)) /* caps indicate word boundary */
             {
-              words.push_back (string (word_start, word_end));
+              words.push_back (String (word_start, word_end));
               word_start = word_end = i;
             }
           word_end++;
@@ -95,53 +95,53 @@ vector<string> CodeGenerator::splitName (const string& name)
     }
 
   if (word_start != word_end) /* handle last word in string */
-    words.push_back (string (word_start, word_end));
+    words.push_back (String (word_start, word_end));
 
   if (remove_caps)
-    for (vector<string>::iterator wi = words.begin(); wi != words.end(); wi++)
+    for (vector<String>::iterator wi = words.begin(); wi != words.end(); wi++)
       *wi = string_tolower (*wi);
 
   return words;
 }
 
 
-string CodeGenerator::makeLowerName (const string& name, char seperator)
+String CodeGenerator::makeLowerName (const String& name, char seperator)
 {
-  string result;
-  const vector<string>& words = splitName (name);
+  String result;
+  const vector<String>& words = splitName (name);
 
-  for (vector<string>::const_iterator wi = words.begin(); wi != words.end(); wi++)
+  for (vector<String>::const_iterator wi = words.begin(); wi != words.end(); wi++)
     {
       if (result != "") result += seperator;
 
-      for (string::const_iterator i = wi->begin(); i != wi->end(); i++)
+      for (String::const_iterator i = wi->begin(); i != wi->end(); i++)
 	result += tolower (*i);
     }
   
   return result;
 }
 
-string CodeGenerator::makeUpperName (const string& name)
+String CodeGenerator::makeUpperName (const String& name)
 {
-  string lname = makeLowerName (name);
-  string result;
-  string::const_iterator i;
+  String lname = makeLowerName (name);
+  String result;
+  String::const_iterator i;
   
   for(i = lname.begin(); i != lname.end(); i++)
     result += toupper(*i);
   return result;
 }
 
-string CodeGenerator::makeMixedName (const string& name)
+String CodeGenerator::makeMixedName (const String& name)
 {
-  string result;
-  const vector<string>& words = splitName (name);
+  String result;
+  const vector<String>& words = splitName (name);
 
-  for (vector<string>::const_iterator wi = words.begin(); wi != words.end(); wi++)
+  for (vector<String>::const_iterator wi = words.begin(); wi != words.end(); wi++)
     {
       bool first = true;
 
-      for (string::const_iterator i = wi->begin(); i != wi->end(); i++)
+      for (String::const_iterator i = wi->begin(); i != wi->end(); i++)
 	{
 	  if (first)
 	    result += toupper (*i);
@@ -154,18 +154,18 @@ string CodeGenerator::makeMixedName (const string& name)
   return result;
 }
 
-string CodeGenerator::makeLMixedName (const string& name)
+String CodeGenerator::makeLMixedName (const String& name)
 {
-  string result = makeMixedName (name);
+  String result = makeMixedName (name);
 
   if (!result.empty()) result[0] = tolower (result[0]);
   return result;
 }
 
-string CodeGenerator::toWordCase (const string& word, WordCase wc)
+String CodeGenerator::toWordCase (const String& word, WordCase wc)
 {
-  string result;
-  for (string::const_iterator si = word.begin(); si != word.end(); si++)
+  String result;
+  for (String::const_iterator si = word.begin(); si != word.end(); si++)
     {
       bool first = (si == word.begin());
       switch (wc)
@@ -182,11 +182,11 @@ string CodeGenerator::toWordCase (const string& word, WordCase wc)
   return result;
 }
 
-string CodeGenerator::joinName (const vector<string>& name, const string& seperator, WordCase wc)
+String CodeGenerator::joinName (const vector<String>& name, const String& seperator, WordCase wc)
 {
-  string result;
+  String result;
 
-  for (vector<string>::const_iterator wi = name.begin(); wi != name.end(); wi++)
+  for (vector<String>::const_iterator wi = name.begin(); wi != name.end(); wi++)
     {
       if (result != "")
 	result += seperator;
@@ -203,13 +203,13 @@ string CodeGenerator::joinName (const vector<string>& name, const string& sepera
   return result;
 }
 
-string
-CodeGenerator::rename (NamespaceType namespace_type, const string& name, WordCase namespace_wc,
-		       const string &namespace_join, const vector<string> &namespace_append,
-		       WordCase typename_wc, const string &typename_join)
+String
+CodeGenerator::rename (NamespaceType namespace_type, const String& name, WordCase namespace_wc,
+		       const String &namespace_join, const vector<String> &namespace_append,
+		       WordCase typename_wc, const String &typename_join)
 {
-  string result;
-  vector<string> namespace_words;
+  String result;
+  vector<String> namespace_words;
 
   if (namespace_type == ABSOLUTE)
     {
@@ -230,18 +230,18 @@ CodeGenerator::rename (NamespaceType namespace_type, const string& name, WordCas
       result += namespace_join;
     }
 
-  vector<string> words = splitName (NamespaceHelper::nameOf (name));
+  vector<String> words = splitName (NamespaceHelper::nameOf (name));
   result += joinName (words, typename_join, typename_wc);
   return result;
 }
 
-string
-CodeGenerator::rename (NamespaceHelper& nsh, const string& name, WordCase namespace_wc,
-		       const string& namespace_join, const vector<string>& namespace_append,
-		       WordCase typename_wc, const string& typename_join)
+String
+CodeGenerator::rename (NamespaceHelper& nsh, const String& name, WordCase namespace_wc,
+		       const String& namespace_join, const vector<String>& namespace_append,
+		       WordCase typename_wc, const String& typename_join)
 {
   g_assert_not_reached ();
-  string pform = nsh.printableForm (name);
+  String pform = nsh.printableForm (name);
   return pform;
 }
 
@@ -257,7 +257,7 @@ CodeGenerator::getOptions()
 }
 
 void
-CodeGenerator::setOption (const string& option, const string& value)
+CodeGenerator::setOption (const String& option, const String& value)
 {
   if (option == "--header")
     {

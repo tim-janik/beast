@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,21 +31,24 @@ using namespace std;
 
 /*--- functions for "C and C++"-like languages ---*/
 
-const gchar *CodeGeneratorCBase::makeCStr (const std::string& str)
+const gchar*
+CodeGeneratorCBase::makeCStr (const String& str)
 {
   return g_intern_string (str.c_str());
 }
 
-string CodeGeneratorCBase::makeGTypeName(const string& name)
+String
+CodeGeneratorCBase::makeGTypeName (const String& name)
 {
   return makeUpperName (NamespaceHelper::namespaceOf (name)
                       + "::Type" + NamespaceHelper::nameOf(name));
 }
 
-string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
+String
+CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 {
-  string pspec;
-  const string group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
+  String pspec;
+  const String group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
  
   switch (parser.typeOf (pdef.type))
     {
@@ -101,15 +104,15 @@ string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
   return pspec;
 }
 
-string CodeGeneratorCBase::scatId (SfiSCategory c)
+String CodeGeneratorCBase::scatId (SfiSCategory c)
 {
-  string s; s += (char) c;
+  String s; s += (char) c;
   return s;
 }
 
 // how "type" looks like when passed as argument to a function
-string
-CodeGeneratorCBase::typeArg (const string& type)
+String
+CodeGeneratorCBase::typeArg (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -131,8 +134,8 @@ CodeGeneratorCBase::typeArg (const string& type)
 }
 
 // how "type" looks like when stored as member in a struct or class
-string
-CodeGeneratorCBase::typeField (const string& type)
+String
+CodeGeneratorCBase::typeField (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -154,8 +157,8 @@ CodeGeneratorCBase::typeField (const string& type)
 }
 
 // how the return type of a function returning "type" looks like
-string
-CodeGeneratorCBase::typeRet (const string& type)
+String
+CodeGeneratorCBase::typeRet (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -177,15 +180,15 @@ CodeGeneratorCBase::typeRet (const string& type)
 }
 
 // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
-string
-CodeGeneratorCBase::typeArray (const string& type)
+String
+CodeGeneratorCBase::typeArray (const String& type)
 {
   return CodeGeneratorCBase::typeField (type) + "*";
 }
 
 // how to create a new "type" called "name" (blank return value allowed)
-string
-CodeGeneratorCBase::funcNew (const string& type)
+String
+CodeGeneratorCBase::funcNew (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -206,8 +209,8 @@ CodeGeneratorCBase::funcNew (const string& type)
   return NULL;
 }
 
-string
-CodeGeneratorCBase::funcCopy (const string& type)
+String
+CodeGeneratorCBase::funcCopy (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -228,8 +231,8 @@ CodeGeneratorCBase::funcCopy (const string& type)
   return NULL;
 }
 
-string
-CodeGeneratorCBase::funcFree (const string& type)
+String
+CodeGeneratorCBase::funcFree (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -250,12 +253,12 @@ CodeGeneratorCBase::funcFree (const string& type)
   return NULL;
 }
 
-string CodeGeneratorCBase::createTypeCode (const std::string& type, TypeCodeModel model)
+String CodeGeneratorCBase::createTypeCode (const String& type, TypeCodeModel model)
 {
   return createTypeCode (type, "", model);
 }
 
-string CodeGeneratorCBase::createTypeCode (const string& type, const string &name,
+String CodeGeneratorCBase::createTypeCode (const String& type, const String &name,
                                            TypeCodeModel model)
 {
   switch (model)
@@ -451,9 +454,9 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       default:
 	{
 	  /* get rid of the Sfi:: (the code wasn't written for it) */
-	  string ptype = NamespaceHelper::nameOf (type);
+	  String ptype = NamespaceHelper::nameOf (type);
 
-	  string sfi = (ptype == "void") ? "" : "Sfi"; /* there is no such thing as an SfiVoid */
+	  String sfi = (ptype == "void") ? "" : "Sfi"; /* there is no such thing as an SfiVoid */
 
 	  if (model == MODEL_TO_VALUE)    return "sfi_value_" + makeLowerName(ptype) + " ("+name+")";
 	  if (model == MODEL_FROM_VALUE)  return "sfi_value_get_" + makeLowerName(ptype) + " ("+name+")";
@@ -479,8 +482,8 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 
 /*--- the C language binding ---*/
 
-std::string CodeGeneratorCBase::makeProcName (const std::string& className,
-	                                      const std::string& procName)
+String CodeGeneratorCBase::makeProcName (const String& className,
+	                                 const String& procName)
 {
   if (className == "")
     return makeLowerName(procName);
@@ -488,10 +491,10 @@ std::string CodeGeneratorCBase::makeProcName (const std::string& className,
     return makeLowerName(className) + "_" + makeLowerName(procName);
 }
 
-void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const string& className)
+void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const String& className)
 {
   vector<Param>::const_iterator pi;
-  string dname, mname = makeProcName (className, mdef.name);
+  String dname, mname = makeProcName (className, mdef.name);
   
   if (className == "")
     {
@@ -523,23 +526,23 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
 
   printf(" {\n");
 
-  string vret = createTypeCode (mdef.result.type, MODEL_VCALL_RET);
+  String vret = createTypeCode (mdef.result.type, MODEL_VCALL_RET);
   if (mdef.result.type != "void")
     printf ("  %s _retval;\n", vret.c_str());
 
-  string rfree = createTypeCode (mdef.result.type, "_retval_conv", MODEL_VCALL_RFREE);
+  String rfree = createTypeCode (mdef.result.type, "_retval_conv", MODEL_VCALL_RFREE);
   if (rfree != "")
     printf ("  %s _retval_conv;\n", cTypeRet (mdef.result.type));
 
-  map<string, string> cname;
+  map<String, String> cname;
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
     {
-      string conv = createTypeCode (pi->type, pi->name, MODEL_VCALL_CONV);
+      String conv = createTypeCode (pi->type, pi->name, MODEL_VCALL_CONV);
       if (conv != "")
 	{
 	  cname[pi->name] = pi->name + "__c";
 
-	  string arg = createTypeCode(pi->type, MODEL_VCALL_CARG);
+	  String arg = createTypeCode(pi->type, MODEL_VCALL_CARG);
 	  printf("  %s %s__c = %s;\n", arg.c_str(), pi->name.c_str(), conv.c_str());
 	}
       else
@@ -549,7 +552,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
   printf("  ");
   if (mdef.result.type != "void")
     printf("_retval = ");
-  string vcall = createTypeCode(mdef.result.type, "", MODEL_VCALL);
+  String vcall = createTypeCode(mdef.result.type, "", MODEL_VCALL);
   printf("%s (\"%s\", ", vcall.c_str(), dname.c_str());
 
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
@@ -558,14 +561,14 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
 
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
     {
-      string cfree = createTypeCode (pi->type, cname[pi->name], MODEL_VCALL_CFREE);
+      String cfree = createTypeCode (pi->type, cname[pi->name], MODEL_VCALL_CFREE);
       if (cfree != "")
 	printf("  %s;\n", cfree.c_str());
     }
 
   if (mdef.result.type != "void")
     {
-      string rconv = createTypeCode (mdef.result.type, "_retval", MODEL_VCALL_RCONV);
+      String rconv = createTypeCode (mdef.result.type, "_retval", MODEL_VCALL_RCONV);
 
       if (rfree != "")
 	{
@@ -583,8 +586,8 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
 
 static bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2)
 {
-  string ename1 = e1.name;
-  string ename2 = e2.name;
+  String ename1 = e1.name;
+  String ename2 = e2.name;
 
   reverse (ename1.begin(), ename1.end());
   reverse (ename2.begin(), ename2.end());
@@ -603,8 +606,8 @@ void CodeGeneratorCBase::printChoiceConverters()
 
       int minval = 1, maxval = 1;
       vector<ChoiceValue>::iterator ci;
-      string name = makeLowerName (ei->name);
-      string arg = typeArg (ei->name);
+      String name = makeLowerName (ei->name);
+      String arg = typeArg (ei->name);
 
       /* produce reverse sorted enum array */
       vector<ChoiceValue> components = ei->contents;
@@ -646,7 +649,7 @@ void CodeGeneratorCBase::printClientRecordPrototypes()
     {
       if (parser.fromInclude (ri->name)) continue;
 
-      string mname = makeMixedName (ri->name);
+      String mname = makeMixedName (ri->name);
       printf("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
     }
 }
@@ -657,7 +660,7 @@ void CodeGeneratorCBase::printClientSequencePrototypes()
     {
       if (parser.fromInclude (si->name)) continue;
 
-      string mname = makeMixedName (si->name);
+      String mname = makeMixedName (si->name);
       printf("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
     }
 }
@@ -668,7 +671,7 @@ void CodeGeneratorCBase::printClientRecordDefinitions()
     {
       if (parser.fromInclude (ri->name)) continue;
 
-      string mname = makeMixedName (ri->name.c_str());
+      String mname = makeMixedName (ri->name.c_str());
 
       printf("struct _%s {\n", mname.c_str());
       for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
@@ -686,9 +689,9 @@ void CodeGeneratorCBase::printClientSequenceDefinitions()
     {
       if (parser.fromInclude (si->name)) continue;
 
-      string mname = makeMixedName (si->name.c_str());
-      string array = typeArray (si->content.type);
-      string elements = si->content.name;
+      String mname = makeMixedName (si->name.c_str());
+      String array = typeArray (si->content.type);
+      String elements = si->content.name;
 
       printf("struct _%s {\n", mname.c_str());
       printf("  guint n_%s;\n", elements.c_str ());
@@ -703,9 +706,9 @@ void CodeGeneratorCBase::printClientRecordMethodPrototypes (PrefixSymbolMode mod
     {
       if (parser.fromInclude (ri->name)) continue;
 
-      string ret = typeRet (ri->name);
-      string arg = typeArg (ri->name);
-      string lname = makeLowerName (ri->name.c_str());
+      String ret = typeRet (ri->name);
+      String arg = typeArg (ri->name);
+      String lname = makeLowerName (ri->name.c_str());
 
       if (mode == generatePrefixSymbols)
 	{
@@ -734,10 +737,10 @@ void CodeGeneratorCBase::printClientSequenceMethodPrototypes (PrefixSymbolMode m
     {
       if (parser.fromInclude (si->name)) continue;
 
-      string ret = typeRet (si->name);
-      string arg = typeArg (si->name);
-      string element = typeArg (si->content.type);
-      string lname = makeLowerName (si->name.c_str());
+      String ret = typeRet (si->name);
+      String arg = typeArg (si->name);
+      String element = typeArg (si->content.type);
+      String lname = makeLowerName (si->name.c_str());
 
       if (mode == generatePrefixSymbols)
 	{
@@ -771,10 +774,10 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
     {
       if (parser.fromInclude (ri->name)) continue;
 
-      string ret = typeRet (ri->name);
-      string arg = typeArg (ri->name);
-      string lname = makeLowerName (ri->name.c_str());
-      string mname = makeMixedName (ri->name.c_str());
+      String ret = typeRet (ri->name);
+      String arg = typeArg (ri->name);
+      String lname = makeLowerName (ri->name.c_str());
+      String mname = makeMixedName (ri->name.c_str());
 
       printf("%s\n", ret.c_str());
       printf("%s_new (void)\n", lname.c_str());
@@ -788,7 +791,7 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
 	   * FIXME(stw): probably all record fields will be NULL initialized (thats the
 	   * way we do it in the C++ language binding)
 	   */
-	  string init = funcNew (pi->type);
+	  String init = funcNew (pi->type);
 	  if (init != "") printf("  rec->%s = %s();\n", pi->name.c_str(), init.c_str());
 	}
       printf("  return rec;\n");
@@ -806,7 +809,7 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
 	{
 	  /* FIXME(tim): this needs to be more versatile, so NULL fields can be special
 	   * cased before copying */
-	  string copy =  funcCopy (pi->type);
+	  String copy =  funcCopy (pi->type);
 	  printf("  rec_copy->%s = %s (rec->%s);\n", pi->name.c_str(), copy.c_str(),
 	      pi->name.c_str());
 	}
@@ -824,8 +827,8 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
       printf("  rec = g_new0 (%s, 1);\n", mname.c_str());
       for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
-	  string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
-	  string init = funcNew (pi->type);
+	  String elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
+	  String init = funcNew (pi->type);
 
 	  printf("  element = sfi_rec_get (sfi_rec, \"%s\");\n", pi->name.c_str());
 	  printf("  if (element)\n");
@@ -851,7 +854,7 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
       printf("  sfi_rec = sfi_rec_new ();\n");
       for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
-	  string elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
+	  String elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
 	  printf("  element = %s;\n", elementToValue.c_str());
 	  printf("  sfi_rec_set (sfi_rec, \"%s\", element);\n", pi->name.c_str());
 	  printf("  sfi_value_free (element);\n");        // FIXME: couldn't we have take_set
@@ -869,7 +872,7 @@ void CodeGeneratorCBase::printClientRecordMethodImpl()
 	{
 	  /* FIXME (tim): needs to be more verstaile, so NULL fields can be properly special cased */
 	  // FIXME (stw): there _should_ be no NULL fields in some cases (sequences)!
-	  string free = funcFree (pi->type);
+	  String free = funcFree (pi->type);
 	  if (free != "") printf("  if (rec->%s) %s (rec->%s);\n",
 	      pi->name.c_str(), free.c_str(), pi->name.c_str());
 	}
@@ -885,12 +888,12 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
     {
       if (parser.fromInclude (si->name)) continue;
 
-      string ret = typeRet (si->name);
-      string arg = typeArg (si->name);
-      string element = typeArg (si->content.type);
-      string elements = si->content.name;
-      string lname = makeLowerName (si->name.c_str());
-      string mname = makeMixedName (si->name.c_str());
+      String ret = typeRet (si->name);
+      String arg = typeArg (si->name);
+      String element = typeArg (si->content.type);
+      String elements = si->content.name;
+      String lname = makeLowerName (si->name.c_str());
+      String mname = makeMixedName (si->name.c_str());
 
       printf("%s\n", ret.c_str());
       printf("%s_new (void)\n", lname.c_str());
@@ -898,7 +901,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  return g_new0 (%s, 1);\n",mname.c_str());
       printf("}\n\n");
 
-      string elementCopy = funcCopy (si->content.type);
+      String elementCopy = funcCopy (si->content.type);
       printf("void\n");
       printf("%s_append (%s seq, %s element)\n", lname.c_str(), arg.c_str(), element.c_str());
       printf("{\n");
@@ -925,7 +928,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  return seq_copy;\n");
       printf("}\n\n");
 
-      string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
+      String elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
       printf("%s\n", ret.c_str());
       printf("%s_from_seq (SfiSeq *sfi_seq)\n", lname.c_str());
       printf("{\n");
@@ -947,7 +950,7 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       printf("  return seq;\n");
       printf("}\n\n");
 
-      string elementToValue = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_TO_VALUE);
+      String elementToValue = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_TO_VALUE);
       printf("SfiSeq *\n");
       printf("%s_to_seq (%s seq)\n", lname.c_str(), arg.c_str());
       printf("{\n");
@@ -971,9 +974,9 @@ void CodeGeneratorCBase::printClientSequenceMethodImpl()
       //
       //        especially in some cases (sequences of sequences) we will free invalid
       //        data structures without complaining!
-      string element_i_free_check = "if (seq->" + elements + "[i]) ";
-      string element_i_free = funcFree (si->content.type);
-      string element_i_new = funcNew (si->content.type);
+      String element_i_free_check = "if (seq->" + elements + "[i]) ";
+      String element_i_free = funcFree (si->content.type);
+      String element_i_new = funcNew (si->content.type);
       printf("void\n");
       printf("%s_resize (%s seq, guint new_size)\n", lname.c_str(), arg.c_str());
       printf("{\n");
@@ -1035,13 +1038,13 @@ void CodeGeneratorCBase::printClientChoiceDefinitions()
     {
       if (parser.fromInclude (ci->name)) continue;
 
-      string mname = makeMixedName (ci->name);
-      string lname = makeLowerName (ci->name);
+      String mname = makeMixedName (ci->name);
+      String lname = makeLowerName (ci->name);
       printf("\ntypedef enum {\n");
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
 	{
 	  /* don't export server side assigned choice values to the client */
-	  string ename = makeUpperName (vi->name);
+	  String ename = makeUpperName (vi->name);
 	  printf("  %s = %d,\n", ename.c_str(), vi->sequentialValue);
 	}
       printf("} %s;\n", mname.c_str());
@@ -1055,8 +1058,8 @@ void CodeGeneratorCBase::printClientChoiceConverterPrototypes (PrefixSymbolMode 
     {
       if (parser.fromInclude (ci->name)) continue;
 
-      string mname = makeMixedName (ci->name);
-      string lname = makeLowerName (ci->name);
+      String mname = makeMixedName (ci->name);
+      String lname = makeLowerName (ci->name);
 
       if (mode == generatePrefixSymbols)
 	{

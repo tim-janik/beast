@@ -17,8 +17,8 @@
 #ifndef _SFIDL_FACTORY_H_
 #define _SFIDL_FACTORY_H_
 
-#include <string>
 #include <list>
+#include "sfidl-utils.hh"
 
 namespace Sfidl {
 
@@ -40,12 +40,12 @@ public:
   /*
    * returns the command line option (e.g. --plugin)
    */
-  virtual std::string option () const = 0;
+  virtual String option () const = 0;
 
   /*
    * returns the full description
    */
-  virtual std::string description () const = 0;
+  virtual String description () const = 0;
 
   /*
    * lists all available factories

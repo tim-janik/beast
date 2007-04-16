@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002-2003 Stefan Westerfeld
+ * Copyright (C) 2002-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,8 +29,8 @@
 using namespace Sfidl;
 using namespace std;
 
-string
-CodeGeneratorClientCxx::typeArg (const string& type)
+String
+CodeGeneratorClientCxx::typeArg (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -43,8 +43,8 @@ CodeGeneratorClientCxx::typeArg (const string& type)
     }
 }
 
-string
-CodeGeneratorClientCxx::typeField (const string& type)
+String
+CodeGeneratorClientCxx::typeField (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -57,8 +57,8 @@ CodeGeneratorClientCxx::typeField (const string& type)
     }
 }
 
-string
-CodeGeneratorClientCxx::typeRet (const string& type)
+String
+CodeGeneratorClientCxx::typeRet (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -71,8 +71,8 @@ CodeGeneratorClientCxx::typeRet (const string& type)
     }
 }
 
-string
-CodeGeneratorClientCxx::funcNew (const string& type)
+String
+CodeGeneratorClientCxx::funcNew (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -81,8 +81,8 @@ CodeGeneratorClientCxx::funcNew (const string& type)
     }
 }
 
-string
-CodeGeneratorClientCxx::funcCopy (const string& type)
+String
+CodeGeneratorClientCxx::funcCopy (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -91,8 +91,8 @@ CodeGeneratorClientCxx::funcCopy (const string& type)
     }
 }
 
-string
-CodeGeneratorClientCxx::funcFree (const string& type)
+String
+CodeGeneratorClientCxx::funcFree (const String& type)
 {
   switch (parser.typeOf (type))
     {
@@ -101,8 +101,8 @@ CodeGeneratorClientCxx::funcFree (const string& type)
     }
 }
 
-string CodeGeneratorClientCxx::createTypeCode (const std::string& type, const std::string& name, 
-				             TypeCodeModel model)
+String CodeGeneratorClientCxx::createTypeCode (const String& type, const String& name, 
+				               TypeCodeModel model)
 {
   /* FIXME: parameter validation */
   switch (parser.typeOf (type))
@@ -163,7 +163,7 @@ string CodeGeneratorClientCxx::createTypeCode (const std::string& type, const st
 }
 
 static const char*
-cUC_NAME (const string &cstr) // FIXME: need mammut renaming function
+cUC_NAME (const String &cstr) // FIXME: need mammut renaming function
 {
   return g_intern_string (cstr.c_str());
 }
@@ -177,7 +177,7 @@ CodeGeneratorClientCxx::printChoicePrototype (NamespaceHelper& nspace)
       if (parser.fromInclude (ci->name))
         continue;
       nspace.setFromSymbol(ci->name);
-      string name = nspace.printableForm (ci->name);
+      String name = nspace.printableForm (ci->name);
       printf ("\n");
       printf ("static inline SfiChoiceValues %s_choice_values();\n", name.c_str());
     }
@@ -192,7 +192,7 @@ CodeGeneratorClientCxx::printChoiceImpl (NamespaceHelper& nspace)
       if (parser.fromInclude (ci->name))
         continue;
       nspace.setFromSymbol(ci->name);
-      string name = nspace.printableForm (ci->name);
+      String name = nspace.printableForm (ci->name);
       printf ("\n");
       printf ("static inline SfiChoiceValues\n");
       printf ("%s_choice_values()\n", name.c_str());
@@ -224,7 +224,7 @@ CodeGeneratorClientCxx::printRecSeqForwardDecl (NamespaceHelper& nspace)
         continue;
 
       nspace.setFromSymbol(ri->name);
-      string name = nspace.printableForm (ri->name);
+      String name = nspace.printableForm (ri->name);
 
       printf("\n");
       printf("class %s;\n", name.c_str());
@@ -237,7 +237,7 @@ CodeGeneratorClientCxx::printRecSeqForwardDecl (NamespaceHelper& nspace)
       if (parser.fromInclude (si->name)) continue;
 
       nspace.setFromSymbol(si->name);
-      string name = nspace.printableForm (si->name);
+      String name = nspace.printableForm (si->name);
 
       printf("\n");
       printf("class %s;\n", name.c_str());
@@ -259,8 +259,8 @@ void CodeGeneratorClientCxx::printRecSeqDefinition (NamespaceHelper& nspace)
 
       /* FIXME: need optimized refcounted copy-on-write sequences as base types */
 
-      string name = nspace.printableForm (si->name);
-      string content = typeField (si->content.type);
+      String name = nspace.printableForm (si->name);
+      String content = typeField (si->content.type);
       
       printf ("\n");
       printf ("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
@@ -281,8 +281,8 @@ void CodeGeneratorClientCxx::printRecSeqDefinition (NamespaceHelper& nspace)
       if (parser.fromInclude (ri->name)) continue;
 
       nspace.setFromSymbol(ri->name);
-      string name = nspace.printableForm (ri->name);
-      string type_name = makeMixedName (ri->name).c_str();
+      String name = nspace.printableForm (ri->name);
+      String type_name = makeMixedName (ri->name).c_str();
 
       printf ("\n");
       printf ("class %s : public ::Sfi::GNewable {\n", name.c_str());
@@ -312,11 +312,11 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       if (parser.fromInclude (si->name))
         continue;
       nspace.setFromSymbol(si->name);
-      string name = nspace.printableForm (si->name);
-      string nname = si->name;
-      string type_name = makeMixedName (si->name).c_str();
+      String name = nspace.printableForm (si->name);
+      String nname = si->name;
+      String type_name = makeMixedName (si->name).c_str();
 
-      string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
+      String elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
       printf("%s\n", cTypeRet (si->name));
       printf("%s::from_seq (SfiSeq *sfi_seq)\n", nname.c_str());
       printf("{\n");
@@ -335,7 +335,7 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  return seq;\n");
       printf("}\n\n");
 
-      string elementToValue = createTypeCode (si->content.type, "seq[i]", MODEL_TO_VALUE);
+      String elementToValue = createTypeCode (si->content.type, "seq[i]", MODEL_TO_VALUE);
       printf("SfiSeq *\n");
       printf("%s::to_seq (%s seq)\n", nname.c_str(), cTypeArg (si->name));
       printf("{\n");
@@ -367,9 +367,9 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       if (parser.fromInclude (ri->name))
         continue;
       nspace.setFromSymbol(ri->name);
-      string name = nspace.printableForm (ri->name);
-      string nname = ri->name;
-      string type_name = makeMixedName (ri->name).c_str();
+      String name = nspace.printableForm (ri->name);
+      String nname = ri->name;
+      String type_name = makeMixedName (ri->name).c_str();
       
       printf("%s\n", cTypeRet (ri->name));
       printf("%s::from_rec (SfiRec *sfi_rec)\n", nname.c_str());
@@ -382,7 +382,7 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  %s rec = Sfi::INIT_DEFAULT;\n", cTypeField (ri->name));
       for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
-	  string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
+	  String elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
 
 	  printf("  element = sfi_rec_get (sfi_rec, \"%s\");\n", pi->name.c_str());
 	  printf("  if (element)\n");
@@ -403,7 +403,7 @@ void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
       printf("  sfi_rec = sfi_rec_new ();\n");
       for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
-	  string elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
+	  String elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
 	  printf("  element = %s;\n", elementToValue.c_str());
 	  printf("  sfi_rec_set (sfi_rec, \"%s\", element);\n", pi->name.c_str());
 	  printf("  sfi_value_free (element);\n");        // FIXME: couldn't we have take_set
@@ -446,7 +446,7 @@ bool CodeGeneratorClientCxx::run ()
           for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
             {
               /* don't export server side assigned choice values to the client */
-              string ename = makeUpperName (nspace.printableForm (ci->name));
+              String ename = makeUpperName (nspace.printableForm (ci->name));
               printf("  %s = %d,\n", ename.c_str(), ci->sequentialValue);
             }
           printf("};\n");
@@ -456,8 +456,8 @@ bool CodeGeneratorClientCxx::run ()
       /* choice converters */
       for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
-	  string name = nspace.printableForm (ei->name);
-	  string lname = makeLowerName (ei->name);
+	  String name = nspace.printableForm (ei->name);
+	  String lname = makeLowerName (ei->name);
 
 	  printf("const gchar* %s_to_choice (%s value);\n", lname.c_str(), name.c_str());
 	  printf("%s %s_from_choice (const gchar *choice);\n", name.c_str(), lname.c_str());
@@ -470,7 +470,7 @@ bool CodeGeneratorClientCxx::run ()
 	  if (parser.fromInclude (ci->name)) continue;
 
 	  nspace.setFromSymbol (ci->name);
-	  string name = nspace.printableForm (ci->name);
+	  String name = nspace.printableForm (ci->name);
 
 	  printf("class %s;\n", name.c_str());
 	}
@@ -483,9 +483,9 @@ bool CodeGeneratorClientCxx::run ()
 	  if (parser.fromInclude (ci->name)) continue;
 
 	  nspace.setFromSymbol (ci->name);
-	  string name = nspace.printableForm (ci->name);
+	  String name = nspace.printableForm (ci->name);
 
-	  string init;
+	  String init;
 	  printf("\n");
 	  if (ci->inherits == "")
 	    {
@@ -545,7 +545,7 @@ bool CodeGeneratorClientCxx::run ()
   return 1;
 }
 
-string CodeGeneratorClientCxx::makeProcName (const string& className, const string& procName)
+String CodeGeneratorClientCxx::makeProcName (const String& className, const String& procName)
 {
   if (className == "")
     {
@@ -593,11 +593,11 @@ void CodeGeneratorClientCxx::printProperties (const Class& cdef)
 
   for (pi = cdef.properties.begin(); pi != cdef.properties.end(); pi++)
     {
-      string setProperty = makeStyleName ("set_" + pi->name);
-      string getProperty = makeStyleName (pi->name);
-      string newName = makeLowerName ("new_" + pi->name);
-      string propName = makeLowerName (pi->name, '-');
-      string ret = typeRet (pi->type);
+      String setProperty = makeStyleName ("set_" + pi->name);
+      String getProperty = makeStyleName (pi->name);
+      String newName = makeLowerName ("new_" + pi->name);
+      String propName = makeLowerName (pi->name, '-');
+      String ret = typeRet (pi->type);
       if (proto) {
 	/* property getter */
 	printf ("  %s %s ();\n", ret.c_str(), getProperty.c_str());
@@ -620,7 +620,7 @@ void CodeGeneratorClientCxx::printProperties (const Class& cdef)
 	printf ("%s::%s (%s %s)\n", cdef.name.c_str(), setProperty.c_str(),
 				    cTypeArg (pi->type), newName.c_str());
 	printf ("{\n");
-	string to_val = createTypeCode (pi->type, newName, MODEL_TO_VALUE).c_str();
+	String to_val = createTypeCode (pi->type, newName, MODEL_TO_VALUE).c_str();
 	printf ("  GValue *val = %s;\n", to_val.c_str());
 	printf ("  sfi_glue_proxy_set_property (_proxy(), \"%s\", val);\n", propName.c_str());
 	printf ("  sfi_value_free (val);\n");
@@ -642,7 +642,7 @@ CodeGeneratorClientCxx::getOptions()
 }
 
 void
-CodeGeneratorClientCxx::setOption (const string& option, const string& value)
+CodeGeneratorClientCxx::setOption (const String& option, const String& value)
 {
   if (option == "--lower")
     {
@@ -669,7 +669,7 @@ CodeGeneratorClientCxx::help()
 */
 }
 
-string CodeGeneratorClientCxx::makeStyleName (const string& name)
+String CodeGeneratorClientCxx::makeStyleName (const String& name)
 {
   if (style == STYLE_MIXED)
     return makeLMixedName (name);
@@ -681,8 +681,8 @@ namespace {
 
 class ClientCxxFactory : public Factory {
 public:
-  string option() const	      { return "--client-cxx"; }
-  string description() const  { return "generate client C++ language binding"; }
+  String option() const	      { return "--client-cxx"; }
+  String description() const  { return "generate client C++ language binding"; }
 
   CodeGenerator *create (const Parser& parser) const
   {
