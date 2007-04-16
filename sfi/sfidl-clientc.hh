@@ -17,8 +17,6 @@
 #ifndef __SFIDL_CLIENTC_H__
 #define __SFIDL_CLIENTC_H__
 
-#include <sfi/glib-extra.h>
-#include <vector>
 #include <map>
 #include <iostream>
 #include <algorithm>

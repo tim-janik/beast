@@ -1,3 +1,14 @@
+Mon Apr 16 13:51:51 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-*[hc]: Refactored some code in order to remove unneccessary
+	include files and to avoid "using namespace std;".
+
+	* sfidl-typelist.hh:
+	* sfidl-corec.hh:
+	* sfidl-corecxx.hh:
+	* Makefile.am: Remove include files that are not really needed any
+	more.
+
 Fri Apr 13 14:22:34 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* Makefile.am:

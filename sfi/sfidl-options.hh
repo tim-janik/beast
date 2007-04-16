@@ -17,7 +17,6 @@
 #ifndef _SFIDL_OPTIONS_H_
 #define _SFIDL_OPTIONS_H_
 
-#include <vector>
 #include <utility>
 #include "sfidl-utils.hh"
 

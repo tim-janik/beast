@@ -27,7 +27,6 @@
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
-using namespace std;
 
 static String
 CxxNameToSymbol (const String &str)     // FIXME: need mammut renaming function

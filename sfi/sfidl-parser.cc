@@ -29,7 +29,8 @@
 namespace {
 
 using namespace Sfidl;
-using namespace std;
+using std::set;
+using std::stack;
 
 /* As opposed to the birnet function string_from_double, we use "%.17e"
  * (instead of "%.17g"). This keeps doubles in param specs like (50.0/100.0)
@@ -548,7 +549,7 @@ void Parser::preprocessContents (const String& input_filename)
 			break;
 	    case '<':	state = filenameIn2;
 			break;
-	    default:	cerr << "bad char after #include statement" << endl;
+	    default:	g_printerr ("bad char after #include statement");
 			g_assert_not_reached (); // error handling!
 	    }
 	}

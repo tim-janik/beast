@@ -17,8 +17,6 @@
 #ifndef __SFIDL_HOSTC_H__
 #define __SFIDL_HOSTC_H__
 
-#include <sfi/glib-extra.h>
-#include <vector>
 #include <map>
 #include <iostream>
 #include <algorithm>

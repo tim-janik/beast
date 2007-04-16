@@ -19,7 +19,6 @@
 #include "sfidl-parser.hh"
 
 using namespace Sfidl;
-using namespace std;
 
 int main (int argc, char **argv)
 {

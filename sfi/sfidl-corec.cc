@@ -14,8 +14,9 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfidl-corec.hh"
+#include "sfidl-utils.hh"
 #include "sfidl-factory.hh"
+#include "sfidl-generator.hh"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -25,7 +26,7 @@
 namespace {
 
 using namespace Sfidl;
-using namespace std;
+using std::make_pair;
 
 class CodeGeneratorCoreC : public CodeGenerator {
   const char*

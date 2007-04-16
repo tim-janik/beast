@@ -14,19 +14,19 @@
  * A copy of the GNU Lesser General Public License should ship along
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
-#include "sfidl-corecxx.hh"
 #include "sfidl-namespace.hh"
 #include "sfidl-factory.hh"
+#include "sfidl-utils.hh"
+#include "sfidl-generator.hh"
 
 #include <string.h>
 #include <stdio.h>
 #include <list>
 #include <map>
-#include <sfi/glib-extra.h>
 
 namespace {
-using namespace std;
 using namespace Sfidl;
+using std::make_pair;
 
 static const gchar*
 canonify_name (const String& s,

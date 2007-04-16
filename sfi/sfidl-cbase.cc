@@ -27,7 +27,8 @@
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
-using namespace std;
+using std::min;
+using std::max;
 
 /*--- functions for "C and C++"-like languages ---*/
 

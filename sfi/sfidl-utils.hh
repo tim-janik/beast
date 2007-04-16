@@ -20,11 +20,17 @@
 
 #include <sfi/glib-extra.h>
 #include <birnet/birnet.hh>
+#include <list>
+#include <vector>
 
 namespace Sfidl {
 
 /* lots of helpers like string_from_int, but also typedefs like String */
 using namespace Birnet;
+
+/* common data structures */
+using std::list;
+using std::vector;
 
 }
 

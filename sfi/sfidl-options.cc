@@ -26,7 +26,6 @@
 #define SFIDL_PRG_NAME	     "sfidl"
 
 using namespace Sfidl;
-using namespace std;
 
 static Options *Options_the = 0;
 

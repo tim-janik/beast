@@ -26,7 +26,7 @@
 #include "sfidl-parser.hh"
 
 using namespace Sfidl;
-using namespace std;
+using std::make_pair;
 
 void CodeGeneratorHostC::printRecordFieldDeclarations()
 {

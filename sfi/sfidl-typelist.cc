@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface                 -*-mode: c++;-*-
- * Copyright (C) 2004 Stefan Westerfeld
+ * Copyright (C) 2004-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,13 +15,31 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 
-#include "sfidl-typelist.hh"
+#include "sfidl-generator.hh"
 #include "sfidl-factory.hh"
+#include <list>
 
 using namespace Sfidl;
-using namespace std;
 
 namespace {
+
+class CodeGeneratorTypeList : public CodeGenerator {
+public:
+  CodeGeneratorTypeList (const Parser &parser) : CodeGenerator (parser) {
+  }
+  bool run ()
+  {
+    vector<String>::const_iterator ti;
+
+    for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
+      {
+	if (parser.fromInclude (*ti)) continue;
+
+	printf ("%s\n", makeMixedName (*ti).c_str());
+      }
+    return true;
+  }
+};
 
 class TypeListFactory : public Factory {
 public:

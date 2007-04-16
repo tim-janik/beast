@@ -18,7 +18,6 @@
 #ifndef _SFIDL_PARSER_H_
 #define _SFIDL_PARSER_H_
 
-#include <vector>
 #include <map>
 #include "sfidl-utils.hh"
 

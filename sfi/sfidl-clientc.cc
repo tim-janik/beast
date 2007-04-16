@@ -22,7 +22,7 @@
 #include <stdio.h>
 
 using namespace Sfidl;
-using namespace std;
+using std::make_pair;
 
 void CodeGeneratorClientC::printClassMacros()
 {

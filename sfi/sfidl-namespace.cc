@@ -16,12 +16,10 @@
  */
 #include <string.h>
 #include <stdio.h>
-#include <list>
 #include <map>
 #include "sfidl-namespace.hh"
 #include <sfi/glib-extra.h>
 
-using namespace std;
 using namespace Sfidl;
 
 /* generic utilities */

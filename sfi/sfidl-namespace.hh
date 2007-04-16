@@ -18,7 +18,6 @@
 #define _SFIDL_NAMESPACE_H__
 
 #include <stdio.h>
-#include <list>
 #include "sfidl-utils.hh"
 
 namespace Sfidl {

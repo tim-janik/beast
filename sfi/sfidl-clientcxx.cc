@@ -27,7 +27,7 @@
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
-using namespace std;
+using std::make_pair;
 
 String
 CodeGeneratorClientCxx::typeArg (const String& type)

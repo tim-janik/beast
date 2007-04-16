@@ -27,7 +27,7 @@
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
-using namespace std;
+using std::make_pair;
 
 /*--- common functions ---*/
 

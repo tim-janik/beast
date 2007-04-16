@@ -17,7 +17,6 @@
 #ifndef _SFIDL_FACTORY_H_
 #define _SFIDL_FACTORY_H_
 
-#include <list>
 #include "sfidl-utils.hh"
 
 namespace Sfidl {

@@ -18,7 +18,6 @@
 #include "glib-extra.h"
 
 using namespace Sfidl;
-using namespace std;
 
 namespace {
   list<Factory *> *factories = 0;
