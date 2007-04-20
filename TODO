@@ -755,7 +755,6 @@ documentation:
  - bsewavetool needs to be documented with documentation tool in the source code (at least gsl_data_find_loop*)
 
 tests, bsefcompare:
-- remove test directory                                                              [ 0.7.2, pending ]
 - vibrato/tremolo - write testcases 4*v / 4*t (slow/fast) (strong/weak)
   
 win32 port:
@@ -783,28 +782,34 @@ Misc Buglets/Feature Requests:
  - implement fractional resampler (oversampling)
  - implement generic FIR eval (based on SIMD resampler code)
  - freeverb should be 96k safe
+ - port sfidl to python
 
 The MCD timeline says:
+- next meeting:
+ - drumkits
+ - consider new beast instruments
 - soon:
  - davorgan c++
  - submit 8 thread crasher
  - use sweep for resampler test
-- autolooper for wavetool
 - man page for wavetool
 - (1) drum kit
- - beast replays samples at 50% volume if std amp/adsr is used - intended or bug?
+ - beast replays samples at 50% volume if std amp/adsr is used: probably bug
 - (2) drum loops
 - (3) bass instrument
 - (4) bass line
 - (5) lead instrument
 - DavOrgan bug: make testcase
 - DavOrgan bug: is blocksize dependant
-* 0.7.1? (+ Hydrogen-DrumKit.bsewave?)
+- stabilization & bug fixing
+* 0.7.2?
+- autolooper for wavetool
+- repackage Hydrogen-DrumKit.bsewave?
 - complete GUS support:
   + quantize gus-patch playback error, decide what to do about gus patches (rip them?)
 - start bse-data-gpl.tgz for GPL-only stuff
 - complete jack treiber
-* 0.7.2?
+* 0.7.3?
 - scripting/cooperation with mma: http://users.xplornet.com/~bvdp/mma/
 
 vim:set ts=8 sts=2 sw=2:
