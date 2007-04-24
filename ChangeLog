@@ -1,3 +1,7 @@
+Fri Apr 20 14:32:32 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* slowtests: Removed directory that is no longer used from SVN.
+
 Sat Mar 31 15:18:54 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/architecture.doxi: Document the new "volume" xinfo.
