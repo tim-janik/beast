@@ -791,7 +791,6 @@ The MCD timeline says:
  - when to bump version number?
 - soon:
  - davorgan c++
- - submit 8 thread crasher
  - use sweep for resampler test
 - man page for wavetool
 - (1) drum kit
