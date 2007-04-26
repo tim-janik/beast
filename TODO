@@ -6,7 +6,6 @@
 - replace secontribsampleandhold.[ic]* with LGPL variant, adapt COPYING*
 - undef _DOMAIN
 - if no usable PCM device could be found, but devices where found at all, the error mesage should contain "is device in use?"
-- subst ArtsCompressor non-constants
 - wavetool manual page
 - bsemathsignal.c -> bsemathsignal.cc
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
@@ -791,6 +790,18 @@ The MCD timeline says:
  - when to bump version number?
 - soon:
  - davorgan c++
+ - subst ArtsCompressor non-constants
+ - pitch for bsewavetool
+   "fine-tune" xinfo
+ - loop chunks with shell script
+ - per wave chunk info
+   --info=all # human readable
+   --info=mix-freq # script readable
+ - volume detector
+ - sample technics drum kits for reference
+ - base freq detector (chunk)
+ - xinfo on bsewave: drum kit play network
+ - adsr replay for samples has issues (= attack != 0) -> file bug
  - use sweep for resampler test
 - man page for wavetool
 - (1) drum kit
