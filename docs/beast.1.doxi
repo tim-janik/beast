@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
+@doxer_set{rvstamp,parse_date} $Date$
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BEAST - Bedevilled Audio System
 @doxer_set{man-title}	BEAST
@@ -41,7 +41,7 @@ beast - Music composition and modular synthesis application.
 @item @manb{--merge} @*
 	Causes the following files to be merged into the previous or first project.
 @item @manb{--devel} @*
-	Enrich the GUI with hints usefull for (script) developers
+	Enrich the GUI with hints useful for (script) developers
 @item @manb{-h}, @manb{--help} @*
 	Shows a brief help message.
 @item @manb{-v}, @manb{--version} @*
@@ -90,7 +90,7 @@ beast - Music composition and modular synthesis application.
 	List possible debug keys.
 @item @manb{-:}[@mani{flags}] @*
 	This option enables or disables various debugging specific flags for
-	qbeast core developers. Use of @manb{-:} is not recommended, because
+	beast core developers. Use of @manb{-:} is not recommended, because
 	the supported flags may change between versions and cause possibly
 	harmful misbehaviour.
 @done
