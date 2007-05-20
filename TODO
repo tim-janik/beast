@@ -45,6 +45,7 @@ MISC:
 - add a dialog that provides details about beast's current run mode:
   - selected audio driver, bit depth and mix-freq thereof
   - provide rating for alternative audio drivers (ALSA)
+  - detect when system has ALSA drivers but bse-alsa is not available
   - running on kernel 2.6 scheduler?
   - reniced synthesis engine?
   - checks mixer channels Master and Pcm for < 20% and Muted
