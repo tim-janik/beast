@@ -795,6 +795,15 @@ The MCD timeline says:
  - pitch for bsewavetool
    "fine-tune" xinfo
  - loop chunks with shell script
+ --------------------------------
+if user lists chunks:
+
+   encode frequency to chunkkey with full float precision
+
+if user matchs chunks (z.B. delete/xinfo):
+
+   epsilon-comparision between chunk and key float frequency
+ --------------------------------
  - per wave chunk info
    --info=all # human readable
    --info=mix-freq # script readable
