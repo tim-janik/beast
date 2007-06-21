@@ -791,7 +791,6 @@ The MCD timeline says:
  - when to bump version number?
 - soon:
  - davorgan c++
- - subst ArtsCompressor non-constants
  - pitch for bsewavetool
    "fine-tune" xinfo
  - loop chunks with shell script

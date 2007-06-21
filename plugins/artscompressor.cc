@@ -72,12 +72,14 @@ class Compressor : public CompressorBase
     double
     comp_linear2db (double linear)
     {
-      return 20 * log (linear) / log (10);
+      // return 20 * log (linear) / log (10);
+      return log (linear) * 8.68588963806503655302257837833210164588794011607333;
     }
     double
     comp_db2linear (double db)
     {
-      return exp (db / 20 * log (10));
+      // return exp (db / 20 * log (10));
+      return exp (db * 0.11512925464970228420089957273421821038005507443144);
     }
     double
     compress (double input_signal)

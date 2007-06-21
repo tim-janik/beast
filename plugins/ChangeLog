@@ -1,3 +1,8 @@
+Thu Jun 21 18:44:18 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* artscompressor.cc: Replaced log() and exp() calls by constants where
+	possible, that is for all cases where the argument is constant, too.
+
 Mon Feb  5 22:16:01 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsenoise.cc: Nullify noise_table pointer after deleting it, so that
