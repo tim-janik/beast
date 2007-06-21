@@ -160,6 +160,15 @@ osc-test:
 	$(BSEFCOMPARE) $(srcdir)/osc-test.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
+# a test for ArtsCompressor
+FEATURE_TESTS += artscompressor-test
+EXTRA_DIST += artscompressor.bse artscompressor.ref
+artscompressor-test:
+	$(BSE2WAV) $(srcdir)/artscompressor.bse $(@F).wav
+	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
+	$(BSEFCOMPARE) $(srcdir)/artscompressor.ref $(@F).tmp --threshold 99.99
+	rm -f $(@F).tmp $(@F).wav
+
 # the BEAST demo song
 FEATURE_TESTS += partymonster-test
 EXTRA_DIST += partymonster.ref
