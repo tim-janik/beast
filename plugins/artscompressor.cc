@@ -73,13 +73,13 @@ class Compressor : public CompressorBase
     comp_linear2db (double linear)
     {
       // return 20 * log (linear) / log (10);
-      return log (linear) * 8.68588963806503655302257837833210164588794011607333;
+      return log (linear) * BSE_DECIBEL20_FACTOR;
     }
     double
     comp_db2linear (double db)
     {
       // return exp (db / 20 * log (10));
-      return exp (db * 0.11512925464970228420089957273421821038005507443144);
+      return exp (db * BSE_1_DIV_DECIBEL20_FACTOR);
     }
     double
     compress (double input_signal)
