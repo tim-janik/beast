@@ -790,8 +790,8 @@ The MCD timeline says:
  - consider new beast instruments
  - when to bump version number?
 - soon:
- - davorgan c++
- - pitch for bsewavetool
+ - davorgan c++            http://bugzilla.gnome.org/show_bug.cgi?id=433311
+ - pitch for bsewavetool   http://bugzilla.gnome.org/show_bug.cgi?id=450490
    "fine-tune" xinfo
  - loop chunks with shell script
  --------------------------------
