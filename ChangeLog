@@ -1,3 +1,8 @@
+Sat Jun 30 23:58:54 2007  Tim Janik  <timj@gtk.org>
+
+	* launchers/beaststart.c (custom_find_executable): fixed string buffer 
+	size, #452604.
+
 Thu Jun 21 18:21:33 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am:
