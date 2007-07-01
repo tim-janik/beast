@@ -1,3 +1,8 @@
+Sun Jul  1 17:13:28 2007  Tim Janik  <timj@gtk.org>
+
+	* launchers/bseshstart.c (custom_find_executable): fixed string buffer
+	size, #452604.
+
 Sat Jun 30 23:58:54 2007  Tim Janik  <timj@gtk.org>
 
 	* launchers/beaststart.c (custom_find_executable): fixed string buffer 
