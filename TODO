@@ -792,11 +792,8 @@ The MCD timeline says:
 - soon:
  - davorgan c++                   http://bugzilla.gnome.org/show_bug.cgi?id=433311
  - pitch for bsewavetool          http://bugzilla.gnome.org/show_bug.cgi?id=450490
-   "fine-tune" xinfo
  - loop chunks with shell script  http://bugzilla.gnome.org/show_bug.cgi?id=450724
- - per wave chunk info
-   --info=all # human readable
-   --info=mix-freq # script readable
+ - per wave chunk info            http://bugzilla.gnome.org/show_bug.cgi?id=454121
  - volume detector
  - sample technics drum kits for reference
  - base freq detector (chunk)
