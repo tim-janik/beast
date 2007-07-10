@@ -1,3 +1,10 @@
+Tue Jul 10 16:34:02 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Implemented the necessary code to allow shell
+	scripts to iterate over the chunks in a bsewave file. This includes
+	support for the --chunk-key option for many commands, as well as a new
+	list-chunks command which generates chunk keys suitable for iteration.
+
 Sun Jul  1 17:13:28 2007  Tim Janik  <timj@gtk.org>
 
 	* launchers/bseshstart.c (custom_find_executable): fixed string buffer

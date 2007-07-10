@@ -1,6 +1,6 @@
 /* BseWaveTool - BSE Wave creation tool
  * Copyright (C) 2001-2004 Tim Janik
- * Copyright (C) 2005 Stefan Westerfeld
+ * Copyright (C) 2005-2007 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -308,6 +308,153 @@ parse_bool_option (char        **argv,
       return true;
     }
   return false;
+}
+
+/* wave chunk keys for shell iteration */
+class WaveChunkKey {
+  BseFloatIEEE754 m_osc_freq;
+public:
+  WaveChunkKey (const String& key_string)
+  {
+    // mark key as invalid
+    m_osc_freq.v_float = -1;     
+    if (key_string.size() != 7)
+      return;  // invalid key
+
+    guint64 key_uint = 0;
+    for (string::const_reverse_iterator si = key_string.rbegin(); si != key_string.rend(); si++)
+      {
+        key_uint *= 62;
+        if (*si >= '0' && *si <= '9')
+          key_uint += *si - '0';
+        else if (*si >= 'A' && *si <= 'Z')
+          key_uint += *si - 'A' + 10;
+        else if (*si >= 'a' && *si <= 'z')
+          key_uint += *si - 'a' + 10 + 26;
+        else
+          return; // invalid key
+      }
+
+    const guint64 key_checksum = key_uint & 0x1ff;
+    key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
+    const guint64 checksum = g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    if (key_checksum != checksum)
+      return; // invalid key
+    key_uint >>= 9;
+
+    // decode float components in byte order independent way
+    m_osc_freq.mpn.mantissa = key_uint;
+    key_uint >>= 23;
+    m_osc_freq.mpn.biased_exponent = key_uint;
+    key_uint >>= 8;
+    m_osc_freq.mpn.sign = key_uint;
+  }
+  WaveChunkKey (float osc_freq)
+  {
+    m_osc_freq.v_float = osc_freq;
+  }
+  String
+  as_string() const
+  {
+    guint64 key_uint = 0;
+
+    // put float components to key in byte order independent way
+    key_uint |= m_osc_freq.mpn.sign;            //  1 bit
+    key_uint <<= 8;
+    key_uint |= m_osc_freq.mpn.biased_exponent; //  8 bit
+    key_uint <<= 23;
+    key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
+    key_uint <<= 9;                             // +9 bit checksum  
+    const guint64 checksum = g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    key_uint |= checksum;
+    key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
+
+    string key_string;
+    for (int i = 0; i < 7; i++) /* encode in custom base-62 format; 7 digits  <=>  2^41 < 62^7 */
+      {
+        guint64 digit = key_uint % 62;
+        if (digit < 10)
+          key_string += '0' + digit;
+        else if (digit < (10 + 26))
+          key_string += 'A' + digit - 10;
+        else if (digit < (10 + 26 + 26))
+          key_string += 'a' + digit - 10 - 26;
+        key_uint /= 62;
+      }
+    g_assert (key_uint == 0);
+      
+    return key_string;
+  }
+  bool
+  is_valid() const
+  {
+    return m_osc_freq.v_float >= 0;
+  }
+  float
+  osc_freq() const
+  {
+    return m_osc_freq.v_float;
+  }
+};
+
+static bool
+parse_chunk_selection (char          **argv,
+                       uint           &i,
+                       uint            argc,
+                       bool           &all_chunks,
+                       vector<float>  &freq_list)
+
+{
+  const gchar *str = NULL;
+
+  if (parse_bool_option (argv, i, "--all-chunks"))
+    {
+      all_chunks = true;
+      return true;
+    }
+  else if (parse_str_option (argv, i, "-f", &str, argc))
+    {
+      freq_list.push_back (g_ascii_strtod (str, NULL));
+      return true;
+    }
+  else if (parse_str_option (argv, i, "--chunk-key", &str, argc))
+    {
+      WaveChunkKey key (str);
+      if (key.is_valid())
+        {
+          freq_list.push_back (key.osc_freq());
+          return true;
+        }
+      else
+        {
+          sfi_error ("invalid bsewavetool chunk key: %s", str);
+          exit (1);
+        }
+    }
+  else if (parse_str_option (argv, i, "-m", &str, argc))
+    {
+      SfiNum num = g_ascii_strtoull (str, NULL, 10);
+      gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
+      freq_list.push_back (osc_freq);
+      return true;
+    }
+  return false;
+}
+
+static void 
+verify_chunk_selection (const vector<float> &freq_list,
+                        Wave                *wave)
+{
+  for (vector<float>::const_iterator fi = freq_list.begin(); fi != freq_list.end(); fi++)
+    {
+      if (!wave->lookup (*fi))
+        {
+          Msg::display (continue_on_error ? Msg::WARNING : Msg::ERROR,
+                        Msg::Primary ("failed to find wave chunk with oscillator frequency: %.2f", *fi));
+          if (!continue_on_error)
+            exit (1);
+        }
+    }
 }
 
 static void
@@ -964,7 +1111,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks|--wave} key=[value] ...\n");
+    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} key=[value] ...\n");
     if (bshort)
       return;
     g_print ("    Add, change or remove an XInfo string of a bsewave file.\n");
@@ -975,6 +1122,7 @@ public:
     g_print ("    Options:\n");
     g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        apply XInfo modification to all chunks\n");
     g_print ("    --wave              apply XInfo modifications to the wave itself\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
@@ -1050,6 +1198,33 @@ public:
                 location = OSC_FREQ;
               }
           }
+        else if (strcmp ("--chunk-key", arg) == 0 ||
+                 strncmp ("--chunk-key", arg, 11) == 0)
+          {
+            const gchar *equal = arg + 11;
+            const gchar *key_str = NULL;
+            if (*equal == '=')              /* --chunk-key=Arg */
+              key_str = equal + 1;
+            else if (it + 1 != args.end())  /* --chunk-key Arg */
+              {
+                it++;
+                key_str = *it;
+              }
+            if (key_str)
+              {
+                WaveChunkKey key (key_str);
+                if (key.is_valid())
+                  {
+                    osc_freq = key.osc_freq();
+                    location = OSC_FREQ;
+                  }
+                else
+                  {
+                    sfi_error ("invalid bsewavetool chunk key: %s", key_str);
+                    exit (1);
+                  }
+              }
+          }
         else /* XInfo string */
           {
             const gchar *equal = strchr (arg, '=');
@@ -1114,7 +1289,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
+    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks} [options]\n");
     if (bshort)
       return;
     g_print ("    Clip head and or tail of a wave chunk and produce fade-in ramps at the\n");
@@ -1123,6 +1298,7 @@ public:
     g_print ("    Options:\n");
     g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to clip all chunks\n");
 #if 0
     g_print ("    --config=\"s h t f p r\"\n");
@@ -1152,23 +1328,8 @@ public:
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str = NULL;
-        if (parse_bool_option (argv, i, "--all-chunks"))
-          {
-            all_chunks = true;
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-f", &str, argc))
-          {
-            freq_list.push_back (g_ascii_strtod (str, NULL));
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-m", &str, argc))
-          {
-            SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
-            freq_list.push_back (osc_freq);
-            seen_selection = true;
-          }
+	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
+          seen_selection = true;
         else if (parse_str_option (argv, i, "-s", &str, argc))
           threshold = g_ascii_strtod (str, NULL);
         else if (parse_str_option (argv, i, "-h", &str, argc))
@@ -1188,6 +1349,8 @@ public:
   exec (Wave *wave)
   {
     sort (freq_list.begin(), freq_list.end());
+    verify_chunk_selection (freq_list, wave);
+
     vector<list<WaveChunk>::iterator> deleted;
     /* level clipping */
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
@@ -1258,7 +1421,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
+    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks} [options]\n");
     if (bshort)
       return;
     g_print ("    Normalize wave chunk. This is used to extend (or compress) the signal\n");
@@ -1266,6 +1429,7 @@ public:
     g_print ("    Options:\n");
     g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to normalize all chunks\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
@@ -1276,24 +1440,8 @@ public:
     bool seen_selection = false;
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str = NULL;
-        if (parse_bool_option (argv, i, "--all-chunks"))
-          {
-            all_chunks = true;
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-f", &str, argc))
-          {
-            freq_list.push_back (g_ascii_strtod (str, NULL));
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-m", &str, argc))
-          {
-            SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
-            freq_list.push_back (osc_freq);
-            seen_selection = true;
-          }
+	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
+	  seen_selection = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
@@ -1301,6 +1449,8 @@ public:
   exec (Wave *wave)
   {
     sort (freq_list.begin(), freq_list.end());
+    verify_chunk_selection (freq_list, wave);
+
     /* normalization */
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
       if (all_chunks || wave->match (*it, freq_list))
@@ -1349,6 +1499,7 @@ public:
     g_print ("    Options:\n");
     g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to loop all chunks\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
@@ -1359,24 +1510,8 @@ public:
     bool seen_selection = false;
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str = NULL;
-        if (parse_bool_option (argv, i, "--all-chunks"))
-          {
-            all_chunks = true;
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-f", &str, argc))
-          {
-            freq_list.push_back (g_ascii_strtod (str, NULL));
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-m", &str, argc))
-          {
-            SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
-            freq_list.push_back (osc_freq);
-            seen_selection = true;
-          }
+	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
+	  seen_selection = true;
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
@@ -1384,6 +1519,8 @@ public:
   exec (Wave *wave)
   {
     sort (freq_list.begin(), freq_list.end());
+    verify_chunk_selection (freq_list, wave);
+
     vector<list<WaveChunk>::iterator> deleted;
     /* level clipping */
     for (list<WaveChunk>::reverse_iterator it = wave->chunks.rbegin(); it != wave->chunks.rend(); it++)
@@ -2060,7 +2197,6 @@ public:
   }
 } cmd_downsample2 ("downsample2");
 
-
 class Export : public Command {
 public:
   vector<gfloat> freq_list;
@@ -2075,7 +2211,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks|-x=filename} [options]\n");
+    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|-x=filename} [options]\n");
     if (bshort)
       return;
     g_print ("    Export chunks from bsewave as WAV file.\n");
@@ -2083,6 +2219,7 @@ public:
     g_print ("    -x <filename>       set export filename (supports %%N %%F and %%C, see below)\n");
     g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
     g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
     g_print ("    --all-chunks        try to export all chunks\n");
     g_print ("    The export filename can contain the following extra information:\n");
     g_print ("      %%F  -  the frequency of the chunk\n");
@@ -2100,23 +2237,8 @@ public:
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str = NULL;
-        if (parse_bool_option (argv, i, "--all-chunks"))
-          {
-            all_chunks = true;
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-f", &str, argc))
-          {
-            freq_list.push_back (g_ascii_strtod (str, NULL));
-            seen_selection = true;
-          }
-        else if (parse_str_option (argv, i, "-m", &str, argc))
-          {
-            SfiNum num = g_ascii_strtoull (str, NULL, 10);
-            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69. /* MIDI kammer note */);
-            freq_list.push_back (osc_freq);
-            seen_selection = true;
-          }
+	if (parse_chunk_selection (argv, i, argc, all_chunks, freq_list))
+          seen_selection = true;
         else if (parse_str_option (argv, i, "-x", &str, argc))
 	  {
 	    export_filename = str;
@@ -2195,6 +2317,11 @@ public:
 	    exit (1);
 	  }
       }
+
+    /* validate freq list */
+    sort (freq_list.begin(), freq_list.end());
+    verify_chunk_selection (freq_list, wave);
+
     /* get the wave into storage order */
     wave->sort();
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
@@ -2258,6 +2385,51 @@ public:
         }
   }
 } cmd_export ("export");
+
+class ListChunks : public Command {
+public:
+  ListChunks (const char *command_name) :
+    Command (command_name)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("[options]\n");
+    if (bshort)
+      return;
+    g_print ("    Prints a list of chunk keys of the chunks contained in the bsewave file.\n");
+    g_print ("    A chunk key for a given chunk identifies the chunk uniquely and stays valid\n");
+    g_print ("    if other chunks are inserted and deleted.\n");
+    g_print ("    Here is a bash script to export all chunks (like export with --all-chunks):\n");
+    // FIXME: use info instead of export, as soon as there is an info command (see #454121)
+    g_print ("      for key in `bsewavetool list-chunks foo.bsewave`\n");
+    g_print ("      do\n");
+    g_print ("        bsewavetool export foo.bsewave --chunk-key $key -x /tmp/foo-note-%%N.wav\n");
+    g_print ("      done\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    return 0; // no missing args
+  }
+  void
+  exec (Wave *wave)
+  {
+    /* get the wave into storage order */
+    wave->sort();
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      {
+        WaveChunk     *chunk = &*it;
+        WaveChunkKey   chunk_key (gsl_data_handle_osc_freq (chunk->dhandle));
+
+        g_print ("%s\n", chunk_key.as_string().c_str());
+      }
+  }
+} cmd_list_chunks ("list-chunks");
+
 
 /* TODO commands:
  * bsewavetool.1 # need manual page
