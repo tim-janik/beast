@@ -13,20 +13,13 @@
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
 - tracks should be default-connected after midi import
 NEXT-RELEASE:
-- davorgan c++                   http://bugzilla.gnome.org/show_bug.cgi?id=433311
-- pitch for bsewavetool          http://bugzilla.gnome.org/show_bug.cgi?id=450490
-- loop chunks with shell script  http://bugzilla.gnome.org/show_bug.cgi?id=450724
-- per wave chunk info            http://bugzilla.gnome.org/show_bug.cgi?id=454121
-- volume detector
 - sample technics drum kits for reference
-- xinfo on bsewave: drum kit play network
-- adsr replay for samples has issues (= attack != 0) -> file bug
 - use sweep for resampler test
-- man page for wavetool           http://bugzilla.gnome.org/show_bug.cgi?id=437469
+- man page for wavetool          
 - consider new beast instruments
 - beast replays samples at 50% volume if std amp/adsr is used: probably bug
-- DavOrgan bug: make testcase
-- DavOrgan bug: is blocksize dependant
+- DavOrgan bug: make testcase            (C++ify before)
+- DavOrgan bug: is blocksize dependant   (C++ify before)
 - add normalize to bsewavetool
 - GslLong -> int64 
 - wave-tool:
