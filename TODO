@@ -796,7 +796,6 @@ The MCD timeline says:
  - per wave chunk info            http://bugzilla.gnome.org/show_bug.cgi?id=454121
  - volume detector
  - sample technics drum kits for reference
- - base freq detector (chunk)
  - xinfo on bsewave: drum kit play network
  - adsr replay for samples has issues (= attack != 0) -> file bug
  - use sweep for resampler test
@@ -812,6 +811,7 @@ The MCD timeline says:
 - stabilization & bug fixing
 * 0.7.2?
 - autolooper for wavetool
+- base freq detector (chunk)
 - repackage Hydrogen-DrumKit.bsewave?
 - complete GUS support:
   + quantize gus-patch playback error, decide what to do about gus patches (rip them?)
