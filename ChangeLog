@@ -1,3 +1,8 @@
+Fri Jul 13 00:18:09 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/artscompressor.bse: Added this file now, necessary for
+	the artscompressor test commited before.
+
 Tue Jul 10 16:34:02 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Implemented the necessary code to allow shell
