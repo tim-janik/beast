@@ -411,7 +411,7 @@ Images to be used as class icons should meet a few requirements:
 
 After writing a plugin, to use it in beast, it needs to be compiled and installed.
 Here is a brief example which assumes that the idl file is called bseportamento.idl,
-and the implementation is the the C++ source bseportamento.cc.
+and the implementation is the C++ source bseportamento.cc.
 
 @example
   sfidl --plugin bseportamento.idl > bseportamento.genidl.hh
