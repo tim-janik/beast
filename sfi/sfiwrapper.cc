@@ -15,7 +15,6 @@
  * with this library; if not, see http://www.gnu.org/copyleft/.
  */
 #include "sfiwrapper.h"
-#undef BIRNET__RUNTIME_PROBLEM
 #include <birnet/birnet.hh>
 #include <errno.h>
 

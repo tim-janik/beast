@@ -26,9 +26,19 @@
  * provided by libbirnet.
  */
 
-BIRNET_EXTERN_C_BEGIN();
-
 /* --- short integer types --- */
+#ifdef __cplusplus
+#include <birnet/birnetutils.hh>
+using Birnet::uint8;
+using Birnet::uint16;
+using Birnet::uint32;
+using Birnet::uint64;
+using Birnet::int8;
+using Birnet::int16;
+using Birnet::int32;
+using Birnet::int64;
+using Birnet::unichar;
+#else
 typedef BirnetUInt8   uint8;
 typedef BirnetUInt16  uint16;
 typedef BirnetUInt32  uint32;
@@ -38,6 +48,9 @@ typedef BirnetInt16   int16;
 typedef BirnetInt32   int32;
 typedef BirnetInt64   int64;
 typedef BirnetUnichar unichar;
+#endif
+
+BIRNET_EXTERN_C_BEGIN();
 
 /* --- initialization --- */
 typedef struct

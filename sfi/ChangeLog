@@ -1,3 +1,18 @@
+Sat Jul 14 15:54:33 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfiwrapper.h: When compiled in C++ sources, use [u]int16/32/...
+	typedefs from Birnet instead of providing own typedefs. This allows
+	using these types in C++ sources which are using namespace Birnet.
+	Fixes #456408.
+
+	* sfiwrapper.cc: Since this is a C++ source, after the change above,
+	birnet/birnetutils.hh will already get included in sfi/sfiwrapper.h.
+	But then, undefining BIRNET__RUNTIME_PROBLEM afterwards will create
+	compile errors in the other birnet headers which are included after
+	sfi/sfiwrapper.h, because they rely on a definition provided by
+	birnet/birnetutils.hh. So I am removing the #undef, which doesn't seem
+	to have any useful purpose anyway.
+
 Mon Apr 16 13:51:51 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-*[hc]: Refactored some code in order to remove unneccessary
