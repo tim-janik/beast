@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-02-22 03:49+0100\n"
-"PO-Revision-Date: 2004-10-13 16:38-0300\n"
+"PO-Revision-Date: 2007-07-29 00:56-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -732,9 +732,8 @@ msgid "None"
 msgstr "Nenhum"
 
 #: ../beast-gtk/bsteventrollctrl.c:59
-#, fuzzy
 msgid "Unselect all events"
-msgstr "Insere notas de meio tempo"
+msgstr "Desmarca a seleção de eventos"
 
 #: ../beast-gtk/bsteventrollctrl.c:61 ../beast-gtk/bstpianorollctrl.c:61
 #, fuzzy
@@ -1683,9 +1682,8 @@ msgid "Select all notes"
 msgstr "Insere notas de tempo inteiro"
 
 #: ../beast-gtk/bstpianorollctrl.c:59
-#, fuzzy
 msgid "Unselect all notes"
-msgstr "Insere notas de meio tempo"
+msgstr "Desmarcar a seleção de notas"
 
 #: ../beast-gtk/bstpianorollctrl.c:77 ../beast-gtk/bsttrackrollctrl.c:44
 msgid "Insert"
