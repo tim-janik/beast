@@ -1,3 +1,8 @@
+Mon Aug 13 23:19:42 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/plugin-devel.doxi: Improved plugin compilation instructions
+	according to Tims comments.
+
 Sat Jul 14 17:50:06 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/plugin-devel.doxi: Added a small section about how to compile

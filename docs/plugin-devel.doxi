@@ -413,20 +413,26 @@ After writing a plugin, to use it in beast, it needs to be compiled and installe
 Here is a brief example which assumes that the idl file is called bseportamento.idl,
 and the implementation is the C++ source bseportamento.cc.
 
+You can get the source code of the plugin from the bugtracker, at
+@uri{http://bugzilla.gnome.org/show_bug.cgi?id=353137}. The plugin wasn't
+designed for learning to write plugins, though, we'll publish a "real" example
+plugin at some later point in time.
+
 @example
   sfidl --plugin bseportamento.idl > bseportamento.genidl.hh
-  g++ -shared -fPIC -o bseportamento.so bseportamento.cc `pkg-config --cflags --libs bse`
+  g++ -O3 -g -Wall -shared -fPIC -o bseportamento.so bseportamento.cc `pkg-config --cflags --libs bse`
   cp bseportamento.so /usr/local/beast/lib/bse/v0.7.1/plugins
 @done
 
 Line by line walk through:
 @enumerate
 @item The "sfidl" line is compiling your IDL file into a C++ header, that
-  provides then the necessary definitions for implementing the plugin. You need
-  to repeat this step whenever you change the IDL file.
+  provides the necessary definitions for implementing the plugin. You need to
+  repeat this step whenever you change the IDL file.
 @item The "g++" line is compiling the C++ source and the generated C++ header to
   a binary. Note that you need to have libbse installed, along with its pkg-config
-  file, for this step to work.
+  file, for this step to work. The pkg-config file might be provided by a separate
+  package of your distribution, such as beast-dev.
 @item The final step copies the binary plugin to beasts plugin path. Here you need
   to be careful to install the plugin in the right directory (which depends on the
   beast version). See below.
@@ -443,8 +449,3 @@ to this plugin path with the preferences dialog at the GUI. This for instance al
 you to develop plugins in your HOME directory, which may be an advantage. Otherwise
 it may be necessary to acquire root privileges (depending on your installation), to
 install the plugin.
-
-If you want to experiment with exactly this plugin, you can get its source code
-from the bugtracker, at @uri{http://bugzilla.gnome.org/show_bug.cgi?id=353137}.
-Note that we have not yet written a "real" example, so this is better than
-nothing, but was not really written with learning in mind.
