@@ -18,7 +18,6 @@
 #define __SFI_WRAPPER_H__
 
 #include <stdbool.h>
-#include <sfi/sfitypes.h>
 #include <sfi/glib-extra.h>
 #include <birnet/birnetcdefs.h> /* include glib before birnet for G_LOG_DOMAIN */
 

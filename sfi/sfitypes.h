@@ -27,10 +27,10 @@ typedef bool			SfiBool;
 typedef gint			SfiInt;
 #define	SFI_MAXINT		(+2147483647)
 #define	SFI_MININT		(-SFI_MAXINT - 1)
-typedef gint64			SfiNum;
+typedef int64			SfiNum;
 #define	SFI_MAXNUM		((SfiNum) +9223372036854775807LL)
 #define	SFI_MINNUM		(-SFI_MAXNUM - 1)
-typedef gint64			SfiTime;
+typedef int64			SfiTime;
 typedef SfiInt			SfiNote;
 typedef double			SfiReal;
 #define SFI_MINREAL		(2.2250738585072014e-308)	/* IEEE754 double */

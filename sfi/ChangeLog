@@ -1,3 +1,16 @@
+Mon Aug 13 23:38:53 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfiwrapper.h: Remove cyclic include dependancy between sfiwrapper.h
+	and sfitypes.h by not longer including sfitypes.h. This will allow
+	using things defined here in sfitypes.h, which was not possible
+	before.
+
+	* sfitypes.h: Use int64 instead of gint64 for SfiTime/SfiNum, which
+	expands to long long on both, 32- and 64-bit systems. This will make
+	printf ("%lld", some_sfi_num) a valid printf format (as seen by gcc),
+	and thus some compiler warnings disappear with this change. Fixes:
+	#456879.
+
 Sat Jul 14 15:54:33 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfiwrapper.h: When compiled in C++ sources, use [u]int16/32/...
