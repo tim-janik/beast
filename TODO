@@ -7,7 +7,6 @@
 - undef _DOMAIN
 - if no usable PCM device could be found, but devices where found at all, the error mesage should contain "is device in use?"
 - wavetool manual page
-- bsemathsignal.c -> bsemathsignal.cc
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
@@ -791,7 +790,7 @@ Misc Buglets/Feature Requests:
  - freeverb should be 96k safe
  - port sfidl to python
 
-The MCD timeline says:
+MCD timeline:
 - (1) drum kit
 - (2) drum loops
 - (3) bass instrument
