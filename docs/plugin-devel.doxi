@@ -420,8 +420,9 @@ plugin at some later point in time.
 
 @example
   sfidl --plugin bseportamento.idl > bseportamento.genidl.hh
-  g++ -O3 -g -Wall -shared -fPIC -o bseportamento.so bseportamento.cc `pkg-config --cflags --libs bse`
-  cp bseportamento.so /usr/local/beast/lib/bse/v0.7.1/plugins
+  g++ -O2 -g -Wall -shared -fPIC -o bseportamento.so bseportamento.cc `pkg-config --cflags --libs bse`
+  mkdir -p ~/beast/plugins
+  cp bseportamento.so ~/beast/plugins
 @done
 
 Line by line walk through:
@@ -433,19 +434,6 @@ Line by line walk through:
   a binary. Note that you need to have libbse installed, along with its pkg-config
   file, for this step to work. The pkg-config file might be provided by a separate
   package of your distribution, such as beast-dev.
-@item The final step copies the binary plugin to beasts plugin path. Here you need
-  to be careful to install the plugin in the right directory (which depends on the
-  beast version). See below.
+@item The "mkdir" line is creating a directory for the plugin.
+@item The final step copies the binary plugin to beasts plugin path.
 @done
-
-To find out which directory is appropriate for installing the plugin, you can run
-
-@example
-  beast --version
-@done
-
-It is also possible to configure the plugin path, and you can add another directory
-to this plugin path with the preferences dialog at the GUI. This for instance allows
-you to develop plugins in your HOME directory, which may be an advantage. Otherwise
-it may be necessary to acquire root privileges (depending on your installation), to
-install the plugin.

@@ -1,3 +1,8 @@
+Sat Aug 18 00:18:16 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/plugin-devel.doxi: Change documentation to recommend installing
+	plugins in ~/beast/plugins.
+
 Mon Aug 13 23:19:42 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/plugin-devel.doxi: Improved plugin compilation instructions
