@@ -818,7 +818,7 @@ record GConfig {
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE plugins. This path "
                                                  "is searched for in addition to the standard BSE plugin location on this system."),
                                                G_SEARCHPATH_SEPARATOR_S),
-                              NULL, STANDARD ":searchpath");
+                              bse_intern_path_user_data ("/plugins"), STANDARD ":searchpath");
     String ladspa_path     = (_("LADSPA Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This "
                                                  "path is searched for in addition to the standard LADSPA location on this system. "

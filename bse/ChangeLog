@@ -1,3 +1,9 @@
+Sat Aug 18 00:15:22 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecore.idl: Include ~/beast/plugins in the default plugin search
+	path, to make it easier for users and developers to install extra
+	plugins from source.
+
 Sun Jun 24 00:17:40 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsemath.h: Added ln (10)/20 constant for ArtsCompressor.
