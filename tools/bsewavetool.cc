@@ -47,8 +47,8 @@ static void     wavetool_parse_args     (int    *argc_p,
 static void     wavetool_print_blurb    (bool    bshort);
 
 /* --- variables --- */
-static bool   continue_on_error = false;
-static bool   quiet_infos = false;
+static bool   skip_errors = false;
+static bool   silent_infos = false;
 static string command_name;
 static string input_file;
 static string output_file;
@@ -63,7 +63,7 @@ wavetool_message_handler (const char              *domain,
 {
   if (mtype == Msg::INFO)
     {
-      if (!quiet_infos)
+      if (!silent_infos)
         {
           String title, primary, secondary, details, checkmsg;
           for (uint i = 0; i < parts.size(); i++)
@@ -180,7 +180,7 @@ main (int   argc,
                     {
                       sfi_warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
                                    wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), bse_wave_file_info_loader (winfo));
-                      if (continue_on_error)
+                      if (skip_errors)
                         error = BSE_ERROR_NONE;
                       else
                         {
@@ -251,12 +251,20 @@ wavetool_print_version (void)
 static void
 wavetool_print_blurb (bool bshort)
 {
+  /* Since global and command specific options can collide, we reserve short
+   * options for command specific options, and use long options for global
+   * options, so that short options are generally available for individual
+   * commands.
+   *
+   * The only exceptions are -o, -h and -v, which are global but short options,
+   * since these are common practice.
+   */
   g_print ("Usage: bsewavetool [tool-options] command <file.bsewave> {command-arguments}\n");
   g_print ("Tool options:\n");
   g_print ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
-  g_print ("  -q                    quiet, suppress extra processing information\n");
-  g_print ("  -k                    continue on errors (may overwrite bsewave files after\n");
-  g_print ("                        load errors occoured for part of its contents)\n");
+  g_print ("  --silent              suppress extra processing information\n");
+  g_print ("  --skip-errors         skip errors (may overwrite bsewave files after load\n");
+  g_print ("                        errors occoured for part of its contents)\n");
   g_print ("  -h, --help            show elaborated help message with command documentation\n");
   g_print ("  -v, --version         print version information\n");
   /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
@@ -449,9 +457,9 @@ verify_chunk_selection (const vector<float> &freq_list,
     {
       if (!wave->lookup (*fi))
         {
-          Msg::display (continue_on_error ? Msg::WARNING : Msg::ERROR,
+          Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
                         Msg::Primary ("failed to find wave chunk with oscillator frequency: %.2f", *fi));
-          if (!continue_on_error)
+          if (!skip_errors)
             exit (1);
         }
     }
@@ -503,10 +511,10 @@ wavetool_parse_args (int    *argc_p,
           wavetool_print_version ();
           exit (0);
         }
-      else if (parse_bool_option (argv, i, "-k"))
-        continue_on_error = true;
-      else if (parse_bool_option (argv, i, "-q"))
-        quiet_infos = true;
+      else if (parse_bool_option (argv, i, "--skip-errors"))
+        skip_errors = true;
+      else if (parse_bool_option (argv, i, "--silent"))
+        silent_infos = true;
       else if (parse_str_option (argv, i, "-o", &str, argc))
         output_file = str;
       else /* command & file names */
@@ -656,7 +664,7 @@ public:
       return;
     g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
     g_print ("    as Ogg/Vorbis streams inside the bsewave file. Options:\n");
-    g_print ("    -Q <n>              use quality level <n>, refer to oggenc(1) for details\n");
+    g_print ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
@@ -666,7 +674,7 @@ public:
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str = NULL;
-        if (parse_str_option (argv, i, "-Q", &str, argc))
+        if (parse_str_option (argv, i, "-q", &str, argc))
           quality = g_ascii_strtod (str, NULL);
       }
     return 0; // no missing args
@@ -751,7 +759,7 @@ public:
                     v += MAX (r, 0);
                   }
               }
-            if (!quiet_infos)
+            if (!silent_infos)
               g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%%       \r",
                           gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                           n * 99.999999 / l);
@@ -778,7 +786,7 @@ public:
           }
         gsl_vorbis_encoder_destroy (enc);
         guint n_bytes = (gsl_data_handle_bit_depth (dhandle) + 7) / 8;
-        if (!quiet_infos)
+        if (!silent_infos)
           g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                   n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
@@ -1090,10 +1098,10 @@ public:
             }
           if (error)
             {
-              Msg::display (continue_on_error ? Msg::WARNING : Msg::ERROR,
+              Msg::display (skip_errors ? Msg::WARNING : Msg::ERROR,
                             Msg::Primary (_("failed to add wave chunk from file \"%s\": %s"),
                                           ochunk.sample_file, bse_error_blurb (error)));
-              if (!continue_on_error)
+              if (!skip_errors)
                 exit (1);
             }
           g_strfreev (xinfos);
@@ -1255,7 +1263,7 @@ public:
                 else
                   {
                     sfi_error ("failed to find wave chunk with oscillator frequency: %.2f", osc_freq);
-                    if (!continue_on_error)
+                    if (!skip_errors)
                       exit (1);
                   }
                 break;
@@ -1398,7 +1406,7 @@ public:
                 }
               g_strfreev (xinfos);
             }
-          if (error && !continue_on_error)
+          if (error && !skip_errors)
             exit (1);
         }
     /* really delete chunks */
@@ -1469,7 +1477,7 @@ public:
               gsl_data_handle_unref (shandle);
             }
           g_strfreev (xinfos);
-          if (error && !continue_on_error)
+          if (error && !skip_errors)
             exit (1);
         }
   }

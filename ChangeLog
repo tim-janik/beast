@@ -1,3 +1,11 @@
+Thu Aug 23 15:17:57 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Replaced global -k option by --skip-errors,
+	global -q option by --silent and oggenc -Q <n> by oggenc -q <n>. The
+	idea behind the switch is to avoid global short options where possible
+	to minimize collisions with command options now and in the future.
+	Fixes #468229.
+
 Sat Aug 18 00:18:16 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/plugin-devel.doxi: Change documentation to recommend installing
