@@ -1,3 +1,8 @@
+Fri Aug 24 20:04:12 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Replaced guint64 variables by uint64
+	variables, to avoid "%lld" compiler warnings on AMD64.
+
 Thu Aug 23 15:17:57 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Replaced global -k option by --skip-errors,

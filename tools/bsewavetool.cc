@@ -329,7 +329,7 @@ public:
     if (key_string.size() != 7)
       return;  // invalid key
 
-    guint64 key_uint = 0;
+    uint64 key_uint = 0;
     for (string::const_reverse_iterator si = key_string.rbegin(); si != key_string.rend(); si++)
       {
         key_uint *= 62;
@@ -343,9 +343,9 @@ public:
           return; // invalid key
       }
 
-    const guint64 key_checksum = key_uint & 0x1ff;
+    const uint64 key_checksum = key_uint & 0x1ff;
     key_uint ^= key_checksum << 32LL;  // deobfuscate high bits with checksum
-    const guint64 checksum = g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
+    const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint - key_checksum).c_str()) % 509;
     if (key_checksum != checksum)
       return; // invalid key
     key_uint >>= 9;
@@ -364,7 +364,7 @@ public:
   String
   as_string() const
   {
-    guint64 key_uint = 0;
+    uint64 key_uint = 0;
 
     // put float components to key in byte order independent way
     key_uint |= m_osc_freq.mpn.sign;            //  1 bit
@@ -373,14 +373,14 @@ public:
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
     key_uint <<= 9;                             // +9 bit checksum  
-    const guint64 checksum = g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
+    const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
 
     string key_string;
     for (int i = 0; i < 7; i++) /* encode in custom base-62 format; 7 digits  <=>  2^41 < 62^7 */
       {
-        guint64 digit = key_uint % 62;
+        uint64 digit = key_uint % 62;
         if (digit < 10)
           key_string += '0' + digit;
         else if (digit < (10 + 26))
@@ -1577,7 +1577,7 @@ public:
 class ThinOutCmd : public Command {
   GslLong max_total_size;
   gdouble max_chunk_error;
-  guint64 gal_iterations; /* genetic algorithm iterations (should we use "time" as API)? */
+  uint64 gal_iterations; /* genetic algorithm iterations (should we use "time" as API)? */
 public:
   ThinOutCmd (const char *command_name) :
     Command (command_name),
@@ -1796,7 +1796,7 @@ public:
     for (int i = 0; i < POPULATION_SIZE; i++)
       population.push_back (chunk_set);
 
-    for (guint64 giteration = 0; giteration < gal_iterations; giteration++)
+    for (uint64 giteration = 0; giteration < gal_iterations; giteration++)
       {
 	/*
 	 * the upper half of the individuums are "loosers", and are replaced by
