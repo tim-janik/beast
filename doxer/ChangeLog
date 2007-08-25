@@ -1,3 +1,7 @@
+Sat Aug 25 03:36:42 2007  Tim Janik  <timj@gtk.org>
+
+	* DoxiParser.py (doxer_setget): reap child process, fixed stripping.
+
 Sat Aug 25 03:16:48 2007  Tim Janik  <timj@gtk.org>
 
 	* fixed $Date parsing, allow to extract dates from git.

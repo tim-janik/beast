@@ -369,8 +369,10 @@ def doxer_setget (macro, env_variables = None):
         sfile = env_variables['source-file']    # absolute
         sfile = os.path.split (sfile)           # (dir, file)
         p1 = subprocess.Popen (['git-log', '-n1', '--pretty=format:%aD', sfile[1]], stdout = subprocess.PIPE, cwd = sfile[0])
-        val_unstripped = p1.stdout.readline().strip()
+        val_unstripped = p1.stdout.readline()
         val = val_unstripped.strip()
+        p1.stdout.close()
+        p1.wait()                               # reap git-log
     if macro.name == 'doxer_add':
       head = env_variables.get (name)
       env_variables[name] = (head and head or ()) + (val,)
