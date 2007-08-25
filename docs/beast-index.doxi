@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,parse_date} $Date: 2006/07/09 12:58:38 $
+@doxer_set{rvstamp,git_author_date,parse_date} $Date$
 @include "docframe.doxi"
 @doxer_set{title}       BEAST/BSE - Documentation Index
 

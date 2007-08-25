@@ -1,3 +1,7 @@
+Sat Aug 25 03:18:50 2007  Tim Janik  <timj@gtk.org>
+
+	* fixed $Date parsing, allow to extract dates from git.
+
 Fri Aug 24 20:04:12 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Replaced guint64 variables by uint64
