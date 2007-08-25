@@ -1,3 +1,7 @@
+Sat Aug 25 03:16:48 2007  Tim Janik  <timj@gtk.org>
+
+	* fixed $Date parsing, allow to extract dates from git.
+
 Sat Aug 25 02:53:19 2007  Tim Janik  <timj@gtk.org>
 
 	* DoxiParser.py: support git_author_date flag in doxer_setget(),
