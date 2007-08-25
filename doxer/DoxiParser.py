@@ -97,6 +97,7 @@ class MacroError (ParseError):
     ParseError.__init__ (self, macro.fname, macro.fline, msg)
 
 # --- simple date parsing and formatting ---
+rfc2822_months = ( 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' )
 def datetime_parse (string, fname = '?', fline = 0):
   if re.match (r'^\D*\d{4}[-/]\d{1,2}[-/]\d{1,2}\D+\d+:\d+:\d+(\D\d*)*$', string): # "2005/09/16 19:28:29", "2005-09-16T19:28:29.215369"
     numstrings = re.findall (r'\d+', string)
@@ -106,15 +107,23 @@ def datetime_parse (string, fname = '?', fline = 0):
     numstrings = re.findall (r'\d+', string)
     nums = [int (n) for n in numstrings]
     return datetime.datetime (year = nums[3], month = nums[4], day = nums[5], hour = nums[0], minute = nums[1], second = nums[2])
+  mpat = '|'.join (rfc2822_months)
+  mo = re.match (r'^\D*(\d+)\s+(' + mpat + r')\s+(\d+)\s+(\d+):(\d+):(\d+)\s+(?:([+-])(\d\d)(\d\d))?$', string) # "Sat, 13 Jan 2007 19:16:08 +0200"
+  if mo: # rfc2822 date
+    g = list (mo.groups())
+    g[1] = 1 + list (rfc2822_months).index (g[1])
+    g[6] = g[6] == '-' and -1 or +1     # tz sign
+    g[7] = g[7] or 0                    # default tz hours
+    g[8] = g[8] or 0                    # default tz minutes
+    g = [int (n) for n in g]
+    tzd = datetime.timedelta (hours = g[7], minutes = g[8]) * g[6]
+    return datetime.datetime (year = g[2], month = g[1], day = g[0], hour = g[3], minute = g[4], second = g[5]) - tzd
   raise ParseError (fname, fline, "Failed to parse date: %s" % string)
 
 def datetime_format (datetime_obj):
   # Sun Jul 31 13:35:47 2005
-  day = ( 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' )
   day = ( 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' )
-  month = ( 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' )
-  month = ( 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' )
-  string = day[datetime_obj.weekday()] + ' ' + month[datetime_obj.month - 1] + ' '
+  string = day[datetime_obj.weekday()] + ' ' + rfc2822_months[datetime_obj.month - 1] + ' '
   return string + datetime_obj.strftime ("%02d %02H:%02M:%02S %04Y")
   return datetime_obj.strftime ("%04Y-%02m-%02d %02H:%02M:%02S")
 
@@ -355,6 +364,13 @@ def doxer_setget (macro, env_variables = None):
         val = datetime_format (date)
       elif flags.find ('unstripped') >= 0:
         val = val_unstripped
+      elif flags.find ('git_author_date') >= 0:
+        import os, subprocess
+        sfile = env_variables['source-file']    # absolute
+        sfile = os.path.split (sfile)           # (dir, file)
+        p1 = subprocess.Popen (['git-log', '-n1', '--pretty=format:%aD', sfile[1]], stdout = subprocess.PIPE, cwd = sfile[0])
+        val_unstripped = p1.stdout.readline().strip()
+        val = val_unstripped.strip()
     if macro.name == 'doxer_add':
       head = env_variables.get (name)
       env_variables[name] = (head and head or ()) + (val,)

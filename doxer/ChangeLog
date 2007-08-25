@@ -1,3 +1,9 @@
+Sat Aug 25 02:53:19 2007  Tim Janik  <timj@gtk.org>
+
+	* DoxiParser.py: support git_author_date flag in doxer_setget(),
+	which tries to set the value from git history.
+	extended datetime_parse() to parse rfc2822 dates.
+
 Fri Jan  5 00:54:29 2007  Tim Janik  <timj@gtk.org>
 
 	* qxmlparser.py (DoxygenXMLParser.parse_field): ignore
@@ -5,7 +11,7 @@ Fri Jan  5 00:54:29 2007  Tim Janik  <timj@gtk.org>
 
 Mon Oct 23 01:07:55 2006  Tim Janik  <timj@gtk.org>
 
-	* Code2Doxi.py: escape commas in urls. 
+	* Code2Doxi.py: escape commas in urls.
 
 Sun Oct  1 13:09:24 2006  Tim Janik  <timj@gtk.org>
 
@@ -14,7 +20,7 @@ Sun Oct  1 13:09:24 2006  Tim Janik  <timj@gtk.org>
 	contain methods and a list of derived types.
 
 	* Code2Doxi.py: write methods out with structures.
-	
+
 	* HtmlGenerator.py: fixed parameter/flush_parameters to work at any
 	nested level within a section. fixed endless recursion bug in case
 	elements nested in parameter descriptions call flush_parameters.
@@ -44,7 +50,7 @@ Thu Mar 23 01:56:30 2006  Tim Janik  <timj@gtk.org>
 	* DoxiParser.py: flag nestable macros appropriately.
 	plain_text_from_token_list(): simple function to convert tokens back to text.
 	parsable_text_from_token_list(): convert tokens back to Doxer source.
-	internal_text_from_token_list(): refactored version of the former 
+	internal_text_from_token_list(): refactored version of the former
 	text_from_token_list() function. fixed '@'-escaping within quotes of QUOTABLE
 	macro arguments. (rare but significant special case)
 	parse_stream(): argument fixups.
@@ -52,7 +58,7 @@ Thu Mar 23 01:56:30 2006  Tim Janik  <timj@gtk.org>
 
 	* HtmlGenerator.py: support strikethrough, subscript, superscript.
 
-	* Data.py: added NESTING flag. 
+	* Data.py: added NESTING flag.
 
 	* docu-main.doxi: extended the documentation somewhat.
 
