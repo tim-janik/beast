@@ -1,3 +1,7 @@
+2007-09-08 04:00:42  Tim Janik  <timj@gtk.org>
+
+	* DoxiParser.py (doxer_setget): catch missing git-log or git repo.
+
 Sat Aug 25 03:36:42 2007  Tim Janik  <timj@gtk.org>
 
 	* DoxiParser.py (doxer_setget): reap child process, fixed stripping.
