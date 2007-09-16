@@ -134,9 +134,13 @@ class SrcFile (Documentable):
     self.members = []
     self.html_file = None
     self.doxi_file = None
-  def add_member (self, mem):
-    assert mem.set_location and mem.loc_file != None # check for proper Documentable
-    self.members += [ mem ]
+    self.member_cache = {}
+  def add_member (self, memb):
+    assert memb.set_location and memb.loc_file != None # check for proper Documentable
+    ident = ("%s:%d:" % memb.location()) + memb.name
+    if not ident in self.member_cache: # ignore dups, needed for doxgen-1.5.1
+      self.members += [ memb ]
+      self.member_cache[ident] = memb
   def list_members (self, classinfo = None):
     r = []
     for m in self.members:

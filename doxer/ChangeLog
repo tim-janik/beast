@@ -1,3 +1,8 @@
+2007-09-16 22:20:15  Tim Janik  <timj@gtk.org>
+
+	* Data.py (SrcFile.add_member): protect against duplicate member
+	additions, this works around a doxygen-1.5.1 bug.
+
 2007-09-08 04:00:42  Tim Janik  <timj@gtk.org>
 
 	* DoxiParser.py (doxer_setget): catch missing git-log or git repo.
