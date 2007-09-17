@@ -1,3 +1,9 @@
+Tue Sep 18 00:02:32 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/scripts/mixer-splitup-by-track.scm: Display error message in
+	the case that somebody tries to run the script while the project is
+	playing (instead of messing up things silently).
+
 Sat Aug 25 03:18:50 2007  Tim Janik  <timj@gtk.org>
 
 	* fixed $Date parsing, allow to extract dates from git.

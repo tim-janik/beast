@@ -55,6 +55,8 @@
 (define (mixer-splitup-by-track song)
   (if (not (bse-is-song song))
       (bse-exit-error 'text1 (_ "No valid song supplied")))
+  (if (bse-project-is-playing (bse-item-get-project song))
+      (bse-exit-error 'text1 (_ "This script cannot be used while the project is playing")))
   (bse-item-group-undo song "mixer-splitup-by-track")
   (for-each (lambda (track)
               (if
