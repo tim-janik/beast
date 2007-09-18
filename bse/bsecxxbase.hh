@@ -71,9 +71,9 @@ public:
   void            notify            (const gchar   *property);
   void            thaw_notify       ();
   void            set               (const gchar   *first_property_name,
-                                     ...);
+                                     ...) G_GNUC_NULL_TERMINATED;
   void            get               (const gchar   *first_property_name,
-                                     ...);
+                                     ...) G_GNUC_NULL_TERMINATED;
   void            set_property      (guint          prop_id,
                                      const Value   &value,
                                      GParamSpec    *pspec);

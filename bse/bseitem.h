@@ -142,7 +142,7 @@ void          bse_item_set_valist_undoable   (gpointer         object,
                                               va_list          var_args);
 void          bse_item_set_undoable          (gpointer        object,
                                               const gchar    *first_property_name,
-                                              ...);
+                                              ...) G_GNUC_NULL_TERMINATED;
 void          bse_item_set_property_undoable (BseItem         *self,
                                               const gchar     *name,
                                               const GValue    *value);

@@ -1,3 +1,10 @@
+2007-09-18 02:25:33  Tim Janik  <timj@gtk.org>
+
+	* bse/bsecxxbase.hh:
+	* bse/bseengine.h:
+	* bse/bseitem.h: added G_GNUC_NULL_TERMINATED to function ellipsis,
+	patch by Stefan Westerfeld from bug #344388.
+
 2007-09-18 02:01:08  Tim Janik  <timj@gtk.org>
 
 	* bseproject.[hc]: removed bogus function decl.

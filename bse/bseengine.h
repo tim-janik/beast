@@ -185,7 +185,7 @@ void       bse_trans_commit_delayed     (BseTrans             *trans,
                                          guint64               tick_stamp);
 void       bse_trans_dismiss            (BseTrans             *trans);
 void       bse_transact                 (BseJob               *job,
-                                         ...);
+                                         ...) G_GNUC_NULL_TERMINATED;
 
 /* --- module utilities (EngineThread functions) --- */
 gfloat*    bse_engine_const_values      (gfloat                value);
