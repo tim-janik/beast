@@ -1,3 +1,8 @@
+2007-09-18 01:30:51  Tim Janik  <timj@gtk.org>
+
+	* bseproject.proc:
+	* bsemidifile.c: removed/disabled debugging printouts.
+
 Fri Sep  7 22:46:20 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsemidifile.c: Assign newly created tracks to the master bus. Fixes

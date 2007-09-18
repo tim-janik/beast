@@ -205,7 +205,7 @@ bse_midi_file_load (const gchar  *file_name,
           smf->tracks[i].events = g_renew (BseMidiEvent*, smf->tracks[i].events, smf->tracks[i].n_events);
           smf->tracks[i].events[n] = sfi_ring_pop_head (&events);
         }
-      g_printerr ("track%u: n_events=%u\n", i, smf->tracks[i].n_events);
+      // g_printerr ("track%u: n_events=%u\n", i, smf->tracks[i].n_events);
       bse_midi_decoder_destroy (md);
       if (*error_p)
         {
@@ -358,9 +358,9 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
           bse_assert_ok (error);
           bse_item_set_undoable (track, "n-voices", 24, NULL);
           bse_item_exec (song, "create-part", &part);
-          g_printerr ("part1: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
+          // g_printerr ("part1: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
           bse_item_exec_void (track, "insert-part", 0, part);
-          g_printerr ("part2: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
+          // g_printerr ("part2: %p %s\n", part, G_OBJECT_TYPE_NAME (part));
           bse_midi_file_add_part_events (smf, i, part, track);
         }
     }

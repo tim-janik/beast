@@ -144,8 +144,7 @@ METHOD (BseProject, import-midi-file, "File/Import MIDI") {
     }
   if (smf)
     bse_midi_file_free (smf);
-  g_printerr ("error: %u\n", error);
-  
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
