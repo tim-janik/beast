@@ -10,7 +10,6 @@
 - change midi events to either list note + fine_tune instead of frequency, or at least preserve notes
 - reconsider musical tuning for midi devices and midi files
 - implement include path handling for bsewave files to fix slowtests/audio/Makefile.am:minisong-test
-- tracks should be default-connected after midi import
 NEXT-RELEASE:
 - sample technics drum kits for reference
 - use sweep for resampler test
