@@ -260,7 +260,7 @@ void         gxk_widget_activate_accel_group      (GtkWidget        *widget,
                                                    GtkAccelGroup    *accel_group);
 void         gxk_size_group                       (GtkSizeGroupMode  sgmode,
                                                    gpointer          first_widget,
-                                                   ...);
+                                                   ...) G_GNUC_NULL_TERMINATED;
 
 /* tree view convenience */
 gint	           gxk_tree_spath_index0		(const gchar		*strpath);
@@ -273,7 +273,7 @@ guint	           gxk_tree_view_add_column		(GtkTreeView		*tree_view,
                                                          GtkTreeViewColumn	*column,
                                                          GtkCellRenderer	*cell,
                                                          const gchar		*attrib_name,
-                                                         ...);
+                                                         ...) G_GNUC_NULL_TERMINATED;
 void               gxk_tree_view_append_text_columns    (GtkTreeView		*tree_view,
                                                          guint			 n_cols,
                                                          ...);

@@ -41,13 +41,13 @@ GtkWidget*     bst_container_get_named_child  (GtkWidget       *container,
 GtkWidget*     bst_xpm_view_create            (const gchar    **xpm,
                                                GtkWidget       *colormap_widget);
 GtkWidget*     bst_vpack                      (const gchar     *first_location,
-                                               ...);
+                                               ...) G_GNUC_NULL_TERMINATED;
 GtkWidget*     bst_hpack                      (const gchar     *first_location,
-                                               ...);
+                                               ...) G_GNUC_NULL_TERMINATED;
 GtkWidget*     bst_vpack0                     (const gchar     *first_location,
-                                               ...);
+                                               ...) G_GNUC_NULL_TERMINATED;
 GtkWidget*     bst_hpack0                     (const gchar     *first_location,
-                                               ...);
+                                               ...) G_GNUC_NULL_TERMINATED;
 void           bst_action_list_add_cat        (GxkActionList   *alist,
                                                BseCategory     *cat,
                                                guint            skip_levels,

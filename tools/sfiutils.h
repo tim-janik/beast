@@ -95,7 +95,7 @@ gboolean    sfi_arguments_read_num	(const gchar   **option,
 					 gdouble	*num);
 guint	    sfi_arguments_read_all_nums	(const gchar    *option,
 					 gdouble	*first,
-					 ...);
+					 ...) G_GNUC_NULL_TERMINATED;
 
 G_END_DECLS
 

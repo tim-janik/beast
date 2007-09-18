@@ -73,13 +73,13 @@ gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
 BstProcedureShell* bst_procedure_shell_global	(void);
 void		   bst_procedure_exec		(const gchar	*procedure_name,
 						 const gchar	*preset_param,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 void		   bst_procedure_exec_auto	(const gchar    *procedure_name,
 						 const gchar	*preset_param,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 void		   bst_procedure_exec_modal	(const gchar    *procedure_name,
 						 const gchar	*preset_param,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 GParamSpec*        bst_procedure_ref_pspec      (const gchar    *procedure_name,
                                                  const gchar    *parameter);
 

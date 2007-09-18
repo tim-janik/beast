@@ -1,3 +1,12 @@
+2007-09-18 02:27:58  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmenus.h:
+	* beast-gtk/bstprocedure.h:
+	* beast-gtk/bstutils.h:
+	* beast-gtk/gxk/gxkutils.h:
+	* tools/sfiutils.h: added G_GNUC_NULL_TERMINATED to function ellipsis,
+	patch by Stefan Westerfeld from bug #344388.
+
 2007-09-18 00:53:28  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/kf-synth-string-sweep.bse: added small comment.

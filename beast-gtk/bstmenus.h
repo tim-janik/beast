@@ -35,7 +35,7 @@ void bst_choice_menu_set_item_sensitive	  (GtkWidget		  *menu,
 					   gulong		   id,
 					   gboolean		   sensitive);
 GtkWidget* bst_choice_dialog_createv      (BstChoice              *first_choice,
-					   ...);
+					   ...) G_GNUC_NULL_TERMINATED;
 gboolean   bst_choice_selectable          (GtkWidget              *widget);
 guint      bst_choice_modal               (GtkWidget              *widget,
 					   guint                   mouse_button,
