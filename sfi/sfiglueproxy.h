@@ -39,10 +39,10 @@ gboolean	sfi_glue_proxy_is_a		(SfiProxy	 proxy,
 						 const gchar	*type);
 void		sfi_glue_proxy_connect		(SfiProxy	 proxy,
 						 const gchar	*signal,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 void		sfi_glue_proxy_disconnect	(SfiProxy	 proxy,
 						 const gchar	*signal,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 gboolean	sfi_glue_proxy_pending		(SfiProxy	 proxy,
 						 const gchar	*signal,
 						 GCallback	 callback,
@@ -63,10 +63,10 @@ void		sfi_glue_proxy_weak_unref	(SfiProxy	 proxy,
 						 gpointer	 data);
 void		sfi_glue_proxy_set		(SfiProxy	 proxy,
 						 const gchar	*prop,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 void		sfi_glue_proxy_get		(SfiProxy	 proxy,
 						 const gchar	*prop,
-						 ...);
+						 ...) G_GNUC_NULL_TERMINATED;
 void		sfi_glue_proxy_set_property	(SfiProxy	 proxy,
 						 const gchar	*prop,
 						 const GValue	*value);

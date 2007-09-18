@@ -88,19 +88,19 @@ const gchar*    g_intern_static_string  (const gchar   *string);
 #endif
 
 const gchar*    g_intern_strconcat      (const gchar   *first_string,
-                                         ...);
+                                         ...) G_GNUC_NULL_TERMINATED;
 const gchar*    g_intern_printf         (const gchar   *format,
                                          ...) G_GNUC_PRINTF (1,2);
 
 gchar*          g_path_concat     (const gchar   *first_path,
-                                   ...);
+                                   ...) G_GNUC_NULL_TERMINATED;
 GString*        g_string_prefix_lines (GString     *gstring,
                                        const gchar *pstr);
 
 
 /* --- string options --- */
 gchar*          g_option_concat   (const gchar   *first_option,
-                                   ...);
+                                   ...) G_GNUC_NULL_TERMINATED;
 gboolean        g_option_check    (const gchar   *option_string,
                                    const gchar   *option);
 gchar*          g_option_get      (const gchar   *option_string,
