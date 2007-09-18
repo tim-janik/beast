@@ -1,3 +1,7 @@
+2007-09-18 00:53:28  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/kf-synth-string-sweep.bse: added small comment.
+
 2007-09-18 00:38:43  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/kf-synth-string-sweep.bse: added synth string

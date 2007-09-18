@@ -3,10 +3,11 @@
 (bse-version "0.7.1")
 
 (container-child "BseCSynth::KF Synth String Sweep"
-  (modification-time "2007-09-17 22:12:46")
+  (modification-time "2007-09-17 22:40:54")
   (creation-time "2007-09-17 21:40:07")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Krzysztof Foltman")
+  (blurb "Soft and wide string sweep")
   (container-child "BseSimpleADSR::SimpleADSR-1"
     (time-range bse-time-range-medium)
     (release-time 12.5)
