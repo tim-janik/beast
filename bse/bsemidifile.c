@@ -333,6 +333,7 @@ void
 bse_midi_file_setup_song (BseMidiFile    *smf,
                           BseSong        *song)
 {
+  BseBus *master_bus;
   guint i, j;
   bse_item_set_undoable (song,
                          "tpqn", smf->tpqn,
@@ -340,6 +341,7 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
                          "denominator", smf->denominator,
                          "bpm", smf->bpm,
                          NULL);
+  bse_item_exec (song, "ensure-master-bus", &master_bus);
   for (i = 0; i < smf->n_tracks; i++)
     {
       BseMidiFileTrack *track = smf->tracks + i;
@@ -350,7 +352,10 @@ bse_midi_file_setup_song (BseMidiFile    *smf,
         {
           BseTrack *track;
           BsePart *part;
+          BseErrorType error;
           bse_item_exec (song, "create-track", &track);
+          bse_item_exec (track, "ensure-output", &error);
+          bse_assert_ok (error);
           bse_item_set_undoable (track, "n-voices", 24, NULL);
           bse_item_exec (song, "create-part", &part);
           g_printerr ("part1: %p %s\n", part, G_OBJECT_TYPE_NAME (part));

@@ -1,3 +1,8 @@
+Fri Sep  7 22:46:20 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsemidifile.c: Assign newly created tracks to the master bus. Fixes
+	#441936.
+
 Sat Aug 18 00:15:22 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecore.idl: Include ~/beast/plugins in the default plugin search
