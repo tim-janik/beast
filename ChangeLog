@@ -1,3 +1,7 @@
+2007-09-18 02:50:22  Tim Janik  <timj@gtk.org>
+
+	* updated version to 0.7.2-rc1, interface age 0, binary age 0.
+
 2007-09-18 02:27:58  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmenus.h:
