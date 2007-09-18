@@ -134,10 +134,13 @@ METHOD (BseProject, import-midi-file, "File/Import MIDI") {
   if (!error)
     {
       BseUndoStack *ustack = bse_item_undo_open (project, "import-midi-file");
-      gchar *basename = g_path_get_basename (file_name);
-      BseSong *song;
-      bse_item_exec (project, "create-song", basename, &song);
-      g_free (basename);
+      BseSong *song = bse_project_get_song (project);
+      if (!song)
+	{
+	  gchar *basename = g_path_get_basename (file_name);
+	  bse_item_exec (project, "create-song", basename, &song);
+	  g_free (basename);
+	}
       bse_midi_file_setup_song (smf, song);
       bse_item_undo_close (ustack);
       bse_project_clear_undo (project); // FIXME: why can't we undo MIDI imports?

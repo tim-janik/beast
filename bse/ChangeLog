@@ -1,3 +1,12 @@
+2007-09-18 02:01:08  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hc]: removed bogus function decl.
+	bse_project_get_song(): new function to retrieve the first song of
+	a project if any. at some point this should become the sole song.
+
+	* bseproject.proc: reuse an existing song if possible when importing
+	MIDI files, effectively merging the import into the existing song.
+
 2007-09-18 01:30:51  Tim Janik  <timj@gtk.org>
 
 	* bseproject.proc:

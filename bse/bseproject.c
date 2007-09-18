@@ -649,12 +649,21 @@ bse_project_lookup_typed_item (BseProject  *self,
 BseWaveRepo*
 bse_project_get_wave_repo (BseProject *self)
 {
-  GSList *slist;
-
   g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
-
+  GSList *slist;
   for (slist = self->supers; slist; slist = slist->next)
     if (BSE_IS_WAVE_REPO (slist->data))
+      return slist->data;
+  return NULL;
+}
+
+BseSong*
+bse_project_get_song (BseProject *self)
+{
+  g_return_val_if_fail (BSE_IS_PROJECT (self), NULL);
+  GSList *slist;
+  for (slist = self->supers; slist; slist = slist->next)
+    if (BSE_IS_SONG (slist->data))
       return slist->data;
   return NULL;
 }

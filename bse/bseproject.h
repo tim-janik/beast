@@ -76,8 +76,6 @@ void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
 BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
-BseItem*	bse_project_item_from_upath	(BseProject	*project,
-						 const gchar	*uname_path);
 BseErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 BseErrorType	bse_project_store_bse		(BseProject	*project,
@@ -92,6 +90,7 @@ BseItem*	bse_project_lookup_typed_item	(BseProject	*project,
 						 GType		 item_type,
 						 const gchar	*uname);
 BseWaveRepo*	bse_project_get_wave_repo	(BseProject	*project);
+BseSong*	bse_project_get_song    	(BseProject	*project);
 gpointer	bse_project_create_intern_synth	(BseProject	*project,
 						 const gchar	*synth_name,
 						 GType           check_type);
