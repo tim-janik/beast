@@ -18,7 +18,6 @@ NEXT-RELEASE:
 - beast replays samples at 50% volume if std amp/adsr is used: probably bug
 - DavOrgan bug: make testcase            (C++ify before)
 - DavOrgan bug: is blocksize dependant   (C++ify before)
-- add normalize to bsewavetool
 - GslLong -> int64 
 - wave-tool:
   * bit-width conversion float<->16 (optional saturation)
