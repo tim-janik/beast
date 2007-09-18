@@ -1,3 +1,8 @@
+2007-09-18 00:38:43  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/kf-synth-string-sweep.bse: added synth string
+	instrument by Krzysztof Foltman.
+
 Tue Sep 18 00:02:32 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/scripts/mixer-splitup-by-track.scm: Display error message in
