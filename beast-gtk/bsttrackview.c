@@ -127,44 +127,41 @@ track_view_fill_value (BstItemView *iview,
 {
   BstTrackView *self = BST_TRACK_VIEW (iview);
   guint seqid = row + 1;
+  SfiProxy item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
+  if (!item)
+    return; // item is probably already destructed
   switch (column)
     {
       const gchar *string;
       gboolean vbool;
       SfiInt vint;
-      SfiProxy item, snet, wave;
+      SfiProxy snet, wave;
       BseItemSeq *iseq;
       SfiSeq *seq;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_printf ("%03d", seqid));
       break;
     case COL_NAME:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       g_value_set_string (value, bse_item_get_name (item));
       break;
     case COL_MUTE:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       bse_proxy_get (item, "muted", &vbool, NULL);
       g_value_set_boolean (value, !vbool);
       break;
     case COL_VOICES:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       bse_proxy_get (item, "n_voices", &vint, NULL);
       sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
       break;
     case COL_SYNTH:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       snet = 0;
       bse_proxy_get (item, "snet", &snet, "wave", &wave, NULL);
       g_value_set_string (value, snet || wave ? bse_item_get_name (snet ? snet : wave) : "");
       break;
     case COL_MIDI_CHANNEL:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       bse_proxy_get (item, "midi-channel", &vint, NULL);
       sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
       break;
     case COL_OUTPUTS:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       bse_proxy_get (item, "outputs", &seq, NULL);
       iseq = bse_item_seq_from_seq (seq);
       if (iseq && iseq->n_items == 1)
@@ -176,13 +173,11 @@ track_view_fill_value (BstItemView *iview,
       bse_item_seq_free (iseq);
       break;
     case COL_POST_SYNTH:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       snet = 0;
       bse_proxy_get (item, "pnet", &snet, NULL);
       g_value_set_string (value, snet ? bse_item_get_name (snet) : "");
       break;
     case COL_BLURB:
-      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       bse_proxy_get (item, "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;

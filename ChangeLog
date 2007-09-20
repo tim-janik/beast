@@ -1,3 +1,8 @@
+2007-09-20 22:59:29  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c (track_view_fill_value): guard against
+	non-existing items when querying object properties, fixes bug #451086.
+
 2007-09-20 18:33:33  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am (dist-hook): fix po/POTFILES.in to exclude non-distributed po files.
