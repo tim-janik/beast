@@ -1,3 +1,8 @@
+Thu Sep 20 16:51:30 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in: Tell configure not to search parent directories for
+	possible other configure files - this fixes make distcheck.
+
 2007-09-18 02:50:53  Tim Janik  <timj@gtk.org>
 
 	* updated version to 0.7.2, interface age 0, binary age 0.

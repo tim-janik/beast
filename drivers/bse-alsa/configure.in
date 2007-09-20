@@ -8,6 +8,7 @@ builtin(include, acbeast.m4)dnl
 #
 AC_INIT
 AC_CONFIG_SRCDIR([bsepcmdevice-alsa.c])
+AC_CONFIG_AUX_DIR(.)
 AM_CONFIG_HEADER(configure.h)
 AC_PREREQ(2.57)
 
