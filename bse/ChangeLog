@@ -1,3 +1,14 @@
+2007-09-20 20:41:30  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c:
+	* bsestorage.c:
+	* bseobject.h, bseobject.c: pass BseStorage version information on in
+	restore_finish() methods.
+
+	* bsecxxbase.hh, bsecxxbase.cc: introduced restore_finished() virtual
+	method, so C++ modules can execute version specific compat code after
+	after it has been restored from serialized object state.
+
 2007-09-18 02:25:33  Tim Janik  <timj@gtk.org>
 
 	* bse/bsecxxbase.hh:

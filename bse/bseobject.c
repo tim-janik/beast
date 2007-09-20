@@ -634,16 +634,22 @@ object_restore_private (BseObject      *object,
 }
 
 static void
-object_restore_finish (BseObject      *object)
+object_restore_finish (BseObject      *object,
+                       guint           vmajor,
+                       guint           vminor,
+                       guint           vmicro)
 {
 }
 
 void
-bse_object_restore_finish (BseObject *object)
+bse_object_restore_finish (BseObject *object,
+                           guint      vmajor,
+                           guint      vminor,
+                           guint      vmicro)
 {
   if (BSE_OBJECT_IN_RESTORE (object))
     {
-      BSE_OBJECT_GET_CLASS (object)->restore_finish (object);
+      BSE_OBJECT_GET_CLASS (object)->restore_finish (object, vmajor, vminor, vmicro);
       BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_RESTORE);
     }
 }

@@ -806,14 +806,17 @@ bus_restore_private (BseObject  *object,
 }
 
 static void
-bus_restore_finish (BseObject *object)
+bus_restore_finish (BseObject *object,
+                    guint      vmajor,
+                    guint      vminor,
+                    guint      vmicro)
 {
   BseBus *self = BSE_BUS (object);
   /* restore real sync setting */
   g_object_set (self, /* no undo */
                 "sync", self->saved_sync,
                 NULL);
-  BSE_OBJECT_CLASS (bus_parent_class)->restore_finish (object);
+  BSE_OBJECT_CLASS (bus_parent_class)->restore_finish (object, vmajor, vminor, vmicro);
 }
 
 static void

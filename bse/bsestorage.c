@@ -407,9 +407,9 @@ static gboolean
 storage_restorable_objects_foreach (gpointer        data,
                                     gpointer        pointer)
 {
-  // BseStorage *self = BSE_STORAGE (data);
+  BseStorage *self = BSE_STORAGE (data);
   BseObject *object = BSE_OBJECT (pointer);
-  bse_object_restore_finish (object);
+  bse_object_restore_finish (object, self->major_version, self->minor_version, self->micro_version);
   return TRUE;
 }
 

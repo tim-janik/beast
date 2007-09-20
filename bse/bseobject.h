@@ -87,7 +87,10 @@ struct _BseObjectClass
   SfiTokenType		(*restore_private)	(BseObject	*object,
 						 BseStorage	*storage,
                                                  GScanner       *scanner);
-  void                  (*restore_finish)       (BseObject      *object);
+  void                  (*restore_finish)       (BseObject      *object,
+                                                 guint            vmajor,
+                                                 guint            vminor,
+                                                 guint            vmicro);
   void			(*unlocked)		(BseObject	*object);
   BseIcon*		(*get_icon)		(BseObject	*object);
 };
@@ -134,7 +137,10 @@ const gchar*	bse_object_debug_name		(gpointer	 object);
 gchar*	        bse_object_strdup_debug_handle 	(gpointer	 object);
 void            bse_object_restore_start        (BseObject      *object,
                                                  BseStorage     *storage);
-void            bse_object_restore_finish       (BseObject      *object);
+void            bse_object_restore_finish       (BseObject      *object,
+                                                 guint            vmajor,
+                                                 guint            vminor,
+                                                 guint            vmicro);
 void		bse_object_reemit_signal	(gpointer	 src_object,
 						 const gchar	*src_signal,
 						 gpointer	 dest_obejct,

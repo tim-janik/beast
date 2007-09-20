@@ -97,6 +97,9 @@ public:
   virtual void    compat_setup      (guint          vmajor,
                                      guint          vminor,
                                      guint          vmicro);
+  virtual void    restore_finished  (guint          vmajor,
+                                     guint          vminor,
+                                     guint          vmicro);
   virtual         ~CxxBase          ();
 
   static void     class_init        (CxxBaseClass *klass);

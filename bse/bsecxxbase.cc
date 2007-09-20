@@ -36,6 +36,21 @@ bse_cxx_base_compat_setup (BseItem         *item,
 }
 
 static void
+bse_cxx_base_restore_finish (BseObject *object,
+                             guint      vmajor,
+                             guint      vminor,
+                             guint      vmicro)
+{
+  CxxBase *self = cast (object);
+
+  // chain parent class' handler
+  BSE_OBJECT_CLASS (bse_cxx_base_parent_class)->restore_finish (object, vmajor, vminor, vmicro);
+
+  // notify C++ modules about finished restoration
+  self->restore_finished (vmajor, vminor, vmicro);
+}
+
+static void
 bse_cxx_base_instance_finalize (GObject *object)
 {
   CxxBase *self = cast (object);
@@ -49,44 +64,49 @@ bse_cxx_base_instance_finalize (GObject *object)
 static void
 bse_cxx_base_class_base_init (gpointer g_class)
 {
-  // FIXME: GObjectClass *object_class = G_OBJECT_CLASS (g_class);
+  // GObjectClass *object_class = G_OBJECT_CLASS (g_class);
 }
 
 void
 CxxBase::class_init (CxxBaseClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  BseObjectClass *bse_object_class = BSE_OBJECT_CLASS (klass);
   BseItemClass *item_class = BSE_ITEM_CLASS (klass);
+
   bse_cxx_base_parent_class = g_type_class_peek_parent (object_class);
   object_class->finalize = bse_cxx_base_instance_finalize;
+  bse_object_class->restore_finish = bse_cxx_base_restore_finish;
   item_class->compat_setup = bse_cxx_base_compat_setup;
 }
 
 /*Con*/
 CxxBase::CxxBase()
-{
-}
+{}
 
 void
 CxxBase::set_property (guint        prop_id,
                        const Value &value,
                        GParamSpec  *pspec)
-{
-}
+{}
 
 void
 CxxBase::get_property (guint       prop_id,
                        Value      &value,
                        GParamSpec *pspec)
-{
-}
+{}
 
 void
 CxxBase::compat_setup (guint          vmajor,
                        guint          vminor,
                        guint          vmicro)
-{
-}
+{}
+
+void
+CxxBase::restore_finished (guint          vmajor,
+                           guint          vminor,
+                           guint          vmicro)
+{}
 
 gulong
 CxxBase::connect (const gchar   *signal,
