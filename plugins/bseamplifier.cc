@@ -38,7 +38,10 @@ class Amplifier : public AmplifierBase {
       cl2 = params->clevel2 * 0.01;
       ctrl_mul = params->ctrl_mul;
       ctrl_exp = params->ctrl_exp;
-      ocs = params->ostrength * 0.5 * 0.01;
+      if (ctrl_mul)
+        ocs = params->ostrength * 0.01;
+      else
+        ocs = params->ostrength * 0.5 * 0.01;
       bl = params->base_level * 0.01;
       double master = params->master_volume;
       al1 *= master;
@@ -235,6 +238,15 @@ protected:
            "audio_gain_f", 0.5,
            "ctrl_mul", FALSE,
            NULL);
+  }
+  void
+  restore_finished (guint          vmajor,
+                    guint          vminor,
+                    guint          vmicro)
+  {
+    if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 7, 1) <= 0)
+      if (ctrl_mul)
+        set ("ostrength", ostrength * 0.5, NULL);
   }
 public:
   /* implement creation and config methods for synthesis Module */
