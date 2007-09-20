@@ -1,3 +1,9 @@
+Thu Sep 20 23:30:35 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/instruments/Makefile.am:
+	* library/instruments/kf-growl-bass.bse: Added KF Growl Bass
+	instrument by Krzysztof Foltman.
+
 2007-09-20 22:59:29  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.c (track_view_fill_value): guard against
