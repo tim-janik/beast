@@ -25,8 +25,6 @@ class Amplifier : public AmplifierBase {
     /* configuration: */
     double al1, al2, cl1, cl2;
     double ocs, bl;
-    double base_level;
-    double master_volume;
     bool ctrl_mul, ctrl_exp;
   public:
     void
@@ -49,8 +47,7 @@ class Amplifier : public AmplifierBase {
     }
     void
     reset ()
-    {
-    }
+    {}
     /* process() function special cases */
 #define ACASE_MASK                      (3 << 0)
     static const int ACASE_A1n_A2n     = 0 << 0;        /* !audio1 && !audio2 */
@@ -111,7 +108,7 @@ class Amplifier : public AmplifierBase {
             au_out = al1 * *au1in++;
           else if (ACASE == ACASE_A1n_A2y)
             au_out = al2 * *au2in++;
-          
+
           au_out *= cv_sum;
           *audio_out++ = au_out;
         }
@@ -145,7 +142,7 @@ class Amplifier : public AmplifierBase {
         simple_control = true;
       if (!simple_control && ctrl_exp)
         mode |= WITH_EXP_CONTROLS;
-      
+
       if (simple_control)
         switch (mode)
           {
