@@ -1,3 +1,8 @@
+Thu Sep 20 16:09:23 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am: Added a missing file to EXTRA_DIST - beasts
+	make distcheck succeeds here now (with po directory alsa patch)
+
 2007-09-18 02:50:22  Tim Janik  <timj@gtk.org>
 
 	* updated version to 0.7.2-rc1, interface age 0, binary age 0.

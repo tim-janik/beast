@@ -125,7 +125,7 @@ osctranspose2-test:
 	rm -f $(@F).tmp $(@F).wav
 
 FEATURE_TESTS += xtalstringssong-test
-EXTRA_DIST += xtalstringssong.ref
+EXTRA_DIST += xtalstringssong.bse xtalstringssong.ref
 xtalstringssong-test:
 	$(BSE2WAV) $(srcdir)/xtalstringssong.bse $(@F).wav
 	$(BSEFEXTRACT) $(@F).wav --cut-zeros --channel 0 --avg-spectrum --spectrum --avg-energy  > $(@F).tmp
