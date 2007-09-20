@@ -187,32 +187,35 @@ protected:
         notify ("clevel1");
         notify ("clevel2");
         break;
-        /* FIXME: handle compat properties */
-      case PROP_AUDIO_BALANCE:
+      case PROP_AUDIO_BALANCE:          // compat 0.5.4
         alevel1 = alevel2 = 100;
         bse_balance_set (audio_balance, &alevel1, &alevel2);
+        abalance = bse_balance_get (alevel1, alevel2);
         notify ("alevel1");
         notify ("alevel2");
+        notify ("abalance");
         break;
-      case PROP_CTRL_BALANCE:
-        alevel1 = alevel2 = 100;
-        bse_balance_set (ctrl_balance, &alevel1, &alevel2);
-        notify ("alevel1");
-        notify ("alevel2");
+      case PROP_CTRL_BALANCE:           // compat 0.5.4
+        clevel1 = clevel2 = 100;
+        bse_balance_set (ctrl_balance, &clevel1, &clevel2);
+        cbalance = bse_balance_get (clevel1, clevel2);
+        notify ("clevel1");
+        notify ("clevel2");
+        notify ("cbalance");
         break;
-      case PROP_CTRL_STRENGTH_F:
+      case PROP_CTRL_STRENGTH_F:        // compat 0.5.4
         ostrength = ctrl_strength_f * 100.0;
         notify ("ostrength");
         break;
-      case PROP_MASTER_GAIN_F:
+      case PROP_MASTER_GAIN_F:          // compat 0.5.4
         olevel = master_gain_f * 100.0;
         notify ("olevel");
         /* fall through */
-      case PROP_OLEVEL:
+      case PROP_OLEVEL:                 // compat 0.5.4
         master_volume = olevel * 0.01;
         notify ("master_volume");
         break;
-      case PROP_AUDIO_GAIN_F:
+      case PROP_AUDIO_GAIN_F:           // compat 0.5.4
         base_level = audio_gain_f * 100.0;
         notify ("base_level");
         break;

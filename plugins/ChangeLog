@@ -1,3 +1,10 @@
+2007-09-20 20:08:16  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.cc:
+	property_changed(): fixed missing property notifies and compat
+	property handling wrg to audio levels and ctrl_balance, fixes
+	bug #474332.
+
 Sun Jun 24 00:18:52 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* artscompressor.cc: Moved constants to bse/bsemath.h.
