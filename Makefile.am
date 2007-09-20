@@ -94,3 +94,7 @@ distcheck: dist
 	@(echo "$(distdir) archives ready for distribution: "; \
 	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
 	  sed -e '1{h;s/./=/g;p;x;}' -e '$${p;x;}'
+# remove non-distributed po files from distributed POTFILES.in
+dist-hook:
+	sed 's,^\(drivers/\),# \1,' < $(distdir)/po/POTFILES.in > $(distdir)/po/POTFILES.tmp
+	mv $(distdir)/po/POTFILES.tmp $(distdir)/po/POTFILES.in

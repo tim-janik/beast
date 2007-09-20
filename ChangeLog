@@ -1,7 +1,11 @@
+2007-09-20 18:33:33  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (dist-hook): fix po/POTFILES.in to exclude non-distributed po files.
+
 Thu Sep 20 16:09:23 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am: Added a missing file to EXTRA_DIST - beasts
-	make distcheck succeeds here now (with po directory alsa patch)
+	make distcheck succeeds here now (with po directory alsa patch).
 
 2007-09-18 02:50:22  Tim Janik  <timj@gtk.org>
 
