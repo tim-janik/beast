@@ -1,3 +1,19 @@
+2007-09-21 00:27:48  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/kf-synth-string-sweep.bse:
+	* library/instruments/bqs-bass-drum-e8012.bse:
+	* library/instruments/bqs-fretless-bass.bse:
+	* library/instruments/bqs-moog-saw-bass.bse:
+	* library/instruments/bqs-queek-synth.bse:
+	* library/instruments/stw-iron-string.bse:
+	* library/instruments/illus-vtremolo.bse:
+	* library/instruments/kf-growl-bass.bse:
+	* library/instruments/bqs-merp-pad.bse:
+	* library/instruments/bqs-slow-hum.bse:
+	* library/instruments/bqs-syndrum.bse:
+	* library/instruments/bqs-organ.bse:
+	* library/instruments/bqs-organ.bse: updated to BSE 0.7.2.
+
 2007-09-20 23:50:33  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstgconfig.h:

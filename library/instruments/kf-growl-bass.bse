@@ -1,13 +1,13 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.7.2")
 
 (container-child "BseCSynth::KF Growl Bass"
-  (modification-time "2007-09-18 19:27:16")
+  (modification-time "2007-09-20 22:23:39")
   (creation-time "2007-09-18 19:27:16")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
-  (blurb "Recommended for C-2 to C+4.")
   (author "Krzysztof Foltman")
+  (blurb "Recommended for C-2 to C+4.")
   (container-child "BseInstrumentInput::InstrumentInput-1"
     (pos-y 3.98)
     (pos-x -9.02))
@@ -47,7 +47,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)

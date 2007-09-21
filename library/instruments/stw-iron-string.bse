@@ -1,16 +1,16 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.7.2")
 
 (container-child "BseCSynth::STW Iron String"
-  (modification-time "2006-08-27 22:20:15")
+  (modification-time "2007-09-20 22:24:53")
   (creation-time "2003-10-04 16:36:52")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
@@ -70,7 +70,7 @@
     (source-input "audio-in1" (link 1 "SubKeyboard-1") "frequency")
     (source-input "audio-in2" (link 1 "SimpleADSR-1") "ctrl-out"))
   (container-child "BseStandardSaturator::StandardSaturator-1"
-    (output-volume 1.0606060606060606)
+    (output-volume 1.0606060606060608)
     (auto-output #t)
     (level 94.285714285714278)
     (saturation bse-standard-saturate-atan)

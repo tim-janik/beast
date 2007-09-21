@@ -1,13 +1,12 @@
 ; BseProject
 
-(bse-version "0.7.0")
+(bse-version "0.7.2")
 
 (container-child "BseCSynth::BQS Queek Synth"
-  (modification-time "2006-04-08 00:56:10")
+  (modification-time "2007-09-20 22:25:44")
   (creation-time "1990-07-20 07:09:22")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik")
-  (blurb "")
   (container-child "BseInstrumentInput::SubKeyboard-1"
     (pos-y 1)
     (pos-x -4))
@@ -64,7 +63,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 0.50118723362727224)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)

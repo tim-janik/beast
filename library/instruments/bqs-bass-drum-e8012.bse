@@ -1,9 +1,9 @@
 ; BseProject
 
-(bse-version "0.7.1")
+(bse-version "0.7.2")
 
 (container-child "BseCSynth::BQS Bass Drum E8012"
-  (modification-time "2007-02-12 00:37:55")
+  (modification-time "2007-09-20 22:24:03")
   (creation-time "2006-01-21 00:44:24")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")
   (author "Tim Janik, Stefan Westerfeld")
@@ -11,7 +11,7 @@
   (container-child "BseAmplifier::Amplifier-1"
     (master-volume 1)
     (base-level 0)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #t)
     (ctrl-mul #t)
     (clevel2 100)
@@ -69,7 +69,7 @@
   (container-child "BseAmplifier::Amplifier-2"
     (master-volume 1)
     (base-level 100)
-    (ostrength 100)
+    (ostrength 50)
     (ctrl-exp #f)
     (ctrl-mul #t)
     (clevel2 100)
