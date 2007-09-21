@@ -148,7 +148,7 @@ key_bindings_exec_action (gpointer data,
 #endif
         }
       else
-        gdk_beep();
+        bst_gui_error_bell (self);
       break;
     case ACTION_EDIT:
       tsel = gtk_tree_view_get_selection (btview);
@@ -170,7 +170,7 @@ key_bindings_exec_action (gpointer data,
           gxk_list_wrapper_notify_change (GXK_LIST_WRAPPER (model), nb);
         }
       else
-        gdk_beep();
+        bst_gui_error_bell (self);
       break;
     case ACTION_LOWER:
       tsel = gtk_tree_view_get_selection (btview);
@@ -311,7 +311,7 @@ key_binding_binding_param_edited (GtkWidget   *self,
       if (error)
         {
           g_free (error);
-          gdk_beep();
+          bst_gui_error_bell (self);
           return;
         }
     }

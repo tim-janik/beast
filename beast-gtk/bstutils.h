@@ -30,6 +30,7 @@ G_BEGIN_DECLS
 void           bst_status_eprintf             (BseErrorType     error,
                                                const gchar     *message_fmt,
                                                ...) G_GNUC_PRINTF (2, 3);
+void           bst_gui_error_bell             (gpointer         widget);
 void           bst_window_sync_title_to_proxy (gpointer         window,
                                                SfiProxy         proxy,
                                                const gchar     *title_format);

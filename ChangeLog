@@ -1,3 +1,22 @@
+2007-09-20 23:50:33  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstgconfig.h:
+	* beast-gtk/bstrecords.idl: added gui_enable_error_bell setting, because
+	some users dislike audible error notification in music programs.
+
+	* beast-gtk/bstgconfig.[hc]: added bst_gconfig_push_updates()
+	to push current config settings to code portions that cannot
+	poll configuration options.
+
+	* beast-gtk/bstutils.[hc]: provide bst_gui_error_bell() to enable
+	configuration of error bells, and to issue error bells on the right
+	display.
+
+	* *.c: changed callers of gdk_beep() to use bst_gui_error_bell().
+
+	* beast-gtk/gxk/gxkstatusbar.[hc]: allow enabling/disabling of
+	error bell via gxk_status_enable_error_bell().
+
 Thu Sep 20 23:30:35 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/instruments/Makefile.am:

@@ -300,7 +300,7 @@ track_view_synth_popup (BstTrackView         *self,
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
-        gdk_beep();
+        bst_gui_error_bell (self);
     }
 }
 
@@ -327,7 +327,7 @@ track_view_post_synth_popup (BstTrackView         *self,
           gxk_cell_renderer_popup_dialog (pcell, dialog);
         }
       else
-        gdk_beep();
+        bst_gui_error_bell (self);
     }
 }
 

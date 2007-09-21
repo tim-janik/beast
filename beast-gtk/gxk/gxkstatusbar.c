@@ -38,9 +38,15 @@ static void             status_bar_set          (GxkStatusBar   *sbar,
 /* --- variables --- */
 static GQuark     quark_status_bar = 0;
 static GSList    *status_window_stack = NULL;
-
+static gboolean   error_bell_enabled = TRUE;
 
 /* --- functions --- */
+void
+gxk_status_enable_error_bell (gboolean enable_error_bell)
+{
+  error_bell_enabled = enable_error_bell != FALSE;
+}
+
 static void
 status_bar_remove_timer (GxkStatusBar *sbar)
 {
@@ -240,8 +246,17 @@ status_bar_set (GxkStatusBar *sbar,
     status_bar_queue_clear (sbar, clear_timeout);
   else
     status_bar_remove_timer (sbar);
-  if (beep)
-    gdk_beep ();
+  if (beep && error_bell_enabled)
+    {
+#if GTK_CHECK_VERSION (2, 12, 0)
+      if (sbar->sbar->window)
+        gdk_window_beep (sbar->sbar->window);
+      else
+        gdk_beep();
+#else
+      gdk_beep();
+#endif
+    }
 }
 
 /**

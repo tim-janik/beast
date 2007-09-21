@@ -217,7 +217,7 @@ pattern_column_note_key_event (BstPatternColumn       *column,
       else if (pseq->n_pnotes <= 1)
         bse_part_insert_note (proxy, column->num, tick, duration, SFI_NOTE_CLAMP (iparam), 0, +1);
       else
-        gdk_beep();
+        bst_gui_error_bell (pview);
       bse_item_ungroup_undo (proxy);
       return TRUE;
     default: ;
@@ -532,7 +532,7 @@ pattern_column_event_key_event (BstPatternColumn       *column,
       if (!isnote && (!is_signed || focus_pos > 0))
         bse_part_insert_control (proxy, tick, control_type, value);
       else
-        gdk_beep();
+        bst_gui_error_bell (pview);
     }
   else if (pctrl && focus_pos < strlen (buffer) && !(modifier & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
     {
@@ -675,7 +675,7 @@ pattern_column_layouter_apply (GtkWidget *dialog)
   if (l < strlen (layout))
     {
       gtk_editable_select_region (GTK_EDITABLE (entry), l, -1);
-      gdk_beep();
+      bst_gui_error_bell (dialog);
     }
 }
 

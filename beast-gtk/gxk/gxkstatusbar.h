@@ -46,6 +46,7 @@ typedef struct
 
 /* --- prototypes --- */
 GtkWidget* gxk_status_bar_create		(void);
+void       gxk_status_enable_error_bell         (gboolean        enable_error_bell);
 void	   gxk_status_set			(gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);

@@ -29,7 +29,7 @@ tree_view_remove_selection (GtkTreeView *tview)
   if (gtk_tree_selection_get_selected (tsel, &model, &iter))
     gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
   else
-    gdk_beep ();
+    bst_gui_error_bell (tview);
 }
 
 static void

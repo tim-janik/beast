@@ -16,6 +16,7 @@
  */
 #include "bstutils.h"
 
+#include "bstgconfig.h"
 #include "bstmenus.h"
 #include "bsttrackview.h"
 #include "bstwaveview.h"
@@ -208,6 +209,21 @@ bst_status_eprintf (BseErrorType error,
   else
     gxk_status_set (GXK_STATUS_DONE, buffer, NULL);
   g_free (buffer);
+}
+
+void
+bst_gui_error_bell (gpointer widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (GTK_WIDGET_DRAWABLE (widget) && BST_GUI_ENABLE_ERROR_BELL)
+    {
+#if GTK_CHECK_VERSION (2, 12, 0)
+      gdk_window_beep (widget->window);
+#else
+      gdk_beep();
+#endif
+    }
 }
 
 typedef struct {

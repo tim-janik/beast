@@ -117,6 +117,8 @@ record GConfig {
                                            FALSE, STANDARD);
   };
   group "Misc" {
+    Bool        gui_enable_error_bell   = (_("Enable Error Bell"), _("Notify users via error bells if edits cannot be carried out"),
+                                           TRUE, STANDARD);
     Bool        size_group_input_fields = (_("Homogeneous Input Fields"),
                                            _("Enable homogeneous sizes for most (numeric and text) input fields. "
                                              "For some fields, this will only take effect after a restart."),

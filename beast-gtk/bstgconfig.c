@@ -93,6 +93,7 @@ bst_gconfig_apply (SfiRec *rec)
   gconfig = bst_gconfig_from_rec (vrec);
   sfi_rec_unref (vrec);
   set_gconfig (gconfig);
+  bst_gconfig_push_updates();
 }
 
 void
@@ -104,6 +105,7 @@ bst_gconfig_set_rc_version (const gchar *rc_version)
   g_free (gconfig->rc_version);
   gconfig->rc_version = g_strdup (rc_version);
   set_gconfig (gconfig);
+  bst_gconfig_push_updates();
 }
 
 void
@@ -111,6 +113,13 @@ bst_gconfig_set_rec_rc_version (SfiRec         *rec,
                                 const gchar    *rc_version)
 {
   sfi_rec_set_string (rec, "rc_version", rc_version);
+}
+
+void
+bst_gconfig_push_updates (void)
+{
+  /* update all code portions that cannot poll config options */
+  gxk_status_enable_error_bell (BST_GUI_ENABLE_ERROR_BELL);
 }
 
 
