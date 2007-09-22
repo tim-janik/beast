@@ -1,3 +1,9 @@
+Sat Sep 22 03:57:48 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/instruments/Makefile.am:
+	* library/instruments/kf-fresh-water-bass.bse: Added KF Fresh Water
+	Bass instrument by Krzysztof Foltman.
+
 2007-09-21 00:27:48  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/kf-synth-string-sweep.bse:

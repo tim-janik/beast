@@ -10,7 +10,7 @@ instruments_DATA = $(strip	\
 	bqs-slow-hum.bse		bqs-fretless-bass.bse	bqs-moog-saw-bass.bse	\
 	bqs-queek-synth.bse		bqs-syndrum.bse		\
 	illus-vtremolo.bse		\
-	kf-synth-string-sweep.bse	kf-growl-bass.bse	\
+	kf-synth-string-sweep.bse	kf-growl-bass.bse	kf-fresh-water-bass.bse	\
 	stw-iron-string.bse		\
 )
 instrumentsdir = $(bseinstrumentdir)
