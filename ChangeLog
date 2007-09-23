@@ -1,3 +1,8 @@
+2007-09-23 16:31:06  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.c (bst_gui_error_bell): cast void* into GtkWidget*
+	before accessing members.
+
 Sat Sep 22 03:57:48 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/instruments/Makefile.am:

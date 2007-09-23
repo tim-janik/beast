@@ -219,7 +219,7 @@ bst_gui_error_bell (gpointer widget)
   if (GTK_WIDGET_DRAWABLE (widget) && BST_GUI_ENABLE_ERROR_BELL)
     {
 #if GTK_CHECK_VERSION (2, 12, 0)
-      gdk_window_beep (widget->window);
+      gdk_window_beep (GTK_WIDGET (widget)->window);
 #else
       gdk_beep();
 #endif
