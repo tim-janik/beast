@@ -543,6 +543,36 @@ struct MinMaxPeakFeature : public Feature
   }
 };
 
+struct DCOffsetFeature : public Feature
+{
+  double dc_offset;
+
+  DCOffsetFeature() :
+    Feature ("--dc-offset-db", "computes the DC offset in dB")
+  {
+    dc_offset = 0;
+  }
+
+  void compute (const Signal &signal)
+  {
+    double dc_offset_div = 0.0;
+
+    for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
+      {
+        dc_offset += signal[l];
+        dc_offset_div += 1.0;
+      }
+
+    if (dc_offset_div > 0.5)
+      dc_offset /= dc_offset_div;
+  }
+
+  void print_results() const
+  {
+    print_value ("dc_offset_db", bse_db_from_factor (dc_offset, -200));
+  }
+};
+
 struct RawSignalFeature : public Feature
 {
   vector<double> raw_signal;
@@ -1467,6 +1497,7 @@ main (int    argc,
   feature_list.push_back (new AvgSpectrumFeature (spectrum_feature));
   feature_list.push_back (new AvgEnergyFeature());
   feature_list.push_back (new MinMaxPeakFeature());
+  feature_list.push_back (new DCOffsetFeature());
   feature_list.push_back (new RawSignalFeature());
   feature_list.push_back (complex_signal_feature);
   feature_list.push_back (base_freq_feature);

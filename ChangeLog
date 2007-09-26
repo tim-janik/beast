@@ -1,3 +1,8 @@
+Wed Sep 26 19:37:53 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Introduced feature for DC offset measurements:
+	--dc-offset-db.
+
 2007-09-23 16:31:06  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.c (bst_gui_error_bell): cast void* into GtkWidget*
