@@ -41,6 +41,10 @@ noinst_PROGRAMS += mathtool
 mathtool_SOURCES = mathtool.c cxxdummy.cc
 mathtool_LDADD   = $(progs_ldadd)
 
+# === Bsewavetool tests ===
+check-after: bsewavetool-tests
+bsewavetool-tests:
+	bsewavetool --unit-test
 
 #
 # bonbon ;)
