@@ -1231,8 +1231,7 @@ class XInfoCmd : public Command {
 public:
   XInfoCmd (const char *command_name) :
     Command (command_name)
-  {
-  }
+  {}
   void
   blurb (bool bshort)
   {
@@ -1273,7 +1272,7 @@ public:
   bool
   exec (Wave *wave)
   {
-    gfloat osc_freq = 0;
+    float osc_freq = 0;
     Location location = NONE;
     for (vector<char*>::iterator it = args.begin(); it != args.end(); it++)
       {
@@ -1285,8 +1284,8 @@ public:
         else if (strcmp ("-m", arg) == 0 ||
                  strncmp ("-m", arg, 2) == 0)
           {
-            const gchar *equal = arg + 2;
-            const gchar *note_str = NULL;
+            const char *equal = arg + 2;
+            const char *note_str = NULL;
             if (*equal == '=')            /* -m=Arg */
               note_str = equal + 1;
             else if (*equal)              /* -mArg */
@@ -1306,8 +1305,8 @@ public:
         else if (strcmp ("-f", arg) == 0 ||
                  strncmp ("-f", arg, 2) == 0)
           {
-            const gchar *equal = arg + 2;
-            const gchar *freq_str = NULL;
+            const char *equal = arg + 2;
+            const char *freq_str = NULL;
             if (*equal == '=')            /* -f=Arg */
               freq_str = equal + 1;
             else if (*equal)              /* -fArg */
@@ -1326,8 +1325,8 @@ public:
         else if (strcmp ("--chunk-key", arg) == 0 ||
                  strncmp ("--chunk-key", arg, 11) == 0)
           {
-            const gchar *equal = arg + 11;
-            const gchar *key_str = NULL;
+            const char *equal = arg + 11;
+            const char *key_str = NULL;
             if (*equal == '=')              /* --chunk-key=Arg */
               key_str = equal + 1;
             else if (it + 1 != args.end())  /* --chunk-key Arg */
@@ -1352,14 +1351,14 @@ public:
           }
         else /* XInfo string */
           {
-            const gchar *equal = strchr (arg, '=');
+            const char *equal = strchr (arg, '=');
             if (!equal)
               {
                 sfi_error ("missing \"=\" in XInfo assignment: %s\n", arg);
                 exit (1);
               }
-            gchar *key = g_strndup (arg, equal - arg);
-            const gchar *value = equal + 1;
+            char *key = g_strndup (arg, equal - arg);
+            const char *value = equal + 1;
             g_strcanon (key, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
             if (!key[0] || strncmp (key, arg, equal - arg) != 0)
               {
@@ -1490,7 +1489,7 @@ public:
 
     for (guint i = 1; i < argc; i++)
       {
-        const gchar *str = NULL;
+        const char *str = NULL;
 	if (parse_chunk_selection (argv, i, argc, m_all_chunks, m_freq_list))
           seen_selection = true;
         else if (parse_bool_option (argv, i, "--wave"))
@@ -1630,13 +1629,13 @@ public:
 
         if (wave->name != "")
           g_print ("  Label             %s\n", wave->name.c_str());
-        const gchar *blurb = bse_xinfos_get_value (wave->wave_xinfos, "blurb");
+        const char *blurb = bse_xinfos_get_value (wave->wave_xinfos, "blurb");
         if (blurb)
           g_print ("  Comment           %s\n", blurb);
-        const gchar *authors = bse_xinfos_get_value (wave->wave_xinfos, "authors");
+        const char *authors = bse_xinfos_get_value (wave->wave_xinfos, "authors");
         if (authors)
           g_print ("  Authors           %s\n", authors);
-        const gchar *license = bse_xinfos_get_value (wave->wave_xinfos, "license");
+        const char *license = bse_xinfos_get_value (wave->wave_xinfos, "license");
         if (license)
           g_print ("  License           %s\n", license);
 
@@ -1702,10 +1701,10 @@ public:
           else  // MEDIUM or FULL output
             {
               g_print ("Chunk '%s'\n", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
-              const gchar *label = bse_xinfos_get_value (dhandle->setup.xinfos, "label");
+              const char *label = bse_xinfos_get_value (dhandle->setup.xinfos, "label");
               if (label)
                 g_print ("  Label             %s\n", label);
-              const gchar *blurb = bse_xinfos_get_value (dhandle->setup.xinfos, "blurb");
+              const char *blurb = bse_xinfos_get_value (dhandle->setup.xinfos, "blurb");
               if (blurb)
                 g_print ("  Comment           %s\n", blurb);
 
@@ -1714,7 +1713,7 @@ public:
               if (bse_xinfos_get_value (dhandle->setup.xinfos, "midi-note"))
                 {
                   int note = bse_xinfos_get_num (dhandle->setup.xinfos, "midi-note");
-                  gchar *note_str = bse_note_to_string (note);
+                  char *note_str = bse_note_to_string (note);
                   g_print ("  MIDI Note   %7d     (%s)\n", note, note_str);
                   g_free (note_str);
                 }
@@ -1736,7 +1735,7 @@ public:
                              feature_avg_energy (dhandle, 1.0));
                   g_print ("\n");
                 }
-              const gchar *loop_type = bse_xinfos_get_value (dhandle->setup.xinfos, "loop-type");
+              const char *loop_type = bse_xinfos_get_value (dhandle->setup.xinfos, "loop-type");
               if (loop_type)
                 {
                   g_print ("  Loop type %9s", loop_type);
@@ -1756,7 +1755,7 @@ public:
               g_print ("\n");
             }
         }
-    return true;
+    return false; /* bsewave didn't change */
   }
 } cmd_info ("info");
 
