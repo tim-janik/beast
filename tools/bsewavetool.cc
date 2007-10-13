@@ -1530,7 +1530,7 @@ public:
      */
     GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
     double avg_energy = 0;
-    for (int64 i = 0; i < dhandle->setup.n_values; i++) 
+    for (int64 i = 0; i < dhandle->setup.n_values; i++)
       {
         double v = gsl_data_handle_peek_value (dhandle, i, &peek_buffer);
         avg_energy += v * v;
@@ -1594,7 +1594,7 @@ public:
             else if (*fi == "license")
               script_output_xstr (wave->wave_xinfos, "license");
             else if (*fi == "play-type")
-              script_output_xstr (wave->wave_xinfos, "play-type");    
+              script_output_xstr (wave->wave_xinfos, "play-type");
             else
               {
                 sfi_error ("info command on the wave: invalid field for --script format: %s", fi->c_str());
