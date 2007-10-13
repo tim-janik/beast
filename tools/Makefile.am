@@ -44,7 +44,7 @@ mathtool_LDADD   = $(progs_ldadd)
 # === Bsewavetool tests ===
 check-after: bsewavetool-tests
 bsewavetool-tests:
-	bsewavetool --unit-test
+	./bsewavetool --unit-test
 
 #
 # bonbon ;)
