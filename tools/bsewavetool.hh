@@ -28,32 +28,13 @@ using namespace std;
 class Command {
 public:
   const string name;
-  Command (const char *command_name) :
-    name (command_name)
-  {
-    registry.push_back (this);
-  }
-  virtual guint
-  parse_args (guint  argc,
-              char **argv)
-  { return 0; }
-  virtual Wave*
-  create ()
-  {
-    return NULL;
-  }
-  virtual void
-  exec (Wave *wave) = 0;
-  virtual void
-  blurb (bool bshort)
-  {
-    g_print ("\n");
-    if (bshort)
-      return;
-  }
-  virtual
-  ~Command()
-  {}
+  explicit      Command    (const char *command_name);
+  virtual uint  parse_args (uint   argc,
+                            char **argv)        { return 0; }
+  virtual Wave* create     ()                   { return NULL; }
+  virtual bool  exec       (Wave *wave) = 0;
+  virtual void  blurb      (bool bshort);
+  virtual      ~Command    ()                   {}
   static list<Command*> registry;
 };
 

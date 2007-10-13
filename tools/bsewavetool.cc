@@ -56,6 +56,21 @@ static string output_file;
 list<Command*> Command::registry;
 list<string>   unlink_file_list;
 
+/* --- Command --- */
+Command::Command (const char *command_name) :
+  name (command_name)
+{
+  registry.push_back (this);
+}
+
+void
+Command::blurb (bool bshort)
+{
+  g_print ("\n");
+  if (bshort)
+    return;
+}
+
 /* --- main program --- */
 static void
 wavetool_message_handler (const char              *domain,
@@ -217,16 +232,19 @@ main (int   argc,
 
   /* process */
   g_printerr ("EXEC: %s\n", command_name.c_str());
-  command->exec (wave);
+  bool needs_saving = command->exec (wave);
 
   /* save */
-  g_printerr ("SAVE: %s\n", output_file.c_str());
-  wave->sort();
-  error = wave->store (output_file);
-  if (error)
+  if (needs_saving)
     {
-      sfi_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
-      exit (1);
+      g_printerr ("SAVE: %s\n", output_file.c_str());
+      wave->sort();
+      error = wave->store (output_file);
+      if (error)
+        {
+          sfi_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
+          exit (1);
+        }
     }
 
   /* cleanup */
@@ -648,10 +666,11 @@ public:
   Store (const char *command_name) :
     Command (command_name)
   {}
-  void
+  bool
   exec (Wave   *wave)
   {
     /* nothing to do */
+    return true;
   }
   void
   blurb (bool bshort)
@@ -732,7 +751,7 @@ public:
     Wave *wave = new Wave (wave_name.c_str(), n_channels, NULL);
     return wave;
   }
-  void
+  bool
   exec (Wave *wave)
   {
     if (!force_creation && birnet_file_check (output_file.c_str(), "e"))
@@ -740,6 +759,7 @@ public:
         sfi_error ("not creating \"%s\": %s\n", output_file.c_str(), g_strerror (EEXIST));
         exit (1);
       }
+    return true;
   }
 } cmd_create ("create");
 
@@ -789,7 +809,7 @@ public:
       gsl_vorbis1_handle_destroy (vhandle);
     return vhandle != NULL;
   }
-  void
+  bool
   exec (Wave *wave)
   {
     /* get the wave into storage order */
@@ -902,6 +922,7 @@ public:
           }
         g_free (temp_file);
       }
+    return true;
   }
 } cmd_oggenc ("oggenc");
 
@@ -1118,7 +1139,7 @@ public:
     error = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
     return dhandle;
   }
-  void
+  bool
   exec (Wave *wave)
   {
     for (list<OptChunk>::iterator it = opt_chunks.begin(); it != opt_chunks.end(); it++)
@@ -1201,6 +1222,7 @@ public:
             }
           g_strfreev (xinfos);
         }
+    return true;
   }
 } cmd_add_chunk ("add-chunk"), cmd_add_raw_chunk ("add-raw-chunk", AddChunk::RAW);
 
@@ -1248,7 +1270,7 @@ public:
     ALL_CHUNKS,
     WAVE
   } Location;
-  void
+  bool
   exec (Wave *wave)
   {
     gfloat osc_freq = 0;
@@ -1369,6 +1391,7 @@ public:
             g_free (key);
           }
       }
+    return true;
   }
 } cmd_xinfo ("xinfo");
 
@@ -1567,7 +1590,7 @@ public:
     else
       script_output_escaped (NULL);
   }
-  void
+  bool
   exec (Wave *wave)
   {
     sort (m_freq_list.begin(), m_freq_list.end());
@@ -1733,6 +1756,7 @@ public:
               g_print ("\n");
             }
         }
+    return true;
   }
 } cmd_info ("info");
 
@@ -1812,7 +1836,7 @@ public:
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
-  void
+  bool
   exec (Wave *wave)
   {
     sort (freq_list.begin(), freq_list.end());
@@ -1874,6 +1898,7 @@ public:
         wave->remove (deleted.back());
         deleted.pop_back();
       }
+    return true;
   }
 } cmd_clip ("clip");
 
@@ -1912,7 +1937,7 @@ public:
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
-  void
+  bool
   exec (Wave *wave)
   {
     sort (freq_list.begin(), freq_list.end());
@@ -1939,6 +1964,7 @@ public:
           if (error && !skip_errors)
             exit (1);
         }
+    return true;
   }
 } cmd_normalize ("normalize");
 
@@ -1982,7 +2008,7 @@ public:
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
-  void
+  bool
   exec (Wave *wave)
   {
     sort (freq_list.begin(), freq_list.end());
@@ -2029,6 +2055,7 @@ public:
 	      g_strfreev (xinfos);
 	    }
         }
+    return true;
   }
 } cmd_loop ("loop");
 
@@ -2164,8 +2191,7 @@ public:
       return chunks[n];
     }
   };
-
-  void
+  bool
   exec (Wave *wave)
   {
     ChunkData chunk_data;
@@ -2205,8 +2231,8 @@ public:
         if (!chunk_set[i])
 	  wave->remove (chunk_data.iterators[i]);
       }
+    return true;
   }
-
   void
   init_empty_set (const ChunkData& chunk_data, ChunkSet& chunk_set)
   {
@@ -2477,7 +2503,7 @@ public:
 
     return BSE_ERROR_NONE;
   }
-  void
+  bool
   exec (Wave *wave)
   {
     /* get the wave into storage order */
@@ -2511,6 +2537,7 @@ public:
 	      }
 	  }
       }
+    return true;
   }
 };
 
@@ -2575,7 +2602,7 @@ public:
       }
     return 0; // no missing args
   }
-  void
+  bool
   exec (Wave *wave)
   {
     /* get the wave into storage order */
@@ -2600,6 +2627,7 @@ public:
             exit (1);
           }
       }
+    return true;
   }
 } cmd_upsample2 ("upsample2");
 
@@ -2636,7 +2664,7 @@ public:
       }
     return 0; // no missing args
   }
-  void
+  bool
   exec (Wave *wave)
   {
     /* get the wave into storage order */
@@ -2661,6 +2689,7 @@ public:
             exit (1);
           }
       }
+    return true;
   }
 } cmd_downsample2 ("downsample2");
 
@@ -2753,8 +2782,7 @@ public:
       pattern += '%';
     pattern = result;
   }
-
-  void
+  bool
   exec (Wave *wave)
   {
     map<string,bool> used_filenames;
@@ -2850,6 +2878,7 @@ public:
 	    }
 	  close (fd);
         }
+    return true;
   }
 } cmd_export ("export");
 
@@ -2881,7 +2910,7 @@ public:
   {
     return 0; // no missing args
   }
-  void
+  bool
   exec (Wave *wave)
   {
     /* get the wave into storage order */
@@ -2893,6 +2922,7 @@ public:
 
         g_print ("%s\n", chunk_key.as_string().c_str());
       }
+    return true;
   }
 } cmd_list_chunks ("list-chunks");
 
