@@ -1,3 +1,24 @@
+Sat Oct 13 21:11:19 2007 +0200 Tim Janik
+
+	tools/bsewavetool.cc: structure name fixup
+
+Sat Oct 13 21:09:40 2007 +0200 Tim Janik
+
+	tools/bsewavetool.cc: fixed up whitespaces.
+
+Sat Oct 13 21:01:52 2007 +0200 Tim Janik
+
+	tools/Makefile.am: fixed paths for bsewavetool invocation.
+
+Sat Oct 13 20:58:37 2007 +0200 Tim Janik
+
+	Unit test for wave chunk keys, patch by stw from bug #450724.
+
+	* tools/Makefile.am:
+	* tools/bsewavetool.cc: Add --unit-test option to bsewavetool, which
+	for now performs checks on the wave chunk key code, and automatic
+	testing to make check.
+
 Wed Sep 26 19:37:53 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Introduced feature for DC offset measurements:
