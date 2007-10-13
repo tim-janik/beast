@@ -1717,18 +1717,18 @@ public:
                   g_print ("  MIDI Note   %7d     (%s)\n", note, note_str);
                   g_free (note_str);
                 }
-              g_print ("  Samples  %10lld     (%.2f s)\n",
-                       gsl_data_handle_length (dhandle),
-                       gsl_data_handle_length (dhandle) / gsl_data_handle_mix_freq (dhandle));
-              if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
-                {
-                  const double volume = gsl_data_handle_volume (dhandle);
-                  const double volume_db = bse_db_from_factor (volume, -200);
-                  g_print ("  Volume      %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
-                }
-              g_print ("  Stored as  %s data\n", dhandle_storage_format (dhandle).c_str());
               if (m_output_format == FULL)
                 {
+                  g_print ("  Samples  %10lld     (%.2f s)\n",
+                           gsl_data_handle_length (dhandle),
+                           gsl_data_handle_length (dhandle) / gsl_data_handle_mix_freq (dhandle));
+                  if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
+                    {
+                      const double volume = gsl_data_handle_volume (dhandle);
+                      const double volume_db = bse_db_from_factor (volume, -200);
+                      g_print ("  Volume      %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
+                    }
+                  g_print ("  Stored as  %s data\n", dhandle_storage_format (dhandle).c_str());
                   g_print ("  Avg Energy %+8.2f dB", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
                   if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
                     g_print ("  (%.2f dB before volume adjustment)",
@@ -1736,7 +1736,7 @@ public:
                   g_print ("\n");
                 }
               const char *loop_type = bse_xinfos_get_value (dhandle->setup.xinfos, "loop-type");
-              if (loop_type)
+              if (loop_type && m_output_format == FULL)
                 {
                   g_print ("  Loop type %9s", loop_type);
                   if (strcmp (loop_type, "none") != 0)
@@ -1752,7 +1752,6 @@ public:
                         g_print ("count: %lld)\n", loop_count);
                     }
                 }
-              g_print ("\n");
             }
         }
     return false; /* bsewave didn't change */
