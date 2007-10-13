@@ -407,7 +407,7 @@ public:
   static void
   unit_test()
   {
-    struct T {
+    struct TestData {
       const char *key;
       double      value;
     } decode_test[] = {
