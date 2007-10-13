@@ -1,3 +1,33 @@
+Sat Oct 13 22:48:04 2007 +0200 Tim Janik
+
+	tools/bsewavetool.cc: compacted info --pretty=medium output.
+
+Sat Oct 13 22:38:14 2007 +0200 Tim Janik
+
+	tools/bsewavetool.cc: don't save the bsewave after reading out info, coding style fixes
+
+Sat Oct 13 22:35:21 2007 +0200 Tim Janik
+
+	tools/bsewavetool.[hc]*: refactored so exec() determines need for bsewave saving
+
+Sat Oct 13 22:21:01 2007 +0200 Tim Janik
+
+	tools/bsewavetool.cc: "info" command usage fixups.
+
+Sat Oct 13 21:26:35 2007 +0200 Tim Janik
+
+	tools/bsewavetool.cc: whitespace fixups.
+
+Sat Oct 13 21:24:58 2007 +0200 Tim Janik
+
+	New bsewavetool "info" command, patch by stw from bug #454121.
+
+	* docs/architecture.doxi: Documented label and blurb xinfos.
+
+	* tools/bsewavetool.cc: Implemented a new bsewavetool command called
+	"info", which allows users and scripts to query information about all
+	or specific chunks of a bsewave file. See #454121.
+
 Sat Oct 13 21:11:19 2007 +0200 Tim Janik
 
 	tools/bsewavetool.cc: structure name fixup
