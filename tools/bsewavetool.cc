@@ -107,7 +107,7 @@ main (int   argc,
   Msg::allow_msgs ("main"); // FIXME
   Msg::set_thread_handler (wavetool_message_handler);
   Msg::configure (Msg::INFO, Msg::LOG_TO_HANDLER, "");
-  
+
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
 
@@ -159,7 +159,7 @@ main (int   argc,
       sfi_error ("extra argument given to command \"%s\": %s\n", command->name.c_str(), argv[1]);
       exit (1);
     }
-  
+
   /* load wave file */
   g_printerr ("LOAD: %s\n", input_file.c_str());
   Wave *wave = command->create ();
@@ -218,7 +218,7 @@ main (int   argc,
   /* process */
   g_printerr ("EXEC: %s\n", command_name.c_str());
   command->exec (wave);
-  
+
   /* save */
   g_printerr ("SAVE: %s\n", output_file.c_str());
   wave->sort();
@@ -326,7 +326,7 @@ public:
   WaveChunkKey (const String& key_string)
   {
     // mark key as invalid
-    m_osc_freq.v_float = -1;     
+    m_osc_freq.v_float = -1;
     if (key_string.size() != 7)
       return;  // invalid key
 
@@ -373,7 +373,7 @@ public:
     key_uint |= m_osc_freq.mpn.biased_exponent; //  8 bit
     key_uint <<= 23;
     key_uint |= m_osc_freq.mpn.mantissa;        // 23 bit
-    key_uint <<= 9;                             // +9 bit checksum  
+    key_uint <<= 9;                             // +9 bit checksum
     const uint64 checksum = g_str_hash (string_printf ("%lld", key_uint).c_str()) % 509;
     key_uint |= checksum;
     key_uint ^= checksum << 32LL;               // obfuscate high bits with checksum
@@ -391,7 +391,7 @@ public:
         key_uint /= 62;
       }
     g_assert (key_uint == 0);
-      
+
     return key_string;
   }
   bool
@@ -410,35 +410,35 @@ public:
     struct T {
       const char *key;
       double      value;
-    } decode_test[] = { 
-      { "YJv6nCS", 1.000000000e-03 }, { "gcQWdrQ", 1.256637061e-03 }, { "dXeM2zG", 1.579136704e-03 }, 
-      { "3BSjFXD", 1.984401708e-03 }, { "z2ncv68", 2.493672730e-03 }, { "3FgEbrN", 3.133641572e-03 }, 
-      { "3udggXH", 3.937850137e-03 }, { "mwJOdP8", 4.948448424e-03 }, { "Wq8Df29", 6.218403687e-03 }, 
-      { "1PCvWKP", 7.814276536e-03 }, { "6prz6TI", 9.819709503e-03 }, { "uAVbweQ", 1.233981089e-02 }, 
-      { "WiAHl0H", 1.550666370e-02 }, { "QTga6LU", 1.948624831e-02 }, { "R5IamYE", 2.448714181e-02 }, 
-      { "X8Hq3EV", 3.077144993e-02 }, { "bTysq86", 3.866854441e-02 }, { "O44r1F6", 4.859232602e-02 }, 
-      { "6Xtdz9H", 6.106291778e-02 }, { "oTnEADX", 7.673392556e-02 }, { "lYHPo92", 9.642669472e-02 }, 
-      { "JIN6b3N", 1.211733583e-01 }, { "YHQ64CY", 1.522709329e-01 }, { "IYvE8J2", 1.913492977e-01 }, 
-      { "H3PGUBB", 2.404566191e-01 }, { "RPKNVNW", 3.021666993e-01 }, { "oKEsrTE", 3.797138730e-01 }, 
-      { "Ib6py6X", 4.771625256e-01 }, { "vUBdWbW", 5.996201140e-01 }, { "NeXqt5A", 7.535048580e-01 }, 
-      { "onjLlCN", 9.468821305e-01 }, { "KqKpl8b", 1.189887178e+00 }, { "sFUvRra", 1.495256327e+00 }, 
-      { "iDMmswb", 1.878994517e+00 }, { "Qi98zf1", 2.361214148e+00 }, { "fwGfS3U", 2.967189208e+00 }, 
-      { "3QiAhhc", 3.728679927e+00 }, { "KjOWeVX", 4.685597387e+00 }, { "qd1u3XX", 5.888095331e+00 }, 
-      { "Sjny6ta", 7.399198815e+00 }, { "Y7H8x3b", 9.298107455e+00 }, { "OPQUQ92", 1.168434643e+01 }, 
-      { "WDDAiXY", 1.468298276e+01 }, { "NW2gCXR", 1.845118031e+01 }, { "Z3jckdV", 2.318643701e+01 }, 
-      { "vHT1zmF", 2.913693606e+01 }, { "B1nbexX", 3.661455372e+01 }, { "Rm9vGPI", 4.601120519e+01 }, 
-      { "NRKoXwb", 5.781938568e+01 }, { "n3ckrYC", 7.265798291e+01 }, { "hePAxF9", 9.130471414e+01 }, 
-      { "1tMGZWQ", 1.147368877e+02 }, { "DEDCuGT", 1.441826254e+02 }, { "WhpTjIX", 1.811852306e+02 }, 
-      { "7Qfdr93", 2.276840758e+02 }, { "sDV9XtJ", 2.861162480e+02 }, { "9BhSRT5", 3.595442811e+02 }, 
-      { "wVwxSBb", 4.518166688e+02 }, { "ZIun3lR", 5.677695710e+02 }, { "kfGMuca", 7.134802853e+02 }, 
-      { "xm31dSY", 8.965857691e+02 }, { "3Jw8sqH", 1.126682906e+03 }, { "KV35vV7", 1.415831496e+03 }, 
-      { "hgCCJWQ", 1.779186331e+03 }, { "EbldxII", 2.235791483e+03 }, { "I29fmr4", 2.809578439e+03 }, 
-      { "kso3Dxa", 3.530620394e+03 }, { "v7xZPlV", 4.436708436e+03 }, { "rJErUN6", 5.575332252e+03 }, 
-      { "5IleXBA", 7.006169138e+03 }, { "N9TbUyN", 8.804211797e+03 }, { "oChbIqW", 1.106369884e+04 }, 
-      { "wezNP3V", 1.390305400e+04 }, { "RisqTI5", 1.747109292e+04 }, { "QuypC2Z", 2.195482287e+04 }, 
-      { "7xalGea", 2.758924410e+04 }, { "XmOEsnX", 3.466966663e+04 }, { "hiKocjG", 4.356718800e+04 }, 
-      { "70aj5NU", 5.474814310e+04 }, { "sOSufiT", 6.879854566e+04 }, { "xBZnuLY", 8.645480225e+04 }, 
-      { "SoNwkyC", 1.086423086e+05 }, { "ul4qK0V", 1.365239515e+05 }, { "ka8lEEJ", 1.715610572e+05 }, 
+    } decode_test[] = {
+      { "YJv6nCS", 1.000000000e-03 }, { "gcQWdrQ", 1.256637061e-03 }, { "dXeM2zG", 1.579136704e-03 },
+      { "3BSjFXD", 1.984401708e-03 }, { "z2ncv68", 2.493672730e-03 }, { "3FgEbrN", 3.133641572e-03 },
+      { "3udggXH", 3.937850137e-03 }, { "mwJOdP8", 4.948448424e-03 }, { "Wq8Df29", 6.218403687e-03 },
+      { "1PCvWKP", 7.814276536e-03 }, { "6prz6TI", 9.819709503e-03 }, { "uAVbweQ", 1.233981089e-02 },
+      { "WiAHl0H", 1.550666370e-02 }, { "QTga6LU", 1.948624831e-02 }, { "R5IamYE", 2.448714181e-02 },
+      { "X8Hq3EV", 3.077144993e-02 }, { "bTysq86", 3.866854441e-02 }, { "O44r1F6", 4.859232602e-02 },
+      { "6Xtdz9H", 6.106291778e-02 }, { "oTnEADX", 7.673392556e-02 }, { "lYHPo92", 9.642669472e-02 },
+      { "JIN6b3N", 1.211733583e-01 }, { "YHQ64CY", 1.522709329e-01 }, { "IYvE8J2", 1.913492977e-01 },
+      { "H3PGUBB", 2.404566191e-01 }, { "RPKNVNW", 3.021666993e-01 }, { "oKEsrTE", 3.797138730e-01 },
+      { "Ib6py6X", 4.771625256e-01 }, { "vUBdWbW", 5.996201140e-01 }, { "NeXqt5A", 7.535048580e-01 },
+      { "onjLlCN", 9.468821305e-01 }, { "KqKpl8b", 1.189887178e+00 }, { "sFUvRra", 1.495256327e+00 },
+      { "iDMmswb", 1.878994517e+00 }, { "Qi98zf1", 2.361214148e+00 }, { "fwGfS3U", 2.967189208e+00 },
+      { "3QiAhhc", 3.728679927e+00 }, { "KjOWeVX", 4.685597387e+00 }, { "qd1u3XX", 5.888095331e+00 },
+      { "Sjny6ta", 7.399198815e+00 }, { "Y7H8x3b", 9.298107455e+00 }, { "OPQUQ92", 1.168434643e+01 },
+      { "WDDAiXY", 1.468298276e+01 }, { "NW2gCXR", 1.845118031e+01 }, { "Z3jckdV", 2.318643701e+01 },
+      { "vHT1zmF", 2.913693606e+01 }, { "B1nbexX", 3.661455372e+01 }, { "Rm9vGPI", 4.601120519e+01 },
+      { "NRKoXwb", 5.781938568e+01 }, { "n3ckrYC", 7.265798291e+01 }, { "hePAxF9", 9.130471414e+01 },
+      { "1tMGZWQ", 1.147368877e+02 }, { "DEDCuGT", 1.441826254e+02 }, { "WhpTjIX", 1.811852306e+02 },
+      { "7Qfdr93", 2.276840758e+02 }, { "sDV9XtJ", 2.861162480e+02 }, { "9BhSRT5", 3.595442811e+02 },
+      { "wVwxSBb", 4.518166688e+02 }, { "ZIun3lR", 5.677695710e+02 }, { "kfGMuca", 7.134802853e+02 },
+      { "xm31dSY", 8.965857691e+02 }, { "3Jw8sqH", 1.126682906e+03 }, { "KV35vV7", 1.415831496e+03 },
+      { "hgCCJWQ", 1.779186331e+03 }, { "EbldxII", 2.235791483e+03 }, { "I29fmr4", 2.809578439e+03 },
+      { "kso3Dxa", 3.530620394e+03 }, { "v7xZPlV", 4.436708436e+03 }, { "rJErUN6", 5.575332252e+03 },
+      { "5IleXBA", 7.006169138e+03 }, { "N9TbUyN", 8.804211797e+03 }, { "oChbIqW", 1.106369884e+04 },
+      { "wezNP3V", 1.390305400e+04 }, { "RisqTI5", 1.747109292e+04 }, { "QuypC2Z", 2.195482287e+04 },
+      { "7xalGea", 2.758924410e+04 }, { "XmOEsnX", 3.466966663e+04 }, { "hiKocjG", 4.356718800e+04 },
+      { "70aj5NU", 5.474814310e+04 }, { "sOSufiT", 6.879854566e+04 }, { "xBZnuLY", 8.645480225e+04 },
+      { "SoNwkyC", 1.086423086e+05 }, { "ul4qK0V", 1.365239515e+05 }, { "ka8lEEJ", 1.715610572e+05 },
       { "KE6hhDL", 2.155899828e+05 }, { "sP4x8p5", 2.709183625e+05 }, { NULL, 0 }
     };
 #if 0
@@ -455,12 +455,12 @@ public:
      *   (3) decode the float key (see below), and compare it with the original double
      *     -> precision wise, fabs, subtraction, division will cause some more precision loss,
      *        but not much since we're operating on doubles
-     * 
+     *
      * The dominating factor here is the precision loss caused by step (1), the
      * precision loss introduced in the other steps is small compared to that. Thus the
      * epsilon below is choosen somewhat higher than BSE_FLOAT_EPSILON.
      */
-    const double epsilon = 6e-8;   
+    const double epsilon = 6e-8;
     TSTART ("Decoding valid chunk keys");
     for (int i = 0; decode_test[i].key; i++)
       {
@@ -539,7 +539,7 @@ parse_chunk_selection (char          **argv,
   return false;
 }
 
-static void 
+static void
 verify_chunk_selection (const vector<float> &freq_list,
                         Wave                *wave)
 {
@@ -570,7 +570,7 @@ wavetool_parse_args (int    *argc_p,
   envar = getenv ("BSEWAVETOOL_NO_DEBUG");
   if (envar)
     Msg::deny_msgs (envar);
-  
+
   for (i = 1; i < argc; i++)
     {
       const gchar *str = NULL;
@@ -2110,7 +2110,7 @@ public:
     sfi_info ("%s: => %.2f dB at %lld Hz", string_toupper (name).c_str(),
 	bse_data_handle_fir_response_db (fir_handle, best_freq), best_freq);
     gsl_data_handle_close (fir_handle);
-    
+
     return BSE_ERROR_NONE;
   }
   void
@@ -2137,7 +2137,7 @@ public:
 	    BseErrorType error = print_effective_stopband_start (fir_handle);
 	    if (!error)
 	      error = chunk->change_dhandle (fir_handle, 0, 0);
-	    
+
 	    if (error)
 	      {
 		sfi_error ("chunk % 7.2f/%.0f: %s",
@@ -2177,7 +2177,7 @@ public:
   {
   }
 } cmd_lowpass ("lowpass");
- 
+
 class Upsample2 : public Command {
 private:
   int precision_bits;
@@ -2368,7 +2368,7 @@ public:
     bool need_subst = false;
 
     for (size_t i = 0; i < pattern.size(); i++)
-      { 
+      {
 	if (need_subst)
 	  {
 	    if (pattern[i] == ch)
@@ -2401,7 +2401,7 @@ public:
       if (export_filename[i] == '%')
 	{
 	  if (export_filename[i+1] == 'N'
-	   || export_filename[i+1] == 'F' 
+	   || export_filename[i+1] == 'F'
 	   || export_filename[i+1] == 'C')
 	    have_export_pattern = true;
 	  else
