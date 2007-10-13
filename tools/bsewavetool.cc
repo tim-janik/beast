@@ -1409,17 +1409,17 @@ public:
     g_print ("    --script <field1>,<field2>,<field3>,...,<fieldN>\n");
     g_print ("                        use script readable line based space separated output\n");
     g_print ("    Valid wave or chunk fields:\n");
-    g_print ("      channels          number of channels of a chunk/wave\n");
-    g_print ("      label             label of a chunk/wave (if available)\n");
-    g_print ("      blurb             comment associated with a chunk/wave (if available)\n");
+    g_print ("      channels          number of channels\n");
+    g_print ("      label             user interface label\n");
+    g_print ("      blurb             associated comment\n");
     g_print ("    Valid wave fields:\n");
     g_print ("      authors           authors who participated in creating the wave file\n");
     g_print ("      license           license specifying redistribution and other legal terms\n");
     g_print ("      play-type         set of required play back facilities for a wave\n");
     g_print ("    Valid chunk fields:\n");
     g_print ("      osc-freq          frequency of the chunk\n");
-    g_print ("      mix-freq          mix freq (sampling rate) of the chunk\n");
-    g_print ("      midi-note         midi note of a chunk (if available)\n");
+    g_print ("      mix-freq          sampling rate of the chunk\n");
+    g_print ("      midi-note         midi note of a chunk\n");
     g_print ("      length            length of the chunk in samples\n");
     g_print ("      volume            volume at which the chunk is to be played\n");
     g_print ("      format            storage format used to save the chunk data\n");
@@ -1430,16 +1430,13 @@ public:
     g_print ("    Chunk fields that can be computed for the signal:\n");
     g_print ("      +avg-energy-raw   average signal energy (dB) of the raw data of the chunk\n");
     g_print ("      +avg-energy       average signal energy (dB) using volume xinfo\n");
-    g_print ("    In the script output, there is one line per chunk, and the individual\n");
-    g_print ("    fields in a line are separated by a single space. Backslash escaping is\n");
-    g_print ("    performed for space, tab, newline and backslash, so that a single\n");
-    g_print ("    line of script parsable output can be parsed using the shell builtin read.\n");
-    g_print ("    Since some of the information is optional (see the remark \"if available\"\n");
-    g_print ("    above), when the information is not there, these fields will printed as a\n");
-    g_print ("    single (escaped) space, which allows the shell builtin read to parse even\n");
-    g_print ("    such cases.\n");
-    g_print ("    The human readable output (--pretty) will probably different in newer\n");
-    g_print ("    versions of bsewavetool and is not intended to be parsed automatically.\n");
+    g_print ("    The script output consists of one line per chunk. The individual fields\n");
+    g_print ("    of a line are separated by a single space. Special characters are escaped,\n");
+    g_print ("    such as spaces, tabs, newlines and backslashes. So each line of script\n");
+    g_print ("    parsable output can be parsed using the read(P) shell command.\n");
+    g_print ("    Optional fields will printed as a single (escaped) space.\n");
+    g_print ("    The human readable output formats (--pretty) may vary in future versions\n");
+    g_print ("    and are not recommended as script input.\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   static vector<String>
