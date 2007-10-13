@@ -1372,6 +1372,373 @@ public:
   }
 } cmd_xinfo ("xinfo");
 
+class InfoCmd : public Command {
+  vector<gfloat> m_freq_list;
+  vector<String> m_fields;
+  bool           m_all_chunks;
+  bool           m_location_wave;
+  enum
+  {
+    SCRIPT,
+    MEDIUM,
+    FULL
+  }              m_output_format;
+public:
+  InfoCmd (const char *command_name) :
+    Command (command_name),
+    m_all_chunks (false),
+    m_location_wave (false),
+    m_output_format (MEDIUM)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-m=midi-note|-f=osc-freq|--chunk-key=key|--all-chunks|--wave} [options]\n");
+    if (bshort)
+      return;
+    g_print ("    Print information about the chunks of a bsewave file.\n");
+    g_print ("    Options:\n");
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --all-chunks        show information for all chunks (default)\n");
+    g_print ("    --chunk-key <key>   select wave chunk using chunk key from list-chunks\n");
+    g_print ("    --wave              show information for the wave\n");
+    g_print ("    --pretty=medium     use human readable format (default)\n");
+    g_print ("    --pretty=full       use human readable format with all details\n");
+    g_print ("    --script <field1>,<field2>,<field3>,...,<fieldN>\n");
+    g_print ("                        use script readable line based space separated output\n");
+    g_print ("    Valid wave or chunk fields:\n");
+    g_print ("      channels          number of channels of a chunk/wave\n");
+    g_print ("      label             label of a chunk/wave (if available)\n");
+    g_print ("      blurb             comment associated with a chunk/wave (if available)\n");
+    g_print ("    Valid wave fields:\n");
+    g_print ("      authors           authors who participated in creating the wave file\n");
+    g_print ("      license           license specifying redistribution and other legal terms\n");
+    g_print ("      play-type         set of required play back facilities for a wave\n");
+    g_print ("    Valid chunk fields:\n");
+    g_print ("      osc-freq          frequency of the chunk\n");
+    g_print ("      mix-freq          mix freq (sampling rate) of the chunk\n");
+    g_print ("      midi-note         midi note of a chunk (if available)\n");
+    g_print ("      length            length of the chunk in samples\n");
+    g_print ("      volume            volume at which the chunk is to be played\n");
+    g_print ("      format            storage format used to save the chunk data\n");
+    g_print ("      loop-type         whether the chunk is to be looped\n");
+    g_print ("      loop-start        offset in samples for the start of the loop\n");
+    g_print ("      loop-end          offset in samples for the end of the loop\n");
+    g_print ("      loop-count        maximum limit for how often the loop should be repeated\n");
+    g_print ("    Chunk fields that can be computed for the signal:\n");
+    g_print ("      +avg-energy-raw   average signal energy (dB) of the raw data of the chunk\n");
+    g_print ("      +avg-energy       average signal energy (dB) using volume xinfo\n");
+    g_print ("    In the script output, there is one line per chunk, and the individual\n");
+    g_print ("    fields in a line are separated by a single space. Backslash escaping is\n");
+    g_print ("    performed for space, tab, newline and backslash, so that a single\n");
+    g_print ("    line of script parsable output can be parsed using the shell builtin read.\n");
+    g_print ("    Since some of the information is optional (see the remark \"if available\"\n");
+    g_print ("    above), when the information is not there, these fields will printed as a\n");
+    g_print ("    single (escaped) space, which allows the shell builtin read to parse even\n");
+    g_print ("    such cases.\n");
+    g_print ("    The human readable output (--pretty) will probably different in newer\n");
+    g_print ("    versions of bsewavetool and is not intended to be parsed automatically.\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  static vector<String>
+  string_tokenize (const String& str)
+  {
+    vector<String> words;
+
+    String::const_iterator word_start = str.begin();
+    for (String::const_iterator si = str.begin(); si != str.end(); si++)
+      {
+        if (*si == ',') /* colon indicates word boundary */
+          {
+            words.push_back (String (word_start, si));
+            word_start = si + 1;
+          }
+      }
+
+    if (!str.empty()) /* handle last word in string */
+      words.push_back (String (word_start, str.end()));
+
+    return words;
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    bool seen_selection = false;
+
+    for (guint i = 1; i < argc; i++)
+      {
+        const gchar *str = NULL;
+	if (parse_chunk_selection (argv, i, argc, m_all_chunks, m_freq_list))
+          seen_selection = true;
+        else if (parse_bool_option (argv, i, "--wave"))
+          {
+            m_location_wave = true;
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "--script", &str, argc))
+          {
+            m_output_format = SCRIPT;
+            m_fields = string_tokenize (str);
+          }
+        else if (parse_str_option (argv, i, "--pretty", &str, argc))
+          {
+            if (strcmp (str, "medium") == 0)
+              m_output_format = MEDIUM;
+            else if (strcmp (str, "full") == 0)
+              m_output_format = FULL;
+            else
+              {
+                sfi_error ("invalid argument to --pretty in info command: %s", str);
+                exit (1);
+              }
+          }
+      }
+    if (!seen_selection) /* default to all chunks */
+      m_all_chunks = true;
+    return 0; /* # args missing */
+  }
+  string
+  dhandle_storage_format (GslDataHandle *dhandle)
+  {
+    GslDataHandle *tmp_handle = dhandle;
+    do        /* skip comment or cache handles */
+      {
+        dhandle = tmp_handle;
+        tmp_handle = gsl_data_handle_get_source (dhandle);
+      }
+    while (tmp_handle);
+    GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle, 0);
+    if (vhandle)
+      {
+        gsl_vorbis1_handle_destroy (vhandle);
+        return "ogg";
+      }
+    return "raw";
+  }
+  static double
+  feature_avg_energy (GslDataHandle *dhandle,
+                      double         volume_adjustment)
+  {
+    const double min_db = -200;
+    g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), min_db);
+
+    /* We do not take into account that a data handle can contain many separate
+     * channels, so we're effectively averaging over all channels here.
+     */
+    GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
+    double avg_energy = 0;
+    for (int64 i = 0; i < dhandle->setup.n_values; i++) 
+      {
+        double v = gsl_data_handle_peek_value (dhandle, i, &peek_buffer);
+        avg_energy += v * v;
+      }
+    avg_energy /= MAX (dhandle->setup.n_values, 1);
+    avg_energy *= volume_adjustment * volume_adjustment;
+
+    if (avg_energy > 0)
+      return 10 * log (avg_energy) / log (10);
+    else
+      return min_db;
+  }
+  void
+  script_output_escaped (const char *s)
+  {
+    if (!s || strlen (s) == 0)
+      s = " ";
+    while (*s)
+      {
+        if (*s == ' ' || *s == '\t' || *s == '\n' || *s == '\\')  /* shell IFS and backslash */
+          g_print ("\\");
+        g_print ("%c", *s++);
+      }
+  }
+  void
+  script_output_xstr (char       **xinfos,
+                      const char  *what)
+  {
+    script_output_escaped (bse_xinfos_get_value (xinfos, what));
+  }
+  void
+  script_output_xnum (char       **xinfos,
+                      const char  *what)
+  {
+    if (bse_xinfos_get_value (xinfos, what))
+      g_print ("%lld", bse_xinfos_get_num (xinfos, what));
+    else
+      script_output_escaped (NULL);
+  }
+  void
+  exec (Wave *wave)
+  {
+    sort (m_freq_list.begin(), m_freq_list.end());
+    verify_chunk_selection (m_freq_list, wave);
+
+    if (m_output_format == SCRIPT && m_location_wave)
+      {
+        for (vector<string>::const_iterator fi = m_fields.begin(); fi != m_fields.end(); fi++)
+          {
+            if (fi != m_fields.begin()) // not first field
+              g_print (" ");
+
+            if (*fi == "channels")
+              g_print ("%d", wave->n_channels);
+            else if (*fi == "label")
+              script_output_escaped (wave->name.c_str());
+            else if (*fi == "blurb")
+              script_output_xstr (wave->wave_xinfos, "blurb");
+            else if (*fi == "authors")
+              script_output_xstr (wave->wave_xinfos, "authors");
+            else if (*fi == "license")
+              script_output_xstr (wave->wave_xinfos, "license");
+            else if (*fi == "play-type")
+              script_output_xstr (wave->wave_xinfos, "play-type");    
+            else
+              {
+                sfi_error ("info command on the wave: invalid field for --script format: %s", fi->c_str());
+                exit (1);
+              }
+          }
+        g_print ("\n");
+      }
+    else if (m_output_format != SCRIPT)
+      {
+        g_print ("\n");
+        g_print ("Wave\n");
+
+        if (wave->name != "")
+          g_print ("  Label             %s\n", wave->name.c_str());
+        const gchar *blurb = bse_xinfos_get_value (wave->wave_xinfos, "blurb");
+        if (blurb)
+          g_print ("  Comment           %s\n", blurb);
+        const gchar *authors = bse_xinfos_get_value (wave->wave_xinfos, "authors");
+        if (authors)
+          g_print ("  Authors           %s\n", authors);
+        const gchar *license = bse_xinfos_get_value (wave->wave_xinfos, "license");
+        if (license)
+          g_print ("  License           %s\n", license);
+
+        g_print ("  Channels    %7d\n", wave->n_channels);
+        g_print ("\n");
+      }
+
+    /* get the wave into storage order */
+    wave->sort();
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      if (m_all_chunks || wave->match (*it, m_freq_list))
+        {
+          WaveChunk *chunk = &*it;
+          GslDataHandle *dhandle = chunk->dhandle;
+
+          if (m_output_format == SCRIPT)
+            {
+              for (vector<string>::const_iterator fi = m_fields.begin(); fi != m_fields.end(); fi++)
+                {
+                  if (fi != m_fields.begin()) // not first field
+                    g_print (" ");
+
+                  if (*fi == "channels")
+                    g_print ("%d", wave->n_channels);
+                  else if (*fi == "length")
+                    g_print ("%lld", gsl_data_handle_length (dhandle));
+                  else if (*fi == "osc-freq")
+                    g_print ("%.3f", gsl_data_handle_osc_freq (dhandle));
+                  else if (*fi == "mix-freq")
+                    g_print ("%.3f", gsl_data_handle_mix_freq (dhandle));
+                  else if (*fi == "chunk-key")
+                    g_print ("%s", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
+                  else if (*fi == "volume")
+                    g_print ("%.3f", gsl_data_handle_volume (dhandle));
+                  else if (*fi == "format")
+                    g_print ("%s", dhandle_storage_format (dhandle).c_str());
+                  else if (*fi == "label")
+                    script_output_xstr (dhandle->setup.xinfos, "label");
+                  else if (*fi == "blurb")
+                    script_output_xstr (dhandle->setup.xinfos, "blurb");
+                  else if (*fi == "loop-type")
+                    script_output_xstr (dhandle->setup.xinfos, "loop-type");
+                  else if (*fi == "loop-start")
+                    script_output_xnum (dhandle->setup.xinfos, "loop-start");
+                  else if (*fi == "loop-end")
+                    script_output_xnum (dhandle->setup.xinfos, "loop-end");
+                  else if (*fi == "loop-count")
+                    script_output_xnum (dhandle->setup.xinfos, "loop-count");
+                  else if (*fi == "midi-note")
+                    script_output_xnum (dhandle->setup.xinfos, "midi-note");
+                  else if (*fi == "+avg-energy-raw")
+                    g_print ("%.3f", feature_avg_energy (dhandle, 1.0));
+                  else if (*fi == "+avg-energy")
+                    g_print ("%.3f", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
+                  else
+                    {
+                      sfi_error ("info command: invalid field for --script format: %s", fi->c_str());
+                      exit (1);
+                    }
+                }
+              g_print ("\n");
+            }
+          else  // MEDIUM or FULL output
+            {
+              g_print ("Chunk '%s'\n", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
+              const gchar *label = bse_xinfos_get_value (dhandle->setup.xinfos, "label");
+              if (label)
+                g_print ("  Label             %s\n", label);
+              const gchar *blurb = bse_xinfos_get_value (dhandle->setup.xinfos, "blurb");
+              if (blurb)
+                g_print ("  Comment           %s\n", blurb);
+
+              g_print ("  Osc Freq   %8.2f Hz\n", gsl_data_handle_osc_freq (dhandle));
+              g_print ("  Mix Freq   %8.2f Hz\n", gsl_data_handle_mix_freq (dhandle));
+              if (bse_xinfos_get_value (dhandle->setup.xinfos, "midi-note"))
+                {
+                  int note = bse_xinfos_get_num (dhandle->setup.xinfos, "midi-note");
+                  gchar *note_str = bse_note_to_string (note);
+                  g_print ("  MIDI Note   %7d     (%s)\n", note, note_str);
+                  g_free (note_str);
+                }
+              g_print ("  Samples  %10lld     (%.2f s)\n",
+                       gsl_data_handle_length (dhandle),
+                       gsl_data_handle_length (dhandle) / gsl_data_handle_mix_freq (dhandle));
+              if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
+                {
+                  const double volume = gsl_data_handle_volume (dhandle);
+                  const double volume_db = bse_db_from_factor (volume, -200);
+                  g_print ("  Volume      %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
+                }
+              g_print ("  Stored as  %s data\n", dhandle_storage_format (dhandle).c_str());
+              if (m_output_format == FULL)
+                {
+                  g_print ("  Avg Energy %+8.2f dB", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
+                  if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
+                    g_print ("  (%.2f dB before volume adjustment)",
+                             feature_avg_energy (dhandle, 1.0));
+                  g_print ("\n");
+                }
+              const gchar *loop_type = bse_xinfos_get_value (dhandle->setup.xinfos, "loop-type");
+              if (loop_type)
+                {
+                  g_print ("  Loop type %9s", loop_type);
+                  if (strcmp (loop_type, "none") != 0)
+                    {
+                      SfiNum loop_start = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-start");
+                      SfiNum loop_end = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-end");
+                      g_print ("     (start: %lld, end: %lld, ", loop_start, loop_end);
+
+                      SfiNum loop_count = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-count");
+                      if (!loop_count)
+                        g_print ("forever)\n");
+                      else
+                        g_print ("count: %lld)\n", loop_count);
+                    }
+                }
+              g_print ("\n");
+            }
+        }
+  }
+} cmd_info ("info");
+
 class ClipCmd : public Command {
   gfloat threshold;
   guint head_samples, tail_samples, fade_samples, pad_samples, tail_silence;
@@ -2504,11 +2871,10 @@ public:
     g_print ("    Prints a list of chunk keys of the chunks contained in the bsewave file.\n");
     g_print ("    A chunk key for a given chunk identifies the chunk uniquely and stays valid\n");
     g_print ("    if other chunks are inserted and deleted.\n");
-    g_print ("    Here is a bash script to export all chunks (like export with --all-chunks):\n");
-    // FIXME: use info instead of export, as soon as there is an info command (see #454121)
+    g_print ("    This bash script shows the length of all chunks (like info --all-chunks):\n");
     g_print ("      for key in `bsewavetool list-chunks foo.bsewave`\n");
     g_print ("      do\n");
-    g_print ("        bsewavetool export foo.bsewave --chunk-key $key -x /tmp/foo-note-%%N.wav\n");
+    g_print ("        bsewavetool info foo.bsewave --chunk-key $key --script length\n");
     g_print ("      done\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }

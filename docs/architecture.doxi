@@ -89,6 +89,8 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 @subsubsection Wave Chunk specific XInfos
 
 @itemize
+@item @strong{label} - The user visible name for this wave chunk.
+@item @strong{blurb} - A comment describing this wave chunk.
 @item @strong{osc-freq} -
 	Note frequency (oscillator frequency) the chunk should be played back at.
 	In other words, the note that was played when the chunk was recorded.
@@ -119,6 +121,8 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 @subsubsection Wave specific XInfos
 
 @itemize
+@item @strong{label} - The user visible name for this wave.
+@item @strong{blurb} - A comment describing this wave.
 @item @strong{authors} - A list of the authors who participated in creating the wave file.
 @item @strong{license} - The license specifiing redistribution and other legal terms for the wave file.
 @item @strong{blurb} - A descriptive text for the wave file.
