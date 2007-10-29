@@ -17,8 +17,14 @@ IMPORT_LINKS = 						\
 
 CHROME_ARGS = --header "X-Theme: chrome=off style=beastdocs.css"
 
-update:
+import-docs:
 	rm -f ${IMPORT_TARGETS}
 	for fi in ${IMPORT_LINKS} ; do echo " $$fi" ; done	\
 	| wget ${CHROME_ARGS} --convert-links -i -
 	cat ${srcdir}/style-append.css >> beastdocs.css
+	touch stamp-import-docs
+.PHONY: import-docs
+
+dist-hook:
+	find stamp-import-docs -mtime -4 | fgrep -q stamp \
+	|| { echo "docs/imports/: Last import is older than 3 days, please run: make import-docs" >&2 ; exit 1 ; }
