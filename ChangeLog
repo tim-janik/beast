@@ -1,3 +1,11 @@
+Mon Oct 29 22:42:08 2007 +0100 Tim Janik
+
+	docs/quickstart.doxi: removed, Beast-Quickstart is imported now.
+
+Mon Oct 29 21:51:18 2007 +0100 Tim Janik
+
+	docs/imports/Makefile.am: changed rule name to import-docs, check for new docs upon distcheck.
+
 Mon Oct 29 03:24:31 2007 +0100 Tim Janik
 
 	docs/imports: Imported docs from testbit.eu.
