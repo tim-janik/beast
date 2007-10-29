@@ -4,7 +4,7 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = images
+SUBDIRS = images imports
 
 MAN_TARGETS = $(strip				\
 	mans/beast.1				\
@@ -22,7 +22,6 @@ HTML_TARGETS = $(strip				\
 	html/engine-mplan.html			\
 	html/faq.html				\
 	html/plugin-devel.html			\
-	html/quickstart.html			\
 	html/sfidl-manual.html			\
 	\
 	html/beast.1.html			\
@@ -30,6 +29,12 @@ HTML_TARGETS = $(strip				\
 	html/sfidl.1.html			\
 	html/bse.5.html				\
 	html/coding-style.html			\
+	\
+	${HTML_IMPORTS}				\
+)
+HTML_IMPORTS = $(strip				\
+	html/beastdocs.css			\
+	html/Beast-Quickstart			\
 )
 CLEANFILES += ${HTML_TARGETS}
 STYLE_TARGETS = $(strip				\
@@ -109,6 +114,10 @@ html/%.html: @DOXRULE@ %.doxi
 	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
 html/%.html: @DOXRULE@ gendoxi/%.doxi
 	$(DOXER) doxi2html $< -d html/ $(DOXIDEFS)
+
+# HTML import rules
+${HTML_IMPORTS}:
+	cp $(subst html/, ${srcdir}/imports/, ${HTML_IMPORTS}) html/
 
 # Generated .doxi files
 gendoxi/:
