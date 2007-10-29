@@ -1,3 +1,28 @@
+Mon Oct 29 03:24:31 2007 +0100 Tim Janik
+
+	docs/imports: Imported docs from testbit.eu.
+
+	* docs/imports/Makefile.am: handle style-append.css.
+
+	* docs/imports/Beast-Quickstart: imported from testbit.eu.
+
+	* docs/imports/beastdocs.css: imported from testbit.eu.
+
+	* docs/imports/style-append.css: additional styles for beastdocs.css.
+
+Mon Oct 29 03:13:39 2007 +0100 Tim Janik
+
+	Moved Beast-Quickstart to testbit.eu.
+
+	* beast-gtk/bstapp.c: the quickstart URL is now "html/Beast-Quickstart".
+
+	* docs/imports/Makefile.am: download Beast-Quickstart and beastdocs.css
+	from testbit.eu.
+
+	* docs/Makefile.am: retrieve some docs from imports/.
+
+	* configure.in: build docs/imports/Makefile.
+
 Sat Oct 13 22:48:04 2007 +0200 Tim Janik
 
 	tools/bsewavetool.cc: compacted info --pretty=medium output.
