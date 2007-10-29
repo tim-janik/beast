@@ -2,10 +2,14 @@
 # Copyright (C) 2007 Tim Janik
 #
 ## GNU Lesser General Public License version 2 or any later version.
+include $(top_srcdir)/Makefile.decl
 
 IMPORT_TARGETS = $(strip			\
 	beastdocs.css				\
 	Beast-Quickstart			\
+)
+EXTRA_DIST += $(strip		\
+	style-append.css	\
 )
 IMPORT_LINKS = 						\
 	"http://testbit.eu/wiki/Beast-Quickstart"	\
@@ -17,3 +21,4 @@ update:
 	rm -f ${IMPORT_TARGETS}
 	for fi in ${IMPORT_LINKS} ; do echo " $$fi" ; done	\
 	| wget ${CHROME_ARGS} --convert-links -i -
+	cat ${srcdir}/style-append.css >> beastdocs.css
