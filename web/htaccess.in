@@ -46,8 +46,8 @@ Redirect 302 /LICENSE-AS-IS			http://beast.gtk.org/mirror/LICENSE-AS-IS
 # download.html, screenshots.html, mailinglist.html, bugs.html, faq.html, about.html
 
 # Compat redirects for testbit.eu 2007 Oct
-Redirect 301 quickstart.html		http://testbit.eu/wiki/Beast-Quickstart
-Redirect 301 quickstart			http://testbit.eu/wiki/Beast-Quickstart
+Redirect 301 /quickstart.html			http://testbit.eu/wiki/Beast-Quickstart
+Redirect 301 /quickstart			http://testbit.eu/wiki/Beast-Quickstart
 
 # Compat redirects for links for 2006 Aug...Dec
 Redirect 301 /bsesh.1.html		http://beast.gtk.org/bsescm.1.html
