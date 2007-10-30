@@ -1,3 +1,17 @@
+Tue Oct 30 03:09:47 2007 +0100 Tim Janik
+
+	Removed last traces of Beast-Quickstart.
+
+	* docs/Makefile.am: removed quickstart.doxi from EXTRA_DIST.
+
+	* docs/beast-index.doxi: link to Beast-Quickstart now.
+
+	* docs/site-navigation.xml: removed unused quickstart.html.
+
+	* web/Makefile.am: removed quickstart.doxi from html targets.
+
+	* web/htaccess.in: redirect quickstart.html to Beast-Quickstart.
+
 Mon Oct 29 22:42:08 2007 +0100 Tim Janik
 
 	docs/quickstart.doxi: removed, Beast-Quickstart is imported now.
