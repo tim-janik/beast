@@ -25,7 +25,6 @@
     <navigation-node title="FAQ"                   target="faq.html" />
     <navigation-node title="Introduction">
       <navigation-node title="Overview (German)"   target="overview-de.html" />
-      <navigation-node title="Quick Start"         target="quickstart.html" />
     </navigation-node>
     <navigation-node title="Manual Pages">
       <navigation-node title="beast(1)"            target="beast.1.html"   />

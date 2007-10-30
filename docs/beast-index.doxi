@@ -10,7 +10,7 @@
 @itemize
 @item @uri{@top_webdir/beast-index.html,	Index}
 @item @uri{@top_webdir/faq.html,		FAQ (Frequently Asked Questions)}
-@item @uri{@top_webdir/quickstart.html,		Quick Start Guide}
+@item @uri{@top_webdir/Beast-Quickstart,	Quickstart Guide}
 @done
 
 @heading Manual Pages

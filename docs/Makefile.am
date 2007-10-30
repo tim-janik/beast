@@ -226,7 +226,6 @@ doxi_files = $(strip		\
 	architecture.doxi	\
 	beast.1.doxi		\
 	faq.doxi		\
-	quickstart.doxi		\
 	sfidl-manual.doxi	\
 	beast-index.doxi	\
 	bsescm.1.doxi		\

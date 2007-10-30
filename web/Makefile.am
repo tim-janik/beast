@@ -45,7 +45,6 @@ HTML_TARGETS = $(strip			\
 	html/architecture.html		\
 	html/faq.html			\
 	html/plugin-devel.html		\
-	html/quickstart.html		\
 	html/sfidl-manual.html		\
 	\
 	html/log-beast.html		\
