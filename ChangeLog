@@ -1,3 +1,10 @@
+Wed Oct 31 20:07:30 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Fix bsewavetool info output for multichannel samples #491552.
+
+	* tools/bsewavetool.cc: When computing the sample count and the sample
+	length in seconds, take into account the number of channels.
+
 Tue Oct 30 03:09:47 2007 +0100 Tim Janik
 
 	Removed last traces of Beast-Quickstart.

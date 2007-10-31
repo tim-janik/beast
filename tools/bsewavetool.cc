@@ -1442,12 +1442,12 @@ public:
     g_print ("      osc-freq          frequency of the chunk\n");
     g_print ("      mix-freq          sampling rate of the chunk\n");
     g_print ("      midi-note         midi note of a chunk\n");
-    g_print ("      length            length of the chunk in samples\n");
+    g_print ("      length            length of the chunk in sample frames\n");
     g_print ("      volume            volume at which the chunk is to be played\n");
     g_print ("      format            storage format used to save the chunk data\n");
     g_print ("      loop-type         whether the chunk is to be looped\n");
-    g_print ("      loop-start        offset in samples for the start of the loop\n");
-    g_print ("      loop-end          offset in samples for the end of the loop\n");
+    g_print ("      loop-start        offset in sample frames for the start of the loop\n");
+    g_print ("      loop-end          offset in sample frames for the end of the loop\n");
     g_print ("      loop-count        maximum limit for how often the loop should be repeated\n");
     g_print ("    Chunk fields that can be computed for the signal:\n");
     g_print ("      +avg-energy-raw   average signal energy (dB) of the raw data of the chunk\n");
@@ -1536,6 +1536,16 @@ public:
         return "ogg";
       }
     return "raw";
+  }
+  int64
+  dhandle_n_frames (GslDataHandle *dhandle)
+  {
+    int64 n_values = gsl_data_handle_length (dhandle);
+    int64 n_channels = gsl_data_handle_n_channels (dhandle);
+    int64 n_frames = n_values / n_channels;
+
+    g_return_val_if_fail (n_values % n_channels == 0, n_frames);  /* a datahandle cannot contain half frames */
+    return n_frames;
   }
   static double
   feature_avg_energy (GslDataHandle *dhandle,
@@ -1628,18 +1638,18 @@ public:
         g_print ("Wave\n");
 
         if (wave->name != "")
-          g_print ("  Label             %s\n", wave->name.c_str());
+          g_print ("  Label                  %s\n", wave->name.c_str());
         const char *blurb = bse_xinfos_get_value (wave->wave_xinfos, "blurb");
         if (blurb)
-          g_print ("  Comment           %s\n", blurb);
+          g_print ("  Comment                %s\n", blurb);
         const char *authors = bse_xinfos_get_value (wave->wave_xinfos, "authors");
         if (authors)
-          g_print ("  Authors           %s\n", authors);
+          g_print ("  Authors                %s\n", authors);
         const char *license = bse_xinfos_get_value (wave->wave_xinfos, "license");
         if (license)
-          g_print ("  License           %s\n", license);
+          g_print ("  License                %s\n", license);
 
-        g_print ("  Channels    %7d\n", wave->n_channels);
+        g_print ("  Channels         %7d\n", wave->n_channels);
         g_print ("\n");
       }
 
@@ -1661,7 +1671,7 @@ public:
                   if (*fi == "channels")
                     g_print ("%d", wave->n_channels);
                   else if (*fi == "length")
-                    g_print ("%lld", gsl_data_handle_length (dhandle));
+                    g_print ("%lld", dhandle_n_frames (dhandle));
                   else if (*fi == "osc-freq")
                     g_print ("%.3f", gsl_data_handle_osc_freq (dhandle));
                   else if (*fi == "mix-freq")
@@ -1703,33 +1713,33 @@ public:
               g_print ("Chunk '%s'\n", WaveChunkKey (gsl_data_handle_osc_freq (dhandle)).as_string().c_str());
               const char *label = bse_xinfos_get_value (dhandle->setup.xinfos, "label");
               if (label)
-                g_print ("  Label             %s\n", label);
+                g_print ("  Label                  %s\n", label);
               const char *blurb = bse_xinfos_get_value (dhandle->setup.xinfos, "blurb");
               if (blurb)
-                g_print ("  Comment           %s\n", blurb);
+                g_print ("  Comment                %s\n", blurb);
 
-              g_print ("  Osc Freq   %8.2f Hz\n", gsl_data_handle_osc_freq (dhandle));
-              g_print ("  Mix Freq   %8.2f Hz\n", gsl_data_handle_mix_freq (dhandle));
+              g_print ("  Osc Freq   %13.2f Hz\n", gsl_data_handle_osc_freq (dhandle));
+              g_print ("  Mix Freq   %13.2f Hz\n", gsl_data_handle_mix_freq (dhandle));
               if (bse_xinfos_get_value (dhandle->setup.xinfos, "midi-note"))
                 {
                   int note = bse_xinfos_get_num (dhandle->setup.xinfos, "midi-note");
                   char *note_str = bse_note_to_string (note);
-                  g_print ("  MIDI Note   %7d     (%s)\n", note, note_str);
+                  g_print ("  MIDI Note        %7d     (%s)\n", note, note_str);
                   g_free (note_str);
                 }
               if (m_output_format == FULL)
                 {
-                  g_print ("  Samples  %10lld     (%.2f s)\n",
-                           gsl_data_handle_length (dhandle),
-                           gsl_data_handle_length (dhandle) / gsl_data_handle_mix_freq (dhandle));
+                  g_print ("  Sample Frames %10lld     (%.2f s)\n",
+                           dhandle_n_frames (dhandle),
+                           dhandle_n_frames (dhandle) / gsl_data_handle_mix_freq (dhandle));
                   if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
                     {
                       const double volume = gsl_data_handle_volume (dhandle);
                       const double volume_db = bse_db_from_factor (volume, -200);
-                      g_print ("  Volume      %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
+                      g_print ("  Volume           %7.2f%%    (%.2f dB)\n", gsl_data_handle_volume (dhandle) * 100, volume_db);
                     }
-                  g_print ("  Stored as  %s data\n", dhandle_storage_format (dhandle).c_str());
-                  g_print ("  Avg Energy %+8.2f dB", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
+                  g_print ("  Stored as       %s data\n", dhandle_storage_format (dhandle).c_str());
+                  g_print ("  Avg Energy %+13.2f dB", feature_avg_energy (dhandle, gsl_data_handle_volume (dhandle)));
                   if (bse_xinfos_get_value (dhandle->setup.xinfos, "volume"))
                     g_print ("  (%.2f dB before volume adjustment)",
                              feature_avg_energy (dhandle, 1.0));
@@ -1738,7 +1748,7 @@ public:
               const char *loop_type = bse_xinfos_get_value (dhandle->setup.xinfos, "loop-type");
               if (loop_type && m_output_format == FULL)
                 {
-                  g_print ("  Loop type %9s", loop_type);
+                  g_print ("  Loop type %14s", loop_type);
                   if (strcmp (loop_type, "none") != 0)
                     {
                       SfiNum loop_start = bse_xinfos_get_num (dhandle->setup.xinfos, "loop-start");
