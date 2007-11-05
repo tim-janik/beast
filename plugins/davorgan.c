@@ -432,7 +432,7 @@ dav_organ_process (BseModule *module,
   const gfloat *ifreq = BSE_MODULE_IBUFFER (module, DAV_ORGAN_ICHANNEL_FREQ);
   gfloat *ovalues = BSE_MODULE_OBUFFER (module, DAV_ORGAN_OCHANNEL_MONO);
   const gdouble transpose = organ->config.transpose_factor;
-  const gdouble fine_tune = bse_cent_factor (organ->config.fine_tune);
+  const gdouble fine_tune = bse_cent_tune_fast (organ->config.fine_tune);
   guint freq_256, mix_freq_256;
   guint freq_256_harm0, freq_256_harm1;
   guint i;

@@ -360,7 +360,7 @@ xmod_trigger (XtalStringsModule *xmod,
    */
   gdouble trigger_freq = untransposed_trigger_freq;
   trigger_freq *= xmod->tparams.transpose_factor;
-  trigger_freq *= bse_cent_factor (xmod->tparams.fine_tune);
+  trigger_freq *= bse_cent_tune_fast (xmod->tparams.fine_tune);
   trigger_freq = CLAMP (trigger_freq, 27.5, 4000.0);
   xmod->last_transposed_trigger_freq = trigger_freq;
   

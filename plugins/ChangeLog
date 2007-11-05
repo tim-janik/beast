@@ -1,3 +1,11 @@
+Wed Oct 31 22:19:27 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Use bse_cent_tune_fast() where appropriate, bug #450490.
+
+	* davxtalstrings.c:
+	* davorgan.c: Use bse_cent_tune_fast() which replaces
+	bse_cent_factor().
+
 2007-09-20 22:16:19  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.cc: fixed whitespaces and extra variables.
