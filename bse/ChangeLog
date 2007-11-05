@@ -1,3 +1,20 @@
+Mon Nov  5 17:28:04 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Merge BSE_FINE_TUNE_FACTOR() and bse_cent_factor(), bug #450490.
+
+	* bse/bseglobals.h:
+	* bsemathsignal.[hc]: Merge BSE_FINE_TUNE_FACTOR() and
+	bse_cent_factor() to bse_cent_tune_fast(). The resulting function
+	automatically clamps its input and uses the cent table to compute its
+	result.
+
+	* bse/bseinfo.c:
+	* bse/bsenote.cc:
+	* bse/bsepart.h:
+	* bse/bsesong.proc:
+	* bse/gsloscillator-aux.c:
+	* bse/tests/misctests.cc: Use bse_cent_tune_fast() where appropriate.
+
 2007-09-20 20:41:30  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c:

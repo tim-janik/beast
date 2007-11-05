@@ -29,7 +29,7 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
   gfloat *bound, fine_tune, fm_strength;
   gboolean with_fine_tune;
 
-  fine_tune = bse_cent_factor (fm->fine_tune);
+  fine_tune = bse_cent_tune_fast (fm->fine_tune);
   with_fine_tune = fm->fine_tune != 0;
   fm_strength = fm->fm_strength;
   
@@ -212,7 +212,6 @@ static const double cent_table201[100 + 1 + 100] = {
   1.05762877449345591872, 1.05823986130118871317, 1.05885130118846660974, 1.05946309435929526456, /* 2^(1/1200*100) */
 };
 const double * const bse_cent_table = cent_table201 + 100;
-
 
 /* --- musical tuning systems --- */
 #define SCALED_INTERVAL(scale, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12)       \

@@ -110,7 +110,7 @@ bse_note_to_tuned_freq (BseMusicalTuningType musical_tuning,
   if (note < BSE_MIN_NOTE || note > BSE_MAX_NOTE)
     return 0.0;
   double semitone_factor = bse_transpose_factor (musical_tuning, note - SFI_KAMMER_NOTE);
-  return BSE_KAMMER_FREQUENCY * semitone_factor * BSE_FINE_TUNE_FACTOR (fine_tune);
+  return BSE_KAMMER_FREQUENCY * semitone_factor * bse_cent_tune_fast (fine_tune);
 }
 
 

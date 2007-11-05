@@ -399,8 +399,18 @@ double        bse_transpose_factor           (BseMusicalTuningType musical_tunin
                                               int                  index /* [-132..+132] */);
 
 /* --- cents (1/100th of a semitone) --- */
-extern const double * const bse_cent_table;
-#define	bse_cent_factor(index /* -100..+100 */)		(bse_cent_table[index])
+
+/**
+ * @param fine_tune	fine tuning in cent between -100 and 100
+ * @return		a factor corresponding to this
+ *
+ * This function computes a factor which corresponds to a given fine tuning in
+ * cent.  The result can be used as factor for the frequency or the play speed.
+ * It is a faster alternative to bse_cent_tune(), and can only deal with
+ * integer values between -100 and 100. The input is always CLAMPed to ensure
+ * that it lies in this range.
+ */
+static inline double	bse_cent_tune_fast (int fine_tune /* -100..+100 */)   G_GNUC_CONST;
 
 /* --- implementation details --- */
 static inline double  G_GNUC_CONST
@@ -704,6 +714,14 @@ bse_saturate_branching (double value,
 }
 
 void    _bse_init_signal (void);
+
+static inline double G_GNUC_CONST
+bse_cent_tune_fast (int fine_tune)
+{
+  extern const double * const bse_cent_table;
+
+  return bse_cent_table[CLAMP (fine_tune, -100, 100)];
+}
 
 G_END_DECLS
 

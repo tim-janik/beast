@@ -270,7 +270,7 @@ struct _BsePartEventNote
 #define BSE_PART_SEMITONE_FACTOR(part,noteval)  (bse_part_transpose_factor ((part), CLAMP ((noteval), SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE))
 #define BSE_PART_NOTE_FREQ(part,note)           (BSE_KAMMER_FREQUENCY *                                 \
                                                  BSE_PART_SEMITONE_FACTOR ((part), (note)->note) *      \
-                                                 BSE_FINE_TUNE_FACTOR ((note)->fine_tune))
+                                                 bse_cent_tune_fast ((note)->fine_tune))
 
 void              bse_part_note_channel_init          (BsePartNoteChannel *self);
 BsePartEventNote* bse_part_note_channel_lookup        (BsePartNoteChannel *self,

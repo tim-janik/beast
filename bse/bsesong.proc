@@ -488,7 +488,7 @@ METHOD (BseSong, synthesize-note) {
   if (BSE_SOURCE_PREPARED (self) && self->midi_receiver_SL)
     {
       double semitone_factor = bse_transpose_factor (self->musical_tuning, CLAMP (note, SFI_MIN_NOTE, SFI_MAX_NOTE) - SFI_KAMMER_NOTE);
-      double freq = BSE_KAMMER_FREQUENCY * semitone_factor * BSE_FINE_TUNE_FACTOR (fine_tune);
+      double freq = BSE_KAMMER_FREQUENCY * semitone_factor * bse_cent_tune_fast (fine_tune);
       SfiTime tstamp = gsl_tick_stamp () + bse_engine_block_size () * 2;
       BseMidiEvent *eon, *eoff;
       eon  = bse_midi_event_note_on (track->midi_channel_SL, tstamp, freq, velocity);

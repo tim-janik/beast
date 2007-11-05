@@ -23,14 +23,14 @@
 #define	FLF	"26.20"
 
 static void
-check_cent_table (void)
+check_cent_tune_fast (void)
 {
-  TSTART ("Cent Table");
+  TSTART ("Cent Tune Function (fast Table based implementation)");
   const double epsilon = 1e-15;
   for (int i = -100; i <= +100; i++)
     {
       double setpoint = pow (2.0, 1. / 1200. * i);
-      TCHECK_CMP (fabs (bse_cent_factor (i) - setpoint), <, epsilon);
+      TCHECK_CMP (fabs (bse_cent_tune_fast (i) - setpoint), <, epsilon);
       if (i % 13 == 0)
         TOK();
     }
@@ -111,7 +111,7 @@ main (gint   argc,
 {
   bse_init_test (&argc, &argv, NULL);
 
-  check_cent_table();
+  check_cent_tune_fast();
   check_equal_tempered_tuning();
 
   BseMusicalTuningType last_tuning = BSE_MUSICAL_TUNING_YOUNG;

@@ -48,7 +48,7 @@ print_fine_tune (const gchar *tune_name,
 {
   g_print ("%s =%-4d \tfactor=%"FLF"f\n",
 	   tune_name, tune,
-	   BSE_FINE_TUNE_FACTOR (tune));
+	   bse_cent_tune_fast (tune));
 }
 
 int

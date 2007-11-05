@@ -78,7 +78,6 @@ guint	  bse_idle_timed	(guint64	usec_delay,
  * (SFI_KAMMER_NOTE + 12) -> 2.0
  * etc...
  */
-#define	BSE_FINE_TUNE_FACTOR(ft)	(bse_cent_factor (CLAMP ((ft), BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE)))
 #define	BSE_TRANSPOSE_FACTOR(st)	(bse_transpose_factor (CLAMP (st, -132, +132)))	/* BSE_MAX_TRANSPOSE */
 
 
