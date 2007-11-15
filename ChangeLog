@@ -1,3 +1,10 @@
+Mon Sep 17 23:28:36 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Document various play-types, see bug #433531.
+
+	* docs/architecture.doxi: Added documentation for adsr-wave-[12] and
+	plain-wave-[12] play types.
+
 2007-11-15 21:52:22  Tim Janik  <timj@gtk.org>
 
 	* applied patch from #450490 by stw and fixed up some whitespaces and docs.

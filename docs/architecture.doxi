@@ -136,7 +136,22 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 	Indicates the set of required play back facilities for a wave.
 	Supported values are:
 @enumerate
-  @item wave-mono - for mono wave files,
+  @item adsr-wave-1 - for mono wave files:
+                      A minimal ADSR envelope which does fade-in at the beginning and
+                      fade-out at the end of the note is used, to prevent clicks.
+                      The pitch bend midi and volume controllers are supported.
+  @item adsr-wave-2 - for stereo wave files:
+                      A minimal ADSR envelope which does fade-in at the beginning and
+                      fade-out at the end of the note is used, to prevent clicks.
+                      The pitch bend and volume midi controllers are supported.
+  @item plain-wave-1 - for mono wave files:
+                       No envelope is used, and the whole sample is played, no matter
+                       how long the actual note is. This is useful for drum samples.
+                       The volume midi controller is supported.
+  @item plain-wave-2 - for stereo wave files:
+                       No envelope is used, and the whole sample is played, no matter
+                       how long the actual note is. This is useful for drum samples.
+                       The volume midi controller is supported.
   @item gus-patch - for GUS Patches (which need a special envelope).
 @done
 @done
