@@ -1,3 +1,11 @@
+Mon Nov 12 21:00:10 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Fix module reset when user presses play again, bug #336766.
+
+	* bseproject.c (bse_project_stop_playback): When this method is
+	called, we need to dismiss the contexts of the BseSuper classes
+	we previously created in bse_project_start_playback.
+
 Mon Nov  5 18:54:39 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	Added necessary code for "fine-tune" xinfo, bug #450490.
