@@ -9,6 +9,10 @@ INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECAT
 ZFILE_DEFS = $(strip \
 	wave-mono		$(srcdir)/wave-mono.bse		\
 	gus-patch		$(srcdir)/gus-patch.bse		\
+	adsr-wave-1		$(srcdir)/adsr-wave-1.bse	\
+	adsr-wave-2		$(srcdir)/adsr-wave-2.bse	\
+	plain-wave-1		$(srcdir)/plain-wave-1.bse	\
+	plain-wave-2		$(srcdir)/plain-wave-2.bse	\
 )
 
 gen_sources = xgen-bzc xgen-bzh

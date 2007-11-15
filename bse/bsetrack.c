@@ -340,7 +340,7 @@ create_wnet (BseTrack *self,
   g_return_if_fail (self->wnet == NULL);
 
   const gchar *play_type = bse_xinfos_get_value (wave->xinfos, "play-type");
-  const gchar *synthesis_network = play_type ? play_type : "wave-mono";
+  const gchar *synthesis_network = play_type ? play_type : "adsr-wave-1";
 
   self->wnet = bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
 						synthesis_network,
@@ -353,9 +353,20 @@ create_wnet (BseTrack *self,
 		  "snet", self->wnet,
 		  NULL);
 
-  if (strcmp (synthesis_network, "wave-mono") == 0)
+  if (strcmp (synthesis_network, "adsr-wave-1") == 0 ||
+      strcmp (synthesis_network, "plain-wave-1") == 0)
     {
       g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
+						 "wave", wave,
+					         NULL);
+    }
+  else if (strcmp (synthesis_network, "adsr-wave-2") == 0 ||
+           strcmp (synthesis_network, "plain-wave-2") == 0)
+    {
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc-left"), /* no undo */
+						 "wave", wave,
+					         NULL);
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc-right"), /* no undo */
 						 "wave", wave,
 					         NULL);
     }

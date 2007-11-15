@@ -1,3 +1,21 @@
+Mon Nov  5 18:23:27 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Support various play-types in bse, bug #433431.
+
+	* bsewaveosc.[hc]: Added done output (inverse gate), which makes it
+	easy to use only the wave oscillator without adsr envelope in an
+	instrument.
+
+	* zintern/Makefile.am:
+	* zintern/plain-wave-[12].bse:
+	* zintern/adsr-wave-[12].bse: Add zintern mono/stereo version for
+	replaying samples with adsr envelope, and zintern mono/stereo bse file
+	for replaying waves without envelope (for drum samples). Pitch bend
+	is +/- 200 cent exponential, replay volume compatible to beast-0.7.1.
+
+	* bsetrack.c: Use plain-wave-[12] and adsr-wave-[12] depending on
+	play-type xinfo of the bsewave file.
+
 Mon Nov 12 21:00:10 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	Fix module reset when user presses play again, bug #336766.

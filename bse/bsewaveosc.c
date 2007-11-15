@@ -396,7 +396,7 @@ wosc_process (BseModule *module,
               guint      n_values)
 {
   GslWaveOscData *wosc = module->user_data;
-  gfloat gate;
+  gfloat gate, done;
   
   gsl_wave_osc_process (wosc,
                         n_values,
@@ -409,7 +409,9 @@ wosc_process (BseModule *module,
                         BSE_MODULE_OBUFFER (module, BSE_WAVE_OSC_OCHANNEL_WAVE));
   
   gate = wosc->done ? 0.0 : 1.0;
+  done = wosc->done ? 1.0 : 0.0;
   module->ostreams[BSE_WAVE_OSC_OCHANNEL_GATE].values = bse_engine_const_values (gate);
+  module->ostreams[BSE_WAVE_OSC_OCHANNEL_DONE].values = bse_engine_const_values (done);
 }
 
 static void
@@ -598,4 +600,6 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
   ochannel = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), _("Gate Output"));
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
+  ochannel = bse_source_class_add_ochannel (source_class, "done-out", _("Done Out"), _("Done Output"));
+  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_DONE);
 }
