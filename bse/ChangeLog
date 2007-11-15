@@ -1,3 +1,8 @@
+Thu Nov 15 23:44:54 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* zintern/Makefile.am:
+	* zintern/wave-mono.bse: Remove obsolete wave-mono replay network.
+
 Mon Nov  5 18:23:27 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	Support various play-types in bse, bug #433431.
