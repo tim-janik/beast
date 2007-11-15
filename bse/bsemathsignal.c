@@ -213,6 +213,21 @@ static const double cent_table201[100 + 1 + 100] = {
 };
 const double * const bse_cent_table = cent_table201 + 100;
 
+/**
+ * @param fine_tune	fine tuning in cent
+ * @return		a factor corresponding to this
+ *
+ * This function computes a factor which corresponds to a given fine tuning in
+ * cent. The result can be used as factor for the frequency or the play speed.
+ * It is similar to the bse_cent_tune_fast(), but also works for non-integer
+ * floating point values. It is however computationally more expensive.
+ */
+double
+bse_cent_tune (double fine_tune)
+{
+  return exp (fine_tune * BSE_LN_2_POW_1_DIV_1200_d);
+}
+
 /* --- musical tuning systems --- */
 #define SCALED_INTERVAL(scale, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12)       \
   scale * (F1), scale * (F2), scale * (F3), scale * (F4), scale * (F5), scale * (F6),   \

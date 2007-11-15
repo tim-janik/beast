@@ -38,6 +38,22 @@ check_cent_tune_fast (void)
 }
 
 static void
+check_cent_tune (void)
+{
+  TSTART ("Cent Tune Function");
+  const double epsilon = 1e-14;
+  int i = 0;
+  for (double fine_tune = -3600; fine_tune < 3600; fine_tune += g_random_double())  /* 3 octaves */
+    {
+      double expected = pow (2.0, 1. / 1200. * fine_tune);
+      TCHECK_CMP (fabs (bse_cent_tune (fine_tune) - expected), <, epsilon);
+      if (i++ % 500 == 0)
+        TOK();
+    }
+  TDONE();
+}
+
+static void
 check_equal_tempered_tuning (void)
 {
   TSTART ("Equal Temperament");
@@ -111,6 +127,7 @@ main (gint   argc,
 {
   bse_init_test (&argc, &argv, NULL);
 
+  check_cent_tune();
   check_cent_tune_fast();
   check_equal_tempered_tuning();
 

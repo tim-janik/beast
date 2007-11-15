@@ -18,6 +18,7 @@
 #include "bsemain.h"
 #include "gslcommon.h"
 #include "gsldatahandle.h"
+#include "bsemathsignal.h"
 #include <string.h>
 
 
@@ -638,7 +639,8 @@ gsl_wave_chunk_new (GslDataCache   *dcache,
   wchunk->open_count = 0;
   wchunk->mix_freq = mix_freq;
   wchunk->osc_freq = osc_freq;
-  wchunk->volume_adjust = 0.0;  /* will be set in gsl_wave_chunk_open */
+  wchunk->volume_adjust = 0.0;	    /* will be set in gsl_wave_chunk_open */
+  wchunk->fine_tune_factor = 0.0;   /* will be set in gsl_wave_chunk_open */
   wchunk->requested_loop_type = loop_type;
   wchunk->requested_loop_first = loop_first;
   wchunk->requested_loop_last = loop_last;
@@ -697,6 +699,7 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
       wchunk->length *= wchunk->n_channels;
       wchunk->n_pad_values = BSE_CONFIG (wave_chunk_padding) * wchunk->n_channels;
       wchunk->volume_adjust = gsl_data_handle_volume (wchunk->dcache->dhandle);
+      wchunk->fine_tune_factor = bse_cent_tune (gsl_data_handle_fine_tune (wchunk->dcache->dhandle));
       gsl_data_cache_open (wchunk->dcache);
       gsl_data_handle_close (wchunk->dcache->dhandle);
       g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, BSE_ERROR_INTERNAL);
@@ -751,6 +754,7 @@ gsl_wave_chunk_close (GslWaveChunk *wchunk)
   wchunk->leave_end_norm = 0;
   wchunk->tail_start_norm = 0;
   wchunk->volume_adjust = 0.0;
+  wchunk->fine_tune_factor = 0.0;
   gsl_wave_chunk_unref (wchunk);
 }
 

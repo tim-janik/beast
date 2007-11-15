@@ -250,7 +250,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
   if (UNLIKELY (!wosc->config.lookup_wchunk))
     return;
 
-  wosc->step_factor = zero_padding * wosc->wchunk->mix_freq;
+  wosc->step_factor = zero_padding * wosc->wchunk->mix_freq * wosc->wchunk->fine_tune_factor;
   wosc->step_factor /= wosc->wchunk->osc_freq * wosc->mix_freq;
   step = wosc->step_factor * play_freq;
   istep = step * (FRAC_MASK + 1.) + 0.5;

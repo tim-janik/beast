@@ -114,6 +114,12 @@ of the lowercase letters 'a'-'z', the digits '0'-'9' and a dash '-'.
 	0.5 (play sample half as loud, corresponding to a -6dB adjustment) and
 	0.25 (corresponds to a -12dB adjustment). The range of valid volume
 	adjustments is: 0 < volume <= 1.0, any other value will be ignored.
+@item @strong{fine-tune}
+	The fine tune allows to change the speed or pitch at which a sample is
+	played back in cent. This does not affect the raw/compressed audio data
+	actually stored. The default is a fine tune of 0 cent which avoids any detuninng.
+	For example a fine tune setting of 100 cents will pitch up the sample by a
+	semitone and 1200 cents cause a full octave shift.
 @item @strong{gus-patch-envelope} -
 	Contains the envelope points for a GUS Patch envelope.
 @done

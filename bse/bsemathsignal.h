@@ -400,6 +400,8 @@ double        bse_transpose_factor           (BseMusicalTuningType musical_tunin
 
 /* --- cents (1/100th of a semitone) --- */
 
+double                  bse_cent_tune (double fine_tune);
+
 /**
  * @param fine_tune	fine tuning in cent between -100 and 100
  * @return		a factor corresponding to this

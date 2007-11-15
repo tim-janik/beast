@@ -305,6 +305,19 @@ gsl_data_handle_volume (GslDataHandle *dhandle)
   return f;
 }
 
+gfloat
+gsl_data_handle_fine_tune (GslDataHandle *dhandle)
+{
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "fine-tune");
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+
+  return f;
+}
+
 const gchar*
 gsl_data_handle_name (GslDataHandle *dhandle)
 {

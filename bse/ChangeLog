@@ -1,3 +1,23 @@
+Mon Nov  5 18:54:39 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	Added necessary code for "fine-tune" xinfo, bug #450490.
+
+	* bsemathsignal.[hc]: Implemented bse_cent_tune(), which is similar to
+	bse_cent_tune_fast(), but accepts arbitary doubles as input because it
+	doesn't use a table internally.
+
+	* tests/misctests.cc: Added test for bse_cent_tune().
+
+	* gsldatahandle.[hc]: Implemented gsl_data_handle_fine_tune, which
+	returns a fine tuning measured in cent ("fine-tune" xinfo).
+
+	* gslwavechunk.[hc]: Cache the fine tune factor here, so that
+	GslWaveOsc can access it quickly.
+
+	* gslwaveosc.c (gsl_wave_osc_set_filter): Take fine tune factor of
+	the chunk into account for step computation (and thus for filter
+	computation).
+
 Mon Nov  5 17:28:04 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	Merge BSE_FINE_TUNE_FACTOR() and bse_cent_factor(), bug #450490.

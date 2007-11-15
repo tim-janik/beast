@@ -1,3 +1,11 @@
+2007-11-15 21:52:22  Tim Janik  <timj@gtk.org>
+
+	* applied patch from #450490 by stw and fixed up some whitespaces and docs.
+
+Wed Oct 31 21:39:13 2007  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/architecture.doxi: Documented the new "fine-tune" xinfo.
+
 Wed Oct 31 20:07:30 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	Fix bsewavetool info output for multichannel samples #491552.

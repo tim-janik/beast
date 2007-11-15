@@ -80,6 +80,7 @@ guint		  gsl_data_handle_bit_depth	    (GslDataHandle	  *data_handle);
 gfloat		  gsl_data_handle_mix_freq	    (GslDataHandle	  *data_handle);
 gfloat		  gsl_data_handle_osc_freq	    (GslDataHandle	  *data_handle);
 gfloat            gsl_data_handle_volume            (GslDataHandle        *data_handle);
+gfloat            gsl_data_handle_fine_tune         (GslDataHandle        *data_handle);
 const gchar*	  gsl_data_handle_name		    (GslDataHandle	  *data_handle);
 int64		  gsl_data_handle_read		    (GslDataHandle	  *data_handle,
 						     int64		   value_offset,
