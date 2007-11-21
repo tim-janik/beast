@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2007-10-28 18:02+0100\n"
-"PO-Revision-Date: 2007-08-19 16:40+0200\n"
+"PO-Revision-Date: 2007-11-21 18:22+0100\n"
 "Last-Translator: Yannig Marchegay (Kokoyaya) <yannig@marchegay.org>\n"
 "Language-Team: Occitan (post 1500) <ubuntu-l10n-oci@lists.ubuntu.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);"
 
 #: ../library/scripts/mixer-splitup-by-track.scm.h:25
 msgid "/Song/Assign Tracks to individual Mixer Busses"
@@ -31,7 +31,7 @@ msgstr ""
 #: ../library/scripts/song-parts-operations.scm.h:30
 #: ../library/scripts/song-parts-operations.scm.h:39
 msgid "Song"
-msgstr ""
+msgstr "Cançon"
 
 #: ../library/scripts/mixer-splitup-by-track.scm.h:57
 #: ../library/scripts/song-parts-operations.scm.h:45
@@ -53,7 +53,6 @@ msgid ""
 msgstr ""
 
 #: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
 msgid "Synth Net"
 msgstr "_Synchroniser"
 
@@ -90,7 +89,6 @@ msgstr ""
 
 #: ../library/scripts/part-harmonic-transposer.scm.h:50
 #: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
 msgid "Part"
 msgstr "Camin"
 
@@ -130,7 +128,6 @@ msgid ""
 msgstr ""
 
 #: ../library/scripts/progressor-example.scm.h:38
-#, fuzzy
 msgid "N Iterations"
 msgstr "Informacions"
 
@@ -1053,7 +1050,7 @@ msgstr ""
 
 #: ../beast-gtk/bstkeybindings.c:437
 msgid "Parameter"
-msgstr ""
+msgstr "Paramètre"
 
 #: ../beast-gtk/bstkeybindings.c:438
 msgid "Parameter to pass to functions upon activation"
@@ -1102,7 +1099,7 @@ msgstr ""
 
 #: ../beast-gtk/bstmain.c:191
 msgid "Plugins"
-msgstr ""
+msgstr "Ajustons"
 
 #: ../beast-gtk/bstmain.c:210
 msgid "LADSPA Plugins"
@@ -1662,7 +1659,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:98
 msgid "1\\/1"
-msgstr ""
+msgstr "1\\/1"
 
 #: ../beast-gtk/bstpianorollctrl.c:98
 msgid "Insert whole notes"
@@ -1678,7 +1675,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:102
 msgid "1\\/4"
-msgstr ""
+msgstr "1\\/4"
 
 #: ../beast-gtk/bstpianorollctrl.c:102
 msgid "Insert quarter notes"
@@ -1694,7 +1691,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:106
 msgid "1\\/16"
-msgstr ""
+msgstr "1\\/16"
 
 #: ../beast-gtk/bstpianorollctrl.c:106
 msgid "Insert sixteenth note"
@@ -1718,7 +1715,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:112
 msgid "1\\/128"
-msgstr ""
+msgstr "1\\/128"
 
 #: ../beast-gtk/bstpianorollctrl.c:112
 msgid "Insert hundred twenty-eighth note"
@@ -1836,7 +1833,7 @@ msgstr ""
 
 #: ../beast-gtk/bstplayback.c:79
 msgid "Playback"
-msgstr ""
+msgstr "_Legir"
 
 #: ../beast-gtk/bstpreferences.c:72
 msgid "Piano Keys"
@@ -2169,7 +2166,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:61
 msgid "1/1"
-msgstr ""
+msgstr "1/1"
 
 #: ../beast-gtk/bstrecords.idl:61
 msgid "Whole note"
@@ -2177,7 +2174,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:62
 msgid "1/2"
-msgstr ""
+msgstr "1/2"
 
 #: ../beast-gtk/bstrecords.idl:62
 msgid "Half note"
@@ -2185,7 +2182,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:63
 msgid "1/4"
-msgstr ""
+msgstr "1/4"
 
 #: ../beast-gtk/bstrecords.idl:63
 msgid "Quarter note"
@@ -2193,7 +2190,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:64
 msgid "1/8"
-msgstr ""
+msgstr "1/8"
 
 #: ../beast-gtk/bstrecords.idl:64
 msgid "Eighths note"
@@ -2201,7 +2198,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:65
 msgid "1/16"
-msgstr ""
+msgstr "1/16"
 
 #: ../beast-gtk/bstrecords.idl:65
 msgid "Sixteenth note"
@@ -2209,7 +2206,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:66
 msgid "1/32"
-msgstr ""
+msgstr "1/32"
 
 #: ../beast-gtk/bstrecords.idl:66
 msgid "Thirty-secondth note"
@@ -2217,7 +2214,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:67
 msgid "1/64"
-msgstr ""
+msgstr "1/64"
 
 #: ../beast-gtk/bstrecords.idl:67
 msgid "Sixty-fourth note"
@@ -2225,7 +2222,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:68
 msgid "1/128"
-msgstr ""
+msgstr "1/128"
 
 #: ../beast-gtk/bstrecords.idl:68
 msgid "Hundred twenty-eighth note"
@@ -2233,7 +2230,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:69
 msgid "1/1."
-msgstr ""
+msgstr "1/1."
 
 #: ../beast-gtk/bstrecords.idl:69
 msgid "Dotted whole note"
@@ -2241,7 +2238,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:70
 msgid "1/2."
-msgstr ""
+msgstr "1/2."
 
 #: ../beast-gtk/bstrecords.idl:70
 msgid "Dotted half note"
@@ -2249,7 +2246,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:71
 msgid "1/4."
-msgstr ""
+msgstr "1/4."
 
 #: ../beast-gtk/bstrecords.idl:71
 msgid "Dotted quarter note"
@@ -2257,7 +2254,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:72
 msgid "1/8."
-msgstr ""
+msgstr "1/8."
 
 #: ../beast-gtk/bstrecords.idl:72
 msgid "Dotted eighths note"
@@ -2265,7 +2262,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:73
 msgid "1/16."
-msgstr ""
+msgstr "1/16."
 
 #: ../beast-gtk/bstrecords.idl:73
 msgid "Dotted sixteenth note"
@@ -2273,7 +2270,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:74
 msgid "1/32."
-msgstr ""
+msgstr "1/32."
 
 #: ../beast-gtk/bstrecords.idl:74
 msgid "Dotted thirty-secondth note"
@@ -2281,7 +2278,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:75
 msgid "1/64."
-msgstr ""
+msgstr "1/64."
 
 #: ../beast-gtk/bstrecords.idl:75
 msgid "Dotted sixty-fourth note"
@@ -2289,7 +2286,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:76
 msgid "1/128."
-msgstr ""
+msgstr "1/128."
 
 #: ../beast-gtk/bstrecords.idl:76
 msgid "Dotted hundred twenty-eighth note"
@@ -2393,7 +2390,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:93
 msgid "2 & 4"
-msgstr ""
+msgstr "2 & 4"
 
 #: ../beast-gtk/bstrecords.idl:93
 msgid "Every second and fourth row"
@@ -2401,7 +2398,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:94
 msgid "4 & 8"
-msgstr ""
+msgstr "4 & 8"
 
 #: ../beast-gtk/bstrecords.idl:94
 msgid "Every fourth and eighth row"
@@ -2409,7 +2406,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:95
 msgid "4 & 12"
-msgstr ""
+msgstr "4 & 12"
 
 #: ../beast-gtk/bstrecords.idl:95
 msgid "Every fourth and twelfth row"
@@ -2417,7 +2414,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:96
 msgid "4 & 16"
-msgstr ""
+msgstr "4 & 16"
 
 #: ../beast-gtk/bstrecords.idl:96
 msgid "Every fourth and sixteenth row"
@@ -2425,7 +2422,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:97
 msgid "8 & 16"
-msgstr ""
+msgstr "8 & 16"
 
 #: ../beast-gtk/bstrecords.idl:97
 msgid "Every eighth and sixteenth row"
@@ -2457,7 +2454,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:101
 msgid "3 & 6"
-msgstr ""
+msgstr "3 & 6"
 
 #: ../beast-gtk/bstrecords.idl:101
 msgid "Every third and sixth row"
@@ -2465,7 +2462,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:102
 msgid "3 & 12"
-msgstr ""
+msgstr "3 & 12"
 
 #: ../beast-gtk/bstrecords.idl:102
 msgid "Every third and twelfth row"
@@ -2473,7 +2470,7 @@ msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:103
 msgid "6 & 12"
-msgstr ""
+msgstr "6 & 12"
 
 #: ../beast-gtk/bstrecords.idl:103
 msgid "Every sixth and twelfth row"
@@ -2633,7 +2630,7 @@ msgstr ""
 
 #: ../beast-gtk/bstsampleeditor.c:476 ../beast-gtk/bstwaveeditor.c:198
 msgid "Zoom:"
-msgstr ""
+msgstr "Zoom :"
 
 #: ../beast-gtk/bstsampleeditor.c:487 ../beast-gtk/bstwaveeditor.c:209
 msgid "VScale:"
@@ -2850,7 +2847,7 @@ msgstr ""
 
 #: ../beast-gtk/bstsupershell.c:185
 msgid "Mixer"
-msgstr ""
+msgstr "Boirador"
 
 #: ../beast-gtk/bstsupershell.c:185
 msgid "Mix track outputs, adjust volume and add effects"
@@ -3261,7 +3258,7 @@ msgstr ""
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Add"
@@ -3504,7 +3501,7 @@ msgstr ""
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
-msgstr ""
+msgstr "Justificacion"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:148
 msgid ""
@@ -5763,7 +5760,7 @@ msgstr ""
 #. TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus.
 #: ../bse/bsesong.c:649
 msgid "Master"
-msgstr ""
+msgstr "Mètre"
 
 #: ../bse/bsesong.c:746
 msgid "Tuning"
@@ -6176,7 +6173,7 @@ msgstr ""
 
 #: ../bse/bsewaveosc.c:565
 msgid "Channel"
-msgstr ""
+msgstr "Canal"
 
 #: ../bse/bsewaveosc.c:565
 msgid "The audio channel to play, usually 1 is left, 2 is right"
@@ -6224,7 +6221,7 @@ msgstr ""
 
 #: ../data/bse.keys.in.h:1
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../drivers/bse-alsa/bsemididevice-alsa.c:305
 #: ../drivers/bse-alsa/bsepcmdevice-alsa.c:549
