@@ -2,211 +2,20 @@
 # Copyright (C) 2004-2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the beast package.
 #
-# Yannig MARCHEGAY (yannig@marchegay.org) - 2006-2007
+# Yannig Marchegay (Kokoyaya) <yannig@marchegay.org> - 2006-2007
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-28 18:02+0100\n"
-"PO-Revision-Date: 2007-11-21 18:22+0100\n"
+"POT-Creation-Date: 2007-12-27 13:26+0100\n"
+"PO-Revision-Date: 2007-12-27 14:59+0100\n"
 "Last-Translator: Yannig Marchegay (Kokoyaya) <yannig@marchegay.org>\n"
 "Language-Team: Occitan (post 1500) <ubuntu-l10n-oci@lists.ubuntu.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-msgid "Song"
-msgstr "Cançon"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:59
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-msgid "Synth Net"
-msgstr "_Synchroniser"
-
-#: ../library/scripts/modules2grid.scm.h:30
-msgid "No valid synthesis network supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-msgid "Part"
-msgstr "Camin"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-msgid "No notes selected"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-msgid "Failed to parse harmony list"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-msgid "N Iterations"
-msgstr "Informacions"
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-msgid "Start Now"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:49
-msgid "No valid part object supplied"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-msgid "Show messages about empty part range"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-msgid "Failed to crop part range."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-msgid "Failed to duplicate part range."
-msgstr ""
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -807,7 +616,7 @@ msgstr "Nom del fichièr"
 
 #: ../beast-gtk/bstfiledialog.c:178
 msgid "Contents"
-msgstr "Somari"
+msgstr "Ensenhador"
 
 #. setup remaining bits
 #: ../beast-gtk/bstfiledialog.c:210
@@ -1667,7 +1476,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:100
 msgid "1\\/2"
-msgstr ""
+msgstr "1\\/2"
 
 #: ../beast-gtk/bstpianorollctrl.c:100
 msgid "Insert half notes"
@@ -1683,7 +1492,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:104
 msgid "1\\/8"
-msgstr ""
+msgstr "1\\/8"
 
 #: ../beast-gtk/bstpianorollctrl.c:104
 msgid "Insert eighths note"
@@ -1699,7 +1508,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:108
 msgid "1\\/32"
-msgstr ""
+msgstr "1\\/32"
 
 #: ../beast-gtk/bstpianorollctrl.c:108
 msgid "Insert thirty-second note"
@@ -1707,7 +1516,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:110
 msgid "1\\/64"
-msgstr ""
+msgstr "1\\/64"
 
 #: ../beast-gtk/bstpianorollctrl.c:110
 msgid "Insert sixty-fourth note"
@@ -1739,7 +1548,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:129 ../beast-gtk/bsttrackrollctrl.c:84
 msgid "Q: 1\\/1"
-msgstr ""
+msgstr "Q : 1\\/1"
 
 #: ../beast-gtk/bstpianorollctrl.c:129 ../beast-gtk/bsttrackrollctrl.c:84
 msgid "Quantize to whole note boundaries"
@@ -1747,7 +1556,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:131 ../beast-gtk/bsttrackrollctrl.c:86
 msgid "Q: 1\\/2"
-msgstr ""
+msgstr "Q : 1\\/2"
 
 #: ../beast-gtk/bstpianorollctrl.c:131 ../beast-gtk/bsttrackrollctrl.c:86
 msgid "Quantize to half note boundaries"
@@ -1755,7 +1564,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:133 ../beast-gtk/bsttrackrollctrl.c:88
 msgid "Q: 1\\/4"
-msgstr ""
+msgstr "Q : 1\\/4"
 
 #: ../beast-gtk/bstpianorollctrl.c:133 ../beast-gtk/bsttrackrollctrl.c:88
 msgid "Quantize to quarter note boundaries"
@@ -1763,7 +1572,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:135 ../beast-gtk/bsttrackrollctrl.c:90
 msgid "Q: 1\\/8"
-msgstr ""
+msgstr "Q : 1\\/8"
 
 #: ../beast-gtk/bstpianorollctrl.c:135 ../beast-gtk/bsttrackrollctrl.c:90
 msgid "Quantize to eighths note boundaries"
@@ -1771,7 +1580,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:137 ../beast-gtk/bsttrackrollctrl.c:92
 msgid "Q: 1\\/16"
-msgstr ""
+msgstr "Q : 1\\/16"
 
 #: ../beast-gtk/bstpianorollctrl.c:137 ../beast-gtk/bsttrackrollctrl.c:92
 msgid "Quantize to sixteenth note boundaries"
@@ -1779,7 +1588,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:139 ../beast-gtk/bsttrackrollctrl.c:94
 msgid "Q: 1\\/32"
-msgstr ""
+msgstr "Q : 1\\/32"
 
 #: ../beast-gtk/bstpianorollctrl.c:139 ../beast-gtk/bsttrackrollctrl.c:94
 msgid "Quantize to thirty-second note boundaries"
@@ -1787,7 +1596,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:141 ../beast-gtk/bsttrackrollctrl.c:96
 msgid "Q: 1\\/64"
-msgstr ""
+msgstr "Q : 1\\/64"
 
 #: ../beast-gtk/bstpianorollctrl.c:141 ../beast-gtk/bsttrackrollctrl.c:96
 msgid "Quantize to sixty-fourth note boundaries"
@@ -1795,7 +1604,7 @@ msgstr ""
 
 #: ../beast-gtk/bstpianorollctrl.c:143 ../beast-gtk/bsttrackrollctrl.c:98
 msgid "Q: 1\\/128"
-msgstr ""
+msgstr "Q : 1\\/128"
 
 #: ../beast-gtk/bstpianorollctrl.c:143 ../beast-gtk/bsttrackrollctrl.c:98
 msgid "Quantize to hundred twenty-eighth note boundaries"
@@ -2996,7 +2805,7 @@ msgid ""
 msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:609 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1024
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
@@ -3013,7 +2822,7 @@ msgid "Mixer busses connected to track output"
 msgstr ""
 
 #: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -3558,7 +3367,7 @@ msgstr "Escript"
 #. INFO (enabled)
 #: ../birnet/birnetmsg.cc:129
 msgid "Information"
-msgstr "Informacions"
+msgstr "Entresenhas"
 
 #. DIAG (enabled)
 #: ../birnet/birnetmsg.cc:133
@@ -3638,6 +3447,7 @@ msgstr ""
 #: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
 #: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
+#, c-format
 msgid "Note"
 msgstr "Nòta"
 
@@ -3669,7 +3479,7 @@ msgstr ""
 #: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:162 ../bse/bsestandardosc.c:167
 #: ../bse/bsestandardosc.c:172 ../bse/bsestandardosc.c:177
-#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
+#: ../bse/bsewaveosc.c:569 ../bse/bsewaveosc.c:575 ../bse/bsewaveosc.c:581
 msgid "Modulation"
 msgstr ""
 
@@ -3678,12 +3488,12 @@ msgid "Strength of linear frequency modulation"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:169
-#: ../bse/bsewaveosc.c:576
+#: ../bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:174
-#: ../bse/bsewaveosc.c:582
+#: ../bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
@@ -3707,7 +3517,7 @@ msgid "Unfiltered Audio Signal"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:197
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 #: ../plugins/davsyndrum.c:117 ../plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr ""
@@ -3733,7 +3543,7 @@ msgid "Gain Modulation Input"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:205
-#: ../bse/bsewaveosc.c:597 ../plugins/bseadder.c:99
+#: ../bse/bsewaveosc.c:599 ../plugins/bseadder.c:99
 #: ../plugins/bseamplifier.idl:47 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:107
 #: ../plugins/bsemult.c:66 ../plugins/davbassfilter.idl:33
@@ -3764,7 +3574,7 @@ msgstr ""
 
 #: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
 #: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr ""
 
@@ -3824,11 +3634,11 @@ msgstr ""
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: ../bse/bsebus.c:896 ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 msgid "Signal Outputs"
 msgstr ""
 
-#: ../bse/bsebus.c:898 ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:898 ../bse/bsetrack.c:1039
 msgid "Output Signals"
 msgstr ""
 
@@ -3896,6 +3706,7 @@ msgid "Constant Output %u"
 msgstr ""
 
 #: ../bse/bseconstant.c:108
+#, c-format
 msgid "Value [float]"
 msgstr ""
 
@@ -3910,6 +3721,7 @@ msgstr ""
 #: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
 #: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
 #: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
+#, c-format
 msgid "Frequency"
 msgstr "Frequéncia"
 
@@ -5123,7 +4935,7 @@ msgstr ""
 #. out of resource conditions
 #: ../bse/bseenums.c:113
 msgid "Too many open files"
-msgstr "Tròp de fichièrs doberts"
+msgstr "Tròp de fichièrs dobèrts"
 
 #: ../bse/bseenums.c:114
 msgid "Too many open files in system"
@@ -5401,10 +5213,12 @@ msgid "/Input & Output/Instrument Output"
 msgstr ""
 
 #: ../bse/bsejanitor.c:535
+#, c-format
 msgid "killed by janitor"
 msgstr ""
 
 #: ../bse/bsejanitor.c:537
+#, c-format
 msgid "connection terminated"
 msgstr ""
 
@@ -5414,12 +5228,14 @@ msgid "%s (core dumped)"
 msgstr ""
 
 #: ../bse/bsemain.cc:269
+#, c-format
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr ""
 
 #: ../bse/bsemain.cc:271
+#, c-format
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5499,11 +5315,11 @@ msgstr ""
 
 #: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
 #: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
-#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
+#: ../bse/bsetrack.c:1027 ../bse/bsetrack.c:1033
 msgid "MIDI Instrument"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1029
 msgid "MIDI Channel"
 msgstr ""
 
@@ -5511,7 +5327,7 @@ msgstr ""
 msgid "Max Voices"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1014
 msgid "Synthesizer"
 msgstr ""
 
@@ -5519,7 +5335,7 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Postprocessor"
 msgstr ""
 
@@ -5543,7 +5359,7 @@ msgstr ""
 msgid "Freq Out"
 msgstr ""
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:601
 msgid "Gate Out"
 msgstr ""
 
@@ -5893,8 +5709,8 @@ msgstr ""
 msgid "Wave Form"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
-#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1019 ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563 ../bse/bsewaveosc.c:565
 msgid "Wave"
 msgstr ""
 
@@ -5948,15 +5764,15 @@ msgstr ""
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:569
+#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:571
 msgid "Input Modulation [%]"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:575
+#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:577
 msgid "Exponential FM"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:581
+#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:583
 msgid "Octaves"
 msgstr ""
 
@@ -6005,11 +5821,11 @@ msgstr ""
 msgid "Pulse Width Modulation Input"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Sync In"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Syncronization Input"
 msgstr ""
 
@@ -6126,31 +5942,31 @@ msgstr ""
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 
-#: ../bse/bsetrack.c:999
+#: ../bse/bsetrack.c:1010
 msgid "Muted"
 msgstr ""
 
-#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1012 ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1022
 msgid "Synth Input"
 msgstr ""
 
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsetrack.c:1014
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1024
 msgid "Max Voixes"
 msgstr ""
 
-#: ../bse/bsetrack.c:1019
+#: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsetrack.c:1040
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -6167,41 +5983,49 @@ msgstr ""
 msgid "List of available waves to choose as oscillator source"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563
 msgid "Wave used as oscillator source"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "Channel"
 msgstr "Canal"
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:570
+#: ../bse/bsewaveosc.c:572
 msgid "Modulation Strength for linear frequency modulation"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 msgid "Frequency Input"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 msgid "Mod In"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 msgid "Modulation Input"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:597
+#: ../bse/bsewaveosc.c:599
 msgid "Wave Output"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:599
+#: ../bse/bsewaveosc.c:601
 msgid "Gate Output"
 msgstr ""
+
+#: ../bse/bsewaveosc.c:603 ../plugins/bsesimpleadsr.c:122
+msgid "Done Out"
+msgstr ""
+
+#: ../bse/bsewaveosc.c:603
+msgid "Done Output"
+msgstr "Sortida"
 
 #: ../data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
@@ -6775,10 +6599,6 @@ msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr ""
 
 #: ../plugins/bsesimpleadsr.c:122
-msgid "Done Out"
-msgstr ""
-
-#: ../plugins/bsesimpleadsr.c:122
 msgid "This signal goes high after the release phase has completed"
 msgstr ""
 
@@ -7100,6 +6920,27 @@ msgstr ""
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
+
+#~ msgid "Song"
+#~ msgstr "Cançon"
+
+#~ msgid "Synth Net"
+#~ msgstr "_Synchroniser"
+
+#~ msgid "Part"
+#~ msgstr "Camin"
+
+#~ msgid "1 /1"
+#~ msgstr "1 /1"
+
+#~ msgid "1 /4"
+#~ msgstr "1 /4"
+
+#~ msgid "1 /16"
+#~ msgstr "1 /16"
+
+#~ msgid "1 /128"
+#~ msgstr "1 /128"
 
 #, fuzzy
 #~ msgid "/Misc/Evaluator"
