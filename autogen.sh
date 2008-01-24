@@ -7,7 +7,6 @@ FILE=bse
 AUTOMAKE=automake
 AUTOMAKE_POSTFIX=1.9
 AUTOMAKE_VERSION=1.9
-AUTOMAKE_MAXVERSION=1.9
 ACLOCAL=aclocal
 AUTOCONF=autoconf
 AUTOCONF_POSTFIX=2.50
@@ -76,14 +75,6 @@ else
 	echo "or get the source tarball at http://ftp.gnu.org/gnu/automake"
 	DIE=1
 fi
-
-# due to automake release incompatibilities, check max-version
-check_version $AUTOMAKE_MAXVERSION.9999 "`$AUTOMAKE --version 2>/dev/null | sed 1q`" || {
-	echo "You need to have $AUTOMAKE (version <= $AUTOMAKE_MAXVERSION) installed to compile $PROJECT."
-	echo "Download the appropriate package for your distribution,"
-	echo "or get the source tarball at http://ftp.gnu.org/gnu/automake"
-	DIE=1
-}
 
 # check for autoconf
 if check_version "`$AUTOCONF --version 2>/dev/null | sed 1q`" $AUTOCONF_VERSION ; then
@@ -174,7 +165,7 @@ echo "Running: $AUTOMAKE"
 case $CC in
 *xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
 esac
-$AUTOMAKE --force-missing --add-missing $am_opt || exit $?
+$AUTOMAKE -Wno-portability --force-missing --add-missing $am_opt || exit $?
 
 echo "Running: $AUTOCONF"
 $AUTOCONF || exit $?
