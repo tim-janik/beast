@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-22 03:49+0100\n"
+"POT-Creation-Date: 2008-01-24 21:52+0100\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -41,6 +41,10 @@ msgstr "गीत"
 #: ../library/scripts/mixer-splitup-by-track.scm.h:57
 #: ../library/scripts/song-parts-operations.scm.h:45
 msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:59
+msgid "This script cannot be used while the project is playing"
 msgstr ""
 
 #: ../library/scripts/modules2grid.scm.h:21
@@ -784,7 +788,7 @@ msgid "Abortion"
 msgstr "एबोर्सन"
 
 #: ../beast-gtk/bstfiledialog.c:137 ../beast-gtk/bstitemview.c:207
-#: ../beast-gtk/bsttrackview.c:608 ../bse/bseobject.c:840
+#: ../beast-gtk/bsttrackview.c:603 ../bse/bseobject.c:846
 msgid "Name"
 msgstr "नाम"
 
@@ -1001,8 +1005,8 @@ msgstr "वस्तु चयन: %s"
 msgid "ID"
 msgstr "ID"
 
-#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:629
-#: ../bse/bseobject.c:850
+#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:624
+#: ../bse/bseobject.c:856
 msgid "Comment"
 msgstr "टिप्पणी"
 
@@ -2551,10 +2555,19 @@ msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "सिन्थेसिस मोड्युल प्रदर्शन गर्दा आगतलाई निर्गत च्यानलसँग सटाउनुहुन्छ ?"
 
 #: ../beast-gtk/bstrecords.idl:120
+#, fuzzy
+msgid "Enable Error Bell"
+msgstr "घातक त्रुटि: "
+
+#: ../beast-gtk/bstrecords.idl:120
+msgid "Notify users via error bells if edits cannot be carried out"
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:122
 msgid "Homogeneous Input Fields"
 msgstr "उस्तै प्रकारको आगत फाँट"
 
-#: ../beast-gtk/bstrecords.idl:121
+#: ../beast-gtk/bstrecords.idl:123
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -2562,11 +2575,11 @@ msgstr ""
 "धेरै जसो (सख्यात्मक वा पाठ) आगत फाँटका लागि उस्तै साइज सक्षम पार्नुहोस् । केहि फाँटमा फेरि "
 "सुरु गरेपछि मात्र यसले प्रभाव पार्छ ।"
 
-#: ../beast-gtk/bstrecords.idl:124
+#: ../beast-gtk/bstrecords.idl:126
 msgid "Slow scopes"
 msgstr "ढिलो क्षेत्र"
 
-#: ../beast-gtk/bstrecords.idl:125
+#: ../beast-gtk/bstrecords.idl:127
 msgid ""
 "Aggresively slows down the periodic update frequency of scopes. Doing this "
 "may be desirable on particularly slow machines."
@@ -2574,91 +2587,91 @@ msgstr ""
 "कार्यक्षेत्रको आवधिक आवृती जोडले ढिला गर्दछ । यो कार्य विशेषरूपले ढिला मेशिनमा आवश्यक "
 "हुनसक्दछ ।"
 
-#: ../beast-gtk/bstrecords.idl:133
+#: ../beast-gtk/bstrecords.idl:135
 msgid "Skin Name"
 msgstr "स्किन नाम"
 
-#: ../beast-gtk/bstrecords.idl:133
+#: ../beast-gtk/bstrecords.idl:135
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "हालको स्किन कन्फिगरेसनका लागि नाम (स्किन चयनका लागि प्रयोग गरिने)"
 
-#: ../beast-gtk/bstrecords.idl:135 ../beast-gtk/bstrecords.idl:145
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Background Image"
 msgstr "पृष्ठभूमि छवि"
 
-#: ../beast-gtk/bstrecords.idl:135
+#: ../beast-gtk/bstrecords.idl:137
 msgid "Background image used by the pattern editor."
 msgstr "बाँन्की सम्पादनकद्वारा प्रयोग गरिएको पृष्ठभूमि छवि"
 
-#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Image shade"
 msgstr "छवि सेड"
 
-#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "पृष्ठभूमि छवि पिक्सेल पृष्ठभूमि रङमा ब्लेन्ड गरेको प्रतिशत"
 
-#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
-#: ../beast-gtk/bstrecords.idl:157
+#: ../beast-gtk/bstrecords.idl:139 ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:159
 msgid "Background Color"
 msgstr "पृष्ठभुमि रङ"
 
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:140
 msgid "Background Shade 1"
 msgstr "पृष्ठभूमि सेड १"
 
-#: ../beast-gtk/bstrecords.idl:139
+#: ../beast-gtk/bstrecords.idl:141
 msgid "Background Shade 2"
 msgstr "पृष्ठभूमि सेड २"
 
-#: ../beast-gtk/bstrecords.idl:140
+#: ../beast-gtk/bstrecords.idl:142
 msgid "Empty Field Color"
 msgstr "खाली फिल्ड रङ"
 
-#: ../beast-gtk/bstrecords.idl:141
+#: ../beast-gtk/bstrecords.idl:143
 msgid "Text Color"
 msgstr "पाठको रङ"
 
-#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:144 ../beast-gtk/bstrecords.idl:151
 msgid "Vertical Bar Color"
 msgstr "ठाडो पट्टी रङ"
 
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:147
 msgid "Background image used by the piano-roll editor."
 msgstr "पियानो-रोल सम्पादनकद्वारा प्रयोग गरिएको पृष्ठभूमि छवि"
 
-#: ../beast-gtk/bstrecords.idl:148 ../beast-gtk/bstrecords.idl:158
+#: ../beast-gtk/bstrecords.idl:150 ../beast-gtk/bstrecords.idl:160
 msgid "Horizontal Bar Color"
 msgstr "तेर्सो पट्टी रङ"
 
-#: ../beast-gtk/bstrecords.idl:150
+#: ../beast-gtk/bstrecords.idl:152
 msgid "Horizontal Grid Color"
 msgstr "तेर्सो ग्रिड रङ"
 
-#: ../beast-gtk/bstrecords.idl:151
+#: ../beast-gtk/bstrecords.idl:153
 msgid "Vertical Grid Color"
 msgstr "ठाडो ग्रिड रङ"
 
-#: ../beast-gtk/bstrecords.idl:152 ../beast-gtk/bstrecords.idl:159
+#: ../beast-gtk/bstrecords.idl:154 ../beast-gtk/bstrecords.idl:161
 msgid "Middle Bar Color"
 msgstr "मध्य पट्टी रङ"
 
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Background image used by the control events editor."
 msgstr "नियन्त्रण घटना सम्पादकद्वारा प्रयोग गर्ने पृष्ठभूमि छवि"
 
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:162
 msgid "Positive Value Color"
 msgstr "सकरात्मक मान रङ"
 
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:163
 msgid "Zero Value Color"
 msgstr "शून्य मान रङ"
 
-#: ../beast-gtk/bstrecords.idl:162
+#: ../beast-gtk/bstrecords.idl:164
 msgid "Negative Value Color"
 msgstr "नकरात्मक मान रङ"
 
@@ -3020,39 +3033,39 @@ msgstr "यो गीतमा नयाँ ट्र्याक थप्न�
 msgid "Delete the currently selected track"
 msgstr "हालमा चयन गरिएको ट्र्याक मेट्नुहोस्"
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
+#: ../beast-gtk/bsttrackview.c:296 ../bse/bsetrack.c:283
 #: ../bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr "उपलब्ध तरङ्ग"
 
-#: ../beast-gtk/bsttrackview.c:302
+#: ../beast-gtk/bsttrackview.c:297
 msgid "List of available waves to choose a track instrument from"
 msgstr "यसबाट तरङ्गको सूची रोज्न उपलब्ध एउटा ट्रयाक बाजा"
 
-#: ../beast-gtk/bsttrackview.c:611
+#: ../beast-gtk/bsttrackview.c:606
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "प्लेब्याकको बेला जाँच नभएको ट्र्याकहरूबाट टिप्पणीहरू अनुक्रमणद्वारा वेबस्ता गरियो"
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1013
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bsemidisynth.c:449
+#: ../bse/bsetrack.c:1024
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "समकालिन प्लेब्याकका लागि आवाजको अधिकतम सङ्ख्या"
 
-#: ../beast-gtk/bsttrackview.c:617
+#: ../beast-gtk/bsttrackview.c:612
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "यो ट्र्याकद्वारा बाजाको रूपमा प्रयोग हुने सिन्थेसिस सञ्जाल वा तरङ्ग"
 
-#: ../beast-gtk/bsttrackview.c:620
+#: ../beast-gtk/bsttrackview.c:615
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "यो ट्र्याकमा मिडि च्यानल मानाङ्कन गरियो, प्रति ट्रयाक ० प्रयोग गर्दछ"
 
-#: ../beast-gtk/bsttrackview.c:623
+#: ../beast-gtk/bsttrackview.c:618
 msgid "Mixer busses connected to track output"
 msgstr "मिश्रण बसहरू ट्र्याक आगतका लागि जडान गरियो"
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
+#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Synthesis network to be used as postprocessor"
 msgstr "पोष्टप्रोसेसरका रूपमा प्रयोग हुने सिन्थेसिस सञ्जाल"
 
@@ -3139,8 +3152,8 @@ msgstr "कार्यविधि कार्यान्वयन त्र�
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "स्क्रिप्ट कार्यविधि कार्यान्वयन गर्न असफल '%s': %s"
 
-#: ../beast-gtk/bstutils.c:296 ../beast-gtk/bstutils.c:318
-#: ../beast-gtk/bstutils.c:321
+#: ../beast-gtk/bstutils.c:312 ../beast-gtk/bstutils.c:334
+#: ../beast-gtk/bstutils.c:337
 msgid "Updating View"
 msgstr "दृश्य अद्यावधिक गर्दैछ"
 
@@ -3716,7 +3729,7 @@ msgstr "चयन गेइन सामान्यकरण प्रकार
 #: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:162 ../bse/bsestandardosc.c:167
 #: ../bse/bsestandardosc.c:172 ../bse/bsestandardosc.c:177
-#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
+#: ../bse/bsewaveosc.c:569 ../bse/bsewaveosc.c:575 ../bse/bsewaveosc.c:581
 msgid "Modulation"
 msgstr "मोडुलेसन"
 
@@ -3725,12 +3738,12 @@ msgid "Strength of linear frequency modulation"
 msgstr "पङ्क्ति आवृति मोडुलेसनको बल"
 
 #: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:169
-#: ../bse/bsewaveosc.c:576
+#: ../bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "पङ्क्तिको सट्टा एक्सपोनेन्सियल आवृतिको मोडुलेसन कार्यसम्पादन गर्नुहोस्"
 
 #: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:174
-#: ../bse/bsewaveosc.c:582
+#: ../bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "एक्सपोनेन्सियल आवृति मोडुलेसनबाट प्रभावित हुने अक्टेभको सङ्ख्या"
 
@@ -3754,7 +3767,7 @@ msgid "Unfiltered Audio Signal"
 msgstr "फिल्टर नगरिएको अडियो सङ्केत"
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:197
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 #: ../plugins/davsyndrum.c:117 ../plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr "आवृति आगत"
@@ -3780,7 +3793,7 @@ msgid "Gain Modulation Input"
 msgstr "नाफा मोडुलेसन आगत"
 
 #: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:205
-#: ../bse/bsewaveosc.c:597 ../plugins/bseadder.c:99
+#: ../bse/bsewaveosc.c:599 ../plugins/bseadder.c:99
 #: ../plugins/bseamplifier.idl:47 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:107
 #: ../plugins/bsemult.c:66 ../plugins/davbassfilter.idl:33
@@ -3809,125 +3822,125 @@ msgstr "उपलब्ध आगत"
 msgid "List of available mixer busses to be used as bus output"
 msgstr "बस आगतमा प्रयोग गर्न उपलब्ध मिश्रण बसहरूको सूची"
 
-#: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
-#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
+#: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
+#: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr "समायोजन"
 
-#: ../bse/bsebus.c:871
+#: ../bse/bsebus.c:874
 msgid "Mute"
 msgstr "मौन"
 
-#: ../bse/bsebus.c:871
+#: ../bse/bsebus.c:874
 msgid "Mute: turn off the bus volume"
 msgstr "मौन: बसको भोल्युम बन्द गर्नुहोस्"
 
-#: ../bse/bsebus.c:873
+#: ../bse/bsebus.c:876
 msgid "Solo"
 msgstr "एकल"
 
-#: ../bse/bsebus.c:873
+#: ../bse/bsebus.c:876
 msgid "Solo: mute all other busses"
 msgstr "एकल: अरू बसलाई मौन गराउनुहोस्"
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:878
 msgid "Sync"
 msgstr "सिन्क्रोनाइज"
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:878
 msgid "Syncronize left and right volume"
 msgstr "दायाँ र बायाँ भोल्युम सिन्क्रोनाइज गर्नुहोस्"
 
-#: ../bse/bsebus.c:877
+#: ../bse/bsebus.c:880
 msgid "Left Volume"
 msgstr "बायाँ भोल्युम"
 
-#: ../bse/bsebus.c:877
+#: ../bse/bsebus.c:880
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "बायाँ बस च्यानलको डेसिबलमा भोल्युम समायोजन"
 
-#: ../bse/bsebus.c:881
+#: ../bse/bsebus.c:884
 msgid "Right Volume"
 msgstr "दायाँ भोल्युम"
 
-#: ../bse/bsebus.c:881
+#: ../bse/bsebus.c:884
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "दायाँ बस च्यानलको डेसिबलमा भोल्युम समायोजन"
 
-#: ../bse/bsebus.c:884
+#: ../bse/bsebus.c:887
 msgid "Signal Inputs"
 msgstr "सङ्केत आगत"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: ../bse/bsebus.c:887
+#: ../bse/bsebus.c:890
 msgid "Input Signals"
 msgstr "आगत सङ्केत"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: ../bse/bsebus.c:891
+#: ../bse/bsebus.c:894
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "बस आगतमा सिन्थेसिस सङ्केतहरूको प्रयोग (ट्र्याक र बसहरूबाट)"
 
-#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 msgid "Signal Outputs"
 msgstr "सङ्केत आगत"
 
-#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:898 ../bse/bsetrack.c:1039
 msgid "Output Signals"
 msgstr "आगत सङ्केत"
 
-#: ../bse/bsebus.c:896
+#: ../bse/bsebus.c:899
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "सिन्थेसिस सङ्केतका लागि आगतको मिश्रण बस"
 
-#: ../bse/bsebus.c:899
+#: ../bse/bsebus.c:902
 msgid "Internals"
 msgstr "आन्तरिक"
 
-#: ../bse/bsebus.c:901
+#: ../bse/bsebus.c:904
 msgid "Master Output"
 msgstr "मास्टर निर्गत"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr "बायाँ अडियो आगत"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 msgid "Left channel input"
 msgstr "बायाँ च्यानल आगत"
 
-#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:129
+#: ../bse/bsebus.c:909 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr "दायाँ अडियो आगत"
 
-#: ../bse/bsebus.c:906
+#: ../bse/bsebus.c:909
 msgid "Right channel input"
 msgstr "दायाँ च्यानल आगत"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr "बायाँ अडियो निर्गत"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 msgid "Left channel output"
 msgstr "बायाँ च्यानल निर्गत"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr "दायाँ अडियो निर्गत"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 msgid "Right channel output"
 msgstr "दायाँ च्यानल निर्गत"
 
-#: ../bse/bsebus.c:929
+#: ../bse/bsebus.c:932
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -5586,11 +5599,11 @@ msgstr "पोष्टप्रोसेसर्स रोज्नका ल�
 
 #: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
 #: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
-#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
+#: ../bse/bsetrack.c:1027 ../bse/bsetrack.c:1033
 msgid "MIDI Instrument"
 msgstr "मिडि बाजा"
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1029
 msgid "MIDI Channel"
 msgstr "मिडि च्यानल"
 
@@ -5598,7 +5611,7 @@ msgstr "मिडि च्यानल"
 msgid "Max Voices"
 msgstr "म्याक्स स्वर"
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1014
 msgid "Synthesizer"
 msgstr "सिन्थेसाइजर"
 
@@ -5606,7 +5619,7 @@ msgstr "सिन्थेसाइजर"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "मिडि बाजाका रूपमा प्रयोग गर्नका लागि सिन्थेसिस सञ्झ्याल"
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Postprocessor"
 msgstr "पोष्टप्रोसेसर"
 
@@ -5630,7 +5643,7 @@ msgstr "प्लेब्याक सेटिङ"
 msgid "Freq Out"
 msgstr "आवृति बाहिर"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:601
 msgid "Gate Out"
 msgstr "बाहिर जानुहोस्"
 
@@ -5668,11 +5681,11 @@ msgstr "दायाँ बाहिर"
 msgid "Disconnect Out"
 msgstr "जडान नभएको बाहिर"
 
-#: ../bse/bseobject.c:840
+#: ../bse/bseobject.c:846
 msgid "Unique name of this object"
 msgstr ""
 
-#: ../bse/bseobject.c:850
+#: ../bse/bseobject.c:856
 msgid "Free form comment or description"
 msgstr ""
 
@@ -5999,8 +6012,8 @@ msgstr "/अडियो स्रोत/स्ट्यान्डर्ड �
 msgid "Wave Form"
 msgstr "तरङ्ग फारम"
 
-#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
-#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1019 ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563 ../bse/bsewaveosc.c:565
 msgid "Wave"
 msgstr "तरङ्ग"
 
@@ -6055,15 +6068,15 @@ msgstr "राम्रो ट्युन"
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "डिट्युनिङ्गको रकम सेन्टमा (सेमिटोनको सयौ भाग)"
 
-#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:569
+#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:571
 msgid "Input Modulation [%]"
 msgstr "आगत मोड्युलेसन [%]"
 
-#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:575
+#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:577
 msgid "Exponential FM"
 msgstr "एक्सपोनेन्शल FM"
 
-#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:581
+#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:583
 msgid "Octaves"
 msgstr "ओक्टेभ"
 
@@ -6116,11 +6129,11 @@ msgstr "PWM भित्र"
 msgid "Pulse Width Modulation Input"
 msgstr "प्लस चौडाइ मोड्युलेसन आगत"
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Sync In"
 msgstr "सिन्क आगत"
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Syncronization Input"
 msgstr "सिन्क्रोनाइजेसन आगत"
 
@@ -6237,33 +6250,33 @@ msgstr "ट्र्याक बाजा रोज्नका लागि �
 msgid "List of available mixer busses to be used as track output"
 msgstr "ट्र्याक आगतमा प्रयोग गर्नका लागि उपलब्ध मिश्रण बसको सूची"
 
-#: ../bse/bsetrack.c:999
+#: ../bse/bsetrack.c:1010
 msgid "Muted"
 msgstr "मौन गराइएको"
 
-#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1012 ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1022
 msgid "Synth Input"
 msgstr "सिन्थ आगत"
 
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsetrack.c:1014
 msgid "Synthesis network to be used as instrument"
 msgstr "बाजामा प्रयोग गर्न सिन्थेसिस सञ्जाल"
 
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "बाजाको रूपमा प्रयोग गरिने तरङ्ग"
 
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1024
 msgid "Max Voixes"
 msgstr "म्याक्स स्वर"
 
-#: ../bse/bsetrack.c:1019
+#: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 "यो ट्र्याकका लागि मिडि च्यानलको मानाङ्कन गर्नुहोस्, ० ले अवधि प्रति ट्र्याक च्यानल प्रयोग "
 "गर्दछ"
 
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsetrack.c:1040
 msgid "Mixer busses used as output for this track"
 msgstr "यो ट्र्याकका लागि निर्गतको रूपमा प्रयोग गरिने मिश्रण बस"
 
@@ -6280,41 +6293,50 @@ msgstr "/अडियो स्रोत/तरङ्ग ओस्सिले�
 msgid "List of available waves to choose as oscillator source"
 msgstr "ओस्सिलेटर स्रोतको रूपमा रोज्न उपलब्ध तरङ्गको सूची"
 
-#: ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563
 msgid "Wave used as oscillator source"
 msgstr "ओस्सिलेटर स्रोतको रूपमा प्रयोग गरिने तरङ्ग"
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "Channel"
 msgstr "च्यानल"
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr "अडियो च्यानल सुरु गर्नका लागि, खासगरी १ बायाँ हो, २ दायाँ हो"
 
-#: ../bse/bsewaveosc.c:570
+#: ../bse/bsewaveosc.c:572
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "रेखा आवृति मोड्युलेसनका लागि मोड्युलेसन बल"
 
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 msgid "Frequency Input"
 msgstr "आवृति आगत"
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 msgid "Mod In"
 msgstr "मोड्युलेसन आगत"
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 msgid "Modulation Input"
 msgstr "मोड्युलेसन आगत"
 
-#: ../bse/bsewaveosc.c:597
+#: ../bse/bsewaveosc.c:599
 msgid "Wave Output"
 msgstr "तरङ निर्गत"
 
-#: ../bse/bsewaveosc.c:599
+#: ../bse/bsewaveosc.c:601
 msgid "Gate Output"
 msgstr "गेट निर्गत"
+
+#: ../bse/bsewaveosc.c:603 ../plugins/bsesimpleadsr.c:122
+msgid "Done Out"
+msgstr "गरियो"
+
+#: ../bse/bsewaveosc.c:603
+#, fuzzy
+msgid "Done Output"
+msgstr "गरियो"
 
 #: ../data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
@@ -6953,10 +6975,6 @@ msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr "आक्रमण-डिके-सस्टेन-खाम आगत छाडिएको"
 
 #: ../plugins/bsesimpleadsr.c:122
-msgid "Done Out"
-msgstr "गरियो"
-
-#: ../plugins/bsesimpleadsr.c:122
 msgid "This signal goes high after the release phase has completed"
 msgstr "छाडिएको समय सकिएपछि यो सङ्केत उच्च हुन्छ"
 
@@ -7292,7 +7310,7 @@ msgstr "बायाँ निर्गत"
 msgid "Right Output"
 msgstr "दायाँ निर्गत"
 
-#: ../tools/bsewavetool.cc:947
+#: ../tools/bsewavetool.cc:1218
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न असफल: %s"
@@ -7462,6 +7480,3 @@ msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न अ
 #, fuzzy
 #~ msgid "Guitar Output"
 #~ msgstr "गेट निर्गत"
-
-#~ msgid "Fatal Error: "
-#~ msgstr "घातक त्रुटि: "

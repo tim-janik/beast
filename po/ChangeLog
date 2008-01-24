@@ -1,3 +1,8 @@
+2008-01-24 21:53:47  Tim Janik  <timj@gtk.org>
+
+	* *.po: update all po files to recent source changes
+	and to contain missing translated scheme strings.
+
 2007-12-31  Yannig Marchegay <yannig@marchegay.org>
 
 	* oc.po: Updated Occitan translation.

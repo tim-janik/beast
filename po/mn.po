@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-22 03:49+0100\n"
+"POT-Creation-Date: 2008-01-24 21:52+0100\n"
 "PO-Revision-Date: 2003-12-08 17:11+0800\n"
 "Last-Translator: Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>\n"
 "Language-Team: Mongolian <openmn-core@lists.sf.net>\n"
@@ -36,6 +36,10 @@ msgstr "_Дуу"
 #: ../library/scripts/mixer-splitup-by-track.scm.h:57
 #: ../library/scripts/song-parts-operations.scm.h:45
 msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:59
+msgid "This script cannot be used while the project is playing"
 msgstr ""
 
 #: ../library/scripts/modules2grid.scm.h:21
@@ -790,7 +794,7 @@ msgid "Abortion"
 msgstr ""
 
 #: ../beast-gtk/bstfiledialog.c:137 ../beast-gtk/bstitemview.c:207
-#: ../beast-gtk/bsttrackview.c:608 ../bse/bseobject.c:840
+#: ../beast-gtk/bsttrackview.c:603 ../bse/bseobject.c:846
 msgid "Name"
 msgstr "Нэр"
 
@@ -998,8 +1002,8 @@ msgstr "Файлын сонголт"
 msgid "ID"
 msgstr "Дугаар"
 
-#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:629
-#: ../bse/bseobject.c:850
+#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:624
+#: ../bse/bseobject.c:856
 msgid "Comment"
 msgstr "Тайлбар"
 
@@ -2631,117 +2635,125 @@ msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:120
+msgid "Enable Error Bell"
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:120
+msgid "Notify users via error bells if edits cannot be carried out"
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:122
 msgid "Homogeneous Input Fields"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:121
+#: ../beast-gtk/bstrecords.idl:123
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:124
+#: ../beast-gtk/bstrecords.idl:126
 msgid "Slow scopes"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:125
+#: ../beast-gtk/bstrecords.idl:127
 msgid ""
 "Aggresively slows down the periodic update frequency of scopes. Doing this "
 "may be desirable on particularly slow machines."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:133
+#: ../beast-gtk/bstrecords.idl:135
 #, fuzzy
 msgid "Skin Name"
 msgstr "Нэр"
 
-#: ../beast-gtk/bstrecords.idl:133
-msgid "Name for the current skin configuration (used for skin selections)."
-msgstr ""
-
-#: ../beast-gtk/bstrecords.idl:135 ../beast-gtk/bstrecords.idl:145
-#: ../beast-gtk/bstrecords.idl:155
-msgid "Background Image"
-msgstr ""
-
 #: ../beast-gtk/bstrecords.idl:135
-msgid "Background image used by the pattern editor."
-msgstr ""
-
-#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
-#: ../beast-gtk/bstrecords.idl:156
-msgid "Image shade"
-msgstr ""
-
-#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
-#: ../beast-gtk/bstrecords.idl:156
-msgid "Percentage of background image pixel to blend over background color."
+msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
 #: ../beast-gtk/bstrecords.idl:157
+msgid "Background Image"
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:137
+msgid "Background image used by the pattern editor."
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
+msgid "Image shade"
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
+msgid "Percentage of background image pixel to blend over background color."
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:139 ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:159
 msgid "Background Color"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:140
 msgid "Background Shade 1"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:139
+#: ../beast-gtk/bstrecords.idl:141
 msgid "Background Shade 2"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:140
+#: ../beast-gtk/bstrecords.idl:142
 msgid "Empty Field Color"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:141
+#: ../beast-gtk/bstrecords.idl:143
 #, fuzzy
 msgid "Text Color"
 msgstr "Сонго"
 
-#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:144 ../beast-gtk/bstrecords.idl:151
 #, fuzzy
 msgid "Vertical Bar Color"
 msgstr "Босоо сонголт"
 
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:147
 msgid "Background image used by the piano-roll editor."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:148 ../beast-gtk/bstrecords.idl:158
+#: ../beast-gtk/bstrecords.idl:150 ../beast-gtk/bstrecords.idl:160
 #, fuzzy
 msgid "Horizontal Bar Color"
 msgstr "Хэвтээгээр өсгө"
 
-#: ../beast-gtk/bstrecords.idl:150
+#: ../beast-gtk/bstrecords.idl:152
 #, fuzzy
 msgid "Horizontal Grid Color"
 msgstr "Хэвтээгээр өсгө"
 
-#: ../beast-gtk/bstrecords.idl:151
+#: ../beast-gtk/bstrecords.idl:153
 #, fuzzy
 msgid "Vertical Grid Color"
 msgstr "Босоо бүс"
 
-#: ../beast-gtk/bstrecords.idl:152 ../beast-gtk/bstrecords.idl:159
+#: ../beast-gtk/bstrecords.idl:154 ../beast-gtk/bstrecords.idl:161
 msgid "Middle Bar Color"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Background image used by the control events editor."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:162
 msgid "Positive Value Color"
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:163
 #, fuzzy
 msgid "Zero Value Color"
 msgstr "Сонго"
 
-#: ../beast-gtk/bstrecords.idl:162
+#: ../beast-gtk/bstrecords.idl:164
 msgid "Negative Value Color"
 msgstr ""
 
@@ -3103,39 +3115,39 @@ msgstr ""
 msgid "Delete the currently selected track"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
+#: ../beast-gtk/bsttrackview.c:296 ../bse/bsetrack.c:283
 #: ../bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:302
+#: ../beast-gtk/bsttrackview.c:297
 msgid "List of available waves to choose a track instrument from"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:611
+#: ../beast-gtk/bsttrackview.c:606
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1013
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bsemidisynth.c:449
+#: ../bse/bsetrack.c:1024
 msgid "Maximum number of voices for simultaneous playback"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:617
+#: ../beast-gtk/bsttrackview.c:612
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:620
+#: ../beast-gtk/bsttrackview.c:615
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:623
+#: ../beast-gtk/bsttrackview.c:618
 msgid "Mixer busses connected to track output"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
+#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -3221,8 +3233,8 @@ msgstr ""
 msgid "Failed to execute script procedure '%s': %s"
 msgstr ""
 
-#: ../beast-gtk/bstutils.c:296 ../beast-gtk/bstutils.c:318
-#: ../beast-gtk/bstutils.c:321
+#: ../beast-gtk/bstutils.c:312 ../beast-gtk/bstutils.c:334
+#: ../beast-gtk/bstutils.c:337
 msgid "Updating View"
 msgstr ""
 
@@ -3816,7 +3828,7 @@ msgstr ""
 #: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:162 ../bse/bsestandardosc.c:167
 #: ../bse/bsestandardosc.c:172 ../bse/bsestandardosc.c:177
-#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
+#: ../bse/bsewaveosc.c:569 ../bse/bsewaveosc.c:575 ../bse/bsewaveosc.c:581
 #, fuzzy
 msgid "Modulation"
 msgstr "Байрлал"
@@ -3826,12 +3838,12 @@ msgid "Strength of linear frequency modulation"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:169
-#: ../bse/bsewaveosc.c:576
+#: ../bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:174
-#: ../bse/bsewaveosc.c:582
+#: ../bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
@@ -3856,7 +3868,7 @@ msgid "Unfiltered Audio Signal"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:197
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 #: ../plugins/davsyndrum.c:117 ../plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr ""
@@ -3882,7 +3894,7 @@ msgid "Gain Modulation Input"
 msgstr ""
 
 #: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:205
-#: ../bse/bsewaveosc.c:597 ../plugins/bseadder.c:99
+#: ../bse/bsewaveosc.c:599 ../plugins/bseadder.c:99
 #: ../plugins/bseamplifier.idl:47 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:107
 #: ../plugins/bsemult.c:66 ../plugins/davbassfilter.idl:33
@@ -3914,62 +3926,62 @@ msgstr "Оролтуудыг устга"
 msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 
-#: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
-#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
+#: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
+#: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr ""
 
-#: ../bse/bsebus.c:871
+#: ../bse/bsebus.c:874
 msgid "Mute"
 msgstr ""
 
-#: ../bse/bsebus.c:871
+#: ../bse/bsebus.c:874
 msgid "Mute: turn off the bus volume"
 msgstr ""
 
-#: ../bse/bsebus.c:873
+#: ../bse/bsebus.c:876
 msgid "Solo"
 msgstr ""
 
-#: ../bse/bsebus.c:873
+#: ../bse/bsebus.c:876
 msgid "Solo: mute all other busses"
 msgstr ""
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:878
 #, fuzzy
 msgid "Sync"
 msgstr "Нотын урт"
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:878
 msgid "Syncronize left and right volume"
 msgstr ""
 
-#: ../bse/bsebus.c:877
+#: ../bse/bsebus.c:880
 #, fuzzy
 msgid "Left Volume"
 msgstr "Зүүн"
 
-#: ../bse/bsebus.c:877
+#: ../bse/bsebus.c:880
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr ""
 
-#: ../bse/bsebus.c:881
+#: ../bse/bsebus.c:884
 #, fuzzy
 msgid "Right Volume"
 msgstr "Баруун"
 
-#: ../bse/bsebus.c:881
+#: ../bse/bsebus.c:884
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr ""
 
-#: ../bse/bsebus.c:884
+#: ../bse/bsebus.c:887
 #, fuzzy
 msgid "Signal Inputs"
 msgstr "Удирдлагын төрөл:"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: ../bse/bsebus.c:887
+#: ../bse/bsebus.c:890
 #, fuzzy
 msgid "Input Signals"
 msgstr "Оролт"
@@ -3977,72 +3989,72 @@ msgstr "Оролт"
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: ../bse/bsebus.c:891
+#: ../bse/bsebus.c:894
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 
-#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 #, fuzzy
 msgid "Signal Outputs"
 msgstr "Удирдлагын төрөл:"
 
-#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:898 ../bse/bsetrack.c:1039
 #, fuzzy
 msgid "Output Signals"
 msgstr "Оролт"
 
-#: ../bse/bsebus.c:896
+#: ../bse/bsebus.c:899
 msgid "Mixer busses used as output for synthesis signals"
 msgstr ""
 
-#: ../bse/bsebus.c:899
+#: ../bse/bsebus.c:902
 msgid "Internals"
 msgstr ""
 
-#: ../bse/bsebus.c:901
+#: ../bse/bsebus.c:904
 #, fuzzy
 msgid "Master Output"
 msgstr "Гаралтуудыг устга"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr ""
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 #, fuzzy
 msgid "Left channel input"
 msgstr "Оролтын суваг ашиглагдаж байна"
 
-#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:129
+#: ../bse/bsebus.c:909 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr ""
 
-#: ../bse/bsebus.c:906
+#: ../bse/bsebus.c:909
 #, fuzzy
 msgid "Right channel input"
 msgstr "Оролтын суваг ашиглагдаж байна"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr ""
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 msgid "Left channel output"
 msgstr ""
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr ""
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 msgid "Right channel output"
 msgstr ""
 
-#: ../bse/bsebus.c:929
+#: ../bse/bsebus.c:932
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -5714,12 +5726,12 @@ msgstr ""
 
 #: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
 #: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
-#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
+#: ../bse/bsetrack.c:1027 ../bse/bsetrack.c:1033
 #, fuzzy
 msgid "MIDI Instrument"
 msgstr "Зэмсгийг хадгал"
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1029
 #, fuzzy
 msgid "MIDI Channel"
 msgstr "Оролтын суваг ашиглагдаж байна"
@@ -5728,7 +5740,7 @@ msgstr "Оролтын суваг ашиглагдаж байна"
 msgid "Max Voices"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1014
 msgid "Synthesizer"
 msgstr ""
 
@@ -5736,7 +5748,7 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 #, fuzzy
 msgid "Postprocessor"
 msgstr "Процедур"
@@ -5762,7 +5774,7 @@ msgstr ""
 msgid "Freq Out"
 msgstr "Зүүн"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:601
 #, fuzzy
 msgid "Gate Out"
 msgstr "Зүүн"
@@ -5806,11 +5818,11 @@ msgstr "Баруун"
 msgid "Disconnect Out"
 msgstr ""
 
-#: ../bse/bseobject.c:840
+#: ../bse/bseobject.c:846
 msgid "Unique name of this object"
 msgstr ""
 
-#: ../bse/bseobject.c:850
+#: ../bse/bseobject.c:856
 msgid "Free form comment or description"
 msgstr ""
 
@@ -6129,8 +6141,8 @@ msgstr ""
 msgid "Wave Form"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
-#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1019 ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563 ../bse/bsewaveosc.c:565
 #, fuzzy
 msgid "Wave"
 msgstr "Урсгал"
@@ -6186,15 +6198,15 @@ msgstr ""
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:569
+#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:571
 msgid "Input Modulation [%]"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:575
+#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:577
 msgid "Exponential FM"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:581
+#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:583
 #, fuzzy
 msgid "Octaves"
 msgstr "Урсгал"
@@ -6244,11 +6256,11 @@ msgstr ""
 msgid "Pulse Width Modulation Input"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Sync In"
 msgstr ""
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Syncronization Input"
 msgstr ""
 
@@ -6366,32 +6378,32 @@ msgstr ""
 msgid "List of available mixer busses to be used as track output"
 msgstr ""
 
-#: ../bse/bsetrack.c:999
+#: ../bse/bsetrack.c:1010
 msgid "Muted"
 msgstr ""
 
-#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1012 ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1022
 #, fuzzy
 msgid "Synth Input"
 msgstr "Зүүн"
 
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsetrack.c:1014
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr ""
 
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1024
 msgid "Max Voixes"
 msgstr ""
 
-#: ../bse/bsetrack.c:1019
+#: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr ""
 
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsetrack.c:1040
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
@@ -6408,46 +6420,56 @@ msgstr ""
 msgid "List of available waves to choose as oscillator source"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563
 msgid "Wave used as oscillator source"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 #, fuzzy
 msgid "Channel"
 msgstr "Оролтын суваг ашиглагдаж байна"
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:570
+#: ../bse/bsewaveosc.c:572
 msgid "Modulation Strength for linear frequency modulation"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 msgid "Frequency Input"
 msgstr ""
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 #, fuzzy
 msgid "Mod In"
 msgstr "Модулийн мэдээлэл"
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 #, fuzzy
 msgid "Modulation Input"
 msgstr "Байрлал"
 
-#: ../bse/bsewaveosc.c:597
+#: ../bse/bsewaveosc.c:599
 #, fuzzy
 msgid "Wave Output"
 msgstr "Гаралт"
 
-#: ../bse/bsewaveosc.c:599
+#: ../bse/bsewaveosc.c:601
 #, fuzzy
 msgid "Gate Output"
 msgstr "Гаралтуудыг устга"
+
+#: ../bse/bsewaveosc.c:603 ../plugins/bsesimpleadsr.c:122
+#, fuzzy
+msgid "Done Out"
+msgstr "Зүүн"
+
+#: ../bse/bsewaveosc.c:603
+#, fuzzy
+msgid "Done Output"
+msgstr "Зүүн"
 
 #: ../data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
@@ -7053,11 +7075,6 @@ msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr ""
 
 #: ../plugins/bsesimpleadsr.c:122
-#, fuzzy
-msgid "Done Out"
-msgstr "Зүүн"
-
-#: ../plugins/bsesimpleadsr.c:122
 msgid "This signal goes high after the release phase has completed"
 msgstr ""
 
@@ -7394,7 +7411,7 @@ msgstr "Зүүн"
 msgid "Right Output"
 msgstr "Баруун"
 
-#: ../tools/bsewavetool.cc:947
+#: ../tools/bsewavetool.cc:1218
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "\"%s\" төслийг ачааллаж байна"

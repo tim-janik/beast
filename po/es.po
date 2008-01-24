@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pan2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-22 03:49+0100\n"
+"POT-Creation-Date: 2008-01-24 21:52+0100\n"
 "PO-Revision-Date: 2006-10-29 23:44+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -42,6 +42,10 @@ msgstr "_Canción"
 #: ../library/scripts/mixer-splitup-by-track.scm.h:57
 #: ../library/scripts/song-parts-operations.scm.h:45
 msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:59
+msgid "This script cannot be used while the project is playing"
 msgstr ""
 
 #: ../library/scripts/modules2grid.scm.h:21
@@ -801,7 +805,7 @@ msgid "Abortion"
 msgstr "Abortando"
 
 #: ../beast-gtk/bstfiledialog.c:137 ../beast-gtk/bstitemview.c:207
-#: ../beast-gtk/bsttrackview.c:608 ../bse/bseobject.c:840
+#: ../beast-gtk/bsttrackview.c:603 ../bse/bseobject.c:846
 msgid "Name"
 msgstr "Nombre"
 
@@ -1018,8 +1022,8 @@ msgstr "Selección de objeto: %s"
 msgid "ID"
 msgstr "ID"
 
-#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:629
-#: ../bse/bseobject.c:850
+#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:624
+#: ../bse/bseobject.c:856
 msgid "Comment"
 msgstr "Comentario"
 
@@ -2619,10 +2623,19 @@ msgstr ""
 "síntesis de los módulos?"
 
 #: ../beast-gtk/bstrecords.idl:120
+#, fuzzy
+msgid "Enable Error Bell"
+msgstr "Error fatal: "
+
+#: ../beast-gtk/bstrecords.idl:120
+msgid "Notify users via error bells if edits cannot be carried out"
+msgstr ""
+
+#: ../beast-gtk/bstrecords.idl:122
 msgid "Homogeneous Input Fields"
 msgstr "Campos de entrada homogéneos"
 
-#: ../beast-gtk/bstrecords.idl:121
+#: ../beast-gtk/bstrecords.idl:123
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -2631,11 +2644,11 @@ msgstr ""
 "Para algunos de los campos, esto sólo tendrá efecto después de reiniciar el "
 "programa."
 
-#: ../beast-gtk/bstrecords.idl:124
+#: ../beast-gtk/bstrecords.idl:126
 msgid "Slow scopes"
 msgstr "Ámbitos lentos"
 
-#: ../beast-gtk/bstrecords.idl:125
+#: ../beast-gtk/bstrecords.idl:127
 msgid ""
 "Aggresively slows down the periodic update frequency of scopes. Doing this "
 "may be desirable on particularly slow machines."
@@ -2643,94 +2656,94 @@ msgstr ""
 "Activa o impide a BEAST que actualice periódicamente la frecuencia de los "
 "ámbitos. Hacer esto quizás sea deseable en equipos lentos."
 
-#: ../beast-gtk/bstrecords.idl:133
+#: ../beast-gtk/bstrecords.idl:135
 msgid "Skin Name"
 msgstr "Nombre de la apariencia"
 
-#: ../beast-gtk/bstrecords.idl:133
+#: ../beast-gtk/bstrecords.idl:135
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 "Nombre para la configuración actual de la apariencia (usada para seleccionar "
 "las apariencias)."
 
-#: ../beast-gtk/bstrecords.idl:135 ../beast-gtk/bstrecords.idl:145
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Background Image"
 msgstr "Imagen de fondo"
 
-#: ../beast-gtk/bstrecords.idl:135
+#: ../beast-gtk/bstrecords.idl:137
 msgid "Background image used by the pattern editor."
 msgstr "Imagen de fondo usada por el editor de patrones."
 
-#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Image shade"
 msgstr "Sombra de la imagen"
 
-#: ../beast-gtk/bstrecords.idl:136 ../beast-gtk/bstrecords.idl:146
-#: ../beast-gtk/bstrecords.idl:156
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:158
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 "Porcentaje del pixel de la imagen de fondo a mezclar con el color de fondo."
 
-#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
-#: ../beast-gtk/bstrecords.idl:157
+#: ../beast-gtk/bstrecords.idl:139 ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:159
 msgid "Background Color"
 msgstr "Color del fondo"
 
-#: ../beast-gtk/bstrecords.idl:138
+#: ../beast-gtk/bstrecords.idl:140
 msgid "Background Shade 1"
 msgstr "Sombra del fondo 1"
 
-#: ../beast-gtk/bstrecords.idl:139
+#: ../beast-gtk/bstrecords.idl:141
 msgid "Background Shade 2"
 msgstr "Sombra del fondo 2"
 
-#: ../beast-gtk/bstrecords.idl:140
+#: ../beast-gtk/bstrecords.idl:142
 msgid "Empty Field Color"
 msgstr "Color del campo vacío"
 
-#: ../beast-gtk/bstrecords.idl:141
+#: ../beast-gtk/bstrecords.idl:143
 msgid "Text Color"
 msgstr "Color del texto"
 
-#: ../beast-gtk/bstrecords.idl:142 ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:144 ../beast-gtk/bstrecords.idl:151
 msgid "Vertical Bar Color"
 msgstr "Color de la barra vertical"
 
-#: ../beast-gtk/bstrecords.idl:145
+#: ../beast-gtk/bstrecords.idl:147
 msgid "Background image used by the piano-roll editor."
 msgstr "Imagen de fondo usada por el editor del piano."
 
-#: ../beast-gtk/bstrecords.idl:148 ../beast-gtk/bstrecords.idl:158
+#: ../beast-gtk/bstrecords.idl:150 ../beast-gtk/bstrecords.idl:160
 msgid "Horizontal Bar Color"
 msgstr "Color de la barra horizontal"
 
-#: ../beast-gtk/bstrecords.idl:150
+#: ../beast-gtk/bstrecords.idl:152
 msgid "Horizontal Grid Color"
 msgstr "Color de la rejilla horizontal"
 
-#: ../beast-gtk/bstrecords.idl:151
+#: ../beast-gtk/bstrecords.idl:153
 msgid "Vertical Grid Color"
 msgstr "Color de la rejilla vertical"
 
-#: ../beast-gtk/bstrecords.idl:152 ../beast-gtk/bstrecords.idl:159
+#: ../beast-gtk/bstrecords.idl:154 ../beast-gtk/bstrecords.idl:161
 msgid "Middle Bar Color"
 msgstr "Color de la rejilla del medio"
 
-#: ../beast-gtk/bstrecords.idl:155
+#: ../beast-gtk/bstrecords.idl:157
 msgid "Background image used by the control events editor."
 msgstr "Color de fondo usado por el editor de control de eventos."
 
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:162
 msgid "Positive Value Color"
 msgstr "Color de valor positivo"
 
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:163
 msgid "Zero Value Color"
 msgstr "Color de valor cero"
 
-#: ../beast-gtk/bstrecords.idl:162
+#: ../beast-gtk/bstrecords.idl:164
 msgid "Negative Value Color"
 msgstr "Color de valor negativo"
 
@@ -3096,41 +3109,41 @@ msgstr "Añadir una  pista nueva a esta canción"
 msgid "Delete the currently selected track"
 msgstr "Borrar la pista seleccionada actualmente"
 
-#: ../beast-gtk/bsttrackview.c:301 ../bse/bsetrack.c:283
+#: ../beast-gtk/bsttrackview.c:296 ../bse/bsetrack.c:283
 #: ../bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr "Ondas disponibles"
 
-#: ../beast-gtk/bsttrackview.c:302
+#: ../beast-gtk/bsttrackview.c:297
 msgid "List of available waves to choose a track instrument from"
 msgstr "Lista de ondas disponibles para elegir un instrumento de la pista"
 
-#: ../beast-gtk/bsttrackview.c:611
+#: ../beast-gtk/bsttrackview.c:606
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 "Las notas de las pistas sin seleccionar son ignoradas por el secuenciador "
 "durante la reproducción"
 
-#: ../beast-gtk/bsttrackview.c:614 ../bse/bsemidisynth.c:449
-#: ../bse/bsetrack.c:1013
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bsemidisynth.c:449
+#: ../bse/bsetrack.c:1024
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Máximo número de voces para su reproducción simultánea"
 
-#: ../beast-gtk/bsttrackview.c:617
+#: ../beast-gtk/bsttrackview.c:612
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Red se síntesis u onda que se va a usar como instrumento en esta pista"
 
-#: ../beast-gtk/bsttrackview.c:620
+#: ../beast-gtk/bsttrackview.c:615
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Canales MIDI asignados a esta pista, 0 usa un canal privado por pista"
 
-#: ../beast-gtk/bsttrackview.c:623
+#: ../beast-gtk/bsttrackview.c:618
 msgid "Mixer busses connected to track output"
 msgstr "Buses de mezcla conectados a la salida de la pista"
 
-#: ../beast-gtk/bsttrackview.c:626 ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
+#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Synthesis network to be used as postprocessor"
 msgstr "La red se síntesis que se va a usar como post-procesador"
 
@@ -3220,8 +3233,8 @@ msgstr "Error en la ejecución del script."
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Error al ejecutar el procedimiento del script «%s»: %s"
 
-#: ../beast-gtk/bstutils.c:296 ../beast-gtk/bstutils.c:318
-#: ../beast-gtk/bstutils.c:321
+#: ../beast-gtk/bstutils.c:312 ../beast-gtk/bstutils.c:334
+#: ../beast-gtk/bstutils.c:337
 msgid "Updating View"
 msgstr "Actualizando la vista"
 
@@ -3806,7 +3819,7 @@ msgstr ""
 #: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
 #: ../bse/bsestandardosc.c:162 ../bse/bsestandardosc.c:167
 #: ../bse/bsestandardosc.c:172 ../bse/bsestandardosc.c:177
-#: ../bse/bsewaveosc.c:567 ../bse/bsewaveosc.c:573 ../bse/bsewaveosc.c:579
+#: ../bse/bsewaveosc.c:569 ../bse/bsewaveosc.c:575 ../bse/bsewaveosc.c:581
 msgid "Modulation"
 msgstr "Modulación"
 
@@ -3815,12 +3828,12 @@ msgid "Strength of linear frequency modulation"
 msgstr "Fuerza de modulación de frecuencia lineal"
 
 #: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:169
-#: ../bse/bsewaveosc.c:576
+#: ../bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Realiza modulación de frecuencia exponencial en vez de lineal"
 
 #: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:174
-#: ../bse/bsewaveosc.c:582
+#: ../bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
@@ -3845,7 +3858,7 @@ msgid "Unfiltered Audio Signal"
 msgstr "Señal de sonido sin filtrar"
 
 #: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:197
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 #: ../plugins/davsyndrum.c:117 ../plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr "Frecuencia entrada"
@@ -3871,7 +3884,7 @@ msgid "Gain Modulation Input"
 msgstr "Entrada de modulación de ganancia"
 
 #: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:205
-#: ../bse/bsewaveosc.c:597 ../plugins/bseadder.c:99
+#: ../bse/bsewaveosc.c:599 ../plugins/bseadder.c:99
 #: ../plugins/bseamplifier.idl:47 ../plugins/bseatandistort.c:90
 #: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:107
 #: ../plugins/bsemult.c:66 ../plugins/davbassfilter.idl:33
@@ -3903,127 +3916,127 @@ msgid "List of available mixer busses to be used as bus output"
 msgstr ""
 "Lista de los buses de mezcla disponibles para ser usados como buses de salida"
 
-#: ../bse/bsebus.c:870 ../bse/bsebus.c:872 ../bse/bsebus.c:874
-#: ../bse/bsebus.c:876 ../bse/bsebus.c:880 ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:997
+#: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
+#: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr "Ajustes"
 
-#: ../bse/bsebus.c:871
+#: ../bse/bsebus.c:874
 msgid "Mute"
 msgstr "Silencio"
 
-#: ../bse/bsebus.c:871
+#: ../bse/bsebus.c:874
 msgid "Mute: turn off the bus volume"
 msgstr "Silencio: apagar el volumen del bus"
 
-#: ../bse/bsebus.c:873
+#: ../bse/bsebus.c:876
 msgid "Solo"
 msgstr "Solo"
 
-#: ../bse/bsebus.c:873
+#: ../bse/bsebus.c:876
 msgid "Solo: mute all other busses"
 msgstr "Solo: silenciar los demás buses"
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:878
 msgid "Sync"
 msgstr "Entrada sincronización"
 
-#: ../bse/bsebus.c:875
+#: ../bse/bsebus.c:878
 msgid "Syncronize left and right volume"
 msgstr "Sincronizar los volúmenes izquierdo y derecho"
 
-#: ../bse/bsebus.c:877
+#: ../bse/bsebus.c:880
 msgid "Left Volume"
 msgstr "Volumen izquierdo"
 
-#: ../bse/bsebus.c:877
+#: ../bse/bsebus.c:880
 msgid "Volume adjustment in decibel of left bus channel"
 msgstr "Ajuste del volumen en decibelios del bus del canal izquierdo"
 
-#: ../bse/bsebus.c:881
+#: ../bse/bsebus.c:884
 msgid "Right Volume"
 msgstr "Volumen derecho"
 
-#: ../bse/bsebus.c:881
+#: ../bse/bsebus.c:884
 msgid "Volume adjustment in decibel of right bus channel"
 msgstr "Ajuste del volumen en decibelios del bus del canal derecho"
 
-#: ../bse/bsebus.c:884
+#: ../bse/bsebus.c:887
 msgid "Signal Inputs"
 msgstr "Entradas de señal"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: ../bse/bsebus.c:887
+#: ../bse/bsebus.c:890
 msgid "Input Signals"
 msgstr "Señales de entrada"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: ../bse/bsebus.c:891
+#: ../bse/bsebus.c:894
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr ""
 "Señales de síntesis (provenientes de pistas y buses) usadas como bus de "
 "entrada"
 
-#: ../bse/bsebus.c:893 ../bse/bsetrack.c:1026
+#: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 msgid "Signal Outputs"
 msgstr "Señales de salida"
 
-#: ../bse/bsebus.c:895 ../bse/bsetrack.c:1028
+#: ../bse/bsebus.c:898 ../bse/bsetrack.c:1039
 msgid "Output Signals"
 msgstr "Señales de salida"
 
-#: ../bse/bsebus.c:896
+#: ../bse/bsebus.c:899
 msgid "Mixer busses used as output for synthesis signals"
 msgstr "Buses de mezcla usados como salidas para las señales de síntesis"
 
-#: ../bse/bsebus.c:899
+#: ../bse/bsebus.c:902
 msgid "Internals"
 msgstr "Internas"
 
-#: ../bse/bsebus.c:901
+#: ../bse/bsebus.c:904
 msgid "Master Output"
 msgstr "Salida maestra"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr "Entrada del sonido izquierda"
 
-#: ../bse/bsebus.c:904 ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 msgid "Left channel input"
 msgstr "Entrada de sonido izquierda"
 
-#: ../bse/bsebus.c:906 ../bse/bsepcmoutput.c:129
+#: ../bse/bsebus.c:909 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr "Entrada de sonido derecha"
 
-#: ../bse/bsebus.c:906
+#: ../bse/bsebus.c:909
 msgid "Right channel input"
 msgstr "Entrada de sonido del canal derecho"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr "Salida de sonido izquierda"
 
-#: ../bse/bsebus.c:908 ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 msgid "Left channel output"
 msgstr "Salida del canal izquierdo"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr "Salida del canal derecho"
 
-#: ../bse/bsebus.c:910 ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 msgid "Right channel output"
 msgstr "Salida del canal derecho"
 
-#: ../bse/bsebus.c:929
+#: ../bse/bsebus.c:932
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -5693,11 +5706,11 @@ msgstr ""
 
 #: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
 #: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
-#: ../bse/bsetrack.c:1016 ../bse/bsetrack.c:1022
+#: ../bse/bsetrack.c:1027 ../bse/bsetrack.c:1033
 msgid "MIDI Instrument"
 msgstr "Instrumento MIDI"
 
-#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1018
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1029
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
@@ -5705,7 +5718,7 @@ msgstr "Canal MIDI"
 msgid "Max Voices"
 msgstr "Número máximo de voces"
 
-#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1003
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1014
 msgid "Synthesizer"
 msgstr "Sintetizador"
 
@@ -5713,7 +5726,7 @@ msgstr "Sintetizador"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "La red se síntesis que se va a usar como instrumento MIDI"
 
-#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1024
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Postprocessor"
 msgstr "Post-procesador"
 
@@ -5737,7 +5750,7 @@ msgstr "Ajustes de reproducción"
 msgid "Freq Out"
 msgstr "Frecuencia de salida"
 
-#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:599
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:601
 msgid "Gate Out"
 msgstr "Puerta de salida"
 
@@ -5775,11 +5788,11 @@ msgstr "Salida derecha"
 msgid "Disconnect Out"
 msgstr "Salida de desconexión"
 
-#: ../bse/bseobject.c:840
+#: ../bse/bseobject.c:846
 msgid "Unique name of this object"
 msgstr "Nombre único para este objeto"
 
-#: ../bse/bseobject.c:850
+#: ../bse/bseobject.c:856
 msgid "Free form comment or description"
 msgstr "Comentario o descripción en forma libre"
 
@@ -6121,8 +6134,8 @@ msgstr "/Fuentes de sonido/Oscilador estándar"
 msgid "Wave Form"
 msgstr "Forma de la onda"
 
-#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1008 ../bse/bsewaveosc.c:559
-#: ../bse/bsewaveosc.c:561 ../bse/bsewaveosc.c:563
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1019 ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563 ../bse/bsewaveosc.c:565
 msgid "Wave"
 msgstr "Onda"
 
@@ -6179,15 +6192,15 @@ msgstr "Ajuste fino"
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "Porcentaje de desentonación (centésima parte de un semitono)"
 
-#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:569
+#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:571
 msgid "Input Modulation [%]"
 msgstr "Modulación de entrada [%]"
 
-#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:575
+#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:577
 msgid "Exponential FM"
 msgstr "FM exponencial"
 
-#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:581
+#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:583
 msgid "Octaves"
 msgstr "Octavas"
 
@@ -6240,11 +6253,11 @@ msgstr "Entrada PWM"
 msgid "Pulse Width Modulation Input"
 msgstr "Ancho de la entrada de modulación del pulso (PWM)"
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Sync In"
 msgstr "Entrada de sincronización"
 
-#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:593
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Syncronization Input"
 msgstr "Entrada de sincronización"
 
@@ -6366,31 +6379,31 @@ msgstr ""
 msgid "List of available mixer busses to be used as track output"
 msgstr "Lista de buses mezcladores para ser usados como salidas de la pista"
 
-#: ../bse/bsetrack.c:999
+#: ../bse/bsetrack.c:1010
 msgid "Muted"
 msgstr "Mudo"
 
-#: ../bse/bsetrack.c:1001 ../bse/bsetrack.c:1006 ../bse/bsetrack.c:1011
+#: ../bse/bsetrack.c:1012 ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1022
 msgid "Synth Input"
 msgstr "Entrada de síntesis"
 
-#: ../bse/bsetrack.c:1003
+#: ../bse/bsetrack.c:1014
 msgid "Synthesis network to be used as instrument"
 msgstr "La red se síntesis que se va a usar como instrumento"
 
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsetrack.c:1019
 msgid "Wave to be used as instrument"
 msgstr "Onda que será usada como instrumento"
 
-#: ../bse/bsetrack.c:1013
+#: ../bse/bsetrack.c:1024
 msgid "Max Voixes"
 msgstr "Máximas voces"
 
-#: ../bse/bsetrack.c:1019
+#: ../bse/bsetrack.c:1030
 msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
 msgstr "Canales MIDI asignados a esta pista, 0 usa un canal privado por pista"
 
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsetrack.c:1040
 msgid "Mixer busses used as output for this track"
 msgstr "Buses mezcladores usados como salida para esta pista"
 
@@ -6407,43 +6420,52 @@ msgstr "/Fuentes de sonido/Oscilador de onda"
 msgid "List of available waves to choose as oscillator source"
 msgstr "Lista de ondas disponibles para elegir como fuente del oscilador"
 
-#: ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563
 msgid "Wave used as oscillator source"
 msgstr "Onda usada como fuente del oscilador"
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "Channel"
 msgstr "Canal"
 
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsewaveosc.c:567
 msgid "The audio channel to play, usually 1 is left, 2 is right"
 msgstr ""
 "Canal de sonido para reproducir, usualmente 1 es el izquierdo, 2 es el "
 "derecho"
 
-#: ../bse/bsewaveosc.c:570
+#: ../bse/bsewaveosc.c:572
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Fuerza de modulación para la modulación de frecuencia lineal"
 
-#: ../bse/bsewaveosc.c:591 ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 msgid "Frequency Input"
 msgstr "Entrada de frecuencia"
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 msgid "Mod In"
 msgstr "Entrada del módulo"
 
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsewaveosc.c:597
 msgid "Modulation Input"
 msgstr "Entrada de modulación"
 
-#: ../bse/bsewaveosc.c:597
+#: ../bse/bsewaveosc.c:599
 msgid "Wave Output"
 msgstr "Salida de onda"
 
-#: ../bse/bsewaveosc.c:599
+#: ../bse/bsewaveosc.c:601
 msgid "Gate Output"
 msgstr "Salida de puerta"
+
+#: ../bse/bsewaveosc.c:603 ../plugins/bsesimpleadsr.c:122
+msgid "Done Out"
+msgstr "Salida completada"
+
+#: ../bse/bsewaveosc.c:603
+#, fuzzy
+msgid "Done Output"
+msgstr "Salida completada"
 
 #: ../data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
@@ -7099,10 +7121,6 @@ msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr "Ataque-Decaimiento-Sostenido-máxima salida"
 
 #: ../plugins/bsesimpleadsr.c:122
-msgid "Done Out"
-msgstr "Salida completada"
-
-#: ../plugins/bsesimpleadsr.c:122
 msgid "This signal goes high after the release phase has completed"
 msgstr ""
 "Esta señal pasa alta después de que la fase de lanzamiento se ha completado"
@@ -7441,16 +7459,13 @@ msgstr "Salida izquierda"
 msgid "Right Output"
 msgstr "Salida derecha"
 
-#: ../tools/bsewavetool.cc:947
+#: ../tools/bsewavetool.cc:1218
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Notación musical correspondiente a la frecuencia del oscilador"
-
-#~ msgid "Fatal Error: "
-#~ msgstr "Error fatal: "
 
 #~ msgid "Fatal Error"
 #~ msgstr "Error fatal"
