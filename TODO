@@ -45,7 +45,7 @@ USAGE:
 - in song view, there should be a way to directly load wave files
 - when popping up the synth selection, if no synth is presnet but waves are available, the notebook should show the Waves page
 MISC:
-- Hanno-Module-Requests: cross-fading, ring-mod, pink-noise, freq->freq, quantizer, band-pass with modulation input
+- Hanno-Module-Requests: cross-fading, ring-mod, pink-noise, freq->freq, band-pass with modulation input
 - add a dialog that provides details about beast's current run mode:
   - selected audio driver, bit depth and mix-freq thereof
   - provide rating for alternative audio drivers (ALSA)
@@ -592,9 +592,6 @@ GSL:
 AutoLooper:
 - bsewavetool: fix thinout command to document the 4-halftone distance criteria and make it configurable
 - bsewavetool: implement export command (writes chunk to wav with --duration <seconds> option to feature looping)
-- bsewavetool: highpass command: add iorder parameters 
-- bsewavetool: highpass command: specify "real" frequencies instead of PI-relative
-- bsewavetool: implement lowpass command
 - commit transfer function evaluator for filter FIR coefficients (done: near hp implementation -> needs to be moved to libbse)
 - implement transfer function evaluator for filter IIR coefficients (done: in filtertest.cc -> needs to be moved to libbse)
 - implement FIR sine-scanner for GSL
