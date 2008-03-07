@@ -256,10 +256,12 @@ typedef void (*BirnetThreadWakeup) (void *wakeup_data);
 typedef union {
   void	     *cond_pointer;
   BirnetUInt8 cond_dummy[MAX (8, BIRNET_SIZEOF_PTH_COND_T)];
+  long long int align;
 } BirnetCond;
 typedef union {
   void	     *mutex_pointer;
   BirnetUInt8 mutex_dummy[MAX (8, BIRNET_SIZEOF_PTH_MUTEX_T)];
+  long long int align;
 } BirnetMutex;
 typedef struct {
   BirnetMutex   mutex;
