@@ -344,6 +344,8 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_SUBST(bseeffectdir)
     bseinstrumentdir=$bsedatadir/instruments
     AC_SUBST(bseinstrumentdir)
+    bsesamplesdir=$bsedatadir/samples
+    AC_SUBST(bsesamplesdir)
     bsescriptdir=$bsedatadir/scripts
     AC_SUBST(bsescriptdir)
     bsedemodir=$bsedatadir/demo
@@ -621,6 +623,7 @@ launchers/Makefile
 library/Makefile
 library/effects/Makefile
 library/instruments/Makefile
+library/samples/Makefile
 library/scripts/Makefile
 library/demo/Makefile
 library/keys/Makefile

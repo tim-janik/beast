@@ -4,7 +4,10 @@
 ## GNU Lesser General Public License version 2 or any later version.
 include $(top_srcdir)/Makefile.decl
 
-SUBDIRS = effects instruments scripts demo keys skins samples
 
-EXTRA_DIST += $(strip \
+samples_DATA = $(strip			\
+	retrokit.bsewave		\
 )
+samplesdir = $(bsesamplesdir)
+
+EXTRA_DIST += $(samples_DATA)
