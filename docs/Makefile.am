@@ -9,6 +9,7 @@ SUBDIRS = images imports
 MAN_TARGETS = $(strip				\
 	mans/beast.1				\
 	mans/bsescm.1				\
+	mans/bsewavetool.1			\
 	mans/sfidl.1				\
 	mans/bse.5				\
 )
@@ -26,6 +27,7 @@ HTML_TARGETS = $(strip				\
 	\
 	html/beast.1.html			\
 	html/bsescm.1.html			\
+	html/bsewavetool.1.html			\
 	html/sfidl.1.html			\
 	html/bse.5.html				\
 	html/coding-style.html			\
@@ -231,6 +233,7 @@ doxi_files = $(strip		\
 	bsescm.1.doxi		\
 	plugin-devel.doxi	\
 	sfidl.1.doxi		\
+	bsewavetool.1.doxi	\
 	coding-style.doxi	\
 )
 
