@@ -16,7 +16,7 @@ progs_ldadd     = $(top_builddir)/bse/libbse.la
 # tools to build
 #
 
-noinst_PROGRAMS    += bsewavetool
+bin_PROGRAMS        = bsewavetool
 bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc bseloopfuncs.c
 bsewavetool_LDADD   = $(progs_ldadd)
 EXTRA_DIST         += bsewavetool.hh bwtwave.hh bseloopfuncs.h sfiutils.h
