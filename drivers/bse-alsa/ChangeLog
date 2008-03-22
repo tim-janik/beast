@@ -1,3 +1,9 @@
+2008-03-09 11:42:10  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: removed automake max-version check because
+	automake-1.10 seems to work fine these days. suppress automake
+	warnings about GNU make features.
+
 Thu Sep 20 16:51:30 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in: Tell configure not to search parent directories for
