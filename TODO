@@ -1,3 +1,4 @@
+- rename KF* instruments to FSM* instruments (kfoltman's original acronym in the buzz world)
 - WEB: http://lwn.net/Articles/217873/ (tannenbaum reliable systems) -> usability page
 - unconditionally add /usr/lib/ladspa to search path
 - fix block-dependence of bsenoise, i.e. non-noisy distributions
