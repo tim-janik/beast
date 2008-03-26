@@ -1,3 +1,8 @@
+2008-03-16 10:27:02  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/Makefile.am: Install bsewavetool, since it has a manual page
+	now.
+
 2008-01-24 22:37:55  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: removed automake max-version check because automake-1.10
