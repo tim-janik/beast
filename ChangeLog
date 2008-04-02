@@ -1,3 +1,8 @@
+2008-03-16 10:07:23  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/Makefile.am:
+	* docs/bsewavetool.1.doxi: Added bsewavetool man page, see bug #437469.
+
 2008-03-16 10:35:29  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/scripts/Makefile.am:
