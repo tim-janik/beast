@@ -1,3 +1,8 @@
+2008-03-15 09:49:29  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bse/bsecategories.c:  
+	* bse/bseutils.c: Use BIRNET_PRETTY_FUNCTION instead of G_GNUC_PRETTY_FUNCTION.
+
 2008-03-16 10:07:23  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/Makefile.am:
