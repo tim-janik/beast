@@ -1,3 +1,8 @@
+2008-03-16 10:35:29  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/scripts/Makefile.am:
+	* tools/scripts/retrokit.sh: Added retrokit.sh.
+
 2008-03-15 13:59:18  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/samples/retrokit.bsewave: Added Retro Acoustic Drumkit with
