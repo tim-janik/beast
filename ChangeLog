@@ -1,3 +1,8 @@
+2008-04-27 18:39:56  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsewavetool.cc: Added chunk selection options (like
+	--chunk-key) to upsampling and downsampling commands.
+
 2008-03-15 09:49:29  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bse/bsecategories.c:  
