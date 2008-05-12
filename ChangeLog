@@ -1,3 +1,7 @@
+2008-05-12 18:01:32  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/scripts/retrokit.sh: Improved Retrokit Acoustic Drumkit.
+
 2008-04-27 18:39:56  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsewavetool.cc: Added chunk selection options (like

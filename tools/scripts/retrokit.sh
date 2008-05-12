@@ -1,8 +1,8 @@
 #!/bin/bash
-# 
+#
 # Copyright (C) 2006-2008 Stefan Westerfeld, stefan@space.twc.de
 # Copyright (C) 2006-2008 Tim Janik, timj@gtk.org
-# 
+#
 # This software is provided "as is"; redistribution and modification
 # is permitted, provided that the following disclaimer is retained.
 #
@@ -18,11 +18,10 @@
 # otherwise) arising in any way out of the use of this software, even
 # if advised of the possibility of such damage.
 
-
 set -e
 set -x
 
-BWT=/usr/local/src/testbit.eu/beast/tools/bsewavetool
+BWT=bsewavetool
 NAME=retrokit.bsewave
 
 if true; then
@@ -71,6 +70,7 @@ $BWT add-chunk $NAME $(cat << END_CHUNKS
   -m 52 china_mittel099_short.wav
   -m 53 ride_bell_laut070_short.wav
   -m 55 splash_mittel092_short.wav
+  -m 56 qcow_mono_short.wav
   -m 57 crash_leise074_short.wav
   -m 58 klick101_short.wav
   -m 59 ride_laut066pitched2.wav
@@ -81,8 +81,8 @@ $BWT add-chunk $NAME $(cat << END_CHUNKS
   -m 64 cr8k-congalow.wav
   -m 65 klick101_short.wav
   -m 66 klick101_short.wav
-  -m 67 klick101_short.wav
-  -m 68 klick101_short.wav
+  -m 67 qbell_short.wav
+  -m 68 qbell_short.wav
   -m 69 klick101_short.wav
   -m 70 klick101_short.wav
   -m 71 klick101_short.wav
@@ -103,12 +103,14 @@ $BWT clip $NAME --all-chunks -s 0.0025 -r 64
 # FIXME: use fade-out ramp which allows more aggressive clipping (gets rid of excessive tails)
 
 # downsample2 all chunks >= 96000
-$BWT info $NAME --script chunk-key,mix-freq | while read CHUNK_KEY MIX_FREQ
-do
-  if test $(echo "$MIX_FREQ" | sed "s/\..*$//g") -gt 80000; then
-    $BWT downsample2 --chunk-key $CHUNK_KEY
-  fi
-done
+$BWT downsample2 $NAME $(
+  $BWT info $NAME --script chunk-key,mix-freq | while read CHUNK_KEY MIX_FREQ
+  do
+      if test $(echo "$MIX_FREQ" | sed "s/\..*$//g") -gt 80000; then
+        echo --chunk-key $CHUNK_KEY
+      fi
+  done
+)
 
 # shorten via Vorbis
 $BWT oggenc $NAME # -q 3
@@ -148,19 +150,19 @@ MIDI GM Docs:
 53 F2  Ride Bell			ride_bell_laut070.wav
 54 F#2 Tambourine
 55 G2  Splash Cymbal			splash_mittel092.wav
-56 G#2 Cowbell
+56 G#2 Cowbell                          qcow_mono_short.wav
 57 A2  Crash Cymbal 2			crash_leise074.wav 
 58 A#2 Vibra Slap
 59 B2  Ride Cymbal 2                    ride_laut066pitched2.wav
-60 C3  Hi Bongo
-61 C#3 Low Bongo
-62 D3  Mute Hi Conga
+60 C3  Hi Bongo                         cr8k-congamed.wav
+61 C#3 Low Bongo                        cr8k-congalow.wav
+62 D3  Mute Hi Conga                    cr8k-congamed.wav
 63 D#3 Open Hi Conga                    cr8k-congamed.wav
 64 E3  Low Conga                        cr8k-congalow.wav
 65 F3  High Timbale
 66 F#3 Low Timbale
-67 G3  High Agogo
-68 G#3 Low Agogo
+67 G3  High Agogo                       qbell_short.wav
+68 G#3 Low Agogo                        qbell_short.wav
 69 A3  Cabasa
 70 A#3 Maracas								sample self
 71 B3  Short Whistle							anneke?
@@ -212,18 +214,19 @@ $BWT xinfo $NAME  $(cat << __EOF
   -m 52 label=Chinese_Cymbal
   -m 53 label=Ride_Bell
   -m 55 label=Splash_Cymbal
+  -m 56 volume=0.2 label=Cow_Bell
   -m 57 label=Crash_Cymbal_2
   -m 58 label=Vibra_Slap
   -m 59 label=Ride_Cymbal_2
-  -m 60 label=High_Bongo
-  -m 61 label=Low_Bongo
-  -m 62 label=Mute_High_Conga
+  -m 60 volume=0.2 label=High_Bongo
+  -m 61 volume=0.2 label=Low_Bongo
+  -m 62 volume=0.2 label=Mute_High_Conga
   -m 63 volume=0.2 label=High_Conga
   -m 64 volume=0.2 label=Low_Conga
   -m 65 volume=0.2
   -m 66 volume=0.2
-  -m 67 volume=0.2
-  -m 68 volume=0.2
+  -m 67 volume=0.2 label=High_Agogo fine-tune=500
+  -m 68 volume=0.2 label=Low_Agogo
   -m 69 volume=0.2
   -m 70 volume=0.2
   -m 71 volume=0.2
