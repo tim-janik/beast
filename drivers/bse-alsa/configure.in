@@ -112,7 +112,7 @@ dnl
 AC_DEFUN([AC_LIBBSE_CHECK],
 [
     dnl We need BSE, GLib, etc.
-    PKG_CHECK_MODULES(BSE, bse >= 0.7.1)
+    PKG_CHECK_MODULES(BSE, bse >= 0.7.2)
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
 
