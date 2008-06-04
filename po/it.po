@@ -1,18 +1,18 @@
-# translation of it.po to Italiano
+# translation of beast-it.po to Italiano
 # Italian translation for the BEAST package.
 # This file is distributed under the same license as the beast package.
 # Copyright (C) 2004 Petrecca Michele <petrecca@interfree.it OR michelinux@aliceposta.it>.
 # Copyright (C) 2005 Petrecca Michele <petrecca@interfree.it OR michelinux@alice.it>.
 #
-# Michele Petrecca <michelinux@alice.it>, 2005, 2006, 2007.
+# Michele Petrecca <michelinux@alice.it>, 2005, 2006, 2007, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: it\n"
+"Project-Id-Version: beast-it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
-"PO-Revision-Date: 2007-05-03 23:26+0200\n"
+"POT-Creation-Date: 2008-06-04 20:30+0200\n"
+"PO-Revision-Date: 2008-01-20 01:11+0100\n"
 "Last-Translator: Michele Petrecca <michelinux@alice.it>\n"
-"Language-Team: Italiano\n"
+"Language-Team: Italiano <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1978,7 +1978,7 @@ msgstr "Nice"
 
 #: ../beast-gtk/bstprofiler.c:264
 msgid "Thread priority from -20 (high) to +19 (low)"
-msgstr "Prioritï¿½ thread da -20 (alta) a +19 (bassa)"
+msgstr "Priorita' thread da -20 (alta) a +19 (bassa)"
 
 #: ../beast-gtk/bstprofiler.c:265
 msgid "CPU#"
@@ -2744,19 +2744,19 @@ msgstr "Fine:"
 
 #: ../beast-gtk/bstsampleeditor.c:515 ../beast-gtk/bstwaveeditor.c:215
 msgid "Shape Range"
-msgstr ""
+msgstr "Intervallo di regolazione"
 
 #: ../beast-gtk/bstsampleeditor.c:516 ../beast-gtk/bstwaveeditor.c:216
 msgid "Shape Average"
-msgstr ""
+msgstr "Regolazione media"
 
 #: ../beast-gtk/bstsampleeditor.c:517 ../beast-gtk/bstwaveeditor.c:217
 msgid "Shape Minimum"
-msgstr ""
+msgstr "Regolazione minima"
 
 #: ../beast-gtk/bstsampleeditor.c:518 ../beast-gtk/bstwaveeditor.c:218
 msgid "Shape Maximum"
-msgstr ""
+msgstr "Regolazione massima"
 
 #: ../beast-gtk/bstsampleeditor.c:519 ../beast-gtk/bstwaveeditor.c:219
 msgid "Sketch Range"
@@ -2826,7 +2826,7 @@ msgid ""
 msgstr ""
 "Modifica Strumenti (pulsanti mouse 1-3)\n"
 "Usa pulsante 1 per creare collegamenti, pulsante 2 per gli spostamenti e il "
-"pulsante 3 per cambiare le propietï¿½"
+"pulsante 3 per cambiare le proprieta'"
 
 #: ../beast-gtk/bstsnetrouter.c:47
 msgid "Edit"
@@ -4025,7 +4025,7 @@ msgstr "Valore [float]"
 
 #: ../bse/bseconstant.c:110
 msgid "Constant signal value"
-msgstr ""
+msgstr "Valore segnale costante"
 
 #: ../bse/bseconstant.c:116 ../bse/bseinstrumentinput.c:118
 #: ../bse/bsemidiinput.c:108 ../bse/bsestandardosc.c:144
@@ -4040,6 +4040,8 @@ msgstr "Frequenza"
 #: ../bse/bseconstant.c:118
 msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr ""
+"Il valore del segnale costante è interpretato come valore di frequenza in "
+"Hertz"
 
 #: ../bse/bseconstant.c:129
 msgid ""
@@ -4714,7 +4716,7 @@ msgstr "controllo-63"
 #. 7bit, literal channel controls
 #: ../bse/bsecore.idl:263 ../bse/bsecore.idl:432
 msgid "Control 64 Damper Pedal Switch (Sustain)"
-msgstr ""
+msgstr "Controllo 64 Commutazione pedale sordina (Sustain)"
 
 #: ../bse/bsecore.idl:264 ../bse/bsecore.idl:433
 msgid "Control 65 Portamento Switch"
@@ -5027,19 +5029,19 @@ msgstr "Tempo di utilizzo della CPU nell'esecuzione sistema per questo thread"
 
 #: ../bse/bsecore.idl:760
 msgid "Child User Time"
-msgstr ""
+msgstr "Tempo child-user"
 
 #: ../bse/bsecore.idl:760
 msgid "The CPU time spent executing instructions of children of this thread"
-msgstr ""
+msgstr "Tempo di CPU utilizzato nell'esecuzione dei 'figli' di questo thread"
 
 #: ../bse/bsecore.idl:762
 msgid "Child System Time"
-msgstr ""
+msgstr "Tempo child-system"
 
 #: ../bse/bsecore.idl:762
 msgid "The CPU time spent in the system for children of this thread"
-msgstr ""
+msgstr "Tempo di CPU utilizzato nel sistema per i 'figli' di questo thread"
 
 #: ../bse/bsecore.idl:777
 msgid "Synthesis Settings"
@@ -5084,12 +5086,14 @@ msgstr "MIDI"
 
 #: ../bse/bsecore.idl:790
 msgid "Invert Sustain Pedal"
-msgstr ""
+msgstr "Inversione pedale sustain"
 
 #: ../bse/bsecore.idl:791
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
+"Inverte lo stato del pedale (sordina) di sustain; in sostanza la sequenza on/"
+"off è invertita."
 
 #: ../bse/bsecore.idl:794
 msgid "Default Values"
@@ -5329,7 +5333,7 @@ msgstr "Nessun file wave"
 
 #: ../bse/bseenums.c:129
 msgid "CODEC failure"
-msgstr ""
+msgstr "Errore CODEC"
 
 #: ../bse/bseenums.c:130
 msgid "Functionality not implemented"
@@ -5671,7 +5675,7 @@ msgstr "Canale MIDI"
 
 #: ../bse/bsemidisynth.c:449
 msgid "Max Voices"
-msgstr ""
+msgstr "Massimo numero voci"
 
 #: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1014
 msgid "Synthesizer"
@@ -5768,7 +5772,7 @@ msgstr ""
 #: ../bse/bseparasite.proc:52 ../bse/bseparasite.proc:70
 #: ../bse/bseparasite.proc:89
 msgid "Parasite"
-msgstr ""
+msgstr "Elemento parassita"
 
 #. syntax
 #. TRANSLATORS: keep this text to 70 chars in width
@@ -5829,7 +5833,6 @@ msgid "Failed to start recording from audio device."
 msgstr "Avvio della registrazione da un dispositivo audio non riuscita."
 
 #: ../bse/bseserver.c:479
-#, fuzzy
 msgid ""
 "An audio project is in use which processes an audio input signal, but the "
 "audio device has not been opened in recording mode. An audio signal of "
@@ -5837,14 +5840,16 @@ msgid ""
 "produce results not actually intended (such as a silent output signal)."
 msgstr ""
 "Un progetto audio d'ingresso è in uso, ma il dispositivo audio non è stato "
-"aperto in modalità registrazione. An  audio signal of silence will be used "
-"instead of a recorded signal, so playback operation may produce results not "
-"actually intended (such as a silent output signal)."
+"aperto in modalità registrazione. In luogo di un segnale registrato verrà "
+"utilizzato un segnale fittizio di 'silenzio' pertanto, durante la modalità "
+"di playback, potrebbe essere riprodotto un qualcosa di inatteso (quale, ad "
+"esempio, solo silenzio inluogo della traccia d'ingresso)."
 
 #: ../bse/bseserver.c:484
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
+"Dispositivo audio \"%s\" non disponibile per l'ingresso - Driver audio: %s=%s"
 
 #: ../bse/bseserver.c:488
 msgid "Show messages about audio input problems"
@@ -5886,6 +5891,9 @@ msgid ""
 "No available MIDI device could be found and opened successfully. Reverting "
 "to null device, no MIDI events will be received or sent."
 msgstr ""
+"Nessun dispositivo MIDI è stato aperto e/o trovato nel tuo hardware. "
+"Regressione in corso al device 'null'; nessun evento MIDI sarà ricevuto e/o "
+"trasmesso."
 
 #: ../bse/bseserver.c:558
 #, c-format
@@ -6455,6 +6463,20 @@ msgid ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 msgstr ""
+"Advanced Linux Sound Architecture PCM driver; in uso\n"
+"ALSA %s.\n"
+"Le specifiche del dispositivo seguono sono legate alle convenzioni adottate "
+"dal progetto ALSA.\n"
+"Una dettagliata descrizione è disponibile al sito del progetto "
+"all'indirizzo:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Diversi plugins ALSA possono essere utilizzati, ad esempio 'hw' permette il "
+"diretto\n"
+"indirizzamento dei canali hardware della scheda audio.\n"
+"  PLUGIN - ALSA plugin, 'default' è tipicamente sufficiente\n"
+"  CARD   - il numero della scheda per plugin come 'hw'\n"
+"  DEV    - il numero del dispositivo per plugin come 'hw'\n"
+"  SUBDEV - il numero del 'sotto-dispositivo' pre plugin come 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../drivers/bse-alsa/bsepcmdevice-alsa.c:551
@@ -6473,6 +6495,20 @@ msgid ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 msgstr ""
+"Advanced Linux Sound Architecture PCM driver; in uso\n"
+"ALSA %s.\n"
+"Le specifiche del dispositivo seguono sono legate alle convenzioni adottate "
+"dal progetto ALSA.\n"
+"Una dettagliata descrizione è disponibile al sito del progetto "
+"all'indirizzo:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Diversi plugins ALSA possono essere utilizzati, ad esempio 'hw' permette il "
+"diretto\n"
+"indirizzamento dei canali hardware della scheda audio.\n"
+"  PLUGIN - ALSA plugin, 'default' è tipicamente sufficiente\n"
+"  CARD   - il numero della scheda per plugin come 'hw'\n"
+"  DEV    - il numero del dispositivo per plugin come 'hw'\n"
+"  SUBDEV - il numero del 'sotto-dispositivo' pre plugin come 'hw'\n"
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../drivers/bse-portaudio/bsepcmdevice-portaudio.cc:403
@@ -7124,7 +7160,7 @@ msgstr ""
 
 #: ../plugins/davcanyondelay.c:107 ../plugins/davcanyondelay.c:113
 msgid "IIR Low-Pass Filter"
-msgstr ""
+msgstr "IIR Filtro Passa-Basso"
 
 #: ../plugins/davcanyondelay.c:109
 msgid "Reflection cutoff frequency"
