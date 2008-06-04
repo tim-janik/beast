@@ -15,12 +15,13 @@ IMPORT_LINKS = 						\
 	"http://testbit.eu/wiki/Beast-Quickstart"	\
 	"http://testbit.eu/beastdocs.css"
 
-CHROME_ARGS = --header "X-Theme: chrome=off style=beastdocs.css"
+CHROME_CONF = --no-cache --header "X-Script-Chrome: chrome=off style=beastdocs.css"
+WGET_MIRROR = wget -k -np -nd -nc
 
 import-docs:
 	rm -f ${IMPORT_TARGETS}
 	for fi in ${IMPORT_LINKS} ; do echo " $$fi" ; done	\
-	| wget ${CHROME_ARGS} --convert-links -i -
+	  | $(WGET_MIRROR) $(CHROME_CONF) --convert-links -i -
 	cat ${srcdir}/style-append.css >> beastdocs.css
 	touch stamp-import-docs
 .PHONY: import-docs
