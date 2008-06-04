@@ -337,15 +337,15 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_SUBST(bsedriverdir)
     bseladspapath=${libdir}/ladspa
     AC_SUBST(bseladspapath)
-    bsesampledir=\${datadir}/bse/samples
-    AC_SUBST(bsesampledir)
+    bseunversionedsampledir=\${datadir}/bse/samples
+    AC_SUBST(bseunversionedsampledir)
     bsedatadir=\${datadir}/bse/v$BIN_VERSION
     bseeffectdir=$bsedatadir/effects
     AC_SUBST(bseeffectdir)
     bseinstrumentdir=$bsedatadir/instruments
     AC_SUBST(bseinstrumentdir)
-    bsesamplesdir=$bsedatadir/samples
-    AC_SUBST(bsesamplesdir)
+    bsesampledir=$bsedatadir/samples
+    AC_SUBST(bsesampledir)
     bsescriptdir=$bsedatadir/scripts
     AC_SUBST(bsescriptdir)
     bsedemodir=$bsedatadir/demo
