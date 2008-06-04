@@ -3,7 +3,7 @@
  *
  * GNU Lesser General Public License version 2 or any later version.
  */
-)
+
 /* --- wiki specials --- */
 div.ctype-wikipage h1   { margin: 1.5em 0 1.5em; font-size: 2.50em; text-decoration: underline; text-align: center; }
 div.ctype-wikipage h2   { margin: 1.5em 0 1.0em; font-size: 2.00em; text-decoration: underline; text-align: center; }
@@ -17,13 +17,13 @@ div.ctype-wikipage ol   { margin: 0; }
 
 table.wikitable         { margin: 5px; padding: 3px; border: 1px solid #aaaaaa; border-collapse: collapse; caption-side: bottom; }
 table.wikitable caption { margin-left: inherit; margin-right: inherit; font-weight: bold; }
-table.wikitable th      { padding: 0 3px 0; text-align: center; border: 1px dashed #aaaaaa; border-bottom: 1px solid #aaaaaa; background-color: #ddddee; }
-table.wikitable td      { padding: 0 3px 0; border: 1px dashed #aaaacc; background-color: #eeeeff; }
+table.wikitable th      { padding: 0.1em 0.3em; text-align: center; border: 1px dashed #aaaaaa; border-bottom: 1px solid #aaaaaa; background-color: #ddddee; }
+table.wikitable td      { padding: 0.1em 0.3em; border: 1px dashed #aaaacc; background-color: #eeeeff; }
 
 table.wikitableslim         { margin: 5px; padding: 3px; border: 1px solid #aaaaaa; border-collapse: collapse; caption-side: bottom; }
 table.wikitableslim caption { margin-left: inherit; margin-right: inherit; font-weight: bold; }
-table.wikitableslim th      { padding: 0 3px 0; text-align: center; border: 1px solid #aaaaaa; border-bottom: 1px solid #aaaaaa; }
-table.wikitableslim td      { padding: 0 3px 0; border: 1px solid #aaaacc; }
+table.wikitableslim th      { padding: 0.1em 0.3em; text-align: center; border: 1px solid #aaaaaa; border-bottom: 1px solid #aaaaaa; }
+table.wikitableslim td      { padding: 0.1em 0.3em; border: 1px solid #aaaacc; }
 /* BEAST - Bedevilled Audio System
  * Copyright (C) 2007 Tim Janik
  *
