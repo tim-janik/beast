@@ -5,7 +5,7 @@ SOURCE="$1"
 MAXIMUM="$2"
 [ -z "$MAXIMUM" ] && MAXIMUM="999999"
 
-function lineecho() {
+lineecho() {
 	# comment out the following line to get real line number information
 	echo "# $1 \"$2\""
 	echo # eat line 0

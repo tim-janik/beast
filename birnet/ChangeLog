@@ -1,3 +1,8 @@
+Sun Jun  8 11:19:57 2008  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* mksignals.sh: Removed bash specific syntax as suggested by Chris
+	Lamb (debian bug #472659).
+
 Wed Feb 21 03:27:02 2007  Tim Janik  <timj@gtk.org>
 
 	* birnetthread.hh: fixed up destructor ordering. added missing
