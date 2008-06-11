@@ -1,3 +1,29 @@
+Overview of Changes in BEAST/BSE 0.7.2:
+
+* Module changes and additions:
+  ArtsCompressor    - Relicensed to LGPL with permission from Matthias Kretz
+  DavXTalStrings    - Deterministic random improves tests [Stefan Westerfeld]
+  BseNoise          - Deterministic random/better randomness for small latency
+* Support 32bit and 24bit PCM-format WAV files
+* Support automake-1.10 
+* Use public editable testbit.eu instead of SVN as source for Beast-Quickstart
+* Added configuration option for muting the error bell in beast
+* Provide improved multisample creation/editing tool bsewavetool to end users
+* Improved .bsewave file format: drumkit multisamples are now better supported
+* Added RetroKit Acoustic Drumkit multisample instrument [Tim, Stefan]
+* Added new instruments [Krzysztof Foltman, Stefan, Tim, William DeVore]
+* Improve test suite by making modules like BseNoise deterministic during test
+* License update to GNU LGPL 2.1
+* Script support works with guile-1.8 now, but keeps 1.6 compatibility code
+* Bug fixes: #452604, #468229, #344388, #451086, #450724, #454121, #491552,
+             #450490, #441936, #336766, #433431, #474332, #474244, #456879,
+             #456408, #424897 [Tim Janik, Stefan Westerfeld]
+* Translation updates
+  - Italien [Michele Petrecca]
+  - Occitan [Yannig Marchegay]
+  - Brazilian Portugues [Leonardo Ferreira Fontenelle]
+  - English (British) [David Lodge]
+
 Overview of Changes in BEAST/BSE 0.7.1:
 
 * Fixed SUID security vulnerability by validating success of seteuid/setreuid,
