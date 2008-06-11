@@ -8,5 +8,5 @@ Icon=beast.png
 TryExec=beast
 Exec=beast
 Terminal=false
-Categories=GTK;GNOME;Application;AudioVideo;AudioVideoEditing;Music;Player;
+Categories=GTK;GNOME;Audio;AudioVideo;AudioVideoEditing;Music;Player;Sequencer;Midi;
 MimeType=audio/x-bse;audio/x-bsewave;
