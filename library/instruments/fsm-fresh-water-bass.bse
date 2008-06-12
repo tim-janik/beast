@@ -2,7 +2,7 @@
 
 (bse-version "0.7.2")
 
-(container-child "BseCSynth::KF Fresh Water Bass"
+(container-child "BseCSynth::FSM Fresh Water Bass"
   (modification-time "2007-09-22 01:55:03")
   (creation-time "2007-09-18 19:27:16")
   (license "Provided \"as is\", WITHOUT ANY WARRANTY (http://beast.gtk.org/LICENSE-AS-IS)")

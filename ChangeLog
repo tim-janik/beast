@@ -1,3 +1,12 @@
+Thu Jun 12 13:52:42 2008  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/instruments/Makefile.am:
+	* library/instruments/fsm-*.bse: Use FSM as prefix for Krzysztof
+	Foltman's instruments. FSM is the prefix he used when he worked on
+	Buzz/Windows code. He agreed to this rename.
+
+	* library/instruments/kf-*.bse: Removed.
+
 Wed Jun 11 14:04:31 2008  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/bse/filtertest.cc:
