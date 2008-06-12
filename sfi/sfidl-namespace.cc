@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <map>
+#include <algorithm>
 #include "sfidl-namespace.hh"
 #include <sfi/glib-extra.h>
 

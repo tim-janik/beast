@@ -20,6 +20,7 @@
 #include "topconfig.h"
 #include <sfi/glib-extra.h>
 #include <stdio.h>
+#include <string.h>
 
 /* FIXME: should be filled out and written into topconfig.h by configure */
 #define SFIDL_VERSION        BST_VERSION

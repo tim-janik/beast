@@ -20,6 +20,7 @@
 #include <birnet/birnet.hh>
 #include <sfi/sfi.h>
 #include <string>
+#include <string.h>
 #include <new>
 
 namespace Sfi {

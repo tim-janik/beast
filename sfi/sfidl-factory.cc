@@ -16,6 +16,7 @@
  */
 #include "sfidl-factory.hh"
 #include "glib-extra.h"
+#include <algorithm>
 
 using namespace Sfidl;
 

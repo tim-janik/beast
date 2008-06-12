@@ -1,3 +1,12 @@
+Sun Jun  8 22:59:52 2008  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-factory.cc:
+	* sfidl-options.cc:
+	* sfidl-namespace.cc:
+	* sfidl-parser.cc:
+	* sfidl-cxxbase.cc:
+	* sficxx.hh: Compile fixes for G++-4.3: Added a few standard includes.
+
 2007-09-18 02:27:07  Tim Janik  <timj@gtk.org>
 
 	* sfi/glib-extra.h:
