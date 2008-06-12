@@ -21,6 +21,7 @@
 #include <sfi/sfitests.h>
 #include <bse/gsldatautils.h>
 #include <bse/bseblockutils.hh>
+#include <stdlib.h>
 #include <vector>
 
 using std::vector;

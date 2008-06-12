@@ -20,6 +20,7 @@
 #include "bseglue.h"
 #include <sfi/sfiglue.h>
 #include <stdio.h>
+#include <string.h>
 #include <string>
 #include <set>
 

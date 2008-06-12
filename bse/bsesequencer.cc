@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <vector>
 
 /* due to a linker/compiler bug on SuSE 9.2, we need to

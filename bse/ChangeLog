@@ -1,3 +1,17 @@
+Wed Jun 11 14:04:31 2008  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsesequencer.cc:
+	* tests/firhandle.cc:
+	* tests/resamplehandle.cc:
+	* tests/filtertest.cc:
+	* bseprocidl.cc:
+	* bseloader-guspatch.cc:
+	* bseresamplerimpl.hh: Compile fixes for G++-4.3: Added a few standard
+	includes.
+
+	* bsecxxplugin.hh: Compile fixes for G++-4.3: Template specializations
+	can not have a storage class.
+
 Thu Nov 15 23:44:54 2007  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* zintern/Makefile.am:

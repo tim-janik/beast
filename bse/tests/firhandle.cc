@@ -22,6 +22,7 @@
 #include <bse/bsemain.h>
 #include "topconfig.h"
 #include <math.h>
+#include <stdlib.h>
 #include <complex>
 #include <vector>
 

@@ -23,6 +23,7 @@
 #include <bse/bseglobals.h> // FIXME
 #include "topconfig.h"
 #include <math.h>
+#include <stdlib.h>
 #include <complex>
 
 typedef std::complex<double> Complex;

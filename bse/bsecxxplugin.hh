@@ -55,7 +55,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 #define BSE_CXX_REGISTER_STATIC_HOOK(HookType)  BSE_CXX_REGISTER_HOOK_NODE (HookType, 1)
 #define BSE_CXX_REGISTER_HOOK_NODE(HookType, __static)                  \
   template<class E> static BseExportNode* bse_export_node ();           \
-  template<> static BseExportNode*                                      \
+  template<> BseExportNode*                                             \
   bse_export_node<HookType> ()                                          \
   {                                                                     \
     static BseExportNodeHook hnode = {                                  \
@@ -90,7 +90,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
   (::NameSpace::bse_type_keeper__3##EnumType.get_type ())
 #define BSE_CXX_DECLARE_ENUM(EnumType,EnumName,N,ICode)                 \
   template<class E> static BseExportNode* bse_export_node ();           \
-  template<> static BseExportNode*                                      \
+  template<> BseExportNode*                                             \
   bse_export_node<EnumType> ()                                          \
   {                                                                     \
     static BseExportNodeEnum enode = {                                  \
@@ -144,7 +144,7 @@ EnumValue (int         int_value,
   (::NameSpace::bse_type_keeper__1##RecordType.get_type ())
 #define BSE_CXX_DECLARE_RECORD(RecordType)                              \
   template<class E> static BseExportNode* bse_export_node ();           \
-  template<> static BseExportNode*                                      \
+  template<> BseExportNode*                                             \
   bse_export_node<RecordType> ()                                        \
   {                                                                     \
     static BseExportNodeBoxed bnode = {                                 \
@@ -180,7 +180,7 @@ EnumValue (int         int_value,
   (::NameSpace::bse_type_keeper__2##SequenceType.get_type ())
 #define BSE_CXX_DECLARE_SEQUENCE(SequenceType)                                  \
   template<class E> static BseExportNode* bse_export_node ();                   \
-  template<> static BseExportNode*                                              \
+  template<> BseExportNode*                                                     \
   bse_export_node<SequenceType> ()                                              \
   {                                                                             \
     static BseExportNodeBoxed bnode = {                                         \
@@ -218,7 +218,7 @@ EnumValue (int         int_value,
   extern ::Bse::ExportTypeKeeper bse_type_keeper__9##ProcType;
 #define BSE_CXX_REGISTER_PROCEDURE(ProcType)                                    \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
-  template<> static ::BseExportNode*                                            \
+  template<> ::BseExportNode*                                                   \
   bse_export_node<Procedure::ProcType> ()                                       \
   {                                                                             \
     static ::BseExportNodeProc pnode = {                                        \
@@ -258,7 +258,7 @@ EnumValue (int         int_value,
 #define BSE_CXX_REGISTER_EFFECT(Effect)                                         \
   BSE_CXX_DEFINE_STATIC_DATA (Effect##Base);                                    \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
-  template<> static ::BseExportNode*                                            \
+  template<> ::BseExportNode*                                                   \
   bse_export_node<Effect> ()                                                    \
   {                                                                             \
     static ::BseExportNodeClass cnode = {                                       \

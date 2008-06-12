@@ -21,6 +21,8 @@
 #include <bse/bseresampler.hh>
 #include <birnet/birnet.hh>
 #include <math.h>
+#include <string.h>
+#include <stdlib.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
