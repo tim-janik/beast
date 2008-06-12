@@ -2,27 +2,25 @@ Overview of Changes in BEAST/BSE 0.7.2:
 
 * Module changes and additions:
   ArtsCompressor    - Relicensed to LGPL with permission from Matthias Kretz
-  DavXTalStrings    - Deterministic random improves tests [Stefan Westerfeld]
-  BseNoise          - Deterministic random/better randomness for small latency
-* Support 32bit and 24bit PCM-format WAV files
-* Support automake-1.10 
-* Use public editable testbit.eu instead of SVN as source for Beast-Quickstart
-* Added configuration option for muting the error bell in beast
-* Provide improved multisample creation/editing tool bsewavetool to end users
-* Improved .bsewave file format: drumkit multisamples are now better supported
-* Added RetroKit Acoustic Drumkit multisample instrument [Tim, Stefan]
-* Added new instruments [Krzysztof Foltman, Stefan, Tim, William DeVore]
-* Improve test suite by making modules like BseNoise deterministic during test
-* License update to GNU LGPL 2.1
-* Script support works with guile-1.8 now, but keeps 1.6 compatibility code
-* Bug fixes: #452604, #468229, #344388, #451086, #450724, #454121, #491552,
+  DavXTalStrings    - Use deterministic random numbers for unit tests
+  BseNoise          - Improved random number generator
+* Automatically import Beast-Quickstart from online location testbit.eu
+* Error bell can be muted in beast preferences dialog
+* Added multisample creation/editing command line tool bsewavetool
+* Support adjustable volume, pitching and drum envelopes in .bsewave files
+* Added Retro Acoustic drum kit [Tim, Stefan]
+* New loadable Instruments/Effects:
+  ... [Krzysztof Foltman, Stefan, Tim, William DeVore]
+* Added support for loading 32bit and 24bit PCM-format WAV files
+* Added support for compiling beast with automake-1.10 
+* Added support for guile-1.8, guile-1.6 remains as minimum requirement
+* Bug fixes: #452604, #468229, #344388, #451086, #450724, #454121, #491552,
              #450490, #441936, #336766, #433431, #474332, #474244, #456879,
              #456408, #424897 [Tim Janik, Stefan Westerfeld]
-* Translation updates
-  - Italien [Michele Petrecca]
-  - Occitan [Yannig Marchegay]
-  - Brazilian Portugues [Leonardo Ferreira Fontenelle]
-  - English (British) [David Lodge]
+* Updated Italien translation [Michele Petrecca]
+* Updated Occitan translation [Yannig Marchegay]
+* Updated Brazilian Portugues translation [Leonardo Ferreira Fontenelle]
+* Updated British English translation [David Lodge]
 
 Overview of Changes in BEAST/BSE 0.7.1:
 
