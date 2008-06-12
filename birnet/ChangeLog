@@ -1,3 +1,16 @@
+Wed Jun 11 14:04:31 2008  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* birnetsignal.hh:
+	* birnetsignaltemplate.hh: Compile fixes for G++-4.3, which does not
+	allow typedefs to the same name that an existing template uses.
+
+	* birnetutils.cc:
+	* tests/sorting.cc:
+	* tests/strings.cc:
+	* tests/threads.cc:
+	* birnetmsg.cc: Compile fixes for G++-4.3: added a few standard
+	includes for strcmp(), rand() and such.
+
 Sun Jun  8 11:19:57 2008  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* mksignals.sh: Removed bash specific syntax as suggested by Chris

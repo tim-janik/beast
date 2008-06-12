@@ -433,7 +433,7 @@ typedef Slot0<bool, void> BoolSlot;
 /* --- predefined signals --- */
 template<class Emitter>
 struct SignalFinalize : Signal0 <Emitter, void, ScopeReferenceFinalizationMark> {
-  typedef Signal0<Emitter, void, ScopeReferenceFinalizationMark> Signal0;
+  typedef Birnet::Signals::Signal0<Emitter, void, ScopeReferenceFinalizationMark> Signal0;
   explicit SignalFinalize (Emitter &emitter)                             : Signal0 (emitter) {}
   explicit SignalFinalize (Emitter &emitter, void (Emitter::*method) ()) : Signal0 (emitter, method) {}
   BIRNET_PRIVATE_CLASS_COPY (SignalFinalize);
@@ -441,7 +441,7 @@ struct SignalFinalize : Signal0 <Emitter, void, ScopeReferenceFinalizationMark> 
 
 template<class Emitter>
 struct SignalVoid : Signal0 <Emitter, void> {
-  typedef Signal0<Emitter, void> Signal0;
+  typedef Birnet::Signals::Signal0<Emitter, void> Signal0;
   explicit SignalVoid (Emitter &emitter)                                 : Signal0 (emitter) {}
   explicit SignalVoid (Emitter &emitter, void (Emitter::*method) (void)) : Signal0 (emitter, method) {}
   BIRNET_PRIVATE_CLASS_COPY (SignalVoid);

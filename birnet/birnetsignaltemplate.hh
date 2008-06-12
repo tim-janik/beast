@@ -163,7 +163,7 @@ struct Signal3 : SignalEmittable3<Emitter, R0, A1, A2, A3, Collector>
 template<class Emitter, typename R0, typename A1, typename A2, typename A3, class Collector>
 struct Signal<Emitter, R0 (A1, A2, A3), Collector> : Signal3<Emitter, R0, A1, A2, A3, Collector>
 {
-  typedef Signal3<Emitter, R0, A1, A2, A3, Collector> Signal3;
+  typedef Birnet::Signals::Signal3<Emitter, R0, A1, A2, A3, Collector> Signal3;
   explicit Signal (Emitter &emitter) :
     Signal3 (emitter)
     {}

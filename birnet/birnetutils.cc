@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <cxxabi.h>
 #include <signal.h>
+#include <string.h>
 
 #ifndef _
 #define _(s)    s

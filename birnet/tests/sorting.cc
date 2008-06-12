@@ -17,6 +17,8 @@
 // #define TEST_VERBOSE
 #include <birnet/birnettests.h>
 #include <math.h>
+#include <stdlib.h>
+#include <algorithm>
 
 namespace {
 using namespace Birnet;
