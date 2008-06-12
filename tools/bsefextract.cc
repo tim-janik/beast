@@ -22,6 +22,8 @@
 #include <bse/gslfft.h>
 #include <bse/gslfilter.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <assert.h>
 #include "topconfig.h"

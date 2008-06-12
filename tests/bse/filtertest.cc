@@ -26,6 +26,7 @@
 #include <birnet/birnettests.h>
 #include "topconfig.h"
 #include <errno.h>
+#include <stdlib.h>
 
 using std::string;
 using std::vector;

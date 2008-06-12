@@ -1,3 +1,11 @@
+Wed Jun 11 14:04:31 2008  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/bse/filtertest.cc:
+	* tools/bsefextract.cc:
+	* tools/bsefcompare.cc:
+	* tools/bsewavetool.cc: Compile fixes for G++-4.3: Added a few
+	standard includes.
+
 Thu Jun 12 12:28:40 2008  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* NEWS: Some fixes due to review from Tim.

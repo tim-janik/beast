@@ -33,6 +33,7 @@
 #include <fcntl.h>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 
 namespace BseWaveTool {
