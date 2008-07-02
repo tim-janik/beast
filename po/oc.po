@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-09 15:16+0200\n"
+"POT-Creation-Date: 2008-07-02 08:55+0200\n"
 "PO-Revision-Date: 2008-06-11 12:59+0200\n"
 "Last-Translator: Yannig Marchegay (Kokoyaya) <yannig@marchegay.org>\n"
 "Language-Team: Occitan (post 1500) <ubuntu-l10n-oci@lists.ubuntu.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -3345,51 +3345,51 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:114
 msgid "Always"
 msgstr "Totjorn"
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:118
 msgid "Error"
 msgstr "Error"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:122
 msgid "Warning"
 msgstr "Alèrta"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:126
 msgid "Script"
 msgstr "Escript"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:130
 msgid "Information"
 msgstr "Entresenhas"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:134
 msgid "Diagnostic"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1194
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1195
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1196
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1197
 msgid "Show messages about web browser launch problems"
 msgstr ""
 
@@ -6916,19 +6916,7 @@ msgstr ""
 msgid "Right Output"
 msgstr ""
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Song"
-#~ msgstr "_Cançon"
-
-#, fuzzy
-#~ msgid "Part"
-#~ msgstr "Partidas"
-
-#, fuzzy
-#~ msgid "N Iterations"
-#~ msgstr "Entresenhas"
