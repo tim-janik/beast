@@ -249,12 +249,12 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
                                BseTrack    *ptrack)
 {
   BseMidiFileTrack *track = smf->tracks + nth_track;
-  BseMidiSignalType msignal = 0;
   guint i, j, dur, start = 0;
   gfloat fvalue = 0;
   for (i = 0; i < track->n_events; i++)
     {
       BseMidiEvent *event = track->events[i];
+      BseMidiSignalType msignal = 0;
       start += event->delta_time;
       switch (event->status)
         {
