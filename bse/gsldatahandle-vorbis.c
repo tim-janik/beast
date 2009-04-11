@@ -93,7 +93,9 @@ vfile_read (void  *ptr,
 	    void  *datasource)
 {
   VFile *vfile = datasource;
-  return gsl_rfile_read (vfile->rfile, size * nmemb, ptr);
+  size_t bytes = size * nmemb;
+  size_t bytes_to_eof = vfile->byte_length - (gsl_rfile_position (vfile->rfile) - vfile->byte_offset);
+  return gsl_rfile_read (vfile->rfile, MIN (bytes, bytes_to_eof), ptr);
 }
 
 static int

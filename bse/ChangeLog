@@ -1,3 +1,10 @@
+Thu Mar 19 16:40:17 2009  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gsldatahandle-vorbis.c: Modified the vfile read function so that no
+	data beyond the end of the virtual file is read. This fixes the
+	problems BEAST sometimes has to read its own .bse files.
+	Fixes #575977 - Some .bse files written by BEAST cannot be loaded again
+
 Wed Jun 11 14:04:31 2008  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsesequencer.cc:
