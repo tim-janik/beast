@@ -8,222 +8,21 @@
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2003, 2004, 2006.
 # Yelitza Louze <ylouze@redhat.com>, 2003.
 # Jorge González <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005, 2006.
+# Jorge González <jorgegonz@svn.gnome.org>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: pan2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
-"PO-Revision-Date: 2006-10-29 23:44+0100\n"
-"Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
-"Language-Team: Spanish <traductores@es.gnome.org>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=beast&component=general\n"
+"POT-Creation-Date: 2009-04-16 17:43+0000\n"
+"PO-Revision-Date: 2009-06-06 13:22+0200\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:25
-msgid "/Song/Assign Tracks to individual Mixer Busses"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:26
-msgid ""
-"This script creates a new Mixer Bus for each track in the song that is "
-"currently using the Master Bus as output."
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:30
-#: ../library/scripts/song-parts-operations.scm.h:39
-#, fuzzy
-msgid "Song"
-msgstr "_Canción"
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:57
-#: ../library/scripts/song-parts-operations.scm.h:45
-msgid "No valid song supplied"
-msgstr ""
-
-#: ../library/scripts/mixer-splitup-by-track.scm.h:59
-msgid "This script cannot be used while the project is playing"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:21
-msgid "/SNet/Grid Align"
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:22
-msgid ""
-"Round module positions to their nearest grid position, so to align all "
-"modules within a synthesis network."
-msgstr ""
-
-#: ../library/scripts/modules2grid.scm.h:26
-#, fuzzy
-msgid "Synth Net"
-msgstr "Sintetización hecha"
-
-#: ../library/scripts/modules2grid.scm.h:30
-#, fuzzy
-msgid "No valid synthesis network supplied"
-msgstr "Â¿Dibujar las redes de síntesis con los bordes suavizados?"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:25
-msgid "/Part/Harmonic Transposer"
-msgstr ""
-
-#. ; FIXME: the description may be suboptimal; the problem is
-#. ; that I can't precisely describe details of musical theory
-#. ; in english. -- stw
-#: ../library/scripts/part-harmonic-transposer.scm.h:29
-msgid ""
-"The harmonic transposer takes the selection of a part and transposes it to "
-"different harmonies. If you for instance have selected a measure filled with "
-"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
-"be four measures, filled with C major, A minor, F major and G major "
-"chords. \n"
-"\n"
-"This also works for melodies, so you can transpose a whole melody written in "
-"G major to D minor. The standard scales used in church music (ionian, "
-"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
-"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
-"is equivalent to minor and the ionian scale is equivalent to major. \n"
-"\n"
-"Since musically, there is no preference on whether to transpose up or down "
-"it is possible to specify the first harmony that will be transposed down "
-"(all harmonies below this will be transposed up). It is possible to omit "
-"this value. Then all notes will be transposed up."
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:50
-#: ../library/scripts/record-midi.scm.h:25
-#, fuzzy
-msgid "Part"
-msgstr "Partes"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:51
-msgid "Harmony Sequence"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:52
-msgid "Transpose down starting at"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:209
-msgid "No valid part supplied"
-msgstr ""
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:211
-#, fuzzy
-msgid "No notes selected"
-msgstr "Ninguna cuantización seleccionada"
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:218
-#, fuzzy
-msgid "Failed to parse harmony list"
-msgstr "Error al iniciar la grabación al disco."
-
-#: ../library/scripts/part-harmonic-transposer.scm.h:221
-msgid "Harmony list is too short"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:32
-msgid "/Project/Toys/Progressor..."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:33
-msgid ""
-"Progressor takes two seed values and then starts progressing. It doesn't do "
-"anything particularly usefull, other than ticking the main program from time "
-"to time. It is a funny example though."
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:38
-#, fuzzy
-msgid "N Iterations"
-msgstr "Información"
-
-#: ../library/scripts/progressor-example.scm.h:39
-msgid "N Wait Spins"
-msgstr ""
-
-#: ../library/scripts/progressor-example.scm.h:40
-msgid "Update Percentage"
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:20
-msgid "/Part/Record Midi..."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:21
-msgid ""
-"Record midi events, currently being played on the default external midi "
-"device, into a given song part. The MIDI recorder is still work in progress."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:26
-#, fuzzy
-msgid "Start Now"
-msgstr "Iniciar editor"
-
-#: ../library/scripts/record-midi.scm.h:49
-#, fuzzy
-msgid "No valid part object supplied"
-msgstr "Propietario del objeto no válido"
-
-#: ../library/scripts/record-midi.scm.h:50
-msgid "You probably want to start this script from a part editor."
-msgstr ""
-
-#: ../library/scripts/record-midi.scm.h:53
-msgid ""
-"Not currently recording...\n"
-"\n"
-"The MIDI recorder is still work in progress.\n"
-"Currently, you need a MIDI Synthesizer network running, in order for this "
-"script to catch the events currently being played back."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:25
-msgid "/Song/Crop parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:26
-msgid ""
-"Crops all parts within the loop range and moves parts after the loop range "
-"backwards accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:34
-msgid "/Song/Duplicate parts (loop range)"
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:35
-msgid ""
-"Duplicate all parts within the loop range and moves parts after the loop "
-"range forward accordingly."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:62
-msgid ""
-"The loop range of the specified song contains no parts or is unset, so no "
-"parts can be identified to operate on."
-msgstr ""
-
-#: ../library/scripts/song-parts-operations.scm.h:64
-#, fuzzy
-msgid "Show messages about empty part range"
-msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
-
-#: ../library/scripts/song-parts-operations.scm.h:68
-#, fuzzy
-msgid "Failed to crop part range."
-msgstr "Error al iniciar la grabación al disco."
-
-#: ../library/scripts/song-parts-operations.scm.h:80
-#, fuzzy
-msgid "Failed to duplicate part range."
-msgstr "Falló la detección (del inicio de) la cabecera"
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -2623,13 +2422,14 @@ msgstr ""
 "síntesis de los módulos?"
 
 #: ../beast-gtk/bstrecords.idl:120
-#, fuzzy
 msgid "Enable Error Bell"
-msgstr "Error fatal: "
+msgstr "Activar campana de error"
 
 #: ../beast-gtk/bstrecords.idl:120
 msgid "Notify users via error bells if edits cannot be carried out"
 msgstr ""
+"Notifica al usuario a través de campanas de error si las ediciones no se "
+"pueden llevar a cabo"
 
 #: ../beast-gtk/bstrecords.idl:122
 msgid "Homogeneous Input Fields"
@@ -3682,51 +3482,51 @@ msgstr ""
 "mnemotécnica"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:114
 msgid "Always"
-msgstr ""
+msgstr "Siempre"
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:118
 msgid "Error"
 msgstr "Error"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:122
 msgid "Warning"
 msgstr "Advertencia"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:126
 msgid "Script"
 msgstr "Script"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:130
 msgid "Information"
 msgstr "Información"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:134
 msgid "Diagnostic"
 msgstr "Diagnóstico"
 
-#: ../birnet/birnetutils.cc:1193
-msgid "Launch Web Browser"
-msgstr ""
-
 #: ../birnet/birnetutils.cc:1194
-msgid "Failed to launch a web browser executable"
-msgstr ""
+msgid "Launch Web Browser"
+msgstr "Lanzar navegador web"
 
 #: ../birnet/birnetutils.cc:1195
+msgid "Failed to launch a web browser executable"
+msgstr "Falló al lanzar el ejecutable del navegador web"
+
+#: ../birnet/birnetutils.cc:1196
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1197
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
@@ -3786,6 +3586,7 @@ msgstr "Configura el porcentaje de la frecuencia de corte"
 #: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
 #: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
+#, c-format
 msgid "Note"
 msgstr "Nota"
 
@@ -4054,13 +3855,13 @@ msgid "Constant Output %u"
 msgstr "Salida constante %u"
 
 #: ../bse/bseconstant.c:108
+#, c-format
 msgid "Value [float]"
 msgstr "Valor [flotante]"
 
 #: ../bse/bseconstant.c:110
-#, fuzzy
 msgid "Constant signal value"
-msgstr "Constante negativa ALTA"
+msgstr "Valor de señal constante"
 
 #: ../bse/bseconstant.c:116 ../bse/bseinstrumentinput.c:118
 #: ../bse/bsemidiinput.c:108 ../bse/bsestandardosc.c:144
@@ -4069,6 +3870,7 @@ msgstr "Constante negativa ALTA"
 #: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
 #: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
 #: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
+#, c-format
 msgid "Frequency"
 msgstr "Frecuencia"
 
@@ -4126,9 +3928,8 @@ msgstr ""
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
 #: ../bse/bsecore.idl:84
-#, fuzzy
 msgid "Diatonic Scale"
-msgstr "Escala vertical"
+msgstr "Escala daltónica"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
 #: ../bse/bsecore.idl:85
@@ -4225,7 +4026,7 @@ msgstr ""
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
 #: ../bse/bsecore.idl:113
 msgid "Werckmeister III"
-msgstr ""
+msgstr "Werckmeister III"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:114
@@ -4238,7 +4039,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:117
 msgid "Werckmeister IV"
-msgstr ""
+msgstr "Werckmeister IV"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:118
@@ -4252,7 +4053,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:122
 msgid "Werckmeister V"
-msgstr ""
+msgstr "Werckmeister V"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:123
@@ -4265,7 +4066,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:126
 msgid "Werckmeister VI"
-msgstr ""
+msgstr "Werckmeister VI"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:127
@@ -4280,7 +4081,7 @@ msgstr ""
 
 #: ../bse/bsecore.idl:134
 msgid "Kirnberger III"
-msgstr ""
+msgstr "Kirnberger III"
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
 #: ../bse/bsecore.idl:135
@@ -5593,10 +5394,12 @@ msgid "/Input & Output/Instrument Output"
 msgstr "/Entrada y salida/Salida de instrumento"
 
 #: ../bse/bsejanitor.c:535
+#, c-format
 msgid "killed by janitor"
 msgstr "killed by janitor"
 
 #: ../bse/bsejanitor.c:537
+#, c-format
 msgid "connection terminated"
 msgstr "conexión terminada"
 
@@ -5606,6 +5409,7 @@ msgid "%s (core dumped)"
 msgstr "%s (core dumped)"
 
 #: ../bse/bsemain.cc:269
+#, c-format
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5614,6 +5418,7 @@ msgstr ""
 "Controladores PCM disponibles:\n"
 
 #: ../bse/bsemain.cc:271
+#, c-format
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5892,8 +5697,8 @@ msgstr ""
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
-"El dispositivo de sonido «%s» no está disponible como entrada, controlador "
-"de sonido: %s=%s"
+"El dispositivo de sonido «%s» no está disponible como entrada, controlador de "
+"sonido: %s=%s"
 
 #: ../bse/bseserver.c:488
 msgid "Show messages about audio input problems"
@@ -5994,13 +5799,12 @@ msgid "Master"
 msgstr "Maestro"
 
 #: ../bse/bsesong.c:746
-#, fuzzy
 msgid "Tuning"
-msgstr "Sincronización"
+msgstr "Modificaciones"
 
 #: ../bse/bsesong.c:748
 msgid "Musical Tuning"
-msgstr ""
+msgstr "Modificaciones musicales"
 
 #: ../bse/bsesong.c:749
 msgid ""
@@ -6463,7 +6267,6 @@ msgid "Done Out"
 msgstr "Salida completada"
 
 #: ../bse/bsewaveosc.c:603
-#, fuzzy
 msgid "Done Output"
 msgstr "Salida completada"
 
@@ -7137,8 +6940,8 @@ msgid ""
 msgstr ""
 "El filtro DavBass es un filtro paso bajo resonante estilo TB-303 basado en "
 "las partes de VCF202 del gsyn v0.2. El algoritmo del filtro está "
-"parcialmente basado en el que está descrito en «Aplicaciones musicales de "
-"los microprocesadores» de Hal Chamberlin."
+"parcialmente basado en el que está descrito en «Aplicaciones musicales de los "
+"microprocesadores» de Hal Chamberlin."
 
 #: ../plugins/davbassfilter.idl:31 ../plugins/davchorus.idl:28
 msgid "Audio input"
@@ -7194,17 +6997,16 @@ msgid "Trigger filter"
 msgstr "Filtro de disparador"
 
 #: ../plugins/davcanyondelay.c:86 ../plugins/davcanyondelay.c:91
-#, fuzzy
 msgid "Left to Right"
-msgstr "Mover a la derecha"
+msgstr "Izquierda a derecha"
 
 #: ../plugins/davcanyondelay.c:87 ../plugins/davcanyondelay.c:97
 msgid "Delay (seconds)"
-msgstr ""
+msgstr "Retardo (segundos)"
 
 #: ../plugins/davcanyondelay.c:88
 msgid "The time for the left to right delay"
-msgstr ""
+msgstr "El tiempo para el retraso de izquierda a derecha"
 
 #: ../plugins/davcanyondelay.c:92 ../plugins/davcanyondelay.c:102
 msgid "Feedback [%]"
@@ -7215,13 +7017,12 @@ msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr ""
 
 #: ../plugins/davcanyondelay.c:96 ../plugins/davcanyondelay.c:101
-#, fuzzy
 msgid "Right to Left"
-msgstr "Salida del canal derecho"
+msgstr "Derecha a izquierda"
 
 #: ../plugins/davcanyondelay.c:98
 msgid "The time for the right to left delay"
-msgstr ""
+msgstr "El tiempo para el retraso de derecha a izquierda"
 
 #: ../plugins/davcanyondelay.c:103
 msgid "Set the feedback amount; a negative feedback inverts the signal"
@@ -7229,7 +7030,7 @@ msgstr ""
 
 #: ../plugins/davcanyondelay.c:107 ../plugins/davcanyondelay.c:113
 msgid "IIR Low-Pass Filter"
-msgstr ""
+msgstr "Filtro paso bajo IIR"
 
 #: ../plugins/davcanyondelay.c:109
 #, fuzzy
@@ -7292,9 +7093,8 @@ msgid "Organ Output"
 msgstr "Salida de órgano"
 
 #: ../plugins/davsyndrum.c:89
-#, fuzzy
 msgid "Drum frequency in Hertz"
-msgstr "Entrada de frecuencia del tambor"
+msgstr "Frecuencia del tambor en Hercios"
 
 #: ../plugins/davsyndrum.c:95
 msgid ""
@@ -7459,10 +7259,58 @@ msgstr "Salida izquierda"
 msgid "Right Output"
 msgstr "Salida derecha"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "error al añadir partes de onda desde el archivo «%s»: %s"
+
+#, fuzzy
+#~ msgid "Song"
+#~ msgstr "_Canción"
+
+#, fuzzy
+#~ msgid "Synth Net"
+#~ msgstr "Sintetización hecha"
+
+#, fuzzy
+#~ msgid "No valid synthesis network supplied"
+#~ msgstr "Â¿Dibujar las redes de síntesis con los bordes suavizados?"
+
+#, fuzzy
+#~ msgid "Part"
+#~ msgstr "Partes"
+
+#, fuzzy
+#~ msgid "No notes selected"
+#~ msgstr "Ninguna cuantización seleccionada"
+
+#, fuzzy
+#~ msgid "Failed to parse harmony list"
+#~ msgstr "Error al iniciar la grabación al disco."
+
+#, fuzzy
+#~ msgid "N Iterations"
+#~ msgstr "Información"
+
+#, fuzzy
+#~ msgid "Start Now"
+#~ msgstr "Iniciar editor"
+
+#, fuzzy
+#~ msgid "No valid part object supplied"
+#~ msgstr "Propietario del objeto no válido"
+
+#, fuzzy
+#~ msgid "Show messages about empty part range"
+#~ msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
+
+#, fuzzy
+#~ msgid "Failed to crop part range."
+#~ msgstr "Error al iniciar la grabación al disco."
+
+#, fuzzy
+#~ msgid "Failed to duplicate part range."
+#~ msgstr "Falló la detección (del inicio de) la cabecera"
 
 #~ msgid "Musical notation corresponding to the oscillator frequency"
 #~ msgstr "Notación musical correspondiente a la frecuencia del oscilador"
