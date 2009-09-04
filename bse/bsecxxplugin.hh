@@ -55,7 +55,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 #define BSE_CXX_REGISTER_STATIC_HOOK(HookType)  BSE_CXX_REGISTER_HOOK_NODE (HookType, 1)
 #define BSE_CXX_REGISTER_HOOK_NODE(HookType, __static)                  \
   template<class E> static BseExportNode* bse_export_node ();           \
-  template<> BseExportNode*                                             \
+  template<> inline BseExportNode*                                      \
   bse_export_node<HookType> ()                                          \
   {                                                                     \
     static BseExportNodeHook hnode = {                                  \
