@@ -734,6 +734,12 @@ plugin_extension_filter (const char  *fname,
   return false;
 }
 
+#ifdef WIN32
+#define PLUGIN_EXTENSION ".dll"
+#else
+#define PLUGIN_EXTENSION ".so"
+#endif
+
 SfiRing*
 bse_plugin_path_list_files (gboolean include_drivers,
                             gboolean include_plugins)
@@ -749,21 +755,21 @@ bse_plugin_path_list_files (gboolean include_drivers,
     {
       if (include_drivers)
         {
-          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.so", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
           files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins)
         {
-          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
           files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
         }
       if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
         {
-          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
+          files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*" PLUGIN_EXTENSION, G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
           files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.o", G_FILE_TEST_IS_REGULAR);
           ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
@@ -775,11 +781,11 @@ bse_plugin_path_list_files (gboolean include_drivers,
   if (true)
     {
       const SfiCPUInfo cpu_info = sfi_cpu_info();
-      const char *exts[] = { ".FPU.so", ".FPU.la", ".so", ".la", };
+      const char *exts[] = { ".FPU" PLUGIN_EXTENSION, ".FPU.la", PLUGIN_EXTENSION, ".la", };
       if (BSE_WITH_SSE_FLAGS && !bse_main_args->force_fpu &&
           cpu_info.x86_mmx && cpu_info.x86_sse && cpu_info.x86_ssesys)
         {
-          exts[0] = ".SSE.so";  /* !".FPU.so" */
+          exts[0] = ".SSE" PLUGIN_EXTENSION;  /* !".FPU.so" / ".FPU.dll" */
           exts[1] = ".SSE.la";  /* !".FPU.la" */
         }
       SfiRing *fname;
