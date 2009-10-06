@@ -1,5 +1,5 @@
 @doxer_dnl      # emacs: -*- mode: texinfo; texinfo-open-quote: "\""; texinfo-close-quote: "\""; -*-
-@doxer_set{rvstamp,git_author_date,parse_date} $Date: 2007-01-13 20:21:16 +0100 (Sa, 13 Jan 2007) $
+@doxer_set{rvstamp,git_author_date} $Date$
 @include @doxer_get{DOXI_INCLUDE_FILE}
 @doxer_set{title}	BSEWAVETOOL - BSE Wave Tool
 @doxer_set{man-title}	BSEWAVETOOL
