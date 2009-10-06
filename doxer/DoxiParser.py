@@ -368,14 +368,17 @@ def doxer_setget (macro, env_variables = None):
         import os, subprocess
         sfile = env_variables['source-file']    # absolute
         sfile = os.path.split (sfile)           # (dir, file)
+        pcmd = ['git', 'log', '-n1', '--pretty=format:%ai', '--', sfile[1]]
         try:
-          p1 = subprocess.Popen (['git-log', '-n1', '--pretty=format:%aD', sfile[1]], cwd = sfile[0],
-                                 stdout = subprocess.PIPE, stderr = open ('/dev/null', 'w'))
+          p1 = subprocess.Popen (pcmd, cwd = sfile[0], stdout = subprocess.PIPE, stderr = open ('/dev/null', 'w'))
+        except Exception, ex:
+          debug ("exec failed: %s: %s" % (" ".join (pcmd), ex))
+          p1 = None
+        if p1:
           val_unstripped = p1.stdout.readline()
           p1.stdout.close()
           if 0 == p1.wait():                    # reap and check success
             val = val_unstripped.strip()
-        except: pass
     if macro.name == 'doxer_add':
       head = env_variables.get (name)
       env_variables[name] = (head and head or ()) + (val,)
