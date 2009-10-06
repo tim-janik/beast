@@ -219,19 +219,7 @@ AC_DEFUN([AC_BSE_REQUIREMENTS],
     AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
 
     dnl # --- Ogg/Vorbis check ---
-    OV_LIBS=
-    ov_tests=0
-    AC_CHECK_LIB(vorbisfile, ogg_stream_reset_serialno,
-	[AC_CHECK_HEADER(ogg/ogg.h, ov_tests=`expr $ov_tests + 1`)]
-	[AC_CHECK_HEADER(vorbis/vorbisfile.h, ov_tests=`expr $ov_tests + 1`)]
-	[AC_CHECK_HEADER(vorbis/vorbisenc.h, ov_tests=`expr $ov_tests + 1`)]
-	,
-	ov_tests=0, -lvorbisenc -lvorbis -logg)
-    if test $ov_tests = 3 ; then
-	OV_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg"
-    else
-	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0) or headers])
-    fi
+    PKG_CHECK_MODULES(OV, ogg >= 1.0.0 vorbis >= 1.0.0 vorbisfile >= 1.0.0 vorbisenc >= 1.0.0)
     
     dnl # --- libmad MPEG decoder check ---
     dnl # libmad doesn't come with a mad.pc file (just its debian package)
