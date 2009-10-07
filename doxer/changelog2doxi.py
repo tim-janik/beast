@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 #
 # Copyright (C) 2006 Tim Janik
 #
@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 import os, sys, re
+assert sys.hexversion >= 0x02040000
 
 def compile_number ():
   # number exponent
