@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 #
 # Doxer - Software documentation system
 # Copyright (C) 2005-2006 Tim Janik
@@ -19,6 +19,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 import os, sys, re, shutil
+assert sys.hexversion >= 0x02040000
 
 # determine installation directory
 qcommentfilter_dir = os.path.dirname (os.path.abspath (os.path.realpath (sys.argv[0])))
