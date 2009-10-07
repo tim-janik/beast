@@ -23,6 +23,8 @@ source code.
 Also, doxer supports an '@@'-escape based markup sytsem which allowes for definition of custom
 markup macros and aliases, based on the set of standard macros supplied with doxer.
 
+@emph{WARNING: This document is grossly outdated, please refer to @uri{http://testbit.eu/wiki/Doxer}}
+
 @section Overall Laoyut
 
 Doxer first parses the raw input text (usually @doxer_italic{.doxi} files) and identifies and expands
