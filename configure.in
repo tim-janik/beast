@@ -530,7 +530,7 @@ if test x"$enable_maintainer_mode" = xyes ; then
     if test -z "$PYTHON" || $PYTHON -c "import sys; sys.exit (sys.hexversion >= 0x20401f0)" 2>/dev/null ; then
 	AC_MSG_ERROR([failed to detect python (version >= 2.4.1) required for maintainer mode])
     fi
-    test -z "$XMLLINT" && { AC_MSG_ERROR([failed to detect xmllint required for maintainer mode]) }
+    test -z "$XMLLINT" && { AC_MSG_ERROR([failed to detect xmllint required for maintainer mode]); }
 else
     AC_MSG_RESULT(no)
 fi
