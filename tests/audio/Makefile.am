@@ -5,6 +5,7 @@ include $(top_srcdir)/Makefile.decl
 
 # === feature test tools ===
 builddirplugins = '$(top_builddir)/plugins/.libs/*.so:$(top_builddir)/plugins/freeverb/.libs/*.so'
+samplepath = '$(top_srcdir)/tests/audio:$(top_srcdir)/library/samples'
 BSEFEXTRACT = $(top_builddir)/tools/bsefextract
 BSEFCOMPARE = $(top_builddir)/tools/bsefcompare
 BSE2WAV = $(strip							\
@@ -12,6 +13,7 @@ BSE2WAV = $(strip							\
 	  --bse-mixing-freq=48000 -p null -m null			\
 	  --bse-rcfile "/dev/null" --bse-no-load			\
 	  --bse-override-plugin-globs $(builddirplugins)		\
+          --bse-override-sample-path $(samplepath)                      \
 	  --bse-disable-randomization					\
 	  -s $(srcdir)/bse2wav.scm					\
 )
@@ -61,7 +63,7 @@ balance-test:
 	$(BSEFCOMPARE) $(srcdir)/balance.ref $(@F).tmp --threshold 99.99
 	rm -f $(@F).tmp $(@F).wav
 
-FEATURE_TESTS += # minisong-test # FIXME: need to be able to load frowzy-drums.bsewave from another dir than CWD
+FEATURE_TESTS += minisong-test
 EXTRA_DIST += minisong.bse frowzy-drums.bsewave minisong.ref
 minisong-test:
 	$(BSE2WAV) $(srcdir)/minisong.bse $(@F).wav
