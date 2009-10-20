@@ -77,6 +77,7 @@ typedef struct {
   const gchar          *bse_rcfile;
   const gchar          *override_plugin_globs;
   const gchar          *override_script_path;
+  const gchar	       *override_sample_path;
   bool                  allow_randomization;	/* init-value "allow-randomization" - enables non-deterministic behavior */
   bool                  force_fpu;		/* init-value "force-fpu" */
   bool		        load_core_plugins;	/* init-value "load-core-plugins" */

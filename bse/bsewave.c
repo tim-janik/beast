@@ -22,6 +22,7 @@
 #include "gsldatahandle.h"
 #include "bseserver.h"
 #include "bseloader.h"
+#include "topconfig.h"
 
 #include <string.h>
 
@@ -274,7 +275,32 @@ bse_wave_load_wave_file (BseWave      *self,
 
   bse_wave_clear (self);
 
-  BseWaveFileInfo *fi = bse_wave_file_info_load (file_name, &error);
+  BseWaveFileInfo *fi = NULL;
+
+  if (!g_path_is_absolute (file_name))	  /* resolve relative path using search dir */
+    {
+      char *sample_path;
+      SfiRing *files, *walk;
+      if (bse_main_args->override_sample_path)
+	sample_path = g_strdup (bse_main_args->override_sample_path);
+      else
+	sample_path = g_path_concat (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path), NULL);
+      files = sfi_file_crawler_list_files (sample_path, file_name, G_FILE_TEST_IS_REGULAR);
+
+      for (walk = files; walk; walk = sfi_ring_walk (files, walk))
+	{
+	  char *fname = walk->data;
+	  if (!fi)
+	    fi = bse_wave_file_info_load (fname, &error);
+	  g_free (fname);
+	}
+      sfi_ring_free (files);
+      g_free (sample_path);
+    }
+  else
+    {
+      fi = bse_wave_file_info_load (file_name, &error);
+    }
   if (fi)
     {
       guint i = 0;

@@ -70,6 +70,7 @@ static BseMainArgs       default_main_args = {
   NULL,                 // bse_rcfile
   NULL,                 // override_plugin_globs
   NULL,                 // override_script_path
+  NULL,			// override_sample_path
   true,                 // allow_randomization
   false,                // force_fpu
 };
@@ -658,6 +659,12 @@ bse_async_parse_args (gint           *argc_p,
 	{
           argv[i++] = NULL;
           margs->override_script_path = argv[i];
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-override-sample-path", argv[i]) == 0 && i + 1 < argc)
+	{
+	  argv[i++] = NULL;
+	  margs->override_sample_path = argv[i];
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-rcfile", argv[i]) == 0 && i + 1 < argc)
