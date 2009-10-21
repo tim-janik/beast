@@ -241,4 +241,10 @@ EXTRA_DIST += $(strip		\
 	$(doxi_files)		\
 	bse-categories.txt	\
 	interpolation.txt	\
+	OldBeast.ChangeLog	\
+	OldBse.ChangeLog	\
+	OldPlugins.ChangeLog	\
+	OldBirnet.ChangeLog	\
+	OldDoxer.ChangeLog	\
+	OldSfi.ChangeLog	\
 )
