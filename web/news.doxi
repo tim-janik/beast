@@ -36,6 +36,20 @@
 @dnl ----------------------------- START -----------------------------
 
 
+@newsentry{Wednesday 21 October 2009, Recent Happenings}
+Due to a @uri{http://www.lanedo.com, variety of reasons} Beast
+development has stalled for quite some time.
+Recently, @uri{http://space.twc.de/~stefan/, Stefan Westerfeld}
+has kicked off some new work and
+@uri{http://beast.gtk.org/log-head, fixes are slowly trippling into}
+the Beast tree again.
+In particular, he brought
+@uri{http://mail.gnome.org/archives/beast/2009-June/msg00001.html, win32 builds}
+into a much better shape and worked on the
+@uri{https://bugzilla.gnome.org/buglist.cgi?query=product%3Abeast&target_milestone=m0.7,
+remaining 0.7.2 release todos}.
+
+
 @newsentry{Wednesday 12 March 2008, Fantasy III Contest}
 The Fantasy Project is an annual challenge. Each artist who participates
 can create his own song, as long as he uses the lyrics given below
@@ -44,19 +58,6 @@ blues, rock, metal, rap, dance, techno, house, ... are welcome.
 @* @uri{http://space.twc.de/~stefan/fantasyIII, Fantasy III Contest}
 @* @uri{http://space.twc.de/~stefan/fantasyII, Fantasy II Results}
 
-
-@newsentry{Thursday 28 December 2006, New release with security fix}
-
-BEAST/BSE version 0.7.1 is available from the
-@uri{@top_webdir/download,download section}.
-@doxer_dnl , here is the @uri{http://gnomedesktop.org/node/2722,FootNotes announcement}.
-
-BEAST tarball:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.1.tar.bz2, beast-0.7.1.tar.bz2}
-@* BEAST patch:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/beast-0.7.0-0.7.1.diff.bz2, beast-0.7.0-0.7.1.diff.bz2}
-@* @uri{http://alsa-project.org, ALSA} driver:
-@uri{http://beast.gtk.org/beast-ftp/v0.7/bse-alsa-0.7.1.tar.bz2, bse-alsa-0.7.1.tar.bz2}
 
 
 The 0.7 development series of Beast focusses on improving usability and
