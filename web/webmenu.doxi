@@ -85,12 +85,7 @@
     @menu_branch{development}
 	@itemize{none}
 	@item 	@fmenuuri{@top_webdir/news-file,		Release NEWS}
-	@item 	@doxer_span{menu-leaf,				ChangeLogs}
-	@item 	@fmenuuri{@top_webdir/log-beast,		BEAST Changes}
-	@item 	@fmenuuri{@top_webdir/log-plugins,		Plugin Changes}
-	@item 	@fmenuuri{@top_webdir/log-bse,			BSE Changes}
-	@item 	@fmenuuri{@top_webdir/log-sfi,			SFI Changes}
-	@item 	@fmenuuri{@top_webdir/log-birnet,		BIRNET Changes}
+	@item 	@fmenuuri{@top_webdir/log-head,			ChangeLog}
 	@item 	@doxer_span{menu-leaf,				BEAST/BSE Development}
 	@item 	@fmenuuri{@top_webdir/architecture,		Architecture}
 	@item 	@fmenuuri{@top_webdir/plugin-devel,		Writing Plugins}

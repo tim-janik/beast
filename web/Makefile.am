@@ -47,6 +47,7 @@ HTML_TARGETS = $(strip			\
 	html/plugin-devel.html		\
 	html/sfidl-manual.html		\
 	\
+	html/log-head.html		\
 	html/log-beast.html		\
 	html/log-bse.html		\
 	html/log-plugins.html		\
@@ -160,8 +161,17 @@ html/%.html: ../docs/gendoxi/%.doxi
 html/%.html: %.tmpdoxi
 	$(DOXER) doxi2html $< -d html/  -D TOP_WEBDIR "." $(DOXIDEFS)
 
+
 CHANGELOG2DOXI = $(top_srcdir)/doxer/changelog2doxi.py
-log-birnet.tmpdoxi: $(top_srcdir)/birnet/ChangeLog $(CHANGELOG2DOXI)
+log-head.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
+	cd . \
+	&& echo '@doxer_dnl'					>$@  \
+	&& echo '@doxer_set{webmenu} development'		>>$@ \
+	&& echo '@include "webframe.doxi"'			>>$@ \
+	&& echo '@doxer_set{title} BEAST - ChangeLog'		>>$@ \
+	&& echo '@subheading'					>>$@ \
+	&& $(CHANGELOG2DOXI) 		<$<			>>$@
+log-birnet.tmpdoxi: $(top_srcdir)/docs/OldBirnet.ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
@@ -169,7 +179,7 @@ log-birnet.tmpdoxi: $(top_srcdir)/birnet/ChangeLog $(CHANGELOG2DOXI)
 	&& echo '@doxer_set{title} BEAST - BIRNET ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
-log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
+log-sfi.tmpdoxi: $(top_srcdir)/docs/OldSfi.ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
@@ -177,7 +187,7 @@ log-sfi.tmpdoxi: $(top_srcdir)/sfi/ChangeLog $(CHANGELOG2DOXI)
 	&& echo '@doxer_set{title} BEAST - SFI ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
-log-bse.tmpdoxi: $(top_srcdir)/bse/ChangeLog $(CHANGELOG2DOXI)
+log-bse.tmpdoxi: $(top_srcdir)/docs/OldBse.ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
@@ -185,7 +195,7 @@ log-bse.tmpdoxi: $(top_srcdir)/bse/ChangeLog $(CHANGELOG2DOXI)
 	&& echo '@doxer_set{title} BEAST - BSE ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
-log-plugins.tmpdoxi: $(top_srcdir)/plugins/ChangeLog $(CHANGELOG2DOXI)
+log-plugins.tmpdoxi: $(top_srcdir)/docs/OldPlugins.ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
@@ -193,12 +203,12 @@ log-plugins.tmpdoxi: $(top_srcdir)/plugins/ChangeLog $(CHANGELOG2DOXI)
 	&& echo '@doxer_set{title} BEAST - Plugin ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
-log-beast.tmpdoxi: $(top_srcdir)/ChangeLog $(CHANGELOG2DOXI)
+log-beast.tmpdoxi: $(top_srcdir)/docs/OldBeast.ChangeLog $(CHANGELOG2DOXI)
 	cd . \
 	&& echo '@doxer_dnl'					>$@  \
 	&& echo '@doxer_set{webmenu} development'		>>$@ \
 	&& echo '@include "webframe.doxi"'			>>$@ \
-	&& echo '@doxer_set{title} BEAST - ChangeLog'		>>$@ \
+	&& echo '@doxer_set{title} BEAST - Beast ChangeLog'	>>$@ \
 	&& echo '@subheading'					>>$@ \
 	&& $(CHANGELOG2DOXI) 		<$<			>>$@
 
@@ -271,6 +281,7 @@ html/rdocu-bse/index.html: tmpdoxi-bse/index.doxi $(wildcard tmpdoxi-bse/*.doxi)
 	         -d html/rdocu-bse/ $(DOXIDEFS) $(call DOCFRAME_DEFS) $< )
 
 intermediate_files = $(strip	\
+	log-head.tmpdoxi	\
 	log-birnet.tmpdoxi	\
 	log-sfi.tmpdoxi		\
 	log-bse.tmpdoxi		\
