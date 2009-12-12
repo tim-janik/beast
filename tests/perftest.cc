@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <time.h>
+#include <stdio.h>
 
 static SfiGlueContext *bse_context = NULL;
 

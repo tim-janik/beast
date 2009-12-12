@@ -27,6 +27,7 @@
 #include "topconfig.h"
 #include <errno.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 using std::string;
 using std::vector;

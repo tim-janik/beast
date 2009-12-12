@@ -17,6 +17,7 @@
 #include "bsecxxapi.hh"
 #include <bse/bse.h>
 #include <unistd.h>
+#include <stdio.h>
 
 static SfiGlueContext *bse_context = NULL;
 

@@ -18,6 +18,7 @@
 #include <sys/time.h>
 #include <string>
 #include <errno.h>
+#include <stdio.h>
 
 using namespace std;
 using namespace Sfi;

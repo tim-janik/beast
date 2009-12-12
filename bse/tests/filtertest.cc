@@ -24,6 +24,7 @@
 #include "topconfig.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <complex>
 
 typedef std::complex<double> Complex;

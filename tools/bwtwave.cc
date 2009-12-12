@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdio.h>
 #include <algorithm>
 #include <vector>
 #include <map>

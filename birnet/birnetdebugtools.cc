@@ -18,6 +18,7 @@
 #include "birnetthread.hh"
 #include <syslog.h>
 #include <errno.h>
+#include <stdio.h>
 
 #ifndef _ // FIXME
 #define _(x)    (x)
