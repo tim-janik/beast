@@ -25,6 +25,7 @@
 
 #include <glib.h>
 #include <string.h>
+#include <signal.h>    /* G_BREAKPOINT() */
 
 BIRNET_EXTERN_C_BEGIN();
 

@@ -17,6 +17,7 @@
 #include "bseloopfuncs.h"
 #include <bse/gsldatacache.h>
 #include <string.h>
+#include <signal.h>    /* G_BREAKPOINT() */
 #include <stdio.h>
 #include <math.h>
 
