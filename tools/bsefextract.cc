@@ -596,7 +596,7 @@ struct RawSignalFeature : public Feature
      * functions (because then gnuplot couldn't parse it any more).
      */
     for (guint i = 0; i < raw_signal.size(); i++)
-      fprintf (options.output_file, "%f\n", raw_signal[i]);
+      fprintf (options.output_file, "%s\n", double_to_string (raw_signal[i]).c_str());
   }
 };
 
@@ -701,7 +701,8 @@ struct ComplexSignalFeature : public Feature
      * functions (because then gnuplot couldn't parse it any more).
      */
     for (guint i = 0; i < complex_signal.size(); i++)
-      fprintf (options.output_file, "%f %f\n", complex_signal[i].real(), complex_signal[i].imag());
+      fprintf (options.output_file, "%s %s\n", double_to_string (complex_signal[i].real()).c_str(),
+                                               double_to_string (complex_signal[i].imag()).c_str());
   }
 };
 
