@@ -2,13 +2,13 @@
 # Copyright (C) 2004-2006 Adam Weinberger and the GNOME Foundation
 # This file is distributed under the same licence as the beast package.
 # Adam Weinberger <adamw@gnome.org>, 2004, 2006.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2005-06-23 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
@@ -3619,51 +3619,51 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "The widget to be activated when the label's mnemonic key is pressed"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "Error"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Warning"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:127
 msgid "Script"
 msgstr "Script"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:131
 msgid "Information"
 msgstr "Information"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "Diagnostic"
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1198
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Show messages about audio input problems"
@@ -5532,7 +5532,7 @@ msgstr "connection terminated"
 msgid "%s (core dumped)"
 msgstr "%s (core dumped)"
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5540,7 +5540,7 @@ msgstr ""
 "\n"
 "Available PCM drivers:\n"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6316,7 +6316,7 @@ msgstr "Midi channel assigned to this track. 0 uses internal per-track channel"
 msgid "Mixer busses used as output for this track"
 msgstr "Mixer busses used as output for this track"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
@@ -7355,7 +7355,7 @@ msgstr "Left Output"
 msgid "Right Output"
 msgstr "Right Output"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "failed to add wave chunk from file \"%s\": %s"

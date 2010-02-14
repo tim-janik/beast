@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2007-07-29 00:56-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
@@ -3647,54 +3647,54 @@ msgstr ""
 "pressionada"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:119
 #, fuzzy
 msgid "Error"
 msgstr "Erro"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Aviso"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:127
 #, fuzzy
 msgid "Script"
 msgstr "Scripts"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:131
 #, fuzzy
 msgid "Information"
 msgstr "Sobreposição inválida"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "Diagnóstico"
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1198
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Mostrar mensagens sobre problemas de gravação de áudio"
@@ -5592,7 +5592,7 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5600,7 +5600,7 @@ msgstr ""
 "\n"
 "Drivers PCM disponíveis:\n"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6365,7 +6365,7 @@ msgstr "O canal MIDI atribuído a essa pista, 0 usa canal por pista privado"
 msgid "Mixer busses used as output for this track"
 msgstr "Barramentos de mixagem usados como saída para esta pista"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
@@ -7378,7 +7378,7 @@ msgstr "Saída esquerda"
 msgid "Right Output"
 msgstr "Saída direita"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "Falha ao abrir o arquivo de saída \"%s\": %s"

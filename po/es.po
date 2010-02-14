@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pan2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-07 01:06+0200\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2009-06-06 13:22+0200\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
@@ -3687,51 +3687,51 @@ msgstr ""
 "mnemotécnica"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:114
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr "Siempre"
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:118
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "Error"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:122
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Advertencia"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:126
+#: ../birnet/birnetmsg.cc:127
 msgid "Script"
 msgstr "Script"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:130
+#: ../birnet/birnetmsg.cc:131
 msgid "Information"
 msgstr "Información"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:134
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "Diagnóstico"
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr "Lanzar navegador web"
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr "Falló al lanzar el ejecutable del navegador web"
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1197
+#: ../birnet/birnetutils.cc:1198
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Mostrar mensajes sobre problemas con las señales de entrada"
@@ -5608,7 +5608,7 @@ msgstr "conexión terminada"
 msgid "%s (core dumped)"
 msgstr "%s (core dumped)"
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5616,7 +5616,7 @@ msgstr ""
 "\n"
 "Controladores PCM disponibles:\n"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6409,7 +6409,7 @@ msgstr "Canales MIDI asignados a esta pista, 0 usa un canal privado por pista"
 msgid "Mixer busses used as output for this track"
 msgstr "Buses mezcladores usados como salida para esta pista"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "Onda «%s»: error al cargar parte de la onda para la frecuencia %f: %s"

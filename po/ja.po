@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -3620,54 +3620,54 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "ラベルのニーモニックキーが押されたときにアクティブになるウィジェット"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:119
 #, fuzzy
 msgid "Error"
 msgstr "エラー"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "警告"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:127
 #, fuzzy
 msgid "Script"
 msgstr "スクリプト"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:131
 #, fuzzy
 msgid "Information"
 msgstr "不正なオーバーラップ"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "診断"
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1198
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "オーディオ録音障害についてのメッセージを表示"
@@ -5540,14 +5540,14 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 #, fuzzy
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr "利用可能な波形"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 #, fuzzy
 msgid ""
 "\n"
@@ -6306,7 +6306,7 @@ msgstr ""
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
@@ -7300,7 +7300,7 @@ msgstr "左出力"
 msgid "Right Output"
 msgstr "右出力"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "出力ファイル \"%s\" を開くのに失敗: %s"

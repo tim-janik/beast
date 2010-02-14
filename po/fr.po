@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2006-07-24 15:00+0200\n"
 "Last-Translator: Christophe Merlet (RedFox) <redfox@redfoxcenter.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -3840,54 +3840,54 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Le widget à activer lorsque la touche mnémonique est activé"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:119
 #, fuzzy
 msgid "Error"
 msgstr "Erreur"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Avertissement"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:127
 #, fuzzy
 msgid "Script"
 msgstr "Scripts"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:131
 #, fuzzy
 msgid "Information"
 msgstr "Emplacement"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1198
 msgid "Show messages about web browser launch problems"
 msgstr ""
 
@@ -5853,14 +5853,14 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 #, fuzzy
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr "_Synchroniser"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6646,7 +6646,7 @@ msgstr ""
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
@@ -7700,7 +7700,7 @@ msgstr "Let It"
 msgid "Right Output"
 msgstr "Sortie droite"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, fuzzy, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "La suppression de l'ancien fichier « %s » a échoué : %s"

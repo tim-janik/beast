@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2006-08-18 05:28+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <gnome@softcatala.org>\n"
@@ -3693,51 +3693,51 @@ msgstr ""
 "l'etiqueta"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "Error"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Avís"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:127
 msgid "Script"
 msgstr "Fitxer de seqüència d'ordres"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:131
 msgid "Information"
 msgstr "Informació"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "Diagnòstic"
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1198
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "Mostra missatges sobre els problemes d'entrada d'àudio"
@@ -5173,8 +5173,8 @@ msgstr "Camí de mostra"
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
-"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
-"mostres d'àudio."
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar mostres "
+"d'àudio."
 
 #: ../bse/bsecore.idl:805
 msgid "Effect Path"
@@ -5186,8 +5186,8 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
 "files."
 msgstr ""
-"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
-"fitxers d'efectes BSE."
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar fitxers "
+"d'efectes BSE."
 
 #: ../bse/bsecore.idl:809
 msgid "Instrument Path"
@@ -5199,8 +5199,8 @@ msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
 "files."
 msgstr ""
-"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar "
-"fitxers d'instruments BSE."
+"Cerca camins de directoris, separats per «%s». Utilitzat per a cercar fitxers "
+"d'instruments BSE."
 
 #: ../bse/bsecore.idl:813
 msgid "Script Path"
@@ -5612,7 +5612,7 @@ msgstr "connexió acabada"
 msgid "%s (core dumped)"
 msgstr "%s (s'ha bolcat el nucli)"
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5620,7 +5620,7 @@ msgstr ""
 "\n"
 "Controladors PCM disponibles:\n"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5850,8 +5850,8 @@ msgid ""
 msgstr ""
 "Controlador PCM del sistema de so obert:\n"
 "  DISPOSITIU - nom del fitxer del dispositiu PCM\n"
-"  MODE   - hauria de contenir «rw», «ro» o «wo» per\"           a accessos "
-"de sols lectura (ro), lectura i \n"
+"  MODE   - hauria de contenir «rw», «ro» o «wo» per\"           a accessos de "
+"sols lectura (ro), lectura i \n"
 "           escriptura (rw) o sols escriptura (ro);\n"
 "           afegint «hs» es força sincronització\n"
 "           forta en baixos.\n"
@@ -5901,8 +5901,8 @@ msgstr ""
 #, c-format
 msgid "Audio device \"%s\" is not open for input, audio driver: %s=%s"
 msgstr ""
-"El dispositiu d'àudio «%s» no està obert per entrada, controlador d'àudio: %"
-"s=%s"
+"El dispositiu d'àudio «%s» no està obert per entrada, controlador d'àudio: %s="
+"%s"
 
 #: ../bse/bseserver.c:488
 msgid "Show messages about audio input problems"
@@ -6412,7 +6412,7 @@ msgstr ""
 msgid "Mixer busses used as output for this track"
 msgstr "Mesclador de busos utilitzat com a sortida per aquesta pista"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
@@ -6633,12 +6633,12 @@ msgstr ""
 "entrada = 20 dB => sortida = 5 dB\n"
 "\n"
 "La compressió sovint se sol pensar com una operació per fer que la música "
-"«soni més alta». Per aconseguir això, el primer pas és reduir el rang "
-"dinàmic com en l'exemple de dalt. Una vegada s'han reduït les parts "
-"sorolloses de la música en volum, ara ho podem amplificar tot, sense el "
-"perill de distorsió o trencament.Això té l'efecte global que la música sona "
-"més forta. En el nostre exemple, una amplificació de sortida de 5 dB seria "
-"suficient, si el senyal d'entrada mai excedeix 0 dB."
+"«soni més alta». Per aconseguir això, el primer pas és reduir el rang dinàmic "
+"com en l'exemple de dalt. Una vegada s'han reduït les parts sorolloses de la "
+"música en volum, ara ho podem amplificar tot, sense el perill de distorsió o "
+"trencament.Això té l'efecte global que la música sona més forta. En el "
+"nostre exemple, una amplificació de sortida de 5 dB seria suficient, si el "
+"senyal d'entrada mai excedeix 0 dB."
 
 #: ../plugins/artscompressor.idl:48 ../plugins/bseadder.c:95
 #: ../plugins/bseamplifier.idl:43 ../plugins/bsebalance.idl:34
@@ -7138,8 +7138,8 @@ msgid ""
 msgstr ""
 "El DavBassFilter és un filtre passa baixos ressonant estil TB-303 basat en "
 "parts del VCF303 del gsyn v0.2. L'algorisme del filtre està basat "
-"parcialment en el descrit «Aplicacions musicals dels microprocessadors», "
-"d'en Hal Chamberlin."
+"parcialment en el descrit «Aplicacions musicals dels microprocessadors», d'en "
+"Hal Chamberlin."
 
 #: ../plugins/davbassfilter.idl:31 ../plugins/davchorus.idl:28
 msgid "Audio input"
@@ -7459,7 +7459,7 @@ msgstr "Sortida esquerre"
 msgid "Right Output"
 msgstr "Sortida dreta"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "No s'ha pogut afegir un tros d'ona des del fitxer «%s»: %s"

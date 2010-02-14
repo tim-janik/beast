@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.ne\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-01-24 21:52+0100\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2006-09-01 14:55+0545\n"
 "Last-Translator: Mahesh subedi <submanesh@hotmail.com>\n"
 "Language-Team: Nepali <info@mpp.org.np>\n"
@@ -3594,51 +3594,51 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "लेबुलको एम्नेमोनिक कुञ्जी थिचेको बेलामा सक्रिय पारिने विजेट"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:113
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:117
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "त्रुटि"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:121
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "चेतावनी"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:125
+#: ../birnet/birnetmsg.cc:127
 msgid "Script"
 msgstr "स्क्रिप्ट"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:129
+#: ../birnet/birnetmsg.cc:131
 msgid "Information"
 msgstr "जानकारी"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:133
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "निदानात्मक"
 
-#: ../birnet/birnetutils.cc:1193
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1198
 #, fuzzy
 msgid "Show messages about web browser launch problems"
 msgstr "अडियो आगत समस्याका बारेमा सन्देश देखाउनुहोस्"
@@ -5503,7 +5503,7 @@ msgstr "जडान समाप्त"
 msgid "%s (core dumped)"
 msgstr "%s (डम्ट गरिएको कोर)"
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5511,7 +5511,7 @@ msgstr ""
 "\n"
 "उपलब्ध PCM ड्राइभर:\n"
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6280,7 +6280,7 @@ msgstr ""
 msgid "Mixer busses used as output for this track"
 msgstr "यो ट्र्याकका लागि निर्गतको रूपमा प्रयोग गरिने मिश्रण बस"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "तरङ्ग \"%s\": आवृति %f का लागि तरङ्ग टुक्रा लोड गर्न असफल: %s"
@@ -7310,7 +7310,7 @@ msgstr "बायाँ निर्गत"
 msgid "Right Output"
 msgstr "दायाँ निर्गत"
 
-#: ../tools/bsewavetool.cc:1218
+#: ../tools/bsewavetool.cc:1219
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr "फाइल \"%s\"बाट वेब भाग थप गर्न असफल: %s"

@@ -5,18 +5,222 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Beast master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.openedhand.com/enter_bug.cgi?product=Dates&component=General\n"
-"POT-Creation-Date: 2009-09-19 16:02+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2010-01-30 10:50+0100\n"
 "Last-Translator: Andrej Žnidaršič <andrej.znidarsic@gmail.com>\n"
 "Language-Team: Slovenian GNOME Translation Team <gnome-si@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
+"%100==4 ? 3 : 0);\n"
 "X-Poedit-Country: SLOVENIA\n"
 "X-Poedit-Language: Slovenian\n"
 "X-Poedit-SourceCharset: utf-8\n"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:25
+msgid "/Song/Assign Tracks to individual Mixer Busses"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:26
+msgid ""
+"This script creates a new Mixer Bus for each track in the song that is "
+"currently using the Master Bus as output."
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:30
+#: ../library/scripts/song-parts-operations.scm.h:39
+#, fuzzy
+msgid "Song"
+msgstr "_Skladba"
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:57
+#: ../library/scripts/song-parts-operations.scm.h:45
+msgid "No valid song supplied"
+msgstr ""
+
+#: ../library/scripts/mixer-splitup-by-track.scm.h:59
+msgid "This script cannot be used while the project is playing"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:21
+msgid "/SNet/Grid Align"
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:22
+msgid ""
+"Round module positions to their nearest grid position, so to align all "
+"modules within a synthesis network."
+msgstr ""
+
+#: ../library/scripts/modules2grid.scm.h:26
+#, fuzzy
+msgid "Synth Net"
+msgstr "Sintetizator je narejen"
+
+#: ../library/scripts/modules2grid.scm.h:30
+#, fuzzy
+msgid "No valid synthesis network supplied"
+msgstr "Ni takšnega sinteznega modula"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:25
+msgid "/Part/Harmonic Transposer"
+msgstr ""
+
+#. ; FIXME: the description may be suboptimal; the problem is
+#. ; that I can't precisely describe details of musical theory
+#. ; in english. -- stw
+#: ../library/scripts/part-harmonic-transposer.scm.h:29
+msgid ""
+"The harmonic transposer takes the selection of a part and transposes it to "
+"different harmonies. If you for instance have selected a measure filled with "
+"C major chords, and enter \"C,Am,F,G\" as harmonic sequence, the result will "
+"be four measures, filled with C major, A minor, F major and G major "
+"chords. \n"
+"\n"
+"This also works for melodies, so you can transpose a whole melody written in "
+"G major to D minor. The standard scales used in church music (ionian, "
+"dorian, phrygian, lydian, mixolydian, aeolian, locrian) are also supported: "
+"it is for instance possible to write Ddorian or Caeolian. The aeolian scale "
+"is equivalent to minor and the ionian scale is equivalent to major. \n"
+"\n"
+"Since musically, there is no preference on whether to transpose up or down "
+"it is possible to specify the first harmony that will be transposed down "
+"(all harmonies below this will be transposed up). It is possible to omit "
+"this value. Then all notes will be transposed up."
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:50
+#: ../library/scripts/record-midi.scm.h:25
+#, fuzzy
+msgid "Part"
+msgstr "Deli"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:51
+msgid "Harmony Sequence"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:52
+msgid "Transpose down starting at"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:209
+msgid "No valid part supplied"
+msgstr ""
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:211
+#, fuzzy
+msgid "No notes selected"
+msgstr "Kvantizacija ni izbrana"
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:218
+#, fuzzy
+msgid "Failed to parse harmony list"
+msgstr "Začetek snemanja na disk je spodletel."
+
+#: ../library/scripts/part-harmonic-transposer.scm.h:221
+msgid "Harmony list is too short"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:32
+msgid "/Project/Toys/Progressor..."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:33
+msgid ""
+"Progressor takes two seed values and then starts progressing. It doesn't do "
+"anything particularly usefull, other than ticking the main program from time "
+"to time. It is a funny example though."
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:38
+#, fuzzy
+msgid "N Iterations"
+msgstr "Podrobnosti"
+
+#: ../library/scripts/progressor-example.scm.h:39
+msgid "N Wait Spins"
+msgstr ""
+
+#: ../library/scripts/progressor-example.scm.h:40
+msgid "Update Percentage"
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:20
+msgid "/Part/Record Midi..."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:21
+msgid ""
+"Record midi events, currently being played on the default external midi "
+"device, into a given song part. The MIDI recorder is still work in progress."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:26
+#, fuzzy
+msgid "Start Now"
+msgstr "Začetek:"
+
+#: ../library/scripts/record-midi.scm.h:49
+#, fuzzy
+msgid "No valid part object supplied"
+msgstr "Neveljavna lastnost predmeta"
+
+#: ../library/scripts/record-midi.scm.h:50
+msgid "You probably want to start this script from a part editor."
+msgstr ""
+
+#: ../library/scripts/record-midi.scm.h:53
+msgid ""
+"Not currently recording...\n"
+"\n"
+"The MIDI recorder is still work in progress.\n"
+"Currently, you need a MIDI Synthesizer network running, in order for this "
+"script to catch the events currently being played back."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:25
+msgid "/Song/Crop parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:26
+msgid ""
+"Crops all parts within the loop range and moves parts after the loop range "
+"backwards accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:34
+msgid "/Song/Duplicate parts (loop range)"
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:35
+msgid ""
+"Duplicate all parts within the loop range and moves parts after the loop "
+"range forward accordingly."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:62
+msgid ""
+"The loop range of the specified song contains no parts or is unset, so no "
+"parts can be identified to operate on."
+msgstr ""
+
+#: ../library/scripts/song-parts-operations.scm.h:64
+#, fuzzy
+msgid "Show messages about empty part range"
+msgstr "Pokaži sporočila o težavah zvočnega vhoda"
+
+#: ../library/scripts/song-parts-operations.scm.h:68
+#, fuzzy
+msgid "Failed to crop part range."
+msgstr "Zaznavanje začetka glave je spodletelo"
+
+#: ../library/scripts/song-parts-operations.scm.h:80
+#, fuzzy
+msgid "Failed to duplicate part range."
+msgstr "Zaznavanje začetka glave je spodletelo"
 
 #: ../beast-gtk/bstapp.c:81
 msgid "_New"
@@ -118,8 +322,7 @@ msgstr "_Uveljavi"
 msgid "Redo the last undone action"
 msgstr "Uveljavi zadnje dejanje razveljave"
 
-#: ../beast-gtk/bstapp.c:120
-#: ../beast-gtk/bstpartdialog.c:71
+#: ../beast-gtk/bstapp.c:120 ../beast-gtk/bstpartdialog.c:71
 msgid "_Clear Undo"
 msgstr "_Počisti razveljave"
 
@@ -139,8 +342,7 @@ msgstr "Prikaz pregleda vseh postopkov"
 msgid "Rack Editor"
 msgstr "Urejevalnik polic"
 
-#: ../beast-gtk/bstapp.c:128
-#: ../beast-gtk/bstprofiler.c:224
+#: ../beast-gtk/bstapp.c:128 ../beast-gtk/bstprofiler.c:224
 msgid "Profiler"
 msgstr "Profilirnik"
 
@@ -193,8 +395,10 @@ msgid "Add MIDI Synthesizer"
 msgstr "Dodaj sintetizator MIDI"
 
 #: ../beast-gtk/bstapp.c:144
-msgid "Add a new MIDI synthesizer to control an instrument from external MIDI events"
-msgstr "Doda nov sintetizator MIDI za nadzor inštrumenta iz zunanjih dogodkov MIDI"
+msgid ""
+"Add a new MIDI synthesizer to control an instrument from external MIDI events"
+msgstr ""
+"Doda nov sintetizator MIDI za nadzor inštrumenta iz zunanjih dogodkov MIDI"
 
 #: ../beast-gtk/bstapp.c:146
 msgid "Remove Song or Synthesizer"
@@ -273,7 +477,8 @@ msgid "Online _Help Desk..."
 msgstr "Pomoč na _spletu ..."
 
 #: ../beast-gtk/bstapp.c:168
-msgid "Start a web browser pointing to the online help desk at the BEAST website"
+msgid ""
+"Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Zaženi spletni brskalnik in pojdi na spletno pomoč na spletišču BEAST"
 
 #: ../beast-gtk/bstapp.c:170
@@ -281,7 +486,8 @@ msgid "Report a Beast Bug..."
 msgstr "Pošlji poročilo o hrošču ..."
 
 #: ../beast-gtk/bstapp.c:170
-msgid "Start a web browser with the bug report form for the BEAST bugzilla product"
+msgid ""
+"Start a web browser with the bug report form for the BEAST bugzilla product"
 msgstr "Zaženi spletni brskalnik z poročilom o hrošču za bugzillo BEAST"
 
 #: ../beast-gtk/bstapp.c:173
@@ -337,8 +543,7 @@ msgstr "Zaženi spletni brskalnik in pojdi na spletne demo skladbe"
 msgid "Export Audio"
 msgstr "Izvozi zvok"
 
-#: ../beast-gtk/bstapp.c:520
-#: ../beast-gtk/bstsupershell.c:232
+#: ../beast-gtk/bstapp.c:520 ../beast-gtk/bstsupershell.c:232
 msgid "Waves"
 msgstr "Valovi"
 
@@ -372,7 +577,8 @@ msgstr "Projekt je bil spremenjen."
 
 #: ../beast-gtk/bstapp.c:649
 #, c-format
-msgid "Changes were made to project \"%s\" since the last time it was saved to disk."
+msgid ""
+"Changes were made to project \"%s\" since the last time it was saved to disk."
 msgstr "Projekt \"%s\" je bil od zadnjega shranjevanja na disk spremenjen."
 
 #: ../beast-gtk/bstapp.c:651
@@ -391,10 +597,8 @@ msgstr "Zavrzi spremembe"
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: ../beast-gtk/bstapp.c:739
-#: ../beast-gtk/bstapp.c:746
-#: ../beast-gtk/bstfiledialog.c:433
-#: ../beast-gtk/bstfiledialog.c:439
+#: ../beast-gtk/bstapp.c:739 ../beast-gtk/bstapp.c:746
+#: ../beast-gtk/bstfiledialog.c:433 ../beast-gtk/bstfiledialog.c:439
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Odpiranje projekta `%s'"
@@ -426,31 +630,22 @@ msgstr "Pritisnite tipkovno bližnjico za namestitev za zmožnost:%s"
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Pritisnite tipkovno bližnjico za namestitev ..."
 
-#: ../beast-gtk/bstbuseditor.c:38
-#: ../beast-gtk/bstbusmixer.c:35
-#: ../beast-gtk/bstbusview.c:34
-#: ../beast-gtk/bstpartview.c:39
+#: ../beast-gtk/bstbuseditor.c:38 ../beast-gtk/bstbusmixer.c:35
+#: ../beast-gtk/bstbusview.c:34 ../beast-gtk/bstpartview.c:39
 #: ../beast-gtk/bsttrackview.c:63
 msgid "Add"
 msgstr "Dodaj"
 
-#: ../beast-gtk/bstbuseditor.c:39
-#: ../beast-gtk/bstbusmixer.c:36
-#: ../beast-gtk/bstbusview.c:35
-#: ../beast-gtk/bstkeybindings.c:57
-#: ../beast-gtk/bstpartview.c:40
-#: ../beast-gtk/bstpianorollctrl.c:79
-#: ../beast-gtk/bstrackitem.c:215
-#: ../beast-gtk/bstsnetrouter.c:713
-#: ../beast-gtk/bstsnetrouter.c:761
-#: ../beast-gtk/bsttrackrollctrl.c:50
-#: ../beast-gtk/bsttrackview.c:66
-#: ../beast-gtk/bstwaveview.c:45
+#: ../beast-gtk/bstbuseditor.c:39 ../beast-gtk/bstbusmixer.c:36
+#: ../beast-gtk/bstbusview.c:35 ../beast-gtk/bstkeybindings.c:57
+#: ../beast-gtk/bstpartview.c:40 ../beast-gtk/bstpianorollctrl.c:79
+#: ../beast-gtk/bstrackitem.c:215 ../beast-gtk/bstsnetrouter.c:713
+#: ../beast-gtk/bstsnetrouter.c:761 ../beast-gtk/bsttrackrollctrl.c:50
+#: ../beast-gtk/bsttrackview.c:66 ../beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Izbriši"
 
-#: ../beast-gtk/bstbuseditor.c:40
-#: ../beast-gtk/bstpartview.c:41
+#: ../beast-gtk/bstbuseditor.c:40 ../beast-gtk/bstpartview.c:41
 #: ../beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Urejevalnik"
@@ -467,8 +662,7 @@ msgstr "Izbris trenutno izbranega vodila"
 msgid "Module Link: "
 msgstr "Povezava modula:"
 
-#: ../beast-gtk/bstcanvaslink.c:185
-#: ../beast-gtk/bstsnetrouter.c:757
+#: ../beast-gtk/bstcanvaslink.c:185 ../beast-gtk/bstsnetrouter.c:757
 msgid "Module link"
 msgstr "Povezava modula"
 
@@ -476,13 +670,11 @@ msgstr "Povezava modula"
 msgid "Module Info"
 msgstr "Pordobnosti modula"
 
-#: ../beast-gtk/bstcanvassource.c:980
-#: ../beast-gtk/bstsnetrouter.c:1090
+#: ../beast-gtk/bstcanvassource.c:980 ../beast-gtk/bstsnetrouter.c:1090
 msgid "Input"
 msgstr "Vhod"
 
-#: ../beast-gtk/bstcanvassource.c:989
-#: ../beast-gtk/bstsnetrouter.c:1094
+#: ../beast-gtk/bstcanvassource.c:989 ../beast-gtk/bstsnetrouter.c:1094
 #: ../plugins/bseamplifier.idl:63
 msgid "Output"
 msgstr "Izhod"
@@ -498,16 +690,15 @@ msgstr "Nariši vrednosti"
 #: ../beast-gtk/bstdbmeter.c:763
 #, fuzzy
 msgid "Adjust whether to draw dB values instead of lines"
-msgstr "Prilagoditev ali naj bodo narisane vrednosti v dB namesto linearnega merila"
+msgstr ""
+"Prilagoditev ali naj bodo narisane vrednosti v dB namesto linearnega merila"
 
-#: ../beast-gtk/bstdbmeter.c:766
-#: ../beast-gtk/bstdbmeter.c:1061
+#: ../beast-gtk/bstdbmeter.c:766 ../beast-gtk/bstdbmeter.c:1061
 #: ../beast-gtk/bstdbmeter.c:1561
 msgid "Orientation"
 msgstr "Usmeritev"
 
-#: ../beast-gtk/bstdbmeter.c:766
-#: ../beast-gtk/bstdbmeter.c:1061
+#: ../beast-gtk/bstdbmeter.c:766 ../beast-gtk/bstdbmeter.c:1061
 #: ../beast-gtk/bstdbmeter.c:1561
 msgid "Choose horizontal or vertical orientation"
 msgstr "Izbor vodoravne ali navpične usmeritve"
@@ -521,8 +712,7 @@ msgstr "Poravnava"
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "Prilagodi relativno poravnavo vrednosti stolpcev za risanje"
 
-#: ../beast-gtk/bsteventrollctrl.c:57
-#: ../beast-gtk/bstpianorollctrl.c:57
+#: ../beast-gtk/bsteventrollctrl.c:57 ../beast-gtk/bstpianorollctrl.c:57
 msgid "All"
 msgstr "Vse"
 
@@ -531,10 +721,8 @@ msgid "Select all events"
 msgstr "Izbor vseh dogodkov"
 
 #. special cased signals
-#: ../beast-gtk/bsteventrollctrl.c:59
-#: ../beast-gtk/bstpianorollctrl.c:59
-#: ../beast-gtk/bstrecords.idl:60
-#: ../beast-gtk/bstrecords.idl:88
+#: ../beast-gtk/bsteventrollctrl.c:59 ../beast-gtk/bstpianorollctrl.c:59
+#: ../beast-gtk/bstrecords.idl:60 ../beast-gtk/bstrecords.idl:88
 #: ../bse/bsecore.idl:331
 msgid "None"
 msgstr "Brez"
@@ -543,49 +731,37 @@ msgstr "Brez"
 msgid "Unselect all events"
 msgstr "Počisti izbor vseh dogodkov"
 
-#: ../beast-gtk/bsteventrollctrl.c:61
-#: ../beast-gtk/bstpianorollctrl.c:61
+#: ../beast-gtk/bsteventrollctrl.c:61 ../beast-gtk/bstpianorollctrl.c:61
 msgid "Invert"
 msgstr "Obrni"
 
-#: ../beast-gtk/bsteventrollctrl.c:61
-#: ../beast-gtk/bstpianorollctrl.c:61
+#: ../beast-gtk/bsteventrollctrl.c:61 ../beast-gtk/bstpianorollctrl.c:61
 msgid "Invert the current selection"
 msgstr "Obrni trenutno izbiro"
 
-#: ../beast-gtk/bsteventrollctrl.c:445
-#: ../beast-gtk/bsteventrollctrl.c:452
+#: ../beast-gtk/bsteventrollctrl.c:445 ../beast-gtk/bsteventrollctrl.c:452
 #: ../beast-gtk/bsteventrollctrl.c:521
 msgid "Move Control Event"
 msgstr "Premakni nadzorni dogodek"
 
-#: ../beast-gtk/bsteventrollctrl.c:452
-#: ../beast-gtk/bsteventrollctrl.c:606
-#: ../beast-gtk/bsteventrollctrl.c:656
-#: ../beast-gtk/bstpianorollctrl.c:579
-#: ../beast-gtk/bstpianorollctrl.c:689
-#: ../beast-gtk/bstpianorollctrl.c:752
-#: ../beast-gtk/bsttrackrollctrl.c:479
-#: ../beast-gtk/bsttrackrollctrl.c:499
-#: ../beast-gtk/bsttrackrollctrl.c:571
-#: ../bse/bseenums.c:167
+#: ../beast-gtk/bsteventrollctrl.c:452 ../beast-gtk/bsteventrollctrl.c:606
+#: ../beast-gtk/bsteventrollctrl.c:656 ../beast-gtk/bstpianorollctrl.c:579
+#: ../beast-gtk/bstpianorollctrl.c:689 ../beast-gtk/bstpianorollctrl.c:752
+#: ../beast-gtk/bsttrackrollctrl.c:479 ../beast-gtk/bsttrackrollctrl.c:499
+#: ../beast-gtk/bsttrackrollctrl.c:571 ../bse/bseenums.c:167
 msgid "No target"
 msgstr "Ni cilja"
 
-#: ../beast-gtk/bsteventrollctrl.c:521
-#: ../beast-gtk/bsteventrollctrl.c:642
+#: ../beast-gtk/bsteventrollctrl.c:521 ../beast-gtk/bsteventrollctrl.c:642
 msgid "Lost Event"
 msgstr "Izgubljeni dogodek"
 
-#: ../beast-gtk/bsteventrollctrl.c:531
-#: ../beast-gtk/bsteventrollctrl.c:564
+#: ../beast-gtk/bsteventrollctrl.c:531 ../beast-gtk/bsteventrollctrl.c:564
 msgid "Align Control Events"
 msgstr "Poravnaj nadzorne dogodke"
 
-#: ../beast-gtk/bsteventrollctrl.c:564
-#: ../beast-gtk/bsteventrollctrl.c:690
-#: ../beast-gtk/bstpianorollctrl.c:810
-#: ../beast-gtk/bstpianorollctrl.c:846
+#: ../beast-gtk/bsteventrollctrl.c:564 ../beast-gtk/bsteventrollctrl.c:690
+#: ../beast-gtk/bstpianorollctrl.c:810 ../beast-gtk/bstpianorollctrl.c:846
 msgid "Aborted"
 msgstr "Prekinjeno"
 
@@ -593,33 +769,26 @@ msgstr "Prekinjeno"
 msgid "Insert Control Event"
 msgstr "Vstavi nadzorni dogodek"
 
-#: ../beast-gtk/bsteventrollctrl.c:601
-#: ../beast-gtk/bsteventrollctrl.c:606
+#: ../beast-gtk/bsteventrollctrl.c:601 ../beast-gtk/bsteventrollctrl.c:606
 #: ../beast-gtk/bsteventrollctrl.c:642
 msgid "Resize Control Event"
 msgstr "Spremeni velikost nadzornega dogodka"
 
-#: ../beast-gtk/bsteventrollctrl.c:653
-#: ../beast-gtk/bsteventrollctrl.c:656
+#: ../beast-gtk/bsteventrollctrl.c:653 ../beast-gtk/bsteventrollctrl.c:656
 msgid "Delete Control Event"
 msgstr "Izbriši nadzorni dogodek"
 
-#: ../beast-gtk/bsteventrollctrl.c:666
-#: ../beast-gtk/bsteventrollctrl.c:690
-#: ../beast-gtk/bstpianorollctrl.c:784
-#: ../beast-gtk/bstpianorollctrl.c:810
+#: ../beast-gtk/bsteventrollctrl.c:666 ../beast-gtk/bsteventrollctrl.c:690
+#: ../beast-gtk/bstpianorollctrl.c:784 ../beast-gtk/bstpianorollctrl.c:810
 msgid "Select Region"
 msgstr "Izbor področja"
 
-#: ../beast-gtk/bsteventrollctrl.c:699
-#: ../beast-gtk/bstpianorollctrl.c:855
+#: ../beast-gtk/bsteventrollctrl.c:699 ../beast-gtk/bstpianorollctrl.c:855
 msgid "Abortion"
 msgstr "Preklic"
 
-#: ../beast-gtk/bstfiledialog.c:137
-#: ../beast-gtk/bstitemview.c:207
-#: ../beast-gtk/bsttrackview.c:603
-#: ../bse/bseobject.c:846
+#: ../beast-gtk/bstfiledialog.c:137 ../beast-gtk/bstitemview.c:207
+#: ../beast-gtk/bsttrackview.c:603 ../bse/bseobject.c:846
 msgid "Name"
 msgstr "Ime"
 
@@ -712,8 +881,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: ../beast-gtk/bstfiledialog.c:543
-#: ../beast-gtk/bstfiledialog.c:557
+#: ../beast-gtk/bstfiledialog.c:543 ../beast-gtk/bstfiledialog.c:557
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -798,14 +966,12 @@ msgstr "Shranjevanje inštrumenta `%s'"
 msgid "Load Wave"
 msgstr "Naloži val"
 
-#: ../beast-gtk/bstfiledialog.c:776
-#: ../beast-gtk/bstfiledialog.c:778
+#: ../beast-gtk/bstfiledialog.c:776 ../beast-gtk/bstfiledialog.c:778
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Nalaganje valu `%s'"
 
-#: ../beast-gtk/bstfiledialog.c:780
-#: ../beast-gtk/bstmain.c:288
+#: ../beast-gtk/bstfiledialog.c:780 ../beast-gtk/bstmain.c:288
 #: ../beast-gtk/bstmain.c:305
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -839,8 +1005,7 @@ msgstr "Izbor predmeta: %s"
 msgid "ID"
 msgstr "ID"
 
-#: ../beast-gtk/bstitemview.c:210
-#: ../beast-gtk/bsttrackview.c:624
+#: ../beast-gtk/bstitemview.c:210 ../beast-gtk/bsttrackview.c:624
 #: ../bse/bseobject.c:856
 msgid "Comment"
 msgstr "Opomba"
@@ -907,8 +1072,7 @@ msgstr "Tipkovna bližnjica"
 msgid "Key combinations used to activate a function"
 msgstr "Kombinacije tipk uporabljene za zaganjanje zmožnosti"
 
-#: ../beast-gtk/bstkeybindings.c:434
-#: ../beast-gtk/bstkeybindings.c:458
+#: ../beast-gtk/bstkeybindings.c:434 ../beast-gtk/bstkeybindings.c:458
 msgid "Function"
 msgstr "Zmožnost"
 
@@ -928,14 +1092,12 @@ msgstr ""
 msgid "Function used to create new key bindings"
 msgstr "Zmožnost uporabljena za ustvarjanje novih tipkovnih bližnjic"
 
-#: ../beast-gtk/bstkeybindings.c:461
-#: ../beast-gtk/bstprocedure.c:202
+#: ../beast-gtk/bstkeybindings.c:461 ../beast-gtk/bstprocedure.c:202
 msgid "Description"
 msgstr "Opis"
 
 #. initialize Birnet/Sfi
-#: ../beast-gtk/bstmain.c:112
-#: ../data/beast.desktop.in.h:1
+#: ../beast-gtk/bstmain.c:112 ../data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
@@ -989,8 +1151,7 @@ msgstr "Pogovorna okna"
 msgid "Loading..."
 msgstr "Nalaganje ..."
 
-#: ../beast-gtk/bstmain.c:284
-#: ../beast-gtk/bstmain.c:286
+#: ../beast-gtk/bstmain.c:284 ../beast-gtk/bstmain.c:286
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Nalaganje \"%s\""
@@ -1090,8 +1251,7 @@ msgstr "Barvni vnos"
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
-#: ../beast-gtk/bstparam-item-seq.c:70
-#: ../beast-gtk/gxk/gxksimplelabel.c:598
+#: ../beast-gtk/bstparam-item-seq.c:70 ../beast-gtk/gxk/gxksimplelabel.c:598
 msgid "..."
 msgstr "..."
 
@@ -1208,8 +1368,12 @@ msgid "Redo the last undone editing step"
 msgstr "Uveljavitev zadnjega razveljavljenega korak urejanja"
 
 #: ../beast-gtk/bstpatterncolumns.c:686
-msgid "The pattern editor column layout is specified by listing column types with possible modifiers in display order."
-msgstr "Razporeditev stolpcev urejevalnika vzorcev je določena z razvrstitvijo vrst stolpcev z možnimi spremenilniki v red prikaza."
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+"Razporeditev stolpcev urejevalnika vzorcev je določena z razvrstitvijo vrst "
+"stolpcev z možnimi spremenilniki v red prikaza."
 
 #: ../beast-gtk/bstpatterncolumns.c:688
 msgid "COLUMN TYPES:"
@@ -1230,7 +1394,9 @@ msgid "offset-1, length-2, velocity-3, ..."
 msgstr "offset-1, length-2, velocity-3, ..."
 
 #: ../beast-gtk/bstpatterncolumns.c:694
-msgid "  display offset, length or velocity of notes in the first, second, ... channel"
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
 msgstr "  prikaži zamik, dolžino ali hitrost not v prvem, drugem, ... kanalu"
 
 #. !!! LEAVE UNTRANSLATED !!!
@@ -1299,7 +1465,8 @@ msgstr "shex2, shex4"
 
 #: ../beast-gtk/bstpatterncolumns.c:716
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
-msgstr "  prikaz 2 (-FF..+FF) ali 4 (-FFFF..+FFFF) mestnih števil hex s predznaki"
+msgstr ""
+"  prikaz 2 (-FF..+FF) ali 4 (-FFFF..+FFFF) mestnih števil hex s predznaki"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:718
@@ -1317,7 +1484,8 @@ msgstr "sdec2, sdec3"
 
 #: ../beast-gtk/bstpatterncolumns.c:722
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
-msgstr "   prikaz predznačenih števil z 2 (-99..+99) ali 3 (-999..+999) števkami"
+msgstr ""
+"   prikaz predznačenih števil z 2 (-99..+99) ali 3 (-999..+999) števkami"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: ../beast-gtk/bstpatterncolumns.c:724
@@ -1365,11 +1533,11 @@ msgid "Steps"
 msgstr "Koraki"
 
 #: ../beast-gtk/bstpatternctrl.c:123
-msgid "The number of cells to move across each time an event or note was edited"
+msgid ""
+"The number of cells to move across each time an event or note was edited"
 msgstr ""
 
-#: ../beast-gtk/bstpatternctrl.c:127
-#: ../beast-gtk/bstscrollgraph.c:574
+#: ../beast-gtk/bstpatternctrl.c:127 ../beast-gtk/bstscrollgraph.c:574
 msgid "Direction"
 msgstr "Smer"
 
@@ -1382,7 +1550,8 @@ msgid "HWrap"
 msgstr "VOblij"
 
 #: ../beast-gtk/bstpatternctrl.c:133
-msgid "Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 
 #: ../beast-gtk/bstpatternctrl.c:136
@@ -1403,7 +1572,8 @@ msgstr "Prilagoditev števila vrstic med vsako osenčeno vrstico"
 
 #. movement
 #: ../beast-gtk/bstpatternctrl.c:312
-msgid "Move focus to the next cell (up/left/right/down according to configuration)"
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 
 #: ../beast-gtk/bstpatternctrl.c:313
@@ -1479,19 +1649,16 @@ msgstr ""
 msgid "Set the focus cell octave"
 msgstr "Nastavitev celice stanja ni uspela: %s."
 
-#: ../beast-gtk/bstpatternctrl.c:346
-#: ../beast-gtk/bstpatternctrl.c:360
+#: ../beast-gtk/bstpatternctrl.c:346 ../beast-gtk/bstpatternctrl.c:360
 msgid "Remove any events in the focus cell"
 msgstr ""
 
-#: ../beast-gtk/bstpatternctrl.c:350
-#: ../beast-gtk/bstpatternctrl.c:364
+#: ../beast-gtk/bstpatternctrl.c:350 ../beast-gtk/bstpatternctrl.c:364
 #, fuzzy
 msgid "Set the focus cell note"
 msgstr "Nastavitev celice stanja ni uspela: %s."
 
-#: ../beast-gtk/bstpatternctrl.c:354
-#: ../beast-gtk/bstpatternctrl.c:368
+#: ../beast-gtk/bstpatternctrl.c:354 ../beast-gtk/bstpatternctrl.c:368
 #, fuzzy
 msgid "Sets the value of the focus digit"
 msgstr "Prebere trenutno vrednost ali nastavi novo"
@@ -1504,8 +1671,7 @@ msgstr "Izbor vseh not"
 msgid "Unselect all notes"
 msgstr "Počisti izbor vseh not"
 
-#: ../beast-gtk/bstpianorollctrl.c:77
-#: ../beast-gtk/bsttrackrollctrl.c:44
+#: ../beast-gtk/bstpianorollctrl.c:77 ../beast-gtk/bsttrackrollctrl.c:44
 msgid "Insert"
 msgstr "Vstavi"
 
@@ -1533,8 +1699,7 @@ msgstr "Izberi"
 msgid "Rectangle select notes"
 msgstr "Pravokotna izbira not"
 
-#: ../beast-gtk/bstpianorollctrl.c:85
-#: ../beast-gtk/bstpianorollctrl.c:820
+#: ../beast-gtk/bstpianorollctrl.c:85 ../beast-gtk/bstpianorollctrl.c:820
 msgid "Vertical Select"
 msgstr "Navpična izbira"
 
@@ -1607,125 +1772,101 @@ msgstr "1\\/128"
 msgid "Insert hundred twenty-eighth note"
 msgstr "Vstavi stoosemindvajsetinko"
 
-#: ../beast-gtk/bstpianorollctrl.c:125
-#: ../beast-gtk/bsttrackrollctrl.c:80
+#: ../beast-gtk/bstpianorollctrl.c:125 ../beast-gtk/bsttrackrollctrl.c:80
 msgid "Q: Tact"
 msgstr "Q: Takt"
 
-#: ../beast-gtk/bstpianorollctrl.c:125
-#: ../beast-gtk/bsttrackrollctrl.c:80
+#: ../beast-gtk/bstpianorollctrl.c:125 ../beast-gtk/bsttrackrollctrl.c:80
 msgid "Quantize to tact boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:127
-#: ../beast-gtk/bsttrackrollctrl.c:82
+#: ../beast-gtk/bstpianorollctrl.c:127 ../beast-gtk/bsttrackrollctrl.c:82
 msgid "Q: None"
 msgstr "K: Brez"
 
-#: ../beast-gtk/bstpianorollctrl.c:127
-#: ../beast-gtk/bsttrackrollctrl.c:82
+#: ../beast-gtk/bstpianorollctrl.c:127 ../beast-gtk/bsttrackrollctrl.c:82
 msgid "No quantization selected"
 msgstr "Kvantizacija ni izbrana"
 
-#: ../beast-gtk/bstpianorollctrl.c:129
-#: ../beast-gtk/bsttrackrollctrl.c:84
+#: ../beast-gtk/bstpianorollctrl.c:129 ../beast-gtk/bsttrackrollctrl.c:84
 msgid "Q: 1\\/1"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:129
-#: ../beast-gtk/bsttrackrollctrl.c:84
+#: ../beast-gtk/bstpianorollctrl.c:129 ../beast-gtk/bsttrackrollctrl.c:84
 msgid "Quantize to whole note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:131
-#: ../beast-gtk/bsttrackrollctrl.c:86
+#: ../beast-gtk/bstpianorollctrl.c:131 ../beast-gtk/bsttrackrollctrl.c:86
 msgid "Q: 1\\/2"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:131
-#: ../beast-gtk/bsttrackrollctrl.c:86
+#: ../beast-gtk/bstpianorollctrl.c:131 ../beast-gtk/bsttrackrollctrl.c:86
 msgid "Quantize to half note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:133
-#: ../beast-gtk/bsttrackrollctrl.c:88
+#: ../beast-gtk/bstpianorollctrl.c:133 ../beast-gtk/bsttrackrollctrl.c:88
 msgid "Q: 1\\/4"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:133
-#: ../beast-gtk/bsttrackrollctrl.c:88
+#: ../beast-gtk/bstpianorollctrl.c:133 ../beast-gtk/bsttrackrollctrl.c:88
 msgid "Quantize to quarter note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:135
-#: ../beast-gtk/bsttrackrollctrl.c:90
+#: ../beast-gtk/bstpianorollctrl.c:135 ../beast-gtk/bsttrackrollctrl.c:90
 msgid "Q: 1\\/8"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:135
-#: ../beast-gtk/bsttrackrollctrl.c:90
+#: ../beast-gtk/bstpianorollctrl.c:135 ../beast-gtk/bsttrackrollctrl.c:90
 msgid "Quantize to eighths note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:137
-#: ../beast-gtk/bsttrackrollctrl.c:92
+#: ../beast-gtk/bstpianorollctrl.c:137 ../beast-gtk/bsttrackrollctrl.c:92
 msgid "Q: 1\\/16"
 msgstr "K: 1\\/16"
 
-#: ../beast-gtk/bstpianorollctrl.c:137
-#: ../beast-gtk/bsttrackrollctrl.c:92
+#: ../beast-gtk/bstpianorollctrl.c:137 ../beast-gtk/bsttrackrollctrl.c:92
 msgid "Quantize to sixteenth note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:139
-#: ../beast-gtk/bsttrackrollctrl.c:94
+#: ../beast-gtk/bstpianorollctrl.c:139 ../beast-gtk/bsttrackrollctrl.c:94
 msgid "Q: 1\\/32"
 msgstr "K: 1\\/32"
 
-#: ../beast-gtk/bstpianorollctrl.c:139
-#: ../beast-gtk/bsttrackrollctrl.c:94
+#: ../beast-gtk/bstpianorollctrl.c:139 ../beast-gtk/bsttrackrollctrl.c:94
 msgid "Quantize to thirty-second note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:141
-#: ../beast-gtk/bsttrackrollctrl.c:96
+#: ../beast-gtk/bstpianorollctrl.c:141 ../beast-gtk/bsttrackrollctrl.c:96
 msgid "Q: 1\\/64"
 msgstr "K: 1\\/64"
 
-#: ../beast-gtk/bstpianorollctrl.c:141
-#: ../beast-gtk/bsttrackrollctrl.c:96
+#: ../beast-gtk/bstpianorollctrl.c:141 ../beast-gtk/bsttrackrollctrl.c:96
 msgid "Quantize to sixty-fourth note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:143
-#: ../beast-gtk/bsttrackrollctrl.c:98
+#: ../beast-gtk/bstpianorollctrl.c:143 ../beast-gtk/bsttrackrollctrl.c:98
 msgid "Q: 1\\/128"
 msgstr "K: 1\\/128"
 
-#: ../beast-gtk/bstpianorollctrl.c:143
-#: ../beast-gtk/bsttrackrollctrl.c:98
+#: ../beast-gtk/bstpianorollctrl.c:143 ../beast-gtk/bsttrackrollctrl.c:98
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr ""
 
-#: ../beast-gtk/bstpianorollctrl.c:572
-#: ../beast-gtk/bstpianorollctrl.c:579
+#: ../beast-gtk/bstpianorollctrl.c:572 ../beast-gtk/bstpianorollctrl.c:579
 #: ../beast-gtk/bstpianorollctrl.c:667
 msgid "Move Note"
 msgstr "Premakni noto"
 
-#: ../beast-gtk/bstpianorollctrl.c:667
-#: ../beast-gtk/bstpianorollctrl.c:738
+#: ../beast-gtk/bstpianorollctrl.c:667 ../beast-gtk/bstpianorollctrl.c:738
 msgid "Lost Note"
 msgstr "Izgubljena nota"
 
-#: ../beast-gtk/bstpianorollctrl.c:684
-#: ../beast-gtk/bstpianorollctrl.c:689
+#: ../beast-gtk/bstpianorollctrl.c:684 ../beast-gtk/bstpianorollctrl.c:689
 #: ../beast-gtk/bstpianorollctrl.c:738
 msgid "Resize Note"
 msgstr "Spremeni velikost note"
 
-#: ../beast-gtk/bstpianorollctrl.c:749
-#: ../beast-gtk/bstpianorollctrl.c:752
+#: ../beast-gtk/bstpianorollctrl.c:749 ../beast-gtk/bstpianorollctrl.c:752
 msgid "Delete Note"
 msgstr "Izbriši noto"
 
@@ -1775,8 +1916,7 @@ msgstr "Začni postopek"
 msgid "Totals"
 msgstr "Skupno"
 
-#: ../beast-gtk/bstprofiler.c:245
-#: ../bse/bsecore.idl:747
+#: ../beast-gtk/bstprofiler.c:245 ../bse/bsecore.idl:747
 msgid "Thread Name"
 msgstr "Ime niti"
 
@@ -1803,16 +1943,20 @@ msgid "UTime"
 msgstr "%d: Utime %s %d\n"
 
 #: ../beast-gtk/bstprofiler.c:249
-msgid "Average number of milliseconds per second of user CPU time used by thread"
-msgstr "Povprečno število milisekund na sekundo uporabniškega CPE, ki ga porabi nit"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
+msgstr ""
+"Povprečno število milisekund na sekundo uporabniškega CPE, ki ga porabi nit"
 
 #: ../beast-gtk/bstprofiler.c:250
 msgid "STime"
 msgstr ""
 
 #: ../beast-gtk/bstprofiler.c:250
-msgid "Average number of milliseconds per second of system CPU time used by thread"
-msgstr "Povprečno število milisekund na sekundo sistemskega CPE, ki ga porabi nit"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
+msgstr ""
+"Povprečno število milisekund na sekundo sistemskega CPE, ki ga porabi nit"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
@@ -1856,11 +2000,14 @@ msgid "Stopping Playback"
 msgstr "Zaustavljanje predvajanja"
 
 #: ../beast-gtk/bstrackeditor.c:94
-msgid "The rack editor is still highly experimental code and guaranteed to be broken by future releases. So don't rely on rack editor contents to look similarly in future versions and be prepared to work around possible instabilities in the code (i.e. save your projects regularly)."
+msgid ""
+"The rack editor is still highly experimental code and guaranteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
 
-#: ../beast-gtk/bstrackeditor.c:108
-#: ../beast-gtk/bstrackview.c:42
+#: ../beast-gtk/bstrackeditor.c:108 ../beast-gtk/bstrackview.c:42
 #: ../beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Edit"
 msgstr "_Uredi"
@@ -1893,8 +2040,7 @@ msgstr "Skrči vodoravno"
 msgid "Shrink Vertically"
 msgstr "Skrči navpično"
 
-#: ../beast-gtk/bstrackview.c:45
-#: ../beast-gtk/gxk/gxkparam-label.c:76
+#: ../beast-gtk/bstrackview.c:45 ../beast-gtk/gxk/gxkparam-label.c:76
 #: ../beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Oznaka"
@@ -1907,8 +2053,7 @@ msgstr "Navzgor"
 msgid "Move upwards"
 msgstr "Premik navzgor"
 
-#: ../beast-gtk/bstrecords.idl:35
-#: ../beast-gtk/bsttrackrollctrl.c:63
+#: ../beast-gtk/bstrecords.idl:35 ../beast-gtk/bsttrackrollctrl.c:63
 msgid "Left"
 msgstr "Levo"
 
@@ -1916,8 +2061,7 @@ msgstr "Levo"
 msgid "Move to the left"
 msgstr "Premik levo"
 
-#: ../beast-gtk/bstrecords.idl:36
-#: ../beast-gtk/bsttrackrollctrl.c:67
+#: ../beast-gtk/bstrecords.idl:36 ../beast-gtk/bsttrackrollctrl.c:67
 msgid "Right"
 msgstr "Desno"
 
@@ -1986,7 +2130,8 @@ msgid "128 Value FFT Window"
 msgstr "Okno 128 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:47
-msgid "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
+msgid ""
+"A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
 msgstr "Okno 128 vrednosti FFT ustreza spektru s 65 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:48
@@ -1994,7 +2139,8 @@ msgid "256 Value FFT Window"
 msgstr "Okno 256 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:48
-msgid "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
+msgid ""
+"A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
 msgstr "Okno 256 vrednosti FFT ustreza spektru z 129 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:49
@@ -2002,7 +2148,8 @@ msgid "512 Value FFT Window"
 msgstr "Okno 512 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:49
-msgid "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
+msgid ""
+"A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
 msgstr "Okno 512 vrednosti FFT ustreza spektru z 257 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:50
@@ -2010,7 +2157,8 @@ msgid "1024 Value FFT Window"
 msgstr "Okno 1024 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:50
-msgid "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
+msgid ""
+"A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
 msgstr "Okno 1024 vrednosti FFT ustreza spektru s 513 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:51
@@ -2018,7 +2166,8 @@ msgid "2048 Value FFT Window"
 msgstr "Okno 2048 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:51
-msgid "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
+msgid ""
+"A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
 msgstr "Okno 2048 vrednosti FFT ustreza spektru s 1025 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:52
@@ -2026,7 +2175,8 @@ msgid "4096 Value FFT Window"
 msgstr "Okno 4096 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:52
-msgid "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
+msgid ""
+"A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
 msgstr "Okno 4096 vrednosti FFT ustreza spektru z 2049 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:53
@@ -2034,7 +2184,8 @@ msgid "8192 Value FFT Window"
 msgstr "Okno 8192 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:53
-msgid "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
+msgid ""
+"A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
 msgstr "Okno 8192 vrednosti FFT ustreza spektru s 4097 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:54
@@ -2042,7 +2193,8 @@ msgid "16384 Value FFT Window"
 msgstr "Okno 16384 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:54
-msgid "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
+msgid ""
+"A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
 msgstr "Okno 16384 vrednosti FFT ustreza spektru z 8193 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:55
@@ -2050,7 +2202,8 @@ msgid "32768 Value FFT Window"
 msgstr "Okno 32768 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:55
-msgid "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
+msgid ""
+"A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
 msgstr "Okno 32768 vrednosti FFT ustreza spektru s 16385 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:56
@@ -2058,7 +2211,8 @@ msgid "65536 Value FFT Window"
 msgstr "Okno 65653 vrednosti FFT"
 
 #: ../beast-gtk/bstrecords.idl:56
-msgid "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
+msgid ""
+"A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
 msgstr "Okno 65536 vrednosti FFT ustreza spektru z 32769 frekvenčnimi vrhovi"
 
 #: ../beast-gtk/bstrecords.idl:60
@@ -2421,15 +2575,20 @@ msgstr "Omogoči zvonec napak"
 
 #: ../beast-gtk/bstrecords.idl:120
 msgid "Notify users via error bells if edits cannot be carried out"
-msgstr "Obvestilo uporabnikov preko zvoncev napak, če urejanj ni mogoče izvesti"
+msgstr ""
+"Obvestilo uporabnikov preko zvoncev napak, če urejanj ni mogoče izvesti"
 
 #: ../beast-gtk/bstrecords.idl:122
 msgid "Homogeneous Input Fields"
 msgstr "Homogena vhodna polja"
 
 #: ../beast-gtk/bstrecords.idl:123
-msgid "Enable homogeneous sizes for most (numeric and text) input fields. For some fields, this will only take effect after a restart."
-msgstr "Omogoči homogene velikosti za večno (besedilnih in številčnih) vnosnih polij. Za nekatera polja bo to imelo učinek po ponovnem zagonu."
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+"Omogoči homogene velikosti za večno (besedilnih in številčnih) vnosnih "
+"polij. Za nekatera polja bo to imelo učinek po ponovnem zagonu."
 
 #: ../beast-gtk/bstrecords.idl:126
 #, fuzzy
@@ -2437,7 +2596,9 @@ msgid "Slow scopes"
 msgstr "Počasno usklajevanje"
 
 #: ../beast-gtk/bstrecords.idl:127
-msgid "Aggresively slows down the periodic update frequency of scopes. Doing this may be desirable on particularly slow machines."
+msgid ""
+"Aggresively slows down the periodic update frequency of scopes. Doing this "
+"may be desirable on particularly slow machines."
 msgstr ""
 
 #: ../beast-gtk/bstrecords.idl:135
@@ -2448,8 +2609,7 @@ msgstr "Ime preobleke"
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Ime trenutne nastavitve preobleke (uporabljeno za izbire preoblek)."
 
-#: ../beast-gtk/bstrecords.idl:137
-#: ../beast-gtk/bstrecords.idl:147
+#: ../beast-gtk/bstrecords.idl:137 ../beast-gtk/bstrecords.idl:147
 #: ../beast-gtk/bstrecords.idl:157
 msgid "Background Image"
 msgstr "Slika ozadja"
@@ -2458,20 +2618,17 @@ msgstr "Slika ozadja"
 msgid "Background image used by the pattern editor."
 msgstr "Slika ozadja, ki jo uporablja urejevalnik vzorcev."
 
-#: ../beast-gtk/bstrecords.idl:138
-#: ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
 #: ../beast-gtk/bstrecords.idl:158
 msgid "Image shade"
 msgstr "Senca slike"
 
-#: ../beast-gtk/bstrecords.idl:138
-#: ../beast-gtk/bstrecords.idl:148
+#: ../beast-gtk/bstrecords.idl:138 ../beast-gtk/bstrecords.idl:148
 #: ../beast-gtk/bstrecords.idl:158
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
-#: ../beast-gtk/bstrecords.idl:139
-#: ../beast-gtk/bstrecords.idl:149
+#: ../beast-gtk/bstrecords.idl:139 ../beast-gtk/bstrecords.idl:149
 #: ../beast-gtk/bstrecords.idl:159
 msgid "Background Color"
 msgstr "Barva ozadja"
@@ -2492,8 +2649,7 @@ msgstr "Barva praznega polja"
 msgid "Text Color"
 msgstr "Barva besedila"
 
-#: ../beast-gtk/bstrecords.idl:144
-#: ../beast-gtk/bstrecords.idl:151
+#: ../beast-gtk/bstrecords.idl:144 ../beast-gtk/bstrecords.idl:151
 msgid "Vertical Bar Color"
 msgstr "Barva navpične vrstice"
 
@@ -2502,8 +2658,7 @@ msgstr "Barva navpične vrstice"
 msgid "Background image used by the piano-roll editor."
 msgstr "Slika ozadja, ki jo uporablja urejevalnik ?? ."
 
-#: ../beast-gtk/bstrecords.idl:150
-#: ../beast-gtk/bstrecords.idl:160
+#: ../beast-gtk/bstrecords.idl:150 ../beast-gtk/bstrecords.idl:160
 msgid "Horizontal Bar Color"
 msgstr "Barva vodoravne vrstice"
 
@@ -2515,8 +2670,7 @@ msgstr "Barva vodoravne mreže"
 msgid "Vertical Grid Color"
 msgstr "Barva navpične mreže"
 
-#: ../beast-gtk/bstrecords.idl:154
-#: ../beast-gtk/bstrecords.idl:161
+#: ../beast-gtk/bstrecords.idl:154 ../beast-gtk/bstrecords.idl:161
 msgid "Middle Bar Color"
 msgstr "Barva srednje vrstice"
 
@@ -2536,13 +2690,11 @@ msgstr "Barva vrednosti nič"
 msgid "Negative Value Color"
 msgstr "Barva negativnih vrednosti"
 
-#: ../beast-gtk/bstsampleeditor.c:476
-#: ../beast-gtk/bstwaveeditor.c:198
+#: ../beast-gtk/bstsampleeditor.c:476 ../beast-gtk/bstwaveeditor.c:198
 msgid "Zoom:"
 msgstr "Povečava:"
 
-#: ../beast-gtk/bstsampleeditor.c:487
-#: ../beast-gtk/bstwaveeditor.c:209
+#: ../beast-gtk/bstsampleeditor.c:487 ../beast-gtk/bstwaveeditor.c:209
 msgid "VScale:"
 msgstr "NMerilo:"
 
@@ -2554,49 +2706,41 @@ msgstr "Začetek:"
 msgid "End:"
 msgstr "Konec:"
 
-#: ../beast-gtk/bstsampleeditor.c:515
-#: ../beast-gtk/bstwaveeditor.c:215
+#: ../beast-gtk/bstsampleeditor.c:515 ../beast-gtk/bstwaveeditor.c:215
 #, fuzzy
 msgid "Shape Range"
 msgstr "ss"
 
-#: ../beast-gtk/bstsampleeditor.c:516
-#: ../beast-gtk/bstwaveeditor.c:216
+#: ../beast-gtk/bstsampleeditor.c:516 ../beast-gtk/bstwaveeditor.c:216
 msgid "Shape Average"
 msgstr "Povprečje oblike"
 
-#: ../beast-gtk/bstsampleeditor.c:517
-#: ../beast-gtk/bstwaveeditor.c:217
+#: ../beast-gtk/bstsampleeditor.c:517 ../beast-gtk/bstwaveeditor.c:217
 #, fuzzy
 msgid "Shape Minimum"
 msgstr "Najmanjši B (odklonjeno)"
 
-#: ../beast-gtk/bstsampleeditor.c:518
-#: ../beast-gtk/bstwaveeditor.c:218
+#: ../beast-gtk/bstsampleeditor.c:518 ../beast-gtk/bstwaveeditor.c:218
 #, fuzzy
 msgid "Shape Maximum"
 msgstr "Največji B (odklonjeno)"
 
-#: ../beast-gtk/bstsampleeditor.c:519
-#: ../beast-gtk/bstwaveeditor.c:219
+#: ../beast-gtk/bstsampleeditor.c:519 ../beast-gtk/bstwaveeditor.c:219
 #, fuzzy
 msgid "Sketch Range"
 msgstr "Razmerje po meri"
 
-#: ../beast-gtk/bstsampleeditor.c:520
-#: ../beast-gtk/bstwaveeditor.c:220
+#: ../beast-gtk/bstsampleeditor.c:520 ../beast-gtk/bstwaveeditor.c:220
 #, fuzzy
 msgid "Sketch Average"
 msgstr "Povprečno datotek:"
 
-#: ../beast-gtk/bstsampleeditor.c:521
-#: ../beast-gtk/bstwaveeditor.c:221
+#: ../beast-gtk/bstsampleeditor.c:521 ../beast-gtk/bstwaveeditor.c:221
 #, fuzzy
 msgid "Sketch Minimum"
 msgstr "Najmanjši B (odklonjeno)"
 
-#: ../beast-gtk/bstsampleeditor.c:522
-#: ../beast-gtk/bstwaveeditor.c:222
+#: ../beast-gtk/bstsampleeditor.c:522 ../beast-gtk/bstwaveeditor.c:222
 #, fuzzy
 msgid "Sketch Maximum"
 msgstr "Največji B (odklonjeno)"
@@ -2608,10 +2752,8 @@ msgstr "Največji B (odklonjeno)"
 msgid "Preview"
 msgstr "Predogled"
 
-#: ../beast-gtk/bstscrollgraph.c:570
-#: ../beast-gtk/bstscrollgraph.c:573
-#: ../beast-gtk/bstscrollgraph.c:576
-#: ../beast-gtk/bstscrollgraph.c:579
+#: ../beast-gtk/bstscrollgraph.c:570 ../beast-gtk/bstscrollgraph.c:573
+#: ../beast-gtk/bstscrollgraph.c:576 ../beast-gtk/bstscrollgraph.c:579
 msgid "Spectrograph"
 msgstr "Spektrograf"
 
@@ -2650,7 +2792,8 @@ msgstr "Nepovezan izhodni kanal"
 #: ../beast-gtk/bstsnetrouter.c:42
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
-"Use button1 to create links, button2 for movement and button3 to change properties"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
 msgstr ""
 "Orodje urejanje (miškini gumbi 1-3)\n"
 "Gumb 1 ustvari povezave, gumb 2 omogoča premika, gumb3 spremeni lastnosti"
@@ -2663,8 +2806,7 @@ msgstr "Uredi"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Uredi/premakni/meni (miškini gumbi 1-3)"
 
-#: ../beast-gtk/bstsnetrouter.c:51
-#: ../beast-gtk/bstsnetrouter.c:933
+#: ../beast-gtk/bstsnetrouter.c:51 ../beast-gtk/bstsnetrouter.c:933
 msgid "Palette"
 msgstr "Paleta"
 
@@ -2676,8 +2818,7 @@ msgstr "Preklop vidnosti orodne palete"
 msgid "Input channel in use"
 msgstr "Vhodni kanal v uporabi"
 
-#: ../beast-gtk/bstsnetrouter.c:639
-#: ../beast-gtk/bstsnetrouter.c:641
+#: ../beast-gtk/bstsnetrouter.c:639 ../beast-gtk/bstsnetrouter.c:641
 #: ../beast-gtk/bstsnetrouter.c:677
 msgid "Create Link"
 msgstr "Ustvari povezavo"
@@ -2690,10 +2831,8 @@ msgstr "Izbor izhodnega modula"
 msgid "Select input module"
 msgstr "Izbor vhodnega modula"
 
-#: ../beast-gtk/bstsnetrouter.c:705
-#: ../beast-gtk/bstsupershell.c:188
-#: ../beast-gtk/bstsupershell.c:221
-#: ../beast-gtk/bstsupershell.c:235
+#: ../beast-gtk/bstsnetrouter.c:705 ../beast-gtk/bstsupershell.c:188
+#: ../beast-gtk/bstsupershell.c:221 ../beast-gtk/bstsupershell.c:235
 msgid "Properties"
 msgstr "Lastnosti"
 
@@ -2709,8 +2848,7 @@ msgstr "Prekini vhode"
 msgid "Disconnect Outputs"
 msgstr "Prekini izhode"
 
-#: ../beast-gtk/bstsnetrouter.c:710
-#: ../beast-gtk/bstsnetrouter.c:759
+#: ../beast-gtk/bstsnetrouter.c:710 ../beast-gtk/bstsnetrouter.c:759
 msgid "Show Info"
 msgstr "Pokaži podrobnosti"
 
@@ -2798,8 +2936,7 @@ msgstr "Deli"
 msgid "Busses"
 msgstr "Vodila"
 
-#: ../beast-gtk/bstsupershell.c:200
-#: ../beast-gtk/bstsupershell.c:217
+#: ../beast-gtk/bstsupershell.c:200 ../beast-gtk/bstsupershell.c:217
 msgid "Routing"
 msgstr "Usmerjanje"
 
@@ -2849,14 +2986,14 @@ msgstr "Položaj"
 
 #: ../beast-gtk/bsttrackrollctrl.c:65
 msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr "Uporaba vodoravnega ravnila za prilagoditev kazalnika položaja predvajanja"
+msgstr ""
+"Uporaba vodoravnega ravnila za prilagoditev kazalnika položaja predvajanja"
 
 #: ../beast-gtk/bsttrackrollctrl.c:67
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr "Uporabna vodoravnega ravnila za prilagoditev desnega kazalnika zanke"
 
-#: ../beast-gtk/bsttrackrollctrl.c:415
-#: ../beast-gtk/bsttrackrollctrl.c:427
+#: ../beast-gtk/bsttrackrollctrl.c:415 ../beast-gtk/bsttrackrollctrl.c:427
 msgid "Edit Part"
 msgstr "Uredi del"
 
@@ -2864,20 +3001,16 @@ msgstr "Uredi del"
 msgid "No Part"
 msgstr "Ni dela"
 
-#: ../beast-gtk/bsttrackrollctrl.c:446
-#: ../beast-gtk/bsttrackrollctrl.c:448
-#: ../beast-gtk/bsttrackrollctrl.c:453
-#: ../beast-gtk/bsttrackrollctrl.c:458
+#: ../beast-gtk/bsttrackrollctrl.c:446 ../beast-gtk/bsttrackrollctrl.c:448
+#: ../beast-gtk/bsttrackrollctrl.c:453 ../beast-gtk/bsttrackrollctrl.c:458
 msgid "Insert Part"
 msgstr "Vstavi del"
 
-#: ../beast-gtk/bsttrackrollctrl.c:448
-#: ../beast-gtk/bsttrackrollctrl.c:554
+#: ../beast-gtk/bsttrackrollctrl.c:448 ../beast-gtk/bsttrackrollctrl.c:554
 msgid "Lost Part"
 msgstr "Izgubljen del"
 
-#: ../beast-gtk/bsttrackrollctrl.c:453
-#: ../beast-gtk/bsttrackrollctrl.c:458
+#: ../beast-gtk/bsttrackrollctrl.c:453 ../beast-gtk/bsttrackrollctrl.c:458
 msgid "Position taken"
 msgstr "Vzet položaj"
 
@@ -2889,24 +3022,20 @@ msgstr "Vstavi del"
 msgid "No Track"
 msgstr "Ni sledi"
 
-#: ../beast-gtk/bsttrackrollctrl.c:476
-#: ../beast-gtk/bsttrackrollctrl.c:479
+#: ../beast-gtk/bsttrackrollctrl.c:476 ../beast-gtk/bsttrackrollctrl.c:479
 msgid "Delete Part"
 msgstr "Izbriši del"
 
-#: ../beast-gtk/bsttrackrollctrl.c:488
-#: ../beast-gtk/bsttrackrollctrl.c:522
+#: ../beast-gtk/bsttrackrollctrl.c:488 ../beast-gtk/bsttrackrollctrl.c:522
 msgid "Link Part"
 msgstr "Poveži del"
 
-#: ../beast-gtk/bsttrackrollctrl.c:488
-#: ../beast-gtk/bsttrackrollctrl.c:522
+#: ../beast-gtk/bsttrackrollctrl.c:488 ../beast-gtk/bsttrackrollctrl.c:522
 #: ../beast-gtk/bsttrackrollctrl.c:554
 msgid "Move Part"
 msgstr "Premakni del"
 
-#: ../beast-gtk/bsttrackrollctrl.c:566
-#: ../beast-gtk/bsttrackrollctrl.c:571
+#: ../beast-gtk/bsttrackrollctrl.c:566 ../beast-gtk/bsttrackrollctrl.c:571
 msgid "Start Editor"
 msgstr "Zaženi urejevalnik"
 
@@ -2924,8 +3053,7 @@ msgstr "Dodajanje nove sledi tej skladbi"
 msgid "Delete the currently selected track"
 msgstr "Izbris trenutno izbrane sledi"
 
-#: ../beast-gtk/bsttrackview.c:296
-#: ../bse/bsetrack.c:283
+#: ../beast-gtk/bsttrackview.c:296 ../bse/bsetrack.c:283
 #: ../bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr "Razpoložljivi valovi"
@@ -2935,11 +3063,11 @@ msgid "List of available waves to choose a track instrument from"
 msgstr "Seznam razpoložljivih valov za izbor inštrumenta sledi"
 
 #: ../beast-gtk/bsttrackview.c:606
-msgid "Notes from unchecked tracks are ignored by the sequencer during playback"
+msgid ""
+"Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 
-#: ../beast-gtk/bsttrackview.c:609
-#: ../bse/bsemidisynth.c:449
+#: ../beast-gtk/bsttrackview.c:609 ../bse/bsemidisynth.c:449
 #: ../bse/bsetrack.c:1024
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Največje število glasov za hkratno predvajanje"
@@ -2957,10 +3085,8 @@ msgstr "Midi kanal dodeljen tej sledi, 0 uporablja zasebni "
 msgid "Mixer busses connected to track output"
 msgstr "Vodila mešalnika povezana z izhodom sledi"
 
-#: ../beast-gtk/bsttrackview.c:621
-#: ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777
-#: ../bse/bsetrack.c:1035
+#: ../beast-gtk/bsttrackview.c:621 ../bse/bsemidisynth.c:458
+#: ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Synthesis network to be used as postprocessor"
 msgstr ""
 
@@ -2972,8 +3098,7 @@ msgstr "Napaka:"
 msgid "Details:"
 msgstr "Podrobnosti:"
 
-#: ../beast-gtk/bstusermessage.c:224
-#: ../beast-gtk/bstusermessage.c:531
+#: ../beast-gtk/bstusermessage.c:224 ../beast-gtk/bstusermessage.c:531
 #, c-format
 msgid ""
 "Procedure: %s\n"
@@ -2998,8 +3123,12 @@ msgid "PID:     %u\n"
 msgstr "PID:     %u\n"
 
 #: ../beast-gtk/bstusermessage.c:262
-msgid "This setting can be changed in the \"Messages\" section of the preferences dialog"
-msgstr "To nastavitev je mogoče spremeniti v odseku \"Sporočila\" pogovornega okna možnosti"
+msgid ""
+"This setting can be changed in the \"Messages\" section of the preferences "
+"dialog"
+msgstr ""
+"To nastavitev je mogoče spremeniti v odseku \"Sporočila\" pogovornega okna "
+"možnosti"
 
 #: ../beast-gtk/bstusermessage.c:367
 #, c-format
@@ -3028,8 +3157,7 @@ msgstr "Prikaz pogovornih oken s sporočili razhroščevanja"
 msgid "Executing procedure '%s' from script '%s'."
 msgstr "Izvajanje postopka '%s' iz skripta '%s'."
 
-#: ../beast-gtk/bstusermessage.c:578
-#: ../beast-gtk/bstusermessage.c:580
+#: ../beast-gtk/bstusermessage.c:578 ../beast-gtk/bstusermessage.c:580
 msgid "processing"
 msgstr "izvajanje"
 
@@ -3038,8 +3166,7 @@ msgstr "izvajanje"
 msgid "An error occoured during execution of script procedure '%s': %s"
 msgstr "Med izvajanjem postopka skripta '%s' je prišlo do napake: %s"
 
-#: ../beast-gtk/bstusermessage.c:604
-#: ../beast-gtk/bstusermessage.c:797
+#: ../beast-gtk/bstusermessage.c:604 ../beast-gtk/bstusermessage.c:797
 msgid "Script execution error."
 msgstr "Napaka izvajanja skripta."
 
@@ -3048,8 +3175,7 @@ msgstr "Napaka izvajanja skripta."
 msgid "Failed to execute script procedure '%s': %s"
 msgstr "Izvajanje postopka skripte '%s' je spodletelo: %s"
 
-#: ../beast-gtk/bstutils.c:312
-#: ../beast-gtk/bstutils.c:334
+#: ../beast-gtk/bstutils.c:312 ../beast-gtk/bstutils.c:334
 #: ../beast-gtk/bstutils.c:337
 msgid "Updating View"
 msgstr "Posodabljanje pogleda"
@@ -3439,15 +3565,20 @@ msgstr "Uporabi podčrtaj"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:138
 #, fuzzy
-msgid "If set, an underline in the text indicates the next character should be used for the mnemonic accelerator key"
-msgstr "Izbrana možnost omogoča, da podčrtaj v besedilu označuje črko, ki je uporabljena kot mnemonična tipkovna bližnjica"
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+"Izbrana možnost omogoča, da podčrtaj v besedilu označuje črko, ki je "
+"uporabljena kot mnemonična tipkovna bližnjica"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
 msgstr "Samodejen izrez"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:143
-msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:147
@@ -3455,15 +3586,21 @@ msgid "Justification"
 msgstr "Poravnava"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:148
-msgid "The alignment of the lines in the text of the label relative to each other. This does NOT affect the alignment of the label within its allocation."
-msgstr "Poravnava vrstic v besedilu oznake relativno ena na drugo. To NE vpliva na poravnavo oznake znotraj dodelitve."
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+"Poravnava vrstic v besedilu oznake relativno ena na drugo. To NE vpliva na "
+"poravnavo oznake znotraj dodelitve."
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
 msgstr "Vzorec"
 
 #: ../beast-gtk/gxk/gxksimplelabel.c:153
-msgid "A string with _ characters in positions correspond to characters in the text to underline"
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
 msgstr "Niz z znaki _ v položajih ustrezajo znakom v besedilu za podčrtanje"
 
 # http://en.wikipedia.org/wiki/Mnemonic
@@ -3485,57 +3622,61 @@ msgstr "Pospeševalni gradnik"
 #: ../beast-gtk/gxk/gxksimplelabel.c:163
 #, fuzzy
 msgid "The widget to be activated when the label's mnemonic key is pressed"
-msgstr "Gradnik, ki naj se zažene, ko je pritisnjena pospeševalna tipka za oznako"
+msgstr ""
+"Gradnik, ki naj se zažene, ko je pritisnjena pospeševalna tipka za oznako"
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:114
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr "Vedno"
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:118
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "Napaka"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:122
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "Opozorilo"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:126
+#: ../birnet/birnetmsg.cc:127
 msgid "Script"
 msgstr "Skripta"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:130
+#: ../birnet/birnetmsg.cc:131
 msgid "Information"
 msgstr "Podrobnosti"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:134
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr "Diagnostika"
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr "Zaženi spletni brskalnik"
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr "Zagon izvedljive datoteke brskalnika je spodletel"
 
-#: ../birnet/birnetutils.cc:1196
-#, c-format
-msgid "No suitable web browser executable could be found to be executed and to display the URL: %s"
-msgstr "Ni mogoče najti primernega spletnega brskalnika za izvedbo in prikaz naslova URL: %s"
-
 #: ../birnet/birnetutils.cc:1197
+#, c-format
+msgid ""
+"No suitable web browser executable could be found to be executed and to "
+"display the URL: %s"
+msgstr ""
+"Ni mogoče najti primernega spletnega brskalnika za izvedbo in prikaz naslova "
+"URL: %s"
+
+#: ../birnet/birnetutils.cc:1198
 msgid "Show messages about web browser launch problems"
 msgstr "Pokaži sporočila o težavah zagona spletnega brskalnika"
 
-#: ../bse/bseautodoc.c:185
-#: ../bse/bseautodoc.c:191
+#: ../bse/bseautodoc.c:185 ../bse/bseautodoc.c:191
 msgid "Range:"
 msgstr "Obseg:"
 
@@ -3547,13 +3688,11 @@ msgstr "Ta postopek ima več vrnjenih vrednosti."
 msgid "Number of elements (C specific)"
 msgstr "Število elementov (C določeno)"
 
-#: ../bse/bseautodoc.c:354
-#: ../bse/bseautodoc.c:428
+#: ../bse/bseautodoc.c:354 ../bse/bseautodoc.c:428
 msgid "Authors:"
 msgstr "Avtorji:"
 
-#: ../bse/bseautodoc.c:363
-#: ../bse/bseautodoc.c:437
+#: ../bse/bseautodoc.c:363 ../bse/bseautodoc.c:437
 msgid "License:"
 msgstr "Licenca:"
 
@@ -3566,23 +3705,19 @@ msgstr "/Filtri/"
 msgid "Filter"
 msgstr "Filter"
 
-#: ../bse/bsebiquadfilter.c:127
-#: ../plugins/bseiirfilter.c:125
+#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr "Vrsta filtra"
 
-#: ../bse/bsebiquadfilter.c:127
-#: ../plugins/bseiirfilter.c:119
+#: ../bse/bsebiquadfilter.c:127 ../plugins/bseiirfilter.c:119
 msgid "The filter design type"
 msgstr "Vrsta oblike filtra"
 
-#: ../bse/bsebiquadfilter.c:131
-#: ../bse/bsebiquadfilter.c:139
+#: ../bse/bsebiquadfilter.c:131 ../bse/bsebiquadfilter.c:139
 msgid "Center Frequency"
 msgstr "Sredniščenje frekvence"
 
-#: ../bse/bsebiquadfilter.c:133
-#: ../plugins/bseiirfilter.c:141
+#: ../bse/bsebiquadfilter.c:133 ../plugins/bseiirfilter.c:141
 #: ../plugins/bseiirfilter.c:152
 msgid "Cutoff [Hz]"
 msgstr "Obrez [Hz]"
@@ -3591,28 +3726,24 @@ msgstr "Obrez [Hz]"
 msgid "Filter cutoff frequency in Hertz"
 msgstr "Obrezna frekvenca filtra v hertzih"
 
-#: ../bse/bsebiquadfilter.c:141
-#: ../bse/bseconstant.c:127
-#: ../bse/bsestandardosc.c:149
-#: ../plugins/bseiirfilter.c:146
-#: ../plugins/bseiirfilter.c:157
-#: ../plugins/davcanyondelay.c:114
-#: ../plugins/davorgan.c:113
-#: ../plugins/davsyndrum.c:94
+#: ../bse/bsebiquadfilter.c:141 ../bse/bseconstant.c:127
+#: ../bse/bsestandardosc.c:149 ../plugins/bseiirfilter.c:146
+#: ../plugins/bseiirfilter.c:157 ../plugins/davcanyondelay.c:114
+#: ../plugins/davorgan.c:113 ../plugins/davsyndrum.c:94
 #: ../plugins/davxtalstrings.c:109
-#, c-format
 msgid "Note"
 msgstr "Nota"
 
-#: ../bse/bsebiquadfilter.c:141
-#: ../plugins/bseiirfilter.c:147
-#: ../plugins/bseiirfilter.c:158
-#: ../plugins/davcanyondelay.c:115
-msgid "Filter cutoff frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Obrezna frekvenca filtra v hertzih kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
+#: ../bse/bsebiquadfilter.c:141 ../plugins/bseiirfilter.c:147
+#: ../plugins/bseiirfilter.c:158 ../plugins/davcanyondelay.c:115
+msgid ""
+"Filter cutoff frequency as note, converted to Hertz according to the current "
+"musical tuning"
+msgstr ""
+"Obrezna frekvenca filtra v hertzih kot nota, pretvorjena v hertze glede na "
+"trenutno uglaševanje"
 
-#: ../bse/bsebiquadfilter.c:147
-#: ../bse/bsebiquadfilter.c:153
+#: ../bse/bsebiquadfilter.c:147 ../bse/bsebiquadfilter.c:153
 msgid "Emphasis"
 msgstr "Poudarki"
 
@@ -3627,36 +3758,28 @@ msgstr "Vrsta datoteke"
 
 #: ../bse/bsebiquadfilter.c:156
 #, fuzzy
-msgid "The filter gain normalization type (supported only by highpass and lowpass)"
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "Vrsta normalizacije okrepitve glasnosti filtra (popirata "
 
-#: ../bse/bsebiquadfilter.c:162
-#: ../bse/bsebiquadfilter.c:168
-#: ../bse/bsebiquadfilter.c:174
-#: ../bse/bsebiquadfilter.c:180
-#: ../bse/bsestandardosc.c:162
-#: ../bse/bsestandardosc.c:167
-#: ../bse/bsestandardosc.c:172
-#: ../bse/bsestandardosc.c:177
-#: ../bse/bsewaveosc.c:569
-#: ../bse/bsewaveosc.c:575
-#: ../bse/bsewaveosc.c:581
+#: ../bse/bsebiquadfilter.c:162 ../bse/bsebiquadfilter.c:168
+#: ../bse/bsebiquadfilter.c:174 ../bse/bsebiquadfilter.c:180
+#: ../bse/bsestandardosc.c:162 ../bse/bsestandardosc.c:167
+#: ../bse/bsestandardosc.c:172 ../bse/bsestandardosc.c:177
+#: ../bse/bsewaveosc.c:569 ../bse/bsewaveosc.c:575 ../bse/bsewaveosc.c:581
 msgid "Modulation"
 msgstr "Modulacija"
 
-#: ../bse/bsebiquadfilter.c:165
-#: ../bse/bsestandardosc.c:164
+#: ../bse/bsebiquadfilter.c:165 ../bse/bsestandardosc.c:164
 msgid "Strength of linear frequency modulation"
 msgstr "Moč linearne modulacije frekvence"
 
-#: ../bse/bsebiquadfilter.c:171
-#: ../bse/bsestandardosc.c:169
+#: ../bse/bsebiquadfilter.c:171 ../bse/bsestandardosc.c:169
 #: ../bse/bsewaveosc.c:578
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Izvedba eksponentne modulacije frekvence namesto linearne"
 
-#: ../bse/bsebiquadfilter.c:177
-#: ../bse/bsestandardosc.c:174
+#: ../bse/bsebiquadfilter.c:177 ../bse/bsestandardosc.c:174
 #: ../bse/bsewaveosc.c:584
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Število oktav na katere vpliva eksponentna modulacija frekvence"
@@ -3670,10 +3793,8 @@ msgstr "Modulacija okrepitve glasnosti [%]"
 msgid "Strength of gain modulation"
 msgstr "Moč modulacije okrepitve glasnosti"
 
-#: ../bse/bsebiquadfilter.c:188
-#: ../plugins/bseatandistort.c:88
-#: ../plugins/bseiirfilter.c:162
-#: ../plugins/davbassfilter.idl:31
+#: ../bse/bsebiquadfilter.c:188 ../plugins/bseatandistort.c:88
+#: ../plugins/bseiirfilter.c:162 ../plugins/davbassfilter.idl:31
 #: ../plugins/davchorus.idl:28
 msgid "Audio In"
 msgstr "Zvočni Vh"
@@ -3682,12 +3803,9 @@ msgstr "Zvočni Vh"
 msgid "Unfiltered Audio Signal"
 msgstr "Nefiltriran zvočni signal"
 
-#: ../bse/bsebiquadfilter.c:190
-#: ../bse/bsestandardosc.c:197
-#: ../bse/bsewaveosc.c:593
-#: ../plugins/davorgan.c:148
-#: ../plugins/davsyndrum.c:117
-#: ../plugins/davxtalstrings.c:151
+#: ../bse/bsebiquadfilter.c:190 ../bse/bsestandardosc.c:197
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
+#: ../plugins/davsyndrum.c:117 ../plugins/davxtalstrings.c:151
 msgid "Freq In"
 msgstr "Frek Vh"
 
@@ -3695,13 +3813,11 @@ msgstr "Frek Vh"
 msgid "Center Frequency Input"
 msgstr "Središčenje vhoda frekvence"
 
-#: ../bse/bsebiquadfilter.c:192
-#: ../bse/bsestandardosc.c:199
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:199
 msgid "Freq Mod In"
 msgstr "Frek Mod Vh"
 
-#: ../bse/bsebiquadfilter.c:192
-#: ../bse/bsestandardosc.c:199
+#: ../bse/bsebiquadfilter.c:192 ../bse/bsestandardosc.c:199
 msgid "Frequency Modulation Input"
 msgstr "Vhod frekvenčne modulacije "
 
@@ -3714,20 +3830,13 @@ msgstr "Mod okr glas Vh"
 msgid "Gain Modulation Input"
 msgstr "Vhod modulacije "
 
-#: ../bse/bsebiquadfilter.c:196
-#: ../bse/bsestandardosc.c:205
-#: ../bse/bsewaveosc.c:599
-#: ../plugins/bseadder.c:99
-#: ../plugins/bseamplifier.idl:47
-#: ../plugins/bseatandistort.c:90
-#: ../plugins/bseiirfilter.c:164
-#: ../plugins/bsemixer.c:107
-#: ../plugins/bsemult.c:66
-#: ../plugins/davbassfilter.idl:33
-#: ../plugins/davchorus.idl:29
-#: ../plugins/davorgan.c:149
-#: ../plugins/davsyndrum.c:123
-#: ../plugins/davxtalstrings.c:155
+#: ../bse/bsebiquadfilter.c:196 ../bse/bsestandardosc.c:205
+#: ../bse/bsewaveosc.c:599 ../plugins/bseadder.c:99
+#: ../plugins/bseamplifier.idl:47 ../plugins/bseatandistort.c:90
+#: ../plugins/bseiirfilter.c:164 ../plugins/bsemixer.c:107
+#: ../plugins/bsemult.c:66 ../plugins/davbassfilter.idl:33
+#: ../plugins/davchorus.idl:29 ../plugins/davorgan.c:149
+#: ../plugins/davsyndrum.c:123 ../plugins/davxtalstrings.c:155
 msgid "Audio Out"
 msgstr "Zvočni izhod"
 
@@ -3743,8 +3852,7 @@ msgstr "Dostopni vhodi"
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Seznam razpoložljivih sinteznih signalov za uporabo kot vhod vodila"
 
-#: ../bse/bsebus.c:145
-#: ../bse/bsetrack.c:300
+#: ../bse/bsebus.c:145 ../bse/bsetrack.c:300
 msgid "Available Outputs"
 msgstr "Dostopni izhodi"
 
@@ -3752,15 +3860,9 @@ msgstr "Dostopni izhodi"
 msgid "List of available mixer busses to be used as bus output"
 msgstr "Seznam razpoložljivih mešalnih vodil za uporabo kot izhod vodila"
 
-#: ../bse/bsebus.c:873
-#: ../bse/bsebus.c:875
-#: ../bse/bsebus.c:877
-#: ../bse/bsebus.c:879
-#: ../bse/bsebus.c:883
-#: ../bse/bsemidisynth.c:461
-#: ../bse/bsemidisynth.c:467
-#: ../bse/bsemidisynth.c:474
-#: ../bse/bsetrack.c:1008
+#: ../bse/bsebus.c:873 ../bse/bsebus.c:875 ../bse/bsebus.c:877
+#: ../bse/bsebus.c:879 ../bse/bsebus.c:883 ../bse/bsemidisynth.c:461
+#: ../bse/bsemidisynth.c:467 ../bse/bsemidisynth.c:474 ../bse/bsetrack.c:1008
 msgid "Adjustments"
 msgstr "Prilagoditve"
 
@@ -3820,13 +3922,11 @@ msgstr "Vhodni signali"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Sintezni signali (iz sledi in vodil) uporabljeni kot vhod vodil"
 
-#: ../bse/bsebus.c:896
-#: ../bse/bsetrack.c:1037
+#: ../bse/bsebus.c:896 ../bse/bsetrack.c:1037
 msgid "Signal Outputs"
 msgstr "Izhodi signala"
 
-#: ../bse/bsebus.c:898
-#: ../bse/bsetrack.c:1039
+#: ../bse/bsebus.c:898 ../bse/bsetrack.c:1039
 msgid "Output Signals"
 msgstr "Izhodni signali"
 
@@ -3842,19 +3942,16 @@ msgstr ""
 msgid "Master Output"
 msgstr "Glavi izhod"
 
-#: ../bse/bsebus.c:907
-#: ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:121
 msgid "Left Audio In"
 msgstr "Levi zvočni Vh"
 
-#: ../bse/bsebus.c:907
-#: ../bse/bsepcmoutput.c:127
+#: ../bse/bsebus.c:907 ../bse/bsepcmoutput.c:127
 msgid "Left channel input"
 msgstr "Vhod levega kanala"
 
-#: ../bse/bsebus.c:909
-#: ../bse/bsepcmoutput.c:129
+#: ../bse/bsebus.c:909 ../bse/bsepcmoutput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:122
 msgid "Right Audio In"
 msgstr "Desni zvočni Vh"
@@ -3863,44 +3960,40 @@ msgstr "Desni zvočni Vh"
 msgid "Right channel input"
 msgstr "Desni zvočni vhod"
 
-#: ../bse/bsebus.c:911
-#: ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 #: ../plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio Out"
 msgstr "Levi zvočni izhod"
 
-#: ../bse/bsebus.c:911
-#: ../bse/bsepcminput.c:127
+#: ../bse/bsebus.c:911 ../bse/bsepcminput.c:127
 msgid "Left channel output"
 msgstr "Izhod levega kanala"
 
-#: ../bse/bsebus.c:913
-#: ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 #: ../plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio Out"
 msgstr "Desni zvočni izhod"
 
-#: ../bse/bsebus.c:913
-#: ../bse/bsepcminput.c:129
+#: ../bse/bsebus.c:913 ../bse/bsepcminput.c:129
 msgid "Right channel output"
 msgstr "Izhod desnega kanala"
 
 #: ../bse/bsebus.c:932
-msgid "Bus implementation for songs, used to route track audio signals to the master output."
+msgid ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
 msgstr ""
 
 #: ../bse/bseconstant.c:83
 msgid "/Other Sources/Constant"
 msgstr "/Drugi viri/stalno"
 
-#: ../bse/bseconstant.c:105
-#: ../bse/bseconstant.c:136
+#: ../bse/bseconstant.c:105 ../bse/bseconstant.c:136
 #, c-format
 msgid "Constant Output %u"
 msgstr "Stalen izhod %u"
 
 #: ../bse/bseconstant.c:108
-#, c-format
 msgid "Value [float]"
 msgstr "Vrednost [plavajoče]"
 
@@ -3908,21 +4001,13 @@ msgstr "Vrednost [plavajoče]"
 msgid "Constant signal value"
 msgstr "Stalna vrednost signala"
 
-#: ../bse/bseconstant.c:116
-#: ../bse/bseinstrumentinput.c:118
-#: ../bse/bsemidiinput.c:108
-#: ../bse/bsestandardosc.c:144
-#: ../plugins/davcanyondelay.c:108
-#: ../plugins/davorgan.c:107
-#: ../plugins/davsyndrum.c:87
-#: ../plugins/davsyndrum.c:88
-#: ../plugins/davsyndrum.c:93
-#: ../plugins/davxtalstrings.c:101
-#: ../plugins/davxtalstrings.c:103
-#: ../plugins/davxtalstrings.c:107
-#: ../plugins/davxtalstrings.c:112
-#: ../plugins/davxtalstrings.c:117
-#, c-format
+#: ../bse/bseconstant.c:116 ../bse/bseinstrumentinput.c:118
+#: ../bse/bsemidiinput.c:108 ../bse/bsestandardosc.c:144
+#: ../plugins/davcanyondelay.c:108 ../plugins/davorgan.c:107
+#: ../plugins/davsyndrum.c:87 ../plugins/davsyndrum.c:88
+#: ../plugins/davsyndrum.c:93 ../plugins/davxtalstrings.c:101
+#: ../plugins/davxtalstrings.c:103 ../plugins/davxtalstrings.c:107
+#: ../plugins/davxtalstrings.c:112 ../plugins/davxtalstrings.c:117
 msgid "Frequency"
 msgstr "Frekvenca"
 
@@ -3931,8 +4016,12 @@ msgid "Constant signal value interpreted as frequency value in Hertz"
 msgstr "Vrednost stalnega signala, obravnava kot vrednost frekvence v hertzih"
 
 #: ../bse/bseconstant.c:129
-msgid "Constant signal value as note, converted to Hertz according to the current musical tuning"
-msgstr "Stalna vrednost signala kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
+msgid ""
+"Constant signal value as note, converted to Hertz according to the current "
+"musical tuning"
+msgstr ""
+"Stalna vrednost signala kot nota, pretvorjena v hertze glede na trenutno "
+"uglaševanje"
 
 #: ../bse/bseconstant.c:135
 #, c-format
@@ -3946,7 +4035,10 @@ msgstr ""
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: ../bse/bsecore.idl:74
-msgid "The most common tuning system for modern Western music, is the twelve-tone equal temperament, abbreviated as 12-TET, which divides the octave into 12 equal parts."
+msgid ""
+"The most common tuning system for modern Western music, is the twelve-tone "
+"equal temperament, abbreviated as 12-TET, which divides the octave into 12 "
+"equal parts."
 msgstr ""
 
 #: ../bse/bsecore.idl:77
@@ -3956,7 +4048,10 @@ msgstr "_Enako velika okna"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: ../bse/bsecore.idl:78
-msgid "A fairly common tuning system is the seven-tone equal temperament tuning system, abbreviated as 7-TET. It divides the octave into 7 equal parts using 171 cent steps."
+msgid ""
+"A fairly common tuning system is the seven-tone equal temperament tuning "
+"system, abbreviated as 7-TET. It divides the octave into 7 equal parts using "
+"171 cent steps."
 msgstr ""
 
 #: ../bse/bsecore.idl:80
@@ -3966,7 +4061,10 @@ msgstr "_Enako velika okna"
 
 #. http://en.wikipedia.org/wiki/Equal_temperament
 #: ../bse/bsecore.idl:81
-msgid "A fairly common tuning system is the five-tone equal temperament tuning system, abbreviated as 5-TET. It divides the octave into 5 equal parts using 240 cent steps."
+msgid ""
+"A fairly common tuning system is the five-tone equal temperament tuning "
+"system, abbreviated as 5-TET. It divides the octave into 5 equal parts using "
+"240 cent steps."
 msgstr ""
 
 #. Rational Intonation: http://en.wikipedia.org/wiki/Just_intonation
@@ -3976,7 +4074,11 @@ msgstr "Diatonično merilo"
 
 #. http://en.wikipedia.org/wiki/Diatonic_scale
 #: ../bse/bsecore.idl:85
-msgid "In music theory, a diatonic scale (also: heptatonia prima) is a seven-note musical scale comprising five whole-tone and two half-tone steps. The half tones are maximally separated, so between two half-tone steps there are either two or three whole tones, repeating per octave."
+msgid ""
+"In music theory, a diatonic scale (also: heptatonia prima) is a seven-note "
+"musical scale comprising five whole-tone and two half-tone steps. The half "
+"tones are maximally separated, so between two half-tone steps there are "
+"either two or three whole tones, repeating per octave."
 msgstr ""
 
 #. Werckmeister I
@@ -3987,7 +4089,8 @@ msgstr "Lestvica deljenja"
 
 #. http://en.wikipedia.org/wiki/Just_intonation#Indian_scales
 #: ../bse/bsecore.idl:90
-msgid "Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
+msgid ""
+"Diatonic scale used in Indian music with wolf interval at Dha, close to 3/2"
 msgstr ""
 
 #: ../bse/bsecore.idl:91
@@ -3996,7 +4099,10 @@ msgstr "Pitagorjevo uglaševanje"
 
 #. http://en.wikipedia.org/wiki/Pythagorean_tuning
 #: ../bse/bsecore.idl:92
-msgid "Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, in which the frequency relationships of all intervals are based on the ratio 3:2. Its discovery is generally credited to Pythagoras."
+msgid ""
+"Pythagorean tuning is the oldest way of tuning the 12-note chromatic scale, "
+"in which the frequency relationships of all intervals are based on the ratio "
+"3:2. Its discovery is generally credited to Pythagoras."
 msgstr ""
 
 #: ../bse/bsecore.idl:95
@@ -4005,7 +4111,10 @@ msgstr "Pentatonska 5-omejitev"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:96
-msgid "Pentatonic scales are used in modern jazz and pop/rock contexts because they work exceedingly well over several chords diatonic to the same key, often better than the parent scale."
+msgid ""
+"Pentatonic scales are used in modern jazz and pop/rock contexts because they "
+"work exceedingly well over several chords diatonic to the same key, often "
+"better than the parent scale."
 msgstr ""
 
 #: ../bse/bsecore.idl:99
@@ -4014,7 +4123,9 @@ msgstr "Pentatosnki blues"
 
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:100
-msgid "The blues scale is the minor pentatonic with an additional augmented fourth, which is referred to as the \"blues note\"."
+msgid ""
+"The blues scale is the minor pentatonic with an additional augmented fourth, "
+"which is referred to as the \"blues note\"."
 msgstr ""
 
 #: ../bse/bsecore.idl:102
@@ -4024,8 +4135,12 @@ msgstr "Pentatonski gogo"
 #. http://en.wikipedia.org/wiki/Pentatonic_scale
 #: ../bse/bsecore.idl:103
 #, fuzzy
-msgid "The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune the instruments of the Gogo people of Tanzania."
-msgstr "Skala pentatonski Gogo je XXXX pentatonska skala uporabljena, ki jo za uglaševanje inštrumentov uporablja ljudstvo Gogo v Tanzaniji."
+msgid ""
+"The Pentatonic Gogo scale is an anhemitonic pentatonic scale used to tune "
+"the instruments of the Gogo people of Tanzania."
+msgstr ""
+"Skala pentatonski Gogo je XXXX pentatonska skala uporabljena, ki jo za "
+"uglaševanje inštrumentov uporablja ljudstvo Gogo v Tanzaniji."
 
 #. Meantone Temperament: http://en.wikipedia.org/wiki/Meantone_temperament
 #: ../bse/bsecore.idl:106
@@ -4035,7 +4150,9 @@ msgstr "Srednji ton"
 
 #. http://en.wikipedia.org/wiki/Quarter-comma_meantone
 #: ../bse/bsecore.idl:107
-msgid "Quarter-comma meantone was the most common meantone temperament in the sixteenth and seventeenth centuries and sometimes used later."
+msgid ""
+"Quarter-comma meantone was the most common meantone temperament in the "
+"sixteenth and seventeenth centuries and sometimes used later."
 msgstr ""
 
 #. Werckmeister II
@@ -4045,7 +4162,9 @@ msgstr ""
 
 #. http://de.wikipedia.org/wiki/Silbermann-Sorge-Temperatur
 #: ../bse/bsecore.idl:110
-msgid "The Silbermann-Sorge temperament is a meantone temperament used for Baroque era organs by Gottfried Silbermann."
+msgid ""
+"The Silbermann-Sorge temperament is a meantone temperament used for Baroque "
+"era organs by Gottfried Silbermann."
 msgstr ""
 
 #. Well Temperament: http://en.wikipedia.org/wiki/Well_temperament
@@ -4055,7 +4174,11 @@ msgstr "Werckmeister III"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:114
-msgid "This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by 1/4 comma. Werckmeister designated this tuning as particularly suited for playing chromatic music."
+msgid ""
+"This tuning uses mostly pure (perfect) fifths, as in Pythagorean tuning, but "
+"each of the fifths C-G, G-D, D-A and B-F# is made smaller, i.e. tempered by "
+"1/4 comma. Werckmeister designated this tuning as particularly suited for "
+"playing chromatic music."
 msgstr ""
 
 #: ../bse/bsecore.idl:117
@@ -4065,8 +4188,17 @@ msgstr "Werckmeister IV"
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:118
 #, fuzzy
-msgid "In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The other fifths are pure. Most of its intervals are close to sixth-comma meantone. Werckmeister designed this tuning for playing mainly diatonic music."
-msgstr "V tem uglaševanju so kvinte C-G, D-A, E-B, F#-C#, in Bb-F znižane za 1/4 XXX, in kvinti G#-D# in Eb-Bb zvišni za 1/3 XXXX. Ostale kvinte so čiste. Večina intervalov je bližje XXXXX srednjemu tonu. Werckmesiter je to uglaševanje oblikoval predvsem za predvajanje diatonske glasbe."
+msgid ""
+"In this tuning the fifths C-G, D-A, E-B, F#-C#, and Bb-F are tempered narrow "
+"by 1/3 comma, and the fifths G#-D# and Eb-Bb are widened by 1/3 comma. The "
+"other fifths are pure. Most of its intervals are close to sixth-comma "
+"meantone. Werckmeister designed this tuning for playing mainly diatonic "
+"music."
+msgstr ""
+"V tem uglaševanju so kvinte C-G, D-A, E-B, F#-C#, in Bb-F znižane za 1/4 "
+"XXX, in kvinti G#-D# in Eb-Bb zvišni za 1/3 XXXX. Ostale kvinte so čiste. "
+"Večina intervalov je bližje XXXXX srednjemu tonu. Werckmesiter je to "
+"uglaševanje oblikoval predvsem za predvajanje diatonske glasbe."
 
 #: ../bse/bsecore.idl:122
 msgid "Werckmeister V"
@@ -4075,8 +4207,15 @@ msgstr "Werckmeister V"
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:123
 #, fuzzy
-msgid "In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by 1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are pure. This temperament is closer to equal temperament than Werckmeister III or IV."
-msgstr "V tem uglaševanju so kvinte D-A, A-E, F#-C#, C#-G#, in F-C zvišane za 1/4 XXX, in kvinta G#-D# je zmanjšana za 1/4 XXXX. Ostale kvinte so čiste. Ta temperament je bližje enakemu temperamentu kot Werckmeister III ali IV."
+msgid ""
+"In this tuning the fifths D-A, A-E, F#-C#, C#-G#, and F-C are narrowed by "
+"1/4 comma, and the fifth G#-D# is widened by 1/4 comma. The other fifths are "
+"pure. This temperament is closer to equal temperament than Werckmeister III "
+"or IV."
+msgstr ""
+"V tem uglaševanju so kvinte D-A, A-E, F#-C#, C#-G#, in F-C zvišane za 1/4 "
+"XXX, in kvinta G#-D# je zmanjšana za 1/4 XXXX. Ostale kvinte so čiste. Ta "
+"temperament je bližje enakemu temperamentu kot Werckmeister III ali IV."
 
 #: ../bse/bsecore.idl:126
 msgid "Werckmeister VI"
@@ -4084,7 +4223,13 @@ msgstr "Werckmeister VI"
 
 #. http://en.wikipedia.org/wiki/Werckmeister_temperament
 #: ../bse/bsecore.idl:127
-msgid "This tuning is also known as Septenarius tuning is based on a division of the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has rational frequency relationships, but in practice involves pure and impure sounding fifths. Werckmeister described the Septenarius as a \"temperament which has nothing at all to do with the divisions of the comma, nevertheless in practice so correct that one can be really satisfied with it\"."
+msgid ""
+"This tuning is also known as Septenarius tuning is based on a division of "
+"the monochord length into 196 = 7 * 7 * 4 parts. The resulting scale has "
+"rational frequency relationships, but in practice involves pure and impure "
+"sounding fifths. Werckmeister described the Septenarius as a \"temperament "
+"which has nothing at all to do with the divisions of the comma, nevertheless "
+"in practice so correct that one can be really satisfied with it\"."
 msgstr ""
 
 #: ../bse/bsecore.idl:134
@@ -4093,7 +4238,13 @@ msgstr "Kirnberger III"
 
 #. http://en.wikipedia.org/wiki/Johann_Philipp_Kirnberger_temperament
 #: ../bse/bsecore.idl:135
-msgid "Kirnberger's method of compensating for and closing the circle of fifths is to split the \"wolf\" interval known to those who have used meantone temperaments between four fifths instead, allowing for four 1/4-comma wolves to take their place. 1/4-comma wolves are used extensively in meantone and are much easier to tune and to listen to. Therefore, only one third remains pure (between C and E)."
+msgid ""
+"Kirnberger's method of compensating for and closing the circle of fifths is "
+"to split the \"wolf\" interval known to those who have used meantone "
+"temperaments between four fifths instead, allowing for four 1/4-comma wolves "
+"to take their place. 1/4-comma wolves are used extensively in meantone and "
+"are much easier to tune and to listen to. Therefore, only one third remains "
+"pure (between C and E)."
 msgstr ""
 
 #: ../bse/bsecore.idl:140
@@ -4102,7 +4253,12 @@ msgstr "Yougov temperament"
 
 #. http://en.wikipedia.org/wiki/Young_temperament
 #: ../bse/bsecore.idl:141
-msgid "Thomas Young devised a form of musical tuning to make the harmony most perfect in those keys which are the most frequently used (give better major thirds in those keys), but to not have any unplayable keys. This is attempted by tuning upwards from C a sequence of six pure fourths, as well as six equally imperfect fifths."
+msgid ""
+"Thomas Young devised a form of musical tuning to make the harmony most "
+"perfect in those keys which are the most frequently used (give better major "
+"thirds in those keys), but to not have any unplayable keys. This is "
+"attempted by tuning upwards from C a sequence of six pure fourths, as well "
+"as six equally imperfect fifths."
 msgstr ""
 
 #. special cased signals
@@ -4131,168 +4287,134 @@ msgid "Note Fine Tune"
 msgstr "Fino uglaševanje note"
 
 #. 14bit, continuous controls
-#: ../bse/bsecore.idl:156
-#: ../bse/bsecore.idl:333
+#: ../bse/bsecore.idl:156 ../bse/bsecore.idl:333
 msgid "Bank Select"
 msgstr "Izbor banke"
 
-#: ../bse/bsecore.idl:157
-#: ../bse/bsecore.idl:334
+#: ../bse/bsecore.idl:157 ../bse/bsecore.idl:334
 msgid "Modulation Depth"
 msgstr "Globina modulacije"
 
-#: ../bse/bsecore.idl:158
-#: ../bse/bsecore.idl:335
+#: ../bse/bsecore.idl:158 ../bse/bsecore.idl:335
 msgid "Breath Control"
 msgstr "Nadzor diha"
 
-#: ../bse/bsecore.idl:159
-#: ../bse/bsecore.idl:336
+#: ../bse/bsecore.idl:159 ../bse/bsecore.idl:336
 msgid "Continuous 3"
 msgstr "Stalno 3"
 
-#: ../bse/bsecore.idl:160
-#: ../bse/bsecore.idl:337
+#: ../bse/bsecore.idl:160 ../bse/bsecore.idl:337
 msgid "Foot Controller"
 msgstr "Nadzornik nog"
 
-#: ../bse/bsecore.idl:161
-#: ../bse/bsecore.idl:338
+#: ../bse/bsecore.idl:161 ../bse/bsecore.idl:338
 #, fuzzy
 msgid "Portamento Time"
 msgstr "Preostaja še"
 
-#: ../bse/bsecore.idl:162
-#: ../bse/bsecore.idl:339
+#: ../bse/bsecore.idl:162 ../bse/bsecore.idl:339
 msgid "Data Entry"
 msgstr "Podatkovni vnos"
 
-#: ../bse/bsecore.idl:163
-#: ../bse/bsecore.idl:340
+#: ../bse/bsecore.idl:163 ../bse/bsecore.idl:340
 msgid "Volume"
 msgstr "Glasnost"
 
-#: ../bse/bsecore.idl:164
-#: ../bse/bsecore.idl:341
-#: ../plugins/bseamplifier.idl:51
-#: ../plugins/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:44
-#: ../plugins/bsebalance.idl:49
+#: ../bse/bsecore.idl:164 ../bse/bsecore.idl:341
+#: ../plugins/bseamplifier.idl:51 ../plugins/bseamplifier.idl:56
+#: ../plugins/bsebalance.idl:44 ../plugins/bsebalance.idl:49
 msgid "Balance"
 msgstr "Ravnotežje"
 
-#: ../bse/bsecore.idl:165
-#: ../bse/bsecore.idl:342
+#: ../bse/bsecore.idl:165 ../bse/bsecore.idl:342
 msgid "Continuous 9"
 msgstr "Stalno 9"
 
-#: ../bse/bsecore.idl:166
-#: ../bse/bsecore.idl:343
+#: ../bse/bsecore.idl:166 ../bse/bsecore.idl:343
 msgid "Panorama"
 msgstr ""
 
-#: ../bse/bsecore.idl:167
-#: ../bse/bsecore.idl:344
+#: ../bse/bsecore.idl:167 ../bse/bsecore.idl:344
 msgid "Expression"
 msgstr "Izraz"
 
-#: ../bse/bsecore.idl:168
-#: ../bse/bsecore.idl:345
+#: ../bse/bsecore.idl:168 ../bse/bsecore.idl:345
 msgid "Effect Control 1"
 msgstr "Nadzor učinkov 1"
 
-#: ../bse/bsecore.idl:169
-#: ../bse/bsecore.idl:346
+#: ../bse/bsecore.idl:169 ../bse/bsecore.idl:346
 msgid "Effect Control 2"
 msgstr "Nadzor učinkov 2"
 
-#: ../bse/bsecore.idl:170
-#: ../bse/bsecore.idl:347
+#: ../bse/bsecore.idl:170 ../bse/bsecore.idl:347
 msgid "Continuous 14"
 msgstr "Stalno 14"
 
-#: ../bse/bsecore.idl:171
-#: ../bse/bsecore.idl:348
+#: ../bse/bsecore.idl:171 ../bse/bsecore.idl:348
 msgid "Continuous 15"
 msgstr "Stalno 15"
 
-#: ../bse/bsecore.idl:172
-#: ../bse/bsecore.idl:349
+#: ../bse/bsecore.idl:172 ../bse/bsecore.idl:349
 msgid "General Purpose Controller 1"
 msgstr "Splošno namenski nadzornik 1"
 
-#: ../bse/bsecore.idl:173
-#: ../bse/bsecore.idl:350
+#: ../bse/bsecore.idl:173 ../bse/bsecore.idl:350
 msgid "General Purpose Controller 2"
 msgstr "Splošno namenski nadzornik 2"
 
-#: ../bse/bsecore.idl:174
-#: ../bse/bsecore.idl:351
+#: ../bse/bsecore.idl:174 ../bse/bsecore.idl:351
 msgid "General Purpose Controller 3"
 msgstr "Splošno namenski nadzornik 3"
 
-#: ../bse/bsecore.idl:175
-#: ../bse/bsecore.idl:352
+#: ../bse/bsecore.idl:175 ../bse/bsecore.idl:352
 msgid "General Purpose Controller 4"
 msgstr "Splošno namenski nadzornik 4"
 
-#: ../bse/bsecore.idl:176
-#: ../bse/bsecore.idl:353
+#: ../bse/bsecore.idl:176 ../bse/bsecore.idl:353
 msgid "Continuous 20"
 msgstr "Stalno 20"
 
-#: ../bse/bsecore.idl:177
-#: ../bse/bsecore.idl:354
+#: ../bse/bsecore.idl:177 ../bse/bsecore.idl:354
 msgid "Continuous 21"
 msgstr "Stalno 21"
 
-#: ../bse/bsecore.idl:178
-#: ../bse/bsecore.idl:355
+#: ../bse/bsecore.idl:178 ../bse/bsecore.idl:355
 msgid "Continuous 22"
 msgstr "Stalno 22"
 
-#: ../bse/bsecore.idl:179
-#: ../bse/bsecore.idl:356
+#: ../bse/bsecore.idl:179 ../bse/bsecore.idl:356
 msgid "Continuous 23"
 msgstr "Stalno 23"
 
-#: ../bse/bsecore.idl:180
-#: ../bse/bsecore.idl:357
+#: ../bse/bsecore.idl:180 ../bse/bsecore.idl:357
 msgid "Continuous 24"
 msgstr "Stalno 24"
 
-#: ../bse/bsecore.idl:181
-#: ../bse/bsecore.idl:358
+#: ../bse/bsecore.idl:181 ../bse/bsecore.idl:358
 msgid "Continuous 25"
 msgstr "Stalno 25"
 
-#: ../bse/bsecore.idl:182
-#: ../bse/bsecore.idl:359
+#: ../bse/bsecore.idl:182 ../bse/bsecore.idl:359
 msgid "Continuous 26"
 msgstr "Stalno 26"
 
-#: ../bse/bsecore.idl:183
-#: ../bse/bsecore.idl:360
+#: ../bse/bsecore.idl:183 ../bse/bsecore.idl:360
 msgid "Continuous 27"
 msgstr "Stalno 27"
 
-#: ../bse/bsecore.idl:184
-#: ../bse/bsecore.idl:361
+#: ../bse/bsecore.idl:184 ../bse/bsecore.idl:361
 msgid "Continuous 28"
 msgstr "Stalno 28"
 
-#: ../bse/bsecore.idl:185
-#: ../bse/bsecore.idl:362
+#: ../bse/bsecore.idl:185 ../bse/bsecore.idl:362
 msgid "Continuous 29"
 msgstr "Stalno 29"
 
-#: ../bse/bsecore.idl:186
-#: ../bse/bsecore.idl:363
+#: ../bse/bsecore.idl:186 ../bse/bsecore.idl:363
 msgid "Continuous 30"
 msgstr "Stalno 30"
 
-#: ../bse/bsecore.idl:187
-#: ../bse/bsecore.idl:364
+#: ../bse/bsecore.idl:187 ../bse/bsecore.idl:364
 msgid "Continuous 31"
 msgstr "Stalno 31"
 
@@ -4326,649 +4448,521 @@ msgid "Non-Registered Parameter"
 msgstr "Nevpisan parameter"
 
 #. 7bit, literal channel controls, MSB values
-#: ../bse/bsecore.idl:197
-#: ../bse/bsecore.idl:366
+#: ../bse/bsecore.idl:197 ../bse/bsecore.idl:366
 msgid "Control 0 Bank Select MSB"
 msgstr "Nadzor 0 izbor banke MSB"
 
-#: ../bse/bsecore.idl:198
-#: ../bse/bsecore.idl:367
+#: ../bse/bsecore.idl:198 ../bse/bsecore.idl:367
 msgid "Control 1 Modulation Depth MSB"
 msgstr "Nadzor 1 Globina modulacije MSB"
 
-#: ../bse/bsecore.idl:199
-#: ../bse/bsecore.idl:368
+#: ../bse/bsecore.idl:199 ../bse/bsecore.idl:368
 msgid "Control 2 Breath Control MSB"
 msgstr "Nadzor 2 nadzor širine MSB"
 
-#: ../bse/bsecore.idl:200
-#: ../bse/bsecore.idl:369
+#: ../bse/bsecore.idl:200 ../bse/bsecore.idl:369
 msgid "control-3"
 msgstr "Nadzor-3"
 
-#: ../bse/bsecore.idl:201
-#: ../bse/bsecore.idl:370
+#: ../bse/bsecore.idl:201 ../bse/bsecore.idl:370
 msgid "Control 4 Foot Controller MSB"
 msgstr "Nadzor 4 nadzornik nog MSB"
 
-#: ../bse/bsecore.idl:202
-#: ../bse/bsecore.idl:371
+#: ../bse/bsecore.idl:202 ../bse/bsecore.idl:371
 msgid "Control 5 Portamento Time MSB"
 msgstr ""
 
-#: ../bse/bsecore.idl:203
-#: ../bse/bsecore.idl:372
+#: ../bse/bsecore.idl:203 ../bse/bsecore.idl:372
 msgid "Control 6 Data Entry MSB"
 msgstr "Nadzor 6 podatkovni vnos MSB"
 
-#: ../bse/bsecore.idl:204
-#: ../bse/bsecore.idl:373
+#: ../bse/bsecore.idl:204 ../bse/bsecore.idl:373
 msgid "Control 7 Volume MSB"
 msgstr "Nadzor 7 glasnost MSB"
 
-#: ../bse/bsecore.idl:205
-#: ../bse/bsecore.idl:374
+#: ../bse/bsecore.idl:205 ../bse/bsecore.idl:374
 msgid "Control 8 Balance MSB"
 msgstr "Nadzor 8 ravnotežje MSB"
 
-#: ../bse/bsecore.idl:206
-#: ../bse/bsecore.idl:375
+#: ../bse/bsecore.idl:206 ../bse/bsecore.idl:375
 msgid "control-9"
 msgstr "Nadzor-9"
 
-#: ../bse/bsecore.idl:207
-#: ../bse/bsecore.idl:376
+#: ../bse/bsecore.idl:207 ../bse/bsecore.idl:376
 msgid "Control 10 Panorama MSB"
 msgstr ""
 
-#: ../bse/bsecore.idl:208
-#: ../bse/bsecore.idl:377
+#: ../bse/bsecore.idl:208 ../bse/bsecore.idl:377
 msgid "Control 11 Expression MSB"
 msgstr "Nadzor 11 izraz MSB"
 
-#: ../bse/bsecore.idl:209
-#: ../bse/bsecore.idl:378
+#: ../bse/bsecore.idl:209 ../bse/bsecore.idl:378
 msgid "Control 12 Effect Control 1 MSB"
 msgstr "Nadzor 12 nadzor učinkov 1 MSB"
 
-#: ../bse/bsecore.idl:210
-#: ../bse/bsecore.idl:379
+#: ../bse/bsecore.idl:210 ../bse/bsecore.idl:379
 msgid "Control 13 Effect Control 2 MSB"
 msgstr "Nadzor 13 nadzor učinkov 2 MSB"
 
-#: ../bse/bsecore.idl:211
-#: ../bse/bsecore.idl:380
+#: ../bse/bsecore.idl:211 ../bse/bsecore.idl:380
 msgid "control-14"
 msgstr "Nadzor-14"
 
-#: ../bse/bsecore.idl:212
-#: ../bse/bsecore.idl:381
+#: ../bse/bsecore.idl:212 ../bse/bsecore.idl:381
 msgid "control-15"
 msgstr "Nadzor-15"
 
-#: ../bse/bsecore.idl:213
-#: ../bse/bsecore.idl:382
+#: ../bse/bsecore.idl:213 ../bse/bsecore.idl:382
 msgid "Control 16 General Purpose Controller 1 MSB"
 msgstr "Nadzor 16 splošno namenski nadzornik 1 MSB"
 
-#: ../bse/bsecore.idl:214
-#: ../bse/bsecore.idl:383
+#: ../bse/bsecore.idl:214 ../bse/bsecore.idl:383
 msgid "Control 17 General Purpose Controller 2 MSB"
 msgstr "Nadzor 17 splošno namenski nadzornik 3 MSB"
 
-#: ../bse/bsecore.idl:215
-#: ../bse/bsecore.idl:384
+#: ../bse/bsecore.idl:215 ../bse/bsecore.idl:384
 msgid "Control 18 General Purpose Controller 3 MSB"
 msgstr "Nadzor 18 splošno namenski nadzornik 3 MSB"
 
-#: ../bse/bsecore.idl:216
-#: ../bse/bsecore.idl:385
+#: ../bse/bsecore.idl:216 ../bse/bsecore.idl:385
 msgid "Control 19 General Purpose Controller 4 MSB"
 msgstr "Nadzor 19 splošno namenski nadzornik 4 MSB"
 
-#: ../bse/bsecore.idl:217
-#: ../bse/bsecore.idl:386
+#: ../bse/bsecore.idl:217 ../bse/bsecore.idl:386
 msgid "control-20"
 msgstr "Nadzor-20"
 
-#: ../bse/bsecore.idl:218
-#: ../bse/bsecore.idl:387
+#: ../bse/bsecore.idl:218 ../bse/bsecore.idl:387
 msgid "control-21"
 msgstr "Nadzor-21"
 
-#: ../bse/bsecore.idl:219
-#: ../bse/bsecore.idl:388
+#: ../bse/bsecore.idl:219 ../bse/bsecore.idl:388
 msgid "control-22"
 msgstr "Nadzor-22"
 
-#: ../bse/bsecore.idl:220
-#: ../bse/bsecore.idl:389
+#: ../bse/bsecore.idl:220 ../bse/bsecore.idl:389
 msgid "control-23"
 msgstr "Nadzor-23"
 
-#: ../bse/bsecore.idl:221
-#: ../bse/bsecore.idl:390
+#: ../bse/bsecore.idl:221 ../bse/bsecore.idl:390
 msgid "control-24"
 msgstr "Nadzor-24"
 
-#: ../bse/bsecore.idl:222
-#: ../bse/bsecore.idl:391
+#: ../bse/bsecore.idl:222 ../bse/bsecore.idl:391
 msgid "control-25"
 msgstr "Nadzor-25"
 
-#: ../bse/bsecore.idl:223
-#: ../bse/bsecore.idl:392
+#: ../bse/bsecore.idl:223 ../bse/bsecore.idl:392
 msgid "control-26"
 msgstr "Nadzor-26"
 
-#: ../bse/bsecore.idl:224
-#: ../bse/bsecore.idl:393
+#: ../bse/bsecore.idl:224 ../bse/bsecore.idl:393
 msgid "control-27"
 msgstr "Nadzor-27"
 
-#: ../bse/bsecore.idl:225
-#: ../bse/bsecore.idl:394
+#: ../bse/bsecore.idl:225 ../bse/bsecore.idl:394
 msgid "control-28"
 msgstr "Nadzor-28"
 
-#: ../bse/bsecore.idl:226
-#: ../bse/bsecore.idl:395
+#: ../bse/bsecore.idl:226 ../bse/bsecore.idl:395
 msgid "control-29"
 msgstr "Nadzor-29"
 
-#: ../bse/bsecore.idl:227
-#: ../bse/bsecore.idl:396
+#: ../bse/bsecore.idl:227 ../bse/bsecore.idl:396
 msgid "control-30"
 msgstr "Nadzor-30"
 
-#: ../bse/bsecore.idl:228
-#: ../bse/bsecore.idl:397
+#: ../bse/bsecore.idl:228 ../bse/bsecore.idl:397
 msgid "control-31"
 msgstr "Nadzor-31"
 
 #. 7bit, literal channel controls, LSB values
-#: ../bse/bsecore.idl:230
-#: ../bse/bsecore.idl:399
+#: ../bse/bsecore.idl:230 ../bse/bsecore.idl:399
 msgid "Control 32 Bank Select LSB"
 msgstr "Nadzor 32 izbor banke LSB"
 
-#: ../bse/bsecore.idl:231
-#: ../bse/bsecore.idl:400
+#: ../bse/bsecore.idl:231 ../bse/bsecore.idl:400
 msgid "Control 33 Modulation Depth LSB"
 msgstr "Nadzor 33 globina modulacije LSB"
 
-#: ../bse/bsecore.idl:232
-#: ../bse/bsecore.idl:401
+#: ../bse/bsecore.idl:232 ../bse/bsecore.idl:401
 msgid "Control 34 Breath Control LSB"
 msgstr "Nadzor 34 nadzor diha LSB"
 
-#: ../bse/bsecore.idl:233
-#: ../bse/bsecore.idl:402
+#: ../bse/bsecore.idl:233 ../bse/bsecore.idl:402
 msgid "control-35"
 msgstr "Nadzor-35"
 
-#: ../bse/bsecore.idl:234
-#: ../bse/bsecore.idl:403
+#: ../bse/bsecore.idl:234 ../bse/bsecore.idl:403
 msgid "Control 36 Foot Controller LSB"
 msgstr "Nadzor 36 nadzor nog LSB"
 
-#: ../bse/bsecore.idl:235
-#: ../bse/bsecore.idl:404
+#: ../bse/bsecore.idl:235 ../bse/bsecore.idl:404
 msgid "Control 37 Portamento Time LSB"
 msgstr ""
 
-#: ../bse/bsecore.idl:236
-#: ../bse/bsecore.idl:405
+#: ../bse/bsecore.idl:236 ../bse/bsecore.idl:405
 msgid "Control 38 Data Entry LSB"
 msgstr "Nadzor 38 vnos podatkov LSB"
 
-#: ../bse/bsecore.idl:237
-#: ../bse/bsecore.idl:406
+#: ../bse/bsecore.idl:237 ../bse/bsecore.idl:406
 msgid "Control 39 Volume LSB"
 msgstr "Nadzor 39 glasnost LSB"
 
-#: ../bse/bsecore.idl:238
-#: ../bse/bsecore.idl:407
+#: ../bse/bsecore.idl:238 ../bse/bsecore.idl:407
 msgid "Control 40 Balance LSB"
 msgstr "Nadzor 40 ravnotežje LSB"
 
-#: ../bse/bsecore.idl:239
-#: ../bse/bsecore.idl:408
+#: ../bse/bsecore.idl:239 ../bse/bsecore.idl:408
 msgid "control-41"
 msgstr "Nadzor-41"
 
-#: ../bse/bsecore.idl:240
-#: ../bse/bsecore.idl:409
+#: ../bse/bsecore.idl:240 ../bse/bsecore.idl:409
 msgid "Control 42 Panorama LSB"
 msgstr ""
 
-#: ../bse/bsecore.idl:241
-#: ../bse/bsecore.idl:410
+#: ../bse/bsecore.idl:241 ../bse/bsecore.idl:410
 msgid "Control 43 Expression LSB"
 msgstr "Nadzor 43 Izraz LSB"
 
-#: ../bse/bsecore.idl:242
-#: ../bse/bsecore.idl:411
+#: ../bse/bsecore.idl:242 ../bse/bsecore.idl:411
 msgid "Control 44 Effect Control 1 LSB"
 msgstr "Nadzor 44 nadzor učinkov 1 LSB"
 
-#: ../bse/bsecore.idl:243
-#: ../bse/bsecore.idl:412
+#: ../bse/bsecore.idl:243 ../bse/bsecore.idl:412
 msgid "Control 45 Effect Control 2 LSB"
 msgstr "Nadzor 45 nadzor učinkov 2 LSB"
 
-#: ../bse/bsecore.idl:244
-#: ../bse/bsecore.idl:413
+#: ../bse/bsecore.idl:244 ../bse/bsecore.idl:413
 msgid "control-46"
 msgstr "Nadzor-46"
 
-#: ../bse/bsecore.idl:245
-#: ../bse/bsecore.idl:414
+#: ../bse/bsecore.idl:245 ../bse/bsecore.idl:414
 msgid "control-47"
 msgstr "Nadzor-47"
 
-#: ../bse/bsecore.idl:246
-#: ../bse/bsecore.idl:415
+#: ../bse/bsecore.idl:246 ../bse/bsecore.idl:415
 msgid "Control 48 General Purpose Controller 1 LSB"
 msgstr "Nadzor 48 splošno namenski nadzornik 1 LSB"
 
-#: ../bse/bsecore.idl:247
-#: ../bse/bsecore.idl:416
+#: ../bse/bsecore.idl:247 ../bse/bsecore.idl:416
 msgid "Control 49 General Purpose Controller 2 LSB"
 msgstr "Nadzor 49 splošno namenski nadzornik 2 LSB"
 
-#: ../bse/bsecore.idl:248
-#: ../bse/bsecore.idl:417
+#: ../bse/bsecore.idl:248 ../bse/bsecore.idl:417
 msgid "Control 50 General Purpose Controller 3 LSB"
 msgstr "Nadzor 50 splošno namenski nadzornik 3 LSB"
 
-#: ../bse/bsecore.idl:249
-#: ../bse/bsecore.idl:418
+#: ../bse/bsecore.idl:249 ../bse/bsecore.idl:418
 msgid "Control 51 General Purpose Controller 4 LSB"
 msgstr "Nadzor 51 splošno namenski nadzornik 4 LSB"
 
-#: ../bse/bsecore.idl:250
-#: ../bse/bsecore.idl:419
+#: ../bse/bsecore.idl:250 ../bse/bsecore.idl:419
 msgid "control-52"
 msgstr "Nadzor-52"
 
-#: ../bse/bsecore.idl:251
-#: ../bse/bsecore.idl:420
+#: ../bse/bsecore.idl:251 ../bse/bsecore.idl:420
 msgid "control-53"
 msgstr "Nadzor-53"
 
-#: ../bse/bsecore.idl:252
-#: ../bse/bsecore.idl:421
+#: ../bse/bsecore.idl:252 ../bse/bsecore.idl:421
 msgid "control-54"
 msgstr "Nadzor-54"
 
-#: ../bse/bsecore.idl:253
-#: ../bse/bsecore.idl:422
+#: ../bse/bsecore.idl:253 ../bse/bsecore.idl:422
 msgid "control-55"
 msgstr "Nadzor-55"
 
-#: ../bse/bsecore.idl:254
-#: ../bse/bsecore.idl:423
+#: ../bse/bsecore.idl:254 ../bse/bsecore.idl:423
 msgid "control-56"
 msgstr "Nadzor-56"
 
-#: ../bse/bsecore.idl:255
-#: ../bse/bsecore.idl:424
+#: ../bse/bsecore.idl:255 ../bse/bsecore.idl:424
 msgid "control-57"
 msgstr "Nadzor-57"
 
-#: ../bse/bsecore.idl:256
-#: ../bse/bsecore.idl:425
+#: ../bse/bsecore.idl:256 ../bse/bsecore.idl:425
 msgid "control-58"
 msgstr "Nadzor-58"
 
-#: ../bse/bsecore.idl:257
-#: ../bse/bsecore.idl:426
+#: ../bse/bsecore.idl:257 ../bse/bsecore.idl:426
 msgid "control-59"
 msgstr "Nadzor-59"
 
-#: ../bse/bsecore.idl:258
-#: ../bse/bsecore.idl:427
+#: ../bse/bsecore.idl:258 ../bse/bsecore.idl:427
 msgid "control-60"
 msgstr "Nadzor-60"
 
-#: ../bse/bsecore.idl:259
-#: ../bse/bsecore.idl:428
+#: ../bse/bsecore.idl:259 ../bse/bsecore.idl:428
 msgid "control-61"
 msgstr "Nadzor-61"
 
-#: ../bse/bsecore.idl:260
-#: ../bse/bsecore.idl:429
+#: ../bse/bsecore.idl:260 ../bse/bsecore.idl:429
 msgid "control-62"
 msgstr "Nadzor-62"
 
-#: ../bse/bsecore.idl:261
-#: ../bse/bsecore.idl:430
+#: ../bse/bsecore.idl:261 ../bse/bsecore.idl:430
 msgid "control-63"
 msgstr "Nadzor-63"
 
 #. 7bit, literal channel controls
-#: ../bse/bsecore.idl:263
-#: ../bse/bsecore.idl:432
+#: ../bse/bsecore.idl:263 ../bse/bsecore.idl:432
 msgid "Control 64 Damper Pedal Switch (Sustain)"
 msgstr ""
 
-#: ../bse/bsecore.idl:264
-#: ../bse/bsecore.idl:433
+#: ../bse/bsecore.idl:264 ../bse/bsecore.idl:433
 msgid "Control 65 Portamento Switch"
 msgstr ""
 
-#: ../bse/bsecore.idl:265
-#: ../bse/bsecore.idl:434
+#: ../bse/bsecore.idl:265 ../bse/bsecore.idl:434
 msgid "Control 66 Sustenuto Switch"
 msgstr ""
 
-#: ../bse/bsecore.idl:266
-#: ../bse/bsecore.idl:435
+#: ../bse/bsecore.idl:266 ../bse/bsecore.idl:435
 msgid "Control 67 Soft Switch"
 msgstr "Nadzor 67 mehko stikalo"
 
 # legato in to so neke glasbeni termini, samo ne vem kako je to pravilno v slovenščini..
-#: ../bse/bsecore.idl:267
-#: ../bse/bsecore.idl:436
+#: ../bse/bsecore.idl:267 ../bse/bsecore.idl:436
 msgid "Control 68 Legato Pedal Switch"
 msgstr ""
 
-#: ../bse/bsecore.idl:268
-#: ../bse/bsecore.idl:437
+#: ../bse/bsecore.idl:268 ../bse/bsecore.idl:437
 msgid "Control 69 Hold Pedal Switch"
 msgstr ""
 
-#: ../bse/bsecore.idl:269
-#: ../bse/bsecore.idl:438
+#: ../bse/bsecore.idl:269 ../bse/bsecore.idl:438
 msgid "Control 70 Sound Variation"
 msgstr ""
 
-#: ../bse/bsecore.idl:270
-#: ../bse/bsecore.idl:439
+#: ../bse/bsecore.idl:270 ../bse/bsecore.idl:439
 msgid "Control 71 Filter Resonance (Timbre)"
 msgstr ""
 
-#: ../bse/bsecore.idl:271
-#: ../bse/bsecore.idl:440
+#: ../bse/bsecore.idl:271 ../bse/bsecore.idl:440
 msgid "Control 72 Sound Release Time"
 msgstr "Nadzor 72 čas izpusta zvoka"
 
-#: ../bse/bsecore.idl:272
-#: ../bse/bsecore.idl:441
+#: ../bse/bsecore.idl:272 ../bse/bsecore.idl:441
 msgid "Control 73 Sound Attack Time"
 msgstr "Nadzor 73 čas napada zvoka"
 
-#: ../bse/bsecore.idl:273
-#: ../bse/bsecore.idl:442
+#: ../bse/bsecore.idl:273 ../bse/bsecore.idl:442
 msgid "Control 74 Sound Brightness"
 msgstr "Nadzor 74 svetlost zvoka"
 
 # Decay je dušenje, kako hitro se zaduši določen zvok
 # Razpad zvoka se sliši čudno....
-#: ../bse/bsecore.idl:274
-#: ../bse/bsecore.idl:443
+#: ../bse/bsecore.idl:274 ../bse/bsecore.idl:443
 msgid "Control 75 Sound Decay Time"
 msgstr "Nadzor 75 čas dušenja zvoka"
 
-#: ../bse/bsecore.idl:275
-#: ../bse/bsecore.idl:444
+#: ../bse/bsecore.idl:275 ../bse/bsecore.idl:444
 msgid "Control 76 Vibrato Rate"
 msgstr "Nadzor 76 hitrost vibracij"
 
-#: ../bse/bsecore.idl:276
-#: ../bse/bsecore.idl:445
+#: ../bse/bsecore.idl:276 ../bse/bsecore.idl:445
 msgid "Control 77 Vibrato Depth"
 msgstr ""
 
-#: ../bse/bsecore.idl:277
-#: ../bse/bsecore.idl:446
+#: ../bse/bsecore.idl:277 ../bse/bsecore.idl:446
 msgid "Control 78 Vibrato Delay"
 msgstr ""
 
-#: ../bse/bsecore.idl:278
-#: ../bse/bsecore.idl:447
+#: ../bse/bsecore.idl:278 ../bse/bsecore.idl:447
 msgid "Control 79 Sound Control 10"
 msgstr ""
 
-#: ../bse/bsecore.idl:279
-#: ../bse/bsecore.idl:448
+#: ../bse/bsecore.idl:279 ../bse/bsecore.idl:448
 msgid "Control 80 General Purpose Switch 5"
 msgstr "Nadzor 80 splošno namensko stikalo 5"
 
-#: ../bse/bsecore.idl:280
-#: ../bse/bsecore.idl:449
+#: ../bse/bsecore.idl:280 ../bse/bsecore.idl:449
 msgid "Control 81 General Purpose Switch 6"
 msgstr "Nadzor 81 splošno namensko stikalo 6"
 
-#: ../bse/bsecore.idl:281
-#: ../bse/bsecore.idl:450
+#: ../bse/bsecore.idl:281 ../bse/bsecore.idl:450
 msgid "Control 82 General Purpose Switch 7"
 msgstr "Nadzor 82 splošno namensko stikalo 7"
 
-#: ../bse/bsecore.idl:282
-#: ../bse/bsecore.idl:451
+#: ../bse/bsecore.idl:282 ../bse/bsecore.idl:451
 msgid "Control 83 General Purpose Switch 8"
 msgstr "Nadzor 83 splošno namensko stikalo 8"
 
 # http://en.wikipedia.org/wiki/Portamento
-#: ../bse/bsecore.idl:283
-#: ../bse/bsecore.idl:452
+#: ../bse/bsecore.idl:283 ../bse/bsecore.idl:452
 msgid "Control 84 Portamento Control (Note)"
 msgstr ""
 
-#: ../bse/bsecore.idl:284
-#: ../bse/bsecore.idl:453
+#: ../bse/bsecore.idl:284 ../bse/bsecore.idl:453
 msgid "control-85"
 msgstr "Nadzor-85"
 
-#: ../bse/bsecore.idl:285
-#: ../bse/bsecore.idl:454
+#: ../bse/bsecore.idl:285 ../bse/bsecore.idl:454
 msgid "control-86"
 msgstr "Nadzor-86"
 
-#: ../bse/bsecore.idl:286
-#: ../bse/bsecore.idl:455
+#: ../bse/bsecore.idl:286 ../bse/bsecore.idl:455
 msgid "control-87"
 msgstr "Nadzor-87"
 
-#: ../bse/bsecore.idl:287
-#: ../bse/bsecore.idl:456
+#: ../bse/bsecore.idl:287 ../bse/bsecore.idl:456
 msgid "control-88"
 msgstr "Nadzor-88"
 
-#: ../bse/bsecore.idl:288
-#: ../bse/bsecore.idl:457
+#: ../bse/bsecore.idl:288 ../bse/bsecore.idl:457
 msgid "control-89"
 msgstr "Nadzor-89"
 
-#: ../bse/bsecore.idl:289
-#: ../bse/bsecore.idl:458
+#: ../bse/bsecore.idl:289 ../bse/bsecore.idl:458
 msgid "control-90"
 msgstr "Nadzor-90"
 
-#: ../bse/bsecore.idl:290
-#: ../bse/bsecore.idl:459
+#: ../bse/bsecore.idl:290 ../bse/bsecore.idl:459
 msgid "Control 91 Reverb Depth"
 msgstr ""
 
-#: ../bse/bsecore.idl:291
-#: ../bse/bsecore.idl:460
+#: ../bse/bsecore.idl:291 ../bse/bsecore.idl:460
 msgid "Control 92 Tremolo Depth"
 msgstr ""
 
-#: ../bse/bsecore.idl:292
-#: ../bse/bsecore.idl:461
+#: ../bse/bsecore.idl:292 ../bse/bsecore.idl:461
 msgid "Control 93 Chorus Depth"
 msgstr "Nadzor 93 globina zbora"
 
-#: ../bse/bsecore.idl:293
-#: ../bse/bsecore.idl:462
+#: ../bse/bsecore.idl:293 ../bse/bsecore.idl:462
 msgid "Control 93 Detune Depth"
 msgstr ""
 
-#: ../bse/bsecore.idl:294
-#: ../bse/bsecore.idl:463
+#: ../bse/bsecore.idl:294 ../bse/bsecore.idl:463
 msgid "Control 95 Phase Depth"
 msgstr "Nadzor 95 fazna globina"
 
-#: ../bse/bsecore.idl:295
-#: ../bse/bsecore.idl:464
+#: ../bse/bsecore.idl:295 ../bse/bsecore.idl:464
 msgid "Control 96 Data Increment Trigger"
 msgstr "Nadzor 96 sprožilec povečanja podatkov"
 
-#: ../bse/bsecore.idl:296
-#: ../bse/bsecore.idl:465
+#: ../bse/bsecore.idl:296 ../bse/bsecore.idl:465
 msgid "Control 97 Data Decrement Trigger"
 msgstr "Nadzor 97 sprožilec zmanjšanja podatkov"
 
-#: ../bse/bsecore.idl:297
-#: ../bse/bsecore.idl:466
+#: ../bse/bsecore.idl:297 ../bse/bsecore.idl:466
 msgid "Control 98 Non-Registered Parameter MSB"
 msgstr "Nadzor 98 nevpisan parameter MSB"
 
-#: ../bse/bsecore.idl:298
-#: ../bse/bsecore.idl:467
+#: ../bse/bsecore.idl:298 ../bse/bsecore.idl:467
 msgid "Control 99 Non-Registered Parameter LSB"
 msgstr "Nadzor 99 nevpisan parameter LSB"
 
-#: ../bse/bsecore.idl:299
-#: ../bse/bsecore.idl:468
+#: ../bse/bsecore.idl:299 ../bse/bsecore.idl:468
 msgid "Control 100 Registered Parameter MSB"
 msgstr "Nadzor 100 vpisan parameter MSB"
 
-#: ../bse/bsecore.idl:300
-#: ../bse/bsecore.idl:469
+#: ../bse/bsecore.idl:300 ../bse/bsecore.idl:469
 msgid "Control 101 Registered Parameter LSB"
 msgstr "Nadzor 101 vpisan parameter LSB"
 
-#: ../bse/bsecore.idl:301
-#: ../bse/bsecore.idl:470
+#: ../bse/bsecore.idl:301 ../bse/bsecore.idl:470
 msgid "control-102"
 msgstr "Nadzor-102"
 
-#: ../bse/bsecore.idl:302
-#: ../bse/bsecore.idl:471
+#: ../bse/bsecore.idl:302 ../bse/bsecore.idl:471
 msgid "control-103"
 msgstr "Nadzor-103"
 
-#: ../bse/bsecore.idl:303
-#: ../bse/bsecore.idl:472
+#: ../bse/bsecore.idl:303 ../bse/bsecore.idl:472
 msgid "control-104"
 msgstr "Nadzor-104"
 
-#: ../bse/bsecore.idl:304
-#: ../bse/bsecore.idl:473
+#: ../bse/bsecore.idl:304 ../bse/bsecore.idl:473
 msgid "control-105"
 msgstr "Nadzor-105"
 
-#: ../bse/bsecore.idl:305
-#: ../bse/bsecore.idl:474
+#: ../bse/bsecore.idl:305 ../bse/bsecore.idl:474
 msgid "control-106"
 msgstr "Nadzor-106"
 
-#: ../bse/bsecore.idl:306
-#: ../bse/bsecore.idl:475
+#: ../bse/bsecore.idl:306 ../bse/bsecore.idl:475
 msgid "control-107"
 msgstr "Nadzor-107"
 
-#: ../bse/bsecore.idl:307
-#: ../bse/bsecore.idl:476
+#: ../bse/bsecore.idl:307 ../bse/bsecore.idl:476
 msgid "control-108"
 msgstr "Nadzor-108"
 
-#: ../bse/bsecore.idl:308
-#: ../bse/bsecore.idl:477
+#: ../bse/bsecore.idl:308 ../bse/bsecore.idl:477
 msgid "control-109"
 msgstr "Nadzor-109"
 
-#: ../bse/bsecore.idl:309
-#: ../bse/bsecore.idl:478
+#: ../bse/bsecore.idl:309 ../bse/bsecore.idl:478
 msgid "control-110"
 msgstr "Nadzor-110"
 
-#: ../bse/bsecore.idl:310
-#: ../bse/bsecore.idl:479
+#: ../bse/bsecore.idl:310 ../bse/bsecore.idl:479
 msgid "control-111"
 msgstr "Nadzor-111"
 
-#: ../bse/bsecore.idl:311
-#: ../bse/bsecore.idl:480
+#: ../bse/bsecore.idl:311 ../bse/bsecore.idl:480
 msgid "control-112"
 msgstr "Nadzor-112"
 
-#: ../bse/bsecore.idl:312
-#: ../bse/bsecore.idl:481
+#: ../bse/bsecore.idl:312 ../bse/bsecore.idl:481
 msgid "control-113"
 msgstr "Nadzor-113"
 
-#: ../bse/bsecore.idl:313
-#: ../bse/bsecore.idl:482
+#: ../bse/bsecore.idl:313 ../bse/bsecore.idl:482
 msgid "control-114"
 msgstr "Nadzor-114"
 
-#: ../bse/bsecore.idl:314
-#: ../bse/bsecore.idl:483
+#: ../bse/bsecore.idl:314 ../bse/bsecore.idl:483
 msgid "control-115"
 msgstr "Nadzor-115"
 
-#: ../bse/bsecore.idl:315
-#: ../bse/bsecore.idl:484
+#: ../bse/bsecore.idl:315 ../bse/bsecore.idl:484
 msgid "control-116"
 msgstr "Nadzor-116"
 
-#: ../bse/bsecore.idl:316
-#: ../bse/bsecore.idl:485
+#: ../bse/bsecore.idl:316 ../bse/bsecore.idl:485
 msgid "control-117"
 msgstr "Nadzor-117"
 
-#: ../bse/bsecore.idl:317
-#: ../bse/bsecore.idl:486
+#: ../bse/bsecore.idl:317 ../bse/bsecore.idl:486
 msgid "control-118"
 msgstr "Nadzor-118"
 
-#: ../bse/bsecore.idl:318
-#: ../bse/bsecore.idl:487
+#: ../bse/bsecore.idl:318 ../bse/bsecore.idl:487
 msgid "control-119"
 msgstr "Nadzor-119"
 
-#: ../bse/bsecore.idl:319
-#: ../bse/bsecore.idl:488
+#: ../bse/bsecore.idl:319 ../bse/bsecore.idl:488
 msgid "Control 120 All Sound Off ITrigger"
 msgstr ""
 
-#: ../bse/bsecore.idl:320
-#: ../bse/bsecore.idl:489
+#: ../bse/bsecore.idl:320 ../bse/bsecore.idl:489
 msgid "Control 121 All Controllers Off ITrigger"
 msgstr ""
 
-#: ../bse/bsecore.idl:321
-#: ../bse/bsecore.idl:490
+#: ../bse/bsecore.idl:321 ../bse/bsecore.idl:490
 msgid "Control 122 Local Control Switch"
 msgstr ""
 
-#: ../bse/bsecore.idl:322
-#: ../bse/bsecore.idl:491
+#: ../bse/bsecore.idl:322 ../bse/bsecore.idl:491
 msgid "Control 123 All Notes Off ITrigger"
 msgstr ""
 
-#: ../bse/bsecore.idl:323
-#: ../bse/bsecore.idl:492
+#: ../bse/bsecore.idl:323 ../bse/bsecore.idl:492
 msgid "Control 124 Omni Mode Off ITrigger"
 msgstr ""
 
-#: ../bse/bsecore.idl:324
-#: ../bse/bsecore.idl:493
+#: ../bse/bsecore.idl:324 ../bse/bsecore.idl:493
 msgid "Control 125 Omni Mode On ITrigger"
 msgstr ""
 
-#: ../bse/bsecore.idl:325
-#: ../bse/bsecore.idl:494
+#: ../bse/bsecore.idl:325 ../bse/bsecore.idl:494
 msgid "Control 126 Monophonic Voices Mode"
 msgstr "Nadzor 126 način monofonskih glasov"
 
-#: ../bse/bsecore.idl:326
-#: ../bse/bsecore.idl:495
+#: ../bse/bsecore.idl:326 ../bse/bsecore.idl:495
 msgid "Control 127 Polyphonic Mode On ITrigger"
 msgstr "Nadzor 127 polifonski način na ITrigger"
 
@@ -4997,7 +4991,9 @@ msgid "Priority"
 msgstr "Prednost"
 
 #: ../bse/bsecore.idl:751
-msgid "The nice value of a thread, -20 indicates a high priority thread and +19 a low priority one that is 'nice' to others"
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
 msgstr ""
 
 #: ../bse/bsecore.idl:754
@@ -5049,8 +5045,12 @@ msgid "Latency [ms]"
 msgstr "Latenca [ms]"
 
 #: ../bse/bsecore.idl:779
-msgid "Processing duration between input and output of a single sample, smaller values increase CPU load"
-msgstr "Trajanje obdelovanja med vhodom in izhodom za en vzorec, manjše vrednosti povečajo obremenitev CPE"
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+"Trajanje obdelovanja med vhodom in izhodom za en vzorec, manjše vrednosti "
+"povečajo obremenitev CPE"
 
 #: ../bse/bsecore.idl:781
 msgid "Synth Mixing Frequency"
@@ -5065,8 +5065,12 @@ msgid "Synth Control Frequency"
 msgstr "Nadzorna frekvenca sintetizatorja"
 
 #: ../bse/bsecore.idl:785
-msgid "Frequency at which control values are evaluated, should be much smaller than Synth Mixing Frequency to reduce CPU load"
-msgstr "Frekvenca na kateri so nadzorne vrednosti ocenjene, naj bo precej manjša od mešalne frekvence sintetizatorja za zmanjšanje bremena CPE"
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+"Frekvenca na kateri so nadzorne vrednosti ocenjene, naj bo precej manjša od "
+"mešalne frekvence sintetizatorja za zmanjšanje bremena CPE"
 
 #: ../bse/bsecore.idl:789
 msgid "MIDI"
@@ -5078,7 +5082,8 @@ msgid "Invert Sustain Pedal"
 msgstr "Filter obračanja slike"
 
 #: ../bse/bsecore.idl:791
-msgid "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 
 #: ../bse/bsecore.idl:794
@@ -5111,8 +5116,10 @@ msgstr "Pot vzorca"
 
 #: ../bse/bsecore.idl:802
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find audio samples."
-msgstr "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje zvočnih vzorcev."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
+msgstr ""
+"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje zvočnih vzorcev."
 
 #: ../bse/bsecore.idl:805
 msgid "Effect Path"
@@ -5120,8 +5127,12 @@ msgstr "Pot učinka"
 
 #: ../bse/bsecore.idl:806
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE effect files."
-msgstr "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje datotek učinkov BSE."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"files."
+msgstr ""
+"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje datotek učinkov "
+"BSE."
 
 #: ../bse/bsecore.idl:809
 msgid "Instrument Path"
@@ -5129,8 +5140,12 @@ msgstr "Pot inštrumenta"
 
 #: ../bse/bsecore.idl:810
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE instrument files."
-msgstr "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje datotek inštrumentov BSE."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"files."
+msgstr ""
+"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje datotek "
+"inštrumentov BSE."
 
 #: ../bse/bsecore.idl:813
 msgid "Script Path"
@@ -5138,8 +5153,11 @@ msgstr "Pot skripta"
 
 #: ../bse/bsecore.idl:814
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."
-msgstr "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje skript BSE sheme."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"scripts."
+msgstr ""
+"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje skript BSE sheme."
 
 #: ../bse/bsecore.idl:817
 msgid "Plugin Path"
@@ -5147,8 +5165,13 @@ msgstr "Pot vstavka"
 
 #: ../bse/bsecore.idl:818
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find BSE plugins. This path is searched for in addition to the standard BSE plugin location on this system."
-msgstr "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov BSE. Ta pot je preiskana poleg običajnih mest vstavka BSE na tem sistemu."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"This path is searched for in addition to the standard BSE plugin location on "
+"this system."
+msgstr ""
+"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov BSE. Ta "
+"pot je preiskana poleg običajnih mest vstavka BSE na tem sistemu."
 
 #: ../bse/bsecore.idl:822
 msgid "LADSPA Path"
@@ -5156,8 +5179,17 @@ msgstr "Pot LADSPA"
 
 #: ../bse/bsecore.idl:823
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This path is searched for in addition to the standard LADSPA location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about LADSPA plugins can be found at http://www.ladspa.org/."
-msgstr "Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov LADSPA. Ta pot je preiskana poleg običajnih mest LADSPA na tem sistemu. LADSPA je API preprostega vstavka linux zvočnega razvijalca, več podrobnosti o vstavkih LADSPA je mogoče najti na http://www.ladspa.org/."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find LADSPA "
+"plugins. This path is searched for in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API, more informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
+msgstr ""
+"Iskalne poti map, ločene z \"%s\", uporabljenih za iskanje vstavkov LADSPA. "
+"Ta pot je preiskana poleg običajnih mest LADSPA na tem sistemu. LADSPA je "
+"API preprostega vstavka linux zvočnega razvijalca, več podrobnosti o "
+"vstavkih LADSPA je mogoče najti na http://www.ladspa.org/."
 
 #. TRANSLATORS: keep this text to 70 chars in width
 #: ../bse/bsedevice.c:339
@@ -5447,39 +5479,32 @@ msgstr "Neveljavno trajanje"
 msgid "Invalid overlap"
 msgstr "Neveljavno prekrivanje"
 
-#: ../bse/bseinstrumentinput.c:118
-#: ../bse/bsemidiinput.c:108
+#: ../bse/bseinstrumentinput.c:118 ../bse/bsemidiinput.c:108
 msgid "Note Frequency"
 msgstr "Frekvenca note"
 
-#: ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:110
+#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:110
 #, fuzzy
 msgid "Gate"
 msgstr "Vrata"
 
-#: ../bse/bseinstrumentinput.c:120
-#: ../bse/bsemidiinput.c:110
+#: ../bse/bseinstrumentinput.c:120 ../bse/bsemidiinput.c:110
 msgid "High if the note is currently being pressed"
 msgstr "Visoko, če je nota trenutno pritisnjena"
 
-#: ../bse/bseinstrumentinput.c:122
-#: ../bse/bsemidiinput.c:112
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Velocity"
 msgstr "Hitrost"
 
-#: ../bse/bseinstrumentinput.c:122
-#: ../bse/bsemidiinput.c:112
+#: ../bse/bseinstrumentinput.c:122 ../bse/bsemidiinput.c:112
 msgid "Velocity of the note press"
 msgstr "Hitrost pritiska note"
 
-#: ../bse/bseinstrumentinput.c:124
-#: ../bse/bsemidiinput.c:114
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Aftertouch"
 msgstr ""
 
-#: ../bse/bseinstrumentinput.c:124
-#: ../bse/bsemidiinput.c:114
+#: ../bse/bseinstrumentinput.c:124 ../bse/bsemidiinput.c:114
 msgid "Velocity while the note is pressed"
 msgstr "Hitrost med pritiskom note"
 
@@ -5520,12 +5545,11 @@ msgid "/Input & Output/Instrument Output"
 msgstr "/Vhod in izhod/Izhod instrumenta"
 
 #: ../bse/bsejanitor.c:535
-#, fuzzy, c-format
+#, fuzzy
 msgid "killed by janitor"
 msgstr "Ubil vas je %s (%s)"
 
 #: ../bse/bsejanitor.c:537
-#, c-format
 msgid "connection terminated"
 msgstr "povezava je prekinjena"
 
@@ -5534,8 +5558,7 @@ msgstr "povezava je prekinjena"
 msgid "%s (core dumped)"
 msgstr "%s (jedro izpisano)"
 
-#: ../bse/bsemain.cc:269
-#, c-format
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -5543,8 +5566,7 @@ msgstr ""
 "\n"
 "PCM gonilniki na voljo:\n"
 
-#: ../bse/bsemain.cc:271
-#, c-format
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5614,9 +5636,7 @@ msgstr ""
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Vhod in izhod/Vhod glasu MIDI"
 
-#: ../bse/bsemidisynth.c:227
-#: ../bse/bsesubsynth.c:156
-#: ../bse/bsetrack.c:292
+#: ../bse/bsemidisynth.c:227 ../bse/bsesubsynth.c:156 ../bse/bsetrack.c:292
 msgid "Available Synthesizers"
 msgstr "Razpoložljivi sintetizatorji"
 
@@ -5624,31 +5644,22 @@ msgstr "Razpoložljivi sintetizatorji"
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "Seznam razpoložljivih sinteznih omrežij za izbiro inštrumenta MIDI"
 
-#: ../bse/bsemidisynth.c:231
-#: ../bse/bsesong.c:140
-#: ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:140 ../bse/bsetrack.c:296
 #, fuzzy
 msgid "Available Postprocessors"
 msgstr "Ukazi, ki so na voljo:\n"
 
-#: ../bse/bsemidisynth.c:231
-#: ../bse/bsesong.c:140
-#: ../bse/bsetrack.c:296
+#: ../bse/bsemidisynth.c:231 ../bse/bsesong.c:140 ../bse/bsetrack.c:296
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 
-#: ../bse/bsemidisynth.c:442
-#: ../bse/bsemidisynth.c:447
-#: ../bse/bsemidisynth.c:452
-#: ../bse/bsemidisynth.c:456
-#: ../bse/bsesong.c:775
-#: ../bse/bsetrack.c:1027
-#: ../bse/bsetrack.c:1033
+#: ../bse/bsemidisynth.c:442 ../bse/bsemidisynth.c:447
+#: ../bse/bsemidisynth.c:452 ../bse/bsemidisynth.c:456 ../bse/bsesong.c:775
+#: ../bse/bsetrack.c:1027 ../bse/bsetrack.c:1033
 msgid "MIDI Instrument"
 msgstr "Instrumenti MIDI"
 
-#: ../bse/bsemidisynth.c:444
-#: ../bse/bsetrack.c:1029
+#: ../bse/bsemidisynth.c:444 ../bse/bsetrack.c:1029
 msgid "MIDI Channel"
 msgstr "Kanal MIDI"
 
@@ -5657,9 +5668,7 @@ msgstr "Kanal MIDI"
 msgid "Max Voices"
 msgstr "<vsi glasovi>"
 
-#: ../bse/bsemidisynth.c:454
-#: ../bse/bsesubsynth.c:512
-#: ../bse/bsetrack.c:1014
+#: ../bse/bsemidisynth.c:454 ../bse/bsesubsynth.c:512 ../bse/bsetrack.c:1014
 msgid "Synthesizer"
 msgstr "Sintetizator"
 
@@ -5667,9 +5676,7 @@ msgstr "Sintetizator"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Sintezno omrežje za uporabo kot inštrument MIDI"
 
-#: ../bse/bsemidisynth.c:458
-#: ../bse/bsesong.c:777
-#: ../bse/bsetrack.c:1035
+#: ../bse/bsemidisynth.c:458 ../bse/bsesong.c:777 ../bse/bsetrack.c:1035
 msgid "Postprocessor"
 msgstr ""
 
@@ -5685,18 +5692,15 @@ msgstr "Glavno [dB]"
 msgid "Master [%]"
 msgstr "Glavno [%s]"
 
-#: ../bse/bsemidisynth.c:480
-#: ../bse/bsesong.c:779
+#: ../bse/bsemidisynth.c:480 ../bse/bsesong.c:779
 msgid "Playback Settings"
 msgstr "Nastavitve predvajanja"
 
-#: ../bse/bsemidivoice.c:109
-#: ../plugins/bsesequencer.c:104
+#: ../bse/bsemidivoice.c:109 ../plugins/bsesequencer.c:104
 msgid "Freq Out"
 msgstr "Frekv Iz"
 
-#: ../bse/bsemidivoice.c:111
-#: ../bse/bsewaveosc.c:601
+#: ../bse/bsemidivoice.c:111 ../bse/bsewaveosc.c:601
 #, fuzzy
 msgid "Gate Out"
 msgstr "Ni več prostora"
@@ -5710,13 +5714,11 @@ msgstr "Hitrost Iz"
 msgid "Aftertouch Out"
 msgstr "Ni več prostora"
 
-#: ../bse/bsemidivoice.c:133
-#: ../plugins/davcanyondelay.c:118
+#: ../bse/bsemidivoice.c:133 ../plugins/davcanyondelay.c:118
 msgid "Left In"
 msgstr "Levi Vh"
 
-#: ../bse/bsemidivoice.c:135
-#: ../plugins/davcanyondelay.c:120
+#: ../bse/bsemidivoice.c:135 ../plugins/davcanyondelay.c:120
 msgid "Right In"
 msgstr "Desni Vh"
 
@@ -5724,14 +5726,12 @@ msgstr "Desni Vh"
 msgid "Disconnect In"
 msgstr "Prekinitveni Vh"
 
-#: ../bse/bsemidivoice.c:139
-#: ../plugins/bsebalance.idl:38
+#: ../bse/bsemidivoice.c:139 ../plugins/bsebalance.idl:38
 #: ../plugins/davcanyondelay.c:122
 msgid "Left Out"
 msgstr "Levi Iz"
 
-#: ../bse/bsemidivoice.c:141
-#: ../plugins/bsebalance.idl:40
+#: ../bse/bsemidivoice.c:141 ../plugins/bsebalance.idl:40
 #: ../plugins/davcanyondelay.c:124
 msgid "Right Out"
 msgstr "Desni Iz"
@@ -5748,17 +5748,13 @@ msgstr "Edinstveno ime tega predmeta"
 msgid "Free form comment or description"
 msgstr "Opomba ali opis proste oblike"
 
-#: ../bse/bseparasite.proc:26
-#: ../bse/bseparasite.proc:50
-#: ../bse/bseparasite.proc:68
-#: ../bse/bseparasite.proc:87
+#: ../bse/bseparasite.proc:26 ../bse/bseparasite.proc:50
+#: ../bse/bseparasite.proc:68 ../bse/bseparasite.proc:87
 msgid "Item"
 msgstr "Predmet"
 
-#: ../bse/bseparasite.proc:27
-#: ../bse/bseparasite.proc:51
-#: ../bse/bseparasite.proc:69
-#: ../bse/bseparasite.proc:88
+#: ../bse/bseparasite.proc:27 ../bse/bseparasite.proc:51
+#: ../bse/bseparasite.proc:69 ../bse/bseparasite.proc:88
 msgid "Path"
 msgstr "Pot"
 
@@ -5766,8 +5762,7 @@ msgstr "Pot"
 msgid "Parasite Paths"
 msgstr "Parazitske poti"
 
-#: ../bse/bseparasite.proc:52
-#: ../bse/bseparasite.proc:70
+#: ../bse/bseparasite.proc:52 ../bse/bseparasite.proc:70
 #: ../bse/bseparasite.proc:89
 msgid "Parasite"
 msgstr "Parazit"
@@ -5832,8 +5827,16 @@ msgid "Failed to start recording from audio device."
 msgstr "Začetek snemanja iz zvočne naprave je spodletel."
 
 #: ../bse/bseserver.c:479
-msgid "An audio project is in use which processes an audio input signal, but the audio device has not been opened in recording mode. An audio signal of silence will be used instead of a recorded signal, so playback operation may produce results not actually intended (such as a silent output signal)."
-msgstr "V uporabi je zvočni projekt, ki obdela zvočni vhodni signal, toda zvočna naprava ni bila odprta v snemalnem načinu. Namesto posnetega signala bo uporabljen signal tišine, zato lahko predvajanje povzroči nepričakovane rezultate (kot na primer tih izhodni signal)."
+msgid ""
+"An audio project is in use which processes an audio input signal, but the "
+"audio device has not been opened in recording mode. An audio signal of "
+"silence will be used instead of a recorded signal, so playback operation may "
+"produce results not actually intended (such as a silent output signal)."
+msgstr ""
+"V uporabi je zvočni projekt, ki obdela zvočni vhodni signal, toda zvočna "
+"naprava ni bila odprta v snemalnem načinu. Namesto posnetega signala bo "
+"uporabljen signal tišine, zato lahko predvajanje povzroči nepričakovane "
+"rezultate (kot na primer tih izhodni signal)."
 
 #: ../bse/bseserver.c:484
 #, c-format
@@ -5854,8 +5857,12 @@ msgstr "Ni mogoče najti razpoložljive zvočne naprave."
 
 #: ../bse/bseserver.c:532
 #, fuzzy
-msgid "No available audio device could be found and opened successfully. Sorry, no fallback selection can be made for audio devices, giving up."
-msgstr "Ni mogoče najti in odpreti razpoložljive zvočne naprave. Žal ni zasilne izbire za zvočne naprave, program se bo zaprl."
+msgid ""
+"No available audio device could be found and opened successfully. Sorry, no "
+"fallback selection can be made for audio devices, giving up."
+msgstr ""
+"Ni mogoče najti in odpreti razpoložljive zvočne naprave. Žal ni zasilne "
+"izbire za zvočne naprave, program se bo zaprl."
 
 #: ../bse/bseserver.c:534
 #, c-format
@@ -5875,8 +5882,12 @@ msgid "MIDI input or oputput is not available."
 msgstr "MIDI vhod ali izhod ni na voljo."
 
 #: ../bse/bseserver.c:556
-msgid "No available MIDI device could be found and opened successfully. Reverting to null device, no MIDI events will be received or sent."
-msgstr "Ni mogoče najti in uspešno odpreti MIDI naprave. Povrnitev na napravo null, noben dogodek MIDI ne bo sprejet ali poslan."
+msgid ""
+"No available MIDI device could be found and opened successfully. Reverting "
+"to null device, no MIDI events will be received or sent."
+msgstr ""
+"Ni mogoče najti in uspešno odpreti MIDI naprave. Povrnitev na napravo null, "
+"noben dogodek MIDI ne bo sprejet ali poslan."
 
 #: ../bse/bseserver.c:558
 #, c-format
@@ -5896,8 +5907,12 @@ msgid "Failed to start recording to disk."
 msgstr "Začetek snemanja na disk je spodletel."
 
 #: ../bse/bseserver.c:615
-msgid "An error occoured while opening the recording file, selecting a different file might fix this situation."
-msgstr "Med odpiranjem posnete datoteke je prišlo do napake, izbira druge datoteke lahko popravi to stanje."
+msgid ""
+"An error occoured while opening the recording file, selecting a different "
+"file might fix this situation."
+msgstr ""
+"Med odpiranjem posnete datoteke je prišlo do napake, izbira druge datoteke "
+"lahko popravi to stanje."
 
 #: ../bse/bseserver.c:617
 #, c-format
@@ -5937,12 +5952,18 @@ msgstr "Glasbeno uglaševanje"
 
 #: ../bse/bsesong.c:749
 #, fuzzy
-msgid "The tuning system which specifies the tones or pitches to be used. Due to the psychoacoustic properties of tones, various pitch combinations can sound \"natural\" or \"pleasing\" when used in combination, the musical tuning system defines the number and spacing of frequency values applied."
-msgstr "Uglaševalni sistem, ki določi tone ali višino tona za uporabo. Zaradi fizoakustičnih?? lastnosti tonov so lahko različne kombinacije višin tonov slišati \"naravno\" ali \"všečno\". Uglaševalni sistem določi število in razmak med uporabljenimi frekvenčnimi vrednostmi."
+msgid ""
+"The tuning system which specifies the tones or pitches to be used. Due to "
+"the psychoacoustic properties of tones, various pitch combinations can sound "
+"\"natural\" or \"pleasing\" when used in combination, the musical tuning "
+"system defines the number and spacing of frequency values applied."
+msgstr ""
+"Uglaševalni sistem, ki določi tone ali višino tona za uporabo. Zaradi "
+"fizoakustičnih?? lastnosti tonov so lahko različne kombinacije višin tonov "
+"slišati \"naravno\" ali \"všečno\". Uglaševalni sistem določi število in "
+"razmak med uporabljenimi frekvenčnimi vrednostmi."
 
-#: ../bse/bsesong.c:756
-#: ../bse/bsesong.c:760
-#: ../bse/bsesong.c:764
+#: ../bse/bsesong.c:756 ../bse/bsesong.c:760 ../bse/bsesong.c:764
 #: ../bse/bsesong.c:768
 #, fuzzy
 msgid "Timing"
@@ -5979,9 +6000,7 @@ msgstr "Udarci na minuto"
 
 #. change default
 #. override parent property
-#: ../bse/bsesong.c:784
-#: ../bse/bsesong.c:788
-#: ../bse/bsesong.c:793
+#: ../bse/bsesong.c:784 ../bse/bsesong.c:788 ../bse/bsesong.c:793
 #: ../bse/bsesong.c:798
 msgid "Looping"
 msgstr "Zankanje"
@@ -5995,7 +6014,8 @@ msgid "Delete a mixer bus from a Song."
 msgstr "Iz skladbe izbriše vodilo mešalnika."
 
 #: ../bse/bsesong.proc:112
-msgid "Retrieve master output bus of a song, will create one if it doesn't exist."
+msgid ""
+"Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr "Pridobi vodilo glavnega izhoda skladbe, če ne obstaja, bo ustvarjeno."
 
 #: ../bse/bsesong.proc:139
@@ -6034,8 +6054,10 @@ msgid "Find a track suitable for playing notes of a given part."
 msgstr "Najdi sled primerno za predvajanje not danega dela."
 
 #: ../bse/bsesong.proc:430
-msgid "Find the first track that contains part, suitable to check for orphan parts."
-msgstr "Najdi prvo sled, ki vsebuje del v katerem je mogoče najti osirotele dele."
+msgid ""
+"Find the first track that contains part, suitable to check for orphan parts."
+msgstr ""
+"Najdi prvo sled, ki vsebuje del v katerem je mogoče najti osirotele dele."
 
 #: ../bse/bsesong.proc:457
 msgid "Synthesize a note on a song of an active project."
@@ -6047,23 +6069,23 @@ msgid "Retrieve song timing information at a specific tick."
 msgstr "Pridobi "
 
 #: ../bse/bsestandardosc.c:106
-msgid "StandardOsc is the BSE basis oscillator which supports various types of wave forms and modulation inputs."
-msgstr "StandardOsc je na BSE osnovan oscilator, ki podpira različne vrste oblik valov in modulacijskih vhodov."
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr ""
+"StandardOsc je na BSE osnovan oscilator, ki podpira različne vrste oblik "
+"valov in modulacijskih vhodov."
 
 #: ../bse/bsestandardosc.c:110
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Zvočni viri/običajni oscilator"
 
-#: ../bse/bsestandardosc.c:131
-#: ../bse/bsestandardosc.c:137
+#: ../bse/bsestandardosc.c:131 ../bse/bsestandardosc.c:137
 msgid "Wave Form"
 msgstr "Valovna oblika"
 
-#: ../bse/bsestandardosc.c:133
-#: ../bse/bsetrack.c:1019
-#: ../bse/bsewaveosc.c:561
-#: ../bse/bsewaveosc.c:563
-#: ../bse/bsewaveosc.c:565
+#: ../bse/bsestandardosc.c:133 ../bse/bsetrack.c:1019 ../bse/bsewaveosc.c:561
+#: ../bse/bsewaveosc.c:563 ../bse/bsewaveosc.c:565
 msgid "Wave"
 msgstr "Val"
 
@@ -6079,27 +6101,29 @@ msgstr "Faza"
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
 msgstr "Začetna faza valovne oblike oscilatorja (zamik cikla v stopinjah)"
 
-#: ../bse/bsestandardosc.c:142
-#: ../bse/bsestandardosc.c:147
-#: ../bse/bsestandardosc.c:152
-#: ../bse/bsestandardosc.c:157
-#: ../plugins/davorgan.c:106
-#: ../plugins/davorgan.c:111
-#: ../plugins/davorgan.c:116
-#: ../plugins/davorgan.c:121
+#: ../bse/bsestandardosc.c:142 ../bse/bsestandardosc.c:147
+#: ../bse/bsestandardosc.c:152 ../bse/bsestandardosc.c:157
+#: ../plugins/davorgan.c:106 ../plugins/davorgan.c:111
+#: ../plugins/davorgan.c:116 ../plugins/davorgan.c:121
 msgid "Base Frequency"
 msgstr "Osnovna frekvenca"
 
 #: ../bse/bsestandardosc.c:145
-msgid "Oscillator frequency in Hertz, i.e. the number of oscillator cycles per second"
-msgstr "Frekvenca oscilatorja v hertzih, število oscilatorskih ciklov na sekundo"
+msgid ""
+"Oscillator frequency in Hertz, i.e. the number of oscillator cycles per "
+"second"
+msgstr ""
+"Frekvenca oscilatorja v hertzih, število oscilatorskih ciklov na sekundo"
 
 #: ../bse/bsestandardosc.c:150
-msgid "Oscillator frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Frekvenca oscilatorja kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
+msgid ""
+"Oscillator frequency as note, converted to Hertz according to the current "
+"musical tuning"
+msgstr ""
+"Frekvenca oscilatorja kot nota, pretvorjena v hertze glede na trenutno "
+"uglaševanje"
 
-#: ../bse/bsestandardosc.c:154
-#: ../plugins/davorgan.c:118
+#: ../bse/bsestandardosc.c:154 ../plugins/davorgan.c:118
 #: ../plugins/davxtalstrings.c:114
 msgid "Transpose"
 msgstr "Premakni"
@@ -6108,30 +6132,25 @@ msgstr "Premakni"
 msgid "Transposition of the oscillator frequency in semitones"
 msgstr "Premik frekvence oscilatorja v poltonih"
 
-#: ../bse/bsestandardosc.c:159
-#: ../plugins/davorgan.c:123
+#: ../bse/bsestandardosc.c:159 ../plugins/davorgan.c:123
 #: ../plugins/davxtalstrings.c:119
 msgid "Fine Tune"
 msgstr "Fino uglaševanje"
 
-#: ../bse/bsestandardosc.c:159
-#: ../plugins/davorgan.c:123
+#: ../bse/bsestandardosc.c:159 ../plugins/davorgan.c:123
 #: ../plugins/davxtalstrings.c:119
 msgid "Amount of detuning in cent (hundredth part of a semitone)"
 msgstr "Vrednost razglašenosti v centih (stotinka poltona)"
 
-#: ../bse/bsestandardosc.c:164
-#: ../bse/bsewaveosc.c:571
+#: ../bse/bsestandardosc.c:164 ../bse/bsewaveosc.c:571
 msgid "Input Modulation [%]"
 msgstr "Modulacija vhoda [%]"
 
-#: ../bse/bsestandardosc.c:169
-#: ../bse/bsewaveosc.c:577
+#: ../bse/bsestandardosc.c:169 ../bse/bsewaveosc.c:577
 msgid "Exponential FM"
 msgstr "Eksponentni FM"
 
-#: ../bse/bsestandardosc.c:174
-#: ../bse/bsewaveosc.c:583
+#: ../bse/bsestandardosc.c:174 ../bse/bsewaveosc.c:583
 msgid "Octaves"
 msgstr "Oktave"
 
@@ -6144,8 +6163,7 @@ msgid "Strength of self modulation"
 msgstr "Moč samo modulacije"
 
 #. disabled
-#: ../bse/bsestandardosc.c:182
-#: ../bse/bsestandardosc.c:189
+#: ../bse/bsestandardosc.c:182 ../bse/bsestandardosc.c:189
 msgid "Pulse Modulation"
 msgstr "Modulacija pulza"
 
@@ -6154,16 +6172,24 @@ msgid "Pulse Width"
 msgstr "Širina pulza"
 
 #: ../bse/bsestandardosc.c:185
-msgid "Proportion of the positive component duration of the pulse wave form (Pulse has to be selected as wave form for this to take effect)"
-msgstr "Delež trajanja pozitivnega dela oblike valu pulza (za učinek te možnosti je potrebno pulz izbrati kot val)"
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr ""
+"Delež trajanja pozitivnega dela oblike valu pulza (za učinek te možnosti je "
+"potrebno pulz izbrati kot val)"
 
 #: ../bse/bsestandardosc.c:191
 msgid "Pulse Modulation [%]"
 msgstr "Modulacija pulza [%]"
 
 #: ../bse/bsestandardosc.c:192
-msgid "Strength of pulse width modulation input (Pulse has to be selected as wave form for this to take effect)"
-msgstr "Moč vhoda modulacije širine pulza (za učinek te možnosti je potrebno pulz izbrati kot val)"
+msgid ""
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr ""
+"Moč vhoda modulacije širine pulza (za učinek te možnosti je potrebno pulz "
+"izbrati kot val)"
 
 #: ../bse/bsestandardosc.c:197
 msgid "Oscillating Frequency Input"
@@ -6177,13 +6203,11 @@ msgstr "PWM Vh"
 msgid "Pulse Width Modulation Input"
 msgstr "Vhod modulacije širine pulza"
 
-#: ../bse/bsestandardosc.c:203
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Sync In"
 msgstr "Uskl Vh"
 
-#: ../bse/bsestandardosc.c:203
-#: ../bse/bsewaveosc.c:595
+#: ../bse/bsestandardosc.c:203 ../bse/bsewaveosc.c:595
 msgid "Syncronization Input"
 msgstr "Uskladitveni vhod"
 
@@ -6199,42 +6223,37 @@ msgstr "Uskl Iz"
 msgid "Syncronization Output"
 msgstr "Izhod usklajevanja"
 
-#: ../bse/bsesubiport.c:292
-#: ../bse/bsesubsynth.c:540
+#: ../bse/bsesubiport.c:292 ../bse/bsesubsynth.c:540
 #, c-format
 msgid "Virtual input %u"
 msgstr "Navidezni vhod %u"
 
-#: ../bse/bsesubiport.c:299
-#: ../bse/bsesubsynth.c:520
+#: ../bse/bsesubiport.c:299 ../bse/bsesubsynth.c:520
 #, c-format
 msgid "Input Port %u"
 msgstr "Vhoda vrata %u"
 
-#: ../bse/bsesubiport.c:301
-#: ../bse/bsesuboport.c:302
-#: ../bse/bsesubsynth.c:510
+#: ../bse/bsesubiport.c:301 ../bse/bsesuboport.c:302 ../bse/bsesubsynth.c:510
 msgid "Assignments"
 msgstr "Dodelitve"
 
-#: ../bse/bsesubiport.c:303
-#: ../bse/bsesuboport.c:304
-msgid "The port name is a unique name to establish input<->output port relationships"
-msgstr "Ime vrat je edinstveno ime za vzpostavljanje razmerij vhodna<->izhodna vrata"
+#: ../bse/bsesubiport.c:303 ../bse/bsesuboport.c:304
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr ""
+"Ime vrat je edinstveno ime za vzpostavljanje razmerij vhodna<->izhodna vrata"
 
 #: ../bse/bsesubiport.c:334
 #, fuzzy
 msgid "/Virtualization/Virtual Input"
 msgstr "Zvočni CD dovod"
 
-#: ../bse/bsesuboport.c:293
-#: ../bse/bsesubsynth.c:547
+#: ../bse/bsesuboport.c:293 ../bse/bsesubsynth.c:547
 #, c-format
 msgid "Virtual output %u"
 msgstr "Navidezni izhod %u"
 
-#: ../bse/bsesuboport.c:300
-#: ../bse/bsesubsynth.c:530
+#: ../bse/bsesuboport.c:300 ../bse/bsesubsynth.c:530
 #, c-format
 msgid "Output Port %u"
 msgstr "Izhodna vrata %u"
@@ -6312,9 +6331,7 @@ msgstr "Seznam razpoložljivih mešalnih vodil za uporabo kot izhodi sledi"
 msgid "Muted"
 msgstr "Nemo"
 
-#: ../bse/bsetrack.c:1012
-#: ../bse/bsetrack.c:1017
-#: ../bse/bsetrack.c:1022
+#: ../bse/bsetrack.c:1012 ../bse/bsetrack.c:1017 ../bse/bsetrack.c:1022
 msgid "Synth Input"
 msgstr "Sestavljen Vhod"
 
@@ -6340,7 +6357,7 @@ msgstr "Midi kanal, dodeljen tej sledi, 0 uporablja notranji kanal"
 msgid "Mixer busses used as output for this track"
 msgstr "Mešalna vodila uporabljena kot izhod za to sled"
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr "Nalaganje valu \"%s\" za frekvenco %f je spodletelo: %s"
@@ -6369,8 +6386,7 @@ msgstr "Zvočni kanal za predvajanje, ponavadi je 1 levo, 2 je desno"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Moč modulacije za linearno frekvenčno modulacijo"
 
-#: ../bse/bsewaveosc.c:593
-#: ../plugins/davorgan.c:148
+#: ../bse/bsewaveosc.c:593 ../plugins/davorgan.c:148
 msgid "Frequency Input"
 msgstr "Frekvenčni vhod"
 
@@ -6390,8 +6406,7 @@ msgstr "Valovni izhod"
 msgid "Gate Output"
 msgstr "Izhod vrat"
 
-#: ../bse/bsewaveosc.c:603
-#: ../plugins/bsesimpleadsr.c:122
+#: ../bse/bsewaveosc.c:603 ../plugins/bsesimpleadsr.c:122
 msgid "Done Out"
 msgstr "Končan Iz"
 
@@ -6407,13 +6422,11 @@ msgstr "Program sledilnika MIDI, skladanje glasbe in modularne izgradnje"
 msgid "Music Composer"
 msgstr "Skladatelj glasbe"
 
-#: ../data/beast.xml.in.h:1
-#: ../data/bse.keys.in.h:2
+#: ../data/beast.xml.in.h:1 ../data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
 msgstr "Več delna datoteka valu BSE"
 
-#: ../data/beast.xml.in.h:2
-#: ../data/bse.keys.in.h:3
+#: ../data/beast.xml.in.h:2 ../data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "Datoteka sestavljanja BSE"
 
@@ -6511,24 +6524,35 @@ msgid ""
 "\n"
 "Compression is a dynamic operation that consists of two parts:\n"
 "(1) the current input volume of the signal is detected\n"
-"(2) if it exceeds a given theshold, the volume of the output signal will be reduced\n"
+"(2) if it exceeds a given theshold, the volume of the output signal will be "
+"reduced\n"
 "\n"
-"The input volume detection has an attack and a release half-life time which can be specified - in milliseconds - with the corresponding properties. This envelope causes the compressor to adapt slowly to the actual input signal level.\n"
+"The input volume detection has an attack and a release half-life time which "
+"can be specified - in milliseconds - with the corresponding properties. This "
+"envelope causes the compressor to adapt slowly to the actual input signal "
+"level.\n"
 "\n"
-"The ratio specifies how the volume of a signal should be reduced, if it exceeds the threshold. A compression ratio of 2:1 means for instance that if the input volume is 2 dB over the threshold, the output volume will be 1 dB over the threshold. Example (threshold = -10, ratio 2:1):\n"
+"The ratio specifies how the volume of a signal should be reduced, if it "
+"exceeds the threshold. A compression ratio of 2:1 means for instance that if "
+"the input volume is 2 dB over the threshold, the output volume will be 1 dB "
+"over the threshold. Example (threshold = -10, ratio 2:1):\n"
 "input = -20 dB => output = -20 dB\n"
 "input = -10 dB => output = -10 dB\n"
 "input = 0 dB => output = -5 dB\n"
 "input = 10 dB => output = 0 dB\n"
 "input = 20 dB => output = 5 dB\n"
 "\n"
-"Compression is often thought off as an operation to make music \"sound louder\". To achieve this, the first step is to reduce the dynamic range like in the example above. As the loud parts of the music have been reduced in volume, we can now amplify everything, without risking distortion or clipping. This has the overall effect of the music sounding louder. In our example, an output amplification of 5 dB would be okay, if the input signal never exceeded 0 dB."
+"Compression is often thought off as an operation to make music \"sound louder"
+"\". To achieve this, the first step is to reduce the dynamic range like in "
+"the example above. As the loud parts of the music have been reduced in "
+"volume, we can now amplify everything, without risking distortion or "
+"clipping. This has the overall effect of the music sounding louder. In our "
+"example, an output amplification of 5 dB would be okay, if the input signal "
+"never exceeded 0 dB."
 msgstr ""
 
-#: ../plugins/artscompressor.idl:48
-#: ../plugins/bseadder.c:95
-#: ../plugins/bseamplifier.idl:43
-#: ../plugins/bsebalance.idl:34
+#: ../plugins/artscompressor.idl:48 ../plugins/bseadder.c:95
+#: ../plugins/bseamplifier.idl:43 ../plugins/bsebalance.idl:34
 #: ../plugins/bsemult.c:58
 msgid "Audio In1"
 msgstr "Zvočni Vh1"
@@ -6537,10 +6561,8 @@ msgstr "Zvočni Vh1"
 msgid "Audio input 1"
 msgstr "Zvočni vhod 1"
 
-#: ../plugins/artscompressor.idl:49
-#: ../plugins/bseadder.c:97
-#: ../plugins/bseamplifier.idl:44
-#: ../plugins/bsebalance.idl:35
+#: ../plugins/artscompressor.idl:49 ../plugins/bseadder.c:97
+#: ../plugins/bseamplifier.idl:44 ../plugins/bsebalance.idl:35
 #: ../plugins/bsemult.c:60
 msgid "Audio In2"
 msgstr "Zvočni Vh2"
@@ -6565,10 +6587,8 @@ msgstr "Zvočni Iz2"
 msgid "Compressed audio output 2"
 msgstr "Stisnjen zvočni izhod 2"
 
-#: ../plugins/artscompressor.idl:53
-#: ../plugins/davbassfilter.idl:34
-#: ../plugins/davchorus.idl:30
-#: ../plugins/davsyndrum.c:106
+#: ../plugins/artscompressor.idl:53 ../plugins/davbassfilter.idl:34
+#: ../plugins/davchorus.idl:30 ../plugins/davsyndrum.c:106
 #: ../plugins/davsyndrum.c:111
 msgid "Parameters"
 msgstr "Parametri"
@@ -6618,28 +6638,25 @@ msgid "Auto Output"
 msgstr "Zvočni izhod"
 
 #: ../plugins/artscompressor.idl:59
-msgid "Adjust the output amplification automatically according to threshold and ratio"
+msgid ""
+"Adjust the output amplification automatically according to threshold and "
+"ratio"
 msgstr "Samodejno prilagajanje ojačitve izhoda glede na prag in razmerje"
 
-#: ../plugins/bseadder.c:95
-#: ../plugins/bsemult.c:58
+#: ../plugins/bseadder.c:95 ../plugins/bsemult.c:58
 msgid "Audio Input 1"
 msgstr "Zvočni vhod 1"
 
-#: ../plugins/bseadder.c:97
-#: ../plugins/bsemult.c:60
+#: ../plugins/bseadder.c:97 ../plugins/bsemult.c:60
 msgid "Audio Input 2"
 msgstr "Zvočni vhod 2"
 
-#: ../plugins/bseadder.c:99
-#: ../plugins/bsemult.c:66
+#: ../plugins/bseadder.c:99 ../plugins/bsemult.c:66
 msgid "Audio Output"
 msgstr "Zvočni izhod"
 
-#: ../plugins/bseamplifier.idl:28
-#: ../plugins/bsebalance.idl:24
-#: ../plugins/bsenoise.idl:25
-#: ../plugins/davbassfilter.idl:25
+#: ../plugins/bseamplifier.idl:28 ../plugins/bsebalance.idl:24
+#: ../plugins/bsenoise.idl:25 ../plugins/davbassfilter.idl:25
 #: ../plugins/davchorus.idl:25
 msgid "GNU Lesser General Public License"
 msgstr "Manj splošno dovoljenje GNU"
@@ -6649,36 +6666,39 @@ msgid "/Routing/Amplifier"
 msgstr "/Usmerjanje/ojačevalnik"
 
 #: ../plugins/bseamplifier.idl:30
-msgid "BseAmplifier provides input signal controlled amplification or attenuation. It supports two control inputs and two audio inputs which are mixed together after balance and level adjustments. The gain setting controls preamplification of the mixed audio signal. The mixed control signal, weighted by a strength setting, determines additional amplification, allowing for external sources to modulate the overall volume (tremolo). The mixed control signal can influence the amplification linearly (to amplify other control signals) or exponentially (to amplify audio signals). Finally, the master volume controls amplification of the resulting output signal."
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
 msgstr ""
 
-#: ../plugins/bseamplifier.idl:43
-#: ../plugins/bsebalance.idl:34
+#: ../plugins/bseamplifier.idl:43 ../plugins/bsebalance.idl:34
 msgid "First audio input"
 msgstr "Prvi zvočni vhod"
 
-#: ../plugins/bseamplifier.idl:44
-#: ../plugins/bsebalance.idl:35
+#: ../plugins/bseamplifier.idl:44 ../plugins/bsebalance.idl:35
 msgid "Second audio input"
 msgstr "Drugo zvočni vhod"
 
-#: ../plugins/bseamplifier.idl:45
-#: ../plugins/bsebalance.idl:36
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
 msgid "Ctrl In1"
 msgstr "Nadzorni Vh1"
 
-#: ../plugins/bseamplifier.idl:45
-#: ../plugins/bsebalance.idl:36
+#: ../plugins/bseamplifier.idl:45 ../plugins/bsebalance.idl:36
 msgid "First control input"
 msgstr "Prvi nadzorni vhod"
 
-#: ../plugins/bseamplifier.idl:46
-#: ../plugins/bsebalance.idl:37
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
 msgid "Ctrl In2"
 msgstr "Nadzorni Vh2"
 
-#: ../plugins/bseamplifier.idl:46
-#: ../plugins/bsebalance.idl:37
+#: ../plugins/bseamplifier.idl:46 ../plugins/bsebalance.idl:37
 msgid "Second control input"
 msgstr "Drugi nadzorni vhod"
 
@@ -6686,59 +6706,47 @@ msgstr "Drugi nadzorni vhod"
 msgid "Amplified audio output"
 msgstr "Ojačan zvočni izhod"
 
-#: ../plugins/bseamplifier.idl:48
-#: ../plugins/bsebalance.idl:41
+#: ../plugins/bseamplifier.idl:48 ../plugins/bsebalance.idl:41
 msgid "Audio Input"
 msgstr "Zvočni vhod"
 
-#: ../plugins/bseamplifier.idl:49
-#: ../plugins/bseamplifier.idl:54
-#: ../plugins/bsebalance.idl:42
-#: ../plugins/bsebalance.idl:47
+#: ../plugins/bseamplifier.idl:49 ../plugins/bseamplifier.idl:54
+#: ../plugins/bsebalance.idl:42 ../plugins/bsebalance.idl:47
 msgid "Input 1 [%]"
 msgstr "Vhod 1 [%]"
 
-#: ../plugins/bseamplifier.idl:49
-#: ../plugins/bsebalance.idl:42
+#: ../plugins/bseamplifier.idl:49 ../plugins/bsebalance.idl:42
 #, fuzzy
 msgid "Attenuate the level of audio input 1"
 msgstr "Alsa dovod zajemanja zvoka"
 
-#: ../plugins/bseamplifier.idl:50
-#: ../plugins/bseamplifier.idl:55
-#: ../plugins/bsebalance.idl:43
-#: ../plugins/bsebalance.idl:48
+#: ../plugins/bseamplifier.idl:50 ../plugins/bseamplifier.idl:55
+#: ../plugins/bsebalance.idl:43 ../plugins/bsebalance.idl:48
 msgid "Input 2 [%]"
 msgstr "Vhod 2 [%]"
 
-#: ../plugins/bseamplifier.idl:50
-#: ../plugins/bsebalance.idl:43
+#: ../plugins/bseamplifier.idl:50 ../plugins/bsebalance.idl:43
 #, fuzzy
 msgid "Attenuate the level of audio input 2"
 msgstr "Alsa dovod zajemanja zvoka"
 
-#: ../plugins/bseamplifier.idl:51
-#: ../plugins/bsebalance.idl:44
+#: ../plugins/bseamplifier.idl:51 ../plugins/bsebalance.idl:44
 msgid "Balance audio input levels"
 msgstr "Ravnotežje zvočnih vhodnih ravni"
 
-#: ../plugins/bseamplifier.idl:53
-#: ../plugins/bsebalance.idl:46
+#: ../plugins/bseamplifier.idl:53 ../plugins/bsebalance.idl:46
 msgid "Control Input"
 msgstr "Nadzor vhoda"
 
-#: ../plugins/bseamplifier.idl:54
-#: ../plugins/bsebalance.idl:47
+#: ../plugins/bseamplifier.idl:54 ../plugins/bsebalance.idl:47
 msgid "Attenuate the level of control input 1"
 msgstr ""
 
-#: ../plugins/bseamplifier.idl:55
-#: ../plugins/bsebalance.idl:48
+#: ../plugins/bseamplifier.idl:55 ../plugins/bsebalance.idl:48
 msgid "Attenuate the level of control input 2"
 msgstr ""
 
-#: ../plugins/bseamplifier.idl:56
-#: ../plugins/bsebalance.idl:49
+#: ../plugins/bseamplifier.idl:56 ../plugins/bsebalance.idl:49
 msgid "Balance control input levels"
 msgstr "Vhodne ravni nadzora ravnotežja"
 
@@ -6748,8 +6756,12 @@ msgid "Multiply Controls"
 msgstr "Oddaljeno upravljanje"
 
 #: ../plugins/bseamplifier.idl:58
-msgid "Switch the two control inputs to work like a chain of gain controls, rather than mixing them together, weighted by balance."
-msgstr "Preklop dveh nadzornih vhodov, tako da delata kot veriga nadzorov okrepitve glasnosti, namesto mešanja skupaj, obteženega z ravnotežjem."
+msgid ""
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr ""
+"Preklop dveh nadzornih vhodov, tako da delata kot veriga nadzorov okrepitve "
+"glasnosti, namesto mešanja skupaj, obteženega z ravnotežjem."
 
 #: ../plugins/bseamplifier.idl:61
 msgid "Exponential Control"
@@ -6759,8 +6771,7 @@ msgstr "Eksponentni nadzor"
 msgid "Toggle exponential and linear control response"
 msgstr "Preklop eksponentnega in linearnega odziva nadzora"
 
-#: ../plugins/bseamplifier.idl:64
-#: ../plugins/bsebalance.idl:52
+#: ../plugins/bseamplifier.idl:64 ../plugins/bsebalance.idl:52
 msgid "Control Strength"
 msgstr "Nadzor moči"
 
@@ -6798,7 +6809,12 @@ msgstr "/Prostorno/ravnotežje"
 
 # http://en.wikipedia.org/wiki/Panning_(audio)
 #: ../plugins/bsebalance.idl:26
-msgid "BseBalance is a stereo panning module with two audio and two control inputs, each of which can be seperately level adjusted. The resulting output balance is controlled by a balance adjustment and the sum of the control inputs. To avoid aliasing artefacts for rapid balance changes, the control signal is preprocessed by a simple lowpass filter with adjustable cutoff frequency."
+msgid ""
+"BseBalance is a stereo panning module with two audio and two control inputs, "
+"each of which can be seperately level adjusted. The resulting output balance "
+"is controlled by a balance adjustment and the sum of the control inputs. To "
+"avoid aliasing artefacts for rapid balance changes, the control signal is "
+"preprocessed by a simple lowpass filter with adjustable cutoff frequency."
 msgstr ""
 
 #: ../plugins/bsebalance.idl:38
@@ -6842,8 +6858,7 @@ msgstr "Ravnotežje izhoda"
 msgid "Adjust output balance between left and right"
 msgstr "Prilagajanje izhodnega ravnotežja med levo in desno"
 
-#: ../plugins/bseiirfilter.c:117
-#: ../plugins/bseiirfilter.c:123
+#: ../plugins/bseiirfilter.c:117 ../plugins/bseiirfilter.c:123
 msgid "Filter Choice"
 msgstr "Izbira filtra"
 
@@ -6855,8 +6870,7 @@ msgstr "Algoritem filtra"
 msgid "The type of filter to use"
 msgstr "Vrsta filtra za uporabo"
 
-#: ../plugins/bseiirfilter.c:129
-#: ../plugins/bseiirfilter.c:134
+#: ../plugins/bseiirfilter.c:129 ../plugins/bseiirfilter.c:134
 msgid "Filter Specification"
 msgstr "Določitev filtra"
 
@@ -6876,8 +6890,7 @@ msgstr "Epsilon"
 msgid "Passband falloff at cutoff frequency"
 msgstr ""
 
-#: ../plugins/bseiirfilter.c:139
-#: ../plugins/bseiirfilter.c:144
+#: ../plugins/bseiirfilter.c:139 ../plugins/bseiirfilter.c:144
 msgid "Cutoff Frequency (All Filters)"
 msgstr "Obrezna frekvenca (vsi filtri)"
 
@@ -6885,8 +6898,7 @@ msgstr "Obrezna frekvenca (vsi filtri)"
 msgid "Filter cutoff frequency"
 msgstr "Obrezna frekvenca filtra"
 
-#: ../plugins/bseiirfilter.c:150
-#: ../plugins/bseiirfilter.c:155
+#: ../plugins/bseiirfilter.c:150 ../plugins/bseiirfilter.c:155
 #, fuzzy
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr "Obrezna frekvenca 2 ("
@@ -7016,16 +7028,21 @@ msgid "/Filters/Bass Filter"
 msgstr "/Filtri/filter basov"
 
 #: ../plugins/davbassfilter.idl:27
-msgid "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 portions of gsyn v0.2. The filter algorithm is partly based on the one described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
-msgstr "DavBassFilter je resonančni filter, ki prepušča nizke frekvence v slogu filtra TB-303 in je osnovan na VCF303 delih gsyn 0.2. Algoritem filtra je deloma osnovan na filtru opisanem v \"Glasbena uporaba mikroprocesorjev\" avtorja Hala Chamberlina."
+msgid ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgstr ""
+"DavBassFilter je resonančni filter, ki prepušča nizke frekvence v slogu "
+"filtra TB-303 in je osnovan na VCF303 delih gsyn 0.2. Algoritem filtra je "
+"deloma osnovan na filtru opisanem v \"Glasbena uporaba mikroprocesorjev\" "
+"avtorja Hala Chamberlina."
 
-#: ../plugins/davbassfilter.idl:31
-#: ../plugins/davchorus.idl:28
+#: ../plugins/davbassfilter.idl:31 ../plugins/davchorus.idl:28
 msgid "Audio input"
 msgstr "Zvočni vhod"
 
-#: ../plugins/davbassfilter.idl:32
-#: ../plugins/davsyndrum.c:121
+#: ../plugins/davbassfilter.idl:32 ../plugins/davsyndrum.c:121
 #: ../plugins/davxtalstrings.c:153
 msgid "Trigger In"
 msgstr "Vh sprožilca"
@@ -7074,13 +7091,11 @@ msgstr "Nastavitev dolžine dušenja v odstotkih"
 msgid "Trigger filter"
 msgstr "Filter sprožilca"
 
-#: ../plugins/davcanyondelay.c:86
-#: ../plugins/davcanyondelay.c:91
+#: ../plugins/davcanyondelay.c:86 ../plugins/davcanyondelay.c:91
 msgid "Left to Right"
 msgstr "Od leve proti desni"
 
-#: ../plugins/davcanyondelay.c:87
-#: ../plugins/davcanyondelay.c:97
+#: ../plugins/davcanyondelay.c:87 ../plugins/davcanyondelay.c:97
 msgid "Delay (seconds)"
 msgstr "Zamik (sekunde)"
 
@@ -7088,8 +7103,7 @@ msgstr "Zamik (sekunde)"
 msgid "The time for the left to right delay"
 msgstr "Čas zamika od leve proti desni"
 
-#: ../plugins/davcanyondelay.c:92
-#: ../plugins/davcanyondelay.c:102
+#: ../plugins/davcanyondelay.c:92 ../plugins/davcanyondelay.c:102
 msgid "Feedback [%]"
 msgstr "Odziv [%]"
 
@@ -7097,8 +7111,7 @@ msgstr "Odziv [%]"
 msgid "The feedback amount; a negative feedback inverts the signal"
 msgstr "Količina odziva, negativen odziv obrne signal"
 
-#: ../plugins/davcanyondelay.c:96
-#: ../plugins/davcanyondelay.c:101
+#: ../plugins/davcanyondelay.c:96 ../plugins/davcanyondelay.c:101
 msgid "Right to Left"
 msgstr "Od desne proti levi"
 
@@ -7110,8 +7123,7 @@ msgstr "Čas zamika od desne proti levi"
 msgid "Set the feedback amount; a negative feedback inverts the signal"
 msgstr "Nastavitev količine odziva, negativen odziv obrne signal"
 
-#: ../plugins/davcanyondelay.c:107
-#: ../plugins/davcanyondelay.c:113
+#: ../plugins/davcanyondelay.c:107 ../plugins/davcanyondelay.c:113
 msgid "IIR Low-Pass Filter"
 msgstr "IIR filter nizkih frekvenc"
 
@@ -7161,11 +7173,13 @@ msgid "Organ frequency in Hertz, i.e. the pitch of the base tone"
 msgstr "Frekvenca orgel v hertzih, višina osnovnega tona"
 
 #: ../plugins/davorgan.c:114
-msgid "Organ frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Frekvenca orgel kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
+msgid ""
+"Organ frequency as note, converted to Hertz according to the current musical "
+"tuning"
+msgstr ""
+"Frekvenca orgel kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
 
-#: ../plugins/davorgan.c:118
-#: ../plugins/davxtalstrings.c:114
+#: ../plugins/davorgan.c:118 ../plugins/davxtalstrings.c:114
 msgid "Transposition of the frequency in semitones"
 msgstr "Premik frekvence v poltonih"
 
@@ -7178,11 +7192,13 @@ msgid "Drum frequency in Hertz"
 msgstr "Frekvenca bobna v hertzih"
 
 #: ../plugins/davsyndrum.c:95
-msgid "Drum frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Frekvenca bobna kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
+msgid ""
+"Drum frequency as note, converted to Hertz according to the current musical "
+"tuning"
+msgstr ""
+"Frekvenca bobna kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
 
-#: ../plugins/davsyndrum.c:99
-#: ../plugins/davxtalstrings.c:123
+#: ../plugins/davsyndrum.c:99 ../plugins/davxtalstrings.c:123
 msgid "Trigger Velocity [%]"
 msgstr "Hitrost sprožilca [%s]"
 
@@ -7190,14 +7206,12 @@ msgstr "Hitrost sprožilca [%s]"
 msgid "The velocity of the drum hit"
 msgstr "Hitrost udarca po bobnu"
 
-#: ../plugins/davsyndrum.c:103
-#: ../plugins/davxtalstrings.c:122
+#: ../plugins/davsyndrum.c:103 ../plugins/davxtalstrings.c:122
 #: ../plugins/davxtalstrings.c:127
 msgid "Trigger"
 msgstr "Sprožilec"
 
-#: ../plugins/davsyndrum.c:104
-#: ../plugins/davxtalstrings.c:128
+#: ../plugins/davsyndrum.c:104 ../plugins/davxtalstrings.c:128
 msgid "Trigger Hit"
 msgstr "Sproži udarec"
 
@@ -7218,8 +7232,11 @@ msgid "Frequency Ratio"
 msgstr "Razmerje frekvenc"
 
 #: ../plugins/davsyndrum.c:113
-msgid "The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)"
-msgstr "Razmerje zamika frekvence. (1,0 pomeni zamik enak osnovni frekvenci bobna)"
+msgid ""
+"The ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base "
+"frequency)"
+msgstr ""
+"Razmerje zamika frekvence. (1,0 pomeni zamik enak osnovni frekvenci bobna)"
 
 #: ../plugins/davsyndrum.c:117
 msgid "Drum Frequency Input"
@@ -7231,7 +7248,8 @@ msgstr "Razmerje vhodov"
 
 #: ../plugins/davsyndrum.c:119
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
-msgstr "Razmerje zamika frekvence (v primeru da ni povezano predpostavljeno 1.0)"
+msgstr ""
+"Razmerje zamika frekvence (v primeru da ni povezano predpostavljeno 1.0)"
 
 #: ../plugins/davsyndrum.c:121
 msgid "Hit the drum on raising edges"
@@ -7246,8 +7264,12 @@ msgid "String oscillation frequency in Hertz"
 msgstr "Oscilacijska frekvenca strune v hertzih"
 
 #: ../plugins/davxtalstrings.c:110
-msgid "String oscillation frequency as note, converted to Hertz according to the current musical tuning"
-msgstr "Oscilacijska frekvenca strune kot nota, pretvorjena v hertze glede na trenutno uglaševanje"
+msgid ""
+"String oscillation frequency as note, converted to Hertz according to the "
+"current musical tuning"
+msgstr ""
+"Oscilacijska frekvenca strune kot nota, pretvorjena v hertze glede na "
+"trenutno uglaševanje"
 
 # Pluck je poteg strune...
 #: ../plugins/davxtalstrings.c:124
@@ -7258,8 +7280,7 @@ msgstr "Hitrost potega strune"
 msgid "Pluck the string"
 msgstr "Potegni struno"
 
-#: ../plugins/davxtalstrings.c:130
-#: ../plugins/davxtalstrings.c:135
+#: ../plugins/davxtalstrings.c:130 ../plugins/davxtalstrings.c:135
 msgid "Decay"
 msgstr "Dušenje"
 
@@ -7279,8 +7300,7 @@ msgstr "Dušenje napetosti"
 msgid "Tension of the string"
 msgstr "Napetost strune"
 
-#: ../plugins/davxtalstrings.c:140
-#: ../plugins/davxtalstrings.c:145
+#: ../plugins/davxtalstrings.c:140 ../plugins/davxtalstrings.c:145
 msgid "Flavour"
 msgstr "Okus"
 
@@ -7333,4 +7353,3 @@ msgstr "Desni izhod"
 #, c-format
 msgid "failed to add wave chunk from file \"%s\": %s"
 msgstr ""
-

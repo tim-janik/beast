@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-07 01:07+0200\n"
+"POT-Creation-Date: 2010-02-14 01:38+0100\n"
 "PO-Revision-Date: 2003-10-25 21:45+0800\n"
 "Last-Translator: storm119 <bbbush@163.com>\n"
 "Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
@@ -3752,53 +3752,53 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 
 #. ALWAYS (always enabled)
-#: ../birnet/birnetmsg.cc:114
+#: ../birnet/birnetmsg.cc:115
 msgid "Always"
 msgstr ""
 
 #. ERROR (enabled)
-#: ../birnet/birnetmsg.cc:118
+#: ../birnet/birnetmsg.cc:119
 msgid "Error"
 msgstr "错误"
 
 #. WARNING (enabled)
-#: ../birnet/birnetmsg.cc:122
+#: ../birnet/birnetmsg.cc:123
 msgid "Warning"
 msgstr "警告"
 
 #. SCRIPT (enabled)
-#: ../birnet/birnetmsg.cc:126
+#: ../birnet/birnetmsg.cc:127
 #, fuzzy
 msgid "Script"
 msgstr "脚本"
 
 #. INFO (enabled)
-#: ../birnet/birnetmsg.cc:130
+#: ../birnet/birnetmsg.cc:131
 #, fuzzy
 msgid "Information"
 msgstr "放弃"
 
 #. DIAG (enabled)
-#: ../birnet/birnetmsg.cc:134
+#: ../birnet/birnetmsg.cc:135
 msgid "Diagnostic"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1194
+#: ../birnet/birnetutils.cc:1195
 msgid "Launch Web Browser"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1195
+#: ../birnet/birnetutils.cc:1196
 msgid "Failed to launch a web browser executable"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1196
+#: ../birnet/birnetutils.cc:1197
 #, c-format
 msgid ""
 "No suitable web browser executable could be found to be executed and to "
 "display the URL: %s"
 msgstr ""
 
-#: ../birnet/birnetutils.cc:1197
+#: ../birnet/birnetutils.cc:1198
 msgid "Show messages about web browser launch problems"
 msgstr ""
 
@@ -5743,13 +5743,13 @@ msgstr ""
 msgid "%s (core dumped)"
 msgstr ""
 
-#: ../bse/bsemain.cc:269
+#: ../bse/bsemain.cc:270
 msgid ""
 "\n"
 "Available PCM drivers:\n"
 msgstr ""
 
-#: ../bse/bsemain.cc:271
+#: ../bse/bsemain.cc:272
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -6528,7 +6528,7 @@ msgstr ""
 msgid "Mixer busses used as output for this track"
 msgstr ""
 
-#: ../bse/bsewave.c:305
+#: ../bse/bsewave.c:331
 #, c-format
 msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
 msgstr ""
