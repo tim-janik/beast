@@ -164,11 +164,10 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 #
 %.genprc.c: @PERLRULE@ %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
-CLEANSTAMPFILES = 
 if WITH_PERLRULE
-CLEANFILES += $(bse_proc_gen_sources) $(CLEANSTAMPFILES)
+CLEANFILES += $(bse_proc_gen_sources)
 else
-MAINTAINERCLEANFILES += $(bse_proc_gen_sources) $(CLEANSTAMPFILES)
+MAINTAINERCLEANFILES += $(bse_proc_gen_sources)
 endif
 # gslfft.c
 GENERATED += gslfft.c
@@ -177,10 +176,8 @@ $(srcdir)/gslfft.c: @PERLRULE@ $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 # bsegentypes.h
 GENERATED_EXTRA_DIST += bsegentypes.h
 $(libbse_la_OBJECTS): bsegentypes.h
-bsegentypes.h: @PERLRULE@ stamp-bsegentypes.h ;
-CLEANSTAMPFILES += stamp-bsegentypes.h
-stamp-bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
-stamp-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
+bsegentypes.h: @PERLRULE@ mktypes.pl $(filter-out bsegentypes.c, $(bse_sources)) $(filter-out bsegentypes.h, $(bse_public_headers))
+bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	( \
 	  cd $(srcdir) \
 	  && $(GLIB_MKENUMS) \
@@ -192,8 +189,8 @@ stamp-bsegentypes.h: @PERLRULE@ bsecore.idl $(SFIDL)
 	) > xgen-$(@F) \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-$(@F) \
 	&& (cmp -s xgen-$(@F) $(srcdir)/bsegentypes.h || cp xgen-$(@F) $(srcdir)/bsegentypes.h) \
-	&& rm -f xgen-$(@F) \
-	&& echo timestamp > $(@F)
+	&& rm -f xgen-$(@F)
+$(bse_sources): bsegentypes.h
 # bsegentypes.c
 GENERATED_EXTRA_DIST += bsegentypes.c
 $(libbse_la_OBJECTS): bsegentypes.c
@@ -293,7 +290,7 @@ noinst_DATA = bsehack.idl
 #
 .PHONY: generated clean-generated
 clean-generated: clean
-	rm -f $(GENERATED) $(CLEANSTAMPFILES)
+	rm -f $(GENERATED)
 generated: clean-generated $(GENERATED) $(idl_built_sources)
 
 
