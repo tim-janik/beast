@@ -45,6 +45,7 @@ typedef struct {
   GslLong lbound, ubound;	/* PHASE_NORM/_BACKWARD */
 } Iter;
 typedef struct {
+  GslLong one;
   GslLong dir;
   GslLong pos;
   GslLong loop_count;
@@ -81,7 +82,7 @@ wpos_step (GslWaveChunk *wchunk,
 	}
       else
 	{
-	  if (wpos->pos == wchunk->loop_last + wpos->dir && wpos->loop_count)
+	  if (wpos->pos == wchunk->loop_last + wpos->one && wpos->loop_count)
 	    {
 	      wpos->loop_count--;
 	      wpos->pos = wchunk->loop_first;
@@ -103,6 +104,7 @@ fill_block (GslWaveChunk *wchunk,
   GslDataCacheNode *dnode;
   WPos wpos;
   
+  wpos.one = wchunk->n_channels;
   wpos.dir = 1; // wchunk->n_channels;
   if (backward)
     wpos.dir = -wpos.dir;
