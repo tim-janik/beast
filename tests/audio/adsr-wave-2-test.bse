@@ -1,0 +1,36 @@
+; BseProject
+
+(bse-version "0.7.2")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2010-03-03 16:14:41")
+  (creation-time "2010-03-03 16:14:41")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld")
+  (container-child "BseWave::pseudo-stereo"
+    (load-wave "pseudo-stereo.bsewave" "pseudo-stereo")))
+(container-child "BseSong::Unnamed"
+  (bpm 120)
+  (denominator 4)
+  (numerator 4)
+  (tpqn 384)
+  (modification-time "2010-03-03 16:14:59")
+  (creation-time "2010-03-03 16:14:59")
+  (license "Creative Commons Attribution 2.5 (http://creativecommons.org/licenses/by/2.5/)")
+  (author "Stefan Westerfeld")
+  (container-child "BsePart::Part-1"
+    (n-channels 1)
+    (insert-notes 0
+      (0x00000 0x180 57)
+      (0x00180 0x180 60)
+      (0x00300 0x180 64)
+      (0x00480 0x180 69)))
+  (container-child "BseBus::Master-1"
+    (master-output #t)
+    (right-volume 1)
+    (left-volume 1)
+    (bus-input (link 1 "Track-01")))
+  (container-child "BseTrack::Track-01"
+    (n-voices 16)
+    (wave (link 2 "Wave-Repository:pseudo-stereo"))
+    (insert-part 0 (link 1 "Part-1"))))
