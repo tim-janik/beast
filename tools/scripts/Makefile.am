@@ -7,4 +7,6 @@ EXTRA_DIST += $(strip \
 	waveloadtest.scm \
 	noteplaytest.scm \
 	retrokit.sh \
+        blip.py \
+        blip.sh \
 )
