@@ -24,21 +24,21 @@
 # shell script to convert the output of blip.py to .bsewave files
 #
 blip.py || { echo "creation failed" ; exit 1; }
-rm pseudo_square.bsewave
-bsewavetool create pseudo_square.bsewave 1
-bsewavetool add-raw-chunk pseudo_square.bsewave -f 440.366972477 -F float -R 48000 pseudo_square_440
+rm pseudo-square.bsewave
+bsewavetool create pseudo-square.bsewave 1
+bsewavetool add-raw-chunk pseudo-square.bsewave -f 440.366972477 -F float -R 48000 pseudo-square-440
 LOOP_END=108
-bsewavetool xinfo pseudo_square.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
+bsewavetool xinfo pseudo-square.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
 
-rm pseudo_saw.bsewave
-bsewavetool create pseudo_saw.bsewave 1
-bsewavetool add-raw-chunk pseudo_saw.bsewave -f 440.366972477 -F float -R 48000 pseudo_saw_440
+rm pseudo-saw.bsewave
+bsewavetool create pseudo-saw.bsewave 1
+bsewavetool add-raw-chunk pseudo-saw.bsewave -f 440.366972477 -F float -R 48000 pseudo-saw-440
 LOOP_END=108
-bsewavetool xinfo pseudo_saw.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
+bsewavetool xinfo pseudo-saw.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
 
-rm pseudo_stereo.bsewave
-bsewavetool create pseudo_stereo.bsewave 2
-bsewavetool add-raw-chunk pseudo_stereo.bsewave -f 440.366972477 -F float -R 48000 pseudo_stereo_440
+rm pseudo-stereo.bsewave
+bsewavetool create pseudo-stereo.bsewave 2
+bsewavetool add-raw-chunk pseudo-stereo.bsewave -f 440.366972477 -F float -R 48000 pseudo-stereo-440
 LOOP_END=216
-bsewavetool xinfo pseudo_stereo.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
-bsewavetool xinfo pseudo_stereo.bsewave --wave play-type=adsr-wave-2
+bsewavetool xinfo pseudo-stereo.bsewave -f440.36 loop-type=jump loop-start=0 loop-end=$LOOP_END loop-count=1000000
+bsewavetool xinfo pseudo-stereo.bsewave --wave play-type=adsr-wave-2

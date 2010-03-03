@@ -66,11 +66,11 @@ def repeat (block, n):
   return out
 
 out_psq = pseudo_square (48000, 440)
-out_psq.tofile (open ("pseudo_square_440", "w"))
+out_psq.tofile (open ("pseudo-square-440", "w"))
 
 out_psaw = pseudo_saw (48000, 440)
-out_psaw.tofile (open ("pseudo_saw_440", "w"))
+out_psaw.tofile (open ("pseudo-saw-440", "w"))
 
 #out_psq_psaw = repeat (interleave (out_psq, out_psaw), 50)
 out_psq_psaw = interleave (out_psq, out_psaw)
-out_psq_psaw.tofile (open ("pseudo_stereo_440", "w"))
+out_psq_psaw.tofile (open ("pseudo-stereo-440", "w"))
